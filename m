@@ -1,255 +1,173 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBFDF371067
-	for <iommu@lists.linux.dev>; Fri, 19 Jun 2026 10:54:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36B69368D7D
+	for <iommu@lists.linux.dev>; Fri, 19 Jun 2026 12:03:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781866481; cv=none; b=HQwybPKN90iEjwRJVGFmG9rhmAdZhocnTz7uq0ZmDJMB39rYyyGYFTLj8oDzI3cEeTmU0VuSQVuaqfiK/kAwi2KQ5wOiYXemMxAK4Jh7QekhKt9RDIOEFsAh3Wu6YNyKbLrDyFNY6a3wsYAPZSZDkeG574rE+hpUVc7CvheBEWE=
+	t=1781870595; cv=none; b=V425SsWk2gk1Upq4EkRbRlNC2WJ/4SILIA/IzfyaWIR94WwmaRmLGxZqWPEczpe20H86T01BtkOGGhG1v74/nqJ5sULRFxMsP5O4OjFW7pCvmPA8hBKLjJI57ifpatbz4wam4EikrIeZic7rTU75p76/ycWTPRdI2iQ6b9uGO6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781866481; c=relaxed/simple;
-	bh=cijrwQ9O5Wsy7Ns7ARoiPJFl63dkmQm9dPwVhuUPxvE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c4yo1w7EeS2KK34+cl6bwVriiD4bg27zsRXt+Op5o+xu83Ml2wjQF1SYwQ8MJUw8WlXHBd8ofU/K9+cqmYN7sVV80gRopHp+08lQSkvw5fhwxX+BW9Ftt1/ZpcpyYVPWmNSBO6rHTrxCwvxBsr4mTHgWU88ObEYNk7a9jyRudLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=OhNHN0bi; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BnHBp9h6; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1781870595; c=relaxed/simple;
+	bh=3CfcX4Be+5vi/NadGQc4bvpp+jHS4/eMDxItDtd8Qqs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UhcBSICwWXZH6XNuzU7MlKmeJ1B2zgIK4Xxtmjwa43lS4vmKLoW2lRGfsmPWxSDPEnS5NWrCBrwZ8svv1v9HYPI6tFld1Wcob+CXiGjgo3lcexZtZ0igbdnEcoe4Eeu80Rdr2xHyx+4+D4SPvYxUsG0ELltfBGLmv2J0Y8X3Yaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ovEEzDFd; arc=none smtp.client-ip=209.85.217.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="OhNHN0bi";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BnHBp9h6"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65JAitk6506808
-	for <iommu@lists.linux.dev>; Fri, 19 Jun 2026 10:54:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	uJASCICmhbYbPbzCDWKXXIRnLLMfhiemH7GJWmQ/H1Q=; b=OhNHN0biDYyFQwgk
-	nXOC7uj4+hu8ejH3kmNt1s+lrUg4ZL23JpqdrV/OMVC+JLAuBLfE+xPm8V78s9iQ
-	IF1mOiz1CV6CNDvSWeOueLa/qfC3FSSmq3Sk5+jbseiurHfL7elTbL+aX8zcQja/
-	rDCmev4XPuahHfjOj/pDvSk4eXqC9a4WyYRwiD0MBk1RRNXmUXy5eWUudBDff8vp
-	IaBJVLBpM2FBEPicbmK6K9qtCNsOlaQRO/HBzQ4qcICcRHme43QtTpf2XhAIqjaO
-	FUCW16qOUCJnr4sifm6l+WTi8bbLHcVZil3qZQUudtHxiiVFW4A0sVMWm60wTmuW
-	P9ZVgA==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4evm22bmyh-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 19 Jun 2026 10:54:38 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2c0d0516ad7so20207885ad.0
-        for <iommu@lists.linux.dev>; Fri, 19 Jun 2026 03:54:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ovEEzDFd"
+Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-7296071d19fso905753137.1
+        for <iommu@lists.linux.dev>; Fri, 19 Jun 2026 05:03:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781866478; x=1782471278; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uJASCICmhbYbPbzCDWKXXIRnLLMfhiemH7GJWmQ/H1Q=;
-        b=BnHBp9h6jSfqsmIqTS5ehCiR5HSBDSefHsxsjXpj7saAtBsQrzRaXotzr3nd5p+iN3
-         Pub/xCFYpwCgZa6WwZxLGf53MbIxgWgj7GdOket91wy2YAu5eCWY+kOGcNVDiUAJJfLc
-         U7XKh7BIzbVXt0BvY9OZrjd8tb9wSihmlUsRttVfitZgMJoyxw47nq2etaOcMKuNkhDn
-         nfVCz3ojW3ZtS8GnnjC3jTj6Mfdqg0sXgnaHKFl33FIRr32p/TnTkDR0QfJ3C5VxtXkt
-         +2JVBUQsJApSNDTIBXNAazhgexEVTZEfAcUxDPnaNQaiDQg39NRsbp8mVUehB3x7vZLT
-         jQLw==
+        d=ziepe.ca; s=google; t=1781870592; x=1782475392; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=StlCUTUicQISJ/bWwbWkmSHhXapLgWFJJHXk0oHb5Ig=;
+        b=ovEEzDFdmge1XBEPWD/OuNrmNkHwFKp80azqXIGH8HSziLhgMxCuDoCclDBwwgjdTN
+         sjwFTARD+lgizP3oDOPAY8d64Re+vLflxTJ5RH7D2y64x86ashlgzOqVMc3/Bkg4Q58H
+         DRkG+hQ4PvIKikm93izM2VoxkqPdLHIA3T13lMX06eKlN5GFaMnB1SOOipWv+OOH2FXl
+         UCPE+VEIY1Pzp/qz1D3AQKlGgM5dcSrc/4pmBmN0dOyGiS7fg8+4pzLw3T2vTT7GTjeh
+         hKuUuwnQR56M8mfbNTaLuwQV/Kf/tW3EWdoLPhA43KSmDpstFMmy1Os8YmFruH4XKMPs
+         KhgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781866478; x=1782471278;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uJASCICmhbYbPbzCDWKXXIRnLLMfhiemH7GJWmQ/H1Q=;
-        b=Xa+S0l/DehynaxGxSIQxG0/wEfRt/yYve9WYBj+Q7pShQqgB/UF5sXIuXMrsLBiBjA
-         WCTKss16bseGFum9aFvTiycsUpEK0OwSDlTbVU5MzWYbqF0PBVDbHCbcHV1YODUVnmiI
-         nhyYDV1eNkhzHWPzd6HGl3vtntyyS6vct77aZKCHaMJG6G+SezZSu78DITfsEULhNhZ1
-         ZPsjqLcJQWzaYbDbJjt6n004RjwsfIK9ONJijrJ/AVo8UyMkQA2NosGEZR8DuzTPnNPj
-         XLiyASmfRMzYgnqi9xkaehRqB5kBdvtp1Wax6uMigNv6h8mcRJVwRe6rq4IWoouCLhRm
-         JIEw==
-X-Forwarded-Encrypted: i=1; AFNElJ+jk56G043Meggx15rQK5pkXPmip5jErycQEqY2EM4/JvvrGNBh2nWy9kImznt0lOvYVATsJQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwjHUnt/CdCAtq6MZiSEWVISf4G4vTpIFnsDIKXTZV3J/MwWj0Q
-	M/lnJYBsJ4gnsKu/6RkeiATjY+3nROy3clSG262OA07Ka0GUzhtRNOrp9emd7B9yZowfwRWagwx
-	iuVCbUcGgATDzB9VBgFnJX5xjawuUV9XvCGofYHG/6T9lVhTIy7Q2W0HpuA==
-X-Gm-Gg: AfdE7cl48EyfHDyauLQddpAScc3N1LyaKmvPrmZqA3TP3DglUxo2tRazDAt0xI+RL5P
-	+eaxnPB0RgrjrvRkBMtUYlir2KEBIqoratNUzuFyBL296vxkoM/TnjXSIRENjeUeZN7x5qqMPhY
-	o03huHCES4hWf/T3BGB/jczr0R0rXPPUWCqogyNJaZocKP/DcyMZoUokpwb2LJ74n6+6QCRwP0A
-	nXbPmd0Y8XQehR2x8/oc5D66Ux7DIHAnzPDS4sWFNxa2VCVME41ORRanaKc/0ibMAWbKCoSRTOd
-	Mv4fAFY27zrFqRr+qdNc7zQ+6PrXhROfbwx3ADf2ohcdYNAqME4U5SaniW7nfOII14wGSbiflgy
-	UZ3l1wxBO/EkYnAUQJkgVu/8QqalXWpWWPMbwYg==
-X-Received: by 2002:a17:903:32c7:b0:2c0:bcb3:86f with SMTP id d9443c01a7336-2c718f1f000mr33930795ad.6.1781866477623;
-        Fri, 19 Jun 2026 03:54:37 -0700 (PDT)
-X-Received: by 2002:a17:903:32c7:b0:2c0:bcb3:86f with SMTP id d9443c01a7336-2c718f1f000mr33930485ad.6.1781866477173;
-        Fri, 19 Jun 2026 03:54:37 -0700 (PDT)
-Received: from [10.219.56.41] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c73663cc3bsm4044435ad.76.2026.06.19.03.54.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Jun 2026 03:54:36 -0700 (PDT)
-Message-ID: <aaf4daee-4886-4214-a761-80545d2565ee@oss.qualcomm.com>
-Date: Fri, 19 Jun 2026 16:24:31 +0530
+        d=1e100.net; s=20251104; t=1781870592; x=1782475392;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=StlCUTUicQISJ/bWwbWkmSHhXapLgWFJJHXk0oHb5Ig=;
+        b=IhvBwho8721IXKwPcvzsM7gAnPYMyId5nlVJF4apwvFujwIpmO8PZH+O1xkhDadfFI
+         kHd8y10ww/U0u0Ta9xWc+KZsh+fava7/hlkK+00J5dsxsyGDN1D+P1yASaJJC9CCYWGT
+         OpZUGuf/Qyst8DCgpCtfHUOKT0UukZU5Tuq/ADEoG4K/e6jA8CrOfzfxMmzVe+oA6jwk
+         srkaRsPJqlfuwtbRF0JO3+PBjq1LVIavAF0ih6LWz25ME4RAqcne2GzdA83N6bBiWwvc
+         5e4O5IZmsikj6KiX5kEa5fdGgw+pkYGIOWWrB4J9VCbrNmw6w37v6w5PogOdok2LqVP+
+         OU6w==
+X-Forwarded-Encrypted: i=1; AFNElJ+yKZtZEXtWt1ZuxrmQto6X0uKYEHSRUzntRKApJteRqZx4LrAqujSsO2vlUtEb3xjp3MMzGQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyGMF812LToPiiG4uGoPvDOYUPREhchn/6FO9LkfdlSCxopPn3+
+	FI0t9Gl87nVAy4vaZSyTZjCF96WjtdEl3dPbsQH4EY65kELPWC4WxjY+Pnpuqog0nC4=
+X-Gm-Gg: AfdE7clSKQ6GOQ85I6VMZwvBYYUSc6ir9XZ2lykQdoJXVHV8r4RDFJ1LYV0Vww+tpHk
+	o5PRA9PlQeKO7a4JSidBMfyGJrEO/08aF1MKt5LEx51/oDj5mlgQNXzzBXOmSx/w522uf/HpVY9
+	7mYlNwXjoeMVgoMNO6m3FOrAOjRiWEa1DG+kp5ARbEj0ZLI8fJwrac69whaP7N208VlzpT2PtML
+	7qLy0GaJAQh7h30qGXxSQMy1Th1RwLujxHJLA42pMVfZtsDy4u6pi+PrZE/sFVONcxtcr968PIs
+	q6k+NJx5TjmcIAZzv3BDvBkJwohlC76WkqzOVXSWsJu0GZ1ketMVaCq2Aq/yLH6LvHS4drm2p7F
+	L21OcTukEkQLA2eaTCS/6njljLyWejI7p6ZFLsCP1HZ8uuSpo1woPfTTXl8SqKF+v7BnZ9Bg4VL
+	6uSACFFioxG1XLGMv1IOqcavb9tFpytD2u1CWBQYacbM+O9Nsyle5CREvRnRg5FFcRYg80QsFVQ
+	aax/A==
+X-Received: by 2002:a05:6102:c89:b0:729:213f:76ca with SMTP id ada2fe7eead31-72a20215eaamr1999509137.29.1781870591985;
+        Fri, 19 Jun 2026 05:03:11 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-920a424f817sm215731985a.22.2026.06.19.05.03.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Jun 2026 05:03:10 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1waXwD-00000004SQK-4AfU;
+	Fri, 19 Jun 2026 09:03:09 -0300
+Date: Fri, 19 Jun 2026 09:03:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
+ direct, pool and swiotlb paths
+Message-ID: <20260619120309.GI231643@ziepe.ca>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <aigYbK12D8uKQvJF@arm.com>
+ <20260609144746.GL2764304@ziepe.ca>
+ <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
+ <yq5aqzm4dz25.fsf@kernel.org>
+ <20260618153705.GH231643@ziepe.ca>
+ <d4ef9a9f-18d9-40e1-9d02-87aeb9cb6540@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/6] iommu/arm-smmu: Add interconnect bandwidth voting
- support
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <20260526-smmu_interconnect_addition-v2-0-2a6d8ca30d63@oss.qualcomm.com>
- <20260526-smmu_interconnect_addition-v2-2-2a6d8ca30d63@oss.qualcomm.com>
- <7xfxlxfqjcqdzl6gckaoyy2ioefglc7bgi66yv5khrbl6fi2zc@ivtiukdaj4jv>
- <d25f24ca-5bb3-4276-ac8f-8340e8fb4ce8@oss.qualcomm.com>
- <sdm7sqiokmsgczeat2mxch42ois5rwabav6c5fm7abct2xoepf@j3kraqrjvpoc>
- <ea345832-711d-4e32-af0f-bc74d8646aef@oss.qualcomm.com>
- <299d54c5-fb93-47ee-9495-fbf48a3204fd@oss.qualcomm.com>
-Content-Language: en-US
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-In-Reply-To: <299d54c5-fb93-47ee-9495-fbf48a3204fd@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Authority-Analysis: v=2.4 cv=YN+vDxGx c=1 sm=1 tr=0 ts=6a351fee cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=5sB-xfgw_plGXbDTPmIA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
-X-Proofpoint-GUID: fp4H787ntxT_o5Q2-mlYedP_mHwGBuuL
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE5MDEwMSBTYWx0ZWRfXwONLZ3bnQRKp
- TwOCx3S31kemY7DDks+Pu4aj0AoWVaddJ4Ab9a/Q7c3MlT8/V8z6trzpn3RxrxytYD4aaHTbjoj
- ntDNRVzOurY+g9dXTCLn7kvpkiuxbCU=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE5MDEwMSBTYWx0ZWRfX92bwmkYPPrZt
- +ggcubGQyd/Mied0Hu01aJhOgFmkPjYXCtFUX1pxQtsoIVNON+xJJfARpTM3THCsn17+3st1pbj
- sbCZcXNThJKZb/JlJSW2UUDbYn5mWzmUyrwaRSVFIZfVnToTHtPdZYD3fF+TFtRu9tpjNlLoa0w
- sA5hWSuZg3wjVE/BBQCp6GO6jclAR/WZRT7akr+hxxAyf/Q71CYaWHNkRVtxZA/ZsWRJ9Imjfqq
- x+VusDdOS4QOz6MKiRlPJLTylF1YfO6799WkPZqdDmC1kMqOFUHnOSb3Ua97rXqJuuvFzZVNaoK
- ybQawmmVtNXIYrpEidIZKPiEkxpAuYyvPLgU+WDHXcepUij92WmfudmkWh4BTda9SpwQDXA1de0
- kt9xJxvLkBP1zVUrjK4coHbiKsNDhA/aDpFbUONiiWUAmDbYgzQLq2nw/lieHoI9OvfPFA7ahOX
- UPgPeN0fqdjfoaVt8RQ==
-X-Proofpoint-ORIG-GUID: fp4H787ntxT_o5Q2-mlYedP_mHwGBuuL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-19_02,2026-06-18_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 bulkscore=0 adultscore=0 clxscore=1015 impostorscore=0
- phishscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606190101
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d4ef9a9f-18d9-40e1-9d02-87aeb9cb6540@amd.com>
 
+On Fri, Jun 19, 2026 at 12:05:45PM +1000, Alexey Kardashevskiy wrote:
 
-
-On 6/18/2026 2:58 PM, Konrad Dybcio wrote:
-> On 6/17/26 4:26 PM, Bibek Kumar Patro wrote:
->>
->>
->> On 6/16/2026 5:51 AM, Dmitry Baryshkov wrote:
->>> On Mon, Jun 15, 2026 at 06:36:51PM +0530, Bibek Kumar Patro wrote:
->>>>
->>>>
->>>> On 6/8/2026 7:25 PM, Dmitry Baryshkov wrote:
->>>>> On Tue, May 26, 2026 at 08:12:03PM +0530, Bibek Kumar Patro wrote:
->>>>>> On some SoCs the SMMU registers require an active interconnect
->>>>>> bandwidth vote to be accessible. While other clients typically
->>>>>> satisfy this requirement implicitly, certain corner cases (e.g.
->>>>>> during sleep/wakeup transitions) can leave the SMMU without a
->>>>>> vote, causing intermittent register access failures.
->>>>>>
->>>>>> Add support for an optional interconnect path to the arm-smmu
->>>>>> driver and vote for bandwidth while the SMMU is active. The path
->>>>>> is acquired from DT if present and ignored otherwise.
->>>>>>
->>>>>> The bandwidth vote is enabled before accessing SMMU registers
->>>>>> during probe and runtime resume, and released during runtime
->>>>>> suspend and on error paths.
->>>>>>
->>>>>> Generally, from an architectural perspective, GEM_NOC and DDR are
->>>>>> expected to have an active vote whenever the adreno_smmu block is
->>>>>> powered on. In most common use cases, this requirement is implicitly
->>>>>> satisfied because other GPU-related clients (for example, the GMU
->>>>>> device) already hold a GEM_NOC vote when adreno_smmu is enabled.
->>>>>>
->>>>>> However, there are certain corner cases, such as during sleep/wakeup
->>>>>> transitions, where the GEM_NOC vote can be removed before adreno_smmu
->>>>>> is powered down. If adreno_smmu is then accessed while the interconnect
->>>>>> vote is missing, it can lead to the observed failures. Because of the
->>>>>> precise ordering involved, this scenario is difficult to reproduce
->>>>>> consistently.
->>>>>> (also GDSC is involved in adreno usecases can have an independent vote)
->>>>>>
->>>>>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->>>>>> ---
->>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu.c | 57 +++++++++++++++++++++++++++++++++--
->>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu.h |  2 ++
->>>>>>     2 files changed, 57 insertions(+), 2 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>> index 0bd21d206eb3e75c3b9fb1364cdc92e82c5aa499..07c7e44ec6a5bd1488f00f87d859a20495e46601 100644
->>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>> @@ -53,6 +53,11 @@
->>>>>>     #define MSI_IOVA_BASE            0x8000000
->>>>>>     #define MSI_IOVA_LENGTH            0x100000
->>>>>> +/* Interconnect bandwidth vote values for the SMMU register access path */
->>>>>> +#define ARM_SMMU_ICC_AVG_BW        0
->>>>>> +#define ARM_SMMU_ICC_PEAK_BW_HIGH    1000
->>>>>
->>>>> totally random numbers, which might be different for non-Qualcomm platform.
->>>>>
->>>>
->>>> Ideally, any non-zero value would be enough to keep the path active.
->>>
->>> This is true for Qualcomm devices. However, you are adding this to a
->>> generic code.
->>>
->>>> Here 1 Would be enough to keep the path active, but might be too small to
->>>> reliably keep the bus active.
->>>> Other is UINT_MAX, which will reliably keep the bus active but might cause a
->>>> power penalty.
->>>>
->>>> #define ARM_SMMU_ICC_PEAK_BW_HIGH    UINT_MAX
->>>>
->>>> seems to be suitable here to reliably keep the bus active by BCM
->>>> for both Qualcomm and non-Qualcomm platforms (with some power penalty).
->>>>
->>>> LMK, if you feel otherwise.
->>>
->>> Shift it to the qcom instance or provide platform-specific values? (My
->>> preference would be towards the first solution).
->>>
->>
->>
->> To support platform-specific values, we may need to introduce a LUT-based approach in the driver. (Bandwidth voting values cannot be placed in device-tree property IIRC ?)
->>
->> Currently, all Qualcomm platforms use 0x1000 for SMMU ICC voting. I
+> > > > > IMHO that's an AMD issue, not with the design of this series..
+> > > > > 
+> > > > > The series is right, a device that is !force_dma_decrypted() must be
+> > > > > considerd to be a trusted device and we must never place any DMA
+> > > > > mappings for a trusted device into shared memory.
+> > > > 
+> > > > swiotlb=force forces swiotlb, not decryption.
+> > 
+> > If force_dma_decrypted() == true then swiotlb must allocate from a
+> > decrypted memory pool. It is right there in the name!
+> > 
+> > The hypervisor environment should *never* set force_dma_decrypted()
+> > because all devices can access all hypervisor memory, up to their IOVA
+> > limits.
 > 
-> (you used decimal 1000)
+> True. But we do not have encrypted swiotlb pool today, right?
+
+"encrypted" is just normal struct page memory, that's the default for
+swiotlb.
+
+I think it was a big mistake for the AMD SME stuff to overload the
+decrypted/encrypted CC stuff which should mean shared/private in a
+guest context to also mean things about physical memory encryption in
+the host. It is really confusing.
+
+The SME side is just a bad arch choice, the real world doesn't work
+well if you set high address bits in your dma_addr_t. I think AMD
+needs to use those restricted swiotlb pool where it allocates this
+very special "SME Disabled" memory that will have a low
+dma_addr_t. Then alloc and bouncing will get memory with a suitable
+dma_addr_t. This has nothing to do with force_dma_unencrypted() which
+is only a CC guest concept and nothing else in the OS should ever
+touch decrypted memory.
+
+> > And this is more insane logic. The right fix is to allocate the
+> > swiotlb bounce from the *encrypted* pools when running on the
+> > hypervisor which requires undoing this abuse of force_dma_decrypted().
 > 
-
-It's my bad, i meant 1000 only
-(I'll check on the icc_bw calculation to get clarity on the values)
-
->> can evaluate if this could be moved to a Qualcomm-specific
->> implementation.
+> +1.
 > 
-> Add a vendor hook to arm_smmu_runtime_suspend/resume and handle it within
-> the QC driver
+> But how does the kernel decide if it is this swiotlb pool or just
+> some page which happens to be below the IOVA limit?
+
+You mean in swiotlb_tbl_unmap_single() ? It checks the address against
+the pool's range?
+
+> swiotlb can be for bouncing (with all these dma_sync_single_for_cpu)
+> or, if dev->dma_io_tlb_mem->for_alloc = true, for coherent
+> allocation (no need in dma_sync_single_for_cpu).
 > 
+> I am looking for a way to set up my "sev-guest" device such as when
 
-Just curious, wouldn't this apply for all the arm-smmu users in addition 
-to Qualcomm devices as i mentioned here [1].
-Vendor hook would make it Qualcomm specific.
+Whats a "sev-guest" device?
 
-[1]: 
-https://lore.kernel.org/all/984ff9c7-3eef-463c-a330-bf7acd063667@oss.qualcomm.com/
+> dma_alloc_attrs(snp_dev->dev,...) happens, it allocates a page from
+> the shared swiotlb pool (with no actual bouncing) and there is no
+> obvious way to trick the DMA layer into doing that.
 
-Thanks & regards,
-Bibek
+Why do you need this?
 
-> Konrad
-
+Jason
