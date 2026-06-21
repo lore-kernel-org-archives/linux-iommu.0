@@ -1,132 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736F939FD4
-	for <iommu@lists.linux.dev>; Sun, 21 Jun 2026 01:45:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83E6439FD4;
+	Sun, 21 Jun 2026 01:53:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782006322; cv=none; b=AKBRV/RSwc6rFK21E/cqgnA1WA/9slndmF75YJUlAkdRI+G+U1rAu8M3PkRoJtopvhTvZcHYuCTEbXGCU82xCTPI4DBCSCfcp16DSTnOEWjqjix76Q78ds9Ir+YLEDVPjgVs5wtn6WznuHszuLy5Lyl4G0oS2gxd4qd/iIAgQrs=
+	t=1782006819; cv=none; b=pqJHCuvEBmm0NJ1KTqmuFKOCJXGymedUzU+XjiywbmmkRdCx1KM2puUO3CzM+CKO0FC0e4kkUcauHtT3yCKwDHmeHoSrRaVCuyqAhIU/52gQs/W2WcwRRoxRjrDyi6y3AJxDuizEGKTw7aHmIsdjUfrQSEjnpu+jUcFJ+2Df0L8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782006322; c=relaxed/simple;
-	bh=wFFPGQPFFc2CzHb+9qIg8mL5l5HTJFbfxlhkboSXUcw=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=PBRxW8wkS50PtZCF3a9Frblu5U3QfZLZTF6agwJVlWc6yCW2umhHcM6sY9kLhOcsj5doAHIEPOzNbuH/sVQ9JaxDP1yaHLCRRTfeSnoxFVE5uXdZY1hga3m00M8K4svgwW9JYRwGlrA2ueCJNp2jU5fYVeq8qap7ha13wOjHfYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jYLAoBJK; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1782006819; c=relaxed/simple;
+	bh=Wkw+gTSghhW0kllSpEqKPRPGIFYpsLmVdDt9AhVNsCc=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Kfvat4bzdxtyR60VazRuIMCw+CKXSWABNSB8TH3mSiKy/JMuNw2dkFFKH+WGmgIAL+GGUQ1RkxaDMJByYReTzg8lYZdZEQjpJGnTojdzIgDduh+g+yTOZ8g9R+n4H8411Xdofi4ubgNAEhS+MPJliO7lZ5C7QbGt3yqAuve8YqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=BlW5fahG; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jYLAoBJK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782006321; x=1813542321;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wFFPGQPFFc2CzHb+9qIg8mL5l5HTJFbfxlhkboSXUcw=;
-  b=jYLAoBJKYOiP9btfuEO1CVF4VAeZEw0oXTClHV+C5L3piU6Ou3OZDWS3
-   l6vxFslnYHii7j+cSrd1pmQ0MT/DWsSJtchv1U1quztFHtf1aaPmtEqIe
-   ee7KslAlBkSKg28lU/hUzq7m80XsVRD08BcwOiXM63Ea/W+3eqQRCXmg1
-   L1Gx38qC+jaYhj9HjALO33CX0qZ6AUZH5B4O7nKHnt0aCmwrz43rQgPU7
-   A33BAOUcaFXq0LMDxmQZCHpyd6AAUDapcUtxEQscor49onWVXZ/CVy1by
-   +SdS99S2nwqdbjvRcbAkazb3py7NkIdJMesxfqfMjeDl7GGfaZOtt7zlH
-   Q==;
-X-CSE-ConnectionGUID: IhxtjYtGScCgN9YgPQawYQ==
-X-CSE-MsgGUID: 8uuKE+DKRZmNjDiMBrp9RQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11823"; a="86628485"
-X-IronPort-AV: E=Sophos;i="6.24,216,1774335600"; 
-   d="scan'208";a="86628485"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2026 18:45:20 -0700
-X-CSE-ConnectionGUID: 8+eWHNFtRhKA271Ld1Qmow==
-X-CSE-MsgGUID: GiMBpXgCR4643MzbFdCpVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,216,1774335600"; 
-   d="scan'208";a="250830858"
-Received: from unknown (HELO [10.238.9.114]) ([10.238.9.114])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2026 18:45:17 -0700
-Message-ID: <dcab2d86-30e5-4d29-9640-bd56c6fc9cea@linux.intel.com>
-Date: Sun, 21 Jun 2026 09:45:14 +0800
+	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="BlW5fahG"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
+	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=Wkw+gTSghhW0kllSpEqKPRPGIFYpsLmVdDt9AhVNsCc=; b=BlW5fahG295vk4fOpUjwc5VPEu
+	Ud2vqZyrDZTa7F5HdCEmB26QKixeqxJ8Q1J/z+ZS2Ak2FmFDmDeWsW7Vd0cPewvX+I4jCr/KMo1a8
+	aYW5HOmnFHIp3hfAm3aNpKr33MLDMLkw3k0CgDapFkj7gDEv3xBlKF/9SCvWGLpBXC4wEnX63Y+O9
+	GBptv+JKdWF1BDYoJaTN4YYGrSiJHfur8v4OtTb5dQu+PQkeFVU0hTwkqESm0IOGeMIRs9o6Ew03e
+	iyf7+ni5xEyTauKXasJx1Hw7lDDtd9PrHwUK3t1otN76aY7/tqhWFmgg9FkFYaBp4o0T8w7uPal60
+	5Ej8t5YQ==;
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@surriel.com>)
+	id 1wb7NF-000000007DA-0IHQ;
+	Sat, 20 Jun 2026 21:53:25 -0400
+Message-ID: <3a3854392b47181d3c64e1961d09b6465efbcb2b.camel@surriel.com>
+Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC
+ failure
+From: Rik van Riel <riel@surriel.com>
+To: Ashok Raj <ashok.raj@oss.qualcomm.com>
+Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
+ robin.murphy@arm.com, 	joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux.dev, jgg@ziepe.ca, 	kyle@mcmartin.ca, Rik van Riel
+ <riel@meta.com>
+Date: Sat, 20 Jun 2026 21:53:24 -0400
+In-Reply-To: <ajcreJrgM1iCSzxp@hu-ashoraj-lv.qualcomm.com>
+References: <20260603033653.4144138-1-riel@surriel.com>
+	 <20260603033653.4144138-4-riel@surriel.com>
+	 <ajcreJrgM1iCSzxp@hu-ashoraj-lv.qualcomm.com>
+Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
+ keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
+ eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
+ Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
+ lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
+ dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
+ mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
+ gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
+ r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
+ WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
+ 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
+ Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
+ +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
+ g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
+ KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
+ fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
+ 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
+ G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
+ okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
+ TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
+ cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
+ omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
+ QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
+ c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <jroedel@suse.de>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Chris Wright <chrisw@sous-sol.org>,
- Jesse Barnes <jbarnes@virtuousgeek.org>,
- "Mallick, Asit K" <asit.k.mallick@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/9] iommu/vt-d: Consolidate dmar state management and
- force_on logic
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20260604051540.592925-1-kevin.tian@intel.com>
- <20260604051540.592925-5-kevin.tian@intel.com>
- <c6ddabae-09ee-4101-94ca-d077514bae5a@linux.intel.com>
- <DM6PR11MB3690A320BEB82740F86424A18CE42@DM6PR11MB3690.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <DM6PR11MB3690A320BEB82740F86424A18CE42@DM6PR11MB3690.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 6/17/2026 3:14 PM, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Monday, June 15, 2026 1:01 PM
->>
->> On 6/4/26 13:15, Kevin Tian wrote:
->>> +
->>> +static inline bool dmar_is_enabled(void)
->>> +{
->>> +	return dmar_state > 0;
->>> +}
->>> +
->>> +static inline bool dmar_is_disabled(void)
->>> +{
->>> +	return dmar_state < 0;
->>> +}
->>
->> The helpers above seem to conflict with:
->>
->> 	extern int intel_iommu_enabled;
->>
->> Can we possibly make the interface consistent?
->>
-> 
-> Can you elaborate the 'conflict' part?
-> 
-> If dmar_state<0, intel_iommu_enabled will be 0 as no initialization
-> will happen.
-> 
-> if dmar_state>0, intel_iommu_enabled may be 0 or 1 upon whether
-> initialization succeeds.
-> 
-> they server different purposes.
-> 
-> or did you mean that the name dmar_is_enabled() may cause
-> confusion with intel_iommu_enabled?
+On Sat, 2026-06-20 at 17:08 -0700, Ashok Raj wrote:
+>=20
+> =C2=A0 If remove_iova() keeps failing (mas_store_gfp(NULL, GFP_ATOMIC)
+> still
+> =C2=A0 can't get a maple tree node), the iova is pushed back onto
+> deferred_frees
+> =C2=A0 and the work reschedules itself at a flat 10ms =E2=80=94 forever.=
+=C2=A0 There is
+> no
+> =C2=A0 retry counter or no backoff.
+>=20
+> =C2=A0 Under sustained memory pressure a device doing frequent unmap coul=
+d
+> =C2=A0 accumulate a growing deferred list, exhaust its IOVA space, and
+> start
+> =C2=A0 failing DMA map calls =E2=80=94 with nothing in dmesg pointing at =
+the real
+> cause.
+>=20
+To some extent, yes.
 
-Yes, that is exactly my concern. dmar_is_enabled() might be misused as a
-replacement for intel_iommu_enabled.
+However, if we have GFP_ATOMIC allocations continue
+to fail for several seconds, the system will be in
+much larger trouble.
 
-> 
-> I could rename it to dmar_should_enable() and dmar_should_disable()
-> to differentiate.
+Making the condition visible seems like a good idea,
+since I don't know if the other GFP_ATOMIC paths that
+could cause system hangs output any warnings.
 
-That's better. How about dmar_requested()?
-
-/*
-  * Track whether the system wants to use the IOMMU based on a
-  * combination of command-line overrides, firmware hint, platform trust
-  * or secure requirements, etc.
-  */
-static inline bool dmar_requested(void)
-{
-	return dmar_state > 0;
-}
-
-Thanks,
-baolu
+--=20
+All Rights Reversed.
