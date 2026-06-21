@@ -1,115 +1,111 @@
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83E6439FD4;
-	Sun, 21 Jun 2026 01:53:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74E3B23ABB9
+	for <iommu@lists.linux.dev>; Sun, 21 Jun 2026 01:53:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782006819; cv=none; b=pqJHCuvEBmm0NJ1KTqmuFKOCJXGymedUzU+XjiywbmmkRdCx1KM2puUO3CzM+CKO0FC0e4kkUcauHtT3yCKwDHmeHoSrRaVCuyqAhIU/52gQs/W2WcwRRoxRjrDyi6y3AJxDuizEGKTw7aHmIsdjUfrQSEjnpu+jUcFJ+2Df0L8=
+	t=1782006822; cv=none; b=ErtgR8eX2N2e+ElLunxdW/n7hfabliIr/psQhJNKuYeOaLQUWPORWipqHq/1GBbxbimnSUKbt125IQ7qMiwPDdEe3yh88nWD59zW24z7uRnW/IxS1eVqNpp3pkWhtNhOSA5o45PsVCdwUjee2c9QlGgzCO975yPvDCUK9asRXmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782006819; c=relaxed/simple;
-	bh=Wkw+gTSghhW0kllSpEqKPRPGIFYpsLmVdDt9AhVNsCc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Kfvat4bzdxtyR60VazRuIMCw+CKXSWABNSB8TH3mSiKy/JMuNw2dkFFKH+WGmgIAL+GGUQ1RkxaDMJByYReTzg8lYZdZEQjpJGnTojdzIgDduh+g+yTOZ8g9R+n4H8411Xdofi4ubgNAEhS+MPJliO7lZ5C7QbGt3yqAuve8YqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=BlW5fahG; arc=none smtp.client-ip=96.67.55.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
+	s=arc-20240116; t=1782006822; c=relaxed/simple;
+	bh=0IdytbMR6TeppsD+FYqGVCZHan6NncQo+OpSjxk8I4A=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Ts+EbZ7tRKFmZH/9k4cSqjYBn+Kd/aOlUfHnuiL3idk01ElszCNGvqyujNG8FJIaSn5spgpXVGCl7/RpwIXSuqFMO3uqKvO3ZbVohhR7VirhfXg4r07DstdBi6S1u9YbusT/NBC7+vQlw+Z/tuMArsBh8UaDT7bAW0dzrK3DLto=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KCeZ9Nl6; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="BlW5fahG"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
-	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
-	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=Wkw+gTSghhW0kllSpEqKPRPGIFYpsLmVdDt9AhVNsCc=; b=BlW5fahG295vk4fOpUjwc5VPEu
-	Ud2vqZyrDZTa7F5HdCEmB26QKixeqxJ8Q1J/z+ZS2Ak2FmFDmDeWsW7Vd0cPewvX+I4jCr/KMo1a8
-	aYW5HOmnFHIp3hfAm3aNpKr33MLDMLkw3k0CgDapFkj7gDEv3xBlKF/9SCvWGLpBXC4wEnX63Y+O9
-	GBptv+JKdWF1BDYoJaTN4YYGrSiJHfur8v4OtTb5dQu+PQkeFVU0hTwkqESm0IOGeMIRs9o6Ew03e
-	iyf7+ni5xEyTauKXasJx1Hw7lDDtd9PrHwUK3t1otN76aY7/tqhWFmgg9FkFYaBp4o0T8w7uPal60
-	5Ej8t5YQ==;
-Received: from fangorn.home.surriel.com ([10.0.13.7])
-	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <riel@surriel.com>)
-	id 1wb7NF-000000007DA-0IHQ;
-	Sat, 20 Jun 2026 21:53:25 -0400
-Message-ID: <3a3854392b47181d3c64e1961d09b6465efbcb2b.camel@surriel.com>
-Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC
- failure
-From: Rik van Riel <riel@surriel.com>
-To: Ashok Raj <ashok.raj@oss.qualcomm.com>
-Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
- robin.murphy@arm.com, 	joro@8bytes.org, will@kernel.org,
- iommu@lists.linux.dev, jgg@ziepe.ca, 	kyle@mcmartin.ca, Rik van Riel
- <riel@meta.com>
-Date: Sat, 20 Jun 2026 21:53:24 -0400
-In-Reply-To: <ajcreJrgM1iCSzxp@hu-ashoraj-lv.qualcomm.com>
-References: <20260603033653.4144138-1-riel@surriel.com>
-	 <20260603033653.4144138-4-riel@surriel.com>
-	 <ajcreJrgM1iCSzxp@hu-ashoraj-lv.qualcomm.com>
-Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
- keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
- eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
- Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
- lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
- dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
- mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
- gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
- r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
- WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
- 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
- Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
- +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
- g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
- KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
- fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
- 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
- G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
- okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
- TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
- cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
- omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
- QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
- c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KCeZ9Nl6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782006822; x=1813542822;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0IdytbMR6TeppsD+FYqGVCZHan6NncQo+OpSjxk8I4A=;
+  b=KCeZ9Nl63NSMIYMIHKYXCM7Ls9BtFdqqI1vupU0C8fRPCuijwEgBUDFC
+   CLn0X0Jg69MtSeuDntKnSjZ9ODri8VA47F1s3Rkn2PPN9bsH+G+VAz4U2
+   5uwhMOahKyJi0oJk/6mquLdKBJ6riGqqBND+W5FAXtagZ34BR0cyoohU3
+   VZ41LJWL1hDdItuyyZXtkh9ptRZivFtyBUmUjXzOlQaaEYOpet6BJcClF
+   5Z0OBKUrnb/7/kdIZmvgx1w5kIKipfM4eXmiZuo0RkPhwTJndGpXAPb3Z
+   vJuIlvL/9+7E3fd9+4cSfMSGqucs78ZUGVeMXZTOKcfcoZ/LbCJcIeqQc
+   w==;
+X-CSE-ConnectionGUID: wja0HhvTS5OZxLilG06B9A==
+X-CSE-MsgGUID: ldgKBTwARrOFIMGHigWT3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11823"; a="82556315"
+X-IronPort-AV: E=Sophos;i="6.24,216,1774335600"; 
+   d="scan'208";a="82556315"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2026 18:53:41 -0700
+X-CSE-ConnectionGUID: 6u0UB0TbQyq5DxD3eFw+QA==
+X-CSE-MsgGUID: FxUDobN6RDifAvLqSfvaDA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,216,1774335600"; 
+   d="scan'208";a="250831584"
+Received: from unknown (HELO [10.238.9.114]) ([10.238.9.114])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2026 18:53:37 -0700
+Message-ID: <25bfc4b7-ec84-41f9-a68c-5dda7839320d@linux.intel.com>
+Date: Sun, 21 Jun 2026 09:53:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <jroedel@suse.de>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Chris Wright <chrisw@sous-sol.org>,
+ Jesse Barnes <jbarnes@virtuousgeek.org>,
+ "Mallick, Asit K" <asit.k.mallick@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 6/9] iommu/vt-d: Call dmar_can_force_on() for tboot optin
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20260604051540.592925-1-kevin.tian@intel.com>
+ <20260604051540.592925-7-kevin.tian@intel.com>
+ <cc8cd5bc-e093-4a95-a68b-ae3ca24944bb@linux.intel.com>
+ <DM6PR11MB3690B5C7395AB982C0AEBA588CE42@DM6PR11MB3690.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <DM6PR11MB3690B5C7395AB982C0AEBA588CE42@DM6PR11MB3690.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, 2026-06-20 at 17:08 -0700, Ashok Raj wrote:
->=20
-> =C2=A0 If remove_iova() keeps failing (mas_store_gfp(NULL, GFP_ATOMIC)
-> still
-> =C2=A0 can't get a maple tree node), the iova is pushed back onto
-> deferred_frees
-> =C2=A0 and the work reschedules itself at a flat 10ms =E2=80=94 forever.=
-=C2=A0 There is
-> no
-> =C2=A0 retry counter or no backoff.
->=20
-> =C2=A0 Under sustained memory pressure a device doing frequent unmap coul=
-d
-> =C2=A0 accumulate a growing deferred list, exhaust its IOVA space, and
-> start
-> =C2=A0 failing DMA map calls =E2=80=94 with nothing in dmesg pointing at =
-the real
-> cause.
->=20
-To some extent, yes.
+On 6/17/2026 3:19 PM, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Friday, June 12, 2026 9:58 PM
+>>
+>> On 6/4/2026 1:15 PM, Kevin Tian wrote:
+>>>
+>>>    static __init int tboot_force_iommu(void)
+>>>    {
+>>> -	if (!tboot_enabled())
+>>> +	if (!tboot_enabled() || intel_iommu_tboot_noforce)
+>>
+>> Hmm, it looks a bit strange here. The core design philosophy is that the
+>> trusted boot environment takes priority over user options. However,
+> 
+> user options here refer to "iommu=off" or "intel_iommu=off" which
+> opts to enable/disable iommu.
+> 
+>> checking intel_iommu_tboot_noforce at the very top means a user
+>> option (intel_iommu=tboot_noforce) is successfully overriding tboot.
+> 
+> but tboot_noforce is to specify the forceon policy on tboot. No conflict.
+> 
+>>
+>> Is this an exception? If so, it might be worth adding a brief comment
+>> clarifying why `tboot_noforce` is allowed to bypass the priority?
+> 
+> so this is irrelevant to the enable/disable priority part.
 
-However, if we have GFP_ATOMIC allocations continue
-to fail for several seconds, the system will be in
-much larger trouble.
+Okay, that explains.
 
-Making the condition visible seems like a good idea,
-since I don't know if the other GFP_ATOMIC paths that
-could cause system hangs output any warnings.
+The "intel_iommu=tboot_noforce" option is used to disable tboot
+entirely, which is not part of the enable/disable override. I suppose
+tboot_noforce is only designed for debugging purposes, so it should not
+be used in a production environment.
 
---=20
-All Rights Reversed.
+Thanks,
+baolu
