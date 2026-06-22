@@ -1,247 +1,451 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012023.outbound.protection.outlook.com [40.107.209.23])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA6813D8B1;
-	Mon, 22 Jun 2026 00:58:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782089917; cv=fail; b=HW8oQmTVyq7zU7WAIzc0iE6MLJQg0gfsySUblIHHs2TBEUZjKW9Z47Lk+WkDBErMhOfnAf+5mVjhnhx9nAL0ABKEJxKw+Mp0S+C2L9iuueY/02vvxxo5gwIOQsbHDtKE5NvoeOeD4OOAUkNf9NJxPHb/vjLHTm3WulKyWMECdQU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782089917; c=relaxed/simple;
-	bh=7CHy71Nt7nUICvVAYTE9tsXPYUoxYjmZk+P0TPDPGGg=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=R336smlEFSdYwu0K0U04Ue2sWWk1ShA9kQHfusPF0Ux3ZVARDvc0SwTRpwppxv/PAGd/lF1nHFXG9Gk+wlmqDUu1krtbCHZ8BUydy8hQ0S5AzKkjhD6VBoEdKe+Z/VvYbKAZ7x1CBiWk+NYj6wOfqA6MPmWdx/offlW92i3PAQw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=rrRfZOxZ; arc=fail smtp.client-ip=40.107.209.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95DB51A9FB7
+	for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 01:51:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782093108; cv=none; b=IpQT38Tk0KqVm0fv5ddREr2hXrTX/OrxySuuvK8C05FSjgZliIl7d+250jr4zqXnRS8x4Fz+zYt4XSMrw0Xcex83Y0kXIQlvY5gc358PG5/vgkM0sBuLHGyy+OngxBuiavDwJrpmfJXxa19KpjU+26Tct2meiNAG2uAEsU07QTU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782093108; c=relaxed/simple;
+	bh=IhFd4pwYcMEK9RXDArmw//aLgtYRiH8UKMytxagLRQ0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nv4Yz9xdualIMPEvTLdWMWAwq37HV9YAa1H/1AczU3dzYG0ZE21PAQL2/0rN/izXBKqYayBJzu3+Jt80S3P/yPFjADCHDgXSbX1ZkSG0fOo8Z8GXT4nc8rypS+ygE/+fp2MzQYTaOuOOAsCp9mbxXZxaU1OQIEwV7YPCBJ4HXbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k0pb9X8j; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="rrRfZOxZ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vMAqy/0MFsA2psc6ReWgWqyzA8l3jj0ISXznOvxaHg2/H9uBkHnybw88v0Wt/M5nJUZXNMAhzHPCglo8/ZJTnYeZCNZyCVL/NfYg8aY17Y9XlyTONxNXDq5R+I6H7bvHS47ISupe7yV+qL/e/lLeM9fU01zNjfW6qKhLgMzqiOQ8pib0dcs7aD6NqLakhE310fO0VLfLFhH415JWgBcI/rxy+fd5iKfazcOuX4V3GdfMPOWHBZOmzakt4DJwsucSHZ38okGzjOLdtd9nlBrN8ubjX5/F46tf7McNlyGJwfkSzGOLyQK0oCXnnMNp5As/+L5K/EKAyHxZACT62dDLHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YaGyQ9yh8csbwApDJxSVr9q03p5Lu/Ktj4l8kTToqMA=;
- b=G7Hlsp5f3wHDcr8FnKcEYsB70y/LV6s/Y8EM0JsrrUuQNS5y7gm4AfbCU0CnwzxSMNnH8NXjq0m22ppw2VsMFaGDZmlzaSNN4J8p5mPU2QRERXFY1RfDwVTrhjJl62KAWF+BnxpNLOgY6IPzfWqHNi6ylihMnyzFl3lz4ZXJpcdjBPXiWTWj5GDWAbhSUgw6//HXNihbgwj25YQrP4Ndupmpc3INk4s50LtnpxgmgxTDmN986OF3rEHODGy05Z9hS8Y75ZpdDsw/d5GBxmwqSx32YokIBsU7ysYA1VyUpoqRvzRTze4eOKT2UN97NADLI08o19X/Vpt1usy4Gl/WMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YaGyQ9yh8csbwApDJxSVr9q03p5Lu/Ktj4l8kTToqMA=;
- b=rrRfZOxZ/w4HP2kJoN3LIjfMGeisZjIbWMzF1bTr40Hr68H/5gU/oRToK1Qz+CFA0231FXnOa6FfCNrDzpavekcy7qnVLA7xjjaoDhSzp96E5BO+m7tiCCRUathASNumfzR7NfT34qLX2Nntt02T9Q7Qr8GrbelMz5JXGu2ruG0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SA1PR12MB999228.namprd12.prod.outlook.com
- (2603:10b6:806:4db::10) by SJ2PR12MB9161.namprd12.prod.outlook.com
- (2603:10b6:a03:566::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.18; Mon, 22 Jun
- 2026 00:58:32 +0000
-Received: from SA1PR12MB999228.namprd12.prod.outlook.com
- ([fe80::4dba:119e:8e7c:37b3]) by SA1PR12MB999228.namprd12.prod.outlook.com
- ([fe80::4dba:119e:8e7c:37b3%4]) with mapi id 15.21.0113.015; Mon, 22 Jun 2026
- 00:58:32 +0000
-Message-ID: <9f20ce61-1edd-411e-a7c3-be541fb89cb4@amd.com>
-Date: Mon, 22 Jun 2026 10:58:23 +1000
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>,
- Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>,
- Suzuki K Poulose <Suzuki.Poulose@arm.com>, Jiri Pirko <jiri@resnulli.us>,
- Mostafa Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>,
- Dan Williams <dan.j.williams@intel.com>, Xu Yilun
- <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <aigYbK12D8uKQvJF@arm.com> <20260609144746.GL2764304@ziepe.ca>
- <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com> <yq5aqzm4dz25.fsf@kernel.org>
- <20260618153705.GH231643@ziepe.ca>
- <d4ef9a9f-18d9-40e1-9d02-87aeb9cb6540@amd.com>
- <20260619120309.GI231643@ziepe.ca>
-Content-Language: en-US
-From: Alexey Kardashevskiy <aik@amd.com>
-In-Reply-To: <20260619120309.GI231643@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY5PR01CA0128.ausprd01.prod.outlook.com
- (2603:10c6:10:246::26) To SA1PR12MB999228.namprd12.prod.outlook.com
- (2603:10b6:806:4db::10)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k0pb9X8j"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782093107; x=1813629107;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=IhFd4pwYcMEK9RXDArmw//aLgtYRiH8UKMytxagLRQ0=;
+  b=k0pb9X8jcNldbdCRdUkf2XyIcRxitZcjhQLaqZqLT09uA3BmERjzOU9x
+   9c9mPx0Y2u3rJivG5flL2bX+9vv2q3p2CHMG29AF4w5PToQlVkqANLGLJ
+   hcIG6PiFpJUZYOyTTybpbSIh0J6RHE/1WndILuK4yO74aVy3uL4Z7XXXc
+   4fvOIpFtkwofm6Fy6W0Vs4Qb5j2D7fos2qXn+aBF6z6F9CdR0zE/Jwv4F
+   nXxB7jX1aNKGdQnYVwncPRCKr7yIJEtO+/Qw6QYcHTnmRgX519XwO4Rwt
+   WVOObzcQTLgO7nMVP04eDcLo63elY+A3T/EHhClZl7BEv7mBQXDjAjwF7
+   Q==;
+X-CSE-ConnectionGUID: MFSNuiNLTlK22plnkpDdsA==
+X-CSE-MsgGUID: 84lJAmluSwq7CjjNwlMTVg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11824"; a="100250561"
+X-IronPort-AV: E=Sophos;i="6.24,217,1774335600"; 
+   d="scan'208";a="100250561"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2026 18:51:46 -0700
+X-CSE-ConnectionGUID: wGA5Cx4nT2ina0INAfRSJw==
+X-CSE-MsgGUID: TO3yEEHXSM6u7V00c39TOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,217,1774335600"; 
+   d="scan'208";a="254093299"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2026 18:51:42 -0700
+Message-ID: <f3e2fef9-4f8c-4032-8d7b-007f47b3fb61@linux.intel.com>
+Date: Mon, 22 Jun 2026 09:50:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA1PR12MB999228:EE_|SJ2PR12MB9161:EE_
-X-MS-Office365-Filtering-Correlation-Id: 184e9de2-6718-48ea-6866-08decff96151
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|23010399003|366016|22082099003|4143699003|3023799007|56012099006|5023799004|11063799006|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	TrkR5OBkj0SFTEYRg7Dlw3r7mkTXiPngouKmV2hEXVeMlX4t4cS8uxsh41YeS6ACueT8l0e0YcjZkck6kJomHhl7HQncARXHB4lN3/AISDZBkhBBzG420AK0pFe/6HwEHu+PryfpAu1ifoNxk+HnxpyTVZNFyCf389pKj2dcPlXAkbZ9eHXea/zwpN7sBDq9vRXG1HbTxeBMff7dxFBqhmAgYSLBEVLz2lkTuASSOloxXLRI1kbQqgTuRsHL2j1JQ5C3kQKr/4kLVSjdjB0szYQ1z3ohm+tLj+BCb2Inx91x8Y+DqkaLfxhb4ZU7lwMaJnfmKgJwmR6suNWR+y+kQKn8x83vhlBOe3gHK0R4FRDOwIrzvaomo/K+E4xeeOcE8N0raRS0P4MjUAPkMycuzudICEzYnhXYgEW5mNmcMg67b8tRMQbHmXSxucr1ZtbLfbio+pvCvrsFRubTwud5N6ogkGtb6nshyz/zvITx5XCUuLfBhYSzYdBzPeqf7L7sepzn6R/P+kvjY8otwpMCvUvERTpESx2Lr8QD9nzgZsW88dQZvAwLN3ge8PN/BcY1QrMiOPlEd4OPfCD+lqYS41Ktachn6oiP2Y2g48wTpXejmGnPxkDl6zzKUt/m2e0+xNQn/BM9preC1VtSFHeFqCyLIvmjQRTXzXRSHuCP0Lw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR12MB999228.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(23010399003)(366016)(22082099003)(4143699003)(3023799007)(56012099006)(5023799004)(11063799006)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dVFVYlhRMnQyaUhLNUIxRlUyTEk5Mm5iNEpkbnlyRmJETGUwSmJVSjNDVjNF?=
- =?utf-8?B?Wm1jTHhQR3IrMHlwb0szOFFZTXdZMVFLMGd1Ly8rZmNYb2pISzlOSEdFWUcx?=
- =?utf-8?B?QVNmYjM4V3VyK3lIcW1NSER4MWNHTnRPZW5BMDN5NDlWWDQwbm8wR3o4ZTNi?=
- =?utf-8?B?QzIwblpsZ0ZJMHZWeWdJd3pPVXdqNThDd0tLTW85eTBXZWwyTHlzV05hWHNk?=
- =?utf-8?B?bmZGMVpsTkYzYWdTdStsc1FMd21rbDZuL3lmdUtDUlV5dlNDRVlPNUF3dWF4?=
- =?utf-8?B?VDVSL2JZejRxNUFLMldrSmxIa21PSzhjN1crTUMraWFzUG5yMEdiNkhodUdT?=
- =?utf-8?B?YXVWR2hvaS9KSHRPdnV1dkNyZFBLblhPUGFBeVBWbEtqOTZPRFFNMUpDelpa?=
- =?utf-8?B?MlVCcXdVS1FxR29VaU1PNXE5aDIzL0V6WmRRZzdGNHJHZTV2OUNkajRDcnZa?=
- =?utf-8?B?SGdPcFlLcmpGMlRYck12Qm9jdE5uRDR5TjlDb3BrNEZDYVZrNjE3WTg5V1BV?=
- =?utf-8?B?eWswcnFwY3pwdXZYQlV0M0tWQWdNL0NFT2owTTZuT1FWOWVUdnE5cnUzTXFN?=
- =?utf-8?B?UGZvdnFQYlB1SVFUVDhUS2hwNzJhY3B4dDU1WjJNVkRNV2RZTjh1blhRd3Nj?=
- =?utf-8?B?LzVqN1NOZjFMUzUrcnU5bW05WUtKL2JhNGluejhKWmxnSWdSc2dMSDdrMzZP?=
- =?utf-8?B?YnpVNkJnYmcyakRvTjlFL2FNeUFvTkVKcjMyQ2lVYW15aUlscmpZTmI1WDNu?=
- =?utf-8?B?RkVacnRVekIvTjRERjhVcDl1WEZjcmFKejhHcnVXUjZnMi9iRXloSHRYYkJo?=
- =?utf-8?B?ZmRIM1hVQXlHaDRrc0JFWXAvYzFQbGd2cmxwTjBGRytIdTBYSDUyTVd2UzU0?=
- =?utf-8?B?Y3h2QkxNcmwrS3RVb3dMMGJOai9rZ0MvZlRSSFpxYlhnQkRJMGVuNitQNmwx?=
- =?utf-8?B?OTVJNGtQWEVEc0NWQVN2ZmlyM3RNdU5UY1dnaDdDc2tRTnV4VDBvSGpwUmEv?=
- =?utf-8?B?aEtjZUM0NndxTGEzeXlrMXZnQ2FUNjc1cEFHQ3h5QXJadnhUT3AzdkdLbDJS?=
- =?utf-8?B?enJNRzRuZE9KOTc0YThEcldjaHFUbVZNQXREdklhcnlHTXhUZWR3cmxmWGgz?=
- =?utf-8?B?WFlWcldEcXBEbkg4aXVmbjVjUHJFQmZPZmRSUW1XamUyMlNLcFZRWHIvUHVP?=
- =?utf-8?B?cVc0dmtaM0pzOWN2aEMyTWttdjM0S09lVHArcFRRcW9IZlh0M2VUVHl1bWw3?=
- =?utf-8?B?dW9kSTF4Sk1sdmJIM1E5cHk1RVo1Z0lkRXhod1RYa05BekI2TTdZbnhiTUpZ?=
- =?utf-8?B?YUlWOXVUamlUMzkydDVVdEZsNVpDRUtUTWtCY1hlTjAzRU5Kb3daYVprbkh1?=
- =?utf-8?B?dC8vR0dmVXc4OUUyblJ0Y2xrTmNDY3RNZHRXWnplLzIzME90azB4eVFzOEVF?=
- =?utf-8?B?anUzalBvZXd0aE9zaVBIaWdmY2V6TStjL1NWRTNydHBUWEtJV0xraU1JaUls?=
- =?utf-8?B?MkJrTVh4Q09aTXBMcGtadi9Lc0xZTjd5dUg0Q3MrWVRkanFSdExHZ0ZrK0Vq?=
- =?utf-8?B?V1pnQ2drVEtGekdJbnpLcm9BV0p3bk1ubitxNFhoZlk5RTlobzVLaGZWNVBo?=
- =?utf-8?B?OG5mL0pRbi81b2thcXMxRjVCMHdpa1B2WTh4eTNoUGo5U2lVcTY4YVViREJa?=
- =?utf-8?B?VWFGb0NZVjhveHpPME43VngvZEtFbmxmS0Jkc0lLRDNTOFhLcTNsMWd5MU5w?=
- =?utf-8?B?SHcwaFZZV0RkamZoS0xuSVJPMDBSS2xISmE4cXJHNFJjQ29VZlgvYlltZHdD?=
- =?utf-8?B?clBJWG04NEoydFBMVDh0Qnl5cHJrYkUrVmxJSEloaFcvSVk3U21HazJWYlp1?=
- =?utf-8?B?SWpEaGxZNWxRaTZlQ05wS0QyOFJoNGVCMStCR1FIS1hZU0tHYk1CVFBsemlq?=
- =?utf-8?B?NldISlVOWkhnWmI3dVBZYkhjRG41RWs0WndqZ0duZkdjUGRrcW5jMGlhcG41?=
- =?utf-8?B?ZFBYaVg4TTBpR1lsc2RpNklOSDJJZURjcVBlWThVNmwwelZ2QU9ML3I3NDJq?=
- =?utf-8?B?YWpPOFgvY3ZubklWUkM3T0Y0Y1QwTWRyNkFIbDBaK1lIVWJ6OUNpZGhhMmFE?=
- =?utf-8?B?TW90MUc4QVBMWWpQMGNMWGU2TnFoVCtiWTZ3RXVNRlc1SkM3WDZmS0RhVnZB?=
- =?utf-8?B?RktmMFpEN2NGRTcyN0E5YzRpOG5vNk1mN2xKT2J4dGVua3FVTElDZ2QxdDdY?=
- =?utf-8?B?VVZtZFVhTk1GZGZWSFlZQVo1K0dza0IyaU5Hb1dvVWZIeW9Fb2NpbTIrYzhn?=
- =?utf-8?Q?TL2SSsgsh3IWEi4JiQ?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 184e9de2-6718-48ea-6866-08decff96151
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR12MB999228.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2026 00:58:32.0636
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GhrF+egcCsB2mea8FAdBg1CvwoFWgJBugB4e2B0lmgz3HQD8vqAGQaVKnTXhk737w2VFIODShNcg901Z8+jJlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9161
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 07/18] iommu/vt-d: Implement device and iommu
+ preserve/unpreserve ops
+To: Samiullah Khawaja <skhawaja@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
+References: <20260614233728.2212104-1-skhawaja@google.com>
+ <20260614233728.2212104-8-skhawaja@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260614233728.2212104-8-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
-
-On 19/6/26 22:03, Jason Gunthorpe wrote:
-> On Fri, Jun 19, 2026 at 12:05:45PM +1000, Alexey Kardashevskiy wrote:
+On 6/15/26 07:37, Samiullah Khawaja wrote:
+> Add implementation of the device and iommu presevation in a separate
+> file. Also set the device and iommu preserve/unpreserve ops in the
+> struct iommu_ops.
 > 
->>>>>> IMHO that's an AMD issue, not with the design of this series..
->>>>>>
->>>>>> The series is right, a device that is !force_dma_decrypted() must be
->>>>>> considerd to be a trusted device and we must never place any DMA
->>>>>> mappings for a trusted device into shared memory.
->>>>>
->>>>> swiotlb=force forces swiotlb, not decryption.
->>>
->>> If force_dma_decrypted() == true then swiotlb must allocate from a
->>> decrypted memory pool. It is right there in the name!
->>>
->>> The hypervisor environment should *never* set force_dma_decrypted()
->>> because all devices can access all hypervisor memory, up to their IOVA
->>> limits.
->>
->> True. But we do not have encrypted swiotlb pool today, right?
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>   MAINTAINERS                      |   8 ++
+>   drivers/iommu/intel/Makefile     |   1 +
+>   drivers/iommu/intel/iommu.c      |   8 +-
+>   drivers/iommu/intel/iommu.h      |  28 +++++
+>   drivers/iommu/intel/liveupdate.c | 175 +++++++++++++++++++++++++++++++
+>   include/linux/kho/abi/iommu.h    |  21 ++++
+>   6 files changed, 239 insertions(+), 2 deletions(-)
+>   create mode 100644 drivers/iommu/intel/liveupdate.c
 > 
-> "encrypted" is just normal struct page memory, that's the default for
-> swiotlb.
->
-> I think it was a big mistake for the AMD SME stuff to overload the
-> decrypted/encrypted CC stuff which should mean shared/private in a
-> guest context to also mean things about physical memory encryption in
-> the host. It is really confusing.
-It is a bit in the PTE which says "encrypted", what do you mean by overloaded?...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index cef90bb50781..4dfb56962426 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13002,6 +13002,14 @@ S:	Supported
+>   T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+>   F:	drivers/iommu/intel/
+>   
+> +INTEL IOMMU LIVEUPDATE (VT-d)
+> +M:	Samiullah Khawaja <skhawaja@google.com>
+> +M:	Lu Baolu <baolu.lu@linux.intel.com>
+> +L:	iommu@lists.linux.dev
+> +S:	Maintained
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+> +F:	drivers/iommu/intel/liveupdate.c
+> +
+>   INTEL IPU3 CSI-2 CIO2 DRIVER
+>   M:	Yong Zhi <yong.zhi@intel.com>
+>   M:	Sakari Ailus <sakari.ailus@linux.intel.com>
+> diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+> index ada651c4a01b..d38fc101bc35 100644
+> --- a/drivers/iommu/intel/Makefile
+> +++ b/drivers/iommu/intel/Makefile
+> @@ -6,3 +6,4 @@ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
+>   obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
+>   obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
+>   obj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) += perfmon.o
+> +obj-$(CONFIG_IOMMU_LIVEUPDATE) += liveupdate.o
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index c3d18cd77d2f..715b538e7efe 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/crash_dump.h>
+>   #include <linux/dma-direct.h>
+>   #include <linux/dmi.h>
+> +#include <linux/iommu-liveupdate.h>
+>   #include <linux/memory.h>
+>   #include <linux/pci.h>
+>   #include <linux/pci-ats.h>
+> @@ -60,8 +61,6 @@ static int force_on = 0;
+>   static int intel_iommu_tboot_noforce;
+>   static int no_platform_optin;
+>   
+> -#define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+> -
+>   /*
+>    * Take a root_entry and return the Lower Context Table Pointer (LCTP)
+>    * if marked present.
+> @@ -3926,6 +3925,11 @@ const struct iommu_ops intel_iommu_ops = {
+>   	.is_attach_deferred	= intel_iommu_is_attach_deferred,
+>   	.def_domain_type	= device_def_domain_type,
+>   	.page_response		= intel_iommu_page_response,
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +	.preserve_device	= intel_iommu_preserve_device,
+> +	.preserve		= intel_iommu_preserve,
+> +	.unpreserve		= intel_iommu_unpreserve,
+> +#endif
 
-> The SME side is just a bad arch choice, the real world doesn't work
-> well if you set high address bits in your dma_addr_t. I think AMD
-> needs to use those restricted swiotlb pool where it allocates this
-> very special "SME Disabled" memory that will have a low
-> dma_addr_t.
+Any reason why an unpreserve_device callback is missing here?
 
-The generic __init iommu_subsys_init(void) calls iommu_set_default_translated() if CC_ATTR_MEM_ENCRYPT (==force the use of IOMMU) and eliminates the bouncing by default, pretty much. We (AMD) do not really want to force Cbit in DMA handles and it is not happening unless "iommu=pt".
+>   };
+>   
+>   static void quirk_iommu_igfx(struct pci_dev *dev)
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index ef145560aa98..5e0bc17e76bf 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -552,6 +552,8 @@ struct root_entry {
+>   	u64     hi;
+>   };
+>   
+> +#define ROOT_ENTRY_NR (VTD_PAGE_SIZE / sizeof(struct root_entry))
+> +
+>   /*
+>    * low 64 bits:
+>    * 0: present
+> @@ -1284,6 +1286,32 @@ static inline int iopf_for_domain_replace(struct iommu_domain *new,
+>   	return 0;
+>   }
+>   
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +int intel_iommu_preserve_device(struct device *dev,
+> +				struct iommu_device_ser *device_ser);
+> +int intel_iommu_preserve(struct iommu_device *iommu,
+> +			 struct iommu_hw_ser *iommu_ser);
+> +void intel_iommu_unpreserve(struct iommu_device *iommu,
+> +			    struct iommu_hw_ser *iommu_ser);
+> +#else
+> +static inline int intel_iommu_preserve_device(struct device *dev,
+> +					      struct iommu_device_ser *device_ser)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline int intel_iommu_preserve(struct iommu_device *iommu,
+> +				       struct iommu_hw_ser *iommu_ser)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void intel_iommu_unpreserve(struct iommu_device *iommu,
+> +					  struct iommu_hw_ser *iommu_ser)
+> +{
+> +}
+> +#endif
+> +
+>   #ifdef CONFIG_INTEL_IOMMU_SVM
+>   void intel_svm_check(struct intel_iommu *iommu);
+>   struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
+> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
+> new file mode 100644
+> index 000000000000..b5613e4ad43a
+> --- /dev/null
+> +++ b/drivers/iommu/intel/liveupdate.c
+> @@ -0,0 +1,175 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +/*
+> + * Copyright (C) 2026, Google LLC
+> + * Author: Samiullah Khawaja <skhawaja@google.com>
+> + */
+> +
+> +#define pr_fmt(fmt)    "DMAR: liveupdate: " fmt
+> +
+> +#include <linux/kexec_handover.h>
+> +#include <linux/liveupdate.h>
+> +#include <linux/iommu-liveupdate.h>
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +
+> +#include "iommu.h"
+> +#include "../iommu-pages.h"
+> +
+> +/* 2 tables per bus in scalable mode with upper table at odd bit */
+> +#define CONTEXT_TABLE_PRESERVED_BIT(bus, devfn) ((bus << 1) + (devfn >> 7))
+> +static bool is_context_table_preserved(struct intel_iommu *iommu,
+> +				       struct iommu_hw_ser *ser,
+> +				       u8 bus, u8 devfn)
+> +{
+> +	return test_bit(CONTEXT_TABLE_PRESERVED_BIT(bus, devfn),
+> +			(unsigned long *)&ser->intel.context_tables_bitmap[0]);
+> +}
+> +
+> +static void unpreserve_context_table(struct intel_iommu *iommu,
+> +				     struct iommu_hw_ser *ser,
+> +				     u8 bus, u8 devfn)
+> +{
+> +	struct context_entry *context;
+> +
+> +	spin_lock(&iommu->lock);
+> +	context = iommu_context_addr(iommu, bus, devfn, 0);
+> +	spin_unlock(&iommu->lock);
 
-> Then alloc and bouncing will get memory with a suitable
-> dma_addr_t. This has nothing to do with force_dma_unencrypted() which
-> is only a CC guest concept and nothing else in the OS should ever
-> touch decrypted memory.
+The spinlock is dropped immediately after reading the address pointer.
+If this is guaranteed to be safe, please add a comment to explain why a
+UAF or race is avoided here. Otherwise, the locking scope needs to be
+extened to protect both the pointer lookup and use.
 
-True.
+> +	if (context && is_context_table_preserved(iommu, ser, bus, devfn)) {
+> +		iommu_unpreserve_pages(context);
+> +		clear_bit(CONTEXT_TABLE_PRESERVED_BIT(bus, devfn),
+> +			  (unsigned long *)&ser->intel.context_tables_bitmap[0]);
+> +	}
+> +}
+> +
+> +static int preserve_context_table(struct intel_iommu *iommu,
+> +				  struct iommu_hw_ser *ser,
+> +				  u8 bus, u8 devfn)
+> +{
+> +	struct context_entry *context;
+> +	int ret;
+> +
+> +	spin_lock(&iommu->lock);
+> +	context = iommu_context_addr(iommu, bus, devfn, 0);
+> +	spin_unlock(&iommu->lock);
 
-Although, with "iommu=pt" enabled, dma handles from swiotlb should not have Cbit so these swiotlb pages  have to be unencrypted.
+Ditto.
 
-As you mentioned in another mail in the thread, DMAing to unencrypted memory with mem_encrypt=on make no sense security wise. May be enforce either mem_encrypt=on or iommu=pt is allowed at the same time but not both? I am worried though that some weirdo still has a use case for it.
+> +	if (context && !is_context_table_preserved(iommu, ser, bus, devfn)) {
+> +		ret = iommu_preserve_pages(context);
+> +		if (ret)
+> +			return ret;
+> +
+> +		set_bit(CONTEXT_TABLE_PRESERVED_BIT(bus, devfn),
+> +			(unsigned long *)&ser->intel.context_tables_bitmap[0]);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void unpreserve_iommu_context_tables(struct intel_iommu *iommu,
+> +					    struct iommu_hw_ser *ser)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+> +		unpreserve_context_table(iommu, ser, i, 0);
+> +
+> +		if (!sm_supported(iommu))
+> +			continue;
+> +
+> +		unpreserve_context_table(iommu, ser, i, 0x80);
+> +	}
+> +}
+> +
+> +static int preserve_iommu_context_tables(struct device_domain_info *info)
+> +{
+> +	struct iommu_hw_ser *iommu_ser;
+> +	struct intel_iommu *iommu;
+> +	int ret;
+> +	int i;
+> +
+> +	/* IOMMU for this device should already preserved.*/
+> +	iommu = info->iommu;
+> +	iommu_ser = iommu_preserved_state(&iommu->iommu);
+> +	if (!iommu_ser)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * We could do preservation of context tables only for the bus of this
+> +	 * device, but these devices can have PCI aliases, so context tables for
+> +	 * those will also require preservation. Also unpreserve would require
+> +	 * some kind of refcounting where the context table will only be
+> +	 * unpreserved when the last device associated with it is unpreserved.
+> +	 *
+> +	 * This introduces unnecessary complication with minimum benefits as the
+> +	 * unpreserved context tables will probably be recreated by the next
+> +	 * kernel as these are all active devices. We follow simpler approach by
+> +	 * just preserving the currently active context tables.
+> +	 */
+> +	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+> +		ret = preserve_context_table(iommu, iommu_ser, i, 0);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (!sm_supported(iommu))
+> +			continue;
+> +
+> +		ret = preserve_context_table(iommu, iommu_ser, i, 0x80);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int intel_iommu_preserve_device(struct device *dev,
+> +				struct iommu_device_ser *device_ser)
+> +{
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	int ret;
+> +
+> +	if (!dev_is_pci(dev)) {
+> +		dev_err(dev, "Cannot preserve non-PCI device\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (!info || !info->domain)
+> +		return -EINVAL;
+> +
+> +	ret = preserve_iommu_context_tables(info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	device_ser->domain_iommu_ser.attachment_id = domain_id_iommu(info->domain,
+> +								     info->iommu);
+> +	return 0;
+> +}
+> +
+> +int intel_iommu_preserve(struct iommu_device *iommu_dev,
+> +			 struct iommu_hw_ser *ser)
+> +{
+> +	struct intel_iommu *iommu;
+> +	int ret;
+> +
+> +	iommu = container_of(iommu_dev, struct intel_iommu, iommu);
+> +
+> +	ret = iommu_preserve_pages(iommu->root_entry);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ser->intel.phys_addr = iommu->reg_phys;
+> +	ser->intel.root_table = __pa(iommu->root_entry);
+> +	ser->type = IOMMU_INTEL;
+> +	ser->token = ser->intel.phys_addr;
+> +
+> +	return 0;
+> +}
+> +
+> +void intel_iommu_unpreserve(struct iommu_device *iommu_dev,
+> +			    struct iommu_hw_ser *ser)
+> +{
+> +	struct intel_iommu *iommu;
+> +
+> +	iommu = container_of(iommu_dev, struct intel_iommu, iommu);
+> +
+> +	unpreserve_iommu_context_tables(iommu, ser);
+> +	iommu_unpreserve_pages(iommu->root_entry);
+> +}
+> diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
+> index d06f251a2df4..ad760c497e13 100644
+> --- a/include/linux/kho/abi/iommu.h
+> +++ b/include/linux/kho/abi/iommu.h
+> @@ -80,6 +80,7 @@
+>    */
+>   enum iommu_type_ser {
+>   	IOMMU_INVALID,
+> +	IOMMU_INTEL,
+>   };
+>   
+>   #define IOMMU_SER_FLAG_DELETED	(1 << 0)
+> @@ -140,16 +141,36 @@ struct iommu_device_ser {
+>   	struct iommu_dev_map_ser domain_iommu_ser;
+>   } __packed;
+>   
+> +/**
+> + * struct iommu_intel_ser - Serialized state of an Intel IOMMU instance
+> + * @restored: Whether IOMMU state is restored
+> + * @phys_addr: Physical address of the IOMMU register base
+> + * @root_table: Physical address of the root entry table
+> + * @context_tables_bitmap: Bitmap representing the context tables that are
+> + * preserved.
+> + */
+> +struct iommu_intel_ser {
+> +	u8 restored;
+> +	u8 padding[7];
+> +	u64 phys_addr;
+> +	u64 root_table;
+> +	u64 context_tables_bitmap[8]; /* Tracks upto 512 context tables */
 
+To avoid open-coded magic numbers, how about something like,
 
->>> And this is more insane logic. The right fix is to allocate the
->>> swiotlb bounce from the *encrypted* pools when running on the
->>> hypervisor which requires undoing this abuse of force_dma_decrypted().
->>
->> +1.
->>
->> But how does the kernel decide if it is this swiotlb pool or just
->> some page which happens to be below the IOVA limit?
-> 
-> You mean in swiotlb_tbl_unmap_single() ? It checks the address against
-> the pool's range?
-> 
->> swiotlb can be for bouncing (with all these dma_sync_single_for_cpu)
->> or, if dev->dma_io_tlb_mem->for_alloc = true, for coherent
->> allocation (no need in dma_sync_single_for_cpu).
->>
->> I am looking for a way to set up my "sev-guest" device such as when
-> 
-> Whats a "sev-guest" device?
+#define VTD_PRESERVED_BITMAP_LONGS  DIV_ROUND_UP(512, BITS_PER_LONG_LONG)
+u64 context_tables_bitmap[VTD_PRESERVED_BITMAP_LONGS];
 
-It is a platform device, presented in SNP VMs as /dev/sev-guest and the guest userspace calls ioctls on it when it needs VM attestation report/certificates/etc.
+?
 
-The sev-guest driver makes calls to the HV (GHCB protocol) to:
-1) get report/certificates/measurements from the HV <- this is done via shared memory as the HV writes to it;
-2) asks the HV to get the digests from the PSP <- this is done via encrypted memory (buuuut it is software encrypted and as far as the hw is concerned - it is shared - no Cbit, no RMP - these buffers contain plaintext headers of the PSP requests and cyphertext of the request/response body).
-
->> dma_alloc_attrs(snp_dev->dev,...) happens, it allocates a page from
->> the shared swiotlb pool (with no actual bouncing) and there is no
->> obvious way to trick the DMA layer into doing that.
-> 
-> Why do you need this?
-
-/dev/sev-guest uses only shared memory (from the HW standpoint), and it is normally lot less than 1MB. If hugepages are used, then today it allocates 4K pages (they come encrypted and likely backed with a 2M page), the driver converts them to shared to make that GHCB call. The conversion smashes backing 2M page to 4K pages (+RMP +IOPDE as there is possible ongoing DMA), which is a problem (I have mentioned it as "TMPM" before - a hw/fw helper to do the smashing).
-
-The idea here is that if swiotlb is already shared, the sev-guest could use that memory pool.
+> +};
+> +
+>   /**
+>    * struct iommu_hw_ser - Serialized state of an IOMMU instance
+>    * @hdr: Common object header
+>    * @token: Unique token for the IOMMU
+>    * @type: IOMMU type serialized state belongs to
+> + * @intel: Intel specific serialization data
+>    */
+>   struct iommu_hw_ser {
+>   	struct iommu_hdr_ser hdr;
+>   	u64 token;
+>   	u64 type;
+> +	union {
+> +		struct iommu_intel_ser intel;
+> +	};
+>   } __packed;
+>   
+>   /**
 
 Thanks,
-
-
-> 
-> Jason
-
--- 
-Alexey
-
+baolu
