@@ -1,70 +1,133 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DE42BCF4C;
-	Mon, 22 Jun 2026 16:38:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C025342519
+	for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 17:43:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782146295; cv=none; b=NE4o3P2D21c08jtcxkYD26hh/jov9l3Km+phQpkKd4GZdakOlj6ebaVFRIVUgnM6/K5CpjzwkuhOGn2+6D5WqPbmGDIrb+00tTgjZdpbuAw29HvwugY2CQmZ52g9dPLsjIefRKeofxlGtVmHOy3w+xn+Z7VrAfMC0HnQ4QYfnV0=
+	t=1782150214; cv=none; b=X5C7bbuR49f7EqpCnt3OguHpgQQcjEibgPcbGHqQTx2AKYcbjP6NO4e7t/+EWi6R1tf6Vz7zM6zaz4vNqbKTNjVMLxPctUtqCDysIu6OOWnmoDl1GqpjT6iT7XpoYoVm6g2oZNyM71flwR5EVlO/s1AmKIBdOR18sl5qSRM1J60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782146295; c=relaxed/simple;
-	bh=MU6NEnvcLJQdqEo/CvT3g7zOZc+phxAEbCp+Y+NUkKw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eq9Ni9cJNl/mZFAKTIyWPPElkfpy1AYdVVg+9W7ua1FeCsZds+m66PYaGmGvo1bsXKDKOOje/XlGwvo2NPh2FUq6p4W4V887TP582oi2gytrRgWLtxA35rOsbovyK0jfyfuI16LP6DF7OdOPzywORXbzaLaZ7cYIajl+SvCOiec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L8naGZ/z; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782150214; c=relaxed/simple;
+	bh=37n0r5kMauruI+X87up//ZNJGThpP+mu8r7gnCJwuZs=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CkXQRm2xvzeayvA9Hj54FEqmUX4Br1k6FCyQDVwz+Q/L2ZyS18XuTwXKn4fE1hHK0Tn9HXU5rdC+S8v870LRIQrhIPq0ZGRV66aptaVAwzj12wvthpMn05yyO0W6i3SpPfzHW3acZ1UmohxG/jDSRoDqi3qnsNrn1+ldEbBgttc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bWs9bj1f; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L8naGZ/z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B8D91F000E9;
-	Mon, 22 Jun 2026 16:38:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bWs9bj1f"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F7DA1F00ADB
+	for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 17:43:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782146294;
-	bh=MU6NEnvcLJQdqEo/CvT3g7zOZc+phxAEbCp+Y+NUkKw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=L8naGZ/zN8Z/ZE7q8bd211dML4/nswb3UZsXt1MJL5Ugq3DvhfWeLKY7tCrKTmOiD
-	 IWIILAt5BLFKjxmpGLNxZ5ezMCOM7DVQZ04cNm/gEENa6ovMibbZmJ6CjeHom/6bG3
-	 a+RTqJaYUn8QdOvXsJ1bdHjNo373JJs+KQAPjI+NUWKFuQQCr9KgisHUp/9hXxljhm
-	 ggwJkojecCgIi6DLvpvp9g4GS/rUy1DoHY4UdPYNsZgp2SIkdlh6y1uxzKNfgnpsMn
-	 vr0eMrQvDc/yPAJBKNfSQGZtMkIzZFsJEQqVMuTrn6OPci76Y+83XSLcIrHYQMSuRA
-	 4spKOQOXA2mhg==
-Date: Mon, 22 Jun 2026 17:38:09 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, jonathanh@nvidia.com,
-	thierry.reding@kernel.org, nicolinc@nvidia.com,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iommu: Fix interrupt type in example
-Message-ID: <20260622-copilot-unsettled-36e0d760e648@spud>
-References: <20260622065410.2780215-1-amhetre@nvidia.com>
+	s=k20260515; t=1782150212;
+	bh=ZOvkxM7SoiYga4F3HI0NRlsezjpo0hLIkN4UO4HHxjU=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=bWs9bj1fag5KYrEtQKDWajU/F6qyj+Xj0XywCLK/icvKgyu3zXE8BtiE5VCmzBOIO
+	 skOV0vdmfh5mCkma6G1yrE/H1sWckCiKx0kV384oGGNyzktYrin//aZ1A2T9J+RvZq
+	 tLhd4ueV9nefHqs6/L55gODvylLnx+BGn1DaSxnxjd+YO5r+feGhhbbldQDXQzrV7q
+	 InN3bE5Wk7q70Sq7/fRrBO5JcoyyAgKcaZfkUgqIJcm8KxCXn9dPVJbUuFpObZuXcl
+	 40yRt2QoBA60YiGyyZSznJ1lh57IMuMv+WKUqWeRQZyld2GfoWo6fs7ZFdt1rcNYd6
+	 YnYd6Pb1v9FZg==
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-39983214844so41523851fa.3
+        for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 10:43:32 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ91j3n7vzgXOAQfK2jwz4rQVbZkCAczbh+AvOK/b42oX4h2aroq7AjT1nlV8qqKZGggBa4OIg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw11rkBK2PtFXH/RNiTQ+IpGE58ShNIyWxwoafGrhYwR8pZwAVJ
+	6mvZu58TGDvwaD1Cdm73e/mf8SzNSWieHj0QpUwBtALdn5udXFbVBRWXbO9q+5YBDXXkW2c4hKn
+	tdME+2GpdHFu0FfEnkSYqHHpzigM7FZJBN/8KL0s/0A==
+X-Received: by 2002:a05:651c:88b:b0:394:635:70b1 with SMTP id
+ 38308e7fff4ca-3998bc52fbemr41304291fa.3.1782150210743; Mon, 22 Jun 2026
+ 10:43:30 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 22 Jun 2026 13:43:29 -0400
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 22 Jun 2026 13:43:28 -0400
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260521-pdev-fwnode-ref-v1-5-88c324a1b8d2@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="s6/WOd/jhXlza5TK"
-Content-Disposition: inline
-In-Reply-To: <20260622065410.2780215-1-amhetre@nvidia.com>
+References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com> <20260521-pdev-fwnode-ref-v1-5-88c324a1b8d2@oss.qualcomm.com>
+Date: Mon, 22 Jun 2026 13:43:28 -0400
+X-Gmail-Original-Message-ID: <CAMRc=MfSsLt8+CAh++8qo_=F=q5XRu6G3WGB=B2TZj8dTZydfg@mail.gmail.com>
+X-Gm-Features: AVVi8CfRnQqz6Nh2M0v3z0C67LQjbAf_AXtOmIr-lp4acya5s7VimMoD1ExGxmc
+Message-ID: <CAMRc=MfSsLt8+CAh++8qo_=F=q5XRu6G3WGB=B2TZj8dTZydfg@mail.gmail.com>
+Subject: Re: [PATCH 05/23] powerpc/powermac: fix OF node refcount
+To: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
+	linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, stable@vger.kernel.org, 
+	Lee Jones <lee@kernel.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, 
+	Thierry Reding <thierry.reding@avionic-design.de>, 
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Srinivas Kandagatla <srini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Doug Berger <opendmb@gmail.com>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
+	Matthew Brost <matthew.brost@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>, 
+	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Maximilian Luz <luzmaximilian@gmail.com>, 
+	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Content-Type: text/plain; charset="UTF-8"
 
+On Thu, 21 May 2026 10:36:28 +0200, Bartosz Golaszewski
+<bartosz.golaszewski@oss.qualcomm.com> said:
+> Platform devices created with platform_device_alloc() call
+> platform_device_release() when the last reference to the device's
+> kobject is dropped. This function calls of_node_put() unconditionally.
+> This works fine for devices created with platform_device_register_full()
+> but users of the split approach (platform_device_alloc() +
+> platform_device_add()) must bump the reference of the of_node they
+> assign manually. Add the missing call to of_node_get().
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 81e5d8646ff6 ("i2c/powermac: Register i2c devices from device-tree")
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+> ---
+>  arch/powerpc/platforms/powermac/low_i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
+> index da72a30ab8657e6dc7e6f3437af612155783d8f9..973f58771d9636605ed5d3e91b45008543b584d3 100644
+> --- a/arch/powerpc/platforms/powermac/low_i2c.c
+> +++ b/arch/powerpc/platforms/powermac/low_i2c.c
+> @@ -1471,7 +1471,7 @@ static int __init pmac_i2c_create_platform_devices(void)
+>  		if (bus->platform_dev == NULL)
+>  			return -ENOMEM;
+>  		bus->platform_dev->dev.platform_data = bus;
+> -		bus->platform_dev->dev.of_node = bus->busnode;
+> +		bus->platform_dev->dev.of_node = of_node_get(bus->busnode);
+>  		platform_device_add(bus->platform_dev);
+>  	}
+>
+>
+> --
+> 2.47.3
+>
+>
 
---s6/WOd/jhXlza5TK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Madhavan, can you please pick this up and send it upstream as a fix please?
+Not having to carry it with the rest of the series will make things easier
+for the next release.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
---s6/WOd/jhXlza5TK
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCajlk8QAKCRB4tDGHoIJi
-0k6dAP9zknucMIytzhaCS0nqL9cl1+PMI5xLFGL0cD9FD1O4fAEA+usVLqK72Zv+
-KGNKlCoj0H8xkFD2fOscVAkY5mcB0gs=
-=U63z
------END PGP SIGNATURE-----
-
---s6/WOd/jhXlza5TK--
+Thanks,
+Bartosz
