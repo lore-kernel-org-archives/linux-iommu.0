@@ -1,181 +1,195 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013044.outbound.protection.outlook.com [40.93.201.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FB4E35F5ED
-	for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 06:54:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782111278; cv=fail; b=Lqba9wvO2LOmTTF3KfRg4AWSiy6WbdewheGbLyP3xmqa29VeVcxHar7+ac86bmmHAFEsEi925sC+DReZ4gRbxcCFu+S9Hch9dksKuNO0CujtaKxIM3bbfuHhvBuE+GxrmudawpIpo7Dn2T+m/YgoHb5thvjunBRIzSvXiqCNB9s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782111278; c=relaxed/simple;
-	bh=e/FTIpf5qnyDo9XuUKQ1AwBzyAnuAEhk70EznK6AJfw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZpOGfTHGL/7svL4SxrtQ0/ouLSobkXUpwQze9cXIIyCDLz6M0OzTvffazF0O5hYsH4HKWlW0Gr9JkfepvSSaspkyVilTM8VJHq3IruzzKktqHlUl84X9XdwNmTCyUfl84D63Y9sQ5nS5/9L+LzcOHtKoI87dN5d2tCvh2EcmBW8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=c4O2oFtw; arc=fail smtp.client-ip=40.93.201.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 830A439021A
+	for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 08:13:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782116031; cv=none; b=GHmm9lKSM8mQeOaBNit5ptH36bhvFinfosyZLjdHoEI/0+9l9D4NzK2HAAOgh509k1ZCZzoTxzmZx4jrKxIdebXmccLxqt8x3mYhSGkjwk/fHNmXNSp8GJroly9WX/ZWxFo/Vc2vxDg+5E/nBjZ0+So8LOqoa2ZYewnG7W1otjY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782116031; c=relaxed/simple;
+	bh=F6H+rAEwAFlvo2vcoaq3mMaDhsIksTBUqphzpxP80WY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lnZI06ecKL/oM55jiLws34wr4Rfj21rWP9EluFpno3EPoa/3PKHwie7PEMd4Hjp1YOpyLmg3ibXO7s7n3VYSji+NX12ugysqDrT+i+lI/TvzK2/Q0zhiyPahKEvE4e90jFE8V4RPgMCb9qvRU4MSdr1KRN1rkKSt+Z1SpCuK2vs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pahMDRfH; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="c4O2oFtw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Big6ykyyZTygnulTWFwy51mPxSUqtSRGLu7gSdvJ7Vqzl2AsKoHmUWCSjTJ9MeKzsdd4xpzzhp+rWgwBmVls6QNUGTXZhKR2Q79+1AQsPIvchdndzeVhI8eZv3jfcuBCV20OXnAu39f15WQO3Vc2MOnjxS5k8QaD3gaC+JHzdexnSDH95HFxA3Fiok6hI/avDUqjwqbTAdCdiL9x8oii5fs0rqz4ZzCsH9sWI56g50MX8ofw3OTBAJpLt7XEDOZ3MGr5PQ63Ll21mrX70mxUlQOszwRG5u9Ch/RL/zm971WXtnazpsNdJbwiEiU2VLi2aKS3rpjFELmWCEqrbhlIMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oGY5I4Yc1KkozFndrOHUtzWZTziM2+pqLOQa66QkBuQ=;
- b=jke5Is2qS4nE4akqJd64tPIOs6InSFdq5DvoTVj/hqGU53X05ezH46WYbVTk/Aev2haXQlF6ByJM7QKpjP7wI2FPaFPg0ZUBUdiXBPfqP5aWOzFBXQ2HdZyYkyjT6y4BkzCqDBgzf0uje5E5QTo00ZwZbYB5sdHSWt99Q822JwsJZdEyjMFtNMxDZ2JBFcAf/kQ230opmTyXAhoDVCwuehvjqb3qJIpiVbvVdGo4y9irMsxY3Q+F0F8aK1vJSl+IjkaImqYOsqSmSCZr9T9/PqMXQR0tx46OccQDMBk7nQ4FUhxS3VuJAWFar/EZDbRbpRn70kEhFlumq4ad6z9Nzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oGY5I4Yc1KkozFndrOHUtzWZTziM2+pqLOQa66QkBuQ=;
- b=c4O2oFtwnEpCXe+Mzgsdsr+nCjT676XIu1H1TUx+RJWgz9an/cQR9MVOWbDQ/twIf4xM/qCTAZkNc+AIGyJtk/RlYTIFq5Uvp2ePrR8+ScxB/ml4Qklo/Jyz8qCVsw4U3hZQ8jyDac96T2T3khyYt69jxEfRnHT/O6mkr4GsV6wAi0+DZIpFNvqhUpS6+Ea5pSokPqsISSMhZhEpJ4nK9ZcRujIy+esq1ObKlpRqScFEdTAO2jYexWjxFPHlmGLzrVL05P/VWOhK8dOpt45Qs5edIj3+QbEO/IXHhz9XfbMy8+mzpCJgHW9Tvunne7aE3LrWRueE3k43cVuNBhQFFA==
-Received: from CH2PR05CA0066.namprd05.prod.outlook.com (2603:10b6:610:38::43)
- by BY5PR12MB4082.namprd12.prod.outlook.com (2603:10b6:a03:212::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.17; Mon, 22 Jun
- 2026 06:54:32 +0000
-Received: from CH2PEPF0000009E.namprd02.prod.outlook.com
- (2603:10b6:610:38:cafe::53) by CH2PR05CA0066.outlook.office365.com
- (2603:10b6:610:38::43) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.11 via Frontend Transport; Mon,
- 22 Jun 2026 06:54:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CH2PEPF0000009E.mail.protection.outlook.com (10.167.244.27) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.159.10 via Frontend Transport; Mon, 22 Jun 2026 06:54:31 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 21 Jun
- 2026 23:54:13 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Sun, 21 Jun 2026 23:54:13 -0700
-Received: from build-amhetre-focal-20250829.internal (10.127.8.12) by
- mail.nvidia.com (10.126.190.182) with Microsoft SMTP Server id 15.2.2562.20
- via Frontend Transport; Sun, 21 Jun 2026 23:54:13 -0700
-From: Ashish Mhetre <amhetre@nvidia.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-	<jonathanh@nvidia.com>, <thierry.reding@kernel.org>, <nicolinc@nvidia.com>
-CC: <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Ashish Mhetre
-	<amhetre@nvidia.com>
-Subject: [PATCH 2/2] arm64: tegra: Fix CMDQV interrupt type on Tegra264
-Date: Mon, 22 Jun 2026 06:54:10 +0000
-Message-ID: <20260622065410.2780215-2-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260622065410.2780215-1-amhetre@nvidia.com>
-References: <20260622065410.2780215-1-amhetre@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pahMDRfH"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-490b9318997so27156145e9.2
+        for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 01:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782116027; x=1782720827; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=y69DNLtkcPX106ySVX6ZlNH6S9rjQScn7EBr8UTU9k0=;
+        b=pahMDRfHpOFrmruaMDhI3sr1qGy4riLap0PtsGUbYFlkO5ldCGwUdzGcWOx8QqcBv1
+         V3qFJvj2TCI5KrERmX/pQ/l8p6H4WTOmk41nPOt5Oep0xi6eyCt/fdJE4Q7GvHhD9oB+
+         HokYXjUw1byHTO+AZiLJZNYN/rmOiF7OYeFmilaUKmO5ma9u43J1e7FIugyIM7OXKS/M
+         DYX1Iah4YC8FC+YtpHuH9EhmTFwQgNzQiyT16iqKRrIt5+VR6kJ3q+JtWSGd/qVmVzBU
+         uivIlzYp/6qurNRo/borsLzoCdTsLWPVOoimf0JorRTVkoSxiTah2dakJ3RMv3ckdR9C
+         oddQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782116027; x=1782720827;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=y69DNLtkcPX106ySVX6ZlNH6S9rjQScn7EBr8UTU9k0=;
+        b=dNEHBaibiEJPp7Ecbpooto+0I39PZX7nVQfXiDFFU6NrHBHo+XN/GquGmji/ZJ48hJ
+         B+aCeGDKS3Tud2hoIINc4LqJYjJIieeJH5CqWB3EcnY5CdHZJGsHCZVBwCU76tKJlT2x
+         bFhvVYx+Lot2pBQb/K0wT80NiKB2Vw+xedenEgY+A5mOQVm8u6RycKivSmG6JJivE8sG
+         azgq4b5I/AsnsmZzIKsK7J7kC77gtwqxExQ7qyr3QXAqtBq2UJ9ozrU63KwEcwe+2EiC
+         9dWYtpP84JV/Dk4l4i5u8ZgpV3Wp7ddoIHvrz7Qg8OD3eWYyp0L6Q/JzUZjtuwO4SCb1
+         qDEQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+PrOoKqCEGo0fYTHQEiU0+HVOL25XLYT0Itaq799OyghYOoXH7gU639/oy8Lne5Omg5MKQDw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxKR7RHyadvN5b4V1KPUb+CT6znn+p9N9eFCUwlMSy7xJCejrMP
+	4iNCLKoPaNHi+8pV2cM2n//eKrGQUYByMfnO8kcqdhO/fAFABWxY0cCX
+X-Gm-Gg: AfdE7ckiK8gtBKMM9SDUFdhkVQ8BAIMj6Nszsb2e29++D8I9Oi6X6SxjNiLB38M44Kz
+	7cCrVRgJkW3cHjImkWeUglv1crcBvFr/CkefHGTe/E52dOzdFSP7fnaEUryEwcM4b1k6hqgTR73
+	NKlu2bgxnpfqgCs8XFlmzBZK8jpM7I2DGmKWlxHWhZa7WsMTHJaiFZyd3xci2A8Rpvird0k4yPo
+	wLmHXEwFKhofNSltcYxzntVDFchTQdt9uVzcR8BQB43qRBdpdFQYdTgQIW3TdRseh0bPKDz3FcV
+	Hm01AStuEQtaTd1BBC1H2UlFOZdbTzeOEqRpEPLS+MR2SMtrgNyTCQ9GMtOBYi3vIZYmJZbvP4q
+	l8Ch25CysHIbyOKDrtt9OwxwELz9cTz7FQ0J5iCk2Y8m2gTh4yaxMF5hgeEguqtlxlZb6i8bwIP
+	eWFdpSxK8G/59P/EZ3LoHgYombp2dRuWm69mm9X9aYVV3k6yO+GQ==
+X-Received: by 2002:a05:600c:8719:b0:492:4c60:bfb8 with SMTP id 5b1f17b1804b1-4924c60bfdemr121648545e9.28.1782116026585;
+        Mon, 22 Jun 2026 01:13:46 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4923fd30078sm274806595e9.7.2026.06.22.01.13.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2026 01:13:45 -0700 (PDT)
+Date: Mon, 22 Jun 2026 09:13:44 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: David Hu <xuehaohu@google.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, "Christian =?UTF-8?B?S8O2bmln?="
+ <christian.koenig@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen
+ <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Kevin Tian
+ <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, Alex Williamson
+ <alex@shazbot.org>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com,
+ praan@google.com, kpberry@google.com, sashiko-bot <sashiko-bot@kernel.org>,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] dma-buf: Split sgl by largest page-aligned chunk
+Message-ID: <20260622091344.794e0d74@pumpkin>
+In-Reply-To: <20260621222130.1667453-1-xuehaohu@google.com>
+References: <20260621222130.1667453-1-xuehaohu@google.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000009E:EE_|BY5PR12MB4082:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3bfcc9c6-fe01-4807-6585-08ded02b1c95
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|7416014|23010399003|376014|36860700016|22082099003|18002099003|6133799003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	4gekeRyyfpp5bVJ4ldowNLSMRl3PP09QUGOe539yxq8XutnxAIbjSEL2VenSJVvt/wN/EayuHtmSP3w38WV+2QGOwJxl/WHAvtA5nwqBIYrNx5wmdyEs6bt/UE0qQcJdwfa4HAell4FfxAe92Zg48cNOxO/giCMiNfE2BjZaTIdqeMbZsZS5Aswg71C7WVo/JcG3m8goxFRSSsaIR83+J8Ezkz6rRHjW5semvOLPxDRAy7HPEqTi032qfDh68IUlWzcWzY9DhAixF8n9DAMRPhYG+SBP6EuxgEFQxCYetnupV3/1ieLN3+UNJkQiMb0hKg59ikDNDjDNvwK4ZlGt4cdomeHHmazizpLBLzv/W3eezF+mAHoHYZSfefGyunpJfsxvOu4RGr3yss1D15HKX18hXhZVSPdGCa/SVr+KBTYpt/RmfjUNTRRfDcP8PU4yXjfk5gvnPtj080QIuadXbwmePyQlI8GyrTUKYqW7BthzYsFOj3UU7lscy3Q+qi1EObQlcafegERDgl+nQcjJMpn81Aibpbd50qH+GNenvEiAXw7rh/FCT2r5zybrYtt8a3r3706Pqaibrpwi+kYFsru+o7971l8mvDKo8nYkXLG2yUmZ4qtONopasVzvZiY3yG8PJhGYTQQM9xQHJLhfytphcTy3zIhoZ4fe5b+DBeLtj1pgSS+Y1Zxl74r3DRfg/JYo5XO3m4ZicCzY6v1k6Q==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(7416014)(23010399003)(376014)(36860700016)(22082099003)(18002099003)(6133799003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	wO0hofs3+VfNOjg1a2W8/T+fU7kOSzE+ndcAMzqqN9XquVGKD/HYFEmyc6zGdeWHFemEHbeUAs1KMPY23KOhAy0eD7iEabkTtfp0i1lz1iM1JDEXreDfZgHOwtiwHgyj+A1Uyy4FcqRRatr9b5Atj6/XHDnptbGVWbE1R01irUj4ofdZmzNc5vydNoQqkAbZCqOEIKeLJkpE2AOWP3X7twnuT+ii2nj5pnTk51yhXI29scSzzIGgL0QfXuEF0MjvMehNAfAgZZqBfOHZq3L+e0OqN/uSpoAsYlgVHGknejRh6TIuJii246bvf8rd5KSU+G1WXm/eSEFUMKmPIcLLy59scRLhBLA9NEj3XK5RZJmYlGNDS//nuC10c5WKXvdDtNNRTYboaWY8425wON8uDlQoOX6hJOi3+gmdfUWuLJcQbUwEV6+V2lz6KoW6Drjf
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2026 06:54:31.3690
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bfcc9c6-fe01-4807-6585-08ded02b1c95
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000009E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4082
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The CMDQV interrupts on Tegra264 are described as level-triggered, but
-per the hardware interrupt documentation these interrupts are actually
-edge-triggered.
+On Sun, 21 Jun 2026 22:21:30 +0000
+David Hu <xuehaohu@google.com> wrote:
 
-Correct the interrupt type for all CMDQV nodes from IRQ_TYPE_LEVEL_HIGH
-to IRQ_TYPE_EDGE_RISING.
+> Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
+> This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
+> first entry, resulting in non-page-aligned DMA addresses for all
+> subsequent entries.
 
-Fixes: fe57d0ac4835 ("arm64: tegra: Add nodes for CMDQV")
-Reported-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra264.dtsi | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+How did you find this?
+It requires a single buffer over 4GB - seems highly unlikely.
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra264.dtsi b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
-index 2d8e7e37830f..ff9c0476e924 100644
---- a/arch/arm64/boot/dts/nvidia/tegra264.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
-@@ -3393,7 +3393,7 @@ smmu1: iommu@5000000 {
- 		cmdqv1: cmdqv@5200000 {
- 			compatible = "nvidia,tegra264-cmdqv";
- 			reg = <0x00 0x5200000 0x0 0x830000>;
--			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupts = <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>;
- 			status = "disabled";
- 		};
- 
-@@ -3413,7 +3413,7 @@ smmu2: iommu@6000000 {
- 		cmdqv2: cmdqv@6200000 {
- 			compatible = "nvidia,tegra264-cmdqv";
- 			reg = <0x00 0x6200000 0x0 0x830000>;
--			interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupts = <GIC_SPI 8 IRQ_TYPE_EDGE_RISING>;
- 			status = "disabled";
- 		};
- 
-@@ -3486,7 +3486,7 @@ smmu0: iommu@a000000 {
- 		cmdqv0: cmdqv@a200000 {
- 			compatible = "nvidia,tegra264-cmdqv";
- 			reg = <0x00 0xa200000 0x0 0x830000>;
--			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupts = <GIC_SPI 28 IRQ_TYPE_EDGE_RISING>;
- 			status = "disabled";
- 		};
- 
-@@ -3506,7 +3506,7 @@ smmu4: iommu@b000000 {
- 		cmdqv4: cmdqv@b200000 {
- 			compatible = "nvidia,tegra264-cmdqv";
- 			reg = <0x00 0xb200000 0x0 0x830000>;
--			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_EDGE_RISING>;
- 			status = "disabled";
- 		};
- 
-@@ -3831,7 +3831,7 @@ smmu3: iommu@6000000 {
- 		cmdqv3: cmdqv@6200000 {
- 			compatible = "nvidia,tegra264-cmdqv";
- 			reg = <0x00 0x6200000 0x0 0x830000>;
--			interrupts = <GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupts = <GIC_SPI 232 IRQ_TYPE_EDGE_RISING>;
- 			status = "disabled";
- 		};
- 
--- 
-2.50.1
+
+> 
+> While the underlying IOMMU mapping may be contiguous, hardware
+> DMA engines often require explicit address alignment (e.g., page,
+> cacheline, or storage sector boundaries). Passing unaligned
+> addresses and lengths can cause explicit failures in DMA descriptor
+> creation or silent data corruption if lower unaligned bits are
+> truncated.
+> 
+> Fix this by splitting the scatterlist by the largest possible page
+> aligned chunk within `UINT_MAX` (`ALIGN_DOWN(UINT_MAX, PAGE_SIZE)`).
+> This ensures all scatterlist DMA addresses and lengths remain page
+> aligned and satisfy hardware constraints.
+
+It would almost certainly better to spilt into 2G chunks.
+That removes any need for any divisions.
+
+> Page-aligned entries allow the system to cleanly chunk payloads into
+> PCIe MaxPayloadSize (MPS) (e.g., 128 bytes, 256 bytes, 512 bytes).
+> As a result, this may help reduce TLP fragmentation in P2P transfers
+> and alleviate potential congestion within a logical PCIe switch
+> partition, especially when Relaxed Ordering is not possible due to
+> hardware constraints.
+> 
+> Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+> Closes: https://lore.kernel.org/all/20260609165431.778061F00893@smtp.kernel.org/
+> Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: David Hu <xuehaohu@google.com>
+> ---
+>  drivers/dma-buf/dma-buf-mapping.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
+> index 794acff2546a..f2bde38fdb1f 100644
+> --- a/drivers/dma-buf/dma-buf-mapping.c
+> +++ b/drivers/dma-buf/dma-buf-mapping.c
+> @@ -5,6 +5,9 @@
+>   */
+>  #include <linux/dma-buf-mapping.h>
+>  #include <linux/dma-resv.h>
+> +#include <linux/align.h>
+> +
+> +#define MAX_ENT_SZ ALIGN_DOWN(UINT_MAX, PAGE_SIZE)
+
+>  
+>  static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+>  					 dma_addr_t addr)
+> @@ -12,9 +15,9 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+>  	unsigned int len, nents;
+>  	int i;
+>  
+> -	nents = DIV_ROUND_UP(length, UINT_MAX);
+> +	nents = DIV_ROUND_UP(length, MAX_ENT_SZ);
+>  	for (i = 0; i < nents; i++) {
+
+Why not change that to 'while (length) {' to avoid the division above.
+
+> -		len = min_t(size_t, length, UINT_MAX);
+> +		len = min_t(size_t, length, MAX_ENT_SZ);
+
+I bet that doesn't need to be min_t()
+
+>  		length -= len;
+>  		/*
+>  		 * DMABUF abuses scatterlist to create a scatterlist
+> @@ -24,7 +27,7 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+>  		 * does not require the CPU list for mapping or unmapping.
+>  		 */
+>  		sg_set_page(sgl, NULL, 0, 0);
+> -		sg_dma_address(sgl) = addr + (dma_addr_t)i * UINT_MAX;
+> +		sg_dma_address(sgl) = addr + (dma_addr_t)i * MAX_ENT_SZ;
+>  		sg_dma_len(sgl) = len;
+
+Replace the multiply with 'addr += len'.
+
+-- David
+
+>  		sgl = sg_next(sgl);
+>  	}
+> @@ -41,14 +44,14 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+>  
+>  	if (!state || !dma_use_iova(state)) {
+>  		for (i = 0; i < nr_ranges; i++)
+> -			nents += DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
+> +			nents += DIV_ROUND_UP(phys_vec[i].len, MAX_ENT_SZ);
+>  	} else {
+>  		/*
+>  		 * In IOVA case, there is only one SG entry which spans
+>  		 * for whole IOVA address space, but we need to make sure
+>  		 * that it fits sg->length, maybe we need more.
+>  		 */
+> -		nents = DIV_ROUND_UP(size, UINT_MAX);
+> +		nents = DIV_ROUND_UP(size, MAX_ENT_SZ);
+>  	}
+>  
+>  	return nents;
 
