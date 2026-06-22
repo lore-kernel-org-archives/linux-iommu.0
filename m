@@ -1,110 +1,115 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 990703CB2CC
-	for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 15:48:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFF81AE877;
+	Mon, 22 Jun 2026 16:18:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.195.75.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782143340; cv=none; b=EM1z8c6uHMOlIhlRyaHfu39sGC26kI0VPvmLvKwG4Lg1ROP9yfXrWzMMRd0oiNPIucsJlm2csb0kHAannmDc7LBnAV8dXtR+Z2AIMql1hiVT7SvHa7rbc1ltoVyqeP0tBdRWcLyTBTGLzvd3e1O6yjEYLi7TacNpx+wGp8knj7k=
+	t=1782145119; cv=none; b=R3OBgMUJ4VabF32Gaoqzf/vOcPHOu1HVk54YGZgKm4/v806AZ5ecktKrhNJz63537J5/ujDYRgLdfAzWvAesvysFyQ8jmxFZc+a/ePThy+176IqywCuV47ZNki/DU5wdQ5puQBJ4Ax3GT84Zx3aDHvv7ea4pCPQLdexe9AO+es4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782143340; c=relaxed/simple;
-	bh=9KXUHzooZ6A4y0KMRUZR+/Wvmg2ePvw6LkNmcJ3n8rM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FNrytEQ6Cv47hOkMSlbE4WPc3yynqllMkufdAD5fcryi8SatTWymib/8eUEjT3OhjBGH3t4nTTMRs1bMcHoxDdm2R7UrMNwTTE7T04MSuGEQf0iKO4vxeVu72/BX+1B4P47GSN0IgQXpxItJJigZN6DakWNXN8zOjwKUKy9AgRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Tfam00kY; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1782145119; c=relaxed/simple;
+	bh=Xfj/GKcfUN60lJa0KVwkvKu98Hb3WHSEqu1XiMbs6wE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=C3s1s4Xrs0gQV+oBPBjM9ObbBDqSvZLjAfYkk39CgmjhvvPnNaYxH7S4PEjIthvjn1Fg1w+zeFhlsiE5P56fuhxZAXeUlHBbKI/m3Wg7vngY5aNl3lqsHrSbXZ+5RIE4HEz5TGfP4fEgDa4VJC9c3krda6ixKGv1QqmtTMQB0jE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=debian.org; dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b=aB/d3oZd; arc=none smtp.client-ip=82.195.75.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=debian.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Tfam00kY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1782143338;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9KXUHzooZ6A4y0KMRUZR+/Wvmg2ePvw6LkNmcJ3n8rM=;
-	b=Tfam00kYfJiVV2RmoqKOvI//mix3kAyee1+5XvsXPLRT64Hu9x6/Nal9IEmFwawGNEGcXJ
-	Zv76RSuqzXwjKg5euQC0HzHRNuOrRZj72s+Rk/6oCZFSH6lKr67vkVwIBVzeUaISx2ySQt
-	mT4Sz3bertQMGu/C6820tL7mMnNESfg=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-301-dkMOqnfLMuOb5xrk4zIGpA-1; Mon, 22 Jun 2026 11:48:55 -0400
-X-MC-Unique: dkMOqnfLMuOb5xrk4zIGpA-1
-X-Mimecast-MFC-AGG-ID: dkMOqnfLMuOb5xrk4zIGpA_1782143334
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6a0f79bf1c0so2266051eaf.0
-        for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 08:48:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782143334; x=1782748134;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9KXUHzooZ6A4y0KMRUZR+/Wvmg2ePvw6LkNmcJ3n8rM=;
-        b=QlsKQTH7XTORawF8jmeH0gtwdAP04Km+MvRDxi/O+6WP2rm8hB04bwXNYFi5jY38oR
-         rlqiyvJ5WtcOnOg7fj5BJcbnJzB9cKfxRFQSWiEXVgxQ3UsF96McJPfdowAhz6VTU+NB
-         aymHt4twWv8rn1vTzrG3fIIrlUpoS5x+ZYBr0+M+L8gQPiAQotnVdzpHCBZmw6Q+gvOn
-         5+XfDvFljj79RWN8hBSRVrbORTcHTw5tMBDQvEBoybvtCb98AbNJCsoIVLUu4R1q6TQ4
-         6ZCiIn9t1HqvbOo+PCaofJtYThTnSwlxsun2yIaz7CGJbHwtXlier+e7WDHjMmazi5pk
-         WdUg==
-X-Forwarded-Encrypted: i=1; AFNElJ/7PkmxaW9OJFxtJnBYUTpOt3rpMQop8YMI4OWhhP+NHNUymFrNQpTPIk9EFzDRu9Rl6QXLbQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzv/qoiKullCun8asJeRoy724P4hTt2e1epwqY4Q8UfbyWY8DAq
-	3jERA+P3jiYGBXFSNGgybCSjl0Anhm9jO0HzlABoSYoDSz0HjI8w/4ZY0PKrCL4G5b1AUFK4GWd
-	NwPp69KZeV+uGu8BFnQFLyMj2uOhOiM1Oxr3ekuv6U2nbDSVH2ZxIMFcGrQy+ztcDkCdyWRCarN
-	R/aFckMV2aGL6omXTSXXPhHuXakZxn9cI=
-X-Gm-Gg: AfdE7cnylQ0CpTachh9cHSVSADrsXNRo3vVHwO2SKgpO9HJZWI8rV4csBEejqR7vFxE
-	Dsz9SNTNoOzKYIuYu2t3COf8DmlEDDWXa7wgKsiBYiF9hrYyQWOgvomkZJE+swgmxcY677QfVHs
-	a5pwmgT61DOyyypRfH/EFRaTO7KwYrBsq60UJMyOzq2IF2QTEtlISsPbbiQqUD5hfbJdQSfpTlm
-	QeOiBCbmYJcASffxCnhAi+fdoYx
-X-Received: by 2002:a05:6820:8108:b0:69e:3c79:6e7c with SMTP id 006d021491bc7-6a0d8992909mr12978963eaf.46.1782143334525;
-        Mon, 22 Jun 2026 08:48:54 -0700 (PDT)
-X-Received: by 2002:a05:6820:8108:b0:69e:3c79:6e7c with SMTP id
- 006d021491bc7-6a0d8992909mr12978928eaf.46.1782143334005; Mon, 22 Jun 2026
- 08:48:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b="aB/d3oZd"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+	s=smtpauto.stravinsky; h=X-Debian-User:Cc:To:Message-Id:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:
+	Reply-To:Content-ID:Content-Description:In-Reply-To:References;
+	bh=S7aEd5EX+YdrVp9yjK9xP6A7alsmVtEUOulKR2UA8VM=; b=aB/d3oZdTIWj2b7PH5y6DejBKh
+	hM9/0pM7SLzKmf0oGnqAmrPyRxLQiLTsrAw7jsnoOSdRCkkSiZgZHUbeogsXR6TTlFIpC1GOGn2lD
+	TRhCS5I99WiGQYHhPWmzBKblzTTsRAMKc2mCgcEs2/edCFaCZQNLF4KG2crdVADR944XZZN+psxDk
+	O+EqJCGSCsapptvxCiQtEGfppvA+0GAd0Dne8m/vLq5IKnBCwxbgFJCCHQbVKNDQeAdPiN0Bar3K+
+	vKrAqX1/a8riGKnjIH6E4ROngufSXdhayyvLZ04opdnINxRfQzp9SJprZ8Kn8mpNhiXCU+Ak8Grn1
+	TU7uc28Q==;
+Received: from authenticated-user
+	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.96)
+	(envelope-from <leitao@debian.org>)
+	id 1wbhLx-00105R-1v;
+	Mon, 22 Jun 2026 16:18:29 +0000
+From: Breno Leitao <leitao@debian.org>
+Date: Mon, 22 Jun 2026 09:17:03 -0700
+Subject: [PATCH] iommu/arm-smmu-v3: Disable PRI when no priq IRQ is
+ available
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260430014817.2006885-1-desnesn@redhat.com> <20260503071749.6abda137.michal.pecio@gmail.com>
- <CACaw+ew8uV5g1G-6qZGtVBEYZ3k+fvFrOq3XMyq-Nuhbq5mdnA@mail.gmail.com>
- <20260503213111.117db3a1.michal.pecio@gmail.com> <20260504093118.615ff480.michal.pecio@gmail.com>
- <20260518083339.507e24bd.michal.pecio@gmail.com> <CACaw+ewSWTo72fSk2Q7ZzCM8pNuyrX5ua+qA=SZOQuNNMKSA5Q@mail.gmail.com>
- <20260522110328.0d3eecd8.michal.pecio@gmail.com> <CACaw+ezqEO_PgjGeYCLq5hA2eKczFXgmZLa8qjPtVJZCGwsdsg@mail.gmail.com>
- <20260523022944.59799d83.michal.pecio@gmail.com> <CACaw+exPdwXVsJc5Xr=vN1WJt8XR46=X0-8PP=+5dWY5zUrKeQ@mail.gmail.com>
- <20260523102815.5c05c70a.michal.pecio@gmail.com> <CACaw+ezMnQh2_oqbZ0jF99+wOADMU2vSMqxh9BoJoefjAC_ixw@mail.gmail.com>
- <20260527103221.7f8b15b0.michal.pecio@gmail.com> <CACaw+exN3fdzGQE7oK-hRE3KpMrA3ckPDRAcXaFbd=ySXf8E5A@mail.gmail.com>
- <CACaw+ewuPm-eOACKX3Ux0UwJBRSftoBm7H+rxE2Z9E7KzWb5ew@mail.gmail.com> <e9472b38-4a91-44b5-b75e-dc7abd23793d@linux.intel.com>
-In-Reply-To: <e9472b38-4a91-44b5-b75e-dc7abd23793d@linux.intel.com>
-From: Desnes Nunes <desnesn@redhat.com>
-Date: Mon, 22 Jun 2026 12:48:42 -0300
-X-Gm-Features: AVVi8CcAlAvfkd2ErCnICSEvqW5Np5KqWlEvhK2rTPgdX5mT-Gkc_TQT0VvBDf8
-Message-ID: <CACaw+ewAk_fs7gw83kRJ=Gj9oSPLMru-txtbPohAttZEyn0qvg@mail.gmail.com>
-Subject: Re: [PATCH RFT RFC] usb: xhci: Kill hosts with HCE or HSE on command timeout
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Michal Pecio <michal.pecio@gmail.com>, David Woodhouse <dwmw2@infradead.org>, 
-	linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, 
-	gregkh@linuxfoundation.org, mathias.nyman@intel.com, stable@vger.kernel.org, 
-	iommu@lists.linux.dev
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: iPh4DaRG6ndJNf958vFvq5_xPbwUdWpGqu6MpvJDX2w_1782143334
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260622-smmu_pri-v1-1-14ad92b6043f@debian.org>
+X-B4-Tracking: v=1; b=H4sIAP9fOWoC/x3MSwqAMAwFwKuEt7ZQEyjYq4iI1KhZ+KFFEcS7C
+ 84B5kHRbFoQ6UHWy4rtGyLVFSEtwzarsxGRwJ6DD8yurOvZH9ncICIcGu+TCCrCkXWy+6/a7n0
+ /XI5q4VoAAAA=
+X-Change-ID: 20260622-smmu_pri-a33326900c33
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, rmikey@meta.com, rneu@meta.com, 
+ kernel-team@meta.com, Breno Leitao <leitao@debian.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1593; i=leitao@debian.org;
+ h=from:subject:message-id; bh=Xfj/GKcfUN60lJa0KVwkvKu98Hb3WHSEqu1XiMbs6wE=;
+ b=owEBbQKS/ZANAwAIATWjk5/8eHdtAcsmYgBqOWBRxW4cg8uASIBMlgSGZlN6WUBefTyJh2uTA
+ VgOPZYjFBaJAjMEAAEIAB0WIQSshTmm6PRnAspKQ5s1o5Of/Hh3bQUCajlgUQAKCRA1o5Of/Hh3
+ bfTdD/9Gzzcx4dDoWg0o7SyVITStwljS54RUi8UotFniXFwq7ysLmAK5t47D1WJPAPr9ZGrnusm
+ 2aP1c+f4EF+JwQUi/9dkmngYYUePtAn63450Of3l8yGdWT6PRbHW4AAGLzRNcEHGP7pjy2nd942
+ s/rf2rlqaLOIHsH9YFaTbM2pb9pZtOfVcVwibyf6RbNrn5puo9X0Do6zTs184B1yToyRjStFZJu
+ GypoOCd+F5uT60SDHRWGmuAqioFxVvh8MqLmBE+aSvAOTbp/V9ZnOqvPas7tuD9Z53dI9wQX0Kf
+ rHasv/eOLeSrZbKkYS+brZK3/flOIZNh671dRwk3rKZUkc1XGe3ViLsNicI3Plr2KPLpH8CPw9e
+ RAfAG8QtSWQH8s3+OdKDD2q3/cLw20vBQYTdINxM6fDIPY6uXPncrKIGAGVBXcc9kAQnFYvHvqn
+ BTrQ2i7X7ocrz19Z2RgrsarLjPhfzpcAlXlezMoQs9TWx0+EYr8563RJzO7T7famh0rBtS6xmXl
+ UpOo+vuNpt+OBwsYNJBm6MHh18BImKHFN5BW4/ZA5RW+JJ5o84ghqDTDX4JtGgSIdCpluTGZIUQ
+ rzXz8q+oIQvG37qNeTCCVJ0HFUDYWc9y3A/AwKW7dhobslB326e/AfZAV0XyHlRkLD5j3zKNEzW
+ Rp2neFe4N9Brc3w==
+X-Developer-Key: i=leitao@debian.org; a=openpgp;
+ fpr=AC8539A6E8F46702CA4A439B35A3939FFC78776D
+X-Debian-User: leitao
 
-Hello Baolu,
+When platform firmware advertises an SMMU as PRI-capable in IDR0.PRI
+but does not assign a GSIV for its priq, arm_smmu_setup_unique_irqs()
+warns and continues. ARM_SMMU_FEAT_PRI remains set, so the driver
+still allocates the PRI queue, programs PRIQ_BASE/PROD/CONS, enables
+IRQ_CTRL_PRIQ_IRQEN, and lets IOMMU_DEV_FEAT_IOPF be advertised to
+upper layers. Page Request messages from devices land in a queue no
+one drains, and SVA binds appear to succeed while silently dropping
+every page fault.
 
-> >> To IOMMU maintainers: should I send this patch to the iommu mailing
-> >> list and move the discussion there?
->
-> Yes, absolutely. The iommu mailing list is the right place to discuss
-> bugs and fixes, so please go ahead.
->
-> > I meant as a new submission to IOMMU maling list, since this started
-> > in xHCI at the usb mailing list.
-> > Of course, that is if nobody has any comments or objections to the patch.
+Clear ARM_SMMU_FEAT_PRI in the missing-IRQ path so every PRI-gated
+site in the driver consistently treats the SMMU as PRI-less, instead of
+the half-baked stated.
 
-Sure, just submitted this RFC as a new submission in the IOMMU mailing list.
+Signed-off-by: Breno Leitao <leitao@debian.org>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks Michal and Baolu,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index a10affb483a4f..44bafbb38e242 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4659,7 +4659,8 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ 				dev_warn(smmu->dev,
+ 					 "failed to enable priq irq\n");
+ 		} else {
+-			dev_warn(smmu->dev, "no priq irq - PRI will be broken\n");
++			dev_warn(smmu->dev, "no priq irq - disabling PRI\n");
++			smmu->features &= ~ARM_SMMU_FEAT_PRI;
+ 		}
+ 	}
+ }
 
-Desnes
+---
+base-commit: 948efecf22e49aa4bf55bb73ec79a0ddcfd38571
+change-id: 20260622-smmu_pri-a33326900c33
+
+Best regards,
+-- 
+Breno Leitao <leitao@debian.org>
 
