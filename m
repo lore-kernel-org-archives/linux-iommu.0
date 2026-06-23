@@ -1,154 +1,184 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-qt1-f201.google.com (mail-qt1-f201.google.com [209.85.160.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E42E1370D4C
-	for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 01:46:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B0437BE7F
+	for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 01:55:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782179208; cv=none; b=dqDFvtLzoSToA2DmUWELuCUbu/0sG0hFjdtvoEDkM64kzclNzAM0yPyGzjbnmBpXvHxSINmboPoMpasUQFl+OsOs0Bf6Y4kqflsOIJXOoZ2HkfoN2ZxH5L3AHtQbU4IK669jUcRn4hOnarfOX4RoI3mcqCS75zrmCqdKyvUyVLo=
+	t=1782179705; cv=none; b=u1cu82PvOyyqGa6kHFlWuoX34eSX3aMlHB3kH/V2mVy4oHsiT9lq8nHq5CipfxL4NBuqk7wReAJEE0fFQrA2w92eTmBNFvKMm7QAKYxCzIR7A46N4c3fikJjcfMTScT9gsZrcSUtjHznDpDrGsALdckbd96ciswIuxs0/c6JxLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782179208; c=relaxed/simple;
-	bh=2apY+z0N2eT8oIYqkywxMesHZ3STxvb01hviFdFriTw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OA3WV2RJd48xS3u9QSQ9iyJP9eAWrxygBLiVqHNz404Qji9xz6DS8Kt0nXQSWdMzcNesC/sOnGGe3dR9q9l659m0hcryHkrLZi3dCNCUcFJVUWwdYY9Y+kX2yRSuhEZaXONkHd097nMHQWagV9v3pR2P1/Fecb7vNHt7f6kE0Fk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hycwDYvo; arc=none smtp.client-ip=209.85.214.174
+	s=arc-20240116; t=1782179705; c=relaxed/simple;
+	bh=bBWRORv7RUc8uRHv6zCGgvNd/JG4DiLB/oASlXLOQPs=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=L7DK3rX4sWWu+nKEBqVOjo55feVDlQjvjRZweleQgCoIf6VrtKxHssSLAR1/cl5l50x7Xtwxvj4SoK1lFqbiM8WSfD9ysE5OgVSjC4knuIhDLzU/DtpHVrlJzAaXpW1lARCp/8+JNvRWcZ4TrCOuRyJUaZqrB8MgB1gE2J4LEYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d3EuR6qM; arc=none smtp.client-ip=209.85.160.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hycwDYvo"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2c69fa0b1f8so25855ad.0
-        for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 18:46:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d3EuR6qM"
+Received: by mail-qt1-f201.google.com with SMTP id d75a77b69052e-519899abab8so100955001cf.2
+        for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 18:55:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782179206; x=1782784006; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=W573SLR3fQ3LHn7BMqDZVpOE+yHqb2rgziXRTcKO9m0=;
-        b=hycwDYvohBuJEZagyKqK8xZ5o6SxQ9w/ngYjRAihK4r6Vc3Fz984Q+zwHEEEFoqutb
-         4SzLHefyos0ey1v6Oto6lBnADFlj403vUD6KWevyYYc1EhJLOg9SKhpeXRkRMFczjkyV
-         jGWjJvasOD+0CubO81+VjJh7owzMJW6H1ybWzKg7IHGKWAq1CSUKZcGM1LGi1N35KnFG
-         VeGTnrMNsUB7tNK00MokQFi1bgzQeGcRC5KMgHfXjBVLkGcpSBjLkTIPkX+BDnTrwF0Z
-         El0Rde2RO0sYl3KcLHt3TnIurVkt1tgKUCjeYo3/6LNPIiMAcP/dCWZv19wuRMyxM934
-         LOrg==
+        d=google.com; s=20251104; t=1782179702; x=1782784502; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=lkITz2dGNs54nij5ccY4KCvNRYJG4BpFQmrxgUXzmOc=;
+        b=d3EuR6qMYv8J3mL4S+IeSGk3d53FSZi9dECorPskzm0pV3iuI61zvxf/KkPOw+TR8e
+         RC8tC4CyZyKbyVUeNibbnD8LDZzNhvr5UKdCpsPkLDRD19OKYvP9Dk5yKARFXrpEmC7f
+         WcHp+J3fBa4E3M0sgOMPeFAUkAdHXZEcwSseCuKLl0Zw297cp9xyy/agPYf/AgNBnD2K
+         cYtmkZP6t6Cv4G/Exo+JFmesTGvwwGqZNc09nT85kUx+oe3RUcZCCKB7dpSgsOgHMRyp
+         ham4cLy/aNrSw+5FsURQR/qVZvGTb1C3EtIPXCrMfQatMUJF87yDFZcrxccFwP7wiDnt
+         7dAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782179206; x=1782784006;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=W573SLR3fQ3LHn7BMqDZVpOE+yHqb2rgziXRTcKO9m0=;
-        b=kvon2ZT9GodrL1sBtIX1/IUIh+S/8va/1UcVcc1+aKiyIeVfbLUrjsrk4cAqzPMw0k
-         YEVge4rt4uBeQVQ5HJLt6ZZajT7+CrGHiPACkCH7DkvDpC0CWKhU7RQjuMnEYe0Yt3/2
-         gEKH6CGPfibW7EVuEcBZpu7l8dIp6trTRsCD6XnI5QB4ePWYQDnsln5s5gCjN0TGVam6
-         UkAY6D13m0WP9F7zNbHPBPtv7CStPd2XQ6Rxvbw2UtTXmZAXiAJ+9c6XoVjMvwCHY0ol
-         QFjHXip87TOUJDfFjoWFGeDo9kE6Q6EaadgxI4BfKFXFk4uU37OxKRfqrkJSZmfQhQj6
-         Gugw==
-X-Forwarded-Encrypted: i=1; AHgh+RonqboQC6IEtlLQBUqrKi0nTb1mJkeUpEEGYFHCRlLmnPDyoC1PNEhBp6roDIKLE6s3hYCp2g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzDsUHYqLa1KUvikRwVgtmOwfQxXgjlGtyes+6OGYDOBJVErVIF
-	nsb/+ge+puRe3v2GctO1Y54DWMF8r4qLqrGtdGwhCayC+hsXqldkljoC+lsNKvS7Uw==
-X-Gm-Gg: AfdE7ckQ6sZvcThdK/6JQLVrFcowwKnhcjgivY4Fuo7NbToQN90NjDhunL4oL2EP3e/
-	4wxUpDqlv1qwOvICdv12MOLyPZ6H4mE2ZQel4zhFmhZK/0Bsm7tcGhOOv8wBOAVwrK8rbYaP/qC
-	Gw9KF9YOD1NarVhSYVIkvR5XRfY7SK7zZ9J95tQNU1S7eVm4qWGvmzzUXu+nF+olnVs3S88KFbs
-	ZY9ZnimMahwXTUNFSDp5D8pKRDXEoBwiJYkhq/9O9C3Zn/l87qeC7VlnmuKL22johs/7v/qpXK/
-	jE1l4LZIf98ngboZjGdVDhSfDqmsqlvQd46GepzxePgn5AMZkpCuqaT9E8uDhTuPs/jtPt2Tlx4
-	YCKvQyEbEqIEIF/OqNQVpPTefv/w8eEy+myzhth97x5q51fIjPZmA6cdNxBotuwi+g81gmJkPd4
-	oFlwbOyqtj0+YPgc1vqLXxXRwt5QWEtkOBfGG8i6x47I7FFxhD9Gorb6rITnZH+IzNrlLT9Qv0b
-	dq8TGaPLHxhpFSQIfY=
-X-Received: by 2002:a17:902:ec92:b0:2c6:afdd:e62e with SMTP id d9443c01a7336-2c7c5156f0emr1179185ad.14.1782179205657;
-        Mon, 22 Jun 2026 18:46:45 -0700 (PDT)
-Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c7436af54dsm92530885ad.11.2026.06.22.18.46.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2026 18:46:45 -0700 (PDT)
-Date: Tue, 23 Jun 2026 01:46:41 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Desnes Nunes <desnesn@redhat.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	stable@vger.kernel.org, baolu.lu@linux.intel.com, dwmw2@infradead.org
-Subject: Re: [PATCH] iommu/vt-d: Fix UCTP context table slot when copying
- root entries
-Message-ID: <ajnlKDglN6wEBBrS@google.com>
-References: <20260622133540.48591-1-desnesn@redhat.com>
+        d=1e100.net; s=20251104; t=1782179702; x=1782784502;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lkITz2dGNs54nij5ccY4KCvNRYJG4BpFQmrxgUXzmOc=;
+        b=pZyj1vXE6qKCxteT8Ph/eXokJvDQ2JTG8lwSCwjRib51trSo8KVT0kdwwwbWWjQ7t0
+         doAMe74z7zsua8vvUj5M9TQYhyThMdiNDR9G2kg3d+mTPMiaQj1I5oZx8B1RB3xQcN6z
+         cwxGRc5DBg34kjNMBLH/QdKyMyfLDBuUOnw5quuGyBO6B0zb/yCYYg+5i278S2zYs2/1
+         RYSZHiCg1MeYDcvfUeh1P8vw9t+AwUujykiu8WAoLL/GMuijXKgFBcq6dx2cUNxJ7/GD
+         FhwM+HUeWT7g/v0etsjBlhWFEpvsteVgU0IeiEMvA3mSmVb1Q2Qt8snu0H0WhVT3SObt
+         Lm5A==
+X-Forwarded-Encrypted: i=1; AFNElJ9JlNdxNqm1Wj8sdVKS36o/XTebdC5MPf9nRPP900qNgaSRMblWRoU6901j5L5Q7BuZNizing==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyh++c3UHKJD3VKldatZ2hJH4pweDLQdQZ3aRWqm1+vKpeTXsO2
+	0ZO/WF0xEcTVMEiC00zqMUocGKQju3ZiFZ1MsdJakt0I1UePQaWSg5QveYfa9f1LD27bMxkWdG4
+	jujoK3eT2unfN
+X-Received: from qtxx9-n2.prod.google.com ([2002:a05:622a:aac9:20b0:517:96a4:99ea])
+ (user=xuehaohu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:622a:2609:b0:519:89f6:6ed4 with SMTP id d75a77b69052e-51a548b6418mr13414611cf.47.1782179701475;
+ Mon, 22 Jun 2026 18:55:01 -0700 (PDT)
+Date: Tue, 23 Jun 2026 01:54:59 +0000
+In-Reply-To: <20260621222130.1667453-1-xuehaohu@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20260622133540.48591-1-desnesn@redhat.com>
+Mime-Version: 1.0
+References: <20260621222130.1667453-1-xuehaohu@google.com>
+X-Mailer: git-send-email 2.55.0.rc0.799.gd6f94ed593-goog
+Message-ID: <20260623015459.1153884-1-xuehaohu@google.com>
+Subject: [PATCH v2] dma-buf: Split sgl into page-aligned 2G chunks
+From: David Hu <xuehaohu@google.com>
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
+Cc: David Laight <david.laight.linux@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com, 
+	praan@google.com, kpberry@google.com, chriscli@google.com, 
+	sashiko-bot@kernel.org, stable@vger.kernel.org, 
+	David Hu <xuehaohu@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jun 22, 2026 at 10:35:40AM -0300, Desnes Nunes wrote:
->When translation is already enabled at boot (e.g. kdump), the vt-d driver
->copies context tables from the previous kernel's root table. In scalable
->mode, buses that only populate the upper root half (UCTP, devfn >= 0x80)
->should be written to ctxt_tbls[tbl_idx + 1] through copy_context_table().
->However, the current copy path always uses tbl[tbl_idx + 0] in this situa-
->tion. Since idx wraps to 0 at devfn 0x80 due to a zeroed LCTP, new_ce for
->LCTP will be NULL and keep pos equals to 0. Thus, UCTP entries will be co-
->pied into tbl[tbl_idx + 0] instead of tbl[tbl_idx + 1], and written after-
->wards to root_entry[bus].lo instead of .hi in copy_translation_tables().
->
->As consequence, devices on bus 0x80 with devfn >= 0x80 fail DMA with
->fault 0x39, which breaks drivers running in kernels with translation
->pre-enabled. This fixes NO_PASID DMAR faults for UCTP-only buses such as:
->
->DMAR: [DMA Read NO_PASID] Request device [80:14.0] fault addr 0xe81759000 [fault reason 0x39] SM: Present bit in Root Entry is clear
->
->Fixes: 091d42e43d21 ("iommu/vt-d: Copy translation tables from old kernel")
->Signed-off-by: Desnes Nunes <desnesn@redhat.com>
->---
-> drivers/iommu/intel/iommu.c | 10 ++++++----
-> 1 file changed, 6 insertions(+), 4 deletions(-)
->
->diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->index 4d0e65bc131d..737936f942a0 100644
->--- a/drivers/iommu/intel/iommu.c
->+++ b/drivers/iommu/intel/iommu.c
->@@ -1443,7 +1443,7 @@ static int copy_context_table(struct intel_iommu *iommu,
-> 			      struct context_entry **tbl,
-> 			      int bus, bool ext)
-> {
->-	int tbl_idx, pos = 0, idx, devfn, ret = 0, did;
->+	int tbl_idx, tbl_slot = 0, idx, devfn, ret = 0, did;
-> 	struct context_entry *new_ce = NULL, ce;
-> 	struct context_entry *old_ce = NULL;
-> 	struct root_entry re;
->@@ -1459,10 +1459,9 @@ static int copy_context_table(struct intel_iommu *iommu,
-> 		if (idx == 0) {
-> 			/* First save what we may have and clean up */
-> 			if (new_ce) {
->-				tbl[tbl_idx] = new_ce;
->+				tbl[tbl_idx + tbl_slot] = new_ce;
-> 				__iommu_flush_cache(iommu, new_ce,
-> 						    VTD_PAGE_SIZE);
->-				pos = 1;
-> 			}
->
-> 			if (old_ce)
->@@ -1484,6 +1483,9 @@ static int copy_context_table(struct intel_iommu *iommu,
-> 				}
-> 			}
->
->+			/* Track if saving UCTP or LCTP entries in scalable mode */
->+			tbl_slot = ext && devfn >= 0x80 ? 1 : 0;
->+
-> 			ret = -ENOMEM;
-> 			old_ce = memremap(old_ce_phys, PAGE_SIZE,
-> 					MEMREMAP_WB);
->@@ -1512,7 +1514,7 @@ static int copy_context_table(struct intel_iommu *iommu,
-> 		new_ce[idx] = ce;
-> 	}
->
->-	tbl[tbl_idx + pos] = new_ce;
->+	tbl[tbl_idx + tbl_slot] = new_ce;
->
-> 	__iommu_flush_cache(iommu, new_ce, VTD_PAGE_SIZE);
->
->-- 
->2.54.0
->
->
+Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
+This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
+first entry, resulting in non-page-aligned DMA addresses for all
+subsequent entries.
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+While the underlying IOMMU mapping may be contiguous, hardware
+DMA engines often require explicit address alignment (e.g., page,
+cacheline, or storage sector boundaries). Passing unaligned
+addresses and lengths can cause explicit failures in DMA descriptor
+creation or silent data corruption if lower unaligned bits are
+truncated.
+
+Fix this by splitting the scatterlist into 2G chunks. An alternative
+previously considered was to use the largest page aligned chunk within
+`UINT_MAX` (`ALIGN_DOWN(UINT_MAX, PAGE_SIZE)`) to satisfy page
+alignment. A 2G chunk is better as it naturally aligns with most known
+hardware boundaries, while also allowing compiler optimizations with
+simple bit shifts. This ensures all scatterlist DMA addresses and
+lengths remain page aligned and satisfy hardware constraints.
+
+Page-aligned entries allow the system to cleanly chunk payloads into
+PCIe MaxPayloadSize (MPS) (e.g., 128 bytes, 256 bytes, 512 bytes).
+As a result, this may help reduce TLP fragmentation in P2P transfers
+and alleviate potential congestion within a logical PCIe switch
+partition, especially when Relaxed Ordering is not possible due to
+hardware constraints.
+
+Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+Closes: https://lore.kernel.org/all/20260609165431.778061F00893@smtp.kernel.org/
+Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
+Cc: stable@vger.kernel.org
+Signed-off-by: David Hu <xuehaohu@google.com>
+---
+ Changes in v2:
+ - Updated commit title and message to reflect the switch to 2G chunks
+ - Switch to using 2G as the max sg entry size as it naturally aligns
+   with most hardware boundaries, while allowing compiler optimizations
+   with bit shifts (David Laight)
+ - Optimized away division calculation for `nent`, and multiplication
+   calculation for sgl address, by dropping the `for` loop in favor of a
+   `while (length)` loop (David Laight)
+ - Dropped `min_t` in favor of `min()` to maintain a strict type
+   checking safety net (David Laight)
+
+ drivers/dma-buf/dma-buf-mapping.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
+index 794acff2546a..2d88e08c5ebf 100644
+--- a/drivers/dma-buf/dma-buf-mapping.c
++++ b/drivers/dma-buf/dma-buf-mapping.c
+@@ -5,16 +5,17 @@
+  */
+ #include <linux/dma-buf-mapping.h>
+ #include <linux/dma-resv.h>
++#include <linux/sizes.h>
++
++#define MAX_SG_ENT_SZ ((size_t)SZ_2G)
+ 
+ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+ 					 dma_addr_t addr)
+ {
+-	unsigned int len, nents;
+-	int i;
++	size_t len;
+ 
+-	nents = DIV_ROUND_UP(length, UINT_MAX);
+-	for (i = 0; i < nents; i++) {
+-		len = min_t(size_t, length, UINT_MAX);
++	while (length) {
++		len = min(length, MAX_SG_ENT_SZ);
+ 		length -= len;
+ 		/*
+ 		 * DMABUF abuses scatterlist to create a scatterlist
+@@ -24,11 +25,12 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+ 		 * does not require the CPU list for mapping or unmapping.
+ 		 */
+ 		sg_set_page(sgl, NULL, 0, 0);
+-		sg_dma_address(sgl) = addr + (dma_addr_t)i * UINT_MAX;
++		sg_dma_address(sgl) = addr;
+ 		sg_dma_len(sgl) = len;
++		addr += len;
++		/* Unconditionally advance. On last segment, this becomes NULL */
+ 		sgl = sg_next(sgl);
+ 	}
+-
+ 	return sgl;
+ }
+ 
+@@ -41,14 +43,14 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 
+ 	if (!state || !dma_use_iova(state)) {
+ 		for (i = 0; i < nr_ranges; i++)
+-			nents += DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
++			nents += DIV_ROUND_UP(phys_vec[i].len, MAX_SG_ENT_SZ);
+ 	} else {
+ 		/*
+ 		 * In IOVA case, there is only one SG entry which spans
+ 		 * for whole IOVA address space, but we need to make sure
+ 		 * that it fits sg->length, maybe we need more.
+ 		 */
+-		nents = DIV_ROUND_UP(size, UINT_MAX);
++		nents = DIV_ROUND_UP(size, MAX_SG_ENT_SZ);
+ 	}
+ 
+ 	return nents;
+-- 
+2.55.0.rc0.799.gd6f94ed593-goog
+
