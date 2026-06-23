@@ -1,111 +1,152 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF38930C164
-	for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 17:08:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB633ACA74
+	for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 20:56:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782234496; cv=none; b=IgKzx2qifKe3iWUxSrozUrGDcfsgfRxSCS6G1isUsufTfthYkXYo4ZwrAgTgw8wC7FSflHHUEuGZBnLLCBbU0BRVGG7RK42nknAWhWP3xkWFHksXtKXHZnIz9pyUUx5fwTFokzgGLAItAniuGcHXbth3+ryW5pGeUM2FaYLRqHc=
+	t=1782248188; cv=none; b=Dz5EzL5sBIuaeNhLSLokgqwLhw37Vn+LAdrzpEM35bAW6MYyAwl5u+ijYrFh8GLmoG9hxKlmcvHduCAgNnVmGrGoaIoMDGzOexhfPvpNqQ0A1iSYjUx41c3sWh91PRhkmu3KXe1jRLEisx/Wu89lFoHIzTKdgpCcKdnLcogxxB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782234496; c=relaxed/simple;
-	bh=ADQsnugpFHOxuOxzTph2IW6GGFQJ6O5IwKd6BdjGweM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GlbclNRrg7+lonmcZMwpsut7jRB8sq9f8DqXFvBwT+mMy5S3MtF3He96yAolWhD0zBxcjtXjWUxR2gVkpyog8D3Xb5MEltj/ZAJtviRKvbTrtqIdK9xNtbnOCX26ChXuc+o90KHzOBK9/g63Pg7QL83Dm84Omdm3nwWOtUFUxGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=QhyoxRA7; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1782248188; c=relaxed/simple;
+	bh=G82PIGobVIM5hrjzCuF1CpVGWo8L2z/ATglE9QG7wqI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HHJZf3lkkRQoGh6ZQNpy7QRSEMXroWOssoRBDVn3MucERMWc8j6ZQ+CQAUExpGn4q/JlKEj2cm6hpjiEAMrqdzdMklNv3xUnHmvIEVQkxhSQIGsYkTmseKipKSBevpY9gkfmo4E/eBQ+FcJNZhszU+hdOO5mGWvXQackXse82dM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=V8dKMGXB; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="QhyoxRA7"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3F22B14BF;
-	Tue, 23 Jun 2026 10:08:08 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34D7B3F62B;
-	Tue, 23 Jun 2026 10:08:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1782234492; bh=ADQsnugpFHOxuOxzTph2IW6GGFQJ6O5IwKd6BdjGweM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=QhyoxRA7HjCf8/agBkdHSW4FjaPUxoIO2W2pmMUtZ318jEYJfOnK/ZBEtsdyTPH7T
-	 ACSjdThyLAFzSuwkDruxCYsK2sQRa3zvNt2wpaZh1LamZmZYEAAW5MNvJa5gr7cAtC
-	 wyU0cVSBm5o6W/adqj6i8O6EXBxX4UuqBLYxrA7Y=
-Message-ID: <3463e5cf-05d3-4e4b-ac22-699e5f95589b@arm.com>
-Date: Tue, 23 Jun 2026 18:08:08 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="V8dKMGXB"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2c6b7bd4e8dso13995ad.0
+        for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 13:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1782248186; x=1782852986; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=tDNBIwJuw+D53Ki5EAv9tDfTFhNZX4Fj7K/EJveLoSA=;
+        b=V8dKMGXBICi7iwRItaZX7AlwMek1ZEG0MEUMqcPIDQz8RKIOwoJ/5ReaDN6FDxJxW+
+         OS+Va7pkHAn83dyi5haGPaTaUCgelaH5lrwtcnfhLEd3CaM5MfTKRKE7mbIk/22+I37j
+         ZIm/q5ut9sJ0hPnBTYecXyg3azwS/yetQ7L78/OTAIXevceN7xAQGL2bn8wXPRZNXMJZ
+         28INKxtUbi1U+Qwkb26R6ROePxFcbpgpxwO0NVyrPTnNYPceJOzIQsXEBzYC3MQKbCQ6
+         NKsEQr3jZ5LCuYy9OXryH1LrAZv5822lhX0RCtoluPjaWRipYia8KuuBDoj/YsNNAJ5X
+         /CTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782248186; x=1782852986;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tDNBIwJuw+D53Ki5EAv9tDfTFhNZX4Fj7K/EJveLoSA=;
+        b=DLr+6AeV1Ay+1S0TQl+ncB9M5lZ3/7ldSV92EOOhO5SBRKcpQod+hMDbpftxlFVC1i
+         p1cmRlUb0ByLh9ke4VUJ4hc55YmAdIgJJY2aMoC00Ttx+iCmP5Oxcj+5mDDOucfovG+q
+         cKcQQQ8J0iMgmBGZISQzbdy2HeUo0X7WDRKSXoB3I7IC+Hy79fRCgkhH/LAxPG1r0Ro+
+         JXRVpAU3Dy0OQMX4QlGEt7AwMyaywksUGPqH+huGZ1bp1/QDcg8oYaH2Hr9ekGoFxaCT
+         qvtibZwwLIqxo69elGJKsQEYHilIaGVDvOWYsKQTiS2XvgSMB/vV0nnI73obgrtrTO0R
+         IHSg==
+X-Forwarded-Encrypted: i=1; AHgh+RouG5LNGAd9kW52pjhkaEyCVfZcRrexBLuAQjqv7dhb9Y9nA2zVBCZ4PRAxqo/dsvIhpG+mIw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzPUXCEVMa2tXw/GXIz5hwkmQaDM67FEY8xuoFEQw1XkQZ8Pzyu
+	Taqh9CXk4PLnL4apX29KpOX9hPm7EmZVdbDeMD/LtXnYA7Sm9SCXDI2Iy84yTz4RsQ==
+X-Gm-Gg: AfdE7ckUh3spJuS0XXE6Ps6KAX5AScO9iPGVYbzDN7iBFttYfTrlh5ZwlvO5rw4WBIb
+	kuGTQAz3MR79i08hc6Pq+EEdEoS+eqqpJPdoW6KEkgtu6A63yy0CXki002d5cWnwpcLghXtFRUD
+	xeUKFc/o7S78BR2KW/BrguMO0Ma6w9TKKddHxTTy2CQxOvpAUN6Xx7kB3xsYSWVHEHef+owgVHC
+	+B49DR3blfVLk4cM+4gU+nE7edGDw/iYzZxMdZ0Z8Qs8Rfx7G+uwWLkB9OAR2nDvI908/UTB6ja
+	ytR5S6WSk1eFyAEzLqiee39ZgX1joTSyPbhN8XmeJ1Zs1Bbb6r4iAV6/Og/8hN73SlUk7OvbJ10
+	nLhvtvIlpPb+f5JNDGW5UT65bSoqT6zozmi+EP3jcf0Q2oHdG7IyMcoru2STBAJd6Xu5DaR+giH
+	zIa5UspllhQZ7IGR2Ce4J7rVZcqU2z5X7GRvtiVc8l3D6GFIubYA==
+X-Received: by 2002:a17:902:f689:b0:2bf:3741:5b76 with SMTP id d9443c01a7336-2c7e26b7724mr203255ad.3.1782248140960;
+        Tue, 23 Jun 2026 13:55:40 -0700 (PDT)
+Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-845a40d1b0fsm54433b3a.28.2026.06.23.13.55.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2026 13:55:40 -0700 (PDT)
+Date: Tue, 23 Jun 2026 20:55:32 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: David Laight <david.laight.linux@gmail.com>
+Cc: David Hu <xuehaohu@google.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
+	Leon Romanovsky <leon@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	jmoroni@google.com, kpberry@google.com, chriscli@google.com,
+	sashiko-bot@kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] dma-buf: Split sgl into page-aligned 2G chunks
+Message-ID: <ajryxMaT5evDUxaq@google.com>
+References: <20260621222130.1667453-1-xuehaohu@google.com>
+ <20260623015459.1153884-1-xuehaohu@google.com>
+ <20260623094446.4a8fc2ed@pumpkin>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 6/8] iommu/qcom: Add NULL ctx check in TLB invalidation
- paths
-To: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260623122034.1166295-1-mukesh.ojha@oss.qualcomm.com>
- <20260623122034.1166295-7-mukesh.ojha@oss.qualcomm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260623122034.1166295-7-mukesh.ojha@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260623094446.4a8fc2ed@pumpkin>
 
-On 23/06/2026 1:20 pm, Mukesh Ojha wrote:
-> to_ctx() returns qcom_iommu->ctxs[asid], which can be NULL if the
-> corresponding context bank failed to probe or was already removed.
-> qcom_iommu_tlb_sync(), qcom_iommu_tlb_inv_context(), and
-> qcom_iommu_tlb_inv_range_nosync() all dereference the returned pointer
-> directly, risking a NULL pointer dereference.
+On Tue, Jun 23, 2026 at 09:44:46AM +0100, David Laight wrote:
 
-But if there's no context bank, then how has a domain been allocated in 
-order to permit io-pgtable operations that would eventually call into 
-qcom_flush_ops at all? Can you please clarify whether you've actually 
-observed a real-world issue here, and if so how?
+Hi David,
+
+> On Tue, 23 Jun 2026 01:54:59 +0000
+> David Hu <xuehaohu@google.com> wrote:
+> 
+> > Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
+> > This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
+> > first entry, resulting in non-page-aligned DMA addresses for all
+> > subsequent entries.
+> 
+> There is a separate issue of whether this code is even needed at all.
+> Where can transfers over 2G (never mind 4G) actually come from.
+> 
+> The read, write and similar system calls limit transfers to INT_MAX
+> (even on 64bit) and a lot of driver code will need fixing it longer
+> lengths are allowed though.
+> io_uring better enforce the same limits.
+> So the transfers can come directly from userspace.
+> 
+> Not only that but you also need a single physically contiguous buffer.
+> Good luck allocating that!
+> 
+> Now maybe there are some peer-to-peer places where the large buffer
+> is device memory, but they will be unusual and probably need
+> special treatment anyway.
+> 
+
+I agree that traditional VFS read/write face the MAX_RW_COUNT limit 
+(~2GB), and io_uring has its limits, but I'm a little confused by the
+push to enforce these limits here in the SGL code?
+
+File I/O seems to be only one side of the picture. In my view, this fix
+is necessary and certainly has a use-case:
+
+For example, the RDMA subsystem has the capability to import dmabufs [1],
+which gives rise to use cases for dmabuf beyond standard file ops 
+(via VFS/io_uring). 
+
+In these scenarios, GPU HBM can be exported as dmabufs. With recent GPUs,
+HBM capacity can be in the order of hundreds of GBs [2]. RDMA can employ
+infrastructure like the vfio-dmabuf-exporter [3] or similar dmabuf 
+exporters to frequently move huge blocks of data via P2PDMA.
+
+If we restrict incoming dmabuf transfers to fit within VFS-centric 
+limits (2GB), we impose unnecessary overhead on the RDMA stack, forcing
+it to manage a significantly higher number of memory registrations. By 
+cleanly splitting these massive contiguous device buffers into 
+page-aligned SGL entries, we directly improve the efficiency of P2P 
+transfers and memory registration.
+
+Since this change doesn't seem to have a negative impact on standard file
+I/O or break existing VFS constraints, I'm curious why we shouldn't 
+support splitting these >4GB P2P transfers? Am I missing something?
 
 Thanks,
-Robin.
+Praan
 
-> Add WARN_ON(!ctx) guards with continue so TLB operations skip
-> broken context banks without crashing.
-> 
-> Signed-off-by: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-> ---
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> index 40fb0408dc07..51b60b296bb8 100644
-> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> @@ -121,6 +121,9 @@ static void qcom_iommu_tlb_sync(void *cookie)
->   		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
->   		unsigned int val, ret;
->   
-> +		if (WARN_ON(!ctx))
-> +			continue;
-> +
->   		iommu_writel(ctx, ARM_SMMU_CB_TLBSYNC, 0);
->   
->   		ret = readl_poll_timeout(ctx->base + ARM_SMMU_CB_TLBSTATUS, val,
-> @@ -138,6 +141,10 @@ static void qcom_iommu_tlb_inv_context(void *cookie)
->   
->   	for (i = 0; i < fwspec->num_ids; i++) {
->   		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-> +
-> +		if (WARN_ON(!ctx))
-> +			continue;
-> +
->   		iommu_writel(ctx, ARM_SMMU_CB_S1_TLBIASID, ctx->asid);
->   	}
->   
-> @@ -157,6 +164,9 @@ static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->   		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
->   		size_t s = size;
->   
-> +		if (WARN_ON(!ctx))
-> +			continue;
-> +
->   		iova = (iova >> 12) << 12;
->   		iova |= ctx->asid;
->   		do {
-
+[1] https://elixir.bootlin.com/linux/v7.1.1/source/drivers/infiniband/core/umem_dmabuf.c#L174 
+[2] https://nvdam.widen.net/s/fdvdqvfvj2/hopper-h200-nvl-product-brief (Table 2-2)
+[3] https://elixir.bootlin.com/linux/v7.1.1/source/drivers/vfio/pci/vfio_pci_dmabuf.c#L297
