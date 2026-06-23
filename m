@@ -1,127 +1,165 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 882FA384CEE
-	for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 00:36:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C258740D56A;
+	Tue, 23 Jun 2026 00:55:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782174992; cv=none; b=cg8dhr0lOttkfEL3QBTAHwfs2UZnEc9yvHVHKPAh46o8F0zppywDjz3LfBdq0qmP5MWCUrHVjn943M0p99OQEoQBlwP5JzlBd6mkckpU2OCmeW/0Ev8WO+O/JGDPryYsKP2ncSsBvWEz+bzW5eTy+XQtJC/ly3ZF/hu12RI1ooE=
+	t=1782176159; cv=none; b=j0btPHUQl6kd/KiUkuxz3rBzjYj8IKz7Oh51Q7oowYSVHl/EtovT8zX0hCEQx7o16OKcfB9ilynInll/IrhLCX9hUAC8mi+4ifqWPS9Fs55/8HNA9R4FtwDC9GNciBdl0ByVlcF1V4d/ZAuyc0jGkIDgPJIxr90nRBFRz4eTYis=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782174992; c=relaxed/simple;
-	bh=PUnUxYHmCp3aaAbqKD/kYlXYduXizBmSoeU75lfmYqM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kVN/uu/438EP8Pf/f8XVV1PZsl4RXZ3usKVNriQlZ/oN5r56G0UMueX7Ph61Tr9SonNE42Lc8TqS08nPg3dU5hKPNvB55cFWwWvOM+HRRhNQj+denD0etPQzOjLudHq4eAdtw/aKUANYO8dQYVDNXjkg7CBga4iEg9isOJwApJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=imL6HxfU; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1782176159; c=relaxed/simple;
+	bh=O3h+r3KMVJ2BTpp0cvTdaW3R2CnFXiiBiYPuDmFfHv0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=qb2nKIQMllQjQWLKN/UMjkCkhVsEMJXtlGsG7hqT9pCVXL8rP5oBOXnTiNO/k0AnVkcEPpWj5iejNetAiMlX48nydZdRqxoW1Q/aKoh2p4dOcmvvkon3hIxze3kwd4fjzgkgJ1+euo1/47d87D/xPfnuiTYo0bMHGPEsPitWaY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I1KDKWzZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="imL6HxfU"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2c6b7bd4e8dso20045ad.0
-        for <iommu@lists.linux.dev>; Mon, 22 Jun 2026 17:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782174990; x=1782779790; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Q1m/UZ+tyAY37uB0UHTmcmll3+MuVllAAR/s1gutk68=;
-        b=imL6HxfUF+UzxWcMKu9fsuuQFgfaO/5vcY8KNLKOa+cS1W5CuoL0IMUcz9+wlgG/04
-         cHdHoYAQK9jRPtfXHsVh6mC650+BPM0109W1fSfyHLkWDVw8Bu8iawvYHXqX8BzugJK8
-         6r0na5GH8caNDrw6bobYvhiRLFISpYijKwkfWvHTkYkOFNgduEarR72a37ILWlG1i+Yq
-         9+xL7cYI1Gblohtt3EeWJvdUaYRIG4v/zZ4gTZJ2qiyIiBs3z0x1z1M/Lu9cHvzw0eG0
-         t/JCJG7reUZrHyy/2vZmBP6wzd1/p/aXBo0aMgF13qesgfB5gl9j3rYfW5ltvroMoVqx
-         X8Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782174990; x=1782779790;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Q1m/UZ+tyAY37uB0UHTmcmll3+MuVllAAR/s1gutk68=;
-        b=RVD5QEityTXr4BHkFMKZtMMThkmCls4v1ddUMsHFTTzTty7OJNxoCmf9xqgC92gntr
-         HlvG23uY6DdVHRSOonP+toWZDAtb+7jrZMc7jQZPN6KfDyasEfdeDVTw2PmmK3TeXu18
-         W4ixH0wiXKq6c6Yh1/c7qcfVYbK8uCsq6tBk27NxWABmyRc5isK0vyF3H9fgDFrwM83U
-         Y0PT8ne8xywl2j0rr6xm0+iu+ejcg3WKdxUjx6WpFEJjw8ELetnR+z1DpM14KGrjKiUU
-         +98KiVgVwBFXIdLQz39jY0FKaDZEftL+/TCWIuIN3FkF7nF8bm0DTKcpHi3Xp47WPXNp
-         r1Yg==
-X-Forwarded-Encrypted: i=1; AHgh+RrcSGYiGiepl19b8Oj0mw7Np2NThRqf/z/F2iLignz+qIDDn4TbGWV3wdJeBe8ohG4g2x3reA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgFgc1qfw2z+HJKH2sVuDcPR/UWlTwUtj816qECvqlc6O/gjhW
-	0pgdVlLjDxFqab7lxdv7OdtNxZb5ZQVifNt3E18lzrbSXYf7gMKlv0ir7vXxrcKYkw==
-X-Gm-Gg: AfdE7cl5ojzDHkToFwVyF/Ta91iLv9+gMoGmI9xR6JQ1gBdLUwO0eiQSNKfnw+Bc48b
-	4lIFh1gc3DduUexmvD50gw8rIg2aCxJYHVzB22szpkqO/W9Rq5CMdCjgCck77noD6Y5Xn1Fz6qd
-	chxMXiPVuY3a3IEj7nTMvRILPhC2ZZXWtRQS6+Jq654Fh0IeVYLRXYcPzbsggqfp6hOtwlj+gbk
-	cPLjHK+UeHy69ivXTGojTFpgjguNKwhTYHwwtqumOavVASgx9s/D7bJtP0ia+dKlUt1BOTXK37n
-	XOxDeC9dhq7CBzoiF8CXvKtCNyHvYi+ny3lUKLRYDpIO1C6eoq8Slr7jpugTx4U3AaKgoDvXBuJ
-	8h30WxBnqh5ToHNd2Z4U+3WuhC0ZhJf7NGZ6yAH50/wfOs8dJ+/Q9DuZat1TZMhNqtuVcRZG8Dq
-	lYnWrmpUWcNraEqmrWkCIhqXmftze0BbFLG9PLFPlKJgRtvbtvf3P/6Jaumv61SBitRCyFm8TAb
-	PsBvE5X
-X-Received: by 2002:a17:902:f710:b0:2bf:749:551 with SMTP id d9443c01a7336-2c7c528b0f1mr1135025ad.22.1782174989106;
-        Mon, 22 Jun 2026 17:36:29 -0700 (PDT)
-Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84564e9dab2sm8963719b3a.41.2026.06.22.17.36.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2026 17:36:28 -0700 (PDT)
-Date: Tue, 23 Jun 2026 00:36:25 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v3 13/18] iommu/vt-d: preserve PASID table of preserved
- device
-Message-ID: <ajnS4Pjb1Sld1jrn@google.com>
-References: <20260614233728.2212104-1-skhawaja@google.com>
- <20260614233728.2212104-14-skhawaja@google.com>
- <8b1076ea-022c-42f2-8fbb-f55cd30b4b3d@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I1KDKWzZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4974DC2BCC9;
+	Tue, 23 Jun 2026 00:55:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1782176159;
+	bh=O3h+r3KMVJ2BTpp0cvTdaW3R2CnFXiiBiYPuDmFfHv0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=I1KDKWzZ05p2vEB9ZiL8dlaQ3Sv2kboq9k/QGP9FkaFIVFuhBXqU5q64AfynPYREy
+	 6GSbxaQY7NqW+0Dtkrh/OTpNVXtvQaOlCPvgHbDT1zoCKO6eTJuomRf/+V1juEBsON
+	 E6X9tKDK91rDM/C4lRmRbWrSpl+54SZf7V3H+pfOlYFet0fr53lShb8nZjTGEvLEcr
+	 vPvqIx2c9NEYf2RVAOy7Qt9jl3aI4/rpGYJqEakwigcxI+SgxGPv90WIr3lhjurtFQ
+	 fFQ0ujpsPYMjQW8Xgi4S/oXq/hYGzVCX9V9LIU6NMRyLBJhVsJ9xz+XKgGGyTVFBVf
+	 JJCMgy1ksqBCA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3191FCDB466;
+	Tue, 23 Jun 2026 00:55:59 +0000 (UTC)
+From: Esteban Urrutia via B4 Relay <devnull+esteuwu.proton.me@kernel.org>
+Date: Mon, 22 Jun 2026 20:54:22 -0400
+Subject: [PATCH 1/8] clk: qcom: dispcc-sm8450: Fix mdss clocks
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <8b1076ea-022c-42f2-8fbb-f55cd30b4b3d@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260622-sm8450-qol-v1-1-37e2ee8df9da@proton.me>
+References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
+In-Reply-To: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ linux-phy@lists.infradead.org, Esteban Urrutia <esteuwu@proton.me>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782176157; l=4544;
+ i=esteuwu@proton.me; s=20260622; h=from:subject:message-id;
+ bh=Nkcn4urkSzO8xVsWhGDA3qPh5MIpKzECwfoMwJPmbeM=;
+ b=2VndCX5WEP4sJ4zXlSVdNf635h5yO9ULJwd3imAAL8DT4Qlqv9EG9o460Gip0qDb6BehVETmC
+ FjFevWKU9cfAwmUzfu0xC5f54vhpTPpbqMj+09WbWfzlJO1fcCFheS3
+X-Developer-Key: i=esteuwu@proton.me; a=ed25519;
+ pk=wToFt4mOAWkzbqb15Ye1hrhevI13vK9BcMUFiQ/me1M=
+X-Endpoint-Received: by B4 Relay for esteuwu@proton.me/20260622 with
+ auth_id=835
+X-Original-From: Esteban Urrutia <esteuwu@proton.me>
+Reply-To: esteuwu@proton.me
 
-On Mon, Jun 22, 2026 at 02:01:09PM +0800, Baolu Lu wrote:
->On 6/15/26 07:37, Samiullah Khawaja wrote:
->>diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->>index 89541b74ab8c..5cac8e95f73b 100644
->>--- a/drivers/iommu/intel/pasid.c
->>+++ b/drivers/iommu/intel/pasid.c
->>@@ -60,8 +60,11 @@ int intel_pasid_alloc_table(struct device *dev)
->>  	size = max_pasid >> (PASID_PDE_SHIFT - 3);
->>  	order = size ? get_order(size) : 0;
->>-	dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
->>-					1 << (order + PAGE_SHIFT));
->>+
->>+	dir = intel_pasid_try_restore_table(dev, 1 << (order + PAGE_SHIFT + 3));
->>+	if (!dir)
->>+		dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
->>+						1 << (order + PAGE_SHIFT));
->>  	if (!dir) {
->>  		kfree(pasid_table);
->>  		return -ENOMEM;
->
->This reads as if PASID table restoration fails, it tries to allocate a
->native PASID table instead. This doesn't match my understanding. It
->would be a disaster, and the system should panic if the table
->restoration fails. Or is there something I'm overlooking?
+From: Esteban Urrutia <esteuwu@proton.me>
 
-Your understanding is correct, and that is exactly what
-intel_pasid_try_restore_table() does if the device state was preserved.
-If the restoration fails, it fails hard with a panic.
+Both of these changes allow the framebuffer to show upon boot and let
+the mdss driver take over afterwards.
+Before, none of these actions were possible. Only mdss takeover was
+possible, but screen had to be turned off first.
 
-The reason I have _try_ in the name is to account for devices that
-simply have no preserved state to begin with. In that case, a new PASID
-table needs to be allocated.
+OLE configuration may have been a misinterpretation... that's not
+something that's done on the downstream driver.
 
-I agree the naming makes it sound like we ignore restoration failures. I
-will rename the function to make this less confusing in v4.
->
->Thanks,
->baolu
+Changing disp_cc_mdss_mdp_clk_src from clk_rcg2_shared_ops to
+clk_rcg2_shared_no_init_park_ops fixes this warning as well:
+
+[    0.075780] ------------[ cut here ]------------
+[    0.075791] disp_cc_mdss_mdp_clk_src: rcg didn't update its configuration.
+[    0.075812] WARNING: drivers/clk/qcom/clk-rcg2.c:136 at update_config+0xd4/0xe4, CPU#3: swapper/0/1
+[    0.075840] Modules linked in:
+[    0.075856] CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Tainted: G S                  7.1.0-rc2+ #320 PREEMPT
+[    0.075870] Tainted: [S]=CPU_OUT_OF_SPEC
+[    0.075877] Hardware name: Motorola ThinkPhone by motorola (DT)
+[    0.075887] pstate: 61400005 (nZCv daif +PAN -UAO -TCO +DIT -SSBS BTYPE=--)
+[    0.075897] pc : update_config+0xd4/0xe4
+[    0.075906] lr : update_config+0xd4/0xe4
+[    0.075914] sp : ffff80008005b9f0
+[    0.075921] x29: ffff80008005ba00 x28: 0000000000000004 x27: ffff000782892200
+[    0.075937] x26: ffff0007823a46c0 x25: 0000000000000004 x24: ffffffffffffffff
+[    0.075953] x23: ffff0007823a0240 x22: ffffdbc0a0940220 x21: ffffdbc0a0940220
+[    0.075967] x20: ffffdbc0a0dcb388 x19: 0000000000000000 x18: 0000000000000048
+[    0.075981] x17: 0000000000000014 x16: 0000000000010008 x15: fffffffffffea870
+[    0.075996] x14: ffffdbc0a0c5d580 x13: ffffdbc0a0c5d600 x12: 00000000000001ee
+[    0.076010] x11: fffffffffffea870 x10: fffffffffffea828 x9 : ffffdbc0a0c5d600
+[    0.076024] x8 : 3fffffffffffefff x7 : ffffdbc0a0cb5600 x6 : 00000000000001ef
+[    0.076038] x5 : 3ffffffffffff1ee x4 : 00000000000001ee x3 : 0000000000000000
+[    0.076052] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff00078066adc0
+[    0.076067] Call trace:
+[    0.076074]  update_config+0xd4/0xe4 (P)
+[    0.076085]  clk_rcg2_shared_disable+0x50/0x80
+[    0.076096]  clk_rcg2_shared_init+0x10/0x20
+[    0.076107]  __clk_register+0x1b4/0x9ec
+[    0.076118]  devm_clk_hw_register+0x5c/0xd4
+[    0.076128]  devm_clk_register_regmap+0x44/0x84
+[    0.076139]  qcom_cc_really_probe+0x304/0x514
+[    0.076149]  disp_cc_sm8450_probe+0x104/0x200
+[    0.076160]  platform_probe+0x5c/0xa4
+[    0.076172]  really_probe+0xbc/0x2ac
+[    0.076182]  __driver_probe_device+0x80/0x154
+[    0.076193]  driver_probe_device+0x3c/0x184
+[    0.076203]  __driver_attach+0x90/0x18c
+[    0.076213]  bus_for_each_dev+0x7c/0xdc
+[    0.076224]  driver_attach+0x24/0x30
+[    0.076233]  bus_add_driver+0xe4/0x20c
+[    0.076243]  driver_register+0x68/0x130
+[    0.076251]  __platform_driver_register+0x20/0x2c
+[    0.076260]  disp_cc_sm8450_driver_init+0x1c/0x28
+[    0.076273]  do_one_initcall+0x60/0x1d4
+[    0.076287]  kernel_init_freeable+0x24c/0x2d4
+[    0.076299]  kernel_init+0x24/0x140
+[    0.076311]  ret_from_fork+0x10/0x20
+[    0.076323] ---[ end trace 0000000000000000 ]---
+
+Signed-off-by: Esteban Urrutia <esteuwu@proton.me>
+---
+ drivers/clk/qcom/dispcc-sm8450.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/clk/qcom/dispcc-sm8450.c b/drivers/clk/qcom/dispcc-sm8450.c
+index 2e91332dd92a..b99d3eb5e195 100644
+--- a/drivers/clk/qcom/dispcc-sm8450.c
++++ b/drivers/clk/qcom/dispcc-sm8450.c
+@@ -614,7 +614,7 @@ static struct clk_rcg2 disp_cc_mdss_mdp_clk_src = {
+ 		.parent_data = disp_cc_parent_data_5,
+ 		.num_parents = ARRAY_SIZE(disp_cc_parent_data_5),
+ 		.flags = CLK_SET_RATE_PARENT,
+-		.ops = &clk_rcg2_shared_ops,
++		.ops = &clk_rcg2_shared_no_init_park_ops,
+ 	},
+ };
+ 
+@@ -1824,8 +1824,8 @@ static int disp_cc_sm8450_probe(struct platform_device *pdev)
+ 		disp_cc_pll1.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE];
+ 		disp_cc_pll1.clkr.hw.init = &sm8475_disp_cc_pll1_init;
+ 
+-		clk_lucid_ole_pll_configure(&disp_cc_pll0, regmap, &sm8475_disp_cc_pll0_config);
+-		clk_lucid_ole_pll_configure(&disp_cc_pll1, regmap, &sm8475_disp_cc_pll1_config);
++		clk_lucid_evo_pll_configure(&disp_cc_pll0, regmap, &sm8475_disp_cc_pll0_config);
++		clk_lucid_evo_pll_configure(&disp_cc_pll1, regmap, &sm8475_disp_cc_pll1_config);
+ 	} else {
+ 		clk_lucid_evo_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
+ 		clk_lucid_evo_pll_configure(&disp_cc_pll1, regmap, &disp_cc_pll1_config);
+
+-- 
+2.54.0
+
+
