@@ -1,33 +1,33 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E5A53D566E
-	for <iommu@lists.linux.dev>; Tue, 23 Jun 2026 12:22:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 559B72DCC1C;
+	Tue, 23 Jun 2026 15:40:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782217382; cv=none; b=rYr96bHnmBigRS2TnYFVpanhOrK4IHq4dHFOSf/jVXXEsY+ZbykUQboDqVOl7OaPXUyP0ts4/bLCvC5mTl64ngAU7+IXVKcd8Ahgve2QMRPLwPcUtXr7onNQLBNMqwxczQidrvw2tRJR5wQuDTvLG0ek5VDAigs+k8hQ1dM1uIM=
+	t=1782229206; cv=none; b=Lx5kR/IZYVH02fFt5qfoXc9CjEiY2D466NMxOWSpLACYf+hho2R14BrFCn2EIzUTDpfcir7ongNtxGCJORns8iPtUgBw06vzt4Z8IIRJQfny1eG0g52BiEtzLnfCOVkYgMZR0ZIhB3pyGVAXkzuTLhbIEojJpTrweG2+JZ2tiWM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782217382; c=relaxed/simple;
-	bh=AS3ac8Xg+L+HLbpB75f/tFX26Y7zBshQVYWslZ0Kumo=;
+	s=arc-20240116; t=1782229206; c=relaxed/simple;
+	bh=6cX12bYt5lU2zEEuwgsiF4sysItirmoUNcjgrKhWcFY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KoDmDxWxjNuhpSMP751RT0Wcv8RAaYYBGx1w+UxEPn9Wrj3uJiS0i0RP9suYpua1BiFiXhEuBblGsIwex5/iKm01KHq6YRRAPsFAplAnXWM/6G5XOtOkdfbqrQvvRi1LvaDrD38IojE56M4iVFP4AnpIfHjDXBRx4SSLWkw/G54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=O+BtR/rr; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	 In-Reply-To:Content-Type; b=Rtz7ojALJTIq1ctKFytw3pow6WlWkc6h2Jmz42lvmxkwwTYeeY5DT63auaZqR4x6ircD1T9w6ERPZs9gRVk0YyAHfaMx65qywDC+t3gEgrkZMJ7EbfWOwUvTqtKBHM3rzIN+4G6wNtiZs9JzITHESm/vCisyxkVN8nEGs8jVSus=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LVMeCBqd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="O+BtR/rr"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F11D11A25;
-	Tue, 23 Jun 2026 05:22:53 -0700 (PDT)
-Received: from [10.1.28.85] (010265703453.cambridge.arm.com [10.1.28.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A7AC83F632;
-	Tue, 23 Jun 2026 05:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1782217378; bh=AS3ac8Xg+L+HLbpB75f/tFX26Y7zBshQVYWslZ0Kumo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=O+BtR/rrZBeMOKGocts1cI2w3dFk6T3DYNF8k50KsTJcg0Dv8xRsP2mpjOXfLnOGU
-	 yqKLF1taBDUA6Z1uoWcPJi9jykvb8Cl+uRMIOmsGTPC5ouo4nxhDWYS+LU36LyLEuN
-	 yqNoNk5jtUtlqSE9OqQwH/R/MzB4+ZTEOodHJmSw=
-Message-ID: <3be73669-0aa6-4dec-87ce-37b979953739@arm.com>
-Date: Tue, 23 Jun 2026 13:22:48 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LVMeCBqd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF98B1F000E9;
+	Tue, 23 Jun 2026 15:39:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782229205;
+	bh=BSb0t7HyzHmwhpJzJhNzEHmlkldxYgAG5n8UPrH07Gc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=LVMeCBqdk5hwFeHn8/I7u9VR7FqrdpBuOPyb6G0GimM+42U1FN4lVvNlcoLFJ4DWj
+	 UxXN+TE3uazvUnbAaHv/SIHC9NTNWe/fppEioc+tcy61ncLijafOYcyTUz97w9tDBo
+	 51p8ChFpKy8FmtloedEEKFdaB1EAVq2nd+MxYAabmhOVRgFdctNHGnDwUKAaXrxebJ
+	 GpyKoYqHJDuKike+GqeFstm/D3gIafyQatSvKZ1Ppd4xMsdMgDcf3hM+YMNT1JtvQJ
+	 3DN0jr31C9XJMhpqqck0u0ImVd3HdR1OEYE00HaTPtr3/AvCJ8yicgMJXHN++VURE3
+	 IeHRaHSbtw4Pg==
+Message-ID: <350464c2-e4e6-4626-961d-b44f4ed864ea@kernel.org>
+Date: Tue, 23 Jun 2026 17:39:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,36 +35,89 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] swiotlb: eliminate per-map atomic contention on
- used/hiwater tracking
-To: Michael Kelley <mhklinux@outlook.com>, Jun Miao <jun.miao@intel.com>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "chenhgs@chinatelecom.cn" <chenhgs@chinatelecom.cn>,
- "fan.du@intel.com" <fan.du@intel.com>, LKML <linux-kernel@vger.kernel.org>
-References: <20260622122114.2563254-1-jun.miao@intel.com>
- <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH 1/8] clk: qcom: dispcc-sm8450: Fix mdss clocks
+To: esteuwu@proton.me, Bjorn Andersson <andersson@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Rob Clark <robin.clark@oss.qualcomm.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Vinod Koul <vkoul@kernel.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-phy@lists.infradead.org
+References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
+ <20260622-sm8450-qol-v1-1-37e2ee8df9da@proton.me>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260622-sm8450-qol-v1-1-37e2ee8df9da@proton.me>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2026-06-23 3:35 am, Michael Kelley wrote:
-[...]
-> Another approach to the contention problem would be to have a separate
-> CONFIG option that is narrower than CONFIG_DEBUG_FS, so that the
-> computation of the hiwater mark can be dropped entirely in production
-> environments. Or the setting could be dynamic at runtime via a
-> static_call, defaulting to not computing the hiwater mark while still
-> allowing a sysadmin to turn it on to see workload usage of the swiotlb.
+On 23/06/2026 02:54, Esteban Urrutia via B4 Relay wrote:
+> From: Esteban Urrutia <esteuwu@proton.me>
+> 
+> Both of these changes allow the framebuffer to show upon boot and let
+> the mdss driver take over afterwards.
+> Before, none of these actions were possible. Only mdss takeover was
+> possible, but screen had to be turned off first.
+> 
+> OLE configuration may have been a misinterpretation... that's not
+> something that's done on the downstream driver.
+> 
+> Changing disp_cc_mdss_mdp_clk_src from clk_rcg2_shared_ops to
+> clk_rcg2_shared_no_init_park_ops fixes this warning as well:
 
-Yeah, in terms of usefulness to admins, I'd imagine a sysctl to enable 
-stats collection would probably be better than a config option - I doubt 
-that most folks who just want to tune a standard distro kernel for their 
-VM workload would want to have to rebuild it. A command line option 
-might also be a fair compromise if that's how the eventual SWIOTLB 
-tuning will be controlled anyway.
 
-Thanks,
-Robin.
+These should be two separate commits, if I understand correctly.
+
+Please use also Fixes tag.
+
+Best regards,
+Krzysztof
