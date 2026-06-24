@@ -1,161 +1,89 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013051.outbound.protection.outlook.com [40.107.201.51])
+Received: from forward100a.mail.yandex.net (forward100a.mail.yandex.net [178.154.239.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CCA8305677
-	for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 06:22:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782282168; cv=fail; b=hNIHEjv2oo6bkl6G7+tCxLfFmFbyFV3qN/6qeaFn7EtPnYQv7m8zqzDDcRYuC6piRNS9vhNn/Ll2nLJyyiO5EYOB8vFyLSSZ7N+026fFyzUeOUz4EUxsTI7zj7hbC9Od5U+vNZtjzV2rwLVpQBXKl+5Zxz1DhXDJPo3nTlMVIDo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782282168; c=relaxed/simple;
-	bh=uM+zR6wU9FOvTMIU9ar/i7kJkuhIRTqY7m7Rek6rna8=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I3+A/NPd25gMTzgsgPTvKVMOBq7DzQ4ZpHHBEUWyiH2x6vZwwWOgAuKdZ3n4O++J93crC0ANWbKQAfNqgj2J+QPYch86bML2zUjEMHyQv3+qXNFH63EkQZhbx2Zqzci9or7l8lRxOJYWTDNUh4gSB4I+mV09LxM8p258mGCD3EI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=KmXedbCy; arc=fail smtp.client-ip=40.107.201.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA4A531A572
+	for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 07:11:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.83
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782285103; cv=none; b=R41PYeCxLbT229a51CE3sEztdMIcCuMgeQtey8gSvR43oHBp6fBbzexU+/x60wwioZb7kJkWbQ134g3aFs4fzo1l5xk3MUUV+MIHINolVMI0QyiwMdvCY3TcFYxM+kHDyCqmTe+JcE5oo7WTHy/Mn9AmqlWtO/5EOrmxSC2Klfk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782285103; c=relaxed/simple;
+	bh=5nJ8TkO4BdnfINiFuUTCqJlldFQEQ/IVziLqa6Z1kEU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Yq0fAJ3Oh/H2q81Q/ZCbj1+RrpZpRGHVU5vR5Mdg7h45uqV01B8ys4xzKkNB7vovfmamVK5OExc8CiZ6Tl0IwcHNSVt4XQc58+6zU3661+P84sXXjT9SPMJvc4+txhVZlVIbkvlhXH0m3934bWD+0Qk/fnzpK5N9U4WmcKAlkGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.ru; spf=pass smtp.mailfrom=yandex.ru; dkim=pass (1024-bit key) header.d=yandex.ru header.i=@yandex.ru header.b=OJz79ybS; arc=none smtp.client-ip=178.154.239.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yandex.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="KmXedbCy"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sJu5XPuG2p7gyU1SvAiQiDGRWn2YXAnSBwefxFoM+pNuKc0cWL9Mdveyeg7hR0DAKL2Jl+3jydgwrMTSIr9/Q10EM9IW7zP4XufZSR0tnWXFY1pQSVkImhT6MnZp5b4OQOAQi7S7nksjuzSisbLv1cKluYAMxphwNcPA2wkczLUmnAzlrZhDy/XMS/BYPyVK0s+ueKKCgc2eLdM9DqNp2ddPE3CmIPzlQ8A/Je/m7inJNfgS3Eg5loiM5sTwTBnZW6nl1Qdxz51mA18t4CJatG32vlidlvYNSXG6aW8BHZviI73i689x6IkYF9YbFLQmecg04DDddkZAjt3DtYPTDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SATZpmG3gdSD3bW5KdQlwRksWp9Ur7q/As9fBxqamyI=;
- b=sbuShPuNMAdpjbp5T6hQO/FKmyDGO/m/C9bnlNiKb/P5G9eqik9ZpcaPtSvGh51XSSyo6lEKGPO4nk6CIEgelX739XgQjxGm0bwpSING9hP89ubIYwvXcu1nA3E2c9aXk/3tB8lNU8BlOMJsVitTMm4bqb/RfRJf6BwZ6pec7OHNc0RS0HhBR99A/NUS5j04dzqPve7XgjTYuYPUIzLzi/9XxFvBYHlSELEAJaPgL8Ix2WlSQnYh2puGuxTo6byBTirOhJJcK4vQ+gXIMOgnrIgzmpbBUgim/Vel/a4TO6eFQtaPydg88m/MTW/ntCDM3EDe6igBfYEBCaAKTtjTWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SATZpmG3gdSD3bW5KdQlwRksWp9Ur7q/As9fBxqamyI=;
- b=KmXedbCyLVPhsZ9k08npCZy80PzDp/E0BbF8KzDWcYwTtKxk18rCU/UeXrvAqgErhl329O8pp6q17dZjDXE9bivPBfVHn1NZDBycJ0YbUIUkiwPgVRAWQ24Q10+iYAJ4yFhGhUIxWFYG6zJYTD5vBcMK9ytokquuFiL4gBK0jEk=
-Received: from DS7PR06CA0050.namprd06.prod.outlook.com (2603:10b6:8:54::32) by
- SAVPR12MB999119.namprd12.prod.outlook.com (2603:10b6:806:4e9::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.13; Wed, 24 Jun
- 2026 06:22:43 +0000
-Received: from CH3PEPF00000017.namprd21.prod.outlook.com
- (2603:10b6:8:54:cafe::88) by DS7PR06CA0050.outlook.office365.com
- (2603:10b6:8:54::32) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.12 via Frontend Transport; Wed,
- 24 Jun 2026 06:22:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- CH3PEPF00000017.mail.protection.outlook.com (10.167.244.122) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.0 via Frontend Transport; Wed, 24 Jun 2026 06:22:42 +0000
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Wed, 24 Jun
- 2026 01:22:41 -0500
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41 via Frontend
- Transport; Wed, 24 Jun 2026 01:22:39 -0500
-Date: Wed, 24 Jun 2026 06:22:29 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Vova Sharaienko <sharaienko@google.com>
-CC: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, <android-mm@google.com>, <kernel-team@android.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH] dma-coherent: use KiB in DMA allocation logs
-Message-ID: <uhi4y75ojzqfpdmhqexcfmnu7mo2aaiuaboqzit32mjtjhapdy@gq47jed54f2b>
-References: <20260624000516.597555-1-sharaienko@google.com>
+	dkim=pass (1024-bit key) header.d=yandex.ru header.i=@yandex.ru header.b="OJz79ybS"
+Received: from mail-nwsmtp-smtp-production-main-95.vla.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-95.vla.yp-c.yandex.net [IPv6:2a02:6b8:c15:340d:0:640:ad51:0])
+	by forward100a.mail.yandex.net (Yandex) with ESMTPS id 39144C0754;
+	Wed, 24 Jun 2026 10:11:32 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-95.vla.yp-c.yandex.net (smtp) with ESMTPSA id JBSaQRJgJ8c0-1F7gwUKA;
+	Wed, 24 Jun 2026 10:11:30 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail;
+	t=1782285091; bh=LuZFBZxLg3E6lGM+psPqd+R/jFP24YGj7RALW9XYQoA=;
+	h=Message-ID:Date:Cc:Subject:To:From;
+	b=OJz79ybSiCtPWf3Ua3C+IrWZLIBB68GAeLDZ0M2i2cmm2EBe54Jnl5NQpT8b3PUQV
+	 n4J1/LkruEw0D9Id5yNKhJ6EGfYrCiB2TZ8ifXQNYYpmOSQsUKW+wFIY236PV5yz3N
+	 rpyfwJmQmzaR5Z/5tIXJHKqFHONJwT8a9oGgW5Ls=
+Authentication-Results: mail-nwsmtp-smtp-production-main-95.vla.yp-c.yandex.net; dkim=pass header.i=@yandex.ru
+From: Dmitry Antipov <dmantipov@yandex.ru>
+To: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	Dmitry Antipov <dmantipov@yandex.ru>
+Subject: [PATCH] iommu/vt-d: use kstrtoint_from_user() in dmar_perf_latency_write()
+Date: Wed, 24 Jun 2026 10:08:19 +0300
+Message-ID: <20260624070819.773161-1-dmantipov@yandex.ru>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260624000516.597555-1-sharaienko@google.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PEPF00000017:EE_|SAVPR12MB999119:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3acf0672-9054-4279-8b07-08ded1b8ff8c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|376014|1800799024|11063799006|56012099006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	DxbMbVwc7m6UYHZnPE8vZ6DrNk5asCg4+LbNlp3sbezniNL7RqgLJTQ/OOeuOdCdWcrz1tZjkFAlEKejcTTZJXL+lOptquCI9PwMMsv6QAakl7E3QeLK0gkb9O6U5m102C6fMLqzdFi4dYVmp/W56Fp1BYJWOm4+Me8NE/AjfdPFPTh5jYQNY+SuhABL8Soi7qt3IsEYVP9oojXPUndcqj9SNqLsDxaVMitT90c4nBZqiFN5Tc8AAk6n4QbY6F4H3NYzHnvpjmFuSjnHi1762M4IF0SdZaVQ8kaJI8oDM5G86LmWzgLpfuBemw4ol4LPkxW0dArhuEpUq10Xj1kSYI/fl3pycPFQCfRn+LfNtdTTJnWZgIDuYhAYUFZL8JT9lBTNhfjlcfY4P+4tmxn7HTISX6oFDI9ipvJ09gL2PGEqGkP+l979g5gA/Dno0a8qCHBXKB6C4m571XWdDhJjetLd78QF0qzrBWbGfKMxHGFBbtBBRdoM6WICDYXV8PLPJojFZ/Ge6y3M1XRvIoEDmRWdnWAWbqMCB1Xxj/mETsoomZErJ9Qg3QztEc/hzAyhkOJZLMcy5xyLL3T/caP1xKBfwHAMUaRQivnKulp8/ER/5Nrthl0BGFgFKlwDdqFv9Ebf/Liswchs2Ws1v6oC9fpJE7mnaUCugdRLuJ/KM/mmm5i+NcEbuTKqvBdSrqIQkGjAHQiosgpAg7w3b3/GHg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(376014)(1800799024)(11063799006)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	eN47nLmece9rEz5k7PH/H9Dzp4W3OLtBOHevmc+dSThQGWbTaSePmrqzos4IVDo84Nwe9SCW3f3yevYyVlinioNyVW8/G4uVISJtp5VQ9P49Nnw2mloYRNAqfdn+gMxbgeWb28enbBVPMk56zWA8dS+NCXLk5//68LeHuOrSLVa5EKXuQhA9Dk+VqWjdOyYi5eqkQKL7LPzs28qoSHIVbBr8+xyK7UEuMw2u74M6jxw4iDPLMuIzto35Ln9xLI0Dokjy0Dss7A9wFuGe84ToslkmYarAP8pPyl09AksbRh2r/7jj0Ciq4ddPPbgNLZIddgyLSJs5IA2QB+b1tGuAsWEG4nbAPQiCL6uLK+d1xJQgKhJ8JHj0Zy/S7olf26Y2lTWIEghwCy5IhQByzfKj/Zr9kORBhm7WVSSWnrNZEyqIPNjCaLgJlkTN+B2hNP+D
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2026 06:22:42.4236
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3acf0672-9054-4279-8b07-08ded1b8ff8c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH3PEPF00000017.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SAVPR12MB999119
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jun 24, 2026 at 12:05:15AM +0000, Vova Sharaienko wrote:
-> We are proposing to update DMA reserved memory pool allocation log
-> messages to display sizes in KiB instead of MiB. Using MiB caused
-> allocations less than 1 MiB to be logged as 0 MiB due to integer
-> truncation. KiB provides better precision for smaller memory regions
-> specified in the Device Tree.
-> 
-> This is currently marked as an RFC because we would like feedback on
-> a KiB unit change.
-> 
-> Signed-off-by: Vova Sharaienko <sharaienko@google.com>
-> ---
->  kernel/dma/coherent.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-> index 480dd1766ece..3ede8da395ce 100644
-> --- a/kernel/dma/coherent.c
-> +++ b/kernel/dma/coherent.c
-> @@ -69,8 +69,8 @@ static struct dma_coherent_mem *dma_init_coherent_memory(phys_addr_t phys_addr,
->  	kfree(dma_mem);
->  out_unmap_membase:
->  	memunmap(mem_base);
-> -	pr_err("Reserved memory: failed to init DMA memory pool at %pa, size %zd MiB\n",
-> -		&phys_addr, size / SZ_1M);
-> +	pr_err("Reserved memory: failed to init DMA memory pool at %pa, size %lu KiB\n",
-> +		&phys_addr, (unsigned long)(size / SZ_1K));
+Simplify 'dmar_perf_latency_write()' by using the convenient
+'kstrtoint_from_user()'.
 
-'size' here is a size_t, so the portable specifier is %zu, which also
-lets you drop the cast.
+Signed-off-by: Dmitry Antipov <dmantipov@yandex.ru>
+---
+ drivers/iommu/intel/debugfs.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
->  	return ERR_PTR(-ENOMEM);
->  }
->  
-> @@ -384,8 +384,8 @@ static int __init rmem_dma_setup(unsigned long node, struct reserved_mem *rmem)
->  	}
->  #endif
->  
-> -	pr_info("Reserved memory: created DMA memory pool at %pa, size %ld MiB\n",
-> -		&rmem->base, (unsigned long)rmem->size / SZ_1M);
-> +	pr_info("Reserved memory: created DMA memory pool at %pa, size %lu KiB\n",
-> +		&rmem->base, (unsigned long)(rmem->size / SZ_1K));
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index 21e4e465ca58..d87408ebb830 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -690,19 +690,11 @@ static ssize_t dmar_perf_latency_write(struct file *filp,
+ {
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+-	int counting;
+-	char buf[64];
++	int ret, counting;
+ 
+-	if (cnt > 63)
+-		cnt = 63;
+-
+-	if (copy_from_user(&buf, ubuf, cnt))
+-		return -EFAULT;
+-
+-	buf[cnt] = 0;
+-
+-	if (kstrtoint(buf, 0, &counting))
+-		return -EINVAL;
++	ret = kstrtoint_from_user(ubuf, cnt, 0, &counting);
++	if (ret)
++		return ret;
+ 
+ 	switch (counting) {
+ 	case 0:
+-- 
+2.54.0
 
-rmem->size is a phys_addr_t, which can be 64-bit on a 32-bit kernel.
-Casting to unsigned long may truncate. It's an unlikely corner case,
-but casting to the widest(%llu) type can avoid it.
-
--Ankit
-
->  	return 0;
->  }
->  
-> -- 
-> 2.55.0.rc0.799.gd6f94ed593-goog
-> 
