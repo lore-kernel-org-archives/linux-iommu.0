@@ -1,163 +1,137 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 612E63AFD0F
-	for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 13:28:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01413285C8B
+	for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 14:08:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.112
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782307691; cv=none; b=dRhb0A0T79t5rZmPUpiTlyVg0CK7ZqmNv8kI7mISq8yjt9EcA0akBEZb2mTTtofvj3zhFk0VG/ST00AXMOjQBqQsa11AcW5weCBii+xAFFlPF10DXXXhwE7U0lwt0pFGyqpTMVKcFJpH4jZohH6/jGNBizc+D0FAxoJFXn3Ve3k=
+	t=1782310088; cv=none; b=bMxjh50jRi46iKi+87VRRwUSiqugso9fA7m75oMbVLL9wG3kp+Ph5CvyhBeLfIA7fo+7G4oj/8BSlFbH3KzVHg8NSYE83T5/VnOzuv+BiZ8yMO4bmJBoGrW40PoHrn+J29MfhltkRVzAaPgTupDIUpPerWtcNwdQv1IhisIw6RM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782307691; c=relaxed/simple;
-	bh=IYaiqSwkKhKq2oKq6noG5azMdI22xDjR53P6dIK4/TU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hwK4ZVpyPs8yDltrOvv7HD/Evd2xW1wYk/EH43/N8lzTx4/WRT6XXZZQN702sVW30PUuvAf/Atzc7iXjYofTxxckFLMo07v5imvpgfzEC0GyPdyL1keHqDk4Oo6grNpSp8ZYy/CQvfsHoxZamBexkwMk+ex2kxoAJ6/mkssa2WQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iBbDXkoc; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=LlY0/fjI; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1782310088; c=relaxed/simple;
+	bh=/W2rJ/IshxKQPF9RZxOatH1cRK6HzDfPC4W2WLFV4u8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=INRgjR2x2mGPjWI9pZqf6Q/0YzSnsevSSU+zjx4qx7H6RzyqqAsp7Nm38PYjUj6ngwfLGFseJ0xmWrmvrwHbKbnXRAu+SoND/CPVElTcFe7FvsrrqQ48guy9gkrFII+EASLmoIkey2xfTt+01o4EHom5OPg2WBKV4KtoW0FWov4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=eC1UQahP; arc=none smtp.client-ip=115.124.30.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iBbDXkoc";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="LlY0/fjI"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65OANRTZ2501699
-	for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 13:28:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	cE5e32Jq9K4Qp/o2vpwbsBEqdWa2a4rwdZ6gyyitcTo=; b=iBbDXkocA62hP9V7
-	NbHB4LoFdsZiL2otz5aw3jzwrXx36qQLZWf7/vqCY2x8+EXDDjspyiW0lzLq2L01
-	qNSr85lYtheKTlkoJtUG+w3EzA7m6cfsmzulBKT2E5LmCqdrgH4An3LKSyP66mtT
-	WkyAzW5uyKBlbeXGzIG6s9lljBO168d4nYdQOPT65UjWBoExCYDVOmj3ZzJXjhd5
-	o6uAbLx74k8Zt872yfh+XavqcKECFWsHcbWTw9awIb+E/jWYgjAkEXzTbBTiHBiy
-	Yv5LyOxJqzMm5kaod/XTqQrkm+Wd06p4uZVB3OIIR+FZ9zfT6edBhphdVHYrb0ZF
-	1VP3hA==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f0d450t6y-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 13:28:08 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-51a07295d67so3472171cf.2
-        for <iommu@lists.linux.dev>; Wed, 24 Jun 2026 06:28:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782307688; x=1782912488; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cE5e32Jq9K4Qp/o2vpwbsBEqdWa2a4rwdZ6gyyitcTo=;
-        b=LlY0/fjITsnasU77njLQfuI8EeDnpaBqfCTyxvXoBsVLWBgVy3C/Lg79emv8117gFO
-         Nev83M3opTRq0mNHEZdPgD2/j3JrdlukboKtdgvfsKb6t6H7QONM+6nPN7a1+vNBrSYL
-         1f09V//wJ/gnQUVoWI5quwW79YSacdfhysGJyyl5xHIkpyAIK/oNBWnBMKIuOkfmdsz6
-         DtofreJ3NBibJs92qjHz15fKDEmAf/tA5yAY9S2bZoli+oMJskLxm3khxMIPRcWIvJ0N
-         0dzusr8auwdAMeAJNmUL6hgtFQKqDru09OvbTHtqIjKGQZryGshBe5Q41hkh1AjXF1C8
-         feMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782307688; x=1782912488;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cE5e32Jq9K4Qp/o2vpwbsBEqdWa2a4rwdZ6gyyitcTo=;
-        b=eHi08PBlEFQMUXuucM/XvaX0Z9kqJdFMkCqkQcXT9aKAWF7AS7xLFNfC5TMAY5lCC5
-         msid6FwfOBi2eEasZIkSm+XGFQnm9hHoWzJxKxyuZsD77MGyXyGTJdezlTNPavzEku3y
-         V9klxtfOqbWExXAZ9YvR03flXAEKRVtehI9ckFK5UeRLgvYbt+VY02ZZ8tCaC6OYzLqu
-         KloQsBZz+Tnwc63oMxICNJwjOV4JOLywA9HibiOeJp7M0WlWWIng9pNf5sbDNu25YH0p
-         vmOnGgCP8RqPF0WBCUS+eP1AX7EEcsI9lXm4BaWuiTdElMo1La71NuN0aqQPc133n+kZ
-         9p0w==
-X-Forwarded-Encrypted: i=1; AFNElJ+br7u9rmaa+2ET/cT4+d99pfLIiqziwJnTVPOR5wzRpW31tq9WoudnEE3tm9oMMc1EV7SbmQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxytHB/nbgih5WtZfe5JI/4VFlkwuNZTkHtWrn43SRUMxJf4+r6
-	txP4jsQ0BN3GVBzyhzTeNaXQm27oaEVJWvL93XAjkcyLu5Q4CvHIWwDK1coc67DQY5y+9bDVLrA
-	WTfePupwoIhH9eaMccqsy7qKbEe3wiobFsftC+4H7ELxuwiKXb/vaaZ8Zbg==
-X-Gm-Gg: AfdE7cm8IlUwYx22fyfjC1eO9dz5RlWcqorRE9XKD0Q9Vvk8x3n7H56oWqEcpEQveSt
-	hBAjq2T614xRrKQkwniqGQr/FdkrCclZDyRwvW13rcO4zuqzHuePDeXrr4n79WN3YBlXYeUqVeT
-	33yyNX8Am4NFg5GiIFqsLhddVqhP9EiTQ6mGCJxHajEdSgSqQBgCTKNPqWyvvpP4obm2hvzuH9O
-	1HeRJSRy4KDjSHCaCH1XZBAzjpDgqrexnYwlew+LrnAlRQVg24ec5mhJf0YST01FgWiVPZFH0At
-	SE8zKrt/O511hFFInpaXigWgjrFdO93uf7i6t6JD71vxznMh0iJHSNUloVUJtkY85obpnx+xZro
-	zEzH0vhknVXfLrfVay7B9jfkBIGJsxpz5hfs=
-X-Received: by 2002:a05:620a:3185:b0:915:8197:4490 with SMTP id af79cd13be357-925c95b2466mr942762285a.4.1782307687811;
-        Wed, 24 Jun 2026 06:28:07 -0700 (PDT)
-X-Received: by 2002:a05:620a:3185:b0:915:8197:4490 with SMTP id af79cd13be357-925c95b2466mr942759185a.4.1782307687275;
-        Wed, 24 Jun 2026 06:28:07 -0700 (PDT)
-Received: from [192.168.120.170] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c0c60ac7c1bsm661168166b.33.2026.06.24.06.28.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2026 06:28:06 -0700 (PDT)
-Message-ID: <53cade89-1fc4-4ba7-aa7b-815b9e26d88b@oss.qualcomm.com>
-Date: Wed, 24 Jun 2026 15:28:03 +0200
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="eC1UQahP"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1782310078; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=t2xQXxgCnfhWmSGFXL1x7sR0Wlz3vICx5yrBNlLkLO8=;
+	b=eC1UQahPo+I7mOceq4AcJFnHpMue0z0Man1IPF5y+9ufxgo3qE4PyG1zYyP3Kfmb2e/rXHDxSdTvBcHEinDe1vqbvcpM2rHM7Tk5NPg63IWl5vZmlC3+kKooxv4KyfGBHM+8xgpXRinYlcIDH0Xj0dpv9P1BET908UPg7W0wprE=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0X5YSeF8_1782310075;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X5YSeF8_1782310075 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Wed, 24 Jun 2026 22:07:57 +0800
+From: fangyu.yu@linux.alibaba.com
+To: zong.li@sifive.com
+Cc: alex@ghiti.fr,
+	aou@eecs.berkeley.edu,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	tomasz.jeznach@linux.dev,
+	will@kernel.org
+Subject: Re: [PATCH] iommu/riscv: Replace illegal command with dummy IOFENCE to prevent hardware lockup 
+Date: Wed, 24 Jun 2026 22:07:52 +0800
+Message-Id: <20260624140752.31155-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20260623081902.589810-1-zong.li@sifive.com>
+References: <20260623081902.589810-1-zong.li@sifive.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/8] arm64: dts: qcom: sm8450: Remove unneeded reserved
- memory nodes
-To: Esteban Urrutia <esteuwu@proton.me>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd
- <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
-        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Vinod Koul <vkoul@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org
-References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
- <20260622-sm8450-qol-v1-2-37e2ee8df9da@proton.me>
- <e1e492ab-884e-442b-8410-cc100c54fd5f@oss.qualcomm.com>
- <6123a923-21dd-4f69-9ac5-02165963027c@oss.qualcomm.com>
- <b3541802-3035-40ee-8327-a65bd5d2dfee@proton.me>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <b3541802-3035-40ee-8327-a65bd5d2dfee@proton.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI0MDExMSBTYWx0ZWRfX54EElrp6pEmp
- K6QtJxe7KNwIN607ZYyIjHfu6TzpUnSKhGRuoEMdEPAF8CrZ2LKBdb+0xwlkPhf86Ga4Yf8z5+G
- I/YdbviKjI4RkWf6EOC0Qkjh/cEw9vQ=
-X-Proofpoint-GUID: hicPTrW3LPIuZDoW2CP9g9k-tnwwaHbN
-X-Authority-Analysis: v=2.4 cv=Ar7eGu9P c=1 sm=1 tr=0 ts=6a3bdb68 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
- a=oK1bmnR47wnCuWhRGskA:9 a=QEXdDO2ut3YA:10 a=a_PwQJl-kcHnX1M80qC6:22
-X-Proofpoint-ORIG-GUID: hicPTrW3LPIuZDoW2CP9g9k-tnwwaHbN
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI0MDExMSBTYWx0ZWRfXzhblT8Zn9r0y
- eGi2eTMFc9cDnslqIK1quzxPEyZpEdX2iUXySgL7Q65/TjM7Sk71Apx4SEvzYxzoIjNi/OrWpsW
- FnAP4c6oynUgtzYqeIa+dK1bx93fLheweN4vnJbYYKuo7zatZGqwwx4f7fuTRlL40YjcIM/i5xa
- p27TfzOgR5iS24hKpPK4x7ZGTpoD/j6sVyoyRtc+Xyn4Pilk/lRMZR+1ki5XEhyUGp0lWiRg7Iv
- gIV/jynzHoBjRPskfVzjZtnt6A4192QLophWi9e8FlP3CZvEA7NuT80N5vmxMPM+5MAq6zmu0Q2
- SqNwIPaE5kDfMzBQaia4CSoRPAGDPc3bxWqmIZmf0c1uJ7Ucd1e3wzJIVjLGIWg4KNszdPt2BGA
- tmJ3om6EbkTZF+mKRz4tRPKwJkxvUg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-24_03,2026-06-23_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 malwarescore=0 lowpriorityscore=0 phishscore=0 adultscore=0
- spamscore=0 suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2606240111
+Content-Transfer-Encoding: 8bit
 
-On 6/24/26 3:26 PM, Esteban Urrutia wrote:
+>When the RISC-V IOMMU encounters an illegal command, the hardware
+>stops processing and the HEAD register remains pointing at the
+>illegal command. If software does not handle this properly, the
+>hardware will be stuck at this index indefinitely, preventing any
+>further command queue operations.
+>
+>This patch implements a recovery mechanism by replacing the illegal
+>command with a dummy IOFENCE instruction (all operands are zero):
+>
+>1. Prevents hardware lockup: By overwriting the illegal command with
+>   a valid instruction, the hardware can continue processing from the
+>   current position instead of being stuck.
+>
+>2. Enables user recovery: After replacing the illegal command, the
+>   user/driver has an opportunity to retry the original failed
+>   operation rather than losing all queued work.
+>
+>3. Minimal hardware impact: A dummy IOFENCE behaves as a NOP, it
+>   it performs no cache invalidation operations and has no side
+>   effects on the system state. This is the safest replacement
+>   instruction.
+>
+>Signed-off-by: Zong Li <zong.li@sifive.com>
+>---
+> drivers/iommu/riscv/iommu.c | 24 +++++++++++++++++++++++-
+> 1 file changed, 23 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>index cec3ddd7ab10..6305ec5f467b 100644
+>--- a/drivers/iommu/riscv/iommu.c
+>+++ b/drivers/iommu/riscv/iommu.c
+>@@ -464,13 +464,35 @@ static unsigned int riscv_iommu_queue_send(struct riscv_iommu_queue *queue,
+> static irqreturn_t riscv_iommu_cmdq_process(int irq, void *data)
+> {
+> 	const struct riscv_iommu_queue *queue = (struct riscv_iommu_queue *)data;
+>-	unsigned int ctrl;
+>+	struct riscv_iommu_command cmd;
+>+	unsigned int ctrl, head;
 > 
-> 
-> On 6/23/26 7:03 AM, Konrad Dybcio wrote:
->>> This is mentioned in the memory map description, but is not part
->>> of it.
->>>
->>> I booted up a 8450 HDK and it doesn't even have MTE, so it's
->>> probably valid
->>
->> i.e. it doesn't report MTE to Linux. I don't know if it's Gunyah
->> trapping it.
-> Then, should device trees delete these memory regions on a case-by-case
-> basis, or be left as is?
+> 	/* Clear MF/CQ errors, complete error recovery to be implemented. */
+> 	ctrl = riscv_iommu_readl(queue->iommu, queue->qcr);
+> 	if (ctrl & (RISCV_IOMMU_CQCSR_CQMF | RISCV_IOMMU_CQCSR_CMD_TO |
+> 		    RISCV_IOMMU_CQCSR_CMD_ILL | RISCV_IOMMU_CQCSR_FENCE_W_IP)) {
+>+		/*
+>+		 * The head pointer is not updated by the hardware, it
+>+		 * still points to the index of illegal command
+>+		 */
+>+		riscv_iommu_readl_timeout(queue->iommu, Q_HEAD(queue), head,
+>+					  !(head & ~queue->mask), 0,
+>+					  RISCV_IOMMU_QUEUE_TIMEOUT);
+>+
+>+		if (ctrl & RISCV_IOMMU_CQCSR_CMD_ILL) {
+>+			/*
+>+			 * Use a dummy IOFENCE instead of the illegal command
+>+			 * to prevent hardware lockup
+>+			 */
 
-I'd delete it and reintroduce as necessary
+The RISC-V IOMMU spec 1.0 (Section 5.15, cqcsr) states:
 
-Konrad
+  "If software makes the CQ operational again after a cmd_ill or
+   cqmf error, then software should resubmit the commands submitted
+   since the last IOFENCE.C that successfully completed."
+
+So it seems that simply replacing the illegal command and letting the
+queue continue is not sufficient.
+
+Thanks,
+Fangyu
+
+>+			memset(&cmd, 0, sizeof(cmd));
+>+			cmd.dword0 = FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE,
+>+						RISCV_IOMMU_CMD_IOFENCE_OPCODE);
+>+			memcpy(queue->base + head * sizeof(cmd), &cmd, sizeof(cmd));
+>+			dma_wmb();
+>+		}
+>+
+> 		riscv_iommu_writel(queue->iommu, queue->qcr, ctrl);
+>+
+> 		dev_warn(queue->iommu->dev,
+> 			 "Queue #%u error; fault:%d timeout:%d illegal:%d fence_w_ip:%d\n",
+> 			 queue->qid,
+>-- 
+>2.43.7
