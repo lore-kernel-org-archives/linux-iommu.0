@@ -1,209 +1,249 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19013081.outbound.protection.outlook.com [52.103.7.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B3225F98A
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:51:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782402717; cv=none; b=aIyQp3UW5DMlzsGnE0O0/z21DWad6QA465BGMNJ7J1PUBCsZSDqzfK9QGumjdn2cuNDsyn0huDyh6XrtjhLLHwoFVkgNdY6MigZZuHqjnclWLxmPR6Fji+d+Df1YLGu6gFKlYF+q+1ZvupHsbUBFxzWyPJ+1bEMoPmFkxEHMcks=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782402717; c=relaxed/simple;
-	bh=Khk+EgWMgrd/fcIfSlawiG1GabII3LIvD1WbEgg6eN8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OzZXeZJtl7bDqmlv66inOCnuPnjAU0B2QuTKYp3FJMD+MIXZP0Rf+ALlriV3EghKu7RdzlpoUZr8tL9yQZjMsve5Xd3bDtEC/TaajOQHYkxzymXTRUDDb4SlLMk9w3cCFiH2xehBBhBuzjuaMXyIVhbyBbB/PhQRiuqpBWpB2Rk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=bgA0McvA; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NNOwoYkJ; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 770972571D7
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:53:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.7.81
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782402837; cv=fail; b=Y4xCsIqicvKDCFQ5PCu0wRkcOvtF+EsLRMZID1KYF8BBes2YWNlq8bfP49iwMzqSRlzALfrop85zdMC3eiQ8KD3GGjLGoyCpSjYAwspEtcQWDyCk1rJGQEAhMm4g2hbICH0WAM0k9gyCktAgGI5OYgsDh3KKIwWxDAMLSaX2SIM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782402837; c=relaxed/simple;
+	bh=6OJVQZfie6Gqigdi3r482vbYdqThkNNSjlI2iqN64uc=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=lmpREUcGb5d18RiK/SpNMZfzoJRlUsv9v+o5hfToqNYTsnIXUF86rDmTeQ/d6barKvDvdQbPX4zN5o9s8EsRwgqbHZfAKlXWvHFpPvi/cIXXqYcNalvyBBEfRjzRaaOantV1pdrldx8SQ8iUL2330vNAw35nqU2mlnk0h9//BNg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=SHMsP9Q2; arc=fail smtp.client-ip=52.103.7.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="bgA0McvA";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NNOwoYkJ"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65PFeMew2737434
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:51:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	XaN+L0rplw4GK7Sfc4WHtZLm/QYscT75GFb5hPkpKto=; b=bgA0McvAmFJLtIls
-	L/buW7JAYI9PfSDopgUvteWZRgcR/N5FKzN6CPAn6aoklfg7vNbD2F+czjeGAs57
-	duWQR7LM7mcfYrf9JKD7zLe8tmWfxQ9VikSWevJw4AvvfH5mvk2THdpe0C69sYT0
-	Wl2gmeVXHjw9r3gfyGpxtj/pO0kPIeZoTOZYezeZD62kVgmtytVHnUiF+l42iYep
-	+LRMNrJbJJjw5iUu+qyCDDDg3PbqF/1ielieE3RZJmZhPZiD9WltuWyumNhtYAT1
-	fHnupap2l1GOf3hIJb4U/Ru7rY2Wacqc9tEfnb7S45bi9ehRNBvJ11PMBz6+6thl
-	GrPamQ==
-Received: from mail-dl1-f71.google.com (mail-dl1-f71.google.com [74.125.82.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f0ya8t3bs-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:51:54 +0000 (GMT)
-Received: by mail-dl1-f71.google.com with SMTP id a92af1059eb24-1384427c3efso110730c88.0
-        for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 08:51:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782402714; x=1783007514; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=XaN+L0rplw4GK7Sfc4WHtZLm/QYscT75GFb5hPkpKto=;
-        b=NNOwoYkJu1MRfihi1z+0Z0Ff60azoyTcevxySt71IFpI84awopxf1UA7yj0H9InsaQ
-         +dB3TUOLyHt3fQngvMtt/Kl6ISJ0qdW03CNffh9JYPgem12Ll71LMXXKiGDvKQ3h4Voo
-         SA+s9karmynh+UjOqA+wNtWRaYdK/uGy5wkkQAROIRdFm09537Z1Z11DE0lZu/9xo+9h
-         a1O25zq4jdPM8cAQbop0vDtAw++sTFHPPS+Byy9i2Qq5631xpoPynB3ykPur9ZnnOYmS
-         KP7DS5jB07mG5K2v/KnpX3231OqhViBdQa/o0FA0Oni/e2ClxDxyt0JK8CJjdVGQ7XQ9
-         STsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782402714; x=1783007514;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XaN+L0rplw4GK7Sfc4WHtZLm/QYscT75GFb5hPkpKto=;
-        b=IzXrbT8QGBnX+ntPLNjncu09ZjZIBb8sHCuWPJfFyVlS+yyzkKQZvTFveDEizGuUUk
-         upvSAzfvxyMQmF65cYPVA6QUZBLg7flfHkYYOvzYhk0qJCZMzO0VwHZX4B3S3md7ylhH
-         1n6T/tM4RIlAWltrvik+/y3FbLuZ8vlb56JnHN/p8BU6VtohpVnHUVNBpR9+4ltoZMNp
-         XolgK8k91B0WM62+SjJ6amyIsTYJ4Qy03mj3Agxt/ImwqQz005tYELqs7lAYsBXMzicJ
-         ZceLlEK/kuZYP9jncHtlOm4G6HYpvcyDzjQaR5v4wcN1U4iDEjTxqXvhh/2JFXuxvFQs
-         LU4Q==
-X-Forwarded-Encrypted: i=1; AFNElJ/QseE2+szcN0LBrCF/cQcgX+5RDt8FejAPd/IEQfqBhEIKuvnzF20wAjdMEsCjtNsn+8n46A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx5l+dYp39PXMBm5pa4LsZ6nGmWHinOUtGFLQBDWQXt+RIkPU7n
-	icqvqLRtbQv05EAGeX536xdG03DezYyTdSAIW9CoW1w177862MbjhR63F0ZxhhHWlOREadOjj3N
-	VT11J6RLOtxuf5/m0JnS/lsiW1VRJ5kIKMWe36rebHTFb3L9jaO9spnpwZQ==
-X-Gm-Gg: AfdE7cl1QmbJ1Hzr+92VF+0FOB5YCY0fmJ8VNzYxCcUWlHx1zSiLKLw035Ifm3FzLp7
-	ird7AE1G6ikfq3DU+jQHPf4BBp7YwoBHov5U5/EqElFBAdk6R1X3rKr1Rbn/MNpRSSnTXr+hvG1
-	VskKtvbhyZxfdVcNgCHnjxAXHl9SoaLSt31wAbKLfuJuEmXOy6xEiC+r1BVKT//Z953ujtt5hSx
-	SzDKANZ/5UvQAXco3iAcsOMaRCJ9H3imljcfynKO0m9zyMGVdjt49lyxwGJfdJ+oq7Woz7nRZEo
-	g3EGj1Wr5gKnDOrLicDK5Vri/LQXrjjWFCORSm8QxMK8Ms5cvTanCWg22a8xjWEfxi5t57/PPxI
-	IBTPLgv8xtuIpWx9zOIB5uscWrb9y0KLxpg+Q7fVUAGEY+kDoYnIJ9Ns9JDDh
-X-Received: by 2002:a05:7022:160c:b0:137:fec9:8ffb with SMTP id a92af1059eb24-139dbb69b90mr2427654c88.25.1782402713727;
-        Thu, 25 Jun 2026 08:51:53 -0700 (PDT)
-X-Received: by 2002:a05:7022:160c:b0:137:fec9:8ffb with SMTP id a92af1059eb24-139dbb69b90mr2427626c88.25.1782402713025;
-        Thu, 25 Jun 2026 08:51:53 -0700 (PDT)
-Received: from hu-ashoraj-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-139d8f77602sm8736337c88.8.2026.06.25.08.51.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2026 08:51:52 -0700 (PDT)
-Date: Thu, 25 Jun 2026 08:51:50 -0700
-From: Ashok Raj <ashok.raj@oss.qualcomm.com>
-To: Rik van Riel <riel@surriel.com>
-Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com, robin.murphy@arm.com,
-        joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, jgg@ziepe.ca,
-        kyle@mcmartin.ca, ashok.raj@oss.qualcomm.com
-Subject: Re: [PATCH 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
-Message-ID: <aj1OlqBtTOUSFm-h@hu-ashoraj-lv.qualcomm.com>
-References: <20260624030853.2340880-1-riel@surriel.com>
- <20260624030853.2340880-4-riel@surriel.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="SHMsP9Q2"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=p+YfkeioAkESHwuAMH+tQRQAGP9z1Oxh8ePqA6OwOGO/btM/hftr5TQkTX5fzosxNdrtVKS+u7pTvt6nxbDhCz3ijl6rbYB1dEgjT2kObiUpEdrD9fKXxGIv/HRZzTFxkX9/sem2nBJllnMUIjatTeE/bguSXKzRv9wxkcCNoV6FvEYEbdq5tEjSrmNk3Z2R0hRzh0uAj3Yja+oGZcHAn7zmNqMfi0mFpz0dzdrPyGsxUVfnvAuPrlmSu80YFsD/A7P0MJV9eEiakkbx49W10ywgjGJi4141ckJssxHcEe4opk6oMPCvTDttskDaNG9xPx4aQg+pkN/WPVDsrQxAZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=T73PYQ8ormNa+VXYN7xGbGdrRn8gQHmKt+uqHwHtHVs=;
+ b=K0CDsIz2qEhORwuWkXQdJ64Ji79kdH96w+qtW4wd+Exdsya/qOXaZwOuon2K/Ye2VwlKzI9rSytCpCkjX3diBO6XgooBKlp8BWs9VkGa2ETqW7zqT1V5Wjn3TjTA4PRSQPG9gZ/PzLslfLtAHMra288k3d21s4ECjKO/L1LGNi+QsRkxALFQTFu22o2Uob+QY+KnmJ/hPkZI4lWFzNdpM+aaRNPVU6QbXmgp8zXUCUecgqIbSV5j0dTtWyIClaZTZOYHBFDf1nxatXUAM5Lx/VY0yifklpDKfWOc2ia+ag48JhS9dnWNlUuzOsMqW25nyD/B7UT+oDU6W/zN9QnrlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T73PYQ8ormNa+VXYN7xGbGdrRn8gQHmKt+uqHwHtHVs=;
+ b=SHMsP9Q21VGZ+e8DHQ/nS9ygWGJ/31gN2DQDs2MP0ZYN2X/8IpCytYTwI/EI0wl3dDFUYp7nOsop3iQKtPSkoO26QQhyoFtY3erIYVREAoSpqAViZIsSs2GZGS3bU+D2dIIhVkyFYwjJrQs1mx+YYB4oCcG+r3kj7UwChBth7QCV/Bmm982V1LppdrwF+cO/iqi8WR+clDOUkgZ9qIuMjfsME5O7x1sAYwjMagArdUoZwgRmh+lRg2nkMIhacHS8wmDhdlgCtw8kC+fWQmjIe0Q1Q3ZkyKic6kkWIN3e1Ra8nnVNsJ1CtFJBeHJhQ88c2AoflZljmlfKKY0Kj7PE1Q==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by DM4PR02MB9264.namprd02.prod.outlook.com (2603:10b6:8:104::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.17; Thu, 25 Jun
+ 2026 15:53:54 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0159.007; Thu, 25 Jun 2026
+ 15:53:53 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: "Du, Fan" <fan.du@intel.com>, Michael Kelley <mhklinux@outlook.com>,
+	"Miao, Jun" <jun.miao@intel.com>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "chenhgs@chinatelecom.cn"
+	<chenhgs@chinatelecom.cn>, LKML <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
+ used/hiwater tracking
+Thread-Topic: [PATCH] swiotlb: eliminate per-map atomic contention on
+ used/hiwater tracking
+Thread-Index: AQHdAl427ISAWK+xiUOEbDzqfvGrgbZLbReAgAN3FYCAAIy50A==
+Date: Thu, 25 Jun 2026 15:53:53 +0000
+Message-ID:
+ <SN6PR02MB4157761C37193172603E6AFDD4EC2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260622122114.2563254-1-jun.miao@intel.com>
+ <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SJ2PR11MB8498277BE45D32A81ED07D9D99EC2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+In-Reply-To:
+ <SJ2PR11MB8498277BE45D32A81ED07D9D99EC2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|DM4PR02MB9264:EE_
+x-ms-office365-filtering-correlation-id: 4575761f-10ae-4694-4be6-08ded2d1f547
+x-ms-exchange-slblob-mailprops:
+ 02NmSoc12Dcj/mAxI/NGvzdUkjNASRo/g+0UZyysfj76+TUTKkwRNXld4d11vojBjWrfU/XyEARTIFvZUI0Y1sY14Lc058oXSH7y/zxlsxM/PD4VNm1PIfeqHB1XguawWAIrX+E/yDuIBYoptTu7kh7Dh6kbyYUEfxyY18NkDJmm4D1AvHjDVm60mAoOfh14iOhpoW/gGEUafdqrRWQFeZifVuJZyJ7bw2d5rimzEfwcAYdp04XyUUsL5bF7q6PevZN14EcBHLJguD6dE1oB7lvTTw8K3t/Fg1/7FxkXCGV8UpMXTa4Y/lqikc9GAN+GtG6nkreEJjxadAiib9OXmvq05aq5WmPAtWZvld3WUprzVBrjrOMiywMqCURI6XKry7nOlDp7pYnUzxspfWVvgdAymQEeFclCpesWXP7F1zXGv8xyBvEvgZXB9g9YZY8HEJmzgdgtOhSIJ4OLrjpo0r0iqOwpblcTI2LOt/UG7jGJJJKvU1Ubv6ZTBzzq/9dkpfvP36D6tctpDUj8v7alRmWR9OIRaCpYVDJfkqUw21OyMMjrSo8VrXlrOQ+R223BwzpAVpK0Mpusv7Cz5sgWrDoRk8T4zNvOxqPJFJksHUZf9BdBMz8FzGsK0t1kJr9Hvd5jSKyr+wJwCZwufNMFVk91pXbkStj0o+9J3tYRVpygQcqYhucUJTtJdy2mbEFF3DLvj1GO5Xp/TENu/zXG+b1PB6RxqW6ZNtcsocva3IpBO51hnOUIBaKe15ASrYT+
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|41001999006|13091999003|19101099003|51005399006|37011999003|15080799012|25010399006|31061999003|19110799012|8062599012|8060799015|440099028|3412199025|40105399003|102099032|1710799026;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?DP4Pu9vYI0kvBD+UESi2biVvSpuPAVpBVM0KtE6ZWpNjl8ZNPkgPdhOEnqAk?=
+ =?us-ascii?Q?LHx8h3VVCkoYWzqinhyzHiniERsfjS7ygQ7ILedDM4IqZEAZ2Xs99XPs4/QX?=
+ =?us-ascii?Q?cF1/8wzgVdJEWT/drb7uQmBsD02+Xse5cjQI8OaABFuglrQ9VkbVU9OvvaXT?=
+ =?us-ascii?Q?C/kOVG7s2/rnVoLi8tTXt8kZSNYA/pKHMtaEb1KZTslARGl4T35ZDpd28fnv?=
+ =?us-ascii?Q?N0UrqLEbjKHzTiaYCyCgF225lIexl3EHsGq8/t5HMB1ap/Hv7Yzk15LYyiLY?=
+ =?us-ascii?Q?CehWxI/CZJWfLbRvm/FNxfjlxv7vAEY86n8pDDDDkEgA8QgJwij9ASyqTX11?=
+ =?us-ascii?Q?pKiWZwUPO6UEWEwkDS2cR4rM2Y394LqUf/bHBV0LpglemVGGml8Yv9g9VVLa?=
+ =?us-ascii?Q?IBzEflLFoh8fqDRX3193fD236Nx8Asnee7ZG1kK28ZdmzeTDyOTsEWBBlzni?=
+ =?us-ascii?Q?npK00Y1XCjXwPHi33/Y1wXV59CoE2ZAW0ET1XgJm4MUurQPTSDP+CMXF3JjO?=
+ =?us-ascii?Q?5oHDFNfDFQNiUneDpekLGH3jxPDsi/BFxOqmAs0VsxCrC7pydijXRPfdo1eW?=
+ =?us-ascii?Q?rcH50Bpjc+bFJXVndfJOJOhTvNeAfNtyL6UjYxUXPYbtvrxo72SW9NEM4AIY?=
+ =?us-ascii?Q?065hd22zeUloLG1m3jNAzhY255XBONR+YqnF5u5CUmjfrwZeYMaI9rx/VX3e?=
+ =?us-ascii?Q?CVT01blv7VBvQIWtTUsy8kgwAdmT+s38w6YzbC7izTPV85keZRdKP5Q6/XLR?=
+ =?us-ascii?Q?/Kc07JXvDQmZRYCTQ8fZ5Wob7pO21uYYWclhOT/qGLZ1QGcNsrudffbtwUtI?=
+ =?us-ascii?Q?vssOXc9cNyGd5wp8dQysonqGqnuzjpzMdF7wKooWqayn/HId0pea5ta6n/wn?=
+ =?us-ascii?Q?F4MvhshkSjCH5tnBe3/QTk+/1VfW4VyR6pHqk/b7ZLzh7Um/D/UVYfmHUhRR?=
+ =?us-ascii?Q?AjF9SfwecU0FCe9aYHJgnUg7bu1NqUBK2YVhZOpOlcX5LtNHKE2+1Dc7p/tR?=
+ =?us-ascii?Q?JI/nH2YD1AV46lBcNIuwqtiV8CotSFFHNMznQF6oQSYo9tUXYb3BDBjhOY4i?=
+ =?us-ascii?Q?reDHEoDC?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?XidlHQrFAUxzapUz1SRAlz/brzWN/xFUJj6sYgF9kqNtIGSQLk1GIPOTjD9n?=
+ =?us-ascii?Q?WUMh13omc0SBl69z9RxzLA7dA8Py85saoqP4ThFlWc6OKKW+ygG6P+CW5+IJ?=
+ =?us-ascii?Q?GzYY6Y4vL/lgp8c0hQK+1StaYn9XALlmVf83y9++iNU4GkOo+rcknBVEYSd7?=
+ =?us-ascii?Q?h6m7BpYFJfbwrIqQKYY12em9WnzW8LrMH7RuUkv0EB1mQsI7XeWNH8SwOa3m?=
+ =?us-ascii?Q?CDEtY9x8fNSkA/k9VDn586HuqMS55P1mJdJgfzjJn0quFFHTiob3j5fI0ADH?=
+ =?us-ascii?Q?HGX/AoUSa7lytTbkt8H9eUPVEBB+jWkxzDP4Zsy0vPt55p5Uut3b6LJvFxW0?=
+ =?us-ascii?Q?8J+qLmxcP3gwT0/gbAswzAMlI7zpZoOXhYKuTZVCj6AK0oO9DAhA8OmaLwes?=
+ =?us-ascii?Q?clKXsVSgyaSUOLKPiaYbMamOPaS5wjMxcKd3k5M5pHdclK0N/7UZMUOh+T1q?=
+ =?us-ascii?Q?dU8/RgcdfAVdnfHgWSvOQhhVkbvsj/Rho+U8HiqaL9MteX+zJh/f5//diTk4?=
+ =?us-ascii?Q?FbL7LrdtEJgxq8GqeUw1ZTBm7qlF6eXxdxLL9B9KnOQNAwIfNniQaWWzLpVV?=
+ =?us-ascii?Q?e606N5v2Uy8bEqAGmCS7I20UO8XRG0unZOl6vs5vuXNUMIHAkgNVko1PJxc+?=
+ =?us-ascii?Q?dzn9iuofl6QyPhSWpxx5yVCsb8WA14PKYzLolqH8grDptexuX90jHJdmsWt9?=
+ =?us-ascii?Q?Gcl4mYrD2/8aFxtDxmd3GKHsHin8LLRW93QQ2s3lxWsfo01MYEdxkrnp6nnP?=
+ =?us-ascii?Q?8aF1smtUnNZw/EVOkxAL9DtRjG1YRAf0Gh/7QTduMVIpnhxrvCMSU9o9oHxh?=
+ =?us-ascii?Q?1LirIhjP+pbKs0DOH533QV1cYXuvp7vhAp0kFR+LgznzTnyYCO1+w+2H4smA?=
+ =?us-ascii?Q?gee/t0vtNRyOgxryikuTEtRqJXxVA46wxtAnFUGdxvvyIMFXilIeVnI1frnI?=
+ =?us-ascii?Q?QQvIbLiXVtZMQoeR303u8A80Qcyp/RB2XtRKt7U3DU2kxsTxHROcwQed6oKb?=
+ =?us-ascii?Q?C3ugX5vBW7MhwWskWs90sSxjF3dzLyDYCApsgrTpbLQF6P64d22DDW2/IBRg?=
+ =?us-ascii?Q?CFf0eDNfGsDtGzvs9J7p6Kdlxxr+TGiVqbjA0zrluWjmS86so13P/Ka71h+w?=
+ =?us-ascii?Q?zWrFFAdw/Wsge/junP3BaQuz/LMH7OwH+vjbbIJSXQP43cZN/yOqjHxEZOKH?=
+ =?us-ascii?Q?NaKx9BCqyYVZmSyUaymrcUE9/NUCeSbp571zQE/CyDGiDlXAO5LGR2e96sfv?=
+ =?us-ascii?Q?bnIxNCB6tcSlNcKb7exWquYUxzB9QEgjbI9arcidZW14hcds/65N0xiMOZjH?=
+ =?us-ascii?Q?J90TmC2b/j+UxCeUmpgZ9cPB9RRs/sLFBBXpkU5iSyZCCwI+kH3iT+DnZ/F2?=
+ =?us-ascii?Q?KNhmVJw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260624030853.2340880-4-riel@surriel.com>
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI1MDEzNiBTYWx0ZWRfX0zogLzjgJBbk
- kML+3NjRm9PfMh7auC8ZUBCgg6ccRidMkUI2NklooRz+8fif48wCUpmxqu9hspbGNpQDBKhPlRE
- hhSpkAVu2KunMAZN1W26HuNeK7zX3C4=
-X-Proofpoint-GUID: 0my0Vdu0kkdyRiVE03xPl84DL-zZWQxa
-X-Proofpoint-ORIG-GUID: 0my0Vdu0kkdyRiVE03xPl84DL-zZWQxa
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI1MDEzNiBTYWx0ZWRfX4qc2uRGG6HtR
- Y11DavgLxUONFASuDCxhrEMu+sAF6HPJxyrYBql/d2/ZM0tMNWOebaz2cZEjXEObOB049r3BY7x
- rmMZRGy2iVDz4tBLK57lzY4cfXVtiAXw0oxouLpkYL0843S7IPGifMG2iAQF9pY/nKPzchv2jrP
- oJVJfely1FkSIx5OY/q/NZ9Ri8PzAaeJWhyj8aamcfoqrHR2eG/IHrWgJGZQTYwNEHBq0ilJKgw
- g+Xd48b1Y+yAbTOczsxYmllZtMZD7v6XhH1Gvi4YzB/QhAMuwrl9GSUrQ15bQkGqJ3SIQHvfPED
- qs6woDyqOxdKfe+m014JGfSzOgbsiS31zYSkgSZC5EmrPzXeRrn9UCk6q7gtK3UFEZl4Q5Fvk+J
- od90Nk7YtiKtATQJPb4Z+70jd8bMRogJnGYhdftfSH9m2DC0pmatvb6DAYpAMuWiTl6SxFSAmLW
- BmjNVX8+1jB5rX1WPLg==
-X-Authority-Analysis: v=2.4 cv=Z+Xc2nRA c=1 sm=1 tr=0 ts=6a3d4e9b cx=c_pps
- a=JYo30EpNSr/tUYqK9jHPoA==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=mOSHGkzkEfEHChMdZykA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=Fk4IpSoW4aLDllm1B1p-:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-25_02,2026-06-24_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 malwarescore=0 bulkscore=0 suspectscore=0 phishscore=0
- spamscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2606250136
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4575761f-10ae-4694-4be6-08ded2d1f547
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2026 15:53:53.7871
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR02MB9264
 
-On Tue, Jun 23, 2026 at 11:07:36PM -0400, Rik van Riel wrote:
-
-Hi Rik,
-
-  Thanks for the v4 redesign — the in-place marker approach is much cleaner than
-  the delayed_work/llist scheme from v3, and it directly addresses the
-  retry-forever concern I raised earlier.
+From: Du, Fan <fan.du@intel.com> Sent: Thursday, June 25, 2026 12:30 AM
+>=20
+> > -----Original Message-----
+> > From: Michael Kelley <mhklinux@outlook.com>
+> > Sent: Tuesday, June 23, 2026 10:35 AM
+> > To: Miao, Jun <jun.miao@intel.com>; m.szyprowski@samsung.com;
+> > robin.murphy@arm.com
+> > Cc: iommu@lists.linux.dev; chenhgs@chinatelecom.cn; Du, Fan
+> > <fan.du@intel.com>; LKML <linux-kernel@vger.kernel.org>
+> > Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
+> > used/hiwater tracking
+> >
 
 [snip]
 
-> +/*
-> + * Remove an IOVA entry from the maple tree and free it.
-> + *
-> + * This runs in atomic context (DMA map/unmap can be called from hardirq,
-> + * softirq, or with spinlocks held) and must not fail. Erasing an entry can
-> + * require a maple tree node for rebalancing, and mas_store_gfp(NULL,
-> + * GFP_ATOMIC) can fail under memory pressure. When it does, overwrite the slot
-> + * in place with IOVA_DEFERRED -- an in-place store needs no node allocation and
-> + * so cannot fail -- which keeps the address range reserved (the allocator's gap
-> + * search treats the non-NULL slot as occupied) and lets the struct iova be
-> + * freed now. The marker is erased later by iova_drain_deferred().
-> + */
->  static void remove_iova(struct iova_domain *iovad, struct iova *iova)
->  {
-> -	MA_STATE(mas, &iovad->mtree, iova->pfn_lo, iova->pfn_hi);
-> +	unsigned long pfn_lo = iova->pfn_lo, pfn_hi = iova->pfn_hi;
-> +
-> +	MA_STATE(mas, &iovad->mtree, pfn_lo, pfn_hi);
->  
->  	assert_spin_locked(&iovad->iova_lock);
->  
-> -	if (iova->pfn_lo < iovad->dma_32bit_pfn)
-> +	if (pfn_lo < iovad->dma_32bit_pfn)
->  		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
->  
-> -	mas_store_gfp(&mas, NULL, GFP_ATOMIC);
-> +	if (iova_kunit_defer_erase || mas_store_gfp(&mas, NULL, GFP_ATOMIC)) {
-> +		/* Erase failed: mark the slot in place and defer removal. */
-> +		mas_set_range(&mas, pfn_lo, pfn_hi);
-> +		if (WARN_ON_ONCE(mas_store_gfp(&mas, IOVA_DEFERRED, GFP_ATOMIC)))
-> +			return;	/* in-place store cannot fail; entry stays put */
-		/* 
-		 * <-- deferred_lo/hi not updated and range stays
-		 * occupied for ever?
-		 */
-> +		if (pfn_lo < iovad->deferred_lo)
-> +			iovad->deferred_lo = pfn_lo;
-> +		if (pfn_hi > iovad->deferred_hi)
-> +			iovad->deferred_hi = pfn_hi;
-> +		free_iova_mem(iova);  
-			<--- only reached if second store succeeds?
-> +		return;
-> +	}
-> +
-> +	free_iova_mem(iova);
-> +
-> +	/* A successful erase means memory is available; clear any backlog. */
-> +	if (unlikely(iova_has_deferred(iovad)))
-> +		iova_drain_deferred(iovad);
->  }
->  
+> > > +	pool =3D &mem->defpool;
+> > > +	for (i =3D 0; i < pool->nareas; i++)
+> > > +		hiwater +=3D READ_ONCE(pool->areas[i].used_hiwater);
+> >
+> > Let's ignore the SWIOTLB_DYNAMIC case for simplicity. The approach
+> > of calculating a separate hiwater mark for each area, and then summing
+> > those per-area hiwater marks, can produce very wrong results.
+> >
+> > Consider a 64MiB swiotlb in a system with 8 CPUs. There will be 8 areas=
+,
+> > each with 8 MiB of space. Suppose the workload putters along with mostl=
+y
+> > smallish I/Os, say between 4 KiB and 32 KiB. If each area has 16 I/Os i=
+n
+> > progress, the area hiwater mark might be 256 KiB (16 I/Os averaging 16 =
+KiB
+> > each). Summing across areas produces a hiwater mark of 8 * 256 KiB =3D =
+2 MiB.
+> > But then suppose a 2 MiB I/O comes in. The hiwater mark for the area th=
+at
+> > handles that I/O will grow to 2+ MiB. After the first big I/O finishes,
+> >  another 2 MiB I/O comes in that is handled by a different area, whose
+> > hiwater mark also goes to 2+ MiB. Pretty soon all 8 areas have a hiwate=
+r
+> > mark of 2+ MiB, and the total hiwater mark is reported as 16+ MiB. The
+> > old algorithm would have reported 4+ MiB, which is accurate. With
+> > higher CPU counts and more areas, the discrepancy can get much worse.
+> > This is a somewhat contrived example, but the problem is real enough
+> > to make the reported hiwater mark be unreliable.
+>=20
+> You are correct here, I like your way of thinking.
+>=20
+> > I'm sure the contention for the total hiwater mark in the current code =
+is
+> > real, but it's in the context of a lot of other CPU work that is being =
+because
+> > of the bounce buffering, including copying lots of data to/from the bou=
+nce
+> > buffers. Is that atomic increment operation a bottleneck even in the
+> > end-to-end context of doing DMA through swiotlb bounce buffers?
+>=20
+> Practical benchmark show case the highest IO performance for each TVM spe=
+c.
+> even if a few iperf (4)workers would cause the contention here.
+> My guts feelings, yes, the real workload probably hit the bottleneck here=
+.
 
-  If the in-place marker store fails and WARN_ON_ONCE fires:
+Just curious -- what is the NIC in the TDX VM? I'm most familiar with the
+Hyper-V case, where the NIC is the Hyper-V synthetic NIC. That driver
+uses dedicated send and receive buffers that are allocated and decrypted
+when the NIC is configured. Most NIC traffic goes through those buffers
+instead of the swiotlb, so I probably haven't seen cases where the swiotlb
+is the bottleneck for NIC traffic. I do see the swiotlb as the bottleneck f=
+or
+disk I/O traffic, but the data copying tends to be the gate rather than the
+allocation and freeing of swiotlb buffers.
 
-  - free_iova_mem(iova) is never reached — the struct iova leaks.
-  - deferred_lo/hi is not updated — the address range stays permanently
-  occupied with no way to reclaim it.
-  - After the first occurrence, WARN_ON_ONCE suppresses the warning on all
-  subsequent hits, so further failures on this path are completely silent.
+>=20
+> > Another approach to the contention problem would be to have a separate
+> > CONFIG option that is narrower than CONFIG_DEBUG_FS, so that the
+> > computation of the hiwater mark can be dropped entirely in production
+> > environments. Or the setting could be dynamic at runtime via a
+> > static_call, defaulting to not computing the hiwater mark while still
+> > allowing a sysadmin to turn it on to see workload usage of the swiotlb.
+>=20
+> That's counter-intuitive from my perspective.
+> With global counters, the observation, which itself impacts the performan=
+ce,
+> wouldn't be able to tell the practical characterization, that's commonly =
+lower than
+> max performance, in turn breaks the semantics of what's it for.
 
-  I understand the comment says this cannot happen, and if that guarantee holds
-  then it's fine. But if it can, a BUG_ON might be a cleaner way to express
-  that invariant — it makes the intent unambiguous rather than leaving the
-  impression the failure is being gracefully handled when it isn't.
+Agreed. If the global counters affect the performance and throughput
+significantly, having an accurate hiwater mark loses some of its value.=20
 
-  Happy to be wrong if I'm missing something about the maple tree's in-place store
-  guarantees.
+>=20
+> Even without those global counters, if user wants to know the hiwater val=
+ue,
+> snapshotting used value(sum of each area as current behavior) periodicall=
+y would
+> produce meaningful value for workload evaluation.
 
-  Cheers,
-  Ashok
+I'm a little skeptical of the value of just summing current usage. Doing so
+tends to miss any spikes, and the spikes are the problem. If swiotlb capaci=
+ty
+is exceeded even for a short spike, you don't just get a performance blip.
+You get I/O failures, which at least on the disk side tends to be fatal to =
+the
+application doing the I/O. Maybe the networking stack recovers well enough
+and retries, resulting in just a performance reduction. But I've always tho=
+ught
+of swiotlb exhaustion as a fairly serious problem to be avoided at all cost=
+s.
+That's why CoCo VMs allocate so much swiotlb space, even though most of
+it is never used for typical workloads (at least in my experience).=20
+
+Michael
