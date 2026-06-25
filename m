@@ -1,517 +1,171 @@
-Received: from mail-pj2-f4.google.com (mail-pj2-f4.google.com [74.125.227.132])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD19387363
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 09:34:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.132
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782380066; cv=none; b=DQ/BYngWoGsRhUQF2+tIdy8lFg9B/JpU878DVjDkwE6Hybekn8S2qLE9XU9cyhPELnmP0seRKngXnffThNTB2XzrdOFZrXB60Wm0pF3UhhNLYPmv/GGM8ZL1Mj4I71PhyRjx9Y3SqMkIyrgD+ccDirJIzRqX4oVcjpAbAQrK764=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782380066; c=relaxed/simple;
-	bh=YMMr9RRiGqMF7PQhm0kMMZ6gvvbut+7gbRTPmff6HJs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uAxJQOaacaBSJfy2ykUT+71KXVa5zzlP6nJUolD4mDUxUx4VJhl1xk3mQSYHCkCrx2OWNwzUF6CtvpVSebZuXH3vu4W09cLOfACpFI14dAyKTYnUavn5T9ls2gIFY+fNtL/ssNIbTY34aMsZ+vrzQS566LtZYkCsMeUCw2r1uIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rDc71A49; arc=none smtp.client-ip=74.125.227.132
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F4B42882C5
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 13:44:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782395046; cv=fail; b=DWZZI+EmJf6SL61s0NlFQRMDmBwSzyCm7EV1T1gueEo7z/7oB8lBD7L8tgBCWLobRxmS0yKbbHTrRpmjTGb7cJBsjVTruku0IckRSmfeqlRbJWLVLhQulJmrtuaJEnf6ZNMqKVs/6dfLVJJnPko8y76gjlVtC96EF+FAlh3SLPo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782395046; c=relaxed/simple;
+	bh=dqiWR4pGKoxYrSkxld8PrU8hLA9FJ6VcQ0cu9cbYgFE=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=FQpKfaqXuo6DnA9uPvZRh6HnwafYVz6IdU0/hO1V7bSYJtZyllKRhfk3bxi3xtl7v/RD9wJQ4hmSIcSc16ANox2pYvbl95p8tyBGRuz+qWoDhP5cQmSLJFZ2DnnoanYO5E3yY8wWEL2X2FUGMlwPHpWcZsCicT72q4d7yNO4MrY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i6T10QXj; arc=fail smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rDc71A49"
-Received: by mail-pj2-f4.google.com with SMTP id 98e67ed59e1d1-37dcc1ef35dso25957a91.0
-        for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 02:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782380063; x=1782984863; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=s1qPFW7V6FcXhucM4uqGUnMjNmz8eHjPw7xkWHkZ93k=;
-        b=rDc71A49jadLw2XdDIfXAWyyh5xXFmaeARlwLPoC48hNMYYEWuebELlQdo2w9aQVNf
-         JwaUXuN+PEl1btF9dd/J63MpL/D7F+JDl8EbH0TyP3pRmGkOn+VsDi6X4jltaEaItgQC
-         aQoQzN84nga8ph7NsxK6jROTE/Dwofb1+RHiLMsdBtUBfX+//xtwO2zh7FR6veY4XbXR
-         RdpyJfANQLbghmokPZDVE4yKpc+ZsrOOWZwMOGTche6sewvdUNVBsMH0prP/0AZzq93Q
-         0WLer+Xgs9m/UvtYvtvBjJ4xMlSM6OeGGQ21KwTbpUfbscPO/YKZTLGArJkd2R3Nue7R
-         ba0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782380063; x=1782984863;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=s1qPFW7V6FcXhucM4uqGUnMjNmz8eHjPw7xkWHkZ93k=;
-        b=BDqxpsbJ5L0ghIX4pt8U73VlQ4pNkvZfN6cG/1yQ65WeOA8KwMwXSbk2PCEVPNaLz2
-         paYcXj+omWWxPbZqNtFu6c38JOSQ0gtiMcwkts5I9hq9VdbYrFDcYJpIsoeh6t0zvxHP
-         4aDFGJjgBTDCqOiqipbr/uQnZrEnlTWv8jly+StoXyFS6mfm8JGD2BsESt1rLj2dKPUJ
-         SHKHSQAgO+cBh5L5kWJ6L62BO8DGSKMeQ2Vhp0NRf0Ghc7o5xnL+55/+jwXyl+NtHo04
-         xB943CQpOfJexLHlht/sib5k4DWO5s/xEg0WMbOtMPGghl64N2m2J17n7LMbXvcO5KxN
-         BY0Q==
-X-Gm-Message-State: AOJu0YyvoHuRq4SkYSS2IdW5HlT+CeF/P+8/dOllN70DXJerP8a4flmT
-	KuuWypmr8fisCsSfC9vAdHc4Vh+sBXdaCVvjSgDf+xRKsM3geP5Tc/iA
-X-Gm-Gg: AfdE7cnqMIXyjXpnmlaG2pYz+nlWveFYRksZcf4ahsh64AMhqAKVKyc4JeclU4lRQrk
-	z6cAjHoDAJJam7EGnzpd74JDNTeXRDLfA5+eaoufeyKNVc9rqCskoISghhbv+mZ9IibkAQJtGxS
-	WF2RU0YhyN0EXQhcnTB6AixY6HAIvHoviXN34Q3jRdBR7jnzVs5f+IVbdUkWQmaqwQh9H+7ugUe
-	VbQDHY/imrO+tdR5N02P1SuDuZwg+n20xSBYFstKrmLxcy/ZPzLxgvbl0aUh7iLoS0ZyhwJZbUa
-	pb16x3Wf5fki6RflvmvGvCMdi05wySDYcAAngayo1AhpbDe6H72eH33KjOOt4tvOJmp0CoSnOdw
-	lJLHrAgiCW0uShVIFXUTluT/21X55gk08nl+pcFWcJYRQcK186AIrgdA6Z4J925Y0PhoOqJV9Rl
-	YEANoiVHqjtlP+XmiHx3OmV262mYo5jLfRvEIb9Q==
-X-Received: by 2002:a17:90b:3f4b:b0:369:1dbb:4732 with SMTP id 98e67ed59e1d1-37df8dc18a1mr1469532a91.0.1782380062722;
-        Thu, 25 Jun 2026 02:34:22 -0700 (PDT)
-Received: from q-System-Product-Name ([129.227.183.200])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37df400b68esm1473863a91.13.2026.06.25.02.34.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2026 02:34:22 -0700 (PDT)
-From: "bingyu.xian" <shanbeeyoo@gmail.com>
-To: tomasz.jeznach@linux.dev,
-	joro@8bytes.org,
-	will@kernel.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	aou@eecs.berkeley.edu
-Cc: iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Bingyu Shan <shanbeeyoo@gmail.com>,
-	Quan Zhou <zhouquan@iscas.ac.cn>
-Subject: [PATCH 1/1] iommu/riscv: RFC: mark endpoint ATS-broken on ATS invalidation timeout
-Date: Thu, 25 Jun 2026 17:34:16 +0800
-Message-ID: <20260625093416.4023451-2-shanbeeyoo@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260625093416.4023451-1-shanbeeyoo@gmail.com>
-References: <20260625093416.4023451-1-shanbeeyoo@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i6T10QXj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782395045; x=1813931045;
+  h=from:to:cc:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=dqiWR4pGKoxYrSkxld8PrU8hLA9FJ6VcQ0cu9cbYgFE=;
+  b=i6T10QXjlimWzD3oouUs3Vg48dLebwhu69yEgxZTdAWVmUWnAemob1Ph
+   8zo5c6F27tGyk0GdwrFl3Nuytj7hf5UsNxAtHttP1DYDQD8evW4/PceGQ
+   xSV+6VMTMBbsLzkNBvs/6WKlJlw3nn5NAsutvdwYDu42CC/6miz137gCJ
+   GAbCP8sketGOnIw56vZwNSvFlfoqCxI+bhwIcDlRzFM9a0pamlfj14/4p
+   J20KTX94zjFainwKc+kuU8M2YO61x9kIM3VaffUm+B8Fob615kPhdWM1S
+   odNtWm6rebdbWsrbmETvP/qyHZ6F3K6BJl3ctBmkvsO8F0KddJJUWCneZ
+   Q==;
+X-CSE-ConnectionGUID: IWWGVyXTQRmwlOO5OOaS5w==
+X-CSE-MsgGUID: dK8pkEg5QUK4K8+1yw6x6Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11827"; a="94566666"
+X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
+   d="scan'208";a="94566666"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 06:44:04 -0700
+X-CSE-ConnectionGUID: aWIMoYTYQ+qR5Waux1gnCQ==
+X-CSE-MsgGUID: uIKOyBL6Rf6bQLt+biaVzA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
+   d="scan'208";a="254419525"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 06:44:04 -0700
+Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Thu, 25 Jun 2026 06:44:03 -0700
+Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
+ FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Thu, 25 Jun 2026 06:44:03 -0700
+Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.8) by
+ edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Thu, 25 Jun 2026 06:44:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dudlEsijZOrv5IdjViUQrrCHiQyTNvnRqVMt6YNN/HSHt9lnhjLOCG9DDyIX6SiForWoDVWCpUAqKbeem1M5uLBWmwCkgn5WOuveX64w29qj6VZYXK2u9rwBi+BZQapCMvDvpzm8UWJkJqf5+mqbIK52kpWQ4aKoPG1f75E119nePRcxHZutmGl7tnD/xjSyGHu0Qv2BIzViMg4+7H9DT4XTJXWJgaajYjUTTytyIXua+crSWg+imXdSsD1SYx93HrYAK0C1UWpSFfzFqToD7bnB6WbrhzMCbazoouSLRLh/V156NB6sLFdZVDPNYjij/BfdVqeUWUiEeEGRlI7gww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=15cufiSprv2STsKealIB8cwCWdme1J0owPt3u2Qvt4A=;
+ b=qSGeRryb/pwbHBpwaijAq3k0saW03J27dNQbZMgWVKQTjDiCNdh07/M+oW4ookNzeGggduWk1L4E6CikQn1xALepsLcOv3nAf0Tkp0zC7nTHN4MMyhTd6m3hbdh09gbU44Vz2HGnQqdlRTvi9PneU0ZuKtkvdryo37fjWou8FQxic8PAutnwG/RRKLrXj4ciXxqPcBaDyg/eeUi15AUo7cN6i+yR/G8fUtkgqOvrAg+V2oW0oVV2AORudzHTZxogvurh1HKN3Y/G5PyzVVblD8KrQCtJ7eqettnKR290O+h/i9h5n7xGwahFJX8LjBZCqKF/qWQ4fDgo0xIdUwI8Og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
+ by CY8PR11MB7778.namprd11.prod.outlook.com (2603:10b6:930:76::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.16; Thu, 25 Jun
+ 2026 13:43:53 +0000
+Received: from PH0PR11MB7424.namprd11.prod.outlook.com
+ ([fe80::c448:1138:6981:52e2]) by PH0PR11MB7424.namprd11.prod.outlook.com
+ ([fe80::c448:1138:6981:52e2%5]) with mapi id 15.21.0159.012; Thu, 25 Jun 2026
+ 13:43:53 +0000
+From: Krzysztof Karas <krzysztof.karas@intel.com>
+To: <intel-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
+	<iommu@lists.linux.dev>
+CC: Andi Shyti <andi.shyti@linux.intel.com>, Robin Murphy
+	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Janusz Krzysztofik
+	<janusz.krzysztofik@linux.intel.com>, Sebastian Brzezinka
+	<sebastian.brzezinka@intel.com>, Krzysztof Niemiec
+	<krzysztof.niemiec@intel.com>, Krzysztof Karas <krzysztof.karas@intel.com>
+Subject: [PATCH 0/3] drivers: Improve memory management for large object allocations when i915/shmem is used with iommu
+Date: Thu, 25 Jun 2026 13:43:39 +0000
+Message-ID: <20260625134342.1102921-1-krzysztof.karas@intel.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TLZP290CA0002.ISRP290.PROD.OUTLOOK.COM (2603:1096:950:9::8)
+ To PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR11MB7424:EE_|CY8PR11MB7778:EE_
+X-MS-Office365-Filtering-Correlation-Id: fbb64936-e05c-49c1-c6c8-08ded2bfcbd4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|18002099003|6133799003|56012099006|11063799006;
+X-Microsoft-Antispam-Message-Info: CT1iJVaRPL6I9ihmxBc8CloMTeYlX7gRXvBY+sVvNl8B38pwhcSaRT3SHPn5wpN6/5WGhssoDKs1LBdR0C83MhpZarRPSjpUysjMAr5sfajX7e6vNAPrACs+2+v8dpVzFgtijgLVM5DPfDOAvCTUrXaM8/3IaUwpmPl5kTmqLojYQ9UabVuzhhsSW/YjQKemiUB8CWA2Y6o7HadgMklYDYDuPaj7wOuXIxdBLWCfjo3N7RYkUbNhHLFt75dNCI1KV+IkiekwoOO1Fp9lKjxLoWJubQoBzenmFsRbATqbGXyJnrxX/Bd4x/bmhZqhK0MaaFBQeOXXoJIXTmjYr6cyKF7RPSEp/nb38YpPmbH1qHoyn0Bn+3nlNPi3CQ85iiU3YjIFG4Eg+g8z7roW3MaUcPBxbce6B3c8kDPEbownlWyn+k1XS70u9GSWdXozXI11yrwZW+8i5DVAH5R8ecTCsGLtm8rfl0g77g2u7+XOJ62kxCyXtc6hRI/HYbO4BwjweLN0VfrDq/8X+X1eZHn+HM8bkusQYQVwyXqRNSTzlGpyznWDQWZoPKcPJk6Uvk3eJFlwsIF8X26gfsBgPD8nYlAwp5vR3NhuVYxl988j6jDIIPYFilQe+C9RBmpTrorWxW8hGfUW8lEyxw9SNxOLapFa/r9gXyaHUIzpTMqEZh0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7424.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(18002099003)(6133799003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OBzNO0QT0U7jTy0vPQk55ecIpOYsdLAmKwOJkH+4F6bEM3JKUVAQJyPHCmt9?=
+ =?us-ascii?Q?tCnFOboqL95PMVxGkjyRXD9JicxwkhX2oaxi8plrJknvSuHSfBGcFD3l9/9R?=
+ =?us-ascii?Q?XznQ3RbJW/iSq2A2rRBIyf0pLbWOEK8O49BehxIuAw0cjUuDlTHnYNULaiHh?=
+ =?us-ascii?Q?NEv3Uk0+2AzF7vudpsJvC3/yjDNW+/8ClHoaLU0SwkP14qeeATGVXD0dmnyv?=
+ =?us-ascii?Q?YzBmBTNN+nnPu5RTtlov37wWEuOb+b35L4XrYcDf/gq7zpkGPsrhH+zvvPqT?=
+ =?us-ascii?Q?y++TzlPIOSrzSWGOqWncBhUjt/Qbc3JgFv3x3j95kj8F24KR1NMDaVnpF96t?=
+ =?us-ascii?Q?lMYUF5j9HZkyrwfswmO0Pk0wugCWHlUtuvvdGxyf7K+mm+lNVxQGlWhH19Y4?=
+ =?us-ascii?Q?BlejU0nKIEKanaADEhEFUHHxDWHJjdG4owrI9D6Jz/rGfWVzfiW9ZXgfdKEa?=
+ =?us-ascii?Q?POI3+4FS8Y/TT1cn0JTFvcdn6e204Fv5LTdUnPOjMNz3ecc2LH18MAyUXCl1?=
+ =?us-ascii?Q?w7t2Z3YgfW4/NkpVbF6pKHGrWRh4dxETHkYKwB/Vn4TzM3bc6w1BRRD3kqfG?=
+ =?us-ascii?Q?vK/dzh3wVScxzUS9CcklvRRl0UAVnc6RZQ6wSCApPw9HJWknu6Xrec0p3MyV?=
+ =?us-ascii?Q?hHtEHUMolcrP+fUtup7vJj3Vnr5XCSEi7aLgNyW4YTYMpp+UHT98Q2+XinJq?=
+ =?us-ascii?Q?fD6thc2/UcHyxUwq9N8euvVLege4qwkUBGf12tqgwt+f6vlX67dKwt39h8V2?=
+ =?us-ascii?Q?P6MoRhZbQS3Fcin6cSpnUiwEfTxlrDrux/KLToLmE77wXEY8p/udcF+Ua856?=
+ =?us-ascii?Q?96yRyVjOMfhDUYQlvQgVf7wv5ju7/MZYwH/GMAJL2+ktuoELNVlZwpA6Xab1?=
+ =?us-ascii?Q?M0hK48d/Lvls+n+jyc+jfwaq6N3UBUkAVsT1oK4TUG/QH3p8AdipcvbR0Op7?=
+ =?us-ascii?Q?EhkNLZqE27A6RIriDBh9J43B7ye2lsWIcLjWLgqXnL9VFQi0QfBleT87lMZf?=
+ =?us-ascii?Q?5G5OdGY+VxrT+EiBM9l968HL7PLZ5i1xwS+IvfA7VbIC7juEO+VBUT2gm47Q?=
+ =?us-ascii?Q?3SqkLU0yngoVcGspEuulJs41D3ePwrA8eedHnrlk67WAr7JYVISSfDToK/HJ?=
+ =?us-ascii?Q?LBbMs0LLGr/IMuf6KOXDshvVjO7nKCqlbZRcfP20AmikUxB0adlR1D5+LeWJ?=
+ =?us-ascii?Q?mz58k67z+r4WDftoIZcWQipKmTs8s72yfNva+rm3xVPdyFC4NOcuW0/FlwHH?=
+ =?us-ascii?Q?rbqm9VCzGd9AibtORhH1LjBInJKrInqjdGeLsPGl8nuOHgzIGaeNz2RT/Lp2?=
+ =?us-ascii?Q?+zQUaIECUuqZw6DweGPStB0mD2Mib4nQv85yifG6661YpqFHnIQm+QN1sXcR?=
+ =?us-ascii?Q?z4P+e5qqyFmBX8tp3j3Wu+ngPIlAExm/PmgZQ/aYigixO9AlNaGJxahXnYmN?=
+ =?us-ascii?Q?I7ckGx4vSNZcQkxxjuyPxTzr7JCzxMnfDpF4t/4i6UZzXx+kGlI01mo+ytR7?=
+ =?us-ascii?Q?czSwaaASLoFGjtpr9MP+fgutRT5nMaLYGtP+hwBrupVBcWHOI66mcQ48dX6B?=
+ =?us-ascii?Q?HYos7rgZqofL1GO21m7cmnVKGw21wkfAk0C8cBfrIUun2ShhojaYzcaVXRia?=
+ =?us-ascii?Q?qmM5RDUkhNaUWriIfvEF+o/CjiOCTvfGAGiEN11My/sUE52OR7c8REsH7zwT?=
+ =?us-ascii?Q?lY2i8JtcZskCKk2nM9tEc2/jMAa+b7BTWr/qUPu1KkqK8tWKnGlwi8NVl11b?=
+ =?us-ascii?Q?wheNrM448PcgsG2GiY5YvYxsL7b8X2M=3D?=
+X-Exchange-RoutingPolicyChecked: OeJNS0793mQhK6ubO1CHiXDK3IByvUvFAApltaDiikmTvkkg+CVkId6w+B+hCU80igSneW2Vmrn7a4C5YoT2OeIYiwB7Y69hyXyrO7HViHcsOCFqwAUdmZwcbHCEzFZJT4Cb5gO3Q2caLgQhDliHZxErxYf/HQnQXRkNkz/fQjkDnQW77psz6tcYnR1YE0Ucv7s2S4aSP7im3falCr3b/Dl3asHAeBV5MqvuqTbyYPXxfSzD7/41uqDb9sWIvD6pl5sFNmSp/jYbzaECCMLmMR5Nze6wZdR9/2uR0p5jnKqk8ItCOA6CCsY5KgGrfd1Y7n46fjWqSU8aaFU8sljnBw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbb64936-e05c-49c1-c6c8-08ded2bfcbd4
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7424.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2026 13:43:53.6814
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y/6anyJv5dbirfl09H1yZyMNkfiBGgqtPZojX8AdT5nNQ0+gmxUqk+TYGHABCswPsdbW4AhBWWcDuqSvybfDwN46fandrijQf6Ie5/GQvho=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7778
+X-OriginatorOrg: intel.com
 
-From: Bingyu Shan <shanbeeyoo@gmail.com>
+It was observed that allocating large objects via i915 driver
+(igt-gpu-tools/tests/gem_exec_big/single) the folios and their
+pages were not handled properly leading to buffer corruptions
+during relocations.
+Furthermore, using iommu driver in this context would leave
+residual mappings in memory that could not be released, hogging
+available RAM even after the process ended.
 
-A PCIe endpoint that fails to complete an ATS invalidation keeps stale ATC
-entries and can keep DMA-ing through them. ARM SMMUv3 recently added handling
-for this class of problem (ATC invalidation timeout / quarantine). The RISC-V
-IOMMU driver currently has no such handling: riscv_iommu_cmd_sync() only logs
-"Hardware error: command execution timeout" once and discards the failure,
-with no attribution to a device and no policy response.
+Krzysztof Karas (3):
+  drivers/iommu: Unroll unsuccessful mapping
+  drm/i915/gem: split shared memory allocation table logic
+  drm/i915/shmem: Count mapped pages in a folio
 
-This RFC adds the first, conservative milestone:
+ drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 191 +++++++++++++---------
+ drivers/iommu/dma-iommu.c                 |  10 +-
+ 2 files changed, 125 insertions(+), 76 deletions(-)
 
-  * On a command-queue timeout, read CQH to find the offending command. If it
-    is an ATS.INVAL, extract its device-id (the RISC-V analog of ARM SMMUv3
-    CERROR_ATC_INV_IDX) and schedule deferred marking.
-
-  * The marking worker resolves the device-id back to a struct device, sets a
-    per-device ats_broken flag, increments a counter, calls pci_disable_ats(),
-    and logs "marked ATS-broken after ATS.INVAL timeout". It is deferred to a
-    work item because cmd_sync() may run with only RCU held while the device
-    lookup takes a sleeping mutex.
-
-  * riscv_iommu_enable_pdev() refuses pci_enable_ats() for a device already
-    marked ats_broken, so a broken endpoint is not put back on the ATS path.
-
-  * Device tracking (the DID-keyed rbtree) previously happened only on the PRI
-    enable/disable path, so ATS-only devices were never tracked and could not
-    be attributed. Move registration to probe_device/release_device so ATS-only
-    devices are tracked. add_device() now takes the iommu explicitly, because
-    dev_to_iommu(dev) is not usable inside probe_device() (the iommu core only
-    links dev->iommu after probe returns). Also fixes a latent duplicate-devid
-    double-unlock in the rbtree insert.
-
-  * Debugfs fault injection (inject_ats_inval_timeout) and a state table
-    (ats_devices) so the marking path can be exercised. Real RISC-V IOMMU
-    hardware and unmodified QEMU complete ATS.INVAL synchronously, so a native
-    timeout cannot be reproduced against a real endpoint; the knob schedules
-    the same worker the real cmd_sync() timeout path would.
-
-Full quarantine and PCI reset recovery are intentionally left out of this step.
-
-This RFC is based on the RISC-V IOMMU ATS support series in
-tjeznach/riscv_iommu.next, because ATS support is not yet in the IOMMU tree.
-It is intended to discuss timeout handling policy, not for immediate merge.
-The single patch can be split (rbtree tracking / timeout marking / debugfs)
-in a non-RFC version.
-
-Validated on stock QEMU (-device virtio-net-pci,ats=on) with no QEMU changes:
-
-  BEFORE                          AFTER
-  0x18 0000:00:03.0 0 0   ->   0x18 0000:00:03.0 1 1
-  virtio-pci 0000:00:03.0: marked ATS-broken after ATS.INVAL timeout
-
-Assisted-by: YuanSheng: deepseek-v4-pro
-Co-developed-by: Quan Zhou <zhouquan@iscas.ac.cn>
-Signed-off-by: Quan Zhou <zhouquan@iscas.ac.cn>
-Signed-off-by: Bingyu Shan <shanbeeyoo@gmail.com>
----
- drivers/iommu/riscv/iommu.c | 210 ++++++++++++++++++++++++++++++++++--
- drivers/iommu/riscv/iommu.h |   9 ++
- 2 files changed, 210 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 2249eea885cc..98f580dc5b49 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -14,14 +14,17 @@
- 
- #include <linux/compiler.h>
- #include <linux/crash_dump.h>
-+#include <linux/debugfs.h>
- #include <linux/init.h>
- #include <linux/iommu.h>
- #include <linux/iopoll.h>
- #include <linux/irqchip/riscv-imsic.h>
- #include <linux/kernel.h>
- #include <linux/mmu_notifier.h>
-+#include <linux/mutex.h>
- #include <linux/pci.h>
- #include <linux/pci-ats.h>
-+#include <linux/seq_file.h>
- 
- #include "../iommu-pages.h"
- #include "iommu-bits.h"
-@@ -492,12 +495,56 @@ static void riscv_iommu_cmd_send(struct riscv_iommu_device *iommu,
- 	riscv_iommu_queue_send(&iommu->cmdq, cmd, sizeof(*cmd));
- }
- 
--/* Send IOFENCE.C command and wait for all scheduled commands to complete. */
-+static struct device *
-+riscv_iommu_get_device(struct riscv_iommu_device *iommu, unsigned int devid);
-+static void riscv_iommu_ats_broken_work(struct work_struct *work);
-+
-+/*
-+ * Extract the device-id of the command that caused a command-queue timeout.
-+ *
-+ * On CQCSR.CMD_TO the hardware stops advancing CQH at the offending command,
-+ * so reading CQH indexes the entry that timed out. If that entry is an
-+ * ATS.INVAL, return its device-id; otherwise return an invalid id.
-+ */
-+static unsigned int riscv_iommu_cmd_timeout_devid(struct riscv_iommu_device *iommu)
-+{
-+	struct riscv_iommu_queue *q = &iommu->cmdq;
-+	struct riscv_iommu_command *entry;
-+	unsigned int head, devid;
-+
-+	if (riscv_iommu_readl_timeout(iommu, Q_HEAD(q), head,
-+				      !(head & ~q->mask), 0, RISCV_IOMMU_QUEUE_TIMEOUT))
-+		return UINT_MAX;
-+
-+	entry = q->base + (head & q->mask) * sizeof(*entry);
-+
-+	if (FIELD_GET(RISCV_IOMMU_CMD_OPCODE, entry->dword0) !=
-+	    RISCV_IOMMU_CMD_ATS_OPCODE)
-+		return UINT_MAX;
-+
-+	if (FIELD_GET(RISCV_IOMMU_CMD_FUNC, entry->dword0) !=
-+	    RISCV_IOMMU_CMD_ATS_FUNC_INVAL)
-+		return UINT_MAX;
-+
-+	devid = FIELD_GET(RISCV_IOMMU_CMD_ATS_RID, entry->dword0);
-+	if (entry->dword0 & RISCV_IOMMU_CMD_ATS_DSV)
-+		devid |= FIELD_GET(RISCV_IOMMU_CMD_ATS_DSEG, entry->dword0) << 16;
-+
-+	return devid;
-+}
-+
-+/*
-+ * Send IOFENCE.C command and wait for all scheduled commands to complete.
-+ *
-+ * On a command execution timeout, attribute the failure to a device when the
-+ * offending command is an ATS.INVAL, and schedule deferred ATS-broken marking
-+ * (the device lookup takes a sleeping mutex, while the caller may hold RCU).
-+ */
- static void riscv_iommu_cmd_sync(struct riscv_iommu_device *iommu,
- 				 unsigned int timeout_us)
- {
- 	struct riscv_iommu_command cmd;
--	unsigned int prod;
-+	unsigned int prod, devid;
- 
- 	riscv_iommu_cmd_iofence(&cmd);
- 	prod = riscv_iommu_queue_send(&iommu->cmdq, &cmd, sizeof(cmd));
-@@ -508,6 +555,14 @@ static void riscv_iommu_cmd_sync(struct riscv_iommu_device *iommu,
- 	if (riscv_iommu_queue_wait(&iommu->cmdq, prod, timeout_us))
- 		dev_err_once(iommu->dev,
- 			     "Hardware error: command execution timeout\n");
-+	else
-+		return;
-+
-+	devid = riscv_iommu_cmd_timeout_devid(iommu);
-+	if (devid != UINT_MAX) {
-+		iommu->ats_broken_devid = devid;
-+		schedule_work(&iommu->ats_broken_work);
-+	}
- }
- 
- /*
-@@ -959,11 +1014,13 @@ struct riscv_iommu_info {
- 	u32 devid;		/* device identifier, assuming iommu_fwspec->num_ids == 1 */
- 	u8 ats_supported:1;
- 	u8 ats_enabled:1;
-+	u8 ats_broken:1;	/* ATS disabled due to ATS.INVAL timeout, do not re-enable */
- 	u8 pasid_supported:1;
- 	u8 pasid_enabled:1;
- 	u8 pri_supported:1;
- 	u8 pri_enabled:1;
- 	u8 pri_pasid_required:1;
-+	unsigned int ats_inval_timeouts;
- };
- 
- /*
-@@ -1058,10 +1115,17 @@ static void riscv_iommu_bond_unlink(struct riscv_iommu_domain *domain,
- 	}
- }
- 
--/* Register device for IOMMU device-id based tracking. */
--static void riscv_iommu_add_device(struct device *dev)
-+/*
-+ * Register device for IOMMU device-id based tracking.
-+ *
-+ * Takes the iommu explicitly: at probe time dev_to_iommu(dev) is not usable
-+ * yet, because the iommu core only links dev->iommu after probe_device()
-+ * returns. Tracking is bound to probe/release so ATS-only devices (which
-+ * never enable PRI) are tracked as well.
-+ */
-+static void riscv_iommu_add_device(struct riscv_iommu_device *iommu,
-+				   struct device *dev)
- {
--	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
- 	struct riscv_iommu_info *info, *rb_info;
- 	struct rb_node **new_node, *parent_node = NULL;
- 
-@@ -1077,7 +1141,9 @@ static void riscv_iommu_add_device(struct device *dev)
- 		} else if (rb_info->devid < info->devid) {
- 			new_node = &((*new_node)->rb_right);
- 		} else {
-+			/* Already tracked, nothing to do. */
- 			mutex_unlock(&iommu->devs_mutex);
-+			return;
- 		}
- 	}
- 
-@@ -1127,6 +1193,115 @@ static struct device *riscv_iommu_get_device(struct riscv_iommu_device *iommu,
- 	return dev;
- }
- 
-+/*
-+ * Mark an endpoint ATS-broken after an ATS invalidation timeout.
-+ *
-+ * A device that fails to complete an ATS invalidation keeps stale ATC entries
-+ * and can keep DMA-ing through them. Mirroring the ARM SMMUv3 ATC invalidation
-+ * timeout handling, disable ATS on the offending endpoint and refuse to
-+ * re-enable it, so the IOMMU no longer relies on the device's ATC being
-+ * coherent. Full quarantine / reset recovery is intentionally left out of this
-+ * first step.
-+ *
-+ * The device lookup takes the sleeping devs_mutex, so the marking is deferred
-+ * to this work item from riscv_iommu_cmd_sync(), which may run with only RCU
-+ * held. It also serves the debugfs fault-injection path.
-+ */
-+static void riscv_iommu_ats_broken_work(struct work_struct *work)
-+{
-+	struct riscv_iommu_device *iommu =
-+		container_of(work, struct riscv_iommu_device, ats_broken_work);
-+	struct device *dev = riscv_iommu_get_device(iommu, iommu->ats_broken_devid);
-+	struct riscv_iommu_info *info;
-+	struct pci_dev *pdev;
-+
-+	if (!dev)
-+		return;
-+
-+	info = dev_iommu_priv_get(dev);
-+	info->ats_broken = true;
-+	info->ats_inval_timeouts++;
-+
-+	if (info->ats_enabled && dev_is_pci(dev)) {
-+		pdev = to_pci_dev(dev);
-+		pci_disable_ats(pdev);
-+		info->ats_enabled = false;
-+	}
-+
-+	dev_warn(dev, "marked ATS-broken after ATS.INVAL timeout\n");
-+	put_device(dev);
-+}
-+
-+#ifdef CONFIG_DEBUG_FS
-+/*
-+ * Debugfs fault injection.
-+ *
-+ * Real RISC-V IOMMU hardware completes ATS.INVAL synchronously, so a timeout
-+ * cannot be reproduced against an unmodified endpoint. To exercise the
-+ * ATS-broken marking path in isolation, this knob records the target device-id
-+ * and schedules the same deferred marking that the real cmd_sync() timeout path
-+ * would. It does not depend on QEMU fault injection.
-+ */
-+static int riscv_iommu_debugfs_inject_ats_timeout(void *data, u64 devid)
-+{
-+	struct riscv_iommu_device *iommu = data;
-+
-+	if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_ATS))
-+		return -ENOTSUPP;
-+
-+	iommu->ats_broken_devid = (unsigned int)devid;
-+	schedule_work(&iommu->ats_broken_work);
-+
-+	return 0;
-+}
-+DEFINE_DEBUGFS_ATTRIBUTE(riscv_iommu_debugfs_inject_ats_fops, NULL,
-+			riscv_iommu_debugfs_inject_ats_timeout, "%llu\n");
-+
-+static int riscv_iommu_debugfs_ats_devices_show(struct seq_file *s, void *data)
-+{
-+	struct riscv_iommu_device *iommu = s->private;
-+	struct rb_node *node;
-+
-+	seq_puts(s, "devid device ats_broken ats_inval_timeouts\n");
-+
-+	mutex_lock(&iommu->devs_mutex);
-+	for (node = rb_first(&iommu->devs); node; node = rb_next(node)) {
-+		struct riscv_iommu_info *info =
-+			rb_entry(node, struct riscv_iommu_info, node);
-+
-+		seq_printf(s, "0x%x %s %d %u\n", info->devid,
-+			   dev_name(info->dev), info->ats_broken,
-+			   info->ats_inval_timeouts);
-+	}
-+	mutex_unlock(&iommu->devs_mutex);
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(riscv_iommu_debugfs_ats_devices);
-+
-+static void riscv_iommu_debugfs_init(struct riscv_iommu_device *iommu)
-+{
-+	struct dentry *root;
-+
-+	root = debugfs_create_dir(dev_name(iommu->dev), NULL);
-+	iommu->debugfs = root;
-+
-+	debugfs_create_file("inject_ats_inval_timeout", 0200, root, iommu,
-+			    &riscv_iommu_debugfs_inject_ats_fops);
-+	debugfs_create_file("ats_devices", 0400, root, iommu,
-+			    &riscv_iommu_debugfs_ats_devices_fops);
-+}
-+
-+static void riscv_iommu_debugfs_remove(struct riscv_iommu_device *iommu)
-+{
-+	debugfs_remove_recursive(iommu->debugfs);
-+	iommu->debugfs = NULL;
-+}
-+#else
-+static inline void riscv_iommu_debugfs_init(struct riscv_iommu_device *iommu) { }
-+static inline void riscv_iommu_debugfs_remove(struct riscv_iommu_device *iommu) { }
-+#endif
-+
- static void riscv_iommu_page_response(struct device *dev,
- 				      struct iopf_fault *evt,
- 				      struct iommu_page_response *msg)
-@@ -1237,8 +1412,6 @@ static int riscv_iommu_dev_enable_iopf(struct device *dev)
- 	if (info->pri_enabled)
- 		return -EBUSY;
- 
--	riscv_iommu_add_device(dev);
--
- #ifdef CONFIG_PCI_PRI
- 	rc = pci_reset_pri(to_pci_dev(dev));
- 	if (rc)
-@@ -1275,8 +1448,6 @@ static int riscv_iommu_dev_disable_iopf(struct device *dev)
- 	info->pri_enabled = false;
- 	pci_disable_pri(to_pci_dev(dev));
- 	iopf_queue_remove_device(iommu->pq_work, dev);
--
--	riscv_iommu_del_device(dev);
- #endif
- 
- 	return 0;
-@@ -1287,6 +1458,11 @@ static void riscv_iommu_enable_pdev(struct pci_dev *pdev)
- {
- 	struct riscv_iommu_info *info = dev_iommu_priv_get(&pdev->dev);
- 
-+	if (info->ats_broken) {
-+		pci_warn(pdev, "ATS disabled: device marked ATS-broken after ATS.INVAL timeout\n");
-+		return;
-+	}
-+
- 	if (info->ats_supported)
- 		info->ats_enabled = !pci_enable_ats(pdev, PAGE_SHIFT);
- }
-@@ -2270,6 +2446,14 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
- 
- 	dev_iommu_priv_set(dev, info);
- 
-+	/*
-+	 * Track the device by its device-id so that ATS invalidation timeouts
-+	 * (and PRI page requests) can be attributed back to a struct device.
-+	 * Registration is bound to probe/release, not to PRI enable, so that
-+	 * ATS-only devices are tracked as well.
-+	 */
-+	riscv_iommu_add_device(iommu, dev);
-+
- 	return &iommu->iommu;
- }
- 
-@@ -2277,6 +2461,8 @@ static void riscv_iommu_release_device(struct device *dev)
- {
- 	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
- 
-+	riscv_iommu_del_device(dev);
-+
- 	if (info->pasid_enabled) {
- 		pci_disable_pasid(to_pci_dev(dev));
- 	}
-@@ -2379,6 +2565,9 @@ void riscv_iommu_remove(struct riscv_iommu_device *iommu)
- 	riscv_iommu_queue_disable(&iommu->fltq);
- 	riscv_iommu_queue_disable(&iommu->priq);
- 	iopf_queue_free(iommu->pq_work);
-+	riscv_iommu_debugfs_remove(iommu);
-+	/* Flush any pending ATS-broken marking before the device goes away. */
-+	cancel_work_sync(&iommu->ats_broken_work);
- }
- 
- int riscv_iommu_init(struct riscv_iommu_device *iommu)
-@@ -2389,6 +2578,7 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
- 	RISCV_IOMMU_QUEUE_INIT(&iommu->fltq, FQ);
- 	RISCV_IOMMU_QUEUE_INIT(&iommu->priq, PQ);
- 	mutex_init(&iommu->devs_mutex);
-+	INIT_WORK(&iommu->ats_broken_work, riscv_iommu_ats_broken_work);
- 
- 	rc = riscv_iommu_init_check(iommu);
- 	if (rc)
-@@ -2444,6 +2634,8 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
- 		goto err_remove_sysfs;
- 	}
- 
-+	riscv_iommu_debugfs_init(iommu);
-+
- 	return 0;
- 
- err_remove_sysfs:
-diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-index 498d9c645fb5..5ac86efc123a 100644
---- a/drivers/iommu/riscv/iommu.h
-+++ b/drivers/iommu/riscv/iommu.h
-@@ -14,9 +14,11 @@
- #include <linux/iommu.h>
- #include <linux/types.h>
- #include <linux/iopoll.h>
-+#include <linux/workqueue.h>
- 
- #include "iommu-bits.h"
- 
-+struct dentry;
- struct riscv_iommu_device;
- 
- struct riscv_iommu_queue {
-@@ -67,6 +69,13 @@ struct riscv_iommu_device {
- 	/* Connected end-points */
- 	struct rb_root devs;
- 	struct mutex devs_mutex;
-+
-+	/* debugfs interface */
-+	struct dentry *debugfs;
-+
-+	/* Deferred ATS-broken marking, see riscv_iommu_cmd_timeout() */
-+	struct work_struct ats_broken_work;
-+	unsigned int ats_broken_devid;
- };
- 
- int riscv_iommu_init(struct riscv_iommu_device *iommu);
 -- 
-2.54.0
+2.34.1
 
