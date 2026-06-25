@@ -1,151 +1,209 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 455A0288BA
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:48:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B3225F98A
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:51:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782402501; cv=none; b=da4Y1CsYR4zcMtMmmykICaS9R0jSs/aLK4/0UZPT3GVoW1oE9PiOcvpDN74+UVKY4gJFuxKqzvQEFg4xZCyhIhIIMM1alZMKo2y2EVrrU26IJqEfS2h3Wzs+3uXCsd6vpDJxhTT2bEuD+ZgTv/0x2puiiELKkxyInTwX/RMJgRE=
+	t=1782402717; cv=none; b=aIyQp3UW5DMlzsGnE0O0/z21DWad6QA465BGMNJ7J1PUBCsZSDqzfK9QGumjdn2cuNDsyn0huDyh6XrtjhLLHwoFVkgNdY6MigZZuHqjnclWLxmPR6Fji+d+Df1YLGu6gFKlYF+q+1ZvupHsbUBFxzWyPJ+1bEMoPmFkxEHMcks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782402501; c=relaxed/simple;
-	bh=1+A6gPT4LQUsY2QnTfPNBJkWRgFjnYZMeyYX+1UYPNk=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=XYtFyNFEoLfSHoB69BgpIWnVaqiaHZf48Pu6tmUx6ADwCjqXWYn9RZKUvptKoGOqEVda+iW959Pp108Gy4oVyZgSUrrhsxQCWEIKQip+iorUNJbberfvanoBzgqG5rmeBQP3MxD4W+vDcJbPJ+7Ki1zKqySwEa5jZtfoWcmpVkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a+ry3h2g; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782402717; c=relaxed/simple;
+	bh=Khk+EgWMgrd/fcIfSlawiG1GabII3LIvD1WbEgg6eN8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OzZXeZJtl7bDqmlv66inOCnuPnjAU0B2QuTKYp3FJMD+MIXZP0Rf+ALlriV3EghKu7RdzlpoUZr8tL9yQZjMsve5Xd3bDtEC/TaajOQHYkxzymXTRUDDb4SlLMk9w3cCFiH2xehBBhBuzjuaMXyIVhbyBbB/PhQRiuqpBWpB2Rk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=bgA0McvA; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NNOwoYkJ; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a+ry3h2g"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782402499; x=1813938499;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=1+A6gPT4LQUsY2QnTfPNBJkWRgFjnYZMeyYX+1UYPNk=;
-  b=a+ry3h2gauQbE5X9Lx54BNbzH3KW4EpqiEnmW+BSCIitJrvTpeuv1LSs
-   o2xPaZfqMnUNDh2bgXbeEGuDMV6Kl/LSTQt3E5LynzPQBqiYZDdzeSwzy
-   l9+XBrDJwWWiFH7fuUsIFr6h/rXOfjvy9/Ycf3PgtBS6m5FoDIn7o+iuj
-   l42EfuzKG5eb5jhKlKDI8qKIAYUKslAIOvj0fLvLoWWHLjRATUzXvV3WN
-   UiCI1cUbjdRYzeyPt840vfa7kaMEOBNglrxpU25fGEG56BEql1Dm+d4Wn
-   EYtWyADISQ5fdYuEiA5h/wlZmM9Qm0jerTHjTGfoarnRPbrBBu8+wDC8K
-   A==;
-X-CSE-ConnectionGUID: eAPrRf8tTQy1GK7V8cwg5g==
-X-CSE-MsgGUID: 5Ic1ifR2RgSybD4ZlgojjQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11828"; a="94672791"
-X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="94672791"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 08:48:19 -0700
-X-CSE-ConnectionGUID: bnTDR+9oSp2v6LlaA//k7g==
-X-CSE-MsgGUID: bsv1XPUrSYWzkAVo2KV/4g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="249751034"
-Received: from dev-417.igk.intel.com ([10.91.214.181])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 08:48:16 -0700
-Date: Thu, 25 Jun 2026 17:48:14 +0200 (CEST)
-From: =?ISO-8859-2?Q?Micha=B3_Grzelak?= <michal.grzelak@intel.com>
-To: Krzysztof Karas <krzysztof.karas@intel.com>
-cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
-    iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>, 
-    Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-    Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>, 
-    Sebastian Brzezinka <sebastian.brzezinka@intel.com>, 
-    Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-Subject: Re: [PATCH 1/3] drivers/iommu: Unroll unsuccessful mapping
-In-Reply-To: <20260625134342.1102921-2-krzysztof.karas@intel.com>
-Message-ID: <5016dea0-5710-b0f9-754b-36d0c7325d46@intel.com>
-References: <20260625134342.1102921-1-krzysztof.karas@intel.com> <20260625134342.1102921-2-krzysztof.karas@intel.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="bgA0McvA";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NNOwoYkJ"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65PFeMew2737434
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:51:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	XaN+L0rplw4GK7Sfc4WHtZLm/QYscT75GFb5hPkpKto=; b=bgA0McvAmFJLtIls
+	L/buW7JAYI9PfSDopgUvteWZRgcR/N5FKzN6CPAn6aoklfg7vNbD2F+czjeGAs57
+	duWQR7LM7mcfYrf9JKD7zLe8tmWfxQ9VikSWevJw4AvvfH5mvk2THdpe0C69sYT0
+	Wl2gmeVXHjw9r3gfyGpxtj/pO0kPIeZoTOZYezeZD62kVgmtytVHnUiF+l42iYep
+	+LRMNrJbJJjw5iUu+qyCDDDg3PbqF/1ielieE3RZJmZhPZiD9WltuWyumNhtYAT1
+	fHnupap2l1GOf3hIJb4U/Ru7rY2Wacqc9tEfnb7S45bi9ehRNBvJ11PMBz6+6thl
+	GrPamQ==
+Received: from mail-dl1-f71.google.com (mail-dl1-f71.google.com [74.125.82.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f0ya8t3bs-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 15:51:54 +0000 (GMT)
+Received: by mail-dl1-f71.google.com with SMTP id a92af1059eb24-1384427c3efso110730c88.0
+        for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 08:51:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1782402714; x=1783007514; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XaN+L0rplw4GK7Sfc4WHtZLm/QYscT75GFb5hPkpKto=;
+        b=NNOwoYkJu1MRfihi1z+0Z0Ff60azoyTcevxySt71IFpI84awopxf1UA7yj0H9InsaQ
+         +dB3TUOLyHt3fQngvMtt/Kl6ISJ0qdW03CNffh9JYPgem12Ll71LMXXKiGDvKQ3h4Voo
+         SA+s9karmynh+UjOqA+wNtWRaYdK/uGy5wkkQAROIRdFm09537Z1Z11DE0lZu/9xo+9h
+         a1O25zq4jdPM8cAQbop0vDtAw++sTFHPPS+Byy9i2Qq5631xpoPynB3ykPur9ZnnOYmS
+         KP7DS5jB07mG5K2v/KnpX3231OqhViBdQa/o0FA0Oni/e2ClxDxyt0JK8CJjdVGQ7XQ9
+         STsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782402714; x=1783007514;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XaN+L0rplw4GK7Sfc4WHtZLm/QYscT75GFb5hPkpKto=;
+        b=IzXrbT8QGBnX+ntPLNjncu09ZjZIBb8sHCuWPJfFyVlS+yyzkKQZvTFveDEizGuUUk
+         upvSAzfvxyMQmF65cYPVA6QUZBLg7flfHkYYOvzYhk0qJCZMzO0VwHZX4B3S3md7ylhH
+         1n6T/tM4RIlAWltrvik+/y3FbLuZ8vlb56JnHN/p8BU6VtohpVnHUVNBpR9+4ltoZMNp
+         XolgK8k91B0WM62+SjJ6amyIsTYJ4Qy03mj3Agxt/ImwqQz005tYELqs7lAYsBXMzicJ
+         ZceLlEK/kuZYP9jncHtlOm4G6HYpvcyDzjQaR5v4wcN1U4iDEjTxqXvhh/2JFXuxvFQs
+         LU4Q==
+X-Forwarded-Encrypted: i=1; AFNElJ/QseE2+szcN0LBrCF/cQcgX+5RDt8FejAPd/IEQfqBhEIKuvnzF20wAjdMEsCjtNsn+8n46A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx5l+dYp39PXMBm5pa4LsZ6nGmWHinOUtGFLQBDWQXt+RIkPU7n
+	icqvqLRtbQv05EAGeX536xdG03DezYyTdSAIW9CoW1w177862MbjhR63F0ZxhhHWlOREadOjj3N
+	VT11J6RLOtxuf5/m0JnS/lsiW1VRJ5kIKMWe36rebHTFb3L9jaO9spnpwZQ==
+X-Gm-Gg: AfdE7cl1QmbJ1Hzr+92VF+0FOB5YCY0fmJ8VNzYxCcUWlHx1zSiLKLw035Ifm3FzLp7
+	ird7AE1G6ikfq3DU+jQHPf4BBp7YwoBHov5U5/EqElFBAdk6R1X3rKr1Rbn/MNpRSSnTXr+hvG1
+	VskKtvbhyZxfdVcNgCHnjxAXHl9SoaLSt31wAbKLfuJuEmXOy6xEiC+r1BVKT//Z953ujtt5hSx
+	SzDKANZ/5UvQAXco3iAcsOMaRCJ9H3imljcfynKO0m9zyMGVdjt49lyxwGJfdJ+oq7Woz7nRZEo
+	g3EGj1Wr5gKnDOrLicDK5Vri/LQXrjjWFCORSm8QxMK8Ms5cvTanCWg22a8xjWEfxi5t57/PPxI
+	IBTPLgv8xtuIpWx9zOIB5uscWrb9y0KLxpg+Q7fVUAGEY+kDoYnIJ9Ns9JDDh
+X-Received: by 2002:a05:7022:160c:b0:137:fec9:8ffb with SMTP id a92af1059eb24-139dbb69b90mr2427654c88.25.1782402713727;
+        Thu, 25 Jun 2026 08:51:53 -0700 (PDT)
+X-Received: by 2002:a05:7022:160c:b0:137:fec9:8ffb with SMTP id a92af1059eb24-139dbb69b90mr2427626c88.25.1782402713025;
+        Thu, 25 Jun 2026 08:51:53 -0700 (PDT)
+Received: from hu-ashoraj-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-139d8f77602sm8736337c88.8.2026.06.25.08.51.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Jun 2026 08:51:52 -0700 (PDT)
+Date: Thu, 25 Jun 2026 08:51:50 -0700
+From: Ashok Raj <ashok.raj@oss.qualcomm.com>
+To: Rik van Riel <riel@surriel.com>
+Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com, robin.murphy@arm.com,
+        joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, jgg@ziepe.ca,
+        kyle@mcmartin.ca, ashok.raj@oss.qualcomm.com
+Subject: Re: [PATCH 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
+Message-ID: <aj1OlqBtTOUSFm-h@hu-ashoraj-lv.qualcomm.com>
+References: <20260624030853.2340880-1-riel@surriel.com>
+ <20260624030853.2340880-4-riel@surriel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-886975909-1782402498=:605841"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260624030853.2340880-4-riel@surriel.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI1MDEzNiBTYWx0ZWRfX0zogLzjgJBbk
+ kML+3NjRm9PfMh7auC8ZUBCgg6ccRidMkUI2NklooRz+8fif48wCUpmxqu9hspbGNpQDBKhPlRE
+ hhSpkAVu2KunMAZN1W26HuNeK7zX3C4=
+X-Proofpoint-GUID: 0my0Vdu0kkdyRiVE03xPl84DL-zZWQxa
+X-Proofpoint-ORIG-GUID: 0my0Vdu0kkdyRiVE03xPl84DL-zZWQxa
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI1MDEzNiBTYWx0ZWRfX4qc2uRGG6HtR
+ Y11DavgLxUONFASuDCxhrEMu+sAF6HPJxyrYBql/d2/ZM0tMNWOebaz2cZEjXEObOB049r3BY7x
+ rmMZRGy2iVDz4tBLK57lzY4cfXVtiAXw0oxouLpkYL0843S7IPGifMG2iAQF9pY/nKPzchv2jrP
+ oJVJfely1FkSIx5OY/q/NZ9Ri8PzAaeJWhyj8aamcfoqrHR2eG/IHrWgJGZQTYwNEHBq0ilJKgw
+ g+Xd48b1Y+yAbTOczsxYmllZtMZD7v6XhH1Gvi4YzB/QhAMuwrl9GSUrQ15bQkGqJ3SIQHvfPED
+ qs6woDyqOxdKfe+m014JGfSzOgbsiS31zYSkgSZC5EmrPzXeRrn9UCk6q7gtK3UFEZl4Q5Fvk+J
+ od90Nk7YtiKtATQJPb4Z+70jd8bMRogJnGYhdftfSH9m2DC0pmatvb6DAYpAMuWiTl6SxFSAmLW
+ BmjNVX8+1jB5rX1WPLg==
+X-Authority-Analysis: v=2.4 cv=Z+Xc2nRA c=1 sm=1 tr=0 ts=6a3d4e9b cx=c_pps
+ a=JYo30EpNSr/tUYqK9jHPoA==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=mOSHGkzkEfEHChMdZykA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=Fk4IpSoW4aLDllm1B1p-:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-25_02,2026-06-24_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 malwarescore=0 bulkscore=0 suspectscore=0 phishscore=0
+ spamscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2606250136
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, Jun 23, 2026 at 11:07:36PM -0400, Rik van Riel wrote:
 
---8323329-886975909-1782402498=:605841
-Content-Type: text/plain; format=flowed; charset=ISO-8859-2
-Content-Transfer-Encoding: 8BIT
+Hi Rik,
 
-Hi Krzysztof,
+  Thanks for the v4 redesign — the in-place marker approach is much cleaner than
+  the delayed_work/llist scheme from v3, and it directly addresses the
+  retry-forever concern I raised earlier.
 
-I'm wondering about changing the prefix of patch's title into
-iommu/dma:, but there are commits changing dma-iommu.c having other
-prefixes as well; not sure if it matters.
+[snip]
 
-On Thu, 25 Jun 2026, Krzysztof Karas wrote:
-> Currently, if iommu maps fewer bytes than requested (iova_len),
-> it proceeds to free the iova, but never tries to unmap already
-> touched bytes. This behavior may cause memory hogging down the
-> line.
->
-> Correct that by unmapping before exiting.
->
-> Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
-> ---
-> drivers/iommu/dma-iommu.c | 10 ++++++++--
-> 1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 381b60d9e7ce..c4c058ba07ef 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1515,8 +1515,14 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-> 	 * implementation - it knows better than we do.
-> 	 */
-> 	ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
-> -	if (ret < 0 || ret < iova_len)
-> +	if (ret < 0 || ret < iova_len) {
-> +		if (ret > 0) {
-> +			/* Unmap partially mapped bytes before freeing IOVA */
-> +			if (iommu_unmap(domain, iova, ret) != ret)
-> +				ret = -EIO;
-> +		}
-> 		goto out_free_iova;
+> +/*
+> + * Remove an IOVA entry from the maple tree and free it.
+> + *
+> + * This runs in atomic context (DMA map/unmap can be called from hardirq,
+> + * softirq, or with spinlocks held) and must not fail. Erasing an entry can
+> + * require a maple tree node for rebalancing, and mas_store_gfp(NULL,
+> + * GFP_ATOMIC) can fail under memory pressure. When it does, overwrite the slot
+> + * in place with IOVA_DEFERRED -- an in-place store needs no node allocation and
+> + * so cannot fail -- which keeps the address range reserved (the allocator's gap
+> + * search treats the non-NULL slot as occupied) and lets the struct iova be
+> + * freed now. The marker is erased later by iova_drain_deferred().
+> + */
+>  static void remove_iova(struct iova_domain *iovad, struct iova *iova)
+>  {
+> -	MA_STATE(mas, &iovad->mtree, iova->pfn_lo, iova->pfn_hi);
+> +	unsigned long pfn_lo = iova->pfn_lo, pfn_hi = iova->pfn_hi;
+> +
+> +	MA_STATE(mas, &iovad->mtree, pfn_lo, pfn_hi);
+>  
+>  	assert_spin_locked(&iovad->iova_lock);
+>  
+> -	if (iova->pfn_lo < iovad->dma_32bit_pfn)
+> +	if (pfn_lo < iovad->dma_32bit_pfn)
+>  		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+>  
+> -	mas_store_gfp(&mas, NULL, GFP_ATOMIC);
+> +	if (iova_kunit_defer_erase || mas_store_gfp(&mas, NULL, GFP_ATOMIC)) {
+> +		/* Erase failed: mark the slot in place and defer removal. */
+> +		mas_set_range(&mas, pfn_lo, pfn_hi);
+> +		if (WARN_ON_ONCE(mas_store_gfp(&mas, IOVA_DEFERRED, GFP_ATOMIC)))
+> +			return;	/* in-place store cannot fail; entry stays put */
+		/* 
+		 * <-- deferred_lo/hi not updated and range stays
+		 * occupied for ever?
+		 */
+> +		if (pfn_lo < iovad->deferred_lo)
+> +			iovad->deferred_lo = pfn_lo;
+> +		if (pfn_hi > iovad->deferred_hi)
+> +			iovad->deferred_hi = pfn_hi;
+> +		free_iova_mem(iova);  
+			<--- only reached if second store succeeds?
+> +		return;
 > +	}
+> +
+> +	free_iova_mem(iova);
+> +
+> +	/* A successful erase means memory is available; clear any backlog. */
+> +	if (unlikely(iova_has_deferred(iovad)))
+> +		iova_drain_deferred(iovad);
+>  }
+>  
 
-Also thinking whether not to split this into two separate if's,
-something like:
+  If the in-place marker store fails and WARN_ON_ONCE fires:
 
-ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
-if (ret < 0)
- 	goto out_free_iova;
+  - free_iova_mem(iova) is never reached — the struct iova leaks.
+  - deferred_lo/hi is not updated — the address range stays permanently
+  occupied with no way to reclaim it.
+  - After the first occurrence, WARN_ON_ONCE suppresses the warning on all
+  subsequent hits, so further failures on this path are completely silent.
 
-if (ret < iova_len) {
- 	if (ret > 0) {
- 		/* Unmap partially mapped bytes before freeing IOVA */
- 		if (iommu_unmap(domain, iova, ret) != ret)
- 			ret = -EIO;
- 	}
+  I understand the comment says this cannot happen, and if that guarantee holds
+  then it's fine. But if it can, a BUG_ON might be a cleaner way to express
+  that invariant — it makes the intent unambiguous rather than leaving the
+  impression the failure is being gracefully handled when it isn't.
 
- 	goto out_free_iova;
-}
+  Happy to be wrong if I'm missing something about the maple tree's in-place store
+  guarantees.
 
-But that's probably just a matter of opinion. Whether it applies or not:
-
-Reviewed-by: Micha� Grzelak <michal.grzelak@intel.com>
-
-BR,
-Micha�
-
->
-> 	return __finalise_sg(dev, sg, nents, iova);
->
-> @@ -1525,7 +1531,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-> out_restore_sg:
-> 	__invalidate_sg(sg, nents);
-> out:
-> -	if (ret != -ENOMEM && ret != -EREMOTEIO)
-> +	if (ret != -ENOMEM && ret != -EREMOTEIO && ret != -EIO)
-> 		return -EINVAL;
-> 	return ret;
-> }
-> -- 
-> 2.34.1
->
->
---8323329-886975909-1782402498=:605841--
+  Cheers,
+  Ashok
