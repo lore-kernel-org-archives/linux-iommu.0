@@ -1,592 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4004835A397
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 07:30:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782372628; cv=fail; b=aoOq9OF7d9ItbiDWFVCLppcdG3MKL+2YkYikumiYbVLkkYRMyQ0g9ACL9mIj170qe/loh1nB4irC2ZIUu6EgjdvGUnvqaTq+zxgFJaBm9xvR1nGtQlI4rv+UxyTa2Sl7UlUtOj+ab0YbmatuSXzv5q3X/qLUrA6Pp07VGBqNZns=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782372628; c=relaxed/simple;
-	bh=f5GkQ/P2z3p6aEaFNemu3bLPJsk3Jljfqwy4UWYv8jg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Gt/xo2Z+tDHd+0u5pTsgf0Uf3zyI0W23kvuGvnbQbTgY9KHYxKep7d5ZBNiGX39XL68AIcerC/AnHDKddyQ9HHGGPUh5bjY/UOz6B6P2xkrrK7a/+DO5+8tm6lZ7rPBa6QPuO13+l9I+/5/ArBtUKsczaY2yzKky3e2QCCEiWX0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e+m1Pxni; arc=fail smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A55937FF6F
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 07:38:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782373106; cv=none; b=tJTCVD7L39xiSDfIvs1yYlAXC0d58QtuQSK1VoeCiD0dj9ooPqzZ4JSXYuoMWbpFSDHVqSTMJidxH5RgrpCcZTZ54gc8+RqQVNTe+oqmEuZw1YcZT0Y6FbczQq0WeNkTG1MAW1/AiwlVEahCvNrPBhdVOs9BmPjiNIf+n3ljz7I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782373106; c=relaxed/simple;
+	bh=94BLnJu/Y44ro9VZwEjhoTWgcdouLHYogTgolaSAjHE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SoeWB+eW1iBD8d0XBcohhz+i1xd/Qfm4MUqfkIVY2jbRjGKFh3rWv1yo02dExKeOs67EzdwpE1JUDWnPtP42OF7ufg04HKQBOzB4mqilb1fm5hx4+w5Qj67ukD/i2yiu07XBfONx4SFRkEr0QvxK+DEEliBP/z/rKr0A3Naw31g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lrOc8xep; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=LxC2rnyY; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e+m1Pxni"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782372626; x=1813908626;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=f5GkQ/P2z3p6aEaFNemu3bLPJsk3Jljfqwy4UWYv8jg=;
-  b=e+m1PxniVug0c8sPFUTQ4/soLjO85bCyLb23ZQAkhiPJIt/OuSh6dV+X
-   9jwTgorga0QtZ3ygzQ0n6PkrT7hYwJKeDkcqdKcr4YhHKAWfO3lm1HWEj
-   vQuCJbz+7i7Ls1XaMLBsexhGaimjAbQGp3WCUVY7HqyxGeR9LBdIwMk3U
-   3Jn3LCK6fqqwWAyu+C0QyaNGnpDtcEAmCRU4TVBPegMSM7rQniVcypGs3
-   EEjsZq5iKQo6Oa2KMVAy58TiOPcjJyCAeGVFnQcNox0a0Tv4+NP8+ar//
-   4Q2PCYsQ4MyltykRv26dJqcdv0hOdltkQ73JMhUp/TMjf3TTj0leP6ZYC
-   g==;
-X-CSE-ConnectionGUID: lhhNAwVyRbSwyhzB5BLOsg==
-X-CSE-MsgGUID: 2fFyKsukSLqW/YraHPSuDA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11827"; a="83149698"
-X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="83149698"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 00:30:25 -0700
-X-CSE-ConnectionGUID: NqjlN5gmSfmCrJ59usGFHA==
-X-CSE-MsgGUID: xKukX71YRUeZfDZuC0Ms2A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="246443063"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 00:30:21 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 25 Jun 2026 00:30:19 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Thu, 25 Jun 2026 00:30:19 -0700
-Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.53) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 25 Jun 2026 00:30:18 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NcOtXkMB6eVuqJCszxDERqfxN331dIuDZy6DmP7pzKJDuoS7hZxEordKGzY2yb98K5aNqVYzU3PobzN8LLhXUC0GzSYxblkQFW8CBUuC6IWYm+DKy4ZRNnUFr6zqRSKvjzVavjmDjQRjf5paJd6I3TPFaG2t8zGB/lRxHa5IDLeSE2WFZW/SrIotkhlzO2YiKnMJKpLzQhRtJKO1wJJ3DNvhNqEBcNjur/qt9NBl4yKIzJqzQFy67eVbDAWXsdcFV118vqelOww9JHKU9rpYBkQB02ncfcjnOm8q4GH4oJGQzbvM3Ay1n8ZDNWgpqQrQIMyq7PgoeHwI1NIEW9w0+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yzTrsBCDkYTItvNmY97k8Hb+uiyjPJSQXqPDybQ57Oc=;
- b=mbrD1IAv+ruMp6YhI4J689iB5oCze6ral05D9fvQSTVDDNfe5oYuOLlhfeAWiFjSNtZLKH0geis4nQEnZrJYy7SSgndQJKe4dp+LG2OTzJgWhYkANfXafGM8DEuLoi32QrnzWgfP9TpEwahSITuZHgj2Swr9WIx8xgBWRRXpZZrxmel8Ke4CaUCqmSwjKXUE9jTO2uhgFjf46l9PWXe1+/UYptfLjdiB+X2N+UTzUV+DyLS4v4qyaeoJGy25WV4se62oBHH4YnuH0ZLj8+YZMMAEBYole7AfFnm12wyk6yqIVnqF2wWsLgwIQABXE1ski84zGc3g0JeUe689aKD5ig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SJ2PR11MB8498.namprd11.prod.outlook.com (2603:10b6:a03:56f::12)
- by CY8PR11MB7265.namprd11.prod.outlook.com (2603:10b6:930:98::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.16; Thu, 25 Jun
- 2026 07:30:11 +0000
-Received: from SJ2PR11MB8498.namprd11.prod.outlook.com
- ([fe80::8db6:d449:e492:308f]) by SJ2PR11MB8498.namprd11.prod.outlook.com
- ([fe80::8db6:d449:e492:308f%6]) with mapi id 15.21.0159.015; Thu, 25 Jun 2026
- 07:30:11 +0000
-From: "Du, Fan" <fan.du@intel.com>
-To: Michael Kelley <mhklinux@outlook.com>, "Miao, Jun" <jun.miao@intel.com>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "chenhgs@chinatelecom.cn"
-	<chenhgs@chinatelecom.cn>, LKML <linux-kernel@vger.kernel.org>, "Du, Fan"
-	<fan.du@intel.com>
-Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
- used/hiwater tracking
-Thread-Topic: [PATCH] swiotlb: eliminate per-map atomic contention on
- used/hiwater tracking
-Thread-Index: AQHdAkGVG27dVNXNe0yyBQUhGJEOBrZLbVMAgANqNeA=
-Date: Thu, 25 Jun 2026 07:30:11 +0000
-Message-ID: <SJ2PR11MB8498277BE45D32A81ED07D9D99EC2@SJ2PR11MB8498.namprd11.prod.outlook.com>
-References: <20260622122114.2563254-1-jun.miao@intel.com>
- <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
-In-Reply-To: <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SJ2PR11MB8498:EE_|CY8PR11MB7265:EE_
-x-ms-office365-filtering-correlation-id: 07bc7a1c-f295-4a02-bfbe-08ded28b9742
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|23010399003|376014|38070700021|18002099003|22082099003|4143699003|11063799006|56012099006;
-x-microsoft-antispam-message-info: EluDAEXLQYUylFB/az0dB0EL9HjpDplPMfkPwf/NYWjHWfZKT8qR9TVIocS1hFUnJN4uO+Bn9xsfJvvTERDjY0P8z6rQGU0F1OH9LqwtYskEhoS87cvRXIGzBYrggTYq1GtE4ifIVtzexcbqFKuoI9dmoWOOu/gAw6n+5CeYMtgWF16TUH/RHWpQ7GQVbMNKu/fYHV8d4/O1k4gd/9ya3jxQz1FkfHfJiLc+ZHrcAEOCB7SOIPNnTiXEYL07itJSdqQxRfxUrkE/zMLoBxjy0WWMbyTWyUfYVh+ushinOK7IDzByQcsgDGS/raJ5Gyb9S3R2wmyKfy8w0FjdwwQOs4tqG9BgJLQg9DSKSAb8jvG6s+xuGMoqBTICsDiaGEFXUqbEX5Bw8VXApnfej3UxUT44NoX/ptBzWMGp4InxK9KzEo4Rq3Jco2j0qVtPYKGkvROOZeq/WVC3cAZlmQbeHiiQKFto+DEFAE7pEzC1wdvF8EeQInY/R3tJi+kJrRdqJ8XHTZyMJBrii+iIkB/aLSLR0hbIX9s0e9eRvDhfFeT3nMRvgpUztQxAtwWObUH1X1BU5vOpAKolYgG812W5ynWWdlceNrARMH6YS1WTU5GU2RgtGi1PHtH9SXmd3UiOVTxBbFOsw59EYZPywJpEe3RuffpECISoHeUcIoRCECnlkNyZ6/z8R6msu+rwVfE6Stz7ox9bvwkyXWJM+PUJtlySLVuBFbroPmTategY72Y=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8498.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(376014)(38070700021)(18002099003)(22082099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uqSqMiE1FxC9A2YXi3ybJh/Q//+t1Li9tVizECg5jzdzVNHl6Afdf0KCUe8q?=
- =?us-ascii?Q?geYYgmpJhfklwJIkpJrXX98miakaTrh4w1cjScIrQ/JFIO6muRX4tXg9KV6r?=
- =?us-ascii?Q?Caev/7WRXl6fTzzEuQreCgTq7lEn+Qzae+j+YYfGInjLTIW4srUwxj2M/ax8?=
- =?us-ascii?Q?4HU96VL1WPIGcciBsdx0NgdRUNbEUOMFNBLFgtDMpNWNXOkCF/ZpQotCVjZn?=
- =?us-ascii?Q?t1HnrJfYso3ubI5j7jpqsHGHhWsVNKIiR5+Q6QlW5p+Cak/h82gCE2VxSebj?=
- =?us-ascii?Q?TmaFEabxqETpf6RVb5LGnZgJy50VDqX+ikiOHDQv36JF2qNRaTwNRyyB4LV+?=
- =?us-ascii?Q?Cong2kukoH7N7Wvw33+5yTdIvPdFzDulYL5R7ODPwwrO/qhrFT1QwfF6eFJN?=
- =?us-ascii?Q?sy4UiOM5uD9SrK43jEUVY4B+bpcmdrSEuDsvDj7y2yHzNquxYYxEfdMVio1o?=
- =?us-ascii?Q?DmRUAvzQssReSz8cq6XDJxdC0WOd9l2JCx0yWEoP6/1CZ6C8Usvlb8HfLFn0?=
- =?us-ascii?Q?j4hFBw866rRXK9JM+5Idk1sScX/SsSjgWu/z3E2sAy5sk6x621I1/2x2Zpit?=
- =?us-ascii?Q?gRYo3QMHWR6LR4+uZw7BQXHh0Neexhk2JYVUfR5DzNkZECKmz+qFBdttcPa4?=
- =?us-ascii?Q?sQzqTi3HziGK6yX/sJ/9qMInn+X9pNi1kHzzTVoc9eBHpYWOghj4F5drEzGQ?=
- =?us-ascii?Q?e3a1snkwCzbLtTGB48tmZ4G6LW7FBogMLdxs+uiLUgXFD+87IwI65c09iB4K?=
- =?us-ascii?Q?L9eAW7DdkxgawtOr2oIszdwHFZfvlaQaHXEFQsZsTBqPXvI/XyFk+oC4iblh?=
- =?us-ascii?Q?cXcueuHwY4gLZUy4SFi7Ze4jQCE5YcQUyQ9T0FFKWX5ASHFlc2EaMlsli0zO?=
- =?us-ascii?Q?558q38pBDKYxApGwWnmb/WUqagkRuxaj8R4QYZEwY33sFZcPMvEnptZCMIfs?=
- =?us-ascii?Q?jlrxsePLiGCB5Mmeby7JeK+NDTIt50QioCW4SmpGnviF2Ual8bjOSAmRidgx?=
- =?us-ascii?Q?PPJ97VSm9tGqTHxKI8SnRzOnfPidQlaxokYPEya4DPEsiZctJwRqM42d2ert?=
- =?us-ascii?Q?IgyrzP9JtiW9d8DuHH51I8eg6SgS0L6krIdwXcjSgeV5wz/slzEU+pXh8ppU?=
- =?us-ascii?Q?/Isq9W5nYfU2/gC/SJi//36JljD+V/b8++tTr32FJ7P3X8Pge0aokZ/rh/YW?=
- =?us-ascii?Q?CJ7vTtbNfMNUm9y7w3Zow4EnFhb6HFDzLoCtqBp9xJQ77uyt1+8mkOv4N2b3?=
- =?us-ascii?Q?dE9jBsA1uDkqVghbyIC8WRSn2yvrjHLA56DjOO8yc9a5LndKPKMNAaJM0mmL?=
- =?us-ascii?Q?lyVZujS/LPmFpLJrw6XfvxwRPSEeh4W3TdEM4ucwCLY2W6QWd5vZqJLcKtMk?=
- =?us-ascii?Q?EC/8CqnUWR0nGQVJDHVJfMBFhJugwyZP/xhy59EFS2RapE8hTLgD+fpYnmqy?=
- =?us-ascii?Q?TmA+htRM1BNSodNsdcnseM/jHoXGBudwYFjvCk9ZM0SVrWPnBPTtZ7TjILvg?=
- =?us-ascii?Q?1yJoIY5BbUCi6uFf2V8zNGiRh+ChmPZ6WbI+PaiRBDf6sm4IrYxuWz9cpZSs?=
- =?us-ascii?Q?6+9lowmk8+O9kgJKMNTH6tILw9ZspD3apvPRx6CFmzUM6lvUqqPQ64jNl7Ln?=
- =?us-ascii?Q?teOuWOXNKpjaccZ9srYKIetCheEaWaf4hR+/nDeEG2XWeDXXD37BUMv3PQMD?=
- =?us-ascii?Q?5mvxLeb7aKRwBisY3rXzttQomZ9k+om5Ooo0icusLcApIFRX?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lrOc8xep";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="LxC2rnyY"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65P6gmis1527037
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 07:38:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	0kMOW4i+4XV2WgAdnsOAr0reBkKZzZYazMDcvSB30UE=; b=lrOc8xepROZ3JvYm
+	Blh/tVWTxMfrAFsytf47oi2cXGKOnmJTQBAHBS7WDEWC1oFwIpeo+fJAbnHYlUVt
+	0NPlZXMKXmMffFqWIx6gYoigCVYtCcnekQxAjj//4dWuFi97QZ9+3+FsGvE09mR3
+	I5hug8Lw6ujgZ5XE6773IU8y7J8UG27FOycsotkLXNwxRUR1Z8Uz1GPLwx+50QcC
+	iFySBP4eSgnA53OsKtsQlahGfTUkq6lIMLUsBG60NyGscxbTGKZfJSSh941kx8DQ
+	xhHUeyl5ZF+MNKZX/6LoWR9f5qOz2li121y+hkS3koONnjTBQrLmVC5cnV8NdMMc
+	FOI7MA==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f0ya8r6uy-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 07:38:24 +0000 (GMT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-920eff1439cso22922985a.3
+        for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 00:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1782373103; x=1782977903; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0kMOW4i+4XV2WgAdnsOAr0reBkKZzZYazMDcvSB30UE=;
+        b=LxC2rnyYJSmXZ14JPpxZFNMtFxvg/0XOvT5muDXVB3sNNU4ElefLlPFymLR5H2bYAs
+         kMbtaKoNq643mZHiQBmiBVGilMYIi+w3sAczBXutqfcid8U90n5X6zw+/ePgqL6T7hc7
+         fBu1WrpC4zSngrHDe9bUMOPsbE3FkvWy20/G4sCcP45mEJinHiiSUD9W6/Fo/ZV34Vfd
+         B3GiKh6abqznDj5JN/3zezSIdIL1nHNVjOczBHdFZq+TQ8dgcATFiJaFHDnWmYw1xLLI
+         a3zRuC79/mzPZs2hCMopzyzuWrb8UfLKpg01qiFpbe5tx0v1QXRpq5ha230zSq0VTlSO
+         71cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782373103; x=1782977903;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0kMOW4i+4XV2WgAdnsOAr0reBkKZzZYazMDcvSB30UE=;
+        b=G4xXXXPdDVuXlQTtNvVReyym9aZ99ZquyZZFTCuVWpt43oxHInpmd/zs0bg/Hj3+3i
+         tfFCnU43dvDfNGgZVBmCt4uA/upsyqW3owco1OXudj70xIxstr+MqIQCQjMrqE61q7Gb
+         HL5DP1UHO4jONxoVubbu/IpXT5XkEiaZbSy8Kj4AAtRIsnrf7n62n1eebgxpRjisOjqu
+         IhsdEpUQaElty51zKFKf7mbFHnxX5qFkDz45XpapQpvwaNja13WPJrk3AX+YAO/0OwFK
+         gqYPPV1W5/tejdecsEjMFWGrfu1uB8guUA+QWoWehlCCTIeY48D8zMYxVaMDDsnCLPGS
+         5uog==
+X-Forwarded-Encrypted: i=1; AFNElJ+ASzYnBODeiSA8pvWozmiMRMWgy24KUDC2buzYp5mEMExII0cWvwTq5GLirpUenTNgdr3rKg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxE31l60gBg+tgn0x33/36+6ignR725TkmhZ0iZUZcCWakWM50P
+	m+QJTD0y/2bLMv89j6ABIu680i4aWXdMhiN0Ya0KbEZ4hqf46VIXZjv3KJouAz44OrfofL2EhOF
+	5WvqaF0ebagryB0MgMRCcsmyB6kAjINaRcY/cvJkKzTs81GFQcBA4PeiLaw==
+X-Gm-Gg: AfdE7cnlqHGsk0QdY46viPY4peLQbnEJQwS9mXQgAuVwbCPqvpLdNzlokU9Bejmu9n0
+	XVAy2gg8J1NWdbdGu2BOdKUTIPSUvXKm5h03pZUfvOcq0dKlhZf8mrsguUgX0/X4RuPZzPpsCXl
+	JSi+LbB/GpI1zF7Lu3jYzJUp6iUGPtj5BvnVSjCrnjO2ditetpncMooOhfKFjMHbdOQJmiM4TXT
+	RzTjZ8sO5vESw+C0hD16cWKrL9U7RYHt0BKkYVAtwNLX3ews+x4O00cbM3ECfb5fftfiW8qGw4P
+	uLGDi5nKTiMpiL8I5+DEL+sp1z2CL3cSioHalydpbSqILepK/kfWTr89ozJffDKPSi9R5d3t3NE
+	9wcQH/n4e2iy/hekEm+M4hu9Jdm3YH+gfVEM=
+X-Received: by 2002:ac8:58d3:0:b0:510:144a:636 with SMTP id d75a77b69052e-51a72ad2276mr10886151cf.8.1782373103373;
+        Thu, 25 Jun 2026 00:38:23 -0700 (PDT)
+X-Received: by 2002:ac8:58d3:0:b0:510:144a:636 with SMTP id d75a77b69052e-51a72ad2276mr10885901cf.8.1782373102900;
+        Thu, 25 Jun 2026 00:38:22 -0700 (PDT)
+Received: from [192.168.120.170] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c11fbedf971sm120256666b.62.2026.06.25.00.38.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Jun 2026 00:38:22 -0700 (PDT)
+Message-ID: <ba15ebf4-ea95-43ce-b612-8df25a9f179a@oss.qualcomm.com>
+Date: Thu, 25 Jun 2026 09:38:19 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: EcT4l1kihaalxrs7h1BSbnbIV5ZwBnxZyhHVQ4I/nApmpvulkjEdgrK5H//wBUUTJC1PuNCZlXGCMtSNnfwWTL+piDqGkCkqdQIsck8zcevKbSBhBCvdje2nCf8fG8kO4514X/kiheWm8J6FQfX1NY2csEG6KuYhmcqnWg2OFjm8cPzdLaYBor1wnPqVQetI7lGSiFisJg1K7dRfKG2WGKISBG8VvAijyTLhLSRy/DhzgdMnBuZcFpZCW1Vc/Xr3RhEmUtqvl6y6v3vTa669aDDvNuSqjkzcKnlWYRZeoZM6H9wbjAWaj7aZvXfVbLNmuqKAmKruSogyWIOpYlNF7A==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB8498.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07bc7a1c-f295-4a02-bfbe-08ded28b9742
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2026 07:30:11.3073
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K5a88SgLYdZmXs/z9OjqAW7JzvyTjFgMWSJ5wezgEWBn88LDCmTgDz9hGnCDJReaNYzDIvo/vF2HWnIaeAL97A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7265
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/8] clk: qcom: dispcc-sm8450: Fix mdss clocks
+To: Esteban Urrutia <esteuwu@proton.me>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd
+ <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
+        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Vinod Koul <vkoul@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org
+References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
+ <20260622-sm8450-qol-v1-1-37e2ee8df9da@proton.me>
+ <65873506-1a9a-40ec-ac67-60f61a0b4b4c@oss.qualcomm.com>
+ <9bc524b9-c6da-47a1-a7cf-abeb131416a7@proton.me>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <9bc524b9-c6da-47a1-a7cf-abeb131416a7@proton.me>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI1MDA2NSBTYWx0ZWRfX3ZRByB+4mEBS
+ leR9siF2ktfY2z/2WFkdDH7nhP/ncXKy01am8ns/EDyZMlznELIijoD8rw7VZYYgKzBdXgepuOD
+ 3PFJNsxLcD7xFPPedAs0s8kkVZKDTFM=
+X-Proofpoint-GUID: Dk8eHDI4p9DkL5PivBzkYbjKQx0f-PEl
+X-Proofpoint-ORIG-GUID: Dk8eHDI4p9DkL5PivBzkYbjKQx0f-PEl
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI1MDA2NSBTYWx0ZWRfX5OgersXQ+XMD
+ op0hdoE4/dbXrRfmRfbqclZ8Z6S1lP4bedP1UKgeSbuPcTooKKCSPuR/aSThz73a31LyBLRMpyA
+ U0yiGx9Rjn5I0a7VwIHVLe0PYRjs4lCvUqgfElvUguA1G+b5Ci4uixPK5G5T+lGzReXMdvn2rzV
+ rCBzOUxF5q0IZr4TmNi8dD5nNYhUrboH5x84Uw0UB9EpdoKPpgWCMJMCsoUlDTweA/bmAllFbgl
+ w1CzPwz5hF3dj1bTB2jHfMhIol5z7EGTzxVn2lqXz3Ml8fMfo82eyCOSBDNRgF9I1zFZlrh3D3q
+ mOOk0rVxHyN2hRQIFXYZL8RqZw+DIFjtqhoQOKmzcpCFYDfKHVMPNV/sqQdAizGwL2QI2elQeM8
+ q6XqKOpr5xLiOexFVWNtWvxqAAaE0auzcj/tTRLAELnq2F/B/gQ4kkmRCiWp6mA97ut3ZxkG7/D
+ zXom62Ucd8F0KYxUavg==
+X-Authority-Analysis: v=2.4 cv=Z+Xc2nRA c=1 sm=1 tr=0 ts=6a3cdaf0 cx=c_pps
+ a=qKBjSQ1v91RyAK45QCPf5w==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=yUEngxm9hVyLX7FlFv4A:9 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-25_01,2026-06-24_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 malwarescore=0 bulkscore=0 suspectscore=0 phishscore=0
+ spamscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2606250065
 
+On 6/25/26 4:22 AM, Esteban Urrutia wrote:
+> On 6/23/26 11:50 AM, Konrad Dybcio wrote:
+>> This can also be fixed by migrating to use qcom_cc_driver_data,
+>> which takes a list of alpha PLLs to be configured, and thenthere's
+>> a switch-statement in clk-alpha-pll.c that always assigns the
+>> correct function
+> 
+> If this is done, should a patch that migrates to qcom_cc_driver_data and a
+> patch that fixes the issue be sent, or should only a single patch be sent?
 
+It's fine to just have one patch, but please mention that this
+actually happens to fix the issue in the commit message
 
-> -----Original Message-----
-> From: Michael Kelley <mhklinux@outlook.com>
-> Sent: Tuesday, June 23, 2026 10:35 AM
-> To: Miao, Jun <jun.miao@intel.com>; m.szyprowski@samsung.com;
-> robin.murphy@arm.com
-> Cc: iommu@lists.linux.dev; chenhgs@chinatelecom.cn; Du, Fan
-> <fan.du@intel.com>; LKML <linux-kernel@vger.kernel.org>
-> Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
-> used/hiwater tracking
->=20
->=20
-> From: Jun Miao <jun.miao@intel.com> Sent: Monday, June 22, 2026 5:21 AM
-> >
->=20
-> [Adding LKML to the Cc: list]
->=20
-> > Under heavy concurrent DMA traffic, inc_used_and_hiwater() performs an
-> > atomic_long_add_return() plus a CAS loop on the global used_hiwater, an=
-d
-> > dec_used() performs an atomic_long_sub() on total_used.
->=20
-> This statement seems overly broad. Normally the swiotlb is rarely used, s=
-o
-> heavy concurrent DMA traffic doesn't generate this problem. The bad case
-> would be in a CoCo VM where all DMA traffic goes through the swiotlb. If
-> your statement is based on the CoCo VM case, please call that out.
->=20
-> > All CPUs contend
-> > on the same cacheline, causing measurable throughput degradation at
-> scale.
-> > Both counters are debug-only (CONFIG_DEBUG_FS).
-> >
-> > Move hiwater tracking into struct io_tlb_area, where area->used is
-> > already maintained under area->lock:
-> >
-> > - Add unsigned long used_hiwater to struct io_tlb_area.  Update it
-> >   inside the existing area->lock critical section in
-> >   swiotlb_search_pool_area() immediately after area->used is
-> >   incremented, at zero additional synchronisation cost.
-> >
-> > - Remove atomic_long_t total_used and used_hiwater from struct
-> >   io_tlb_mem; make inc_used_and_hiwater()/dec_used() empty stubs.
-> >
-> > - Unify the two CONFIG_DEBUG_FS / !CONFIG_DEBUG_FS versions of
-> >   mem_used() into a single implementation that sums per-area used
-> >   counts with READ_ONCE().
-> >
-> > - Rewrite io_tlb_hiwater_get() to sum area->used_hiwater across all
-> >   areas (locklessly with READ_ONCE()); rewrite io_tlb_hiwater_set() to
-> >   reset each area under its own spinlock.
-> >
-> > Result: zero global atomic operations on the DMA map/unmap hot path.
->=20
-> Another result (as I describe below in the code) is that the reported
-> hiwater value can now be egregiously wrong. Back when I added
-> reporting the hiwater value in commit 8b0977ecc8b3, there was
-> considerable discussion of the potential impact of the atomic operations,
-> and the decision was to place reporting under CONFIG_DEBUG_FS as a
-> mitigation option if needed.
->=20
-> At the time, the use case for the hiwater mark was to enable a sysadmin
-> to see how much peak swiotlb space is needed for a particular workload.
-> This info would allow the swiotlb size to be set smaller than the rather =
-large
-> default that is used in CoCo VMs, and free up memory for real workload
-
-
-
-> usage. I thought about the approach you've taken here, but my view at
-> the time was that approach is inaccurate enough so as to be fairly
-> worthless for the intended use case.
->=20
-> >
-> > Without this patch, the inc_used_and_hiwater() accounts for the most ti=
-me
-> > from perf assembly record as following log:
-> >
-> >        | spin_unlock_irqrestore():
-> >        | - call    _raw_spin_unlock_irqrestore
-> >        | swiotlb_area_find_slots():
-> >  10.38 |   mov    $0x60(%rsp),%rax
-> >   0.00 |   mov    $0x2b8(%rax),%rcx
-> >        | arch_atomic64_add_return():
-> >   0.00 |   mov    %r15,%rax
-> >   0.00 |   lock    xadd    %rax,0x58(%rcx)
-> >  66.74 |   lea    (%r15,%rax,1),%rdx
-> >        | arch_atomic64_read():
-> >   0.14 |   mov    $0x60(%rcx),%rax
-> >        | inc_used_and_hiwater():
-> >  19.74 |   cmp    %rdx,%rax
-> >        |   jae    43f
-> >        | arch_atomic64_try_cmpxchg():
-> >        |   lock    cmpxchg %rdx,0x60(%rcx)
-> >        |   jne    432
-> >        | swiotlb_area_find_slots():
-> >   0.07 |   mov    %ebx,%eax
-> >   0.04 |   jmp    289
-> >        | wrap_area_index():
-> >        |   xor    %edx,%edx
-> >        |   jmp    3fb
-> >
-> > Suggested-by: Fan Du <fan.du@intel.com>
-> > Co-developed-by: Chenhgs <chenhgs@chinatelecom.cn>
-> > Tested-by: Chenhgs <chenhgs@chinatelecom.cn>
-> > Signed-off-by: Jun Miao <jun.miao@intel.com>
-> > ---
-> >  include/linux/swiotlb.h |   7 ---
-> >  kernel/dma/swiotlb.c    | 109 +++++++++++++++++-----------------------
-> >  2 files changed, 45 insertions(+), 71 deletions(-)
-> >
-> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> > index 3dae0f592063..a92496786cb5 100644
-> > --- a/include/linux/swiotlb.h
-> > +++ b/include/linux/swiotlb.h
-> > @@ -97,11 +97,6 @@ struct io_tlb_pool {
-> >   * @lock:	Lock to synchronize changes to the list.
-> >   * @pools:	List of IO TLB memory pool descriptors (if dynamic).
-> >   * @dyn_alloc:	Dynamic IO TLB pool allocation work.
-> > - * @total_used:	The total number of slots in the pool that are
-> currently used
-> > - *		across all areas. Used only for calculating used_hiwater in
-> > - *		debugfs.
-> > - * @used_hiwater: The high water mark for total_used.  Used only for
-> reporting
-> > - *		in debugfs.
-> >   * @transient_nslabs: The total number of slots in all transient pools=
- that
-> >   *		are currently used across all areas.
-> >   */
-> > @@ -119,8 +114,6 @@ struct io_tlb_mem {
-> >  	struct work_struct dyn_alloc;
-> >  #endif
-> >  #ifdef CONFIG_DEBUG_FS
-> > -	atomic_long_t total_used;
-> > -	atomic_long_t used_hiwater;
-> >  	atomic_long_t transient_nslabs;
-> >  #endif
-> >  };
-> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > index 1abd3e6146f4..9b4130e3f8e8 100644
-> > --- a/kernel/dma/swiotlb.c
-> > +++ b/kernel/dma/swiotlb.c
-> > @@ -107,12 +107,15 @@ static unsigned long default_nareas;
-> >   * This is a single area with a single lock.
-> >   *
-> >   * @used:	The number of used IO TLB block.
-> > + * @used_hiwater: Per-area high-water mark of used slots. Updated unde=
-r
-> > + *		@lock; read locklessly for approximate debugfs reporting.
-> >   * @index:	The slot index to start searching in this area for next rou=
-nd.
-> >   * @lock:	The lock to protect the above data structures in the map and
-> >   *		unmap calls.
-> >   */
-> >  struct io_tlb_area {
-> >  	unsigned long used;
-> > +	unsigned long used_hiwater;
-> >  	unsigned int index;
-> >  	spinlock_t lock;
-> >  };
-> > @@ -959,40 +962,6 @@ static unsigned int wrap_area_index(struct
-> io_tlb_pool *mem, unsigned int index)
-> >  	return index;
-> >  }
-> >
-> > -/*
-> > - * Track the total used slots with a global atomic value in order to h=
-ave
-> > - * correct information to determine the high water mark. The mem_used(=
-)
-> > - * function gives imprecise results because there's no locking across
-> > - * multiple areas.
-> > - */
-> > -#ifdef CONFIG_DEBUG_FS
-> > -static void inc_used_and_hiwater(struct io_tlb_mem *mem, unsigned int
-> nslots)
-> > -{
-> > -	unsigned long old_hiwater, new_used;
-> > -
-> > -	new_used =3D atomic_long_add_return(nslots, &mem->total_used);
-> > -	old_hiwater =3D atomic_long_read(&mem->used_hiwater);
-> > -	do {
-> > -		if (new_used <=3D old_hiwater)
-> > -			break;
-> > -	} while (!atomic_long_try_cmpxchg(&mem->used_hiwater,
-> > -					  &old_hiwater, new_used));
-> > -}
-> > -
-> > -static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
-> > -{
-> > -	atomic_long_sub(nslots, &mem->total_used);
-> > -}
-> > -
-> > -#else /* !CONFIG_DEBUG_FS */
-> > -static void inc_used_and_hiwater(struct io_tlb_mem *mem, unsigned int
-> nslots)
-> > -{
-> > -}
-> > -static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
-> > -{
-> > -}
-> > -#endif /* CONFIG_DEBUG_FS */
-> > -
-> >  #ifdef CONFIG_SWIOTLB_DYNAMIC
-> >  #ifdef CONFIG_DEBUG_FS
-> >  static void inc_transient_used(struct io_tlb_mem *mem, unsigned int
-> nslots)
-> > @@ -1132,9 +1101,10 @@ static int swiotlb_search_pool_area(struct devic=
-e
-> *dev, struct io_tlb_pool *pool
-> >  	 */
-> >  	area->index =3D wrap_area_index(pool, index + nslots);
-> >  	area->used +=3D nslots;
-> > +	if (area->used > area->used_hiwater)
-> > +		area->used_hiwater =3D area->used;
-> >  	spin_unlock_irqrestore(&area->lock, flags);
-> >
-> > -	inc_used_and_hiwater(dev->dma_io_tlb_mem, nslots);
-> >  	return slot_index;
-> >  }
-> >
-> > @@ -1295,29 +1265,12 @@ static int swiotlb_find_slots(struct device *de=
-v,
-> phys_addr_t orig_addr,
-> >
-> >  #endif /* CONFIG_SWIOTLB_DYNAMIC */
-> >
-> > -#ifdef CONFIG_DEBUG_FS
-> > -
-> > -/**
-> > - * mem_used() - get number of used slots in an allocator
-> > - * @mem:	Software IO TLB allocator.
-> > - *
-> > - * The result is accurate in this version of the function, because an =
-atomic
-> > - * counter is available if CONFIG_DEBUG_FS is set.
-> > - *
-> > - * Return: Number of used slots.
-> > - */
-> > -static unsigned long mem_used(struct io_tlb_mem *mem)
-> > -{
-> > -	return atomic_long_read(&mem->total_used);
-> > -}
-> > -
-> > -#else /* !CONFIG_DEBUG_FS */
-> > -
-> >  /**
-> >   * mem_pool_used() - get number of used slots in a memory pool
-> >   * @pool:	Software IO TLB memory pool.
-> >   *
-> > - * The result is not accurate, see mem_used().
-> > + * Returns the sum of per-area used slot counts. The result is approxi=
-mate
-> > + * since there is no locking across areas.
-> >   *
-> >   * Return: Approximate number of used slots.
-> >   */
-> > @@ -1327,7 +1280,7 @@ static unsigned long mem_pool_used(struct
-> io_tlb_pool *pool)
-> >  	unsigned long used =3D 0;
-> >
-> >  	for (i =3D 0; i < pool->nareas; i++)
-> > -		used +=3D pool->areas[i].used;
-> > +		used +=3D READ_ONCE(pool->areas[i].used);
-> >  	return used;
-> >  }
-> >
-> > @@ -1335,8 +1288,8 @@ static unsigned long mem_pool_used(struct
-> io_tlb_pool *pool)
-> >   * mem_used() - get number of used slots in an allocator
-> >   * @mem:	Software IO TLB allocator.
-> >   *
-> > - * The result is not accurate, because there is no locking of individu=
-al
-> > - * areas.
-> > + * Returns the sum of per-area used slot counts across all pools. The =
-result
-> > + * is approximate since there is no locking across areas.
-> >   *
-> >   * Return: Approximate number of used slots.
-> >   */
-> > @@ -1357,8 +1310,6 @@ static unsigned long mem_used(struct
-> io_tlb_mem *mem)
-> >  #endif
-> >  }
-> >
-> > -#endif /* CONFIG_DEBUG_FS */
-> > -
-> >  /**
-> >   * swiotlb_tbl_map_single() - bounce buffer map a single contiguous
-> physical area
-> >   * @dev:		Device which maps the buffer.
-> > @@ -1508,8 +1459,6 @@ static void swiotlb_release_slots(struct device
-> *dev, phys_addr_t tlb_addr,
-> >  		mem->slots[i].list =3D ++count;
-> >  	area->used -=3D nslots;
-> >  	spin_unlock_irqrestore(&area->lock, flags);
-> > -
-> > -	dec_used(dev->dma_io_tlb_mem, nslots);
-> >  }
-> >
-> >  #ifdef CONFIG_SWIOTLB_DYNAMIC
-> > @@ -1531,7 +1480,6 @@ static bool swiotlb_del_transient(struct device
-> *dev, phys_addr_t tlb_addr,
-> >  	if (!pool->transient)
-> >  		return false;
-> >
-> > -	dec_used(dev->dma_io_tlb_mem, pool->nslabs);
-> >  	swiotlb_del_pool(dev, pool);
-> >  	dec_transient_used(dev->dma_io_tlb_mem, pool->nslabs);
-> >  	return true;
-> > @@ -1710,20 +1658,53 @@ static int io_tlb_used_get(void *data, u64 *val=
-)
-> >  static int io_tlb_hiwater_get(void *data, u64 *val)
-> >  {
-> >  	struct io_tlb_mem *mem =3D data;
-> > +	unsigned long hiwater =3D 0;
-> > +	struct io_tlb_pool *pool;
-> > +	int i;
-> >
-> > -	*val =3D atomic_long_read(&mem->used_hiwater);
-> > +#ifdef CONFIG_SWIOTLB_DYNAMIC
-> > +	rcu_read_lock();
-> > +	list_for_each_entry_rcu(pool, &mem->pools, node)
-> > +		for (i =3D 0; i < pool->nareas; i++)
-> > +			hiwater +=3D READ_ONCE(pool->areas[i].used_hiwater);
-> > +	rcu_read_unlock();
-> > +#else
-> > +	pool =3D &mem->defpool;
-> > +	for (i =3D 0; i < pool->nareas; i++)
-> > +		hiwater +=3D READ_ONCE(pool->areas[i].used_hiwater);
->=20
-> Let's ignore the SWIOTLB_DYNAMIC case for simplicity. The approach
-> of calculating a separate hiwater mark for each area, and then summing
-> those per-area hiwater marks, can produce very wrong results.
->=20
-> Consider a 64MiB swiotlb in a system with 8 CPUs. There will be 8 areas,
-> each with 8 MiB of space. Suppose the workload putters along with mostly
-> smallish I/Os, say between 4 KiB and 32 KiB. If each area has 16 I/Os in
-> progress, the area hiwater mark might be 256 KiB (16 I/Os averaging 16 Ki=
-B
-> each). Summing across areas produces a hiwater mark of 8 * 256 KiB =3D 2 =
-MiB.
-> But then suppose a 2 MiB I/O comes in. The hiwater mark for the area that
-> handles that I/O will grow to 2+ MiB. After the first big I/O finishes,
->  another 2 MiB I/O comes in that is handled by a different area, whose
-> hiwater mark also goes to 2+ MiB. Pretty soon all 8 areas have a hiwater
-> mark of 2+ MiB, and the total hiwater mark is reported as 16+ MiB. The
-> old algorithm would have reported 4+ MiB, which is accurate. With
-> higher CPU counts and more areas, the discrepancy can get much worse.
-> This is a somewhat contrived example, but the problem is real enough
-> to make the reported hiwater mark be unreliable.
-
-You are correct here, I like your way of thinking.
-
-> I'm sure the contention for the total hiwater mark in the current code is
-> real, but it's in the context of a lot of other CPU work that is being be=
-cause
-> of the bounce buffering, including copying lots of data to/from the bounc=
-e
-> buffers. Is that atomic increment operation a bottleneck even in the
-> end-to-end context of doing DMA through swiotlb bounce buffers?
-
-Practical benchmark show case the highest IO performance for each TVM spec.=
-=20
-even if a few iperf (4)workers would cause the contention here.
-My guts feelings, yes, the real workload probably hit the bottleneck here.
-
-> Another approach to the contention problem would be to have a separate
-> CONFIG option that is narrower than CONFIG_DEBUG_FS, so that the
-> computation of the hiwater mark can be dropped entirely in production
-> environments. Or the setting could be dynamic at runtime via a
-> static_call, defaulting to not computing the hiwater mark while still
-> allowing a sysadmin to turn it on to see workload usage of the swiotlb.
-
-That's counter-intuitive from my perspective.
-With global counters, the observation, which itself impacts the performance=
-,=20
-wouldn't be able to tell the practical characterization, that's commonly lo=
-wer than
-max performance, in turn breaks the semantics of what's it for.
-
-Even without those global counters, if user wants to know the hiwater value=
-,
-snapshotting used value(sum of each area as current behavior) periodically =
-would
-produce meaningful value for workload evaluation.
-
-
-> Michael
->=20
-> > +#endif
-> > +	*val =3D hiwater;
-> >  	return 0;
-> >  }
-> >
-> >  static int io_tlb_hiwater_set(void *data, u64 val)
-> >  {
-> >  	struct io_tlb_mem *mem =3D data;
-> > +	struct io_tlb_pool *pool;
-> > +	unsigned long flags;
-> > +	int i;
-> >
-> >  	/* Only allow setting to zero */
-> >  	if (val !=3D 0)
-> >  		return -EINVAL;
-> >
-> > -	atomic_long_set(&mem->used_hiwater, val);
-> > +#ifdef CONFIG_SWIOTLB_DYNAMIC
-> > +	rcu_read_lock();
-> > +	list_for_each_entry_rcu(pool, &mem->pools, node)
-> > +		for (i =3D 0; i < pool->nareas; i++) {
-> > +			spin_lock_irqsave(&pool->areas[i].lock, flags);
-> > +			pool->areas[i].used_hiwater =3D 0;
-> > +			spin_unlock_irqrestore(&pool->areas[i].lock, flags);
-> > +		}
-> > +	rcu_read_unlock();
-> > +#else
-> > +	pool =3D &mem->defpool;
-> > +	for (i =3D 0; i < pool->nareas; i++) {
-> > +		spin_lock_irqsave(&pool->areas[i].lock, flags);
-> > +		pool->areas[i].used_hiwater =3D 0;
-> > +		spin_unlock_irqrestore(&pool->areas[i].lock, flags);
-> > +	}
-> > +#endif
-> >  	return 0;
-> >  }
-> >
-> > --
-> > 2.32.0
-> >
-
+Konrad
