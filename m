@@ -1,260 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B4F932E128
-	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 13:44:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782395050; cv=fail; b=pNVUdITOXuZfIwO4RgtONS7BshXqdybiTxxSfe6NNf0HkSDYIkqTTUTKcInkS0PPVXcGjeV4cy4nNX405iCn/PVhAw/RuDMtbB/6E1lWItXvWeyibPs53rhotAxh5atdrINy3uHX1pLH9P4h1X/TdXWLzBCIQPDbUO4TNz/HT94=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782395050; c=relaxed/simple;
-	bh=B+B2bMAkW7PtGLt/haGi9FS9AicqsxfqXglmqePTl90=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=XqnHfqPtC7HHhWcXnkG7NKh/9JYPdw6Op6ZR7ZSrTTz0t2fUDi4krp/y2TNViSAEMHf6prcFk214xrYSJtvd9/6OORx6OXMjoVe2m88XzIj3lck8OaNuUR4FmnkMXpIZ0sDoA561F2U2WdbgsO0u7NJwjjqVNqRoo307Tgzuylg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Sy4UvUfs; arc=fail smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0B293A0B2E
+	for <iommu@lists.linux.dev>; Thu, 25 Jun 2026 14:29:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782397760; cv=none; b=taO8RcR0ZpJgWAv0IRSFKer4t4p9IBoNr2txkxKRe1pP2Cv+AVdDAUJy6eMVL0R672i1Z+yWBTuLcc2WfQexjNG1xG0uaZS4oU7myswy0Cpeg6EGIdYERFY9CAmnkjYWK0YOUhM7FFGuf+JEnsGmDDD34kT70u9zRvZu0XhfZ14=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782397760; c=relaxed/simple;
+	bh=qjgPdRm4ZE5PWnURF3lUNHIhYW/JfrxqkVr5Kw1oNwE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=od66gNBNUpF3wOc3XZm/KHxvP71W9mKEE1gskR/1/zgCQIdBJuJAzPFBL4dUXxyCCYmTExSZ3uhsyaVgLbyEer0noBCXUZLjOWAvHLsAgEcHGgsEkdSBaf7z126AGQY6Jp3OTc0RAZM9gmLGfv+0SwX4E38R5B6DkHnGkH26wFQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=MnWZqGEn; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Sy4UvUfs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782395049; x=1813931049;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=B+B2bMAkW7PtGLt/haGi9FS9AicqsxfqXglmqePTl90=;
-  b=Sy4UvUfsybYZnDdcAOGTO2fOgWrIkSs4v2BsGDYJx2zUMPpMVHn4j2DY
-   2XLSom7iBuk37yvrzB2Moof6Y60HFfqEf58mHnIBYo84E3WCO3ZFodUed
-   4VyqRsxd9nvECUvKNCvRop2xMPylGXIQqwGDd9oGoyrNkzgnI9vcl8yKw
-   lII/icsQCSGs1zZc4Mn0vdDSmIFjFQ9XexYrjb4o/aXqYKgC1SXyBqjKh
-   l2RtGb/M9zpk6a493R9kXgiH9zzk4hbQL4ahBgQqKUkODfZYNzwGHCui/
-   Gznhu1g9+/VwvevE5cHUUKNmIZ1SgwbObP9M+9Z64Ll8H0IkJFxMhr/0K
-   w==;
-X-CSE-ConnectionGUID: i8B8eSxBTuaxREQ9Cnk6OQ==
-X-CSE-MsgGUID: 8aLCcD7MSvuPFvthPlmgcg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11827"; a="94566681"
-X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="94566681"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 06:44:08 -0700
-X-CSE-ConnectionGUID: WAxNJmx7Ra+eBWss9m1lOw==
-X-CSE-MsgGUID: 2TYCODGuS62v9OEISLosmw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="254419578"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 06:44:08 -0700
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 25 Jun 2026 06:44:07 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Thu, 25 Jun 2026 06:44:07 -0700
-Received: from PH0PR06CU001.outbound.protection.outlook.com (40.107.208.44) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 25 Jun 2026 06:44:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ausi+cpNt95dnf2RaWVucU8XG6fao5v+QiTy1pY6O3YXou1GS8z2UeVcBB8FW0X8QloKkzYg5k7I5a0WcqNoFxrrbZcXIM+PcQ8xyY5nOwPaKRY3vJlMlElcR75Ry+29TLC71qTPTg7s4pH4/d9Y69DnBSmBJ4s9y6z3l4cQD7mhcPSbElsBW5HMm7CSOleAVBhwUEoW8IyMFtx1WzHdaHm363Qb6a96RzJp6mo4RPZISvv1WmpHvpFwBBtn+V19lPFV8v7qqZVYAWnZ4b7Jxc538+E8ulb+NE8/cNKTjN5qtlB9pantWqUeUBRobnCJUP62sbew4whGSnxv1KanYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/ezp9Odiisb28uzTAJmG1JK6PM4yEUynJSvcjN1CSqo=;
- b=KsfSbn2c20glTypM8V7x/AQ9CvYLoSon1EIK28dYI/XJ+w871a9JmgpuqURw3xBRZxGrSSIkyW7IJMmkZ+r0ntaP1VCzhc7rJ4g2h0BsMrS2uinnQDXABObqVmHbz3FxkMRaju4XEz3FDIzKnntbjwo/Era7YLqsykYWawtBhSCwEPTOi1SyBQMp7wQCgu08wayKVklJ7mEoxqV2He++3lGzdMm6iq7XKAtL0RlEqadaXcljqImbHmwA7EZ6VXYkOM+xyxbbhHRFRWvFQDP8jsdBF8o+ViWjOAijmhk2SV9IDvqtYUOuK7dKRfp0uE7O5vAqWk+AdCc9g1s3WnCzoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
- by DSWPR11MB9716.namprd11.prod.outlook.com (2603:10b6:8:353::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.17; Thu, 25 Jun
- 2026 13:44:04 +0000
-Received: from PH0PR11MB7424.namprd11.prod.outlook.com
- ([fe80::c448:1138:6981:52e2]) by PH0PR11MB7424.namprd11.prod.outlook.com
- ([fe80::c448:1138:6981:52e2%5]) with mapi id 15.21.0159.012; Thu, 25 Jun 2026
- 13:44:03 +0000
-From: Krzysztof Karas <krzysztof.karas@intel.com>
-To: <intel-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
-	<iommu@lists.linux.dev>
-CC: Andi Shyti <andi.shyti@linux.intel.com>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Janusz Krzysztofik
-	<janusz.krzysztofik@linux.intel.com>, Sebastian Brzezinka
-	<sebastian.brzezinka@intel.com>, Krzysztof Niemiec
-	<krzysztof.niemiec@intel.com>, Krzysztof Karas <krzysztof.karas@intel.com>
-Subject: [PATCH 3/3] drm/i915/shmem: Count mapped pages in a folio
-Date: Thu, 25 Jun 2026 13:43:42 +0000
-Message-ID: <20260625134342.1102921-4-krzysztof.karas@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260625134342.1102921-1-krzysztof.karas@intel.com>
-References: <20260625134342.1102921-1-krzysztof.karas@intel.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TLZP290CA0002.ISRP290.PROD.OUTLOOK.COM (2603:1096:950:9::8)
- To PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="MnWZqGEn"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 262973165;
+	Thu, 25 Jun 2026 07:29:09 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 669E53F836;
+	Thu, 25 Jun 2026 07:29:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1782397753; bh=qjgPdRm4ZE5PWnURF3lUNHIhYW/JfrxqkVr5Kw1oNwE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=MnWZqGEnKH2EhQavXCW7Yl0+Q8r4veQKBRHMWp+oc8Bz6nX8Ny55VHMzy1n3XM1v3
+	 Ci0wWwUw/VUTmG1EyJiBOhzksBI6DlkdWWg194tllBG2FoG7rgJurqCmkvMxyf580d
+	 jnj2+fdQZRxD5uEIgUBAUEqxO9xom3Jd/BkU1ceY=
+Message-ID: <ce5f27fd-82be-4750-8592-2eeb31a54523@arm.com>
+Date: Thu, 25 Jun 2026 15:29:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB7424:EE_|DSWPR11MB9716:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6e542ad-baaf-4c4f-98da-08ded2bfd1d0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|11063799006|56012099006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info: iNfkd3W/XkOM7JEkdY7WO70S8q2Qqi49bqPtVkY+aazGrKOLiLOEsV6Rx3egw7ND7WB/p/CYGxa/enouoYtCW83Qp3EmkpNoBKXVt3R4H+PEXx6KcivcPWfrBwbbC6IbUhQgyCQcNKv0C0TlfjMq/TraVv+OaOpsv5A4P7d6uHIMWvau2l9CKL8bjc9pRvEXS+M77g2d2s9G6Mvi81paC517Oj5ZTJH2+sJvo48XosIvgcASwCfCDGJh7A6ojZeHjXlSeuN50+YT1/hKo9DiP3LPabvAPHdfML5Xic9CsbAtPSXLwy3YxLtsuHGqoSuSk70W+8OslNsP6/+v87vxJXd+QzFgyKpGlmhjMmj4t+d9cJs4A8lVt0O4k/zyHPn3wSBXoaJfLiVCuKRfd5EwQ5nfELmjI1vD2d+V5bMQzmx8gmdKenel6hKVpnhpi5666u1HcOeWNxIg0e073MLxvbpvRhVKoXg5KAgojGcr9iK+WjS6dJRV+q9aAbgx/MDurPTFoJ56nzabPAyqANAXmbjpAm1OzwUErm5psK5793dkUZK6iGhFQedmpwNClG3v0lNPaGyqokwXPdAjbVeDH+98GCeF8SEcsopdCF2eqDg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7424.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(11063799006)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VJ3sQ8mg66kGNB7FOsZjfrYdHiuT+sxzMaZ9hzfO2OvKmnlE9qCeqGj4K3jI?=
- =?us-ascii?Q?rYAWk369tBpiRAgZrIpHpd017k0KVMgZ8noNyObpbA4wSO2S7TZ0BX/fx2Kl?=
- =?us-ascii?Q?khOnHvVMPT5z4gjUFeq0/TrWo1pCNjoCm26L9l7WP0BWZcS4IN64Ox5jQnCt?=
- =?us-ascii?Q?RO2bTOeASoQ7onyG3UwMXxnLS5KiXZ/XjjUK1Bdxf70Bdrb75aBdTw2JAyJE?=
- =?us-ascii?Q?RSwoputEBfykLL7/8yfB1lrfEZ4XuwD4/plt9gv2aoaBKQEpkr5mv1v1Doqd?=
- =?us-ascii?Q?mmz80u9l61CsHjE7SE9EKyFnTUJa3PJOv5kLNavWr0mut/YWGtCUrVMrRrET?=
- =?us-ascii?Q?Jc4NRo78/EE3Sp3rJtUoYwGYTPteIBkL7SXf990tiM6EbJMziiG2VdzMgZXQ?=
- =?us-ascii?Q?/Oy8U3jIhar8a1Y18NfexYJeJpYHjSRk8UtQ8oCeprHXCpJY36ehE0wYD+Iw?=
- =?us-ascii?Q?Eipr6Q1NFQprnouxqmdPHTtaZn4PWN6Vbmh+Pjlq1Onza1eWtxqj+RIQSbmj?=
- =?us-ascii?Q?8bY6zPNR4QAtrntX15I/XYNjpFS3GxbtRoHFg46Ac47sVLgMP4iJLyRhcWPP?=
- =?us-ascii?Q?Z4NAIeH6A7tgDN0LZpCDFC/2WEl+gIrsyjrzD3W+zqQ512eSr2ux1/xrryaA?=
- =?us-ascii?Q?i41HXaJMGDfFM9ZnjSqxwFV7yjUrf4OKk3/JSBu83h/mQSMJJWjrd7IDJSpk?=
- =?us-ascii?Q?2KkLTylKSTO7Ba87Ac9GLiaI4GQnNXBOj1H8U0sBXUNb8rMoIAKobxxw0OlW?=
- =?us-ascii?Q?QxySG79uvzoIka6HGuVUEqibPTKgL7vakFtDRd9mgnSYc+N9175+9pKsO4+8?=
- =?us-ascii?Q?iwif1f6HyaDoxzb5tDuvfRB+AltZKIFXC3jfsoqLZCphX2vQHySR6ahFdee1?=
- =?us-ascii?Q?EsnjbL9hzZEwf++qm4v0femoLGoY1hbrch71iMzri8rF58v7yhRDU2uucasl?=
- =?us-ascii?Q?qSGPDSSztkDCQPR+Fn2ZvvQBMEUcDj1H5PwKIO3rv1vKa5tKpmrL/u6B2dLJ?=
- =?us-ascii?Q?w0M86fs/J0WZQxXlJ3DNeFMYMUrOrgIhF/eqlX6NfbViSZvGmLI+xF6PsomX?=
- =?us-ascii?Q?LA3ta7toElvJ9r1kg11B7ourNhuBdoWADSlpYeP+U8XRbABtK/Iti0SpY8N3?=
- =?us-ascii?Q?Zs9ytyC6LbHI38ZCq//qYnzwRqCmxRT0EhK7ZBcfzb9PpzoMyB2ZWb5N8Z55?=
- =?us-ascii?Q?otsLugW+pOVnnN0bw+miSwYI60yFmXbjKLkF37wq00xaY3TNgHeFbuD2gjfE?=
- =?us-ascii?Q?/yOLMDoETuXEAebgn6+tQvqBTu25hUuMqvmm+9ek1DeAjUxRcmmzBVNfOZCw?=
- =?us-ascii?Q?ZuYb755sRmu+EZt9igNMtTmJ9ujMU/Nm439oJYw3pwqXafJxV7qCJY17nk37?=
- =?us-ascii?Q?204nG8tCkSm/PNr0Vwu9QECxH1SMmh14BI29+vsdLPxcXFgPM4lCyqmfJzq0?=
- =?us-ascii?Q?GhUlAWnnzgIY0RNcpj9hMNX3sg0i8/Mz5qVcrcffxs9K0V6CX8oIFHRBWU55?=
- =?us-ascii?Q?mEXg35knCUUwrESjDrB2BR1up/4YlGGC0wTyRNGEaXP7TFQeZd7gYjzdWpS7?=
- =?us-ascii?Q?PRk0611b5/2mepgyDccmgWFWSS6v9AShQ9RBKuGy2h+57cK0u+5rlPMVnDpr?=
- =?us-ascii?Q?CbipURck1j4eDQJVeJDexez3Wf7hvOKtDvLL3+8L4XxChedIuf0Z0/oXDRk/?=
- =?us-ascii?Q?d9iF1vqhnhg5X0Zp33JwYeofQ/SbmFXfUlVrzWyFCdcpiD63VIpO+bca75CL?=
- =?us-ascii?Q?EXDGpb9zq/fIH6422e9N/hbZw2BB5+4=3D?=
-X-Exchange-RoutingPolicyChecked: nYN/EJRvMG8JlGjSjXmT9OaxbDxZcjhbTdvtMRzbb57/s3P3qqdaxWpuT8vWmztBFc7lZYzmopJ0UVilDmWpLiNiscEy1EEnkBk3yIyFZ1z4+yTOplANd6nKorw56MliXyVMU846cijMYybi3KHayyXYXaHJ2OisgXV/YcxceE9BhHH1EogFZ34GfJzaUyg06OhFoVkeCY8PWEE8lGQhAPAdwOZsCCY1rfIh+g/78zz91Z9TfFrHqniZNEiuo1lokoyinrtJuD6kfMaX9jNGPH//fgyLD4TZnbbJpj4Vd91yCGfSbyhzbpTeE2F3pW9sYJKE8sIJGIZUjhFIbqA1Qg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6e542ad-baaf-4c4f-98da-08ded2bfd1d0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7424.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2026 13:44:03.6051
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FjjSRbTVgkC6mU4KWkERC2dJAF/XOWbptsak6Vfmavi0GrufUTBYOZEQhIWHa942LpAapGM6DAacEdI1JEJH2/ZxC8zUGkXj3Gy/6DxyJDM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DSWPR11MB9716
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] drivers/iommu: Unroll unsuccessful mapping
+To: Krzysztof Karas <krzysztof.karas@intel.com>,
+ intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+ iommu@lists.linux.dev
+Cc: Andi Shyti <andi.shyti@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
+ Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
+ Krzysztof Niemiec <krzysztof.niemiec@intel.com>
+References: <20260625134342.1102921-1-krzysztof.karas@intel.com>
+ <20260625134342.1102921-2-krzysztof.karas@intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260625134342.1102921-2-krzysztof.karas@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-With addition of commit 029ae067431a
-("drm/i915: Fix potential overflow of shmem scatterlist length")
-max_segment size was included in calculating a number of pages
-for the scatterlist. This meant that segment sizes considerably
-smaller than number of pages in a folio (see shmem_get_pages(),
-rebuild_st label for context), were not enough to jump to the
-next folio, which has never been a problem before folios have
-been introduced. In result, sg_set_folio() was called multiple
-times with nr_pages smaller than folio size, using multitude of
-scatterlists, all pointing to the beginning pages of the folio
-and never fully covering its range of pages.
+On 25/06/2026 2:43 pm, Krzysztof Karas wrote:
+> Currently, if iommu maps fewer bytes than requested (iova_len),
+> it proceeds to free the iova, but never tries to unmap already
+> touched bytes. This behavior may cause memory hogging down the
+> line.
 
-Track how many pages have already been counted in a folio to
-ensure it is fully covered before reading next folio.
+Huh? iommu_map_sg() has always unmapped internally upon any error - can 
+you clarify how you've seen it returning a short mapping in a non-error 
+case?
 
-Fixes: 029ae067431a ("drm/i915: Fix potential overflow of shmem scatterlist length")
-Closes: https://gitlab.freedesktop.org/drm/i915/kernel/-/work_items/15816
-Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
----
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 43 ++++++++++++++++-------
- 1 file changed, 31 insertions(+), 12 deletions(-)
+Thanks,
+Robin.
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index b5ae7e5f80a0..0e4929efbfe5 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -138,7 +138,10 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- {
- 	unsigned int pages_left; /* restricted by sg_alloc_table */
- 	unsigned long next_pfn = 0; /* suppress gcc warning */
-+	unsigned long folio_start = 0;
- 	unsigned long pages_done = 0;
-+	unsigned long folio_end = 0;
-+	struct folio *folio = NULL;
- 	struct scatterlist *sg;
- 	gfp_t noreclaim;
- 	int ret;
-@@ -166,37 +169,53 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 	sg = st->sgl;
- 
- 	while (pages_left) {
-+		unsigned long folio_pages_done = 0;
- 		unsigned long nr_pages;
- 		gfp_t gfp = noreclaim;
--		struct folio *folio;
- 
--		folio = shmem_shrink_get_folio(mapping, pages_done, gfp,
--					       pages_left, i915);
--		if (IS_ERR(folio)) {
--			ret = PTR_ERR(folio);
-+		/* Grab the next folio if we exhausted the current one. */
-+		if (!pages_done || pages_done > folio_end) {
-+			folio = shmem_shrink_get_folio(mapping, pages_done, gfp,
-+						       pages_left, i915);
-+			if (IS_ERR(folio)) {
-+				ret = PTR_ERR(folio);
-+				goto err_sg;
-+			}
-+
-+			folio_start = folio_pgoff(folio);
-+			folio_end = folio_start + folio_nr_pages(folio) - 1;
-+		}
-+
-+		folio_pages_done = pages_done - folio_start;
-+		if (WARN_ON_ONCE(folio_pages_done >= folio_nr_pages(folio))) {
-+			ret = -EINVAL;
-+			folio_put(folio);
- 			goto err_sg;
- 		}
- 
- 		nr_pages = min_array(((unsigned long[]){
--					     folio_nr_pages(folio),
-+					     folio_nr_pages(folio) - folio_pages_done,
- 					     pages_left,
--					     max_segment / PAGE_SIZE,
-+					     max_t(unsigned int, 1, max_segment / PAGE_SIZE),
- 				     }), 3);
- 		if (!st->nents) {
- 			st->nents++;
--			sg_set_folio(sg, folio, nr_pages * PAGE_SIZE, 0);
-+			sg_set_page(sg, folio_page(folio, 0), nr_pages * PAGE_SIZE, 0);
- 		} else if (sg->length >= max_segment ||
--			   folio_pfn(folio) != next_pfn) {
-+			   folio_pfn(folio) + folio_pages_done != next_pfn) {
- 			sg = sg_next(sg);
- 			st->nents++;
--			sg_set_folio(sg, folio, nr_pages * PAGE_SIZE, 0);
-+			sg_set_page(sg, folio_page(folio, folio_pages_done),
-+				    nr_pages * PAGE_SIZE, 0);
- 		} else {
- 			nr_pages = min_t(unsigned long, nr_pages,
--					 (max_segment - sg->length) / PAGE_SIZE);
-+						max_t(unsigned long, 1,
-+						      (max_segment - sg->length) / PAGE_SIZE));
- 
- 			sg->length += nr_pages * PAGE_SIZE;
- 		}
--		next_pfn = folio_pfn(folio) + nr_pages;
-+
-+		next_pfn = folio_pfn(folio) + folio_pages_done + nr_pages;
- 		pages_done += nr_pages;
- 		pages_left -= nr_pages;
- 
--- 
-2.34.1
+> Correct that by unmapping before exiting.
+> 
+> Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
+> ---
+>   drivers/iommu/dma-iommu.c | 10 ++++++++--
+>   1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 381b60d9e7ce..c4c058ba07ef 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1515,8 +1515,14 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>   	 * implementation - it knows better than we do.
+>   	 */
+>   	ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
+> -	if (ret < 0 || ret < iova_len)
+> +	if (ret < 0 || ret < iova_len) {
+> +		if (ret > 0) {
+> +			/* Unmap partially mapped bytes before freeing IOVA */
+> +			if (iommu_unmap(domain, iova, ret) != ret)
+> +				ret = -EIO;
+> +		}
+>   		goto out_free_iova;
+> +	}
+>   
+>   	return __finalise_sg(dev, sg, nents, iova);
+>   
+> @@ -1525,7 +1531,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>   out_restore_sg:
+>   	__invalidate_sg(sg, nents);
+>   out:
+> -	if (ret != -ENOMEM && ret != -EREMOTEIO)
+> +	if (ret != -ENOMEM && ret != -EREMOTEIO && ret != -EIO)
+>   		return -EINVAL;
+>   	return ret;
+>   }
 
