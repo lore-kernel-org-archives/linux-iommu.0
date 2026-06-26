@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E1E13DA7FF;
-	Fri, 26 Jun 2026 08:21:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E7CF3E1696;
+	Fri, 26 Jun 2026 08:21:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782462086; cv=none; b=ICb2+IgDL5Hw9F1bxIiCFBflGJZLh/N8yvgfPfp4soeH+zxh+MiLoA+KBqNHkUZyNyD4u7pqXc3TPuV23FBYj55OIT2QQ1f63WVoqIJjr78T4rfKRLBTwvN9VQB1q1hxb0zoxyX9HBI5Sc/wlBQ0IqJTTMIMvUQfR3alID4dCvA=
+	t=1782462114; cv=none; b=blBsEee2j92gRf+Uv7CeWnDVNFiT14GF5FTJ1P93O8+SIFCu3gm1QCZ0r5tn4EcV1YaR2l2CssfAOtNE3f0R8cwYVu23XtAvuvir44b+gTvLCjPTT+zYqP8lHg4tkkCYOfC2d3oVR9YpoWCRldg5cq6PkZNaQIUnOnGI1wY+OK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782462086; c=relaxed/simple;
-	bh=jozA/9hSSEl0LZa5zjviMwaxKKk6EFT508tBeV+rv90=;
+	s=arc-20240116; t=1782462114; c=relaxed/simple;
+	bh=/4mtzQsCbxNw+zby24mrqKFAWlXw3OO99jVq6qbqJHU=;
 	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=jyJ6BmXvJfCgDUAcxiqDBMIn1DsPL8pvp0NnYbKQh6eh3yNMkLspjF8zzzbNi+n6PQCDMKjo10yI9B3fwjlkaUvswtriQmnedRfkVrTcxLC6r/flgJGPet9LaZGIa0TuZCN7Q24zAT3+PkmORxSGzsLoU7QMxuJEx4E5nvUAk1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XcOuCqMe; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:To:Cc; b=X7UCXmfpqRRnQ0FV9n2VmXE+DT8iSoo+pQWTO50LFQh0QoAz9m+PpVsycnWRl0IiRRXQbXWlGHOSh6IM0wMaQZhg15tCS4pIU+SyyrMhBMX2xpyzQrhm4oJeOp2LkYfgPQjL8e7Lrmm/g0MwE6gjKiOr9KdRP9auSkiuBtOqTqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DLkaMOoe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XcOuCqMe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D08041F01558;
-	Fri, 26 Jun 2026 08:21:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DLkaMOoe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDAC1F00A3A;
+	Fri, 26 Jun 2026 08:21:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782462084;
-	bh=E/4pqgcq9wOLsYE6QVsSxWSWz+ZXSQyYGZ30obGSCUs=;
+	s=k20260515; t=1782462112;
+	bh=7N6xFs6HldNaJtHXB+1so7kMQ4CsatgFOfKvzUpfQ6c=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc;
-	b=XcOuCqMetxebaok5K747BiRuwF263jUQf6yCWdNaDMF23/wT10XwviIPTA4JVVOgb
-	 hRJ7fmvjaJO0hVXMKrZUCfZooWH/3Hc7nUL4tCBnkBaXogndD+PeCVBixrS/bW7XaO
-	 dvKHJMmlqOkiKcgmDDgUBx8dz6IdWYyFHI8Ka/+4zqAOiGbYE8UC409sw8N1fVBxVN
-	 jIN+faUZCAstmP7Q4rPNVuxR9HqnLb8yKeiFOlsxXRjgbnGFAhKmjWIT8m/R2vKSk7
-	 B0YgUgN5Q+i/YL7zbEhLJy34F2qFUnwC/froHedJvhycoV0suw+233NPcpZHU4Osz8
-	 +8q+nGUMMfE0Q==
+	b=DLkaMOoe7jjLq0zrWVM7g5T3weWBVn0GKvdUrsWL1NS6Qs/YGb/jSI/OCz0xvfzqS
+	 Qaym8bn+YQ7Yv3mFvqa3JZPMQyeTT1JkI61/DRV2mqoJOQ6RCZahCcrN/sZ0P41GxN
+	 lQMkVEyzffwbljfjI4cRAmJFH6TA/MXXocYqdJ0r2fyaFbY7MUFYbzOT2mQ1bO9ESQ
+	 aXENlZ4+KidZLyWpFEQCN/4TQ2SdvjPzYQw0gZqKyFHWnTN9MR5o7FqI9NLTieKhiJ
+	 eEE7hw/g70YQVjdOMlBaDUGyYwudw/LY4An0H/3ioGWkJoeS59H947CE7rYTKgUHWr
+	 baMoIKRFCt04w==
 Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 19ABB39389E8;
-	Fri, 26 Jun 2026 08:21:13 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 199D639389E8;
+	Fri, 26 Jun 2026 08:21:41 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -37,62 +37,65 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 00/11] kdump: reduce vmcore size and capture time
+Subject: Re: [PATCH v5 0/9] driver core: Fix some race conditions
 From: patchwork-bot+linux-riscv@kernel.org
 Message-Id: 
- <178246207180.3816447.2682390089667943548.git-patchwork-notify@kernel.org>
-Date: Fri, 26 Jun 2026 08:21:11 +0000
-References: <20260527032917.3385849-1-chenwandun1@gmail.com>
-In-Reply-To: <20260527032917.3385849-1-chenwandun1@gmail.com>
-To: Wandun <chenwandun1@gmail.com>
-Cc: linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
- devicetree@vger.kernel.org, kexec@lists.infradead.org, iommu@lists.linux.dev,
- zhaomeijing@lixiang.com, catalin.marinas@arm.com, will@kernel.org,
- chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org, palmer@dabbelt.com,
- aou@eecs.berkeley.edu, alex@ghiti.fr, robh@kernel.org, saravanak@kernel.org,
- akpm@linux-foundation.org, bhe@redhat.com, rppt@kernel.org,
- pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
- m.szyprowski@samsung.com, robin.murphy@arm.com, quic_obabatun@quicinc.com
+ <178246209959.3816447.5329631417058038374.git-patchwork-notify@kernel.org>
+Date: Fri, 26 Jun 2026 08:21:39 +0000
+References: <20260406232444.3117516-1-dianders@chromium.org>
+In-Reply-To: <20260406232444.3117516-1-dianders@chromium.org>
+To: Doug Anderson <dianders@chromium.org>
+Cc: linux-riscv@lists.infradead.org, gregkh@linuxfoundation.org,
+ rafael@kernel.org, dakr@kernel.org, stern@rowland.harvard.edu, aik@ozlabs.ru,
+ johan@kernel.org, edumazet@google.com, leon@kernel.org, hch@lst.de,
+ robin.murphy@arm.com, maz@kernel.org, aleksander.lobakin@intel.com,
+ saravanak@kernel.org, akpm@linux-foundation.org, Frank.Li@kernel.org,
+ jgg@ziepe.ca, alex@ghiti.fr, alexander.stein@ew.tq-group.com,
+ andre.przywara@arm.com, andrew@codeconstruct.com.au, andrew@lunn.ch,
+ andriy.shevchenko@linux.intel.com, aou@eecs.berkeley.edu, ardb@kernel.org,
+ astewart@tektelic.com, bhelgaas@google.com, brgl@kernel.org,
+ broonie@kernel.org, catalin.marinas@arm.com, chleroy@kernel.org,
+ davem@davemloft.net, david@kernel.org, devicetree@vger.kernel.org,
+ dmaengine@vger.kernel.org, driver-core@lists.linux.dev, gbatra@linux.ibm.com,
+ gregory.clement@bootlin.com, hkallweit1@gmail.com, iommu@lists.linux.dev,
+ jirislaby@kernel.org, joel@jms.id.au, joro@8bytes.org, kees@kernel.org,
+ kevin.brodsky@arm.com, kuba@kernel.org, lenb@kernel.org, lgirdwood@gmail.com,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-aspeed@lists.ozlabs.org, linux-cxl@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-snps-arc@lists.infradead.org, linux-usb@vger.kernel.org,
+ linux@armlinux.org.uk, linuxppc-dev@lists.ozlabs.org,
+ m.szyprowski@samsung.com, maddy@linux.ibm.com, mani@kernel.org,
+ miko.lenczewski@arm.com, mpe@ellerman.id.au, netdev@vger.kernel.org,
+ npiggin@gmail.com, osalvador@suse.de, oupton@kernel.org, pabeni@redhat.com,
+ palmer@dabbelt.com, peter.ujfalusi@gmail.com, peterz@infradead.org,
+ pjw@kernel.org, robh@kernel.org, sebastian.hesselbarth@gmail.com,
+ tglx@kernel.org, tsbogend@alpha.franken.de, vgupta@kernel.org,
+ vkoul@kernel.org, will@kernel.org, willy@infradead.org,
+ yangyicong@hisilicon.com, yeoreum.yun@arm.com
 
 Hello:
 
-This series was applied to riscv/linux.git (fixes)
-by Rob Herring (Arm) <robh@kernel.org>:
+This patch was applied to riscv/linux.git (fixes)
+by Danilo Krummrich <dakr@kernel.org>:
 
-On Wed, 27 May 2026 11:29:06 +0800 you wrote:
-> From: Wandun Chen <chenwandun@lixiang.com>
+On Mon,  6 Apr 2026 16:22:53 -0700 you wrote:
+> The main goal of this series is to fix the observed bug talked about
+> in the first patch ("driver core: Don't let a device probe until it's
+> ready"). That patch fixes a problem that has been observed in the real
+> world and could land even if the rest of the patches are found
+> unacceptable or need to be spun.
 > 
-> On SoCs that carve out large firmware-owned reserved memory (GPU
-> firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
-> those carveouts as part of system RAM even though their contents are
-> firmware state that is not useful for kernel crash analysis.
+> That said, during patch review Danilo correctly pointed out that many
+> of the bitfield accesses in "struct device" are unsafe. I added a
+> bunch of patches in the series to address each one.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v3,01/11] of: reserved_mem: handle NULL name in of_reserved_mem_lookup()
-    https://git.kernel.org/riscv/c/cfba13a18672
-  - [v3,02/11] kexec/crash: provide crash_exclude_mem_range() stub when CONFIG_CRASH_DUMP=n
-    (no matching commit)
-  - [v3,03/11] of: reserved_mem: avoid post-init UAF when alloc_reserved_mem_array() fails
-    (no matching commit)
-  - [v3,04/11] of: reserved_mem: zero total_reserved_mem_cnt if no valid /reserved-memory entry
-    https://git.kernel.org/riscv/c/50a488de5fcc
-  - [v3,05/11] of: reserved_mem: split alloc_reserved_mem_array() from fdt_scan_reserved_mem_late()
-    (no matching commit)
-  - [v3,06/11] of: reserved_mem: add dumpable flag to opt-in vmcore
-    (no matching commit)
-  - [v3,07/11] of: reserved_mem: save /memreserve/ entries into the reserved_mem array
-    (no matching commit)
-  - [v3,08/11] of: reserved_mem: add kdump helpers to exclude non-dumpable regions
-    (no matching commit)
-  - [v3,09/11] arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
-    (no matching commit)
-  - [v3,10/11] riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
-    (no matching commit)
-  - [v3,11/11] loongarch: kdump: exclude non-dumpable reserved memory regions from vmcore
-    (no matching commit)
+  - [v5,7/9] driver core: Replace dev->dma_coherent with dev_dma_coherent()
+    https://git.kernel.org/riscv/c/3e2c1e213ac2
 
 You are awesome, thank you!
 -- 
