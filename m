@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC3B3E44ED;
-	Fri, 26 Jun 2026 08:21:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E1E13DA7FF;
+	Fri, 26 Jun 2026 08:21:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782462086; cv=none; b=tXs21IPNQO7ZIBojGeKK2oNJ6xY2nVsde1eReLlYWiFfEdxCP0Olb0h1VYsFdDpNG+g8Wn5CrEEhALLJDbLkfojE/E0YKSE5rZfxX0M7zzURQIicY3TBb+YqXZda/tSJ7xg02qYbgv3F6wCa4MmY3CkoA0wp3yP/64WonOw896w=
+	t=1782462086; cv=none; b=ICb2+IgDL5Hw9F1bxIiCFBflGJZLh/N8yvgfPfp4soeH+zxh+MiLoA+KBqNHkUZyNyD4u7pqXc3TPuV23FBYj55OIT2QQ1f63WVoqIJjr78T4rfKRLBTwvN9VQB1q1hxb0zoxyX9HBI5Sc/wlBQ0IqJTTMIMvUQfR3alID4dCvA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782462086; c=relaxed/simple;
-	bh=dSaiTT1rGFr8qpEYcgO8/FtYUP+SfgT2MBw8poSyEyo=;
+	bh=jozA/9hSSEl0LZa5zjviMwaxKKk6EFT508tBeV+rv90=;
 	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=CSDd7OCCR5usxP8Q/zpn3NuxLNKr/o6mujqbzt8OTXcWsANYSicL+ofdLuR8MDwyd4XfnRSujCoMPnvyyodTV8pakK8ougJeB+1MigkXweZy+wP77fipKz8t47e0tYo90KTcERzRyUyqprl9kP3b0qiZb1ujXRA6XnWkLSWXOQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aMYx1Gto; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:To:Cc; b=jyJ6BmXvJfCgDUAcxiqDBMIn1DsPL8pvp0NnYbKQh6eh3yNMkLspjF8zzzbNi+n6PQCDMKjo10yI9B3fwjlkaUvswtriQmnedRfkVrTcxLC6r/flgJGPet9LaZGIa0TuZCN7Q24zAT3+PkmORxSGzsLoU7QMxuJEx4E5nvUAk1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XcOuCqMe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aMYx1Gto"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BCA41F00A3A;
-	Fri, 26 Jun 2026 08:21:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XcOuCqMe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D08041F01558;
+	Fri, 26 Jun 2026 08:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782462073;
-	bh=JvPo55g3eS2w4p/tC+pRBIWpmLSFQYMnnMNilcteyYo=;
+	s=k20260515; t=1782462084;
+	bh=E/4pqgcq9wOLsYE6QVsSxWSWz+ZXSQyYGZ30obGSCUs=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc;
-	b=aMYx1Gto+N0bypalZDoOlr81wF/uH5UhY0QLhvs3GfbDwe5bOFn2glLQH8D+H7Nev
-	 0Ha6rhez+fSUCy/wkeqZ3/bg7F7Ed9gH95xZyZB4l4cOrd6O06o1PaxzzmD5RkMEEK
-	 Oj8M+q3f+yWMfsAPzd/3h1rE4oaTY7Nv5DjHgJFBAFox7DT9p0wZgwni9qaHDUM4D8
-	 11J5ZTpZfXRQJodF+odR4kikxgiW5zjCjdReouqymf/4FfvtZCcwCnMGG/C2ik6cSI
-	 FyRPycWIgCmEPNB4nTJ1B9JhyFj57Rv4Su4SabrWN+t+hc9bhF6FrvcKRIVT00h1Sv
-	 XXokDVsnCNwzw==
+	b=XcOuCqMetxebaok5K747BiRuwF263jUQf6yCWdNaDMF23/wT10XwviIPTA4JVVOgb
+	 hRJ7fmvjaJO0hVXMKrZUCfZooWH/3Hc7nUL4tCBnkBaXogndD+PeCVBixrS/bW7XaO
+	 dvKHJMmlqOkiKcgmDDgUBx8dz6IdWYyFHI8Ka/+4zqAOiGbYE8UC409sw8N1fVBxVN
+	 jIN+faUZCAstmP7Q4rPNVuxR9HqnLb8yKeiFOlsxXRjgbnGFAhKmjWIT8m/R2vKSk7
+	 B0YgUgN5Q+i/YL7zbEhLJy34F2qFUnwC/froHedJvhycoV0suw+233NPcpZHU4Osz8
+	 +8q+nGUMMfE0Q==
 Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 5695939389E8;
-	Fri, 26 Jun 2026 08:21:01 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 19ABB39389E8;
+	Fri, 26 Jun 2026 08:21:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -37,45 +37,61 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 0/2] iommu/riscv: Support Svpbmt memory types in
- generic_pt
+Subject: Re: [PATCH v3 00/11] kdump: reduce vmcore size and capture time
 From: patchwork-bot+linux-riscv@kernel.org
 Message-Id: 
- <178246206005.3816447.8810357368655365502.git-patchwork-notify@kernel.org>
-Date: Fri, 26 Jun 2026 08:21:00 +0000
-References: <20260512074142.16356-1-fangyu.yu@linux.alibaba.com>
-In-Reply-To: <20260512074142.16356-1-fangyu.yu@linux.alibaba.com>
-To: yu fangyu <fangyu.yu@linux.alibaba.com>
-Cc: linux-riscv@lists.infradead.org, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
- aou@eecs.berkeley.edu, alex@ghiti.fr, tjeznach@rivosinc.com, jgg@ziepe.ca,
- kevin.tian@intel.com, baolu.lu@linux.intel.com, vasant.hegde@amd.com,
- anup@brainfault.org, atish.patra@linux.dev, skhawaja@google.com,
- jgg@nvidia.com, nutty.liu@hotmail.com, guoren@kernel.org,
- andrew.jones@oss.qualcomm.com, kvm@vger.kernel.org, iommu@lists.linux.dev,
- kvm-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+ <178246207180.3816447.2682390089667943548.git-patchwork-notify@kernel.org>
+Date: Fri, 26 Jun 2026 08:21:11 +0000
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+In-Reply-To: <20260527032917.3385849-1-chenwandun1@gmail.com>
+To: Wandun <chenwandun1@gmail.com>
+Cc: linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+ devicetree@vger.kernel.org, kexec@lists.infradead.org, iommu@lists.linux.dev,
+ zhaomeijing@lixiang.com, catalin.marinas@arm.com, will@kernel.org,
+ chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, robh@kernel.org, saravanak@kernel.org,
+ akpm@linux-foundation.org, bhe@redhat.com, rppt@kernel.org,
+ pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, quic_obabatun@quicinc.com
 
 Hello:
 
 This series was applied to riscv/linux.git (fixes)
-by Joerg Roedel <joerg.roedel@amd.com>:
+by Rob Herring (Arm) <robh@kernel.org>:
 
-On Tue, 12 May 2026 15:41:40 +0800 you wrote:
-> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Wed, 27 May 2026 11:29:06 +0800 you wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
 > 
-> RISC-V Svpbmt adds page-based memory types (PBMT) to PTEs, allowing
-> mappings to be tagged as e.g. normal memory, non-cacheable memory, or
-> I/O.
-> 
-> This series wires the RISC-V IOMMU Svpbmt capability into generic_pt
-> and uses PBMT to encode device memory attributes for IOMMU mappings.
+> On SoCs that carve out large firmware-owned reserved memory (GPU
+> firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
+> those carveouts as part of system RAM even though their contents are
+> firmware state that is not useful for kernel crash analysis.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v4,1/2] iommu/riscv: Advertise Svpbmt support to generic page table
-    https://git.kernel.org/riscv/c/f196a8668797
-  - [v4,2/2] iommupt: Encode IOMMU_MMIO/IOMMU_CACHE via RISC-V Svpbmt bits
+  - [v3,01/11] of: reserved_mem: handle NULL name in of_reserved_mem_lookup()
+    https://git.kernel.org/riscv/c/cfba13a18672
+  - [v3,02/11] kexec/crash: provide crash_exclude_mem_range() stub when CONFIG_CRASH_DUMP=n
+    (no matching commit)
+  - [v3,03/11] of: reserved_mem: avoid post-init UAF when alloc_reserved_mem_array() fails
+    (no matching commit)
+  - [v3,04/11] of: reserved_mem: zero total_reserved_mem_cnt if no valid /reserved-memory entry
+    https://git.kernel.org/riscv/c/50a488de5fcc
+  - [v3,05/11] of: reserved_mem: split alloc_reserved_mem_array() from fdt_scan_reserved_mem_late()
+    (no matching commit)
+  - [v3,06/11] of: reserved_mem: add dumpable flag to opt-in vmcore
+    (no matching commit)
+  - [v3,07/11] of: reserved_mem: save /memreserve/ entries into the reserved_mem array
+    (no matching commit)
+  - [v3,08/11] of: reserved_mem: add kdump helpers to exclude non-dumpable regions
+    (no matching commit)
+  - [v3,09/11] arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
+    (no matching commit)
+  - [v3,10/11] riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
+    (no matching commit)
+  - [v3,11/11] loongarch: kdump: exclude non-dumpable reserved memory regions from vmcore
     (no matching commit)
 
 You are awesome, thank you!
