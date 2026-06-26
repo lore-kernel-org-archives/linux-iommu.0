@@ -1,235 +1,173 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E8991C862F
-	for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 16:15:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281F53B47D9;
+	Fri, 26 Jun 2026 18:33:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782490521; cv=none; b=A/ETWk9DR91gzbdGytdw5qUdDxP60MdD1yYSTi78hUfwt4zn+C8U7J65vysw9o7wKzqcdHhrg65cJmMtxZOo4hJqXYJvfe89WFA+oa/s1aLVs6STnkXvkb3MPkIZAvJPDxaHd8QkxpY28KlptkD+KwwyZ5MkFgAIGHMUj0dPWf0=
+	t=1782498786; cv=none; b=r8+3iJPa4g+uEnqrQOnN94fcNAuK316X/axWYx80rAMqH9y60xQ/Jjq0ZGB9EnGgfpL75emqEo1vr7VYGYbEghNy7R3PcDchXJI5mKeOeJypS7DqpIm75hwWmcA5iVL8VvmtULzcMWY0h41YPaJ5m2c88EtzTHo2CTmvmbetxSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782490521; c=relaxed/simple;
-	bh=x1pZG/Gj42lOLXnmttonXXa2JSMsqRCTY2KmksX0HQ8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GU8Iw6L4yJf7Rp802f0mgG0VMBWp052jFTsKGGOUoFOv0280zYUMDWcJZ2TQtmcVZtFDK7y2XxVYYc46pJypHsQl4X5Y9EpIIrWMayB2pVpV6du5cOUoMH6OtlHNnpYzJHejJyt9AxauPyQlQNdEhJDD6zcSragFIvsgU/vEoq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=eRK/J+KY; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1782498786; c=relaxed/simple;
+	bh=wHQpCqG95XlFFHAMSIKHDU4GU4mYH/iJHk1Y0uBOMQw=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=rokF3oa8K1GG+e6QNk8UbLbnBVKz2jKhCuRidIvbB/lFW083AfImPp9ZiyEIyXCsZzPkf6bZcY8ObrnqEdjxnv5kCLxb5wqafzU4QoAlh1ieTKKGlIxt2XTFne+52VCHhD0cKn8P3pVav5J0Fs/X2BwVC/duQVX99LUcF4pnLaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=THuKbE3J; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="eRK/J+KY"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4936A1F37;
-	Fri, 26 Jun 2026 09:15:14 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6CC793F905;
-	Fri, 26 Jun 2026 09:15:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1782490518; bh=x1pZG/Gj42lOLXnmttonXXa2JSMsqRCTY2KmksX0HQ8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=eRK/J+KYf7DjADjIUXwQEubt1nCizCaOY2eJ8PmY/58KATn8ZkhCYGfu0BFdW1ryr
-	 Lvi5GVIbuA65ERwq3LxT7PC01/3KTVY6fG4iysSn/KN9zjm/PgdP4jcMGNlqVvl02f
-	 WsdIF967MSv63AMJVtIV7bYvAGlax9tCXlPPstF0=
-Message-ID: <b5085e09-6533-4f88-938d-8d46751cf7da@arm.com>
-Date: Fri, 26 Jun 2026 17:15:13 +0100
+	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="THuKbE3J"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
+	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=iyjE6Dhm0bhwSWIdqUH4ZmDX2rlKaOGTcuORxxwf6Hg=; b=THuKbE3J2F7te35y7B2FdbDIio
+	w2OgM01S9opETnlwGP/NDE1GxAH9BiPJrWxvmAr+kZIPK9ngZ8Jm7+oWYvD8GFoHDmgZhGC6bvOH+
+	Srw9DZa35jiLcuZpm+/4UwnIvjNP/knRRYoetiVt+BKum3zInn4veET0C4djHAhyOZczm4A0Ujt51
+	Dnwe/nJpglKpqpdgeHSSZ4P8cLK/4UPvENYc3vsixwMakc0xkkLpYVF5oJ11UnqiHyT9OtqLOU1ZV
+	C2Li0+Ecugj0BujuPHRFGFBlM3dq+di/dCDgYEDc6yG8jW2f4OCNspgrIz7tYFI3lamE4P4n4/h2g
+	p5zyQQtQ==;
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@surriel.com>)
+	id 1wdBMD-000000001l4-06aO;
+	Fri, 26 Jun 2026 14:32:53 -0400
+Message-ID: <ab7b21eba098ec85e8977b03208639873f43e071.camel@surriel.com>
+Subject: Re: [PATCH 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
+From: Rik van Riel <riel@surriel.com>
+To: Ashok Raj <ashok.raj@oss.qualcomm.com>
+Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
+ robin.murphy@arm.com, 	joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux.dev, jgg@ziepe.ca, 	kyle@mcmartin.ca
+Date: Fri, 26 Jun 2026 14:32:52 -0400
+In-Reply-To: <aj1OlqBtTOUSFm-h@hu-ashoraj-lv.qualcomm.com>
+References: <20260624030853.2340880-1-riel@surriel.com>
+	 <20260624030853.2340880-4-riel@surriel.com>
+	 <aj1OlqBtTOUSFm-h@hu-ashoraj-lv.qualcomm.com>
+Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
+ keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
+ eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
+ Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
+ lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
+ dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
+ mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
+ gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
+ r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
+ WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
+ 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
+ Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
+ +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
+ g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
+ KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
+ fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
+ 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
+ G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
+ okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
+ TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
+ cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
+ omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
+ QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
+ c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 05/11] iommu/arm-smmu-v3: Submit CMDQ_OP_PRI_RESP for
- IOPF event
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, jgg@nvidia.com
-Cc: joro@8bytes.org, bhelgaas@google.com, praan@google.com,
- kevin.tian@intel.com, kees@kernel.org, smostafa@google.com,
- baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org, skaestle@nvidia.com, mmarrid@nvidia.com,
- skolothumtho@nvidia.com, bbiber@nvidia.com
-References: <cover.1779944354.git.nicolinc@nvidia.com>
- <6c713c724fa09bf5a1b5e2247c633e516036f079.1779944354.git.nicolinc@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <6c713c724fa09bf5a1b5e2247c633e516036f079.1779944354.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 28/05/2026 8:59 am, Nicolin Chen wrote:
-> From: Malak Marrid <mmarrid@nvidia.com>
-> 
-> To handle IOMMU_FAULT_PAGE_REQ from the PRI queue, arm_smmu_page_response()
-> must issue a CMDQ_OP_PRI_RESP back to the SMMU.
-> 
-> However, either a stall event in the EVTQ or a PRI request in the PRIQ can
-> surface to the IOPF infrastructure with fault.type == IOMMU_FAULT_PAGE_REQ,
-> and a single master can in principle be both stall-capable and PRI-capable
+On Thu, 2026-06-25 at 08:51 -0700, Ashok Raj wrote:
+> On Tue, Jun 23, 2026 at 11:07:36PM -0400, Rik van Riel wrote:
+>=20
+> Hi Rik,
+>=20
+> =C2=A0 Thanks for the v4 redesign =E2=80=94 the in-place marker approach =
+is much
+> cleaner than
+> =C2=A0 the delayed_work/llist scheme from v3, and it directly addresses
+> the
+> =C2=A0 retry-forever concern I raised earlier.
+>=20
+> [snip]
+>=20
+> > +/*
+> > + * Remove an IOVA entry from the maple tree and free it.
+> > + *
+> > + * This runs in atomic context (DMA map/unmap can be called from
+> > hardirq,
+> > + * softirq, or with spinlocks held) and must not fail. Erasing an
+> > entry can
+> > + * require a maple tree node for rebalancing, and
+> > mas_store_gfp(NULL,
+> > + * GFP_ATOMIC) can fail under memory pressure. When it does,
+> > overwrite the slot
+> > + * in place with IOVA_DEFERRED -- an in-place store needs no node
+> > allocation and
+> > + * so cannot fail -- which keeps the address range reserved (the
+> > allocator's gap
+> > + * search treats the non-NULL slot as occupied) and lets the
+> > struct iova be
+> > + * freed now. The marker is erased later by iova_drain_deferred().
+> > + */
+> > =C2=A0static void remove_iova(struct iova_domain *iovad, struct iova
+> > *iova)
+> > =C2=A0{
+> > -	MA_STATE(mas, &iovad->mtree, iova->pfn_lo, iova->pfn_hi);
+> > +	unsigned long pfn_lo =3D iova->pfn_lo, pfn_hi =3D iova-
+> > >pfn_hi;
+> > +
+> > +	MA_STATE(mas, &iovad->mtree, pfn_lo, pfn_hi);
+> > =C2=A0
+> > =C2=A0	assert_spin_locked(&iovad->iova_lock);
+> > =C2=A0
+> > -	if (iova->pfn_lo < iovad->dma_32bit_pfn)
+> > +	if (pfn_lo < iovad->dma_32bit_pfn)
+> > =C2=A0		iovad->max32_alloc_size =3D iovad->dma_32bit_pfn;
+> > =C2=A0
+> > -	mas_store_gfp(&mas, NULL, GFP_ATOMIC);
+> > +	if (iova_kunit_defer_erase || mas_store_gfp(&mas, NULL,
+> > GFP_ATOMIC)) {
+> > +		/* Erase failed: mark the slot in place and defer
+> > removal. */
+> > +		mas_set_range(&mas, pfn_lo, pfn_hi);
+> > +		if (WARN_ON_ONCE(mas_store_gfp(&mas,
+> > IOVA_DEFERRED, GFP_ATOMIC)))
+> > +			return;	/* in-place store cannot
+> > fail; entry stays put */
+> 		/*=20
+> 		 * <-- deferred_lo/hi not updated and range stays
+> 		 * occupied for ever?
+> 		 */
 
-No, the SMMU architecture does all it can to specifically forbid this, 
-see 3.12.1 and 16.4, it just can't be made architecturally ILLEGAL to 
-enable stalls for PCIe devices because there's no strict architectural 
-definition for what "a PCIe device" actually is. Similarly with the note 
-in the definition of STE.EATS about the relationship with CD.S - the 
-unwritten implication is that defining specific behaviours would only 
-create an unreasonable burden for hardware validation, for the sake of 
-something that nobody in their right mind should ever do anyway.
+If the in-place store fails, then updating
+deferred_lo / hi won't help, since the
+sweep later on will be unable to identify
+this area.
 
-The expectation is that RCiEPs which do speak stallable non-PCIe bus 
-protocols will not go to the effort of implementing ATS/PRI capabilities 
-(not least because there's every chance that such protocols simply 
-doesn't have that kind of transaction flow anyway). And conversely that 
-it can be considered an egregious firmware (or system design) error to 
-even claim (let alone force) stall capability for a real PCIe root port 
-which may be deadlocked by blocking its requirement for free-flowing 
-writes. Thus I think we could go so far as to refuse to handle any 
-endpoint which did somehow claim both.
+Freeing the iova at that point would leave
+the maple tree with a pointer into memory
+that could be re-used for something else.
 
-Thanks,
-Robin.
+We need to either return early and warn,
+or panic.
 
-> (e.g. FEAT_STALL_FORCE on a PCIe device with PRI), so master state is not a
-> reliable discriminator.
-> 
-> Add IOMMU_FAULT_PAGE_REQUEST_STALLS_TRANS to the generic flags so the fault
-> reporter can mark a page request that is holding the device's transaction:
->      arm_smmu_handle_event() sets it on STALL events
->      arm_smmu_handle_ppr() leaves it clear for PRI events
-> 
-> Note: streams[0].id remains the RID because arm_smmu_enable_iopf() rejects
-> num_streams != 1.
-> 
-> Co-developed-by: Barak Biber <bbiber@nvidia.com>
-> Signed-off-by: Barak Biber <bbiber@nvidia.com>
-> Co-developed-by: Stefan Kaestle <skaestle@nvidia.com>
-> Signed-off-by: Stefan Kaestle <skaestle@nvidia.com>
-> Signed-off-by: Malak Marrid <mmarrid@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
->   include/linux/iommu.h                       |  1 +
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 75 +++++++++++++++------
->   3 files changed, 58 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 2bb810e4d5fce..1083621705f16 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -1007,6 +1007,7 @@ struct arm_smmu_master {
->   	/* Locked by the iommu core using the group mutex */
->   	struct arm_smmu_ctx_desc_cfg	cd_table;
->   	unsigned int			num_streams;
-> +	bool				pri_enabled : 1;
->   	bool				ats_enabled : 1;
->   	bool				ste_ats_enabled : 1;
->   	bool				stall_enabled;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e587d4ac4d331..83c4dfcf20637 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -76,6 +76,7 @@ struct iommu_fault_page_request {
->   #define IOMMU_FAULT_PAGE_REQUEST_PASID_VALID	(1 << 0)
->   #define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
->   #define IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID	(1 << 2)
-> +#define IOMMU_FAULT_PAGE_REQUEST_STALLS_TRANS	(1 << 3)
->   	u32	flags;
->   	u32	pasid;
->   	u32	grpid;
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index ffc9621cd2288..061f1d46fda0d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -921,32 +921,68 @@ static int arm_smmu_drain_queue_for_iopf(struct arm_smmu_device *smmu,
->   	return ret;
->   }
->   
-> -static void arm_smmu_page_response(struct device *dev, struct iopf_fault *unused,
-> +static void arm_smmu_page_response(struct device *dev, struct iopf_fault *evt,
->   				   struct iommu_page_response *resp)
->   {
->   	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> -	u8 resume_resp;
-> +	struct arm_smmu_cmd cmd;
-> +	int sid;
->   
-> -	if (WARN_ON(!master->stall_enabled))
-> +	if (WARN_ON_ONCE(evt->fault.type != IOMMU_FAULT_PAGE_REQ))
->   		return;
->   
-> -	switch (resp->code) {
-> -	case IOMMU_PAGE_RESP_INVALID:
-> -	case IOMMU_PAGE_RESP_FAILURE:
-> -		resume_resp = CMDQ_RESUME_0_RESP_ABORT;
-> -		break;
-> -	case IOMMU_PAGE_RESP_SUCCESS:
-> -		resume_resp = CMDQ_RESUME_0_RESP_RETRY;
-> -		break;
-> -	default:
-> -		resume_resp = CMDQ_RESUME_0_RESP_TERM;
-> -		break;
-> +	/* IOPF is gated to num_streams == 1 in arm_smmu_enable_iopf() */
-> +	sid = master->streams[0].id;
-> +
-> +	if (evt->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_STALLS_TRANS) {
-> +		u8 resume_resp;
-> +
-> +		if (WARN_ON_ONCE(!master->stall_enabled))
-> +			return;
-> +		switch (resp->code) {
-> +		case IOMMU_PAGE_RESP_INVALID:
-> +		case IOMMU_PAGE_RESP_FAILURE:
-> +			resume_resp = CMDQ_RESUME_0_RESP_ABORT;
-> +			break;
-> +		case IOMMU_PAGE_RESP_SUCCESS:
-> +			resume_resp = CMDQ_RESUME_0_RESP_RETRY;
-> +			break;
-> +		default:
-> +			resume_resp = CMDQ_RESUME_0_RESP_TERM;
-> +			break;
-> +		}
-> +		cmd = arm_smmu_make_cmd_resume(sid, resp->grpid, resume_resp);
-> +	} else {
-> +		enum pri_resp pri_resp;
-> +		bool ssv;
-> +
-> +		if (WARN_ON_ONCE(!master->pri_enabled))
-> +			return;
-> +		/* PCIe allows only one PRG Response per group */
-> +		if (!(evt->fault.prm.flags &
-> +		      IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE))
-> +			return;
-> +		switch (resp->code) {
-> +		case IOMMU_PAGE_RESP_SUCCESS:
-> +			pri_resp = PRI_RESP_SUCC;
-> +			break;
-> +		case IOMMU_PAGE_RESP_FAILURE:
-> +			pri_resp = PRI_RESP_FAIL;
-> +			break;
-> +		case IOMMU_PAGE_RESP_INVALID:
-> +			pri_resp = PRI_RESP_DENY;
-> +			break;
-> +		default:
-> +			WARN_ON(true);
-> +			return;
-> +		}
-> +		ssv = !!(evt->fault.prm.flags &
-> +			 IOMMU_FAULT_PAGE_REQUEST_PASID_VALID);
-> +		cmd = arm_smmu_make_cmd_pri_resp(sid, resp->pasid, ssv,
-> +						 resp->grpid, pri_resp);
->   	}
->   
-> -	arm_smmu_cmdq_issue_cmd(master->smmu,
-> -				arm_smmu_make_cmd_resume(master->streams[0].id,
-> -							 resp->grpid,
-> -							 resume_resp));
-> +	arm_smmu_cmdq_issue_cmd(master->smmu, cmd);
->   	/*
->   	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
->   	 * RESUME consumption guarantees that the stalled transaction will be
-> @@ -2081,7 +2117,8 @@ static int arm_smmu_handle_event(struct arm_smmu_device *smmu, u64 *evt,
->   
->   		flt->type = IOMMU_FAULT_PAGE_REQ;
->   		flt->prm = (struct iommu_fault_page_request){
-> -			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-> +			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE |
-> +				 IOMMU_FAULT_PAGE_REQUEST_STALLS_TRANS,
->   			.grpid = event->stag,
->   			.perm = perm,
->   			.addr = event->iova,
+I'm fine with either.
 
+Robin, do you have a preference here?
+
+> > +		if (pfn_lo < iovad->deferred_lo)
+> > +			iovad->deferred_lo =3D pfn_lo;
+> > +		if (pfn_hi > iovad->deferred_hi)
+> > +			iovad->deferred_hi =3D pfn_hi;
+> > +		free_iova_mem(iova);=C2=A0=20
+> 			<--- only reached if second store succeeds?
+> > +		return;
+> > +	}
+> >=20
+
+--=20
+All Rights Reversed.
