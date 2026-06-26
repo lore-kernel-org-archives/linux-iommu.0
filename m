@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBA0D283FFB;
-	Fri, 26 Jun 2026 08:21:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC3B3E44ED;
+	Fri, 26 Jun 2026 08:21:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782462065; cv=none; b=VNtmdKQbEGM185OKmKaAmn0iGHchDRSLhmHmbHhOb4Uii2ItAvhJTLeS71XR3hS05z5PyfnXYL+6lfRXHCR92ilzDupT4qeoLxpoQ/ensWGaoJa9CIPXc8lJGIBR41mbAPIGch8NyVK/XriQl1Zc80YcYFWIubLX1stlwpnOdbQ=
+	t=1782462086; cv=none; b=tXs21IPNQO7ZIBojGeKK2oNJ6xY2nVsde1eReLlYWiFfEdxCP0Olb0h1VYsFdDpNG+g8Wn5CrEEhALLJDbLkfojE/E0YKSE5rZfxX0M7zzURQIicY3TBb+YqXZda/tSJ7xg02qYbgv3F6wCa4MmY3CkoA0wp3yP/64WonOw896w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782462065; c=relaxed/simple;
-	bh=8sc6cxuR3tk2T90p8ARBnlmi1Acg6LbP52gCsMdVs0M=;
+	s=arc-20240116; t=1782462086; c=relaxed/simple;
+	bh=dSaiTT1rGFr8qpEYcgO8/FtYUP+SfgT2MBw8poSyEyo=;
 	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=p5DM5FCQuWskeEuVW1Xh4OTeWBLIOI0Hw1B9OJtafJWqj9Bb9dnwWvLnDEk5/6fCcmkjOTdMJC37bQPBmx6L30OewU4BQcdSmR2oGEco19w/hNzZRrEJgCvoU5A+CDXxf19Orsvz4LdOnGpfJUlZx3+Gu1m2MgHqp34VWVUbKGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PClxCafl; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:To:Cc; b=CSDd7OCCR5usxP8Q/zpn3NuxLNKr/o6mujqbzt8OTXcWsANYSicL+ofdLuR8MDwyd4XfnRSujCoMPnvyyodTV8pakK8ougJeB+1MigkXweZy+wP77fipKz8t47e0tYo90KTcERzRyUyqprl9kP3b0qiZb1ujXRA6XnWkLSWXOQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aMYx1Gto; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PClxCafl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 545E41F000E9;
-	Fri, 26 Jun 2026 08:21:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aMYx1Gto"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BCA41F00A3A;
+	Fri, 26 Jun 2026 08:21:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782462064;
-	bh=+YfZ76r2ksaV8Km/IBCLkq4BDK1sE4dAu4lNJUrn33E=;
+	s=k20260515; t=1782462073;
+	bh=JvPo55g3eS2w4p/tC+pRBIWpmLSFQYMnnMNilcteyYo=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc;
-	b=PClxCafl7uU6D140WFTcVLHSe+JnE8XVg1bEtWxqtnVqcc0egtLYo7WqqboEO4D7m
-	 DeNOsV4ecE44NXMKAYEJZHFzYP96iaQGVvusNZQGekuqmDZJ02cf0KZdw62YJ7AtwH
-	 T6B8jxwwgQbXcCahcJ4iYjA4RmRQ58nnNwP1SCwHLjxA6Fi6IGc9h3dN1bJStX1beh
-	 e4r025iZ0taPA+LXTdOT5t9Wj6Db44RJLkJpS80I4blWQtBjw9XKRTf6gzvNlsM8VX
-	 I6JM4SbMLJQ6EkiBnzKai7KtSU3j6PnouZlYJUqH0cTI+zVc40aaFkoNHEWVZxHT1J
-	 TphSLdkrHIBHg==
+	b=aMYx1Gto+N0bypalZDoOlr81wF/uH5UhY0QLhvs3GfbDwe5bOFn2glLQH8D+H7Nev
+	 0Ha6rhez+fSUCy/wkeqZ3/bg7F7Ed9gH95xZyZB4l4cOrd6O06o1PaxzzmD5RkMEEK
+	 Oj8M+q3f+yWMfsAPzd/3h1rE4oaTY7Nv5DjHgJFBAFox7DT9p0wZgwni9qaHDUM4D8
+	 11J5ZTpZfXRQJodF+odR4kikxgiW5zjCjdReouqymf/4FfvtZCcwCnMGG/C2ik6cSI
+	 FyRPycWIgCmEPNB4nTJ1B9JhyFj57Rv4Su4SabrWN+t+hc9bhF6FrvcKRIVT00h1Sv
+	 XXokDVsnCNwzw==
 Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 8FE2B39389E8;
-	Fri, 26 Jun 2026 08:20:52 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 5695939389E8;
+	Fri, 26 Jun 2026 08:21:01 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -37,55 +37,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/8] Support non-leaf and range invalidation features
- in
- RISC-V
+Subject: Re: [PATCH v4 0/2] iommu/riscv: Support Svpbmt memory types in
+ generic_pt
 From: patchwork-bot+linux-riscv@kernel.org
 Message-Id: 
- <178246205139.3816447.9006141630589978031.git-patchwork-notify@kernel.org>
-Date: Fri, 26 Jun 2026 08:20:51 +0000
-References: <0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
-In-Reply-To: <0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-riscv@lists.infradead.org, alex@ghiti.fr, aou@eecs.berkeley.edu,
- iommu@lists.linux.dev, joro@8bytes.org, palmer@dabbelt.com, pjw@kernel.org,
- robin.murphy@arm.com, tjeznach@rivosinc.com, will@kernel.org,
- andrew.jones@oss.qualcomm.com, fangyu.yu@linux.alibaba.com,
- patches@lists.linux.dev
+ <178246206005.3816447.8810357368655365502.git-patchwork-notify@kernel.org>
+Date: Fri, 26 Jun 2026 08:21:00 +0000
+References: <20260512074142.16356-1-fangyu.yu@linux.alibaba.com>
+In-Reply-To: <20260512074142.16356-1-fangyu.yu@linux.alibaba.com>
+To: yu fangyu <fangyu.yu@linux.alibaba.com>
+Cc: linux-riscv@lists.infradead.org, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, tjeznach@rivosinc.com, jgg@ziepe.ca,
+ kevin.tian@intel.com, baolu.lu@linux.intel.com, vasant.hegde@amd.com,
+ anup@brainfault.org, atish.patra@linux.dev, skhawaja@google.com,
+ jgg@nvidia.com, nutty.liu@hotmail.com, guoren@kernel.org,
+ andrew.jones@oss.qualcomm.com, kvm@vger.kernel.org, iommu@lists.linux.dev,
+ kvm-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
 
 Hello:
 
 This series was applied to riscv/linux.git (fixes)
 by Joerg Roedel <joerg.roedel@amd.com>:
 
-On Fri,  8 May 2026 11:52:59 -0300 you wrote:
-> This is part of the patch pile to get SMMUv3 moved to iommupt. From
-> that perspective it introduces the PT_FEAT_DETAILED_GATHER which will
-> be used by both RISC-V and SMMUv3 to generate optimized invalidation
-> commands.
+On Tue, 12 May 2026 15:41:40 +0800 you wrote:
+> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 > 
-> I don't have any RISC-V anything so this needs to be tested by someone who
-> does.
+> RISC-V Svpbmt adds page-based memory types (PBMT) to PTEs, allowing
+> mappings to be tagged as e.g. normal memory, non-cacheable memory, or
+> I/O.
+> 
+> This series wires the RISC-V IOMMU Svpbmt capability into generic_pt
+> and uses PBMT to encode device memory attributes for IOMMU mappings.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/8] iommu: Split the kdoc comment for struct iommu_iotlb_gather
-    https://git.kernel.org/riscv/c/74c9d82c7e3f
-  - [v2,2/8] iommupt: Add struct iommupt_pending_gather
-    https://git.kernel.org/riscv/c/f0e4b7f5f875
-  - [v2,3/8] iommupt: Add PT_FEAT_DETAILED_GATHER
-    https://git.kernel.org/riscv/c/89792629d4b2
-  - [v2,4/8] iommu/riscv: Enable PT_FEAT_DETAILED_GATHER and pass gather to iotlb_inval
+  - [v4,1/2] iommu/riscv: Advertise Svpbmt support to generic page table
+    https://git.kernel.org/riscv/c/f196a8668797
+  - [v4,2/2] iommupt: Encode IOMMU_MMIO/IOMMU_CACHE via RISC-V Svpbmt bits
     (no matching commit)
-  - [v2,5/8] iommu/riscv: Compute best stride for single invalidation
-    https://git.kernel.org/riscv/c/bb62adcf4513
-  - [v2,6/8] iommu/riscv: Add RISCV_IOMMU_CAPABILITIES_NL
-    https://git.kernel.org/riscv/c/e4084c6bbb42
-  - [v2,7/8] iommu/riscv: Include the dword number in RISCV_IOMMU_CMD macros
-    https://git.kernel.org/riscv/c/835d06ee7ef0
-  - [v2,8/8] iommu/riscv: Add NAPOT range invalidation support
-    https://git.kernel.org/riscv/c/082ad5ed0785
 
 You are awesome, thank you!
 -- 
