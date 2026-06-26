@@ -1,173 +1,125 @@
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281F53B47D9;
-	Fri, 26 Jun 2026 18:33:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A696A36F41C
+	for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 20:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782498786; cv=none; b=r8+3iJPa4g+uEnqrQOnN94fcNAuK316X/axWYx80rAMqH9y60xQ/Jjq0ZGB9EnGgfpL75emqEo1vr7VYGYbEghNy7R3PcDchXJI5mKeOeJypS7DqpIm75hwWmcA5iVL8VvmtULzcMWY0h41YPaJ5m2c88EtzTHo2CTmvmbetxSc=
+	t=1782505903; cv=none; b=oGdrjbTcQ1dZdZTqURzhoRRRk5rf1CBvTUm+T9MtlX4KtjI1+uJBHhfEPINdqIwCzQL57egspE5sGF2SpB9Y0k/HP2briSs30mleQdTnLx+Cj2gjxeh+EoC5RSjHRvFhe2JPAfMFO702G/PF+FtUgmNmgoLjafmspL8CY8AjoBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782498786; c=relaxed/simple;
-	bh=wHQpCqG95XlFFHAMSIKHDU4GU4mYH/iJHk1Y0uBOMQw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=rokF3oa8K1GG+e6QNk8UbLbnBVKz2jKhCuRidIvbB/lFW083AfImPp9ZiyEIyXCsZzPkf6bZcY8ObrnqEdjxnv5kCLxb5wqafzU4QoAlh1ieTKKGlIxt2XTFne+52VCHhD0cKn8P3pVav5J0Fs/X2BwVC/duQVX99LUcF4pnLaA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=THuKbE3J; arc=none smtp.client-ip=96.67.55.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
+	s=arc-20240116; t=1782505903; c=relaxed/simple;
+	bh=8COOnbZMJUxF4xVAYNoIlb7bDxzTG9J03+R0KaoyutE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JCCxbRGjH97bKmww6GQeyExX7+tPLGo3vDRqpCJCYF/mpNtOX+D1gugQy+YOrgEhQimA/uQJDDnFY5tgHRFARTaBCXdx7t3pSmu6ZwqAIR60Yr90VI7tMphcne4d0LRGyJy0U2+n75s/7+ai7+W3dP4Q8WwouK+7mevMS5NKwo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NPBvAzw2; arc=none smtp.client-ip=74.125.82.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="THuKbE3J"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
-	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
-	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=iyjE6Dhm0bhwSWIdqUH4ZmDX2rlKaOGTcuORxxwf6Hg=; b=THuKbE3J2F7te35y7B2FdbDIio
-	w2OgM01S9opETnlwGP/NDE1GxAH9BiPJrWxvmAr+kZIPK9ngZ8Jm7+oWYvD8GFoHDmgZhGC6bvOH+
-	Srw9DZa35jiLcuZpm+/4UwnIvjNP/knRRYoetiVt+BKum3zInn4veET0C4djHAhyOZczm4A0Ujt51
-	Dnwe/nJpglKpqpdgeHSSZ4P8cLK/4UPvENYc3vsixwMakc0xkkLpYVF5oJ11UnqiHyT9OtqLOU1ZV
-	C2Li0+Ecugj0BujuPHRFGFBlM3dq+di/dCDgYEDc6yG8jW2f4OCNspgrIz7tYFI3lamE4P4n4/h2g
-	p5zyQQtQ==;
-Received: from fangorn.home.surriel.com ([10.0.13.7])
-	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <riel@surriel.com>)
-	id 1wdBMD-000000001l4-06aO;
-	Fri, 26 Jun 2026 14:32:53 -0400
-Message-ID: <ab7b21eba098ec85e8977b03208639873f43e071.camel@surriel.com>
-Subject: Re: [PATCH 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
-From: Rik van Riel <riel@surriel.com>
-To: Ashok Raj <ashok.raj@oss.qualcomm.com>
-Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
- robin.murphy@arm.com, 	joro@8bytes.org, will@kernel.org,
- iommu@lists.linux.dev, jgg@ziepe.ca, 	kyle@mcmartin.ca
-Date: Fri, 26 Jun 2026 14:32:52 -0400
-In-Reply-To: <aj1OlqBtTOUSFm-h@hu-ashoraj-lv.qualcomm.com>
-References: <20260624030853.2340880-1-riel@surriel.com>
-	 <20260624030853.2340880-4-riel@surriel.com>
-	 <aj1OlqBtTOUSFm-h@hu-ashoraj-lv.qualcomm.com>
-Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
- keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
- eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
- Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
- lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
- dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
- mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
- gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
- r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
- WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
- 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
- Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
- +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
- g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
- KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
- fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
- 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
- G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
- okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
- TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
- cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
- omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
- QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
- c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NPBvAzw2"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-30bf132969bso2157261eec.0
+        for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 13:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782505902; x=1783110702; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=saLU0AoA9Cmy1VJ6xB3QXKeFOZEGeKiaAK6r/QB287s=;
+        b=NPBvAzw2BP1kvt/zq2WErw2KNb1LkYyCBZKl3xoaKLnRFq73nbTEoRpXeH7prRqbz2
+         OUe55sBhZ2h7tqTx+AfcCUy5jQimOdyPtI7JoBdsenI0j2IB8T74bAf0ysLRoHxTMJTX
+         KwAwwRcQq2J4Mz1yxlqZCxkHGhMCWKr/qF/nWil2+tJog7+DDdg1RQG71QxUO28EuVk0
+         /ViiJVj/blYq2OAqnjSUH4mAD4awFsCGv3Tulv2lrVsNo7bEoz5gRN9x8f7U25ekESxC
+         2Eih4miKogEIEzZ0TBryAVXKu30eGSzGnabY9BfFlVQsmw7c6FrOV7/j0EMI1ANXSkVd
+         o+dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782505902; x=1783110702;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=saLU0AoA9Cmy1VJ6xB3QXKeFOZEGeKiaAK6r/QB287s=;
+        b=EFQtzT/BOUcxrjTicr9zaEZvI7mAXfmiuVXF32hiX1Lhhs5CLlFAQuArFvmmhST4/I
+         C84o5LbVgCNgczAg6FGSDFa3pHiGJLjgJ9uD/oYmLSgIEGbeyC8mfYsmnLx8fuzb8Gpu
+         ptviz+O3IAMGQv3XnY13jSVNopLfOuqAq3LYJVEU/s8Fnh7JvslP76Cc86H2EBnPlDcR
+         wsWea1z4WwEA/9nWh5toaLn0/SfkxYo/qWZZi4+sO9lN8MjvIA/wmdouQcicUsawKXI+
+         6kd7kwjpth3P5Q3Zks6g76HGCqKL0JnLSR36cLwOAC+czvlhLVRpYsLiwKf4liKL/9vz
+         DMxw==
+X-Forwarded-Encrypted: i=1; AHgh+RqklJc2+CMMGMhRoSda77QRBnvXZw7m3XaKzrOXWfi/6u5skMtPFuzLJCQXvbMFddkGbiHVGA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxQ2Q8X+d4vzbJEfzcEfCUj3PWE0lU1S2Vqokvma3PyvIDQzaas
+	AxUoPT+q0tTPhm3b/7ZJHW3uWuLh6Kx4FF50GZQ81PAZiP4O19DyvSE=
+X-Gm-Gg: AfdE7clBS6byJ5/pq71+HQIdJXlFRT/Iz9hm0n9Fx/vpl2jx6NPflOc/+oKJad1msqo
+	zLGZubJj999CtQJWx27twMGbHNj+qNRuRuy33FvVf7cnliBHL2rG1z4nRjdEis4tQAZiGfX4LdP
+	+XKZVG/0jM1rwuYjR9haLJrP49TNZiFCXlrrTj9M2aVJkw4rNBipkcBLcOonqHU5Wy46QFleL3I
+	69YQDxJnIKw0sJwiS6cQQ0okQOMh0FDI1bkkcXcBjR8bPnYLwqvgBGZ57z5TFT6pOUq9BY/pD8V
+	AtNcg6MBEmX1xcnP/Lxvx6q/PhdrLLH0Cdntp4G8lfZWhJdHW0PyOPVNDV37e8dJHUaBI23JCgE
+	4GhS2wMV1ntQQ7oV4dxLeEdBayLpXoGmZyPu9l9lceT/RQ12PTGhgude5CvPbYzBo1uq7xuTwpY
+	XZz8rZj5E2R0Bo3OJDaUd403jbdRN/Z+eA6voc06aoeXUs9OcMQFOABf7EEOo5yLHc
+X-Received: by 2002:a05:7300:7246:b0:304:630d:e4ec with SMTP id 5a478bee46e88-30c84dc428cmr8616976eec.28.1782505901801;
+        Fri, 26 Jun 2026 13:31:41 -0700 (PDT)
+Received: from localhost.localdomain ([186.158.238.108])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c7c58831asm22580134eec.13.2026.06.26.13.31.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2026 13:31:41 -0700 (PDT)
+From: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Benno Lossin <lossin@kernel.org>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Boqun Feng <boqun@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	=?UTF-8?q?Onur=20=C3=96zkan?= <work@onurozkan.dev>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	linux-kernel@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel-mentees@lists.linux.dev
+Subject: [PATCH] rust: iommu: replace core::mem::zeroed with pin_init::zeroed
+Date: Fri, 26 Jun 2026 17:31:19 -0300
+Message-ID: <20260626203122.713317-1-nico.antinori.7@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, 2026-06-25 at 08:51 -0700, Ashok Raj wrote:
-> On Tue, Jun 23, 2026 at 11:07:36PM -0400, Rik van Riel wrote:
->=20
-> Hi Rik,
->=20
-> =C2=A0 Thanks for the v4 redesign =E2=80=94 the in-place marker approach =
-is much
-> cleaner than
-> =C2=A0 the delayed_work/llist scheme from v3, and it directly addresses
-> the
-> =C2=A0 retry-forever concern I raised earlier.
->=20
-> [snip]
->=20
-> > +/*
-> > + * Remove an IOVA entry from the maple tree and free it.
-> > + *
-> > + * This runs in atomic context (DMA map/unmap can be called from
-> > hardirq,
-> > + * softirq, or with spinlocks held) and must not fail. Erasing an
-> > entry can
-> > + * require a maple tree node for rebalancing, and
-> > mas_store_gfp(NULL,
-> > + * GFP_ATOMIC) can fail under memory pressure. When it does,
-> > overwrite the slot
-> > + * in place with IOVA_DEFERRED -- an in-place store needs no node
-> > allocation and
-> > + * so cannot fail -- which keeps the address range reserved (the
-> > allocator's gap
-> > + * search treats the non-NULL slot as occupied) and lets the
-> > struct iova be
-> > + * freed now. The marker is erased later by iova_drain_deferred().
-> > + */
-> > =C2=A0static void remove_iova(struct iova_domain *iovad, struct iova
-> > *iova)
-> > =C2=A0{
-> > -	MA_STATE(mas, &iovad->mtree, iova->pfn_lo, iova->pfn_hi);
-> > +	unsigned long pfn_lo =3D iova->pfn_lo, pfn_hi =3D iova-
-> > >pfn_hi;
-> > +
-> > +	MA_STATE(mas, &iovad->mtree, pfn_lo, pfn_hi);
-> > =C2=A0
-> > =C2=A0	assert_spin_locked(&iovad->iova_lock);
-> > =C2=A0
-> > -	if (iova->pfn_lo < iovad->dma_32bit_pfn)
-> > +	if (pfn_lo < iovad->dma_32bit_pfn)
-> > =C2=A0		iovad->max32_alloc_size =3D iovad->dma_32bit_pfn;
-> > =C2=A0
-> > -	mas_store_gfp(&mas, NULL, GFP_ATOMIC);
-> > +	if (iova_kunit_defer_erase || mas_store_gfp(&mas, NULL,
-> > GFP_ATOMIC)) {
-> > +		/* Erase failed: mark the slot in place and defer
-> > removal. */
-> > +		mas_set_range(&mas, pfn_lo, pfn_hi);
-> > +		if (WARN_ON_ONCE(mas_store_gfp(&mas,
-> > IOVA_DEFERRED, GFP_ATOMIC)))
-> > +			return;	/* in-place store cannot
-> > fail; entry stays put */
-> 		/*=20
-> 		 * <-- deferred_lo/hi not updated and range stays
-> 		 * occupied for ever?
-> 		 */
+All types in `bindings` implement `Zeroable` if they can. This enables
+using `pin_init::zeroed()` for `io_pgtable_cfg` initialization instead
+of relying on `..unsafe { core::mem::zeroed() }`.
 
-If the in-place store fails, then updating
-deferred_lo / hi won't help, since the
-sweep later on will be unable to identify
-this area.
+This change improves readability and removes an unnecessary unsafe
+block.
 
-Freeing the iova at that point would leave
-the maple tree with a pointer into memory
-that could be re-used for something else.
+Link: https://github.com/Rust-for-Linux/linux/issues/1189
+Suggested-by: Benno Lossin <lossin@kernel.org>
+Signed-off-by: Nicolás Antinori <nico.antinori.7@gmail.com>
+---
+ rust/kernel/iommu/pgtable.rs | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-We need to either return early and warn,
-or panic.
+diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs
+index c88e38fd938a..8faa1d8d9fad 100644
+--- a/rust/kernel/iommu/pgtable.rs
++++ b/rust/kernel/iommu/pgtable.rs
+@@ -102,8 +102,7 @@ pub unsafe fn new_raw(dev: &Device<Bound>, config: Config) -> Result<IoPageTable
+             coherent_walk: config.coherent_walk,
+             tlb: &raw const NOOP_FLUSH_OPS,
+             iommu_dev: dev.as_raw(),
+-            // SAFETY: All zeroes is a valid value for `struct io_pgtable_cfg`.
+-            ..unsafe { core::mem::zeroed() }
++            ..pin_init::zeroed()
+         };
 
-I'm fine with either.
+         // SAFETY:
+--
+2.47.3
 
-Robin, do you have a preference here?
-
-> > +		if (pfn_lo < iovad->deferred_lo)
-> > +			iovad->deferred_lo =3D pfn_lo;
-> > +		if (pfn_hi > iovad->deferred_hi)
-> > +			iovad->deferred_hi =3D pfn_hi;
-> > +		free_iova_mem(iova);=C2=A0=20
-> 			<--- only reached if second store succeeds?
-> > +		return;
-> > +	}
-> >=20
-
---=20
-All Rights Reversed.
