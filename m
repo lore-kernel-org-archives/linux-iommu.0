@@ -1,224 +1,316 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazolkn19010018.outbound.protection.outlook.com [52.103.13.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A499931AABC
-	for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 14:54:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782485683; cv=none; b=EIwhihO6YwQjHXpL9eYmCcikTFEd6KaRZj5+Cc1imUKV1Tser4MTzd4oYX4BL8UpyNOSBK9wpR0AT1M5W9YjJbt0tkUjOkHqhRDesaHmZSlOfRRzjaKSgOJIPvxskZPDRLz8pt7FLbpMxN74FwiQHaoPCddeob7A5hiMHXTuLx0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782485683; c=relaxed/simple;
-	bh=UCwkJAe8P1pYFdk06PaNaKtvagHVUYsw8cugPruxH2E=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=WDPKEa8I6booUNhcPoSHDqixG16t4ctCbjluVVX0fwtk9eLUfvJi5WiwW3AXRBL1xbj5OBxc7fj8idwMTUEUfDBU1FaTRrNu47E7wSYlx1VyhmT7n53aFsb9FgKOKOlBkQK5vgLXBK/r3NuOy8QlRjfIW1pdT4krHa/G8YtrKjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=nZ1SMgbC; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=WD+tBAxp; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C3723E5570
+	for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 16:00:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.13.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782489626; cv=fail; b=fA1mo5ouyyd7qyMAdv1aUy0VOyFvdUMnsTA75DnebGnR5Tbg/x/FR1jQHmiWYyZ+q9pocCEiSftusicxHQYnnJyPIDjs5a0wc2aazbfw6JXjYkP4vzI6vrH7LEpDK31Yt/GZlwHp1azP/zIYZnvnFGxCmMn06o88wsE9uPgRPrU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782489626; c=relaxed/simple;
+	bh=Br5Aw0bPsBIDJV+f3ONk5lL11cnZIqJtH8VP1OH8ReU=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=MaDIm8WNvN8+7NMEiiGnHovIuNtDEXw57mmXUrh/VExutHBy4hPGIMUfED83rRx1pjLThGa5U5CycCSKj2o4wILLYn8y34vPiMR8K3sd9MVpasXzfdUn5mAdikCDEjLtjhRt5BCv3rX+FB8bcuqnsZ4EIFXhyec+j+WbwwsZFlI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=cU7fcc6w; arc=fail smtp.client-ip=52.103.13.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="nZ1SMgbC";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="WD+tBAxp"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65QAchFg1143743
-	for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 14:54:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	mYWJkhNIK4vEw8z7nhJCveZpwInyCIrXGAzZOF/vmPE=; b=nZ1SMgbCdM6XOVR1
-	iinWb5Si+AAILW4f57MbZ3eRlU/0q35t64nBbizVTVbZNFoCH6nvIkJw6hJbEHtW
-	5JVJwD98DI77lkVNqJYPkXVJrvDn32XrCQKSSL6DRJyBW4AjxnXz2xgVJibIytrg
-	XyJgoblrtq6VLyEn1JzepHwFwNgBz7bjPYJSzoi+v/HMjobPLtCLK4lqG5+mkO5e
-	v7pWy6tPs55DZate5bFbwqrP5j1653J4BDTV/diUTNIHTyKEanmzCmPJeVtKTCOu
-	hnkIY9O9h0VSxqx5Oq9mNrT+wH3y8zSeLobSTP5OUTjIbYtQxtoTyhpqi9V24eLU
-	p4KcMQ==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f1eewb728-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 14:54:40 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2c7cfa17fe6so15010905ad.3
-        for <iommu@lists.linux.dev>; Fri, 26 Jun 2026 07:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782485680; x=1783090480; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mYWJkhNIK4vEw8z7nhJCveZpwInyCIrXGAzZOF/vmPE=;
-        b=WD+tBAxplhy0dghC5YboQYdnyotm6tW5YX/AWnupNWKrU78a8Ky7a1ceM1n2CKVcHd
-         5RwZ7ofOHk8l6cGRMNkwRJmEaAxZxDIvd37I2sbYHjRQ9pPDGpPkXHklNU1MFhdAgkDC
-         dEvMh2G02WH7GbTqDkZ6UTtwOtnMU+upd9rT347i/EE5XWMZczrH6y0w9QkVkYWLGvCC
-         tq57oSdX6rUA3G3AjmBjMuvi6kM4TWuxbbafpE6Pj1lEhprT9a0Py65F2Jn/PywLNIpU
-         cOwD5K/tO9YMqLp5Yzsp0AIIoZkIUITIqRkM+Cy0nKvgrGe4Ew/2qghgUkO3peVV8QWr
-         lj4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782485680; x=1783090480;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mYWJkhNIK4vEw8z7nhJCveZpwInyCIrXGAzZOF/vmPE=;
-        b=hE1uma9Zgr8Z8qAeKuZWKArFllOFKNd74Q/KiD4lyIY+8BjcQtp+lu4HWA2QXYcbFb
-         mJxaJzFXEIhvac/DliUbiYXcuEc19UE6LHM/+wIdvsigxFI87VZkV9NJmq5begNG0MDT
-         V4hyx3TE7iKp9VsSELijhXohfsqw15Cyi8wXqzAvlTaUE8x8HQ+w0jTRGkS5I+EseRhj
-         23TmXe38/lDv/mFJNQtF/8p7a6FR943qRA9RwOp9Fbb/TXf17eVTC0yH203kqAKGfVwB
-         IhPHe6nF1XrnX91meLxIQ0qaoAKgXPhRlpQWoEgpFlhHtpO+wVFrFGmZifFDnXmdGvl7
-         jDow==
-X-Forwarded-Encrypted: i=1; AHgh+RpEXfWqQXELarKjsMvMfB//K2DKoBBXVmVbO5hvrhKxxNOAPs0EOPTG75QMbNWE5g+l6CTqDQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyglCM1be3eaASHq0NfeZHsP2htyEJr0pvM6wJKWLeplTCqPNw1
-	jjxpa6OtGfs2waQVtE5/gFlEj6S9JA3TTHOEBM8znQD0IYOq8mnQ856r8kA3OvO13IgG/IO6fqE
-	JvtpPhjQiUoFLGjTpc6oTUos8H/0bPEv+eockRJFww12ijeGEzZAsUDoNKg==
-X-Gm-Gg: AfdE7cn/pDHlqXzffJKWSrTlgfojUWUSwN3bSIeWsHhq0rean12zxlcqgcEW2m2VclA
-	jSOYg6zLPBxMXO6DU+1gPS0yGXT98GLajuP8b/uouzLkhOsU31YDMD98LsUIs/40FyJaJlpQK29
-	iPnovpOZm81XZhhxrhAjlLUOCQXNv3HZgIU2AfKKrTaULT6ugoD9qBGKK+Iy0jvP8JZnfJcPTyo
-	QcMNdrEJpvory8nuZRQsgcTQPVyH6aT06+MsYUAIQj3jL620+HyarT9EYic+X6oFOGbGMdQNt/V
-	R3+eh+EWP4X5JYAixlBTV6rRCm/nOVlgjP5pAVuc0nq/3LrBkTZ6Nfzcwgym/zgutTC/ty6mo8f
-	L9pkW92g0N+2soYxO+oSKXA7r93wYMUqihvo=
-X-Received: by 2002:a17:902:c40a:b0:2c0:a555:80e6 with SMTP id d9443c01a7336-2c7fc654109mr75502965ad.6.1782485679555;
-        Fri, 26 Jun 2026 07:54:39 -0700 (PDT)
-X-Received: by 2002:a17:902:c40a:b0:2c0:a555:80e6 with SMTP id d9443c01a7336-2c7fc654109mr75502655ad.6.1782485679097;
-        Fri, 26 Jun 2026 07:54:39 -0700 (PDT)
-Received: from [192.168.29.96] ([49.37.170.88])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c7f5ac899esm41390565ad.7.2026.06.26.07.54.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Jun 2026 07:54:38 -0700 (PDT)
-Message-ID: <2a52ecb1-be8a-4522-aa23-f3277f0555fa@oss.qualcomm.com>
-Date: Fri, 26 Jun 2026 20:24:31 +0530
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="cU7fcc6w"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=unfTEU81uWrbMnCwzYIOi0kjMZh53xu0hIRiva27Cw+8PZ9LT1WlGJrHPhw35QAAjG7QThsPrCLq6ue91xi7YVxhrTW0DIjkiK23aJIQbLQlzSEwLu5rEd2zQXITjkdre6lvSOe0/YWojTwYZQJn2m+aZEee7Gry9OD5XHU71rlMYAFcHtIQU7cs3OnqBcPkizTMEa+19PuWcKby555tTdOEOvZ7Nm+AF8L+Dyo/Jtqt8i1ZVFf2wR9rtouS1fir72F57poDeOLhGidcT/Qy0vutpPO5m+2iOiQw/4tQC5MndY9KRcTstzLVcpMc0woeu9e7f7g3M/Ob0nPC3FyBIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nP0xctpK24R/gws6aSE1ilZYF+AbvwyVseVCqde4uZQ=;
+ b=s01kUqUkD8BjXwu9tvsSSaEPmdfXMijYTPS9EnUtgi+PhzZ5qS/IZYRHL7wFSHbq89evizzvd+3k2Lezwh1JN1DXu+vxxn0gzuZXdb+Hw1j/iJDDyZ01C7KIXFM2yifHHzqPoYZJ9jWeepMkyiANYLzBu8+doG1IVoAcgJKwR6duhrXMV528KikxZGZkpSuKSvG8xyNdFxmSCd5+s4Rj5Anbv5QTNwUpsECB6viLvZZWf4EIsHLSa/HT2GoDvKu2bWBTGjIM4IMWFttdtKnoM6qeeyrNxI5xcP/KsZH+RNZKGXrkkCHLPgl3EgLQ5UzpsZEaXvgdX08Gx97nGHVN6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nP0xctpK24R/gws6aSE1ilZYF+AbvwyVseVCqde4uZQ=;
+ b=cU7fcc6wFQWU0HE8swGWQvuJEnTWmCPY70OVoZgvuuxEbo7fThhYXB1jClQNMlHz5IAOf/ISDj4ctwE9uKO31EfjZzuaOExsxOncT1iZgkG6SuH6DEyPaLdIe+ZlYMjthJ3p3v8bduwOpnHyBzIAvlLFDPGmcEXkPhs76a8goDL7X50pULdvwjiahQ4l5g3V/k/K/sOSW0CEt4vqWf3S9gJDgS674lIMo0gscYFBe1RAv7oCqdG9CVc8C+5XJk/ynOrAHKi81WQkW9+9g9U8+u1sNW3Cif0KHdTnx5/XiRQIT0UGtS+cTOeOWGnEPwz3L6IL8tueQHa4lC835c+zmA==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by SA3PR02MB10140.namprd02.prod.outlook.com (2603:10b6:806:39b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.12; Fri, 26 Jun
+ 2026 16:00:20 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0159.007; Fri, 26 Jun 2026
+ 16:00:19 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: "Du, Fan" <fan.du@intel.com>, Michael Kelley <mhklinux@outlook.com>,
+	"Miao, Jun" <jun.miao@intel.com>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "chenhgs@chinatelecom.cn"
+	<chenhgs@chinatelecom.cn>, LKML <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
+ used/hiwater tracking
+Thread-Topic: [PATCH] swiotlb: eliminate per-map atomic contention on
+ used/hiwater tracking
+Thread-Index: AQHdAl427ISAWK+xiUOEbDzqfvGrgbZLbReAgAN3FYCAAIy50IAAvYmAgADWmfA=
+Date: Fri, 26 Jun 2026 16:00:19 +0000
+Message-ID:
+ <SN6PR02MB4157AA96B686F49F0800A39AD4EB2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260622122114.2563254-1-jun.miao@intel.com>
+ <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SJ2PR11MB8498277BE45D32A81ED07D9D99EC2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+ <SN6PR02MB4157761C37193172603E6AFDD4EC2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SJ2PR11MB8498300801245B279182EDE799EB2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+In-Reply-To:
+ <SJ2PR11MB8498300801245B279182EDE799EB2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA3PR02MB10140:EE_
+x-ms-office365-filtering-correlation-id: a306d6f1-7cad-44d8-c68b-08ded39c05b9
+x-ms-exchange-slblob-mailprops:
+ 02NmSoc12Dcj/mAxI/NGvzdUkjNASRo/g+0UZyysfj4/fAVtkrKiAqItxzCpDEeQolohwJQ7reh7Y7wCDBVG9I4PeFm/j7+qWbpbX7KlzX3Y0MyrbYKPoVLNONGEWn+cVIWxUeqIp5u1AbslUnKD4YCW62hmEs4FD1U5pCsQuV0/edN5siqmgrYg15b4pjAJZWq0iEFpb3qkJoETfIyJ1oecj2lzM5Qp+VR6nWDUyqFRRzAg4R374U4mjJ+6tObsGeysSuv0QV3VuRjM5XoYCUYHRm9qDvD4UgX7cL/EfKUlyiM9FLfXOlWbTXrGcvuZPN1Sak5b/BI2pB+Aiatna/YRmJakBerfNy9w+yHn83LaR7aP4ZHkLcXbcof7WTfbU7aLLJaGBaPMugn3539FDwqnxTCrsza7BYT31TIW+fuqWa9LAtzB8C5euXoiuB5y328iotc+chJZHZMmSGUDgMubQAFDU9jjtwGy6TGu1foT9+LAAPdzCiHK1pQQyeecrkm9BKzV2lpB11nnnFOlvmNr7fCo2DjMNWDniNgEPfWIRxdCY4LwJdOlbYSj9Wp9zVaIRvBSFGTQLf/ApN4iMf4i23FOvQz7gZRB26kkbfX+DO/Uijy3Gc2W1ufstihe4vF2irlMo6BHLKp/xh9z8pBSQCBlT4/2siTXJeZfpq6s9l91d7F7CXuTtf26bIjNM43+EX2nYUjp9HAS1tZPu1BMU0Xju1bBZk4B5eP42+m/lIOsLpLYUzksFUn27Klg
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|25010399006|19101099003|15080799012|8060799015|13091999003|51005399006|41001999006|31061999003|19110799012|8062599012|37011999003|3412199025|440099028|102099032|40105399003|1710799026;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?0IgsQ2akGgmrG32Cd9ady8akU/vo6c5RWWwka5yi9X+8bxf8F2KYsDJVU5gg?=
+ =?us-ascii?Q?qY9viabZ2yCKdY4CiT4TuiBttflBEJfrcmOtVHE53VwWRLcmqmeFSmzh00vM?=
+ =?us-ascii?Q?8bJ88y8lkXFt56rQouXLcjLDsaFwAvjEwnwXNUeYvWScHt8FhzDGuy4GiqNw?=
+ =?us-ascii?Q?Q2xJ2Ofw5I9wApjSYi6ycsWjupA6faXFFoNegP9KXxHQtc+TNHcMwRKHCbz3?=
+ =?us-ascii?Q?568WAnzhSuyTUCqDncV7YggL/jPFJ0HVD0HQSN1Yqz1HbivLFdte9WjLyph6?=
+ =?us-ascii?Q?gLRYUY/VPcVot8NYON524itwmwDpZmo97EFUGaG+Fu+YMr/nDFuPUkj9qitR?=
+ =?us-ascii?Q?Zef9SPCaePGcpAWlTIfyAnOan5197s3i2Hda/ZwfhPPijckofT8yiBfaG3qz?=
+ =?us-ascii?Q?bMh4z3UdUjCzhZx5XzsMkGGWueEUn7vfn9gmVH3V+PL1tyYwfU4qltvyqi4z?=
+ =?us-ascii?Q?LjHZPrxgMi8hy0dQumzNGnl+xZG4TFN40gXiYJdPkOCnB08+mnZHBgqKz55G?=
+ =?us-ascii?Q?5ti/8L5Anf0eTY1GMEN0afvt8tp3GCACUaZfCfvbNbumkFJbFtcl6Dc/olG5?=
+ =?us-ascii?Q?jPx31jG3C3UGTESsFO5Ye2eD07uiM0Xp6E5FbaNJwif91HPGTh7vTeJUS0wF?=
+ =?us-ascii?Q?Ci2IwjHOIRAa2K5Uj5jz/4JmWpPMbvRIooILTwxhmIAUq5ybS9yz2bH88r3u?=
+ =?us-ascii?Q?ei5TG4ZvNMgwz6H3x0Q4zJtrjVCB9art/3ziEypSDUH1ZpSt54Iy3c9Vqfct?=
+ =?us-ascii?Q?NrrUurrTLp5NUkqHD0TQM1YpEI7d1j31hYAclxGauh/k/IIFZvexWJ0gx0v3?=
+ =?us-ascii?Q?7Az0drOMTNiF8Zc9anAmjDiSD0NwrAoCSe5Moh1UCrYT+KL9oa348Ybe4Bwg?=
+ =?us-ascii?Q?qu6v5j/YWWgg7ppu1Se/vFT5oZ6/WiGKIf11QEylrRT9fsfsCs5/HjoxukiJ?=
+ =?us-ascii?Q?ko8TXFazExlg1XNrP4IjQmn5bXAgXfhijnL3E5BcY96F/OkPqpcfDarAWB5m?=
+ =?us-ascii?Q?xv3U0+BuCGQ5dbFHNg9kUlaM0WwzcwuPFecBBuq997stTk4ZcZPPaIUmFscy?=
+ =?us-ascii?Q?4bK5wvlI?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?iQMhy8aiYL9PsdPMieAGJiIXPN/NHjJ2coEcmkp/zkDQybJBTO0gxP1O6wtM?=
+ =?us-ascii?Q?IFFe7udQLlZgZwsoi8vxDfT9ZkRXx4KASOluNBmnCpewJDV53+2UqrNFXrlG?=
+ =?us-ascii?Q?j79CqVo9Uy5Y+eQO95V27QeYdxwnJkl9D2c9O81E/lZ4v739J17rqXxG8sll?=
+ =?us-ascii?Q?hh0Q0c1cYfgeyL7HPsCyL5CbDZwwq2O3BXAppVQ7AO/sgu/fWOS0zp8xXJqw?=
+ =?us-ascii?Q?Fbh7fSCNQJj9qslIvd2MRl+qBwu+op1A7mI/vflyMjQyQKiKQVtF/KfBnHIl?=
+ =?us-ascii?Q?iDQL1GHznWDvObzFcCc+zv6gNyHbaaJUWSwieD8Z6yaTiGECvpADDNQYglh+?=
+ =?us-ascii?Q?1Qxs7p7nsqi5ZFkAcKfBqVO2BgFP+yQDcIK4K4AXtrFg7GAKZvmSdrf/HYll?=
+ =?us-ascii?Q?EfhzxTJyzY2D2S3qnxhLD2yiaXZwjDjXfpnIuuUTGbZRugm4TK6lMvHgLwVN?=
+ =?us-ascii?Q?vpBY9Si6yxfDlmwggmQeF11Qadq5OJsEh4WLjze+tgU2zXuUT1l4TienJpIU?=
+ =?us-ascii?Q?dbrOVefiGnC3tsPqw54XCCNBjZPHNdZWGmgj/TIrRqaO2xnJQI4lb9mhkiZT?=
+ =?us-ascii?Q?1kq843l0UKPZLSVHAt+9mLKJdB/5kQH7paFDhEM9bLsQcBM78+5hOuOACegB?=
+ =?us-ascii?Q?CtchLMXEHLWQKAzZXrkdn7b8wpTIFeZji4ZaKczuwmr53365U6ChOwtMS8+X?=
+ =?us-ascii?Q?FtFmsbo8jj5uliM3Eko7sZi+erW9CNRpI+Pt9gfj67iT0HS9e54jp/N6jHcw?=
+ =?us-ascii?Q?finHhXbVQYNV1rUW4hbZs5g8QISZj8THGspGlMBgI/wJJuGFaUJA+8iGRdDX?=
+ =?us-ascii?Q?YjA0Y6LvwRz96zIbRRnS8PWPBhF1BJp/ems7yfoL6pB7zRQQgnRgq+iXW8jr?=
+ =?us-ascii?Q?qbMsw4kI6iqqy2JWp6ZnyKRB9OYvczqqVE/8w+2Bgajy1NyHlueaUeu+m55v?=
+ =?us-ascii?Q?rcounnhmlNUAns0wH5QwUWocT/xFyM0DNUHJTyZgUzST5tSxP6jAk+6tIc47?=
+ =?us-ascii?Q?1Mm+BKp7wIQjIQoVG77bWYXl+XkAWORW7LlwW19jERoh6MZYr+SwG0LMpXUz?=
+ =?us-ascii?Q?STGnOdwN10PFqMDPSNF7ljbbU2kDOtMknvhc+yHqUs409wD3+MXbvTk7mpPV?=
+ =?us-ascii?Q?k9NqkwBHiORR3IrAcvYAAhFuNBO1YHtyHmYdYp7X+CKcj4jFu9WyjurS0qJy?=
+ =?us-ascii?Q?AKjmXTzrfugHANfPYWVF+sEH3+L3T9wTV6fGBQQ+hPAyBei9q5wsZ28+/A7o?=
+ =?us-ascii?Q?RSICtzumw5O2KmHy5F0ZnF7V28KKdZE4dJa/dCPLM7ehrpTRjqAA+jfjN4zs?=
+ =?us-ascii?Q?iwEK9jJGrM6R5usW9osdJmwiwSjg+i2SHlU3nmXGqCVBKCZ0K/vFeUTkVyGv?=
+ =?us-ascii?Q?nA6r7WY=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: harsha.v@oss.qualcomm.com
-Subject: Re: [PATCH v2 00/11] iommu/arm-smmu-v3: Add PRI support
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, robin.murphy@arm.com,
-        jgg@nvidia.com
-Cc: joro@8bytes.org, bhelgaas@google.com, praan@google.com,
-        kevin.tian@intel.com, kees@kernel.org, smostafa@google.com,
-        baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, skaestle@nvidia.com, mmarrid@nvidia.com,
-        skolothumtho@nvidia.com, bbiber@nvidia.com
-References: <cover.1779944354.git.nicolinc@nvidia.com>
-Content-Language: en-GB
-In-Reply-To: <cover.1779944354.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI2MDEyMyBTYWx0ZWRfXyEre93tDZTbC
- c6zsgRHaqp6qvVXMgBSfmokMQSA/eKn+zVZjBXbtOBt7Rw4XWrl7HA1q/3nEK3X/pm0ySgJgzRZ
- kbzKOX1ljP00s8iZqtEvN8KnWHAdRyc=
-X-Proofpoint-GUID: MIhpmGAN7Ko_DUrybAF8w_tcFZdxVeX5
-X-Proofpoint-ORIG-GUID: MIhpmGAN7Ko_DUrybAF8w_tcFZdxVeX5
-X-Authority-Analysis: v=2.4 cv=P7UKQCAu c=1 sm=1 tr=0 ts=6a3e92b0 cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=asHclmMlXTalQ/2ShlWtEQ==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=NEAV23lmAAAA:8 a=VwQbUJbxAAAA:8 a=Ikd4Dj_1AAAA:8 a=XZ8z-I0mWLgmP2cXQ10A:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=uG9DUKGECoFWVXl0Dc02:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI2MDEyMyBTYWx0ZWRfX6HSlrenlrmTC
- Elo/XmfkW+Ch0feE+1DJsJL992Dgh4wUbydwgyDrLDMxIMy6cjjC3tgckO/tL4ZlHs25e4U72D7
- MS8Gz7+mLAaueFzWdPXBza1nkWo+CKFk73tgw723gFL69Q/UMINq7lLvnBzF8E3ifkGEL2r3R+7
- I//Dqg0mIEPUhGaTrb6lQMzPiORh1k8Evd3hlC10MeC0TozN8zWSUuqmLosD/5l1cl1+9pUNkl6
- gzCadiHy1t5NPtDWH719DCxo1jbvxe1aquzdKAaD9UQw8bIhe1QsJVQmiRUJ6UUXflEp9p2FinA
- ljT4Crpuh0HtcAIB1vGI9C+9pNLf7hd24ot221eG8FcqfizCl/xbXHgVyhUx0ZPgLS2xj+jxrFu
- 7RM4aPpRODCTVwHX4p8BSRDfGAp6ab4C444bcTRyFchyiRhHHIuKvnvSN9HzhBD/Kn0WhnXf+ro
- o59nOkr1UqQ97hljL+w==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-26_03,2026-06-24_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 adultscore=0 phishscore=0 bulkscore=0 spamscore=0
- impostorscore=0 clxscore=1015 suspectscore=0 lowpriorityscore=0
- malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2606260123
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: a306d6f1-7cad-44d8-c68b-08ded39c05b9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2026 16:00:19.7283
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR02MB10140
 
-Hi Nicolin Chen,
+From: Du, Fan <fan.du@intel.com> Sent: Thursday, June 25, 2026 8:12 PM
+>=20
+> > -----Original Message-----
+> > From: Michael Kelley <mhklinux@outlook.com>
+> > Sent: Thursday, June 25, 2026 11:54 PM
+> >
+> > From: Du, Fan <fan.du@intel.com> Sent: Thursday, June 25, 2026 12:30 AM
+> > >
+> > > > -----Original Message-----
+> > > > From: Michael Kelley <mhklinux@outlook.com>
+> > > > Sent: Tuesday, June 23, 2026 10:35 AM
+> > > > To: Miao, Jun <jun.miao@intel.com>; m.szyprowski@samsung.com;
+> > > > robin.murphy@arm.com
+> > > > Cc: iommu@lists.linux.dev; chenhgs@chinatelecom.cn; Du, Fan
+> > > > <fan.du@intel.com>; LKML <linux-kernel@vger.kernel.org>
+> > > > Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention o=
+n
+> > > > used/hiwater tracking
+> > > >
+> >
+> > [snip]
+> >
+> > > > > +	pool =3D &mem->defpool;
+> > > > > +	for (i =3D 0; i < pool->nareas; i++)
+> > > > > +		hiwater +=3D READ_ONCE(pool->areas[i].used_hiwater);
+> > > >
+> > > > Let's ignore the SWIOTLB_DYNAMIC case for simplicity. The approach
+> > > > of calculating a separate hiwater mark for each area, and then summ=
+ing
+> > > > those per-area hiwater marks, can produce very wrong results.
+> > > >
+> > > > Consider a 64MiB swiotlb in a system with 8 CPUs. There will be 8 a=
+reas,
+> > > > each with 8 MiB of space. Suppose the workload putters along with m=
+ostly
+> > > > smallish I/Os, say between 4 KiB and 32 KiB. If each area has 16 I/=
+Os in
+> > > > progress, the area hiwater mark might be 256 KiB (16 I/Os averaging=
+ 16 KiB
+> > > > each). Summing across areas produces a hiwater mark of 8 * 256 KiB =
+=3D 2 MiB.
+> > > > But then suppose a 2 MiB I/O comes in. The hiwater mark for the are=
+a that
+> > > > handles that I/O will grow to 2+ MiB. After the first big I/O finis=
+hes,
+> > > >  another 2 MiB I/O comes in that is handled by a different area, wh=
+ose
+> > > > hiwater mark also goes to 2+ MiB. Pretty soon all 8 areas have a hi=
+water
+> > > > mark of 2+ MiB, and the total hiwater mark is reported as 16+ MiB. =
+The
+> > > > old algorithm would have reported 4+ MiB, which is accurate. With
+> > > > higher CPU counts and more areas, the discrepancy can get much wors=
+e.
+> > > > This is a somewhat contrived example, but the problem is real enoug=
+h
+> > > > to make the reported hiwater mark be unreliable.
+> > >
+> > > You are correct here, I like your way of thinking.
+> > >
+> > > > I'm sure the contention for the total hiwater mark in the current c=
+ode is
+> > > > real, but it's in the context of a lot of other CPU work that is be=
+ing because
+> > > > of the bounce buffering, including copying lots of data to/from the=
+ bounce
+> > > > buffers. Is that atomic increment operation a bottleneck even in th=
+e
+> > > > end-to-end context of doing DMA through swiotlb bounce buffers?
+> > >
+> > > Practical benchmark show case the highest IO performance for each TVM=
+ spec.
+> > > even if a few iperf (4)workers would cause the contention here.
+> > > My guts feelings, yes, the real workload probably hit the bottleneck =
+here.
+> >
+> > Just curious -- what is the NIC in the TDX VM? I'm most familiar with t=
+he
+> > Hyper-V case, where the NIC is the Hyper-V synthetic NIC. That driver
+> > uses dedicated send and receive buffers that are allocated and decrypte=
+d
+> > when the NIC is configured. Most NIC traffic goes through those buffers
+> > instead of the swiotlb, so I probably haven't seen cases where the swio=
+tlb
+> > is the bottleneck for NIC traffic. I do see the swiotlb as the bottlene=
+ck for
+> > disk I/O traffic, but the data copying tends to be the gate rather than=
+ the
+> > allocation and freeing of swiotlb buffers.
+> >
+> > >
+> > > > Another approach to the contention problem would be to have a separ=
+ate
+> > > > CONFIG option that is narrower than CONFIG_DEBUG_FS, so that the
+> > > > computation of the hiwater mark can be dropped entirely in producti=
+on
+> > > > environments. Or the setting could be dynamic at runtime via a
+> > > > static_call, defaulting to not computing the hiwater mark while sti=
+ll
+> > > > allowing a sysadmin to turn it on to see workload usage of the swio=
+tlb.
+> > >
+> > > That's counter-intuitive from my perspective.
+> > > With global counters, the observation, which itself impacts the perfo=
+rmance,
+> > > wouldn't be able to tell the practical characterization, that's commo=
+nly lower than
+> > > max performance, in turn breaks the semantics of what's it for.
+> >
+> > Agreed. If the global counters affect the performance and throughput
+> > significantly, having an accurate hiwater mark loses some of its value.
+> >
+> > >
+> > > Even without those global counters, if user wants to know the hiwater=
+ value,
+> > > snapshotting used value(sum of each area as current behavior) periodi=
+cally would
+> > > produce meaningful value for workload evaluation.
+> >
+> > I'm a little skeptical of the value of just summing current usage. Doin=
+g so
+> > tends to miss any spikes, and the spikes are the problem. If swiotlb ca=
+pacity
+>=20
+> That's current design when CONFIG_DEBUG_FS is off, and used as swiotlb
+> shortage indicator for user.
+>=20
+> Statistically that sampled value is approximate to the true value as alwa=
+ys.
 
-On 5/28/2026 1:29 PM, Nicolin Chen wrote:
-> The SMMUv3 driver doesn't handle events on the PRI queue or respond to IOPF
-> faults. This series adds the missing pieces, using the IOPF infrastructure,
-> to convert PRI page requests into iopf_faults and issue CMDQ_OP_PRI_RESP.
-> 
-> The iopf_queue_flush_dev() contract requires the driver to first drain the
-> hardware PRI queue and synchronize using a threaded IRQ handler before the
-> IOPF software flush. This drove the additional commits compared to v1:
->   - arm_smmu_drain_queue_for_iopf() drains the hardware queue to the PROD
->     snapshot
->   - arm_smmu_attach_release() moves the teardown outside the global lock
->   - synchronize_irq() closes the gap before the final flush
-> 
-> This is on Github:
-> https://github.com/nicolinc/iommufd/commits/smmuv3_pri-v2
-> 
-> FWIW, engineers on the NVIDIA side have managed to verify the PRI feature.
-> 
-> Changelog
-> v2:
->   * Allocate evtq.iopf for ARM_SMMU_FEAT_PRI
->   * Pick up Jean's PRI stubs and PRI export patches
->   * Enable PRI for PCI devices in arm_smmu_probe_device()
->   * Add arm_smmu_drain_queue_for_iopf() for EVTQ and PRIQ
->   * Add arm_smmu_attach_release() to rework the IOPF drain
->   * Add IOMMU_FAULT_PAGE_REQUEST_STALLS_TRANS for STALL mode
->   * Gate pci_enable_pri() on FEAT_PRI plus a non-NULL evtq.iopf
->   * Deny unrecognised-StreamID PRG_LAST in arm_smmu_handle_ppr()
->   * Disable PRI when no IRQ handler is registered (unique or combined IRQ)
-> v1:
->   https://lore.kernel.org/all/cover.1772568590.git.nicolinc@nvidia.com/
-> 
-> Jean-Philippe Brucker (2):
->    PCI/ATS: Add PRI stubs
->    PCI/ATS: Export pci_enable_pri() and pci_reset_pri()
-> 
-> Malak Marrid (1):
->    iommu/arm-smmu-v3: Submit CMDQ_OP_PRI_RESP for IOPF event
-> 
-> Nicolin Chen (8):
->    iommu/arm-smmu-v3: Add arm_smmu_attach_release()
->    iommu/arm-smmu-v3: Factor out __queue_empty() and __queue_consumed()
->    iommu/arm-smmu-v3: Add arm_smmu_drain_queue_for_iopf() helper
->    iommu/arm-smmu-v3: Drain in-flight fault handlers
->    iommu/arm-smmu-v3: Support PRI Page Request in arm_smmu_handle_ppr()
->    iommu/arm-smmu-v3: Disable PRI when no IRQ handler is registered
->    iommu/arm-smmu-v3: Allocate IOPF queue for ARM_SMMU_FEAT_PRI
->    iommu/arm-smmu-v3: Enable PRI for PCI device in
->      arm_smmu_probe_device()
-> 
->   drivers/iommu/arm/Kconfig                     |   1 +
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   3 +
->   include/linux/iommu.h                         |   1 +
->   include/linux/pci-ats.h                       |   5 +
->   .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |   1 +
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 244 +++++++++++++++---
->   drivers/pci/ats.c                             |   2 +
->   7 files changed, 221 insertions(+), 36 deletions(-)
-> 
-> 
-> base-commit: 74fa4c177ad09800b007cba043370c887bb1b4e3
+OK, yes, statistical sampling could work. The kernel queues a work item
+that runs periodically to sum current usage across all areas. That sum is
+compared against the previous sum to calculate a hiwater mark. An
+experiment to compare the statistical hiwater mark against the current
+exact calculation would be interesting. I wonder how many samples would
+be needed, and hence how frequently it would need to run, to get a good
+result.
 
-One thing I noticed while reviewing: when arm_smmu_priq_thread() detects
-PRIQ overflow, partial faults (non-LAST pages stored via
-report_partial_fault()) whose LAST page was lost in the overflow remain
-permanently in iopf_param->partial. This is a monotonic memory leak —
-it grows with each overflow event.
+>=20
+> > is exceeded even for a short spike, you don't just get a performance bl=
+ip.
+> > You get I/O failures, which at least on the disk side tends to be fatal=
+ to the
+> > application doing the I/O. Maybe the networking stack recovers well eno=
+ugh
+> > and retries, resulting in just a performance reduction. But I've always=
+ thought
+> > of swiotlb exhaustion as a fairly serious problem to be avoided at all =
+costs.
+> > That's why CoCo VMs allocate so much swiotlb space, even though most of
+> > it is never used for typical workloads (at least in my experience).
+>=20
+> That's dynamic SWIOTLB is designed for.
+> Only when the IO is so intensive, transient buffer/DMA pool is exhausted =
+quickly
+> before new shared memory pool is created.
 
-Intel VT-d handles this in prq_event_thread() (drivers/iommu/intel/prq.c):
-     if (head == tail) {
-         iopf_queue_discard_partial(iommu->iopf_queue);
-         writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
-     }
+I don't think dynamic SWIOTLB in its current implementation is very useful
+for large CoCo VMs. Exhausting the atomic DMA pool is one problem. The
+dynamic swiotlb also can grow in a max of 4 MiB increments, so if 400 MiB i=
+s
+added dynamically, there's a list of 100 entries that must be searched
+to find space (and that list is currently searched linearly). Furthermore,
+the pre-allocated swiotlb gets 1 area per CPU, which mostly avoids contenti=
+on
+on the area spin locks. But a dynamically added 4 MiB pool can have a max o=
+f
+16 areas because each area must be at least 256 KiB. So there's more area
+spin lock contention with higher CPUs counts. And that all assumes that the
+memory allocator can provide a 4 MiB contiguous area for the new pool. If
+the swiotlb needs to grow after there's been memory fragmentation, an
+added pool might be limited to 2 MiB or 1 MiB or smaller, with a
+corresponding reduction in the area count and increase in area spin lock
+contention. Overall, dynamic swiotlb in a big CoCo VM results in complex
+and messy behavior with new failure modes and bottlenecks.
 
-iopf_queue_discard_partial() was written for exactly this scenario.
-Could we add the same here arm_smmu_priq_thread()
-(drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c) ?
-
-     if (queue_sync_prod_in(q) == -EOVERFLOW) {
-         dev_err(smmu->dev, "PRIQ overflow detected -- requests lost\n");
-+       iopf_queue_discard_partial(smmu->evtq.iopf);
-     }
-
-At this point all surviving entries have already been consumed by the
-loop above, so discarding unconditionally is safe — implicitly matching
-Intel's "head == tail" guard.
-
-Best Regards,
-Harsha Vardhan V
+Michael
