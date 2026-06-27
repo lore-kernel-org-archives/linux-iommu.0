@@ -1,174 +1,386 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013017.outbound.protection.outlook.com [40.107.201.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE7432BDC0E;
-	Sat, 27 Jun 2026 08:35:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C9F8347FC0
+	for <iommu@lists.linux.dev>; Sat, 27 Jun 2026 23:20:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782549311; cv=fail; b=LQ2gUz+jixFNsIs+JzgDMuSkvtgXZMd55BSock1WQIF9GOe7R2V/Jx+hx7evPElholoUF0IzLCy1UvohQ5GkMNZZgAbgwOwQ18KpcVFr0pgOnk1FgW/CFU5oFXn8klyo2nEHF5CHtrGgrX/14Oc9Dq8dhAyNFy0DP6LqNYjOTkw=
+	t=1782602454; cv=fail; b=iqbblCV4bdJgiTlzpSyP7HNuJaJbbMN8OBiHXUQzamnN9mhvh7xSHjbgIVkOrXRv5O+FBxYWujJoBV0LMBs5y2oFGhpeR0gM/B7L9ZSy/O68MnCyZqpEQIELAxkhQ7NaWJLGRqBzsmTD2CO3Sf+7U6XyHnbK9lyPj7A5VUpwLKs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782549311; c=relaxed/simple;
-	bh=UMdztxafF6HQmcUZSsyd8y8VQ3WznDrgEJXHi4WKOSQ=;
-	h=Content-Type:Date:Message-Id:To:Cc:Subject:From:References:
-	 In-Reply-To:MIME-Version; b=HwZvZd+9LsfIk2Ua67Ds5riCSm6fvcVeUlsG66DGcLEuuyqFoSr4d6pwl4O0NeNfB9zmZvCKDLeY1KfjqpDmxwA8UHwGdahTZh/QxdV5PAQNccAFvF6l9YyTArXH2ZDSZlAn1eaRPcp/769ucg5dtiNwx4xbS5q2kZOt7ATvwjQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=kPBPYaxH; arc=fail smtp.client-ip=40.107.201.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1782602454; c=relaxed/simple;
+	bh=AmtokBUDpLhSJkAHdfFdnaPKMr7Gz8weDOkv7A/g7Pw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=cKrZwQdxyxzG6AVOdHIHLnV03FiIX0FXhqb5DLLYjX9Bh009P/9f8/79eFO/7l6VKuTicWo92S5pvQgBvq/i8lx+5DYyxkVeXBS4bSdCL9R6CMHciDcB41pZ0cf/lRLcl3fQsdZsqfbK3CO2gBVhsbkbB4s6k233puOrVJQYnSM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Afm7EIw+; arc=fail smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kPBPYaxH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Afm7EIw+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782602452; x=1814138452;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=AmtokBUDpLhSJkAHdfFdnaPKMr7Gz8weDOkv7A/g7Pw=;
+  b=Afm7EIw+bj+o6sGOPICslDJTy2z0KMVKx0CnsHvn2krDOTSFEVnfeNKe
+   YqtbSxWTlvxM5ViDoFr1/1FDTnrtQoMkaNnThHvjOjG/cUwci6U8VjBYb
+   ILusfCE8WGoDwDfw3nQ8unlLeL9rDyBcZMdXbra9oZL/FASVsMkP6F4yh
+   xHggpxdTU96gcztnE5ACKswuqEjoAwvZyX6/Gq2znIxBfEN4+qxVWmwFV
+   mvvf1MbBOOaoaeHuG0VXxvwUBCKvr694/CXvfZtVvynQvyfK5Gsl00i+k
+   +MRX+tWHC4heqXkHlMgkSnCfq7X3k7piHjL5XiAbrLPlz1+AUvKYj3t6o
+   A==;
+X-CSE-ConnectionGUID: EJxONCKoTrqZwtfUb2iWMA==
+X-CSE-MsgGUID: PMbTym6USB+j17yzYbEB6Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11830"; a="94001270"
+X-IronPort-AV: E=Sophos;i="6.24,229,1774335600"; 
+   d="scan'208";a="94001270"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2026 16:20:52 -0700
+X-CSE-ConnectionGUID: uWBHFjpkQBy8xcbdFU7kEg==
+X-CSE-MsgGUID: bZ5A3JHtQI+zYsmNwCX48A==
+X-ExtLoop1: 1
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2026 16:20:51 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Sat, 27 Jun 2026 16:20:51 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Sat, 27 Jun 2026 16:20:51 -0700
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.20) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Sat, 27 Jun 2026 16:20:50 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lLwwEd8izuhu9ozVVDNYnI9Djx0HjO9v+wg2UlWUpdyvLRvQbMKS0hFGZmf7lJuRG/TiXdPA+5O0QWNhYGn8RVoI7Rs/iSKtND/R9qPW2+G66l222uDiUpd4WwM0wAELClMy/485WAmk/65SsivkQtJfS9XkzA6JW1Uw8tDlmgJjLnK3mxyL2Fl0OZuvQjooP82jxnDWJsem9Amvy2RlLjnZzCz9lzFeMBPzF+senjD6ykzUqsw3i0pIGZLn4zXfCPLK1DGBN0Kp3MFiTuQ45sgg3uENuaUU22GvVPQUY9/7Ul7fS6N+mecZaf60iUwF3DgBpQ7hiAbi07FEsMqKRw==
+ b=dy8h5zg3ar5K0cAOfjVrcfI04l9McWN/SyFncJ7VVlvzYT1m3f7e95XvNQC5adLW1DZ01rhYejlIhV5TFOyArJFKfG1TLTjq6+eaG924092NR/JXVyk+oFBgLM6ilmhZ81Sy7/gJwCO5gS6m+sJDSRN0WQgo0/3bBVmXW3I9WN5CzRsaNrvH7P2jYU6kWmX0Fy8kgZyrfPOqP87irQbkW8nFfRvqrjNZE6K6ScwJM1r08wGDMetr2NGO3Sg0QVXq1adiWcokfGhhEf5ZEFDa9gmV1TXedC5QPKYPzOZxaBKMIE3Qs3gRFxDFIRgvS4F82aJqOdxvefJBqWJ5XKKz1w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kpmTB5WxFoJVzGbNVsbe0DYzdYzxr2pFzgmSMQWoa+8=;
- b=and312SIeJJyO5Rf8W6ZFOoW4jgLTyyY6ibQNVrZo/pJaJ5muwsuGVtfoLRl6iHIN75jSaM7PtNPDoIh9rHVA8KX/jfRfLRYkNVPL0bIbFAK0542F3AnIPprtJiHkk+W2Vx/sDr6F/2ElpfeWT2pxJuWhT6AiztTY+0sAhGj2T0NHx2PqZ8d4DZBcUe49bdLX9I4zq2bPdVeRN2A+erneFJJLW+/qQNW2Hz2A0W3F0nPuqMvJaHhnHgPrxX6VbYexg5bmVtnfyGRHEebvf1y0wZTATiX811vXHt7puh6CC0HHmgVlnvi5l4mfj17VC6xJNhJ4NM/M5oPnqm++F7/GQ==
+ bh=OWPbU81VfXiZWBi4DlXD6yFBo/P7N9Ro1V32eg10IaM=;
+ b=xFqCBVO3QLQWw9EAM+Gp+LZi6Zc0xN2vKQESZxvP0DXQf3liW0nSJG8Rk9EbEiVOwQjZZzmAXquVkeW6w72jrK62z++GVn9E6njxgjfpvwnf/jkUx0jJGObEj4ozSrPvzm/i4oNAZUde6Wj5DJnEAZf6rG8D/XLqQC0x3aPU8IUdypd1RCjZsT+RwcZsZOKaVxFR91MU7qb5dgJqfY6OQwLyQX0KNJOHpaA7hhk2k8AQqqvAwuGR0O3Eg96SckFSBeiNXNvhFWI5Y6sCnV4HZQVjij6lOt/tKJEr6r6B2FYS/Y5jmuu+6NI6dDcsQWHeS+4zM1a7X17n8susTWjCcg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kpmTB5WxFoJVzGbNVsbe0DYzdYzxr2pFzgmSMQWoa+8=;
- b=kPBPYaxHOoP5/I2avBbc7jeEYrHqwXZT5GBnmp4eOKVdnxYKkdupY7IqMx6U9rFGAaxepTojb5Yn90+9LcBGXuVj/ay31gFAqlxbiBQdwG5mtCkvOzNnuXyEHmOiFIQM5WBip7vIa5d4ww00wur5fRsmZMSxW7ALGd6lfpoxPqNF33A0ufwmm1Vg0y8ACws3J7ylZMuQy3Cs/NRq55GtJjLEhkiGCLf/480rLdaoXoiwx/geZ/wUYtAD4m/ow2oJvN6FGyn90wjMBFXZB+uOobmVBB9vxnNB+azHX1M6yD3XtqLGnTTRxrWntvmDmT+6nH9BzBENBS7LQVfp+Dtt2g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com (2603:10b6:610:28::18)
- by PH7PR12MB7164.namprd12.prod.outlook.com (2603:10b6:510:203::13) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ2PR11MB8498.namprd11.prod.outlook.com (2603:10b6:a03:56f::12)
+ by DS3PR11MB9819.namprd11.prod.outlook.com (2603:10b6:8:364::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.17; Sat, 27 Jun
- 2026 08:35:04 +0000
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::7de1:4fe5:8ead:5989]) by CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::7de1:4fe5:8ead:5989%4]) with mapi id 15.21.0159.016; Sat, 27 Jun 2026
- 08:35:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.18; Sat, 27 Jun
+ 2026 23:20:48 +0000
+Received: from SJ2PR11MB8498.namprd11.prod.outlook.com
+ ([fe80::8db6:d449:e492:308f]) by SJ2PR11MB8498.namprd11.prod.outlook.com
+ ([fe80::8db6:d449:e492:308f%6]) with mapi id 15.21.0159.018; Sat, 27 Jun 2026
+ 23:20:48 +0000
+From: "Du, Fan" <fan.du@intel.com>
+To: Michael Kelley <mhklinux@outlook.com>, "Miao, Jun" <jun.miao@intel.com>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "chenhgs@chinatelecom.cn"
+	<chenhgs@chinatelecom.cn>, LKML <linux-kernel@vger.kernel.org>, "Du, Fan"
+	<fan.du@intel.com>
+Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
+ used/hiwater tracking
+Thread-Topic: [PATCH] swiotlb: eliminate per-map atomic contention on
+ used/hiwater tracking
+Thread-Index: AQHdAkGVG27dVNXNe0yyBQUhGJEOBrZLbVMAgANqNeCAAJmZgIAAr8IwgADkX4CAAgQt4A==
+Date: Sat, 27 Jun 2026 23:20:48 +0000
+Message-ID: <SJ2PR11MB84984BB3EE01F44D466EE39E99EA2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+References: <20260622122114.2563254-1-jun.miao@intel.com>
+ <SN6PR02MB415757A3F56268BE3AF01D35D4EE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SJ2PR11MB8498277BE45D32A81ED07D9D99EC2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+ <SN6PR02MB4157761C37193172603E6AFDD4EC2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SJ2PR11MB8498300801245B279182EDE799EB2@SJ2PR11MB8498.namprd11.prod.outlook.com>
+ <SN6PR02MB4157AA96B686F49F0800A39AD4EB2@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To: <SN6PR02MB4157AA96B686F49F0800A39AD4EB2@SN6PR02MB4157.namprd02.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ2PR11MB8498:EE_|DS3PR11MB9819:EE_
+x-ms-office365-filtering-correlation-id: 735a1191-4ff6-4e52-aa95-08ded4a2b8e0
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|38070700021|56012099006|4143699003|11063799006|18002099003|22082099003;
+x-microsoft-antispam-message-info: RKP3V3XsawAxRB9NyYuLL7upD1PQL4PQiDWVUIjcHqsPX8nGwrPusdsIM+vqOD+H+iwuTuNgZw0UhtuYfgJ9uy20GwLiryq6QuBDHpOv7GDZ5qsUWh6W9FdEzjbwtSLSCD/2mWcTN4PrsBK98yLVhiAhxnGLFpLwSyg+yLiPu6m8D6NdVqE2H/Z1DJP9ldlH60G+VtP4443vuUSV9dCKCy0T36/kzRi6ddbrHCEnGigElVo3lmDylFa4NUTrzy4vmMlfPUe2kJa4B1OYJJ0gl3uUIUerPj3sCkJaA6MCGQ5g+CBHgmmCJj7mFo3u89ZooxBzE3nJ2szvE3bt35A3kZy2QW87UYUxKH6EsXTTugUgOr0tRg/32Jwvgp67MWYj4TeGEj6umz1U1QayCDp51CfJ1rG+uGqgYIEnivEmaHInidT8DsaoDuqC1WazVc3wQifmsilg2xC9dLmxBYhI+XoaM4Z8Ui+Ar28zxppSBvL0yHWEbcIvdM3zlhPU6RJ7MCOvnpbfQQ1rev0rv8Zge28ffviy//EbxQbASbShYlR8zTgi61bi3xm0chd7uNO83KdrzQ9RmmHuQkZu2+DBvHktmA+s4GjkzPUNNS2V0wX+si8/cWg8ia6lIVxUaT+wnDRqUaNDOZUeLMmHQv/mRqCubxqPskFmTiXl4UhL0CCtfHDlXuMPlXpHKzGdQpbA8zsNO3hZlSi51fzaNcTXzR6OpnDUpPU9RHGoGKQlrrw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8498.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(38070700021)(56012099006)(4143699003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?w2tleR6cc9MTzAE2b1RIO7v6EJjhKCenkjO4VHSTS7hm5hbx3XxdKzKvQK1D?=
+ =?us-ascii?Q?Qyyus274mJORn+Z2M0qd+wJI7+VHDEIYGilEEHgARd/93yvNTE91PlfFW3QX?=
+ =?us-ascii?Q?B++FnbsuXaMw2qPSrOQ9ZcdDFTi4DJ0pqbTQipOjljhf+XrmdyGMcXG4jYSH?=
+ =?us-ascii?Q?u0imOgZGLrhHkUowdJJDpYqNkYA4oX7gSiSOkpK9HbgRysXukIW/VcyZryHJ?=
+ =?us-ascii?Q?LrHVg0+nW/LtoUvyi68ykWNjdNpW7U3fbneRYYBsV6yO5cj0YNQmFw8Y4Xq+?=
+ =?us-ascii?Q?9M/fQ9RdhFpjF9JyXxtR/MJAI6yDOeeYvgTxV7xECvUW9l/G86CCLnYENR4t?=
+ =?us-ascii?Q?ZFyeRMGDhuQHAts0vR1qSh072b/QZfEwIN+f4CymBcAaD0yKYInVmCxiBsSt?=
+ =?us-ascii?Q?DZsQVONRBkbMkimyVNp0p6zAr27IThwjsQ4KpwVQMYMk6kfkePoyHWIrz+ut?=
+ =?us-ascii?Q?oEKY1MI0amhhJG3IBBKrOl47Pd37GQentmatFLTq0yPfqumHGwLSuo9arBAG?=
+ =?us-ascii?Q?9rl9dIKVPSEnnq0T9YijttiOU3h8DzGSQrjBoGDg3LT3n4KvMJAwhFhzHXZ/?=
+ =?us-ascii?Q?mI7fW49LSh3e0hFLyyz7ZdSuZgJOg6RLyG/3zIKDMlH7z5QR80zPtA6RVZIJ?=
+ =?us-ascii?Q?iRrQloCuVAK18tizoXJPoeGRPTwohwBgAccjcUjw47NqY2A4NsOIeyi3Uqcb?=
+ =?us-ascii?Q?9jVSzB96gS86xxevHQIA0eHU/iU6SzeosvMI3E71yGgDTy6ly35VLn2lBPGN?=
+ =?us-ascii?Q?bW7hqGS/1X6sIE60EYZtfK8s6KbQH2sF0Ug6q+pZzIBypMX7gji8rPfAjVVB?=
+ =?us-ascii?Q?GmGm/SvuxxT3Eard9tLmJCbynoDKT5XHOgTA4XCfVjqhtbpaqq+3gV3siF26?=
+ =?us-ascii?Q?LUZ9olbLVal7BcbWKljpHxHhDYcSr79GGDPitRfrumqMJ7A7NbhNrYhv3nGp?=
+ =?us-ascii?Q?g/VtZJ0wnIeQDaZXCjzCEhU90NI17qTL6o5kCXi4auw/VkdQLEg7b44LGznJ?=
+ =?us-ascii?Q?HO6XL4WEH1wPLF6/unjfSbLBBUGnsTSb+mKCo0ZgTh6t93kkiwREyXxdPwAU?=
+ =?us-ascii?Q?YT8CPygzeFoyLrFVlSiO9YUHOH8cKQrjrBHfq5cw+XBzyDVxO5g/u+GhomHE?=
+ =?us-ascii?Q?40HYS3rYz66yAvRrmHCJO6p5i9vGt86hlh58QysaCVDE3AZ1BZAjtxbnVxbV?=
+ =?us-ascii?Q?IWM5m2RiI44SBKUlOhHqqU426oRFdaLifA/kOHFOYcmXtYDaNgcKEkjL9X2M?=
+ =?us-ascii?Q?sFU+bJ/qpr0V+ZmZN6MOFmTpKo1Q6D+PagB/0TiY3SDrMLxMDBHCAFogPtNs?=
+ =?us-ascii?Q?gkZfaMRT4+AvKuKBqxp+sCA7HR6N9yquLycfVqPiZQJaeO3fymNR8p4hS8FB?=
+ =?us-ascii?Q?RujqtaWM5HCpmo0b7qCGIi4SGl+eIoCidqILDW6ZLlBy9MYkDJ56s6VsoRaI?=
+ =?us-ascii?Q?2NQa/0RhyKCjk7aqXipXpj/zuNifFazhwyHm5lL/rX+8FxbWpQEf+blraMZv?=
+ =?us-ascii?Q?RLBnH0rnqUEn7RFraoRqBAQR2+AeHjj8a6SJTs03yOH48dVdhONzwd1DEtuH?=
+ =?us-ascii?Q?urvRpfpgeru5FdrsUKDaWiLV/92Pc0d31+AL8qcENpv+dJXXO0fUkjdTJeKP?=
+ =?us-ascii?Q?s5AQzHTpgVTiUfI7v+vl43mvRlUJ8yl/abkDz0Qq4OUttMb9s/xAwwh/VBBN?=
+ =?us-ascii?Q?hGOAqodKTppmqxYFCEXr3l2+5A1Ku7f9Vt79YNSNrs0Hx7KH?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sat, 27 Jun 2026 17:34:59 +0900
-Message-Id: <DJJOZNFW51LZ.IKTXQ8ZIVO55@nvidia.com>
-To: =?utf-8?q?Nicol=C3=A1s_Antinori?= <nico.antinori.7@gmail.com>
-Cc: "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
- "Alice Ryhl" <aliceryhl@google.com>, "Andreas Hindborg"
- <a.hindborg@kernel.org>, "Benno Lossin" <lossin@kernel.org>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Boqun Feng"
- <boqun@kernel.org>, "Daniel Almeida" <daniel.almeida@collabora.com>,
- "Danilo Krummrich" <dakr@kernel.org>, "Gary Guo" <gary@garyguo.net>,
- "Miguel Ojeda" <ojeda@kernel.org>, =?utf-8?q?Onur_=C3=96zkan?=
- <work@onurozkan.dev>, "Robin Murphy" <robin.murphy@arm.com>, "Shuah Khan"
- <skhan@linuxfoundation.org>, "Tamir Duberstein" <tamird@kernel.org>,
- "Trevor Gross" <tmgross@umich.edu>, <linux-kernel@vger.kernel.org>,
- <rust-for-linux@vger.kernel.org>, <iommu@lists.linux.dev>,
- <linux-kernel-mentees@lists.linux.dev>
-Subject: Re: [PATCH] rust: iommu: replace core::mem::zeroed with
- pin_init::zeroed
-From: "Alexandre Courbot" <acourbot@nvidia.com>
-References: <20260626203122.713317-1-nico.antinori.7@gmail.com>
-In-Reply-To: <20260626203122.713317-1-nico.antinori.7@gmail.com>
-X-ClientProxiedBy: TYCP301CA0003.JPNP301.PROD.OUTLOOK.COM
- (2603:1096:400:386::9) To CH2PR12MB3990.namprd12.prod.outlook.com
- (2603:10b6:610:28::18)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3990:EE_|PH7PR12MB7164:EE_
-X-MS-Office365-Filtering-Correlation-Id: c1d68fd4-4cde-4448-8a20-08ded426fc11
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|23010399003|10070799003|366016|18002099003|22082099003|11063799006|6133799003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	nWqXllGLpJVM5qLvbEFaiXxh4oo1T1VKLqGOwe3oYgAXjrhcUu1qW40kHrgmqFGFpfDsReUSJwnWI3dkh64+EpCKcpU2IUsXLTBAIVuwoUiav0pSWyNYhPm3vkjThT/E5Zoxi/IowR3myeRDaikeJOe2gXIkW238DsZMXiAaMFG592fnE5R/ndOzwY0lw4aH3DgiUcTZnNlkKYNCoGChBXbaT8CrMu7ToGKWLui/RIs5OQIgr6+mX7OUhODPanI5wCb6+seSsJVDTqoaBTAL9h5vPyiCiY9zyNpuQBj3Wj72ZO1L1U7tj7gMLwMiQFKfbzwSkzHN8byC6x+aglQRJapvSV2o3HFqGJhzZ98uciBv0jthslW/hOitYaS7Q7pm+bYPW1dhphclMxKsOMZvcvYrV/R0molmNa4ACB42r0o4zmDIt3tmUN7Of4qHZ9zgNRrbDmyIB/kd2b6X5yQEnyuwalTnH+VIoqp3ICelX2pl0rpEiKWKisgKH/5FIS9E4vlRa9hOJKtrDTw3uP5spWM2+Qkbtc7LxjHbxUaeOk8W8wyQaHYPrdyVMJxJzkhsHqcCxb/37PDNCx/kGIeDvNeItVvjdLplA7F5/s9zCc0DXdwZYyLKYS2qvzgQhwhIKxZb++5cwl+n/Bes7tIVKPghqeepP6h3RTE4FmZdt/M=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3990.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(23010399003)(10070799003)(366016)(18002099003)(22082099003)(11063799006)(6133799003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bGU0TzVMQUFvZm5PR3ZSeTJBdWJWMWRhQmdCRXFMTk92YkVtUzJkREFxeVly?=
- =?utf-8?B?ZUVqUzF3VXNSVWJYT3FHblZ4RGQvd0lMYlI4Y2pzV0xyZVZMNkxQRFgxMEVa?=
- =?utf-8?B?TmtaOFlLaml5eUNpVXlzSEFrU1cvQkpzM2JZaDJNeFB0cFcydS9PMkkwbEth?=
- =?utf-8?B?azhNMEJ0NjA2L0VYTzkwakg0VjBoNTUwSGpSOXlBbDR0R1ZaKy80dTNWZEVx?=
- =?utf-8?B?QVkrSFQrS0hONXhKV3hmK0VJblUyMUlZS09xMFlCM0hTVFg0RVBnVFNKM1Vl?=
- =?utf-8?B?TTljanJKVjV2Yit5eENPamMvbkcyUU5oYUNEWkh1UEFMT0x0ZXlxcjJpb09y?=
- =?utf-8?B?WXh0a3B4ZlplT3V1RTk2cUxXMVNUdkZsSWZNNGJIMEtaSHlma1RyQVF6UDBj?=
- =?utf-8?B?TXNjcnhmZUMvKzFld1NGSlExS3FTa25rZlJ3Q1J4dGlDZ2RoMVpuaHowYjlD?=
- =?utf-8?B?TFdYZUs5WWVJU2NzeHQ3R3lCVzlhRmx4SDBkcnFYa1Vic21ROHNIaVdQaDND?=
- =?utf-8?B?MnF2cjZJWWV5eGF5dW1SZTk0UTZ5Z2NLdVB0d1ZLeFREbXIvTmVtUGpMZlVJ?=
- =?utf-8?B?RlhUN25ZZnFhQnlmNDl1WDRJSjJ2SVlNN1NCMUxRSCtWNytJT1BiUmpmQTJX?=
- =?utf-8?B?dE9QKyt2MlFvS1NqU1grK2NTL1dVVmV0bWc5Q1p4TWZIUS90REQyNCtuM2x6?=
- =?utf-8?B?em45MEVoTFNvNDg1eFZ3dFM5TUI0SUZxbDFJd2Q3dnlIdG11WmJ0Z3lqbjB5?=
- =?utf-8?B?SVpDYlVVZ25KTHkwdXdqb2NyY0VnZ2t3VStmTWdSeUlVYTYrL042Z25rT1Yy?=
- =?utf-8?B?UERZUFphem9FYTNMMjZlNitYVU4vTHU5K2l3NkpsM1p0OUh1M01ORTVHeDJz?=
- =?utf-8?B?ekRhMTVSbzFCM25wK0s2Ym44c0hJNnd6cU5IeDRFUHpCMVlSa2FYM2JVQkpu?=
- =?utf-8?B?SkVqWjd6MEN1OVN3MzI2ejJRbG1TZFphMzhnMCt6c2x6MWlHdmJhNXdHR0Jv?=
- =?utf-8?B?dDJJT2QvWFhrQ0NKU2U5dkxka0tHOGxqUFZVOTdNTU1Jc0R4S1FSMm5kZG10?=
- =?utf-8?B?K3VYdFJmVE42U0d0NGJLT1ZXd3pTemc2WGV4cTRoS3g4eVkxWThsN3RXVS9p?=
- =?utf-8?B?cnQvTUlRaE9TQnpKUTlsTUh4ZEhXZ2pGRjhFdElCalpRTG5HdTFlOWs3bVRk?=
- =?utf-8?B?UlFZN3IzNnVjSk40L1JoUG9qSmhhQmQ3d29hZlVzQkR1NlVFbzFSaFhJZlhR?=
- =?utf-8?B?M0tTc01PcU0xNVVVSzNnZWd6TWNhYmxyRERjKzRpRG5zNHAyakk3UEloN0Qw?=
- =?utf-8?B?dUc5aW1pd2lxcW5JZjArekFMcU4xVnMwL2dEVG8yd2xmWGlka1owZTFmdlVo?=
- =?utf-8?B?LzBxOGJ5ZGVHQkNscVB5S1F2MnZGK21ucUdVSktINW9EZGxkeEt1RUhOWXRp?=
- =?utf-8?B?K1V4b05KUGp3WWtqR25QSWwzblVLSS9LY2NnazJ5c2hmbjRQVkRpTHlrZTJG?=
- =?utf-8?B?VnllNEU4TDAwUnRmakx0WEMyQkJIc3VlNjdkR0VJbzUvNlVRVXp6TnMxQnpj?=
- =?utf-8?B?N3hNN0xvemFSdmlMdTRVRENFeDBFM3ZTVjZIRElNYmh3Yk1GSVMvRVJsM3NC?=
- =?utf-8?B?SHVMR3hEdFRwUUF6Z2l4K0xLY2ZKOWZ2SzgxNlJwU01BNWowRWVJZzlnWVhv?=
- =?utf-8?B?aW9URW9zeEJZSjdEWTYrYldPWUZwaDZJVG9PYTl5UW5Ddk1YOWxvTUlRK0lp?=
- =?utf-8?B?OEVXa3JkbGJnNStCOGJQNTdSOG82aTJMY1B1VkNBZmZVSGRFcHdJZzRjVXI1?=
- =?utf-8?B?bnBuMDh6b3VBM3JlekF6S1FPUVRjSS92V3hTLzFhOFZkNmMvdmFGSmxGSHQz?=
- =?utf-8?B?WmhOc1pmWVFiMUpVK0xZa2JXYUhnd25VWmpManpzcXZac1B6MWExUllXKzc3?=
- =?utf-8?B?aFJwS3VZQklXYkZNNXEzd2ZnZmVUMXRaSnc5Y0JlYWowUFRuUW96QlpVVzJm?=
- =?utf-8?B?MDMzQkRlMThnRVVxcTV1WTRWRHBxRHpTdlU5V29ucVoyTFdQT0Z2UXFTOWNt?=
- =?utf-8?B?eDErT3N1TmEyN0tLV1YrbXd4cDB6aVV5THp0OTZqd21aVi9lV1M4cWVZNjdt?=
- =?utf-8?B?OHg0M01oOXRCVENuVmpDdEx5T2l4dWlNWlhxR3RqVDl3TkJQTWxNSUlHMWh2?=
- =?utf-8?B?ZEFpc1A0U0tMVCs0NjZwK29ESCsyZnhTckZuczlINlBzQjdicWZQMjlUaHlL?=
- =?utf-8?B?UDVOL0ZJL0owWmZwRzF5TVFseEJMNnJOWnRpSTRlanFDRk83RFdLeUxpNitR?=
- =?utf-8?B?bVJGMmVqZm1FTzVURG9OMVNTSlRHZEFwVWpDd0pPYUc3a2N4UmtpdHFhbG1k?=
- =?utf-8?Q?+pNNnWx5bPLFfBMyD9tvbAmGTX9v3ZyAO4dGR+fYgRYBv?=
-X-MS-Exchange-AntiSpam-MessageData-1: d4LdVKNeMyIuBw==
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1d68fd4-4cde-4448-8a20-08ded426fc11
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3990.namprd12.prod.outlook.com
+X-Exchange-RoutingPolicyChecked: sa31ByWykGcUYiQCcfiGnXLYoR/ltYlSHKqIaoUsz2JKxP53SYY5YHIInuSWtCZ0O8azG6dj1IFPftHZ9Ks3ajfsMWqzAyDNJxkxzjFudcsaFJh3shy8cv1QRISNGvIBI2tc6Tr8GS1ffSiBySBpn/DUXA5gB5qPkREef3sM+oAJAbabfM/XZ7qdm2Ck/jx7NjAXAz9J0qPhjtQa2i97id5yNKLlPB8Bv73zj61STLEudC6Vvhfk4pPE8U1p1bTGzSM2+EGVnYH68gg+73ueK98K+aDpdOPzBKc0pfAkRr+HiyDi86ntDWEgT7TeNmQ16QGmP+IXvI85d+OlPufJZw==
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2026 08:35:03.8292
+X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB8498.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 735a1191-4ff6-4e52-aa95-08ded4a2b8e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2026 23:20:48.4683
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yP3iqHeuKYNuEcd/BOdcv8ls7BVjsxUYlMySbI15+FTLbIJP5eL82rqIPwDqe/s2ZFFvqZ7ZM/tRiLI2EtElxA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7164
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: C1QSTxBdSWWJ8F4x3CPgWvcWIheEpXLfUSZKZvqhx+9lEDRevUE472ZAaVZlJ+Rtywu+cXvYnOBHJaJ56pV6mA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS3PR11MB9819
+X-OriginatorOrg: intel.com
 
-On Sat Jun 27, 2026 at 5:31 AM JST, Nicol=C3=A1s Antinori wrote:
-> All types in `bindings` implement `Zeroable` if they can. This enables
-> using `pin_init::zeroed()` for `io_pgtable_cfg` initialization instead
-> of relying on `..unsafe { core::mem::zeroed() }`.
->
-> This change improves readability and removes an unnecessary unsafe
-> block.
->
-> Link: https://github.com/Rust-for-Linux/linux/issues/1189
-> Suggested-by: Benno Lossin <lossin@kernel.org>
-> Signed-off-by: Nicol=C3=A1s Antinori <nico.antinori.7@gmail.com>
-> ---
->  rust/kernel/iommu/pgtable.rs | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs
-> index c88e38fd938a..8faa1d8d9fad 100644
-> --- a/rust/kernel/iommu/pgtable.rs
-> +++ b/rust/kernel/iommu/pgtable.rs
-> @@ -102,8 +102,7 @@ pub unsafe fn new_raw(dev: &Device<Bound>, config: Co=
-nfig) -> Result<IoPageTable
->              coherent_walk: config.coherent_walk,
->              tlb: &raw const NOOP_FLUSH_OPS,
->              iommu_dev: dev.as_raw(),
-> -            // SAFETY: All zeroes is a valid value for `struct io_pgtabl=
-e_cfg`.
-> -            ..unsafe { core::mem::zeroed() }
-> +            ..pin_init::zeroed()
 
-Note that you can also use `..Zeroable::zeroed()` here since we are not
-in const context. Not sure which one we prefer in this case, but I'd
-personally err on the side of not referring to `pin_init` unless we are
-dealing with a pinned object or need to because of a const requirement.
+
+> -----Original Message-----
+> From: Michael Kelley <mhklinux@outlook.com>
+> Sent: Saturday, June 27, 2026 12:00 AM
+> To: Du, Fan <fan.du@intel.com>; Michael Kelley <mhklinux@outlook.com>;
+> Miao, Jun <jun.miao@intel.com>; m.szyprowski@samsung.com;
+> robin.murphy@arm.com
+> Cc: iommu@lists.linux.dev; chenhgs@chinatelecom.cn; LKML <linux-
+> kernel@vger.kernel.org>
+> Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention on
+> used/hiwater tracking
+>=20
+> From: Du, Fan <fan.du@intel.com> Sent: Thursday, June 25, 2026 8:12 PM
+> >
+> > > -----Original Message-----
+> > > From: Michael Kelley <mhklinux@outlook.com>
+> > > Sent: Thursday, June 25, 2026 11:54 PM
+> > >
+> > > From: Du, Fan <fan.du@intel.com> Sent: Thursday, June 25, 2026 12:30
+> AM
+> > > >
+> > > > > -----Original Message-----
+> > > > > From: Michael Kelley <mhklinux@outlook.com>
+> > > > > Sent: Tuesday, June 23, 2026 10:35 AM
+> > > > > To: Miao, Jun <jun.miao@intel.com>; m.szyprowski@samsung.com;
+> > > > > robin.murphy@arm.com
+> > > > > Cc: iommu@lists.linux.dev; chenhgs@chinatelecom.cn; Du, Fan
+> > > > > <fan.du@intel.com>; LKML <linux-kernel@vger.kernel.org>
+> > > > > Subject: RE: [PATCH] swiotlb: eliminate per-map atomic contention=
+ on
+> > > > > used/hiwater tracking
+> > > > >
+> > >
+> > > [snip]
+> > >
+> > > > > > +	pool =3D &mem->defpool;
+> > > > > > +	for (i =3D 0; i < pool->nareas; i++)
+> > > > > > +		hiwater +=3D READ_ONCE(pool->areas[i].used_hiwater);
+> > > > >
+> > > > > Let's ignore the SWIOTLB_DYNAMIC case for simplicity. The approac=
+h
+> > > > > of calculating a separate hiwater mark for each area, and then
+> summing
+> > > > > those per-area hiwater marks, can produce very wrong results.
+> > > > >
+> > > > > Consider a 64MiB swiotlb in a system with 8 CPUs. There will be 8
+> areas,
+> > > > > each with 8 MiB of space. Suppose the workload putters along with
+> mostly
+> > > > > smallish I/Os, say between 4 KiB and 32 KiB. If each area has 16 =
+I/Os in
+> > > > > progress, the area hiwater mark might be 256 KiB (16 I/Os averagi=
+ng 16
+> KiB
+> > > > > each). Summing across areas produces a hiwater mark of 8 * 256 Ki=
+B =3D
+> 2 MiB.
+> > > > > But then suppose a 2 MiB I/O comes in. The hiwater mark for the a=
+rea
+> that
+> > > > > handles that I/O will grow to 2+ MiB. After the first big I/O fin=
+ishes,
+> > > > >  another 2 MiB I/O comes in that is handled by a different area, =
+whose
+> > > > > hiwater mark also goes to 2+ MiB. Pretty soon all 8 areas have a
+> hiwater
+> > > > > mark of 2+ MiB, and the total hiwater mark is reported as 16+ MiB=
+.
+> The
+> > > > > old algorithm would have reported 4+ MiB, which is accurate. With
+> > > > > higher CPU counts and more areas, the discrepancy can get much
+> worse.
+> > > > > This is a somewhat contrived example, but the problem is real eno=
+ugh
+> > > > > to make the reported hiwater mark be unreliable.
+> > > >
+> > > > You are correct here, I like your way of thinking.
+> > > >
+> > > > > I'm sure the contention for the total hiwater mark in the current=
+ code
+> is
+> > > > > real, but it's in the context of a lot of other CPU work that is =
+being
+> because
+> > > > > of the bounce buffering, including copying lots of data to/from t=
+he
+> bounce
+> > > > > buffers. Is that atomic increment operation a bottleneck even in =
+the
+> > > > > end-to-end context of doing DMA through swiotlb bounce buffers?
+> > > >
+> > > > Practical benchmark show case the highest IO performance for each
+> TVM spec.
+> > > > even if a few iperf (4)workers would cause the contention here.
+> > > > My guts feelings, yes, the real workload probably hit the bottlenec=
+k
+> here.
+> > >
+> > > Just curious -- what is the NIC in the TDX VM? I'm most familiar with=
+ the
+> > > Hyper-V case, where the NIC is the Hyper-V synthetic NIC. That driver
+> > > uses dedicated send and receive buffers that are allocated and decryp=
+ted
+> > > when the NIC is configured. Most NIC traffic goes through those buffe=
+rs
+> > > instead of the swiotlb, so I probably haven't seen cases where the sw=
+iotlb
+> > > is the bottleneck for NIC traffic. I do see the swiotlb as the bottle=
+neck for
+> > > disk I/O traffic, but the data copying tends to be the gate rather th=
+an the
+> > > allocation and freeing of swiotlb buffers.
+> > >
+> > > >
+> > > > > Another approach to the contention problem would be to have a
+> separate
+> > > > > CONFIG option that is narrower than CONFIG_DEBUG_FS, so that the
+> > > > > computation of the hiwater mark can be dropped entirely in
+> production
+> > > > > environments. Or the setting could be dynamic at runtime via a
+> > > > > static_call, defaulting to not computing the hiwater mark while s=
+till
+> > > > > allowing a sysadmin to turn it on to see workload usage of the sw=
+iotlb.
+> > > >
+> > > > That's counter-intuitive from my perspective.
+> > > > With global counters, the observation, which itself impacts the
+> performance,
+> > > > wouldn't be able to tell the practical characterization, that's com=
+monly
+> lower than
+> > > > max performance, in turn breaks the semantics of what's it for.
+> > >
+> > > Agreed. If the global counters affect the performance and throughput
+> > > significantly, having an accurate hiwater mark loses some of its valu=
+e.
+> > >
+> > > >
+> > > > Even without those global counters, if user wants to know the hiwat=
+er
+> value,
+> > > > snapshotting used value(sum of each area as current behavior)
+> periodically would
+> > > > produce meaningful value for workload evaluation.
+> > >
+> > > I'm a little skeptical of the value of just summing current usage. Do=
+ing so
+> > > tends to miss any spikes, and the spikes are the problem. If swiotlb
+> capacity
+> >
+> > That's current design when CONFIG_DEBUG_FS is off, and used as swiotlb
+> > shortage indicator for user.
+> >
+> > Statistically that sampled value is approximate to the true value as al=
+ways.
+>=20
+> OK, yes, statistical sampling could work. The kernel queues a work item
+> that runs periodically to sum current usage across all areas. That sum is
+> compared against the previous sum to calculate a hiwater mark. An
+> experiment to compare the statistical hiwater mark against the current
+> exact calculation would be interesting. I wonder how many samples would
+> be needed, and hence how frequently it would need to run, to get a good
+> result.
+
+Kernel doesn't do that sampling, kernel only report the sum as user space r=
+equested.
+Take a look at the flow when DEBUG_FS is off, and essentially it works as v=
+mstat,
+user set query interval.
+
+> >
+> > > is exceeded even for a short spike, you don't just get a performance =
+blip.
+> > > You get I/O failures, which at least on the disk side tends to be fat=
+al to the
+> > > application doing the I/O. Maybe the networking stack recovers well
+> enough
+> > > and retries, resulting in just a performance reduction. But I've alwa=
+ys
+> thought
+> > > of swiotlb exhaustion as a fairly serious problem to be avoided at al=
+l costs.
+> > > That's why CoCo VMs allocate so much swiotlb space, even though most
+> of
+> > > it is never used for typical workloads (at least in my experience).
+> >
+> > That's dynamic SWIOTLB is designed for.
+> > Only when the IO is so intensive, transient buffer/DMA pool is exhauste=
+d
+> quickly
+> > before new shared memory pool is created.
+>=20
+> I don't think dynamic SWIOTLB in its current implementation is very usefu=
+l
+> for large CoCo VMs. Exhausting the atomic DMA pool is one problem. The
+> dynamic swiotlb also can grow in a max of 4 MiB increments, so if 400 MiB=
+ is
+> added dynamically, there's a list of 100 entries that must be searched
+> to find space (and that list is currently searched linearly). Furthermore=
+,
+> the pre-allocated swiotlb gets 1 area per CPU, which mostly avoids conten=
+tion
+> on the area spin locks. But a dynamically added 4 MiB pool can have a max=
+ of
+> 16 areas because each area must be at least 256 KiB. So there's more area
+> spin lock contention with higher CPUs counts. And that all assumes that t=
+he
+> memory allocator can provide a 4 MiB contiguous area for the new pool. If
+> the swiotlb needs to grow after there's been memory fragmentation, an
+> added pool might be limited to 2 MiB or 1 MiB or smaller, with a
+> corresponding reduction in the area count and increase in area spin lock
+> contention. Overall, dynamic swiotlb in a big CoCo VM results in complex
+> and messy behavior with new failure modes and bottlenecks.
+
+Fragmentation indeed undermine the requested allocation size as dynamic swi=
+otlb
+grows by default 64M . In production practice, for large TVM, we see admin =
+will reserve
+majority of needed size, and let dynamic swiotlb works to add additional bu=
+ffer.
+Current dynamic switlb doesn't support shrinker to release unused memory ba=
+ck
+to buddy yet.
+
+> Michael
