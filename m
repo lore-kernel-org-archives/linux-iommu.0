@@ -1,155 +1,182 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012009.outbound.protection.outlook.com [52.101.48.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3723581ACD
-	for <iommu@lists.linux.dev>; Sat, 27 Jun 2026 00:45:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782521104; cv=fail; b=Iw93gWnr/9I33XQAT5QFkVi/6a6WmV2Uhx1meAl8BjOwYuxFyoIj+XxFJTOpedoGM0yqznv5TksP5R1U/ZXdG/sG4GJXizZjwL5+kFpp0Ve/OqB0nXiLO8jBW+UlM2czcm8haULHHMh39nYHYr8oYA6KLUZ6UUis3Ljnut2+zrU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782521104; c=relaxed/simple;
-	bh=AuAFkMWZ20dbMNVXcDo6yxQq/gIxVNna2m4b1BjM8ig=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rjoP8W4m6o/ToqzrdedRmMhTY13qlg4AUZFBmNbvZ00tE7UWDNb8W/zguWas96tuFUieVVH6SmV9rnXK23bbCb76Yn5jUBa4XevYCpAl9d92VccGtlSqCPOREmBt3XZW2wqSm7QlhJGnojOV403/tvSzgfzENWQKnMRqCovjnE0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tsYSlZdR; arc=fail smtp.client-ip=52.101.48.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E716C2772E
+	for <iommu@lists.linux.dev>; Sat, 27 Jun 2026 06:46:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782542801; cv=none; b=MR654xaSHKXcoYpGC4AwUnjMmxEsOS364LbtXi7h0h7Tll9Cj6w5VI9OdjOBIsdF4cy73qBm5NZpdr865j9TPftzQPYKDiOr5QsD1BNhA34xMNXCawcn4+0GvWGjnYR8Q32z01gxwDvIq2pk9MLtv2M35HrHO1QKtxw0etkSCFU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782542801; c=relaxed/simple;
+	bh=1ZU4PXIbpJ62dFQtt4f4Z+ju5PABDgSmdwIvFY6uQbw=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=GOtBQCa89qwnexUG3y93+ht3LlFRrJBj8E40v9tbG6PdUyKCAb9/mT1hZo0Iguk7RQ7vGLXMV81Fbli56KDrDbnoXR3EG0icRdHrKMX28T5W7oja+UUaeR0AJxS4P0XEbWHGEi9aPWhdJGLwrDbyM0q2WksvjD3u6/Qvm2z6kOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cf/C9242; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tsYSlZdR"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tJxTLQkzXM0YGIztvCynO/BlbXx/Fjx6GxU3qRHLyY3AvHTMKyMsrt5Ds0Cnm2OgzIrfzseHxHto5CQv9yA5YKL6A1I1M16qU+pqgblU/t2j25TQtoXCj3dN0oFhP0z3Dmxri2jjdlDnoXr+dCNHHYUXVVpt5UhJno2HOumHBzLMYyOZgwA+zogbMZQVrID2juqFZfThU8z8BihdZLnJm+eGnuEW7xCQ4S7VIKJpOPOdXCGWX08BaQxbcfVyCzq0FRExAbXEdH0l+ELRfYYVbfszFZF/jyk+SoMPt9QA6NYMsRdM7BlRiK6EYJfp2fBhicxM2+k9eKcoAV/gzTbIwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=teh2UxW0RwzVcHuMV81q6TJEIxRcFyvvjo/DcEXS3i4=;
- b=defT2aRuEW24EDaK/qPTFMgk8HU/KGNXr6tT7C7QHv9h7vfNKP5fiJElLjdwabXsWxP7y89ibH4sXNNoB9sCfRFIwcaf1aPSvzwMjfO/26paxsa68aog59jR+JnWdEjpdQgLjuEQucQhYOMp45zxus3IUtCe7GjsrS9q55cmFHzX61q3/FUESRxrsuBMfjk5GGiZ9Ic6e+DPTqG82uqY2OHHx2991JQD6hIcizCYt7fq/olw5yQmTL0qQqtFOAgg/P+SbRMMmOdEMlw5ERyFkl9C8x1SZBCACGkXDvn6SNxav2BlOYh6YMyHZ98Py0OCZ3ViEwoog8hVZjpQuwedVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=teh2UxW0RwzVcHuMV81q6TJEIxRcFyvvjo/DcEXS3i4=;
- b=tsYSlZdRSCPlT+8r511Y9MfV1UNrIvmSEloE20CSqaBX8XVio+MKPY5FToE0vm7umK99QsVrgq8bw9xk5RFNDlfkz0sOgUaGgEqjWwDgHQ9z91IwHXhFli2HqjEaxYtF4ekxocvDQk+RR6lwojiORPKhu54TW503OCJwCzZZNk/LohPeD4Yy6gJOlqKd5cril4tBNsk+/QkREwICmchZTemzONipX6IS8KYm6eTggcv9wSKs4BIOmogNW3zAwa8Q3UG9x5cEM+rjhaJOnTJZI4vDn9rgnnpaAm0c1lWF8aQwS4WXRlWEZCi4kWbvdV9QZFxrD9xmCrORCK5Gr3P4JA==
-Received: from SA9PR10CA0017.namprd10.prod.outlook.com (2603:10b6:806:a7::22)
- by DM4PR12MB7696.namprd12.prod.outlook.com (2603:10b6:8:100::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.17; Sat, 27 Jun
- 2026 00:44:56 +0000
-Received: from SA2PEPF000015CB.namprd03.prod.outlook.com
- (2603:10b6:806:a7:cafe::60) by SA9PR10CA0017.outlook.office365.com
- (2603:10b6:806:a7::22) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.16 via Frontend Transport; Sat,
- 27 Jun 2026 00:44:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SA2PEPF000015CB.mail.protection.outlook.com (10.167.241.201) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Sat, 27 Jun 2026 00:44:55 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Fri, 26 Jun
- 2026 17:44:53 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Fri, 26 Jun 2026 17:44:52 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 26 Jun 2026 17:44:50 -0700
-Date: Fri, 26 Jun 2026 17:44:49 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: <will@kernel.org>, <jgg@nvidia.com>, <joro@8bytes.org>,
-	<bhelgaas@google.com>, <praan@google.com>, <kevin.tian@intel.com>,
-	<kees@kernel.org>, <smostafa@google.com>, <baolu.lu@linux.intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-	<skaestle@nvidia.com>, <mmarrid@nvidia.com>, <skolothumtho@nvidia.com>,
-	<bbiber@nvidia.com>
-Subject: Re: [PATCH v2 05/11] iommu/arm-smmu-v3: Submit CMDQ_OP_PRI_RESP for
- IOPF event
-Message-ID: <aj8dAWZ7GGyxfUdR@nvidia.com>
-References: <cover.1779944354.git.nicolinc@nvidia.com>
- <6c713c724fa09bf5a1b5e2247c633e516036f079.1779944354.git.nicolinc@nvidia.com>
- <b5085e09-6533-4f88-938d-8d46751cf7da@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cf/C9242"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782542800; x=1814078800;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1ZU4PXIbpJ62dFQtt4f4Z+ju5PABDgSmdwIvFY6uQbw=;
+  b=Cf/C9242AYPISZE1Yj4RgFS7T+/B2r2qqBv6l7zQisElv3xGxwm22pwT
+   umoY494yBeWatn2a2mF/qjeWxutI89wXVRx3yaHxfCaj1euCYlpZtDA2O
+   KCneDkMuDcdeCIlR0BJqbqP5kv1BD3253TgAMaLNlC5UgKRlLMrL5qfi7
+   AVeRUz0eHQvmLVH2F35+It+58odkMT7y921FE63/Se6vSQ7L6rMz47M5G
+   2KeKb/9poMYPpxCv7Dman98acB/B2YP6P7g83qd/UkEd/WxPPh5zd+J6I
+   GO+RLnwIdRcEbi0WUXZ77Wqz3j00bmUmPYSs1le6rHJMwVOZrmalUk6+K
+   w==;
+X-CSE-ConnectionGUID: Py5sUjvhRXaiQD9hhITw4g==
+X-CSE-MsgGUID: GzMxjHIESlWQlj9pnkUMBQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11829"; a="108862642"
+X-IronPort-AV: E=Sophos;i="6.24,228,1774335600"; 
+   d="scan'208";a="108862642"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2026 23:46:39 -0700
+X-CSE-ConnectionGUID: N/iVHx3MRlyP6u/Hxs8A8A==
+X-CSE-MsgGUID: /6GuFxfyRByhAvwSio/qWw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,228,1774335600"; 
+   d="scan'208";a="245108607"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.236.63]) ([10.124.236.63])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2026 23:46:37 -0700
+Message-ID: <be228d1b-f4f8-4cc8-ab35-717571d0db36@linux.intel.com>
+Date: Sat, 27 Jun 2026 14:46:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <b5085e09-6533-4f88-938d-8d46751cf7da@arm.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF000015CB:EE_|DM4PR12MB7696:EE_
-X-MS-Office365-Filtering-Correlation-Id: ec9b7f84-51ed-4f40-bb68-08ded3e54ef2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|30052699003|36860700016|82310400026|1800799024|23010399003|18002099003|22082099003|11063799006|5023799004|4143699003|56012099006|6133799003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	TOzJR1OLDdw4SJCIVojUth2pGhw5GlW+GEdwzPASGLCUUEJafULEyGvxnZizl0LDNidYGKPqihzxcqGg4x6fBJfIE1frfkncx6N1dgzfgdFZyU8yyYbi8E4nqFqiSXflp6+soC43yjXj9zPFqwivyio1CE6GIgVps4nDqw5J2vzK/7XWgECYq1jryHivwqFqK008E4aCER/P7vb6/IXbGo8ea4PpRqPCblh2iwQkseX+eMQxZr5kE47QNhd8JaimD/0wTjF1MUbPcMc0LxyuZIlSZnqtfSoqAIk/2P9bWgcNDhf5M+lhyt2Der09tDih6B6G4V2HjOw3MjyKGwi4jCm9QqkPADMhA/cwhemYOUNHCP/nUB/hD75NJNPuSReqHLrR5UsnSlsxcJmLPT9Fng4Dyck702YFsJOCyc/Ue72fI4nbl9PLyQaMNYSoXNXkwaCpEkAiyX7nQFbGPitWq2/UIxNW7ejkqx/e2m/WcvFu/ibIxervIzpFa67Io8+2uImPEzdWdxW2c1UdvSrv2QRN6bjM3Zn5GRotaJJR3Ga2/1hatzkHTXAVG1QENO/RfObHhaZOo9fp9QZlRGAbNfqZcuw54hMGy/AmGirCnX5dRUA5GFJ2MbdoLRoT1BzmoHw+79Xae66kf3nU1dYGu8FX0TawfRZIM/MoJRgvZWnkd9NOURoxzMzqr5uNRNt9uPxRc1AfvhvpRlfpY/gtAQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(30052699003)(36860700016)(82310400026)(1800799024)(23010399003)(18002099003)(22082099003)(11063799006)(5023799004)(4143699003)(56012099006)(6133799003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	JEsBIbiYTe7fb+MRgEjVwj+lgWhJcSHjOujyz6x9t2Rn9TOswhKINxh6BWSmXfGRNVENmja3dJvfV14d6It6aCt17c0P3RLUBnaOojrfD0m0M2qgEhyiS1R6W8xbG2mOcdjkwO3oqHbUS11faAbyfMLUa6wlC9ar4nBHCSnTnr8rYQN6ZRxer5TdIrzl/w/p+eJDA+08teA6Z7Rlo/W83U9MzQGSPIyjiz7MEcmve2X3cRkHl4S1VJuJ2MnwcSD8GMwtLkXXOoK0thvdf/CGQ1Ao58qeOpg0oFfNT5fltZQydjS/vcOya/TMPG0szgBIIj0TxDKiGKVXScygHmC6ttRMIJAjAooLCKVvJjuNtuTvJD2ppm/L7NqYP0A4QEL8mAp85T2BkcbElWyjN9tsh9vcMyHTS/FpkyS7PIM73JL8YXBVzIArugQX9OGf5WW6
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2026 00:44:55.7432
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec9b7f84-51ed-4f40-bb68-08ded3e54ef2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF000015CB.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7696
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, dwmw2@infradead.org
+Subject: Re: [PATCH] iommu/vt-d: Fix UCTP context table slot when copying root
+ entries
+To: Desnes Nunes <desnesn@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, stable@vger.kernel.org
+References: <20260622133540.48591-1-desnesn@redhat.com>
+ <CACaw+ewAhmPYxnQgpzh-zL823YEuyZGDukwAzeDUOvRU9RrWcA@mail.gmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CACaw+ewAhmPYxnQgpzh-zL823YEuyZGDukwAzeDUOvRU9RrWcA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 26, 2026 at 05:15:13PM +0100, Robin Murphy wrote:
-> On 28/05/2026 8:59 am, Nicolin Chen wrote:
-> > From: Malak Marrid <mmarrid@nvidia.com>
-> > 
-> > To handle IOMMU_FAULT_PAGE_REQ from the PRI queue, arm_smmu_page_response()
-> > must issue a CMDQ_OP_PRI_RESP back to the SMMU.
-> > 
-> > However, either a stall event in the EVTQ or a PRI request in the PRIQ can
-> > surface to the IOPF infrastructure with fault.type == IOMMU_FAULT_PAGE_REQ,
-> > and a single master can in principle be both stall-capable and PRI-capable
+On 6/23/2026 8:57 AM, Desnes Nunes wrote:
+> Hello IOMMU mailing list,
 > 
-> No, the SMMU architecture does all it can to specifically forbid this, see
-> 3.12.1 and 16.4, it just can't be made architecturally ILLEGAL to enable
-> stalls for PCIe devices because there's no strict architectural definition
-> for what "a PCIe device" actually is. Similarly with the note in the
-> definition of STE.EATS about the relationship with CD.S - the unwritten
-> implication is that defining specific behaviours would only create an
-> unreasonable burden for hardware validation, for the sake of something that
-> nobody in their right mind should ever do anyway.
+> On Mon, Jun 22, 2026 at 10:37 AM Desnes Nunes <desnesn@redhat.com> wrote:
+>> When translation is already enabled at boot (e.g. kdump), the vt-d driver
+>> copies context tables from the previous kernel's root table. In scalable
+>> mode, buses that only populate the upper root half (UCTP, devfn >= 0x80)
+>> should be written to ctxt_tbls[tbl_idx + 1] through copy_context_table().
+>> However, the current copy path always uses tbl[tbl_idx + 0] in this situa-
+>> tion. Since idx wraps to 0 at devfn 0x80 due to a zeroed LCTP, new_ce for
+>> LCTP will be NULL and keep pos equals to 0. Thus, UCTP entries will be co-
+>> pied into tbl[tbl_idx + 0] instead of tbl[tbl_idx + 1], and written after-
+>> wards to root_entry[bus].lo instead of .hi in copy_translation_tables().
+>>
+>> As consequence, devices on bus 0x80 with devfn >= 0x80 fail DMA with
+>> fault 0x39, which breaks drivers running in kernels with translation
+>> pre-enabled. This fixes NO_PASID DMAR faults for UCTP-only buses such as:
+>>
+>> DMAR: [DMA Read NO_PASID] Request device [80:14.0] fault addr 0xe81759000 [fault reason 0x39] SM: Present bit in Root Entry is clear
 > 
-> The expectation is that RCiEPs which do speak stallable non-PCIe bus
-> protocols will not go to the effort of implementing ATS/PRI capabilities
-> (not least because there's every chance that such protocols simply doesn't
-> have that kind of transaction flow anyway). And conversely that it can be
-> considered an egregious firmware (or system design) error to even claim (let
-> alone force) stall capability for a real PCIe root port which may be
-> deadlocked by blocking its requirement for free-flowing writes. Thus I think
-> we could go so far as to refuse to handle any endpoint which did somehow
-> claim both.
+> FYI, this bug can block a system from rebooting after collecting a
+> kdump, with a stack trace similar to:
 
-Oh, I missed that. This certainly can simplify things here.
+So this not only addresses a DMA fault message, but also resolves a
+real-world kdump reboot issue. When you send the next version, could you
+please include this and the below stack trace in the commit message?
 
-I will fix it.
+The change itself looks good to me. Thank you!
 
-Thanks!
-Nicolin
+> 
+> [   72.987601] systemd-udevd[246]: usb3: Worker [255] processing
+> SEQNUM=2193 is taking a long time
+> [  132.237566] dracut-initqueue[277]: Timed out while waiting for udev
+> queue to empty.
+> [  202.988014] systemd-udevd[246]: usb3: Worker [255] processing
+> SEQNUM=2193 killed
+> [  202.998059] systemd-udevd[246]: usb3: Worker [255] terminated by
+> signal 9 (KILL).
+> ...
+> [  206.288378] kdump[569]: saving vmcore complete
+> ...
+> [  206.821258] systemd-shutdown[1]: Rebooting.
+> [  246.858495] INFO: task kworker/0:1:11 blocked for more than 122 seconds.
+> [  246.865319]       Not tainted 7.0.0-clean #1
+> [  246.869663] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  246.877623] task:kworker/0:1     state:D stack:0     pid:11 tgid:11
+>     ppid:2      task_flags:0x4208160 flags:0x00080000
+> [  246.888942] Workqueue: usb_hub_wq hub_event
+> [  246.893202] Call Trace:
+> [  246.895690]  <TASK>
+> [  246.897828]  __schedule+0x299/0x5c0
+> [  246.901378]  schedule+0x27/0x80
+> [  246.904572]  schedule_timeout+0xbd/0x100
+> [  246.908565]  __wait_for_common+0x97/0x1b0
+> [  246.912644]  ? __pfx_schedule_timeout+0x10/0x10
+> [  246.917252]  xhci_alloc_dev+0x9e/0x2b0
+> [  246.921068]  usb_alloc_dev+0x7a/0x3b0
+> [  246.924795]  hub_port_connect+0x285/0x960
+> [  246.928873]  hub_port_connect_change+0x94/0x290
+> [  246.933482]  port_event+0x4bb/0x840
+> [  246.937030]  hub_event+0x141/0x460
+> [  246.940489]  process_one_work+0x196/0x390
+> [  246.944569]  worker_thread+0x1af/0x320
+> [  246.948383]  ? __pfx_worker_thread+0x10/0x10
+> [  246.952724]  kthread+0xe3/0x120
+> [  246.955921]  ? __pfx_kthread+0x10/0x10
+> [  246.959736]  ret_from_fork+0x199/0x260
+> [  246.963550]  ? __pfx_kthread+0x10/0x10
+> [  246.967362]  ret_from_fork_asm+0x1a/0x30
+> [  246.971355]  </TASK>
+> [  369.738508] INFO: task systemd-shutdow:1 blocked for more than 122 seconds.
+> [  369.745593]       Not tainted 7.0.0-clean #1
+> [  369.749935] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> disables this message.
+> [  369.757897] task:systemd-shutdow state:D stack:0     pid:1 tgid:1
+>    ppid:0      task_flags:0x400100 flags:0x00080000
+> [  369.769128] Call Trace:
+> [  369.771616]  <TASK>
+> [  369.773752]  __schedule+0x299/0x5c0
+> [  369.777299]  schedule+0x27/0x80
+> [  369.780493]  schedule_preempt_disabled+0x15/0x30
+> [  369.785188]  __mutex_lock.constprop.0+0x547/0xac0
+> [  369.789974]  device_shutdown+0xac/0x1b0
+> [  369.793877]  kernel_restart+0x3a/0x70
+> [  369.797603]  __do_sys_reboot+0x147/0x240
+> [  369.801595]  do_syscall_64+0x11b/0x6a0
+> [  369.805407]  ? handle_mm_fault+0x110/0x350
+> [  369.809574]  ? do_user_addr_fault+0x206/0x680
+> [  369.814006]  ? irqentry_exit+0x7a/0x4d0
+> [  369.817907]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+> [  369.823046] RIP: 0033:0x7fe2958da917
+> [  369.826684] RSP: 002b:00007ffc5c458618 EFLAGS: 00000206 ORIG_RAX:
+> 00000000000000a9
+> [  369.834383] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe2958da917
+> [  369.841639] RDX: 0000000001234567 RSI: 0000000028121969 RDI: 00000000fee1dead
+> [  369.848893] RBP: 00007ffc5c458790 R08: 0000000000000069 R09: 00000000ffffffff
+> [  369.856148] R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
+> [  369.863402] R13: 0000000000000000 R14: 00007ffc5c4588b8 R15: 0000000000000000
+> [  369.870659]  </TASK>
+> [  369.872888] INFO: task systemd-shutdow:1 is blocked on a mutex
+> likely owned by task kworker/0:1:11.
+> 
+> A summary of the debugging and logic for the fix can be found in the
+> following RFC message, which came from the USB mailing list:
+> https://lore.kernel.org/linux-iommu/CACaw+exN3fdzGQE7oK-hRE3KpMrA3ckPDRAcXaFbd=ySXf8E5A@mail.gmail.com/T/#mf184c20cff4dcf491deb106b6d65b80dcb58368d
+> 
+> Best Regards,
+> 
+> Desnes Nunes
+> 
+
+Thanks,
+baolu
+
