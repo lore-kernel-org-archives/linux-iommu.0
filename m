@@ -1,127 +1,142 @@
-Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA8751D88B4
-	for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 10:31:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.181
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782642706; cv=pass; b=kuSLceTp+eXAkaB/2NioeY/0ecXLo22jwmGCzrqdqC/V1ZLFQh7tIa3W4p7r+p9xRqrrzSJwqMuvzLK21oz9RQODXes+NdsqK/RG9dWzLPKlgkV9QrujXFG4InYc2lzc5MAYUp/zIMWS4kjCCQ0sIao7E7IJTsWY3b/qXTDEfrw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782642706; c=relaxed/simple;
-	bh=p9T7gPyArMS/KVn5vgGJ/6O04XuwG8iFCNcQCBiuYx4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=r7r6lZPUTnNuO+7rw5VgVrFl/YndtZIPISGLc6eSZlvAJREL074oUrXFbcL/zvBUvDCsUMlm1X0TyuQg+H7BFoNl8GXee0itPscov3i1XLeCyXKOmhU7Q/kKvrjYYpcSlaXUTGco7AZ4SkUc/JCiDADCeVlT9Drq2qsexZRXEVY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XImHuX1G; arc=pass smtp.client-ip=74.125.82.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14FC53AEB26
+	for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 15:26:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782660398; cv=none; b=U81M4w1qEzJPm0giAS4hLiCVNpdHkTujTjMFKSHhsVx70W/gLrfrAPDV5XyKAvR03ySE9zfeidDIBJWJBZIi4Dl2L/6jfTnInlXuxYWY/OUT6tG7s5QYSM0PLBh2kV07f6dsGjigju4h3at8i+kJlL9OhVr7/nqMZITeCq1tlEI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782660398; c=relaxed/simple;
+	bh=Psg+BEPCrWQehpC4vVGZncoib61fM9hgxCY/O/yo39U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=P7deDZM+6NKFaoq9peIW96af+hPWkXaWXG4BTdM3lNob2QNt6EhmnE5hNShGM5+4RTRBWGh6S9rM/dwGvssAf7CV9+zp3m9CoCQ261kSTwIIq4ScWlX6qPQVILJ378M4j0TiNNwmpuFfjVZkAqh/8QqI+q2mjVyayqJNv0Go8p8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com; spf=pass smtp.mailfrom=trailofbits.com; dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b=HC8FYdaw; arc=none smtp.client-ip=209.85.222.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=trailofbits.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XImHuX1G"
-Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-30caa24aeb4so149250eec.1
-        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 03:31:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1782642704; cv=none;
-        d=google.com; s=arc-20260327;
-        b=M97YTeNFE/WB5E6tUqQFlMB3BygmNA8SVXON4TvjnevyIvmhnc/aUYnEyBR04Qx3cs
-         poCVv5iIWSQqDGIzAA8kRJ+LhpA4WVA8GF6aGhb4ZMSBHJqREy29PA4fgFGmsYw2rgH5
-         pNZNS6xuOcoJ/WcGHlfumdx16HNRXztQUx1dtbohMs6MZ9XRMJ0xCEmPePZw6hjIgbkx
-         UFndNHOHnI2X04TBwlUVj3EcSGfHfN1/rA+5m+2aLTMe58YxM2GvjxxeNbheknicAgvS
-         ip503VVQ6aOBH4Xy/0XH4+m48Wl1ZaWwjDcR7ePQklNMsNKZwvtjt82Ap0c/7Kt90gsB
-         6iHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=p9T7gPyArMS/KVn5vgGJ/6O04XuwG8iFCNcQCBiuYx4=;
-        fh=+Uq/ttRiAC95j+/SZtmKiocrzy15joHlH8xdMFD2ay4=;
-        b=AEJCTZFczZISMmwfdXwJzjhsH/P0fMop4hzox3uUVgjEq7r/hbwDciiZdjKd9TPKm+
-         dgMyKqf0qXokTwdPeW9GEPBEK9lswTpitDDeX4RFUJYZi+tgeN4yt3N7tl6l/QDVzSpD
-         Y/nfsL1e2d6cDIMkONqm2hwrQmzhSc9G0+nSKDWqXcf3uMfiTJ+EWjXOcOzRSwdCBhd+
-         6mLqe11a4VRo92JuqBE5CSXSgqi9tUky7F1eq0sUzHwS0kxX00aTOCzKkuadjx1tqPhd
-         2D2Ff00MjVe5A2zvduFpW9QSilQpFXRmquSPSCHlCdHFI+vXOijncxAeZ1dzXD2+KDIz
-         UNfw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b="HC8FYdaw"
+Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-92b21f65b60so178672985a.1
+        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 08:26:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782642704; x=1783247504; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=p9T7gPyArMS/KVn5vgGJ/6O04XuwG8iFCNcQCBiuYx4=;
-        b=XImHuX1G6eROIok1u7J+vgm2WZ53YfuiJSht2tGm4+AkbxKeGhRPAF9d981do9Q2Dy
-         i/INKaN8zsdO5sXHXMvN2NEvMlnnoIvQZP4xANcs2tpmxLaht5yUGJbqhGSVeaN/1f+f
-         06GXOF7alyzr7zXPtD3NeApakaE3J+qG7G/X8sz9riF9At1unUaux6rwbsEKSV5cu0BO
-         v1DJwQxDIwhDWBKYJBSILrR60J4PiOAVzdn4CmuuDsE204jL063NPRFa//5dgrCrej+m
-         2l+of9Tf/HPTYgyHDitVtyK/kirZjeExYx+upJl458HpD4R5axMJ1OKE8Ba1VT7xuPfr
-         Q/Sg==
+        d=trailofbits.com; s=google; t=1782660396; x=1783265196; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+CfnQksWaSbp2ovyXk3RdqN/MF8n3ttFf3hc1ArqSrk=;
+        b=HC8FYdawhodOoi4fuTPDZu0sOwohOSbnCh7ofaAemsPHxy5IVjKLX7GC3p6mK5AHpc
+         tOb5i6JyqOeF3dmJIlPGivmhHNXjKuHhzdcb6BSAezCq5kfTMno/pimzHEHPJXzl3+e6
+         FilEtTblO8ndANE9k6ANAf6om+hTwBFCs+eHwhd9HhDszLdgyS/ucUqqALOYU4QX3q2Z
+         Pc8C0w37weJHec1gFeYzJV5lmHpiVbzf7BzJvSlJBZF6DF27HtSIYinjl5awBzuSLvjx
+         bJLKqOrk8pq6X6OIfegL2ubd0l8sFiQ43HWWC8tMgjzuzf4k33rYxeP5vZxh1XTRsE1p
+         Koeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782642704; x=1783247504;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=p9T7gPyArMS/KVn5vgGJ/6O04XuwG8iFCNcQCBiuYx4=;
-        b=DZnkUEgJm3NzYyiXBiGnRmXnICm8E/Fcpk0FOBZHr9jXmvcKcXHFIemU+M59WBAhU6
-         NP1LlwX5H76zkaK5LDJYrjzjXXpaJWB2thaJhjmgihzKl0LyZmf6sL1SlSNNoZ6c7o6C
-         B9TddxKtG9E+TLhzhGtDdZ9YefwkeI7D5ogXass/jnnaamW0OQmr9gzGobXez7oaLsI9
-         Qtzfjrh6esrn0/cF8+l/Zp1x/a6Cek57zfrJFpHixODZZB9bnzvmuKFs/XrI0oYz0F3V
-         8e2j/jIBRTg7VADmMROH21qweHNmRb9YLoCUmMGJsKf/ArFcfVXYZLQ3AC1Y27vur/Jf
-         QSiQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqUNZiOiA5ooao6rnMPk5Pg7GAlSl1MoZdPKS9YedW3ge4os4svJ+2hSyc9zaiis0S863FuAw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YydvcLYevAQvbvCoM094jD6FWB18TwVs23cI/NPKFLOMacw/ZF9
-	dmtUvXIN6uhhaHqWiheckNmU8yw7WuMIUycRe9yxUJVkEhKP4LrhOCfqcZeBeZk94xXZJJwuz9x
-	9t+6U074G0re36DTD2zZ0KmMnsRqB4jA=
-X-Gm-Gg: AfdE7cnapF23D33DTJ46KQ5ngT6hBNe7wXCOe4V359qjc1YmtEllzPoaCWA1nLLL6At
-	K2PX202Q7lsLjo3phyZkeDD4uEFoiC8xUrEmSrfrPRCNCJsl3GGBG11n2J+uxhDLQObRzcjlI8S
-	XrIzYl+r+lXhQy7SPnEciWx44lG+Tpvdr2tYPN3+Ze3bXqclOIfu+Qw9WhjOrluPjsHidWeL0H5
-	hBf5ScKJdMQm7rGKR0/9ll5AzNoak33GK0Ju1dwoqwjwBdBJRP1d0ZOhfE84xnobEOuJ/0PT03M
-	LWRKl3wzz0JkTF95i70/7bH/PTyHYx1uK2g34mR8cJ1UFnAKT+EkT4A0slJPbSp+QnGW3nX7cuf
-	ml0T+u4YchSbS
-X-Received: by 2002:a05:7300:d517:b0:30b:6192:5b9 with SMTP id
- 5a478bee46e88-30c84def54emr5929447eec.8.1782642703979; Sun, 28 Jun 2026
- 03:31:43 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782660396; x=1783265196;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+CfnQksWaSbp2ovyXk3RdqN/MF8n3ttFf3hc1ArqSrk=;
+        b=kAK8LboxRAvVwMkzjHCmQLuKXehP4V60oaY+Zshy+Io8/qey3nHW9ZOke4J2TtdG9u
+         b06t66j/FByAd84OHFi7TvPCoW1jFtI0UX6VdlOXQxtAZxHyp8znVLxPZnlFmzRD+oTg
+         UWPevzXbs98tPNZPNZuA6DV8HfTSSI7THNTc6lMBF1O+QOUBoFc9ClwTyvfy7p4+DR9d
+         9Ph/8Dji7q00FoOWsTiKBQGNWrIYb0SLCKHWZO1pj7RV7YvLCjth8PLf11InDHG2lJ2f
+         H7icsPn+dCQGjxPjCVElvm7pysO5dZKEsCHMac45zW6oGxsWYNeSb8/0Cm9hcSzKldic
+         ofLw==
+X-Forwarded-Encrypted: i=1; AFNElJ8YCsjuelm4SfgrEQiHTNwm1kolM5JbV5vUfNyjzb9IooWSLulCEHJVJVYgMIGI/3tifq6hSg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyej0RiJ3obxtw+SQwU2NmOASxUTnXJ7v4Rhwptklb5lkKbrkUu
+	rIOKFUHlxujOaPV99wIag21iwsBgTx+lq1d0IjNkPog8T6YhJze8DvIizitV4W2aufSLxuNtLQ8
+	B4O4J1N0=
+X-Gm-Gg: AfdE7ckFFzgIP/BDqADZpcsuxgxPIAxjrGtpJq/ZFL8J4WwvU48aQCtejpSosArcoGB
+	+sZkp3dv14UauRhl3vvt0HYRLestbAcZPqmWHUjrqK4Kaksd6s+0MZX9wDsgE5ysZyXO0DCIhPY
+	a6KhaJKgoKn69JFPbQwAwLhD6GI2EQ7hZnzN5+NpgLsNZOw2I6zVHTpW4tas8PJb6/1JY5aGQS5
+	cpq4XlcUpM9vQB+270bQncChusn0ncQpLTJeOaRhefmxRiskfCgndpD1MUnYLWAsEQL7fWEF2hw
+	WjO91DLzdqtUQFiwapUbZNARfd6OyQLzZwr6FPyWBbhSf0SeFPXs/uCg/xFBCbz3XRt5TWrNz+D
+	dqFNFk7Qq9BrsIMuiWayWy5OY6ORVtZVq0QWETFxTblZHcmWKMG+NXfBMsoQ8fkK+fNSNg/YIgB
+	5AkxPT4qQnU7/YBrcfMOQ861ytVlg=
+X-Received: by 2002:a05:620a:4052:b0:91e:712d:f79d with SMTP id af79cd13be357-926033c265bmr3255298485a.40.1782660395985;
+        Sun, 28 Jun 2026 08:26:35 -0700 (PDT)
+Received: from localhost ([161.35.96.86])
+        by smtp.gmail.com with UTF8SMTPSA id af79cd13be357-92e51f017ebsm18209385a.5.2026.06.28.08.26.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Jun 2026 08:26:35 -0700 (PDT)
+From: Samuel Moelius <sam.moelius@trailofbits.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Samuel Moelius <sam.moelius@trailofbits.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev (open list:IOMMUFD),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v3] iommu/iommufd: avoid selftest dirty bitmap size wrap
+Date: Sun, 28 Jun 2026 15:23:32 +0000
+Message-ID: <20260628152331.82122.408afd7b466c.iommufd-test-dirty-bitmap-size-wrap@trailofbits.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260626203122.713317-1-nico.antinori.7@gmail.com> <DJJOZNFW51LZ.IKTXQ8ZIVO55@nvidia.com>
-In-Reply-To: <DJJOZNFW51LZ.IKTXQ8ZIVO55@nvidia.com>
-From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date: Sun, 28 Jun 2026 12:31:31 +0200
-X-Gm-Features: AVVi8Cfa2gu-uh51v2W-N-eZdtsPgwAWc2f3g7iiuHZxmyLE0nd_b1sk7GagU0s
-Message-ID: <CANiq72kdCAyRUmXFcqQfkHpk1miG8Gagsn0_5U8p4WpKxv9d_g@mail.gmail.com>
-Subject: Re: [PATCH] rust: iommu: replace core::mem::zeroed with pin_init::zeroed
-To: Alexandre Courbot <acourbot@nvidia.com>, Benno Lossin <lossin@kernel.org>, Gary Guo <gary@kernel.org>
-Cc: =?UTF-8?Q?Nicol=C3=A1s_Antinori?= <nico.antinori.7@gmail.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Boqun Feng <boqun@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	Danilo Krummrich <dakr@kernel.org>, Gary Guo <gary@garyguo.net>, Miguel Ojeda <ojeda@kernel.org>, 
-	=?UTF-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Tamir Duberstein <tamird@kernel.org>, Trevor Gross <tmgross@umich.edu>, linux-kernel@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel-mentees@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, Jun 27, 2026 at 10:35=E2=80=AFAM Alexandre Courbot <acourbot@nvidia=
-.com> wrote:
->
-> Note that you can also use `..Zeroable::zeroed()` here since we are not
-> in const context. Not sure which one we prefer in this case, but I'd
-> personally err on the side of not referring to `pin_init` unless we are
-> dealing with a pinned object or need to because of a const requirement.
+IOMMU_TEST_OP_DIRTY sizes its temporary dirty bitmap from
+length / page_size.  Very large selftest ranges can make the
+DIV_ROUND_UP() additions wrap before allocation, producing a
+zero-length allocation while the later test_bit() loop still walks the
+original number of bits.
 
-That sounds reasonable -- Benno/Gary, any comments?
+The selftest helper does not need to support unbounded dirty bitmap
+sizes.  Reject requests whose range cap calculation overflows, or whose
+range exceeds SZ_16M pages, before converting the value to bitmap
+allocation and copy sizes.
 
-By the way, speaking of that: the docs of `zeroed()` (both of them)
-could mention the existence of the other (and the `const fn`
-difference).
+Assisted-by: Codex:gpt-5.5-cyber-preview
+Signed-off-by: Samuel Moelius <sam.moelius@trailofbits.com>
+---
+Changes in v3:
+  - Fail if page size is too large
+Changes in v2:
+  - Adjust how length is checked
 
-I guess this will eventually go through IOMMU, but I can also take it
-via `rust-next` if needed.
+ drivers/iommu/iommufd/selftest.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Thanks!
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index af07c642a526..cf9a38e72b9a 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -12,6 +12,7 @@
+ #include <linux/iommu.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
++#include <linux/sizes.h>
+ #include <linux/xarray.h>
+ #include <uapi/linux/iommufd.h>
+ #include <linux/generic_pt/iommu.h>
+@@ -1686,6 +1687,8 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
+ 			      u32 flags)
+ {
+ 	unsigned long i, max;
++	unsigned long max_pages = SZ_16M;
++	unsigned long max_length;
+ 	struct iommu_test_cmd *cmd = ucmd->cmd;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	struct mock_iommu_domain *mock;
+@@ -1705,6 +1708,15 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
+ 		goto out_put;
+ 	}
+ 
++	if (check_mul_overflow(max_pages, page_size, &max_length)) {
++		rc = -EOVERFLOW;
++		goto out_put;
++	}
++	if (length > max_length) {
++		rc = -EOVERFLOW;
++		goto out_put;
++	}
++
+ 	max = length / page_size;
+ 	tmp = kvzalloc(DIV_ROUND_UP(max, BITS_PER_LONG) * sizeof(unsigned long),
+ 		       GFP_KERNEL_ACCOUNT);
+-- 
+2.43.0
 
-Cheers,
-Miguel
