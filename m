@@ -1,65 +1,65 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E26D0369211
-	for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 23:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2072F8E90
+	for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 23:06:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782687655; cv=none; b=ThbnqII7wv+e7in4xLr8WKC8CkMT3c243ZThMU0myKlbEleyOFnT98XxaHWvnOXipe+JNAYv63z6gssAz3WDfcM8hEOYKZ58adh+TkNbGpVCzW/ODds2HUCDbYj/NLiXAbds6HgivbFLv0whKuXESU/FdiYehz5ZbHEZDKIUn3w=
+	t=1782687977; cv=none; b=LvHJl8I2l4J0g+4IbHhU3QV+b66z26YJp9seq9vPLdrkiqXNv9Af+rWHyzfs1ZJc1CBSPzWEP3nT27kHSQkH+PSOZN83IZFlJsQ1Jg9hCUM5UVkMYBYL2HExe7OdTgD4pBao9uUVeIgsrnsrEXR/H70HSs63sKP40La4lbfSpDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782687655; c=relaxed/simple;
-	bh=y1f/YWG4aeU3TBXMa+0PbPF2K0h6rQc77aeNVXSbVF0=;
+	s=arc-20240116; t=1782687977; c=relaxed/simple;
+	bh=Etgv1zt6H58TAeWQ2Ok+9a/koljupx+SXENx+QnUjf4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oU/zY/O1qC4my/tzJzZ/lp1SgSqWPjW1acG3LdwXZNn5IJ/3aWHIPgX3VMK86QK5sHvbbckB2SeKm+bsfUnXArHVZv5T1F143t/pily3YNunBKT/k64vMa0hSlgxI3ZaLdPcyrvClfWOos2TIOytrjvNGhfOGvBbdYJ9myHC7W4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SCk4IjJB; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=kEtAxmwirHtZgdo34Xo/BEXQBg4e4SzJDSmeUZa6msBeFgjvV/fWiL/Wd2tEijghMYPB9ugtpQq8bKTAIf8NUW6jHQvn4ykKwkozGsK+VjiPHLtPvi7WebjdM2b2jtYmclG3aVSPa4AsVFdftEdFHiA/mVMEwxUqCHAv0ZJ7Zzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SUf4qTZ3; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SCk4IjJB"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2c9df229032so12465ad.1
-        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 16:00:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SUf4qTZ3"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2c9b2ac97cdso20515ad.1
+        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 16:06:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782687651; x=1783292451; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1782687975; x=1783292775; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=eYEj0yKZwB/DJtVSwa2XkeCzAfCYSyeO+hU4UeJV7oU=;
-        b=SCk4IjJBNezCP4rbCDLzdbIgrpWKK63mZIdCG/YrBmgArGs52LXwVofAikRQ+RPAxN
-         R8/ePxu4EoqeKnmfLO/e+pYXacjubRGWVbs1y8uT7RhNVDyoYjAMOrxGGVIkalZP1b+p
-         KaiFGBR6e2clwoptBFEng+XW0c4jQNleRcC8+YRRcrcqHMo6xjedcEYMAV2L0HETy7Lo
-         vpbjuNlpzx6y2JgrqsjG987cQDMjISO6U7GGHwlPSZmUb8RbA39VIGuZO58g/yk8cre/
-         l8OLB3wvfTUTtiWrxy2pOXldgBb+hjtO/7/Qcyzv/4C6fYPAyb4hpfx4bQAFPUxguWgs
-         tFYA==
+        bh=w9ASwZXxOhuIEA88U9uqvxx2ThgVPLf9gDKq6x0EUXg=;
+        b=SUf4qTZ3itdccxG6pFkcu4NMrxdnQI4WDBRlyEUP54CWy29L/pZPp++sttwO55K7AC
+         w7qj0aYkdWuF1pbje8gM2FfexWOwVYk5XZfDK55lFaNMLnA/N0WERZ4QgKsDErYSzdwC
+         eBdivxtLQw2HRrr0WdNH7Q8X/XskYaU+hgpH9KUHvWRPYtaxDCFwm7ocCxpooKSDwLe/
+         FSQ2RSNENLUm4aP2IJi2zRAoCH6hAqOdLlpI1cOlD0HsQC93Dg3Z9D/NZyuvvVw5uhds
+         gg4ofRmUVLjUx/+GhRL5RECZJAdVQb2U3/Avp4lMXZynIv+nrpTRH8rO+b50SyUT+r89
+         PrVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782687651; x=1783292451;
+        d=1e100.net; s=20251104; t=1782687975; x=1783292775;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=eYEj0yKZwB/DJtVSwa2XkeCzAfCYSyeO+hU4UeJV7oU=;
-        b=rGJh/8k92lrfRSPeT9sHGsOwltISAEFgnDLpGUhXrsJj/Fncblr281fBNxKK3J5tTN
-         1selxF9iybFlezR5fPY/zBR/APK/3XvvhcqA3NMiRYip3IbLuAYOgT3jLoWrEJD/T6L0
-         GTgqESCuhUBvy0DwcKqr2qresgCVKusolp376mAe4B82XxKoaxN2pEWcQgnJoWcyTjf4
-         unvj+7e8YBhYWBq7GsQeqmjLYyThY+pj02iAcNIVPAQLqm/txXDfgkl/BFRl7GXicmXx
-         ekdRsT1YSOGIZb34MLBMh49rZBfkIr/dUrdpJdrpY1VbezztfrYdMj2Qo+gb33hx/9Gh
-         qChQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpvNg4Alced9Vjyv5CfPNabu5VVSM4wOey+//W5rsIY+LVocmBv/4E+wJggD8YXrEo7FFqh5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzGpP9jsZ0IjLRAnhu25DRj52e9PtyzQzNNOJts8+K6xkRYmW2q
-	4vixlETyY/kPEcQKIMHHGcxZ2x1bf4u2MB6rkMUQ6VP+2IuNQj4M3woDBJ155ZHoIw==
-X-Gm-Gg: AfdE7clhUZJy6KzRWWIew7HSPdD4NuPeF9bvbeqFKu7LvEo3RpkQJ/cj0LasQ7vmwQn
-	kuCzd0SLQcHUNQD3VX+aIMGGUiKEv8hRVmos2eeY5iNe88+tk3RZx2d/FnPG2ROh48b4rZbliv3
-	ssSfEdIleJgsnSPuqs8AWPdH2he0sCWVlj8MKdjvWPU5CqBB0bjgLut712Vr95ddkJp6Vb9ytyz
-	mz1ygTdr+gDGkb/GWcM1MSJFs+0sQcrW/dIAEL2rdwrexXHSMTFwCfp5piSNjjbrNgLfrbdKaxX
-	gD9sTfyx7fVswTFp7+Z2AJa5hA8/wkkiD40tt7BCZKQZh6LcTfH1CI3R4RCUt4eb82aeJ+h84BT
-	NZGKjy2VJytiQkOE/I/LK6h7qwCBw67lGUYEErcPh7kiu7qcUhZ0nWTmnT657Gk28yOV29pFUfs
-	PIcYkg2HjY6QjBws3g8WHbxOSR+PZx8W6Hz4Li+ZJwruB4WQM=
-X-Received: by 2002:a17:902:cecd:b0:2c7:f688:f22f with SMTP id d9443c01a7336-2c9ae676218mr2550725ad.13.1782687650355;
-        Sun, 28 Jun 2026 16:00:50 -0700 (PDT)
+        bh=w9ASwZXxOhuIEA88U9uqvxx2ThgVPLf9gDKq6x0EUXg=;
+        b=c4zFfiAgulTF4OXf5xoaLXEsJ3KQakHIxLL4IdWpWPrx4dIdnGyFoKc/JpJHi8AlSU
+         0BUiWQGpSdGkBjWI169KBJB0s0hgMCr59jNCYtgn9Ogn6VZ028GyQ2jUS870hKQ8nu2J
+         pMYHyWpzzKUQy0fibiqzQFYlFk4Myck9gx7jejYoK+glSP2h/etsEygoG0F5S6tearcE
+         fRT7zpSJuLm0CminpiV5a2AaDG0YC3rSuNkl8UM2vJRtHsm6d3sgGvmvrn6W3Bv1ccGl
+         vK+7RtWA67RSM4MmUo3LPVepbPzQQozgVh5HnJ8WGopeNzggBeAIgkviwWiXq+FaCuLv
+         /b4A==
+X-Forwarded-Encrypted: i=1; AHgh+RqpmUZGyDveE3sEKBuKCupKyRBI7l3gORsD6OoUcpwHx7pwFg8MIP6vVHr1vgmBo0lyD5cnCg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxAVDdKX9VYAMZ/PJ1WU+xricJOSIg+6NhaJOVsYN7PRPhzkH0f
+	KeCSxYISXOElvrWt4vyQIagHQJ7VfUqx+bRN+jfSmkH7rTNtUx3z78tr4Axn2pRusA==
+X-Gm-Gg: AfdE7ckFy/HrvVsov3tXt0KSe7vkDy735q7FOCHPxP8XJSaap/IDTlV8anp0nNQnce6
+	OQJHBWvEK35uDY7F7UN9mO+qfO1RZqoZRXD/RSlp6y8pPPjO+kLERV70Uomi0gM6mgxkyrsjuqu
+	xfUMUkyyTQOwpHBpqbpBkDH6e/NzrbjUT4MN2lxqQ9s6psO/YyIve2jggG1jjPHbdV5clXL4LAr
+	TNUMbqEXBIo7MkxJhbttjjP8OINdSpHCW0+Gjhb60piFebg6QHJg70Ol0qmMexsHnFHgrxSqg6S
+	obvN727MlbOt05L/zg4wv9s8SX6wVQGJuw7pqFQiYu6DB18XoGGLQcDaDm35DnhC1XqHIp2HnC/
+	R28SOm4q8/ck1GXijiEd5K7MXfoNqtI9NYgSu/HUnfrctUHOQSrbSJHfv8AJZ14kvk2OiA8N0zA
+	5tm0+YZ+MB+ON8+GmscbZw/IUZMcpYp31wyK/NlwzN6K/QzWX7qqxJ6RkxTQ==
+X-Received: by 2002:a17:902:fd87:b0:2c1:ee6e:be1c with SMTP id d9443c01a7336-2c9a27fbf39mr2722965ad.26.1782687974705;
+        Sun, 28 Jun 2026 16:06:14 -0700 (PDT)
 Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c9878aca91sm41025365ad.79.2026.06.28.16.00.46
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca0b454815sm3400655ad.2.2026.06.28.16.06.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2026 16:00:49 -0700 (PDT)
-Date: Sun, 28 Jun 2026 23:00:43 +0000
+        Sun, 28 Jun 2026 16:06:14 -0700 (PDT)
+Date: Sun, 28 Jun 2026 23:06:07 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
@@ -68,11 +68,11 @@ Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
 	jamien@nvidia.com
-Subject: Re: [PATCH rc v6 1/7] iommu/arm-smmu-v3: Add
- arm_smmu_kdump_adopt_strtab() for kdump
-Message-ID: <akGnm_dzvoapjwoI@google.com>
+Subject: Re: [PATCH rc v6 2/7] iommu/arm-smmu-v3: Implement
+ is_attach_deferred() for kdump
+Message-ID: <akGo30h_EZCUJCkJ@google.com>
 References: <cover.1779265413.git.nicolinc@nvidia.com>
- <f3d1f938a9b4d540f67d9c1ff394bd62735a4f5c.1779265413.git.nicolinc@nvidia.com>
+ <89cbd3760a13f11cf63f6ead12f44974511f308a.1779265413.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,453 +81,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f3d1f938a9b4d540f67d9c1ff394bd62735a4f5c.1779265413.git.nicolinc@nvidia.com>
+In-Reply-To: <89cbd3760a13f11cf63f6ead12f44974511f308a.1779265413.git.nicolinc@nvidia.com>
 
-On Wed, May 20, 2026 at 10:03:18AM -0700, Nicolin Chen wrote:
-
-Hi Nicolin,
-> When transitioning to a kdump kernel, the primary kernel might have crashed
-> while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
-> driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
-> and setting the Global Bypass Attribute (GBPA) to ABORT.
+On Wed, May 20, 2026 at 10:03:19AM -0700, Nicolin Chen wrote:
+> Though the kdump kernel adopts the crashed kernel's stream table, the iommu
+> core will still try to attach each probed device to a default domain, which
+> overwrites the adopted STE and breaks in-flight DMA from that device.
 > 
-> In a kdump scenario, this aggressive reset is highly destructive:
-> a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
->    PCIe AER or SErrors that may panic the kdump kernel
-> b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
->    the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
-> 
-> To safely absorb in-flight DMAs, a kdump kernel will have to leave SMMUEN=1
-> intact and avoid modifying STRTAB_BASE, allowing HW to continue translating
-> in-flight DMAs reusing the crashed kernel's page tables until the endpoint
-> device drivers probe and quiesce their respective hardware.
-> 
-> However, the ARM SMMUv3 architecture specification states that updating the
-> SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
-> 
-> This leaves a kdump kernel no choice but to adopt the stream table from the
-> crashed kernel.
-> 
-> Introduce ARM_SMMU_OPT_KDUMP_ADOPT and adopt functions memremapping all the
-> stream tables extracted from STRTAB_BASE and STRTAB_BASE_CFG.
-> 
-> Note that the adoption of the crashed kernel's stream table follows certain
-> strict rules, since the old stream table might be compromised. Thus, apply
-> some basic validations against the values read from the registers. If tests
-> fail, it means the stream table cannot be trusted, so toss it entirely. To
-> avoid OOM due to a potentially corrupted stream table, the memremap for l2
-> tables is done on the kdump kernel's demand.
-> 
-> The new option will be set in a following change.
+> Implement an is_attach_deferred() callback to prevent this. For each device
+> that has STE.V=1 and STE.Cfg!=Abort in the adopted table, defer the default
+> domain attachment, until the device driver explicitly requests it.
 > 
 > Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
 > Cc: stable@vger.kernel.org # v6.12+
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 254 +++++++++++++++++++-
->  2 files changed, 252 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index ef42df4753ec4..cd60b692c3901 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -861,6 +861,7 @@ struct arm_smmu_device {
->  #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
->  #define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
->  #define ARM_SMMU_OPT_TEGRA241_CMDQV	(1 << 4)
-> +#define ARM_SMMU_OPT_KDUMP_ADOPT	(1 << 5)
->  	u32				options;
->  
->  	struct arm_smmu_cmdq		cmdq;
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index e8d7dbe495f03..aa6837a5daa88 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2040,16 +2040,70 @@ static void arm_smmu_init_initial_stes(struct arm_smmu_ste *strtab,
->  	}
->  }
->  
-> +static int arm_smmu_kdump_adopt_l2_strtab(struct arm_smmu_device *smmu, u32 sid,
-> +					  phys_addr_t base, u32 span,
-> +					  struct arm_smmu_strtab_l2 **l2table)
-> +{
-> +	struct arm_smmu_strtab_l2 *table;
-> +	size_t size;
-> +
-> +	/*
-> +	 * Only a coherent SMMU is supported at this moment. For a non-coherent
-> +	 * SMMU that wants to support ARM_SMMU_OPT_KDUMP_ADOPT, try MEMREMAP_WC.
-> +	 */
-> +	if (WARN_ON(!(smmu->features & ARM_SMMU_FEAT_COHERENCY)))
-> +		return -EOPNOTSUPP;
 
-We already checked this in arm_smmu_kdump_adopt_strtab_2lvl() can it
-change since?
-
-> +
-> +	/*
-> +	 * Retest the span in case the L1 descriptor has been overwritten since
-> +	 * the adopt. Reject this master's insert; panic or SMMU-disable would
-> +	 * either lose the vmcore or cascade aborts. Do not try to fix it, as it
-> +	 * would break all other SIDs in the same bus (PCI case). The corruption
-> +	 * blast radius is already bounded to that bus range.
-> +	 */
-> +	if (span != STRTAB_SPLIT + 1) {
-> +		dev_err(smmu->dev,
-> +			"kdump: L1[%u] span %u changed since adopt (was %u)\n",
-> +			arm_smmu_strtab_l1_idx(sid), span, STRTAB_SPLIT + 1);
-> +		return -EINVAL;
-> +	}
-> +
-> +	size = (1UL << (span - 1)) * sizeof(struct arm_smmu_ste);
-> +
-> +	table = devm_memremap(smmu->dev, base, size, MEMREMAP_WB);
-
-Why do we use devm_memremap() here but memremap() in the rest of the
-functions (even for the L1 ptr)?
-
-> +	if (IS_ERR(table)) {
-> +		dev_err(smmu->dev,
-> +			"kdump: failed to adopt l2 stream table for SID %u\n",
-> +			sid);
-> +		return PTR_ERR(table);
-> +	}
-> +
-> +	*l2table = table;
-> +	return 0;
-> +}
-> +
->  static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->  {
->  	dma_addr_t l2ptr_dma;
->  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
->  	struct arm_smmu_strtab_l2 **l2table;
-> +	u32 l1_idx = arm_smmu_strtab_l1_idx(sid);
->  
-> -	l2table = &cfg->l2.l2ptrs[arm_smmu_strtab_l1_idx(sid)];
-> +	l2table = &cfg->l2.l2ptrs[l1_idx];
->  	if (*l2table)
->  		return 0;
->  
-> +	/* Deferred adoption of the crashed kernel's L2 table */
-> +	if (smmu->options & ARM_SMMU_OPT_KDUMP_ADOPT) {
-> +		u64 l2ptr = le64_to_cpu(cfg->l2.l1tab[l1_idx].l2ptr);
-> +		phys_addr_t base = l2ptr & STRTAB_L1_DESC_L2PTR_MASK;
-> +		u32 span = FIELD_GET(STRTAB_L1_DESC_SPAN, l2ptr);
-> +
-> +		if (span && base)
-> +			return arm_smmu_kdump_adopt_l2_strtab(smmu, sid, base,
-> +							      span, l2table);
-> +	}
-> +
->  	*l2table = dmam_alloc_coherent(smmu->dev, sizeof(**l2table),
->  				       &l2ptr_dma, GFP_KERNEL);
->  	if (!*l2table) {
-> @@ -2061,8 +2115,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->  
->  	arm_smmu_init_initial_stes((*l2table)->stes,
->  				   ARRAY_SIZE((*l2table)->stes));
-> -	arm_smmu_write_strtab_l1_desc(&cfg->l2.l1tab[arm_smmu_strtab_l1_idx(sid)],
-> -				      l2ptr_dma);
-> +	arm_smmu_write_strtab_l1_desc(&cfg->l2.l1tab[l1_idx], l2ptr_dma);
->  	return 0;
->  }
->  
-> @@ -4556,10 +4609,204 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
->  	return 0;
->  }
->  
-> +static int arm_smmu_kdump_adopt_strtab_2lvl(struct arm_smmu_device *smmu,
-> +					    u32 cfg_reg, phys_addr_t base)
-> +{
-> +	u32 log2size = FIELD_GET(STRTAB_BASE_CFG_LOG2SIZE, cfg_reg);
-> +	u32 split = FIELD_GET(STRTAB_BASE_CFG_SPLIT, cfg_reg);
-> +	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +	u32 num_l1_ents;
-> +	size_t size;
-> +	int i;
-> +
-> +	/*
-> +	 * Only a coherent SMMU is supported at this moment. For a non-coherent
-> +	 * SMMU that wants to support ARM_SMMU_OPT_KDUMP_ADOPT, try MEMREMAP_WC.
-> +	 */
-> +	if (WARN_ON(!(smmu->features & ARM_SMMU_FEAT_COHERENCY)))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (log2size < split || log2size > smmu->sid_bits) {
-> +		dev_err(smmu->dev, "kdump: log2size %u out of range [%u, %u]\n",
-> +			log2size, split, smmu->sid_bits);
-> +		return -EINVAL;
-> +	}
-> +	if (split != STRTAB_SPLIT) {
-> +		dev_err(smmu->dev,
-> +			"kdump: unsupported STRTAB_SPLIT %u (expected %u)\n",
-> +			split, STRTAB_SPLIT);
-> +		return -EINVAL;
-> +	}
-> +
-> +	num_l1_ents = 1U << (log2size - split);
-> +	if (num_l1_ents > STRTAB_MAX_L1_ENTRIES) {
-> +		dev_err(smmu->dev, "kdump: l1 entries %u exceeds max %u\n",
-> +			num_l1_ents, STRTAB_MAX_L1_ENTRIES);
-> +		return -EINVAL;
-> +	}
-> +
-> +	cfg->l2.num_l1_ents = num_l1_ents;
-> +
-> +	size = num_l1_ents * sizeof(struct arm_smmu_strtab_l1);
-> +	cfg->l2.l1tab = memremap(base, size, MEMREMAP_WB);
-> +	if (!cfg->l2.l1tab)
-> +		return -ENOMEM;
-
-Same here (as below, sorry reviewing it as the code flows), we should
-populate cfg->l2.l1_dma here to be consistent.
-
-> +
-> +	cfg->l2.l2ptrs =
-> +		kcalloc(num_l1_ents, sizeof(*cfg->l2.l2ptrs), GFP_KERNEL);
-> +	if (!cfg->l2.l2ptrs)
-> +		return -ENOMEM;
-
-We shuold ummap cfg->l2.l1tab before returning -ENOMEM here
-
-> +
-> +	for (i = 0; i < num_l1_ents; i++) {
-> +		u64 l2ptr = le64_to_cpu(cfg->l2.l1tab[i].l2ptr);
-> +		phys_addr_t l2_base = l2ptr & STRTAB_L1_DESC_L2PTR_MASK;
-> +		u32 span = FIELD_GET(STRTAB_L1_DESC_SPAN, l2ptr);
-> +
-> +		if (!span || !l2_base)
-> +			continue;
-> +
-> +		if (span != STRTAB_SPLIT + 1) {
-> +			dev_err(smmu->dev,
-> +				"kdump: L1[%u] unsupported span %u (vs %u)\n",
-> +				i, span, STRTAB_SPLIT + 1);
-> +			return -EINVAL;
-
-We leak kcalloc'd mem (l2.l2ptrs) here, also we should unmap cfg->l2.l1tab
-
-> +		}
-> +
-> +		/*
-> +		 * If the crashed kernel's l1 descriptors are deeply corrupted,
-> +		 * blindly memremapping every l2 table here could lead to OOM.
-> +		 *
-> +		 * Defer the l2 memremap to arm_smmu_init_l2_strtab(), so peak
-> +		 * memory is bounded by the kdump kernel's actual demand.
-> +		 */
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int arm_smmu_kdump_adopt_strtab_linear(struct arm_smmu_device *smmu,
-> +					      u32 cfg_reg, phys_addr_t base)
-> +{
-> +	u32 log2size = FIELD_GET(STRTAB_BASE_CFG_LOG2SIZE, cfg_reg);
-> +	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +	unsigned int max_log2size;
-> +	size_t size;
-> +
-> +	/*
-> +	 * Only a coherent SMMU is supported at this moment. For a non-coherent
-> +	 * SMMU that wants to support ARM_SMMU_OPT_KDUMP_ADOPT, try MEMREMAP_WC.
-> +	 */
-> +	if (WARN_ON(!(smmu->features & ARM_SMMU_FEAT_COHERENCY)))
-> +		return -EOPNOTSUPP;
-> +
-> +	/* Cap the size at what the kdump kernel itself would have allocated */
-> +	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
-> +		max_log2size =
-> +			ilog2(STRTAB_MAX_L1_ENTRIES * STRTAB_NUM_L2_STES);
-
-Looks like we'd never hit this if condition because we'd never support a
-"linear" strtab if the HW supports ARM_SMMU_FEAT_2_LVL_STRTAB. Please
-see arm_smmu_init_strtab:
-
-static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
-{
-	int ret;
-
-	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
-		ret = arm_smmu_init_strtab_2lvl(smmu);
-	else
-		ret = arm_smmu_init_strtab_linear(smmu);
-	if (ret)
-		return ret;
-
-	ida_init(&smmu->vmid_map);
-
-	return 0;
-}
-
-> +	else
-> +		max_log2size = smmu->sid_bits;
-> +
-> +	/* cfg->linear.num_ents is unsigned int, so cap log2size at 31 */
-> +	max_log2size = min(max_log2size, 31U);
-> +	if (log2size > max_log2size) {
-> +		dev_err(smmu->dev, "kdump: unsupported log2size %u (> %u)\n",
-> +			log2size, max_log2size);
-> +		return -EINVAL;
-> +	}
-> +
-> +	/*
-> +	 * We might end up with a num_ents != sid_bits, which is fine. In the
-> +	 * ARM_SMMU_OPT_KDUMP_ADOPT case, arm_smmu_write_strtab() is bypassed.
-> +	 */
-> +	cfg->linear.num_ents = 1U << log2size;
-> +
-> +	size = cfg->linear.num_ents * sizeof(struct arm_smmu_ste);
-> +	cfg->linear.table = memremap(base, size, MEMREMAP_WB);
-> +	if (!cfg->linear.table)
-> +		return -ENOMEM;
-
-We seem to skips initializing cfg->linear.ste_dma (it is populated in
-arm_smmu_init_strtab_linear)
-
-While the comment notes that arm_smmu_write_strtab() is bypassed in the
-kdump case, leaving cfg->linear.ste_dma uninitialized seems like a 
-ticking time bomb if any other part of the driver ever uses it.
-
-> +	return 0;
-> +}
-> +
-> +static void arm_smmu_kdump_adopt_cleanup(void *data)
-> +{
-> +	struct arm_smmu_device *smmu = data;
-> +	u32 cfg_reg = readl_relaxed(smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
-
-I'm worried about reading the HW register here, since this is a devres action, it
-can run after arm_smmu_device_remove() or arm_smmu_device_shutdown()
-(which would call rpm_put()). Please see __device_release_driver[1]:
-
-	pm_runtime_put_sync(dev); <--- HW turned off
-
-	device_remove(dev);
-
-	if (dev->bus && dev->bus->dma_cleanup)
-		dev->bus->dma_cleanup(dev);
-
-	device_unbind_cleanup(dev); <--- This is where devm_release runs
-	device_links_driver_cleanup(dev);
-
-Thus, even if we call rpm_get() here it would make no sense as the 
-register contents would've been lost. Can we rely on some SW state
-here? smmu->features & 2LVL or maybe add an fmt in cfg? 
-
-> +	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +	u32 fmt = FIELD_GET(STRTAB_BASE_CFG_FMT, cfg_reg);
-> +
-> +	if (fmt == STRTAB_BASE_CFG_FMT_2LVL) {
-> +		kfree(cfg->l2.l2ptrs);
-> +		if (cfg->l2.l1tab)
-> +			memunmap(cfg->l2.l1tab);
-> +	} else if (fmt == STRTAB_BASE_CFG_FMT_LINEAR) {
-> +		if (cfg->linear.table)
-> +			memunmap(cfg->linear.table);
-> +	}
-> +}
-> +
-> +static int arm_smmu_kdump_adopt_strtab(struct arm_smmu_device *smmu)
-> +{
-> +	u32 cfg_reg = readl_relaxed(smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
-> +	u64 base_reg = readq_relaxed(smmu->base + ARM_SMMU_STRTAB_BASE);
-> +	u32 fmt = FIELD_GET(STRTAB_BASE_CFG_FMT, cfg_reg);
-> +	phys_addr_t base = base_reg & STRTAB_BASE_ADDR_MASK;
-> +	int ret;
-> +
-> +	dev_info(smmu->dev, "kdump: adopting crashed kernel's stream table\n");
-
-Nit: Should this be dev_info? If everything goes right, the user doesn't
-need to know. dev_dbg seems more appropriate. It should only be a warn or 
-err if adoption fails (which is in place).
-
-> +
-> +	if (fmt == STRTAB_BASE_CFG_FMT_2LVL) {
-> +		/*
-> +		 * Both kernels run on the same hardware, so it's impossible for
-> +		 * kdump kernel to see the support for linear stream table only.
-> +		 */
-> +		if (WARN_ON(!(smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)))
-> +			ret = -EINVAL;
-> +		else
-> +			ret = arm_smmu_kdump_adopt_strtab_2lvl(smmu, cfg_reg,
-> +							       base);
-> +	} else if (fmt == STRTAB_BASE_CFG_FMT_LINEAR) {
-> +		/*
-> +		 * In case that the old kernel for some reason used the linear
-
-Nit: This sounds a little judgemental, what if the HW only supports
-linear table? Let's drop the "for some reason" part.
-
-> +		 * format, enforce the same format to match the adopted table.
-> +		 */
-> +		ret = arm_smmu_kdump_adopt_strtab_linear(smmu, cfg_reg, base);
-> +		if (!ret)
-> +			smmu->features &= ~ARM_SMMU_FEAT_2_LVL_STRTAB;
-
-IIRC, this should NOT be set if we selected the linear format.
-Looking at arm_smmu_init_strtab(), if the HW supports 2-level tables,
-the driver unconditionally selects it. What is the expected scenario
-where the previous kernel would have allocated a linear table on 2-level
-capable hardware? IMO, it is a bug if we see linear fmt with this
-feature set. Am I missing something?
-
-> +	} else {
-> +		dev_err(smmu->dev, "kdump: invalid STRTAB format %u\n", fmt);
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	if (ret) {
-> +		arm_smmu_kdump_adopt_cleanup(smmu);
-> +		goto err;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(smmu->dev, arm_smmu_kdump_adopt_cleanup,
-> +				       smmu);
-> +	/* devm_add_action_or_reset ran the cleanup upon failure */
-> +	if (ret) {
-> +		dev_warn(smmu->dev, "kdump: failed to set up cleanup action\n");
-> +		goto err;
-> +	}
-> +
-> +	return 0;
-> +
-> +err:
-> +	dev_warn(smmu->dev, "kdump: falling back to full reset\n");
-> +	memset(&smmu->strtab_cfg, 0, sizeof(smmu->strtab_cfg));
-> +	smmu->options &= ~ARM_SMMU_OPT_KDUMP_ADOPT;
-> +	return ret;
-> +}
-> +
->  static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
->  {
->  	int ret;
->  
-> +	if ((smmu->options & ARM_SMMU_OPT_KDUMP_ADOPT) &&
-> +	    !arm_smmu_kdump_adopt_strtab(smmu))
-> +		goto out;
-> +
->  	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
->  		ret = arm_smmu_init_strtab_2lvl(smmu);
->  	else
-> @@ -4567,6 +4814,7 @@ static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
->  	if (ret)
->  		return ret;
->  
-> +out:
->  	ida_init(&smmu->vmid_map);
->  
->  	return 0;
-> -- 
-> 2.43.0
-> 
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
 Thanks,
 Praan
-
-[1] https://elixir.bootlin.com/linux/v7.1.2/source/drivers/base/dd.c#L1350
