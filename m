@@ -1,78 +1,125 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07D11423167
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 15:15:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8299436367
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 15:27:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782746130; cv=none; b=NImGCAJlzbTGrFBKeJAYykRY1sHBfewJM5XA3zEdJLd3VQqQ35kYUN1BOnudvpPMNLtC1az07fusHMx5tacYfzf/XcjMd3oMsfCzvL/0V9eoxw1Qt1iJ5TbPgGKQK7BeFjQldlkFGvtzVzrxlfc7R6R8veJrjUBGmOiiDHLqHao=
+	t=1782746856; cv=none; b=OzF3ZpFVStbX0buJHanCTelH1rfh9knW12jBI7IqZHNXpuV6eb0eUbqJRgu7vu5DXIofK5cFIBx+jFCNh05IXrmmg6kab/ZCgDVJfWqYWpqbzqYHj0GHvVVl3socdqE3t8RF9Tplj3TG9w3F1nIJ4GHZijmzo3PlS0IxS11SOGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782746130; c=relaxed/simple;
-	bh=af20jhog62oBC86VKU1xoF2h/kpAYcLB6qGZDThBzQE=;
+	s=arc-20240116; t=1782746856; c=relaxed/simple;
+	bh=S0czybLrYjf/ynP1kVMlwjsL14pOds5Rs5BBJNaJCXo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V213nU6K8n4JFe6Kxq01IozVvjCe4dv3ZefmpYlE8wLz7oXuFQ2YisSPm7D2vJnbnCgBH6p8ZFOUb+R0YjrH2yX9HpaTwLp4NZFeUqE5HcyeDqAJ3L37OxAzRSHdvZhH66YPxlPd3EziOSpGTag7um72tAKPCqjqWUMbTA0+EZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=noLz/wOy; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=pUHjofw94cvgCZ59IJzzqDUCupj1QxxaxpBLZoG67LMDImTZdDI8EaUdc+aAK6XcpE7nREzTRH/vBEuxfmgWlZTawkbt9KvkPZANfn3dXglw+SmD+BFpnhK1QA0LQLaCeb/gTCrOEy1m91AOTcTnDeK1kmIkJeKF/EneYsfLOeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=fufOXl26; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="noLz/wOy"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2c81db32393so95995ad.0
-        for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 08:15:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="fufOXl26"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-92e50a650a0so84130185a.1
+        for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 08:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782746128; x=1783350928; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=UPSjr9JU+pCYrEmDJ7OVpfKAUb1nOpu7R28XymotIVY=;
-        b=noLz/wOykJZgD4CxBXqVvd98Jo+dK7wrnTii+QZ0bpnCsK6GkZbqYL9Miax4i7TW1L
-         wv/6KLemArNJlrgwS30/hO2oC4eXYS49Bx9xzKqrhCS7dzvpWi1AjR0q+C+QecqmImbB
-         o3lIuzhroz6SFX1S8yuR/BrnBnmfzkC++7RhjrnO4xVQwsCItl1nc1RQV8NuIeCELXgj
-         EsHQjWBDu6E5zdxnY0eIkTFVe9H/UdimIF68+di6G4/srimJXo4+1FRLnw2Gy/0kbShO
-         trxDO7gHZ/UvjYc2gcbGIEbZc3sMlbmqQcAQ4hAth34ekaqSLNky+exbUHY/IK8e6W5+
-         oqyA==
+        d=gourry.net; s=google; t=1782746853; x=1783351653; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YVSnUoP7z1l2IjNO7QqWpl688BIslf+DGUxd2Ln6LGs=;
+        b=fufOXl26tddYEvKC9n+5h20T60XIDuGzZaxm3DvodwVPf+JqcdTp9Zbk57UJhs/BlV
+         6cIRccfI65up7RvtovUaeJzlcSF9edYwm+msMfKIk+aPTBflTWtjH5jBHW9jW42e/rAH
+         x0EokZrzpDaQQlxX6rmMLyrbBiPA1nrnbPM63zMtMfeIipv/EyOJaPRTLCzrbNrLaEEF
+         62nXcPQER/7QoDGXmwkese/240SzhdL1lkja3ct2pY05OqUb1MnmdhM2hfQ5P/hEzAhu
+         L7P0sTp3mRgWT3q9RSOJjPPeb5NQd38SpB8Z7zJpcT2Gexyl28GRwHqQCgHH1lUrn0Wr
+         4b0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782746128; x=1783350928;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=UPSjr9JU+pCYrEmDJ7OVpfKAUb1nOpu7R28XymotIVY=;
-        b=Awu23nZWaL8/jpvLHDfiZhhFKIbuEj8Xen5DUKHibSG3vPn/p0d4+6mxT4OURa+0Gj
-         U6jh11XJvPINWmP/M3RI4dtheQ3bKaD0WYzYu8tSaZT6UfB9o4v8+PI9xrlz6u1X3ln0
-         NcHct/5KKhJoz8zcR5LoGehbqxWJ9QtMl5tKtlEz9UufVGbpS4hsTLvb34W9pr1SnHGu
-         7RHqO8Ca1obleaYrWecGeWIRpSMsUygI9abLRcgEIE0EnseP+9kxKOdLcYGB7aZy8cu2
-         gQgAV+gzoCGgHFAwu7D47/nWjaBbIYuQ5APwB2vwpr+Ky1XExdIg3MoH0GfbRLoBO7g3
-         qzZQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpeTjpp16kH6FSCTzSKyCXjFGiyCe+47xZ/Tzq6sM+lgXu5RznJ/XiZSrhhJaZ7gCGKfHksVw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxVe0MGgboSObUorQmD+DAtyiHiM8zmQjYWJG+4AtOFTAg46yZ/
-	6oCGbVEQ1uu7+b6awqxhi8DgqOSHxgWbsJ5CfHCqxqyVWanDOPms6zHSiAGhYRcXsg==
-X-Gm-Gg: AfdE7cnMTCgQ2I4UxJh8LzlGxywFuCKCOGSASmWqWqLKHoeYc6pyZtEuBGoMZkQXxMF
-	Bx7DZKkCDJTvUFicojhcQLRWm/T3k6vp6hxKlv9egCUHBjXPAJzQ/gDL1Oc+Gzh6ITP4cJGqfHY
-	oEAPTVw/ykm2ZBrqCkUzDrbe7CT5xq3yAaI1QCuk7rufe1/pXLKkwKMB/paGLMB7gxlLfLpla5p
-	49wZSKZmP/KR0Ko5O3eHhHwxhnDo4z+/m8TMYTug7A2+5WmTSWLkEcpQec38wwcTNtnv7aI66+G
-	C5yzP3RvzUr3vlRqCjKVgEZVI2GoT6R00GqcwDLNTpTw/q4isRl7rOoONfz/41DYrlCPG3yi/jt
-	zWUcrcytCDYTHTTySqbYo6lJDOGcylUQ+k7FFRP/wZrzbjrfZm37gVBpiMGoeUkAqLZUVveRyIQ
-	SVaS09E/841ySuLP7HBauNKTB6SZfOnu9FkSNVbsZXyCyEM8k=
-X-Received: by 2002:a17:902:e5c1:b0:2c7:b1e7:501e with SMTP id d9443c01a7336-2ca2ce7f8b4mr86255ad.3.1782746127572;
-        Mon, 29 Jun 2026 08:15:27 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c9b0992227sm50676885ad.37.2026.06.29.08.15.23
+        d=1e100.net; s=20251104; t=1782746853; x=1783351653;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YVSnUoP7z1l2IjNO7QqWpl688BIslf+DGUxd2Ln6LGs=;
+        b=Pg8pJz8Vj5f8VAgXkLyjRuVMz2XvHHmcV2NjhCKLj8714S920qMLp/KmZHrlhIaCWe
+         mB2kjPh+DsLbBblTvtYxDZK2Bg5ygqpFqLHIgmxoGxlbPOpLyFxonMOc91+kPC/oD5dq
+         jL7qtRrBjMVrRkEPRAnQPLcFCqUlxMH4hl1vpsFvXl55Gee6xzNiNITWNQu+183tI1mO
+         OqJpL5bLRc4vdZTO49M/3SehOIiQip6uHKpc8Z9xTcISArfBXV6rqfajb/OnpcwGwt+c
+         q9Z17oO2QNCnn9cal1980ltsk+nTdeLUj0R0wI+//eCXMuLHQrwDQFSYniIbTVE3PR+F
+         j/Ug==
+X-Forwarded-Encrypted: i=1; AFNElJ+DuUiQQA7UIjKLb1f/7t8KHHvK3Naru2jc11KY8FiB8eTQuYTUDakutSD5h2GYqS4tPwL+ew==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxJLwdczKpFWQwdGgYEvwt6oBBfAGQDWDeLvHZ6OvbKhHkEg2xW
+	iU9McJPU5kCyDfpOxL5BZrd9m4OLwAYK8xQgKNwHk1lYLl/8SIbEInQFWc0M+le50Bw=
+X-Gm-Gg: AfdE7cng/LimcYOLx7kIbsSpJY4jtdUDMcljoJM3PpWAciqLUl1094pVC8AakE10Zpo
+	SNLOSemNq6W6JIfkCkqQH64vdUNyDWRVGXOKRSLh8UUpvrSOIgsXat/4Tqo23A6veJczv0hUNyo
+	TnATsjxkGQ0YChLvW6bPlHSpicNKuCiFiKxP8D0XzzLJf4lq5yGkD22lvMZLvlT/aH8adtlz9ex
+	HdFKpXKKPDjStfdUscvREFhumip4Iuf7tREzw4KeoIMy0qGeDVGcAPzj/KE7qRZnBt1Nn4E8Nme
+	/+vfcLLte+kauVqaH/rty7KxJQN/k9BGhBWMFKukBDDfKHCdzX9JsqlOIBYhXDgrCexLkw0PP7W
+	O6sqHrKj/0cBOioF7hBq8PtrCdorUovTiLj9bsJD3JL2G4yg+z4O2+cEcVZ0PH/5esVr1lVFLDS
+	UyC6uBHfPlfcn7jduZpsp6MFnmfrRWGorNtCcsHAqpAq+0X2OYJqTviOKXv9FQZqiaWq/Ch3hdJ
+	gI7C/w=
+X-Received: by 2002:a05:620a:7002:b0:921:9df8:d38f with SMTP id af79cd13be357-92e62785c63mr1415985a.43.1782746852526;
+        Mon, 29 Jun 2026 08:27:32 -0700 (PDT)
+Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e621943b3sm7429785a.19.2026.06.29.08.27.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2026 08:15:26 -0700 (PDT)
-Date: Mon, 29 Jun 2026 15:15:21 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
-	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, smostafa@google.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	jamien@nvidia.com
-Subject: Re: [PATCH rc v6 4/7] iommu/arm-smmu-v3: Skip EVTQ/PRIQ setup in
- kdump kernel
-Message-ID: <akKMCYsdH4lVSyf7@google.com>
-References: <cover.1779265413.git.nicolinc@nvidia.com>
- <1280ac4fdb37f998fd6dcb2bf8f4437283279395.1779265413.git.nicolinc@nvidia.com>
+        Mon, 29 Jun 2026 08:27:32 -0700 (PDT)
+Date: Mon, 29 Jun 2026 11:27:26 -0400
+From: Gregory Price <gourry@gourry.net>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Simon Schuster <schuster.simon@siemens-energy.com>,
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Lucas Stach <l.stach@pengutronix.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Christian Koenig <christian.koenig@amd.com>,
+	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>,
+	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	David Hildenbrand <david@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	"Liam R . Howlett" <liam@infradead.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Namhyung Kim <namhyung@kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
+	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
+	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
+	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
+	linux-perf-users@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+	damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
+	Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 01/30] mm: move vma_start_pgoff() into mm.h and clean up
+Message-ID: <akKO3vnNmWIJAZ7z@gourry-fedora-PF4VCD3F>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <b28b698df4c009e85c4728446ca5863d8e633164.1782735110.git.ljs@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,102 +128,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1280ac4fdb37f998fd6dcb2bf8f4437283279395.1779265413.git.nicolinc@nvidia.com>
+In-Reply-To: <b28b698df4c009e85c4728446ca5863d8e633164.1782735110.git.ljs@kernel.org>
 
-On Wed, May 20, 2026 at 10:03:21AM -0700, Nicolin Chen wrote:
-> In kdump cases, the crashed kernel's CDs and page tables can be corrupted,
-> which could trigger event spamming. Also, we cannot serve page requests.
+On Mon, Jun 29, 2026 at 01:23:12PM +0100, Lorenzo Stoakes wrote:
+> vma_last_pgoff() already lives there, so it's a bit odd to keep
+> vma_start_pgoff() in mm/interval_tree.c. Move them together.
 > 
-> Skip the EVTQ/PRIQ setup entirely rather than enabling then disabling them.
+> These each return unsigned long, which pgoff_t is typedef'd to. Make this
+> consistent and have these functions return pgoff_t instead.
 > 
-> Also add some inline comments explaining that.
+> Additionally, express vma_last_pgoff() in terms of vma_start_pgoff(), since
+> we wrap the vma->vm_pgoff access, we may as well use it here.
 > 
-> Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
-> Cc: stable@vger.kernel.org # v6.12+
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 43 +++++++++++++--------
->  1 file changed, 27 insertions(+), 16 deletions(-)
+> Also while we're here, const-ify the VMA and cleanup a bit.
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index e00b28e36f9c4..3f22949391c82 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -5161,21 +5161,35 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  	cmd.opcode = CMDQ_OP_TLBI_NSNH_ALL;
->  	arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
->  
-> -	/* Event queue */
-> -	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> -	writel_relaxed(smmu->evtq.q.llq.prod, smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> -	writel_relaxed(smmu->evtq.q.llq.cons, smmu->page1 + ARM_SMMU_EVTQ_CONS);
-> -
-> -	enables |= CR0_EVTQEN;
-> -	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> -				      ARM_SMMU_CR0ACK);
-> -	if (ret) {
-> -		dev_err(smmu->dev, "failed to enable event queue\n");
-> -		return ret;
-> +	/*
-> +	 * Event queue
-> +	 *
-> +	 * Do not enable in a kdump case, as the crashed kernel's CDs and page
-> +	 * tables might be corrupted, triggering event spamming.
-> +	 */
-> +	if (!is_kdump_kernel()) {
-> +		writeq_relaxed(smmu->evtq.q.q_base,
-> +			       smmu->base + ARM_SMMU_EVTQ_BASE);
-> +		writel_relaxed(smmu->evtq.q.llq.prod,
-> +			       smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> +		writel_relaxed(smmu->evtq.q.llq.cons,
-> +			       smmu->page1 + ARM_SMMU_EVTQ_CONS);
-> +
-> +		enables |= CR0_EVTQEN;
-> +		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> +					      ARM_SMMU_CR0ACK);
-
-Nit:
-I believe only the write_reg_sync(CR0) should be under this if condition
-do we see any weird behavior if we perform the reg writes in
-kdump_kernel?
-
-> +		if (ret) {
-> +			dev_err(smmu->dev, "failed to enable event queue\n");
-> +			return ret;
-> +		}
->  	}
->  
-> -	/* PRI queue */
-> -	if (smmu->features & ARM_SMMU_FEAT_PRI) {
-> +	/*
-> +	 * PRI queue
-> +	 *
-> +	 * Do not enable in a kdump case, as we cannot serve page requests.
-> +	 */
-> +	if (!is_kdump_kernel() && (smmu->features & ARM_SMMU_FEAT_PRI)) {
->  		writeq_relaxed(smmu->priq.q.q_base,
->  			       smmu->base + ARM_SMMU_PRIQ_BASE);
->  		writel_relaxed(smmu->priq.q.llq.prod,
-> @@ -5208,9 +5222,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  		return ret;
->  	}
->  
-> -	if (is_kdump_kernel())
-> -		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
-> -
->  	/* Enable the SMMU interface */
->  	enables |= CR0_SMMUEN;
->  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> -- 
-> 2.43.0
+> No functional change intended.
 > 
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 
-Apart from that nit, 
+Reviewed-by: Gregory Price <gourry@gourry.net>
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-
-Thanks,
-Praan
