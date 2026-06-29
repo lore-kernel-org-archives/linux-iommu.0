@@ -1,46 +1,46 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011040.outbound.protection.outlook.com [40.93.194.40])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010069.outbound.protection.outlook.com [40.93.198.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB7343D6CD4
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 15:41:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 724B73FBB76
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 15:41:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.69
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782747707; cv=fail; b=n6o2BhMwojBqFz/xa69K2kSCEe97cIICUNblFQsgiX5cGePtc7uo7zO+YK0TSNu0ijNK3SYhT+bgUmwwQsXxgU5AcoJswvk18Hv0Ttisqvw1SIWv7aXYllCltCsAgzCmExg9pQ9c6C1rDgIl8bt4MvVuOUyVrmozIT0ZDP6gF4Y=
+	t=1782747708; cv=fail; b=KfrOHVRBeC0MZd8faQEYlQVBpp4MNc1/jwKSmV9XF8khOJgxAPDPItftuN3/VM7sTzWH9xvzP3ljOCO41hYaKV8zY8kIW50cITeSStRkhEJT+/nBxf74B0Q20P0vkO5rXalYIc7cOAm3Tf3w5+1gqtMlz7Qurb863o1OemsU5xk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782747707; c=relaxed/simple;
-	bh=h+yD2HJSNmiI6mDK9rxsq05TCBqbgAWQVKFWMkKweP4=;
+	s=arc-20240116; t=1782747708; c=relaxed/simple;
+	bh=2wUnBxVcpfQC/avxiElcDq4KL4lpa3Imbg1FXl7QapM=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lN7Nd9A7KuTfVZpT+1x9ISz+g6dgr1EWYUSLAAkqcI8Mev7fLknVGGCeCEJc4eoQQ9AxFI/y+YZ2/k1SQ3H6BDNGnh63lHRRju/DShusFvK/YxJkfRXtaZVyzmUg6gTfA5J/1x/Gz5OCJDbikp1t3MgZ8sV4Dt+rpOQJqD1iq08=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=XVQSXloG; arc=fail smtp.client-ip=40.93.194.40
+	 MIME-Version:Content-Type; b=sogQVSHsOgygDlYK38jT/SaE80x7ATOWlXQUNDHe2wqMD9rlPAXdjDp3SygRvCeoZHW+GPEafTya7ZM3Vkiz85ZRKTQwbOVrpzz8SI6gpv8fSjFfoWt+VWyDr/g+K75hn6HofH/WKVpHD/NZtkpYNHt2v2i5RqeS2ulymxTwXhI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Q5rTQKGn; arc=fail smtp.client-ip=40.93.198.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="XVQSXloG"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Q5rTQKGn"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BjqCScgHzQgm87mzO29AhILbDs4KXNS55ToTtkELuhetOEx4ghDXoodKM7meqRNWMpVs8Li5tBluRCFHliW4SooSKubJHAOIF3cCFg0Ev6apP5Gz6HDHM6T4D/hh4NE6dyiqtoycdvbq0kc/sdr4hK9f9MvbYacLqcf34sUhJpESGXE7uKa77blR86QTnhRFzXvCZpcQeSo4BbhemarY9UFneSJyUiJdLf2KaGq259n57Qctm0wPaIyk/1K0OIKpacCi2Am5EAr7jbuHJl5kErMA5wlPi0JXu6IfWi0d2PABGjMjxbq1y9pjHWkzEYtHYWsc6SQg1jCBkj+7NR4wFA==
+ b=sO259TMfcSVtYughc9wBAiuz/HPlv023n2JxL6l0Yb2NI5iOH9pPv+zVlPmJxV6PzywtmT1/yqrU3jba+F8KFYkM+4XtUY6+N8BjW67lL0oqDJuI1pvLAOfRNxHBTmOLgulRFmmi0FIqTvP6X289JNgBIBagCS66rswFhHre6q8wp0NiLXpkPijYYVMKe9muS18G5knYSPnYy3rkdFZn5VMlpq/hrBTeQx2Vioov6wJHLafHsmDf7v+U5uKxCbCek7IaiZUba/qPpJCG/vjoL0iRvUXlVTFLhnH1gIrF7CZX0jBHeeoDbCG8c1tUCWdKEVSx69HX1EH4m43lCuFDTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NiQEnwP2Wydt1FXeRAxCxKqmiqbXQRcCXk9UlzIt++A=;
- b=tqOzadKKI6fhVtITguTBnX747Hrc633MSfSwDl8sZ0CxINXe33mC12e0TRscobpin+71guVM3u6I1wsGTrLjWFUpkf2a2GIk3wIH+CVs8/Y4ivvcYth+0Idh9kEnuXik42kXBwjj+gJEmw+f/HpH0ia1cd07QpTDmrObmYUA+/mZRsgXoUkfJkE6zD+gCuEAk8gqy6pDgpaDIt7EUxEIZYyWqeBkIuczENUw/CL53e/pzGoTwqI+q/oZOtKpWAIJ2Km7HPaaBgHn4WnQTGY5ljlhbkrO2JSC6G0h6JvjS1Lyd9+7PBM2xr6U1V/aTArgmtzAJJeqhwMi32Ov+G6KiA==
+ bh=QZag/GU07m4sRNgqhBdk6g1TvvrEVLU0bGitpfZRAt8=;
+ b=iaJWpiYSmwwhvDrkO/G69SbrkMjkSuYIMTQD6Lb2zB9zF5wNcbpo6DagkYY7XC92YYFlLfsZg2ETpL/HjyBZZQUspfhgQ7NMYMUcCfaMaxc4AR0203GCSyxQeSqrGohN1pKPnU/iVB2D7eZqMimGzM3A1+FBGClQIPwyV2Q9Ar9SVm4+2E02L8JHadknEiDtwrUkKTRNrdgcbIAlLA+3u6CjBt7vHjJ+Ke1G10qxJGerNoy9YOLGY8zkZJ0QynRHvrvbdbPayw457zbVEh9wdIwifP06yIb28CVpjnH9+N94wDV7NBOYDle2s4PDOlDa791WrdVbMbdZ0ZSy/oeKDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NiQEnwP2Wydt1FXeRAxCxKqmiqbXQRcCXk9UlzIt++A=;
- b=XVQSXloGt0YnCmf+vdmhVO3m64pzoObF7pHisw0iXCZFSVpRQf5v7zjKEwS83p+VmrOgTeV1PZjhQ/H1lTgmK+qMFBBzh2btyRG/EAWb+Jv3rfANN2/G0sop7s0iaP2uMeuAviuaaqruXtzfE2J+HGSrHZy92AgLN+HdbDwkyLQ=
-Received: from BN0PR08CA0005.namprd08.prod.outlook.com (2603:10b6:408:142::20)
- by PH7PR12MB8426.namprd12.prod.outlook.com (2603:10b6:510:241::20) with
+ bh=QZag/GU07m4sRNgqhBdk6g1TvvrEVLU0bGitpfZRAt8=;
+ b=Q5rTQKGn/Y63VTby00Cc0SjGs1wYZD5z7TiOQSeJzFsXwZwKyOftXSvrfkXPPhWixnaaGnPudt8R5RJKIMR4sVfgFPTWdIb0iSuqRQwbpskkddRNeJi+S6Uelq1aagB4UE8CVnB9Ec66ym9SGxXYzgfyJI8vHCRyKXeF4LtU3jk=
+Received: from BN0PR08CA0013.namprd08.prod.outlook.com (2603:10b6:408:142::21)
+ by CH3PR12MB8284.namprd12.prod.outlook.com (2603:10b6:610:12e::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.19; Mon, 29 Jun
- 2026 15:41:38 +0000
+ 2026 15:41:39 +0000
 Received: from BN2PEPF000055E1.namprd21.prod.outlook.com
- (2603:10b6:408:142:cafe::31) by BN0PR08CA0005.outlook.office365.com
- (2603:10b6:408:142::20) with Microsoft SMTP Server (version=TLS1_3,
+ (2603:10b6:408:142:cafe::4) by BN0PR08CA0013.outlook.office365.com
+ (2603:10b6:408:142::21) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.19 via Frontend Transport; Mon,
- 29 Jun 2026 15:41:38 +0000
+ 29 Jun 2026 15:41:39 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -50,7 +50,7 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from satlexmb08.amd.com (165.204.84.17) by
  BN2PEPF000055E1.mail.protection.outlook.com (10.167.245.11) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.202.0 via Frontend Transport; Mon, 29 Jun 2026 15:41:38 +0000
+ 15.21.202.0 via Frontend Transport; Mon, 29 Jun 2026 15:41:39 +0000
 Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 29 Jun
@@ -58,7 +58,7 @@ Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
 Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb09.amd.com
  (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 29 Jun
- 2026 08:36:20 -0700
+ 2026 08:36:35 -0700
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
 	<joro@8bytes.org>, <jgg@nvidia.com>
@@ -67,9 +67,9 @@ CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
 	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
 	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
 	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 06/22] iommu/amd: Map vIOMMU VF and VF Control MMIO BARs
-Date: Mon, 29 Jun 2026 15:35:19 +0000
-Message-ID: <20260629153535.15775-7-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3 09/22] iommu/amd: Introduce and map vIOMMU private IPA region
+Date: Mon, 29 Jun 2026 15:35:22 +0000
+Message-ID: <20260629153535.15775-10-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260629153535.15775-1-suravee.suthikulpanit@amd.com>
 References: <20260629153535.15775-1-suravee.suthikulpanit@amd.com>
@@ -85,327 +85,361 @@ X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb09.amd.com
  (10.181.42.218)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF000055E1:EE_|PH7PR12MB8426:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4d5697c6-c6f9-4448-cc5c-08ded5f4e88c
+X-MS-TrafficTypeDiagnostic: BN2PEPF000055E1:EE_|CH3PR12MB8284:EE_
+X-MS-Office365-Filtering-Correlation-Id: d0e58935-d6f4-4bb2-836a-08ded5f4e919
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|376014|23010399003|7416014|1800799024|22082099003|56012099006|11063799006|18002099003|6133799003;
+	BCL:0;ARA:13230040|82310400026|36860700016|23010399003|376014|7416014|1800799024|13003099007|6133799003|11063799006|18002099003|56012099006|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	ZJkGaYXkoGDWqF+M//45evC4+/1wdH9QTqMTRpI6ykUfipjYT/hdkQVz5H9j8fHhefbtX8gLvwwljOd9QF+re0xNYLFGdebPTv0h0quSwt/7XvWLatVfEqEtaJVug6RbFDljM9H8TkMaHT6O1cRqY3Ao2+9qZkO3u7EnoMMAXL5oZJK3EbH/pav26UM0F5YQ88K0AI6Zva1DVvpjeDe+TBRRQRBfuSkJIjFCHr/bosd9DK66ZAYaaQLdzs7gthol5wpwF7qE7U5aGFRaL3Xd0A4ci8OUmbqMSvwfGEq1n4TqBzTirSQSeRCpyIM0AcSFRUOXkAxjMlZWxcdLORdLXWz2KO8iFDLcHVW5XV/MEEtDYmDKWdNlpDWTU/SyyJgdIvFzcfBR3BGDezFoVJ86IYnMVUKYcz+ENi/nNoPZZCO0qKHA6GHr+69HhS1qugm6jvue/GwYWbFT18/bDSnBTQt3+xeCP8X41efwOlpPCqNpK79Wb8z3jr+8SEcGvZX6eBrUIe1fgfv5FO6A5mA2Cor+EQLBFCoglPXb4uW7aip/iogPrTi1Bx1L77qIEiqmncXsv8DVP+RbJlAcV3gDYHHFlIIfXiBZxk25GbfowKTIlAGwfW0b5CgstRCJiVXASsXbyZkszyOdZ1WN+n9Iv6ASLWOn16nvTiuicCDtjH0igwQccxy3GTSXCnuJWbmbQzDyql9PoPKXbacPYrxJFg==
+	pU53whM5kowGIxsXWGQjHfzbOqGNUxJNixXnSZkJI8XG9pS7RmfCHloba3MRyV8p3pDpMoCrJnCYsyU+Z5WF5II0rAU0hAAjn/lLjPoSBHF87Kz0r6UJvX+4fJfF3aSbryNmsw/EPXME61T75zegUDS4uvXwppnL5oeP18+THVJBtHa55RmDUNQir10VgB+LuOAdFybn0F0azY2+JBCVXmzeX04XWEWQjdLnuKwsZsdNRR9gYh0n40PH06oRyEwDqftFokelbxzeFsgbF/o7dNJNgJNlYdObi0X+KDhxJya6T/jghOrF20e8x9mygCWnfKGHtBgw8o8hp20gk9IOUbTxOs1ZiGFrWKCFOAS/SmZdPxWtDFhnI9iLMLLJ/+hp5qF73XjU2AG0UwcWexVeVYGyZ2TG+nzRpvnloGXsvH/sL564Hk3KvlR6dY+sWS7UN6AR4cTO9AFoByVHwSCML0Qe/3817wNbZsYoDVCBwFJBnn1Inuu3XiFN4Vqwn6oT4Z9tvOaEsvKpetDKYaAatvH+EmsHdw1Romcr0LwyMTWHloUMnpLER7y9yC84iXwoMjTYx2CfhXlox5RwYS9fG7uXe+J0LcK/1tClzrhWairgmWJyFZGzRq/MxfrYXiDm3idZInh2x3byVKlAGS/92OjnJqzK/JC9wRFqlSMfMJq6JdSVLbE1wSBSkv8JekpCpFUCjJd1I5RVQf2e49l7vA==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(23010399003)(7416014)(1800799024)(22082099003)(56012099006)(11063799006)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(23010399003)(376014)(7416014)(1800799024)(13003099007)(6133799003)(11063799006)(18002099003)(56012099006)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	FYFEd4ITf4Rv/3iV+izk/fWQbETDrImoTKVFn1Bn2Uws91Vc/pR7srzZ/l4zLVYgMTtdpyFwHbD/GYZm5tHNMy9RWngeAWD2zZCBU/TyMRSqdaM/obzFyc7U6Dco8DxTNe7osp+xJN2VejK2lrL5Y8CVxhfjtcGr43XDDBd968B2elt7AAlMtX2LAVWW0itfChzm4hLYMGSAvlKEnD6xL4l45x9PJB/zwVHHPEjQvx4m2WDvnBaRlhRles6Gcz86DljGa683apRlP3j714c7KJjmCF3NKavRafLhCZ1P6tw4+1/ItoTBCqReXBPGDM50JXY9M22jmlH4D7VSe5tQpECz0jL0cAs56x0/hjfrZxlPr/FjuoOjsv9mJzO6B2YY1SA5qm99GwneA80g16gCraBDPn1a0eaPdTEWF10QS69r1L06kAxVri0W5XI6VIHR
+	fMlwegTcZose7xZxfBmO0iE9b6MTKbFTlDnc2hIYn1lJHt3UuNG/mQnx2B0zi0LLFOweuoPw99/7TPiZCPFs6dISSpqwM7OV9Q/jWu6mI9Ty1MmSxukBjTyS+qfxIQ6U2ia+nor/jh2614Wjk+0urJ8VL8MdbMy/AaxV9FJdMEjeX+zrTeRNLTEV9EL6WjT1lnB7K1KtigcirP8j8UBomO3Kl7F5Yr/kCSIMlsTA9Phyex+phyGH0i3yX22PEcOmf8SkS+LDBgVhmYPnQwOIwZRbTnSD47ke45RZLBTo9ZLpd/qSSLANaZQF10iHcvgZdIKZc+cXSPQljGC7K5bqwb98+8Jc5kOMcWfFmIk1U6WGGYpEunCgQDXO3jSIINdC/L04Fo4unHHMpxOza0G7CFd9qBSEkBESI6iu6Bt5Qs8M+jIs4FXPqcyAvqTvQwHG
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2026 15:41:38.3044
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2026 15:41:39.2264
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d5697c6-c6f9-4448-cc5c-08ded5f4e88c
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0e58935-d6f4-4bb2-836a-08ded5f4e919
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	BN2PEPF000055E1.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8426
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8284
 
-Enable hardware vIOMMU on an IOMMU by locating its PCI vendor-specific
-capability (VSC), reading the VF and VF Control BAR addresses, and
-mapping them for host access (256MB VF, 4MB VF Control).
+AMD vIOMMU introduces the IOMMU Private Address (IPA) region for
+guest-side IOMMU virtualization data structures.
 
-VF Control covers the first 4K of guest IOMMU MMIO (control registers,
-trapped by QEMU). VF MMIO covers the third 4K (virtualized by the
-IOMMU). Per-guest bases use the Guest ID from the previous patch.
+Introduce a per-IOMMU v1 paging domain in viommu_pdom, allocate
+8MB of backing memory as four 2MB subregions, map them into the
+domain, and add viommu_private_space_init() /
+viommu_private_space_uninit() as a matched pair.
 
-Initialize the per-amd_iommu gid_ida here so amd_iommu_gid_alloc() can
-run when IOMMUFD creates a vIOMMU instance. Export MMIO map helpers and
-call amd_viommu_uninit() from IOMMU teardown.
+For more info, see section vIOMMU Private Address Space of the
+IOMMU specification [1].
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+[1] https://docs.amd.com/v/u/en-US/48882_3.10_PUB
+
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h       |   2 +
- drivers/iommu/amd/amd_iommu_types.h |  34 ++++++++
- drivers/iommu/amd/amd_viommu.h      |   6 ++
- drivers/iommu/amd/init.c            |   5 +-
- drivers/iommu/amd/viommu.c          | 124 ++++++++++++++++++++++++++++
- 5 files changed, 169 insertions(+), 2 deletions(-)
+ drivers/iommu/amd/amd_iommu.h       |   8 ++
+ drivers/iommu/amd/amd_iommu_types.h |  11 ++
+ drivers/iommu/amd/iommu.c           |  25 ++++-
+ drivers/iommu/amd/viommu.c          | 165 ++++++++++++++++++++++++++++
+ 4 files changed, 204 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 9f2a1a8a6d3c..044bc9a634a1 100644
+index 2ce207529ea0..279f458becda 100644
 --- a/drivers/iommu/amd/amd_iommu.h
 +++ b/drivers/iommu/amd/amd_iommu.h
-@@ -28,6 +28,8 @@ void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
- void iommu_feature_enable(struct amd_iommu *iommu, u8 bit);
- void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
+@@ -31,6 +31,7 @@ void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
  				  gfp_t gfp, size_t size);
-+u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end);
-+void __init iommu_unmap_mmio_space(struct amd_iommu *iommu);
+ u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end);
+ void __init iommu_unmap_mmio_space(struct amd_iommu *iommu);
++int iommu_flush_dte(struct amd_iommu *iommu, u16 devid);
  
  #ifdef CONFIG_AMD_IOMMU_DEBUGFS
  void amd_iommu_debugfs_setup(void);
+@@ -39,6 +40,8 @@ static inline void amd_iommu_debugfs_setup(void) {}
+ #endif
+ 
+ extern bool amd_iommu_viommu;
++extern const struct pt_iommu_driver_ops amd_hw_driver_ops_v1;
++extern const struct iommu_domain_ops amdv1_ops;
+ 
+ /* Needed for interrupt remapping */
+ int amd_iommu_prepare(void);
+@@ -56,6 +59,8 @@ extern bool amd_iommu_hatdis;
+ /* Protection domain ops */
+ void amd_iommu_init_identity_domain(void);
+ struct protection_domain *protection_domain_alloc(void);
++struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev,
++						      u32 flags);
+ struct iommu_domain *amd_iommu_domain_alloc_sva(struct device *dev,
+ 						struct mm_struct *mm);
+ void amd_iommu_domain_free(struct iommu_domain *dom);
+@@ -100,6 +105,9 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+ void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+ 				     ioasid_t pasid, u64 address, size_t size);
+ 
++int amd_iommu_flush_private_vm_region(struct amd_iommu *iommu, struct protection_domain *pdom,
++				      u64 address, size_t size);
++
+ #ifdef CONFIG_IRQ_REMAP
+ int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
+ #else
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 00f964d5b149..e88e0bacd1a9 100644
+index 44fa1d6c64d6..a5e2f32590d1 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -40,6 +40,12 @@
- #define MMIO_RANGE_OFFSET	0x0c
- #define MMIO_MISC_OFFSET	0x10
+@@ -424,6 +424,13 @@
+ /* For vIOMMU, the GID is 16-bit. */
+ #define VIOMMU_MAX_GID		0xFFFF
  
-+/* vIOMMU Capability offsets (from IOMMU Capability Header) */
-+#define MMIO_VSC_VF_BAR_LO_OFFSET	0x08
-+#define MMIO_VSC_VF_BAR_HI_OFFSET	0x0c
-+#define MMIO_VSC_VF_CNTL_BAR_LO_OFFSET	0x10
-+#define MMIO_VSC_VF_CNTL_BAR_HI_OFFSET	0x14
++/*
++ * Total IOMMU private region is 8MB (4 x 2MB-subregion)
++ */
++#define VIOMMU_PRIV_REGION_BASE		(0)
++#define VIOMMU_PRIV_SUBREGION_CNT	(4)
++#define VIOMMU_PRIV_SUBREGION_SIZE	(0x200000)  /* 2MB */
 +
- /* Masks, shifts and macros to parse the device range capability */
- #define MMIO_RANGE_LD_MASK	0xff000000
- #define MMIO_RANGE_FD_MASK	0x00ff0000
-@@ -473,6 +479,20 @@ extern bool amdr_ivrs_remap_support;
- #define for_each_ivhd_dte_flags(entry) \
- 	list_for_each_entry((entry), &amd_ivhd_dev_flags_list, list)
+ /* Timeout stuff */
+ #define LOOP_TIMEOUT		100000
+ #define MMIO_STATUS_TIMEOUT	2000000
+@@ -814,6 +821,10 @@ struct amd_iommu {
  
-+/* VIOMMU stuff */
-+#define VIOMMU_VF_MMIO_ENTRY_SIZE		4096
-+#define VIOMMU_VFCTRL_MMIO_ENTRY_SIZE		64
+ 	struct ida gid_ida;		 /* guest IDs for this IOMMU */
+ 	bool gid_ida_inited;
 +
-+/* Host ioremap/request_mem_region sizes for VF / VF_CNTL BARs */
-+#define VIOMMU_VF_MMIO_MAP_SIZE		0x10000000UL
-+#define VIOMMU_VF_CNTL_MMIO_MAP_SIZE	0x400000UL
-+
-+#define VIOMMU_VF_MMIO_BASE(iommu, guestId) \
-+	(iommu->vf_base + (guestId * VIOMMU_VF_MMIO_ENTRY_SIZE))
-+
-+#define VIOMMU_VFCTRL_MMIO_BASE(iommu, guestId) \
-+	(iommu->vfctrl_base + (guestId * VIOMMU_VFCTRL_MMIO_ENTRY_SIZE))
-+
- struct amd_iommu;
- struct iommu_domain;
- struct irq_domain;
-@@ -686,6 +706,20 @@ struct amd_iommu {
- 	 */
- 	u16 cap_ptr;
++	/* HW vIOMMU support */
++	struct protection_domain *viommu_pdom;
++	void *viommu_priv_region[VIOMMU_PRIV_SUBREGION_CNT];
+ };
  
-+	/* Vendor-Specific Capability (VSC) pointer. */
-+	u16 vsc_offset;
-+
-+	/*
-+	 * VF MMIO base physical address. This is needed to calculate/pass
-+	 * per guest VF MMIO address (3rd 4K of IOMMU MMIO space)
-+	 */
-+	u64 vf_base_phys;
-+	u64 vf_cntl_phys;
-+
-+	/* virtual addresses of vIOMMU VF/VF_CNTL BAR */
-+	u8 __iomem *vf_base;
-+	u8 __iomem *vfctrl_base;
-+
- 	/* pci domain of this IOMMU */
- 	struct amd_iommu_pci_seg *pci_seg;
- 
-diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
-index f08ab9ef23a9..d0c4fdd00809 100644
---- a/drivers/iommu/amd/amd_viommu.h
-+++ b/drivers/iommu/amd/amd_viommu.h
-@@ -10,6 +10,8 @@
- 
- int amd_viommu_init(struct amd_iommu *iommu);
- 
-+void __init amd_viommu_uninit(struct amd_iommu *iommu);
-+
- #else
- 
- static inline int amd_viommu_init(struct amd_iommu *iommu)
-@@ -17,6 +19,10 @@ static inline int amd_viommu_init(struct amd_iommu *iommu)
- 	return -EOPNOTSUPP;
+ static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 6f5ecc48f4ad..8b441f68bc47 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1551,7 +1551,7 @@ static void domain_flush_complete(struct protection_domain *domain)
+ 		amd_iommu_completion_wait(pdom_iommu_info->iommu);
  }
  
-+static inline void amd_viommu_uninit(struct amd_iommu *iommu)
+-static int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
++int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
+ {
+ 	struct iommu_cmd cmd;
+ 
+@@ -1808,6 +1808,22 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
+ 	return ret;
+ }
+ 
++int amd_iommu_flush_private_vm_region(struct amd_iommu *iommu, struct protection_domain *pdom,
++				      u64 address, size_t size)
 +{
++	int ret;
++	struct iommu_cmd cmd;
++
++	build_inv_iommu_pages(&cmd, address, size, pdom->id, 0, false);
++
++	ret = iommu_queue_command(iommu, &cmd);
++	if (ret)
++		return ret;
++
++	amd_iommu_completion_wait(iommu);
++	return ret;
 +}
 +
- #endif /* CONFIG_AMD_IOMMU_IOMMUFD */
- 
- #endif /* AMD_VIOMMU_H */
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 5ac883429ced..6e69b3dd8b1e 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -459,7 +459,7 @@ static void iommu_disable(struct amd_iommu *iommu)
-  * mapping and unmapping functions for the IOMMU MMIO space. Each AMD IOMMU in
-  * the system has one.
-  */
--static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
-+u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
- {
- 	if (!request_mem_region(address, end, "amd_iommu")) {
- 		pr_err("Can not reserve memory region %llx-%llx for mmio\n",
-@@ -471,7 +471,7 @@ static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
- 	return (u8 __iomem *)ioremap(address, end);
+ /*
+  * TLB invalidation function which is called from the mapping functions.
+  * It flushes range of PTEs of the domain.
+@@ -2726,12 +2742,12 @@ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
+ 	iommu_put_pages_list(&gather->freelist);
  }
  
--static void __init iommu_unmap_mmio_space(struct amd_iommu *iommu)
-+void __init iommu_unmap_mmio_space(struct amd_iommu *iommu)
+-static const struct pt_iommu_driver_ops amd_hw_driver_ops_v1 = {
++const struct pt_iommu_driver_ops amd_hw_driver_ops_v1 = {
+ 	.get_top_lock = amd_iommu_get_top_lock,
+ 	.change_top = amd_iommu_change_top,
+ };
+ 
+-static const struct iommu_domain_ops amdv1_ops = {
++const struct iommu_domain_ops amdv1_ops = {
+ 	IOMMU_PT_DOMAIN_OPS(amdv1),
+ 	.iotlb_sync_map = amd_iommu_iotlb_sync_map,
+ 	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
+@@ -2746,8 +2762,7 @@ static const struct iommu_dirty_ops amdv1_dirty_ops = {
+ 	.set_dirty_tracking = amd_iommu_set_dirty_tracking,
+ };
+ 
+-static struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev,
+-							     u32 flags)
++struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev, u32 flags)
  {
- 	if (iommu->mmio_base)
- 		iounmap(iommu->mmio_base);
-@@ -1790,6 +1790,7 @@ static void __init free_iommu_one(struct amd_iommu *iommu)
- 	free_iommu_buffers(iommu);
- 	amd_iommu_free_ppr_log(iommu);
- 	free_ga_log(iommu);
-+	amd_viommu_uninit(iommu);
- 	iommu_unmap_mmio_space(iommu);
- 	amd_iommu_iopf_uninit(iommu);
- }
+ 	struct pt_iommu_amdv1_cfg cfg = {};
+ 	struct protection_domain *domain;
 diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-index f4b5f96d4785..014ae16bf58b 100644
+index 9e6eb2f977ec..c5c85e82c265 100644
 --- a/drivers/iommu/amd/viommu.c
 +++ b/drivers/iommu/amd/viommu.c
-@@ -7,9 +7,15 @@
- #define dev_fmt(fmt)    pr_fmt(fmt)
+@@ -131,6 +131,167 @@ static int __init viommu_vf_vfcntl_init(struct amd_iommu *iommu)
+ 	return -ENOMEM;
+ }
  
- #include <linux/iommu.h>
-+#include <linux/amd-iommu.h>
-+
-+#include <linux/fs.h>
-+#include <linux/cdev.h>
-+#include <linux/ioctl.h>
- #include <linux/iommufd.h>
- #include <linux/amd-iommu.h>
- #include <uapi/linux/iommufd.h>
-+#include <linux/mem_encrypt.h>
- 
- #include <asm/iommu.h>
- #include <asm/set_memory.h>
-@@ -18,12 +24,130 @@
- #include "amd_iommu.h"
- #include "amd_iommu_types.h"
- #include "amd_viommu.h"
-+#include "../iommu-pages.h"
-+
-+LIST_HEAD(viommu_devid_map);
-+
-+static int viommu_init_pci_vsc(struct amd_iommu *iommu)
++/*
++ * Allocate backing pages, mark UC, and map at @iova in viommu_pdom.
++ * *@out_va is NULL on any failure.
++ */
++static int viommu_priv_alloc_map_flush(struct amd_iommu *iommu, u64 iova, size_t size,
++				       gfp_t gfp, void **out_va)
 +{
-+	iommu->vsc_offset = pci_find_capability(iommu->dev, PCI_CAP_ID_VNDR);
-+	if (!iommu->vsc_offset)
-+		return -ENODEV;
++	int ret;
++	void *va;
++	int nid = iommu && iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
 +
-+	DUMP_printk("device:%s, vsc offset:%04x\n",
-+		    pci_name(iommu->dev), iommu->vsc_offset);
-+	return 0;
-+}
++	*out_va = NULL;
 +
-+static void amd_viommu_gid_ida_init(struct amd_iommu *iommu)
-+{
-+	ida_init(&iommu->gid_ida);
-+	iommu->gid_ida_inited = true;
-+}
-+
-+static void amd_viommu_gid_ida_fini(struct amd_iommu *iommu)
-+{
-+	if (!iommu->gid_ida_inited)
-+		return;
-+
-+	ida_destroy(&iommu->gid_ida);
-+	iommu->gid_ida_inited = false;
-+}
-+
-+static void __init amd_viommu_vf_vfcntl_unmap(struct amd_iommu *iommu)
-+{
-+	if (iommu->vfctrl_base) {
-+		iounmap(iommu->vfctrl_base);
-+		iommu->vfctrl_base = NULL;
-+	}
-+	if (iommu->vf_cntl_phys)
-+		release_mem_region(iommu->vf_cntl_phys, VIOMMU_VF_CNTL_MMIO_MAP_SIZE);
-+
-+	if (iommu->vf_base) {
-+		iounmap(iommu->vf_base);
-+		iommu->vf_base = NULL;
-+	}
-+	if (iommu->vf_base_phys)
-+		release_mem_region(iommu->vf_base_phys, VIOMMU_VF_MMIO_MAP_SIZE);
-+}
-+
-+void __init amd_viommu_uninit(struct amd_iommu *iommu)
-+{
-+	amd_viommu_gid_ida_fini(iommu);
-+	amd_viommu_vf_vfcntl_unmap(iommu);
-+}
-+
-+static int __init viommu_vf_vfcntl_init(struct amd_iommu *iommu)
-+{
-+	u32 lo, hi;
-+	u64 vf_phys, vf_cntl_phys;
-+
-+	/* Setting up VF and VF_CNTL MMIOs */
-+	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_BAR_LO_OFFSET, &lo);
-+	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_BAR_HI_OFFSET, &hi);
-+	vf_phys = hi;
-+	vf_phys = (vf_phys << 32) | lo;
-+	if (!(vf_phys & 1)) {
-+		pr_err(FW_BUG "vf_phys disabled\n");
++	if (!iommu || !iommu->viommu_pdom)
 +		return -EINVAL;
-+	}
 +
-+	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_CNTL_BAR_LO_OFFSET, &lo);
-+	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_CNTL_BAR_HI_OFFSET, &hi);
-+	vf_cntl_phys = hi;
-+	vf_cntl_phys = (vf_cntl_phys << 32) | lo;
-+	if (!(vf_cntl_phys & 1)) {
-+		pr_err(FW_BUG "vf_cntl_phys disabled\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!vf_phys || !vf_cntl_phys) {
-+		pr_err(FW_BUG "AMD-Vi: Unassigned VF resources.\n");
++	va = iommu_alloc_pages_node_sz(nid, gfp, size);
++	if (!va)
 +		return -ENOMEM;
-+	}
 +
-+	/* Mapping 256MB of VF and 4MB of VF_CNTL BARs */
-+	vf_phys &= ~1ULL;
-+	iommu->vf_base = iommu_map_mmio_space(vf_phys, VIOMMU_VF_MMIO_MAP_SIZE);
-+	if (!iommu->vf_base) {
-+		pr_err("Can't reserve vf_base\n");
-+		return -ENOMEM;
-+	}
-+	iommu->vf_base_phys = vf_phys;
++	/*
++	 * IOMMU spec mentions that the vIOMMU backing storage memory
++	 * should be marked as UC.
++	 */
++	ret = set_memory_uc((unsigned long)va, size >> PAGE_SHIFT);
++	if (ret)
++		goto err_free_pages;
 +
-+	vf_cntl_phys &= ~1ULL;
-+	iommu->vfctrl_base = iommu_map_mmio_space(vf_cntl_phys, VIOMMU_VF_CNTL_MMIO_MAP_SIZE);
-+	if (!iommu->vfctrl_base) {
-+		pr_err("Can't reserve vfctrl_base\n");
-+		goto err_out;
-+	}
-+	iommu->vf_cntl_phys = vf_cntl_phys;
++	ret = iommu_map(&iommu->viommu_pdom->domain, iova, iommu_virt_to_phys(va), size,
++			IOMMU_PROT_IR | IOMMU_PROT_IW, GFP_KERNEL);
++	if (ret)
++		goto cleanup_mem_attr;
 +
-+	pr_debug("%s: IOMMU device:%s, vf_base:%#llx, vfctrl_base:%#llx\n",
-+		 __func__, pci_name(iommu->dev), vf_phys, vf_cntl_phys);
++	*out_va = va;
 +	return 0;
-+err_out:
-+	amd_viommu_uninit(iommu);
-+	return -ENOMEM;
++
++cleanup_mem_attr:
++	set_memory_wb((unsigned long)va, size >> PAGE_SHIFT);
++err_free_pages:
++	iommu_free_pages(va);
++	return ret;
 +}
- 
- int __init amd_viommu_init(struct amd_iommu *iommu)
- {
++
++/*
++ * Unmap @iova, flush the unmapped span on this IOMMU, WB, and free @cpu_va.
++ * Returns 0, or the flush error if amd_iommu_flush_private_vm_region() fails.
++ */
++static int viommu_priv_unmap_flush_free(struct amd_iommu *iommu, u64 iova, size_t size,
++					void *cpu_va)
++{
++	size_t unmapped;
++	int ret = 0;
++
++	if (!cpu_va)
++		return 0;
++	if (!iommu || !iommu->viommu_pdom)
++		return -EINVAL;
++
++	unmapped = iommu_unmap(&iommu->viommu_pdom->domain, iova, size);
++	if (unmapped != size)
++		pr_warn("%s: unmapped %#zx of %#lx at %#llx\n", __func__, unmapped, size, iova);
++
++	if (unmapped) {
++		ret = amd_iommu_flush_private_vm_region(iommu, iommu->viommu_pdom, iova,
++							unmapped);
++		if (ret)
++			pr_warn("%s: IOTLB flush failed (%d) for %#zx at %#llx\n",
++				__func__, ret, unmapped, iova);
++	}
++
++	set_memory_wb((unsigned long)cpu_va, size >> PAGE_SHIFT);
++	iommu_free_pages(cpu_va);
++	return ret;
++}
++
++static void *alloc_private_subregion(struct amd_iommu *iommu, u64 base, size_t size)
++{
++	void *region = NULL;
 +	int ret;
 +
- 	if (!amd_iommu_viommu ||
- 	    !check_feature(FEATURE_VIOMMU))
- 		return 0;
++	ret = viommu_priv_alloc_map_flush(iommu, base, size, GFP_KERNEL | __GFP_ZERO, &region);
++	if (ret)
++		return NULL;
++
++	pr_debug("%s: base=%#llx, size=%#lx, subregion=%#llx(%#llx)\n",
++		 __func__, base, size, (unsigned long long)region, iommu_virt_to_phys(region));
++
++	return region;
++}
++
++static void viommu_private_space_uninit(struct amd_iommu *iommu)
++{
++	int i, ret, first_err = 0;
++	u64 base;
++	struct iommu_domain *dom;
++
++	if (!iommu->viommu_pdom)
++		return;
++
++	for (i = 0; i < VIOMMU_PRIV_SUBREGION_CNT; i++) {
++		if (!iommu->viommu_priv_region[i])
++			continue;
++		base = VIOMMU_PRIV_REGION_BASE + (i * VIOMMU_PRIV_SUBREGION_SIZE);
++		ret = viommu_priv_unmap_flush_free(iommu, base, VIOMMU_PRIV_SUBREGION_SIZE,
++						   iommu->viommu_priv_region[i]);
++		if (ret && !first_err)
++			first_err = ret;
++		iommu->viommu_priv_region[i] = NULL;
++	}
++
++	dom = &iommu->viommu_pdom->domain;
++	amd_iommu_domain_free(dom);
++	iommu->viommu_pdom = NULL;
++
++	if (first_err)
++		pr_err("%s: private subregion teardown failed (%d)\n", __func__, first_err);
++}
++static int viommu_private_space_init(struct amd_iommu *iommu)
++{
++	int i;
++	u64 base;
++	struct iommu_domain *dom;
++	struct protection_domain *pdom;
++	struct pt_iommu_amdv1_hw_info pt_info;
++
++	/*
++	 * Setup page table root pointer, Guest MMIO and
++	 * Cmdbuf Dirty Status regions.
++	 */
++	dom = amd_iommu_domain_alloc_paging_v1(&iommu->dev->dev, 0);
++	if (!dom) {
++		pr_err("%s: Failed to initialize private space\n", __func__);
++		return -ENOMEM;
++	}
++
++	pdom = to_pdomain(dom);
++	iommu->viommu_pdom = pdom;
++
++	/*
++	 * Each private region requires to 8MB of memory to be allocated
++	 * and mapped. Split the region into 4 x 2MB-subregion.
++	 */
++	for (i = 0; i < VIOMMU_PRIV_SUBREGION_CNT; i++) {
++		base = VIOMMU_PRIV_REGION_BASE + (i * VIOMMU_PRIV_SUBREGION_SIZE);
++		iommu->viommu_priv_region[i] = alloc_private_subregion(iommu, base,
++								       VIOMMU_PRIV_SUBREGION_SIZE);
++		if (!iommu->viommu_priv_region[i]) {
++			pr_err("%s: Failed to allocate vIOMMU private subregion %d\n", __func__, i);
++			viommu_private_space_uninit(iommu);
++			return -ENOMEM;
++		}
++	}
++
++	pt_iommu_amdv1_hw_info(&pdom->amdv1, &pt_info);
++	pr_debug("%s: devid=%#x, pte_root=%#llx\n",
++		 __func__, iommu->devid,
++		 (unsigned long long)pt_info.host_pt_root);
++
++	return 0;
++}
++
+ /*
+  * Returns VF MMIO BAR offset for the give guest ID which will be
+  * mapped to guest vIOMMU 3rd 4K MMIO address
+@@ -160,5 +321,9 @@ int __init amd_viommu_init(struct amd_iommu *iommu)
  
-+	ret = viommu_init_pci_vsc(iommu);
+ 	amd_viommu_gid_ida_init(iommu);
+ 
++	ret = viommu_private_space_init(iommu);
 +	if (ret)
 +		return ret;
-+
-+	ret = viommu_vf_vfcntl_init(iommu);
-+	if (ret)
-+		return ret;
-+
-+	amd_viommu_gid_ida_init(iommu);
 +
  	return 0;
  }
