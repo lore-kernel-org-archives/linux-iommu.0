@@ -1,151 +1,267 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC90B3B7747
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 11:09:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C82A3FF882;
+	Mon, 29 Jun 2026 12:23:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782731387; cv=none; b=XnS5d7/GrMjJ9zOFtR5dy13jwLwAHV46UT6+xPJEDX7/t1SqwIRSqUcDOvFPAxwiE+5gdNbo3M+zdx3HSxcHXc2p12TXZ+vxLojl9xgFWFg/xNuYhLxjFQ0bouKaTo5blt+dfxOg03HxAnZ6UwhUQZY25JMMVCfBfkYxieXWfsI=
+	t=1782735837; cv=none; b=r0U0c0qus5qgOr8ZCpPoHw2/wX6WEe3k9KPQFH3BenCP2iOYjRUcmY+TT0WM+ypY5KrFig8ur7UCFNmRm3TKJMDtrr676zuu/PwOfYy4tpLo+EzBJ2hapnuR3opidiUV3R2spipJFEq3A7R7+VYRVp3Mka4PHdwT3uRJZDSV5BM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782731387; c=relaxed/simple;
-	bh=QgqZKkxSbB1wM8e1IkdcQNU62wH1FE5dh6CdTyleERs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AqE+8HPPLqVimRVzOaCi35D8yXzJNn0g9WW/b8iIJwKjm8EeO680Pj/DPl5vYCdrOvCM8cbyu7YCcr/mogt1G4l+E4VMotC8STCGuzBEGvRFvpaCmlIBIQyYI8CdOTyQXX0PF9LZG7kuSN4Qn3YTj/4SO4PcF+vkNxE6YJ3IMjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=etUC27lV; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1782735837; c=relaxed/simple;
+	bh=ykYZMTKEV9hGpicnoJmepKH0wgtlYPIDGNJrMx1fbJc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Tdo/ejy01sywxuvhFNHEaC/YnijQLW9e2vGEdxqmMSlyArhme4Ww9YA/wfbYbs/ozdty1HmZG/mIxtMeFoonMyKrEdw9EdmIZd2b0M92S9dQRO3nzVZLRYWAX28pT+7b2mUJdV08AMt+mPy1ZbZM8g5qjzQ2ZxPC/zJxsS2+knE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VXIgWtDv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="etUC27lV"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ECFD1176C;
-	Mon, 29 Jun 2026 04:09:40 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13CF33F905;
-	Mon, 29 Jun 2026 04:09:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1782731385; bh=QgqZKkxSbB1wM8e1IkdcQNU62wH1FE5dh6CdTyleERs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=etUC27lVxe1LcWUtyzLzSaSYek/7XypDJ6QAtaOA17N3O1iP7MNCBcY0k9Z75DiCQ
-	 aapf//5FtO5mL2ZSaB+K6jodFkzvCYjO1WpBvVkLx3UYubGinfus94XJCRXDZX9czU
-	 9Ku+OI1viWKbsbijz3REGZnYSzjx/p3xlNx5JVpg=
-Message-ID: <7c9720fd-c615-481c-ba4d-f5e0efbdd7f0@arm.com>
-Date: Mon, 29 Jun 2026 12:09:42 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VXIgWtDv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D2D1F000E9;
+	Mon, 29 Jun 2026 12:23:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782735835;
+	bh=KhbirzDiqdXz8L9jjlZYmqe2i6OHEV90p3aTdG2piLY=;
+	h=From:To:Cc:Subject:Date;
+	b=VXIgWtDvSyFcIJVJpcYBkbjDgAVyydc/iME59+R6XRw8bXvm1BkNScIESWGDKzwG8
+	 AhB5OWOUACxuGpUzXK9CREXTc7QbzenbF+f/m6fiWZ0ZOCz579Z+6psilDULlUv4KS
+	 t1hK4vxpshyeCdzB6jjoAR0ouWSDv6aa2AfmFzAVxeVUQ8libN4amrv2h5IP6iXnkJ
+	 vw5hlBz64z8tNrLEbQWPi3qxat89f66kKwijiuXDogs+GZh0c9W1lQTLDBkLRzgknf
+	 wM2jN6figSLSgDjYHDAuCpQ6/CJax3wvd/hhdrpFl4QAONOJEwet916X7QRVjLhdGy
+	 V41g50mCmMcMA==
+From: Lorenzo Stoakes <ljs@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Russell King <linux@armlinux.org.uk>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Simon Schuster <schuster.simon@siemens-energy.com>,
+	"James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	Jarkko Sakkinen <jarkko@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Lucas Stach <l.stach@pengutronix.de>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Christian Koenig <christian.koenig@amd.com>,
+	Huang Rui <ray.huang@amd.com>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>,
+	Dan Williams <djbw@kernel.org>,
+	Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	David Hildenbrand <david@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	"Liam R . Howlett" <liam@infradead.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Namhyung Kim <namhyung@kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	SeongJae Park <sj@kernel.org>,
+	Miaohe Lin <linmiaohe@huawei.com>,
+	Hugh Dickins <hughd@google.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Kees Cook <kees@kernel.org>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-parisc@vger.kernel.org,
+	linux-sgx@vger.kernel.org,
+	etnaviv@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org,
+	kvm@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	nvdimm@lists.linux.dev,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev,
+	linux-perf-users@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org,
+	kasan-dev@googlegroups.com,
+	damon@lists.linux.dev,
+	Pedro Falcato <pfalcato@suse.de>,
+	Rik van Riel <riel@surriel.com>,
+	Harry Yoo <harry@kernel.org>,
+	Jann Horn <jannh@google.com>
+Subject: [PATCH 00/30] mm: make VMA page offset handling more consistent
+Date: Mon, 29 Jun 2026 13:23:11 +0100
+Message-ID: <cover.1782735110.git.ljs@kernel.org>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dma-mapping: make dma_max_mapping_size() return 0 for
- no DMA capability
-To: John Garry <john.g.garry@oracle.com>,
- James.Bottomley@HansenPartnership.com, martin.petersen@oracle.com,
- m.szyprowski@samsung.com, hch@lst.de
-Cc: linux-scsi@vger.kernel.org, iommu@lists.linux.dev,
- ionut.nechita@windriver.com
-References: <20260629085310.2298552-1-john.g.garry@oracle.com>
- <20260629085310.2298552-2-john.g.garry@oracle.com>
- <53d07679-b1bb-469c-acc2-981e75c071c9@arm.com>
- <d82926fe-4557-401d-ae58-4302fef5657c@oracle.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <d82926fe-4557-401d-ae58-4302fef5657c@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 29/06/2026 11:46 am, John Garry wrote:
-> On 29/06/2026 11:11, Robin Murphy wrote:
->> On 29/06/2026 9:53 am, John Garry wrote:
->>> For when a device is not DMA capable, the max mapping size would be 
->>> 0, so
->>> make dma_max_mapping_size() reflect that.
->>
->> Seems logical.
->>
->> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> Thanks, but sashiko has been reviewing this and has a few things to say.
-> 
-> I don't know how it chooses recipients.
-> 
-> On 29/06/2026 10:10, sashiko-bot@kernel.org wrote:
->  >>
->  >> +    if (!dev->dma_mask)
->  >> +        return 0;
->  > [Severity: High]
->  > Could this new return value of 0 cause a division by zero in callers 
-> that
->  > expect a strictly positive maximum mapping size?
->  >
->  > For instance, in drivers/accel/amdxdna/ 
-> amdxdna_cbuf.c:amdxdna_cbuf_map(),
->  > the returned size is used directly as a divisor:
->  >
->  >          max_seg = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
->  >          n_entries = (cbuf->node.size + max_seg - 1) / max_seg;
-> 
-> Later in amdxdna_cbuf_map() we call dma_map_resource() (-> 
-> dma_map_phys()) and this would fail and WARN for !dev->dma_mask. Indeed 
-> amdxdna_cbuf_map() is used as a callback for .map_dma_buf, so highly 
-> unrealistic to have !dev->dma_mask ever.
+This series performs a series of cleanups and improvements around how the
+vma->vm_pgoff field is used.
 
-Moreover, the driver would have failed to probe in the first place if 
-its dma_set_mask_and_coherent() call had failed.
+Folios belonging to file-backed mappings are simply indexed by the page
+offset within the file they map.
 
->  >
->  > If a device lacking a dma_mask maps the attachment, max_seg becomes 0,
->  > which would result in an immediate kernel panic.
->  >
->  > Additionally, could this cause invalid zero-sized block layer queue 
-> limits
->  > in MMC drivers? In drivers/mmc/host/bcm2835.c:bcm2835_add_host(), the
->  > return value clamps max_req_size:
->  >
->  >          mmc->max_req_size = min_t(size_t, 524288, 
-> dma_max_mapping_size(dev));
-> 
-> bcm2835.c is a platform device driver, and platform devices have their 
-> dev->dma_mask set in setup_pdev_dma_masks()
-> 
-> Indeed, that driver does have a non-DMA mode of operation, but that 
-> looks to be selected independent of whether dev->dma_mask is set.
+However, anonymous folios belonging to pure anonymous mappings are indexed
+by their "virtual" page offset, which is equal to addr >> PAGE_SHIFT at the
+time at which the VMA was first faulted in.
 
-That one seems pretty bogus already, given that DMA mode is apparently 
-dependent on an external DMA channel, so "dev" is the wrong device to 
-check (should be dmaengine_get_dma_device()), while conversely 
-dma_max_mapping_size(anything) is a questionably meaningless number for 
-PIO mode... :/
+The page offset of a VMA is stored in vma->vm_pgoff and indicates the page
+offset of the start of the VMA range, whether it be file-backed or
+anonymous.
 
-Cheers,
-Robin.
+The work here both cleans up how we reference this field, as well as laying
+the foundations for a future series which addresses the inconsistency of
+CoW'd folios in MAP_PRIVATE-file backed mappings, which are indexed as if
+they were file-backed but behave as if they were anonymous.
 
-> 
->  >
->  > If the device lacks DMA support, max_req_size becomes 0, which 
-> propagates
->  > to the block layer and can trigger panics when processing requests.
-> 
-> All other users of dma_max_mapping_size() are drivers for real/virtio 
-> HW, so should be no issues.
-> 
->>
->>> Signed-off-by: John Garry <john.g.garry@oracle.com>
->>> ---
->>>   kernel/dma/mapping.c | 3 +++
->>>   1 file changed, 3 insertions(+)
->>>
->>> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
->>> index 4fe04669e5e66..7e576e5c6b8be 100644
->>> --- a/kernel/dma/mapping.c
->>> +++ b/kernel/dma/mapping.c
->>> @@ -979,6 +979,9 @@ size_t dma_max_mapping_size(struct device *dev)
->>>       const struct dma_map_ops *ops = get_dma_ops(dev);
->>>       size_t size = SIZE_MAX;
->>> +    if (!dev->dma_mask)
->>> +        return 0;
->>> +
->>>       if (dma_map_direct(dev, ops))
->>>           size = dma_direct_max_mapping_size(dev);
->>>       else if (use_dma_iommu(dev))
->>
-> 
+This future series will make it such that all anonymous folios are indexed
+by virtual page offset whether belonging to VMAs who satisfy
+vma_is_anonymous() or MAP_PRIVATE-mapped file-backed mappings.
 
+This series:
+
+* Exposes vma_start_pgoff() and updates the kernel to use it consistently.
+* Adds and uses the useful vma_end_pgoff() helper.
+* Parameterises the file-backed mapping helpers vma_interval_tree_*()
+  by adress_space rather than rb_root_cached.
+* Renames the misleadingly-named vma_interval_tree_*() helpers to
+  mapping_interval_tree_*() to be consistent with
+  anon_vma_interval_tree_*().
+* Parameterises anon_vma_interval_tree_*() by anon_vma.
+* Moves mm/interval_tree.c to the rmap section.
+* Adds vmg_*() helpers for page offset.
+* Clarifies the confusing vmg_adjust_set_range() function.
+* Introduces linear_page_delta() to provide relative pgoff within a VMA.
+* Replaces open-coded versions of linear_page_delta() and
+  linear_page_index() with invocations of these functions.
+* Introduces and uses vma_assert_can_modify() to account for whether a VMA
+  can be modified (detached or write locked).
+* Adds and uses vma_[add,sub]_pgoff() to adjust VMA page offset.
+* Moves __install_special_mapping() to vma.c.
+* Makes vma_set_range() static and internal to vma.c.
+* Introduces and makes use of vma_set_pgoff().
+* Fixes incorrect vma.h header inclusion.
+* Defaults VMA userland tests to 64-bit vma flags size.
+* Updates VMA userland tests to give better output on failure.
+* Various smaller cleanups.
+
+Lorenzo Stoakes (30):
+  mm: move vma_start_pgoff() into mm.h and clean up
+  mm: add kdoc comments for vma_start/last_pgoff()
+  tools/testing/vma: use vma_start_pgoff() in merge tests
+  mm: introduce and use vma_end_pgoff()
+  mm/rmap: update mm/interval_tree.c comments
+  mm/rmap: parameterise vma_interval_tree_*() by address_space
+  mm/rmap: elide unnecessary static inline's in interval_tree.c
+  mm/rmap: rename vma_interval_tree_*() to mapping_interval_tree_*()
+  mm/rmap: parameterise anon_vma_interval_tree_*() by anon_vma
+  MAINTAINERS: Move mm/interval_tree.c to rmap section
+  mm/vma: introduce and use vmg_pages(), vmg_[start, end]_pgoff()
+  mm/vma: clean up anon_vma_compatible()
+  mm/vma: refactor vmg_adjust_set_range() for clarity
+  mm/vma: minor cleanup of expand_[upwards, downwards]()
+  mm: introduce and use linear_page_delta()
+  mm/vma: use vma_start_pgoff(), linear_page_index() in mm code
+  mm: prefer vma_[start,end]_pgoff() to vma->vm_pgoff in kernel/
+  mm/vma: remove duplicative vma_pgoff_offset() helper
+  mm: use linear_page_[index, delta]() consistently
+  mm/vma: introduce vma_assert_can_modify()
+  mm/vma: add and use vma_[add/sub]_pgoff()
+  mm/vma: move __install_special_mapping() to vma.c
+  mm/vma: make vma_set_range() static, drop insert_vm_struct() decl
+  mm/vma: update vma_shrink() to not pass unnecessary pgoff parameter
+  mm/vma: update vmg_adjust_set_range() to offset pgoff instead
+  mm/vma: introduce and use vma_set_pgoff()
+  mm/vma: correct incorrect vma.h inclusion
+  mm/vma: use guard clauses in can_vma_merge_[before, after]()
+  tools/testing/vma: default VMA flag bits to 64-bit
+  tools/testing/vma: output compared expression on ASSERT_[EQ, NE]()
+
+ MAINTAINERS                           |   2 +-
+ arch/arm/mm/fault-armv.c              |   4 +-
+ arch/arm/mm/flush.c                   |   2 +-
+ arch/nios2/mm/cacheflush.c            |   2 +-
+ arch/parisc/kernel/cache.c            |   2 +-
+ arch/x86/kernel/cpu/sgx/virt.c        |   3 +-
+ drivers/comedi/comedi_fops.c          |   3 +-
+ drivers/gpu/drm/etnaviv/etnaviv_gem.c |   3 +-
+ drivers/gpu/drm/gma500/gem.c          |   2 +-
+ drivers/gpu/drm/msm/msm_gem.c         |   3 +-
+ drivers/gpu/drm/omapdrm/omap_gem.c    |   5 +-
+ drivers/gpu/drm/tegra/gem.c           |   3 +-
+ drivers/gpu/drm/ttm/ttm_bo_vm.c       |   7 +-
+ drivers/vfio/pci/nvgrace-gpu/main.c   |   3 +-
+ drivers/vfio/pci/vfio_pci_core.c      |   3 +-
+ fs/dax.c                              |   2 +-
+ fs/hugetlbfs/inode.c                  |  15 +-
+ include/linux/huge_mm.h               |   1 +
+ include/linux/hugetlb.h               |   3 +-
+ include/linux/mm.h                    | 118 +++++++++----
+ include/linux/mmap_lock.h             |   8 +
+ include/linux/pagemap.h               |  39 ++++-
+ kernel/dma/coherent.c                 |   7 +-
+ kernel/dma/direct.c                   |   6 +-
+ kernel/dma/mapping.c                  |   8 +-
+ kernel/dma/ops_helpers.c              |   4 +-
+ kernel/events/core.c                  |  20 ++-
+ kernel/events/uprobes.c               |  13 +-
+ kernel/kcov.c                         |   2 +-
+ kernel/trace/ring_buffer.c            |   3 +-
+ mm/damon/vaddr.c                      |   5 +-
+ mm/debug.c                            |   2 +-
+ mm/filemap.c                          |   7 +-
+ mm/huge_memory.c                      |   2 +-
+ mm/hugetlb.c                          |  15 +-
+ mm/internal.h                         |  33 ++--
+ mm/interval_tree.c                    | 113 +++++++-----
+ mm/khugepaged.c                       |   7 +-
+ mm/ksm.c                              |   7 +-
+ mm/madvise.c                          |   6 +-
+ mm/mapping_dirty_helpers.c            |   2 +-
+ mm/memory-failure.c                   |  10 +-
+ mm/memory.c                           |  33 ++--
+ mm/mempolicy.c                        |  13 +-
+ mm/mmap.c                             |  41 +----
+ mm/mmu_notifier.c                     |   2 +-
+ mm/mremap.c                           |  12 +-
+ mm/msync.c                            |   4 +-
+ mm/nommu.c                            |  22 +--
+ mm/pagewalk.c                         |   6 +-
+ mm/rmap.c                             |  14 +-
+ mm/shmem.c                            |   9 +-
+ mm/userfaultfd.c                      |   4 +-
+ mm/util.c                             |   4 +-
+ mm/vma.c                              | 239 ++++++++++++++++++--------
+ mm/vma.h                              |  59 ++++++-
+ mm/vma_exec.c                         |  12 +-
+ mm/vma_init.c                         |   6 +-
+ mm/vma_internal.h                     |   4 +-
+ tools/testing/vma/Makefile            |   2 +-
+ tools/testing/vma/include/dup.h       |  41 ++++-
+ tools/testing/vma/include/stubs.h     |  12 +-
+ tools/testing/vma/shared.c            |   9 -
+ tools/testing/vma/shared.h            |  36 ++--
+ tools/testing/vma/tests/merge.c       |  40 ++---
+ virt/kvm/guest_memfd.c                |   2 +-
+ 66 files changed, 699 insertions(+), 432 deletions(-)
+
+--
+2.54.0
