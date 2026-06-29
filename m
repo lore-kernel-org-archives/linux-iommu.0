@@ -1,203 +1,344 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A3154279E0
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 14:49:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 235FD3E2AA1;
+	Mon, 29 Jun 2026 14:57:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782744566; cv=none; b=sE1Xmp9tYhECEhlN96Bb/o8e9XJA1qiWAmctC1Jb2wf0hUfxfi9amL4+We+gxn6026C/I2askOJo8GiD+lOjZvYmi3gcaIImRJZko4Bw2VqeMPbAqXxL+r07SpSpG6b7tLeRNBYioPQwLDZKQTOR/EVzRLjxNC26hveoMf5ts6Y=
+	t=1782745032; cv=none; b=k+3WDCFauvgrn3wjhCIfjjQlN18OhLIIUYCZE/vOwlGbxO19o0shaX8WQYww1KfC4bAKEA9grHmTP9qUEbom/hnPm3rC1WQyDqfm7ySvNW2sAFwPE1sUAXcbIpZIWKDBlVXSuqXozawHn1wOPNp9d+Mv7mD/k/2eDciEXwjIl6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782744566; c=relaxed/simple;
-	bh=WRvszeiPBO/Fb5FiI/vE/FGwK3nriHHDLWyvTKu4jxY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:content-type; b=HxvSz1Xl80ymC6eH/aqJWNG/Wn5BGTq9jz8QgT+yF85mBz46og9azxN57PQUm5SOqU2YHJz1C5hctm5UXropGs1pyuIVgamnCHdLQbO7IjhOPlH9aMUrjQdkOoz0Il7w2jdEEWdIBX7SA7OVVlvOZz8My4nvkAB/+F3rvvo/kQw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BmNzSqe/; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1782745032; c=relaxed/simple;
+	bh=LNgB0LZoHZw0fP3mNzpypR694eprJdbAT8t2kv7BsKU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GI5/5Ra45V/YDwNMQz8ePGi4cIwOMbqC2HJnXjf5w0BEYBatRgQbj7tczWiijqHkQ7/4oIbkOokcphb3MA8FcCQX0eBE4REHvb6MyP2hRLev9vZbyT9xWMfZcF58B7hG+65FCiqyJotAVyWNfsJ7b8uKGTU9MMv6a+ggv3Fs/+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fb4gXdfC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BmNzSqe/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1782744562;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=TT8DezCMCkGl2L1G18lDfniaKuva6//NVtalZcejz24=;
-	b=BmNzSqe/VjbuTb9C7hQQ8x3yBk3+MJ0upjaGTLxgoU33ntsT9qOgRztQu8OS6VokplaR8J
-	hBGOjTc05ptL0uulB2j3aQWhtqK/TViMehrn8rHa9nOyNaZqbgN1LX4rNv8cdnd/NjU6D5
-	itkOBx6pGB9LdTeloQpPgAkxODkVUJQ=
-Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-501-m58T3XVhPY6ALAcZ2BpU0w-1; Mon,
- 29 Jun 2026 10:49:16 -0400
-X-MC-Unique: m58T3XVhPY6ALAcZ2BpU0w-1
-X-Mimecast-MFC-AGG-ID: m58T3XVhPY6ALAcZ2BpU0w_1782744555
-Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 132EB19235F6;
-	Mon, 29 Jun 2026 14:48:50 +0000 (UTC)
-Received: from desnesn-thinkpadp16vgen1.rmtbr.csb (unknown [10.96.134.92])
-	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 6D65C18007F8;
-	Mon, 29 Jun 2026 14:48:46 +0000 (UTC)
-From: Desnes Nunes <desnesn@redhat.com>
-To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: baolu.lu@linux.intel.com,
-	dwmw2@infradead.org,
-	Desnes Nunes <desnesn@redhat.com>
-Subject: [PATCH v2] iommu/vt-d: Fix UCTP context table slot when copying root entries
-Date: Mon, 29 Jun 2026 11:48:37 -0300
-Message-ID: <20260629144837.3244851-1-desnesn@redhat.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fb4gXdfC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466751F00A3A;
+	Mon, 29 Jun 2026 14:56:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782745029;
+	bh=c8iLIqBeF3LyAyaueUWtK1sqEjRS1M9AqqZ5Dyw7Z58=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Fb4gXdfCr+2KFrFMF2IByaqjqN6OTvaWqQOC5SC3n+FH76BIVh2JDagVQM04zbj4i
+	 z9UqiAHTat+mRSFXdSoYoJyzmoUlF3p6Jal6xe6vOj0QLi7S2K5h9jaYFUYjI+BSuq
+	 9d7IwNlxDTjp3VQUkRtwL9oT//Ua6zIzQzWpQkWh48TlIzq75ChfxoMs7JMB6YBa+Q
+	 ZxwQy1+SAoBg4NhXVNiEOzrZ3Dhl/wVvyFl01n5vJfnD+QDhnTEyYlWVs30E2o8W8y
+	 wepBBBkvWmHWS2C9RD6SaF8XQCZzAuIK1yFyi3oKvRdndjk8kenHlAuuXYQ9iZ77Xx
+	 OWjGalyUwbbUQ==
+Date: Mon, 29 Jun 2026 15:56:48 +0100
+From: Lorenzo Stoakes <ljs@kernel.org>
+To: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Dmitry Baryshkov <lumag@kernel.org>, Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, 
+	Thierry Reding <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Christian Koenig <christian.koenig@amd.com>, 
+	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Pedro Falcato <pfalcato@suse.de>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
+	Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 19/30] mm: use linear_page_[index, delta]() consistently
+Message-ID: <akKHUPxEVCSlifn5@lucifer>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <bf56e2e98b512962a2fb88900d535a0e9e6769d8.1782735110.git.ljs@kernel.org>
+ <21c4d96a-cd1b-4c65-8a66-2223df3b6109@suse.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
-X-Mimecast-MFC-PROC-ID: DHSF7h45Nxh1wQkJFP3155Dlh1E-CctNYBNRyOrjGkw_1782744555
-X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-content-type: text/plain; charset="US-ASCII"; x-default=true
+In-Reply-To: <21c4d96a-cd1b-4c65-8a66-2223df3b6109@suse.de>
 
-When translation is already enabled at boot (e.g. kdump), the vt-d driver
-copies context tables from the previous kernel's root table. In scalable
-mode, buses that only populate the upper root half (UCTP, devfn >= 0x80)
-should be written to ctxt_tbls[tbl_idx + 1] through copy_context_table().
-However, the current copy path always uses tbl[tbl_idx + 0] in this situa-
-tion. Since idx wraps to 0 at devfn 0x80 due to a zeroed LCTP, new_ce for
-LCTP will be NULL and keep pos equals to 0. Thus, UCTP entries will be co-
-pied into tbl[tbl_idx + 0] instead of tbl[tbl_idx + 1], and written after-
-wards to root_entry[bus].lo instead of .hi in copy_translation_tables().
+On Mon, Jun 29, 2026 at 03:56:33PM +0200, Thomas Zimmermann wrote:
+> Hi
+>
+> Am 29.06.26 um 14:23 schrieb Lorenzo Stoakes:
+> > There are a number of places where we open code what linear_page_index()
+> > and linear_page_delta() calculate.
+> >
+> > Replace this code with the appropriate functions for consistency.
+> >
+> > No functional change intended.
+> >
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+>
+> For the DRM changes:
+>
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
 
-In short, devices on bus 0x80 with devfn >= 0x80 fail DMA with fault 0x39,
-which will break drivers running in kernels with translation pre-enabled.
-This fixes NO_PASID DMAR faults for UCTP-only buses such as:
+Thanks!
 
-DMAR: [DMA Read NO_PASID] Request device [80:14.0] fault addr 0xe81759000 [fault reason 0x39] SM: Present bit in Root Entry is clear
+>
+> See below for two additional comments.
+>
+>
+> > ---
+> >   arch/arm/mm/fault-armv.c              | 2 +-
+> >   arch/x86/kernel/cpu/sgx/virt.c        | 3 ++-
+> >   drivers/comedi/comedi_fops.c          | 3 ++-
+> >   drivers/gpu/drm/etnaviv/etnaviv_gem.c | 3 ++-
+> >   drivers/gpu/drm/gma500/gem.c          | 2 +-
+> >   drivers/gpu/drm/msm/msm_gem.c         | 3 ++-
+> >   drivers/gpu/drm/omapdrm/omap_gem.c    | 5 +++--
+> >   drivers/gpu/drm/tegra/gem.c           | 3 ++-
+> >   drivers/gpu/drm/ttm/ttm_bo_vm.c       | 7 ++++---
+> >   drivers/vfio/pci/nvgrace-gpu/main.c   | 3 ++-
+> >   drivers/vfio/pci/vfio_pci_core.c      | 3 ++-
+> >   mm/nommu.c                            | 2 +-
+> >   mm/vma.c                              | 2 +-
+> >   virt/kvm/guest_memfd.c                | 2 +-
+> >   14 files changed, 26 insertions(+), 17 deletions(-)
+> >
+>
+> [...]
+>
+> >   #include <linux/io.h>
+> >   #include <linux/uaccess.h>
+> > @@ -2462,7 +2463,7 @@ static int comedi_vm_access(struct vm_area_struct *vma, unsigned long addr,
+> >   {
+> >   	struct comedi_buf_map *bm = vma->vm_private_data;
+> >   	unsigned long offset =
+> > -	    addr - vma->vm_start + (vma->vm_pgoff << PAGE_SHIFT);
+> > +	    addr - vma->vm_start + (vma_start_pgoff(vma) << PAGE_SHIFT);
+>
+> This doesn't seem to belong here.
 
-For instance, this fault yielded to locking issues between systemd and
-xHCI, blocking a system's reboot after a vmcore was captured with kdump:
+Ah yeah, I'll move that on a respin thanks!
 
-[   72.987601] systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=2193 is taking a long time
-[  132.237566] dracut-initqueue[277]: Timed out while waiting for udev queue to empty.
-[  202.988014] systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=2193 killed
-[  202.998059] systemd-udevd[246]: usb3: Worker [255] terminated by signal 9 (KILL).
-...
-[  206.288378] kdump[569]: saving vmcore complete
-...
-[  206.821258] systemd-shutdown[1]: Rebooting.
-[  246.858495] INFO: task kworker/0:1:11 blocked for more than 122 seconds.
-[  246.865319]       Not tainted 7.0.0-clean #1
-[  246.869663] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  246.877623] task:kworker/0:1     state:D stack:0     pid:11 tgid:11    ppid:2      task_flags:0x4208160 flags:0x00080000
-[  246.888942] Workqueue: usb_hub_wq hub_event
-[  246.893202] Call Trace:
-[  246.895690]  <TASK>
-[  246.897828]  __schedule+0x299/0x5c0
-[  246.901378]  schedule+0x27/0x80
-[  246.904572]  schedule_timeout+0xbd/0x100
-[  246.908565]  __wait_for_common+0x97/0x1b0
-[  246.912644]  ? __pfx_schedule_timeout+0x10/0x10
-[  246.917252]  xhci_alloc_dev+0x9e/0x2b0
-[  246.921068]  usb_alloc_dev+0x7a/0x3b0
-[  246.924795]  hub_port_connect+0x285/0x960
-[  246.928873]  hub_port_connect_change+0x94/0x290
-[  246.933482]  port_event+0x4bb/0x840
-[  246.937030]  hub_event+0x141/0x460
-[  246.940489]  process_one_work+0x196/0x390
-[  246.944569]  worker_thread+0x1af/0x320
-[  246.948383]  ? __pfx_worker_thread+0x10/0x10
-[  246.952724]  kthread+0xe3/0x120
-[  246.955921]  ? __pfx_kthread+0x10/0x10
-[  246.959736]  ret_from_fork+0x199/0x260
-[  246.963550]  ? __pfx_kthread+0x10/0x10
-[  246.967362]  ret_from_fork_asm+0x1a/0x30
-[  246.971355]  </TASK>
-[  369.738508] INFO: task systemd-shutdow:1 blocked for more than 122 seconds.
-[  369.745593]       Not tainted 7.0.0-clean #1
-[  369.749935] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  369.757897] task:systemd-shutdow state:D stack:0     pid:1 tgid:1   ppid:0      task_flags:0x400100 flags:0x00080000
-[  369.769128] Call Trace:
-[  369.771616]  <TASK>
-[  369.773752]  __schedule+0x299/0x5c0
-[  369.777299]  schedule+0x27/0x80
-[  369.780493]  schedule_preempt_disabled+0x15/0x30
-[  369.785188]  __mutex_lock.constprop.0+0x547/0xac0
-[  369.789974]  device_shutdown+0xac/0x1b0
-[  369.793877]  kernel_restart+0x3a/0x70
-[  369.797603]  __do_sys_reboot+0x147/0x240
-[  369.801595]  do_syscall_64+0x11b/0x6a0
-[  369.805407]  ? handle_mm_fault+0x110/0x350
-[  369.809574]  ? do_user_addr_fault+0x206/0x680
-[  369.814006]  ? irqentry_exit+0x7a/0x4d0
-[  369.817907]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-[  369.823046] RIP: 0033:0x7fe2958da917
-[  369.826684] RSP: 002b:00007ffc5c458618 EFLAGS: 00000206 ORIG_RAX: 00000000000000a9
-[  369.834383] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe2958da917
-[  369.841639] RDX: 0000000001234567 RSI: 0000000028121969 RDI: 00000000fee1dead
-[  369.848893] RBP: 00007ffc5c458790 R08: 0000000000000069 R09: 00000000ffffffff
-[  369.856148] R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
-[  369.863402] R13: 0000000000000000 R14: 00007ffc5c4588b8 R15: 0000000000000000
-[  369.870659]  </TASK>
-[  369.872888] INFO: task systemd-shutdow:1 is blocked on a mutex likely owned by task kworker/0:1:11.
+>
+> >   	if (len < 0)
+> >   		return -EINVAL;
+> > diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem.c b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
+> > index b0436a1e103f..2e4d6d117ee2 100644
+> > --- a/drivers/gpu/drm/etnaviv/etnaviv_gem.c
+> > +++ b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
+> > @@ -6,6 +6,7 @@
+> >   #include <drm/drm_prime.h>
+> >   #include <drm/drm_print.h>
+> >   #include <linux/dma-mapping.h>
+> > +#include <linux/pagemap.h>
+> >   #include <linux/shmem_fs.h>
+> >   #include <linux/spinlock.h>
+> >   #include <linux/vmalloc.h>
+> > @@ -188,7 +189,7 @@ static vm_fault_t etnaviv_gem_fault(struct vm_fault *vmf)
+> >   	}
+> >   	/* We don't use vmf->pgoff since that has the fake offset: */
+> > -	pgoff = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
+> > +	pgoff = linear_page_delta(vma, vmf->address);
+> >   	pfn = page_to_pfn(pages[pgoff]);
+> > diff --git a/drivers/gpu/drm/gma500/gem.c b/drivers/gpu/drm/gma500/gem.c
+> > index 88f1e86c8903..2708e8c68f4c 100644
+> > --- a/drivers/gpu/drm/gma500/gem.c
+> > +++ b/drivers/gpu/drm/gma500/gem.c
+> > @@ -288,7 +288,7 @@ static vm_fault_t psb_gem_fault(struct vm_fault *vmf)
+> >   	/* Page relative to the VMA start - we must calculate this ourselves
+> >   	   because vmf->pgoff is the fake GEM offset */
+> > -	page_offset = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
+> > +	page_offset = linear_page_delta(vma, vmf->address);
+> >   	/* CPU view of the page, don't go via the GART for CPU writes */
+> >   	if (pobj->stolen)
+> > diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+> > index efd3d3c9a449..cbf723a5d86f 100644
+> > --- a/drivers/gpu/drm/msm/msm_gem.c
+> > +++ b/drivers/gpu/drm/msm/msm_gem.c
+> > @@ -9,6 +9,7 @@
+> >   #include <linux/spinlock.h>
+> >   #include <linux/shmem_fs.h>
+> >   #include <linux/dma-buf.h>
+> > +#include <linux/pagemap.h>
+> >   #include <drm/drm_dumb_buffers.h>
+> >   #include <drm/drm_prime.h>
+> > @@ -360,7 +361,7 @@ static vm_fault_t msm_gem_fault(struct vm_fault *vmf)
+> >   	}
+> >   	/* We don't use vmf->pgoff since that has the fake offset: */
+> > -	pgoff = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
+> > +	pgoff = linear_page_delta(vma, vmf->address);
+> >   	pfn = page_to_pfn(pages[pgoff]);
+> > diff --git a/drivers/gpu/drm/omapdrm/omap_gem.c b/drivers/gpu/drm/omapdrm/omap_gem.c
+> > index 8e013e4f2c6b..00404fb6c29a 100644
+> > --- a/drivers/gpu/drm/omapdrm/omap_gem.c
+> > +++ b/drivers/gpu/drm/omapdrm/omap_gem.c
+> > @@ -5,6 +5,7 @@
+> >    */
+> >   #include <linux/dma-mapping.h>
+> > +#include <linux/pagemap.h>
+> >   #include <linux/seq_file.h>
+> >   #include <linux/shmem_fs.h>
+> >   #include <linux/spinlock.h>
+> > @@ -359,7 +360,7 @@ static vm_fault_t omap_gem_fault_1d(struct drm_gem_object *obj,
+> >   	pgoff_t pgoff;
+> >   	/* We don't use vmf->pgoff since that has the fake offset: */
+> > -	pgoff = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
+> > +	pgoff = linear_page_delta(vma, vmf->address);
+> >   	if (omap_obj->pages) {
+> >   		omap_gem_cpu_sync_page(obj, pgoff);
+> > @@ -407,7 +408,7 @@ static vm_fault_t omap_gem_fault_2d(struct drm_gem_object *obj,
+> >   	const int m = DIV_ROUND_UP(omap_obj->width << fmt, PAGE_SIZE);
+> >   	/* We don't use vmf->pgoff since that has the fake offset: */
+> > -	pgoff = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
+> > +	pgoff = linear_page_delta(vma, vmf->address);
+> >   	/*
+> >   	 * Actual address we start mapping at is rounded down to previous slot
+> > diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
+> > index 436394e04812..1d8d27a5ea89 100644
+> > --- a/drivers/gpu/drm/tegra/gem.c
+> > +++ b/drivers/gpu/drm/tegra/gem.c
+> > @@ -13,6 +13,7 @@
+> >   #include <linux/dma-buf.h>
+> >   #include <linux/iommu.h>
+> >   #include <linux/module.h>
+> > +#include <linux/pagemap.h>
+> >   #include <linux/vmalloc.h>
+> >   #include <drm/drm_drv.h>
+> > @@ -564,7 +565,7 @@ static vm_fault_t tegra_bo_fault(struct vm_fault *vmf)
+> >   	if (!bo->pages)
+> >   		return VM_FAULT_SIGBUS;
+> > -	offset = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
+> > +	offset = linear_page_delta(vma, vmf->address);
+> >   	page = bo->pages[offset];
+> >   	return vmf_insert_page(vma, vmf->address, page);
+> > diff --git a/drivers/gpu/drm/ttm/ttm_bo_vm.c b/drivers/gpu/drm/ttm/ttm_bo_vm.c
+> > index a80510489c45..88babf435ac2 100644
+> > --- a/drivers/gpu/drm/ttm/ttm_bo_vm.c
+> > +++ b/drivers/gpu/drm/ttm/ttm_bo_vm.c
+> > @@ -32,6 +32,7 @@
+> >   #define pr_fmt(fmt) "[TTM] " fmt
+> >   #include <linux/export.h>
+> > +#include <linux/pagemap.h>
+> >   #include <drm/ttm/ttm_bo.h>
+> >   #include <drm/ttm/ttm_placement.h>
+> > @@ -208,9 +209,9 @@ vm_fault_t ttm_bo_vm_fault_reserved(struct vm_fault *vmf,
+> >   	if (unlikely(err != 0))
+> >   		return VM_FAULT_SIGBUS;
+> > -	page_offset = ((address - vma->vm_start) >> PAGE_SHIFT) +
+> > -		vma->vm_pgoff - drm_vma_node_start(&bo->base.vma_node);
+> > -	page_last = vma_pages(vma) + vma->vm_pgoff -
+> > +	page_offset = linear_page_index(vma, address) -
+> > +		drm_vma_node_start(&bo->base.vma_node);
+> > +	page_last = vma_end_pgoff(vma) -
+> >   		drm_vma_node_start(&bo->base.vma_node);
+>
+> Not your fault, but page_last seems misnamed here.
 
-Fixes: 091d42e43d21 ("iommu/vt-d: Copy translation tables from old kernel")
-Signed-off-by: Desnes Nunes <desnesn@redhat.com>
----
-V1 -> V2: Updated commit message and added xHCI stack trace as requested
+Yeah :)
 
-v1: https://lore.kernel.org/linux-iommu/ajnlKDglN6wEBBrS@google.com/T/#t
+>
+> Best regards
+> Thomas
+>
+> >   	if (unlikely(page_offset >= PFN_UP(bo->base.size)))
+> > diff --git a/drivers/vfio/pci/nvgrace-gpu/main.c b/drivers/vfio/pci/nvgrace-gpu/main.c
+> > index d07dcacb76bd..963fd8ded20d 100644
+> > --- a/drivers/vfio/pci/nvgrace-gpu/main.c
+> > +++ b/drivers/vfio/pci/nvgrace-gpu/main.c
+> > @@ -11,6 +11,7 @@
+> >   #include <linux/jiffies.h>
+> >   #include <linux/sched.h>
+> >   #include <linux/pci-p2pdma.h>
+> > +#include <linux/pagemap.h>
+> >   #include <linux/pm_runtime.h>
+> >   #include <linux/memory-failure.h>
+> > @@ -385,7 +386,7 @@ static unsigned long addr_to_pgoff(struct vm_area_struct *vma,
+> >   	u64 pgoff = vma->vm_pgoff &
+> >   		((1U << (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
+> > -	return ((addr - vma->vm_start) >> PAGE_SHIFT) + pgoff;
+> > +	return linear_page_delta(vma, addr) + pgoff;
+> >   }
+> >   static vm_fault_t nvgrace_gpu_vfio_pci_huge_fault(struct vm_fault *vmf,
+> > diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> > index a28f1e99362c..55d4937d495a 100644
+> > --- a/drivers/vfio/pci/vfio_pci_core.c
+> > +++ b/drivers/vfio/pci/vfio_pci_core.c
+> > @@ -19,6 +19,7 @@
+> >   #include <linux/module.h>
+> >   #include <linux/mutex.h>
+> >   #include <linux/notifier.h>
+> > +#include <linux/pagemap.h>
+> >   #include <linux/pci.h>
+> >   #include <linux/pm_runtime.h>
+> >   #include <linux/slab.h>
+> > @@ -1727,7 +1728,7 @@ static vm_fault_t vfio_pci_mmap_huge_fault(struct vm_fault *vmf,
+> >   	struct vm_area_struct *vma = vmf->vma;
+> >   	struct vfio_pci_core_device *vdev = vma->vm_private_data;
+> >   	unsigned long addr = vmf->address & ~((PAGE_SIZE << order) - 1);
+> > -	unsigned long pgoff = (addr - vma->vm_start) >> PAGE_SHIFT;
+> > +	unsigned long pgoff = linear_page_delta(vma, addr);
+> >   	unsigned long pfn = vma_to_pfn(vma) + pgoff;
+> >   	vm_fault_t ret = VM_FAULT_FALLBACK;
+> > diff --git a/mm/nommu.c b/mm/nommu.c
+> > index 60560b2c457e..7333d855e974 100644
+> > --- a/mm/nommu.c
+> > +++ b/mm/nommu.c
+> > @@ -1332,7 +1332,7 @@ static int split_vma(struct vma_iterator *vmi, struct vm_area_struct *vma,
+> >   	*region = *vma->vm_region;
+> >   	new->vm_region = region;
+> > -	npages = (addr - vma->vm_start) >> PAGE_SHIFT;
+> > +	npages = linear_page_delta(vma, addr);
+> >   	if (new_below) {
+> >   		region->vm_top = region->vm_end = new->vm_end = addr;
+> > diff --git a/mm/vma.c b/mm/vma.c
+> > index ee3a8ca13d07..185d07397ca6 100644
+> > --- a/mm/vma.c
+> > +++ b/mm/vma.c
+> > @@ -517,7 +517,7 @@ __split_vma(struct vma_iterator *vmi, struct vm_area_struct *vma,
+> >   		new->vm_end = addr;
+> >   	} else {
+> >   		new->vm_start = addr;
+> > -		new->vm_pgoff += ((addr - vma->vm_start) >> PAGE_SHIFT);
+> > +		new->vm_pgoff += linear_page_delta(vma, addr);
+> >   	}
+> >   	err = -ENOMEM;
+> > diff --git a/virt/kvm/guest_memfd.c b/virt/kvm/guest_memfd.c
+> > index db57c5766ab6..f0e5da490866 100644
+> > --- a/virt/kvm/guest_memfd.c
+> > +++ b/virt/kvm/guest_memfd.c
+> > @@ -440,7 +440,7 @@ static int kvm_gmem_set_policy(struct vm_area_struct *vma, struct mempolicy *mpo
+> >   static struct mempolicy *kvm_gmem_get_policy(struct vm_area_struct *vma,
+> >   					     unsigned long addr, pgoff_t *ilx)
+> >   {
+> > -	pgoff_t pgoff = vma->vm_pgoff + ((addr - vma->vm_start) >> PAGE_SHIFT);
+> > +	pgoff_t pgoff = linear_page_index(vma, addr);
+> >   	struct inode *inode = file_inode(vma->vm_file);
+> >   	*ilx = inode->i_ino;
+>
+> --
+> --
+> Thomas Zimmermann
+> Graphics Driver Developer
+> SUSE Software Solutions Germany GmbH
+> Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
+> GF: Jochen Jaser, Andrew McDonald, Werner Knoblich, (HRB 36809, AG Nürnberg)
+>
+>
 
- drivers/iommu/intel/iommu.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4d0e65bc131d..737936f942a0 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1443,7 +1443,7 @@ static int copy_context_table(struct intel_iommu *iommu,
- 			      struct context_entry **tbl,
- 			      int bus, bool ext)
- {
--	int tbl_idx, pos = 0, idx, devfn, ret = 0, did;
-+	int tbl_idx, tbl_slot = 0, idx, devfn, ret = 0, did;
- 	struct context_entry *new_ce = NULL, ce;
- 	struct context_entry *old_ce = NULL;
- 	struct root_entry re;
-@@ -1459,10 +1459,9 @@ static int copy_context_table(struct intel_iommu *iommu,
- 		if (idx == 0) {
- 			/* First save what we may have and clean up */
- 			if (new_ce) {
--				tbl[tbl_idx] = new_ce;
-+				tbl[tbl_idx + tbl_slot] = new_ce;
- 				__iommu_flush_cache(iommu, new_ce,
- 						    VTD_PAGE_SIZE);
--				pos = 1;
- 			}
- 
- 			if (old_ce)
-@@ -1484,6 +1483,9 @@ static int copy_context_table(struct intel_iommu *iommu,
- 				}
- 			}
- 
-+			/* Track if saving UCTP or LCTP entries in scalable mode */
-+			tbl_slot = ext && devfn >= 0x80 ? 1 : 0;
-+
- 			ret = -ENOMEM;
- 			old_ce = memremap(old_ce_phys, PAGE_SIZE,
- 					MEMREMAP_WB);
-@@ -1512,7 +1514,7 @@ static int copy_context_table(struct intel_iommu *iommu,
- 		new_ce[idx] = ce;
- 	}
- 
--	tbl[tbl_idx + pos] = new_ce;
-+	tbl[tbl_idx + tbl_slot] = new_ce;
- 
- 	__iommu_flush_cache(iommu, new_ce, VTD_PAGE_SIZE);
- 
--- 
-2.54.0
-
+Cheers, Lorenzo
