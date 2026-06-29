@@ -1,104 +1,78 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD07B399007;
-	Mon, 29 Jun 2026 16:23:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB1041C314
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 16:24:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782750198; cv=none; b=owM4QpLmrkahAVgrqs5JFoR0lFDzgofa/gDYDf4FfGAl2kBA4Yhmi+6cc7jJpielHtMjgKD2XnX1LWnydAAA/MCxUde0ZbjQPY4NrFRVlNoBqkGuhFqnp62wkL2EooWA61OE8arhfFRKh8KD+Xl4Nl1yxJQ3ltJ2Qz5inM4SDGQ=
+	t=1782750274; cv=none; b=gvdtIDQy28k1KN2uFmxfEmjl0h0Wgg/XmrKB1KXnAgrh5Bd1fOKa64oNvmqkq6Ud9P/tthynH/OrwyRKpMFHKJNSD/3NDTQUJ2z+61f5Yx8i3gBe2u3NeV5dQUqKyGHh7T2z8r4CVJwJEHm/tXUJjXbwaP9BdNIvvafVi4xByQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782750198; c=relaxed/simple;
-	bh=60Kkhn1S4xFp8KF1ZAF46WPmvC0pF6KOvaZqQh2Mlf4=;
+	s=arc-20240116; t=1782750274; c=relaxed/simple;
+	bh=ySTaJdnZa62yhBnxOv6OcbAWc2ceyO8zhRkoDVDC8ig=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b8rWrCByepTNYNmoCV7qBk1LFvloGKC6EPVDI2SPteW94xvNHwo6thFWGbCAjpoc39aK4yfXa6nEDDy166aM1kf4/VR5FdVh2I4DcPMWUZuVdD364SOki6U6QZh54vbVaZDt2Jho4KwMcEZWqWo/HpIVa3egFNi8SCIEDlWRgok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XUh5lqOG; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZPwva2JxAJ6ISMcI8gdkxtpcNF8w7O+1ooA24rwlYHt9A0TWI99PzV6gutJ8Vp0VT4iOfaw9+fMiKIP4PDD8baEgfiTSGC2JLekb+NWWN5IQMLXALInb+BkNKeFR/Jj8V8/+CWFkfYgc3JnJTl7xjIqcRKsiRgn6KzFFZjG7Y1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qZMKH2K9; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XUh5lqOG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782750197; x=1814286197;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=60Kkhn1S4xFp8KF1ZAF46WPmvC0pF6KOvaZqQh2Mlf4=;
-  b=XUh5lqOG7e40hPihuH2jgk5xQ/GzbvFEk+m2Al0tfQThrr2AJoRATROb
-   pl1/dHkRS+rxWEqhDjD3t+Bctb0rHUJlluhmSenAhd6AFRvO3vfbiPoYg
-   jTzF3a7OAQrGE6BuiXVI3z6L+5R7H4SJhlSgTrVBFV7XaNsP6/OYrz47U
-   FO2Hr9lD+tzP7MjBON94ne4N0yiuex75fYqeLwDn9AuoyWVohKlzgeZ5O
-   RkcadvbYng+4kTIG/WK2u1XooArWAckObng2uOJu2EMMOLg3PzLY5dAiC
-   0imZlnO1t55X1xaMVfuqg7vb5sf7i0wj90u+q1z48Y3wH9jhzd8ZKpP8w
-   w==;
-X-CSE-ConnectionGUID: /l5r34i2RtqfhOmbodVFjw==
-X-CSE-MsgGUID: XjBJlc9hRviR+GjhOzVyKA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="83476048"
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="83476048"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 09:23:15 -0700
-X-CSE-ConnectionGUID: tfo8W8J/QcSmRxl6mSfrug==
-X-CSE-MsgGUID: qa+c086/QemtMiZKLSzfAA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="256920930"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 09:23:02 -0700
-Date: Mon, 29 Jun 2026 19:23:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Cc: Lee Jones <lee@kernel.org>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Thierry Reding <thierry.reding@avionic-design.de>,
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Vinod Koul <vkoul@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Doug Berger <opendmb@gmail.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Peter Chen <peter.chen@kernel.org>,
-	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Maximilian Luz <luzmaximilian@gmail.com>,
-	Hans de Goede <hansg@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, brgl@kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
-	driver-core@lists.linux.dev, devicetree@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pm@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org, stable@vger.kernel.org,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: Re: [PATCH v2 00/19] driver core: count references of the platform
- device's fwnode, not OF node
-Message-ID: <akKb5LPBIMenF9yD@ashevche-desk.local>
-References: <20260629-pdev-fwnode-ref-v2-0-8abe2513f96e@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qZMKH2K9"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2c9b2ac97cdso61565ad.1
+        for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 09:24:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1782750272; x=1783355072; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=0iNSQseB1MUx/UyReLsxkuNDNXPWZeXUlBY5ARaf804=;
+        b=qZMKH2K9XKIlmoqt2pAOix+Sb85fONUji/rtZyJXfmIXRBhptq0fzN56gFKWwOKKP6
+         OHTKrC1+1tr/j+SSuBvnic0p3NL0r8FFEGcfJCnruPN5kr553PPo+V+szetcCPGHtjPq
+         Q9CCNSDqD/UCRO+uIfcfzylmcVsWd8CGOmmFBBmtoAw3QLr5kgH5l3vIMBofIuojlHuV
+         sFetCjYzd4voe71iK6WnI6/IxEIwX37kz2Rz5F3aagBgPCpSUKDCvv/PxLKU++C5uBeD
+         5CB3wcgkcHw+XMgyUrd6Nk9tnLDsIm8rzkN3wHPXSA1zHC5CHOp8lG8kyuZ3kdzcnWaT
+         bQAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782750272; x=1783355072;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0iNSQseB1MUx/UyReLsxkuNDNXPWZeXUlBY5ARaf804=;
+        b=Kc6dRX7F3lGDsP6KASWg0zMcsxyuUJwkDB+LnYOSVGUUxhy8kHOjgyS+a+gi4BrIwU
+         kmgAXd83KQ9QxnBdX0e0w+0sjJ4YpRR30uqk2zHVG9d+PuWTbJJmsmAMt8eKwGPBP1ZV
+         4JKUTrLvZ2aBlY+Zy5Pbx4Wv8gwz1JRpFIcVkbo5PUHVHhWm/xmywvSoAiMz7SeH4UCQ
+         eTHKCiX9psPW+v4vJvvjdRzFNQIVZa42XEGUVCP3A7xp3s8fyPxB9B/mG5BrvBVJf0qc
+         B9T9EjAHjWZf+USFl1QHfGiivxlCkk2QORWRwA8pFsKXnfbwJrmNLgjaqPwEa9t9+vaA
+         XcKw==
+X-Forwarded-Encrypted: i=1; AHgh+Rpwevly+G0O8m4ywVlcqinyTs3mlYIDz5RxhgWnHlh1On5qH1tBVeVdKK5i0vs74WBw9gSZlA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxCSITbIIN8mxggfaOVo5C2w7o5CGWuc/5NxKAxHhvVgGOOKa2P
+	QbYDxPC7XTH0IqQWd/Wj+JAKkc8BkSCJhNef56BymVfwcP/3HZAZErOUc/7eCpUK2g==
+X-Gm-Gg: AfdE7cmIZnaUx+84R1WvonjO0EJnZbx6ppZisG3+VNRi4Nn4yhrqxwZdfRak8kYUHbE
+	QuL4J9H3JntL8a383Lpu1EO3532afdVs/UnkG0Uy/07XlPRDQUkaYYnkbUgFv9vRnBqoEcMGFg9
+	kYdoLSlmN37N89RVm9vjF53ThlSxkrmbNSSwyXhy8CG21WJ56eoj7Q9JfjbFMbI9Ao7fDC5a7Yr
+	koIH012OBXe4FOyxkZR9gw4r0mEgPMSD0fcun3XR7z6HNBxfpJbaPVYSyWist3O02p2UJVrNhUK
+	C3SZbr9C5LrjPqvuCIpaMEUWqNKffmEPLFVxxSCE6O9ab39wCwQyksm+U/XWWcyxEcIv5i0YYJt
+	U0mBExKrWxHfghvRIE140vFP0A3FhxV/qsNFuRuTyghphQQRH0p4Vrwy7nW54Rnifpi0MTrtt8l
+	ufjzb8jqxS9EQHDRVhmq3R5KW/GYa4ZSE5/PuiWctbDNCOok8=
+X-Received: by 2002:a17:902:cec8:b0:2c6:cbcb:bc72 with SMTP id d9443c01a7336-2ca2d062c01mr256175ad.23.1782750271674;
+        Mon, 29 Jun 2026 09:24:31 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37eb013af70sm3876698a91.0.2026.06.29.09.24.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jun 2026 09:24:30 -0700 (PDT)
+Date: Mon, 29 Jun 2026 16:24:24 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, smostafa@google.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	jamien@nvidia.com
+Subject: Re: [PATCH rc v6 5/7] iommu/arm-smmu-v3: Retain CR0_SMMUEN during
+ kdump device reset
+Message-ID: <akKcOMsUoc0mYVoe@google.com>
+References: <cover.1779265413.git.nicolinc@nvidia.com>
+ <f3866cc84cde2108b28c35b570ae502384e84c2a.1779265413.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -107,50 +81,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260629-pdev-fwnode-ref-v2-0-8abe2513f96e@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <f3866cc84cde2108b28c35b570ae502384e84c2a.1779265413.git.nicolinc@nvidia.com>
 
-On Mon, Jun 29, 2026 at 11:12:23AM +0200, Bartosz Golaszewski wrote:
-> Platform device core provides helper interfaces for dealing with
-> dynamically created platform devices. Most users should use
-> platform_device_register_full() which encapsulates most of the
-> operations but some modules will want to use the split approach of
-> calling platform_device_alloc() + platform_device_add() separately for
-> various reasons.
+On Wed, May 20, 2026 at 10:03:22AM -0700, Nicolin Chen wrote:
+> When ARM_SMMU_OPT_KDUMP_ADOPT is detected, do not disable SMMUEN and skip
+> the CR1/CR2/STRTAB_BASE update sequence in arm_smmu_device_reset(). Those
+> register writes are all CONSTRAINED UNPREDICTABLE while CR0_SMMUEN==1, so
+> leaving them intact lets in-flight DMAs continue to be translated by the
+> adopted stream table.
 > 
-> With many platform devices now using dynamic software nodes as their
-> primary firmware nodes and with the platform device interface being
-> extended to also better cover the use-cases of secondary software nodes,
-> I believe it makes sense to switch to counting the references of all
-> kinds of firmware nodes.
+> Initialize 'enables' to 0 so it can carry CR0_SMMUEN in kdump case. Then,
+> preserve that when enabling the command queue.
 > 
-> To that end, I identified all users of platform_device_alloc() that also
-> assign dev.of_node or dev.fwnode manually. I noticed five cases where
-> the references are not increased as they should (patches 1-5 fix these
-> users) and provided three new functions in platform_device.h that now
-> become the preferred interfaces for assigning firmware nodes to dynamic
-> platform devices (in line with platform_device_add_data(),
-> platform_device_add_resources(), etc.). The bulk of the patches in this
-> series are small driver conversions to port all users to going through
-> the new functions that now encapsulate the refcount logic. With that
-> done, the final patch seamlessly switches to counting the references of
-> all firmware node types.
+> Clear latched gerror bits if necessary.
 > 
-> This effort is prerequisite of removing platform_device_release_full()
-> and unifying the release path for dynamic platform devices using
-> unmanaged software nodes.
-> 
-> Merging strategy: The entire series should go through the driver core
-> tree, possibly with an immutable branch provided to solve any potential
-> conflicts though these are rather unlikely.
+> Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
+> Cc: stable@vger.kernel.org # v6.12+
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-for patches 2-4 assuming they will be accompanied with patch 19 at the same
-time.
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Praan
