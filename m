@@ -1,273 +1,286 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03F5717745
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 01:15:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27798245012
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 01:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.171
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782695760; cv=pass; b=kSx3si5C/y9XYT8QQJOR9oaYEaXiG9VFvduDV3jjlH5mEqgly5siKi4c3Qlacyg9FVKfsERirInqRzsbwv2Rr6anGEBbXl/LV/6NlAsuwpviAhZLCPdK3vY3CKXUEsmVGKqb4Cw8k14baKQrZn5sO1SswsN+0VK28LyvHXl+nhw=
+	t=1782698376; cv=pass; b=aiCQyQdvP5crAHQRLz2eLQXStkghUcHnt2Rp5l3Xlq0zlT7V4IABvZcbGYxB6orSrnsCS4otPnt3KcQdc8SmGXk6lsStYnrkc7xJvmCEnWwYG5lABbeJCttr8j1YjWYyOD89PL9bl9rh7T4UYeMuG/Vo93Enszd+Zs6o8q8FNKw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782695760; c=relaxed/simple;
-	bh=zAuR7THOwobLwULkWsxQJmBDVFUm6+So5/Nsf8QNZCw=;
+	s=arc-20240116; t=1782698376; c=relaxed/simple;
+	bh=ci4xs6o79f5ubeHnEPZAtey0amYwWXwdlCPisz3L1SM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CJb1jNj71VSqEVB8NS3e+IPpEFMT4NvSmr3QRNAyhHH81dt+PXdbL2Xkollhc20C5PEmbNcIw50sMTMbUCbr+9XAdHD774RE2KBetxP/m9L2AQUA0tfpNWc1Rx/3Az+l86PspcC6bRyoYnmrBJybgnL57etq2WgQ67s8rBu1BuQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=bKoc0d6P; arc=pass smtp.client-ip=209.85.208.42
+	 To:Cc:Content-Type; b=c0+hwARLDa6gAxVeL9GU3LvIVSTYNL4bVpLuy60T0bvkKpbOJu7akSHot5Rm2Mowdh6XirdriTohBdWgs1P6c5HC4TO68Vxa+CC7MuWADZes4UXLPguIAEM8L2LhI0oa6o0dx3Q14PODtiti7NwyRzqizeeibzWNRuILwQ9WUe8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=FRFYK54P; arc=pass smtp.client-ip=209.85.128.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="bKoc0d6P"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-68bd9fce347so4780164a12.2
-        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 18:15:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1782695757; cv=none;
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="FRFYK54P"
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-80e24970f1dso6612027b3.0
+        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 18:59:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782698374; cv=none;
         d=google.com; s=arc-20260327;
-        b=FSp7hnd9RmyFrzNk4J7UNSmjq1ZyI3/MMz2rwEFfW93dMgRaE/Ut32Rl+58arfrMLR
-         mYjpIntCRGYOfzLWmz2iB7pRXSNU6wf+RKSnaRA+l+mjmoqg4gtX0izifJbx+++P2XHe
-         7ReU+HuhB/upZKoWnd1i6cp1BS+sLgg3NZrSaJ5tGuF2UQln0bECPXgCfTzIswsMQzfF
-         b8ULRkDNL/HbwhggrYs9wbSilQwAhDwBEe4EIzvnmfZ4auVS2jNY8km5YB6O4HliteIS
-         i5PUDgRYTy8l25hYYR97IX2UiCeTn6dXOfuI8+YgCn2xQzPgFH+uFEdES13un5p+4iRU
-         02Lg==
+        b=qlO3qDYvNPNAzAR/Gqkmstnd33Onqbh2A3PddYRbIP4dhfqBdIlMMdiHjjsUWy3knx
+         lLVT38WYB0LgxcblwTQ0zFkXp5K3HjVuSBz4YwEjwctJVvMgVaIm2LkuOm25p+EpB9hc
+         7OKS57gaVr7/q9Lu28kr29dB2EVTm95ktknCqAYYZTk8XZsoZkmCxIZ4QB3kd4D/bfrK
+         JCILQmPFyUW0S5jxJISWEU9c0MccHtThN+0UlajWLpiXFqbFt7UzI2cCC7DnmN2aCQGM
+         NlTpzkmAcTW3Ubi3KCfK0eYQEPkE3Ag8+5nFDaDXl7rs7PjJROC0Cb7fUY0JMUh3wsnW
+         J1EA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=mkIGoNj9/WZkckvb1+KhYqNwSHBnTTepRZw4NPJEdhA=;
-        fh=+2lDZ9PLkxBKdBHvxzAI4Gldq6d4wWQytupXEVEHrL8=;
-        b=pejdsr2JGVZCClXy6Gn49ZB6widFww2luEF+/Nm0ZR47TZNRO8hwFnZzdrmdesXxFD
-         CJs+pMzRswQ6PdZ6oqatjw/Gmd+QXfo8xBLumSHB1Lr4DwznNxuzPUClD7yYEL59E7mT
-         KdBp2qRjFL1yzEvQ5rFGMIGS44pS6758CS/3Q5WNeIBnSlJmaYGFaJMSfrJMhb/AVXxH
-         Of9miIwNkCynOaJ6C3ajImSut/4oDb/95eOVn+CW3Jb2evD8fEeAfXwGwekyCmjPM/JQ
-         nBcYF5/XgiFnZCaMfRTzWHfg9RcdvX1LujgQN0WAAY4retX5guKggxyYh2dFHXzWjjGI
-         okIA==;
+        bh=PrKMfGvBB+n2SPK2Ky9jgrmaZHuvUlCc5IRFb6yy7lY=;
+        fh=YhEpygcqt+02E/V9ada2Qcs4EzH9+X8krf1NfIhqeSo=;
+        b=E5FE8kX2SogYbeVMSwqUA45AtQiapUziAIda3iWrpMzkjooCeHcgvJp6oDV5g8E0mh
+         jBQP43vY7IXYCWpg/2jBhvQph4IXrGmXmXGFxeoxb2Sbk0o2bqzUIs0HSRxRtvHeROh4
+         vH208lO/yFI8pzulu5+MdKp+X8yK21w6t4cfmDNxoZdygAeI7eEWVkqoSzLndNhDCa4A
+         mwyNy+RHIxlYInes3TEMegOyGGTXVloWmjoiUqdZ75dB4NEa1hJbXjobpJQ55aVMTbWV
+         MSDeYg/3iQ7JsuJSyhSGjwqiWhSEu1zdRbz1h1ZiUsVzfzILSTROAeRlB9w7jQKH/v+9
+         E1HA==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1782695757; x=1783300557; darn=lists.linux.dev;
+        d=sifive.com; s=google; t=1782698374; x=1783303174; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mkIGoNj9/WZkckvb1+KhYqNwSHBnTTepRZw4NPJEdhA=;
-        b=bKoc0d6PhjguIl48qgNtj0xV3Wcz4nHHXaT7OInn7mW2cMK15G1li5f8H+b406hpOO
-         gcA1ZIpAdWb+x4/t5/oGqtowsWA4Tu7CNg+vkqGvy0XFLISl6g/9q/hKK3P6p+H4yHwB
-         5YcPeoGLh/8j7BA1X+wVwWhOw9YbgIjvraASc4pSeKFGShYr/NS0xQp1Lke8gnEVcLfg
-         EtFQ1ZaDDTs5/dZ+oFDTgSyT/Zma4V5PConbg39DFqAKeJCIb70w9JXqwfYloVENAW4Z
-         pAB079+f+tKXBZA7oaFyENny+W8EJ28n3Kp6CK3MTGVMPUxteV/8bAMcExKzPdY2AHx0
-         giTw==
+        bh=PrKMfGvBB+n2SPK2Ky9jgrmaZHuvUlCc5IRFb6yy7lY=;
+        b=FRFYK54P9e9LLb3NtDzcFTJ1lyZJQiDLjpl+luu45AV4dvUt0SCBqqhZdcg2N8Zwon
+         jjDeockvr2xOLDhy+NuGjISVwgcN3k1C/EgoTkv/YTcCnU2jP8uJ/ZBIb6Wl4ZsGWMqd
+         PSaORxiAWhk+w0n3uaEceu+rHYqEwZCw8CMAUoZiTdR+r/t1ndXa7q9wSAl981LuDoBa
+         GXLJ1MJEXr+qhxp0i/WmOpP8xbjqZBUOm4htPAHDEjEVYwTjfXU8uENdD1aGjJUAJTM8
+         NxaQEk6f1Vn9/TE/qytUa3oa/0bQ2co1cZ3vAu0TyU2eSensmdJgSU9a1zWdjmuIOxfQ
+         EGXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782695757; x=1783300557;
+        d=1e100.net; s=20251104; t=1782698374; x=1783303174;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=mkIGoNj9/WZkckvb1+KhYqNwSHBnTTepRZw4NPJEdhA=;
-        b=LulLD/R6Sf2RclpjZnTTR/RJmOKSChh4u3p1uafoyK4Fksr2R0MI4lkpHSenpKXC0E
-         LZfwtDT7C6ieJfMR5wSPr7cmuSIktofSC1f1NpaPzHELoiJ5aApMloWxVZfTnVM9ntRu
-         aS2zFU8MPBqvpqJ7Vv5rXXVfCxLva6BnKLmUYeahHGtFMiY8fDpk96Er/LVSKKhSppAl
-         u7mLACx+vpJCQwRXolvXNOZnXFaCeU7iIdPp8jnNAlTFtwHtSd576QIjZlGios0CU0Bt
-         CSSGHX980nyfOoYmoZqzdb7AA+xYcxFQl0AiO/FID4yio2dWeSogwf4F+DPVPHI/D/3W
-         cN/w==
-X-Forwarded-Encrypted: i=1; AHgh+RqP/sbIE37C6KvBu9MbuL1/gT4bAklwEGWNBL5uFXkBogHa3Z3dXEbBY8O//L+wb6QHM7yj/w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzhSZbO47aK2UQ0/Vm1yUe7xwLeaqoXmjHBKz/7E0e9/buqEj67
-	9P0czvfnFU3QYXNk5VtBmNGbJWolQOqqIneAm0aBC1K1v6I+3TAS+3/yAGEQhmeFYiaWh/i4ofD
-	oqhVELAoGORG3PFFaHxtqObHOm/e+L9yBtmVJDUdF6g==
-X-Gm-Gg: AfdE7cmdJG62p2SySOmh2RNtDC+cQdEDOOax65hVU4sjs1maEikCHIoSaxu9cGfScM4
-	gMtDTKdvwBqB0rF+G1BLajDp9D9NpI1ILTh9S6rJeZ/eh3mL0lUtA+pisxUUm4w9GmqUjZwwyLp
-	ZAEfDWfCP5AOSx86hPWeedK/XZwciDuQKwn8sCA5J8ierQtG5cPX6XKem3ZMGvRkaP+LizChm/Q
-	aMCCu5ubbnc81OG/yfdSlj/OvRMBT2y/LA/Y6d0Gfvf7pW/N+Z42qTTkGdiayuhW4BcWuqhOqg=
-X-Received: by 2002:a05:6402:50c7:b0:698:56e7:8eb3 with SMTP id
- 4fb4d7f45d1cf-69856e7906cmr1618583a12.14.1782695757511; Sun, 28 Jun 2026
- 18:15:57 -0700 (PDT)
+        bh=PrKMfGvBB+n2SPK2Ky9jgrmaZHuvUlCc5IRFb6yy7lY=;
+        b=jxgg8uFDLOqdaSpGwJ1/D76U7gNo3CDrEQDho/LdbKXXU8rSwxdP6y2n/elo1m2CuN
+         4gmZwpCjgiM6alIJMfk+oJsZULirxPO7Gh9YUJfWRBEMjZygCIWDzqj570Ff8EPA0N9U
+         vUcX3OkKn46i+h/hNj1Jl0cWRjQWLpHokivWamUH8bUjw2wXQJThulOWtYotv5L4zAmR
+         Rvt9CRF+he10QRP+yIaAufTdb63qvU4uUwc+tnp2GZhIvAhT3HNZ/e8T/AIT5cWf4kG7
+         faY9C/+2mxlRsMEB8n3zGY9DD6bs5foU4gmECT+SQSNL74QvI8iKOkZ17Vz2aAxLYcWn
+         vT4Q==
+X-Forwarded-Encrypted: i=1; AHgh+RpuqVldeeXZm+etAh7AqSBfBKXy4SAma7WbSa/lC92Bx0DXXywXsy/W6DcqN3iFVvODqrYCxw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw20AH5i9J4mEeR8U9I85txtr1/bzkYHbIBfSGI7qB3Llkzhceo
+	F9cIk0YoIe5T6P2Pc6PyWEIP+F0YygFM89OWASwta8kt+lSTtP51V/QmRvjS6BwdjQPLJJ1hcfx
+	mNIj1ItIA2tAX1Bho8INMHOFvNtrfrhrtPCEudp4s3g==
+X-Gm-Gg: AfdE7clLOtEaU47+eiVJMD4bRe4UxF81G7WZjcQ32Ra3ubd3mRv+BAn96VOan9DCehI
+	036iPfM4wNxqLoJN15s/83NpkXpvraBC0KhnbHLU5xtb+xhQrzf9cbq3qgDHrg+9POyfVGnH8sX
+	7v0bXuRP03qnAnzq01z5e88YZNflDDI8NMPKqGf6qubFjeqsStrCRVIc+3nsDGJOUvRj4bN5RgL
+	Et9x8jHb+Or6qFEC4jMF/yKhYE2/SBYm6RPJuHD1cpE6jHds1gwprsMDO6Z/oF+t7RQPZ8wcfg=
+X-Received: by 2002:a05:690c:7208:b0:80c:85e5:8743 with SMTP id
+ 00721157ae682-80c85e58a99mr97225767b3.65.1782698374189; Sun, 28 Jun 2026
+ 18:59:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260615123821.373248-1-guoren@kernel.org> <7c490aeb-a3d9-4fe9-81de-f9662577851d@iscas.ac.cn>
- <CAJF2gTQ+-gpvUDtOh99aKP2-iDJy3MYOWti9k2Ntd0-J0MXqxQ@mail.gmail.com>
- <e051d822-d0be-4a88-ba86-ec9b5905fd1e@iscas.ac.cn> <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
- <20260618143634.7f3dd6c5@pumpkin> <CAJF2gTQqnpHPrE-df_kDZ-Y9g7sSfTQco3jKKnDzkuJfOEKmxQ@mail.gmail.com>
- <CANXhq0r=hNEF9jVM39fYC-bk7S4bNpWt9H4M3Qh3zo+d3UNRpA@mail.gmail.com> <CAJF2gTQD+PZj1pLpVT0u+q9CAwFMQubF6d3CYS=GDR0-b_fykQ@mail.gmail.com>
-In-Reply-To: <CAJF2gTQD+PZj1pLpVT0u+q9CAwFMQubF6d3CYS=GDR0-b_fykQ@mail.gmail.com>
+References: <CANXhq0pw5TPSD+p3YnTyEHQTSB-3jmAp3bzRSXvHdVjvevfL7w@mail.gmail.com>
+ <20260626135002.65703-1-fangyu.yu@linux.alibaba.com>
+In-Reply-To: <20260626135002.65703-1-fangyu.yu@linux.alibaba.com>
 From: Zong Li <zong.li@sifive.com>
-Date: Mon, 29 Jun 2026 09:15:46 +0800
-X-Gm-Features: AVVi8Cds7GpMAvxKFJN7_-MdJZZ2NSSYN4ijpQeh5aUC9mstNP0YCeor9he6LBA
-Message-ID: <CANXhq0o5z7+mxTptca32Ywr9UY5jrpA89f7fS81A9fG0JS25xw@mail.gmail.com>
-Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
-To: Guo Ren <guoren@kernel.org>
-Cc: David Laight <david.laight.linux@gmail.com>, Vivian Wang <wangruikang@iscas.ac.cn>, 
-	zhangzhanpeng.jasper@bytedance.com, alex@ghiti.fr, aou@eecs.berkeley.edu, 
-	cuiyunhui@bytedance.com, iommu@lists.linux.dev, joro@8bytes.org, 
-	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	luxu.kernel@bytedance.com, palmer@dabbelt.com, pjw@kernel.org, 
-	robin.murphy@arm.com, tjeznach@rivosinc.com, will@kernel.org, 
-	yuanzhu@bytedance.com
+Date: Mon, 29 Jun 2026 09:59:22 +0800
+X-Gm-Features: AVVi8Cfs6OnM1zYw0BdE3kdeo1BeI9b7DrH8QUKjlQ1z_hZeH2r2MUO5dRtSSZs
+Message-ID: <CANXhq0ozFOeUciPCmCwxJMw4SVwfHRGaz9+0DsOr98mixmjdew@mail.gmail.com>
+Subject: Re: [PATCH] iommu/riscv: Replace illegal command with dummy IOFENCE
+ to prevent hardware lockup
+To: fangyu.yu@linux.alibaba.com
+Cc: alex@ghiti.fr, aou@eecs.berkeley.edu, iommu@lists.linux.dev, 
+	joro@8bytes.org, linux-kernel@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, palmer@dabbelt.com, pjw@kernel.org, 
+	robin.murphy@arm.com, tomasz.jeznach@linux.dev, will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jun 28, 2026 at 4:20=E2=80=AFPM Guo Ren <guoren@kernel.org> wrote:
+On Fri, Jun 26, 2026 at 9:50=E2=80=AFPM <fangyu.yu@linux.alibaba.com> wrote=
+:
 >
-> Hi Zong Li,
->
-> On Tue, Jun 23, 2026 at 5:21=E2=80=AFPM Zong Li <zong.li@sifive.com> wrot=
-e:
+> >On Wed, Jun 24, 2026 at 10:08=E2=80=AFPM <fangyu.yu@linux.alibaba.com> w=
+rote:
+> >>
+> >> >When the RISC-V IOMMU encounters an illegal command, the hardware
+> >> >stops processing and the HEAD register remains pointing at the
+> >> >illegal command. If software does not handle this properly, the
+> >> >hardware will be stuck at this index indefinitely, preventing any
+> >> >further command queue operations.
+> >> >
+> >> >This patch implements a recovery mechanism by replacing the illegal
+> >> >command with a dummy IOFENCE instruction (all operands are zero):
+> >> >
+> >> >1. Prevents hardware lockup: By overwriting the illegal command with
+> >> >   a valid instruction, the hardware can continue processing from the
+> >> >   current position instead of being stuck.
+> >> >
+> >> >2. Enables user recovery: After replacing the illegal command, the
+> >> >   user/driver has an opportunity to retry the original failed
+> >> >   operation rather than losing all queued work.
+> >> >
+> >> >3. Minimal hardware impact: A dummy IOFENCE behaves as a NOP, it
+> >> >   it performs no cache invalidation operations and has no side
+> >> >   effects on the system state. This is the safest replacement
+> >> >   instruction.
+> >> >
+> >> >Signed-off-by: Zong Li <zong.li@sifive.com>
+> >> >---
+> >> > drivers/iommu/riscv/iommu.c | 24 +++++++++++++++++++++++-
+> >> > 1 file changed, 23 insertions(+), 1 deletion(-)
+> >> >
+> >> >diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.=
+c
+> >> >index cec3ddd7ab10..6305ec5f467b 100644
+> >> >--- a/drivers/iommu/riscv/iommu.c
+> >> >+++ b/drivers/iommu/riscv/iommu.c
+> >> >@@ -464,13 +464,35 @@ static unsigned int riscv_iommu_queue_send(stru=
+ct riscv_iommu_queue *queue,
+> >> > static irqreturn_t riscv_iommu_cmdq_process(int irq, void *data)
+> >> > {
+> >> >       const struct riscv_iommu_queue *queue =3D (struct riscv_iommu_=
+queue *)data;
+> >> >-      unsigned int ctrl;
+> >> >+      struct riscv_iommu_command cmd;
+> >> >+      unsigned int ctrl, head;
+> >> >
+> >> >       /* Clear MF/CQ errors, complete error recovery to be implement=
+ed. */
+> >> >       ctrl =3D riscv_iommu_readl(queue->iommu, queue->qcr);
+> >> >       if (ctrl & (RISCV_IOMMU_CQCSR_CQMF | RISCV_IOMMU_CQCSR_CMD_TO =
+|
+> >> >                   RISCV_IOMMU_CQCSR_CMD_ILL | RISCV_IOMMU_CQCSR_FENC=
+E_W_IP)) {
+> >> >+              /*
+> >> >+               * The head pointer is not updated by the hardware, it
+> >> >+               * still points to the index of illegal command
+> >> >+               */
+> >> >+              riscv_iommu_readl_timeout(queue->iommu, Q_HEAD(queue),=
+ head,
+> >> >+                                        !(head & ~queue->mask), 0,
+> >> >+                                        RISCV_IOMMU_QUEUE_TIMEOUT);
+> >> >+
+> >> >+              if (ctrl & RISCV_IOMMU_CQCSR_CMD_ILL) {
+> >> >+                      /*
+> >> >+                       * Use a dummy IOFENCE instead of the illegal =
+command
+> >> >+                       * to prevent hardware lockup
+> >> >+                       */
+> >>
+> >> The RISC-V IOMMU spec 1.0 (Section 5.15, cqcsr) states:
+> >>
+> >>   "If software makes the CQ operational again after a cmd_ill or
+> >>    cqmf error, then software should resubmit the commands submitted
+> >>    since the last IOFENCE.C that successfully completed."
+> >>
+> >> So it seems that simply replacing the illegal command and letting the
+> >> queue continue is not sufficient.
+> >>
 > >
-> > On Fri, Jun 19, 2026 at 1:14=E2=80=AFAM Guo Ren <guoren@kernel.org> wro=
-te:
-> > >
-> > > On Thu, Jun 18, 2026 at 9:36=E2=80=AFPM David Laight
-> > > <david.laight.linux@gmail.com> wrote:
-> > > >
-> > > > On Thu, 18 Jun 2026 17:51:34 +0800
-> > > > Guo Ren <guoren@kernel.org> wrote:
-> > > >
-> > > > > Hi Vivian,
-> > > > >
-> > > > > As noted in the RISC-V IOMMU Specification, Chapter 6:
-> > > > > > Whether an 8-byte access to an IOMMU register is single-copy at=
-omic is UNSPECIFIED, and such an access may appear, internally to the IOMMU=
-, as if two separate 4-byte accesses =E2=80=94 first to the high half and s=
-econd to the low half =E2=80=94 were performed.
-> > > > >
-> > > > > Therefore, the atomicity of 64-bit MMIO accesses is UNSPECIFIED a=
-nd
-> > > > > not clearly defined in the current ratified RISC-V IOMMU
-> > > > > specification. To handle this correctly, the Linux RISC-V IOMMU d=
-river
-> > > > > should fall back to 32-bit MMIO accesses when reading 64-bit regi=
-sters
-> > > > > (e.g., performance counters). The behavior of 32-bit MMIO accesse=
-s is
-> > > > > more precisely defined in the RISC-V IOMMU specification.
-> > > > >
-> > > > > Thus, many hardware vendors implement 32-bit MMIO (rather than 64=
--bit
-> > > > > MMIO) based on the current ratified RISC-V IOMMU specification, a=
-nd
-> > > > > this driver does not appear to benefit from 64-bit MMIO access ei=
-ther.
-> > > > > Performance is fundamentally constrained by bus latency; assuming=
- that
-> > > > > simply reducing the number of accesses will improve performance i=
-s an
-> > > > > oversimplification that ignores the underlying hardware
-> > > > > characteristics.
-> > > >
-> > > > If the bus latency is significant it is almost certainly worth usin=
-g
-> > > > memory accesses to avoid re-reading the hi register.
-> > > >
-> > > > Something like this might work:
-> > > >
-> > > > static volatile u32 hi_prev, lo_prev;
-> > > >
-> > > >         u32 hi =3D read_reg_hi();
-> > > >         u32 lo =3D read_reg_lo();
-> > > >
-> > > >         if (lo <=3D lo_prev || hi !=3D hi_prev) {
-> > > >                 u32 hi_tmp =3D read_reg_hi;
-> > > >                 if (hi_tmp !=3D hi) {
-> > > >                         hi =3D hi_tmp;
-> > > >                         lo =3D 0;
-> > > >                 }
-> > > >                 lo_prev =3D ~0u;
-> > > >                 hi_prev =3D hi;
-> > > >         }
-> > > >         lo_prev =3D lo;
-> > > >         return (u64)hi << 32 | lo;
-> > > >
-> > > > It shouldn't need any locking but the accesses do need to be ordere=
-d.
-> > > Thank you for the suggestion. However, I believe this feedback is mor=
-e
-> > > relevant to the RISC-V IOMMU HPM patchset [1], as no counter register=
-s
-> > > are involved in the current patchset. That said, the idea of improvin=
-g
-> > > the hi-lo-hi slow-path mechanism to better handle high-latency
-> > > hardware scenarios is well taken and worth discussing in the
-> > > appropriate thread.
-> > > [1]: https://lore.kernel.org/linux-riscv/20260208063848.3547817-2-zon=
-g.li@sifive.com/
-> > >
-> > > P.S. The hardware I have at hand exhibits very low interconnect
-> > > latency. And I have never observed the slow path where hi_tmp !=3D hi
-> > > being triggered =E2=80=94 my approach was to remove the retry mechani=
-sm
-> > > directly in 32-bit mmio mode and run stress tests to check whether
-> > > perf stat produced incorrect results. That said, I may have simply
-> > > been lucky instead of hw guarantee.
-> > >
-> >
-> >
-> > Hi everyone,
-> >
-> > Thank you for adding me to this discussion. I took some time to read
-> > the previous messages.
-> > Regarding the GitHub issue mentioned by Vivian, I noticed someone
-> > pointed out that the hardware must support 64-bit access.
-> >
-> >     https://github.com/riscv-non-isa/riscv-iommu/issues/765#issuecommen=
-t-4742941894
-> >
-> > I would like to confirm if that is correct. If so, should we update
-> > the spec? And does this mean we do not need to modify the driver?
+> >Yes, this patch doesn't completly follow what the spec mentioned.
+> >Initially, I wanted to implement the method suggested by the spec.
+> >However, there are some synchronization challenges based on current
+> >driver implementation. Therefore, I chose an approach similar to other
+> >IOMMU drivers (like SMMU and Intel VT-d). The main goal is to at least
+> >prevent the hardware from getting stuck and crashing the entire
+> >system.
 >
-> Currently, no one has proposed updating the SPEC. Discussions are
-> still focused on clarifying the meaning of the existing specification.
-> There are two main points under discussion: the first has been
-> clarified, while the second remains controversial.
+> Thanks for the detailed explanation. I understand the practical
+> challenges you described. However, I=E2=80=99d like to note that the ARM
+> SMMUv3 and Intel VT-d specs appear to provide somewhat different
+> guarantees from the RISC-V IOMMU spec with regard to error recovery.
 >
-> The first point =E2=80=94 "Whether an 8-byte access to an IOMMU register =
-is
-> single-copy atomic is UNSPECIFIED" =E2=80=94 is uncontroversial. Ved furt=
-her
-> explained that such an access may appear internally to the IOMMU as
-> two separate 4-byte accesses. Therefore, for hpm COUNTER counters,
-> 32-bit MMIO access must be used to guarantee the correct hi-lo-hi
-> ordering. Using 64-bit MMIO access can result in a lo-hi-hi-lo
-> sequence, because the specification does not define the order in which
-> the access may be split and explicitly marks this behavior as
-> UNSPECIFIED. At present, there is unanimous agreement on this point,
-> that is, "Whether an 8-byte access to an IOMMU register is single-copy
-> atomic is UNSPECIFIED".
+> ARM SMMUv3 (IHI 0070, Section 7.1):
+>   "Older commands are unaffected by a later Command queue error."
 >
-> The second point =E2=80=94 "Registers that are 64-bit wide may be accesse=
-d
-> using either a 32-bit or a 64-bit access." =E2=80=94 is controversial.
-> According to the clear definition in RFC 2119: MAY This word, or the
-> adjective "OPTIONAL", mean that an item is truly optional. One vendor
-> may choose to include the item because a particular marketplace
-> requires it or because the vendor feels that it enhances the product
-> while another vendor may omit the same item. An implementation which
-> does not include a particular option MUST be prepared to interoperate
-> with another implementation which does include the option, though
-> perhaps with reduced functionality. In the same vein an implementation
-> which does include a particular option MUST be prepared to
-> interoperate with another implementation which does not include the
-> option (except, of course, for the feature the option provides).
-> Consequently, any claim that this wording imposes a requirement for
-> hardware to support 64-bit MMIO access has generated significant
-> controversy.
->
-> The current explicit consensus on the specification is therefore as follo=
-ws:
-> 1. All hardware must support access to 64-bit registers using 32-bit
-> MMIO accesses.
-> 2. Only 32-bit MMIO accesses are guaranteed to be single-copy atomic.
->
-> From both a single-copy atomicity perspective and a hardware
-> requirements standpoint, Linux kernel drivers should currently follow
-> the consensus described above and avoid the controversial 64-bit MMIO
-> access. Furthermore, I see no performance benefit to using 64-bit MMIO
-> accesses in this driver, as the only 64-bit registers involved =E2=80=94 =
-such
-> as RISCV_IOMMU_REG_DDTP, RISCV_IOMMU_REG_ICVEC, and queue->qbr =E2=80=94 =
-are
-> not frequently accessed.
+> Intel VT-d (Section 6.5.2.10):
+>   "Any invalidation commands ahead of the invalid descriptor that
+>    are already fetched and pending in hardware at the time of
+>    detecting the invalid descriptor error are completed by
+>    hardware as normal."
 >
 
-Thanks for your clarification, I will address this topic in PMU driver
-in the next version.
+Thanks for your elaboration, it is important for discussion here.
+Although SMMU and Intel VT-d can protect the commands sent before an
+illegal one, the original task of the illegal command is still lost.
+This might still lead to unexpected hardware behavior
 
-> --
-> Best Regards
->  Guo Ren
+> >
+> >Here are the main issues we would need to solve if we fully follow the s=
+pec:
+> >
+> >1. IOFENCE index shift: After an illegal command, if another thread is
+> >waiting for subsequent IOFENCE to finish, re-submitting commands will
+> >change that IOFENCE's index in the queue. This means the waiting
+> >thread in 'riscv_iommu_cmd_sync' might finish too early because the
+> >'prod' value should be changed as well. We could fix this by making
+> >IOFENCE write a sequence number to a specific address, and having the
+> >thread wait for that data instead.
+> >
+> >2. Timeout errors: If an illegal command happens while another thread
+> >is trying to write a command, that thread might be waiting for the
+> >tail to move (in 'riscv_iommu_queue_send'), and exit the wait due to a
+> >timeout. This leads to errors in the caller subsystem (like DMA). So
+> >it seems even if the resubmit finishes later, it might not help much.
+> >
+> >3. Queue tail mismatch: Similar to point 2 situation, a thread waiting
+> >in 'riscv_iommu_queue_send' expects prod =3D=3D queue->tail. If we
+> >re-submit commands quickly, queue->tail is updated asynchronously to a
+> >farther value. The waiting thread might never see the condition met
+> >and time out.
+> >
+> >4. Shadow queue overhead: Inside the threading IRQ handler, we cannot
+> >easily know what the illegal command was just by checking the current
+> >command queue. We would need to create a "shadow command queue" to
+> >keep a history. This would break the current driver design. We would
+> >also need to add locks to prevent race conditions on shadow command
+> >queue, which would reduce the driver's performance.
+> >
+> >Considering these trade-offs, I prefer not to make the driver much
+> >more complex and slower just to handle rare hardware errors.
+> >Personally, I lean towards treating this hardware fault as a fatal
+> >error without trying to recover it in software. However, I understand
+> >this might be too extreme and would require a hardware reset.
+> >Therefore, this patch might be a good middle ground. It prevents the
+> >hardware lockup. Even though we might lose some commands and cause
+> >incorrect results for the user, it at least keeps the system alive and
+> >gives the user a chance to retry their operation again.
+> >
+>
+> I understand the trade-off. Given the complexity of full spec
+> compliance, this simplified version may not actually address the
+> underlying issue very well, so I=E2=80=99d suggest making its limitations
+> explicit. Specifically, could you document in the commit message or
+> code comments which scenarios it can handle and which ones may
+> still remain problematic?
+>
+
+Ok, I will add more details to the code comments and the commit
+message. As we discussed, this method is a trade-off and doesn't
+completely fix the problem. Whether to accept this patch might still
+depend on the maintainer's decision. Thank you very much for your
+review and the helpful discussion
+
+> >
+> >> Thanks,
+> >> Fangyu
+> >>
+> >> >+                      memset(&cmd, 0, sizeof(cmd));
+> >> >+                      cmd.dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPC=
+ODE,
+> >> >+                                              RISCV_IOMMU_CMD_IOFENC=
+E_OPCODE);
+> >> >+                      memcpy(queue->base + head * sizeof(cmd), &cmd,=
+ sizeof(cmd));
+> >> >+                      dma_wmb();
+> >> >+              }
+> >> >+
+> >> >               riscv_iommu_writel(queue->iommu, queue->qcr, ctrl);
+> >> >+
+> >> >               dev_warn(queue->iommu->dev,
+> >> >                        "Queue #%u error; fault:%d timeout:%d illegal=
+:%d fence_w_ip:%d\n",
+> >> >                        queue->qid,
+> >> >--
+> >> >2.43.7
