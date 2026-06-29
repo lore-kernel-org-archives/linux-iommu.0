@@ -1,78 +1,74 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7120A44E040
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 16:28:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0163335CB6B;
+	Mon, 29 Jun 2026 16:35:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782750509; cv=none; b=gJlRQTEhbL2K42yquMBGXLl1MB7YBXQHIQhfb1wBG3VCy/ISJ/TgecxNSwZobWe9NUDxNFfJHy4CZVg/4rnpuFrGwI0ZdYzE5/2w3dgJcw+0fq+fhsWyL4Tqfiybi6HYTcxqZHVQ+rUKjdiEos5Pe18SKP3bd/c00ZTY+tkwXyQ=
+	t=1782750940; cv=none; b=B3ICgxWPehMgt0TUtVZqHH4Ua3NOBeyH0ORu9TWWKKSyX+xtMLuv0TdI4AJbS20hXsOLeWbQ8J56zc/q72Wv5dlcDZ4HQnM7eDfQTN5s/SonDICpTUHiNdUcbsSznLKfVNoQ7N8R/u0TiwEm+UCXokmhCZvJAOpzMGfylBYmtT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782750509; c=relaxed/simple;
-	bh=HoZdwkQCUZWVoOYy4+KgRStt8L7Oi0ubrdBnrNiil7s=;
+	s=arc-20240116; t=1782750940; c=relaxed/simple;
+	bh=tqvibWEtQh2T48OiewXhNx0S0zqLKa3gex5DVvzFGOM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AuLbD+q9dIPtFACiYVwA//+u4svXQwFe/5N4i21/L9k/GMB+5lQJH4blBpZZF2COJ4BKNOfNrFKxquHgGjt4hvxwiEvL66uk6+iU3PjKLMZUxSDeyvs6HjqR/YOOqB9JX/A/hPC+MGtW5WOY0l6VX0Z0BU49HDfJQvJxvkcDMdg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vGGvNVp+; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=XxUgGjIv/sBzujxBoeW+rrSISZ7AEhGYuwOxSeryej9d3HehzOy172UMpuK3T4nR81r05uGy++y68m7t+qlT8GG6U2FXGoARBdQNzQkLwF4zRdstrh+i6hk2CMxI6jfUFGccU7gt4ZYdJH0om+vFYl7ZeqUh196HsHL2PYBvp/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PfDXIPAD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vGGvNVp+"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2c9b2ac97cdso61805ad.1
-        for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 09:28:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782750508; x=1783355308; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=bio6F01mW1uhzjb2Qp+Xy8h4WP35qzyJOdcn1fRlVDM=;
-        b=vGGvNVp+Ya5K9qzGuDgOiNNtHjXfWPt66JkxDZ+MzSyNJHFWdL7uxVSm9c792ZAPkz
-         G4Qdo/21d4UjoXxRhnR04Q0BOkwBIIfAG4O/qcywh+j1oV2JxoImWwkXCq6AKzNh69PR
-         1yUsNh+mPloEFbb1zlCHrfCGsFc7j+5qE+x7G4iiZcHiwdp/eFJkaw4n9DekqimH2wMZ
-         BMDu96KeapUApIbf4fGCRfZaXfUdWwfjLEsKhIqjVbTQDvq95tCpDvWFwgIDPW0uz4GG
-         WzqdaGlRohXiVWfKEaQwfQpmZipZl48e1Tvx6kg2HTkhhNy1YgSz6xgKCsSdOU3+YMC7
-         1qlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782750508; x=1783355308;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bio6F01mW1uhzjb2Qp+Xy8h4WP35qzyJOdcn1fRlVDM=;
-        b=CMcR4CKKWqCKKg2ABtdtD/Hgl2Ni66iMDRN6ZpdzmKfW6Qr87gY5oZ9hITn0D1qsdI
-         xPbbJYqcD5YSKvDJ2c+81neTusK4OAbSY8vyRdnwxBDaHa4w5aBrn5wCxrGyq+qhKDL7
-         l1mk9YDRj9EA0xAAN0upixSjlVGUFmNABmrNT5197iy9KWW4dZOOAKr0BV0ufIdFPwBI
-         G0CaZ6B+DMU1Cekjo9LySExy1yIoGJO+PGfNyKHldv3VsiV7w+HjuE+1yMXiPYnECbi7
-         vs/PrTQchmbJ9l/8wOtHx62YgIg++81NnqddqYsv7kSI95mxVEXV43B0NAHtES7S8YJy
-         FCvg==
-X-Forwarded-Encrypted: i=1; AHgh+Rr1Z+oI0v+Q7CiEJPrgvcbTNAwTP0mI3ieK3wQwFn0GGsn/yYq8dEpN1xHnK0zCZwGnB76WRA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwIQqIqKuQ1nJy8a/NodYlapkjg8wDaa7qoxda48ynGf2pMlzP1
-	eXBLyYP6Q1yYQCEVVYtBlb3XKmpZQmNUa8cJzCW1L+R45fvP/wqnYoPUw+Urr5rCiQ==
-X-Gm-Gg: AfdE7ckD7c5P5htAuN+Rg9gQ+kTpJfnaFHWY58ypKqX8xqbGudtZjWd497HmfIJdOtu
-	CxevpFx8aMnP/8OFgw/vkJ4FiSNQghqUfNq0NfdTlDd6A5w8ZoBzc2QLTnJ+Zi4yOGhFOJFxFIu
-	FjjLyq5s63L180MGgJx0WXgHLaazXApa2ZMbyELPQFjcplQSEKNenOpmwxbHQGFvj030l8P91OM
-	D2lVEHJ6E0CDSnKuSrqX7gaag7VVVSe3ttox78cvSIKoDOTeP9F5SpCvhB1OlAQr4VIuQgSbqxf
-	OF5AzlL8pvFdyyCH1zd27qe0Oeys2/PjE470s5DEz1bAMAqaair+cNBoGiSiH8kPVccDCAUAil/
-	7cc7/cGj5NEzB6qErtI9r2NMSShnxexTUsUTX6pENfpCVNn5MUwdulxE7gyc0UdqQuiTxhCglEh
-	jR7mvuDG7EuuYvJhyJM4Ju+J6N1nGRLtBnX0Zpms68HcJQLX4=
-X-Received: by 2002:a17:902:fdaf:b0:2c7:debf:2146 with SMTP id d9443c01a7336-2ca2cf9c2c1mr251595ad.9.1782750507162;
-        Mon, 29 Jun 2026 09:28:27 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38052f4789dsm10213a91.14.2026.06.29.09.28.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2026 09:28:26 -0700 (PDT)
-Date: Mon, 29 Jun 2026 16:28:20 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
-	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, smostafa@google.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	jamien@nvidia.com
-Subject: Re: [PATCH rc v6 6/7] iommu/arm-smmu-v3: Skip RMR bypass for kdump
- adoption
-Message-ID: <akKdJFx7zhWtpjBT@google.com>
-References: <cover.1779265413.git.nicolinc@nvidia.com>
- <88e75018e94adc2eb3db8c1fd97c3cc738c170bb.1779265413.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PfDXIPAD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5B21F000E9;
+	Mon, 29 Jun 2026 16:35:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782750938;
+	bh=tqvibWEtQh2T48OiewXhNx0S0zqLKa3gex5DVvzFGOM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=PfDXIPADcSrUOwdTRGhDf130tTlUjzfb55asHDeokcwn4q2fFY7uD5zpTbQijKU2j
+	 A3h6LyrgBRhD8vjv/PCOQbIS0x10wNp15U53uZUeJSa+ZUUtNYjmvMkaFTX0FdsPtY
+	 5VFsbeAwARiOlYL96AR5bc/UJx13BAZgTchhOZXOoq884yT683+Ba+UY0kenSbPQ5G
+	 /9Y3STPVYFUZGbaD/nfway1UOiEmxiypL1sfzIHXjp28wqpXFD1BkVYOwnVTwzjxBO
+	 T6iDd2rL+GJ7Oq4z7lXn+Gf9jPYSMojIl9QVfBm4ugrQ3F58b1YoFt3gxDwWn1rh48
+	 BJyQRg2g8eDBw==
+Date: Mon, 29 Jun 2026 17:35:16 +0100
+From: Lorenzo Stoakes <ljs@kernel.org>
+To: Gregory Price <gourry@gourry.net>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Pedro Falcato <pfalcato@suse.de>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
+	Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 03/30] tools/testing/vma: use vma_start_pgoff() in merge
+ tests
+Message-ID: <akKeKSnWlc416OIP@lucifer>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <b501eca378b9d9734e83838102aadc9276590fba.1782735110.git.ljs@kernel.org>
+ <akKR3bFV7393yOUs@gourry-fedora-PF4VCD3F>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,39 +77,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <88e75018e94adc2eb3db8c1fd97c3cc738c170bb.1779265413.git.nicolinc@nvidia.com>
+In-Reply-To: <akKR3bFV7393yOUs@gourry-fedora-PF4VCD3F>
 
-On Wed, May 20, 2026 at 10:03:23AM -0700, Nicolin Chen wrote:
-> RMR bypass STEs are installed during SMMUv3 probe for StreamIDs listed by
-> IORT RMR nodes. A normal boot switches the driver to a fresh stream table
-> whose initial STEs abort, so those RMR SIDs need bypass entries before it
-> becomes live. This preserves firmware/guest-owned traffic, including vSMMU
-> guest MSI cases built around RMR-described SIDs.
-> 
-> ARM_SMMU_OPT_KDUMP_ADOPT is the opposite case: the driver keeps SMMUEN set
-> and adopts the crashed kernel's stream table, so RMR SIDs already have the
-> only translation state known to be safe for active in-flight DMA. Replacing
-> an adopted STE with bypass can turn translated DMA into physical DMA, then
-> point it at the wrong memory.
-> 
-> arm_smmu_make_bypass_ste() also rewrites the STE in place after clearing it
-> first. While the table is live, a concurrent hardware STE fetch can observe
-> V=0 or mixed old/new state.
-> 
-> Leaving the adopted STE unmodified keeps the kdump kernel using the crashed
-> kernel's translation. That gives the endpoint driver a chance to probe and
-> quiesce the device.
-> 
-> If the old STE was already abort or invalid, installing bypass would create
-> new DMA permission; leaving it alone is a safer failure mode. Later domain
-> setup still gets the RMR direct mappings through the reserved-region path.
-> 
-> Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
-> Cc: stable@vger.kernel.org # v6.12+
-> Assisted-by: Codex:gpt-5.5
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
- 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+On Mon, Jun 29, 2026 at 11:40:13AM -0400, Gregory Price wrote:
+> On Mon, Jun 29, 2026 at 01:23:14PM +0100, Lorenzo Stoakes wrote:
+> > Now we have the vma_start_pgoff() helper, update the merge tests to make
+> > use of it for consistency.
+> >
+> > No functional change intended.
+> >
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+>
+> Question: Should we have primitive tests for vma_*_pgoff() since
+> the behavior changes depending on file/anon?
+>
+> Nice to have the cleanup and clarity. Maybe worth asserting no
+> one ever breaks this.
 
-Thanks,
-Praan
+Well funny you should mention that :) I do add some asserts as I go.
+
+In my RFC series which this series is the predicate for, I add more as then
+we track virtal page off separately (see [0]).
+
+Amusingly (or not) /dev/zero breaks assumptions a bit (anonymous VMA with
+vma->vm_file that tracks by file index, just glroious). But I plan to fix
+that later!
+
+>
+> for this patch though
+>
+> Reviewed-by: Gregory Price <gourry@gourry.net>
+
+Thanks!
+
+Cheers, Lorenzo
+
+[0]:https://lore.kernel.org/linux-mm/cover.1782745153.git.ljs@kernel.org/
