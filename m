@@ -1,149 +1,205 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013026.outbound.protection.outlook.com [40.93.201.26])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C7D13C063F
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 15:40:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782747622; cv=none; b=ezUC+1GaVT+iNPl3l3ml74Xrde/8mrC5uONhHytMH1A9qg7wIXfvUWXAUe0/EesQrKvivY8/t36kDXeZSJEd8XDXJDMRXzGQnf9+zuYjN8P97Bl1+XRrdoI9DX0Hjpy/BNMMPj6MH073/fE2Hm49YjNPIKCQmaL3UtrI11pxpyY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782747622; c=relaxed/simple;
-	bh=wTZ867cLvl3NEk7csUy7NtkIFljCREofjieQ4f4eY6U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WzVs6Th0WRQ296ciSwFOevfolpxPOKpfYTSzdfr/f6wkAxg+l9JnkX45Kh0g2p5x0lSpqXQd2NNO7NvlvbxHheyXsux61TOPOgOqBJbbOKyD7eJ9V917VhLNrzbnYNZr26BHwQiNC8uQRWBNzf+QNtZcZtJW8U39IoFRi2St5G4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=dZT4vYGK; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 868C630596F
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 15:41:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.26
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782747705; cv=fail; b=DL3kC0iCPjwDRjmCxdrndcJSA2If9qL0TlnrQ9OgrJNzWJJ3gm9RuYwJnPU6uAq5mA1Tfv06ADgKDbIiqai0KHb1PQl0rU78/RVAPJg2HyxoVsgfDDFd82koR4ImxnMORndWyuKFO9puHH9yKivjcrE/qpLGO4sdBqQwYJtwX1w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782747705; c=relaxed/simple;
+	bh=7e69S+AMpYt+2560h9s7Q1qknBhYuowqC1Vy27vo7Ws=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=II9KIPXemIcSNaxhwoPrYVppeml5BIt3Kx7LX1KliR+nEXWUTEMzYmwjAAVxtpPH7LiC07emx8m9VnYrkHtzrsbmjDwcNyHtzabhMCjbR8YSiTAsECe9o9gZxs5atiPUsOdHMCnq0HGRi6jxeMZU/tJGMow4v1TsnQRwle1Vlv4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Jv2RLXSs; arc=fail smtp.client-ip=40.93.201.26
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="dZT4vYGK"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-519eedc30a3so33870381cf.1
-        for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 08:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gourry.net; s=google; t=1782747619; x=1783352419; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VwgemlAWVZOfyfvrJ+7cyHmQGRLai3JgFnH6EFj5//k=;
-        b=dZT4vYGKcz19n0TwwHG1zDIsyBQ5YZSd90fIQcZJrGVdUJPF1A78XW5JJHpIAcJdDp
-         RMRd7gFoZmDvu99N/EK8T4i5uVPPDczSxv+bFB7yaMi/e7bJPJTw5TJgAI/ieilxgFvS
-         pq7q/gy/wuUOWKlFozYd8cnQ6rxnSkwwXyaS4BNuzvIIydhBqM1cQ+foSDbTz59ecL+b
-         Oh7NeTvw/u+aL/BNYEA635pa1KDy13LfdHVFXCAFJGIB3/bXDDHBAAb1yiTpBjglwlGj
-         X7U1nDQ4cKGkNusLIDSyqWROgZLCQ0/Q1h3tqxkSIqLHM/eBIXSeglzxUoYCymZv+Ge6
-         aIeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782747619; x=1783352419;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VwgemlAWVZOfyfvrJ+7cyHmQGRLai3JgFnH6EFj5//k=;
-        b=c2tm1YjNGZo/28Qk2Vk4bXkpZko/n6oJ4FXw2FGKn9xTRUL1VfWjtTR3rbTL+lcVkK
-         s8cWeL9luC7EEoF9EpGb4brtOMeNOUlcGukYRMzsNIM0Ka+zYFkUZL0ceQ99kMcoxLgq
-         9qSzO4dUNjD17pbBKYOjj8RF13uLV79V5FDPYKRTQ1F87SpMzfhi/2/wnT6+7YC4gaUj
-         EFr3CsAMGctGDGJh4t3r2x1N4YLTJWV1v41sXiaj+Pwul+up0GHs9uQlEAqXI1aAIFTp
-         DFUujuK7rp+9AttEq91lkVCHDddKSTcVIUW72CWIaFomMTB46TuBdNFYRI/Vps3IQZig
-         OUhA==
-X-Forwarded-Encrypted: i=1; AFNElJ/8RCSR3GNDUqB18zBsWPIH9XnoMo+9pPD8wgvx1BWcBIV9zoTVjMvyh/RFbGXo4TToOA0B0g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz0+rmuQathIhWp59mceeNMQcykXkuu2SmMLSCxvRRbaoClbprQ
-	AwXlI7yDnkP/3c2N9ngR7oyq/39qrVTomRmuWStH2XH7JKGpbHztpaDEMDxUZrY/SUU=
-X-Gm-Gg: AfdE7cnYB/uh7uUqrIfHdfC6Kd7T1C5w+u2YBiBVozOxbDA4yWrsXxqpxyF4N8vLvkZ
-	DSul8d4obLjlTP0P9r+5J8Ti80TguNX9EVaHEHhtRPXHCxehlYdWzf7BrzTwG+7JicRt1vlSKiA
-	bkCA1ncJjcdJZVOo8PIvCQfYglzOYSr0Tzv1WyMePPykbMTmP3PR+MY1gChksNZr3C9/b0UvKlp
-	Uz3b5w/Ht+wI+oDUZiA1AcGFGPE79q7tQetwC1T2V0ZYzkN+Gml1Zba5gSaFPgtBVh4epClZq9p
-	S3m5WoR8S4n/0DQCKcmh56ylmH4hz5+b4mes+sincFD07cSMqwqydChsgn60s1rgok3WcTh8Kmd
-	9yJF8VwC61EjrDPAyZoOqoQWyJPx4hC8w+IkgWUrQYwQzbklr7m0L5198TZHn4nAsmGQomtT08m
-	Zs6ZeXqFtC8jZPZjTw54CgUB+8QOjwzLMqNaqeAmi7Uionj1Ybgn9AZa3sXSVzM2yl+TfS
-X-Received: by 2002:a05:622a:5987:b0:51b:f635:9aa1 with SMTP id d75a77b69052e-51bf6359eadmr68650541cf.48.1782747619393;
-        Mon, 29 Jun 2026 08:40:19 -0700 (PDT)
-Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51a876c888bsm78114501cf.9.2026.06.29.08.40.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2026 08:40:18 -0700 (PDT)
-Date: Mon, 29 Jun 2026 11:40:13 -0400
-From: Gregory Price <gourry@gourry.net>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Simon Schuster <schuster.simon@siemens-energy.com>,
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Ian Abbott <abbotti@mev.co.uk>,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	Lucas Stach <l.stach@pengutronix.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Christian Koenig <christian.koenig@amd.com>,
-	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
-	Oscar Salvador <osalvador@suse.de>,
-	David Hildenbrand <david@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
-	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
-	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
-	damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
-	Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 03/30] tools/testing/vma: use vma_start_pgoff() in merge
- tests
-Message-ID: <akKR3bFV7393yOUs@gourry-fedora-PF4VCD3F>
-References: <cover.1782735110.git.ljs@kernel.org>
- <b501eca378b9d9734e83838102aadc9276590fba.1782735110.git.ljs@kernel.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Jv2RLXSs"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=n2MJwVa/pZYSP2oFkgGylb06QMqVD7JENsmhOCj3SUA4KVRUL3sX/KJa3YUV1WQiYr+EwZonmm5giGyfQLfKS9YWeV9pyZRk3bOgPAWarLku7vieeu8qJk1Fv3G6LqSKSsn+FOYrcZNSBg+Px3Q1/eiWDcT70ROXK9ZNLQ0iBXOx7xWTd/CcM98bqJtXD0mkhMlwX//kmmQeHrblbsSa+CqNoIB7nWy1Cr84k/GFomesr4yUboYIySsoD9N6u3Nb8MExXZmJ76mrfIjNxbMzFt7pnvEUaL2m7ucWWB1aq+Y0ZVpFHbE6o3pn8EBYKEBM2nZ220o5f7DSPRK5tVoReA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/WrJYWTck1PP/BcndWeTSXyBWvyfyteZocr9EmH75eQ=;
+ b=qPCSnFOHQ63MsfQnOrJ5lyg1Xn9X1jWlrEd72IsMIWCc/OjG0Jex4fdfYgXSZ1RGksXD0kdXysqQmHrMI4Ra7kog3f3zdxAm5yKqwiq/bFmS47k+k/D4WbjPkZGCypVfl8zuxcYkKz24p7gXOK46JozkmoHR4+uRVi5r4lJXPMNgNaP6WD45fwcHI0U2weBf9sFfNZhTMz6snZpaAUUOaVx4DW4t2aMNDi+8o+rMNbUAjp5MEt5nc4QQx4Tl3q2R0GON9JOQgA7fqZAhu9cK6mMXs2rNfgTzN9P8uNkXprbHYT8EW1DhXxEPFnfUMVtTCyYHi2eh9KjiTt7np7eYAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/WrJYWTck1PP/BcndWeTSXyBWvyfyteZocr9EmH75eQ=;
+ b=Jv2RLXSsr304znZd8k9BUIT4iFAJ2uudJdn7Ax40Tuc9KyPUHvcZSese7YIXUAwKanH0TYyAqmCHsPnr6LtOkMpVw+25/CGoJ3piA81wcNi8dODWP8bNy9bl2sCnTrmHdhTN0YrsDt8cZjAkYi4E8mlPVfxEKxl3lKprEte2QfY=
+Received: from BN0PR08CA0016.namprd08.prod.outlook.com (2603:10b6:408:142::35)
+ by IA1PR12MB6090.namprd12.prod.outlook.com (2603:10b6:208:3ee::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.19; Mon, 29 Jun
+ 2026 15:41:38 +0000
+Received: from BN2PEPF000055E1.namprd21.prod.outlook.com
+ (2603:10b6:408:142:cafe::10) by BN0PR08CA0016.outlook.office365.com
+ (2603:10b6:408:142::35) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.19 via Frontend Transport; Mon,
+ 29 Jun 2026 15:41:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ BN2PEPF000055E1.mail.protection.outlook.com (10.167.245.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.202.0 via Frontend Transport; Mon, 29 Jun 2026 15:41:38 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 29 Jun
+ 2026 10:41:33 -0500
+Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 29 Jun
+ 2026 08:36:30 -0700
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<joro@8bytes.org>, <jgg@nvidia.com>
+CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
+	<vasant.hegde@amd.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
+	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
+	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
+	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3 08/22] iommu/amd: Introduce Reset vMMIO Command
+Date: Mon, 29 Jun 2026 15:35:21 +0000
+Message-ID: <20260629153535.15775-9-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260629153535.15775-1-suravee.suthikulpanit@amd.com>
+References: <20260629153535.15775-1-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b501eca378b9d9734e83838102aadc9276590fba.1782735110.git.ljs@kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb09.amd.com
+ (10.181.42.218)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000055E1:EE_|IA1PR12MB6090:EE_
+X-MS-Office365-Filtering-Correlation-Id: d9cf510e-be7d-4dcd-6390-08ded5f4e8d2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|36860700016|23010399003|1800799024|82310400026|56012099006|11063799006|22082099003|18002099003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	0DZ475ZYZgh6Itna/XqHt9xJYX31qOyHRexuhgrWaJLng4f4Taf7zlni2+UbbQw0E5Hp/QtJW+JRSCQr3W7dhQGubGzcyifR4dJEdBUNMbdYY6zmomDVF/nkSVk9EfZOstJcDO9adf5LAPYlJGDwgYDo6hFz/iGSDcz8Ro2kn0zTk8meHzs+7A1FnWMoKBF0+pb5iuEpMmLVthgOIlYuW/vo96daG4VPXAR31E1Bd7LmTjpqvJGtMoafXg3Ti7CU8mM6u9hsv7jVrlAWPJcPgvSN6+8wPAADv+wfZIz/+k6e57X1wEFaUqTqEHMBTI3YJL36/yO2SVeaGjoFtWm+kns0YTAchbVCb43xOXsLftnihq1dbvpJmsXVD/CjSEf4RbK+d9LLOpsXQebtZM9K9eDWtSrL/S7o1H0TtaQWl2xpux5hhr+9SAQk7WAxBhh5OJEy4B5s9lViAJkbfXwQIl5qrfwvtatNzna2kEWzWfS510X4ecfo411dN+KiHFCKE3hRaLclhQ/TYcRYHZbxgBtejzxwz4oVrDbpFzSAnaEJDsZvPcwh7DXOh65dwe2yeB6FUKjcq3BTnxJHguqCu6gczbs5Q4v/ERW9pDeqS9t6qoThQUoZFIGSpW4knhe99PN9FPwqCe3HXng0fiNZNWBTClLfnSZYannaevRgaSqIu63g3eaN/Y0P/y5qcLDQca7oyt3r3H3MW8wd8vtDeA==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700016)(23010399003)(1800799024)(82310400026)(56012099006)(11063799006)(22082099003)(18002099003)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	HGptFcoOUYDLbCSkkxvuh22xgEaOA3eBAxCHF4Ti1b9JDhQbVq5jLDhYAtbvhGouHOzSrINTLdJqDMYeGpaElNl511qhjA1i+7SX0BfpGdhQp/WPjXe0SqhSJTiBXHDgCBr4UokCXPqyYXgwAuldracg8rM5wsG9JgXaPVi2GA+8ULQcei+/KQldCZ8E9q1bUTjnVW/AVI8oXqUrTIz1MPZ4N6NzxL+ChOzuO1IeEcNAnM3t6Nru4lwZvjCd9Ru3bEr9s0eV9cf99A4DITaa3rHDSTxn5Ae5GLpDvLytr+50n8fIQfrhxFQg5w2iuwssKcr2ytIHyOainUnIEY7Lb+pOSA+KZnT/w86VKKsCEOYSNeNRf02HQK+DLF205Q35ag0cD9dNz9xqUpsnfssN8KBgSGk9g0m9lAOuMGQbN3D3Eo5lTV6zhZBYzEje7Q+t
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2026 15:41:38.7597
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9cf510e-be7d-4dcd-6390-08ded5f4e8d2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000055E1.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6090
 
-On Mon, Jun 29, 2026 at 01:23:14PM +0100, Lorenzo Stoakes wrote:
-> Now we have the vma_start_pgoff() helper, update the merge tests to make
-> use of it for consistency.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+Introduce new IOMMU commands for vIOMMU to reset
+virtualized MMIO registers of a particular guest.
 
-Question: Should we have primitive tests for vma_*_pgoff() since
-the behavior changes depending on file/anon?
+Reviewed-by: Weinan Liu <wnliu@google.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd/amd_iommu.h       |  1 +
+ drivers/iommu/amd/amd_iommu_types.h |  1 +
+ drivers/iommu/amd/iommu.c           | 22 ++++++++++++++++++++++
+ drivers/iommu/amd/iommufd.c         |  3 +++
+ 4 files changed, 27 insertions(+)
 
-Nice to have the cleanup and clarity. Maybe worth asserting no
-one ever breaks this.
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 044bc9a634a1..2ce207529ea0 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -11,6 +11,7 @@
+ 
+ #include "amd_iommu_types.h"
+ 
++void iommu_reset_vmmio(struct amd_iommu *iommu, u16 gid);
+ extern int amd_iommu_evtlog_size;
+ extern int amd_iommu_pprlog_size;
+ 
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index cc7049bbfa14..44fa1d6c64d6 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -218,6 +218,7 @@
+ #define CMD_INV_IRT		0x05
+ #define CMD_COMPLETE_PPR	0x07
+ #define CMD_INV_ALL		0x08
++#define CMD_RESET_VMMIO		0x0A
+ 
+ #define CMD_COMPL_WAIT_STORE_MASK	0x01
+ #define CMD_COMPL_WAIT_INT_MASK		0x02
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 73fba8be40d1..6f5ecc48f4ad 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1428,6 +1428,18 @@ static void build_inv_irt(struct iommu_cmd *cmd, u16 devid)
+ 	CMD_SET_TYPE(cmd, CMD_INV_IRT);
+ }
+ 
++static void build_reset_vmmio(struct iommu_cmd *cmd, u16 gid,
++			      bool vcmd, bool all)
++{
++	memset(cmd, 0, sizeof(*cmd));
++	cmd->data[0] = gid;
++	if (all)
++		cmd->data[0] |= (1 << 28);
++	if (vcmd)
++		cmd->data[0] |= (1 << 31);
++	CMD_SET_TYPE(cmd, CMD_RESET_VMMIO);
++}
++
+ /*
+  * Writes the command to the IOMMUs command buffer and informs the
+  * hardware about the new command.
+@@ -1668,6 +1680,16 @@ void amd_iommu_flush_all_caches(struct amd_iommu *iommu)
+ 	}
+ }
+ 
++void iommu_reset_vmmio(struct amd_iommu *iommu, u16 gid)
++{
++	struct iommu_cmd cmd;
++
++	build_reset_vmmio(&cmd, gid, 1, 1);
++
++	iommu_queue_command(iommu, &cmd);
++	amd_iommu_completion_wait(iommu);
++}
++
+ /*
+  * Command send function for flushing on-device TLB
+  */
+diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
+index 9f76bfa1d6ea..81e0244348a2 100644
+--- a/drivers/iommu/amd/iommufd.c
++++ b/drivers/iommu/amd/iommufd.c
+@@ -80,6 +80,9 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
+ 
+ 	data.out_vfmmio_mmap_offset = aviommu->vfmmio_mmap_offset;
+ 
++	/* Reset vIOMMU MMIOs to initialize the vIOMMU */
++	iommu_reset_vmmio(iommu, aviommu->gid);
++
+ 	ret = iommu_copy_struct_to_user(user_data, &data,
+ 					IOMMU_VIOMMU_TYPE_AMD,
+ 					out_vfmmio_mmap_offset);
+-- 
+2.34.1
 
-for this patch though
-
-Reviewed-by: Gregory Price <gourry@gourry.net>
