@@ -1,303 +1,173 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5616B3A543F;
-	Mon, 29 Jun 2026 06:47:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BCF73B14C5
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 06:57:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782715635; cv=none; b=dxAeLDLOKlQJASQvxfQ2Tos1mi605uwgF0Y8+exssB/b7a9b0+uviOZtYR5QXoXy3RhDqi5I8UIU7ZAg2/HY468VpXQY4Tg7OeYaAz6Q17b/ZjmHar4se6eLb1/di9IatLVNyxz8LghcDElYK3MHnL+OWrq8hPaf/l6wG989x+0=
+	t=1782716228; cv=none; b=sMz3l/fouUlv8o40fbASyq2Q1o8puA3xJXc3Y9f08AtmiW2EiMvrIOh0CdmyUfnrnMRq7JVIJ6lma+HUZMzrz3nZxzxnTUEppOhFXzhbreNFrfBQNrVpO1XgtY+jSpVv4r2836EGeMcLVN+yq75OMKNZzt/DwGTKof2JtY2pxhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782715635; c=relaxed/simple;
-	bh=znmh01JaG+YV12lYbuPs8yO1BSajQWT1IMsv0kKGPJk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=LkHEP63dYSJREyb796jJgGbavCe7adoRQuFjMgCD4KU9etYJSmhty9woWI1Fi+l58AGxVJK8UmZJy7NJvGPQg3EoHfvA0EXO7bAnqS6Z+uXEABHxOpCNFVJLXMnjuKfWy2WcncyOKyJd/p22RqOhoZvXXZpCRc2BsTMcwIsHWvE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAD6E1F000E9;
-	Mon, 29 Jun 2026 06:47:03 +0000 (UTC)
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-In-Reply-To: <20260619140616.GB1068655@ziepe.ca>
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <aigYbK12D8uKQvJF@arm.com> <20260609144746.GL2764304@ziepe.ca>
- <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
- <yq5aqzm4dz25.fsf@kernel.org> <20260618153705.GH231643@ziepe.ca>
- <yq5ao6h6enhm.fsf@kernel.org> <20260619122148.GL231643@ziepe.ca>
- <yq5aldcaejos.fsf@kernel.org> <20260619140616.GB1068655@ziepe.ca>
-Date: Mon, 29 Jun 2026 12:16:30 +0530
-Message-ID: <yq5ao6gtoncp.fsf@kernel.org>
+	s=arc-20240116; t=1782716228; c=relaxed/simple;
+	bh=BtkPFNWwQb2PwuusYf/8KN3qcU9Gir40fUa8c/oqJ5I=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=VtUXQg0wqLdoSmUApiHbDw6Rp0ttc/z9pfHBVTrqgWKMDWCQmBGaVBcZu68+99RWZ0lKAsNN+iU5/TwVcUS4Ied3DCaTNV35hhIqnaugPVqaveQ11q7gtw9rm4RST/rPHczapJOVuqfgHLJYH5NtzIhtO7ccs1/n8WTWPnFNuBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=giUQhWBy; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=FZgNB2fn; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="giUQhWBy";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="FZgNB2fn"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65T6sKMD2143078
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 06:57:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=xOux2gDggREnIc5Op1Tbz5
+	VNmuHn30UOA4c59Lv6Txk=; b=giUQhWByJkMkmkHPncSBlK/cyD2BmCue3wQBYq
+	yZhoLgsoHppyLJC0d8I3gc778X98oq2/voWWPMorovgyoPInub1k5PLB7jubcYni
+	iVzM9sjOqm0FjTVFio1Z3PEK8T8nJBL4XXMSnwwUCYUaqiOgu70Yv0XpkIVqAKih
+	O7OjsgVdo4cJc2XGG2e2CY2nnqB8bKrt88BTutjFAVOVklkyFUB3Zv17aJHDG8aX
+	1lp8hcNylwDa9s9BKceta+7wsxaTELPwnwd9yiRwumdJAs1WybZNWYxVg7So6CMO
+	76NEgYMQZvfvdVnqPvDwVPCvbtZdNnvuDBjFVvH7ILBxyicA==
+Received: from mail-dl1-f71.google.com (mail-dl1-f71.google.com [74.125.82.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f26x8n67k-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 06:57:03 +0000 (GMT)
+Received: by mail-dl1-f71.google.com with SMTP id a92af1059eb24-139fe708181so1499102c88.0
+        for <iommu@lists.linux.dev>; Sun, 28 Jun 2026 23:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1782716223; x=1783321023; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xOux2gDggREnIc5Op1Tbz5VNmuHn30UOA4c59Lv6Txk=;
+        b=FZgNB2fnzgehP6b8fJ0sKIrtfZYW+0ORqKNtxChB37akY6nkMoB77HkNTYVF+fm5w0
+         kCT39cCIx6dPAR54QZr5mdrIgMI1QBMuccj55jpHuT3Mq5QWwvCjwlsoSU9xdRWvBY/W
+         bqsvh7sdAIhOl1i1hDGTqhTZPBUdVSAv5uHSCYSfTzRY6stUSMMP3Y0Iq48aNofoaBuN
+         t8JP15h9PG7JQeRba3OZy1Yt1mezRCnzAr+Oh/lo0ANyKWAQd4c5xYaUc2gnY5VUX7Io
+         twpdgcW6z5WCfnZo19aosBvfzOx4a9iXbKdCZHs3o3G/5OrnGAiUXj0V5vqkJl3QTyI2
+         fKAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782716223; x=1783321023;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xOux2gDggREnIc5Op1Tbz5VNmuHn30UOA4c59Lv6Txk=;
+        b=emloNdxBjpBmwdAOtZHnb1QEiXranx+2DH4pOWJ1e9Wd5eoYFPQplcTIrHLDAFrASb
+         wo5IHHzHLx/LXP/u8XiC28ASRTs65SlbOjw2zAtT1hEzxnppB8RspH+Wmw9ZZdObxh/j
+         E/PVrS9Hw1HNSd+PI/hN8BGuo4AAUbHnOmlDUlhK4Rer0CZGu4jHv4mU2ImtP2QTn+Pq
+         zTTbUhxmdmgi70pggGGUfzgn0OHXX5nPXSsoV66S91ONWLe1GjkMV2jdC04fcmEedekz
+         84k57iGJ70lSTM6zgTQ1x/2xBLuek8M2JemFu1wNqb8rWaPclV84aafq51ZAiPXwutOY
+         ePYA==
+X-Forwarded-Encrypted: i=1; AHgh+RpddiUf6d1ffz2GB030C1+SrUV834L/2VPhCyPmv8bKti+0DQS2DySLdt7XZyEOm/fHKBNr9w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyG+6UETKTY2NShahMlznHvwJWifxou6+rSCopMe6D6rHLBR25B
+	YDje73DorkbBXSDSNvESsC6cVDzQiE6rELBNj9fzn3Er84TZDZ17+g5/u7JbnoGomAVr2IlX/Gh
+	zqeo1qCDur1gwbC2b46mgp1QZmrCsnfOju06mPx7wcOOURY/dsoxhMx2vtw==
+X-Gm-Gg: AfdE7cnJ8X3BYkAKQxENIya4bp3iOq1sX+w5RTWenixK/QKBUuEDAn4N1NskY0HUwx7
+	xmiaqtMvx8Z5tFowbD1S3sEK49HCY3dRQ00zWFtlPIODGmXUHEZbKS3rPHze0OLHuWQZEHnf4Y2
+	T8w51ZxhPGixnJ+/LrLExX6SIcazCYo4kXHpd+I3CcjQaLDviYsZXZyA5j3q2ArhWLXdtGhcVAZ
+	tXIVJm9qpyeBvzxntAulaUzeg9Jga36Z7lLj+VlyijYn+MqUOpg4rTVsMBxOVkm+fsDKXnPs07U
+	chERWOxS/5iHsiMZqqj38skcVZaw3j8l4eO5nZvqrfZ8qgzLaT3LM5JUkJoSEm+/MiCoIQHtNf+
+	4/EIjThTEvH9sQ+YKhUsYCe9tLSn/0e6CIFzTFouDX3CoTy/HEh+/tAMng/HdSw==
+X-Received: by 2002:a05:7301:6003:b0:307:91f9:c1d9 with SMTP id 5a478bee46e88-30c84f77b05mr15366621eec.29.1782716222315;
+        Sun, 28 Jun 2026 23:57:02 -0700 (PDT)
+X-Received: by 2002:a05:7301:6003:b0:307:91f9:c1d9 with SMTP id 5a478bee46e88-30c84f77b05mr15366587eec.29.1782716221797;
+        Sun, 28 Jun 2026 23:57:01 -0700 (PDT)
+Received: from hu-jingyw-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c7c52c6c2sm44995600eec.10.2026.06.28.23.57.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Jun 2026 23:57:01 -0700 (PDT)
+From: Jingyi Wang <jingyi.wang@oss.qualcomm.com>
+Date: Sun, 28 Jun 2026 23:56:53 -0700
+Subject: [PATCH v2] dt-bindings: arm-smmu: qcom: Add compatible for Maili
+ SoC
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260628-maili-smmu-v2-1-87448a7678ec@oss.qualcomm.com>
+X-B4-Tracking: v=1; b=H4sIADQXQmoC/02NwQ6CMBBEf4X0bAldhRRP/ofhUNpFNqEUu0I0h
+ H+34MXLJC+ZebMKxkjI4pqtIuJCTGFMAKdM2N6MD5TkEgsooCoq0NIbGkiy97Os0RUdWKVr40Q
+ aTBE7eh+ye5O4NYyyjWa0/a5I82qv9cSvED/H5aL28s9ewuXfviipJFpdtgo6Z/T5Fpjz52wGG
+ 7zPU4hm27YvrJsaD8IAAAA=
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Cc: aiqun.yu@oss.qualcomm.com, tingwei.zhang@oss.qualcomm.com,
+        trilok.soni@oss.qualcomm.com, yijie.yang@oss.qualcomm.com,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jingyi Wang <jingyi.wang@oss.qualcomm.com>
+X-Mailer: b4 0.15-dev-3d134
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782716221; l=1234;
+ i=jingyi.wang@oss.qualcomm.com; s=20250911; h=from:subject:message-id;
+ bh=BtkPFNWwQb2PwuusYf/8KN3qcU9Gir40fUa8c/oqJ5I=;
+ b=QnqI2Z0FwP7IqQVq1stRSgL3Kmyg9mkoHLOBdkzpbuoDBBSGghBhnyoHaLBqYkrOJfrh+vpgx
+ a/mQgHR0MfwCp7N0ENAXOw6pmh8hAexhgtVK9oM3H0P1619SRkyGQzp
+X-Developer-Key: i=jingyi.wang@oss.qualcomm.com; a=ed25519;
+ pk=PSoHZ6KbUss3IW8FPRVMHMK0Jkkr/jV347mBYJO3iLo=
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI5MDA1NyBTYWx0ZWRfX+74qC+TuGgOB
+ ygiE9NaOBu3+y7STfStprwbTjLxbosYWfSYhbP/rpHQuiJbH6Uj/vT3kST61Je7XQsmma7UuY6d
+ vlAczbFjuWuNoXMaFYfVYgvdvk8fYko=
+X-Authority-Analysis: v=2.4 cv=D+N37PRj c=1 sm=1 tr=0 ts=6a421740 cx=c_pps
+ a=JYo30EpNSr/tUYqK9jHPoA==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=0vWZlYpcnXXQiWOWdZUA:9 a=QEXdDO2ut3YA:10
+ a=Fk4IpSoW4aLDllm1B1p-:22
+X-Proofpoint-GUID: XLAi3MJgD5hQHnrc7yEgSMvvDgQ-sf_-
+X-Proofpoint-ORIG-GUID: XLAi3MJgD5hQHnrc7yEgSMvvDgQ-sf_-
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI5MDA1NyBTYWx0ZWRfXyxml1cGYYO3p
+ 8cyerbzlYSEhpCKiFsLhDXyGXs8jGoQFFtbnmQvQia+gqSp8oeYw24mp9OOm+hRh4i0nWKrCmx9
+ mt7rlbbmWVydPdleXzc85v8YJMcUlt7Pxf3Q4gM7QBJQ/FsRiamGL3kAplcLfmCCMnUtb8zFn6h
+ 5p5Se6Uq0c6xpJCxgyvLrnUzlCsVE88p3Xd2RNsTM0LplUQ5CNsovR7G7837xG1nHGK1B+KFSIZ
+ jdEi6RYoA7J6+mq0yoS6u/gNUHHEgTYV5LXvChbVJlBT+yDWkv1syRPGoCDuSmpVhbtsuzlT542
+ W90RFFG40ePW57awMlzIuQBaQgL+0DXj/VBAz0sf7wSy97wo/9bPXJFR6hi6AM11W/m7CuJ/GK5
+ 7bY4BdmU4govrJnkEThMxmtfJoJbPSU8L+ztVbSR7E+jjZwQaqi1ZnpD698r48+5KdBW2iGwI0+
+ xUO+oIoWpRD7ru8QLEQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-29_02,2026-06-26_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 clxscore=1015 suspectscore=0 bulkscore=0 impostorscore=0
+ malwarescore=0 lowpriorityscore=0 adultscore=0 spamscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606290057
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+Qualcomm Maili SoC includes apps smmu that implements arm,mmu-500,
+which is used to translate device-visible virtual addresses to
+physical addresses. Add compatible for it.
 
-> On Fri, Jun 19, 2026 at 02:36:19PM +0100, Aneesh Kumar K.V wrote:
->> >> Agreed. If the device can do encrypted DMA and requires bouncing, it
->> >> should bounce through encrypted pools. We don't support encrypted pools
->> >> now and that means, we mark the option ("mem_encrypt=on iommu=pt
->> >> swiotlb=force") not supported for now? 
->> >
->> > ?? if you don't have a CC system then the swiotlb is "encrypted"
->> > meaning ordinary struct page system memory.
->> >
->> > The hypervisor should not be triggering any CC special stuff here, it
->> > is not a CC guest.
->> >
->> > Agree we don't need to worry about swiotlb=force with a trusted device
->> > in the GUEST for now, but it should be something to fix eventually.
->> >
->> 
->> If i understand this correctly, the setup Alexey is referring to here is
->> bare metal system with memory encryption enabled and dma address doesn't
->> need C bit cleared because it is handled in iommu.
->
-> This is how I understand it too, if the iommu is turned on then it can
-> take the high PA with the C bit set and map it to an IOVA that matches
-> the device's dma limit.
->
->> ( I consider this as memory encryption that is handled
->> transparently, device can access any address because that encryption
->> details are now managed by iommu).
->
-> Compared to the guest side there are some important host side differences:
->
->  - On the host the iommu can fix it because this is only a matter of
->    IOVA range not access control. On a guest even a IOMMU cannot
->    permit access to private memory
->  - On the host the state of the device is driven by the dma limit
->    which is not set until after the driver probes. On guest the state is
->    set by the tsm and device security level before the driver
->    probes
->  - Both flows end up using pgprot_decrypted and set_memory_decrypted()
->    to create their special pools, but for completely different
->    reasons.
->  - The memory coming from the special swiotlb pool must NOT be used by
->    a trusted device on a CC guest, while there is no problem for any
->    device to use it on the host.
->
+Signed-off-by: Jingyi Wang <jingyi.wang@oss.qualcomm.com>
+---
+Changes in v2:
+- patch rebase
+- Link to v1: https://lore.kernel.org/r/20260524-maili-smmu-v1-1-ec85b12fda83@oss.qualcomm.com
+---
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Agreed.
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index a701dec2fa0a..c48e9de1a2bd 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -39,6 +39,7 @@ properties:
+               - qcom,glymur-smmu-500
+               - qcom,hawi-smmu-500
+               - qcom,kaanapali-smmu-500
++              - qcom,maili-smmu-500
+               - qcom,milos-smmu-500
+               - qcom,nord-smmu-500
+               - qcom,qcm2290-smmu-500
 
->> Thinking about this more, I guess we should mark the swiotlb as
->> cc_shared only with  CC_ATTR_GUEST_MEM_ENCRYPT instead of
->> CC_ATTR_MEM_ENCRYPT as we have below.
->
-> The name cc_shared should be used for GUEST scenarios only.
->
-> I guess there is some merit in keeping swiotlb using "decrypted" to
-> mean it usinig pgprot_decrypted and set_memory_decyped() which AMD
-> gives meaning to on both host and guest.
->
+---
+base-commit: 3d5670d672ae08b8c534b7beed6f57c8b44e7b43
+change-id: 20260628-maili-smmu-9ed0f2c189ad
 
-Are you suggesting to change the struct io_tlb_mem::cc_shared back to
-struct io_tlb_mem::unencrypted?. If we want to split cc_shared and
-unencrypted as two flags, I think we will add quiet a lot of code
-duplication.
+Best regards,
+-- 
+Jingyi Wang <jingyi.wang@oss.qualcomm.com>
 
-> IDK what AMD should do on the host by default. I guess it should setup
-> a swiotlb pool of low dma addrs "unencrypted", but not "cc_shared"?
->
-
-If by low DMA address you mean using an address with the C-bit
-cleared. Currently the SME code uses force_dma_unencrypted() as the hook to
-determine whether the C-bit needs to be cleared. Therefore,
-force_dma_unencrypted(dev) must be true to use such a pool.
-
-The current code already does this and uses the swiotlb pool correctly
-on SME. The challenge arises when we want to force SWIOTLB
-bouncing even for devices that can handle encrypted DMA addresses (more
-on that below). For such a config force_dma_uencrypted(dev) will return
-false and swiotlb will be marked cc_shared/decrypted = true; This trip
-the new check we added.
-
-	/* swiotlb pool is incorrect for this device */
-	if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-		return (phys_addr_t)DMA_MAPPING_ERROR;
-
-We can also do
-
-	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-		/* swiotlb pool is incorrect for this device */
-		if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-			return (phys_addr_t)DMA_MAPPING_ERROR;
-
-		/* Force attrs to match the kind of memory in the pool */
-		if (mem->cc_shared)
-			*attrs |= DMA_ATTR_CC_SHARED;
-		else
-			*attrs &= ~DMA_ATTR_CC_SHARED;
-	} else {
-		/*
-		 * Host memory encryption where device requires an
-		 * unencrypted dma_addr_t due to dma mask limit
-    		 */
-		if (force_dma_unencrypted(dev))
-			*attrs |= DMA_ATTR_CC_SHARED;
-		else
-			*attrs &= ~DMA_ATTR_CC_SHARED;
-	}
-
-
-Here I see value in having DMA_ATTR_UNENCRYPTED. The question is do we
-need to split this into two flags and introduce the resulting code
-duplication.
-
->
-> But if we are operating on the host then this pool is not limited to
-> only T=0 devices, every device can "safely" use it. (ignoring this
-> destroys the security memory encryption on bare metal was supposed to
-> provide)
->
->> Now we have the case of host memory encryption where the C-bit needs to
->> be cleared in dma_addr_t. That requires special handling in the kernel, and
->> I believe we need to mark swiotlb as unencrypted in this configuration.
->
-> I think we need to split the two things up, they have different
-> behaviors and need different flags and labels to make it all work
-> right.
->
->> I am still not clear whether there is a config option or runtime check
->> we can use to identify this case.
->
-> The dma api has to detect, after the driver sets the dma limit, that
-> none of system memory is usable when:
->  - The direct path is being used
->  - phys to dma for 0 is outside the dma limit
->
-> Then it should assume the arch has setup a swiotlb pool for it to use
-> to fix the high memory problem.
->
-> Similar hackery would be needed in the dma alloc path to know that
-> decrypted can be used to fix the high memory problem like for GUEST.
->
-> I guess some 'dev_cannot_reach_memory(dev)' sort of test in a
-> few key places? Setup with a static branch to be a nop on everything
-> but AMD, compiled out on every other arch.
->
-
-If we are not able to reach the memory because of the memory encryption
-bit, then isn't dev_cannot_reach_memory(dev) the same as
-force_dma_unencrypted(dev)? If so, that is how it is already done.
-
-I am wondering whether we can keep this simpler by ignoring the
-swiotlb=force kernel parameter and keeping cc_shared as it is, even
-though that can be confusing when looking at SME.
-
-The three configurations we need to consider here are:
-
-1) SEV-SNP guest
-2) SME host with iommu=translated
-3) SME host with iommu=passthrough
-
-IIUC, all of the above work with the current code because we mark the
-swiotlb as cc_shared/decrypted when CC_ATTR_MEM_ENCRYPT is set (i.e.,
-this applies to an SME host as well).
-
-The challenge arises when the user forces swiotlb bouncing with the
-swiotlb=force command-line option. At that point, all devices, including
-those whose DMA mask can handle encrypted DMA addresses, are forced to
-use SWIOTLB. That becomes a problem because SWIOTLB is marked as
-decrypted by default.
-
-How about something like the following?
-
-x86/dma: Disable forced SWIOTLB bouncing for SME IOMMU passthrough
-
-With host memory encryption and IOMMU passthrough, DMA address handling
-depends on whether a device can address the C-bit. Devices that cannot
-address it need DMA addresses with the C-bit cleared, while devices that
-can address encrypted memory should keep using encrypted DMA addresses.
-
-The default swiotlb pool is marked shared when memory encryption is active.
-Forcing all devices through that pool would also force devices capable of
-encrypted DMA to use shared mappings. Clear the global swiotlb-force-bounce
-state in this mode, and warn when this overrides an explicit swiotlb=force
-command-line request.
-
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-
-modified   arch/x86/kernel/pci-dma.c
-@@ -51,8 +51,24 @@ static void __init pci_swiotlb_detect(void)
- 	 * Set swiotlb to 1 so that bounce buffers are allocated and used for
- 	 * devices that can't support DMA to encrypted memory.
- 	 */
--	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
-+	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
- 		x86_swiotlb_enable = true;
-+		/*
-+		 * With host memory encryption and IOMMU passthrough, devices
-+		 * that cannot address the C-bit need DMA addresses with the
-+		 * C-bit cleared, while devices that can address encrypted
-+		 * memory should keep using encrypted DMA addresses.
-+		 *
-+		 * The default SWIOTLB pool is marked shared when memory
-+		 * encryption is active, so forcing all devices through it would
-+		 * also force devices that support encrypted DMA to use shared
-+		 * mappings. Disable global forced bouncing in this mode.
-+		 */
-+		if (iommu_default_passthrough() &&
-+		    clear_swiotlb_force_bounce())
-+			pr_warn("Ignoring swiotlb=force with host memory encryption and "
-+				"IOMMU passthrough\n");
-+	}
- 
- 	/*
- 	 * Guest with guest memory encryption currently perform all DMA through
-modified   include/linux/swiotlb.h
-@@ -40,6 +40,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	int (*remap)(void *tlb, unsigned long nslabs));
- extern void __init swiotlb_update_mem_attributes(void);
-+bool __init clear_swiotlb_force_bounce(void);
- 
- #ifdef CONFIG_SWIOTLB
- 
-modified   kernel/dma/swiotlb.c
-@@ -208,6 +208,15 @@ unsigned long swiotlb_size_or_default(void)
- 	return default_nslabs << IO_TLB_SHIFT;
- }
- 
-+bool __init clear_swiotlb_force_bounce(void)
-+{
-+	if (!swiotlb_force_bounce)
-+		return false;
-+
-+	swiotlb_force_bounce = false;
-+	return true;
-+}
-+
- void __init swiotlb_adjust_size(unsigned long size)
- {
- 	/*
