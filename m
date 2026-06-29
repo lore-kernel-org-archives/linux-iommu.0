@@ -1,33 +1,33 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9D085352C52
-	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 10:50:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC90B3B7747
+	for <iommu@lists.linux.dev>; Mon, 29 Jun 2026 11:09:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782730202; cv=none; b=NNkqUlBKf28OHvU+pBj1YwaDfxLvl5Hmo5NWqMBJeHTuTPxrnHJOsnPNvGbbN4Uodl/Dt4P9Y6STmkyPXfCSbh4XxE6j79AekjdUnFlPnQGuZTyei63SuRGne/x5JVzfQZVakjsSc2rfuDAqT6lmMZ6rHZFaHVtQrUB5Uopku70=
+	t=1782731387; cv=none; b=XnS5d7/GrMjJ9zOFtR5dy13jwLwAHV46UT6+xPJEDX7/t1SqwIRSqUcDOvFPAxwiE+5gdNbo3M+zdx3HSxcHXc2p12TXZ+vxLojl9xgFWFg/xNuYhLxjFQ0bouKaTo5blt+dfxOg03HxAnZ6UwhUQZY25JMMVCfBfkYxieXWfsI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782730202; c=relaxed/simple;
-	bh=wF6fcioGkP3XO6al5/wvWBbE3VVkjvj+GMCxkCwlGDI=;
+	s=arc-20240116; t=1782731387; c=relaxed/simple;
+	bh=QgqZKkxSbB1wM8e1IkdcQNU62wH1FE5dh6CdTyleERs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jUlUw6Y5l3Hz/+/WvC5EdFWbeBMkNMY8Lv8LEB97qW/N04u0JmhPa2mZF+EQxPJUsD3mZN05bZIf4fkwtsvlIG/3BYClMkeS3Pphl5N7LNSavcCPUR1xaDZY5f4ePZre9Zr1qa49eQsc8QI5H1x/EnFZkCV0D3jpfy5IwGRXs0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=qc27SAZ4; arc=none smtp.client-ip=217.140.110.172
+	 In-Reply-To:Content-Type; b=AqE+8HPPLqVimRVzOaCi35D8yXzJNn0g9WW/b8iIJwKjm8EeO680Pj/DPl5vYCdrOvCM8cbyu7YCcr/mogt1G4l+E4VMotC8STCGuzBEGvRFvpaCmlIBIQyYI8CdOTyQXX0PF9LZG7kuSN4Qn3YTj/4SO4PcF+vkNxE6YJ3IMjU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=etUC27lV; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="qc27SAZ4"
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="etUC27lV"
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A96AA176C;
-	Mon, 29 Jun 2026 03:49:55 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ECFD1176C;
+	Mon, 29 Jun 2026 04:09:40 -0700 (PDT)
 Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A40C73F836;
-	Mon, 29 Jun 2026 03:49:58 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13CF33F905;
+	Mon, 29 Jun 2026 04:09:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1782730200; bh=wF6fcioGkP3XO6al5/wvWBbE3VVkjvj+GMCxkCwlGDI=;
+	t=1782731385; bh=QgqZKkxSbB1wM8e1IkdcQNU62wH1FE5dh6CdTyleERs=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qc27SAZ4DI8FopNeR7UEBCj1+ah3ZipheSF4vsZPYv5BT5XDnkSzNF0PCUgv3KLWI
-	 wHMiTmPh67LfydGxEP8oN7nihY2sriz0bGLkYXu0yAtdBzvymVw178CW+WKmzp1HVW
-	 CtUm9pE/vuXhtSd3xJmCyrNSZG5b62krhthZxOWg=
-Message-ID: <050f21ea-109c-4247-b6ad-cdef906f6175@arm.com>
-Date: Mon, 29 Jun 2026 11:49:56 +0100
+	b=etUC27lVxe1LcWUtyzLzSaSYek/7XypDJ6QAtaOA17N3O1iP7MNCBcY0k9Z75DiCQ
+	 aapf//5FtO5mL2ZSaB+K6jodFkzvCYjO1WpBvVkLx3UYubGinfus94XJCRXDZX9czU
+	 9Ku+OI1viWKbsbijz3REGZnYSzjx/p3xlNx5JVpg=
+Message-ID: <7c9720fd-c615-481c-ba4d-f5e0efbdd7f0@arm.com>
+Date: Mon, 29 Jun 2026 12:09:42 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,186 +35,117 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] drivers/iommu: Unroll unsuccessful mapping
-To: Krzysztof Karas <krzysztof.karas@intel.com>
-Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>,
- Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
- Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
- Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-References: <20260625134342.1102921-1-krzysztof.karas@intel.com>
- <20260625134342.1102921-2-krzysztof.karas@intel.com>
- <ce5f27fd-82be-4750-8592-2eeb31a54523@arm.com>
- <xajagmgqwrspthaza4zkxfgubatdg762k6icu6vwv2lzwzarh5@hxzhg7vkuc2g>
+Subject: Re: [PATCH 1/2] dma-mapping: make dma_max_mapping_size() return 0 for
+ no DMA capability
+To: John Garry <john.g.garry@oracle.com>,
+ James.Bottomley@HansenPartnership.com, martin.petersen@oracle.com,
+ m.szyprowski@samsung.com, hch@lst.de
+Cc: linux-scsi@vger.kernel.org, iommu@lists.linux.dev,
+ ionut.nechita@windriver.com
+References: <20260629085310.2298552-1-john.g.garry@oracle.com>
+ <20260629085310.2298552-2-john.g.garry@oracle.com>
+ <53d07679-b1bb-469c-acc2-981e75c071c9@arm.com>
+ <d82926fe-4557-401d-ae58-4302fef5657c@oracle.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <xajagmgqwrspthaza4zkxfgubatdg762k6icu6vwv2lzwzarh5@hxzhg7vkuc2g>
+In-Reply-To: <d82926fe-4557-401d-ae58-4302fef5657c@oracle.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 29/06/2026 11:12 am, Krzysztof Karas wrote:
-> Hi Robin,
-> 
-> thanks for looking at this.
-> 
-> On 2026-06-25 at 15:29:10 +0100, Robin Murphy wrote:
->> On 25/06/2026 2:43 pm, Krzysztof Karas wrote:
->>> Currently, if iommu maps fewer bytes than requested (iova_len),
->>> it proceeds to free the iova, but never tries to unmap already
->>> touched bytes. This behavior may cause memory hogging down the
->>> line.
+On 29/06/2026 11:46 am, John Garry wrote:
+> On 29/06/2026 11:11, Robin Murphy wrote:
+>> On 29/06/2026 9:53 am, John Garry wrote:
+>>> For when a device is not DMA capable, the max mapping size would be 
+>>> 0, so
+>>> make dma_max_mapping_size() reflect that.
 >>
->> Huh? iommu_map_sg() has always unmapped internally upon any error - can you
->> clarify how you've seen it returning a short mapping in a non-error case?
-> Yes. I applied some debug logging:
+>> Seems logical.
+>>
+>> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 > 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 381b60d9e7ce..f166cd31d68f 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1515,8 +1515,10 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->           * implementation - it knows better than we do.
->           */
->          ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
-> -       if (ret < 0 || ret < iova_len)
-> +       if (ret < 0 || ret < iova_len) {
-> +               printk("%s: ret = %zd, iova_len = %lu\n", __func__, ret, iova_len);
->                  goto out_free_iova;
-> +       }
->   
->          return __finalise_sg(dev, sg, nents, iova);
->   
-> @@ -1525,8 +1527,10 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->   out_restore_sg:
->          __invalidate_sg(sg, nents);
->   out:
-> -       if (ret != -ENOMEM && ret != -EREMOTEIO)
-> +       if (ret != -ENOMEM && ret != -EREMOTEIO) {
-> +               printk("%s: returning -EINVAL\n", __func__);
->                  return -EINVAL;
-> +       }
->          return ret;
->   }
->   
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d1a9e713d3a0..59163ad0bce3 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2900,6 +2900,7 @@ ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
->          return mapped;
->   
->   out_err:
-> +       printk("%s: Calling iommu_unmap()\n", __func__);
->          /* undo mappings already done */
->          iommu_unmap(domain, iova, mapped);
+> Thanks, but sashiko has been reviewing this and has a few things to say.
 > 
+> I don't know how it chooses recipients.
 > 
-> and ran "gem_exec_big" with subtest "single" from igt-gpu-tools
-> (./igt-gpu-tools/build/tests/gem_exec_big --run-subtest single)
-> on a Tiger Lake platform. I observed:
+> On 29/06/2026 10:10, sashiko-bot@kernel.org wrote:
+>  >>
+>  >> +    if (!dev->dma_mask)
+>  >> +        return 0;
+>  > [Severity: High]
+>  > Could this new return value of 0 cause a division by zero in callers 
+> that
+>  > expect a strictly positive maximum mapping size?
+>  >
+>  > For instance, in drivers/accel/amdxdna/ 
+> amdxdna_cbuf.c:amdxdna_cbuf_map(),
+>  > the returned size is used directly as a divisor:
+>  >
+>  >          max_seg = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
+>  >          n_entries = (cbuf->node.size + max_seg - 1) / max_seg;
 > 
-> [   77.494513] [IGT] gem_exec_big: executing
-> [   77.513162] [IGT] gem_exec_big: starting subtest single
-> [   77.513739] gem_exec_big (2863): drop_caches: 4
-> [   79.912199] i915 0000:00:02.0: Using 39-bit DMA addresses
-> [   79.915571] iommu_dma_map_sg: ret = 7138717696, iova_len = 20023619584   <<===
+> Later in amdxdna_cbuf_map() we call dma_map_resource() (-> 
+> dma_map_phys()) and this would fail and WARN for !dev->dma_mask. Indeed 
+> amdxdna_cbuf_map() is used as a callback for .map_dma_buf, so highly 
+> unrealistic to have !dev->dma_mask ever.
 
-OK, yeah, something weird is happening there... Given that you're 
-apparently trying to map over 20GB in a single scatterlist, I suspect we 
-might be running into some 32-bit integer overflow somewhere - we've 
-certainly hit issues with gigantic individual segments in the past - 
-which is then leading to the IOVA calculation and/or field-swizzling in 
-iommu_dma_map_sg() itself going wrong, or the merging logic in 
-iommu_map_sg(), or perhaps both.
+Moreover, the driver would have failed to probe in the first place if 
+its dma_set_mask_and_coherent() call had failed.
 
-I'd agree there definitely appears to be a bug here, but ultimately it's 
-that iommu_map_sg() is somehow returning a short mapping when it should 
-not, so papering over that in iommu-dma is not the solution.
-
-> [   79.915581] iommu_dma_map_sg: returning -EINVAL
-> [   82.680323] [IGT] gem_exec_big: finished subtest single, SUCCESS
-> [   82.682692] [IGT] gem_exec_big: exiting, ret=0
+>  >
+>  > If a device lacking a dma_mask maps the attachment, max_seg becomes 0,
+>  > which would result in an immediate kernel panic.
+>  >
+>  > Additionally, could this cause invalid zero-sized block layer queue 
+> limits
+>  > in MMC drivers? In drivers/mmc/host/bcm2835.c:bcm2835_add_host(), the
+>  > return value clamps max_req_size:
+>  >
+>  >          mmc->max_req_size = min_t(size_t, 524288, 
+> dma_max_mapping_size(dev));
 > 
-> on a first test execution and then subsequent runs would result
-> DMA remap failures:
+> bcm2835.c is a platform device driver, and platform devices have their 
+> dev->dma_mask set in setup_pdev_dma_masks()
+> 
+> Indeed, that driver does have a non-DMA mode of operation, but that 
+> looks to be selected independent of whether dev->dma_mask is set.
 
-Indeed once the pagetables _have_ got out of sync with the IOVA 
-allocator then this is expected behaviour - -EADDRINUSE is generic_pt 
-refusing to map over an unexpectedly-present PTE, unlike the old 
-intel-iommu code which would have just silently replaced it and 
-succeeded, so if you're only seeing these subsequent failures since 
-6.19, that's probably a factor too.
+That one seems pretty bogus already, given that DMA mode is apparently 
+dependent on an external DMA channel, so "dev" is the wrong device to 
+check (should be dmaengine_get_dma_device()), while conversely 
+dma_max_mapping_size(anything) is a questionably meaningless number for 
+PIO mode... :/
 
-Thanks,
+Cheers,
 Robin.
 
-> [ 1053.077620] [IGT] gem_exec_big: executing
-> [ 1053.086272] [IGT] gem_exec_big: starting subtest single
-> [ 1055.220807] iommu_dma_map_sg: ret = 10581184512, iova_len = 19171119104
-> [ 1055.220821] iommu_dma_map_sg: returning -EINVAL
-> [ 1055.343891] iommu_map_sg: Calling iommu_unmap()
-> [ 1055.343895] iommu_dma_map_sg: ret = -98, iova_len = 15817768960
-> [ 1055.356710] iommu_dma_map_sg: returning -EINVAL
-> [ 1055.356807] i915 0000:00:02.0: Failed to DMA remap 3861760 pages
-> [ 1055.509975] iommu_map_sg: Calling iommu_unmap()
-> [ 1055.509981] iommu_dma_map_sg: ret = -98, iova_len = 19171119104
-> [ 1055.509990] iommu_dma_map_sg: returning -EINVAL
-> [ 1055.636194] iommu_map_sg: Calling iommu_unmap()
-> [ 1055.636198] iommu_dma_map_sg: ret = -98, iova_len = 15817768960
-> [ 1055.648844] iommu_dma_map_sg: returning -EINVAL
-> [ 1055.648955] i915 0000:00:02.0: Failed to DMA remap 3861760 pages
-> [ 1055.800664] iommu_map_sg: Calling iommu_unmap()
-> [ 1055.800670] iommu_dma_map_sg: ret = -98, iova_len = 19171119104
-> [ 1055.800679] iommu_dma_map_sg: returning -EINVAL
-> [ 1055.924869] iommu_map_sg: Calling iommu_unmap()
-> [ 1055.924873] iommu_dma_map_sg: ret = -98, iova_len = 15817768960
-> [ 1055.937634] iommu_dma_map_sg: returning -EINVAL
-> [ 1055.937729] i915 0000:00:02.0: Failed to DMA remap 3861760 pages
-> [ 1056.042152] [IGT] gem_exec_big: finished subtest single, FAIL
-> [ 1056.042736] [IGT] gem_exec_big: exiting, ret=98
 > 
-> which would cause the test to fail. Rebooting the machine is the
-> only way I could get the test to pass again.
+>  >
+>  > If the device lacks DMA support, max_req_size becomes 0, which 
+> propagates
+>  > to the block layer and can trigger panics when processing requests.
+> 
+> All other users of dma_max_mapping_size() are drivers for real/virtio 
+> HW, so should be no issues.
 > 
 >>
->> Thanks,
->> Robin.
->>
->>> Correct that by unmapping before exiting.
->>>
->>> Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
+>>> Signed-off-by: John Garry <john.g.garry@oracle.com>
 >>> ---
->>>    drivers/iommu/dma-iommu.c | 10 ++++++++--
->>>    1 file changed, 8 insertions(+), 2 deletions(-)
+>>>   kernel/dma/mapping.c | 3 +++
+>>>   1 file changed, 3 insertions(+)
 >>>
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>> index 381b60d9e7ce..c4c058ba07ef 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -1515,8 +1515,14 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->>>    	 * implementation - it knows better than we do.
->>>    	 */
->>>    	ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
->>> -	if (ret < 0 || ret < iova_len)
->>> +	if (ret < 0 || ret < iova_len) {
->>> +		if (ret > 0) {
->>> +			/* Unmap partially mapped bytes before freeing IOVA */
->>> +			if (iommu_unmap(domain, iova, ret) != ret)
->>> +				ret = -EIO;
->>> +		}
->>>    		goto out_free_iova;
->>> +	}
->>>    	return __finalise_sg(dev, sg, nents, iova);
->>> @@ -1525,7 +1531,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->>>    out_restore_sg:
->>>    	__invalidate_sg(sg, nents);
->>>    out:
->>> -	if (ret != -ENOMEM && ret != -EREMOTEIO)
->>> +	if (ret != -ENOMEM && ret != -EREMOTEIO && ret != -EIO)
->>>    		return -EINVAL;
->>>    	return ret;
->>>    }
+>>> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+>>> index 4fe04669e5e66..7e576e5c6b8be 100644
+>>> --- a/kernel/dma/mapping.c
+>>> +++ b/kernel/dma/mapping.c
+>>> @@ -979,6 +979,9 @@ size_t dma_max_mapping_size(struct device *dev)
+>>>       const struct dma_map_ops *ops = get_dma_ops(dev);
+>>>       size_t size = SIZE_MAX;
+>>> +    if (!dev->dma_mask)
+>>> +        return 0;
+>>> +
+>>>       if (dma_map_direct(dev, ops))
+>>>           size = dma_direct_max_mapping_size(dev);
+>>>       else if (use_dma_iommu(dev))
 >>
 > 
 
