@@ -1,81 +1,92 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010029.outbound.protection.outlook.com [52.101.56.29])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com [209.85.214.196])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AA5A3E715C
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 06:16:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.29
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782800189; cv=fail; b=TDLJNx+kQH0iuyvOmc8VrMBVYTUN+JhlaKOGfNP22+T65VlzktPw+EG2oMVXxgYfWXjRA5yCoTqj7Tf385/DkT8QMFvalpvYxSDDj4hqLI2FU5YrGxBZ0th1R7gbL/QFg7ZxNO2iI76ACO5TJvJlTfCS5rfPAodj8/ylqp5WZz4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782800189; c=relaxed/simple;
-	bh=v2PJxtRzjAkEzo/sJJ7tqHpdqTXrHRvVbC76ncyXfwg=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SxuHcIP7T6Yymgd6PiPiv+qR6nxr3IJUhn9whiv3ivOAuy/Frm866ouna/m0BF+sIRsJ2nwXFQHbiS2j1IBo0BRqp5rpKqz9ldPZVGhEOjFW7OYNwyi8iJUM0dw8yoT5WWLaJyrNeQsohOO0sXSFKMZ31zbQr49DvV1sA9zTteA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UaSm2ZTs; arc=fail smtp.client-ip=52.101.56.29
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C34AF3E170E
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 07:47:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.196
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782805651; cv=none; b=KM6E6kFPEhNMWEcLXycnY2ltjdOtuZEBmJaXq0ovFxyo+WlHzHgBeYCRd19K3GtQVVxCtno8GjmkBJ8umcLVdSZLl5bXvWunRCFIk8HJhWwWyJ+Az9YDSO7Ahe8KRpFpYFdL9SQqk4W5pOdCWqWOBBj0KBooLTPmXB4LYeFQNkU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782805651; c=relaxed/simple;
+	bh=heKSEPDt49FyXQkUR7yX+hI6qaeXiquq+AzKfj9m46s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AJw+Q3BxBU9rK3dN3h4trcZDMLa0zUP6HQGJJsc1+tsESDKFVqH+gjz13Jm6dohWKSJmJlD7UuUGeWCRB7kcqrQZ30O0MoOaie5QICAsKTewP/sxn1XT7JvyVKXpG2iDqMGIEE6B4+pBK2MBjup5JKSZTq4ekdXT7B2u9JgLgB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mUxYEyqe; arc=none smtp.client-ip=209.85.214.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UaSm2ZTs"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=t46XcQAKdM5HIzP+PC/Z2ivkcH9SLOLkMJPEknzwyWW7h4Y6VfjpFKjibY0U87WiEQHqOGVhCp3ikuEpljgUVkz3ebSC6k8R67+2UqnVVPNWXXEJeIhIZtO5MI7rLoAd8lATSXvVRs19T7BX/dmn1WCYW9saUtyMk0B7BqYnrqB8qngxw82B9LCbaHSO3VVeEdKxSC1/+ns2ARZBF3oiQYof2HlQz1AWxK/TZm4EH4HcLpzM0hDGbf5a2ufHBybm0KbfJbIqNZsqmkZi2nttXp4R2/TvJXleaHtZY3EdVykihEkD0YILuEAuuJXlZvccqU7kEib3X6pNEfGCSb9sfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fCdLUOrPahdSZOE3ORM+KOpLmv/f8Rp0zpPqW9+gpBA=;
- b=yVDcWYagITe/LM4Wq1zs0ev+EJicg4TVf01hvC79nn6epezq8NCTQDh2TfDe0V+w2S5GYrNjK9wPtGz2FjiYW7yBO8o0lq1V99f3/2VxVP2rNaIuzi2o7+9ymWNmROJpaPSym+rD2QJAKvM7v5IpzgWFg+R4i+0dnz3bzZ9qqf31rZ7QR4903nBTq6BALNkpLSRtdyqZrReFGGmj2M+h+l8DJaiUKrRdbMYed2M4sOiss5KKdkz4JBeHypuCBcE3zG0Zq0qSnFXjTlg1VfWHe6LrDGB+qnlY/r/KgAV5/QHbsXTej1rRpA7yuKsuNEsl3WjGd4ya3nxkm40vdrphVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fCdLUOrPahdSZOE3ORM+KOpLmv/f8Rp0zpPqW9+gpBA=;
- b=UaSm2ZTsJ5NUZSxKBHNgWIW6W2lhovMAqwzcyp4IDm1UjplY0REZDWKjjyBhPKVsPZcaK9aspmqZVk1ldozVA2L4/vuv6GlI52CNjSKRq64MnmWZKiTtOO3Mi+NCx9WmLu0WNlZy7jM2eb8er06bxQxP9eoLVKOm2/C9VtaahOvvxAjqqV1Mb7GLiIxd4B5cqxfOYh1BN86/YamJkZIgKfR5Z9YvVZVlRaULzoa7DBfYaJduogRarrpgJDCdVDN5EaTk5GR4ZZjpd1IUhWjMsSl2uFmTBYV4PbA3VTvO1WnzD/ZBTfzNcBPeWKEWUFOgCfZ4gpkBPLar9YAfhhIBhg==
-Received: from SA9PR10CA0021.namprd10.prod.outlook.com (2603:10b6:806:a7::26)
- by PH8PR12MB7445.namprd12.prod.outlook.com (2603:10b6:510:217::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.19; Tue, 30 Jun
- 2026 06:16:16 +0000
-Received: from SA2PEPF000015CB.namprd03.prod.outlook.com
- (2603:10b6:806:a7:cafe::6a) by SA9PR10CA0021.outlook.office365.com
- (2603:10b6:806:a7::26) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.19 via Frontend Transport; Tue,
- 30 Jun 2026 06:16:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF000015CB.mail.protection.outlook.com (10.167.241.201) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Tue, 30 Jun 2026 06:16:15 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 29 Jun
- 2026 23:16:00 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 29 Jun
- 2026 23:15:59 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Mon, 29 Jun 2026 23:15:58 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <praan@google.com>, <kees@kernel.org>,
-	<baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
-	<miko.lenczewski@arm.com>, <smostafa@google.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
-Subject: [PATCH rc v7 5/7] iommu/arm-smmu-v3: Retain CR0_SMMUEN during kdump device reset
-Date: Mon, 29 Jun 2026 23:15:38 -0700
-Message-ID: <6f08e5f6ee8de3fe3613d834e26120cdbdaae7fe.1782799827.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mUxYEyqe"
+Received: by mail-pl1-f196.google.com with SMTP id d9443c01a7336-2c821a50615so21151585ad.0
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 00:47:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782805649; x=1783410449; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+GS4Pj9gB+OIxG6eqcIUsdmhCCBXu3Ye2u2fsYJSw7Q=;
+        b=mUxYEyqeEiNKSyhDE3ZKm61Q9+SlLReltxM7xexAZchQ47vtgjFsSz+XooOsBpomk5
+         cH4JED0DnZJuRdvy9CbupG7Guj2iEFAmqFzII8zu0dq2Spajgo0h4WFwf0PdTWLuZMWM
+         +l9EdsPO2xVV25jPM+tXJzENxYTemJiB47W2HJvijEfnu+e+oeoOS0c4iyYhiRtl5vyj
+         gjhaJf0sa5lN5eKw0TBXD4h9uG2ngRk99Kx7GG23DpQgtFLdlJ8HvJzLSWeNHvDV7PdN
+         yb67NGCa0kxp9SkxI4Af7D0VTS+nrMWIc6N3F2SmYQFoDNj7Iiwtc+DpSHS/tTzUecvM
+         nsVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782805649; x=1783410449;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+GS4Pj9gB+OIxG6eqcIUsdmhCCBXu3Ye2u2fsYJSw7Q=;
+        b=oNMjfByrbteZq58dFhDBn/og7Rid0jkazWu4Ot4W04E4jPRzbcWpzn8GfDcUu3yvua
+         zPlT0lg8mSZIs9nfm/pGrFHlaYZyn73tvxVtGkjquIswnQtv7/W9xH0++r8lgneDQc5V
+         S6I4DB3jfHTzSYyuHjQUEklDfVEB7aW4JG3gKPH0KqpXyuxc1K6vl8seeeJzl62XQqr8
+         GaS89yzcdFUZMcX69M8FKIqGJWY7DURXVHyub8lxXATugwa4e+u4RJIufBBE+1V6Hv+K
+         n2FpStfmKTh0x21jfWF+7yG7Q/cqArKRhiYUkPdlZctguRUxROjtL+Uj0XP9xn7wCxdq
+         6TFw==
+X-Forwarded-Encrypted: i=1; AHgh+RqwRLug6uKVyYZXWNvM+E7DhqweZLldk1dl5cwc3kFoJfQXIbvnB5X3pzQ5zO23nOqmpLItow==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyx5iCVa0BFmOgzte+OkNlXnrCaaNS7cjokazP3CLiz8sfxPnYX
+	xDY7QoHK8s1U49kddBcjHAUG32lmG7pPsK/S6RD6lm9xTgeQlDsKgPnp
+X-Gm-Gg: AfdE7cnVyKPd22AsU5ylp513Zhu+uAURKbE31CUKXrwNy5YECu5wjZ/gNRMV8hnkd5t
+	yyHIj77MXvfFhVg8Eh4M3lqn2ktZs/HGh60uBHRgfDCsFqQI4pvr5JcHp5BFrKQOxlVKMTqaqmo
+	JlR1doo8d+rb58OpJaQponf7SnbphUYnTw+9BCwraeAgjmVoKx3dc32eUyDjPmz/agPrXJpgQW1
+	WHDn97eOW1xFwi4B+pzblo4G9vyZbnUlZJXNGba1fo+Ouk/16bD0ikN7syfqTozBIWmdqnwoRZv
+	/LN0yYaIQjlu4eVgj9iXFbF0m2rO7h56FyI4YVFxXkwvEvP/KbiJHFPqupFNosvZyXK5ytAQyUh
+	XP8dWw+wQdqoesh+crEe8C+hkkU0PRjZJ+5ZUELmqmXq36WAmC3J4kq6MHhcRWDB7r866IanXhL
+	xFzuP4yMv/1VAGbUGzy162ynnE4A==
+X-Received: by 2002:a17:903:46cf:b0:2c9:f0e3:e20a with SMTP id d9443c01a7336-2ca2ea178a7mr21382995ad.33.1782805648953;
+        Tue, 30 Jun 2026 00:47:28 -0700 (PDT)
+Received: from intel.company.local ([210.184.73.204])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca382a2d3dsm7821045ad.55.2026.06.30.00.47.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2026 00:47:28 -0700 (PDT)
+From: Wandun Chen <chenwandun1@gmail.com>
+To: chenhuacai@kernel.org,
+	kernel@xen0n.name,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	robh@kernel.org,
+	saravanak@kernel.org,
+	bhe@redhat.com,
+	rppt@kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	kexec@lists.infradead.org,
+	iommu@lists.linux.dev,
+	zhaomeijing@lixiang.com
+Cc: catalin.marinas@arm.com,
+	will@kernel.org,
+	alex@ghiti.fr,
+	akpm@linux-foundation.org,
+	pasha.tatashin@soleen.com,
+	pratyush@kernel.org,
+	ruirui.yang@linux.dev,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Subject: [PATCH v4 00/10] kdump: reduce vmcore size and capture time
+Date: Tue, 30 Jun 2026 15:47:04 +0800
+Message-ID: <20260630074715.4126796-1-chenwandun1@gmail.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1782799827.git.nicolinc@nvidia.com>
-References: <cover.1782799827.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,141 +94,83 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF000015CB:EE_|PH8PR12MB7445:EE_
-X-MS-Office365-Filtering-Correlation-Id: 14067e17-0d9b-4c6a-b48f-08ded66f178b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|7416014|376014|82310400026|36860700016|22082099003|18002099003|11063799006|56012099006|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	Hd6R5f7o1FKTQe9WNWpXuK4dCOU/uHivzSIKmP1lpRrz9D7NqT1jpkr7vq/Q3ymFD4LxZW6YHGYvJVtvplnmaqQoTsL3HJ4aXbLFYPCESfmm87NgvmXQd+x2X3z2Wvpuuft688QyWpxwiveY5C5T6QvZGrw/v419rtVGM9BjwVEpO6mKtXNoFsxIv6ST+8iCRLWYpWX+di5YwD5n9ezfSYZv0BmfxPULyzfSkX2NaspedzdU14ksS/bb/vZHOiItYJFkXrDphxlCBnj5AN/40C1GyLqUXcB3/Iq+OqMlTr29NmubtpdBD7njmZkjr3kOgHQkbbxbpEA38/o4eWdyu00SoL8k0m8rStqSTWUCFEsCTjrTEznE8nJWOWLQ3MTj8aMK0eo4BqvHcYDjJZAcw1rrMka1+xu5O8Vhq27yssMPm2Hgk0qS4DpC7gHxq/5940ktZYwFU7CKt+Shamql/jRob2pp/OenP2UkwzscTFcg2ux+3mhhb0kEivMFxQKXLbdsDvcgrgBevWp+O6KQ4Lj2mnZnTt5BgzfZ2yNrQQT5fiJYcOWJmID3lwTdFv+nMoqA9Mci9/yWMsGnG3X4JnxNJW21Y84/IaPCxEKk9gLk+X79kH8NqN2ZV8HifHo1TGY7b1GmgOCbRbPywPovE8R8QtK8zQzNkBej7bAVk0GoSIHUWxbk5UJ/+cO0NPilfHAWyCng8H4of98L2KiHAg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(7416014)(376014)(82310400026)(36860700016)(22082099003)(18002099003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	gpfCU1hP72U0siUlpELdfM6H/EAZ+AKhSMB2oLv8Bwp8wtGLYp0FVUcmEfeXKkR46MrLZMxwLaTtLr3ha3Ib7O/ux3/syLaoL4TCoCphja4ddNaJ5eRTR/zmffNyd/+jdIAyXWci/oSSstz5S4063OdsXqNMloy6IlYCf/4uV+JjiN7ZLRxA3bFTBhNgP5KpSXtsJsWnVZOD2iCJiUjwUTaWoCuFdzeLKfCI9gVKU5Uhv8OAU1iHKRYggDbq4zTtoH1EztYP7EUOsYlIePdP5dzseK7MgRwgj1Ih+pzxPBOZo1NOyIULobdJwEehWe2ZMfgS5M6d15fm7FbJPgF5lSXwYt4F46IUT8lrEyrUHyL7Ht8a+xe5d5wjQat9UbjCriKdt6CwLXUz9QgtEwpGzXOvgGlYm3fC1rsjnjwigxTCg9/jH0D/a1dJN0g+ihVc
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2026 06:16:15.6392
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 14067e17-0d9b-4c6a-b48f-08ded66f178b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF000015CB.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7445
 
-When ARM_SMMU_OPT_KDUMP_ADOPT is detected, do not disable SMMUEN and skip
-the CR1/CR2/STRTAB_BASE update sequence in arm_smmu_device_reset(). Those
-register writes are all CONSTRAINED UNPREDICTABLE while CR0_SMMUEN==1, so
-leaving them intact lets in-flight DMAs continue to be translated by the
-adopted stream table.
+From: Wandun Chen <chenwandun@lixiang.com>
 
-Initialize 'enables' to 0 so it can carry CR0_SMMUEN in kdump case. Then,
-preserve that when enabling the command queue.
+On SoCs that carve out large firmware-owned reserved memory (GPU
+firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
+those carveouts as part of system RAM even though their contents are
+firmware state that is not useful for kernel crash analysis.
 
-Clear latched gerror bits if necessary.
+This series introduces an opt-in 'dumpable' flag [1] on struct
+reserved_mem and uses it to filter the elfcorehdr PT_LOAD ranges on
+DT-based architectures (arm64, riscv, loongarch). By default reserved
+regions are treated as non-dumpable; CMA regions are explicitly opted
+in because their pages are returned to the buddy allocator and may
+carry key crash-analysis data.
 
-Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
-Cc: stable@vger.kernel.org # v6.12+
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 54 +++++++++++++++++++--
- 1 file changed, 50 insertions(+), 4 deletions(-)
+Since the reserved memory regions are filtered out, the vmcore is
+smaller in size and faster to produce. The reserved memory
+has already been filtered out in x86; the optimizations in this series
+apply to systems that use DTS such as arm64/riscv/loongarch.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index abcbc9874f252..55ef2e7470a42 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -5025,10 +5025,27 @@ static void arm_smmu_write_strtab(struct arm_smmu_device *smmu)
- static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
--	u32 reg, enables;
-+	u32 reg, enables = 0;
- 
--	/* Clear CR0 and sync (disables SMMU and queue processing) */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-+
-+	/*
-+	 * In a kdump case (set when CR0_SMMUEN=1 and !GERROR_SFM_ERR), retain
-+	 * CR0_SMMUEN to avoid aborting in-flight DMA, and CR0_ATSCHK to carry
-+	 * on the ATS-check policy.
-+	 *
-+	 * According to spec, updating STRTAB_BASE/CR1/CR2 when CR0_SMMUEN=1 is
-+	 * CONSTRAINED UNPREDICTABLE. So, skip those register updates and rely
-+	 * on the adopted stream table from the crashed kernel.
-+	 */
-+	if (smmu->options & ARM_SMMU_OPT_KDUMP_ADOPT) {
-+		dev_info(smmu->dev,
-+			 "kdump: retaining SMMUEN for in-flight DMA\n");
-+		enables = reg & (CR0_SMMUEN | CR0_ATSCHK);
-+		goto reset_queues;
-+	}
-+
-+	/* Clear CR0 and sync (disables SMMU and queue processing) */
- 	if (reg & CR0_SMMUEN) {
- 		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
- 		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-@@ -5058,12 +5075,36 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	/* Stream table */
- 	arm_smmu_write_strtab(smmu);
- 
-+reset_queues:
-+	if (smmu->options & ARM_SMMU_OPT_KDUMP_ADOPT) {
-+		/* Disable queues since arm_smmu_device_disable() was skipped */
-+		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-+					      ARM_SMMU_CR0ACK);
-+		if (ret) {
-+			dev_err(smmu->dev, "failed to disable queues\n");
-+			return ret;
-+		}
-+	}
-+
-+	/*
-+	 * GERROR bits are latched. Read after queue disabling so that unhandled
-+	 * errors would be visible. Ack everything prior to re-enabling the CMDQ
-+	 * as a stale CMDQ_ERR would halt the CMDQ and new command will timeout.
-+	 */
-+	if (is_kdump_kernel()) {
-+		u32 gerror = readl_relaxed(smmu->base + ARM_SMMU_GERROR);
-+		u32 gerrorn = readl_relaxed(smmu->base + ARM_SMMU_GERRORN);
-+
-+		if ((gerror ^ gerrorn) & GERROR_ERR_MASK)
-+			writel(gerror, smmu->base + ARM_SMMU_GERRORN);
-+	}
-+
- 	/* Command queue */
- 	writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
- 	writel_relaxed(smmu->cmdq.q.llq.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
- 	writel_relaxed(smmu->cmdq.q.llq.cons, smmu->base + ARM_SMMU_CMDQ_CONS);
- 
--	enables = CR0_CMDQEN;
-+	enables |= CR0_CMDQEN;
- 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
- 				      ARM_SMMU_CR0ACK);
- 	if (ret) {
-@@ -5128,7 +5169,12 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 		}
- 	}
- 
--	if (smmu->features & ARM_SMMU_FEAT_ATS) {
-+	/*
-+	 * In a kdump adopt case, retain the crashed kernel's ATS-check policy
-+	 * captured above rather than forcing it on.
-+	 */
-+	if (!(smmu->options & ARM_SMMU_OPT_KDUMP_ADOPT) &&
-+	    (smmu->features & ARM_SMMU_FEAT_ATS)) {
- 		enables |= CR0_ATSCHK;
- 		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
- 					      ARM_SMMU_CR0ACK);
+The series is organized as follows:
+Patches 1-4: Small prepare changes and cleanups.
+Patches 5: Add dumpable flag to opt-in vmcore.
+Patches 6: Append /memreserve/ entries into reserved_mem[].
+Patch 7: Add generic kdump helpers.
+Patches 8-10: Wire the helpers into arm64, riscv and loongarch kdump
+              elfcorehdr preparation.
+
+v3 --> v4:
+1. Rebase this series on v7.2-rc1.
+2. Add two cleanup patches (patch 02/03).
+3. Simplify patch 03 to avoid checking whether initial_boot_params is
+   NULL multiple times, suggested by Rob.
+
+v2 --> v3:
+1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.[2]
+2. Fix UAF issue when alloc_reserved_mem_array() fails.
+3. Add some prepare patches.
+
+v1 --> v2:
+1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+   feedback [1], v2 drop that property and exclude reserve memory
+   by default.
+2. Split some prepared patches from the original patches.
+3. Address coding-style comments on patch 5 from Rob.
+
+[1] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+[2] https://sashiko.dev/#/patchset/20260520091844.592753-1-chenwandun%40lixiang.com?part=4
+
+
+Wandun Chen (10):
+  kexec/crash: provide crash_exclude_mem_range() stub when
+    CONFIG_CRASH_DUMP=n
+  of: reserved_mem: dedup and relocate reserved-memory messages
+  of: reserved_mem: skip late scan when no regions are reserved
+  of: reserved_mem: split alloc_reserved_mem_array() from
+    fdt_scan_reserved_mem_late()
+  of: reserved_mem: add dumpable flag to opt-in vmcore
+  of: reserved_mem: save /memreserve/ entries into the reserved_mem
+    array
+  of: reserved_mem: add kdump helpers to exclude non-dumpable regions
+  arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
+  riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
+  loongarch: kdump: exclude non-dumpable reserved memory regions from
+    vmcore
+
+ arch/arm64/kernel/machine_kexec_file.c     |   6 ++
+ arch/loongarch/kernel/machine_kexec_file.c |   6 ++
+ arch/riscv/kernel/machine_kexec_file.c     |   4 +
+ drivers/of/fdt.c                           |  11 ++-
+ drivers/of/of_private.h                    |   3 +
+ drivers/of/of_reserved_mem.c               | 108 ++++++++++++++++++---
+ include/linux/crash_core.h                 |   6 ++
+ include/linux/of_reserved_mem.h            |  15 +++
+ kernel/dma/contiguous.c                    |   1 +
+ 9 files changed, 142 insertions(+), 18 deletions(-)
+
 -- 
 2.43.0
 
