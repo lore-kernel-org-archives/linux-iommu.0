@@ -1,113 +1,165 @@
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com [209.85.210.196])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D51793CB8FB;
-	Tue, 30 Jun 2026 11:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 690AD409107
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 12:00:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782819506; cv=none; b=CaZzwSMjxqcsoAEoNmL6Z51netE0VoO/AByCjRoAPmJ0MjBft6xgkZq6uOMEsjIIZO/xaioDlwpo3MrvOxTtDVaLUl23AT7En9p0vXd4pLVKQ8rV0VcMlnrRmr7t7Sg3rmfS49Xb29EM2+/pAt61J7aWDAKd2QTjiBrJn6+z5TA=
+	t=1782820830; cv=none; b=DjqRCHC3/jwDixtady2bjmz0ka072sr7NRHgnjndROZsxnXkluuKO4gUqmPFxTQQdjK1pd+f9hAysYkIohW5SrK8dpw9fRpLg6MxaNN4NXSh1oUf59GW1EYdP1tpxs22nsnZUEF/QEqwUd/K/QFexmyyQydq+GYS2tlSxzfRbNY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782819506; c=relaxed/simple;
-	bh=oTCNM/AOyFpPb5rIncF1bOxUq0WXQpL6pQN30H0AnWg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Gf3lqbRp7V4zRu3RZYdMQlEvMVqvKSohj6aC98JW5DC4uvf5CLeql+JNEuU96clnctIDD05iBVCT2WHz0aKvmoGIGqzFI1Lf5c0AJsdBCgpnsgj2n0fZLY8iNLUiY/vvh9774FC0CWpFu7UpFTpgxTl+d4/w2ZYsQGj+7reSstI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=YCB6Twpa; arc=none smtp.client-ip=80.241.56.161
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1782820830; c=relaxed/simple;
+	bh=w7L5Tp+hZz2TDhwz1Qm9WD2gfKZhpAFFy+VHrf2oVjM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jLLwUKvfpXf0U5LwAtQ8h+mjWz6Nfl7VXj9PEc2IIezYFvnePmwRjj2wUUuNcybp7VKPiPQzKvZdlcMuPfguPWnO3WEkEdRnXMqhgIUbLRyiqsERSUweXXRNjh4BiJnY77gA6zhCEmoAsGkPOjtBBW8ldz8zVypDuuZWFIhrz+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q0UpjjFv; arc=none smtp.client-ip=209.85.210.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="YCB6Twpa"
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4gqLkP18PWz9ttL;
-	Tue, 30 Jun 2026 13:38:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1782819501;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xShlwrKyTIF4qAdBox24ShRYzAy+zv7+bJMeZEybzao=;
-	b=YCB6TwpaO927QjEdXrlIiJBt3S2TMj/lUoTQyC5iej5UxCRKDn/XljRoPJbwW7XxlugG6N
-	xBgQ8xLD8khNkgkWh+g0ulj34prUa724A/+poOtOInojCqpSRpE4vb6OBmRtDmIJAxSA4f
-	q+iHkCtSckNXJ49ELVp3wKYekx4Hu3LHe2ZUyT3N5n18Mwi4lpbcu585fLX8dl6Sm1920r
-	w0LYy0isS0hDcqp6fFRitgGmFoMYdelUtHSbx9Tm6NOH0N4ee+iItLHiYZcykaDEt9MsqF
-	xFH0uK67m+VTeUGiD6g7C/77X5TkshLws6H+4ToFw4GPgFvrVvyldWMMbrXUAQ==
-Message-ID: <263f58b418a27a2339fc2478f93234e0208b0ad9.camel@mailbox.org>
-Subject: Re: [PATCH v2 02/19] driver core: platform: provide
- platform_device_set_of_node()
-From: Manuel Ebner <manuelebner@mailbox.org>
-To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Lee Jones	
- <lee@kernel.org>, Thierry Reding <thierry.reding@avionic-design.de>, 
- Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Andrew Lunn
- <andrew+netdev@lunn.ch>, "David S. Miller"	 <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski	 <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Srinivas Kandagatla	 <srini@kernel.org>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul	 <vkoul@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich	
- <dakr@kernel.org>, Rob Herring <robh@kernel.org>, Saravana Kannan	
- <saravanak@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
- Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)"	 <chleroy@kernel.org>, Andi Shyti
- <andi.shyti@kernel.org>, Andy Shevchenko	
- <andriy.shevchenko@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Doug Berger
- <opendmb@gmail.com>,  Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list	
- <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
- Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team	 <kernel@pengutronix.de>, Fabio Estevam
- <festevam@gmail.com>, Matthew Brost	 <matthew.brost@intel.com>, Thomas
- =?ISO-8859-1?Q?Hellstr=F6m?=	 <thomas.hellstrom@linux.intel.com>, Rodrigo
- Vivi <rodrigo.vivi@intel.com>,  David Airlie <airlied@gmail.com>, Simona
- Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>,  Paul
- Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, Philipp Zabel
- <p.zabel@pengutronix.de>,  Maximilian Luz <luzmaximilian@gmail.com>, Hans
- de Goede <hansg@kernel.org>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=	
- <ilpo.jarvinen@linux.intel.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
-	driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
- iommu@lists.linux.dev, 	linux-pm@vger.kernel.org, imx@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
-	linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Date: Tue, 30 Jun 2026 13:37:54 +0200
-In-Reply-To: <20260629-pdev-fwnode-ref-v2-2-8abe2513f96e@oss.qualcomm.com>
-References: <20260629-pdev-fwnode-ref-v2-0-8abe2513f96e@oss.qualcomm.com>
-	 <20260629-pdev-fwnode-ref-v2-2-8abe2513f96e@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q0UpjjFv"
+Received: by mail-pf1-f196.google.com with SMTP id d2e1a72fcca58-84347ad88edso3651792b3a.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 05:00:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782820828; x=1783425628; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rQJzhkIkVPlkRxcrVSAS1/qxSmuU/Saa7J0AIvXGGuk=;
+        b=q0UpjjFvprSSgwxxyot76MSp9qtdp0uxt2j1o47UjBiSWLrIPi9gTfk9GaeMELlhMk
+         71CzZkmqGQUauvk7ou4A13hO3H1L6nfrwBnK9faiDP27e9KYj//DNErY18kDVWu29p4Q
+         pmY7z19e0/fAup13XulvJYhTKFY7oixg56vbGmozRNREPqYwQWcXVIWs0FKeAvOCFVHD
+         IZcndRBWQze4uJHWVL1OB+4TulRFCQXQT76OQQwcnRb6gfKsCeNgetRrUHPDXo+7uByc
+         MzzqNpoUzEEamjF7vYBFZUkQScsZgy/K47rxYouxl0xZRBrurrdCTvkWwgPJCVkzNuLi
+         iIrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782820828; x=1783425628;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rQJzhkIkVPlkRxcrVSAS1/qxSmuU/Saa7J0AIvXGGuk=;
+        b=MFtVY6/uvl0zVv6k1C8yvAbvu0A88CTApYQ3JJtOV3akR27acW99f0reonbvNKreQg
+         X17Dc8T3uxptEwkTnwdGeAUQXOpDY4Uk6FWk0NPZi26n0Mci3un3wp/WVntoK8949IfM
+         sf4svkYJTduJbWjlbT7qr1+9PsEZAu/95xdcQK+72NF3s7ma5rSw1BRXg6hJsBZEvzxh
+         yzlGQ8GrFBQhntYRgswarQuLZGyVI+WYjhUUWNZuBgYa6Yxmzq2ZrkaQlmxx4l2qwGam
+         uGDSW6EHX5+KlnpJNHJbysM/py8rgVlwiC976SJ34gQvPYvBPKcr51t+YtU94VvJjhds
+         gBSQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqD5weyLPFbXbQh/crZHysK3AeKe2g2yE+UuLNOtVYubIGCRnFS3H7OPNTtrPyTyzliXFnLoA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx5zR6yzc2bzAhrZ73WpdDt/770x4h5XebqYkawQA/eklyYwT0q
+	DnOr5yyaPsFGhXb6BS0ZcBVqnCcbjoaigwImaklLFsVxnYJWHZliVnsN
+X-Gm-Gg: AfdE7cl8KJrGN37pue50pWlSbZ/VlwIOoQwNJrPBjkc7Qt4sFw5WfkLqR8h2X0Hbxxp
+	TC6mnWQjk1s5M4mwHr/MbDLHpKhQwpGEZWI124suryiRishHqbju/76SDtjexbiY3ScXheVxgtK
+	HSU1FGDPhlkhFANgIEA4HEx2dgiXWuyDCIkaXHcHDIFVIwlg/qu1URJW+3+JsSAdz9+9w6mNCKC
+	HO5jni6LRTt1czvUewP2KCepnAiliG05a/uTwgdqAhDhYZ7entGFhYuQkip2ENnKLVQeQIZX8++
+	/OGJhGQ59SwC6O3G9QMLOZc4uCs0j3mzUogRyDH1SW1uKOnivs8hZPYR+69M7FBHWVPC5RevptT
+	zJ2aPEg3vS0mHyOAbVDPDrrRpvTV4jd7w3+QYN0Dd6z8ZXtEFWpNr1G+/1XSSp7M/rjFNoay1zK
+	RovoXVDw6t5oGK25LGpHAf
+X-Received: by 2002:a05:6a00:1ca1:b0:847:902a:57b5 with SMTP id d2e1a72fcca58-8479f2175cbmr2758259b3a.35.1782820827394;
+        Tue, 30 Jun 2026 05:00:27 -0700 (PDT)
+Received: from [10.125.112.20] ([210.184.73.204])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-847a02cd39asm1834294b3a.34.2026.06.30.05.00.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2026 05:00:26 -0700 (PDT)
+Message-ID: <e6028d44-781f-4d21-bef9-eba0547df03d@gmail.com>
+Date: Tue, 30 Jun 2026 20:00:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MBO-RS-ID: e997ada4adfcbcacfc2
-X-MBO-RS-META: xtee85ryzhfy8x8szdsj4cwckgtw999y
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 09/10] riscv: kdump: exclude non-dumpable reserved
+ memory regions from vmcore
+To: Pratyush Yadav <pratyush@kernel.org>
+Cc: chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, robh@kernel.org,
+ saravanak@kernel.org, bhe@redhat.com, rppt@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+ devicetree@vger.kernel.org, kexec@lists.infradead.org,
+ iommu@lists.linux.dev, zhaomeijing@lixiang.com, catalin.marinas@arm.com,
+ will@kernel.org, alex@ghiti.fr, akpm@linux-foundation.org,
+ pasha.tatashin@soleen.com, ruirui.yang@linux.dev, m.szyprowski@samsung.com,
+ robin.murphy@arm.com
+References: <20260630074715.4126796-1-chenwandun1@gmail.com>
+ <20260630074715.4126796-10-chenwandun1@gmail.com>
+ <2vxzechoi8o0.fsf@kernel.org>
+Content-Language: en-US
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <2vxzechoi8o0.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, 2026-06-29 at 11:12 +0200, Bartosz Golaszewski wrote:
-> [...]
-> =C2=A0
-> +/**
-> + * platform_device_set_of_node - assign an OF node to device
-> + * @pdev: platform device to add the node for
-> + * @np: new device node
-> + *
-> + * Assign an OF node to this platform device. Internally keep track of t=
-he
-> + * reference count. Devices created with platform_device_alloc() must us=
-e this
-> + * function instead of assigning the node manually.
 
-Doesn't it make sense to add a remark to the kernel doc of platform_device_=
-alloc()?
 
-Thanks
- Manuel
+On 6/30/26 19:12, Pratyush Yadav wrote:
+> On Tue, Jun 30 2026, Wandun Chen wrote:
+> 
+>> From: Wandun Chen <chenwandun@lixiang.com>
+>>
+>> Apply the same non-dumpable reserved memory filtering to RISC-V kdump
+>> as was done for arm64. Use of_reserved_mem_kdump_exclude() to drop
+>> flagged regions from the elfcorehdr PT_LOAD segments, and
+>> of_reserved_mem_kdump_nr_ranges() to pre-size the crash_mem array.
+>>
+>> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+>> ---
+>>  arch/riscv/kernel/machine_kexec_file.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/arch/riscv/kernel/machine_kexec_file.c b/arch/riscv/kernel/machine_kexec_file.c
+>> index 59d4bbc848a8..25359d583bc3 100644
+>> --- a/arch/riscv/kernel/machine_kexec_file.c
+>> +++ b/arch/riscv/kernel/machine_kexec_file.c
+>> @@ -10,6 +10,7 @@
+>>  #include <linux/elf.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/of.h>
+>> +#include <linux/of_reserved_mem.h>
+>>  #include <linux/libfdt.h>
+>>  #include <linux/types.h>
+>>  #include <linux/memblock.h>
+>> @@ -64,6 +65,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+>>  
+>>  	nr_ranges = 1; /* For exclusion of crashkernel region */
+>>  	walk_system_ram_res(0, -1, &nr_ranges, get_nr_ram_ranges_callback);
+>> +	nr_ranges += of_reserved_mem_kdump_nr_ranges();
+>>  
+>>  	cmem = kmalloc_flex(*cmem, ranges, nr_ranges);
+>>  	if (!cmem)
+>> @@ -77,6 +79,8 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+>>  
+>>  	/* Exclude crashkernel region */
+>>  	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
+>> +	if (!ret)
+>> +		ret = of_reserved_mem_kdump_exclude(cmem);
+>>  	if (!ret)
+>>  		ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
+> 
+> Nit: can you do the usual pattern of if (err) goto err; instead?
+> 
+Sure, will fix in the next version.
 
->  [...]
+Best regards,
+Wandun
+
+> So this would look like:
+> 
+> 	/* Exclude crashkernel region */
+> 	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
+> 	if (ret)
+> 		goto out;
+> 
+> 	ret = of_reserved_mem_kdump_exclude(cmem);
+> 	if (ret)
+> 		goto out;
+>         
+> 	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
+> out:
+> 	...
+> 
+> With this,
+> 
+> Acked-by: Pratyush Yadav <pratyush@kernel.org>
+> 
+
