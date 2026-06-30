@@ -1,76 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974653ED134;
-	Tue, 30 Jun 2026 11:13:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D51793CB8FB;
+	Tue, 30 Jun 2026 11:38:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782818009; cv=none; b=ORVPu0bIloR5jfDQyFKXKQTnHXYrL8YBV7YjjOss++k6DbWB6vo5yucVlROv24zQ38tjUmjB8Q8TRsz4JBtRw7CsaADHugGHhtJQLoU6denfa9PASgo/gjpIzBC0moY+tqd4q7tsY5KNFvWkPfhBtZ3+hcqJ88BwuUH7wTDTvVI=
+	t=1782819506; cv=none; b=CaZzwSMjxqcsoAEoNmL6Z51netE0VoO/AByCjRoAPmJ0MjBft6xgkZq6uOMEsjIIZO/xaioDlwpo3MrvOxTtDVaLUl23AT7En9p0vXd4pLVKQ8rV0VcMlnrRmr7t7Sg3rmfS49Xb29EM2+/pAt61J7aWDAKd2QTjiBrJn6+z5TA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782818009; c=relaxed/simple;
-	bh=uZBoD4hToNo2KabJQHYXYg+k7RrwRGIWXBXHh5Zu+Ew=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=VnNOWAcHvf4IoW8B3sIQ88c0kjuPePZxPkUinvQ7hYiPnvm/LApyKihrYyyl1zy/1i4zVDyuYa8QjZJO90UcF73eU02geAac1egAhswqCni841WLBge9CQsz5xcYsFMvLSDTOj/m5oYLG1Vo5gTk1kW7RjvJN+YvvUuYgsjGImY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=blytqQRa; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782819506; c=relaxed/simple;
+	bh=oTCNM/AOyFpPb5rIncF1bOxUq0WXQpL6pQN30H0AnWg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Gf3lqbRp7V4zRu3RZYdMQlEvMVqvKSohj6aC98JW5DC4uvf5CLeql+JNEuU96clnctIDD05iBVCT2WHz0aKvmoGIGqzFI1Lf5c0AJsdBCgpnsgj2n0fZLY8iNLUiY/vvh9774FC0CWpFu7UpFTpgxTl+d4/w2ZYsQGj+7reSstI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=YCB6Twpa; arc=none smtp.client-ip=80.241.56.161
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="blytqQRa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262B41F000E9;
-	Tue, 30 Jun 2026 11:13:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782818008;
-	bh=gBrw4h6G+CAidiPHKiZfKf7oBnSSJvuEXV9bJiShaTA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=blytqQRac+g9IOLHTev0RLz7JAEA05ZsCRJ4cXitfvYsRAWj+gBUwA3e6cQe8G0UO
-	 PmqqWpzCpst3E2PvtVSn5zI6mrdwPf0p93zgNTlUC+ctCybXfH6X9J1JZ3viG6eATk
-	 W/0sowhyccmzR/ELJy79DfC7PRH4Hk+2ksfFhFf5w/3BxLpG7rq4fDlGIsoMndRLaQ
-	 ISDk9zW3XOoIF3nWXA39CBFku69yw+kff9k6bT2J8SgKMr6GCcewIkNUHIf7kcfpLR
-	 dR7FNbthATEO2DTOT+eXGFIJt028JX+fkSP8YDOCwgjuuzeV6rGd5vO1VRkidBO596
-	 f9DESVmWQK+TQ==
-From: Pratyush Yadav <pratyush@kernel.org>
-To: Wandun Chen <chenwandun1@gmail.com>
-Cc: chenhuacai@kernel.org,  kernel@xen0n.name,  pjw@kernel.org,
-  palmer@dabbelt.com,  aou@eecs.berkeley.edu,  robh@kernel.org,
-  saravanak@kernel.org,  bhe@redhat.com,  rppt@kernel.org,
-  linux-arm-kernel@lists.infradead.org,  linux-kernel@vger.kernel.org,
-  loongarch@lists.linux.dev,  linux-riscv@lists.infradead.org,
-  devicetree@vger.kernel.org,  kexec@lists.infradead.org,
-  iommu@lists.linux.dev,  zhaomeijing@lixiang.com,
-  catalin.marinas@arm.com,  will@kernel.org,  alex@ghiti.fr,
-  akpm@linux-foundation.org,  pasha.tatashin@soleen.com,
-  pratyush@kernel.org,  ruirui.yang@linux.dev,  m.szyprowski@samsung.com,
-  robin.murphy@arm.com
-Subject: Re: [PATCH v4 10/10] loongarch: kdump: exclude non-dumpable
- reserved memory regions from vmcore
-In-Reply-To: <20260630074715.4126796-11-chenwandun1@gmail.com> (Wandun Chen's
-	message of "Tue, 30 Jun 2026 15:47:14 +0800")
-References: <20260630074715.4126796-1-chenwandun1@gmail.com>
-	<20260630074715.4126796-11-chenwandun1@gmail.com>
-Date: Tue, 30 Jun 2026 13:13:22 +0200
-Message-ID: <2vxza4sci8ml.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="YCB6Twpa"
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4gqLkP18PWz9ttL;
+	Tue, 30 Jun 2026 13:38:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1782819501;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=xShlwrKyTIF4qAdBox24ShRYzAy+zv7+bJMeZEybzao=;
+	b=YCB6TwpaO927QjEdXrlIiJBt3S2TMj/lUoTQyC5iej5UxCRKDn/XljRoPJbwW7XxlugG6N
+	xBgQ8xLD8khNkgkWh+g0ulj34prUa724A/+poOtOInojCqpSRpE4vb6OBmRtDmIJAxSA4f
+	q+iHkCtSckNXJ49ELVp3wKYekx4Hu3LHe2ZUyT3N5n18Mwi4lpbcu585fLX8dl6Sm1920r
+	w0LYy0isS0hDcqp6fFRitgGmFoMYdelUtHSbx9Tm6NOH0N4ee+iItLHiYZcykaDEt9MsqF
+	xFH0uK67m+VTeUGiD6g7C/77X5TkshLws6H+4ToFw4GPgFvrVvyldWMMbrXUAQ==
+Message-ID: <263f58b418a27a2339fc2478f93234e0208b0ad9.camel@mailbox.org>
+Subject: Re: [PATCH v2 02/19] driver core: platform: provide
+ platform_device_set_of_node()
+From: Manuel Ebner <manuelebner@mailbox.org>
+To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Lee Jones	
+ <lee@kernel.org>, Thierry Reding <thierry.reding@avionic-design.de>, 
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Andrew Lunn
+ <andrew+netdev@lunn.ch>, "David S. Miller"	 <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski	 <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Srinivas Kandagatla	 <srini@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul	 <vkoul@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich	
+ <dakr@kernel.org>, Rob Herring <robh@kernel.org>, Saravana Kannan	
+ <saravanak@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
+ Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)"	 <chleroy@kernel.org>, Andi Shyti
+ <andi.shyti@kernel.org>, Andy Shevchenko	
+ <andriy.shevchenko@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Doug Berger
+ <opendmb@gmail.com>,  Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list	
+ <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
+ Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team	 <kernel@pengutronix.de>, Fabio Estevam
+ <festevam@gmail.com>, Matthew Brost	 <matthew.brost@intel.com>, Thomas
+ =?ISO-8859-1?Q?Hellstr=F6m?=	 <thomas.hellstrom@linux.intel.com>, Rodrigo
+ Vivi <rodrigo.vivi@intel.com>,  David Airlie <airlied@gmail.com>, Simona
+ Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>,  Paul
+ Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, Philipp Zabel
+ <p.zabel@pengutronix.de>,  Maximilian Luz <luzmaximilian@gmail.com>, Hans
+ de Goede <hansg@kernel.org>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=	
+ <ilpo.jarvinen@linux.intel.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+ iommu@lists.linux.dev, 	linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
+	linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Date: Tue, 30 Jun 2026 13:37:54 +0200
+In-Reply-To: <20260629-pdev-fwnode-ref-v2-2-8abe2513f96e@oss.qualcomm.com>
+References: <20260629-pdev-fwnode-ref-v2-0-8abe2513f96e@oss.qualcomm.com>
+	 <20260629-pdev-fwnode-ref-v2-2-8abe2513f96e@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MBO-RS-ID: e997ada4adfcbcacfc2
+X-MBO-RS-META: xtee85ryzhfy8x8szdsj4cwckgtw999y
 
-On Tue, Jun 30 2026, Wandun Chen wrote:
+On Mon, 2026-06-29 at 11:12 +0200, Bartosz Golaszewski wrote:
+> [...]
+> =C2=A0
+> +/**
+> + * platform_device_set_of_node - assign an OF node to device
+> + * @pdev: platform device to add the node for
+> + * @np: new device node
+> + *
+> + * Assign an OF node to this platform device. Internally keep track of t=
+he
+> + * reference count. Devices created with platform_device_alloc() must us=
+e this
+> + * function instead of assigning the node manually.
 
-> From: Wandun Chen <chenwandun@lixiang.com>
->
-> Apply the same non-dumpable reserved memory filtering to LoongArch
-> kdump as was done for arm64. Use of_reserved_mem_kdump_exclude() to
-> drop flagged regions from the elfcorehdr PT_LOAD segments, and
-> of_reserved_mem_kdump_nr_ranges() to pre-size the crash_mem array.
->
-> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+Doesn't it make sense to add a remark to the kernel doc of platform_device_=
+alloc()?
 
-Acked-by: Pratyush Yadav <pratyush@kernel.org>
+Thanks
+ Manuel
 
-[...]
-
--- 
-Regards,
-Pratyush Yadav
+>  [...]
