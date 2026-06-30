@@ -1,70 +1,71 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF34402BAA
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 12:38:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5758740E8D6
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 12:42:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782823133; cv=none; b=frSpEslOQKqo4LW83Lq3QXh1aD3OnIL0+/lhIGrzlBtOclT6TShiRo0vwOeo5hMM4BHcgIdOxhAM75FSnGtKYXqPJUrVUx69Om8pqK1xnxHhWF304EWeWxnIDxgBvB5IlBbCTtbNd+HTV91zKQUjZNjYSvzMS5sVKMbxXVI5NLQ=
+	t=1782823376; cv=none; b=kDRRHr6Ue3zReojXSAmkiFvrj0sBd8vRiDMYUDGL7WA95r6+zSAIW6ue8LQR9ueL+iDlA2FtrpjZKZ44ROLjys6oGs7X5DhYgfGXupAu/Os+YLkq6Gp5hpfPv1mViB3/CqffiGNvGc/J/fYOgz1CV1PG0dPP0uNqLqSLUByMHVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782823133; c=relaxed/simple;
-	bh=HWLewm9KCB7MjAKi5lfHa4PConKZEGpyeTggVQfUIHk=;
+	s=arc-20240116; t=1782823376; c=relaxed/simple;
+	bh=QWPvsZn8DT0/Vu+hfGGOncPmT+V2i9T+xJS7wbHqZDM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u1fcJPTsxM8r0edxr0nR0Y0CqPzjYlUJvLwKtIbZ8tuFPoDC9Q5u8Vk74h8Cn18nIAYqM0GU2msSd5+V3bKeGS6xdd1s0pG4ewkDyzsOWHTJt2swJf1kfB6iUbSa7+bw3bdA2uc3FuHxU9uGAPnLUaQVhxQPpfT6EVTfPgNrqis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fKm3tObq; arc=none smtp.client-ip=209.85.219.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=pLkMmLs4M6ftATvfpGelnr9tHVsa/v6N/JUACVJDEK69tJaFRi3olTYrOfz4K4AQC6ZxvJjFmsVNJp+nBWk5dZ4X3TuzVlJ5+W6p+bAGmcuHRT4B0gqe1OFh8wAxtAYTQPcNpzEMvUKF/X4yPZH0zwxLvJKfRI5MCUSja4rtSCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=G8i1/krY; arc=none smtp.client-ip=209.85.222.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fKm3tObq"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8ea70ca4fc8so5649696d6.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 05:38:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="G8i1/krY"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-92c7a0a701aso213896185a.3
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 05:42:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1782823131; x=1783427931; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1782823374; x=1783428174; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=usbOUHulcGkq5pslDcl5tYYUADM4pc66+J0xE33qcCE=;
-        b=fKm3tObq89khAzqc2M5kWMZzWZUYHW6Gt6mBxVKv+iWw2IFdDS2xWodB8s8C2w1Ygy
-         DDbRY93MxvaUczKk2PwghKzfZ73FvnPs3LW30OGkZToITQRKJFIrPMY7zLXDsrZXothX
-         8NrRFShVW2EpE4KIK9pWyQJaCyAiq/C7zPn6sTQljaBwh9mgZ5JwYzlpL+af47gzWMjz
-         r+23wzgMSECj4173tMraOup1IVAlKHOjNECKc9VJ2QuEYztXw+bizSTuBJ4RDIJEhj+t
-         a0DAxTpMM0o90EuyuxbduvepulnYoFvMIjA/bM+8f6J/Mw77WPXrMgmVIGU98rXXuyGo
-         wB+w==
+        bh=DQO+LwB4rlmVUEVrQLIA/Kr74YcNiyTBCzOFtX1NQKY=;
+        b=G8i1/krYVPPMFnQ6esAqfdvGZWbrb/S9jEw3Lw8w7ABgbyNPVsCmJJu2s2VBb8PBqO
+         8O7jEKIFIVETzpQjLQt9hYiBjydUNN0dqcPx7V4PANcBW1QnpieUvB1+VK6D1DaLbgNE
+         04HVXRn5XNZr0JIP0rnW5uMnok7IaTU9YRSQ2ZO8LxyhNDIbvcEyiXVHBgL37OiCGN/w
+         AKvPrHN6t48+7K63128hNIH06WQM9dd/BMHJ09MLB9Jx0ksTtNUHXBiZ/uudK27LQRyc
+         aFxmRqhO4DITMbOl0AgMAeNfphuYTkom7ih5a37BUz6KV1+/gKSR8v017VARtaWPmt3q
+         tiww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782823131; x=1783427931;
+        d=1e100.net; s=20251104; t=1782823374; x=1783428174;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=usbOUHulcGkq5pslDcl5tYYUADM4pc66+J0xE33qcCE=;
-        b=qngs4X8H2WY1hS63CYPr7c3ds+UyG2Fd8F6qv19gCsnppyZjxVKfx5E2D3eyMUDoWr
-         5c0v64rnrcbrtNo+bOodGUQUUVfMCh0Sd5m+0bnHpeLXvf7+u1RwHWAEt8N3akb6Ilh1
-         tFQlVHqtsFO7XSBgYIaSTKekuqVxmYseHhIoEWeJH8mhdjbxa2xCCAHvgR8jlVD0Nz37
-         zwdm1tg+2jFapyGUzztjaWLLutaqLMqfzNTBMJkO9nty36t7oJ5zhHOqH/09zbh7ssca
-         HLkk11lH5PFwbNJGhUqUJQj2TB5zujpZkd9aJNnXkuliR4B/u5O5PGoPE+AU/y1TC5qz
-         ryEw==
-X-Forwarded-Encrypted: i=1; AHgh+RpbJm5n1gIB7f1MJNL7CtjGW/oT/erY3xv/I98a5wiQ55Vx/Z6bp83ZFDt5huUiB8gvopwTDg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwadOXCjESphqyRuvRE6BPa9VWgG6uHnEaEUOouPlxQJRMhWDLW
-	oDPbvlSJDXQfkxpFI8o4+2xsoSjpNDnl4Xh0oup9vRqo6tUX3bCDQq65LMNukS1BMHY=
-X-Gm-Gg: AfdE7cmWWSn7/0ome8tZNU0V4ToskH6JaWEd10AXGJdhZJziGzOISZg9c6OcMeNry0I
-	74WpJ9JgHXrKYsIcgfQWxuuIZ2UqW7XQT+3Uf6NezQqTtIDX8llnrgd2G807EpE1rZ+MMaXlPH6
-	qMVtyEWDTzbB2vUiYBQcaZJ4Ryp8m8wgdbgV1X4rJ5/VCTE+6v6SRl14O/dOd7fRZj2QGV9JNRX
-	VSAZizRHqWpEw3aBXUvkoacxYdZ01+FsmNWZWXFLP4zSAncmfgMbVF7sZhQlc2zLQg3yp7o7yV/
-	+ZdDE5iYycZmHw00g+R3Sa9tomw/jpBuNu6FFhD3LDBvjhvdV/fTQVJuCBMat/d4QZgkSdWxFH0
-	rZ2UIl2guxJTe6KrRe+pDaCvtmMql2u8II9S7XmDKD5Hd8NH8/W1GCYmuOVvqmsJPV2lJt5U3Z5
-	W4cDe+S1BbwGar+rpSciJYWa0jxW0RrW95VqIEQbkt4rBYeGtjQIjH+zqN9qy86RGagX0=
-X-Received: by 2002:a05:6214:448e:b0:8db:480e:6944 with SMTP id 6a1803df08f44-8f2549e5762mr17241226d6.26.1782823130931;
-        Tue, 30 Jun 2026 05:38:50 -0700 (PDT)
+        bh=DQO+LwB4rlmVUEVrQLIA/Kr74YcNiyTBCzOFtX1NQKY=;
+        b=KWMlHPOBLHzOn7hBlareJwkh7muexy5kDURUJOFzZiDk4U9CSq5hqlAQ2W9t1bA/Za
+         GxmUOUORJPFyOyoq0aaVHRAu8tHbpcihPF7NObFhBs22jHzojgLfQJm9LD/Q8/OzG7aS
+         qgf0JOQSsARPRGaakAN85WgbBE2LYG1Vx+qiAuqj1OBHH1griKnjp/J7nXhr3rLfOsFi
+         zKfjDRdtqcRXhD9JUHV7fsiGYvgMgqfvXb6kLv5Bp9av9FpXSz5E/t/sdXRx6XNOUzfg
+         Ap86t6fbo+5eCZWOjEvRTxeuK2Mn2MiiZuzfABWNRwthrCNE6f/gBXYN3/JLdA7ajMMd
+         w5jg==
+X-Forwarded-Encrypted: i=1; AFNElJ9F3IXdaXRWwcP9rUkFsaA2zVRODZXEtZq2Zj73oSJoX2jYMOdP6aJNeeIKrueBKR2vVvSwBg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywf0kYLJHoU0qcxveCzeSaWniC9S695oIw9HWZrlYqLQ5k4s7js
+	2ovfzMvZfAS6bwM7Byt/Y9aC2tsOR8vmwSLG8Ie2yg9Tx6HD9GWY0wSWvvzsWxHA8q4=
+X-Gm-Gg: AfdE7cm9G++zi2NukjByQrFj1TqDDtWU5hWebmo61xhBGigiLb0sfxvgR3DlZTCiNma
+	OyVXmKO+lLNueHntEjgp5P392LwC8NzGQIhmuQX2alMN7VI2Jw5FmQeT4oGboOOC5MN2rB5TDtR
+	Crm+q4NauQvcR6/AZoSy6+w3fjGVE9TBtUGD2jzLJo8vLAqS+u3GzfSu8ovO4f7wfWW2AGr16Yw
+	6RrggTNMZ+HgxtU/TxUx6mjNfNxnkM/B4c9JpMN49UWh/UEqXXP5JXADN+FZLYKtk/Dub7DyYPc
+	jnrCfguxN09f5au4ODisOcoirchU/IvfIELWzvSG+vozDQCSOExzf1gH39kLMf6TJ5aT+T8itvn
+	VjvSsuhwQnL1ATeftgf3JJze7AL9gy5IH755lS8O1YEo9cE8C4Z1rAp/dHQ1+YKEijAA3g07ccq
+	8AZ5NLhCiKIocgoFsm6DjerHPu4bf3gdaUB92LIw76okyX9U4yK2V2+hSBGltu2wuYW7s=
+X-Received: by 2002:a05:620a:8391:b0:92e:4867:95af with SMTP id af79cd13be357-92e62af0f9amr515174185a.73.1782823374078;
+        Tue, 30 Jun 2026 05:42:54 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f1a7558676sm22067246d6.40.2026.06.30.05.38.50
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e6234dc50sm226634685a.39.2026.06.30.05.42.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 05:38:50 -0700 (PDT)
+        Tue, 30 Jun 2026 05:42:53 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1weXjl-00000001qLK-2mow;
-	Tue, 30 Jun 2026 09:38:49 -0300
-Date: Tue, 30 Jun 2026 09:38:49 -0300
+	id 1weXng-00000001qgI-3Vni;
+	Tue, 30 Jun 2026 09:42:52 -0300
+Date: Tue, 30 Jun 2026 09:42:52 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: David Laight <david.laight.linux@gmail.com>
-Cc: David Hu <xuehaohu@google.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+Cc: Pranjal Shrivastava <praan@google.com>, David Hu <xuehaohu@google.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
 	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Leon Romanovsky <leon@kernel.org>,
@@ -73,13 +74,15 @@ Cc: David Hu <xuehaohu@google.com>, Sumit Semwal <sumit.semwal@linaro.org>,
 	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
 	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	jmoroni@google.com, praan@google.com, kpberry@google.com,
-	chriscli@google.com, sashiko-bot@kernel.org, stable@vger.kernel.org
+	jmoroni@google.com, kpberry@google.com, chriscli@google.com,
+	sashiko-bot@kernel.org, stable@vger.kernel.org
 Subject: Re: [PATCH v2] dma-buf: Split sgl into page-aligned 2G chunks
-Message-ID: <20260630123849.GC7525@ziepe.ca>
+Message-ID: <20260630124252.GD7525@ziepe.ca>
 References: <20260621222130.1667453-1-xuehaohu@google.com>
  <20260623015459.1153884-1-xuehaohu@google.com>
  <20260623094446.4a8fc2ed@pumpkin>
+ <ajryxMaT5evDUxaq@google.com>
+ <20260623235350.6540eaa2@pumpkin>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,24 +91,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260623094446.4a8fc2ed@pumpkin>
+In-Reply-To: <20260623235350.6540eaa2@pumpkin>
 
-On Tue, Jun 23, 2026 at 09:44:46AM +0100, David Laight wrote:
-> On Tue, 23 Jun 2026 01:54:59 +0000
-> David Hu <xuehaohu@google.com> wrote:
+On Tue, Jun 23, 2026 at 11:53:50PM +0100, David Laight wrote:
+
+> > If we restrict incoming dmabuf transfers to fit within VFS-centric 
+> > limits (2GB), we impose unnecessary overhead on the RDMA stack, forcing
+> > it to manage a significantly higher number of memory registrations. By 
+> > cleanly splitting these massive contiguous device buffers into 
+> > page-aligned SGL entries, we directly improve the efficiency of P2P 
+> > transfers and memory registration.
 > 
-> > Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
-> > This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
-> > first entry, resulting in non-page-aligned DMA addresses for all
-> > subsequent entries.
+> But a divide by '4G - PAGE_SIZE' is also non-trivial and (I think affects
+> a lot of io) when the quotient is always 1.
+> Splitting into 2G chunks is a lot cheaper.
+
+Doesn't matter this isn't fast path stuff. It is better to use fewer
+SGL entries, IHMO.
+
+> > Since this change doesn't seem to have a negative impact on standard file
+> > I/O or break existing VFS constraints, I'm curious why we shouldn't 
+> > support splitting these >4GB P2P transfers? Am I missing something?
 > 
-> There is a separate issue of whether this code is even needed at all.
-> Where can transfers over 2G (never mind 4G) actually come from.
+> I was only wondering whether it was needed...
+> It does bring up the question of why the >4GB transfers even need splitting.
+> But that is another question.
 
-This is DMABUF land, you really can alocate DMABUFS of huge amounts of
-physical memory, VFIO does this reliably and trivially for example. It
-wouldn't come from the physical allocator.
+SGL can only store an unsigned int size, so any large physical range
+has to be split down.
 
-So yes, these scenarios need to work in this code.
+rdma now a days has code to process the sgl and restore back the > 4G
+sizes since mode RDMA HW can accept that.
+
+commit 486055f5e09df959ad4e3aa4ee75b5c91ddeec2e
+Author: Michael Margolin <mrgolin@amazon.com>
+Date:   Mon Feb 17 14:16:23 2025 +0000
+
+    RDMA/core: Fix best page size finding when it can cross SG entries
+    
+So whatever this produces needs to be compatible with that to undo it.
 
 Jason
