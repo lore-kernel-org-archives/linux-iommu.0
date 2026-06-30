@@ -1,63 +1,63 @@
-Received: from mail-pj2-f0.google.com (mail-pj2-f0.google.com [74.125.227.128])
+Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com [209.85.214.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139D43E51DE
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 07:48:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.128
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 760133E316E
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 07:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782805737; cv=none; b=HOstNqgVumJtz9iKE6igE1DIZTHCHMO3JCErT+GFvLQH+DX1lPHGzceo1yz+z8jhilQ+IhOPLHHKlUS0/XbvQ2c5/JbyudmBu8VQb561k8YUxAakXSm5UYFX7oZbxJFo4zi7IOs7vO6BiSkJmbdwuneJXslhfQyVx0GxAGzIgcc=
+	t=1782805743; cv=none; b=C99zK27MRv6JzOBSNBLsfsYmiaBCooKdi9Ge98UqrxgUDRzzYemcDe/ujCReBdyjiv4Z4IKcNGfZnu/Vetx43S0EG1E211Ttcy3i1S7o/by9snHc/fORGJfoTvPbMCR1D/AjnyH6/2KOoRyzb4VPJ7QW4iQGLO/56g8YP3EC314=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782805737; c=relaxed/simple;
-	bh=no62Ldx/VYtMusTTq5JG8f1ZzMtpg2aqQYYLKUw/J80=;
+	s=arc-20240116; t=1782805743; c=relaxed/simple;
+	bh=y6ocNgSkfdA76nqYi7hGDzpnjmSBmWUarRvhw+f2qaA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jsPvJ/xM2uFiPCckgTZEpxRhXcI0jm00/6hebZq9MDx2+K8KqcN+ZiM3VcCeKX8xES7yOI5wo75S/juymK+3Ssnbj6uStCsb5udgJ8jI119KPOf4o98yZmXdG5TvaXZKgkwh9nKRHEVkJqx/wwRRTf66W3G37kYQydhkF1pfX5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fKv6Sze9; arc=none smtp.client-ip=74.125.227.128
+	 MIME-Version; b=Y+ExgCobdEOP8Kkf87c0rbA3pYDA+G8u1oDL4KDykkSD0KY6dJUd7Xa6IAICzs2TNF2fhIpHNCSpRJJ09+07P7GbFJFQMe1H6DWZF6nEb+ogEIGqTQv5yUEupTd5FmgRlm8B1+q5SkJGWphwIe0umf6mxUfkizA/LHaE6BWVHzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ESq8K7np; arc=none smtp.client-ip=209.85.214.194
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fKv6Sze9"
-Received: by mail-pj2-f0.google.com with SMTP id d9443c01a7336-2c99784b434so2273825ad.0
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 00:48:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ESq8K7np"
+Received: by mail-pl1-f194.google.com with SMTP id d9443c01a7336-2c9ed0c7fc7so12811935ad.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 00:49:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782805731; x=1783410531; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1782805742; x=1783410542; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kilHQAUiYtCIXGoXTLzkG+QFNETPWES64QJavnYCw8Q=;
-        b=fKv6Sze91HBjtfo/RsM4YmVPY40vhB66QVFYqihyRa7KHI55umN562yzAqg6R1O1DN
-         YE0QYbcWBJbPn57tAPFkzT7KxF5GN5/PhunKu2CL7O8RM1SIuoCYWz70IHkBy12OtggY
-         Wc3kHi1lhklf56q6FH4c3RLIqtxXSL0r1HCq1fNq9pb1b9zw/M8JYTDACJErHwJyAQPd
-         FRsBFn8rIkEaZXGumFZnH4WJEfxbejLI6Uxp6b/reRbNDP9VoW5L1nL0efFtcHieUCEv
-         8L+TVhesVJp5FrN/DFKKjXbObIjDiqaLMAu/a/a1jT8Y/KIpstckbmyw5fbVTs+QMtEI
-         bXOA==
+        bh=miEM+ZI1eBAN6H+hUm7y5SHAIdsM2tNi01WsyWumT6E=;
+        b=ESq8K7npjBIEu2E0gtZ0KbEJxFBAGwr2xQemqGmIu3zO2PliQ32XXNdIEljsLqqrk5
+         er3rORIFj9B2as13Z64LUjILCzl0ehVG42rjqc7Vi8D0PcQU4gtKasBahN/QfU8NRKa1
+         3lX42AnllJPx6dqd0xLfLeLkeL32qFv7Y3hXRFuk+qmtqGko9YU50+GI/reVAPaaGYXB
+         srqFVr/CY8GnRPjyYExhE780df0dxklU4uMv2Scu/kD1RNygVL2FGhGG56j0fZiY+iq7
+         x173km/XsXDv43wcZopduKDya9dDvKPhZE4cu4vg+zbd8xVJsyMZqXitVkLUHgmRpWvE
+         YBcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782805731; x=1783410531;
+        d=1e100.net; s=20251104; t=1782805742; x=1783410542;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=kilHQAUiYtCIXGoXTLzkG+QFNETPWES64QJavnYCw8Q=;
-        b=Hd++U0eO7OIeE9ssjdGGxQD+cAzSbLNiPkU9QdHRnuVgzXw07bo7U69PyynJCiBmvC
-         vaDseMYAh80cPp0VjUHkGinQcgnAJXi9n84HNJD1SFXpmyMecExIvD1yd3HqmK4aQzvu
-         Buzoxa79sOR/k+sSZS1Tv3TXYNsEsm6IJeWbFpKxHFBtBxwkwJ008S823hvXdT8wOk/o
-         n3iwV3poTH63f+GZrJmkGb5iSblQGgUf/+cUSL6P0sG0AhW1wNoAuzP7SaizbWOd8NrK
-         qdykzPNtrBrNg03qumdZrIvnUpgtqOg6BABZ7LVk0OvuHJxici+DklBexEwbJ9/6CPQ+
-         qmrA==
-X-Forwarded-Encrypted: i=1; AHgh+RrQsmmbWkuCPGpWMo/Ko5ZE+9PSTNzZEqd/3Y2BZlOG86CY/j4utdVcKVkgl2DPsmlFc5VT9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwJkckauUhvsh++OYxzsGgIfiTjmyCnRgAA45jN0B/RwXNr+BEd
-	UqFA46g1ukYDQ8AZYujp/TuPDvG0uPvsam5osqFMksepvkwXl7XGu08m
-X-Gm-Gg: AfdE7ckHRxvMr52Bxbe3NNZGYn/O7OMzc11PcBYSnoyJmw/CgjAXq6fzyqxavQ6A0sH
-	xicAdxgEEq0qhJ60lh1c0ujnree0OCT71k00kgbt1bIFLvmZPHf5GD/1xY7ffdbqiURXGNdXhII
-	U4dAj9VT6REa6r1MV1Tj9IMvUiJfxC/vh4gLuApMs71okrPYCkNpT/hMFE79uN/x/f7DtpPvoW3
-	nL+zo4M+dYdAcuf6RIrdbWdxhrc8LrFbUOYOVTX0C2bu0ZFgcV1H/efQ7epzBcw1zSY4KEwOpnu
-	nkWtxYbJwidskNGkLbRcTp9VqhApPar9ykSgO2XqmPkdwS8NUH5DwVu1T5xcR7CA6rN98/h62Sm
-	CCaYVI87yB6toIK906xgrekwNs+hDx1o8p0ORyH+9FDoGjHAMGeg/WS8/xpajpx6S8F4OeUMdHE
-	gSR3Nltlyk0zdgMwGwvW0i7RpZCw==
-X-Received: by 2002:a17:902:dad1:b0:2c9:d55d:2d3 with SMTP id d9443c01a7336-2ca2d55dedbmr19212325ad.15.1782805731371;
-        Tue, 30 Jun 2026 00:48:51 -0700 (PDT)
+        bh=miEM+ZI1eBAN6H+hUm7y5SHAIdsM2tNi01WsyWumT6E=;
+        b=ZJWN77QB7nluTcAUBQQBkvEvjKLk/yW1obvtzwXjuGO9dICnwNUEwf1yxL7xQr00We
+         NOFncpYHDw3PBmwWpqkG3Js55zdbVfrsr9ZnXWQgaEZq3hnnGVNGx8yEZXZnJT4Pd5ih
+         yGzHnTyAa68O8DilyfbkiTdFsyDq3Dw8vuSFds/RHhrSoKg6Sd34gBqxGLOBKYNHbitb
+         NVj6v34Hj4vAk1MAGWZ2YIebz2FVOmFSwGK8SQ59gO7C/8plq0hqIZmkI3/FKtLjPVU0
+         o+HeQ9B6j0K9Wva401O+MIY+ws8TMRoIXtIbrWwPJLkWARtW4lr4w53N3MIbbspqHCG+
+         b1YA==
+X-Forwarded-Encrypted: i=1; AHgh+RrzAhN5Hev+pEkdChXIFdTkVsCC10rGYUojRU1RERwDHgtDi0xwBXF/+qBuK3YcpeGkukyhGA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxMpEzqeuGVDTb5Mg8kLESNGpLiEa9Y5KVganLUyhJAUZgvy3jt
+	hxUNU0qOzUBNO72n4VtAhOfr1kynO74PmV+Ec0g7ksT5wuS8c2+2OgtB
+X-Gm-Gg: AfdE7cmX0ZDGM9s3+IAg71+H1Uu00jwMQFDrcmgbplpkXMoWA9sIqU88dId+ch5wdps
+	rTE39fRAmDxvS+OadDyeo4oI8nydvLNPALC95o9soC7+x37FlFTa3ec87IVkhmcpxPpEkws1Ky5
+	GSSvndeGZtxCHLMBuVqdVIxCoQTNWeWMp44ih9Wsb1HUzyivjhjn4rAWGwOkXZHp7gT0d4sLftc
+	58U0tuImpIxqZNqhzrJEh+vZNUPMmXA7i/HRsxJxw2tO6iQiWvf1s6woLQd9Ex6hBinWu8xTFIv
+	aK6Thvs7G34WjRyhlTaF2XXwYyK1j8QKKVwrntkYhk4VnOA+PIstmS1RgFELqwbT7r8t+VidSJw
+	QAcBtty7FEWmnHwqPUtiyJyUyGUSD5jJKnZ4Einh/HwzHOKEquEZ8S5AfYU5nudEQ8yZAxqbIQl
+	RcRJKAOCaz0XbXR+YjO6vfCV2+EA==
+X-Received: by 2002:a17:903:186:b0:2c0:a746:7b16 with SMTP id d9443c01a7336-2ca2d8a616amr19688075ad.22.1782805741701;
+        Tue, 30 Jun 2026 00:49:01 -0700 (PDT)
 Received: from intel.company.local ([210.184.73.204])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca382a2d3dsm7821045ad.55.2026.06.30.00.48.40
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca382a2d3dsm7821045ad.55.2026.06.30.00.48.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 00:48:50 -0700 (PDT)
+        Tue, 30 Jun 2026 00:49:01 -0700 (PDT)
 From: Wandun Chen <chenwandun1@gmail.com>
 To: chenhuacai@kernel.org,
 	kernel@xen0n.name,
@@ -85,9 +85,9 @@ Cc: catalin.marinas@arm.com,
 	ruirui.yang@linux.dev,
 	m.szyprowski@samsung.com,
 	robin.murphy@arm.com
-Subject: [PATCH v4 08/10] arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
-Date: Tue, 30 Jun 2026 15:47:12 +0800
-Message-ID: <20260630074715.4126796-9-chenwandun1@gmail.com>
+Subject: [PATCH v4 09/10] riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
+Date: Tue, 30 Jun 2026 15:47:13 +0800
+Message-ID: <20260630074715.4126796-10-chenwandun1@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260630074715.4126796-1-chenwandun1@gmail.com>
 References: <20260630074715.4126796-1-chenwandun1@gmail.com>
@@ -101,53 +101,45 @@ Content-Transfer-Encoding: 8bit
 
 From: Wandun Chen <chenwandun@lixiang.com>
 
-Reserved memory regions are excluded from vmcore by default unless
-marked dumpable. Honor the dumpable flag to filter out device firmware
-regions (e.g., GPU, DSP, modem) reserved via device tree, since they
-typically contain data not useful for kernel crash analysis and can
-significantly increase vmcore size.
-
-Use of_reserved_mem_kdump_exclude() to perform the exclusion, and
-pre-size the crash_mem array via of_reserved_mem_kdump_nr_ranges().
+Apply the same non-dumpable reserved memory filtering to RISC-V kdump
+as was done for arm64. Use of_reserved_mem_kdump_exclude() to drop
+flagged regions from the elfcorehdr PT_LOAD segments, and
+of_reserved_mem_kdump_nr_ranges() to pre-size the crash_mem array.
 
 Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
-Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
-Acked-by: Will Deacon <will@kernel.org>
 ---
- arch/arm64/kernel/machine_kexec_file.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/riscv/kernel/machine_kexec_file.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
-index e31fabed378a..1d65320c6ba4 100644
---- a/arch/arm64/kernel/machine_kexec_file.c
-+++ b/arch/arm64/kernel/machine_kexec_file.c
-@@ -17,6 +17,7 @@
- #include <linux/memblock.h>
- #include <linux/of.h>
- #include <linux/of_fdt.h>
-+#include <linux/of_reserved_mem.h>
+diff --git a/arch/riscv/kernel/machine_kexec_file.c b/arch/riscv/kernel/machine_kexec_file.c
+index 59d4bbc848a8..25359d583bc3 100644
+--- a/arch/riscv/kernel/machine_kexec_file.c
++++ b/arch/riscv/kernel/machine_kexec_file.c
+@@ -10,6 +10,7 @@
+ #include <linux/elf.h>
  #include <linux/slab.h>
- #include <linux/string.h>
+ #include <linux/of.h>
++#include <linux/of_reserved_mem.h>
+ #include <linux/libfdt.h>
  #include <linux/types.h>
-@@ -51,6 +52,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
- 	nr_ranges = 2; /* for exclusion of crashkernel region */
- 	for_each_mem_range(i, &start, &end)
- 		nr_ranges++;
+ #include <linux/memblock.h>
+@@ -64,6 +65,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+ 
+ 	nr_ranges = 1; /* For exclusion of crashkernel region */
+ 	walk_system_ram_res(0, -1, &nr_ranges, get_nr_ram_ranges_callback);
 +	nr_ranges += of_reserved_mem_kdump_nr_ranges();
  
  	cmem = kmalloc_flex(*cmem, ranges, nr_ranges);
  	if (!cmem)
-@@ -75,6 +77,10 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
- 			goto out;
- 	}
+@@ -77,6 +79,8 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
  
-+	ret = of_reserved_mem_kdump_exclude(cmem);
-+	if (ret)
-+		goto out;
-+
- 	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
+ 	/* Exclude crashkernel region */
+ 	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
++	if (!ret)
++		ret = of_reserved_mem_kdump_exclude(cmem);
+ 	if (!ret)
+ 		ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
  
- out:
 -- 
 2.43.0
 
