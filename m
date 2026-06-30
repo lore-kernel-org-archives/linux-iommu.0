@@ -1,96 +1,83 @@
-Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com [209.85.214.193])
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD7F3E8C74
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 07:49:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD4F28C037
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 08:38:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782805753; cv=none; b=VnzkUeNKUWjzW50etvjB7efZT081yU7JT6zMhBf3RQuJoYq/AMAYf7Yxr8LffO0JELsYFx+xXuebk+m2yLhgh1ekofnFjIif3LBoI60xfwmRlR3leo7npJThdDn7YYdOY56cX4+PjW1oRGZsy60kXH7lxlbZ468kxkzVm4fM3Eo=
+	t=1782808720; cv=none; b=egfue23iaJ+i00QzcDmz4an097rBalGHRpvV+7rWICxKTgH7X4ksvPynEFvSJhQndr+mQ2cc/fBEpnrrBrltgd+JEoFbWupMCb+UBeLbVX5cTnmkTeVGTB9Z+b2x9g6AlD3Hw5DIv4T6PRYBShivKWPAz8OkSjcSfH7TNe+GiF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782805753; c=relaxed/simple;
-	bh=uLOeasSEYWAvpT8ERSE9h3DlJwiheu4obyaLXpGYn9A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Lbws3qUKCycqvldvIP2pI6OG1AV87lQctv7Xdm4FFyoQ+IOVSFg+9gVBjPSuDij3pcRSNQJimXQdvjZ59UzpZrWllCEoXMLfuybl2KOkaKJFEaIp/o1cfXGMNWXtqUYmXYujyAHbmZohGACfZNYiBsSDBZgg7OhSwxEQ+9x5zf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T1yPDjPN; arc=none smtp.client-ip=209.85.214.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782808720; c=relaxed/simple;
+	bh=9AiGGaUHOh2C6AJyqb34e8YM2g4s5YiIRtvd0EhU/V4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CDFIiRcVKso5KDz1vFiWrlBvE2jxuZf5gLSySah1gIrUW7KHfqWWduInxuDXwTmk18hrp3xtnAw1Ki4HiavS+zBYONmtym3jYSOVxlDtHsOKURhpav62NwcxwvZuW4fYNBNRb3A9ql59ABCtON4pYmW1zwVbA9Qed0GFbfycQMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=W6+6+hkL; arc=none smtp.client-ip=74.125.82.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T1yPDjPN"
-Received: by mail-pl1-f193.google.com with SMTP id d9443c01a7336-2c82538b6c0so24615085ad.2
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 00:49:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="W6+6+hkL"
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-30c944aacbaso4601090eec.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 01:38:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782805751; x=1783410551; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HcszoUDc7316A03Dx3QXGOd8FcU7DWvjuNUEWPnVcI4=;
-        b=T1yPDjPNcWOvZS0erpveW510X4++HFrycaDTJnLpRd5O4ANGqhqfau3TJaKMT+Uh9c
-         gnKfb8wMtlOWJDH6u5ia1q16kdJ1T2r8k7zl7XfRr5wOF8uDnfmGb4VXvKCRsCjFhLWe
-         YOIP+in+s5gM5mDpKVkhqtKCK8YY8C3q7YUo1vLo1DX275AFCfoq+gmlDvM0DS6GG69G
-         w0VI+Uzk5NlB1aseRNzVLaFt1JXkxdsEvFQvglSflW5XaHXCxYcTcueoagDzHbRD43bn
-         MV/+l3vv4DOwOD2L/1hyQDxRBYCzNd0MPMuI0Z6A/NSAOiuqaNrt6jWoxYOL2C+BEwOM
-         qKWQ==
+        d=sifive.com; s=google; t=1782808718; x=1783413518; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pcbh2hH4jKecepaLWhXNqv0o5ONWwPeeMm+RS/NEOcE=;
+        b=W6+6+hkL8pnnuNbtUdfb6a2ZUUd416ModpDib0VvcO+yJq/aYzLDKVLvJQhwqqxjeM
+         R7RMr5Ix4JHQYWcKIMg6NLNGS1k6O9Kj/9qWyaTokOw0vyDcAsCInAZrul5cI4UqHscS
+         kMr5wc8O7szCkSqoSSfFvvoF3SZH9p8purzyreFO9FE2zdekprZxj374qi306wo14Mxl
+         tGwWFekitn37LzrtMsPEJXoAf5/vG5D8KmTtlVFLIxLzbOZSgfM2j4vQrP1F96jA8LLz
+         b89Me6ZDlW72zgNFxBSe7vlMa7ROfWw/HcB8npidwaHJbloI+K5stvKczQmllstzJVES
+         ljYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782805751; x=1783410551;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=HcszoUDc7316A03Dx3QXGOd8FcU7DWvjuNUEWPnVcI4=;
-        b=J11ONp83lygAGrTwNHwEB0DuidpaJzOXRLngxWNNJM0SHOdbKCTy5Nxe7uTbO7PA7T
-         ipUCkbDF6Ks6qnekGk7a4XeZZ6y4oNpyx77CtCRVQ9YBRnsylGh78PMFakzIpbt2vSIr
-         jx22V8cwi8lrFUAFtJjLLCIXcG0c8py78vhLYFPWDRVvtaFNDuZbgnq9jqBed5b9hCOP
-         4ofIV3S5pxIr4OKpxohMbPaVIfeTKNZFWy4uHFImjEBAhjh67qHpXdyFBDcSkwHNzTQ8
-         OlrdOTETb/gSupeU88/H25lHo6HB1hp8zVpU5sKJJeEkYOYRxrzxjPLA+QbA7eYTY5Eo
-         chLg==
-X-Forwarded-Encrypted: i=1; AHgh+Rq2iVD6ULbyR5lbM4HnKcEKLWw9KiNMkTxD4t9vuqGXamlvyiehaOfzPTESwP4bmWi+bJUHrw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx1hRaI/gz/DWLB9r4Bx60Ejr4rw6M1wG4D3hx+V0LdQPD7IX/m
-	q5mLsVHACEHxl4EOL58p450VTwck8WItPtARLY5Z43KEWW4Dc2P14jE3
-X-Gm-Gg: AfdE7cnd0RSIooj583SqnLv5TqRz6P1lgO+LYtPyeBlxmNl+bhWM4gihsrql1WSdM/1
-	/Be68vnfLhOpqEfbajoVKxYF09ddh561DhcONSMS6XzeflF0xXH0c2CBTd5Z4FTXKFhhauXR3iU
-	8/fpBJOuvbH9xJJ3FgfG3+oJnTYYcUCXL+N+2NvlnX98jZhJHnjJqaM8Rnc5NEnbqx/YXgjXyix
-	KwWNsbXb7pYjmS9jAdPw0thDI48jVd+Q+BGJ9KNLVcEey2vyKVI8LuDOYrCI04l18i69uCLBmwC
-	XVxhMNttZ4tf6MmD5I5OEGKga7Kx4djdMssIkRWc1/BxPeHEMwKGNCmm2KzF4U1tQ8E19yrZ6I4
-	cgy81gKq/mZOXue8y0iJP1Vt5d52kYMmCrHBdqwj6X1sQPSsPmCk7ZjZ+bStYXDjQF/+DpvyEC2
-	/sq9m7i+sAWxhkcskvtQxnPQ3pZw==
-X-Received: by 2002:a17:902:c94c:b0:2c0:cb0e:ac3a with SMTP id d9443c01a7336-2ca2e71832cmr21250665ad.23.1782805751208;
-        Tue, 30 Jun 2026 00:49:11 -0700 (PDT)
-Received: from intel.company.local ([210.184.73.204])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca382a2d3dsm7821045ad.55.2026.06.30.00.49.02
+        d=1e100.net; s=20251104; t=1782808718; x=1783413518;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pcbh2hH4jKecepaLWhXNqv0o5ONWwPeeMm+RS/NEOcE=;
+        b=HF9cWhrkZDDAZRNCscYrWwFRApQWtT8ZioFzfofZvxmfbN83Bg2t5qaVGj3iXhsNqi
+         DZUAdp7GljQh3qNYidbeiqO7s57jQGjvyPf1jDNobFYGekc+l7U7DPyfjP7IkNm1lCNH
+         TvF6svzgo8FkbMzm0y8BgfLtTEVrjikDDUODptTreLn5tUJLywwwHsggSkcaLduxPANL
+         ghSaOiEIqXuJqtjsEsFkDAtNiYqcltERjHvGdoRbCwLZwPw1EdAt5IPbUR912hG2DVEP
+         DoyuKDWsG3svqismoqQFlUm51BtAwGiwYpk8OuYM+fpEFFr2hVi3UhzuHVA0jVzHbo76
+         e8lQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqIUvQ+zbWO/6tqeS+IdblLYtxkGj2kKOMAA2h0PxknOy2txgGoxdGhV49PM/waG0SVXH/E2A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyutM1CrZeXU66UVHTLlzbqEX8UhnaHgV4VP6uKZjxK7grlmwMa
+	Jj73AhxaUr24GkiNWBMLz6yZ0VnT99niJnLbT9xcxoXRNm299PRWlFZ+KGunt8KcwJk=
+X-Gm-Gg: AfdE7clJQAaBWF6+EqbaG8HZvfz335CjISPi1mBZaf0PAbWm6iNDqVHhar1O+tKdcnR
+	wtNvjxmKi8nFh+39FYcX4UvsjeVeLzMlx6wQiTTswIoqr5WYfoAhNUYlut+F0x+uDSujyWzK1YO
+	7tEe6n7QtVJLp0otDRmK8l7SxTAXNIvZa5kiunyE8rirIEI3rnLxs8wBnkXS7Giw2A7juCLOswM
+	/tdINlzgCQ9Msqp+XE3bTGJYpjnDCbPEiXMcp7AEh2lsiUtyLFdcao9ryq4GD9EN/29T8w2SELF
+	yY0IApBvxjtXShT7MFfwaWTiajKVlR2AwCzYWtcwSqwsSOfcpPq/QROhOIOA5cdpaKap7UhN9J9
+	2Bd9kBUq/8y3Lbl1qPQY5UhQoUmDGs6TKrYh3xjtyuDJnLMdiWwoxsdqoAkSVYlzU542L1zo9NI
+	DWkm+j07sIg0d7sJNjnieJV1kIAoLuUrzRCQ0=
+X-Received: by 2002:a05:7300:1824:b0:30e:da5b:2725 with SMTP id 5a478bee46e88-30ee12c0a42mr2097408eec.6.1782808717684;
+        Tue, 30 Jun 2026 01:38:37 -0700 (PDT)
+Received: from sw04.internal.sifive.com ([4.53.31.132])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee2f5aeb0sm6756444eec.3.2026.06.30.01.38.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 00:49:10 -0700 (PDT)
-From: Wandun Chen <chenwandun1@gmail.com>
-To: chenhuacai@kernel.org,
-	kernel@xen0n.name,
+        Tue, 30 Jun 2026 01:38:37 -0700 (PDT)
+From: Zong Li <zong.li@sifive.com>
+To: tjeznach@rivosinc.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
 	pjw@kernel.org,
 	palmer@dabbelt.com,
 	aou@eecs.berkeley.edu,
-	robh@kernel.org,
-	saravanak@kernel.org,
-	bhe@redhat.com,
-	rppt@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	kexec@lists.infradead.org,
-	iommu@lists.linux.dev,
-	zhaomeijing@lixiang.com
-Cc: catalin.marinas@arm.com,
-	will@kernel.org,
 	alex@ghiti.fr,
-	akpm@linux-foundation.org,
-	pasha.tatashin@soleen.com,
-	pratyush@kernel.org,
-	ruirui.yang@linux.dev,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com
-Subject: [PATCH v4 10/10] loongarch: kdump: exclude non-dumpable reserved memory regions from vmcore
-Date: Tue, 30 Jun 2026 15:47:14 +0800
-Message-ID: <20260630074715.4126796-11-chenwandun1@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260630074715.4126796-1-chenwandun1@gmail.com>
-References: <20260630074715.4126796-1-chenwandun1@gmail.com>
+	mark.rutland@arm.com,
+	andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org,
+	david.laight.linux@gmail.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-perf-users@vger.kernel.org
+Cc: Zong Li <zong.li@sifive.com>
+Subject: [PATCH v3 0/2] RISC-V IOMMU HPM support
+Date: Tue, 30 Jun 2026 01:38:05 -0700
+Message-ID: <20260630083833.1275837-1-zong.li@sifive.com>
+X-Mailer: git-send-email @GIT_VERSION@
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -99,49 +86,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Wandun Chen <chenwandun@lixiang.com>
+This series implements support for the RISC-V IOMMU hardware performance
+monitor.
 
-Apply the same non-dumpable reserved memory filtering to LoongArch
-kdump as was done for arm64. Use of_reserved_mem_kdump_exclude() to
-drop flagged regions from the elfcorehdr PT_LOAD segments, and
-of_reserved_mem_kdump_nr_ranges() to pre-size the crash_mem array.
+The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver
+created by the parent RISC-V IOMMU driver. Therefore, the child driver
+can obtain resources and information from the parent device, such as
+the MMIO base address and IRQ number.
 
-Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
----
- arch/loongarch/kernel/machine_kexec_file.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Changed in v2:
+- Rebased onto v7.2-rc1
+- Use hi-lo-hi mechanism to read counter.
+  Suggested by Guo Ren and David Laight
 
-diff --git a/arch/loongarch/kernel/machine_kexec_file.c b/arch/loongarch/kernel/machine_kexec_file.c
-index 5584b798ba46..4b918c3d4a28 100644
---- a/arch/loongarch/kernel/machine_kexec_file.c
-+++ b/arch/loongarch/kernel/machine_kexec_file.c
-@@ -14,6 +14,7 @@
- #include <linux/kernel.h>
- #include <linux/kexec.h>
- #include <linux/memblock.h>
-+#include <linux/of_reserved_mem.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/types.h>
-@@ -67,6 +68,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
- 	nr_ranges = 2; /* for exclusion of crashkernel region */
- 	for_each_mem_range(i, &start, &end)
- 		nr_ranges++;
-+	nr_ranges += of_reserved_mem_kdump_nr_ranges();
- 
- 	cmem = kmalloc_flex(*cmem, ranges, nr_ranges);
- 	if (!cmem)
-@@ -91,6 +93,10 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
- 			goto out;
- 	}
- 
-+	ret = of_reserved_mem_kdump_exclude(cmem);
-+	if (ret)
-+		goto out;
-+
- 	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
- 
- out:
+Changed in v1:
+- Rebased onto v6.19-rc8
+- Pick all suggestions and feedbacks from v1 series
+- Add cpu hotplug implementation to avoid race enablement
+- Move PMU-related definition from header to c file
+- Change PMU driver to auxiliary device driver
+
+Changed in RFC:
+- Rebase onto v6.13-rc7
+- Clear interrupt pending before handling interrupt
+- Fix the counter value issue caused by OF bit in the cycle counter.
+- Invoke riscv_iommu_hpm_disable() instead of riscv_iommu_pmu_uninit()
+  in riscv_iommu_remove()
+
+Zong Li (2):
+  drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+  iommu/riscv: create a auxiliary device for HPM
+
+ drivers/iommu/riscv/iommu-bits.h |  61 ---
+ drivers/iommu/riscv/iommu.c      |  19 +
+ drivers/perf/Kconfig             |  12 +
+ drivers/perf/Makefile            |   1 +
+ drivers/perf/riscv_iommu_pmu.c   | 703 +++++++++++++++++++++++++++++++
+ 5 files changed, 735 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/perf/riscv_iommu_pmu.c
+
 -- 
-2.43.0
+2.43.7
 
