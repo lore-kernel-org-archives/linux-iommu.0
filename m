@@ -1,63 +1,63 @@
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com [209.85.214.194])
+Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com [209.85.216.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BC423E2ADA
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 07:47:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBC893E5A3B
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 07:48:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782805675; cv=none; b=jWVhbqwwWC5haIyuIZKdXA/17+//GyuCk8vUyCfKSri4MIMyScMg22yCKpquNJQoqGupUlZskBDhvwdSyoest9N5lA4xHIEl8mc+DHamDUrZGT3XOnrW+WHWhzRHNT6OHpCc0T1h4qPgPmpfoo5+6aTl955lLgcvQxRBrIaAcjo=
+	t=1782805683; cv=none; b=XDNenNzAKkzziCTvA3sWJiFRtgX6VdwHTaaD6KuWjUy4rUPZjzeo0lhb9BlP6gnSE9AJH9SImjnC5+0SgX+gHK0QhCxqR5uew9VjXM4pXT4KUOEcHLnXv3P/i31NiH0ptXy1XEp7sMlkmiC9jJOhOtQzxzs1tpsviWfZ0ugewks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782805675; c=relaxed/simple;
-	bh=8OujZebZaWz43d3tSXQeCWPkY+eLKrfLdaC8H8OV1pc=;
+	s=arc-20240116; t=1782805683; c=relaxed/simple;
+	bh=eRKNOIjCkiF2jF/wqDsLoKJFJ7gQkK71h6q8X23yaLc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aZz8L7xFSVb0RD37f/NCLVcb+Ca9VKF8ynJqEX6tU4fOuwFnbEmCVqnVf/T6CXgXRDxCXi0y8BeVuquGr7/ByY+C8lyF1avHaFoje/Q5wtmEO5Wy3cf2q2/2YIVclwG95T6YKlIPmFZuEUc7niGc1eLf/nFuMk4LnzaGRbWfQ5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AIcwwV8o; arc=none smtp.client-ip=209.85.214.194
+	 MIME-Version; b=m1gE9/hsokDhxSkhaxuE8biyQFjL+M9D7xa6trrlaC4oHEu2Eh2mgY7/1CFyYN5vqIoKb5MwYeEjyYPWs5JYkIgiOhRKqibysGGHZVXTbDuQoL1WLh1zg/3GL03SoqFRRcewAcx8wjWyuxqJgHM4Sr9xJ4VrEIUa80UtZIoqsgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QFewLym6; arc=none smtp.client-ip=209.85.216.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AIcwwV8o"
-Received: by mail-pl1-f194.google.com with SMTP id d9443c01a7336-2c7c61b5292so36994255ad.0
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 00:47:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QFewLym6"
+Received: by mail-pj1-f66.google.com with SMTP id 98e67ed59e1d1-37fb17e1435so1424162a91.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 00:48:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782805670; x=1783410470; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1782805680; x=1783410480; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VoJbo79rUg5zjWEB3QBIDp68NPxVQaL4/r71+zofbTM=;
-        b=AIcwwV8oIb59SY7BSvr0NR4LgllRE21RwB5ZkTOZ9G5ehXu+izHIKbMrH5qX8EDHA6
-         2XYQivHkOM4Dr0XKOZJEsHmxCRtuNrDuJW0e2gc6enjNAITrbc2Yw2xFYdvzJluaIHnr
-         XN1U4Ka0h4N60qUYw/wbXoVoChBr7LG80p25aLjtDNVdZH6iG9KQsLxPqO9XQdhGCpqM
-         Nx1dvmlefSxkcyxRvOGBin9Q3HilGXYxZQtiXi7vENUH+GpMJrXBfn/AuroWdedr76G8
-         nvk54vYWUeCJs9DM9J+FLkbO0ejRg1ZZFOJhngdcQ3lrgrfjEDJj3pIWe+Nq0i9paImz
-         pMMg==
+        bh=1Grclqvhv7nIlB4Htu6FP2QRzAU/Ix2vbgSwcdXfpMs=;
+        b=QFewLym6Lx+VHqKHROkBXkZTpxoLGUQZCoxwT1CRWOKh0OllviiI//eY6XapBlBEjw
+         v394C4HAiZS1Ml+ri84llMmWGkOOrH3AvmP4gRFzL14UUDai17pSRQfbQiBI0aIkt0FL
+         DxvCDDhX7fZTccic+Pa7z1NEQNc+PCKOy/KNuQmWcfJ7/gqq3d4jUnHgnts4sERgHv5d
+         VOwFD+LISNaMl/ZLXOvkG9RX2Zv4K0golprSnMezfHRBnmcxiCOu5Q8zIoEGNrCn1Crn
+         AM/Q7m0bkKAscbHx9vJcUbasnIzYpHgJrLeJgEG4nd6Y/TTY/nf3PucKduNiMD+Govav
+         E9Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782805670; x=1783410470;
+        d=1e100.net; s=20251104; t=1782805680; x=1783410480;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=VoJbo79rUg5zjWEB3QBIDp68NPxVQaL4/r71+zofbTM=;
-        b=Cyttcrw4JHYfi5Isge4/2OKtwbbhkNppTveo5JYfyLvKPiNyhpxtKFv6EZrpgzt1IC
-         aqJrfA0L5t7s951mCpUoRyenYmfBfNsgmk62kv/XEgVnaDqIQdxVhNMqxQmhbkvof58t
-         dAEoPpxREmF8TPpVYQGUXvzlNUOhO5WvhxyOhunX+jWGd7WfkD+4ELO5kboC912isapK
-         colnemLuBmm4jaC9RRUI0lvjpSvXBPCnTZQ9mxIvi3+nz0QmHSROFaiIKbd9+ICIU44y
-         vQcZEY3prhlPTomCEEyD/4DXSr38+DZ0X1DMknU3MBMeVtgDmyRIrnmKPS6DNKwzPcSG
-         egCQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rri5tcNiMxiLUV6ldYGn9uNzkiaz29vI8/4HJpXYuyd3y31YE1m4w1xxuP98KXQXfyuq8qT9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw3kcvtMpeOVwIqbMOVLzCBtBqtHB7lsLFGWPsfZP2ex0OeqWZR
-	MNbdYo+9/+LrYP51i6nW1kb9qMuq8uEKCb2TP5pr7UXLrdECu77Krhck
-X-Gm-Gg: AfdE7ckim2muT7ZMO5J/kMMia4rLM05tsDQGgMY9RlTChA9bjvFZkHKjOiAKIgcUg+H
-	pMC14JacEvz0vUHkMHOUJAjId6Iz9e6xQNOZtUj9d0I0infXFh2QKVfT61S/7R1qQsBezgScyJj
-	806Y4TvHN2aAekWDWBZ33r2UQLO7jSoVLFCZ5oYIKf5O8tAhmSwBt4gBP7M9j79Yyp3QScagO/L
-	0hXCFgtpPMY1TNHaejAOtdvMgd5RGZX11HuRmTl3BAQn+KdLVHcI2YPSkp6RlzH8DA3piY14yyt
-	eb1k7Nljki8RVyAthzExOsH5wo2mIDvvR8zP+JPesjtmcRvPvEERU+IkFc3Ticr2d5oTYRtLvxW
-	IIngFTJIB4u1lGCT+yYilPI4zgDxMyfqFI43R52a+qt45NIOz3PNkOdGhK9/6ofxIqZjhVg1Y7Y
-	z07SEgf1t4gOKVVpnjOPxf0itVbA==
-X-Received: by 2002:a17:903:41d1:b0:2c9:97a9:209b with SMTP id d9443c01a7336-2ca2ed32417mr20077795ad.47.1782805669781;
-        Tue, 30 Jun 2026 00:47:49 -0700 (PDT)
+        bh=1Grclqvhv7nIlB4Htu6FP2QRzAU/Ix2vbgSwcdXfpMs=;
+        b=gf07KpYXGqgK3wBdtrGfi7oS2FjtZ5BC0CKz2EVbUv3uecaX+1h+X1wWT7Z6uGdbBp
+         wHG03yQimsFWtDEuIJZAZAh8+T9rpW+f8bonre/OTj0cIfvlhziGHaxHqMiBK25IyCBC
+         Y0w7fkKbeXv6CWjtJ6MEVxA3f072IQ1byMUqVz87QchmUBt00S1f5lAHROkma4Bs9e8n
+         pc7ax9YpvxZbdoSEf0dn9StFRKGlELgkhWqSk3TS+yK5BEiHXC2+qq5QHKQPzPPVFN8w
+         bqpyx5/vFDX0RM9MkwVGJobUYvg6pL2iLT4VeERuZUhZsHTke0xSgqtUpGi9lk+x2Rei
+         O64Q==
+X-Forwarded-Encrypted: i=1; AHgh+Ro0NeTWoA6BAvYa9Pqedc7Dh9JS3VdZH2dXpmdc48QV8B9kI69b576HVcqDt/i9K+cY8hAPFw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx+WHJXegNhrdRmDpK1CwI8IkcpK/B3SXFc9mHRg4sqoSNIhowx
+	zcSAHYfVy8X5LfoVfPKZYuWcu8+cp3nFM2iulYv7Buf65PdP4bKAV8dJ
+X-Gm-Gg: AfdE7cmDjwb+5PnEiRSV3qZHAn4+J/4seWZ3k/gNZ0uBO3HsswtM7GpmWF1XhXZQ9l3
+	7PuIPPuNtI5A9OiikcXp6GDYahKnMVKEkUQ+1qfYir0NQy1YvIT84belHWnz6nogwsqImdgVxP5
+	0l4OggskkrWjW2ca/X6KR+bzp94jGL8qMHmmn0aCtMe/dJuRJDrHhS4h/os6li5lKEtI93gep24
+	wmF9dYsePy1dyVrFKNFqV2OzI4Ovwib1xXXnRKqKh+FkGN1Eei/sbn85ZOjKVYmzvPzt2AZOJHW
+	d6bgSHOf6dKEjI9pMk/QDYl0AHo1YeDSAF+Eud1z1kf8FrpjXaahSeemN26HFT60dNg6hKqvL1V
+	tl09QSXkisi067KDcKKCR6HcPQATcGsby0qBd2I3+X/8A8Nuqxea+27FIGpH308ihUbFKi59gRd
+	kgaYwDFBu3E0LN35iZLKYsaBKoNA==
+X-Received: by 2002:a17:90b:3c8e:b0:37f:9ce0:af34 with SMTP id 98e67ed59e1d1-38052826ad9mr1631272a91.31.1782805679897;
+        Tue, 30 Jun 2026 00:47:59 -0700 (PDT)
 Received: from intel.company.local ([210.184.73.204])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca382a2d3dsm7821045ad.55.2026.06.30.00.47.39
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca382a2d3dsm7821045ad.55.2026.06.30.00.47.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 00:47:49 -0700 (PDT)
+        Tue, 30 Jun 2026 00:47:59 -0700 (PDT)
 From: Wandun Chen <chenwandun1@gmail.com>
 To: chenhuacai@kernel.org,
 	kernel@xen0n.name,
@@ -85,9 +85,9 @@ Cc: catalin.marinas@arm.com,
 	ruirui.yang@linux.dev,
 	m.szyprowski@samsung.com,
 	robin.murphy@arm.com
-Subject: [PATCH v4 02/10] of: reserved_mem: dedup and relocate reserved-memory messages
-Date: Tue, 30 Jun 2026 15:47:06 +0800
-Message-ID: <20260630074715.4126796-3-chenwandun1@gmail.com>
+Subject: [PATCH v4 03/10] of: reserved_mem: skip late scan when no regions are reserved
+Date: Tue, 30 Jun 2026 15:47:07 +0800
+Message-ID: <20260630074715.4126796-4-chenwandun1@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260630074715.4126796-1-chenwandun1@gmail.com>
 References: <20260630074715.4126796-1-chenwandun1@gmail.com>
@@ -101,51 +101,30 @@ Content-Transfer-Encoding: 8bit
 
 From: Wandun Chen <chenwandun@lixiang.com>
 
-In both fdt_scan_reserved_mem and fdt_scan_reserved_mem_late, there
-are identical check-related print messages. Consolidate these messages
-by moving them all into the fdt_scan_reserved_mem function.
+When total_reserved_mem_cnt is 0, there is no /reserved-memory node
+so fdt_scan_reserved_mem_late() have nothing to do, so return -ENODEV
+directly from alloc_reserved_mem_array() in this case.
 
 No functional change.
 
 Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
 ---
- drivers/of/of_reserved_mem.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/of/of_reserved_mem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 82222bd45ac6..42649dc3613f 100644
+index 42649dc3613f..e1bd35115cc1 100644
 --- a/drivers/of/of_reserved_mem.c
 +++ b/drivers/of/of_reserved_mem.c
-@@ -270,19 +270,15 @@ void __init fdt_scan_reserved_mem_late(void)
- 		return;
+@@ -76,7 +76,7 @@ static int __init alloc_reserved_mem_array(void)
+ 	int ret;
  
- 	node = fdt_path_offset(fdt, "/reserved-memory");
--	if (node < 0) {
--		pr_info("Reserved memory: No reserved-memory node in the DT\n");
-+	if (node < 0)
- 		return;
--	}
+ 	if (!total_reserved_mem_cnt)
+-		return 0;
++		return -ENODEV;
  
- 	/* Attempt dynamic allocation of a new reserved_mem array */
- 	if (alloc_reserved_mem_array())
- 		return;
- 
--	if (__reserved_mem_check_root(node)) {
--		pr_err("Reserved memory: unsupported node format, ignoring\n");
-+	if (__reserved_mem_check_root(node))
- 		return;
--	}
- 
- 	fdt_for_each_subnode(child, fdt, node) {
- 		const __be32 *prop;
-@@ -337,6 +333,7 @@ int __init fdt_scan_reserved_mem(void)
- 
- 	node = fdt_path_offset(fdt, "/reserved-memory");
- 	if (node < 0) {
-+		pr_info("Reserved memory: No reserved-memory node in the DT\n");
- 		total_reserved_mem_cnt = 0;
- 		return -ENODEV;
- 	}
+ 	alloc_size = array_size(total_reserved_mem_cnt, sizeof(*new_array));
+ 	if (alloc_size == SIZE_MAX) {
 -- 
 2.43.0
 
