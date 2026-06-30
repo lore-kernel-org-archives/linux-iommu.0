@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED23C413259;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4386413245;
 	Tue, 30 Jun 2026 12:54:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782824087; cv=none; b=uFQT67OUy6CTMrWVlqq+gy1oG/I9FUT/NtrRtGo6JFqgd2gyzREmO5QzuNBRq49L89SWtkOXGoPuNaxyEyXgAjkovXLKASX7XwLYO04LHN8qotsVjmyQLEJSv6TRYg9LfelaqAO8CXcSMe+KU2Zy+VQVmG3CsWoZfeRLzwlijtI=
+	t=1782824087; cv=none; b=rbuG+u876Ep52S3nI/8gMfCWIJqxPsntrYABZOJvQZ67VTHXDwM7/wy7Jqmwn7edEh7kmeEdcyeT77k+Y6blKExz8KlCy3Lb2sz1jQvplwIi6QvNUD8XfxcYnkqQsXQ3yc3C1x84o7qao4REzmaOLrquhBI0UJasbPfv/Opv8VI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782824087; c=relaxed/simple;
-	bh=JjSBcUsCIWijnP1RO/tcdaxQskqlpD+6f8guQj7iid0=;
+	bh=/hlpe6cnaNnjH8M3ZgDbGLL+CA8dnfXHdAP46wuyD1Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Sr1aM/KLMQh4VbZxYTmOqYAcL6WHkiF8Ffj0UGjD9ISUYvPXpzW+dzsTR5xiRDAmMjVr58LJB6D3wgyQWt2PpT5Jsn37U/BKdUuVJt+JyMzdIK80CXIIzpxMB9xCQAbrNBUegL7U3v+iXQirSnL23I7JnFTcjqAXy87WEkr72nA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FlfjgDsO; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=kv0RIn3W665TfcpQydZVNJFY+SXijZU28HbvMGKGmq3Mq7ltazzvS+MrxweDg5qa5ZZN7EHx77O5hscm6SLwXyb8M2u02doZR8g6q5nHrLZoZArSAM8XFbgCQ6YCDoEAORa0edomMrWyDb6g6UZhOjAXED+JGRkphXaHIdPNTgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fi2Qexid; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FlfjgDsO"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 922BFC32781;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fi2Qexid"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B1B17C2BCF6;
 	Tue, 30 Jun 2026 12:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1782824086;
-	bh=JjSBcUsCIWijnP1RO/tcdaxQskqlpD+6f8guQj7iid0=;
+	bh=/hlpe6cnaNnjH8M3ZgDbGLL+CA8dnfXHdAP46wuyD1Y=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=FlfjgDsO8EJjz5AQp5YkXaFaihiQmqOomg2ZTs5wjWwD2dkRA62/QhJBT4+NqD0mt
-	 gjRSx5dG/uJbw7kohaoKJIfZ6DpOBAC6ifDyvpeL9nJQmXPPlya8wpR4KXjjNNRlUP
-	 1Of35pmSDWuqP2Xr36sZq+SyND732eBKD65xRhQjyqjlFIH9/e54nS4zH/J8ZG0O8N
-	 xt8/JkCcNZGw1KGfTghi8zUBbjiVSTSyQgZ6QOxLS9dhsKGJFQ9VUE0jdbmieNBGpb
-	 rwb6PnjNBsyqN6W03qumOzCPZJBWz2lUm9bpRuJJstZVI1Ge/h0A7bfXVgkMy6nbc0
-	 BGKHaQHQsgu4A==
+	b=fi2QexidsvJlA0AaAArvBcIc3zfYhzv/gbKTJqDAs2AfX2ba/W8lKosjgk9hNyfvg
+	 9PaLsLs8HCIr//R+QghJBkUyT3khbcK1RkE2lTvn4gRL+9lf1yYunLHdMbwNVeHh+v
+	 JQrZ91TS7CDIipurznVoR89V41cyFTGI+J8Wkf70s+aVTgElA8lJjpxEXdetU/W9Yw
+	 YKoL1tOBfodtQF3zWG697gcMeHJuRfIDidAx3TeUIuXDHCcIk1WSEp32o6NHSBPQ5N
+	 97iy1XiU3cI4x2yaIEuAc1WdM+qMBPLbRFdjgqYik26Lp2UgCgRrzZKx7nuJwPzLJV
+	 WGpUlGRry2tRg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885A1C43602;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9441C43458;
 	Tue, 30 Jun 2026 12:54:46 +0000 (UTC)
 From: Michael Reeves via B4 Relay <devnull+michael.reeves077.gmail.com@kernel.org>
-Date: Tue, 30 Jun 2026 22:54:33 +1000
-Subject: [PATCH 05/10] mailbox: apple: Add DockChannel FIFO controller
+Date: Tue, 30 Jun 2026 22:54:35 +1000
+Subject: [PATCH 07/10] HID: apple: Add support for DockChannel HID
+ keyboards
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260630-apple-mtp-keyboard-final-v1-5-506d936a1707@gmail.com>
+Message-Id: <20260630-apple-mtp-keyboard-final-v1-7-506d936a1707@gmail.com>
 References: <20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com>
 In-Reply-To: <20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com>
 To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
@@ -56,11 +57,11 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-input@vger.kernel.org, 
  Michael Reeves <michael.reeves077@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782824083; l=14145;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782824083; l=8555;
  i=michael.reeves077@gmail.com; s=20260105; h=from:subject:message-id;
- bh=kYpCmYxQZoBs0BJjHZBNv8MenqrnGTiSP5cTeGdpidA=;
- b=0FvdcrzK3mg5Ru5nq6JH6A1tZy3CLwyElGoIHQU/n7uzv8kbUf4nI+PUxINrLRlCPBP+kjAfX
- WufSI/1C+J6DsGyS45WmCjJpQrtmetAtx+AXmhOdBgnwgmqxy1L+i6C
+ bh=6yE6aPZb9tp6hFgVMnmA6H50KbXFNGStoSs+JCgZxl0=;
+ b=OpXm1MgNkoDy8VFQrjkrrXlTcOxcFF3aH5P9H/l26/nx7yJoWCrq7WjkQdz4JA26KJpJSrAy/
+ KTzmxv9DIlFDxT18Lf/5y7YBG5sHOZZJjxfnK+o6hr8TGI0oyBy+C4g
 X-Developer-Key: i=michael.reeves077@gmail.com; a=ed25519;
  pk=QIrgWBGCm3LG0YYc6MLCDkwuVXLTGGooVBdWX/KhSiU=
 X-Endpoint-Received: by B4 Relay for michael.reeves077@gmail.com/20260105
@@ -70,506 +71,232 @@ Reply-To: michael.reeves077@gmail.com
 
 From: Michael Reeves <michael.reeves077@gmail.com>
 
-DockChannel is a hardware FIFO used by Apple coprocessors for
-low-latency byte-stream communication with the AP.
+DockChannel keyboards are registered as host-bus Apple HID devices
+instead of USB or Bluetooth devices.
 
-Add a mailbox controller that preallocates RX storage, tracks IRQ
-enable state in software, and reports TX completion from the TX-empty
-interrupt.
+Match them in hid-apple, use the modern Magic Keyboard function-key
+table, and fix up the oversized report-size descriptor pattern before
+parsing.
 
-Reject messages larger than the FIFO and return -EBUSY while the
-previous message is still pending. This keeps the provider usable for
-future small-message clients such as serial transports without a TX
-worker.
-
-Co-developed-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Michael Reeves <michael.reeves077@gmail.com>
 ---
- MAINTAINERS                               |   2 +
- drivers/mailbox/Kconfig                   |  12 +
- drivers/mailbox/Makefile                  |   2 +
- drivers/mailbox/apple-dockchannel.c       | 380 ++++++++++++++++++++++++++++++
- include/linux/mailbox/apple-dockchannel.h |  29 +++
- 5 files changed, 425 insertions(+)
+ drivers/hid/hid-apple.c | 139 ++++++++++++++++++++++++++++++++----------------
+ include/linux/hid.h     |   1 +
+ 2 files changed, 94 insertions(+), 46 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1f3c2cdb6e19..ed68452c0ad6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2628,6 +2628,7 @@ F:	drivers/input/touchscreen/apple_z2.c
- F:	drivers/iommu/apple-dart.c
- F:	drivers/iommu/io-pgtable-dart.c
- F:	drivers/irqchip/irq-apple-aic.c
-+F:	drivers/mailbox/apple-dockchannel.c
- F:	drivers/mfd/macsmc.c
- F:	drivers/nvme/host/apple.c
- F:	drivers/nvmem/apple-efuses.c
-@@ -2646,6 +2647,7 @@ F:	drivers/video/backlight/apple_dwi_bl.c
- F:	drivers/watchdog/apple_wdt.c
- F:	include/dt-bindings/interrupt-controller/apple-aic.h
- F:	include/dt-bindings/pinctrl/apple.h
-+F:	include/linux/mailbox/apple-dockchannel.h
- F:	include/linux/mfd/macsmc.h
- F:	include/linux/soc/apple/*
- F:	include/uapi/drm/asahi_drm.h
-diff --git a/drivers/mailbox/Kconfig b/drivers/mailbox/Kconfig
-index 3062ee352f78..f1af76d19f1e 100644
---- a/drivers/mailbox/Kconfig
-+++ b/drivers/mailbox/Kconfig
-@@ -36,6 +36,18 @@ config ARM_MHU_V3
- 	  that provides different means of transports: supported extensions
- 	  will be discovered and possibly managed at probe-time.
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index bf7dd0fbf249..47c6ec09d5fa 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -390,6 +390,12 @@ static bool apple_is_omoton_kb066(struct hid_device *hdev)
+ 		strcmp(hdev->name, "Bluetooth Keyboard") == 0;
+ }
  
-+config APPLE_DOCKCHANNEL
-+	tristate "Apple DockChannel FIFO mailbox"
-+	depends on ARCH_APPLE || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	depends on OF
-+	help
-+	  DockChannel is a hardware FIFO used on Apple Silicon SoCs for
-+	  communication between the application processor and co-processors.
-+	  This driver exposes DockChannel FIFOs through the mailbox framework.
++static bool apple_is_dockchannel_keyboard(struct hid_device *hdev)
++{
++	return hdev->bus == BUS_HOST &&
++	       hdev->group == HID_GROUP_APPLE_DOCKCHANNEL;
++}
 +
-+	  Say Y here if you have an M2 or later Apple MacBook.
-+
- config AST2700_MBOX
- 	tristate "ASPEED AST2700 IPC driver"
- 	depends on ARCH_ASPEED || COMPILE_TEST
-diff --git a/drivers/mailbox/Makefile b/drivers/mailbox/Makefile
-index 944d8ea39f34..4f3405064269 100644
---- a/drivers/mailbox/Makefile
-+++ b/drivers/mailbox/Makefile
-@@ -11,6 +11,8 @@ obj-$(CONFIG_ARM_MHU_V2)	+= arm_mhuv2.o
+ static inline void apple_setup_key_translation(struct input_dev *input,
+ 		const struct apple_key_translation *table)
+ {
+@@ -477,53 +483,57 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
+ 		asc->fn_on = !!value;
  
- obj-$(CONFIG_ARM_MHU_V3)	+= arm_mhuv3.o
- 
-+obj-$(CONFIG_APPLE_DOCKCHANNEL)	+= apple-dockchannel.o
-+
- obj-$(CONFIG_AST2700_MBOX)	+= ast2700-mailbox.o
- 
- obj-$(CONFIG_CV1800_MBOX)	+= cv1800-mailbox.o
-diff --git a/drivers/mailbox/apple-dockchannel.c b/drivers/mailbox/apple-dockchannel.c
-new file mode 100644
-index 000000000000..bae183db1307
---- /dev/null
-+++ b/drivers/mailbox/apple-dockchannel.c
-@@ -0,0 +1,380 @@
-+// SPDX-License-Identifier: GPL-2.0-only OR MIT
-+/*
-+ * Apple DockChannel mailbox controller
-+ *
-+ * Copyright The Asahi Linux Contributors
-+ *
-+ * DockChannel is a byte FIFO used by Apple co-processors. This driver exposes a
-+ * single FIFO pair as a Linux mailbox channel and moves payload bytes with PIO.
-+ * There is no DMA involved, so relaxed MMIO accessors are sufficient for the
-+ * FIFO accesses themselves.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/mailbox/apple-dockchannel.h>
-+#include <linux/mailbox_controller.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/spinlock.h>
-+#include <linux/unaligned.h>
-+
-+#define APPLE_DOCKCHANNEL_FIFO_SIZE	0x800
-+
-+#define IRQ_MASK			0x0
-+#define IRQ_FLAG			0x4
-+
-+#define IRQ_TX				BIT(2)
-+#define IRQ_RX				BIT(3)
-+
-+#define CONFIG_TX_THRESH		0x0
-+#define CONFIG_RX_THRESH		0x4
-+
-+#define DATA_TX8			0x4
-+#define DATA_TX32			0x10
-+#define DATA_TX_FREE			0x14
-+#define DATA_RX8			0x1c
-+#define DATA_RX32			0x28
-+#define DATA_RX_COUNT			0x2c
-+
-+struct apple_dockchannel {
-+	struct device *dev;
-+	struct mbox_controller controller;
-+	struct mbox_chan chan;
-+
-+	void __iomem *irq_base;
-+	void __iomem *config_base;
-+	void __iomem *data_base;
-+	int irq;
-+
-+	spinlock_t lock; /* protects IRQ mask and TX state */
-+	u32 irq_mask;
-+
-+	const u8 *tx_buf;
-+	size_t tx_len;
-+	size_t tx_pos;
-+	bool tx_active;
-+
-+	u8 rx_buf[APPLE_DOCKCHANNEL_FIFO_SIZE];
-+};
-+
-+static void apple_dockchannel_irq_update(struct apple_dockchannel *dc,
-+					 u32 bits, bool enable)
-+{
-+	if (enable)
-+		dc->irq_mask |= bits;
-+	else
-+		dc->irq_mask &= ~bits;
-+	writel_relaxed(dc->irq_mask, dc->irq_base + IRQ_MASK);
-+}
-+
-+static void apple_dockchannel_irq_enable(struct apple_dockchannel *dc, u32 bits)
-+{
-+	/*
-+	 * IRQ_FLAG is write-to-clear. Clear stale latched flags before
-+	 * unmasking so the next interrupt reflects current FIFO state.
-+	 */
-+	writel_relaxed(bits, dc->irq_base + IRQ_FLAG);
-+	apple_dockchannel_irq_update(dc, bits, true);
-+}
-+
-+static void apple_dockchannel_irq_disable(struct apple_dockchannel *dc, u32 bits)
-+{
-+	apple_dockchannel_irq_update(dc, bits, false);
-+}
-+
-+static bool apple_dockchannel_tx_empty(struct apple_dockchannel *dc)
-+{
-+	return readl_relaxed(dc->data_base + DATA_TX_FREE) ==
-+	       APPLE_DOCKCHANNEL_FIFO_SIZE;
-+}
-+
-+static void apple_dockchannel_write_pending(struct apple_dockchannel *dc)
-+{
-+	size_t left = dc->tx_len - dc->tx_pos;
-+	const u8 *p = dc->tx_buf + dc->tx_pos;
-+
-+	while (left) {
-+		size_t avail;
-+		size_t block;
-+
-+		avail = readl_relaxed(dc->data_base + DATA_TX_FREE);
-+		if (!avail)
-+			break;
-+
-+		block = min(left, avail);
-+
-+		while (block >= sizeof(u32)) {
-+			writel_relaxed(get_unaligned_le32(p),
-+				       dc->data_base + DATA_TX32);
-+			p += sizeof(u32);
-+			left -= sizeof(u32);
-+			block -= sizeof(u32);
-+		}
-+
-+		while (block) {
-+			writeb_relaxed(*p++, dc->data_base + DATA_TX8);
-+			left--;
-+			block--;
-+		}
-+	}
-+
-+	dc->tx_pos = dc->tx_len - left;
-+}
-+
-+static void apple_dockchannel_read(struct apple_dockchannel *dc, void *buf,
-+				   size_t count)
-+{
-+	u8 *p = buf;
-+	size_t left = count;
-+
-+	while (left >= sizeof(u32)) {
-+		put_unaligned_le32(readl_relaxed(dc->data_base + DATA_RX32), p);
-+		p += sizeof(u32);
-+		left -= sizeof(u32);
-+	}
-+
-+	while (left) {
-+		/*
-+		 * The byte FIFO register returns the byte in bits [15:8] on
-+		 * these instances.
-+		 */
-+		*p++ = readl_relaxed(dc->data_base + DATA_RX8) >> 8;
-+		left--;
-+	}
-+}
-+
-+static int apple_dockchannel_send_data(struct mbox_chan *chan, void *data)
-+{
-+	struct apple_dockchannel *dc = chan->con_priv;
-+	struct apple_dockchannel_msg *msg = data;
-+	unsigned long flags;
-+
-+	if (!msg || !msg->data || !msg->len)
-+		return -EINVAL;
-+
-+	if (msg->len > APPLE_DOCKCHANNEL_FIFO_SIZE)
-+		return -EMSGSIZE;
-+
-+	spin_lock_irqsave(&dc->lock, flags);
-+
-+	if (dc->tx_active || !apple_dockchannel_tx_empty(dc)) {
-+		spin_unlock_irqrestore(&dc->lock, flags);
-+		return -EBUSY;
-+	}
-+
-+	dc->tx_buf = msg->data;
-+	dc->tx_len = msg->len;
-+	dc->tx_pos = 0;
-+	dc->tx_active = true;
-+
-+	apple_dockchannel_write_pending(dc);
-+	writel_relaxed(APPLE_DOCKCHANNEL_FIFO_SIZE,
-+		       dc->config_base + CONFIG_TX_THRESH);
-+	apple_dockchannel_irq_enable(dc, IRQ_TX);
-+
-+	spin_unlock_irqrestore(&dc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int apple_dockchannel_startup(struct mbox_chan *chan)
-+{
-+	struct apple_dockchannel *dc = chan->con_priv;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dc->lock, flags);
-+	/*
-+	 * The mailbox framework has no per-client RX threshold. Use byte
-+	 * granularity because UART-style DockChannel clients require it.
-+	 */
-+	writel_relaxed(1, dc->config_base + CONFIG_RX_THRESH);
-+	apple_dockchannel_irq_enable(dc, IRQ_RX);
-+	spin_unlock_irqrestore(&dc->lock, flags);
-+
-+	enable_irq(dc->irq);
-+
-+	return 0;
-+}
-+
-+static void apple_dockchannel_shutdown(struct mbox_chan *chan)
-+{
-+	struct apple_dockchannel *dc = chan->con_priv;
-+	unsigned long flags;
-+
-+	disable_irq(dc->irq);
-+
-+	spin_lock_irqsave(&dc->lock, flags);
-+	apple_dockchannel_irq_disable(dc, IRQ_TX | IRQ_RX);
-+	dc->tx_active = false;
-+	spin_unlock_irqrestore(&dc->lock, flags);
-+}
-+
-+static const struct mbox_chan_ops apple_dockchannel_mbox_ops = {
-+	.send_data = apple_dockchannel_send_data,
-+	.startup = apple_dockchannel_startup,
-+	.shutdown = apple_dockchannel_shutdown,
-+};
-+
-+static irqreturn_t apple_dockchannel_irq(int irq, void *data)
-+{
-+	struct apple_dockchannel *dc = data;
-+	u32 flags;
-+	u32 pending;
-+	bool tx_done = false;
-+
-+	flags = readl_relaxed(dc->irq_base + IRQ_FLAG);
-+
-+	spin_lock(&dc->lock);
-+
-+	pending = flags & dc->irq_mask & (IRQ_TX | IRQ_RX);
-+	if (!pending)
-+		goto out_unlock_none;
-+
-+	if (pending & IRQ_TX) {
-+		if (apple_dockchannel_tx_empty(dc)) {
-+			apple_dockchannel_irq_disable(dc, IRQ_TX);
-+			tx_done = dc->tx_active;
-+			dc->tx_active = false;
+ 	if (real_fnmode) {
+-		switch (hid->product) {
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ANSI:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ISO:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_JIS:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_JIS:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO:
+-		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_JIS:
+-			table = magic_keyboard_alu_fn_keys;
+-			break;
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2015:
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2015:
+-			table = magic_keyboard_2015_fn_keys;
+-			break;
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021:
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021:
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021:
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2024:
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2024:
+-		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2024:
++		if (apple_is_dockchannel_keyboard(hid)) {
+ 			table = magic_keyboard_2021_and_2024_fn_keys;
+-			break;
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J132:
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J213:
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680:
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680_ALT:
+-			table = macbookpro_no_esc_fn_keys;
+-			break;
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J152F:
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J214K:
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J223:
+-			table = macbookpro_dedicated_esc_fn_keys;
+-			break;
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J140K:
+-		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J230K:
+-			table = apple_fn_keys;
+-			break;
+-		default:
+-			if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
+-			    hid->product <= USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS)
+-				table = macbookair_fn_keys;
+-			else if (hid->product < 0x21d || hid->product >= 0x300)
+-				table = powerbook_fn_keys;
+-			else
 +		} else {
-+			pending &= ~IRQ_TX;
++			switch (hid->product) {
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ANSI:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ISO:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_JIS:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_JIS:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO:
++			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_JIS:
++				table = magic_keyboard_alu_fn_keys;
++				break;
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2015:
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2015:
++				table = magic_keyboard_2015_fn_keys;
++				break;
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021:
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021:
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021:
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2024:
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2024:
++			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2024:
++				table = magic_keyboard_2021_and_2024_fn_keys;
++				break;
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J132:
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J213:
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680:
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680_ALT:
++				table = macbookpro_no_esc_fn_keys;
++				break;
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J152F:
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J214K:
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J223:
++				table = macbookpro_dedicated_esc_fn_keys;
++				break;
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J140K:
++			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J230K:
+ 				table = apple_fn_keys;
++				break;
++			default:
++				if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
++				    hid->product <= USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS)
++					table = macbookair_fn_keys;
++				else if (hid->product < 0x21d || hid->product >= 0x300)
++					table = powerbook_fn_keys;
++				else
++					table = apple_fn_keys;
++			}
+ 		}
+ 
+ 		trans = apple_find_translation(table, code);
+@@ -659,6 +669,7 @@ static void apple_battery_timer_tick(struct timer_list *t)
+ /*
+  * MacBook JIS keyboard has wrong logical maximum
+  * Magic Keyboard JIS has wrong logical maximum
++ * Internal DockChannel keyboards can advertise oversized report sizes
+  */
+ static const __u8 *apple_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+ 		unsigned int *rsize)
+@@ -699,6 +710,27 @@ static const __u8 *apple_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+ 		rdesc[3] = 0x06;
+ 	}
+ 
++	if (apple_is_dockchannel_keyboard(hdev) && *rsize >= 5) {
++		int i;
++
++		for (i = 0; i <= *rsize - 5; i++) {
++			if (rdesc[i] == 0x76 && rdesc[i + 1] == 0x00 &&
++			    rdesc[i + 2] == 0x40 && rdesc[i + 3] == 0x95) {
++				u8 count = rdesc[i + 4];
++
++				if (count > 0 && count < 32) {
++					hid_info(hdev,
++						 "fixing up DockChannel report size\n");
++					rdesc[i] = 0x75;
++					rdesc[i + 1] = 0x08;
++					rdesc[i + 2] = 0x96;
++					rdesc[i + 3] = 0x00;
++					rdesc[i + 4] = count * 8;
++				}
++			}
 +		}
 +	}
 +
-+	writel_relaxed(pending, dc->irq_base + IRQ_FLAG);
-+
-+	spin_unlock(&dc->lock);
-+
-+	if (tx_done)
-+		mbox_chan_txdone(&dc->chan, 0);
-+
-+	if (pending & IRQ_RX)
-+		return IRQ_WAKE_THREAD;
-+
-+	if (pending)
-+		return IRQ_HANDLED;
-+
-+	return IRQ_NONE;
-+
-+out_unlock_none:
-+	spin_unlock(&dc->lock);
-+
-+	if (flags & (IRQ_TX | IRQ_RX))
-+		writel_relaxed(flags & (IRQ_TX | IRQ_RX),
-+			       dc->irq_base + IRQ_FLAG);
-+
-+	return IRQ_NONE;
-+}
-+
-+static irqreturn_t apple_dockchannel_irq_thread(int irq, void *data)
+ 	return rdesc;
+ }
+ 
+@@ -763,7 +795,7 @@ static int apple_input_configured(struct hid_device *hdev,
+ 	struct apple_sc *asc = hid_get_drvdata(hdev);
+ 
+ 	if (((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) || apple_is_omoton_kb066(hdev)) {
+-		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
++		hid_info(hdev, "Disabling function quirk for device without function key\n");
+ 		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
+ 
+@@ -1003,6 +1035,17 @@ static void apple_remove(struct hid_device *hdev)
+ 	hid_hw_stop(hdev);
+ }
+ 
++static bool apple_match(struct hid_device *hdev, bool ignore_special_driver)
 +{
-+	struct apple_dockchannel *dc = data;
++	if (ignore_special_driver)
++		return false;
 +
-+	for (;;) {
-+		struct apple_dockchannel_msg msg;
-+		size_t avail;
++	if (hdev->group == HID_GROUP_APPLE_DOCKCHANNEL)
++		return apple_is_dockchannel_keyboard(hdev);
 +
-+		avail = readl_relaxed(dc->data_base + DATA_RX_COUNT);
-+		if (!avail)
-+			break;
-+
-+		avail = min_t(size_t, avail, APPLE_DOCKCHANNEL_FIFO_SIZE);
-+
-+		apple_dockchannel_read(dc, dc->rx_buf, avail);
-+
-+		msg.data = dc->rx_buf;
-+		msg.len = avail;
-+		mbox_chan_received_data(&dc->chan, &msg);
-+	}
-+
-+	return IRQ_HANDLED;
++	return true;
 +}
 +
-+static struct mbox_chan *
-+apple_dockchannel_of_xlate(struct mbox_controller *mbox,
-+			   const struct of_phandle_args *spec)
-+{
-+	if (spec->args_count != 0)
-+		return ERR_PTR(-EINVAL);
-+
-+	return &mbox->chans[0];
-+}
-+
-+static int apple_dockchannel_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct apple_dockchannel *dc;
-+	int ret;
-+
-+	dc = devm_kzalloc(dev, sizeof(*dc), GFP_KERNEL);
-+	if (!dc)
-+		return -ENOMEM;
-+
-+	dc->dev = dev;
-+	spin_lock_init(&dc->lock);
-+	platform_set_drvdata(pdev, dc);
-+
-+	dc->irq_base = devm_platform_ioremap_resource_byname(pdev, "irq");
-+	if (IS_ERR(dc->irq_base))
-+		return PTR_ERR(dc->irq_base);
-+
-+	dc->config_base = devm_platform_ioremap_resource_byname(pdev, "config");
-+	if (IS_ERR(dc->config_base))
-+		return PTR_ERR(dc->config_base);
-+
-+	dc->data_base = devm_platform_ioremap_resource_byname(pdev, "data");
-+	if (IS_ERR(dc->data_base))
-+		return PTR_ERR(dc->data_base);
-+
-+	writel_relaxed(0, dc->irq_base + IRQ_MASK);
-+	writel_relaxed(~0, dc->irq_base + IRQ_FLAG);
-+
-+	dc->irq = platform_get_irq(pdev, 0);
-+	if (dc->irq < 0)
-+		return dc->irq;
-+
-+	ret = devm_request_threaded_irq(dev, dc->irq, apple_dockchannel_irq,
-+					apple_dockchannel_irq_thread, IRQF_ONESHOT,
-+					dev_name(dev), dc);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to request IRQ\n");
-+
-+	disable_irq(dc->irq);
-+
-+	dc->chan.con_priv = dc;
-+	dc->controller.dev = dev;
-+	dc->controller.ops = &apple_dockchannel_mbox_ops;
-+	dc->controller.chans = &dc->chan;
-+	dc->controller.num_chans = 1;
-+	dc->controller.txdone_irq = true;
-+	dc->controller.of_xlate = apple_dockchannel_of_xlate;
-+
-+	ret = devm_mbox_controller_register(dev, &dc->controller);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to register mailbox\n");
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id apple_dockchannel_of_match[] = {
-+	{ .compatible = "apple,t8122-dockchannel" },
-+	{ .compatible = "apple,t8112-dockchannel" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, apple_dockchannel_of_match);
-+
-+static struct platform_driver apple_dockchannel_driver = {
-+	.driver = {
-+		.name = "apple-dockchannel",
-+		.of_match_table = apple_dockchannel_of_match,
-+	},
-+	.probe = apple_dockchannel_probe,
-+};
-+module_platform_driver(apple_dockchannel_driver);
-+
-+MODULE_DESCRIPTION("Apple DockChannel mailbox controller");
-+MODULE_AUTHOR("Hector Martin <marcan@marcan.st>");
-+MODULE_AUTHOR("Michael Reeves <michael.reeves077@gmail.com>");
-+MODULE_LICENSE("Dual MIT/GPL");
-diff --git a/include/linux/mailbox/apple-dockchannel.h b/include/linux/mailbox/apple-dockchannel.h
-new file mode 100644
-index 000000000000..04d2fc44f12f
---- /dev/null
-+++ b/include/linux/mailbox/apple-dockchannel.h
-@@ -0,0 +1,29 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
-+/*
-+ * Apple DockChannel mailbox message format.
-+ *
-+ * Copyright The Asahi Linux Contributors
-+ */
-+
-+#ifndef _LINUX_MAILBOX_APPLE_DOCKCHANNEL_H_
-+#define _LINUX_MAILBOX_APPLE_DOCKCHANNEL_H_
-+
-+#include <linux/types.h>
-+
-+/**
-+ * struct apple_dockchannel_msg - DockChannel mailbox payload
-+ * @data: Pointer to the byte stream payload
-+ * @len: Number of payload bytes
-+ *
-+ * For TX, @data must remain valid until mbox_send_message() completes or the
-+ * client receives tx_done in non-blocking mode.
-+ *
-+ * For RX, @data is owned by the controller and is valid only for the duration
-+ * of the rx_callback.
-+ */
-+struct apple_dockchannel_msg {
-+	void *data;
-+	size_t len;
-+};
-+
-+#endif /* _LINUX_MAILBOX_APPLE_DOCKCHANNEL_H_ */
+ static const struct hid_device_id apple_devices[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MIGHTYMOUSE),
+ 		.driver_data = APPLE_MIGHTYMOUSE | APPLE_INVERT_HWHEEL },
+@@ -1224,6 +1267,9 @@ static const struct hid_device_id apple_devices[] = {
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_TOUCHBAR_BACKLIGHT),
+ 		.driver_data = APPLE_MAGIC_BACKLIGHT },
++	{ HID_DEVICE(BUS_HOST, HID_GROUP_APPLE_DOCKCHANNEL,
++		     HID_ANY_ID, HID_ANY_ID),
++		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 
+ 	{ }
+ };
+@@ -1232,6 +1278,7 @@ MODULE_DEVICE_TABLE(hid, apple_devices);
+ static struct hid_driver apple_driver = {
+ 	.name = "apple",
+ 	.id_table = apple_devices,
++	.match = apple_match,
+ 	.report_fixup = apple_report_fixup,
+ 	.probe = apple_probe,
+ 	.remove = apple_remove,
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index 47dc0bc89fa4..0d40deec6295 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -441,6 +441,7 @@ struct hid_item {
+ #define HID_GROUP_STEAM				0x0103
+ #define HID_GROUP_LOGITECH_27MHZ_DEVICE		0x0104
+ #define HID_GROUP_VIVALDI			0x0105
++#define HID_GROUP_APPLE_DOCKCHANNEL		0x0106
+ 
+ /*
+  * HID protocol status
 
 -- 
 2.51.2
