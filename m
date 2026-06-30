@@ -1,105 +1,80 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 459233DCD9B
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 17:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C1C1360ED7
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 18:30:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782841340; cv=none; b=SVzRpvyuqBGbfPiidkAJqOgmIGdlEzFXB+h43Cg17U0IpBk4fE3KTlvg/iW7Rw2JWq0OiktfwwTLTX/+2xMMyi2CoXi/t7vW9Px1g/Ozb8FFWoKYnj3+O2aqm2QKvkpLuyZnoW543c/TuRbhiqkm3y68wb/9Xf1iFaNzDDgTbz0=
+	t=1782844252; cv=none; b=O+j/xcrHwNpKiGyDEGGTAf52Dy2kNk8dZCuDR1FrPDHaZqi8n38B/+WHkp9Me8CExstOcu1k7eEmZStFgigeVYkkqzS03dOvj7nqwiUiFfcPoSXuEFH42n3JCkdz8yaAmYkezSp0izyR5LZM0vg5lXfipeiouI//NVi6JbMAvYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782841340; c=relaxed/simple;
-	bh=40oEbRtFZjh6zocY8nSse6CdFmdhYjJwkaMk4N2oNpw=;
+	s=arc-20240116; t=1782844252; c=relaxed/simple;
+	bh=lcny+By7zybEfee72uKlhA8jZ6/K+CPLkKhviUZiqUM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gLZiSksaVXfYhxjtzlPloEcEzyuKFxhbpolKIH8HW4Z6qaDBW5ENDwx/TUZwMuW5uYJaFo7u6ujS+TjO7zX+Fhz+gSe2mQjiqdmH1h36UffPWumvxypEQNoP96kHelntVXbaF/OQFZV8NLKk7jFK7CbK0WtDlDxbz13K/lKpCwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=naEzMBKM; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=NRH3uKe/vm4q0UU7bBNfVOkylfeT+pHKX7Ki6uhZzehl84loH25/g3e1PVSX3L8+Oas3tFyW8Ql+dVa79reTh6OXXkNOGgKp64JZJ+jMg+fjh3RfamqqKyjSm8IYGta5O0ICt1xpHYSXw0MAXVyxddcTohH2ls1+XsocQlGQ7To=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qAMV5Hjz; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="naEzMBKM"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c19f91d7dso5352781cf.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 10:42:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qAMV5Hjz"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2c81db32393so8955ad.0
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 11:30:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1782841338; x=1783446138; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zClWOUjkDWFvMHOUBkD6PB+uKy7SGdgOfe7bM5K85sk=;
-        b=naEzMBKM/o3XhzGwYn4QKVmTG/TY8X25tX7ADYf0IJIQW+fmEbQNHvPaoGfjgg8LEj
-         inbxQe4tXC8GG+7w+JPgoXNtiWpw7bLCGLLFoRmFmxnKEu1Cq54GdmVgwxzDKx1xBRGJ
-         yaaBHUxjECEpwmtfNmjzgzVKn/rgCQiSGZHg4FHbIXkAc+VzrmczrzJLN/uhtjNwJY0G
-         SE63E5GMQT9O//4dCPJ2lySLUirM8pZUcmyrOkyQ3BfXJsFhzd4vy4lX3yRbQ6+k8Mf9
-         TtzOsdW47gg8oPdZNV/bXAxNGJR6CIKrQ6aBA979vHpJO3Twl2z1ZF4KMEiru53OisGB
-         IMoQ==
+        d=google.com; s=20251104; t=1782844250; x=1783449050; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=UFLNZBPki14ArLq9AWdBh/KIv4fHhLMZ/fjJCcm8kA0=;
+        b=qAMV5HjzCIDYCldiu9QqF2ZepSvknDQbcONjYVOebPIVp2cJo7EFDKp/b4Qoy9ITlg
+         iBggJHjzeDdX53kMHjpShHV9fApI1RoDMu4XS9CUN37aQ+qY/iDVjlrXEy20My3Nbh7Q
+         4eMK5pPf8LhTEQhXxj3n2g0qmBbpnXFqLs9sffuar2AuoKWjIO4d91PToELB8xZQVvn3
+         paoDesdVb3S3689FkD5+vZbtJchrzaDOUJO3f/xdYXx9Qj64+1EA1Qkqyn9Qmwbp/acN
+         dOa6sDaWt3oMJlUVavFn1uEoyUyIBQQ0NgjUPtXPQH7rE/RNjag9rhyrmXywZ2x82EwO
+         ZC/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782841338; x=1783446138;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zClWOUjkDWFvMHOUBkD6PB+uKy7SGdgOfe7bM5K85sk=;
-        b=nbopeXn/hvKP1pv9BGbwiLfKm0DlxbaOpkr/W2XPWzZngpPGmx521ZYQrklzX2UUS3
-         10X5YIz9LrqROmakxLWuEOVPT++vVwdYbAkAiaXky9CtJC0Hssl3m/Y8ophYAby58iI8
-         D+ss9y+evTR5ExQsx5ECivUP/9syNWKsswgty1O3CjRGCalKAql+83f2+96Abyl2Vr5S
-         Xt2S3mdhDb8CUGLOIzFSBpJosHaRfHI5JmdYxqE5H9YTupT9a/jF2GLXfhhjRjHFV30z
-         9rO9I/rQ/CzCHc7EM0lzw9YVVNUoW0WUE69UskDk1gVPBVna1KgQjXRnb2egMr8QjFfY
-         6HQA==
-X-Forwarded-Encrypted: i=1; AFNElJ+q4lVKeljMk/b8Jo69O5dk5qzr/42Y6atOW/v4DfqgLALhdDoTIOYcGvQ3zVkHDWCQ0C5zeQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxQ/PiwebwtgzJj9emvmVIO9oE4GwJTA4OTxykjWYrLVDq2OPKd
-	bRHhhF2+pqz9c6swBRjwT2izZv0NHoFSqOzLVmlWELYsWLc/AiS0IgGL5WpJxguMScI=
-X-Gm-Gg: AfdE7clxbee8egZmW0eK7Vm6pxPzDP18Wvt9QUXTtyonnQMT1wEOFkYdTgfziwJQRaw
-	4CLAz7swZiKRLr6aOW/YklgaP3iob80LiFfmfXFikRnRtcHzpzrOHU1qDXgPiQM7rANor68RjTj
-	J1rlKpCxbIWxKMpS+czJaEpEgs+7AMqljey4L3+zFL8nX8acyh6L292MtTP2O4LELzEcPbHPipf
-	HD9oARPHB8sBrdEU+QIS4Un9mZ8I7VdTfuUs15d/7ORXWCRof9Ea0xas8/rEz3uZDcCI3lEUaIL
-	BXpfQOo6T6AQgj1w5PJ8MwBMGu+gP33dgyiJaJturfAvDL3kx3EYt42ENrs7hN/Fxu23gLwvcjW
-	9Yz6YMBll/yATSns+EiF0v2t1T0F0MOr5TMkAFAO3NL0ZkebC5LculKGdTYcTDtgYv1pWrlgVLB
-	1rZE/4fPm9qwgqtsG/3EXicYXGF/dY5XwepZip5+kfrgK48bJYgArpRkJhetH/OJ6BWE0=
-X-Received: by 2002:ac8:59d4:0:b0:51a:8c99:1f14 with SMTP id d75a77b69052e-51c108ca48fmr58918701cf.67.1782841337969;
-        Tue, 30 Jun 2026 10:42:17 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51c1080d4dcsm22942861cf.5.2026.06.30.10.42.17
+        d=1e100.net; s=20251104; t=1782844250; x=1783449050;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=UFLNZBPki14ArLq9AWdBh/KIv4fHhLMZ/fjJCcm8kA0=;
+        b=UyefAwGCkZ2A98oXe8MMYk7zjTCcmVtfeOJn0Yc9FAPnIz4V2oRnmX94uMMnbxMhC8
+         lq9cWfqcArfd3fNu96UwRgE3a1u2NjrI8sBOw553TmQpxDtZr81nDv8c5pa0Sh3WfkWY
+         vFRSazGBpfubmPUkEa28utQaxajtNjKcKBgGSbd4fDyDcRgUPoX5UoO3MD155Ln3Goyy
+         +RNt8g6xOObJp/yAEskvCmxFo0ntiKwDxXKmN1XauOT3sTwbmhoiLPpyzt4gCQFEq/qd
+         EQtI9Wmn5iXCArfv+otue5wb0XmL6lGg21DKWrxW855eK/lbBgMD2Tq1lAjMAHE0cr4t
+         ih5g==
+X-Forwarded-Encrypted: i=1; AHgh+Ro633wJVH+50w6fsv6adaBnBB5mtQmbrK6mI46eL7nvvGm5USLSksjVjm9t/i9h2XtfTPOhOg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwnkqdkzLUlMnhjgvZNiz9///awpHHX02SvDPzLJJvo5SwiuPFN
+	zUN19R+kYMmTxZTt+65/3WTCoM1iRM1AdCYmMbguaG7BYjPSjS8CpjnUWYJUzXbICQ==
+X-Gm-Gg: AfdE7cnTaQoKAakSIZ3I1NqvWukOHPLMSbrgtLcTtriqkAguYVPWLatAImcFF5Cx6hM
+	ETXQaG1A61i8fbHlxZAuWUgJfFtiqI2t1ko2nipAjF2Ta49Ikbd8sdMdBerGmPVFXRDYyo1eM8u
+	cgmesqR/OBJ74OvHlUXQXeWCWwvreBPR9G0oov0tizHucUBcsrlkxXrnD+k9CNIVA9J4Tn+ape4
+	3XimBpauMXvTQgy4drL7XfkXP9Je4+N1/Vy2kF2ayAbD9SNqTBPKZAFrriollS4IS32bkWP1+Ej
+	XA6+EKjXOOMLD1Yice2KMoFXpt0t1T6yuuRRLytDnV6aMb1jpk0v5juxRgsrG0k1Ozw9w7bQlNo
+	7lFznomyJh5NXr4R3Ecn8iIYUV/2OpnIQtzFHclKI0dpeRvcvaVXQ38udgX7vXbuUO4BEiwWatQ
+	EAidfqOc4Nh4mJuXvIpALMKvq/031BCiamanVxrcw/vUwLLTI=
+X-Received: by 2002:a17:902:ccc8:b0:2c1:ee6e:be1d with SMTP id d9443c01a7336-2ca68c40b96mr331005ad.27.1782844249825;
+        Tue, 30 Jun 2026 11:30:49 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-847a00029d3sm2576588b3a.20.2026.06.30.11.30.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 10:42:17 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wecTQ-00000002FOX-35V1;
-	Tue, 30 Jun 2026 14:42:16 -0300
-Date: Tue, 30 Jun 2026 14:42:16 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-Message-ID: <20260630174216.GK7525@ziepe.ca>
-References: <aigYbK12D8uKQvJF@arm.com>
- <20260609144746.GL2764304@ziepe.ca>
- <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
- <yq5aqzm4dz25.fsf@kernel.org>
- <20260618153705.GH231643@ziepe.ca>
- <yq5ao6h6enhm.fsf@kernel.org>
- <20260619122148.GL231643@ziepe.ca>
- <yq5aldcaejos.fsf@kernel.org>
- <20260619140616.GB1068655@ziepe.ca>
- <yq5ao6gtoncp.fsf@kernel.org>
+        Tue, 30 Jun 2026 11:30:48 -0700 (PDT)
+Date: Tue, 30 Jun 2026 18:30:41 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, jamien@nvidia.com
+Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Message-ID: <akQLURkLA-bZ9dAk@google.com>
+References: <cover.1782799827.git.nicolinc@nvidia.com>
+ <akPB6l-fuJUcg4a2@google.com>
+ <akPX_N0P2EcI_jbV@google.com>
+ <akPhuF9pAWaBXzpi@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -108,114 +83,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <yq5ao6gtoncp.fsf@kernel.org>
+In-Reply-To: <akPhuF9pAWaBXzpi@google.com>
 
-On Mon, Jun 29, 2026 at 12:16:30PM +0530, Aneesh Kumar K.V wrote:
-> >> Thinking about this more, I guess we should mark the swiotlb as
-> >> cc_shared only with  CC_ATTR_GUEST_MEM_ENCRYPT instead of
-> >> CC_ATTR_MEM_ENCRYPT as we have below.
-> >
-> > The name cc_shared should be used for GUEST scenarios only.
-> >
-> > I guess there is some merit in keeping swiotlb using "decrypted" to
-> > mean it usinig pgprot_decrypted and set_memory_decyped() which AMD
-> > gives meaning to on both host and guest.
+On Tue, Jun 30, 2026 at 03:33:12PM +0000, Mostafa Saleh wrote:
+> On Tue, Jun 30, 2026 at 02:51:40PM +0000, Pranjal Shrivastava wrote:
+> > On Tue, Jun 30, 2026 at 01:17:30PM +0000, Mostafa Saleh wrote:
+> > > On Mon, Jun 29, 2026 at 11:15:33PM -0700, Nicolin Chen wrote:
+> > > > When transitioning to a kdump kernel, the primary kernel might have crashed
+> > > > while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
+> > > > driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
+> > > > and setting the Global Bypass Attribute (GBPA) to ABORT.
+> > > > 
+> > > > In a kdump scenario, this aggressive reset is highly destructive:
+> > > > a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
+> > > >    PCIe AER or SErrors that may panic the kdump kernel
+> > > 
+> > > Can you please clarify more on those errors, what conditions will
+> > > trigger that?
+> > > For example, patch 4 disables the EVTQ to avoid events as there might
+> > > be a lot, why are they not fatal also?
+> > > 
+> > > > b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
+> > > >    the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
+> > > > 
+> > > > To safely absorb in-flight DMA, the kdump kernel must leave SMMUEN=1 intact
+> > > > and avoid modifying STRTAB_BASE. This allows HW to continue translating in-
+> > > > flight DMA using the crashed kernel's page tables until the endpoint device
+> > > > drivers probe and quiesce their respective hardware.
+> > > > 
+> > > > However, the ARM SMMUv3 architecture specification states that updating the
+> > > > SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
+> > > > 
+> > > > This leaves a kdump kernel no choice but to adopt the stream table from the
+> > > > crashed kernel.
+> > > 
+> > > In many cases the patches assume that the CDs/STE might be corrupted,
+> > > but still attempt to retrieve them with some validation
+> > > (log2size/split...)
+> > > However, the base address might be broken, TLBs state is unknown...
+> > > 
+> > > IMO, although that might improve the status quo, there are still
+> > > heuristics, in addition to noticeable complexity to transition the
+> > > stream tables. I wonder if FW can deal with AER in that case before
+> > > booting the kdump kernel.
+> > 
+> > I guess we're reading the base address from the HW register itself so
+> > that should be fine? CDs are in-memory so that's why they could be
+> > corrupted?
 > 
-> Are you suggesting to change the struct io_tlb_mem::cc_shared back to
-> struct io_tlb_mem::unencrypted?. 
-
-Yes
-
-> > IDK what AMD should do on the host by default. I guess it should setup
-> > a swiotlb pool of low dma addrs "unencrypted", but not "cc_shared"?
-> >
+> For example patch#1 verifies log2size and split and both are read
+> from HW registers. Same for the base address or other addresses as
+> the page tables, they  might be corrupted due to a buggy driver.
+> My point is that, it is really hard to assume that the previous state
+> of registers/STE/page-tables were valid or even consistent, when the
+> kernel crashed and did not transition the state gracefully.
 > 
-> If by low DMA address you mean using an address with the C-bit
-> cleared. 
-
-Yes
-
-> The current code already does this and uses the swiotlb pool correctly
-> on SME.
-
-Well, through the force_dma_unencrypted() hack...
-
-> The challenge arises when we want to force SWIOTLB
-> bouncing even for devices that can handle encrypted DMA addresses (more
-> on that below). For such a config force_dma_uencrypted(dev) will return
-> false and swiotlb will be marked cc_shared/decrypted = true; This trip
-> the new check we added.
-
-Yes, because cc_shared (guest) and unencrypted (host) are very
-different things and we've mixed them:
-
-> 	if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-
-I'm aruging force_dma_unencrypted should mean cc_shared and be
-guest_only, but the SME hack breaks this.
-
-> We can also do
+> > 
+> > About the TLB state, I'm not sure what might pollute it, since this is a
+> > kexec, I don't expect any non-kernel entity to gain program control
+> > before the kdump kernel.. Hence, IMO, we can't configure FW to deal with
+> > AER here..
 > 
-> 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-> 		/* swiotlb pool is incorrect for this device */
-> 		if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-> 			return (phys_addr_t)DMA_MAPPING_ERROR;
+> Similarly for TLBs, the kernel might have panicked in the middle of an
+> unmap or free domain. (not to mention what that means for RPM where
+> a device reset with unknown TLBs?
 > 
-> 		/* Force attrs to match the kind of memory in the pool */
-> 		if (mem->cc_shared)
-> 			*attrs |= DMA_ATTR_CC_SHARED;
-> 		else
-> 			*attrs &= ~DMA_ATTR_CC_SHARED;
-> 	} else {
-> 		/*
-> 		 * Host memory encryption where device requires an
-> 		 * unencrypted dma_addr_t due to dma mask limit
->     		 */
-> 		if (force_dma_unencrypted(dev))
-> 			*attrs |= DMA_ATTR_CC_SHARED;
-> 		else
-> 			*attrs &= ~DMA_ATTR_CC_SHARED;
-> 	}
+> Why can't the FW deal with it?
 
-If we do this I would like to split the force_dma_.. functions into
-guest and host, ie force_dma_cc_shared() and force_host_decrypted()
+The FW can't handle it because between a kexec from main kernel -> kdump
+there's no FW-based handoff hence wee can't setup a handler in FW..
 
-To make it clear there are two very different things here.
-
-> Here I see value in having DMA_ATTR_UNENCRYPTED. The question is do we
-> need to split this into two flags and introduce the resulting code
-> duplication.
-
-The external flag name should be DMA_ATTR_CC_SHARED and only used on
-CC guest. Internally that turns into using set_memory_decrypted()
-which works on guest and host for AMD. I don't know how to make the
-host only case clearer and still keep the code efficient..
-
-> > The dma api has to detect, after the driver sets the dma limit, that
-> > none of system memory is usable when:
-> >  - The direct path is being used
-> >  - phys to dma for 0 is outside the dma limit
-> >
-> > Then it should assume the arch has setup a swiotlb pool for it to use
-> > to fix the high memory problem.
-> >
-> > Similar hackery would be needed in the dma alloc path to know that
-> > decrypted can be used to fix the high memory problem like for GUEST.
-> >
-> > I guess some 'dev_cannot_reach_memory(dev)' sort of test in a
-> > few key places? Setup with a static branch to be a nop on everything
-> > but AMD, compiled out on every other arch.
-> >
+> As I mentioned above in the previous
+> reply I am not sure I understand what situation leads into this, when
+> does a device trigger SError to the system vs when not which is observed
+> as an event in that case.
 > 
-> If we are not able to reach the memory because of the memory encryption
-> bit, then isn't dev_cannot_reach_memory(dev) the same as
-> force_dma_unencrypted(dev)? If so, that is how it is already done.
 
-Sort of yes, but it is properly named to its purpose and not confused
-with what should be a guest-only function.
+Ack. I see what you mean now.. How does a DMA fault raise an SError? 
 
-> x86/dma: Disable forced SWIOTLB bouncing for SME IOMMU passthrough
+I'm guessing the HW (PCIe RC) is wired in a way to raise an SError on an
+error? But I agree that sounds pretty unusual, why should a DMA abort
+panic the CPU? Is the DMA happening between a platform device & PCIe EP?
+Even if that's true, why would it raise an SError? (No CPU was involved)
+Unless, we have a fabric that raises an Serror on a SLVERR or something
 
-Maybe as a crutch to get this series merged..
-
-Jason
+Thanks,
+Praan
