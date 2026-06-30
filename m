@@ -1,104 +1,116 @@
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F206922424C
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 16:18:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C0E27280A
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 16:19:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782836293; cv=none; b=mRl8ZGHhJhy7kvschIpI+xCuL3yAz65zBmBL9Tdhvim2Bq8E9YQIZ8Kd2cdb8r8W/ygDLd6ZEnjoJmHjFSDVjtArbwlaUhcjk1pXjMKLn44TmAZJmAieWjOCBHhdjJRcISsAkMzUEfnl8CuvA6Gzu7XEOFJKFNUSmk+EtvNUlNo=
+	t=1782836367; cv=none; b=dJ4R7hZUx+VltGsf6RJO44eWxilkHKT4Sk/9rNzKLMR7cvT8iVRE++3qhMFAY+O6z+qu4Q+Y4zdGqMUL0TXg0Pui1AJu9os7LzSyDAOsTyD5u+CIGFSF6yWBBeniL7Zz8exrZ8Dj6zBbw5TXM5wFeDjkuRS/SMLnbcnZSidEdAs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782836293; c=relaxed/simple;
-	bh=bEJ6UV/Ig3Wnd5uyEVVm52U1d7GhtJ5Yxfqjfeq0uC8=;
+	s=arc-20240116; t=1782836367; c=relaxed/simple;
+	bh=V2N96sQErKbtUp0KcJAK4KWJX5TxdrLO1CRaaZhwIi4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VfkdtzJSultIZWzvhyroUk3Q8Qtld5sDtpe/UH1+odEBspsr79vjggJ+lbF527gAHOJKdxCWt6Kwhf1Cy/QNlDz5KQxNmS6vX5PeHDby7flZ8YJp/MwAfWLz56l8kB1GMW4+exXaAPld07177Z/5dmfApcnwv6WJX0O/TW3WnD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=lEqNic2R; arc=none smtp.client-ip=209.85.219.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=PIfXa+iOlM2sJNxDbZO30qOcGmdolrH1ajSkyqh29KQ26GxhFQDYKdSqTcQbBxN39mI0R9oN+B3nwIuSw3CgjXllzMLZh61R/kmLKRshC6m/H1tp/Ybfxi31JZNn41WKCcbb5oCw9MHGPLSE/BkWGh+384RmnUPd7MTGLnneFb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=bp88J+lh; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=jBVZJHTz; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ypAxO1gK; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=tO9woAdD; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="lEqNic2R"
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-8f1a8e914a9so15438706d6.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 09:18:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1782836288; x=1783441088; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rGel1rvdm2vqYO1DEls9OmTRzPQ+QRBZhk43D5aDGso=;
-        b=lEqNic2RdtxmX4s3RdtW1PjmHl8aSxgJVvl3jP443fEsF7IT0zep+zFELu8YOHSe4Y
-         xXtn2ootebNPP/db90JF3fYcBlqXmE4MSzoG+w/yP1u2HnfYqX4EqmLTi1ups0Nt6eCG
-         74mjhhw2bO3XvHjrYDC+ZeT7aJ/h/PSl7jR9soGVTo1uHYNxZgWdU2E7Ms9wfNg4vgfX
-         rLLwypdH2iOJlJzXKoFbh2QXnqC+31PrdKdjdztOD71M41ddL37dnSy/XU/V1vFX5Z7V
-         N7Di6MB8RJk50J90IAS332ToR6FWmMZQEmPlRmzDr9T0xyKz8iGbEREnPhum3q+XL/mN
-         vDVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782836288; x=1783441088;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rGel1rvdm2vqYO1DEls9OmTRzPQ+QRBZhk43D5aDGso=;
-        b=ZBMXgk4KrJU+S9E0qGttcOAvSBiWZeG7uAdEYnfEQQmrzNm4NK8k25H28gfhEK7Lpk
-         khNftvJRqA8weRLL5j1ukESW7sXvjVOQ3qCZ/4JxGWxOjsyyT4PBNHAvA10NTmfrPKjx
-         oupmiU48aWB7MnwZQxn8yRCaJ23w6gOWpq3n5fNmSYeC/rVFwFn6DUtWsJDVxZXf6fMd
-         gGDcjtY6RI6HZzp00kM1r3PuKPtlF0lE5dyAKlxuBeXoIgkCHuhfR/dYKndZzxAm4Zo8
-         IztYbtTfnJGqsRyGplGtxdOqy+jQ2TnGeAx93jDL/ZRBz3NZn/Yb8MpQW+04cy6gM4+5
-         ep/A==
-X-Forwarded-Encrypted: i=1; AHgh+Rpfoj1HSb77MqijzyY15DQOW/bV93QbsGmWtjc6qJq3i/jFMokW4amm77On6iyfamDohjDoKA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgY2UVWg2fPjaHTvNeHDTPADkuHR1qENn1ueeX3mvVkMoqsCn+
-	iMu8MFpOKcY4GY4G9YIps9uevJME37xlEgR4yPE1PNjCetNMxPuxDEgkp1WUq1ZaJcg=
-X-Gm-Gg: AfdE7cmnbQb443CqzRoXFTlD/b9J++mq1QSBAm2Of7fhXo2LHwE2iWHcLpx3PlOz9UQ
-	XBZAx0FEnI/2BnDaixaXfp9OhElEDMsC0P7nR2PYdH+ZdvGDVJ3gYtNNF/S8sYDKMRHUdvNmWCY
-	FtKseaiyBkC18PLGTT2ad1VAvvS8tzXJLBgoOkPfYGGOjf6Fq1YutXZU4WYTJxR5LHX6U6bnYnI
-	ZdYH52UuSzmvW1e9czePxU6YxpK0zwQ1z+OPmvKNACSIc66fcOlUEcaZZXGV7ynmmTk4pkTmH7l
-	b6T3KQEk5tOd0j+payMH4nv1+Y5JGP+MjCcGxK6exjTYoyrrD0eY7nHSREhlQxvhIY/A50NQIql
-	qplmSj/uOWw4o1DQpLdy1IgH/gXxGePMmdzYrAvcYM7D4wWmjtoMLpJzv7atPKhkdcLbKvT3+qS
-	XTzU8OA5TxdkvmQTtqEXvgpsvhXFf/+OZozh1JdfprWsdXondQtq5TBlR+DtAKcCBNCWo=
-X-Received: by 2002:ad4:4a6e:0:b0:8f0:1b69:25d2 with SMTP id 6a1803df08f44-8f1ba1b1e7bmr44221716d6.23.1782836288213;
-        Tue, 30 Jun 2026 09:18:08 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f24723defcsm15060566d6.49.2026.06.30.09.18.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 09:18:06 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1web9x-000000028Ii-0dcm;
-	Tue, 30 Jun 2026 13:18:05 -0300
-Date: Tue, 30 Jun 2026 13:18:05 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-Message-ID: <20260630161805.GJ7525@ziepe.ca>
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <aigYbK12D8uKQvJF@arm.com>
- <20260609144746.GL2764304@ziepe.ca>
- <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
- <yq5aqzm4dz25.fsf@kernel.org>
- <20260618153705.GH231643@ziepe.ca>
- <d4ef9a9f-18d9-40e1-9d02-87aeb9cb6540@amd.com>
- <20260619120309.GI231643@ziepe.ca>
- <9f20ce61-1edd-411e-a7c3-be541fb89cb4@amd.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="bp88J+lh";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="jBVZJHTz";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ypAxO1gK";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="tO9woAdD"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id DE1BB73684;
+	Tue, 30 Jun 2026 16:19:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1782836363; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IwxxOysWKobPD5UlF8mjIU0+j6+KU4KiqW7uzYDC/ek=;
+	b=bp88J+lh4Ld94QLb/FgxSc78EMcIhQAsR8PDfC2OkzpEPkYI12ZSgnttOpJkZGY73S0x/Y
+	+7bgS2BZHogPBH5J1FJpmwzYjtavfVf6uelEie7YrbKOXGK3LSeBHpJY5h07tuDudJDiWu
+	jh98BikBWca7bsCsXuf3A7wH5JsyjM0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1782836363;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IwxxOysWKobPD5UlF8mjIU0+j6+KU4KiqW7uzYDC/ek=;
+	b=jBVZJHTzVzoE0M2g+PcL1BZzDdNmv+XSGT2v6Wu9el0LCF815lqezYdA5vJfGmUyjSnQid
+	W06sQywmqiDF22Dw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=ypAxO1gK;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=tO9woAdD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1782836362; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IwxxOysWKobPD5UlF8mjIU0+j6+KU4KiqW7uzYDC/ek=;
+	b=ypAxO1gKMdIHQ8+ywHHuDwYNcjoy9rSDILpeGDU1FomJu6ky3ZQGryK4UvLVW1g9pfP1Au
+	L/5zy9jUtBQg1Dfz9gtdqXOt+qSlZgJ3kOyrpuB2VvuSo+Vcxb8rewchUhOO4ShufwgYYo
+	7+BE+yEMVAdC5umL8fl/GyJn6nE+y48=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1782836362;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IwxxOysWKobPD5UlF8mjIU0+j6+KU4KiqW7uzYDC/ek=;
+	b=tO9woAdDVgqM8KEyW+ULw4DreASg4B0YhphL0oz7tBKd3s5SUtC4zeWGlkFFQsRsvp058J
+	YqK5R1Lt3StFr7Bg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 539FA779A8;
+	Tue, 30 Jun 2026 16:19:18 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id pVf+EIbsQ2rzbQAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Tue, 30 Jun 2026 16:19:18 +0000
+Date: Tue, 30 Jun 2026 17:19:16 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 06/30] mm/rmap: parameterise vma_interval_tree_*() by
+ address_space
+Message-ID: <akPsGrmaOd3JMlC2@pedro-suse.lan>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <43050b10b53cdfc3627440e6b14ae2a9730b2a5c.1782735110.git.ljs@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -107,125 +119,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9f20ce61-1edd-411e-a7c3-be541fb89cb4@amd.com>
+In-Reply-To: <43050b10b53cdfc3627440e6b14ae2a9730b2a5c.1782735110.git.ljs@kernel.org>
+X-Rspamd-Action: no action
+X-Rspamd-Queue-Id: DE1BB73684
+X-Spam-Flag: NO
+X-Spam-Score: -3.01
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_CC(0.00)[linux-foundation.org,armlinux.org.uk,kernel.org,siemens-energy.com,hansenpartnership.com,gmx.de,redhat.com,alien8.de,linux.intel.com,mev.co.uk,visionengravers.com,pengutronix.de,gmail.com,ffwll.ch,suse.de,oss.qualcomm.com,ideasonboard.com,nvidia.com,amd.com,shazbot.org,zeniv.linux.org.uk,linux.dev,google.com,infradead.org,samsung.com,goodmis.org,huawei.com,vger.kernel.org,lists.infradead.org,lists.freedesktop.org,lists.linux.dev,kvack.org,googlegroups.com,surriel.com];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com,gmx.de];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_TLS_ALL(0.00)[];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	DKIM_TRACE(0.00)[suse.de:+];
+	R_RATELIMIT(0.00)[to_ip_from(RLziudqfrzo6b7hzgpxksh1d9i)];
+	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	RCPT_COUNT_GT_50(0.00)[75];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[pedro-suse.lan:mid,suse.de:email,suse.de:dkim,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
 
-On Mon, Jun 22, 2026 at 10:58:23AM +1000, Alexey Kardashevskiy wrote:
-
-> > I think it was a big mistake for the AMD SME stuff to overload the
-> > decrypted/encrypted CC stuff which should mean shared/private in a
-> > guest context to also mean things about physical memory encryption in
-> > the host. It is really confusing.
->
-> It is a bit in the PTE which says "encrypted", what do you mean by overloaded?...
-
-Encrypted meaning I'm using DRAM encryption on the host and Encrypted
-meaning this page is private and inaccessible to the hypervisor are
-very different things with very different requirements and is
-confusing they have been overloaded in Linux :(
-
-
-> > The SME side is just a bad arch choice, the real world doesn't work
-> > well if you set high address bits in your dma_addr_t. I think AMD
-> > needs to use those restricted swiotlb pool where it allocates this
-> > very special "SME Disabled" memory that will have a low
-> > dma_addr_t.
+On Mon, Jun 29, 2026 at 01:23:17PM +0100, Lorenzo Stoakes wrote:
+> The file-backed mapping interval tree functions vma_interval_tree_*()
+> accept a raw rb_root_cached pointer to determine the tree in which they are
+> operating.
 > 
-> The generic __init iommu_subsys_init(void) calls
-> iommu_set_default_translated() if CC_ATTR_MEM_ENCRYPT (==force the
-> use of IOMMU) and eliminates the bouncing by default, pretty
-> much.
-
-Sure, I know, it is a gross solution to a self inflict error.
-
-> We (AMD) do not really want to force Cbit in DMA handles and
-> it is not happening unless "iommu=pt".
-
-Lots of real HW won't work will because of this, so yeah you pretty
-much have to. But also there is HW that is fine, like you can use a
-mlx5 device and it will handle the C bit just fine.
-
-It is pretty hacky to globally force the iommu mode because some
-devices end up not working.
-
-> > Then alloc and bouncing will get memory with a suitable
-> > dma_addr_t. This has nothing to do with force_dma_unencrypted() which
-> > is only a CC guest concept and nothing else in the OS should ever
-> > touch decrypted memory.
+> However, in each case, this is always associated with an address_space data
+> type.
 > 
-> True.
+> So simply pass a pointer to that instead to simplify the code, and more
+> clearly differentiate between these operations and those concerning
+> anonymous mappings.
 > 
-> Although, with "iommu=pt" enabled, dma handles from swiotlb should
-> not have Cbit so these swiotlb pages have to be unencrypted.
-
-That is how it should ideall work, in this case the purpose of the
-swiotlb pool is to provide low dma address memory because the device
-cannot reach the normal linux dram addresses.
-
-> As you mentioned in another mail in the thread, DMAing to
-> unencrypted memory with mem_encrypt=on make no sense security
-> wise. 
-
-Yes, pretty much.
-
-> May be enforce either mem_encrypt=on or iommu=pt is allowed at
-> the same time but not both? I am worried though that some weirdo
-> still has a use case for it.
-
-Arguably it should be done per device. The problem is the iommu layer
-doesn't know what the dma mask is until the driver binds so it can't
-detect a device that is unable to reach any dram and switch away from
-identity automatically. That would be much cleaner.
-
-> > > I am looking for a way to set up my "sev-guest" device such as when
-> > 
-> > Whats a "sev-guest" device?
+> While we're here, make the generated interval tree functions static as they
+> do not need to be used externally (any previously existing external users
+> have now been removed).
 > 
-> It is a platform device, presented in SNP VMs as /dev/sev-guest and
-> the guest userspace calls ioctls on it when it needs VM attestation
-> report/certificates/etc.
+> We also rename VMA parameters from 'node' to 'vma' as calling this a node
+> is simply confusing, update the input index types to pgoff_t since they
+> reference page offsets and rename the parameters to pgoff_start and
+> pgoff_last.
 > 
-> The sev-guest driver makes calls to the HV (GHCB protocol) to:
-
-> 1) get report/certificates/measurements from the HV <- this is done
-> via shared memory as the HV writes to it;
-
-> 2) asks the HV to get the digests from the PSP <- this is done via
-> encrypted memory (buuuut it is software encrypted and as far as the
-> hw is concerned - it is shared - no Cbit, no RMP - these buffers
-> contain plaintext headers of the PSP requests and cyphertext of the
-> request/response body).
-
-Ok, but here you have overloaded the word encrypted again :( Decrypted
-memory containing ciphertext I think you mean
-
-> > > dma_alloc_attrs(snp_dev->dev,...) happens, it allocates a page from
-> > > the shared swiotlb pool (with no actual bouncing) and there is no
-> > > obvious way to trick the DMA layer into doing that.
-> > 
-> > Why do you need this?
+> No functional change intended.
 > 
-> /dev/sev-guest uses only shared memory (from the HW standpoint), and
-> it is normally lot less than 1MB. If hugepages are used, then today
-> it allocates 4K pages (they come encrypted and likely backed with a
-> 2M page), the driver converts them to shared to make that GHCB
-> call. The conversion smashes backing 2M page to 4K pages (+RMP
-> +IOPDE as there is possible ongoing DMA), which is a problem (I have
-> mentioned it as "TMPM" before - a hw/fw helper to do the smashing).
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 
-Okay, but this has nothing to do with sev-guest at all, and should not
-be solved uniquely for it.
+1) This is fantastic
+2) I need to rebase my local work :)
 
-The DMA API in general has a problem spraying allocations all over
-system memory and fragmenting the RMP/GPT/etc and yes it needs a
-solution, but it should be entirely in the DMA API and have no
-special involvment with sev-guest. sev-guest should just make coherent
-allocations and use them in the normal way.
+Reviewed-by: Pedro Falcato <pfalcato@suse.de>
 
-> The idea here is that if swiotlb is already shared, the sev-guest
-> could use that memory pool.
-
-dma_alloc_coherent using the swiotlb pool instead of allocating and
-converting in general is a reasonable proposal, IMHO. Again, nothing
-to do with sev-guest.
-
-Jason
+-- 
+Pedro
