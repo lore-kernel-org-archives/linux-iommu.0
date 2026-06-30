@@ -1,79 +1,125 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8404343E49A
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 15:33:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E69F944E049
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 15:42:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782833601; cv=none; b=KA3Om3spr+6MS7EAqDWpF3L7a+Qjk7Vqj0QfG1E/0N+OXCtdm1pY4KYmvDtRh1sbkC+M6db4u0orQjxi/dpqolzePNWmy1Txtw95JWByMW6hZIL5unmOQB+UVLhqsjcSY78ooX0W4TUyUBVET/bJrp0FiN7TUKfS7+wSxHSV6dc=
+	t=1782834146; cv=none; b=tYCe6ynPHks2uFvITX/zMQDvCJRWeXmFY8uxsCd65DERZq50KpXN+LoqLiFCBPJSb0YkSPIHjvRE5lnYhOA9UgT3HhQ29bdj7GnAqyWAvAfNLWdFD+jU7WplwLaqeAOSsIl20gOD3uWuQheK4ugb0lRQ4xJ0MFufOijrH+mciHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782833601; c=relaxed/simple;
-	bh=u5e4tGlqn778Ahe+mUV5OcGjPTxwzcOru7Knys+GwPY=;
+	s=arc-20240116; t=1782834146; c=relaxed/simple;
+	bh=G7yBa9qRXwqvk5O66eyJS/F0IvVRBRnFUCu+8taoCIs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dAIDDR9zMUQQebIVoNil7G7ocjyIHydOGZlekhTER3dGRtpIKln0+IUbwiGpa9n3xTkFHMDudjunN+49McuO4vsUjWNE5fDWKWShMoa1DG7SUNCTmIlOC1DZY2GWAWg6juffHdb9foHT4vH3M0SQZcxpDriuu2Yz9nMCGxI/0Fw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mEgQD5Iy; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=HjXOY0qc3oOLR/nT1XXdx5XOfOz84Ecn/5RpDmq3StCrQuPvvBM1Yu8xBopTos+oDxV/yBUjHQ+yzGEGCiYuJGxExM/G9hLA8Huq+HNNLaHnvrIsJQ9lXXtE43iPWVZYIi2hAMYTjcWzs7M0LeXW/qDOdMukQGsobrVdyTN/E8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=jf1e0vbX; arc=none smtp.client-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mEgQD5Iy"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-493b8d92a4eso54665e9.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 08:33:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="jf1e0vbX"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-92e602d2c0fso74959385a.0
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 08:42:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782833598; x=1783438398; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=7y23lwVc1qU9pQQZzwFQKSERGQYoPnAW1oWXpZxS+y4=;
-        b=mEgQD5Iyu8+I9/jMiZ+trK14cDmHeVU5+wd8gcowMBmgD2lZS+QmijUvWVQw5wLoQN
-         JWrlUtmqICh9lAS/ETsciLiS2Lel/pRQRktiDSdGMcsIDgxaST3FJ60QsdJGilDUbnfJ
-         JYmlMzFd6unoVPwxJTR0Chkac6sVnaUDVK1PcyBh82IwjUVqMSmJfHfdtA7C3UX2Eb13
-         eJGyKvUHaxwgeT7KA0HLg52xzqfzuiyPuzRScKAv6Sieo4RqlWW4PNkIrstiZZgVzu7Y
-         GrVvauUjK79iSQQ50kGQpidqFONnT2rqHFkjk9JVGe/mf0/zjLH98uorB0APzJLWd0Zj
-         T2yA==
+        d=gourry.net; s=google; t=1782834144; x=1783438944; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QB3LlP562wM9vhAInyZtqjaYedctMNHlJgLHcqpXNiE=;
+        b=jf1e0vbXN9WHA75z7y2uYxs71+5ddmPHth4etxgt04k/1p5i7sLLhabahl3YdJtTvp
+         rpc+uGW61RRmBWNp8kDuAOd2ZljKbGChcSgOr7iTvO5IPCs9yc3HuuwSzuhXSF33M86i
+         DVaxf0P7Cjh4eZbpElqnurfthpg04+ty0kMBt8XAIKCzHcOp0EYu1IlpbwB5CfpW6QwJ
+         Ovp00MLwt4ucDo/iKwAOVSoQnID0L03RYBC/zp2IdG1DJti4RAkjf82k8S9tawFOne8g
+         1/TfBGX9+nniM2SBdZS8qzOMl2OcOjtBriP5OM1eHHukvyotZm7NVjUZuduid54TYmp3
+         Stxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782833598; x=1783438398;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7y23lwVc1qU9pQQZzwFQKSERGQYoPnAW1oWXpZxS+y4=;
-        b=oWYA4UOinRz3c4smVb5nT1qHMiQ36kwoSfoUUC50vlZ5/EKWydAGHCPzC82wcwOijE
-         wffzfV/9cIa6/IUuCgEkfw10A63YYm8kOhs9ImDnSXLQ+yMTIk6pKY5jnXkL9VL+ONTP
-         686IVJXyHyJsQks9ZKMlUM3Vo7H6jQcg9qQuSYsGgJCzKxmrRigkAtQmfbsv5o4Q+pj+
-         n1HBnMaQykuL8RV07YDWdDB25GYChiq7Y98hzGeKNF8TThqFsrpp0isKEWf4ClROiwrA
-         5B2cZ11tjlpmelUVc04huRowmwP1qUNxdBiXDRR29fzdgmTBN7SrSp2evf9nigVwCgnm
-         68Dw==
-X-Forwarded-Encrypted: i=1; AFNElJ9Ksteb53DmVJp1FXhy8YopoEKTSPKK6GHDspSSD4Muphg1FVbkrrzNZGxK+UPinrzIkrGTSQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyosGT4sXNbH3FVhrzY3+ZYumMZMFU1cOYqwuLSZ0nbYilopHl3
-	U5tGcm3GBemMKDw6hExBABX7fKjPwh4THZvZC8DYL1q7vbpReX9VOSvXfaCd6FWgVA==
-X-Gm-Gg: AfdE7cnMgA7goxKORI0Agw3eVMu5zYlR1ls/lUS+5RdVHda4XD+uMxUbi12BMQ8emdi
-	meFSSOh6x8986ZEe7TSSCL2TUKmDbbOUjQowy+gifTYpyBtGkOwYmQqa06SwgI7rWZ3zwMG1Ex2
-	AbAubfvCzTiDqxhJdcihkxyqu7XMQ31MHXijF8+yhY8uKGU3N5evKVG/84snTvwNKrMqgI5+/YJ
-	zr+Xkk0wlO00OfRhzwHWSyIHtggr3Rm/yuOD/CplpU5U+XYbVAswtFNBuIjDHqIQNy/TPNCNIyo
-	XurVVaV4QdJtpIkyUhT4yH/hTm08m8B4zEQ4UQjeFlUO9BUZ0B7B5hvDXcv1NusZx7D/WOS86Sl
-	Fs54D96YPL90ZPcIJDRUcnq3aNsV/f3YTWkZR7Mc67lvuKWz4p7PncLjtveT78fLxsmReHCrmiI
-	j4OWSyjiPdlaxbr9ntmIKWFbCvDOMZCQT3ooHGeiEOCcf6aKtqn06Vctg1KBGN6A==
-X-Received: by 2002:a05:600c:5290:b0:48a:5d55:c194 with SMTP id 5b1f17b1804b1-493bde1e099mr224345e9.7.1782833597416;
-        Tue, 30 Jun 2026 08:33:17 -0700 (PDT)
-Received: from google.com (140.240.76.34.bc.googleusercontent.com. [34.76.240.140])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493be4c9f78sm3528615e9.5.2026.06.30.08.33.15
+        d=1e100.net; s=20251104; t=1782834144; x=1783438944;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QB3LlP562wM9vhAInyZtqjaYedctMNHlJgLHcqpXNiE=;
+        b=skSJGqbCvB2VqOfPqzSbvPBiW66Dk8KOf5YFd1Jjch+Yx3oYNNBZ4/VkSQymZ1XDw8
+         VYv19xCKSQgXT2FGOT1cw2jaOsViNV6IxQNmsAv57kHpS6s/tddhD0XA0pqc+5Z20hcm
+         LdqX9Zt2lJ27FZupY3lAE4URluvgjLvxRt/BRW5eKGLlMPp/hu8z24xsnVtEHn9WegXZ
+         PQMmORLU7IJqhMFP42U61OOsCADoOrWHhD07s/ujoRtCbCLdvSoxXCL7hNgi7Pl+u8kH
+         FXTqXe1oKhIQie2vC21pQxyEwIJ+7/1N8D0pIKw5+DVzaTJoDmqMtznb1Xqgbs28OcXh
+         A/SQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+q+pgWPoknsZM4lebyfypAFNU+bm5OtOOpzyu7bL/78D18zdxvXhvPwXDvb+s1eGQPZBxZkA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwduR0gFElYvdIVJkuw0rXSeIG8KuOZvNzqM0ctntEYXLVYWJ2M
+	aw0m1JyHQNP3f59w3c+C0jKXy+FrutNVisnNTLEM/Si6JP6Yk4yzSykX+MwiucHYadw=
+X-Gm-Gg: AfdE7cnzPx/n83RF7NAr4tFqQ9tOYTsGwUJfJ/ysM/eW9TEQ6eWStRGkCyW9TGNbCPd
+	H8lGo2XlREb8EA1PWuCxCSTbTAhlP1h7oJ4RCCCw8yQvRgAPmPc86BQ5f2WwOZdRbIaeVDLKLhJ
+	cTMTepp2Vb6BXKOSjZDJXsPUvtMwJim2C1EHo16/NI/TcACsPJKOmnpVL5JPVjpnsCo9bxBuhYV
+	1kGxSZ+2Xp8yHuNBB/3mZ1feHX89FhtU+mM+RS3zEPsQIbc6A8EWN+fq64WrFxej0PaXZfGN2LS
+	JtS7T/+B8VTel6B2tvE0b6d5G0Bu92DU4LYke15NltuPVoIC7ZUvPB4rM6QLyFb8/bGEyHeTTYv
+	8t9Borw4MWdy8OvLLu95VWCgr3AcEm+s6m6FAE/SKh/QNalekhU5x1EueMTLFpBqB2n3JqwVEaC
+	gk/IhaKgCNBvhuhb367BYL8vUraicDK0WyOYu6T/p/jYTYkBdbjy2EY0xucUtfMb5elef9
+X-Received: by 2002:a05:620a:271d:b0:91e:712d:f79d with SMTP id af79cd13be357-92e6984d3d1mr270456885a.40.1782834143842;
+        Tue, 30 Jun 2026 08:42:23 -0700 (PDT)
+Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e6234dc50sm263249085a.39.2026.06.30.08.42.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 08:33:16 -0700 (PDT)
-Date: Tue, 30 Jun 2026 15:33:12 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
-	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org, jamien@nvidia.com
-Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
- kernel
-Message-ID: <akPhuF9pAWaBXzpi@google.com>
-References: <cover.1782799827.git.nicolinc@nvidia.com>
- <akPB6l-fuJUcg4a2@google.com>
- <akPX_N0P2EcI_jbV@google.com>
+        Tue, 30 Jun 2026 08:42:23 -0700 (PDT)
+Date: Tue, 30 Jun 2026 11:42:18 -0400
+From: Gregory Price <gourry@gourry.net>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Simon Schuster <schuster.simon@siemens-energy.com>,
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Lucas Stach <l.stach@pengutronix.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Christian Koenig <christian.koenig@amd.com>,
+	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>,
+	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	David Hildenbrand <david@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	"Liam R . Howlett" <liam@infradead.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Namhyung Kim <namhyung@kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
+	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
+	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
+	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
+	linux-perf-users@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+	damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
+	Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 08/30] mm/rmap: rename vma_interval_tree_*() to
+ mapping_interval_tree_*()
+Message-ID: <akPj2snngOp5nOYq@gourry-fedora-PF4VCD3F>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <f95462457025370efd047b9dfb039e76bbddf58b.1782735110.git.ljs@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,78 +128,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <akPX_N0P2EcI_jbV@google.com>
+In-Reply-To: <f95462457025370efd047b9dfb039e76bbddf58b.1782735110.git.ljs@kernel.org>
 
-On Tue, Jun 30, 2026 at 02:51:40PM +0000, Pranjal Shrivastava wrote:
-> On Tue, Jun 30, 2026 at 01:17:30PM +0000, Mostafa Saleh wrote:
-> > On Mon, Jun 29, 2026 at 11:15:33PM -0700, Nicolin Chen wrote:
-> > > When transitioning to a kdump kernel, the primary kernel might have crashed
-> > > while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
-> > > driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
-> > > and setting the Global Bypass Attribute (GBPA) to ABORT.
-> > > 
-> > > In a kdump scenario, this aggressive reset is highly destructive:
-> > > a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
-> > >    PCIe AER or SErrors that may panic the kdump kernel
-> > 
-> > Can you please clarify more on those errors, what conditions will
-> > trigger that?
-> > For example, patch 4 disables the EVTQ to avoid events as there might
-> > be a lot, why are they not fatal also?
-> > 
-> > > b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
-> > >    the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
-> > > 
-> > > To safely absorb in-flight DMA, the kdump kernel must leave SMMUEN=1 intact
-> > > and avoid modifying STRTAB_BASE. This allows HW to continue translating in-
-> > > flight DMA using the crashed kernel's page tables until the endpoint device
-> > > drivers probe and quiesce their respective hardware.
-> > > 
-> > > However, the ARM SMMUv3 architecture specification states that updating the
-> > > SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
-> > > 
-> > > This leaves a kdump kernel no choice but to adopt the stream table from the
-> > > crashed kernel.
-> > 
-> > In many cases the patches assume that the CDs/STE might be corrupted,
-> > but still attempt to retrieve them with some validation
-> > (log2size/split...)
-> > However, the base address might be broken, TLBs state is unknown...
-> > 
-> > IMO, although that might improve the status quo, there are still
-> > heuristics, in addition to noticeable complexity to transition the
-> > stream tables. I wonder if FW can deal with AER in that case before
-> > booting the kdump kernel.
+On Mon, Jun 29, 2026 at 01:23:19PM +0100, Lorenzo Stoakes wrote:
+> The family of vma_interval_tree_() functions manipulate the
+> address_space (which, of course, is generally referred to as 'mapping')
+> reverse mapping, but are named the 'VMA' interval tree.
 > 
-> I guess we're reading the base address from the HW register itself so
-> that should be fine? CDs are in-memory so that's why they could be
-> corrupted?
-
-For example patch#1 verifies log2size and split and both are read
-from HW registers. Same for the base address or other addresses as
-the page tables, they  might be corrupted due to a buggy driver.
-My point is that, it is really hard to assume that the previous state
-of registers/STE/page-tables were valid or even consistent, when the
-kernel crashed and did not transition the state gracefully.
-
+> VMAs may be mapped by an anon_vma, an address_space, or both. Therefore
+> calling the mapping interval tree a 'VMA' interval tree is rather
+> confusing.
 > 
-> About the TLB state, I'm not sure what might pollute it, since this is a
-> kexec, I don't expect any non-kernel entity to gain program control
-> before the kdump kernel.. Hence, IMO, we can't configure FW to deal with
-> AER here..
-
-Similarly for TLBs, the kernel might have panicked in the middle of an
-unmap or free domain. (not to mention what that means for RPM where
-a device reset with unknown TLBs)
-
-Why can't the FW deal with it? As I mentioned above in the previous
-reply I am not sure I understand what situation leads into this, when
-does a device trigger SError to the system vs when not which is observed
-as an event in that case.
-
-Thanks,
-Mostafa
-
+> This is also inconsistent with the anon_vma_interval_tree_*() functions
+> which explicitly reference the rmap object to which they pertain.
 > 
-> Thanks,
-> Praan
+> Rename the vma_interval_tree_*() functions to mapping_interval_tree_*() to
+> correct this.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+
+obligatory "naming is hard", this patch helps, thank you.
+
+Reviewed-by: Gregory Price <gourry@gourry.net>
