@@ -1,134 +1,147 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010030.outbound.protection.outlook.com [52.101.46.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 803633DE451;
-	Tue, 30 Jun 2026 18:39:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782844784; cv=none; b=Wxg63y0pRAu5BP/o2/AMFnXjA4s3Z8U6ygzBSr0HlcZ+f7gf5WUP0mZ6UHzbFKkbpHis747w2a29mclgFAl43TtQIfu/OsiO9d5zbdfzWYA/jQ0GIudi9xJvHFfNKpHp6SbOBmH2oeP7ixbME+nsa3R11CW/i6VGAoNZdL+3vKc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782844784; c=relaxed/simple;
-	bh=1AqnINwVyr54yl9bnnNtfcun+6VQRA0RIvv7fbFIkpo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dmHI1zYY07BOmr/SAZ62iuC546HMA4myhkXOFiPlc80DdLILXog46vFcTw5KuWOq5MqSrbIID4yTcJw8MVcE+O+nNWsL22vwKpT7IOVPpfmc3kcJ49or7BrgeRkkUorHjpUxcDyMB57S6LVd5mPsdWaCU4bMXQxCG4Z4s4/SjNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=f7nc668V; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F105239C658
+	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 18:56:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.30
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782845782; cv=fail; b=GV5EPZem4FoS7KtHRrh5xIW/nawi/MLbl1H2BUX5T3xJ5RkT5hgR8RuCAGuLqnOpvnpQQKC2DHe5G5sNDRUOD3HFKppPeb467+YGZYreAxwluBY4AGwjl30J53kngJRMLWyyjsuJnIbJACnGlhUIm2HbWtLO9/JjxZ9UxpjpWV0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782845782; c=relaxed/simple;
+	bh=YiJ3EAme58nZW/dmNXqsZWfzRWeOVMWFj//CFENwUmQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=k3ZRm26yEGYyDySZaUGCcFDj4/OZ/hjxe2VOn3c2R12fcXeZlNfBF99MK4EvQNSIVfdUr1lEtpnGzvUfpE1/LyP66/txjyRL2HyAbDvpnNWymbPPGyVU1FrFrHSTRrGKdwJYoIfg9nXLtWvaMa8vcWrQFPPJHHlTu0bd/jy1yQA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PdIsAADP; arc=fail smtp.client-ip=52.101.46.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="f7nc668V"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=SHjwFOAhvsASRijm+SVYf2tJ5249QQ8kmD9oJXhAHss=; b=f7nc668V6l0z8UMtSIDsI8vYCa
-	ph3rQXYcWYOUkkN5jOjNa6Rg4IKUSvx4DjUUwCfyFiRvE5RD4ge3ig4ltLYVh42gP9l90yPnjCmK0
-	jj3qYbtMProDxr3hdH3EuD7RywuU+uwnFlUUHP3Vv/eA9v80iSj9nHUYY75V41FstdH8Rc1tSuSIA
-	IAqKImhYierXNKUUeMg4WoRwPDxg9d2NK4ox0ciwWcjJ2j4qsGzW309+F9/UCN8z+SF/naYLQ8lw+
-	gHm7Cu1ToPBGq/gs0tVdrQT3tFclO1skLpijutp5XI+JeDCFhyw7eGbd68qsf8WuC6C39GKqp+dBj
-	mxaxC4kw==;
-Received: from [38.23.173.23] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wedMx-000000003Gn-05Z8;
-	Tue, 30 Jun 2026 18:39:39 +0000
-Date: Tue, 30 Jun 2026 14:39:35 -0400
-From: "Liam R. Howlett" <liam@infradead.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org, 
-	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
-	iommu@lists.linux.dev, kyle@mcmartin.ca, Rik van Riel <riel@meta.com>, 
-	maple-tree@lists.infradead.org
-Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
-Message-ID: <kfqgoauq4jia4jlgndxz54jblzarvltqr6eh2odaygqqkfvgzd@exr4hirlatnu>
-References: <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
- <20260612180303.GO1066031@ziepe.ca>
- <iv7sxqezzz42xieytbf3lskutricz7ltkr3wii3w4jbnbzto7f@2tz5hwa43l37>
- <20260615115633.GQ1066031@ziepe.ca>
- <vbtql77uf65vyxl4smefpol75x3opa7vnixdbzwg7ylxgre6j4@emvlfmdus4kj>
- <20260617180419.GA231643@ziepe.ca>
- <hsojwfbi5e6mpgtzd6rupod4xkviaehj4uo4xo7k2qmmswrc3v@odf2osyjxehw>
- <20260618152451.GE231643@ziepe.ca>
- <r4jlbi3hbtvv6vrenarz6i7n6cu3vfqqdz2jfenkwsuv3fkadi@nq5u5txbtso6>
- <20260619120854.GJ231643@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PdIsAADP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vCj51bhV//46dJXXur0GlDgeWFxG3e5ASilBDCFZFNnUIqnvQCkAA/bYeKu8PAvV4iMwDvIowlivxB3fyhOXWw5dTyvsgOF12dl1Wfl5dmOuKLhbpHlyvkq6qT3185puLXNzwMPVjJldppuMpi/JEY/wCwCT3/TrdXRLFtT4IHmMcOGfqhkKkpHvdrZDfExxAm2L7lrk0iHT8vEHFsJ4Dsmb/rGPZaS+EEA7H+YSIDzOp25ppVPfxU8eQ/JJrzpGO48QvCRuLsT8TPTQ5KC+cn6Oekqd2+YLMz7xvypHgs7pWgXL1CQyXex+7T+MV6cYHbGgd6XmGFYKfnH/WTOeyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=epyAOUNtIHPYFjtaVP0WgukvzYzz0ZtHwHBolB+5iV4=;
+ b=ITMuOBSsebV4fgCjGwp2In9Oe0G1Z1Uft3o7uwOAUdKqmJ5NNZPTBqgoj+7jT0Pl2QvhGNWQD3Ml0AEOgJMLamGUB99rT+uOxIEgoNKORH0w1tZS6OeRVeX3/U5OYnmJb2wDaGpC5043CSEEtafAjZXy7oWF6oQRBoKj7rPYCdIPaZYZi9PIci431Xa6XTwlGrNFBBtsRA11wyIoU3A+ainvsTS8IdPE7pnP0KsfSeFbYqPyvCbhXDGpJbr9Eknd6S2ld19WslOIUrPsKBsIFz+q04fuh01Sc1/Y64xDZVOrYmHwQ3ghRLrWbt4eidcyo7ERr4J6TBUDIZV51ZLHvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=epyAOUNtIHPYFjtaVP0WgukvzYzz0ZtHwHBolB+5iV4=;
+ b=PdIsAADP3lnaoSoyGyn4fGHl1d5a2pRFNgqmwAB4dGXZEGun0msbMaWoFcPK3xOampEikM0EpvBp+FkvgcD1DgG955PbxQHQDLYyo3qhyEFbHEke0aJLZEyKdO+vnWrY+gd2XrZX9KWQoDLxFpyuXEKPLdkJp6hQFKVKbUSo8NZhNixBfUuZf+R/jWTacAzO6zSkG8iaAx7QqIFxbfY48rKLD0WHx2LY0Ccbj25zEG08ouuF5jC36t3Ab5BLzI8bNupnv3hbQ+fn/6b6qtaoMmA4L2iX8NiJef5/sV/d6rpWkpk7Q43xVjJdhYjz/6JwQ4wiDiMlNIwXcxqbk0qJHA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by IA0PR12MB8862.namprd12.prod.outlook.com (2603:10b6:208:48e::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.19; Tue, 30 Jun
+ 2026 18:56:12 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.008; Tue, 30 Jun 2026
+ 18:56:11 +0000
+Date: Tue, 30 Jun 2026 15:56:10 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, praan@google.com,
+	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, jamien@nvidia.com
+Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Message-ID: <20260630185610.GE7481@nvidia.com>
+References: <cover.1782799827.git.nicolinc@nvidia.com>
+ <akPB6l-fuJUcg4a2@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akPB6l-fuJUcg4a2@google.com>
+X-ClientProxiedBy: MN2PR08CA0002.namprd08.prod.outlook.com
+ (2603:10b6:208:239::7) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260619120854.GJ231643@ziepe.ca>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA0PR12MB8862:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8f5cc589-7e90-4569-ccfc-08ded6d940a0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|23010399003|366016|1800799024|6133799003|11063799006|56012099006|4143699003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	fTpSGDyStESGcj7A4pYLnSBXBKCdkyhhWvE3zwjcIq4jSWSl2GNgrA6x/fMUkfCZEsXCr5cLZp3fbmRb2H0TYgtj++yU5ZbP6zFSBcnG5cWhEqDch1p3s56+Z+zdWd1iXZ6SwzOlx5rWzAwy98KVxwe3ibK/Qxy4ygd6oVUo8lIRI42eH0lwFqIoWGuxzCJFSmPigdkehXIki8wSbiKOO5SCqZ2U/bdM5irPN1FscTEpTWOghmvr6ImXY6+gklwA8QICVwZwzGqkWT8n2vrPT/HKQo6YQvVFp1x5MTAfWv+LkVURpAi5MDhg6F5TMHXUDVcz5BNb1zJfVjQfpxvm3ITI4RYLXqA/IK4m2in+vGMNZepuTev9gUbtyEPI122TG+DUu4wA8t4y8EhDDNLwX8ZwCyUJYy/uolwR18w9PSnZXf+pf6eMXVYoYnVvelh+XHVUoshfSkWnY+oA23MJPD6P8/30loKbzB7ZdwcxNou6Lg3rTCiYB4oio3ESAW+9LARR53pzdDhpsywMsE/sYtM9e0c6b918O9KXuq0UHiIrOG877hjqrJ2W5szsd/hv6IRoW/6BFmgale6OMNbQaQRt8SQqD0Om+nFLY1glPejfyXwQn3R0lH2rKLHr98ftdqd7KogjG2P+FT4ZrA3jGWTKvGaTogcFvMxpBn5dnnI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(366016)(1800799024)(6133799003)(11063799006)(56012099006)(4143699003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?RM1okTjhjiNhU3P8NPiNo1NG61k7TI3OiSj6I4FtzBSk5L1lzeFHdZS+O26m?=
+ =?us-ascii?Q?qSxoWymmNLJx4e1Uz5J+FZcfWE+hHo8gqFHoERkT+CudWSS4MMGm2KhU9DkR?=
+ =?us-ascii?Q?eez/1BX6uYFF0KCqjqavUkX6Gv4l6Yyi/Z6zkkjL61ZS1YKCw8WhYDaiFeTQ?=
+ =?us-ascii?Q?sD1g8QpavfBxhNOF/wYLtAo3BClCM7Hsa4RdehqeTEzBlxCllqyBy3LTQ9kM?=
+ =?us-ascii?Q?EawP5i05uDw3i6YhP0/YIj8aAkzv5qQRa62GGSh5FiojzyOtjCBDxGasyfNM?=
+ =?us-ascii?Q?/g4oQ0vd/cJSOtybikx2QION5DdeTWQL3aQssO0VK5BO66g8HYLSwo8IZ7aI?=
+ =?us-ascii?Q?6CONbLF0sbFW2/ptEoxY6Eswbm0aJ8HUeXx8iqys3/lH32m0Uj3hYeOeADYL?=
+ =?us-ascii?Q?/h9pWJHO/nFgHll4F0mi3S/GIWgu9uXB97dqf4l3CvL1HSCETD657D1QVyLp?=
+ =?us-ascii?Q?3XwAUP11YJXrDcu7aznBOC+J/RPOEu3yclJWGZevtZ/HPZflvli7ATWcyp8S?=
+ =?us-ascii?Q?dQkkp35LzyabvIKaouMhLIt+qw+rvdpdBHhhWivPkkOvdxn9kEc9dsxtkDuW?=
+ =?us-ascii?Q?4vMKArTSiK/JbNqcPf6hIT98M7FUrJb9QBDImchzI1aOflw/vi9DkDRHUFhy?=
+ =?us-ascii?Q?GWGqK7Mvc330Zo8uFLr2CWOIhkHYldrlJYnqEA+oG1IodJlsNvONdOyxme5o?=
+ =?us-ascii?Q?mjC+DI9oHTaYM5PAlsg7udbYI++D0TIUTbGwYCZvTVcU8iQwhNE0pmD7dW5V?=
+ =?us-ascii?Q?UzKs+mHDreV2C74P04xygaQmI6Bz5/E0WWxL1j7J+dzrK99tOSAqY0ApDH96?=
+ =?us-ascii?Q?VwK4K3G5LShGBKArXkzhMIfmmes3PfBhH0JnRXMbGfVbmIGBDfKWl2/f8P4p?=
+ =?us-ascii?Q?rP1/s+U9CjBLHHegqytweCzd3UAKiWM8Tk2/h2kHJJESvdgxp8tbneFMaDye?=
+ =?us-ascii?Q?y7vJQu0WlnW2DOvPJ8LBndNVQyNqEltIMs7EHSKkedw7L2B43cjYfJXm1QgV?=
+ =?us-ascii?Q?12q6ZAeVPX+zOeOJJXnrMAIMIC/XUtEkJR17FffSaqoxaE8CDn9texHf13wJ?=
+ =?us-ascii?Q?aXpXLxJFk+PA9oDDqY7psYJkTuD0soQxKQlpKVqTfmxHM0cc2QUBHBRVZdxW?=
+ =?us-ascii?Q?sTwF6Szv9CQrCQTyjxStWibmZLt6tRp9r4lk4e4+W+ZgP9vLyevgDWhT1E6Q?=
+ =?us-ascii?Q?wkAWGBmY42DyVXa/UDaBMB0lzU5q2PmiHtYOyBHCznCZmeF64H1s71PVTxdJ?=
+ =?us-ascii?Q?8LuT2gomokyR65FYWl0ctiUgxCEyr2saXPetzhfW77ISSVlWFOimQj2wkQ8W?=
+ =?us-ascii?Q?NIoxdfXcrhEEEx2ZXZ3rKGD/O+s50kAEzvYlNomiIXNxXFvxyTCFPIdlNEnu?=
+ =?us-ascii?Q?a6WI3Nfg7GeClmSKZpvcIrgma/Pl+8GudMiPdAOlYLfjFhBdhX2APMG5rKt2?=
+ =?us-ascii?Q?VRRjZAK4QfVHXze6OzMdGEUlN2oiObNzy35J3E2S7RFTzb5RGtslDb0A0OVS?=
+ =?us-ascii?Q?h58QhXwLHd5k4T0oa4trV5otz+2AMIwsvnsn3sKKt+u1BrUJkp+GWGUYiTjv?=
+ =?us-ascii?Q?7Fj6qiC/qfxLNoiy8+X42hAM6nLY+ky7nhxuoZrFV8XHdrqbCCKl9L+/6ODL?=
+ =?us-ascii?Q?hrbF5iqSxagYutOuxMVd/Yf8S7v4y3lsGia0iTQR2VnDubk1t8yIrznGa/PH?=
+ =?us-ascii?Q?5zUd2EGbZB0ydiEir84M5g0w3a8VbNFcsafS3722fEWhC7Y0?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f5cc589-7e90-4569-ccfc-08ded6d940a0
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2026 18:56:11.6646
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Us1OkU3oI9N/5dE79f/jJSvRWH9wABt62B2jgveGFMXXUa+xZjMnXlrIGwoManWk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8862
 
-On 26/06/19 09:08AM, Jason Gunthorpe wrote:
-> On Thu, Jun 18, 2026 at 01:27:02PM -0400, Liam R. Howlett wrote:
-> > On 26/06/18 12:24PM, Jason Gunthorpe wrote:
-> > > On Thu, Jun 18, 2026 at 10:50:56AM -0400, Liam R. Howlett wrote:
-> > > 
-> > > > > If that's the case it should be documented like this too :)
-> > > > 
-> > > > Yeah, very much should add some notes here... but also maybe stop them
-> > > > from doing it by adding this to mas_erase():
-> > > > 
-> > > > if (mt_external_lock(mas->tree))
-> > > >         might_alloc(GFP_KERNEL);
-> > > 
-> > > Yeah, and then I'd add a might_alloc() to mtree_erase() as well, it
-> > > can always sleep..
-> > 
-> > mtree_erase() calls mas_erase(), so I think the one should be enough.
-> 
-> I was thinking an unconditional one before locking:
-> 
-> @@ -5919,6 +5919,8 @@ void *mtree_erase(struct maple_tree *mt, unsigned long index)
->         MA_STATE(mas, mt, index, index);
->         trace_ma_op(TP_FCT, &mas);
->  
-> +       might_alloc(GFP_KERNEL);
-> +
+On Tue, Jun 30, 2026 at 01:17:30PM +0000, Mostafa Saleh wrote:
 
-Right, yes.  I'll do that.
+> In many cases the patches assume that the CDs/STE might be corrupted,
+> but still attempt to retrieve them with some validation
+> (log2size/split...)
+> However, the base address might be broken, TLBs state is unknown...
+ 
+> IMO, although that might improve the status quo, there are still
+> heuristics, in addition to noticeable complexity to transition the
+> stream tables.
 
->         mtree_lock(mt);
-> 
-> Since with internal locking this can still sleep, and it has to be
-> called in a sleepable context.
-> 
-> The one in mas_erase() is conditional on external locking and is
-> basically asserting the external lock is non-atomic.
-> 
-> > > Okay, so to summarize:
-> > > 
-> > > - mas_erase, mtree_erase cannot fail with ENOMEM. The check for ENOMEM
-> > >   inside should be changed to a WARN_ON to document this.
-> > >   Rational: in a GFP_KERNEL context it will sleep forever until it
-> > >   gets memory "too small to fail"
-> > 
-> > The ENOMEM check inside mas_nomem() is still possible because we try
-> > NOWAIT first, so it is possible that we hit a retry.
-> > 
-> > The return from mas_nomem() without allocations should be impossible.
-> > So if (!mas->sheaf && !mas->alloc) should be a WARN_ON_ONCE().
-> > 
-> > I believe this is what you meant anyways?
-> 
-> Yeah, probably, or maybe this:
-> 
-> 	if (mas_is_err(mas))
-> 		goto out;
-> 
-> Can it ever be anything but -ENOMEM within mas_erase()?
->  
-> > So cleaning them up should be handled sooner rather than later.  I'm
-> > trying to figure out the best place to do this as I do not like the
-> > retry with the timer idea.
-> 
-> I would clean them up when gap searching to allocate a new thing. That
-> is a safe place to fail and ensures the gaps are correct before
-> checking them.
-> 
-> Jason
-> 
-> -- 
-> maple-tree mailing list
-> maple-tree@lists.infradead.org
-> https://lists.infradead.org/mailman/listinfo/maple-tree
+That's basically what kdump is all about, try to improve the chances
+that the kdump kernel functions enough to retrieve the dump. There are
+many reasons kdump can fail, but nevertheless it works well enough and
+often enough to still be highly useful.
+
+So, the cases which are frequent and problematic should be addressed.
+On this HW kdump has a high failure rate because of the errors.
+
+Given that non-disruption is exactly what the Intel and AMD drivers
+both implement SMMU should also.
+
+Jason
