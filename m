@@ -1,148 +1,140 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011026.outbound.protection.outlook.com [52.101.52.26])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CEE3175A7D
-	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 00:25:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.26
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782865527; cv=fail; b=IXaZyjGlmVbEXkRoNVX1nXr6eM2gndHVxrn/yDDFDA86uqJjHSJbPpLCjTAEdRpRHoeCuCEAvGnaZcpGNavbqOYlvoXlecC2gK4CWooJPTQF0vGSKQN83SkyEsINOBRF0b2Hxa3iDfqaRrHguFJJYLs69DdWpzIcXHOrJ1fEaJQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782865527; c=relaxed/simple;
-	bh=uMW1aaOH59PjbF7asuNwZmWdK0IyWfhr/T1u7v6RXi8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=P95QBkGfcSxnz/XUtUbFg17ywrvcFE6qmBHa3vk/Q0byE+ANmiPz40Zk3HlEiIUu2iMRM/LDUve0zqKizJNBPLPqO9Zll1uZT4ZWLMuU+1c5ACryxawu3zbPWYmhLknDlDORSewzzKTResqQO/mMy+tgDe1h57e4zCyb1ytbetI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=B1plgWz3; arc=fail smtp.client-ip=52.101.52.26
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B30C134D385
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 01:43:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782870208; cv=none; b=kySG7UHd6A9pdyQSBO5XQ4aO4DBNiO+yc65k5kqt9cOdx0BVeOyXOd7mU159k8hQkfx0jQniH5Ghxx3+5jjbOVEgYCJfY5TBDFhYlg1pSEFEa2RsX8Re6pYL/9KBEkomlA0hcQ68yHcGt13CWTzD8L/2bhCycPEAM7+EFpnDQkI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782870208; c=relaxed/simple;
+	bh=Tr/ognelDwnn+tppC96yXVE7WDS+dq6NSuJqOhWuVNw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=N7bMRUwPOPkhNalbiP6BGijDdHrCfgkT7ByKLd3TJ3aPUl/CEy6AFF6B0dHFYlJ/NneGmVU+GYRL8f/NsqOy4M9oV2vUENSzBUTTAPs00kG3VaHvvMWA2tE4R0kaXxWHqczAZbI6bQqzUpWG5SVSK9w8gdJvgzFyzXrK/ooZNMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lUh2xsP7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="B1plgWz3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CG/bwsCk4Fkrrfe4ygkHaL/9g1qwlpN+y/Y8GtQyxredlYQeElK0y3Dzd1TEVfEwRxip690ksINmwUHIxWRSVMFMY/kN5f6bW3KVmdzTtVwFwe6Cy4t96pSjNB0XEJJyOhfvlfyx0RR0aiVanBoikfX5W16Y0HTdwXN/IdyEfLCdaFSpa/zEXK7c3AvNBbeynVAIjDtsfxGJ5BG/UhMEg/dmP9PgJ6/POBPW9Fy8pGREoNb4xT4KnpPfk5TBQkwTiifr31pPF00Y3iyZFoDypzyfY9lcmVTPNpP6Le4LjJw+fs2+D9LckTZkKocN0yRsXpM87Qz6H/oILHWyZ4OcTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dcq2bRy/ugTCK6dtBaAYpbBBW1xLB+JpPbQxN5k1aMc=;
- b=PJQ/3eTFbCARuuLI5E+7+7pgrhH4QMpuwtBfWFiDFmgFHYReogt2nw7XOgRWh2zyVAvQbZYaP7HW2/vGf+GdZB9EPwNivGjOiofSftJcoFHJAnBW6B1VR6HqMHNfcMVJrcdlMDiPP+yUILl5o8Mnfh3v+ktTQ8W0pL49N7UP9jFKadH2MjNIzDFpNxpUcKZiUQhVZMVgBjMUpz+IKYVokTc91T0b8qeztoWJHU8uytGtnAjW/i3rcBukH3O5N93CB9bizAW9p0yWB6mUku+hNnzF06+BaPGskJljAaGyvL7N1aaI+GXFxyKgTikmMuLir1FD5urgu0l3RbfhYqrXWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dcq2bRy/ugTCK6dtBaAYpbBBW1xLB+JpPbQxN5k1aMc=;
- b=B1plgWz35R1JpghG1O+q/EXFd0LqwMtqCwi2j3rudS3GBnDQ5v4Qo8cy8XhprX1pVlZ3jidoG700xJhTE95V1ie6jrX6IKqob16+rIU1loczdQ75W/SWaVRL4/EL4N70BJSwG/CB+Kehl8emUa0e4xP2M9GSRYTU9phlrvtJQCTTaOMTjo4mS9Zr2YWhLEyewElyCt1R63k68mtVXZJNgbIzxGN48P0HGsEL5I/DLA2Ki6Iej4RNm+rcYFtLOsgKCg3KjEJ+hBLRmbPN8S1MjALS4olUOs7QUq7UJ1vaZwExLFeQeGOwBfNvulscOVFQHTJS3yYFJ6DhfFfmUF07mQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by PH7PR12MB6907.namprd12.prod.outlook.com (2603:10b6:510:1b9::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.8; Wed, 1 Jul 2026
- 00:25:19 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.008; Wed, 1 Jul 2026
- 00:25:18 +0000
-Date: Tue, 30 Jun 2026 21:25:17 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Pranjal Shrivastava <praan@google.com>,
-	Mostafa Saleh <smostafa@google.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, kees@kernel.org,
-	baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org, jamien@nvidia.com
-Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
- kernel
-Message-ID: <20260701002517.GJ7481@nvidia.com>
-References: <cover.1782799827.git.nicolinc@nvidia.com>
- <akPB6l-fuJUcg4a2@google.com>
- <akPX_N0P2EcI_jbV@google.com>
- <akPhuF9pAWaBXzpi@google.com>
- <akQLURkLA-bZ9dAk@google.com>
- <20260630190819.GG7481@nvidia.com>
- <akQYCgLWv4fs7GAg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <akQYCgLWv4fs7GAg@nvidia.com>
-X-ClientProxiedBy: IA1P220CA0009.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:461::6) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lUh2xsP7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE4E1F00ACA
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 01:43:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782870207;
+	bh=pgwo5Y2YVtSU5NJkiPPhD+usOSDvizU2sfk4E7Z4ajQ=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=lUh2xsP7XV2H7rUr1KR28PmQbzhA2WM9r7gPWMLbUkWpcU9DUD0h+YFbmbJ95+C+0
+	 O8lGO22mRrFTqwW53h0Ri3YMZWPtektXcmtOyAp37lRpVSnXKJbcaoXF7qi5YZkv+t
+	 y5qnKIx1PW8fPqma7HfpJY53VCfAdcBzzE/fBFoYkhg0TBFZCCjB8+HjY2a92+PhCq
+	 7sDdyGIfMpiq/QxyDWh4O17YZMVXVZqyddEbObXUzAlEO0lTqwduRlvEJZ8L8o99dB
+	 1smK7PQNIE8fAMtK5QNCCt1vpAaV8fc4mS3IW8CY07/IgkgP4eKRp1N1Qneo6o9x95
+	 7zbcxJl5fsSPw==
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-473ba028d46so76272f8f.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 18:43:27 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RojGcVYfNAzQveGLxChD9VvPENGCrPhxv7tY7tVyCn+izxjXfbir0H8dI55jQ6b+aMsukldrg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwHUnc90MqI1QxhZpteGh3PfQkVJwl5v0+iwF7snLad0BtG3TY3
+	ufgnd5szL/BvhpH8kphCYWBNNMnUUYP+EsMy3um9hSvnPhXi3fdliRjmuAEUOPZZM0eoXEkCO/w
+	Wbcs52CR0ftBXv1Cz8z7QodJpVwxxQls=
+X-Received: by 2002:adf:e011:0:10b0:46e:8226:96ba with SMTP id
+ ffacd0b85a97d-476582f5260mr3272401f8f.13.1782870205832; Tue, 30 Jun 2026
+ 18:43:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB6907:EE_
-X-MS-Office365-Filtering-Correlation-Id: 750e321e-6d4e-4df4-79ac-08ded7073ae8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|23010399003|22082099003|18002099003|6133799003|4143699003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	9ohcUHQ3W0c7WzTE8h+5f6jgBpMDExEC2FZUVYEMooXEf4SwUZliZJv3vVCDSUdExkxtRgQEdpjnTrW2SmjAjusO9X5J/qfaTImi92AAAgBShAvRtuOlKQ1JRmwv8gbidZ11Bvxt6hDg1t7k/I0GqK9TnDrz93hg+cSsN/LZxy8EgI0VxXRrUzaIEtuL/Wk+TX3VTeY8lQKV2JG2JfVTPsCP0BBjKWuXdPuHKxA7lFKpetpxJqbTX44g+sCVK5ffrCiZDCwY+6pWaTlac+FCy+ZOmbKwUJ+AB5uhDEsbsKAgtrXCj2E0IuV63TAe+KRmABnJJhek3LI4164z9YW1nGIZ+Q8qyhoarFuGseVwADHDuMOZLbWsI+Aj5F+aMrHJQc3kX01n6QPrc4AycG4yMtmEdaKrH4IcNpLmRSeA5jcVMR9e+wcNh3B57Kb0nHyCnuY+fuFlLPpwg5j4Hji3zojL8aMKAGTrXxOxTvOr9hr+YnBznCNUnkOM/HhZmmTjnC3F4lDT6xPj759ST7A6wrn5jnp5R1+2PsYhV+u/6aO6eama6kop76wqMMEl4agGTI9EiKYs42Ky+BOKLp7ejbl1XQ3T16HdcO+q5l4VSUEC/v3mKSVjmjYeCXBBf/a09s8y3HYaOzW4B2lPqX5yssz7ph+JGvw4HQ2YHExXty8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(23010399003)(22082099003)(18002099003)(6133799003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0DbtvWGQHwPN8upXt3fnprL6++R1k3+QW7VEKCQrITqkDJCI6omTBGG2Gflv?=
- =?us-ascii?Q?pJHbdFInlJRV0h1TMS3QiAILQR7U21h/Iru0M9Sk66ESgB7v5gZPE+QfcFTO?=
- =?us-ascii?Q?gdgMkDkG90JBm8fl9dCpKcHKJ3XRIz7proNf00z607CQojd1daCiHyHs3oSO?=
- =?us-ascii?Q?akJGyNCVTMDpCLYiZ7JfdIGYXiO1T8kiCPCdYNO0ve9tXqler6LAXHNkG2/G?=
- =?us-ascii?Q?/Ytcm04L4IhVG5CeTQM4aTO9X3BQo0xdjRWN3m80b8AzLURGJp8ebWaAHyHz?=
- =?us-ascii?Q?2bYbwxO/t5c8NSGjeBPl0uvzd49FmOun3xu4hThHbyHl2xunDZqj7bsohVT2?=
- =?us-ascii?Q?2xFJWQJ7HPSHWYgvjPIb6vqfla4goOG7Ht44710ozDAsnukbLgsquwSF2nXZ?=
- =?us-ascii?Q?nsslOLb707QiHilMlDxKDC0wr/nQp8A6YBTScCDMczFcMqcP2i+YBgs90na/?=
- =?us-ascii?Q?wHwWLIy3ou8dwD5LbqW6Dg7kLiAmP409pDsljsKx7eTAWKhSyEcbuKGnGRXr?=
- =?us-ascii?Q?YGY8tkCyZNMrys9cnf3jHXFNThE5SuxNj9qZ8cdhVvGYXMwjJcjwvzbQlbOs?=
- =?us-ascii?Q?oXHQ6aP+l1o/69LveapZz60TZHYLBhEX6GKm2I0gGqfKMSIWHIzYqoRPZXQb?=
- =?us-ascii?Q?Att3awkR3+UP4QUt6De5OLm0TrDzsaZPgA5uFg33KwAAcvUeIvJ0jH1mAWRS?=
- =?us-ascii?Q?zLBUxG0v9EpMo+CwH5lcmz+BL1IcELEsWVQxH6fqZlxMBCKFuWNACUp3r3Jo?=
- =?us-ascii?Q?INLyyVICqo6hM09tcTBlMv5/0jKMJwRZOQme2hNrxkPzG/UJwvNx1uVzJGn+?=
- =?us-ascii?Q?EW5jO2SNhcaatEd9NYScgh/+F1/w8p3SOnd8D/shV9PG5s2UwpmFEetJRdGu?=
- =?us-ascii?Q?WEhEa73YRMbNfaHn1gN8MplkAyshmRLPnMK0rsMVq7kFAmFX3tAyuZuMrdtS?=
- =?us-ascii?Q?qUXWdX3y7SF3GRWvKqS2Bq1rYI2iu2QXT+d5nZHiohF6cPYwxCUv6EDjLTtB?=
- =?us-ascii?Q?9nuYBaLATjtW6NZIPPyfLXDArDkQKfDDnYIORsvO346gzU+VZg6pdsodxaMW?=
- =?us-ascii?Q?MH2UzIQQbgGU3FgTBrq5TqJIt5+ZITnATcrr67yKkbTpATjU6fox0H6kjEO5?=
- =?us-ascii?Q?EMu1OGMVq5tWKF2LFqGht8wwcBSbm/emi39fTYbPytNWTxEiqUUMv1hGprE1?=
- =?us-ascii?Q?A8YWcOymmMZ4iePoL5cS2/VBoP9ctozl2uvsdnE4VxBW+BeRkivLCL+g7PWp?=
- =?us-ascii?Q?Re5ATE4Fv7dF8xDTBmI8AiPgvfnTMZK7PllvkCsiISLhAPsj3xjr5VmsaApl?=
- =?us-ascii?Q?Uv3rDH6A0TC97UXjLtykCrIJzzlX6juRdL9qpMjycU+N95sm5swKNZUdLhNn?=
- =?us-ascii?Q?bVBFlufiUqW81mR0PWX8bJJaHXehhgfwECFFeYmXJQ/guXGsvVpG29f0F9na?=
- =?us-ascii?Q?lsRrqXyHVCTVt6bnaSaUCgeUYeg+Np9Xzf/b25mEbpMNiigE58T3OMqCD8D2?=
- =?us-ascii?Q?kp9oFsRM0fYgwhNF8ezYDgq+ee6V3b5KsWtf8ta6QAmM11HVWpTPqUAIhqsK?=
- =?us-ascii?Q?QSJTXov0BvzVi+ItDoeTdZY1aHeeS5HlQL5AVKzrU7gjXXJ4W8Lh6vQdoEzj?=
- =?us-ascii?Q?YfvvnEBolkrj6AOSriYGlFK2tLkpZmDYwQwPrcdZ1plyo43XIKb076HFFq95?=
- =?us-ascii?Q?zhdp5evzPZj+yyU/cz1I1jYXlSuApZCkiPzz2Ur5ORMfIkq6?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 750e321e-6d4e-4df4-79ac-08ded7073ae8
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2026 00:25:18.7958
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NdtAbt/ly9BCGno4/LXhz9HCrKz7RaGRAcxGKrDHXp2jQW/ltnANcUt0J6c2YK57
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6907
+References: <20260630083833.1275837-1-zong.li@sifive.com> <20260630083833.1275837-3-zong.li@sifive.com>
+In-Reply-To: <20260630083833.1275837-3-zong.li@sifive.com>
+From: Guo Ren <guoren@kernel.org>
+Date: Wed, 1 Jul 2026 09:43:12 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQfFEHp5BZtKRE4on-FMRuwBHZEtDn=g=L8=GaPH0uEyQ@mail.gmail.com>
+X-Gm-Features: AVVi8Cfcy5cWO9H4sDPMuveM9pp9eeEvl4ZKMfbR2jpOIiJoFwyXdryNTJq0UMs
+Message-ID: <CAJF2gTQfFEHp5BZtKRE4on-FMRuwBHZEtDn=g=L8=GaPH0uEyQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] iommu/riscv: create a auxiliary device for HPM
+To: Zong Li <zong.li@sifive.com>
+Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com, 
+	aou@eecs.berkeley.edu, alex@ghiti.fr, mark.rutland@arm.com, 
+	andrew.jones@oss.qualcomm.com, david.laight.linux@gmail.com, 
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+	Samuel Holland <samuel.holland@sifive.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 30, 2026 at 12:24:58PM -0700, Nicolin Chen wrote:
-> > I don't know exactly the sequence of events that lead up to the kdump
-> > kernel crashing (I imagine it is hard to debug that one), but it is
-> > something related to the new kernel not participating in the RAS and
-> > the RAS flow escalating to something fatal.
-> 
-> Here is the original bug report:
->  - kernel boots into a crash kernel
->  - crash kernel hits OOM do to insufficient reserved memory and
->    panics
->  - PCIe errors are observed during this failure flow
+On Tue, Jun 30, 2026 at 4:38=E2=80=AFPM Zong Li <zong.li@sifive.com> wrote:
+>
+> Create an auxiliary device for HPM when the IOMMU supports a
+> hardware performance monitor.
+>
+> Suggested-by: Samuel Holland <samuel.holland@sifive.com>
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> ---
+>  drivers/iommu/riscv/iommu.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index cec3ddd7ab10..36ad4aa81465 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -14,6 +14,7 @@
+>
+>  #include <linux/acpi.h>
+>  #include <linux/acpi_rimt.h>
+> +#include <linux/auxiliary_bus.h>
+>  #include <linux/compiler.h>
+>  #include <linux/crash_dump.h>
+>  #include <linux/init.h>
+> @@ -565,6 +566,21 @@ static irqreturn_t riscv_iommu_fltq_process(int irq,=
+ void *data)
+>         return IRQ_HANDLED;
+>  }
+>
+> +/*
+> + * IOMMU Hardware performance monitor
+> + */
+> +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
+> +{
+> +       struct auxiliary_device *auxdev;
+> +
+> +       auxdev =3D __devm_auxiliary_device_create(iommu->dev, KBUILD_MODN=
+AME,
+> +                                               "pmu", iommu, 0);
 
-Maybe the RAS events hits some bugs and OOMs the kdump kernel?
+Using an auxiliary device makes sense here =E2=80=94 it keeps perf PMU logi=
+c
+out of the IOMMU driver and lets a dedicated driver handle
+perf_pmu_register() independently. The devm-managed creation also ties
+the auxiliary device lifetime to the parent IOMMU device, so no
+explicit teardown is needed.
 
-Regardless more general cases like CXL are still things where you
-don't want to cause unexpected ATS failures..
+Reviewed-by: Guo Ren <guoren@kernel.org>
 
-Jason
+
+> +       if (!auxdev)
+> +               return -ENODEV;
+> +
+> +       return 0;
+> +}
+> +
+>  /* Lookup and initialize device context info structure. */
+>  static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_devi=
+ce *iommu,
+>                                                  unsigned int devid)
+> @@ -1613,6 +1629,9 @@ int riscv_iommu_init(struct riscv_iommu_device *iom=
+mu)
+>                 goto err_remove_sysfs;
+>         }
+>
+> +       if (iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM)
+> +               riscv_iommu_hpm_enable(iommu);
+> +
+>         return 0;
+>
+>  err_remove_sysfs:
+> --
+> 2.43.7
+>
+
+
+--=20
+Best Regards
+ Guo Ren
