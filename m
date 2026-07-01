@@ -1,237 +1,148 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011026.outbound.protection.outlook.com [52.101.52.26])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4B4A32B117
-	for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 23:38:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782862692; cv=none; b=k6Fl9ETNqBw14ZoFHR37uRjrsLZ+dJvAPcex3AxMihzKwkriu3XQrJTDjp4KLxg+04egM51U47efA2CjEiPdhOEzChVXYU9F5uFwxwF29v0+hE/3f2rCHBOLHILHc2UaxEq28KWkOOtYua/34wrEZrGzp0EFZn6eiv8up9lXMqc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782862692; c=relaxed/simple;
-	bh=S0eecLIECrW0DLNR33LeZhFNgmlgBsCaspl+gAXvn2I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=nAmqBgF9cCq1xDdtGPNgrbqAsqigRYf449thgOEiRkIfdTFwiceEBxKbClDUZfy5JXBUpjBRELFVLteq/+cNrR/9GieWct8Fo61djl9936t+vsC9fwDLuJbCiDVFTorYgNHiEswm8ek3Kck6xFYQMZQW+BrlHQILA49HKpdSGgc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LTqT0sMD; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CEE3175A7D
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 00:25:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.26
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782865527; cv=fail; b=IXaZyjGlmVbEXkRoNVX1nXr6eM2gndHVxrn/yDDFDA86uqJjHSJbPpLCjTAEdRpRHoeCuCEAvGnaZcpGNavbqOYlvoXlecC2gK4CWooJPTQF0vGSKQN83SkyEsINOBRF0b2Hxa3iDfqaRrHguFJJYLs69DdWpzIcXHOrJ1fEaJQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782865527; c=relaxed/simple;
+	bh=uMW1aaOH59PjbF7asuNwZmWdK0IyWfhr/T1u7v6RXi8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=P95QBkGfcSxnz/XUtUbFg17ywrvcFE6qmBHa3vk/Q0byE+ANmiPz40Zk3HlEiIUu2iMRM/LDUve0zqKizJNBPLPqO9Zll1uZT4ZWLMuU+1c5ACryxawu3zbPWYmhLknDlDORSewzzKTResqQO/mMy+tgDe1h57e4zCyb1ytbetI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=B1plgWz3; arc=fail smtp.client-ip=52.101.52.26
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LTqT0sMD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1782862689;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eV8FxCsvcQQMn46BNl5VjX2wuC3TdKg658kA/dAWs8g=;
-	b=LTqT0sMD2l2h3BwphYSF4ZU+bvD64upZePSJhx77CsWIszmriXM5z2O58FmFC7cLd6ogWW
-	BChGIHUx1xb+QUJPbXN84hh802/TMIPizmFKNEYypySxSwTPrX3jWAfcbwikZnGwz2fCbE
-	OdL6S0NJpLZLHKeUY5Buy+rpSDXxSKQ=
-Received: from mail-dy1-f197.google.com (mail-dy1-f197.google.com
- [74.125.82.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-356-Ew9eBMCnONqlzMppwzxYkA-1; Tue, 30 Jun 2026 19:38:08 -0400
-X-MC-Unique: Ew9eBMCnONqlzMppwzxYkA-1
-X-Mimecast-MFC-AGG-ID: Ew9eBMCnONqlzMppwzxYkA_1782862687
-Received: by mail-dy1-f197.google.com with SMTP id 5a478bee46e88-30eec544cc2so67278eec.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 16:38:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782862687; x=1783467487;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eV8FxCsvcQQMn46BNl5VjX2wuC3TdKg658kA/dAWs8g=;
-        b=sHxhZtKADMkNNkRp1EMY25+SX/w41PLtV2NQUJbinlpcybQ386vrqzj7CH6Km0r6eS
-         qv0nHowKdlk0YgRReRrn/GwdewS3lcVlrznQRmwbryAyW63YwwfLoX5Isf7TSkfsdbr7
-         RcP7DbGcmM32PIJijiibEQWQBaIk7nrKikTnLrl5ls82UxGusZtMqrPJ0SDrDe7T/uE8
-         xeXZVayRRczhIIMWfTNlF2EYKsnUN0dLj0zy6EA4XQ4O9RfFhMbI5L0xeKaM2iz32bg5
-         kDbXbOEXeUWeR57JHOm2PeHuTbBuPOTBY9mNsOI4TbNwVgRUOvL8qmwGM6W5bBCvzokw
-         KIJQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrYX7jQsTip03but3Ub7ttv92q+Zro6RWGN4l14uYKtmPlCjUFomQMqav4cG6UOgYHebsRxhQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw6GDPVNTiXsfxCZCysU1nD6kxavvVsYJimZuWVxZssTGGyI5k2
-	l2XWfzwxh0/dclue5oMi/mSSsMMDjWkCD4EDemfZYByDV46Xd18qfZ0vnWBGosTmFurrOc2x4sJ
-	XjDC6vbTw+uvUDD+yoQivMBScfEG9XjSnXYPLNugadIgM+wESgDUL2iA+
-X-Gm-Gg: AfdE7cmTrjQZs8cCtY1NiaF4aDLD52evOIVFmeKkMecXx6StJ3s/YbQKRe8Ms1QVICN
-	lZb/nrherG3CX9zuc0nUKZ7TGnuf/j68rRDxmey8guz0dQiu0bZw7q1fBN8gXrAYRwGiBLvlWRj
-	rPbXplGiVjtUolhtM0l5+o0uboNlgDv9lrUCVfS1HX5p2R8jP4udpRptm7bC9LWiOJzm6PQTF/f
-	RA84sSVcgaOZd5AqPdAlcuH+elokMFrqyy0Pz7qGA8w+TnxAZLwn7uP73aK1LPg2oveMAyUiADv
-	+3UsS4cOb5gELLhG/vn8Oyg8LrByrKVam4ocyuTpSFM4iYu11nFreiyGmAVv3NlOBbQqbe+uind
-	9ft3ZScRAnjRL5K8EvbIUhgwA/Pu8V513ccqJqZ3iTRfRCLeNhw==
-X-Received: by 2002:a05:7300:547:b0:30c:ab4f:46c7 with SMTP id 5a478bee46e88-30ef0a3bb58mr2418751eec.45.1782862687111;
-        Tue, 30 Jun 2026 16:38:07 -0700 (PDT)
-X-Received: by 2002:a05:7300:547:b0:30c:ab4f:46c7 with SMTP id 5a478bee46e88-30ef0a3bb58mr2418706eec.45.1782862686439;
-        Tue, 30 Jun 2026 16:38:06 -0700 (PDT)
-Received: from localhost.localdomain (122-63-73-73.mobile.spark.co.nz. [122.63.73.73])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee31cfcaesm12341209eec.20.2026.06.30.16.38.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 16:38:05 -0700 (PDT)
-Date: Wed, 1 Jul 2026 11:37:58 +1200
-From: Tao Liu <ltao@redhat.com>
-To: Desnes Nunes <desnesn@redhat.com>, kexec@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	stable@vger.kernel.org, baolu.lu@linux.intel.com,
-	dwmw2@infradead.org
-Subject: Re: [PATCH v2] iommu/vt-d: Fix UCTP context table slot when copying
- root entries
-Message-ID: <akRTVinqeeZnVARD@localhost.localdomain>
-References: <20260629144837.3244851-1-desnesn@redhat.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="B1plgWz3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CG/bwsCk4Fkrrfe4ygkHaL/9g1qwlpN+y/Y8GtQyxredlYQeElK0y3Dzd1TEVfEwRxip690ksINmwUHIxWRSVMFMY/kN5f6bW3KVmdzTtVwFwe6Cy4t96pSjNB0XEJJyOhfvlfyx0RR0aiVanBoikfX5W16Y0HTdwXN/IdyEfLCdaFSpa/zEXK7c3AvNBbeynVAIjDtsfxGJ5BG/UhMEg/dmP9PgJ6/POBPW9Fy8pGREoNb4xT4KnpPfk5TBQkwTiifr31pPF00Y3iyZFoDypzyfY9lcmVTPNpP6Le4LjJw+fs2+D9LckTZkKocN0yRsXpM87Qz6H/oILHWyZ4OcTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dcq2bRy/ugTCK6dtBaAYpbBBW1xLB+JpPbQxN5k1aMc=;
+ b=PJQ/3eTFbCARuuLI5E+7+7pgrhH4QMpuwtBfWFiDFmgFHYReogt2nw7XOgRWh2zyVAvQbZYaP7HW2/vGf+GdZB9EPwNivGjOiofSftJcoFHJAnBW6B1VR6HqMHNfcMVJrcdlMDiPP+yUILl5o8Mnfh3v+ktTQ8W0pL49N7UP9jFKadH2MjNIzDFpNxpUcKZiUQhVZMVgBjMUpz+IKYVokTc91T0b8qeztoWJHU8uytGtnAjW/i3rcBukH3O5N93CB9bizAW9p0yWB6mUku+hNnzF06+BaPGskJljAaGyvL7N1aaI+GXFxyKgTikmMuLir1FD5urgu0l3RbfhYqrXWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dcq2bRy/ugTCK6dtBaAYpbBBW1xLB+JpPbQxN5k1aMc=;
+ b=B1plgWz35R1JpghG1O+q/EXFd0LqwMtqCwi2j3rudS3GBnDQ5v4Qo8cy8XhprX1pVlZ3jidoG700xJhTE95V1ie6jrX6IKqob16+rIU1loczdQ75W/SWaVRL4/EL4N70BJSwG/CB+Kehl8emUa0e4xP2M9GSRYTU9phlrvtJQCTTaOMTjo4mS9Zr2YWhLEyewElyCt1R63k68mtVXZJNgbIzxGN48P0HGsEL5I/DLA2Ki6Iej4RNm+rcYFtLOsgKCg3KjEJ+hBLRmbPN8S1MjALS4olUOs7QUq7UJ1vaZwExLFeQeGOwBfNvulscOVFQHTJS3yYFJ6DhfFfmUF07mQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH7PR12MB6907.namprd12.prod.outlook.com (2603:10b6:510:1b9::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.8; Wed, 1 Jul 2026
+ 00:25:19 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.008; Wed, 1 Jul 2026
+ 00:25:18 +0000
+Date: Tue, 30 Jun 2026 21:25:17 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Pranjal Shrivastava <praan@google.com>,
+	Mostafa Saleh <smostafa@google.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, kees@kernel.org,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, jamien@nvidia.com
+Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Message-ID: <20260701002517.GJ7481@nvidia.com>
+References: <cover.1782799827.git.nicolinc@nvidia.com>
+ <akPB6l-fuJUcg4a2@google.com>
+ <akPX_N0P2EcI_jbV@google.com>
+ <akPhuF9pAWaBXzpi@google.com>
+ <akQLURkLA-bZ9dAk@google.com>
+ <20260630190819.GG7481@nvidia.com>
+ <akQYCgLWv4fs7GAg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akQYCgLWv4fs7GAg@nvidia.com>
+X-ClientProxiedBy: IA1P220CA0009.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:208:461::6) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20260629144837.3244851-1-desnesn@redhat.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 2MN33UdBl1ONTOZnsga9GHInbo75zZGAPKiOJc_SQzk_1782862687
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB6907:EE_
+X-MS-Office365-Filtering-Correlation-Id: 750e321e-6d4e-4df4-79ac-08ded7073ae8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|23010399003|22082099003|18002099003|6133799003|4143699003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	9ohcUHQ3W0c7WzTE8h+5f6jgBpMDExEC2FZUVYEMooXEf4SwUZliZJv3vVCDSUdExkxtRgQEdpjnTrW2SmjAjusO9X5J/qfaTImi92AAAgBShAvRtuOlKQ1JRmwv8gbidZ11Bvxt6hDg1t7k/I0GqK9TnDrz93hg+cSsN/LZxy8EgI0VxXRrUzaIEtuL/Wk+TX3VTeY8lQKV2JG2JfVTPsCP0BBjKWuXdPuHKxA7lFKpetpxJqbTX44g+sCVK5ffrCiZDCwY+6pWaTlac+FCy+ZOmbKwUJ+AB5uhDEsbsKAgtrXCj2E0IuV63TAe+KRmABnJJhek3LI4164z9YW1nGIZ+Q8qyhoarFuGseVwADHDuMOZLbWsI+Aj5F+aMrHJQc3kX01n6QPrc4AycG4yMtmEdaKrH4IcNpLmRSeA5jcVMR9e+wcNh3B57Kb0nHyCnuY+fuFlLPpwg5j4Hji3zojL8aMKAGTrXxOxTvOr9hr+YnBznCNUnkOM/HhZmmTjnC3F4lDT6xPj759ST7A6wrn5jnp5R1+2PsYhV+u/6aO6eama6kop76wqMMEl4agGTI9EiKYs42Ky+BOKLp7ejbl1XQ3T16HdcO+q5l4VSUEC/v3mKSVjmjYeCXBBf/a09s8y3HYaOzW4B2lPqX5yssz7ph+JGvw4HQ2YHExXty8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(23010399003)(22082099003)(18002099003)(6133799003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0DbtvWGQHwPN8upXt3fnprL6++R1k3+QW7VEKCQrITqkDJCI6omTBGG2Gflv?=
+ =?us-ascii?Q?pJHbdFInlJRV0h1TMS3QiAILQR7U21h/Iru0M9Sk66ESgB7v5gZPE+QfcFTO?=
+ =?us-ascii?Q?gdgMkDkG90JBm8fl9dCpKcHKJ3XRIz7proNf00z607CQojd1daCiHyHs3oSO?=
+ =?us-ascii?Q?akJGyNCVTMDpCLYiZ7JfdIGYXiO1T8kiCPCdYNO0ve9tXqler6LAXHNkG2/G?=
+ =?us-ascii?Q?/Ytcm04L4IhVG5CeTQM4aTO9X3BQo0xdjRWN3m80b8AzLURGJp8ebWaAHyHz?=
+ =?us-ascii?Q?2bYbwxO/t5c8NSGjeBPl0uvzd49FmOun3xu4hThHbyHl2xunDZqj7bsohVT2?=
+ =?us-ascii?Q?2xFJWQJ7HPSHWYgvjPIb6vqfla4goOG7Ht44710ozDAsnukbLgsquwSF2nXZ?=
+ =?us-ascii?Q?nsslOLb707QiHilMlDxKDC0wr/nQp8A6YBTScCDMczFcMqcP2i+YBgs90na/?=
+ =?us-ascii?Q?wHwWLIy3ou8dwD5LbqW6Dg7kLiAmP409pDsljsKx7eTAWKhSyEcbuKGnGRXr?=
+ =?us-ascii?Q?YGY8tkCyZNMrys9cnf3jHXFNThE5SuxNj9qZ8cdhVvGYXMwjJcjwvzbQlbOs?=
+ =?us-ascii?Q?oXHQ6aP+l1o/69LveapZz60TZHYLBhEX6GKm2I0gGqfKMSIWHIzYqoRPZXQb?=
+ =?us-ascii?Q?Att3awkR3+UP4QUt6De5OLm0TrDzsaZPgA5uFg33KwAAcvUeIvJ0jH1mAWRS?=
+ =?us-ascii?Q?zLBUxG0v9EpMo+CwH5lcmz+BL1IcELEsWVQxH6fqZlxMBCKFuWNACUp3r3Jo?=
+ =?us-ascii?Q?INLyyVICqo6hM09tcTBlMv5/0jKMJwRZOQme2hNrxkPzG/UJwvNx1uVzJGn+?=
+ =?us-ascii?Q?EW5jO2SNhcaatEd9NYScgh/+F1/w8p3SOnd8D/shV9PG5s2UwpmFEetJRdGu?=
+ =?us-ascii?Q?WEhEa73YRMbNfaHn1gN8MplkAyshmRLPnMK0rsMVq7kFAmFX3tAyuZuMrdtS?=
+ =?us-ascii?Q?qUXWdX3y7SF3GRWvKqS2Bq1rYI2iu2QXT+d5nZHiohF6cPYwxCUv6EDjLTtB?=
+ =?us-ascii?Q?9nuYBaLATjtW6NZIPPyfLXDArDkQKfDDnYIORsvO346gzU+VZg6pdsodxaMW?=
+ =?us-ascii?Q?MH2UzIQQbgGU3FgTBrq5TqJIt5+ZITnATcrr67yKkbTpATjU6fox0H6kjEO5?=
+ =?us-ascii?Q?EMu1OGMVq5tWKF2LFqGht8wwcBSbm/emi39fTYbPytNWTxEiqUUMv1hGprE1?=
+ =?us-ascii?Q?A8YWcOymmMZ4iePoL5cS2/VBoP9ctozl2uvsdnE4VxBW+BeRkivLCL+g7PWp?=
+ =?us-ascii?Q?Re5ATE4Fv7dF8xDTBmI8AiPgvfnTMZK7PllvkCsiISLhAPsj3xjr5VmsaApl?=
+ =?us-ascii?Q?Uv3rDH6A0TC97UXjLtykCrIJzzlX6juRdL9qpMjycU+N95sm5swKNZUdLhNn?=
+ =?us-ascii?Q?bVBFlufiUqW81mR0PWX8bJJaHXehhgfwECFFeYmXJQ/guXGsvVpG29f0F9na?=
+ =?us-ascii?Q?lsRrqXyHVCTVt6bnaSaUCgeUYeg+Np9Xzf/b25mEbpMNiigE58T3OMqCD8D2?=
+ =?us-ascii?Q?kp9oFsRM0fYgwhNF8ezYDgq+ee6V3b5KsWtf8ta6QAmM11HVWpTPqUAIhqsK?=
+ =?us-ascii?Q?QSJTXov0BvzVi+ItDoeTdZY1aHeeS5HlQL5AVKzrU7gjXXJ4W8Lh6vQdoEzj?=
+ =?us-ascii?Q?YfvvnEBolkrj6AOSriYGlFK2tLkpZmDYwQwPrcdZ1plyo43XIKb076HFFq95?=
+ =?us-ascii?Q?zhdp5evzPZj+yyU/cz1I1jYXlSuApZCkiPzz2Ur5ORMfIkq6?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 750e321e-6d4e-4df4-79ac-08ded7073ae8
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2026 00:25:18.7958
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NdtAbt/ly9BCGno4/LXhz9HCrKz7RaGRAcxGKrDHXp2jQW/ltnANcUt0J6c2YK57
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6907
 
-CC to kexec ML.
+On Tue, Jun 30, 2026 at 12:24:58PM -0700, Nicolin Chen wrote:
+> > I don't know exactly the sequence of events that lead up to the kdump
+> > kernel crashing (I imagine it is hard to debug that one), but it is
+> > something related to the new kernel not participating in the RAS and
+> > the RAS flow escalating to something fatal.
+> 
+> Here is the original bug report:
+>  - kernel boots into a crash kernel
+>  - crash kernel hits OOM do to insufficient reserved memory and
+>    panics
+>  - PCIe errors are observed during this failure flow
 
-On Mon, Jun 29, 2026 at 11:48:37AM -0300, Desnes Nunes wrote:
-> When translation is already enabled at boot (e.g. kdump), the vt-d driver
-> copies context tables from the previous kernel's root table. In scalable
-> mode, buses that only populate the upper root half (UCTP, devfn >= 0x80)
-> should be written to ctxt_tbls[tbl_idx + 1] through copy_context_table().
-> However, the current copy path always uses tbl[tbl_idx + 0] in this situa-
-> tion. Since idx wraps to 0 at devfn 0x80 due to a zeroed LCTP, new_ce for
-> LCTP will be NULL and keep pos equals to 0. Thus, UCTP entries will be co-
-> pied into tbl[tbl_idx + 0] instead of tbl[tbl_idx + 1], and written after-
-> wards to root_entry[bus].lo instead of .hi in copy_translation_tables().
-> 
-> In short, devices on bus 0x80 with devfn >= 0x80 fail DMA with fault 0x39,
-> which will break drivers running in kernels with translation pre-enabled.
-> This fixes NO_PASID DMAR faults for UCTP-only buses such as:
-> 
-> DMAR: [DMA Read NO_PASID] Request device [80:14.0] fault addr 0xe81759000 [fault reason 0x39] SM: Present bit in Root Entry is clear
-> 
-> For instance, this fault yielded to locking issues between systemd and
-> xHCI, blocking a system's reboot after a vmcore was captured with kdump:
-> 
-> [   72.987601] systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=2193 is taking a long time
-> [  132.237566] dracut-initqueue[277]: Timed out while waiting for udev queue to empty.
-> [  202.988014] systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=2193 killed
-> [  202.998059] systemd-udevd[246]: usb3: Worker [255] terminated by signal 9 (KILL).
-> ...
-> [  206.288378] kdump[569]: saving vmcore complete
-> ...
-> [  206.821258] systemd-shutdown[1]: Rebooting.
-> [  246.858495] INFO: task kworker/0:1:11 blocked for more than 122 seconds.
-> [  246.865319]       Not tainted 7.0.0-clean #1
-> [  246.869663] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  246.877623] task:kworker/0:1     state:D stack:0     pid:11 tgid:11    ppid:2      task_flags:0x4208160 flags:0x00080000
-> [  246.888942] Workqueue: usb_hub_wq hub_event
-> [  246.893202] Call Trace:
-> [  246.895690]  <TASK>
-> [  246.897828]  __schedule+0x299/0x5c0
-> [  246.901378]  schedule+0x27/0x80
-> [  246.904572]  schedule_timeout+0xbd/0x100
-> [  246.908565]  __wait_for_common+0x97/0x1b0
-> [  246.912644]  ? __pfx_schedule_timeout+0x10/0x10
-> [  246.917252]  xhci_alloc_dev+0x9e/0x2b0
-> [  246.921068]  usb_alloc_dev+0x7a/0x3b0
-> [  246.924795]  hub_port_connect+0x285/0x960
-> [  246.928873]  hub_port_connect_change+0x94/0x290
-> [  246.933482]  port_event+0x4bb/0x840
-> [  246.937030]  hub_event+0x141/0x460
-> [  246.940489]  process_one_work+0x196/0x390
-> [  246.944569]  worker_thread+0x1af/0x320
-> [  246.948383]  ? __pfx_worker_thread+0x10/0x10
-> [  246.952724]  kthread+0xe3/0x120
-> [  246.955921]  ? __pfx_kthread+0x10/0x10
-> [  246.959736]  ret_from_fork+0x199/0x260
-> [  246.963550]  ? __pfx_kthread+0x10/0x10
-> [  246.967362]  ret_from_fork_asm+0x1a/0x30
-> [  246.971355]  </TASK>
-> [  369.738508] INFO: task systemd-shutdow:1 blocked for more than 122 seconds.
-> [  369.745593]       Not tainted 7.0.0-clean #1
-> [  369.749935] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  369.757897] task:systemd-shutdow state:D stack:0     pid:1 tgid:1   ppid:0      task_flags:0x400100 flags:0x00080000
-> [  369.769128] Call Trace:
-> [  369.771616]  <TASK>
-> [  369.773752]  __schedule+0x299/0x5c0
-> [  369.777299]  schedule+0x27/0x80
-> [  369.780493]  schedule_preempt_disabled+0x15/0x30
-> [  369.785188]  __mutex_lock.constprop.0+0x547/0xac0
-> [  369.789974]  device_shutdown+0xac/0x1b0
-> [  369.793877]  kernel_restart+0x3a/0x70
-> [  369.797603]  __do_sys_reboot+0x147/0x240
-> [  369.801595]  do_syscall_64+0x11b/0x6a0
-> [  369.805407]  ? handle_mm_fault+0x110/0x350
-> [  369.809574]  ? do_user_addr_fault+0x206/0x680
-> [  369.814006]  ? irqentry_exit+0x7a/0x4d0
-> [  369.817907]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> [  369.823046] RIP: 0033:0x7fe2958da917
-> [  369.826684] RSP: 002b:00007ffc5c458618 EFLAGS: 00000206 ORIG_RAX: 00000000000000a9
-> [  369.834383] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe2958da917
-> [  369.841639] RDX: 0000000001234567 RSI: 0000000028121969 RDI: 00000000fee1dead
-> [  369.848893] RBP: 00007ffc5c458790 R08: 0000000000000069 R09: 00000000ffffffff
-> [  369.856148] R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
-> [  369.863402] R13: 0000000000000000 R14: 00007ffc5c4588b8 R15: 0000000000000000
-> [  369.870659]  </TASK>
-> [  369.872888] INFO: task systemd-shutdow:1 is blocked on a mutex likely owned by task kworker/0:1:11.
->
+Maybe the RAS events hits some bugs and OOMs the kdump kernel?
 
-Thanks for attaching the kernel stack trace, which is similar to the one I have
-encountered recently. And I have applied & tested the patch, works good for me.
+Regardless more general cases like CXL are still things where you
+don't want to cause unexpected ATS failures..
 
-Tested-by: Tao Liu <ltao@redhat.com> 
- 
-> Fixes: 091d42e43d21 ("iommu/vt-d: Copy translation tables from old kernel")
-> Signed-off-by: Desnes Nunes <desnesn@redhat.com>
-> ---
-> V1 -> V2: Updated commit message and added xHCI stack trace as requested
-> 
-> v1: https://lore.kernel.org/linux-iommu/ajnlKDglN6wEBBrS@google.com/T/#t
-> 
->  drivers/iommu/intel/iommu.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 4d0e65bc131d..737936f942a0 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1443,7 +1443,7 @@ static int copy_context_table(struct intel_iommu *iommu,
->  			      struct context_entry **tbl,
->  			      int bus, bool ext)
->  {
-> -	int tbl_idx, pos = 0, idx, devfn, ret = 0, did;
-> +	int tbl_idx, tbl_slot = 0, idx, devfn, ret = 0, did;
->  	struct context_entry *new_ce = NULL, ce;
->  	struct context_entry *old_ce = NULL;
->  	struct root_entry re;
-> @@ -1459,10 +1459,9 @@ static int copy_context_table(struct intel_iommu *iommu,
->  		if (idx == 0) {
->  			/* First save what we may have and clean up */
->  			if (new_ce) {
-> -				tbl[tbl_idx] = new_ce;
-> +				tbl[tbl_idx + tbl_slot] = new_ce;
->  				__iommu_flush_cache(iommu, new_ce,
->  						    VTD_PAGE_SIZE);
-> -				pos = 1;
->  			}
->  
->  			if (old_ce)
-> @@ -1484,6 +1483,9 @@ static int copy_context_table(struct intel_iommu *iommu,
->  				}
->  			}
->  
-> +			/* Track if saving UCTP or LCTP entries in scalable mode */
-> +			tbl_slot = ext && devfn >= 0x80 ? 1 : 0;
-> +
->  			ret = -ENOMEM;
->  			old_ce = memremap(old_ce_phys, PAGE_SIZE,
->  					MEMREMAP_WB);
-> @@ -1512,7 +1514,7 @@ static int copy_context_table(struct intel_iommu *iommu,
->  		new_ce[idx] = ce;
->  	}
->  
-> -	tbl[tbl_idx + pos] = new_ce;
-> +	tbl[tbl_idx + tbl_slot] = new_ce;
->  
->  	__iommu_flush_cache(iommu, new_ce, VTD_PAGE_SIZE);
->  
-> -- 
-> 2.54.0
-> 
-
+Jason
