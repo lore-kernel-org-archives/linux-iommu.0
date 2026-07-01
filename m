@@ -1,186 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 060B033AD8B;
-	Wed,  1 Jul 2026 03:09:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 989F517736
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 04:00:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782875361; cv=none; b=uOe0vwgZ782msgNJ3OscovkrGhppLxJyPPbm3UD1h0a+ee42lgHBvKZ4HRyGephNIfhsyKma+I09LuPGdrPangLGlOS8/1tvOXqz9AtsFiunVkK1oMpxTf4+D3bxvpAnZzlYJmBogdclFOSagbW3VX7IeHj79B0dJkDDXRLZY8Y=
+	t=1782878433; cv=none; b=iT3P1kDGs1Nixnm2QNAKcfm1KbiFytotHSDK7kK8b4bVkfG6e9/3IoE8bWHYBsaZ6UZmuigQBFUcw7+tuJarB4TZJty80c4aQ0w2TxMlH3g39AYT/6pT1KTCQoja2XTINKo8gtnk/xGXdqhd0sThXlNcReU70xN8JqxA7K6PptA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782875361; c=relaxed/simple;
-	bh=FPT9y30vnOlO/lNgfWP5ptP/TtCb7F5Scbs6AXcyfNM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=KbRsp258eRuj5JIYvud3A6NghR/NCNHUiCC4kFmRFC5g/C5n8YQrM1NX8DntBnql9jzr/S0pfcf10JT+R3oA7VQfm+XxQZE+wfP4jz0/4qapBDJTlgLvKBZm5UZ5aFPX0Oggx3sfb4GaYsONtSeh8iy8JZEhPW7//fK+xIh7HRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Apa1e2TN; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782878433; c=relaxed/simple;
+	bh=WCIcwrrTPMRmog2SUs+VIrCq0XbCEwlD78QOssRp5n4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=lS5LZucVBmwKOmiYyJ+yHETS84AShgqHrfQu3Hhvh/sBMqzX7V2KC4ADVj2jYpnFrAHAqWC/ZiXDH0+ORLtgCjBdWoCljNJxJtPA9BppKvM2oAJdkJ2BTYcfPnV3wybYPKn3mTa4JSVc5Ua//zELII1emY9uKSORIFSH4jQksGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=J/sNhYyH; arc=none smtp.client-ip=74.125.82.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Apa1e2TN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 598A71F000E9;
-	Wed,  1 Jul 2026 03:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782875359;
-	bh=FJhajr5kdTmXSpbRHiZGZT3ioUVr6sHAFFO+7D7H7Iw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=Apa1e2TNAD1OXcazOEFCxJl7l5BrVVMLldpRf0byGAFIxmHZcJ9j3O57EBDpqqCGC
-	 npNWTMDbd5MynUk+n9TOEgWrKZLUeu0x85rBnH3oE01O8UmQAVgtiT8Oxe0DwbXarq
-	 Rhj55UyvnpmtD02vXdUXMyNS/Gwhk3JQUnTOPAcDA46ZE++fUcZtSTuxWdL5uTuivC
-	 kvC2jhtCrGypZNaCdpd0nztN0oQqPcwT5h4mHQP6EvhXUQv1O6OZax7pV/JnK+5h4f
-	 Xtfv09ZeJ7OVs0ct4YkBueDVTpnVdg+nTb12bqzwLvFUbpPUCF35eDdmAKCrVeiZyW
-	 sl8y0F2F3AO0Q==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="J/sNhYyH"
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-30c591fb1cbso228784eec.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 21:00:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1782878428; x=1783483228; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bAjXq9Ej4fB7f7nIuAnBVBBySejxitzWJLxvllDtjcA=;
+        b=J/sNhYyHyybhk5z6EqDHIZFWPbOcifhfss+C7KNm3RsuJbmgjnR3ww12aangCDtr6V
+         xS8HDFqGyGgk73X2kO/W4C4NP/i+hWSfDKSyUXkduXqc1XDir3lQdMsG3OMJ3H3Fv24F
+         NeeS0n6CaHPW9HnUZszfrnp5WOjA2HmKxs/0UqyNUM2q5Mz8DEWczbq1BTEJuckoU9rc
+         ov8dxSSfXxmzOyC6NtLAY0YUlwLgfPBFvSuIKxKs4Ob8bXU0yr4ACHmPiC4hKaUjb6M7
+         L/SRvp5GqIhlkg6A4KNLHiJXS+6XtUY127UdfwQyCB9X8VOamJ6Yh1S7MaTfIb0wXiF0
+         H11w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782878428; x=1783483228;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=bAjXq9Ej4fB7f7nIuAnBVBBySejxitzWJLxvllDtjcA=;
+        b=GbZmE9aR+7hbk8/moE0GFglrblejwnKJnQeU/ZKTY75qq1fy5T+h+7Csz1M7HFTp3a
+         je8Qm7lHKthMoiTaQ4q4jIk/rPhjqWHBbvGa0EdDWrFsBke6JfXje2E/0DM4O9SdE0QR
+         cdWjhviaHYJQXKRVko/a0O7MzKnE6+8V4uk+DYsOi6SsfetZ8VUuoRftcwi/cJffNpQB
+         Ch1bMhP2qAgxhtDx+aZNOcTDDLLiG+J327nEWTAw+B8Q+G1piVTGslF4DsCp8LeB/MlD
+         aI+QSmj506n6IUedHd+/zHwL1L9fCjPHmh/CU3O2dKS6GjBBkjBITQYXR4ZQLd30PvhI
+         pX2A==
+X-Forwarded-Encrypted: i=1; AHgh+Ro/Tx+v9X+wbKYq0hTinwwA0J56gyT3xVh/hsrm/A6WHASh6LSkNxfSESxPOhhvJxfgCi29tw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyNbYfMLFRncEtdEETpkXbWQvr0twCulEp9pyVap8q9S2og1Htq
+	3/ffyiYRp6FoAdykh1DSwT7qKH0dUFELwW3EE7iuwX3X99ngEJEhIFIbKZpc0qcofGA=
+X-Gm-Gg: AfdE7ck5u097dmY2yBWHLAIRJ9ZrZnCioMFMB09FnLIaspgjjmQtZUlW4G6rbJiOoTw
+	ys4uLOOfobgZ5UWFVHWr7WMkwLMzklS5dR6ZQ0oITywCFMDg11gKpYF9TzHFZBUXicJx8PqxZZy
+	vF2rPDBdv8tGvjQYw/+rAztggb4mwx23FwSXUemiJlwp2AhioA7dqjuJ+Gi1gFBAhUOXJ2Pv/4t
+	uV8G9kY1BQfkcgTUJtQT98lKbo9UsB7W8ax4hi7NhqgcXUEYABBRb4+FaQV0fIyWvDE7HjFg9CT
+	+VzqejwBPeoeId+otXO/9o3TruldVm2JvIoO7KN1UeikUDE2XeL5ye2l6Hwpzz9vpbyi5zGmX17
+	h4q+6zIQaxYK0NC5exem+1BOCYjMBZ2Q1JQh7nYbSVbBhjxsudxfgvWrz5krikHaxOgQTIfqL9+
+	AX9Q9PPJ5M5gt6qZFUlkQAfzKn9x7PSWC6gU6NLSiLMuSfzBWuuYTpNlag+q4Jcyc8
+X-Received: by 2002:a05:7300:d516:b0:30e:c801:eace with SMTP id 5a478bee46e88-30eff05c70emr10195eec.5.1782878427991;
+        Tue, 30 Jun 2026 21:00:27 -0700 (PDT)
+Received: from FJ7FR2JRQ3.bytedance.net ([63.216.146.178])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee32519aesm14024287eec.27.2026.06.30.21.00.20
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 30 Jun 2026 21:00:27 -0700 (PDT)
+From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+To: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Cc: Andrew Jones <ajones@ventanamicro.com>,
+	Anup Patel <anup@brainfault.org>,
+	Atish Patra <atish.patra@linux.dev>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-In-Reply-To: <20260630174216.GK7525@ziepe.ca>
-References: <aigYbK12D8uKQvJF@arm.com> <20260609144746.GL2764304@ziepe.ca>
- <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
- <yq5aqzm4dz25.fsf@kernel.org> <20260618153705.GH231643@ziepe.ca>
- <yq5ao6h6enhm.fsf@kernel.org> <20260619122148.GL231643@ziepe.ca>
- <yq5aldcaejos.fsf@kernel.org> <20260619140616.GB1068655@ziepe.ca>
- <yq5ao6gtoncp.fsf@kernel.org> <20260630174216.GK7525@ziepe.ca>
-Date: Wed, 01 Jul 2026 08:39:06 +0530
-Message-ID: <yq5abjcro17x.fsf@kernel.org>
+	Paolo Bonzini <pbonzini@redhat.com>,
+	cuiyunhui@bytedance.com,
+	yuanzhu@bytedance.com,
+	kvm@vger.kernel.org,
+	kvm-riscv@lists.infradead.org,
+	linux-riscv@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 0/3] RISC-V: KVM/IOMMU: Fix MRIF irqfd notice handling
+Date: Wed,  1 Jul 2026 12:00:13 +0800
+Message-ID: <20260701040017.42707-1-zhangzhanpeng.jasper@bytedance.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
+References: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+Hi Fangyu,
 
-> On Mon, Jun 29, 2026 at 12:16:30PM +0530, Aneesh Kumar K.V wrote:
->> >> Thinking about this more, I guess we should mark the swiotlb as
->> >> cc_shared only with  CC_ATTR_GUEST_MEM_ENCRYPT instead of
->> >> CC_ATTR_MEM_ENCRYPT as we have below.
->> >
->> > The name cc_shared should be used for GUEST scenarios only.
->> >
->> > I guess there is some merit in keeping swiotlb using "decrypted" to
->> > mean it usinig pgprot_decrypted and set_memory_decyped() which AMD
->> > gives meaning to on both host and guest.
->> 
->> Are you suggesting to change the struct io_tlb_mem::cc_shared back to
->> struct io_tlb_mem::unencrypted?. 
->
-> Yes
->
->> > IDK what AMD should do on the host by default. I guess it should setup
->> > a swiotlb pool of low dma addrs "unencrypted", but not "cc_shared"?
->> >
->> 
->> If by low DMA address you mean using an address with the C-bit
->> cleared. 
->
-> Yes
->
->> The current code already does this and uses the swiotlb pool correctly
->> on SME.
->
-> Well, through the force_dma_unencrypted() hack...
->
->> The challenge arises when we want to force SWIOTLB
->> bouncing even for devices that can handle encrypted DMA addresses (more
->> on that below). For such a config force_dma_uencrypted(dev) will return
->> false and swiotlb will be marked cc_shared/decrypted = true; This trip
->> the new check we added.
->
-> Yes, because cc_shared (guest) and unencrypted (host) are very
-> different things and we've mixed them:
->
->> 	if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
->
-> I'm aruging force_dma_unencrypted should mean cc_shared and be
-> guest_only, but the SME hack breaks this.
->
->> We can also do
->> 
->> 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
->> 		/* swiotlb pool is incorrect for this device */
->> 		if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
->> 			return (phys_addr_t)DMA_MAPPING_ERROR;
->> 
->> 		/* Force attrs to match the kind of memory in the pool */
->> 		if (mem->cc_shared)
->> 			*attrs |= DMA_ATTR_CC_SHARED;
->> 		else
->> 			*attrs &= ~DMA_ATTR_CC_SHARED;
->> 	} else {
->> 		/*
->> 		 * Host memory encryption where device requires an
->> 		 * unencrypted dma_addr_t due to dma mask limit
->>     		 */
->> 		if (force_dma_unencrypted(dev))
->> 			*attrs |= DMA_ATTR_CC_SHARED;
->> 		else
->> 			*attrs &= ~DMA_ATTR_CC_SHARED;
->> 	}
->
-> If we do this I would like to split the force_dma_.. functions into
-> guest and host, ie force_dma_cc_shared() and force_host_decrypted()
->
-> To make it clear there are two very different things here.
->
+I put together a local test branch based on Andrew's RISC-V IOMMU
+irqbypass series [1] and your MRIF RFC series [2], then ran VFIO device
+assignment tests on hardware on top of that combined tree.
 
-I have now folded the below change into
+One test case that exposed a problem was a VFIO guest started with QEMU's
+AIA emulation mode, e.g. `riscv-aia=emul`.  The guest could hang because
+a normal MSI injection was classified as a MRIF notice, so KVM skipped
+the software IMSIC EIP update and the interrupt was never made pending.
 
-modified   kernel/dma/swiotlb.c
-@@ -1514,9 +1514,23 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
- 		pr_warn_once("Memory encryption is active and system is using DMA bounce buffers\n");
- 
--	/* swiotlb pool is incorrect for this device */
--	if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
--		return (phys_addr_t)DMA_MAPPING_ERROR;
-+	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-+
-+		/* swiotlb pool is incorrect for this device */
-+		if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-+			return (phys_addr_t)DMA_MAPPING_ERROR;
-+
-+	} else if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
-+		/*
-+		 * On hosts with memory encryption, SWIOTLB-backed memory is
-+		 * unencrypted. DMA addresses returned for bounce buffers must
-+		 * therefore be marked unencrypted, even for devices that can
-+		 * address encrypted memory. This also preserves swiotlb=force
-+		 * behavior for those devices.
-+		 */
-+		if (unlikely(!mem->cc_shared))
-+			return (phys_addr_t)DMA_MAPPING_ERROR;
-+	}
- 
-[PATCH] dma: swiotlb: track pool encryption state and honor DMA_ATTR_CC_SHARED
+The issue is that the current code identifies a MRIF notice by comparing
+the injected guest interrupt ID with cached host MSI data:
 
-This is the only code path where we need to special-case host memory
-encryption. For this reason, I have avoided renaming
-io_tlb_mem::cc_shared to io_tlb_mem::unencrypted. I can send a v7 with
-the above and we can review the changes based on that?
+    msg->data == iid
 
--aneesh
+That is a payload value comparison, not a source/provenance check.  A
+normal MSI injection can carry the same interrupt ID value as a cached
+host MSI message.  If the vCPU is currently using the software IMSIC file
+and this collision happens, KVM can misclassify the normal MSI as a MRIF
+notice, skip the software IMSIC EIP update, and leave the guest waiting
+for an interrupt that was never made pending.
+
+This series identifies MRIF notices by irqfd route provenance instead.
+irqfd_wakeup() already injects from a seqcount-protected copy of
+irqfd->irq_entry, so patch 2 keeps the architecture's MRIF notice metadata
+in that route snapshot.  Userspace MSI injection and normal guest MSI
+injection do not carry irqfd MRIF provenance and therefore follow the
+normal software IMSIC path.
+
+The generic KVM change is needed because the decision must be made from
+the same copied route that irqfd_wakeup() injects from; keeping the
+provenance in RISC-V side state would not be tied to that route snapshot.
+
+Feel free to fold any of these patches into previous commits if you think
+that is a better shape for the next version. I also have a few other local
+adaptation and improvement patches on top, but kept them out of this series
+to focus on the MRIF notice issue. Please let me know if you already have a
+plan for the next revision, I am happy to support your next version in
+whichever form is useful.
+
+Zhanpeng Zhang (3):
+  iommu/riscv: Complete MRIF MSI PTE setup
+  KVM: Move irqfd arch data into route snapshots
+  RISC-V: KVM: Identify MRIF notices from irqfd snapshots
+
+These patches are based on a combined tree, not a plain upstream tree.
+The combined tree is made up of the following pieces:
+In your series, patch 4/6 is already covered by the irqbypass series [1].
+I ported patches 1/6, 2/6, 3/6, the relevant MRIF MSI PTE part of 5/6,
+and the notice handler part of 6/6, with a few integration changes.
+
+Fangyu Yu's MRIF RFC series [2] (selected patches):
+  [1/6] RISC-V: Add more elements to irqbypass vcpu_info
+  [2/6] RISC-V: KVM: Transfer the physical address of MRIF to iommu-ir
+  [3/6] RISC-V: KVM: Add a xarray to record host irq msg
+  [5/6, adapted] iommu/riscv: Add MRIF mode support
+  [6/6, adapted] RISC-V: KVM: Check the MRIF in notice MSI irq handler
+
+Andrew Jones et al. [1] (irqbypass series, omitted):
+  [RFC PATCH v2 00/18] iommu/riscv: Add irqbypass support
+
+[1] https://lists.infradead.org/pipermail/kvm-riscv/2025-September/010148.html
+[2] https://lwn.net/ml/all/20250811061104.10326-1-fangyu.yu@linux.alibaba.com/
