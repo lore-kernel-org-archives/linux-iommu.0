@@ -1,145 +1,117 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A78494A19
-	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 13:36:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782913003; cv=none; b=Td0JUhgH3IlHc8jgeUsAplNcM+jMiQKvSguHsIYUAMMRV4GLwBVxyhX/38bQTT+pl5YGt9IHMNaiCzlHvqm+kvhY4t8e60VJAfYSPC5CtW1yu3nWWeeVSUnDDAstkeuccUtGfq3NjkViMP3HoqkTOgiWZM1RuC4QJe//hZxsSFY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782913003; c=relaxed/simple;
-	bh=Rvbe9sFMJGpQWup1UcjTJpn3Xq27G7UIqOzhJnx5NSE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Aw2WMamVmaFBBrjnwuwLIRugFMh4bCWNQryHPVqdV1/3GFiijFuIDilRz4pg2fScZbfeyafJuhEzllai/tXo5bz2W+D5MsTLD6Bu6IBuAJagUWj6CMwXkie2ugN2S7Hl0+tZKDyCWXgvOJIbotVqAMUhM68Wlthbqx6QkJrE2pg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZoAD4qXY; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F8E25A357
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 14:01:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782914493; cv=pass; b=cO6u1S1dO3Q5usegH3O8RCzHa0Wp8/jYadYhulTqeqt4sG8yG5tVXQXR7wUVWmWms3d+mpmtZSBDDTmryUSGKjbVhq1xH0fO0q6Bo2PYb1bffUtessDT7KocXtKLwhDMUzPbNd9qO30HVu4H36frS7D/FwN26eIRYIS/B4JyuZs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782914493; c=relaxed/simple;
+	bh=eVUZ4embWnOBiS9PgKFrner9THwK3cnX7ndZCKBqzJ8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cEaQPK0BAi0+8PPGLVMdbetBL2bjMVJV9mHRPS61mCZMr28mSkv7PMpdx0M8Yr/miDfuFPmw191T9NWgPo88NvdH5bPRodd66XNgmKxIwi+wiAa3F9Mwx1/PtFGL1k/zvPjx1wk9fA70JPvZrNyECW+tt3S1OY8zgcxFTIgXKQk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p3aZM6Lu; arc=pass smtp.client-ip=74.125.224.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZoAD4qXY"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2c81db32393so58595ad.0
-        for <iommu@lists.linux.dev>; Wed, 01 Jul 2026 06:36:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p3aZM6Lu"
+Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-664b2c00e12so996287d50.2
+        for <iommu@lists.linux.dev>; Wed, 01 Jul 2026 07:01:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782914491; cv=none;
+        d=google.com; s=arc-20260327;
+        b=QFM84dmL3ul+ZPca8u7TMgblxqSK6Fg8BbJmJ5/J28IhoIR1f0j/4/fFbhH1iVTG8x
+         Mfu9PDZeRzJj2o4Dffg6VekIc6CYboy8kAS4Uov/SQxhjb3qdLx+HkcN3cE9Y3iQuteW
+         7v3t0JblDoyrM0pi0RNCnBcSLqk9o/uiIgySTVzSglYIf5hCJ38JPsk/jUVuWgmLOtLo
+         izq02eCs8qG2iUCwhbAfrMXCUgoe/LBfABxKYTLYEgTHksD39IdCeLXrBWzLFuUbHxNG
+         ueqftLa2rzwoE/ALPiIatYWxOd2UHgFouujLigPXF4xmP1ssycmwdkDyt1em0ueVEJYt
+         XtEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=eVUZ4embWnOBiS9PgKFrner9THwK3cnX7ndZCKBqzJ8=;
+        fh=toa79SWVpcRkVqKw9fLr1ZEKVUcipHZvxoiAtP5YH9o=;
+        b=kfDlSwwxSOfaXGQTVxUPN66WQQP60YLoj6NEwBiGyqb6FviTfCQe1BQTl8rWygosuS
+         xT8ZfGMYL4uLj8r3Qwh4YktIxn8FfmOAvCst3g7HzaYiaLlJ1UrLkG5RrS0ld+FMEKJI
+         ByFvxHzMmk0sLxKgNnpTCHyrhvMCuv+Oynn+UXE089Atg4NYKTi7RPqhs6EDWc21+vyz
+         FGY/hAYBLODkdlr2uf+tflTauRKj4aNNI4NjeYgNnm40EQmOBmnpjEiwDnB21is0cF0P
+         UDDqwe+bq+AZzM5e/2KMoDapoHTKpJi6alkUsPRGtJITUopQfvdMKae73q/IqnGXJG66
+         ddJw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782912999; x=1783517799; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=qS13cSENFGcBB0bnz6k1QAxOjQr0kz2UqGp/5+eDOd8=;
-        b=ZoAD4qXYmH3FQ4Ju9t9U6ma8BQ//lxJ0GNyfGZBFVbwCD/p9u32GvjBuIvmyjaJuSo
-         ePheiXApnCb7lnSFggqGFg+7vik0kk/h/TWOXIRCgdygXT4+r8Asu1rOgljdq7Tp/X5z
-         m5jfY6ebiTlCLZZDOdcLk7nXjREK49ARtBVLmwNMMLqllvlyoULV8bE640Q+yVlzC0V6
-         VWDAbpRSuxjSCiHzf1hcyb5yO9Ldt/zDURE6XnDICKoc5TTrtPKBIQv3soIr6oai8xPM
-         w9k6gmnM12qUw5K8Lt1zfh2Z8cEo/k8b3b4eATRpmle5f9VcTJt5jLDNf5PMZ9cOrFBF
-         hPZw==
+        d=gmail.com; s=20251104; t=1782914491; x=1783519291; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eVUZ4embWnOBiS9PgKFrner9THwK3cnX7ndZCKBqzJ8=;
+        b=p3aZM6LuYjLJLtNISufQiH9KL6we981zudOU++K043CAoyx4BOPpf2nFaMIl1SZXHF
+         6mwlVKJojLZFNajpfjZkdHIWxlF8RJidwngZDLWfJPYxCGb9dvvV6I7HSJWyZdXn0uvO
+         dfoyMNcVQ17q1NrHspW9Fp7Qnj+Dwb4EYSbEEmI3HH/7r6CnVTp/6wHegI/VUMFGcLAs
+         sHEKY/P5MrhyJSo1SdPTtYwFe3hs3yRzsztDzTclBihz+1tEYeP7QeAge2gQOiRiSRl4
+         eBS6pj8+WzbIFLbM3Cem2ij0tymhogwo4W3pN4XPGFokwTuiwoAsMV8NUXIjs4c0VfD6
+         Cruw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782912999; x=1783517799;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=qS13cSENFGcBB0bnz6k1QAxOjQr0kz2UqGp/5+eDOd8=;
-        b=UFL6A3GzKxp2LGSXX8i34ptvpagZPLjaJWLt0MUQFotuDEg7dOrUvqIgufO82YDp3W
-         uu0LgiSuUdVBebN1rAhc9UfhnPDWfkW+uDFJZ5sV5XFlOQs3uXgT8uKCO1mYrgCZ7r7A
-         vS2lblZPLG6CEqKKGP3t8VRJBPNiPi1qfsgwh4HF74A06T7JQT3bJBQgfqzFjk0i3P9a
-         f/stWXaLwAs1+/upDjWe/esvB35mgMzD+/seih5cTDgm2HrzSQa1YwOLyJaTyHJMuKvH
-         Du72N8ae0Ig3mgU8WsUHRN7XOW03VgKA05ORC3ytkivCxg5IbdrKKdG4DzrLRZ6LWn/9
-         +WlQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rr7UgugOfCXZykxgJ9jkbVFmq4t5Lu4ifCH/YA80msEZ2Qoq79I/pdqyCNW7Q7290sn0ZbsJg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxKOaAIe7W/766vrZPlaGW8+in0xflhozpteqItCDXjJW8e4Nmz
-	cLIRjauJOhEbucV9i3Hs+V+xHlHZ0iJ22gB6gsYlEcchZq3uinN/2Oiaa5d3i6dwoA==
-X-Gm-Gg: AfdE7cnyU6T9DMMUwOTaLzQNI3YElV1DGOZa8jTX6fwB/CnRoEKgyTbzBq+PM3Mpk+I
-	vHB2xkPJ4OtHat15907xYOjXwKv7IwRxgEYzMsrTBONKlSMUe/2W3Puki5SNe9IJgeKuwnSLEgA
-	18EEpPeNFHtzW/G7Y/6ekkzJtWx1ZOriJVEmBRJjmjRo3vJLYOyLB8yJ27b5EhvICdA56ezemyr
-	fB8PeBl6xYHCUrxGC4dUt4CtFK/xhZqzNiCPuHcofwie8eJUhVjza3gia+uT1aoDhfvkAkoL6NG
-	LjoT+N8yWIr/2NET4nrIlirb5kmPTrXaUJ29wcu1iFH9LVdmGUF2xctfz87H3SZzCQtJMMy+SMG
-	Xwwfjs7Uk4fE1x7J4lvtZpNgtF6bsxlXY8pnWYQ8cizxTXm3qgmmwC3sof7OTqVRT6uKQ1+jy7O
-	jgtLOKLZJpmq+qB7ZGrGsSXIIxIRDPgN/p/1z4k/bsjBTuN5U=
-X-Received: by 2002:a17:903:283:b0:2ca:1bbe:c3e0 with SMTP id d9443c01a7336-2ca8f1bb537mr296825ad.0.1782912998682;
-        Wed, 01 Jul 2026 06:36:38 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8479fffa65bsm4111750b3a.21.2026.07.01.06.36.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 06:36:36 -0700 (PDT)
-Date: Wed, 1 Jul 2026 13:36:29 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	kees@kernel.org, baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org, jamien@nvidia.com
-Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
- kernel
-Message-ID: <akUX3T3fIoN42sdM@google.com>
-References: <cover.1782799827.git.nicolinc@nvidia.com>
- <akPB6l-fuJUcg4a2@google.com>
- <akPX_N0P2EcI_jbV@google.com>
- <akPhuF9pAWaBXzpi@google.com>
- <20260630185942.GF7481@nvidia.com>
- <akUQj2pa1W-MekgF@google.com>
+        d=1e100.net; s=20251104; t=1782914491; x=1783519291;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=eVUZ4embWnOBiS9PgKFrner9THwK3cnX7ndZCKBqzJ8=;
+        b=rOpwVS6TiChe7UCajbsm6pUX2WYrF6uEoKnDPECKsJn9bHx421O6HQJveEgy3QNXWB
+         +14fJXckv9O1ICde7f5FvEedYvifYC4aLlg1WyMMBA66fojYpHspc6FjdRERkjPfUOcF
+         e8O6zrSJSqn9RoXAToTyBOOwu1Ydur0bFUrWtWbMGbZYUNXJuzEGetC77h/qW3HeEwMI
+         /97bSVPoDehKJCmYfdtRcVxh7U3Z1dEmFTJPja7RejcWzwud7MRhsgdVL5fRuzTcwW+f
+         YuwfdjuHvF1Wd89+xqzaPT9qsL/KYdyGa3Ukaci5E0qvb2NLM5lvUrWfzmhJGVMfxqRV
+         vDlg==
+X-Forwarded-Encrypted: i=1; AHgh+Rpv442krqya7beHFoDuTFVyxdFtdXBdxnJM4FnRloqbu9oEQOHC6wCAt3gfZK8XYgSUHnbYTA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy8AhNpvcXlLXhQhzaWB5XC49LtHI7qa753vSvUbSDtn7+knkPT
+	pzxxS45ED4t97SH40oRFUmDVvQ5xekAmWpyKYq7hvol2/QksY/N4fycuZ0x/2Q/lXnqTWUgfsTL
+	v2oxTX16uHan1HLg8Ju4dSWZncie7ois=
+X-Gm-Gg: AfdE7ckQ6c3L/ISiO7sX5c4zn7bRbZvchAdKcbZUuIMY0eBd15CxvKICRm/LwwJu+uI
+	Rre3QTdPtGdVts1CIH6WLJOoVdiSfEuww9BNgQwzsSoMji9tstpuQ5sFwmr7o8jYUwhemYeSsg8
+	3hi5ZSIO20TTpiGIJOImfkKayw5jC3ZCNygOGMu6HJGDg4fqQR1D7Qsq7D279v32CmU3QsTqD54
+	5Tx4MObRkIcHDu90zSEAhk64IhAKIOAv2Q+Sryh6emuOsikAlu+qsyFkPdOru/y4SwpG6ATKGhh
+	FOHB4A1lwiuk6qhe3GoPc/67nl+FQQ+IGuHy2vpNL4yaCSvtoL0C3W5vkBLI/A==
+X-Received: by 2002:a05:690e:b88:b0:664:ae03:5251 with SMTP id
+ 956f58d0204a3-66591634413mr801390d50.2.1782914491125; Wed, 01 Jul 2026
+ 07:01:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <akUQj2pa1W-MekgF@google.com>
+References: <20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com>
+ <20260630-apple-mtp-keyboard-final-v1-7-506d936a1707@gmail.com> <B22C8EFD-DEDE-49C1-AD8E-BAEB5C91B6A6@chaosmail.tech>
+In-Reply-To: <B22C8EFD-DEDE-49C1-AD8E-BAEB5C91B6A6@chaosmail.tech>
+From: Michael Reeves <michael.reeves077@gmail.com>
+Date: Thu, 2 Jul 2026 00:01:19 +1000
+X-Gm-Features: AVVi8CdUm7TRIKQUnleOwtMjaxBDCbjz3iJPuSJcM6iQODX-JToqKlxvunuUfag
+Message-ID: <CANpmGNuoS+AK6yOo-S8Z7M9LbOqZXUN8Sgv46L_y=OYnU_orXA@mail.gmail.com>
+Subject: Re: [PATCH 07/10] HID: apple: Add support for DockChannel HID keyboards
+To: Sasha Finkelstein <k@chaosmail.tech>
+Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hector Martin <marcan@marcan.st>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+	Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>, asahi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-input@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 01, 2026 at 01:05:19PM +0000, Mostafa Saleh wrote:
-> On Tue, Jun 30, 2026 at 03:59:42PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Jun 30, 2026 at 03:33:12PM +0000, Mostafa Saleh wrote:
-> > 
-> > > For example patch#1 verifies log2size and split and both are read
-> > > from HW registers. Same for the base address or other addresses as
-> > > the page tables, they  might be corrupted due to a buggy driver.
-> > > My point is that, it is really hard to assume that the previous state
-> > > of registers/STE/page-tables were valid or even consistent, when the
-> > > kernel crashed and did not transition the state gracefully.
-> > 
-> > Sure, and this mechanism is probably not very useful for debugging
-> > these kinds of errors in the SMMU driver. Oh well, that isn't a common
-> > source of kernel crashes :)
-> 
-> I hope not! Although memory corruption can happen due to many other
-> reasons :/
-> 
-> I am not trying to bikeshed, but I wondering if there is a more
-> reliable way rather than doing archaeology from a panicked kernel
-> SMMUv3 configuration, as I am worried that will be even harder to
-> debug if it goes wrong.
-> 
-> >  
-> > > Similarly for TLBs, the kernel might have panicked in the middle of an
-> > > unmap or free domain. (not to mention what that means for RPM where
-> > > a device reset with unknown TLBs)
-> > 
-> > TLB is fine. kdump works by carving out a chunk of memory for the
-> > future crash kernel. When the kernel boots it ignores all the memory
-> > used by the prior kernel. So DMA can keep running into the old kernels
-> > memory with no issue. It doesn't matter if the TLBs are inconsistent or
-> > not.
-> 
-> Ideally if a TLB is to be missed (because of the panic), it should not
-> point to kdump memory as it is carved-out. However, it is still a leap to
-> assume that the TLBs are in a good shape as I mentioned with RPM (or
-> even if the device resets transiently for some reason) it can end up
-> with garbage in its TLBs.
+On Tue, Jun 30, 2026 at 11:41=E2=80=AFPM Sasha Finkelstein <k@chaosmail.tec=
+h> wrote:
+[...]
+> It looks like this section is duplicated in the following commit (8).
+> Is that correct?
+>
+Yes, it is duplicated, thank you for the pick up. I moved the fixup to
+the transport layer driver (in the following commit 8), which works
+better, but must have forgotten to delete it here.
 
-Regarding RPM, I can say that even if we panicked while SMMU was off in
-the previous kernel, when we call device_reset() in the new kernel we
-still issue the TLBI_ALL with the reset.
+I will correct this in v2.
 
-However, I agree with the overall problem, i.e. IF an active device
-unmaps the DMA addr after the transaction in the previous kernel, 
-(with the SMMU powered ON) but the TLBI was missed due to a crash/panic,
-Any new DMA in the new kernel may alias onto a memory in the previous 
-(crashed) kernel, not the kdump kernel.
-
-That way, I agree that continuing DMA could be problematic as we may
-corrupt the very memory we'd wanna analyze for a crash.
-
-Thanks,
-Praan
-
+Thank you again!
