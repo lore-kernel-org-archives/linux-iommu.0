@@ -1,168 +1,60 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-20.ptr.blmpb.com (va-2-20.ptr.blmpb.com [209.127.231.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F7294A2E16;
-	Wed,  1 Jul 2026 16:09:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646C437D133
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 17:04:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782922154; cv=none; b=Rz3IjR2OkcakXG+hBPLWBNmu/51UDdQZKE4FtqPhjQRhIaw6WItIzb7+/tnEpXmsXBzdCx/ZirHxxWtMyyuSCnhgA5gjI6GSaAgEwmXb7n2+P3CNw0z7iDgm5gS3svMlQifYZcH5kQiQeSk0ATFzYzl9E7AtXEyVoj3R7rW9df8=
+	t=1782925451; cv=none; b=Dy9pu14p9UybRWgyfDVrfBeH5kXgafn8buU7r3hTN7ybKn+95KBX6+vlLXnrleU4uM8vvljG3s/LLhhaDfKkIXS10KA1ZkDMJiMQrUiu6OcxQUWyX4lqXeY6M/rYNr257MyTkGR+jk+9cJj67AsmyLtHRudU8Vp2F2Q43B0E62A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782922154; c=relaxed/simple;
-	bh=/PegpBh702nD/rEthDcQMo3aYTkbs90ol1VkbGRzl04=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sBw43N1KPdX+vXalsB+nqGpKJqCp/ad6HAqXbE+pE6C9NBlbHahD4pxUf/agWE4le0+NNhTTwXcLWTaGcx4IW75VeVZ/WVU8NO4ONYNYeC+drZcfXa1fL68FfVMxbLs/Noysm3ssMpulyln6Q0yfZog8A6NB3veXuV0D4gJQ1Dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MRqxn+xA; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782925451; c=relaxed/simple;
+	bh=Daj0dbkaos4Wz91jBB5kK1s7GaOi0AqoCpMkmzvBtGU=;
+	h=To:Subject:Mime-Version:Message-Id:From:Date:In-Reply-To:
+	 Content-Type:Cc:References; b=ScY02OIEga7SudRPJUwTbEYyHbsBncxMVGWodwbsv8T45ng5y3Mm//NinkbQs4fYbMCXUDAIUrTxUZ4fSjrFjBGMIHPH80WKJZhx3xIPGjHtW8Qv32WLMwJASUbNFdnHE7lAz6wdGEJdud8tGy/FA+ez49Z873JLje+5Z7kSkfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=liuxiaozhen.dev; spf=pass smtp.mailfrom=liuxiaozhen.dev; dkim=pass (2048-bit key) header.d=liuxiaozhen.dev header.i=@liuxiaozhen.dev header.b=HbSAhLzY; arc=none smtp.client-ip=209.127.231.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=liuxiaozhen.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=liuxiaozhen.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MRqxn+xA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 135A41F00A3E;
-	Wed,  1 Jul 2026 16:09:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782922152;
-	bh=NZ1ua092sFPJbERnBLwgyQPXHI/AIXZthh7+PsUJfz0=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=MRqxn+xAkXOJJLLhdGBoaVL0dEVa/CDsnQMn9qp9ZF1Oujk8XW+LUtpt68psqUmu4
-	 oZWoT7wSka6UJCE6aAuTR36fM9bmBCjZECh3RENSfvxEpKTaYpfZ66aJp7RGiQh7pS
-	 o6b8e7u0SpgKxF6jINcLov7ZVqNcrDrycMit6hs33UvOKY2ILCzwpQhm74Fw5YGNNf
-	 VUwKeQeL2qtN7xY11U8I3dePTm6oxTceB5XCBD6bLgiKYHyvBCo0hVdGXzyYVFLKyH
-	 f8voI1pinD/fjU4aEO5A6KaxA9PeQKuCDylB75Nn0J0dmTxTRql8V2lPTv+7B9ACEV
-	 cojxbCS4VzmrA==
-From: Thierry Reding <thierry.reding@kernel.org>
-Date: Wed, 01 Jul 2026 18:08:22 +0200
-Subject: [PATCH v3 11/11] arm64: tegra: Add VPR placeholder node on
- Tegra264
+	dkim=pass (2048-bit key) header.d=liuxiaozhen.dev header.i=@liuxiaozhen.dev header.b="HbSAhLzY"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2602171341; d=liuxiaozhen.dev; t=1782925438;
+  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
+ reply-to:content-type:mime-version:in-reply-to:message-id;
+ bh=7BVMB9YIQkUZy14lWL5C/6fmBKrZtOxqjkLTfJ35tSQ=;
+ b=HbSAhLzYOXjgn+MAXVipQzlU1SbhM1l6zmOkrKViuvmU9Dkkj6/DowDDO6UP49htOX/BKi
+ iJmw4uxgeFlaWhNQQo5i/PMymf7DqUHT3I750OEgF5lUEat1Bq3PTC6F0BVxxIeVY5qIR8
+ tNL5KRysFuKmGl+Myk4OzoIRqyYeFWB0zc/XbKDPr+xM5sxr6u5dJ88gp9ZBTgGoURnm/E
+ LwTljnVm5bic/jvqpl5uYZyiaxZ6gcOl1hxFhwDn5wCZBBCkrqe6O31/lPANeLZEh48EyR
+ vlWhCQKIA6Unsy+PRheDjnpiBz8b3FDjktFUSNPdwNbuI+WIEHUH6dXc9L62lg==
+To: "Baolu Lu" <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Disable IOMMU on Lenovo ThinkPad P50s
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
+X-Original-From: Oliver Lin <oliver@liuxiaozhen.dev>
+Message-Id: <8d131b2c-978e-4aac-88aa-21b39237344a@liuxiaozhen.dev>
+User-Agent: Mozilla Thunderbird
+X-Lms-Return-Path: <lba+26a45487c+dc0982+lists.linux.dev+oliver@liuxiaozhen.dev>
+From: "Oliver Lin" <oliver@liuxiaozhen.dev>
+Date: Thu, 2 Jul 2026 01:03:45 +0800
+Content-Language: en-US
+In-Reply-To: <e4deced7-aabf-44d2-859c-d0b0add48d76@liuxiaozhen.dev>
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260701-tegra-vpr-v3-11-d80f7b871bb4@nvidia.com>
-References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
-In-Reply-To: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Thierry Reding <thierry.reding@kernel.org>, 
- Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
- Simona Vetter <simona@ffwll.ch>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Sowjanya Komatineni <skomatineni@nvidia.com>, 
- Luca Ceresoli <luca.ceresoli@bootlin.com>, 
- Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
- Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
- Russell King <linux@armlinux.org.uk>, 
- Alexander Gordeev <agordeev@linux.ibm.com>, 
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
- Christian Borntraeger <borntraeger@linux.ibm.com>, 
- Sven Schnelle <svens@linux.ibm.com>, 
- Andrew Morton <akpm@linux-foundation.org>, 
- David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
- "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
- Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
- Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
- "T.J. Mercier" <tjmercier@google.com>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Steven Rostedt <rostedt@goodmis.org>, 
- Masami Hiramatsu <mhiramat@kernel.org>, 
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, 
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, 
- linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
- linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2208; i=treding@nvidia.com;
- h=from:subject:message-id; bh=UDPMoi7c/r2YYc7KMYasNvRmmrFnb+/8WQEYBHJoT9o=;
- b=owEBbQKS/ZANAwAKAd0jrNd/PrOhAcsmYgBqRTuGsc2UqwsB18Ps0JNikBH538NWGoIW6yQyT
- jBWP077JiKJAjMEAAEKAB0WIQSI6sMIAUnM98CNyJ/dI6zXfz6zoQUCakU7hgAKCRDdI6zXfz6z
- oWYQD/4zNJzhF0ziH/cfp++YEWF2QzkCBtNhxlib5GS0I1XV2iIewgNdcCwyxmX5iJepLKIfpTF
- MI8uKdvbIH/rmjtfgZhLdieCQdJqxJjnUWpEPpHNDezJRFN5KAGFBa0JyDU8TwgpPWetpMpVjoi
- JtOdfDqoTulUptfcs2SnD464Cc7ULfNYO9pqD/zJ1inq5qNZeBpC/WV29fMPwNgyTk33TcYZgTh
- JQMlIV9KsjBq9UGt3g5as6AyxLkK4n870/MrIjOTAlIlG0s3dMb3TuRSRseoAZzMatNsLKoBfDv
- 3LqE29PjChBqoRhBF+74YxKk1M6vUz1Xk6hntBgcKMnATrZrXQTm9RCgqSx+E0sFxBbO5wkwl4A
- HQWbmwu0/nCUYjnSHWE7QqKWaoDnl7RvUNNkfxKA/JMlXG6qtNpGC0NsOfOBKauSfg/4MVcKd7v
- x3kBNBh+1yJMVNl5dD9HFy3hOs7EDlz5B8wD3o7taIbseFcbfLfuneSlHkB9Ar8bWAqnMQDdNZf
- qvh5iEwypLCoSYFLV96TaHcV80M8qqmGoU7nPSjhbaGLuqtx2VOyK4Lg68R3+G3zfF7XOHOzpGM
- nLfJbw6vtU4JZFhzyD3NXUzQ/3xSUuHcS7uGJf6i4/ph51+s+Zh4Ik7+mTAn6T48fzuMV/Vq6km
- 8q9G/imB3ixEDzQ==
-X-Developer-Key: i=treding@nvidia.com; a=openpgp;
- fpr=88EAC3080149CCF7C08DC89FDD23ACD77F3EB3A1
+Content-Type: text/plain; charset=UTF-8
+Cc: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, 
+	<dwmw2@infradead.org>
+Received: from [172.16.0.2] ([104.28.165.55]) by smtp.feishu.cn with ESMTPS; Thu, 02 Jul 2026 01:03:56 +0800
+References: <20260620192214.923500-1-oliver@liuxiaozhen.dev> <7ebdaa50-2048-486e-9da4-145cea4e3753@linux.intel.com> <e4deced7-aabf-44d2-859c-d0b0add48d76@liuxiaozhen.dev>
 
-From: Thierry Reding <treding@nvidia.com>
+Hi Baolu,
 
-This node contains two sets of properties, one for the case where the
-VPR is resizable (in which case the VPR region will be dynamically
-allocated at boot time) and another case where the VPR is fixed in size
-and initialized by early firmware.
+Thanks for the feedback.
 
-The firmware running on the device is responsible for updating the node
-with the real physical address for the fixed VPR case and remove the
-properties needed only for resizable VPR. Similarly, if the VPR is
-resizable, the firmware should remove the "reg" property since it is no
-longer needed.
+I will investigate the DMAR table further and provide acpidump + dmesg 
+comparison in the next revision.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
-Changes in v3:
-- comment out fixed VPR properties, assume resizable by default
-- rename node to "protected"
----
- arch/arm64/boot/dts/nvidia/tegra264.dtsi | 33 ++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/nvidia/tegra264.dtsi b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
-index 4c701abd25a8..85a18d99d643 100644
---- a/arch/arm64/boot/dts/nvidia/tegra264.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
-@@ -24,6 +24,39 @@ shmem_bpmp: shmem@86070000 {
- 			reg = <0x0 0x86070000 0x0 0x2000>;
- 			no-map;
- 		};
-+
-+		vpr: protected {
-+			compatible = "nvidia,tegra-video-protection-region";
-+			status = "disabled";
-+
-+			/*
-+			 * Two variants exist for this. For fixed VPR, the
-+			 * firmware is supposed to update the "reg" property
-+			 * with the fixed memory region configured as VPR.
-+			 *
-+			 * For resizable VPR we don't care about the exact
-+			 * address and instead want a reserved region to be
-+			 * allocated with a certain size and alignment at
-+			 * boot time.
-+			 *
-+			 * The below assumes resizable VPR by default. If the
-+			 * firmwares sets up fixed VPR, it is responsible for
-+			 * adding the missing "reg" property, removing any of
-+			 * the unused properties, as well as adding a unit-
-+			 * address matching the "reg" property.
-+			 */
-+
-+			/* fixed VPR */
-+			/*
-+			reg = <0x0 0x0 0x0 0x0>;
-+			no-map;
-+			*/
-+
-+			/* resizable VPR */
-+			size = <0x0 0x70000000>;
-+			alignment = <0x0 0x100000>;
-+			reusable;
-+		};
- 	};
- 
- 	/* SYSTEM MMIO */
-
--- 
-2.54.0
-
+Best regards,
+Oliver
