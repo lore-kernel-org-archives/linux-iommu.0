@@ -1,107 +1,144 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FBBF401491
-	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 09:58:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1420E3EEAF5;
+	Wed,  1 Jul 2026 10:14:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782899938; cv=none; b=ZSOr3kcRKzN8lZJLpQHpsLNSEYIIVwHBZuAZjaxWqOxSw1BAZcp0HavNKiVT3jylHhqJ4sw7/vhCcusDJ9VYOD1K+zAiaDTyaYrPgQQ9fCNNayq7WDcrq6xRFDsiHYv0Q2xfa5UxoQsz5873ar+vye8JMvjuSFiAXlJtVLpbTis=
+	t=1782900875; cv=none; b=lWl1DLnTNQqRcbgC5hSJfA5tEKi5sn3X/D3Vyj0jz1jbiRzDQmsjNDCzL8rM710X3+cpCn483FOR0QAzuK0UGs5M41ftZcyExUm8PrvwfQkrDW3emgtBd6QMnWCV7l2WU49LZeMbRswBCtJwev2C1b+EpTu1rLI8gf9hWQRCYNM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782899938; c=relaxed/simple;
-	bh=v7yW10N5rdbaNr0AbgfvIKAE851swmfImkTSQtp0FiY=;
+	s=arc-20240116; t=1782900875; c=relaxed/simple;
+	bh=MxQbnGsZoYEeUUWCNxHFMLWCbhf6XkMB4J/kyZCw7aQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DRY7YxwT705v6sEljihnQHpDyjAugnnRxAnzt0Xyof2oEy2Ns4AbAqFAMMgWqrPhbW5mmPQg5eeIAo/sej06ETAAFhoeW6EXgdyrq8EDSJk70eRupTROnRJftavducK2MswpYBWj6WCZI4CqCn55DV2tspfWB1Lf6nDpLkPuahU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OLP84vH0; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=E594ttcBJ422EpsAOYTK16HLKBEsyb6YNgoAaxvfIqNXHT2drm5Gd2NWzzpMrsDWifnRu5+hgx+fShRGB7SQU8IUetewhqCcXO0gTplNa5bFqb0utzvNU1SX6uuR3Y5k/WRt8mBnQ34uwLo8w2csU9WzXZFIAGnhi8IMgGKnobI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SsMSUbAA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OLP84vH0"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493bed621acso47215e9.0
-        for <iommu@lists.linux.dev>; Wed, 01 Jul 2026 02:58:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782899936; x=1783504736; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7aPPO+1CYD+YBwvwpYgtZJkmXkRW2VjIt/FwgJ0T6qg=;
-        b=OLP84vH0Kbrtve/0YR4uMxCFr67aKk2fwY/7W33ub4DPXIv3jnPffHK8efTKJjS3bu
-         C0ooeEM1DSrev5sGnmL34iJ6pVd+J4TJ08GQx2mhct5YDtWqADfHs8imR1gU1c6V8Adt
-         M1vcWgwtaMPemRhSwvnuljkSEisOygxts6eZOcxfp2yJcMhDnzMh+WO/ZTBEY3Jf2X/1
-         NQ0AaVcOv+ES6wdLpjD1RgukiMw6qaZzUPRuY9AAMTEfJ/srRVJqL4eifhJ50BqmJoPf
-         A8RRvkyykrDkm56SBsFh9UEV/3JHutMtghv0qd1/NrqZRjG30zitsLzSaXGL+nBUESfL
-         viZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782899936; x=1783504736;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=7aPPO+1CYD+YBwvwpYgtZJkmXkRW2VjIt/FwgJ0T6qg=;
-        b=d3Xm3jkq+QpqFgi/AVNo8aGmPB+KTgx7iSbKulfYp9i2MY+nBfyyPgxu1iQNY1Jv/n
-         CiXkyn9xMANGV+oCyhb70cS/UlSSWtr7yab9w5Q/xSf4EISf4pRYWtBPX4pKWluufhB0
-         DS4i/x1BeTcmf/3EHe7M7HujOufg/jVpeyheUwYZ/55I/kzWrwBD2+ptb304XfgMq52y
-         hmDLavrVkUKnWMvtLsFXGlXgoQm9KRj/38DTFHaMHA1gX5RIVvhXnVCIbS3UZ4bN+u4z
-         MVfaTUzfz3a/Lt0BMjDfZ3kYViAUVCqCmhfb0hSvTPnGwOwy7B3YMksbFAwWBnJ+gPCV
-         kuMw==
-X-Forwarded-Encrypted: i=1; AFNElJ8HQWkVMmgXyOTd8PmOMeTTntU4RS21G3XuelXM6mAmcu3GRDCprr7FKCG5Oyy7h5v6yF7qtg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzPDnSfzYLMf0BmeBT1/B6KCHS09WXHcARCH/Zg/7wi9fcswcD1
-	SzEP14BdqPedVm23GOjjmxdzoMTuNoogQkW+ERycF9An5SlCLVZzZ1BjP8EsUyWM1w==
-X-Gm-Gg: AfdE7ck96xqUQQt9WzfIffGXiuE9iy8BsG/nuZgFXs1cjbo5zz6yYtKjYc4dxsT5BDR
-	7Xq6JUPYm0wN86Tm+WGcg1YLCl6lbjm2PtXIhqGBfDNyuX/W4XSa8Eko65ZfqTUzqPNzp28veFH
-	Wbyj9luHfLvEa9cJ1IEwuBVXPgE+j44S7mTwxHHqT4/yoz+zFm1gtDDoaY5kg2SvkUzZ8yiONbK
-	KmknZ1RgAFqs3urIPNekOcfvjvyDsVcuYf4jJVELm2suWb2exxMt36zJw/ACJDw8bVZnSLudvmu
-	qXTFK4i1Zd30ITCFzpQd6sLkr3NAAGFv4Rggr9UgeEQdjmfeFR/iDpd/PhGm7cT4d/B1dQhlBkK
-	LRdozgNeV5ZTLbEZBkGlhTRIcLhW0Nz1M0vENe8rTBB2wr5ci29qrlSoDAR/9rC7PKMJGAZ829D
-	vwF/holBAk5dYRNhXocVp60Z8lD0C2aDqkfqa1FnDML8nw9IPJAjE=
-X-Received: by 2002:a05:600c:22d4:b0:493:b47f:a24 with SMTP id 5b1f17b1804b1-493c0bcab48mr503405e9.6.1782899935171;
-        Wed, 01 Jul 2026 02:58:55 -0700 (PDT)
-Received: from google.com (140.240.76.34.bc.googleusercontent.com. [34.76.240.140])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493bef17c82sm31881885e9.1.2026.07.01.02.58.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 02:58:54 -0700 (PDT)
-Date: Wed, 1 Jul 2026 09:58:50 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
-	praan@google.com, kees@kernel.org, baolu.lu@linux.intel.com,
-	kevin.tian@intel.com, miko.lenczewski@arm.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	jamien@nvidia.com
-Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
- kernel
-Message-ID: <akTk2uM0Kat4Jvrg@google.com>
-References: <cover.1782799827.git.nicolinc@nvidia.com>
- <akPB6l-fuJUcg4a2@google.com>
- <akQYpCdwGnpKTnjN@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SsMSUbAA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9816A1F000E9;
+	Wed,  1 Jul 2026 10:14:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782900873;
+	bh=MxQbnGsZoYEeUUWCNxHFMLWCbhf6XkMB4J/kyZCw7aQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=SsMSUbAAV6xvXQAFUx89uz5IFhN7+Zl1QTMWjM1sfBzD12H9w9GlLytFDAvlfqEtu
+	 zxM1nx/Rw+0etgyNI/MUT6BoXukwf38U1evQ9uAuYcVhPAZon9ACkm+QDkxCLUZGOV
+	 jfEfE5rqcIppLW/a+fFzg/lxdqwkSprEQ5wQzNhAM4QTPk/LKJXoFlzAwqp6zt4Pdo
+	 MZsZG+fVKjkTgAWqt2sNhKdd0V9vHe1rSxqL7N2gbyIy7k6rBJg99uje117D1fIMTs
+	 Ofv+7N0ZI9pM30elRxaNZLThhLB/mgA/4FFYjnJTIBx8Ssa/NQrq/aaGT1eQD2mIsM
+	 MrCyKM8zicfjg==
+Date: Wed, 1 Jul 2026 11:14:11 +0100
+From: Lorenzo Stoakes <ljs@kernel.org>
+To: Pedro Falcato <pfalcato@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 08/30] mm/rmap: rename vma_interval_tree_*() to
+ mapping_interval_tree_*()
+Message-ID: <akTketJmWBOSThSf@lucifer>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <f95462457025370efd047b9dfb039e76bbddf58b.1782735110.git.ljs@kernel.org>
+ <akPtjuele4I7iqTQ@pedro-suse.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <akQYpCdwGnpKTnjN@nvidia.com>
+In-Reply-To: <akPtjuele4I7iqTQ@pedro-suse.lan>
 
-On Tue, Jun 30, 2026 at 12:27:32PM -0700, Nicolin Chen wrote:
-> (I think Jason has answered most of the questions here.)
-> 
-> On Tue, Jun 30, 2026 at 01:17:30PM +0000, Mostafa Saleh wrote:
-> > For example, patch 4 disables the EVTQ to avoid events as there might
-> > be a lot, why are they not fatal also?
-> 
-> FWIW, the PATCH-4 doesn't disable the EVTQ: EVTQ is disabled in
-> kdump case prior to the series; PATCH-4 just makes sure it won't
-> get enabled transiently.
+On Tue, Jun 30, 2026 at 05:28:20PM +0100, Pedro Falcato wrote:
+> On Mon, Jun 29, 2026 at 01:23:19PM +0100, Lorenzo Stoakes wrote:
+> > The family of vma_interval_tree_() functions manipulate the
+> > address_space (which, of course, is generally referred to as 'mapping')
+> > reverse mapping, but are named the 'VMA' interval tree.
+> >
+> > VMAs may be mapped by an anon_vma, an address_space, or both. Therefore
+> > calling the mapping interval tree a 'VMA' interval tree is rather
+> > confusing.
+> >
+> > This is also inconsistent with the anon_vma_interval_tree_*() functions
+> > which explicitly reference the rmap object to which they pertain.
+> >
+> > Rename the vma_interval_tree_*() functions to mapping_interval_tree_*() to
+> > correct this.
+> >
+> > No functional change intended.
+> >
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+>
+> I'll have to nitpick this and say that I prefer [1] file_rmap_tree_, or
+> mapping_rmap_tree. Or possibly even better - mapping_ (so
+> mapping_for_each_vma, mapping_insert_vma, etc).
 
-Yes, I meant the patch disabling it even transiently because of DMA
-faults, which was confusing to me because I though they are fatal anyway,
-but I see Jason’s explanation now.
+Haha of course.
 
-Thanks,
-Mostafa
+I don't like mapping_ because that is such an overloaded term and it's confusing
+really.
 
-> 
-> Nicolin
+I'm iffy on mapping_rmap_tree as it feels like that implies 'this is the whole
+of how the rmap lookup works', and it also makes it less obvious what _kind_ of
+tree it is, though I suppose you could look up the types, but the crap macro
+generation makes that more of a pain.
+
+Also, for file 'rmap' you are potentially not actually doing an rmap at all in
+the classical sense of folio -> rmap object -> related VMAs, but rather are
+going from file/inode -> <page cache abstraction> -> related VMAs...
+
+But then again a quick spot check suggests it's usually from a folio... I guess
+only the rmap really needs to find the VMAs.
+
+Also if I renamed it to mapping_rmap_tree I'd have to respin and churn all the
+anon_vma code but I guess that's not impossible... :)
+
+I guess I'm a bit stubborn about doing much with the anon_vma stuff until I get
+rid of it.
+
+But I couldn't live with the stupidity of calling it vma_interval_tree_*()
+anymore here...
+
+OK I'm a bit torn, mapping_rmap_tree*() and anon_rmap_tree*() are the workable
+contenders from your suggestions.
+
+Let me think about that on respin... :)
+
+>
+> A bit of bikeshedding never hurts ;)
+>
+> [1] locally I was naming things file_rmap, but I never actually got to
+> churn these names away
+> --
+> Pedro
+
+Cheers, Lorenzo
