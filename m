@@ -1,63 +1,64 @@
-Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3C8C37755D
-	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 04:01:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53A173783BE
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 04:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782878470; cv=none; b=stt6lsEQGUoSr/6zPzAiq3uQPb9YZpGREfCRMoZz6VYvpF+vV0Cno09XViJ2aQH408hW0VbPc3VsO14eHK1f/snNokCkfbOh5lTcAX5arGXtSPJ1PFibKm2IL0yl7vv9FkOD+7YIrsr49ylyiRNxHGTKmYpFBvv2J3duoixFWE0=
+	t=1782878477; cv=none; b=hbBD3nvrfbRgrIBJsX4iG+iS+s7mQjmA185cBvF/+kUVSzwRLUjezDMmSL0K+SbLnu3u4ic/L8hNycmZi6biJY+9/bwVMFphejWSKtmyqbX5DPRLGQ159DqyHgLhADWM2ymEpyjv+veSHNxiJj6cfQ+vLFQILoJpGs3TPUui7aM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782878470; c=relaxed/simple;
-	bh=1IOWge6MtXvrty9jqSCer2unjjBTrRLH8qMTiiCM4o8=;
+	s=arc-20240116; t=1782878477; c=relaxed/simple;
+	bh=HR6LFB3M6+yB82VbVD7Uder2kK5niVbQaSw8XBBfRgw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eLbm0T5JLnYlPZ5wzCY9MHH/lz0l5JZQ+jateZG2ehE4/rViF8lOIHuO0kTKnzQzVdIHAfUZfzQAz/lzOF17Coc0ewgVykfVl/tf+XNrDYmGVCIzkw8GApGrnXo5UVhOAtzjMgWmMeGZBQ8XbJX4g/zXZfT5YZ7C9MCUF6fH4Zs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=fDglEzgl; arc=none smtp.client-ip=74.125.82.52
+	 MIME-Version; b=qS5b/9QnE/kG4G+DTOuiCndVf7E+S4DZ+ADCW7aqaCt9Wj15nhqyPhPjzrRe6Tu2zFBDX8QYuojI9kDZ2YI4/yWrT2nu/noXAcVi31u0ZIO2PJyQqMufkmbFx5CicazVvIG7R29Uq/NteXc3PLVeFcVK/6zXiwVtM8+MryECG2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=STYzdwAx; arc=none smtp.client-ip=74.125.82.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="fDglEzgl"
-Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-13b30f3d1e5so728323c88.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 21:01:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="STYzdwAx"
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-30c944aacbaso378702eec.1
+        for <iommu@lists.linux.dev>; Tue, 30 Jun 2026 21:01:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1782878464; x=1783483264; darn=lists.linux.dev;
+        d=bytedance.com; s=google; t=1782878472; x=1783483272; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1e3YXWFANhBpw4yjMWQhabBTa2QrRN36l2rv62U94S4=;
-        b=fDglEzgl04+lsJ7N7E1jMDeGes/nQ25pwkQJVzCm3cBnjyJ4AEOn2hMm/2kA9qDtJ5
-         FqKmCXvrlhc+k4ocYQlT7hdlNcY4icji1f+3BJu2UxhVS5cPOLl+h6nV1b4WwK/5GCQf
-         bC4vJ+emnh5LsTh3rzppIg3ZDAcF+YkwgkwTrVVMWabDgzNWl8MTl7/b0uoKfDzGEiIM
-         BI6PVU7w4wNha+bGmul/fe4hNd2ixzPyxv+yUZ9eRyO23MAiXS9nWPCeKbPRC5zYeIBz
-         XhrN8JC+eh0MCMAxXBbZ6RXUsws1yHxdl3yAOCdbuwXkqAwDY3c3Bk7hIGKSdTpDzHv7
-         QqHg==
+        bh=HWN7NBari0i1/8aoHDWNlUmTk2Z27L997IJ1yNwTiBc=;
+        b=STYzdwAxbJNK0T+HY57M0tne6roSOPn6QDcVKRLXRfLfo1mNUhRmFO/Vde7cFdCTAO
+         4aZcLlF/qpgKPke9gmYmYKsWpY/KRCjMm2sqT1ZvcQGzhiW7FD1Cp9hxdrdOEAvRnwb8
+         ugJHUZyLWDyYwOZR1N/S/HXWMX44S8oOb6zX6BCmkDgVfj4jkJtJxC7rqknB0M1xnOPx
+         N6p0yEJMZJCcG7gD5ON03Lp/RXCpt23tfOiVACt9ZpJXT9XO89YYuIz8wSjxLzTko9Kp
+         B9HmhP+44pZZN+KLTuP12wg6zSX5LxjXIrxt4kmpKF0D8TDCmB5qm0XJgxBiM8Q4KxxH
+         ApvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782878464; x=1783483264;
+        d=1e100.net; s=20251104; t=1782878472; x=1783483272;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=1e3YXWFANhBpw4yjMWQhabBTa2QrRN36l2rv62U94S4=;
-        b=ivFrduxp9UbsqZ1PUg3ijRWR5zf/LtpQEtLn4xPxbhWv0adxQMhWQ6q81v6o8YnLtE
-         M9M6XtKarIHfEDQnApMcdvItGarrwHKFUPZxlOkJZ3mi+L3bR+g2CKjYUVH5gy/Z3tEr
-         XOf2pnWPS1kw4RwyitEEgYfuarnuQ/vx2i8Jd+BAyFvbFWWspG8gZlO32jzJShYJO1mx
-         R5/mWw/4H7w0QP97eN0s6zo19fyAzYCNX/GmpbJtouUd+EK29Dp1BTkyhVPO/+2xZn/J
-         xw10wLiib0Fz9USJZDl2aT0xN3HaBRnWSciLqdNnZzmeiGWI4C09dz2jE4fkplMxoFRK
-         fqYA==
-X-Forwarded-Encrypted: i=1; AHgh+RoLyR7rhKVwKAvzE/GnBjOb9eovjyJKQBOfhfYIfw5tzrSjPzyx+YqdlDHg0fsYrU8RvvFTxw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyTu/YqcqdA6mvohGzVSi0q+jw41irq5VA2MllYD13JoBkNqlDO
-	n2onlFBVAmPNO/iU6n2sEmCMwZZdvFSIXNcr+JUiLtY5gDVg/L/7PUUph0eV8jL8zhc=
-X-Gm-Gg: AfdE7cm5i3VgGk14OPdt1prsVsr4aOVdsz5nD8WCV/kvmMYwgTgzxKEKrtjTYpj38Hc
-	8b/MIRQ3MfbIfRUmvJid+f/Ei333dGUy7mnyToaaLy9jNl6pXBLhiS5aA2innVdU/yVUZNn5B4t
-	o9Qg4A8y1NWVhJlHzGtCvnIY+RqcTfUWciuODcYcGJwxpJfLVKkMIqxBpQFHH4CZGtqDfEHgU39
-	tirhyxYrJYaMjYeKXoddf2Wmfio0pmbslZAOz/y9kfNp0Kpy+fv3W0tEght/sB43XHQz5cedART
-	kQZdTGnJpSoZDhDtOJ+AYt6MvZnN4en0D77YIBVRI4xN0Atxi9fc7jWxu8IZPOrONorXm7R7o3L
-	c2VHHjxI0+/Nxgr5IS3uV2SROVGpwVp8yUZ6bOmAkUHAoaXmJzr8ykjFPNC2tcxfBh3I+VedQff
-	K5lK1d22EA01mRxT2IT8e5d00X8kwOvZ17TlHwTQGktmgyCui0p1CgMFKjBkch+tjT
-X-Received: by 2002:a05:7300:148f:b0:30c:ab96:7305 with SMTP id 5a478bee46e88-30efe97a06bmr77957eec.21.1782878463972;
-        Tue, 30 Jun 2026 21:01:03 -0700 (PDT)
+        bh=HWN7NBari0i1/8aoHDWNlUmTk2Z27L997IJ1yNwTiBc=;
+        b=QRamsvm40jqXfYIONiK8Y9OXQeDc9OUaSRiAxa9YCEPIrEpTSs5kcymmuWuCdbWH/c
+         kXH6GbH3iFuOigPJtReU8a8c4kXFVH0xFPhBA9PGMtSycBU8NxTsId9X6B/faqIGPCLu
+         huyksmyzfE3hGnXG8IWNfJIU7nbhOtb/NBcrTupiiaqEolb66jSgTOpSC6PFFuH8lJWj
+         LuZdKq0vz4GLVPqGlCkAoCGrWiM/vL70zNwJmO0JX8GzYBZVG4GjrnqPKaw9pZU1Fqym
+         c11RAFo2XPICSLzUgU4ZYPkDpiuz+9idQM18mUg4apap3wCItMqprcvlCww0X1JZxh7j
+         Kftw==
+X-Forwarded-Encrypted: i=1; AHgh+RpKOH550nAPzIaes6Dageq0sHmnUAvxFZHx9hFSHx9AUIQbtDQ6wuFE1rr7lUJWUsC4rRiIUg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy2vyv0Kchig8DuKthvcnjeY87ae6EYgGvY1116fwKL6VwoZIyW
+	uxWsahf+n1BwEhpWP4BPDATs3GCi7ZTINn++zexH8+Jq2cPDA8B8AcOwTCcbqAltt6I=
+X-Gm-Gg: AfdE7cn70IClM7XT/DvY7qkwJqzk1WJjqQT1VzaGApv0sF4yoeRBsjBsUs0ZXlu9+24
+	sNhg7IyVAuwpWfQka/PLc/KRgPZdcfEGs951VaWv95uOx1XvEL6mrUmNqjR6JbAD0NRC3pzOwBZ
+	c3iyGa0xXvKQj1L9KdAayqc8hsnJcI4QVYFgubMn4t3LWGZ2yrHgJKtbaIxlAX/G9KG0Gcku+m0
+	dqJUDO/t810d6PaCfFBYtemYUSaXGzD/rcjg/ESfv8uwphfIsITrgjIz/gsLcxzWDCABARQkCWQ
+	bZrGvdyZzI6gl2Sen6zjj52kpg0LZz15sP7eOm5beQzjtnpD8iiyZwTxu2AsvKaM+MXO6+yFlBh
+	7dWbDQDWM0IRuTV3oAUrRj4cC6DZJxZbmMjnZ6Ue1lC0hKyaHUsmuip8ndemoAaFM8ZxbpcN2XX
+	pjpI3/6/Y2ZUG+AHpcoK8r3I/EGKemfT6LWD9jfm75opLji4Z+U+NbLCzk+Y6l+Xmmsq0xFv8FZ
+	pM=
+X-Received: by 2002:a05:7301:2a04:b0:30c:52c5:6e3f with SMTP id 5a478bee46e88-30eff0b4e80mr8435eec.18.1782878471619;
+        Tue, 30 Jun 2026 21:01:11 -0700 (PDT)
 Received: from FJ7FR2JRQ3.bytedance.net ([63.216.146.178])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee32519aesm14024287eec.27.2026.06.30.21.00.56
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee32519aesm14024287eec.27.2026.06.30.21.01.04
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 30 Jun 2026 21:01:03 -0700 (PDT)
+        Tue, 30 Jun 2026 21:01:11 -0700 (PDT)
 From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 To: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 Cc: Andrew Jones <ajones@ventanamicro.com>,
@@ -80,9 +81,9 @@ Cc: Andrew Jones <ajones@ventanamicro.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-Subject: [RFC PATCH 1/3] iommu/riscv: Complete MRIF MSI PTE setup
-Date: Wed,  1 Jul 2026 12:00:14 +0800
-Message-ID: <20260701040017.42707-2-zhangzhanpeng.jasper@bytedance.com>
+Subject: [RFC PATCH 2/3] KVM: Move irqfd arch data into route snapshots
+Date: Wed,  1 Jul 2026 12:00:15 +0800
+Message-ID: <20260701040017.42707-3-zhangzhanpeng.jasper@bytedance.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260701040017.42707-1-zhangzhanpeng.jasper@bytedance.com>
 References: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
@@ -95,192 +96,115 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The MRIF path can retarget an existing MSI table entry, but it does
-not fully handle installing a new MRIF MSI table entry.  It also encodes
-the MRIF target with the normal PPN helper even though a RISC-V IOMMU MSI
-PTE uses MRIF_ADDR[53:7] in MRIF mode.
+irqfd wakeup takes a seqcount-protected copy of irqfd->irq_entry before
+injecting an interrupt.  Architectures that need to classify an injection
+by its irqfd producer need any derived arch state to be part of that same
+snapshot.
 
-Add a dedicated MRIF PTE helper and use it for both the new-table and
-retarget paths.  This keeps the normal MSI PTE encoding unchanged while
-programming the MRIF address and information fields when vCPU affinity
-requests MRIF delivery.
+The irqfd object had per-irqfd arch side state, but that state describes
+the current producer, not the specific route snapshot used for an
+in-flight injection.  Keeping the metadata there can race with route
+updates and teardown: the inatomic injection path may observe a new route
+with old arch metadata, or old arch metadata after the route has already
+been invalidated.
 
-Publish MRIF entries so the notice information is visible before the
-valid PTE word is installed.  When rewriting a live entry, clear the PTE
-word first and order the mrif_info update before publishing the
-replacement PTE, so a racing device MSI does not observe a valid MRIF PTE
-with stale notice data.
+Add optional arch-owned irqfd metadata to struct
+kvm_kernel_irq_routing_entry and initialize it whenever KVM refreshes or
+clears an irqfd route.  Remove the old per-irqfd arch side-state fields
+so the route snapshot is the only place carrying this producer
+provenance.  Userspace MSI injection uses a zero-initialized temporary
+route, so it is never reported as irqfd-originated.
+
+This provides the sequencing needed by RISC-V AIA to distinguish MRIF
+notice MSI delivery from normal MSI injection without consulting mutable
+irqfd state outside irq_entry_sc.
 
 Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 ---
- drivers/iommu/riscv/iommu-ir.c | 96 ++++++++++++++++++++++++++--------
- 1 file changed, 75 insertions(+), 21 deletions(-)
+ include/linux/kvm_host.h  | 7 +++++++
+ include/linux/kvm_irqfd.h | 4 ----
+ virt/kvm/eventfd.c        | 5 +++++
+ virt/kvm/irqchip.c        | 4 +++-
+ 4 files changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/riscv/iommu-ir.c b/drivers/iommu/riscv/iommu-ir.c
-index ccbb7aa74a25..82fbb44d6df0 100644
---- a/drivers/iommu/riscv/iommu-ir.c
-+++ b/drivers/iommu/riscv/iommu-ir.c
-@@ -119,10 +119,11 @@ static void riscv_iommu_ir_set_pte(struct riscv_iommu_msipte *pte, u64 addr)
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 5bd76cf394fa..254f8fd132cc 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -685,6 +685,13 @@ struct kvm_kernel_irq_routing_entry {
+ 		struct kvm_hv_sint hv_sint;
+ 		struct kvm_xen_evtchn xen_evtchn;
+ 	};
++	/*
++	 * Optional arch-owned irqfd metadata.  It is updated under
++	 * irq_entry_sc together with the route so irqfd_wakeup() observes a
++	 * single consistent snapshot.
++	 */
++	struct kvm_vcpu *irqfd_arch_vcpu;
++	void *irqfd_arch_data;
+ 	struct hlist_node link;
+ };
  
- static void riscv_iommu_ir_set_mrif_pte(struct riscv_iommu_msipte *pte, u64 addr, u64 mrif_info)
- {
-+	pte->mrif_info = mrif_info;
-+	dma_wmb();
- 	pte->pte = FIELD_PREP(RISCV_IOMMU_MSIPTE_M, 1) |
--		   riscv_iommu_phys_to_ppn(addr) |
-+		   riscv_iommu_phys_to_mrif(addr) |
- 		   FIELD_PREP(RISCV_IOMMU_MSIPTE_V, 1);
--	pte->mrif_info = mrif_info;
- }
+diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
+index ef8c134ded8a..44fd2a20b09e 100644
+--- a/include/linux/kvm_irqfd.h
++++ b/include/linux/kvm_irqfd.h
+@@ -58,10 +58,6 @@ struct kvm_kernel_irqfd {
+ 	struct work_struct shutdown;
+ 	struct irq_bypass_consumer consumer;
+ 	struct irq_bypass_producer *producer;
+-
+-	struct kvm_vcpu *irq_bypass_vcpu;
+-	struct list_head vcpu_list;
+-	void *irq_bypass_data;
+ };
  
- static void riscv_iommu_ir_clear_pte(struct riscv_iommu_msipte *pte)
-@@ -131,6 +132,17 @@ static void riscv_iommu_ir_clear_pte(struct riscv_iommu_msipte *pte)
- 	pte->mrif_info = 0;
- }
- 
-+static void riscv_iommu_ir_update_pte(struct riscv_iommu_msipte *pte,
-+				      const struct riscv_iommu_msipte *pteval)
-+{
-+	/* Rewrite live entries without exposing stale MRIF notice data. */
-+	pte->pte = 0;
-+	dma_wmb();
-+	pte->mrif_info = pteval->mrif_info;
-+	dma_wmb();
-+	pte->pte = pteval->pte;
-+}
-+
- static void riscv_iommu_ir_msitbl_inval(struct riscv_iommu_domain *domain)
- {
- 	struct riscv_iommu_bond *bond;
-@@ -337,14 +349,65 @@ static bool riscv_iommu_ir_vcpu_check_config(struct riscv_iommu_domain *domain,
- 	       domain->group_index_shift == vcpu_info->group_index_shift;
- }
- 
-+static int riscv_iommu_ir_get_mrif_info(struct irq_data *data,
-+					struct riscv_iommu_ir_vcpu_info *vcpu_info,
-+					u64 *mrif_info)
-+{
-+	struct device *dev;
-+	struct riscv_iommu_device *iommu;
-+	struct msi_desc *desc;
-+	struct irq_data *irqdata;
-+	struct irq_chip *chip;
-+
-+	*mrif_info = 0;
-+	if (!vcpu_info->mrif)
-+		return 0;
-+
-+	if (!vcpu_info->host_msg)
-+		return -EINVAL;
-+
-+	desc = irq_data_get_msi_desc(data);
-+	if (!desc)
-+		return -EINVAL;
-+
-+	dev = msi_desc_to_dev(desc);
-+	if (!dev)
-+		return -EINVAL;
-+
-+	iommu = dev_to_iommu(dev);
-+	if (!iommu)
-+		return -ENODEV;
-+
-+	if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_MSI_MRIF)) {
-+		irqdata = irq_get_irq_data(vcpu_info->host_irq);
-+		chip = irqdata ? irq_data_get_irq_chip(irqdata) : NULL;
-+		if (!chip || !chip->irq_write_msi_msg)
-+			return -EOPNOTSUPP;
-+
-+		chip->irq_write_msi_msg(irqdata, vcpu_info->host_msg);
-+		return -ENODEV;
-+	}
-+
-+	*mrif_info = riscv_iommu_data_to_nid(vcpu_info->host_msg->data) |
-+		     riscv_iommu_phys_to_nppn((u64)vcpu_info->host_msg->address_hi << 32 |
-+					      vcpu_info->host_msg->address_lo);
-+
-+	return 0;
-+}
-+
- static int riscv_iommu_ir_vcpu_new_config(struct riscv_iommu_domain *domain,
- 					  struct irq_data *data,
- 					  struct riscv_iommu_ir_vcpu_info *vcpu_info)
- {
- 	struct riscv_iommu_msipte *pte;
-+	u64 mrif_info;
- 	size_t idx;
- 	int ret;
- 
-+	ret = riscv_iommu_ir_get_mrif_info(data, vcpu_info, &mrif_info);
-+	if (ret)
-+		return ret;
-+
- 	if (domain->pgd_mode)
- 		riscv_iommu_ir_unmap_imsics(domain);
- 
-@@ -378,8 +441,10 @@ static int riscv_iommu_ir_vcpu_new_config(struct riscv_iommu_domain *domain,
- 	idx = riscv_iommu_ir_compute_msipte_idx(domain, vcpu_info->gpa);
- 	pte = &domain->msi_root[idx];
- 	riscv_iommu_ir_irq_set_msitbl_info(data, idx, domain->msitbl_config);
--	BUG_ON(vcpu_info->mrif);
--	riscv_iommu_ir_set_pte(pte, vcpu_info->hpa);
-+	if (vcpu_info->mrif)
-+		riscv_iommu_ir_set_mrif_pte(pte, vcpu_info->hpa, mrif_info);
-+	else
-+		riscv_iommu_ir_set_pte(pte, vcpu_info->hpa);
- 	riscv_iommu_ir_msitbl_inval(domain);
- 	refcount_set(&domain->msi_pte_counts[idx], 1);
- 
-@@ -393,15 +458,13 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg
- 	struct riscv_iommu_info *info = data->domain->host_data;
- 	struct riscv_iommu_domain *domain = info->domain;
- 	struct riscv_iommu_ir_vcpu_info *vcpu_info = arg;
--	struct device *dev = msi_desc_to_dev(irq_data_get_msi_desc(data));
--	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
- 	struct riscv_iommu_msipte pteval;
- 	struct riscv_iommu_msipte *pte;
- 	bool inc = false, dec = false;
- 	size_t old_idx, new_idx;
- 	u32 old_config;
- 	u64 mrif_info = 0;
--	bool mrif_support = (iommu->caps & RISCV_IOMMU_CAPABILITIES_MSI_MRIF);
-+	int ret;
- 
- 	if (!domain->msi_root)
- 		return -EOPNOTSUPP;
-@@ -422,18 +485,9 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg
- 	if (!riscv_iommu_ir_vcpu_check_config(domain, vcpu_info))
- 		return riscv_iommu_ir_vcpu_new_config(domain, data, vcpu_info);
- 
--	if (vcpu_info->mrif) {
--		if (!mrif_support) {
--			struct irq_data *irqdata = irq_get_irq_data(vcpu_info->host_irq);
--			irq_data_get_irq_chip(irqdata)->irq_write_msi_msg(irqdata,
--					vcpu_info->host_msg);
--			return -ENODEV;
--		}
--		mrif_info = riscv_iommu_data_to_nid(vcpu_info->host_msg->data) |
--				riscv_iommu_phys_to_nppn(
--					(u64)vcpu_info->host_msg->address_hi << 32 |
--					vcpu_info->host_msg->address_lo);
--	}
-+	ret = riscv_iommu_ir_get_mrif_info(data, vcpu_info, &mrif_info);
-+	if (ret)
-+		return ret;
- 
- 	new_idx = riscv_iommu_ir_compute_msipte_idx(domain, vcpu_info->gpa);
- 	riscv_iommu_ir_irq_set_msitbl_info(data, new_idx, domain->msitbl_config);
-@@ -444,8 +498,8 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg
+ #endif /* __LINUX_KVM_IRQFD_H */
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index a7794ffdb976..399ef2bdce5d 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -273,6 +273,9 @@ static void irqfd_update(struct kvm *kvm, struct kvm_kernel_irqfd *irqfd)
  	else
- 		riscv_iommu_ir_set_pte(&pteval, vcpu_info->hpa);
+ 		irqfd->irq_entry.type = 0;
  
--	if (pteval.pte != pte->pte) {
--		*pte = pteval;
-+	if (pteval.pte != pte->pte || pteval.mrif_info != pte->mrif_info) {
-+		riscv_iommu_ir_update_pte(pte, &pteval);
- 		riscv_iommu_ir_msitbl_inval(domain);
- 	}
++	irqfd->irq_entry.irqfd_arch_vcpu = NULL;
++	irqfd->irq_entry.irqfd_arch_data = NULL;
++
+ 	write_seqcount_end(&irqfd->irq_entry_sc);
+ }
  
+@@ -594,6 +597,8 @@ kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
+ 			 */
+ 			write_seqcount_begin(&irqfd->irq_entry_sc);
+ 			irqfd->irq_entry.type = 0;
++			irqfd->irq_entry.irqfd_arch_vcpu = NULL;
++			irqfd->irq_entry.irqfd_arch_data = NULL;
+ 			write_seqcount_end(&irqfd->irq_entry_sc);
+ 			irqfd_deactivate(irqfd);
+ 		}
+diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+index 6ccabfd32287..b163f7ed3c1e 100644
+--- a/virt/kvm/irqchip.c
++++ b/virt/kvm/irqchip.c
+@@ -47,7 +47,7 @@ int kvm_irq_map_chip_pin(struct kvm *kvm, unsigned irqchip, unsigned pin)
+ 
+ int kvm_send_userspace_msi(struct kvm *kvm, struct kvm_msi *msi)
+ {
+-	struct kvm_kernel_irq_routing_entry route;
++	struct kvm_kernel_irq_routing_entry route = {};
+ 
+ 	if (!kvm_arch_irqchip_in_kernel(kvm) || (msi->flags & ~KVM_MSI_VALID_DEVID))
+ 		return -EINVAL;
+@@ -145,6 +145,8 @@ static int setup_routing_entry(struct kvm *kvm,
+ 
+ 	e->gsi = gsi;
+ 	e->type = ue->type;
++	e->irqfd_arch_vcpu = NULL;
++	e->irqfd_arch_data = NULL;
+ 	r = kvm_set_routing_entry(kvm, e, ue);
+ 	if (r)
+ 		return r;
 -- 
 2.50.1 (Apple Git-155)
 
