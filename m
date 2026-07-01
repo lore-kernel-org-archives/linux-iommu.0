@@ -1,107 +1,129 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E8B34B19F
-	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 14:38:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08CB48097D;
+	Wed,  1 Jul 2026 15:06:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782916705; cv=none; b=KNHquexuUh2+JrNBFd1rP6DLxyaeUWV49pgJVvBpZMZeQGUJLCMQL6wloRcMXdSqc89iK5BW3LI/49Gr4Ed9fW6uSvLawTtkvgMru9N7dvmaYTTr3zI23rL0kjbMNDgM+5ufrrAbYZh2CWZa4exe/2JB1qKtDGM45UvpQ2HjZjk=
+	t=1782918389; cv=none; b=KGMvYsvFuaCNY2JMsDKTR1HeQGJBh08R/rwKUcnePmSdYzoy5vHbe6/UrBWKM3kLRkoFIgAuoB8eDSGln+o+tyd6DOpT+G19mMgGlcn5klRo35f927Hg4W5wYBwN1LRB9BbrUnfETkdsjc8O9LFTCGSnK07RfNrb8mDnY82xs/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782916705; c=relaxed/simple;
-	bh=ZkSSLMO5sTW2e2Ggwl6O1EpW5lgoafxV6kp3/SwIcoQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KZ8xBFlgqwHNQ6CG9+MxynC+R8A1Vk7QBD4/ZU3/WUkUVJZGdv1hw5gKUKZUdge16/MjSp9kWzl38WOZMTM5dUwClIPCqJg6wMf4y/ncMPKPfdnIErv0VT1VtEZAA/GzG60c+lYPI2zJ1kfIBUMhVgKy+XiIHpbrV0HzStKMIn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B6xyVSEr; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782918389; c=relaxed/simple;
+	bh=7iK4BGNHJy0tB94tmLVRjvi1Oe1FniGBRLtTBxRpX9I=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=oDl+hdKun8WIAGtLjBZjPYFBKLStZDEUmKv7juqlaNIGFjFCouDcqYQAUcErAM/+JdBpxnfOQXAj4fLHtWl8ghqIkFkMux1TNSeDn5/G8xzCexKSlNLFfKmhHc53EDjgtou6Cn2P2jFP6ybQt/X/+3WzTWZkBMWGsjOWL+4s2Hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=pcd0PeJh; arc=none smtp.client-ip=80.241.56.161
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B6xyVSEr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B9A51F000E9;
-	Wed,  1 Jul 2026 14:38:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782916703;
-	bh=FCJc8Y4JmEOreL4L+vTlFLlPE/nMLhzyI1DM8YdqDxY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=B6xyVSErGQCC8QTMJYXKkOjLc7Mv9Rv2B6Ifr7ClnfKg36JsUPDYDajR/pLRNaXuJ
-	 8DIyBokdUdMBU6UbRRrEdjbUWCytV2AxOQuI6NViO5B4xKkDxo7+9Qi0Iu4MCoqBH2
-	 Nkew2CpAno/k2fyqTTt57p8FX+zsY0EWkxmv6+Gz5+BZOkiCytNHyIWS9xPtXj2CO6
-	 pKKfgW0Fg4Yr+G9SlUm2vb5zyzayQ2C+Xb1OI4EjEKGu6z3hqR2aWEFDQZ7DopzOUW
-	 bGTNsAD8D6mgksC/d2TZbjZG97hJH+jsP67CDPe6n7TARhzTc/YcrL9t6o5K9WNTsN
-	 OL/pwav2TNtSg==
-Date: Wed, 1 Jul 2026 16:38:11 +0200
-From: Andi Shyti <andi.shyti@kernel.org>
-To: Krzysztof Karas <krzysztof.karas@intel.com>
-Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
-	iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	=?utf-8?Q?Micha=C5=82?= Grzelak <michal.grzelak@intel.com>, Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>, 
-	Sebastian Brzezinka <sebastian.brzezinka@intel.com>, Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-Subject: Re: [PATCH v2 1/3] drm/i915/gem: split shared memory allocation
- table logic
-Message-ID: <akUibf3NyThHnXco@zenone.zhora.eu>
-References: <20260701104437.236979-1-krzysztof.karas@intel.com>
- <20260701104437.236979-2-krzysztof.karas@intel.com>
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="pcd0PeJh"
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4gr3Hr4RPhz9ts8;
+	Wed,  1 Jul 2026 17:06:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1782918376;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7iK4BGNHJy0tB94tmLVRjvi1Oe1FniGBRLtTBxRpX9I=;
+	b=pcd0PeJh7Iv8r/KVTFH5oFdA/lvvSyvuvKi3if55cztI2n/XSqmRdnZKteH85HKKVV85yU
+	j9HVmz2EWbdR6s0CcET0z1vhIRn4hJ25bjWnCJwEuRpc0w/NW+iGM63mTUN/npapcFcSR/
+	fvTXXtkA/gTpkwn7ezESk2MSMTKfcqmvoICSsIiJierSEvXB9xwtVzbElgLSVNcJv+Ritx
+	B8K9i27AJIekT+XY6QmKpjCphMf9LuJwlimFmayP7Cy6geBGJUxhP+KSpU8c/IrGtSWTsI
+	iKUJjdFVYMmR+verObzbMA+hWZMieIpK2Ln1S3xxLh3nAIF0DvnMe971s5Fifw==
+Message-ID: <f6ce9878f3528dd026e6ca8ff56ac773a264e476.camel@mailbox.org>
+Subject: Re: [PATCH v2 02/19] driver core: platform: provide
+ platform_device_set_of_node()
+From: Manuel Ebner <manuelebner@mailbox.org>
+To: Bartosz Golaszewski <brgl@kernel.org>
+Cc: linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+ iommu@lists.linux.dev, 	linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
+	linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org, Bartosz
+ Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Lee Jones
+ <lee@kernel.org>, Thierry Reding	 <thierry.reding@avionic-design.de>,
+ Sebastian Hesselbarth	 <sebastian.hesselbarth@gmail.com>, Andrew Lunn
+ <andrew+netdev@lunn.ch>,  "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Srinivas Kandagatla <srini@kernel.org>, Greg
+ Kroah-Hartman	 <gregkh@linuxfoundation.org>, Vinod Koul <vkoul@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich
+ <dakr@kernel.org>, Rob Herring <robh@kernel.org>,  Saravana Kannan
+ <saravanak@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
+ Ellerman	 <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Andi Shyti
+ <andi.shyti@kernel.org>, Andy Shevchenko	
+ <andriy.shevchenko@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Doug Berger
+ <opendmb@gmail.com>,  Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list	
+ <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
+ Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team	 <kernel@pengutronix.de>, Fabio Estevam
+ <festevam@gmail.com>, Matthew Brost	 <matthew.brost@intel.com>, Thomas
+ =?ISO-8859-1?Q?Hellstr=F6m?=	 <thomas.hellstrom@linux.intel.com>, Rodrigo
+ Vivi <rodrigo.vivi@intel.com>,  David Airlie <airlied@gmail.com>, Simona
+ Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>,  Paul
+ Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, Philipp Zabel
+ <p.zabel@pengutronix.de>,  Maximilian Luz <luzmaximilian@gmail.com>, Hans
+ de Goede <hansg@kernel.org>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=	
+ <ilpo.jarvinen@linux.intel.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Date: Wed, 01 Jul 2026 17:05:49 +0200
+In-Reply-To: <CAMRc=MdQURjypSn+QjSDJfEiOMC8bbEZmZLgjpt=EquAM1Q1pw@mail.gmail.com>
+References: <20260629-pdev-fwnode-ref-v2-0-8abe2513f96e@oss.qualcomm.com>
+		 <20260629-pdev-fwnode-ref-v2-2-8abe2513f96e@oss.qualcomm.com>
+	 <263f58b418a27a2339fc2478f93234e0208b0ad9.camel@mailbox.org>
+	 <CAMRc=MdQURjypSn+QjSDJfEiOMC8bbEZmZLgjpt=EquAM1Q1pw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260701104437.236979-2-krzysztof.karas@intel.com>
+X-MBO-RS-META: 37tty84b1zxogwptawjudbroswqcnaqn
+X-MBO-RS-ID: 303d5cb0e0c41c6b372
 
-Hi Krzysztof,
+On Tue, 2026-06-30 at 09:22 -0400, Bartosz Golaszewski wrote:
+> On Tue, 30 Jun 2026 13:37:54 +0200, Manuel Ebner <manuelebner@mailbox.org=
+> said:
+> > On Mon, 2026-06-29 at 11:12 +0200, Bartosz Golaszewski wrote:
+> > > [...]
+> > >=20
+> > > +/**
+> > > + * platform_device_set_of_node - assign an OF node to device
+> > > + * @pdev: platform device to add the node for
+> > > + * @np: new device node
+> > > + *
+> > > + * Assign an OF node to this platform device. Internally keep track =
+of the
+> > > + * reference count. Devices created with platform_device_alloc() mus=
+t use this
+> > > + * function instead of assigning the node manually.
+> >=20
+> > Doesn't it make sense to add a remark to the kernel doc of platform_dev=
+ice_alloc()?
+> >=20
+> > Thanks
+> > =C2=A0Manuel
+> >=20
+> > > =C2=A0[...]
+> >=20
+>=20
+> Sure, will do in the next iteration.
 
-On Wed, Jul 01, 2026 at 10:44:35AM +0000, Krzysztof Karas wrote:
-> shmem_sg_alloc_table is a complex and hard to read function.
-> Split its logic into smaller pieces to improve readability and
-> reduce indentation. Change the main "for" loop into "while" to
-> get rid of obscure iterator "i" and be more explicit in
-> traversing scatterlist.
+then you can add
+Reviewed-by: Manuel Ebner <manuelebner@mailbox.org>
 
-any chance we can split this cleanup into smaller pieces?
-
-> Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
-
-...
-
-> +static struct folio *shmem_shrink_get_folio(struct address_space *mapping,
-> +					    unsigned long folio_index,
-> +					    gfp_t gfp, unsigned int pages_left,
-> +					    struct drm_i915_private *i915)
-> +{
-> +#define MAX_READS 2
-
-This MAX_READS here is very ugly! Just use 2 and explain it in a
-comment. In the 'if' below you can check out of "if (... || i)"
-and still explain it in a comment.
-
-> +	struct folio *folio;
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < MAX_READS; i++) {
-> +		cond_resched();
-> +		folio = shmem_read_folio_gfp(mapping, folio_index, gfp);
-> +		if (!IS_ERR(folio) || i == MAX_READS - 1)
-> +			return folio;
-> +
-> +		i915_gem_shrink(NULL, i915, 2 * pages_left, NULL,
-
-/pages_left/page_count/
-
-> +				I915_SHRINK_BOUND | I915_SHRINK_UNBOUND);
-> +
-
-...
-
-> +	}
-> +
-> +	/* Should never happen */
-> +	WARN_ON_ONCE(1);
-
-no need.
-
-Thanks,
-Andi
-
-> +	return ERR_PTR(-EINVAL);
-> +}
+ Manuel
+>=20
+> Bart
