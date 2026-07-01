@@ -1,129 +1,72 @@
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08CB48097D;
-	Wed,  1 Jul 2026 15:06:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19D8F245008
+	for <iommu@lists.linux.dev>; Wed,  1 Jul 2026 15:36:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782918389; cv=none; b=KGMvYsvFuaCNY2JMsDKTR1HeQGJBh08R/rwKUcnePmSdYzoy5vHbe6/UrBWKM3kLRkoFIgAuoB8eDSGln+o+tyd6DOpT+G19mMgGlcn5klRo35f927Hg4W5wYBwN1LRB9BbrUnfETkdsjc8O9LFTCGSnK07RfNrb8mDnY82xs/Q=
+	t=1782920220; cv=none; b=RcOxLm06NuViZPybpRQPOufrtXVx8XxoDkyKNKN4DSGuuUCEoCi/HHC+55y6ZZhzRpmoLNuAabPhJnJ8pA+o+7IMiUU+h8BNmtYnhSwaxqSl31YHqdzF6uGctEJ/rRMqYjwiFAZ9BXHwHbLwjw4uTDPlTMIxFpJLrP8eUVXboqE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782918389; c=relaxed/simple;
-	bh=7iK4BGNHJy0tB94tmLVRjvi1Oe1FniGBRLtTBxRpX9I=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=oDl+hdKun8WIAGtLjBZjPYFBKLStZDEUmKv7juqlaNIGFjFCouDcqYQAUcErAM/+JdBpxnfOQXAj4fLHtWl8ghqIkFkMux1TNSeDn5/G8xzCexKSlNLFfKmhHc53EDjgtou6Cn2P2jFP6ybQt/X/+3WzTWZkBMWGsjOWL+4s2Hs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=pcd0PeJh; arc=none smtp.client-ip=80.241.56.161
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1782920220; c=relaxed/simple;
+	bh=qyAuk7vvNndbZzr9c+dFli6Plk1Deun09VLbe1qJVTI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mkCvl4tkkb6ECc0iA6uGZr/RankgJ6vISgI1cwZTc5p6li8uwdaQwb0WC86VJSMy7BXV28f6vAI/0VLcwYidMPftPMSO7Fy71uxeI+wFaQSTttFZ0VKSGcRZdVzosaGdynHtpEpFQzJ+zBY524y7LU0yt+7E1W1empNRXxREhQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ktR4M2kx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="pcd0PeJh"
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4gr3Hr4RPhz9ts8;
-	Wed,  1 Jul 2026 17:06:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1782918376;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=7iK4BGNHJy0tB94tmLVRjvi1Oe1FniGBRLtTBxRpX9I=;
-	b=pcd0PeJh7Iv8r/KVTFH5oFdA/lvvSyvuvKi3if55cztI2n/XSqmRdnZKteH85HKKVV85yU
-	j9HVmz2EWbdR6s0CcET0z1vhIRn4hJ25bjWnCJwEuRpc0w/NW+iGM63mTUN/npapcFcSR/
-	fvTXXtkA/gTpkwn7ezESk2MSMTKfcqmvoICSsIiJierSEvXB9xwtVzbElgLSVNcJv+Ritx
-	B8K9i27AJIekT+XY6QmKpjCphMf9LuJwlimFmayP7Cy6geBGJUxhP+KSpU8c/IrGtSWTsI
-	iKUJjdFVYMmR+verObzbMA+hWZMieIpK2Ln1S3xxLh3nAIF0DvnMe971s5Fifw==
-Message-ID: <f6ce9878f3528dd026e6ca8ff56ac773a264e476.camel@mailbox.org>
-Subject: Re: [PATCH v2 02/19] driver core: platform: provide
- platform_device_set_of_node()
-From: Manuel Ebner <manuelebner@mailbox.org>
-To: Bartosz Golaszewski <brgl@kernel.org>
-Cc: linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
-	driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
- iommu@lists.linux.dev, 	linux-pm@vger.kernel.org, imx@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
-	linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org, Bartosz
- Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Lee Jones
- <lee@kernel.org>, Thierry Reding	 <thierry.reding@avionic-design.de>,
- Sebastian Hesselbarth	 <sebastian.hesselbarth@gmail.com>, Andrew Lunn
- <andrew+netdev@lunn.ch>,  "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Srinivas Kandagatla <srini@kernel.org>, Greg
- Kroah-Hartman	 <gregkh@linuxfoundation.org>, Vinod Koul <vkoul@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich
- <dakr@kernel.org>, Rob Herring <robh@kernel.org>,  Saravana Kannan
- <saravanak@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
- Ellerman	 <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Andi Shyti
- <andi.shyti@kernel.org>, Andy Shevchenko	
- <andriy.shevchenko@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Doug Berger
- <opendmb@gmail.com>,  Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list	
- <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
- Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team	 <kernel@pengutronix.de>, Fabio Estevam
- <festevam@gmail.com>, Matthew Brost	 <matthew.brost@intel.com>, Thomas
- =?ISO-8859-1?Q?Hellstr=F6m?=	 <thomas.hellstrom@linux.intel.com>, Rodrigo
- Vivi <rodrigo.vivi@intel.com>,  David Airlie <airlied@gmail.com>, Simona
- Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>,  Paul
- Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, Philipp Zabel
- <p.zabel@pengutronix.de>,  Maximilian Luz <luzmaximilian@gmail.com>, Hans
- de Goede <hansg@kernel.org>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=	
- <ilpo.jarvinen@linux.intel.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Date: Wed, 01 Jul 2026 17:05:49 +0200
-In-Reply-To: <CAMRc=MdQURjypSn+QjSDJfEiOMC8bbEZmZLgjpt=EquAM1Q1pw@mail.gmail.com>
-References: <20260629-pdev-fwnode-ref-v2-0-8abe2513f96e@oss.qualcomm.com>
-		 <20260629-pdev-fwnode-ref-v2-2-8abe2513f96e@oss.qualcomm.com>
-	 <263f58b418a27a2339fc2478f93234e0208b0ad9.camel@mailbox.org>
-	 <CAMRc=MdQURjypSn+QjSDJfEiOMC8bbEZmZLgjpt=EquAM1Q1pw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ktR4M2kx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9531F000E9;
+	Wed,  1 Jul 2026 15:36:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782920218;
+	bh=7PMyPj49ff92f1DaqsDh3uAzfXfDvH/ocFqvDS3U5Sc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ktR4M2kx8zAi2arn+ibq69x76kDkmaMWw0nujrGJ0ZgnUjvN6n+VCsnXdyx4TBxqc
+	 y2Q//eJ7God84zRv3Orgod57tsmFoVMzQfoEDMms+XVkq0XXwIOJh8WqW+gXehTtB+
+	 Cjk03q6cKspXSJcv2K+LnLdnrR9o8h80yDFLX52Jq13FpDh9vzvIAmH2HNPAthbjkE
+	 gZS6ZDZfK1ZsJ0xWKN2dt8OpU5sdV+0A9wqfRZqwp7bGfJiot3fFpP22rzVdaTGCLB
+	 MxMh7rIrqu7M0fhNiwc2MXgEMrO8Dl1VMF/KH43+1SBAG7/S2jEvxlMca91OhC3b91
+	 sx5FA2P/PV5eQ==
+Date: Wed, 1 Jul 2026 17:36:54 +0200
+From: Andi Shyti <andi.shyti@kernel.org>
+To: Krzysztof Karas <krzysztof.karas@intel.com>
+Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
+	iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	=?utf-8?Q?Micha=C5=82?= Grzelak <michal.grzelak@intel.com>, Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>, 
+	Sebastian Brzezinka <sebastian.brzezinka@intel.com>, Krzysztof Niemiec <krzysztof.niemiec@intel.com>
+Subject: Re: [PATCH v2 0/3] drivers: Improve memory management for large
+ object allocations when i915/shmem is used with iommu
+Message-ID: <akUzCar-MMOMGtGB@zenone.zhora.eu>
+References: <20260701104437.236979-1-krzysztof.karas@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MBO-RS-META: 37tty84b1zxogwptawjudbroswqcnaqn
-X-MBO-RS-ID: 303d5cb0e0c41c6b372
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260701104437.236979-1-krzysztof.karas@intel.com>
 
-On Tue, 2026-06-30 at 09:22 -0400, Bartosz Golaszewski wrote:
-> On Tue, 30 Jun 2026 13:37:54 +0200, Manuel Ebner <manuelebner@mailbox.org=
-> said:
-> > On Mon, 2026-06-29 at 11:12 +0200, Bartosz Golaszewski wrote:
-> > > [...]
-> > >=20
-> > > +/**
-> > > + * platform_device_set_of_node - assign an OF node to device
-> > > + * @pdev: platform device to add the node for
-> > > + * @np: new device node
-> > > + *
-> > > + * Assign an OF node to this platform device. Internally keep track =
-of the
-> > > + * reference count. Devices created with platform_device_alloc() mus=
-t use this
-> > > + * function instead of assigning the node manually.
-> >=20
-> > Doesn't it make sense to add a remark to the kernel doc of platform_dev=
-ice_alloc()?
-> >=20
-> > Thanks
-> > =C2=A0Manuel
-> >=20
-> > > =C2=A0[...]
-> >=20
->=20
-> Sure, will do in the next iteration.
+Hi Krzysztof,
 
-then you can add
-Reviewed-by: Manuel Ebner <manuelebner@mailbox.org>
+> Krzysztof Karas (3):
+>   drm/i915/gem: split shared memory allocation table logic
+>   drm/i915/shmem: Count mapped pages in a folio
 
- Manuel
->=20
-> Bart
+Please move the refactoring after the fix. We don't want to
+create a dependency between a fix and a code refactoring, as
+that makes it harder for maintainers to backport the fix.
+
+Thanks,
+Andi
+
+>   drivers/iommu: Catch scatterlist length overflows
+> 
+>  drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 191 +++++++++++++---------
+>  drivers/iommu/dma-iommu.c                 |  14 +-
+>  2 files changed, 129 insertions(+), 76 deletions(-)
+> 
+> -- 
+> 2.34.1
+> 
