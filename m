@@ -1,137 +1,229 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D130F3EDAAE;
-	Thu,  2 Jul 2026 11:28:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 297904189A9
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 11:30:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782991712; cv=none; b=o9cV5QfwR0dg1I+qN63Ji7RT7fOKTE78OaDRR+uDigPC9mUnTXidSiDYumzPBs9ljAzluXOeqflaL5ybmsTAgeaM7JCZMoMaxNjuJiDgW+Uo4Nvgy1Z2QIo/1pwhcN+Va2RKWWrMmcjy7TuoKuMdObHVWSgg5pJzc3dob312LQk=
+	t=1782991805; cv=none; b=iDhm7hePljzz3r690JHq4htgLgZ4OnfvaAv2hfvK34mvKEFSzcfyzMpsDh18GUhmj+dnz+0IlZejqdnnSgS0n66+CgfeWPNOaTzCz+44wZjHzcmA5pgUPxQtWA+kkeobwfMXrAJJNLvVy80uVs9E4ludkyzN7oOEp5HRl9PULa8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782991712; c=relaxed/simple;
-	bh=fXBLWoxuATWQ8dca6CLjiiXPqZS+bx4cnqLlWkj/IMY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lrsVKzh5iTMEDKW88or+8hbnenwFgxs8FWJwQ6Kd3x7cIds5m0wdbiHCbWOGgqW8myKtLy4zsUYoSX+vpAwXQ4htD25TDDAIPcbC9z9vX95J8VvqItIKDJLD2bsW/MNlFbQVJ5d9/Co9fpv4x4kspNRj6RShLf2xKWgpQj1Oi+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VjmsCVaf; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782991805; c=relaxed/simple;
+	bh=8jjfSPYg5U66L8zK7oshft2R9Q5n1QusWIFSP0r0Zy8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s+sw6H4eaPC/RnnNtqSnzt69Bjrqh9skFzRyNYDg1dYw7R5Wb43HJy/QCjcIxK09UdBswKHixURExLrh/H+YXp9wvm4OQG4KzeMN+VpmvYR7loBIkWLQHS6AzzdaCUGacZzoUQlqZaGEMTgqBxAwOxmNOd5fALmGX//cahKMy0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=b1V0EUVs; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=VpW3Ejyl; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=b1V0EUVs; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=VpW3Ejyl; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VjmsCVaf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596381F00A3D;
-	Thu,  2 Jul 2026 11:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782991711;
-	bh=cEaUVNTt35/9gjndPgOFyykYqGHl4r842ag5IRhn4OA=;
-	h=From:To:Cc:Subject:Date;
-	b=VjmsCVafUVSCuPPbaQWJH92Up9ypMgTuf/N9dV9j60mvfdgIDSFGqQrzFtPVDxmk6
-	 e2jYeFkG+a+nX3eSYUzlsFf1Yf7nEeV36yvbAXraixxxoHnH7yQgUtB0JD1SI7Qod/
-	 pEG/SxEWvPh622TZ4CbglNyo7Wmpg83EI5aZH9eYYFOoFm8WgGBjgWUdRcr+biCPnc
-	 ioP297OLRTfCFzjFjR7xMrxqEEx2ScRjMhnWwyR5Dla4Z3MSwFgu8FMYxwcxfFRiZV
-	 07lEixErf5nmKoDXHVrxAISuT8tGUY+4s9V7eNU/w82y3vac4oQI5tAo6y8YuKiPOw
-	 ntJY47fIL06kw==
-Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 7B128F40068;
-	Thu,  2 Jul 2026 07:28:30 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-03.internal (MEProxy); Thu, 02 Jul 2026 07:28:30 -0400
-X-ME-Sender: <xms:XktGajNL0AgV96PdEXQfYq-prm6p1Bw1-SFsdKq7h38rrJQ6aQV3Qw>
-    <xme:XktGamGoQpx8L75omiiC9aif2jsSMFBjJAY7iMLdSDiFpFsXXxFW4o_Ch0yicHWsN
-    tp_ND3o6amFQG7YzB6MMGtmZqrDPsYdUrY6O1pP_6A29q0B_B6Msn8>
-X-ME-Received: <xmr:XktGahzlrYyivlAidKANg0iCfSPeNIc1Ce_koBquTHCO_-C-Gmmb5q-fGXWrSQ>
-X-ME-Proxy-Cause: dmFkZTGDz2TgXYD15RfQJl3C1/PFcHSD6jKh/svFZqpNhYXxBkJjR5Fny7ZMYPRtBRXty0
-    O8Lh42t82Rp0MOZw771Vs+6UYgwEZ0aEm8GOYOT1Gf6b08MaOkgiPSj/PP7kufaV4rS25j
-    SbuEtcm2NTfjlY+vJM/W6AmTncqiZbnT3xko8EfR+JGAgSDA3eFv2WyubKH5etbgxr9ydS
-    u+ZlevPd78XVZ+3jmtHfvGuzvlxsPzFZx4lx5yMK7cLLkxfl2w1urjhK/ZkDbfPJguti0W
-    Rg88IS3FM1KRDa8mMpUINhuTpGxXL7vi00izNm3lYNPMnmWxzvoDrhTNFjTd//decMf5cE
-    8jl+Lvf1u5iVwiB/lWpGsfaqkFBWsMOdr9GiaJyPM2iNtzrlIhbkQzRxOTXg4agDCXcXxp
-    676r3wOFHH9YKLkDy89zgz04wTkPUGSPEWscSF9FplXqIh1wVyRNDhHOI6V5pkzfxN54cc
-    u+q507o2EM0ctxFB3wMb0mjzbI3am4m+BpMtUib4XTM+JYKqPkRGFvPLTnyf924OJXWSpb
-    fFKBfC3iYCvteDVFEDqQV5+2Pr822eZi/KHhL321w3np4c2UVOGC1gf9+UAL//zypxrVSa
-    Lzi1tf/Fl9uHJtWYQnTvLj8BV1NtzSwY+x3AwoMQvHXT0D78/a6fMj+3kBXQ
-X-ME-Proxy: <xmx:XktGanozHPKmQEuV7DFmCke5iZ3GfEpuh59qRnym6_PqzjOJ0hyXcw>
-    <xmx:XktGanmoqSnPSWUMiyxd_SGbZm2tPCFmNTn4SdmNV8_kp1E54cpTaA>
-    <xmx:XktGahURk81tPf4P5nn1zqjyrF-57AYwDZBPEbMSRWs-L2atQ81thg>
-    <xmx:XktGarouPTcWIXliYS42LQcI8KxLIkA4tDtV_XQXib0_7VU3Tg7I8Q>
-    <xmx:XktGaiVNKupu9W6zZ0A1KTL1zob1ZcbPjJHqcVviTiML3xhMweySgcKz>
-Feedback-ID: i10464835:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 2 Jul 2026 07:28:29 -0400 (EDT)
-From: "Kiryl Shutsemau (Meta)" <kas@kernel.org>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Kyle McMartin <jkkm@meta.com>,
-	Breno Leitao <leitao@debian.org>,
-	Usama Arif <usama.arif@linux.dev>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	"Kiryl Shutsemau (Meta)" <kas@kernel.org>
-Subject: [PATCH v2] iommu/arm-smmu-v3: Shrink command/event/PRI queues in kdump kernel
-Date: Thu,  2 Jul 2026 12:28:25 +0100
-Message-ID: <20260702112825.781750-1-kas@kernel.org>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="b1V0EUVs";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="VpW3Ejyl";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="b1V0EUVs";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="VpW3Ejyl"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 272C375826;
+	Thu,  2 Jul 2026 11:30:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1782991801; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GQ5WNGbzin/8vtFDbM8MbJVMoDULad2+FK2cbMLRvxc=;
+	b=b1V0EUVs7Ryzq47sXHyoMJr4JZZKjRZAq5PgvmgMFnAklikv2OYEmEeg7B9svz/QHBrX66
+	mB5yghfOAlHB0fX34t3q3IyNpEXuiXPxIfmxCvscO3OL7qd/yQ7G0KmD4Jd8J5jXHJYIVS
+	NCERshvGZ/f1dJtc20DF60zU/Yynep8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1782991801;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GQ5WNGbzin/8vtFDbM8MbJVMoDULad2+FK2cbMLRvxc=;
+	b=VpW3EjylCJF5yoxNrG2csldpuwjxwS7DCjeAVumRCzdwPhw4Sr5LNXAnK/UsjhF5SleOX3
+	PJir6mDWAi97z3AA==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=b1V0EUVs;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=VpW3Ejyl
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1782991801; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GQ5WNGbzin/8vtFDbM8MbJVMoDULad2+FK2cbMLRvxc=;
+	b=b1V0EUVs7Ryzq47sXHyoMJr4JZZKjRZAq5PgvmgMFnAklikv2OYEmEeg7B9svz/QHBrX66
+	mB5yghfOAlHB0fX34t3q3IyNpEXuiXPxIfmxCvscO3OL7qd/yQ7G0KmD4Jd8J5jXHJYIVS
+	NCERshvGZ/f1dJtc20DF60zU/Yynep8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1782991801;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GQ5WNGbzin/8vtFDbM8MbJVMoDULad2+FK2cbMLRvxc=;
+	b=VpW3EjylCJF5yoxNrG2csldpuwjxwS7DCjeAVumRCzdwPhw4Sr5LNXAnK/UsjhF5SleOX3
+	PJir6mDWAi97z3AA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 9F893779AA;
+	Thu,  2 Jul 2026 11:29:56 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 4DAfI7RLRmr5dgAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 02 Jul 2026 11:29:56 +0000
+Date: Thu, 2 Jul 2026 12:29:54 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 25/30] mm/vma: update vmg_adjust_set_range() to offset
+ pgoff instead
+Message-ID: <akZLhkjsJ_3sGdox@pedro-suse.lan>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <910f7b5be78232304dc7ca01cd57c6f5ca8f3d13.1782735110.git.ljs@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <910f7b5be78232304dc7ca01cd57c6f5ca8f3d13.1782735110.git.ljs@kernel.org>
+X-Spam-Flag: NO
+X-Rspamd-Action: no action
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_CC(0.00)[linux-foundation.org,armlinux.org.uk,kernel.org,siemens-energy.com,hansenpartnership.com,gmx.de,redhat.com,alien8.de,linux.intel.com,mev.co.uk,visionengravers.com,pengutronix.de,gmail.com,ffwll.ch,suse.de,oss.qualcomm.com,ideasonboard.com,nvidia.com,amd.com,shazbot.org,zeniv.linux.org.uk,linux.dev,google.com,infradead.org,samsung.com,goodmis.org,huawei.com,vger.kernel.org,lists.infradead.org,lists.freedesktop.org,lists.linux.dev,kvack.org,googlegroups.com,surriel.com];
+	RCVD_TLS_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com,gmx.de];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	TO_DN_SOME(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_TRACE(0.00)[0:+];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	R_RATELIMIT(0.00)[to_ip_from(RLziudqfrzo6b7hzgpxksh1d9i)];
+	MISSING_XM_UA(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
+	DWL_DNSWL_BLOCKED(0.00)[suse.de:dkim];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[75];
+	TAGGED_RCPT(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:dkim,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,pedro-suse.lan:mid]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Queue-Id: 272C375826
+X-Spam-Score: -3.01
 
-The command, event and PRI queues are sized from the maxima the hardware
-advertises in IDR1, which can be several megabytes each. On systems with
-many SMMUv3 instances that cost is paid per instance and adds up to tens
-of megabytes of coherent DMA in the capture kernel.
+On Mon, Jun 29, 2026 at 01:23:36PM +0100, Lorenzo Stoakes wrote:
+> We are calculating the pgoff as an offset, since we have vma_add_pgoff()
+> and vma_sub_pgoff() available, just offset this value directly and use
+> __vma_set_range() for vma->vm_[start, end] values.
+> 
+> We take care to update the range before offsetting the page offset, so the
+> adjusted VMA's vm_start and vm_pgoff are mutually consistent at the point
+> the page offset helpers operate - this matters once vma_set_pgoff() comes
+> to assert invariants which relate the two.
+> 
+> Doing so lays the foundation for future work which allows for use of
+> virtual page offsets for MAP_PRIVATE-file backed mappings.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+> ---
+>  mm/vma.c | 15 ++++-----------
+>  1 file changed, 4 insertions(+), 11 deletions(-)
+> 
+> diff --git a/mm/vma.c b/mm/vma.c
+> index e3355eab11f2..0579fc8c9bd5 100644
+> --- a/mm/vma.c
+> +++ b/mm/vma.c
+> @@ -714,9 +714,6 @@ void validate_mm(struct mm_struct *mm)
+>   */
+>  static void vmg_adjust_set_range(struct vma_merge_struct *vmg)
+>  {
+> -	struct vm_area_struct *adjust;
+> -	pgoff_t pgoff;
+> -
+>  	if (vmg->__adjust_middle_start) {
+>  		/*
+>  		 * vmg->start    vmg->end
+> @@ -735,8 +732,8 @@ static void vmg_adjust_set_range(struct vma_merge_struct *vmg)
+>  		struct vm_area_struct *middle = vmg->middle;
+>  		const unsigned long delta = vmg->end - middle->vm_start;
+>  
+> -		pgoff = vma_start_pgoff(middle) + (delta >> PAGE_SHIFT);
+> -		adjust = middle;
+> +		__vma_set_range(middle, vmg->end, middle->vm_end);
+> +		vma_add_pgoff(middle, delta >> PAGE_SHIFT);
+>  	} else if (vmg->__adjust_next_start) {
+>  		/*
+>  		 *                Originally:
+> @@ -764,13 +761,9 @@ static void vmg_adjust_set_range(struct vma_merge_struct *vmg)
+>  		struct vm_area_struct *next = vmg->next;
+>  		const unsigned long delta = next->vm_start - vmg->end;
+>  
+> -		pgoff = vma_start_pgoff(next) - (delta >> PAGE_SHIFT);
+> -		adjust = next;
+> -	} else {
+> -		return;
+> +		__vma_set_range(next, vmg->end, next->vm_end);
+> +		vma_sub_pgoff(next, delta >> PAGE_SHIFT);
+>  	}
+> -
+> -	vma_set_range(adjust, vmg->end, adjust->vm_end, pgoff);
+>  }
 
-A kdump capture kernel runs from a small crashkernel reservation and only
-has to drive the few devices used to save the dump, so deep queues serve
-no purpose. The queues carry invalidation commands and fault records, not
-DMA data, so dump throughput is unaffected; a shallower queue only bounds
-how many commands may be in flight before a sync, which does not matter for
-the capture kernel's small device count and modest I/O.
+Maybe this should be squashed with That Other Patch that touches this.
 
-Clamp every queue to a single page when is_kdump_kernel() is true. Doing
-it in arm_smmu_init_one_queue() covers the command, event and PRI queues
-in one place. The command queue still holds at least one batch plus a sync
-(256 entries on a 4K-page kernel, well above CMDQ_BATCH_ENTRIES), so
-command batching keeps working.
+Anyway,
 
-Suggested-by: Kyle McMartin <jkkm@meta.com>
-Signed-off-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
-Reviewed-by: Breno Leitao <leitao@debian.org>
----
-v2:
- - Use min() instead of min_t(); both operands are u32 so the cast was
-   redundant (Jason Gunthorpe, Breno Leitao).
- - Add Reviewed-by from Breno.
+Reviewed-by: Pedro Falcato <pfalcato@suse.de> 
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e8d7dbe495f0..a4ec4a59e527 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4414,6 +4414,20 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- {
- 	size_t qsz;
- 
-+	/*
-+	 * A kdump capture kernel runs from a small crashkernel reservation and
-+	 * only has to drive the few devices used to save the dump, so there is
-+	 * no point sizing the queues for the (multi-megabyte) maxima the
-+	 * hardware advertises. Clamp each queue to a single page. ent_sz_shift
-+	 * is the log2 of the entry size in bytes (dwords * 8).
-+	 */
-+	if (is_kdump_kernel()) {
-+		u32 ent_sz_shift = ilog2(dwords) + 3;
-+
-+		q->llq.max_n_shift = min(q->llq.max_n_shift,
-+					 PAGE_SHIFT - ent_sz_shift);
-+	}
-+
- 	do {
- 		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
- 		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
 -- 
-2.54.0
-
+Pedro
