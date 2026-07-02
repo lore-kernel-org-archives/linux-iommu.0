@@ -1,144 +1,154 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E48EF480DC3
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 12:46:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D106F492522;
+	Thu,  2 Jul 2026 12:58:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782996409; cv=none; b=jNuojo1P7zfRbS5lgjyS8g1maDM0BgswDzej0XDj07ZMUxQ8yOyZ+ofpNeiW/RtLxzlFwb9yU+1PveVz2tWa3Hll4+zjo/THL8NwLfJO6IORtQf+JxApqwa0n2dZRoj7ZO/CHSEoInd379mii3oO8wCqMx3ZPSmVwM3lbE8mBms=
+	t=1782997117; cv=none; b=rbbgvI1yJKi+BdqmKGDx0feVDDh4sQ4hqU1LxAidrPjsvNCDH57gmsnWQh+d/BnB+kFOmGtuOR0auNnG5fkae3aK4qAac5JyIb+91NkANLKcVMsKQPYu+T36KNRpwkNT4rXXI4CEVHMNxWJdSPwcZkpKwwEebZy3GVE1cd32gUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782996409; c=relaxed/simple;
-	bh=5uHYC1eO+x2S8J06bwKaEfjHFTxm+1JRWoisJ4D6TaM=;
+	s=arc-20240116; t=1782997117; c=relaxed/simple;
+	bh=ShsbAZ+6W71qAbfGXVC0TvICNAKnIcCP/PU8K2kCMHY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n/dZ+xRh0s79PPsVojsTSWgAOVzZKL8dBBCGCsZ7vkAS5pg+VdH+Sc6XPQsIxeg4BRzmZCkreHQc0SkVJ6qnOTgnG/BxQX5L4bCCGziLvOBD7R733OcG5QSccc77dwqOOuBCkf82AQSl23tuSpFFP1C09BvdC619yUWEUtwFXWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=GCjxUW80; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=DG5DUAtu; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=VI2FPfFps6xwl9YeMpdk2NehX0ip4NOJR6tuotz4hWqkmjjSL8HOiPbBYiC2KX4UPKcE9mamceyZ0q7FksYs53Vyabk8pc8in/6JW3I44WKcPZioVf4lTriwB65YtxfrKakK74FKIJn8l9ZV9P54TUfgZDoSP0sNOveJVNgaLx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kO4usZ5Q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="GCjxUW80";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="DG5DUAtu"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 662CkI7g494633
-	for <iommu@lists.linux.dev>; Thu, 2 Jul 2026 12:46:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=VxVATGBDUQiPbAXFQhZkLFDY
-	sCweETLs6MuM7WPXiSU=; b=GCjxUW80PH1hTFi5yA+zkB2nlFSaBtRFmH6DXhzM
-	k8R0RBoztVvXvjQJ9and6cAlKrUj+FG3Kper1/nvwF/V68UM8fld7uev/Y5m5LY8
-	/jq3f5CtjR5ADB/H8PCPfyPP/ZjugQRPHiMBrQd9T7KKF7Tw72khtaC5NkbX8X4a
-	QR9IQgiQ90bPgmbEAl2T7Kye09QAlGiiv5mLtRx3Ns7wYmRm5nEfmMnB5sGa+NaQ
-	znhnypkPEEOpCbLivb2kY33K1VY2PpKSk4tutZYXlI0tFzs/2dp4TSr50WumxkQO
-	xhspqYUjHHGJ3J1RtyBYnHQw+Ds7043dyq/S/OmLhoHpog==
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f5h7n9rsw-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 12:46:47 +0000 (GMT)
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-92e4f946461so211709685a.2
-        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 05:46:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782996406; x=1783601206; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VxVATGBDUQiPbAXFQhZkLFDYsCweETLs6MuM7WPXiSU=;
-        b=DG5DUAtu9RH/R4xlzt+2flNCmT9g2zhifr4SRy+tLhHVNp1qVd1JsgQjnmzGl6cWLD
-         0G2zwaZAmssF+/BFnJLPQlF9r5TF4qTBNns3QTyQsvOCc1hw8Dksf+I5UR8ZrpqyjGgi
-         JHfZq5MMaet6Pqqhwhn+hEMQhwhAfTqBS5p1v2LUCpzzYYyFuANrA20nUUleoXAS8V10
-         AU5pzkjylMNluLyT5nVb+HdqKqLBggQusy3kFFdqH1NqnYPVXvE7esSebq+HOrAbldEj
-         jcd51soRnjwI4EUyjzCw6ZW5CLRsEHzXrkSg99lnzGU1ekQveK0eeMUK/ar8Ujn0SLrl
-         OOSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782996406; x=1783601206;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VxVATGBDUQiPbAXFQhZkLFDYsCweETLs6MuM7WPXiSU=;
-        b=lezW3ys0HJeA/ZRBm36+R4U9cCGBKzQoM8c0ueHX2nDvJLGpEaGDcgJTSvWZl8hWd/
-         VJhscn5EGfCysHoHY/Gpr5BgfQ4UhgrCMcsJaHjmf9mNv/rEwmBCYd82mrv0fGiVvLhk
-         BgTUd9ROnlC19Bj7g2exTl3UM3QMV4r5PjwHgU00al2kXSEJo7I7gs9BNvEkjKnZJSbf
-         J8qwNQia404AXMfcUQw2y4xt6RlQhr0t9cChwVMw35xOsL5nIzUTGzN10bECQvmtw6+f
-         rxI3Ee8xRaE2d10RlG4TxSvyk96XlN1r0ARVWuuaT55G5KPt9erNAk6wN6K+z8XWWBUK
-         nGVQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9UnzHa4WpfeLHfcS8J51LQ0wnovwYJoKDTAjaMR0rnaY7P32dxMF27kzS2yjYr7NCmK8GViQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyrXlwHEUx/0baT6eOd3cqAetHsCo0gs68Fzcbxks8XH0ds0KPr
-	vZIbLYUoRCShqBWluF1YpUR6iKAQsK/V0c/j5WiMqfSP0ht+RJpWGXrZqRro9H+KPKzSejkSMZq
-	VeGlJp+VlqRncdN2aVJOfL8W/UsAF/+5+82wsqTwKRAZN2nlm8MWM71odGA==
-X-Gm-Gg: AfdE7cki2cpSdZjFZU+6lz9/U28sam5wIKsReO33DL8dJhjGclxAbBK8VMw1CXAqd4Q
-	zgyWhOWOs/Jywe4cXAe4jnMXbxlQSZ5zK7qxsFycUsSAg/L1uV3OKYsGIAiEPnKbfLlVY34tHzm
-	xhyA/MW2DkCckDl3c+kJCKzZ4Xisl8lCctgSmUzOdwNQCAdJ0ObCAO81IHhYZaj7vmhC7MZKXoG
-	zOb80BuDQArVn8re26gPSEEYeRphcK5VLwzogeRD0tMMISULw/TK7S11N4JC/Pd9F8tsjB5yXiS
-	xv1vi+7BRoLCNCL+5Ef2Ql8vCGvDVvgOc4Pw40KJyu623cRAJBsKNI6qFCUA3uWVClj5njDj2vQ
-	KJextvCYizRvK/czlgLYZRrpAKzfugtkgxssuOlahIXF3VbtyvQPxz8FuQQW5+AicYz0EfUGr5k
-	7TFqE7tcpA0jTtxcNP5LdTHlIs
-X-Received: by 2002:a05:620a:a18f:20b0:92e:7ba3:73e2 with SMTP id af79cd13be357-92e7ba37697mr502998685a.74.1782996406282;
-        Thu, 02 Jul 2026 05:46:46 -0700 (PDT)
-X-Received: by 2002:a05:620a:a18f:20b0:92e:7ba3:73e2 with SMTP id af79cd13be357-92e7ba37697mr502996185a.74.1782996405860;
-        Thu, 02 Jul 2026 05:46:45 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39b37fc492dsm5699941fa.22.2026.07.02.05.46.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 05:46:44 -0700 (PDT)
-Date: Thu, 2 Jul 2026 15:46:42 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vladimir Zapolskiy <vz@kernel.org>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Sricharan Ramabadhran <quic_srichara@quicinc.com>,
-        iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH] iommu/msm: Return -ENOMEM on memory allocation failure
- in probe
-Message-ID: <nesu4iru5gs4wif4iip7evktqrqnwhg4e7efawcmd7gie4sif6@w4qq57i4qjsa>
-References: <20260701222411.138514-1-vz@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kO4usZ5Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC311F000E9;
+	Thu,  2 Jul 2026 12:58:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782997116;
+	bh=E/1DCNOv6BvGR9MJ9FvUvqyYS0lnKrQcbwU1VR2yiNw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kO4usZ5QxTv0KTmHTZC/qASNpRJK/tbL1yjometAkq37XaVoiPj9yYNJYSMa/miOy
+	 WDumAgPKPoA6O+ZAhZknNP5uy3myN2YtroWwxIDDh/D9adoYaQBir+NbjrazmpzPB/
+	 G26xcrXk1KhYilWa5NJdthwc2uJy3iDeefPoHZlhdFDGTm+nZ6/SJsuST7sAsnkvJn
+	 dXE7Zj7K2yahM8tyC7aM0z9NdoTfrtRX0iFx9IZ2s+glDcBGyXLo+A5UHqZ60T2grQ
+	 plqvfAsOE08WmETjdkeuGfJSTD3aYifZvi/nV1eTiyVSnRKxXP1QYtapabLU1eTAKw
+	 hZ6pAM4+B/9zQ==
+Date: Thu, 2 Jul 2026 14:58:33 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, dri-devel@lists.freedesktop.org, 
+	David Hildenbrand <david@kernel.org>, Yury Norov <yury.norov@gmail.com>, linux-media@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, 
+	Simona Vetter <simona@ffwll.ch>, linux-trace-kernel@vger.kernel.org, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	linux-mm@kvack.org, Russell King <linux@armlinux.org.uk>, 
+	Will Deacon <will@kernel.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, linaro-mm-sig@lists.linaro.org, 
+	Heiko Carstens <hca@linux.ibm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	Thierry Reding <treding@nvidia.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, John Stultz <jstultz@google.com>, 
+	Luca Ceresoli <luca.ceresoli@bootlin.com>, Vlastimil Babka <vbabka@kernel.org>, 
+	Brian Starkey <Brian.Starkey@arm.com>, Mikko Perttunen <mperttunen@nvidia.com>, 
+	Michal Hocko <mhocko@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Sowjanya Komatineni <skomatineni@nvidia.com>, Suren Baghdasaryan <surenb@google.com>, 
+	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, devicetree@vger.kernel.org, 
+	"Liam R. Howlett" <liam@infradead.org>, linux-tegra@vger.kernel.org, 
+	Catalin Marinas <catalin.marinas@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Conor Dooley <conor+dt@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Andrew Morton <akpm@linux-foundation.org>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Lorenzo Stoakes <ljs@kernel.org>, 
+	"T.J. Mercier" <tjmercier@google.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	iommu@lists.linux.dev, Mike Rapoport <rppt@kernel.org>, 
+	Sven Schnelle <svens@linux.ibm.com>
+Subject: Re: [PATCH v3 01/11] dt-bindings: reserved-memory: Document Tegra VPR
+Message-ID: <akZde-8lFvf8rPji@orome>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-1-d80f7b871bb4@nvidia.com>
+ <178293558945.1610040.13281502080616690110.robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="jt3c4zsxeledpb4t"
 Content-Disposition: inline
-In-Reply-To: <20260701222411.138514-1-vz@kernel.org>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAyMDEzMyBTYWx0ZWRfX1Yz23gIVUdq+
- G/n/WIA46fEGezUzmUpS4soAfiLeHhosfw1HwpDVi+YRH+9t/MJNA+XQD2298iwV/pnf7Ln/83i
- eVxsIUkUK6cuXMMw967pmWauH++yYaIBj9D9pCI8nCQIhJtMjXlppADFGGXwd0TGyIubjg6xede
- LypfkBsNlFkjW+WgzVIgojx7wK2VI7dT++0WqmlsapvQu0lEQnfnnNNK0E5vFNJ666XLIdgm9Eh
- qTn9IQoBj0JlzurZdYB2Pk8L+yd4sSsCfcUIK21vENMuok2HvD+/ZDQ/Bv0w0mTEo5q0NkX9p2J
- gwj+2UXukpFncbfyMPcgyjh4/J0c4iwe9u6IrIuhsJzKZAzWVUYXXGVYENdYIV1HzMYZS3iS5wA
- x/VfHQRgTj8+Dlf1Hs/wi+yYrjbsuBaG9Z0dIaZOaazBAUDT635pcgfCut3daudesTrKs1IlrO3
- qt8N2PtSH2TQTtEYUOA==
-X-Proofpoint-ORIG-GUID: yXvFPq2GNFmn-tfuyvzpNs3xi0KIqxMU
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAyMDEzMyBTYWx0ZWRfX1xs2PlUn5cqm
- XuBndPLgShv1EhUDw0hgpL5mLjh0gumh/BJh5AIxapqhDf2m1bqdVh7dcE4IWnaQCUyHoVC5PUD
- WBdjhapJxA0J5w6IUxZoc5TWlnuN/u0=
-X-Proofpoint-GUID: yXvFPq2GNFmn-tfuyvzpNs3xi0KIqxMU
-X-Authority-Analysis: v=2.4 cv=WMBPmHsR c=1 sm=1 tr=0 ts=6a465db7 cx=c_pps
- a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=VwQbUJbxAAAA:8
- a=EUspDBNiAAAA:8 a=RiI-g2rLsoY8Z6saGawA:9 a=CjuIK1q_8ugA:10
- a=IoWCM6iH3mJn3m4BftBB:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-07-02_01,2026-06-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 phishscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
- spamscore=0 priorityscore=1501 adultscore=0 impostorscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607020133
-
-On Thu, Jul 02, 2026 at 01:24:11AM +0300, Vladimir Zapolskiy wrote:
-> If dynamic memory allocation in driver's probe function execution fails,
-> it should be reported to the driver's framework with -ENOMEM error code.
-> 
-> Fixes: 109bd48ea2e1 ("iommu/msm: Add DT adaptation")
-> Signed-off-by: Vladimir Zapolskiy <vz@kernel.org>
-> ---
->  drivers/iommu/msm_iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+In-Reply-To: <178293558945.1610040.13281502080616690110.robh@kernel.org>
 
 
--- 
-With best wishes
-Dmitry
+--jt3c4zsxeledpb4t
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 01/11] dt-bindings: reserved-memory: Document Tegra VPR
+MIME-Version: 1.0
+
+On Wed, Jul 01, 2026 at 02:53:10PM -0500, Rob Herring (Arm) wrote:
+>=20
+> On Wed, 01 Jul 2026 18:08:12 +0200, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > The Video Protection Region (VPR) found on NVIDIA Tegra chips is a
+> > region of memory that is protected from CPU accesses. It is used to
+> > decode and play back DRM protected content.
+> >=20
+> > It is a standard reserved memory region that can exist in two forms:
+> > static VPR where the base address and size are fixed (uses the "reg"
+> > property to describe the memory) and a resizable VPR where only the
+> > size is known upfront and the OS can allocate it wherever it can be
+> > accomodated.
+> >=20
+> > Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> > Changes in v2:
+> > - add examples for fixed and resizable VPR
+> > ---
+> >  .../nvidia,tegra-video-protection-region.yaml      | 76 ++++++++++++++=
+++++++++
+> >  1 file changed, 76 insertions(+)
+> >=20
+>=20
+> My bot found errors running 'make dt_binding_check' on your patch:
+>=20
+> yamllint warnings/errors:
+>=20
+> dtschema/dtc warnings/errors:
+> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/r=
+eserved-memory/nvidia,tegra-video-protection-region.example.dtb: protected@=
+2a8000000 (nvidia,tegra-video-protection-region): reg: [[2, 2818572288], [0=
+, 1879048192]] is too long
+> 	from schema $id: http://devicetree.org/schemas/reserved-memory/nvidia,te=
+gra-video-protection-region.yaml
+> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/r=
+eserved-memory/nvidia,tegra-video-protection-region.example.dtb: protected@=
+2a8000000 (nvidia,tegra-video-protection-region): Unevaluated properties ar=
+e not allowed ('no-map', 'reg' were unexpected)
+> 	from schema $id: http://devicetree.org/schemas/reserved-memory/nvidia,te=
+gra-video-protection-region.yaml
+
+Any ideas why that second error shows up? It turns out that it goes away
+when the first one is fixed (which admittedly is a stupid mistake), but
+I spent quite a bit of time looking for a fix before realizing that it's
+only a side-effect of the first.
+
+Thierry
+
+--jt3c4zsxeledpb4t
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpGYHcACgkQ3SOs138+
+s6FXSg/8DETX0ZuK2IIeUJbIHp/syjqHI0/Rww4Pal6HHyPG1Nmh7Mw8aUeTurgJ
+joGwb1v3IfLcjn3lMb2FCqe/oBcRBhmc8WlGWIiqiFfoTtXAPo8Rg64dg0l2ndIV
+u9BZrRKqkWLAjjq8uSoXf/8ub0GjtRGMSEiRqa4adYKV0VAUPUbQjEzfikHg91aU
+kSrCvilTLa1KSh268wVWvSEKjraNsiSBq+IoZ3L641ddHo9unPIuXnoFTZzFam4o
+xj7cgpnuBO79MYgpv5vlyz3Rz9W1twGkNdysDqEVRuh8kHJLNsaFrWhMEOeoTcMX
+iCyp3WySjGD1yBTs7VM2RXj9RvBllF0DYKc142VSpEPhsy49wMcjv8Bag05Zwzys
+LHSKvs1SF/dN62tw1x2kZs+Jd4+QcwlTfGDQbtf3Xtf88MP6QcXUUWXB+VMcWumA
+K4mrmfHiRpBrk7IW3c+b4lGwZ6Tl72Z1c6LI07ju7x3DohTXat7hYT2+iDZI1xfA
+s47ub8HQS6xthrn9/xco8ZPWOOjizZiMRSe7l/2gbvrymb1LINSe8uL0W6CFPCJ6
+G37Ad7PfTI1b60hHNGhEGteQtvty4ZuUr126ehR9qrhkvpzYWRUT/ml5MeCYjsOY
+hJrS/jVvbJcphwokdb+6MUfkHN1EC7gbyLCALmMVjSqAec+7Ds0=
+=yG1A
+-----END PGP SIGNATURE-----
+
+--jt3c4zsxeledpb4t--
