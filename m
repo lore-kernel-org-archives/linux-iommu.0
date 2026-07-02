@@ -1,157 +1,210 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D70C4481FAC
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 12:01:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754183563F0;
+	Thu,  2 Jul 2026 12:17:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782993674; cv=none; b=MmO2dUkVV+eh+IwyIjQKuhEMCEuHVGGSzlv88X/bJjIrRuIp5RH5JI7XAINAQX3fU0Q3vGsOffA7BRDCD2aomezHsdBSbbInZsLDSnLS95vXI0Zfw0kvH8yKELpE6fBR0VxUKmBtM9g+0T/l3tcflN+ddbSAoW6csD0+08tx2Ts=
+	t=1782994621; cv=none; b=g4d5Szp9beIcBwuLfCCrsLMt1eqsKNgy6Og5esqhT4CGJoGgzb5yF03AzAkMjoLF+Qq/jBlaYHZ+dGebXaUpbKZUb/DAwAC61nxn2USpDxcOEDeuZ5YIhLdSSTsrXkEHw1zczwM7rhtUFLdEro8baufWUOlWBHa0gUL+vQmir4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782993674; c=relaxed/simple;
-	bh=Q++t6UDjEPmAM1sRpwFz4r69sHx9kEtoP4L1SoBqxGQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ulLCw/mCvsyDkz2ledhi1mjpaKRBks7wyeeZIywtewLJE5xFuHfRuw/surr5kxtpTXQKKAH98G6gfGPNYL9nYNhSnoqvTkyCs/KwKF8Gv15wX1vpDat+KMs9wSaYuJzVa3XRFjAGzyq9THboGvSY8rxUBi8902ZmzJF7Gk9NkQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=O5la7sBy; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1782994621; c=relaxed/simple;
+	bh=4h/zoa0EO0oEjCowB1soFdJQhwwlc7WmH55lSMsp9ng=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SbRPk3fVgANmq8O61HVYKQoMM0+OX1sMfYbyl+f5ebfHx9tx5HrXyEQhkmZpfNDWRtMovdrN2KOAD9fLdlkaKneL+Gs0KlTvlCD9Pa5CCeHptV+kQxZOpdr9iI62R7sgsBaUxR6HTfTsH7zBdD9omNCweJRRJVi2ghYaIEhXMOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YfjRFUXE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="O5la7sBy"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98D0D1655;
-	Thu,  2 Jul 2026 05:01:06 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9EAAB3F85F;
-	Thu,  2 Jul 2026 05:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1782993671; bh=Q++t6UDjEPmAM1sRpwFz4r69sHx9kEtoP4L1SoBqxGQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=O5la7sBy9fpG9oKdnfnA7d5kfya6c7tw+A6LroXoItQlVAf1iyPXjjgCxSHX0d7Vg
-	 hIP+jrTnvTVFjlgfnrVCEIHoqJlHVFsg8UBSu4eTTScJh7rW6PCoFFGvCBZiVSLMHe
-	 tpk4DdMS5+Pi+vpx5n7NY+ZVX92QhgW61o7a2Ubc=
-Message-ID: <50d61140-15e2-471e-8a07-d4a3752ddcbc@arm.com>
-Date: Thu, 2 Jul 2026 13:01:06 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YfjRFUXE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DE691F000E9;
+	Thu,  2 Jul 2026 12:16:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782994620;
+	bh=SmrhXKb/tICfou2fB2Dbzvn0JaPripZ9jvu2bmh8Jik=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=YfjRFUXEBU2dRmuBpB4h+tQRBLbIKpZBr7Vf/wGNH8GIbYIoOZ2+iJacKSoCbpVtS
+	 nLyO5ja5AytCvhqwDq0QenPxKrMKslV49oH6XBSjalGtxG47SJjiMV7MT+tzXio6ce
+	 JdlM4siO5IwFaYVLcm4KaNHxCA6hmUqsbOTyo9nlQqZd4lEWBGt33GCh9LZqRUfBBn
+	 mcQd1A7BvVsZSb2TQuY2xdCzCh+UDajG+SL5GXiJNr7mmSLrWTVjj9rBrdT9z87G/T
+	 Vy7FJvYKgcFqj/cL9xNXF6QvQ5MobsDT2Zofpc5Qxh41lYF1oSGL+QhpzzXdyRSPWv
+	 bIXuhAyMKtIcQ==
+Date: Thu, 2 Jul 2026 13:16:38 +0100
+From: Lorenzo Stoakes <ljs@kernel.org>
+To: Pedro Falcato <pfalcato@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 20/30] mm/vma: introduce vma_assert_can_modify()
+Message-ID: <akZNWNuyBU4xDDyf@lucifer>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <23c7602c58cacc23ef22618a27af9a2d54addf58.1782735110.git.ljs@kernel.org>
+ <akZHWwVgJfqCwA2W@pedro-suse.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] drm/i915/gem: split shared memory allocation table
- logic
-To: Krzysztof Karas <krzysztof.karas@intel.com>,
- Andi Shyti <andi.shyti@kernel.org>
-Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, =?UTF-8?Q?Micha=C5=82_Grzelak?=
- <michal.grzelak@intel.com>,
- Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
- Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
- Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-References: <20260701104437.236979-1-krzysztof.karas@intel.com>
- <20260701104437.236979-2-krzysztof.karas@intel.com>
- <akUibf3NyThHnXco@zenone.zhora.eu>
- <5yosfyp4yuvix56sc7uzsbelndiph2ibzzg747lyrklqjy4bxr@mbbbcvl2cczk>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <5yosfyp4yuvix56sc7uzsbelndiph2ibzzg747lyrklqjy4bxr@mbbbcvl2cczk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akZHWwVgJfqCwA2W@pedro-suse.lan>
 
-On 02/07/2026 7:18 am, Krzysztof Karas wrote:
-> Hi Andi,
-> 
-> thanks for reviewing!
-> 
-> On 2026-07-01 at 16:38:11 +0200, Andi Shyti wrote:
->> Hi Krzysztof,
->>
->> On Wed, Jul 01, 2026 at 10:44:35AM +0000, Krzysztof Karas wrote:
->>> shmem_sg_alloc_table is a complex and hard to read function.
->>> Split its logic into smaller pieces to improve readability and
->>> reduce indentation. Change the main "for" loop into "while" to
->>> get rid of obscure iterator "i" and be more explicit in
->>> traversing scatterlist.
->>
->> any chance we can split this cleanup into smaller pieces?
-> Yeah, I'll work something out.
-> 
->>
->>> Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
->>
->> ...
->>
->>> +static struct folio *shmem_shrink_get_folio(struct address_space *mapping,
->>> +					    unsigned long folio_index,
->>> +					    gfp_t gfp, unsigned int pages_left,
->>> +					    struct drm_i915_private *i915)
->>> +{
->>> +#define MAX_READS 2
->>
->> This MAX_READS here is very ugly! Just use 2 and explain it in a
->> comment. In the 'if' below you can check out of "if (... || i)"
->> and still explain it in a comment.
-> If we are on the topic of personal preferences, I'd prefer
-> moving this to a variable instead of leaving a magic number
-> buried in the code. The comment is unnecessary if you figure out
-> what this loop does and in the end "2" is just a number somebody
-> picked way back.
+On Thu, Jul 02, 2026 at 12:16:32PM +0100, Pedro Falcato wrote:
+> On Mon, Jun 29, 2026 at 01:23:31PM +0100, Lorenzo Stoakes wrote:
+> > vma_assert_write_locked() and vma_assert_attached() are useful for their
+> > own purposes, however VMA code absolutely does allow the modification of
+> > non-write locked VMAs if they are at that point detached (i.e. unreachable
+> > from anywhere).
+> >
+> > It's therefore useful to be able to assert that a VMA is either
+> > detached (modification doesn't matter) or write locked (you're explicitly
+> > locked for modification).
+>
+> Hmm, I was wondering why detached does not imply write_locked, and then
 
-FWIW since I'm looking at the thread - indeed if it's just a retry loop 
-and the actual index value isn't significant, then often a count-down 
-loop can be the most self-explanatory, e.g.:
+For one obviously when detaching they are also write locked (see
+vma_mark_detached()) but yeah the point of this is when you have a VMA allocated
+which doesn't hold the appropriate lock.
 
-	int retries = 2;
+> realized that new VMAs aren't write-locked. Could we do it by default?
+> Like a simple:
+>
+> 	vma->vm_lock_seq = __vma_raw_mm_seqnum(vma);
+>
+> might do the trick. I don't see why it wouldn't work? Is there some other
+> case I am not considering?
 
-	while (retries--) {
-		...
-	}
+Firstly, I'd rather not rework the VMA lock logic as part of this series. It's
+subtle and such changes are tricky.
 
-Or perhaps in this case:
+I'm trying to achieve the minimum changes while adding extra validation as I can
+in preparation for the scalable CoW work.
 
-	do {
-		folio = shmem_read_folio();
-		if (IS_ERR(folio))
-			i915_gem_shrink();
-	while (!IS_ERR(folio) && --retries);
-	return folio;
+And I'm not sure wanting to alter the fundamentals of VMA locks is a good reason
+not to ack a patch :)
 
-Cheers,
-Robin.
+But since you bring it up...
 
->>
->>> +	struct folio *folio;
->>> +	unsigned int i;
->>> +
->>> +	for (i = 0; i < MAX_READS; i++) {
->>> +		cond_resched();
->>> +		folio = shmem_read_folio_gfp(mapping, folio_index, gfp);
->>> +		if (!IS_ERR(folio) || i == MAX_READS - 1)
->>> +			return folio;
->>> +
->>> +		i915_gem_shrink(NULL, i915, 2 * pages_left, NULL,
->>
->> /pages_left/page_count/
-> I mean, sure, but is there a reason for using "count" instead of
-> "left"?
-> 
->>
->>> +				I915_SHRINK_BOUND | I915_SHRINK_UNBOUND);
->>> +
->>
->> ...
->>
->>> +	}
->>> +
->>> +	/* Should never happen */
->>> +	WARN_ON_ONCE(1);
->>
->> no need.
-> Okay, I'll remove it.
-> 
->>
->> Thanks,
->> Andi
->>
->>> +	return ERR_PTR(-EINVAL);
->>> +}
-> 
+There's subtleties here too.
 
+- At what point do you do this assignment? If it's the VMA allocation logic,
+  it's not obvious then that you even have the mmap write lock necessarily. Now
+  you're making assumptions that might be broken, or broken in future.
+
+  Now everybody who allocates a VMA has to 'just know' that they need to assign
+  an mm and mark it write-locked (but in a special new VMA way) before setting
+  the pgoff.
+
+- Detached means it is not currently in any tree, nor belongs necessarily to any
+  mm. So the concept of it being write locked is meaningless.
+
+- It's broken to perform actions on a new VMA that is not yet linked into any
+  tree that would require the VMA write lock. Currently the code _explicitly_
+  asserts that a detached VMA is not attempted to be write locked.
+
+- So we have a good way of catching people doing stupid or broken stuff to VMAs
+  that are not in the correct state (we currently _don't_ do that for detached
+  VMAs that _were_ in the tree, probably we should change that...!)
+
+- You'd have to create a new function to do this since we explicitly disallow
+  doing this right now, and that's more complexity and then you're then
+  creating a whole new meaning as to what VMA write lock acquisition is,
+  which is even more added complexity.
+
+- create_init_stack_vma() would break, so would hugetlb (lol) and static gate
+  VMAs explicitly do not belong to an mm, so there's simply no concept of them
+  being VMA write locked anyway.
+
+- I'm not sure violating the invariant of seqnum = 0 = no write locked VMAs is
+  safe.
+
+- Things get quite horrendous on fork (prior to us taking tmp's VMA write lock)
+  - you'd have to assign this field after duplicating the VMA midway through
+  attaching it to the new mm, where that mm has a new seqnum. But the new mm has
+  a seqnum of 0... so now you're having to duplicate it but alter what
+  vma_lock_init() does to reset the seqnum to 0 but then what if the
+  'duplication' logic asserts VMA write locked?
+
+It's very chicken and egg - on VMA duplication you want to be able to write the
+very fields that you need to do anything with the VMA prior to it being linked
+in anywhere.
+
+And we probably don't want to bake in the assumption that to change fundamental
+fields requires that you always hold the write lock as a consequence.
+
+>
+> >
+> > Therefore introduce vma_assert_can_modify() for this purpose.
+> >
+> > While we're here, make vma_is_attached() available generally - if
+> > !CONFIG_PER_VMA_LOCKS, then there's no sense in which a VMA is
+> > detached (vma_mark_detached() is a noop), so have this default to true in
+> > this case.
+> >
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+> > ---
+> >  include/linux/mmap_lock.h | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >
+> > diff --git a/include/linux/mmap_lock.h b/include/linux/mmap_lock.h
+> > index 04b8f61ece5d..d513286d8160 100644
+> > --- a/include/linux/mmap_lock.h
+> > +++ b/include/linux/mmap_lock.h
+> > @@ -506,6 +506,8 @@ static inline __must_check
+> >  int vma_start_write_killable(struct vm_area_struct *vma) { return 0; }
+> >  static inline void vma_assert_write_locked(struct vm_area_struct *vma)
+> >  		{ mmap_assert_write_locked(vma->vm_mm); }
+> > +static inline bool vma_is_attached(struct vm_area_struct *vma)
+> > +		{ return true; }
+> >  static inline void vma_assert_attached(struct vm_area_struct *vma) {}
+> >  static inline void vma_assert_detached(struct vm_area_struct *vma) {}
+> >  static inline void vma_mark_attached(struct vm_area_struct *vma) {}
+> > @@ -530,6 +532,12 @@ static inline void vma_assert_stabilised(struct vm_area_struct *vma)
+> >
+> >  #endif /* CONFIG_PER_VMA_LOCK */
+> >
+> > +static inline void vma_assert_can_modify(struct vm_area_struct *vma)
+> > +{
+> > +	if (vma_is_attached(vma))
+> > +		vma_assert_write_locked(vma);
+> > +}
+> > +
+> >  static inline void mmap_write_lock(struct mm_struct *mm)
+> >  {
+> >  	__mmap_lock_trace_start_locking(mm, true);
+> > --
+> > 2.54.0
+> >
+>
+> --
+> Pedro
+
+Thanks, Lorenzo
