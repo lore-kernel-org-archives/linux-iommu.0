@@ -1,117 +1,127 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8A89385D64
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 19:32:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D70E35DD1C
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 20:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783020743; cv=none; b=gdvOTPtM/IJPAZFyks2aNw0KrvBOflxvUoMv9k5VRUoih/1CcmNLAmukr14dRUTpEWR/SJcSrFJxwdYkygeFlkq8vz/RMSwScY7BnQuMI60CmbbTge2/jrTbPfzlSEtei3GrWqgCv5vWGV412uXTyOZrD6ybW/HABTZpfUtc4x8=
+	t=1783023931; cv=none; b=EIj42Z32r8z4t2AWPQQb+X4WJFLXXeXqwpIRxPzc9C1/U5R8kyv39UJIH/VJpIbxoK/y7nPiipVzY+zf18vg387eq4GR6HwivoDVQOcrcZGhgUJXTE3Sg+oBOM1eGGiUfG1F/s+042QQiyrSSCL7hu6xvQjB7650bILRzXsRhOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783020743; c=relaxed/simple;
-	bh=Y3myU6PC6Y/+0AUV070w4T/IlmTKT4MrSxy6LSocXzY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SoU9EUKurPy61wjjWRDBPTZ5QPcyHTe09XdTBjZfLv3CbQlgqXVwTxE7a3ZVF9XEL+y8fVpFWBtwt5Zen0sWoZa0D0Jd8q9xEIqzAzLPQXVh5r2gcv2m26m0UrfUm/UpR+z7yJOyS8Btup5o02l+BDVNNLccQw8kLwblGJf0FMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QtYnmaAH; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783023931; c=relaxed/simple;
+	bh=k0pMqimW5JNY6E7Ta2qKbyunsX9A3EiSLwuDAUjF0Bc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jpW3wdJUfmdGTfE+xRJml66qhY+8Cwa7rCznqOfRPE+q+ODGQ+FYARFhZm7Uo082FZlD18365NKyHLbDT6aSyx+awoU4uVzYB23HozOzL/nUnTFpz9Kj+y3DFwCcrrbLXhlvgT+w4I9lRZM8BX/fO/vvxg2e5YosE/ZzF8Lnj7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UIcf7eig; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QtYnmaAH"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-472055b0efaso1488023f8f.2
-        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 12:32:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UIcf7eig"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cacef7d299so27995ad.1
+        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 13:25:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783020739; x=1783625539; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7qgcEW/wpSAcIIpifYaO2mjjD/biPw57/pk0Dft8EAU=;
-        b=QtYnmaAH5B3N1SW+gLrWR3hMIKJ0rzNZk76uX1pihp3ExtSDPNxyR8hMXubxGBJhzE
-         vPouvqYbW2vPsbVIlcJoJwHfOqMDLEXwrbUHn494GQQiM0Dw3a5Vbq56/gGaW+jy3yB5
-         NtkNHJIIfKjhIit6KRQR6+ReVwTnkFScCOxIUGd1faoYzfAT8xtzlrkJN6oTi0EAIsy2
-         8JT2fhnGU79DrJDhJoxaZPQaOFa+5eC1kpdXzVIEXYSuSerLPpu/mb8YMX6TckVl4e8S
-         OHaR3enGAe4C1CBO441aDQxEU0kmuaVBNAeBTzqc7FhqANE5T3S3JHh057hqKC1UN22F
-         JN7Q==
+        d=google.com; s=20251104; t=1783023929; x=1783628729; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=D1/4TQCQv4x02z/PLYtJPpvADBvf6W/GQerzpdxNkZY=;
+        b=UIcf7eig7F9Ou926NTNJwH+PGFffup+lrEv0PvBFzdIfNBH01WGcjNyXAYoWZt8rZ6
+         ajY872ejCWdF5a4meYfOFRbeiOnlAWLcWSozpSe14nkoWGir2FZ4jck+uGNYUO6D+b4C
+         bbt7a23diUA9tGRgckZocREm0ehJH+jNeTLPqSYjef/30KY+hXDNnjv+jJK6faRRyv05
+         Fua4GDBewApyceYkgTbPBSVtgutwN05dnW/Y4A28MX5Egmf4FUh/VwKcBv8fCa6kms+Q
+         9wLHZH2abR1fzQKI7A0Nkxzb9Gg23pzYtU3q4qPM1ZRHNHS0SMoHJczcCeicYlKIyQpf
+         mX0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783020739; x=1783625539;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:sender:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=7qgcEW/wpSAcIIpifYaO2mjjD/biPw57/pk0Dft8EAU=;
-        b=kWbKbS/cdbZNWCyEl5u2C/05b6bwXmS2QNNTaLxCe3F78piW5F656zKnGZ5PRw3gHE
-         mGEhQ1W87jeWWReDCEUamMscjM2GJhdlgp8A39IZXzLsKsqZW8WTjt8vTKthiM8LcxaF
-         yp1KZhZgW+Gm99YOUYzHDF+BdWE03uK7CcMBTyJtxmZsl2+VuxbgnKenS1MXkEn7mE1q
-         DcJocmYWom8opKyhiu87ZoZoq6ABae9TZmMXqxNN0P2PL3tZUReBqHV4S2JFnVCiA/WI
-         eAZch/8EgOOG6XlLSTvVHDWbohicHgaG9nLgXa/IhalYnr2/J9J+kTAu3CxD4QTnXiuX
-         ojag==
-X-Forwarded-Encrypted: i=1; AHgh+RqN92QDljUnpOIgpReUt7hcJLIv8PrC9oMsnAm87q2fu4imCM369+xVbAV2cQz0x2YPzCAJ5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxmCDmnLnOKPSa+BBwd3IAxS6EHXLdPwXtwn5TTKP2FnwdB9tDX
-	N2lyXCi/6Lf2spR0qqVsaAFdsnhPIjD+b4KMMoU0MHihwKqs7p3k6W91
-X-Gm-Gg: AfdE7clkIQs0x8L3oZL1Je+4/WfJ4xzfxTZHYJoV0+vRq52pFiSbZ8owlb9OjliNSVX
-	OfrpVq+pXEnOqhhs5QXhIqLZlutASy3sV3OqET/8xp2joyRSDEuALCY4HDPuX7IPVEKuehy4tt7
-	bU8ceChx48H95SZhgQJgIibNTsnL38/2sY+KWk9edWuAu5dIiOFituduJIeZR6LO4+T1rHuUZQy
-	tnddyp4ST5lzCa8cNHtbDiEsEOHCb7WjMqrJNf1VcTBfdkZZp5YxE9rJv71ULjU0Dv6yQH9Wc6n
-	KHWsOwilh7h2seQuh0Xf3z/plj8Zmaembn+rqBt0bnrdnrSEpqSWFlWiStw5V9fkb0a+NJ5mFSK
-	KKIaBuAbqG0tvtelFiHXUhDQEW58pjuqvdY2PBHjnfq+dJoSutVunCB3gyE0bQGCm7pJ8YjjjvD
-	kj1u5xROsv+RCzXzj9IxZyUL/WMz735IAnvF2SKKdl8diHKB/acxH0zEL9ay/Y4Acr4jKHRurq7
-	sNBMCLR
-X-Received: by 2002:adf:e00b:0:20b0:475:3a97:8e47 with SMTP id ffacd0b85a97d-4775918fa48mr8502412f8f.29.1783020738996;
-        Thu, 02 Jul 2026 12:32:18 -0700 (PDT)
-Received: from [10.128.11.240] (195-23-151-163.net.novis.pt. [195.23.151.163])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-477dd94ce4csm12070471f8f.17.2026.07.02.12.32.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jul 2026 12:32:17 -0700 (PDT)
-Sender: Julian Braha <julian.braha@gmail.com>
-Message-ID: <a0cee001-7bca-438a-943b-da28528e7df7@gmail.com>
-Date: Thu, 2 Jul 2026 20:32:16 +0100
+        d=1e100.net; s=20251104; t=1783023929; x=1783628729;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=D1/4TQCQv4x02z/PLYtJPpvADBvf6W/GQerzpdxNkZY=;
+        b=MwlPNV2WC08Ehb5QuHdOgNJK07nimv8ThnhzGBVqHNN65tEDsoAZH3DweC+wtgtaeL
+         BzfuwFPT6m+INn3O2JbyoiKHf7Lafwz/8LKkP9OrHxx0NzihqE/sB43UfGlk3ry0qHYg
+         tJh2zKXJTmv0iGCzlzn6bSIF3/4t20btI/+IOXGPy06S0VLzqXyT7DUX4NjXFE4LjBwJ
+         H0HzjnsH8b+KtzO5SerIHnzbkvHS4nHT9KbWKsjaAJGLabr6OEx9p8lQR1rLS/f21J+C
+         cKoTocj1/enHkUldKtJavvXQJoj3amqHO8IUNhWVAsLc/kxPOihzlY7SNNKTcAO7tflv
+         ABxQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoKYJMBzLUro10nXpPASr/AwzL4vAlADwQ3IrWk0LKHnCQ5hnmltaEcj8BZhu8TOSeo2T+foA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyus/rC3MAHhRE0m2eIG4AFYy/FC2jEv+2kyyWa+cXaxBKLDz/b
+	gIEuTRLStppUNbdAu7RH3uXzdRRGcTMGUREHhAo3JVLB4ekblyCJ23yT852sHgwEzQ==
+X-Gm-Gg: AfdE7clh2F5Lc+VYuJdRCPHABa3ZY3dp80kQj9B5tlTWHX9gFud98c73wzfw0wPwgPV
+	Qf+msmla1zHqQx6+zRUPyQ3bIucf2RUHUEot7VIej8g2Chu3wZpkl0Z4i2odqtuxFe0XyLvx4Iz
+	tIRv2hik1e6RFqcc5+NjO8ljKTeROZpVVUlNXDekizmeCQ/L5q9NSR9c4p80Fqc38KoDYj9SVsP
+	dH9D1GqclUEROY8wbunKdzpuDTICJ6TgogCUBCQXkuXiPobsRCPDFNsGvWeNih3OiuO1HLnrRP3
+	0KgIdOttsEVjADJYZXB6ZE3CyJQMg2To8uQ8LOP4reUHwcW5WCJ9JreHYe1gUYndxbspPhlUFf9
+	dDW/A5/zORG0H7z2WD4lt1RWizlFZAJReTvajbZH+L2bUSvMwABGjeh0CyEGQdK6QdW7tW8QSt7
+	rCbSz/yFKVz5jQ6E4jvil9P3i8Kbgj9NvNJGAJdpgUulMYUsg=
+X-Received: by 2002:a17:902:da8e:b0:2bf:1000:d3ac with SMTP id d9443c01a7336-2caa6ff1431mr2958025ad.11.1783023928961;
+        Thu, 02 Jul 2026 13:25:28 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca9aa0b7e9sm18461795ad.81.2026.07.02.13.25.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jul 2026 13:25:27 -0700 (PDT)
+Date: Thu, 2 Jul 2026 20:25:21 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Kiryl Shutsemau <kas@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>, Kyle McMartin <jkkm@meta.com>,
+	Breno Leitao <leitao@debian.org>, Usama Arif <usama.arif@linux.dev>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
+ kdump kernel
+Message-ID: <akbJMT2mH7QfLwuQ@google.com>
+References: <20260702112825.781750-1-kas@kernel.org>
+ <akZ-KIVJlmP4LEcQ@google.com>
+ <akaFcwcSHVGeT8PZ@thinkstation>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/10] HID: apple: Add DockChannel HID transport driver
-To: michael.reeves077@gmail.com, Sven Peter <sven@kernel.org>,
- Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>,
- Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Kosina <jikos@kernel.org>,
- Benjamin Tissoires <bentiss@kernel.org>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- iommu@lists.linux.dev, linux-input@vger.kernel.org
-References: <20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com>
- <20260630-apple-mtp-keyboard-final-v1-8-506d936a1707@gmail.com>
-Content-Language: en-US
-From: Julian Braha <julianbraha@gmail.com>
-In-Reply-To: <20260630-apple-mtp-keyboard-final-v1-8-506d936a1707@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akaFcwcSHVGeT8PZ@thinkstation>
 
-Hi Michael,
+On Thu, Jul 02, 2026 at 04:38:55PM +0100, Kiryl Shutsemau wrote:
+> On Thu, Jul 02, 2026 at 03:05:12PM +0000, Pranjal Shrivastava wrote:
+> > On Thu, Jul 02, 2026 at 12:28:25PM +0100, Kiryl Shutsemau (Meta) wrote:
+> > > The command, event and PRI queues are sized from the maxima the hardware
+> > 
+> > A minor note here is PRI & EVT queues are disabled for the kdump kernel
+> > (see arm_smmu_device_reset). We could just mention all SMMU queues are
+> > sized [...] in the commit message. 
+> 
+> Fair enough.
+> 
+> Here's updated commit message (I will send v3 in few days, if no new
+> feedback):
+> 
+> Subject: [PATCH v3] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
+>  kdump kernel
+> 
+> All SMMU queues are sized from the maxima the hardware advertises in IDR1,
+> which can be several megabytes each, and are allocated at probe. The kdump
+> kernel already disables the event and PRI queues (arm_smmu_device_reset()
+> drops CR0_EVTQEN/CR0_PRIQEN) but still allocates them at full size. On
+> systems with many SMMUv3 instances that cost is paid per instance and adds
+> up to tens of megabytes of coherent DMA in the capture kernel.
+> 
+> A kdump capture kernel runs from a small crashkernel reservation and only
+> has to drive the few devices used to save the dump, so deep queues serve
+> no purpose. The queues are not on the DMA data path, so dump throughput is
+> unaffected; a shallower command queue only bounds how many commands may be
+> in flight before a sync, which does not matter for the capture kernel's
+> small device count and modest I/O.
+> 
+> Clamp every queue to a single page when is_kdump_kernel() is true. Doing
+> it in arm_smmu_init_one_queue() covers the command, event and PRI queues
+> in one place. The command queue still holds at least one batch plus a sync
+> (256 entries on a 4K-page kernel, well above CMDQ_BATCH_ENTRIES), so
+> command batching keeps working.
+>
 
-On 6/30/26 13:54, Michael Reeves via B4 Relay wrote:
-> +source "drivers/hid/dockchannel/Kconfig"
-> +
->  endif # HID
->  
+Looks good. Thanks!
 
-> +++ b/drivers/hid/dockchannel/Kconfig
-> @@ -0,0 +1,15 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR MIT
-> +
-> +config APPLE_DOCKCHANNEL_HID
-> +	tristate "HID over Apple DockChannel"
-> +	depends on APPLE_DOCKCHANNEL
-> +	depends on APPLE_RTKIT
-> +	depends on HID
-
-APPLE_DOCKCHANNEL_HID has a duplicate dependency on HID,
-since you put the import for this file inside of 'if HID..endif',
-and then also gave it a 'depends on HID'.
-
-- Julian Braha
+Praan
