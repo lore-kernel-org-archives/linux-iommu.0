@@ -1,166 +1,223 @@
-Received: from LO0P265CU003.outbound.protection.outlook.com (mail-uksouthazon11022106.outbound.protection.outlook.com [52.101.96.106])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9A303EAC84;
-	Thu,  2 Jul 2026 11:11:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.96.106
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782990671; cv=fail; b=Hw4LZC4nchltInOu9jG7INw6L0mX/PXoOtv1sZK6+5CgZ7h3DXrJA7JKiD0hCYL8XVj/rdbeRwHmOoX9gRDcz2zQKIgoN5KQOk0EXUHGhRUmDdovDROt4w1LYVBgjIuw3Y5FB4oE9+9C0SkC84QoIrAKxfRkKOzyqfxSqJT1rqs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782990671; c=relaxed/simple;
-	bh=xR8DKJqAOOqT+oHkmbW7CB/Vx3FcGelsHgrTSmbJYW0=;
-	h=Content-Type:Date:Message-Id:Cc:Subject:From:To:References:
-	 In-Reply-To:MIME-Version; b=Isv2AY2/5E5p8P/YYscMnBDkGutu1CtKwks8rmMsBVIZZ50Fqvwv4DyI5WMYo2znjcgF7KYZlDRQPGzs17sczT1whOECnxb2bXsQE8FJhUgzlBAQzQ5iq9/DrXZE45RaAkL1Pgl/nD1AFesPW5R2EytyBsz8dwuU3VAMIaXgctM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=RDKuiGE3; arc=fail smtp.client-ip=52.101.96.106
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D1933ECBCF
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 11:16:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782991003; cv=none; b=bL+CzpJSxZjVaZRpL9eo0cPg6q+TR5iyDpD/yKPUP4RTvi8+2Zlw/mHYUlaqKYT38fL2zol80MvHfl/z1qhUya3LTNcCAA3QizwCF0fkDxtvJ2uvF811if9T7W0ZbMjqIfDxt+boAbImz1pzphsHP0i9i0/prSF1aIq09Kv5rQA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782991003; c=relaxed/simple;
+	bh=egNNIeSTqKDsuUgb2VZ0PZXU/HWv6jJeb1LiC5f7h6I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nu9hyY7//FxT2q+npWViU1M8apK4Y4TEolwGeXh+Q9KO/UfqueZvbJjm7+ICmZmpeH4THb16iSAykhcsnFfeNuP6PGbmz+xa9zBLQugwKA2/6ZcVvrhjlmDXx8FS1Tj3ezd+MMJMffrTX7L9vB1HPVFPJC7H7lGSpERs9Sh9wOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=MaQ0JND5; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=3pvLQ4ye; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=MaQ0JND5; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=3pvLQ4ye; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="RDKuiGE3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Cow+EElfUlUg611y/2vEkblLSKcsYk7kJjY17TJrIR7ibQDm/hUl84Wl1lzx70oVLmKWSY/95gE5lZF3jFwTnmjNe6CHlRwwNQRh8IQA8OwA4cWU5IfY2MSElwB7fK6JCw1coxGLIV7pRibzA9PGLeg8xvqT9/Z2WRuYW7adP3VwV3fDbqHo+84AxMUsZ5a+lWnUbsz3WyiFfxrcZQZOWtMHf45Ni5CYKrQMlaqxA6hPST/tSzNqPDog9SR8BjjMKBhIhDQ5rsSV1kfQ8CoaPUOWGT+Q4YhDWv/gjcOO5UY8v64pdoNR8EvFMHjYH5o5buQpqxEMQfl7W7rq+ZmuQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Yy23mlVrp7XqSSlIrAHH5RUG1Od/NeuCBeGGs958/co=;
- b=M1KXgW630o9gLrr9uTodxgE4Nshz+nu3fs6p1l9y9rSNWD36woAP6mDysXg5G88F+dUcfYssp6+wRFALv1pz1PWMZ89wGkSQV6CORi9BuXaW03Anldq/6xXiksxgyFz4T5znBxwp0XSpj1BSuNwLa2HemLw9ABX8L5Y5CTMcat5AXoqSUkndxB72f7INjdbVbjSBY1kI6sFWQY8LrMHA/fMk+qLzIlXgheQTq26S6GAbX88X27dvSvSy4Vlc/CgUNEcNA/nNNIklVTNz4qPW6z6OXUmGTJfmppf7KuH8aADU/sQP5XyRbpX798844KdM1R9MNv1Y8t7OJEwXJwf6/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
- dkim=pass header.d=garyguo.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Yy23mlVrp7XqSSlIrAHH5RUG1Od/NeuCBeGGs958/co=;
- b=RDKuiGE3gzTaIj65keg/pUGlvMXZr0NXivmKuIa/0UqCtSFz3GuTkiPmtFt75wbOe8F1seZ6dbwZN8GH8DG7RM7ACQmTAjkXIt5NOgB2NNLWxDD2dX7e2BV9B6RTsnaqnX9aU8BuXZ0i1DlYe9nlbLOPIopYeQYPIOfNixRELHY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=garyguo.net;
-Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:488::16)
- by CWXP265MB2646.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:88::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Thu, 2 Jul
- 2026 11:11:05 +0000
-Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
- ([fe80::1c3:ceba:21b4:9986]) by LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
- ([fe80::1c3:ceba:21b4:9986%4]) with mapi id 15.21.0159.018; Thu, 2 Jul 2026
- 11:11:05 +0000
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 02 Jul 2026 12:11:05 +0100
-Message-Id: <DJO1FVUK9ZD5.31NEM51PY0WJ6@garyguo.net>
-Cc: "Alexandre Courbot" <acourbot@nvidia.com>, "Alice Ryhl"
- <aliceryhl@google.com>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Benno
- Lossin" <lossin@kernel.org>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, "Boqun Feng" <boqun@kernel.org>, "Daniel
- Almeida" <daniel.almeida@collabora.com>, "Danilo Krummrich"
- <dakr@kernel.org>, "Gary Guo" <gary@garyguo.net>, "Miguel Ojeda"
- <ojeda@kernel.org>, =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- "Robin Murphy" <robin.murphy@arm.com>, "Shuah Khan"
- <skhan@linuxfoundation.org>, "Tamir Duberstein" <tamird@kernel.org>,
- "Trevor Gross" <tmgross@umich.edu>, <linux-kernel@vger.kernel.org>,
- <rust-for-linux@vger.kernel.org>, <iommu@lists.linux.dev>,
- <linux-kernel-mentees@lists.linux.dev>
-Subject: Re: [PATCH v2] rust: iommu: replace core::mem::zeroed with
- Zeroable::zeroed
-From: "Gary Guo" <gary@garyguo.net>
-To: =?utf-8?q?Nicol=C3=A1s_Antinori?= <nico.antinori.7@gmail.com>, "Joerg
- Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>
-X-Mailer: aerc 0.21.0
-References: <20260629201046.423464-1-nico.antinori.7@gmail.com>
-In-Reply-To: <20260629201046.423464-1-nico.antinori.7@gmail.com>
-X-ClientProxiedBy: LO4P265CA0146.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:2c4::18) To LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:488::16)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="MaQ0JND5";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="3pvLQ4ye";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="MaQ0JND5";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="3pvLQ4ye"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 7A215758C1;
+	Thu,  2 Jul 2026 11:16:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1782990998; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eRBGEURpGsQZvwqVZtDQ4XJM7h1z4ZC8YrrvTCFqxmw=;
+	b=MaQ0JND5KWm4wpsJciLfkQvP3ai3tn4nmxHssSfFpsKDgKPYMo0CCpWKvNCaMeBjXitcJ3
+	ryZQphknx3FCsPabrXjnCA7E61K/L28Q+1mGAIXijYZw0KuJju507sLH6zDd+1GghLs0zF
+	8X9joVhTiON2oevqtL6uIb5F4wnvrBo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1782990998;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eRBGEURpGsQZvwqVZtDQ4XJM7h1z4ZC8YrrvTCFqxmw=;
+	b=3pvLQ4yedxRGWLa9EIEPJidt5sWRqQteN0D5+X9wN34CbwAqs9zn4kp7F2+pWog96DCFuh
+	7UShynnYN7M9UJCQ==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=MaQ0JND5;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=3pvLQ4ye
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1782990998; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eRBGEURpGsQZvwqVZtDQ4XJM7h1z4ZC8YrrvTCFqxmw=;
+	b=MaQ0JND5KWm4wpsJciLfkQvP3ai3tn4nmxHssSfFpsKDgKPYMo0CCpWKvNCaMeBjXitcJ3
+	ryZQphknx3FCsPabrXjnCA7E61K/L28Q+1mGAIXijYZw0KuJju507sLH6zDd+1GghLs0zF
+	8X9joVhTiON2oevqtL6uIb5F4wnvrBo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1782990998;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eRBGEURpGsQZvwqVZtDQ4XJM7h1z4ZC8YrrvTCFqxmw=;
+	b=3pvLQ4yedxRGWLa9EIEPJidt5sWRqQteN0D5+X9wN34CbwAqs9zn4kp7F2+pWog96DCFuh
+	7UShynnYN7M9UJCQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 13EB5779AA;
+	Thu,  2 Jul 2026 11:16:34 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id fWCIAZJIRmp4aQAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 02 Jul 2026 11:16:34 +0000
+Date: Thu, 2 Jul 2026 12:16:32 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 20/30] mm/vma: introduce vma_assert_can_modify()
+Message-ID: <akZHWwVgJfqCwA2W@pedro-suse.lan>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <23c7602c58cacc23ef22618a27af9a2d54addf58.1782735110.git.ljs@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LOVP265MB8871:EE_|CWXP265MB2646:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9bc17748-69aa-4b93-1304-08ded82a9c57
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|7416014|10070799003|376014|56012099006|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	/ssZioQE4sKaKhn+eGMOEs4EKHebtzRq3iknykuWfswHxeR6WTGDBQeWGtysaXX9EGh29/oSoU6qvVW6XQmGoigRAb/cQyR8/yjxmsANV2zuRvJnfYaYjphDk+t0MBpFq5R86x7UX/LxjmliZcdFL4Irkls7er41c/dxeDdGN3/0HOxrOHZpBIDyJuYLkkAY4Njgpzw/yUWUuiCznbu/RULyJnMri79sWc7xEGiuir6gbLB+Enl48m+Y72QHgpLrpSNbN459fLZ6svDMY/YmpLJ+HyRbAGa7hwP/n072+SyTVHFZEWeq/UTmLhwgLhUEYKSTNdt+3qdFdpBw93cR8qe1PUddmFb9KpY0OU7GY/nhrKW15yoK9AaVwu5bP1mTp2tIZsm57XC1YwPe2w+nO0javQA+5TDWlz6IDMc6xKxAKm75fdgZ/fL01v8rQTmxR2R6yDGXtdxf78X1NQahDW1j8KXuq+8ZWStZGM520kYm9biLTBqtRr2GhMLZW8OXbcUTRjjlBjfF3HeTPYJuNFK0T0sKr4ov4vxopi6xZxedFa2NIZ7DAayzKaMfJ7ZUbGLOZSeQYi0rf0iD+HIeyhpOcn5ZfepR2tQMyZIWELo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(7416014)(10070799003)(376014)(56012099006)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WktzaGxqckhxT2lMYmRjaVFJeHkwQXl2UW83OWJIZkhvVzZ1c1gvRVB6N0F3?=
- =?utf-8?B?OFZQQVJlbEdBZU9CMVFZVUVueVdyUGR1V0QzU2NMNGFUUkVKVGRnYXk4cllm?=
- =?utf-8?B?WDBLa1BRclQyZ1U0TExiK0RDc3R1YjZaUE9VOWlTN1k3WmR3N1NTTFZoTjlO?=
- =?utf-8?B?dWtSRmlJakpHdzYvVjdiT0xLV0FHejlEd2JHdWZyaGE3cmE2MVhRbDJ6LytT?=
- =?utf-8?B?NG90SkJrMGZVQU5wazJhWEg5K2NFWWF4WjdPVlpHNk4wdXFTcVZ2WUo3QkhO?=
- =?utf-8?B?ZkRzOXY5dE9EazQvak16VktjemhYa0FZNEVoUVBmSml5OFN5bm5TVnd2VTZK?=
- =?utf-8?B?WlMzekZRZjk0ckppUGxvV0FYZTJZT3VzdDRINDhkTmppWUxaK2trK3BuYWJK?=
- =?utf-8?B?ZW5teHh3eEFBTUdHajVEVFptZzExMmlXQllDWnpSc21Edjk3OEZvQWZtYWp6?=
- =?utf-8?B?OU1KZDlZRzArL2JKOFhheS8zczBwZHlGY3hwVXRlNGNUbE5lUkUxSHdLbitE?=
- =?utf-8?B?Y2dObEtkdzFlRjI2OEJRMEpXUm9Vd2M1RXZCVWFoZExMdTFhdTF3V0hZNi9v?=
- =?utf-8?B?QUFZd3h2bXM2ZHRxbWtGQmtySlU4YjUrR1VoUlo2b0RBVHk2aHMyeDA0OFgy?=
- =?utf-8?B?ZnlSRXpoT2JobDFWWDFjVWowaFhNb3phekoySi9PNzhIbnNLR3B4ME1TZ3M2?=
- =?utf-8?B?MjBRVG9jYSsrcWVaOVVuTXAybmFzdVpCMmxCZUk1TzJzencxZGJlTURmeVNG?=
- =?utf-8?B?YXZsWUdCWERVT3ZxYlhVNnF2NlJ6YmwrMjRaUVcxeGJ4NklPR1lWK0JxbGtr?=
- =?utf-8?B?OUlDY3ZlbFBTSHAyc3JtR08xRnRWSW1TV2tUOW9oenM0OUR5N2s3QlNwMG5T?=
- =?utf-8?B?MFpiRERubEVpclNVY3JvdmJkTjFoLzNjQWhmcWJMd2Nabjl1Z1lwbWtmYnhn?=
- =?utf-8?B?YldtK1VjQnkvVGF4OVY2bEhRYllSQUlrdnRNQ3ZhTDRCMlQxb1JQZWNlbTdz?=
- =?utf-8?B?NDRuUjZranBBZGI2NjM4VVZ4MUNzM0daQzArK3pFU0FkVnZLTE9wdHhNV2lr?=
- =?utf-8?B?RWNJMDZWUW90VkdDYklDaXk3Tlpua29FZzdRT2xDeFdRR1pHTmdZR1hBejJa?=
- =?utf-8?B?U2hSVVEvekRVRndLQW1OMEpBdXc0UFdyeVpMUTlaNldNM0d5eFpROEowWnlz?=
- =?utf-8?B?blJZeU9EdmlqaHhBSk1XVHRHMTlhNFBoOHpsajlITnBsY3V3Vzg0cWsvRlBK?=
- =?utf-8?B?UlFrekl6KzNJS0Jvdm9QcUZPWC9aVkdtQk9YUldpYVY3ZEZFZzZBRnFocDRs?=
- =?utf-8?B?UEdsbnBSSnBFM1pCdkZlbzhvQ3lvdHNCcW0yQnhIOHhyRndTMUNRZFRIVElO?=
- =?utf-8?B?Q1ZyYkxGNU02bUt4NXljVnRQaUIrb1hDdUNOQmt0VzZISjJNdlYvYWNNNnA5?=
- =?utf-8?B?Rm81dHh0b3NFd1RxZlhzNEFrZVZsb1BMN2JGdkFmSVFBM2xCcXZMZ2laZUM1?=
- =?utf-8?B?dktQejZBMDRTZlgvTDlXZDBPUkR2c2NyL0hLbjBudTlSZlQ4cHJScUhtMUk5?=
- =?utf-8?B?RVNGRFNLeWgvUEJGOFloaWRlM3V6M0t0a25COW9ZVmVrV2hxY2RYS3BXTEQ0?=
- =?utf-8?B?TFBkVDV1d2t5R2tDSlp5T21mMVh1VzNsYk5Da1k5TG5JN1Z2Wk5LRXROOTBV?=
- =?utf-8?B?QXUvWk03Qk9oZ0d3aUNIZ0wwSUxhSDFONHpjZjF2eXlQNkY3bkQwWG5GRGJG?=
- =?utf-8?B?OXpPVk5EOVNZb3JXVEhwcmVWcnFCNkdTa3BEczJtbDNIbmIybzN3VUNhS0xh?=
- =?utf-8?B?bFZNZURFbXV5UnFlZjJUeCtwdFFQSWxZK2lmU0QyQlcrUlVqbnBDYURvSHE1?=
- =?utf-8?B?K0lVWFFUVnBNR1YzeHVROHpJMVZuYnI1bkliOTFEeWhZZkNoRTZHVUNJOWJZ?=
- =?utf-8?B?Z2R5SEJDUVNnbU9MNVVsSWU3cmV1N2gzdlVqRkNna01ncWs1MG1DcFI1QmpE?=
- =?utf-8?B?Y1V4dTUxenN3bW1YUE45OGkwWGlTa2VSTlVMY2lmdzBHL254bnhnUnFGazJX?=
- =?utf-8?B?ek5OL1hVU1VQM3J0ejVtRWRwaWl6Y05IRjVuKzJUUzFQdEhydHljMzcrelNy?=
- =?utf-8?B?YWNYbkZua3lzY2w2OFR4NmtaUjNJSmlHM1lKMG1SQnRrWDNCbUEwZGd0bEU0?=
- =?utf-8?B?MXk3akpRc0FzQURYNzBsRCtEMktXVGZ1R1FHR0tTWG9zUG0xZjB0MDdBVHhT?=
- =?utf-8?B?MHdDUmlBWlJGdno0clJIdDFuZDE3akgwdTdCbTJFbE5JdnhpT2dUZmpFT3FV?=
- =?utf-8?B?QWhrSmI1Q3huMGdQRjFkTE1wY2xSR09jK0VadWc2a0xNU3d6cEs4Zz09?=
-X-OriginatorOrg: garyguo.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9bc17748-69aa-4b93-1304-08ded82a9c57
-X-MS-Exchange-CrossTenant-AuthSource: LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2026 11:11:05.7069
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FVaveT6v2dTiPD3ejtgo6jKgqzO8ddTz939THXWtDjyOOR4K6JMXCDqpMbIHscTkHuR5n5l0bWvoASM98v8PCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWXP265MB2646
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <23c7602c58cacc23ef22618a27af9a2d54addf58.1782735110.git.ljs@kernel.org>
+X-Spam-Flag: NO
+X-Rspamd-Action: no action
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com,gmx.de];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	TO_DN_SOME(0.00)[];
+	FREEMAIL_CC(0.00)[linux-foundation.org,armlinux.org.uk,kernel.org,siemens-energy.com,hansenpartnership.com,gmx.de,redhat.com,alien8.de,linux.intel.com,mev.co.uk,visionengravers.com,pengutronix.de,gmail.com,ffwll.ch,suse.de,oss.qualcomm.com,ideasonboard.com,nvidia.com,amd.com,shazbot.org,zeniv.linux.org.uk,linux.dev,google.com,infradead.org,samsung.com,goodmis.org,huawei.com,vger.kernel.org,lists.infradead.org,lists.freedesktop.org,lists.linux.dev,kvack.org,googlegroups.com,surriel.com];
+	MIME_TRACE(0.00)[0:+];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	ARC_NA(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	R_RATELIMIT(0.00)[to_ip_from(RLziudqfrzo6b7hzgpxksh1d9i)];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:104:10:150:64:97:from,2a07:de40:b281:106:10:150:64:167:received];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MISSING_XM_UA(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[75];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[pedro-suse.lan:mid,suse.de:dkim,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Queue-Id: 7A215758C1
+X-Spam-Score: -3.01
 
-On Mon Jun 29, 2026 at 9:10 PM BST, Nicol=C3=A1s Antinori wrote:
-> All types in `bindings` implement `Zeroable` if they can. This enables
-> using `Zeroable::zeroed` for `io_pgtable_cfg` initialization instead
-> of relying on `..unsafe { core::mem::zeroed() }`.
->=20
-> This change improves readability and removes an unnecessary unsafe
-> block.
->=20
-> Link: https://github.com/Rust-for-Linux/linux/issues/1189
-> Suggested-by: Benno Lossin <lossin@kernel.org>
-> Signed-off-by: Nicol=C3=A1s Antinori <nico.antinori.7@gmail.com>
+On Mon, Jun 29, 2026 at 01:23:31PM +0100, Lorenzo Stoakes wrote:
+> vma_assert_write_locked() and vma_assert_attached() are useful for their
+> own purposes, however VMA code absolutely does allow the modification of
+> non-write locked VMAs if they are at that point detached (i.e. unreachable
+> from anywhere).
+> 
+> It's therefore useful to be able to assert that a VMA is either
+> detached (modification doesn't matter) or write locked (you're explicitly
+> locked for modification).
 
-Acked-by: Gary Guo <gary@garyguo.net>
+Hmm, I was wondering why detached does not imply write_locked, and then
+realized that new VMAs aren't write-locked. Could we do it by default?
+Like a simple:
 
+	vma->vm_lock_seq = __vma_raw_mm_seqnum(vma);
+
+might do the trick. I don't see why it wouldn't work? Is there some other
+case I am not considering?
+
+> 
+> Therefore introduce vma_assert_can_modify() for this purpose.
+> 
+> While we're here, make vma_is_attached() available generally - if
+> !CONFIG_PER_VMA_LOCKS, then there's no sense in which a VMA is
+> detached (vma_mark_detached() is a noop), so have this default to true in
+> this case.
+> 
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 > ---
-> Changelog:
-> v2: replaced `..pin_init::zeroed()` with `..Zeroable::zeroed()` as
->     discussed in v1 thread.
-> v1:
->   https://lore.kernel.org/rust-for-linux/20260626203122.713317-1-nico.ant=
-inori.7@gmail.com/T/#u
->=20
->  rust/kernel/iommu/pgtable.rs | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  include/linux/mmap_lock.h | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/include/linux/mmap_lock.h b/include/linux/mmap_lock.h
+> index 04b8f61ece5d..d513286d8160 100644
+> --- a/include/linux/mmap_lock.h
+> +++ b/include/linux/mmap_lock.h
+> @@ -506,6 +506,8 @@ static inline __must_check
+>  int vma_start_write_killable(struct vm_area_struct *vma) { return 0; }
+>  static inline void vma_assert_write_locked(struct vm_area_struct *vma)
+>  		{ mmap_assert_write_locked(vma->vm_mm); }
+> +static inline bool vma_is_attached(struct vm_area_struct *vma)
+> +		{ return true; }
+>  static inline void vma_assert_attached(struct vm_area_struct *vma) {}
+>  static inline void vma_assert_detached(struct vm_area_struct *vma) {}
+>  static inline void vma_mark_attached(struct vm_area_struct *vma) {}
+> @@ -530,6 +532,12 @@ static inline void vma_assert_stabilised(struct vm_area_struct *vma)
+>  
+>  #endif /* CONFIG_PER_VMA_LOCK */
+>  
+> +static inline void vma_assert_can_modify(struct vm_area_struct *vma)
+> +{
+> +	if (vma_is_attached(vma))
+> +		vma_assert_write_locked(vma);
+> +}
+> +
+>  static inline void mmap_write_lock(struct mm_struct *mm)
+>  {
+>  	__mmap_lock_trace_start_locking(mm, true);
+> -- 
+> 2.54.0
+> 
 
+-- 
+Pedro
