@@ -1,139 +1,120 @@
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A444433E96
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 15:03:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88BDE433E8E
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 15:05:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783004631; cv=none; b=rIXamH3UOQc77EN50qmIxhpsF5QtPKcN2VAqLe+stVJJRLoXX+IRpS/jrpC1V6NsemOxRLt+Eo2v0edXo268zJaa4bXG1odApieR93ozQfTg5qITe4le/vVQUvw9tq+3i0W31vQvrrczsnRG9WSTKvqc9GoPh6As5ytyr1QhKgw=
+	t=1783004727; cv=none; b=CSRbacIJr+48ACDIt6NubaWofj0SaUCaROE/Qmdxd7npgbT35MPjHtQQbrd5CTWn6pPFR3fxDFEyCd5IPH5Vv7wObhCoaDjbek8rSuJ1ZFqxBBqMuS+Mx/ywcuj1Il+oXGlU10W7ts2B3vP5Bn/33IOG6ETDNDNHRLlAoVJr6Z8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783004631; c=relaxed/simple;
-	bh=W8BurQ3nRNlTzRaGRE3wTvVbqX5y4A5tPKLolg771wo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=G/2NbvmYvITHcqlh33kIHMg3iRDTMOTINASfwH3CEp++yS+W8stO6waQusuiCDtRucqYSNUczJEITi78j2u5907qgxv6sfpdLvAdTr+Ev3bZbZlsGzHs2OPnkfSMnDHYO+tC74Xo2KWQiW5RW3WMd3wdsB1StiCNBXkJhu87fIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org; spf=pass smtp.mailfrom=bitbyteword.org; dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b=VKPN3bWV; arc=none smtp.client-ip=209.85.161.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bitbyteword.org
+	s=arc-20240116; t=1783004727; c=relaxed/simple;
+	bh=YCpC3z2Mm9LjQyPLfuLvO28v7VtBiXIyE2W8Vn+gKdw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PS78OAaPtBTN4X23HZbs6n9njxGEKRjvQNJy7lcy7MJbUQJ1qlmfDxmmjKfQ5NpCnEcJYhfVA7BRHKpDiCFmjFHYrd38CjSEbqQw+RxFmuESe3HiT5lH/LTL2kTW9TwdYDq1E/xpNkBnA/KWZkVhnaBsa84A/lv+Yc5rGJDFOrw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JbRr5ZxY; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b="VKPN3bWV"
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-6a18e363d52so644045eaf.0
-        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 08:03:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JbRr5ZxY"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-51c10e86e52so627431cf.1
+        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 08:05:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bitbyteword.org; s=google; t=1783004629; x=1783609429; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nwG/MTWeS4xv8HKjPsiFYVmNZmAypY2FEaPTyYrUllo=;
-        b=VKPN3bWVySAxTxlIX7L1H29uqL4tZ90/3FNjRJbN4o6y3FZ7n8Ihvmg5PGveYLAsvU
-         /x2P84OLVbitaWtrBLbCnyjnbZw56J++VQWecO/O6NujFLWTItA0eP/YRpJzHDqy6F9p
-         0J1mOauUhuN2LJkmRgyrWa6AW9FFLnYCU36XqDuca/PJhwko1VuZ6bhcrksogxdBWfDu
-         rQeieTOrHFI0+7nn1eCgQqEjdeilg5s920aXZAhWHwzJVjxAl40Rux1EGHtUcstIi00S
-         A/d78VqrmjyTXiSVOe4yYTfVPzj7jzpZ3I0R+yyKj4oq2ZAvgSsYQGoFHnYbODyTrnef
-         byfA==
+        d=google.com; s=20251104; t=1783004726; x=1783609526; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=XSio1tefA8hn2ItHYltO++r3B3H0zvF625Ng9n3K4Tk=;
+        b=JbRr5ZxYKamber8rbMp3zFYnBfL9tOox2sB49RLzmxS6MVPPf7flLLfbQAik75R49s
+         hRQvrvQJbAaj2EOUNDJ3eWxvpvmBBYlthClHBod+n3S6ZgIjqA/Ds8h7PxDkOBkx0aT0
+         4P5Cu11dRa9D+F7kfSisXcH/HZwcBT9QHFzSUC7fEt+aVmdr0RSlRIih6xLWP9+GeSOP
+         z+8cPMpSREt2a8wP4q0Y8xbRew+lRk6XUbgxrK83liJzGBRB5zmln7rFX/s9ZgJKt+Qd
+         Pn4wBpyZPHa/74kK1LZwuTQyM9EipMf7k8c04gWOClotc9NuENR07Xlb0FzJ9Y3uHXZ9
+         7rCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783004629; x=1783609429;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=nwG/MTWeS4xv8HKjPsiFYVmNZmAypY2FEaPTyYrUllo=;
-        b=Yw01WypwZGVbuwffUr921iHlzorsoDlap3C1lE9bXepg/6JOCZB7dMihlUO6nqN1do
-         +yBmuzFpLc0/QSgoVLO9wIZiGkVl33CBbP/VTp1V1Pzv9peMU2gwZS/elayORj7/FHgJ
-         wdFdy5ylnlzjx2jYTZk/DHWNwacW/8OSxfvjh6if4WIjBfOBvBTMNolLRTm3bM84gOyO
-         Gg/9he4E/qLlAHUhD90sS8WpF9LcyFybSuCMsCAxLFR4EkhGZytZf0bYmdyZGC8PoOG4
-         km6m6EZ+oBKA75XVuLdUGNQvnsSYxDIGsjU7UEDpJCnb2cbeeAgQZ1x/HKSAbM43ha4J
-         pu+g==
-X-Forwarded-Encrypted: i=1; AFNElJ9WBtn3D7n4qAGRRoDMOnIQcJzNmdksUYIvLQz266JtSEP1SyjbZIzeRI3tuVtWbHFoHxJn4Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzNx3clskUwDI/LZxZbAE6kucTZ5TKc36Z18F62nQUJPVzGcZBw
-	eSF5HlEz4vn/X+NzSnRiNH4z71TB1PveeVP5Ih2weaz/uTAtbruoYM19/5DdCWOyljs=
-X-Gm-Gg: AfdE7cmFRlMHipmzIXUGLpoxrS95C0NJIAaSR7tnmCMVtzVvncM4sqEVfNkO1xFTSdw
-	tHwBDWH4noEK3I7E7hadJJ3Jr0etsD8ICuk4vOhpW+r7/SovrYrKRLiKG2hCpfA2a4cVhsTKx7/
-	M0tIKzkBZHkiSinRpgRURV9u6/K2lcIax5m1VH8Z7mEs0vbpZVB2hBTkhqQpDOA8Vg8zY8FB2x7
-	PRDtvXX6oQCmU/kV4JAO3HPvwKIkDBddQkwB7kJCkGG5Yah/d6bktQRYDJpfIEBzyNrBqpGbHXs
-	JkwZ1attPW5jeSdHj6RMvCEp3nLrHwbfDZVC15jiyIPj33JvpldQW7j2PZhteoxMKbNiCyoRlqw
-	8myCUVA12tcfwayuyPfl2uMLfswVEkbHL1r9OhTve9/+IyTU+yNPCC81+AhjSFwCxWAi2waccqL
-	XUxjQiblyxhtxdppQT4zN/2qe+RtwXPCtkDmYFg8d/gP7IBmktPumn
-X-Received: by 2002:a05:6820:2915:b0:69e:a233:6154 with SMTP id 006d021491bc7-6a31d15bd58mr146837eaf.8.1783004629042;
-        Thu, 02 Jul 2026 08:03:49 -0700 (PDT)
-Received: from vinp2.lan (c-71-235-107-29.hsd1.vt.comcast.net. [71.235.107.29])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e80193fbfsm233245085a.33.2026.07.02.08.03.47
+        d=1e100.net; s=20251104; t=1783004726; x=1783609526;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XSio1tefA8hn2ItHYltO++r3B3H0zvF625Ng9n3K4Tk=;
+        b=EZHrJWP44o9w+Yz66wwgJbFW+xOBFHMmHfjzPzl3+KblhTh0AvfJhNSE8HpWmCXWOy
+         e4/5PilI3dD4ayoEX3u9aMesRSA2rP2/mJAxwgLVxPdEL+aBT0rmzcqTnDimm/ZkrpQ7
+         WvERGAKS7/ALBLVinNnwPIFlP+SIfdflTw6nufivqYS/rm0OvF3eTexcd4ncyh5iozcW
+         108M1XOBmBiFYvpEoQAAELmqc54/z4NoI9la7Z1zqg1xKDFWFp84QkvfgSR85U+bw+kS
+         x0vFHI/Z2SL3AnxHtQ9oNQLrj1Fo1hzgXaNv01jNrJtZIx1B8/KJAfZcy404/4WhmsBu
+         /Alg==
+X-Forwarded-Encrypted: i=1; AFNElJ+iJw0lisLWRrjJnDYLP+fKmhmdMn4LlKedgizS7cIpdyjayZielNlq9if3OVq0QxXYFhgPhg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzSQttSEDg4f6Jrr3r80FLDmpDPAl+7NssCXM66DlqW5wl9q891
+	DIRpxwN+MKE4I9dYtqWx5OdWX7Csu7d8PeLS1/2KxTV+hRdn/1jyliCmq1/B7VAG9WxQmJ4iZUM
+	8CfgZpA==
+X-Gm-Gg: AfdE7clK2F0G37hx4DKzGN7JO2K+lMTiW425r5Jed6GsQV75PGnB5MEGxHeaP1zjp+h
+	L7d67HzS76SuuW2klvckrYRAk5z2DIZbbsupulPOVO15I9snF6CbssHe3ARoaCSOp7EFjT1pBwb
+	EUrNMRHCAerzszgtwCAi+ELME31SJK39V5avp82GS6V2ZYkDi9Bv3gP3J/pCGpELtQagUKBa7Wl
+	LG00CLledVFfuqXliSTmSBd92lzomD0UoKxhW8FQWInZqfrtNOoLBDAwb2RM+YU27Wvpz2FK1zb
+	q00Ugrx2Gmx0py0D6VQ5RVWdmqVh+nCoXYavpSSyFsW+D88IFmAgiQo069W70UXDPMk473PF6yW
+	HsCDjdZwea4adQ075dmYo/iDwBQBO9o+4N7cSlS52cM4wwTvZDi0MCCr0KWmuTBORDGAWWKOtdg
+	6jV4iusdqzXncGDisuD7Aitz80TLyVbmwv1+2bNRcrybo9bgw=
+X-Received: by 2002:a05:622a:1811:b0:51c:d16:b48e with SMTP id d75a77b69052e-51c3191132amr7766811cf.22.1783004720401;
+        Thu, 02 Jul 2026 08:05:20 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44cbec93a70sm3241630fac.11.2026.07.02.08.05.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 08:03:48 -0700 (PDT)
-From: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>
-To: baolu.lu@linux.intel.com
-Cc: dmaluka@chromium.org,
-	iommu@lists.linux.dev,
-	jgg@nvidia.com,
-	joro@8bytes.org,
-	kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	skhawaja@google.com,
-	will@kernel.org
-Subject: Re: [PATCH v2 0/3] iommu/vt-d: Ensure atomicity in context and PASID entry updates
-Date: Thu,  2 Jul 2026 11:03:46 -0400
-Message-ID: <20260702150346.42807-1-vineeth@bitbyteword.org>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
-References: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
+        Thu, 02 Jul 2026 08:05:19 -0700 (PDT)
+Date: Thu, 2 Jul 2026 15:05:12 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: "Kiryl Shutsemau (Meta)" <kas@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>, Kyle McMartin <jkkm@meta.com>,
+	Breno Leitao <leitao@debian.org>, Usama Arif <usama.arif@linux.dev>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
+ kdump kernel
+Message-ID: <akZ-KIVJlmP4LEcQ@google.com>
+References: <20260702112825.781750-1-kas@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260702112825.781750-1-kas@kernel.org>
 
-Hi Baolu,
+On Thu, Jul 02, 2026 at 12:28:25PM +0100, Kiryl Shutsemau (Meta) wrote:
+> The command, event and PRI queues are sized from the maxima the hardware
 
-> This is a follow-up from recent discussions in the iommu community
-> mailing list [1] [2] regarding potential race conditions in table
-> entry updates.
->
-> The Intel VT-d hardware fetches translation table entries (context
-> entries and PASID entries) in 128-bit (16-byte) chunks. Currently, the
-> Linux driver often updates these entries using multiple 64-bit writes.
-> This creates a race condition where the IOMMU hardware may fetch a
-> "torn" entry — a mixture of old and new data — during a CPU update. This
-> can lead to unpredictable hardware behavior, spurious faults, or system
-> instability.
-> 
-> This addresses these atomicity issues by following the translation table
-> entry ownership handshake protocal recommended by the VT-d specification.
-> 
-> [1] https://lore.kernel.org/linux-iommu/20251227175728.4358-1-dmaluka@chromium.org/
-> [2] https://lore.kernel.org/linux-iommu/20260107201800.2486137-1-skhawaja@google.com/
-> 
-> Change log:
-> 
-> v2:
->  - Considering that these fixes should be backported deep into old
->    versions, and the previous solution relies heavily on the x86_64
->    cmpxchg16b instruction, which is not friendly to backport as it might
->    cause regressions on early hardware or configurations, we use the
->    simple dma_wmb() approach in this version.
->  - Jason proposed the entry-sync framework
->    (https://lore.kernel.org/linux-iommu/20260113150542.GF812923@nvidia.com/)
->    which consolidates the details of how to update a translation table
->    entry in common code shared by the individual drivers, so that the
->    IOMMU driver could be designed without considering the hitless or
->    non-hitless replace.
->  - To make life easier, I decided to split all the work into multiple
->    series. The first, as it is, covers fixing the real problems in a
->    backport-friendly way, and the next series covers entry-sync for
->    PASID table entry updates.
-> 
-> v1: https://lore.kernel.org/linux-iommu/20260113030052.977366-1-baolu.lu@linux.intel.com/
-> 
-> Lu Baolu (3):
->   iommu/vt-d: Clear Present bit before tearing down PASID entry
->   iommu/vt-d: Clear Present bit before tearing down context entry
->   iommu/vt-d: Fix race condition during PASID entry replacement
+A minor note here is PRI & EVT queues are disabled for the kdump kernel
+(see arm_smmu_device_reset). We could just mention all SMMU queues are
+sized [...] in the commit message. 
 
-This last patch(addressing CVE-2026-45945) did not seem to make it to
-6.18 stable, while the first 2 patches went in with v6.18.14.
+> advertises in IDR1, which can be several megabytes each. On systems with
+> many SMMUv3 instances that cost is paid per instance and adds up to tens
+> of megabytes of coherent DMA in the capture kernel.
+> 
+> A kdump capture kernel runs from a small crashkernel reservation and only
+> has to drive the few devices used to save the dump, so deep queues serve
+> no purpose. The queues carry invalidation commands and fault records, not
+> DMA data, so dump throughput is unaffected; a shallower queue only bounds
+> how many commands may be in flight before a sync, which does not matter for
+> the capture kernel's small device count and modest I/O.
+> 
+> Clamp every queue to a single page when is_kdump_kernel() is true. Doing
+> it in arm_smmu_init_one_queue() covers the command, event and PRI queues
+> in one place. The command queue still holds at least one batch plus a sync
+> (256 entries on a 4K-page kernel, well above CMDQ_BATCH_ENTRIES), so
+> command batching keeps working.
+> 
+> Suggested-by: Kyle McMartin <jkkm@meta.com>
+> Signed-off-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
+> Reviewed-by: Breno Leitao <leitao@debian.org>
+> ---
 
-Could you please send a patch for 6.18?
+Apart from that.
+
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
 Thanks,
-Vineeth
+Praan
