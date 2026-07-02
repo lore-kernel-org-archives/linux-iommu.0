@@ -1,191 +1,169 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011035.outbound.protection.outlook.com [52.101.52.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C055D35677E
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 23:48:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 463E5381E93
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 23:50:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.35
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783036084; cv=pass; b=f6J21GI6lKvGzgRtgHEBkjIXkIdBfzAzaeAPygwqD05IG+HjCMTh8fqu6q5hDint8NORbssdCZfxWd5aw7Hlq5d5s/CcSycVAEZtDRxQeRxRhzGQesXJqAlQh6W4Tk49mxiMB86cZVwH1gLofT2lQM+eN/n9oSS3sSVqR/7B5fM=
+	t=1783036212; cv=fail; b=fhFCCFBdgE1jZJILeukmOpjOxXiTWLfh2yEKp38m8DS9Pf0FQMDl6067d5GMc1/XjPhJ5llGwKiwIQ23gBCUtQsaJe2mczwLuQKWCrVF8RJz0jByNJyQvkjArKKidP3dZiXCkIut/CVvsRRXW+m6C81K5lQj7c5HPMZAVg6nsy0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783036084; c=relaxed/simple;
-	bh=aBumc0wGxxCOdrgpftfUMvirYJvjxNQ1AjJ9HYWhWk0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=gsaqC36HRp2LitV7ydBgD2DsWyvLiZ5Sx3WHE3nb+68BNZkppDDP2pUBSOYI3D8fxwxH6K1tazXZREZn5B4Ly0UK8onuHQfB/CgVHArYT/1vtBdIanDclWx20tpd1poGCrbr4q+Gi+J7rPLVk1xwDzJ/obT8BtLXWg7eb8I5AOc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=deborah.brouwer@collabora.com header.b=VrWxuUnf; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1783036212; c=relaxed/simple;
+	bh=EZbFBCfpWVfua+91GbzcE+ow8qUPo6oRLYHMowYi/aM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=KedtC/dbxE8luKrg/aFrK1wpYAbxGVogi0SeLMPmNIitkVPezJGfBuGIG+Olr2lMgKIYFSaA/D8IqjeWtXJhqXgvKsGGmgzIHUXIBQ1RQ3+OM1L5F9lHYu7NId3XU1/jAKQYCf1FEDH/53WVlsZeP7OUWyFYjU7A0rWdawb/9kw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=iLtragCf; arc=fail smtp.client-ip=52.101.52.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=deborah.brouwer@collabora.com header.b="VrWxuUnf"
-ARC-Seal: i=1; a=rsa-sha256; t=1783036076; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=C6FybWWGTRwbtg2zrn9aR2t3ZHnc+UU7SEmT6BeaPALb98TUftZFcZIVBEWmJtGWrlPQRxnLV/79ShSZC5/niZ3Yi7lRHjnmPjTLoB5Shef1fIHBtYV9CV3iy/R0CGaCW+BE9579BtyclvMxn0KZI5bR3G0iAOfJyAFbJ0OV7Ak=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1783036076; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=KFVTo7RfLpFVVazK+3bL5ArPbL18Ps/MhpevEmhVSJk=; 
-	b=n/btbTYe+M+7Zbn29Al8asDwj089nfx69gD2ZpGjG9fIsfXd4hShoaJWfQGGWvx3TrjD/zEkz2JxRDMMHKy+T1aV4/1h3KZZFvQRqjlmD6aKvO/EgaHAEUr6hsa9kfGmwLliI4+mLG5d2WNbjReMWzL69ClPAi+Cwo0ueQpvxT8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=deborah.brouwer@collabora.com;
-	dmarc=pass header.from=<deborah.brouwer@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1783036076;
-	s=zohomail; d=collabora.com; i=deborah.brouwer@collabora.com;
-	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:To:To:Cc:Cc:Reply-To;
-	bh=KFVTo7RfLpFVVazK+3bL5ArPbL18Ps/MhpevEmhVSJk=;
-	b=VrWxuUnfF+88pI9N0+mTuhwMMHQQqsNcDwRpdas+M1Sjz8AfXbj604/8PNFghZ84
-	WzG23Meyl7leCsru0Xin4P/D4qO6wxzoKcRLfjDYEEK2frb3ufZ+ZeisqgOfDIYX47o
-	zKbGiwVTQ0XemQr4tNCZuVUtat8JA9QAe5RyKynM=
-Received: by mx.zohomail.com with SMTPS id 1783036074721243.51256091292396;
-	Thu, 2 Jul 2026 16:47:54 -0700 (PDT)
-From: Deborah Brouwer <deborah.brouwer@collabora.com>
-Date: Thu, 02 Jul 2026 16:47:39 -0700
-Subject: [PATCH] rust: iommu: add device lifetime to IoPageTable
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="iLtragCf"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YnVc6qsTJmKPwoxZjxze1LbytSsOga5IVBcP/LqxZ0nCMM1uWlDnZyEDhiXhdRlYEzlS0y4/bnzP2Fr6KgLt9GiNebp8T7sdU6lW/cBFLupyUAuKugzyieqPoOgMcRrn7BuCB43pVl2K+YYjzAJ38ud5W1c00Ufl5qfdWX1bQU5bYV3jTecpxsNsriTq1yt2O/T2gbX+u94rwCuj8D8RL0W6tW/JJJnXv9Y6qRbOQPqvh/tPm15r+4aQtYeQNZcl1cigFwjMwC6SKE150F3BPPWJrZl9NkrEvWftSUZBgXnGTYLdnL6ujdaqBNAQ/QiAhPr12/pry/oRc0WiHX9jCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XP8NS1SBrjDxcUbOY7hTvfRrmYWW+k7OFWmRzlJwnao=;
+ b=rol59God46SMVYzUwbBMc2HUb/PP7p8Nmjz2r1FcLohC32JJokJb7+Qs7x1qLbDwKZ5h1P80LEaBzEC97DPvuzJsHAi4I6Pev+EXYUngt5M7kh5eqW/7oQlKKncMi7q3InvNi+nKyeliCAKJRPHdsfAUGWvIK85YMW3REZ568DW0KayR8DWOEITfxAqdUY/aBROAH93J/0gpXIA3cucTsi1rg5E/OD8HikX0FFWszp3+u7uiDeA7Iwl4Usu/sxFSSx79fvibkyZi0c5cueII1x9xG0V8njv1BWGfxuJV9mql7uy/d0P+nccWq0iCOD/tsQovHhUgN0TBe49bzkyNKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XP8NS1SBrjDxcUbOY7hTvfRrmYWW+k7OFWmRzlJwnao=;
+ b=iLtragCfEg4Hkoz6BE5co1+H5TBaGZ8AKLxe/RCe5hJlpLNVAXlGlTqO7EhtJWUqWQPkHYWztShhZKqiE7BIp0Ap9BS2v9M+QTKdW4vKjoNvHdNtSmJHVgdzFM4wE80CZxGdp0W9qvKiAeoYTcBIaQFoXnDej6FRR8UFLbxppwslX0GGzS0oJn6UrMQT1D2+un53INlokjISli6BBkYAAtgjhOgU6YQ9Z36xAa5AwecyIjjjwWB1V4rtUK1fTow3Xgv897mNRqhRe9tsFt8XEGVUVWxV3gzggNNZmk7QVXJZvMCa9YNK2O8xzw5rFQKXlsW/ieedSiSLReoESekTIA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by DM4PR12MB7744.namprd12.prod.outlook.com (2603:10b6:8:100::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Thu, 2 Jul
+ 2026 23:50:06 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.008; Thu, 2 Jul 2026
+ 23:50:06 +0000
+Date: Thu, 2 Jul 2026 20:50:04 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Pranjal Shrivastava <praan@google.com>,
+	Mostafa Saleh <smostafa@google.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, kees@kernel.org,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, jamien@nvidia.com
+Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Message-ID: <20260702235004.GN7481@nvidia.com>
+References: <cover.1782799827.git.nicolinc@nvidia.com>
+ <akPB6l-fuJUcg4a2@google.com>
+ <akPX_N0P2EcI_jbV@google.com>
+ <akPhuF9pAWaBXzpi@google.com>
+ <20260630185942.GF7481@nvidia.com>
+ <akUQj2pa1W-MekgF@google.com>
+ <akUX3T3fIoN42sdM@google.com>
+ <20260702144157.GM7481@nvidia.com>
+ <aka7N6oLVq3CoBqn@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aka7N6oLVq3CoBqn@nvidia.com>
+X-ClientProxiedBy: BL0PR05CA0015.namprd05.prod.outlook.com
+ (2603:10b6:208:91::25) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260702-pgtable_lt_v1-v1-1-18d9c9812a1a@collabora.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDcwMj3YL0ksSknNT4nJL4MkNdY4PUNBPTVANDyzQTJaCegqLUtMwKsHn
- RsbW1AMO95HhfAAAA
-X-Change-ID: 20260702-pgtable_lt_v1-30ef45e019f4
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Miguel Ojeda <ojeda@kernel.org>, 
- Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
- Danilo Krummrich <dakr@kernel.org>
-Cc: iommu@lists.linux.dev, rust-for-linux@vger.kernel.org, 
- linux-kernel@vger.kernel.org, samitolvanen@google.com, 
- boris.brezillon@collabora.com, laura.nao@collabora.com, 
- daniel.almeida@collabora.com, 
- Deborah Brouwer <deborah.brouwer@collabora.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4554;
- i=deborah.brouwer@collabora.com; h=from:subject:message-id;
- bh=aBumc0wGxxCOdrgpftfUMvirYJvjxNQ1AjJ9HYWhWk0=;
- b=owGbwMvMwCVWuULzOU9c7WvG02pJDFluP1Z6bf2YJsRTcHijucW3oEjvIv32f6fPrfp+UTHE7
- JDF/1fxHaUsDGJcDLJiiixn7Y16xKveG+nO/98MM4eVCWQIAxenAExEkI+R4crFBNWUv+whAlrV
- OyfelOFrmHT7aa/d3mIzw0UfT3h/Oc3w3zlWwUArvHVR4HYnqxs5zjevrlq18/STu60Mv477bGX
- QYQIA
-X-Developer-Key: i=deborah.brouwer@collabora.com; a=openpgp;
- fpr=CD3F328C177AEF322D9FFF8379A829E70C5E7DEB
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM4PR12MB7744:EE_
+X-MS-Office365-Filtering-Correlation-Id: aeca3b70-3b52-4035-5e85-08ded894a44f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|7416014|4143699003|11063799006|6133799003|56012099006|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	LI4XVqDUp5eSobD9/0zogahZQXH5ltltD7ALMA72UEPXtZ66GIJ4IN7q8ypFK6cwx6ZzBxkIAO8zcESidU8x6kgbtmB0QBgiXsEwngFYhAQg9x8gGe5wXtLAXkXpDHv+HnjV912O51ksetXt2VQrdV4t3DFJLgbetSOZ41BXieWuCsq1d1NYaa2qFqA1hx3hBdiTW+w098DIieTzjQS4SbOqv+XBQZXlM+aQAJHO4DeJBloOxMWDSnAFiYzDJS/utDece7P+AMS8Q4LNYRIptn/YAVeoNFlq0j0kzWW8xxdShpbsFizlJ0A4/0Hv0x9iI6qMGh2x3Yac7DtQCc1/iAByCLZQrHnmMoc41MTSVkn/5E+OVANwSdlLB5YX6wf9UgiDkqvmvYvKwkoC29JIch5MdkUTBupMuiZVOhr6OKie6wchlO4vRPMGk8dh7ZXYTIEsMzr6i0ccOzLUnWvnz2xIIx7fXCaJQ2JtCGBu+jjvE5R8rkStpUH4eEtUrHE55Dxn5Rni5VqZuyaUpVZPiQsiAmYflHK6fEhPkWw9qLOEmMtBf5sJT1GHLg3IMsv651ystMJCC1fZJHl5ugZWK2OEP//qGocQrtTgvrPA6UevQRcZS8J77NEoqnNywAlAF8Ft63+JwIPuhSscbk2Y0UXg3wddoEzZQu/LrCRhQfg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(7416014)(4143699003)(11063799006)(6133799003)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?9cCgkV1m2SDTRsXE9d+8axWNhdFNHKTyIQ9dfPl7g3hNdztFhjq9wVMbR904?=
+ =?us-ascii?Q?naS7FXVQg2i4rhxdIDG/ZtrZ4QCNnP8/4sYQQ/BGkGy2IWjR3ery7K0dRlkY?=
+ =?us-ascii?Q?qpTnnkRY4ZgIFBnBr1w3XRowODun5tYVssAGv++l7I6VT8Pt3nSW2ZVkng7R?=
+ =?us-ascii?Q?0wXoMNAJK7ewN2/TcwTv5DeAmhUos44sPR9cxARZ4YVz318LoG2IFn1btkaN?=
+ =?us-ascii?Q?ZyMKjSKPtPFxqVUql2ei1LB69QRHwal9zBQBczttj8VOvhp2XaK7XFiQLkSw?=
+ =?us-ascii?Q?ZQTUsM3dbdjQgETx6J5Ifbwpin0k6f4Bop+7aKGsvlXKIy/A8d1587vHMwR+?=
+ =?us-ascii?Q?S7wCYhrTm0dzH2wFmQYfg+0ny4t1d6Dgd/JMovREcSdd9vptweKAJrIvN/7B?=
+ =?us-ascii?Q?zZQvtk8dM/7nuDwg9angvQU5OIkQic7E0zFvZ2C23sFsKcYDIu649+KQrV50?=
+ =?us-ascii?Q?XHxS2ADqIuGJzLVW4xGFbIdQQ6hsNBN/xrRCBIPqc2uKBNAKFDmr5iPNGP/V?=
+ =?us-ascii?Q?ellQ8rNo9cln+F0WcB4yrXQBpsli0fRioo+qWXXF5WTPC2eXunP1043c57hI?=
+ =?us-ascii?Q?zvOpvJz7x4v75IKxZu9EjiLZfQ8EHiwzGZtNPdK5HWY0Yv7oSoUvrr+ZGopT?=
+ =?us-ascii?Q?4ekbLwo1iPU//HbxdBnszJD5bd+EY3lkHObekXbHLV6GGI/lUVUL561VlkyG?=
+ =?us-ascii?Q?wgqgWD4XKvE53ka/Xj5+WZROWIwx/2iDMZPLQSrF2iBJwzJgS2YibWZIuZm5?=
+ =?us-ascii?Q?P+uMcygiLQo0CNm2d7bmH9d5SGNvzJrIfe2AqYg+lawIvWBpdkpy2lUOn0Bo?=
+ =?us-ascii?Q?IK/drI4d7qCdVHmVqM/Tgg41UU5mHC/e/7uLOQPuIjy8E8qTd5j9zij7055q?=
+ =?us-ascii?Q?raGg5Bkv6MMwekBIlqFj8mlrepsYbAthCJgf50WJiV9cqp/XHb/vDbtnBTjg?=
+ =?us-ascii?Q?IDBH7WFDraQsH15PQ6M0KN7/y/sZ1fky1yNBjnI+j013keEvao8b0bliybN3?=
+ =?us-ascii?Q?+LsmrGfLPL/oiu7sdjbfFFIApH2SKwXX7fPFdInEyZ7k6VkZ9msJdEQjMyQl?=
+ =?us-ascii?Q?p6+1sVuMVe3QbT6VoTjdb8q7NFv30NrzvracPNCJz2BW9PtF+JF3qCgHO7DX?=
+ =?us-ascii?Q?sqdotBXO1fcCTt+aJUlxfSXXXRV216rBm1716qg6mrlAhgubkbbFQ00DIXRD?=
+ =?us-ascii?Q?C5MOOIJQnWuiOB/PV2hsVXyC3mTefLdqtbMqbUs3dkrEmACh9m5p+2mnzObS?=
+ =?us-ascii?Q?WFIi2AngfUO4cxIkvCZIoN+7D/naEI5nAgzPlTIatYLA1krmjoNNePAy9XsJ?=
+ =?us-ascii?Q?MAHq6UC0B3dtaGYVvwIKNGLwTiuVTB+Us9vXtf/8YVYSvcNo+AwYirMAPUqZ?=
+ =?us-ascii?Q?1N1RrvBYKAtYdlAIVGNX1YoaR6riLCQtc9vuIKCFQvnsahfP2bRBNlWdEtRw?=
+ =?us-ascii?Q?EHhgF/ApZoSBjCuYGmCuQ1X3Rbcx1DDeHbWlbAoHesQmiAQoexZ9hCf2Op7T?=
+ =?us-ascii?Q?uAhHkh5GqsL5q7pNmt7ImlKkayhgWE2hgZyVqOj+Li5+2zELa2y2oX8D9Nuf?=
+ =?us-ascii?Q?SONZC0u5Ud6C/9Iyk5PgGW9Nr5Zi1gidcxSwYRAC3tzPqaqnJG/AzmW5Tjgf?=
+ =?us-ascii?Q?yKjo8mG6CivB0g1gi+rrphMbpQ7wi4VtE46dIqxjx2EoLgDfsKN8+nILcni1?=
+ =?us-ascii?Q?bcKU/DFD51DBA/tn2AesPoUV/KQBaXAWvipitEUYZDmMtwfg?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aeca3b70-3b52-4035-5e85-08ded894a44f
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2026 23:50:05.9914
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Zp3fZcfc4LCozAxv4KKe/wp/5yUzjILEHyV85v342zM2fNCJ/qtk3oIomlqux17b
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7744
 
-Currently, using a raw IoPageTable is unsafe because the returned
-IoPageTable is not tied to the device driver binding lifetime.
+On Thu, Jul 02, 2026 at 12:25:43PM -0700, Nicolin Chen wrote:
+> On Thu, Jul 02, 2026 at 11:41:57AM -0300, Jason Gunthorpe wrote:
+> > On Wed, Jul 01, 2026 at 01:36:29PM +0000, Pranjal Shrivastava wrote:
+> > 
+> > > However, I agree with the overall problem, i.e. IF an active device
+> > > unmaps the DMA addr after the transaction in the previous kernel, 
+> > > (with the SMMU powered ON) but the TLBI was missed due to a crash/panic,
+> > > Any new DMA in the new kernel may alias onto a memory in the previous 
+> > > (crashed) kernel, not the kdump kernel.
+> > 
+> > It looks like there is an issue in this series, it isn't doing
+> > anything with the VMIDs.
+> > 
+> > The VMIDs that are in-used by the adopted stream table have to be
+> > removed from the idr as well (and similarly for ASID if we don't have
+> > VMID HW support).
+> > 
+> > Then the VMIDs that may be dirtied by the prior kernel remain isolated
+> > and are never re-used by the new kernel. When the new kernel wants to
+> > do DMA it will replace the STE with a new, clean VMID, and there is no
+> > problem.
+> 
+> I see. I assume the reserved VMID for the kdump kernel will be a
+> clean VMID (!=0). That should guarantee different cache tags.
 
-Since device drivers now receive a lifetime parameter <'bound>
-representing the interval during which a device driver is bound to its bus
-device, add this lifetime parameter to IoPageTable. This ensures that
-the returned IoPageTable cannot outlive the bus device binding.
-
-Also temporarily remove the option to create a page table as a device
-resource since currently Devres is not compatible with resources that have
-a lifetime parameter. This option can be restored once the lifetime-aware
-wrapper for devres is available.
-
-Suggested-by: Boris Brezillon <boris.brezillon@collabora.com>
-Signed-off-by: Deborah Brouwer <deborah.brouwer@collabora.com>
----
- rust/kernel/iommu/pgtable.rs | 32 ++++++++++----------------------
- 1 file changed, 10 insertions(+), 22 deletions(-)
-
-diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs
-index c88e38fd938a..d4a16283b5a7 100644
---- a/rust/kernel/iommu/pgtable.rs
-+++ b/rust/kernel/iommu/pgtable.rs
-@@ -16,7 +16,6 @@
-         Bound,
-         Device, //
-     },
--    devres::Devres,
-     error::to_result,
-     io::PhysAddr,
-     prelude::*, //
-@@ -59,15 +58,16 @@ pub struct Config {
- /// # Invariants
- ///
- /// The pointer references a valid io page table.
--pub struct IoPageTable<F: IoPageTableFmt> {
-+pub struct IoPageTable<'bound, F: IoPageTableFmt> {
-     ptr: NonNull<bindings::io_pgtable_ops>,
-+    _dev: PhantomData<&'bound Device<Bound>>,
-     _marker: PhantomData<F>,
- }
+You will also have to change things to allocate the kernel global vmid
+from the IDR, it will usually be 0 but not for kdump. Then you have to
+find all the places where the 0 is implicitly placed and put in the
+actual value.
  
- // SAFETY: `struct io_pgtable_ops` is not restricted to a single thread.
--unsafe impl<F: IoPageTableFmt> Send for IoPageTable<F> {}
-+unsafe impl<F: IoPageTableFmt> Send for IoPageTable<'_, F> {}
- // SAFETY: `struct io_pgtable_ops` may be accessed concurrently.
--unsafe impl<F: IoPageTableFmt> Sync for IoPageTable<F> {}
-+unsafe impl<F: IoPageTableFmt> Sync for IoPageTable<'_, F> {}
- 
- /// The format used by this page table.
- pub trait IoPageTableFmt: 'static {
-@@ -75,25 +75,12 @@ pub trait IoPageTableFmt: 'static {
-     const FORMAT: io_pgtable_fmt;
- }
- 
--impl<F: IoPageTableFmt> IoPageTable<F> {
--    /// Create a new `IoPageTable` as a device resource.
--    #[inline]
--    pub fn new(
--        dev: &Device<Bound>,
--        config: Config,
--    ) -> impl PinInit<Devres<IoPageTable<F>>, Error> + '_ {
--        // SAFETY: Devres ensures that the value is dropped during device unbind.
--        Devres::new(dev, unsafe { Self::new_raw(dev, config) })
--    }
-+impl<'bound, F: IoPageTableFmt> IoPageTable<'bound, F> {
-+    // TODO: Create a new `IoPageTable` as a device resource when DevresLt is available.
- 
-     /// Create a new `IoPageTable`.
--    ///
--    /// # Safety
--    ///
--    /// If successful, then the returned `IoPageTable` must be dropped before the device is
--    /// unbound.
-     #[inline]
--    pub unsafe fn new_raw(dev: &Device<Bound>, config: Config) -> Result<IoPageTable<F>> {
-+    pub fn new_raw(dev: &'bound Device<Bound>, config: Config) -> Result<IoPageTable<'bound, F>> {
-         let mut raw_cfg = bindings::io_pgtable_cfg {
-             quirks: config.quirks,
-             pgsize_bitmap: config.pgsize_bitmap,
-@@ -118,6 +105,7 @@ pub unsafe fn new_raw(dev: &Device<Bound>, config: Config) -> Result<IoPageTable
-         // INVARIANT: We successfully created a valid page table.
-         Ok(IoPageTable {
-             ptr: NonNull::new(ops).ok_or(ENOMEM)?,
-+            _dev: PhantomData,
-             _marker: PhantomData,
-         })
-     }
-@@ -240,7 +228,7 @@ extern "C" fn rust_tlb_flush_walk_noop(
- ) {
- }
- 
--impl<F: IoPageTableFmt> Drop for IoPageTable<F> {
-+impl<F: IoPageTableFmt> Drop for IoPageTable<'_, F> {
-     fn drop(&mut self) {
-         // SAFETY: The caller of `Self::ttbr()` promised that the page table is not live when this
-         // destructor runs.
-@@ -255,7 +243,7 @@ impl IoPageTableFmt for ARM64LPAES1 {
-     const FORMAT: io_pgtable_fmt = bindings::io_pgtable_fmt_ARM_64_LPAE_S1 as io_pgtable_fmt;
- }
- 
--impl IoPageTable<ARM64LPAES1> {
-+impl IoPageTable<'_, ARM64LPAES1> {
-     /// Access the `ttbr` field of the configuration.
-     ///
-     /// This is the physical address of the page table, which may be passed to the device that
+> But, do we have to scan CDs for ASID? I wonder if we could limit
+> to ARM_SMMU_FEAT_TRANS_S2 only, as this series does not memremap
+> CDs at all..
 
----
-base-commit: dd8a3c6cd531dca5917111a94fa3074077f6ba5a
-change-id: 20260702-pgtable_lt_v1-30ef45e019f4
+Yeah, I would limit to S2 for now
 
-Best regards,
--- 
-Deborah Brouwer <deborah.brouwer@collabora.com>
-
+Jason
