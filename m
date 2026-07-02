@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A310E2E2286
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 06:01:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC271293C4E
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 06:01:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782972065; cv=none; b=Cu6PpOGkrDiwkzPA7T7UDPD5dFXWUt0sxbw7aYhOB4mPWO5pF24lhRGQNj8yp9hwOy7dVqNJSNR5+q7/y8Z3Ux+3QahpnBdYPYhHJAUKpZUPiR2+Y4Hfw6qVtJWvjNfLhNGkk0vBoBQ/QTTaZUwL6z3ITRJvMDLxE682b6SM7Ds=
+	t=1782972076; cv=none; b=a0Xe8dv9AepIm2UZnzLz3VPvJzLbcwZWjjAAHkGnkKN+rrgoXOQKTOihOCkjGV/+ydUF6v+//gqUIOHjDhZYL5aBdTGK+834426FTjQSJZq3f1bJ9O2pb2cuigvV9eggGZNC6GccTkXRd8ne8kTaRdtlvvbqG2qv/A0KuYxbreI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782972065; c=relaxed/simple;
-	bh=PGZ7XcqusTzo/vEZ4Zwieltb3LQtUVtLZXDHcuy63NI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ji/nPVWpV7xfA/3o52vM9XF+E7yqbNwp3zx6tbaE9W8hiWF+u4aMUklYJvGYMSoD1uchvBY7lxfBuWiNnWON6Yr4FJApKPJik5+L45hLjXEDE3/D0YjEgD+C6sKtdn83DirVcvDGz6lbeB9LTtsRQDrFPjFjyAKoFxk4o+T4/P8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lC/rAhFl; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1782972076; c=relaxed/simple;
+	bh=q2Wgw43RZbcIRFK1NOke6KeNW5aJCGqACPvZsSZ61n4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=XmDh+WIwKpzyVmCDlpW6BUGDzj1pt5WH3038h6AH0vONAcs30iAhlb5egCdXFfD/x+SD3nGwbZZO4mhxeEcK4wZmJ3Sec2GSh+zfQ5HXJ1rL7Lld5iorKNlXICZhWuv3lLPJGS6w73Mh3HHUabRlvqQyxiMTcp2PST+uO8uMu+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZQWCpjbI; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lC/rAhFl"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZQWCpjbI"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782972063; x=1814508063;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PGZ7XcqusTzo/vEZ4Zwieltb3LQtUVtLZXDHcuy63NI=;
-  b=lC/rAhFl1ZHkR/sMv0yqovcUukDcZHX7Xyf2UKSjc7cOg5ppQMWZS4Ze
-   prjQjOnTfVh4oAnRQuhEEMsbpgCTIZNLsPZf/aPjxA+yRKo7+7QfD7sKv
-   vBeUiiSXWNFPQI9N6zfPZss1Km+OitgKK3JbKahK5v6mNP6UbQ4MD/K50
-   3Or/JBQkcpmWxcTKzI4B9pQ5CwqR4lgu3d+jc2Jsk4FITQoin9WGX5VMx
-   Bbi1PnjkuG2MjlP0uVtXAQm85MfXBxMQjucXmCsIhD1NxnyrdX0z+whCr
-   MYxQYUS9H4T71wJrEFMk5SH5Poewhj8YcefdAwa4mdLgctynvAKIaPJxJ
-   w==;
-X-CSE-ConnectionGUID: u56vL4j0SZqOU1Tug82vng==
-X-CSE-MsgGUID: 9HCytKmURnSlYQOINbC8ag==
-X-IronPort-AV: E=McAfee;i="6800,10657,11834"; a="101256427"
+  t=1782972073; x=1814508073;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=q2Wgw43RZbcIRFK1NOke6KeNW5aJCGqACPvZsSZ61n4=;
+  b=ZQWCpjbIvNAKZ3iZPDbg+/dkQhz0viPvZMTvhgk11x/f0ML7nZ85ko0W
+   C72+8ROieFqWSGZTUmHY2O2z5Oe5F7tGH0KfmL500XmyCG+qsj9bde7Td
+   wWngsmcYGTWMI7HLeKivCGHwfCABPNz+O6mKbm/lRZOPGsG2s6YwR2uKr
+   Z9U8ZsuKHbH6FtmtHWXj18EDPoisw/715BCjvlFjh+pMZ9tJ9jaj5a5+3
+   ofSYrgnEoacPG9jyF1dHSIh75Np1JqcwU8h1nyMfKwpDTEwZGayStCd39
+   7YcLX2Er/gXPYSqEK1pk4yMhfJkI6sOfl/+wX0eS6stC7TZjxlWmJtfO3
+   g==;
+X-CSE-ConnectionGUID: EXrFP1KGSqKNZhuoGQpcJQ==
+X-CSE-MsgGUID: us95kY/vSuif0Fa9IS4aIw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11834"; a="101256448"
 X-IronPort-AV: E=Sophos;i="6.25,143,1779174000"; 
-   d="scan'208";a="101256427"
+   d="scan'208";a="101256448"
 Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 23:01:03 -0700
-X-CSE-ConnectionGUID: /14sC3GpTyqXtVp2JEcF6w==
-X-CSE-MsgGUID: wFq0icQPTR+RfbwMFxUMcQ==
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 23:01:13 -0700
+X-CSE-ConnectionGUID: n3ffq01hRB2aEiJSmynHyA==
+X-CSE-MsgGUID: uNU+6/rQT/anic4wYubiLw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,143,1779174000"; 
-   d="scan'208";a="253425716"
+   d="scan'208";a="253425765"
 Received: from ktian1-pkvm.sh.intel.com ([10.239.48.205])
-  by orviesa009.jf.intel.com with ESMTP; 01 Jul 2026 23:01:00 -0700
+  by orviesa009.jf.intel.com with ESMTP; 01 Jul 2026 23:01:03 -0700
 From: Kevin Tian <kevin.tian@intel.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>,
 	Joerg Roedel <joro@8bytes.org>,
@@ -54,11 +55,14 @@ Cc: Kevin Tian <kevin.tian@intel.com>,
 	Jesse Barnes <jbarnes@virtuousgeek.org>,
 	Asit Mallick <asit.k.mallick@intel.com>,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/9] iommu/vt-d: Support a new DMAR flag
-Date: Thu,  2 Jul 2026 06:12:07 +0000
-Message-ID: <20260702061216.388743-1-kevin.tian@intel.com>
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH v2 1/9] iommu/vt-d: Fix no_iommu to disable platform optin
+Date: Thu,  2 Jul 2026 06:12:08 +0000
+Message-ID: <20260702061216.388743-2-kevin.tian@intel.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260702061216.388743-1-kevin.tian@intel.com>
+References: <20260702061216.388743-1-kevin.tian@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,52 +71,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-VT-d spec v5.2 introduces a new DMA_REMAP_OPT_OUT flag in the DMAR
-table, adding another knob to affect whether the DMA remapping
-capability should be turned on or off.
+If user explicitly requests to disable iommu (via "iommu=off" or
+"intel_iommu=off"), there is no reason to force enabling it due
+to platform optin (for external-facing devices). User should be
+aware of any security implication of doing so.
 
-While at it, first clean up the existing on/off policy messed with
-user opts and various force_on conditions in the first 8 patches.
+"intel_iommu=off" implements this policy by setting no_platform_optin
+to skip platform optin in platform_optin_force_iommu().
 
-On top of the improved framework, the last patch introduces the
-support of the new bit.
+However, "iommu=off" (no_iommu=1) doesn't set no_platform_optin
+hence is broken in this aspect:
 
-Some cleanups will be done after this series:
-- Cache dmar->flags instead of reading ACPI table multiple times
-- Check intel_iommu_enabled at runtime instead of using dmar_policy
-- Clean up existing warning messages (e.g. force_on panic message
-  always has the "tboot:" prefix)
+  - detect_intel_iommu() doesn't request ACS if no_iommu=1
+  - platform_optin_force_iommu() forces iommu on if external-facing
+    devices exist and no_platform_optin is not set
 
-v2:
-- Rebase to 7.2-rc1
-- Policy-oriented renaming to avoid confusion with runtime state (Baolu)
-- Warning message/comment improvements (Baolu)
-- Always return error for unsupported force_on type
-- No need to do platform optin if tboot already forces on (old behavior)
+This leads to a bad configuration with ACS disabled while DMA
+remapping is enabled.
 
-v1:
-https://lore.kernel.org/linux-iommu/20260604051540.592925-1-kevin.tian@intel.com/
+Instead of setting no_platform_optin (will soon be removed) for
+no_iommu=1, directly check no_iommu in platform_optin_force_iommu().
 
-Kevin Tian (9):
-  iommu/vt-d: Fix no_iommu to disable platform optin
-  iommu/vt-d: Force requesting ACS when tboot is enabled
-  iommu/vt-d: Remove dead code when CONFIG_INTEL_IOMMU is not set
-  iommu/vt-d: Consolidate dmar policy management and force_on logic
-  iommu/vt-d: Use dmar_can_force_on() for platform optin
-  iommu/vt-d: Call dmar_can_force_on() for tboot optin
-  iommu/vt-d: Remove the 'force_on' variable
-  iommu/vt-d: Remove dmar_disabled
-  iommu/vt-d: Support the new DMA_REMAP_OPT_OUT flag bit
+Fixes: 89a6079df791 ("iommu/vt-d: Force IOMMU on for platform opt in hint")
+Cc: stable@vger.kernel.org
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+---
+ drivers/iommu/intel/iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- drivers/iommu/intel/dmar.c  | 95 +++++++++++++++++++++++++++++++++----
- drivers/iommu/intel/iommu.c | 78 +++++++++++++++---------------
- drivers/iommu/intel/iommu.h | 64 ++++++++++++++++++++-----
- drivers/iommu/intel/svm.c   |  2 +-
- include/linux/dmar.h        |  1 +
- 5 files changed, 180 insertions(+), 60 deletions(-)
-
-
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 849d06dfe1ae..8668565e5781 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2482,10 +2482,11 @@ static bool has_external_pci(void)
+ 
+ static int __init platform_optin_force_iommu(void)
+ {
+-	if (!dmar_platform_optin() || no_platform_optin || !has_external_pci())
++	if (no_iommu || !dmar_platform_optin() || no_platform_optin ||
++	    !has_external_pci())
+ 		return 0;
+ 
+-	if (no_iommu || dmar_disabled)
++	if (dmar_disabled)
+ 		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
+ 
+ 	/*
+@@ -2496,7 +2497,6 @@ static int __init platform_optin_force_iommu(void)
+ 		iommu_set_default_passthrough(false);
+ 
+ 	dmar_disabled = 0;
+-	no_iommu = 0;
+ 
+ 	return 1;
+ }
 -- 
 2.43.0
 
