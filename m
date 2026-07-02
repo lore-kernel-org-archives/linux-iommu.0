@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F21536728F
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 06:01:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E545367F5E
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 06:01:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782972095; cv=none; b=anHxLyb+noDWoswg3U/cjVUTZ/fGvcA8HHwNxPCYvajRKL1dHx0PuZRPgoopM/1ixovnH/ndlJf6bqtV8HcUSJs2qOISTs8Io22JzzzxrE6Ac6yQqjSFAPcA1ZCPM4kfOSU+H9WNxAjTqLivl9i7jedL2U3PlAgEx1Cuj8NOPqY=
+	t=1782972096; cv=none; b=Ewn7s2Jpd6MDxdI46oLQzd+qeJz11XFsat2HAEqqMXoDVi12uCBCc8RKaK7mb6xlefnOSMOuPm02sRVZ/GZruKAx32SWDMQVQihtzPp9kVTRaJazUJMfeFpGpScYTCcVdjE/bqYiDKw6XDnd3Rq61Jvl/ws+QRmKvD79ethtWWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782972095; c=relaxed/simple;
-	bh=p4P0Jj3DAmfKFvOX4WQBJ1/TYWv+N6lLG9Zs2+i4Fs0=;
+	s=arc-20240116; t=1782972096; c=relaxed/simple;
+	bh=nw6vqerEKtMjQGpFpah8ivdXT2RFXgLoQvqrJslgSkE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=j3bE1ObzEjBApJOJ9hzQhYOg6KFPnz/zTSUYUK/gPH6guLl8mdse3x2s9X/4MaBM4rWNllaUUkSCxDpEe1yjIW56ugzOI/0YmtDTnS3/dQt8+b4hDe1KI9LPUe8VPZ89y79SWS2N9x95+wOEV9t4Sc6jKA91FwOpFb7NO/l2zG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EH+KnEfv; arc=none smtp.client-ip=192.198.163.8
+	 MIME-Version; b=NAyEOcbFgOqnx/YYiqgoQPI5JC8r9N/GN//9HGA7wsko3tYrJNj9YlGxi0gfS7hQntp+jsh+StOW/089FPogZ3DcAjMdsQPAYNJ+hv5VUxN/67eOWaiYaSsoN8wPMB8YsvDB4AR22uqz57qkp6qzjkQ1D6Mzy2p2gc18UD+/gxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mo/sjiHG; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EH+KnEfv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mo/sjiHG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782972091; x=1814508091;
+  t=1782972094; x=1814508094;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=p4P0Jj3DAmfKFvOX4WQBJ1/TYWv+N6lLG9Zs2+i4Fs0=;
-  b=EH+KnEfv56PVfI2DitYK/JCgxACEiHTESIGnNeM6Z2GKWa/XHJJBn2km
-   8xtMUKS48TSXC9woqLPb/CCVEs9012G5J2XFIdYKGgvgb6S0p3TTBtYaW
-   uiI3XcKorYqjWVClNQl0JWMJ46rw2XYTwXKjr0BF9R8tevPss9vPb5PPr
-   hq44yt8+7QlP3a7nNowbo64oOS8d2HXoxSbzZKp+GCPhJ4wrP5NVYcNK0
-   K0UWtp44+4q1slg/9Qg5O8FAFTjy7FDiKSbNX/lswQOgpdaaLWywDbJUl
-   jKjN5NAqxMqhCUl/4PocNvL1f/moy77aQzuUy1FUL6T17Bmeovzf2IX51
-   g==;
-X-CSE-ConnectionGUID: KyLrNoJ0RFaxNr0Ss6NOdw==
-X-CSE-MsgGUID: yQd8oQeKTeS9mrGTqGio2g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11834"; a="101256507"
+  bh=nw6vqerEKtMjQGpFpah8ivdXT2RFXgLoQvqrJslgSkE=;
+  b=mo/sjiHG7O6Hi0f77sl1RL5U26J13xCf+o9zeDM2cUzHgobzkUApE1j/
+   V3mRIcy7hb6RVpcB8xcZG6Sfr1w+t8Mt0KNz6cDrQ10IclEDhBS5fPm1/
+   7KH+pNWKSTtTfBT+8ztyXOflugN63X9zHy/5wRAzv9iItDsSb6NZh+FQQ
+   bFPaUDxHAxB+2OJSTrSR+L/iapKakfZTnnt78BmS2p+WYss4YG+MCdG5m
+   mETLFvlMe1hK8CmBiO3VAqZGRKp0oqyCWaAW2d5kqbUZqEhqbQcEqLCaU
+   VtXmTU/HozAiARCQzA45FhM2b1BpttGhEL71/pS7qpksXO6cFscWg9iGF
+   A==;
+X-CSE-ConnectionGUID: ZrIboxC3QpmvWRLwtDom3Q==
+X-CSE-MsgGUID: hkKWpSK7TaCNk6ANOTXp0Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11834"; a="101256516"
 X-IronPort-AV: E=Sophos;i="6.25,143,1779174000"; 
-   d="scan'208";a="101256507"
+   d="scan'208";a="101256516"
 Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 23:01:30 -0700
-X-CSE-ConnectionGUID: qSL6MlvkRvi/WiwBbZcr7w==
-X-CSE-MsgGUID: p1aYMNTqRvqTwGyxIa/hbw==
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 23:01:33 -0700
+X-CSE-ConnectionGUID: ig2qslc/SGS2fd1ty2brxQ==
+X-CSE-MsgGUID: Rt6sOD3GQfaoGsl6nES/hg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,143,1779174000"; 
-   d="scan'208";a="253425894"
+   d="scan'208";a="253425910"
 Received: from ktian1-pkvm.sh.intel.com ([10.239.48.205])
-  by orviesa009.jf.intel.com with ESMTP; 01 Jul 2026 23:01:28 -0700
+  by orviesa009.jf.intel.com with ESMTP; 01 Jul 2026 23:01:31 -0700
 From: Kevin Tian <kevin.tian@intel.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>,
 	Joerg Roedel <joro@8bytes.org>,
@@ -56,9 +56,9 @@ Cc: Kevin Tian <kevin.tian@intel.com>,
 	Asit Mallick <asit.k.mallick@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 7/9] iommu/vt-d: Remove the 'force_on' variable
-Date: Thu,  2 Jul 2026 06:12:14 +0000
-Message-ID: <20260702061216.388743-8-kevin.tian@intel.com>
+Subject: [PATCH v2 8/9] iommu/vt-d: Remove dmar_disabled
+Date: Thu,  2 Jul 2026 06:12:15 +0000
+Message-ID: <20260702061216.388743-9-kevin.tian@intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260702061216.388743-1-kevin.tian@intel.com>
 References: <20260702061216.388743-1-kevin.tian@intel.com>
@@ -70,165 +70,102 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The force_on variable is now redundant - same information captured
-by "dmar_policy == DMAR_FORCE_ON". Replace all force_on checks
-with dmar_policy_force_on().
+It's replaced by dmar_policy_off() now, covering both "iommu=off"
+and "intel_iommu=off". Also remove unnecessary checks on no_iommu,
+leaving only one exception in intel_iommu_init() which skips debugfs
+init for "iommu=off" but not "intel_iommu=off". Keep it to avoid
+surprise for now.
 
 Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 37 +++++++++++++++++--------------------
- drivers/iommu/intel/iommu.h |  5 +++++
- 2 files changed, 22 insertions(+), 20 deletions(-)
+ drivers/iommu/intel/iommu.c | 9 ++-------
+ drivers/iommu/intel/iommu.h | 1 -
+ drivers/iommu/intel/svm.c   | 2 +-
+ 3 files changed, 3 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cddd3ab215cf..50dfe426322f 100644
+index 50dfe426322f..3312ee28db11 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -53,10 +53,9 @@ static int rwbf_quirk;
- #define rwbf_required(iommu)	(rwbf_quirk || cap_rwbf((iommu)->cap))
+@@ -202,7 +202,6 @@ int dmar_policy = DMAR_ON;
+ #else
+ int dmar_policy = DMAR_DEFAULT_OFF;
+ #endif
+-int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
+ int intel_iommu_sm = IS_ENABLED(CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON);
  
- /*
-- * set to 1 to panic kernel if can't successfully enable VT-d
-- * (used when kernel is launched w/ TXT)
-+ * Skip forcing iommu on and avoid tboot-related kernel panics during
-+ * initialization when set to 1 (via intel_iommu=tboot_noforce).
-  */
--static int force_on = 0;
- int intel_iommu_tboot_noforce;
+ int intel_iommu_enabled = 0;
+@@ -244,11 +243,9 @@ static int __init intel_iommu_setup(char *str)
+ 	while (*str) {
+ 		if (!strncmp(str, "on", 2)) {
+ 			dmar_policy = DMAR_ON;
+-			dmar_disabled = 0;
+ 			pr_info("IOMMU enabled\n");
+ 		} else if (!strncmp(str, "off", 3)) {
+ 			dmar_policy = DMAR_USER_OFF;
+-			dmar_disabled = 1;
+ 			pr_info("IOMMU disabled\n");
+ 		} else if (!strncmp(str, "igfx_off", 8)) {
+ 			disable_igfx_iommu = 1;
+@@ -2369,7 +2366,7 @@ void intel_iommu_shutdown(void)
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu = NULL;
  
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
-@@ -1711,7 +1710,7 @@ static int __init init_dmars(void)
- 			 * we always have to disable PMRs or DMA may fail on
- 			 * this device
- 			 */
--			if (force_on)
-+			if (dmar_policy_force_on())
- 				iommu_disable_protect_mem_regions(iommu);
- 			continue;
- 		}
-@@ -1803,7 +1802,7 @@ static int init_iommu_hw(void)
- 			 * we always have to disable PMRs or DMA may fail on
- 			 * this device
- 			 */
--			if (force_on)
-+			if (dmar_policy_force_on())
- 				iommu_disable_protect_mem_regions(iommu);
- 			continue;
- 		}
-@@ -1864,7 +1863,7 @@ static void iommu_resume(void *data)
- 	unsigned long flag;
- 
- 	if (init_iommu_hw()) {
--		if (force_on)
-+		if (dmar_policy_force_on())
- 			panic("tboot: IOMMU setup failed, DMAR can not resume!\n");
- 		else
- 			WARN(1, "IOMMU setup failed, DMAR can not resume!\n");
-@@ -2132,7 +2131,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- 		/*
- 		 * we always have to disable PMRs or DMA may fail on this device
- 		 */
--		if (force_on)
-+		if (dmar_policy_force_on())
- 			iommu_disable_protect_mem_regions(iommu);
- 		return 0;
- 	}
-@@ -2485,13 +2484,13 @@ static bool has_external_pci(void)
- 	return false;
- }
- 
--static int __init platform_optin_force_iommu(void)
-+static void __init platform_optin_force_iommu(void)
- {
- 	if (!dmar_platform_optin() || !dmar_can_force_on(DMAR_FORCEON_PLATFORM))
--		return 0;
-+		return;
- 
- 	if (!has_external_pci())
--		return 0;
-+		return;
+-	if (no_iommu || dmar_disabled)
++	if (dmar_policy_off())
+ 		return;
  
  	/*
- 	 * If Intel-IOMMU is disabled by default, we will apply identity
-@@ -2505,8 +2504,6 @@ static int __init platform_optin_force_iommu(void)
+@@ -2503,7 +2500,6 @@ static void __init platform_optin_force_iommu(void)
+ 
  	/* No concurrent access to dmar_policy at this point. */
  	dmar_policy = DMAR_FORCE_ON;
- 	dmar_disabled = 0;
--
--	return 1;
+-	dmar_disabled = 0;
  }
  
  static int __init probe_acpi_namespace_devices(void)
-@@ -2546,10 +2543,10 @@ static int __init probe_acpi_namespace_devices(void)
- 	return 0;
- }
+@@ -2556,7 +2552,6 @@ static __init void tboot_force_iommu(void)
  
--static __init int tboot_force_iommu(void)
-+static __init void tboot_force_iommu(void)
- {
- 	if (!tboot_enabled() || intel_iommu_tboot_noforce)
--		return 0;
-+		return;
- 
- 	if (!dmar_can_force_on(DMAR_FORCEON_TBOOT))
- 		panic("tboot: Failed to force IOMMU on\n");
-@@ -2561,8 +2558,6 @@ static __init int tboot_force_iommu(void)
+ 	/* No concurrent access to dmar_policy at this point. */
  	dmar_policy = DMAR_FORCE_ON;
- 	dmar_disabled = 0;
+-	dmar_disabled = 0;
  	no_iommu = 0;
--
--	return 1;
  }
  
- int __init intel_iommu_init(void)
-@@ -2575,17 +2570,19 @@ int __init intel_iommu_init(void)
- 	 * Intel IOMMU is required for a TXT/tboot launch or platform
- 	 * opt in, so enforce that.
- 	 */
--	force_on = tboot_force_iommu() || platform_optin_force_iommu();
-+	tboot_force_iommu();
-+	if (!dmar_policy_force_on())
-+		platform_optin_force_iommu();
+@@ -2600,7 +2595,7 @@ int __init intel_iommu_init(void)
+ 	if (!no_iommu)
+ 		intel_iommu_debugfs_init();
  
- 	down_write(&dmar_global_lock);
- 	if (dmar_table_init()) {
--		if (force_on)
-+		if (dmar_policy_force_on())
- 			panic("tboot: Failed to initialize DMAR table\n");
- 		goto out_free_dmar;
- 	}
- 
- 	if (dmar_dev_scope_init() < 0) {
--		if (force_on)
-+		if (dmar_policy_force_on())
- 			panic("tboot: Failed to initialize DMAR device scope\n");
- 		goto out_free_dmar;
- 	}
-@@ -2639,7 +2636,7 @@ int __init intel_iommu_init(void)
- 
- 	ret = init_dmars();
- 	if (ret) {
--		if (force_on)
-+		if (dmar_policy_force_on())
- 			panic("tboot: Failed to initialize DMARs\n");
- 		pr_err("Initialization failed\n");
- 		goto out_free_dmar;
+-	if (no_iommu || dmar_disabled) {
++	if (dmar_policy_off()) {
+ 		/*
+ 		 * We exit the function here to ensure IOMMU's remapping and
+ 		 * mempool aren't setup, which means that the IOMMU's PMRs
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index d2e787243532..95962a45ac36 100644
+index 95962a45ac36..ad4d1aafd12c 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -1394,6 +1394,11 @@ static inline bool dmar_policy_off(void)
- 	return dmar_policy < 0;
- }
+@@ -1401,7 +1401,6 @@ static inline bool dmar_policy_force_on(void)
  
-+static inline bool dmar_policy_force_on(void)
-+{
-+	return dmar_policy == DMAR_FORCE_ON;
-+}
-+
  bool dmar_can_force_on(enum dmar_force_on force_on);
  
- extern int dmar_disabled;
+-extern int dmar_disabled;
+ extern int intel_iommu_enabled;
+ extern int intel_iommu_tboot_noforce;
+ 
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index fea10acd4f02..0636987f03c8 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -115,7 +115,7 @@ static int intel_iommu_sva_supported(struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu;
+ 
+-	if (!info || dmar_disabled)
++	if (!info || dmar_policy_off())
+ 		return -EINVAL;
+ 
+ 	iommu = info->iommu;
 -- 
 2.43.0
 
