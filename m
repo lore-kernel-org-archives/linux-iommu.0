@@ -1,105 +1,71 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A242D30B50D
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 15:19:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98341433E9C;
+	Thu,  2 Jul 2026 15:38:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783005580; cv=none; b=WecmLzcsTX/Jr0qv3Jymx/6Vh96zJyNNs9CCAbLDkTfYWxIhDMfybpfPgR77v724LWMtF66oTRIATy+v3hxNecH6hYjjQWeCtr1/lWpCVLEnqToByDfbQGu9yFXANNBR8Yoo/3EnhjUC60X50/EgiYiWLekNQNjqVp5SDKOUaqA=
+	t=1783006739; cv=none; b=SLq4lxrU32elXOdLA96Ed+lSi7q3wPxqvnXmXZh9vruNpA+TANBnze+tIaRN6YKOuKsrp3u0aJmsAwHOxk/Fvv1K0HgS/OdvuNrqU7z6kEWOXxaLlxKuMFkXQi7psuzRdTfdA+79oUB6tby+DBCUfzmqnFGTzD3QII0dyKQBRbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783005580; c=relaxed/simple;
-	bh=una0b7iSQE3/1X7UfiBFNzSBZGQVECZybRvoQUF1H+I=;
+	s=arc-20240116; t=1783006739; c=relaxed/simple;
+	bh=rGwJB0RR0Cq+UaOIw7kJhMQDZOlfePHOPUM659ERK4U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m35COz0KsmTxEk/AbPE/M5NKBbwcEhrUEnhHmAIdaPPw/xGiMVkPcm5XQ5efhIS1kkOO3NWyR2yjxdADtblofrJfwfMnnff3DLD6eOxtrZHAmPtVgwYYaoln2QprtovgHjkJQqnWTYCSXCJt5fNeklbtIk3FSxkOOQEWmtdX/14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ndwCFHuK; arc=none smtp.client-ip=209.85.219.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=sl7A4ywIWaUfoHMAGUrwBqJFfd/LP8By0nJbnWaR2NtQhrtteVlGLXev1rcgC8PomKZ2+spNWp/9ZBs/8mL/JEGTbP3DAi2q1Hw+3B1rnut/RmRD8be4n0Ft6744+ZH8Zq9qffp0TAKx3JoPKMYjz9dbT2WexltN5z7d1/mYrhk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b2V0+7EL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ndwCFHuK"
-Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-8efcef23d21so12569516d6.2
-        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 08:19:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783005579; x=1783610379; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=una0b7iSQE3/1X7UfiBFNzSBZGQVECZybRvoQUF1H+I=;
-        b=ndwCFHuKINeN8wCfTs6+jYDPMQmUa/daKxB176zlXYOdTfSHPbw+c42mmeiUqVg8z7
-         8hOP8V3tagcd7dVj8i3Rkw3rT9PY6V2wZhV2rXC/zbRt3PGL2d6U/qRIhJg04g0ph+ba
-         FMet/MsZSAfFgoCc3MYP1rOF11zJkRxnaceS/BvhiSv6a5pqCImPzVF89eK6gKIziudc
-         +2cn1BLiZIABHt2hY1KyTJ5I3hWjxsIk7HQTVYdqXjWaGpCniL6iO3CfxTJLLSxsZIt0
-         JZkMF0ayA4vSfO4mFkK+JAZLDr8t3pZmryT7Mr+1fu584BaUxkW7Iy8iEZOOufGiXzhC
-         mcIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783005579; x=1783610379;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=una0b7iSQE3/1X7UfiBFNzSBZGQVECZybRvoQUF1H+I=;
-        b=DevWIJMcyTCMWkOvD90ZFG/CNGHKYvU5m9wYqdMsa74fgEuWK0bi0gEhOsENFsNqIU
-         U4DLtNC3KSdus0vF4DR3ojDyQXRMu3vUk11H+fYFPsbDVCNjtK16pcmmJ+G2WI74rSlc
-         yy1bJl8Oh4jtfjrH8M34hnkEG6waQOpta0y6oIvhUuYBsN8IKSnlB/+8l4ML64JCpRWq
-         Y2I8c0Mqsc6mi9rhw6IPHNhGy1hamNo4/8GdHa1Ur+xcImj0TZyvu6+0QICxGdrbJY6X
-         POlgplBA0oaWF14QLGMrhp7vJC4jVZZKpk4eVAVA1Uxpkzq3GvX0b273+h5NHn0TVsWm
-         BLAQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrUiFHVl3YJZ6T+jsuJep6XnnZF3uG7bZ9j1V/oCptHDCSyTJNFWYpjmSDiLEq2PuueZ5Y0xA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwXPfqxriaH9lhKy4ajo++ig31z5q4k4g6hzh56n8q0anahN7DC
-	HAH4mJ3lkmbUIF+hLRHSHQyTq7KBsYNN9N3BhsxnrmSWcA3T4RbY4mwjRh2xycBa1nA=
-X-Gm-Gg: AfdE7cmY6WclyC8lXkvhf3CNZ1Dcv8qY7HuEnFn8aMeDiRQPf4BEiY8LyUz0pVYBcrh
-	Zhw4Dh6drQUUD2TArGcewCp0jyb8A8ruTWPW2QfKz5Qc/XOQDb4Vz/pN13rv8KfSHRDUMSUsaz+
-	Ua7w7alFqUC8jiIN0lJtZ2f28qrJpRGwn2juo+RkGRfUA7INb+zTizEA8/lyvWbIg07i7AluKyy
-	RfYGCDjfZESTrzlb684dvhNYyvmTHl6n7mRQRJrxUmC++6OInwXUbMaK+0gvYOjg1iNOswts7SR
-	Zq0AvmPmczS2rSlsNcCBr8W7RviGnXJwIgcdZ2wDEzO/KSGi2bwBKmstOTVv8sB2CVAWVFG6HmU
-	nirkd/b8PD7bkYjOr3Zqda1dJ5OPr6UtW3xMYEbVlxdDtEUFL8JUJcfWOL27s5qQNNk3BtKaMTC
-	FodKQhdr1q3Bo6zsZNrZ9VmoFgvr7plhASz60DHuNbbz/WmfexiL8yuj5W7zoI8hVztWQ=
-X-Received: by 2002:a05:6214:4208:b0:8de:16a7:fbe3 with SMTP id 6a1803df08f44-8f3c863d139mr68985636d6.31.1783005578597;
-        Thu, 02 Jul 2026 08:19:38 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f471de93a1sm27985376d6.34.2026.07.02.08.19.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 08:19:36 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wfJCR-00000005wsj-2X8o;
-	Thu, 02 Jul 2026 12:19:35 -0300
-Date: Thu, 2 Jul 2026 12:19:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-Message-ID: <20260702151935.GR7525@ziepe.ca>
-References: <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
- <yq5aqzm4dz25.fsf@kernel.org>
- <20260618153705.GH231643@ziepe.ca>
- <yq5ao6h6enhm.fsf@kernel.org>
- <20260619122148.GL231643@ziepe.ca>
- <yq5aldcaejos.fsf@kernel.org>
- <20260619140616.GB1068655@ziepe.ca>
- <yq5ao6gtoncp.fsf@kernel.org>
- <20260630174216.GK7525@ziepe.ca>
- <yq5abjcro17x.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b2V0+7EL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8B61F000E9;
+	Thu,  2 Jul 2026 15:38:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783006738;
+	bh=IwURMR915CTbYb07LaM/xpAOPf64S6EJL9O/N9i05RY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=b2V0+7ELQGqQAd7sEVIVbP6pFh+c4EMQTIsyOJX3uWWlRR0XC5sqh9iLzgvypZEFr
+	 MCYwPJQ1JqUdN2KsXxotRHYTIc7iTlkYz7s6/Lj9Y2G6seTf35mOk2bhYGAO/nKfV+
+	 YvR3nedHklCOJI1If3RTDzW0/MsM5hdpnGjuEW312MB9IQBqfZc1HKNbWg6zdLXI2v
+	 299Lk7QuyM4kLMu1S82jx3Qj+sjA8OvzICobeZYh7rRgZ5QiExjPFDb42ITzBskVxw
+	 73GNr/N00NcYAzfCwFhtGufjo6jy6nFfS4LoEIOe7fXrYvv6GLYpo0LLyJOwxCPkwP
+	 wczFHD4n0tSbw==
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailfauth.phl.internal (Postfix) with ESMTP id D4ED6F40068;
+	Thu,  2 Jul 2026 11:38:56 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-03.internal (MEProxy); Thu, 02 Jul 2026 11:38:56 -0400
+X-ME-Sender: <xms:EIZGahWeuVA8H8V2CYPQFmEImWdYZeq8xvbAKQwvejWgfFRwpLluvg>
+    <xme:EIZGatA-tBORQdhRyNScLUnydoLmE7pnrxsu8kO3fw7YTpsUpzRrMpjvU1MIj1eWz
+    EiUOUvrhK9vlkxt6j1vTNz-d0o5uJVOX35gdw4v172hYU4EyCXvmSA>
+X-ME-Received: <xmr:EIZGasHE3usmO8SugVccsdSV_klloDxcwHZCuFX7tiaofiPheGk2hd05SQC3mQ>
+X-ME-Proxy-Cause: dmFkZTEwQOjPdUgEUF/zj9zIWxYWCudWk5ov27ppwihUDlHHjgYJjMp/Z01BHkffqoH534
+    7z+IElUhPIbERwk+0qBfxHoZf3BGgwtTB3pcYXVchNztlxrHJPdAnUnpUmN+sWk9GN3WTV
+    uzkPx3WdGew/i45LqmqtkNl2A6rag+vIrFay8WE6BTXqojLkpLYom0vkMglk1+QVyWPC9m
+    1NBsEVF/QtyzEzdzqM++vAc0KL8CTLF6jVJldZc4IMFs0Udh7LtZQ16TSxmnhhD6s8R+6A
+    QYKOWMci5v+WymLIssgTHuoP+T9Yj1E09VJ5Kw9c35KB9n8+KzKarSJYU1SwlRubSS6AeJ
+    i0+hOizX0DFaJ0KRHZ9+fyprtVN/RrNttwKp31mvQd0uTleevKBpuMTxctPERMD2DbmYYH
+    JTSj1TnYBOL7mbQ+WdTEgDWr7XaOisRXGNtNKaO8K4ZWFXSjPkk/2O5778HYl75kn9nA3G
+    hfDNw7ScMv2NaUtzgRTl0iJt9yVfSzFcmqc4MRZi4XAOrkcbffvnBnToRrPscUri7uyLiL
+    kXlQJRtmBEC3ic9QP1JKUUFFKhPIVC8wJEzeOz/5aRnMYw4HRuobZLQTwtUHtujb3QSxER
+    psvw3fzFLESgucZzUaZufcYg8SZRC4UR8j3OmfBB/uMlNa+1HDN90pCwNBRA
+X-ME-Proxy: <xmx:EIZGahdbLavMIi9zdVSR5X9sAS8Y48TOBqfra8H8TA6eZetoYwwCiQ>
+    <xmx:EIZGah-_pLW43hCitLpck93CJjPVYjG8jK6pFGQyexW4izCKZ-z4Gg>
+    <xmx:EIZGanbVywB32-aFcoh3NEkOGtT1748pXw_Yb4QvZQtWJd_2k1V4UA>
+    <xmx:EIZGaieYWJINgbfGY-b0JzuTVq2jMD4Y3tjl8Uax77vNh509AVyebA>
+    <xmx:EIZGalTIzlfw4_YKu9Gq7cTQ8dlFNRHnVfDeHIeV1qFn-joYP3nimcHJ>
+Feedback-ID: i10464835:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 2 Jul 2026 11:38:56 -0400 (EDT)
+Date: Thu, 2 Jul 2026 16:38:55 +0100
+From: Kiryl Shutsemau <kas@kernel.org>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Kyle McMartin <jkkm@meta.com>, Breno Leitao <leitao@debian.org>, 
+	Usama Arif <usama.arif@linux.dev>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
+ kdump kernel
+Message-ID: <akaFcwcSHVGeT8PZ@thinkstation>
+References: <20260702112825.781750-1-kas@kernel.org>
+ <akZ-KIVJlmP4LEcQ@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -108,15 +74,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <yq5abjcro17x.fsf@kernel.org>
+In-Reply-To: <akZ-KIVJlmP4LEcQ@google.com>
 
-On Wed, Jul 01, 2026 at 08:39:06AM +0530, Aneesh Kumar K.V wrote:
+On Thu, Jul 02, 2026 at 03:05:12PM +0000, Pranjal Shrivastava wrote:
+> On Thu, Jul 02, 2026 at 12:28:25PM +0100, Kiryl Shutsemau (Meta) wrote:
+> > The command, event and PRI queues are sized from the maxima the hardware
+> 
+> A minor note here is PRI & EVT queues are disabled for the kdump kernel
+> (see arm_smmu_device_reset). We could just mention all SMMU queues are
+> sized [...] in the commit message. 
 
-> This is the only code path where we need to special-case host memory
-> encryption. For this reason, I have avoided renaming
-> io_tlb_mem::cc_shared to io_tlb_mem::unencrypted. I can send a v7 with
-> the above and we can review the changes based on that?
+Fair enough.
 
-I'm OK with this
+Here's updated commit message (I will send v3 in few days, if no new
+feedback):
 
-Jason
+Subject: [PATCH v3] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
+ kdump kernel
+
+All SMMU queues are sized from the maxima the hardware advertises in IDR1,
+which can be several megabytes each, and are allocated at probe. The kdump
+kernel already disables the event and PRI queues (arm_smmu_device_reset()
+drops CR0_EVTQEN/CR0_PRIQEN) but still allocates them at full size. On
+systems with many SMMUv3 instances that cost is paid per instance and adds
+up to tens of megabytes of coherent DMA in the capture kernel.
+
+A kdump capture kernel runs from a small crashkernel reservation and only
+has to drive the few devices used to save the dump, so deep queues serve
+no purpose. The queues are not on the DMA data path, so dump throughput is
+unaffected; a shallower command queue only bounds how many commands may be
+in flight before a sync, which does not matter for the capture kernel's
+small device count and modest I/O.
+
+Clamp every queue to a single page when is_kdump_kernel() is true. Doing
+it in arm_smmu_init_one_queue() covers the command, event and PRI queues
+in one place. The command queue still holds at least one batch plus a sync
+(256 entries on a 4K-page kernel, well above CMDQ_BATCH_ENTRIES), so
+command batching keeps working.
+
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
