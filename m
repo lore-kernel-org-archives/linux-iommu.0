@@ -1,173 +1,95 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DEF3CEB9A
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 11:04:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF943CB2EF
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 11:06:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782990281; cv=none; b=Jj1iykUJVlHXUI/+vhLUbeQyNiZrpbVfs/ZsRpg0aW7EPy3kBZNNIoLqZQBy8peR8EEC+Lq6WSeSjG64tb9erbz+8mPs2kSehGSfcGuFoG8vIOLHPfcXYweuym36Frk0sWJ9NTBXbgl1HYnYUsqN8bqsDBrPKy+AIOe9f8Oy9TY=
+	t=1782990386; cv=none; b=tQmwbv2B/XXadQaoU/J+4rEn8SZPi8FGkSWWyfF4iYr7EiIi+nPrl+dZD/+Tew/9dyu9hzIMCMEqUzONqFOM84/D3IyJlrwGlkVQ+Jzji4vt5eMB9qAZcF0UPQGW+RmppaLjPP/yXckKhszl03pyWFm0rU/dewPh79Id1n56CJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782990281; c=relaxed/simple;
-	bh=V5Qh3F0r7UKO4a2pst2HKAruYuCXs0d3M8jSNjL/Iog=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XcqB9HwqdW9smqagA+r664xlVtnTsrz9YgQ1bU7bcVatWrKL+GSe8znKV26utqZ0pDerVSOeZAZaMG91MQHvPgx5rrpmJGAxDfIbIhU+QqmTYv7ssd2yDVCLnkLdlMwDfwpGEFtK/vN6/jylmISbJ4Je3h5dzwdQ0d5M+sbAu5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=FetH+lRX; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=5kLIclg2; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=bhSk6d6j; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=DzHL3T70; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1782990386; c=relaxed/simple;
+	bh=hEjKsLw6JbLkC66BSkq1CjuR6SFo/HJNCc8wlFrl71g=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=PZg3ijmf2x3FN74Hvmtdg6MIln1C62cjZfbUPAGn3tC9mdhRDYE8IFUYWFrXg4qUBbBzA8S7cxmRCSLGVaAqIL5CIflZFzTyRiEB4z561IuunwDe0SccIEWRdtWSQLyecW+dd5Gmx9sTmZe/gIdWpfzNZrouUwYArZx3h4iubrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=T1IpeGV0; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="FetH+lRX";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="5kLIclg2";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="bhSk6d6j";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="DzHL3T70"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id AE93C74158;
-	Thu,  2 Jul 2026 11:04:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1782990278; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RM0VnXVk8zwqUTKTdqmIyIriscuAiRayUnMD17BOvjs=;
-	b=FetH+lRXOBR5XXV51imu9ljC+T70ZDce7ciLoxqyYuTD6SS6OE/OxwAIMpARPbGdjxFnt5
-	tguAcjKBFFBKfJQqcNxCxiB49art39Z64B/CyT6pni1Hh2MsWhyWhsw9eUMMj+mBJjKdRb
-	GvOBztPz7f29ZyV6W9PxsOTw30HZ3iU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1782990278;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RM0VnXVk8zwqUTKTdqmIyIriscuAiRayUnMD17BOvjs=;
-	b=5kLIclg2rijKZ/Embq58dsde1+ak7vUB8mltc6mZF2C3u49t/xRP6KCUxlMLClQBas2jVj
-	ZIzAJ57qJBjPsbDw==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=bhSk6d6j;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=DzHL3T70
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1782990276; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RM0VnXVk8zwqUTKTdqmIyIriscuAiRayUnMD17BOvjs=;
-	b=bhSk6d6jaJukAkLrM+k+465vPBcI9hqzsHCvCLWmQkUQSRCidrLbUQzozfIHUAifnIpyHH
-	F5rme4Pt5efSvrDUUGdxw+NgQtz0lcsoRb82lDT9zQZejRGWVNY2TphmghW1nTrZkSWz4v
-	UWI7ik0P5b1jidgqMj2IuXx2BOkP05k=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1782990276;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RM0VnXVk8zwqUTKTdqmIyIriscuAiRayUnMD17BOvjs=;
-	b=DzHL3T70nLB6a6RbNb1r7Wrdb/fKTHMnmniCbTOBz/9Pu6d/JCPqV/khBXqqsiR77G0gN7
-	aSrbyy0yzOVqdaDQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 516B0779AA;
-	Thu,  2 Jul 2026 11:04:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Q66hEMBFRmpLXQAAD6G6ig
-	(envelope-from <pfalcato@suse.de>); Thu, 02 Jul 2026 11:04:32 +0000
-Date: Thu, 2 Jul 2026 12:04:30 +0100
-From: Pedro Falcato <pfalcato@suse.de>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Simon Schuster <schuster.simon@siemens-energy.com>, 
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
-	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
-	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
-	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
-	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
-	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
-	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 19/30] mm: use linear_page_[index, delta]() consistently
-Message-ID: <akZFmt9uAmOBqs2z@pedro-suse.lan>
-References: <cover.1782735110.git.ljs@kernel.org>
- <bf56e2e98b512962a2fb88900d535a0e9e6769d8.1782735110.git.ljs@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="T1IpeGV0"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-493b21b1fe8so13162975e9.0
+        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 04:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1782990383; x=1783595183; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:references:mime-version:in-reply-to:date:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=hEjKsLw6JbLkC66BSkq1CjuR6SFo/HJNCc8wlFrl71g=;
+        b=T1IpeGV0ZonrH2krw6LFk51tZVy2v42a1o4yxihdTwORlrx7zwohCqd6kjdPdYyP9I
+         dAU9HC3pOUKlrlCHGJD+Z7McArU2AuN6U0u978suU+SdRGWe1Q0nFixPdbzpsMrNcxIf
+         Xr75FAL0gx1GO1Qb9PQFM6lpw0kpQEdkowMbI6cK4LW4QZkm1gLzXw89XLsXQWdF+HXC
+         cTKBC5WvQsWAKXXvb/4PPeva0EYymVmRbCW9syZl/ibpHhuZDUkOmuNKr1XuQw5gOmFr
+         DGy7dI1xlcwJlhZO/ElpkQNGNLGegsANyOjY6pL9p0JyGKLXjvtxqhDE8ccTBziI4pj+
+         lD6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782990383; x=1783595183;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:references:mime-version:in-reply-to:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hEjKsLw6JbLkC66BSkq1CjuR6SFo/HJNCc8wlFrl71g=;
+        b=ePKdnjaE84Mu7496MbpI3zJ0wo4KfF8bb9n4s052e9pzdxrsdSqKHtZ12ms+1RNtgw
+         4ct7CoaPAM1y0t9TVrCY5nTwn1BiNQrUA78T1d16FmveQQ/pvnX5+4n71g462MM44lLk
+         7/U+JzmiICsWpZo6D3qLNjdxi2sfMFoOySJlMdl06q5qS3jA3EpevFSYSPsF4MCClNEj
+         tQyy8ltHRLvkJrF0ngB/ED4hcRYoVxLz9LXzmaHo8JR/FYMnivKq8rhaNB5AQ7S5VSt5
+         76IooR3X3vf8kpw90abk5VaEsgj1YFyxKJy2N+oWO9T/2o5RrrTrCnxLaif/koEx2mTB
+         wRMw==
+X-Forwarded-Encrypted: i=1; AFNElJ+oMd7H4UyFzDujcyvY4TmPa7FmyNVEQFLjvXb659R9O/x4ddAgHMZR9hzmYTKRnv4EkFM/Aw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyACJmI1o4J2irV2sTXGmagOMfpqrVP8RKY/EdSV884HF66TrmF
+	byRuXOBj9TmlHAt0Cvtb+7augqYalHEibPark/kOg3CY9i3LZvFSLYvWycf+qlXES5A+PoFghWh
+	Nv1ingbSA/GmcsA2aDQ==
+X-Received: from wmsm38.prod.google.com ([2002:a05:600c:3b26:b0:492:49e7:fff3])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:26d2:b0:490:9782:3eb8 with SMTP id 5b1f17b1804b1-493c3cedeb1mr40482955e9.25.1782990383098;
+ Thu, 02 Jul 2026 04:06:23 -0700 (PDT)
+Date: Thu, 2 Jul 2026 11:06:21 +0000
+In-Reply-To: <20260629201046.423464-1-nico.antinori.7@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bf56e2e98b512962a2fb88900d535a0e9e6769d8.1782735110.git.ljs@kernel.org>
-X-Spam-Flag: NO
-X-Rspamd-Action: no action
-X-Spam-Level: 
-X-Spamd-Result: default: False [-3.01 / 50.00];
-	BAYES_HAM(-3.00)[99.99%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com,gmx.de];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	TO_DN_SOME(0.00)[];
-	FREEMAIL_CC(0.00)[linux-foundation.org,armlinux.org.uk,kernel.org,siemens-energy.com,hansenpartnership.com,gmx.de,redhat.com,alien8.de,linux.intel.com,mev.co.uk,visionengravers.com,pengutronix.de,gmail.com,ffwll.ch,suse.de,oss.qualcomm.com,ideasonboard.com,nvidia.com,amd.com,shazbot.org,zeniv.linux.org.uk,linux.dev,google.com,infradead.org,samsung.com,goodmis.org,huawei.com,vger.kernel.org,lists.infradead.org,lists.freedesktop.org,lists.linux.dev,kvack.org,googlegroups.com,surriel.com];
-	MIME_TRACE(0.00)[0:+];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	ARC_NA(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RLziudqfrzo6b7hzgpxksh1d9i)];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:104:10:150:64:97:from,2a07:de40:b281:106:10:150:64:167:received];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	MISSING_XM_UA(0.00)[];
-	RCPT_COUNT_GT_50(0.00)[75];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[pedro-suse.lan:mid,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:email,suse.de:dkim]
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Queue-Id: AE93C74158
-X-Spam-Score: -3.01
+Mime-Version: 1.0
+References: <20260629201046.423464-1-nico.antinori.7@gmail.com>
+Message-ID: <akZGLXnmUaF0XPtL@google.com>
+Subject: Re: [PATCH v2] rust: iommu: replace core::mem::zeroed with Zeroable::zeroed
+From: Alice Ryhl <aliceryhl@google.com>
+To: "=?utf-8?Q?Nicol=C3=A1s?= Antinori" <nico.antinori.7@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Alexandre Courbot <acourbot@nvidia.com>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Benno Lossin <lossin@kernel.org>, 
+	"=?utf-8?B?QmrDtnJu?= Roy Baron" <bjorn3_gh@protonmail.com>, Boqun Feng <boqun@kernel.org>, 
+	Daniel Almeida <daniel.almeida@collabora.com>, Danilo Krummrich <dakr@kernel.org>, 
+	Gary Guo <gary@garyguo.net>, Miguel Ojeda <ojeda@kernel.org>, 
+	"Onur =?utf-8?B?w5Z6a2Fu?=" <work@onurozkan.dev>, Robin Murphy <robin.murphy@arm.com>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Tamir Duberstein <tamird@kernel.org>, 
+	Trevor Gross <tmgross@umich.edu>, linux-kernel@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-kernel-mentees@lists.linux.dev
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 29, 2026 at 01:23:30PM +0100, Lorenzo Stoakes wrote:
-> There are a number of places where we open code what linear_page_index()
-> and linear_page_delta() calculate.
-> 
-> Replace this code with the appropriate functions for consistency.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+On Mon, Jun 29, 2026 at 05:10:41PM -0300, Nicol=C3=A1s Antinori wrote:
+> All types in `bindings` implement `Zeroable` if they can. This enables
+> using `Zeroable::zeroed` for `io_pgtable_cfg` initialization instead
+> of relying on `..unsafe { core::mem::zeroed() }`.
+>=20
+> This change improves readability and removes an unnecessary unsafe
+> block.
+>=20
+> Link: https://github.com/Rust-for-Linux/linux/issues/1189
+> Suggested-by: Benno Lossin <lossin@kernel.org>
+> Signed-off-by: Nicol=C3=A1s Antinori <nico.antinori.7@gmail.com>
 
-Reviewed-by: Pedro Falcato <pfalcato@suse.de> # mm
+Reviewed-by: Alice Ryhl <aliceryhl@google.com>
 
--- 
-Pedro
+Joerg, is this cleanup you can pick up? Thanks!
