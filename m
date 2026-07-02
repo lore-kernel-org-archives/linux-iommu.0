@@ -1,223 +1,150 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CC85346774
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 16:05:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1ABE397339;
+	Thu,  2 Jul 2026 16:41:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783008349; cv=none; b=f5LcFbhC0Rx5cUOYovGO3n3b0MJ7IL5ymV8HBJpB8uFCXJxZT4cV3newjt4gGpSwMiyp+r1111RXz4Yvd+8HATgGrHdAfZo53tUg5AivgHbFX3L+5twDX3OOCbYkQn5Y75b6Dl2D5eEcbEicX9GGNfnnDiRybwlV8TX5UmZ1x1E=
+	t=1783010492; cv=none; b=iwVHd7/428O8morhrGOiyKcPacxnsuDag9pUkkgumUoh7tj6RZFf8BW4VnmXDQEqfPrCXovw9krSZEq+fIdZBSjtbTh3YmR4gBs3av/tH1yW+AiphXj7v/OwDjelw8ZS1v5tcMKX5tcWuXQeWNKPseKBHUSKo+XWvPLfrboej08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783008349; c=relaxed/simple;
-	bh=Kn5NrkHVHRgQj8Fa4JwpgLNa/jM8DfiVsDkswNu0aSk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rqfohynKd75poARBN51oYXWgTtruUhpkp5eR6RZ1kCnwe5W29OxyDFSWd+yd+m4mAO56wEQsV6AzT032NcnHQQFWuW/EztuNa3A6lMl12kucEgbVQUUTe8ILknHdgcbebOQtXCdj1lfxvN13VRSMCVodM3BhEvoAp4kshX8+QOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=mfFdIIJa; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1783010492; c=relaxed/simple;
+	bh=4TcPpM0BZaoJj/LKE0Ry2kWPQZbK+NaW1FTfGXp6Qn4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a/PpFtrJlDx8CL2DHWhX7TlufHi1XY4BEm2gvt7KmyKwWUmDD9wP23vIAY1rIDRLRCWxbW5zYy1cEK/ugO1Cn6C2iNQU+PI9+ud/60aXExymRq+PHPGe8iRfUYKqEFnOgJTKY9eO4LIGO2ZOonIz36Q4PtB/X1nH7Szgnur8GNg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UbIxVhIT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="mfFdIIJa"
-Received: from zhangyu-hyperv.mshome.net (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 22FFA20B7167;
-	Thu,  2 Jul 2026 09:05:39 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 22FFA20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1783008344;
-	bh=6OE1Mauqb92odTbNSOoBdujt4QCH/s9L+WnP1i8hHJE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=mfFdIIJaxIiypsFDAUZIY4Zoc838CL78wnLbxefZcztN7LRwyIRMCqwWoly0x1+Bo
-	 oc13ItowVTGzBmwCVggQT5i5BiwfwuhHAUwWEp0+z+7QfIHvikh9hWhLFR6YyuAsaB
-	 xT5o7nywXf0O5GLD3xnbyHuMeqsbZ5LRbcS1KbFo=
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org
-Cc: wei.liu@kernel.org,
-	kys@microsoft.com,
-	haiyangz@microsoft.com,
-	decui@microsoft.com,
-	longli@microsoft.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	bhelgaas@google.com,
-	kwilczynski@kernel.org,
-	lpieralisi@kernel.org,
-	mani@kernel.org,
-	robh@kernel.org,
-	arnd@arndb.de,
-	jgg@ziepe.ca,
-	mhklinux@outlook.com,
-	jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com,
-	easwar.hariharan@linux.microsoft.com,
-	mrathor@linux.microsoft.com
-Subject: [PATCH v2 4/4] iommu/hyperv: Add page-selective IOTLB flush support
-Date: Fri,  3 Jul 2026 00:05:18 +0800
-Message-ID: <20260702160518.311234-5-zhangyu1@linux.microsoft.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UbIxVhIT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3321D1F00ACF;
+	Thu,  2 Jul 2026 16:41:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783010485;
+	bh=4TcPpM0BZaoJj/LKE0Ry2kWPQZbK+NaW1FTfGXp6Qn4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=UbIxVhIT3k+L2Rvex870aYp4emZYvycrMzgT/l80VxrbTxWvxI9JRKpnaUNMEjG3G
+	 ZoVLWczTG/g9HyZAgZ70twW/ylV0EE7XLdG/sgXmKLnHisy8AsEYlfbd5niKzqz1lY
+	 ws98cZTWJqeFnp3vSJLG17/qF3Ge/moCJxFQuACsKCwbcRvPFAWF7LSujuvl0ZguAd
+	 0Ey5CbVzfmKHTGGtoQsv7zUESob5GM+jQi/nn4i0YwCIBp/b1yxTiqFNMy4jhvtD5D
+	 q7w26HLWMKTd+xN5EbSr27iexWuWelP+dlG+S+pGinCthmp6iUYPrtV/RBEn+6x6na
+	 +pBQI4mIXDTaw==
+Date: Thu, 2 Jul 2026 18:41:23 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: Will Deacon <will@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+Message-ID: <akaSJ5D98w2cHqb6@orome>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
+ <akYs91INHMXMTI-t@willie-the-truck>
+ <akZkuwktaXFTrASP@orome>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="a4brqgkdrivfh2ns"
+Content-Disposition: inline
+In-Reply-To: <akZkuwktaXFTrASP@orome>
 
-Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
-This hypercall accepts a list of (page_number, page_mask_shift) entries,
-enabling finer-grained IOTLB invalidation compared to the domain-wide
-HVCALL_FLUSH_DEVICE_DOMAIN used by hv_iommu_flush_iotlb_all().
 
-hv_iommu_calc_flush_range() computes the smallest power-of-two aligned
-range that covers the target IOVA region, producing a single flush
-descriptor. This may over-flush when the range is not naturally aligned,
-matching the approach used by Intel VT-d PSI. If the page-selective
-flush fails, the code falls back to a full domain flush.
+--a4brqgkdrivfh2ns
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+MIME-Version: 1.0
 
-Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
----
- drivers/iommu/hyperv/iommu.c | 68 +++++++++++++++++++++++++++++++++++-
- include/hyperv/hvgdk_mini.h  |  1 +
- include/hyperv/hvhdk_mini.h  | 17 +++++++++
- 3 files changed, 85 insertions(+), 1 deletion(-)
+On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
+> On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
+> > On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
+> > > From: Chun Ng <chunn@nvidia.com>
+> > >=20
+> > > Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protection bits
+> > > on a kernel-linear-map range.
+> >=20
+> > That sounds like a really terrible idea. Why is this necessary and how
+> > does it interact with things like load_unaligned_zeropad()?
+>=20
+> This is necessary because once the memory controller has walled off the
+> new memory region the CPU must not access it under any circumstances or
+> it'll cause the CPU to lock up (I think technically it'll hit an SError
+> but in practice that just means it'll freeze, as far as I can tell).
+>=20
+> Probably doesn't interact well at all with load_unaligned_zeropad().
+>=20
+> > I think you should unmap the memory from the linear map and memremap()
+> > it instead.
+>=20
+> Given that the memory can never be accessed by the CPU after the memory
+> controller locks it down, I don't think we'll even need memremap(). The
+> only thing we really need is the sg_table we hand out via the DMA BUFs
+> so that they can be used by device drivers to program their DMA engines
+> internally.
+>=20
+> Looking through some of the architecture code around this, shouldn't we
+> simply be using set_memory_encrypted() and set_memory_decrypted() for
+> this? While they might've been created for slightly other use-cases,
+> they seem to be doing exactly what we want (i.e. remove the page range
+> from the linear mapping and flushing it, or restoring the valid bit and
+> standard permissions, respectively).
 
-diff --git a/drivers/iommu/hyperv/iommu.c b/drivers/iommu/hyperv/iommu.c
-index 254136946404..e9b104a322fd 100644
---- a/drivers/iommu/hyperv/iommu.c
-+++ b/drivers/iommu/hyperv/iommu.c
-@@ -9,6 +9,7 @@
- #define pr_fmt(fmt) "Hyper-V pvIOMMU: " fmt
- #define dev_fmt(fmt) pr_fmt(fmt)
- 
-+#include <linux/hyperv.h>
- #include <linux/iommu.h>
- #include <linux/pci.h>
- #include <linux/dma-map-ops.h>
-@@ -401,10 +402,74 @@ static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 	hv_flush_device_domain(to_hv_iommu_domain(domain));
- }
- 
-+/*
-+ * Calculate the minimal power-of-two aligned range that covers [start, end]
-+ * (end is inclusive). Returns a single (page_number, page_mask_shift)
-+ * descriptor that may over-flush when the range is not naturally aligned.
-+ */
-+static void hv_iommu_calc_flush_range(unsigned long start, unsigned long end,
-+				       union hv_iommu_flush_va *va)
-+{
-+	unsigned long start_pfn = HVPFN_DOWN(start);
-+	unsigned long last_pfn = HVPFN_UP(end + 1) - 1;
-+	unsigned long mask_shift, aligned_pfn;
-+
-+	if (start_pfn == last_pfn) {
-+		mask_shift = 0;
-+	} else {
-+		/*
-+		 * Find the highest bit position where start_pfn and last_pfn
-+		 * differ.  A range aligned to one above that bit is the
-+		 * smallest power-of-two region that covers both endpoints.
-+		 */
-+		mask_shift = __fls(start_pfn ^ last_pfn) + 1;
-+	}
-+
-+	aligned_pfn = ALIGN_DOWN(start_pfn, 1UL << mask_shift);
-+	va->page_number = aligned_pfn;
-+	va->page_mask_shift = mask_shift;
-+}
-+
-+static void hv_flush_device_domain_list(struct hv_iommu_domain *hv_domain,
-+					struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	u64 status;
-+	unsigned long flags;
-+	struct hv_input_flush_device_domain_list *input;
-+
-+	local_irq_save(flags);
-+
-+	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	memset(input, 0, sizeof(*input));
-+
-+	input->device_domain = hv_domain->device_domain;
-+	input->flags |= HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
-+	hv_iommu_calc_flush_range(iotlb_gather->start, iotlb_gather->end,
-+				  &input->iova_list[0]);
-+
-+	status = hv_do_rep_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
-+				     1, 0, input, NULL);
-+
-+	if (!hv_result_success(status)) {
-+		/* Page-selective flush failed, fall back to full flush. */
-+		struct hv_input_flush_device_domain *flush_all = (void *)input;
-+
-+		memset(flush_all, 0, sizeof(*flush_all));
-+		flush_all->device_domain = hv_domain->device_domain;
-+		status = hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
-+					flush_all, NULL);
-+		WARN(!hv_result_success(status),
-+		     "HVCALL_FLUSH_DEVICE_DOMAIN fallback also failed: %lld\n",
-+		     status);
-+	}
-+
-+	local_irq_restore(flags);
-+}
-+
- static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
- 				struct iommu_iotlb_gather *iotlb_gather)
- {
--	hv_flush_device_domain(to_hv_iommu_domain(domain));
-+	hv_flush_device_domain_list(to_hv_iommu_domain(domain), iotlb_gather);
- 
- 	iommu_put_pages_list(&iotlb_gather->freelist);
- }
-@@ -455,6 +520,7 @@ static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
- 
- 	cfg.common.hw_max_vasz_lg2 = hv_iommu_device->max_iova_width;
- 	cfg.common.hw_max_oasz_lg2 = 52;
-+	cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE);
- 	cfg.top_level = (hv_iommu_device->max_iova_width > 48) ? 4 : 3;
- 
- 	ret = pt_iommu_x86_64_init(&hv_domain->pt_iommu_x86_64, &cfg, GFP_KERNEL);
-diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-index 5bdbb44da112..eaaf87171478 100644
---- a/include/hyperv/hvgdk_mini.h
-+++ b/include/hyperv/hvgdk_mini.h
-@@ -496,6 +496,7 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
- #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
- #define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
- #define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-+#define HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1
- #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
- #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
- #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-index 493608e791b4..f51d5d9467f1 100644
---- a/include/hyperv/hvhdk_mini.h
-+++ b/include/hyperv/hvhdk_mini.h
-@@ -671,4 +671,21 @@ struct hv_input_flush_device_domain {
- 	u32 reserved;
- } __packed;
- 
-+union hv_iommu_flush_va {
-+	u64 iova;
-+	struct {
-+		u64 page_mask_shift : 12;
-+		u64 page_number : 52;
-+	};
-+} __packed;
-+
-+
-+struct hv_input_flush_device_domain_list {
-+	struct hv_input_device_domain device_domain;
-+#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT (1 << 0)
-+	u32 flags;
-+	u32 reserved;
-+	union hv_iommu_flush_va iova_list[];
-+} __packed;
-+
- #endif /* _HV_HVHDK_MINI_H */
--- 
-2.52.0
+Ah... I guess we can't do it because we're not in a realm world and so
+the early checks in __set_memory_enc_dec() would return early and turn
+it into a no-op.
 
+How about if I extract a common helper and provide set_memory_p() and
+set_memory_np() in terms of those. Those are available on x86 and
+PowerPC as well, so fairly standard. I suppose at that point we're
+closer to set_memory_valid().
+
+Thierry
+
+--a4brqgkdrivfh2ns
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpGlK8ACgkQ3SOs138+
+s6HETA//VE10mlKmDkMPw7oOS2GPLTn9mVHksFDOn28PMBlC2qgyv4CyznGj3Rfw
+WHIYoNb0rxntAbxQkh6SV5FCCi76fm/uTR3z2an8FI8W7KwiVfDiaIv3cmlG6TVd
+XcCj42QUsUHU7iFHzfSVkW33626MSfyeD+w00yxmT14U2Utl4X/+V+EQF6tRStJZ
+eLJUAyxrArCx98MI79QW13QB5MilfaFjtY6IxwXr+0hW2qnXGbNWJ5x1Z5kbC6wD
+6yOAfi8QY0nqau5GKgo/+dkYUq1zAc65a7QdRu5KW383NDcLhRbtrwBoA6TYFriL
+c2GJiV1ch4N8Dsr694Lmn4jNHUUqPLcPY8it6qMkUNVrc5XjK24C0intns2AFR4i
+7ca82YvaTCuql87GjgBkz9NptVtmqVdZxnrtVYAH9mbvfczVpAEEsacYrMwtqBPM
+crTqcMLjkLxVZdnsvwT3Je73FolwTnxNsBlTaA24I64kQCW9QUIRy6WltcFdimPM
+2K40ULhVg3dNDSaGsQaIvDv8kpgBJiX4sf3kIjK71Dgo9/HKS4IBZx3kfKUxxURj
+RD51dxPOiDXPwIzDZxbERJ2rZx4NxSTj2FjLET7Vs6nbKwvC+K/XiLOtEIXbfwdD
+w9Hih0fRPiPrhG+uab8J6u+Jsaj9KI/DnuqDrIZL+ciFm4MVaNc=
+=9S6h
+-----END PGP SIGNATURE-----
+
+--a4brqgkdrivfh2ns--
