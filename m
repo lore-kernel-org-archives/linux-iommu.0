@@ -1,134 +1,139 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD1C6353A63
-	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 14:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A444433E96
+	for <iommu@lists.linux.dev>; Thu,  2 Jul 2026 15:03:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783003653; cv=none; b=RlYq6kkHb9f9lewiWAnicsuHVu5im7ZjdV7hsgMY0vSFqpJA7av0tGfeH+NALrukygTc22K9WundqKl22bQE+nhOd+3zvf5R7etTiJwedx0+fTlgzwSBzsRx8WPyP+Bk0VlyEEnmHfACcCj908B2wrizWR0WMGQPtHJWd408uUg=
+	t=1783004631; cv=none; b=rIXamH3UOQc77EN50qmIxhpsF5QtPKcN2VAqLe+stVJJRLoXX+IRpS/jrpC1V6NsemOxRLt+Eo2v0edXo268zJaa4bXG1odApieR93ozQfTg5qITe4le/vVQUvw9tq+3i0W31vQvrrczsnRG9WSTKvqc9GoPh6As5ytyr1QhKgw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783003653; c=relaxed/simple;
-	bh=wPrLPIkahV/48dLiq8gAC7HDusdQj1NNPVoCnuPpx5M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PzekqfTQ9zHkmlemHfF0YCcLZ1zTyiFgRU/1zH+5Bfoy41s2G8kMZNBpU00mFXUUEZJMJJ4Au7HUhUMSxpauQAfGTM+tIy+/h/sZ5aa6x5POCy4fGz2FCSDZ1W06Q7BHEG77PPFkBe1humUGp0Lb/PK8Mn6DtL3rg+hmV1J4JHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=e/anwoG3; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1783004631; c=relaxed/simple;
+	bh=W8BurQ3nRNlTzRaGRE3wTvVbqX5y4A5tPKLolg771wo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=G/2NbvmYvITHcqlh33kIHMg3iRDTMOTINASfwH3CEp++yS+W8stO6waQusuiCDtRucqYSNUczJEITi78j2u5907qgxv6sfpdLvAdTr+Ev3bZbZlsGzHs2OPnkfSMnDHYO+tC74Xo2KWQiW5RW3WMd3wdsB1StiCNBXkJhu87fIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org; spf=pass smtp.mailfrom=bitbyteword.org; dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b=VKPN3bWV; arc=none smtp.client-ip=209.85.161.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bitbyteword.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="e/anwoG3"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-51c16ac21acso11595301cf.0
-        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 07:47:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b="VKPN3bWV"
+Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-6a18e363d52so644045eaf.0
+        for <iommu@lists.linux.dev>; Thu, 02 Jul 2026 08:03:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783003651; x=1783608451; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VHZVkcI1dGlitqBERLzcSZUkSvuExam94MObbuJvLAQ=;
-        b=e/anwoG31Hergg0KVEgIbZj5/SqaoWCwXRJNQWcBpbLJtvc7SL+7ktcXjj6+hxVPUW
-         hzbx0lKe4w+pvCLT8cJsVaEtyBHnIdKLj20bxiRjlzDK7HVgVagjObGZ1uljB6ka9BGT
-         hsoOSgBmdABYIe+ovbxAayzM5yHc+sEmJVzkK9t9RIC/inIdVXIxs1GZlb0UdaoEua3x
-         LKaDvPe8d/ctF9vJTs2LhglylsJBRfi94e31fu07YgrbZMClPkYVx8BwbQPrFf2pFLn5
-         /o3w0/q16qbRByvBQiSyGQZ+olveDhTGBZu0Bb89d/x1GGZQMCDiKFJukmHIbVftvt10
-         jYRg==
+        d=bitbyteword.org; s=google; t=1783004629; x=1783609429; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nwG/MTWeS4xv8HKjPsiFYVmNZmAypY2FEaPTyYrUllo=;
+        b=VKPN3bWVySAxTxlIX7L1H29uqL4tZ90/3FNjRJbN4o6y3FZ7n8Ihvmg5PGveYLAsvU
+         /x2P84OLVbitaWtrBLbCnyjnbZw56J++VQWecO/O6NujFLWTItA0eP/YRpJzHDqy6F9p
+         0J1mOauUhuN2LJkmRgyrWa6AW9FFLnYCU36XqDuca/PJhwko1VuZ6bhcrksogxdBWfDu
+         rQeieTOrHFI0+7nn1eCgQqEjdeilg5s920aXZAhWHwzJVjxAl40Rux1EGHtUcstIi00S
+         A/d78VqrmjyTXiSVOe4yYTfVPzj7jzpZ3I0R+yyKj4oq2ZAvgSsYQGoFHnYbODyTrnef
+         byfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783003651; x=1783608451;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VHZVkcI1dGlitqBERLzcSZUkSvuExam94MObbuJvLAQ=;
-        b=GrHmiiNo2Iq7zUr189g4q8CD0Wefrd5Vs91XSL46XEWQhCmtN9bcYP1HvfAVb2ujJ7
-         OseeXzx0eHeDMJXUQON4ZiZU30brwiTCEPiKA0CILgns2tCjHdTfbXcYOU4PoP+3pSrg
-         0FD8D+tWaUaZXCU7GnlR/kurBZ3p29aHp/25lHkI/nvDDrjtxnXX5I7fCy+Y3SXD4Mg9
-         o+P95L/F7pXUvVyiI3vpO8DU0lcI+D94xzbHw5bcAbkWlpcm4MdE0DIcBwcbYJonl9TT
-         0wdsoPBE+nIkbEYm50Y3Wx81xR4zjeX7xuULt8Kn3Ev9ZbysXOH+/uSuz6Zs090LzBHq
-         ommA==
-X-Forwarded-Encrypted: i=1; AFNElJ9aaPZtPGHMDVhx9KE2uxbPst0Sz5qnkKNS0JqxD3+Zq8tuVvw105tOri3kD5jQW+8lm06SCg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw7hROpVyZsIMjSh8C1kAuEtKBxnH38U7AKSAZzfDAmX/v+4WrR
-	Ub8L3KMNK7Amsi/bmqw2eYQsHpEUDyhlOQxCLK5Cp3GbzFXAWmlBNl3cZ/yVRvSIp6I=
-X-Gm-Gg: AfdE7cnw8PR9xJg40njqqTwyNy4/P459AYuNUOBSTVMPof3fe33Sspf4fn9IX3/XMCF
-	OcLXsBoK6ZQn0CJODJE0H1CK2kfNQzpPrBf1oof5UhgXQloXUhiVS9vlIOG3deHU6WXUKYZbP6T
-	g/nIb/5QVtr3PBwouUYAxqqPY2kWQfOBCcwwdDW701WNajWjTQnh69tELPPE6lagB96HHMTTHN8
-	V6MjANccNWTN0agKxASfmBOof7XcFwDVG+MxbkLoqRmO6lPDXGmISuxRdRFgeMy8DoTNu1UNha8
-	S55+RVJIXYV9WAyKmotH4pRzJ3RQRr41HnZgiy8IAAn5F2DvxHoJfPoDYeVBe3mkfdgErCx4GWu
-	0NT56eN0KFL9Y8/vf/2ny+klvsAPqU2kO/RqXoDPPc5XvImpbXX4Uz1wMg21d9nwpgK+bNLBHHo
-	F+Mr4FHtDbhLdU16cd6aqp3bzflqmQJj9+mWhx7naT+FPMweyYrLMLBUevoZFJeQfh9ew=
-X-Received: by 2002:a05:622a:1b92:b0:51c:1ec5:d0f with SMTP id d75a77b69052e-51c2aebaa70mr65534301cf.40.1783003650663;
-        Thu, 02 Jul 2026 07:47:30 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51c30c61857sm15516901cf.28.2026.07.02.07.47.29
+        d=1e100.net; s=20251104; t=1783004629; x=1783609429;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=nwG/MTWeS4xv8HKjPsiFYVmNZmAypY2FEaPTyYrUllo=;
+        b=Yw01WypwZGVbuwffUr921iHlzorsoDlap3C1lE9bXepg/6JOCZB7dMihlUO6nqN1do
+         +yBmuzFpLc0/QSgoVLO9wIZiGkVl33CBbP/VTp1V1Pzv9peMU2gwZS/elayORj7/FHgJ
+         wdFdy5ylnlzjx2jYTZk/DHWNwacW/8OSxfvjh6if4WIjBfOBvBTMNolLRTm3bM84gOyO
+         Gg/9he4E/qLlAHUhD90sS8WpF9LcyFybSuCMsCAxLFR4EkhGZytZf0bYmdyZGC8PoOG4
+         km6m6EZ+oBKA75XVuLdUGNQvnsSYxDIGsjU7UEDpJCnb2cbeeAgQZ1x/HKSAbM43ha4J
+         pu+g==
+X-Forwarded-Encrypted: i=1; AFNElJ9WBtn3D7n4qAGRRoDMOnIQcJzNmdksUYIvLQz266JtSEP1SyjbZIzeRI3tuVtWbHFoHxJn4Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzNx3clskUwDI/LZxZbAE6kucTZ5TKc36Z18F62nQUJPVzGcZBw
+	eSF5HlEz4vn/X+NzSnRiNH4z71TB1PveeVP5Ih2weaz/uTAtbruoYM19/5DdCWOyljs=
+X-Gm-Gg: AfdE7cmFRlMHipmzIXUGLpoxrS95C0NJIAaSR7tnmCMVtzVvncM4sqEVfNkO1xFTSdw
+	tHwBDWH4noEK3I7E7hadJJ3Jr0etsD8ICuk4vOhpW+r7/SovrYrKRLiKG2hCpfA2a4cVhsTKx7/
+	M0tIKzkBZHkiSinRpgRURV9u6/K2lcIax5m1VH8Z7mEs0vbpZVB2hBTkhqQpDOA8Vg8zY8FB2x7
+	PRDtvXX6oQCmU/kV4JAO3HPvwKIkDBddQkwB7kJCkGG5Yah/d6bktQRYDJpfIEBzyNrBqpGbHXs
+	JkwZ1attPW5jeSdHj6RMvCEp3nLrHwbfDZVC15jiyIPj33JvpldQW7j2PZhteoxMKbNiCyoRlqw
+	8myCUVA12tcfwayuyPfl2uMLfswVEkbHL1r9OhTve9/+IyTU+yNPCC81+AhjSFwCxWAi2waccqL
+	XUxjQiblyxhtxdppQT4zN/2qe+RtwXPCtkDmYFg8d/gP7IBmktPumn
+X-Received: by 2002:a05:6820:2915:b0:69e:a233:6154 with SMTP id 006d021491bc7-6a31d15bd58mr146837eaf.8.1783004629042;
+        Thu, 02 Jul 2026 08:03:49 -0700 (PDT)
+Received: from vinp2.lan (c-71-235-107-29.hsd1.vt.comcast.net. [71.235.107.29])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e80193fbfsm233245085a.33.2026.07.02.08.03.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 07:47:29 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wfIhN-00000005tmX-0mNc;
-	Thu, 02 Jul 2026 11:47:29 -0300
-Date: Thu, 2 Jul 2026 11:47:29 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>,
-	"Cheloha, Scott" <Scott.Cheloha@amd.com>
-Subject: Re: [PATCH v6 03/20] dma-direct: use DMA_ATTR_CC_SHARED in
- alloc/free paths
-Message-ID: <20260702144729.GP7525@ziepe.ca>
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <20260604083959.1265923-4-aneesh.kumar@kernel.org>
- <845d0c8a-6d51-47aa-8e0b-8381e733444a@amd.com>
- <20260617154101.GE3577091@ziepe.ca>
- <25155bd6-4348-4aa8-ba70-0a882fc84db9@amd.com>
- <20260630160242.GI7525@ziepe.ca>
- <98800d21-18f6-44d6-9ba0-da9b77567d85@amd.com>
+        Thu, 02 Jul 2026 08:03:48 -0700 (PDT)
+From: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>
+To: baolu.lu@linux.intel.com
+Cc: dmaluka@chromium.org,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	will@kernel.org
+Subject: Re: [PATCH v2 0/3] iommu/vt-d: Ensure atomicity in context and PASID entry updates
+Date: Thu,  2 Jul 2026 11:03:46 -0400
+Message-ID: <20260702150346.42807-1-vineeth@bitbyteword.org>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
+References: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <98800d21-18f6-44d6-9ba0-da9b77567d85@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jul 02, 2026 at 10:25:16AM +1000, Alexey Kardashevskiy wrote:
+Hi Baolu,
 
-> > > not externally available so I'll have to trick the DMA layer into
-> > > using SWIOTLB (which is still all shared, right?) as I specifically
-> > > want to skip page conversions. Setting low DMA mask won't guarantee
-> > > that the DMA layer won't allocate a page outside of SWIOTLB and
-> > > convert it. Manually do
-> > 
-> > Why so particular?
+> This is a follow-up from recent discussions in the iommu community
+> mailing list [1] [2] regarding potential race conditions in table
+> entry updates.
+>
+> The Intel VT-d hardware fetches translation table entries (context
+> entries and PASID entries) in 128-bit (16-byte) chunks. Currently, the
+> Linux driver often updates these entries using multiple 64-bit writes.
+> This creates a race condition where the IOMMU hardware may fetch a
+> "torn" entry — a mixture of old and new data — during a CPU update. This
+> can lead to unpredictable hardware behavior, spurious faults, or system
+> instability.
 > 
-> aahhh I missed "pre-". I need a way to get pre-shared pages for my
-> sev-guest activities.
+> This addresses these atomicity issues by following the translation table
+> entry ownership handshake protocal recommended by the VT-d specification.
+> 
+> [1] https://lore.kernel.org/linux-iommu/20251227175728.4358-1-dmaluka@chromium.org/
+> [2] https://lore.kernel.org/linux-iommu/20260107201800.2486137-1-skhawaja@google.com/
+> 
+> Change log:
+> 
+> v2:
+>  - Considering that these fixes should be backported deep into old
+>    versions, and the previous solution relies heavily on the x86_64
+>    cmpxchg16b instruction, which is not friendly to backport as it might
+>    cause regressions on early hardware or configurations, we use the
+>    simple dma_wmb() approach in this version.
+>  - Jason proposed the entry-sync framework
+>    (https://lore.kernel.org/linux-iommu/20260113150542.GF812923@nvidia.com/)
+>    which consolidates the details of how to update a translation table
+>    entry in common code shared by the individual drivers, so that the
+>    IOMMU driver could be designed without considering the hitless or
+>    non-hitless replace.
+>  - To make life easier, I decided to split all the work into multiple
+>    series. The first, as it is, covers fixing the real problems in a
+>    backport-friendly way, and the next series covers entry-sync for
+>    PASID table entry updates.
+> 
+> v1: https://lore.kernel.org/linux-iommu/20260113030052.977366-1-baolu.lu@linux.intel.com/
+> 
+> Lu Baolu (3):
+>   iommu/vt-d: Clear Present bit before tearing down PASID entry
+>   iommu/vt-d: Clear Present bit before tearing down context entry
+>   iommu/vt-d: Fix race condition during PASID entry replacement
 
-It sounds to me like you don't, what you are worried about is
-optimizing the dma_alloc_coherent flow to avoid fragmentation and all
-CC architetures require this optimization.
+This last patch(addressing CVE-2026-45945) did not seem to make it to
+6.18 stable, while the first 2 patches went in with v6.18.14.
 
-So I'm strongly against you trying to open code something in your
-driver. Use the DMA API as-is. Propose general DMA API improvements to
-reduce the fragmentation problem. It is a real problem.
+Could you please send a patch for 6.18?
 
-Jason
+Thanks,
+Vineeth
