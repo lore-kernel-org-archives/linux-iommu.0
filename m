@@ -1,172 +1,147 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011024.outbound.protection.outlook.com [40.107.208.24])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9029D1A267
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 18:20:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.24
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783102857; cv=fail; b=kv0VDhpebY27rclwZtVkcP8TNsYzgmF383bVf1ckjf3S2rruyIeR/O5vnFQcD0btme2viN3zFpVEMDjysKzZxxgH9VE6UXujHGxli7AcwJM3wfud2YjVhTGMpbbBw/jc5YcRNGKrOblwjwbZRTe493bmNasHC96Hs0JLdJ6M7N0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783102857; c=relaxed/simple;
-	bh=Xhfx31S8oPe21vTLzjS1pdCyDhdXAmjM1z928SsV6Pk=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UvDZ0SW7AgNnIK1ZaHKJUe1VpimyxZS9VUa1uM/p3euo4XGnrUzR3urwjkhe468H9IHwuH+4KC9LNz0sxewL16ALjX0HmvFY8CQcjHgx5T9cEzhsK+pseZYUJlnTVt00sAcnp382mmXh3vTTwMRQu7H8FmdQpwX1N3GTxihoPLo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FSjD6aN1; arc=fail smtp.client-ip=40.107.208.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94BD123BD1D;
+	Fri,  3 Jul 2026 18:29:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783103364; cv=none; b=PuQqxA5LAJFQq8uDob4THuuTfuyPYDF27laN7Wc/wABw9l6v/HAQ9AqYfVKNVrRP5HVwI8NPP9gKB9ysT+iXQi0BvJtrHbXxxoR7O0N/oZWj95XaZOcA5wL+nzI644mvscTmJphiG9PME8Yv4x93RbUl4LA8VSF/dMFbXwnva4U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783103364; c=relaxed/simple;
+	bh=Xl9CUYMIhXkFBk952nuPiNR2NtJxqNcKi1GiIwILJRc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MH0efoD3ws42RqkVFlmeFIoWOpteaTRe/vTesEhy8gd2h9XbyP4QgI+G8l9jrvq7zty3IHzbLTDHp6qfyyrE/EeLXMAL2XsBiiEa/8p0y+3N67u/vZUMJU/64NxS9Afdi5R0iOcRce/wwa+ecexSA311HBZyCZnShYcNgDlgqRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bj8wiXFD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FSjD6aN1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gnKv9K4VUcyGbiunt8mhvPJs9oa5JZreKIRucuN4bpkMI45nbF3gvjVxUZ1UlEEuII+z1JrhWoy71BHKOMKlSjjojPBL1bJ0+P8S0zd5yiZ0AGJiM6UyZNq3AtwGJzDCn66EwJYk4oA2fbMDIguWHd9F4SFlW5LxcU/wifdagqWqriCpY/2dkKalrEOl8ktbQwX7KbVlsQgDuTmocSxfqNVorodwk3jw5XHJpcAm0bNIXuUwbpJY8jZC508bpudXVAzJm50pqUt0sBfBuG3KphkAePDXCkxjjp/EVGx0ve3gTVi6ZPZUt+qJco4k4N90o5y/0uUadTJMQkcILP0APA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=htvTdVqBj5sQU58rbr9YMzjmDc7fYbUXWR1FudTikW4=;
- b=nx1J4XAYOCkhunezxhQRr0DBB5mjzpBVAkBwfukjZj1nx2I03k7Rcz2pg7JERR7iYGLsAUYxWsMQOXBleIQDPKoaLVnGmDDmhKaFm3ghVzHTg8lIDUjSSWQK39UOVNPbnVqDDTGOvN3ErrllLg7LHwLYq4jXrSv2IKni8S2RoAfTHg3/6VV2LTG96TjfyO2+6skUnUWwsotL/wzc7uIjr5+r9fQ2Wb/iLUizu/Ww8kJ6AfUoszzjLXC9r2DM5lBCISkgdcIsyIj+yLPetofCDmwmH+tpInAZrLkzHgTfg6ooIm/+1UkVhRI1iApo4JSZOJ6oy2kXWFWHaUEciABzcQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=htvTdVqBj5sQU58rbr9YMzjmDc7fYbUXWR1FudTikW4=;
- b=FSjD6aN1KBuox7ZkS+i240aTnBUlxBIGk6mNnoSTU9SMCE5ocvngkqzv3lzwIBbT492k7Iay2/9p2vSD/B+uco9mUYWxPy6MKRfKKjdRk6ZM93EBnz8hV66IMmX8YADfLL4ONWKS9uY2U/BGJVjTumbjgwxBNVw74AEVmKOMGh2EizkCdmkrwd8c3cg3HnBE4nNQqleceGVpypK6wjd0SxlZ8FSGXXMKZIytBTDXNmINd+g8pr8QICsZte0bFDXOnwW3Zf8LkFfS69N+C4FhyKwGIKIxtmBtUV7pEnrPhuHCr6iBZoqdn6ZV+vbCflryKmZCQzFGqmuBDB2vtvK6fw==
-Received: from SJ0PR05CA0124.namprd05.prod.outlook.com (2603:10b6:a03:33d::9)
- by CH3PR12MB9121.namprd12.prod.outlook.com (2603:10b6:610:1a1::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Fri, 3 Jul
- 2026 18:20:48 +0000
-Received: from SJ5PEPF000001D7.namprd05.prod.outlook.com
- (2603:10b6:a03:33d:cafe::37) by SJ0PR05CA0124.outlook.office365.com
- (2603:10b6:a03:33d::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.181.8 via Frontend Transport; Fri, 3
- Jul 2026 18:20:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ5PEPF000001D7.mail.protection.outlook.com (10.167.242.59) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Fri, 3 Jul 2026 18:20:48 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 3 Jul
- 2026 11:20:36 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 3 Jul
- 2026 11:20:36 -0700
-Received: from nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 3 Jul 2026 11:20:34 -0700
-Date: Fri, 3 Jul 2026 11:20:34 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Pranjal Shrivastava <praan@google.com>, Mostafa Saleh
-	<smostafa@google.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<joro@8bytes.org>, <kees@kernel.org>, <baolu.lu@linux.intel.com>,
-	<kevin.tian@intel.com>, <miko.lenczewski@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
-Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
- kernel
-Message-ID: <akf9cjLaBLn82lKP@nvidia.com>
-References: <akPX_N0P2EcI_jbV@google.com>
- <akPhuF9pAWaBXzpi@google.com>
- <20260630185942.GF7481@nvidia.com>
- <akUQj2pa1W-MekgF@google.com>
- <akUX3T3fIoN42sdM@google.com>
- <20260702144157.GM7481@nvidia.com>
- <aka7N6oLVq3CoBqn@nvidia.com>
- <20260702235004.GN7481@nvidia.com>
- <akctXFSALBNfYWww@nvidia.com>
- <20260703115716.GO7481@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bj8wiXFD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0081F000E9;
+	Fri,  3 Jul 2026 18:29:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783103362;
+	bh=cDUa7qAvGQxAqsninsYf1imnrLZa/8omKlfZyOjK/p4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=Bj8wiXFDw1AEwJAJzWMHcoHUzUnO5RSLUrrdbPDDtrmHvICV4zvluTNYGrCKNReo+
+	 V2VHecn6G9LIfWRUYhHviazaY5SPs+PD1M5UTv6w3boNcTB2kk7c8VZ81fqK1AbmAd
+	 57RAJvDkiTHqnE5bsKAh+rQSmEVuCAEs9yrQTdJVFl4TPsOQ6fqSkVKiMM138D6+Rf
+	 Twkdgzz2OvoRegKiZIkL8IHSmlKgnE/rg5/I6C9SHJU0zH1mL5dkYJmbH1CiVSrtWD
+	 pBboBrk2Smc/JfNU6pSXBek5e4iYD0aLFYqs7FYnuViAFirbZ/UiaEVn+QUB9L+tsG
+	 bcf6WGk9oP15Q==
+Message-ID: <58458578-a6fb-40c8-838f-9a06a7371f76@kernel.org>
+Date: Fri, 3 Jul 2026 20:29:06 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260703115716.GO7481@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001D7:EE_|CH3PR12MB9121:EE_
-X-MS-Office365-Filtering-Correlation-Id: 160d175f-3266-4d04-1c7f-08ded92fce51
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|23010399003|376014|7416014|36860700016|3023799007|56012099006|4143699003|18002099003|6133799003|11063799006|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	EICIZ9+QrRsgb+htE3aFsE4+jbxIl9bMfbso4cN20sGQQoJMwUWs/K5LUBHGKcTzX0oUSTyKRmmLfTLqZmJ+FD4/JQw3CI7HjgBbuBNepfzkx29B+/i1Yo96DZRzw4aTuDvyUgJTtZgaGgXTEvJuXPM20aS8GH74QhiYFSydcTxEviAtaEpUCMMnpNicauhhIuYVuXp8Osi6/NQtKHmr7+BXzKJ6PwjYtcpz5wZxDkWKERdW+9DhpgyzFXVclHl2lP4OiPY0hLlMLr4oybYrwy8hviQfqQ3npJye8bmvd9O65//w0+PJhu4f+XuTM5k+OFMwUqwizZYRpNhEUWTiHo/QR3X1VyQmph3nM9mSFVlHx+iQ9TXlJZtKSTOr0GeFoICzKiCbw0XWpnh/ocEFKS/aeeOIYUyN4LJiOf28VmLa8EnbM8rBjjI0shTp10/wyNy0xGK/uG+4zUcLdQXpr50+AalbdE1Dul0+VZZng/WTLycylZbgj4ueTLzqByrjf5w+VsTjH5nowYeVgej/kvfawyZErPTdbXsYulzhrhla61+UjVLG4409rqau2HieeQ97bzkMf31a42L3wkybMIkEJ/X8hkWj4yDWCpjNo8ygYoGnSEm3sx1YQuiLgDLA8YuWiXy/5C4hS/PMVGJ8SLR+Ajx5fz6Wh47eUhCgduVuHlmWNArC+v6oiuag7cVgk24/VvRRxMr3poBj2kbm+A==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(23010399003)(376014)(7416014)(36860700016)(3023799007)(56012099006)(4143699003)(18002099003)(6133799003)(11063799006)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	xBu/ML5n9FPijZYfFZgwX24b1VzeO4zQbq4Oe5Rp5/a8ptwkAUeu29XstXnGJiU3d9KF6/yTi63RDB9UfD3ig1AmYRlZsQiXKE0kZi0O90+o/RWJQzK6tMYutiJWf94YtezoF/NlmrMQJBocnqRsqlTYQkqnu3laVtrpztC3dKvy+EVpuaqiSNbDP0ZbRArSHM3ogO1dCn0Ml9Dg0Q+idA5dKmwT/JF64N5fGmf5+a/LCdBZI92wIh3sHMNOW/8Guq+QG8mf4Fwwon8t22A5m7FwWLHi6uLThCVn1ObITj8aXM4+6XpISNYd7j02oS/JSRw8Z9i4Upc2gvX3QQsb4+9Az3S/wRsX6DtjSzeWCCuBex3DpGRu9n5Da92beP4NEoQlMz1O8eCD/qYFc4TaZHBwoH1neEIHduCdTjrZkzCe1aOvN9x+NEgJiLHYpdpt
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2026 18:20:48.0953
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 160d175f-3266-4d04-1c7f-08ded92fce51
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001D7.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9121
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
+To: Thierry Reding <thierry.reding@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Sowjanya Komatineni <skomatineni@nvidia.com>,
+ Luca Ceresoli <luca.ceresoli@bootlin.com>,
+ Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Russell King <linux@armlinux.org.uk>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>,
+ Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>,
+ Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
+ "T.J. Mercier" <tjmercier@google.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org,
+ linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
+ linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 03, 2026 at 08:57:16AM -0300, Jason Gunthorpe wrote:
-> On Thu, Jul 02, 2026 at 08:32:44PM -0700, Nicolin Chen wrote:
-> > On Thu, Jul 02, 2026 at 08:50:04PM -0300, Jason Gunthorpe wrote:
-> > > On Thu, Jul 02, 2026 at 12:25:43PM -0700, Nicolin Chen wrote:
-> > > > On Thu, Jul 02, 2026 at 11:41:57AM -0300, Jason Gunthorpe wrote:
-> > > > > The VMIDs that are in-used by the adopted stream table have to be
-> > > > > removed from the idr as well (and similarly for ASID if we don't have
-> > > > > VMID HW support).
-> > > > > 
-> > > > > Then the VMIDs that may be dirtied by the prior kernel remain isolated
-> > > > > and are never re-used by the new kernel. When the new kernel wants to
-> > > > > do DMA it will replace the STE with a new, clean VMID, and there is no
-> > > > > problem.
-> > > > 
-> > > > I see. I assume the reserved VMID for the kdump kernel will be a
-> > > > clean VMID (!=0). That should guarantee different cache tags.
-> > > 
-> > > You will also have to change things to allocate the kernel global vmid
-> > > from the IDR, it will usually be 0 but not for kdump. Then you have to
-> > > find all the places where the 0 is implicitly placed and put in the
-> > > actual value.
-> > 
-> > Hmm, I just realized that all the EL2 commands do not take VMID.
+On 7/1/26 18:08, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
 > 
-> If the EL2 commands are being used then there is no S2 support and no
-> VMID support.
+> There is no technical reason why there should be a limited number of CMA
+> regions, so extract some code into helpers and use them to create extra
+> functions (cma_create() and cma_free()) that allow creating and freeing,
+> respectively, CMA regions dynamically at runtime.
 > 
-> So if you disable kdump when S2 is not supported it also disables it
-> when EL2 would be used, which effectively means it is not supported in
-> a VM.
+> The static array of CMA areas cannot be replaced by dynamically created
+> areas because for many of them, allocation must not fail and some cases
+> may need to initialize them before the slab allocator is even available.
+> To account for this, keep these "early" areas in a separate list and
+> track the dynamic areas in a separate list.
 
-Hmm, they are actually not exclusive: e.g. Grace has both.
+I want MM maintainers to review/ack this before this gets merged.
 
-EL2 is from FEAT_E2H, which is set when
- 1. IDR0.HYP=1
- 2. cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN)
+I'm putting it on my todo list for next week (please ping me if it falls down
+the cracks and nobody else ends up reviewing it in the meantime).
 
-VMID is from FEAT_TRANS_S2, which is set When
- 1. IDR0_S2P=1
+-- 
+Cheers,
 
-So, host-level stage-1 TLBIs use EL2 commands (no VMID); guest-level
-TLBIs use NH_ commands (with VMID).
-
-Scanning through CDs seems inevitable...
-
-Thanks
-Nicolin
+David
