@@ -1,33 +1,33 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 441223016FB
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 18:57:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB74C285061
+	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 18:58:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783105039; cv=none; b=RLB7cXPwSNQpLbHX/B4udYhKFdgrBXTCWst+zTnvP5zDrkYvzwnOTv9T/WqgkEDrjb8qvGAlGlmB5WNIJiJN61uQlEzwUcox6ft0p/NANKvdmh6HoeHqEeAcgS15fMgT2qyToPpGfeXYRUSG7ihy3qMANK/jd7TlESb/0WEkv4k=
+	t=1783105118; cv=none; b=SXsJlxISXlDpoENG8qNpAUvMdHpZe1q5zebjGk6p0sFfwbQPHXPhzRHJ6VKLZuM+AuBC+qUpemkt3f2SI4gYrv2Em9LjgeRK2NlyX301PUxLEp2AwDgLur8WE36gEIdUt3Q+IMFRfnop/eTtRNzsgfsSHERg2H2Ro8G/1Iyfqic=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783105039; c=relaxed/simple;
-	bh=EVj/nJjoDMSSbQCOLNFtXva5XAladq3bBJePirYqfas=;
+	s=arc-20240116; t=1783105118; c=relaxed/simple;
+	bh=eJi3Q668y9RAPTvxGdrmsu4bbQ/DxsV+6g+FezUkJLA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qXMmqOen/dJt+tsyIlEkdN16nLiED/LVvivX42pPQB8xYhtu/Et6oTNWXbrJi0QIYYrObus2CLV6gmDUWOVASpNlHyKRLDQYsjdQIKsylBb3mQmgIcjZ6xc3x7Ej9pgxIa5yDmigHFRhx/sirv99oGrBP3/7or/wzQHRNNFH4q8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ApfJI2W6; arc=none smtp.client-ip=217.140.110.172
+	 In-Reply-To:Content-Type; b=nVjKiCbJZHSbxwT9Y91DzjTHfcX/+iT/k8+Z0ImxKFDc8SqxTfu6p89My85Qe3BJvjsddWj/D2hk7u082wU15goxnNHcopziemNFk4myyd6Htj3HU1iWrt4kcKrDah4WrqjYMOdDypEzDXOxnFnH9NBaDsLawrHjhAZzVEFVO60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=XE7CPE5M; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ApfJI2W6"
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="XE7CPE5M"
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C8ED22D7;
-	Fri,  3 Jul 2026 11:57:11 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C53471756;
+	Fri,  3 Jul 2026 11:58:31 -0700 (PDT)
 Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6E7C3F905;
-	Fri,  3 Jul 2026 11:57:13 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6348A3F905;
+	Fri,  3 Jul 2026 11:58:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783105035; bh=EVj/nJjoDMSSbQCOLNFtXva5XAladq3bBJePirYqfas=;
+	t=1783105116; bh=eJi3Q668y9RAPTvxGdrmsu4bbQ/DxsV+6g+FezUkJLA=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ApfJI2W6Dx1v89BrkpaA+IivzEXpoA/C6HWy29MyKt+dwodqdvzesqJh0FhCHxrkZ
-	 HzjY99MkITrRuWRSNz1vn6CdJhMDyAFV/9nnSr0JjElv9gqUAuElmPfXoVW1wbGZXK
-	 lcQbhN305LF4d8wOzD+lptwW/xscZD3DX0+3bzUo=
-Message-ID: <6465c885-3a9d-4c0b-ab74-7665e274ae72@arm.com>
-Date: Fri, 3 Jul 2026 19:57:04 +0100
+	b=XE7CPE5MdLDFjPysJeNjbm56qsnl/g7p4caBxL49moaNJ8FjVu9pvtO+g+sItZO1a
+	 M0c8apqFxgI3llPzzC9FgK/HOZzcjhOlNNLMsp/Z0vrDdddNLxgQ/hC8moCoEuhyOY
+	 ksTufc2hx7lIKBU3LHszq3cPrKRBfccmqELbFOg4=
+Message-ID: <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
+Date: Fri, 3 Jul 2026 19:58:32 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,68 +35,100 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add HAFT support for SVA
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: will@kernel.org, joro@8bytes.org, jpb@kernel.org,
- catalin.marinas@arm.com, yangyicong@hisilicon.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- stable@vger.kernel.org
-References: <878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com>
- <20260703164914.GY7525@ziepe.ca>
+Subject: Re: [PATCH v2 3/3] drivers/iommu: Catch scatterlist length overflows
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Krzysztof Karas <krzysztof.karas@intel.com>
+Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+ iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, =?UTF-8?Q?Micha=C5=82_Grzelak?=
+ <michal.grzelak@intel.com>,
+ Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
+ Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
+ Krzysztof Niemiec <krzysztof.niemiec@intel.com>
+References: <20260701104437.236979-1-krzysztof.karas@intel.com>
+ <20260701104437.236979-4-krzysztof.karas@intel.com>
+ <20260703162236.GX7525@ziepe.ca>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20260703164914.GY7525@ziepe.ca>
+In-Reply-To: <20260703162236.GX7525@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 03/07/2026 5:49 pm, Jason Gunthorpe wrote:
-> On Wed, Jul 01, 2026 at 06:45:17PM +0100, Robin Murphy wrote:
+On 03/07/2026 5:22 pm, Jason Gunthorpe wrote:
+> On Wed, Jul 01, 2026 at 10:44:37AM +0000, Krzysztof Karas wrote:
+>> It is possible, when a very large mapping uses a single
+>> scatterlist, that padding overflows scatterlist's length field.
+>> This results in:
+>>   1) silently wrapping the value
+>>   2) smaller than desired mappings produced by iommu_map_sg
+>>   3) leaving mapped bytes in memory (no iommu_unmap)
+>>
+>> Address this issue by adding overflow detection for previous
+>> scatterlist length field.
 > 
->> @@ -211,6 +213,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->>   	if (system_supports_bbml2_noabort())
->>   		feat_mask |= ARM_SMMU_FEAT_BBML2;
->>   
->> +	if (system_supports_haft())
->> +		feat_mask |= ARM_SMMU_FEAT_HAFT;
+> Urk, this is unfortunate, it means we cannot map certain kinds of
+> scatterlists? Meaning there is a condition that makes a scatterlist
+> ill formed?
 > 
-> I fear this is going to make SVA stop working on systems it currently
-> does work on, so it might be a major regression.
-> 
-> SMMU HTTU is not a commonly implemented feature.. I think of all the
-> NVIDIA ARM chips only one supports it. Given that a quick internal
-> check is raising concerns this will be breaking for us. We need to
-> check in more detail which cores have HAFT.
-> 
-> Breaking already deployed SVA would be a major functional regression.
-> 
-> I think this should start by just enabling SMMU HAFT when CPU HAFT is
-> on, when possible. Maybe print a warning on the mismatch instead of
-> failing.
-> 
-> Since we can't break already deployed SVA a full solution would either
-> have to somehow turn off CPU HAFT or we ignore the gap in the AF
-> updates..
+> This seems like something that needs to be more clearly documented and
+> we need to ensure at least the common scatterlist builders don't hit
+> it..
 
-TBH I do not know how bad the implications of 
-pmd_young()/pmdp_test_and_clear_young() returning a false-negative are, 
-but if we aren't considering mismatched CPUs harmless then surely the 
-same must apply for SVA. In the POE/GCS cases all that can really be 
-broken is users' expectations, if they've opted in to additional 
-security features, but also opted in to SVA wherein those features can't 
-protect against DMA. Here, though, it's the kernel mm layer itself 
-that's impacted, and I'm not confident to say that that isn't more serious.
+Well, it's taken 10 years to be caught by a test which seemingly expects 
+the mapping of a single absurdly giant scatterlist to fail anyway, so 
+combined with the great urgency to get rid of scatterlists, I hardly see 
+it being a big deal... This will always have returned an error due to 
+the "ret < iova_len" condition at the end, the fix just means we can now 
+error out earlier without passing a mangled list to iommu_map_sg() and 
+corrupting the pagetable in the process.
 
-This came about as a sudden "oh crap" moment when answering an internal 
-query about SMMU features, and it seemed prudent to do _something_ for 
-the sake of correctness ASAP. Making HAFT depend on !SVA could only 
-easily be done at the config level, which seems arguably even more 
-over-reaching, and given that CPUs supporting HAFT aren't common yet - 
-at least from Arm it seems to be only the big cores of the latest C1 
-generation so far - in a pinch this felt like the least-worst option for 
-the short term. If someone has time to look into whether it's possible 
-to dynamically switch arch_has_hw_nonleaf_pmd_young (and whatever else) 
-post-init, then that's an obvious follow-up, but I can say for sure that 
-that someone is not me...
+Certainly if a list was initially malformed with an individual segment 
+longer than the segment boundary mask then it's not going to do any 
+favours here, but I suspect this is likely just regular iova_granule 
+rounding overflowing when the segment boundary is the maximum 4GB, since 
+the largest representable segment length is 4GB - 1. Note the 
+off-by-an-exact-multiple-of-4GB error in Krzysztof's logging from the v1 
+thread:
+
+[   79.915571] iommu_dma_map_sg: ret = 7138717696, iova_len = 20023619584
+
+Quite simply this code was never written with the expectation of mapping 
+4GB+ of _physically contiguous_ memory in one go. We could possibly try 
+adding a bunch of special-case complexity to allow treating UINT_MAX as 
+4GB through iommu_map_sg() if there was a real need to make something 
+which never worked start working, but going back to my initial point, it 
+really doesn't seem worth the bother.
 
 Thanks,
 Robin.
+
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 9abaec0703ef..c403057577df 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -1493,8 +1493,18 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>>   		 *   time through here (i.e. before it has a meaningful value).
+>>   		 */
+>>   		if (pad_len && pad_len < s_length - 1) {
+>> -			prev->length += pad_len;
+>> -			iova_len += pad_len;
+>> +			if (overflows_type(prev->length + pad_len, prev->length)) {
+>> +				/*
+>> +				 * For large mappings spanning multiple GBs we
+>> +				 * may not be able to fit all needed padding into
+>> +				 * sg->length.
+>> +				 */
+>> +				ret = -EOVERFLOW;
+>> +				goto out_restore_sg;
+>> +			} else {
+>> +				prev->length += pad_len;
+>> +				iova_len += pad_len;
+>> +			}
+> 
+> It is better to use
+>    check_add_overflow(prev->length, pad_len, &prev->length)
+> 
+> instead of overflows_type()..
+> 
+> Jason
+
