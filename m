@@ -1,146 +1,286 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5587F266EE9
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 20:35:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643802F532F
+	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 20:35:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783110906; cv=none; b=Q8rFrNTsW7ga2iFb8CTZmd2dMNcVcxkIlGyI8LnuxkRhtyE0xTp69E9C7sW+jpHbOvdVBle1MJRMA69KKs4+0HFVJxtAipZaToxeCo32IST/Qc1K+ZcEBQKYUg8XrWRfRQIempjrrUBFEsDykR0nC25rEtVMI9JlmxpNy8uCkNA=
+	t=1783110922; cv=none; b=Z5hxt2msmYn3bRwyLvdj8Me3MCgAFo8dgqqZ2/hr01B8nn1pYUReHgAJ1sBXnJJSrWx5FnSK26yqiludZtd/W+BCl+WQsGxc563DGoFBw0vEtefOwwEApXyX0EB9wGeMotYDujZtDooi8lzJHvhakd3N6N2XZzXpw5B5OFY4JhA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783110906; c=relaxed/simple;
-	bh=EkjsDigGbxlvbkct7iwP8iTt9HoAKBhjfQMayARljI8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KOQSSnniIHsE1x2TciVBrizVfH9Nipri4X4NIb3UbYUhnyDU1ri6GTggN3qMHVr6zKDBvL02EvgVLFvE59cy23/bBPCQEpvYYbtZNmgSrJVTdvOkxXTYxr4iHWcvBMaXllxsqS1fALwI/NGVAsImi3vdKX+xAKDjZ3hGrhjlcEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=KHPmi2B2; arc=none smtp.client-ip=209.85.219.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1783110922; c=relaxed/simple;
+	bh=cQJUfOffyGai9cYWh9giX7dcXXxXozL8g2Y76wATJv8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=phecg+mafvbCwuRRO2NZbELsB2A3slPVEmrv17+8dFBb9f+KF5QOL+klCzQRwgCDLczFDY1OlM2dihotSGSjDBMXup6BTJUx7+dUt18swj6c+erYCeAG58DbnZ5A6A2xPj8IcpWZzOiHk38EWURbIyoDrVYgk9AW0dfZ/lIkQME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=YN1Gzx2W; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=g3ax9h3I; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KHPmi2B2"
-Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-8efb708b1a0so8027266d6.3
-        for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 13:35:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="YN1Gzx2W";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="g3ax9h3I"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 663KPZn1837911
+	for <iommu@lists.linux.dev>; Fri, 3 Jul 2026 20:35:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=xsqcPanR1sYfdIVIFKnMQp
+	3W9jlppvlZVAC/PYjhq40=; b=YN1Gzx2Wdnq1qGQ8sDcy5Ow8u9r1VESqJpr+Lb
+	NLP4QsyOuGkTT7iDry/WSvYBhzoL1iolBtzEcIO1IcfFCQobXNkJI5z1PRm1rJNn
+	TfEr8PVMO1yqYiwWhpAlSQkGPJ6uHNOt3IsnMsDOoVom98kEiavdLpJhig0f8n+b
+	MHUKP5NgzWjuNC9k3g+0QdhZd02b6g/JtzCkx9Dth/G3CQ4YWJzZ40uDsCfBy2U1
+	1rDA1X6mq2bMZhWHljRBdP4NR42UTVtPgCOTqc9e7+YTHOoxJnFzBD4+Gcns6IuN
+	Ixs6wC+Fw/6mKkq++dYEpbu0kiSjVbwXfR1BoGbrrr8dhN0A==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f68jytqva-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 20:35:18 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-383b6012ba4so99001a91.2
+        for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 13:35:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783110904; x=1783715704; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KEqrn50FtdxGVsX9vWULW1SFinyIlJ9nzqYUDztwtgI=;
-        b=KHPmi2B2HILTE72KAQwTHU+PmgqbPu9a4OReu7RucYoooQyeroPG5PNVXR3JtSZBbP
-         hZs1tvBzMoHNl+HcZOlu3MHkMDuXmskky4DpLeBMtqWJtAm03eXmKYHCzfLxTQpKTwRp
-         aXTzY4MVA+HTU5jCakVn3MEJUYxeNsx58jyKq6exqOeZl+ykVlvtfib1hjDgvCS8zWEV
-         1utIuJKN/GkVXhjYdHc6pBu5VuvELtQimJ5Ac6HQNYWv/BDDJeKJiXf/6yBhgbQFjWbC
-         +6A1fuwcNauDjOH5KvtbM4svS0hA7OapFsCf5GbhWwdgiQ3TmohxwAeHrH9PO/rxrUTp
-         Z0dw==
+        d=oss.qualcomm.com; s=google; t=1783110918; x=1783715718; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xsqcPanR1sYfdIVIFKnMQp3W9jlppvlZVAC/PYjhq40=;
+        b=g3ax9h3IzKKLJgPfkeXK/4+bYMoE4/a9RlOW+PSAgP7rVnQqfFat49MyEsalW2lD3k
+         Z1T8h1wa9N55cZSa9dYvl1XS+XBC6JUPVkwMUzFqq/7cl8b7OtbaDgTLBchTofITeS+i
+         CdfMfOM6mzIi1JtekXWmqEZYp7neFMIuUw0l8AH/pnzaMuwn0bwaXHRhZoKHVJo1wy6Q
+         P7ndl6DxbOFU7o73jFaw8B3iIYueotGyF9MPaGkEpWnwVn6sUUrYST97ozwSX2f7glUE
+         u+3kZmy0bsn/6FX8WiTUktC2NS1XS8ZjLkdmmhtsgFLm/nA3pdIexdZOUQyq68ovWQqM
+         MmoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783110904; x=1783715704;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KEqrn50FtdxGVsX9vWULW1SFinyIlJ9nzqYUDztwtgI=;
-        b=ZzzgWfQAqm4tJgqzt/WbuYJOUE2zmeLRrs/PgEVd+VAy4p13ySAoAA8bPLURX56qyo
-         1juhkxQsSonOb9aP8Z28QmlFqnhAQ2vsLZ8oA8BU6tyhndss1bevp+uGfXGGRm1SPB/o
-         sgeFmasN3SUbPYeX2KAO4KN4mfYUFthCaNNrZ8f+OrT/kW4MajkhlTwB2BB8LXZN99YU
-         iVevvXN1Y0E8qsbndwlQdePjDv9v3HvoSx3BZM+SDa7rEheZyd9n+WwqnO+FyfQCEG/a
-         WqVC8NKNNJuSTD+ksCtlPqB27hA3HrjtflA+QTsAnaq4pmyG83J3VZzQhkrfnUQ1WKi+
-         G90g==
-X-Forwarded-Encrypted: i=1; AHgh+RpFtV5/okSEeSId8f5nNirTZdPO2WSPQySZ8+qxy7wqdFY7OlE2UzcQ+LQRjj4trCLLscma3Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzfYWPsE7HswQeMwQ4RcbbIV+nHejznobw7N9P2qjBCsOQb9Dp2
-	1tsN0FtlGdNw+BHegMZOK455oIz537gg0XA2qdm1TBWMJaGLFGhcK0iRtsDJw1YXoSg=
-X-Gm-Gg: AfdE7cnfi0nrdwKQpB0fcKi8Nu/vOqf13zVI+Xt8ojJJbyUa6Fs6iRovgnOjLIKQhC+
-	xyoRkGTeS69LGmx4YrVMiKy1DVJQnUCWAEa6RUfE731Iyk60WnvzWCf8H9w/9TtrJtUFfsbS+6e
-	3GGng5YSdH4Mr6cCmLXk7j9loKZphpFp6kWFbpurb0NMS1nfTrnbW1UfWJ9BYANoOpVDrihoi4S
-	GtnhJXTme3AntVMalw26b8uSeLz9i8lGmxKui7WDpQT0PiGhAsaf3BtjZld+gw/UW8SywMl3boD
-	C5ehbAaBtmtM6WPULzXFaToB40Gq1BIHc/px0xJDZnSVpDjQsHtaVP59E9gXZzhUATyaxboLgPO
-	JB6tItobmlUWbj+MaWvUQO7khpY1kL0ZHOczSm7RMeCPrmZMvIUnOb/iaS7tIbggEydQgCr8TzL
-	MqmboQUcA8gzYWvRD8jKZv9UKGpDC85PwFYi/wboBqTIxc8/YJzVD7P4FrPAXc7hdjxVfsSdDUk
-	pXAfA==
-X-Received: by 2002:a05:6214:e69:b0:8ef:3407:3dd1 with SMTP id 6a1803df08f44-8f74997c1f5mr12182176d6.6.1783110904066;
-        Fri, 03 Jul 2026 13:35:04 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f46f304533sm62882746d6.18.2026.07.03.13.35.03
+        d=1e100.net; s=20251104; t=1783110918; x=1783715718;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xsqcPanR1sYfdIVIFKnMQp3W9jlppvlZVAC/PYjhq40=;
+        b=MSWJKSX5ovbp8IUW4GBZ0jKIzdDx23GZmybdM2Anb6+IZXYANmhq78gkOAjZMV2JyT
+         RllsbQtNXsrwI4IZT4qM9bFXAwWN8+lxHaWy/uf9Wgi+fbFXyOIskIsObxinVbrNERUb
+         /c9Y8yTiN5Iq+/d9n5OycgWRWLsOGHgoa+IfeVM3SOT9UbUXrExZJzGqemTHz3K9sHkn
+         OqqlXSZLVUdmFMPzN+rSYT5lsIItS8s7jwLdTOXrc5angr6bS5vH8L0jAyS0vCRXMCw3
+         ovvjDULGANpjVTW6SSh5jrikiUeRmJzKMHXBHN+crrBm1ZMsjKzzvnKuaYCfPsAWEi36
+         XLow==
+X-Forwarded-Encrypted: i=1; AHgh+Rp6Ha+3+r5wkJM8aS6433LN/o8SFfaWZwqZa0ZQc8y72oXgxS7Dwc8qlQArCdOkriDuXgLNAA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxL3K6b/JvcE9QtmiOwVIX4xqer8wtG19ozlOJvRT37gWF7Bzw2
+	jnSnnX2WKhaxNWAsCNSynVgHjrEy12HbiHCYWesZSOa1sHdOIgCUjPzv3zDlJGIa21DojEWHI/U
+	P+dKWwrj/Izuno5FZ9az7iCZLXsEiMbNBhZOBNpANdjB/oXDb9AL4Hgyy9Xgkh8tK3w==
+X-Gm-Gg: AfdE7cnAI79ke3vL9liSAZKO7AUAQ2LT2Btr8oz2yinkmFvU6pXh+AGL1C6IZ0Mrcjq
+	dKyN6h91rS2Fp5b+sqYR1zW/IiVK19oNgZxUUiw+7NjVv0KeVYxxJXSCCGaq6M3duT2QUEyRFFY
+	YZ5vmtyu+AcpurMcPD7X9qJECoTgaOfXKQki8rCUplSR8Sx3grR3fm2LgH5XdEAJvOwAFYTAEz5
+	pjf2nwPbVP8OY6TdOJPX2gch4dze5IJh2hTFaiQkP5y1Z2MXT6VxAgjgJ2JipArgo5dRdU11Wc0
+	WLcw0d7s6eZJxq0vyt+5R4Ot7SUOxgPC5DLjXNnsnNZBo8TETB7ejwU6aoAhLIKrtEHyI4IRswY
+	DJl2lFhoDFyIbj7hAs12RXvvJ1ekByzeISiM=
+X-Received: by 2002:a17:90b:4ec5:b0:380:a568:cc4e with SMTP id 98e67ed59e1d1-382808b3454mr824517a91.9.1783110917771;
+        Fri, 03 Jul 2026 13:35:17 -0700 (PDT)
+X-Received: by 2002:a17:90b:4ec5:b0:380:a568:cc4e with SMTP id 98e67ed59e1d1-382808b3454mr824493a91.9.1783110917152;
+        Fri, 03 Jul 2026 13:35:17 -0700 (PDT)
+Received: from hu-akhilpo-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f0b7b9a8asm24815567eec.2.2026.07.03.13.35.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2026 13:35:03 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wfkbG-00000008b0h-35vJ;
-	Fri, 03 Jul 2026 17:35:02 -0300
-Date: Fri, 3 Jul 2026 17:35:02 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Krzysztof Karas <krzysztof.karas@intel.com>,
-	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	=?utf-8?Q?Micha=C5=82?= Grzelak <michal.grzelak@intel.com>,
-	Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
-	Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
-	Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-Subject: Re: [PATCH v2 3/3] drivers/iommu: Catch scatterlist length overflows
-Message-ID: <20260703203502.GC1978949@ziepe.ca>
-References: <20260701104437.236979-1-krzysztof.karas@intel.com>
- <20260701104437.236979-4-krzysztof.karas@intel.com>
- <20260703162236.GX7525@ziepe.ca>
- <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
+        Fri, 03 Jul 2026 13:35:16 -0700 (PDT)
+From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Subject: [PATCH v4 0/9] drm/msm: Add support for Shikra GPU (A704)
+Date: Sat, 04 Jul 2026 02:04:26 +0530
+Message-Id: <20260704-shikra-gpu-v4-0-90cf1a52e539@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIANMcSGoC/6XU4W6bMBAH8FeJ+Dwi39nYOJqmvcdURcY+J1YCo
+ ZhEnaq8+ww0bbIxiXVfLBnBj/ufD16zSF2gmG1Wr1lHlxDDqUkb8WWV2b1pdpQHl/YZMpRMMp3
+ HfTh0Jt+157wQHCtHxjOvsvRA25EPLyP24ynt9yH2p+7naF9guDrLXCBnuXaMmLamAii+n2JcP
+ 5/N0Z7qep2WbNAueCdA8SBgEtCjAy6U5b76i8DvBCwfBD7UUGFpeAVSEcwI1yliR8/n1KZ+ypl
+ VJlI+3BT6zaqhlz4ffcVwaElNMZqxiZvV17fwHy+2Nu/aOq32eIj5pRhqEJZ86gQS8T9q+DZPF
+ ijfyG2wdnuwp8aH3dBXyG1RalehY8jtvNea3u5HjUpGRmnBKl2CEkJbsgjGG0mahODEmAIp/Xw
+ VgrNbsFBTnVehcaG5lSG1ksi118wvjsXgBkb7m6e5U954qFQpPuH1NnaPILPApQPNJV8Myo/E5
+ IydBhlLVXHkHAWYxRC8V+b6aQ6AcXIoTVmgXsooBiALVsBaACIWOuU6dCHuG7M+nDuTTjr8k4V
+ KFGuRThaY/A9LMn6bT2pj3B759L1xi8QqpSWpcnldeNeqGqZueQ1grEaFzC6X+LsUYpu+wvQjS
+ OsI2jQOJUonXDF3ik/X6y/JdGQjOgUAAA==
+X-Change-ID: 20260609-shikra-gpu-5432bdeaf0f7
+To: Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Aditya Sherawat <asherawa@qti.qualcomm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Aastha Pandey <aastha.pandey@oss.qualcomm.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783110907; l=6744;
+ i=akhilpo@oss.qualcomm.com; s=20240726; h=from:subject:message-id;
+ bh=cQJUfOffyGai9cYWh9giX7dcXXxXozL8g2Y76wATJv8=;
+ b=6MPdCPLdvbaVRwPFgJwT8h7lc54fKYZDTWvxTXyMLEAx2uxd046XLBzjHsBetoh/wFXk54uxn
+ PBiu2ywmBWeAi9C5n3TB6+M5jYuHAsz93EbDcFgyBNOHJl/bm9YmecI
+X-Developer-Key: i=akhilpo@oss.qualcomm.com; a=ed25519;
+ pk=lmVtttSHmAUYFnJsQHX80IIRmYmXA4+CzpGcWOOsfKA=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAzMDIwOCBTYWx0ZWRfX9hxKSCucQLQV
+ 0gzng7PAb7DO8ES9a4FkX1jLHokkryPjs3T5rKGs2DtrHGo1vsiXxte0WkU9Qw84VWz+pJzDAAb
+ 67C30jH01m0diSAedYwi1AwIKVithMoYc0/Kw4Q6WZbAGl3vxhpeIle/4Xs7KmaSnxawXWYuT70
+ bz9F6p16yHM/Ld6hNzJKxGp7fopx6JREcXggIJlp402v2W+ShLgtuAbCDDc6Mi3NWAtKmKYsQbC
+ SUgLrb+2NwRWCxiv6IKnCyxM/YdAP4hrWNFSVeyEiOtwkGJo8gKKPzPx8hZOEBVdVuw0URCnR2t
+ MhEzwtbJ3Pse0/f0BBJSdtZGOodHbil1CQkMOPRWFzM5kkUjJuo8KlqN9dQo6KSJHe6CvMh0NrO
+ 4Ob2kWlB9DUDS6dqnSqN0/+Wk7aewn+G71v5Od2WQmY3ZuW+x0GPEbCbs01gIoiofA0yL3p0Q6K
+ xFIJjexGCWb2FjJ3qIw==
+X-Proofpoint-GUID: oLzpOIAP2q7JJ4TzvvNUhDQk2XwBq0aL
+X-Authority-Analysis: v=2.4 cv=QbFWeMbv c=1 sm=1 tr=0 ts=6a481d06 cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=e5mUnYsNAAAA:8 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=-nh9RajweDyCoOXDqwUA:9
+ a=QEXdDO2ut3YA:10 a=uKXjsCUrEbL0IQVhDsJ9:22 a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-ORIG-GUID: oLzpOIAP2q7JJ4TzvvNUhDQk2XwBq0aL
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAzMDIwOCBTYWx0ZWRfX/ywTno/sIq5G
+ LFZGOxpnNWtmkOnIwzUCcI8A7nQxFUr3bKY4Oq57W+Riee10LgRwWaGJu5LpJFv4qe7UQZVD6Z3
+ qDgWq2UdOnUH9YEvVl+Qvak4ZFmB8nc=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-07-03_04,2026-07-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 phishscore=0 malwarescore=0 suspectscore=0 clxscore=1015
+ bulkscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607030208
 
-On Fri, Jul 03, 2026 at 07:58:32PM +0100, Robin Murphy wrote:
-> On 03/07/2026 5:22 pm, Jason Gunthorpe wrote:
-> > On Wed, Jul 01, 2026 at 10:44:37AM +0000, Krzysztof Karas wrote:
-> > > It is possible, when a very large mapping uses a single
-> > > scatterlist, that padding overflows scatterlist's length field.
-> > > This results in:
-> > >   1) silently wrapping the value
-> > >   2) smaller than desired mappings produced by iommu_map_sg
-> > >   3) leaving mapped bytes in memory (no iommu_unmap)
-> > > 
-> > > Address this issue by adding overflow detection for previous
-> > > scatterlist length field.
-> > 
-> > Urk, this is unfortunate, it means we cannot map certain kinds of
-> > scatterlists? Meaning there is a condition that makes a scatterlist
-> > ill formed?
-> > 
-> > This seems like something that needs to be more clearly documented and
-> > we need to ensure at least the common scatterlist builders don't hit
-> > it..
-> 
-> Well, it's taken 10 years to be caught by a test which seemingly expects the
-> mapping of a single absurdly giant scatterlist to fail anyway,
+Adreno A704 GPU found in Shikra is an IP reuse of A702 GPU with very 
+minimal changes. The only KMD facing difference is the chipid and the
+zap firmware which is specified via devicetree.
 
-If your server has 0.5TB of ram a 4G IO isn't actually that large.
-Randomly getting a few contiguous 1G hugetlbfs pages is not even that
-unlikely. Something like FSDAX has a very high chance of getting high
-contiguity pages in files.
+Mesa side support is already merged:
+https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/41762
 
-So I wouldn't be quite so dismissive that this is not something a real
-user can hit.
+Included the DT bits in the v3 revision.
 
-> here, but I suspect this is likely just regular iova_granule rounding
-> overflowing when the segment boundary is the maximum 4GB, since the largest
-> representable segment length is 4GB - 1. 
+-Akhil.
 
-It looks like the iommu_dma_map_sg() algorithm only works reliably if
-the scatterlist entry size is less than UINT_MAX/2, otherwise it can
-risk overflowing when it pads.
+Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+---
+Changes in v4:
+- Rebased on top of next-20260702
+- Included additional DT patch for gpu cooling
+- Link to v3: https://lore.kernel.org/r/20260628-shikra-gpu-v3-0-9b28a3b167e1@oss.qualcomm.com
 
-API wise I expect any arbitary input to sg_alloc_table_from_pages() to
-result in a scatterlist that iommu_dma_map_sg() will map. This
-patch highlights there are cornere cases where that isn't true, it
-should be fixed..
+Changes in v3:
+- Rebase on top of next-20260626
+- Included GPU related DT patches
+- Link to v2: https://lore.kernel.org/r/20260615-shikra-gpu-v2-0-2f2d1347c3fb@oss.qualcomm.com
 
-I agree we shouldn't overcomplicate iommu_dma_map_sg(), so the
-simplest fix is to introduce a SG_MAX_LENGTH set to UINT_MAX/2,
-justified by the logic in iommu_dma_map_sg(). Fixup the core sg_alloc
-code to respect that. WARN_ON in iommu_dma_map_sg() if a malformed
-scatterlist entry is presented. Add a WARN_ON under DMA debugging
-kconfig as well for the physical path.
+Changes in v2:
+- Add a new patch to document the GPU SMMU bindings
+- Capture trailers
+- Link to v1: https://lore.kernel.org/r/20260609-shikra-gpu-v1-0-9d0e09cab115@oss.qualcomm.com
 
-DRM would then have to generate scatterlists with a max segment size.
+---
+Aastha Pandey (1):
+      arm64: dts: qcom: shikra: Add GPU cooling
 
-Jason
+Aditya Sherawat (6):
+      dt-bindings: display/msm/gpu: Add support for A704 GPU
+      drm/msm/adreno: Add support for A704 GPU
+      arm64: dts: qcom: shikra: Add A704 GPU support
+      arm64: dts: qcom: shikra-cqm-evk: Enable A704 GPU
+      arm64: dts: qcom: shikra-cqs-evk: Enable A704 GPU
+      arm64: dts: qcom: shikra-iqs-evk: Enable A704 GPU
+
+Bibek Kumar Patro (2):
+      dt-bindings: arm-smmu: Document GPU SMMU for Shikra SoC
+      arm64: dts: qcom: shikra: Add Adreno SMMU node
+
+ .../devicetree/bindings/display/msm/gpu.yaml       |   1 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   2 +
+ arch/arm64/boot/dts/qcom/shikra-cqm-evk.dts        |   8 ++
+ arch/arm64/boot/dts/qcom/shikra-cqs-evk.dts        |   8 ++
+ arch/arm64/boot/dts/qcom/shikra-iqs-evk.dts        |   8 ++
+ arch/arm64/boot/dts/qcom/shikra.dtsi               | 143 ++++++++++++++++++++-
+ drivers/gpu/drm/msm/adreno/a6xx_catalog.c          |   2 +-
+ 7 files changed, 170 insertions(+), 2 deletions(-)
+---
+base-commit: a9498e40e3e314ade387d3ab0d5cb14f0f3aa1ad
+change-id: 20260609-shikra-gpu-5432bdeaf0f7
+prerequisite-message-id: <20260608-shikra-gcc-rpmcc-clks-v5-0-94cefe092ee3@oss.qualcomm.com>
+prerequisite-patch-id: 59bb0a7828e41f546f734f127d81da83c0adcda9
+prerequisite-patch-id: 197da6bcb15cadc47869dba88c8020987b25c335
+prerequisite-patch-id: 8ec9c1eb03f052ae232ed54117abed38672c23f6
+prerequisite-patch-id: 350db4f4bcdfc0fad9ed57cd5b1723f85ad44f5d
+prerequisite-message-id: <20260526-shikra_icc_kconfig-v1-1-c589db2d023c@oss.qualcomm.com>
+prerequisite-patch-id: 028f3a3c64f57a611b6ddcfee947c56aa6251e3b
+prerequisite-patch-id: e80ea7940b9817449cec21afa6e9e443e007166f
+prerequisite-message-id: <20260430-shikra-imem-binding-v1-1-c6976239f90f@oss.qualcomm.com>
+prerequisite-patch-id: 80d8ab865b7b0663c5b2878b45b55e2e4fde9c19
+prerequisite-message-id: <20260501-shikra-scm-binding-v1-1-93d7faf1b784@oss.qualcomm.com>
+prerequisite-patch-id: 8e645e1c6ad6182de4813a726c293654324de1df
+prerequisite-message-id: <20260501-shikra-tcsr-binding-v1-1-0c136d193634@oss.qualcomm.com>
+prerequisite-patch-id: f6781d2cf0829ccb32f1400623c95739972f2ee2
+prerequisite-message-id: <20260630-shikra-edac-v1-0-287b3233241a@oss.qualcomm.com>
+prerequisite-patch-id: fb821179cbe1fb1a97b987d04acb5a656aee9c14
+prerequisite-patch-id: 1981818fdff444d3bfbe15f5f52a654a73b91c81
+prerequisite-message-id: <20260611-shikra-dt-v5-0-103ed26a8529@oss.qualcomm.com>
+prerequisite-patch-id: 3a689e8dda5fd2755b689d94d095806b3f2e6eed
+prerequisite-patch-id: e9f8fc7688e5b366cfbd2449856c0aa524424051
+prerequisite-patch-id: 2357cac636e019eaf14d6a493a1c72bca56fe405
+prerequisite-patch-id: 2885f299e711582da312ca9d13983d296a3dd5dc
+prerequisite-patch-id: 91af5f3c01e766a53ce8de69aa21847a2d6bbbf8
+prerequisite-message-id: <20260701165051.4122259-1-krishna.kurapati@oss.qualcomm.com>
+prerequisite-patch-id: 0cbcb69abbbf83da785619c266c96af624c38a87
+prerequisite-patch-id: 1d1ae48f09e537312052f93bff8d04093addc996
+prerequisite-patch-id: 6126fcda921fe53b86b3a18c649fd8ff2e1f43d8
+prerequisite-patch-id: 3a0482207e363349423f81ee7589328a84752de3
+prerequisite-message-id: <20260701162745.4043106-1-krishna.kurapati@oss.qualcomm.com>
+prerequisite-patch-id: b4d2580ed983cd0262302ad93304dbe5398e5d6f
+prerequisite-message-id: <20260603-shikra_epss_l3-v3-0-3c2e0b796e78@oss.qualcomm.com>
+prerequisite-patch-id: b5d7f75df02fde56181f576a936baf09d0a72276
+prerequisite-patch-id: 3ce52e07ae57139c2e2b71a29ed7d7250f6fcc87
+prerequisite-message-id: <20260702-shikra-dt-m1-v5-0-f911ac92720c@oss.qualcomm.com>
+prerequisite-patch-id: 48ecd66c06c4fad81f91283c26ec57d95bbde29d
+prerequisite-patch-id: 7d92e5a301d09616840e54dc9e4a81f30a64383c
+prerequisite-patch-id: be1a16f53e23dd5ab90210a056c9da3559c6186d
+prerequisite-patch-id: 3eff04500c55100c763aeac1f1f8c5768d500500
+prerequisite-patch-id: ab22c5fdb2fa65b78ffef76bbe4459c8d5ffe7b2
+prerequisite-patch-id: cb24efedb648271ef5c60ace96e2366d89254e8f
+prerequisite-patch-id: 8be7df0395c5847a988c7e814c7db878b5932b11
+prerequisite-patch-id: 0510992d022cef7317b6efee6765ac78c0225356
+prerequisite-patch-id: de4327fcbe81f92a337f429b74e8220969a5b79f
+prerequisite-patch-id: 968bffc36646412f8289b917f37e762a4297bcc8
+prerequisite-patch-id: 35944403bd4480caad12657342da15ea71c6afbd
+prerequisite-message-id: <20260703-shikra-dispcc-gpucc-v5-0-cc13826d4d5a@oss.qualcomm.com>
+prerequisite-patch-id: 23b24fb512c882a045ed8339b22269bfc2c5d02c
+prerequisite-patch-id: 0e79e46bc5a88849a2f0a410b39c08f3244dfed3
+prerequisite-patch-id: 17b412a37859fba801efdbe451db31e5bd77438b
+prerequisite-patch-id: 0396ac157aba73a5afd7ba4a8a744847f5a7b433
+prerequisite-patch-id: 2b1aecd97b9c073a1b323138cd7a98cb34e3715f
+prerequisite-patch-id: 823bc7bc713f6fce1b9de47a266307f1829636b9
+prerequisite-patch-id: 1b990e46422307e558300815c1166b90d96fbb9d
+prerequisite-patch-id: d78e0b95758b82977d80c7cf18da49661cd181e5
+prerequisite-patch-id: f62b00cd64ac3191e0906514443dd43e88746818
+prerequisite-patch-id: 0fab99455f954a917fb65348656505cd7ab45bc2
+prerequisite-patch-id: b59fd05f9b62bda86079c9d86538b80289110862
+prerequisite-patch-id: 71691d8b40e36cdbff6a52c3999ea8bb2c164d70
+prerequisite-patch-id: b2868bc50d74afd13c8a0d0fd62301fa9546a211
+prerequisite-patch-id: f83f24719ac475317507af09bf08b4a69b02d429
+prerequisite-patch-id: c9f2942207341ad4f450b20f049199f35188c02a
+prerequisite-patch-id: 3a6e9752793f2d7b084008b47daed10ea572064a
+prerequisite-patch-id: 3338cdc5915c1e6b991067d3a7afb734c182663e
+prerequisite-patch-id: 59cf68a3a49958a60833aa0464980f8c8d879961
+prerequisite-patch-id: 5d146a518f2f76bf9fe93e23a2cfa63c73731883
+
+Best regards,
+-- 
+Akhil P Oommen <akhilpo@oss.qualcomm.com>
+
