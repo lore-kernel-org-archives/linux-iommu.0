@@ -1,113 +1,66 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 002122E542C
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 16:49:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E19A42E62B4;
+	Fri,  3 Jul 2026 16:53:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783097358; cv=none; b=HXCwd33/7HVLAeZ/yaTm9unZISDO+QgoIEbFf+xHj24ZSEoSPPJQxVs/uzxGvtx0XHiUEYPZYbemPmEj2ql/afNdsSeyjZpotRBW9EWV7JUBMhqdmO2b5ULQU42tf6ZYskMJKuZcidjuHrBkrh5fwCPPrFk6JiYuumtBEAAofmw=
+	t=1783097605; cv=none; b=dBvajaCRDJYrbr6hke4XwrUP2MVWbix5CnYfatIfCLcR/UrHpQuO0XI5+aIdpJL0gacaUVlPgjzkv/imE90ZGc+cOpIS2TinNSjYoo0A6dkTFMuzoISG8+EqjWbcHSXp8jXUQq7cUXdgRJkas1FndTCVd7t39rRCKq+quZAy35c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783097358; c=relaxed/simple;
-	bh=NImIZmSEszOUZywtJZSxACAiRqZzU96rD6XMWaHuLMk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VMU87oL68tlPy0LC0oC7U9drB6kqi45To505X9ujEcHoAIlYXohpUNZF0G6DX4uv2K3wIJlhVC9HxgtMO6awGi1JYPAR8w2SgPCAJICXHZHAspeOQaq1KME9hxV0MogHWRsuDq4HQi//0wQs6wIXicIOM9ICkTLahjK+izlZeBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OWSOeGqJ; arc=none smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1783097605; c=relaxed/simple;
+	bh=+wm7iBGV6NG9r5LEc21MHyCO5EAWcpaPW8H0ZcGzVDk=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=ULKd42SElmNL8ZhicaAaVWzv/LWzGv9BSpdDEiSxwdvC5hzD5dFcu+n9wnWkNdwdlOcBJJfaiK+hKSbHGb9tBnOCq0LXxnr78PHRHV2NdfHpdgvUySTXyFD8geReNKUS6edvrd7Wi1Vk+7MeI+Z5DRDrf3+azlTLlqc1PIpkZpo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J+g5ZKeE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OWSOeGqJ"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-51c0c68aa31so4712501cf.3
-        for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 09:49:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783097356; x=1783702156; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QyotU5l8k0oAbp2gmOwsLK/XfEKLkjm+dMk7XQ103yI=;
-        b=OWSOeGqJutfaYszroSvSnyaEqmdoxnPc1l2tS74IOGeOnOZ9t+P2Rrnt08TtCG9dXM
-         1nDp1Kxdw00V2GiRpHh2cjAqaWn0AAuO4zKVxp2XMOP2aapvlcHhAQo8c9gDOS6Eezov
-         uifVHd/KvklAwFQ5uQ8u3gBSZ+CRU1yF07EnqLynU3jRAJIJxWIcG8rzyv7aUtevcaiO
-         ua0C9Chs7FMQAUV1emBE1KPZne5T5g1x30IPhVwRl92tmkcTQ97nfaHYBKeeCjlJkP4I
-         mXee/ZilQp5TmvWoMVysmoqvyiAoWZN825691HLPOF25pOrMLO5IzLXffLcvO2x0I2sB
-         Pssw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783097356; x=1783702156;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QyotU5l8k0oAbp2gmOwsLK/XfEKLkjm+dMk7XQ103yI=;
-        b=K4Db0cTCyh9XHoQuonc/aIhH/FPYYMWnZF+mxy/BOtqIAwAbpyGVAmdaozHY5xukb7
-         1pxL+PEYzxqp8cRriqJ47RqpZcaj9IXu+JUSJzBUGrEHhdN8EBL/OdnYrhjFrXdlB9YC
-         s1hlhyU++srHT/dXl9/yjb5fqi9MUBRWDGTcHOmn26V4kLW/iR5IZP3WkyXdqrvwkrIv
-         QdNePyIJs7EU7g0xXH1nKlsrpbbItrRgwWjvrqBN1/r3oLuJMgqDVYEgQDpgIUE0sN8S
-         i3/I8Tg+jOqh602EUhHmNTyP7dl9ozCdx7lR+BxpSfEgxtYd8tVD0tr6FIySGL5M3KSA
-         LO9w==
-X-Forwarded-Encrypted: i=1; AFNElJ+WE2HwYCllan1tc/xlQHbFyNpHjpVi9hlWBfiZcdbDCjo0E74+60aj5/9SyYeoH/czxGz+Cg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxG6kCRplSbFu8g3qMZ/ZIIXTbGvHVrTev6PYlCX5PNk+NfNNYc
-	dM6WeLKecQnEHr4YV3EbF2uK9iQGIaNnqbnr9NbuH+3sOcowpSNtIFqHdvG9ukY5CZ4=
-X-Gm-Gg: AfdE7ckmbBhrdHZkna1lb4lgmWwvnoq/7NypbtXETNmglRsvcKd+7AJBFOWWoHk5Bhe
-	rJ99OKUquUbXdkAkHrdgSvrhh/wIcwxc3NfI2w2tMUzHYUZJ7WuDusxOCw9vH3GLYtg8eFnuCSU
-	fhu0kvFtADwqEZEK2huT6piH0izidnFHSG/3+oYRc3bvYlm9JHcR66i+Zc9sr2KscPau6toIRPB
-	tx+IH17NWSALVEqzFrloagU3aoRJh6vQbmnc4yV6Wdz9ppxX+XTBabBaxnuvAPMvaN/qivLJ6SG
-	iHATcwzFj74m0G+vLC9me6Ezu4RmWfi9RXhEpCM0m/KEvZbh8RTjejZ5eCkiJ6cVFDZESwe8/a+
-	GHFWgFeJrCYysG4LphAfAsXbpEAwq0V8PjW6jzshbZi50TsPXNDS6bP9UkzjfkPxoJk/Ng9nMIF
-	atdUzPP4jTcMj7qTSo9vnkRqR79m4cDVJFcFLe9ec3v57jKttYMRoSchR5cmM60c8d2Dw=
-X-Received: by 2002:ac8:594c:0:b0:51c:2cd3:ae7e with SMTP id d75a77b69052e-51c4c33eedamr5242041cf.45.1783097355828;
-        Fri, 03 Jul 2026 09:49:15 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f4724bab9esm57511866d6.42.2026.07.03.09.49.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2026 09:49:15 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wfh4k-00000008F7B-0pi6;
-	Fri, 03 Jul 2026 13:49:14 -0300
-Date: Fri, 3 Jul 2026 13:49:14 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, joro@8bytes.org, jpb@kernel.org,
-	catalin.marinas@arm.com, yangyicong@hisilicon.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add HAFT support for SVA
-Message-ID: <20260703164914.GY7525@ziepe.ca>
-References: <878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J+g5ZKeE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36041F000E9;
+	Fri,  3 Jul 2026 16:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783097604;
+	bh=+wm7iBGV6NG9r5LEc21MHyCO5EAWcpaPW8H0ZcGzVDk=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To;
+	b=J+g5ZKeEgpx9BLtfXznjokAYfMUTXTTvcKTTEuoPuD3uLTDHClnsSmvZ/g7E/gOxh
+	 AVTRL2Tn14up6KFfzO3It/ay0VpJlAuoI3rUJDtiVbIJrdkt5Dp7HlIy6zmF0Uy7VU
+	 ywF2uVjKMGSK+NXFD9HDhHOzQN1bZwocouVxXuS0WxspT+TaVlD++dOk5v7xnWU0bj
+	 CRO/vJMUF2ieTRwYBe/7yYiBEwlXBplv+AHe8FlumbBRdEXfYYagtysKDgGHIrBUtH
+	 CEo6X/Dq7pcRHMKBUnX/PnE+A9HbKVneDQbx2CogK1uVo6iPXQBzYT1Y4YdBLbIEcG
+	 3h9ygMVYPMfQA==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 03 Jul 2026 18:53:19 +0200
+Message-Id: <DJP3CGLE438Q.1EM46SY9PWLHB@kernel.org>
+Subject: Re: [PATCH] rust: iommu: add device lifetime to IoPageTable
+Cc: "Deborah Brouwer" <deborah.brouwer@collabora.com>, "Joerg Roedel (AMD)"
+ <joro@8bytes.org>, "Will Deacon" <will@kernel.org>, "Robin Murphy"
+ <robin.murphy@arm.com>, "Miguel Ojeda" <ojeda@kernel.org>, "Boqun Feng"
+ <boqun@kernel.org>, "Gary Guo" <gary@garyguo.net>,
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
+ <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Trevor
+ Gross" <tmgross@umich.edu>, <iommu@lists.linux.dev>,
+ <rust-for-linux@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <samitolvanen@google.com>, <boris.brezillon@collabora.com>,
+ <laura.nao@collabora.com>, <daniel.almeida@collabora.com>
+To: "Alice Ryhl" <aliceryhl@google.com>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20260702-pgtable_lt_v1-v1-1-18d9c9812a1a@collabora.com>
+ <akdaMa7hQbAjWbox@google.com>
+In-Reply-To: <akdaMa7hQbAjWbox@google.com>
 
-On Wed, Jul 01, 2026 at 06:45:17PM +0100, Robin Murphy wrote:
+On Fri Jul 3, 2026 at 8:44 AM CEST, Alice Ryhl wrote:
+> I would suggest renaming this method to just `new()`.
 
-> @@ -211,6 +213,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->  	if (system_supports_bbml2_noabort())
->  		feat_mask |= ARM_SMMU_FEAT_BBML2;
->  
-> +	if (system_supports_haft())
-> +		feat_mask |= ARM_SMMU_FEAT_HAFT;
+Agreed.
 
-I fear this is going to make SVA stop working on systems it currently
-does work on, so it might be a major regression. 
+> As for creating a device resoure version with DevresLt, I think that can
+> be the secondary constructor and be called `new_devres()` or similar.
 
-SMMU HTTU is not a commonly implemented feature.. I think of all the
-NVIDIA ARM chips only one supports it. Given that a quick internal
-check is raising concerns this will be breaking for us. We need to
-check in more detail which cores have HAFT.
-
-Breaking already deployed SVA would be a major functional regression.
-
-I think this should start by just enabling SMMU HAFT when CPU HAFT is
-on, when possible. Maybe print a warning on the mismatch instead of
-failing.
-
-Since we can't break already deployed SVA a full solution would either
-have to somehow turn off CPU HAFT or we ignore the gap in the AF
-updates..
-
-Jason
+Other device resources use an into_devres() method consuming self. However,=
+ I
+wouldn't add it until we have a valid use-case anyway.
