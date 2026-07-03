@@ -1,134 +1,159 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB74C285061
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 18:58:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783105118; cv=none; b=SXsJlxISXlDpoENG8qNpAUvMdHpZe1q5zebjGk6p0sFfwbQPHXPhzRHJ6VKLZuM+AuBC+qUpemkt3f2SI4gYrv2Em9LjgeRK2NlyX301PUxLEp2AwDgLur8WE36gEIdUt3Q+IMFRfnop/eTtRNzsgfsSHERg2H2Ro8G/1Iyfqic=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783105118; c=relaxed/simple;
-	bh=eJi3Q668y9RAPTvxGdrmsu4bbQ/DxsV+6g+FezUkJLA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nVjKiCbJZHSbxwT9Y91DzjTHfcX/+iT/k8+Z0ImxKFDc8SqxTfu6p89My85Qe3BJvjsddWj/D2hk7u082wU15goxnNHcopziemNFk4myyd6Htj3HU1iWrt4kcKrDah4WrqjYMOdDypEzDXOxnFnH9NBaDsLawrHjhAZzVEFVO60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=XE7CPE5M; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010058.outbound.protection.outlook.com [52.101.56.58])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2974E326945
+	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 19:10:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783105818; cv=fail; b=NkYm5QpHYT+hvTv9NQT0uGQrE6RTeIxkYqIPWl4pUwMkLObwRfMansVWGq3MgwHIfpo9+ZvVdfPcIpt3BMbVq4ykWtYa1FaI6YBLK9BzoiSJI7ENcCTlDSbbesSrbdOv4WcmvjrKrW2QnEUiuKFf7OoC3/e5J9oMz9RCfN087ks=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783105818; c=relaxed/simple;
+	bh=xpSdSan7IjbqMswR5bAdLkihSY35cmk4L1LzlIp7FOs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=pts6OrVNEwcBlvnbTJFBWRMvbjefBVauVEfMbFbpY/LIrKyRfg8dcwX6ns6JFazp/dNz+ajAPSiBtZLo7aDJq+apz5i7kRCDwka2TAajaZE0xrLF7hPDQoDi1XXvDr2nVcFiXo8z4/SL+l++3k89JacSOhTac0yo0Lxguf6SJoE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=HbbQeP4D; arc=fail smtp.client-ip=52.101.56.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="XE7CPE5M"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C53471756;
-	Fri,  3 Jul 2026 11:58:31 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6348A3F905;
-	Fri,  3 Jul 2026 11:58:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783105116; bh=eJi3Q668y9RAPTvxGdrmsu4bbQ/DxsV+6g+FezUkJLA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XE7CPE5MdLDFjPysJeNjbm56qsnl/g7p4caBxL49moaNJ8FjVu9pvtO+g+sItZO1a
-	 M0c8apqFxgI3llPzzC9FgK/HOZzcjhOlNNLMsp/Z0vrDdddNLxgQ/hC8moCoEuhyOY
-	 ksTufc2hx7lIKBU3LHszq3cPrKRBfccmqELbFOg4=
-Message-ID: <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
-Date: Fri, 3 Jul 2026 19:58:32 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HbbQeP4D"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hM7ZGPnU3hpY4W5hoPlSGCEyEVv1GaAlW3GPKGVKvWnDeDB1bm7EGgKSIxYeNeNkaRRs8zrp72WYp47Pk30PN26OpJ1lk8O7/yo6GRyl3oTFx5oBdd8YxtTdzU/gYlpRRVJRq9sQa7fsmksrFoOMF+Nhbu/QnCjejUngko7bbcTvQnKmPCo1Ks3GQJnw9jJwoGVx0TEKxDXm9WW8HEv3kevzj/4sPysk/9DjGaFDhlStE7/WyWGf5Dou7CbFelv8m145+rnuDi+XT0QCszMh6sBbvuuNWIGQ8/dWrxiIP6Yf6/A4kySFXqNwbA0iD6GAeX47Xrb0H00ObEX492OK2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=er2y6GA5qqkVjv1SlPPbUHzie4ZJJs1RxTvaZ1hJCnc=;
+ b=pwEZG+mHn7VUF8UQQvMRDMdqRUW52R7XgphStnSuow/+SpJGbqTJl46dw95c71W8NN7msfIX5ccEjXnHZZapMlRXJYKHv4qYTgIdOZzpyE56RB7ouflWsPQOL1bM+wAdHkWM7JtWeffdRSvgY9lXFnycvkvQFY3wzKm5Fy8G5CbXDxR3D8o/eE/9V89Y8wwM6xXTGnSl76KRbNHLh3DrRb84luBuiri0IU56B6KZPKHadAvNuDsxsvKcdysufF3+YA4uIQsmp+K+W9vtwzBShRmQjFlUs/5NBLqbQp0YZ6NP55EyVoYPxnS4Aeqtn/DAQtY/BsyhmAEJ3Q7AL9eHfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=er2y6GA5qqkVjv1SlPPbUHzie4ZJJs1RxTvaZ1hJCnc=;
+ b=HbbQeP4DXmIoF1Klnz67eIfBB95OCVCoHpU6OPf/UPKCyeR79bBpBH/B/5d0URpI807HAc1ME8B49qVSIeQF27ZA4isjN9P0mC3M6ZTeN5kXrdzIGKSFw33SdSGpH2UYkZ9RfDjh2lCzPLfCyDFph/KhcYGwWpj0Niht6hQm8kk7XKsnxbU1r9l7WtKy6+80jAgtORuHFAwM/xOmPzdeQLOBoAO22S1Xkuh+orRCu9EE861oy6xxdefFT227UkCI18Oc9O22/n6F4QiIJr+2L1BiCNTztEM/ifZnUzZCsuUBBCNgXX5Ho+4BF7mPt+0EBqyot49+Kimuub9misL7Ig==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH7PR12MB6394.namprd12.prod.outlook.com (2603:10b6:510:1fe::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Fri, 3 Jul
+ 2026 19:10:12 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.008; Fri, 3 Jul 2026
+ 19:10:11 +0000
+Date: Fri, 3 Jul 2026 16:10:10 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Pranjal Shrivastava <praan@google.com>,
+	Mostafa Saleh <smostafa@google.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, kees@kernel.org,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, jamien@nvidia.com
+Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Message-ID: <20260703191010.GQ7481@nvidia.com>
+References: <akPhuF9pAWaBXzpi@google.com>
+ <20260630185942.GF7481@nvidia.com>
+ <akUQj2pa1W-MekgF@google.com>
+ <akUX3T3fIoN42sdM@google.com>
+ <20260702144157.GM7481@nvidia.com>
+ <aka7N6oLVq3CoBqn@nvidia.com>
+ <20260702235004.GN7481@nvidia.com>
+ <akctXFSALBNfYWww@nvidia.com>
+ <20260703115716.GO7481@nvidia.com>
+ <akf9cjLaBLn82lKP@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akf9cjLaBLn82lKP@nvidia.com>
+X-ClientProxiedBy: BL1P222CA0030.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c7::35) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] drivers/iommu: Catch scatterlist length overflows
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- Krzysztof Karas <krzysztof.karas@intel.com>
-Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, =?UTF-8?Q?Micha=C5=82_Grzelak?=
- <michal.grzelak@intel.com>,
- Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
- Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
- Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-References: <20260701104437.236979-1-krzysztof.karas@intel.com>
- <20260701104437.236979-4-krzysztof.karas@intel.com>
- <20260703162236.GX7525@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260703162236.GX7525@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB6394:EE_
+X-MS-Office365-Filtering-Correlation-Id: 233a8814-b9e9-4b28-94a7-08ded936b49d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|7416014|376014|1800799024|23010399003|56012099006|11063799006|4143699003|3023799007|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	KCqPwpuE7buO8p0OfCOXdV99SOQcjf0E4/gaQvy3hVHN+3ZNb0llp83euG3f9y0WydaO3jikL1Pw3jf6vzlXwEWrZCxIm41BH2JoRYCztpESo2D8/eNCpgua2mLuKJqlFs4fRskuj5FdMBrF1PWEkMPz1uZszb+25v2lpgITiw/D6jYo4GRuykupngSdEeYyNg8ndNyLaSE1tV9Ta01jh+dMmU0Ha1cuODY2eZm6NVKC5FfvEG4WI6HLxNAPkAU0KRH59nREAN+n7OBBAbzPfakFycE4g6iHl3+XY80GqxaHuqDclLc4zacfnXMZHKAgjBuzSk3WEwPSnwbuNiST4tl+4X/L8v8nv1AvJyBMPXzI440gVoCDXMPxQwUnOzI7iK7FZTt6TilNwbFmN2oR0s/4QDCmHA8u+bR1lVq8iH7IKb5yKetBOctNfY6clmuMk/fYv2mycGu46sl+tBGnzNtqrVMUbYdLETl7kdXp0lpuwKGITUoIScs0ynfIgNiI091/NQDZw+EsgJMI36ovpvrCJ1wWKCD6W46ismqaGdf2fUPsZMOgWziFjJQPyir8Qcz5T9tD0KAmlr15Ixor5OxwZEG90JvCkMX2VUKHUKfB+6YH9yFjFlQ8zanac5lL4cGwPNrpQ4vTKBbRkty5Zwu7W869HEA3y5fhLtlFKm8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(23010399003)(56012099006)(11063799006)(4143699003)(3023799007)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?qvmYEzlKndZnvJ5H9v4e/BHtj+ZqeK2vhnd63ahTISeN36D8ik2EtKfy19dC?=
+ =?us-ascii?Q?WRy4LsrMsmSXbYJIYwrGqmFyK/Yg27tBLlTDz+NLXdpRsyDjHV1YiXd5p5A6?=
+ =?us-ascii?Q?V96CDJPOnYUEDNaSxjO4pXorjfhzq+6A8bpsfNLGIZTJoKGmPPnFjkI6LWLl?=
+ =?us-ascii?Q?Hu3FfaD+yHXQK7o3UMcz7qNKH7+6UmtIjYxJjsmU3AhJEtq/AaYfCLyOB3x8?=
+ =?us-ascii?Q?JBxl4TUVrqOXV7nkLvoLOuYEFzouHuFB36Wu5to9CpSlWRIF4oOFFgo55DDg?=
+ =?us-ascii?Q?s3CLh3mvVdfjF06Yk0scJMn7v6O6UbBnD0vWayH6vabYkza9m0cMD47P806W?=
+ =?us-ascii?Q?kixt5WnvjkaQh4nKbtY8D05QvL0lCCg/yEAo5NUtYhYx1eJLJzfvDxx66oYP?=
+ =?us-ascii?Q?Mj7707vqS40z6Fa25QX0CoP9fnDhMBdnVPV4OGbDRzX7H8ymAuCO1sr4es4a?=
+ =?us-ascii?Q?gihy1HjB5fPJE6ga5zt9bnswEfV5aW9p9XqCa7OBQoovmMbFuYyNioNYXIGO?=
+ =?us-ascii?Q?tVxvNPj7ieweBO7MdoRY9p7vz2pXgCxFMvECrZ1WcyzZNRJd9oYPk3wl7ATY?=
+ =?us-ascii?Q?F7IZ2Z1Tl7YvoWzzjLCX4EK4iWG5vGRKQ6EMiEb0xRuTiaZcv0l0sAB9c/5V?=
+ =?us-ascii?Q?1cGlICMnIX5N9TI6vPN1WzikSDucyOFXkE1dlK3LgUNA6HvHz/YpQoEqo9zi?=
+ =?us-ascii?Q?ja4nWHiYCtp8ikhws5gbZWH1/9/5AQ833locgpc3vfre7DtnIlb5rmt5o7v4?=
+ =?us-ascii?Q?QfepLtnJYrVKKUDBE4D5xY5CycHaWNVYzTNByDtpd7QcGwLBjfDcq5h7Vbyg?=
+ =?us-ascii?Q?bDinYO1hP+LbBzYrhAi9ImiMPspg4VXdVDbtQm1P3NALIJFeWcSl+r1pfpDz?=
+ =?us-ascii?Q?JofW5vdpuE+N5CpfCFSCemEoCaLOpJ4sUr8yTOXLRrda5vTk3mYNGjmUmWGQ?=
+ =?us-ascii?Q?KIG42XaoVs2e/mnLuw/iQmBExmBJzi15ElJBNle3RiqYiEOHTohO6PN6Y2d9?=
+ =?us-ascii?Q?c1quETpnZoMz0LHqfpfsp6E5v8FQ2YX2by160NIP0PkgiffDpyP13kSEiTvk?=
+ =?us-ascii?Q?FQDLTUK+EcHJpATsFkwHa0UQc+U1nXB9GUuchgbMrgKz5RrRrDN9nA48znHe?=
+ =?us-ascii?Q?6rKN0CYSJtObJXuQRFwB4fSUq+XSPKDD6x5/LCBoDlRJsVWGs/eNxOsxAF0c?=
+ =?us-ascii?Q?7o9f+9gGrc6/YQ3Thb3HCExUIfqaO2XtOpZXql888GHsnB4urN3CLq71ZKD/?=
+ =?us-ascii?Q?s3fjQppKFBvUcHwFQqL/ULMOPNVxt2TaHk8H5zMnKNZGgdWFlyaelv6t+XZf?=
+ =?us-ascii?Q?SQjGVV+Mj9Vx2XexGLFvlM1cOglCtavYJM5XnPbs4OEEUj5/Hk63ZcGyQj70?=
+ =?us-ascii?Q?RXLMxrWmmJrYgO3scmuRYnEiDXOHlPTBCIIbSLRuWi1kcHopBtlnFMq7dc+R?=
+ =?us-ascii?Q?FPbTXnX5Xmy2dnwGXXZdHOj84Rf41biuIAzya+7mV1fkTH6hShtngz3T3ji9?=
+ =?us-ascii?Q?UR0eGlwVkKf3uk3SjYK3H+n2ofzBvmO0Qq8k4XWGJaJlRyW/KoTp6x5ZbODA?=
+ =?us-ascii?Q?OYFg6d5zJODg/T+ZfanmKaimizhSypQ1VF9jucO4lQ7nUmF5ov8Ht1tFPV/L?=
+ =?us-ascii?Q?h5CfY8SI/WK6A6Xa2AutcdRiNS5LR7aUueQFX3fDXO5eAlMS7ELJQwaBePNA?=
+ =?us-ascii?Q?50oYwoUybEORr+561QpZl5HFMEbtE9LeT+vpwOh0zRHrrEmc?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 233a8814-b9e9-4b28-94a7-08ded936b49d
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2026 19:10:11.7629
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4X76UhbIIWSIzd0kRoZEMvTtLO/rmKVOHSUZMwDJZNLES/MTGwiwnwon7dr3EFUw
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6394
 
-On 03/07/2026 5:22 pm, Jason Gunthorpe wrote:
-> On Wed, Jul 01, 2026 at 10:44:37AM +0000, Krzysztof Karas wrote:
->> It is possible, when a very large mapping uses a single
->> scatterlist, that padding overflows scatterlist's length field.
->> This results in:
->>   1) silently wrapping the value
->>   2) smaller than desired mappings produced by iommu_map_sg
->>   3) leaving mapped bytes in memory (no iommu_unmap)
->>
->> Address this issue by adding overflow detection for previous
->> scatterlist length field.
+On Fri, Jul 03, 2026 at 11:20:34AM -0700, Nicolin Chen wrote:
+
+> > So if you disable kdump when S2 is not supported it also disables it
+> > when EL2 would be used, which effectively means it is not supported in
+> > a VM.
 > 
-> Urk, this is unfortunate, it means we cannot map certain kinds of
-> scatterlists? Meaning there is a condition that makes a scatterlist
-> ill formed?
+> Hmm, they are actually not exclusive: e.g. Grace has both.
 > 
-> This seems like something that needs to be more clearly documented and
-> we need to ensure at least the common scatterlist builders don't hit
-> it..
-
-Well, it's taken 10 years to be caught by a test which seemingly expects 
-the mapping of a single absurdly giant scatterlist to fail anyway, so 
-combined with the great urgency to get rid of scatterlists, I hardly see 
-it being a big deal... This will always have returned an error due to 
-the "ret < iova_len" condition at the end, the fix just means we can now 
-error out earlier without passing a mangled list to iommu_map_sg() and 
-corrupting the pagetable in the process.
-
-Certainly if a list was initially malformed with an individual segment 
-longer than the segment boundary mask then it's not going to do any 
-favours here, but I suspect this is likely just regular iova_granule 
-rounding overflowing when the segment boundary is the maximum 4GB, since 
-the largest representable segment length is 4GB - 1. Note the 
-off-by-an-exact-multiple-of-4GB error in Krzysztof's logging from the v1 
-thread:
-
-[   79.915571] iommu_dma_map_sg: ret = 7138717696, iova_len = 20023619584
-
-Quite simply this code was never written with the expectation of mapping 
-4GB+ of _physically contiguous_ memory in one go. We could possibly try 
-adding a bunch of special-case complexity to allow treating UINT_MAX as 
-4GB through iommu_map_sg() if there was a real need to make something 
-which never worked start working, but going back to my initial point, it 
-really doesn't seem worth the bother.
-
-Thanks,
-Robin.
-
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 9abaec0703ef..c403057577df 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -1493,8 +1493,18 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->>   		 *   time through here (i.e. before it has a meaningful value).
->>   		 */
->>   		if (pad_len && pad_len < s_length - 1) {
->> -			prev->length += pad_len;
->> -			iova_len += pad_len;
->> +			if (overflows_type(prev->length + pad_len, prev->length)) {
->> +				/*
->> +				 * For large mappings spanning multiple GBs we
->> +				 * may not be able to fit all needed padding into
->> +				 * sg->length.
->> +				 */
->> +				ret = -EOVERFLOW;
->> +				goto out_restore_sg;
->> +			} else {
->> +				prev->length += pad_len;
->> +				iova_len += pad_len;
->> +			}
+> EL2 is from FEAT_E2H, which is set when
+>  1. IDR0.HYP=1
+>  2. cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN)
 > 
-> It is better to use
->    check_add_overflow(prev->length, pad_len, &prev->length)
+> VMID is from FEAT_TRANS_S2, which is set When
+>  1. IDR0_S2P=1
 > 
-> instead of overflows_type()..
-> 
-> Jason
+> So, host-level stage-1 TLBIs use EL2 commands (no VMID); guest-level
+> TLBIs use NH_ commands (with VMID).
 
+Oh... I see the half baked BTM stuff pushes STRW it into the NH mode
+because the CPU runs in that mode so we loose the VMID :\
+
+I guess VM support is important anyhow so you do have to scan the CD
+tables and extract the ASIDs, carefully considering the STRW and VMID
+of the STE :\
+
+Jason
