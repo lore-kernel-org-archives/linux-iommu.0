@@ -1,253 +1,172 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011024.outbound.protection.outlook.com [40.107.208.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3315A305678
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 17:32:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783099971; cv=none; b=T/646VeJyASTKa2+mPrAtxBB4BapKQT7oet0vW6+znZXy3BpVVEB8uJcE5M0Fx7MRsBU9TmNCn0UN6juKR4c0F3lpO0iG65elvOd3q+HgUb3tD6lzsCgCjscPq+eol48b6NCzejSuBd/pZGoXcYLf+Lg3keacW9TXbhqZCRg8Rc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783099971; c=relaxed/simple;
-	bh=Wcpl1M8C6rbl+gWtOZA3jLQB6f728HV5z3+kNftSXRU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ukTTcWJu+Irz/kJYpkAmKb90iV9PfvxcFag/Gvu5yvBDVr2jO/3F4stNXGvtavKwN4qySNCkQBIalINu5NutZBZLd0GgAw574xSxoZmSYgZh/VhObGz4Xy1J+szjZZgvFkUD1itUAHlTBNpYLykvbMBykD2uq/8ShJ1Xg6iAzZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=FcdhbDQO; arc=none smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9029D1A267
+	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 18:20:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.24
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783102857; cv=fail; b=kv0VDhpebY27rclwZtVkcP8TNsYzgmF383bVf1ckjf3S2rruyIeR/O5vnFQcD0btme2viN3zFpVEMDjysKzZxxgH9VE6UXujHGxli7AcwJM3wfud2YjVhTGMpbbBw/jc5YcRNGKrOblwjwbZRTe493bmNasHC96Hs0JLdJ6M7N0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783102857; c=relaxed/simple;
+	bh=Xhfx31S8oPe21vTLzjS1pdCyDhdXAmjM1z928SsV6Pk=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UvDZ0SW7AgNnIK1ZaHKJUe1VpimyxZS9VUa1uM/p3euo4XGnrUzR3urwjkhe468H9IHwuH+4KC9LNz0sxewL16ALjX0HmvFY8CQcjHgx5T9cEzhsK+pseZYUJlnTVt00sAcnp382mmXh3vTTwMRQu7H8FmdQpwX1N3GTxihoPLo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FSjD6aN1; arc=fail smtp.client-ip=40.107.208.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FcdhbDQO"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-51bfbe05683so5676011cf.2
-        for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 10:32:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783099969; x=1783704769; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yiTtUHYVC+sBH8N9u4bqwWOXo++BMfy79AiAKwhU9io=;
-        b=FcdhbDQOWUwQ1+peY9pcTByWKCcVrMTnFKM05K3E/gSgdKQfFq7h4dMHmca8HSaf4O
-         OVdZY4nw2gNFeN0nhFOUzSHJ2X+EEuXRvGq06IV+GJkQYc3ekOaWeY6mZjkMThWcg0HN
-         CS/KOerU55vMdBeF/QfIC2AKIE7or9kVa7hRemcV10bhjgISq0eO267fRcX0z3xXTEUJ
-         1q9o29CKmA+S6Qa/HzaqqU5g9F6S1SlafBTW+9nPYgP6/pC6VioiGWtd7XxMTHgNGjLa
-         IvmSmeQxwKkxr/xNzYE5GtUFD41IIPJQxtADmSaD1uzhisMPkxGSqz8+744rsCcjoMSm
-         QqMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783099969; x=1783704769;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yiTtUHYVC+sBH8N9u4bqwWOXo++BMfy79AiAKwhU9io=;
-        b=IPac9I6H4inOA48yzxx4M7XncKEpx7mDSoQzDaDAbDjD+VOpebrmOuZy3yrjF3EfsR
-         qb9wxL8ewhWeUt4RtdtsoAwFHsl1R775UkihF+1zBCSY4Ik39Ns/ajZ9fEYqn1SsI3GL
-         NElod/xxsb+8gj5ocfEfc7T1mJp1k3DDVj7tOUQ7uFu5LzCA2wLUNR3mCohPOhskrCBj
-         LPa9VJxTHVMGfFGFMLAaTgL/pzb/PmhB4ZqDR3iDQ+YHZqICTPKGl6B/lG0TQrXUC8BF
-         iAAljmN4mzqfwxulOP+s3pyESh6bxDAQ71+w44g1iAbFEZJzJvZG9fIQcARFUAlXwluk
-         KviA==
-X-Forwarded-Encrypted: i=1; AFNElJ+9Qcay8+bm9rZnYdYdgGqVwBcRrY0C5c2cH2z6dKarFlqjOjIFerBIBwEl5AkMGbLEiRIZIw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yydz/3WUGvUfsy9P4unjCsDJLVdVrYKrrAB/0EBuOqQVvwmRNFd
-	iE+pLboN1gBrACjjjIvhmEusdQXRpqT0UA5Ba2gG4Gx35GRMdL22CYBLW5PIaWV1Ang=
-X-Gm-Gg: AfdE7cmxxvvQXJtvKDXd5mh430ljtsqWqNUmyHsLlKiE8/LDIGcuNifvU+fjTXA5pya
-	RFJaupLb7WGdq4PxdfuESA8HrBFz+NTi3qACBGBGMvH7er26jjXE6rkzSVk6FvIf7AdaJP3sRnU
-	ICeLBfbklPzNQxSlY6hNutwsYbONrlclFcDocrcUUeTlHbVdlZSCaq1ynP7QQFo24nb5mOI0Qme
-	AWPguiDaByp0yYYAoCKgOUju7N7oCN1ZGfdkpgnhH/rKi6WclZrn6UQBe4nSfUbZVP7bQJqvQoN
-	pl27ys7aIBpVEwi3A1YRkGFkPT3xaCJzZo1b2takHmC35h18a70hIEe4q7vNgPDdCGtbY18OBTT
-	UJc10PIMmHx5GhEXPTszCucFcKDBZ1wkAyUDJJFCwfJflEzfyL4yFR+F1DEKOyT3opyVvjD8P/i
-	bPBH4o0MMBQ1KCm1xuhLhnLi5oSjMq21pfrbcIKB/XVcggEEM0BvgQaE+UlygukqTgF0M=
-X-Received: by 2002:a05:622a:290:b0:51c:e14:87a7 with SMTP id d75a77b69052e-51c4c214c01mr7650981cf.28.1783099969076;
-        Fri, 03 Jul 2026 10:32:49 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f472a9ad1fsm58402856d6.47.2026.07.03.10.32.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2026 10:32:48 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wfhku-00000008Ink-0GPL;
-	Fri, 03 Jul 2026 14:32:48 -0300
-Date: Fri, 3 Jul 2026 14:32:48 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, wei.liu@kernel.org, kys@microsoft.com,
-	haiyangz@microsoft.com, decui@microsoft.com, longli@microsoft.com,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org,
-	mani@kernel.org, robh@kernel.org, arnd@arndb.de,
-	mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
-	mrathor@linux.microsoft.com
-Subject: Re: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <20260703173248.GB1968184@ziepe.ca>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FSjD6aN1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=gnKv9K4VUcyGbiunt8mhvPJs9oa5JZreKIRucuN4bpkMI45nbF3gvjVxUZ1UlEEuII+z1JrhWoy71BHKOMKlSjjojPBL1bJ0+P8S0zd5yiZ0AGJiM6UyZNq3AtwGJzDCn66EwJYk4oA2fbMDIguWHd9F4SFlW5LxcU/wifdagqWqriCpY/2dkKalrEOl8ktbQwX7KbVlsQgDuTmocSxfqNVorodwk3jw5XHJpcAm0bNIXuUwbpJY8jZC508bpudXVAzJm50pqUt0sBfBuG3KphkAePDXCkxjjp/EVGx0ve3gTVi6ZPZUt+qJco4k4N90o5y/0uUadTJMQkcILP0APA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=htvTdVqBj5sQU58rbr9YMzjmDc7fYbUXWR1FudTikW4=;
+ b=nx1J4XAYOCkhunezxhQRr0DBB5mjzpBVAkBwfukjZj1nx2I03k7Rcz2pg7JERR7iYGLsAUYxWsMQOXBleIQDPKoaLVnGmDDmhKaFm3ghVzHTg8lIDUjSSWQK39UOVNPbnVqDDTGOvN3ErrllLg7LHwLYq4jXrSv2IKni8S2RoAfTHg3/6VV2LTG96TjfyO2+6skUnUWwsotL/wzc7uIjr5+r9fQ2Wb/iLUizu/Ww8kJ6AfUoszzjLXC9r2DM5lBCISkgdcIsyIj+yLPetofCDmwmH+tpInAZrLkzHgTfg6ooIm/+1UkVhRI1iApo4JSZOJ6oy2kXWFWHaUEciABzcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=htvTdVqBj5sQU58rbr9YMzjmDc7fYbUXWR1FudTikW4=;
+ b=FSjD6aN1KBuox7ZkS+i240aTnBUlxBIGk6mNnoSTU9SMCE5ocvngkqzv3lzwIBbT492k7Iay2/9p2vSD/B+uco9mUYWxPy6MKRfKKjdRk6ZM93EBnz8hV66IMmX8YADfLL4ONWKS9uY2U/BGJVjTumbjgwxBNVw74AEVmKOMGh2EizkCdmkrwd8c3cg3HnBE4nNQqleceGVpypK6wjd0SxlZ8FSGXXMKZIytBTDXNmINd+g8pr8QICsZte0bFDXOnwW3Zf8LkFfS69N+C4FhyKwGIKIxtmBtUV7pEnrPhuHCr6iBZoqdn6ZV+vbCflryKmZCQzFGqmuBDB2vtvK6fw==
+Received: from SJ0PR05CA0124.namprd05.prod.outlook.com (2603:10b6:a03:33d::9)
+ by CH3PR12MB9121.namprd12.prod.outlook.com (2603:10b6:610:1a1::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Fri, 3 Jul
+ 2026 18:20:48 +0000
+Received: from SJ5PEPF000001D7.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d:cafe::37) by SJ0PR05CA0124.outlook.office365.com
+ (2603:10b6:a03:33d::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.181.8 via Frontend Transport; Fri, 3
+ Jul 2026 18:20:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ5PEPF000001D7.mail.protection.outlook.com (10.167.242.59) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.181.6 via Frontend Transport; Fri, 3 Jul 2026 18:20:48 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 3 Jul
+ 2026 11:20:36 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 3 Jul
+ 2026 11:20:36 -0700
+Received: from nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Fri, 3 Jul 2026 11:20:34 -0700
+Date: Fri, 3 Jul 2026 11:20:34 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Pranjal Shrivastava <praan@google.com>, Mostafa Saleh
+	<smostafa@google.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <kees@kernel.org>, <baolu.lu@linux.intel.com>,
+	<kevin.tian@intel.com>, <miko.lenczewski@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
+Subject: Re: [PATCH rc v7 0/7] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Message-ID: <akf9cjLaBLn82lKP@nvidia.com>
+References: <akPX_N0P2EcI_jbV@google.com>
+ <akPhuF9pAWaBXzpi@google.com>
+ <20260630185942.GF7481@nvidia.com>
+ <akUQj2pa1W-MekgF@google.com>
+ <akUX3T3fIoN42sdM@google.com>
+ <20260702144157.GM7481@nvidia.com>
+ <aka7N6oLVq3CoBqn@nvidia.com>
+ <20260702235004.GN7481@nvidia.com>
+ <akctXFSALBNfYWww@nvidia.com>
+ <20260703115716.GO7481@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
+In-Reply-To: <20260703115716.GO7481@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001D7:EE_|CH3PR12MB9121:EE_
+X-MS-Office365-Filtering-Correlation-Id: 160d175f-3266-4d04-1c7f-08ded92fce51
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|23010399003|376014|7416014|36860700016|3023799007|56012099006|4143699003|18002099003|6133799003|11063799006|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	EICIZ9+QrRsgb+htE3aFsE4+jbxIl9bMfbso4cN20sGQQoJMwUWs/K5LUBHGKcTzX0oUSTyKRmmLfTLqZmJ+FD4/JQw3CI7HjgBbuBNepfzkx29B+/i1Yo96DZRzw4aTuDvyUgJTtZgaGgXTEvJuXPM20aS8GH74QhiYFSydcTxEviAtaEpUCMMnpNicauhhIuYVuXp8Osi6/NQtKHmr7+BXzKJ6PwjYtcpz5wZxDkWKERdW+9DhpgyzFXVclHl2lP4OiPY0hLlMLr4oybYrwy8hviQfqQ3npJye8bmvd9O65//w0+PJhu4f+XuTM5k+OFMwUqwizZYRpNhEUWTiHo/QR3X1VyQmph3nM9mSFVlHx+iQ9TXlJZtKSTOr0GeFoICzKiCbw0XWpnh/ocEFKS/aeeOIYUyN4LJiOf28VmLa8EnbM8rBjjI0shTp10/wyNy0xGK/uG+4zUcLdQXpr50+AalbdE1Dul0+VZZng/WTLycylZbgj4ueTLzqByrjf5w+VsTjH5nowYeVgej/kvfawyZErPTdbXsYulzhrhla61+UjVLG4409rqau2HieeQ97bzkMf31a42L3wkybMIkEJ/X8hkWj4yDWCpjNo8ygYoGnSEm3sx1YQuiLgDLA8YuWiXy/5C4hS/PMVGJ8SLR+Ajx5fz6Wh47eUhCgduVuHlmWNArC+v6oiuag7cVgk24/VvRRxMr3poBj2kbm+A==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(23010399003)(376014)(7416014)(36860700016)(3023799007)(56012099006)(4143699003)(18002099003)(6133799003)(11063799006)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	xBu/ML5n9FPijZYfFZgwX24b1VzeO4zQbq4Oe5Rp5/a8ptwkAUeu29XstXnGJiU3d9KF6/yTi63RDB9UfD3ig1AmYRlZsQiXKE0kZi0O90+o/RWJQzK6tMYutiJWf94YtezoF/NlmrMQJBocnqRsqlTYQkqnu3laVtrpztC3dKvy+EVpuaqiSNbDP0ZbRArSHM3ogO1dCn0Ml9Dg0Q+idA5dKmwT/JF64N5fGmf5+a/LCdBZI92wIh3sHMNOW/8Guq+QG8mf4Fwwon8t22A5m7FwWLHi6uLThCVn1ObITj8aXM4+6XpISNYd7j02oS/JSRw8Z9i4Upc2gvX3QQsb4+9Az3S/wRsX6DtjSzeWCCuBex3DpGRu9n5Da92beP4NEoQlMz1O8eCD/qYFc4TaZHBwoH1neEIHduCdTjrZkzCe1aOvN9x+NEgJiLHYpdpt
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2026 18:20:48.0953
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 160d175f-3266-4d04-1c7f-08ded92fce51
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001D7.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9121
 
-On Fri, Jul 03, 2026 at 12:05:17AM +0800, Yu Zhang wrote:
+On Fri, Jul 03, 2026 at 08:57:16AM -0300, Jason Gunthorpe wrote:
+> On Thu, Jul 02, 2026 at 08:32:44PM -0700, Nicolin Chen wrote:
+> > On Thu, Jul 02, 2026 at 08:50:04PM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Jul 02, 2026 at 12:25:43PM -0700, Nicolin Chen wrote:
+> > > > On Thu, Jul 02, 2026 at 11:41:57AM -0300, Jason Gunthorpe wrote:
+> > > > > The VMIDs that are in-used by the adopted stream table have to be
+> > > > > removed from the idr as well (and similarly for ASID if we don't have
+> > > > > VMID HW support).
+> > > > > 
+> > > > > Then the VMIDs that may be dirtied by the prior kernel remain isolated
+> > > > > and are never re-used by the new kernel. When the new kernel wants to
+> > > > > do DMA it will replace the STE with a new, clean VMID, and there is no
+> > > > > problem.
+> > > > 
+> > > > I see. I assume the reserved VMID for the kdump kernel will be a
+> > > > clean VMID (!=0). That should guarantee different cache tags.
+> > > 
+> > > You will also have to change things to allocate the kernel global vmid
+> > > from the IDR, it will usually be 0 but not for kdump. Then you have to
+> > > find all the places where the 0 is implicitly placed and put in the
+> > > actual value.
+> > 
+> > Hmm, I just realized that all the EL2 commands do not take VMID.
+> 
+> If the EL2 commands are being used then there is no S2 support and no
+> VMID support.
+> 
+> So if you disable kdump when S2 is not supported it also disables it
+> when EL2 would be used, which effectively means it is not supported in
+> a VM.
 
-> +static bool hv_iommu_capable(struct device *dev, enum iommu_cap cap)
-> +{
-> +	switch (cap) {
-> +	case IOMMU_CAP_CACHE_COHERENCY:
-> +		return true;
-> +	case IOMMU_CAP_DEFERRED_FLUSH:
-> +		return true;
+Hmm, they are actually not exclusive: e.g. Grace has both.
 
-This CAP isn't necessary anymore
+EL2 is from FEAT_E2H, which is set when
+ 1. IDR0.HYP=1
+ 2. cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN)
 
-> +static struct iommu_device *hv_iommu_probe_device(struct device *dev)
-> +{
-> +	struct pci_dev *pdev;
-> +	struct hv_iommu_endpoint *vdev;
-> +	struct hv_output_get_logical_device_property device_iommu_property = {0};
-> +
-> +	if (!dev_is_pci(dev))
-> +		return ERR_PTR(-ENODEV);
-> +
-> +	pdev = to_pci_dev(dev);
-> +
-> +	if (hv_iommu_get_logical_device_property(dev,
-> +						 HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU,
-> +						 &device_iommu_property) ||
-> +	    !(device_iommu_property.device_iommu & HV_DEVICE_IOMMU_ENABLED))
-> +		return ERR_PTR(-ENODEV);
-> +
-> +	vdev = kzalloc_obj(*vdev, GFP_KERNEL);
-> +	if (!vdev)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	vdev->dev = dev;
-> +	vdev->hv_iommu = hv_iommu_device;
-> +	dev_iommu_priv_set(dev, vdev);
-> +
-> +	if (hv_iommu_ats_supported(hv_iommu_device->cap) &&
-> +	    pci_ats_supported(pdev))
-> +		pci_enable_ats(pdev, __ffs(hv_iommu_device->pgsize_bitmap));
+VMID is from FEAT_TRANS_S2, which is set When
+ 1. IDR0_S2P=1
 
-This can probably just be PAGE_SHIFT
+So, host-level stage-1 TLBIs use EL2 commands (no VMID); guest-level
+TLBIs use NH_ commands (with VMID).
 
-Also ATS shouldn't be enabled until a translation is installed,
-otherwise the driver cannot participate in the ATS error handling
-Nicolin is working on.
+Scanning through CDs seems inevitable...
 
-> +static void hv_iommu_release_device(struct device *dev)
-> +{
-> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +	if (pdev->ats_enabled)
-> +		pci_disable_ats(pdev);
-> +
-> +	dev_iommu_priv_set(dev, NULL);
-
-No necessary, the caller does it
-
-> +static struct iommu_group *hv_iommu_device_group(struct device *dev)
-> +{
-> +	if (dev_is_pci(dev))
-> +		return pci_device_group(dev);
-> +
-> +	WARN_ON_ONCE(1);
-> +	return generic_device_group(dev);
-
-I think you can just return failure here instead of WARN_ON ?
-
-> +static int __init hv_initialize_static_domains(void)
-> +{
-> +	int ret;
-> +	struct hv_iommu_domain *hv_domain;
-> +
-> +	/* Default stage-1 identity domain */
-> +	hv_domain = &hv_identity_domain;
-> +
-> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_IDENTITY);
-> +	if (ret)
-> +		goto delete_identity_domain;
-
-IMHO I would change this around to have a single function that accepts
-a struct hv_input_configure_device_domain as input and does both of
-the hypercalls inside. Then here it is easy to directly construct the
-hv_input_configure_device_domain for blocking and identity.
-
-I'd be happy if this never touched domain_type, drivers shouldn't be
-touching that.
-
-> +static void __init hv_init_iommu_device(struct hv_iommu_dev *hv_iommu,
-> +			struct hv_output_get_iommu_capabilities *hv_iommu_cap)
-> +{
-> +	ida_init(&hv_iommu->domain_ids);
-> +
-> +	hv_iommu->cap = hv_iommu_cap->iommu_cap;
-> +	hv_iommu->max_iova_width = hv_iommu_cap->max_iova_width;
-> +	if (!hv_iommu_5lvl_supported(hv_iommu->cap) &&
-> +	    hv_iommu->max_iova_width > 48) {
-> +		pr_info("5-level paging not supported, limiting iova width to 48.\n");
-> +		hv_iommu->max_iova_width = 48;
-> +	}
-> +
-> +	hv_iommu->geometry = (struct iommu_domain_geometry) {
-> +		.aperture_start = 0,
-> +		.aperture_end = (((u64)1) << hv_iommu->max_iova_width) - 1,
-> +		.force_aperture = true,
-> +	};
-
-I don't see anything reading this, I don't expect this to be used?
-
-The max_iova_width has to be passed into the iommupt creation, which
-it does:
-
- +	cfg.common.hw_max_vasz_lg2 = hv_iommu_device->max_iova_width;
- +	cfg.common.hw_max_oasz_lg2 = 52;
- +	cfg.top_level = (hv_iommu_device->max_iova_width > 48) ? 4 : 3;
- +	ret = pt_iommu_x86_64_init(&hv_domain->pt_iommu_x86_64, &cfg, GFP_KERNEL);
- +	if (ret)
-
-So just delete hv->iommu->geometry.
-
-Also, VT-D has weirdness where the HW can require a 4 level table but
-only a 3 level worth of IOVA width is being used. This was a
-real-world bug we hit when converting to iommupt. This interaction
-with the HV doesn't seem able to represent that.
-
-> +	/*
-> +	 * The page table code only maps x86 page sizes (4K/2M/1G); require the
-> +	 * hypervisor to advertise a non-empty subset of exactly those.
-> +	 */
-> +	if (!hv_iommu_cap.pgsize_bitmap ||
-> +	    (hv_iommu_cap.pgsize_bitmap & ~(u64)(SZ_4K | SZ_2M | SZ_1G))) {
-> +		pr_err("unsupported page sizes: pgsize_bitmap=0x%llx\n",
-> +		       hv_iommu_cap.pgsize_bitmap);
-> +		return -ENODEV;
-> +	}
-
-This can just be
-
-if (!(hv_iommu_cap.pgsize_bitmap & PAGE_SHIFT)) {
-		pr_err("unsupported page sizes: pgsize_bitmap=0x%llx\n",
-		       hv_iommu_cap.pgsize_bitmap);
-}		return -ENODEV;
-
-Which is all you really need. If the HV doesn't support 1G it is
-perfectly fine, the iommupt page bitmap is already masked by this. 
-
-> +	ret = iommu_device_register(&hv_iommu->iommu, &hv_iommu_ops, NULL);
-> +	if (ret) {
-> +		pr_err("iommu_device_register failed: %d\n", ret);
-> +		goto err_sysfs_remove;
-> +	}
-> +
-> +	pr_info("successfully initialized\n");
-
-Don't log someting so vauge?
-
-Jason
+Thanks
+Nicolin
