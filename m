@@ -1,73 +1,98 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012017.outbound.protection.outlook.com [52.101.53.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCCB39FCAE;
-	Fri,  3 Jul 2026 10:16:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783073765; cv=fail; b=YpVDxSXB7hZJOo896yUfNe7B1lmMz7x3yAPYKGHY2jAzvfV64EApqbXSPwiL8omyZwSY0/yBfcUDuJPKtqAEi1/O3hyjJSctppdOOcKjy88f3DyUh/RE6bYbaebl3DU9Ivv4cnb4KWJnjlfr8jEo2X7reP073ZlYPIHCOssbgm0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783073765; c=relaxed/simple;
-	bh=MOK8namwZuMFcbgqWg0d7cpI1CwMBDlDVrMUHYwp8GE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=nsXgnfY5uk6WS4gPQkviyUXHLI8WDtrEj3X3ageEOxLf9BGXJ/RhS1NmQmVXDqNUAPgEjirObiaH/yY+GJ+BIYpoK4PkVd0dLPvdfrkmZCTJWkG49V3RDi3hLzKhmTFZzNcmjF2KHd1ONu1UhqNMGY5EF/XJVpIDxWDQg/YUzsU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=UEycZv4Q; arc=fail smtp.client-ip=52.101.53.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2250B388E68
+	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 11:46:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783079219; cv=none; b=gUWziP05bWTGUq8t/JwRSy/ZYG7TLMc4+ZK+TXClTjvuGiVuzTSIRRjvAx6Ww6TuJNIy/T4x8HG3osrNuJndCKpSDOZYGWz7YGfky1/EN4LRjhUfieBv7VWoX88LNR/jBhQ4a4PVBESG1COdFcJbGdOREwiyuvW/UoaYBhPOFCg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783079219; c=relaxed/simple;
+	bh=ErVa6O+H+ziQoQxw89SnZ3zm/NmC5i67ydJ72rOS0eE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rX76iY3pwHGy2hiB8olsa3XMcX7p6y8PIrujNfn2KXmcm1NtQDS4x/V2Vdkqe0XtDGMEzv/nOOLfomTuuVmq757AiT0vRCIxthTgttjLrc4R15mdXtwA2dW6iT+ZcoJzMkVcIfwyIHTd9KVMAI9nOyeLKSZrYE4fAvaawcVm0hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=b3idcErl; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="UEycZv4Q"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oggyBYgpf0LgGqj0VM2/ibVSCa+uoObFCptdBTOseoiJeAMRMZfoUKiwC7dqeeGcxR/jspzQDbhQ5I8nDhHOyEkUE98RyMDS2nHYgA1hbOyAFuBdruJp8sWGA2HRT5vO+6Gsie5vYWmJ0aFwfv6cPCUE+1gm/UY58F4H50MIAi53AQe1GSLXZJyBDwFIdJUix5kXTM61LPiTB7SAX/rjwTPN5LIfKAoBUfJo3NN0CeBzz5g0yb8O7EIfeLJOvWhBwsUlKAzy7xrY74Dgfse8UtGPjKu7uVydNPIL61ZE9T4ktdM44WkJ2jIibeNt+A7KLn3iRrXnWoRz5OYjY5QRTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IBVMhNGGtTnLBZyGOG8H8b9TrV4fbJMm6cRAgaU9WDY=;
- b=ugGsr0SZn2ldjEOdCO0TvxfZ5lb5hnioRK/+bPZOjHfTVeYAW22wTtgW04D5BtQJG8bcxr6+eBRGjbxu5TJeqShdZDPk3akMi5wloywy8n0eqHIl8JdwJY5Id6a8l4zKJMJUKql3PhEKqSmHktGnodP/Of6wLP/rsPtgrPQF81nD7PZMnSYi+mTppHAesqel4oj1YE63vAaHMQa1ywhKDyw61HRpaLPsmGQjYGw67ArOpDeguq5AfK6f68ju4zJxl9HJBTKsmrOrffLVhfhGWOpHaEu3A/F7W2PbFK8msKDyN8RpKrNBT2yNT6T7mUjRwLO7fT+jauLf72jf4qGIkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IBVMhNGGtTnLBZyGOG8H8b9TrV4fbJMm6cRAgaU9WDY=;
- b=UEycZv4Qi1wa4Se+BkowHJj6ptewku3pXsIaNs4z4Eb87IcWXvuPl3w3uMRxxxIjUb+o5jGw7VO8QqYvDs9WMSXOBoDQu9gxmZ4S2eG/UvN0amU9EXpmu+cjPHJfKZs4rBaGmwxcAR8uXY2ouSorTzKWDIJsqcY3V8IOhQwO+Z0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SA1PR12MB999228.namprd12.prod.outlook.com
- (2603:10b6:806:4db::10) by DS7PR12MB6309.namprd12.prod.outlook.com
- (2603:10b6:8:96::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Fri, 3 Jul
- 2026 10:15:59 +0000
-Received: from SA1PR12MB999228.namprd12.prod.outlook.com
- ([fe80::4dba:119e:8e7c:37b3]) by SA1PR12MB999228.namprd12.prod.outlook.com
- ([fe80::4dba:119e:8e7c:37b3%4]) with mapi id 15.21.0181.009; Fri, 3 Jul 2026
- 10:15:59 +0000
-Message-ID: <58bb92a9-c5ea-47a3-b19a-934573f15305@amd.com>
-Date: Fri, 3 Jul 2026 20:15:49 +1000
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 03/20] dma-direct: use DMA_ATTR_CC_SHARED in alloc/free
- paths
-To: Jason Gunthorpe <jgg@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="b3idcErl"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c4436d02cso1394671cf.1
+        for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 04:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1783079217; x=1783684017; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GF/dZxM95AsUU1wWK1B0B/CUui/snGJUvA0tIkHl1DM=;
+        b=b3idcErlIeQB36DyX2V8uG4M/1xQSYHXJwYvS7hMQq8dM23e1qk9uKesz2nWC8tiKJ
+         6qE7EoucabPBhw3nwXpniN6lrgQpkuqZdzqDHoT635btbmzIxRvt98l9eazeh93XSN4+
+         nQ6jsQY+M2ZQsGXvFJISx++AosLgNxA89C/BzSIXbY7eXZKtVlPE6T5IYqoxmND1F7He
+         j/gqZ6WA3IyeNPpPkeHEl46yfu2NM/viAXeLhgsVexCrETMRS1ZLp0+djOuCvyyfviPl
+         tzINoRtXieqjs9WMgLw002OcK7Pb4B0wkL6xvcFkQs/vhLMIONFuM+ISBMHi67HSA7E4
+         1Vpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783079217; x=1783684017;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GF/dZxM95AsUU1wWK1B0B/CUui/snGJUvA0tIkHl1DM=;
+        b=UKw89bbRspXHzpR4MYYXOl31yG8dkaeYxnZTDruZwLLriPiibdylDRLthuO1amIP9G
+         MqH/QJgiP/LGnnXbTkKV2A2Gx2BGXEaS4G+ZPXNIaw3RVuJheInoO6PlBdokBdxk7yQl
+         a3eQWtOjJLv9cdHHcfsgiXQY9tJdGVkw2Y5l45CAbmYi4HitFeoLVtIAxVdVirM0XLVw
+         Yj22Pwj0K+Y1ohQljr6iAHUMkfXLRYzmu5dhQei+k3tLAlaONM+oNBrRXWdi0avNPwkx
+         L1iupWFbQUQM7R1/WU90nOaRM9l4hoCeIGQW3JA3NmYmLEg9IYuFdp6xs1Z4z7mdnLcm
+         aGMQ==
+X-Forwarded-Encrypted: i=1; AFNElJ92EgZIFbJDtcTyA9wEzVBj112Rda5q29ps1nFxrHDybH71WBoh7oAOyWAkGM13EuYm0Pf2Wg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxxUA8PnnOroho5C6xI2os0xVnCSy1ysd2bXghnLA5qzpEbEc/N
+	qt/OMNxjEdLxuhLv+qRffudvFV/fkzCmJjaAMQL1gc4lN2yuHgK84wnN0TSCkNhZi6o=
+X-Gm-Gg: AfdE7cl9a2oLzpbJErLjbhTxm6XOKVpKRRxK69ELcwFp4MXERREfiM+J1oyK0nIXAK9
+	bcQYrrVMaDiYJ77eT8i4jSrD4D4X5g3/a+3WA69ZnbU/BkpM7B/qSyZgyUWWeUHeec8N/m6JA3x
+	XivVnYeB5BgZFTTPVOG8xcx69Tep7+O43frlME+jRCkgU8n7l/1oWlMoJPUuUAuQ5dh+ovA/n5M
+	323SJ1RwnXg9Ec/rTqORd/XeJjoy6DVUAPLlnnF6GyRa4kupNdyXqXvnHaPbqRvKmLMwjZNtwkW
+	nhmdhOmZpJlFKkmtJ8cqv79PhZeQ2mQYHCEJDSrlqaqa23GSiNm1627iEsuk1ABINf5ENbI9wTM
+	TvHIf90bDiPDAQIrRy799X6kVmIs5didKXK2jRN4SzocHzbO2ChedlwgJJ5cVWHqDky+UoAXh0r
+	omsJOpVhTHc5Oe+9VP11ujoMVrvMnaeoZGkxiLnYGIROrnSTlwAvs2xy/RG84K4RNclqk=
+X-Received: by 2002:ac8:59d1:0:b0:51c:555:7dea with SMTP id d75a77b69052e-51c2ad42df1mr112307971cf.30.1783079216951;
+        Fri, 03 Jul 2026 04:46:56 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51c4202366csm13366551cf.30.2026.07.03.04.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jul 2026 04:46:56 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wfcMB-00000007ngp-0vd7;
+	Fri, 03 Jul 2026 08:46:55 -0300
+Date: Fri, 3 Jul 2026 08:46:55 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alexey Kardashevskiy <aik@amd.com>
 Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
- Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>,
- Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>,
- Suzuki K Poulose <Suzuki.Poulose@arm.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>,
- Mostafa Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>,
- Dan Williams <dan.j.williams@intel.com>, Xu Yilun
- <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
- Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>,
- "Cheloha, Scott" <Scott.Cheloha@amd.com>
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>,
+	"Cheloha, Scott" <Scott.Cheloha@amd.com>
+Subject: Re: [PATCH v6 03/20] dma-direct: use DMA_ATTR_CC_SHARED in
+ alloc/free paths
+Message-ID: <20260703114655.GW7525@ziepe.ca>
 References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
  <20260604083959.1265923-4-aneesh.kumar@kernel.org>
  <845d0c8a-6d51-47aa-8e0b-8381e733444a@amd.com>
@@ -76,118 +101,49 @@ References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
  <20260630160242.GI7525@ziepe.ca>
  <98800d21-18f6-44d6-9ba0-da9b77567d85@amd.com>
  <20260702144729.GP7525@ziepe.ca>
-Content-Language: en-US
-From: Alexey Kardashevskiy <aik@amd.com>
-In-Reply-To: <20260702144729.GP7525@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY5P282CA0165.AUSP282.PROD.OUTLOOK.COM
- (2603:10c6:10:24a::15) To SA1PR12MB999228.namprd12.prod.outlook.com
- (2603:10b6:806:4db::10)
+ <58bb92a9-c5ea-47a3-b19a-934573f15305@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA1PR12MB999228:EE_|DS7PR12MB6309:EE_
-X-MS-Office365-Filtering-Correlation-Id: dd4c620f-8fca-436c-552c-08ded8ec1430
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|7416014|376014|1800799024|366016|56012099006|4143699003|6133799003|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	y7r87hAgRGbWF+BoU5Rwk0nsXIRRgL0NNBybQpriNyOJ7AAP9Ybdglt/ag7GOb+C9GMpdoamzlHl9c69WvqoZ+LiQp0JWEExkYpjbLhOLrlLcNtQcFjdHo7a46UVRf6SmXTazLu7MJO4ZEGQI1aZvnTvo75nnahaVySuyddGFoYcby5T5xO6q111AASYmmsItHw8ayvMD8b4D2OBjRJyoCzn6EfPJMzwt0clN8xe8+DTyDClC6C8xhgKZL4An33KCZzGyxQUpDA+xN9rz4LQiYgCCYwowBVXUELtv7HzYaSN38LHMKIE8/r+CauXRRavlgkMdonBz6rrIZN5eCYraO3etvR62ouND6Dfy8Rqq6MF8dzSHts0jxe31MpcQAwY+6cAqQxRX/NV54kd6tGO57ene15SDpXILOxS2xpAc+uWMOMqWfLxxt4Ot8WhPyCGHII+stH6fRSaI6QNk3wSnGJ4G5eAfPZLtQavqlMC3EDKCm3gRsm/JkR5jcooBQSSf22qk8X3tbJMVCG0yqDREnUIOAeH1vmKVSjet/igkwNipxfU6ryMpSNUmjRZ6GMF2tJoKSxoYbnJC0OE8IZx+iIIEpC3g67Bv4nrUhUPJLte4Ri7yj3Iio55PgT35GUqMyq4j+3XA/yZ3z2HjtSi9kI8t9RLiHYl7rMi7OEAAus=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR12MB999228.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(1800799024)(366016)(56012099006)(4143699003)(6133799003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SEE5L0FtUDE0bEIzVVAyOHVFck1YWEJKYkgrTlNyUko4UHM2UlZ6UkM5dmZo?=
- =?utf-8?B?SnpWT0hjMHVzUTlrMjVLT2V3VTZoM1NzTHNsc0djeGdDa2xvMjBSY1Npa1Va?=
- =?utf-8?B?RVFhd0MycStGcjM3QkMxUjdORlA2TGpaZElwbEhiTExBcFI3YS8zeWZzM0ZB?=
- =?utf-8?B?TmNIenJOTDhyN2pOL2RHZlFUcFJ6OFR3blBPUlJQMS9IWXZkRlpRK2JiQUNY?=
- =?utf-8?B?RGp6aTdQa1RVNzByR0VOODdwbVppb1g4eEZtRHhxcHo3ZS9pVEN5V3J0UXdZ?=
- =?utf-8?B?ME1mMFR2SC81a2pvV2IrZ0JKRmI2Rm4xZzY3YkJRNkU5cS9ZTWs4dWVMWExj?=
- =?utf-8?B?ZGQ2WVg0VzFuL0FsMTVNT0ZpRjU0K0VBTHB5K0xwSWdtRzJRTmtSQlJYL1JN?=
- =?utf-8?B?WGhzK2wrU1M1TUFVaDVlNmN4d1NpaWp1QjhHV2g1QXpZTDl5Ujh5a2pHakk5?=
- =?utf-8?B?WnBTUTVUU1IyM0hjdVJFL3RQWWV6UHArZndqZnVlV3NUTmhZOVE4cVNMa3Vv?=
- =?utf-8?B?Um50UVNiYWZJM0lRaUxmUlE1bWhyUU0xM1FzblVqQ0RPdHJ2U2QzWGx0SEdw?=
- =?utf-8?B?eElXblJkQjlmdGNWVFBaU01vVFJBUnFVRW5DcEtBK0tkR0EwcXJFSVRHR3pw?=
- =?utf-8?B?OFcxN3VOSk85Sk0vQVMwcjlFQ2NWcnBSd0F1Lys2dEFiWjJ3T1VxeDZzOUh5?=
- =?utf-8?B?UjhGVjdscHBoVnN4czBKNTdxTUErMnFtM25JL1ZQY3p1M2VWS2NNeDVNTXRn?=
- =?utf-8?B?SURNK0xKUCtrWGZiREt3R09pS3VUZkVvcm1SejFPWjBCVGVmcDdUWExlNnI4?=
- =?utf-8?B?b2ZLSjhVQjNyZUNSNTNFUEVoQmNpOGtCclBrSmVmZkhYUW1JdTUzV0NJTVRo?=
- =?utf-8?B?ZXE3cFRvNzNVd1NxNzNPN3psUFhXUy8zbktsMFJDTXNPV0l6UjVTckdMakla?=
- =?utf-8?B?bVpKSkNHTjgvbVE3YmxRTEJaZURlTVJGOXF5MU1rMFRhcVo1TS9tZ2pTUWdK?=
- =?utf-8?B?eXFpckhNdUpNTkJMdzZnT3Q4dE1MYVU5b3hCczJpUUNpUnVQR0dJRHJ6M1pQ?=
- =?utf-8?B?Ukxid3J4eTBNc2hGb1RqY0RNeTBqejUyVC9VZzg0LzNzL1M0ZlZITVd2aVZ0?=
- =?utf-8?B?akZWQVRtRVZXVnRydFZLM2RzSU9KaTZoVzBXR3Q5NEJDZjUxbVB0NUpUTlg3?=
- =?utf-8?B?Uyt1VXpteVpKekhwdnJxdUUwcEpqVUlieWdvMDM0QVVQQ0xjOTB2OUVDZHZO?=
- =?utf-8?B?UWM2TEdQSi93bFB0NmhGa3RDVUpwcGNoS3BRdE5ZaHpOZ3E5NExKVkRHNy9n?=
- =?utf-8?B?VWgrNDVHOHBnaDlaeEI1QVowbC9IY2RMcW9LbHdOc1libWN3QTB4VkFpK3Zv?=
- =?utf-8?B?dWFIQ1ZoVDJ3NHg0N1Z3WDZvK29lRFEyQlFtb0U5MDRZd2FXVklCQ2grWWNn?=
- =?utf-8?B?WVRwR3JMTERla05lcStLK3RQWW56QzBWTVZ1RGRFd3ZCSVJKOHNtOG0xSThz?=
- =?utf-8?B?b1A3YkMwUWVWdlE3Wk9MZGJmTUdzU3RWclhuY25nZnhzK0haWkRQYkZUK0RS?=
- =?utf-8?B?TVJ0OWh2UUpEQUtuaXJBTTRFREorSjJET2RLVnVqTUJ4RUFkL1hUYUc2WVZl?=
- =?utf-8?B?Z0ZLVkFlM2pMMXQ0VXNMcGZuVWRTQmliakNhZWt6Rjg1Q2J4K3lnSEZiMmdX?=
- =?utf-8?B?clhYWnFPaGNQQ0tBZXF2TEdEb1RFbmNwMXdBckJlQXpMZEFlRnErSGZncDdn?=
- =?utf-8?B?a3Z5QTZoT2hrVUtHNUlHL25rRUdoTWY0dUptTlNDWUNZNFlGTzc0ajM2WHFr?=
- =?utf-8?B?OTA4dUNyQklLQjRzaVNRenpVVFc1YWdtWVE5dWw2cmU5Z01oMDZvZHZobUtv?=
- =?utf-8?B?ZEtkcUdqMG9HVUxWa1h4YVZIdi9EbGtCSHB6L2lDQjlieXlUYjBuanRSS0tp?=
- =?utf-8?B?OFRwSjBRODdBYXZBZnBDaFJySFdtcDR2ZW9VckJjSFZFN3VBOUFRR3JlVzl0?=
- =?utf-8?B?U0JDN0pIRHNyVXdud2tPUCtpOEFacldSaUVTTWcvUG94YnRnTWRyTE52eFZ4?=
- =?utf-8?B?RGI1d1d6NDFaVmRaRUIyazJ1bmR4bCtJbTlrQU5UZ2ZlSEkxeWFRRnVGVito?=
- =?utf-8?B?U1V1ZDcvSkpmS3gyQ1RCdVRqZ0hVWk8vTWxFYVpXL2RpakNLaHg0RVNBUnB5?=
- =?utf-8?B?NTZxK2JLVEFJemIyYk54ZURETVZNcENRM2RBU3V3UW82Wis3YU9leGp4NzlR?=
- =?utf-8?B?eWFhTDljcEdRbzJhYWtDSSt6U21LT201QTRMelR6b2gvcmx6VDNDTTVGdklP?=
- =?utf-8?B?WWVneXg1T1QwNWR3MkhIeGg5emF5cmNxTWNTYllkaEU3TkltQm5yUT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd4c620f-8fca-436c-552c-08ded8ec1430
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR12MB999228.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2026 10:15:59.6633
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AzwBfwuFS/Shf2EaUGk5hugTlMbxb3ika7JIX0/7voBlCugtw1Eznw2wOM6zcYJr08Aqu9NLsK+c6+mYScreFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6309
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <58bb92a9-c5ea-47a3-b19a-934573f15305@amd.com>
 
-
-
-On 3/7/26 00:47, Jason Gunthorpe wrote:
-> On Thu, Jul 02, 2026 at 10:25:16AM +1000, Alexey Kardashevskiy wrote:
+On Fri, Jul 03, 2026 at 08:15:49PM +1000, Alexey Kardashevskiy wrote:
+> On 3/7/26 00:47, Jason Gunthorpe wrote:
+> > On Thu, Jul 02, 2026 at 10:25:16AM +1000, Alexey Kardashevskiy wrote:
+> > 
+> > > > > not externally available so I'll have to trick the DMA layer into
+> > > > > using SWIOTLB (which is still all shared, right?) as I specifically
+> > > > > want to skip page conversions. Setting low DMA mask won't guarantee
+> > > > > that the DMA layer won't allocate a page outside of SWIOTLB and
+> > > > > convert it. Manually do
+> > > > 
+> > > > Why so particular?
+> > > 
+> > > aahhh I missed "pre-". I need a way to get pre-shared pages for my
+> > > sev-guest activities.
+> > 
+> > It sounds to me like you don't, what you are worried about is
+> > optimizing the dma_alloc_coherent flow to avoid fragmentation and all
+> > CC architetures require this optimization.
 > 
->>>> not externally available so I'll have to trick the DMA layer into
->>>> using SWIOTLB (which is still all shared, right?) as I specifically
->>>> want to skip page conversions. Setting low DMA mask won't guarantee
->>>> that the DMA layer won't allocate a page outside of SWIOTLB and
->>>> convert it. Manually do
->>>
->>> Why so particular?
->>
->> aahhh I missed "pre-". I need a way to get pre-shared pages for my
->> sev-guest activities.
-> 
-> It sounds to me like you don't, what you are worried about is
-> optimizing the dma_alloc_coherent flow to avoid fragmentation and all
-> CC architetures require this optimization.
+> It is not about fragmentation, it is about unwanted page state
+> changes when few pages are shared for a very short time.
 
-It is not about fragmentation, it is about unwanted page state changes when few pages are shared for a very short time.
+That's really basically the same thing. The responsiblity for
+optimizing the shared/private conversion lies with the DMA API not the
+callers.
 
-When I needed these pages, I could: get a private page, convert, (possibly trigger RMP and IO PDE smashing if that 4K is backed with 2M), do the VM<->HV communication, convert back to private (and possibly unsmash the page).
+> When I needed these pages, I could: get a private page, convert,
+> (possibly trigger RMP and IO PDE smashing if that 4K is backed with
+> 2M), do the VM<->HV communication, convert back to private (and
+> possibly unsmash the page).
 
-Or ask swiotlb for these already shared pages, and skip all of the above.
+IMHO it would be better to use something like dma_pool to amortize the
+coherent allocations instead of trying to hack with swiotlb.
 
-How would defragmentation help here? It is two or zero conversions.
-
-> So I'm strongly against you trying to open code something in your
-> driver. Use the DMA API as-is. Propose general DMA API improvements to
-> reduce the fragmentation problem. It is a real problem.
-> 
-> Jason
-
--- 
-Alexey
-
+Jason
