@@ -1,153 +1,184 @@
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C74D13D6461
-	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 12:38:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D363D813A
+	for <iommu@lists.linux.dev>; Fri,  3 Jul 2026 13:36:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783082330; cv=none; b=ee1qoxLzcHfm5Ih9Ov5UWLJ8TYuCfnljClbFIPVKWSGzByz9LKQ/QHqJJ+EJJQDp29a624bjYXS1wozKyVXP3Nx+/XAwANYgY+HzotOXIGGnD9wDglb9w7I4XWsxeFGHV66hlEQ/TSMo/C4ivjFu1xBbOadtnUwp3TBq60sQqSM=
+	t=1783085766; cv=none; b=g4VV0mMVs0AJiZv+lW5Bk6CL8LXdBjV6gBQg79c5zP2EAozRUTbqRAkV4r0Y2DISYPzQaXlNOXzs70j6Ja6/rVR052ufQF57Vl2g64KH6FvguCTwHVQifDU/QlA3eLmHr4C+pVd+KVXSL4v/Sj9lklyzb/XqvM+rdoFCngz2qUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783082330; c=relaxed/simple;
-	bh=7cqKQ9nuMZFC/0h39B8BTWb/IrgOChDNbyiwXPKmKNA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=hrix6sCuj0UMO6YlSP0eWclb5bqdkXf9YugJAXBcJvHZxCnLXQBvQdsX+s7HkYN41paJMk2DhNy51kbC2/Y1FONPydV1hdJaJWo/SOFnXegiIZfwM/ahXsAC4iDMxNURn8NklJnMk/ZTIAlFxbxkkYbZHuvLmySkunqGTVzSSoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=lx/4tCcE; arc=none smtp.client-ip=115.124.30.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1783085766; c=relaxed/simple;
+	bh=3+iyZZJ72WgUSPLdNBTNWi2rabs+mKXDECi8R3MNjWs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cSQmN5dFeMo6UC4cGpsWLDDYjkKOGxHQHP5mcVwNexIp9w1s1e4yeDOMdu+EsTulxY/bwV6AQ4Fc2xMyWK3IgAVzs51NLDW+VgzzLyY3TAdjMiS3lfXN+KjHQMRZRtJz16R78DeckzfOK+GBak1Xtwqn1Cm9J9E/VdN8+9nODsA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=LpqleAqI; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="lx/4tCcE"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1783082320; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=K8IESsN7IazgF4kkAKc3Bjn0YxF6z3ruog0n74pY0Hc=;
-	b=lx/4tCcE3j9pBL/EYarlFvM2Z334PsbGudNQlhwSTQ1MfOSOgqGfWY6BpuQQmPbUFLPG20i/wgNi8vzxcVRScr4PpXWFLsmgEweCSV8DbzR75GV/IPbyh4BRfjAD2LiZZjaAlVs2I8L6bfNeptvZWuW+Z4jf2ZQJY//8tEQXa3U=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0X6JE1Zq_1783082316;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X6JE1Zq_1783082316 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Fri, 03 Jul 2026 20:38:38 +0800
-From: fangyu.yu@linux.alibaba.com
-To: zhangzhanpeng.jasper@bytedance.com
-Cc: ajones@ventanamicro.com,
-	andrew.jones@oss.qualcomm.com,
-	alex@ghiti.fr,
-	anup@brainfault.org,
-	aou@eecs.berkeley.edu,
-	atish.patra@linux.dev,
-	cuiyunhui@bytedance.com,
-	fangyu.yu@linux.alibaba.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	kvm-riscv@lists.infradead.org,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pbonzini@redhat.com,
-	pjw@kernel.org,
-	robin.murphy@arm.com,
-	tjeznach@rivosinc.com,
-	will@kernel.org,
-	yuanzhu@bytedance.com
-Subject: Re: [RFC PATCH 0/3] RISC-V: KVM/IOMMU: Fix MRIF irqfd notice handling 
-Date: Fri,  3 Jul 2026 20:38:35 +0800
-Message-Id: <20260703123835.41006-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20260701040017.42707-1-zhangzhanpeng.jasper@bytedance.com>
-References: <20260701040017.42707-1-zhangzhanpeng.jasper@bytedance.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="LpqleAqI"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493adc4ff7eso573915e9.0
+        for <iommu@lists.linux.dev>; Fri, 03 Jul 2026 06:36:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1783085763; x=1783690563; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :references:cc:to:content-language:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FNBtslBmkdxYY8pJaB+biO9zOY0LMt3+psd/OnIDrZs=;
+        b=LpqleAqIS2Odv534JKdBdjoyA96HZY1DQLRn0ivzD8sMIhhIGWZ6UGeSJJoWHFirVH
+         9sla/xe9+bPIugh7XPS2NyvdWOfc9E0kSZ89xGBo56yFeKA6vE74XSk2Tu4P2B9cr17l
+         wSkO5IJhvBXinapUsdOOvgVrkxXqMT422cyl4E/YcQb18ukoXYyctfTfphjhFVQc1ICo
+         K7qkGor/TyaI2QLJW8KkQgC1uYgGL1AW8a3yTkGmiSnKWO0l3yCf5FPrICsM1B7JYeJ+
+         xu8Pe1U+YCoKAjM1OW+szeefFE4LLPHHJMOG4+Jtz0NLaGHNXyZpX0YLzLZnAEXcIUYU
+         g8CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783085763; x=1783690563;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :references:cc:to:content-language:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=FNBtslBmkdxYY8pJaB+biO9zOY0LMt3+psd/OnIDrZs=;
+        b=oZaJlLpJOGN8WK5HVl+qoy1M4yepEDnyrkPvmr/MdVylZ7MtoXOed49RaPVUKe1Dse
+         370J7/qmQYfUHFx5DbV4uJc8tsrHgYFKhuuFAa7R8STGZojsEUtqYOfvZkNPXcGylKDt
+         KnA2VHy0i3ZmJvr3jjb4XYPCdrZTJrtmcVKYLT8bkARLhEqFgd5tJvxLetAHv9PFM/Rt
+         McLAT7KiucxI/kAsWi3FTtXdCVvmkorNjmuQ2IcTtpk7L4Q+9gvriSQOgC0BnBpWa8p2
+         8EcSRz8zOGr25zUONbAWbzMAZ2g1nyILQPY4kA+luZhSM3layuffH5X0//bJv8oDU002
+         N3Bw==
+X-Forwarded-Encrypted: i=1; AFNElJ8dFEjlCIXOxyM9x30sjwP3wf3/epPjrLByiX/vzZKJ0E5nMc8fEeyYdCxlTTwx0/arSFVxrw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz/07JWWsjQEbDaW1aak8JSVR+A6oqwoFPrnVjHSZglpKHytjd9
+	z0HP9uLoHGmx8gTYGd6mKub7aodBftiQuEGobqFdX5Bqjj1rhVOja0MgFRADLvwdYsg=
+X-Gm-Gg: AfdE7ckjt9TeEgPb9eUrzd5xAh2ucJIaO86FA+DkIsiNTS0fgBHeA8JlRz8PY/iSGtv
+	6GkesbaFF4yV1kh3VX2Ci92N5bV7NwtVPw+Y8eF7i6wXlzVURvv4eltQ6xgiSAa9CnDnPsXyGuX
+	D0YSN69RPxAE/gYWDOinCQK3qmmqzVOKj8PcPmrtHM5kj8BNK2WMi43us9CxpN//6GJLjduJVBm
+	zj89vRM50CRx6LtJ8jZxRW7Ljo1XJ6dbgTffmjeuX2xTukR9WUlZt4dXP5X3wFBTOB49NByEWAw
+	gHaOf+vu5/r7t6pQ0uFYhyUThXzqMsRw8Uhe8SjVjSMFsx4qxDiStrhKPjylfdN+CmKpq0nE2ES
+	ATptAPc5SYSDCkpxXYDKIpTaUiFrPwYLGS3WgCo0rYXYoCAixhaIdXZCwpIx+/R7JVecyHeR51/
+	PzADjJKSU=
+X-Received: by 2002:a05:600c:1912:b0:493:bd67:315 with SMTP id 5b1f17b1804b1-493c2b91fe3mr73724125e9.5.1783085762867;
+        Fri, 03 Jul 2026 06:36:02 -0700 (PDT)
+Received: from ?IPV6:2001:1a48:8:903::e14? ([2001:1a48:8:903::e14])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493bef11338sm202929555e9.1.2026.07.03.06.36.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jul 2026 06:36:02 -0700 (PDT)
+Message-ID: <f0110241-eb12-49f8-81ce-3acf12939f45@suse.com>
+Date: Fri, 3 Jul 2026 15:36:00 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 01/30] mm: move vma_start_pgoff() into mm.h and clean up
+Content-Language: en-US
+To: Lorenzo Stoakes <ljs@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>,
+ Simon Schuster <schuster.simon@siemens-energy.com>,
+ "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
+ Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>,
+ H Hartley Sweeten <hsweeten@visionengravers.com>,
+ Lucas Stach <l.stach@pengutronix.de>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>,
+ Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
+ <lumag@kernel.org>, Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+ Thierry Reding <thierry.reding@kernel.org>,
+ Mikko Perttunen <mperttunen@nvidia.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>,
+ Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>,
+ Alexander Viro <viro@zeniv.linux.org.uk>,
+ Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>,
+ Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>,
+ David Hildenbrand <david@kernel.org>, Suren Baghdasaryan
+ <surenb@google.com>, "Liam R . Howlett" <liam@infradead.org>,
+ Matthew Wilcox <willy@infradead.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Peter Zijlstra <peterz@infradead.org>,
+ Arnaldo Carvalho de Melo <acme@kernel.org>,
+ Namhyung Kim <namhyung@kernel.org>, Masami Hiramatsu <mhiramat@kernel.org>,
+ Oleg Nesterov <oleg@redhat.com>, Steven Rostedt <rostedt@goodmis.org>,
+ SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>,
+ Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>,
+ Kees Cook <kees@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org,
+ etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+ linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+ linux-tegra@vger.kernel.org, kvm@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org,
+ iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+ damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
+ Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
+ Jann Horn <jannh@google.com>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <b28b698df4c009e85c4728446ca5863d8e633164.1782735110.git.ljs@kernel.org>
+From: Vlastimil Babka <vbabka@suse.com>
+Autocrypt: addr=vbabka@suse.com; keydata=
+ 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
+ pYekxJujNeEDkUlky0Y=
+In-Reply-To: <b28b698df4c009e85c4728446ca5863d8e633164.1782735110.git.ljs@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
->Hi Fangyu,
->
->I put together a local test branch based on Andrew's RISC-V IOMMU
->irqbypass series [1] and your MRIF RFC series [2], then ran VFIO device
->assignment tests on hardware on top of that combined tree.
->
->One test case that exposed a problem was a VFIO guest started with QEMU's
->AIA emulation mode, e.g. `riscv-aia=emul`.  The guest could hang because
->a normal MSI injection was classified as a MRIF notice, so KVM skipped
->the software IMSIC EIP update and the interrupt was never made pending.
->
->The issue is that the current code identifies a MRIF notice by comparing
->the injected guest interrupt ID with cached host MSI data:
->
->    msg->data == iid
->
->That is a payload value comparison, not a source/provenance check.  A
->normal MSI injection can carry the same interrupt ID value as a cached
->host MSI message.  If the vCPU is currently using the software IMSIC file
->and this collision happens, KVM can misclassify the normal MSI as a MRIF
->notice, skip the software IMSIC EIP update, and leave the guest waiting
->for an interrupt that was never made pending.
+On 6/29/26 14:23, Lorenzo Stoakes wrote:
+> vma_last_pgoff() already lives there, so it's a bit odd to keep
+> vma_start_pgoff() in mm/interval_tree.c. Move them together.
+> 
+> These each return unsigned long, which pgoff_t is typedef'd to. Make this
+> consistent and have these functions return pgoff_t instead.
+> 
+> Additionally, express vma_last_pgoff() in terms of vma_start_pgoff(), since
+> we wrap the vma->vm_pgoff access, we may as well use it here.
+> 
+> Also while we're here, const-ify the VMA and cleanup a bit.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 
-Hi Zhanpeng,
+Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
 
-Thanks for reviewing and testing my patches, and for pointing out
-the race condition issues. Your analysis is very helpful.
-
-A few notes on the current status:
-
-My original patches were based on Andrew Jones's tree [1]. Andrew
-has since published a v2 [2], and I have adapted my work on top of
-that version with some additional fixes. However, Andrew's v2 still
-needs further adjustments, so I plan to rebase onto his v3 once it
-is available.
-
-When I send out my v2, I will take your patchset into consideration.
-
-Thanks again for your effort.
-
-[1] https://github.com/jones-drew/linux/tree/riscv/
-    iommu-irqbypass-rfc-v2-rc1
-[2] https://lore.kernel.org/linux-riscv/
-    20250920203851.2205115-20-ajones@ventanamicro.com/
-
-Fangyu
-
->This series identifies MRIF notices by irqfd route provenance instead.
->irqfd_wakeup() already injects from a seqcount-protected copy of
->irqfd->irq_entry, so patch 2 keeps the architecture's MRIF notice metadata
->in that route snapshot.  Userspace MSI injection and normal guest MSI
->injection do not carry irqfd MRIF provenance and therefore follow the
->normal software IMSIC path.
->
->The generic KVM change is needed because the decision must be made from
->the same copied route that irqfd_wakeup() injects from; keeping the
->provenance in RISC-V side state would not be tied to that route snapshot.
->
->Feel free to fold any of these patches into previous commits if you think
->that is a better shape for the next version. I also have a few other local
->adaptation and improvement patches on top, but kept them out of this series
->to focus on the MRIF notice issue. Please let me know if you already have a
->plan for the next revision, I am happy to support your next version in
->whichever form is useful.
->
->Zhanpeng Zhang (3):
->  iommu/riscv: Complete MRIF MSI PTE setup
->  KVM: Move irqfd arch data into route snapshots
->  RISC-V: KVM: Identify MRIF notices from irqfd snapshots
->
->These patches are based on a combined tree, not a plain upstream tree.
->The combined tree is made up of the following pieces:
->In your series, patch 4/6 is already covered by the irqbypass series [1].
->I ported patches 1/6, 2/6, 3/6, the relevant MRIF MSI PTE part of 5/6,
->and the notice handler part of 6/6, with a few integration changes.
->
->Fangyu Yu's MRIF RFC series [2] (selected patches):
->  [1/6] RISC-V: Add more elements to irqbypass vcpu_info
->  [2/6] RISC-V: KVM: Transfer the physical address of MRIF to iommu-ir
->  [3/6] RISC-V: KVM: Add a xarray to record host irq msg
->  [5/6, adapted] iommu/riscv: Add MRIF mode support
->  [6/6, adapted] RISC-V: KVM: Check the MRIF in notice MSI irq handler
->
->Andrew Jones et al. [1] (irqbypass series, omitted):
->  [RFC PATCH v2 00/18] iommu/riscv: Add irqbypass support
->
->[1] https://lists.infradead.org/pipermail/kvm-riscv/2025-September/010148.html
->[2] https://lwn.net/ml/all/20250811061104.10326-1-fangyu.yu@linux.alibaba.com/
