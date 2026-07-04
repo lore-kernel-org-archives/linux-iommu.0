@@ -1,85 +1,192 @@
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF2D81FDA61
-	for <iommu@lists.linux.dev>; Sat,  4 Jul 2026 01:16:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B42E390204
+	for <iommu@lists.linux.dev>; Sat,  4 Jul 2026 08:26:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783127772; cv=none; b=GY7WPPfpIXflkrFK6bfEji9QWJyqyGaHnL7EoPGv1HTrcpLU/bzJc5fkycLl5Gx1G1XTAHlVxHU5DQoaJxltb0QOSZ9GMUSGWJRuesuOJMjZMeU86aQ+IckAPGMcympMAAm1ltmWCBlYDpb3f+948yR2KZOgGY4G6OjT9JFL8+I=
+	t=1783153610; cv=none; b=qIKqW1uRBAX4X60l5WTDaymQ1FmzAevVVIxbfFQ5stTTlQ1l+akXLf/lxJpBi6+xidVVblCu5YCvvWihU/e9Bnn7qF+ll2rRowqnMbmdqicGv8Vk3fGHrtzCucedERhWQFavSdvXFdy3WBn6hycJ4o1JY7aF8JBfkVqmUzeiYAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783127772; c=relaxed/simple;
-	bh=QIq0i1uRb4CD36VVnafIJ+x7ndn6LE7SYR47Ra66rrs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iFLRohrtGTaJa+TYxN023JYNlN/zTwASJkNNA1SKSDpdRTKLcFvk2FxL1GsJU+Bcoo0TvQjSOVaz9/mALGX2wmqnpttclI+uvDyVz5waDHxuR+6AcUyYojmvRm0F+bdlzWFP8lpTximDglHUcxkpmI1YkA+4wzjtX7UzdWgtfcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost.localdomain (unknown [111.196.245.140])
-	by APP-05 (Coremail) with SMTP id zQCowABX7RDTXkhqRsPEFg--.56832S2;
-	Sat, 04 Jul 2026 09:16:03 +0800 (CST)
-From: Pengpeng Hou <pengpeng@iscas.ac.cn>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Pengpeng Hou <pengpeng@iscas.ac.cn>
-Subject: [PATCH] iommu/amd: bound early ACPI HID map entries
-Date: Sat,  4 Jul 2026 09:16:01 +0800
-Message-ID: <20260704011601.62087-1-pengpeng@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1
+	s=arc-20240116; t=1783153610; c=relaxed/simple;
+	bh=5pBxfx6NGzONIJ90pATmj6WKIeItmpcQu0YbmPEzucc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jwBaZyUAPCHQozG4ljww/Mc64NtMt9llAtbH3SKXc3Enqn0ffKEaWg36sIRmgBbLJTQR7F6fyyhJ3Dm7OQIlowRAsRlpG12Nt7r6FgAFIaTFgp9PPGYynS92ajCtIJ3UbKFdGCTQNo+H1bRstYuDr7MhorfJf5Ig6Wskykxs3Bk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZemKFxjO; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QMenTRt+; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZemKFxjO";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QMenTRt+"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6646hesE2145078
+	for <iommu@lists.linux.dev>; Sat, 4 Jul 2026 08:26:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	D6CPp0iJudsU6L8wSjPuRWKqGYqr17Tm7EBF+oYdEIM=; b=ZemKFxjO6AcQKlK0
+	SCLwmrUnKICDVi4LvF863+RK7x0XoghxqaAI+vd2UKkMfM9GjsDYhEANFCMJqxX+
+	5oMN+94676A8gao4D90SiC+WYIVk89xLAjPVeS5Mm8xHd2bqvcRqjw5mX6H8FnFq
+	C42TDsuFiT0ZkYYskPs1QdAhaqIh1ZDvPye+EbsB7C6yRGTT4xs3PeU2phxTapSh
+	eNdsY7dbeU+C6yQwcCBXuagTTOszxPEVr1fcfbnnnvUgwUF1IF64iS67VDN2YqdE
+	prxG8NZrZQvPmzrD+a8Ii9XmJnS58IfJzdX//+AWlJ4Z0a/wkAxtEnCeOQO90dUm
+	muosbg==
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f6txegdcd-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 04 Jul 2026 08:26:46 +0000 (GMT)
+Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-c89956023dbso1677404a12.0
+        for <iommu@lists.linux.dev>; Sat, 04 Jul 2026 01:26:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783153605; x=1783758405; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D6CPp0iJudsU6L8wSjPuRWKqGYqr17Tm7EBF+oYdEIM=;
+        b=QMenTRt+kOJkjqWdrsgNOvvaVDk4uyMCaV+vwJB4S12fBkvBhl/xk8HW65dTyrhN3R
+         1mqqp6ndBbbwcODrJ0eiv4E5bO7yHtr7j9ooxjLhgE7W1xi+Y2YbWpaE/t7mZ2LVZ0qB
+         R0bwrRvddPLw3rZDFMLHaUxycu5RAb4l5p/gMJ5MUJNs6yoOTC7plrz+VMZk4eteDTf3
+         XPW21t8AshyOfOcN5SNbxEY5UqS754EuHuBzenH1CzehIl4xI1zzzCELv4H22Bj2gdrC
+         yFdjxcrs11TKksClgHHpLkOMnoegaYMTzCf5i6Wn/ZvyNWf1fT+sOKL1fJ7I68DkbWg2
+         iILg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783153605; x=1783758405;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D6CPp0iJudsU6L8wSjPuRWKqGYqr17Tm7EBF+oYdEIM=;
+        b=grIRzN2JCq5onGFrJ8srzD0xiBw4jdcin/9mM93gRsRoJ8iMRky7ux9sE4gO7X6LlF
+         IcMIofOjcxxyMBWPRZGmfQqUjL8HgKw67poAYiFYUxlLGqzGl2Sx3bH5mKN4c9ZzXJsw
+         kvLQPd46hjIVzyyrISzAIX/Jz9EGGxRPhu/4UqrCmDcn0w01vYEgmn1mL9rIQqwq+D7A
+         rdPNAK6pgGDowiSqfKNFpvfbZxZzFs0VZao7fbH4+H+lw1gq8tw7CR5lhEgu0oyk1ZnO
+         gdf4Rwm1o1JupqRDBkp+5VNJo/5M/Ao50PqMYJme1IMwGVmOc3dTar4l6mhOJd1ti1UP
+         y7ZQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8Nu+3LaSpN4kMrsRPfclg7Ixu+Rg6U9T2P5VRLzjXsmcT+6OpmkYhOu5fbnetcIUjL6yC3ww==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxLfE5Yvv0uLJsopT9qZRm5RHQ7HXHgRg3tCErKcZq4OsBIwUOS
+	QvxvoGMC2AwQ3CvGMoYA/jYdwdnK0sfU/soLJCRzXx02hM7HT57ur+pEgddytJ548ODTXbx2JYL
+	4v4NS7kjEc+HG/l3bLNz6dS291qqJHz3/XzF0kwS0xlI7L8foa6sCjSE94g==
+X-Gm-Gg: AfdE7cmsPrzjjMEfjIt3kPure8n+u7VPx0fOuGvAaNjmju21vKSrkB7Xy59vx0In28L
+	+4kg7QwH2IIb6F1Maigv+X/7/xmJ6G3Wf+ucyTRPVV+PCyNZ3Ek/lKxXsZdzvS1OBnHdwkSEXNU
+	9F45BbQplpD38br+Gi18ls2hgUpNgIOhugyKq5WvwUyOW7kZeqKm+V93hdxbKufcWwFTFanbYL0
+	QKY/aENqJSAdClJM2aOWibc0+Vg/tpGWQjZo5RzQuF6F0vrvtWf0WPEWQqpFFN9GmMcWqPAjO5/
+	XdPFzjqO/RHKbEW3i/aonnW90mm9GbS2kkMYf6nuwvwcTuT1apgoSp6lZPphTjtVUvJ9jZsPRDx
+	RGkW3AIM4T2b7vRmQpAeJvhETjR5QGr+GjgJsbK+xYLU=
+X-Received: by 2002:a05:6a21:3294:b0:3bf:b5fb:d7ac with SMTP id adf61e73a8af0-3c03e1fa2f3mr2525737637.10.1783153605601;
+        Sat, 04 Jul 2026 01:26:45 -0700 (PDT)
+X-Received: by 2002:a05:6a21:3294:b0:3bf:b5fb:d7ac with SMTP id adf61e73a8af0-3c03e1fa2f3mr2525713637.10.1783153605147;
+        Sat, 04 Jul 2026 01:26:45 -0700 (PDT)
+Received: from [192.168.29.91] ([49.43.231.149])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f376bf710sm10035822eec.6.2026.07.04.01.26.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Jul 2026 01:26:44 -0700 (PDT)
+Message-ID: <ca8f3731-3f23-45f5-82ed-ba1a65514b95@oss.qualcomm.com>
+Date: Sat, 4 Jul 2026 13:56:30 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 6/9] arm64: dts: qcom: shikra: Add GPU cooling
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev
+References: <20260704-shikra-gpu-v4-0-90cf1a52e539@oss.qualcomm.com>
+ <20260704-shikra-gpu-v4-6-90cf1a52e539@oss.qualcomm.com>
+ <opgj6twppqwhb77itqelmyzniaifcja3wdazyzeal5axstr25g@a7v634mnimbm>
+Content-Language: en-US
+From: Aastha Pandey <aastha.pandey@oss.qualcomm.com>
+In-Reply-To: <opgj6twppqwhb77itqelmyzniaifcja3wdazyzeal5axstr25g@a7v634mnimbm>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowABX7RDTXkhqRsPEFg--.56832S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZryxJFyfCF4fCrW7Ww4fAFb_yoWfJwc_CF
-	n5A3s7Jrs3uF4UCF1Iqw13Z34fKa9ruanrur97tw17Jw13ZF4kW348Grn5Xw4UG3W5GF1k
-	CrZ8urW0qrnrXjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbxxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-	Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-	1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-	7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r
-	1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AK
-	xVWUAVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
-	0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
-	IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxV
-	AFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWU
-	JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUnG
-	QDUUUUU
-X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA0MDA4MSBTYWx0ZWRfXx7c8wc3QuXla
+ oWeaA3b/dNYSPtKhS8qGHE5KIlekn/kO99ISXtHuwsdtO8gYeadGS+chERa8/ylmIzp2d/niCB2
+ Qgf+CcmAImO3CXL859A4LyBZqEYfKVw=
+X-Proofpoint-GUID: 2rY7vkIwKocRy0ozjbBmxuD1586IVZ0B
+X-Proofpoint-ORIG-GUID: 2rY7vkIwKocRy0ozjbBmxuD1586IVZ0B
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA0MDA4MSBTYWx0ZWRfXxjaHztNl0BB/
+ FDq9BUsbPg5yughtUeQCuLmZ+ZauTdAOgGHCPOTgog8sy8exa8bFLhQGcpmk5y8WvxHpm6fSN7m
+ YsgKpDkdcmv+VeFpos7sRf1Pv7Y8l0jAwBxSZmpsZVTPmpiP1Gm0j9yBi1DF3Obmj+IKtt1PhU6
+ +Ud/srHpU74rFxzqD1nISHH2VpVRMc7E8SwGULhi/FwmbVxT3njPztAr9+SzM8QNRqMEgDAxUZe
+ 3y0dAHwuVpd1so/s+eTFcBf40g8QYo5bhRvQDgAod3N4kxtCDqtNCVpo4smKQGlUyF006zi82DB
+ nrPREG7cY5XNKp/kZgGeNGl0bDFvJss2RIibZ2D6FZkSyhoUf6MjlagRUYVx6AOOULviXxFt1B1
+ 0GIWIqffBKOgbAZMB1SanwqkDWKp0vqT5/7qic/YPFFfyMxGZB6+blEFWsQKVoMiMNPkauemiHE
+ /02PiKs3TKI3/aNl29A==
+X-Authority-Analysis: v=2.4 cv=HLLz0Itv c=1 sm=1 tr=0 ts=6a48c3c6 cx=c_pps
+ a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=lXa6t/u14VstaBBXcWJ8zA==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=EUspDBNiAAAA:8 a=wGVdvqWwsIcFZm6VKzoA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=3WC7DwWrALyhR5TkjVHa:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-07-04_01,2026-07-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 priorityscore=1501 clxscore=1011 suspectscore=0 impostorscore=0
+ phishscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607040081
 
-parse_ivrs_acpihid() appends command-line ACPI HID mappings to the
-fixed early_acpihid_map[] array, but unlike the neighbouring IOAPIC
-and HPET parsers it does not check early_acpihid_map_size before
-incrementing it and writing the next entry.
+will update why part in commit message.
 
-Reject additional ivrs_acpihid= entries once the fixed early map is
-full.
+On 7/4/2026 4:41 AM, Dmitry Baryshkov wrote:
+> On Sat, Jul 04, 2026 at 02:04:32AM +0530, Akhil P Oommen wrote:
+>> From: Aastha Pandey <aastha.pandey@oss.qualcomm.com>
+>>
+>> Unlike the CPU, the GPU does not throttle its speed automatically when it
+>> reaches high temperatures.
+>>
+>> Set up GPU cooling by throttling the GPU speed
+>> when reaching 115°C.
+> 
+> Nit: 72 chars. It looks really strange to see two paragraphs with
+> different line wrapping.
+> 
+>>
+>> Signed-off-by: Aastha Pandey <aastha.pandey@oss.qualcomm.com>
+>> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+>> ---
+>>   arch/arm64/boot/dts/qcom/shikra.dtsi | 16 +++++++++++++++-
+>>   1 file changed, 15 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/shikra.dtsi b/arch/arm64/boot/dts/qcom/shikra.dtsi
+>> index 34261221664b..eeeaa369d3a7 100644
+>> --- a/arch/arm64/boot/dts/qcom/shikra.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/shikra.dtsi
+>> @@ -2510,6 +2510,7 @@ cpuss0-critical {
+>>   		};
+>>   
+>>   		gpuss-thermal {
+>> +			polling-delay-passive = <10>;
+> 
+> Why?
+> 
+>>   			thermal-sensors = <&tsens0 6>;
+>>   
+>>   			trips {
+> 
 
-Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
----
- drivers/iommu/amd/init.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3888,6 +3888,11 @@
- 		return 1;
- 	}
- 
-+	if (early_acpihid_map_size == EARLY_MAP_SIZE) {
-+		pr_err("Invalid command line: too many ivrs_acpihid entries\n");
-+		return 1;
-+	}
-+
- 	i = early_acpihid_map_size++;
- 	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
- 	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
+-- 
+Thanks & Regards,
+Aastha Pandey
 
