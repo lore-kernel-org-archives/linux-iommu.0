@@ -1,65 +1,65 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9D413A641D
-	for <iommu@lists.linux.dev>; Sun,  5 Jul 2026 19:14:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118533A7D82
+	for <iommu@lists.linux.dev>; Sun,  5 Jul 2026 19:14:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783278880; cv=none; b=mTBkTutGw05rVG7LVF0HGHtUKswt+TCQrCteN4EwUoCK0EiKjsyie5iWue2SBMNUUFfusuB5t3M6QpynRa9PfR+lhm18TOW1KZ9sRaHAOB62G1AfF/1+WNLxBq4/4zVqp2COto7vUBl5GpGo7S9meWHNHQvDMtroGqdq8hNqRi8=
+	t=1783278883; cv=none; b=MxpJPdbrJu569oW3F01DVv7TjZATCNaSUl5xb6W0GbhZG+R+YPjBC50xM1PoJ0iN4r0y7uAR+wOrouTP4b9jxrMmrK1VfVsQcnv+9EYBBASe+Sb3CvGHi4BjgPjQvUACuI+z1DjLBoblxmA4ZVKlilJhNQHVjN5cqCKFQuXcZ4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783278880; c=relaxed/simple;
-	bh=GNmboLcpB1u+4sbu+20YXtJhFgR6gBIC5iE7jNeRoQc=;
+	s=arc-20240116; t=1783278883; c=relaxed/simple;
+	bh=wmCqgt9bbc7y6girDLeQUG/lasgVe98klmVzcoHOM/o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gN0iVNmR79qZ+jFr4ouToy2B2/b7h7KqXiDwxs07LxwnZVDEk/hw2hMMsBTNgR5EL+1Ue0saX3BDHZW714Mq/7Y8SpxXYAnNVVZFIpYDLaQKi0eEQ1MGttMCvCFOb1NjcLWgBWX17N9N9ADssvf1QxIak4973xIJs+IBuXnHHnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ANw3Npnr; arc=none smtp.client-ip=209.85.221.41
+	 In-Reply-To:To:Cc; b=SS9HUvrqphaKmyu+b/xcirpe3NVqJkJ/F77rKg/JId9hXjR8+vTGPkNK23pinLf2BmCFsSRQMKoK7TO+iGe6WzTrg0hAlLbx9Pq/6JVTcwBtn7IXXhkjjzs+bGcz1EuSec0N/vLFBeanTzLdlj3lLcimoFBiKNmwPD/mRIWXmfc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VV03w9Hu; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ANw3Npnr"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-47d6c634f45so422217f8f.3
-        for <iommu@lists.linux.dev>; Sun, 05 Jul 2026 12:14:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VV03w9Hu"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-493c733f15aso23263335e9.0
+        for <iommu@lists.linux.dev>; Sun, 05 Jul 2026 12:14:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783278877; x=1783883677; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1783278879; x=1783883679; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=nZ84WH17cmaqhOLzZnVtdcV+4jwRY2Bo5WKI6TnLcX4=;
-        b=ANw3NpnrbRvjJFiXr1DGZ+Q2fsTFRqfEh7MoLg8tm/2KduAOsGMc8erdq5IlD15PAi
-         e9aG87ctXD0e1WtfFDd+3Pdc26SXMj5hps5X4SO/A3/i1U0Cr3Sq3SwOpXsT0ICIs56Q
-         V15WSMj7ShW661+ku3YgINtioT5v8R1Jn/+pAjVychT44Uyu3L3qX9xi/p3aGT8csrRZ
-         xbHKkFeUk/0TFgidAuE8FdhlCPogUEqqAvHAe/vdE7BInw0+DLwkIsVOl6kugXsjfTvg
-         Ip6RE+/6MZZq+KBwvslbmzAwS6TdF8ZCOuA3Wnd2nvdnJNTP0FlZQKqjoMnO7e/e8FOI
-         Zt1g==
+        bh=C8zcaiL31SCCh1YPdlPY6GbxJWdviTylW/ogJ//b4zE=;
+        b=VV03w9Hu+XOC1ZoYdF7hXSKwNf6a5eUAzaIYqlhP61YvsPemMScMtiJff8kWFH5G8J
+         O8TL1/J0r1eu0uggLoKwcHeuFQQdzRnsfLaUVStLEf7h/ER6j/04e8efctLwKUNJR+0O
+         IVFUUT9upvEYDANTUIK1q1x6pvSM+cWdWd3k4KYWFbChjrCIADmLYRRQdJrG1nL+8OYm
+         lrMxhqiP++q0Lq+OvTBVUoBegysowE4dbqKF6gwyNkYxmBUORbFBXhVki9O7P+G5WTcA
+         a6/Qb57nwbnt4+Pu3ANZMZu5HCMaRfR1njG8dQLbg112CSRZFuGD/THKyVW3ytumeoan
+         ysEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783278877; x=1783883677;
+        d=1e100.net; s=20251104; t=1783278879; x=1783883679;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=nZ84WH17cmaqhOLzZnVtdcV+4jwRY2Bo5WKI6TnLcX4=;
-        b=TDdoMy5phRaA+f4LB8y05A2hJtHbPpP2rXRGCGwJNyg6ZmTgSbeE9VklzUz+Hro5Si
-         n27zJpch3VTyLfNOh3Y5Fh/bZpPhjsJMngTOEr64r9EgNKyDIhPQD/fGqJr8bmJ59Z7a
-         ds8eE//SYEhKC/+cblDQxhuN0U5NemndIOIfEhSSRhQgLQkw9eihUQ9oS/zmMBW49RBM
-         qE9pMIVM/pY4Hu8fZB3KsB1sfgLb4fkLcE1qg/efvE2t3qVqQW2zgA38GanZvoQuc5rV
-         1fs4BqDnlTo8Rx48sJMXK0zVGqhoN9hHOUWP08Ejx1St0VXcKmyKDiuLe+O4sDh+DfGO
-         zNDw==
-X-Gm-Message-State: AOJu0YyTqR+VuM/PequxGJ6QaFZGILrlTJqC1gJVAsRZNYUl5S2lKq19
-	EHCycCBix4OyvizEmHJ6ReKEQaZBkUIYc2ccwj5wmuJnp/jDbn1Eg10=
-X-Gm-Gg: AfdE7clv+STQBSoF0yIv9fqZyS9kewRKwVYn2O2W9Axb/aQUAU7VDKtVjGGcjfh7lRN
-	wSRRUbr959zCag11Zd2pMRHf5U7n29XBLr2sKcftdduhKMJR+QP4Y2lW0ClOG1/YQH+chDDB/dC
-	820fL/0LTNGF2am7taTcNQ0fUAYYHXJjtMu8KElKsAOegjzeG6npz+Piqk4eaAHjdliC+IgIS1d
-	p194fjXRU47NtnYemFtbS7r2FkWo6/ue19JfdNV5InmEqJsvJ3ZjrgvvA8xoNN5waDwlMVzhTKB
-	eDjYPpxWIftBinvKJ4GPAEY4PvuqSmqEZoc4lDCHwy/33CB9AK0ueBwJpcgAMVFwgkDq9LXFokB
-	nD0a8+HMtYoDXFDl07v2AA5aZWUznKZz6FSY8gB8dcJrzUd1TdF7C39qQrPRbyGdapPWGYb0IZV
-	Kh33cHbARqlE4byAUIKSfCzBFFkRk/HQ==
-X-Received: by 2002:a05:6000:1846:b0:473:cefa:98da with SMTP id ffacd0b85a97d-47aaa60de86mr8534994f8f.10.1783278876921;
-        Sun, 05 Jul 2026 12:14:36 -0700 (PDT)
+        bh=C8zcaiL31SCCh1YPdlPY6GbxJWdviTylW/ogJ//b4zE=;
+        b=NiazePJvv4Vh0Jj8m5vW/em46j0DN++H2xFttTV8TjvryBYjKUssxrztKOcBStB1Xm
+         INRA6DaB1SLOYKhKn7KvdRnrcyhZrBGhA7jTp6u1L42O7F3Ivt3RfqGmxI2XZzDEzCLw
+         qepv2PYeTOe3dqh0JB/47fi/d432ft26j84ZPSQD7ouqfdEkUmScFEikCXVw74aNoDG3
+         cSrH8vmXK/vLU+CuQ7nixs/Ydri9NqstKYp5JUpVtj0S4Ofe4P2whlJZaCwdKZMbXkhH
+         2TP6A+iwI5CeZE+oIap6qUZwkgjH2HPzz1atrThm23nHxQrZRBYdXcrMTn54MrYYanOQ
+         tgvQ==
+X-Gm-Message-State: AOJu0Yx/4wsGF3wFdE3919nsZnXEgHfyqeClHik6/Y7caJC3cYJSYgof
+	rZF8sL3SQYfc0N6AYn9yJ+Xqingnczra7FDrOXtMXFWq5+Ot8cii2lc=
+X-Gm-Gg: AfdE7cnOgaaQMXzVQ8tLe+WnO8ENxzAFRCuPznBVMj3SeveFo90sui/Osu3FbeRtKsU
+	3Ep+Ss0j22uqIzWDucv6areIcp3ztOhW2AgSgP6gGzf4vPQIXyO/K39IuahuVrrVN5tmTzGS2qH
+	tgCid/9s6zREEQUcKUn0qnS++1zKq5P28wTvRCjnhtR/Xpagd/m/TYvpQL94sQGT3GUy+enjy4g
+	qqsA9Hk75DG7R2nVDbrO4QL4KCgykpw4vjAoxEkiGnaGzDXD0a7sX0KatvTWzsUHBVdxzBBUvbj
+	bvFMkAh+NLDRWD5DY6tKZ34bz3JnKsGWZDUfxrEG+GwoG68siSv5d8BNCoZkvDhZ+uRg6NKUT9a
+	gOUYjv33KTtuwVo2PBdf8M5ZxBoNCVPyScJHEv8jjfkOd6GrjtHRsVg/u4x6LLny+UB1hTnRY/Z
+	udPCp+OflCIxgsQzw=
+X-Received: by 2002:a05:600c:c16f:b0:492:523f:a3df with SMTP id 5b1f17b1804b1-493d52ac417mr60885215e9.5.1783278878843;
+        Sun, 05 Jul 2026 12:14:38 -0700 (PDT)
 Received: from [192.168.1.67] ([2001:b07:2ec:601d:4b26:1672:75c7:805a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0960634sm19209528f8f.26.2026.07.05.12.14.35
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0960634sm19209528f8f.26.2026.07.05.12.14.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2026 12:14:36 -0700 (PDT)
+        Sun, 05 Jul 2026 12:14:38 -0700 (PDT)
 From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-Date: Sun, 05 Jul 2026 21:13:46 +0200
-Subject: [PATCH RFC 12/13] drm/msm: set ctxbank and asid based on ring
+Date: Sun, 05 Jul 2026 21:13:47 +0200
+Subject: [PATCH RFC 13/13] drm/msm: add lpac ring to devcoredump
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,7 +68,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260705-descriptive-name-lpac-upstream-v1-12-01d50c3e0c99@gmail.com>
+Message-Id: <20260705-descriptive-name-lpac-upstream-v1-13-01d50c3e0c99@gmail.com>
 References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
 In-Reply-To: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
@@ -90,53 +90,83 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
  devicetree@vger.kernel.org, Anna Maniscalco <anna.maniscalco2000@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783278851; l=1658;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783278851; l=2731;
  i=anna.maniscalco2000@gmail.com; s=20240815; h=from:subject:message-id;
- bh=GNmboLcpB1u+4sbu+20YXtJhFgR6gBIC5iE7jNeRoQc=;
- b=rmC2QQUsBeGBctekJrkX9Bu4XpWytNrOy081NaDsxEdKs3EL5tzPk65CpjizWt1u9+G71Ip0Z
- pqDS3aq7HVdCwtuw5G8Lc0fcU6h3n5cTjmCTycxplXu/JrouOa8zMbf
+ bh=wmCqgt9bbc7y6girDLeQUG/lasgVe98klmVzcoHOM/o=;
+ b=PVK05TezP6oByIlmJqXX6RCKZc0Sfa+FvqbaJD2D2MNQt18wh5zplyqPzMUoPj4wq2v3x/AHS
+ ORhKtsBbYDeCcbFNugaM2rR3PLhNr8TrJkg/x8sEhnkPAzo9vnVPIw+
 X-Developer-Key: i=anna.maniscalco2000@gmail.com; a=ed25519;
  pk=0zicFb38tVla+iHRo4kWpOMsmtUrpGBEa7LkFF81lyY=
 
-qcom-arm-smmu always maps asid and ctxbank 1:1 and lpac is always 1
+Add the LPAC ring state to the devcoredump for debugging.
 
 Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
 ---
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 19 ++++++++++---------
+ drivers/gpu/drm/msm/msm_gpu.h           |  2 +-
+ 2 files changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 4417a9d04d7c..a8a061652ec2 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -247,7 +247,7 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
- 	struct adreno_gpu *adreno_gpu = &a6xx_gpu->base;
- 	phys_addr_t ttbr;
- 	bool is_lpac = ring == a6xx_gpu->base.base.lpac_rb;
--	u32 asid;
-+	u32 asid, ctxbank;
- 	u64 memptr = rbmemptr(ring, ttbr0);
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+index 94dbec9464a4..030bb1aeb7ee 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+@@ -782,25 +782,26 @@ int adreno_gpu_state_get(struct msm_gpu *gpu, struct msm_gpu_state *state)
  
- 	if (ctx->seqno == ring->cur_ctx_seqno)
-@@ -256,6 +256,9 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
- 	if (msm_iommu_pagetable_params(to_msm_vm(vm)->mmu, &ttbr, &asid))
- 		return;
+ 	ktime_get_real_ts64(&state->time);
  
-+	/* qcom-arm-smmu always maps asid and ctxbank 1:1 */
-+	ctxbank = asid = is_lpac;
-+
- 	if (adreno_gpu->info->family >= ADRENO_7XX_GEN1) {
- 		/* Wait for previous submit to complete before continuing: */
- 		OUT_PKT7(ring, CP_WAIT_TIMESTAMP, 4);
-@@ -313,7 +316,7 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
- 		CP_SMMU_TABLE_UPDATE_1_TTBR0_HI(upper_32_bits(ttbr)) |
- 		CP_SMMU_TABLE_UPDATE_1_ASID(asid));
- 	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_2_CONTEXTIDR(0));
--	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK(0));
-+	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK(ctxbank));
+-	for (i = 0; i < gpu->nr_rings; i++) {
++	for (i = 0; i < gpu->nr_rings + !!gpu->lpac_rb; i++) {
++		struct msm_ringbuffer *ring = i < gpu->nr_rings ? gpu->rb[i] : gpu->lpac_rb;
+ 		int size = 0, j;
  
- 	/*
- 	 * Write the new TTBR0 to the memstore. This is good for debugging.
+-		state->ring[i].fence = gpu->rb[i]->memptrs->fence;
+-		state->ring[i].iova = gpu->rb[i]->iova;
+-		state->ring[i].seqno = gpu->rb[i]->fctx->last_fence;
+-		state->ring[i].rptr = get_rptr(adreno_gpu, gpu->rb[i]);
+-		state->ring[i].wptr = get_wptr(gpu->rb[i]);
++		state->ring[i].fence = ring->memptrs->fence;
++		state->ring[i].iova = ring->iova;
++		state->ring[i].seqno = ring->fctx->last_fence;
++		state->ring[i].rptr = get_rptr(adreno_gpu, ring);
++		state->ring[i].wptr = get_wptr(ring);
+ 
+ 		/* Copy at least 'wptr' dwords of the data */
+ 		size = state->ring[i].wptr;
+ 
+ 		/* After wptr find the last non zero dword to save space */
+ 		for (j = state->ring[i].wptr; j < MSM_GPU_RINGBUFFER_SZ >> 2; j++)
+-			if (gpu->rb[i]->start[j])
++			if (ring->start[j])
+ 				size = j + 1;
+ 
+ 		if (size) {
+-			state->ring[i].data = kvmemdup(gpu->rb[i]->start, size << 2, GFP_KERNEL);
++			state->ring[i].data = kvmemdup(ring->start, size << 2, GFP_KERNEL);
+ 			if (state->ring[i].data)
+ 				state->ring[i].data_size = size << 2;
+ 		}
+@@ -1001,7 +1002,7 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
+ 
+ 	drm_puts(p, "ringbuffer:\n");
+ 
+-	for (i = 0; i < gpu->nr_rings; i++) {
++	for (i = 0; i < gpu->nr_rings + !!gpu->lpac_rb; i++) {
+ 		drm_printf(p, "  - id: %d\n", i);
+ 		drm_printf(p, "    iova: 0x%016llx\n", state->ring[i].iova);
+ 		drm_printf(p, "    last-fence: %u\n", state->ring[i].seqno);
+diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+index 263dafeb9652..4fbf0dedc334 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.h
++++ b/drivers/gpu/drm/msm/msm_gpu.h
+@@ -639,7 +639,7 @@ struct msm_gpu_state {
+ 		void *data;
+ 		int data_size;
+ 		bool encoded;
+-	} ring[MSM_GPU_MAX_RINGS];
++	} ring[MSM_GPU_MAX_RINGS+1];
+ 
+ 	int nr_registers;
+ 	u32 *registers;
 
 -- 
 2.54.0
