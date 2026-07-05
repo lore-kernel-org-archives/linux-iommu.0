@@ -1,66 +1,65 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4073D258EE9
-	for <iommu@lists.linux.dev>; Sun,  5 Jul 2026 19:14:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC6D3A2E12
+	for <iommu@lists.linux.dev>; Sun,  5 Jul 2026 19:14:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783278875; cv=none; b=K0SkrRP5iGW9TaNaGJZWZpYYEm2E2LFQrP4QMdIBjTocNcKnPmw8x6UqeIzf7rUSSPvZN0Fyj02+e/x9ykwZfIpW/UosyK6Deh+rXi87IgjgAbqS8vgnMd63ChGdMnVjE3z5tUO9tNIN4Sms2jnqa4N1uEugX/d3NRML9BcgaxE=
+	t=1783278875; cv=none; b=Nh/67ovW+vKlXPyIBBBzvMP/W1Dh8IWncD3yiPP/FPiqhk4Y1ZBUsWEMF6QFi+Q9lywPpCsxdx7JI2TRVAd9Ie4zfhXstIqAv7F1Xyx0HUjnVNliXGm9lkOMGndT5VqA55IBeyXlz+XHlvmrK2oaK4/kIXmYi/07K+2MX7J97ks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783278875; c=relaxed/simple;
-	bh=CTSVd/0edKxTFOAN7N2IneJxadcZY86l85ROlQLsf6k=;
+	bh=gKbn7DxHBfW8SLIM+L0EECSMebRwKa2NPKVJkQ/QPPw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=R5tiC1AlwUo6G+QkrEm0dRXOP/crYAJIkhcInuwGpbrS218kNHZcWJpP9ZnhVigsSbWo8nb0SubNB69chn3dAUjbdUo751Us0PZBcRkDFmtYeJPwgN3DHppmlmbWgcJ0UIDgR5DmiuKLr4xuysQTBPz5fB4JvzFKyilxOGWqGQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hx1g4CA6; arc=none smtp.client-ip=209.85.221.44
+	 In-Reply-To:To:Cc; b=NAeUF/b4KqV2bbO017btGhLsontm/8sSBzdqoGAlgU2qFhjj1CbSkvTJHOlz3mZYib5chO7D8QX8jvu555TOMirR0OwCfmIaussvrLnYAKA20vE24IM1oeWsAoWiyH/8vgf7cAA8lbkiVCdwS8jHEl05qZah4wrFWcnlHfA0T2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J91KVkdW; arc=none smtp.client-ip=209.85.221.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hx1g4CA6"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-47d6c634f45so422145f8f.3
-        for <iommu@lists.linux.dev>; Sun, 05 Jul 2026 12:14:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J91KVkdW"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-47ddf7b09aaso246902f8f.3
+        for <iommu@lists.linux.dev>; Sun, 05 Jul 2026 12:14:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783278867; x=1783883667; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1783278871; x=1783883671; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FOJQZsuitJv3y9s8sz3fzgy77bgdsy3S43prspkqpPY=;
-        b=Hx1g4CA67SjQYHzJgpuHh99p2IoBxUS/zSa6xLQLb/RHtFgTgx5EFmdEf5pDMzwXL7
-         EYNWcQTIKWQbe6l3U1syrK9zl6SOpXG9vLUQGS4ksIjWimoPOQZKI1OFO+o0pF9s1nJ+
-         NYYpSB3Og4nTISxzuANAaKL6VsVGM/5rDwBMmxuF+MVH/VmxZYBphpYNubvZXEp9UHlZ
-         o1yNKOBaYdI2HSuzIigJEPYznwo+oSNXIoaPDqv3EUNnpB64uuZxWEMnU8D96pZBnD8w
-         AJLuBHN039/5RYS4UxAyTdt7kCyBKqd8qvj2EjfTxP0XpHUjCAHz73rrYXIKRfLUTHJV
-         y/hA==
+        bh=Zjiz7ZnbyxVfBfvfi0uSyQjszdJNoTxi1eUy+vx48jY=;
+        b=J91KVkdWaA6mQJuBrzqTcrRCYVHGnEwy8FrJwyW4Qdt2POkIsF7vEoPzW2wbJVZGXD
+         LdelyJFgqQGQOYkocO3iz/uwSiSQYnu20ieHnBsXnkkcMQYu+u4BbM7lDfYf4T4FTCFh
+         ixFZ9qvZUwUEvvpqQxk9ydNp0C1HeZRADSsLTHL3I3yWw7uz5ssgRTjzb1ISLd5UNp6d
+         18o2ofo/Nr6vlc/DPs8288MdMO3dTGw/Cp4llm/5YlhWuiSEHu2TE7IJHs4mlx4rdusR
+         ChRJ3S5qNvmJPGSmT0xND1CdTbcVJrP8vSYINlLXyT0z6WsXHEAaBKLldMz43EUeaEfr
+         odbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783278867; x=1783883667;
+        d=1e100.net; s=20251104; t=1783278871; x=1783883671;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=FOJQZsuitJv3y9s8sz3fzgy77bgdsy3S43prspkqpPY=;
-        b=QcLab7MrfP0yorTDPQ1OUqE7sBlQb1ifa1oZ1qXbYVPv9EqtxFkBk1F8ggfNaP3Y0I
-         no5P81rMOP43C+66Rq7ntKv4MxwxDHY53aNqjme+vJ5ysoSlw+rC07zYBLqd7nTvwu8a
-         w3P9LSOp5AHpiyFuy8Km2OmPOwReU/dMHc0ADzCsBec78nUWtcXo8zfZJrH1wpeosXPO
-         jfOx4HF3m0NOE20ofB6kr0f0v15/oHn/o4kzm/MQOKcyeknap+Of4vPYmBLqG49xCMPg
-         X4JcvvJHW5Ostp2Dbgeww7e2pbpoRPlcL1ycsgccZe+mavw22F4s8lJaGfxVAdf4IPGi
-         jclQ==
-X-Gm-Message-State: AOJu0YwDWlxPj7DA7yztcNVKmeqebJFXhW+VqPNdcs6SYpjr2aVUKU1f
-	5s8ow0xBpzJrzrDxM9CKqp88Anm6HG1jEaMJZYYEx0+oJ81Rt4lGz1w=
-X-Gm-Gg: AfdE7cmbAwNTTOJBpW6OakqY3gd9j/jRogDX+BhGryUaYU2Bqjc5qNx0XFTvUAZqNJf
-	QC5AVdXw5MM1xRl53h0wVQO/G+DOLm0t4ATaER8azWMU8pdcqC4OaSYIF1Lmxo2gUjZ8URQQEKe
-	WkA2R/um88+lWAafif0XGt+KFp+EisaUFaY9JaQ6YD0yWXw2l67RxlORHHQZTD4QbXyD0sKqxif
-	BCg/ViaqCTRFjPGkq2B5glR/2xhH8a1E5rXkhh28QsVpuleLt6Xp8pRiX/GHbPTaIG+VWvECMeH
-	uynQ77QR6KMgBvFATOtQHFFKUESRqnItatkcqhKW6BM2/RSKjbzSWLJ7sbd46D2pRwA7ENb1k92
-	0Ap+0gQEifbxNE4lJB8xXxWsfIyrSCFVVblffSwTgDnybxvPw5wkHGjE/YLlL9AiV+zdaBzlIWJ
-	vbjRmyQBRYY2dLvvOcI+sjWiYCtBOWbQ==
-X-Received: by 2002:a05:6000:2689:b0:477:6874:542c with SMTP id ffacd0b85a97d-47aab487abdmr8336510f8f.22.1783278867370;
-        Sun, 05 Jul 2026 12:14:27 -0700 (PDT)
+        bh=Zjiz7ZnbyxVfBfvfi0uSyQjszdJNoTxi1eUy+vx48jY=;
+        b=k5YckhxwFXi0N2Zor+XPIuQzTxjqf/zstus5ieyC/thA5YmWsmXDljZQAHvGTN3w8G
+         s1NGP8r84CTZhOU7NuLYANj3GIvKcvS50xxHelzkySikzKTNppZSQ1t2qWb1/FrVZxmR
+         WBG2KS4Tb/hqaa0b6gbd5jKye/ww6a5EUkRpnLJSY9MAxN/5mDCoIuapg6iBrDRSfenS
+         W2LJTnNKmrtwCG7nHHxkkn9U0Ok0N999Ked6s0LUuxtgKfaaZ4cAWFD/jCm5y+NeJB93
+         HaoGVYd0rSD5kwzHpJzfzmk506yHc4lIVsoB2FZrA/qoR9QVbhYxn9Wl9UKgdK+kFs1m
+         1npg==
+X-Gm-Message-State: AOJu0Yy59hPs0Pc2sB1DXDFHa/oBmwXJTLLh0Q1gVkeDmzfuHyj+6C2X
+	RXQoiS1EjCS4EP/JAeKX5rgDRayUQwh+dJIXJ0WpvQygYuMREhhs/fE=
+X-Gm-Gg: AfdE7clX2kzUZZHLY14eMuXtrYB9YaxSTQKkVcphInH0EFczaS2Yqw6zgFb5YAtOBPD
+	Hnd9iQ8js+jUv1bhEpbX9Vah922zBdx9XpPDpHQygxInGLmT/N5rvVi94HB6KS09oWkTbQzGFUH
+	Bs7Dt63ZoUxkjMQK0AjT2PlJlM0f7ltGDDTJYP56BLs0XLdBuTCGFOY41pnAfI6SgczE8eRLCOh
+	tBw7jgnVHObghc2/v8L/Z48k+b1VOWFZVbbRntIk8Z4xSNNH2xmcL6TtUm31LmW3wyQoNnYciXS
+	eKz+89GIePjI00IJIDhD97AO2Wao1FL28qlPKqZYf/m4MvYBA928m/wS4cO34vK9EOlymjjxest
+	4lg15SUxjLeZtJcPrq/MQsOsGF+91+i1Un5aUxPLeXSQ68YTHPUFK6twCmivIIC/kwfYNHmASW8
+	VsqJ5zJjBt/pLW72nsU5hfap8hYoMH2w==
+X-Received: by 2002:a05:6000:2c05:b0:47d:df96:c9f4 with SMTP id ffacd0b85a97d-47ddf96cc37mr2857980f8f.10.1783278871226;
+        Sun, 05 Jul 2026 12:14:31 -0700 (PDT)
 Received: from [192.168.1.67] ([2001:b07:2ec:601d:4b26:1672:75c7:805a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0960634sm19209528f8f.26.2026.07.05.12.14.25
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0960634sm19209528f8f.26.2026.07.05.12.14.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2026 12:14:27 -0700 (PDT)
+        Sun, 05 Jul 2026 12:14:30 -0700 (PDT)
 From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-Date: Sun, 05 Jul 2026 21:13:41 +0200
-Subject: [PATCH RFC 07/13] iommu: arm-smmu-qcom: Fixed mapping between sid
- and cb for gpu and lpac
+Date: Sun, 05 Jul 2026 21:13:43 +0200
+Subject: [PATCH RFC 09/13] temp: add LPAC regs
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,7 +68,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260705-descriptive-name-lpac-upstream-v1-7-01d50c3e0c99@gmail.com>
+Message-Id: <20260705-descriptive-name-lpac-upstream-v1-9-01d50c3e0c99@gmail.com>
 References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
 In-Reply-To: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
@@ -91,68 +90,76 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
  devicetree@vger.kernel.org, Anna Maniscalco <anna.maniscalco2000@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783278851; l=1792;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783278851; l=3442;
  i=anna.maniscalco2000@gmail.com; s=20240815; h=from:subject:message-id;
- bh=CTSVd/0edKxTFOAN7N2IneJxadcZY86l85ROlQLsf6k=;
- b=N1CzOkGooWs0D7hEFfO64qs+XczQExJuyhhzPJnlf0WwJlRgmpU6QS/Q3PibSJHKmN1K6WJPv
- WALfNWTwDnSBfYHo0sDNPhrc2jlfRyjKisM+ctCA7C/dwWocYLjvP6b
+ bh=gKbn7DxHBfW8SLIM+L0EECSMebRwKa2NPKVJkQ/QPPw=;
+ b=kVEoEECsDH8lgKuRlOjhb0NLej7gAlbXc+I8b7Z8Y6BmwMTjsJI23i+SxwgE0fdda9uz24tEH
+ NoA9v8TbOQcCAGwLTW9/mUY/YNUbybJ8jacr99G3tWrk2UifXc4ttFe
 X-Developer-Key: i=anna.maniscalco2000@gmail.com; a=ed25519;
  pk=0zicFb38tVla+iHRo4kWpOMsmtUrpGBEa7LkFF81lyY=
 
-We want to map context bank 0 to SID 0 and context bank 1 to SID 1 as it
-makes it simpler to deal with.
+https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/39416
+
+should we merged and we should sync to mesa instead
 
 Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/registers/adreno/a6xx.xml | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index ae6152bddf8f..e605a535f328 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -225,6 +225,25 @@ static void qcom_adreno_smmu_set_prr_addr(const void *cookie, phys_addr_t page_a
- #define QCOM_ADRENO_SMMU_GPU_SID 0
- #define QCOM_ADRENO_SMMU_LPAC_SID 1
+diff --git a/drivers/gpu/drm/msm/registers/adreno/a6xx.xml b/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
+index 3349c01646e1..bb49f6a61a9a 100644
+--- a/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
++++ b/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
+@@ -276,6 +276,11 @@ by a particular renderpass/blit.
+ 		<bitfield pos="1" name="ACCESS_FAULT_ON_VIOL_EN" type="boolean"/>
+ 		<bitfield pos="0" name="ACCESS_PROT_EN" type="boolean"/>
+ 	</bitset>
++	<reg32 offset="0x0B09" name="CP_LPAC_PROTECT_CNTL">
++		<bitfield pos="3" name="LAST_SPAN_INF_RANGE" type="boolean"/>
++		<bitfield pos="1" name="ACCESS_FAULT_ON_VIOL_EN" type="boolean"/>
++		<bitfield pos="0" name="ACCESS_PROT_EN" type="boolean"/>
++	</reg32>
  
-+static bool qcom_adreno_smmu_is_lpac_device(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	int i;
-+
-+	/*
-+	 * The GPU will always use SID 0 so that is a handy way to uniquely
-+	 * identify it and configure it for per-instance pagetables
-+	 */
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		u16 sid = FIELD_GET(ARM_SMMU_SMR_ID, fwspec->ids[i]);
-+
-+		if (sid == QCOM_ADRENO_SMMU_LPAC_SID)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-@@ -312,13 +331,12 @@ static int qcom_adreno_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_doma
- 	 * switch pagetables
- 	 */
- 	if (qcom_adreno_smmu_is_gpu_device(dev)) {
--		start = 0;
--		count = 2;
-+		start = !!qcom_adreno_smmu_is_lpac_device(dev);
-+		count = start + 1;
- 	} else {
- 		start = 2;
- 		count = smmu->num_context_banks;
- 	}
--
- 	return __arm_smmu_alloc_bitmap(smmu->context_map, start, count);
- }
+ 	<reg32 offset="0x084f" name="CP_PROTECT_CNTL" type="a6xx_cp_protect_cntl" variants="A6XX-A7XX"/>
+ 	<bitset name="a8xx_cp_protect_cntl" inline="yes">
+@@ -333,6 +338,11 @@ by a particular renderpass/blit.
+ 	<reg32 offset="0x0845" name="CP_CRASH_DUMP_STATUS" variants="A8XX-"/>
+ 	<reg32 offset="0x0908" name="CP_SQE_STAT_ADDR" variants="A6XX-A7XX"/>
+ 	<reg32 offset="0x0909" name="CP_SQE_STAT_DATA" variants="A6XX-A7XX"/>
++	<reg64 offset="0x0b00" name="CP_LPAC_RB_BASE" variants="A7XX-"/>
++	<reg32 offset="0x0b02" name="CP_LPAC_RB_CNTL" variants="A7XX-"/>
++	<reg64 offset="0x0b04" name="CP_LPAC_RB_RPTR_ADDR" variants="A7XX-"/>
++	<reg32 offset="0x0b06" name="CP_LPAC_RB_RPTR" variants="A7XX-"/>
++	<reg32 offset="0x0b07" name="CP_LPAC_RB_WPTR" variants="A7XX-"/>
+ 	<reg32 offset="0x090a" name="CP_DRAW_STATE_ADDR" variants="A6XX-A7XX"/>
+ 	<reg32 offset="0x090b" name="CP_DRAW_STATE_DATA" variants="A6XX-A7XX"/>
+ 	<reg32 offset="0x090c" name="CP_ROQ_DBG_ADDR" variants="A6XX-A7XX"/>
+@@ -521,6 +531,7 @@ by a particular renderpass/blit.
+ 	<reg32 offset="0x0b29" name="CP_SQE_AC_STAT_ADDR" variants="A7XX"/>
+ 	<reg32 offset="0x0b2a" name="CP_SQE_AC_STAT_DATA" variants="A7XX"/>
  
++	<reg32 offset="0x0b30" name="CP_LPAC_CHICKEN_DBG" variants="A7XX-"/>
+ 	<reg32 offset="0x0b31" name="CP_LPAC_APRIV_CNTL" variants="A7XX"/>
+ 	<reg32 offset="0x0b34" name="CP_LPAC_PROG_FIFO_SIZE" variants="A7XX"/>
+ 	<reg32 offset="0x0b35" name="CP_LPAC_ROQ_DBG_DATA" variants="A7XX"/>
+@@ -1207,6 +1218,7 @@ by a particular renderpass/blit.
+ 	<reg64 offset="0x0E08" name="UCHE_TRAP_BASE" variants="A8XX-"/>
+ 	<reg64 offset="0x0E0B" name="UCHE_GMEM_RANGE_MIN" variants="A6XX-A7XX"/>
+ 	<reg64 offset="0x0E0D" name="UCHE_GMEM_RANGE_MAX" variants="A6XX-A7XX"/>
++	<reg32 offset="0x0E12" name="UCHE_DEBUG_CNTL_1" usage="cmd"/>
+ 	<reg32 offset="0x0e17" name="UCHE_CACHE_WAYS" variants="A6XX-A7XX" usage="init"/>
+ 	<reg32 offset="0x0e04" name="UCHE_CACHE_WAYS" variants="A8XX-"/>
+ 	<reg32 offset="0x0E18" name="UCHE_FILTER_CNTL"/>
+@@ -4406,6 +4418,8 @@ by a particular renderpass/blit.
+ 
+ 	<array offset="0xaec0" name="SP_PERFCTR_HLSQ_SEL_2" stride="1" length="6" variants="A7XX-"/>
+ 
++	<reg32 offset="0xaf84" name="SP_LPAC_CHICKEN_BITS_2" variants="A7XX-" usage="cmd"/>
++
+ 	<!--
+ 	The downstream kernel calls the debug cluster of registers
+ 	"a6xx_sp_ps_tp_cluster" but this actually specifies the border
 
 -- 
 2.54.0
