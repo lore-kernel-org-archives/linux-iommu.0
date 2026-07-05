@@ -1,65 +1,67 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B54D369D67
-	for <iommu@lists.linux.dev>; Sun,  5 Jul 2026 19:14:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECFF339EF0C
+	for <iommu@lists.linux.dev>; Sun,  5 Jul 2026 19:14:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783278856; cv=none; b=Uzdvn2Hso7vvzOESkdiIEW2dBuJWy/Su5vb39pA0ySRVV0gT3zEvl/UaCvqodlAD9Vw0PhWAxsMlLAZFxsUJRgaBMWD71goWRQEgVA5wJFZIn6D8LRs/xSiBuK+f3Q92vYNPFEwhFLSiqwluFAsxbatMC611WnM9F8090Xp486k=
+	t=1783278858; cv=none; b=U8ZnrinfPVP8Y7lwbtdWQP8DnFkR5GLzOkRk0a77NxZIV3+H7DGJpvPMLAKVmZv7U4A+2bPtItKCAgUquKQPy2j/WSbU3uyjNQ+mUpfYdtFn03BEdApH3GJYd9VDKRpnnzo+5q9/2taZCnaxdHqON+9Jdbw/aq9U/wwddU2WbRs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783278856; c=relaxed/simple;
-	bh=8dMwcHoLl0Z1JzcMDPMcwAdi90HhpnlCPh0AzVY5gFw=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=liPxDkccsc4bVZhPIhqRsYhC60mabPhUymzvWRu5nJ8UMJy2yxB+njXKIaGtmJQLPyo4YlBZdrP/tyMvUyE67ZpPyab37r7dAUDt1HzHRVkGlwM+ktjmuKAQCcxkb3UKHwWnRoPVYvoyN/LhVV3L8/TWIlENeruS7jmkUdnMVHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mHSZcivN; arc=none smtp.client-ip=209.85.221.47
+	s=arc-20240116; t=1783278858; c=relaxed/simple;
+	bh=TOpopsFtZ1PPnGuz7Qdse1Rb2dSOsjvazts1+j2Qsuk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=JZ7Lsq4upsC6XSCd5e4CERwlm5YToDOKb7xgWREAJVXuwMsI72k0ELYHkGMhzSEUbG8ZrrTmcWzmSoiT6iiX+EH3hQvJN3Lzkpgvb5FTuTUMIwD1dtWP2wDfGmd725AsWEuoNmHqhQjCpW6OHUdRt6Rpd/pHcarQk6BZbOpPL3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FBJ0jYdH; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mHSZcivN"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-475881b9a4bso1930385f8f.3
-        for <iommu@lists.linux.dev>; Sun, 05 Jul 2026 12:14:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FBJ0jYdH"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-493d92b7db3so4502505e9.2
+        for <iommu@lists.linux.dev>; Sun, 05 Jul 2026 12:14:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783278854; x=1783883654; darn=lists.linux.dev;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=rfOoMuZEApI7TKZXEN8dHfuOQq4puRHMEr9ArXWgLU4=;
-        b=mHSZcivNrz8pL7pQxuBPLXN5xQUUp8fr9LFPwCqhLRdcARwLa4+I+xHRrpQNkWocft
-         mHkx1rMOQRfVcFgtQnfli8lwHIhlDSXZXopBCaP1mdRKbkrk6vP2BMF5pJdMt8Tme0vr
-         g9VoPvMFUul6g7zN3nM2hXZbZZm8tgLkbfOEzGUSH7xbDU+wFnwr45M5eAHPaR5pHPhE
-         OM8dvvlVUSKcEBbTgpk9VAEQ/Hg7ievebFvpa5hqwUD0DYs1/+4/frvZCEnId9y7k2F8
-         g4cR52nAnlUgnFFht5uEQrbfJbNEx4AHTO+CKohqPWFakKlqcFi7TBCFaOiy9Ux2ZRlQ
-         GuHA==
+        d=gmail.com; s=20251104; t=1783278855; x=1783883655; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=G3eyPuG/7N0ePFJ/qBb/yJdx1/OQTbqvhMmqlXZb7jM=;
+        b=FBJ0jYdHArR2Ow+FMwN6UsrG/aCZiwRogagudNmz0uppzXIUjXugSRYk5V35+JEHLQ
+         oS1opdtlqWiSJ4z2hIMZnA01k7MAQSwjAZdz3FsjZrky4x1G6tXWITQHDksEI3mXp8d1
+         mDp/oeYYIOXBeRQkncNC7YWNMsuvaU0T+C9CR39pKHldad/wlAIYbmHT5COW9pvitARB
+         NRNr6zIE+KEWEhl1FlACbYzW4iwWRPMysBuO315S6NU4kPMN3Drg+tufJc2LGMAxpjoo
+         HTmYcj8SiGRbRfmzkevVe0L+oCBj6qlQSncI0JcgkEADfOAnzrfWgYCaovpGZ6NjTDPC
+         Y1WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783278854; x=1783883654;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=rfOoMuZEApI7TKZXEN8dHfuOQq4puRHMEr9ArXWgLU4=;
-        b=fPpO1j/j2EfYsOL+tsVICrPGqBlnheyx5ue4zL2FN2h0o9yK/9NLf63kn+XFRtdpff
-         QSnfJtGCh2EspOvOqMKlZkj2OLXCOyEpWa2ygeiC93eS53WqtJ/UGa5kSO+c2sCEsH42
-         irdLjCwrMaYptY2hlQS2HE5oQyV9JujDOgX5rs4Nmcu7IkrpnwZfKrx/ITvo9sgDhbg2
-         2hELYlozhOMr0vZFUbO+27fwf0wFLDBM8S6hQNzbDhD82yZ4TXPwTTMoChhlxItfXN+N
-         A3yBqtY0NRg2BywqZWbUM37eCWxd0RFiKyxeAF8zrsWnAhpfrsVDZseuHY+GWb43irk6
-         fV5g==
-X-Gm-Message-State: AOJu0YxcMqCvd+ZLZf3rnz+bYNwr27YCbhafH9G+j+0JxMtFFa96fpbf
-	+8tURVLrbKjQ6IsmQADrSFj5EgWHxg8OIQaGV8G2+P8qGlAuGYqnm/w=
-X-Gm-Gg: AfdE7cl8TZCweLi5xR2Ao2FtZkr2Fxsep7SABPlCoD+XPUdMQOq6tjZiG/qMcd4flJW
-	Wjk+lE8k0H20rKC3NmjdtDbzGpWSy+Ws0nnEHGC2Anj9ooejzMs1BplJHbPepskKqxQ25Nwjncf
-	fKLOTUlZ32opoM6kJLtrsg9QkXAIB1tqKAJtToQw+i4qbL0iYdzEB6q1nNmIbvnZIxzByWrv4Mr
-	l+iofq10MxdtMmDG33rJD8yOogLTjfiXPvqhshkEaPZyIWlcapaihv0VOpZvZ295gf3cM/kzpMq
-	9UWeLY14HgnaoeG4ehoRojqlc4kfc3asgJjZ2hhTTuI3GnMGaJGa/BykpOWNiVdz7LFabj/5kN/
-	kvbGy1mACBNI1vMSmNH7PVDs2Nljqp9eKhQWShye+7dO7x9HUqfT2BUzBJjLY509q2I6L88o+1D
-	9xx8DrhTlmRUIepEc=
-X-Received: by 2002:a05:6000:469a:b0:46e:1815:6a83 with SMTP id ffacd0b85a97d-47aad6435e9mr5514134f8f.29.1783278853423;
-        Sun, 05 Jul 2026 12:14:13 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1783278855; x=1783883655;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=G3eyPuG/7N0ePFJ/qBb/yJdx1/OQTbqvhMmqlXZb7jM=;
+        b=poNxb3aQM+wMirTIWVJRkuaDMHlu/xKvF732PfGT9jIDTS/rRpVvGcleJ4dsSXWnCC
+         DowiVCm+P2lmLaTSrUX//yPS7CqRp2p49bTYE3Ij8eivuAHWAFjYV+ABMxbTrfaAz4j2
+         8wmvGzkM46QjnqOT8NP/1OhKl2X6FPTvK/g5NptKYYIlv60Za8WhIc5kw+XrLIKqWfgg
+         ovkLk26baSTyu20nhSI4Rs01tFv3b2M+j+0BXtznlbdkVeXRKrInjigBU2xFm+mi/Y+5
+         fVYVmgaZ+21bWaBMaLYV2b/THpbZwNNjjhVPd26ApbuUvEr48dV68eL8NuhNDZAPQne0
+         eD7g==
+X-Gm-Message-State: AOJu0YwQ47je8bjnT6W8VZNvBHML9y4U7vnE/BE33ih7RTLVS7Mm7YmL
+	MHX3GvDXGCvy/iGwhnVbUQWXZl2n5/d6htMcXWhSPKzyXznGEfCXt5Q=
+X-Gm-Gg: AfdE7clKFzqzJnTXptOKBNTIUktpyjzdZpjWM5cU2YXpmmK8T4g93cC5VXE0F/1sMiW
+	wa8HjZjNYKAOod8FQVi027RkfGD6I//CS0m+MWMyQj6xtcw/tnAxajE/XTAEL6wZ+y9kG7h9CEa
+	p25qqkFDOyzoiduCh1y/HF7d3FA6yFyRzUay4dhXPx16Yteqv/ZvjaiHOTu8/Va9B6iPN9rgs+k
+	yPOeLI2E8SkCz77jxz9GeNsySLcCd/2xrTI7XTlbXK+UM5YVuUvFU/6S8PP85SKdLveUY35ORS9
+	fyWYD1wCEXKUZQI4SHhaSJssV625OgLccQxJocfwA3sfjRhJ4l8BQQcBnmOW3sdstkJb1sBy2n5
+	zZvv+vPBc2xgt713aWK+skRZaNHwcWirFfYQi5zfNcssK3CQ/eCgy72APjkPATnkwIhVamVBKz7
+	z3wYFJII3VgwuCM2pGTKp1hYql7U0TO1ZILcrFzVZG
+X-Received: by 2002:a05:600c:628f:b0:493:bf84:53d8 with SMTP id 5b1f17b1804b1-493d11d7d55mr92320425e9.9.1783278855325;
+        Sun, 05 Jul 2026 12:14:15 -0700 (PDT)
 Received: from [192.168.1.67] ([2001:b07:2ec:601d:4b26:1672:75c7:805a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0960634sm19209528f8f.26.2026.07.05.12.14.11
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0960634sm19209528f8f.26.2026.07.05.12.14.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2026 12:14:13 -0700 (PDT)
+        Sun, 05 Jul 2026 12:14:14 -0700 (PDT)
 From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-Subject: [RFC PATCH 00/13] Enable LPAC on a7xx series GPUs
-Date: Sun, 05 Jul 2026 21:13:34 +0200
-Message-Id: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+Date: Sun, 05 Jul 2026 21:13:35 +0200
+Subject: [PATCH RFC 01/13] iommu: arm-smmu-qcom: Configure lpac device with
+ split address space
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,10 +70,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNwQrCMAyA4VcZORtIN63gq4iHtosacbUk3RDG3
- t2qx+/y/ysYq7DBqVtBeRGTV25wuw7SPeQbo4zN0FPvydOAI1tSKVUWxhwmxmcJCediVTlMeBw
- oOL+Pjg4RWqQoX+X9G5wvf9scH5zqtwrb9gEd3ZUqggAAAA==
-X-Change-ID: 20260603-descriptive-name-lpac-upstream-730a164b105b
+Message-Id: <20260705-descriptive-name-lpac-upstream-v1-1-01d50c3e0c99@gmail.com>
+References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+In-Reply-To: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
  Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>, 
@@ -91,64 +92,74 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
  devicetree@vger.kernel.org, Anna Maniscalco <anna.maniscalco2000@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783278851; l=2538;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783278851; l=2198;
  i=anna.maniscalco2000@gmail.com; s=20240815; h=from:subject:message-id;
- bh=8dMwcHoLl0Z1JzcMDPMcwAdi90HhpnlCPh0AzVY5gFw=;
- b=Q83mQkQCI/ZbHgZyMczAaUD07W0pExCURYUI+AfeuCtFffXnVzp1aiJOAaTDPf13rw1Fzn+7X
- WRuPw2v96y4CWwkfRLibXR6NQ9DulNdUY/gYM6XuxmEibN0Vv7DXr+i
+ bh=TOpopsFtZ1PPnGuz7Qdse1Rb2dSOsjvazts1+j2Qsuk=;
+ b=swnPSg6jJwnfwPpO2lUtsliGm7jHo9gqL51QEmCML+oAIm1zPDuCFHYdt3TNVGcjeXVx38cVC
+ 13fGjbA8BMDAB0TZwyRx8GCJenaSAUzrSU2r89a5X2KYaRbtynBvrSe
 X-Developer-Key: i=anna.maniscalco2000@gmail.com; a=ed25519;
  pk=0zicFb38tVla+iHRo4kWpOMsmtUrpGBEa7LkFF81lyY=
 
-This series enables LPAC on a7xx GPUs
-
-Currently hangcheck and recovery are broken as the patches to make them
-work depend on https://lore.kernel.org/linux-arm-msm/20250911-preemption_aware_hangcheck-v1-0-974819876819@gmail.com/
-
-The series also depends on https://lore.kernel.org/linux-arm-msm/177919116291.814652.1720687887970998122.b4-ty@kernel.org/
-to work correctly.
+We want the context bank used by LPAC to use split address space just
+like GFX.
 
 Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
 ---
-Anna Maniscalco (13):
-      iommu: arm-smmu-qcom: Configure lpac device with split address space
-      drm/msm: add support for lpac_domain in msm_mmu
-      drm/msm: look for lpac from dts
-      arm64: dts: qcom: sm8650: move smmu sid 1 to new lpac device
-      firmware: qcom: scm: Configure LPAC aperture
-      DEBUGGING: print contextbank and other ttbrs on fault
-      iommu: arm-smmu-qcom: Fixed mapping between sid and cb for gpu and lpac
-      HACK: use cb1 address in lpac dtb node
-      temp: add LPAC regs
-      drm/msm: initialize LPAC ring
-      drm/msm: Add LPAC submitqueue
-      drm/msm: set ctxbank and asid based on ring
-      drm/msm: add lpac ring to devcoredump
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
- arch/arm64/boot/dts/qcom/sm8650.dtsi          |  12 +-
- drivers/firmware/qcom/qcom_scm.c              |  18 +++
- drivers/gpu/drm/msm/adreno/a6xx_catalog.c     |   1 +
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c         |   2 +-
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c         | 191 +++++++++++++++++++++-----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.h         |   2 +-
- drivers/gpu/drm/msm/adreno/adreno_device.c    |   6 +
- drivers/gpu/drm/msm/adreno/adreno_gpu.c       |  79 +++++++----
- drivers/gpu/drm/msm/msm_gem_submit.c          |   6 +-
- drivers/gpu/drm/msm/msm_gpu.c                 |  29 +++-
- drivers/gpu/drm/msm/msm_gpu.h                 |  17 ++-
- drivers/gpu/drm/msm/msm_iommu.c               | 158 ++++++++++++++++++---
- drivers/gpu/drm/msm/msm_mmu.h                 |   7 +-
- drivers/gpu/drm/msm/msm_submitqueue.c         |  11 +-
- drivers/gpu/drm/msm/registers/adreno/a6xx.xml |  14 ++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    |  37 ++++-
- include/linux/adreno-smmu-priv.h              |   2 +
- include/linux/firmware/qcom/qcom_scm.h        |   1 +
- include/uapi/drm/msm_drm.h                    |   2 +
- 19 files changed, 492 insertions(+), 103 deletions(-)
----
-base-commit: 9a967125427e03c7ebc24d7ad26e9307e8403d4e
-change-id: 20260603-descriptive-name-lpac-upstream-730a164b105b
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index edd41b5a3b6a..48a590aaeb5e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -35,6 +35,8 @@
+ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
+ 	{ .compatible = "qcom,adreno",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
++	{ .compatible = "qcom,lpac",
++			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,adreno-gmu",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,adreno-smmu",
+@@ -217,6 +219,7 @@ static void qcom_adreno_smmu_set_prr_addr(const void *cookie, phys_addr_t page_a
+ }
+ 
+ #define QCOM_ADRENO_SMMU_GPU_SID 0
++#define QCOM_ADRENO_SMMU_LPAC_SID 1
+ 
+ static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+ {
+@@ -230,7 +233,8 @@ static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+ 	for (i = 0; i < fwspec->num_ids; i++) {
+ 		u16 sid = FIELD_GET(ARM_SMMU_SMR_ID, fwspec->ids[i]);
+ 
+-		if (sid == QCOM_ADRENO_SMMU_GPU_SID)
++		if (sid == QCOM_ADRENO_SMMU_GPU_SID ||
++		    sid == QCOM_ADRENO_SMMU_LPAC_SID)
+ 			return true;
+ 	}
+ 
+@@ -305,9 +309,9 @@ static int qcom_adreno_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_doma
+ 	 */
+ 	if (qcom_adreno_smmu_is_gpu_device(dev)) {
+ 		start = 0;
+-		count = 1;
++		count = 2;
+ 	} else {
+-		start = 1;
++		start = 2;
+ 		count = smmu->num_context_banks;
+ 	}
+ 
+@@ -394,6 +398,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 
+ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ .compatible = "qcom,adreno" },
++	{ .compatible = "qcom,lpac" },
+ 	{ .compatible = "qcom,adreno-gmu" },
+ 	{ .compatible = "qcom,glymur-mdss" },
+ 	{ .compatible = "qcom,mdp4" },
 
-Best regards,
---  
-Anna Maniscalco <anna.maniscalco2000@gmail.com>
+-- 
+2.54.0
 
