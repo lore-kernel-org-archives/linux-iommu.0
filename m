@@ -1,157 +1,130 @@
-Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 218E7378828
-	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 15:07:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522463A9D94;
+	Mon,  6 Jul 2026 15:50:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783350455; cv=none; b=rr0gbXIBpyKkqUbWFRl9ZrQyUxcGwwP+Y2La/m5ex2Lf1Eg5GoJJhAisadIUSBw3icZ+xh/P0qxq7PDzeCHeR1+d42/G6cIs3IkFCDVJ6GEYDq+ekLpp8XR8wfVoU/fjb/jR2aDWNe9cW/EzlJ/pGy2KTzSEIve9yZx6ZyDJkjQ=
+	t=1783353034; cv=none; b=SP564uf+QxMZssvFri+SoJ7uuDne+t/OmXVIwXiCZiqPO2WIpCu8WLeJBHWN6LEOQaN4Ao1Gs54oiS1/MlRwp4m4whSlouoYNK8J9bNV+ZYX5gA9xkr3cAM9psU+ChQfPeN1slmuTsVXZD6uDb27CAYLp4cWFp2cuz/+rJ4lyZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783350455; c=relaxed/simple;
-	bh=lKQonR4ehLSrdg7Q9EQmcaFN4H/cXaBULLkvW6+uEfg=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=p+LVGc2uR5EG+7IS9ScEvZAg3HeMkgzIY1Uz2yiZ4Hg9oVpTOeD/dtETT7CvaUGGHIv4Mf6Ge+rzp5gB5GlD3EwWGGqgf8iYtLYTBXS0FpNaqfgyNyUBOtyx3d9odNrJDPyxQehJQ1ZptEZMNj9tR5jhPVGW0mstetCK8UjqiEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--mclapinski.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kfI1INL4; arc=none smtp.client-ip=209.85.218.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--mclapinski.bounces.google.com
+	s=arc-20240116; t=1783353034; c=relaxed/simple;
+	bh=of6d9n1ZVp2VvNBWbeQxrIvJaxz8Dqo4F/lZHKvIDzs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mC9Q5JKFMLaaEQt/Tw7REXPIGQUdtkcX5Xi/qGfjLHVj+d0S1IkkUHqeKS/Kv/ISPCpJCLMRjfsED3LO+Uw3hJOu0znZy6xP8pkMUeV718NAPVCTAU1LqdgHO/hTJxZgDc0lJcjd4IeFYlwxJNugG3IdwNKrjK8Q+LVw2KI0jDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FVBVZkkO; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kfI1INL4"
-Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-c126399a328so320127166b.1
-        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 08:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783350452; x=1783955252; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1lx/Tz8Zmq/2rMr5850VaaKZJq/iHDsvqGoxRZtlKNQ=;
-        b=kfI1INL4mHkpStlD+Tkr7EG7dT7C3cscW7AhCv5L+iGgq9N6bk1ByE6xIOJoZU7gzo
-         8CmghEZjbshNvyGXje18lkrHMqAtj906TOIt6Bkr9D6PvwQ2Gcb7Oil+bKbpxVTJNLaE
-         aaW2E4H9AUTooLvDMPzBZlx4MxyFcLjVFHSlU9VdR3QawkBRtuKenPH/JXcBycCfCuPV
-         5QbtZHDdq1OeiAi3Sqi/Q5feJ1wXusx9ZLk8bcBM0QIQ+O4+zYd1mzgIVbkWlO63tfix
-         7YIEM2lmBe4iBNRVX3xFB2cYdcEQFiOWUeEPu1G2orBUurB6FwzOHoBcQOmld9mgmoXX
-         /G4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783350452; x=1783955252;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1lx/Tz8Zmq/2rMr5850VaaKZJq/iHDsvqGoxRZtlKNQ=;
-        b=dQprhBvJ7424obzzHjRUiwI3yCiomORqBjag86FtVYvwjzn/zcVhbnqIMxa29KzoLB
-         AHZBWRQ8BS/2bnmPpTk1z2ts086wbmC3eAZHqHEKR8joyPajWfYw2G7fy+qLxs7D83up
-         C8SXeYkgtfL/CRN3yqClZmw4Lfrgy/wmSR5pQnKp4hYCkNkoIsLHuuNFMqZ9/WYso0rz
-         czsm4548bMWBElOFrJGnGpPHSeFNdruN2iRWcVpuu8abx7Br4rJ4ncs3uCdkAovhyhqA
-         CgoGy1fjbyHqf5fSU/ghJQwL3UrJywYNsFAAFtCy/Uq1XBkpEfRGNagnrd7sbDBjMgK5
-         1gbA==
-X-Forwarded-Encrypted: i=1; AHgh+RqAKcNRqbWjE3qiHUGxlcF2X/8bUpw+rrRvfXXGfsSeBqeH7a9rsjTq3ZHIb6ovbQNAM6bvpA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzGpLYm36BHyydREx+lPo7QrhHQYNwD9rtxoJhNWHkJaV27mXde
-	EmCvzUdRQSojJitXeqRcwftMqDrD1Te+mIRw2MH5yUiO69D/Rgg+lrXThkYu7RFjZRKZHP1m1y3
-	GEutu1dZuv3K7txkeIjNaXA==
-X-Received: from edqu19.prod.google.com ([2002:aa7:d893:0:b0:698:878f:fb60])
- (user=mclapinski job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:bac5:b0:c12:15b5:876a with SMTP id a640c23a62f3a-c15a67fa6f0mr51152166b.17.1783350452355;
- Mon, 06 Jul 2026 08:07:32 -0700 (PDT)
-Date: Mon,  6 Jul 2026 17:07:27 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FVBVZkkO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783353034; x=1814889034;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=of6d9n1ZVp2VvNBWbeQxrIvJaxz8Dqo4F/lZHKvIDzs=;
+  b=FVBVZkkO81v97qwqgXdQoZ5BtTEZSn8hptdpl5+zhp69DG8Wc7HTqCA0
+   Iua/lgzHUpOHNX2O5GBppmUYF1PiPf69sOaB8Ow4GlK1ag6lLh9zEg8pF
+   3VKtX/orEhXlCgZIM6AVkaFJHxZaFunveVf1rFI+fQqXnttQ54x0cVXY3
+   PlohclVweXpZXa4qC4hRMfljkSLzo1HoC+VphEFD4spHrYIS29LmWh30o
+   NBG1HLrivq2LD58UeKk3qVdcS1nUHVpnKz1s+8OtrxC2NoD4y3qJ8HZ/f
+   mX/u9zXsoPrcTEQjyYz7zOPXp9EpFEYt2ZjDbFgjEYiqZ9otPaMD0rKrP
+   Q==;
+X-CSE-ConnectionGUID: BB6DNSW9S4iqCbM1J+wtyw==
+X-CSE-MsgGUID: 064545fzRHWEcP8yRBElbg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11838"; a="101408845"
+X-IronPort-AV: E=Sophos;i="6.25,149,1779174000"; 
+   d="scan'208";a="101408845"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2026 08:50:32 -0700
+X-CSE-ConnectionGUID: NvB5N+KWQv+u1kUJ01a6bg==
+X-CSE-MsgGUID: ST8IrUj4Qs29+PTwG4IXGQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,149,1779174000"; 
+   d="scan'208";a="283836189"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.48])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2026 08:50:18 -0700
+Date: Mon, 6 Jul 2026 18:49:55 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Manuel Ebner <manuelebner@mailbox.org>, Mark Brown <broonie@kernel.org>
+Cc: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
+	Lee Jones <lee@kernel.org>,
+	Thierry Reding <thierry.reding@avionic-design.de>,
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Peter Chen <peter.chen@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, brgl@kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pm@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org, mfd@lists.linux.dev
+Subject: Re: [PATCH v3 02/20] driver core: platform: provide
+ platform_device_set_of_node()
+Message-ID: <akvOo2EeERLYPh72@ashevche-desk.local>
+References: <20260706-pdev-fwnode-ref-v3-0-1ff028e33779@oss.qualcomm.com>
+ <20260706-pdev-fwnode-ref-v3-2-1ff028e33779@oss.qualcomm.com>
+ <fbc50f89e0c3bb148656a3b8d96974f591576dec.camel@mailbox.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.55.0.795.g602f6c329a-goog
-Message-ID: <20260706150727.4098614-1-mclapinski@google.com>
-Subject: [PATCH v2] iommu/iova: Move CPU magazine init to first insert
-From: Michal Clapinski <mclapinski@google.com>
-To: Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, Logan Odell <loganodell@google.com>, 
-	Michal Clapinski <mclapinski@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fbc50f89e0c3bb148656a3b8d96974f591576dec.camel@mailbox.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Logan Odell <loganodell@google.com>
+On Mon, Jul 06, 2026 at 04:39:00PM +0200, Manuel Ebner wrote:
+> On Mon, 2026-07-06 at 14:44 +0200, Bartosz Golaszewski wrote:
 
-A large amount of memory may be allocated for these magazines on
-machines with a lot of IOMMU groups and CPU cores. Not all may be used
-as some devices may be unused or be bound to drivers that do not use the
-DMA-API. Furthermore, some drivers may not use all levels or CPUs.
+> I removed Mark Brown <broonie@opensource.wolfsonmicro.com> from recipients because:
+> “RCPT TO <broonie@opensource.wolfsonmicro.com> failed:
+> <broonie@opensource.wolfsonmicro.com>: Recipient address rejected: Domain not found”.
 
-Move the initialization of the loaded and prev magazines for each CPU on
-the first attempt to try to insert a freed IOVA to them.
+Perhaps he needs to send a patch to update .mailmap?
+Cc'ed to Mark.
 
-Signed-off-by: Logan Odell <loganodell@google.com>
-Signed-off-by: Michal Clapinski <mclapinski@google.com>
----
-v2: only rebase
----
- drivers/iommu/iova.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 021daf6528de..1a4bbf45dbb9 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -621,6 +621,9 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
- 	unsigned long flags;
- 	int i;
- 
-+	if (!mag)
-+		return;
-+
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
- 
- 	for (i = 0 ; i < mag->size; ++i) {
-@@ -737,14 +740,7 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
- 		}
- 		for_each_possible_cpu(cpu) {
- 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
--
- 			spin_lock_init(&cpu_rcache->lock);
--			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
--			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
--			if (!cpu_rcache->loaded || !cpu_rcache->prev) {
--				ret = -ENOMEM;
--				goto out_err;
--			}
- 		}
- 	}
- 
-@@ -777,8 +773,20 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
- 	spin_lock_irqsave(&cpu_rcache->lock, flags);
- 
-+	if (!cpu_rcache->loaded) {
-+		cpu_rcache->loaded = iova_magazine_alloc(GFP_ATOMIC | __GFP_NOWARN);
-+		if (!cpu_rcache->loaded)
-+			goto unlock;
-+	}
-+
- 	if (!iova_magazine_full(cpu_rcache->loaded)) {
- 		can_insert = true;
-+	} else if (!cpu_rcache->prev) {
-+		cpu_rcache->prev = iova_magazine_alloc(GFP_ATOMIC | __GFP_NOWARN);
-+		if (!cpu_rcache->prev)
-+			goto unlock;
-+		swap(cpu_rcache->prev, cpu_rcache->loaded);
-+		can_insert = true;
- 	} else if (!iova_magazine_full(cpu_rcache->prev)) {
- 		swap(cpu_rcache->prev, cpu_rcache->loaded);
- 		can_insert = true;
-@@ -799,6 +807,7 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 	if (can_insert)
- 		iova_magazine_push(cpu_rcache->loaded, iova_pfn);
- 
-+unlock:
- 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
- 
- 	return can_insert;
-@@ -831,9 +840,9 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
- 	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
- 	spin_lock_irqsave(&cpu_rcache->lock, flags);
- 
--	if (!iova_magazine_empty(cpu_rcache->loaded)) {
-+	if (cpu_rcache->loaded && !iova_magazine_empty(cpu_rcache->loaded)) {
- 		has_pfn = true;
--	} else if (!iova_magazine_empty(cpu_rcache->prev)) {
-+	} else if (cpu_rcache->prev && !iova_magazine_empty(cpu_rcache->prev)) {
- 		swap(cpu_rcache->prev, cpu_rcache->loaded);
- 		has_pfn = true;
- 	} else {
 -- 
-2.55.0.795.g602f6c329a-goog
+With Best Regards,
+Andy Shevchenko
+
 
