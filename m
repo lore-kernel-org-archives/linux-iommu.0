@@ -1,139 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13FAF381B1C;
-	Mon,  6 Jul 2026 12:57:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 534C335AC24
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 13:08:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783342630; cv=none; b=Gv+ZX7oRry32jTozi1td7kzTopq0HPa4VkV39+Sazp/LPPBJDhoovIcIduAYrAIIYThb/1jQIJaIY034TOx61EoG0CFfsSUwk0wDjRdnimvG8zQ+1xPb2wbsqX2hXb/p2ishRSBDr03jR+ns4gNimTSyGln4lC+8dpxFAddcJDw=
+	t=1783343302; cv=none; b=sfqtNV8kGuNpTXnc5Zsu4zsed2z3k+3FxTgyStQ+6KVNgK8h0dDZyrPYEvPQjILK8sjhMlJKS6KSP7Uij8L2k4LnYox615XVUcFGja8juL9PIMfZe3vH4+misjAkD5UIbTP2H7jqLWZAJwC7hOL3WdlJdG2oexmZVza1F5VqR2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783342630; c=relaxed/simple;
-	bh=VUZIkXufgwBW/JMrzaWRzp9hNDKyQfFV0tnX6ij9HlE=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=JfOK28rkaWNN+mNjp2umjOYrEtRqIrz1tXqGr1UQFKj9R8fPB49m4tb5M7w+JkWpy0cg962Jmdm/pUYTz+uav7QVut0rqaZqrysX0I4WJYHZ1KBKYztWFs8sghnHWCr+mKfPG2IeCa5d+Bja9s1aSAN4RKj0y8OFmgzAr6+bnKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QkBcHryg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783343302; c=relaxed/simple;
+	bh=0aA4qLPP4be61ChbVSTr6j8z/Dm/HGd90mPQPS4LDmU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=n3lJ2wmJ5Hkn9CroMoIFBO1kgb7lAPYts2+wLhs/8up3B3U0sP7/f1wA7td053g11vwBQBLTfZ8Y1qaCu+75+AQAQXhB+Rg3ipATfvneyvspGQplo8/sljZ1PtTc3KxTz6IzFuakXmJW42VI8yvfFn9AGo20gSusFcryat2q3Uw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=M4rTjdB2; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QkBcHryg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E9581F000E9;
-	Mon,  6 Jul 2026 12:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783342628;
-	bh=GCyaRI2v+Msir348xm9C8l5PWA+QlX0OzfCc70e43Ik=;
-	h=Date:From:To:Subject;
-	b=QkBcHrygH5Ere2gGZ4IyKeQAgDzFCP4pMLmbC0I83R0o1GjlJpPUMR+jerIqInvf7
-	 7X0TiE/VD50oxAlFigliU+PgUxb81uTzPO9uvaxv3JXsOEV3qsy9u1lA5EI9qafcqU
-	 3pw36XTN6XIZ7UinHMVqp31cmfLQjQxoU63HdjksOhilnPFgda6VmTqafvtpB0cfUp
-	 fAVe437fW9nOmEqL35sDZ3DM2BukTie3OJG+njNbtHwoeP6oAkyFI57AsiHuKoWfsj
-	 zps9YuvZ9SGDFXJMMh3P+OJ10C8qX7+nR1nfPR8h5TX0696OcqXg9O4K/KYynZ2fSv
-	 IXF1Ji/Ip+wIg==
-Date: Mon, 6 Jul 2026 21:57:06 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-To: Linux PCI <linux-pci@vger.kernel.org>, 
-	Linux IOMMU <iommu@lists.linux.dev>, Linux KVM <kvm@vger.kernel.org>, 
-	Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Bjorn Helgaas <helgaas@kernel.org>, =?utf-8?B?SsO2cmc=?= Roedel <joro@8bytes.org>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>
-Subject: The VFIO/IOMMU/PCI MC at LPC 2026
-Message-ID: <20260706123705.GB3821042@rocinante>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="M4rTjdB2"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F82628C7;
+	Mon,  6 Jul 2026 06:08:16 -0700 (PDT)
+Received: from [10.57.82.104] (unknown [10.57.82.104])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E88F43F7B4;
+	Mon,  6 Jul 2026 06:08:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1783343300; bh=0aA4qLPP4be61ChbVSTr6j8z/Dm/HGd90mPQPS4LDmU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=M4rTjdB20bQ2CIIm6sF9czHLIiKzlI2RImQaKwc20odxzVCQybIaWr3rwfjrKShR5
+	 KD1O5KVG+VNwczLFB/cfjDMk335CqXNUd1rKGJjEVFahgMi5MA35fcXRGjNdG6lza+
+	 SNjeWVEgCVnwJxppYQ/IW6dg3IkcQENcwHFbtb7Q=
+Message-ID: <a381d265-e7a4-4fe7-9421-3553706d41c1@arm.com>
+Date: Mon, 6 Jul 2026 14:08:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/3] drivers/iommu: Catch scatterlist length overflows
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Krzysztof Karas <krzysztof.karas@intel.com>,
+ intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+ iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, =?UTF-8?Q?Micha=C5=82_Grzelak?=
+ <michal.grzelak@intel.com>,
+ Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
+ Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
+ Krzysztof Niemiec <krzysztof.niemiec@intel.com>
+References: <20260701104437.236979-1-krzysztof.karas@intel.com>
+ <20260701104437.236979-4-krzysztof.karas@intel.com>
+ <20260703162236.GX7525@ziepe.ca>
+ <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
+ <20260703203502.GC1978949@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260703203502.GC1978949@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello everyone!
+On 2026-07-03 9:35 pm, Jason Gunthorpe wrote:
+> On Fri, Jul 03, 2026 at 07:58:32PM +0100, Robin Murphy wrote:
+>> On 03/07/2026 5:22 pm, Jason Gunthorpe wrote:
+>>> On Wed, Jul 01, 2026 at 10:44:37AM +0000, Krzysztof Karas wrote:
+>>>> It is possible, when a very large mapping uses a single
+>>>> scatterlist, that padding overflows scatterlist's length field.
+>>>> This results in:
+>>>>    1) silently wrapping the value
+>>>>    2) smaller than desired mappings produced by iommu_map_sg
+>>>>    3) leaving mapped bytes in memory (no iommu_unmap)
+>>>>
+>>>> Address this issue by adding overflow detection for previous
+>>>> scatterlist length field.
+>>>
+>>> Urk, this is unfortunate, it means we cannot map certain kinds of
+>>> scatterlists? Meaning there is a condition that makes a scatterlist
+>>> ill formed?
+>>>
+>>> This seems like something that needs to be more clearly documented and
+>>> we need to ensure at least the common scatterlist builders don't hit
+>>> it..
+>>
+>> Well, it's taken 10 years to be caught by a test which seemingly expects the
+>> mapping of a single absurdly giant scatterlist to fail anyway,
+> 
+> If your server has 0.5TB of ram a 4G IO isn't actually that large.
+> Randomly getting a few contiguous 1G hugetlbfs pages is not even that
+> unlikely. Something like FSDAX has a very high chance of getting high
+> contiguity pages in files.
 
-A quick reminder that our VFIO/IOMMU/PCI micro-conference (MC) has been
-accepted for this year's Linux Plumbers Conference, and it is now open for
-topic submissions.  More at:
+Sure, but how many servers had 0.5TB of RAM in 2015? And how many of 
+those were running the arm64 DMA mapping code? As I said, both this 
+merging logic and the iommu_map_sg() interface itself were essentially 
+written to support media buffers on Android phones which didn't even 
+have 4GB of RAM in total. Yes, things have moved on by now, but 
+correspondingly it has also been decided that the ~30-year-old 
+scatterlist design also doesn't scale to modern use-cases anyway, and is 
+being replaced, so limitations of a "legacy" API that don't have any 
+meaningful impact to its existing users are hardly something to panic 
+about. If DRM does want to be able to *reliably* map massive amounts of 
+RAM then it can adopt the new IOMMU API, for this and all the other 
+reasons that that new API was promised to be "better".
 
-  https://lpc.events/event/20/contributions/2326/
+> So I wouldn't be quite so dismissive that this is not something a real
+> user can hit.
 
-LPC 2026 will be held in Prague, Czechia, from the 5th to the 7th of October.
-Please note that this year presenters and micro-conference topic leads are
-expected to attend in person; remote presentations will be considered only on
-an emergency basis.  See https://lpc.events for more details and the latest
-updates.
+I'm not being dismissive - clearly it can be hit. My point is that 
+anyone who *does* hit it can only expect it to fail (as indeed this 
+particular IGT test seems to), because it has never worked. You cannot 
+encode a 4GB scatterlist segment, because it overflows UINT_MAX. And if 
+you did try to bodge it and pass a UINT_MAX length segment to 
+iommu_map_sg() then that will also fail because it's not aligned to an 
+IOMMU page size. It's purely the matter of *how* exactly it fails which 
+could do with fixing.
 
-If you have a topic you would like to bring to the MC, please submit it through
-the official Call for Proposals (CfP) process at:
+>> here, but I suspect this is likely just regular iova_granule rounding
+>> overflowing when the segment boundary is the maximum 4GB, since the largest
+>> representable segment length is 4GB - 1.
+> 
+> It looks like the iommu_dma_map_sg() algorithm only works reliably if
+> the scatterlist entry size is less than UINT_MAX/2, otherwise it can
+> risk overflowing when it pads.
 
-  https://lpc.events/event/20/abstracts/
+AFAICS, the overflow can only happen with a 4GB boundary mask, and for 
+two conditions:
 
-Choose "Submit new abstract" and make sure to select the "VFIO/IOMMU/PCI MC"
-entry from the Track drop-down menu, so that your proposal is submitted against
-the correct track.
+- rounding up the current segment, when s->length + s->offset > 4GB - 
+iova_granule (but still <= 4GB otherwise it's bogus anyway)
+- padding the previous segment in the case where the current segment 
+would otherwise cross the next boundary, when prev->offset = 0 and 
+prev->length + s->length >= 4GB
 
-Two dates are worth keeping in mind:
+So yes, limiting any individual segment to <=2GB would end up avoiding 
+both those conditions, but it would also impact plenty of cases that 
+*do* currently work fine, e.g. 1GB+3GB+3GB. The limitation is really 
+that you can't have two consecutive segments where the first starts 
+exactly on a 4GB boundary and the sum of both their sizes >=4GB.
 
-  - 10th of July: submit a topic by this date to become eligible to
-    pre-register for the conference.
+> API wise I expect any arbitary input to sg_alloc_table_from_pages() to
+> result in a scatterlist that iommu_dma_map_sg() will map. This
+> patch highlights there are cornere cases where that isn't true, it
+> should be fixed..
 
-  - 7th of August, 23:59 UTC: the Call for Proposals closes.  This is the
-    final deadline, shared by all micro-conferences.
+Technically sg_alloc_table_from_pages() carries no such assumption, only 
+sg_alloc_table_from_pages_segment() (or __sg_alloc_table_from_pages()) 
+with the correct dma_seg_boundary value for the given device. But even 
+then in the worst case, they should still end up splitting segments at 
+4GB-PAGE_SIZE due to the fundamental int limitation, and so only be at 
+risk of putting two such segments back-to-back.
 
-The sooner the better, as it gives us more time to review the submissions and
-plan the schedule ahead.  And do remember: you can submit early and refine the
-proposal later; there will be time.  Even a rough draft is fine, so please
-don't hesitate.
+> I agree we shouldn't overcomplicate iommu_dma_map_sg(), so the
+> simplest fix is to introduce a SG_MAX_LENGTH set to UINT_MAX/2,
+> justified by the logic in iommu_dma_map_sg(). Fixup the core sg_alloc
+> code to respect that. WARN_ON in iommu_dma_map_sg() if a malformed
+> scatterlist entry is presented. Add a WARN_ON under DMA debugging
+> kconfig as well for the physical path.
 
-If you are new to Linux Plumbers Conference, or you are not quite sure what
-a micro-conference topic should look like, Steven Rostedt's write-up on the
-ideal micro-conference topic session is well worth a read before you submit:
+Again, it's not "malformed", it's just an edge case of certain 
+otherwise-valid scatterlist layouts that are not supported in this one 
+DMA API implementation. Nothing in the DMA API ever guarantees that any 
+particular mapping must succeed. Furthermore I don't see that anyone's 
+asking for this to actually be supported, just to fail cleanly and 
+correctly without inadvertently corrupting state.
 
-  > Hello Microconference runners and topic presenters,
-  >
-  >
-  > This is a reminder that microconeference topics are not presentations.
-  > Think of the "Problem Statement" you would like to present. Any
-  > presentation should be short and direct to the point. The goal of the
-  > presentation is to bring the audience up to speed, so that they can offer
-  > useful contributions to the issue you want to address.
-  >
-  > Ideal presentations should be no more than a third of the allotted time for
-  > the topic. If your topic time slot is 15 minutes, present for no more than
-  > 5 minutes. If your topic is 30 minutes, present for no more than 10
-  > minutes. At a maximum, do not present for any more than half the allotted
-  > time. Maximum for 15 minute time slots is a 7 minute presentation. Maximum
-  > for 30 minutes is a 15 minute presentation.
-  >
-  > The best slides are those that can be referenced during the discussion. If
-  > you propose an API, have a slide with that API. If you propose a work flow,
-  > have a work flow diagram. Something you can go back to and point to if the
-  > discussion needs more clarification.
-  >
-  > And please have some slides that explain what you want to discuss. If only
-  > three people in the session understand the problem, you will only have
-  > three people in that discussion and you will lose out on the potential of
-  > diversity in ideas, that a wider group can bring.
-  >
-  > Remember, you are not giving a talk. You are leading a discussion to a
-  > problem you would like to solve. Bring as much to the table that can assist
-  > you in that goal.
-  >
-  > And I would like to sincerely thank all of you in your participation in
-  > this year's Linux Plumbers microconferences. Without your work, Linux
-  > Plumbers would not be as successful as it is today.
-  >
-  > Steven Rostedt
-  > Linux Plumbers Microconference Chair
-
-In short, a micro-conference topic is a problem statement rather than a
-finished talk.  The idea is to explain a problem you are currently working on,
-show what you have tried so far, and then use the time in the room to discuss
-how best to solve it.  More at:
-
-  https://lpc.events/blog/current/index.php/2023/06/26/the-ideal-microconference-topic-session/
-
-As always, please get in touch with me directly, or with any of the other
-organisers, if you need any assistance or have any questions.
-
-Looking forward to seeing you all in Prague!
-
-Thank you!
-
-	Alex, Bjorn, Jörg, Lorenzo and Krzysztof
+Thanks,
+Robin.
