@@ -1,185 +1,232 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from fhigh-b8-smtp.messagingengine.com (fhigh-b8-smtp.messagingengine.com [202.12.124.159])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3A747ECCB
-	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 21:41:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34D583F889E
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 21:47:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.159
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783374105; cv=none; b=O5c69pHB627E11b0O13jNVVelF3Kd/1a/Z1gtGjlXNZ47I8dNvP0VaMej00cEKWhKwzhWQt2Ti4bZjrdAyIlvC2gQtD/jFowPwsc4fgwgW+r6zeLAK/hZVRlXUTrHqt6lF5kaxHkkcye3MLgPjWGnnxhgwIzVMdGbD4h+VTLCHs=
+	t=1783374432; cv=none; b=juIjPIJlg0HQhcMZSHcff0m5JbJbLgLj6cgGVshzq5iYCRqSHeeuwzBUy2ZmPC7Mj15bTQh1wz4qq75C5f1qWVu5NUURRkAqvVUEYLxZ5eGgzesKIEbxyGRL1mR115G84FMxPprrGWnIESLxbcyfkNNMmIy3nqADrjI8js4ffPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783374105; c=relaxed/simple;
-	bh=wcNtHiPt37tRcLONgZr/t6X+o8Dp6m14w6rdasOzENQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rhAfuF3Q4Y1Dqr8RfLf/hp3AhXK7IcCcj05w9cRQnm7/I2sZdLm5/Wk6h7UiLVmcbczLXFt4Dmx7EMbeB1GtykPTDclsceY+jwpcG0mN/yiVoOZKZ4mtH5dYpxZoEQyXQYvav9Gd2qsc10t55cn3Ng0Xb9+CW7L2jQCRQboakew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=o/HVbnMK; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=iz90qJMm; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1783374432; c=relaxed/simple;
+	bh=yOX/pngM4h8XtJJGYSyUJUmzf7y+QUF055lYu28wJHk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aJ51eGYV8rE6fSI7c6G5FD0D/y2lYgqmo8q6mVR9RAzhjd7ERzHqemNjfsOuRaM2njR7DIW9yW6eJDZi9kTDbv3V1dcKfKEhZfyAaM5zr9oPo0NjbVB/m1hHKT1xAXXy5fPh/JLpWMw25MdJGtObMwy4XN8C/GRQw/ddxZXwCYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=F1QKp5Vv; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=R7G0cDcZ; arc=none smtp.client-ip=202.12.124.159
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="o/HVbnMK";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="iz90qJMm"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 666KE4b11626316
-	for <iommu@lists.linux.dev>; Mon, 6 Jul 2026 21:41:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	kJCEGFaL2BWb7t2hrhNOF7E5Nh+JxpjT/H4VU+ffr1Y=; b=o/HVbnMKBfWdPeGE
-	YfYaoyoYMuON7hNNIrCJ4qeYkqm+0GAX0x95cvU6wFADsAFvB14Fg7zY9I+x8Kr8
-	joP6cPJGyqRiA2M8kFUUJFkdngGFLDD/FbnO5iF12K0FrpsN328ZKuLdRNaAmppE
-	Lk5BNaJEPm9ZNgfYqd28qCKnJ0VssVdquZ3ULhDf2f7u2NutjYXufb0qeY0r7OfO
-	2SUgzOKo2bCWgmJUOh94Qae41HHid8+OyPNjuFM39zDUfO6vkNyzabNEfS1CXJ3A
-	wnVtwXbhmXRg9vnusIQ0vIjuEzzoi3Vv/2JBOXKeQS9Scbm+TNTayATWFB55E2Ua
-	VJnhZA==
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f88h9bg0e-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 21:41:43 +0000 (GMT)
-Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-c88aab7c1d4so2973412a12.3
-        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 14:41:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783374102; x=1783978902; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kJCEGFaL2BWb7t2hrhNOF7E5Nh+JxpjT/H4VU+ffr1Y=;
-        b=iz90qJMmj4xjdvP6lVlg59G0sYbuHAzoIen0DXwiy9OgEs5/0YGUG/xznZD4Unk7yh
-         RmTCqlVVnJQgxqjZXCaFL9bnCh+VI4+cCnRV0lUhL6f794sVLgYP3Fg43ibtsKdDf8Wy
-         yS8TH/t0rA/NWfBLYSs4Y7npjJ3SRi79k68LEQFZNfNikOY4mt+NQCD6zNOJygfik2aB
-         xHPLaN23wt/73qqgqztc7oN2Hg2ysoXowyBYUVsBnw8H2jPXNCC4/i1/4jCLC/vLyEYa
-         JaiI/BwZ8wpu0OCz26YPYVji0kvyq+KCXbfo8aBrD0sPq+zDBkkgbPGhAEuglhCNDvFX
-         sI9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783374102; x=1783978902;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=kJCEGFaL2BWb7t2hrhNOF7E5Nh+JxpjT/H4VU+ffr1Y=;
-        b=XKNFVX39oPpB3+AJWFSpic+VY4AoDxBxWwFyDynMgOG6nUB9ysOQp44JmNrcSHn4Hp
-         eZgrj6kQH0B46RWcK7Bmu48FqQCyJQnnUgWxdyxXbd2SWkayMbTYIM33HLOFxqNxKp9V
-         BU7WhfQ58L2N9BhkXqilVUJSzKAf1IBBAU7Vv5z5+wAfda0fZDJWNqzszhXt2fuyxaLk
-         SE/XJhrBmJmz4pjjDjlumBwRM81SD9Ialf+l0YMi+Zxp7AO+E3ymGLxpEM1MtVcCsshM
-         DHUnwaWhaOsvpVNg7qzS5YTqwubZCeU0TC+RAAJif1z78Yo4QyT9i5QqGl/ghrJM3Pc2
-         clnA==
-X-Forwarded-Encrypted: i=1; AHgh+Ro1Uvx9gBJJbtgjhtZ9Kfr66dppu58tFwcjJPdX7NIw6tNle2L0pCK80bJncogCBGM1S70tPQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzo3XQDqjsdCsj0C1DPqC9krC5jM/FlkdDQbv+tcJxM7KEz8MoH
-	4j45vFRyErlWlfiBj5q/G0nOG2s0YHrafgO6iCwEMgY8OWqbGjnrgy2aq9VKShAkklUbXqxKwov
-	S+e93StIeHqMy64k4XLVVr62zgkrrkIdHm8/wrQX9smSxlx/YZbpQKbXufA==
-X-Gm-Gg: AfdE7cmW6zpE48gtjuqBhStQ7R3pFNrWSGSknbCe8YwwFhlne9Er78j3tQbjZyq+pRt
-	CnZYRg/xzxoZxvBaNVz6rHJ5oC7wlIt3C9d9scVQ2D3+S/Ci2JjSGpsW3rfsBBYU3rEoGS+5uAJ
-	CxKwxpUSHVGh0i6lk7YvBDSBfFEgPK0Gt/kUsBSh9OA17by1jQGTm9Dr0479sKaOiYZHnamEME+
-	6sCm9LUUsUAq/aaV8sR9IbUdBzvnaRGz+FJlidoFTrulSjNEZv31Q/qvly89Q+0g3mCGYv3DFCG
-	3NIp2Ysg8HLW3dBF6OuTM4OW9jAddmx2l2fzbwHMnhq5DlhyVxsYCyZiDrMNhsswzfQTtqfVcNv
-	jmy+tlDS1kOhbaDbvGN9/AUF5LOEyfggtdJ4=
-X-Received: by 2002:a17:902:db0b:b0:2c9:a5e9:c26e with SMTP id d9443c01a7336-2ccbe6134e8mr22172775ad.13.1783374102112;
-        Mon, 06 Jul 2026 14:41:42 -0700 (PDT)
-X-Received: by 2002:a17:902:db0b:b0:2c9:a5e9:c26e with SMTP id d9443c01a7336-2ccbe6134e8mr22172395ad.13.1783374101635;
-        Mon, 06 Jul 2026 14:41:41 -0700 (PDT)
-Received: from hu-akhilpo-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b659d8da9sm901810c88.14.2026.07.06.14.41.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2026 14:41:41 -0700 (PDT)
-From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Date: Tue, 07 Jul 2026 03:10:25 +0530
-Subject: [PATCH v3 7/7] arm64: dts: qcom: kaanapali-qrd: Enable GPU
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="F1QKp5Vv";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="R7G0cDcZ"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 0809F7A00BD;
+	Mon,  6 Jul 2026 17:47:09 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-05.internal (MEProxy); Mon, 06 Jul 2026 17:47:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1783374428;
+	 x=1783460828; bh=dblZBFlOPQdOdcdQ+N50i9tH9O5Ky4enKZUwJMU8O7s=; b=
+	F1QKp5Vv2E1BUAUJYKwAASO+N+qCzR+GGBA8lVSJu7Ld9nVYI+6jfH1BLx3fmQZU
+	H2v4drbUYBgeAq+xN//Gpu3cOqUHD3WGsHGmX7Dr3GDX5wf8tjL8G+4TW3v+Rr+9
+	ElpdD8XfjrsVVCZENpsLtV9bFzWrQPo+HzvP9AmFLyaHI7dDrRLxEUQ/5k5sxOhs
+	RYtHpfPfKx3yL3IRRES7s/QSQmmXVNNU3bbEdpajNE4aoxT5MPs+8xDjLbFOovQF
+	CZ5PkbjjpaNRNHpBaxeWgwrWVM/JFfJHG8BNtCCPvLUwYZfKH6/f1uoUnzZ5I7CX
+	rJRLC2RLS4F7kQDp/maTGg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1783374428; x=
+	1783460828; bh=dblZBFlOPQdOdcdQ+N50i9tH9O5Ky4enKZUwJMU8O7s=; b=R
+	7G0cDcZ1MQP1fn8phZveBeDNJqti7/SvmTuub/mUhtjTUh+c4Ug5pdbgHnWuKLBp
+	thcGYhh2w9hwrv3SBhStYCL+7rr21/4/dyQcTa6n2RxBR+gy5wuxV6pc+38r++3T
+	a8b+IW7pzbwMGHnPxSh9iwFRxMxcX/In18+jgvqHnBN0D5W6kzOSsEWVBiVT6hNg
+	FLIw8u+7EoEIDi1AqnLpOMny/1a3wq3KFByz84x2DYDZ+tPOMejQVecFtP8V99fc
+	tWbOgPtEAP6/9B3W0H32jFnUlKeWLE8Kj83z3awVhzpMJ3FVT6V3O0ummsc+K8fI
+	t2VGzz16QSkoQfFWVSlJA==
+X-ME-Sender: <xms:WyJMapJadEtdkz_Ke-35YTK9kfgRDiHvdgNMiYNILrLFYOkqrkNlyA>
+    <xme:WyJMahF7xg2-hEUMZDfnW0o9VvS8FTSSo-n-WeiSlDKqqAObIbN2W1IlS2J5CAddp
+    E4PE_ixoOnxPi2F_H_xWqzYDpXK6m44c-OHK6y1ECrDnQs2Hreh_A>
+X-ME-Received: <xmr:WyJMan1IoSTxxPHqvhA7iLk8n4JtcBZko6CZKprLVZM9tqacmcNnrwS9nY8>
+X-ME-Proxy-Cause: dmFkZTGvNIjY2Vplghz8cgOyVSCztsxzD9OCzjLAwveJocuzaj+H0QJ98XBv4eElp0TtP+
+    RqgqpQj8e9dcSGKKqPm+wbcFMfB0LaVti8lxcsPpgFpxh3XuzCDo64VWBVVkefORhZMKPp
+    nhx6IbUJa5MEq0zpkpUEO7Mkj1VIyGKXgMLPHXigdSd2wngZxhCfcuUfAeLuQK0TtyCKXj
+    ncBwOvpQkRGOW9Cf2QZ8mnK9TE7OHg3G8dd2J83h2hXW6SWgLzmIVrx8yjrj3lL63d/RBX
+    Mxx1fD2HNmQn1fVcnPpbAjr++qb1illTzqKfxXfq2EIqGVR0okWr1g8gRwSz+CzJrn0IZn
+    J5TAHRjz4VouLXH6QQ4BXtZuUch53rzMgSC9B51U8QfAwAPugcRxXUjohcl7b3bPyP9w7J
+    97N4kT9nArSRKC5f+SlvcudTQpNKjlQe8CifC0+g7qcbH+GIJlI1hQkJwIWfXkc/rr80kH
+    TLK7Y7gAbqYBX+LOSYtfnL9Juv/6BB1KI8o2DpDIphTOfxOiQzdDq1PfVT+4NugZatVz+H
+    Z4UYBZCxV/z2abwvdpAQoWwrEiilA98wHChbReqVAmhp4t/IsX+D8nU2k/AV3SjIedCWxw
+    mFmDP/A+1SGYGdLWWjJzN3KrUBxWe0/CjEg1lhb1zt4ne07uWe2v7OkTLnOQ
+X-ME-Proxy: <xmx:WyJMagwErtsru0D1hY-ERDMmR2g5q3uDzSkBFtbOp6JJggOm58xfbQ>
+    <xmx:WyJMaugzihDdO59uDyqDVcqr5p2wUQvnSjETFabfjaY4nzbBH2JRNw>
+    <xmx:WyJManwlg9w63akD7JY9Nqdxh0_dTn4WpwlhVYtzNb2JFW3XN_X9Yg>
+    <xmx:WyJMakx9cxj2RRcBR75WYFno8Y3W63O9-2LRh7beK56cgrD7yKrrNg>
+    <xmx:XCJMav2wXRaqK9ZUImqvSYKlWnEv_vPGmVgOYMfiINR5yskUMrcS_NpD>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 6 Jul 2026 17:47:06 -0400 (EDT)
+Date: Mon, 6 Jul 2026 15:47:04 -0600
+From: Alex Williamson <alex@shazbot.org>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, Baolu Lu <baolu.lu@linux.intel.com>, Saurabh Sengar
+ <ssengar@linux.microsoft.com>, skhawaja@google.com,
+ pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>, alex@shazbot.org
+Subject: Re: [PATCH v10 6/6] Documentation: Update VFIO NOIOMMU mode
+Message-ID: <20260706154704.20ae47cf@shazbot.org>
+In-Reply-To: <7d4a050505317a29f7f2c32d024333b7b5c7d4fd.1783360051.git.jacob.pan@linux.microsoft.com>
+References: <cover.1783360051.git.jacob.pan@linux.microsoft.com>
+	<7d4a050505317a29f7f2c32d024333b7b5c7d4fd.1783360051.git.jacob.pan@linux.microsoft.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260707-kaana-gpu-dt-v3-7-8dac9a60dd5c@oss.qualcomm.com>
-References: <20260707-kaana-gpu-dt-v3-0-8dac9a60dd5c@oss.qualcomm.com>
-In-Reply-To: <20260707-kaana-gpu-dt-v3-0-8dac9a60dd5c@oss.qualcomm.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Akhil P Oommen <akhilpo@oss.qualcomm.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783374032; l=851;
- i=akhilpo@oss.qualcomm.com; s=20240726; h=from:subject:message-id;
- bh=wcNtHiPt37tRcLONgZr/t6X+o8Dp6m14w6rdasOzENQ=;
- b=/vxFPiWhExDAZrwWpa9l5y1Vh5+B3MHCEDcTetW6Rnsi8OF+RTcQYPZQUwPmK0SL7uCCDX+zC
- BZENeY9M3FPA6/x/6kAZHbvTkjGW6EySXdhiV8xYjlk/ovPvpLvmdhJ
-X-Developer-Key: i=akhilpo@oss.qualcomm.com; a=ed25519;
- pk=lmVtttSHmAUYFnJsQHX80IIRmYmXA4+CzpGcWOOsfKA=
-X-Proofpoint-ORIG-GUID: 5grqlW6INUP8wf8gxoxgq-YVPVa0U4Wq
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA2MDIxOCBTYWx0ZWRfX4dxeJCX828Tg
- 7POBFNUj4fpx9U/TXkEJZoxaE2foDUCwIYHTV5ftCxN3cmOG+K3Xxf0+KQRhCKC4xZlHwlW83lr
- snTIImYLB8R0Dhd8BrbT2FQElNQNjH0=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA2MDIxOCBTYWx0ZWRfX2G1niQX12jL5
- U4Re4mAWUWFsDwOqdeC/rPzjbFCYub8DdbgjRFP3Gs8NbJskDaNypWu7TxUHz5CyY9jQSikv+4L
- M3xlar559rkdYeuvgwTjNn5DQ3eY4s/WhWvGnZoE4dFQSR6HvFn6tt7n11W4KKY7TjXYO7szrSR
- 4YZAndXIvFQG0NngHhVBRHDQo0BqxQNGmCFW0nu/9jZd+Vj0YQpQI+sWr9AuAlwoMSmksQ4RxEX
- AJUI5xglL1yAd4ez7bX6/9xs9Vyjq7A+gQiYjwcXCz6sbkfOQw4CecbMaAt6e69jrvuncxTQvKj
- 62e1PbuOhq8ZCXjwveqYw1r1uKllJec6iV7APHsufRD/7xaGgPZDOIQQHtNki8bCyO0nEvag8g8
- tMmUgQT4q5aE+myImVF0IVhxxXgAfko0JUQOXCMQlTIXgZZVcHOeVOAydzpTfxaMn9D8vq5SeLj
- WrFFb79P/Vbs9sgu3pg==
-X-Proofpoint-GUID: 5grqlW6INUP8wf8gxoxgq-YVPVa0U4Wq
-X-Authority-Analysis: v=2.4 cv=GulyPE1C c=1 sm=1 tr=0 ts=6a4c2117 cx=c_pps
- a=rz3CxIlbcmazkYymdCej/Q==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
- a=EUspDBNiAAAA:8 a=ckKq4DLX54o5ySWhiFgA:9 a=QEXdDO2ut3YA:10
- a=bFCP_H2QrGi7Okbo017w:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-06_03,2026-07-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 adultscore=0 clxscore=1015 malwarescore=0 impostorscore=0
- priorityscore=1501 suspectscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607060218
 
-Add the secure firmware name property and enable GPU support on
-Kaanapali QRD device.
+On Mon,  6 Jul 2026 11:48:34 -0700
+Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
----
- arch/arm64/boot/dts/qcom/kaanapali-qrd.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> Document the NOIOMMU mode with newly added cdev support under iommufd.
+> 
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> ---
+>  v9:
+>  - Clarify VFIO cdev no-IOMMU Kconfig limits
+>  V8:
+>  - Remove reference about self test.
+>  v7:
+>  - Added Kconfig matrix
+>  v6:
+>  - Generalize device node names (noiommu-vfioX, noiommu-Y) in the tree
+>    example (Yi)
+>  - Clarify table column descriptions for Yes/No meanings (Yi)
+> ---
+>  Documentation/driver-api/vfio.rst | 89 ++++++++++++++++++++++++++++++-
+>  1 file changed, 87 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/kaanapali-qrd.dts b/arch/arm64/boot/dts/qcom/kaanapali-qrd.dts
-index 55d02219ef4e..6bef8ec151f8 100644
---- a/arch/arm64/boot/dts/qcom/kaanapali-qrd.dts
-+++ b/arch/arm64/boot/dts/qcom/kaanapali-qrd.dts
-@@ -693,6 +693,14 @@ vreg_l7n_3p3: ldo7 {
- 	};
- };
- 
-+&gpu {
-+	status = "okay";
-+};
-+
-+&gpu_zap_shader {
-+	firmware-name = "qcom/kaanapali/gen80200_zap.mbn";
-+};
-+
- &pmh0101_flash {
- 	status = "okay";
- 
 
--- 
-2.54.0
+Reviewed-by: Alex Williamson <alex@shazbot.org>
+
+> 
+> diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
+> index 2a21a42c9386..07192386f7a6 100644
+> --- a/Documentation/driver-api/vfio.rst
+> +++ b/Documentation/driver-api/vfio.rst
+> @@ -275,8 +275,6 @@ in a VFIO group.
+>  With CONFIG_VFIO_DEVICE_CDEV=y the user can now acquire a device fd
+>  by directly opening a character device /dev/vfio/devices/vfioX where
+>  "X" is the number allocated uniquely by VFIO for registered devices.
+> -cdev interface does not support noiommu devices, so user should use
+> -the legacy group interface if noiommu is wanted.
+>  
+>  The cdev only works with IOMMUFD.  Both VFIO drivers and applications
+>  must adapt to the new cdev security model which requires using
+> @@ -370,6 +368,93 @@ IOMMUFD IOAS/HWPT to enable userspace DMA::
+>  
+>  	/* Other device operations as stated in "VFIO Usage Example" */
+>  
+> +VFIO NOIOMMU mode
+> +-------------------------------------------------------------------------------
+> +VFIO also supports a no-IOMMU mode, intended for usages where unsafe DMA can
+> +be performed by userspace drivers w/o physical IOMMU protection. This mode
+> +is controlled by the parameter:
+> +
+> +/sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+> +
+> +Upon enabling this mode, with an assigned device, the user will be presented
+> +with a VFIO group and device file, e.g.::
+> +
+> +  /dev/vfio/
+> +  |-- devices
+> +  |   `-- noiommu-vfioX	/* VFIO device cdev */
+> +  |-- noiommu-Y		/* VFIO group */
+> +  `-- vfio
+> +
+> +The capabilities vary depending on the device programming interface and kernel
+> +configuration used. The following table summarizes the differences ("Yes" means
+> +the UAPI is accessible and functional in noiommu mode, "No" means the UAPI is
+> +not supported):
+> +
+> ++-------------------+---------------------+----------------------+
+> +| Feature           | VFIO group          | VFIO device cdev     |
+> ++===================+=====================+======================+
+> +| VFIO device UAPI  | Yes                 | Yes                  |
+> ++-------------------+---------------------+----------------------+
+> +| VFIO container    | No                  | No                   |
+> ++-------------------+---------------------+----------------------+
+> +| IOMMUFD IOAS      | No                  | Yes*                 |
+> ++-------------------+---------------------+----------------------+
+> +
+> +Note that the VFIO container case includes IOMMUFD provided VFIO compatibility
+> +interfaces when either CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER is
+> +enabled.
+> +
+> +* IOMMUFD UAPI is available for VFIO device cdev to pin and map user memory with
+> +  the ability to retrieve physical addresses for DMA command submission.
+> +
+> +Kconfig Support Matrix
+> +^^^^^^^^^^^^^^^^^^^^^^
+> +
+> +The visibility of CONFIG_VFIO_NOIOMMU depends on the combination of
+> +CONFIG_VFIO_GROUP, CONFIG_VFIO_DEVICE_CDEV, and whether a container backend
+> +(CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER) is configured.  The
+> +Kconfig dependencies enforce the following constraints:
+> +
+> +- At least one access path (group or cdev) must be available.
+> +- If VFIO_GROUP is enabled, a container backend is required; otherwise the
+> +  group node would be unusable in noiommu mode.
+> +- The cdev noiommu path requires CONFIG_GENERIC_ATOMIC64=n because it depends
+> +  on CONFIG_IOMMUFD_NOIOMMU.
+> +
+> +The resulting support matrix:
+> +
+> ++------+-------+-----------+------+---------+---------------------------+
+> +| Case | GROUP | Container | CDEV | NOIOMMU | Notes                     |
+> ++======+=======+===========+======+=========+===========================+
+> +|  1   |   y   |     y     |  n   |   yes   | Group noiommu works       |
+> ++------+-------+-----------+------+---------+---------------------------+
+> +|  2   |   y   |     n     |  n   |   no    | Blocked - no container    |
+> ++------+-------+-----------+------+---------+---------------------------+
+> +|  3   |   y   |     y     |  y   |   yes   | Both paths work [#cdev]_  |
+> ++------+-------+-----------+------+---------+---------------------------+
+> +|  4   |   y   |     n     |  y   |   no    | Blocked - no container    |
+> ++------+-------+-----------+------+---------+---------------------------+
+> +|  5   |   n   |     -     |  y   |   yes   | Cdev-only works [#cdev]_  |
+> ++------+-------+-----------+------+---------+---------------------------+
+> +|  6   |   n   |     -     |  n   |   no    | No access path            |
+> ++------+-------+-----------+------+---------+---------------------------+
+> +
+> +Container = CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER (either
+> +suffices).  Case 4 is intentionally blocked: allowing NOIOMMU with GROUP
+> +enabled but no container would create unusable group nodes.  Users who want
+> +cdev-only noiommu should set CONFIG_VFIO_GROUP=n (case 5).
+> +
+> +.. [#cdev] The cdev noiommu path requires CONFIG_GENERIC_ATOMIC64=n.  When
+> +   CONFIG_VFIO_GROUP=y, CONFIG_VFIO_DEVICE_CDEV=y, and
+> +   CONFIG_GENERIC_ATOMIC64=y, CONFIG_VFIO_NOIOMMU remains selectable for the
+> +   group path, but no noiommu device cdev is registered.  Cdev-only noiommu is
+> +   not selectable on those platforms.
+> +
+> +A new IOMMUFD ioctl IOMMU_IOAS_NOIOMMU_GET_PA is added to retrieve the physical
+> +address for a given IOVA. Although there is no physical DMA remapping hardware,
+> +IOMMU_IOAS_MAP_FIXED_IOVA is still used to establish IOVA-to-PA mappings in the
+> +software page table for later IOMMU_IOAS_NOIOMMU_GET_PA lookups.
+> +
+>  VFIO User API
+>  -------------------------------------------------------------------------------
+>  
 
