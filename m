@@ -1,131 +1,198 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEF05348C79;
-	Mon,  6 Jul 2026 13:42:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF6DD42088B;
+	Mon,  6 Jul 2026 13:49:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783345350; cv=none; b=reowY+s5DQPwxv0ljoiTlpCBycJOeZpKb3mom7Oof07GFLbCftTl1s5+TmIs/9VgvDt0tzByDgvppbvYWtUCU6s3jR5cmWA5LyUr0WKH2nsbHEiluBsqlIRvFFFq53CtYzBKApz8JDGdtE2SSwErltj6C4/cV0eJglpEZRFkGZA=
+	t=1783345768; cv=none; b=TPA8eF1CbmxULKdX6bSx1Y7fzWrDzYG814pra930jlNHAL4KHMsCKLN41xh19TBDwTuy4m4k0jM8h9AI6WkaqclMBZUVHUTQp2q6MkBgCnX076KKvd5tsgYOFmH3Jr8KZ1Ip8zDeR0pKiJ7qf+ZufPU8kaIlT9yWeIWhVwXB5xQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783345350; c=relaxed/simple;
-	bh=XAFY2PT6pdsrqzojrYs8JZ6/o40ZFesVrGhqlhhlBHU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=HAizfsSCtizZurK9wFdCxErf9xJoMJbldvd/VJCcZpZqp/3uR7o5KGwPMqG+9VOxm1+9pQqcyIzXWY+9Dk0NJU+0ZfhKGLftFOjBh40X0Xaa68T9ro/a3aas9j96kUnaLXj2NiCj/B6WPYsLdC1Kk9s3NPlNcdz+q27Mwn9uRYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MyTUEFo+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783345768; c=relaxed/simple;
+	bh=n2XIM2CQ/NysWLV70KA17o1xrRADPboha/A2J5wScPA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YUC8O5ZCFgerr7PImHsUX18ZKQZrJFyC9YWNecxB4ytK7QEJaQIV9xyGf9lPVnnqSZf9lpovHuGbQaJyA7GTz0zhXnHqQHqBmVyLSLBRjY+OTiYypG/9xLsbRleFWkacOw4Y11/33kzd5ecfbnElop/r84XO3lYLYXo8IABDGV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i0h5ujtI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MyTUEFo+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37CE11F000E9;
-	Mon,  6 Jul 2026 13:42:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i0h5ujtI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D786C1F00A3A;
+	Mon,  6 Jul 2026 13:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783345348;
-	bh=gXQkycuyZrdfubY+a8etURqHKk4IqlvevFVov045YPE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=MyTUEFo+V8Urr2g/vi7rndXCyW+0VLn2hck1DNdkKhva7mSObnt3GYs6H3d1v3hK2
-	 1TEFyhfmmbXArlLTvIQhrsqFCwqyADwS+LVYNQ6G2RN7xDV96Hgd1pKXP/BOR0qEY6
-	 YIVYXs3JBwYYR5wjRxTrhFGO6SlfmE/XW880EnxFSxulA3EzvwnoyGuQS4G7OwJlmU
-	 tE3cwfhh4IxggHX4IMOWUIWlcOf/88vGjd6IlfgFYkaD8pYIBT3VuvHANC8OLDoHIA
-	 k0BAKkE0+1fxXVDXVUMFu0kRSY3YlZ4x0Ca+73lDkNDaDGsrE54C4a3ECtbhgV9uen
-	 Bzo4jyQVdJExA==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Marc Zyngier <maz@kernel.org>
-Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 02/10] irqchip/gic-v3-its: Align shared ITS
- allocations to the CoCo shared granule size
-In-Reply-To: <86ik6sp7fc.wl-maz@kernel.org>
-References: <20260706060432.1375570-1-aneesh.kumar@kernel.org>
- <20260706060432.1375570-3-aneesh.kumar@kernel.org>
- <86ik6sp7fc.wl-maz@kernel.org>
-Date: Mon, 06 Jul 2026 19:12:17 +0530
-Message-ID: <yq5a7bn8i69y.fsf@kernel.org>
+	s=k20260515; t=1783345766;
+	bh=n2XIM2CQ/NysWLV70KA17o1xrRADPboha/A2J5wScPA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=i0h5ujtIHJf8JcmNUZYbVaz2XCJNa+558wUqGLmQJ6IUGVggW/DloLPLWuhO1R2J4
+	 CIOvWervclMAC+t4YHzYZNeUGQs8n5RQhD5+pX7FGLeY/rM5aE9jpEapugictLRSjy
+	 U6beDhWeB8OPkhoDVSPRejb9WdNMKzAExXxlUyKhgS+dMwIADqpoFT/nQ2cCpoW9eC
+	 K73pyNMp9AVnJTvgF51xaXwNZ1O5AGEmdncXHGxK1cdbGJD4OTUcEagkrNS0kpfl92
+	 eL06YmfDi9opIB9rvfLfMV/X8yRpROG+gLsnpOyp/R1Z2OC3JwzKq8tEhICv5cqzGn
+	 dck7DrRmZHnng==
+Date: Mon, 6 Jul 2026 15:49:24 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: Will Deacon <will@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+Message-ID: <akuvyu1Pq0ZVMZV0@orome>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
+ <akYs91INHMXMTI-t@willie-the-truck>
+ <akZkuwktaXFTrASP@orome>
+ <akaSJ5D98w2cHqb6@orome>
+ <akftuw9NyRy36fXA@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="eye62g5djwewlpln"
+Content-Disposition: inline
+In-Reply-To: <akftuw9NyRy36fXA@willie-the-truck>
 
-Marc Zyngier <maz@kernel.org> writes:
 
-> On Mon, 06 Jul 2026 07:04:24 +0100,
-> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
->> 
->> ITS tables allocated by the coco guest are shared with the hypervisor.
->> These allocations must satisfy the host shared-buffer granule size so that
->> the full converted range is safe for host access.
->> 
->> Allocate ITS pages using a size rounded up to the shared granule size and
->> use the same allocation order when encrypting, decrypting and freeing the
->> memory. Also grow the ITT cache in shared-granule sized chunks instead of
->> assuming PAGE_SIZE is sufficient.
->> 
->> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->> ---
->>  drivers/irqchip/irq-gic-v3-its.c | 17 +++++++++++------
->>  1 file changed, 11 insertions(+), 6 deletions(-)
->> 
->> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
->> index b57d81ad33a0..5d6d38aa0dae 100644
->> --- a/drivers/irqchip/irq-gic-v3-its.c
->> +++ b/drivers/irqchip/irq-gic-v3-its.c
->> @@ -213,16 +213,17 @@ static gfp_t gfp_flags_quirk;
->>  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
->>  					 unsigned int order)
->>  {
->> +	unsigned int alloc_order;
->>  	struct page *page;
->>  	int ret = 0;
->>  
->> -	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
->> -
->> +	alloc_order = get_order(mem_cc_align_to_shared_granule(PAGE_SIZE << order));
->> +	page = alloc_pages_node(node, gfp | gfp_flags_quirk, alloc_order);
->>  	if (!page)
->>  		return NULL;
->>  
->>  	ret = set_memory_decrypted((unsigned long)page_address(page),
->> -				   1 << order);
->> +				   1 << alloc_order);
->>  	/*
->>  	 * If set_memory_decrypted() fails then we don't know what state the
->>  	 * page is in, so we can't free it. Instead we leak it.
->> @@ -241,13 +242,16 @@ static struct page *its_alloc_pages(gfp_t gfp, unsigned int order)
->>  
->>  static void its_free_pages(void *addr, unsigned int order)
->>  {
->> +	int alloc_order;
->> +
->> +	alloc_order = get_order(mem_cc_align_to_shared_granule(PAGE_SIZE << order));
->>  	/*
->>  	 * If the memory cannot be encrypted again then we must leak the pages.
->>  	 * set_memory_encrypted() will already have WARNed.
->>  	 */
->> -	if (set_memory_encrypted((unsigned long)addr, 1 << order))
->> +	if (set_memory_encrypted((unsigned long)addr, 1 << alloc_order))
->>  		return;
->> -	free_pages((unsigned long)addr, order);
->> +	free_pages((unsigned long)addr, alloc_order);
->
-> The comments I had in [1] are still applicable.
->
-> 	M.
->
-> [1] https://lore.kernel.org/all/86zf2ozrb8.wl-maz@kernel.org/
->
+--eye62g5djwewlpln
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+MIME-Version: 1.0
 
-I renamed it to alloc_order to make it clear that it refers to the
-allocation order rather than the requested order. If you feel strongly
-about not introducing another variable, I'll drop the new variable.
+On Fri, Jul 03, 2026 at 06:13:31PM +0100, Will Deacon wrote:
+> On Thu, Jul 02, 2026 at 06:41:23PM +0200, Thierry Reding wrote:
+> > On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
+> > > On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
+> > > > On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
+> > > > > From: Chun Ng <chunn@nvidia.com>
+> > > > >=20
+> > > > > Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protection=
+ bits
+> > > > > on a kernel-linear-map range.
+> > > >=20
+> > > > That sounds like a really terrible idea. Why is this necessary and =
+how
+> > > > does it interact with things like load_unaligned_zeropad()?
+> > >=20
+> > > This is necessary because once the memory controller has walled off t=
+he
+> > > new memory region the CPU must not access it under any circumstances =
+or
+> > > it'll cause the CPU to lock up (I think technically it'll hit an SErr=
+or
+> > > but in practice that just means it'll freeze, as far as I can tell).
+> > >=20
+> > > Probably doesn't interact well at all with load_unaligned_zeropad().
+> > >=20
+> > > > I think you should unmap the memory from the linear map and memrema=
+p()
+> > > > it instead.
+> > >=20
+> > > Given that the memory can never be accessed by the CPU after the memo=
+ry
+> > > controller locks it down, I don't think we'll even need memremap(). T=
+he
+> > > only thing we really need is the sg_table we hand out via the DMA BUFs
+> > > so that they can be used by device drivers to program their DMA engin=
+es
+> > > internally.
+> > >=20
+> > > Looking through some of the architecture code around this, shouldn't =
+we
+> > > simply be using set_memory_encrypted() and set_memory_decrypted() for
+> > > this? While they might've been created for slightly other use-cases,
+> > > they seem to be doing exactly what we want (i.e. remove the page range
+> > > from the linear mapping and flushing it, or restoring the valid bit a=
+nd
+> > > standard permissions, respectively).
+> >=20
+> > Ah... I guess we can't do it because we're not in a realm world and so
+> > the early checks in __set_memory_enc_dec() would return early and turn
+> > it into a no-op.
+> >=20
+> > How about if I extract a common helper and provide set_memory_p() and
+> > set_memory_np() in terms of those. Those are available on x86 and
+> > PowerPC as well, so fairly standard. I suppose at that point we're
+> > closer to set_memory_valid().
+>=20
+> Why not just call set_direct_map_invalid_noflush() +
+> flush_tlb_kernel_range() for each page? We already have APIs for this.
 
--aneesh
+Having a "standard" helper with a fixed and documented purposed seemed
+like a preferable approach for this particular case. We also may want to
+make the driver that uses this buildable as a module, in which case we'd
+need to export these rather low-level APIs. And then there's also the
+fact that we typically call this on a rather large region of memory
+(usually something like 512 MiB), so doing it page-by-page is rather
+suboptimal.
+
+> The big challenge I see with any linear map manipulation, however, is
+> that it will rely on can_set_direct_map() which likely means you need to
+> give up some performance and/or security to make this work. Does memory
+> become inaccesible dynamically at runtime? If not, the best bet would
+> be to describe it as a carveout in the DT and mark it as "no-map" so
+> we avoid mapping it in the first place.
+
+VPR exists in two modes: static and resizable. For static VPR we do
+exactly that: describe it as carveout in DT with no-map and deal with it
+accordingly in the driver. Resizable VPR is for device that have small
+amounts of RAM. Content-protected video playback will in the worst case
+consume around 1.8 GiB of RAM, so we want to be able to reuse for other
+purposes when VPR is unused on those devices. In that case, the memory
+is also described as a reserved-memory region in DT, but it is marked as
+reusable so that it can be managed by CMA.
+
+The resize operation is fairly slow to begin with because we need to
+stall the GPU and put it into reset before the operation, then take it
+out of reset and resume it afterwards.
+
+What kind of performance impact do you expect?
+
+Thierry
+
+--eye62g5djwewlpln
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpLsl8ACgkQ3SOs138+
+s6HxxA//d5TQAy9G9NF/ZbA14NpOegwi6/NUjnNgWvezWXjMqGI55A0c3bbPyVKd
+tYgSNk/b86yED38u0/P4s6EilDp/WwgoM1xy7ibzv5tNhejc/YT343EeL6HiJWj1
+qcNFmynHfWiDPj5sp0ZomDHIcYv6BB+Xvq2/xZqHiuID7m8rOKp9YSzvi+HJYvIf
+gguy2ZdLlDr9S1NbQ+grzLpoFNE2QIhZn7Hch0JUwecNP7Yta44xzRKNhlFW+2m7
+ZtOzsDQ7QKHbGy3tJ+e63Zn5NjOkbRZW5xYH2rkDFt5+RqxESCS3NMXuiQ3RoCIU
+qRj7uZvZSTblbK4YNNf2ptTeEA8U0FBtJlTVZeaLp0QeIGVdgGbzC/hEySihrUCK
+R7KUsnlh8WXP0vCIj892V+PJnT8EgOq8lzk2nq8Ymp6VxXwehgJeMd6z5pea5zS7
+cZNrRSyCJFzPjmFKM5DOqo9brqwud8tYMRhaTWiNvPfvNqZtzP//TEA9OE+4Yizm
+2Ol5NP4Y7puaiFApHu958LfbnVGus2qdGkbvu/w4f2nQxIbspoGfIOwOh1MQl0Vj
+JOkcl65qwJhLAndx1wepYqOCa8NtBlSaeTagY/xxZ6/OePEgaPCKeMltWVNRFTb9
+tuWdL+sDbBfd9LRNtKNu5v/4KPGqF7swq76dY5tmpLSfQ6qAWKc=
+=gHEV
+-----END PGP SIGNATURE-----
+
+--eye62g5djwewlpln--
