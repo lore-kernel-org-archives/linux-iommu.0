@@ -1,146 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08A773F410E
-	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 08:47:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DE6147884F
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 08:48:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783327643; cv=none; b=VCBn0ichuQWFYL0gnprchWx4Ozryx/I3nWhLZeDbwpvevckdosKNzolqliRDmMGQbpqNUYlfbzSTZYGDatPaoQ8lInnw/lHTPsLl6NSK6Lbp0NTykD1D95IdP3SQB/FCzz2t7ep0BVEIhYmZ5/Xxw+3PruwKbytTxdDCD2AIJPg=
+	t=1783327735; cv=none; b=Srl+AYQD1gAlOJXJkbKaxmZk+0W3TgbxX6FikVQfHaBP0lBNDV8sXdFfp2QPQ8A56clZcnZldJp7GYO61U3tsiL4tDeKYeRMQInXl+WqKPatigzpd3yEczOV/iIfjzz/P2OM8b/O6HP69D9njwmo5Bip73rrrgEIOVe9s+dzOeo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783327643; c=relaxed/simple;
-	bh=kH6gAJ5PNvSmS0ibEasQVY/hXRYRiL9VBuNzqTlhNkA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kss4i78Ut+YyNKApUfZtPEH4OkCrKlJXXwOlk5+xYwstexQ0Mn2T3YS5k37cwxGjPTFbYMjdUstKPbkPTpWnrAC2OG9ii8JuwlfhyyELu5E7U4+CuUrhvGWZPEu7yUHjAD7QIHVDAru4QuMhOec+yxuInq0jP5tIi7zCRPCq+lI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T5K4LDaT; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783327735; c=relaxed/simple;
+	bh=QZbdVd3wDcjbE5HqJ43PJx1XHy6+qgXALVHgYnjvA4E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sLbiFzJbxxuU/U/RMMroNx8m2/uDNzwImC4m393VLHO2F1xEenwOwKVKMWzSocclIkkHImKEIRGQ8Na8e+UuByr/0IcKLwNuaLfq7jRdZCd7UM9DPJ+d4vefRfivl0ENtqp3GmcKW4WXE8hyK8VIU/b7kLgTP5fzmJnKoamwaTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=RoQsyK5f; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=LznsOv8s; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T5K4LDaT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E811F00A3D;
-	Mon,  6 Jul 2026 08:47:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783327634;
-	bh=K1JM3iR83U/G0YDsw5gW97fJ9sEdX5VFtPwLyKf8wMA=;
-	h=From:To:Cc:Subject:Date;
-	b=T5K4LDaTnrTLInmxYLGFhXguJrdgMjUW0A9lkms0OMmpbpCHlvsMmu+R4JSqbmaFr
-	 4LXRKG23mYEpyL1zLv0NXIAf8jE8vVbW0GR8GtrzkWjxLeDWTs/KUSr/sXt1WVahYp
-	 JgCyggNjlKCeq+FPUnmAD7hMNn18DxA2bp4dcPcoUcbqVc+1j3ZI4yz9J5+PB7v4zh
-	 GhYYfSc67sDMu+IvaIo0Au0+iYpRDcg9A1qq/mbiOFE+ojLCWGvWbY5z9Fy34LzRXF
-	 keKR0t0B9K/AxR+pkZjKO2RBcx9LLEk6a58mqon2/t6PfsVUyW2tkEIwKtm1NWaQWA
-	 lyasFhRtAtm1g==
-Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 0556FF40069;
-	Mon,  6 Jul 2026 04:47:13 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-09.internal (MEProxy); Mon, 06 Jul 2026 04:47:13 -0400
-X-ME-Sender: <xms:kGtLapuqRIBO2s0WTzd7lweDFzYv8Ik_LePIrmSkKJdqvXGyYy3p9Q>
-    <xme:kGtLavIxEg2dI37Nt_5rD_ofEBr1vqBjLxUZgpkzsBZnGKzWQcjeB0MJD-LfhLuot
-    QYMchK5mxUDpu3PhcppiyYqRwMlCy0Tt2IVxmg9NijYwn1Ir9XivO2f>
-X-ME-Received: <xmr:kGtLagqTpEpFNtP6jHzjcMRuxK7uzerWiBpbbo6ALvZImfw-k6_xQfBXAWLYjw>
-X-ME-Proxy-Cause: dmFkZTFgLk5M9VxGft6rFuXGnGCOxsoVsLfH/QhMWdGsWlLYZ+tvZp1fr+XMDadXHgzDSl
-    y6Q9gczpCt+E83q0zkJrtfwUsirjdQSNVdeURUQWhISVyyJ4XB/Y7Pyg9Hl7/mqlBl7Qcn
-    qwlFvgz+uVlNLAiUHQQMtYxXqcFTn9MB5S+hZyCmdDngmC/3Ia+GlwR3CrsOCy/aWlfsUz
-    zV54lUI+sNsGL3WP17ea0EMmkmiCyq/64WDRqlzED74cjLv/UBUIr24yghmQmxiaXp4xC5
-    9zyCq9IDeqXQNDvjPod3FKqKBUnS2uLzL5XGYdbfrQ4O9oYFLYXUmlE8guOhUXF3e6pZbo
-    FNCVgo6+FoYet0fxGa5N/bknHEQjATOo6auOEvli93NPdiztZguBZntImJ4QsA04v/j4JG
-    92QiU0HND4/uQ7zJ7d1mq9u4c0d5kX8Waiydpy773aqR99TW5k2sHIsJl06F+RadfXTgVY
-    0VLZUt2wErQ1BX1zgI6oARS3y3q+Drry6n2QAfTCpfslHDSnID88icpTCXwPwpC3hkUTVk
-    UIbhObQFXnCFUqokK+rifqHyB5PrDpYvArl2VIBllJ7Dnk8VhFbfeXHj/q2Tw6Nn1fr54i
-    Il5/sLo+IcM51e+x/KwqBlvIB6XlLXprGbVl2M81nsfhHezQ9+Rn3pnJEscQ
-X-ME-Proxy: <xmx:kGtLaqWKK3tzlUX-X3zhMvyJkfZSJBwtpAxKK2z7irwA061-6KoiVw>
-    <xmx:kGtLat2TrT2zg8axIIMLuTjh93ssPmvlSYJVLKDi5kVQXkpNZb6ibw>
-    <xmx:kGtLapTK_FsSnoU5mi89Ti_4fa2Xd0ujN5fdD1huN6pLUZeXX3b__Q>
-    <xmx:kGtLahTBfYC-cIoaKxyzqEhuIEyssCfPvuy_14nWnn4WyUEqG8rpwA>
-    <xmx:kWtLaqVskaUZaBMHKxRhdpmq_E7k_bBrjYAV7nQWCi8g9EX8ZmN1e4Er>
-Feedback-ID: i10464835:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 6 Jul 2026 04:47:12 -0400 (EDT)
-From: "Kiryl Shutsemau (Meta)" <kas@kernel.org>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Breno Leitao <leitao@debian.org>,
-	Kyle McMartin <jkkm@meta.com>,
-	Usama Arif <usama.arif@linux.dev>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	"Kiryl Shutsemau (Meta)" <kas@kernel.org>
-Subject: [PATCH v3] iommu/arm-smmu-v3: Shrink command/event/PRI queues in kdump kernel
-Date: Mon,  6 Jul 2026 09:47:08 +0100
-Message-ID: <20260706084708.8072-1-kas@kernel.org>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="RoQsyK5f";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="LznsOv8s"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66683qg74156693
+	for <iommu@lists.linux.dev>; Mon, 6 Jul 2026 08:48:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	UyCrsVtN/vgWmUocyd2gtWqkOjFDvVdxEkewtddvF+I=; b=RoQsyK5f7fV1iWo4
+	SyCXOG5Wkn8sUyU2MNNAjdt+XvirxwPpqH+Vl7KXVFEVxe6G13eUl2I8KVybA5Fs
+	bSvo8oIfzknqPfNdnifuLyviUJ6qvjS7+XgDfmJkkkad+KCKBhPrhToiobXU1tIl
+	YFdVQfN0zAjEXkvCYS/RJwZyzBnhTM0JKyMah2Xfn8xtenWxWKQbuFKggz6rMm1c
+	f7N4t3sUjBejdx8EkRRKelOmwe/39PgIO+IfwWCzvdTvih77/oAKY2UL4gfGdrid
+	viv5xUbpgVRpsw0bW5UH4/K4NFST7TWUs7qPFG3KyW7Gj3qOHq9VQRRK1bEMR40S
+	50O6Og==
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f88h986bu-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 08:48:45 +0000 (GMT)
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-51c21be5bb4so20865501cf.0
+        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 01:48:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783327725; x=1783932525; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=UyCrsVtN/vgWmUocyd2gtWqkOjFDvVdxEkewtddvF+I=;
+        b=LznsOv8sKk84/opaz52ma1CyGfNF9ePxLHU3LpY4F2D7sK+YWzG2wUl6d1gVolsZ2d
+         OfIbNcoAjR+VLSBY3wfJ2EZWtiizQRFYtpY9wdfgcJtmNMzWSrLZ2tHmFMugk7V5tk5a
+         /v6JSGN2/P8nrod+VYUlQLwM1z2B2BA0E04wvrv5dNaJb0h29oohiOcbWwmOZ5DKmciM
+         F9a8mK6x3EFM3YOqxoB18Ivpvr+LYFnHptLPReknb0OH0nJcOICX0RoyKBqaNbSBkf7H
+         kHkW0xCk0KKBeeL3VoXftiZ2ccVohnGEucCYuAO2Ki/L5eDeeC/vcvObAacASZJ36Bqj
+         GqxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783327725; x=1783932525;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=UyCrsVtN/vgWmUocyd2gtWqkOjFDvVdxEkewtddvF+I=;
+        b=Kz/HiqfrdGbd2a0PTG71LHOgUTvsAkx3Kz6KeB1Oxy4sTiBsO8qpv4BR5h1VTDO7mJ
+         h+yNxsiYNnqqGSuKrHtKRUqbY/hwMrR0Mm6NTj9lbn3Wtp20RrdDdkhtPVQmMcU4RLBH
+         DCwVGieX4AwO50u/1FgUY63L6ApepsSmmZEYVXV5KpFNlaeDcAf+B0aeFcoGKlm4wBvC
+         Yg9LkKKv6wYXgyz3FQrvIH/vJ0r7hSjJlkHa3QHgG9vKwo5dLBEow1+YQCckpljDtDVm
+         +zWafHMUESub54O1bfWnVzZTLt409pIdd/oAPR9eZvwbKNrR6ptn7JgPLW1127pteQv1
+         JKEw==
+X-Forwarded-Encrypted: i=1; AHgh+Rpx57u5ndTg8f7rRvUf09YVfHxHqsCwH4CLFJk2HrdXqP5jX8Cms9SvfZ/HzDo/+knni3HJ/w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxr/QOyWJXKko8JkT+P2SSSMK4KNeloTXmAjJdgXKHdlsLt+Xqa
+	5rF4Gv4EF4RRXp0r+CpAj0rJdq9OSWacvfbTGwxc5cd5HeR6Ra310xQorZoK3qTTo7R6NoghHeR
+	EqLNE635BSXjESQdoNMbAf0UFxd04E1DfpWS2VMaBt/OJ49+ctJVFO1p+vw==
+X-Gm-Gg: AfdE7cmWpYeX3zeYqe/q3QWlQb+D2bZHBGxpf5vSOYTTzeZ0hgTmuWy5kYlxj7u9Z4D
+	i0zsI5rTslqmKLlXIMWsPbF56SLvWGK9+EcZo6DbFDqJs0TqiQKeDKXEiKD4DTnjRcK1xKgayWr
+	JuwoWjvZPdwcEi0u7mBEfrr8YjTpfueMZ/z1Si1VePa2P+2DRfeHmaPGF2bxFeFDgFRauJs337m
+	gwBva4V3/mjM5PhLObMbax9pfJtMfrCzOnPRm7UIO4wIMpxd8u8O9wDOBWbS9iT9oKSyxvAh8jw
+	R7WM6ip14WDBnha7ywKcax0J1tBocj4qcj0TRy4BoV4ANcFaeAWnMeUjZBJ1uZK/JyEySxPDHby
+	CBmkvmza/gZFOsfE7J/nqjZb40S+2zGYON5I=
+X-Received: by 2002:ac8:58cd:0:b0:51c:223:3c57 with SMTP id d75a77b69052e-51c4bf30d44mr87210771cf.10.1783327724794;
+        Mon, 06 Jul 2026 01:48:44 -0700 (PDT)
+X-Received: by 2002:ac8:58cd:0:b0:51c:223:3c57 with SMTP id d75a77b69052e-51c4bf30d44mr87210471cf.10.1783327724419;
+        Mon, 06 Jul 2026 01:48:44 -0700 (PDT)
+Received: from [192.168.120.193] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c12b62c2d37sm691730366b.42.2026.07.06.01.48.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jul 2026 01:48:43 -0700 (PDT)
+Message-ID: <3208407d-05ea-4b1f-bb65-91afbcbc858e@oss.qualcomm.com>
+Date: Mon, 6 Jul 2026 10:48:39 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/8] drm/msm/a6xx: Fix RBBM_CLOCK_CNTL3_TP0 value in
+ a730_hwcg
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>
+Cc: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>,
+        Abel Vesa <abel.vesa@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <20260705-eliza-gpu-v1-0-c9f1354dbd29@oss.qualcomm.com>
+ <20260705-eliza-gpu-v1-1-c9f1354dbd29@oss.qualcomm.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20260705-eliza-gpu-v1-1-c9f1354dbd29@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: 1dXs6i0a6BhaaW4eyKciPcajyBRWbPMV
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA2MDA4OCBTYWx0ZWRfXxUB/4/8UthZd
+ /fdhUOHrL6mLkE2BIDEX8H5S3M9HoxnHr0SIXa44NG3B2U12BgmVXivOJjVb6C7jO441woeg6jX
+ I0CYJLY04r8HXD0Q2QcKFpUlkOk6v7k=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA2MDA4OCBTYWx0ZWRfX8PhsGhIUL6KM
+ yR6qtR6AljTM3BrOY8r6Jx+1yXGP1PnhdAUebFz3PadTcOhvRymqdysINoOi+S0JSsrnfD+bmXM
+ +26EeqD4q98qHp26nXMOn1SLQ+tWiv+aQL+ZHFJkVGpDHMwvLc1zJq3HkxOOUvxrgpnIN2KdSaK
+ kRbwTMeMAu8VxPJaf2P81wzDdHu25SOgcRKWS+YS7Sl157uT1UhsTYM4jS+qRliUYPxq7PZm+Ys
+ ++opp7xvrN0b/HRzJJVjMpe5BaZexKrpfpb9f45O+t71ZU4ORznHgFlDIqxPSW+jvvCsi+xjd1p
+ mc6ut7xI0p2dshzqP5orsw4UjF8Y4pcIj8rp6TcgpxjrTiFnc+c2kltjoOGNQp1jcefe4dCgEmz
+ Cj0ID7niKl+G45Eo/OycFLH/ioPmRCQ+ya50+2XtJobYUZr5sbMYA5VA223o/LXNjS+g083used
+ M8WaDlR+xouv/b5psHQ==
+X-Proofpoint-GUID: 1dXs6i0a6BhaaW4eyKciPcajyBRWbPMV
+X-Authority-Analysis: v=2.4 cv=GulyPE1C c=1 sm=1 tr=0 ts=6a4b6bed cx=c_pps
+ a=JbAStetqSzwMeJznSMzCyw==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
+ a=EUspDBNiAAAA:8 a=KnFAnPMC3uCYYmJdzeAA:9 a=QEXdDO2ut3YA:10
+ a=uxP6HrT_eTzRwkO_Te1X:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-07-05_02,2026-07-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 adultscore=0 clxscore=1015 malwarescore=0 impostorscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607060088
 
-All SMMU queues are sized from the maxima the hardware advertises in IDR1,
-which can be several megabytes each, and are allocated at probe. The kdump
-kernel already disables the event and PRI queues (arm_smmu_device_reset()
-drops CR0_EVTQEN/CR0_PRIQEN) but still allocates them at full size. On
-systems with many SMMUv3 instances that cost is paid per instance and adds
-up to tens of megabytes of coherent DMA in the capture kernel.
+On 7/5/26 10:14 AM, Akhil P Oommen wrote:
+> From: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>
+> 
+> The RBBM_CLOCK_CNTL3_TP0 entry in a730_hwcg has bits[19:16] set to 2
+> (clock gating enabled for that TP0 stage). As per the latest
+> recommendation, clear this nibble to disable clock gating for this
+> particular stage.
+> 
+> Fixes: 9588d2f860a4 ("drm/msm/a6xx: Add A730 support")
+> Signed-off-by: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>
+> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+> ---
 
-A kdump capture kernel runs from a small crashkernel reservation and only
-has to drive the few devices used to save the dump, so deep queues serve
-no purpose. The queues are not on the DMA data path, so dump throughput is
-unaffected; a shallower command queue only bounds how many commands may be
-in flight before a sync, which does not matter for the capture kernel's
-small device count and modest I/O.
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-Clamp every queue to a single page when is_kdump_kernel() is true. Doing
-it in arm_smmu_init_one_queue() covers the command, event and PRI queues
-in one place. The command queue still holds at least one batch plus a sync
-(256 entries on a 4K-page kernel, well above CMDQ_BATCH_ENTRIES), so
-command batching keeps working.
-
-Suggested-by: Kyle McMartin <jkkm@meta.com>
-Signed-off-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
-Reviewed-by: Breno Leitao <leitao@debian.org>
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
----
-v3:
- - Reword the commit message: all SMMU queues are sized from IDR1, and the
-   event/PRI queues, though disabled in kdump, are still allocated
-   (Pranjal Shrivastava).
- - Collect Reviewed-by from Pranjal, Jason and Nicolin; Tested-by from
-   Nicolin.
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e8d7dbe495f0..a4ec4a59e527 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4414,6 +4414,20 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- {
- 	size_t qsz;
- 
-+	/*
-+	 * A kdump capture kernel runs from a small crashkernel reservation and
-+	 * only has to drive the few devices used to save the dump, so there is
-+	 * no point sizing the queues for the (multi-megabyte) maxima the
-+	 * hardware advertises. Clamp each queue to a single page. ent_sz_shift
-+	 * is the log2 of the entry size in bytes (dwords * 8).
-+	 */
-+	if (is_kdump_kernel()) {
-+		u32 ent_sz_shift = ilog2(dwords) + 3;
-+
-+		q->llq.max_n_shift = min(q->llq.max_n_shift,
-+					 PAGE_SHIFT - ent_sz_shift);
-+	}
-+
- 	do {
- 		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
- 		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
--- 
-2.54.0
-
+Konrad
