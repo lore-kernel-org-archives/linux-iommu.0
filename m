@@ -1,157 +1,195 @@
-Received: from fhigh-b8-smtp.messagingengine.com (fhigh-b8-smtp.messagingengine.com [202.12.124.159])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA4722D780C
-	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 21:51:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0C112DB794
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 21:56:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783374689; cv=none; b=IIdMHrWiwm54GKsJV8hlfwWfYQSmP9oW1SeUl4W+oRZFefALQOR1b1P1pdZsFgzRz5cgUJ+8oJUv0heDkVB78dK5dhCPB7hF4jvwP/F2Q7kWU2KSlrQmwNAelo3JFzr7vXbZbXO+zE6jQiJ9dbJdY2efL6NbcAOPFwlCqCmbopE=
+	t=1783374985; cv=none; b=tZePxctuSY0fWh7ymNcscyte8BD3qR8oCJTM+KeJYCBAScfYzeYJiUB7tLx+dzp9r5YS2ttkL0L5bGOWR3Kr4KOYO4qO3SNLRAsL22Zqx0a7UdEgD0MaXWIV0SEuaTEKmXOK+VwSTUMN4cqoeyaCuzQ3fTKJJv8K8hM6+NUtG+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783374689; c=relaxed/simple;
-	bh=Lw5Z4xMd5bcUN8OiTtUp1LCCjiRcuTk221uKowvkcXg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=etjhtWxtRWmrVyD8aT/zAq8kam8L6OHs8cweaJZ1pfbxph8tSd7RBZD1mlXa1t9sOR6ZUt3A9Zic4oHzJCfi3OEk5YkcYb9KTk6A9GepZk6U/lKqs3l7oT1dsiRdH9QL9y0RAJd2+XmjGcQDTA+6ELUg6lbWLMX1ytgWMrmpfn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=KBmMM/QG; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=kVhDTKG+; arc=none smtp.client-ip=202.12.124.159
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	s=arc-20240116; t=1783374985; c=relaxed/simple;
+	bh=UpO4tKWLM6NpkjaToU5bkuiwbjykqdoA95uxnkZptHc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZhqkvK8nJK8sZsbo/2EhsFQND9pAePJm9vRAxIB0wFGdeqjikP7jhLdlU17vMWdhMb78Js9ZJKRJ++rBP4dVE/7twm/uKkaz0CGqAhhhRETsU2vZvjUjVMa0ezdwjr26FbF+lLCOKvQs6SKJ+CsSi+tiYizT2kNUk5BzG9HGd4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=aSlxawR/; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Uh96mipr; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="KBmMM/QG";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="kVhDTKG+"
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id E24FD7A0086;
-	Mon,  6 Jul 2026 17:51:26 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-01.internal (MEProxy); Mon, 06 Jul 2026 17:51:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1783374686;
-	 x=1783461086; bh=ptTzMMktxWgceyotpwu8TMRSI/WL7rhcXCUL7c/2MqE=; b=
-	KBmMM/QGgdKKevsXG+X754R3geMw5evm5FcUUUz5H2u//QDbsc4c/B64KuVwJHig
-	qbUj+sQNtydIzLoLVtp9t5o2wrlUSw/xaXaddUexCyylSAFsaCmW149MlSfJiI1N
-	bdzomFyDx4YYBum1BTVNSBY7f19Nas3ZVGMM18xtHZ2/KygH7GkSrRdcyDLLvpw0
-	S691TyqNziHIBhxPVs6bemVOFPN2JRMlJUB7oGb+QG7Uif/ID+9QhsJUwgc+ViXq
-	jU2Sdpj2CK+e2nni7NIMkcMp3BQDKK3LzSORGbVb5T4D8VkCazpuegjV5U3dJpW7
-	89EoQSA85RNaG/1fT/qmEw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1783374686; x=
-	1783461086; bh=ptTzMMktxWgceyotpwu8TMRSI/WL7rhcXCUL7c/2MqE=; b=k
-	VhDTKG+r++NWTltWOt61L/8c0V/nYRWnOgybDgkdXB9aJ4Zp3yNDwlh19uBD2Fv3
-	Ykm6dzxDrmCQRbyy23D1LRft96vVmd1gZoH/lQLsgdTjYDxTQmWRwgwq4RusqXib
-	V7PjCU/K3tjJWHfux/39MmMgi5eex7KFmonIHjAQXg6iQ8Zom4tekTy8bmOj8IxF
-	X0le/YRjgUU3yxbQAqRrzuBEGL4FQmgPR6VSyZS/oo5rdwOoV99eJKnHV/ARPy52
-	mhp1gecnddXru731dIq3CGau21X2iyyPbUYmgYfb6nyIycw86qnFoAnWKwquJ1M0
-	3xWZLReq+7HdFlwK2zPSg==
-X-ME-Sender: <xms:XiNMah0Vj7MwryIet9_lrzsk3iXaSAw2T-KzMjyDi5R0ht_pypgAdQ>
-    <xme:XiNMakDK5ObrfXcTn7kprTzIhUsGqLaFQi2y8lZUkDSWO6JM4gWUklnPbjziqyh-0
-    xZhVluLR_Ut59CjzR2RX2R4SENIrFKmu_Kaxh591Obsa39U_0ITVg>
-X-ME-Received: <xmr:XiNMaoA5AZMrd2kWbzG2kW01DjVXWTZpPMP_4IKxjC1-s3paD86ShpVCMXU>
-X-ME-Proxy-Cause: dmFkZTEH1IamlHq5oE2VKhS+HiqS50Y8kEzR2l459lPaCUjBbRZru/ARdbHsXKeest7qpv
-    Ly3iDidIrb8e9tTtth9ZsR9HlCUrYeCMtWD5Kg5lpSLYC6NdI070HjE5wN04OB62SBsKYv
-    1favmgk00+acgTCM5Zhx68FfJSsD1t46whEUVfFP3khQX+BlVaHVUnRo2/SIWSCEGya5/u
-    Xpcff/O31SmiFAXWqhFgB7gLljq1IWXMh3BQr2HzF4/3nG4uWzMbC8AXkU/fYQQ5EYGZUa
-    u/iOaUSJjwjR6vwxMcDTeBQpMB8MkkSa2SoOsP7o/PHD9M9IZ0TAiZlH6ysQA2zaMoicIA
-    buFVCqoa3K79uINM0s1SdQ9ApB0M+hikqXBKoafNAzaT8Lr8e6TOPsVv7U1psHGQhH1dT3
-    NFy6A1AyRCh68OBAp3IdPHDSVsv7c2+EfRDv3SSKs/tkkWmVChu3U+3jUb6xmgQ0ZJ45Ir
-    pFwUrcvtTJBrsQqTn+qHnwZumFQ4x6s0OXGObzCSR9MMbG+vn2nU2FWBC/gom/7md1gaJe
-    ls2kn4yZ1YN3XFXx5ZdMR5KgYAhE1P+xPt/gATzZZNNUEU1wJFzmu2u3ogCPi60VP9dBCT
-    pCsbwyp3Dn3hTgu1G0JQN9LV15sL5LRxTESO0KMPif0RWp0fd7JFoNHaIpOA
-X-ME-Proxy: <xmx:XiNMalNU1NVdwjC3CcMk6Ee8bczsg6e5Qb5gHiXtowQnTLHbZBVdCQ>
-    <xmx:XiNMaiMsbpJLesinqQFjpDf-KcG45iRASVjm2Ysn--VVYmZqRSK8CQ>
-    <xmx:XiNMapvY_Pt0ukDqhNSlP-BcsIB1AXYdrO0im6PX0e5wwt51uehsBQ>
-    <xmx:XiNMan-bxtjZ0kDoJffLE_uSUNWiNgz0kcGj6wOfg3cJTHXowU3SpQ>
-    <xmx:XiNManBiYptgnl86UkVhQSGbc2IPs8mdGJ10ZiW5H1F0uXQdLMmpaRWW>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 6 Jul 2026 17:51:25 -0400 (EDT)
-Date: Mon, 6 Jul 2026 15:51:24 -0600
-From: Alex Williamson <alex@shazbot.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, linux-kernel@vger.kernel.org,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
- <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
- <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, Baolu Lu <baolu.lu@linux.intel.com>, Saurabh Sengar
- <ssengar@linux.microsoft.com>, skhawaja@google.com,
- pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>, alex@shazbot.org
-Subject: Re: [PATCH v10 0/6] iommufd: Enable noiommu mode for cdev
-Message-ID: <20260706155124.15b2456c@shazbot.org>
-In-Reply-To: <20260706195403.GE118313@nvidia.com>
-References: <cover.1783360051.git.jacob.pan@linux.microsoft.com>
-	<20260706195403.GE118313@nvidia.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="aSlxawR/";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Uh96mipr"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 666KF2eT1506341
+	for <iommu@lists.linux.dev>; Mon, 6 Jul 2026 21:56:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	DVdlz/AoF+GYHSUtVQ5knwxf7V9QHtqCyB2a5fsaD8Q=; b=aSlxawR/BBrrsLrp
+	S3V4J3GgdBLFVH5XsOppLOymMo59D1CcyK+MsnVve7Xg8I93VdIAqy/Rb+2vPqjr
+	qo4uc1b5gPUwyAagrMaFTdRWnCjyA8JXRU+Ip7WGUxq8dXhqxZ8ljDUCSvgRBZHc
+	v3HN1fyYz/aBTB9jd9QYwx229j5YIT9hrUHTIniakWSL5de1l5DDGqjbFPPB0Usy
+	ctjuHWEBvMsAIi3PIFQrGdnIRUWKEPo82upPFGkhkapz+jPJK/YB7Mutu7vmLS2J
+	uXtkmaiJcgYuLaMCiV4VSNSLtKM1svV0ILMYxrVktt+/zD+eGP7+rwJulfaj8iG+
+	vbvbfg==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f8a98jy99-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 21:56:23 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-38127ae6b99so26603a91.1
+        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 14:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783374982; x=1783979782; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DVdlz/AoF+GYHSUtVQ5knwxf7V9QHtqCyB2a5fsaD8Q=;
+        b=Uh96mipr9e1es1KEikK5VUi4ayltwvqk8osbyKOaQRdQBT079sbKAVnzTDphh5et6t
+         7jo5qvfIPGSMMQTTegOr5SNJ02IAp6JqI7j984nBbfU2dhqrGKX1WFwTjxJvzxGAHQG4
+         rSC6sqHrW7LkWMbF5cml7L7HSVM/Z08WFhhXOFPO0/jPXz36dbPQw1PeC6bg+BcFXUvj
+         0RaeblYvz9b1nS77Rqf23MLCz2j7WSnoUUcAAuRvR9EfY0gjAzL0dHmRyD1TZTbFJMQN
+         nJmRkTFjswtXCApSIaEcjeZRsYSOwWq3WcU6cOKYpBQuHd/Onz/f5lMRTkm3WiNFU0nF
+         Jxtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783374982; x=1783979782;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DVdlz/AoF+GYHSUtVQ5knwxf7V9QHtqCyB2a5fsaD8Q=;
+        b=VDuywgDklAhZfBc/V5pqmjRndKN3Pp0RvRurHswSS738+3cG3mFaO6h19bU1NSKwgD
+         dbX8gXlheQfA0657gwQjxry7odsz4e6phjp29n/mKZMtRSYl2muKmHyCZ03bRhMApoJN
+         w5uriIkYmL2ttm9dYzs9vbv9XVlg/zzLKkMDxOV5ajFHyC9ixyEMH+TLDusHpLFDtna1
+         IqhJTVar3HRA/D8suemVb/L7YK0LmunwsILGYo/J1lzPZZFDRMkD6dBIk219DfwxJ4iP
+         CVRGeCuNgTwkiCPsYFpG3szB/I3WEGHX1EmDmx+4YGpZ4hNYetR5HgA2uF+V8y9nQ/0E
+         AjDw==
+X-Gm-Message-State: AOJu0YzxWX+YDT2oBJsily3tX2vp4AYGEXzIO1LI/AiQTot0pdnzwVRy
+	IxCxrK7vhy//TSytxUHpP5MKDaLRq+5GSi6tAh+0oS5LaOfytA8XhdM4kmu+FeI3Qab64vQpnwD
+	q/8gq5XG8n+r4Hv74n/tywcGMYj5tdqgs5yXSpePloYjo3hJKlbeJBQ/2QA==
+X-Gm-Gg: AfdE7cnz9S5iJdnsdyZGQ4xueWDEau7T0JuLjmsVAzVd6ZFajwzh5YPGGTuJPsS7fBs
+	MS5DtVkIX362zZegNaaGlPFh+Fj8O7z1domR0NDMJv7lOp11ufDOudT05Wl/5fUMamgiWBGHucL
+	hcso1on3S45HdIwx+sxvtytTsmfJVFMUqAHjyu6tLUg37RX1kE+fSwOkfyENqDp7jx7qPh4WV9C
+	GwtDJc3hwnTo3AZwdF7Q6dZ/XtqBl+sDl7fTaVq3N4LqMsKQrerzkYJ4O67PTDGXjFEaxxzs3bO
+	ena3trjMCbmdXP01RjO42xfkbEA7yZNCGoCc8D4R0M3i+4e8T7O3fSwsS7MM/mLSHnDObb22M7g
+	8ZO5QaKEBOm1rTchdgoyMbPn5RHblg0J38lk=
+X-Received: by 2002:a17:90b:3a48:b0:37f:ee3a:12a with SMTP id 98e67ed59e1d1-387d6b978a7mr102071a91.2.1783374982391;
+        Mon, 06 Jul 2026 14:56:22 -0700 (PDT)
+X-Received: by 2002:a17:90b:3a48:b0:37f:ee3a:12a with SMTP id 98e67ed59e1d1-387d6b978a7mr102043a91.2.1783374981910;
+        Mon, 06 Jul 2026 14:56:21 -0700 (PDT)
+Received: from [192.168.1.9] ([106.222.230.254])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311748394acsm762251eec.8.2026.07.06.14.56.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jul 2026 14:56:21 -0700 (PDT)
+Message-ID: <2a556ca0-d276-4c56-a44e-9d8b92a3af6b@oss.qualcomm.com>
+Date: Tue, 7 Jul 2026 03:26:11 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 10/13] drm/msm: initialize LPAC ring
+To: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar
+ <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org
+References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+ <20260705-descriptive-name-lpac-upstream-v1-10-01d50c3e0c99@gmail.com>
+ <93b78299-866f-4a3c-9423-a990d9a7d4cd@oss.qualcomm.com>
+ <64a919ab-8b36-45fe-8da8-5eaaf4d55359@gmail.com>
+From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Content-Language: en-US
+In-Reply-To: <64a919ab-8b36-45fe-8da8-5eaaf4d55359@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=SpigLvO0 c=1 sm=1 tr=0 ts=6a4c2487 cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=fsdq8dFr2Uux402FS9br8A==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=pGLkceISAAAA:8 a=mx_oZ8J27MAni7-wUjsA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA2MDIyMSBTYWx0ZWRfX1wacqFaGdbGU
+ CDs3xA9jsWZ4aohBugsyWHbOsiz+pdxZVNCEVxNHujRkgOyMFCO9cVPy8/BRAabcj4rg1iuCMhz
+ NJJdw0U0rccNvtoHZUCwbhPTfOaMSycpdRx5u8U96vRBx6W3Fx6GiuU2/XHHU62GNXbSFRN8aMK
+ XNPtc7gv4alIe1g2THdKTOjgOntRFaa/MoalFcTtHyhnfabPGRViCkr31x9+efv6zpb9d+pJd/H
+ 4OV4fqP9wEFWTQaXCgM/tJ3pl4bzXpkiTW5kf2o1vVWoaa7BId4O8WNYYzeTlQt0P+L3CWJv+Bt
+ YXEzl+j1mx1TKgHuMlKo76JATsFFKsAnumLDv5+1ZewXBzDADcdbE7ehx4Q999N883owjuHRhL9
+ oHpZCPjfjsnGakzX+WSm9DFP4NEMHUTboregxnnGoxuRRWI9l6Ya2r/KH1/NQ2JoAmOC1TPmnu8
+ v9cy9uliQLtsNF8LM2A==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA2MDIyMSBTYWx0ZWRfX99Ab9agfcETP
+ GLkZXSali6+pQbq7tpT4tKFmGFTA1PS66LxwDVFxPLogK53yA+u7YcNLWDqshki/0RRK9QeZ+e3
+ jEmRu2nVhoKFmS77WvXRcsNUovOo/WE=
+X-Proofpoint-GUID: NTWdu3VZaTN-yigqCXlCMOw4djw3Gv7v
+X-Proofpoint-ORIG-GUID: NTWdu3VZaTN-yigqCXlCMOw4djw3Gv7v
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-06_03,2026-07-06_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 priorityscore=1501 spamscore=0 clxscore=1015 phishscore=0
+ bulkscore=0 adultscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607060221
 
-On Mon, 6 Jul 2026 16:54:03 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Mon, Jul 06, 2026 at 11:48:28AM -0700, Jacob Pan wrote:
-> > VFIO's unsafe_noiommu_mode has long provided a way for userspace drivers
-> > to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD also
-> > supports No-IOMMU mode for group-based devices under vfio_compat mode.
-> > However, IOMMUFD's native character device (cdev) does not yet support
-> > No-IOMMU mode, which is the purpose of this patch.
-> > 
-> > In summary, we have:
-> > 
-> > |-------------------------+------+---------------|
-> > | Device access mode      | VFIO | IOMMUFD       |
-> > |-------------------------+------+---------------|
-> > | group /dev/vfio/$GROUP  | Yes  | Yes           |
-> > |-------------------------+------+---------------|
-> > | cdev /dev/vfio/devices/ | No   | This patch    |
-> > |-------------------------+------+---------------|
-> > 
-> > Beyond enabling cdev for IOMMUFD, this patch also addresses the following
-> > deficiencies in the current No-IOMMU mode suggested by Jason[1]:
-> > - Devices operating under No-IOMMU mode are limited to device-level UAPI
-> >   access, without container or IOAS-level capabilities. Consequently,
-> >   user-space drivers lack structured mechanisms for page pinning and often
-> >   resort to mlock(), which is less robust than pin_user_pages() used for
-> >   devices backed by a physical IOMMU. For example, mlock() does not prevent
-> >   page migration.
-> > - There is no architectural mechanism for obtaining physical addresses for
-> >   DMA. As a workaround, user-space drivers frequently rely on /proc/pagemap
-> >   tricks or hardcoded values.
-> > 
-> > By allowing noiommu device access to IOMMUFD IOAS and HWPT objects, this
-> > patch brings No-IOMMU mode closer to full citizenship within the IOMMU
-> > subsystem. In addition to addressing the two deficiencies mentioned above,
-> > the expectation is that it will also enable No-IOMMU devices to seamlessly
-> > participate in live update sessions via KHO [2].
-> > 
-> > Furthermore, these devices will use the IOMMUFD-based ownership checking model for
-> > VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an iommufd_access object
-> > as required in a previous attempt [3].
-> > 
-> > ChangeLog:
-> > v10:
-> >   - Rebased to v7.2-rc2, no intended code change  
+On 7/6/2026 4:37 PM, Anna Maniscalco wrote:
+> On 7/6/26 10:44 AM, Konrad Dybcio wrote:
+>> On 7/5/26 9:13 PM, Anna Maniscalco wrote:
+>>> Program all the register needed to start up LPAC and send initialization
+>>> sequence.
+>>>
+>>> Additionally, now that the LPAC ring is live, make the code aware of it.
+>>>
+>>> Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
+>>> ---
+>> I believe some/all of these writes need to be guarded by if (has_lpac),
+>> as many GPUs lack these registers and there may be side effects on
+>> others
 > 
-> My impression is we are good on this now, right? I would like to pick
-> it up?
+> That's correct yeah. I'm not sure what has_lpac should be though.
+> 
+> Something we add to catalog? Or checking if it is a gen that has LPAC?
 
-There are a couple Sashiko findings.  The PAGE_SIZE issue seems like a
-false positive.  The AMD based page tables necessarily expose 4K, but
-pinning is obviously at PAGE_SIZE, so returning multiples of PAGE_SIZE
-is arguably correct.
+We can introduce a new QUIRK (ADRENO_QUIRK_LPAC?).
 
-The PASID issue seems more like a uAPI hygiene question, and it might
-be the correct answer to return error for values other than
-IOMMU_NO_PASID.  Your call.
+> 
+>>
+>>
+>> [...]
+>>
+>>>           a6xx_gpu->shadow = msm_gem_kernel_new(gpu->dev,
+>>> -                              sizeof(u32) * gpu->nr_rings,
+>>> +                              sizeof(u32) * (gpu->nr_rings + !!gpu-
+>>> >lpac_rb),
+>> Should we rename nr_rings to something like nr_XXX_rings
+>> where XXX is some uarch-generic (i.e. not SQE because we also
+>> support pre-a6xx) name for the main number cruncher?
+> Qualcom calls it GC so nr_gc_rings perhaps?
 
-Fine otherwise from a vfio perspective.  Thanks,
+How about nr_gfx_rings as those rings can handle graphics workload?
 
-Alex
+-Akhil.
+
+>>
+>> Konrad
+> 
+> 
+> Best regards,
+
