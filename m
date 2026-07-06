@@ -1,154 +1,57 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail-24418.protonmail.ch (mail-24418.protonmail.ch [109.224.244.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3A91392C36;
-	Mon,  6 Jul 2026 14:44:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2747B3DDAF0
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 14:45:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783349100; cv=none; b=Nto5ZCsn1skLF2Ffj4zsYIBJLlM1397/FnoLOm7BE1jzziJi6zwKLtpCDUHmrBZ9szZtqwNsLGhu3Id68/fQujuFgBI6zrLGmsD12YZvoZ9wBHu8PXNlcVgGsA9qDymtot5nWjKXB39f56xJqnJp3zPLdRVTgTeDvG0Ha7beL/A=
+	t=1783349108; cv=none; b=Hit/HUmsJPtx0+Fc8Cd7pLTIQZuR0YkulSt9aC7v1MpyLK5WaXvb8FJs9qBdQOsh7tEtYQBO439/zrgg1rjYvCK4A2L8Z4u/oxbgO73kUgNbRnjOlbMWRQaqaBluwBQmNtCcOxrEv9KlIjMXm7xUTu2+reVka6xeevuEXfiqAgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783349100; c=relaxed/simple;
-	bh=PH56BOtAy+0dmr/EksHt/OZDeCD+2GMl65NDITOxSrI=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nj1GDJT6/idlve4W21VNUDaWZQEvzYWXxK341HZA4jRxFMA/M7lKAIIwoQvVC/eU+Cbr/O4ufJVrvpIHdJ6mkcrk7mP7onyCSELCu9+sdBkFpsFAaiYHL0Z3CjHmZAq3292jfhK8I3pBF5WCL7Rrc0mU/MZb7lMTasX07CsQ9C4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TjMOwfDM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783349108; c=relaxed/simple;
+	bh=AsCqUSepLV1EVCdAVb1gjnK16IGOCWPNy8kXiha5vOI=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k5yy5sOlYup2kQrY5rnvAVTLxuNtBVtAvZQA2l2JsbC6mjS7F8KkpSf6a0QXla0P+jhy3yXyprnAaj01pYj/f0gbCGFfSHKYsOdJQZEn1kLnmvK6w5v0lZoLkIg5BryOipb3HuW7ZFpQv+qV/ykCvRU1idLcRs2FCGBb5zy1k1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=VipuLJ4u; arc=none smtp.client-ip=109.224.244.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TjMOwfDM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748561F00A3F;
-	Mon,  6 Jul 2026 14:44:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783349098;
-	bh=0/x/qPU/Mc5BG2XPfLPZ5NC8qJYbU07GVymxY/B1eeU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TjMOwfDMZifMw3H2/8ppID+L8d/jyr9SeYD1M3fCMWNCqLc4SdT7FtiXFUC+MRf5Z
-	 nVVfCX7YGNBKvN8WwuubQqppAk5qoUeshcJXP0yZosi9Q78MXBtLv2zUnmyOHJOU9e
-	 6zClMZTdBiB/FsW3AcAptE5qUQIYha35SNzednw9dSfqygAiRDOmj9SNTzxgRdD4X5
-	 Ue49tvXg+5IZsw9dlB/871oEUsIsPjaAVqBbczl6tRGs+4mFhHW6ez1+Ank5rsbHLr
-	 /rObu0dZpclZ1eCHPSi9r5ebQtEM1DAP/xep9DsdB8qtE+I78yCJ7GhjKU0gyg5lGK
-	 Sk4axVoKxCFtA==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <maz@kernel.org>)
-	id 1wgkZ6-00000001zfe-2hmG;
-	Mon, 06 Jul 2026 14:44:56 +0000
-Date: Mon, 06 Jul 2026 15:44:56 +0100
-Message-ID: <86fr1wp47r.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-Cc: linux-coco@lists.linux.dev,
-	kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 02/10] irqchip/gic-v3-its: Align shared ITS allocations to the CoCo shared granule size
-In-Reply-To: <yq5a7bn8i69y.fsf@kernel.org>
-References: <20260706060432.1375570-1-aneesh.kumar@kernel.org>
-	<20260706060432.1375570-3-aneesh.kumar@kernel.org>
-	<86ik6sp7fc.wl-maz@kernel.org>
-	<yq5a7bn8i69y.fsf@kernel.org>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
- (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="VipuLJ4u"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=protonmail; t=1783349097; x=1783608297;
+	bh=AsCqUSepLV1EVCdAVb1gjnK16IGOCWPNy8kXiha5vOI=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=VipuLJ4un5PyrPcU0KPcGiK0xJEfiUV3xhrpBqr6mg8Mps1BbtBjxAM5646uVOKIy
+	 SlksiiSCQ4zT91kZrt2NMczhh5luxT2AaTiVzcPgJFBMOQkWgrhjcTPhaVxRzqJAuX
+	 iF/4etLGMFunrq4FAQ5Dq13xGej6umdPTOu+JTsxCWybEDAk/+Vl+3gkCr/4gQtmqD
+	 MY4lCSXXMGSjQgsHN+hWWv1d7NbqwLMzz0bJw+JnB+eSGjRfgt1aCO0qX9GMDWITnT
+	 qC5d5gzcCEqZL+J3mqXcDsGcx2iqvZgwEMJiTm3gWploRJZijlDPERGrnjggRphVZS
+	 /tpVlyzwY0cLQ==
+Date: Mon, 06 Jul 2026 14:44:51 +0000
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, Bjorn Andersson <andersson@kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>, Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+From: Esteban Urrutia <esteuwu@proton.me>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-phy@lists.infradead.org
+Subject: Re: [PATCH 7/8] phy: qcom: qmp-combo: Correct pre-emphasis table for QMP v4 DP PHYs
+Message-ID: <9a203e5e-5d16-400d-a507-8b68df8eb017@proton.me>
+In-Reply-To: <4635a665-f605-4647-810d-c9d83a271a86@oss.qualcomm.com>
+References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me> <20260622-sm8450-qol-v1-7-37e2ee8df9da@proton.me> <4635a665-f605-4647-810d-c9d83a271a86@oss.qualcomm.com>
+Feedback-ID: 147889766:user:proton
+X-Pm-Message-ID: 4d9a7c56b233fd2d39549ef51db60aa12ffaa5e3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: aneesh.kumar@kernel.org, linux-coco@lists.linux.dev, kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, catalin.marinas@arm.com, jgg@ziepe.ca, m.szyprowski@samsung.com, robin.murphy@arm.com, steven.price@arm.com, suzuki.poulose@arm.com, tglx@kernel.org, will@kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 06 Jul 2026 14:42:17 +0100,
-Aneesh Kumar K.V <aneesh.kumar@kernel.org> wrote:
-> 
-> Marc Zyngier <maz@kernel.org> writes:
-> 
-> > On Mon, 06 Jul 2026 07:04:24 +0100,
-> > "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
-> >> 
-> >> ITS tables allocated by the coco guest are shared with the hypervisor.
-> >> These allocations must satisfy the host shared-buffer granule size so that
-> >> the full converted range is safe for host access.
-> >> 
-> >> Allocate ITS pages using a size rounded up to the shared granule size and
-> >> use the same allocation order when encrypting, decrypting and freeing the
-> >> memory. Also grow the ITT cache in shared-granule sized chunks instead of
-> >> assuming PAGE_SIZE is sufficient.
-> >> 
-> >> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> >> ---
-> >>  drivers/irqchip/irq-gic-v3-its.c | 17 +++++++++++------
-> >>  1 file changed, 11 insertions(+), 6 deletions(-)
-> >> 
-> >> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> >> index b57d81ad33a0..5d6d38aa0dae 100644
-> >> --- a/drivers/irqchip/irq-gic-v3-its.c
-> >> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> >> @@ -213,16 +213,17 @@ static gfp_t gfp_flags_quirk;
-> >>  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
-> >>  					 unsigned int order)
-> >>  {
-> >> +	unsigned int alloc_order;
-> >>  	struct page *page;
-> >>  	int ret = 0;
-> >>  
-> >> -	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
-> >> -
-> >> +	alloc_order = get_order(mem_cc_align_to_shared_granule(PAGE_SIZE << order));
-> >> +	page = alloc_pages_node(node, gfp | gfp_flags_quirk, alloc_order);
-> >>  	if (!page)
-> >>  		return NULL;
-> >>  
-> >>  	ret = set_memory_decrypted((unsigned long)page_address(page),
-> >> -				   1 << order);
-> >> +				   1 << alloc_order);
-> >>  	/*
-> >>  	 * If set_memory_decrypted() fails then we don't know what state the
-> >>  	 * page is in, so we can't free it. Instead we leak it.
-> >> @@ -241,13 +242,16 @@ static struct page *its_alloc_pages(gfp_t gfp, unsigned int order)
-> >>  
-> >>  static void its_free_pages(void *addr, unsigned int order)
-> >>  {
-> >> +	int alloc_order;
-> >> +
-> >> +	alloc_order = get_order(mem_cc_align_to_shared_granule(PAGE_SIZE << order));
-> >>  	/*
-> >>  	 * If the memory cannot be encrypted again then we must leak the pages.
-> >>  	 * set_memory_encrypted() will already have WARNed.
-> >>  	 */
-> >> -	if (set_memory_encrypted((unsigned long)addr, 1 << order))
-> >> +	if (set_memory_encrypted((unsigned long)addr, 1 << alloc_order))
-> >>  		return;
-> >> -	free_pages((unsigned long)addr, order);
-> >> +	free_pages((unsigned long)addr, alloc_order);
-> >
-> > The comments I had in [1] are still applicable.
-> >
-> > 	M.
-> >
-> > [1] https://lore.kernel.org/all/86zf2ozrb8.wl-maz@kernel.org/
-> >
-> 
-> I renamed it to alloc_order to make it clear that it refers to the
-> allocation order rather than the requested order. If you feel strongly
-> about not introducing another variable, I'll drop the new variable.
+On 6/23/26 7:36 AM, Konrad Dybcio wrote:
+> It seems like 8350/8450 should be using what this driver calls
+> v5 tables, with this fixup:
+Any updates on this?
 
-I do. At the very least, to avoid you changing the type of the order
-in its_free_pages(). These things do matter.
+Regards,
+Esteban
 
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
