@@ -1,131 +1,196 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96AB9370AE9
-	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 14:13:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2732A3FE369;
+	Mon,  6 Jul 2026 14:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783347188; cv=none; b=bNbUOXi2i4HEMsMAqg7eN06DslrDODj4nl5/9LlxFnKUO3pcRm0zsPKcSVJYhVY8Eycu9FTXIVB8Jow3JxS0Opw2B8hgRU4ItMs+zDIyuHytAeWA9nLj3+8Q7hnXKAajQjqLG2lY9gxfp2rmtILY1Ocd0MgoumZQxPSWDgKaYzs=
+	t=1783348802; cv=none; b=dMFb0rQ4Ty36pXpYHMy53HOWehyxiY6/eAJsReoHfbJSHhtX36unXFJHWeuweFWsdef49fD/+y/9bzpcuVtUedm8AHPweB+JyG7yMv3fAmPhMDWhFi7i4iMPQ/oyuj/wbigkjFjY99/BA9P8aijieQz3ZMEc361AC5BL76dXyQM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783347188; c=relaxed/simple;
-	bh=ybqksaPU55sJFW3qtBXVCD28yakikrTrcL71vkCHABg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PQCqcT0vfadn8UX5AQOHYlWA8v7MmZW+PVmP9L8bjBV1hqRdml2J7QkHW5adZQz5ywP6J2hrg2X8pgSLyDCXd2zaL6uii0JyKBneajPJ4lJm2JOkF58w0mn7XYhUa2EaJlw/fpz2g/Fz+2L91ReOnDr7s3R2zOj9/27/kUw5YRw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=WnG2ln2T; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1783348802; c=relaxed/simple;
+	bh=XtbXxotRn4eonCuXI7S2La3x2DD6roUS8w7lR6Aocns=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=S8YzoJeMQrJYhymBgnF8T9xUST3JdTEI5XOVcy5UwFdxOGntSVyB0Rw3fL6bwQwobVjMr+CEdWXOPnqLJwBeopU9vEKTY8+sHoWtT/ubsriKu9L/a4mmKYBhmR7PTV+D+fDoeOpAkA5TmulzfmSVTxszB/TCOZR3Up8PEPYLHKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=OIh2q5No; arc=none smtp.client-ip=80.241.56.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="WnG2ln2T"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 918AF2BCB;
-	Mon,  6 Jul 2026 07:13:01 -0700 (PDT)
-Received: from [10.57.82.104] (unknown [10.57.82.104])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F14473F85F;
-	Mon,  6 Jul 2026 07:13:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783347185; bh=ybqksaPU55sJFW3qtBXVCD28yakikrTrcL71vkCHABg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WnG2ln2TCLbJEPhs6x3Tu3RJp4t6P7dlYO1Br22WERGMD8ZTHXWog0AN0oLd34Y/f
-	 Lqs6a+whjgBQIsnegAb8PydQsN0nM8M67NkZdoDK4+VsFce6PLUMAaMFKSKjZiJ9+Y
-	 lbNrijAQVBH2qjGEL/5yzDH2nY9yHIJ6tqktj4dk=
-Message-ID: <f13b30cf-e885-44c6-8e61-7924937eb8ac@arm.com>
-Date: Mon, 6 Jul 2026 15:13:01 +0100
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="OIh2q5No"
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA512)
+	(No client certificate requested)
+	by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4gv6TB3Q84zKv2g;
+	Mon, 06 Jul 2026 16:39:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1783348798;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PTWGfLdwlWAV/LMkx8q6n+16+BLtwX+Uw6eFuSY1pwE=;
+	b=OIh2q5NoOb8/zfHzXHh6+EFxzLMaDkzPcbVgv5xkovZYR/4JA9SFzE0VU9VAm1rNRZLR0S
+	AX9n6t6Qdg/BHwG8GIE0XsFgInmrRdJCk1rI7C64cKOlIyq4TCeFWdyPovr+dbaBZvE7Xw
+	3Gt8jIfDUCNo/K6k+YRQVDybeevZzGh0XtuQ2zVUtN5hCMOWCq8qaO0uMb1bLR1G0foLqN
+	KuGMynijGMoLzFJiCQ/pxQVYlrrpwux9nHY20wk2i5B2W/3iVCLsdvpCsubihHUwhDMw1G
+	ARSB7sTYnBnOH85aXuiUq7w/RlmGL22TeStMe6dbMo/bP0D6ZZw0KkWwo9maXg==
+Message-ID: <fbc50f89e0c3bb148656a3b8d96974f591576dec.camel@mailbox.org>
+Subject: Re: [PATCH v3 02/20] driver core: platform: provide
+ platform_device_set_of_node()
+From: Manuel Ebner <manuelebner@mailbox.org>
+To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Lee Jones	
+ <lee@kernel.org>, Thierry Reding <thierry.reding@avionic-design.de>, 
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Andrew Lunn
+ <andrew+netdev@lunn.ch>, "David S. Miller"	 <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski	 <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Srinivas Kandagatla	 <srini@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul	 <vkoul@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich	
+ <dakr@kernel.org>, Rob Herring <robh@kernel.org>, Saravana Kannan	
+ <saravanak@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
+ Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)"	 <chleroy@kernel.org>, Andi Shyti
+ <andi.shyti@kernel.org>, Andy Shevchenko	
+ <andriy.shevchenko@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Doug Berger
+ <opendmb@gmail.com>,  Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list	
+ <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
+ Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team	 <kernel@pengutronix.de>, Fabio Estevam
+ <festevam@gmail.com>, Matthew Brost	 <matthew.brost@intel.com>, Thomas
+ =?ISO-8859-1?Q?Hellstr=F6m?=	 <thomas.hellstrom@linux.intel.com>, Rodrigo
+ Vivi <rodrigo.vivi@intel.com>,  David Airlie <airlied@gmail.com>, Simona
+ Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>,  Paul
+ Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, Philipp Zabel
+ <p.zabel@pengutronix.de>,  Maximilian Luz <luzmaximilian@gmail.com>, Hans
+ de Goede <hansg@kernel.org>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=	
+ <ilpo.jarvinen@linux.intel.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+ iommu@lists.linux.dev, 	linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
+	linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+	mfd@lists.linux.dev
+Date: Mon, 06 Jul 2026 16:39:00 +0200
+In-Reply-To: <20260706-pdev-fwnode-ref-v3-2-1ff028e33779@oss.qualcomm.com>
+References: <20260706-pdev-fwnode-ref-v3-0-1ff028e33779@oss.qualcomm.com>
+	 <20260706-pdev-fwnode-ref-v3-2-1ff028e33779@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add HAFT support for SVA
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: will@kernel.org, joro@8bytes.org, jpb@kernel.org,
- catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, stable@vger.kernel.org
-References: <878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com>
- <20260703164914.GY7525@ziepe.ca>
- <6465c885-3a9d-4c0b-ab74-7665e274ae72@arm.com>
- <20260703192459.GB1978949@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260703192459.GB1978949@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MBO-RS-ID: dd8ce0f1dac3e9f612a
+X-MBO-RS-META: 1q71yutefcf1nyjzwoom4gu47fi8rss3
 
-On 2026-07-03 8:24 pm, Jason Gunthorpe wrote:
-> On Fri, Jul 03, 2026 at 07:57:04PM +0100, Robin Murphy wrote:
->> On 03/07/2026 5:49 pm, Jason Gunthorpe wrote:
->>> On Wed, Jul 01, 2026 at 06:45:17PM +0100, Robin Murphy wrote:
->>>
->>>> @@ -211,6 +213,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->>>>    	if (system_supports_bbml2_noabort())
->>>>    		feat_mask |= ARM_SMMU_FEAT_BBML2;
->>>> +	if (system_supports_haft())
->>>> +		feat_mask |= ARM_SMMU_FEAT_HAFT;
->>>
->>> I fear this is going to make SVA stop working on systems it currently
->>> does work on, so it might be a major regression.
->>>
->>> SMMU HTTU is not a commonly implemented feature.. I think of all the
->>> NVIDIA ARM chips only one supports it. Given that a quick internal
->>> check is raising concerns this will be breaking for us. We need to
->>> check in more detail which cores have HAFT.
->>>
->>> Breaking already deployed SVA would be a major functional regression.
->>>
->>> I think this should start by just enabling SMMU HAFT when CPU HAFT is
->>> on, when possible. Maybe print a warning on the mismatch instead of
->>> failing.
->>>
->>> Since we can't break already deployed SVA a full solution would either
->>> have to somehow turn off CPU HAFT or we ignore the gap in the AF
->>> updates..
->>
->> TBH I do not know how bad the implications of
->> pmd_young()/pmdp_test_and_clear_young() returning a false-negative are, but
->> if we aren't considering mismatched CPUs harmless then surely the same must
->> apply for SVA. In the POE/GCS cases all that can really be broken is users'
->> expectations, if they've opted in to additional security features, but also
->> opted in to SVA wherein those features can't protect against DMA. Here,
->> though, it's the kernel mm layer itself that's impacted, and I'm not
->> confident to say that that isn't more serious.
-> 
-> This has come up a few times now where the SMMU and CPU
-> incompatibilities in ARM's IP are causing real headaches.
-> 
-> Let's give it some time and I can say for certain if we have impacted
-> chips or not. I was able to confirm the server chips are OK, but there
-> is still some concern about the embedded chips..
-> 
-> I also don't know how harmless it is to ignore the aging. I thought
-> the PTE was designed to be backwards compatible, but I never looked at
-> how AF works..
+Hi Bartosz,
 
-HA and HD are effectively just a performance feature, since the software 
-fault handler only ends up setting the PTE bits such that the outcome is 
-the same either way, it's just hideously inefficient to have to take the 
-whole round-trip through the SMMU event queue. HAFT is different because 
-it's already a strict superset of HA so there is no software-handlable 
-fault; table AFs will *only* be set by agents with HAFT enabled, and 
-thus a mismatch leads to actual loss of correctness if a HAFT-aware 
-pmd_young() assumes that AF=0 in a table entry means there must be no 
-leaf PTEs with AF=1 below it.
->> Making HAFT depend on !SVA could only easily be done at the config
->> level, which seems arguably even more over-reaching
-> 
-> Yeah, but if you could build a custom embedded kernel with HAFT
-> disabled in kconfig maybe that is enough for some people.
+On Mon, 2026-07-06 at 14:44 +0200, Bartosz Golaszewski wrote:
+> Encapsulate the reference counting logic for OF nodes assigned to
+> platform devices created with platform_device_alloc() in a helper
+> function. Make the kerneldoc state that this is the proper interface for
+> assigning OF nodes to dynamically allocated platform devices. This will
+> allow us to switch to counting the references of the device's firmware
+> nodes, not only the OF nodes.
+>=20
+> Reviewed-by: Manuel Ebner <manuelebner@mailbox.org>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+> ---
+> =C2=A0drivers/base/platform.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 | 18 ++++++++++++++++++
+> =C2=A0include/linux/platform_device.h |=C2=A0 4 ++++
+> =C2=A02 files changed, 22 insertions(+)
+>=20
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index fb9120b0bcfe0e7dd9dfc0d29b91e0ad40a01440..3188d5aba5f90622f821c6950=
+49cacda030204fb
+> 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -693,6 +693,24 @@ int platform_device_add_data(struct platform_device =
+*pdev, const
+> void *data,
+> =C2=A0}
+> =C2=A0EXPORT_SYMBOL_GPL(platform_device_add_data);
+> =C2=A0
+> +/**
+> + * platform_device_set_of_node - assign an OF node to device
+> + * @pdev: platform device to add the node for
+> + * @np: new device node
+> + *
+> + * Assign an OF node to this platform device. Internally keep track of t=
+he
+> + * reference count. Devices created with platform_device_alloc() must us=
+e this
+> + * function instead of assigning the node manually.
 
-Indeed if anyone does want to use SVA on such mismatched hardware and 
-are happy to use a custom kernel with CONFIG_ARM64_HAFT disabled then 
-they can and will continue to be able to do so. However I don't feel 
-it's right to make general distros do that if they want to ship SVA 
-support, as then it means future systems that don't use SVA, or do have 
-system-wide HAFT, lose out on an additional performance feature 
-unnecessarily (I guess if HiSilicon added it to their CPU they might 
-have added it to their SMMU as well and just overlooked enabling it?)
+I did some more pondering about this patch and concluded the right place
+for a warning would be the lines been read right before or after assigning
+a node manually.=20
+I think this would be in platform_device_alloc() (as I suggested in v2).
 
-Furthermore, as I alluded to, with the idreg-override stuff it should be 
-easy enough to add the further option of suppressing HAFT from the 
-command line if anyone wants that.
+BUT my knowledge in C isn't sound. So if it's good as is keep it. If it isn=
+'t
+add or move the remark.
 
-Thanks,
-Robin
+Either way Thanks and
+ Reviewed-by Manuel Ebner.
+
+---
+Note:
+I removed Mark Brown <broonie@opensource.wolfsonmicro.com> from recipients =
+because:
+=E2=80=9CRCPT TO <broonie@opensource.wolfsonmicro.com> failed:
+<broonie@opensource.wolfsonmicro.com>: Recipient address rejected: Domain n=
+ot found=E2=80=9D.
+
+
+> + */
+> +void platform_device_set_of_node(struct platform_device *pdev,
+> +				 struct device_node *np)
+> +{
+> +	of_node_put(pdev->dev.of_node);
+> +	pdev->dev.of_node =3D of_node_get(np);
+> +	pdev->dev.fwnode =3D of_fwnode_handle(np);
+> +}
+> +EXPORT_SYMBOL_GPL(platform_device_set_of_node);
+> +
+> =C2=A0/**
+> =C2=A0 * platform_device_add - add a platform device to device hierarchy
+> =C2=A0 * @pdev: platform device we're adding
+> diff --git a/include/linux/platform_device.h b/include/linux/platform_dev=
+ice.h
+> index 8c566f09d04efe420d85ffa046f92c44c6d08526..e9f7baceeb4c8269dbc0143c4=
+d8fc9d73ba024ca
+> 100644
+> --- a/include/linux/platform_device.h
+> +++ b/include/linux/platform_device.h
+> @@ -19,6 +19,8 @@
+> =C2=A0struct irq_affinity;
+> =C2=A0struct mfd_cell;
+> =C2=A0struct property_entry;
+> +struct platform_device_id;
+> +struct device_node;
+> =C2=A0
+> =C2=A0struct platform_device {
+> =C2=A0	const char	*name;
+> @@ -262,6 +264,8 @@ extern int platform_device_add_resources(struct platf=
+orm_device
+> *pdev,
+> =C2=A0					 unsigned int num);
+> =C2=A0extern int platform_device_add_data(struct platform_device *pdev,
+> =C2=A0				=C2=A0=C2=A0=C2=A0 const void *data, size_t size);
+> +void platform_device_set_of_node(struct platform_device *pdev,
+> +				 struct device_node *np);
+> =C2=A0extern int platform_device_add(struct platform_device *pdev);
+> =C2=A0extern void platform_device_del(struct platform_device *pdev);
+> =C2=A0extern void platform_device_put(struct platform_device *pdev);
