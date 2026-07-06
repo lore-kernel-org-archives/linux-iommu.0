@@ -1,164 +1,254 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 534C335AC24
-	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 13:08:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9967640A922
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 13:15:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783343302; cv=none; b=sfqtNV8kGuNpTXnc5Zsu4zsed2z3k+3FxTgyStQ+6KVNgK8h0dDZyrPYEvPQjILK8sjhMlJKS6KSP7Uij8L2k4LnYox615XVUcFGja8juL9PIMfZe3vH4+misjAkD5UIbTP2H7jqLWZAJwC7hOL3WdlJdG2oexmZVza1F5VqR2s=
+	t=1783343747; cv=none; b=tTmRRrmtSjiQCkgLAcBNbF1gSTaIYu9tbidjJ/eVwCqLMqJnLZ3Czds9QH4TbB8rFjRdQXyP5fA4oemUJSWGDs8eWiv5CfmrvqRhS+pY+F2SHyH8WTrIAmyxQVpNIcIylR9hThZFy192U4mjOfCsMSxFFkLhalfQ1rvjaYf+eos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783343302; c=relaxed/simple;
-	bh=0aA4qLPP4be61ChbVSTr6j8z/Dm/HGd90mPQPS4LDmU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=n3lJ2wmJ5Hkn9CroMoIFBO1kgb7lAPYts2+wLhs/8up3B3U0sP7/f1wA7td053g11vwBQBLTfZ8Y1qaCu+75+AQAQXhB+Rg3ipATfvneyvspGQplo8/sljZ1PtTc3KxTz6IzFuakXmJW42VI8yvfFn9AGo20gSusFcryat2q3Uw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=M4rTjdB2; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1783343747; c=relaxed/simple;
+	bh=IqF/4dKgB1628r62VJTRc6pv/7HE6yY73nomq/D91IU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=eTXW0fWuhk8LQYH0e2EInKqVFWwFR8m8+xWLwuMSnW+wgDERpnivfr8UzYx5ym23Ikt5kHQQx+UMSYNlH3sCqJoTbdscvJH9SElCy/d/mH44tZRH//QbBEgsVp73lHXUjvtK/70YVC78s4WSNzA1Fn0PyWDDdGa8BWduZUZqlXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=mJEEF2hq; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=hhRd1TYy; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="M4rTjdB2"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F82628C7;
-	Mon,  6 Jul 2026 06:08:16 -0700 (PDT)
-Received: from [10.57.82.104] (unknown [10.57.82.104])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E88F43F7B4;
-	Mon,  6 Jul 2026 06:08:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783343300; bh=0aA4qLPP4be61ChbVSTr6j8z/Dm/HGd90mPQPS4LDmU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=M4rTjdB20bQ2CIIm6sF9czHLIiKzlI2RImQaKwc20odxzVCQybIaWr3rwfjrKShR5
-	 KD1O5KVG+VNwczLFB/cfjDMk335CqXNUd1rKGJjEVFahgMi5MA35fcXRGjNdG6lza+
-	 SNjeWVEgCVnwJxppYQ/IW6dg3IkcQENcwHFbtb7Q=
-Message-ID: <a381d265-e7a4-4fe7-9421-3553706d41c1@arm.com>
-Date: Mon, 6 Jul 2026 14:08:14 +0100
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="mJEEF2hq";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="hhRd1TYy"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 666AxLJa367215
+	for <iommu@lists.linux.dev>; Mon, 6 Jul 2026 12:45:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	j94N3D67YZmp+yB/bJ2N7wl2Db8ez4ZkEgubeH9mxnM=; b=mJEEF2hqlR/uOjVJ
+	VGxfq6X8Coeflz9gG17PG5AS1d8bsHMFXhdZWsQVpoBGNxPvBhyMKeuA+dyOCDVQ
+	f1hfsjqCoXOdNFPJoAu72h5EhTA2RJe8aHAuVR3do6hcY/6XuWdPi5v4ABh+SBK/
+	rcNeX0qyntCP4cdXULNVaYmo+GOzB4IXw/vS1gy2FdSZK/epGthEs0eICwD0JDHC
+	qLwA7MiAX+whloAu+BOq3pVZA9mRrwwWNHrvcFQktC3WPAB1dKapRcEh1XLp4aGO
+	t0DPDKiFYVlnUQvHVG/TurGAk+efJV3NTROGxUtnqQUlu+PHgMshaUYjPMuJ3IBZ
+	RMPGMA==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f891urwmk-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 12:45:52 +0000 (GMT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-92e63df032bso328988085a.0
+        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 05:45:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783341952; x=1783946752; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j94N3D67YZmp+yB/bJ2N7wl2Db8ez4ZkEgubeH9mxnM=;
+        b=hhRd1TYypN+4Mot7kPnYMXeldGyh3PP9nF7IcTS1dqiYh9qVznQqu7YQ0YpSVMNscK
+         0Ha/4BGmAxNYfZV5pmVnbTnOmEK5ZgMW7jcxIJ/eahS9ZLlI3zNdKcUHRmhzXx+nYgK6
+         W5QwL8bQObXr6Sb7ovC8mm/2qZivELxyjsIWyW1s9Qxn6cZ79ikPQt4gc4ciIdMRcdYd
+         iqZnM0REguLUK0ym7Vm7N0aZ6+/yZGUag1/1nyAkErYZVjWgF3B9pLtJdzOYKIfnI1Yo
+         l/dNez3nwa3gmMZ+sZOX8FxvNEHJgc5akQxqWDtkQDtiDskyOJ6//yom6Ivim2owsYP4
+         EKjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783341952; x=1783946752;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=j94N3D67YZmp+yB/bJ2N7wl2Db8ez4ZkEgubeH9mxnM=;
+        b=TM8dFHk4sC5swb2afXPVgLNS682OsZxi8OgwC1+hIgmXxWycVNDiYjd8gepxPXtr1k
+         JpOqDKkdOjLb4V66hxPkso0US4x6dat3FN7L+tEGd1F9eNvr59kwMp9DbIpYREn3ACjq
+         KwfJ377WLpQ9oC0Bpq/1y6QfbE2ZL4GLoNRJRkXRjxjn46Sd6tYYMO27xnqlqZHSNivs
+         VL+aWGIni3FI6OuIpH0fgyt80wA4jb0EmuDz7Ef5NqzVnyPbZbdVDh7ELMVM+xFJyc6Y
+         Lm4t/xTViQPVZWhlsGz2e8kJKsXT7p53GIPEh1sOWdXUfnnwU+1Xk5gNaY8dnCSzeNBZ
+         sg2g==
+X-Forwarded-Encrypted: i=1; AHgh+Rp+xR9GMLFxsd8Hzhz6mzS9cyx4pNgjRRnhSyGXK4wPdA3+6CYOusA5NMkPcPBPnfgY8QdZ1A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzGVYK9KhL56eZKtggZgXyAGrqJ0eXyom2p48nf4JQ/AKZYdlxJ
+	e/saa6heSyoXf8aAyURKo5RiU1A0sAbFAvYDr68QsKgejbKHt3/Vqz+BpyI6ReF7FL5DX9YdYru
+	pcEMSto4xO1oQ3FYrLMBw0flp6z0cQo6qvB6Ae2iV00UY+1/QdumnhE13vQ==
+X-Gm-Gg: AfdE7ckp6B8qj1ohF0kpikgVbIx8+LF8j2PCMUELuHYfs1QZZKw3AOR1QCARBo9YAsM
+	gvXZ1qrMC8CHw/Qh5BAa/4oqt3E8iWNns+903DpEGmF5ORM/unsOu8Od677iRL1ekzik0jz1K9O
+	MhqpD0k+FzdL3nC4hAUGxw2DGdaf0uasDn9YSmbiynsxmCWiP43wtwvPqDif5HSCAVaBQXIAJb0
+	Ehz/loPUOxAfT0BbmHQgcoIjvFDO3mh7hFFQyX4xF8PCu0NsjitcnIzfiGZ7Zmhvi/IgJSkDCPE
+	ZD0KCzC70I4QZwocYMGMk3FmUw+Xu8c1ouNWaVjPu4A9d4WXTmpQB0YvjOflq2ZS7xsSmKw7CmX
+	zh1adRQLlxMAXY5VV+QnqrCLG3r742HlD6mKJD5NI
+X-Received: by 2002:a05:620a:459f:b0:92e:5b63:224e with SMTP id af79cd13be357-92e8b5049abmr1749181585a.22.1783341951065;
+        Mon, 06 Jul 2026 05:45:51 -0700 (PDT)
+X-Received: by 2002:a05:620a:459f:b0:92e:5b63:224e with SMTP id af79cd13be357-92e8b5049abmr1749171985a.22.1783341950261;
+        Mon, 06 Jul 2026 05:45:50 -0700 (PDT)
+Received: from brgl-qcom.local ([2a01:cb1d:dc:7e00:86f0:c42b:ef4c:d3bb])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0a55be4sm22126539f8f.31.2026.07.06.05.45.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2026 05:45:49 -0700 (PDT)
+From: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Date: Mon, 06 Jul 2026 14:44:32 +0200
+Subject: [PATCH v3 20/20] driver core: platform: count references to all
+ kinds of firmware nodes
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] drivers/iommu: Catch scatterlist length overflows
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Krzysztof Karas <krzysztof.karas@intel.com>,
- intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, Andi Shyti <andi.shyti@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, =?UTF-8?Q?Micha=C5=82_Grzelak?=
- <michal.grzelak@intel.com>,
- Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
- Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
- Krzysztof Niemiec <krzysztof.niemiec@intel.com>
-References: <20260701104437.236979-1-krzysztof.karas@intel.com>
- <20260701104437.236979-4-krzysztof.karas@intel.com>
- <20260703162236.GX7525@ziepe.ca>
- <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
- <20260703203502.GC1978949@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260703203502.GC1978949@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260706-pdev-fwnode-ref-v3-20-1ff028e33779@oss.qualcomm.com>
+References: <20260706-pdev-fwnode-ref-v3-0-1ff028e33779@oss.qualcomm.com>
+In-Reply-To: <20260706-pdev-fwnode-ref-v3-0-1ff028e33779@oss.qualcomm.com>
+To: Lee Jones <lee@kernel.org>,
+        Mark Brown <broonie@opensource.wolfsonmicro.com>,
+        Thierry Reding <thierry.reding@avionic-design.de>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andrew Lunn <andrew+netdev@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Srinivas Kandagatla <srini@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+        Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        =?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Peter Chen <peter.chen@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hansg@kernel.org>,
+        =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
+        driver-core@lists.linux.dev, devicetree@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        iommu@lists.linux.dev, linux-pm@vger.kernel.org, imx@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org,
+        linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        mfd@lists.linux.dev,
+        Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2537;
+ i=bartosz.golaszewski@oss.qualcomm.com; h=from:subject:message-id;
+ bh=IqF/4dKgB1628r62VJTRc6pv/7HE6yY73nomq/D91IU=;
+ b=owEBbQKS/ZANAwAKAQWdLsv/NoTDAcsmYgBqS6M9ruJ8yyUk+I6pdpFWbcAtYm5CgsYvefKU+
+ TywqoMuS8KJAjMEAAEKAB0WIQSR5RMt5bVGHXuiZfwFnS7L/zaEwwUCakujPQAKCRAFnS7L/zaE
+ w0+BD/9zjT3fKJr7/zYP0sHpUApNtRCsyLsJzRKuAlcO+cogBO21GRQk1DGikSTFqOqALVvaQ2g
+ 83j83HjHg+bMyaUlGN/FEHSMVHmKvXmesanFWRUyj5q/cQcFMH8POK0Xe3edFHZZx4BBkdJLCiU
+ YBgV2p9qKU7Yx9ujTc0nbFflTLCPc+KLCa6XMeNIL7NcRgHVvMgBJocHY4ppEVSl3w0N1MqzNLN
+ MJ2jEc+08OGTNE6VqBsWKGpcVcsy0c/flgXequGSLwF2lbMvrEVBeckaXblcohUFBgsZTwHIilr
+ DuAyyAxwT3CWTsisqCJ/uzziDpBphBHYSMVHgzJR0EvF/dg0gFk2JrYTFDjipwiMhwshuY4pMG6
+ brBELDRVNzWmoJxvrqtCNEs2g6/282jmP5bq8VSGXsiFh0Tlh1WMQesFTI3Dru/rc0SNeU4rkul
+ wq2awNwyKdDtNJtZDmRz22Vrcbh76dcF1Halbc2omaKC8QdnXDZFTtncn03dXnNqBcF2/RucoRD
+ PgoRvdtJOI/EakLR/ayb7hAHHB2aey6mLr7a280QfJRvxTxQ9lcDY4ZxG2oeQyo5EJpmBhQCPl8
+ BmnHyLd2X+djvXjF8tGCWMjxCty1aDjcqXp8ApTdwR04CWKI/ZYVFf+bcapravEbsUypfWAAx2W
+ 0i3DMYG/6NOmHjA==
+X-Developer-Key: i=bartosz.golaszewski@oss.qualcomm.com; a=openpgp;
+ fpr=169DEB6C0BC3C46013D2C79F11A72EA01471D772
+X-Proofpoint-GUID: 0_rlSHhLb2UDZ3c0wWtjmLkDxEQM8h2e
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA2MDEyOSBTYWx0ZWRfX2bciXLpL6lTN
+ MRi69TZ1HqLgaswNYjRPXe/GWenFHvSbx1LhRo6cfZyvei9YyUqgsPAG6VPuqDxLXZz5RaIyKob
+ eln3/Rwec99WNlIXA23U7MUfaeILItA=
+X-Authority-Analysis: v=2.4 cv=Mo1iLWae c=1 sm=1 tr=0 ts=6a4ba380 cx=c_pps
+ a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22 a=QyXUC8HyAAAA:8
+ a=EUspDBNiAAAA:8 a=2sGp0kyKjRk1obZUzdUA:9 a=QEXdDO2ut3YA:10
+ a=NFOGd7dJGGMPyQGDc5-O:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA2MDEyOSBTYWx0ZWRfX11coV8IULqVQ
+ EEghbBwEhoAVTy6iuLsssg0VFvGuHNMbABG8eMtj+GmMvzGL12lD6jS7ty761ACYsE54qhMHtf3
+ Ut7HhE2VrghERuLWz/2pVmLSElD5Xd0wseBWRtpoLw9EV3FEpOK+3p7xjXqQutXQDppSf5bEh2K
+ OX6xWKHMvV0aoBWRWQoI4evV+qbnTNNUVK45CA9VmbSMzzrzAotaioxW3+FM1I5KzzFkSjgiUUp
+ dBbZhdG+LG3LigAYDdF3vslqELIh/zbaUOCWfNqyPkJ595i8emFLNnqYnwFkhauVq+qwNO8Wtcc
+ ybuiopDY5QeOkoRf6wJ8URvE+9j7XGoO6yIvXT8aIAD4+K/S7CuSc+eghZNZW3bFHnZBlZnnJh9
+ buIAia7jd1+4USpB0TG45prixfreDGuP9kNj7E8v3pMj1XxuR3pYSDupBssiekQyo2qjBpmUfif
+ +4iHAUIiBBbw0m24b9w==
+X-Proofpoint-ORIG-GUID: 0_rlSHhLb2UDZ3c0wWtjmLkDxEQM8h2e
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-06_01,2026-07-06_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ suspectscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607060129
 
-On 2026-07-03 9:35 pm, Jason Gunthorpe wrote:
-> On Fri, Jul 03, 2026 at 07:58:32PM +0100, Robin Murphy wrote:
->> On 03/07/2026 5:22 pm, Jason Gunthorpe wrote:
->>> On Wed, Jul 01, 2026 at 10:44:37AM +0000, Krzysztof Karas wrote:
->>>> It is possible, when a very large mapping uses a single
->>>> scatterlist, that padding overflows scatterlist's length field.
->>>> This results in:
->>>>    1) silently wrapping the value
->>>>    2) smaller than desired mappings produced by iommu_map_sg
->>>>    3) leaving mapped bytes in memory (no iommu_unmap)
->>>>
->>>> Address this issue by adding overflow detection for previous
->>>> scatterlist length field.
->>>
->>> Urk, this is unfortunate, it means we cannot map certain kinds of
->>> scatterlists? Meaning there is a condition that makes a scatterlist
->>> ill formed?
->>>
->>> This seems like something that needs to be more clearly documented and
->>> we need to ensure at least the common scatterlist builders don't hit
->>> it..
->>
->> Well, it's taken 10 years to be caught by a test which seemingly expects the
->> mapping of a single absurdly giant scatterlist to fail anyway,
-> 
-> If your server has 0.5TB of ram a 4G IO isn't actually that large.
-> Randomly getting a few contiguous 1G hugetlbfs pages is not even that
-> unlikely. Something like FSDAX has a very high chance of getting high
-> contiguity pages in files.
+When using platform_device_register_full(), we currently only increase
+the reference count of the OF node associated with a platform device. We
+symmetrically decrease it in platform_device_release(). With all users in
+tree now converted to using provided platform device helpers for
+assigning OF and firmware nodes, we can now switch to counting references
+of all kinds of firmware nodes.
 
-Sure, but how many servers had 0.5TB of RAM in 2015? And how many of 
-those were running the arm64 DMA mapping code? As I said, both this 
-merging logic and the iommu_map_sg() interface itself were essentially 
-written to support media buffers on Android phones which didn't even 
-have 4GB of RAM in total. Yes, things have moved on by now, but 
-correspondingly it has also been decided that the ~30-year-old 
-scatterlist design also doesn't scale to modern use-cases anyway, and is 
-being replaced, so limitations of a "legacy" API that don't have any 
-meaningful impact to its existing users are hardly something to panic 
-about. If DRM does want to be able to *reliably* map massive amounts of 
-RAM then it can adopt the new IOMMU API, for this and all the other 
-reasons that that new API was promised to be "better".
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+---
+ drivers/base/platform.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
-> So I wouldn't be quite so dismissive that this is not something a real
-> user can hit.
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 9357942d0c79b032645035879b2bed3d53305b9f..a71015f1d915340aa01ebfae67196d4d7ccecba8 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -599,7 +599,7 @@ static void platform_device_release(struct device *dev)
+ 	struct platform_object *pa = container_of(dev, struct platform_object,
+ 						  pdev.dev);
+ 
+-	of_node_put(pa->pdev.dev.of_node);
++	fwnode_handle_put(pa->pdev.dev.fwnode);
+ 	kfree(pa->pdev.dev.platform_data);
+ 	kfree(pa->pdev.mfd_cell);
+ 	kfree(pa->pdev.resource);
+@@ -712,9 +712,7 @@ EXPORT_SYMBOL_GPL(platform_device_add_data);
+ void platform_device_set_of_node(struct platform_device *pdev,
+ 				 struct device_node *np)
+ {
+-	of_node_put(pdev->dev.of_node);
+-	pdev->dev.of_node = of_node_get(np);
+-	pdev->dev.fwnode = of_fwnode_handle(np);
++	platform_device_set_fwnode(pdev, of_fwnode_handle(np));
+ }
+ EXPORT_SYMBOL_GPL(platform_device_set_of_node);
+ 
+@@ -730,10 +728,8 @@ EXPORT_SYMBOL_GPL(platform_device_set_of_node);
+ void platform_device_set_fwnode(struct platform_device *pdev,
+ 				struct fwnode_handle *fwnode)
+ {
+-	if (is_of_node(fwnode))
+-		platform_device_set_of_node(pdev, to_of_node(fwnode));
+-	else
+-		pdev->dev.fwnode = fwnode;
++	fwnode_handle_put(pdev->dev.fwnode);
++	device_set_node(&pdev->dev, fwnode_handle_get(fwnode));
+ }
+ EXPORT_SYMBOL_GPL(platform_device_set_fwnode);
+ 
+@@ -928,8 +924,7 @@ struct platform_device *platform_device_register_full(const struct platform_devi
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	pdev->dev.parent = pdevinfo->parent;
+-	pdev->dev.fwnode = pdevinfo->fwnode;
+-	pdev->dev.of_node = of_node_get(to_of_node(pdev->dev.fwnode));
++	device_set_node(&pdev->dev, fwnode_handle_get(pdevinfo->fwnode));
+ 	dev_assign_of_node_reused(&pdev->dev, pdevinfo->of_node_reused);
+ 
+ 	if (pdevinfo->dma_mask) {
 
-I'm not being dismissive - clearly it can be hit. My point is that 
-anyone who *does* hit it can only expect it to fail (as indeed this 
-particular IGT test seems to), because it has never worked. You cannot 
-encode a 4GB scatterlist segment, because it overflows UINT_MAX. And if 
-you did try to bodge it and pass a UINT_MAX length segment to 
-iommu_map_sg() then that will also fail because it's not aligned to an 
-IOMMU page size. It's purely the matter of *how* exactly it fails which 
-could do with fixing.
+-- 
+2.47.3
 
->> here, but I suspect this is likely just regular iova_granule rounding
->> overflowing when the segment boundary is the maximum 4GB, since the largest
->> representable segment length is 4GB - 1.
-> 
-> It looks like the iommu_dma_map_sg() algorithm only works reliably if
-> the scatterlist entry size is less than UINT_MAX/2, otherwise it can
-> risk overflowing when it pads.
-
-AFAICS, the overflow can only happen with a 4GB boundary mask, and for 
-two conditions:
-
-- rounding up the current segment, when s->length + s->offset > 4GB - 
-iova_granule (but still <= 4GB otherwise it's bogus anyway)
-- padding the previous segment in the case where the current segment 
-would otherwise cross the next boundary, when prev->offset = 0 and 
-prev->length + s->length >= 4GB
-
-So yes, limiting any individual segment to <=2GB would end up avoiding 
-both those conditions, but it would also impact plenty of cases that 
-*do* currently work fine, e.g. 1GB+3GB+3GB. The limitation is really 
-that you can't have two consecutive segments where the first starts 
-exactly on a 4GB boundary and the sum of both their sizes >=4GB.
-
-> API wise I expect any arbitary input to sg_alloc_table_from_pages() to
-> result in a scatterlist that iommu_dma_map_sg() will map. This
-> patch highlights there are cornere cases where that isn't true, it
-> should be fixed..
-
-Technically sg_alloc_table_from_pages() carries no such assumption, only 
-sg_alloc_table_from_pages_segment() (or __sg_alloc_table_from_pages()) 
-with the correct dma_seg_boundary value for the given device. But even 
-then in the worst case, they should still end up splitting segments at 
-4GB-PAGE_SIZE due to the fundamental int limitation, and so only be at 
-risk of putting two such segments back-to-back.
-
-> I agree we shouldn't overcomplicate iommu_dma_map_sg(), so the
-> simplest fix is to introduce a SG_MAX_LENGTH set to UINT_MAX/2,
-> justified by the logic in iommu_dma_map_sg(). Fixup the core sg_alloc
-> code to respect that. WARN_ON in iommu_dma_map_sg() if a malformed
-> scatterlist entry is presented. Add a WARN_ON under DMA debugging
-> kconfig as well for the physical path.
-
-Again, it's not "malformed", it's just an edge case of certain 
-otherwise-valid scatterlist layouts that are not supported in this one 
-DMA API implementation. Nothing in the DMA API ever guarantees that any 
-particular mapping must succeed. Furthermore I don't see that anyone's 
-asking for this to actually be supported, just to fail cleanly and 
-correctly without inadvertently corrupting state.
-
-Thanks,
-Robin.
