@@ -1,83 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466C73EFD36;
-	Mon,  6 Jul 2026 06:57:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 856343976A4
+	for <iommu@lists.linux.dev>; Mon,  6 Jul 2026 07:07:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783321050; cv=none; b=pQY8CIMZeNEf0hCgz2iCA6zSnJ82CzWOyPuZYK6xScf0d2QQOAhnUm6ej1CGPbrMly/KJrdkX4Zfhc2pr08ykUzKon3GqVg6YjXAZIeXxk1tbGktvLW2HGf2nVaEishQZH81oDBiri4o31KfWELKjLF2LUS26PXkYjbuwPjRWb8=
+	t=1783321665; cv=none; b=dk0xkfw+rkaSkOkqkMyXvgWtE4UwHdML1e8n1q8lOSbcsBxQWP6icWCOcd+PCpzLBvDkAMgIGFrvvDtRhke5WqDDpMn4HNb90W6Nws7o/GnMoMtCjOcUt/h6XjGQVkpWnCuStfqeT+5dBujl8u2bRMmGAXzWgMreGGD9prcDt00=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783321050; c=relaxed/simple;
-	bh=GBnJ/HGn063WC0vwh1cPovUlxJPS3BsBDjn5dNWiSBY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZYgY2q92pKPqA9D6xa6fvX5mQfl4YWJqTZKH4n0YlRnlxqAur88M2bVGz5Rq2g0M8i1hshEAOt7G7qxUASTP5aUuYaFLq55NVFYF4t1fK3+XUOHaO7XIeijLP356ZNU3pOV3D1Nhvqhii5iiZMHdHFp/qSeR/Cjlrv8htdnx5SI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kpry7HAx; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783321665; c=relaxed/simple;
+	bh=pHaT0UF2+/TYyEtU2KWnSTLxajZpJo3t4LkID/vIQT0=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=dAkMB5j8XZoC7pT3oiB3IE3IATbVnvlvFMLbfF+1Ks4k7RzbS6mdbKIppBntJxXG2zU3tFPe1Plbr0XvJycTufNsFNofEC//gfDGecuSRtGJMQY4EEuoeSFyWLsrCAj98pS2B+ealcLBCh1e24XQipFM/75D/etZoyVmEmp/R7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hh9Tk6oy; arc=none smtp.client-ip=209.85.221.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kpry7HAx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A6CE1F000E9;
-	Mon,  6 Jul 2026 06:57:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783321037;
-	bh=IED6QZNQ0APBb2RT+lZieni4CjI0wDzgvUKFq8gCmw0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Kpry7HAxYLJsH0ML10AxcMpo8KxAyeapJlQMnPgDFWzIbZH/IyYsGX/Jj/Bpb6iPD
-	 Ziaw8VqdWNEuZEhsltRuIeVVRYzoNMX33u3oIjvMHufuOfIhqTq4dfcd9tBhgsjnni
-	 CJUYqKnLZgdhYIZoLUaYz9GHNPCUMH1ARtay3rHOC1ZsRgTnrkoOTsFeMqUX/JuYw6
-	 TbomheDZUMqTjhi3+bu/Yn8UmPoRdtJW0y5Tfcs2Wxagni8AsEyfDERXnaNY5UzHHI
-	 bU+OGc6qo0OrhxGDxB7SMTUZ0Lhy2rIsHKM9JEs5yHBDyi7SGKwPmASlXTT8S3qo4A
-	 vIITuQM52GChQ==
-Date: Mon, 6 Jul 2026 08:57:13 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>, 
-	Abel Vesa <abel.vesa@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 5/8] dt-bindings: display/msm: Document Adreno 722 GPU
- and GMU
-Message-ID: <20260706-attractive-flawless-otter-fdc7d7@quoll>
-References: <20260705-eliza-gpu-v1-0-c9f1354dbd29@oss.qualcomm.com>
- <20260705-eliza-gpu-v1-5-c9f1354dbd29@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hh9Tk6oy"
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-4784d0fb9cfso1309965f8f.2
+        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 00:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1783321654; x=1783926454; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9KUrzbaJQC6Xrx/utKgCBD6Z3BLENLPOFpin94j9wAk=;
+        b=hh9Tk6oy2I0ECnUPRq4B7dXLAH8yj1mRWou0QifqyJdkTzOHKVeXiXQZWZ4tuXpBdn
+         xgo0fRbm1O4nsg6FDa6XvH6SUGwUyvvNHuCLXTgCj2Pi0ND8geqh9pVv2hs3zCod68wN
+         a03oYyiVdyPwW8Dh4smyBd1zWICU0EzG3cghZcTVSJXc6de+oSc2XP01WPGzUJ3LK8VF
+         jM0sXuGV/OyJrBhfNQFH7qJc48eLsf0RlnHOws+7gbCPwFs898vaQNFUmje9WvW1rMXZ
+         QgIUFnuC+w2dlJG5x5jBwJ1vJjq2UCA5veET7KDu85pGTTCw2UpRRjf2E2IM9wndROCp
+         Y3Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783321654; x=1783926454;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9KUrzbaJQC6Xrx/utKgCBD6Z3BLENLPOFpin94j9wAk=;
+        b=BFtUDbIWbbkV2c2vcK57ChLvrAwDcRxxhgRX5AVxw801mrd1R8LOWGoDtvYjzY0rOP
+         eyOy8Z8HL4/m/xa1BmRoJxe6hGz10P4kCgFaksWiPV5nXG6Kd1C0i0JVapwkfwRxpbcD
+         5q6hpfxued2jg0zGAT97iQr0h3oQFhV9pBY31hiW60Uka5BHJWb2KNxqTL4++a/94mBR
+         sCe/Z3Ipp50pDyb+pYUKGygZLhKYNhRe060udZU9sTUZMw+lpd4C3OJXMPOWOTOv57+5
+         6iZwWzvxe5wA0iW4gkuSgxCCNC+gSIcU3atDommsA0jIa943t/898NSLEXpYJ870VCvp
+         TIog==
+X-Forwarded-Encrypted: i=1; AHgh+RqFVA0RtdczPMSkqdr7HZCDmr93L2tO2qm3IkANig/YRhFJzw+ViqHaCZI3O3ePGWgVMoMtLw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzPuXCTOnls9+Wg3M1fKdb4yzgdvkNU29eqcRFWU+G/tO8M3oR7
+	OHJN9uVRXgT4gNJxu1pt7mCTM/IY7s3vZo3xw4UgOa2mJFPAGmu/yNyD3AbDdPZXodrCwo/SiEw
+	Uc0XX/o7CsijDl88eBg==
+X-Received: from wrbfq16.prod.google.com ([2002:a05:6000:2a10:b0:46e:e0c2:b4c3])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6000:299c:10b0:46f:7127:9f70 with SMTP id ffacd0b85a97d-47aaabde0aemr6910526f8f.18.1783321653615;
+ Mon, 06 Jul 2026 00:07:33 -0700 (PDT)
+Date: Mon, 6 Jul 2026 07:07:32 +0000
+In-Reply-To: <20260703-pgtable_lt_b4-v3-1-e738e1f513a4@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260705-eliza-gpu-v1-5-c9f1354dbd29@oss.qualcomm.com>
+Mime-Version: 1.0
+References: <20260703-pgtable_lt_b4-v3-1-e738e1f513a4@collabora.com>
+Message-ID: <aktUNAUerQ7rHN1F@google.com>
+Subject: Re: [PATCH v3] rust: iommu: add device lifetime to IoPageTable
+From: Alice Ryhl <aliceryhl@google.com>
+To: Deborah Brouwer <deborah.brouwer@collabora.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
+	Gary Guo <gary@garyguo.net>, 
+	"=?utf-8?B?QmrDtnJu?= Roy Baron" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, iommu@lists.linux.dev, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, samitolvanen@google.com, 
+	laura.nao@collabora.com, boris.brezillon@collabora.com, 
+	daniel.almeida@collabora.com
+Content-Type: text/plain; charset="utf-8"
 
-On Sun, Jul 05, 2026 at 01:44:20PM +0530, Akhil P Oommen wrote:
-> From: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>
+On Fri, Jul 03, 2026 at 05:28:44PM -0700, Deborah Brouwer wrote:
+> Currently, using a raw IoPageTable is unsafe because the returned
+> IoPageTable is not tied to the device driver binding lifetime.
 > 
-> Adreno 722 found in Eliza chipset belongs to the A7x Gen1 family. It is
-> derived from A730 and shares the same IP-level configurations: HWCG
-> registers, protected registers, GBIF CX registers and gmu_cgc_mode.
-> Major differences include lower cache/core counts, 1MB GMEM, no
-> Concurrent Binning & LPAC support. Some of the peripheral blocks like
-> RSCC are from A740 that resulted in updates to RSC layout.
+> Since device drivers now receive a lifetime parameter <'bound>
+> representing the interval during which a device driver is bound to its bus
+> device, add a lifetime parameter to IoPageTable. This ensures that
+> the returned IoPageTable cannot outlive the bus device binding.
 > 
-> Update the dt-binding docs to document this GPU and GMU.
+> Also remove the option to create a page table as a device resource since
+> currently Devres is not compatible with resources that have a lifetime
+> parameter. This option can be restored once the lifetime-aware
+> wrapper for devres is available and if a use-case appears for it.
 > 
-> Signed-off-by: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>
-> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-> ---
->  Documentation/devicetree/bindings/display/msm/gmu.yaml | 1 +
->  Documentation/devicetree/bindings/display/msm/gpu.yaml | 1 +
->  2 files changed, 2 insertions(+)
+> Suggested-by: Boris Brezillon <boris.brezillon@collabora.com>
+> Signed-off-by: Deborah Brouwer <deborah.brouwer@collabora.com>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-
-Best regards,
-Krzysztof
-
+Reviewed-by: Alice Ryhl <aliceryhl@google.com>
