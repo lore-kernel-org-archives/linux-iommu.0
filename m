@@ -1,87 +1,33 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61BC024B28
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 13:07:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A01CD2E7F3E
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 13:17:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783429657; cv=none; b=IqtsVcaCrkLDdLxWNo8QbctSQW4kKpKqRFG5kPbczTq0RJQUwbfe/RRToMfODX/IvpLG4Jmi0+7R7oJ0/VKIXk8sjyC0RMC4uh6hdylDbB6LRM69kf9ojTBhCJ49wq1VYrmBA1+OhQNYUYLvMVoM1tNFJ8WLG9E4GJxTiAakLIc=
+	t=1783430262; cv=none; b=vBJbHSafsSBF1/06OXZco9kcRhXPRurW7106xf6cIRS8PzHvDPW8c4rp/9KZIYZ93MWp62+uQHtP595Cc7KJhrVzbVnI6rv4BIQ/l8U8GmCL5SyEs3VL4S5N2q9N+V/Ux4fgH93SV013e2i4l/bcC6PM5XsbfGtI98U0UXvdzsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783429657; c=relaxed/simple;
-	bh=KpdPVz19HVrlkW48+Oy2TNpS9/8iY6PDbSnX4WVderw=;
+	s=arc-20240116; t=1783430262; c=relaxed/simple;
+	bh=c4sgJIlp41KnfkxKX5Y8adETb3Yp/G6tgwZ1bFzMLxo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dUmSfbjYkW/qVrpVR2+RUrYP2XgiTgGV4l1FeD9wbPWABwtZfKsMceB2NAa/oxqV2C0PqKnWwN8/9SjsmjLjXZv7P6atQAVDL7ulQYISi01HI2ztGXFpF1ffBbzfOtcYg7NubWbEldbMhoF431I1pV7ASEpvFA5lm5vEqE1eIB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=L7lEwIfh; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=L7LH20YO; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=cLfdbXVhWlqOg+ARHUd0tHKhI2cuDE17QRalXuNfMa904eauUAtMqR9cdGe8HnnF3rTm3fMcKdILkEA5C2iL0/K1q0tD411lVEm6hp9ew5yWdhLK/GfeXE5UpqO0OueeyN5CbQU2n/pqBhAkqqNvR9CdpbPhBYNFPRm6as6oaag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=IDNSpqSx; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="L7lEwIfh";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="L7LH20YO"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 667C8hUH3755535
-	for <iommu@lists.linux.dev>; Tue, 7 Jul 2026 13:07:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	hnXcQ3o0MMmuZU0mxgw/WDOefXkSOTgmXJB6YAntbRk=; b=L7lEwIfhmrJlWiNo
-	1bnUAJMzW/LSGvniuGqYWeTH+CRlhdbiiwMOfmYghtgPHbaud1U60yXSpGBgrTwO
-	+zJywcpSoeIQxfF7kb1NPliFdM9z663U9mRl0bVJ2M09b2R0l5K71RhzBOHZ8F/a
-	AjKXzUTkpg9zq28puAcPT6U5NkZg/h8HOs8/B6Akgo8FvAqDrueyHe++jUNJAt5z
-	SLHVNsNV/IniHraf8Q6Qk/Lv/V4WxvEx5pL7TGLWjd2eclnwa1kGiFhgEozYs3xx
-	c+6yrUu2RwKh6refVw23EN5lrymswM2TSZcA3q0OOQw9tiMO9OmI0uYxhNkknl2z
-	a3T8Xg==
-Received: from mail-vs1-f69.google.com (mail-vs1-f69.google.com [209.85.217.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f8wep1834-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 13:07:35 +0000 (GMT)
-Received: by mail-vs1-f69.google.com with SMTP id ada2fe7eead31-73843d3623dso678526137.1
-        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 06:07:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783429654; x=1784034454; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hnXcQ3o0MMmuZU0mxgw/WDOefXkSOTgmXJB6YAntbRk=;
-        b=L7LH20YOeLMPM8d5F9c8vuwF9w5fqhRmBCjB9nc/Dckrr0XWCPohJ5MCn67jcMBt7N
-         y1+ylDfsPWPF/famWo0Z9tb5Zz0EzuSssK9WX1kiUnFkgEQ9xz2QIDSVwDCbq+qD1eD/
-         k89RIJqXCMAMhlGE1GnPHi+jphK8QgztYJyuBwg5ZSkUJaRlyaDMtcJ2SzFDxUqgbz1l
-         RSaRE8Ujmsn7Ui2nJwFL2w9MRwpaFxf6ZIcKaT537vyBRCJcBFFuHTEIh+PzngA6U5/1
-         /XcYHLV49APLzEmhBACyG0cKCKRyRlbj44Ozi/VPw4kXT+7nQ0B3oxjEzgxTzryVoI+7
-         7BCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783429654; x=1784034454;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=hnXcQ3o0MMmuZU0mxgw/WDOefXkSOTgmXJB6YAntbRk=;
-        b=E3uk6GfH7XOb6o5sznszEwcmcyyubx6MshYlDdoXhuz8Vq1Qovz0t4xvsoQEph8svu
-         SDChV4kvjMcOMV/p+070W+nMOhm7c5EY1sLszXsI3Tpje56KScfC3p0OhDFYWxAs6lKB
-         NOSInzm4Rc6fxVtgTZpyil4HV1GjHjOPriE+8NCOhuNnerwmtjoZzHQ5HilKBTW954sE
-         MBw1eR3VDBZDR5ITfuEYaMIJLmTmhlsqN0gNhCIjoTh+jZfSY92c6Ei/c8mMMxSS+Rim
-         639ciU0g7loQHwYAWzyk88uJWO5GQAKiwxxTJdmIgCNT/mte74pM4JeujwZsgiu/5ZwX
-         /a8A==
-X-Forwarded-Encrypted: i=1; AHgh+RoyJsiRXfWNiyCBM6eyQ8AOFqtbTlYMVy0FqkDKkX9Tvh7HpAnMxAs5Q5UgZ78jggWklSVOMg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwSIHEnTJugCT8bBFnrN488Id87bcxuyWsZTtG0aslMa/16lDV3
-	ckkD7HSePdn3hYahZG7pfi0dHyTPzE0XUEcx5EbMRkH1HY2r+6vyLAids0b1NhoIAT9WixIyy38
-	fcBSz6xuVqOkDjPbJ36LWG7KYSrOFmX3F5x169dGChardOCQTOwcBe5RaNQ==
-X-Gm-Gg: AfdE7cnDxxTE6ZxQo+1YhpUbWBzO/cWRy4RtI1phHKCwvFZt3s40oWTdUeyXh7FAFdx
-	YXee5jH0WSgBCYfxTbNehm8kq5IQSv0Vo6+PxyiyFQxmRCkPqwJ61xpsCK2gvucXpwOpvlFG8SO
-	N11RF0AmbGUnDbwEp8yqBf3SUhVzlETRBb6o3Ovwr9p9pG1pZcDE6pufW45CwAmlj+YzFGHNrFy
-	WfUQwHgapvBDkspF6MRDYLYODUDkSSBzbYy+E2d1Z2cb0aykoAtpZb+DNgtz4GA7Ls0NFlU5Q/L
-	75OHtdF41kvq8ZBO2AB83PDQ5ptTx04CRqi4tWay3Awr74wnI1pjJCEl15t8zZ5lYC8YYCiVbJa
-	Ab8pZXkEbxpxf1uHb3b4y53JwDFfMAet0qa9XHGs=
-X-Received: by 2002:a05:6102:290c:b0:737:1ca6:84d1 with SMTP id ada2fe7eead31-744b7c5e3e3mr2503025137.24.1783429654500;
-        Tue, 07 Jul 2026 06:07:34 -0700 (PDT)
-X-Received: by 2002:a05:6102:290c:b0:737:1ca6:84d1 with SMTP id ada2fe7eead31-744b7c5e3e3mr2502943137.24.1783429653657;
-        Tue, 07 Jul 2026 06:07:33 -0700 (PDT)
-Received: from [10.219.56.198] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aed137705dsm3703700e87.32.2026.07.07.06.07.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jul 2026 06:07:32 -0700 (PDT)
-Message-ID: <807f145d-88d3-460a-9862-b63fe2a52cf7@oss.qualcomm.com>
-Date: Tue, 7 Jul 2026 18:37:24 +0530
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="IDNSpqSx"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6918119F6;
+	Tue,  7 Jul 2026 06:17:35 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 555EE3F85F;
+	Tue,  7 Jul 2026 06:17:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1783430259; bh=c4sgJIlp41KnfkxKX5Y8adETb3Yp/G6tgwZ1bFzMLxo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=IDNSpqSxtFtaWJyxD6ND7bhZDzkCBdR/qNZC+pDBu9MxOTbdwwuRp2qhdJjRMjzk3
+	 YysGDLtP2ZnjwNvmBVMkMDiNbKNdfL4YoCvHcQ3PS8DF8iP9OT/GQsdjdnsUlDzODm
+	 pVxQUIhnCsc/b3A1PQmyYi7EofZIIfYSBk4wEIKQ=
+Message-ID: <b0a1bdd7-46ab-4025-8775-c9273892444e@arm.com>
+Date: Tue, 7 Jul 2026 14:17:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,104 +35,151 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/6] arm64: dts: qcom: kodiak: Add GEM_NOC interconnect
- for adreno SMMU
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <20260706-smmu_interconnect_addition-v3-0-afdca0125a65@oss.qualcomm.com>
- <20260706-smmu_interconnect_addition-v3-3-afdca0125a65@oss.qualcomm.com>
- <h6opbtr2ced3sannj3ym573qc2sjk7ek3clpto5j5mtqfrfk6w@34sk2zraoqtj>
-Content-Language: en-US
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-In-Reply-To: <h6opbtr2ced3sannj3ym573qc2sjk7ek3clpto5j5mtqfrfk6w@34sk2zraoqtj>
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+To: Will Deacon <will@kernel.org>, Thierry Reding <thierry.reding@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Sowjanya Komatineni <skomatineni@nvidia.com>,
+ Luca Ceresoli <luca.ceresoli@bootlin.com>,
+ Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Russell King <linux@armlinux.org.uk>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>,
+ Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>,
+ Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
+ "T.J. Mercier" <tjmercier@google.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org,
+ linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
+ linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+ Chun Ng <chunn@nvidia.com>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
+ <akYs91INHMXMTI-t@willie-the-truck> <akZkuwktaXFTrASP@orome>
+ <akaSJ5D98w2cHqb6@orome> <akftuw9NyRy36fXA@willie-the-truck>
+ <akuvyu1Pq0ZVMZV0@orome> <akzikTrmhMsvkNVY@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <akzikTrmhMsvkNVY@willie-the-truck>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: lG-zTqDaZm2ahx63u1xPh-_galtfx-aE
-X-Proofpoint-ORIG-GUID: lG-zTqDaZm2ahx63u1xPh-_galtfx-aE
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA3MDEyNyBTYWx0ZWRfX17tVzMDj7DnR
- m5TjGNxT7voTGaRKmag8QVH5R03R05RiOd7nFZGbggBhwW8Mb1Fd0Sp/W8Q62Bc6ejTWm5vcyYo
- P/l6EKVq98O1TJoWcmmAQDziDDMLmEZq2ivO9Aw2X78D2IqZP1rVlafU+j51FPRIn4jyvtkSHga
- Pyrt7e/fMO+YK3aU8d5zEp60g41rza9tshKZkMIa+ZMi5mcV6IG2XYrQqG14+9ZKglNwcFp2coX
- 5nem9QhBO8oANNscRVLjcQgITOJIxFDaEdmXf5aA1BJZqqz1pjEWars1f4H8uuMfmCyFcXpamXO
- Ifzqyon7hObANuuPC/Utr06PdjqD0UAwcGuCHoC/Fwj1US1MeWwFNQ5HLGLZDVZhXr0nUFXhoGJ
- Lri56k7fz0ydlO8LpbLA7wbD788bS+dGnfTdHmoxkQbcA6zQfW4R9CH4clYDV+oYTQCGGHMv7C3
- A6bXHT5J1joUfiGxvRg==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA3MDEyNyBTYWx0ZWRfX2lbeonbkrtgu
- NCR/o8TpX5HiFUR2/X3aIs7UWdztps1+TG2zF24d+5ydiGxnZRV9cvQjZwMUADafGU3XMfUuH3G
- vjuZnaXtMzPH6OSdTrt8slLX09YWIbY=
-X-Authority-Analysis: v=2.4 cv=atSCzyZV c=1 sm=1 tr=0 ts=6a4cfa17 cx=c_pps
- a=5HAIKLe1ejAbszaTRHs9Ug==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=EUspDBNiAAAA:8 a=-8xGkPWzXzLllqT0I9MA:9 a=QEXdDO2ut3YA:10
- a=gYDTvv6II1OnSo0itH1n:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-07_03,2026-07-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 phishscore=0 clxscore=1015 priorityscore=1501 spamscore=0
- suspectscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607070127
 
-
-
-On 7/6/2026 11:12 PM, Dmitry Baryshkov wrote:
-> On Mon, Jul 06, 2026 at 10:26:36PM +0530, Bibek Kumar Patro wrote:
->> On Kodiak platforms, the Adreno SMMU requires a bandwidth vote on
->> the GEM_NOC path (MASTER_GPU_TCU -> SLAVE_EBI1) before its registers
->> are accessible. Without this vote, the SMMU may become unreachable,
->> leading to intermittent probe failures and runtime issues.
+On 07/07/2026 12:27 pm, Will Deacon wrote:
+> On Mon, Jul 06, 2026 at 03:49:24PM +0200, Thierry Reding wrote:
+>> On Fri, Jul 03, 2026 at 06:13:31PM +0100, Will Deacon wrote:
+>>> On Thu, Jul 02, 2026 at 06:41:23PM +0200, Thierry Reding wrote:
+>>>> On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
+>>>>> On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
+>>>>>> On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
+>>>>>>> From: Chun Ng <chunn@nvidia.com>
+>>>>>>>
+>>>>>>> Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protection bits
+>>>>>>> on a kernel-linear-map range.
+>>>>>>
+>>>>>> That sounds like a really terrible idea. Why is this necessary and how
+>>>>>> does it interact with things like load_unaligned_zeropad()?
+>>>>>
+>>>>> This is necessary because once the memory controller has walled off the
+>>>>> new memory region the CPU must not access it under any circumstances or
+>>>>> it'll cause the CPU to lock up (I think technically it'll hit an SError
+>>>>> but in practice that just means it'll freeze, as far as I can tell).
+>>>>>
+>>>>> Probably doesn't interact well at all with load_unaligned_zeropad().
+>>>>>
+>>>>>> I think you should unmap the memory from the linear map and memremap()
+>>>>>> it instead.
+>>>>>
+>>>>> Given that the memory can never be accessed by the CPU after the memory
+>>>>> controller locks it down, I don't think we'll even need memremap(). The
+>>>>> only thing we really need is the sg_table we hand out via the DMA BUFs
+>>>>> so that they can be used by device drivers to program their DMA engines
+>>>>> internally.
+>>>>>
+>>>>> Looking through some of the architecture code around this, shouldn't we
+>>>>> simply be using set_memory_encrypted() and set_memory_decrypted() for
+>>>>> this? While they might've been created for slightly other use-cases,
+>>>>> they seem to be doing exactly what we want (i.e. remove the page range
+>>>>> from the linear mapping and flushing it, or restoring the valid bit and
+>>>>> standard permissions, respectively).
+>>>>
+>>>> Ah... I guess we can't do it because we're not in a realm world and so
+>>>> the early checks in __set_memory_enc_dec() would return early and turn
+>>>> it into a no-op.
+>>>>
+>>>> How about if I extract a common helper and provide set_memory_p() and
+>>>> set_memory_np() in terms of those. Those are available on x86 and
+>>>> PowerPC as well, so fairly standard. I suppose at that point we're
+>>>> closer to set_memory_valid().
+>>>
+>>> Why not just call set_direct_map_invalid_noflush() +
+>>> flush_tlb_kernel_range() for each page? We already have APIs for this.
 >>
->> Add the required interconnect to ensure reliable register access.
+>> Having a "standard" helper with a fixed and documented purposed seemed
+>> like a preferable approach for this particular case. We also may want to
+>> make the driver that uses this buildable as a module, in which case we'd
+>> need to export these rather low-level APIs. And then there's also the
+>> fact that we typically call this on a rather large region of memory
+>> (usually something like 512 MiB), so doing it page-by-page is rather
+>> suboptimal.
 >>
->> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->> ---
->>   arch/arm64/boot/dts/qcom/kodiak.dtsi | 2 ++
->>   1 file changed, 2 insertions(+)
+>>> The big challenge I see with any linear map manipulation, however, is
+>>> that it will rely on can_set_direct_map() which likely means you need to
+>>> give up some performance and/or security to make this work. Does memory
+>>> become inaccesible dynamically at runtime? If not, the best bet would
+>>> be to describe it as a carveout in the DT and mark it as "no-map" so
+>>> we avoid mapping it in the first place.
 >>
->> diff --git a/arch/arm64/boot/dts/qcom/kodiak.dtsi b/arch/arm64/boot/dts/qcom/kodiak.dtsi
->> index 90e50c245c0c..721526f023dd 100644
->> --- a/arch/arm64/boot/dts/qcom/kodiak.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/kodiak.dtsi
->> @@ -3389,6 +3389,8 @@ adreno_smmu: iommu@3da0000 {
->>   
->>   			power-domains = <&gpucc GPU_CC_CX_GDSC>;
->>   			dma-coherent;
->> +			interconnects = <&gem_noc MASTER_GPU_TCU QCOM_ICC_TAG_ALWAYS
->> +					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
+>> VPR exists in two modes: static and resizable. For static VPR we do
+>> exactly that: describe it as carveout in DT with no-map and deal with it
+>> accordingly in the driver. Resizable VPR is for device that have small
+>> amounts of RAM. Content-protected video playback will in the worst case
+>> consume around 1.8 GiB of RAM, so we want to be able to reuse for other
+>> purposes when VPR is unused on those devices. In that case, the memory
+>> is also described as a reserved-memory region in DT, but it is marked as
+>> reusable so that it can be managed by CMA.
+>>
+>> The resize operation is fairly slow to begin with because we need to
+>> stall the GPU and put it into reset before the operation, then take it
+>> out of reset and resume it afterwards.
+>>
+>> What kind of performance impact do you expect?
 > 
-> Why is it ALWAYS? Would it be better to declare it as ACTIVE_ONLY and
-
-Added QCOM_ICC_TAG_ALWAYS, to hold the vote in SLEEP bucket as well
-preventing gem_noc going to sleep when icc_set_bw is being called.
-
-> then drop the extra suspend/resume play?
-
-Not sure if I understood it correctly.
-Did you mean the extra suspend/resume play in arm_smmu_runtime_suspend
-or in arm_smmu_device_shutdown() path?
-
-Thanks & regards,
-Bibek
-
+> You'll need to measure it, but we've seen reports of double-digit
+> percentage regressions in performance and power. As I said, the problem
+> is that you need to split the linear map to 4k page at runtime to unmap
+> the dynamic carveout, but that isn't something that can be done on most
+> CPUs. Therefore you end up having to use page-granular mappings for the
+> entire thing, similarly to how 'rodata_full' drives can_set_direct_map()
+> and the perf/power hit affects everything.
 > 
->>   		};
->>   
->>   		gfx_0_tbu: tbu@3dd9000 {
->>
->> -- 
->> 2.34.1
->>
-> 
+> It's hard to know what to suggest... I wonder if any of the memory
+> hotplug logic could help here?
 
+Given the precedent of memblock_mark_nomap(), as long as the reusable 
+reserved-memory regions also get split into distinct memblocks, then it 
+seems like in principle we ought to be able to give them a new 
+MEMBLOCK_PTEMAP (or whatever) flag which could then be picked up in 
+map_mem() without needing to override force_pte_mapping() globally?
+
+Cheers,
+Robin.
