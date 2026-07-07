@@ -1,139 +1,117 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E453E417364
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 13:26:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D39DD41D4D7;
+	Tue,  7 Jul 2026 13:37:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783430787; cv=none; b=HuaMI4yOSWQalbLlvow4tt2XFw2NyJRFD2awpfrOoL+DPYKPh7leL4iS2mFquOc3UCroJIZrLu50Qs4akPI4LLKSheo/d2hpQGZwPxMmHCe7XMqNo6RH9c4gpGiOnl5OR2ASWpa6hLBMcFWaVJRzk8wCTJdrumoJT5jLr4Y48tI=
+	t=1783431421; cv=none; b=cUleUffoT4AoOE+8hpEQr2PcEkqfXoOkCRxz/N33/F7jRCaC/XUL7dQVpyMw/+vnaRiGtVfOTUdEpqIqkOM4RrbzAHQ+aFaNUCEuqQ+Htkqvrpzn5uX+zjwN1ym4U7MQORTubgGwuMftUlx3BXg1Dd2Et6mlm0C2+rd0exbRF0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783430787; c=relaxed/simple;
-	bh=a9h/UPEhXHJcQUJXaij0kLNRiuVX+h3HSouNcW4ixWI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=S85TpHve+8qPYpK2Do6M89Nz6002hnXV3uBKZWyZSLTZ6wh2vl+5CUiGW1I6kjUNyjfjxBryjsWO2LY3n3J/9H7yVp1T1r/GfnNc/SZG9M5/4ilq2EaqYW2/20MlBgWB5lgq/Wi3/qmVxQbqugG1b4bSBMIXa1Eb007U/H9vnlo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=mW7bcfoI; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1783431421; c=relaxed/simple;
+	bh=sYwS8ou9VYhfx6gHtvvSKZH1Q3kUx/7HfTO2JFgLyTY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V3bYOGU/Wg2FZYzmK8UOEOSgGjEmyD3gEE8wUQyNm8LWKQKm1MnJbhLKPAVQlbS8eClr2Ju0KGdJMnBAvmZufDAKapMTrOzBE1skqxxX8ym/lYFYYhxGQOfu5ofutDlp81/cl5pBgUyz9HdtDYThkyweTZPjvtl2BUf1N/2GLGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kUwTJQX7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="mW7bcfoI"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D940419F6;
-	Tue,  7 Jul 2026 06:26:20 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E766B3F85F;
-	Tue,  7 Jul 2026 06:26:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783430785; bh=a9h/UPEhXHJcQUJXaij0kLNRiuVX+h3HSouNcW4ixWI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mW7bcfoIOacfPHTmaL5YDUPi+l4RzE6GYxxKDiZPmCku89Pv4N1JbCGHW0FesrY/f
-	 o3soNc3De1LjahTmzUuMp4AG2OpdD698osyi5edFdDpHomyqDhQuuJ3bViGDqjhZeZ
-	 JMRThJSD45VXhFoFymjWeyNn2IT3GHd0MGckTKJM=
-Message-ID: <5786468d-a4bc-41d6-ad8b-56f9fd43f5f7@arm.com>
-Date: Tue, 7 Jul 2026 14:26:20 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kUwTJQX7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E271F00A3A;
+	Tue,  7 Jul 2026 13:36:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783431420;
+	bh=vTs7v8zsu7whrsyWYprIzwZsShGkshSeH1mdnWeQhDk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kUwTJQX71bILcSB7SmskFWmkhK3TGF8YHFkyzQY17WlEUAM8I+JqGhzvo55X7PZDi
+	 oNje6D+myo2INszEVM2+lfsi+C0YTOUvQd8LQ6wAhpcKtd1hSyiihaQKnBkeNV4GNZ
+	 5/3ulew7PLDZljlcalvW+jw7W3SqxgElQzYMRTnDAV7mG6O1GMwabMWgRGCkympsPW
+	 1RpMFJA/eH96zKbocqhlAzgaIjPRn+rPf4mrjkia4fALw+u63xKvDyGhiNKwawd808
+	 fZfwtvsYxWNpieAutJUVIs8936x82mFXpOxy8SGgRrCjLSRSD8AtbD3lO570OfQ5nP
+	 hhaRyoXYh5eFQ==
+Date: Tue, 7 Jul 2026 16:36:41 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Sowjanya Komatineni <skomatineni@nvidia.com>,
+	Luca Ceresoli <luca.ceresoli@bootlin.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Yury Norov <yury.norov@gmail.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Russell King <linux@armlinux.org.uk>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
+	linux-trace-kernel@vger.kernel.org,
+	Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+Message-ID: <ak0A6eLp0Pw8iKK0@kernel.org>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
+ <akYs91INHMXMTI-t@willie-the-truck>
+ <akZkuwktaXFTrASP@orome>
+ <akaSJ5D98w2cHqb6@orome>
+ <akftuw9NyRy36fXA@willie-the-truck>
+ <akuvyu1Pq0ZVMZV0@orome>
+ <akzikTrmhMsvkNVY@willie-the-truck>
+ <b0a1bdd7-46ab-4025-8775-c9273892444e@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] iommu/riscv: Drop superflous zeros in pci_device_id
- array
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
- <u.kleine-koenig@baylibre.com>, Tomasz Jeznach <tjeznach@rivosinc.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
- iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org
-References: <20260522145943.774344-2-u.kleine-koenig@baylibre.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260522145943.774344-2-u.kleine-koenig@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b0a1bdd7-46ab-4025-8775-c9273892444e@arm.com>
 
-On 22/05/2026 3:59 pm, Uwe Kleine-König (The Capable Hub) wrote:
-> The .driver_data member of the struct pci_device_id array were
-> initialized by a list expressions to zero without making use of that
-> value. In this case it's better to not specify a value at all and let
-> the compiler fill in the zeros. Same for the list terminator that can
-> better be completely empty.
+On Tue, Jul 07, 2026 at 02:17:29PM +0100, Robin Murphy wrote:
+> 
+> Given the precedent of memblock_mark_nomap(), as long as the reusable
+> reserved-memory regions also get split into distinct memblocks, then it
+> seems like in principle we ought to be able to give them a new
+> MEMBLOCK_PTEMAP (or whatever) flag which could then be picked up in
+> map_mem() without needing to override force_pte_mapping() globally?
 
-I think I'd agree this counts as a nice enough cleanup in its own right.
+Please don't. _nomap() caused enough pain.
+ 
+> Cheers,
+> Robin.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
-> ---
-> Hello,
-> 
-> while being a cleanup that can stand on its own this is also a
-> preparation for making driver_data an anonymous union that requires that
-> .driver_data is initialized by name and not by list order. The union
-> allows to make better use of the C type system and drops the need for
-> casting. The change to a driver will look as follows:
-> 
-> 	diff --git a/arch/x86/platform/intel-mid/pwr.c b/arch/x86/platform/intel-mid/pwr.c
-> 	index 1739971478ff..c0d9da81d512 100644
-> 	--- a/arch/x86/platform/intel-mid/pwr.c
-> 	+++ b/arch/x86/platform/intel-mid/pwr.c
-> 	@@ -347,7 +347,7 @@ struct mid_pwr_device_info {
-> 	
-> 	 static int mid_pwr_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> 	 {
-> 	-	struct mid_pwr_device_info *info = (void *)id->driver_data;
-> 	+	struct mid_pwr_device_info *info = id->driver_data_ptr;
-> 		struct device *dev = &pdev->dev;
-> 		struct mid_pwr *pwr;
-> 		int ret;
-> 	@@ -471,8 +471,8 @@ static const struct mid_pwr_device_info tng_info = {
-> 	
-> 	 /* This table should be in sync with the one in drivers/pci/pci-mid.c */
-> 	 static const struct pci_device_id mid_pwr_pci_ids[] = {
-> 	-	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_PENWELL), .driver_data = (kernel_ulong_t)&pnw_info },
-> 	-	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_TANGIER), .driver_data = (kernel_ulong_t)&tng_info },
-> 	+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_PENWELL), .driver_data_ptr = &pnw_info },
-> 	+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_TANGIER), .driver_data_ptr = &tng_info },
-> 		{}
-> 	 };
->   
-> which is a nice improvement dropping three casts and that will make the
-> compiler say:
-> 
-> arch/x86/platform/intel-mid/pwr.c: In function ‘mid_pwr_probe’:
-> arch/x86/platform/intel-mid/pwr.c:350:44: error: initialization discards ‘const’ qualifier from pointer target type [-Werror=discarded-qualifiers]
->    350 |         struct mid_pwr_device_info *info = id->driver_data_ptr;
->        |                                            ^~
-> 
-> (so it promotes that driver data is supposed to be const).
-> 
-> There is no iommu driver using pointers for driver data, so the example
-> is from a different subsystem. Also this is the only pci driver in
-> drivers/iommu, so no further patches for this part of my quest to that
-> subsystem.
-> 
-> Best regards
-> Uwe
-> 
->   drivers/iommu/riscv/iommu-pci.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/iommu-pci.c
-> index d82d2b00904c..8abf52dfb4c9 100644
-> --- a/drivers/iommu/riscv/iommu-pci.c
-> +++ b/drivers/iommu/riscv/iommu-pci.c
-> @@ -109,9 +109,9 @@ static void riscv_iommu_pci_shutdown(struct pci_dev *pdev)
->   }
->   
->   static const struct pci_device_id riscv_iommu_pci_tbl[] = {
-> -	{PCI_VDEVICE(REDHAT, PCI_DEVICE_ID_REDHAT_RISCV_IOMMU), 0},
-> -	{PCI_VDEVICE(RIVOS, PCI_DEVICE_ID_RIVOS_RISCV_IOMMU_GA), 0},
-> -	{0,}
-> +	{ PCI_VDEVICE(REDHAT, PCI_DEVICE_ID_REDHAT_RISCV_IOMMU) },
-> +	{ PCI_VDEVICE(RIVOS, PCI_DEVICE_ID_RIVOS_RISCV_IOMMU_GA) },
-> +	{ }
->   };
->   
->   static struct pci_driver riscv_iommu_pci_driver = {
-> 
-> base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
-
+-- 
+Sincerely yours,
+Mike.
