@@ -1,91 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84F683EB0EE;
-	Tue,  7 Jul 2026 11:27:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A1873FADF6
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 11:45:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783423649; cv=none; b=edjuz/RnWkK7dYwXl1YHMyXesI+v/YAPmdV1S9PFw6zmNj2FezxrrM1zJiCoxn1p5HPdtu43QOj71Iq7UvBfOaovItgyHN8DvOPPZEEY2PYOMJbi+gsYpH1BUurjwOfLUTyXFsjHz1ha8ABd9Y1N0e4F41apyxvotDfVQzfaerM=
+	t=1783424754; cv=none; b=JgiWsAufqM2LZgcSY6Qz8UPb5GtE6SKLrDayV2fISaw9fGYC6o288CbUp02wgbctADA+hhNF1UtlX1e8HVWOlftgJ0cAATZJvQlxR32JzBWstOejNB83o+QtSBpfn9uTGb9lzPtYKSx7n6Xvrd7ktivon7f/I5nndnZP5TdapPA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783423649; c=relaxed/simple;
-	bh=4l1iXQHyZX4KWBSzqmvIdP4JZC7MUT5WaO5EHB7P7oI=;
+	s=arc-20240116; t=1783424754; c=relaxed/simple;
+	bh=U1zRZA757u+fv0JMlGa/t+wuWzMlXcCu0ncHTr55sz8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=odCD50QOfJsElVdlyemxUXaXpUUvR3omfhj7BVvQN4LQl49lsJqm6MggjLEDoGjbV4C2YZj4EmDsC2927bXLCVpiEITLJfN+sLI2kzRUlOLFQOQ5IMt2sTnttA4PLT4RSLDyU9J9ajGZ8r4yH4ghEzAK1k5NYuwqXYDDf71/pFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GcnzsePl; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Vh6NsIv+p0k0EWO8MtYCaEJpdL/0GHb4Lx1WaODEzJWwEIM87rRdeOur3GKG2mgIYsWmrcBC5Y/MVq2Zohy92GSjiOYbsea5xDBpkaHY4J6aNARwrRjEMGcqnISu9hRyA0uKz4h2ghAhZsdcXTQB+chhNDFftHAOak3qdsprM6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GFVcfa1h; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GcnzsePl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C559E1F00A3A;
-	Tue,  7 Jul 2026 11:27:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783423646;
-	bh=aYNExvVjE68Bssuz6Q0Uk1wNO8ENlyByAV7s1CeJs/c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=GcnzsePlke2sHPVKXFrpmfWgDPaoaXvAGDCsvjpqbfsyvtLlho3fWpXDj/uKbDk36
-	 29MbpRdO6rfO94xIsXtWVBLVNSFu0PRpK+8Q3N5xgWJ0OkZvieybMvgBUqMhb2gQ4l
-	 Ahv8XDpa/3PWbSrFZzHelbxOI04a8OSapHaj/zeLfsMzVDa3n5HsTdyC0YbOpI139d
-	 fBoWckCalPRK9vcu5ifrE9IuraW6MqY6Q5ge3UN3DrPMz67mVJTxLFQXEVChjUNePg
-	 j6GuAFSVjQX9tNj/p8+7XZT6WNDH+X3gTCGkYbSR/BFOoYlGChu7c6d+b+RUXalLPP
-	 aFzzC3Jb5OcTA==
-Date: Tue, 7 Jul 2026 12:27:13 +0100
-From: Will Deacon <will@kernel.org>
-To: Thierry Reding <thierry.reding@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Sowjanya Komatineni <skomatineni@nvidia.com>,
-	Luca Ceresoli <luca.ceresoli@bootlin.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Russell King <linux@armlinux.org.uk>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>,
-	"T.J. Mercier" <tjmercier@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
-	linux-trace-kernel@vger.kernel.org,
-	Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
-Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
- set_memory_normal()
-Message-ID: <akzikTrmhMsvkNVY@willie-the-truck>
-References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
- <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
- <akYs91INHMXMTI-t@willie-the-truck>
- <akZkuwktaXFTrASP@orome>
- <akaSJ5D98w2cHqb6@orome>
- <akftuw9NyRy36fXA@willie-the-truck>
- <akuvyu1Pq0ZVMZV0@orome>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GFVcfa1h"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-493be0fbcc5so34625e9.0
+        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 04:45:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1783424749; x=1784029549; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=eT2u2uECc/JyT//Y0MUNfLJ3f6c5Vk9vkYH8un7LuaA=;
+        b=GFVcfa1h3BOrHrZ4QarE61CWfSzLfgVLrzSafGhdQ+4pM+nXrTmPJLsBRP8uK9YVqo
+         7KKrLEx4l5U+yli78veiynR/MCTToRTQlHYaeXj6wd28eaWJwBACSz2eaOMUv+lDyp3v
+         5VzW1inMGsPn4i8tgR3/MIDKAIgSs34IRlL2ul4c6j6Gb992/DkH0XbNee5cJ9FQ3Myt
+         cDenbh7jIl2+V8UkmB/fjojw3F/qv3bkA8NjADJy4DsMDsedKLEfU6PpITvtoZTD63Tr
+         A32KNouKQ2FZOfZOgKv+TmroPveprr5Ou8DUhAumMR3T9QIjZNzXHgWO37c/QyYjHHql
+         SFkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783424749; x=1784029549;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=eT2u2uECc/JyT//Y0MUNfLJ3f6c5Vk9vkYH8un7LuaA=;
+        b=HYeCa5ftdyN0AM8uqwe/W7L+YePMO16XXy0jQLDNbdh6OlwRpHQZzeXdMmw/KtzH14
+         +AR/rAV+yuU15/sWZzms++hLwMBQFP65c9AXID3bcPy/lfuP6S7uMlH5vWsayq8RpGFh
+         4wn7hXIaJgQsLJk5p2sIpyQbsueD7VHfukH6aos6FeVSU6obsfdiMy9VkWfmUEPj6htd
+         O2jYOG+mtegwXreysHmyl62RtsqkdwGIlyKE8AGMItCnINnE2omO5SIoQmF56rq/H06J
+         KFlvuK2ya1jNWZC5XrvEJSJML5Wx3kis4b323QZQNODI8AHbe7/vumibHTDI4q/fzKaR
+         alGQ==
+X-Gm-Message-State: AOJu0YzBRNYVVanXLF/rEVMzG+fEQtpC4umhxHAuA1n1GAtT+TXc9Wki
+	ymxkuex+P7BQBDCi5dmG9XY9AT7yJxDSyjYuGK6w0yHw2MBCs6lsp2MXgzh6O6JGig==
+X-Gm-Gg: AfdE7cmZVC71pzdCc+gMGRvn0MmcsVFGNecZ8a/Li36YlaQmpXxguekUJs9SmvCHBb/
+	0hxBAbZy8WqgU5oLiZFrQ4BbDYpBeHmFsnyucHwn0W3uEnCVdnicPCQpk2bSVGkBbEnA7IxnJGF
+	y3l7n4rgit/fmsI+ugAdK5U+Sl+t5upyVZku01IQ0nRYPaHQ6EmgTp9G148VnMyda1SMNfAXL3f
+	pyLymOPL6xdpgNx9Itz5TQaJyJMsYZdlJYJ4NmvmgM26kcIrN/v8kDZwkLrM0hcR2HWGkVOYSSG
+	fJw5pg5TzxljAV3HwLXYRuwO3j3T7CutBcfTT6peullbX4HOOdTmHdBMbcrKZ9osVTpNUUbXQQb
+	U+MWAP0uQ+NZBzNoZ6RR9aP3xZUY+8L965khYzQ3MN2+fLdaRTpMooeK6aFKP1JTLC7qdy5reoK
+	aITGLmrj3viCdSLsVvP7iEWHRtP+ktO2rUplFQc7hrdZbBR9tK
+X-Received: by 2002:a05:600d:8654:20b0:48a:623c:8859 with SMTP id 5b1f17b1804b1-493e15301b5mr647595e9.7.1783424749113;
+        Tue, 07 Jul 2026 04:45:49 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e01c9faesm37268395e9.1.2026.07.07.04.45.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2026 04:45:47 -0700 (PDT)
+Date: Tue, 7 Jul 2026 11:45:40 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
+ for latency
+Message-ID: <akzm5BoV0rToJ7ij@google.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -94,96 +82,134 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <akuvyu1Pq0ZVMZV0@orome>
+In-Reply-To: <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 
-On Mon, Jul 06, 2026 at 03:49:24PM +0200, Thierry Reding wrote:
-> On Fri, Jul 03, 2026 at 06:13:31PM +0100, Will Deacon wrote:
-> > On Thu, Jul 02, 2026 at 06:41:23PM +0200, Thierry Reding wrote:
-> > > On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
-> > > > On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
-> > > > > On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
-> > > > > > From: Chun Ng <chunn@nvidia.com>
-> > > > > > 
-> > > > > > Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protection bits
-> > > > > > on a kernel-linear-map range.
-> > > > > 
-> > > > > That sounds like a really terrible idea. Why is this necessary and how
-> > > > > does it interact with things like load_unaligned_zeropad()?
-> > > > 
-> > > > This is necessary because once the memory controller has walled off the
-> > > > new memory region the CPU must not access it under any circumstances or
-> > > > it'll cause the CPU to lock up (I think technically it'll hit an SError
-> > > > but in practice that just means it'll freeze, as far as I can tell).
-> > > > 
-> > > > Probably doesn't interact well at all with load_unaligned_zeropad().
-> > > > 
-> > > > > I think you should unmap the memory from the linear map and memremap()
-> > > > > it instead.
-> > > > 
-> > > > Given that the memory can never be accessed by the CPU after the memory
-> > > > controller locks it down, I don't think we'll even need memremap(). The
-> > > > only thing we really need is the sg_table we hand out via the DMA BUFs
-> > > > so that they can be used by device drivers to program their DMA engines
-> > > > internally.
-> > > > 
-> > > > Looking through some of the architecture code around this, shouldn't we
-> > > > simply be using set_memory_encrypted() and set_memory_decrypted() for
-> > > > this? While they might've been created for slightly other use-cases,
-> > > > they seem to be doing exactly what we want (i.e. remove the page range
-> > > > from the linear mapping and flushing it, or restoring the valid bit and
-> > > > standard permissions, respectively).
-> > > 
-> > > Ah... I guess we can't do it because we're not in a realm world and so
-> > > the early checks in __set_memory_enc_dec() would return early and turn
-> > > it into a no-op.
-> > > 
-> > > How about if I extract a common helper and provide set_memory_p() and
-> > > set_memory_np() in terms of those. Those are available on x86 and
-> > > PowerPC as well, so fairly standard. I suppose at that point we're
-> > > closer to set_memory_valid().
-> > 
-> > Why not just call set_direct_map_invalid_noflush() +
-> > flush_tlb_kernel_range() for each page? We already have APIs for this.
+On Mon, Jul 06, 2026 at 01:26:40PM -0300, Jason Gunthorpe wrote:
+> The server IOMMU drivers focus on invalidation latency by default,
+> over-invalidating if necessary, to round the invalidation range up to a
+> single command. I think this represents a trade off for DMA non-FQ and SVA
+> where stalling the operation is overall worse than re-loading the IOTLB.
 > 
-> Having a "standard" helper with a fixed and documented purposed seemed
-> like a preferable approach for this particular case. We also may want to
-> make the driver that uses this buildable as a module, in which case we'd
-> need to export these rather low-level APIs. And then there's also the
-> fact that we typically call this on a rather large region of memory
-> (usually something like 512 MiB), so doing it page-by-page is rather
-> suboptimal.
+> For instance AMD and VT-d both round the range up to the largest aligned
+> power of two and invalidate that. This causes over-invalidation but that
+> is preferred on real HW over trying to issue a number of smaller
+> range invalidations.
 > 
-> > The big challenge I see with any linear map manipulation, however, is
-> > that it will rely on can_set_direct_map() which likely means you need to
-> > give up some performance and/or security to make this work. Does memory
-> > become inaccesible dynamically at runtime? If not, the best bet would
-> > be to describe it as a carveout in the DT and mark it as "no-map" so
-> > we avoid mapping it in the first place.
+> Only if a para-virtualizating hypervisor is detected do they switch to
+> using more accurate invalidation. This also triggers using
+> iommu_iotlb_gather_is_disjoint() (ie PT_FEAT_FLUSH_RANGE_NO_GAPS) to
+> remove over invalidation from the gather. A pvIOMMU has a hypervisor that
+> will walk the IOPTEs and resync them. Over invalidation, especially
+> significant over invalidation, can incur a big latency cost reloading alot
+> of page table. x86 IOMMUs have aligned range restrictions so there are
+> some pretty nasty corner cases that can trigger huge over invalidation.
 > 
-> VPR exists in two modes: static and resizable. For static VPR we do
-> exactly that: describe it as carveout in DT with no-map and deal with it
-> accordingly in the driver. Resizable VPR is for device that have small
-> amounts of RAM. Content-protected video playback will in the worst case
-> consume around 1.8 GiB of RAM, so we want to be able to reuse for other
-> purposes when VPR is unused on those devices. In that case, the memory
-> is also described as a reserved-memory region in DT, but it is marked as
-> reusable so that it can be managed by CMA.
+> Currently SMMUv3 doesn't support detecting a hypervisor, and it
+> unconditionally runs in a NO_GAPS mode. This makes some sense for the
+> single invalidation flow where there is little reason to push single
+> commands across a gap.
 > 
-> The resize operation is fairly slow to begin with because we need to
-> stall the GPU and put it into reset before the operation, then take it
-> out of reset and resume it afterwards.
+> When we get to RIL hardware, this doesn't look so good. On real HW the
+> best option is the same as x86: issue a single RIL per gather and optimize
+> for latency. SMMUv3 has a significant advantage as its RIL does not have
+> alignment limitations so it's single-command over-invalidation is capped
+> at < 1/32 of the gather's size, making it much more suitable for a
+> pvIOMMU.
 > 
-> What kind of performance impact do you expect?
+> However even with RIL SMMUv3 still uses NO_GAPS and it breaks down the
+> gather into several exactly sized RILs to avoid any over-invalidation,
+> costing latency on real HW.
+> 
+> When the HW has RIL support follow the x86 approach in SMMUv3 and
+> calculate a single RIL per gather that will cover the required
+> invalidation.
+> 
+> Calculate the smallest SCALE such that NUM can cover the range to minimize
+> over-invalidation. Always use a RIL command if RIL is possible working
+> around the spec limitations to form a valid one. If RIL is not possible
+> then do full invalidation.
+> 
 
-You'll need to measure it, but we've seen reports of double-digit
-percentage regressions in performance and power. As I said, the problem
-is that you need to split the linear map to 4k page at runtime to unmap
-the dynamic carveout, but that isn't something that can be done on most
-CPUs. Therefore you end up having to use page-granular mappings for the
-entire thing, similarly to how 'rodata_full' drives can_set_direct_map()
-and the perf/power hit affects everything.
+That may be beneficial for servers, but I am not sure about other use
+cases, we already know that the invalidated entries are unmapped
+and not used. However, over invalidating might impact live DMA which
+would be bad for workloads sensitive to translation latency (as
+embedded cameras, displays for example). Maybe this can be configured
+instead (via cmdline)
 
-It's hard to know what to suggest... I wonder if any of the memory
-hotplug logic could help here?
+> At least one invalidation errata is avoided by 'always use RIL'.
+>
 
-Will
+Can you please clarify what that means?
+
+> Since the normal path is now the only one with a loop, split them into two
+> functions and fold a simplified version of arm_smmu_inv_size_too_big()
+> directly into the normal flow in a way that directly limits the number of
+> single invalidation commands generated, again focusing on controlling
+> latency.
+> 
+> The end result is any gather is converted into either:
+>  - One invalidate all
+>  - One range invalidate op
+>  - At most 512 single invalidation ops
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 257 ++++++++++++--------
+>  1 file changed, 153 insertions(+), 104 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index d22012466e3965..1ad642e09eb92d 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2395,124 +2395,166 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>  	arm_smmu_domain_inv(smmu_domain);
+>  }
+>  
+[...]
+> +	scale = fls64((num_tg - 1) / 32);
+> +	if (scale > 31) {
+> +		/*
+> +		 * Range too large for a single command, use full invalidation.
+> +		 */
+> +		return false;
+> +	}
+> +
+> +	/* 16K granule TTL=1 is reserved (Section 4.4.1) */
+> +	if (tg_lg2 == 14 && ttl == 1)
+> +		ttl = 0;
+> +
+> +	/* Verify address alignment for the TTL hint */
+> +	if (ttl && !arm_smmu_ttl_addr_aligned(cur_tg << tg_lg2, tg_lg2, ttl))
+> +		ttl = 0;
+> +
+> +	arm_smmu_cmdq_batch_add_ril(smmu, cmds, cmd, tlbi->leaf_only,
+> +				    cur_tg << tg_lg2,
+> +				    DIV_ROUND_UP_ULL(num_tg, 1ULL << scale) - 1,
+> +				    scale, ttl, tg_enc);
+> +	return true;
+>  }
+>  
+> -/* Used by non INV_TYPE_ATS* invalidations */
+> -static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
+> +/*
+> + * One TLBI command per IOTLB entry, assuming the entries are all at least
+> + * iopte_granule sized. Returns false if too many commands would be needed which
+> + * indicates too high a latency. The threshold is similar to MAX_DVM_OPS in
+> + * arch/arm64/include/asm/tlbflush.h for the 4k PAGE_SIZE.
+> + */
+> +static bool arm_smmu_cmdq_batch_add_single(struct arm_smmu_device *smmu,
+> +					   struct arm_smmu_cmdq_batch *cmds,
+> +					   struct arm_smmu_cmd *cmd,
+> +					   struct arm_smmu_tlbi *tlbi)
+> +{
+> +	unsigned long num_ops = tlbi->size / tlbi->iopte_granule;
+> +	unsigned long iova = tlbi->iova;
+> +	unsigned long i;
+> +
+> +	if (!num_ops || num_ops > 512)
+
+Is there a reason that was added instead of keeping the old formula?
+
+Thanks,
+Mostafa
