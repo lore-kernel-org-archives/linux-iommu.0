@@ -1,189 +1,129 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C94032B113
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 08:41:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0213E38E8D4
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 09:07:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783413673; cv=none; b=R0I1vkTeSo2BF/0gMnFlv6K3XD+j3vU4kkP5qQ8QY0hUZERUauNExx3AKh61+ZjrJfi57JQReJHxFbVvUtcFC/ovtFSahafPPqIl9RSHcRbNoogEuQhu3oVh34e9aTcAMLFk7+p3sN1M5EdNSwbVXVe7m+nTqweeKX+ZdH4v49g=
+	t=1783415277; cv=none; b=gsfMXyG0elfzxB5DfuTHRMSszEFE48U/l3eTGUT9xeBORyP112o6PBjU+qED1BCuTq6w6cj81tISVon7i/3EQHWpSzC47mK0WLOuGOxhH4FyQIPbvJJk2Na54R0iumszHaMzxjIFtCcLUOamPA6TJOI9WKWJcQS0OZT/0ksEjEs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783413673; c=relaxed/simple;
-	bh=hsE1R7ng6TipGkRqwppICugWHMfDvmkiKuhrFirCYII=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nLcAflb2B09wdifikRraA5wJwOmoWnz2C9tOzoMrNzOqjHHaY6CeACUXY5fGRdgNQUwOHuy8x4ZHOiJFMdGSzJwyqQOk+1g7QOz0yHO1I1jwORLK7EzsPDu+SOv/44/qIFTp/CUadaH+A8DN7S6v/QBhLXDgsSsN6I/morsQ1Hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=I2h4gFwU; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=MaNEg7OJ; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1783415277; c=relaxed/simple;
+	bh=sI/lThfPPa6ZbQMicdFXAkGpuTpYP7bvsD6WMn+lQQs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qN2Ejs4Ny4c7gNVAh0S2XnZhN274PZn2RTvTG3cl4i6ajQc8vLPV9Xlg+LP/DyVnHPCkiYcv/LFzmF71IfD0hPzPZJzRVK1tp386chmwkukUh3L99ykgOk0hPwR/roL+pZh7XhQO9hlPry741yXn3v2e+xd8Pv2pZJ+PWjvlW9o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Y8PEE/bE; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="I2h4gFwU";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="MaNEg7OJ"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6678DqZW3206049
-	for <iommu@lists.linux.dev>; Tue, 7 Jul 2026 08:41:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	T/aFwVhqAGc0ZbZI9x0aiPx8X3rURaDkbGwWbnLHtE8=; b=I2h4gFwU+DniJ4AS
-	I91DXHqeGqDegN3b98/ME1S4lHUcHux6a+mV81sSLsHSjLylYglx2/w/5qDHd+ol
-	HF0zsqAyi7+hb/q69X8Jpg00yWpQJmFWn2xYqWrnnb4jQ/caRQdTo2sBdnEvBOJx
-	shzzooXfsKpgIZ3W7kYt7Qtg2YQ3tVOtVCSLNO7WTi0ogZqh1ZL0njIPq2Ekx28r
-	tdo9WfgNDu94+IU3vy6pzlKrPRI+1NJd2NI7xOACyRDnXoZrO/Yn8LPq5xXfOkKq
-	ISh1NjzAp8nhQsFyyHOMM+uajbYVla7wxSJNH+zLr8BfwxKHghtfp2CcT3wQ3Lrt
-	CYw5eA==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f8fdw3dy5-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 08:41:05 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-36d97a4e08fso6916853a91.0
-        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 01:41:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Y8PEE/bE"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-493c2c0b9a8so34549885e9.1
+        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 02:07:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783413665; x=1784018465; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=T/aFwVhqAGc0ZbZI9x0aiPx8X3rURaDkbGwWbnLHtE8=;
-        b=MaNEg7OJNqo6fxPJlwIB9RL0JMq0vmVZ80VVqqLkH1kTgBMZUTNKWgTtgQBkgGRai5
-         ecU+EfAMbg+PVXZBZEsNrQVeM445zq/TM9teWu6FMZ8fRfMnC5BgRsKc/IkOzeUPL3/T
-         PwdMJJrTBocqkm/ZLBOcsobjYumPM9goab28oxgsVA+2wPh8No/bsnobaxc3fBGQd68p
-         WaVsFX0Sp/WwPXR9tabOz6TOlg986mdJK4mJrgwNWuhVR8hqtMsGBrR8U46VbctpC4ep
-         MAmDJDqOfVfwigcuemqgF6i8YiUCzTvJToWMn6MfW7imG4oQcjmQQ2UkdYEyD4uZpLtN
-         gAuA==
+        d=baylibre.com; s=google; t=1783415274; x=1784020074; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=sI/lThfPPa6ZbQMicdFXAkGpuTpYP7bvsD6WMn+lQQs=;
+        b=Y8PEE/bEnSRj8CuVUb11Tz0faNHrb45e3qKGl6cxmmhnNrwHDHcghHzn35NAE9docj
+         yZOFbqFXO8CPWfJ31/kofHGGRb/c0ha9hhgtjFjl16DcDhEEWm8VvtPFU4UGG/7bO8ae
+         j7fTBKu9ykcENe/xavxc4EuzLpcprOSXQNFGuFulN/OLXVX12GVYe1LNI3Im5mJ5oAfe
+         Jio8G6UiRKxPFu+OpjAUj8oiTG42DWZWbcAZl/y14RiorMJsLoTD8l3MsPCSVta3aY3k
+         XijcpBr2O0ePEjpwdFbDQ3r9mLoc94vsQBY2jY+jFGfO0Uo7212zO8y6mnLInAXP5S8X
+         Ei0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783413665; x=1784018465;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=T/aFwVhqAGc0ZbZI9x0aiPx8X3rURaDkbGwWbnLHtE8=;
-        b=rXkiVxftPpsGdT8BZtDkEzseBGQZEGksivSA9TFutJdAwZ4DQiHhN6a2fuqUHNT2qE
-         6mBM2Q38nILQPvNAktoBQzVk7gzEJMyAOWcRBI2w8yi3h+cdoi9rEhdulIPch2uXlhRK
-         Gtb1vufRL4uk9LOu/NiYLPggu1vApmGWzs630lzadr9xHjG2nh4zeDr4zJpajP2Sbfrq
-         GMVEu/zHbhfM2iUpBlwt2X5RgKb11vTzP0EoHXgRp2rh8ph6Wm2Q5ekpoEpTirSfTIZY
-         YdAbPJFZC8ONVjAUe1pk+jLiqcDY5lzgnUJJsLBizLv+135vgMsLO2Hw823IoMU94upD
-         HX/Q==
-X-Forwarded-Encrypted: i=1; AHgh+RqJbcsvy1gdKj/qdHtQQDrEFURnQN5dbAz8dC2JXfaNRoZs6rzoOrR6fwS+qK/lqyto0nrl9Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwT0yHgmGbbjEDn6DgeCH0UzA2z3mgZ1pImXj50nJVjBPAn9w1H
-	VS3p+g0UO2Jbzr9jmQA7ohA99vKABxlgEI5VCncefw2NbVA+YQ/HUGEwUXIw8spbo8VvWalnkyH
-	GLwHw4PVj29PrwuD0cVXLCzRm4Q0zKtbV65AS0240chFwc9yZxjQa3p0E0Q==
-X-Gm-Gg: AfdE7cmPaipPN5EkDPsxiaj06O1c7vlKxb0D30bZfCEYU6aFFPQfclOp0CaT0+Sb7B2
-	nZ5J9lh1lIp/htkcwzo1ZdI8uhtehH8Y3QWeVpotT/f7iWHZFt0mq9ZN4D/Iw/ruqEx9RYj5tI7
-	in4mxOf9oZHedzFlutsxYZSWoOR/HSjAW/E8i/wrD2rEWRsn2bxNvYxQ2VxKJSH//yVhRjH1U0k
-	lrF211iZPVBrTb4SjKBE6dgNfBITGinEZ31zg1Ux2s700wMB2c3GdclMmoM86bTeNFSiCsn60F7
-	kmVviDjRT2bCU7L2mpZ8dhKR3SQKE4fx3EgE/N+7JyQ+HfN7xfCi3aUOTVmrzB/8einrO62ug7W
-	cvGFoqtXJnRHliZAaIQlIa+hIDu8hLqQqOYUwtHPRzA==
-X-Received: by 2002:a17:90b:2e48:b0:384:8a11:33eb with SMTP id 98e67ed59e1d1-387575abe72mr4559424a91.24.1783413665181;
-        Tue, 07 Jul 2026 01:41:05 -0700 (PDT)
-X-Received: by 2002:a17:90b:2e48:b0:384:8a11:33eb with SMTP id 98e67ed59e1d1-387575abe72mr4559398a91.24.1783413664710;
-        Tue, 07 Jul 2026 01:41:04 -0700 (PDT)
-Received: from [10.218.50.222] ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-387d1ad7974sm708702a91.12.2026.07.07.01.40.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jul 2026 01:41:04 -0700 (PDT)
-Message-ID: <447245d3-4e79-4645-a814-9dfc52fc5bf1@oss.qualcomm.com>
-Date: Tue, 7 Jul 2026 14:10:52 +0530
+        d=1e100.net; s=20251104; t=1783415274; x=1784020074;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=sI/lThfPPa6ZbQMicdFXAkGpuTpYP7bvsD6WMn+lQQs=;
+        b=l9t7lwvMhvQ1OxGS2TNcQdpybR4+0XPUph4T54dPUAIVtjbJJ5aPXJ2KMMFb74iig8
+         YnX7qWZzxB4Rp/r4YZ28kRZwo+uf8rr3Z8tVTa6vPjlaLrdDCXvJZyFMydKveJjfk12H
+         ke7ywy3ddpbhbG6nxgVugCbslaIi61XiCTy/Jr24P3+GBRPtNZfl8LxMIqcOiKCz3pRd
+         7iYIhIR/68oitenUxNSfqJHpPx53Lpt7Hqyme1uQoA49JMVvwRIl/2BL9YvT5DoWEjzz
+         WGyYWnMtR6VCGUXEG7BXuaUrhPMkxl6v/Zfcki8JOrs1rUFnL2qx0zI4P0G5Ga7H136r
+         FGRA==
+X-Forwarded-Encrypted: i=1; AHgh+RpEE+tRUZ/MzlBrmNgM4g8/LGchPCrw8wKdPTqwmjD1sSfQQBkPfypqDiDXZ76j3MbT+Qczew==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwpM2CXHSpEtLd0Iv7ienPy9ww9+KFIHyRw6uiwsGSc8u3frY1o
+	IR4mWoQtPGPhaHg68UAZNOEfv5vG72lQBktEhHX1zp8WszgLZmdoMD3TnaXx/s+qCL0=
+X-Gm-Gg: AfdE7cm3bJIvSOCMalBDXm9z9xsDOjmZMmE3b/A8J9nMEne5rmXRH/73t0UhDeIsahG
+	9i7GLGAUGBe9VnIwvvG4PGuW/WD3bhXo1S9Dwz/UUNSUpuHVsXCA9J6B+X31zDYU/6uxVJK8Hk+
+	hY7H1P3yGXCyfC7wSzSEVYf+brznGhqzrx12LZ5okoO167Kzf96lbdGFS2RhiliZxmK6UvhtJib
+	7UzW5PxzHJ9PA/51XjtTwgw76ndY7rshM8EL4WZ1x9EUVNgLIsh0pFoJUdsrsrgt+vf+kmfpISB
+	QovpvTGVDsZPS5QmBvwF/hWwKkRtKaLBlL7DXvatV2NsWFDMdKOT5SaA0AZViLijFTQOqCc8Etg
+	mGrYy+P+GzjbaKAgvo/Se9wNZtqOfs12xYGKfvGN1tQsF/UbcXgvpcbQuT1YAx8rCWgIllI6r8S
+	RmmWzSkji5bfMH/nFCJl422UjjGZCMuOmaBurKGE1ePKefeVmIM1L1dk/v4vu1aD9W+/vlLLeBj
+	RG1
+X-Received: by 2002:a05:600c:a011:b0:493:a8eb:5145 with SMTP id 5b1f17b1804b1-493df063da1mr47094795e9.4.1783415273961;
+        Tue, 07 Jul 2026 02:07:53 -0700 (PDT)
+Received: from localhost (p200300f65f47db0437b4d928ee3eb6f8.dip0.t-ipconnect.de. [2003:f6:5f47:db04:37b4:d928:ee3e:b6f8])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-493e0fc1348sm41108005e9.14.2026.07.07.02.07.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2026 02:07:53 -0700 (PDT)
+Date: Tue, 7 Jul 2026 11:07:52 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <pjw@kernel.org>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Alexandre Ghiti <alex@ghiti.fr>, iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] iommu/riscv: Drop superflous zeros in pci_device_id
+ array
+Message-ID: <akzBoIyLjEKZk-5j@monoceros>
+References: <20260522145943.774344-2-u.kleine-koenig@baylibre.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 6/7] arm64: dts: qcom: shikra: Add GPU cooling
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev
-References: <20260707-shikra-gpu-v5-0-d2f373912d3f@oss.qualcomm.com>
- <20260707-shikra-gpu-v5-6-d2f373912d3f@oss.qualcomm.com>
- <cikq6wyljzdlyuopvxno7fipifzc7f2zc6hs2ligiu5esnljui@5mxhammibgpc>
-Content-Language: en-US
-From: Aastha Pandey <aastha.pandey@oss.qualcomm.com>
-In-Reply-To: <cikq6wyljzdlyuopvxno7fipifzc7f2zc6hs2ligiu5esnljui@5mxhammibgpc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA3MDA4MyBTYWx0ZWRfXzO+fsd94VlZM
- BQl3V3pmhkFK83dGIwIU+4on8inchLWd3R123uLrN9aSA4TIwhsS6fVrnMUkj2DsUhaJcbtOGPz
- aKPJgzTTDvxKvpQ2iiXLPDjrFk5m/10=
-X-Proofpoint-ORIG-GUID: uyMEgZ25tcT3lPA-Wpic5vPd0gEDEnXu
-X-Authority-Analysis: v=2.4 cv=EtziaycA c=1 sm=1 tr=0 ts=6a4cbba1 cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=EUspDBNiAAAA:8 a=agT521uulj5WE4s-WisA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=uKXjsCUrEbL0IQVhDsJ9:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA3MDA4MyBTYWx0ZWRfX+sFp4V+9FzHl
- G6RzXXZSko5MoGsRx0VVmyFLN1dBju5etsUX6eLoden6xmaEf0Q0Vq9+0DrBiUIwYGLvFgSl2Vq
- ZWV4c8gbKoiGJSpA7wvgIfpAtsUd6iSAAsUYvZnOqMxboTUOtgAB3E2qfsfIt+wzMllAw2vxS7k
- H0NBm0Pjpj2mfwCYMxLqLqQu93pqA5HvJAF/0PI4CuFpVCudfcpMFDKg+qXST2PwvNVKmeLbWIj
- hOKL2wfPiLGSdY4K98fADodz120ovRfnuK+liPV9EQN5fUsff920N5We90U2v8ufT5pJKgIKKjG
- aRlRN5IFxYklFG6NcdiCvsGrlpKXy9IFKYFwHCLjCRKtGsPHIoO267MJ/kVR/yTLZGQCbIv69Dn
- K35E+WKYuJOQq6D8nR8F3kQBDP561mpUI0JNIl/44/Y6maq9XadEq1AztiIMXahKC5OgdFha/MM
- 5Lrx/6n9zHzVbbe9fNA==
-X-Proofpoint-GUID: uyMEgZ25tcT3lPA-Wpic5vPd0gEDEnXu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-07_02,2026-07-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 suspectscore=0 clxscore=1015 adultscore=0 phishscore=0
- spamscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607070083
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ey6zjmsvpt54p5f3"
+Content-Disposition: inline
+In-Reply-To: <20260522145943.774344-2-u.kleine-koenig@baylibre.com>
 
 
+--ey6zjmsvpt54p5f3
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v1] iommu/riscv: Drop superflous zeros in pci_device_id
+ array
+MIME-Version: 1.0
 
-On 7/7/2026 2:58 AM, Dmitry Baryshkov wrote:
-> On Tue, Jul 07, 2026 at 02:34:38AM +0530, Akhil P Oommen wrote:
->> From: Aastha Pandey <aastha.pandey@oss.qualcomm.com>
->>
->> Unlike the CPU, the GPU does not throttle its speed automatically when it
->> reaches high temperatures.
->>
->> Set up GPU cooling by throttling the GPU speed when reaching 115°C. And
->> use a passive polling delay to ensure more than one "passive" thermal
->> point is considered when throttling the GPU thermal zones.
-> 
-> I'm not sure I can parse this sentence. How does polling delay affect
-> number of thermal points to be considered?
+Hello,
 
-Thanks for the review. The commit message was unclear, apologies.
-Without passive_delay, the governor fires only on trip crossing interrupts.
+On Fri, May 22, 2026 at 04:59:43PM +0200, Uwe Kleine-K=F6nig (The Capable H=
+ub) wrote:
+> The .driver_data member of the struct pci_device_id array were
+> initialized by a list expressions to zero without making use of that
+> value. In this case it's better to not specify a value at all and let
+> the compiler fill in the zeros. Same for the list terminator that can
+> better be completely empty.
+>=20
+> Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@bayl=
+ibre.com>
 
-Can we use something like below in commit message:
-"Without passive_delay, the governor fires only on trip crossing
-interrupts. Temperature stabilizing between two trips generates
-no interrupt, so not all cooling levels are applied. Set
-passive_delay to enable periodic polling to ensure all cooling
-is applied."
+This patch was sent before v7.1-rc5 and missed the merge window leading
+to v7.2-rc1. I wonder if it's still on someone's radar?
 
-> 
->>
->> Signed-off-by: Aastha Pandey <aastha.pandey@oss.qualcomm.com>
->> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
->> ---
->>   arch/arm64/boot/dts/qcom/shikra.dtsi | 16 +++++++++++++++-
->>   1 file changed, 15 insertions(+), 1 deletion(-)
->>
-> 
+Best regards
+Uwe
 
--- 
-Thanks & Regards,
-Aastha Pandey
+--ey6zjmsvpt54p5f3
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpMweQACgkQj4D7WH0S
+/k6rpAgAnTFyflMCkuo0PNYUPa4d10VpQnXa5capkEKkV/j9oJywGHlRsvrtBsWb
+25TCYntEvTW5V/uH4ZmVVLRWgxMTghVqFxokevX/yKYlXE0u7Ud21v8/9oEOU79O
+zAoRhsh3GQlz3TdWHwsrMqar1TJlSGc/ao7uI5oeMlzu/unWD5ki/j2JZJio+s5b
+hqYRLYF8uCeYPjQVTkas5MyAgw9lVux54oILDGSjyOWMpXbXY1uRx6tDagP27KHK
+lJulkKCBN3/v5axD66zYw4a14M1NzJPFsgdQeOt51nXbTpom2AQlJeX+dOMMrMzO
++2in5sBwtKDcJIPIoy/Y7H/yic2J1w==
+=lib1
+-----END PGP SIGNATURE-----
+
+--ey6zjmsvpt54p5f3--
