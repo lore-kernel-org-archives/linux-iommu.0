@@ -1,268 +1,189 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441083F6C29
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 11:24:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84F683EB0EE;
+	Tue,  7 Jul 2026 11:27:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783423491; cv=none; b=Oh1QOFlswU/a4333Rse09xtpop+7vBH+1sg0mK6WMX2PlfKuMhWZqz0+s3cgRFn3aI3JTJ94IS66jJUMzdliwA9b7oG2Z7t1yFEvNohTPurZKdumCrrmDavnfJwCDqOt/UnvGP4GkYpxbwlRv61WrkPIfCgqQY7GuCVGexbAk9o=
+	t=1783423649; cv=none; b=edjuz/RnWkK7dYwXl1YHMyXesI+v/YAPmdV1S9PFw6zmNj2FezxrrM1zJiCoxn1p5HPdtu43QOj71Iq7UvBfOaovItgyHN8DvOPPZEEY2PYOMJbi+gsYpH1BUurjwOfLUTyXFsjHz1ha8ABd9Y1N0e4F41apyxvotDfVQzfaerM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783423491; c=relaxed/simple;
-	bh=DrU75j4aPdyIe1KGThKxf/CUTwPbzDvnN/ERBbMWJwg=;
+	s=arc-20240116; t=1783423649; c=relaxed/simple;
+	bh=4l1iXQHyZX4KWBSzqmvIdP4JZC7MUT5WaO5EHB7P7oI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SipOrSK6ahyiv3zUne05F/OSXDS9wrOJTUUs5n+GQ0RXfLKHIDql2w1Jqc8fA64jlEVPlGiOkY8xG+A5keTB4F6pLQLamuaWmEid+FPIZM6c7jcDOO2Bwgl4Nap2Lgw01doXUb0k+EeI34Ye0mIR7P5vdcBz8UtEvnQ3cyW3T9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IIXjlpQK; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=odCD50QOfJsElVdlyemxUXaXpUUvR3omfhj7BVvQN4LQl49lsJqm6MggjLEDoGjbV4C2YZj4EmDsC2927bXLCVpiEITLJfN+sLI2kzRUlOLFQOQ5IMt2sTnttA4PLT4RSLDyU9J9ajGZ8r4yH4ghEzAK1k5NYuwqXYDDf71/pFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GcnzsePl; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IIXjlpQK"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493b8d99342so25045e9.1
-        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 04:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783423487; x=1784028287; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=VV+gJB5ebBMdY4lrxfExKBx0DMSngEYrND59Gya7WaU=;
-        b=IIXjlpQKkzQv5dy1qR3B101z8dy/4zKLez8qeqKFPcjA7ul7JIDufzoiFF3hQWR+it
-         5ctiSvBub/Nr/E4yr2OkqjB+0NKwPAeeg1fgyu1jt+H/4RSUh0YuJLCSBlcx3v5OgGIp
-         sLO4gu9h1FUrPZmXLDr0KNfTEYgcg4xHO+lvxlrhW6gVOHytEy/8NAJDHnCox219LeO9
-         yVdSJRVFSzPRQbDuUx7v2XiS8uycJRpBvIIbrvwcmc/6U5N6aPI3RGuEZdfkoSOY7B3a
-         LzqFpgxxI5KUMbb0d3lF3TdYm8eNj23JFV+MI3LE+0U5/KoCzuJMzQ4aj46GWsHlVqRb
-         HQrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783423487; x=1784028287;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=VV+gJB5ebBMdY4lrxfExKBx0DMSngEYrND59Gya7WaU=;
-        b=lOL8dTBO39JyxqTe2DurxzxhoeQuGGDAOWKfN5jkjS/Y7uI5iAvcdGT0nzItKaKhpp
-         /5vt6LC9udtqLSujsecNvtHpxJELzusj8MXmPl9SP/HwivjawuwRfOZs3hClPGdKNSrz
-         VOm5EspLhl+fwybjT6SLFf2M+MAcPIuS8oJISo/m9/OfROleN0l2tqfQy1/Qr8CRyKqc
-         LzX1FuXO1xfhFglggNe64NQL1xUlZUfRDX1an0XYORi4+qSB0A65bsIGEgNpo+nqLy17
-         pzfuMNmD7K/IoY1xVD32TAi5lvlXXZil4vtxZS36ZClD1oan6YZpNWLGe2CT0IOOZZRn
-         5/0g==
-X-Gm-Message-State: AOJu0Yzx6JVykcVQ9rCRuc/HkP4rGsPaEBWRVIABUuO+Tk4hQ600xNr0
-	ixgoVay9xkLxK/UWh/m6y/hiZ2ghCRJ+vV3llung8zFeG2oN+1BouTm20uEjJNR0ew==
-X-Gm-Gg: AfdE7clzCIn0m4uNZjV16QBjjL30rHsdSEcOES9jO0t2V9ztrNhjQaG8hM8xQBd+gAC
-	C0LyytTT/KMF8RDUCmIPCk/J9XeiMZltqaJ7Q2DrmtaHCpCoeHPlI0TzPDz4dh/VOCF0AFaR4nS
-	+JFiqroudZykHv/1S52B31gmWUNnet/FqUdBI2EgkrVVTg9Hw5hgq4f/nZHoqoGJKPaR1bowgd4
-	VhsrTU4bRk4n/GtRPmNHE1ELYMHtWYfYGLUpTw6Ims2BcNWPfgOJJP/dDMl/WC2AZcIxg5MdJs4
-	BmHWqrQ0ihfd7PqfD1atdPQI6JTuEYnEz7ni/QyFL0qUf14cAXBX5z6cDhHvmVwjiUMvoedJYHC
-	OZg+wnLrYJ0ukFPOW1sJHHaXXT0zWe5f1ElIIeEzvxtxHe9EVuF07oBE10sAMivcJkK7UCDaO70
-	jKmhqbo9iwZFHd5QoIya5OwYVJWVJh3aj3Y9dOJOP+8+m3yGza
-X-Received: by 2002:a05:600d:6409:10b0:492:668f:410c with SMTP id 5b1f17b1804b1-493e122aa8dmr648535e9.10.1783423487138;
-        Tue, 07 Jul 2026 04:24:47 -0700 (PDT)
-Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0078d49sm53005485e9.0.2026.07.07.04.24.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 04:24:46 -0700 (PDT)
-Date: Tue, 7 Jul 2026 11:24:38 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Move pgsize out of arm_smmu_inv
-Message-ID: <akzh9qFEfi2umwDW@google.com>
-References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <2-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GcnzsePl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C559E1F00A3A;
+	Tue,  7 Jul 2026 11:27:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783423646;
+	bh=aYNExvVjE68Bssuz6Q0Uk1wNO8ENlyByAV7s1CeJs/c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=GcnzsePlke2sHPVKXFrpmfWgDPaoaXvAGDCsvjpqbfsyvtLlho3fWpXDj/uKbDk36
+	 29MbpRdO6rfO94xIsXtWVBLVNSFu0PRpK+8Q3N5xgWJ0OkZvieybMvgBUqMhb2gQ4l
+	 Ahv8XDpa/3PWbSrFZzHelbxOI04a8OSapHaj/zeLfsMzVDa3n5HsTdyC0YbOpI139d
+	 fBoWckCalPRK9vcu5ifrE9IuraW6MqY6Q5ge3UN3DrPMz67mVJTxLFQXEVChjUNePg
+	 j6GuAFSVjQX9tNj/p8+7XZT6WNDH+X3gTCGkYbSR/BFOoYlGChu7c6d+b+RUXalLPP
+	 aFzzC3Jb5OcTA==
+Date: Tue, 7 Jul 2026 12:27:13 +0100
+From: Will Deacon <will@kernel.org>
+To: Thierry Reding <thierry.reding@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Sowjanya Komatineni <skomatineni@nvidia.com>,
+	Luca Ceresoli <luca.ceresoli@bootlin.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Yury Norov <yury.norov@gmail.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Russell King <linux@armlinux.org.uk>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
+	linux-trace-kernel@vger.kernel.org,
+	Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+Message-ID: <akzikTrmhMsvkNVY@willie-the-truck>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
+ <akYs91INHMXMTI-t@willie-the-truck>
+ <akZkuwktaXFTrASP@orome>
+ <akaSJ5D98w2cHqb6@orome>
+ <akftuw9NyRy36fXA@willie-the-truck>
+ <akuvyu1Pq0ZVMZV0@orome>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+In-Reply-To: <akuvyu1Pq0ZVMZV0@orome>
 
-On Mon, Jul 06, 2026 at 01:26:39PM -0300, Jason Gunthorpe wrote:
-> pgsize is a constant property of the domain, it is the base translation
-> granule of the page table (4k, 16k, 64k) in log2.
+On Mon, Jul 06, 2026 at 03:49:24PM +0200, Thierry Reding wrote:
+> On Fri, Jul 03, 2026 at 06:13:31PM +0100, Will Deacon wrote:
+> > On Thu, Jul 02, 2026 at 06:41:23PM +0200, Thierry Reding wrote:
+> > > On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
+> > > > On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
+> > > > > On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
+> > > > > > From: Chun Ng <chunn@nvidia.com>
+> > > > > > 
+> > > > > > Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protection bits
+> > > > > > on a kernel-linear-map range.
+> > > > > 
+> > > > > That sounds like a really terrible idea. Why is this necessary and how
+> > > > > does it interact with things like load_unaligned_zeropad()?
+> > > > 
+> > > > This is necessary because once the memory controller has walled off the
+> > > > new memory region the CPU must not access it under any circumstances or
+> > > > it'll cause the CPU to lock up (I think technically it'll hit an SError
+> > > > but in practice that just means it'll freeze, as far as I can tell).
+> > > > 
+> > > > Probably doesn't interact well at all with load_unaligned_zeropad().
+> > > > 
+> > > > > I think you should unmap the memory from the linear map and memremap()
+> > > > > it instead.
+> > > > 
+> > > > Given that the memory can never be accessed by the CPU after the memory
+> > > > controller locks it down, I don't think we'll even need memremap(). The
+> > > > only thing we really need is the sg_table we hand out via the DMA BUFs
+> > > > so that they can be used by device drivers to program their DMA engines
+> > > > internally.
+> > > > 
+> > > > Looking through some of the architecture code around this, shouldn't we
+> > > > simply be using set_memory_encrypted() and set_memory_decrypted() for
+> > > > this? While they might've been created for slightly other use-cases,
+> > > > they seem to be doing exactly what we want (i.e. remove the page range
+> > > > from the linear mapping and flushing it, or restoring the valid bit and
+> > > > standard permissions, respectively).
+> > > 
+> > > Ah... I guess we can't do it because we're not in a realm world and so
+> > > the early checks in __set_memory_enc_dec() would return early and turn
+> > > it into a no-op.
+> > > 
+> > > How about if I extract a common helper and provide set_memory_p() and
+> > > set_memory_np() in terms of those. Those are available on x86 and
+> > > PowerPC as well, so fairly standard. I suppose at that point we're
+> > > closer to set_memory_valid().
+> > 
+> > Why not just call set_direct_map_invalid_noflush() +
+> > flush_tlb_kernel_range() for each page? We already have APIs for this.
 > 
-> Store it to the struct arm_smmu_domain based on how the page table was created.
+> Having a "standard" helper with a fixed and documented purposed seemed
+> like a preferable approach for this particular case. We also may want to
+> make the driver that uses this buildable as a module, in which case we'd
+> need to export these rather low-level APIs. And then there's also the
+> fact that we typically call this on a rather large region of memory
+> (usually something like 512 MiB), so doing it page-by-page is rather
+> suboptimal.
 > 
-> Add smmu_domain to the tlbi and just get tg from the domain.
+> > The big challenge I see with any linear map manipulation, however, is
+> > that it will rely on can_set_direct_map() which likely means you need to
+> > give up some performance and/or security to make this work. Does memory
+> > become inaccesible dynamically at runtime? If not, the best bet would
+> > be to describe it as a carveout in the DT and mark it as "no-map" so
+> > we avoid mapping it in the first place.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 27 ++++++++-----------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 ++-
->  3 files changed, 14 insertions(+), 17 deletions(-)
+> VPR exists in two modes: static and resizable. For static VPR we do
+> exactly that: describe it as carveout in DT with no-map and deal with it
+> accordingly in the driver. Resizable VPR is for device that have small
+> amounts of RAM. Content-protected video playback will in the worst case
+> consume around 1.8 GiB of RAM, so we want to be able to reuse for other
+> purposes when VPR is unused on those devices. In that case, the memory
+> is also described as a reserved-memory region in DT, but it is marked as
+> reusable so that it can be managed by CMA.
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 1ed8a6f29dc445..5d4dde3d1cfe87 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -334,6 +334,7 @@ struct iommu_domain *arm_smmu_sva_domain_alloc(struct device *dev,
->  	 * ARM_SMMU_FEAT_RANGE_INV is present
->  	 */
->  	smmu_domain->domain.pgsize_bitmap = PAGE_SIZE;
-> +	smmu_domain->tgsz_lg2 = PAGE_SHIFT;
->  	smmu_domain->stage = ARM_SMMU_DOMAIN_SVA;
->  	smmu_domain->smmu = smmu;
->  
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 0c875771b46d2f..d22012466e3965 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2398,14 +2398,13 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->  static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
->  					  struct arm_smmu_cmdq_batch *cmds,
->  					  struct arm_smmu_cmd *cmd,
-> -					  struct arm_smmu_tlbi *tlbi,
-> -					  size_t pgsize)
-> +					  struct arm_smmu_tlbi *tlbi)
->  {
->  	size_t inv_range = tlbi->iopte_granule;
->  	unsigned long iova = tlbi->iova;
->  	unsigned long end = iova + tlbi->size;
->  	unsigned long num_pages = 0;
-> -	unsigned int tg = pgsize;
-> +	unsigned int tg = tlbi->smmu_domain->tgsz_lg2;
->  	u64 orig_data0 = cmd->data[0];
->  	u8 ttl = 0, tg_enc = 0;
->  
-> @@ -2513,7 +2512,7 @@ static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
->  		return;
->  	}
->  
-> -	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, tlbi, inv->pgsize);
-> +	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, tlbi);
->  }
->  
->  static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
-> @@ -2615,6 +2614,7 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
->  			       unsigned int granule, bool leaf)
->  {
->  	struct arm_smmu_tlbi tlbi = {
-> +		.smmu_domain = smmu_domain,
->  		.iova = iova,
->  		.size = size,
->  		.iopte_granule = granule,
-> @@ -2870,6 +2870,7 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
->  		return -ENOMEM;
->  
->  	smmu_domain->domain.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-> +	smmu_domain->tgsz_lg2 = __ffs(pgtbl_cfg.pgsize_bitmap);
->  	smmu_domain->domain.geometry.aperture_end = (1UL << pgtbl_cfg.ias) - 1;
->  	smmu_domain->domain.geometry.force_aperture = true;
->  	if (enable_dirty && smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
-> @@ -3104,15 +3105,13 @@ static void arm_smmu_disable_iopf(struct arm_smmu_master *master,
->  
->  static struct arm_smmu_inv *
->  arm_smmu_master_build_inv(struct arm_smmu_master *master,
-> -			  enum arm_smmu_inv_type type, u32 id, ioasid_t ssid,
-> -			  size_t pgsize)
-> +			  enum arm_smmu_inv_type type, u32 id, ioasid_t ssid)
->  {
->  	struct arm_smmu_invs *build_invs = master->build_invs;
->  	struct arm_smmu_inv *cur, inv = {
->  		.smmu = master->smmu,
->  		.type = type,
->  		.id = id,
-> -		.pgsize = pgsize,
->  	};
->  
->  	if (WARN_ON(build_invs->num_invs >= build_invs->max_invs))
-> @@ -3164,28 +3163,24 @@ arm_smmu_master_build_invs(struct arm_smmu_master *master, bool ats_enabled,
->  			   ioasid_t ssid, struct arm_smmu_domain *smmu_domain)
->  {
->  	const bool nesting = smmu_domain->nest_parent;
-> -	size_t pgsize = 0, i;
-> +	size_t i;
->  
->  	iommu_group_mutex_assert(master->dev);
->  
->  	master->build_invs->num_invs = 0;
->  
-> -	/* Range-based invalidation requires the leaf pgsize for calculation */
-> -	if (master->smmu->features & ARM_SMMU_FEAT_RANGE_INV)
-> -		pgsize = __ffs(smmu_domain->domain.pgsize_bitmap);
-> -
->  	switch (smmu_domain->stage) {
->  	case ARM_SMMU_DOMAIN_SVA:
->  	case ARM_SMMU_DOMAIN_S1:
->  		if (!arm_smmu_master_build_inv(master, INV_TYPE_S1_ASID,
->  					       smmu_domain->cd.asid,
-> -					       IOMMU_NO_PASID, pgsize))
-> +					       IOMMU_NO_PASID))
->  			return NULL;
->  		break;
->  	case ARM_SMMU_DOMAIN_S2:
->  		if (!arm_smmu_master_build_inv(master, INV_TYPE_S2_VMID,
->  					       smmu_domain->s2_cfg.vmid,
-> -					       IOMMU_NO_PASID, pgsize))
-> +					       IOMMU_NO_PASID))
->  			return NULL;
->  		break;
->  	default:
-> @@ -3197,7 +3192,7 @@ arm_smmu_master_build_invs(struct arm_smmu_master *master, bool ats_enabled,
->  	if (nesting) {
->  		if (!arm_smmu_master_build_inv(
->  			    master, INV_TYPE_S2_VMID_S1_CLEAR,
-> -			    smmu_domain->s2_cfg.vmid, IOMMU_NO_PASID, 0))
-> +			    smmu_domain->s2_cfg.vmid, IOMMU_NO_PASID))
->  			return NULL;
->  	}
->  
-> @@ -3208,7 +3203,7 @@ arm_smmu_master_build_invs(struct arm_smmu_master *master, bool ats_enabled,
->  		 */
->  		if (!arm_smmu_master_build_inv(
->  			    master, nesting ? INV_TYPE_ATS_FULL : INV_TYPE_ATS,
-> -			    master->streams[i].id, ssid, 0))
-> +			    master->streams[i].id, ssid))
->  			return NULL;
->  	}
->  
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index a364d847c22a92..2fc695817671fe 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -734,7 +734,6 @@ struct arm_smmu_inv {
->  	u8 nsize_opcode;
->  	u32 id; /* ASID or VMID or SID */
->  	union {
-> -		size_t pgsize; /* ARM_SMMU_FEAT_RANGE_INV */
->  		u32 ssid; /* INV_TYPE_ATS */
->  	};
->  
-> @@ -803,6 +802,7 @@ static inline struct arm_smmu_invs *arm_smmu_invs_alloc(size_t num_invs)
->  }
->  
->  struct arm_smmu_tlbi {
-> +	struct arm_smmu_domain *smmu_domain;
+> The resize operation is fairly slow to begin with because we need to
+> stall the GPU and put it into reset before the operation, then take it
+> out of reset and resume it afterwards.
+> 
+> What kind of performance impact do you expect?
 
-The smmu_domain is only used for the tgsz_lg2, can’t we add that
-directly instead? Decoupling the invalidation form the domain would
-make it easier for KVM to re-use the code.
-I see by the end of the series the only difference would be
-arm_smmu_domain_tlbi() which need to the domain for the RCU, but that
-can be passed instead as all the callers are have the domain already.
+You'll need to measure it, but we've seen reports of double-digit
+percentage regressions in performance and power. As I said, the problem
+is that you need to split the linear map to 4k page at runtime to unmap
+the dynamic carveout, but that isn't something that can be done on most
+CPUs. Therefore you end up having to use page-granular mappings for the
+entire thing, similarly to how 'rodata_full' drives can_set_direct_map()
+and the perf/power hit affects everything.
 
-Thanks,
-Mostafa
+It's hard to know what to suggest... I wonder if any of the memory
+hotplug logic could help here?
 
->  	unsigned long iova;
->  	size_t size;
->  	unsigned int iopte_granule;
-> @@ -1050,6 +1050,7 @@ struct arm_smmu_domain {
->  	spinlock_t			devices_lock;
->  	bool				enforce_cache_coherency : 1;
->  	bool				nest_parent : 1;
-> +	u8				tgsz_lg2;
->  
->  	struct mmu_notifier		mmu_notifier;
->  };
-> -- 
-> 2.43.0
-> 
+Will
