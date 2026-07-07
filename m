@@ -1,162 +1,175 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtpbg150.qq.com (smtpbg150.qq.com [18.132.163.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD0A93ED3CC;
-	Tue,  7 Jul 2026 10:35:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C0EF3B47D0
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 10:37:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.132.163.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783420553; cv=none; b=dMVN8C9mVfDmk1DpkFZbofplvGXvW3MJ33KxRSYivGWalSBGg2IxohPS4rlj5plVLkJRoOFZL8UGOA/kPaxnqgbmQXGJxcIqcLOzHvEvfhTpkduXDjwtE+QGbEiXpxOC6aDMNb04qUQpmxFraX7ApbPVrc+2oQmvY3AhG7wBSNo=
+	t=1783420655; cv=none; b=UVeEby7TS9Pem1KhabUpn+EAugvoJ3JiYiQGowrDnHcIOXUh6uhnk+cycf4863RkVMXLgJZslRs4V4WaG31I74MXIZsBmYPXivObbOBp59jfiGtIyJ6NPgsmotizj0wrjcPztdiFq0K1C7edR+iaWLe7CC8bK73vLwS8UUGQB5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783420553; c=relaxed/simple;
-	bh=HvoDLh1pJSoqWDRA6onKpz1ZBpgF670CyjlLdi2zj/8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kupQVxKiHfSu/fV81/6x2ynU8rUCbth6y+qfC9Hep2PKiVNcIZOME3rRzzJ6Fl5cd7hW5cRLbt4hYHVUyt2ZpNcTt/z6YDHh1gDChM6wQxnc8hbuCU3cOUIDy9Yj5oA8nUyFb+YFtw/PHR0mtZKj4LYKIdT//m1OWQ2kvlO3XUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=muEHhNZS; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783420655; c=relaxed/simple;
+	bh=mkVG0y7nrRTuMjjOmOlD8Yb6CF/PM0k2yhy6xYjy9vc=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=g+eezC8h4CdFOFV5sS85S+Pi4TeLLtTrVrXi0itR/Nk+x6+ooO9CBrXXEYpXsVDkmiubDjVP7EvFZnInTcURVGEMgg0uzjlGiKjHVU0w68coOZrn/rl7d14INdLckLKO+GbwIuaG5fR+s9S+yM8nakgFO7qb91X8ToAvv24DIT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=HfAXtW2L; arc=none smtp.client-ip=18.132.163.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="muEHhNZS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AF751F000E9;
-	Tue,  7 Jul 2026 10:35:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783420551;
-	bh=ZIdJ2kWnZSzaIc2VKvx3tV02RUSZsKP0aF813USpRQY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=muEHhNZSQ0LSJO5dQUblRtk+3KNiW1Sexx9P7JyID1p9Hp3xGv0J4UbRG+fY5Nk5k
-	 lfNOH48QJc7HVhAUIDSaP4FNnIxe1mCFgX523zuLO4ghOrfTq4nTYzyBZzGlQjIANh
-	 G5dVcytVLi1Y4Go7lt7Hi1xf1O/iRDFx8vFh8b1fkkLSr//7hIoyAOX0XNg3mhaHuE
-	 /MZdzFdyC5bAY2+EfgYmdAJYL+l14uqVN6YBlzzFherZX3IvuvVVB4464w8KwAKHFR
-	 Cb6iDTk1N1p2T8kQle7lANNppyIF7SnaCJrLWMjV2fVD3A9nrBk/dbzE9PoWVE/mTu
-	 kXgj2SJWBNUbA==
-Date: Tue, 7 Jul 2026 11:35:27 +0100
-From: Lorenzo Stoakes <ljs@kernel.org>
-To: Pedro Falcato <pfalcato@suse.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Simon Schuster <schuster.simon@siemens-energy.com>, 
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
-	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
-	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
-	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
-	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
-	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
-	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 25/30] mm/vma: update vmg_adjust_set_range() to offset
- pgoff instead
-Message-ID: <akzVxx6vIeiXO-cV@lucifer>
-References: <cover.1782735110.git.ljs@kernel.org>
- <910f7b5be78232304dc7ca01cd57c6f5ca8f3d13.1782735110.git.ljs@kernel.org>
- <akZLhkjsJ_3sGdox@pedro-suse.lan>
+	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="HfAXtW2L"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
+	s=iohv2404; t=1783420609;
+	bh=fPdC5PV+PuRXItVok8N0EXj30Y77igLvtAJNXqF0e/o=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To;
+	b=HfAXtW2LHiE0RIISWEFc6fl007gURZItY1hECy1z+KlswRpV/qzk17rntnf7uo5F8
+	 hdw5pvzsazV7yEishaF+HAGd7QCJ/f4p6ord6qjWtFQpKUZ0Jtrv5D9+shtgywmCyW
+	 uuuiPVsyzDm2Dr+SpEL9SoxR17o3D/0W1P91cwDs=
+X-QQ-mid: esmtpgz15t1783420603t836706f9
+X-QQ-Originating-IP: n+VphMwNPrCYEyoe+OFymGBQwjgGDZ0VU/NY9ff2S5Q=
+Received: from [127.0.0.1] ( [36.152.24.164])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Tue, 07 Jul 2026 18:36:41 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 13391982158505295696
+Message-ID: <29F8ABC41A81139D+fc011ccd-cc15-4f64-bcc7-88e5d16184d5@smail.nju.edu.cn>
+Date: Tue, 7 Jul 2026 18:36:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <akZLhkjsJ_3sGdox@pedro-suse.lan>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [BUG] iommu: KASAN slab-use-after-free in
+ iommufd_auto_response_faults
+From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+To: jgg@ziepe.ca, kevin.tian@intel.com, iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org, syzkaller@googlegroups.com,
+ baolu.lu@linux.intel.com, nicolinc@nvidia.com, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, dwmw2@infradead.org,
+ suravee.suthikulpanit@amd.com, vasant.hegde@amd.com, yi.l.liu@intel.com,
+ jpb@kernel.org
+References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+Content-Language: en-US
+In-Reply-To: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
+X-QQ-XMAILINFO: Ni68Q0J6fxe2gbf5wR1kMsUsY65Iea/rmWVZU7v4I1pchc8wc/7ux30S
+	yML9ctzqSSqiZY4D8azOjueVSsZIbMh8dd/t20ara/Kwz9ZvWmVMdTwYJWxlrdVkgHzdTDn
+	1Qw4slkvOA6F02Gn4Ig5A3IA7iEtebmgv3dX6f+Z9zPeNSJDoRmFrfkv52cmJqaUz3qDXe9
+	sYjnP3SKx9MdCzg5M2GQelt/OsfQZH5llwWdtkztz0NhyupyQMuAgzt8PFdKWufAYZA3mXN
+	XdGkKhEsLNpIyzD6wVtursTLoGdpxo7wsIQz5qdzjw7P5+9gwolEmdWun8zLawPXNSZzIfJ
+	yFU/0v+SD4IW5ZkRyVsgVWJrJeJgyMO7Gebx/z3mjk1qPPSev7oPSVad1v24mao0nCGb/Q1
+	uCPga7xOZU68Kxb/hN6INV07wHCm0663MkI5uIfge/VkpCUfCCK+jGVvG9KUY+fJnfYOJ1S
+	srskL5UF9oTW2ZZQqPtLUGBMK0l5SINUQRjh+HdYzJ7su2gj59VTRB06lsqzsqfANE32eD5
+	LR2Wcl0jsPKuM/kYUAA961fS1/sixMZYo4A23eqX9lehJRzAuONXqZIrCb9XXX1KOOxRbnf
+	31JHa2znqstmryy/mZLPnNpVmQoWll7A1jf5gS9ImGpENFmrJfWT8LikqgJ0Ab9kJQvxHq3
+	5v0+AOTMzckZxqdDsYKL18nSOVxhEBHGYUrtkXWRbVjdR+LKdVeQpDgRDPG97MyfBqZyMcg
+	yAyzWr7C0mhcHPsYDrKIonJWI8d7BVdE15MMeVGXaLKtBLzZFVddDEKNlgs+3Il5Ek6Frcm
+	4JALUZub8shdthPP/BQBPqCId/ZQ1g0v47m4EyqJRUNb8opAxaFuCkW1moSc0ulZDmq5L0r
+	2qlTMUsz5/4bAEvH54qQjc+gUyunjQ8cPwOSLz9qSwLL8hkls25Eys4vkbZEcm8l8l9dgCA
+	+dQWBcsJJTZHfod7irD+/aX0yt4uLWWWvNZA31Pig9MpQNKGe7k8Zv6GtSPjUXV3hD53rQO
+	jQbEPXIHG2I68Fm3gWYkZrSdoG+mz1/QQgvrAcyA==
+X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
+X-QQ-RECHKSPAM: 0
 
-On Thu, Jul 02, 2026 at 12:29:54PM +0100, Pedro Falcato wrote:
-> On Mon, Jun 29, 2026 at 01:23:36PM +0100, Lorenzo Stoakes wrote:
-> > We are calculating the pgoff as an offset, since we have vma_add_pgoff()
-> > and vma_sub_pgoff() available, just offset this value directly and use
-> > __vma_set_range() for vma->vm_[start, end] values.
-> >
-> > We take care to update the range before offsetting the page offset, so the
-> > adjusted VMA's vm_start and vm_pgoff are mutually consistent at the point
-> > the page offset helpers operate - this matters once vma_set_pgoff() comes
-> > to assert invariants which relate the two.
-> >
-> > Doing so lays the foundation for future work which allows for use of
-> > virtual page offsets for MAP_PRIVATE-file backed mappings.
-> >
-> > No functional change intended.
-> >
-> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
-> > ---
-> >  mm/vma.c | 15 ++++-----------
-> >  1 file changed, 4 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/mm/vma.c b/mm/vma.c
-> > index e3355eab11f2..0579fc8c9bd5 100644
-> > --- a/mm/vma.c
-> > +++ b/mm/vma.c
-> > @@ -714,9 +714,6 @@ void validate_mm(struct mm_struct *mm)
-> >   */
-> >  static void vmg_adjust_set_range(struct vma_merge_struct *vmg)
-> >  {
-> > -	struct vm_area_struct *adjust;
-> > -	pgoff_t pgoff;
-> > -
-> >  	if (vmg->__adjust_middle_start) {
-> >  		/*
-> >  		 * vmg->start    vmg->end
-> > @@ -735,8 +732,8 @@ static void vmg_adjust_set_range(struct vma_merge_struct *vmg)
-> >  		struct vm_area_struct *middle = vmg->middle;
-> >  		const unsigned long delta = vmg->end - middle->vm_start;
-> >
-> > -		pgoff = vma_start_pgoff(middle) + (delta >> PAGE_SHIFT);
-> > -		adjust = middle;
-> > +		__vma_set_range(middle, vmg->end, middle->vm_end);
-> > +		vma_add_pgoff(middle, delta >> PAGE_SHIFT);
-> >  	} else if (vmg->__adjust_next_start) {
-> >  		/*
-> >  		 *                Originally:
-> > @@ -764,13 +761,9 @@ static void vmg_adjust_set_range(struct vma_merge_struct *vmg)
-> >  		struct vm_area_struct *next = vmg->next;
-> >  		const unsigned long delta = next->vm_start - vmg->end;
-> >
-> > -		pgoff = vma_start_pgoff(next) - (delta >> PAGE_SHIFT);
-> > -		adjust = next;
-> > -	} else {
-> > -		return;
-> > +		__vma_set_range(next, vmg->end, next->vm_end);
-> > +		vma_sub_pgoff(next, delta >> PAGE_SHIFT);
-> >  	}
-> > -
-> > -	vma_set_range(adjust, vmg->end, adjust->vm_end, pgoff);
-> >  }
->
-> Maybe this should be squashed with That Other Patch that touches this.
+> The analysis above goes through the iommufd selftest mock device (M). We
+> have not reproduced this on real Intel/AMD hardware, but the same lifetime
+> issue is not specific to the mock driver: Intel and AMD both have real detach
+> paths that can reach the very same iopf_queue_remove_device(). This is exactly
+> what iommufd_hwpt_detach_device() triggers, via iommu_detach_group_handle() /
+> iommu_detach_device_pasid(), right before it calls iommufd_auto_response_faults().
+> 
+> The following is a static code-path analysis.
+> 
+> iommu_detach_group_handle() (RID-level detach) dispatches through the
+> blocking domain's attach_dev op, like mock_domain_nop_attach() in the
+> above analysis. iommu_detach_device_pasid() (PASID-level detach) is different:
+> it dispatches through the blocking domain's set_dev_pasid op instead
+> (drivers/iommu/iommu.c:3815 -> drivers/iommu/iommu.c:3553).
+> 
+> Intel (drivers/iommu/intel/) reaches iopf_queue_remove_device() on both paths:
+>   blocking_domain_attach_dev()       [attach_dev, RID]       iommu.c:2755
+>   blocking_domain_set_dev_pasid()    [set_dev_pasid, PASID]  iommu.c:3557
+>   --> iopf_for_domain_remove()                               iommu.h:1263
+>   --> intel_iommu_disable_iopf()                             iommu.c:3471
+>   --> iopf_queue_remove_device()                             iommu.c:3483
+> 
+> AMD (drivers/iommu/amd/): the evidence here only covers the RID/group-detach
+> path.
+>   blocked_domain_attach_device()     [attach_dev, RID]       iommu.c:2883
+>   --> detach_device()                                        iommu.c:2398
+>   --> amd_iommu_iopf_remove_device()                         ppr.c:270
+>   --> iopf_queue_remove_device()                             ppr.c:273
+> AMD's PASID path, blocked_domain_set_dev_pasid() (iommu.c:2900), only calls
+> amd_iommu_remove_dev_pasid() and does not reach iopf_queue_remove_device().
 
-Ah this separation makes more sense from the point of view of the virt pgoff
-stuff in the RFC (see [0]).
+Hello Linux kernel developers and maintainers,
 
-And would rather keep as vaguely bitesized as possible :>)
+After further analysis of the code, we think that this UAF should not be feasible on AMD devices,
+but still feasible on Intel devices.
 
->
-> Anyway,
->
-> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+===
+AMD
+===
 
-Thanks!
+We found no path by which a real AMD PPR fault can land in an IOMMUFD hw_pagetable's
+fault->common.deliver or fault->response.
 
->
-> --
-> Pedro
+A real AMD PPR fault is always PASID-valid: iommu_call_iopf_notifier(), the only
+iommu_report_device_fault() call site under drivers/iommu/amd/, rejects PASID 0 and always sets
+IOMMU_FAULT_PAGE_REQUEST_PASID_VALID (drivers/iommu/amd/ppr.c:107,140-148).
 
-Cheers, Lorenzo
+find_fault_handler() (drivers/iommu/io-pgfault.c:118) resolves a PASID-valid fault only via a
+per-PASID attach_handle, or a fallback to a RID-level NESTED domain gated by ops->user_pasid_table.
+AMD does not set that flag (only arm-smmu-v3.c:4389 and the iommufd selftest mock, selftest.c:861,
+do), so a failed per-PASID lookup is simply aborted on AMD, never delivered to any RID-level domain.
 
-[0]:https://lore.kernel.org/linux-mm/cover.1782745153.git.ljs@kernel.org/
+The per-PASID lookup cannot succeed toward an IOMMUFD HWPT on AMD, because the
+AMD domains that IOMMUFD can allocate as HWPTs do not implement .set_dev_pasid:
+amdv1_ops (iommu.c:2663), amdv2_ops (iommu.c:2741), and nested_domain_ops
+(drivers/iommu/amd/nested.c:291) all lack it. Therefore, if userspace tries to
+attach one of those IOMMUFD HWPT domains to a PASID, iommu_attach_device_pasid()
+rejects it with -EOPNOTSUPP at the !domain->ops->set_dev_pasid check
+(drivers/iommu/iommu.c:3625,3641-3644). The AMD nested RID attach path is not a
+substitute here either: nested_attach_device() refuses attachment when PASID is
+enabled (WARN_ON(dev_data->pasid_enabled), nested.c:244).
+
+AMD does have a domain with .set_dev_pasid, amd_sva_domain_ops
+(drivers/iommu/amd/pasid.c:177), but that is the kernel SVA domain path, not an
+IOMMUFD HWPT. The SVA allocation path installs iommu_sva_iopf_handler()
+(drivers/iommu/iommu-sva.c:298,327), not iommufd_fault_iopf_handler(), so faults
+delivered there are not linked into an iommufd_fault object's deliver/response
+queues.
+
+=====
+Intel
+=====
+
+Intel's PRQ descriptor carries a real, hardware-set pasid_present bit: intel_prq_report()
+(drivers/iommu/intel/prq.c:175) only sets IOMMU_FAULT_PAGE_REQUEST_PASID_VALID when
+desc->pasid_present is true, so a non-PASID PRI request reaches find_fault_handler()'s RID
+(IOMMU_NO_PASID) lookup directly -- a RID-attached fault-capable HWPT can receive it.
+
+Unlike AMD, Intel's IOMMUFD-attachable domains do implement .set_dev_pasid: intel_fs_paging_domain_ops
+and intel_ss_paging_domain_ops (drivers/iommu/intel/iommu.c:3894,3905) and intel_nested_domain_ops
+(drivers/iommu/intel/nested.c:190) all set it to intel_iommu_set_dev_pasid /
+intel_nested_set_dev_pasid, so a PASID-tagged fault can also resolve to an IOMMUFD attach_handle.
+
+Both RID and PASID detach reach iopf_queue_remove_device() the same way as the mock device:
+blocking_domain_attach_dev() / blocking_domain_set_dev_pasid() (drivers/iommu/intel/iommu.c:2755,3557)
+-> iopf_for_domain_remove() (drivers/iommu/intel/iommu.h:1263) -> intel_iommu_disable_iopf()
+(iommu.c:3471) -> iopf_queue_remove_device() (iommu.c:3483), but only once info->iopf_refcount
+drops to zero. This refcount is shared per device across every attach path, so the bug may only fire
+when the detached domain is the last fault-capable attachment on that device.
+
+
+Again, the above analysis is based solely on the code.
+For now we do not have suitable hardware to test the behavior of the AMD and Intel drivers.
+
+Thanks,
+Peiyang
+
+
