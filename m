@@ -1,72 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A34383F1AC8;
-	Tue,  7 Jul 2026 10:47:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475D7380FFB
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 11:18:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783421262; cv=none; b=TclHGrPec0fHZ6cX74uAPHfe5JZqnItT9SsbFDNvdnrgM3zPHc/vZOmxjzTXSoURRezGSYwxWAGRZrdJtKqIiYu64joC/dmGHxVMNd04ZtXQx2lO5vmfEjk/Au0drFE+e6OKr+Jp1KqRyP6aff0nc7l/E4ETYdLGcVgRXBp9fds=
+	t=1783423113; cv=none; b=T0DSSmWyVwkTVcCWmOpj9mMzW1KwPp3cVmLBE+BI6wMBuV9/SpjWJzUuYEqsV7uAW7wcobbRmuCUNPYJawtLIPs3AXkfYk8lLQm7HEBicAbO1WIxDFDx/3Qy5FNdavpCRcqvD0tbAyeATKOplY5wAruj6YTWqwvG1TqRxY6j1jY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783421262; c=relaxed/simple;
-	bh=K6XhXZvdxeZA7r5A4Qd3KUVGcGcAP3v98yAItEXMLbs=;
+	s=arc-20240116; t=1783423113; c=relaxed/simple;
+	bh=UWi0gG9gvWB26Oz4ForF3pNb2bVahsSQn8sEmpML4A0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f3GkjkvKE2epH65fvIw5FZ+E6RFNPL8iz04hICiL7ObezhLBrCNJ2d311ro1qGxVDyKnZ86MlSPVNZKGrziXH8LBC+osOwoOPoslMPJC/WZBMxowro/la17oXWhN+X21tCSP3wMz+3ji3RaAQC0i0lbj7rRVmWESvfCkm9rfQmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nAwcbqQZ; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=rlKriyfPSUd2kusj2Y03fcEN0/JRDapTH3BXSeWKsI5KW5pc1XWquy38LOh8ek0PJ2aWkHW95Z9EKURmIkTuU9wUQZag4T1HiucVgAqGvPV2cPG/juYJUyGGQUmkD1nrwc63EXzW1+tAGeGQX9+pjhHbxoKhA9TlYxnTVh6SqDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eSkdivcH; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAwcbqQZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BA301F000E9;
-	Tue,  7 Jul 2026 10:47:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783421260;
-	bh=LLhzkk/JgHcYgAhLZKjLeN62LByel6fmISiRV1ITuB4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=nAwcbqQZ6EYWFhU6Pa79F4DwZWj+s50w7KhSPUgAeSGSsvopOpj4c3CR6Dc4BvSKY
-	 UI/T4Y1V/RDDoyeFB8sXD2vSc8XMgX7PuHapXBY0cr7IWraSANQSAw1tuqycqvya7H
-	 EOLCy/nYmsu9fsBZZUMJw29VxKcXmmkS6wgUhpYDSoopqSIeazhcGwCvu+qGCZzZfm
-	 i6rrFcDrq00hFMpsTT5W6KK6td/K2YCAI1AB22h3luD//ahG1ub28FDnVRKZXh9KJy
-	 yczJHuo2utfhmEijYANtSxrq9T9w4QGeuL41lVe4jp1n6hobidMgbC6xXylCzlyKTK
-	 rSE3IBUcHgXTg==
-Date: Tue, 7 Jul 2026 11:47:16 +0100
-From: Lorenzo Stoakes <ljs@kernel.org>
-To: Pedro Falcato <pfalcato@suse.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Simon Schuster <schuster.simon@siemens-energy.com>, 
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
-	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
-	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
-	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
-	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
-	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
-	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 29/30] tools/testing/vma: default VMA flag bits to 64-bit
-Message-ID: <akzZBrZC_ja-R-nJ@lucifer>
-References: <cover.1782735110.git.ljs@kernel.org>
- <27cd07f6dd862d92410cf9db03f7c11e5f66854d.1782735110.git.ljs@kernel.org>
- <akZO3xI4Lt1iSbms@pedro-suse.lan>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eSkdivcH"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-493c556ada3so33595e9.0
+        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 04:18:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1783423110; x=1784027910; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=w6IJ44fHla9q8jik3/kgaIVLbHkWW80AbYg/MgWLN94=;
+        b=eSkdivcHQiGiydEH8TTYiloh1ehC8aDGQYGK/x+KnXixm1QA4A2QmTL3MKRZ586BBl
+         yIra7HrrKMJG2mXlqTcTWNq1MwkGh1Fu0P9tsI/zMnzl9aw4OHt6s6SbfQW7BM70+arv
+         0ZqVj/wJ7hwnYgbTqPGMTR1Oq9CHdRc93Wx/FaH6uDtT5qdPxGjLjmh7GzPLKYEqz1Lw
+         MnRbqgxFB20irESIrDCu60IvQW/PcfV0fwkkYYB9+Bf0i99VlJ3IrnpA+qeOvnigLS8u
+         lGTqRlWK/fDkbaNNZ8QfiGzZbvDMuc0Dwoj/m3SeVUMPuvUBqHZ0JGbN1pRJSLKNn3p+
+         VYHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783423110; x=1784027910;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=w6IJ44fHla9q8jik3/kgaIVLbHkWW80AbYg/MgWLN94=;
+        b=N0qKp9daGD0JosegIcIexK8JDV/ypP81NPi2lunCd3E1tgl2edfqR4atJvVoo9waIz
+         qg6G/d6PVkcGm1MQL0/YZ4UL9a6GOzoJc0EudEBHNnZF0eeMOoC5opx57w3kzOufHjb+
+         40GNX9lGZxZD43ueHSvZ4Usv59RM6r/bgnHIhm0KY3Uj+zs7VZGpfY6dSU89Jp2kJX6g
+         Gk1cxrT8XVxotf5LaUKVFEpvHU6+fW74cyxcnAIuKIjcKZe8zfGhfXfiswKFTuSyM16P
+         xv06h97deR7lZIRhqoPNmpxBQEI15PiEyuLRmp83uXG2zqkko3/0brKclhDmKHuf8HD0
+         l60Q==
+X-Gm-Message-State: AOJu0YzgyjPD0ECbmvLT+lJMnPjX5aZfhQ6+fjUPscMsBSSGUXU0Qtyj
+	RqduPWz0f1nKnxVulOhLLb1bcB8ot8sNC0oXR1/Mx7og7MquDQyJwoMTqVAa665Agg==
+X-Gm-Gg: AfdE7cliB0v239//xL6Amz6+kQAeFqaEHuotn2XpdyDx141bkPAEYqfwXCxMo7kaa5p
+	UzxR2ravePwbzA9Nx4Q0GPryHZgANrCK1jrNU4GmN+QMDBnWE6G2IAJLiJTFeW3glC0aP0qrmUh
+	mRn3+JX+yVLQrScPlU0k8jGJz/3RH13PCvnlgfmH9JUipAlZB4/J9GzmY3QtD6uie17B4duPejU
+	UIyuvpXPr4ytVKIRDjY5ZgItwUEQban4VeBvW8i0GlFlgfKJFchBUq50VYW7+20CTycUhbMQqir
+	9bXQc7MEn/+ymTPLXjmiAe7p3vtWVH4SknU0BTwGxlGjIK7Nfrj65LFao/QsRt2l1oK0fHSWxj+
+	hnsrQABZvbUtlSbP3zgbznSldAVXwQ47HliTy3/CpkRvi8FTwZfb67UM95efn/lo3HELBeGe9/s
+	rFKKQvdyj6y7+nIJ1UaNw2Z6b7DsZqjBwXz2XtvJrWJ0RS73eKnKxMHVkfzhM=
+X-Received: by 2002:a05:600c:604a:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-493e14ef934mr536545e9.2.1783423109000;
+        Tue, 07 Jul 2026 04:18:29 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0078d49sm52669675e9.0.2026.07.07.04.18.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2026 04:18:28 -0700 (PDT)
+Date: Tue, 7 Jul 2026 11:18:22 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 1/8] iommu/arm-smmu-v3: Pass the parameters for the
+ invalidation in a struct
+Message-ID: <akzgfisqFzfLGW51@google.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <1-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,49 +82,239 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <akZO3xI4Lt1iSbms@pedro-suse.lan>
+In-Reply-To: <1-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 
-On Thu, Jul 02, 2026 at 12:44:21PM +0100, Pedro Falcato wrote:
-> On Mon, Jun 29, 2026 at 01:23:40PM +0100, Lorenzo Stoakes wrote:
-> > With all of the sanitisers turned on, setting the VMA flag bits depth to
-> > 128 by default results in overly long build times.
-> >
-> > Reduce this to 64 - we can always manipulate these later for testing of
-> > larger bitmaps as needed.
-> >
->
-> Hmm, what's the problem with the sanitizers? Shouldn't this just result in
-> slightly different codegen?
+On Mon, Jul 06, 2026 at 01:26:38PM -0300, Jason Gunthorpe wrote:
+> These parameters go to a lot of different functions and the next
+> patches will add more. Put them into a struct to keep things tidy.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-I'm not sure but it results in vastly longer build times. It was a fun idea but
-it partly defeats the point of the VMA userland tests.
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
 
-Rather than spend too long investigating I'd rather we move to a sane default.
+Thanks,
+Mostafa
 
->
-> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
-> > ---
-> >  tools/testing/vma/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/vma/Makefile b/tools/testing/vma/Makefile
-> > index e72b45dedda5..ef6cc558afe1 100644
-> > --- a/tools/testing/vma/Makefile
-> > +++ b/tools/testing/vma/Makefile
-> > @@ -10,7 +10,7 @@ OFILES = $(SHARED_OFILES) main.o shared.o maple-shim.o
-> >  TARGETS = vma
-> >
-> >  # These can be varied to test different sizes.
-> > -CFLAGS += -DNUM_VMA_FLAG_BITS=128 -DNUM_MM_FLAG_BITS=128
-> > +CFLAGS += -DNUM_VMA_FLAG_BITS=64 -DNUM_MM_FLAG_BITS=64
-> >
-> >  main.o: main.c shared.c shared.h vma_internal.h tests/merge.c tests/mmap.c tests/vma.c ../../../mm/vma.c ../../../mm/vma_init.c ../../../mm/vma_exec.c ../../../mm/vma.h include/custom.h include/dup.h include/stubs.h
-> >
-> > --
-> > 2.54.0
-> >
->
-> --
-> Pedro
-
-Thanks, Lorenzo
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 75 +++++++++++----------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  7 ++
+>  2 files changed, 46 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a10affb483a4fe..0c875771b46d2f 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2298,8 +2298,8 @@ static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
+>  	return IRQ_WAKE_THREAD;
+>  }
+>  
+> -static struct arm_smmu_cmd
+> -arm_smmu_atc_inv_to_cmd(u32 sid, int ssid, unsigned long iova, size_t size)
+> +static struct arm_smmu_cmd arm_smmu_atc_inv_to_cmd(u32 sid, int ssid,
+> +						   struct arm_smmu_tlbi *tlbi)
+>  {
+>  	size_t log2_span;
+>  	size_t span_mask;
+> @@ -2321,8 +2321,8 @@ arm_smmu_atc_inv_to_cmd(u32 sid, int ssid, unsigned long iova, size_t size)
+>  	 * This has the unpleasant side-effect of invalidating all PASID-tagged
+>  	 * ATC entries within the address range.
+>  	 */
+> -	page_start	= iova >> inval_grain_shift;
+> -	page_end	= (iova + size - 1) >> inval_grain_shift;
+> +	page_start = tlbi->iova >> inval_grain_shift;
+> +	page_end = (tlbi->iova + tlbi->size - 1) >> inval_grain_shift;
+>  
+>  	/*
+>  	 * In an ATS Invalidate Request, the address must be aligned on the
+> @@ -2397,20 +2397,23 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>  
+>  static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
+>  					  struct arm_smmu_cmdq_batch *cmds,
+> -					  struct arm_smmu_cmd *cmd, bool leaf,
+> -					  unsigned long iova, size_t size,
+> -					  size_t granule, size_t pgsize)
+> +					  struct arm_smmu_cmd *cmd,
+> +					  struct arm_smmu_tlbi *tlbi,
+> +					  size_t pgsize)
+>  {
+> -	unsigned long end = iova + size, num_pages = 0, tg = pgsize;
+> +	size_t inv_range = tlbi->iopte_granule;
+> +	unsigned long iova = tlbi->iova;
+> +	unsigned long end = iova + tlbi->size;
+> +	unsigned long num_pages = 0;
+> +	unsigned int tg = pgsize;
+>  	u64 orig_data0 = cmd->data[0];
+> -	size_t inv_range = granule;
+>  	u8 ttl = 0, tg_enc = 0;
+>  
+> -	if (WARN_ON_ONCE(!size))
+> +	if (WARN_ON_ONCE(!tlbi->size))
+>  		return;
+>  
+>  	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> -		num_pages = size >> tg;
+> +		num_pages = tlbi->size >> tg;
+>  
+>  		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
+>  		tg_enc = (tg - 10) / 2;
+> @@ -2423,8 +2426,8 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
+>  		 * want to use a range command, so avoid the SVA corner case
+>  		 * where both scale and num could be 0 as well.
+>  		 */
+> -		if (leaf)
+> -			ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+> +		if (tlbi->leaf_only)
+> +			ttl = 4 - ((ilog2(tlbi->iopte_granule) - 3) / (tg - 3));
+>  		else if ((num_pages & CMDQ_TLBI_RANGE_NUM_MAX) == 1)
+>  			num_pages++;
+>  	}
+> @@ -2462,7 +2465,7 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
+>  		 * command and something would be very broken if iova had them
+>  		 * set.
+>  		 */
+> -		cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, leaf) |
+> +		cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, tlbi->leaf_only) |
+>  			       FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
+>  			       FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) |
+>  			       (iova & ~GENMASK_U64(11, 0));
+> @@ -2472,13 +2475,13 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
+>  	}
+>  }
+>  
+> -static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu, size_t size,
+> -				      size_t granule)
+> +static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu,
+> +				      struct arm_smmu_tlbi *tlbi)
+>  {
+>  	size_t max_tlbi_ops;
+>  
+>  	/* 0 size means invalidate all */
+> -	if (!size || size == SIZE_MAX)
+> +	if (!tlbi->size || tlbi->size == SIZE_MAX)
+>  		return true;
+>  
+>  	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV)
+> @@ -2491,19 +2494,17 @@ static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu, size_t size,
+>  	 * invalidation feature, where there can be too many per-granule TLBIs,
+>  	 * resulting in a soft lockup.
+>  	 */
+> -	max_tlbi_ops = 1 << (ilog2(granule) - 3);
+> -	return size >= max_tlbi_ops * granule;
+> +	max_tlbi_ops = 1 << (ilog2(tlbi->iopte_granule) - 3);
+> +	return tlbi->size >= max_tlbi_ops * tlbi->iopte_granule;
+>  }
+>  
+>  /* Used by non INV_TYPE_ATS* invalidations */
+>  static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
+>  				       struct arm_smmu_cmdq_batch *cmds,
+>  				       struct arm_smmu_cmd *cmd,
+> -				       bool leaf,
+> -				       unsigned long iova, size_t size,
+> -				       unsigned int granule)
+> +				       struct arm_smmu_tlbi *tlbi)
+>  {
+> -	if (arm_smmu_inv_size_too_big(inv->smmu, size, granule)) {
+> +	if (arm_smmu_inv_size_too_big(inv->smmu, tlbi)) {
+>  		struct arm_smmu_cmd nsize_cmd = *cmd;
+>  
+>  		u64p_replace_bits(&nsize_cmd.data[0], inv->nsize_opcode,
+> @@ -2512,8 +2513,7 @@ static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
+>  		return;
+>  	}
+>  
+> -	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, leaf,
+> -				      iova, size, granule, inv->pgsize);
+> +	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, tlbi, inv->pgsize);
+>  }
+>  
+>  static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
+> @@ -2532,9 +2532,8 @@ static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
+>  	return false;
+>  }
+>  
+> -static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+> -					unsigned long iova, size_t size,
+> -					unsigned int granule, bool leaf)
+> +static void __arm_smmu_domain_inv_range(struct arm_smmu_tlbi *tlbi,
+> +					struct arm_smmu_invs *invs)
+>  {
+>  	struct arm_smmu_cmdq_batch cmds = {};
+>  	struct arm_smmu_inv *cur;
+> @@ -2564,18 +2563,16 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+>  		case INV_TYPE_S1_ASID:
+>  			cmd = arm_smmu_make_cmd_tlbi(cur->size_opcode,
+>  						     cur->id, 0);
+> -			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, leaf,
+> -						   iova, size, granule);
+> +			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, tlbi);
+>  			break;
+>  		case INV_TYPE_S2_VMID:
+>  			cmd = arm_smmu_make_cmd_tlbi(cur->size_opcode,
+>  						     0, cur->id);
+> -			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, leaf,
+> -						   iova, size, granule);
+> +			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, tlbi);
+>  			break;
+>  		case INV_TYPE_S2_VMID_S1_CLEAR:
+>  			/* CMDQ_OP_TLBI_S12_VMALL already flushed S1 entries */
+> -			if (arm_smmu_inv_size_too_big(cur->smmu, size, granule))
+> +			if (arm_smmu_inv_size_too_big(cur->smmu, tlbi))
+>  				break;
+>  			arm_smmu_cmdq_batch_add_cmd(
+>  				smmu, &cmds,
+> @@ -2586,7 +2583,7 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+>  			arm_smmu_cmdq_batch_add_cmd(
+>  				smmu, &cmds,
+>  				arm_smmu_atc_inv_to_cmd(cur->id, cur->ssid,
+> -							iova, size));
+> +							tlbi));
+>  			break;
+>  		case INV_TYPE_ATS_FULL:
+>  			arm_smmu_cmdq_batch_add_cmd(
+> @@ -2617,6 +2614,12 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
+>  			       unsigned long iova, size_t size,
+>  			       unsigned int granule, bool leaf)
+>  {
+> +	struct arm_smmu_tlbi tlbi = {
+> +		.iova = iova,
+> +		.size = size,
+> +		.iopte_granule = granule,
+> +		.leaf_only = leaf,
+> +	};
+>  	struct arm_smmu_invs *invs;
+>  
+>  	/*
+> @@ -2657,10 +2660,10 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
+>  		unsigned long flags;
+>  
+>  		read_lock_irqsave(&invs->rwlock, flags);
+> -		__arm_smmu_domain_inv_range(invs, iova, size, granule, leaf);
+> +		__arm_smmu_domain_inv_range(&tlbi, invs);
+>  		read_unlock_irqrestore(&invs->rwlock, flags);
+>  	} else {
+> -		__arm_smmu_domain_inv_range(invs, iova, size, granule, leaf);
+> +		__arm_smmu_domain_inv_range(&tlbi, invs);
+>  	}
+>  
+>  	rcu_read_unlock();
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index c909c9a88538bf..a364d847c22a92 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -802,6 +802,13 @@ static inline struct arm_smmu_invs *arm_smmu_invs_alloc(size_t num_invs)
+>  	return new_invs;
+>  }
+>  
+> +struct arm_smmu_tlbi {
+> +	unsigned long iova;
+> +	size_t size;
+> +	unsigned int iopte_granule;
+> +	bool leaf_only;
+> +};
+> +
+>  struct arm_smmu_evtq {
+>  	struct arm_smmu_queue		q;
+>  	struct iopf_queue		*iopf;
+> -- 
+> 2.43.0
+> 
