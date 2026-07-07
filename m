@@ -1,127 +1,111 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BC55434E4F
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 16:26:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4264435AAD
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 16:40:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783441615; cv=none; b=cMW5IRueGF8fiwyVAKOx2FRbDQpVKHlwXR0mr/41klL4EiTiYsVOuaE380IAdWmUBxi8f6aP67LWlz/dL2W+CGRqefu1JB/Sq0AhzO+7LMm+iHsY46BFg7cc30ggyNtphYRSzxvpu+9Qt12nKFBRacG6+EaM3jN7z4klz5J9PnM=
+	t=1783442406; cv=none; b=ugHJObeI0/0JqDNtYpe84mf9OVprzxO623jC+SId0s/dJiZHWkM/rXtvEcUfVEf4AU8xG2fEpO8Ru5hO/LHHICwDCT+FT2zoaA843yFXi3nHTsubItyIEZ7uMJOnpNDk1V2r2qVCq+bl/aLyqhcWmjHMMTL9Tc/NO+pNZ+Sp//U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783441615; c=relaxed/simple;
-	bh=YNUiKnsVmS0YnEoi5UBidfFcsIdy4Lv/4umM1P9hbyY=;
+	s=arc-20240116; t=1783442406; c=relaxed/simple;
+	bh=1XRsvNIGdAMhpe6h6Rmr9ffQO30RuYSohh6zIGmdAfM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mtY/FXeGiQhRLjD2snjl+OtTRCoWns/QmeSmRiCBftdxAopOQ+dqlbpPvrUgg6cJFG6ZtwYFOEB2sCsxdvDIsWvUqN8JuXWFFzf6uARbHObyHxyGpfRSpdzYGU349W/V4JlimN2cr5f3duwbaxVKiXxF0NLEvPz3B+D01oH32og=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=DgKeiTpC; arc=none smtp.client-ip=209.85.222.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
+	 Content-Type:Content-Disposition:In-Reply-To; b=bloN3Ve7WynHjFj0eYtTxoFZ6VwftLvIX7U1lGFd9i/EBghL6blr6vxpL22oX83Pd/Vq2cqJYXMA+FpXIfBokDtjpaEOVbBEcdVhHUaG2ZrYPEGjACYIEsI0+P1aML6yO5SnASd1PsYFVjzB7anIqbVK9K5SqUlSM5Y51I22x30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=MiYr/TPI; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=C3Z8Ip3K; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="DgKeiTpC"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-92e5c9211d2so350002985a.1
-        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 09:26:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="MiYr/TPI";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="C3Z8Ip3K"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 667FT7PX017879
+	for <iommu@lists.linux.dev>; Tue, 7 Jul 2026 16:40:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=ngMJFXW0MVpSyT9cIuB08wDD
+	gujyroBQVzUzKlhc52Q=; b=MiYr/TPIV1tgnI2ssrts3PiyItGY+zxGj8RBOb/N
+	1US8orSQS1Kqkf5lDLxiYel8uxWhE1agG5lZh4l9NrQ1+3s3uU1iu/VQEr93MVLy
+	hLqRCwJEW2fTBgHh+GNsCmTRW0NE+TllBeUgadAL6gokqzklRbdaJk/4GDfpKVaS
+	GHputQFD0WBQhDtgOgcQjtX3N97uCAAqy2nFq2EYtzlm1iqSm/Qqzu8Zs24Dk0Fx
+	qg0cPK8IkgftVeeByYZ39VmtZm+mreJ4g+8P+NdkDKHnkoDGrdFPyJKu3opDXq/4
+	EQnaEm8R8JojofSQZN+MI6uHIH2aGXhvJf9hoINEC8deWA==
+Received: from mail-ua1-f69.google.com (mail-ua1-f69.google.com [209.85.222.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f8wep26vg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 16:40:04 +0000 (GMT)
+Received: by mail-ua1-f69.google.com with SMTP id a1e0cc1a2514c-9674fae89e9so527497241.3
+        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 09:40:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gourry.net; s=google; t=1783441611; x=1784046411; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1783442402; x=1784047202; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=3pPJvCom7n6xLJkZnxYC/ipfbqNHo6N+N3CeZviAw0k=;
-        b=DgKeiTpC1241Cfioz7Dg65LdNkcANIi1laldlaYY/ldXRPsuwvBKFWPK/fhqp0l2OF
-         FD/fmwNNIjbhr224B5/yRDL2C47QHrIjuxQQmWziD1Ph3Ia6UOSlkSOlRWIr6Tm9g9jy
-         JCw/1DMvDlZyxJ1RpkVKf5HKS/vMbjEiqSF5ps1AHNbxOaGnA2udpL5rhenWJY2+Et9G
-         mz5XaPIXJNHdJu13ys+G+kKT3VDXYCEmPOd2/kny3rX77IOKD9rr/j3DHatgJxXnp9PR
-         14ZiUY5bhjsSDIqIVspNuwLJnpaxmcG8utD1OOOW3xignrFtlupX4f8y+hXA6Z5L4Fhv
-         DFoQ==
+        bh=ngMJFXW0MVpSyT9cIuB08wDDgujyroBQVzUzKlhc52Q=;
+        b=C3Z8Ip3KnnVNvGyJIUhbJfQFoKrCipy4esyFwJh9AH8OXXAxH1QYQSAwJA8KQcsOY9
+         OLxH8W8fAoEguBFNQGhSpvMN6Mr9wr0itlEgjvo9rVe5SyOS9frpzBx/9kqJOYsBJYqO
+         IjziCcVAXKvW1JICr5/t1GLLDNWbTx5QEKLfIz1DIXXQ4MqfJUd9dOL6gHB92EGszFyG
+         aBXqxz17qm6QQQNWUyr70EKHVBCZ+yEdw3g8FQtBU9NqVP3pyEpN425MZT0uSl0Mp2yy
+         Mg29vZVzwhDjXGWcYNp8N5t7UpJG5nmWj36wGGbtCfRqrL4RFzuP51koxlTXLyDb3ZK5
+         DdYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783441611; x=1784046411;
+        d=1e100.net; s=20251104; t=1783442402; x=1784047202;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=3pPJvCom7n6xLJkZnxYC/ipfbqNHo6N+N3CeZviAw0k=;
-        b=V4SU9dhSHcPnSKBtIbAm7oTtS5CniiaHVkZZipy7CgdG/fV9uQQ+CSNZXjYQ7Lhtcr
-         RQ3JKMs/i+hZXd/ICb77Agu4giex2BAw9f3zr3ylBQDMGQGJmarYhmKfy6PdPD/6e0vv
-         oZIiZpv5Id5spogGYNt9a2yLk7GUQXZS73mnsh7FPfq+Z4b8YLjhWkoNET4SlcocsKOc
-         HeNJNV33EpgAiPlB30Hvmf7TPZvXI8z5nOsgeIBnYt+iv19IbtI6AlZku3b6nWMH4qPn
-         Um3Q0GwTShGEISU0+oFgqyn44dNyYR8CjAvhpV32wCrjnyzF/yU9BAHJ92Gfq8XH/Jz4
-         Cj0Q==
-X-Forwarded-Encrypted: i=1; AHgh+RqioyqHmx8dchixeqRNdOH237b/4JNN68LVu2h9Szt3Cupeb5ShfNUat5cwompxC9dL8YojDA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy5OxEbka75mYv4Gt5DwF4qqyNgBV0E9Qx8F/Kvoz9uH3xeEvyu
-	ELWbdZbuBk9BF/VZiXKHpY/TU46esYqlLdgMrzioTj6g2tIHdRHyVH/yJz2xgU96+Qc=
-X-Gm-Gg: AfdE7ckNb1S/CS3Eo7BpDqhJTjWXdZkaHQHyG1nBxNd9lhUL20hvHtdtZVapeAn++Vg
-	AAZrmRXI7RficDCBAY+lLmkQGSuEaY2olRZjO/AdNad4weEnqmJDg7nl4rezHJ1cNXiDqrmtzwz
-	XPzyKEjp2HfnKyaVrXKw1e6FHK64yENznhgRKDoiRhRfozciDaZ/A0Nsv/fGoNQV2Us0R7Htmsk
-	uFKwLsOnDNhFrkgPN+hK9OqA0Gqh7whSa6vT+1tAA6yaDDAB8qYy+PpPPkfD9TT2haOWUWhk+yq
-	LK8uR3E2MW0ToQZgjqZbZvFVqVY9I/eMIt1ZvU++mo9I9jGbWh4Kc1G5Rh/unDzkux1QQ7a/0Gu
-	anfE3n+pmU1QcsxOK5MKoS9B0w3sCAxqzwhOlJTnXjg6+ORangj78rqMLD48DIaGnGV3EMkSCBF
-	nqaHjRuKe0VqikP7MZ5FFlSGaFWL4GkZToWKyeTzZ5pEzUYJNOt5EnAvbZengAKBOT4kWgaizZQ
-	TKzLGk=
-X-Received: by 2002:a05:620a:a807:b0:92e:c118:18b9 with SMTP id af79cd13be357-92ec1181fa1mr324497185a.88.1783441610850;
-        Tue, 07 Jul 2026 09:26:50 -0700 (PDT)
-Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e90ba41fesm1231337385a.17.2026.07.07.09.26.47
+        bh=ngMJFXW0MVpSyT9cIuB08wDDgujyroBQVzUzKlhc52Q=;
+        b=CtX+BtSpYhyrNevRG0k7IE7JzXY21U/0MmYftA2uUQkBDZ7VBsTeme6VlR0ugbAdYD
+         cgH/BBzLCphgQ1V8rcw/ZIBmTp/N+JoZIqdedP3SgUL5JOYjdNsk406goOAaHwkXCuD0
+         jI9B3ESds55d189P9qM4laBNekyT1xNmXrac29y9EAVujQx2YSYivN5D+TvKeDrH6Zrj
+         YHuRln//QIfJtorpjtulT5HqKEwjcmGlfvHaGpAaHKApgwZd7UNRqLGsAPlkZwi/9kmq
+         OSl/pnZxL0JPPTuJtdxETicx/+Jl5bvdJPfIATHd4k2ahyCwBZTNJD5t3gLiFNGUUTV7
+         G8hQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqyZjrX9Kf8ZIm8GTLlubSexOXNC+UUZy6E/B907ptEhaR4mkd8gCCPhDptt7pw9RcHeydcAg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YySQz34E+0yWD3rbA6wBB9fcjjHmb4vkjPd4agWP7EXyYULwHGX
+	w039v3IbpbVPd5RT/AOA71olwsVAHvNwlKMB95qBX4tMmDJEL1c7xJIkWj9aRVJXBseKrtzIl18
+	S80csvqqeAWJIXwUYkt7+aRt1Vj9G81Ch9YkBcfSDPhBZoIA6M5d1i3Z9FA==
+X-Gm-Gg: AfdE7clo8ZaCt9TUk3jWFMTUM8hT54vuCGSsqF/MiV03T3dgNbc1ogFQO8Zx9miZQmF
+	8WblG4HYZrd0GQeBGPM2Fs3YV96Oc93vJ/GWOT6qDEmv5EXNd/EnsOpD2NZloT2kWw4J/seAEzU
+	4jtp+8afERxggOwzgT+m4gJo7G2PQPzeSp0i3QLPgrBri6ujuzctP3qazvFuQnxbt+kSVdIL4sb
+	iXnNMElpE5ByfwJHL7ZKpHpRPstPZbUrQP913q2Mwqr3C8A8NCKh0rLxj63ZLWW6FO50tbrue4c
+	nh2zXUclJt/OGU4TUepzNiSA3TaXbD9sR/4bEMReUtiHujouSK/XmqsXQRMurIFCZb1zxUinO/4
+	OD40fOqSwNaxopeOr1d5xsCkhldizhir8jXo52MgkIPDRTeqt7gV9YHVAajXSZB5pIqN0X7Vj+k
+	HdCgL0/lNQu+PtzGOevzeOGK8L
+X-Received: by 2002:a05:6102:5f05:b0:738:be7b:add3 with SMTP id ada2fe7eead31-744b7ade412mr3295745137.6.1783442401885;
+        Tue, 07 Jul 2026 09:40:01 -0700 (PDT)
+X-Received: by 2002:a05:6102:5f05:b0:738:be7b:add3 with SMTP id ada2fe7eead31-744b7ade412mr3295690137.6.1783442400917;
+        Tue, 07 Jul 2026 09:40:00 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aed13bb3aasm3792026e87.53.2026.07.07.09.39.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 09:26:49 -0700 (PDT)
-Date: Tue, 7 Jul 2026 12:26:43 -0400
-From: Gregory Price <gourry@gourry.net>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Simon Schuster <schuster.simon@siemens-energy.com>,
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Ian Abbott <abbotti@mev.co.uk>,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	Lucas Stach <l.stach@pengutronix.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Christian Koenig <christian.koenig@amd.com>,
-	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
-	Oscar Salvador <osalvador@suse.de>,
-	David Hildenbrand <david@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
-	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
-	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
-	damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
-	Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 12/30] mm/vma: clean up anon_vma_compatible()
-Message-ID: <ak0owyNkHX6mw4pe@gourry-fedora-PF4VCD3F>
-References: <cover.1782735110.git.ljs@kernel.org>
- <5a7a07bd2a774989849b0fea84f758059ed914df.1782735110.git.ljs@kernel.org>
+        Tue, 07 Jul 2026 09:39:58 -0700 (PDT)
+Date: Tue, 7 Jul 2026 19:39:56 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Anna Maniscalco <anna.maniscalco2000@gmail.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
+        Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH RFC 03/13] drm/msm: look for lpac from dts
+Message-ID: <m4vwrqt6yyaawpvkyrqfzs3kbipbhygmtrhphuthl2gmjvkgyt@u2d3dnvl2phy>
+References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+ <20260705-descriptive-name-lpac-upstream-v1-3-01d50c3e0c99@gmail.com>
+ <rwohvfbsw2brpxrfg26egu5arwe6g7n2etelo33eegmu5cz65k@3syofuxzsjrc>
+ <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -130,14 +114,81 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5a7a07bd2a774989849b0fea84f758059ed914df.1782735110.git.ljs@kernel.org>
+In-Reply-To: <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
+X-Proofpoint-GUID: bbsZutX6fN1AUWu4j2Dt-OWMFWeQn81Y
+X-Proofpoint-ORIG-GUID: bbsZutX6fN1AUWu4j2Dt-OWMFWeQn81Y
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA3MDE2MiBTYWx0ZWRfXxik49K6cZSmM
+ 3GAGbqwvd7Qo66QCDcLeeCUUQSVdasusyWV97/FkeEEqSNUUHNhqaaxhRPxBOJkFRiFebV9kRQ/
+ jvXr3OcEn+jxln6fe/KfCtantf5zU8EAplk0/QP5E8sKO0pFd5xhn/saXkf0uD7s17sGyfRLtzE
+ OxaEFfl08Cg8GWJiz+cXDgoSc4UUK+cVrjlYuFMONuZEapaT/Tqowzp49vQS1HFeh0TG1KZzreH
+ xfUGFo0Cn5tx4n2OI58bnlkpQwcd/a3FV+LhBFn1WoLT8S1Wot/ondP0yUahVyIJb4RBvlR08B1
+ +TD3umV/CO7MVraangP/qH+SN7y+wch0WlFJRVnPwJx8MyxJg7QZ7oYjSHLWTSrll7eHO0td0AV
+ eAyI0TaprpOJg0YIpQbb4TK2/8d8Tn5gXfFGsA7QFQtG0qdSJ8UUa3aESGurzMQTPWrqNjHPLba
+ xg37Zz2DA18PeJ1CU5w==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA3MDE2MiBTYWx0ZWRfXwS+pcIxpjuPS
+ or9DeCQUervg6T/GFXD7w2o3lyEwpMDpgnKPD20l3NbY16SvnNvsy6AYb0vdpZOmxsinm2R6aeO
+ eT8iOP5wV7SiJdQ2qUvYfq7kp5ML6CE=
+X-Authority-Analysis: v=2.4 cv=atSCzyZV c=1 sm=1 tr=0 ts=6a4d2be4 cx=c_pps
+ a=UbhLPJ621ZpgOD2l3yZY1w==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=pGLkceISAAAA:8
+ a=1fOCVGvR8NE8L1w4xeIA:9 a=CjuIK1q_8ugA:10 a=TOPH6uDL9cOC6tEoww4z:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-07_04,2026-07-06_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0 clxscore=1015 priorityscore=1501 spamscore=0
+ suspectscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607070162
 
-On Mon, Jun 29, 2026 at 01:23:23PM +0100, Lorenzo Stoakes wrote:
-> Break up the existing very large conditional, add comments and use
-> vma_[start/end]_pgoff() to make clearer what we're doing here.
+On Tue, Jul 07, 2026 at 05:02:43PM +0200, Anna Maniscalco wrote:
+> On 7/6/26 5:04 PM, Dmitry Baryshkov wrote:
+> > On Sun, Jul 05, 2026 at 09:13:37PM +0200, Anna Maniscalco wrote:
+> > > In order to associate the SID used by LPAC to it's own domain and
+> > > context bank we need a separate node on the DTS.
+> > Can we use iommu-map instead of adding a new device using the same
+> > addresses? You provide zero explanations, but it seems like you are
+> > trying to separate a part of the GPU into a separate device, but it's
+> > unnecessary.
 > 
-> No functional change intended.
+> What I was trying to say is that we need to map sid0 and sid1 to different
+> context banks.
 > 
-> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+> From what I recall, so long as we use the same dt node, the iommu drivert
+> provides no way of doing this.
+> 
+> What kgsl does is having a node for the iommu and then subnodes for gfx lpac
+> and secure.
+> 
+> The address on the lpac device doesn't really matter. I have very limted
+> knowledge of DTSs but I think we could just leave it out altogether?
 
-Reviewed-by: Gregory Price <gourry@gourry.net>
+I think, you were poined to the Glymur Iris patches. Another option is
+the QDA driver being submitted too. Both ot them use iommu-map to
+describe the same usecase - a set of SIDs which are used by the device
+but which should not be a part of the defaut set. With it in place you
+don't need to have separate qcom,lpac devices, no additional properties,
+etc. 
+
+I'd recommend following the same approach.
+
+> 
+> > 
+> > > Add the code to look up that node on initialization.
+> > > 
+> > > Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
+> > > ---
+> > >   drivers/gpu/drm/msm/adreno/adreno_gpu.c | 21 ++++++++++++++++++++-
+> > >   drivers/gpu/drm/msm/msm_gpu.h           |  1 +
+> > >   2 files changed, 21 insertions(+), 1 deletion(-)
+> > > 
+> 
+> Best regards,
+> -- 
+> Anna Maniscalco <anna.maniscalco2000@gmail.com>
+> 
+
+-- 
+With best wishes
+Dmitry
