@@ -1,64 +1,64 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A1873FADF6
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 11:45:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D4D63ED132
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 11:47:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783424754; cv=none; b=JgiWsAufqM2LZgcSY6Qz8UPb5GtE6SKLrDayV2fISaw9fGYC6o288CbUp02wgbctADA+hhNF1UtlX1e8HVWOlftgJ0cAATZJvQlxR32JzBWstOejNB83o+QtSBpfn9uTGb9lzPtYKSx7n6Xvrd7ktivon7f/I5nndnZP5TdapPA=
+	t=1783424822; cv=none; b=YJGO1lDTIdUFonCjWGvyqe8zS1o7Y7KU8aoNszKGraOV/voTR0nw/UhColUY4b7SA94+PhqauCBo2bcMaEQzZtgx88xJOOQkUklCzN9jfxJAIjNHENoqf3bgYYYhdBujINvrFl4TkJPgswr7430/mr+XBeiIVtq/RrImve1FTug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783424754; c=relaxed/simple;
-	bh=U1zRZA757u+fv0JMlGa/t+wuWzMlXcCu0ncHTr55sz8=;
+	s=arc-20240116; t=1783424822; c=relaxed/simple;
+	bh=8VqmA/RfqjlTktvlCswxt/OoKdHFMqpb/V2Joz8bZ/0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vh6NsIv+p0k0EWO8MtYCaEJpdL/0GHb4Lx1WaODEzJWwEIM87rRdeOur3GKG2mgIYsWmrcBC5Y/MVq2Zohy92GSjiOYbsea5xDBpkaHY4J6aNARwrRjEMGcqnISu9hRyA0uKz4h2ghAhZsdcXTQB+chhNDFftHAOak3qdsprM6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GFVcfa1h; arc=none smtp.client-ip=209.85.128.49
+	 Content-Type:Content-Disposition:In-Reply-To; b=IOMHqoZIsQfWi6ff2wzRkyDxABkKAKLyos4Ud7wC3/n4p/XQa+ZkUrYXsvkQ217gzL3ZzXj9rK6BlgRV7SN7zo8l5AVlrr1YTS80LYB5duct8ZVFhfHbo6F7UZeMKsBNVbm0qZRKGBqb6rtcfGZZY720h7XaZE1fp5CIwcU2YPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oNIS6s1v; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GFVcfa1h"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-493be0fbcc5so34625e9.0
-        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 04:45:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oNIS6s1v"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493c556ada3so34825e9.0
+        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 04:47:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783424749; x=1784029549; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1783424819; x=1784029619; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=eT2u2uECc/JyT//Y0MUNfLJ3f6c5Vk9vkYH8un7LuaA=;
-        b=GFVcfa1h3BOrHrZ4QarE61CWfSzLfgVLrzSafGhdQ+4pM+nXrTmPJLsBRP8uK9YVqo
-         7KKrLEx4l5U+yli78veiynR/MCTToRTQlHYaeXj6wd28eaWJwBACSz2eaOMUv+lDyp3v
-         5VzW1inMGsPn4i8tgR3/MIDKAIgSs34IRlL2ul4c6j6Gb992/DkH0XbNee5cJ9FQ3Myt
-         cDenbh7jIl2+V8UkmB/fjojw3F/qv3bkA8NjADJy4DsMDsedKLEfU6PpITvtoZTD63Tr
-         A32KNouKQ2FZOfZOgKv+TmroPveprr5Ou8DUhAumMR3T9QIjZNzXHgWO37c/QyYjHHql
-         SFkw==
+        bh=aCHfMn1isXXOGBYF1cLNW7WhWweWyXtBiUjIq8H8qFU=;
+        b=oNIS6s1vVokdeRyVJAn+8IyVN+DBSUTfSAkDGqlKPzg2YebqjtLTFrdt319Z2eLfIY
+         k/CmLBU8lj5vjb4Mf19q/3zCyWRNd7VHR5zqOnzR8gwm1nyRrsIFWyIBwRJ2dNkgmbqu
+         +g9uNF/DwAwjmnwkQdqKF9kyzni40tPJRkw1co+eIt+9p3no/fwhbAdsz/cUoCbUGFUm
+         KtPjJDQz2ng08UYPrOWV5eksrvWdUX4tNARYOW/rvnQu4wRZFnsReWT/UnsDjYCZ09bL
+         amsz/aEzLMSfOqXrGntHnhk8f7ArGrZWUxHK8b0KYYUdzekOE8Nwvlx260nxZngfwG+g
+         S1AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783424749; x=1784029549;
+        d=1e100.net; s=20251104; t=1783424819; x=1784029619;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=eT2u2uECc/JyT//Y0MUNfLJ3f6c5Vk9vkYH8un7LuaA=;
-        b=HYeCa5ftdyN0AM8uqwe/W7L+YePMO16XXy0jQLDNbdh6OlwRpHQZzeXdMmw/KtzH14
-         +AR/rAV+yuU15/sWZzms++hLwMBQFP65c9AXID3bcPy/lfuP6S7uMlH5vWsayq8RpGFh
-         4wn7hXIaJgQsLJk5p2sIpyQbsueD7VHfukH6aos6FeVSU6obsfdiMy9VkWfmUEPj6htd
-         O2jYOG+mtegwXreysHmyl62RtsqkdwGIlyKE8AGMItCnINnE2omO5SIoQmF56rq/H06J
-         KFlvuK2ya1jNWZC5XrvEJSJML5Wx3kis4b323QZQNODI8AHbe7/vumibHTDI4q/fzKaR
-         alGQ==
-X-Gm-Message-State: AOJu0YzBRNYVVanXLF/rEVMzG+fEQtpC4umhxHAuA1n1GAtT+TXc9Wki
-	ymxkuex+P7BQBDCi5dmG9XY9AT7yJxDSyjYuGK6w0yHw2MBCs6lsp2MXgzh6O6JGig==
-X-Gm-Gg: AfdE7cmZVC71pzdCc+gMGRvn0MmcsVFGNecZ8a/Li36YlaQmpXxguekUJs9SmvCHBb/
-	0hxBAbZy8WqgU5oLiZFrQ4BbDYpBeHmFsnyucHwn0W3uEnCVdnicPCQpk2bSVGkBbEnA7IxnJGF
-	y3l7n4rgit/fmsI+ugAdK5U+Sl+t5upyVZku01IQ0nRYPaHQ6EmgTp9G148VnMyda1SMNfAXL3f
-	pyLymOPL6xdpgNx9Itz5TQaJyJMsYZdlJYJ4NmvmgM26kcIrN/v8kDZwkLrM0hcR2HWGkVOYSSG
-	fJw5pg5TzxljAV3HwLXYRuwO3j3T7CutBcfTT6peullbX4HOOdTmHdBMbcrKZ9osVTpNUUbXQQb
-	U+MWAP0uQ+NZBzNoZ6RR9aP3xZUY+8L965khYzQ3MN2+fLdaRTpMooeK6aFKP1JTLC7qdy5reoK
-	aITGLmrj3viCdSLsVvP7iEWHRtP+ktO2rUplFQc7hrdZbBR9tK
-X-Received: by 2002:a05:600d:8654:20b0:48a:623c:8859 with SMTP id 5b1f17b1804b1-493e15301b5mr647595e9.7.1783424749113;
-        Tue, 07 Jul 2026 04:45:49 -0700 (PDT)
+        bh=aCHfMn1isXXOGBYF1cLNW7WhWweWyXtBiUjIq8H8qFU=;
+        b=mzwJFNPj138jFl6yNrtyYyekdj8d+6Xx7nMxuhXqqBtXO466/1WOIlD/XOvZN45SJZ
+         8/5FWXCXfM/JofV8ejDHzumgxd3apfVngcZpfqiXF5HEocVuQ+NWuYHgHjBxVVIHOBtl
+         ChcHbAAEVu7GqrCSHaDhDOPiVAkoIxtoBIN/dm2eoAbNHKe1SSlvfk1kZ+008fui5R3x
+         yTcVplZLk5OkeVOJMLb2S7NOBGtVKh3VDJDcDkkWFZDAZgXDQ6Vuvl7qY9XBSL7Bo+Ow
+         tk0LXhQKsqzGTkhAE0uM7nIM021nM78wJLZdVgWV0KdZfJorc6RmXDm1jG4/TPg3uZsH
+         85Rg==
+X-Gm-Message-State: AOJu0YzpHhFnzcU8d0jNKCzzvjLP4Rbt0MOl0Y32EG6zVTpPhx/H6GxP
+	+ivjS5UkZHGMWMw6Kx65sMbRe86GZykPz2GfuSJ11/TCghor/VYucyNq1tmPg75Qcw==
+X-Gm-Gg: AfdE7cl7m0NXVIx4r6zAyQrsoSA80OX1Elvw2IcqgwWDH9CIL3vLNddEwJtAUX0LiG5
+	qrROZ8dI+2FglyGG7d2q66G0xd7YTD32OLQgwLyEblUdPRY/q4jYyvErKomoPHBAvcS2G4z21GJ
+	f8zn9DafVLBCV3AhN9G8YxFdwNnCqwXQzzzxhsOj1DfVSKEOJ5Pa2lEKYsucP0QojhWyD3J1CXh
+	PQZPpGuzUE3xgnKswGotd5OXtXyDGQWE6bIzlEXEKS4Z+f3XKvm+Tg2pdI5u19MMA6e6QId4u2k
+	xLMNavINbuZkoiaZ9nHPzh792MAzgBEtsz5ZuSV+hpr9MQdSFvIFk2E0Y/VAmN5TWzsFVvyGE2p
+	Er1BHiJbHCkV5JrubKMrM+ho+++24tdbKskvGRTh51bMGBvwkw5dAGxoyj5f0p2lVXOo4as6QXf
+	duyLPmHHwsMyfQId0aQjletBIec3kC22jKWpfj2M8K3HX1XlUx
+X-Received: by 2002:a05:600c:604a:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-493e14ef934mr557925e9.2.1783424818179;
+        Tue, 07 Jul 2026 04:46:58 -0700 (PDT)
 Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e01c9faesm37268395e9.1.2026.07.07.04.45.47
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa039b126sm32893908f8f.24.2026.07.07.04.46.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 04:45:47 -0700 (PDT)
-Date: Tue, 7 Jul 2026 11:45:40 +0000
+        Tue, 07 Jul 2026 04:46:57 -0700 (PDT)
+Date: Tue, 7 Jul 2026 11:46:51 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
@@ -69,11 +69,11 @@ Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
 	Pranjal Shrivastava <praan@google.com>,
 	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
- for latency
-Message-ID: <akzm5BoV0rToJ7ij@google.com>
+Subject: Re: [PATCH v2 4/8] iommu/arm-smmu-v3: Keep track in the
+ arm_smmu_invs if RIL is used
+Message-ID: <akznKwVE-Rc8ZjJN@google.com>
 References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <4-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,134 +82,146 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+In-Reply-To: <4-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 
-On Mon, Jul 06, 2026 at 01:26:40PM -0300, Jason Gunthorpe wrote:
-> The server IOMMU drivers focus on invalidation latency by default,
-> over-invalidating if necessary, to round the invalidation range up to a
-> single command. I think this represents a trade off for DMA non-FQ and SVA
-> where stalling the operation is overall worse than re-loading the IOTLB.
-> 
-> For instance AMD and VT-d both round the range up to the largest aligned
-> power of two and invalidate that. This causes over-invalidation but that
-> is preferred on real HW over trying to issue a number of smaller
-> range invalidations.
-> 
-> Only if a para-virtualizating hypervisor is detected do they switch to
-> using more accurate invalidation. This also triggers using
-> iommu_iotlb_gather_is_disjoint() (ie PT_FEAT_FLUSH_RANGE_NO_GAPS) to
-> remove over invalidation from the gather. A pvIOMMU has a hypervisor that
-> will walk the IOPTEs and resync them. Over invalidation, especially
-> significant over invalidation, can incur a big latency cost reloading alot
-> of page table. x86 IOMMUs have aligned range restrictions so there are
-> some pretty nasty corner cases that can trigger huge over invalidation.
-> 
-> Currently SMMUv3 doesn't support detecting a hypervisor, and it
-> unconditionally runs in a NO_GAPS mode. This makes some sense for the
-> single invalidation flow where there is little reason to push single
-> commands across a gap.
-> 
-> When we get to RIL hardware, this doesn't look so good. On real HW the
-> best option is the same as x86: issue a single RIL per gather and optimize
-> for latency. SMMUv3 has a significant advantage as its RIL does not have
-> alignment limitations so it's single-command over-invalidation is capped
-> at < 1/32 of the gather's size, making it much more suitable for a
-> pvIOMMU.
-> 
-> However even with RIL SMMUv3 still uses NO_GAPS and it breaks down the
-> gather into several exactly sized RILs to avoid any over-invalidation,
-> costing latency on real HW.
-> 
-> When the HW has RIL support follow the x86 approach in SMMUv3 and
-> calculate a single RIL per gather that will cover the required
+On Mon, Jul 06, 2026 at 01:26:41PM -0300, Jason Gunthorpe wrote:
+> Summarize if any of the inv entries will use RIL. The next patch will use
+> this to avoid RIL pre-calculations unless RIL is being used by the
 > invalidation.
 > 
-> Calculate the smallest SCALE such that NUM can cover the range to minimize
-> over-invalidation. Always use a RIL command if RIL is possible working
-> around the spec limitations to form a valid one. If RIL is not possible
-> then do full invalidation.
-> 
-
-That may be beneficial for servers, but I am not sure about other use
-cases, we already know that the invalidated entries are unmapped
-and not used. However, over invalidating might impact live DMA which
-would be bad for workloads sensitive to translation latency (as
-embedded cameras, displays for example). Maybe this can be configured
-instead (via cmdline)
-
-> At least one invalidation errata is avoided by 'always use RIL'.
->
-
-Can you please clarify what that means?
-
-> Since the normal path is now the only one with a loop, split them into two
-> functions and fold a simplified version of arm_smmu_inv_size_too_big()
-> directly into the normal flow in a way that directly limits the number of
-> single invalidation commands generated, again focusing on controlling
-> latency.
-> 
-> The end result is any gather is converted into either:
->  - One invalidate all
->  - One range invalidate op
->  - At most 512 single invalidation ops
-> 
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 257 ++++++++++++--------
->  1 file changed, 153 insertions(+), 104 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index d22012466e3965..1ad642e09eb92d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2395,124 +2395,166 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->  	arm_smmu_domain_inv(smmu_domain);
->  }
->  
-[...]
-> +	scale = fls64((num_tg - 1) / 32);
-> +	if (scale > 31) {
-> +		/*
-> +		 * Range too large for a single command, use full invalidation.
-> +		 */
-> +		return false;
-> +	}
-> +
-> +	/* 16K granule TTL=1 is reserved (Section 4.4.1) */
-> +	if (tg_lg2 == 14 && ttl == 1)
-> +		ttl = 0;
-> +
-> +	/* Verify address alignment for the TTL hint */
-> +	if (ttl && !arm_smmu_ttl_addr_aligned(cur_tg << tg_lg2, tg_lg2, ttl))
-> +		ttl = 0;
-> +
-> +	arm_smmu_cmdq_batch_add_ril(smmu, cmds, cmd, tlbi->leaf_only,
-> +				    cur_tg << tg_lg2,
-> +				    DIV_ROUND_UP_ULL(num_tg, 1ULL << scale) - 1,
-> +				    scale, ttl, tg_enc);
-> +	return true;
->  }
->  
-> -/* Used by non INV_TYPE_ATS* invalidations */
-> -static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
-> +/*
-> + * One TLBI command per IOTLB entry, assuming the entries are all at least
-> + * iopte_granule sized. Returns false if too many commands would be needed which
-> + * indicates too high a latency. The threshold is similar to MAX_DVM_OPS in
-> + * arch/arm64/include/asm/tlbflush.h for the 4k PAGE_SIZE.
-> + */
-> +static bool arm_smmu_cmdq_batch_add_single(struct arm_smmu_device *smmu,
-> +					   struct arm_smmu_cmdq_batch *cmds,
-> +					   struct arm_smmu_cmd *cmd,
-> +					   struct arm_smmu_tlbi *tlbi)
-> +{
-> +	unsigned long num_ops = tlbi->size / tlbi->iopte_granule;
-> +	unsigned long iova = tlbi->iova;
-> +	unsigned long i;
-> +
-> +	if (!num_ops || num_ops > 512)
 
-Is there a reason that was added instead of keeping the old formula?
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
 
 Thanks,
 Mostafa
+
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 30 +++++++++----------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 18 ++++++++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 ++
+>  3 files changed, 31 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> index add671363c828c..785dd21bd68b7a 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> @@ -655,37 +655,37 @@ static void arm_smmu_v3_invs_test_verify(struct kunit *test,
+>  
+>  static struct arm_smmu_invs invs1 = {
+>  	.num_invs = 3,
+> -	.inv = { { .type = INV_TYPE_S2_VMID, .id = 1, },
+> -		 { .type = INV_TYPE_S2_VMID_S1_CLEAR, .id = 1, },
+> -		 { .type = INV_TYPE_ATS, .id = 3, }, },
+> +	.inv = { { .smmu = &smmu, .type = INV_TYPE_S2_VMID, .id = 1, },
+> +		 { .smmu = &smmu, .type = INV_TYPE_S2_VMID_S1_CLEAR, .id = 1, },
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 3, }, },
+>  };
+>  
+>  static struct arm_smmu_invs invs2 = {
+>  	.num_invs = 3,
+> -	.inv = { { .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
+> -		 { .type = INV_TYPE_ATS, .id = 4, },
+> -		 { .type = INV_TYPE_ATS, .id = 5, }, },
+> +	.inv = { { .smmu = &smmu, .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 4, },
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 5, }, },
+>  };
+>  
+>  static struct arm_smmu_invs invs3 = {
+>  	.num_invs = 3,
+> -	.inv = { { .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
+> -		 { .type = INV_TYPE_ATS, .id = 5, }, /* recover a trash */
+> -		 { .type = INV_TYPE_ATS, .id = 6, }, },
+> +	.inv = { { .smmu = &smmu, .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 5, }, /* recover a trash */
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 6, }, },
+>  };
+>  
+>  static struct arm_smmu_invs invs4 = {
+>  	.num_invs = 3,
+> -	.inv = { { .type = INV_TYPE_ATS, .id = 10, .ssid = 1 },
+> -		 { .type = INV_TYPE_ATS, .id = 10, .ssid = 3 },
+> -		 { .type = INV_TYPE_ATS, .id = 12, .ssid = 1 }, },
+> +	.inv = { { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 1 },
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 3 },
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 12, .ssid = 1 }, },
+>  };
+>  
+>  static struct arm_smmu_invs invs5 = {
+>  	.num_invs = 3,
+> -	.inv = { { .type = INV_TYPE_ATS, .id = 10, .ssid = 2 },
+> -		 { .type = INV_TYPE_ATS, .id = 10, .ssid = 3 }, /* duplicate */
+> -		 { .type = INV_TYPE_ATS, .id = 12, .ssid = 2 }, },
+> +	.inv = { { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 2 },
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 3 }, /* duplicate */
+> +		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 12, .ssid = 2 }, },
+>  };
+>  
+>  static void arm_smmu_v3_invs_test(struct kunit *test)
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 1ad642e09eb92d..02323fd7709f07 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -988,6 +988,18 @@ static inline int arm_smmu_invs_iter_next_cmp(struct arm_smmu_invs *invs_l,
+>  	return arm_smmu_inv_cmp(cur_l, &invs_r->inv[next_r]);
+>  }
+>  
+> +static void arm_smmu_invs_update_caps(struct arm_smmu_invs *invs,
+> +				      const struct arm_smmu_inv *inv)
+> +{
+> +	if (arm_smmu_inv_is_ats(inv))
+> +		invs->has_ats = true;
+> +
+> +	if (!(inv->smmu->features & ARM_SMMU_FEAT_RANGE_INV))
+> +		return;
+> +
+> +	invs->has_range_inv = true;
+> +}
+> +
+>  /**
+>   * arm_smmu_invs_for_each_cmp - Iterate over two sorted arrays computing for
+>   *                              arm_smmu_invs_merge() or arm_smmu_invs_unref()
+> @@ -1058,8 +1070,7 @@ struct arm_smmu_invs *arm_smmu_invs_merge(struct arm_smmu_invs *invs,
+>  		 */
+>  		if (new != new_invs->inv)
+>  			WARN_ON_ONCE(arm_smmu_inv_cmp(new - 1, new) == 1);
+> -		if (arm_smmu_inv_is_ats(new))
+> -			new_invs->has_ats = true;
+> +		arm_smmu_invs_update_caps(new_invs, new);
+>  		new++;
+>  	}
+>  
+> @@ -1169,8 +1180,7 @@ struct arm_smmu_invs *arm_smmu_invs_purge(struct arm_smmu_invs *invs)
+>  
+>  	arm_smmu_invs_for_each_entry(invs, i, inv) {
+>  		new_invs->inv[num_invs] = *inv;
+> -		if (arm_smmu_inv_is_ats(inv))
+> -			new_invs->has_ats = true;
+> +		arm_smmu_invs_update_caps(new_invs, inv);
+>  		num_invs++;
+>  	}
+>  
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 2fc695817671fe..3ef55f8af63d90 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -755,6 +755,7 @@ static inline bool arm_smmu_inv_is_ats(const struct arm_smmu_inv *inv)
+>   *               Must not be greater than @num_invs
+>   * @rwlock: optional rwlock to fence ATS operations
+>   * @has_ats: flag if the array contains an INV_TYPE_ATS or INV_TYPE_ATS_FULL
+> + * @has_range_inv: flag if any entry's SMMU supports range invalidation
+>   * @rcu: rcu head for kfree_rcu()
+>   * @inv: flexible invalidation array
+>   *
+> @@ -784,6 +785,7 @@ struct arm_smmu_invs {
+>  	size_t num_trashes;
+>  	rwlock_t rwlock;
+>  	bool has_ats;
+> +	bool has_range_inv;
+>  	struct rcu_head rcu;
+>  	struct arm_smmu_inv inv[] __counted_by(max_invs);
+>  };
+> -- 
+> 2.43.0
+> 
