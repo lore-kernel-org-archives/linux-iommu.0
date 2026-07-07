@@ -1,118 +1,117 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-106119.protonmail.ch (mail-106119.protonmail.ch [79.135.106.119])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBD2337DAA9
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 03:06:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8002D223702
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 03:19:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783393612; cv=none; b=BTfo0ZdEU+Yks0QDWF2NWnrKij6bExxuonShQe4YTZfnJ/mHY+LCF5udas1YtU6+fR9o1uoQdBqHG/V+1NRpVgYGS52Pxg3Sqs8kppZnwL8iGrDW+hKYu94ogPU+USEo3/lNHV9Fx6ysQcdkcbZWhk04izLcKwvLtsTmNM77iC4=
+	t=1783394374; cv=none; b=RdjVi+bQGTHvhClw5YhgL0Yo8H59P7E5d6ytno7Qx7OW6TfEqjIZ3xaOIj/SioxpGjgX1GapFxsA0uhT5ccc8c6nSKA/c8RXx25uOh5QjPrNOvEoiK3PMVxkwFZpl1UPB+jb3//ZMYdSK9JQ/gfYkZIudUD3jbnRRM4/f87aWdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783393612; c=relaxed/simple;
-	bh=aoKO72l1A+dW3fqW3BzjjnB1+WCcmKxl8/Z+ZRyiK5c=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=ecIHW8cET4eNvRSqfQJBORKbpcLQL9iJ9phAbqhWZapQolyGlWt9Bk9mLwpckORg+qjIsu4yvN2EJMqWjQe9fSZCaK1ux+dyKAl7kB0/cTA2makAMGa/XyKaCPP9ARcpRuhfMctGvyZ7lBMwfYcoK5EwXn5+dfEeHJ2put9URx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jWEZl+QN; arc=none smtp.client-ip=209.85.219.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783394374; c=relaxed/simple;
+	bh=RJk2ew42x1OaFHgC10H3ItLiRiqgdw10zjzfWvDhk4w=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=j0zMbuaNRg4bo8tpd0v+wtL9VEk8TlbfgWU5vFt5lWHW6JYQdam7UsIKEeU9BlYL2e4c/4PtDE4P5HoczQ38kCFOEsNa6GwKmrlTMzt/JPYYd4jU0NLsJbZQAHmoQs4UE0aCvpHm9WQaGeDKx+6VdzdW0d1vaBCTEQgQNKPJ9/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=DcqEiGqw; arc=none smtp.client-ip=79.135.106.119
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jWEZl+QN"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-8eeadbc5e21so26173316d6.3
-        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 20:06:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783393610; x=1783998410; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DF9/m6/00tuGO47IW671QE4G3CPTVyzUsVi+M5LKDUM=;
-        b=jWEZl+QNeLL3B51d4ilzYk4edYXI9fmfoL50UMmLEFM/SmDKt3G8VAPGcz0BwZs45v
-         ZbYlcd7lDyTzaIeb//MBU783+w2k1OKSpZV4NnIHELatCqcdywnbzYqkXz7p3+QxSrBg
-         8ruj4EZYbBnw0fiCQMLa/5AiM7RwLYOjycehZRC3d7aoYjP3B2NsyBk9kMebM1HxcQYD
-         30FMWZnmp1vwJj8CoyGUUfHDUM+Ma3B+QBavWTvhCloHnM8Gm998/aObDzBnbbiD/tAE
-         TdX2wRvah8nUGLhDrNBIbfademuivOlk+YFP01ZcRF/WqrOFFK5ZIWOOBzOMxikphh2c
-         t3bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783393610; x=1783998410;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=DF9/m6/00tuGO47IW671QE4G3CPTVyzUsVi+M5LKDUM=;
-        b=mFnYxoXBzSh3uEIlI9shPQNhNKPEdhf2IzTaWvW58eD3AR8DT81dD4C8XJ5Tv1KBmn
-         IpEMVGN6nuGXTqSalF1mHtWOd9pUJuMIBTy64hjrmhtbcwHar773TI/vpykE5WsVBUbi
-         uh/hC6BcZlgeq2RbQYd6EQYAaoN+m1RB1UL0XCeli2b2ZPdER1BQimWIpPOipISSJdmN
-         aea7L0uYKtk9l+8VWR22IZUAop99ZrNEMecxXP1S7hIrsdlIhsUtE//RtdzoqTGkvOyN
-         AsFPG4FtqYQwzwM7J38wcSbziC9CF5gs0Ja0Vnj3NusAYgCf+FPKEWhJU+vj/6Ic7zoK
-         KINA==
-X-Gm-Message-State: AOJu0YzehljFulaDPmG/d8GoD1Z3P+TYg/7hoVI3tRG0UJrew2uCMuUj
-	V/xWg3VqjjXtr1Ew7P40CNB8SYSL6jqb/kFo4UL07IPRp27BSigJdx0+
-X-Gm-Gg: AfdE7cmbuPOAC07sb/Q9sXRu0nOxH0KdslOTv38skNL1v4cI/ovgj/Ht4JMEEYBodrv
-	BmWlZMZtbk+0FYsLYT6FOZ+Jz0v9h84v3pSixJIqonVkJbKFTt+Tou/UJwTHTEgKn8TJSbrjJhG
-	D5ZfJIgLO4fqhz3fgzB1UPMks5eQHDrndfLfeJb8jgKAMeLYBrCihz3IJi+GOZWjI48+y2mtEvG
-	umUHY4RH1UMhu3gDoWxSPzEV4lDhswLd2WozOkZUceln29GjT8D4X1x9HnoVPkmRngeGJHJ+ZET
-	GwjoYDhRSzYyzs94QENSa+FfzOlL2yic6qDwnqnYHT99zM32pRdXbrxRH4/umCt72P0GuHM52lz
-	JZV8hdtKKRGibiRUR/UMIO2Zk5LH3Af0QMCsDfphEiRHne3hfgfQlWSxjZLuF0bwU04Km7mzDdV
-	s1pX51SRG/wrm3WuInFrLW+DFviO4=
-X-Received: by 2002:a05:6214:419b:b0:8ee:ed05:61d5 with SMTP id 6a1803df08f44-8fcb4a06276mr41670976d6.36.1783393609669;
-        Mon, 06 Jul 2026 20:06:49 -0700 (PDT)
-Received: from localhost.localdomain ([104.28.205.50])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8f4724b9ff8sm148107466d6.40.2026.07.06.20.06.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2026 20:06:49 -0700 (PDT)
-From: YeeLi <seven.yi.lee@gmail.com>
-To: jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	yeeli <seven.yi.lee@gmail.com>
-Subject: [PATCH] iommufd/selftest: Fix dmabuf leak in iommufd_test_dmabuf_get()
-Date: Tue,  7 Jul 2026 11:06:35 +0800
-Message-Id: <20260707030635.221577-1-seven.yi.lee@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="DcqEiGqw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=protonmail; t=1783394367; x=1783653567;
+	bh=w1WW+Rf6WB8PFdRwptz/r6ZcYQos2RZ0HVWaAzzGe6E=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=DcqEiGqwnDffW849Ke0oHoSASXiFHyxSPGSBoDRPf3AoHMJX3sFX6Pias03dc2HK1
+	 1JlCZOYHH2vYfe2M59WIyY7bocfkr83QQ10VOqckrDq+sN534l+fh7tr3IZ/HuLNaC
+	 r0xCZ8vIEkccxDCvWDYWig3aItBqrpImSWDoxG3spZHpfCbCBtiiAAQO1kb8On4V5o
+	 GW86fXwNbPYZ1ocx26EhShmIqqlYQ4Kt+joWExfvdXcrH/8/F6AfqsT3GXUvUFSrpd
+	 /zfoEyblg26Vmeuw7oTXFpSb9kGtmWwBf9lWRU1U9RlX0++cJ8E6NxM4f/R5GWmPVb
+	 kcifZz5w0+Ycg==
+Date: Tue, 07 Jul 2026 03:19:22 +0000
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+From: Esteban Urrutia <esteuwu@proton.me>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, Bjorn Andersson <andersson@kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>, Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-phy@lists.infradead.org
+Subject: Re: [PATCH 2/8] arm64: dts: qcom: sm8450: Remove unneeded reserved memory nodes
+Message-ID: <c11f9ddd-8533-426c-8a88-0ed461f6a30e@proton.me>
+In-Reply-To: <4g6y4q2udludhwmoqc34afwj5svra4a4j5bmpqza7h3av2oov7@6k5r7a4meruk>
+References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me> <20260622-sm8450-qol-v1-2-37e2ee8df9da@proton.me> <e1e492ab-884e-442b-8410-cc100c54fd5f@oss.qualcomm.com> <6123a923-21dd-4f69-9ac5-02165963027c@oss.qualcomm.com> <b3541802-3035-40ee-8327-a65bd5d2dfee@proton.me> <4g6y4q2udludhwmoqc34afwj5svra4a4j5bmpqza7h3av2oov7@6k5r7a4meruk>
+Feedback-ID: 147889766:user:proton
+X-Pm-Message-ID: f44e9ea796ae9a36b6ac3c3fb88470b5693b7329
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-From: yeeli <seven.yi.lee@gmail.com>
+On 7/6/26 2:24 PM, Dmitry Baryshkov wrote:
+> Please verify that you can actually access those areas (boot with
+> memtest=3D1)
 
-iommufd/selftest: Fix dmabuf leak in iommufd_test_dmabuf_get()
+Thanks for the suggestion!
 
-When dma_buf_export() succeeds but dma_buf_fd() fails (e.g. -EMFILE
-from fd exhaustion), the dmabuf is leaked with no dma_buf_put() called.
+I actually did boot an SM8475 based device I'm mainlining (motorola-bronco)
+with this parameter.
+Deleted regions in DT are as follows:
 
-Reproducer: exhaust fd table near RLIMIT_NOFILE, then repeatedly call
-IOMMU_TEST_OP_DMABUF_GET — htop shows unbounded memory growth.
+/delete-node/ &mte_mem;
+/delete-node/ &oem_vm_mem; (seems to not exist in SM8475?)
+/delete-node/ &qheebsp_reserved_mem;
+/delete-node/ &trust_ui_vm_mem;
+/delete-node/ &trust_ui_vm_qrtr;
+/delete-node/ &trust_ui_vm_swiotlb;
+/delete-node/ &trust_ui_vm_vblk0_ring;
+/delete-node/ &trusted_apps_ext_mem;
+/delete-node/ &trusted_apps_mem;
 
-Fix by calling dma_buf_put(dmabuf) on error and returning directly.
+Here are the results:
 
-Signed-off-by: yeeli <seven.yi.lee@gmail.com>
----
- drivers/iommu/iommufd/selftest.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+[    0.000000] early_memtest: # of tests: 1
+[    0.000000]   0x00000000808f4000 - 0x0000000080900000 pattern 0000000000=
+000000
+[    0.000000]   0x0000000085200000 - 0x0000000085700000 pattern 0000000000=
+000000
+[    0.000000]   0x0000000087f00000 - 0x0000000088000000 pattern 0000000000=
+000000
+[    0.000000]   0x000000008b91c000 - 0x000000008ba00000 pattern 0000000000=
+000000
+[    0.000000]   0x000000009ff80000 - 0x00000000a6e00000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000a6e40000 - 0x00000000a6f00000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000a7000000 - 0x00000000a8000000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000ab350000 - 0x00000000b70cd000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000b70ebdd1 - 0x00000000b72ce000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000b7fff000 - 0x00000000b8000000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000b89e3400 - 0x00000000e0600000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000e0b00000 - 0x00000000e8800000 pattern 0000000000=
+000000
+[    0.000000]   0x00000000f1400000 - 0x0000000100000000 pattern 0000000000=
+000000
+[    0.000000]   0x0000000800000000 - 0x000000083af00000 pattern 0000000000=
+000000
+[    0.000000]   0x000000083b500000 - 0x000000083d300000 pattern 0000000000=
+000000
+[    0.000000]   0x0000000840000000 - 0x000000097f089d40 pattern 0000000000=
+000000
+[    0.000000]   0x000000097f089d6f - 0x000000097f089d70 pattern 0000000000=
+000000
+[    0.000000]   0x000000097f153ff8 - 0x000000097f154000 pattern 0000000000=
+000000
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index af07c642a526..7340d9f3c62b 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -2023,7 +2023,12 @@ static int iommufd_test_dmabuf_get(struct iommufd_ucmd *ucmd,
- 		goto err_free;
- 	}
- 
--	return dma_buf_fd(dmabuf, open_flags);
-+	rc = dma_buf_fd(dmabuf, open_flags);
-+	if (rc < 0) {
-+		dma_buf_put(dmabuf);
-+		return rc;
-+	}
-+	return rc;
- 
- err_free:
- 	kfree(priv->memory);
--- 
-2.34.1
+The device didn't crash at boot, and everything works as expected.
+For the record, the manufacturer has made changes in downstream device
+trees that state TVM is not used, so it's expected that the device works
+without QHEE and TVM regions.
+
+Regards,
+Esteban
 
