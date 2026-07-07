@@ -1,558 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012065.outbound.protection.outlook.com [52.101.53.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C15927A462
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 02:58:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783393103; cv=none; b=mDg0Bo90XMWlEM+vj74pDBruDqTRcmP2YJq+qCYwbK4KTcYswGWTv84Mr2Fq1eIVIu/ydIUuWdRhYL4q0DNqtAfRc5JCK1QEMZlgBXO4DU2h/8NFnZbE++SKOk3GCnuRDA9LaIolGAMSwwdoAavyKeZn3sqPU2AT42hyzCWmZ9o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783393103; c=relaxed/simple;
-	bh=V2jRVWHZbfeFwgax1y25wKJVVJoLJq2ltAZqKM90S7o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VPA/ZcrZpvbGQFKY3nnWd1wnyBpekIO3XD5RqxpTmnCNBCHfwA5PZ7WNGeplTjgRjkP0JAsuc+N43F5jow1Q4hERILw+1gGOMOolwCVLgrDtmFbsxUOC13z06+iOEYf0AqpvoGroVG82hV2TQoInk/aga5GMCpZ91Wlw/fOXHXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QUXPe2rB; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CFB613B293;
+	Tue,  7 Jul 2026 03:04:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783393492; cv=fail; b=I/6oRUx9PgFN5qBMspUmnLCLuyuzAJyP45HqLTSi3Ubn7ROF93Fe45Lm7Lo2ONf07P+HUxQUmebhRhl0N8O0qgIenYSeu3ej6pETK1tjFAPYYwbOFrqC/q+YSLPltfpIFbl4MlMZNGgT08s7JWRltdN3RWFnt/VCnABU7IHt7d4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783393492; c=relaxed/simple;
+	bh=I3rlGdAABKkIPPts6S0XPmHTXW4pLInjSRbEc3hh7ds=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hiGdSBpbvSBdTTyKYeUBx8t2bArXbkmjpgQtnFrSUzOhf64e93eKLTsjB3vqdf3ao/hgzm7edDr+NKvQI601CqXdOtS5mRT2kXGb8u2743DfmZ2Us0Au7jQUAqR7+QcssE3+TrLvT/BtY9M1y3Qdqff0bOXq6UONwugzDUq999s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IdEFwvIA; arc=fail smtp.client-ip=52.101.53.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QUXPe2rB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F7EB1F01559
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 02:58:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783393100;
-	bh=Ax31u46xpDxyaTuLwEuBRY1cpifK9C74G1BlVQX5smU=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=QUXPe2rBqrXlARdFtaCgyO3eYkZ0aQ5xhEpA66EyQJPrLIeVH+JS8vjfS8qDMGsc/
-	 c9trHT9ZimXEnmlCGnBVlqyEJT7EYvn6K2wXcfdmGD/HIrq8DLLM0XDdpamcTtz0dU
-	 BVTQgk0nV6C1HlK3aRTWuELsBV/JTLYGH0jD/2ZQMh1A7yaX8yUwo4XPyxVqVdkitG
-	 o65pKXj7I59+TnlHvhh5No7zAKyGZhlngOW+HnVDMiwkpDWKeWHFKcYTJc3k5DmVmE
-	 /XVgjamXJ8a0q4HpH8/ST+zj66s2PdP1j5dtAmMCxLRgJMk62+Tdrudfn7cKqKtCzF
-	 g4xrf+yozr9dA==
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-474560436c3so3505473f8f.0
-        for <iommu@lists.linux.dev>; Mon, 06 Jul 2026 19:58:20 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rqf4uS8tniO8DZOpPi9lj22anGSc12nWVUGYugSoUKMApP5Z4qOJLKNKpoLfTKp3LaIapuBpw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx1CNbM3WtTpOkQrDH4nOnOstjn6v67N5AG1fM6+WFW4mJS1VCP
-	5HaBx0s8h97YhLvGxd44nqbSovCHxXTr+Uai78fKpVh0UGHCqbdwURVZA5Z/jmE/gu+QYPQwpT+
-	qMAF1XHKs7RB6SFevGnIGs5j7H/jJ3tA=
-X-Received: by 2002:adf:f9cd:0:b0:474:9991:60d0 with SMTP id
- ffacd0b85a97d-47de6689bc8mr2192750f8f.12.1783393098489; Mon, 06 Jul 2026
- 19:58:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IdEFwvIA"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fs6aYqY+dk162HVUDxZWpC6EAgfPNpAvNFie0/nawZIU/Tmm6jPQAbfkS9cbj0s17waHY5qYZdNXmdX9B6fR6iZXoRiXzGUAsNk+gjcPp4l4u2u6572gY4R1ZvbfOcGwcAJyA+lBj6fpru/GPZrGZc3cI59somguk/k1d/7E5V1xF5rDQ0sxOiZjlpB0QoihLVG5AaH9CY6qf3gV6iaHSY8P9mXGhV89DKHJt+Y3bVve7y/aayXQCVRfEpyNJfPuRb2mKUgZK0QfxhsE8fahNXXSFcc8EXHC+OKPj/gkM1eNxyOIwKDoRYAeC2KVQvQ1u3ndLiI1jhs7EqHeyoF99g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Sun3Kf96aqA1fXDqI7EMlSK+E+bLJoN8dOhqqCwyWsI=;
+ b=GHzkpkZoSztEHxVbdDmHojRqhQEAEw3DEGFTlL/XzIdZ9IF7h7VuVWoqT2QYn6AlzQkBEhb0DIICgZJprtLTAd/58D2eAm6wYaTuLoEh5R3PBzSZCOPjTMRKIx8z7qq7B5hbmNAPAzRdUmDimCa4gfVzsVG6DzZn9W2+o2MGuO1HQQQPFghFL6jMEzFrD6HXGsmARlRNgkANs6D53MQGeEM2It54825pvrx394zqV9hxjC0VTRN/pmJTcwokkt6+HC8h0KBhwaKNxFsNsRn6CCmiAu+bMkObFSFPqKrrcx8D6IgxlRCAonYexKdxBS+XM1+NQpFALMUaNMQDPogeQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Sun3Kf96aqA1fXDqI7EMlSK+E+bLJoN8dOhqqCwyWsI=;
+ b=IdEFwvIA732REG8vYiq+byZAQe9VzxHQMVQqrewEGYZPoDp/9O0ytws2DFuIi0gmqjCKGTPpfJnHMVuijtjs9VxDP6fKnMJTkuAp5MvtyWAeiy0iVStFVecxrZf+EoyuyujqQenvW4TotSKANFazFFVoALrxI9qJ38mWxXg2G3saqNCmCWNSH1CdK3Shn7uKBvdCaeRzXEWruUe7WHU9k3LsjlpjgF+USjAIzm3iHh/vjBPFg4yLsiGBfb0lw4QC8UQAnyXL5KGCXX5sL0XX83rt0snH1saLEslHVNlzAfAYsSNMPpGROwqrebxtc83DKasv0qI4/Iz0MS5i48216A==
+Received: from BY3PR03CA0018.namprd03.prod.outlook.com (2603:10b6:a03:39a::23)
+ by IA4PR12MB9836.namprd12.prod.outlook.com (2603:10b6:208:5d0::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Tue, 7 Jul
+ 2026 03:04:47 +0000
+Received: from SJ1PEPF000026C6.namprd04.prod.outlook.com
+ (2603:10b6:a03:39a:cafe::8a) by BY3PR03CA0018.outlook.office365.com
+ (2603:10b6:a03:39a::23) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.181.12 via Frontend Transport; Tue, 7
+ Jul 2026 03:04:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ1PEPF000026C6.mail.protection.outlook.com (10.167.244.103) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.181.6 via Frontend Transport; Tue, 7 Jul 2026 03:04:46 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 6 Jul
+ 2026 20:04:34 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 6 Jul
+ 2026 20:04:33 -0700
+Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Mon, 6 Jul 2026 20:04:32 -0700
+Date: Mon, 6 Jul 2026 20:04:32 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>, "Pasha
+ Tatashin" <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, "Pranjal
+ Shrivastava" <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 1/8] iommu/arm-smmu-v3: Pass the parameters for the
+ invalidation in a struct
+Message-ID: <akxswI05If+23vyz@nvidia.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <1-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260630083833.1275837-1-zong.li@sifive.com> <20260630083833.1275837-2-zong.li@sifive.com>
- <CAJF2gTTHnv3-JqWEZFbxmvkqWERsgRz5ecZOFFnieTicAODtQw@mail.gmail.com>
- <CANXhq0p6g+cgky8rt0p0NZgyA7=q7ZQ3BSXwSUnTamvS_jc=rg@mail.gmail.com> <CANXhq0pP2SJk9N-3SG-A5FL5v9omFxLmLybKsAQowtt=5+gn5Q@mail.gmail.com>
-In-Reply-To: <CANXhq0pP2SJk9N-3SG-A5FL5v9omFxLmLybKsAQowtt=5+gn5Q@mail.gmail.com>
-From: Guo Ren <guoren@kernel.org>
-Date: Tue, 7 Jul 2026 10:58:06 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTRnepM8b=nD+Ge+mnWsc7W+YCh6i_W7NH+gpZ9cASWcUA@mail.gmail.com>
-X-Gm-Features: AVVi8Cd_v7-CAj85Yo7nE57yaNvXl187Hcpvh_nKvnxZu5BDT7RN0ei4itDixhQ
-Message-ID: <CAJF2gTRnepM8b=nD+Ge+mnWsc7W+YCh6i_W7NH+gpZ9cASWcUA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] drivers/perf: riscv-iommu: add risc-v iommu pmu driver
-To: Zong Li <zong.li@sifive.com>
-Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com, 
-	aou@eecs.berkeley.edu, alex@ghiti.fr, mark.rutland@arm.com, 
-	andrew.jones@oss.qualcomm.com, david.laight.linux@gmail.com, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C6:EE_|IA4PR12MB9836:EE_
+X-MS-Office365-Filtering-Correlation-Id: 17dbcc1c-3c36-4799-7e97-08dedbd48085
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|36860700016|23010399003|376014|7416014|18002099003|22082099003|3023799007|4143699003|11063799006|56012099006|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	4Yy3GkCS4IML4gnr4ft3jakD5lNhC4VRWvBKoRUuvog8teWcW/fHJAaPK+qisMWPnY+eTzI/gcEqh4camg1Ay1IR72ptKjP8f4FtVYjUjDmoSbYOtzNIRTGdNP61YpyQ4ZQNOzOxfxfL0qTa/dcrGh7+uKtDEzN8/F5bxtu1m42mcvbPsMbCxJcSgOx6GCOr1SPomO0Gia4KuQWDAjXeKbe7ZiEE+7fBFBeRJO9lyct5Nf+uEkOQgur6mLF44d6bVGjGP3SE2RXptwHe3RGvYQmA1kW9Rub8aO/gZZQwc3R9JlflmjHxReZ+I9DT5+v9ktpqUtsAL4B9WtiLxvkxO0o1F2xTpcSUVN6jj5ySWoCjPIRTixnD587y2axpj8idBQXAAuhJF8vS2w+2Ck9CaDcpKImB+9n+9qD01Y4uMcZzFdHDBdrA9C7GiZocEAsjzDUE3xMkPt9vBaDuJN/nI862STdHpXpAiQD7hOyJ5aQXSIa6zt2XMyIvhpjgPLPivqCzPcvwwBSPh10ObMPDxIkZ9V1DydzmB0Lyap1Yfxt5HAP9ul5ulfvnOzOTH824tsiRJzkgMtBtB0pibdLHXo/X2AyWEPit7oi67oP3GFI3zTPeTC14vHUM6/HmCyDXL7sz3iiYDOq7edZZt7ftTwO/wjz6tamtqhTgoceR9jxpiNkmgiOSYzZFAWBo5fEvf2VF3f6gJYltKbm1XQdqLQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700016)(23010399003)(376014)(7416014)(18002099003)(22082099003)(3023799007)(4143699003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Lf0U0V3Yyt2vGlikM08Qhx5YRmb69GagL/xq5olYdNVpkrsKRdrSRSMZYWcQQ6+QghK6vwj+HdrVR6egxLjq0qfoHXaZQmg9knIan2Ae5Knsh0oX8eO9TUhsT8Q7O4iY+GN3yQqMmqFWckcZ82ghzAHOKeoCTxq/fS+UmyuTz54AFybBnjbtKDyXfWPeLWvZ+Tv5h7WxEI75UXaj4CFJk6AJmP1qbNYiQ6c6hDSoky9SSSQr95/seg2VHqC1Y0kCXmqVeJ4e9K8fz6DWLk3JDa4sAA8g2jlHH2G+DcDe99TcwftTZvAizmENLqOzfnU/tr4XIzhd9W9iyC4ZuvhD/Udu6jGTIT0tUE/WEENdAX0eHiHjITh9pyrwL+eibQtJP8H094fNzc87wrl5u6zgE5KDzRqKTojQ8hoIb0MrtAOkZhxudIhh0KpuZdoTOA2q
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2026 03:04:46.8647
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17dbcc1c-3c36-4799-7e97-08dedbd48085
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF000026C6.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA4PR12MB9836
 
-On Tue, Jul 7, 2026 at 10:01=E2=80=AFAM Zong Li <zong.li@sifive.com> wrote:
->
-> On Fri, Jul 3, 2026 at 9:36=E2=80=AFAM Zong Li <zong.li@sifive.com> wrote=
-:
-> >
-> > On Tue, Jun 30, 2026 at 9:17=E2=80=AFPM Guo Ren <guoren@kernel.org> wro=
-te:
-> > >
-> > > Hi Zong Li,
-> > >
-> > > On Tue, Jun 30, 2026 at 4:38=E2=80=AFPM Zong Li <zong.li@sifive.com> =
-wrote:
-> > > >
-> > > > Add a new driver to support the RISC-V IOMMU PMU. This is an auxili=
-ary
-> > > > device driver created by the parent RISC-V IOMMU driver.
-> > > >
-> > > > The RISC-V IOMMU PMU separates the cycle counter from the event cou=
-nters.
-> > > > The cycle counter is not associated with iohpmevt0, so a software-d=
-efined
-> > > > cycle event is required for the perf subsystem.
-> > > >
-> > > > The number and width of the counters are hardware-implemented and m=
-ust
-> > > > be detected at runtime.
-> > > >
-> > > > The performance monitor provides counters with filtering support to
-> > > > collect events for specific device ID/process ID, or GSCID/PSCID.
-> > > >
-> > > > PMU-related definitions are moved into the perf driver, where they =
-are
-> > > > used exclusively.
-> > > >
-> > > > Suggested-by: David Laight <david.laight.linux@gmail.com>
-> > > > Suggested-by: Guo Ren <guoren@kernel.org>
-> > > > Link: https://lore.kernel.org/linux-riscv/20260618143634.7f3dd6c5@p=
-umpkin/
-> > > > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > > > ---
-> > > >  drivers/iommu/riscv/iommu-bits.h |  61 ---
-> > > >  drivers/perf/Kconfig             |  12 +
-> > > >  drivers/perf/Makefile            |   1 +
-> > > >  drivers/perf/riscv_iommu_pmu.c   | 703 +++++++++++++++++++++++++++=
-++++
-> > > >  4 files changed, 716 insertions(+), 61 deletions(-)
-> > > >  create mode 100644 drivers/perf/riscv_iommu_pmu.c
-> > > >
-> > > > diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv=
-/iommu-bits.h
-> > > > index f2ef9bd3cde9..6b5de913a032 100644
-> > > > --- a/drivers/iommu/riscv/iommu-bits.h
-> > > > +++ b/drivers/iommu/riscv/iommu-bits.h
-> > > > @@ -192,67 +192,6 @@ enum riscv_iommu_ddtp_modes {
-> > > >  #define RISCV_IOMMU_IPSR_PMIP          BIT(RISCV_IOMMU_INTR_PM)
-> > > >  #define RISCV_IOMMU_IPSR_PIP           BIT(RISCV_IOMMU_INTR_PQ)
-> > > >
-> > > > -/* 5.19 Performance monitoring counter overflow status (32bits) */
-> > > > -#define RISCV_IOMMU_REG_IOCOUNTOVF     0x0058
-> > > > -#define RISCV_IOMMU_IOCOUNTOVF_CY      BIT(0)
-> > > > -#define RISCV_IOMMU_IOCOUNTOVF_HPM     GENMASK_ULL(31, 1)
-> > > > -
-> > > > -/* 5.20 Performance monitoring counter inhibits (32bits) */
-> > > > -#define RISCV_IOMMU_REG_IOCOUNTINH     0x005C
-> > > > -#define RISCV_IOMMU_IOCOUNTINH_CY      BIT(0)
-> > > > -#define RISCV_IOMMU_IOCOUNTINH_HPM     GENMASK(31, 1)
-> > > > -
-> > > > -/* 5.21 Performance monitoring cycles counter (64bits) */
-> > > > -#define RISCV_IOMMU_REG_IOHPMCYCLES     0x0060
-> > > > -#define RISCV_IOMMU_IOHPMCYCLES_COUNTER        GENMASK_ULL(62, 0)
-> > > > -#define RISCV_IOMMU_IOHPMCYCLES_OF     BIT_ULL(63)
-> > > > -
-> > > > -/* 5.22 Performance monitoring event counters (31 * 64bits) */
-> > > > -#define RISCV_IOMMU_REG_IOHPMCTR_BASE  0x0068
-> > > > -#define RISCV_IOMMU_REG_IOHPMCTR(_n)   (RISCV_IOMMU_REG_IOHPMCTR_B=
-ASE + ((_n) * 0x8))
-> > > > -
-> > > > -/* 5.23 Performance monitoring event selectors (31 * 64bits) */
-> > > > -#define RISCV_IOMMU_REG_IOHPMEVT_BASE  0x0160
-> > > > -#define RISCV_IOMMU_REG_IOHPMEVT(_n)   (RISCV_IOMMU_REG_IOHPMEVT_B=
-ASE + ((_n) * 0x8))
-> > > > -#define RISCV_IOMMU_IOHPMEVT_EVENTID   GENMASK_ULL(14, 0)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_DMASK     BIT_ULL(15)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_PID_PSCID GENMASK_ULL(35, 16)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_DID_GSCID GENMASK_ULL(59, 36)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_PV_PSCV   BIT_ULL(60)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_DV_GSCV   BIT_ULL(61)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_IDT       BIT_ULL(62)
-> > > > -#define RISCV_IOMMU_IOHPMEVT_OF                BIT_ULL(63)
-> > > > -
-> > > > -/* Number of defined performance-monitoring event selectors */
-> > > > -#define RISCV_IOMMU_IOHPMEVT_CNT       31
-> > > > -
-> > > > -/**
-> > > > - * enum riscv_iommu_hpmevent_id - Performance-monitoring event ide=
-ntifier
-> > > > - *
-> > > > - * @RISCV_IOMMU_HPMEVENT_INVALID: Invalid event, do not count
-> > > > - * @RISCV_IOMMU_HPMEVENT_URQ: Untranslated requests
-> > > > - * @RISCV_IOMMU_HPMEVENT_TRQ: Translated requests
-> > > > - * @RISCV_IOMMU_HPMEVENT_ATS_RQ: ATS translation requests
-> > > > - * @RISCV_IOMMU_HPMEVENT_TLB_MISS: TLB misses
-> > > > - * @RISCV_IOMMU_HPMEVENT_DD_WALK: Device directory walks
-> > > > - * @RISCV_IOMMU_HPMEVENT_PD_WALK: Process directory walks
-> > > > - * @RISCV_IOMMU_HPMEVENT_S_VS_WALKS: First-stage page table walks
-> > > > - * @RISCV_IOMMU_HPMEVENT_G_WALKS: Second-stage page table walks
-> > > > - * @RISCV_IOMMU_HPMEVENT_MAX: Value to denote maximum Event IDs
-> > > > - */
-> > > > -enum riscv_iommu_hpmevent_id {
-> > > > -       RISCV_IOMMU_HPMEVENT_INVALID    =3D 0,
-> > > > -       RISCV_IOMMU_HPMEVENT_URQ        =3D 1,
-> > > > -       RISCV_IOMMU_HPMEVENT_TRQ        =3D 2,
-> > > > -       RISCV_IOMMU_HPMEVENT_ATS_RQ     =3D 3,
-> > > > -       RISCV_IOMMU_HPMEVENT_TLB_MISS   =3D 4,
-> > > > -       RISCV_IOMMU_HPMEVENT_DD_WALK    =3D 5,
-> > > > -       RISCV_IOMMU_HPMEVENT_PD_WALK    =3D 6,
-> > > > -       RISCV_IOMMU_HPMEVENT_S_VS_WALKS =3D 7,
-> > > > -       RISCV_IOMMU_HPMEVENT_G_WALKS    =3D 8,
-> > > > -       RISCV_IOMMU_HPMEVENT_MAX        =3D 9
-> > > > -};
-> > > > -
-> > > >  /* 5.24 Translation request IOVA (64bits) */
-> > > >  #define RISCV_IOMMU_REG_TR_REQ_IOVA     0x0258
-> > > >  #define RISCV_IOMMU_TR_REQ_IOVA_VPN    GENMASK_ULL(63, 12)
-> > > > diff --git a/drivers/perf/Kconfig b/drivers/perf/Kconfig
-> > > > index 245e7bb763b9..8cce6c2ea626 100644
-> > > > --- a/drivers/perf/Kconfig
-> > > > +++ b/drivers/perf/Kconfig
-> > > > @@ -105,6 +105,18 @@ config RISCV_PMU_SBI
-> > > >           full perf feature support i.e. counter overflow, privileg=
-e mode
-> > > >           filtering, counter configuration.
-> > > >
-> > > > +config RISCV_IOMMU_PMU
-> > > > +       depends on RISCV || COMPILE_TEST
-> > > > +       depends on RISCV_IOMMU
-> > > > +       bool "RISC-V IOMMU Hardware Performance Monitor"
-> > > > +       default y
-> > > > +       help
-> > > > +         Say Y if you want to use the RISC-V IOMMU performance mon=
-itor
-> > > > +         implementation. The performance monitor is an optional ha=
-rdware
-> > > > +         feature, and whether it is actually enabled depends on IO=
-MMU
-> > > > +         hardware support. If the underlying hardware does not imp=
-lement
-> > > > +         the PMU, this option will have no effect.
-> > > > +
-> > > >  config STARFIVE_STARLINK_PMU
-> > > >         depends on ARCH_STARFIVE || COMPILE_TEST
-> > > >         depends on 64BIT
-> > > > diff --git a/drivers/perf/Makefile b/drivers/perf/Makefile
-> > > > index eb8a022dad9a..90c75f3c0ac1 100644
-> > > > --- a/drivers/perf/Makefile
-> > > > +++ b/drivers/perf/Makefile
-> > > > @@ -20,6 +20,7 @@ obj-$(CONFIG_QCOM_L3_PMU) +=3D qcom_l3_pmu.o
-> > > >  obj-$(CONFIG_RISCV_PMU) +=3D riscv_pmu.o
-> > > >  obj-$(CONFIG_RISCV_PMU_LEGACY) +=3D riscv_pmu_legacy.o
-> > > >  obj-$(CONFIG_RISCV_PMU_SBI) +=3D riscv_pmu_sbi.o
-> > > > +obj-$(CONFIG_RISCV_IOMMU_PMU) +=3D riscv_iommu_pmu.o
-> > > >  obj-$(CONFIG_STARFIVE_STARLINK_PMU) +=3D starfive_starlink_pmu.o
-> > > >  obj-$(CONFIG_THUNDERX2_PMU) +=3D thunderx2_pmu.o
-> > > >  obj-$(CONFIG_XGENE_PMU) +=3D xgene_pmu.o
-> > > > diff --git a/drivers/perf/riscv_iommu_pmu.c b/drivers/perf/riscv_io=
-mmu_pmu.c
-> > > > new file mode 100644
-> > > > index 000000000000..2e856289ddc9
-> > > > --- /dev/null
-> > > > +++ b/drivers/perf/riscv_iommu_pmu.c
-> > > > @@ -0,0 +1,703 @@
-> > > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > > +/*
-> > > > + * Copyright (C) 2026 SiFive
-> > > > + *
-> > > > + * Authors
-> > > > + *     Zong Li <zong.li@sifive.com>
-> > > > + */
-> > > > +
-> > > > +#include <linux/auxiliary_bus.h>
-> > > > +#include <linux/io-64-nonatomic-hi-lo.h>
-> > > > +#include <linux/perf_event.h>
-> > > > +
-> > > > +#include "../iommu/riscv/iommu.h"
-> > > > +
-> > > > +/* 5.19 Performance monitoring counter overflow status (32bits) */
-> > > > +#define RISCV_IOMMU_REG_IOCOUNTOVF     0x0058
-> > > > +#define RISCV_IOMMU_IOCOUNTOVF_CY      BIT(0)
-> > > > +#define RISCV_IOMMU_IOCOUNTOVF_HPM     GENMASK_ULL(31, 1)
-> > > > +
-> > > > +/* 5.20 Performance monitoring counter inhibits (32bits) */
-> > > > +#define RISCV_IOMMU_REG_IOCOUNTINH     0x005C
-> > > > +#define RISCV_IOMMU_IOCOUNTINH_CY      BIT(0)
-> > > > +#define RISCV_IOMMU_IOCOUNTINH_HPM     GENMASK(31, 0)
-> > > > +
-> > > > +/* 5.21 Performance monitoring cycles counter (64bits) */
-> > > > +#define RISCV_IOMMU_REG_IOHPMCYCLES    0x0060
-> > > > +#define RISCV_IOMMU_IOHPMCYCLES_COUNTER        GENMASK_ULL(62, 0)
-> > > > +#define RISCV_IOMMU_IOHPMCYCLES_OF     BIT_ULL(63)
-> > > > +#define RISCV_IOMMU_REG_IOHPMCTR(_n)   (RISCV_IOMMU_REG_IOHPMCYCLE=
-S + ((_n) * 0x8))
-> > > > +
-> > > > +/* 5.22 Performance monitoring event counters (31 * 64bits) */
-> > > > +#define RISCV_IOMMU_REG_IOHPMCTR_BASE  0x0068
-> > > > +#define RISCV_IOMMU_IOHPMCTR_COUNTER   GENMASK_ULL(63, 0)
-> > > > +
-> > > > +/* 5.23 Performance monitoring event selectors (31 * 64bits) */
-> > > > +#define RISCV_IOMMU_REG_IOHPMEVT_BASE  0x0160
-> > > > +#define RISCV_IOMMU_REG_IOHPMEVT(_n)   (RISCV_IOMMU_REG_IOHPMEVT_B=
-ASE + ((_n) * 0x8))
-> > > > +#define RISCV_IOMMU_IOHPMEVT_EVENTID   GENMASK_ULL(14, 0)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_DMASK     BIT_ULL(15)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_PID_PSCID GENMASK_ULL(35, 16)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_DID_GSCID GENMASK_ULL(59, 36)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_PV_PSCV   BIT_ULL(60)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_DV_GSCV   BIT_ULL(61)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_IDT       BIT_ULL(62)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_OF                BIT_ULL(63)
-> > > > +#define RISCV_IOMMU_IOHPMEVT_EVENT     GENMASK_ULL(62, 0)
-> > > > +
-> > > > +/* The total number of counters is 31 event counters plus 1 cycle =
-counter */
-> > > > +#define RISCV_IOMMU_HPM_COUNTER_NUM    32
-> > > > +
-> > > > +static int cpuhp_state;
-> > > > +
-> > > > +/**
-> > > > + * enum riscv_iommu_hpmevent_id - Performance-monitoring event ide=
-ntifier
-> > > > + *
-> > > > + * @RISCV_IOMMU_HPMEVENT_CYCLE: Clock cycle counter
-> > > > + * @RISCV_IOMMU_HPMEVENT_URQ: Untranslated requests
-> > > > + * @RISCV_IOMMU_HPMEVENT_TRQ: Translated requests
-> > > > + * @RISCV_IOMMU_HPMEVENT_ATS_RQ: ATS translation requests
-> > > > + * @RISCV_IOMMU_HPMEVENT_TLB_MISS: TLB misses
-> > > > + * @RISCV_IOMMU_HPMEVENT_DD_WALK: Device directory walks
-> > > > + * @RISCV_IOMMU_HPMEVENT_PD_WALK: Process directory walks
-> > > > + * @RISCV_IOMMU_HPMEVENT_S_VS_WALKS: First-stage page table walks
-> > > > + * @RISCV_IOMMU_HPMEVENT_G_WALKS: Second-stage page table walks
-> > > > + * @RISCV_IOMMU_HPMEVENT_MAX: Value to denote maximum Event IDs
-> > > > + *
-> > > > + * The specification does not define an event ID for counting the
-> > > > + * number of clock cycles, meaning there is no associated 'iohpmev=
-t0'.
-> > > > + * Event ID 0 is an invalid event and does not overlap with any va=
-lid
-> > > > + * event ID. Let's repurpose ID 0 as the cycle for perf, the cycle
-> > > > + * event is not actually written into any register, it serves sole=
-ly
-> > > > + * as an identifier.
-> > > > + */
-> > > > +enum riscv_iommu_hpmevent_id {
-> > > > +       RISCV_IOMMU_HPMEVENT_CYCLE      =3D 0,
-> > > > +       RISCV_IOMMU_HPMEVENT_URQ        =3D 1,
-> > > > +       RISCV_IOMMU_HPMEVENT_TRQ        =3D 2,
-> > > > +       RISCV_IOMMU_HPMEVENT_ATS_RQ     =3D 3,
-> > > > +       RISCV_IOMMU_HPMEVENT_TLB_MISS   =3D 4,
-> > > > +       RISCV_IOMMU_HPMEVENT_DD_WALK    =3D 5,
-> > > > +       RISCV_IOMMU_HPMEVENT_PD_WALK    =3D 6,
-> > > > +       RISCV_IOMMU_HPMEVENT_S_VS_WALKS =3D 7,
-> > > > +       RISCV_IOMMU_HPMEVENT_G_WALKS    =3D 8,
-> > > > +       RISCV_IOMMU_HPMEVENT_MAX        =3D 9
-> > > > +};
-> > > > +
-> > > > +struct riscv_iommu_pmu {
-> > > > +       struct pmu pmu;
-> > > > +       struct hlist_node node;
-> > > > +       void __iomem *reg;
-> > > > +       unsigned int on_cpu;
-> > > > +       int num_counters;
-> > > > +       u64 cycle_cntr_mask;
-> > > > +       u64 event_cntr_mask;
-> > > > +       struct perf_event *events[RISCV_IOMMU_HPM_COUNTER_NUM];
-> > > > +       DECLARE_BITMAP(used_counters, RISCV_IOMMU_HPM_COUNTER_NUM);
-> > > > +       u32 hi_prev[RISCV_IOMMU_HPM_COUNTER_NUM];
-> > > > +       u32 lo_prev[RISCV_IOMMU_HPM_COUNTER_NUM];
-> > > > +};
-> > > > +
-> > > > +#define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_=
-pmu, pmu))
-> > > > +
-> > > > +#define RISCV_IOMMU_PMU_ATTR_EXTRACTOR(_name, _mask)              =
-     \
-> > > > +       static inline u32 get_##_name(struct perf_event *event)    =
-     \
-> > > > +       {                                                          =
-     \
-> > > > +               return FIELD_GET(_mask, event->attr.config);       =
-     \
-> > > > +       }                                                          =
-     \
-> > > > +
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(event, RISCV_IOMMU_IOHPMEVT_EVENTID=
-);
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(partial_matching, RISCV_IOMMU_IOHPM=
-EVT_DMASK);
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(pid_pscid, RISCV_IOMMU_IOHPMEVT_PID=
-_PSCID);
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(did_gscid, RISCV_IOMMU_IOHPMEVT_DID=
-_GSCID);
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_pid_pscid, RISCV_IOMMU_IOHPM=
-EVT_PV_PSCV);
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_did_gscid, RISCV_IOMMU_IOHPM=
-EVT_DV_GSCV);
-> > > > +RISCV_IOMMU_PMU_ATTR_EXTRACTOR(filter_id_type, RISCV_IOMMU_IOHPMEV=
-T_IDT);
-> > > > +
-> > > > +/* Formats */
-> > > > +PMU_FORMAT_ATTR(event,            "config:0-14");
-> > > > +PMU_FORMAT_ATTR(partial_matching, "config:15");
-> > > > +PMU_FORMAT_ATTR(pid_pscid,        "config:16-35");
-> > > > +PMU_FORMAT_ATTR(did_gscid,        "config:36-59");
-> > > > +PMU_FORMAT_ATTR(filter_pid_pscid, "config:60");
-> > > > +PMU_FORMAT_ATTR(filter_did_gscid, "config:61");
-> > > > +PMU_FORMAT_ATTR(filter_id_type,   "config:62");
-> > > > +
-> > > > +static struct attribute *riscv_iommu_pmu_formats[] =3D {
-> > > > +       &format_attr_event.attr,
-> > > > +       &format_attr_partial_matching.attr,
-> > > > +       &format_attr_pid_pscid.attr,
-> > > > +       &format_attr_did_gscid.attr,
-> > > > +       &format_attr_filter_pid_pscid.attr,
-> > > > +       &format_attr_filter_did_gscid.attr,
-> > > > +       &format_attr_filter_id_type.attr,
-> > > > +       NULL,
-> > > > +};
-> > > > +
-> > > > +static const struct attribute_group riscv_iommu_pmu_format_group =
-=3D {
-> > > > +       .name =3D "format",
-> > > > +       .attrs =3D riscv_iommu_pmu_formats,
-> > > > +};
-> > > > +
-> > > > +/* Events */
-> > > > +static ssize_t riscv_iommu_pmu_event_show(struct device *dev,
-> > > > +                                         struct device_attribute *=
-attr,
-> > > > +                                         char *page)
-> > > > +{
-> > > > +       struct perf_pmu_events_attr *pmu_attr;
-> > > > +
-> > > > +       pmu_attr =3D container_of(attr, struct perf_pmu_events_attr=
-, attr);
-> > > > +
-> > > > +       return sysfs_emit(page, "event=3D0x%02llx\n", pmu_attr->id)=
-;
-> > > > +}
-> > > > +
-> > > > +#define RISCV_IOMMU_PMU_EVENT_ATTR(name, id)                   \
-> > > > +       PMU_EVENT_ATTR_ID(name, riscv_iommu_pmu_event_show, id)
-> > > > +
-> > > > +static struct attribute *riscv_iommu_pmu_events[] =3D {
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(cycle, RISCV_IOMMU_HPMEVENT_CYCL=
-E),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(untranslated_req, RISCV_IOMMU_HP=
-MEVENT_URQ),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(translated_req, RISCV_IOMMU_HPME=
-VENT_TRQ),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(ats_trans_req, RISCV_IOMMU_HPMEV=
-ENT_ATS_RQ),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(tlb_miss, RISCV_IOMMU_HPMEVENT_T=
-LB_MISS),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(ddt_walks, RISCV_IOMMU_HPMEVENT_=
-DD_WALK),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(pdt_walks, RISCV_IOMMU_HPMEVENT_=
-PD_WALK),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(s_vs_pt_walks, RISCV_IOMMU_HPMEV=
-ENT_S_VS_WALKS),
-> > > > +       RISCV_IOMMU_PMU_EVENT_ATTR(g_pt_walks, RISCV_IOMMU_HPMEVENT=
-_G_WALKS),
-> > > > +       NULL,
-> > > > +};
-> > > > +
-> > > > +static const struct attribute_group riscv_iommu_pmu_events_group =
-=3D {
-> > > > +       .name =3D "events",
-> > > > +       .attrs =3D riscv_iommu_pmu_events,
-> > > > +};
-> > > > +
-> > > > +/* cpumask */
-> > > > +static ssize_t riscv_iommu_cpumask_show(struct device *dev,
-> > > > +                                       struct device_attribute *at=
-tr,
-> > > > +                                       char *buf)
-> > > > +{
-> > > > +       struct riscv_iommu_pmu *pmu =3D to_riscv_iommu_pmu(dev_get_=
-drvdata(dev));
-> > > > +
-> > > > +       return cpumap_print_to_pagebuf(true, buf, cpumask_of(pmu->o=
-n_cpu));
-> > > > +}
-> > > > +
-> > > > +static struct device_attribute riscv_iommu_cpumask_attr =3D
-> > > > +       __ATTR(cpumask, 0444, riscv_iommu_cpumask_show, NULL);
-> > > > +
-> > > > +static struct attribute *riscv_iommu_cpumask_attrs[] =3D {
-> > > > +       &riscv_iommu_cpumask_attr.attr,
-> > > > +       NULL
-> > > > +};
-> > > > +
-> > > > +static const struct attribute_group riscv_iommu_pmu_cpumask_group =
-=3D {
-> > > > +       .attrs =3D riscv_iommu_cpumask_attrs,
-> > > > +};
-> > > > +
-> > > > +static const struct attribute_group *riscv_iommu_pmu_attr_grps[] =
-=3D {
-> > > > +       &riscv_iommu_pmu_cpumask_group,
-> > > > +       &riscv_iommu_pmu_format_group,
-> > > > +       &riscv_iommu_pmu_events_group,
-> > > > +       NULL,
-> > > > +};
-> > > > +
-> > > > +/* PMU Operations */
-> > > > +static void riscv_iommu_pmu_set_counter(struct riscv_iommu_pmu *pm=
-u, u32 idx,
-> > > > +                                       u64 value)
-> > > > +{
-> > > > +       u64 counter_mask =3D idx ? pmu->event_cntr_mask : pmu->cycl=
-e_cntr_mask;
-> > > > +
-> > > > +       writeq(value & counter_mask, pmu->reg + RISCV_IOMMU_REG_IOH=
-PMCTR(idx));
-> > > #include <include/linux/io-64-nonatomic-lo-hi.h>
-> > > lo_hi_writeq(value & counter_mask, pmu->reg + RISCV_IOMMU_REG_IOHPMCT=
-R(idx));
-> > >
-> > > For better compatibility, it is recommended to use writel and readl
-> > > instead of readq and writeq. Sorry for overlooking this last time =E2=
-=80=94
-> > > could you please make the change again?
-> > > In the future, your driver could support RV32 directly, as the RISC-V
-> > > IOMMU specification also supports RV32; it's just that the current
-> > > RISC-V IOMMU driver's Kconfig depends on 64BIT.
-> >
-> > Hi Guo,
-> > Thank you for your review. In my implementation for RV32, readq and
-> > writeq are replaced by hi_lo_readq and hi_lo_writeq (from
-> > io-64-nonatomic-hi-lo.h). So, supporting RV32 should be fine.
-> > However, as you mentioned before: 64-bit access might be undefined on
-> > some hardware. To be safe and compatible with all hardware, we should
-> > use 32-bit access instead of 64-bit access.
-> > I will modify them in the next version
-> >
-> > I'd like to make sure I didn't miss anything important. My original
-> > code uses the "hi-lo" order. May I ask if there is a specific reason
-> > why you prefer the "lo-hi" order?
-> > Thanks
-> >
->
-> Hi all,
-> I have been thinking more about the IOMMU register access behavior and
-> would like to share my thoughts regarding the lo-hi vs. hi-lo access
-> order.
->
-> It seems to me that the correct 32-bit write order is strictly tied to
-> the underlying hardware implementation. From the software side, we
-> have no way of knowing whether a specific vendor designed their
-> hardware with a low-part trigger or a high-part trigger. Therefore,
-> hardcoding a fixed 32-bit write sequence could result in compatibility
-> issues across different hardware designs.
->
-> Revisiting the spec regarding the UNSPECIFIED 8-byte atomic access,
-> this might imply that the hardware itself will handle the split into
-> two 4-byte accesses and internally manage its own trigger logic.
-> Because of this, for RV64 systems, software might simply use standard
-> 8-byte writes (e.g., writeq). Delegating the access handling to the
-> hardware is likely the best way to maximize compatibility across all
-> vendor implementations. For the counter reading strategy (hi-lo-hi
-> pattern), I completely agree with using the hi-lo-hi pattern when
-> reading the PMU counters. Since this is a read operation and does not
-> alter hardware state.
->
-> For RV32 support, we inevitably face the 32-bit access splitting
-> issue. For the RV32 case, maybe we can assume the hi-lo order as the
-> default fallback, because the IOMMU specification uses this sequence
-> as example: "an access may appear, internally to the IOMMU, as if two
-> separate 4 byte accesses - first to the high half and second to the
-> low half - were performed.". Or do you prefer to use the same
-> assumption (hi-lo pattern) in RV64 as well?
->
-> Please let me know what you think about this.
->
-> Thanks
-
-You're right, RV32 is not a valid argument here =E2=80=94 my wording was
-incorrect. Thanks for pointing that out.
-Also, I have no strong preference for lo-hi; that was just a careless
-copy-paste on my part. I agree hi-lo is the right choice.
-
-Thanks again for your great work.
-
---=20
-Best Regards
- Guo Ren
+On Mon, Jul 06, 2026 at 01:26:38PM -0300, Jason Gunthorpe wrote:
+> These parameters go to a lot of different functions and the next
+> patches will add more. Put them into a struct to keep things tidy.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+ 
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
