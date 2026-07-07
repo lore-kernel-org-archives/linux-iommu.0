@@ -1,165 +1,355 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD1CF3D88FA
-	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 10:12:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 909703E0C7A
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 10:20:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783419171; cv=none; b=aQZEWOl34QKSrR3ATrX7NZS+PJ9ELTOjnjd61Sq0zmNZz3Opz1RZZH96nySvj+CDawlywauniU0chiFtrmhCXXinQzbmZaOLp+vd2Q8Em6Oc4P27eQCsXUTewmc24/30Pmyuw2OZC8CKT6YhEc8y74MKq2W1ysRtNssuwHwjsUM=
+	t=1783419644; cv=none; b=bO6VEmIposig3jGO3EyXOekfWUGMK7O/Fvb3SPO+WIZyroQSiEgpTNeV72ENXoEy0UKQ9FBZyCkK/bS0cqsT8V0tgSTGi9iXFadA6hHtrXsuvDTzoo02g2nUYlRH1LmitCXjkOGx3abeRqA8JqWGw7tD0L6QJWwF3XLT2RalZjg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783419171; c=relaxed/simple;
-	bh=ESxyEB/tDsAO+oi+pSDFTqjZIxjuG8H3dDWNdmAQcac=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oNgJBDv9cWNTnjkzVJtTgoTjF2l0K0YgL7v8wxp9FUJG4cgSc9ZD9pVHdavIcuHx25truAWFteAeax1Z2LRyYFlc3XIAWRoS75hU7Ayjp/KdHWoAnfv+vMZK0BJZ66qUsbCilMRYKA//GNLASM4iaEGQLkvy7Ec8QXJQ7ugR2ZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=VpA58R8J; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=HNA1cg0Y; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1783419644; c=relaxed/simple;
+	bh=VCE9WS4zG0XYGDT6yveV9PjHBy3Cmcgk0yB8h8VkIU4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=rB+/k3ADkmzpL7Sz6KBTFIjxz9mNzm6xqqOnSsSbFdbD33VOL1FBrI08RZFFVUT3r7TFXAjESWeNBEG+NXltAuR/vCCM8dMGn0vK+24OskO9/cJ0eSizrisVsw5LP8J9Bx6OKqhn39lUyL6dwpQ1Yyv4ewKX40tNdNzmcrQL+yU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=vJW3jw9F; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="VpA58R8J";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="HNA1cg0Y"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6678Dboq3219300
-	for <iommu@lists.linux.dev>; Tue, 7 Jul 2026 10:12:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ByMXdijkHl9hu7GM8jt2AMzJWtpO0+9CnetiEbvOVzc=; b=VpA58R8JiSlVbUdY
-	S6MHesUXfkwIBo3HzMez6adaN2gWzDQNMFVx+ZUl6tnES3W6Tj7pt6rjlanvjnT2
-	o/GnGIDyN1LLdP8ZAQjUn5H9g+jqKQbT/8WiEiA5LlB8OHGlELSDOY7sXwVeBuxM
-	4EIFlwi4NOfosfmkcncRQYCNxqXSP+S3tGmodsagdfWod+a+tOVUPuh34/QB30AE
-	Svx22pQiSPcvtll2QpJgf6rGYIdQGtYXyJ1ve+H4FGtlD5ZTHp/zXAGmt8JO4v3a
-	sa++8xf7Ka1c5Cwq8TOl+nzZsUl2njze64TKgSiVxSwg5mWPewNTIrc0pgltRBFb
-	Q3pCtw==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f8wep0jvh-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 10:12:49 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-51c1e777a15so7618811cf.2
-        for <iommu@lists.linux.dev>; Tue, 07 Jul 2026 03:12:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783419169; x=1784023969; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ByMXdijkHl9hu7GM8jt2AMzJWtpO0+9CnetiEbvOVzc=;
-        b=HNA1cg0YKgKHiISwd554vL1pYPo5+8jSU44Z2ZZHbNdh34c1UCfHPtZwWWi0ZQvuMk
-         o4H32IhFKvsnbkY8s53jled9w8l0l2gRSAszlRo0FXqXDyQbZfP2bV+qP9JO/s4XyKe8
-         DyR9ntCmSVEgjGnUcYaDsEneQOjKusnMOQQilSq+ywTdSgX7o0Igk+VghrUqvGbkkV3L
-         1mkrzhEQwspAsztPX7RO7QgiPREsJ+GiuBbX8ipNxp4f7gj5HpL7cl5OyNhjz9gx4ws9
-         0NsoD5ivBWNKa4MTaH3mjk+ij9YfduoZ7QM09FaxjnZv35IEShs6Sg3A5tkyNwOQIGCZ
-         D7LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783419169; x=1784023969;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ByMXdijkHl9hu7GM8jt2AMzJWtpO0+9CnetiEbvOVzc=;
-        b=AcLWK7hDELS95jsOW+YDHa19VMERQJtLc43kHkzCt56wFgq+caL57wkpb9+AZaiOHT
-         ldiM4w2ZAZlZkoryOj6atgGpOGEdIl8KQqBEBkU61JxRerERjQU6WsDODxf24X3iCnVc
-         D/4Q11fav7ebeA3ucylp+vw830AhgyQZZyoRR13F+OVG+Qctxdc58xCwZTcgvq2hSt86
-         ZGi+oQr9+9k092EQRgp5OJLBOKPDkebTkcmqXxpUOLpvQ71AFVzGBCsG0QStTpp39ZQm
-         1/46MFT+TZr3Wx5JhbHFZot9MYRd2mf6aAHjn2U+nUpUYUDWiNtIr2AcUrCnLgUoOmfY
-         QeuQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rp4peNaSjNcr6WVS2vtPbNFyPOFedQSJD3CEQHC26SbpPXXN5T+wQGC/tIBBoemd2wLR1G/jA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzP4U37KdUlf4PAhyBhc8k2VFkGNlwdwxS3T5QGIkxeqR8QQ9it
-	Al+c1oHc5Xy11fWPWJ9YMdUQtXoxpZWBrFEeLgTD05ApL0MfV5TkK6whnw3pX3d4CR4PNFlwnCy
-	ZsdN92NFJ3rbo0OHWZ2Mn5K4GODgxY6U12HbZJAKrnwcwDuHPQChIJ5T3Pg==
-X-Gm-Gg: AfdE7cmn2NYN9pKZpIxfWf+oe4lOX0CnVGJ+Avb5SpGrp6qOGuTceoxhLkuM0XHHsKT
-	ofrF5egLRCpSC6YjC0+Dg5nxm83cXVQOF/OheqDuDf79BJJkaW0HMZXBwY6v7x8wJNpkyTtdy8B
-	ZwFsQ51PDOXZLyzN1yjy/D2Wlv/No1wn/v4D6B28zo3qTbyNUa+TxMiIy08HyGHj3Ng54afwjHf
-	XgY+lG/JQ4GOgIFnBd2ePR5WTDDqJO6O+dHYbelxi22+nBknQAZdsqfxn6TmoHdG55XosrTicSL
-	vz/S1QwykxoBI7onnqyK/PzsRjoqj2gwwXmGRhnp29AmMaRN74z70Rgt61ZjiCIhNkwBS2efuwp
-	yT+wP+7jWzgBLO++mXcZHI8fzfyIM53i8S6Q=
-X-Received: by 2002:ac8:5a0f:0:b0:517:57c1:bbdc with SMTP id d75a77b69052e-51c79ed34b8mr20269431cf.6.1783419168905;
-        Tue, 07 Jul 2026 03:12:48 -0700 (PDT)
-X-Received: by 2002:ac8:5a0f:0:b0:517:57c1:bbdc with SMTP id d75a77b69052e-51c79ed34b8mr20269231cf.6.1783419168432;
-        Tue, 07 Jul 2026 03:12:48 -0700 (PDT)
-Received: from [192.168.120.193] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c15ada057bfsm98437966b.43.2026.07.07.03.12.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jul 2026 03:12:47 -0700 (PDT)
-Message-ID: <36f4507c-2524-4a9a-b38a-7d061d13cd4d@oss.qualcomm.com>
-Date: Tue, 7 Jul 2026 12:12:43 +0200
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="vJW3jw9F"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260707102035euoutp025fbb15a10a7b48a647b934101ead0696~-_rWsG-PM2259422594euoutp02t
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 10:20:35 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260707102035euoutp025fbb15a10a7b48a647b934101ead0696~-_rWsG-PM2259422594euoutp02t
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1783419635;
+	bh=lmb/5Y9eqdFEyGZnoKkjY5KUURxdOJiW/7gAlorWsrg=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=vJW3jw9FiZcG7/UHGkwH5JaAnf6ymNATTIxiifa8jlb3yOBOH89Uxh08+r7oDerxK
+	 EsZlhcXiTTGBxrPKV9jqlCOxkEOVuGH7hnN2EzBNjFuPApcWvDHEmCGtwJRVBF100F
+	 URSllvY91M4pWP+UFs1gKAqGZkVKvNvgkBMmLRYg=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260707102035eucas1p1c2fe59754f05ce2ac4d33a261d491e9f~-_rWYpPrG2875828758eucas1p16;
+	Tue,  7 Jul 2026 10:20:35 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260707102034eusmtip12c241a5a2db256b2323ea93fdaf0bc36~-_rVbfelg1926719267eusmtip14;
+	Tue,  7 Jul 2026 10:20:34 +0000 (GMT)
+Message-ID: <54596eee-191d-4370-a0e1-44b5b7387c3a@samsung.com>
+Date: Tue, 7 Jul 2026 12:20:33 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 4/7] arm64: dts: qcom: Add GPU support for Kaanapali
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov
- <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-References: <20260707-kaana-gpu-dt-v3-0-8dac9a60dd5c@oss.qualcomm.com>
- <20260707-kaana-gpu-dt-v3-4-8dac9a60dd5c@oss.qualcomm.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 17/30] mm: prefer vma_[start,end]_pgoff() to
+ vma->vm_pgoff in kernel/
+To: Lorenzo Stoakes <ljs@kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org,
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org, kvm@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+	damon@lists.linux.dev
 Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260707-kaana-gpu-dt-v3-4-8dac9a60dd5c@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <ea87349d63205bf4c26ea79854f179a9bf8cfb0b.1782735110.git.ljs@kernel.org>
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: NLUCESrx3ggTqoCW9k-vjS3uatkF1xIV
-X-Proofpoint-ORIG-GUID: NLUCESrx3ggTqoCW9k-vjS3uatkF1xIV
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA3MDA5OSBTYWx0ZWRfX3mmWhaP8245y
- 5tOIseSKTn+qr6IFEdFvJkWG9TooYNe9ivcFQh3bN5xQL4IwxQB6hFw71QOvqyiFtR4PbUiwQFK
- YmsW+fGPtS4zWibMi+8wUL/bL9o7hfD5gafu5qUMfrzk6pIMhJ2/hEMZ4JbhLtDywPzTsu/sMFY
- lg2nj7usbbgSb4Cf8r2sbjkF1PXU+BUiARNcqLHoNVyveZ/L8Axzb/O8JPDXWaq7xjOUE9HpMXp
- V/rz7TcZFEUMXjx96LTuHkPl/R7MjTHFq+ro3ms4bZ7FQWX7buxG1jnWgyfBWZe+wByBfJoUFtz
- anRvs3gQ+zgnAnAXlPInRuMrVS1/oKYAoAmzeuPj67QNEihiZngSaVgIYBvpxBaR24P7aDBTLhP
- z6GfIE9dU2t3Bu5+aCChHY7nf2DLzn6Kpc2ozF+oCvEDkAtTYtU8qz3GNQfV41E+TrNhgfOp5c+
- VFWRs4bsxOIx3yxByFQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA3MDA5OSBTYWx0ZWRfX52TmBQgS2QNj
- CDSl1mHxQUYgnpI7PT72lWg+PtUJsWt222uNbK0+gbbYrN+BJCsTjPvBauZQQaeO/vcdevYqOhl
- kcqNXSLWeK3TzUyFxaViEQ/2+POXkcs=
-X-Authority-Analysis: v=2.4 cv=atSCzyZV c=1 sm=1 tr=0 ts=6a4cd121 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=EUspDBNiAAAA:8 a=z65YV3W3F_EkYOo9s_QA:9 a=QEXdDO2ut3YA:10
- a=a_PwQJl-kcHnX1M80qC6:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-07_02,2026-07-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 phishscore=0 clxscore=1015 priorityscore=1501 spamscore=0
- suspectscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607070099
+X-CMS-MailID: 20260707102035eucas1p1c2fe59754f05ce2ac4d33a261d491e9f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260629122451eucas1p29aab6e559201e31a45e7051d4a700347
+X-EPHeader: CA
+X-CMS-RootMailID: 20260629122451eucas1p29aab6e559201e31a45e7051d4a700347
+References: <cover.1782735110.git.ljs@kernel.org>
+	<CGME20260629122451eucas1p29aab6e559201e31a45e7051d4a700347@eucas1p2.samsung.com>
+	<ea87349d63205bf4c26ea79854f179a9bf8cfb0b.1782735110.git.ljs@kernel.org>
 
-On 7/6/26 11:40 PM, Akhil P Oommen wrote:
-> Adreno 840 present in Kaanapali SoC is the second generation GPU in
-> A8x family. It is based on the new slice architecture with 3 slices,
-> higher GMEM/caches etc.
-> 
-> There is some re-arrangement in the reglist to properly cover maximum
-> register region. Other than this, the DT description is mostly similar
-> to the existing chipsets except the OPP tables.
-> 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+On 29.06.2026 14:23, Lorenzo Stoakes wrote:
+> Be consistent in using vma_start_pgoff() and vma_end_pgoff(), which clearly
+> indicates which part of the VMA the page offset refers to and aids
+> greppability.
+>
+> This is part of a broader series laying the ground to provide a virtual
+> page offset for MAP_PRIVATE-file backed anon folios.
+>
+> No functional change intended.
+>
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 > ---
+>  kernel/dma/coherent.c      |  7 ++++---
+>  kernel/dma/direct.c        |  6 ++++--
+>  kernel/dma/mapping.c       |  8 +++++---
+>  kernel/dma/ops_helpers.c   |  4 ++--
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-Konrad
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com> # for kernel/dma
+
+
+>  kernel/events/core.c       | 20 +++++++++++---------
+>  kernel/events/uprobes.c    | 11 +++++++----
+>  kernel/kcov.c              |  2 +-
+>  kernel/trace/ring_buffer.c |  3 ++-
+>  8 files changed, 36 insertions(+), 25 deletions(-)
+>
+> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+> index bcdc0f76d2e8..2d3195eb7e83 100644
+> --- a/kernel/dma/coherent.c
+> +++ b/kernel/dma/coherent.c
+> @@ -236,14 +236,15 @@ static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
+>  {
+>  	if (mem && vaddr >= mem->virt_base && vaddr + size <=
+>  		   (mem->virt_base + ((dma_addr_t)mem->size << PAGE_SHIFT))) {
+> -		unsigned long off = vma->vm_pgoff;
+> +		const pgoff_t pgoff_start = vma_start_pgoff(vma);
+> +		const pgoff_t pgoff_end = vma_end_pgoff(vma);
+>  		int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
+>  		unsigned long user_count = vma_pages(vma);
+>  		int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>  
+>  		*ret = -ENXIO;
+> -		if (off < count && user_count <= count - off) {
+> -			unsigned long pfn = mem->pfn_base + start + off;
+> +		if (pgoff_start < count && pgoff_end <= count) {
+> +			unsigned long pfn = mem->pfn_base + start + pgoff_start;
+>  			*ret = remap_pfn_range(vma, vma->vm_start, pfn,
+>  					       user_count << PAGE_SHIFT,
+>  					       vma->vm_page_prot);
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4391b797d4db..436310d6e4a2 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -534,6 +534,8 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
+>  	unsigned long user_count = vma_pages(vma);
+>  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>  	unsigned long pfn = PHYS_PFN(dma_to_phys(dev, dma_addr));
+> +	const pgoff_t pgoff_start = vma_start_pgoff(vma);
+> +	const pgoff_t pgoff_end = vma_end_pgoff(vma);
+>  	int ret = -ENXIO;
+>  
+>  	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
+> @@ -545,9 +547,9 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
+>  	if (dma_mmap_from_global_coherent(vma, cpu_addr, size, &ret))
+>  		return ret;
+>  
+> -	if (vma->vm_pgoff >= count || user_count > count - vma->vm_pgoff)
+> +	if (pgoff_start >= count || pgoff_end > count)
+>  		return -ENXIO;
+> -	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
+> +	return remap_pfn_range(vma, vma->vm_start, pfn + pgoff_start,
+>  			user_count << PAGE_SHIFT, vma->vm_page_prot);
+>  }
+>  
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 4fe04669e5e6..c986639044e9 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -761,12 +761,14 @@ EXPORT_SYMBOL_GPL(dma_free_pages);
+>  int dma_mmap_pages(struct device *dev, struct vm_area_struct *vma,
+>  		size_t size, struct page *page)
+>  {
+> -	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	const pgoff_t pgoff_start = vma_start_pgoff(vma);
+> +	const pgoff_t pgoff_end = vma_end_pgoff(vma);
+> +	const unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>  
+> -	if (vma->vm_pgoff >= count || vma_pages(vma) > count - vma->vm_pgoff)
+> +	if (pgoff_start >= count || pgoff_end > count)
+>  		return -ENXIO;
+>  	return remap_pfn_range(vma, vma->vm_start,
+> -			       page_to_pfn(page) + vma->vm_pgoff,
+> +			       page_to_pfn(page) + pgoff_start,
+>  			       vma_pages(vma) << PAGE_SHIFT, vma->vm_page_prot);
+>  }
+>  EXPORT_SYMBOL_GPL(dma_mmap_pages);
+> diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
+> index 20caf9cabf69..6b5f9208d31c 100644
+> --- a/kernel/dma/ops_helpers.c
+> +++ b/kernel/dma/ops_helpers.c
+> @@ -39,7 +39,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+>  #ifdef CONFIG_MMU
+>  	unsigned long user_count = vma_pages(vma);
+>  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	unsigned long off = vma->vm_pgoff;
+> +	unsigned long off = vma_start_pgoff(vma);
+>  	struct page *page = dma_common_vaddr_to_page(cpu_addr);
+>  	int ret = -ENXIO;
+>  
+> @@ -52,7 +52,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+>  		return -ENXIO;
+>  
+>  	return remap_pfn_range(vma, vma->vm_start,
+> -			page_to_pfn(page) + vma->vm_pgoff,
+> +			page_to_pfn(page) + vma_start_pgoff(vma),
+>  			user_count << PAGE_SHIFT, vma->vm_page_prot);
+>  #else
+>  	return -ENXIO;
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index 954c36e28101..d6d2d557ccb8 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -6998,7 +6998,7 @@ static void perf_mmap_open(struct vm_area_struct *vma)
+>  	refcount_inc(&event->mmap_count);
+>  	refcount_inc(&event->rb->mmap_count);
+>  
+> -	if (vma->vm_pgoff)
+> +	if (vma_start_pgoff(vma))
+>  		refcount_inc(&event->rb->aux_mmap_count);
+>  
+>  	if (mapped)
+> @@ -7032,7 +7032,7 @@ static void perf_mmap_close(struct vm_area_struct *vma)
+>  	 * The AUX buffer is strictly a sub-buffer, serialize using aux_mutex
+>  	 * to avoid complications.
+>  	 */
+> -	if (rb_has_aux(rb) && vma->vm_pgoff == rb->aux_pgoff &&
+> +	if (rb_has_aux(rb) && vma_start_pgoff(vma) == rb->aux_pgoff &&
+>  	    refcount_dec_and_mutex_lock(&rb->aux_mmap_count, &rb->aux_mutex)) {
+>  		/*
+>  		 * Stop all AUX events that are writing to this buffer,
+> @@ -7190,7 +7190,8 @@ static int map_range(struct perf_buffer *rb, struct vm_area_struct *vma)
+>  	 */
+>  	for (pagenum = 0; pagenum < nr_pages; pagenum++) {
+>  		unsigned long va = vma->vm_start + PAGE_SIZE * pagenum;
+> -		struct page *page = perf_mmap_to_page(rb, vma->vm_pgoff + pagenum);
+> +		struct page *page = perf_mmap_to_page(rb,
+> +				vma_start_pgoff(vma) + pagenum);
+>  
+>  		if (page == NULL) {
+>  			err = -EINVAL;
+> @@ -7348,6 +7349,7 @@ static int perf_mmap_aux(struct vm_area_struct *vma, struct perf_event *event,
+>  	u64 aux_offset, aux_size;
+>  	struct perf_buffer *rb;
+>  	int ret, rb_flags = 0;
+> +	const pgoff_t pgoff_start = vma_start_pgoff(vma);
+>  
+>  	rb = event->rb;
+>  	if (!rb)
+> @@ -7366,11 +7368,11 @@ static int perf_mmap_aux(struct vm_area_struct *vma, struct perf_event *event,
+>  	if (aux_offset < perf_data_size(rb) + PAGE_SIZE)
+>  		return -EINVAL;
+>  
+> -	if (aux_offset != vma->vm_pgoff << PAGE_SHIFT)
+> +	if (aux_offset != pgoff_start << PAGE_SHIFT)
+>  		return -EINVAL;
+>  
+>  	/* already mapped with a different offset */
+> -	if (rb_has_aux(rb) && rb->aux_pgoff != vma->vm_pgoff)
+> +	if (rb_has_aux(rb) && rb->aux_pgoff != pgoff_start)
+>  		return -EINVAL;
+>  
+>  	if (aux_size != nr_pages * PAGE_SIZE)
+> @@ -7400,7 +7402,7 @@ static int perf_mmap_aux(struct vm_area_struct *vma, struct perf_event *event,
+>  		if (vma->vm_flags & VM_WRITE)
+>  			rb_flags |= RING_BUFFER_WRITABLE;
+>  
+> -		ret = rb_alloc_aux(rb, event, vma->vm_pgoff, nr_pages,
+> +		ret = rb_alloc_aux(rb, event, pgoff_start, nr_pages,
+>  				   event->attr.aux_watermark, rb_flags);
+>  		if (ret) {
+>  			refcount_dec(&rb->mmap_count);
+> @@ -7457,7 +7459,7 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
+>  		if (event->state <= PERF_EVENT_STATE_REVOKED)
+>  			return -ENODEV;
+>  
+> -		if (vma->vm_pgoff == 0)
+> +		if (!vma_start_pgoff(vma))
+>  			ret = perf_mmap_rb(vma, event, nr_pages);
+>  		else
+>  			ret = perf_mmap_aux(vma, event, nr_pages);
+> @@ -9884,7 +9886,7 @@ static bool perf_addr_filter_vma_adjust(struct perf_addr_filter *filter,
+>  					struct perf_addr_filter_range *fr)
+>  {
+>  	unsigned long vma_size = vma->vm_end - vma->vm_start;
+> -	unsigned long off = vma->vm_pgoff << PAGE_SHIFT;
+> +	unsigned long off = vma_start_pgoff(vma) << PAGE_SHIFT;
+>  	struct file *file = vma->vm_file;
+>  
+>  	if (!perf_addr_filter_match(filter, file, off, vma_size))
+> @@ -9974,7 +9976,7 @@ void perf_event_mmap(struct vm_area_struct *vma)
+>  			/* .tid */
+>  			.start  = vma->vm_start,
+>  			.len    = vma->vm_end - vma->vm_start,
+> -			.pgoff  = (u64)vma->vm_pgoff << PAGE_SHIFT,
+> +			.pgoff  = (u64)vma_start_pgoff(vma) << PAGE_SHIFT,
+>  		},
+>  		/* .maj (attr_mmap2 only) */
+>  		/* .min (attr_mmap2 only) */
+> diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+> index f23cebacbc6d..244651380ca1 100644
+> --- a/kernel/events/uprobes.c
+> +++ b/kernel/events/uprobes.c
+> @@ -144,12 +144,14 @@ static bool valid_vma(struct vm_area_struct *vma, bool is_register)
+>  
+>  static unsigned long offset_to_vaddr(struct vm_area_struct *vma, loff_t offset)
+>  {
+> -	return vma->vm_start + offset - ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
+> +	return vma->vm_start + offset -
+> +		((loff_t)vma_start_pgoff(vma) << PAGE_SHIFT);
+>  }
+>  
+>  static loff_t vaddr_to_offset(struct vm_area_struct *vma, unsigned long vaddr)
+>  {
+> -	return ((loff_t)vma->vm_pgoff << PAGE_SHIFT) + (vaddr - vma->vm_start);
+> +	return ((loff_t)vma_start_pgoff(vma) << PAGE_SHIFT) +
+> +		(vaddr - vma->vm_start);
+>  }
+>  
+>  /**
+> @@ -1482,7 +1484,7 @@ static int unapply_uprobe(struct uprobe *uprobe, struct mm_struct *mm)
+>  		    file_inode(vma->vm_file) != uprobe->inode)
+>  			continue;
+>  
+> -		offset = (loff_t)vma->vm_pgoff << PAGE_SHIFT;
+> +		offset = (loff_t)vma_start_pgoff(vma) << PAGE_SHIFT;
+>  		if (uprobe->offset <  offset ||
+>  		    uprobe->offset >= offset + vma->vm_end - vma->vm_start)
+>  			continue;
+> @@ -2453,7 +2455,8 @@ static struct uprobe *find_active_uprobe_speculative(unsigned long bp_vaddr)
+>  	if (!vm_file)
+>  		return NULL;
+>  
+> -	offset = (loff_t)(vma->vm_pgoff << PAGE_SHIFT) + (bp_vaddr - vma->vm_start);
+> +	offset = (loff_t)(vma_start_pgoff(vma) << PAGE_SHIFT) +
+> +		(bp_vaddr - vma->vm_start);
+>  	uprobe = find_uprobe_rcu(vm_file->f_inode, offset);
+>  	if (!uprobe)
+>  		return NULL;
+> diff --git a/kernel/kcov.c b/kernel/kcov.c
+> index 1df373fb562b..b19b473c366a 100644
+> --- a/kernel/kcov.c
+> +++ b/kernel/kcov.c
+> @@ -512,7 +512,7 @@ static int kcov_mmap(struct file *filep, struct vm_area_struct *vma)
+>  
+>  	spin_lock_irqsave(&kcov->lock, flags);
+>  	size = kcov->size * sizeof(unsigned long);
+> -	if (kcov->area == NULL || vma->vm_pgoff != 0 ||
+> +	if (kcov->area == NULL || vma_start_pgoff(vma) ||
+>  	    vma->vm_end - vma->vm_start != size) {
+>  		res = -EINVAL;
+>  		goto exit;
+> diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
+> index 56a328e94395..dfa493d54ef9 100644
+> --- a/kernel/trace/ring_buffer.c
+> +++ b/kernel/trace/ring_buffer.c
+> @@ -7613,7 +7613,8 @@ static int __rb_inc_dec_mapped(struct ring_buffer_per_cpu *cpu_buffer,
+>  static int __rb_map_vma(struct ring_buffer_per_cpu *cpu_buffer,
+>  			struct vm_area_struct *vma)
+>  {
+> -	unsigned long nr_subbufs, nr_pages, nr_vma_pages, pgoff = vma->vm_pgoff;
+> +	unsigned long nr_subbufs, nr_pages, nr_vma_pages;
+> +	pgoff_t pgoff = vma_start_pgoff(vma);
+>  	unsigned int subbuf_pages, subbuf_order;
+>  	struct page **pages __free(kfree) = NULL;
+>  	int p = 0, s = 0;
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
