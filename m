@@ -1,158 +1,264 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010016.outbound.protection.outlook.com [52.101.85.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B10C02DECB2;
-	Tue,  7 Jul 2026 21:08:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783458493; cv=fail; b=bOEWFWr/bFikh6V+1ilQ0inh6B+UXLeXvMnKlf5Ma1pJEDS72h3oS7NVo0tVSLXyMKO37EcQK2fe0AlILvG84d3kqJRpdn16TzieFkGr4KFJ+8z1paqJ7upl7sEcUQbBf+QBmv3zWCJWMGibF1RmtU+z/3IuDsaET43cmH5ub+I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783458493; c=relaxed/simple;
-	bh=uJGOkSoDy2p/cHzXD9GzdLn8wdbs2XeWY9ftjO0LWSM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cD4sF99RCW9SbjMlhp8s8vookIMG+2ksd36YQmd/2TAjjYl+6gJGpyTdkxMjjaitsGcKRp+Z/DGh9dh7k4WoZGqGECrG8EXjK+9vTuBynheuIcHP76VDIgToQl8tV9AuE1sdc5p/O3ZVxyNXhFKeHXJ1HL5MVQDNvTyxFlRZ86c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LOKINMY6; arc=fail smtp.client-ip=52.101.85.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DD7F305E19
+	for <iommu@lists.linux.dev>; Tue,  7 Jul 2026 21:10:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783458655; cv=none; b=mzU75vl8FiawYEdfiJzQKibMLNi7MLhE1LyEkAuQXkkMHF3t4BEOSjOKNvtas99SckdMMuKukpFCl8Fuw79l366ak9PAaG/2byZ2DkRnGclmMcF1w9/5owx3Wvy9eGNa7T0WJon9gyGnwOfqBC/AHX62B+RNpS8jDBb6EM18fkI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783458655; c=relaxed/simple;
+	bh=1/y3KjQ2fjlRD1cyuJqrpsmwbxft2UO8DFm9hMzhE/k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tQGgXjkdaidWvL92Qj2kt+l8n9Pbl53U/90QyxD2D6NKUmMYHbTPQKvrbl+l8P09p97X2SZz8d/84DrEs+G1JVlTwDEnbpVIYXI1JCzUu1WgM8Uk8Zf+B0ztU8dgv+D+JGgKfGD4DdIQBYS7YX8LoG9ix2fuobgpWI/Kp6CgE+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Rskp2gQn; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LOKINMY6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xj6nuNAEhrxBXzw9kgEgWOsdjTu5zJ8W2jSvX+wO7O2hUgtKDHUl+hEVnJrs0QurGKFgzzPu+PAH5FZ3zyKXmOGELYKhmQ83Jc+QFo/FZLYxn73WwTl1xE5NMLC+YTszxVQZYmYVUFwsytt1P0uOvAzsg5NCCnYTpqfrS2gIyORW0a8llRQyQX/+vPNv2SyCOD7KRQWZ4g8Hgb9dzHDH76n7uSnRCtSOAIyhB24dj9AUuxIOjMD6MGHDFfEpzp22ZBJJpzvak23RS1eHp7NOQUoQzw6lAZ2GLcBab+TVtf53V/o/eVHYqCOVGpZSRJi3xVcD0sJ1WHTInsBDF4tUOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0nG7gmJkL0yGHZL8B0+yNNQi6iwQ51USIU/uuQVCr8E=;
- b=Q1WeOcpzE55EqhI2TINqgRh1ibhmtE3vF4S0XgQVT/lYWnwfN3XAtf473XWU1s700x8PKxjgFFPcetwgGmV/q9k+GekI3Pu7KXhvXqTZjbfyp0YN0jC12Z/yWuiBLWsWzETnvGr6xO2+6iM6V2Pu0cvT3xFGs2BOlDMMZ9Aygl9jKsrYL4qvHyst5C5pYByqWX4Xp1Xm8G0/SCVRyyP+otlKp8jwtBsG6x15tQng8s8/0KXgL1PPdiaEfJ0GIbkdIU5D4G3/0mQGE7I67WtDKNnAVB+8hDZ/SWDyEUSbqV3anEeviWQFQcI+2CCLQ2cODPjq9fV1Gri9bjU+RMIuYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0nG7gmJkL0yGHZL8B0+yNNQi6iwQ51USIU/uuQVCr8E=;
- b=LOKINMY6LeWdDkAJWy7MQfGr/cQYC6aRStrLxt3IZ5GFPPPThBn0lTeRA9V+jM0jDxeyp7lMU9Y24bp5ISdb5zoYp2wPjaZsmtZBBGBeWZ0LtZfbLfTbNxz85K/16P4lpb+uYBJhc3+ifsP+X5gZCwQYpjVTzmxiVcTFDpmBZOa6OWdsePuTByNNdZlMqNjDhwIO3phqy512BooIOTYLiY4wFqr+mLUpkC0YBnKUgzuiObqlS73JKzkFAw3DO773KzSf7fFLY2qVTxf0zUXqjKV37On3kEnKo3s7M0ce6stWy2GdbJ3cR71jj7dQHCFJ5c688PGw+LaKQjQYXrup4Q==
-Received: from MW4PR04CA0120.namprd04.prod.outlook.com (2603:10b6:303:83::35)
- by MW6PR12MB7070.namprd12.prod.outlook.com (2603:10b6:303:238::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.8; Tue, 7 Jul 2026
- 21:08:03 +0000
-Received: from CO1PEPF000066E7.namprd05.prod.outlook.com
- (2603:10b6:303:83:cafe::20) by MW4PR04CA0120.outlook.office365.com
- (2603:10b6:303:83::35) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.181.13 via Frontend Transport; Tue, 7
- Jul 2026 21:08:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CO1PEPF000066E7.mail.protection.outlook.com (10.167.249.9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Tue, 7 Jul 2026 21:08:02 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 7 Jul
- 2026 14:07:44 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Tue, 7 Jul 2026 14:07:44 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Tue, 7 Jul 2026 14:07:43 -0700
-Date: Tue, 7 Jul 2026 14:07:42 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>, "Pasha
- Tatashin" <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, "Pranjal
- Shrivastava" <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
- for latency
-Message-ID: <ak1qniAsNGNu6ksR@Asurada-Nvidia>
-References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <akyqH7f5h42wru8a@nvidia.com>
- <20260707191329.GC226829@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Rskp2gQn"
+Received: from [100.93.96.56] (unknown [40.86.181.13])
+	by linux.microsoft.com (Postfix) with ESMTPSA id C7A4820B7166;
+	Tue,  7 Jul 2026 14:10:42 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C7A4820B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1783458643;
+	bh=6ZuqzjFeYeI8YCp2Qv7P1iu3j5Efggu6mHkwGAeF6FE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Rskp2gQnhnj0cYn4aI9k+LX+HRw1X1zUgMQypRfmf1aLFz1I2KEdfKGB2KGqEKwre
+	 4qMCYpCQ8FP3o/gOup/xktdEl4Nm9KiobnOfP28nTXO0emiAg4Lw5I4shYs6N9pNXU
+	 IMRCiI6W40amC8bxZ+DrUZl9RRovo5JFOJ+NPsv8=
+Message-ID: <9e999605-0527-f1c1-5c82-0055ede045b5@linux.microsoft.com>
+Date: Tue, 7 Jul 2026 14:10:46 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260707191329.GC226829@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000066E7:EE_|MW6PR12MB7070:EE_
-X-MS-Office365-Filtering-Correlation-Id: af4042fd-7b8d-4c7c-d50e-08dedc6bd52c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|82310400026|36860700016|376014|7416014|1800799024|4143699003|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	9J4lAj10c0RWOSvTu4GtaJ12chWeIPHTpcLuxTajdPWXCLMg7jV6QZZbNGIVui34WqXonfnluC+8EkkUshWdeIeUxrn4DCnAniU6aknxvgQKqE1C2PKy6TfnG+IT7OFTZLFEhFrYvGevGmzI2f9/k4ygqDuYZfH0hDd7pIsMt+RlqGNFBVuGVPah7+0RKnOYv6JM2902oA3bDoWEOv8ZPsDuqMsq3PkKGD8FcNDnDXsd1eEBaK+Vn7p9w1FAlN3dehHDCi3ol96Vor9il0dDPRI1JOdkdeLaoFx+a9U+SvJ6LYyw3c00Y/NLEyl2ixoS2vFoKdkU3LHUL5BCmQrCdyYjJdyaX+j6Jvr/IWtHoz1aIcENOhrRAgdT+j06Cryz807VdSmLdTGHNqMAcXX3dTFUxEpZ1qiO6oYBhd68DX9Lqn4q8WcJbu6+O1KCKYlHI2YLsy1ygNx5G7ziFJDItbNTWIA4wSJ+WLMLKrpJltulPqHuDpuAgiJXHZOZnHlYldy5KVEN9FvDsOZRpehlk76mIXyBFlQhWgItha20fY3bEodFRRC3pycd9mxgZ2VSgHz3qVunnlzn7qdGZyooCwuq1gykIvdXNY7KypzzMq0KcqMp9QAGrjkLk9enm+ZkJ7kCFrIb8PSVCh4KJTNh0uLZBaTB76FGjWwp0zUDaYpq3EOH8KL3DNsIVmp9/UOr
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(36860700016)(376014)(7416014)(1800799024)(4143699003)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	B1OZjVB9/xJtaDUqqdHbw81qyUwwMvrDVrs07ujm0IZmtBNYSGd+6CMjRV5+ytVxf3d+LTGqaUEy3mHjQYuvsqmqwjUHkgk98s9joEZ+sl+frrh2K3S9T8Xt+Eu+q+FZT+NJy8f6pNHaSlc4u7+h7TrZJ0NR4drqkiJrsCNVnF0zDHQv1WBwcbETEhXQmIOCq6QsJOkIVOUxP/KFx20cSY7h8baO8J5OhRCdDHCimsuvdEnxGb+10cRuzDMN9bVf5ZttIlIDiKAmPsUf/0HWDgn7O5DSQd1b6kY6IMMxKfweCwFvFCVCjPdX8M0BSP6gToUMmUX2UpPyEBPR9ygry5fxB+kOCMcTzDGfiVHtbcIQl0Hf+x3QvvrLPI5bi3IG81dD0mDm58jjSpEqRhmqFNSm0cPzmTSfvTl0HhSI+jPcXaNPWgUxh5dTCo3j6zha
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2026 21:08:02.8383
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: af4042fd-7b8d-4c7c-d50e-08dedc6bd52c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000066E7.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7070
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH v2 1/4] hyperv: Introduce new hypercall interfaces used by
+ Hyper-V guest IOMMU
+Content-Language: en-US
+To: Yu Zhang <zhangyu1@linux.microsoft.com>, linux-kernel@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org
+Cc: wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
+ decui@microsoft.com, longli@microsoft.com, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
+ lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de,
+ jgg@ziepe.ca, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
+ tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com
+References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
+ <20260702160518.311234-2-zhangyu1@linux.microsoft.com>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <20260702160518.311234-2-zhangyu1@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jul 07, 2026 at 04:13:29PM -0300, Jason Gunthorpe wrote:
-> On Tue, Jul 07, 2026 at 12:27:00AM -0700, Nicolin Chen wrote:
-> > On Mon, Jul 06, 2026 at 01:26:40PM -0300, Jason Gunthorpe wrote:
-> > > +	/*
-> > > +	 * There are at most 5 possible values for NUM based on SCALE. The
-> > 
-> > Mind elaborating the "at most 5 possible values for NUM"?
+On 7/2/26 09:05, Yu Zhang wrote:
+> From: Wei Liu <wei.liu@kernel.org>
 > 
-> Oh, I guess it is at most 6 since it is +1
-
-Yea, that's what I thought.
-
-log2(NUM + 1) could be 5, 4, 3, 2, 1, or 0. So, totally 6.
-
-> How about:
+> Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
+> Introduce the hypercalls used by the child partition to interact with
+> this facility.
 > 
-> 	/*
-> 	 * The spec defines the invalidated range as:
-> 	 *   Range = ((NUM+1) * 2^SCALE) * Translation_Granule_Size
-> 	 * NUM is 5 bits, so (NUM+1) covers 1..32 granules and SCALE scales
-> 	 * that by a power of two. We must pick NUM and SCALE so the range
-> 	 * covers num_tg granules, i.e. (NUM+1) * 2^SCALE >= num_tg with
-> 	 * NUM+1 <= 32. That constrains SCALE to:
-> 	 *    ceil(num_tg / 2^SCALE) <= 32
-> 	 *    SCALE >= ceil(log2(num_tg / 32))
-> 	 * Choosing the smallest such SCALE gives the finest granularity and
-> 	 * thus the tightest (least over-covering) range, and equivalently the
-> 	 * largest NUM.
-> 	 *
-> 	 * Unlike other IOMMUs the spec has no alignment requirement on the
-> 	 * address beyond alignment to tg (so long as TTL=0).
-> 	 */
+> These hypercalls fall into below categories:
+> - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
+>    detect the existence and capabilities of the guest IOMMU.
+> 
+> - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
+>    check whether an endpoint device is managed by the guest IOMMU.
+> 
+> - Domain management: A set of hypercalls is provided to handle the
+>    creation, configuration, and deletion of guest domains, as well as
+>    the attachment/detachment of endpoint devices to/from those domains.
+> 
+> - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
+>    for a domain-selective IOTLB flush (which in its handler may flush
+>    the device TLB as well).
+> 
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> ---
+>   include/hyperv/hvgdk_mini.h |   8 +++
+>   include/hyperv/hvhdk_mini.h | 124 ++++++++++++++++++++++++++++++++++++
+>   2 files changed, 132 insertions(+)
+> 
+> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+> index 6a4e8b9d570f..5bdbb44da112 100644
+> --- a/include/hyperv/hvgdk_mini.h
+> +++ b/include/hyperv/hvgdk_mini.h
+> @@ -486,10 +486,16 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>   #define HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a
+>   #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af
+>   #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0
+> +#define HVCALL_CREATE_DEVICE_DOMAIN			0x00b1
+> +#define HVCALL_ATTACH_DEVICE_DOMAIN			0x00b2
+>   #define HVCALL_SIGNAL_EVENT_DIRECT			0x00c0
+>   #define HVCALL_POST_MESSAGE_DIRECT			0x00c1
+>   #define HVCALL_DISPATCH_VP				0x00c2
+> +#define HVCALL_DETACH_DEVICE_DOMAIN			0x00c4
+> +#define HVCALL_DELETE_DEVICE_DOMAIN			0x00c5
+>   #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
+> +#define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
+> +#define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
+>   #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
+>   #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
+>   #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
+> @@ -502,6 +508,8 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>   #define HVCALL_MMIO_READ				0x0106
+>   #define HVCALL_MMIO_WRITE				0x0107
+>   #define HVCALL_DISABLE_HYP_EX                           0x010f
+> +#define HVCALL_GET_IOMMU_CAPABILITIES			0x0125
+> +#define HVCALL_GET_LOGICAL_DEVICE_PROPERTY		0x0127
+>   #define HVCALL_MAP_STATS_PAGE2				0x0131
+>   
+>   /* HV_HYPERCALL_INPUT */
+> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+> index b4cb2fa26e9b..493608e791b4 100644
+> --- a/include/hyperv/hvhdk_mini.h
+> +++ b/include/hyperv/hvhdk_mini.h
+> @@ -547,4 +547,128 @@ union hv_device_id {		/* HV_DEVICE_ID */
+>   	} acpi;
+>   } __packed;
+>   
+> +/* Device domain types */
+> +#define HV_DEVICE_DOMAIN_TYPE_S1	1 /* Stage 1 domain */
+> +
+> +/* ID for default domain and NULL domain */
+> +#define HV_DEVICE_DOMAIN_ID_DEFAULT 0
+> +#define HV_DEVICE_DOMAIN_ID_NULL    0xFFFFFFFFULL
+> +
+> +union hv_device_domain_id {
+> +	u64 as_uint64;
+> +	struct {
+> +		u32 type: 4;
+> +		u32 reserved: 28;
+> +		u32 id;
+> +	} __packed;
+> +};
+> +
+> +struct hv_input_device_domain {
+> +	u64 partition_id;
+> +	union hv_input_vtl owner_vtl;
+> +	u8 padding[7];
+> +	union hv_device_domain_id domain_id;
+> +} __packed;
+> +
+> +union hv_create_device_domain_flags {
+> +	u32 as_uint32;
+> +	struct {
+> +		u32 forward_progress_required: 1;
+> +		u32 inherit_owning_vtl: 1;
+> +		u32 reserved: 30;
+> +	} __packed;
+> +};
+> +
+> +struct hv_input_create_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_create_device_domain_flags create_device_domain_flags;
+> +} __packed;
+> +
+> +struct hv_input_delete_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +} __packed;
+> +
+> +struct hv_input_attach_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_device_id device_id;
+> +} __packed;
+> +
+> +struct hv_input_detach_device_domain {
+> +	u64 partition_id;
+> +	union hv_device_id device_id;
+> +} __packed;
+> +
+> +struct hv_device_domain_settings {
+> +	struct {
+> +		/*
+> +		 * Enable translations. If not enabled, all transaction bypass
+> +		 * S1 translations.
+> +		 */
+> +		u64 translation_enabled: 1;
+> +		u64 blocked: 1;
+> +		/*
+> +		 * First stage address translation paging mode:
+> +		 * 0: 4-level paging (default)
+> +		 * 1: 5-level paging
+> +		 */
+> +		u64 first_stage_paging_mode: 1;
+> +		u64 reserved: 61;
+> +	} flags;
+> +
+> +	/* Address of translation table */
+> +	u64 page_table_root;
+> +} __packed;
+> +
+> +struct hv_input_configure_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	struct hv_device_domain_settings settings;
+> +} __packed;
+> +
+> +struct hv_input_get_iommu_capabilities {
+> +	u64 partition_id;
+> +	u64 reserved;
+> +} __packed;
+> +
+> +struct hv_output_get_iommu_capabilities {
+> +	u32 size;
+> +	u16 reserved;
+> +	u8  max_iova_width;
+> +	u8  max_pasid_width;
+> +
+> +#define HV_IOMMU_CAP_PRESENT (1ULL << 0)
+> +#define HV_IOMMU_CAP_S2 (1ULL << 1)
+> +#define HV_IOMMU_CAP_S1 (1ULL << 2)
+> +#define HV_IOMMU_CAP_S1_5LVL (1ULL << 3)
+> +#define HV_IOMMU_CAP_PASID (1ULL << 4)
+> +#define HV_IOMMU_CAP_ATS (1ULL << 5)
+> +#define HV_IOMMU_CAP_PRI (1ULL << 6)
+> +
+> +	u64 iommu_cap;
+> +	u64 pgsize_bitmap;
+> +} __packed;
+> +
+> +enum hv_logical_device_property_code {
+> +	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
+> +};
+> +
+> +struct hv_input_get_logical_device_property {
+> +	u64 partition_id;
+> +	u64 logical_device_id;
+> +	/* Takes values from enum hv_logical_device_property_code. */
+> +	u32 code;
+> +	u32 reserved;
+> +} __packed;
+> +
+> +struct hv_output_get_logical_device_property {
+> +#define HV_DEVICE_IOMMU_ENABLED (1ULL << 0)
+> +	u64 device_iommu;
+> +	u64 reserved;
+> +} __packed;
+> +
+> +struct hv_input_flush_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	u32 flags;
+> +	u32 reserved;
+> +} __packed;
+> +
+>   #endif /* _HV_HVHDK_MINI_H */
 
-This reads good to me.
 
-With that,
+Please add tags to all structs, like,
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+struct hv_input_device_domain { /* HV_INPUT_DEVICE_DOMAIN */
+
+
+Or just wait for my patches.
+
+Thanks,
+-Mukesh
+
+
