@@ -1,141 +1,195 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F22963BE16F;
-	Wed,  8 Jul 2026 11:35:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97915428462
+	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 11:43:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783510559; cv=none; b=jL+LAz4qxE0ESoInR0qF7TJUQUFIFfGORNVy4D3L+YC99rZTUAe0WNeRPnZ2ZxO1ev8T4QRM+npoG1KjNrlJ93agBzFFbgJ5ird7JawLt8ag1bKRZhhs0qyurm4xNQLM4XuoCjldokdOUwlWvn3L70X3Z9oCvQZnE9v+oN9eO+k=
+	t=1783511012; cv=none; b=Mx6Cqi3E/qCJ0EnifXAynWgXR3t4uAyV1feMrZ9rEJXlFGVwHMkzNHFDY6zqlkt88U/UMCvH8GoWd8Ajx4/6b35n9LzbRSWFe9b/pOIaXcvPoRijytycgz2g7u5vJ+3ofkVrNkHjoeCRnEDdZX6qsEZlfZrcTc6WUq31447UJZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783510559; c=relaxed/simple;
-	bh=skF61y21KgPsVGfJvwoIpH8oYC/C836tWg/Zi0aByAc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KtCXphLx5hXQOjvrjEZYoElacHTsrfSVjy8GDUKBdGa4RSccMmt1JAgPHAZIuJ+Xs29dUhd7IXVyoRX5YMaYXr0Gf3CgrTOciMCylsKnK272tfNn52dSZukID0WsODp0p6RNmQdRhxySEelFZEioTMYHEz0T/6OuMdJZD/KlU/k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=BDUtEDVy; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1783511012; c=relaxed/simple;
+	bh=cYBjM+6JUbUWk9wD+XnEhHPnVniDXVmsFcLu4IVx7Pk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FQ2DpCKrOVL7Q40Hc6ZL7RDTzxeIVdETsd2kUHlLy2LBOHWkXE2gQmmObHBrkHRhKb/FdtbiIxMSGiSUMrgM8liWPZ3YBx1iWa8S/uazHiQpZpQJh1xvXrAwud78LdsYcF3R8Whf7oojMqKEAg0thU+LG26FlUjMASUdLT/I8cI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=At+bgtaT; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="BDUtEDVy"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 00BCE1E5E;
-	Wed,  8 Jul 2026 04:35:53 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E39E3F85F;
-	Wed,  8 Jul 2026 04:35:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783510557; bh=skF61y21KgPsVGfJvwoIpH8oYC/C836tWg/Zi0aByAc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BDUtEDVyOjE2X987uSwyfq3z9RD7lBFkhkdA5EBvVEUJF3xFy0wXNZao/bpBtdGJT
-	 bzEIyGgplNZ8FteGaCdPd8M9i1hu4qN4jloW+AkzdgaaYEgqMwYQieSh7ECTVL08I/
-	 ukOcYIu1QhMGKdh1zDxGves8zlEW6X1jwQ6tkJ14=
-Date: Wed, 8 Jul 2026 12:35:51 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
- DMA_ATTR_CC_SHARED
-Message-ID: <ak42F240d-53QeFN@arm.com>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-17-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="At+bgtaT"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 668BSrg52637355;
+	Wed, 8 Jul 2026 11:42:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=n4xUiTW+CHf35eqdhEgJ3yXNSJuJIczfbeD
+	Ax06fgzs=; b=At+bgtaTRxYXf9MG0a6cXwyNHiByzZcrokBGKodSYiMhTZ5AKd8
+	7tybyX8G4HtjRTbVfH2r/SstLxk2HFYf4G2IpEs4K0HW3KISWdIcq/hVvo74Ovj5
+	PEI+ov9mCfvwUSlfVvxCAl6IBCNXpBhPJmL1aGgb4F1jnLKHh8YiYU3NROu5rKwi
+	Cw/NPe7ssfm2p2b4U4J2ycfDtcS5Hl1xqqUyPFzl1HcTAkaOafrsvLn3wOyUSjKM
+	HTlD25yaoa1DQL7kd4UDX41qaNgbJ4pEPoeu85BlMa3fjeEV8mUzUU5Lk2H2krqs
+	OVXLfVtmdlGgJQcaVOuoRFNHagqWbfaP8vA==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f95fd48dm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Jul 2026 11:42:51 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 668Bgl4m017613;
+	Wed, 8 Jul 2026 11:42:47 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 4f6u8k3w6e-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Jul 2026 11:42:47 +0000 (GMT)
+Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 668Bgle7017604;
+	Wed, 8 Jul 2026 11:42:47 GMT
+Received: from blr-ubuntu-283-g06.qualcomm.com (blr-ubuntu-283-g06.qualcomm.com [10.131.30.181])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 668BglBG017602
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Jul 2026 11:42:47 +0000 (GMT)
+Received: by blr-ubuntu-283-g06.qualcomm.com (Postfix, from userid 4791667)
+	id 0FE45411C9; Wed,  8 Jul 2026 17:12:46 +0530 (IST)
+From: Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>
+To: m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc: corbet@lwn.net, skhan@linuxfoundation.org, akpm@linux-foundation.org,
+        bp@alien8.de, rdunlap@infradead.org, peterz@infradead.org,
+        feng.tang@linux.alibaba.com, dapeng1.mi@linux.intel.com,
+        elver@google.com, enelsonmoore@gmail.com, kuba@kernel.org,
+        lirongqing@baidu.com, ebiggers@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        aneesh.kumar@kernel.org, alexey.kardashevskiy@amd.com,
+        thomas.lendacky@amd.com, jeff.hugo@oss.qualcomm.com,
+        thanson@qti.qualcomm.com, Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>
+Subject: [RFC PATCH] x86/pci-dma: add "any" keyword to swiotlb= kernel parameter
+Date: Wed,  8 Jul 2026 17:12:44 +0530
+Message-ID: <20260708114244.246176-1-aakarsh.jain@oss.qualcomm.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260701054926.825925-17-aneesh.kumar@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA4MDExMyBTYWx0ZWRfX4TXkTMCQNiuF
+ s4ndd9JyVmOylo1pK8PI17K9qR0KBwyTL8PJ7oc9kRUBBkYDDgnoX7sWlKFy0ziI0Uqb7uW4CUp
+ UbDM6zc2JQh5G+kZ7fu5rO3elpedwOAHbw1UtUiLRoI2WZQ+NzHw3HLu8O49TEyWxNMbsNDkBSi
+ 5WnccKJCTZMZ1CEwC+0mOgGj3HzccFEkv3nlHGQxetbd9NmZMAeuV2cgLMqTLeAkdByOT0SN2wh
+ uODTY8/fAMGxYoRoUmJ6fuqJavCX0fsRFX5JqU9NwM7YX/xcZ4ppRRlFlYhNC1sY6Gd2JkcV3Jb
+ 0Zc4VtUmys7lXJtXXf5n5MNEElKpdmzuafYBmt3jqnPbzaev5nAgr63QS1vdRfPKEQpfekRf4ql
+ jq3BvKtQWmX5JfF3LThoOAyGbvf8HgypReus5lLWeLrdER3NK8jZvHyeTiBLPYjQ98tTgbsWQr0
+ ChgburvucqNqSpbuM5Q==
+X-Authority-Analysis: v=2.4 cv=VZLH+lp9 c=1 sm=1 tr=0 ts=6a4e37bb cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=gowsoOTTUOVcmtlkKump:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
+ a=pVVJNHN2wY_hqiUAWGQA:9
+X-Proofpoint-ORIG-GUID: HHQIIRUIrqTv45gud0z-RZEU5dA_wkyV
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA4MDExMyBTYWx0ZWRfX7lF2DFSCKL9L
+ 2UWIG92n/ORia1QNoi2jSlKGWRJZqVp/9qcPUptpXcJ6hMmzZqtkxPCJuRC60s0Z+vPqsa7N3sS
+ 7xcaCVbe0EYH5OekBimRjbpcu850jKE=
+X-Proofpoint-GUID: HHQIIRUIrqTv45gud0z-RZEU5dA_wkyV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-08_01,2026-07-08_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 suspectscore=0
+ lowpriorityscore=0 spamscore=0 malwarescore=0 adultscore=0 clxscore=1011
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607080113
 
-On Wed, Jul 01, 2026 at 11:19:20AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 97987f850a33..acf67c7064db 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -338,10 +338,8 @@ void __init arch_mm_preinit(void)
->  	unsigned int flags = SWIOTLB_VERBOSE;
->  	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
->  
-> -	if (is_realm_world()) {
-> +	if (is_realm_world())
->  		swiotlb = true;
-> -		flags |= SWIOTLB_FORCE;
-> -	}
+CoCo guests (AMD SEV-SNP, Intel TDX) require large swiotlb pools for
+streaming DMA workloads such as high-speed NIC and AI accelerator
+inference. The existing swiotlb pool allocator restricts placement to
+low memory (below 4GB by default), capping usable pool size at ~1GB even
+when a larger pool is requested via swiotlb=<nslabs>.
 
-For this part:
+The SWIOTLB_ANY flag already exists to lift this restriction, and
+swiotlb_init_remap() already handles it correctly via the flags
+parameter (see CONFIG_SWIOTLB_DYNAMIC path: io_tlb_default_mem.phys_limit
+is set to virt_to_phys(high_memory-1) when SWIOTLB_ANY is set).
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+However, there is no way to set SWIOTLB_ANY from the command line. The
+only existing mechanism was via arch-specific code (e.g. powerpc SVM sets
+SWIOTLB_ANY in pci_iommu_init). x86 CoCo guests have no such path.
 
-> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-> index e05dc7649366..f3fc28f352ba 100644
-> --- a/kernel/dma/direct.h
-> +++ b/kernel/dma/direct.h
-> @@ -88,37 +88,40 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
->  {
->  	dma_addr_t dma_addr;
->  
-> +	/*
-> +	 * For a device requiring unencrypted DMA, MMIO memory is treated
-> +	 * as shared by default.
-> +	 */
-> +	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
-> +		attrs |= DMA_ATTR_CC_SHARED;
-> +
->  	if (is_swiotlb_force_bounce(dev)) {
-> -		if (!(attrs & DMA_ATTR_CC_SHARED)) {
-> -			if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
-> -				return DMA_MAPPING_ERROR;
-> +		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
-> +			return DMA_MAPPING_ERROR;
->  
-> -			return swiotlb_map(dev, phys, size, dir, attrs);
-> -		}
-> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
-> -		return DMA_MAPPING_ERROR;
-> +		return swiotlb_map(dev, phys, size, dir, attrs);
->  	}
->  
-> -	if (attrs & DMA_ATTR_MMIO) {
-> -		dma_addr = phys;
-> -		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
-> -			goto err_overflow;
-> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
-> +	if (attrs & DMA_ATTR_CC_SHARED)
->  		dma_addr = phys_to_dma_unencrypted(dev, phys);
-> +	else
-> +		dma_addr = phys_to_dma_encrypted(dev, phys);
+After Aneesh  series ("dma-mapping: Track shared DMA state through
+direct, pool and swiotlb paths", https://patchwork.kernel.org/project/linux-arm-kernel/cover/20260701054926.825925-1-aneesh.kumar@kernel.org/)
+removes SWIOTLB_FORCE, x86 pci_swiotlb_detect() leaves x86_swiotlb_flags = 0 for
+CoCo guests. The pool falls back to low memory and caps at ~1GB:
 
-For AMD/SME, on host with memory encryption we now end up setting the C
-bit for DMA_ATTR_MMIO. This is fine for RAM but not sure whether
-some other MMIO bus understands this attribute. Maybe we should stick to
-something like __phys_to_dma() for the !CC_SHARED && MMIO path. Or,
-since this is not universally defined, just use the old dma_addr = phys
-if MMIO and ignore any unlikely DMA offsets.
+  Without "any": pool at 0x35a9c000 (~900MB, below 4GB boundary)
+  With    "any": pool at 0x1df9c00000 (~120GB, anywhere in RAM)
+  [Tested on AMD SEV-SNP guest, swiotlb=4194304]
 
-In the other case, for an arm CCA guest, if the MMIO is shared we end up
-setting the shared attribute but that's fine, it's only an IPA address.
+Add "any" as a new keyword to the swiotlb= kernel parameter. This is an
+explicit, opt-in mechanism that sets SWIOTLB_ANY for the default pool at
+boot time, without touching any arch-specific code.
 
+Devices with 32-bit DMA masks are not affected, they still use the normal
+low-memory bounce buffer path. The "any" option is only meaningful for
+workloads where all active DMA devices have 64-bit masks.
+
+Signed-off-by: Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 5 ++++-
+ kernel/dma/swiotlb.c                            | 5 +++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index b5493a7f8f22..8a1fccbd9b25 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -7477,7 +7477,7 @@ Kernel parameters
+ 			Execution Facility on pSeries.
+ 
+ 	swiotlb=	[ARM,PPC,MIPS,X86,S390,EARLY]
+-			Format: { <int> [,<int>] | force | noforce }
++			Format: { <int> [,<int>] | force | noforce | any}
+ 			<int> -- Number of I/O TLB slabs
+ 			<int> -- Second integer after comma. Number of swiotlb
+ 				 areas with their own lock. Will be rounded up
+@@ -7485,6 +7485,9 @@ Kernel parameters
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
+ 			noforce -- Never use bounce buffers (for debugging)
++			any --  Allow the swiotlb pool to be placed anywhere in
++				system RAM, lifting the default low-memory (4GB)
++				restriction.
+ 
+ 	switches=	[HW,M68k,EARLY]
+ 
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 1abd3e6146f4..34773ae7c770 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -80,6 +80,7 @@ struct io_tlb_slot {
+ 
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
++static unsigned int swiotlb_param_flags __initdata;
+ 
+ #ifdef CONFIG_SWIOTLB_DYNAMIC
+ 
+@@ -198,6 +199,8 @@ setup_io_tlb_npages(char *str)
+ 		swiotlb_force_bounce = true;
+ 	else if (!strcmp(str, "noforce"))
+ 		swiotlb_force_disable = true;
++	else if (!strcmp(str, "any"))
++		swiotlb_param_flags |= SWIOTLB_ANY;
+ 
+ 	return 0;
+ }
+@@ -445,6 +448,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 
+ 	io_tlb_default_mem.force_bounce = swiotlb_force_bounce;
+ 
++	flags |= swiotlb_param_flags;
++
+ #ifdef CONFIG_SWIOTLB_DYNAMIC
+ 	if (!remap)
+ 		io_tlb_default_mem.can_grow = true;
 -- 
-Catalin
+2.43.0
+
