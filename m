@@ -1,212 +1,221 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010019.outbound.protection.outlook.com [52.101.56.19])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D9040962A
-	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 09:16:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783502195; cv=fail; b=ddjXyAE6ZAIsNhedKwiIPpi0IPwlEkCAZYkXC9GGjQWB+fw2KBJeeBH8jyRwdJjIMxDvz7bqzEzNfrOox5SMrOak4okew/3KRwMViYclEt6Ws9nCUojt+aAEpcnklhx65YFORQy8SLR+WHj/g8JJ4dte4voFAamZFLngEmLrdWE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783502195; c=relaxed/simple;
-	bh=8lVHf9PrP51/4+Z9u0Ii74LZxrQLq3BmhMzl4dTtq84=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ie7hYrj+uq2HxwlKiPVY9mI5vuPPmsLsB0Ufh2wamgEIHhBLiJXb6zbiAGUUvCMI20QECUlPa/JqcFPKI4PkAS+p/EP48asM6ZFRrDws3zG3wcZLXq04ofVeyABKGeEkw/48oe/Ec6xUbcGAUByQICW17t/O2d+JtafEMg4DJ6M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=KHJtjIxM; arc=fail smtp.client-ip=52.101.56.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C7BC388E6B
+	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 10:01:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783504897; cv=none; b=iYjWJGtsm7FsBbfPuPoId9uqbPkEtPoVXAGHsLmLp7mAHhZYPb58F1SvBDGjItF4T4RPsEyqQyYhV27Zdn+Xl1go/SuYEb20Jc9YgCytqfe1f70r31dxvafwuQWfXEr3D2874qoJ2VzctDUCCa646kI9bzr0kfwoFGyFtPAuZAQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783504897; c=relaxed/simple;
+	bh=oKVfH/0Hygcklu+R5xYMT12z1eblv56XDMwOFHZZNzQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=M9XRFZpLdt5r4AV67x3jlXIBuQ3mIRaahVKTitF3fSucu+huigFjVNPhjcS/ljQmnufwOiA1Al4fyFlsrMQO/u6E2du+KHWREzOCBkqVLeqN/F82T8PdKxRKiwQ+tClQTga8IR24atSEqfb8XvNIsUKEEVpZemd01I4INSESOa0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=oltHG4ZG; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=F3GsR4+D; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="KHJtjIxM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XBYnbAbJNYk9teyYO7C7/cloXK+cIf7+5jPOWU/viTgCY2D84Q83n+gJ75ZvShhZLjEY/bx1Ee909hthnFF9Hfj6b4nUCDJ+NXMk1dwo27meerf3PuWPHh5xJ/1ccSMs1HZVYffmJsWMKVI5XiX+R/FldaUBbkkzcSGQ/DZvoGV4HBm9AAtJjIcFdazCqOg6H8+3p/dlclqV22pmNWhVfyNTQ+XOpoBZsNKxBAv4cckcvpTg8o/G3Q45L/hkB/X5pAqJDw32U9Xi9MT3izWbQ28O2NMwXM9a2JYj1O/9W0aMa+M2WV3WAEF+xS4vlYeDoTiJ2GaZ9UAfyesbqLPwCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZO35+c3saBXZkwqA7qqdrM9vT/xtMF9uZFOaMluoUYE=;
- b=wsGAHbAE6Gva4CVVThtLsZ3/M08Tv2doKpX28OtazoKR6xv/x3tox6qbT+zXrnsxNJcJ274bzpgk4LgSDV5DQxci9joJ4Tdr8UDodHIXnl4N7H+DhCaZRdSeRjWnNbvnfA0X5az51W3dXUkAw3eSCDSXGfeQU6rk9qCewssz6OWk5ASfQHUrc+65gD18qrjTwzqp/LZgdqR9mE01BWjla+P7Ez8363Z34+1eQkiJsVYZV4Rg3V3KYFUW/YbS2Ond84JtXL/5P1x4xENbIKlp0sSxJFQZay9YzNL1ZkIXE4ZvKkNBZvjrROE0MI7YcH/ybijhh32z4ajIwEjOoPceZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=zytor.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZO35+c3saBXZkwqA7qqdrM9vT/xtMF9uZFOaMluoUYE=;
- b=KHJtjIxM4cngdh9z7W4QNK1+aUA4fO0YMV52tztlIu0+uwVtODJz5V79167xY36tBnJDfGpQiDl+2NqSiijlbsuN0jmhOyA4MKTwES5fn93xArJWpe/hxPDhOssX+jIV4nI1jXsOz9pTydK/xFdfmrlwbAS4qEXp0nqPpPd7tq8=
-Received: from BY3PR10CA0005.namprd10.prod.outlook.com (2603:10b6:a03:255::10)
- by CH2PR12MB4167.namprd12.prod.outlook.com (2603:10b6:610:7a::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.12; Wed, 8 Jul
- 2026 09:16:22 +0000
-Received: from CO1PEPF00012E64.namprd05.prod.outlook.com
- (2603:10b6:a03:255:cafe::1b) by BY3PR10CA0005.outlook.office365.com
- (2603:10b6:a03:255::10) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.202.10 via Frontend Transport; Wed, 8
- Jul 2026 09:16:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CO1PEPF00012E64.mail.protection.outlook.com (10.167.249.73) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Wed, 8 Jul 2026 09:16:22 +0000
-Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Wed, 8 Jul
- 2026 04:16:16 -0500
-From: Sairaj Kodilkar <sarunkod@amd.com>
-To: "H. Peter Anvin" <hpa@zytor.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
-	Ingo Molnar <mingo@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Sairaj Kodilkar <sarunkod@amd.com>, "Sean
- Christopherson" <seanjc@google.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Thomas Gleixner <tglx@kernel.org>, "Vasant
- Hegde" <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	<iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <x86@kernel.org>
-Subject: [RFC PATCH v2 5/5] iommu/amd: Provide kernel command line option to enable GAPPI
-Date: Wed, 8 Jul 2026 14:44:08 +0530
-Message-ID: <20260708091408.12106-6-sarunkod@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260708091408.12106-1-sarunkod@amd.com>
-References: <20260708091408.12106-1-sarunkod@amd.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="oltHG4ZG";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="F3GsR4+D"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6688A8gD2222678
+	for <iommu@lists.linux.dev>; Wed, 8 Jul 2026 10:01:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	XQ9AX7OhkLOaP+j4lLrbeTNcxF7e4kwK6kGQsbCEXA8=; b=oltHG4ZG0U80gfpJ
+	tYRua4KBzGf901wPuYRVh2i5a1FPhwH/fr5a0zAjX3VDEublxoHPSvbZVaHRjjT5
+	CVNGhLqADIgdvEh+ShfpeXP7RXFgIQ32QbejmmRBpxzEg243jUP69Vl3QIpt/3ue
+	wOlVnwQMI5cMt5cnRPvam1Gpq/+FxAldRghc0cFUCAhGcdwDssjsTTQtE/2Cv2ZD
+	IWjMXV6OPjWh7LeTjXNlTovAKeiijLRzgWQqQQt4W9x5DEJhXHA5z98Sm5mYdGVJ
+	a1ACK+xTymCfENv1pL85ypKsPEXw7JDCXTDpWaCUDQ4ZEwRMav11ZN4OetgL0ZVW
+	+LRCmw==
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f9csssw5n-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 10:01:35 +0000 (GMT)
+Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-845e6a11332so893064b3a.3
+        for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 03:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783504894; x=1784109694; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XQ9AX7OhkLOaP+j4lLrbeTNcxF7e4kwK6kGQsbCEXA8=;
+        b=F3GsR4+DlPNvWPaVLAUTWQhDYhyyIKWpFNYMR6p1uf1MMTUEaNYq9mKyrCNfgIvXLC
+         BJAwgcKbM93gtavmxHK2a4ncke0sWa0YTSqzwnykzubuuzhn+KUZ5TIO7ZbNIBV5BoBb
+         hmQ4QkDAemYUKA7ovRejekxXaQNa5zhSygGgOHfTvFPgB/LAgkXkgvPNcw3augaA+GTT
+         Qnmey6Y//+yFR2KMfnW96LxOnRbBeptevNgadgiuLqm3oh9J6t7M6nDBU1KGqnA00lb6
+         dXPPlz86HRFChK8aPnKMQnwZY58yPm56J9C7rkd+I3dWaa6c8nQU0tSKg9YV+up4q118
+         h+aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783504894; x=1784109694;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XQ9AX7OhkLOaP+j4lLrbeTNcxF7e4kwK6kGQsbCEXA8=;
+        b=PmcRU7iAJSGkLd0XuVh7FrNKfCKq2vDzGAUwo+LLKyCgn478zS3FhkLS7LgWjcOLSv
+         9+Z2Rb+XCjZ/ZkiekKebgzwNddSlAeOi3m3EyS5kEtOfbCASgFY7xqIwsg0A3SgylT7m
+         4sucxWtZkGbKevxlsEIBl2zVtbsVFADmWHtSwdeAJzx5B+um1i/5OI/ZU7ndffhh7lAM
+         R3+1lsKSQAum7kaNzeD4S/x+ELkVSxSNC6yzsrj3cldJqY2FKLVTWJsr5t0In6IYZ1Am
+         D+LIog1n3O3Wva2Qt92z2Oz/damtCTmp3OH7WnmjQztIeEoPbFwixmCPgovCfm2rbxrH
+         3JSw==
+X-Forwarded-Encrypted: i=1; AHgh+Roy3L36d5h9tIiHGKxQQiqaprKPY/ZY8CaUjwDKO1upB+x9hOiRbFp3Lx5r9qsL4nQPencgPw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzEL5500C34oh8pxxXD51Wv7Mt3p7NUKQeQTqnizmJw3k2zcm4V
+	BaX/42yfwHA+n9Qx7vO3uPs67IXk04MkFa++GRAYWIKwD8FyPksSEnNrD3+YXV6w1v5nK58go5e
+	ySd2NcXHNpBEqepCOkgIY+gPE27B0CiHfXqnJJfRyEX3EidIFWNEVvpJO7g==
+X-Gm-Gg: AfdE7cnpTzGxCRzzELjsRnc2Y841pWrU+QRhLPXGuGHXW6mQ5NBaQ9vcU8FNuZauUwy
+	0pCsq2jRvBJHA1JO9vg34gX4oFX5ij42e0WZC5eZgijKhyKUMzz2r1FOjkBx79xVdTKaCQVeC7T
+	fNt60aCBFtVEjT1K2ezwYT3SkwCpogzjzsOzRSYe0SBCcylQt3yJD1RaWI7ROJyOYeA6XbkFqKi
+	v9bgNuztiQCzMQPzSYKA0PJg/bO+TMQbqpcrX9S/k6/ZmyZFJ3EAzfRdCwj9eyqJsyqXR82Ld7b
+	rQbFKifSa2GT4qyYiNbkKiMNuGnxvSFWcDD1EFvWxGgHmOwzTlnhILcpHBm1SnDHx5ZuRn/dzr0
+	XnHjl4vAHT407hQP9KifQ8c69B+alivUJ7vDseog=
+X-Received: by 2002:a05:6a00:2e24:b0:82f:3a1e:5618 with SMTP id d2e1a72fcca58-84842ee9c8emr1865645b3a.22.1783504894034;
+        Wed, 08 Jul 2026 03:01:34 -0700 (PDT)
+X-Received: by 2002:a05:6a00:2e24:b0:82f:3a1e:5618 with SMTP id d2e1a72fcca58-84842ee9c8emr1865535b3a.22.1783504892128;
+        Wed, 08 Jul 2026 03:01:32 -0700 (PDT)
+Received: from [10.219.56.198] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-847f6d4e741sm6916358b3a.28.2026.07.08.03.01.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2026 03:01:31 -0700 (PDT)
+Message-ID: <4e5a3d82-b946-4490-885a-ea7061939c32@oss.qualcomm.com>
+Date: Wed, 8 Jul 2026 15:31:07 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF00012E64:EE_|CH2PR12MB4167:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b4e8b2d-d9f3-4f91-c3bc-08dedcd19409
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|376014|7416014|1800799024|23010399003|56012099006|18002099003|11063799006|22082099003|6133799003|921020;
-X-Microsoft-Antispam-Message-Info:
-	0Dpk/9KFKUmHzmbcIcebfimBy6vu8JKEjWlyV8dIV1O/NRUm9NWdbbVBMekCZ/T7p9HP64swVlGg2fywGlKkjVQ1vow++r5yXgm57FCzU47fXVXNaGIGc0lhsttMaFRoUk2ZAmRgr4wxHy9vOU42s3jxLAV6BRQHzsmSsoUUejPl6DnHQedImWVfgf7FTHJoLsdByWCeWbLBFcBVIp6t/efNyHfoZlyr6P0jcaZvLuCH7RkuQ/KPnZHs7BGDmm4DA7AicxGdx24oKfIP3t+zOybxRslRPQY0tBzgRIbnc7ru3EGBR5MiG49ITjJIrenJRZncxkJ0BXK2morAv0ESUhJfdptF8Zvp47OPgJu7R6+jxq+lEMSXZSLGClrEk33lA+wrhobu6A/voxeFNng7qFT2YXMOjLQSFoYvm9BnRdFtY6ZJ47NUkh+UwslJO7q38CMnkGXfj1PqYqoI/L/IAm1Op/jDZX2ngz2uwHbJ48mEEsokhaiCtFdWIVDakYuz9NWZC+Vk50yXAffk0e/Z8PBbh/j88pNvK+J9lD9ytQyEH5pyQ/Fy15d+zUeRsaDuPDDg8gxGZPPY9aMGfHWq05dcQXUYjgFNEs58jjWz/G88Uly9PCt2JsNk/rvko5tjHe2NMNy5ycM2tHxBe+qXlVHp+lKxTNf0oInzqEzOH7dVJJGfchXbv7mx5hb1IvTNUEsCchQNr15q7xcB22kHF0wA6Jj14igAvvfyFHOFFXCZvMLYjAHcPEHKtl344DVK
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(7416014)(1800799024)(23010399003)(56012099006)(18002099003)(11063799006)(22082099003)(6133799003)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	alKULkDFfFBecoZYBQDqrccjJYG7CfKyhFCctjvj9oGsi5UABBIieYh387X55L0G+ZoOI8KDIEYyCKdrQnnspi0onz9eh1IjCGcbTDaZrRVg44ddJs6Xzh/fKfj3pv9zhI/VYLnbdvxPw0xDUIzDw6uHlykeD/kWy1yl60dnUrsG6xNZ7+3Ss3R6bGzux+PB7MgoAJxEHnSdxzRyLjbf6qLCQGBQCdhtXSnn6rTrZ/nhetByd7fWe1Gdrwy9ZHF3qW4u6xpUp2h3SFy655vV5ka1EtiSfpCEA7yi7R1g16UQ3DfNxmYHJNkTiZKvxleikQtd6nczW/HsZOMnL1LeC58T053FxsLJKSY+uO5PQkv+RLGUbfKU6FyruLhAH2e5HmtDH3Y1YNOi/nEKRj5sgpiPb9XnddRqP3xSJfqi0b/24GEDIsPTtoHxwOrY2zme
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2026 09:16:22.2374
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b4e8b2d-d9f3-4f91-c3bc-08dedcd19409
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF00012E64.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4167
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/6] arm64: dts: qcom: kodiak: Add GEM_NOC interconnect
+ for adreno SMMU
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <20260706-smmu_interconnect_addition-v3-0-afdca0125a65@oss.qualcomm.com>
+ <20260706-smmu_interconnect_addition-v3-3-afdca0125a65@oss.qualcomm.com>
+ <h6opbtr2ced3sannj3ym573qc2sjk7ek3clpto5j5mtqfrfk6w@34sk2zraoqtj>
+ <807f145d-88d3-460a-9862-b63fe2a52cf7@oss.qualcomm.com>
+ <a4f5sod3aflubxkk4mm4k5ozddydqcnqeac4s6vnozkd2nvxbi@hmh6zclsw5z3>
+Content-Language: en-US
+From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+In-Reply-To: <a4f5sod3aflubxkk4mm4k5ozddydqcnqeac4s6vnozkd2nvxbi@hmh6zclsw5z3>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=EtziaycA c=1 sm=1 tr=0 ts=6a4e1fff cx=c_pps
+ a=rEQLjTOiSrHUhVqRoksmgQ==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=EUspDBNiAAAA:8 a=Gb3r-SE-3tiIfwJ9XNYA:9 a=QEXdDO2ut3YA:10
+ a=2VI0MkxyNR6bbpdq8BZq:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA4MDA5NiBTYWx0ZWRfXxcNpnZNs7pd5
+ rRgMSvJDldxIKTbTm8Dnj+nbFisUEKK/4ScXZPW7SSsaENinkZLt7qxekbnQC9gWGkNWKdUuESa
+ UnV4riVz7ltTmTyN05MrLTK46P8LfskHv0De4NbQxd4fR5vNS7ABOkpVsekVMyt6k8ymUjmTYet
+ HmE3Fwg/j8Y2pYfJpGTn8lmO66Q6TQmceUuQLqYKOdVFou23OumWYIMnU2uQjy4JWorlF0cVBCv
+ RQj58xY7yb3jeE63/0/dka5XxVtNcPRbgwfgdcECunHVmOaezg3i8nbJiew+umXlmzAUsxJ9GgE
+ 6D+WS0kiBRuDVb9/9yjQTmHt4y+ISnIjILw5N4K8PI8LAloZIu+VqnwUphv9S8cPaW2zMNE+eyo
+ dtW6pAzsAloNUUBJoIoiAWtotUhsW/Z87tkMzgYSsi/D3huvIGS9dkMa6O283xiItjeQvT2iZT2
+ YZli1ZU9lWFFATzfwhQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA4MDA5NiBTYWx0ZWRfX3jGwnqfsszf4
+ NherMOdT6iR2CC8ekk62wrD4NDfRseOgH5usJptdy0ENrqiROtMpufr1yS0oBUg/cjKVA7KE46+
+ wEmxJU+VY2Fe5o5zT5jZvrIKEl13YcE=
+X-Proofpoint-GUID: cellYttBS1a1bt7ROT9f7T-iiLSICVDn
+X-Proofpoint-ORIG-GUID: cellYttBS1a1bt7ROT9f7T-iiLSICVDn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-08_01,2026-07-06_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
+ priorityscore=1501 clxscore=1015 suspectscore=0 bulkscore=0 impostorscore=0
+ spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607080096
 
-Enable GAPPI when IOMMU GAPPISup extended feature bit is set and
-the kernel is booted with "amd_iommu=gappi" command line parameter.
 
-Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  2 ++
- drivers/iommu/amd/init.c            | 27 ++++++++++++++++++++++++---
- 2 files changed, 26 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 26d7a9796e64..de0b23306944 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -94,6 +94,7 @@
- #define FEATURE_X2APIC		BIT_ULL(2)
- #define FEATURE_NX		BIT_ULL(3)
- #define FEATURE_GT		BIT_ULL(4)
-+#define FEATURE_GAPPI		BIT_ULL(5)
- #define FEATURE_IA		BIT_ULL(6)
- #define FEATURE_GA		BIT_ULL(7)
- #define FEATURE_HE		BIT_ULL(8)
-@@ -191,6 +192,7 @@
- #define CONTROL_EPH_EN		45
- #define CONTROL_XT_EN		50
- #define CONTROL_INTCAPXT_EN	51
-+#define CONTROL_GAPPI_EN	55
- #define CONTROL_GCR3TRPMODE	58
- #define CONTROL_IRTCACHEDIS	59
- #define CONTROL_SNPAVIC_EN	61
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 2e1889f8a9e4..27ffb2184bf2 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -465,6 +465,9 @@ static void iommu_disable(struct amd_iommu *iommu)
- 	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
- 	iommu_feature_disable(iommu, CONTROL_GAINT_EN);
- 
-+	/* Disable IOMMU GAPPI */
-+	iommu_feature_disable(iommu, CONTROL_GAPPI_EN);
-+
- 	/* Disable IOMMU PPR logging */
- 	iommu_feature_disable(iommu, CONTROL_PPRLOG_EN);
- 	iommu_feature_disable(iommu, CONTROL_PPRINT_EN);
-@@ -2999,6 +3002,12 @@ static void enable_iommus_vapic(void)
- 	struct amd_iommu *iommu;
- 
- 	for_each_iommu(iommu) {
-+		/* Disable GAPPI, do not check amd_iommu_gappi as it may be
-+		 * false in new kexec kernel even though previous kernel has
-+		 * enabled it.
-+		 */
-+		iommu_feature_disable(iommu, CONTROL_GAPPI_EN);
-+
- 		/*
- 		 * Disable GALog if already running. It could have been enabled
- 		 * in the previous boot before kdump.
-@@ -3038,10 +3047,19 @@ static void enable_iommus_vapic(void)
- 		return;
- 	}
- 
-+	if (amd_iommu_gappi &&
-+	    !(check_feature(FEATURE_GAPPI) &&
-+	      AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))) {
-+		pr_warn("GAPPI is not supported.\n");
-+		amd_iommu_gappi = false;
-+	}
-+
- 	/* Enabling GAM and SNPAVIC support */
- 	for_each_iommu(iommu) {
--		if (iommu_init_ga_log(iommu) ||
--		    iommu_ga_log_enable(iommu))
-+		if (amd_iommu_gappi)
-+			iommu_feature_enable(iommu, CONTROL_GAPPI_EN);
-+		else if (iommu_init_ga_log(iommu) ||
-+			 iommu_ga_log_enable(iommu))
- 			return;
- 
- 		iommu_feature_enable(iommu, CONTROL_GAM_EN);
-@@ -3050,7 +3068,8 @@ static void enable_iommus_vapic(void)
- 	}
- 
- 	amd_iommu_irq_ops.capability |= (1 << IRQ_POSTING_CAP);
--	pr_info("Virtual APIC enabled\n");
-+	pr_info("Virtual APIC enabled with %s\n",
-+		amd_iommu_gappi ? "GAPPI" : "GALOG");
- #endif
- }
- 
-@@ -3741,6 +3760,8 @@ static int __init parse_amd_iommu_options(char *str)
- 		} else if (strncmp(str, "v2_pgsizes_only", 15) == 0) {
- 			pr_info("Restricting V1 page-sizes to 4KiB/2MiB/1GiB");
- 			amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
-+		} else if (strncmp(str, "gappi", 5) == 0) {
-+			amd_iommu_gappi = true;
- 		} else {
- 			pr_notice("Unknown option - '%s'\n", str);
- 		}
--- 
-2.34.1
+On 7/7/2026 10:14 PM, Dmitry Baryshkov wrote:
+> On Tue, Jul 07, 2026 at 06:37:24PM +0530, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 7/6/2026 11:12 PM, Dmitry Baryshkov wrote:
+>>> On Mon, Jul 06, 2026 at 10:26:36PM +0530, Bibek Kumar Patro wrote:
+>>>> On Kodiak platforms, the Adreno SMMU requires a bandwidth vote on
+>>>> the GEM_NOC path (MASTER_GPU_TCU -> SLAVE_EBI1) before its registers
+>>>> are accessible. Without this vote, the SMMU may become unreachable,
+>>>> leading to intermittent probe failures and runtime issues.
+>>>>
+>>>> Add the required interconnect to ensure reliable register access.
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>>> ---
+>>>>    arch/arm64/boot/dts/qcom/kodiak.dtsi | 2 ++
+>>>>    1 file changed, 2 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/qcom/kodiak.dtsi b/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>>> index 90e50c245c0c..721526f023dd 100644
+>>>> --- a/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>>> +++ b/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>>> @@ -3389,6 +3389,8 @@ adreno_smmu: iommu@3da0000 {
+>>>>    			power-domains = <&gpucc GPU_CC_CX_GDSC>;
+>>>>    			dma-coherent;
+>>>> +			interconnects = <&gem_noc MASTER_GPU_TCU QCOM_ICC_TAG_ALWAYS
+>>>> +					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
+>>>
+>>> Why is it ALWAYS? Would it be better to declare it as ACTIVE_ONLY and
+>>
+>> Added QCOM_ICC_TAG_ALWAYS, to hold the vote in SLEEP bucket as well
+>> preventing gem_noc going to sleep when icc_set_bw is being called.
+> 
+> _why_?
+> 
+
+Now when i think of where we implemented the hooks, ALWAYS is not 
+needed. We should keep it ACTIVE_ONLY since we are already voting it
+back in resume pah. I'll fix it in next revision.
+
+>>
+>>> then drop the extra suspend/resume play?
+>>
+>> Not sure if I understood it correctly.
+>> Did you mean the extra suspend/resume play in arm_smmu_runtime_suspend
+>> or in arm_smmu_device_shutdown() path?
+> 
+> runtime_suspend/resume. I might be incorrect here, but I think it is
+> exactly what you need.
+> 
+
+Yes, I think we should go with the ACTIVE_ONLY flag and we would need
+this voting in suspend resume path (For the same reason mentioned in 
+commit description and cover letter of the series).
+
+ALWAYS would avoid the need for this handling, it would keep the vote 
+active unnecessarily, but still that would have been nondeterministic.
+
+Thanks & regards,
+Bibek
+
+>>
+>> Thanks & regards,
+>> Bibek
+>>
+>>>
+>>>>    		};
+>>>>    		gfx_0_tbu: tbu@3dd9000 {
+>>>>
+>>>> -- 
+>>>> 2.34.1
+>>>>
+>>>
+>>
+> 
 
