@@ -1,193 +1,196 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012037.outbound.protection.outlook.com [40.93.195.37])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4293E3033E9
-	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 14:38:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.37
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783521503; cv=fail; b=sXjA4YifghZkZsqSDoWCr5HRdmfemGZkyRct1Z8YIZhmYfq30EcyB3Ky7uYsgXhHAhsm4Oa3pcpbxl97v9OyQx9phm9YaXXaHR9q7EDIMAPEIfom7AkYKJFQvIqIHiwJqSRWFBlRyv/4VVLJJO3LDJI2pubxbD/HT/WdQui6zAA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783521503; c=relaxed/simple;
-	bh=sJajDyNzXY/BOdlAMs9UaiaJ1plaSCZaz5DT+MqH1FU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bIxTuvREV5l/VAcG8R1qFYGLW8OgCFj0s4FWFcKsOdddPeGH+wbuhS5LordAFy31IZYlYs8qeitXv0ApXZRMKtKYk7fYSVkCNybI15FPb1eFnYu/vz3RKhW2mirZ9pNSWuXxQ+enfzAbM97RkmJPFQguZoM8aCIHxohwUWxiY70=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=FihwWP6n; arc=fail smtp.client-ip=40.93.195.37
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43EE7481AA2
+	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 14:52:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783522332; cv=none; b=hfnnw9ieK1UdfiNkV0mXj02R1/TNByjw/go3ZJmZZWreo1hP29dmLweer6gWLm+ipsSMd9fRxj4tU81mM0E5Fny4GmisFcT71Y7SI7B68z2+XAVn0gVngzrbdFupM8KSh8aEcVsGqe632qOXAWLhcrEetePGjL8UxNfIcSYXgWc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783522332; c=relaxed/simple;
+	bh=RoFMDCUUj62w2tWbiccAzqrlHIyKF0aRDZB8FP8cyts=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZuWjRVncZ6ObleuRyHyS1CQtJaO/+PyCuSL/FvpekaOlMmDnlQIBQx+sXn4zDgDga0Ol/OZY5do53EktdWFJjt2tJ33HDa/Mc6wsVWUHGtef3IBMXQVE1/lAgGEsNgxOJUAn6t8r2iro78V2IrLZ4c7PQH1qjSL9iqNs5tczSO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=I/6K8tSV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=PYX55SPE; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="FihwWP6n"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IvxatlxoyW00TixYH2lp3CGGBMYvFIxGtOHzP4UvEQVePqARiGGYDMA9i2rH9pTVeenXKA/HKjD8ox0b8tFlyspG/Ohr5v4rxIfxRI5TxqXsJfiHQnRjgmL6LPvMEpernIhGeakNBnYVYw+ogXGfRU2tHD3lFcVir1Y3JxJrW95c0eSJuE6/Ej4rbFuSJmj06y1jM8Ngy7D1L/OK7U1RwrflUXXo5u0o3e0IIE9nOGmuYANLC0cCBGTlKn/hht9qZDytb+BBpU2VVlGAmn6tTda6kyiPP/3pBTgZVCrvK0VTQa5JobBAzhIAsggibqhYwMFEGMgJzzwS6nlmNd4FcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f6VAqjivv/IvAbv7Jmwhaj46hGkwSUFgTCTwMEqnnoY=;
- b=MlkrzzlLFDcVvoX+JQONzaUr/cLdIf5ld00DzsVu/5w67bwLtQhc/dIceUAteE4zFotLO7vBDwSGzkjOeM/YgysmBEdrqfKYlYVhA/VGRoj6lyRrWKJ7DB7JpRQfPe10Iu6ERRw4EVutg39CfMudXzUuOwVSvJkOIuCo5TIJHzTT+q2CglcJx9hSxS6bJaH2W7v2dhraA5cEZ9ihIKTEJKUlAeB+MOAd+eKM4EKOoqjQsB5MIGwmNbCTzgaBoNMYGzbyOuLEqWYig0MgIoiIhNERzqvXIMr24tt4u0ut3USkef6NZOWgI4N9oMM3E3nzP0blyW1MfZHzhv7hVR3OSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=smail.nju.edu.cn smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f6VAqjivv/IvAbv7Jmwhaj46hGkwSUFgTCTwMEqnnoY=;
- b=FihwWP6nkiQ8hgsiVjGppvvN1KidmT85+76axhV82Ff7/WhBbqJTnEAjutUGkX/VzLCeYwxM2hRe1vBsO7mv5qW73rE5wkoniu9gymZe6snRv6hzIMY3Y4uR58n1l1ddgJHoroYBucCVhSiJPr/wUhUi/g1dQv2gz89qHBtufQo=
-Received: from DS1PR04CA0025.namprd04.prod.outlook.com (2603:10b6:8:243::13)
- by SN7PR12MB7909.namprd12.prod.outlook.com (2603:10b6:806:340::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Wed, 8 Jul
- 2026 14:38:16 +0000
-Received: from DM2PEPF00003FC2.namprd04.prod.outlook.com
- (2603:10b6:8:243:cafe::11) by DS1PR04CA0025.outlook.office365.com
- (2603:10b6:8:243::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.202.10 via Frontend Transport; Wed, 8
- Jul 2026 14:38:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- DM2PEPF00003FC2.mail.protection.outlook.com (10.167.23.20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Wed, 8 Jul 2026 14:38:14 +0000
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Wed, 8 Jul
- 2026 09:38:12 -0500
-Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41 via Frontend
- Transport; Wed, 8 Jul 2026 09:38:08 -0500
-Date: Wed, 8 Jul 2026 14:38:03 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Peiyang He <peiyang_he@smail.nju.edu.cn>
-CC: <jgg@ziepe.ca>, <kevin.tian@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <syzkaller@googlegroups.com>,
-	<baolu.lu@linux.intel.com>, <nicolinc@nvidia.com>, <joro@8bytes.org>,
-	<will@kernel.org>, <robin.murphy@arm.com>, <dwmw2@infradead.org>,
-	<suravee.suthikulpanit@amd.com>, <vasant.hegde@amd.com>,
-	<yi.l.liu@intel.com>, <jpb@kernel.org>
-Subject: Re: [BUG] iommu: KASAN slab-use-after-free in
- iommufd_auto_response_faults
-Message-ID: <dhvcdnypilztuwxx3uivdie3ejgfh7zfkufhihmxvhkhdnh7gv@ywwlp56mxzwa>
-References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
- <29F8ABC41A81139D+fc011ccd-cc15-4f64-bcc7-88e5d16184d5@smail.nju.edu.cn>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="I/6K8tSV";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="PYX55SPE"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 668C3TSU2617315
+	for <iommu@lists.linux.dev>; Wed, 8 Jul 2026 14:52:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	hO6xcDIc0zi6w0QwroXm/ugLcJogfcgAT7RlRKexx38=; b=I/6K8tSV8Tog1rSx
+	QxTgfuz3V4KJuTrPPMd8xzxm2aaI6LUUSzIanf1NQbBAEsalbCXUwg382Rnv3p/a
+	jlD5XnZYGzgz8Uq63XhVbDtel8TCA0glGeJp7uDS2/7jzS24G+OzLfripjdAvyUs
+	FLlAFqO7Fr/02nlVXF7J7d7Yc//8R67dC1D06wli2yKvt05bnScaZi+H8ZaqYGwp
+	W4BNxGV2GnQmaAUIBS9iFVnWhFsGQKOGoAs7QJFDxEy3zArlMLhqu81mxr2WIh49
+	rrlcQ5TANwq1woAas9TIzX7YWOK0hKx1eMAwxXKKzh/eZDTNfg6thRCZ+7owT9yy
+	0rAePg==
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f9gqwa3uw-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 14:52:10 +0000 (GMT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6a17dafd042so910085eaf.2
+        for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 07:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783522329; x=1784127129; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hO6xcDIc0zi6w0QwroXm/ugLcJogfcgAT7RlRKexx38=;
+        b=PYX55SPEtmgJmYijW3I1pgPl81As17yCkmqZf2OhY8zNGAWfne+AmENWuTbMvfcZJH
+         +jBGcMkz+hV70cPYrhsriuOKu/CGmM/OCEU0tFGbP1QOSrUZ4Qs9bdkkN9SADh1iqFFR
+         +hddkVnm/S7iE3eVRMQfULdEcOMAXW8rTEMfyhB+2xNkvlx9pdlZPvTsathO9ZFmjdcP
+         aDKKoHaHWtrIXs+/qxUwR16AtimtvSuz2HuObvhN5p0tp1txe3vgofeVwjXY8BiJHX6H
+         ub8M4Jgr0lI1XfKtTy5ZLg8w3mnZMk7PIOU/+gRMS/9SKJK7YOPdT/W42YVDW5PqNMSt
+         kIXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783522329; x=1784127129;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=hO6xcDIc0zi6w0QwroXm/ugLcJogfcgAT7RlRKexx38=;
+        b=YYY/5nRND961jk6h3imCTJ1mE84KWKyXF2rjzNzcivumRyOiKV8qZHsHBI0x87fmez
+         JLzHnsnrTf7LwLx3/xUZSPLdCuw8j7H3haDoNb/0mZEH+vrEn9x6B3H2iivssGsjYUlO
+         jA+zMjq+ZiGASVQVQDyKIPJ0Wzq9nKXi9omSOiwNMpZNrJ9D87fQHtflbKEldD6O5N3m
+         h+qu05Xr7AYE/+Rqe9MqK1+h56oisF6YUkhWqJ76B7QX9F+J8Viwj3WRqO6GTyitA56V
+         mC0gwszac6T5BKmMhF8NxQ/lQFxy/FBB75+PrM5nQ6KzRjwRB0o0wwwlhwXkJuLwWWU0
+         uiUQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/mLgK9HxkMqhfmEQoQrd9joipwjGgfyFfc0/qOuGhLdI6WVewNDB14UkugCskdLhyzGY5jAg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwRLPDv9O47l+tcxCwA4EVBwop9WFGzUv+HSaI+hUmwvjvNUKkQ
+	Plf89H5i2eOUIWWHEStgJBBNrI1sDb11KNj5SqRJcz6SH/lHlxRDQifDOdt8dy3k5Vw+Yy1U0mA
+	XsienQOdCYHhy57r+GLNHp1SZpVCQlLhe7asZyLiizfb3BwakiPQNwfjQXQa1eD7EQA==
+X-Gm-Gg: AfdE7ckkayolXGY8S5OWH0nmHZE+MhrsSpQWQIZwp6Yj8vwYOFXA+2HvtfrDjnnDCR2
+	0WYL4vEAP9XcLxsB6/wenvTeQ+dJzu9m3OcawvZFNlk04JLfF3k+pG4dXkQmU7pyzudMUz9XCdf
+	EeXTsxSZssWGJdJAOIZkj3V63hFomHTONwercbwJykjXQLYQVqxvpqB0xEWlUFwHGuAi58Ml3eZ
+	jVFEbgMTMghBXqb6Jjdltclzo0vUM6afygNfFP52+tvPFHG0ZvIp8tbaJxxVHYkqYcyPVXZoUqH
+	3lBnyynF6agXKyfQDJ1khrQg1JPLxiTHnpdpXJQeYECG9ank/aj8FgKQdJrPidwZhe3Yv7mH29R
+	3KeNXHR4PcuHVER9n/XFsgZLNSSM09c6C/1+qJ6Q=
+X-Received: by 2002:a05:6820:20e:b0:6a3:21bb:17b with SMTP id 006d021491bc7-6a36da17682mr1672817eaf.58.1783522329613;
+        Wed, 08 Jul 2026 07:52:09 -0700 (PDT)
+X-Received: by 2002:a05:6820:20e:b0:6a3:21bb:17b with SMTP id 006d021491bc7-6a36da17682mr1672782eaf.58.1783522328951;
+        Wed, 08 Jul 2026 07:52:08 -0700 (PDT)
+Received: from [10.219.56.198] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44cfb13d624sm16831050fac.1.2026.07.08.07.52.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2026 07:52:08 -0700 (PDT)
+Message-ID: <4e266d45-ee88-42f8-91da-6253927686ae@oss.qualcomm.com>
+Date: Wed, 8 Jul 2026 20:22:00 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <29F8ABC41A81139D+fc011ccd-cc15-4f64-bcc7-88e5d16184d5@smail.nju.edu.cn>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM2PEPF00003FC2:EE_|SN7PR12MB7909:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1f3ee308-a923-4de0-bc95-08dedcfe8b4f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700016|23010399003|376014|7416014|18002099003|22082099003|6133799003|5023799004|56012099006|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	WapO6mVR6rU6KwMjxJjgBSYwdFBcZpKHcLqp0EXc1ThyymTb4eeAHTppurAYIsfPvNzv6mP8bwlt86dYRZW4W10Z+VIPH5G74xUAcZ6ht6Eym/PJwAMFDZJ/gp+EVG+ysLvjZ3P11uo/etqQRVKfF1sA2iCXLTl0h6lWbmWX0sI4LtdNxYpQ0M7zOGihH44qRf5a9etncveSXVHTSwBh8gt15Agn+vqJnTwuP/JzCUB40fwy025S8vq2ESfOsVKiWoV4UWtbGhaM+YlkrcKVTxAkvjnDxEsmFFcDXzxOrZRMSLeWn/lY2z45JZufLWslIXtllKsJs4yeePUqbIIr4Z689kvncWqM6FPT2rPJEVxIhokoXaKcuv5c3W9dfpy2jenMtWLWgOojS2dm3WSlnVMfaG0pgzEtHvFendrXTMkGJVtMBcwOMBqVvQM1ey01nVizOGU02j8CoPgOqYt8q+wGDOpYTskyOIVssi8XVM8FiW7FLueJGPbSohagK7HHBCby44VGLCyWZO1BPQmm5cYouS/UGXpHQ6SmVqawGlQENgm3hYOvjGFqwcHh9bGIqtrMmHdqxzJFTZTWkD1YqyJouD2shnRsy5QnCPhv1/9/5uDtdw6uujMqjWDJv5q3lAIruybEoN1zdUx/+ehp4CsKvek42N+4rwSb1tWVd+l2lMo1p6v7XMBemeHtmjPnJel/ruvyE79DlYm3b539GQ==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700016)(23010399003)(376014)(7416014)(18002099003)(22082099003)(6133799003)(5023799004)(56012099006)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	FxUl7ldSpRyDx+HIFAXwo7R/1vtE1eWk9AxTxYdoAw5ZK4rhxB9NwO7Tvs37U4P+cjO+zSNxnN6WqwqPC2coa5XuLw8ax1XBkUdZ1OcxJ+xbyg8rnYeyXTdizSFF9Zj+dozwx5ivQKwze8ubg61KSvKrcAGqtqfQRF1vS3HZFc9wnN3TT9QHNGjodoqJCe09/jC3uNOtnbwlsqIKFWK54koqtie9s7ExGAy/f23QSQcLRc8eDHQ7f3eYjnDrl3/8pX8ESPKF1h/lCTEXxQ3S/+0qeYKarIjHaod8y6zGdI+6sPk2GkjdSCb6MUqLPpYAuwaAyZ3PgyI+jKsv+q3fC+BnR6KiHz8DJspcWWWe/mXOKV1BwAFRB0u8OddtbfmMrib6Wdzifh42CTqHHQIqK2mO1GI8zpDrikCa9e4QpIxw6ZnhWUm8KWYP0j3Gtzbn
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2026 14:38:14.9434
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f3ee308-a923-4de0-bc95-08dedcfe8b4f
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM2PEPF00003FC2.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7909
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/6] dt-bindings: iommu: arm,smmu: Document
+ interconnects property
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+References: <20260706-smmu_interconnect_addition-v3-0-afdca0125a65@oss.qualcomm.com>
+ <20260706-smmu_interconnect_addition-v3-1-afdca0125a65@oss.qualcomm.com>
+ <nrht4irqtvt2vk3lrqvljonarc4kanht2nrwjt7pppsfhozffv@o4xei47l6gcj>
+ <e8b247d9-d60d-497f-a831-a9772d27481a@oss.qualcomm.com>
+ <phlk6zsxr7szdadsvgoecf7ewcqjkuaj5aeqmfqa4uvvvvnsmj@57u2pofxewuh>
+Content-Language: en-US
+From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+In-Reply-To: <phlk6zsxr7szdadsvgoecf7ewcqjkuaj5aeqmfqa4uvvvvnsmj@57u2pofxewuh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA4MDE0NiBTYWx0ZWRfX9xrebNQ51oIu
+ JqkyS+wATdRzhTcwcg8Ol63LAjwb4IIr143IMQ0SyhxpcUQ6CMP3sGhvST6wgltQ6QQOaj2u80P
+ DPDfsE02yGuZ8D2pD7ncIK3br0Hae4snzlikwIESCsC7Hu0CCr2s6srtMuPJr+2khcxeD3yRfcM
+ FMnCfTv+D46dSnBv+MLApFpaDg9PzdTVRAdYdKe/ehi9ynT8LBrv7W8GmfF6bFDgXVuJXStMnma
+ 0kasIjT/N9pynw8r3EVtFgPAK66MTIeu5z+SOy8QwAHofp5kSoWzYe58z4dciC6ioKJKqunr1O6
+ gxA2SCDVjPieIflgRLXvgsGANQvHt3JOa0WYXfjvk8o1VAoUYKyqcYvrvdp5LYRKrLuEsxvicpz
+ uNBVQElMW2tUVeomIX5BGQwoLF0M95UGNvptNJVXlwVOx7T3Khv7i4jIvvXiMQka/58QDOFiNDT
+ RYaohl9DIlwlmGuXi1A==
+X-Proofpoint-GUID: irsZThAaea2s9H14kax15DXoW6UpPRqd
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA4MDE0NiBTYWx0ZWRfX341J/JZ5/+Ne
+ 80Pm9N1+bj7F4Up8HbpB02HQqj3Kh7duXDs1whqeq2l29L3xv6FNPUa3+Ek79Pl4HF5js8CS1ok
+ fP87D9EUcamCjIURnuhL+sa30M3lHDE=
+X-Proofpoint-ORIG-GUID: irsZThAaea2s9H14kax15DXoW6UpPRqd
+X-Authority-Analysis: v=2.4 cv=Wf88rUhX c=1 sm=1 tr=0 ts=6a4e641a cx=c_pps
+ a=V4L7fE8DliODT/OoDI2WOg==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=EUspDBNiAAAA:8 a=6nhsP2hVHzjk3Kom7RcA:9 a=QEXdDO2ut3YA:10
+ a=WZGXeFmKUf7gPmL3hEjn:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-08_02,2026-07-08_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 clxscore=1015 bulkscore=0 impostorscore=0 malwarescore=0
+ spamscore=0 priorityscore=1501 adultscore=0 lowpriorityscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607080146
 
-On Tue, Jul 07, 2026 at 06:36:40PM +0800, Peiyang He wrote:
-> > The analysis above goes through the iommufd selftest mock device (M). We
-> > have not reproduced this on real Intel/AMD hardware, but the same lifetime
-> > issue is not specific to the mock driver: Intel and AMD both have real detach
-> > paths that can reach the very same iopf_queue_remove_device(). This is exactly
-> > what iommufd_hwpt_detach_device() triggers, via iommu_detach_group_handle() /
-> > iommu_detach_device_pasid(), right before it calls iommufd_auto_response_faults().
-> > 
 
-../..
 
-> > AMD (drivers/iommu/amd/): the evidence here only covers the RID/group-detach
-> > path.
-> >   blocked_domain_attach_device()     [attach_dev, RID]       iommu.c:2883
-> >   --> detach_device()                                        iommu.c:2398
-> >   --> amd_iommu_iopf_remove_device()                         ppr.c:270
-> >   --> iopf_queue_remove_device()                             ppr.c:273
-> > AMD's PASID path, blocked_domain_set_dev_pasid() (iommu.c:2900), only calls
-> > amd_iommu_remove_dev_pasid() and does not reach iopf_queue_remove_device().
+On 7/7/2026 10:12 PM, Dmitry Baryshkov wrote:
+> On Tue, Jul 07, 2026 at 06:06:59PM +0530, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 7/6/2026 11:09 PM, Dmitry Baryshkov wrote:
+>>> On Mon, Jul 06, 2026 at 10:26:34PM +0530, Bibek Kumar Patro wrote:
+>>>> Some SoC implementations require a bandwidth vote on an interconnect
+>>>> path before the SMMU register space is accessible. Add the optional
+>>>
+>>> Why is it limited only to those SoCs? Is it also applicable to other
+>>> Qualcomm SoCs?
+>>>
+>>
+>> I was hoping to keep this series focused on the core infrastructure
+>> changes: the bindings, base ICC bandwidth-voting support, and DT
+>> interconnect properties for the platforms currently supported on
+>> Qualcomm Linux and have been validated so far.
+>>
+>> The additional targets have not been tested yet, so I'd prefer
+>> to add their support in a separate follow-up series once validation
+>> is complete, rather than growing this series further. WDYT?
 > 
-> Hello Linux kernel developers and maintainers,
-> 
-> After further analysis of the code, we think that this UAF should not be feasible on AMD devices,
-> but still feasible on Intel devices.
-> 
-> ===
-> AMD
-> ===
-> 
-> We found no path by which a real AMD PPR fault can land in an IOMMUFD hw_pagetable's
-> fault->common.deliver or fault->response.
-> 
-> A real AMD PPR fault is always PASID-valid: iommu_call_iopf_notifier(), the only
-> iommu_report_device_fault() call site under drivers/iommu/amd/, rejects PASID 0 and always sets
-> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID (drivers/iommu/amd/ppr.c:107,140-148).
-> 
-> find_fault_handler() (drivers/iommu/io-pgfault.c:118) resolves a PASID-valid fault only via a
-> per-PASID attach_handle, or a fallback to a RID-level NESTED domain gated by ops->user_pasid_table.
-> AMD does not set that flag (only arm-smmu-v3.c:4389 and the iommufd selftest mock, selftest.c:861,
-> do), so a failed per-PASID lookup is simply aborted on AMD, never delivered to any RID-level domain.
-> 
-> The per-PASID lookup cannot succeed toward an IOMMUFD HWPT on AMD, because the
-> AMD domains that IOMMUFD can allocate as HWPTs do not implement .set_dev_pasid:
-> amdv1_ops (iommu.c:2663), amdv2_ops (iommu.c:2741), and nested_domain_ops
-> (drivers/iommu/amd/nested.c:291) all lack it. Therefore, if userspace tries to
-> attach one of those IOMMUFD HWPT domains to a PASID, iommu_attach_device_pasid()
-> rejects it with -EOPNOTSUPP at the !domain->ops->set_dev_pasid check
-> (drivers/iommu/iommu.c:3625,3641-3644). The AMD nested RID attach path is not a
-> substitute here either: nested_attach_device() refuses attachment when PASID is
-> enabled (WARN_ON(dev_data->pasid_enabled), nested.c:244).
-> 
-> AMD does have a domain with .set_dev_pasid, amd_sva_domain_ops
-> (drivers/iommu/amd/pasid.c:177), but that is the kernel SVA domain path, not an
-> IOMMUFD HWPT. The SVA allocation path installs iommu_sva_iopf_handler()
-> (drivers/iommu/iommu-sva.c:298,327), not iommufd_fault_iopf_handler(), so faults
-> delivered there are not linked into an iommufd_fault object's deliver/response
-> queues.
+> Then it should be a part of the commit message. All SoCs since SDM12345
+> need to vote on the interconnect (and then, in the cover letter mention
+> that you convert only a few of the SoCs). We possibly can help with
+> testing on other platforms.
 > 
 
-Hi,
+Ack, sounds reasonable.
+I'll add the first platform onwards which interconnect voting is 
+required in commit description.
+And update the cover letter to clarify that this series adds
+support for the Qualcomm Linux-supported targets available today, and
+the list will be expanded in follow-up series as additional platforms
+are enabled.
 
-Your analysis is correct. Currently AMD is not affected by this bug.
+Thanks & regards,
+Bibek
 
-The UAF requires iommufd_fault_iopf_handler to be registered as the
-IOPF handler for the device, which only happens when an iopf-capable
-HWPT is attached via a domain with .set_dev_pasid implemented.
-AMD's IOMMUFD HWPT domain ops (amd_iommu_domain_ops) do not implement
-.set_dev_pasid, so iommufd_fault_iopf_handler is never installed for
-AMD. The PASID-less path through mock_domain_nop_attach is also not
-reachable via the IOMMUFD fault path.
+>>>> 'interconnects' property to the binding to allow platform DT nodes
+>>>> to describe this path.
+>>>>
+>>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+>>>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>>> ---
+>>>>    .../devicetree/bindings/iommu/arm,smmu.yaml        | 27 ++++++++++++++++++++++
+>>>>    1 file changed, 27 insertions(+)
+>>>>
+> 
 
-The existing _test_cmd_trigger_iopf() helper always responds immediately 
-(read+write on fault_fd), which is why the current selftest  does not 
-catch this.
-
-@Jason,
-Is it worth adding a test variant that triggers an IOPF without
-responding and then detaches — to cover the cleanup path in
-iommufd_auto_response_faults() as a regression test?
-
--Ankit
