@@ -1,244 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012002.outbound.protection.outlook.com [40.107.200.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7906438FFB;
-	Wed,  8 Jul 2026 12:50:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783515011; cv=none; b=mYF0cgU1dCYkz9S6x3fgoOQBXRVrbuODdd28hCmLJ4+2wT4lKOrbGEjzlf5RrItz4SM1eEyF9gHxPxCViFIv6p9jphF/INqZj+rCmdYr5qj5fR0e9f3I2MtvuEc54jOxK0lCHnic3GlCllY5qViMStLqGcf7QTovv96HPK3oM6w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783515011; c=relaxed/simple;
-	bh=IbwF4pMHfyhwOslYT5YnzmrvzgTa5uH5GBgU1nK9uiI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RNjmFQYyO1Jg6KkQGwSC8CVMXnKm6UPOZCdNq63h8S3FPArP8O8/qbI+dPplRV3suSHb5o5VwXEzSVzPkz8TX06+quh0REhCzpppy9nkYg1E2RY4PiM8Jc5F3M4368mpsrfn4mHbEsn6rXapPnH5XIiV0htv5HVE3w37LuOCyGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jitZrOHB; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E659F1EE7B7;
+	Wed,  8 Jul 2026 13:05:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.2
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783515938; cv=fail; b=n7eYBXG/BVZxzcJ2dWa+wNiAW6EGiXbaN+qPOWBl5TxDKPEzmpe5Esshse0RhGdU4iOE76wH9/L83qKIlM/zmrOLLW5of+7Vur9mINH9n/Rw70Inxu85DWoCIQl98ijdR0SaxabVrna8YijVKLKCTaZ5MHPeuKu4/2nj8lwoYwY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783515938; c=relaxed/simple;
+	bh=N4BtVeeosIG2x1si7O1IJK3km5VDtnnn6jIyErfCX68=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=hyvqj7ljGASsRm2wDoM0UewXvbJS+mURF/L0Oue44jWePcUWTsZV/aFj+k498rJBq4BVgdOlcF7fnCsOR2TQP57f/elyLvtGmu9pXQouBpyZQ2fkvBJc/qHNYlpkry8kKiphQeixjapz7AfQpVrL3qtZfUSGSajPtoW5eGkwb1w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MRvps2gS; arc=fail smtp.client-ip=40.107.200.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jitZrOHB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2693F1F000E9;
-	Wed,  8 Jul 2026 12:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783515007;
-	bh=IbwF4pMHfyhwOslYT5YnzmrvzgTa5uH5GBgU1nK9uiI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=jitZrOHBE9XNJumMdXFVv18tUngtPLdb9x2l4MXb1a4a3audPmwI5ES1+E/p39+fH
-	 HMBtTttJu5WKPwMZpzl5XSMW8IWWsdWOQpWuuuOHUvCzW0Upi/fHIEHKy/XatkKhbs
-	 YIrgECVYDaOyOlaeXFov/nDhiba0x7J/yL1Q67FUZOmQNsefjzpkn/aCjEu0dJ6ZK9
-	 nlap2Fjp+x+P5ahqGT40ffudUAfNKdE4tL3hjqRQjY1+Q8v+zswk6N6KyX0QPm3fqz
-	 Jak61XpK3z4GmnyZVFYWCCa1m5lbXTTe07OjSwKUXfEIRonD9IqEaS2TOTSr62FACC
-	 l7BKByWi/ic2A==
-Date: Wed, 8 Jul 2026 14:50:04 +0200
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Will Deacon <will@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
-	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
-	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
-Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
- set_memory_normal()
-Message-ID: <ak5CXzGStC6ZmtwI@orome>
-References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
- <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
- <akYs91INHMXMTI-t@willie-the-truck>
- <akZkuwktaXFTrASP@orome>
- <akaSJ5D98w2cHqb6@orome>
- <akftuw9NyRy36fXA@willie-the-truck>
- <akuvyu1Pq0ZVMZV0@orome>
- <akzikTrmhMsvkNVY@willie-the-truck>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MRvps2gS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MMtkJ5eLcOy6po2g0WotYN9s0MjZrS65txuAes3XIiQtjfXtzD/9M6AHv+poaBu1iyE2RNbNoZXO6iUyDOpZzWO7TlpDLnLrOTopBIgbzUHSpvpUtEfXGPNRuEMXLkuptBuA2q8X1iJi06F2GPFfThQyTaqlwhsiq4jTm1aVeI90T2U7y1DwJLXzmvcQBQ7qaPAnZ3Q0gY7FATmaKTRkZQ8hKFc0+JYNh4hqoZBg2aGFnou2DL+chAQ0bqXTV1Ta21JJxm/IqhxHpeXqecnvCx/DXI+SjZDG7C+q3VOhKUAX0upOSiFhvcSVDH7G7ojJkLhVqC57Fg8YAi9Rno9LMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UiiG3O7C7E8Y187yZCWZJCROxDGCT070jn0XR7ExXyU=;
+ b=SiKdo2I+3bWYayBdicx2YwBxbUY02hihZy3dhabMVZ9Gpa/4fl7IxSYrrcL5rCRQ3DaN3F+iLqdEZp6mqNczB7FD0hd57wXRIp96IMHQAcjA0whTnEQB+G+Bgg7f9cmdn1KO4AgoV4qdeXPrHkSpaNti/VOT0sFrQu2MI3e6hWZiGDP95h1R2KvtZDjbXfWBihk3XDM+BhGWt1tWDD+9ks59U18c49gRql5w4/P47xDnFQy2eX+RBsXITShTqAuklt9uRoSOtrtRKzYI8EiLjHb4YDm7Uj6xUnwc/Hsa2VfCrzLwuQEa8gTasHOgqLNNe3jWzIHSJWmDAXOoMVbTUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UiiG3O7C7E8Y187yZCWZJCROxDGCT070jn0XR7ExXyU=;
+ b=MRvps2gS1LbJx2CxTYv6AYajVW1TxWY6KGp8K6hF4GQQ9QmVRmKVDm6WDxWYzEcLyng2I7XAAYDcjxPqIYz1Y8xVfPswvcsEC+Ib2zJSX+/IQf15qMtyiawV+Jrd9cIFnC0GPilZsX9a/iks4bj+RwsjQL5OLO/BNeikFGzOjszm/9i3Tukz2q1/I6KpGWbwh8ZZQRrIO9hg1mCVjJi6xK8H/mmWiYPXKlkFAZnQ3DUvt1JzHHio8WofhARAqrknA4r1Kr3m6kW7CxQCblmpMbboLKC/JpnfpQefGBB9Q16iEoUHdWmQQVyTDw+eBUNHghsgT6TjdaZUrC4ekoicWA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH0PR12MB7488.namprd12.prod.outlook.com (2603:10b6:510:1e9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.10; Wed, 8 Jul
+ 2026 13:05:31 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.008; Wed, 8 Jul 2026
+ 13:05:31 +0000
+Date: Wed, 8 Jul 2026 10:05:29 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 8/8] iommu/arm-smmu-v3: Support the DS expansion of
+ RIL's SCALE
+Message-ID: <20260708130529.GO220801@nvidia.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <8-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <ak2J2gLgXD7WJbfv@Asurada-Nvidia>
+ <20260708000239.GN220801@nvidia.com>
+ <ak2xnfGDSnITiEjk@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ak2xnfGDSnITiEjk@Asurada-Nvidia>
+X-ClientProxiedBy: YT4PR01CA0474.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:d6::28) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="gs6kcdn3aiethnov"
-Content-Disposition: inline
-In-Reply-To: <akzikTrmhMsvkNVY@willie-the-truck>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH0PR12MB7488:EE_
+X-MS-Office365-Filtering-Correlation-Id: c2c5d020-4f52-4950-3cec-08dedcf196bc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|23010399003|376014|7416014|22082099003|18002099003|3023799007|6133799003|56012099006|11063799006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	FOl7sIzKOxx4j9YONPsdsCuBHimAJlRguvYnO7qpBx3KzMSyNS5dtfoPr1D3scueFRuUTakWAq3ViYjeBFRQIJG8R2yX4CTb+JhgKSyoDOhX9aCVjZeaV3NO1/utLh76aCoOviz0Ixxklubco8LCaiPOOG6heGhoXGGSo7+qMYd2I9dsgeRG+2Yzp6Gnvu7xB5i/CUJ1CaQkGRyBdblj2WhXh+VxTxG5ZZqYmJX+SSoM0YsGy9xoN351l784MTvnsbjLc1vTopgaeOEg6XkV6Yh6RXhPbkE2zr3eTS37+hJCYa5yhtMf46FCmTZe2GiJ+UekrEEo4uHWkuH7Kdt+K7j5qhzRJvS1ty9qUbSzqi7USxcnnjCUCYbZw4iIupI7yJFFnW6GV/IbAajWB69IIYsrHZFDlXA573us3Z7tVN12fhgjLbHm0iIMMlQi7sh2lsOaY1Cj2IGtR74kEYFwrdEJTKydAp1k6qOQcBiKI1F6v8QuSdX+38er4M/QT79lEvShwltpSBLd59b6m3PMF+jQ1/B4qhXzMInHyhMgYXvJnj6+5P/wNkB0qwo5CCphrYQifeekOQeVow9u81CTcgUQAoBvFB5LB/N4IYCjEXGB/JArfCeNC1sPP32TjUuGk8yY6glMlnH19CUNKM3E2QB7cdTd78vMudqqd//YguQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(376014)(7416014)(22082099003)(18002099003)(3023799007)(6133799003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?HNSj9N/VdS2A1NFa7m4AyQLn39uhFqRRlSadq7YQrlFuc+Vi5p6Qnoh8Ylvs?=
+ =?us-ascii?Q?KT/TspXrQmmbbmTyeeLkLprseCL0kcZ55F++7OYSCXucSkaYI0A9tzsDwghm?=
+ =?us-ascii?Q?4GGUfRU2/Xn6LBVSsLDi2fxh2fTbEoUzvM4kOmNJ8DhMeXN6z5jacsAeBeMI?=
+ =?us-ascii?Q?UEK9d8rhu4sBVTiXr7KSNCdU/VQ4uMrOJS5puCGkOFE3CTsvWKgohTOkpagG?=
+ =?us-ascii?Q?Y89p24bqt/bfhKw9CdmWQcr8O6p9GSxRrlsDdwSk3lCJ66JaThMH7UPBU1e+?=
+ =?us-ascii?Q?Reluri4YI7v/hYAUpxaUMcgpG3lIctAoj8ps0g6TYl/qqU58gldj2ZPULpEU?=
+ =?us-ascii?Q?YWWYBi77T/jK1Rg/Gc1HBR9JTljMV7iXmT/2BWOoyOnlvIC0DMqQg4ZK/bOF?=
+ =?us-ascii?Q?Za8kwKcDz/THspk4M3Y5gRbENP64+RenefvYKUDHggDkOl92qd1UEjX2Rh6G?=
+ =?us-ascii?Q?oM4o8SEjNGnPqZy6HrF7BD97rt4wgxKKeTsY1IT3c1PRpdNwGBXm0PBgwLSJ?=
+ =?us-ascii?Q?Qa56uG7E3vUvsD/8Tt8NWG+LIe27c4k0q6CnAZ52MTGPERloRRltgPGAgSD5?=
+ =?us-ascii?Q?qxN31zJGG5WvIkDvHnLgb2dSeZPX1m7XK+BPQkO8oUzAjAMnk4jCssuWx11h?=
+ =?us-ascii?Q?ZofJPqb+dZwt+tfu60hbAlfVjB5C3kUkKXOxbkfy6OeGQRoUVSlh6gZI4A8l?=
+ =?us-ascii?Q?DryCHqNb480qu2VlJg1wjk2uEn8VveaSoGrBJJLKqHJWZhRlrXXPqQ4fHx6D?=
+ =?us-ascii?Q?0FgC+H7bWQ5djRm8/nqcXhAsVsACtNN5mcTb5ZztjUEYR3UslucoDkuwb4Qy?=
+ =?us-ascii?Q?jgVe0WrkkDvemUqha1W5wfe/t5Tpmar0B5lNjh25gqweULEb+bo8JXi47erL?=
+ =?us-ascii?Q?qlxUUIenK0BefHcd/6GpO0tbG70RXiTRxBCy6jc0xelc6xFgnUNQVhYByKEf?=
+ =?us-ascii?Q?sR1vFzdsbQ0dMK/qPAd5xzyzc/wHf68sHRnKRy6SRk5DIN7a2CxPPXlwanNh?=
+ =?us-ascii?Q?R39N4LmvnleSM0X0nXyIr3J34wmNO+1eqlWNt0u4o/9rmUGoRaF74bBi097J?=
+ =?us-ascii?Q?jbCEXE0vz5FeMrvtqWxfSc5S/4Sc0V8WBhcZ4RqDzNkNDMiDck+AUuMttrUq?=
+ =?us-ascii?Q?Uj5xiAbvmoZ4gigFB+mlG9XMs9L6FECs0gmFr4Xr2Bq/glpKfPXyM8x33u38?=
+ =?us-ascii?Q?jFD7aP3Qm+iZkwQHeHzrTfKmXVBJ6dDJI7W9uSasLVAKusl/4yZ8Xh3zQ1oR?=
+ =?us-ascii?Q?rv1JxuhUI+xipJZFbdio2GoYuYJRIdWfoK4P3saoNd4zCBWyB7u4QjqPcDEL?=
+ =?us-ascii?Q?rIDKTb5TWaOxghwsuLSQrcUneLEs9tiLusi2w1dWaYZDbSp//nEbVl1ZPALT?=
+ =?us-ascii?Q?K4kMC2PhetPLADs65s65cnEMdGTJeeAyBbhlGZywDFr8YI9lWpWaMABaONuU?=
+ =?us-ascii?Q?Ls6LwkSWvFXVN6tyraPQLcXnHjBepbesuF1SgEAk+326zgoxQKCuJMaXMy+7?=
+ =?us-ascii?Q?8vw3biHNIqghDDyJ0ZpA5Zg7CmaZ+BSpAHciQ3vIeJcxTQsUTzTYmMxG16rQ?=
+ =?us-ascii?Q?q2+jYnHcWNr9kNASdCGoqdFAZ1xfbeS/G6bHk6CkMOJNUnHM3Is2Uz9oi3Zg?=
+ =?us-ascii?Q?OUc6JqXuj5oI0njix/BzgUBmkddzNJ8OiaQjoL5KWeeqGU23dauRkqtgT62C?=
+ =?us-ascii?Q?DQrIwMDwVjLLXztbNNAT2lMtbXkLwIj313wPAn+frAI1LWrZ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2c5d020-4f52-4950-3cec-08dedcf196bc
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2026 13:05:30.9627
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wocz7QcR7udcdsZqh9d5q27+aysvz/xiywSDOH6JZIaff/uF0a+U55hwFdyT83wt
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7488
 
+On Tue, Jul 07, 2026 at 07:10:37PM -0700, Nicolin Chen wrote:
+> On Tue, Jul 07, 2026 at 09:02:39PM -0300, Jason Gunthorpe wrote:
+> > On Tue, Jul 07, 2026 at 04:20:58PM -0700, Nicolin Chen wrote:
+> > > On Mon, Jul 06, 2026 at 01:26:45PM -0300, Jason Gunthorpe wrote:
+> > > > If DS is supported then SCALE can go up to 39. Detect the IDR and compute
+> > > > a scale max that is compatible for the entire invs list.
+> > > > 
+> > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > 
+> > > Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> > > 
+> > > > @@ -5235,6 +5242,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+> > > >  	/* Maximum number of outstanding stalls */
+> > > >  	smmu->evtq.max_stalls = FIELD_GET(IDR5_STALL_MAX, reg);
+> > > >  
+> > > > +	if (reg & IDR5_DS)
+> > > > +		smmu->features |= ARM_SMMU_FEAT_DS;
+> > > > +
+> > > 
+> > > Just a note here:
+> > > 
+> > > This somehow conflicts with my iommufd_invalidation_loop series
+> > > where we sanitize user space commands, because the driver would
+> > > support IDR5.DS. So, one of the series would need a rebase.
+> > 
+> > Oh that's an interesting one. So if you add strict validation it will
+> > technically break DS, no VMM can set DS to the vIOMMU as then it would
+> > face invalid SCALE which the kernel will now block.
+> > 
+> > Maybe these hunks need to be included in your series, I do expect it
+> > to go first, and we should try to validate fully.
+> 
+> OK. I can take the minimal DS part into my series.
+> 
+> One more question to confirm: there are other fields like DS, which
+> are defined in the spec but not supported by the driver. Should we
+> expose them via hw_info while rejecting them via user cmds?
 
---gs6kcdn3aiethnov
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
- set_memory_normal()
-MIME-Version: 1.0
+Yeah, we decided long ago to expose all the IDR as-is. Userspace needs
+to understand what the conditions are for including a feature in the
+VIOMMU.
 
-On Tue, Jul 07, 2026 at 12:27:13PM +0100, Will Deacon wrote:
-> On Mon, Jul 06, 2026 at 03:49:24PM +0200, Thierry Reding wrote:
-> > On Fri, Jul 03, 2026 at 06:13:31PM +0100, Will Deacon wrote:
-> > > On Thu, Jul 02, 2026 at 06:41:23PM +0200, Thierry Reding wrote:
-> > > > On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
-> > > > > On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
-> > > > > > On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
-> > > > > > > From: Chun Ng <chunn@nvidia.com>
-> > > > > > >=20
-> > > > > > > Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protec=
-tion bits
-> > > > > > > on a kernel-linear-map range.
-> > > > > >=20
-> > > > > > That sounds like a really terrible idea. Why is this necessary =
-and how
-> > > > > > does it interact with things like load_unaligned_zeropad()?
-> > > > >=20
-> > > > > This is necessary because once the memory controller has walled o=
-ff the
-> > > > > new memory region the CPU must not access it under any circumstan=
-ces or
-> > > > > it'll cause the CPU to lock up (I think technically it'll hit an =
-SError
-> > > > > but in practice that just means it'll freeze, as far as I can tel=
-l).
-> > > > >=20
-> > > > > Probably doesn't interact well at all with load_unaligned_zeropad=
-().
-> > > > >=20
-> > > > > > I think you should unmap the memory from the linear map and mem=
-remap()
-> > > > > > it instead.
-> > > > >=20
-> > > > > Given that the memory can never be accessed by the CPU after the =
-memory
-> > > > > controller locks it down, I don't think we'll even need memremap(=
-). The
-> > > > > only thing we really need is the sg_table we hand out via the DMA=
- BUFs
-> > > > > so that they can be used by device drivers to program their DMA e=
-ngines
-> > > > > internally.
-> > > > >=20
-> > > > > Looking through some of the architecture code around this, should=
-n't we
-> > > > > simply be using set_memory_encrypted() and set_memory_decrypted()=
- for
-> > > > > this? While they might've been created for slightly other use-cas=
-es,
-> > > > > they seem to be doing exactly what we want (i.e. remove the page =
-range
-> > > > > from the linear mapping and flushing it, or restoring the valid b=
-it and
-> > > > > standard permissions, respectively).
-> > > >=20
-> > > > Ah... I guess we can't do it because we're not in a realm world and=
- so
-> > > > the early checks in __set_memory_enc_dec() would return early and t=
-urn
-> > > > it into a no-op.
-> > > >=20
-> > > > How about if I extract a common helper and provide set_memory_p() a=
-nd
-> > > > set_memory_np() in terms of those. Those are available on x86 and
-> > > > PowerPC as well, so fairly standard. I suppose at that point we're
-> > > > closer to set_memory_valid().
-> > >=20
-> > > Why not just call set_direct_map_invalid_noflush() +
-> > > flush_tlb_kernel_range() for each page? We already have APIs for this.
-> >=20
-> > Having a "standard" helper with a fixed and documented purposed seemed
-> > like a preferable approach for this particular case. We also may want to
-> > make the driver that uses this buildable as a module, in which case we'd
-> > need to export these rather low-level APIs. And then there's also the
-> > fact that we typically call this on a rather large region of memory
-> > (usually something like 512 MiB), so doing it page-by-page is rather
-> > suboptimal.
-> >=20
-> > > The big challenge I see with any linear map manipulation, however, is
-> > > that it will rely on can_set_direct_map() which likely means you need=
- to
-> > > give up some performance and/or security to make this work. Does memo=
-ry
-> > > become inaccesible dynamically at runtime? If not, the best bet would
-> > > be to describe it as a carveout in the DT and mark it as "no-map" so
-> > > we avoid mapping it in the first place.
-> >=20
-> > VPR exists in two modes: static and resizable. For static VPR we do
-> > exactly that: describe it as carveout in DT with no-map and deal with it
-> > accordingly in the driver. Resizable VPR is for device that have small
-> > amounts of RAM. Content-protected video playback will in the worst case
-> > consume around 1.8 GiB of RAM, so we want to be able to reuse for other
-> > purposes when VPR is unused on those devices. In that case, the memory
-> > is also described as a reserved-memory region in DT, but it is marked as
-> > reusable so that it can be managed by CMA.
-> >=20
-> > The resize operation is fairly slow to begin with because we need to
-> > stall the GPU and put it into reset before the operation, then take it
-> > out of reset and resume it afterwards.
-> >=20
-> > What kind of performance impact do you expect?
->=20
-> You'll need to measure it, but we've seen reports of double-digit
-> percentage regressions in performance and power. As I said, the problem
-> is that you need to split the linear map to 4k page at runtime to unmap
-> the dynamic carveout, but that isn't something that can be done on most
-> CPUs. Therefore you end up having to use page-granular mappings for the
-> entire thing, similarly to how 'rodata_full' drives can_set_direct_map()
-> and the perf/power hit affects everything.
->=20
-> It's hard to know what to suggest... I wonder if any of the memory
-> hotplug logic could help here?
+Something like DS could have reasonably been concluded that the IDR is
+sufficient since kernel always supported it since iommufd support
+came.
 
-I've read up on memory hotplug a bit and it sounds like it could fit
-this really nicely. Given that we only use CMA (along with the extra
-patches to it) to make sure that any buffers are reclaimed for VPR use,
-we should be able to get rid of the CMA usage altogether and replace it
-with online_pages() and offline_pages() instead. Rather than using a
-fixed set of CMA areas like we currently do, each "chunk" in the VPR
-driver could represent a memory block instead (which looks like it will
-be 128 MiB for 4 KiB pages and 512 MiB for 64 KiB pages). We currently
-use 512 MiB as the chunk size, so it should be relatively similar and
-easy to adjust.
+Some things will probably need kernel flags to indicate the support
+is there
 
-One issue that we would absolutely need this memory to be ZONE_MOVABLE
-=66rom the start. Using no-map in DT and then online_pages() probably will
-not work because there's no struct page for the memory. So we're left
-with keeping the memory onlined by default, in which case we'd need some
-way for DT to instruct the memory to be put into ZONE_MOVABLE always.
+Other things might just work out of the box (like a PTE or CD
+feature).
 
-There's a "hotpluggable" property for "memory" nodes, maybe that can be
-extended to apply to reserved-memory nodes as well?
-
-Thierry
-
---gs6kcdn3aiethnov
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpOR3kACgkQ3SOs138+
-s6EbFg/9G04JpY5Cu3AX1K9vtQtrw3D5Gowsl1qT7PXe9AmN9PK2oggEDnsm6JPw
-hyDVKxzpLbktBMB5vNKmr4KGYrIEeW4fs+thwrdNjf5GhX7cTQyL78oHaEVTZAn7
-cpiFfepSy6xW4ZDIpHzj6bUVg06S8VZmLOwKHuDbA4N6PZ95evD1ff3/TQs6Y1E6
-WJhgBPjZbTLh6jiIM1y2hRK3GAChy9nC2g2R1LOySIK9NBCgfKV0p2/hv+vQCLSk
-e5ON2GcP06dR1XChOMnEPkUS4BzptxIzVkM7aRiGPJqxVREXJK4MvRTyjZ+W4FuX
-R/QDhwkxdI8+4pwfVPWB10dEWH5vfIrxU5VwO4Uujp4p14P1/nKkWXTe8S69Qitj
-GU8UxLk76btqwkVS43qOyHXH+yXuQBiaWBVTyo8vQx3zp5i8gq1h1xm04ryI0hWj
-BGqXiOxzDr6lEmXUj6h3gUTP+14whWOW8lTqIL0QTKwC4HDv5KTgfgBME2KkYAwp
-1adJdmJ09vhkKAOK1mKHCJHmhOggmoDpIfH8yYSbHeTe4mZZHq9qKtFjvzA8TtMw
-82H0EfyjYM8eNPNZU1/SfsTnhKpTmnLpDCmmdz6Oe4hWGxZVO16z9VujL/EPa0fa
-mY3dWpM8cSvKCP6jm8jguy5IhhLZkS4ljig1obSEvcH0/Tu1FJk=
-=zFs3
------END PGP SIGNATURE-----
-
---gs6kcdn3aiethnov--
+Jason
