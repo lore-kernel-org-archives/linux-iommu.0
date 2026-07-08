@@ -1,117 +1,111 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87B0D403EBD;
-	Wed,  8 Jul 2026 12:12:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBC8831327F
+	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 12:43:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783512727; cv=none; b=lAO81Plld+P48KNKaKPb8JxUS7jcUEaHdzpD0GF7FJpvNUYwnXpWEeALN1Eeu7b2CQkVpUpOFORV+bbjPlmtg3AUaRJ9WT5I757vRKB/2watb6utMrrZZSIjep+xHpFJTc+mX1GyQsEpRkqRBko52rRgIXNFUJ0fcemdabosTow=
+	t=1783514613; cv=none; b=sgi0tBaci4/f0f6F51hKiBvu0QHsTe8K7nyn/lPwNrDQhJK8123xYB8I+gwA321l4AEIt/JTSmoxXfqpwjEmzZ1gY/hJJ6A3JbljSBIGAAyvFvviHcZz4MpzqFikzNq9bCRhlgjX1ubTPhtLRzQlWRi+xiwh3ouCQapXX2DtsxA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783512727; c=relaxed/simple;
-	bh=8/7zvmWxegXEn2qwWzbLy+la1fhDjUolmn1c+tkuiCo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=t8AC1wcmX3gnVzlp6aULjfOwy8bM+q4eJks3jmQvUdVOwfCKCyfN1uJIe9wkuZH8oqQ5vA3RNP7Y0uh5W5nunLul26CrezOvnDrTRWXS0URXboeYRLrGO26R8+A4QFuy8nv87GCjRnG5lp/W8pP5I2HpjjYp0mYUE0SxDJUOBQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=VYLThK6n; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1783514613; c=relaxed/simple;
+	bh=YPSlorxvKGGGAn9rS2DCDvIqf9nDCHFr8SvpqVkku20=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dEmQCCtGJMchZOsiYQ0SmEbazEvWuqnO0IkJZ/WhZY6d4DJMGX/g/dqhyjhSN5cSENcFinWOldJ7fy+DT6xiXKiPF+g9/0OjoNUFotGaSc1gGgoaQztAmHk1t7k4E3NL9vim2x1hNZYuBFmFHc/QRkdXjMZ9nhxPXBWWtas2OKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=nraVjsSR; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="VYLThK6n"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8995215A1;
-	Wed,  8 Jul 2026 05:12:00 -0700 (PDT)
-Received: from [10.1.37.27] (Suzukis-MBP.cambridge.arm.com [10.1.37.27])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B81CF3F7B4;
-	Wed,  8 Jul 2026 05:11:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783512724; bh=8/7zvmWxegXEn2qwWzbLy+la1fhDjUolmn1c+tkuiCo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=VYLThK6nv7poE0WxqyAkkUzVattkhpNXgz0FB5kUhD63AtBVZyrisuMmv5M0CoESI
-	 L6c2zVVqqGetqMAqNotIZPSb5x7ZJI/M+DkEmmj/SyrIe71mPHqJUlt3Lr8T1+qgXX
-	 3+YkEUZClQkuG47VW0GuZxUiJRDmk0w4H31JziKU=
-Message-ID: <79a41669-72f0-4068-9f38-62fb586d9180@arm.com>
-Date: Wed, 8 Jul 2026 13:11:57 +0100
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="nraVjsSR"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id CAE2620B7166;
+	Wed,  8 Jul 2026 05:43:26 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CAE2620B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1783514607;
+	bh=dfjsnvM8L5ZEJeKFiMUV10x0T6Aph9uTpWPOLGW1LMQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nraVjsSRVBgKsrN/h1nM6C7JA7jJ0k9gFZTfs+/Og9Z0dB8pNTZbK2UGbxLjIPgD+
+	 AImB40Rw+RgziAN2jG3RnRhpc+xCs/JTeB2KD9br3fpd2m18sVMnGQ+eqPF77kfWQy
+	 jGDtWc2Guou3/dC2yGgQKSTHfAPwmY0Ov3BmpkGY=
+Date: Wed, 8 Jul 2026 20:43:28 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
+	wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com, 
+	longli@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org, mani@kernel.org, 
+	robh@kernel.org, arnd@arndb.de, mhklinux@outlook.com, 
+	jacob.pan@linux.microsoft.com, tgopinath@linux.microsoft.com, 
+	easwar.hariharan@linux.microsoft.com, mrathor@linux.microsoft.com
+Subject: Re: [PATCH v2 4/4] iommu/hyperv: Add page-selective IOTLB flush
+ support
+Message-ID: <x2aatvemtx5sjnkcudcj6q5uwsjg533kiitqmg7lriknsfcd5c@t3ohzsw3ylr3>
+References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
+ <20260702160518.311234-5-zhangyu1@linux.microsoft.com>
+ <20260703171018.GA1968184@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
- DMA_ATTR_CC_SHARED
-Content-Language: en-GB
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
-Cc: Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>,
- Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>,
- Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
- Petr Tesarik <ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>,
- Dan Williams <dan.j.williams@intel.com>, Xu Yilun
- <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
- Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-17-aneesh.kumar@kernel.org>
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20260701054926.825925-17-aneesh.kumar@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260703171018.GA1968184@ziepe.ca>
 
-On 01/07/2026 06:49, Aneesh Kumar K.V (Arm) wrote:
-> Teach dma_direct_map_phys() to select the DMA address encoding based on
-> DMA_ATTR_CC_SHARED.
+On Fri, Jul 03, 2026 at 02:10:18PM -0300, Jason Gunthorpe wrote:
+> On Fri, Jul 03, 2026 at 12:05:18AM +0800, Yu Zhang wrote:
 > 
-> Use phys_to_dma_unencrypted() for decrypted mappings and
-> phys_to_dma_encrypted() otherwise. If a device requires unencrypted DMA
-> but the source physical address is still encrypted, force the mapping
-> through swiotlb so the DMA address and backing memory attributes remain
-> consistent.
+> > @@ -401,10 +402,74 @@ static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
+> >  	hv_flush_device_domain(to_hv_iommu_domain(domain));
+> >  }
+> >  
+> > +/*
+> > + * Calculate the minimal power-of-two aligned range that covers [start, end]
+> > + * (end is inclusive). Returns a single (page_number, page_mask_shift)
+> > + * descriptor that may over-flush when the range is not naturally aligned.
+> > + */
+> > +static void hv_iommu_calc_flush_range(unsigned long start, unsigned long end,
+> > +				       union hv_iommu_flush_va *va)
+> > +{
+> > +	unsigned long start_pfn = HVPFN_DOWN(start);
+> > +	unsigned long last_pfn = HVPFN_UP(end + 1) - 1;
 > 
-> Update the arm64, x86, s390 and powerpc secure-guest setup to not use
-> swiotlb force option
+> Pedantically end can be ULONG_MAX, you shouldn't be adding to it since
+> it will overflow.
 > 
-> Tested-by: Jiri Pirko <jiri@nvidia.com>
-> Tested-by: Michael Kelley <mhklinux@outlook.com>
-> Tested-by: Mostafa Saleh <smostafa@google.com>
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
-> Changes from v3:
-> * Handle DMA_ATTR_MMIO
-> ---
->   arch/arm64/mm/init.c                 |  4 +--
->   arch/powerpc/platforms/pseries/svm.c |  2 +-
->   arch/s390/mm/init.c                  |  2 +-
->   arch/x86/kernel/pci-dma.c            |  4 +--
->   kernel/dma/direct.c                  |  4 ++-
->   kernel/dma/direct.h                  | 45 +++++++++++++++-------------
->   6 files changed, 31 insertions(+), 30 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 97987f850a33..acf67c7064db 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -338,10 +338,8 @@ void __init arch_mm_preinit(void)
->   	unsigned int flags = SWIOTLB_VERBOSE;
->   	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
->   
-> -	if (is_realm_world()) {
-> +	if (is_realm_world())
->   		swiotlb = true;
-> -		flags |= SWIOTLB_FORCE;
-> -	}
->   
->   	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) && !swiotlb) {
->   		/*
 
+Good catch!
 
-For arm64 CCA bits:
+> > +	unsigned long mask_shift, aligned_pfn;
+> > +
+> > +	if (start_pfn == last_pfn) {
+> > +		mask_shift = 0;
+> > +	} else {
+> > +		/*
+> > +		 * Find the highest bit position where start_pfn and last_pfn
+> > +		 * differ.  A range aligned to one above that bit is the
+> > +		 * smallest power-of-two region that covers both endpoints.
+> > +		 */
+> > +		mask_shift = __fls(start_pfn ^ last_pfn) + 1;
+> > +	}
+> > +
+> > +	aligned_pfn = ALIGN_DOWN(start_pfn, 1UL << mask_shift);
+> 
+> I think the whole thing is simpler if it stays using bytes until the end:
+> 
+> 	sz_lg2 = __fls(gather->start ^ gather->end);
+> 	if (sz_lg2 < HV_PAGE_SHIFT)
+> 		cmd.sz_lg2 = HV_PAGE_SHIFT;
+> 
+> 	page_number = (gather->start & ~(1UL << sz_lg2)) >> HV_PAGE_SHIFT;
+> 	page_mask_shift = sz_lg2 - HV_PAGE_SIFT;
+> 
+> No overflows that way either
+> 
 
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Indeed. It is much cleaner. Will rewrite using this logic.
+
+B.R.
+Yu
+> Jason
+> 
