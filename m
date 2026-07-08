@@ -1,48 +1,108 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 660B63CF02E
-	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 11:05:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 005633AC0C1;
+	Wed,  8 Jul 2026 11:12:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783508728; cv=none; b=KHEUHc2JIOZNxS/7OGqNIONtRmjvPCFufk9IHjUs9V0RZ8SoS5k+hJTazsQR+68K4L6QRCP0RVy4UaQEhcTBxwJ5zPJMg3G7cmBD7qoq9Z324Jz6t123T4vLybt3KfRdAd+r3yHhABdg8R3pTITVpuAy32hFFUUkTfueeuUAR6A=
+	t=1783509136; cv=none; b=jPykNzg+2BHAzKfffm4/r4V0kBaDeYODapjHybpZlQc/EQGBctMxgxXGcxzmW1U5RWKXbNi9nZb/N+q272A+1rf161mh/5l6dBV3ty1I2W6icrSzxM38hML9437kp5xQaugwCRsg8PoPvD2SZhDTzulUBDFlOlk+quSYhm0diQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783508728; c=relaxed/simple;
-	bh=7xN3gN/1fufW2zcG5xVQZNt3mgjfLnXivIEcwpleKQI=;
+	s=arc-20240116; t=1783509136; c=relaxed/simple;
+	bh=dXbZA1E6z2cbPpn5lXVwUbC3y8RJZe9PuV/6K4qA1zI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EynH7VDkV79D9cLQSpb+1OSwFVRp2aIy1fXmjcmjcHBupIIKovdy/EpW3djdtBaxdC2aAu/WlaBQ2IrXEtmb6tNM8npNhQbSRb40NjljZfZPCBRNrOfDx0T7Uv3zjHnZIzXLAjsw/HSRNa5WG42SX5qU8JY62D4sH9lCOH3L5Jw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=aisOYdqk; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=BiF3qR7rJBWbNmlFriBx6WniD58XQNt58kyh0Zl5TMaCh8AK6D9gKK7Jy9JLhDW1doGywyM1Q2jE3uZXVl3dxr7KLHFTiwqROst+wcS4IiNial7Vxvx7N5A16lXhOPP8xDX5PX/K0Igub6V6+d7tbDOcI6EHjY1pLqR7mThKQ/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NKaLLLgY; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="aisOYdqk"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id E033920B7166;
-	Wed,  8 Jul 2026 04:05:19 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E033920B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1783508720;
-	bh=NfmX2Gu/X4lDwJwfowtrot5xu5EOiks7e+Fc49sNRR0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aisOYdqk1Lm2WQ/Q/WjXnlJHEwO8YMfW/+p3Gn9mVKsA7RbU/6imb7DzVvsV1eLhO
-	 I/UgK3F6r0ySTnIKjvc3ruv1/x6HQcTpU4VFId6G2gUYPwgF3Bk/Xm/FEkZ8q3b9OK
-	 sd1/3Lxfxbf7IZyVyHufcfpFV6LlzFhqU95uPJAs=
-Date: Wed, 8 Jul 2026 19:05:22 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: Mukesh R <mrathor@linux.microsoft.com>, linux-kernel@vger.kernel.org, 
-	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
-	linux-arch@vger.kernel.org, wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, 
-	decui@microsoft.com, longli@microsoft.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org, 
-	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de, jgg@ziepe.ca, 
-	mhklinux@outlook.com, tgopinath@linux.microsoft.com, 
-	easwar.hariharan@linux.microsoft.com
-Subject: Re: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <smr7cmmhvqeuddmoxwyt774qtb5clf6s3vbkfmusrvccav6ey4@cqtqgkeqv5lx>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
- <1f57d1d9-ccbb-ff4e-9680-d45adc7821ea@linux.microsoft.com>
- <20260707074814.000010a0@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NKaLLLgY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783509135; x=1815045135;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dXbZA1E6z2cbPpn5lXVwUbC3y8RJZe9PuV/6K4qA1zI=;
+  b=NKaLLLgYSGwRbFEUPZ4WXfWAkQLZfXhRPviQaSCCWKxzP1Hwd/RZVyI5
+   qhXuK+dXM700naBdhd5VjHzf3fB68yRX1rwFVdBb5K4tRooC+h47nZN0b
+   HqlzRyvi3i/kegVxXwlN1Q9bFbd81z5OdScYJJbrEMHBh9n2zirrfivj3
+   BLmv97jfpG4CZUhQ06zO8jXEDpEWV04IHrUTpZ4Y4IibitKa+7JaNke2V
+   eeZ2GZkWMVMW7okGFl4bSqx3udTAk2pzQVKxjuOZ7hAoPkOtFqIPD9PMt
+   rUuZBYfnUwPvVhb5PmwwjRrhP3ahd79YDWKu/qN+x7cMdQsrVi6vnYScE
+   A==;
+X-CSE-ConnectionGUID: t+LfzDDcQdq0C18vyL+efg==
+X-CSE-MsgGUID: dJZFJx+mTge7Lrlfjtm2qg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11840"; a="84025153"
+X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
+   d="scan'208";a="84025153"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 04:12:14 -0700
+X-CSE-ConnectionGUID: xnTXU7N2RFKFpJyFUzPznA==
+X-CSE-MsgGUID: WXa6o+4tR/u+kKLX2b+3mA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
+   d="scan'208";a="252523743"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 04:12:00 -0700
+Date: Wed, 8 Jul 2026 14:11:58 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Bartosz Golaszewski <brgl@kernel.org>
+Cc: Lee Jones <lee@kernel.org>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Thierry Reding <thierry.reding@avionic-design.de>,
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Peter Chen <peter.chen@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pm@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org, mfd@lists.linux.dev,
+	Manuel Ebner <manuelebner@mailbox.org>,
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Subject: Re: [PATCH v3 05/20] driver core: update kerneldoc for
+ platform_device_alloc()
+Message-ID: <ak4wfuYxO2serrQt@ashevche-desk.local>
+References: <20260706-pdev-fwnode-ref-v3-0-1ff028e33779@oss.qualcomm.com>
+ <20260706-pdev-fwnode-ref-v3-5-1ff028e33779@oss.qualcomm.com>
+ <ak0jyUbNonSRiP_g@ashevche-desk.local>
+ <CAMRc=Md7-XMBKpdPuZ4=epfTn6F-PXKJBZNPGuz5xbVy58BHsg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,84 +111,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260707074814.000010a0@linux.microsoft.com>
+In-Reply-To: <CAMRc=Md7-XMBKpdPuZ4=epfTn6F-PXKJBZNPGuz5xbVy58BHsg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jul 07, 2026 at 07:48:14AM -0700, Jacob Pan wrote:
-> Hi Mukesh,
+On Wed, Jul 08, 2026 at 12:42:58AM -0700, Bartosz Golaszewski wrote:
+> On Tue, 7 Jul 2026 18:05:29 +0200, Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> said:
+> > On Mon, Jul 06, 2026 at 02:44:17PM +0200, Bartosz Golaszewski wrote:
+> >> Users of platform_device_alloc() + platform_device_add() must not modify
+> >> certain fields of the dynamically created platform device object. Update
+> >> the kernel doc to say which fields are affected and which functions to
+> >> use.
+> >
+> > Consider using __private checker attribute for them as well. It will make
+> > sparse scream.
 > 
-> On Mon, 6 Jul 2026 17:08:50 -0700
-> Mukesh R <mrathor@linux.microsoft.com> wrote:
-> 
-> > From: Mukesh R <mrathor@linux.microsoft.com>
-> > To: Yu Zhang <zhangyu1@linux.microsoft.com>,
-> > linux-kernel@vger.kernel.org,  linux-hyperv@vger.kernel.org,
-> > iommu@lists.linux.dev,  linux-pci@vger.kernel.org,
-> > linux-arch@vger.kernel.org Cc: wei.liu@kernel.org, kys@microsoft.com,
-> > haiyangz@microsoft.com,  decui@microsoft.com, longli@microsoft.com,
-> > joro@8bytes.org, will@kernel.org,  robin.murphy@arm.com,
-> > bhelgaas@google.com, kwilczynski@kernel.org,  lpieralisi@kernel.org,
-> > mani@kernel.org, robh@kernel.org, arnd@arndb.de,  jgg@ziepe.ca,
-> > mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-> > tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com
-> > Subject: Re: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU
-> > support  for Hyper-V guest Date: Mon, 6 Jul 2026 17:08:50 -0700
-> > User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
-> > Thunderbird/91.13.1
-> > 
-> > On 7/2/26 09:05, Yu Zhang wrote:
-> > > Add a para-virtualized IOMMU driver for Linux guests running on
-> > > Hyper-V. This driver implements stage-1 IO translation within the
-> > > guest OS. It integrates with the Linux IOMMU core, utilizing
-> > > Hyper-V hypercalls for:
-> > >   - Capability discovery
-> > >   - Domain allocation, configuration, and deallocation
-> > >   - Device attachment and detachment
-> > >   - IOTLB invalidation
-> > > 
-> > > The driver constructs x86-compatible stage-1 IO page tables in the
-> > > guest memory using consolidated IO page table helpers. This allows
-> > > the guest to manage stage-1 translations independently of vendor-
-> > > specific drivers (like Intel VT-d or AMD IOMMU).
-> > > 
-> > > Hyper-V consumes this stage-1 IO page table when a device domain is
-> > > created and configured, and nests it with the host's stage-2 IO page
-> > > tables, therefore eliminating the VM exits for guest IOMMU mapping
-> > > operations. For unmapping operations, VM exits to perform the IOTLB
-> > > flush are still unavoidable.
-> > > 
-> > > To identify a device in its hypercall interface, the driver looks
-> > > up the logical device ID prefix registered for the device's PCI
-> > > domain (see the logical device ID registry in hv_common.c) and
-> > > combines it with the PCI function number of the endpoint device.
-> > > 
-> > > Co-developed-by: Wei Liu <wei.liu@kernel.org>
-> > > Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> > > Co-developed-by: Easwar Hariharan
-> > > <easwar.hariharan@linux.microsoft.com> Signed-off-by: Easwar
-> > > Hariharan <easwar.hariharan@linux.microsoft.com> Signed-off-by: Yu
-> > > Zhang <zhangyu1@linux.microsoft.com> ---
-> > >   arch/x86/hyperv/hv_init.c       |   4 +
-> > >   arch/x86/include/asm/mshyperv.h |   4 +
-> > >   drivers/iommu/Kconfig           |   1 +
-> > >   drivers/iommu/hyperv/Kconfig    |  16 +
-> > >   drivers/iommu/hyperv/Makefile   |   1 +
-> > >   drivers/iommu/hyperv/iommu.c    | 620
-> > > ++++++++++++++++++++++++++++++++ drivers/iommu/hyperv/iommu.h    |
-> > > 51 +++ 7 files changed, 697 insertions(+)
-> > >   create mode 100644 drivers/iommu/hyperv/Kconfig
-> > >   create mode 100644 drivers/iommu/hyperv/iommu.c  
-> > 
-> > Hey Jacob,
-> > 
-> > You had suggested I rename iommu.c to iommu-root.c (I called it
-> > hv-iommu-root.c eventually), so this needs to be renamed also,
-> > right?
-> 
-> yes, I agree. I feel it is clearer to name it hv-iommu-guest.c since
-> this is a guest only driver.
-> 
+> Sure but let's leave it for another series.
 
-hv-iommu-guest.c sounds good to me. :)
+Sure, just a side note comment that you know that we have some facilities for
+that type of problems.
 
-B.R.
-Yu
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
