@@ -1,154 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C435D406802;
-	Wed,  8 Jul 2026 09:00:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFF752D8391
+	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 09:00:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783501205; cv=none; b=EVaVSfMWsHGCoPRj2aFrBxfUJCbNQQmt3HLGXLdAhWEqE3VcQpUgqc4Ny2djyHKJ/u6xTl1Dl6H9pXZEpNtsHrJIGIlBJhvrxWuN6dMjmtIQ7p/qExyrecQBcnBScjURcBFFdgLFLn8vZBWJAOMdoSZn7pQ0raW84auGEUeSY/M=
+	t=1783501260; cv=none; b=SImzRMajRJyN2UGCIdNU7AML+ZKBK0Z813YN8dB3diwCYdwu5mibL95rY7t6A4zcLRQKKZ+3voCfJNsfJW2BNMlOTZvJd+3/6xkekpQ9xC/+7gosCxqHvp/m020S/QbMqMRVINCa9k5BX23QEwNKqHHe9EqU+faT4s8LaWR85oU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783501205; c=relaxed/simple;
-	bh=qWhYj6MQPO/MH9kFY77eKyngQd1ZO+mMyqbq7aXdRbA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ys/nbtSBppdxhy0HrlLixsauynHIzYB6jykVvd47bak2FDOdOiO5ulO5HDuKmQdxaOKP7+lgvmDGAMSKdgk4V6MANowpO4fs80hm4MhqY2vvntjfAMMTEm8ksUmQWobtZfEnZUiDKAzgWZdhWMqyWE243CvVQveyCTDqw84mqC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iHtmHf+W; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783501260; c=relaxed/simple;
+	bh=mqXxmLVItLLxTPE7v7NU8HoWE7R1G2xKWlke5C9C/JM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pPEbxyfj7mNsN0XqquG1oU32KLUVOOCQY1HSQlHZj6TV/hMeBH9Nmb8lWo16xz+nrv/BnbTr1qvuAqfD5dO4TgdigO7LkysxeQVDqZkE3P2O9PnESuysDu/Tk0q0msTRFnMV65J3ZOHZCf82jOPuHYVer7nlhxWuaoGDpfeM9Bg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cbdXK6l9; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iHtmHf+W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E88291F000E9;
-	Wed,  8 Jul 2026 08:59:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783501204;
-	bh=42ENaxlVxio2+AeXpLQCCBY5AaY42vaHQtw8IyJI7n4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=iHtmHf+W92OnzbuIGI/2kRlZExBywlAzkyUDXMC6Rjv+NJD7rS2O7NEduy2egn4G7
-	 TKjsBbmYtkGtNyvRhzZnNvUK2kcWhL+oPKetwYOGs8n79NmwgfBymXAI2yeQLHqR3z
-	 MrJjwMra9aWFMHaLJZBFIIPGAJYZBb6FFWpTBlDNOhJIAme4maDHpuOMLuMr8jQH/W
-	 Dzp/KsdaILh+27RGjHZK71B/vovDbAdEX05hoarii4XhLvaBDQxMxOMKE7jTeRYltK
-	 ldw1+1HAHXHEh8oSVliTo7a8sMzMXQj1l0+oQMVe2k7shpGJ+BJsGcdValVGj/F2lU
-	 Sqnt2Ad8FzbxA==
-Message-ID: <b1c1693d-02b4-4c5c-bb0a-1c2d87258d30@kernel.org>
-Date: Wed, 8 Jul 2026 10:59:46 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cbdXK6l9"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-493be0fbcc5so43135e9.0
+        for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 02:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1783501255; x=1784106055; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=QiQMvuBEKbz3IC4tovbH4hMkKdurz1w/2IHV/DGw0uw=;
+        b=cbdXK6l9XaIv1GTHbtIdzjKM1qu2m+0cx64m4yVeXECP8lN4KXK6pzfRJAa+wnPh6B
+         WesM5CoZaKZdxP1wZQz5Pl9V8+Rucs9CGWfTu1HxDzQ/0pA2azuQixi71tkz950LTopV
+         Ka8djjzAaqftC00O3G8QeLlbEfVRFcMhOlLugK++bMsK39/RSQOF7NWY/ruoGpwoDGBw
+         jiiNY8dItj5g3WBzGouUR6HbttWaSzGiasWgDER9Ro87EpLtim4lxRrRmTYsFxQnd/cZ
+         PvAtdxRJA1XZgBIpmKhFE4nK6Gw2bkXpXsSg1TUnOxD52i2Ctpl/zSVrkJMzkzJxsyhA
+         7bpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783501255; x=1784106055;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QiQMvuBEKbz3IC4tovbH4hMkKdurz1w/2IHV/DGw0uw=;
+        b=OFo0JMhhtiCbmCI4f2NrJU0LQC0SV4nI05OFUhV2C5W6oGyUrY2zwzmmBxslN0mxyF
+         9Q4C7YFm8+qEZTiDtOYjbVj8rqPRI3iMq5ZTWi4nmFGIB0g5VcKnFTRsPhmwtmwiS8tA
+         VOhe/xWEOzvfd19XqtHYHiyNXNEwux5ZirBtlgAbgldFhAnFszu4b1hBc9MiUhw9cMz7
+         ufGopvmryY46oruuComF9UxQwXwFo1UXcxzts0Dse2hrqguwAUvvzGd27FK/LrppYHoc
+         9IzmbkUAD2/uwtib0OgooxcS/ZM4bn5pEGLzuqs3GWMC2bApiGvF6P48jyC/d4Og1lA5
+         k6cQ==
+X-Gm-Message-State: AOJu0Ywz5iK3AG5jVQUJuhvqF+cJp2B7n4MxdDKj5r0/vPQsGhIIW2S6
+	JsO09OoIboGB0tshYpaRyx8P6Eiuv9qgZqcbnwVSfKOqniIEFW/LDI7TwzEXHWvvwA==
+X-Gm-Gg: AfdE7cnpzuruOciHIZawRCxLM5JEMBLhWgNwNGW39sNxO8B7E6+lfen4T8KJKZXy5tl
+	7a0ceH7IOWIQT5hK2sWBBjY6cSBblKmx5JS36xnbU6J4Jkpf7PdWXtkuApdVyxP7jHovqbzSHgO
+	EkUHWQnMgRQgy+QaD7qKpdL9ipy9k26a3roebjHTSw60GZMUYAtLZ6+Nz2ZFamvGg9ol8sW3ZoF
+	rkM4kHyJHoYbAl5qDX/jPUYnamH5ouwogr6XafnYt1rkwoTU/gd4Ny44ZiK17fO5MqDIoqtuqS+
+	Huxl9db47kX6xgYNUM5lZY8cxEx5Uff+ex2UcqO64gQ1PhwFqkNDJIQZhHpAWXl2ONI/m/SJChB
+	GaMNEaYFUZpc/oYtpqUocOegsx4BknzGplbE4aeB1g1+vLB7BtBXopxlirH3m0VGO4n1ex+ij5y
+	JLc8ZyOgL1JSO+15SL9+E4cn7g7NiTmUYZdQ6Feug5h5AmvNGx
+X-Received: by 2002:a05:600c:591a:b0:493:caa7:4fd2 with SMTP id 5b1f17b1804b1-493e121b946mr1933975e9.6.1783501254766;
+        Wed, 08 Jul 2026 02:00:54 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0f41014sm120832345e9.6.2026.07.08.02.00.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2026 02:00:53 -0700 (PDT)
+Date: Wed, 8 Jul 2026 09:00:50 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 5/8] iommu/arm-smmu-v3: Precompute the invalidation
+ commands
+Message-ID: <ak4Rwnr39HuP053s@google.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <5-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <akzoeexW-4W70QdU@google.com>
+ <20260707145812.GK220801@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
-To: Thierry Reding <thierry.reding@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Sowjanya Komatineni <skomatineni@nvidia.com>,
- Luca Ceresoli <luca.ceresoli@bootlin.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Russell King <linux@armlinux.org.uk>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>,
- Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>,
- "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>,
- Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>,
- Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
- "T.J. Mercier" <tjmercier@google.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
- linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
- <20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
-From: "David Hildenbrand (Arm)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
- qIws/H2t
-In-Reply-To: <20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260707145812.GK220801@nvidia.com>
 
-On 7/1/26 18:08, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
+On Tue, Jul 07, 2026 at 11:58:12AM -0300, Jason Gunthorpe wrote:
+> On Tue, Jul 07, 2026 at 11:52:25AM +0000, Mostafa Saleh wrote:
+> > On Mon, Jul 06, 2026 at 01:26:42PM -0300, Jason Gunthorpe wrote:
+> > > Store the required cmd data in the tlbi and just copy it out when
+> > > processing each item in the invs list. The cmd form only depends on
+> > > if the instance supports RIL or not, otherwise it is always the same.
+> > > 
+> > > This avoids redundant calculations for each invs entry.
+> > 
+> > I do not understand how does this avoids redundant calculation?
+> > This would be the case if the domain shares multiple SMMUs,
+> > otherwise, a range TLB invalidation should be unique and can not be
+> > reused.
 > 
-> There is no technical reason why there should be a limited number of CMA
-> regions, so extract some code into helpers and use them to create extra
-> functions (cma_create() and cma_free()) that allow creating and freeing,
-> respectively, CMA regions dynamically at runtime.
+> Right, if there are multiple SMMUs for the domain then currently it
+> recomputes the range for every one.
+> 
+> At the moment I think we can't have multiple SMMUs per domain but
+> Nioclin has a patch series changing that
 
-I'm confused. We still allow cma_create() only during __init, right?
+Yes, it is not possible at the moment, I think it makes sense to have
+it in this series, but a comment would be helpful as it is not clear
+from just reading the code.
 
-Would we expect callers of cma_free() after __init? Or at which point?
+However, as I mentioned I am not sure if that actually helps on a real
+system, is that something that you noticed during perf or based on the
+code?
+
+Thanks,
+Mostafa
 
 > 
-> The static array of CMA areas cannot be replaced by dynamically created
-> areas because for many of them, allocation must not fail and some cases
-> may need to initialize them before the slab allocator is even available.
-
-We can start with a memblock array of an initial size (like we do today).
-
-Then, when you need more space, we can double the size (copying content and
-exchanging the pointer). Either allocate from memblock or from slab, if
-available (slab_is_available).
-
-memblock does something similar, see memblock_double_array().
-
-
--- 
-Cheers,
-
-David
+> Jason
