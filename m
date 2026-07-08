@@ -1,56 +1,56 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7DDC3AFCE9
-	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 23:49:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7663F379C42
+	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 23:49:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783554552; cv=none; b=GOIiXgwi2o6hGktq4J7C2pj/gAge/VlN25mjtbdYmP+p35llsF1MbdS+LEtHEk36Ln8NnSci/UvQeFZ5FJ37nXWA+M6aws8lB9c9rYvnLqPmJ2EF1Vyw5kLlWvzVNd+v0GDNmPWwKyS6pUL5/FEa9tkzCHVocmV9c4asHwd5Xls=
+	t=1783554556; cv=none; b=YgrNyBZOONTdsC4Ib+HZmUuCHpQFjczJYe21HDo0N7fj4LnUW6BMcqSsb6TKnb9LP9ux+fU4PYS6hXBiJDueK7YQWY8AFjNKdOVbFaO8qrxl2YM2aDdoIVNDuEnX+Woh/nABi59/ZvBy/pO67KkOZ2Xs9s/Xu/wGwWJKWJNZbYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783554552; c=relaxed/simple;
-	bh=8OoZvLMH4ThuGxhQEiXShDSuroGIAHdNtptcInC9DpY=;
+	s=arc-20240116; t=1783554556; c=relaxed/simple;
+	bh=svwRb5FqDOotzSvpMqIzYKJxEBfgPXgrhnz3d8wsn8U=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=no4XjRzstcmPTAO6WF4Gt3QeXfkfKRR16IGSD9xXBMlAApvQfarx86dwUTPnDrv6sB54iX8I1GAKQrHOJ6caeJBwhIOSfvnOwNfHfpzY0yFILteVsLLseKFDOmW1cer8cCVQ+xD22ZDapxY16Yjz3OjJUTwcx3RHI35FaM8ajBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wnUJFCkh; arc=none smtp.client-ip=209.85.214.202
+	 To:Cc:Content-Type; b=Q158h1JyurI5qd1q1WZO7iRuAScKmfookGOvQ6TIHB7OnJmEoy7GUsjkggZn+0Hqt2oX91F7MnOTnfTHZOzbsvrdRuBG8/tcPMYbWx6dOPCU9zoOU+P4uyY2Dr4gBbIKIDeFgMZcK3baQUrEhGBPfMb8MZJNdyckb3bMulfY7dc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GSfZhZ5k; arc=none smtp.client-ip=209.85.214.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wnUJFCkh"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2cca5e0a0c9so25243685ad.1
-        for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 16:49:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GSfZhZ5k"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2caf4173b1cso26604815ad.3
+        for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 16:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783554542; x=1784159342; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1783554543; x=1784159343; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=S36ZhlE0su/Uhwn2a42SI+N6oTSNT9EqACGdaCh7Irk=;
-        b=wnUJFCkhI5q9MJfcJTSDKA/xIuMTMHnBlgjGe0k2NfhPFnzrWygM9i8W+ZQZRMPH6l
-         4nQTYAV1t+C0kwtaO1VblARXAECWKdK2tqS3MZWJN5eBpHJi2QSKf/bhSfozf+Ivboiq
-         9x0uhKbRuV+QFrefV6rvl+BLPdFVFPexmJocRIMR0r3YLwl+UuZ+iWk/4oN/m1LztrtH
-         9gQar1OzSfSX7Xhb2IoyOwy95eMvCgjmgNXN1gNMX44/qybi6QSBuGPglD7u5Ba+s2g1
-         x3Hn3WCR8J9ENGtOFZlyL8kxuZyBSrsd7fSlPek1B2P5w/12Ift25LyytQufmHSK7EQ4
-         HUpA==
+        bh=nqgUUDLbrc3OMfaB+epoRKq9BuL+wqg9nIdlWGSYSoM=;
+        b=GSfZhZ5k0RC6NPeUmA7zeOGklnIjdXkvPFjqpriCZAkEG99knkK3KR2TJf4+yUv0jq
+         iFF9C9+HCemyiaNXr9mWWDDgYteh1KnaP69aIYnu7kL6wPxIL4j04iNidWJ4l5jseYuO
+         XCpvD9TFfy8pTYo1wiMNbeQspcxKNyGmEv44r+qhOYVP+rTVKbJd/xXDjkYWCfNYGFWS
+         WJUBjt08Ln77zRxmIQKsyuyelnHLJ7Frqm6CKb89Us8sQp8EJHcob++P6ZlGwpQnnAFf
+         Q3bg7cigILy8yxxxwxiyTE435+4/Qw4YoNO2WzMzj8DL2iOgylQ8BXZjGCcvdzxAc/+9
+         BxkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783554542; x=1784159342;
+        d=1e100.net; s=20251104; t=1783554543; x=1784159343;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=S36ZhlE0su/Uhwn2a42SI+N6oTSNT9EqACGdaCh7Irk=;
-        b=mN2A/bad1thp0PSbjBuG14/LvvSez+qzaccR+TWQy5SUMm0WzNfEpiitKPzVxai9YC
-         PTAbOI6cm4NRsJxFz1yv0v26/Bl8iwex1YTeLqhzhZBh1jBQREjwwkPeLaISCOIHkBKW
-         0M2c6yvpGTM3p5PpGDaW9UFEYh8RtzQjDi8+arRUJ+fd9NLkNvuk/VXA0cVgz0SqjopE
-         HKqc0P9rcvs791uGxPYba8xWpg5IiwOmVeBKY8Qy4jT6InM+b18bwcWadouXnth+4xHY
-         x25kfCl9mFHsv70k6U42wtVt15E2n6EQY5NXA1v359p4l/EiVQ3iO96xhgypk4VzedJv
-         p42A==
-X-Forwarded-Encrypted: i=1; AHgh+Ro7c9MF2rc6aruOq+6kCBVRBKIX03Io0ZICh9GvPJNgXbp603Ye8Eim+A3QbgRU1M1To2r8Vw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyTeRC7AZBvq/Wrdfgex31Y4mkTT+or7ersBUQaVyFYP4WnegRW
-	xCEq8lCs9tsUkUGOiRaDct0va8LVh6apL7GqNCkO5hob5rFIZJHfhCxUDbwLB13iHpFnG+VSOPM
-	eoOQmd8J7YE0iAg==
-X-Received: from pgcn4.prod.google.com ([2002:a63:7204:0:b0:c99:3b68:c9c6])
+        bh=nqgUUDLbrc3OMfaB+epoRKq9BuL+wqg9nIdlWGSYSoM=;
+        b=aU6Ns1rWe8ttmGMUcnTC4FWI5fFnRiTu4JCJjHkyRiAdD/YbtObu+CQJdLfJX97Cay
+         mqDHom2C/nVSBp26mmtoKwR2PUrL3z69j4zPucn69j4EjNM1z/mq3QSKTf781ofWPsBH
+         KZzGtcMzrj3j8Z/6wY9ni6jwPYnIXI5SlA/+A6kUkh0nojxBlIBEafO9bjmn3p3OBqNR
+         fmGDyNiEx2U6ebnjxu1kFO4WL/lQ2Esi2Mf95QkU+wxa6fIJG5IYg/AC1jGd68f3oJMK
+         RR+trgSudF+zwhGQcLqfrzZ4xP9KMAGcbEyFCv9cF0lgMim8amM9n286mMQI3uLvtVF8
+         b0LA==
+X-Forwarded-Encrypted: i=1; AHgh+RqgHfZDvJ+Us9rc6JA2co9amGyC5YEqCQ78YHisxyI+K1ySkemgr8oimQGVRFM4u2Sq6kZOxw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywhj9S7J2bU+NLbLjv61ZZHYAmpSz3Kq2pECqPJmQcDRxwzD/nO
+	kcQuQhzv3M/Xq7aCXPIayI79W41Gfx8LZiAZD++vu0KmLVA7YIi1ZDC9fbl8TdguhXp8O5AcQTL
+	W0XXOcmt04MitsQ==
+X-Received: from pldv18.prod.google.com ([2002:a17:902:ca92:b0:2ca:d0f4:2f91])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a21:4d8e:b0:3c0:b766:74f4 with SMTP id adf61e73a8af0-3c0bca47d59mr5364528637.31.1783554541947;
- Wed, 08 Jul 2026 16:49:01 -0700 (PDT)
-Date: Wed,  8 Jul 2026 23:48:52 +0000
+ 2002:a17:902:ef06:b0:2ca:a03a:29b2 with SMTP id d9443c01a7336-2ccea2a565fmr51586345ad.8.1783554542780;
+ Wed, 08 Jul 2026 16:49:02 -0700 (PDT)
+Date: Wed,  8 Jul 2026 23:48:53 +0000
 In-Reply-To: <20260708234854.4044652-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260708234854.4044652-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.55.0.795.g602f6c329a-goog
-Message-ID: <20260708234854.4044652-9-skhawaja@google.com>
-Subject: [RFC PATCH v2 08/10] dma: contiguous: Export is_from_cma helper for kunit
+Message-ID: <20260708234854.4044652-10-skhawaja@google.com>
+Subject: [RFC PATCH v2 09/10] dma: pool: Export the is_from_pool helper for kunit
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, 
 	Jason Gunthorpe <jgg@ziepe.ca>
@@ -73,36 +73,33 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Pasha Tatashin <pasha.tatashin@sole
 	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-The is_from_cm() can be used to check if a memory allocation is done
-from CMA. Export the helper when kunit is enabled so it can be used by
-the kunit tests.
+When kunit is enabled, export the is_from_pool() helper function so it
+can be used to check whether the allocations are from DMA pools.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- kernel/dma/contiguous.c | 3 +++
- 1 file changed, 3 insertions(+)
+ kernel/dma/pool.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 0b1702bf39ca..6d0cf9c7528c 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -37,6 +37,8 @@
- 
- #define pr_fmt(fmt) "cma: " fmt
- 
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index d1a0bb03e478..78496568973f 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -3,6 +3,9 @@
+  * Copyright (C) 2012 ARM Ltd.
+  * Copyright (C) 2020 Google LLC
+  */
++
 +#include <kunit/visibility.h>
 +
- #include <asm/page.h>
+ #include <linux/cma.h>
+ #include <linux/debugfs.h>
+ #include <linux/dma-map-ops.h>
+@@ -320,3 +323,4 @@ bool dma_is_from_pool(void *start, size_t size)
  
- #include <linux/memblock.h>
-@@ -153,6 +155,7 @@ bool dma_is_from_cma(phys_addr_t phys, size_t size)
- 
- 	return cma_for_each_area(dma_cma_check_area, &chk) != 0;
+ 	return false;
  }
-+EXPORT_SYMBOL_IF_KUNIT(dma_is_from_cma);
- 
- #ifdef CONFIG_DMA_NUMA_CMA
- 
++EXPORT_SYMBOL_IF_KUNIT(dma_is_from_pool);
 -- 
 2.55.0.795.g602f6c329a-goog
 
