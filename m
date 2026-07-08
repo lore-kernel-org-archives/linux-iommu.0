@@ -1,301 +1,163 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1438A47DD6E
-	for <iommu@lists.linux.dev>; Wed,  8 Jul 2026 16:52:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEDED2459EA;
+	Wed,  8 Jul 2026 17:58:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783529544; cv=none; b=tMPCO2c0cjmn7Ie+L10bnROn+ltJhQGAHJ0wnfzKkTxlTzcShCRzm1hizq2wgEq6hhcd92FOdry/XipM8PCbrBNV/JB/3ny5AOTpQP27V03DQicaXbJly9oEYttugNgDhdmttQ8UQ6HIl6eXm56cyd5vmWt9hnuxAMgOqj5o7ts=
+	t=1783533510; cv=none; b=l2f8ZTTfOzd1WSxO9j1orjmj6lPWO+y0j/b1F9V0a9gNChmULY8gMVSec6dH5IVqelPb/kN5xzgqcCZMT4JpmbmhMBxWdOtdwUwLdEp7jkjHZq6hfV7cjqmDX7fCIJ2PzjS7JXLcPW9wse4tBdMfzM4/t6ftjmYfCTnb+Sv98y8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783529544; c=relaxed/simple;
-	bh=1Wl+9r0+s0TDUjhnfcyyKaDZxB4Fsr0gGq2PjdolWCg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=PPkY9fW+OAfxTsDDdnG+oyCyr0hQt/o6qrmqq4y41KDQP9x0GxW7+NsH+X50fBBA5e+WQXYA+D9YzwRfTaunkKJCEGW/5vbnDQqgdece0QtxGqswdrQbidCdVTNYuBXNgyWK2zrK8V/BLyPI1yag1Lajcbgx5QCfzTtB8sfaCZg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cy8yTGG5; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783533510; c=relaxed/simple;
+	bh=DAStDXOSf9Oo/ReDKIwpVBMsGNG26XsqmGIDDvE59dc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=qOev/0Txr80LJDDmCo+4NgnpvRDxwsqJGFd2zoznKcZ4+2qeRwsCffQvtlAtxRjCATOoeCTSu/Fjgus0KHrVQNO6ay047E8YGQmwNFI/+uIteyLVJqsfvqlC+/K8xHr60ew0dH0Cj7KnLYtBwFVLRnhAv0whXjUDpzeL7V4O5GU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lUFCGVvh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cy8yTGG5"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-383fff6e8b6so111299a91.0
-        for <iommu@lists.linux.dev>; Wed, 08 Jul 2026 09:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783529535; x=1784134335; darn=lists.linux.dev;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=U//PbZPS0wgDigTHSbhziRKqlRUyA7Fn8Fac9dDowRc=;
-        b=Cy8yTGG5kmFOBd9qkg8g+FwFN6h+o//oG6YvwZM1tH+5Tq6dvvpOKQGuDykGjYRf/Z
-         MOIZpdMcLm72yJf63juVmVrhaJ6tQ6Bsk3L6KCH4TAKGUrjY2kE5OBkd1Vd8guFpoh7Z
-         3lNKVGRroRtlVEvLB5dA2D6LPTLXfejLKC4SoKo3t9a5SG+2NsS+VIOGFhR0Rg2FQksC
-         q7I4qQaGJhFoGoLRzaWgzYi5XRuWQ8FOGhLyInVW+d30X36Dn0QqU40b1ynDyq+gHmdW
-         imIsZQKvdxWD8uDxqmFjjNdEsflJQzXmJzUD2jIstWTPs6li8SdLvMG8iUUWXmAIiBnh
-         XI3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783529535; x=1784134335;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=U//PbZPS0wgDigTHSbhziRKqlRUyA7Fn8Fac9dDowRc=;
-        b=XQRw7qHTCm8A7n0mzxal9YomSu8pq2xmXCUFNPoWPJuRpUOaynMzNaAJbISrDJJREi
-         rj387iMhJ2EBSMDwuHd+qbV9Smnbe4goB0GUpWkBYm79zIAxDI0DavEiBkCEffjcYhho
-         KEzNLPzKgtyP6eMlTTkS5/PBWv/v5bRuJecxAeQutKzHvp0UCMpSmYYqoNwf7mEe/94J
-         xOR/Gug6cwChjRovC6nGvKe00dvGq8rqa3KWnFKgilgJjRMVezKObpQqV74mOSV+E5yL
-         K1ug/paF4TT27oES0auJ2EzJ/K4W3MTAhdFotV4oLDeCsDg3rGT0ktDHzqe6us0dnQhR
-         o5fg==
-X-Gm-Message-State: AOJu0Yy2oWENRsHlalCioWCgXvCBioYYBcIHObr25f/S7tC8U7ykZqU9
-	A+gIi+w80lsv93p209TdgIg5wP51m4LfLp47Rad0sVK9I9h/khA8zhEK
-X-Gm-Gg: AfdE7cm8fvd76lg9XZExdtnf8VPaHYMdVL2+hrv/rRUguJpQZ4b2Go+NsXEYlCry6HR
-	H2ZOoEQ6VzhxMLsJ1WLrlJlzpLvLUMMuIGz39G94gBS2Jj0sRuQVAhgmC7x5/YavKrgXwHvrCNq
-	V3uB/j8kDcCQJGR/q6xik4gCl/LIjOag+1tRIhvYBOVaG8o7bEYr1SMW2gLh6QRMkUr3jAcftvd
-	tkOAHNi8FeEMUf40pfj0N5IN59ipsgjXejyeUjFZnmbvS7K7bxmz0Nl0kx/LCT6P0GtUkvTKvAP
-	ARTp3JyxkrsyqTjYJOp6dYfabdr6gxThJBcPKLNc8B6YVGcRmIAphVZLCGEV0shQgkHMfciqGb/
-	x4JTFJCzmCrcPPfO9YTnSq3TDOExXj85d7LD+nGzZykooFXcSAUhujwxmJcA9oQ18MO+pj2fLJ9
-	Nxvor8QOG2ud6mJzLQW6qw6w==
-X-Received: by 2002:a17:90b:4c0e:b0:381:1ffc:7d35 with SMTP id 98e67ed59e1d1-38a2122c84amr257831a91.6.1783529535194;
-        Wed, 08 Jul 2026 09:52:15 -0700 (PDT)
-Received: from [192.168.1.2] ([2401:4900:881c:f765:f05c:d31e:8ae0:b06d])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311935fd091sm7136661eec.24.2026.07.08.09.52.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2026 09:52:14 -0700 (PDT)
-From: Bhargav Joshi <j.bhargav.u@gmail.com>
-Date: Wed, 08 Jul 2026 22:21:43 +0530
-Subject: [PATCH v2] dt-bindings: iommu: ti,omap-iommu: Convert to DT schema
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lUFCGVvh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DFE91F000E9;
+	Wed,  8 Jul 2026 17:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783533509;
+	bh=2zcJcB1E4eAZy0egEbo5b49ra1AlE1ZZgAl0aBZPFpg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=lUFCGVvhi3r0g2REAtCb2IGA8CZvBtpISzpqNOsLlIz4oC8RYsx/4BDzxBWlKpED0
+	 OO0H8pEE+Rj/gvkRHSvopojk6+7GJ2AVOWtst9fH1KbISbjRghLiVKG8hjeEoo2NJL
+	 1pONN4spCjOkHAEVviRtqhHebsdb8FkdHq+W9mwMHVu3D2rDo+PIliDI8dLOzCpavH
+	 2v63vsnLIDMQkmI7iMKzYlLlawSHemKEODU9IgIdU5HL7fCECve8y+XTvAEm18oYQ/
+	 fjk+++bhVL1mK2ZtC2q+a75eR0XtyKKWF5XVAIEO0u/AFkjmd4VWUqV8Us3U8DJG1R
+	 Qf80NCztIqmrQ==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
+ DMA_ATTR_CC_SHARED
+In-Reply-To: <ak42F240d-53QeFN@arm.com>
+References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
+ <20260701054926.825925-17-aneesh.kumar@kernel.org>
+ <ak42F240d-53QeFN@arm.com>
+Date: Wed, 08 Jul 2026 23:28:14 +0530
+Message-ID: <yq5apl0xgy89.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260708-ti-omap-iommu-v2-1-612d4a6644ba@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WNQQ6CMBBFr0Jm7RgoCMSV9zAshjqFMZaSthAN4
- e4Crl2+5P33FwjshQNckwU8zxLEDRuoUwK6p6FjlMfGoFJVplVaYxR0lkYUZ+2EOStlqtzolhR
- sm9GzkffRuzc/DlP7ZB33yG70EqLzn+NwznbvX3vOMMOi1kZfciIqyltnSV5n7Sw067p+Ae2co
- lO8AAAA
-X-Change-ID: 20260708-ti-omap-iommu-3e22f73fcba2
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, goledhruva@gmail.com, m-chawdhry@ti.com, 
- daniel.baluta@gmail.com, simona.toaca@nxp.com, j.bhargav.u@gmail.com
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783529530; l=6812;
- i=j.bhargav.u@gmail.com; h=from:subject:message-id;
- bh=1Wl+9r0+s0TDUjhnfcyyKaDZxB4Fsr0gGq2PjdolWCg=;
- b=lFU8uyDQABCOFUqV6yGWemDCgw90I2sdy3M0wBvWUKs6x3ud5O5vkGIWo9zbTdMZJFL+pZkgU
- CSg/0AYIcAeArks8DjXtY8ClaZrrSbbANMU+VYqk/zDzTTwx7RzBfjn
-X-Developer-Key: i=j.bhargav.u@gmail.com; a=ed25519;
- pk=IqNDwUZKECEA+n8wXctFLBbYL9NhFstZNbOznm/nX1k=
+Content-Type: text/plain
 
-Convert Texas Instruments OMAP2+ IOMMU from text to DT schema. Make the
-'ti,hwmods' property optional and mark it deprecated as it is no longer
-used, it is kept to support legacy dtbs.
+Catalin Marinas <catalin.marinas@arm.com> writes:
 
-Signed-off-by: Bhargav Joshi <j.bhargav.u@gmail.com>
----
-Changes in v2:
-- Added maxItems:1 to ti,syscon-mmuconfig as property expects only one
-  pair of phandle-args
-- Added deafult value 32 for ti,#tlb-entries
-- Link to v1: https://lore.kernel.org/r/20260708-ti-omap-iommu-v1-1-48cfc53aaa46@gmail.com
----
- .../devicetree/bindings/iommu/ti,omap-iommu.txt    |  59 -----------
- .../devicetree/bindings/iommu/ti,omap-iommu.yaml   | 114 +++++++++++++++++++++
- 2 files changed, 114 insertions(+), 59 deletions(-)
+> On Wed, Jul 01, 2026 at 11:19:20AM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>> index 97987f850a33..acf67c7064db 100644
+>> --- a/arch/arm64/mm/init.c
+>> +++ b/arch/arm64/mm/init.c
+>> @@ -338,10 +338,8 @@ void __init arch_mm_preinit(void)
+>>  	unsigned int flags = SWIOTLB_VERBOSE;
+>>  	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
+>>  
+>> -	if (is_realm_world()) {
+>> +	if (is_realm_world())
+>>  		swiotlb = true;
+>> -		flags |= SWIOTLB_FORCE;
+>> -	}
+>
+> For this part:
+>
+> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+>
+>> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+>> index e05dc7649366..f3fc28f352ba 100644
+>> --- a/kernel/dma/direct.h
+>> +++ b/kernel/dma/direct.h
+>> @@ -88,37 +88,40 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>>  {
+>>  	dma_addr_t dma_addr;
+>>  
+>> +	/*
+>> +	 * For a device requiring unencrypted DMA, MMIO memory is treated
+>> +	 * as shared by default.
+>> +	 */
+>> +	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
+>> +		attrs |= DMA_ATTR_CC_SHARED;
+>> +
+>>  	if (is_swiotlb_force_bounce(dev)) {
+>> -		if (!(attrs & DMA_ATTR_CC_SHARED)) {
+>> -			if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
+>> -				return DMA_MAPPING_ERROR;
+>> +		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
+>> +			return DMA_MAPPING_ERROR;
+>>  
+>> -			return swiotlb_map(dev, phys, size, dir, attrs);
+>> -		}
+>> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
+>> -		return DMA_MAPPING_ERROR;
+>> +		return swiotlb_map(dev, phys, size, dir, attrs);
+>>  	}
+>>  
+>> -	if (attrs & DMA_ATTR_MMIO) {
+>> -		dma_addr = phys;
+>> -		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
+>> -			goto err_overflow;
+>> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
+>> +	if (attrs & DMA_ATTR_CC_SHARED)
+>>  		dma_addr = phys_to_dma_unencrypted(dev, phys);
+>> +	else
+>> +		dma_addr = phys_to_dma_encrypted(dev, phys);
+>
+> For AMD/SME, on host with memory encryption we now end up setting the C
+> bit for DMA_ATTR_MMIO. This is fine for RAM but not sure whether
+> some other MMIO bus understands this attribute. Maybe we should stick to
+> something like __phys_to_dma() for the !CC_SHARED && MMIO path. Or,
+> since this is not universally defined, just use the old dma_addr = phys
+> if MMIO and ignore any unlikely DMA offsets.
+>
 
-diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-deleted file mode 100644
-index 4bd10dd881b8..000000000000
---- a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-+++ /dev/null
-@@ -1,59 +0,0 @@
--OMAP2+ IOMMU
--
--Required properties:
--- compatible : Should be one of,
--		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
--		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
--		"ti,dra7-dsp-iommu" for DRA7xx DSP IOMMU instances
--		"ti,dra7-iommu" for DRA7xx IOMMU instances
--- ti,hwmods  : Name of the hwmod associated with the IOMMU instance
--- reg        : Address space for the configuration registers
--- interrupts : Interrupt specifier for the IOMMU instance
--- #iommu-cells : Should be 0. OMAP IOMMUs are all "single-master" devices,
--                 and needs no additional data in the pargs specifier. Please
--                 also refer to the generic bindings document for more info
--                 on this property,
--                     Documentation/devicetree/bindings/iommu/iommu.txt
--
--Optional properties:
--- ti,#tlb-entries : Number of entries in the translation look-aside buffer.
--                    Should be either 8 or 32 (default: 32)
--- ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
--		          back a bus error response on MMU faults.
--- ti,syscon-mmuconfig : Should be a pair of the phandle to the DSP_SYSTEM
--                        syscon node that contains the additional control
--                        register for enabling the MMU, and the MMU instance
--                        number (0-indexed) within the sub-system. This property
--                        is required for DSP IOMMU instances on DRA7xx SoCs. The
--                        instance number should be 0 for DSP MDMA MMUs and 1 for
--                        DSP EDMA MMUs.
--
--Example:
--	/* OMAP3 ISP MMU */
--	mmu_isp: mmu@480bd400 {
--		#iommu-cells = <0>;
--		compatible = "ti,omap2-iommu";
--		reg = <0x480bd400 0x80>;
--		interrupts = <24>;
--		ti,hwmods = "mmu_isp";
--		ti,#tlb-entries = <8>;
--	};
--
--	/* DRA74x DSP2 MMUs */
--	mmu0_dsp2: mmu@41501000 {
--		compatible = "ti,dra7-dsp-iommu";
--		reg = <0x41501000 0x100>;
--		interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
--		ti,hwmods = "mmu0_dsp2";
--		#iommu-cells = <0>;
--		ti,syscon-mmuconfig = <&dsp2_system 0x0>;
--	};
--
--	mmu1_dsp2: mmu@41502000 {
--		compatible = "ti,dra7-dsp-iommu";
--		reg = <0x41502000 0x100>;
--		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
--		ti,hwmods = "mmu1_dsp2";
--		#iommu-cells = <0>;
--		ti,syscon-mmuconfig = <&dsp2_system 0x1>;
--	};
-diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.yaml b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.yaml
-new file mode 100644
-index 000000000000..9588eb60376e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.yaml
-@@ -0,0 +1,114 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/ti,omap-iommu.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: OMAP2+ IOMMU
-+
-+maintainers:
-+  - Bhargav Joshi <j.bhargav.u@gmail.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,omap2-iommu
-+      - ti,omap4-iommu
-+      - ti,dra7-dsp-iommu
-+      - ti,dra7-iommu
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  '#iommu-cells':
-+    const: 0
-+
-+  ti,#tlb-entries:
-+    description: Number of entries in the translation look-aside buffer.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [8, 32]
-+    default: 32
-+
-+  ti,iommu-bus-err-back:
-+    description:
-+      Indicates the IOMMU instance supports throwing back a bus error response
-+      on MMU faults.
-+    type: boolean
-+
-+  ti,syscon-mmuconfig:
-+    description:
-+      Pair of the phandle to the DSP_SYSTEM syscon node that
-+      contains the additional control register for enabling the MMU, and the
-+      MMU instance number (0-indexed) within the sub-system. The instance number
-+      should be 0 for DSP MDMA MMUs and 1 for DSP EDMA MMUs.
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    maxItems: 1
-+    items:
-+      items:
-+        - description: phandle to the DSP_SYSTEM syscon node
-+        - description: MMU instance number
-+          enum: [0, 1]
-+
-+  ti,hwmods:
-+    description: Name of the hwmod associated with the IOMMU instance
-+    $ref: /schemas/types.yaml#/definitions/string
-+    deprecated: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#iommu-cells'
-+  - interrupts
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,dra7-dsp-iommu
-+    then:
-+      required:
-+        - ti,syscon-mmuconfig
-+    else:
-+      properties:
-+        ti,syscon-mmuconfig: false
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    mmu@480bd400 {
-+        #iommu-cells = <0>;
-+        compatible = "ti,omap2-iommu";
-+        reg = <0x480bd400 0x80>;
-+        interrupts = <24>;
-+        ti,hwmods = "mmu_isp";
-+        ti,#tlb-entries = <8>;
-+    };
-+
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    mmu@41501000 {
-+        compatible = "ti,dra7-dsp-iommu";
-+        reg = <0x41501000 0x100>;
-+        interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
-+        ti,hwmods = "mmu0_dsp2";
-+        #iommu-cells = <0>;
-+        ti,syscon-mmuconfig = <&dsp2_system 0x0>;
-+    };
-+
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    mmu@41502000 {
-+        compatible = "ti,dra7-dsp-iommu";
-+        reg = <0x41502000 0x100>;
-+        interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
-+        ti,hwmods = "mmu1_dsp2";
-+        #iommu-cells = <0>;
-+        ti,syscon-mmuconfig = <&dsp2_system 0x1>;
-+    };
+Considering for AMD/SME system an unencrypted dma addr is one without C
+bit, will this be good?
 
----
-base-commit: 0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
-change-id: 20260708-ti-omap-iommu-3e22f73fcba2
+	/*
+	 * For host memory encryption and device requiring unencrypted DMA,
+	 * MMIO memory is treated as shared by default.
+	 */
+	if (attrs & DMA_ATTR_MMIO) {
+		if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) || force_dma_unencrypted(dev))
+			attrs |= DMA_ATTR_CC_SHARED;
+	}
 
-Best regards,
--- 
-Bhargav
 
+>
+> In the other case, for an arm CCA guest, if the MMIO is shared we end up
+> setting the shared attribute but that's fine, it's only an IPA address.
+>
+> -- 
+> Catalin
+
+-aneesh
