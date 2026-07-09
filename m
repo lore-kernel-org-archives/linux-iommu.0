@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D753C3C0C;
-	Thu,  9 Jul 2026 19:58:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 853553C552B;
+	Thu,  9 Jul 2026 19:58:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783627118; cv=none; b=nGGyOmAQVLkDy8dgaVIy8f3uxlqT+0VDQi8cMLkwrt0L36i7dSR33+9j6xOeCeHFl/s9kFAxGHRbJC4UYPqCDVLo5kH3whDOpLnGIccB/hme49/CIepGIxRFRiWxPFNgNpNbuuET0yAXix1Gp958k0eFj/q4/4mewfI4/5CX9Nk=
+	t=1783627119; cv=none; b=izQ47GAhusQK/1tXESc0wgU9Mr9eUm90snCNz0DqqfrWquvewmmuRPSImE7nvwxMVi7RTGjd2rnYKUiAez2HXiNO/7gQEljCjOVSCPd97L2oRlrogjdYZ4WrzCelYlUVhIxevlj4m/n4V6/3EMoazldLcdd+N+OypO9kiAsXLfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783627118; c=relaxed/simple;
-	bh=xGAms/CAyTXOY+R+sgeyji1H5cIWZhG79Yo6idp7GSc=;
+	s=arc-20240116; t=1783627119; c=relaxed/simple;
+	bh=5pNf2xZzAqCooI9pNGi+wOiXa/COYR39H9LRGaTEOJA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=W3AqJswtsBhEcRh1XQcfyi5LFnqDjmaoSClZ2KzL0h/zEytipQ6ijAD4OMb8SD2G6QyazuOdXTXQzyEjLH3FfiQypfDckTPwCKT5n2+y8nu4kcsY/t4uAx8An1gWSLHokL/lyPdteQbsUxqM/+MoQpaC9E5h7qLnAS32K7TN+Co=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N/NAjljz; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=HnP1bkukvMlodecQnxWbpYMKOSU6D6kWFcgrDjIOmOJ85kPutdm56/Z89zE0DaD3QFi+GCNBlZCj52tBDnuVJhKkIr2YAMt18ryluvRj7J7rMe8CtfV7lvInoqrdb/xI/TyOMm0OMr5b92ZH76T8g9bxZb9wbdvdxY2rWA5OWqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F8nlg64/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N/NAjljz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC821F00A3A;
-	Thu,  9 Jul 2026 19:58:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F8nlg64/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1132E1F00A3D;
+	Thu,  9 Jul 2026 19:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783627116;
-	bh=8m52B7A3W0B/yFautWsfwbdXZVaTq0sQqqoFOF2bDgo=;
+	s=k20260515; t=1783627118;
+	bh=iPPvVf5D6y7d2MiVXSZ4GbJUHiKcCLQ7l0EG1noZUrM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=N/NAjljzKwZow42pgJwvm9iPLhyW3y5KNQhH4zDIIxqQQctUThPk4trscb4BgEjsB
-	 1Zw8sDCPlbaOpZpifjAXfVhJr4+SAuukcKuYjXk2chgYBeG32b9BGLKs9tAWMXfSV2
-	 vc8CTdezRfb54udyjsqbj6Z5XhUmSZjrWeoP0ffVfNoaSMfwII27q3zAjMRU1/IT4B
-	 0hAvJlxbP7IDTLst7m6M6DezcxXtSIq2/nb+vmg7YPR6A+nRblVYxj66HfPyHLHxg9
-	 ZBGp65FVjfxmdVEjrAV9JumchNuaoQZLCOI2qA3KILxDeELJrq+24+sy6ZB5Jh7i1D
-	 B+jKP9jlCo6Kw==
+	b=F8nlg64/CXSfLg2k/fPfmxhVFU6K15rQyra/FtKctpRCgGcJnz8nG5XDc+HRZ/qUg
+	 BNjHhr6U3IuUGkXKgjhRxCPlxQqTYdu3LAPCL7kPGuFUSGvTRyOUgQ1XA1KppPqAIJ
+	 EEs6RvVwF34kPXRZ43ihElTDeus1LzzsvaX9+6Parxbteh7Dny3/AhbbFiE9y+kuM9
+	 U60wTrE4e2UosxuFUCjMHUkJ8ILrjwT6e9wK1x7Y7ILtOQ7KAKJ7MlGB5zye0csev8
+	 9cEcRFs+JaZIZc4fs4ZmjBX6Sdvbodg3+PrsmkJjS1BwIz65yvPC5PgtN4IpW+KAFx
+	 PRnjzsrTBzR1g==
 From: Tycho Andersen <tycho@kernel.org>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
@@ -36,9 +36,9 @@ Cc: Joerg Roedel <joerg.roedel@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	"Tycho Andersen (AMD)" <tycho@kernel.org>
-Subject: [PATCH v1 1/2] iommu/amd: Fix IRQ unsafe locking in gdom allocation
-Date: Thu,  9 Jul 2026 13:57:35 -0600
-Message-ID: <20260709195736.3070536-2-tycho@kernel.org>
+Subject: [PATCH v1 2/2] iommu/amd: Fix nested domain leak
+Date: Thu,  9 Jul 2026 13:57:36 -0600
+Message-ID: <20260709195736.3070536-3-tycho@kernel.org>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260709195736.3070536-1-tycho@kernel.org>
 References: <20260709195736.3070536-1-tycho@kernel.org>
@@ -52,182 +52,53 @@ Content-Transfer-Encoding: 8bit
 
 From: "Tycho Andersen (AMD)" <tycho@kernel.org>
 
-Lockdep complains:
+A couple of runs of different AI tools have generated something like the
+following bug report:
 
-  [  259.410489] =====================================================
-  [  259.417287] WARNING: HARDIRQ-safe -> HARDIRQ-unsafe lock order detected
-  [  259.424667] 7.0.0-g51db1d8d2113 #54 Not tainted
-  [  259.429718] -----------------------------------------------------
-  [  259.436516] qemu-system-x86/10143 [HC0[0]:SC0[0]:HE0:SE1] is trying to acquire:
-  [  259.444670] ff3b2b1c60305170 (&xa->xa_lock#25){+.+.}-{3:3}, at: __domain_flush_pages+0x17c/0x4b0
-  [  259.454485]
-                 and this task is already holding:
-  [  259.460991] ff3b2b1c98504cc0 (&domain->lock){-.-.}-{3:3}, at: amd_iommu_iotlb_sync+0x25/0x60
-  [  259.470408] which would create a new lock dependency:
-  [  259.476041]  (&domain->lock){-.-.}-{3:3} -> (&xa->xa_lock#25){+.+.}-{3:3}
-  [  259.483615]
-                 but this new dependency connects a HARDIRQ-irq-safe lock:
-  [  259.492447]  (&domain->lock){-.-.}-{3:3}
-  [  259.492449]
-                 ... which became HARDIRQ-irq-safe at:
-  [  259.503705]   lock_acquire+0xb6/0x2e0
-  [  259.507790]   _raw_spin_lock_irqsave+0x3e/0x60
-  [  259.512748]   amd_iommu_flush_iotlb_all+0x20/0x50
-  [  259.517996]   iommu_dma_free_iova.isra.0+0x1b8/0x1e0
-  [  259.523534]   __iommu_dma_unmap+0xc2/0x140
-  [  259.528100]   iommu_dma_unmap_phys+0x55/0xc0
-  [  259.532863]   dma_unmap_phys+0x274/0x2e0
-  [  259.537238]   dma_unmap_page_attrs+0x17/0x30
-  [  259.542000]   nvme_unmap_data+0x13e/0x280
-  [  259.546473]   nvme_pci_complete_batch+0x45/0x70
-  [  259.551524]   nvme_irq+0x83/0x90
-  [  259.555123]   __handle_irq_event_percpu+0x92/0x360
-  [  259.560466]   handle_irq_event+0x39/0x80
-  [  259.564841]   handle_edge_irq+0xb2/0x1a0
-  [  259.569214]   __common_interrupt+0x4e/0x130
-  [  259.573882]   common_interrupt+0x88/0xa0
-  [  259.578256]   asm_common_interrupt+0x27/0x40
-  [  259.583019]   cpuidle_enter_state+0x119/0x5d0
-  [  259.587877]   cpuidle_enter+0x2e/0x50
-  [  259.591962]   do_idle+0x153/0x2c0
-  [  259.595657]   cpu_startup_entry+0x29/0x30
-  [  259.600128]   start_secondary+0x118/0x150
-  [  259.604601]   common_startup_64+0x13e/0x141
-  [  259.609266]
-                 to a HARDIRQ-irq-unsafe lock:
-  [  259.615384]  (&xa->xa_lock#25){+.+.}-{3:3}
-  [  259.615386]
-                 ... which became HARDIRQ-irq-unsafe at:
-  [  259.627039] ...
-  [  259.627039]   lock_acquire+0xb6/0x2e0
-  [  259.633071]   _raw_spin_lock+0x2f/0x50
-  [  259.637250]   amd_iommu_alloc_domain_nested+0x140/0x3c0
-  [  259.643078]   iommufd_hwpt_alloc+0x272/0x800 [iommufd]
-  [  259.648813]   iommufd_fops_ioctl+0x14e/0x200 [iommufd]
-  [  259.654547]   __x64_sys_ioctl+0x9d/0xf0
-  ...
+    In nested_domain_free(), when refcount_dec_and_test() returns false
+    (other nested domains still reference the same gdom_info), the function
+    returns without calling kfree(ndom), leaking the nested_domain
+    structure. This problem wasn't introduced by this patch, but exists in
+    the code from commit 757d2b1fdf5b that the patch modifies. Each
+    nested_domain (ndom) is allocated individually in
+    amd_iommu_alloc_domain_nested() via kzalloc_obj(*ndom). The .free
+    callback is the sole point responsible for freeing this domain. When
+    the refcount is > 0, only the xa_unlock_irqrestore is performed and the
+    function returns, leaving ndom permanently allocated. This leak occurs
+    every time a nested domain sharing a gDomID is destroyed while other
+    domains still use that gDomID.
 
-Since amd_iommu_domain_flush_pages() necessarily holds domain->lock to do the
-flush, switch the allocation side in gdom_info_load_or_alloc_locked() to
-HARDIRQ-safe allocation. The IOMMU_DESTROY->free path has the same issue,
-so switch that path to HARDIRQ-safe locking as well.
+There is a similar leak later in this function in the WARN_ON() test when
+the mapping is already NULL. Switch to a RAII-based cleanup for ndom, since
+it should always be freed in this function.
 
 Fixes: 757d2b1fdf5b ("iommu/amd: Introduce gDomID-to-hDomID Mapping and handle parent domain invalidation")
 Signed-off-by: Tycho Andersen (AMD) <tycho@kernel.org>
 ---
- drivers/iommu/amd/nested.c | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+ drivers/iommu/amd/nested.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-index 5b902598e68a..5c9405223f91 100644
+index 5c9405223f91..63b53b29e029 100644
 --- a/drivers/iommu/amd/nested.c
 +++ b/drivers/iommu/amd/nested.c
-@@ -59,7 +59,9 @@ static int validate_gdte_nested(struct iommu_hwpt_amd_guest *gdte)
- 	return 0;
- }
- 
--static void *gdom_info_load_or_alloc_locked(struct xarray *xa, unsigned long index)
-+static void *gdom_info_load_or_alloc_locked(struct xarray *xa,
-+					    unsigned long index,
-+					    unsigned long *flags)
+@@ -263,7 +263,7 @@ static void nested_domain_free(struct iommu_domain *dom)
  {
- 	struct guest_domain_mapping_info *elm, *res;
- 
-@@ -67,13 +69,13 @@ static void *gdom_info_load_or_alloc_locked(struct xarray *xa, unsigned long ind
- 	if (elm)
- 		return elm;
- 
--	xa_unlock(xa);
-+	xa_unlock_irqrestore(xa, *flags);
- 	elm = kzalloc_obj(struct guest_domain_mapping_info);
--	xa_lock(xa);
-+	xa_lock_irqsave(xa, *flags);
- 	if (!elm)
- 		return ERR_PTR(-ENOMEM);
- 
--	res = __xa_cmpxchg(xa, index, NULL, elm, GFP_KERNEL);
-+	res = __xa_cmpxchg(xa, index, NULL, elm, GFP_ATOMIC);
- 	if (xa_is_err(res))
- 		res = ERR_PTR(xa_err(res));
- 
-@@ -95,6 +97,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 			      const struct iommu_user_data *user_data)
- {
- 	int ret;
-+	unsigned long irqflags;
- 	struct nested_domain *ndom;
- 	struct guest_domain_mapping_info *gdom_info;
- 	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
-@@ -136,11 +139,12 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 	 * keep track of the gDomID mapping. When the S2 is changed, the INVALIDATE_IOMMU_PAGES
- 	 * command must be issued for each hDomID in the xarray.
- 	 */
--	xa_lock(&aviommu->gdomid_array);
-+	xa_lock_irqsave(&aviommu->gdomid_array, irqflags);
- 
--	gdom_info = gdom_info_load_or_alloc_locked(&aviommu->gdomid_array, ndom->gdom_id);
-+	gdom_info = gdom_info_load_or_alloc_locked(&aviommu->gdomid_array,
-+						   ndom->gdom_id, &irqflags);
- 	if (IS_ERR(gdom_info)) {
--		xa_unlock(&aviommu->gdomid_array);
-+		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
- 		ret = PTR_ERR(gdom_info);
- 		goto out_err;
- 	}
-@@ -148,7 +152,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 	/* Check if gDomID exist */
- 	if (refcount_inc_not_zero(&gdom_info->users)) {
- 		ndom->gdom_info = gdom_info;
--		xa_unlock(&aviommu->gdomid_array);
-+		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
- 
- 		pr_debug("%s: Found gdom_id=%#x, hdom_id=%#x\n",
- 			  __func__, ndom->gdom_id, gdom_info->hdom_id);
-@@ -161,7 +165,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 	if (gdom_info->hdom_id <= 0) {
- 		__xa_cmpxchg(&aviommu->gdomid_array,
- 			     ndom->gdom_id, gdom_info, NULL, GFP_ATOMIC);
--		xa_unlock(&aviommu->gdomid_array);
-+		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
- 		ret = -ENOSPC;
- 		goto out_err_gdom_info;
- 	}
-@@ -169,7 +173,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 	ndom->gdom_info = gdom_info;
- 	refcount_set(&gdom_info->users, 1);
- 
--	xa_unlock(&aviommu->gdomid_array);
-+	xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
- 
- 	pr_debug("%s: Allocate gdom_id=%#x, hdom_id=%#x\n",
- 		 __func__, ndom->gdom_id, gdom_info->hdom_id);
-@@ -257,14 +261,15 @@ static int nested_attach_device(struct iommu_domain *dom, struct device *dev,
- 
- static void nested_domain_free(struct iommu_domain *dom)
- {
-+	unsigned long irqflags;
+ 	unsigned long irqflags;
  	struct guest_domain_mapping_info *curr;
- 	struct nested_domain *ndom = to_ndomain(dom);
+-	struct nested_domain *ndom = to_ndomain(dom);
++	struct nested_domain *ndom __free(kfree) = to_ndomain(dom);
  	struct amd_iommu_viommu *aviommu = ndom->viommu;
  
--	xa_lock(&aviommu->gdomid_array);
-+	xa_lock_irqsave(&aviommu->gdomid_array, irqflags);
+ 	xa_lock_irqsave(&aviommu->gdomid_array, irqflags);
+@@ -290,7 +290,6 @@ static void nested_domain_free(struct iommu_domain *dom)
  
- 	if (!refcount_dec_and_test(&ndom->gdom_info->users)) {
--		xa_unlock(&aviommu->gdomid_array);
-+		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
- 		return;
- 	}
+ 	amd_iommu_pdom_id_free(ndom->gdom_info->hdom_id);
+ 	kfree(curr);
+-	kfree(ndom);
+ }
  
-@@ -275,7 +280,7 @@ static void nested_domain_free(struct iommu_domain *dom)
- 	curr = __xa_cmpxchg(&aviommu->gdomid_array, ndom->gdom_id,
- 			    ndom->gdom_info, NULL, GFP_ATOMIC);
- 
--	xa_unlock(&aviommu->gdomid_array);
-+	xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
- 	if (WARN_ON(!curr || xa_err(curr)))
- 		return;
- 
+ static const struct iommu_domain_ops nested_domain_ops = {
 -- 
 2.55.0
 
