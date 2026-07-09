@@ -1,196 +1,228 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8CE53BED70
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 19:39:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B80B1305E19;
+	Thu,  9 Jul 2026 19:58:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783625950; cv=none; b=Ou2U+azjfdY9cB65uql/rBlBR30xG+RCz4KF+DuhPJoHOAzNszS1eVUK7VNiRov0rdj+LF/RA+DYoJgHiqx5QTxIo8PWnVMZHHI7Zl6sxq/8xk+A+i/hQ86+FrWMDgmMIhXtmCUO8DPKMF2tgW+OGKpsWR+q43Lif7MNBrH5bL4=
+	t=1783627085; cv=none; b=Z97XlwRc9EQl5w2rjd1HtH3EEGuQwT3a+ucYG9ufCFrnYl3UP1AhvhaSWlfZJgLZI6P8UdkWaosvOq6gpH9NQLaCBGe6rxodrzV756J25MJmA6lb+GiuRlTGpA8a/P1e3ka7ShhAP/7GQRTzmVkJWHEEsvI+ctv7Doxafw7zWag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783625950; c=relaxed/simple;
-	bh=QD9mJPs+t+9s56rb5xaB5rKMWigU4OS46sDGTzukNhw=;
+	s=arc-20240116; t=1783627085; c=relaxed/simple;
+	bh=nASUEopdTVpbiOlaqA3bl70JASaPDBXc6RrPfU8TUhM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jFqex0LkHMjWqRX7NpOsSyLAad6aY2gjowgPJdzA2MDvovBPLP/v9IaEj2huQKmgF91gqOZ1dMSIcKj3Yt7BblOslmvjlxWQkFxwBXPivgW5dQpR+mxbWfUM1Mkql4FBKHmgBfx073TIcHj4CKsVt7qBtRVdGsBN/l3Bu5Zdjt4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=f51JX49F; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=cgi5CHC/; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=HiYSQsui9CPC71TYWN8jkFyZF28c+w8HWxXvdlFuAv/hLpPsXRiDCxZq5Q1ScW55siSwO0/bsXFMrhqu01gkGy30hap6D9JzRnyJwLrvNEpyfvv18rSwPd8XfR/9E35dtMpTw4N/6KtUGnechyGWxMJ8aborGj4EWhyekL8rVIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HUZ0FPy6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="f51JX49F";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="cgi5CHC/"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 669HWuUV2514890
-	for <iommu@lists.linux.dev>; Thu, 9 Jul 2026 19:39:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=lXtkLmMeqA5Txfu3sYVMsQEq
-	969mvFVnJZMw0O2S5F4=; b=f51JX49FycsxSY94vb3shNav9rc4rU9buD/v8EbY
-	gVT3Lzsu85teQtDP4CIdy4rdzXRUPg42PS7hEJP4b0FsK6YCzMl1q46AneSH5TZh
-	KiTZVG/rQcrE/J44s0nXXL/PfqyCp9d9o8YRwns0vDcsmgnm0IaLH+DDznbFgCyr
-	iU3M7WhK1e4+S6M6odp6pB0/bZCh0rGdAAEyA+rajwDiFSXUBTR/F8zsUQ4fyqgN
-	Xd57d61SwMw2Xn/A3UrfTytP5EsFkWf1198r7R2i86Y97z6boIBCgQdzRf1jWfwY
-	h3EwAl+O3tTATUnjedMXV0VdoK2YMibTyYBQkNrldiFmFQ==
-Received: from mail-ua1-f70.google.com (mail-ua1-f70.google.com [209.85.222.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fa418m6qd-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 19:39:07 +0000 (GMT)
-Received: by mail-ua1-f70.google.com with SMTP id a1e0cc1a2514c-96939fcd33dso60238241.1
-        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 12:39:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783625947; x=1784230747; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=lXtkLmMeqA5Txfu3sYVMsQEq969mvFVnJZMw0O2S5F4=;
-        b=cgi5CHC/lhshoyAg/+cNoNneiSKLYktvB6jR2KsA3AzrEyyJfSzLr1J4AHNJmWvrV6
-         itchRijch3Gl+HMLyD10AqXF9ZJoPXoLk5GxAeo3ZVB2avDCaDQkMBE1GctMJXScMiNt
-         bVQQHaJx4sTbRnXhY8jb/S1rvPNILyXLtY0Zbv8yGutxYsJg+eXjUZcud+ty7nlPluZ2
-         lEZJYOakKTm86J9tiVLfHd9HWgWSAZPM81xTRyezD4ROUM6ATg7bT6loyjRf6aoWZWQh
-         drKNOQEgYqjej+AbvL0Ajl/jdECo2Z1MBgkelJcCMhXoE/RB2G0ayoZOcKRBwEF1xy1g
-         vdew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783625947; x=1784230747;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=lXtkLmMeqA5Txfu3sYVMsQEq969mvFVnJZMw0O2S5F4=;
-        b=cnFrFp8FWK9Mnk7jHv5MJth1i+1H7vwvXSixN1Q0DBfjTNBbG//r4mODWXNgciB0sK
-         grApvw2fvv00WWcZVmwaxFj1PCeqT6yMdgoDB8Jgqc4OanT/+fzQP6tjk+tkWPZ1jtD5
-         5ou9lf7YLHa+TlDAfrR6q8/d2hizMKrw+rFkFSUhuthleM2xjk2jhBmE/TMt8RByVl2B
-         vDiqYXSgYqI4vtwCv4g0r/VSodSSVmXYSF+Eisjx2EB/4V790XQB/OJKClH7OkVR0sfC
-         eypAEyx0mlW18MrJPa3Gfr/Ln3Z5wjX6ShdeSXv7+CTbgP+vOtuGq2TaOitZVAwZAX+L
-         dtGQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrBfdye7ZpYF7W5RpY8qXbNTeqs3Lk0t7J88AaGGVyvjGv7omod7zYql9q4cd3UsHX485e27A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwxZEaPvUUTafx8vJVUpoh84Hiq1e64D7y8QpPOOUM8DxJsmv+k
-	CQkOEoVVfG1FJu7J1Cr4fNNxHhilgd6TAuulWc4UP5+dTHVZgjsDNTRzcDFikrTBZy7s05GNOVv
-	icnCKKqr0LSJWhCLUjkBSbbeRIZuTMF9ZjWquS/hw4zqyxK7keqXNLzB1OA==
-X-Gm-Gg: AfdE7cmCGfImRK88EpbAbr43Jc95GOWb8B9inZB3+M0boqLmmtKWUbk5055Jwb6DQky
-	sifAysyBCe5oWkRsNzGahmYXDiKvZR/ykib5lifl5lVAxsEANXV/rCZHQnkWqZxhLvIQYiWRVTH
-	RT7fL3RjHz1XFy1XepJgOIGl2nRr+M8LDUFpK7czOAlIKHC+Y0EDI8J9Ym6v6j7knb44MeMUqby
-	UBIlyry3ZK1zTdGHqH5Woj0/eDk+ouE5MDUlQ98S1oT/tm6GKtE/7TJatLU6+lGqTcLmcwaEzuV
-	AncpWTSnR+t7QkJIXKQK2+XCEgoJnGcP078+oUZlgJONv+PEDwM81H77VfCb5Q6Wsvnfvvuu9dC
-	Fq7DHdsLva/plI7J077djhEGlHtMY3YUQRNbI8Hjjqmh6k7gJoFBtWctb6GYzfO8oyV0xlU95Oa
-	O2yjURRMD46hM9zBCv1sXII6Zx
-X-Received: by 2002:a05:6102:1490:b0:631:af51:7d8e with SMTP id ada2fe7eead31-744e00d15demr5013522137.17.1783625946441;
-        Thu, 09 Jul 2026 12:39:06 -0700 (PDT)
-X-Received: by 2002:a05:6102:1490:b0:631:af51:7d8e with SMTP id ada2fe7eead31-744e00d15demr5013479137.17.1783625945914;
-        Thu, 09 Jul 2026 12:39:05 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39c84b13407sm5148981fa.12.2026.07.09.12.39.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2026 12:39:03 -0700 (PDT)
-Date: Thu, 9 Jul 2026 22:39:01 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH RFC 03/13] drm/msm: look for lpac from dts
-Message-ID: <wtun2cfukyzxlsfiz2izsejd33k4jpapwqa3uqih5drcsrkff5@e6llkke5dayw>
-References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
- <20260705-descriptive-name-lpac-upstream-v1-3-01d50c3e0c99@gmail.com>
- <rwohvfbsw2brpxrfg26egu5arwe6g7n2etelo33eegmu5cz65k@3syofuxzsjrc>
- <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
- <m4vwrqt6yyaawpvkyrqfzs3kbipbhygmtrhphuthl2gmjvkgyt@u2d3dnvl2phy>
- <54cb37bb-aaa5-4c5d-a563-acca4822dd35@oss.qualcomm.com>
- <t5gu6ciwmxdb2jghc44gtixdsbedkgy4yzke5sgawjrr2h362u@ahvhh3yfe6lx>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HUZ0FPy6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A69C51F000E9;
+	Thu,  9 Jul 2026 19:58:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783627084;
+	bh=nASUEopdTVpbiOlaqA3bl70JASaPDBXc6RrPfU8TUhM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=HUZ0FPy6tJ5k2FpZZk4TmtW8oNPYG0UCTaswg34FnSsVTMZ+nc6abBzQoGLAe7QpZ
+	 4839oR2E7eU5H+0VQhcuYDxXFXmLbqe785v0OtfK8pZM64xT/vjBbY8gU6OQqxdQko
+	 2bj2K0aisc+j7i5kyFSxJBzHYPyWTVbTuJKmXAkqp+WJvRZsZfqnl91bOFM7185CBN
+	 pNNt3ie4Xo7ripQOTTqoaN5lwefEhmBf7ncJ41sgP4urIb+UmKalmTY+FHBAjFjAbH
+	 sZHtyFtM9TSgQQsGPMBhSwsdDCYRoGd5HD7SutnqDROuHsn6T0qtpDhVLf9Zj3BAl/
+	 ejFRs0GNI3+Yw==
+Date: Thu, 9 Jul 2026 21:58:01 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: Will Deacon <will@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>, Chun Ng <chunn@nvidia.com>
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+Message-ID: <ak_8Po3NxgAU7k0T@orome>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <20260701-tegra-vpr-v3-4-d80f7b871bb4@nvidia.com>
+ <akYs91INHMXMTI-t@willie-the-truck>
+ <akZkuwktaXFTrASP@orome>
+ <akaSJ5D98w2cHqb6@orome>
+ <akftuw9NyRy36fXA@willie-the-truck>
+ <akuvyu1Pq0ZVMZV0@orome>
+ <akzikTrmhMsvkNVY@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="rvxsrpqt5djhs2ak"
 Content-Disposition: inline
-In-Reply-To: <t5gu6ciwmxdb2jghc44gtixdsbedkgy4yzke5sgawjrr2h362u@ahvhh3yfe6lx>
-X-Authority-Analysis: v=2.4 cv=UI3t2ify c=1 sm=1 tr=0 ts=6a4ff8db cx=c_pps
- a=R6oCqFB+Yf/t2GF8e0/dFg==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=VwQbUJbxAAAA:8
- a=9jRdOu3wAAAA:8 a=KUW68C9JwZgBSL_lDhwA:9 a=CjuIK1q_8ugA:10
- a=TD8TdBvy0hsOASGTdmB-:22 a=ZE6KLimJVUuLrTuGpvhn:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA5MDE5NSBTYWx0ZWRfX1uasM7TOb0xQ
- a4zjnHIqgoXsoewNvOIu0Qe2H6iZseuChh1oLMaXe216Xb+7iZcCo93415YESndXfSeFzGjQzLS
- SiLiyivrFZExdRob6x7uWmFm/bWvS9m5Vdc+d2dDNQnQcbFCtaiy3KaWt8PQOx1g2Guv+UfFlCU
- ifjxarBmiNgKSgFWdDmRlziMH3Lbuq9EOv//QgUwhlnlfGYaj9uap3jxUK7tQaU0bhfaVphPzZT
- y4tqMeaXoZ5HSfcFpwLpvzvhGBlScKAMqtByKCoD3qkUykyOY7ks9GPVdaes83TgxcGOqgin7sx
- fKAKz5PYuD8Lm6CfQKx8GHUBI/Z3ID969Qq7MwNwUbubue6LhOPNdPgqcEZGmRKeoIt+wV073nb
- 6FmcW6rrKGmwTIn9oQVw0IKHMOZTWbRAdGaheyQQ+SlW89+aD7FbXGHNoJxpyda4VY37ckmNlQA
- kkn6hDoTxl86rHshb9A==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA5MDE5NSBTYWx0ZWRfXz6vI+KGbxU7d
- 0ZGGRBeGPaDPrGFan1XAVU2J8zKkH+uFdwNUU17YjDwyeVmAAYrIUkfkFW+ZM+cnMPeNmmInTiR
- gR6vBqpQBlAjcp7MUR2VNER4cCL7gBE=
-X-Proofpoint-GUID: PU6rZg30i3zs7-0ME-VfmHjyMSFlRrqS
-X-Proofpoint-ORIG-GUID: PU6rZg30i3zs7-0ME-VfmHjyMSFlRrqS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-09_04,2026-07-09_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 suspectscore=0 spamscore=0 malwarescore=0 bulkscore=0
- adultscore=0 clxscore=1015 lowpriorityscore=0 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607090195
+In-Reply-To: <akzikTrmhMsvkNVY@willie-the-truck>
 
-On Thu, Jul 09, 2026 at 05:54:23PM +0300, Dmitry Baryshkov wrote:
-> On Thu, Jul 09, 2026 at 07:12:39PM +0530, Akhil P Oommen wrote:
-> > On 7/7/2026 10:09 PM, Dmitry Baryshkov wrote:
-> > > On Tue, Jul 07, 2026 at 05:02:43PM +0200, Anna Maniscalco wrote:
-> > >> On 7/6/26 5:04 PM, Dmitry Baryshkov wrote:
-> > >>> On Sun, Jul 05, 2026 at 09:13:37PM +0200, Anna Maniscalco wrote:
-> > >>>> In order to associate the SID used by LPAC to it's own domain and
-> > >>>> context bank we need a separate node on the DTS.
-> > >>> Can we use iommu-map instead of adding a new device using the same
-> > >>> addresses? You provide zero explanations, but it seems like you are
-> > >>> trying to separate a part of the GPU into a separate device, but it's
-> > >>> unnecessary.
-> > >>
-> > >> What I was trying to say is that we need to map sid0 and sid1 to different
-> > >> context banks.
-> > >>
-> > >> From what I recall, so long as we use the same dt node, the iommu drivert
-> > >> provides no way of doing this.
-> > >>
-> > >> What kgsl does is having a node for the iommu and then subnodes for gfx lpac
-> > >> and secure.
-> > >>
-> > >> The address on the lpac device doesn't really matter. I have very limted
-> > >> knowledge of DTSs but I think we could just leave it out altogether?
-> > > 
-> > > I think, you were poined to the Glymur Iris patches. Another option is
-> > > the QDA driver being submitted too. Both ot them use iommu-map to
-> > > describe the same usecase - a set of SIDs which are used by the device
-> > > but which should not be a part of the defaut set. With it in place you
-> > > don't need to have separate qcom,lpac devices, no additional properties,
-> > > etc. 
-> > > 
-> > > I'd recommend following the same approach.
-> > 
-> > iiuc, the conclusion in this recent thread is to use child nodes for a
-> > similar case:
-> > https://lore.kernel.org/all/20260618151745.GD231643@ziepe.ca/
-> 
-> Let me check internally.
 
-After a brief discussion: it can be either, depending on what suites
-better (and if you can persuade DMA / IOMMU maintainers to let one extra
-bus or not).
+--rvxsrpqt5djhs2ak
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 04/11] arm64/mm: Add set_memory_device() and
+ set_memory_normal()
+MIME-Version: 1.0
 
--- 
-With best wishes
-Dmitry
+On Tue, Jul 07, 2026 at 12:27:13PM +0100, Will Deacon wrote:
+> On Mon, Jul 06, 2026 at 03:49:24PM +0200, Thierry Reding wrote:
+> > On Fri, Jul 03, 2026 at 06:13:31PM +0100, Will Deacon wrote:
+> > > On Thu, Jul 02, 2026 at 06:41:23PM +0200, Thierry Reding wrote:
+> > > > On Thu, Jul 02, 2026 at 03:46:44PM +0200, Thierry Reding wrote:
+> > > > > On Thu, Jul 02, 2026 at 10:18:47AM +0100, Will Deacon wrote:
+> > > > > > On Wed, Jul 01, 2026 at 06:08:15PM +0200, Thierry Reding wrote:
+> > > > > > > From: Chun Ng <chunn@nvidia.com>
+> > > > > > >=20
+> > > > > > > Add helpers to swap PROT_NORMAL and PROT_DEVICE_nGnRnE protec=
+tion bits
+> > > > > > > on a kernel-linear-map range.
+> > > > > >=20
+> > > > > > That sounds like a really terrible idea. Why is this necessary =
+and how
+> > > > > > does it interact with things like load_unaligned_zeropad()?
+> > > > >=20
+> > > > > This is necessary because once the memory controller has walled o=
+ff the
+> > > > > new memory region the CPU must not access it under any circumstan=
+ces or
+> > > > > it'll cause the CPU to lock up (I think technically it'll hit an =
+SError
+> > > > > but in practice that just means it'll freeze, as far as I can tel=
+l).
+> > > > >=20
+> > > > > Probably doesn't interact well at all with load_unaligned_zeropad=
+().
+> > > > >=20
+> > > > > > I think you should unmap the memory from the linear map and mem=
+remap()
+> > > > > > it instead.
+> > > > >=20
+> > > > > Given that the memory can never be accessed by the CPU after the =
+memory
+> > > > > controller locks it down, I don't think we'll even need memremap(=
+). The
+> > > > > only thing we really need is the sg_table we hand out via the DMA=
+ BUFs
+> > > > > so that they can be used by device drivers to program their DMA e=
+ngines
+> > > > > internally.
+> > > > >=20
+> > > > > Looking through some of the architecture code around this, should=
+n't we
+> > > > > simply be using set_memory_encrypted() and set_memory_decrypted()=
+ for
+> > > > > this? While they might've been created for slightly other use-cas=
+es,
+> > > > > they seem to be doing exactly what we want (i.e. remove the page =
+range
+> > > > > from the linear mapping and flushing it, or restoring the valid b=
+it and
+> > > > > standard permissions, respectively).
+> > > >=20
+> > > > Ah... I guess we can't do it because we're not in a realm world and=
+ so
+> > > > the early checks in __set_memory_enc_dec() would return early and t=
+urn
+> > > > it into a no-op.
+> > > >=20
+> > > > How about if I extract a common helper and provide set_memory_p() a=
+nd
+> > > > set_memory_np() in terms of those. Those are available on x86 and
+> > > > PowerPC as well, so fairly standard. I suppose at that point we're
+> > > > closer to set_memory_valid().
+> > >=20
+> > > Why not just call set_direct_map_invalid_noflush() +
+> > > flush_tlb_kernel_range() for each page? We already have APIs for this.
+> >=20
+> > Having a "standard" helper with a fixed and documented purposed seemed
+> > like a preferable approach for this particular case. We also may want to
+> > make the driver that uses this buildable as a module, in which case we'd
+> > need to export these rather low-level APIs. And then there's also the
+> > fact that we typically call this on a rather large region of memory
+> > (usually something like 512 MiB), so doing it page-by-page is rather
+> > suboptimal.
+> >=20
+> > > The big challenge I see with any linear map manipulation, however, is
+> > > that it will rely on can_set_direct_map() which likely means you need=
+ to
+> > > give up some performance and/or security to make this work. Does memo=
+ry
+> > > become inaccesible dynamically at runtime? If not, the best bet would
+> > > be to describe it as a carveout in the DT and mark it as "no-map" so
+> > > we avoid mapping it in the first place.
+> >=20
+> > VPR exists in two modes: static and resizable. For static VPR we do
+> > exactly that: describe it as carveout in DT with no-map and deal with it
+> > accordingly in the driver. Resizable VPR is for device that have small
+> > amounts of RAM. Content-protected video playback will in the worst case
+> > consume around 1.8 GiB of RAM, so we want to be able to reuse for other
+> > purposes when VPR is unused on those devices. In that case, the memory
+> > is also described as a reserved-memory region in DT, but it is marked as
+> > reusable so that it can be managed by CMA.
+> >=20
+> > The resize operation is fairly slow to begin with because we need to
+> > stall the GPU and put it into reset before the operation, then take it
+> > out of reset and resume it afterwards.
+> >=20
+> > What kind of performance impact do you expect?
+>=20
+> You'll need to measure it, but we've seen reports of double-digit
+> percentage regressions in performance and power. As I said, the problem
+> is that you need to split the linear map to 4k page at runtime to unmap
+> the dynamic carveout, but that isn't something that can be done on most
+> CPUs. Therefore you end up having to use page-granular mappings for the
+> entire thing, similarly to how 'rodata_full' drives can_set_direct_map()
+> and the perf/power hit affects everything.
+
+The VPR has fairly large alignment restrictions (1 MiB) and we do unmap
+in fairly large chunks (512 MiB currently, but we can change that if it
+is helpful) because we really want to avoid resizing operations, so the
+tradeoff is between frequency of resize vs. potential memory wasted.
+
+Does that change anything with regards to performance?
+
+Thierry
+
+--rvxsrpqt5djhs2ak
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpP/UkACgkQ3SOs138+
+s6GFqBAAsfNpGtxzDc/1UKAc4Vjp9eilQE6L3ZzhQhn1d3Crc+ym9vGZzyfe4lTR
+di2aYaWn+6XslOczfKwW58jo+D8/fP64sFF9UY3mR7U+MzuIGEF61RVgF0fFH4Vb
+wo6H5bLYvA2J1VhXyIv08l/Oxb+GGHMa2gRVdTbFux+csAi4ahPJVT0oS9S0sJht
+cmPEaDkjN8StPrx4IN3oTcj7g3LW3aDuShMtgqRrceSaIw2xvtb+rvWLvGJac/HH
+kNrn5Vc+pAJJigN3NZqMgpjeD3gHZDZYaKUToPXJuIOlZILR0VzdDAHxD9U+lmyD
+YVPGNnPi13QmxTk9KHR+Tm2aL7AxXx8TK0jIOUFuaySrgD16Oo9CTxOvsxewNGpg
+lGDhuvag7BCxZqQzlxbhAuGtHZS+s6OWCXleWAsKpVs4Ga/FDaAvZYCHugxIur84
+mexc1/5CBcjohTAfvTLpAZGUxDXslKopeYaBZGgRJXz+iwulrGeeDpEvDH1VNo1r
+SkCIXoLOlq4bEKwejuGzuVzc47hLYGL+c09cCOwa73rhvVARke2v05fRowwN29Iv
+1OVDKNQTsHbBZ8PNTsoaEApLvif8crc38kborIPtiuaGz4WDg7q90ogJoIhqEK2L
+z8Lt64Ul985C2ht8PNWLbWeUKGNX54YFmnBCCP+lgBzDRu2sc4g=
+=Axxn
+-----END PGP SIGNATURE-----
+
+--rvxsrpqt5djhs2ak--
