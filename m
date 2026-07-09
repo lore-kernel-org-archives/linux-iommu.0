@@ -1,159 +1,285 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A061408028;
-	Thu,  9 Jul 2026 11:13:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C8DB41CB25
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 11:33:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783595609; cv=none; b=HKy+6v0tRKVR00PmTcUgjBl835Ym/zddZEMxcKqZHOYaeuMQrx4zyg9dqxWVR+NsoZJS6KubHLGTcsLHOpyQWqG4TNeMi7Av22hTuNoWuZOyr6wlkw6jDdZ2CNyaN4Oo6EFhV+GFz9SDpXf1yr/DzBO2krnQfa1sNz0etqbiwe4=
+	t=1783596829; cv=none; b=A7U1zF4QhV2ZUcYUakeEEBmICn+N69TB0acLxgq2alpQXicy+Wcqhsdm3d2XcACsFjHfPycul6fyts0Rf0R1l4S/KN1AXITqzwxz+mjitV8RWhgzMZbovwET9D/FVN0xtYSy+SQI3Heg31SD5GsPWYwXPNC+IYBiU+yGJ0tteD8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783595609; c=relaxed/simple;
-	bh=SAV3PQ7+eCtje2uVxH/LefEDAxakMvTJxqH9sWGHNjU=;
+	s=arc-20240116; t=1783596829; c=relaxed/simple;
+	bh=K0THlXNwZqipz/KEI06FjAdUeSpg5s7LDONtQ2Zte8g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lwbYbZTP4Re3HWiF9btuKYDxEFwi8hzGGniErvImnkb142X9FqMTtvKbRJ1TU5LJEWimoKKo+fbuorUBNJju8ZehNecsTjAzZKo6kjwJoP4yrRsFxyl50862lVOxZDDSav/GiVpVM5GWxytSuGfZq1eBzc7BpMhAszE7ruN6cDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=dqr2VgVo; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=k53fWZr1HDPbyUVMbbyigenUK6NRpW+5icJ6rfI8D68rGeWF/x3rAw1bDOR6V9t9T3abz/SS0L4+eRgjyHrGyUXSysd6Qy9QEqybn/pu6nqdkVg3Pr9Mqn3YpBotpnWL+lw7ybcQwYKHVtzsk/w7fIIteidQ+DQwy2JCmpcCb+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=hovpNZ3T; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="dqr2VgVo"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25E443570;
-	Thu,  9 Jul 2026 04:13:22 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E40B83FE53;
-	Thu,  9 Jul 2026 04:13:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1783595606; bh=SAV3PQ7+eCtje2uVxH/LefEDAxakMvTJxqH9sWGHNjU=;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="hovpNZ3T"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4A43420B716B;
+	Thu,  9 Jul 2026 04:33:38 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4A43420B716B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1783596818;
+	bh=LJd/+GU+PpP/Ium6hNk30csI0fmCJwtgCwZHUVsgKho=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dqr2VgVo4J5uM+joPiCCMcuMryXYkHoDl8Yseh7vn5qnsw8KiVm31/w5zxn+qHZz6
-	 FQ+PFakz3CMKt8/wA88yoTOV9CvFtW55mtYdapJsL6VEivjrkA7AVCtB4s+WoNPG6B
-	 FEJ4cXCyQS9OxIYWx7h63mAscI4uPmXdfA6VwK+M=
-Date: Thu, 9 Jul 2026 12:13:19 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
- DMA_ATTR_CC_SHARED
-Message-ID: <ak-CT3oanlDfgTy4@arm.com>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-17-aneesh.kumar@kernel.org>
- <ak42F240d-53QeFN@arm.com>
- <yq5apl0xgy89.fsf@kernel.org>
+	b=hovpNZ3TPhHx/HgG/98cgurUwIpqSkztqwDe0evKW+PVJY8k7FqGSIMz2PlREZPEW
+	 5FRx12WtVtyS1Sjp6ozdvLGdCLoGIMag2WiCU2x6FgNo6nsSQ7VensjxunuGYb+i+H
+	 undDj7/2n65it5yFFcbnKT4Asefw6BMab67xV/Nk=
+Date: Thu, 9 Jul 2026 19:33:41 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
+	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
+	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
+	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
+	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>
+Subject: Re: [PATCH v2 2/4] Drivers: hv: Add logical device ID registry for
+ vPCI devices
+Message-ID: <ja2drof5i7xjhpj4vbpavnphtn6cx4y5d3337vjrofxr47gxtq@msvg6xpbkb2h>
+References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
+ <20260702160518.311234-3-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB415798534DFCC14E5202D021D4FF2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <u2l4lz5skybcukrb6hwp2u6v3jdibrugokxmclgv3uq4ljj3vw@x7mlfvuwb5f4>
+ <BN7PR02MB4148C8DB748CFD863B97D1B7D4FF2@BN7PR02MB4148.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <yq5apl0xgy89.fsf@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN7PR02MB4148C8DB748CFD863B97D1B7D4FF2@BN7PR02MB4148.namprd02.prod.outlook.com>
 
-On Wed, Jul 08, 2026 at 11:28:14PM +0530, Aneesh Kumar K.V wrote:
-> Catalin Marinas <catalin.marinas@arm.com> writes:
+On Wed, Jul 08, 2026 at 01:28:42PM +0000, Michael Kelley wrote:
+> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Wednesday, July 8, 2026 6:09 AM
+> > 
+> > On Wed, Jul 08, 2026 at 02:52:43AM +0000, Michael Kelley wrote:
+> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Thursday, July 2, 2026 9:05 AM
+> > > >
+> > > > From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > > >
+> > > > Hyper-V identifies each PCI pass-thru device by a logical device ID in
+> > > > its hypercall interface. This ID consists of a per-bus prefix, derived
+> > > > from the VMBus device instance GUID, combined with the PCI function
+> > > > number of the endpoint device.
+> > > >
+> > > > Add a small registry in hv_common.c that maps a PCI domain number to its
+> > > > logical device ID prefix. The vPCI bus driver (pci-hyperv) registers the
+> > > > prefix when a bus is probed and unregisters it when the bus is removed.
+> > > > Consumers such as the para-virtualized IOMMU driver look up the prefix
+> > > > by PCI domain number and combine it with the function number to form the
+> > > > complete logical device ID for hypercalls.
+> > > >
+> > > > The prefix construction is shared via hv_build_logical_dev_id_prefix() so
+> > > > that pci-hyperv's interrupt retargeting path and the registry use exactly
+> > > > the same byte layout. It is derived on demand from the constant hv_device
+> > > > instance GUID rather than cached in struct hv_pcibus_device, which is
+> > > > private to the pci-hyperv module; this keeps the interface narrow and
+> > > > avoids depending on pci-hyperv internals.
+> > > >
+> > > > Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> > > > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> > > > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > > > ---
+> > > >  drivers/hv/hv_common.c              | 95 +++++++++++++++++++++++++++++
+> > > >  drivers/pci/controller/pci-hyperv.c | 21 +++++--
+> > > >  include/asm-generic/mshyperv.h      | 13 ++++
+> > > >  include/linux/hyperv.h              |  8 +++
+> > > >  4 files changed, 132 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+> > > > index 6b67ac616789..53493f8d14dc 100644
+> > > > --- a/drivers/hv/hv_common.c
+> > > > +++ b/drivers/hv/hv_common.c
+> > > > @@ -26,6 +26,8 @@
+> > > >  #include <linux/kmsg_dump.h>
+> > > >  #include <linux/sizes.h>
+> > > >  #include <linux/slab.h>
+> > > > +#include <linux/list.h>
+> > > > +#include <linux/spinlock.h>
+> > > >  #include <linux/dma-map-ops.h>
+> > > >  #include <linux/set_memory.h>
+> > > >  #include <hyperv/hvhdk.h>
+> > > > @@ -863,3 +865,96 @@ const char *hv_result_to_string(u64 status)
+> > > >  	return "Unknown";
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(hv_result_to_string);
+> > > > +
+> > > > +#ifdef CONFIG_HYPERV_PVIOMMU
+> > > > +/*
+> > > > + * Logical device ID registry shared between the vPCI bus driver
+> > > > + * (pci-hyperv) and the para-virtualized IOMMU driver. The vPCI driver
+> > > > + * registers the per-bus logical device ID prefix at bus probe time, and
+> > > > + * the pvIOMMU driver looks it up to build the full logical device ID used
+> > > > + * in IOMMU hypercalls.
+> > > > + */
+> > > > +struct hv_pci_busdata {
+> > > > +	int		 pci_domain_nr;
+> > > > +	u32		 logical_dev_id_prefix;
+> > > > +	struct list_head list;
+> > > > +};
+> > > > +
+> > > > +static LIST_HEAD(hv_pci_bus_list);
+> > > > +static DEFINE_SPINLOCK(hv_pci_bus_lock);
+> > > > +
+> > > > +int hv_iommu_register_pci_bus(int pci_domain_nr, u32 logical_dev_id_prefix)
+> > > > +{
+> > > > +	struct hv_pci_busdata *bus, *new;
+> > > > +	int ret = 0;
+> > > > +
+> > > > +	new = kzalloc_obj(*new, GFP_KERNEL);
+> > > > +	if (!new)
+> > > > +		return -ENOMEM;
+> > > > +
+> > > > +	spin_lock(&hv_pci_bus_lock);
+> > > > +	list_for_each_entry(bus, &hv_pci_bus_list, list) {
+> > > > +		if (bus->pci_domain_nr != pci_domain_nr)
+> > > > +			continue;
+> > > > +
+> > > > +		if (bus->logical_dev_id_prefix != logical_dev_id_prefix) {
+> > > > +			pr_err("stale registration for PCI domain %d (old prefix 0x%08x, new 0x%08x)\n",
+> > > > +			       pci_domain_nr, bus->logical_dev_id_prefix,
+> > > > +			       logical_dev_id_prefix);
+> > > > +			ret = -EEXIST;
+> > > > +		}
+> > > > +
+> > > > +		goto out_free;
+> > > > +	}
+> > > > +
+> > > > +	new->pci_domain_nr = pci_domain_nr;
+> > > > +	new->logical_dev_id_prefix = logical_dev_id_prefix;
+> > > > +	list_add(&new->list, &hv_pci_bus_list);
+> > > > +	spin_unlock(&hv_pci_bus_lock);
+> > > > +	return 0;
+> > > > +
+> > > > +out_free:
+> > > > +	spin_unlock(&hv_pci_bus_lock);
+> > > > +	kfree(new);
+> > > > +	return ret;
+> > > > +}
+> > > > +EXPORT_SYMBOL_FOR_MODULES(hv_iommu_register_pci_bus, "pci-hyperv");
+> > > > +
+> > > > +void hv_iommu_unregister_pci_bus(int pci_domain_nr)
+> > > > +{
+> > > > +	struct hv_pci_busdata *bus, *tmp;
+> > > > +
+> > > > +	spin_lock(&hv_pci_bus_lock);
+> > > > +	list_for_each_entry_safe(bus, tmp, &hv_pci_bus_list, list) {
+> > > > +		if (bus->pci_domain_nr == pci_domain_nr) {
+> > > > +			list_del(&bus->list);
+> > > > +			kfree(bus);
+> > > > +			break;
+> > > > +		}
+> > > > +	}
+> > > > +	spin_unlock(&hv_pci_bus_lock);
+> > > > +}
+> > > > +EXPORT_SYMBOL_FOR_MODULES(hv_iommu_unregister_pci_bus, "pci-hyperv");
+> > > > +
+> > > > +/*
+> > > > + * Look up the logical device ID prefix registered for @pci_domain_nr.
+> > > > + * Returns 0 on success with *prefix filled in; -ENODEV if no entry is
+> > > > + * registered for that PCI domain.
+> > > > + */
+> > > > +int hv_iommu_lookup_logical_dev_id(int pci_domain_nr, u32 *prefix)
+> > > > +{
+> > > > +	struct hv_pci_busdata *bus;
+> > > > +	int ret = -ENODEV;
+> > > > +
+> > > > +	spin_lock(&hv_pci_bus_lock);
+> > > > +	list_for_each_entry(bus, &hv_pci_bus_list, list) {
+> > > > +		if (bus->pci_domain_nr == pci_domain_nr) {
+> > > > +			*prefix = bus->logical_dev_id_prefix;
+> > > > +			ret = 0;
+> > > > +			break;
+> > > > +		}
+> > > > +	}
+> > > > +	spin_unlock(&hv_pci_bus_lock);
+> > > > +	return ret;
+> > > > +}
+> > >
+> > > I started thinking about the mechanism here because it's somewhat
+> > > annoying that it takes 77 lines of code (sans comments) to manage
+> > > this simple little mapping. I also started thinking about how many entries
+> > > are likely to be in the mapping. A guest VM probably has fewer than 10
+> > > entries unless it has multiple NICs and maybe some GPUs. But this code
+> > > is also intended to be used by the Linux-as-root code, and I'm thinking
+> > > that the number of PCI devices managed by the root could easily be a
+> > > hundred or more if the root is managing a couple dozen VMs on a large
+> > > physical server. Searching a linked list with 100 or more entries could be
+> > > a bit slow.
+> > >
+> > > If only the guest scenario were needed, you could declare a static
+> > > array with 64 entries (64 is an arbitrary upper bound), and just search
+> > > through the array instead of having to allocate memory, deal with
+> > > allocation failures, and deal with linked lists. But a fixed size array
+> > > would need to be much bigger for the root scenario, and you would
+> > > still be doing a linear search.
+> > >
+> > > A better alternative to consider is rhashtable, which is an existing
+> > > Linux kernel facility. Based on what an AI bot generated for me, the
+> > > code for setting up and using rhashtable is straightforward, and
+> > > would probably result in far fewer than 77 lines of code. Lookups
+> > > would also be faster than a linear search, at least for the root case
+> > > with more than just a few entries. I'd suggest looking at rhashtable
+> > > to see whether you like how the resulting code comes out for this
+> > > use case, and whether it really is simpler than a roll-your-own linked
+> > > list.
+> > >
+> > 
+> > Thank you so much for thinking this through, Michael! That is really
+> > a valid concern.
+> > 
+> > How about using XArray? It might be more lightweight compared with
+> > rhashtable. Using pci_domain_nr as the key and prefix as the value.
+> > Maybe sth. like:
+> >                                                                                                                                                         ┃
+> > 	static DEFINE_XARRAY(hv_pci_bus_xa);
+> > 
+> > 	int hv_iommu_register_pci_bus(int domain_nr, u32 prefix)
+> > 	{
+> > 		return xa_insert(&hv_pci_bus_xa, domain_nr,
+> > 				xa_mk_value(prefix), GFP_KERNEL);
+> > 	}                                                                                                                                                ┃
+> > 
+> > 	void hv_iommu_unregister_pci_bus(int domain_nr)
+> > 	{
+> > 		xa_erase(&hv_pci_bus_xa, domain_nr);
+> > 	}
+> > 
+> > 	int hv_iommu_lookup_logical_dev_id(int domain_nr, u32 *prefix)
+> > 	{
+> > 		void *entry = xa_load(&hv_pci_bus_xa, domain_nr);
+> > 		if (!entry)
+> > ┃
+> > 			return -ENODEV;
+> > 		*prefix = xa_to_value(entry);
+> > 		return 0;
+> > ┃
+> > 	}
+> > 
 > 
-> > On Wed, Jul 01, 2026 at 11:19:20AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> >> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> >> index 97987f850a33..acf67c7064db 100644
-> >> --- a/arch/arm64/mm/init.c
-> >> +++ b/arch/arm64/mm/init.c
-> >> @@ -338,10 +338,8 @@ void __init arch_mm_preinit(void)
-> >>  	unsigned int flags = SWIOTLB_VERBOSE;
-> >>  	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
-> >>  
-> >> -	if (is_realm_world()) {
-> >> +	if (is_realm_world())
-> >>  		swiotlb = true;
-> >> -		flags |= SWIOTLB_FORCE;
-> >> -	}
-> >
-> > For this part:
-> >
-> > Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-> >
-> >> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-> >> index e05dc7649366..f3fc28f352ba 100644
-> >> --- a/kernel/dma/direct.h
-> >> +++ b/kernel/dma/direct.h
-> >> @@ -88,37 +88,40 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
-> >>  {
-> >>  	dma_addr_t dma_addr;
-> >>  
-> >> +	/*
-> >> +	 * For a device requiring unencrypted DMA, MMIO memory is treated
-> >> +	 * as shared by default.
-> >> +	 */
-> >> +	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
-> >> +		attrs |= DMA_ATTR_CC_SHARED;
-> >> +
-> >>  	if (is_swiotlb_force_bounce(dev)) {
-> >> -		if (!(attrs & DMA_ATTR_CC_SHARED)) {
-> >> -			if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
-> >> -				return DMA_MAPPING_ERROR;
-> >> +		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
-> >> +			return DMA_MAPPING_ERROR;
-> >>  
-> >> -			return swiotlb_map(dev, phys, size, dir, attrs);
-> >> -		}
-> >> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
-> >> -		return DMA_MAPPING_ERROR;
-> >> +		return swiotlb_map(dev, phys, size, dir, attrs);
-> >>  	}
-> >>  
-> >> -	if (attrs & DMA_ATTR_MMIO) {
-> >> -		dma_addr = phys;
-> >> -		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
-> >> -			goto err_overflow;
-> >> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
-> >> +	if (attrs & DMA_ATTR_CC_SHARED)
-> >>  		dma_addr = phys_to_dma_unencrypted(dev, phys);
-> >> +	else
-> >> +		dma_addr = phys_to_dma_encrypted(dev, phys);
-> >
-> > For AMD/SME, on host with memory encryption we now end up setting the C
-> > bit for DMA_ATTR_MMIO. This is fine for RAM but not sure whether
-> > some other MMIO bus understands this attribute. Maybe we should stick to
-> > something like __phys_to_dma() for the !CC_SHARED && MMIO path. Or,
-> > since this is not universally defined, just use the old dma_addr = phys
-> > if MMIO and ignore any unlikely DMA offsets.
-> >
+> xarray is best where the keys are dense or mostly dense integers. In
+> this use case, the pci_domain_nr keys are essentially random 16-bit
+> values, which doesn't fit xarray as well. It would work, but wouldn't
+> be very efficient. See the 2nd paragraph of the documentation here:
 > 
-> Considering for AMD/SME system an unencrypted dma addr is one without C
-> bit, will this be good?
+> https://www.kernel.org/doc/html/latest/core-api/xarray.html#xarray
 > 
-> 	/*
-> 	 * For host memory encryption and device requiring unencrypted DMA,
-> 	 * MMIO memory is treated as shared by default.
-> 	 */
-> 	if (attrs & DMA_ATTR_MMIO) {
-> 		if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) || force_dma_unencrypted(dev))
-> 			attrs |= DMA_ATTR_CC_SHARED;
-> 	}
 
-Yes, I think it does the trick, preserves the current semantics for AMD.
-I guess you could use a single 'if' for all checks (up to you).
+Thanks for pointing out the documentation. You're right. With sparse
+16-bit keys, a hash-based data structure makes more sense than a
+radix-based one. I'll try reworking it with rhashtable and let you
+know if it doesn't work out.
 
--- 
-Catalin
+B.R.
+Yu
+> Michael
