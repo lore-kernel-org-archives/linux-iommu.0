@@ -1,113 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E807543932C;
-	Thu,  9 Jul 2026 05:43:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45C2C3AB5DE
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 05:56:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783575828; cv=none; b=J6cqVpVfQnbzLtQuLE7wDETTubkNuLrShdDq0XwBtLPfkuWacATdUTFIPV/e/Q+WCSoOOAr2cuphHeWtXgRHs3NnRMmGhivW71455WHdTsXGgvyuy4g/3yKWpL9KiDoQNx8eYy0ijLtpr0FwZ9y3ZTsBQKxWQ1acdtEVWLBTkIQ=
+	t=1783576614; cv=none; b=Ki7/+p3vvspbtXnh8490HMz7P68X2CSGBpeFeHOzR9BwrLnz+8c56fw3Q3136GN6B9Hew7TILu6s15W10qXMVtIOltO9Y1MS5x1qeW0y7rc1GnMl90Ky42qbMsC8sihDFubtdllKmq8fDSAXpf4cYqdB3VcN0bkgP8eLtnJgPX8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783575828; c=relaxed/simple;
-	bh=c/7Wj6PdrlZXC2hh+OdKcA0brKNMahmYbkopRZsSj4w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tSyI5CHFr6sr9wle9ITTkCmdtm1fXavm5qFbQHV2CtdSUkHUrZSZEd6XTNHkQRNwpyyjbvvhhMWT7Cn2Wd1ClrEmi3WoriHjRmdgHF808PNzBRRMpPga/qySEdn+IaevZqBsucUj2AAkE/b9jbAI7scTOYQbPr2Z1VJz6HYAE6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BzMErqn7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783576614; c=relaxed/simple;
+	bh=yWBPkKzs783mUEzWAbniSemwEzrqyPrMZEl2J3lxHyk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=Yru9V1C52Tfet91wXBslqbjtXU9EhftfVa3Et2X0SWxU88WkRIYuN23Eagt/eIBt6NzpbXV1Jqnj/apoUGjGIZpwhQyoFKFd/RI8f+Q8ZdYL4sN6EvpCLbInZWXk+OP3hfM0Y/mW425HBcl1Pd2BL4Q1xX+6LvfWnOhJGlzZt6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=YG6NrUKP; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BzMErqn7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CAF51F000E9;
-	Thu,  9 Jul 2026 05:43:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783575826;
-	bh=qiRZlu+pN9UCQWPo2SujBtFWkDfJIgfryKRGlCH9SOw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=BzMErqn7H0tBQWhIwwL6cUV+PjYiwddzfMugre75ZSIDqZBCLeCqXrYojO2boVY6m
-	 WEHqDK9+AFssKNWzeZSrEXx6ZE8pGP7XrpR/kzxGx0xXXBHhVlVk05mMLjuZx3AN3q
-	 nFwms3UbgAZTz7CoZQfvH1PiOO0qS3P/j07senEZR/5mIK9KDJT3xrUlGAfo+o5Pzk
-	 P9PlZ9QqFsr4ZtFXhvfxdyJmNot3XsN9XOSspEw0RmfmQP+oJ0IKP8AK6VLS+VFyh4
-	 9hMocZ0tLgRbX3AucUK107XcluYsLU4ZDIC+IANdz7E7zD6WbZ1KA6LiNnn/ZYB3C4
-	 F7pcOoylRdyqw==
-Date: Thu, 9 Jul 2026 07:43:19 +0200
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>, 
-	"Vaibhaav Ram T . L" <vaibhaavram.tl@microchip.com>, Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>, 
-	Even Xu <even.xu@intel.com>, Xinpeng Sun <xinpeng.sun@intel.com>, 
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Jiri Kosina <jikos@kernel.org>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Zhou Wang <wangzhou1@hisilicon.com>, 
-	Longfang Liu <liulongfang@huawei.com>, Vinod Koul <vkoul@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Jijie Shao <shaojijie@huawei.com>, Jian Shen <shenjian15@huawei.com>, 
-	Sunil Goutham <sgoutham@marvell.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
-	Heiner Kallweit <hkallweit1@gmail.com>, "David S . Miller" <davem@davemloft.net>, 
-	Jeff Hugo <jeff.hugo@oss.qualcomm.com>, Oded Gabbay <ogabbay@kernel.org>, 
-	Maciej Falkowski <maciej.falkowski@linux.intel.com>, Karol Wachowski <karol.wachowski@linux.intel.com>, 
-	Min Ma <mamin506@gmail.com>, Lizhi Hou <lizhi.hou@amd.com>, 
-	Andreas Noever <andreas.noever@gmail.com>, Mika Westerberg <westeri@kernel.org>, 
-	Will Deacon <will@kernel.org>, Xinliang Liu <xinliang.liu@linaro.org>, 
-	Tian Tao <tiantao6@hisilicon.com>, Davidlohr Bueso <dave@stgolabs.net>, 
-	Srujana Challa <schalla@marvell.com>, Bharat Bhushan <bbhushan2@marvell.com>, 
-	Antoine Tenart <atenart@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, 
-	Raag Jadav <raag.jadav@intel.com>, Hans de Goede <hansg@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Andy Shevchenko <andy@kernel.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, 
-	Andi Shyti <andi.shyti@kernel.org>, Robert Richter <rric@kernel.org>, 
-	Mark Brown <broonie@kernel.org>, Nirmal Patel <nirmal.patel@linux.intel.com>, 
-	Kurt Schwemmer <kurt.schwemmer@microsemi.com>, Logan Gunthorpe <logang@deltatee.com>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Sakari Ailus <sakari.ailus@linux.intel.com>, Bingbu Cao <bingbu.cao@intel.com>, 
-	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Jonathan Cameron <jic23@kernel.org>, 
-	Ulf Hansson <ulfh@kernel.org>, Shawn Lin <shawn.lin@rock-chips.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Benjamin Tissoires <bentiss@kernel.org>, 
-	linux-input@vger.kernel.org, linux-i3c@lists.infradead.org, dmaengine@vger.kernel.org, 
-	Philipp Stanner <phasta@kernel.org>, netdev@vger.kernel.org, nic_swsd@realtek.com, 
-	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, linux-cxl@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
-	linux-serial@vger.kernel.org, mhi@lists.linux.dev, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jan Dabros <jsd@semihalf.com>, linux-i2c@vger.kernel.org, 
-	Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, 
-	linux-spi@vger.kernel.org, Jonathan Derrick <jonathan.derrick@linux.dev>, 
-	linux-pci@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, linux-media@vger.kernel.org, linux-mmc@vger.kernel.org
-Subject: Re: (subset) [PATCH 0/37] PCI/MSI: Enforce explicit IRQ vector
- management by removing devres auto-free
-Message-ID: <vb3ywnzdult3h3bzvh2m6ye5xcuxuzvufcsp4kdos6g2a4q6tn@5ut3kgguaey6>
-References: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
- <178357565325.731734.7291964273199898845.b4-ty@b4>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="YG6NrUKP"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260709055650euoutp025a12a0c6f53f1597c081fde8840d680e~AiXozFXMg0222702227euoutp02U;
+	Thu,  9 Jul 2026 05:56:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260709055650euoutp025a12a0c6f53f1597c081fde8840d680e~AiXozFXMg0222702227euoutp02U
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1783576610;
+	bh=0zn1dtIX1zk4qdGW1lihLluLd2XJtl/1EEzMzw8sXVc=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=YG6NrUKPsBwqBvMGbjU5xWHF+nu3KR5nOX3x74qWn9o7ulsLODQrO0+6rPDBK/gpN
+	 1aWd1EwavrpW47dURG/rZPG1Z8lkEaDbZyuKetZ8FW+4NfqXLobtjcACnZ9jgKwdIK
+	 6ZKTeq786aUMJpm83Q1TIX+j/ImTlbLRjVWgi5yM=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260709055650eucas1p215ba97832f0fed53c1c322ecf192ff45~AiXoi0Jv90198801988eucas1p2U;
+	Thu,  9 Jul 2026 05:56:50 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260709055646eusmtip2b9b69a8f7af4b283ece88d085252d254~AiXlAfqwT0885208852eusmtip2U;
+	Thu,  9 Jul 2026 05:56:46 +0000 (GMT)
+Message-ID: <83e5e74d-7106-4e14-9d10-56438372f6a3@samsung.com>
+Date: Thu, 9 Jul 2026 07:56:45 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
+To: "David Hildenbrand (Arm)" <david@kernel.org>, Thierry Reding
+	<thierry.reding@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+	Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Jonathan
+	Hunter <jonathanh@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, Yury
+	Norov <yury.norov@gmail.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Russell King <linux@armlinux.org.uk>, Alexander Gordeev
+	<agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
+	<svens@linux.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, Lorenzo
+	Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, Vlastimil
+	Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, Suren
+	Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, Robin
+	Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey
+	<Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, "T.J. Mercier"
+	<tjmercier@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?=
+	<christian.koenig@amd.com>, Steven Rostedt <rostedt@goodmis.org>, Masami
+	Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers
+	<mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org, linux-trace-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <e212caac-6c30-448a-9e10-32fff8b842f6@kernel.org>
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <178357565325.731734.7291964273199898845.b4-ty@b4>
+X-CMS-MailID: 20260709055650eucas1p215ba97832f0fed53c1c322ecf192ff45
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c
+X-EPHeader: CA
+X-CMS-RootMailID: 20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+	<CGME20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c@eucas1p1.samsung.com>
+	<20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
+	<3f47aeab-33b1-4966-a5ce-5d6d5261e0e2@samsung.com>
+	<e212caac-6c30-448a-9e10-32fff8b842f6@kernel.org>
 
-On Thu, Jul 09, 2026 at 07:40:53AM +0200, Manivannan Sadhasivam wrote:
-> 
-> On Mon, 23 Feb 2026 23:29:39 +0800, Shawn Lin wrote:
-> > This patch series addresses a long-standing design issue in the PCI/MSI
-> > subsystem where the implicit, automatic management of IRQ vectors by
-> > the devres framework conflicts with explicit driver cleanup, creating
-> > ambiguity and potential resource management bugs.
-> > 
-> > ==== The Problem: Implicit vs. Explicit Management ====
-> > Historically, `pcim_enable_device()` not only manages standard PCI resources
-> > (BARs) via devres but also implicitly triggers automatic IRQ vector management
-> > by setting a flag that registers `pcim_msi_release()` as a cleanup action.
-> > 
-> > [...]
-> 
-> Applied, thanks!
-> 
-> [13/37] bus: mhi: host: Replace pci_alloc_irq_vectors() with pcim_alloc_irq_vectors()
->         commit: 256995e80fcd39cab94eee8135dd90f6da6ac744
-> 
+On 08.07.2026 10:35, David Hildenbrand (Arm) wrote:
+> On 7/7/26 12:02, Marek Szyprowski wrote:
+>> On 01.07.2026 18:08, Thierry Reding wrote:
+>>> From: Thierry Reding <treding@nvidia.com>
+>>>
+>>> There is no technical reason why there should be a limited number of CMA
+>>> regions, so extract some code into helpers and use them to create extra
+>>> functions (cma_create() and cma_free()) that allow creating and freeing,
+>>> respectively, CMA regions dynamically at runtime.
+>>
+>> Well, the technical reason for not creating cma regions dynamically at
+>> runtime is that on some architectures (like 32bit ARM) the early fixup
+>> for the region is needed to make it functional for DMA.
+> Can you point me at the code that does that? Thanks!
+Check dma_contiguous_early_fixup() and dma_contiguous_remap() in 
+arch/arm/mm/dma-mapping.c. Those functions ensures that the CPU mappings for
+the CMA reserved region in linear map are remapped with 4k pages instead
+of the 1M sections, so later, it will be possible to alter the mappings and
+change them to coherent when needed (altering 1M sections is not possible,
+because each process has it's own level-1 array even for the kernel linear
+mapping).
 
-Sorry, this is a mistake. This patch is not applied.
 
-- Mani
 
+However, in the use case in this patchset the reserved region is only shared
+with buddy allocator by using the CMA infrastructure, not registered to the
+regular DMA-mapping API, so it would work fine. I'm not convinced that this
+is the right API to use for this though.
+
+Best regards
 -- 
-மணிவண்ணன் சதாசிவம்
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
