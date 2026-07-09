@@ -1,148 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9552E332917;
-	Thu,  9 Jul 2026 15:59:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 224E842E8F1
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 16:04:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783612757; cv=none; b=MdCamrvEElkcAErpZvVRkts9j+uQoPN9C7JuAoUAeLkL5/SQazWw1wNXbqbILvKyt1E9eJa+oySYT/IHIVHG1Jgc7VmtB7UPiGlx/8Phs/mZNW2hoJKTliHyR9D+8jhF2cXA7P412lNySmE6zRIedc3x95xblH/QtDiZxwPUq2c=
+	t=1783613084; cv=none; b=fqzxY7nJA/4ni31DYDYk8K3QMVf3g5DU2V73uwHNQWcH7I49m/xFH4nOd1hvfGvtLpEB0rE6MLfmlV0iC4Gls6m8C59CjxtxLsmtImoykM89lBTp0w+TmvZkXl3+spCMx1Zoelxmo+tTKWMIdSxqkgR7jGd2X+BVNcTd8qqKQmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783612757; c=relaxed/simple;
-	bh=aJbh9LElbrEI7E/P7mvmoKpzdOlw1yDQ59JtSNULaUQ=;
+	s=arc-20240116; t=1783613084; c=relaxed/simple;
+	bh=u7N2Wz8N3g79uBYieYx5umiLmofN8vzB4vLH6EOh0wc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OkqPKPu/lg5N2S3ELhLewsEkHXFGWfEttEj1hBfoo8kUpU9FxPEceEwuBfUeOhKMbYXOK7AADlMTFPTvwPBcsCCYMvDgTzpFTDVDnba1Cnuigvcl3Dt6o9RtEyJnZRQ4D7T64UXbikBm4RzMLIH8a4kyGaa8+xijyPPgXvGw7gE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RC+SN67W; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=qubx6N7byJ6glnDpmM3zJSHijorajR7TxttviVeXpB7u8MEtQ4DTi/q1rnZ1Y3qAZFwClEia+UB7d1cpJwEulONYx8cn14pjs7Q1/a07NJvl8XOdi7tPWPK/cfZNrfe0TPdMHFgxtoPVWO0mN8JyNXN7oF2gzT5skPmCe9a52/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ou4TkW+8; arc=none smtp.client-ip=209.85.222.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RC+SN67W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7221E1F000E9;
-	Thu,  9 Jul 2026 15:59:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783612756;
-	bh=aJbh9LElbrEI7E/P7mvmoKpzdOlw1yDQ59JtSNULaUQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RC+SN67Wo1bRPHmk2A3aRNqpRIZs1vt054/wDbMqrDQX+h2TC1c2qOU/P+vZpdlhO
-	 AGbczQTeBS/xYxBRav4immcCdk9NfNEvFoxtcbuJpR+9S08i4HqzmmxUf2mXM8hMj7
-	 lXpkqf096CaOPzHCghkHjTNtD6G/fOZ8q4jHCFjUFlLP5HaCXiv4HJYAS5IZqtiACw
-	 SFUrZULwFBv+H+0ToU32sDdtnyqRsHAorRSMSNXr8y2FRWFng0qncigrrOJt/3zqzq
-	 3H/Ma20+f66D8Hr1nfijRAegJrkTFT+SYpIfq6Gx4gdnn9Z3ulZD77FcSZxNF6fYJs
-	 u62hwfrMdO64Q==
-Date: Thu, 9 Jul 2026 17:59:13 +0200
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: "David Hildenbrand (Arm)" <david@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
-	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	Michal Hocko <mhocko@suse.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
-	linux-trace-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
-Message-ID: <ak_E4UxfnFJywJa7@orome>
-References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
- <CGME20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c@eucas1p1.samsung.com>
- <20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
- <3f47aeab-33b1-4966-a5ce-5d6d5261e0e2@samsung.com>
- <e212caac-6c30-448a-9e10-32fff8b842f6@kernel.org>
- <83e5e74d-7106-4e14-9d10-56438372f6a3@samsung.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ou4TkW+8"
+Received: by mail-ua1-f41.google.com with SMTP id a1e0cc1a2514c-9618b8bdc51so1526241.1
+        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 09:04:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1783613082; x=1784217882; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=u7N2Wz8N3g79uBYieYx5umiLmofN8vzB4vLH6EOh0wc=;
+        b=Ou4TkW+8XH7i/K5oBEl+3ovptcHFNA0mix5UOPjoIc1gJzciwJxJkNwS/xokVrcsy0
+         6MddQkc+UIp4URt+b+x1G8D1OZzeu/D6J9vasyoHhYetE6EJJrOeRQtxFXOQcAa2XfwT
+         0RJqdSun8R2S1vn+oB4u2MFFDpM1jds7KYQ/GNkdSv9TPB5LgeTMjI1ZL+jS8jsGeb0x
+         d4WfvfsxcAA64SGaMZRiYhRS1mrcALULlGm4NuELZ+5DUNv0A58NRCT6PS7A4FKyVyYP
+         uSscWcUXBD7aWz5FCOXMnG+zmYM/RBqLlWsvYzmXu4z9i8ujrf19DLCvtqoGybZqaJpI
+         1CUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783613082; x=1784217882;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=u7N2Wz8N3g79uBYieYx5umiLmofN8vzB4vLH6EOh0wc=;
+        b=fvWJRK5GWfSSjVRmaS+HMjxpLg6O8VSjOKiw8WGTQ5Mg5eBhfkPPRnEzHhHId56bI1
+         kjbqYVH68dclF9D7z6jpmYmXt2h/n1G8XRVqsLEhQLBwAxKPCAWy/cUmwsP3DorfflN3
+         MLlGP8tVQ/0qaXKxR95xYZp8layCJVy7hmKSiZrFp0yFbRcOXA2GoEJckiLGz9xRe85r
+         om7L3EF2hLFyVIPagzhwbbL6xc+AkWiFNnsQRrX8ZxImS69hz1YNxZGuDZEkEKBzdO9p
+         P8bW6hITySgTK+I7X2PtShephJ3sZj+td+2I2y7HFwWzFt2CEY30X4gVmXrjhtKZ4FW6
+         UdwQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqxGT02AZOH46SP4bg8cbeUr0PWY7DnIX88dp4AqkQCA0SBMpCSqJXTwVVyvduHBLMx3Rk6kQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzX17vQgxOTedbQwTk4sZMsQt6j8yMl0Yj43I2mlmibgM5U8Ig8
+	OZe/GUBlAM+ALTGSjOtxBWZ9WyK5D0yJBqIX1hEZ1UYjWAS1vIRk7Vejv3/2AU2JWHU=
+X-Gm-Gg: AfdE7cn3LTen8pSBW65+fb5p2AjA7IuTTsSEzXASB8DCdiZXhMWhXBTXZEK3weZ8ncH
+	Ka93svbBao4K87hznyr0tae9V7dEeV9vE2VkXQ2GXf1fVu6e6zaUg0hulNrlr4CFrZ8i7a7CAtQ
+	jzf8T4Q4ooPjA/QxVJ1DKMhLMDT+r19LSaKKVOvFPFKegSXBbiwAWgmnenEj3tUeqxl2nSO9mBR
+	qeTm7SA18HZfKIakpwdbosdGuETc5tVR3dtjKC2mOzIs7+yetv9e4AzdpkYD/OqKL92WWiU2q+v
+	IppKN42efQJxsSbojpb/tTr3s8V4D05sRcSyLC/WIUCNXYNUVS8jiipZLTOWiEF/3RqKwairxmY
+	8vC199kTSZl0r1CGirLQ0tkY1Ix6x9V9dhhdbITdwt2i+JkjPErhcR0DeRksu
+X-Received: by 2002:a05:6102:f9c:b0:737:ba2e:8a29 with SMTP id ada2fe7eead31-744e0306830mr5071060137.27.1783613081904;
+        Thu, 09 Jul 2026 09:04:41 -0700 (PDT)
+Received: from ziepe.ca ([159.2.72.92])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd7c1d9f6sm20470796d6.23.2026.07.09.09.04.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2026 09:04:41 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1whrEu-000000058g9-24As;
+	Thu, 09 Jul 2026 13:04:40 -0300
+Date: Thu, 9 Jul 2026 13:04:40 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, joro@8bytes.org, jpb@kernel.org,
+	catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add HAFT support for SVA
+Message-ID: <20260709160440.GL118978@ziepe.ca>
+References: <878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com>
+ <20260703164914.GY7525@ziepe.ca>
+ <6465c885-3a9d-4c0b-ab74-7665e274ae72@arm.com>
+ <20260703192459.GB1978949@ziepe.ca>
+ <f13b30cf-e885-44c6-8e61-7924937eb8ac@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="j2boipej3wyu4mib"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <83e5e74d-7106-4e14-9d10-56438372f6a3@samsung.com>
+In-Reply-To: <f13b30cf-e885-44c6-8e61-7924937eb8ac@arm.com>
 
+On Mon, Jul 06, 2026 at 03:13:01PM +0100, Robin Murphy wrote:
 
---j2boipej3wyu4mib
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
-MIME-Version: 1.0
+> Indeed if anyone does want to use SVA on such mismatched hardware and are
+> happy to use a custom kernel with CONFIG_ARM64_HAFT disabled then they can
+> and will continue to be able to do so.
 
-On Thu, Jul 09, 2026 at 07:56:45AM +0200, Marek Szyprowski wrote:
-> On 08.07.2026 10:35, David Hildenbrand (Arm) wrote:
-> > On 7/7/26 12:02, Marek Szyprowski wrote:
-> >> On 01.07.2026 18:08, Thierry Reding wrote:
-> >>> From: Thierry Reding <treding@nvidia.com>
-> >>>
-> >>> There is no technical reason why there should be a limited number of =
-CMA
-> >>> regions, so extract some code into helpers and use them to create ext=
-ra
-> >>> functions (cma_create() and cma_free()) that allow creating and freei=
-ng,
-> >>> respectively, CMA regions dynamically at runtime.
-> >>
-> >> Well, the technical reason for not creating cma regions dynamically at
-> >> runtime is that on some architectures (like 32bit ARM) the early fixup
-> >> for the region is needed to make it functional for DMA.
-> > Can you point me at the code that does that? Thanks!
-> Check dma_contiguous_early_fixup() and dma_contiguous_remap() in=C2=A0
-> arch/arm/mm/dma-mapping.c. Those functions ensures that the CPU mappings =
-for
-> the CMA reserved region in linear map are remapped with 4k pages instead
-> of the 1M sections, so later, it will be=C2=A0possible to alter the mappi=
-ngs and
-> change them to coherent when needed (altering 1M sections is not possible,
-> because each process has it's own level-1 array even for the kernel linear
-> mapping).
->=20
->=20
->=20
-> However, in the use case in this patchset the reserved region is only sha=
-red
-> with buddy allocator by using the CMA infrastructure, not registered to t=
-he
-> regular DMA-mapping API, so it would work fine. I'm not convinced that th=
-is
-> is the right API to use for this though.
+It seems like we have a chip that is impacted by this. I'm being told
+that the necessary ARM IP is not available in time to properly match
+SMMU and CPU for its particular application.d
 
-Are you saying you're not convinced that CMA is the right API to use for
-this? Or something else?
+The chip is embedded so those work arounds are possibly OK - but I
+think this issue keeps coming up and ARM should have a better overall
+solution for CPU/SMMU mismatch in the ecosystem since it seems like
+this is going to keep happening..
 
-I certainly don't think we want to get the DMA-mapping API involved for
-this because that always implies that we perform cache operations, which
-we specifically don't want for this memory.
+Even if Linux could automatically limit the CPU features to the SMMU
+it would be a big help.
 
-Thierry
-
---j2boipej3wyu4mib
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpPxVEACgkQ3SOs138+
-s6Eb0Q/+LDCagsX5c/5bbiHk3kITlOkkdqUCHLmicqkfr4LZXyuHnPZlygaoxrFM
-pWQKdyKOOfpM0U1Z1cuOHjLwTv5iB98Ne5qANisu+FqK6xFJ4ccA5Y2pXRG+2cEG
-YJS9S13i37EoR6iOHndhRxeZyxcx080fd7aAJdY9yKXL4+bAmW9W5/zS5XbLyBbt
-9MEA8Ah3pUnnLdjfeEq0SH2diKgT9OHXRpP4MEEFJbBufctOLZKoBOBBYPuURxCJ
-UxjR6KKyMObW2G6HP7fdgDzj5XYdbMEyHN+Cvom68auUKijpkjfOt5NUTQvxuuni
-YbwzbmHnbB76VYY6E/4i8uUPDxlBxha2COauHTiiJvdhBoJtPWSKLEYRU7BFrqBr
-SJY+OpLNROUP+oZLTyr7jmAoaJI0wLnBLxId6GjF0iID6w1BybeRRDX34o5+mkpE
-TOQ703x0/ZpECHboXKqJgo9CX0XIWtiD+yEbn7/HnR/wvHjksGNrCGxYaR5mrIAv
-N75RHCupJjA918YwITUGC0EtKUWOcwlVvLwS2G8gAUZd6goYWyEd/fV7G4VEj/4+
-+GA2L/CzSK0TbN+Ktayav2Ec5EQy4mKHa47hkWmWGe+Lh22DNNiP2CS3LjnPGs2i
-II6qTao1jGC6L0sqjSQAw8VxP4TpU/XHRW8zs9HCzUaNg0ZSnGs=
-=xmpu
------END PGP SIGNATURE-----
-
---j2boipej3wyu4mib--
+Jason
