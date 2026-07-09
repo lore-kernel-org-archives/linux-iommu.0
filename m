@@ -1,285 +1,174 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C8DB41CB25
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 11:33:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E7AA41A76A
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 11:48:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783596829; cv=none; b=A7U1zF4QhV2ZUcYUakeEEBmICn+N69TB0acLxgq2alpQXicy+Wcqhsdm3d2XcACsFjHfPycul6fyts0Rf0R1l4S/KN1AXITqzwxz+mjitV8RWhgzMZbovwET9D/FVN0xtYSy+SQI3Heg31SD5GsPWYwXPNC+IYBiU+yGJ0tteD8=
+	t=1783597702; cv=none; b=mAeEQMB3Obqdef8Z1ep7VXOqU9TAuPkUHm+ni0XM93UIR7WlW70JTHr+WJ/7ERogAEieqTTfJ4u/VegH4vOV4gcENhx6ghVGJLZ5euFNEHqAG5ZJQitkv2gpe0c5aomcXgLGYLnhkT4cU+KSMfuRYQbjG+ayQEQkWxkQB79O37c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783596829; c=relaxed/simple;
-	bh=K0THlXNwZqipz/KEI06FjAdUeSpg5s7LDONtQ2Zte8g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k53fWZr1HDPbyUVMbbyigenUK6NRpW+5icJ6rfI8D68rGeWF/x3rAw1bDOR6V9t9T3abz/SS0L4+eRgjyHrGyUXSysd6Qy9QEqybn/pu6nqdkVg3Pr9Mqn3YpBotpnWL+lw7ybcQwYKHVtzsk/w7fIIteidQ+DQwy2JCmpcCb+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=hovpNZ3T; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1783597702; c=relaxed/simple;
+	bh=b6Cc4UcywU20YwkD+cdB4MosSaGEN9+qS/zz4wONwV4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=MDlS6lGv6MuuaMpfx4ZjJdti8wSM7x93tWBLnXYX8o72Se0EgRzUHokQVQ2ecV3mxxm5tBQIrawOuDX9LjE6Nv9RJIzHmrTSCjO3xzCU6Lr9ER6kKp0Ra1zKvwVDSpBP+j4lGo0+wbDpKNsZjfmaA+rENS4k4fwzAi78G6XznoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=dmyp4Var; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="hovpNZ3T"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 4A43420B716B;
-	Thu,  9 Jul 2026 04:33:38 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4A43420B716B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1783596818;
-	bh=LJd/+GU+PpP/Ium6hNk30csI0fmCJwtgCwZHUVsgKho=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hovpNZ3TPhHx/HgG/98cgurUwIpqSkztqwDe0evKW+PVJY8k7FqGSIMz2PlREZPEW
-	 5FRx12WtVtyS1Sjp6ozdvLGdCLoGIMag2WiCU2x6FgNo6nsSQ7VensjxunuGYb+i+H
-	 undDj7/2n65it5yFFcbnKT4Asefw6BMab67xV/Nk=
-Date: Thu, 9 Jul 2026 19:33:41 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
-	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
-	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
-	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
-	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>
-Subject: Re: [PATCH v2 2/4] Drivers: hv: Add logical device ID registry for
- vPCI devices
-Message-ID: <ja2drof5i7xjhpj4vbpavnphtn6cx4y5d3337vjrofxr47gxtq@msvg6xpbkb2h>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-3-zhangyu1@linux.microsoft.com>
- <SN6PR02MB415798534DFCC14E5202D021D4FF2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <u2l4lz5skybcukrb6hwp2u6v3jdibrugokxmclgv3uq4ljj3vw@x7mlfvuwb5f4>
- <BN7PR02MB4148C8DB748CFD863B97D1B7D4FF2@BN7PR02MB4148.namprd02.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="dmyp4Var"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260709114817euoutp0146429dd8ec8c86cf55ab9330b37c4afa~AnKfeEHUY0179801798euoutp01G
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 11:48:17 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260709114817euoutp0146429dd8ec8c86cf55ab9330b37c4afa~AnKfeEHUY0179801798euoutp01G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1783597697;
+	bh=mbdm+gUkaYDjaWGKLha+HVrbYf+sfFzbfVrVqxEhhvQ=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=dmyp4Var6RjkkB1vajADW+b854j66E4a8tOhbdAZBc+KrQ3T4ExgndaJ0ru91bFtT
+	 4aL0TDpMA9o+owJxLFhQYpDaChGMM6tI/YudIMETgaGbaq9fQRz+OvPjywucg/6gyP
+	 5VSgJg+HKMF4+vsL6EffRkXM0S6JTsUkMvX8OOK4=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260709114816eucas1p110f68ffa791aae37e094a48f7c81a84c~AnKfIORfW0198001980eucas1p1j;
+	Thu,  9 Jul 2026 11:48:16 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260709114815eusmtip26476bf679b9f8b6a9369ca12f533d2b8~AnKd7jPDA0429604296eusmtip2W;
+	Thu,  9 Jul 2026 11:48:15 +0000 (GMT)
+Message-ID: <b3caef50-db1a-4102-9be8-745c68d53074@samsung.com>
+Date: Thu, 9 Jul 2026 13:48:14 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN7PR02MB4148C8DB748CFD863B97D1B7D4FF2@BN7PR02MB4148.namprd02.prod.outlook.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [RFC PATCH] x86/pci-dma: add "any" keyword to swiotlb= kernel
+ parameter
+To: Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>, robin.murphy@arm.com
+Cc: corbet@lwn.net, skhan@linuxfoundation.org, akpm@linux-foundation.org,
+	bp@alien8.de, rdunlap@infradead.org, peterz@infradead.org,
+	feng.tang@linux.alibaba.com, dapeng1.mi@linux.intel.com, elver@google.com,
+	enelsonmoore@gmail.com, kuba@kernel.org, lirongqing@baidu.com,
+	ebiggers@kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	aneesh.kumar@kernel.org, alexey.kardashevskiy@amd.com,
+	thomas.lendacky@amd.com, jeff.hugo@oss.qualcomm.com,
+	thanson@qti.qualcomm.com
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260708114244.246176-1-aakarsh.jain@oss.qualcomm.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260709114816eucas1p110f68ffa791aae37e094a48f7c81a84c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260708114338eucas1p2bbdea8406913619fdc046b6e8f66d5ca
+X-EPHeader: CA
+X-CMS-RootMailID: 20260708114338eucas1p2bbdea8406913619fdc046b6e8f66d5ca
+References: <CGME20260708114338eucas1p2bbdea8406913619fdc046b6e8f66d5ca@eucas1p2.samsung.com>
+	<20260708114244.246176-1-aakarsh.jain@oss.qualcomm.com>
 
-On Wed, Jul 08, 2026 at 01:28:42PM +0000, Michael Kelley wrote:
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Wednesday, July 8, 2026 6:09 AM
-> > 
-> > On Wed, Jul 08, 2026 at 02:52:43AM +0000, Michael Kelley wrote:
-> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Thursday, July 2, 2026 9:05 AM
-> > > >
-> > > > From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > > >
-> > > > Hyper-V identifies each PCI pass-thru device by a logical device ID in
-> > > > its hypercall interface. This ID consists of a per-bus prefix, derived
-> > > > from the VMBus device instance GUID, combined with the PCI function
-> > > > number of the endpoint device.
-> > > >
-> > > > Add a small registry in hv_common.c that maps a PCI domain number to its
-> > > > logical device ID prefix. The vPCI bus driver (pci-hyperv) registers the
-> > > > prefix when a bus is probed and unregisters it when the bus is removed.
-> > > > Consumers such as the para-virtualized IOMMU driver look up the prefix
-> > > > by PCI domain number and combine it with the function number to form the
-> > > > complete logical device ID for hypercalls.
-> > > >
-> > > > The prefix construction is shared via hv_build_logical_dev_id_prefix() so
-> > > > that pci-hyperv's interrupt retargeting path and the registry use exactly
-> > > > the same byte layout. It is derived on demand from the constant hv_device
-> > > > instance GUID rather than cached in struct hv_pcibus_device, which is
-> > > > private to the pci-hyperv module; this keeps the interface narrow and
-> > > > avoids depending on pci-hyperv internals.
-> > > >
-> > > > Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > > > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > > > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > > > ---
-> > > >  drivers/hv/hv_common.c              | 95 +++++++++++++++++++++++++++++
-> > > >  drivers/pci/controller/pci-hyperv.c | 21 +++++--
-> > > >  include/asm-generic/mshyperv.h      | 13 ++++
-> > > >  include/linux/hyperv.h              |  8 +++
-> > > >  4 files changed, 132 insertions(+), 5 deletions(-)
-> > > >
-> > > > diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-> > > > index 6b67ac616789..53493f8d14dc 100644
-> > > > --- a/drivers/hv/hv_common.c
-> > > > +++ b/drivers/hv/hv_common.c
-> > > > @@ -26,6 +26,8 @@
-> > > >  #include <linux/kmsg_dump.h>
-> > > >  #include <linux/sizes.h>
-> > > >  #include <linux/slab.h>
-> > > > +#include <linux/list.h>
-> > > > +#include <linux/spinlock.h>
-> > > >  #include <linux/dma-map-ops.h>
-> > > >  #include <linux/set_memory.h>
-> > > >  #include <hyperv/hvhdk.h>
-> > > > @@ -863,3 +865,96 @@ const char *hv_result_to_string(u64 status)
-> > > >  	return "Unknown";
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(hv_result_to_string);
-> > > > +
-> > > > +#ifdef CONFIG_HYPERV_PVIOMMU
-> > > > +/*
-> > > > + * Logical device ID registry shared between the vPCI bus driver
-> > > > + * (pci-hyperv) and the para-virtualized IOMMU driver. The vPCI driver
-> > > > + * registers the per-bus logical device ID prefix at bus probe time, and
-> > > > + * the pvIOMMU driver looks it up to build the full logical device ID used
-> > > > + * in IOMMU hypercalls.
-> > > > + */
-> > > > +struct hv_pci_busdata {
-> > > > +	int		 pci_domain_nr;
-> > > > +	u32		 logical_dev_id_prefix;
-> > > > +	struct list_head list;
-> > > > +};
-> > > > +
-> > > > +static LIST_HEAD(hv_pci_bus_list);
-> > > > +static DEFINE_SPINLOCK(hv_pci_bus_lock);
-> > > > +
-> > > > +int hv_iommu_register_pci_bus(int pci_domain_nr, u32 logical_dev_id_prefix)
-> > > > +{
-> > > > +	struct hv_pci_busdata *bus, *new;
-> > > > +	int ret = 0;
-> > > > +
-> > > > +	new = kzalloc_obj(*new, GFP_KERNEL);
-> > > > +	if (!new)
-> > > > +		return -ENOMEM;
-> > > > +
-> > > > +	spin_lock(&hv_pci_bus_lock);
-> > > > +	list_for_each_entry(bus, &hv_pci_bus_list, list) {
-> > > > +		if (bus->pci_domain_nr != pci_domain_nr)
-> > > > +			continue;
-> > > > +
-> > > > +		if (bus->logical_dev_id_prefix != logical_dev_id_prefix) {
-> > > > +			pr_err("stale registration for PCI domain %d (old prefix 0x%08x, new 0x%08x)\n",
-> > > > +			       pci_domain_nr, bus->logical_dev_id_prefix,
-> > > > +			       logical_dev_id_prefix);
-> > > > +			ret = -EEXIST;
-> > > > +		}
-> > > > +
-> > > > +		goto out_free;
-> > > > +	}
-> > > > +
-> > > > +	new->pci_domain_nr = pci_domain_nr;
-> > > > +	new->logical_dev_id_prefix = logical_dev_id_prefix;
-> > > > +	list_add(&new->list, &hv_pci_bus_list);
-> > > > +	spin_unlock(&hv_pci_bus_lock);
-> > > > +	return 0;
-> > > > +
-> > > > +out_free:
-> > > > +	spin_unlock(&hv_pci_bus_lock);
-> > > > +	kfree(new);
-> > > > +	return ret;
-> > > > +}
-> > > > +EXPORT_SYMBOL_FOR_MODULES(hv_iommu_register_pci_bus, "pci-hyperv");
-> > > > +
-> > > > +void hv_iommu_unregister_pci_bus(int pci_domain_nr)
-> > > > +{
-> > > > +	struct hv_pci_busdata *bus, *tmp;
-> > > > +
-> > > > +	spin_lock(&hv_pci_bus_lock);
-> > > > +	list_for_each_entry_safe(bus, tmp, &hv_pci_bus_list, list) {
-> > > > +		if (bus->pci_domain_nr == pci_domain_nr) {
-> > > > +			list_del(&bus->list);
-> > > > +			kfree(bus);
-> > > > +			break;
-> > > > +		}
-> > > > +	}
-> > > > +	spin_unlock(&hv_pci_bus_lock);
-> > > > +}
-> > > > +EXPORT_SYMBOL_FOR_MODULES(hv_iommu_unregister_pci_bus, "pci-hyperv");
-> > > > +
-> > > > +/*
-> > > > + * Look up the logical device ID prefix registered for @pci_domain_nr.
-> > > > + * Returns 0 on success with *prefix filled in; -ENODEV if no entry is
-> > > > + * registered for that PCI domain.
-> > > > + */
-> > > > +int hv_iommu_lookup_logical_dev_id(int pci_domain_nr, u32 *prefix)
-> > > > +{
-> > > > +	struct hv_pci_busdata *bus;
-> > > > +	int ret = -ENODEV;
-> > > > +
-> > > > +	spin_lock(&hv_pci_bus_lock);
-> > > > +	list_for_each_entry(bus, &hv_pci_bus_list, list) {
-> > > > +		if (bus->pci_domain_nr == pci_domain_nr) {
-> > > > +			*prefix = bus->logical_dev_id_prefix;
-> > > > +			ret = 0;
-> > > > +			break;
-> > > > +		}
-> > > > +	}
-> > > > +	spin_unlock(&hv_pci_bus_lock);
-> > > > +	return ret;
-> > > > +}
-> > >
-> > > I started thinking about the mechanism here because it's somewhat
-> > > annoying that it takes 77 lines of code (sans comments) to manage
-> > > this simple little mapping. I also started thinking about how many entries
-> > > are likely to be in the mapping. A guest VM probably has fewer than 10
-> > > entries unless it has multiple NICs and maybe some GPUs. But this code
-> > > is also intended to be used by the Linux-as-root code, and I'm thinking
-> > > that the number of PCI devices managed by the root could easily be a
-> > > hundred or more if the root is managing a couple dozen VMs on a large
-> > > physical server. Searching a linked list with 100 or more entries could be
-> > > a bit slow.
-> > >
-> > > If only the guest scenario were needed, you could declare a static
-> > > array with 64 entries (64 is an arbitrary upper bound), and just search
-> > > through the array instead of having to allocate memory, deal with
-> > > allocation failures, and deal with linked lists. But a fixed size array
-> > > would need to be much bigger for the root scenario, and you would
-> > > still be doing a linear search.
-> > >
-> > > A better alternative to consider is rhashtable, which is an existing
-> > > Linux kernel facility. Based on what an AI bot generated for me, the
-> > > code for setting up and using rhashtable is straightforward, and
-> > > would probably result in far fewer than 77 lines of code. Lookups
-> > > would also be faster than a linear search, at least for the root case
-> > > with more than just a few entries. I'd suggest looking at rhashtable
-> > > to see whether you like how the resulting code comes out for this
-> > > use case, and whether it really is simpler than a roll-your-own linked
-> > > list.
-> > >
-> > 
-> > Thank you so much for thinking this through, Michael! That is really
-> > a valid concern.
-> > 
-> > How about using XArray? It might be more lightweight compared with
-> > rhashtable. Using pci_domain_nr as the key and prefix as the value.
-> > Maybe sth. like:
-> >                                                                                                                                                         ┃
-> > 	static DEFINE_XARRAY(hv_pci_bus_xa);
-> > 
-> > 	int hv_iommu_register_pci_bus(int domain_nr, u32 prefix)
-> > 	{
-> > 		return xa_insert(&hv_pci_bus_xa, domain_nr,
-> > 				xa_mk_value(prefix), GFP_KERNEL);
-> > 	}                                                                                                                                                ┃
-> > 
-> > 	void hv_iommu_unregister_pci_bus(int domain_nr)
-> > 	{
-> > 		xa_erase(&hv_pci_bus_xa, domain_nr);
-> > 	}
-> > 
-> > 	int hv_iommu_lookup_logical_dev_id(int domain_nr, u32 *prefix)
-> > 	{
-> > 		void *entry = xa_load(&hv_pci_bus_xa, domain_nr);
-> > 		if (!entry)
-> > ┃
-> > 			return -ENODEV;
-> > 		*prefix = xa_to_value(entry);
-> > 		return 0;
-> > ┃
-> > 	}
-> > 
-> 
-> xarray is best where the keys are dense or mostly dense integers. In
-> this use case, the pci_domain_nr keys are essentially random 16-bit
-> values, which doesn't fit xarray as well. It would work, but wouldn't
-> be very efficient. See the 2nd paragraph of the documentation here:
-> 
-> https://www.kernel.org/doc/html/latest/core-api/xarray.html#xarray
-> 
+On 08.07.2026 13:42, Aakarsh Jain wrote:
+> CoCo guests (AMD SEV-SNP, Intel TDX) require large swiotlb pools for
+> streaming DMA workloads such as high-speed NIC and AI accelerator
+> inference. The existing swiotlb pool allocator restricts placement to
+> low memory (below 4GB by default), capping usable pool size at ~1GB even
+> when a larger pool is requested via swiotlb=<nslabs>.
+>
+> The SWIOTLB_ANY flag already exists to lift this restriction, and
+> swiotlb_init_remap() already handles it correctly via the flags
+> parameter (see CONFIG_SWIOTLB_DYNAMIC path: io_tlb_default_mem.phys_limit
+> is set to virt_to_phys(high_memory-1) when SWIOTLB_ANY is set).
+>
+> However, there is no way to set SWIOTLB_ANY from the command line. The
+> only existing mechanism was via arch-specific code (e.g. powerpc SVM sets
+> SWIOTLB_ANY in pci_iommu_init). x86 CoCo guests have no such path.
+>
+> After Aneesh  series ("dma-mapping: Track shared DMA state through
+> direct, pool and swiotlb paths", https://patchwork.kernel.org/project/linux-arm-kernel/cover/20260701054926.825925-1-aneesh.kumar@kernel.org/)
+> removes SWIOTLB_FORCE, x86 pci_swiotlb_detect() leaves x86_swiotlb_flags = 0 for
+> CoCo guests. The pool falls back to low memory and caps at ~1GB:
+>
+>   Without "any": pool at 0x35a9c000 (~900MB, below 4GB boundary)
+>   With    "any": pool at 0x1df9c00000 (~120GB, anywhere in RAM)
+>   [Tested on AMD SEV-SNP guest, swiotlb=4194304]
 
-Thanks for pointing out the documentation. You're right. With sparse
-16-bit keys, a hash-based data structure makes more sense than a
-radix-based one. I'll try reworking it with rhashtable and let you
-know if it doesn't work out.
 
-B.R.
-Yu
-> Michael
+Do we really need a new option for that? Doesn't this simply mean that
+x86_swiotlb_flags should be always set to "any" for CoCo guests?
+
+
+> Add "any" as a new keyword to the swiotlb= kernel parameter. This is an
+> explicit, opt-in mechanism that sets SWIOTLB_ANY for the default pool at
+> boot time, without touching any arch-specific code.
+>
+> Devices with 32-bit DMA masks are not affected, they still use the normal
+> low-memory bounce buffer path. The "any" option is only meaningful for
+> workloads where all active DMA devices have 64-bit masks.
+>
+> Signed-off-by: Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 5 ++++-
+>  kernel/dma/swiotlb.c                            | 5 +++++
+>  2 files changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index b5493a7f8f22..8a1fccbd9b25 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -7477,7 +7477,7 @@ Kernel parameters
+>  			Execution Facility on pSeries.
+>  
+>  	swiotlb=	[ARM,PPC,MIPS,X86,S390,EARLY]
+> -			Format: { <int> [,<int>] | force | noforce }
+> +			Format: { <int> [,<int>] | force | noforce | any}
+>  			<int> -- Number of I/O TLB slabs
+>  			<int> -- Second integer after comma. Number of swiotlb
+>  				 areas with their own lock. Will be rounded up
+> @@ -7485,6 +7485,9 @@ Kernel parameters
+>  			force -- force using of bounce buffers even if they
+>  			         wouldn't be automatically used by the kernel
+>  			noforce -- Never use bounce buffers (for debugging)
+> +			any --  Allow the swiotlb pool to be placed anywhere in
+> +				system RAM, lifting the default low-memory (4GB)
+> +				restriction.
+>  
+>  	switches=	[HW,M68k,EARLY]
+>  
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 1abd3e6146f4..34773ae7c770 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -80,6 +80,7 @@ struct io_tlb_slot {
+>  
+>  static bool swiotlb_force_bounce;
+>  static bool swiotlb_force_disable;
+> +static unsigned int swiotlb_param_flags __initdata;
+>  
+>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>  
+> @@ -198,6 +199,8 @@ setup_io_tlb_npages(char *str)
+>  		swiotlb_force_bounce = true;
+>  	else if (!strcmp(str, "noforce"))
+>  		swiotlb_force_disable = true;
+> +	else if (!strcmp(str, "any"))
+> +		swiotlb_param_flags |= SWIOTLB_ANY;
+>  
+>  	return 0;
+>  }
+> @@ -445,6 +448,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+>  
+>  	io_tlb_default_mem.force_bounce = swiotlb_force_bounce;
+>  
+> +	flags |= swiotlb_param_flags;
+> +
+>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>  	if (!remap)
+>  		io_tlb_default_mem.can_grow = true;
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
