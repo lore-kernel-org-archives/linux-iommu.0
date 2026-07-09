@@ -1,125 +1,123 @@
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD1C335BA
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 05:10:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.254.200.92
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79C533A7858;
+	Thu,  9 Jul 2026 05:41:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783573831; cv=none; b=cHUF5ZWRRPlQtRA7XVoFT8HDn+48EhmgRwcvzgbMCxD7jOyNhGxH9u7oAc1lmaq+5CdZ3kTzVqs22b7N/qFzUMKEOUZhMYhmxHbzHIjIjNpZoYA+4r5z5XuEKLgWKlGifImKDyoifstCKWBiVY5Et2qdNfkNH2EyDPt9X8HOfhM=
+	t=1783575678; cv=none; b=USzP2bWOrV6Kedt+mLsJj8wG34JRjSjOIgYDANDZTheb5phvB2WaZAouVC5KPfSmejB4HEhx6hl9h414ryXUoK1tQuRR3iRelgxQe8Sv4W7NbhQ3tocqXuW1BWd3WdC8N8WvWbKQHOlAPIz3W5dGtNVwiEqkISKTUegRyC44cWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783573831; c=relaxed/simple;
-	bh=bArJglugTDLUlyd3Jz+IwTeXArCFn6FuYJvM3Mnzbw0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BNz7zEYNEJp4Q8YVeb4un5Rru/Fvs+fhh6wl3WwP+KAgaEWq4EQJQsXFrktNOWf7Ez/rXAbda0HepDpSp3GI9fhqcmP6t3mcYEXwAMIUF6WgNbD9Bla4XSHbC/Pe1TOpvrExTpW+CNwCi9YepuWFC/Kxc+0dMfrykGHkTn0eQF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=rAleO5IA; arc=none smtp.client-ip=54.254.200.92
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
+	s=arc-20240116; t=1783575678; c=relaxed/simple;
+	bh=vd/pKHnN9hHEq/PC2ZKa5Ks5FAZG9ipiDZlCtIFKHWA=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=Sz+AMAyFvMaIp2ihH/XHgskQbhUvphToTAOUip8OSlcT4ZwgVSYZ5RLdHGSqaLSFcCyqY7FP5CNKrq2Aj+R26BW153pLHwRNBXYsN+kGhdIV3R2va4LrL5luOzrWzq8KJpv4vo2BDoV3P7SdYpn9LodkJ10feZ+KCBIncmmCP5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PMF7MIfe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="rAleO5IA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1783573766;
-	bh=b28BuLuWzZmVa3dZHeQAGfeKAnuThtv1IUJ4ATrUWZo=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=rAleO5IAF6tZ4gLZQlcdVjenXRWm9zNUEzymH+6rb7kljWNtoqFYq6Fnzh007UQrD
-	 WOTBoiYVeEeGV8Jq1bsGbhneP2mtfj0S527mumecUdoDxT1//V4dRBMC/mf/fjQ/hw
-	 OEOM0bGCG5nkj/xD1dyfLq3hFLPEGuvP01cNON6M=
-X-QQ-mid: zesmtpsz9t1783573764te49ad84c
-X-QQ-Originating-IP: Z8/nptW7vbCW2LYigMLkSc4KBAdczReFyJFdB950gjY=
-Received: from hepeiyang-vm.wu.lxd ( [218.94.142.195])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Thu, 09 Jul 2026 13:09:22 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 4659233235440531068
-EX-QQ-RecipientCnt: 10
-From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-To: jgg@ziepe.ca,
-	kevin.tian@intel.com
-Cc: joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	robin.murphy@arm.com,
-	linux-kernel@vger.kernel.org,
-	syzkaller@googlegroups.com,
-	stable@vger.kernel.org,
-	Peiyang He <peiyang_he@smail.nju.edu.cn>
-Subject: [PATCH] iommufd: Reject DMABUF pages from the access pin path
-Date: Thu,  9 Jul 2026 13:08:00 +0800
-Message-ID: <CD68F549BF3761B7+20260709050800.520607-1-peiyang_he@smail.nju.edu.cn>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <E8540D7D05768C91+8b2ef227-3368-494e-909d-7b28e1489dfb@smail.nju.edu.cn>
-References: <E8540D7D05768C91+8b2ef227-3368-494e-909d-7b28e1489dfb@smail.nju.edu.cn>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PMF7MIfe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAE21F000E9;
+	Thu,  9 Jul 2026 05:40:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783575677;
+	bh=GUR46VabSVZbPyehLw4syLT30MNmMe+mudnTx0VnTpA=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=PMF7MIfeOb6sPplAJM3ptwtGVrsjDjcmNM8+KBGIZapvBcxEoEW05Z71w8wT7OiCo
+	 DpyTqd8LBQSOVV2LXf12bv3I6Pc0h9ojZxvVDoieC+rI/KlduqQsbmNYRbApokpMUS
+	 906x2f5dfccmHGNLaQwrgeNkFJeM+vrwSPjhiXoBgGmr7P/GzXUVoT8b+iN+kTpuYZ
+	 3miqhB4alxgUPujwFkL9mVwHxHABNpvGLd+MKygFosR17bCiXd9AFhTno3Tpzpr8G2
+	 W04sec2rt03zdANmLtdpyqOtx7Xh3Wl/PfkGMSLLD5Y/7X7CmPps6HOirGFsnoRUm/
+	 YRXFW3BE6RuOQ==
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>, 
+ "Vaibhaav Ram T . L" <vaibhaavram.tl@microchip.com>, 
+ Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>, 
+ Even Xu <even.xu@intel.com>, Xinpeng Sun <xinpeng.sun@intel.com>, 
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
+ Jiri Kosina <jikos@kernel.org>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Zhou Wang <wangzhou1@hisilicon.com>, Longfang Liu <liulongfang@huawei.com>, 
+ Vinod Koul <vkoul@kernel.org>, Lee Jones <lee@kernel.org>, 
+ Jijie Shao <shaojijie@huawei.com>, Jian Shen <shenjian15@huawei.com>, 
+ Sunil Goutham <sgoutham@marvell.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+ Heiner Kallweit <hkallweit1@gmail.com>, 
+ "David S . Miller" <davem@davemloft.net>, 
+ Jeff Hugo <jeff.hugo@oss.qualcomm.com>, Oded Gabbay <ogabbay@kernel.org>, 
+ Maciej Falkowski <maciej.falkowski@linux.intel.com>, 
+ Karol Wachowski <karol.wachowski@linux.intel.com>, 
+ Min Ma <mamin506@gmail.com>, Lizhi Hou <lizhi.hou@amd.com>, 
+ Andreas Noever <andreas.noever@gmail.com>, 
+ Mika Westerberg <westeri@kernel.org>, Will Deacon <will@kernel.org>, 
+ Xinliang Liu <xinliang.liu@linaro.org>, Tian Tao <tiantao6@hisilicon.com>, 
+ Davidlohr Bueso <dave@stgolabs.net>, Srujana Challa <schalla@marvell.com>, 
+ Bharat Bhushan <bbhushan2@marvell.com>, Antoine Tenart <atenart@kernel.org>, 
+ Herbert Xu <herbert@gondor.apana.org.au>, Raag Jadav <raag.jadav@intel.com>, 
+ Hans de Goede <hansg@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andy@kernel.org>, 
+ Mika Westerberg <mika.westerberg@linux.intel.com>, 
+ Andi Shyti <andi.shyti@kernel.org>, Robert Richter <rric@kernel.org>, 
+ Mark Brown <broonie@kernel.org>, 
+ Nirmal Patel <nirmal.patel@linux.intel.com>, 
+ Kurt Schwemmer <kurt.schwemmer@microsemi.com>, 
+ Logan Gunthorpe <logang@deltatee.com>, Linus Walleij <linusw@kernel.org>, 
+ Bartosz Golaszewski <brgl@kernel.org>, 
+ Sakari Ailus <sakari.ailus@linux.intel.com>, 
+ Bingbu Cao <bingbu.cao@intel.com>, 
+ Tomasz Jeznach <tomasz.jeznach@linux.dev>, 
+ Jonathan Cameron <jic23@kernel.org>, Ulf Hansson <ulfh@kernel.org>, 
+ Shawn Lin <shawn.lin@rock-chips.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Benjamin Tissoires <bentiss@kernel.org>, 
+ linux-input@vger.kernel.org, linux-i3c@lists.infradead.org, 
+ dmaengine@vger.kernel.org, Philipp Stanner <phasta@kernel.org>, 
+ netdev@vger.kernel.org, nic_swsd@realtek.com, linux-arm-msm@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ linux-cxl@vger.kernel.org, linux-crypto@vger.kernel.org, 
+ platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, 
+ mhi@lists.linux.dev, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Jan Dabros <jsd@semihalf.com>, linux-i2c@vger.kernel.org, 
+ Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, 
+ linux-spi@vger.kernel.org, Jonathan Derrick <jonathan.derrick@linux.dev>, 
+ linux-pci@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, linux-media@vger.kernel.org, 
+ linux-mmc@vger.kernel.org
+In-Reply-To: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
+References: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
+Subject: Re: (subset) [PATCH 0/37] PCI/MSI: Enforce explicit IRQ vector
+ management by removing devres auto-free
+Message-Id: <178357565325.731734.7291964273199898845.b4-ty@b4>
+Date: Thu, 09 Jul 2026 07:40:53 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: MC1aAhoHww3U1Oo0dThj6QvC7Pgx/yty65IzW1uSnl0RGl99PdDy/hIb
-	ChF4UKlGfaudeiwO36o77ZX3NMDbR0kG7hJlsbdMeSOxRUwJFox8u/nGU/LFpJ1mjS3pucM
-	O8H7U1zh2MOf7pgfCvdqr4tRi6MEl+5k6+FExSpJyUoSVctQDVhGbWPmDkmHvd0OyFNRlZ4
-	nKmKb7Sp6cdYOLAD1nuOX4Zj/HVBgqh0rWTnpVnBEwlaEznhnd5GPtmnFERWQXclMx2eBU9
-	C4ufGN+67HI/dWlzrbUetlkh6PgjaY8Cl8TBcitJtiV7gSmOrgu0I4chb5ABpm1Zkle3IWF
-	PYB7mScebjGTi/5fLcN7LaZqxo3bOFu1O7yyaycBY7u4Bg9dttQFcUdUphmwZJVMxTaTw0o
-	KxwWoYZRyjLdRfgSodXab/hwigl6Kvlhr6DYmmM30ovwAocpYz1PyQ6UEac5asCv6NQFZBO
-	QDMJKqWbZX1k95A9vEWzI8HsmWoY5E472wkUBv6cr0NJGhJdTFKTPiIQHc/iVPQezuKHEOW
-	gktNj+oDx+07oXQ6O3f2PsMhS7eDC+YF8L2mDTnxJ2Qf8ER5/eJVJyce46Zi4URidufQL1z
-	LP0k/sR8+Hj/RvLzzhcBWE3eMw8Pbn7qhIlTj3kE0fNeLXxhoFL8B82FkRAi1aAAM6PcoFQ
-	VV1azxxdgRc7eMy/UkWCAYVfXkAUYY7SrGVJQj28CoxbzKuSXwLM5kGBVE8drztG+4IY8op
-	PteDGBiPuJAG/EDOM9WZPjYmy2dApnb2Uai7BtrZSx9lVwZwteyttu/Nc61Pdv/2tgS06WZ
-	EH1j7B+1QkLeomBjKheTw1RZunB5az7o4jfNqwf+ccvc8ajtWtCGAbP6w8v0ZTk/kpTnDLU
-	q51J+tfatj0UtF3yLywK30IsBX7KF2BO67kD7EbciK/ppRiT6JRdwxjRdc9J1SAWKVDfzqR
-	cbsFFkwm9Ocft5hzVdinwjNad+AKQIUMuTjVU9VIDvu/PF3u75eSugerZb3qWgypHVxi9IY
-	e4BH+3xPEvXq0ZX6faWWulCliqZVvjURHOkEsH2YzqyIsxRaLl+z+yrvS3qEeVcKXeiF1nJ
-	mreXEShLtWDZBtNa7a73RA=
-X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
-X-QQ-RECHKSPAM: 0
+X-Mailer: b4 0.15.2
 
-DMABUF pages are not supported for iommufd access pinning.
-iommufd_access_pin_pages() returns struct page pointers for
-in-kernel CPU access, but DMABUF-backed iopt_pages do not carry
-a userspace address that can be passed to the GUP path.
 
-iopt_pages_rw_access() already rejects IOPT_ADDRESS_DMABUF before doing
-CPU access. Apply the same rejection to iopt_area_add_access() before it
-takes pages->mutex and calls iopt_pages_fill_xarray().
-Otherwise a DMABUF-backed iopt_pages can reach the hole-fill path, where
-pfn_reader_user_pin() interprets the union as uptr and
-calls pin_user_pages_fast()/pin_user_pages_remote().
+On Mon, 23 Feb 2026 23:29:39 +0800, Shawn Lin wrote:
+> This patch series addresses a long-standing design issue in the PCI/MSI
+> subsystem where the implicit, automatic management of IRQ vectors by
+> the devres framework conflicts with explicit driver cleanup, creating
+> ambiguity and potential resource management bugs.
+> 
+> ==== The Problem: Implicit vs. Explicit Management ====
+> Historically, `pcim_enable_device()` not only manages standard PCI resources
+> (BARs) via devres but also implicitly triggers automatic IRQ vector management
+> by setting a flag that registers `pcim_msi_release()` as a cleanup action.
+> 
+> [...]
 
-This fix also avoids the lockdep warning reported from that path, where
-pages_dmabuf_mutex_key is held while gup_fast_fallback() may acquire
-mmap_lock.
+Applied, thanks!
 
-Reported-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Closes: https://lore.kernel.org/all/E8540D7D05768C91+8b2ef227-3368-494e-909d-7b28e1489dfb@smail.nju.edu.cn/
-Fixes: 71db84a092c3 ("iommufd: Add DMABUF to iopt_pages")
-Cc: stable@vger.kernel.org
-Tested-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
----
- drivers/iommu/iommufd/pages.c | 3 +++
- 1 file changed, 3 insertions(+)
+[13/37] bus: mhi: host: Replace pci_alloc_irq_vectors() with pcim_alloc_irq_vectors()
+        commit: 256995e80fcd39cab94eee8135dd90f6da6ac744
 
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 03c8379bbc34..404f31d8f729 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -2451,6 +2451,9 @@ int iopt_area_add_access(struct iopt_area *area, unsigned long start_index,
- 	if ((flags & IOMMUFD_ACCESS_RW_WRITE) && !pages->writable)
- 		return -EPERM;
- 
-+	if (iopt_is_dmabuf(pages))
-+		return -EINVAL;
-+
- 	mutex_lock(&pages->mutex);
- 	access = iopt_pages_get_exact_access(pages, start_index, last_index);
- 	if (access) {
-
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+Best regards,
 -- 
-2.43.0
+மணிவண்ணன் சதாசிவம்
+
 
