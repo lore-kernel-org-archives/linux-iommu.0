@@ -1,219 +1,342 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012063.outbound.protection.outlook.com [52.101.48.63])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD563D331A
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 06:39:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.63
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627FE3C10AF
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 07:18:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783579183; cv=fail; b=T/mVddvtpqgK/NXQPnvqsAMAxkrQSwMElYRUk6HSry7SfiavQ9Z0a3vDAUNXBmlQiSyxGeosNVUibPrTvCSLwRmQK4dJFrjCX/naL//bxxrVGUbnzryj2wBRJORbIEDvCQJNStw2A5jxEfoEABhASVOL3hORf1m6vLg5YX7QHTk=
+	t=1783581534; cv=fail; b=VVmjRRDXTjkZ62bM8ymZduQ2jENmHy3nYO84WVcWmaezT0SppZzuc8GN/7Qc7uhklLV2TaEXi8YVBy+BV0k6zG+2mbzPvewH8j6rSeqwyU2abxww3wdWLSO4jaNRweVjp8AxpaGu2+9WGwEAPiYIAQR/VGdbJ2jO1puYXr4Ha78=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783579183; c=relaxed/simple;
-	bh=j0bs/ZJvaypzxxqVSJGU/ZMn/WYTVibvxogKjAJpkuU=;
-	h=Message-ID:Date:MIME-Version:CC:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=a1/6hUBXbM8wzCJOUmmBBcWSzZlVxR5+X9wEhKspfo8tXgVxv+zHMVthJsD6JKGU2K5OdKqWF71mJynGtsZzmycZgTmTRBUO8+MDnIuy0ijUAZgOAl16IqWB1OEDAYwmPM9gTYg9M2OyAMMPHygDMbSFsULcqHX6dqdf6F+leYU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=f2nvoHjS; arc=fail smtp.client-ip=52.101.48.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1783581534; c=relaxed/simple;
+	bh=HZptqVi01QQrOem+exfb9g080dq1HAFrZ+PMyMGZ9kg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=DI6TR9q3Oeou4LV/fvRcdlaqbolKAbIH8MN6dMNtp0EzhXAbpRlyQEU2alMOUcZFdlrI6ugYXbbs9bN9nGAaZZCoRNxM14BejHidXXWB9bNvLGPR74OkoZEGSvmBbUuYe+pO32U8rmbeevbsGPYA3/b4/e5yJivn6EF2734+cyg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OJvtljFQ; arc=fail smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="f2nvoHjS"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OJvtljFQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783581532; x=1815117532;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=HZptqVi01QQrOem+exfb9g080dq1HAFrZ+PMyMGZ9kg=;
+  b=OJvtljFQmeq9yGlcfy7qdKLIkXl+vR8hvi/ZRFKxHiyM5Hnc9l1W54PF
+   oyGNC/VusRXt24VBJ/YSwE8CdcfgOaOgS5RUENrmPIyPskaCZUFJciqoR
+   Ot1svgXHx/hIIuo6RRQBWG4LNBoaNEoolWPbEyBuVGgEZqwckN7jpGK/I
+   Wg1OacsVIsCWBKZTm3O3LOM7kER8gTTvW81xuKzxDhcnG0VF7MGqiV8mr
+   A/5e7xNCs8jBXgteS9cVDPDkNHOMgTs85jGspIDD9/2fWT322NVrRm15S
+   L+CdR1/HClH76PxNPNQosn0dZvZGP3pFhZr6f3E4/Fp1LH/SulMsjVY0c
+   w==;
+X-CSE-ConnectionGUID: hCclDjYRQe+YafvOXjSjcw==
+X-CSE-MsgGUID: wpQyXifeT+GN0774wMnWLg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84227085"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="84227085"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 00:18:51 -0700
+X-CSE-ConnectionGUID: STrpbZr2Rze9gfdOTTJABw==
+X-CSE-MsgGUID: g8pRH73fTF+iGxG0ZcGzTg==
+X-ExtLoop1: 1
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 00:18:51 -0700
+Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43; Thu, 9 Jul 2026 00:18:51 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43 via Frontend Transport; Thu, 9 Jul 2026 00:18:51 -0700
+Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.30) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43; Thu, 9 Jul 2026 00:18:45 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=R1gNgfm4g68kFvHcgYeUcI/CFdxj7xhCVJdmoa2fK6aVcU9ehF27TIRK/DfUpWAHMJDxJzFM14ujdusaiMalclB5bj1WL3LHZuMpQLSUR4PCJ8LDamOn0pg8hMDKCzKJR0i5qMkFyEJhkFX8NQRLTZ3NGTbEP/st1eQT9FPre+hFf02MUJY23+E4zO62AQhz6NQSGSeZor9eV8Cq0vnK0fUKjxdMOd8eBvTHA2Uz0cIBjHzQvpxglu5D4XirTYw4sfGIJYOJ1KgMqat0Hwn7un4OxE6Mn2RegRfBAUeG8WWu5OYC0LVBdHLtY1bKP1kfVVCCwv5RKF6UeR6u3y7a3Q==
+ b=NJhhRjx8KWK1MuJwY2b0ZwL+8XeEcLVlSeuHbTJoLRB6URcVaJTj39QOBfWYVyTLI4bXLGZ9Kv1EB2P15iY8Ru39I6P00K+kjZNQHC4rYhjXLP8SI7HGjdGRdMhcayE20zMVcSEon5KgMou2IEh6SqdQmjCw/tAMkLdxvygSJLViGvi3hLXEY8LqsyS2CCLCld75/D2k9M53h2QVnZhwOyxf1anhnxPP850RRi/6QZDrPl6+wBOOly8Z8NPVyDOkhkIbKePZ8jcrlxS2bBV+7YC4fXzqGa9mjMBPDuGSIHldSqgnykhAuZEZ3/8n2+YnEslEa1UMuGE1ksw2QZiKcg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3+a5Hvf2TIP2QULy/NU9+QNCtfqfx3L6BgWsvAZfsx4=;
- b=mXdVcA/cj5xeH9gdGJkyBi51fJEsKnSSrcC0GTMJGzq9u5AzpBgS0Tb/uZZLrQ1OOhOX83XZJgoGR8kFCsrnC3hzZezFf4Wr/Wh2qbYwDluMdpU7Nu7wqwfHlklxDCHAshBSKcXfM0jvjpA7001CUgILEX8iuB5tWpQyTBTPkmDbeNPGiA4jnTVWWGxAodPYUSHUV+al0whtpJiAGRFv4YwhvwliE1xoQz7MsSSbDTUkLmRNNAloyhDaEE4B9zVxDiavRi4LSTsAzOgduNtYVGMfMKF1qGPQ0SK76FrAecFnZbBTSfx6xOGJVjzKSYIYc3mWjkQd/Sg0n4AWW0+nSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3+a5Hvf2TIP2QULy/NU9+QNCtfqfx3L6BgWsvAZfsx4=;
- b=f2nvoHjS2K5Zksmgox49DWPsnb/+tlQVL2hVB5EWx1TA5A8bx3J9gYp47GwcS2AhTfy+AJFMTlP8ZH3cO8bn0+2uaasWgo0s3gCdnlChBYM6mO440DRHzbRjjZT8nORe8HV2P52xYnJYMR2D2lI5xX9CeqkAEhFK3zHa+uCc4X0=
-Received: from BN9PR03CA0349.namprd03.prod.outlook.com (2603:10b6:408:f6::24)
- by SN7PR12MB6716.namprd12.prod.outlook.com (2603:10b6:806:270::20) with
+ bh=BLNRo81DVT2XY/EgGjfAVeSNPe6vl9j4O8SQ9KJjrCg=;
+ b=usLiMwZ1c/NCdb1hX61jz3Tw/nBLKPZQP5r7qbgjZ/ZK2gQFQSxKGtUlpEJRVxPaTPIyVJpI9MDnc6mwN1P82HG0xmO1hITaFju/69lKNRcLe/v1B9nICvXSApy5pRcGwDz3EtttI1jtIdZxgNsxVtJEp9jb4GEzwCFdUvtm52vG7NEicvRwuG2QcTnYrRDsuyJebcWYCMKlVTQk1GvgxyF9l9JMgpelLlCV2Ss8NH3GM5QlFxTac+hm8clb8AphI5AavQ6MDGxTOR9anfhXu7nt+x5f1bi0Vdl2YSTuUAqlQ9hkWpt5SiW3VK+mDt/GkXzocMl4UpyUYEx7qo+jcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
+ by MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.16; Thu, 9 Jul
- 2026 06:39:32 +0000
-Received: from BN2PEPF000044A3.namprd02.prod.outlook.com
- (2603:10b6:408:f6:cafe::50) by BN9PR03CA0349.outlook.office365.com
- (2603:10b6:408:f6::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.202.9 via Frontend Transport; Thu, 9
- Jul 2026 06:39:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BN2PEPF000044A3.mail.protection.outlook.com (10.167.243.154) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.181.6 via Frontend Transport; Thu, 9 Jul 2026 06:39:31 +0000
-Received: from [10.252.200.247] (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 9 Jul
- 2026 01:39:25 -0500
-Message-ID: <f3037b16-0974-4c6a-9914-50f0401af656@amd.com>
-Date: Thu, 9 Jul 2026 12:09:22 +0530
+ 2026 07:18:41 +0000
+Received: from PH0PR11MB7424.namprd11.prod.outlook.com
+ ([fe80::c448:1138:6981:52e2]) by PH0PR11MB7424.namprd11.prod.outlook.com
+ ([fe80::c448:1138:6981:52e2%5]) with mapi id 15.21.0181.008; Thu, 9 Jul 2026
+ 07:18:41 +0000
+Date: Thu, 9 Jul 2026 07:18:26 +0000
+From: Krzysztof Karas <krzysztof.karas@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
+CC: <intel-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
+	<iommu@lists.linux.dev>, Andi Shyti <andi.shyti@linux.intel.com>, "Joerg
+ Roedel" <joro@8bytes.org>, =?utf-8?Q?Micha=C5=82?= Grzelak
+	<michal.grzelak@intel.com>, Janusz Krzysztofik
+	<janusz.krzysztofik@linux.intel.com>, Sebastian Brzezinka
+	<sebastian.brzezinka@intel.com>, Krzysztof Niemiec
+	<krzysztof.niemiec@intel.com>
+Subject: Re: [PATCH v2 3/3] drivers/iommu: Catch scatterlist length overflows
+Message-ID: <fgvf2f2dlj3hggjdfu7b6zulhdudm4e75yrxvveyo52erkpu2s@i54t3iqfdfoc>
+"Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173,
+ 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316"
+References: <20260701104437.236979-1-krzysztof.karas@intel.com>
+ <20260701104437.236979-4-krzysztof.karas@intel.com>
+ <20260703162236.GX7525@ziepe.ca>
+ <90558ba3-44e6-4d5e-9c72-ed8817d372be@arm.com>
+ <20260703203502.GC1978949@ziepe.ca>
+ <a381d265-e7a4-4fe7-9421-3553706d41c1@arm.com>
+ <20260706144546.GE107792@ziepe.ca>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20260706144546.GE107792@ziepe.ca>
+X-ClientProxiedBy: TL2P290CA0014.ISRP290.PROD.OUTLOOK.COM
+ (2603:1096:950:2::17) To PH0PR11MB7424.namprd11.prod.outlook.com
+ (2603:10b6:510:287::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-CC: <sarunkod@amd.com>, "H. Peter Anvin" <hpa@zytor.com>, "Joerg Roedel (AMD)"
-	<joro@8bytes.org>, Borislav Petkov <bp@alien8.de>, Dave Hansen
-	<dave.hansen@linux.intel.com>, Ingo Molnar <mingo@redhat.com>, Paolo Bonzini
-	<pbonzini@redhat.com>, Robin Murphy <robin.murphy@arm.com>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>, Thomas Gleixner
-	<tglx@kernel.org>, Vasant Hegde <vasant.hegde@amd.com>, Will Deacon
-	<will@kernel.org>, <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <x86@kernel.org>
-Subject: Re: [RFC PATCH v2 1/5] iommu/amd: kvm/svm: Improve API between SVM
- and AMD IOMMU
-Content-Language: en-US
-To: Sean Christopherson <seanjc@google.com>
-References: <20260708091408.12106-1-sarunkod@amd.com>
- <20260708091408.12106-2-sarunkod@amd.com> <ak5SXWcvtVLL0eKs@google.com>
-From: Sairaj Kodilkar <sarunkod@amd.com>
-In-Reply-To: <ak5SXWcvtVLL0eKs@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF000044A3:EE_|SN7PR12MB6716:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5da43bc7-86bb-4d0d-4024-08dedd84d542
+X-MS-TrafficTypeDiagnostic: PH0PR11MB7424:EE_|MW3PR11MB4522:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0ec4fb09-aac6-4946-c4dc-08dedd8a4d2c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|376014|7416014|1800799024|82310400026|18002099003|22082099003|56012099006|11063799006|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	sUDL05ik9KvTZHf0byvPzSs4EvGJp9EOpLJgZ/37QtNflZroXTs+nFU4vHU4amdNCBVhkrx1W+sXkSoRGIoiGJQ4bGCmXBpD6VWRB40dmJ8+P0REW/DjKH+pqljuSbibXYtvkkbp5MWABssi1lFcZss53R3FqW79xwegZHPq100DiBQdAIN3qus0vPUSfsv6TMPAnnP/Cw3GKsv/wj3bsuaBaPWOeO9vkmUeMkZ2Ij6Owuq+BlmNlJezLDzPM2FbhKHs8OhYwvEnkijzwGJEDjauUlnkVbYH1NA4uaESn63XAF9uxi2cNxfHbpbLw+v+5csNAMLEfQCXo4QXJmUndFQAGAK6j70aKhuSrkkq/RUChGqdDaujSh4tty+JBHKcqO2NcXInwi3IVoVziyEujKvuO3DOy8HUSWhhiTmZbQlm2B6AenQXhq/lX21h5p4wO4Dm7geEimfgM0y0GHN1rmQSedlLmNGEF8DoYmLByAcO54SzvyGqnebm07dopAPL0+fzYOuNLRpUOgn+Sy4QhuXHT6OgGZreNmSAFmT7qP73Wyh13LQ94VbGQqn7YyuM42kefYmTNQNXP6TNzE1hdD/SJu/XFx8+Jt9uTkT7PslCjAKIKi2HxULR6cDTFoLs1Xx3/IYfJyuW6W+0es+hLvZkGERwFe8Gr/7TfGAd7MRbWavvcTxkCVNgpZvOaWFqnpxzUqeBPdon4TgNPss1Tg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(376014)(7416014)(1800799024)(82310400026)(18002099003)(22082099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|23010399003|1800799024|366016|18002099003|22082099003|4143699003|56012099006|11063799006|6133799003;
+X-Microsoft-Antispam-Message-Info: /blDxkm6p6bYlh/LrfX67Ltx8ZXks78SJEyVcYR5XAOXc0mMQB077ho8Cgz8qAsUk4sPa+VB333Q+kNDa43IwUSxNgCC8OZK5aFOR29fkN9iHIBD2+E+3faSe2JyJNgDFoekYF2nl5w4+3PaL+NKyBu81YB76InnI/qsGUhAc4rbmd9QiwYSaAp4Xogh2iejri+5hTRxCf+cDqAaB88UGexecnXiohqgvIwI5txThbH7TWWYDJDj2Nl5NTUez3Um7p8UYaD/IKqQqIbRxTotVDRMkJI0xmTIvV70vV06Am7irEoos3bw4eJ72o4T/1YfjojYTi73JORF9E6b/QuKm31sBCe3Bn7u0Abxc90Kdh3G3MLD7cYXvfpTDxPFGbbSE/kAv/KqelRggM69vN6GbqbPy6CV/8NJnFw64D0sZ4ZdRb+cIXVxIAbaVsh2Xrlf0WIQwZ6ZCdU9glnnPurqTHj1o4WC2cB+MTMLfzBkBE002s5gzq4b2aB+L1QOgx0B8Ui1L26CtmofehQvC+vN3jLJ1Oh7jhfg2btpItk0exGfBG06NzMKyh9aQNgbOihQatAhcsrcF59Wmlnp4mNy5HRPLsoyfPuJqvpSOM4RAdL3DM64Z9TZylY4mK02DYurZCsVXCWgOr1pchZ7BuiNrXF973mI2HvC+MplgOQcnOg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7424.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(366016)(18002099003)(22082099003)(4143699003)(56012099006)(11063799006)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	woU8V7sZMEbzH3qdC5fum6OjVcJ5KvyKi3IwnFVuVR9zjOAd37T4w0814ZvnpYYlEv57ARobMbPTfIR6qz5gCfJ47eW+3cRBN5EIdRLcHuP8QKRGGvnUkgFUFcqW9bO9AGkdpoZz4RUfrCVb12+y3VnyaREHGFMu+iVqyM4wTTRJsphsiLQxY2hnssLI6IQrc9pZH7HNom7igZsxMmEqybyGefQckcCYfYnxTrWhFc8HlSHoKbij0njO+HRVEhe32E8KaheJ9+7vLU5gFlCXBa+jVhcBEpXwI0wmIc/QQaPldns+19NFj2OAGIVloDMvuS0Bss3VVVsvY5xxMs9kpFgnA10Hpj9GWZ8Fa37K6t0WgXyTmIdFC/IlKaOitVF9XQUpE//jZgYezodWls1CEuXpbbB2l+RlHUueR7Ch5VJS5pz9O9cemDizvfrdfgil
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2026 06:39:31.6096
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cVFaWU5PZTlOZHF6UjYrQzdwZkZ2MWFLaklYeVRKb0ptM1VGbVhvbmlLUm0r?=
+ =?utf-8?B?VWNrZ01vWVJ1eWI5Z3JyWXhqRkpPRkhvNHFWQWYzVm8vYkNGS0JldHR4dzZT?=
+ =?utf-8?B?V0U5azhWMGQ2c0I1RVprUmtiZ2RaeGRFZDBwMzIwRkZ6cEpXS005Z3RBV0Vn?=
+ =?utf-8?B?ME1ONXF2eWhaakFFdDZxSXFYbEFoMjczMC81dEYxZW9vcTJHLzl5QXduWEo2?=
+ =?utf-8?B?VE9LS2NTMmZUMkRnZHU3c3J1dkh1WUJ2K3JFWmIvNStMdlp4MWlYYW1xT3pU?=
+ =?utf-8?B?WDJnZE5qYzI4T29pa0dYOFR4MnNidkVEbHRWZmdVR0I0V1ZZaWN4eDlVS2hv?=
+ =?utf-8?B?dVhYZGwxUW1YMlpTaERwbkNVK2VrMGttQXdYYXV0Tkpldy9DSm9QSy9sWnJT?=
+ =?utf-8?B?YzEvT1dJRlpJdkRIRW9ZSmthcWVlQnBrdk41RzV0dGMzMDJoR0hnbDJ1V2t6?=
+ =?utf-8?B?akt1NExUMkQ5Y1RvaFFKY3ltQlZabVNrbmhaelpxZFBhN3l4ZFZObWRRR214?=
+ =?utf-8?B?bGNIaXFGZWRXTmdtbFJaNmQreVhnMmpaSm9ld2RHeGpVVjhqYitTUlB1a3Nv?=
+ =?utf-8?B?dG1ZY2xaczNvS083cno5eEwwWTJMTDcxc0FCSXkvUVRORHVOMjEzM051WWho?=
+ =?utf-8?B?QS9IZzVxdXBEQmo3YkE0UXEyS3VJb0gxYUZVYko5SSt5MzF1RWplMEpmbmI1?=
+ =?utf-8?B?aTNIWWVEUlUrbHVvRFJhT2d0VUZSOXd0VWppOU5GNzlSRnlRYllEWFFqVGRn?=
+ =?utf-8?B?a0QzNjQwWk5aK2xjZWcyQ1lYLzd0cmJuOEx2Nm54cUVqOVZ4am1nSDd1Vi8w?=
+ =?utf-8?B?VVZpQ28wNmxpRGthU1ZzM3Z2MTlFKzc1OHhvdnJqWlJNNHVwU1dUV1pGNXM5?=
+ =?utf-8?B?ODYzZUdXamNzUFZMMDFXSGtuM1VuTE9CWlZVanpPaVZZdVVaRCtINTVRV1F1?=
+ =?utf-8?B?NmJIdXVrNUUvclpsUllnNkFKdjFQM0VYZlRZMkk5MlllamxrZlpWY3pxOTdE?=
+ =?utf-8?B?RnA2YzhSVGV2bVhUK1NrWU16ZXVLcE1heWRibjM4aWUxYnFxUmg3L1RxQVI1?=
+ =?utf-8?B?QTJWRmpDdXh3cVdCNDN3bGlZaURtV3Nnc2ZJRlpXcUtJbC9DbUE0YW1GWllu?=
+ =?utf-8?B?bUhNVVVENGs1VWZGakY4bldkUzFmdnpneUVmMHNvTEQ2U0FnY2owSlgxK1lv?=
+ =?utf-8?B?V1pKeHJ6Z2Jxd3R5cWlVeTY4aVJDZ2tZZ1A4TkE0dldyS0xJdFpNZ1ZoL3No?=
+ =?utf-8?B?b1QrOG1mbzBKWVJCdGJLYWZJejBEZlNFblVMR0pCMHlxOUlvVU42b1AxSnNP?=
+ =?utf-8?B?a0NPc3lpelB5NnRCLzRxbklCd0tQUXhyZE9mLy9nbHNDc1VvVFBlUk56MUtB?=
+ =?utf-8?B?d0pkR1hjeVlHMkFKU1dUYTZmcjZOMFR1QlI5UGFxbzVvY2lkNGpZWk1ZNUU2?=
+ =?utf-8?B?UHNTY2J2blNaeDBsci94SzZja0EvSGplazJvemNaeU8ycHVXSEFXY0YyRUov?=
+ =?utf-8?B?MUFPbVhzaHVPS3NraFJtNmlia3FzTWl2WS9tU2tad2orRk54bnd6T3hjOUph?=
+ =?utf-8?B?UThjeHlsWDdjcVFzZk1QaTlCcExlUXJFZlprUmphcGprN3ZCU0Q1OW5BU1Ry?=
+ =?utf-8?B?cUN0Tm9yaHlXMWdHZVE2dU1HTzEwNEN1K2lGRmdJVzZ4NWtWaE02d2xIMXhv?=
+ =?utf-8?B?czRJdGhKOTFVYi9kcTJ0Mlk5OUFtMVRmTEY2aVNrZGprK3U2cTByaXNxN01Y?=
+ =?utf-8?B?aU9FeitTLzZ4ZVl3c05YYUFKYjI1Um5DR3J5dWZzUlQ1QXJyc3VkcURqRm0v?=
+ =?utf-8?B?MkZXempXWFcxRzhDQm9ZbEJXaFRlZU5SdlpETnUxSzhVMnBpK2trajJ0SFVn?=
+ =?utf-8?B?aHJ5RjR6UVhVMVZTN2laak83NHdCM280NWxiZDhXbEc1QmoyRUU4QUF3WGpU?=
+ =?utf-8?B?aVFRM2toeWtHMGdwQzQwazJZZXNFMUdvWnVSSVFsaGNDQjc5bGVmNDhrOUp3?=
+ =?utf-8?B?dDlTWkdPbTNTSTFYWXowZUpuVkFrSTVxY0lTWFZMOUNBaWkyWGY3eWoxUW04?=
+ =?utf-8?B?T0hlTXRHZ3lXK0J4K1ZZbStnMzlDSU1tQVEyZlNwSEtXTFBkNm95Ylo5MWRv?=
+ =?utf-8?B?eGg3cVJSMStrRlFlNHhmeGZ5d3VSTEdqYVdDc2VBczJjalQ2VGl2eHQ4clBM?=
+ =?utf-8?B?RVlCditLbTAvOHMwWjJocEZnTDNCV0tXYzRXVFRrbGpNMElhSnd0SkdxOGlh?=
+ =?utf-8?B?QzdXSmhORlNzMEU4Z0VjU2hlYWVKZTFPbXpjZ1Z4Uk0wZlE2bHlmLy9Oc3Jo?=
+ =?utf-8?B?aUx5UzYrQ1dvVzkrWHZHaUdNZ2hhRGdDdmpBL2lFSk1XMFl3Rm94bnRWcnMv?=
+ =?utf-8?Q?+9VTrXms4IrOkG+A=3D?=
+X-Exchange-RoutingPolicyChecked: tFj3WVDkusrRomB/8ZoMcUtTtUoeJB0fo8r4nD36bqsefhw+05r4ZL46CIhrDoJ9rlA/yFVt+VTXUS05jjDKHFmmQVzh8GsiITvoAmJCRVJRiKSX8YjoWxbeQ9oyH/yP8zSTKJhv9p8kUqqd4fADJJ1q7tpILMrh3lOxGCfxz2ZRQbLVg9P2JPKvkTQwM9V98kfpnlt3ZxO9nhg6aKgtGE7W5f+rRN5tHTP1wWdWcBWxPGferxGzB7U/4AvrgMUSTCuBWAWM8o0uoU1YYqDZnAYpha66e9jsR1mFQJqUPznpRfVtUjC9KdwCpMyxogLjj2/Pn3SgVUGDf0LiPbX+3A==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ec4fb09-aac6-4946-c4dc-08dedd8a4d2c
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7424.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2026 07:18:40.7001
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5da43bc7-86bb-4d0d-4024-08dedd84d542
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF000044A3.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6716
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oDcSnA0PmINTzXacWlHZa9rJAbrlSe/DvTKFKqKESE1EKvjb9RfeHM4zK+I0MqQRAXdhBtIxw12MrqLHzTrZBYx/f4E8/RirsDcyWBxB3o0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4522
+X-OriginatorOrg: intel.com
 
+Hi,
 
-
-On 7/8/2026 7:06 PM, Sean Christopherson wrote:
-> This should be two separate patches, one to rename the @cpu param/field, one to
-> replace @ga_log_intr with flags.  "Improve XYZ" is the equilavent of a do_work()
-> function.  And I'm having a hell of a time trying to review this because of the
-> overlapping churn.
+On 2026-07-06 at 11:45:46 -0300, Jason Gunthorpe wrote:
+> On Mon, Jul 06, 2026 at 02:08:14PM +0100, Robin Murphy wrote:
 > 
-> Actually, if you insist on a "flags" field, three patches: rename, convert to
-> flags, add the dedicated RUNNING flag.
+> > modern use-cases anyway, and is being replaced, so limitations of a "legacy"
+> > API that don't have any meaningful impact to its existing users are hardly
+> > something to panic about. If DRM does want to be able to *reliably* map
+> > massive amounts of RAM then it can adopt the new IOMMU API, for this and all
+> > the other reasons that that new API was promised to be "better".
 > 
-
-Sorry for inconvenience, will split the patch and improve the verbosity
-of all the commits.
-
-> On Wed, Jul 08, 2026, Sairaj Kodilkar wrote:
->> The name "cpu" in the parameter is misleading as it represents the
->> physical apicid of the cpu. Hence rename it.
+> Yes the new API does solve these issues, and it avoids padding
+> destroying the iova contiguity.
 > 
-> Hrm, I was going to suggest having KVM pass in the actual CPU instead of the APIC
-> ID, because the fact that the IRTE takes an APIC ID is an implementation detail
-> that would ideally not bleed into the API.  But unfortunately KVM uses the entry
-> in the physical ID table when filling amd_iommu_pi_data.cpu, so taking the APIC ID
-> probably is the least awful approach.  :-/
+> > > So I wouldn't be quite so dismissive that this is not something a real
+> > > user can hit.
+> > 
+> > I'm not being dismissive - clearly it can be hit. My point is that anyone
+> > who *does* hit it can only expect it to fail (as indeed this particular IGT
+> > test seems to), because it has never worked.
 > 
->> Introduce flags to determine the state of the vCPU (running or not) and
->> posted interrupts.
+> Today you can allocate memory from hugetlbfs and map it through
+> RDMA. The user can set 1G hugetlbfs page size and allocate 16G of
+> memory, and RDMA map it. Databases and HPC, for example, love to do
+> work loads like this.
 > 
->> This is useful as following patch overloads the apicid (formerly cpu) field
->> to determine GAPPI destination when vCPU is not running and it can no longer
->> be used to determine if vCPU is running or not.
+> So there is an unlucky hugetlbfs FD that has an internal memory layout
+> that will build a scatterlist that cannot be mapped by the iommu.
 > 
-> Rewrite the GAPPI behavior with --verbose to explain *why*.  The only reason I
-> could suss out the why is because I already know how Intel posted interrupts work
-> and so could intuit why GAPPI would want to keep the APIC ID valid.  Without that
-> knowledge, this is unreviewable.
+> The user's application that normally works will fail randomly and
+> infrequently for no fault of their own. This isn't "can only expect it
+> to fail".
 > 
->> Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
->> ---
->>  arch/x86/include/asm/irq_remapping.h |  4 ++--
->>  arch/x86/kvm/svm/avic.c              | 22 ++++++++++++++--------
->>  drivers/iommu/amd/iommu.c            | 24 ++++++++++++------------
->>  include/linux/amd-iommu.h            | 14 ++++++++++----
->>  4 files changed, 38 insertions(+), 26 deletions(-)
->>
->> diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
->> index 37b94f484ef3..40a2206a33c0 100644
->> --- a/arch/x86/include/asm/irq_remapping.h
->> +++ b/arch/x86/include/asm/irq_remapping.h
->> @@ -35,8 +35,8 @@ struct amd_iommu_pi_data {
->>  	u64 vapic_addr;		/* Physical address of the vCPU's vAPIC. */
->>  	u32 ga_tag;
->>  	u32 vector;		/* Guest vector of the interrupt */
->> -	int cpu;
->> -	bool ga_log_intr;
->> +	int apicid;
->> +	int flags;
+> > So yes, limiting any individual segment to <=2GB would end up avoiding both
+> > those conditions, but it would also impact plenty of cases that *do*
+> > currently work fine, e.g. 1GB+3GB+3GB. The limitation is really that you
+> > can't have two consecutive segments where the first starts exactly on a 4GB
+> > boundary and the sum of both their sizes >=4GB.
 > 
-> Why use flags?  This is on-stack data, packing booleans into flags adds no value
-> IMO, and makes the code way harder to read.
+> Yeah, but that's hard to express.
 > 
->>  	bool is_guest_mode;
->>  	void *ir_data;
->>  };
->> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
->> index cdd5a6dc646f..7862b13c5409 100644
->> --- a/arch/x86/kvm/svm/avic.c
->> +++ b/arch/x86/kvm/svm/avic.c
->> @@ -932,6 +932,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->>  		struct vcpu_svm *svm = to_svm(vcpu);
->>  		u64 entry;
->>  		int ret;
->> +		int posted_intr;
->>  
->>  		/*
->>  		 * Prevent the vCPU from being scheduled out or migrated until
->> @@ -949,10 +950,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->>  		 */
->>  		entry = svm->avic_physical_id_entry;
->>  		if (entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK) {
->> -			pi_data.cpu = entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
->> +			pi_data.apicid = entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
->> +			pi_data.flags = AMD_IOMMU_FLAG_VCPU_RUNNING;
->>  		} else {
->> -			pi_data.cpu = -1;
->> -			pi_data.ga_log_intr = entry & AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR;
->> +			posted_intr = !!(entry & AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR);
+> My feeling was supporting >2GB without a split is not really so
+> important. You are (righly) arguing these huge sizes are usually rare.
+> Places like RDMA where they are not rare people already added
+> re-assembly logic to join SGLs so HW optimizations for >= 4G mappings
+> can be used, so smaller splitting doesn't really matter.
 > 
-> "posted_intr" is misleading, and IMO flat out wrong.  Even when a GA Log Intr
-> and notification is logged/sent, the virtual interrupt is still posted to the
-> vCPU's virtual APIC.  I have no idea what you're trying to capture with this
-> code.  And that is yet another reason why this patch needs to be split up: so
-> that you can explain the reasoning and logic behind this refactoring.
+> > > API wise I expect any arbitary input to sg_alloc_table_from_pages() to
+> > > result in a scatterlist that iommu_dma_map_sg() will map. This
+> > > patch highlights there are cornere cases where that isn't true, it
+> > > should be fixed..
+> > 
+> > Technically sg_alloc_table_from_pages() carries no such assumption,
+> > only
+> 
+> There are lots of callers that just do sg_alloc_table_from_pages()
+> then dma_map_sg(). Callers can use this simplified API when they don't
+> need any segmentation logic in the DMA API.
+> 
+> > sg_alloc_table_from_pages_segment() (or __sg_alloc_table_from_pages()) with
+> > the correct dma_seg_boundary value for the given device. 
+> 
+> _segment is the segment size, not boundary. The sg_alloc_table
+> functions don't support the seg_boundary limitation.
 > 
 
-I needed an generic name for boolean that is being used by both GAPPI
-and GALOG, hence I replaced ga_log_intr with posted_intr. But I can
-understand that it can lead to confusion. How about replacing
-ga_log_intr with wakeup_intr and AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR with
-AVIC_PHYSICAL_ID_ENTRY_WAKEUP_INTR
+I do not have any strong feelings for or against any of your
+suggestions. We could do one of them or both, as long as you and
+community are happy, I'm happy too.
 
-Thanks
-Sairaj
+Current fix adjusted to Jason's suggestion:
 
->> +			pi_data.flags = posted_intr << AMD_IOMMU_FLAG_POSTED_INTR_SHIFT;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 381b60d9e7ce..1a36fd9bf10b 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1493,7 +1493,18 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		 *   time through here (i.e. before it has a meaningful value).
+ 		 */
+ 		if (pad_len && pad_len < s_length - 1) {
+-			prev->length += pad_len;
++			unsigned int new_pad_len;
++			/*
++			 * For large mappings spanning multiple GBs we
++			 * may not be able to fit all needed padding into
++			 * sg->length.
++			 */
++			if (check_add_overflow(prev->length, pad_len, &new_pad_len)) {
++				ret = -EOVERFLOW;
++				goto out_restore_sg;
++			}
++
++			prev->length = new_pad_len;
+ 			iova_len += pad_len;
+ 		}
 
+
+My interpretation of what should be done according to Jason's
+point of view:
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 381b60d9e7ce..4d06010216bb 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -33,6 +33,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/swiotlb.h>
+ #include <linux/vmalloc.h>
++#include <linux/scatterlist.h>
+ #include <trace/events/swiotlb.h>
+ 
+ #include "dma-iommu.h"
+@@ -1477,6 +1478,10 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		sg_dma_len(s) = s_length;
+ 		s->offset -= s_iova_off;
+ 		s_length = iova_align(iovad, s_length + s_iova_off);
++
++		if (WARN_ON_ONCE(s_length > SG_MAX_LENGTH))
++			goto out_restore_sg;
++
+ 		s->length = s_length;
+ 
+ 		/*
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index 6de1a2434299..04be2fa10359 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -472,6 +472,12 @@ int sg_alloc_table_from_pages_segment(struct sg_table *sgt, struct page **pages,
+ 				      unsigned long size,
+ 				      unsigned int max_segment, gfp_t gfp_mask);
+ 
++
++/*
++ * Keep enough headroom for segment-merging in DMA/IOMMU paths.
++ */
++#define SG_MAX_LENGTH 			(UINT_MAX / 2U)
++
+ /**
+  * sg_alloc_table_from_pages - Allocate and initialize an sg table from
+  *			       an array of pages
+@@ -499,7 +505,7 @@ static inline int sg_alloc_table_from_pages(struct sg_table *sgt,
+ 					    unsigned long size, gfp_t gfp_mask)
+ {
+ 	return sg_alloc_table_from_pages_segment(sgt, pages, n_pages, offset,
+-						 size, UINT_MAX, gfp_mask);
++						 size, SG_MAX_LENGTH, gfp_mask);
+ }
+ 
+ #ifdef CONFIG_SGL_ALLOC
+diff --git a/lib/scatterlist.c b/lib/scatterlist.c
+index b7fe91ef35b8..a788345b93a1 100644
+--- a/lib/scatterlist.c
++++ b/lib/scatterlist.c
+@@ -468,6 +468,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
+ 	 * The algorithm below requires max_segment to be aligned to PAGE_SIZE
+ 	 * otherwise it can overshoot.
+ 	 */
++	max_segment = min(max_segment, SG_MAX_LENGTH);
+ 	max_segment = ALIGN_DOWN(max_segment, PAGE_SIZE);
+ 	if (WARN_ON(max_segment < PAGE_SIZE))
+ 		return -EINVAL;
+
+
+@Robin @Jason I value your input and would like to reach an
+agreement on how to proceed.
+If scatterlists are going away soon-ish, then we could go with
+the quick-fix version as to not involve too many people.
+
+-- 
+Best Regards,
+Krzysztof
