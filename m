@@ -1,104 +1,171 @@
-Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFA7C274FD1
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 15:47:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10497426D18
+	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 15:49:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783612024; cv=none; b=igVeTyTDW+SqLy7/Nzr5VaOslzOq1iexRmxTtY7hXlF1cB+GrKz+qKoe0S2SnhjdnxDOR859XfwO7DWMKINphlypgoUBAL5ahKVWrbvLMNgWZc/oJ++717xiqCfJAbXyve5bk3hx7z4OL+EcoKsP0mftEOe+POr+vEdgrcQBNHg=
+	t=1783612169; cv=none; b=RFN6+RpyoyVRD4lhoGn28vqQRXqJrrveurfEy7B+AyD1JNfKRH8v/3aNmAgB4qqgA1B6YRVMVNQNLJ7omOBnOXZXobn4wwgBVdcQ1xld5yWjey8Ko7In2/Zl5Pykn6G0DU0gjtl40aOokuNO1gAEkUEejY9OvlEutyZgYmLY+6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783612024; c=relaxed/simple;
-	bh=MgPfa4pKGE1SzEFbQCeqHMYKqdAxa7JEG0bUQwYux8M=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=mRVRS5Aw0KkzwJ5lQVa4vumLftcO3CzF23/94I78NT8MSyUZskqOMfa61J2G6DPvrbOupCVYos/oSwvBvv1M8l90YGI2wNmehkECmQXp3pcB5AyS6wet4SkZh0tJ0ZU+4fgNRuTJy+xZ1igN0ECgmz/Jx3Ull4GuUeLCaZatiNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MYRk5EHT; arc=none smtp.client-ip=209.85.221.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
+	s=arc-20240116; t=1783612169; c=relaxed/simple;
+	bh=0qkqAHRaBHgpB2UR0C6dAMPOVUmsbtzeoEt8MNK67Xo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=q36yZ3StuIXiXxLqV85jHaVBxzqMFO4QOG2Od6PMmCgN2Jo6f3mn1xVOs+MGUuDyNCu9vMf368c5SUlhHN0VX1P+hnqXORLEWw1z1AXL4bOtkp3DjrOubK0jZPUmUrP0VT5HRwxte9PROvV1RoVbw8aZ29zNl7Gz7y3osE1vhDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=oveLNVue; arc=none smtp.client-ip=209.85.219.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MYRk5EHT"
-Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-47d81cf0c4cso24722f8f.2
-        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 08:47:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="oveLNVue"
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-8f1a8e914a9so450366d6.1
+        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 08:49:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783612021; x=1784216821; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=1ShG0iDDEU7To4XJxO6yX4MTZYqSurnuJSiTMgcIjD0=;
-        b=MYRk5EHTFbkrgwToNNmMOXSH/FH9M7v+l72jJLMdjqvsHN///c8sMuB34yE4B5bSwN
-         pXf36RLBEuVw/88OuysH4Eqz+K5gelwKbnBk5HBQGk87l8nCm9cWmPfbS5l4q6Iab6r9
-         Rl6AjopxL9jPq5paYs+hAbgTTB8eyJQq4Wcl8yOAjUTyuVqa96WHd/SDyI4ze6DanaGA
-         4SB7sq4NkMCjD8FekMYhfaR8vey+D29g4mrUZIkhD/7epi1s7onz3feX2F1mLH3+EUj1
-         QuQDuzMRp7db2et5gD7jclJkOTRV/u9fgHlGL6f94j5FH89OnxkyfMq7veGhUB5Hy2fk
-         9sDw==
+        d=gourry.net; s=google; t=1783612166; x=1784216966; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=hryUWYzOZzjuIh9gJx+Hzg+n+E360+tJZh4R7BZGeLA=;
+        b=oveLNVueRXAHGTcDlgTdy/qQx6ZDIATnCjLysooGepeIuANXx4S67ODZhApIiQ/Ltk
+         AOKKc/2D6AvLle/QhzDpnlLXUsIIYgzna6xADdJaTmJG0Eq7mev95YVDPDvcDCQ2fdhQ
+         rvqdHn21ZTh+D8jQwiCFynMe9TqWR6R5xTJXLgo139SO/MwqvMLAXpBm3jkhhNP2DiV3
+         OgZLVstH5zjW+Lm3C06FY1FJ95mE6Zet8bzG3z1DkAe2El3igN+mUbJs8nUJMmZwlwzB
+         L1NU3ypzQzcp4zz3LOuA0SCZb8DSPxsSJqg8EEhUaeE6SthM52AX1VX6T2TVRdkWy9Yo
+         giSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783612021; x=1784216821;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=1ShG0iDDEU7To4XJxO6yX4MTZYqSurnuJSiTMgcIjD0=;
-        b=c8uDRldgQPP5N6H1Tybtm2oaKfuUEyPZEik2zvKNqX525HZsyfl3Y7yUDb7SvpI8E/
-         bFRDBEN85l6bQs4eWL+g2j2OExlgXCIw3yjpeEQig4MUE4PH9AEss1w2aJeUCedljrtl
-         cEahulghVxBSuQ/nJIhxkIv2AvzILvWcPIZ8SJDdawGZ0bPrtT5FYwdntMZWCkK/nGOl
-         o1O2U/5h4BvI5xPBys/qW9KC0T8NwbLl8K7mFGYCH5kQ+pxLL/66ZeNVIoXO8Ll7mOa2
-         J2QW7Ou0vNCFiZRGJBWmTrMwBov7ZEdckzBrvOm59kXLr6quXxs/AHZb9+gug2Ybmnl2
-         RPPA==
-X-Forwarded-Encrypted: i=1; AHgh+RqL10mHzl9rtrODMtDgY0780a6fqXKQSoiQbJz2tRHZEcNt8HqUff39MdxuordJc9EFnL8IOA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy//+5tiLc/dPWL2X65EqUvPhbgx0ORrkdarOaCEQwRrytJT0Zk
-	2wGtHyBlmHhr9YS/syqzdgiJntK2GDSDw43XMhpGmscwbfzR2s7gbMoicN9qvnNfQiHN8vTiShH
-	94/ms9xBF+QD05iTNDg==
-X-Received: from wrs28.prod.google.com ([2002:a05:6000:65c:b0:44a:cfa:ca21])
- (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:2201:b0:465:ba53:a006 with SMTP id ffacd0b85a97d-47df07394efmr8123926f8f.23.1783612021018;
- Thu, 09 Jul 2026 08:47:01 -0700 (PDT)
-Date: Thu, 9 Jul 2026 15:46:59 +0000
-In-Reply-To: <20260703-pgtable_lt_b4-v3-1-e738e1f513a4@collabora.com>
+        d=1e100.net; s=20251104; t=1783612166; x=1784216966;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hryUWYzOZzjuIh9gJx+Hzg+n+E360+tJZh4R7BZGeLA=;
+        b=B9gPUN1Q0mwHjIu47LXYlblRUS3RZGSMSIgU1qKRAkcEmQnyFk6yKEfYBT4Su9JVFc
+         EwunFV+NG/9CDz2Vr4Vhsk0orvHB4SB2SiGU4pLHOGiGxH3fI631r+JDkkP9SnFj28OM
+         nYu6f9R1+MbatgHzxcVmVfROi/bGhfckHHRDf5Q6Lp7mCM45vIHB5HkY9vozbLP6G3Ml
+         U4e70lxDl/nlYSWtGUf8jlxKlZrSTR79YU3ceCvdYglNWzpyABxDOz5K+PIV9CMmcch+
+         Ngd/dmKYCUpm/daQR1T/tISyzRs9cM3LXzKNvrhXeJ5qJZeOCHvUKCkqOfJt6+Jd/PPp
+         oF3Q==
+X-Forwarded-Encrypted: i=1; AHgh+Rp9Y9xt+EeDIunHiqR5q+7vHnUluE80tVzCwwOJIgQtpE32JfmddSQOCm2anak93heIy2VN7Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzSdAO7Fohy12LdtpkTda9PyHETYM1XfKEbppt2L0zOhqRq/OiY
+	q8cGnOAmBSHgTCzPp3loGVq7yMFOhO3biD5Q4HU/2L6dc4WW3Q1FOmeKlpcIxW4h7uQ=
+X-Gm-Gg: AfdE7ckm/1yLec6cl+H8bDecApzFk88ztoqqQJGQeCN8s+5ddE8tGWYIjhWo9jgabgO
+	iMdFfP2YruMNQT7TMwuhDdouW7ZuQMsGgnYCNnHmBtpFKrfzwLaBukMo7TPXQ7/DuPPXU067Guv
+	Da4caR5lKh60w2akBN7W42dCnF34Rf2FH0yq+POyHLK7bdY+fpz9OZGG+x3adTnGsn1zPELWV03
+	OiT4mRhhrDt560tpVoNNCM8PYDzqiCpwR/whYLPYmWt9WQz9gl/y9k1+bu1GqYKqbdKnPzTVbG0
+	p6xk2gk57EBO7kQx0uVoLhhutuz2f4eE8bYVPI0qIyFjZ/fY4tKpg8Sq+FS6TZXlUoAwQyYo/AW
+	LA6YaEycULMq687SYh1KC8p0e1rgYhkg78zlki7wLpkEk9NA//FeJjXRtv6OcWJhsYgoLuk98UU
+	OUzgYGdtzcT9mT45LDKD9zAT4ymEzHp4JmbbphO6OdIcu2PJlCLwTa6NJTM/Lg8a9fWDiD
+X-Received: by 2002:ad4:5c8a:0:b0:8cc:2a92:48e4 with SMTP id 6a1803df08f44-8fec217b8bfmr87997286d6.32.1783612165998;
+        Thu, 09 Jul 2026 08:49:25 -0700 (PDT)
+Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd7c1d9f6sm20164456d6.23.2026.07.09.08.49.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2026 08:49:24 -0700 (PDT)
+Date: Thu, 9 Jul 2026 11:49:18 -0400
+From: Gregory Price <gourry@gourry.net>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Pedro Falcato <pfalcato@suse.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Simon Schuster <schuster.simon@siemens-energy.com>,
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Lucas Stach <l.stach@pengutronix.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Christian Koenig <christian.koenig@amd.com>,
+	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>,
+	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	David Hildenbrand <david@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	"Liam R . Howlett" <liam@infradead.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Namhyung Kim <namhyung@kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
+	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
+	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
+	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
+	linux-perf-users@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+	damon@lists.linux.dev, Rik van Riel <riel@surriel.com>,
+	Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 17/30] mm: prefer vma_[start,end]_pgoff() to
+ vma->vm_pgoff in kernel/
+Message-ID: <ak_C_o2ehS17Q5HV@gourry-fedora-PF4VCD3F>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <ea87349d63205bf4c26ea79854f179a9bf8cfb0b.1782735110.git.ljs@kernel.org>
+ <akZCg73F-oGzDp1a@pedro-suse.lan>
+ <akZGqclqQ6gS12Vv@lucifer>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260703-pgtable_lt_b4-v3-1-e738e1f513a4@collabora.com>
-Message-ID: <ak_Cc7yylzGM6oEF@google.com>
-Subject: Re: [PATCH v3] rust: iommu: add device lifetime to IoPageTable
-From: Alice Ryhl <aliceryhl@google.com>
-To: Deborah Brouwer <deborah.brouwer@collabora.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Miguel Ojeda <ojeda@kernel.org>, 
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
-	"=?utf-8?B?QmrDtnJu?= Roy Baron" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
-	Danilo Krummrich <dakr@kernel.org>, iommu@lists.linux.dev, rust-for-linux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, samitolvanen@google.com, 
-	laura.nao@collabora.com, boris.brezillon@collabora.com, 
-	daniel.almeida@collabora.com
-Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akZGqclqQ6gS12Vv@lucifer>
 
-On Fri, Jul 03, 2026 at 05:28:44PM -0700, Deborah Brouwer wrote:
-> Currently, using a raw IoPageTable is unsafe because the returned
-> IoPageTable is not tied to the device driver binding lifetime.
+On Thu, Jul 02, 2026 at 12:30:59PM +0100, Lorenzo Stoakes wrote:
 > 
-> Since device drivers now receive a lifetime parameter <'bound>
-> representing the interval during which a device driver is bound to its bus
-> device, add a lifetime parameter to IoPageTable. This ensures that
-> the returned IoPageTable cannot outlive the bus device binding.
+...
+> static inline unsigned long vma_offset(const struct vm_area_struct *vma,
+> 				       const unsigned long address)
+> {
+> 	/* Retains page offset and tags. */
+> 	return address - vma->vm_start;
+> }
 > 
-> Also remove the option to create a page table as a device resource since
-> currently Devres is not compatible with resources that have a lifetime
-> parameter. This option can be restored once the lifetime-aware
-> wrapper for devres is available and if a use-case appears for it.
+...
+> And I'm not sure it's really all that useful. Perhaps retaining vma_offset()
+> would be though.
 > 
-> Suggested-by: Boris Brezillon <boris.brezillon@collabora.com>
-> Signed-off-by: Deborah Brouwer <deborah.brouwer@collabora.com>
 
-Joerg, this patch is a dependency for this other series:
-https://lore.kernel.org/rust-for-linux/20260708-fw-boot-b4-v5-0-7792ab68e359@collabora.com
+Silly question:
 
-Would it be okay with you if I apply this patch via drm-rust-next
-together with the thing it's a dependency of?
+   What's the purpose of retaining tags in a non-address value?
 
-It cleanly merges together with 'rust: iommu: replace core::mem::zeroed
-with Zeroable::zeroed' that you already picked up, so taking them
-through separate trees will not lead to a merge conflict.
+That sounds like there's fragility just waiting to be broken.
 
-Alice
+(I presume you are talking about things like ARM MTE and such, right?)
+
+> This is one that I think makes more sense.
+> 
+> But in general, I'd rather hold off from yet more churn here.
+> 
+> I'm making these changes to establish a basis for virtual page offsets
+> introduced in [0], rather than just cleaning up in general.
+> 
+
+I agree with this.  If the refactors here suddenly have to think about
+corner cases on things like tags, that's better resolved separately.
+
+~Gregory
