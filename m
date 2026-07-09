@@ -1,149 +1,148 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFBA40D56E
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 15:57:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9552E332917;
+	Thu,  9 Jul 2026 15:59:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783612639; cv=none; b=fUmClXTs7tx9wl9sHJJTe3hl4d+jXGw6LsNfORvBCRFcg97tBapSiCEuogRf8HIa0SHZRwkMzalUZDrKO3jb6+xd10KyZ5A6B6fh5xRwGBROyGwWlJjdpiLKfUwVz0VOvzEyKRLCGFCAidGFhYh8GH5zqeFi5R7WhfJZ9xvlL8g=
+	t=1783612757; cv=none; b=MdCamrvEElkcAErpZvVRkts9j+uQoPN9C7JuAoUAeLkL5/SQazWw1wNXbqbILvKyt1E9eJa+oySYT/IHIVHG1Jgc7VmtB7UPiGlx/8Phs/mZNW2hoJKTliHyR9D+8jhF2cXA7P412lNySmE6zRIedc3x95xblH/QtDiZxwPUq2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783612639; c=relaxed/simple;
-	bh=zOqJj5IGDkUHkuE0A0VjkQNttgCPQIdWlZYAcSbicnE=;
+	s=arc-20240116; t=1783612757; c=relaxed/simple;
+	bh=aJbh9LElbrEI7E/P7mvmoKpzdOlw1yDQ59JtSNULaUQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DqywsLQGB01ctpOSHBmkg+nzvXhtp39CNwDI8g5CyOGNrayYh2i31zBuTYujdNe9AngF+FtCYuktZaV2/yX40PDCLZSuEa9rEkp9ZmfVvxaStK+bo11q46Exb7gFl1AzbS0rD+RDe/7j3MM1/SdJ4q5KYMiMzvhMtHcQJuMlKrE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=jLF/diRW; arc=none smtp.client-ip=209.85.219.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
+	 Content-Type:Content-Disposition:In-Reply-To; b=OkqPKPu/lg5N2S3ELhLewsEkHXFGWfEttEj1hBfoo8kUpU9FxPEceEwuBfUeOhKMbYXOK7AADlMTFPTvwPBcsCCYMvDgTzpFTDVDnba1Cnuigvcl3Dt6o9RtEyJnZRQ4D7T64UXbikBm4RzMLIH8a4kyGaa8+xijyPPgXvGw7gE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RC+SN67W; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="jLF/diRW"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-8eefd4a8057so1012026d6.0
-        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 08:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gourry.net; s=google; t=1783612636; x=1784217436; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=T5BtG8ZZnILhla7gs7f63UlRSUpFIkMkPS04TXxov0k=;
-        b=jLF/diRWZQAw8mbITdwe827t/GeLOl95ABkfxtEcmtqIvudToPj79ed3K6ePG/a/DM
-         LQHP6zGR/XyCV3vNWKWIqoC6kWbzvVzMdAhdZ9soOXsPyM3JxuR/iVs0JseAN8OPeIU1
-         jbQSsKtbPEoOkQ7Fw/Az0EUuvzTIP7mMhEkE3xStd7pGweSYseF2GyzADrJ7yJxelVjy
-         O5xaINP8zX+DYsPwoAZPbHLC7GWdSMQNHiPbFJyquQ/7iWrg6D1nKhDYcl769IbnE+F+
-         Z/82rcoNPFdug8vA40YrBD21HA01qd0+Ol05Sf8EQ0pvCgeRLwT95+3bdGATt5oRlX4y
-         e9cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783612636; x=1784217436;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=T5BtG8ZZnILhla7gs7f63UlRSUpFIkMkPS04TXxov0k=;
-        b=S01kt8VkYFuV37sWU78BuSxlYEkICrxTCrv6Ed8UzYFFS9jCE2ONpVF+9DN62lb+vQ
-         hxLN/Y68r+/G5OpEIehPv7lvShetJ8NpQep5NRB1CRO5OWYDZIpYA/ifuh+2wnu/CBeB
-         mV4t9fEtlpe7n1yx5Dx6WoFhOwLiApde9kmBrUZGcQqONTXyIjy/dC4D6JcKiBgkQh1F
-         K4XrATbbhaD2wTfiLz9pQTvQ6eXa7ybEQshpog+1iQ0LG1QkdMG12w8vAJonpXceWA63
-         nh6/6fsKj9d7s5p8pmDM5VqcnqndjquImQ0S+d+WfDKeGKdkZ1yRdNfwjcF6jNvyELbc
-         Fk/Q==
-X-Forwarded-Encrypted: i=1; AHgh+RqBpB6jE2GKykD8Poi5DQSfXQkb+nYj485BRX/hZ/9Afr4hYY5IwnTvqmAl7evQN39PGx491A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwujuQBMjU5b0gE0qNURfKcn5UQmflxfbAQZOfeDDv7jLW9ND4U
-	GDPJu/aRoo8jxoH9P0v1bQejPh9fotNaLOPbPaq8a66BJZRlXSIER/y56Kw7bj9MM1A=
-X-Gm-Gg: AfdE7ckrwoPK2b5wuI/Q59JBUl98Nr+ivuNhwyQyFHpe+9OWX6Znhn8DgYmz7c9UHjp
-	jNBXHR0sXQKztd1LGcKBFB/1QK0IALscA6sty7q2ljqFg65A25LNnuEBDiEvgD2HyvmELd8sS2a
-	N41TVoayoCI2Yf2lihEZRYV2SkER89zit+5a1KmBjA8FfC9DywJXh5sZsLMqiddomxuQFdvKFBW
-	mxGWs4SD5GpZwUs6LDav7A2eKjlplRYbrqPI0oRI9LGqOn4pX1lMqNbkkiKzeU2U4NsX0CMbl0c
-	iaLCaH2p5wHLO3yO/VEe2L96IZieU+Xoj1Cn8IuVc1CYSOcuXAAFz4OOhJ+OMM/UzAYELTCw0bR
-	/RtTILlg/Z7Ef+pCIVDuKrLeobrR6OaEamgi0AHNFtAUFh0ws/869FcR3JQZk17A9hTPdNjFUHS
-	jRSDef4zkDMv4Ad4mtsOI9PGQE3ZaN1qlhr1gCIgkPS8kWyLqmD5Wlu/0rAd0Whj2slRhv9pR6q
-	7OhVJU=
-X-Received: by 2002:a05:6214:2aa6:b0:8f3:e0ce:6119 with SMTP id 6a1803df08f44-8fec0ead52amr91789316d6.21.1783612635560;
-        Thu, 09 Jul 2026 08:57:15 -0700 (PDT)
-Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd86d43e2sm20317526d6.43.2026.07.09.08.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2026 08:57:15 -0700 (PDT)
-Date: Thu, 9 Jul 2026 11:57:09 -0400
-From: Gregory Price <gourry@gourry.net>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Simon Schuster <schuster.simon@siemens-energy.com>,
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Ian Abbott <abbotti@mev.co.uk>,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	Lucas Stach <l.stach@pengutronix.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Christian Koenig <christian.koenig@amd.com>,
-	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
-	Oscar Salvador <osalvador@suse.de>,
-	David Hildenbrand <david@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
-	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
-	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
-	damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
-	Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 19/30] mm: use linear_page_[index, delta]() consistently
-Message-ID: <ak_E1Y-D2Twykusr@gourry-fedora-PF4VCD3F>
-References: <cover.1782735110.git.ljs@kernel.org>
- <bf56e2e98b512962a2fb88900d535a0e9e6769d8.1782735110.git.ljs@kernel.org>
- <ak_EivwcDDdn1Xvp@gourry-fedora-PF4VCD3F>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RC+SN67W"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7221E1F000E9;
+	Thu,  9 Jul 2026 15:59:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783612756;
+	bh=aJbh9LElbrEI7E/P7mvmoKpzdOlw1yDQ59JtSNULaUQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=RC+SN67Wo1bRPHmk2A3aRNqpRIZs1vt054/wDbMqrDQX+h2TC1c2qOU/P+vZpdlhO
+	 AGbczQTeBS/xYxBRav4immcCdk9NfNEvFoxtcbuJpR+9S08i4HqzmmxUf2mXM8hMj7
+	 lXpkqf096CaOPzHCghkHjTNtD6G/fOZ8q4jHCFjUFlLP5HaCXiv4HJYAS5IZqtiACw
+	 SFUrZULwFBv+H+0ToU32sDdtnyqRsHAorRSMSNXr8y2FRWFng0qncigrrOJt/3zqzq
+	 3H/Ma20+f66D8Hr1nfijRAegJrkTFT+SYpIfq6Gx4gdnn9Z3ulZD77FcSZxNF6fYJs
+	 u62hwfrMdO64Q==
+Date: Thu, 9 Jul 2026 17:59:13 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "David Hildenbrand (Arm)" <david@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+	linux-trace-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
+Message-ID: <ak_E4UxfnFJywJa7@orome>
+References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
+ <CGME20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c@eucas1p1.samsung.com>
+ <20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
+ <3f47aeab-33b1-4966-a5ce-5d6d5261e0e2@samsung.com>
+ <e212caac-6c30-448a-9e10-32fff8b842f6@kernel.org>
+ <83e5e74d-7106-4e14-9d10-56438372f6a3@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="j2boipej3wyu4mib"
 Content-Disposition: inline
-In-Reply-To: <ak_EivwcDDdn1Xvp@gourry-fedora-PF4VCD3F>
+In-Reply-To: <83e5e74d-7106-4e14-9d10-56438372f6a3@samsung.com>
 
-On Thu, Jul 09, 2026 at 11:55:54AM -0400, Gregory Price wrote:
-> > @@ -2462,7 +2463,7 @@ static int comedi_vm_access(struct vm_area_struct *vma, unsigned long addr,
-> >  {
-> >  	struct comedi_buf_map *bm = vma->vm_private_data;
-> >  	unsigned long offset =
-> > -	    addr - vma->vm_start + (vma->vm_pgoff << PAGE_SHIFT);
-> > +	    addr - vma->vm_start + (vma_start_pgoff(vma) << PAGE_SHIFT);
-> >  
-> 
-> Obviously correct, but was this intended for a different patch?
-> 
-> ~Gregory
 
-bleh already caught, sorry for the noise :]
+--j2boipej3wyu4mib
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
+MIME-Version: 1.0
+
+On Thu, Jul 09, 2026 at 07:56:45AM +0200, Marek Szyprowski wrote:
+> On 08.07.2026 10:35, David Hildenbrand (Arm) wrote:
+> > On 7/7/26 12:02, Marek Szyprowski wrote:
+> >> On 01.07.2026 18:08, Thierry Reding wrote:
+> >>> From: Thierry Reding <treding@nvidia.com>
+> >>>
+> >>> There is no technical reason why there should be a limited number of =
+CMA
+> >>> regions, so extract some code into helpers and use them to create ext=
+ra
+> >>> functions (cma_create() and cma_free()) that allow creating and freei=
+ng,
+> >>> respectively, CMA regions dynamically at runtime.
+> >>
+> >> Well, the technical reason for not creating cma regions dynamically at
+> >> runtime is that on some architectures (like 32bit ARM) the early fixup
+> >> for the region is needed to make it functional for DMA.
+> > Can you point me at the code that does that? Thanks!
+> Check dma_contiguous_early_fixup() and dma_contiguous_remap() in=C2=A0
+> arch/arm/mm/dma-mapping.c. Those functions ensures that the CPU mappings =
+for
+> the CMA reserved region in linear map are remapped with 4k pages instead
+> of the 1M sections, so later, it will be=C2=A0possible to alter the mappi=
+ngs and
+> change them to coherent when needed (altering 1M sections is not possible,
+> because each process has it's own level-1 array even for the kernel linear
+> mapping).
+>=20
+>=20
+>=20
+> However, in the use case in this patchset the reserved region is only sha=
+red
+> with buddy allocator by using the CMA infrastructure, not registered to t=
+he
+> regular DMA-mapping API, so it would work fine. I'm not convinced that th=
+is
+> is the right API to use for this though.
+
+Are you saying you're not convinced that CMA is the right API to use for
+this? Or something else?
+
+I certainly don't think we want to get the DMA-mapping API involved for
+this because that always implies that we perform cache operations, which
+we specifically don't want for this memory.
+
+Thierry
+
+--j2boipej3wyu4mib
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmpPxVEACgkQ3SOs138+
+s6Eb0Q/+LDCagsX5c/5bbiHk3kITlOkkdqUCHLmicqkfr4LZXyuHnPZlygaoxrFM
+pWQKdyKOOfpM0U1Z1cuOHjLwTv5iB98Ne5qANisu+FqK6xFJ4ccA5Y2pXRG+2cEG
+YJS9S13i37EoR6iOHndhRxeZyxcx080fd7aAJdY9yKXL4+bAmW9W5/zS5XbLyBbt
+9MEA8Ah3pUnnLdjfeEq0SH2diKgT9OHXRpP4MEEFJbBufctOLZKoBOBBYPuURxCJ
+UxjR6KKyMObW2G6HP7fdgDzj5XYdbMEyHN+Cvom68auUKijpkjfOt5NUTQvxuuni
+YbwzbmHnbB76VYY6E/4i8uUPDxlBxha2COauHTiiJvdhBoJtPWSKLEYRU7BFrqBr
+SJY+OpLNROUP+oZLTyr7jmAoaJI0wLnBLxId6GjF0iID6w1BybeRRDX34o5+mkpE
+TOQ703x0/ZpECHboXKqJgo9CX0XIWtiD+yEbn7/HnR/wvHjksGNrCGxYaR5mrIAv
+N75RHCupJjA918YwITUGC0EtKUWOcwlVvLwS2G8gAUZd6goYWyEd/fV7G4VEj/4+
++GA2L/CzSK0TbN+Ktayav2Ec5EQy4mKHa47hkWmWGe+Lh22DNNiP2CS3LjnPGs2i
+II6qTao1jGC6L0sqjSQAw8VxP4TpU/XHRW8zs9HCzUaNg0ZSnGs=
+=xmpu
+-----END PGP SIGNATURE-----
+
+--j2boipej3wyu4mib--
