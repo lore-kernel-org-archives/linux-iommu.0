@@ -1,326 +1,160 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19013083.outbound.protection.outlook.com [52.103.7.83])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010000.outbound.protection.outlook.com [52.101.56.0])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05DBA4499A5
-	for <iommu@lists.linux.dev>; Thu,  9 Jul 2026 19:08:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.7.83
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67D0B37F725;
+	Thu,  9 Jul 2026 19:10:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.0
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783624131; cv=fail; b=c0OAljbNYORV7iI49JUYb+tnEIvxq0yPtD33OHaXW6a0vRRsFf9Vdg+VnqlzuPbCiJn3qQSoroLFiKIxJTP3M3yyD4ifhhbNObgD2nXb1nfM5oxka+HJ0NKAzTOSiY+BxayQIhznP3o5d8+Ptn9YQKj3LcIC0DntUEAAyriMT60=
+	t=1783624240; cv=fail; b=kOWYjpgnJ4c0MaKt9sxayc5Rw9pQA+P/2wKfTBW3Fg2uRxxqEIco6S3b/XH8Vo3KkXr32N4gboklG3PXzeLa5hhSKz6jcw0nKkKGPpQ+hVUk2ZiwvF/dVth+WjhiweK2zRW+ze2/U4kiW61YvFsuU2gPTRi65HQHaVHJjSu+7yE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783624131; c=relaxed/simple;
-	bh=qW5Dry2QuVRbldNlOA7ru8rZO4UPHltinYF2a9THWO4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=FTOGi/ElfJ3MMPplZiHlZcu6cS1HGOTM30wNMUf1W9xp+9DhKuMwxXS8YG81twR0MKNVwkOZMYYEm47ZcJS383nUhiVbllIbK6zMobkNMsjGcq8oERPAHHFuYHN3JT2E2nZFAY7f9ndrwC/YEWld3ml7PFAttWAfSUV6KUGz7zg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=naoh+wph; arc=fail smtp.client-ip=52.103.7.83
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1783624240; c=relaxed/simple;
+	bh=nkNeJUWDbLDMDRHN+TKhniDKOn81cqGOMd9TOC2B5i8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qsLr7s4fyp6KJlmsqBSyMgaZy/7ekU89kvSm3eb24uzsq6qADZ2gG05WzPtDCWMvW0usYoplzQnMKB98IacB/WpdAWMmPdj/TnWi/PTe9YtxiYvGZf1ZjL6AgKm/irPRucuyEyfbjtH6dWDS4DQ3/9RgI5tU8hvwkDlsZ0cGAX0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XvaYT33d; arc=fail smtp.client-ip=52.101.56.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="naoh+wph"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XvaYT33d"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Za80asbC5NSIdfD3FFIacO0MgO/Wr7qBLZUUfEGUF2WSX78263MXDLNKMWCCK7AiFSi5/HvwLDiW2RVzLvA0s+DiUqgv0JDLfJJqF1LBZXY/uFL0SPQVDlX1R9kckqU8FdKc/5qRkNm5tEqgvpTa6VB/RNAOaVCOd4lW2hBlCkwRn0wpRHhhQOdNdYuQWbKfcvMS4nUIHNpk6mtUMA9bs8Cvs0PBZ+9pUPFG2LFk20hk/gtXumn+Ar/g4qmg+xymzNSXdT4GSos3UuOF6yOHW0adw2kcEDg++ldOOYAwTbdmTUfOPx4eAW0TCf2UFjuqln4oV7jlKw8GAm48Orz6CQ==
+ b=bmPbgSVE32zytyEE5XFk8Qw0ivUHVv5lkCYiolzqgyLQfrFS9Pw3QIP2oMSQ6aiRDN11Q6QXycqQQFhDTD/EleC0jGJgB1q5tu2H7n2HWHeQEa+oknawBAKTgvFeJkfx87cukj7A7jGQqvDVCGTo1PHlr28MoMi9+lsdNmq5RZEJeIaCJvXlZoVQp8TKP0cfLVHubdrXeI11P47+9KeIzzmSOmic0aadA2iraU05ibJQXGYtrV1lynrJSHAfNThs0IBwYkjGD4J+ZFV81uPP+WsF0flnynrvL7KNzGsQNft4+uViLkWYNu9O2zU/IBK810j9uibFFdkbElnDd1JHgA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R8mOSiJhvfQBH7mmR9C+TI/+K00LyuBPwtXohZhtgqo=;
- b=d+zW1jzp7wu3WKrZg7HSF0VnALq6grsOY/JICLv96kSIvWD7ezyaYBWK9byTlVBtPnolCuOCHfCkendg4152pKpbn6d1NU2JBX52N4tRIh+BRndXOReYTFEb5+cz5sTv/ldiMsyTu5yDjA2CbaD3tMCoe8i9u0PzznrLBDYl4TIHrbwsM85El8/HM0e3nkihMLiHTRU6YDHHXZyP869z4FbU1nlfQ1444RqXw7IS2xTF9tALuWpYgwEP/sYETEqXz4xpUihwF3FRK3kOj7oWGIgbJjNfSPamUFdOiu8TsjUVCGow8B3eY+eL80opG05tx9GXU82IyxOcvlOO78ZQKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
+ bh=QQftZt+v3sQ5XblbEila8btNC4ScPcFZn/SZpkuj1iY=;
+ b=ejnOtvC4tIMkAjGqH3RFhUVnnIo3d65wHOwZM8Pn4qs2kRZjeH6NN/sdE81iG7TyrAkZcqKqMoQKVVbezuF9RDiDCenzGf3sddKZq1DFWfW/3CTKvHKZAxW5tEEHsE3cL7lt7ASGTWr6HEm/B9U4oamoIWO/luklplTo0Kz+spUNdFHwfZCqtcu3l9YR0i/7xiKYzkcJZVDfg9f0ZnULnZ+F/6HADKwxf/+VH82l9lr8vojXgwhjebBVpAAgGcDHh1w41+gGRxgWxrynUpPEyzy7R3eNgqIk5jlj4N6aXZH/NAq35WkPf2tc3EyYr/HkmhnGkTcHtk6fkgJPUD1KzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R8mOSiJhvfQBH7mmR9C+TI/+K00LyuBPwtXohZhtgqo=;
- b=naoh+wphc98ykz8V20N9yzB3bW1AuAZlOyxgXTt6+U6VC91WRuLTfh1XEXyjBLfHANzedUoo/+IG4O5/0f2W9bLBHTMc+AAGB9NwwTn+gPHmzcpyIXk3GVt6o9hDw+jmReXnYJ3jmMpJA50UKdJ4S0MgvOsVz6qMc00UBRsVUfzGXOTvuVpuAtrKOVR7FUlfUoRuUY66BcOtTjzfresFe9pzGzopmQY9H18Ni3EzNuXRa63+I7TeOmC2lSyrJtLkJquCjpTbU077l09ygiteQXCi6c3jUm1UU7znqlD+Dd0jGiAaizZT5etPBhazm8fLkcZPI1FhApqk2aIi8qRMQw==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by DM6PR02MB6905.namprd02.prod.outlook.com (2603:10b6:5:252::15) with
+ bh=QQftZt+v3sQ5XblbEila8btNC4ScPcFZn/SZpkuj1iY=;
+ b=XvaYT33djWZlNRlNODenIUowJMNaR+E5ccD2+xo/MIo7vGLcIytja+3j3QhYIXl9YAz74u8kET1gth97/ySdwnfRZHJev8StxOV0rS3aGn1jirv3JKLzj8gpHcpZg3kAT7lJ+98BcpAbmqxQvBPoxTvo2+DCmZerN8aWl4BYAlfs8kkWCEB7rsQU0a6H/LrdrvccYUJQRkj0lxab3bjR755aCY0XfOMGMwgDOGyon94NYF3PiyN04IGTa+mimXJW9bDiQKwpVMbBrmuN+idaAZ6UuU/Xiko+es5HuAFMyy4T/o/4Qap5Zr8j1DLIA/49lcqMMdSky50JgRorxEQnbQ==
+Received: from PH8PR21CA0001.namprd21.prod.outlook.com (2603:10b6:510:2ce::25)
+ by DM4PR12MB6254.namprd12.prod.outlook.com (2603:10b6:8:a5::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.16; Thu, 9 Jul
- 2026 19:08:47 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0181.014; Thu, 9 Jul 2026
- 19:08:47 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>
-CC: "wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com"
-	<kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com"
-	<longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
-	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org"
-	<lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>, Michael Kelley <mhklinux@outlook.com>,
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
-	"tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>,
-	"easwar.hariharan@linux.microsoft.com"
-	<easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com"
-	<mrathor@linux.microsoft.com>
-Subject: RE: [PATCH v2 4/4] iommu/hyperv: Add page-selective IOTLB flush
- support
-Thread-Topic: [PATCH v2 4/4] iommu/hyperv: Add page-selective IOTLB flush
- support
-Thread-Index: AQHdCjymkcgjkjrpdUyYQ1Fm2oFqarZlmEJw
-Date: Thu, 9 Jul 2026 19:08:47 +0000
-Message-ID:
- <SN6PR02MB415780D9D86B04EA1AE1B2BBD4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-5-zhangyu1@linux.microsoft.com>
-In-Reply-To: <20260702160518.311234-5-zhangyu1@linux.microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|DM6PR02MB6905:EE_
-x-ms-office365-filtering-correlation-id: def0f78a-60b0-4694-1e87-08dedded8119
-x-microsoft-antispam:
- BCL:0;ARA:14566002|13091999003|19110799012|8062599012|8060799015|51005399006|31061999003|19101099003|16051099003|25010399006|37011999003|15080799012|40105399003|12091999003|102099032|3412199025|440099028|1710799026;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?EqsJjSCmJEBrj21XBAJLjM+nZTUerl5mw2EBIxtUIHFGqMiU3LsxzvMoqKP5?=
- =?us-ascii?Q?3lLKOj+Iwnoo1y91efnP9QOC2N+0Uak/q7O+NqvyCaGWwisLpIUeelBjWghW?=
- =?us-ascii?Q?ezqCKOSBXpIXwLDFEM2sxU2MzE9uv1scD8da/5GtZ4tn8i/fw6Dfv+FQ40qs?=
- =?us-ascii?Q?sakVDgCQI6EXru3ze92ygVie+w9zw47n88+yKvBbprkDoxo9R/kh0WpXvqkS?=
- =?us-ascii?Q?pWJrWYubLPxGaF6RCxNr5R5kKydomFl9hFEuq4YvCG9N2Fo81FpjBxwzm3Up?=
- =?us-ascii?Q?6OXEmpchmKqRKU9mRVNdOWYL+owNJsnIh5yTZlFkC8ZHRl6+ysWX1RH6z47m?=
- =?us-ascii?Q?AJtw/CZFbpSK8x5Mj2JYDI39k5qEu5prYAy/3NEoAljHM+dAzSR3zNoli2KE?=
- =?us-ascii?Q?7r72C4bEsZWIgJfJNOTh2wD7/I54RH0eQjVqZmcE3F6bWfn1qOpSjzOD8tAi?=
- =?us-ascii?Q?iV1BxVTpgbdDLq1FgFrXBbIEJC2QangMsiKOzJAy4qfhyn6XfOeNwBqJHfwF?=
- =?us-ascii?Q?lGMvi/M+N8Ikte6EcsYW0A634DEGch3xXwmi7x/GHLTRW5+cRn7sVXRO1jZc?=
- =?us-ascii?Q?1hoyS7K1R9Al4gCxmdrrvrWX7x+cfa3dAeaQGOiaOBodloD67xT9tU2rb2OB?=
- =?us-ascii?Q?9bZw2qwvfehMMf5t1F38ATTgKGq0HiPwXgQfOEFdAvd3cUAMt+XK8S/tAX5m?=
- =?us-ascii?Q?TURIw6n+sXQROE+V0ZT2eHJG+9mxm9tE0hDyzAvDFtE77MD+g3G/MTfHN4eJ?=
- =?us-ascii?Q?qQKvXJ71G68uZ0+XNG/JTJ0MLG7yE6USZcBMn0HvKS55eA82hztdVuCMPgG/?=
- =?us-ascii?Q?O6fBxioZ9RPaFS1D4LM9olw0KkUiydPuAAwX5+Qjp1xzlJVSKeNV7zn+gcpj?=
- =?us-ascii?Q?kx30bU6VLX2zFAkHLCbWknah7SZSIwkkNAtxPIHOxTjcLUOE3XJLqI2Pa5+m?=
- =?us-ascii?Q?2LC8f90GTxE8zzEIJN6jZ2O5lzUlN2dxQgmJX625k6R/LiXflyVXS6Qd5Vcz?=
- =?us-ascii?Q?M8mMgHLvEIEOCB90yPR2CSlA7soaET9pz6hO+Me1AzXwedtPigS60WbVewu8?=
- =?us-ascii?Q?JRZ93bUJFSsBTf9N1YkuJtS59D+uqLEd1eXPSBBWZp1kYmS/CZ4=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?OALv/0laQSG8Zt6AY0YIFGGHsMsL4ieID4x7hkVSaj9juTGtGQK03HYxwSx9?=
- =?us-ascii?Q?gThsBNn1vNjRmVyGHATL9cn/KVgGvFSgN49T/bvLG0v1cojSgcD7Zk8dYBlM?=
- =?us-ascii?Q?0Z2FAMh2Z9gtcQ7792EBVZDApw+ilDGR0wIfjllVerugwgiD8rkXh87TkC/0?=
- =?us-ascii?Q?Yl15ul9d58ZXnKgx5uhIpcd9ygSDZDvOGytOREppu0laQubNZwoo9qX6DfqS?=
- =?us-ascii?Q?e9sO9jsxTKKdGQ/O0OWw9m2ejvpLNDrylCBszoVldIiK9s+OkvlPHbIkLH+M?=
- =?us-ascii?Q?F6AXQb/2ppQ+mhvgQItGFgwUvYbjeLQ4LuU0NR9lRpydn9iT4OCfVheR+Hdy?=
- =?us-ascii?Q?LPz3IN+Oa5Y34H5kCYSiDkM/267QUFu5AEaMNuZVa/Pj4TO6B0KZ8sky4b62?=
- =?us-ascii?Q?y7Bod2gza7KO4d2vXN21O7rrN9B085L4JUjTb1Zu47s9DP1HdUVzIpiLtpy7?=
- =?us-ascii?Q?7hzxRmn8K/kKK7LxWhLzac2Rl2WsVdh7b1/OlirDTn1wxw7wyFCtUe4FIlXm?=
- =?us-ascii?Q?lJM7xVKjwd84ux72wC7bC9UQEE+XgAk/pua0pcdJkAtBeLshrb+3To7HBH5u?=
- =?us-ascii?Q?5V8469vYBNO4HZWVEG+AIwqvBm1FMDClJksl0micuEjP3MetZbfwxo99zrOm?=
- =?us-ascii?Q?Y2LE8NBq7ln4jnzVu1CpqnXeCC+tzpQxBqcwbRDAAjfQgGx8zDGAs8IgNrbc?=
- =?us-ascii?Q?KW+LE8jKzEURh74x+h4M2NUhnzb+hBdOFmAlelhsjOQ4lyuHSVElet1JA783?=
- =?us-ascii?Q?rlLKrD8HMFF2IhPQn5Jj/i2CkLCzytste8MON7mC4B/MwHuDMSHL08Npyiyv?=
- =?us-ascii?Q?F157cq84VMAoaMiwwxNShTPDy027Rog35gxJ0931rnfih5ekslhHdUVgNrgd?=
- =?us-ascii?Q?BYbTtQ+V8pjnNvVEtEdwwkCsc8jH4iji4Jnxe1nWU/MJzp+cqa7Sx77bnE2/?=
- =?us-ascii?Q?2/Z2eO4B0iv2pcKTsjaIxg5oAuyw8nn+OrlsVOV+jKWRlKfYYO8V06JTWSxG?=
- =?us-ascii?Q?CQ6+UJZ9BJJu/gk9kX+lGdcsZGXhZueSfFFML9XljHpQPWTMJYyJYBsDnP8z?=
- =?us-ascii?Q?4iUinZBjWJepUFpQKJDcHrUBlXhlVB6b8CnVZSZosWioRD2dp+YTTRGUh7H2?=
- =?us-ascii?Q?WzSwDKGtN24qcr2Y0h8MKm/0WAhmwbYbOs9octAIfcykTLaZ4GnOR6uIlFXh?=
- =?us-ascii?Q?auic0FG4+CexPBl6YhS5XBH6CHlKcjM795HfZVx3OLFBpn8W8dm0ge2yygny?=
- =?us-ascii?Q?yt0mVOvIIlV6Fzrv/MRdc/2ElTy1pu5qkc52pAgBYAd8IdvIkTZO5tGhBs83?=
- =?us-ascii?Q?Q2XuMJYIhP5zG3eTQKpSmECehHBhCk6FlxHoD/Z9en+X0ncBU36urLNGHXfd?=
- =?us-ascii?Q?JhTB6K4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.15; Thu, 9 Jul
+ 2026 19:10:31 +0000
+Received: from SN1PEPF0002529E.namprd05.prod.outlook.com
+ (2603:10b6:510:2ce:cafe::8a) by PH8PR21CA0001.outlook.office365.com
+ (2603:10b6:510:2ce::25) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.5 via Frontend Transport; Thu, 9
+ Jul 2026 19:10:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ SN1PEPF0002529E.mail.protection.outlook.com (10.167.242.5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.181.6 via Frontend Transport; Thu, 9 Jul 2026 19:10:31 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Thu, 9 Jul
+ 2026 12:10:07 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Thu, 9 Jul 2026 12:10:07 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Thu, 9 Jul 2026 12:10:06 -0700
+Date: Thu, 9 Jul 2026 12:10:05 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>, "Pasha
+ Tatashin" <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, "Pranjal
+ Shrivastava" <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 5/8] iommu/arm-smmu-v3: Precompute the invalidation
+ commands
+Message-ID: <ak/yDcoX5R7uWjrH@nvidia.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <5-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <ak1iOWrvLv/6ACsP@Asurada-Nvidia>
+ <20260709120744.GF422027@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: def0f78a-60b0-4694-1e87-08dedded8119
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2026 19:08:47.5736
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260709120744.GF422027@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF0002529E:EE_|DM4PR12MB6254:EE_
+X-MS-Office365-Filtering-Correlation-Id: 405a7290-5f3c-4895-815c-08deddedbf02
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|23010399003|82310400026|36860700016|1800799024|18002099003|22082099003|56012099006|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	KEn7TTBQjBfNlQAmSlIJpm4wqVg43Ak97Z+pH0UWtGzumc6wTBIb+VU0BG/d1H+Jpoc0eY24p1ko7/Hv7QBWkubQbi81gtOufabll2Ct9AHjnFJlhwnH+1dLC0HOXeyDa5R4yUccpfDoBpq0sxZxJzBl4itiX1tSHtremHsoOvsr972dC9/z5RVZSQMG5UikveUYdPtJ47fdDge04kFXj7XLKBmGuOsuFu5sfBDNkGL4RHfxKAl93FvL7yDxX0VI16LvQtIJn1QwECDoPwBGIySUbiZjc3jwDkE87lYHGcXv1wFCvAFdtz/mUCJPzTEyuLBYB51X78/Lns/ZmneHpOidmYORudBlV4OEC/bgVCXTGAZqJVZ8T7pem6v469AYGO4iE9zI65hlFsbFtkmLbjm9jUPT38V20E8Rgl6Y3hhDws+k7UFx25/HpLO+l8mJW8FvsvBwcyE0629OUb2zxto9lz7JfbVOPO51h+qcGIn+Excev4vz2kBOJZti0BuBOOITd4hmC3aikqek0mDjktCKJmDNbXp1tdlY2NQAIuKAEqVvd1JoH1IKTFpdKphLte4w8hfYHUW1wzzhVxBnGSqDwd8uclSqW6SWn2KjMNvk3IrIm499l5iZRNejeOTXpxY4EeAJlnXHx8YJL97e0dZnFR8OQyFuJh3UiSQT6rLsJRoP8ED+1ZsJ/ugZXsatwJPX5Z1LSNP5IltBj714dA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(23010399003)(82310400026)(36860700016)(1800799024)(18002099003)(22082099003)(56012099006)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	/m/IlXKDkESwzLoreDvmLMiFehGmoW6DNGeaxftjpLTuEC3sQk9+mbmMDmKk4Jnuy5EYf0VkBjChg0kfSDpb7SzoEM/pTwk4scDA7RvIW/+Z5BRzFJHHI5q1YKdZVIm7OwNljCtDBNkJg6z5dn4lF7DIW3UyYiMuy+XeKmMNzBuqMQwe9x6FNmFVk78oOj98pT/NfbWDjAn/KGlumEfbBJSK5M/CEBbwCM3ex5ceqFYmv0kO2+Flc9JU/+6keiHFWg8a9oflpT7QRCgF+8vPAbRLIkrXD4b2arK4cS/QPSnsb94P7TJottRCwFPoIiHfzc7Mbkr9g3hyFkaJfVRA6euF1N5S1BBvONdWeBPrSO2hfS5nUXVHkpaZamU7EYstXdlHWU9/7pSVJRnVx84BsMIuYZJusV7oVK5zxKxn9rzxauq0FV2Ph7UdILBskoea
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2026 19:10:31.2945
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6905
+X-MS-Exchange-CrossTenant-Network-Message-Id: 405a7290-5f3c-4895-815c-08deddedbf02
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF0002529E.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6254
 
-From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Thursday, July 2, 2026 =
-9:05 AM
->=20
-> Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
-> This hypercall accepts a list of (page_number, page_mask_shift) entries,
-> enabling finer-grained IOTLB invalidation compared to the domain-wide
-> HVCALL_FLUSH_DEVICE_DOMAIN used by hv_iommu_flush_iotlb_all().
->=20
-> hv_iommu_calc_flush_range() computes the smallest power-of-two aligned
-> range that covers the target IOVA region, producing a single flush
-> descriptor. This may over-flush when the range is not naturally aligned,
-> matching the approach used by Intel VT-d PSI. If the page-selective
-> flush fails, the code falls back to a full domain flush.
->=20
-> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> ---
->  drivers/iommu/hyperv/iommu.c | 68 +++++++++++++++++++++++++++++++++++-
->  include/hyperv/hvgdk_mini.h  |  1 +
->  include/hyperv/hvhdk_mini.h  | 17 +++++++++
->  3 files changed, 85 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iommu/hyperv/iommu.c b/drivers/iommu/hyperv/iommu.c
-> index 254136946404..e9b104a322fd 100644
-> --- a/drivers/iommu/hyperv/iommu.c
-> +++ b/drivers/iommu/hyperv/iommu.c
-> @@ -9,6 +9,7 @@
->  #define pr_fmt(fmt) "Hyper-V pvIOMMU: " fmt
->  #define dev_fmt(fmt) pr_fmt(fmt)
->=20
-> +#include <linux/hyperv.h>
->  #include <linux/iommu.h>
->  #include <linux/pci.h>
->  #include <linux/dma-map-ops.h>
-> @@ -401,10 +402,74 @@ static void hv_iommu_flush_iotlb_all(struct iommu_d=
-omain *domain)
->  	hv_flush_device_domain(to_hv_iommu_domain(domain));
+On Thu, Jul 09, 2026 at 09:07:44AM -0300, Jason Gunthorpe wrote:
+> I'm not keen on gotos outside error unwind, but how about
+> 
+> +       tlbi->range.data1 =
+> +               FIELD_PREP(CMDQ_TLBI_1_LEAF, !tlbi->table_levels_bitmap) |
+> +               FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) | (cur_tg << tg_lg2);
+> +
+>         /*
+>          * SMMUv3 H.a Section 4.4.1.1: TG!=0, NUM==0, SCALE==0, TTL==0 is
+>          * Reserved and causes CERROR_ILL. Single page uses NUM=0, SCALE=0 with
+> @@ -2472,11 +2476,7 @@ static void arm_smmu_tlbi_calc_range(struct arm_smmu_tlbi *tlbi,
+>                 if (WARN_ON(!ttl))
+>                         ttl = 3;
+>                 tlbi->range.data0 = 0;
+> -               tlbi->range.data1 = FIELD_PREP(CMDQ_TLBI_1_LEAF,
+> -                                              !tlbi->table_levels_bitmap) |
+> -                                   FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
+> -                                   FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) |
+> -                                   (cur_tg << tg_lg2);
+> +               tlbi->range.data1 |= FIELD_PREP(CMDQ_TLBI_1_TTL, ttl);
+>                 return;
+>         }
+>  
+> @@ -2513,11 +2513,7 @@ static void arm_smmu_tlbi_calc_range(struct arm_smmu_tlbi *tlbi,
+>                 FIELD_PREP(CMDQ_TLBI_0_NUM,
+>                            DIV_ROUND_UP_ULL(num_tg, 1ULL << scale) - 1) |
+>                 FIELD_PREP(CMDQ_TLBI_0_SCALE, scale);
+> -       tlbi->range.data1 =
+> -               FIELD_PREP(CMDQ_TLBI_1_LEAF, !tlbi->table_levels_bitmap) |
+> -               FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
+> -               FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) |
+> -               (cur_tg << tg_lg2);
+> +       tlbi->range.data1 |= FIELD_PREP(CMDQ_TLBI_1_TTL, ttl);
 >  }
->=20
-> +/*
-> + * Calculate the minimal power-of-two aligned range that covers [start, =
-end]
-> + * (end is inclusive). Returns a single (page_number, page_mask_shift)
-> + * descriptor that may over-flush when the range is not naturally aligne=
-d.
-> + */
-> +static void hv_iommu_calc_flush_range(unsigned long start, unsigned long=
- end,
-> +				       union hv_iommu_flush_va *va)
-> +{
-> +	unsigned long start_pfn =3D HVPFN_DOWN(start);
-> +	unsigned long last_pfn =3D HVPFN_UP(end + 1) - 1;
-> +	unsigned long mask_shift, aligned_pfn;
-> +
-> +	if (start_pfn =3D=3D last_pfn) {
-> +		mask_shift =3D 0;
-> +	} else {
-> +		/*
-> +		 * Find the highest bit position where start_pfn and last_pfn
-> +		 * differ.  A range aligned to one above that bit is the
-> +		 * smallest power-of-two region that covers both endpoints.
-> +		 */
-> +		mask_shift =3D __fls(start_pfn ^ last_pfn) + 1;
-> +	}
-> +
-> +	aligned_pfn =3D ALIGN_DOWN(start_pfn, 1UL << mask_shift);
-> +	va->page_number =3D aligned_pfn;
-> +	va->page_mask_shift =3D mask_shift;
-> +}
-> +
-> +static void hv_flush_device_domain_list(struct hv_iommu_domain *hv_domai=
-n,
-> +					struct iommu_iotlb_gather *iotlb_gather)
-> +{
-> +	u64 status;
-> +	unsigned long flags;
-> +	struct hv_input_flush_device_domain_list *input;
-> +
-> +	local_irq_save(flags);
-> +
-> +	input =3D *this_cpu_ptr(hyperv_pcpu_input_arg);
-> +	memset(input, 0, sizeof(*input));
-> +
-> +	input->device_domain =3D hv_domain->device_domain;
-> +	input->flags |=3D HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
-> +	hv_iommu_calc_flush_range(iotlb_gather->start, iotlb_gather->end,
-> +				  &input->iova_list[0]);
-> +
-> +	status =3D hv_do_rep_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
-> +				     1, 0, input, NULL);
-> +
-> +	if (!hv_result_success(status)) {
-> +		/* Page-selective flush failed, fall back to full flush. */
+> 
+> Which removes most of the duplication
 
-With the selective flush now simplified to just a single entry, it really
-shouldn't fail, right? Doing a full flush as a fallback makes sense, but
-perhaps do a WARN_ON_ONCE() first so that there's an indication that
-the selective flush failed.
+Yea, that looks very clean.
 
-> +		struct hv_input_flush_device_domain *flush_all =3D (void *)input;
-> +
-> +		memset(flush_all, 0, sizeof(*flush_all));
-> +		flush_all->device_domain =3D hv_domain->device_domain;
-> +		status =3D hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
-> +					flush_all, NULL);
-> +		WARN(!hv_result_success(status),
-> +		     "HVCALL_FLUSH_DEVICE_DOMAIN fallback also failed: %lld\n",
-> +		     status);
-> +	}
-> +
-> +	local_irq_restore(flags);
-> +}
-> +
->  static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
->  				struct iommu_iotlb_gather *iotlb_gather)
->  {
-> -	hv_flush_device_domain(to_hv_iommu_domain(domain));
-> +	hv_flush_device_domain_list(to_hv_iommu_domain(domain), iotlb_gather);
->=20
->  	iommu_put_pages_list(&iotlb_gather->freelist);
->  }
-> @@ -455,6 +520,7 @@ static struct iommu_domain *hv_iommu_domain_alloc_pag=
-ing(struct device *dev)
->=20
->  	cfg.common.hw_max_vasz_lg2 =3D hv_iommu_device->max_iova_width;
->  	cfg.common.hw_max_oasz_lg2 =3D 52;
-> +	cfg.common.features |=3D BIT(PT_FEAT_FLUSH_RANGE);
->  	cfg.top_level =3D (hv_iommu_device->max_iova_width > 48) ? 4 : 3;
->=20
->  	ret =3D pt_iommu_x86_64_init(&hv_domain->pt_iommu_x86_64, &cfg, GFP_KER=
-NEL);
-> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-> index 5bdbb44da112..eaaf87171478 100644
-> --- a/include/hyperv/hvgdk_mini.h
-> +++ b/include/hyperv/hvgdk_mini.h
-> @@ -496,6 +496,7 @@ union hv_vp_assist_msr_contents {	 /*
-> HV_REGISTER_VP_ASSIST_PAGE */
->  #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
->  #define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
->  #define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-> +#define HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1
->  #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
->  #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
->  #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-> index 493608e791b4..f51d5d9467f1 100644
-> --- a/include/hyperv/hvhdk_mini.h
-> +++ b/include/hyperv/hvhdk_mini.h
-> @@ -671,4 +671,21 @@ struct hv_input_flush_device_domain {
->  	u32 reserved;
->  } __packed;
->=20
-> +union hv_iommu_flush_va {
-> +	u64 iova;
-> +	struct {
-> +		u64 page_mask_shift : 12;
-> +		u64 page_number : 52;
-> +	};
-> +} __packed;
-> +
-> +
-> +struct hv_input_flush_device_domain_list {
-> +	struct hv_input_device_domain device_domain;
-> +#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT (1 << 0)
-
-Use BIT()?
-
-> +	u32 flags;
-> +	u32 reserved;
-> +	union hv_iommu_flush_va iova_list[];
-> +} __packed;
-> +
->  #endif /* _HV_HVHDK_MINI_H */
-> --
-> 2.52.0
->=20
-
+Nicolin
