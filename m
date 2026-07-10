@@ -1,138 +1,337 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF5201EEE6
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 17:01:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E48543801A
+	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 17:08:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783702917; cv=none; b=LjAJDvVocAPGfjiCbjUfB1Ho3POErj01P5nyu4t9+FC2lrcpnaEj/AyjxHhI7rV0s3Yult/nxlImLyYfl4R032tqnpZ67Esz2u3UJ9wGIqGvgGPvPZX8fv/wSnOmBzoVVhan99amUN1g5jMdgqRFB3Thn7koEWAxGHiUCyvmkCA=
+	t=1783703338; cv=none; b=He/WXhb2g2wehCp0z7lH0fceARKRlsMEtvbZAc5hl+0OVcwqFvpodKy/Ls+0uWsZk1pPuKwmSAt6zswgsz1WJuYZS4VorguWgT8+QJ0qm9BJtRsU3SvKiBd0LOKYS3X2twBFBSvOQm5dXcW7J0e2zP4UxPMBfG1vPX6uCUBeeac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783702917; c=relaxed/simple;
-	bh=oLlwgxJ/hzRXy8GFi25yVUWtdC3YIOvF2/fOjbuZurw=;
+	s=arc-20240116; t=1783703338; c=relaxed/simple;
+	bh=g5tTg7DEkv7I+90dPyEuJLJcUEiNTQpXx5FFwVa7534=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZnbhEJqK2n3nNaR/RRa/6ZGWnD/FvvyAUYlkPWOSgOa2NRTH4a1HFtTCNdsQ+4/2PjGDa+UE4kZ4eHF+IKRag4RjHTYeW6xRilyfONz8gA++4GSJQr2E2/4NYHzkvYG+HV+6+DPWk7zXJWGH40OFn+c5iLNGiSM08yVMRL3oHtM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OBwSeVHK; arc=none smtp.client-ip=209.85.160.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=mqwgzXjIptWLK7UEVi5xX0enyjZLlS9HyLBNxVJqzY+VEpApBXR6bxQof1SysTzfoEzrFxsE2tdoQaGWPJlgFzz/gyStss7P+ijnuJ+b0NsBHyxhpNjtUSjvT2uwRrG5y7ALa6FUHqjj0iCLIu14dtS+HCKpgE3H+Mb6WqcVib4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vqY4XqFL; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OBwSeVHK"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-51c0cea8883so9143061cf.1
-        for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 10:01:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vqY4XqFL"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-804e46366d7so17719087b3.2
+        for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 10:08:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783702915; x=1784307715; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=zwCO1//q+s3YukDP/Z5Z7eubEGo+AIobT+lx9B201YY=;
-        b=OBwSeVHKYFutOtpmAQIVHyLmS28CaIkY6PEcIl4iXRyjl74dlFdHhKOngvs23OCFRW
-         84R4fnMmwECs9e40JfsIWU4wAqCmnareayIwvDUqwRqjP2oUt/0RWlDPguqO2Sh99LYi
-         FIu2sQ8j3VW4EWSqgDQOedNFNmjrsFwjZehxe03D3gNPOjvVJP3TV8FX2T26Rpm0jJfM
-         vqTWPylAwfr/W3pbbRnQvrrepckxtC7U5TkWzf2jJkA0Z+saOq9HuDj17yrt3qzkrOQn
-         ptcxP/DBuxUZWXOs8FtuwjrEdCXMi4hYZn37vSJhbFXDlRJoJHM91hFBF7jhMOPcqntf
-         QiXA==
+        d=google.com; s=20251104; t=1783703335; x=1784308135; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=/HsR2t+CM1gEbj7YDybNgOOuROSnjWp8XwwNRjSK1d0=;
+        b=vqY4XqFLOO1oI+XT/TohsTrkXhFC3vsg3fyZQhAvHGzzeqdojXq8ocz+0eJD0V1a8i
+         O3Pd4ppv7d92sYh1zmTZQJxdEQdqwxLbsLuOBJLG8Rh3fnzufniZ0JdCgiuuU0xyrS3N
+         qo40pq9jykPijBYI6NIJLXiWrbCCxWPjqjicoEUk3XCBs4GJUS7FYkpKiKpjCA1mrIB9
+         9LdH4wQAkUtJgPhxm0ZcZq+ws4yGKWU7ZDtULBGyBfSdHd0c31Bx0JgaG0Wl3U24zvfp
+         7pmoa0rtaxieZJW3O5Rt8A0SG8Cfry9tWJzDdjGCyuSa7SQrflTTrZil7ETv6+2QABdN
+         YuKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783702915; x=1784307715;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zwCO1//q+s3YukDP/Z5Z7eubEGo+AIobT+lx9B201YY=;
-        b=R3Y8Ust8IqZ5B9Szs/Z62DvMnunAbDRsXrDdoj9xcSmczF9FAH40E79jgcvWFUg6L+
-         MRYQx71c6OdDk0nzTVLCTGGaGhgTzuXgOqJCVpyNkxWPPv5IgkNu15GCR5WYwn/Mv/wi
-         140vQYEXCkDtwg01CmBp01pbSxDfr6xwz/L9p6mSgf2AKvQMAKmiWN+JUJZRPvD88yg2
-         T3cPilyLk95XlCxr6BDFT+1pGwc6ObMn6p1jYbczVtokiXnmWavNjvj3gXEaOkiPi7gD
-         R3AGZRrBXWsQismzBh0Oj8T2O14ouH2lkcnfGYnGY9qfHwsG8q5MQ3DtSsTs+1wfHDZ5
-         yKGA==
-X-Gm-Message-State: AOJu0YxL8meXFd+i/Ergb6PkWPCd1ptLDWuWaphaLp+Ntme07VAPjf2g
-	OAbOZ11mb1/FNI1FYEkXO5IBl0Kj00WHN11N23UVS8xCXZokn+OAQD4OkSASBubJ1bM=
-X-Gm-Gg: AfdE7cmwnBI77gykWoI9I3XuB3hURdIXYWYOlN4iiZ/GUOu81NtvBohHtq2oDW1x4cF
-	SdFGdMLbkYU5sTNM67oZRLLPgGO4AYgCGyu4WmaFuOdKJZ6VhltqQ/Tc2ZhKn5iXv351IPaImRt
-	Cwawv3V6nLNCq11iYTdKZ3fZzMsMaptZ7wMrL8b3fMpxK9qpSI0ZJGIXvrr6ejDvXgzlNq1IkXK
-	usBBnRAgp0I+IUPw2n5J4sLpmC2PIMJcUjDmx3ASICQPoZ9rLcUZTojocl5QO+jZomh+ROeeGLu
-	7+uSfQJ7U3sAboey2EM2rx2Blu9RH3zLE2Fb9d0sLU30/BrpmJh8jgLHYeKaLOPCLViH00c3reO
-	ATvqLg4muLYz0nSAO5xdCjt700+O9REKsTzk1XU6/fOYNO9oGPI7kuNXZGFuU
-X-Received: by 2002:ac8:5fcc:0:b0:517:5ed7:d28f with SMTP id d75a77b69052e-51caa476931mr43472331cf.25.1783702914518;
-        Fri, 10 Jul 2026 10:01:54 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51cba49439dsm6020111cf.27.2026.07.10.10.01.51
+        d=1e100.net; s=20251104; t=1783703335; x=1784308135;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=/HsR2t+CM1gEbj7YDybNgOOuROSnjWp8XwwNRjSK1d0=;
+        b=didazOvcXVIZ40kQqfR7XZOoQU1e04re0UjnjgZLUzGz5rSb+MzeitlJ9RErkzFVVM
+         if9K0XmiaIUAYLk+9bRbhO1KNZ6/8NJmA/gjnLe7swuoERgZ/1ZWBWWb4MAK8P0I2SDw
+         R7f9/fKwy2gxnbqqxsEh0ugNmZZVaBOJG3p0x+kLP/7/U7atbNIG5TkjxJ4nJtM8yaqJ
+         IG6XDr6rflwfc9ieN32hw3B3ULrjHSNW3I3n3K0zxrfhMdepOfR4km3xkUsevpTR9PtU
+         VavNioLFJ40hu7g1tvrT9UA3YGogV/4ivXBDn5ZTkw+EuVu0oDzOtszcZgRCChLpG0yb
+         cw9Q==
+X-Forwarded-Encrypted: i=1; AHgh+RpxRRvDTRvLZbQCvSGs8AI2nclE6+exFNQQEzFS9bYyzmbOCUhq8nQzaN2BXEzdW+dyy5b7tg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxiWPKY/QyvrHgzjMhXGFOwzPTEEZHqdYjz6C1tz23EqLthfVuf
+	1PynbSVuFrMyYSf/6WiVg/mAMiaeGA18/dnNou5udfa9OEv79ox0JYmvda0eKUvUEg==
+X-Gm-Gg: AfdE7clIHqUaSwbbrKfh0PRf+ix/mytWi1QRuq/5UaRJT/DJhCqOV5lnPQ7RyfbO8h8
+	wcvqStRsc4V35H1tr1JOJJLIC8YzPPTJwQEDgnY78I37nh+5O7Qn0irH3PWkzojiB2CqfeJl0/n
+	UZs2C1qaJ+tAmd8HRfTsrQbZNJ5R0ACfMNeNARGPnHyO79xSRczq4RiKgzQCJakvm0Zz5tFEDH3
+	pl5Yeftig0JhhOJlJVmYIcM039z8JaCz7DNiB1Ie3XVnp9AYpIXeyo3oWTN7WhnijYiFtflmzvh
+	VU4952kzXKoC+wrT3O3M/gKIdfAyJ22M2eZG0jNPcVIHvRiMamHbBkc5YWtTVbDLkjrLHJqE7Z2
+	Vppl7x5UNHD14acIj89/EB24JdozZIKJwDBE7EzUbTP0vbwEpExWpGgaYpB36v6+qaerdX14fFy
+	JMBbthBOjZbxSH+iQeeytWnpL8BRPaU6/ozgPoNqrAaeo88Yj4iE0=
+X-Received: by 2002:a05:690c:6e93:b0:81d:5489:a659 with SMTP id 00721157ae682-81dc10ed452mr89759497b3.63.1783703333968;
+        Fri, 10 Jul 2026 10:08:53 -0700 (PDT)
+Received: from google.com (137.69.77.34.bc.googleusercontent.com. [34.77.69.137])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-81e6bea2114sm51042637b3.3.2026.07.10.10.08.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2026 10:01:51 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wiEbn-00000007aTw-07zw;
-	Fri, 10 Jul 2026 14:01:51 -0300
-Date: Fri, 10 Jul 2026 14:01:51 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shameer Kolothum <skolothumtho@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, nicolinc@nvidia.com,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	nathanc@nvidia.com, mochs@nvidia.com
-Subject: Re: [PATCH v3 2/2] iommu/tegra241-cmdqv: Fix CMD_SYNC use-after-free
- on teardown
-Message-ID: <20260710170151.GC1803712@ziepe.ca>
-References: <20260629094106.251694-1-skolothumtho@nvidia.com>
- <20260629094106.251694-3-skolothumtho@nvidia.com>
+        Fri, 10 Jul 2026 10:08:53 -0700 (PDT)
+Date: Fri, 10 Jul 2026 18:08:47 +0100
+From: Vincent Donnefort <vdonnefort@google.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
+	tabba@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 02/25] KVM: arm64: Donate MMIO to the hypervisor
+Message-ID: <alEnH98wFppYjmnE@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-3-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260629094106.251694-3-skolothumtho@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260501111928.259252-3-smostafa@google.com>
 
-On Mon, Jun 29, 2026 at 10:41:06AM +0100, Shameer Kolothum wrote:
-> arm_smmu_impl_remove() is registered as a devres action in
-> arm_smmu_impl_probe(), before arm_smmu_init_queues() allocates
-> smmu->cmdq.q.base. On a devres unwind, whether a failed probe or an
-> unbind, the queue is freed first and arm_smmu_impl_remove() then runs
-> tegra241_cmdqv_remove_vintf(), whose VINTF deinit issues a CMD_SYNC on
-> the freed memory.
+On Fri, May 01, 2026 at 11:19:04AM +0000, Mostafa Saleh wrote:
+> Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
+> drivers can protect and access the MMIO of IOMMUs.
 > 
-> Observed during testing with a QEMU hack that makes the VCMDQ fail to
-> enable, so the impl reset fails and probe aborts into the devres unwind:
+> As donating MMIO is very rare, and we don’t need to encode the full
+> state, it’s reasonable to have a separate function to do this.
+> It will init the host s2 page table with an invalid leaf with the owner ID
+> to prevent the host from mapping the page on faults.
 > 
->  platform NVDA200C:00: tegra241_cmdqv: VINTF0: VCMDQ0/LVCMDQ0: failed to enable, STATUS=0x00000000
->  platform NVDA200C:00: tegra241_cmdqv: VINTF0: VCMDQ0/LVCMDQ0: GERRORN=0x0, GERROR=0x4, CONS=0x0
->  platform NVDA200C:00: tegra241_cmdqv: VINTF0: VCMDQ0/LVCMDQ0: uncleared error detected, resetting
->  arm-smmu-v3 arm-smmu-v3.0.auto: failed to reset impl
->  arm-smmu-v3 arm-smmu-v3.0.auto: probe with driver arm-smmu-v3 failed with error -110
->  Unable to handle kernel paging request at virtual address ffff8000891e0098
->  ...
->  Internal error: Oops: 0000000096000047 [#1] SMP
->  ...
->  Call trace:
->   arm_smmu_cmdq_issue_cmdlist+0x320/0x6fc (P)
->   tegra241_vcmdq_hw_deinit+0x98/0x168
->   tegra241_vintf_hw_deinit+0x5c/0x1b0
->   tegra241_cmdqv_remove_vintf+0x34/0xec
->   tegra241_cmdqv_remove+0x40/0x9c
->   arm_smmu_impl_remove+0x20/0x30
->   devm_action_release+0x14/0x20
->   devres_release_all+0xa8/0x110
->   device_unbind_cleanup+0x18/0x84
->   really_probe+0x1f0/0x29c
+> Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
+> stage-2 PTEs, as this can be triggered from recycle logic under memory
+> pressure. There is no code relying on this, as all ownership changes is
+> done via kvm_pgtable_stage2_set_owner()
 > 
-> Drop the VINTF deinit from tegra241_cmdqv_remove_vintf() so the unwind no
-> longer touches the freed queue. Quiesce the VINTFs earlier instead. Add a
-> device_disable() impl op and run it from arm_smmu_disable_action() while
-> the CMDQ is still up. That handles a live unbind. A failed reset is already
-> handled because tegra241_vintf_hw_init() deinits the VINTF on its own error
-> path. tegra241_cmdqv_remove_vintf() is also used by the iommufd viommu
-> destroy path, so quiesce there too.
+> For the error path in IOMMU drivers, add a function to donate MMIO
+> back from hyp to host. However, that leaks the hypervisor virtual
+> address range which should be acceptable as this is quite rare and
+> it matches the behaviour of fix_map/block.
 > 
-> Fixes: 4dc0d12474f9 ("iommu/tegra241-cmdqv: Add user-space use support")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Shameer Kolothum <skolothumtho@nvidia.com>
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h    |  1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c    |  2 ++
->  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 15 +++++++++++++--
->  3 files changed, 16 insertions(+), 2 deletions(-)
+>  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |   2 +
+>  arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 119 +++++++++++++++++-
+>  arch/arm64/kvm/hyp/pgtable.c                  |   9 +-
+>  3 files changed, 121 insertions(+), 9 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> index 3cbfae0e3dda..ff440204d2c7 100644
+> --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> @@ -36,6 +36,8 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+>  int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+>  int __pkvm_host_unshare_hyp(u64 pfn);
+>  int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
+> +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr);
+> +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size);
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Can we have u64 pfn, u64 nr_pages here to match all the other functions?
 
-Jason
+Also, as this is used by a "module" perhaps a sort of kerneldoc would be nice,
+especially to explain this isn't mapped into the hyp idmap range.
+
+>  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
+>  int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
+>  int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
+> diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> index 28a471d1927c..2fb20a63a417 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> @@ -353,6 +353,38 @@ int __pkvm_prot_finalize(void)
+>  	return 0;
+>  }
+>  
+> +/* Unmap MMIO region while skipping donated PTEs. */
+> +static int host_stage2_unmap_mmio_region(u64 start, u64 size)
+> +{
+> +	struct kvm_pgtable *pgt = &host_mmu.pgt;
+> +	u64 unmap_start = start;
+> +	u64 addr = start;
+> +	kvm_pte_t pte;
+> +	int ret = 0;
+> +	u8 level;
+> +
+> +	while (addr < start + size) {
+> +		ret = kvm_pgtable_get_leaf(pgt, addr, &pte, &level);
+> +		if (ret)
+> +			return ret;
+> +		if (!kvm_pte_valid(pte) && pte != 0) {
+> +			if (addr > unmap_start) {
+> +				ret = kvm_pgtable_stage2_unmap(pgt, unmap_start,
+> +							       addr - unmap_start);
+> +				if (ret)
+> +					return ret;
+> +			}
+> +			addr += kvm_granule_size(level);
+> +			unmap_start = addr;
+> +		} else {
+> +			addr += kvm_granule_size(level);
+> +		}
+> +	}
+> +	if (addr > unmap_start)
+> +		ret = kvm_pgtable_stage2_unmap(pgt, unmap_start, addr - unmap_start);
+
+Ah shame, that's a lot of table walking. I guess we could:
+
+ * create our own custom walker here but that would duplicate a lot of logic
+   from pgtable.c. So doesn't look great.
+
+ * Retry kvm_pgtable_stage2_unmap() as long as it return -EPERM... but then we
+   it needs to return where it has stopped?
+
+ * Modify kvm_pgtable_stage2_unmap() to just skip the refcounted entries?
+   There's already a flag something that looks like this: KVM_PGTABLE_WALK_IGNORE_EAGAIN
+
+I am not so convinced by the first two points but the last one is probably worth
+exploring.
+ 
+> +	return ret;
+> +}
+> +
+>  static int host_stage2_unmap_dev_all(void)
+>  {
+>  	struct kvm_pgtable *pgt = &host_mmu.pgt;
+> @@ -363,11 +395,11 @@ static int host_stage2_unmap_dev_all(void)
+>  	/* Unmap all non-memory regions to recycle the pages */
+>  	for (i = 0; i < hyp_memblock_nr; i++, addr = reg->base + reg->size) {
+>  		reg = &hyp_memory[i];
+> -		ret = kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
+> +		ret = host_stage2_unmap_mmio_region(addr, reg->base - addr);
+>  		if (ret)
+>  			return ret;
+>  	}
+> -	return kvm_pgtable_stage2_unmap(pgt, addr, BIT(pgt->ia_bits) - addr);
+> +	return host_stage2_unmap_mmio_region(addr, BIT(pgt->ia_bits) - addr);
+>  }
+>  
+>  /*
+> @@ -1087,6 +1119,89 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+>  	return ret;
+>  }
+>  
+> +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr)
+> +{
+> +	kvm_pte_t pte;
+> +	u64 offset;
+> +	int ret;
+> +
+> +	/* Only before de-privilege. */
+> +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> +		return -EPERM;
+> +
+> +	if (!PAGE_ALIGNED(addr | size))
+> +		return -EINVAL;
+
+Would be nice here to have pfn_range_is_valid() even though this is only
+used by modules? (ditto __pkvm_hyp_donate_host_mmio())
+
+> +
+> +	ret = __pkvm_create_private_mapping(addr, size, PAGE_HYP_DEVICE, haddr);
+> +	if (ret)
+> +		return ret;
+
+Perhaps better to do it once it's been annotated into the host s2, so that we
+don't burn the private range in case of failure.
+
+> +
+> +	host_lock_component();
+> +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> +		if (addr_is_memory(addr + offset)) {
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+> +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> +		if (ret)
+> +			goto unlock;
+> +		if (pte && !kvm_pte_valid(pte)) {
+> +			ret = -EPERM;
+> +			goto unlock;
+> +		}
+> +	}
+> +	/*
+> +	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
+> +	 * - host aborts: host_stage2_adjust_range() would fail for invalid non zero PTEs.
+> +	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would call
+> +	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid ptes (counted).
+> +	 * - other MMIO donation: Would fail as we check that the PTE is valid or empty.
+> +	 */
+> +	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
+> +			      addr, size, &host_s2_pool,
+> +			      KVM_HOST_INVALID_PTE_TYPE_DONATION,
+> +			      FIELD_PREP(KVM_HOST_DONATION_PTE_OWNER_MASK, PKVM_ID_HYP));
+> +unlock:
+> +	host_unlock_component();
+> +	return ret;
+> +}
+> +
+> +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size)
+> +{
+> +	kvm_pte_t pte;
+> +	u64 offset;
+> +	int ret = 0;
+> +
+> +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> +		return -EPERM;
+> +
+> +	if (!PAGE_ALIGNED(addr | size))
+> +		return -EINVAL;
+> +
+> +	host_lock_component();
+> +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> +		if (addr_is_memory(addr + offset)) {
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+> +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> +		if (ret)
+> +			goto unlock;
+> +		if (!pte || kvm_pte_valid(pte)) {
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+
+It should probably verify it is also mapped as we expect into the hyp.
+
+
+> +		if (FIELD_GET(KVM_HOST_DONATION_PTE_OWNER_MASK, pte) != PKVM_ID_HYP) {
+> +			ret = -EPERM;
+> +			goto unlock;
+> +		}
+> +	}
+> +	WARN_ON(host_stage2_idmap_locked(addr, size, PKVM_HOST_MMIO_PROT));
+
+Perhaps we are better of simply zapping the entry and not map it proactively?
+
+And even if we can't "reclaim" the VA-space from the private range, it would be
+good to unmap it. I have made a function for that as part of the allocator
+series:
+
+https://lore.kernel.org/all/20260706175415.2604046-3-vdonnefort@google.com/
+
+> +unlock:
+> +	host_unlock_component();
+> +	return ret;
+> +}
+> +
+>  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages)
+>  {
+>  	u64 phys = hyp_pfn_to_phys(pfn);
+> diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
+> index 0c1defa5fb0f..b64a50f9bfa8 100644
+> --- a/arch/arm64/kvm/hyp/pgtable.c
+> +++ b/arch/arm64/kvm/hyp/pgtable.c
+> @@ -1159,13 +1159,8 @@ static int stage2_unmap_walker(const struct kvm_pgtable_visit_ctx *ctx,
+>  	kvm_pte_t *childp = NULL;
+>  	bool need_flush = false;
+>  
+> -	if (!kvm_pte_valid(ctx->old)) {
+> -		if (stage2_pte_is_counted(ctx->old)) {
+> -			kvm_clear_pte(ctx->ptep);
+> -			mm_ops->put_page(ctx->ptep);
+> -		}
+> -		return 0;
+> -	}
+> +	if (!kvm_pte_valid(ctx->old))
+> +		return stage2_pte_is_counted(ctx->old) ? -EPERM : 0;
+>  
+>  	if (kvm_pte_table(ctx->old, ctx->level)) {
+>  		childp = kvm_pte_follow(ctx->old, mm_ops);
+> -- 
+> 2.54.0.545.g6539524ca2-goog
+> 
