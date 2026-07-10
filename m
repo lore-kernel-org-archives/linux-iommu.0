@@ -1,141 +1,282 @@
-Received: from mail-pj2-f3.google.com (mail-pj2-f3.google.com [74.125.227.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 702AE330D22
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.131
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4088B2F0C79
+	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:17:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783663522; cv=none; b=qfGLNN/bf9TAh1rBDeY3aZUg6hUSi6g3qaYLtf4gZwguJjJqoigL86KlTOZ3aKV2fSWZBq03lAHjCypTW6R9eLmi+5e2bidzNe+enXEVuc4qGA+JUlEmXDiPY8CGB9DYLs0+U+XwYm1fqzwoMlbUfgu+8V9pei9ME3j21HjjkvY=
+	t=1783664271; cv=none; b=kYfhcq54WP08TC6lAYOy/gkfD0FDy7me5kd6Zwrzf1iqSsTCgHiRoW1pknbOVWB94pUefRtlOKAv71aDO+c1oBJzfaPyk1b/UdgPT6hDYSknsYvzmYI0Z1pOPc+0Eyl6zlpBguMYuur9lbFkM2lgBdX2eZTYXCqNhSynjpYD6Ow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783663522; c=relaxed/simple;
-	bh=+TSl9lWGvPOhVvtGbRmV7Zvub/yR8s6/knDkK3HGmbo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=U2Ko3gwvJ0Jaz3R9Ex7iVSNnaRzwSB1J9+IjBFHi1H8e5UUvgEPuGHg3QyaC+n14NFnbywXWhzCyspwUJ3LwB9E4PtjaAAW2YgocP1TAVP94wLAvCcCgi0zC552HJNULtL02KdNA46SidAXvbHzzIu5SU9GIgVLmFEVoMXpaubc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AIakjcYr; arc=none smtp.client-ip=74.125.227.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783664271; c=relaxed/simple;
+	bh=XOmSjByoNF6Vt4jgC7Oz9VwkAlxisH3g8HUOSqtXj8g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eNgWpoIkJrmwoMTPDOjix+Mxjr7TGwl70rzWm18xBJcGaRLgGeJGAch13yra6+3ctpBxZqvWpe96HWPg7rx3K/2JalHG5wqn3iJrmH/jPpcMilMJ0MZwrW191TFWNAERrievGoJyPLZDrHx25TnEP0Z2JepSZ08n+omz6hpJg40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YNqa0lUn; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AIakjcYr"
-Received: by mail-pj2-f3.google.com with SMTP id d9443c01a7336-2cc8ed77bbcso8474495ad.0
-        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 23:05:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783663521; x=1784268321; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=pQgPhs+dZcfRNPuJReU9TiVxwha1e01HcHWKyyYl0NE=;
-        b=AIakjcYrZh6AS8EuQwoqMv79PUoRF+/uIpyphUlOzlfaoyBVX4mPu7J/qUIHB12fim
-         QmYRWzOzpPDN/HVA+LHQEFhK3FnSJgpa2i4OX02aWYo2EFl89f5o/fCOG0dTRFSYwSKG
-         riMsXw0zNYgaAI//3kj06KNwhgEnKthsZkRCPPDWsy/3AlFg1SFQG84ne1bUXDn2mIfv
-         XZHQrkhUpQOrhuHY/2VEJ++Ab5XEORcIN6TEz4pgw3duCEWhQGl3Mz3IByo0ef2p2Kbx
-         O1Z+CHCWW7aGXKYAtQcwp3V8GR+RqeCA/pV5LUXhNqA2h7+79iE9b1KlPxgn/4SiSuRI
-         2rAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783663521; x=1784268321;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=pQgPhs+dZcfRNPuJReU9TiVxwha1e01HcHWKyyYl0NE=;
-        b=KUh3hOPnD3b2D1D7pBI8wS7c1gOpIkYDKzKND0cryNDcq1/nZALNfWWOwEwj5xNN4T
-         P4pKb+j4edCTADag+/ClGk27wiTcXUmwGOFyvZMAsJpdJQhNtXtKk4k5EzdLOZm5Z3SA
-         3bOpH5c/mPJNvsrsXI8Fx1+7Z5PyyZAtr5sTXG2uqNkhGSoX0uPz3WtIFRkb0OOg3VjR
-         XCP9HcLMpLuh4Hy+LuEFCDCncgBm0wqZ/4T6nB6Xj7ARSd/vVCyrfql8tm/ncWB/Rki8
-         T13q3ScpOeDstQBHcdhy2R64wwi0IDeFXhuuvK0ct7Qg4O320Tr5eK5F3ow4yBvFPiaw
-         GB1g==
-X-Forwarded-Encrypted: i=1; AHgh+Ro4C7bn+TBbtkEcTTOypo2h7yL8IwpNDeQLHITgQjveuezX9ReK//HgUHP/vySv9ZrkTxaYzg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxr+W982Q5AwOB2MgDR1mDf2cnl/G4+IQ8XhrZQZe/unAgIQoGc
-	n/VqppLRoQ1Kg8MlCY06b+sG15HFrJVd+EsS3vBLQjaOmVwnbbcX8hRL
-X-Gm-Gg: AfdE7ckNCwcfnokU0mFFuYWNQh9CL7Vur2Wd7zDkmMv5Mbaorg6qfkb5vTZMlpw+Ra8
-	rpTxpvLJ/YT2eGtvI6pEIdZASMCGSBFiULdNRoPZAQgq/NgycdUPs1sHNoedfwqr/LyBXX9xb+k
-	mo9drPntWM1p1JwFQj6n9Dpv/R/ypbVsdBiopKxCsJBrjqyAWXJTWEF7sem3u9hIgx0rwHoZck8
-	fOL/FBw44NJnIVFYE7ZO3frgWJfO1HI+IyHqaMXvzqZSdCplYqc5Y0hoPOLrqenqtXNWbuHOiGK
-	7BKk1S4ap8upblsN9QW74GOkCq2UioZ+71LwswG2PC83WfnhV6lQg05ANkHNc9ffLCZtTDvrRv7
-	DgTSgyxZ/KE2O0vyrZuPGnWuNbjQd0UIAJLGY8fagYe5PTxzAGLIfMR13YP8Czl0OCusrc3yx7E
-	OP7jU7bIldLmyS460/IoJRFngYdTct/KDV5MNH20gabhC7sIcAY1albJy/RMWRBlK3aXrkK6M=
-X-Received: by 2002:a17:903:1b0f:b0:2c9:c95e:5836 with SMTP id d9443c01a7336-2ccea2a5748mr105552515ad.5.1783663520722;
-        Thu, 09 Jul 2026 23:05:20 -0700 (PDT)
-Received: from ubuntu-gnu-linux-24-04-3.hub ([2407:7000:af23:3e00:61b7:bd9d:8d64:1bac])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bdb76asm56314635ad.12.2026.07.09.23.05.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2026 23:05:19 -0700 (PDT)
-From: Jiaxing Hu <huhuvmb88@gmail.com>
-To: Heiko Stuebner <heiko@sntech.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-rockchip@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/rockchip: implement .flush_iotlb_all
-Date: Fri, 10 Jul 2026 18:05:13 +1200
-Message-ID: <20260710060513.863714-1-huhuvmb88@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YNqa0lUn"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3839B20B716E;
+	Thu,  9 Jul 2026 23:17:42 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3839B20B716E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1783664262;
+	bh=5BI1bwekiHhmXFmNYH3osBguDBBQ2ik4qNO2EtDDABM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YNqa0lUnd+91XFtKhumTUuIQSy5ymXySxSHsDfPqXrA1xNJyuESOexSzLLaDphq7b
+	 jyRGPVEgyP4IRfULmaHSeagXGJdN4TWsSjHa1LDg2HxO20SohSYAfhc+akJ+Rgsl3v
+	 hqdL5nVm1HB+kjepLHBimGMiY57EwZakHmmpTrc8=
+Date: Fri, 10 Jul 2026 14:17:46 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
+	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
+	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
+	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
+	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>
+Subject: Re: [PATCH v2 1/4] hyperv: Introduce new hypercall interfaces used
+ by Hyper-V guest IOMMU
+Message-ID: <skgtaljhihedmdtax3jlqbrbtl3goky2odrdvohaopux35gljh@ieyan5a7cxpu>
+References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
+ <20260702160518.311234-2-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB41579A957E1C81583BBA1119D4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB41579A957E1C81583BBA1119D4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
 
-rk_iommu invalidates the IOTLB synchronously in .unmap (via
-rk_iommu_zap_iova), so it stays consistent without a deferred .iotlb_sync
-and does not advertise IOMMU_CAP_DEFERRED_FLUSH.
+On Thu, Jul 09, 2026 at 07:06:19PM +0000, Michael Kelley wrote:
+> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Thursday, July 2, 2026 9:05 AM
+> > 
+> > From: Wei Liu <wei.liu@kernel.org>
+> > 
+> > Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
+> > Introduce the hypercalls used by the child partition to interact with
+> > this facility.
+> > 
+> > These hypercalls fall into below categories:
+> > - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
+> >   detect the existence and capabilities of the guest IOMMU.
+> > 
+> > - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
+> >   check whether an endpoint device is managed by the guest IOMMU.
+> > 
+> > - Domain management: A set of hypercalls is provided to handle the
+> >   creation, configuration, and deletion of guest domains, as well as
+> >   the attachment/detachment of endpoint devices to/from those domains.
+> > 
+> > - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
+> >   for a domain-selective IOTLB flush (which in its handler may flush
+> >   the device TLB as well).
+> > 
+> > Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> > Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> > ---
+> >  include/hyperv/hvgdk_mini.h |   8 +++
+> >  include/hyperv/hvhdk_mini.h | 124 ++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 132 insertions(+)
+> > 
+> > diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+> > index 6a4e8b9d570f..5bdbb44da112 100644
+> > --- a/include/hyperv/hvgdk_mini.h
+> > +++ b/include/hyperv/hvgdk_mini.h
+> > @@ -486,10 +486,16 @@ union hv_vp_assist_msr_contents {	 /*
+> > HV_REGISTER_VP_ASSIST_PAGE */
+> >  #define HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a
+> >  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af
+> >  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0
+> > +#define HVCALL_CREATE_DEVICE_DOMAIN			0x00b1
+> > +#define HVCALL_ATTACH_DEVICE_DOMAIN			0x00b2
+> >  #define HVCALL_SIGNAL_EVENT_DIRECT			0x00c0
+> >  #define HVCALL_POST_MESSAGE_DIRECT			0x00c1
+> >  #define HVCALL_DISPATCH_VP				0x00c2
+> > +#define HVCALL_DETACH_DEVICE_DOMAIN			0x00c4
+> > +#define HVCALL_DELETE_DEVICE_DOMAIN			0x00c5
+> >  #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
+> > +#define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
+> > +#define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
+> >  #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
+> >  #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
+> >  #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
+> > @@ -502,6 +508,8 @@ union hv_vp_assist_msr_contents {	 /*
+> > HV_REGISTER_VP_ASSIST_PAGE */
+> >  #define HVCALL_MMIO_READ				0x0106
+> >  #define HVCALL_MMIO_WRITE				0x0107
+> >  #define HVCALL_DISABLE_HYP_EX                           0x010f
+> > +#define HVCALL_GET_IOMMU_CAPABILITIES			0x0125
+> > +#define HVCALL_GET_LOGICAL_DEVICE_PROPERTY		0x0127
+> >  #define HVCALL_MAP_STATS_PAGE2				0x0131
+> > 
+> >  /* HV_HYPERCALL_INPUT */
+> > diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+> > index b4cb2fa26e9b..493608e791b4 100644
+> > --- a/include/hyperv/hvhdk_mini.h
+> > +++ b/include/hyperv/hvhdk_mini.h
+> > @@ -547,4 +547,128 @@ union hv_device_id {		/* HV_DEVICE_ID */
+> >  	} acpi;
+> >  } __packed;
+> > 
+> > +/* Device domain types */
+> > +#define HV_DEVICE_DOMAIN_TYPE_S1	1 /* Stage 1 domain */
+> > +
+> > +/* ID for default domain and NULL domain */
+> > +#define HV_DEVICE_DOMAIN_ID_DEFAULT 0
+> > +#define HV_DEVICE_DOMAIN_ID_NULL    0xFFFFFFFFULL
+> > +
+> > +union hv_device_domain_id {
+> > +	u64 as_uint64;
+> > +	struct {
+> > +		u32 type: 4;
+> > +		u32 reserved: 28;
+> > +		u32 id;
+> > +	} __packed;
+> > +};
+> > +
+> > +struct hv_input_device_domain {
+> > +	u64 partition_id;
+> > +	union hv_input_vtl owner_vtl;
+> > +	u8 padding[7];
+> > +	union hv_device_domain_id domain_id;
+> > +} __packed;
+> > +
+> > +union hv_create_device_domain_flags {
+> > +	u32 as_uint32;
+> > +	struct {
+> > +		u32 forward_progress_required: 1;
+> > +		u32 inherit_owning_vtl: 1;
+> > +		u32 reserved: 30;
+> > +	} __packed;
+> > +};
+> > +
+> > +struct hv_input_create_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	union hv_create_device_domain_flags create_device_domain_flags;
+> > +} __packed;
+> > +
+> > +struct hv_input_delete_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +} __packed;
+> > +
+> > +struct hv_input_attach_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	union hv_device_id device_id;
+> > +} __packed;
+> > +
+> > +struct hv_input_detach_device_domain {
+> > +	u64 partition_id;
+> > +	union hv_device_id device_id;
+> > +} __packed;
+> > +
+> > +struct hv_device_domain_settings {
+> > +	struct {
+> > +		/*
+> > +		 * Enable translations. If not enabled, all transaction bypass
+> > +		 * S1 translations.
+> > +		 */
+> > +		u64 translation_enabled: 1;
+> > +		u64 blocked: 1;
+> > +		/*
+> > +		 * First stage address translation paging mode:
+> > +		 * 0: 4-level paging (default)
+> > +		 * 1: 5-level paging
+> > +		 */
+> > +		u64 first_stage_paging_mode: 1;
+> > +		u64 reserved: 61;
+> > +	} flags;
+> > +
+> > +	/* Address of translation table */
+> > +	u64 page_table_root;
+> > +} __packed;
+> > +
+> > +struct hv_input_configure_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	struct hv_device_domain_settings settings;
+> > +} __packed;
+> > +
+> > +struct hv_input_get_iommu_capabilities {
+> > +	u64 partition_id;
+> > +	u64 reserved;
+> > +} __packed;
+> > +
+> > +struct hv_output_get_iommu_capabilities {
+> > +	u32 size;
+> > +	u16 reserved;
+> > +	u8  max_iova_width;
+> > +	u8  max_pasid_width;
+> > +
+> > +#define HV_IOMMU_CAP_PRESENT (1ULL << 0)
+> > +#define HV_IOMMU_CAP_S2 (1ULL << 1)
+> > +#define HV_IOMMU_CAP_S1 (1ULL << 2)
+> > +#define HV_IOMMU_CAP_S1_5LVL (1ULL << 3)
+> > +#define HV_IOMMU_CAP_PASID (1ULL << 4)
+> > +#define HV_IOMMU_CAP_ATS (1ULL << 5)
+> > +#define HV_IOMMU_CAP_PRI (1ULL << 6)
+> 
+> hvgdk_mini.h mostly uses the Linux BIT() and BIT_ULL()
+> macros instead of explicit shifts. But this is hvhdk_mini.h.
+> Does it need to play by a different set of rules for
+> compatibility with the original Windows files? I think
+> the Linux BIT* macros are preferable if possible. 
+> 
 
-It never implemented the optional .flush_iotlb_all op, though, and
-iommu_flush_iotlb_all() is a no-op when that op is absent -- so on Rockchip
-a driver that owns an rk_iommu domain and calls it to flush the whole
-domain's TLB (e.g. before reusing a mapping, without unmapping it) gets
-nothing, even though the hardware can do it: rk_iommu already issues
-ZAP_CACHE for range shootdowns.
+I'm not aware of any compatibility requirement. And since it
+does not change the real definition, I guess we should use
+BIT*.
 
-Implement it with that same primitive: ZAP_CACHE every bank of every IOMMU
-on the domain, under the runtime-PM + clk guard already used by
-rk_iommu_zap_iova().
+> > +
+> > +	u64 iommu_cap;
+> > +	u64 pgsize_bitmap;
+> > +} __packed;
+> > +
+> > +enum hv_logical_device_property_code {
+> > +	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
+> > +};
+> > +
+> > +struct hv_input_get_logical_device_property {
+> > +	u64 partition_id;
+> > +	u64 logical_device_id;
+> > +	/* Takes values from enum hv_logical_device_property_code. */
+> > +	u32 code;
+> > +	u32 reserved;
+> > +} __packed;
+> > +
+> > +struct hv_output_get_logical_device_property {
+> > +#define HV_DEVICE_IOMMU_ENABLED (1ULL << 0)
+> 
+> Same here about BIT_ULL().
+> 
 
-Found while bringing up an out-of-tree RK3576 NPU (accel/rocket) driver
-that flushes before each submit; on Rockchip that flush did nothing.
+Will fix. Thanks!
 
-Signed-off-by: Jiaxing Hu <huhuvmb88@gmail.com>
----
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1202,6 +1202,30 @@
- 	return 0;
- }
- 
-+/* shootdown the entire tlb on all iommus using this domain */
-+static void rk_iommu_flush_iotlb_all(struct iommu_domain *domain)
-+{
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
-+	struct list_head *pos;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
-+	list_for_each(pos, &rk_domain->iommus) {
-+		struct rk_iommu *iommu = list_entry(pos, struct rk_iommu, node);
-+		int ret = pm_runtime_get_if_in_use(iommu->dev);
-+
-+		if (WARN_ON_ONCE(ret < 0))
-+			continue;
-+		if (ret) {
-+			WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks));
-+			rk_iommu_command(iommu, RK_MMU_CMD_ZAP_CACHE);
-+			clk_bulk_disable(iommu->num_clocks, iommu->clocks);
-+			pm_runtime_put(iommu->dev);
-+		}
-+	}
-+	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
-+}
-+
- static const struct iommu_ops rk_iommu_ops = {
- 	.identity_domain = &rk_identity_domain,
- 	.domain_alloc_paging = rk_iommu_domain_alloc_paging,
-@@ -1214,6 +1245,7 @@
- 		.map_pages	= rk_iommu_map,
- 		.unmap_pages	= rk_iommu_unmap,
- 		.iova_to_phys	= rk_iommu_iova_to_phys,
-+		.flush_iotlb_all = rk_iommu_flush_iotlb_all,
- 		.free		= rk_iommu_domain_free,
- 	}
- };
+B.R.
+Yu
+
+> > +	u64 device_iommu;
+> > +	u64 reserved;
+> > +} __packed;
+> > +
+> > +struct hv_input_flush_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	u32 flags;
+> > +	u32 reserved;
+> > +} __packed;
+> > +
+> >  #endif /* _HV_HVHDK_MINI_H */
+> > --
+> > 2.52.0
+> > 
+> 
