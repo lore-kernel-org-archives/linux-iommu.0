@@ -1,289 +1,164 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012015.outbound.protection.outlook.com [52.101.48.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9712D3A3816
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:38:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783665510; cv=none; b=NZAV4lT7OfIGmRBV1z5Xh3s4XvDkR2HvYBdXhnXtydxtSLpslkeMUVe65pQG7DCjmkOG7SYkgvbH7jsRguzcrTr/2YLjHJff9esfc4ocisA37FyHjZNgnlsbjjvpoLoSgxPCuDy5YbsKfM40gegce2sGfxbIYATQsxKmZWu5wqA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783665510; c=relaxed/simple;
-	bh=VKRIt/7yRmxAz+S9gKURZ4WyeFPoIUvlkDUS5dWUi6k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Rm490cqNo7GmZd2YvgFL/0TIlIJLDWg4eCleJMUFMH3TH2UZpPHQtatea21Ai5nllfgHR3OgoMR+UyMDAwIELxI9b9oPGPgqGwvUpYoGQh0gBxzjMBcv+ICsr8oVG+R3QxVy5DkFh3NxB7cwUyds96fO1fQ8qvcYd1Uz1/kIcB8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=An11jyea; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NTSNBBsv; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35D433A3816
+	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:39:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783665559; cv=fail; b=AN/s9KqcMKS3IS4rzwV+uCD9PTTVjfM9MV65n8xBjEQtifRxRCO3qdleapvyakAsPWcVcdjcM/OZ26EEknOHXaPIAQc3UdvDYxyhBD68HnlXcmLccAsvQvX+zCLDCw1B5Zy0Sm4Yb8RYkYivKhEOUSduZ8bCr6b7hYYkj5q5lXY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783665559; c=relaxed/simple;
+	bh=rS10WUzBcmo429Yam+CQOEMHLWxCMQ8DcgI84kV3ONw=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Lf2MM2jsuusRDCtb8c+/5qQ0oVV3LmF6I2sZ9GZbylaLIUxzZIIIOCB94l6Y2FM2ThudbpKpR9Ic9FX5csis6mXwvAeA5k6USpMfq/mBn4pL1N4vKNzPU/Gt8fyaSYqeAUJMspJecBaAxZdV6L11vGjBQe+xX8A1ULcUGJnvVfU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=HeXGJ3lW; arc=fail smtp.client-ip=52.101.48.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="An11jyea";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NTSNBBsv"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66A3nUCN3848885
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:38:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	0K5Opuo8W6vFKvh+gdX8BbeA6S2QAhhORoWXkYpGKec=; b=An11jyea+IvpFq77
-	RvyfijqFOM1GQc75OTNGUf2BHZXCyUWplzVX5aEvM6EHLptMMrsfNu1mvMo+rTY7
-	C1BFzMsCv8ds8Ff5vzjn7zHge+GVICsoYya1/rxoJQz0M3SCX00lLk+zlaaHif0+
-	PjouPLZY81+I0wilKDTy00akcR2TdgU8sBZkqcAFlyPxeAtcAxtzRhjNC5yWIvSA
-	VvysduvlLdkC5Vm13vnzGgSmW4Cv+TRQeObmcimleXRkQP7/w7KbvjIYUHwX1BgV
-	oG3Y0be2lbXtqMawfhrZQXVIiGKD+OsIfyrNL9jWIA9LD795SI2BU1jmXSUkzheW
-	uKiLKg==
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4faeesu4j9-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:38:27 +0000 (GMT)
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2cae455cf6dso8455505ad.2
-        for <iommu@lists.linux.dev>; Thu, 09 Jul 2026 23:38:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783665506; x=1784270306; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0K5Opuo8W6vFKvh+gdX8BbeA6S2QAhhORoWXkYpGKec=;
-        b=NTSNBBsvIDzuytFrYWytTVAemRoKhi+2NtifoamNFZwam/Jvuc4eR97YWy9tWxnFqs
-         PtkMezaMnCPQIn2YgWcW193GU0i8YxaqW5h8zOKG8ZkV49QwCoglaiseIJJrVXA1n7PI
-         fLbrFJMpEO1wlxPzxuoPS2htU0b+73485ZrQP6A5kcB54d3xvhI5WtyLBlvXaN+urGCr
-         eWIYWAFQ6e5qD7UBeEzzmpjHBSDN2n4IKbri/wWHT8NIIkJlODnrrGnawM7LpG0U0Hcy
-         XKJsHfSFiZvoTrxy8OYDZkH8s5HbBBbLDbmvUk6YanM7HG+k0xNPMRjHT07McACHpey/
-         ysUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783665506; x=1784270306;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=0K5Opuo8W6vFKvh+gdX8BbeA6S2QAhhORoWXkYpGKec=;
-        b=SLkMuaXKuJUz43h4hE49XQyrGONBWxw0ibKifx7DowhYlha4ttXw5n6Nd9adq16MLS
-         X56H1DhdUHJUH592EKiG7sKDXItSgy4XyoqYAT61XeBdkmwQHuHz6SyJ2d0bc382lkHb
-         KalUBq7kd+qazIyPDveCCJEy92msZLEJTF74WC3b5uVccXu8rmaXodO9wU2mMLg4BQns
-         xxailfdBXSPukoCSo2lfFjo7gqDaHHfI3Gwzu1cyNz7VedehprNm0m0JThm+YCXx/Yce
-         qvqVSjuRTP/+oas4oi0ziSUWjHR6yy1SKmmZyyzwXrwu58Zt9IsVODZY5EBcgWRuFHHc
-         hZVQ==
-X-Forwarded-Encrypted: i=1; AHgh+Ro10LcFqj9as7+Zx9O5K46ovHcrNKwwP2Yhr7s9qdBhKSzjYFAGxG8qX3psE4CJAoEg6Wax3Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxd6dE1u48vkA2C1CBgYbCf3JTZ4ScU/c4Ha1TG7PLqJl8z+eQM
-	0Qvl932IwHSqHDVq4r0hIx/jEe3FpxxymTrr3aZr4d0/m1gk6FyhVWdSG3RPpl4bAUToyPIYL5B
-	SxpOXq5NsD8qCDvEgiibPBFH4eqcIia38Tr1pOqR1y5T4Fs//B2roM8Krtw==
-X-Gm-Gg: AfdE7cl4jC8M9Apmxme4QYW3L9PThNFTXZbsW7s8xBD+kaLTvYweEiAJjCXgHdSGL85
-	9YlDqeaIe8t1ouztiarDsE61ZyiDzGYNQLNEc8pzpxALbYOjIyL9FPp/nRmuLkRXPP5+dNFx1kB
-	WSBz6zT8XQX/4RktiRAzHewgpUDRkXFxtAgXPgE0HuOtXvdiTPRo894ZJFOGqRQQQs044vBG0Gx
-	V4ThlrQOtw7IdOjvAt1DNofUxI4rZqxFSFZGWz0XUJItQvkO7wgyVlw00U+uz8MfNPuwr7WiAow
-	4jqqCdrnrmFaH5GQGtmsLVJfw+ysvHAo6NGW9zUuSNKZzeFhXklh8PHEfIzq4Ni2U4C8lBbFUlq
-	gLf1Al96Gj2Q7xhHyEKpz1wSr/SHtqHb3K45B7fhHcTTlkT1lNzbChDAS09k+7GXwp/EEUim1t7
-	NpZBEa9RdpbqCPrgAKZ8em88TltJqT
-X-Received: by 2002:a17:903:32c9:b0:2ca:e9dc:7357 with SMTP id d9443c01a7336-2ccea2d8029mr109938195ad.9.1783665506286;
-        Thu, 09 Jul 2026 23:38:26 -0700 (PDT)
-X-Received: by 2002:a17:903:32c9:b0:2ca:e9dc:7357 with SMTP id d9443c01a7336-2ccea2d8029mr109937745ad.9.1783665505631;
-        Thu, 09 Jul 2026 23:38:25 -0700 (PDT)
-Received: from [10.193.24.221] (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com. [103.229.18.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bfb7aesm54996575ad.29.2026.07.09.23.38.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jul 2026 23:38:25 -0700 (PDT)
-Message-ID: <0d1398f3-c2d5-4717-adf6-bdbc6055606b@oss.qualcomm.com>
-Date: Fri, 10 Jul 2026 12:08:17 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HeXGJ3lW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=t027QiN/HYB3Bg9hmNWCFJ9u4xcIS/C+dRY9J07fm2Kb7Nr4oP03QoPzvmk7YcQaKwMaUsIVCYskmNLbYePcJiNHZPsqlrgE4H12fnYcHVBv9Ckyht+C72Xb1yliVSY3quzJhhFUedoEcpkqbOZ05rGAIyASCl0lkQa/RtYO0acNqqJIg93AnQFNhyi+pgpfC6oOkVuqPK93eHNJu9KLchQ+GPQ3AcD4kTDSjaQ1y7R36A2BRCByLM53D9ihgdgp7dWJzMXsRyOD830eN/sVqLOXQamkKYkhLGXTOc2vSmUIbrwysS1bCcmYTT50I9iAA0xV3VUTxThQbjPAf7B9sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7eY8IwiZj0Gw+LHhFSUKuOzf25S+swrhHLMzVCCdMmA=;
+ b=alyGHT3vK+G6Sakv6jGwv5f3lwEDQCgXv0IbYSEMXnT4vOeqEQBqmtR62Eagv6WITvBkNLRyoIG3/0+Y60g9gZobsJOwV6dqVLTASTB9VrAP1DMxlW+t07xewwhs8oMZ242G3B1sadJyS8ok6zIO+OqStwz1dwPyh3QJIQw7Pd26qXoXaP7meHykmLToOSU/RgV+9JM+Jo14GXR2rDIb0W0J7R6XFUgl/EhLswRsqmXufzj+cwUkEF7xqEzcrtMLyqZHQjnm/32JmkMgKRqZXAlNgCvvz1/H9yzzbhiL0zKrm+iHwiUtMP3kSjLIe8uWxE8OGJkicQofVO7RAqkfkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7eY8IwiZj0Gw+LHhFSUKuOzf25S+swrhHLMzVCCdMmA=;
+ b=HeXGJ3lWUO/Knj6vH8RASGZnMlGyHMNTOfzrz4h5evbr3InhOSX6hirZIT25IfSkaY1kKmClMRZxsBPid4/NLG05AXNg9uTSuzBiv6MS/ejxqU0/JIQC2lDd6ZUcrKCRySmnVo0k9HdSfcjzs+id6uTzqrJG/RfPG1BdbBLICnAoXSG8KOU+yvWTDCs9KRuVueR5DZBMYKsjV6wxMjqvnG68/tHxkNF5ZDdXKF09kGefpcGX1FzVWRohzSZCioxzPu5Gl6Pjaf6NjIP9/Eu7fjkbj/5pi3LLyZBVse0vZzHFXbv+qnmAeEaEu2M9VVVmE3w7ps+xAE6A5/AuCjwFiQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BN5PR12MB9511.namprd12.prod.outlook.com (2603:10b6:408:2a9::14)
+ by SA1PR12MB7344.namprd12.prod.outlook.com (2603:10b6:806:2b7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.17; Fri, 10 Jul
+ 2026 06:39:14 +0000
+Received: from BN5PR12MB9511.namprd12.prod.outlook.com
+ ([fe80::4d8d:5f91:6c3c:dc8c]) by BN5PR12MB9511.namprd12.prod.outlook.com
+ ([fe80::4d8d:5f91:6c3c:dc8c%4]) with mapi id 15.21.0181.009; Fri, 10 Jul 2026
+ 06:39:14 +0000
+Message-ID: <014ae844-e7ca-4829-95f6-31de979db140@nvidia.com>
+Date: Fri, 10 Jul 2026 12:09:08 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/3] iommu/arm-smmu-v3: Factor out CMDQ batch
+ force-sync conditions
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, linux-tegra@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260709095613.831769-1-amhetre@nvidia.com>
+ <alB0/RXGUtoyXggd@nvidia.com>
+Content-Language: en-US
+From: Ashish Mhetre <amhetre@nvidia.com>
+In-Reply-To: <alB0/RXGUtoyXggd@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY1P220CA0041.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:a03:59e::13) To BN5PR12MB9511.namprd12.prod.outlook.com
+ (2603:10b6:408:2a9::14)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH] x86/pci-dma: add "any" keyword to swiotlb= kernel
- parameter
-To: Robin Murphy <robin.murphy@arm.com>, m.szyprowski@samsung.com
-Cc: corbet@lwn.net, skhan@linuxfoundation.org, akpm@linux-foundation.org,
-        bp@alien8.de, rdunlap@infradead.org, peterz@infradead.org,
-        feng.tang@linux.alibaba.com, dapeng1.mi@linux.intel.com,
-        elver@google.com, enelsonmoore@gmail.com, kuba@kernel.org,
-        lirongqing@baidu.com, ebiggers@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        aneesh.kumar@kernel.org, alexey.kardashevskiy@amd.com,
-        thomas.lendacky@amd.com, jeff.hugo@oss.qualcomm.com,
-        thanson@qti.qualcomm.com
-References: <20260708114244.246176-1-aakarsh.jain@oss.qualcomm.com>
- <7c21e121-9bce-469e-a983-adbdf3781842@arm.com>
-Content-Language: en-US
-From: Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>
-In-Reply-To: <7c21e121-9bce-469e-a983-adbdf3781842@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: EMB7YoBS4p9MDQ0LnRssVtKJhRAPxuaz
-X-Authority-Analysis: v=2.4 cv=bbpbluPB c=1 sm=1 tr=0 ts=6a509363 cx=c_pps
- a=JL+w9abYAAE89/QcEU+0QA==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8 a=zd2uoN0lAAAA:8 a=EUspDBNiAAAA:8
- a=LWuNMJU_oDth5YTcOp8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=324X-CrmTo6CU4MGRt3R:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzEwMDA2MiBTYWx0ZWRfX5C0Fm0f7TZ+f
- bAthcmnzOAJ+y5NbShC8XwByYqcgoCZ0Skr67yYgj9Vhh1rjnU15wcYrzGDv7RmC8sk7hJALBpN
- R+OC8rjUEfICNN4xLYOpxRrc1BKCe2Y=
-X-Proofpoint-ORIG-GUID: EMB7YoBS4p9MDQ0LnRssVtKJhRAPxuaz
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzEwMDA2MiBTYWx0ZWRfXyS2urI+2gfay
- X+F5Ym3SS1HYcabrZG7Sf1cbOu2u6Z0W5HHdtaVjXMXNqj8Ecx/C0RagSswtqTHcjQxQ04+2KQV
- 7eZjTJjopHilV+rT2tMjUd0Dsepgjv4WfRlaN1fGWv9yh1wrdLWLQg2mimzEGItJJwWDjj5uuoa
- HKBY6rx1q2p8A1+yK1D32eOojGH0gCcOjuwBqrCQ48Mqx2wv9cwY7VnD2Tp8Ytd+fXJU7xkHFeu
- 9RPJ92u+wgL6sFc/9voWclpmCjF63gni//GNhv3DqRWqEVv/ijsmWYm8SMPwyj0dM0xTnWdW2MR
- HjP8mGWKNjSekNnEqDiYlviZJfvwh41Q3ZMIeA77fMfHQq2SEC0Fv3qWr1sgIFfhGbs7JD9vE+C
- 7ok3iqZZ0tHlwMpa0LgRdiMRMvc7F6sISqsQYZChI+ANUKjIoT1hbGKj5KoXJy0dGjYMWVZpTBA
- asTCKJthYdDoW0G+yVw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-10_01,2026-07-09_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 malwarescore=0 bulkscore=0 suspectscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607100062
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN5PR12MB9511:EE_|SA1PR12MB7344:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6a19ac7f-8fbc-44d9-9281-08dede4df565
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|18002099003|22082099003|4143699003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	qoH1wije1R2OOlIVZoywuFKv4//V8RxT6bATxBYI5ak4LMMoeD5dUK3Gl/hXDaj7r8tb6ifmUrrM74oCnQJTwsISrpvdxLYDIL51dM9S+g7NyHm4pnND8R5ZAjFvPP3Nbkpa3Mmk3/Zi9p14pO/oGWzPewW5V95pGpiQ/I6UVwHRHoqJBQqUhZuM2LRatCZm6zz5ffSpc7P7xaCPaA83IpLAscyb/fgdEil6ipOAOV4KUl5BWCs15wA8PFNGRHmSJ5tGQiBeurqhpXkfzvSypZbCsn9b2V+/AK7ga640Dn12wIbxvV7GiAFrRx8RdL8y7IMsUQCnUIV6IKJA5XVGSmCF3G69v584dqSKX9jhkrm44tOvRbiC4qCZcKOQZ6aj1Pk9hkqi+IBdKMlphUi/uto+D9p9eZwKqe0yrYBq7sjh78lAJGLdJctbsacf2XhaQA97flITch/4//hDLqIAh/vFjmKSG9SHWMXd9XWbKwX74VuFTwQv3PYpP5f1mBUULd84T+/7SLBqtRKlQ1liJ2eKY0HxJEaEWMHf6jlaibJcUwaiFhN42Z7j5P5Nqa9/DAYYfcC/ysJWNouFlinN9L1L8HzGhk5Mz96aZW1C6FQXlbQdN04oElv4Iz4vKmNp/l7ONIu9MlRybtuUY9A7VFVn0eVzoH4tKjKPBTA3eds=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN5PR12MB9511.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(18002099003)(22082099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MFBhUE4zdHFuTFV0WUdWSVVzYWo5cHRVMCtrV0VFN2FhblBsRDVFY2hNUFNY?=
+ =?utf-8?B?SE55VThpK3I4bzVCekJBcDFUaUZNaVdWbUxoaFpLWFZ6cFNidkZtYnBORmlB?=
+ =?utf-8?B?OVZwUldWcTBSZ21TNENENHpLWGpkZ1ViUExlRGVhNElQWllGMXNrbWc1anBY?=
+ =?utf-8?B?eGRUVkJFWWExZk1mRDBtcWxad0EzUFBxT2p5MHBCUDk1aVRuRkYvSXBWalZk?=
+ =?utf-8?B?aVZBT3NIN0g2OXAzN1pyQUlVUHJuUlBPVzhpMHRrSy80WE5CNDUrN2FiT0Jt?=
+ =?utf-8?B?WFR6QytKSmNnR20xRXFOZWZiSlJBUSt5enh2WTJMWVRKallWTjV3NDM0SW9Q?=
+ =?utf-8?B?TGtaTHltWkpuWEVtU2h5VHNrcWdVaEsyblk2Y2lRa0J3TGJNOEQ3KzJwYm42?=
+ =?utf-8?B?ejNhc3VTbFlseTBSSUhnNmtkTkwxR1JrMmlyYkErUlYrSVRDK2haYVZONW0x?=
+ =?utf-8?B?M3lyZ05JSW1tWm1IcUhNcHVjeERKQzYyMk9qTDVJUUdpUDdQdjQ1cXMvVEJj?=
+ =?utf-8?B?aldRd0R0Q3k3K21YV0NDNHMxR2Q0TlRmWUJ6Z04zZEw5R0Nmb3YxWEhQMngw?=
+ =?utf-8?B?MzQ0dGdENzhqbEdHUXFNN1VXeHJ5YmZZQUJ5VTFubEtVQzR5WVZkMExzTUdh?=
+ =?utf-8?B?My8zRE0wTUVOTmZaeFA0YmNCR2Y4ZlBJdGxyYUk0ZlRVSlFsSkFwSWJ3S1Z5?=
+ =?utf-8?B?UTlZRFRJOHJSTmhEc20zUkJCWWIxRXNabEFhcEhESitJTndVLzhMYXBUTnZn?=
+ =?utf-8?B?VTNzek1yWUZqMTRIbGFxUlc5VmJoZG10UG5LdWMzYTNvcnJmYVgzWDZlczM3?=
+ =?utf-8?B?Kyt5eW1NTXljSXp4VHQvTzRUMW93NmlUY3dLWFlvQ1hHWDF4YjdNNnVjWFpX?=
+ =?utf-8?B?Q0R4YmdpUFlKZ3J1Mjg0RVdDakFRa25DREJRbGpJMTdFbG55MGNiWWNTcjVm?=
+ =?utf-8?B?SGEya2JUTStyWWhJWW1iK0pKM0FKenl2L3ZQRnQrUE05UGxCdlJ3aExQQUEy?=
+ =?utf-8?B?czV5dWlxVHZOTk1ORnhHVC9BRTBwaGswdDV4eCtXeksyMndReTZNWGNJMHpV?=
+ =?utf-8?B?TnhaeTl2S2kwU1RXL2ttTEFMaGd3L0grbExOQlhBOGJPTGdtWGZBdmRuNVNM?=
+ =?utf-8?B?VFBVK0xrekh1c1p1ZFZFcTFrNVNUQjIwNVFuL294eUk3Z205K0pUVFV0MUJO?=
+ =?utf-8?B?TUw4OG13RW1CSDdoRTVqQ3ZyZEdXQW5RZytHY2oxQkNGWUpaL2g1RkQraE1R?=
+ =?utf-8?B?RDlFYzUzazZXK1ZBYzRERVhDMlROaDhzcnZzaW02UWJid2FYS3FidE1seGVH?=
+ =?utf-8?B?VjAvWFRxQ2twOEVMTmNxMC9UNFVsaGZYVVVkQjA0Z1VqdS85aVc5R2hkaTVL?=
+ =?utf-8?B?TjNHTU1tdzdDYnVWSHUzb1U2OFN1dHJGRjRPRnB6NWFlUTlVYmNyOWZkb0gr?=
+ =?utf-8?B?VjNRZ21IU2pHaDZodWNvd0l4dE1QTm40dEkrWXl4QW9uMHBjTGpKNE1HTk1w?=
+ =?utf-8?B?VjZiNHVCMFVzUjBYM0ZFNE5TVCtrdWJHZEl1Q2Vld0prSkFKTEtJZ3BZSkZJ?=
+ =?utf-8?B?dDQ3TGZRYnRZdmVVczBhZFMrbitiU1dNOC9qTXdHSE9FeEJPdk5aWlE4bE9J?=
+ =?utf-8?B?QzFrcVEzZ3hFVERGd1ZzVTdjWHR1cUxFUlJlbjFOdXRrZ2ZQeWEwdU5TOE1x?=
+ =?utf-8?B?UnF2bXNrZ21uaHpBNzZNbEp3aEQvYjU0N2ZLeTltOG1kaWw5M1YxbjNvNm5E?=
+ =?utf-8?B?bTdsaXc0eGFvQUd4RlRDejBUS2xiSnNFUmxyUndibG85cWlzZEk4VFo2djZj?=
+ =?utf-8?B?ME9uSDhNUHJlZTlIU2xkUCtEL2wzbFRhdUxaRGpwWG9jTmUxc0dkbUZ1Ukcx?=
+ =?utf-8?B?Kzd0eWN1YldxSFB3a0tiajJNN1gzRWpoZTFHS1FXd0ZPb0wvWlptUmlUZDFr?=
+ =?utf-8?B?TEpUWW9yTmthTVhvbFFKQWg2ak53TUlwdkx2ZVB4ZGF6Q21JcngxK3E4WVhW?=
+ =?utf-8?B?NmZCYzl6OWVQcG9aRkcyVGNzSlhkQW1aazlkQlluTWU5NkZTemNRMEpzZmIr?=
+ =?utf-8?B?VUhCVGp2RzlRY1Y3MUpWY283SE15U1d6WjEvY2c0dGNsSDRnQ2hkRGZkL3hB?=
+ =?utf-8?B?SUtFUjEwTWhSWXdYZ0tvOVFGZ3dIQ1R0aktaVnN1Qi83cEdkaWQ4TVhJV0Ev?=
+ =?utf-8?B?V2l6dWw4SzAydTh3ZHNtMTlPb0VCek9rYlUrSWtMM0Y5ci9HaTk4OUdnTlFB?=
+ =?utf-8?B?aXl3TkFxM1l0UTVmUDR6bWJZTTJrUzNTM0VCMHNYNXdIWDk5UGEyazgzZjFo?=
+ =?utf-8?B?czEvakV3aEdHSVpRamwxckRWTk5JcTg5WWJ2UlE5cXowaEhSZVNvQT09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a19ac7f-8fbc-44d9-9281-08dede4df565
+X-MS-Exchange-CrossTenant-AuthSource: BN5PR12MB9511.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2026 06:39:14.5622
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pL6YpsoDP5HPa+THrW2yC8tCXsYKmzOw3y/6D/TCoQOvN+zJM7gYkYkbIQtdsYJxMFIDaLWjNgj0YkyT3Dbj2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7344
 
-Thanks Robin, Marek for the review.
 
-On 7/9/2026 5:58 PM, Robin Murphy wrote:
-> On 08/07/2026 12:42 pm, Aakarsh Jain wrote:
->> CoCo guests (AMD SEV-SNP, Intel TDX) require large swiotlb pools for
->> streaming DMA workloads such as high-speed NIC and AI accelerator
->> inference. The existing swiotlb pool allocator restricts placement to
->> low memory (below 4GB by default), capping usable pool size at ~1GB even
->> when a larger pool is requested via swiotlb=<nslabs>.
->>
->> The SWIOTLB_ANY flag already exists to lift this restriction, and
->> swiotlb_init_remap() already handles it correctly via the flags
->> parameter (see CONFIG_SWIOTLB_DYNAMIC path: io_tlb_default_mem.phys_limit
->> is set to virt_to_phys(high_memory-1) when SWIOTLB_ANY is set).
->>
->> However, there is no way to set SWIOTLB_ANY from the command line. The
->> only existing mechanism was via arch-specific code (e.g. powerpc SVM sets
->> SWIOTLB_ANY in pci_iommu_init). x86 CoCo guests have no such path.
->>
->> After Aneesh  series ("dma-mapping: Track shared DMA state through
->> direct, pool and swiotlb paths", https://patchwork.kernel.org/project/ 
->> linux-arm-kernel/cover/20260701054926.825925-1-aneesh.kumar@kernel.org/)
->> removes SWIOTLB_FORCE, x86 pci_swiotlb_detect() leaves 
->> x86_swiotlb_flags = 0 for
->> CoCo guests. The pool falls back to low memory and caps at ~1GB:
-> 
-> This is entirely irrelevant; SWIOTLB_FORCE has no impact on allocation 
-> behaviour anyway. x86 wasn't passing SWIOTLB_ANY before and it still 
-> isn't, although there doesn't seem to be any particular reason why the 
-> well-reviewed patch for that hasn't been picked up:
-> 
-> https://lore.kernel.org/lkml/20260625012616.2992535-1-jun.miao@intel.com/
-> 
-You are right my commit message incorrectly tied SWIOTLB_FORCE removal 
-to pool placement. SWIOTLB_FORCE only controls whether bounce buffering 
-is forced at runtime, it has no bearing on where the pool is allocated. 
-Placement is governed solely by SWIOTLB_ANY. I'll drop that paragraph 
-entirely.
-I see both you and Marek are pointing to this patch, which fixes the 
-issue architecturally. I'm happy to help get that landed instead of 
-adding a user facing knob. My only hesitation is the 32-bit concern below:
-auto-enabling SWIOTLB_ANY for *all* CoCo guests carries the same 
-breakage risk for limited-mask devices, which was flagged here:
-https://lore.kernel.org/lkml/0a08cea7-62a2-4b33-8d8b-dd14b3c74235@amd.com/
 
->>    Without "any": pool at 0x35a9c000 (~900MB, below 4GB boundary)
->>    With    "any": pool at 0x1df9c00000 (~120GB, anywhere in RAM)
->>    [Tested on AMD SEV-SNP guest, swiotlb=4194304]
+On 7/10/2026 9:58 AM, Nicolin Chen wrote:
+> On Thu, Jul 09, 2026 at 09:56:07AM +0000, Ashish Mhetre wrote:
+>> From: Nicolin Chen <nicolinc@nvidia.com>
 >>
->> Add "any" as a new keyword to the swiotlb= kernel parameter. This is an
->> explicit, opt-in mechanism that sets SWIOTLB_ANY for the default pool at
->> boot time, without touching any arch-specific code.
+>> arm_smmu_cmdq_batch_add_cmd_p() carries two distinct reasons for
+>> flushing the current batch with a CMD_SYNC before appending the
+>> new command:
 >>
->> Devices with 32-bit DMA masks are not affected, they still use the normal
->> low-memory bounce buffer path. The "any" option is only meaningful for
->> workloads where all active DMA devices have 64-bit masks.
-> 
-> That doesn't make any sense - if a user passes this option then any 
-> devices with DMA addressing limitations definitely *are* going to be 
-> affected, and quite likely broken altogether. If anything, the 
-> documentation should be even more explicit that this should only be used 
-> if you do know for sure that no devices have DMA addressing limitations.
-> 
-You are correct here too. My statement that "32-bit devices are not 
-affected" is wrong. There is a single default pool, once it moves above 
-4GB via "any", a device with a <64-bit DMA mask has no reachable bounce 
-buffer and will break.
-The opt-in nature only means the admin accepted that risk, it does not 
-make the risk go away. If this option survives at all, the documentation 
-must state the opposite of what I wrote: use it ONLY when you are 
-certain no device in the system has DMA addressing limitations.
+>>    - The batch's pre-assigned cmdq does not support the new command.
+>>    - The Arm erratum 2812531 workaround (ARM_SMMU_OPT_CMDQ_FORCE_SYNC)
+>>      forces a SYNC at one entry before the batch is full.
+>>
+>> Lift those checks into a new arm_smmu_cmdq_batch_force_sync() helper
+>> so that adding another force-sync condition becomes a one-line
+>> addition. No functional change.
+> Patch is fine, but you're missing the cover-letter and changelogs.
+>
+> Nicolin
 
-> As a general SWIOTLB-behaviour-debugging option for orthogonality with 
-> force/noforce I'm not opposed to the idea, but it is definitely not 
-> something that real CoCo use-cases should rely on - if the general 
-> consensus if that CoCo environments want a different setup by default 
-> then the arch/CoCo code should be taking care of that.
-> 
+I had sent out the cover-letter along with change logs.
+The sequence got messed up while sending. Here's the cover letter.
+https://lore.kernel.org/linux-tegra/20260709095613.831769-4-amhetre@nvidia.com/T/#u 
 
-So my takeaway, this patch, if kept, is at best a debugging knob for 
-orthogonality with force/noforce, and not something real CoCo 
-deployments should rely on. I'm fine positioning it that way, or 
-dropping it.
-Which brings me to the actual motivation behind posting this patch.
-what should be recommended approach for large streaming DMA workloads in 
-CoCo guests(high-speed NIC / AI accelerator inference)?
-Is the intended direction to move such drivers to the coherent DMA path 
-rather than growing or relocating the SWIOTLB pool?
+
+I will fix this in next version.
 
 Thanks,
-Aakarsh
-
-
-> Thanks,
-> Robin.
-> 
->> Signed-off-by: Aakarsh Jain <aakarsh.jain@oss.qualcomm.com>
->> ---
->>   Documentation/admin-guide/kernel-parameters.txt | 5 ++++-
->>   kernel/dma/swiotlb.c                            | 5 +++++
->>   2 files changed, 9 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/ 
->> Documentation/admin-guide/kernel-parameters.txt
->> index b5493a7f8f22..8a1fccbd9b25 100644
->> --- a/Documentation/admin-guide/kernel-parameters.txt
->> +++ b/Documentation/admin-guide/kernel-parameters.txt
->> @@ -7477,7 +7477,7 @@ Kernel parameters
->>               Execution Facility on pSeries.
->>       swiotlb=    [ARM,PPC,MIPS,X86,S390,EARLY]
->> -            Format: { <int> [,<int>] | force | noforce }
->> +            Format: { <int> [,<int>] | force | noforce | any}
->>               <int> -- Number of I/O TLB slabs
->>               <int> -- Second integer after comma. Number of swiotlb
->>                    areas with their own lock. Will be rounded up
->> @@ -7485,6 +7485,9 @@ Kernel parameters
->>               force -- force using of bounce buffers even if they
->>                        wouldn't be automatically used by the kernel
->>               noforce -- Never use bounce buffers (for debugging)
->> +            any --  Allow the swiotlb pool to be placed anywhere in
->> +                system RAM, lifting the default low-memory (4GB)
->> +                restriction.
->>       switches=    [HW,M68k,EARLY]
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index 1abd3e6146f4..34773ae7c770 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -80,6 +80,7 @@ struct io_tlb_slot {
->>   static bool swiotlb_force_bounce;
->>   static bool swiotlb_force_disable;
->> +static unsigned int swiotlb_param_flags __initdata;
->>   #ifdef CONFIG_SWIOTLB_DYNAMIC
->> @@ -198,6 +199,8 @@ setup_io_tlb_npages(char *str)
->>           swiotlb_force_bounce = true;
->>       else if (!strcmp(str, "noforce"))
->>           swiotlb_force_disable = true;
->> +    else if (!strcmp(str, "any"))
->> +        swiotlb_param_flags |= SWIOTLB_ANY;
->>       return 0;
->>   }
->> @@ -445,6 +448,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->>       io_tlb_default_mem.force_bounce = swiotlb_force_bounce;
->> +    flags |= swiotlb_param_flags;
->> +
->>   #ifdef CONFIG_SWIOTLB_DYNAMIC
->>       if (!remap)
->>           io_tlb_default_mem.can_grow = true;
-> 
-
+Ashish Mhetre
