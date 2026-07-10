@@ -1,79 +1,104 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1129536897F
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 16:17:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D8C23DEFFA
+	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 16:19:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783700264; cv=none; b=N3FcCG+s0Ajv1BOku0ld8QNhky5S+rjYY64EML0hC5tsHmnSoNFZlZQ9W2lYNqFR6toO8mUiDMlDzRCgpQM/03sd0pjncRgTroytcNMPKXCZPHtnSOHHj7jpKnTlznhhEknn7RbQub78knRxIRx/r12V9TGPg6LV9VxK7+Te8PQ=
+	t=1783700392; cv=none; b=QsMn/PJrImKJqAO7tDzRx9iEI4KV42zQJjQdRe84q6rG7tpINnyx2xH6y0BF1a1jyV4A7C9MbP3IMp5i7MHSEkVkOFmUnftGS+vtQ9pPklg0tFSQW0yYrYFIEpjCAuKMX2iTFoqoMNrCI7QpXUBKQkMQj/JsTQUnDXtVI+6hhqQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783700264; c=relaxed/simple;
-	bh=owaUiQCKwhLk5DxVCpjYmtFnThoJ3PmJZ1sU/pLxi1Y=;
+	s=arc-20240116; t=1783700392; c=relaxed/simple;
+	bh=ZcNef127/m6SyCOm4THElfckuZegJcazDJQV119TKbw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XEygxSZXRcea3q0Xlt2d00r4+iCbiFzsqWALJev80BW4sX/FCfntvssfjd8kdmnu2GFdHajq0qmcNtrpVqlMguDiSf9Fzmv2JRzlUKdbA6yYdmtLMcgprT6YJq4CXhPaBF7w790A1zTeJ/mgcO18xmp4lX/UiboO+mB1d1LV8zM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fga8S6qs; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=h396Ur5rEQzkOJ5bG1OvifxXoJ2M6mBSiry4HkS1sXLfMAj1UkGVotrZ6IO0hwWxlGFpY7wTxR+7iyxCi+71OKVbO1usnYdCUchd7q7bAYoZ7G2W6GUkggNcEJhofXxfbT/sFUHUg2FqRao9DhO/cGIzMN4jEMFXTS7nLXUkmcM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=moMI3tqd; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fga8S6qs"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-493b77b150aso9718625e9.2
-        for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 09:17:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="moMI3tqd"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8efcfdb2b43so7348816d6.3
+        for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 09:19:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783700258; x=1784305058; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1783700388; x=1784305188; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=36epyzeQ57987BAo//5mNX8OTT88iDUdRaI6qY+H3cE=;
-        b=fga8S6qsS3/6aAHNzJBmzpuS+qx+kOxXNb7K2CDvgUpAClmqxgMDYdHd0wWXpBJKHf
-         p6KgglsgoNT0Ouc8zM7C8nDlnoIxkoLu6xWJ2KfB5N4rDDIsP01FOpDxRsEMa+uAnacN
-         2c5XqfA5gMG6A6qeE88TP/7zcpnaRcCD0TasTxIoP6l/qvLOfM1/bR7ORzaULpB1mumB
-         fyHu20owJSTwBaQCfs2+7ysFY7WBXIPCB9Rl0HniM4NFEWQlBgaVTzIFVXZ30OkUMt3H
-         0xHEM3HpJXpK8afAWqRJICF1ZWbc303vB9z/O5Ucjq/GptjiAPIrU5BAImYXy87rF1mF
-         Bteg==
+        bh=wu7pGf03sdcW+GKZ7Iww7/tPEwPDkL98YpGrOpuCsUc=;
+        b=moMI3tqdZfdin9SAkVjP5M2A8NaC/2t6HiY4gxyTX/Rp3CMfxeDcKCeVKsJBo26JNj
+         xNawpUfn/sKJVdo6wzSnC2fw7tEpajstjW8QSZK2mVXkIhGgEzx8wdVZFRWXkKuoN6mH
+         8Gha77bciaKkPG4UpaUpY3kJ416eFH3tmcjEJgu28wGy58Z2pK2oZt6I0+8o8cFCVX7v
+         GhxjaE2RXWKpj1Rt2of842QFJrKV95Ylbeqk1nBJEPI+YNMA9PlXjXeIptCc5DL/VA4S
+         WZ9CVfL2asOtkP5bppe9wB5aX3OA79cLI5gFK8DtKqPQW2HW+ltbF258lV1voZphfl2b
+         ckhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783700258; x=1784305058;
+        d=1e100.net; s=20251104; t=1783700388; x=1784305188;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=36epyzeQ57987BAo//5mNX8OTT88iDUdRaI6qY+H3cE=;
-        b=jvrEbyZS9b8oTnpdOFPLbkfdkwkRcw2w/G6w0hZNzXqMbZc9guj0dbJKI12sdrw/tg
-         N+iNKOQ0a5DIC1AbyniS8K0jtveEQur6X4ZtiyqPHnBa+Fiv/Akaf3fa4CfUijRnjo5K
-         H6K7KRYZvvoaPwyC0FyId7tAoW1cfSUaVUNzwZa6HcBYmaT7CrW2YniqbwLJ5GtwnbF7
-         y4WLX8Ybgl9liQueYbr4hNVr508InWJYKOzPNPBvKd5QI4R+NJu2a7P6hghr+V0GOu7K
-         Z6W05ndsAlPBoLbaLHSNOuo1gaaUoGOAjWIFaMw2T276bFmPcGJbAhsi3b8+1ZD3YYbE
-         QN/A==
-X-Forwarded-Encrypted: i=1; AHgh+RoGJsBUI75R/p5aj1z/TxnAFnf88tMxLRnqbzAZOVwFo0WgIGDut3yF5N676y2lDXXbvv3LSA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwadfgPjmT86W0Zsu8xnBbsa4MoR5hpB6uyzT/juEVgm7xlJ2S1
-	R4Ar0Y6HzFAsw6+2CehMxefpVODv5CId6N1f4VSJDzbOh6FdCx27oKSTnXKj8yegQw==
-X-Gm-Gg: AfdE7ckskPDWlwT7GcR/mwU3japg8YJbTm7R4F+2yfdqnvaQKNa1fLEBCNU8m5TvW2c
-	Ydt27hVBip34DFClZfy9+6ys13Q7dB6fFZZvwSxpPlkkgE+dy+MSuuEm+X0UDNUyEkx39py1yaq
-	kEglg24TvfRM0QhbSZ5sKbIbcugUBHPGyVvvuQ99AnSd5K3b4b5tI7rE7ES3K/8KrfkTMKPwcBS
-	SFtTZTz5Q0cchBWLpUCYp3Mmyz9X981sG5+yGLbguTmX8e3TIX8ZosSGRzqgeWySfgp9yPLH/bp
-	a7zKnv3CG1xT0Vo7Bu44hmHq+kdaBv3ueNCoKraiBL+l2UBKhLzIiZG7qaxt96Sp6foiOFOGjpp
-	WHLquzZYSd87/mgIszTC39AxY4nQ7hq5OPFS8iq/0Sto31xijT5ztgO6BOl05XfV8GVhuQ9cFzB
-	eHXC3Uh6P4xeEdrN4E6IszFOp1DbEKdzt9NmE8oDF5O/wKJPgMtfA=
-X-Received: by 2002:a05:600c:3496:b0:493:bc4a:c6b4 with SMTP id 5b1f17b1804b1-493f7499191mr13922845e9.38.1783700257980;
-        Fri, 10 Jul 2026 09:17:37 -0700 (PDT)
-Received: from google.com (137.69.77.34.bc.googleusercontent.com. [34.77.69.137])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493eb6f3dcdsm143760685e9.3.2026.07.10.09.17.36
+        bh=wu7pGf03sdcW+GKZ7Iww7/tPEwPDkL98YpGrOpuCsUc=;
+        b=pE+aBBNPdGNBw6PoLGidIF3799fnyoMhwRMICxnvRNz8vt5v8G1T7/tJvPMWwB1LXl
+         Ju6GQloY8nueHeX8r/DPNfMFVzRI2ONIkPgignwVLhXmCXop2BBWS6ZKr462PSPP15qG
+         J5EdGsbXp6JT+gAVu+A/i1aNEueNEKE1zdxXmsB1dE3q+xmJKizIb4owrCvckD3BwoBu
+         0oWO+VU+Kt5v34oYOd87dev625nDVh4Z0Mt6t37NLPEgV1nHFLGAic+O57BbeBdwsOGH
+         RQKEFAboNGLWisIzF8zl5uvBdu67enJYDuU43Wr71t3HnPTpxeIStaVzJnBcmlWWOwth
+         /mYg==
+X-Forwarded-Encrypted: i=1; AHgh+RogK+tDw5iQN0zkoSHvqmQtKcVsWl8uRQ3t/xgYNnL7cTj7MaqwyWQg4vbUWiQbWvtmGNKk1g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzxRY3RtvHTQtPDb7GWTf80SW6CdKt/9HGSBZOHUAW4GFG0gVQr
+	dN+jBKBexbHYCxuVG8HewYjJntgC3GWqFhlj1L6E0nDjA5gOfp1srZWZzVuqYF//NDU=
+X-Gm-Gg: AfdE7cmWn/ShQUgXQZL9XVQ21rFhIohLLEtTxh7ECKOj9rTMYJG48Byo+fw8uiZfyNi
+	Ik4BFyNqjkiLfxQPruWuQYEdOow9fkAm7i00oKq5Z0xuDOzmzr19kgZoIUFNiZg6rVwnl7qvCkn
+	Ae1PC4DIM1aWDakIyY9w0LpckXsrfNAF2W/SLdsihpi2wlby12PqGW905Q0/BMij9oAxIuDbgdq
+	kzC+XDT0RmtVLfBfcqcF+8zHAS0JjIeyFqqBSlpqVXGumhR5TDrDWBNxMPbQJXWBHMBI6wcC1Vi
+	k5YdiHdT8rko56Hpv9uVtg42w6RgtypXwdege9E6OueGTlwXZ1B3f45fYSE0+xSUQ9inOZVymGp
+	oU9PBjk3WuXV5tRCNKvmyQQrAWUVzxe7/TGgBxAZxm0T+EsdBCgiKwGovcxyQ
+X-Received: by 2002:ad4:5743:0:b0:8f4:870f:72bc with SMTP id 6a1803df08f44-8fec3cf5d44mr142091486d6.51.1783700387612;
+        Fri, 10 Jul 2026 09:19:47 -0700 (PDT)
+Received: from ziepe.ca ([159.2.72.92])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd56bf455sm44263206d6.13.2026.07.10.09.19.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2026 09:17:36 -0700 (PDT)
-Date: Fri, 10 Jul 2026 17:17:32 +0100
-From: Vincent Donnefort <vdonnefort@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
-	tabba@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 07/25] KVM: arm64: iommu: Introduce IOMMU driver
- infrastructure
-Message-ID: <alEbHFbmr_PvY6ZB@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-8-smostafa@google.com>
+        Fri, 10 Jul 2026 09:19:46 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wiDx3-00000007We8-41pt;
+	Fri, 10 Jul 2026 13:19:45 -0300
+Date: Fri, 10 Jul 2026 13:19:45 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
+ DMA_ATTR_CC_SHARED
+Message-ID: <20260710161945.GO118978@ziepe.ca>
+References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
+ <20260701054926.825925-17-aneesh.kumar@kernel.org>
+ <ak42F240d-53QeFN@arm.com>
+ <yq5apl0xgy89.fsf@kernel.org>
+ <ak-CT3oanlDfgTy4@arm.com>
+ <20260709181336.GM118978@ziepe.ca>
+ <yq5ajyr3h106.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,206 +107,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260501111928.259252-8-smostafa@google.com>
+In-Reply-To: <yq5ajyr3h106.fsf@kernel.org>
 
-On Fri, May 01, 2026 at 11:19:09AM +0000, Mostafa Saleh wrote:
-> To establish DMA isolation, KVM needs an IOMMU driver which provides
-> ops implemented at EL2.
+On Fri, Jul 10, 2026 at 10:52:49AM +0530, Aneesh Kumar K.V wrote:
+> >> > 	/*
+> >> > 	 * For host memory encryption and device requiring unencrypted DMA,
+> >> > 	 * MMIO memory is treated as shared by default.
+> >> > 	 */
+> >> > 	if (attrs & DMA_ATTR_MMIO) {
+> >> > 		if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) || force_dma_unencrypted(dev))
+> >> > 			attrs |= DMA_ATTR_CC_SHARED;
+> >> > 	}
+> >> 
+> >> Yes, I think it does the trick, preserves the current semantics for AMD.
+> >> I guess you could use a single 'if' for all checks (up to you).
+> >
+> > Please don't change it, MMIO P2P is broken on CC systems today and it
+> > should stay broken. Passing DMA_ATTR_MMIO with DMA_ATTR_CC_SHARED is
+> > an error that we need to correct in the drivers not make work in the
+> > core code.
+> >
 > 
-> Only one driver can be used and is registered with
-> kvm_iommu_register_driver() by passing pointer to the ops.
-> 
-> This must be called before module_init() which is the point KVM
-> initializes.
+> But the above changes are intended to handle HOST_MEM_ENCRYPT. In v7, we
+> had the following diff:
 
-Everywhere s/KVM/pKVM/ as this can be registered only if pKVM is enabled.
+To follow how the rest of the decrypted/encrypted stuff works the MMIO
+has to be flaged with CC_SHARED for HOST_MEM_ENCRYPT too, just like
+the PTEs.
 
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  arch/arm64/include/asm/kvm_host.h       |  5 +++++
->  arch/arm64/kvm/Makefile                 |  2 +-
->  arch/arm64/kvm/hyp/include/nvhe/iommu.h | 13 +++++++++++++
->  arch/arm64/kvm/hyp/nvhe/Makefile        |  3 ++-
->  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 20 +++++++++++++++++++
->  arch/arm64/kvm/hyp/nvhe/setup.c         |  5 +++++
->  arch/arm64/kvm/iommu.c                  | 26 +++++++++++++++++++++++++
->  7 files changed, 72 insertions(+), 2 deletions(-)
->  create mode 100644 arch/arm64/kvm/hyp/include/nvhe/iommu.h
->  create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
->  create mode 100644 arch/arm64/kvm/iommu.c
-> 
-> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-> index 851f6171751c..52898d2a3ec6 100644
-> --- a/arch/arm64/include/asm/kvm_host.h
-> +++ b/arch/arm64/include/asm/kvm_host.h
-> @@ -1733,4 +1733,9 @@ static __always_inline enum fgt_group_id __fgt_reg_to_group_id(enum vcpu_sysreg
+> @@ -88,37 +88,40 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>  {
+>  	dma_addr_t dma_addr;
 >  
->  long kvm_get_cap_for_kvm_ioctl(unsigned int ioctl, long *ext);
->  
-> +#ifndef __KVM_NVHE_HYPERVISOR__
+> +	/*
+> +	 * For a device requiring unencrypted DMA, MMIO memory is treated
+> +	 * as shared by default.
+> +	 */
+> +	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
+> +		attrs |= DMA_ATTR_CC_SHARED;
 
-I think it's not necessary, a lot of things aren't guarded for
-__KVM_NVHE_HYPERVISOR__.
+force_dma_unencrypted() says nothing about the properties of the
+address passed in, this was nonsense :\
 
-> +struct kvm_iommu_ops;
+> As we discussed [1], that can come in a later patch. In the meantime, adding
+> the HOST_MEM_ENCRYPT check preserves the previous behavior for SME.
 
-Perhaps we can keep this private to hyp code by just using (void *) here?
+It never worked. When we added ATTR_MMIO it started to have a chance
+to work but prior to that it was always broken anyhow. I don't see
+there is much merit in preserving the narrow window when we
+inadvertantly had a half working ATTR_MMIO.
 
-> +int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops);
-> +#endif
-> +
->  #endif /* __ARM64_KVM_HOST_H__ */
-> diff --git a/arch/arm64/kvm/Makefile b/arch/arm64/kvm/Makefile
-> index 59612d2f277c..0ddef54f7434 100644
-> --- a/arch/arm64/kvm/Makefile
-> +++ b/arch/arm64/kvm/Makefile
-> @@ -24,7 +24,7 @@ kvm-y += arm.o mmu.o mmio.o psci.o hypercalls.o pvtime.o \
->  	 vgic/vgic-mmio.o vgic/vgic-mmio-v2.o \
->  	 vgic/vgic-mmio-v3.o vgic/vgic-kvm-device.o \
->  	 vgic/vgic-its.o vgic/vgic-debug.o vgic/vgic-v3-nested.o \
-> -	 vgic/vgic-v5.o
-> +	 vgic/vgic-v5.o iommu.o
+But if you really want to it should be
+cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) *only* and get rid of the wrong
+force_dma_unencrypted().
 
-alphabetical order.
+But IMHO, I'd rather this series treat ATTR_MMIO as private MMIO and
+ATTR_MMIO|CC_SHARED as shared MMIO and that's the right and correct
+thing for the DMA API.
 
->  
->  kvm-$(CONFIG_HW_PERF_EVENTS)  += pmu-emul.o pmu.o
->  kvm-$(CONFIG_ARM64_PTR_AUTH)  += pauth.o
-> diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> new file mode 100644
-> index 000000000000..1ac70cc28a9e
-> --- /dev/null
-> +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> @@ -0,0 +1,13 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef __ARM64_KVM_NVHE_IOMMU_H__
-> +#define __ARM64_KVM_NVHE_IOMMU_H__
-> +
-> +#include <asm/kvm_host.h>
-> +
-> +struct kvm_iommu_ops {
-> +	int (*init)(void);
-> +};
-> +
-> +int kvm_iommu_init(void);
-> +
-> +#endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
-> diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
-> index 89d0533921f9..606c0e1b7bd0 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/Makefile
-> +++ b/arch/arm64/kvm/hyp/nvhe/Makefile
-> @@ -24,7 +24,8 @@ CFLAGS_switch.nvhe.o += -Wno-override-init
->  
->  hyp-obj-y := timer-sr.o sysreg-sr.o debug-sr.o switch.o tlb.o hyp-init.o host.o \
->  	 hyp-main.o hyp-smp.o psci-relay.o early_alloc.o page_alloc.o \
-> -	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o stacktrace.o ffa.o
-> +	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o stacktrace.o ffa.o \
-> +	 iommu/iommu.o
->  hyp-obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
->  	 ../fpsimd.o ../hyp-entry.o ../exception.o ../pgtable.o ../vgic-v5-sr.o clock.o
->  hyp-obj-y += ../../../kernel/smccc-call.o
-> diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> new file mode 100644
-> index 000000000000..406c8fb9b3b9
-> --- /dev/null
-> +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> @@ -0,0 +1,20 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * IOMMU operations for pKVM
-> + *
-> + * Copyright (C) 2022 Linaro Ltd.
-> + */
-> +#include <nvhe/iommu.h>
-> +
-> +/* Only one set of ops supported */
-> +struct kvm_iommu_ops *kvm_iommu_ops;
-> +
-> +
-
-Empty line.
-
-> +int kvm_iommu_init(void)
-> +{
-> +	/* Keep DMA isolation optional. */
-> +	if (!kvm_iommu_ops || !kvm_iommu_ops->init)
-> +		return 0;
-
-The absence of the SME workaround on affected systems breaks pKVM init. So
-perhaps the IOMMU should do the same? (see pkvm_check_sme_dvmsync_fw_call())
-
-> +
-> +	return kvm_iommu_ops->init();
-> +}
-> diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
-> index 8041f6e80cd1..1f6b221db9a0 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/setup.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/setup.c
-> @@ -14,6 +14,7 @@
->  #include <nvhe/early_alloc.h>
->  #include <nvhe/ffa.h>
->  #include <nvhe/gfp.h>
-> +#include <nvhe/iommu.h>
->  #include <nvhe/memory.h>
->  #include <nvhe/mem_protect.h>
->  #include <nvhe/mm.h>
-> @@ -329,6 +330,10 @@ void __noreturn __pkvm_init_finalise(void)
->  	if (ret)
->  		goto out;
->  
-> +	ret = kvm_iommu_init();
-> +	if (ret)
-> +		goto out;
-> +
->  	ret = hyp_ffa_init(ffa_proxy_pages);
->  	if (ret)
->  		goto out;
-> diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
-> new file mode 100644
-> index 000000000000..f247384fa193
-> --- /dev/null
-> +++ b/arch/arm64/kvm/iommu.c
-> @@ -0,0 +1,26 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2025 Google LLC
-> + * Author: Mostafa Saleh <smostafa@google.com>
-> + */
-> +
-> +#include <linux/kvm_host.h>
-> +
-> +extern struct kvm_iommu_ops *kvm_nvhe_sym(kvm_iommu_ops);
-> +
-> +static DEFINE_MUTEX(kvm_iommu_reg_lock);
-
-could be moved directly into the only user: kvm_iommu_register_driver
-
-> +
-> +int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
-
-__init ?
-
-> +{
-> +	guard(mutex)(&kvm_iommu_reg_lock);
-> +
-> +	/* Only protected KVM before de-privilege. */
-
-Don't think that comment brings much information, looking at the line below.
-
-> +	if (!is_protected_kvm_enabled() || is_kvm_arm_initialised())
-> +		return -EINVAL;
-
--EPERM?
-
-> +
-> +	if (kvm_nvhe_sym(kvm_iommu_ops))
-> +		return -EBUSY;
-> +
-> +	kvm_nvhe_sym(kvm_iommu_ops) = hyp_ops;
-> +	return 0;
-> +}
-> -- 
-> 2.54.0.545.g6539524ca2-goog
-> 
+Jason
