@@ -1,103 +1,95 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1756541166C
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 12:04:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E20B63783D8
+	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 12:11:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783685067; cv=none; b=eIVZL66yDVeKC0da9BEYP87AoU9nRbLxGBz4iO+U32SUCCglMHnQRgPv8fYkUX3fpoR+kAJlueKDvBJnxYvtfvCVM/+vjcNeh4OhaCsivmm0+xl038Enhwcik1b4dk2pV7AyHA5DRP8xDyses5e//dyFVpStyZ6jkBD2cGXEGhw=
+	t=1783685508; cv=none; b=NxvgqVvTo2m3GwzOfWmWOKMhZjLYFOzcWSkG8G0VFLyeq3PxCD1LxwhDhYTZs27gMIzOI64SjWxDghJkuFNFcoyTwKhXGAxsFFxFTJ+1xJ4eh1Mkdx3w5lGBFRKI0PrBO9NznovSbwfVLGpV93S3RBRHO1F5gmhBmN2l9kNOz8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783685067; c=relaxed/simple;
-	bh=n6yMtU5a9xI+ekMnhRgl8xfMzS3v7/anO/PeMGwUz3g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GyT4FIBvvXNNsAVgt2YzFZ07HuPAC3R231n/pm2GZu/q+tDGJNw+h9x70KBcnEj9lTHVKYMu9uOBydAWh/cU06MNoDNRdomdM6eRGmCHJVNj/RkCmMYSbZ+rdo6zd6Xzz83oGqGO+IbwmsXBPGC2YnyI57bIV3r3jMOzuY5vtX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ZCyZQILs; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1783685508; c=relaxed/simple;
+	bh=Q2see9+GI8xU//+CtviZOZx19CnBHqZmF8tVQaULcbE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=m9cwwiBy9GpGnKprR+V4Wbrf+VR1sKvyW0YjOx8EQh7ds2R84PUrEhzeh3y77LciuYNAi0ymrgMv91QqMxL03UwviDBfK2KV5yqs11GeppSObbtk1/lbNzRNfN7g6lHQCmFT9ribut6cDqhmlXqlYaJ2Zi+rAer0fhV+bXjo7q8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=D5p3BRWS; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZCyZQILs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1783685065;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=n6yMtU5a9xI+ekMnhRgl8xfMzS3v7/anO/PeMGwUz3g=;
-	b=ZCyZQILsXTMqcz8z4boE6dk2LDtw6V0LGWHFhb1MUe6H+M1ANABrulHaZoNXDfMojbi8M1
-	EPrkGlVYH7awXp6lJNn/bNHst47ZinTgr9Po81O5JBCuW8rZ78uAbIuGGTeVsxQSFor33Y
-	vEKyZtTp8uqu2gub6FgYsz26Fo5Bf58=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-619-O1JRr3ZNPd-hJKDjLHZZNg-1; Fri, 10 Jul 2026 08:04:23 -0400
-X-MC-Unique: O1JRr3ZNPd-hJKDjLHZZNg-1
-X-Mimecast-MFC-AGG-ID: O1JRr3ZNPd-hJKDjLHZZNg_1783685063
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-48f0c5d20c6so1121331b6e.2
-        for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 05:04:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783685063; x=1784289863;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=n6yMtU5a9xI+ekMnhRgl8xfMzS3v7/anO/PeMGwUz3g=;
-        b=UvuMmIoZ6akvMWEWX8FfYPGdGVY8KOpsLkIwvWkWhl1RXo+I1pXaHQAtM7a/fFiOkM
-         UJ8s8YqSOkYYHpibGaLOvi2QAogbdpS7hlliYJGpIdg93ZmMODMn26oyZw3NUtfqsnUK
-         tPePAvmwbnjb2hGRnpsPO1ruGQ/GD9FJREyQbWjaSiCP23y1eFXTeLuWfGuby9baNEdp
-         wKk8bXpBuandJa2vpc67oj9Dm3LARyvdC+pmAJ0WG1SPRw6FDfiknGofJHzxT4AXclaL
-         j68r8T6QblFBgstjy/GW7Bgg7SMbfLr0tgezWpmwHtK0/KWx3817+1ijmnztYEs5V3So
-         GReQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8buMlQVnnG1SifbWsko1dxZe4a8klLosuwwofpIF8polX0fYjLt8f5o8zYNFiNjqOsIhmvrw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YydId8rKAypzM+uQWZHOlzwIauEpqtldrUtqjQ5438SFPYuWzUG
-	2t25/kMpKg06QmZdj/XAtMzcmlPA6o6IFDiMzAk8oJGUnMXfMm93pHgMa2+7WPj3ZjB86i2WZKn
-	E+yxqGIWM7rqzI/i0scRl559s4XQztvxZQNx7Iv6gTk2m/bJDkVD8ZTp5AimMkxYfebO45Nhz6x
-	T9h6Y7kka4X1Bl+VW5mFJ4rJ3s7ze7Ax0=
-X-Gm-Gg: AfdE7clPtXY+6PprrrEwBJTAhAJN+OZ4w21lPaKunszKPk243cOXq00FgDOeaE3ztcU
-	Yanswd/r0dk/w30K3g7Q/4CZURal2W7NPNLM43mHcw1QMuXoCXVToHnf2IqG/xH3dSU5JX6bgqA
-	15PzmFfJdKKCIUgC9/BOLHPNSknt8mWpcFm/gd+b/oeav5FXSjDLO9rqNDqs5fYAG+hsol1s2Gx
-	+BXe905PYuatoqkmr2n5wck+i0=
-X-Received: by 2002:a05:6808:4495:b0:495:d6b7:6004 with SMTP id 5614622812f47-4a2045e17aemr8153643b6e.26.1783685063070;
-        Fri, 10 Jul 2026 05:04:23 -0700 (PDT)
-X-Received: by 2002:a05:6808:4495:b0:495:d6b7:6004 with SMTP id
- 5614622812f47-4a2045e17aemr8153631b6e.26.1783685062691; Fri, 10 Jul 2026
- 05:04:22 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="D5p3BRWS"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0AFAF1E7D;
+	Fri, 10 Jul 2026 05:11:40 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 12DFD3F85F;
+	Fri, 10 Jul 2026 05:11:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1783685504; bh=Q2see9+GI8xU//+CtviZOZx19CnBHqZmF8tVQaULcbE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=D5p3BRWSyMoNDxD/QaUv5QMjXLFZnnn18JTuKVPlAZXBN450QHvPpSetMzN/GZ3zj
+	 W2IiiMPdZtGLD+M+Anx7Qy1UV4t86jKoZu1P3IZDMTQyiPguDn8CfF299YNnaznMWE
+	 KZwYaOSphRKwtuby8ouXyFEY7FmW5cqo+6Mbxy0k=
+Message-ID: <15bbada2-3214-45dc-8934-a6dbe207c887@arm.com>
+Date: Fri, 10 Jul 2026 13:11:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260629144837.3244851-1-desnesn@redhat.com> <akRTVinqeeZnVARD@localhost.localdomain>
-In-Reply-To: <akRTVinqeeZnVARD@localhost.localdomain>
-From: Desnes Nunes <desnesn@redhat.com>
-Date: Fri, 10 Jul 2026 09:04:11 -0300
-X-Gm-Features: AUfX_mzVC853Yhxe5IzKb6IGxVPhPJKkZ0EBhVqEVYwZEn7zq3i4mNWDrdm-aj8
-Message-ID: <CACaw+exCLSLRUNU38uorD9r+fk4AjD-Oe+RZNzFXzjwE2q9rsQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/vt-d: Fix UCTP context table slot when copying
- root entries
-To: Tao Liu <ltao@redhat.com>
-Cc: kexec@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, stable@vger.kernel.org, baolu.lu@linux.intel.com, 
-	dwmw2@infradead.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: CovXeqeewTWZRdyYbuGhGrRl4s4zc4dhbxna4tea0wA_1783685063
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/rockchip: implement .flush_iotlb_all
+To: Will Deacon <will@kernel.org>, Jiaxing Hu <huhuvmb88@gmail.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
+ iommu@lists.linux.dev, linux-rockchip@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ jgg@ziepe.ca
+References: <20260710060513.863714-1-huhuvmb88@gmail.com>
+ <alDQevX58XvdRcWc@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <alDQevX58XvdRcWc@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Greetings Tao,
+On 10/07/2026 11:59 am, Will Deacon wrote:
+> On Fri, Jul 10, 2026 at 06:05:13PM +1200, Jiaxing Hu wrote:
+>> rk_iommu invalidates the IOTLB synchronously in .unmap (via
+>> rk_iommu_zap_iova), so it stays consistent without a deferred .iotlb_sync
+>> and does not advertise IOMMU_CAP_DEFERRED_FLUSH.
+>>
+>> It never implemented the optional .flush_iotlb_all op, though, and
+>> iommu_flush_iotlb_all() is a no-op when that op is absent -- so on Rockchip
+>> a driver that owns an rk_iommu domain and calls it to flush the whole
+>> domain's TLB (e.g. before reusing a mapping, without unmapping it) gets
+>> nothing, even though the hardware can do it: rk_iommu already issues
+>> ZAP_CACHE for range shootdowns.
+>>
+>> Implement it with that same primitive: ZAP_CACHE every bank of every IOMMU
+>> on the domain, under the runtime-PM + clk guard already used by
+>> rk_iommu_zap_iova().
+>>
+>> Found while bringing up an out-of-tree RK3576 NPU (accel/rocket) driver
+>> that flushes before each submit; on Rockchip that flush did nothing.
+>>
+>> Signed-off-by: Jiaxing Hu <huhuvmb88@gmail.com>
+>> ---
+> 
+> We tried to get rid of iommu_flush_iotlb_all() in 69e5a17511f6
+> ("iommu: Remove useless flush from iommu_create_device_direct_mappings()")
+> but we had to revert that in a33bf8d8ce7e ("iommu: Restore
+> iommu_flush_iotlb_all()") because of a user in the MSM driver.
 
-On Tue, Jun 30, 2026 at 8:38=E2=80=AFPM Tao Liu <ltao@redhat.com> wrote:
-> Thanks for attaching the kernel stack trace, which is similar to the one =
-I have
-> encountered recently. And I have applied & tested the patch, works good f=
-or me.
->
-> Tested-by: Tao Liu <ltao@redhat.com>
+We wanted rid of the public API (indeed partly due to the prospect of 
+client drivers abusing it), but the actual ->flush_tlb_all driver op 
+remains crucial to the flush queue mechanism, so there's no harm in 
+drivers implementing it *if* they also implement the relevant 
+optimisations to avoid synchronous flushing in unmap_pages to make 
+CAP_DEFERRED_FLUSH worthwhile.
 
-Thanks for testing it on another system and confirming the fix.
+Thanks,
+Robin.
 
-Best regards,
-
-Desnes
+> So I think this is the wrong direction. We should try harder to remove
+> the function rather than add new implementations of it. I'm assuming
+> you're only adding it for some out-of-tree code that calls it?
+> 
+> Will
 
