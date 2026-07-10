@@ -1,152 +1,158 @@
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A430382370
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 19:08:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E263437DE84;
+	Fri, 10 Jul 2026 19:10:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783710520; cv=none; b=Z7CtpeqRZ7TITfG6VYSigotnYch5P4pJGt2X63mvqgFLCdhWLsjLEfvwIuj6/U8bWtYf67rRMdDf9/FeMC4Djvpj9FjA4p5sY/+55xBtE5slRtLUrzrSGKXG/fHs8OZ3GchjvpDxyY3mwcHvGCfkTwr1raw/HM8n+qe4xOs4Jp8=
+	t=1783710606; cv=none; b=NqR84pZ/IQ+VxMW2mv0KdHGcSlPsLMnlgIIh4mCiABxnnKAOJPONrMNaAyf4Cw8BjIs0vlz71RZXMeB65zt0YkBKoOXtKLUKJa8B4ZiSTi226Y3feeVgmJPlyKPjXdK/0yR7/PvBD1hMDEMDbEoJpPowKQfj2f9SRyHki0FbLSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783710520; c=relaxed/simple;
-	bh=HnhvpODSykZGd0gC/qYJbWWYfTQ/iP5eixsH8/fLwto=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=c4innG9d6q/jsWXxY2pZff8Q8jAlBTpBJR5Xkp+5iPJBy7O2mzWOMc8idQFmYJ09JKa0AOoXutUzDcjgA8ZHRUtnjUGMlbtzHEzx2thfx167Dh/4r6sk1cDMe/3p3Y5+99Ay2Wf01vVbVtGUNQtBKTiewtVLkI/8A798IGyo/bo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=U7Y+WUUw; arc=none smtp.client-ip=209.85.160.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
+	s=arc-20240116; t=1783710606; c=relaxed/simple;
+	bh=T3NhY1Odkiqu1O5vVfFHhbxIja3A+wYbFcoqVrmS1IM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=e/e5FFZczUwecqxp+KglhMqDF/2dS7WSUd6vjBMLg+MRQfax95XpUzVyAWOOScU5zfK9UEazE5nDIz8HeYGGN1PdDSECSFAjr+q/y8SJTwnzS/FmoUICS1+5TLjBoIOJbTKqXmkVcpgs/0kGAmSpuTkm+InHOdlG7CbhazXmiQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gJVAQDeZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="U7Y+WUUw"
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-51bfbe05683so7627041cf.2
-        for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 12:08:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gourry.net; s=google; t=1783710517; x=1784315317; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=iFtVuusRSG4YUFzvnh+nyLwKm1T7E76ZywXpwPdPfD8=;
-        b=U7Y+WUUwcUXj0Ho7v8eb35AK58hWiJ3+WbygjnMIk666WQuKqtV8piYsecYIuPgqis
-         LYBXORmjiQzFuqw4akrBICh1LNlB7xtOClSJiYk6jKNOjLbBjS9/1cuAhKmP+1xgzoxs
-         jLRW3Ay2PezWyC9kZRaiXepYU8SaFbDNElkekaX2AfHeWQgq0YBkAzxVr4gN1T0IVBKL
-         IiMVceKqOOORuNaV7MhQy5oHmmOmKL8VMEAJ+btY3tDh7wrY/tbBHhvHeZlCwTnku7T2
-         qKsffvOenkQ8zH4DR5ZpBDC4CIprVe2hHzJu7WUdPbP10Vx5tu/aJoc7hrfuKHPS3c/X
-         pksg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783710517; x=1784315317;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=iFtVuusRSG4YUFzvnh+nyLwKm1T7E76ZywXpwPdPfD8=;
-        b=WcSBWVvOIlJbBLG2pBXviy5TQx5JDyf/ZO2EhB0OngyLSGoDeycDY9sLkDx3Q3K872
-         w9YW53b5bVtqgB4ZBSbW4bIr/7uRRgo1OurO8n9hY4U0qzqT3SW6GqbFFWuJ8jLOX67E
-         3C2C3elhlI7wVXjE0Qmuk9qDNq6+X+VLSjq3rhif7tPblW6xQTRTcr01tNj9De4qr1mk
-         9nXeTVOoPoOmcdXXlxZWZsMJ+3ptZCb6Ae0E65MJu+NZHLWhTDg+q/4Y4/4HlwIYo4bK
-         GEx3u/+AAxEd7QZG22NRMh6mNtmw6wa3KLpaUS7qrW7ADAz6/nIKglmUCulNsXdlfNdj
-         cFIw==
-X-Forwarded-Encrypted: i=1; AHgh+Rr1lVKn9y0rczg5wsqCuOWtUCOpteT/ilg9wHgm++vuKwvbR4o248/HTzKj+F2QuJGm4t6O0Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwsZyIX7LzNjH73SA1BIrdEuF5DUn8YCcGVK3aGsbSnVqDiTmGn
-	aSa6UBCt4XWJyjEzZ7YNQA2ms7/wHYMXfxKzddd3wXVeN/Own80PdMvxFEbpv9Gxcus=
-X-Gm-Gg: AfdE7clv9gIGCARjlJjeZhhE25FxApYvyjdAOcgrl1npOlXrSY6O+Kr8MrUmaRTKC/H
-	o9VylnW9Q+G/bJ1lSVKFqNgz35QRUHcuqHGbOOXXZpNutaIPC5dPVkXHhxdKqoxavgRecMoTNWd
-	LJLXSKDtht+tCMUDLdNDvtnufhzRihNKnkc1tJB5qzMizmQOHU8TMhT3GUvoHA3CbaLrG7suOHk
-	3EH8M3sj/a0d/rtasboyZPn9P3gysS+RnrD84OdlgD7XsiekOtlUlLir8hDH6N6D9wu6Esxvu37
-	A3r/AtOppOmafPDw8+wLRvfKt247Xdigske8LK/9xJZeqzB/KxICLwODebXtb8Oq6IOy57/wl8i
-	t4yeIxqLNVou2wRmpim8PAwhBriNGxKtZWBskCw6XpRRxH+g/T298YRvRNc2q9k+PpnPOAdqx2o
-	BZ0i5P87ZkkKNGyjSCj2i5Wn1ubTOSwPuRMGeyRNQ4v8Vz0O4np6vKxV71dZfXUDyWZi4N
-X-Received: by 2002:a05:622a:1818:b0:51c:b900:513d with SMTP id d75a77b69052e-51cbf280a8amr2226311cf.53.1783710517321;
-        Fri, 10 Jul 2026 12:08:37 -0700 (PDT)
-Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd7c1da1bsm47847566d6.30.2026.07.10.12.08.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2026 12:08:36 -0700 (PDT)
-Date: Fri, 10 Jul 2026 15:08:31 -0400
-From: Gregory Price <gourry@gourry.net>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Simon Schuster <schuster.simon@siemens-energy.com>,
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Ian Abbott <abbotti@mev.co.uk>,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	Lucas Stach <l.stach@pengutronix.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Christian Koenig <christian.koenig@amd.com>,
-	Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Dan Williams <djbw@kernel.org>, Muchun Song <muchun.song@linux.dev>,
-	Oscar Salvador <osalvador@suse.de>,
-	David Hildenbrand <david@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Matthew Wilcox <willy@infradead.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gJVAQDeZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A666D1F000E9;
+	Fri, 10 Jul 2026 19:09:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783710604;
+	bh=W80wLEkD9W1pRB495wpgnQIxmPS8lDwtXqHw1IqIoXA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=gJVAQDeZh09mlIwH9aS39ydQbMv9ATCa+q6RzlotJlYDVCb0X489XGl54CievRuGV
+	 bGeu8Trnzs9LKTmlXX1pDvL33HGewl6FHGfOjc0OpTWhcguWUb6nrHVON5SwxxlXxh
+	 iJTpwsEFNo+/Gm+kYK5XFRHKL4VnmI2nxMSvTZO7jYF/1Rr/f9TiJImRsDON2mAQ0g
+	 19pArOpGrtzlKcjk3UrEhjHcRxKRE7bBMnW84vRE1rhb/QkRefEY9u0Iubp2HtQgxb
+	 ZzlSURdXD0kwVECjToI+lZg14zJMWTnVf7oLvDTrLlhMJEAMH6DYqS738Ii5K0QjYJ
+	 coYrGCnVbQA5Q==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>,
-	Miaohe Lin <linmiaohe@huawei.com>, Hugh Dickins <hughd@google.com>,
-	Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>,
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-	linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-	kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-mm@kvack.org, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
-	damon@lists.linux.dev, Pedro Falcato <pfalcato@suse.de>,
-	Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
-	Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 22/30] mm/vma: move __install_special_mapping() to vma.c
-Message-ID: <alFDLz9_oSSvHTuJ@gourry-fedora-PF4VCD3F>
-References: <cover.1782735110.git.ljs@kernel.org>
- <b3254231831037ca3e9757e3e05c90072e04a6aa.1782735110.git.ljs@kernel.org>
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
+ DMA_ATTR_CC_SHARED
+In-Reply-To: <20260710161945.GO118978@ziepe.ca>
+References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
+ <20260701054926.825925-17-aneesh.kumar@kernel.org>
+ <ak42F240d-53QeFN@arm.com> <yq5apl0xgy89.fsf@kernel.org>
+ <ak-CT3oanlDfgTy4@arm.com> <20260709181336.GM118978@ziepe.ca>
+ <yq5ajyr3h106.fsf@kernel.org> <20260710161945.GO118978@ziepe.ca>
+Date: Sat, 11 Jul 2026 00:39:49 +0530
+Message-ID: <yq5atsq6hdaa.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b3254231831037ca3e9757e3e05c90072e04a6aa.1782735110.git.ljs@kernel.org>
+Content-Type: text/plain
 
-On Mon, Jun 29, 2026 at 01:23:33PM +0100, Lorenzo Stoakes wrote:
-> This function is operating on VMAs and rightly belongs in vma.c, where it
-> can be subject to VMA userland testing and allows us to isolate it from the
-> rest of mm.
-> 
-> The _install_special_mapping() function will remain in mmap.c as a wrapper,
-> since this is used by architecture-specific code.
-> 
-> Doing so allows us to isolate more functions in vma.c for the same reasons.
-> 
-> This forms part of work to allow for tracking MAP_PRIVATE file-backed
-> mappings by their anonymous virtual page offset, as doing so allows us to
-> isolate and keep code that interacts with this together.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-Reviewed-by: Gregory Price <gourry@gourry.net>
+> On Fri, Jul 10, 2026 at 10:52:49AM +0530, Aneesh Kumar K.V wrote:
+>> >> > 	/*
+>> >> > 	 * For host memory encryption and device requiring unencrypted DMA,
+>> >> > 	 * MMIO memory is treated as shared by default.
+>> >> > 	 */
+>> >> > 	if (attrs & DMA_ATTR_MMIO) {
+>> >> > 		if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) || force_dma_unencrypted(dev))
+>> >> > 			attrs |= DMA_ATTR_CC_SHARED;
+>> >> > 	}
+>> >> 
+>> >> Yes, I think it does the trick, preserves the current semantics for AMD.
+>> >> I guess you could use a single 'if' for all checks (up to you).
+>> >
+>> > Please don't change it, MMIO P2P is broken on CC systems today and it
+>> > should stay broken. Passing DMA_ATTR_MMIO with DMA_ATTR_CC_SHARED is
+>> > an error that we need to correct in the drivers not make work in the
+>> > core code.
+>> >
+>> 
+>> But the above changes are intended to handle HOST_MEM_ENCRYPT. In v7, we
+>> had the following diff:
+>
+> To follow how the rest of the decrypted/encrypted stuff works the MMIO
+> has to be flaged with CC_SHARED for HOST_MEM_ENCRYPT too, just like
+> the PTEs.
+>
+>> @@ -88,37 +88,40 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>>  {
+>>  	dma_addr_t dma_addr;
+>>  
+>> +	/*
+>> +	 * For a device requiring unencrypted DMA, MMIO memory is treated
+>> +	 * as shared by default.
+>> +	 */
+>> +	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
+>> +		attrs |= DMA_ATTR_CC_SHARED;
+>
+> force_dma_unencrypted() says nothing about the properties of the
+> address passed in, this was nonsense :\
+>
+>> As we discussed [1], that can come in a later patch. In the meantime, adding
+>> the HOST_MEM_ENCRYPT check preserves the previous behavior for SME.
+>
+> It never worked. When we added ATTR_MMIO it started to have a chance
+> to work but prior to that it was always broken anyhow. I don't see
+> there is much merit in preserving the narrow window when we
+> inadvertantly had a half working ATTR_MMIO.
+>
+> But if you really want to it should be
+> cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) *only* and get rid of the wrong
+> force_dma_unencrypted().
+>
+
+Ok, I will update the changes to so we preserve the previous behaviour
+for SME?
+
+	if (attrs & DMA_ATTR_MMIO) {
+		/*
+		 * For host memory encryption treat MMIO memory as shared
+		 */
+		if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+			attrs |= DMA_ATTR_CC_SHARED;
+	}
+
+Do let me know if you feel strongly that the above change should not be
+included and that the SME P2P case should instead be handled in a future
+patch.
+
+
+>
+> But IMHO, I'd rather this series treat ATTR_MMIO as private MMIO and
+> ATTR_MMIO|CC_SHARED as shared MMIO and that's the right and correct
+> thing for the DMA API.
+>
+
+If you think the rest of the series is ready for upstream, could you
+please ack it so it can be picked up for the next merge window? I'll
+repost v8, rebased on top of the pKVM topic branch.
+
+-aneesh
