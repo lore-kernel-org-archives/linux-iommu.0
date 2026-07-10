@@ -1,238 +1,260 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E09B372EEF
-	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:22:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783664550; cv=none; b=WswzxAREU2DhAkSzVHJPwmrLfF9C0B+1uj/80KpkgccKlDbwhG3ME7Wbb5auc/W93gw18PXf1QOQwuGJxqXUlOHdPcQPIRPsGnYZCpjtav9WeG16SfCu/0sZrZMPcm1qNLQK4fyfrzXBaNSjMlOVw89kwad0ownCnYtnkwA6T3g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783664550; c=relaxed/simple;
-	bh=mFZ+yaXM6HIBDWqIkKJ4Xb0+XLcL4ZCcx5Ve1DIH3uU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tceYKN7ddwmUxuBDz7AQ6zwd3MSZ0JPPQim8JTzDW5pLgPwlDtFsqBb2f4ufMHsJSypZ1+egyzfuAvw6TvJvFhqtMABrMxoW26mTwBBjLO4FSU3aou6CskMCzGH3QEcyl0M6sxAQf86Iwh/ZjG6g1/e3A6bLqrbsJKG2yh3uQ1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XkwsHJp1; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011014.outbound.protection.outlook.com [40.93.194.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 998D8386C0A
+	for <iommu@lists.linux.dev>; Fri, 10 Jul 2026 06:35:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783665325; cv=fail; b=nYIK0yLXJuPDdUxmU4IjUz1GZ+WJGlDp+LZq+/2wL/lplDGFBZDSWef0glHuPswOPAq0clUcGitbWR//mucI/myyNCMrCH2qdez9JyHcNplN5wfPpNA0tJcrAPQne1gGqcFcqkacPLqYvQVk3P7WdEaf56BRkjrfnC8BphFyQh4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783665325; c=relaxed/simple;
+	bh=pzOmH3CnKqBS4IeAejjN584EjdKSN9wXcH4vSvYoVTc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=bN1GP8aliqqBmkebWSvwFlIqwD9dWx9xmsu8x3Pe6k61ArEMDBWpvaH28GLL3NOpY6xgO/25VsC4j8Rwt4RmByNrDPOnoWJxeQEZpmVpCf2qFDbVNEcoioe3yUiUhGM51KTnjX3gG4RNm7PUN5pOiHAphyAvCbY9OTA1Y0OL/sk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Y/yp+FM7; arc=fail smtp.client-ip=40.93.194.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XkwsHJp1"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6AF9820B716E;
-	Thu,  9 Jul 2026 23:22:22 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6AF9820B716E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1783664542;
-	bh=6T08yoQBGEnCA8ApT6CLiZzvqynDeT9TU9CPnwizVm8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XkwsHJp19MPDInfewC6r2DvEiwdo/sudF8qiQvimHOnKtoRpX7Jip/evnDcYgBoBq
-	 hH2RbSfK/laxeCRp37qW37yIR9S0++hhkhmofh1k55xVLwCKoAK75eNbxhsxF5TWOy
-	 N6OWuMlefPxrb2qBkoBqfypSO94ZaXqBXrs2rS10=
-Date: Fri, 10 Jul 2026 14:22:26 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
-	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
-	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
-	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
-	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>
-Subject: Re: [PATCH v2 4/4] iommu/hyperv: Add page-selective IOTLB flush
- support
-Message-ID: <obcdoeu533zh2qlncvuzxcgjucuot33hvsnwhx56rqotyrhamk@3tpu6qnbjipe>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-5-zhangyu1@linux.microsoft.com>
- <SN6PR02MB415780D9D86B04EA1AE1B2BBD4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Y/yp+FM7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=yp1cMeu3a6vnqO/lRW1xeph8kJx59+YxrhIFukZe/A6hjy2Z97ajjDRuSZo5l1WvXkAmZdxOJskJt3uES6D9es7KrKRrvJ5CgPhfIEFVNcF8Vwao7jrFThpZFjiZqouMu+7DYAO/oUO+AcvmwhhXJZ4idzzBwUiI/p15mQycFtdwcBxSsQLW3NU8qNfEPhUle79ICaR/A6bO3wFvSv04IA/YpAOK50wY5Xuhb8Lgw973V/ZFEQeFdTf4HUTMSIcyNg6J1sWgXMzisTT8IcsUsWG/NjwMKY6nModOzv1ZNnlBmEeFo8kr2gkIhj4/MLMgEdOvt2fXCSekYTsRTRQ2Cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zzAs6xjNc3O0soFXzhPDEGPZ1/TY4FNBdBap42F7MDs=;
+ b=Az0gz42Ws1MwjDoRDp2Ynfhc+8mg/at4nIuR33gxng8TTLPKwQpYNf5SEfskOkfV4VrBUIVJOmZxeuZ+3tATQQwNLD3ZiGKU1AQ96D33RoCQ13Croh+TyoPz8z3E91YnwmanOidKFHsajnsIUtBB0lcbIdqxEVItxUqRiWVRL1BzXm5dsrYLTXbujHpgKjhst62nNq+PWxxox9dlplnAGOkVWmMDhIGWzHy+4u2Zpbw92ShOIaWvaiIZ/sWzkthzjrYfRTc51e3LZ3Zxw8kq7SNbfwsuihOAWS7acz03WsKKNEcX8HJRVFa/BRZ050yuk+MwjVHSRcTKJoxlLJQ02A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zzAs6xjNc3O0soFXzhPDEGPZ1/TY4FNBdBap42F7MDs=;
+ b=Y/yp+FM7xC9B0piqAmhmbrbvgBhChRGgi/3lZPv5YNwbjV33L6nuKuqIvUk+9Zbg6Iji8rUP7QZTYJDM/KSdRPrnaN5JfoJ/DxXDF95J0Ekm9ahalCNaVpMr2UXSTCYfIAcm25YxsGdqQ/g1Vz7/KhC3aODe2NkUKDXOmwSurV2ebc5RY+GE9KQcXv/NaVde/Ys9+MwXqqg8Cb10Q4DHKnLqCML14sEBYFEPZoCryeoWsjsAHRtzVLxRrJ5rsBsQSJR8tcvfukh6inzNp9h4vmItZ4LQfugp7F+WDgoKkgJhnjy8Bqcgg84pqsyJCn1jWpDhJBi9ab/s3tMFWt7eiQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BN5PR12MB9511.namprd12.prod.outlook.com (2603:10b6:408:2a9::14)
+ by SA1PR12MB7344.namprd12.prod.outlook.com (2603:10b6:806:2b7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.17; Fri, 10 Jul
+ 2026 06:35:19 +0000
+Received: from BN5PR12MB9511.namprd12.prod.outlook.com
+ ([fe80::4d8d:5f91:6c3c:dc8c]) by BN5PR12MB9511.namprd12.prod.outlook.com
+ ([fe80::4d8d:5f91:6c3c:dc8c%4]) with mapi id 15.21.0181.009; Fri, 10 Jul 2026
+ 06:35:19 +0000
+Message-ID: <6d7ba8bb-2d41-4cec-8923-d7a14d7675ff@nvidia.com>
+Date: Fri, 10 Jul 2026 12:05:12 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 2/3] iommu/arm-smmu-v3: Introduce CFGI/TLBI-repeat
+ workaround infrastructure
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, linux-tegra@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260709095613.831769-1-amhetre@nvidia.com>
+ <20260709095613.831769-2-amhetre@nvidia.com> <alBzEGd3a2MQTpt5@nvidia.com>
+Content-Language: en-US
+From: Ashish Mhetre <amhetre@nvidia.com>
+In-Reply-To: <alBzEGd3a2MQTpt5@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0335.namprd03.prod.outlook.com
+ (2603:10b6:a03:39c::10) To BN5PR12MB9511.namprd12.prod.outlook.com
+ (2603:10b6:408:2a9::14)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN6PR02MB415780D9D86B04EA1AE1B2BBD4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN5PR12MB9511:EE_|SA1PR12MB7344:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1b133676-e8dd-4b2b-26d1-08dede4d6939
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|18002099003|22082099003|4143699003|11063799006|3023799007|6133799003|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	2ZRiXPV9vi+CsviXZGsO3gYRcqZfeZT9YmLyO6mdyzTqcvAkM3EvH1aDZwIVvfzazWrdCNTP5Tnz8Pi/TAmaRT2O7m6yQ652DguDGFBlCEJMCuH1NBIeSqI/EVRizWiTjhgupsLQGg8GSQtKoHa2sm2RKVehQWoupoo0Yz1Bwdc4xGU+XLvpA4v1S5tN3JhW1BnejQrKuXnuJfkSqDnNmUute6KrDmSPOtoW23EvomxdvIuT2+g9l6AUOLoVdk56f+bsxx5PLrjp2wyFozctMP20y0G6hLtO430u8TwHD7chdAiAqoIZdASyuu9X2NhlgSOXXVFvVqYf2+oLziC4uZagKgkj8iR1joiPYi/SLrpvmc4vrlSzb0F6HwPTxKtT8KKQb3qn9RKPsfm5wx4DM70vPk2QwqIhfhmhZDo+r119i2BohJBTab3xw3BtUXrAWoFGM6D+10ypaC+HOdKICWaIBrcNG7r31b+9mWC9wnsxW1ZEY7hDPD1+MzBMeSaKLUJ76QWcc75zy5X/UOSJcrHGQAVjfEoAXoc1jvfrv4Xh6cddVHSqPG7cfeSzi1/i+m2ZhrdiM1uUAbLEN+lefg0uCCcq4/zeYoalml+TceQji6hGjObLoADTj01jqA2MvEShewxHJCvvBah4zk7Z1CKWNN2Dq1gW3TiO7iEBDgY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN5PR12MB9511.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(18002099003)(22082099003)(4143699003)(11063799006)(3023799007)(6133799003)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Umk2TFlqQ0xqWWFHRlYycnYvRlc4cGxncUd2eXpXTERjd1loMTNpQVFJNjRa?=
+ =?utf-8?B?YWZhcVhvQkM5YVJ3d0U2YXJBWFlnR2xVbTFmbm05QU5VQ1lBQ2tONWpmT1pm?=
+ =?utf-8?B?MjhaVDFnNkZGOGMxUkg3QVRyYU8yWHhKMm1JdGVNZ09zaGUvRlFoN2Q3Wkk5?=
+ =?utf-8?B?R09vQzN5UGJjdGt4SFdGMXEzZHJ4ZjYxYkt2TjVaWTZtQllmazNTdUNUTWtM?=
+ =?utf-8?B?anREU0pWVGZWeEh2TUMrTmpDTWV3Y04zU3ZxZlUzNTROZ0VoY0JOYVh4OXlO?=
+ =?utf-8?B?UHIxN3NxOFlNMkUraTYzR1d0azB3c3BqZ0xrU2ZPYWNwRGprV0dUQUZWeVRF?=
+ =?utf-8?B?eThLc0NwOHlqVlVFd3pZRnZlbnJtbUpQY2VpQTVtSDZCNGdjQVVRbWMyb0dr?=
+ =?utf-8?B?cTZBdzl3MlllYVl6OFNLY3draUNBTldJR3FDZ05Mb05CUTFQQ2NQKzk2VktC?=
+ =?utf-8?B?Y2pDNFpDaGduRDdWTnpTTzhYemxNWmUvdlVmZWxYL3l1dFZ0M3dUNUwyTmlF?=
+ =?utf-8?B?dFMxUGpCVTd3NjkvTzRoL2d0RWFLTUQ3WkZERjQ5TERyQnB2bVZGSytFTUxP?=
+ =?utf-8?B?bjh5YVdmTjNpditWRVFDWWYwMHlEbWlibnRLNTBEbUJQWmVHZzJTM0NnZGJn?=
+ =?utf-8?B?MjN1ZERVK05KQVduR2VJWU5NcmV3TjdpQkVvRVVtcGlPeVhmeVR5Vy9SVkpV?=
+ =?utf-8?B?U2orMEgwVExwbXlkVlB3VEpvSU42eWlRbXlpOEUwWXA2cGF6U3JFeThRbEU4?=
+ =?utf-8?B?dkFKTnBockRBRVpCemNaMnBQZlMwVnpvSXRwRGlhSjlEU3ljSDVHY1FodlhC?=
+ =?utf-8?B?T2pkdnNQRHhIa1I1NlkxTHdHSngvbzM4dktSSHQ1ak4zeU54MllWMXoyeTFk?=
+ =?utf-8?B?aFptV0hZOHd5clNDaFZ0emhpZ1l6aGxLTk1BWUJuZitCUjRQZkhzTSt3dWFn?=
+ =?utf-8?B?cUJqaHovVjdyL1Z6SUlnK2dCKzkxd29rZnM0TGVGSThuL203SFR3V1NNOUV4?=
+ =?utf-8?B?VDh6c0RIYlArYkJSQVBGeEpSWHRDdnc5VTNPZjB5QmtsNGZiYWpxd3dZeVpw?=
+ =?utf-8?B?amdTVEJwYlBmTFNUc1Jnbk5yb29od0p4TXZMa3I0SkM1QW5TanA2ZHdtYzVx?=
+ =?utf-8?B?cW51ck1JbGVPWVM3Q0ZxMTg0RE5aRkl3YkFjM29uNVA1dWJzcG4weG1KV1Bz?=
+ =?utf-8?B?bWlJenBQNGJORlRwVGI0UGlmbTRlUWNSbDZySTkwMGExQjNwRHZkc0lhcDMr?=
+ =?utf-8?B?NU9WWWNzeDhhMEFRQkRaQUYzQVM3OFpYT3hOemhWMlJEWGp1anFLZndzWEVL?=
+ =?utf-8?B?bW5IakJiSWlTZnlheHRvZG1MR2xjVDBOcU5yRmplMHFjczhSZkJLaGRUT3Ev?=
+ =?utf-8?B?VFJpSS9lbEF2QjBPbHNVK0tWeFBPWTcrVWxXRWZ4c0htVlRDUkxrMGFCYkg4?=
+ =?utf-8?B?WHRtemlCRSttYVMyYzd3Y1V2QkVlcUdmTTJBNXlFdnZyQmIwRm9OeFVEYjd5?=
+ =?utf-8?B?cDIvRDRhUEJHY2NmMmtZeXNhc1IxblFPbS94NENrNUExbUo2YkdwWlhvbWho?=
+ =?utf-8?B?UXVtUzgvWmJUamh0WHR5d3FvOFV5bC9TWWpBbUZpTFhibmg0UnZ5dGNXSWpE?=
+ =?utf-8?B?KzRhNWh3N2ZhMEhlWG5IeTBEZ3h6OVRJRUlXWEc1eDVBVWdkYmFDSTBnT3ZI?=
+ =?utf-8?B?VlRUNmdyN21iYXhNWTlIUkwrZG94OGVVZHVraUI0eHRVMi9yWmNMbUdnSWIw?=
+ =?utf-8?B?WTVpbjhtQTRWME1aUk45OS9OMFVaZEpLMVdFVG52VktnVjdqbUlCVFQ0bk8w?=
+ =?utf-8?B?L1FlNGI4Q2RSYXptVElxMjg1RGlmdisxWjZ6M1RZSDkvc3c2MlNMa3JYYjA2?=
+ =?utf-8?B?QlJhbTcwZTdtSWFzS2R6UGhBajRSVzIwTVJ0OFJCeDByMHU4c0ZyeDdMRUxQ?=
+ =?utf-8?B?cVVSaWx3bHVoU3oxYlZ5YUU1U01xSlpHYjhVZFc4VVBUNytrczRGRElrMmp3?=
+ =?utf-8?B?a0NNdFJySUFickdYTjNyTlJRN0dnaUk5Yzh5UGFyaHpsRjFuSUwxa0NjMm50?=
+ =?utf-8?B?QjdHN2RyZEM2a1N1eDIxRmRvWjVpbkc4ck00eHlhdGlvYUN6Z0tEVlo4SWxl?=
+ =?utf-8?B?S2wzK2o5alJZOU55VFZ0R1N5ZjFja2pnNkt0RXJOR3QyQnBkYjU3Z0hqK3FZ?=
+ =?utf-8?B?K2dRYmhqM0oxU1lhRThqbnJZQklDb0JrWUFaK2JoSC9KSHZSWXBDTEhKZk5n?=
+ =?utf-8?B?NElaT2s5OUU3MTFaVGd1ME9Wek45N01YbG1JTmJvYUJVWlhDRnphQmx3TzBO?=
+ =?utf-8?B?a3VUNHNpcnlaL1pIYTFSd2Q3dGE5d1pwMHNVRVFjSURrMlRhRmdaZz09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b133676-e8dd-4b2b-26d1-08dede4d6939
+X-MS-Exchange-CrossTenant-AuthSource: BN5PR12MB9511.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2026 06:35:19.4006
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lSII7Ln5rHI0ldYJAZsQzPsy51T/2p8Lq4LbfjWpVpD05bCxM8dG3jYkH/CQTtqbawscCf17dzdBiBBUk6tjGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7344
 
-On Thu, Jul 09, 2026 at 07:08:47PM +0000, Michael Kelley wrote:
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Thursday, July 2, 2026 9:05 AM
-> > 
-> > Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
-> > This hypercall accepts a list of (page_number, page_mask_shift) entries,
-> > enabling finer-grained IOTLB invalidation compared to the domain-wide
-> > HVCALL_FLUSH_DEVICE_DOMAIN used by hv_iommu_flush_iotlb_all().
-> > 
-> > hv_iommu_calc_flush_range() computes the smallest power-of-two aligned
-> > range that covers the target IOVA region, producing a single flush
-> > descriptor. This may over-flush when the range is not naturally aligned,
-> > matching the approach used by Intel VT-d PSI. If the page-selective
-> > flush fails, the code falls back to a full domain flush.
-> > 
-> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > ---
-> >  drivers/iommu/hyperv/iommu.c | 68 +++++++++++++++++++++++++++++++++++-
-> >  include/hyperv/hvgdk_mini.h  |  1 +
-> >  include/hyperv/hvhdk_mini.h  | 17 +++++++++
-> >  3 files changed, 85 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/hyperv/iommu.c b/drivers/iommu/hyperv/iommu.c
-> > index 254136946404..e9b104a322fd 100644
-> > --- a/drivers/iommu/hyperv/iommu.c
-> > +++ b/drivers/iommu/hyperv/iommu.c
-> > @@ -9,6 +9,7 @@
-> >  #define pr_fmt(fmt) "Hyper-V pvIOMMU: " fmt
-> >  #define dev_fmt(fmt) pr_fmt(fmt)
-> > 
-> > +#include <linux/hyperv.h>
-> >  #include <linux/iommu.h>
-> >  #include <linux/pci.h>
-> >  #include <linux/dma-map-ops.h>
-> > @@ -401,10 +402,74 @@ static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
-> >  	hv_flush_device_domain(to_hv_iommu_domain(domain));
-> >  }
-> > 
-> > +/*
-> > + * Calculate the minimal power-of-two aligned range that covers [start, end]
-> > + * (end is inclusive). Returns a single (page_number, page_mask_shift)
-> > + * descriptor that may over-flush when the range is not naturally aligned.
-> > + */
-> > +static void hv_iommu_calc_flush_range(unsigned long start, unsigned long end,
-> > +				       union hv_iommu_flush_va *va)
-> > +{
-> > +	unsigned long start_pfn = HVPFN_DOWN(start);
-> > +	unsigned long last_pfn = HVPFN_UP(end + 1) - 1;
-> > +	unsigned long mask_shift, aligned_pfn;
-> > +
-> > +	if (start_pfn == last_pfn) {
-> > +		mask_shift = 0;
-> > +	} else {
-> > +		/*
-> > +		 * Find the highest bit position where start_pfn and last_pfn
-> > +		 * differ.  A range aligned to one above that bit is the
-> > +		 * smallest power-of-two region that covers both endpoints.
-> > +		 */
-> > +		mask_shift = __fls(start_pfn ^ last_pfn) + 1;
-> > +	}
-> > +
-> > +	aligned_pfn = ALIGN_DOWN(start_pfn, 1UL << mask_shift);
-> > +	va->page_number = aligned_pfn;
-> > +	va->page_mask_shift = mask_shift;
-> > +}
-> > +
-> > +static void hv_flush_device_domain_list(struct hv_iommu_domain *hv_domain,
-> > +					struct iommu_iotlb_gather *iotlb_gather)
-> > +{
-> > +	u64 status;
-> > +	unsigned long flags;
-> > +	struct hv_input_flush_device_domain_list *input;
-> > +
-> > +	local_irq_save(flags);
-> > +
-> > +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-> > +	memset(input, 0, sizeof(*input));
-> > +
-> > +	input->device_domain = hv_domain->device_domain;
-> > +	input->flags |= HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
-> > +	hv_iommu_calc_flush_range(iotlb_gather->start, iotlb_gather->end,
-> > +				  &input->iova_list[0]);
-> > +
-> > +	status = hv_do_rep_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
-> > +				     1, 0, input, NULL);
-> > +
-> > +	if (!hv_result_success(status)) {
-> > +		/* Page-selective flush failed, fall back to full flush. */
-> 
-> With the selective flush now simplified to just a single entry, it really
-> shouldn't fail, right? Doing a full flush as a fallback makes sense, but
-> perhaps do a WARN_ON_ONCE() first so that there's an indication that
-> the selective flush failed.
-> 
 
-It shouldn't fail under normal circumstances. Will add a WARN_ON_ONCE()
-in case the fallback happens. Thanks!
 
-> > +		struct hv_input_flush_device_domain *flush_all = (void *)input;
-> > +
-> > +		memset(flush_all, 0, sizeof(*flush_all));
-> > +		flush_all->device_domain = hv_domain->device_domain;
-> > +		status = hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
-> > +					flush_all, NULL);
-> > +		WARN(!hv_result_success(status),
-> > +		     "HVCALL_FLUSH_DEVICE_DOMAIN fallback also failed: %lld\n",
-> > +		     status);
-> > +	}
-> > +
-> > +	local_irq_restore(flags);
-> > +}
-> > +
-> >  static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
-> >  				struct iommu_iotlb_gather *iotlb_gather)
-> >  {
-> > -	hv_flush_device_domain(to_hv_iommu_domain(domain));
-> > +	hv_flush_device_domain_list(to_hv_iommu_domain(domain), iotlb_gather);
-> > 
-> >  	iommu_put_pages_list(&iotlb_gather->freelist);
-> >  }
-> > @@ -455,6 +520,7 @@ static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
-> > 
-> >  	cfg.common.hw_max_vasz_lg2 = hv_iommu_device->max_iova_width;
-> >  	cfg.common.hw_max_oasz_lg2 = 52;
-> > +	cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE);
-> >  	cfg.top_level = (hv_iommu_device->max_iova_width > 48) ? 4 : 3;
-> > 
-> >  	ret = pt_iommu_x86_64_init(&hv_domain->pt_iommu_x86_64, &cfg, GFP_KERNEL);
-> > diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-> > index 5bdbb44da112..eaaf87171478 100644
-> > --- a/include/hyperv/hvgdk_mini.h
-> > +++ b/include/hyperv/hvgdk_mini.h
-> > @@ -496,6 +496,7 @@ union hv_vp_assist_msr_contents {	 /*
-> > HV_REGISTER_VP_ASSIST_PAGE */
-> >  #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
-> >  #define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
-> >  #define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-> > +#define HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1
-> >  #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
-> >  #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
-> >  #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-> > diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-> > index 493608e791b4..f51d5d9467f1 100644
-> > --- a/include/hyperv/hvhdk_mini.h
-> > +++ b/include/hyperv/hvhdk_mini.h
-> > @@ -671,4 +671,21 @@ struct hv_input_flush_device_domain {
-> >  	u32 reserved;
-> >  } __packed;
-> > 
-> > +union hv_iommu_flush_va {
-> > +	u64 iova;
-> > +	struct {
-> > +		u64 page_mask_shift : 12;
-> > +		u64 page_number : 52;
-> > +	};
-> > +} __packed;
-> > +
-> > +
-> > +struct hv_input_flush_device_domain_list {
-> > +	struct hv_input_device_domain device_domain;
-> > +#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT (1 << 0)
-> 
-> Use BIT()?
-> 
+On 7/10/2026 9:50 AM, Nicolin Chen wrote:
+> On Thu, Jul 09, 2026 at 09:56:08AM +0000, Ashish Mhetre wrote:
+>> No callers enable the static key yet, so this patch introduces no
+>> functional change. A subsequent change hooks the DT probe to enable
+>> the key on affected instances.
+> Nit: once a patch is merged, it's no longer a "patch" but "commit".
+>
+> Instead,
+>
+> No callers enable the static key yet, so there is no functional change. A
+> subsequent change will enable the key on affected instances.
 
-Sure. 
+Ack.
 
-> > +	u32 flags;
-> > +	u32 reserved;
-> > +	union hv_iommu_flush_va iova_list[];
-> > +} __packed;
-> > +
-> >  #endif /* _HV_HVHDK_MINI_H */
-> > --
-> > 2.52.0
-> > 
-> 
+>> Suggested-by: Nicolin Chen <nicolinc@nvidia.com>
+>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 76efe479e80f..15b9d0170520 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -41,6 +41,7 @@ MODULE_PARM_DESC(disable_msipolling,
+>>   
+>>   static const struct iommu_ops arm_smmu_ops;
+>>   static struct iommu_dirty_ops arm_smmu_dirty_ops;
+>> +DEFINE_STATIC_KEY_FALSE(arm_smmu_erratum_repeat_tlbi_cfgi_key);
+> It's an erratum; it should have an inline description, like the
+> one you had at ARM_SMMU_OPT_TLBI_TWICE previously.
 
-B.R.
-Yu
+Okay, I'll restore the description I had for option bit here.
+
+>> +int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+>> +				struct arm_smmu_cmdq *cmdq,
+>> +				struct arm_smmu_cmd *cmds, int n,
+>> +				bool sync)
+>> +{
+>> +	int ret = __arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, cmds, n, sync);
+>> +
+>> +	/*
+>> +	 * arm_smmu_cmdq_batch_add_cmd_p() can flush its current batch
+>> +	 * with sync=true and n=0 (bare SYNC) when the next command is
+>> +	 * not supported by the batch's pre-selected cmdq, so the
+> After a second thought, this "supported" case is not reachable.
+>
+> When a batch is init-ed, it's given an opcode (same as cmd[0]'s).
+>
+> If an opcode is not supported, it's init-ed with smmu->cmdq that
+> must support all commands.
+>
+> So, adding the !n is more like a defensive play. But the comments
+> here would be misleading.
+
+You're right, the unsupported-cmdq force-sync path cannot run with n == 0.
+I'll fix the misleading comment. The !n guard stays as a safety check 
+for empty
+batch_submit(), where we must not inspect cmds[0].
+
+>> +	 * repeat path must not inspect cmds[0].
+>> +	 */
+>> +	if (!n || ret || !sync)
+>> +		return ret;
+>> +
+>> +	if (arm_smmu_erratum_cmd_needs_repeating(smmu, &cmds[0]))
+>> +		ret = __arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, cmds, n, sync);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>>   static int arm_smmu_cmdq_issue_cmd_p(struct arm_smmu_device *smmu,
+>>   				     struct arm_smmu_cmd *cmd, bool sync)
+>>   {
+>> @@ -860,6 +883,11 @@ static bool arm_smmu_cmdq_batch_force_sync(struct arm_smmu_device *smmu,
+>>   	    (smmu->options & ARM_SMMU_OPT_CMDQ_FORCE_SYNC))
+>>   		return true;
+>>   
+>> +	/* See arm_smmu_erratum_cmd_needs_repeating() */
+>> +	if (cmds->num == CMDQ_BATCH_ENTRIES &&
+>> +	    arm_smmu_erratum_cmd_needs_repeating(smmu, &cmds->cmds[0]))
+> The comment above is useless; arm_smmu_erratum_cmd_needs_repeating
+> doesn't give any useful explanation either.
+>
+> Like I suggested, add the missing piece of war description to the
+> arm_smmu_erratum_repeat_tlbi_cfgi_key at the top. Then,
+>
+> 	/* See the description at arm_smmu_erratum_repeat_tlbi_cfgi_key */
+
+Ack.
+
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> @@ -1211,6 +1212,20 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+>>   				struct arm_smmu_cmdq *cmdq,
+>>   				struct arm_smmu_cmd *cmds, int n,
+>>   				bool sync);
+>> +DECLARE_STATIC_KEY_FALSE(arm_smmu_erratum_repeat_tlbi_cfgi_key);
+>> +
+>> +static inline bool
+>> +arm_smmu_erratum_cmd_needs_repeating(struct arm_smmu_device *smmu,
+>> +				     struct arm_smmu_cmd *cmd)
+> smmu is unused.
+
+Thanks for pointing. With static key, smmu pointer is not used anymore.
+I'll remove it.
+
+>> +{
+>> +	u8 opcode;
+>> +
+>> +	if (!static_branch_unlikely(&arm_smmu_erratum_repeat_tlbi_cfgi_key))
+>> +		return false;
+>> +
+>> +	opcode = FIELD_GET(CMDQ_0_OP, cmd->data[0]);
+>> +	return opcode >= CMDQ_OP_CFGI_STE && opcode < CMDQ_OP_ATC_INV;
+>> +}
+> Maybe move this to the first caller in arm-smmu-v3.c? Instead, add
+> its stub here, so we can drop that DECLARE_STATIC_KEY_FALSE. Then,
+> DEFINE_STATIC_KEY_FALSE will need a "static".
+>
+> Nicolin
+
+Makes sense as iommufd only needs the classifier, not the key itself. 
+I'll move
+arm_smmu_erratum_cmd_needs_repeating() into arm-smmu-v3.c, leave a
+declaration in the header.
+
+Thanks,
+Ashish Mhetre
