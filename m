@@ -1,153 +1,148 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012030.outbound.protection.outlook.com [52.101.53.30])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711B431F99E;
-	Fri, 10 Jul 2026 14:29:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.30
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783693747; cv=fail; b=njSv+oN22JZc+/fSPwMaba1QpjC483Ob+OUQA4gw2PbwU+x1Co7JuOdSba1P+30bJufVhwKny0Gyw6X2jnxl6zYvKprpsTKBun+/WFPBaKlRhEUDh97TD6eQP6OR2gC7wafyG4V+CDOWWGjTLbWQr/GqVCKOkltbw6Q77r1+GlE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783693747; c=relaxed/simple;
-	bh=DG0C3tl0hhnK61Z3OmON6uJ6SiFBJElNKGSN4NIc5MI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Q+G+XEHgYdIsg7Wot77yKo4zx2o6E/wkzQGrqcACoZNPTdSKoeOhfRPKciN92ggNKNspMSdpRpQc/jkvIs7Jr5ZtFh3RJQJ12VCtQly/RrSmJEdc6651ojU7eV2N2CqQ/SG0OU9CTlkGi0p0GXVGXbuCIvcTt6Sovl0x89/MFck=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pLGUEOD3; arc=fail smtp.client-ip=52.101.53.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BE363191BA;
+	Fri, 10 Jul 2026 14:51:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783695073; cv=none; b=RMaVUAQHdBWKp8KL4IbEN6rl9kxd8jydu6p4ABIKgq0hn9j+aLW4FwhEkGJFSj2fin2hUTK8gdp6xeKuGmwgwwjFJ1R6cMVKT2PcoqsDicsf39y2HhYoKIcIjp+l0DAOkuPh1yJIS0yFVWxURvTPfbZoOBQpbUOkbDtH/MfOqEU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783695073; c=relaxed/simple;
+	bh=HVCHZJFQAGlkuskJ7SayMhosIqfStBiyOTKFtFT5fdk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JdowGOYA6kcqCoWBOaON0YBx4rGBqhH6UgACOr9zrM43N9YtsQsTqBcgukxWI1OuPkZNj2rsL6I33CQG4qT8CxfgoxZv9bvsXmZ+p/VDk3HnNFlv+2182xYfwpFaEfKqNx9YqsYlwjJkidiqa9tySqhuNk7/6YuDFQaRVSoOk3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GV0G1PCd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pLGUEOD3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lZz4Erdf8O0lmlcx/u39tXEF6GC9zmwHYb56QfUWI9FrrNgixmowVMAI4MPUEfqs7+vGKdse6kNbDAWTCXp+EFBOpdUW+w3Y3T5ZKufmFK/jukk8JHlIBkwW7cMu1dQrffp2j2GfhmNDw/TCtIwl+S9CXVuCdcPZO6ZR5muwzBVIkPep3Dz5yWOpQrEJCKTTy9mBPXuCCeW7nN9aP1CPPfASDbx3gAwuflgfjvXAznZVW1/neKn/zTHL/TkH0hBYsyzI9WBSqypgVowKaPw0qXyqNqvaXYyK2VLL6nrs2pshMwCCaqjcTG0O3GBVfba3Xx5wVNqCZ2mSwReP9GeFrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0M9HuTy2P3aZrCCJmDkMZddp9pW+X5vt6OTbXb8Q5Js=;
- b=LoecTNyePolR8RNXavcXRv4gO4gBleJRWHnWGeaPBkfE4/vznIYHHW3+dHulDrY/W0Z6bnf0THIg18PlxxiegBke2099V3VbJ24LidifCDokecsQm/h/d5T6akrSH+KsIRm47CqxrEdDWUfDYE5nsTYBBkmXoZ9sxjxXRRYNTQUGGgtSlMXFyV8yNRq/2rIFPBBk28RlmrQE6gxz5FKL7gk2dfFj4Pm/5kJA2GfLnV6Gvdx+q+fIHyqKjTfxQmq74mwxioi14w9kqDiP9zD7wiERu/HKh8dte9+KIHMfxVjddosUOaECak0KZrBpQV8gx8VBelfVFcXBQ0DutuYHXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0M9HuTy2P3aZrCCJmDkMZddp9pW+X5vt6OTbXb8Q5Js=;
- b=pLGUEOD3RWgw8T0j9kPgOXN7/KPBstz+UwKaOlfLs6/U4ssw+UMsB7UmOI6MP54tYvcB/UbczlXzaOcbLdTNvO8WFqEJGNBNUlMhXa+iiLekcjzUYx2aOckKE+yUFK+htD+SPCNG/cktTZVoDNChyTOj8KA8KXXw5ad5ingaHunsg/EpIOb7/ji7CxXpE00LqJPXJN9HoYsDMcR3WV8f4kWMPVK1vEsJLBNBUpoWnlEkNBtX/kMAKkK+LKi4rtPtQ/JRhnqv/xSuOAFPUAFGP1nH4Av+oUwOmlMq4poUkZaOHKcABM+r4tBjAhZqPSK65rAqPz/iPLuetWSWpwsqSQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DS0PR12MB7770.namprd12.prod.outlook.com (2603:10b6:8:138::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.18; Fri, 10 Jul
- 2026 14:29:00 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0181.014; Fri, 10 Jul 2026
- 14:29:00 +0000
-Date: Fri, 10 Jul 2026 11:28:59 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Move pgsize out of arm_smmu_inv
-Message-ID: <20260710142859.GA1636147@nvidia.com>
-References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <2-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <CAE2F3rCh8U-gULjvS_8xsVo7YWN0=K2d8DC0eHwDOfgwB7bvCA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rCh8U-gULjvS_8xsVo7YWN0=K2d8DC0eHwDOfgwB7bvCA@mail.gmail.com>
-X-ClientProxiedBy: BLAPR03CA0074.namprd03.prod.outlook.com
- (2603:10b6:208:329::19) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GV0G1PCd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A13DE1F00A3A;
+	Fri, 10 Jul 2026 14:50:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783695069;
+	bh=/adl28F1RG11+xFCTzjhiMT3/quSA/55SrYHe5Xl+as=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=GV0G1PCdVWL/17cPDVZfz86GmBO0VpAcpElRSgqzkFaZnFKsDK6rIw+lxzMvM7oyM
+	 gOb7BmlLZV+r7XfvVToV0An5vS3DWoiRNZEtakP1kgKdd/pwAzK/AhJrUnpZlFH/ma
+	 IDgVC6vlNuOfwFAEke1UlfCP3mMcmRNqv1rAQF1Ta5n8CDc7P/kP23VMlYUdFRkbMx
+	 btXD63gJA5fhI4bndbOxrinkAQhHaNvBor7RN1UECzz5h5BotHDkxdGHR0ZdFn1Wle
+	 sxRRlN3kLf8W7g8Lmmkim9s7ySe4W1NlivrC5VU8viOWzvoYYPKNt7/4lb6lTsMCz8
+	 i1PWPp9WBYC/w==
+Date: Fri, 10 Jul 2026 15:50:44 +0100
+From: Lorenzo Stoakes <ljs@kernel.org>
+To: Gregory Price <gourry@gourry.net>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, 
+	Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, Thierry Reding <thierry.reding@kernel.org>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Dan Williams <djbw@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	David Hildenbrand <david@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <liam@infradead.org>, Matthew Wilcox <willy@infradead.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, SeongJae Park <sj@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, 
+	Hugh Dickins <hughd@google.com>, Mike Rapoport <rppt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, damon@lists.linux.dev, 
+	Pedro Falcato <pfalcato@suse.de>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
+	Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 13/30] mm/vma: refactor vmg_adjust_set_range() for clarity
+Message-ID: <alEGqHY5GPhT30Ty@lucifer>
+References: <cover.1782735110.git.ljs@kernel.org>
+ <ada7972f49ea7f1ff1df6d11e4651f270444f8fd.1782735110.git.ljs@kernel.org>
+ <ak-70CHGujkI5jJI@gourry-fedora-PF4VCD3F>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DS0PR12MB7770:EE_
-X-MS-Office365-Filtering-Correlation-Id: 76a88dd6-2c90-4434-4312-08dede8f9578
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|23010399003|366016|1800799024|56012099006|11063799006|4143699003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	A1XqMPtL+xkoKpf+HogQJOYGkE1cTcnmc8MwSWqPyAGFfMNJ1av9U7m5wnF3fXDUuFpDBzkPl7Od1bgN/q90XvMAHm8U5EVuyKGvrOO6vX5b5AYEXZP4iDavwOVYnJfyz4r62HAXK+xTBmPCg9Bx6uoYWP5GlREVZLPI3yYSsa2YxtKrC6q+FavXF7BPH5VX+6b6UaFj4bfuqkNFRD7PDv9RcYEnGZEllB+wFGinA8MkoWM1DIk+uaxLfDeCwUguu/BvG36J5eu26092TQZnYeM+Tc0wbZIBk53G9CUvpEnV2PK6tdniEi01Dc3Xj8W5H8RpXohy1fbJ/RzL45p25qP1sacwK4l+0JsVOFvmouXzksB8kLot5XkSPzuiPzkeowVFtJrvw4tkJWXgtGe6MPEfh+qOWS4J1ewDVk0FP9SyAPHRKfUZVXEIIl4EzXir+d+uqrTL8L2z/6hoMVA1+XM0d57v0wggdlssjJyAPknpb8DsQr2xcriXTa7lPbA/5sDeKoykOuVZSw5qIt6eQd9iGvNyD6KbwTS9MEFsFSNL7Xnk3QWET1VAJdyZRNyQrw0ZLZddADDv2CPogzBByUboYzZyxn414nGPIw/N1TB+kD0QlQQ1R2mO7/bLhTBEURzhBmxduChwl/vuJ6GBh1pwkPw6rp1+r+3uR2Cihwo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(23010399003)(366016)(1800799024)(56012099006)(11063799006)(4143699003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?K2JpVmtlbVhzYXk0c1pmbVdHTHRFY2xHa1dvSkpsV09OVHd3VUlzZ0daeUVS?=
- =?utf-8?B?UlkwR1B1Mmp3NDNINHpJTS9SMEpLQVMvZDVnL1dlVTkwell0UVZGOUgvV290?=
- =?utf-8?B?OUZveGVnRVEwelU3dEdjbEhPRnR3UlZBTW5pMUp2WEJSd253VVdpbTFyUTdp?=
- =?utf-8?B?aXc3Qm4zQmJRRmt6TUtzandialFVeWtTQ0EreVNiSCtnaDVtZ0FPUWNjbVdl?=
- =?utf-8?B?b0Jtc3B6REZqR1pJd1FWbGh5SGFDSGU1aG1lODFTWFJQb0VxQTd3SGJ1K0Vj?=
- =?utf-8?B?alpFNWsxaFdIeWlCcDFNNDh5bE0zWmJOenEvaTlTbGwzZmxTMkdHMDJaaUNB?=
- =?utf-8?B?TTBURUR1SXlWSU5sWUQvb2liTGRmZnF2WnJ4NU1vNzdURUJ0MllwY2lZZnNR?=
- =?utf-8?B?U25uUVBFYWVYTnlKaDltZ3lyZFlhUzFmTHhiU3RzZlRka01SZ24yN28yWnFr?=
- =?utf-8?B?bVhtNXhLODJlc1NJVXdRRkMvNHRKTUZUS2xFbC84d21LTzgvc1UrdnFOOWZX?=
- =?utf-8?B?TklEdndrb1FPUkorK1lFUGRFWnRVbWdSdFM0MlZUVW1ZY0lTeUxqbE5peDMy?=
- =?utf-8?B?ZmNIaVprdXdOTUM3KzNHZ3cvMDlwcC9vS3JuVTFNSEVPaFgxWC9oQjAzUk4w?=
- =?utf-8?B?QUlnNW81NGliRmpnV3BnNkI0OXNuZ1c0SHQ1RExteis4NmxxTStzSHNLRDJ0?=
- =?utf-8?B?bGthR0tQYlFxY3ZpN0dOSmllWGVUMThGQk81dzc4d0JWSnhzeXZJcUFIbFNj?=
- =?utf-8?B?QVF0Z1hybFJUZXpvWXM1Ylg4M3hSTU1XOEk0bGhHNjdGMU9RbE5iNUtoL0pu?=
- =?utf-8?B?M0NOdGZpdHdURG1qS2xNL2VIenN0a2FIN2ZsNGk0cVZkZ2gwclJ1TWJkN0hZ?=
- =?utf-8?B?MFFBTmpzNjJNQVpQVXRBakdIMm5scnRGejZiODdpV1VnaTVlTXVWV0VJaVVI?=
- =?utf-8?B?MkYzcCtBNEFnVkdTdlJZWkNYakM5QjRBbkJacEFmcUZ3bytiTmJqc0hRN3Qw?=
- =?utf-8?B?Y1RXSmVaejZDa2luSVVlbGRwdTJZbDFPd1VLWmdYa2treXlyMXZIa3E1T25L?=
- =?utf-8?B?Nlc5YlI3U2JzSmV4clpYVml2cnBhT3VQVWJRWndROW4zOVM1NHJMdWo2SThw?=
- =?utf-8?B?cjBYc1ZMQTRPL3ZHYkxsUXRkdjk3WHZ0S2pIMGRjV2c0S2E4d0lrbWZYLzhy?=
- =?utf-8?B?bUk5ZVpxakkvcWJEYU10OTloRjdFWjlhYlZCbWQ1TGg5QWZQRHNXaHBiclpj?=
- =?utf-8?B?WUNPQWlDSkpzMHY5K2llbFh5YVo0UDNmbDROL0gvbzQyK2k2N1ZFZ2ljWU5Y?=
- =?utf-8?B?MHVONFhxSjlPZW01eHVDUGtNb2drbHlueDBqLzZIVWhtaEtJbnlScUVLSG5F?=
- =?utf-8?B?cWY2MGFvZ0hzOGNmYkFOS3k2bUZkTDZBSE9RdnpqUUZmaU1WWG9hTjlxdFdo?=
- =?utf-8?B?SGxrV1JLQitXSVRKRldpT2IrREFkT3ZRWVg0aDFYSzMwMHVIQ21YbWphNEox?=
- =?utf-8?B?TXptb0ZoNFRFNmcyaWRMbFlCWEdsS25qeHZzeW9KQnNCOTZSV0RhN3JVa0di?=
- =?utf-8?B?aWZGRjZaN3Z2NDQ5Q1NSMDhPL1ZJYzA3aFNBclpDMzJpWmNiaEdFNS9CWjJm?=
- =?utf-8?B?Uk55RGUyZGxwQUU5clVzM3p2bm1ZblkzVHM1eXBIZFpGVllOUzUzNFRDVnd2?=
- =?utf-8?B?cFE3Y2R5K3c5Q2dTRDNVSDZ3dWJnVzNUbDFHSnc5MSt1M0lNOE1oR0gzQkxZ?=
- =?utf-8?B?WGVrRDYyYU5laHc5NmtwSTFGaFVLbUlDNVpNczdjTzRyOHZ4R2txaEpkVnFt?=
- =?utf-8?B?RnBSTWZRM213QTBMV1ZqRnY5L0VYc3pYeUtYTGhXcGFCdEl3ekhzRkdsLytD?=
- =?utf-8?B?MFFOaGhOSjZrUDhlV2xFOGkzaE4xVE8vQ3NjUFl6QytMVWpQdVBiVlY2RUtk?=
- =?utf-8?B?QzFOYWdmcmVtUDMxd0prcTZUelRuQ0d3RkVZcmtDQTRlcFZKZ3lYZUFCeHhL?=
- =?utf-8?B?cU5NeVZtdUpleDdMNDkrdUVYRFUzNjNpajNVRlY0dVc5NytnWEdPY3crTFha?=
- =?utf-8?B?ckFyNjhZUTZFNXpkZkZTSTI0ZEFLNDIvV3pqY2k1RWM4bEdoSW1WdTkrSDZN?=
- =?utf-8?B?T0tJUllHVnhxUkRRYmhpT1ExT2tidmdpeC9KTisxc2dOWUR2VVRndHlXM2J1?=
- =?utf-8?B?bEx3eWZRTlRKOWxGempqdFV1a1YrUTRBTmFjSW1QbHVHL0k4MHI3MDZzWmFW?=
- =?utf-8?B?UTlGYWd5S0JTU0xVcHY4VVVhTks2VmFDS2pqZWxsbyt6MU9sbjNyK2Z5ZXZh?=
- =?utf-8?Q?MdAZio9+0xT+dv1+Tk?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76a88dd6-2c90-4434-4312-08dede8f9578
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2026 14:29:00.4316
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DLcXPRwjrlfHq+jo5bhopwjcJh9ubEH/V/AMvNNaI7Gs8F/ZNvBvg5NjKstopnuB
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7770
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ak-70CHGujkI5jJI@gourry-fedora-PF4VCD3F>
 
-On Thu, Jul 09, 2026 at 09:06:18PM -0700, Daniel Mentz wrote:
-> On Mon, Jul 6, 2026 at 9:29 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Thu, Jul 09, 2026 at 11:18:40AM -0400, Gregory Price wrote:
+> On Mon, Jun 29, 2026 at 01:23:24PM +0100, Lorenzo Stoakes wrote:
+> > Add comments with ASCII diagrams to describe what we're doing, avoid
+> > dubious use of PHYS_PFN(), and use vma_start_pgoff().
 > >
-> > pgsize is a constant property of the domain, it is the base translation
-> > granule of the page table (4k, 16k, 64k) in log2.
-> 
-> > +       u8                              tgsz_lg2;
-> 
-> In struct pt_iommu_armv8_cfg, this is called granule_lg2sz. Should we
-> align on a common name?
+> > The most complicated scenario represented here is vmg->__adjust_next_start
+> > - when this is set, vmg->[start, end] actually indicate the range to be
+> > retained, so take special care to describe this accurately.
+> >
+> > No functional change intended.
+> >
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+>
+> Reviewed-by: Gregory Price <gourry@gourry.net>
+>
+> > +		/*
+> > +		 * vmg->start    vmg->end
+> > +		 * |             |
+> > +		 * v    merge    v
+> > +		 * <------------->
+> > +		 *         delta
+> > +		 *        <------>
+> > +		 * |------|----------------|
+> > +		 * | prev |    middle      |
+> > +		 * |------|----------------|
+> > +		 *        ^
+> > +		 *        |
+> > +		 *        middle->vm_start
+> > +		 */
+>
+> Even with these diagrams, it's a bit difficult to understand what the
+> actual intent/result of this chunk is (but that may be a limitation of
+> me not spending enough time reading the surrounding code, not a comment
+> of your work here).
 
-Yeah let's use tgsz_lg2 everywhere, it is what the SMMU spec uses for
-this value in the RIL at least.
+Yeah I know, I do hope to refactor all this at some point to make it simpler,
+but for the time being tried to make the confusing thing at least _slightly_
+less confusing :)
 
-Jason
+>
+> ~Gregory
+
+Cheers, Lorenzo
+
+>
+> > +		/*
+> > +		 *                Originally:
+> > +		 *
+> > +		 *            vmg->start   vmg->end
+> > +		 *            |            |
+> > +		 *            v    merge   v
+> > +		 *            <------------>
+> > +		 *            .            .
+> > +		 * merge_existing_range() updates to:
+> > +		 *            .            .
+> > +		 * vmg->start vmg->end     .
+> > +		 * |          |            .
+> > +		 * v  retain  v            .
+> > +		 * <---------->            .
+> > +		 *             delta       .
+> > +		 *            <----->      .
+> > +		 * |----------------|------|
+> > +		 * |    middle      | next |
+> > +		 * |----------------|------|
+> > +		 *                  ^
+> > +		 *                  |
+> > +		 *                  next->vm_start
+> > +		 */
