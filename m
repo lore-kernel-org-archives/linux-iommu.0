@@ -1,123 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011045.outbound.protection.outlook.com [40.107.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F50E4499A6;
-	Fri, 10 Jul 2026 22:45:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783723527; cv=none; b=SlzS9tfSC6p3tbPajrQWA0AZdF3WLWGn5YW9uxK8np0bnHzeA8pOonqbpARd/4jy86IDVwjmOFDFNB0WOloyQmbl1bm2UYqHzqf+FzXnN1UAquq+YAFrj8YyotF+ulqK5wno65mdPf0rLj9XcfPQJ3w4pzP5Iu59UAuPuER7RYU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783723527; c=relaxed/simple;
-	bh=hCZkEMaSNg91BSp9lPUnfEVv5lLLPtH93/eR1BiWlDo=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=RBSFGV0OBxO+paqutAdCctxdiMU+2Wida7p6GAX/repCyt3bMoDU8KxaSTzj4wfGWfoL0qwxTflTbFFtHDNTdrKNs2W4ZvsUQsijY/t0F5NFa71/qVcUj2CdWhItDqYYOwcP3bySFEAS/2IDlEKUYE6gAo3zy9opH1eGHFaFP8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=ZSx7QPoS; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C281213E02A
+	for <iommu@lists.linux.dev>; Sat, 11 Jul 2026 00:53:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783731197; cv=fail; b=gOQ8Mq5PnO8zYykIl+qz0+NoFTyBDHkTGhTPc7pbxfBGk8iyTGpuMCtZFZd/ktqRTC5lREiafiSc2J9mHzvtrUBC412SCuRwQXdIPeGjffSU5B96B8yKvNom5UsDHchIGrI67xfcjKKI4xkYI+yxIx8TZxP7VQ4V5FmlMS1agnc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783731197; c=relaxed/simple;
+	bh=P+pZQC64cGKYy/cVPOlSIaBW9UOlCSf8I4B4l80rtA8=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZjXKGcKRtS2Bb2SSpFBZnCxeli4rZdoHbzwK8EzDxuVr2760n9zuh9BR5rMnqsOcHska2WWj/DdrC/m5pK5ZKALVrDTcpPFwN+S5kulVjVdvGYVHjTyOQvzoRyP0OQv5r0KarQj14vj8oAzjj8qFN1NzuG3HqpzJL77iLal6mtI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=c2cDPUEM; arc=fail smtp.client-ip=40.107.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="ZSx7QPoS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28FA61F000E9;
-	Fri, 10 Jul 2026 22:45:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux-foundation.org; s=korg; t=1783723525;
-	bh=Yq17DLw8B7m0Ic0jrotN2vK5MclACu0PBR+dyFlWO78=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZSx7QPoSol/yIwMXKEmUJhTjHYhOTBLc5mXwwU3UwAh9roiwGFOEkEGDc9BHD66gH
-	 ol4A8UhH1Qv4PL+p4SHToO2ow21dRlKuMhNHReG860Gc0SP2DYkvm0I7ZKgAi4s3Wk
-	 nNh7xrNAGItIywqfA1/YCTySczvPZbj9fgWwv5ao=
-Date: Fri, 10 Jul 2026 15:45:21 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: David Hildenbrand <david@kernel.org>, "Liam R. Howlett"
- <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport
- <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, Michal Hocko
- <mhocko@suse.com>, Rik van Riel <riel@surriel.com>, Harry Yoo
- <harry@kernel.org>, Jann Horn <jannh@google.com>, Lance Yang
- <lance.yang@linux.dev>, Pedro Falcato <pfalcato@suse.de>, Russell King
- <linux@armlinux.org.uk>, Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster
- <schuster.simon@siemens-energy.com>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
- Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner
- <brauner@kernel.org>, Jan Kara <jack@suse.cz>, Dan Williams
- <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>, Muchun Song
- <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, Masami
- Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, Peter
- Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo
- Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin
- <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, Ian
- Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>, James
- Clark <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>, Ryan
- Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song
- <baohua@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>, Naoya Horiguchi
- <nao.horiguchi@gmail.com>, Xu Xin <xu.xin16@zte.com.cn>, Chengming Zhou
- <chengming.zhou@linux.dev>, SJ Park <sj@kernel.org>, Matthew Brost
- <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim
- <rakie.kim@sk.com>, Byungchul Park <byungchul@sk.com>, Gregory Price
- <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, Alistair
- Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>, Peter Xu
- <peterx@redhat.com>, Kees Cook <kees@kernel.org>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Andrey
- Konovalov <andreyknvl@gmail.com>, Alexander Potapenko <glider@google.com>,
- Dmitry Vyukov <dvyukov@google.com>, Steven Rostedt <rostedt@goodmis.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Jarkko Sakkinen
- <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, Thomas
- Gleixner <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>, H Hartley
- Sweeten <hsweeten@visionengravers.com>, Lucas Stach
- <l.stach@pengutronix.de>, Christian Gmeiner <christian.gmeiner@gmail.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Patrik
- Jakobsson <patrik.r.jakobsson@gmail.com>, Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, Rob Clark
- <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>,
- Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang
- <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, Marijn Suijten
- <marijn.suijten@somainline.org>, Tomi Valkeinen
- <tomi.valkeinen@ideasonboard.com>, Thierry Reding
- <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christian Koenig
- <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>, Matthew Auld
- <matthew.auld@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas
- <yishaih@nvidia.com>, Shameer Kolothum <skolothumtho@nvidia.com>, Kevin
- Tian <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, Alex
- Williamson <alex@shazbot.org>, Paolo Bonzini <pbonzini@redhat.com>, Shakeel
- Butt <shakeel.butt@linux.dev>, Usama Arif <usama.arif@linux.dev>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
- linux-perf-users@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- damon@lists.linux.dev, iommu@lists.linux.dev, kasan-dev@googlegroups.com,
- linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
- kvm@vger.kernel.org, Russell King <linux+etnaviv@armlinux.org.uk>, Ackerley
- Tng <ackerleytng@google.com>, Kai Huang <kai.huang@intel.com>
-Subject: Re: [PATCH v2 00/33] mm: make VMA page offset handling more
- consistent
-Message-Id: <20260710154521.435f67cc7b03ed3a9ccd423a@linux-foundation.org>
-In-Reply-To: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
-References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="c2cDPUEM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=kT+cG2A8HYFqbVnT/QCa3PFwpfctskKiOKLS2cL6EM0Npp1ArTiVxNq76RAMVu/c8SycmUMMeS4oCOD5ALblMiCyyo3/mUoVFAaI/N8J0/zkRPMDLCRNyUBtrETrIvcAaWqoZ/UFy1D1GLZYwxaEN1s24YIkQ1+OT3ULJoSJJxGLS5XUaRY2rqUQacuVItH3qbs0H7M9aSnW0DcWO5mYcCGUf2SYvLxDS9pXgyjGLEPtVS4Fdvzhuz4k92J01aFPdPhMlRWkVKYoP7O2fIXE7r84f2BqLTQskMXljcsNMt5T3F0nC1i996ErXqs20WnmDrTzRorKF3WlcYE5IPOZ9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XqlPOmLKfoaigQ8p6CnkhvohyvlRctFlhS/R+FhF9q4=;
+ b=AG+//aH2LsGWYa/ILGBY05+HqOnvE1WWfg6j6+O2NdXtuXIhSU7z77ugR7qoflaBYN8XmDeoSOav9aoKexHUgYw9JL8q4cz7W/n+4Vr408DMJBn7zJL4kCal/Z0HKr+J0+ZG0eZsl8AhaC/i6mZQocnyJobeyHmKxY4223GpmpxYy1AFfW6IfuxzGaeu2tHHV3Z3ot2BEi4gmpjbtJS4YWt63d6jBXtnd//Rz6OAIgrdFpHxg8PfvVlO2AbxfWlDyedzqQjPVpgchmkjC1RdvX/aS5GKCNDQXaQ+AQC00kV7oHrW6ANERH7cCR2+9ZzJa8e2QeL9YfOaqc7uLul91w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XqlPOmLKfoaigQ8p6CnkhvohyvlRctFlhS/R+FhF9q4=;
+ b=c2cDPUEM9FMzrcl+SSxcmt9LtH4ArF0m/1HpB58YY4+sei4t9DWIJN7+JKOir4FwkJV/AxiQAEAvuSeZb7BDi9xvfhBQ3Vtqcu/L8XwExYrcwzxJoeEtkQqkioirHk2nB2BsgTkRZVEE99bSl7/yQMxRnqSy4mg2TXeflKpo9GJhURTN2L7TV4r6j0E88TS+ZM9B336XIWVZTwBWEy0tzUe9bs5hhHsd4V6iEqICv31NEd1JEq0C/NDSUXBrwmbUcr4imoUl0R+s7E9oYMlgeL6GP11gep1MtI3Dti2dOorKQHjI4MO6GJeRmqNjz1ZCRXPQ1mO10clBKZeRS6ZKGA==
+Received: from SJ0PR03CA0135.namprd03.prod.outlook.com (2603:10b6:a03:33c::20)
+ by SA1PR12MB8858.namprd12.prod.outlook.com (2603:10b6:806:385::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.8; Sat, 11 Jul
+ 2026 00:53:10 +0000
+Received: from SJ1PEPF00001CE9.namprd03.prod.outlook.com
+ (2603:10b6:a03:33c:cafe::5c) by SJ0PR03CA0135.outlook.office365.com
+ (2603:10b6:a03:33c::20) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.202.10 via Frontend Transport; Sat,
+ 11 Jul 2026 00:53:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ1PEPF00001CE9.mail.protection.outlook.com (10.167.242.25) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.181.6 via Frontend Transport; Sat, 11 Jul 2026 00:53:10 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 10 Jul
+ 2026 17:53:00 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 10 Jul
+ 2026 17:52:59 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
+ Transport; Fri, 10 Jul 2026 17:52:58 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>
+CC: <joro@8bytes.org>, <praan@google.com>, <kevin.tian@intel.com>,
+	<smostafa@google.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, <jamien@nvidia.com>
+Subject: [PATCH v8 4/9] iommu/arm-smmu-v3: Destroy vmid_map ida via devres
+Date: Fri, 10 Jul 2026 17:52:45 -0700
+Message-ID: <1b39e846b503635c43122033b8aaf89379af9a6f.1783729633.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1783729633.git.nicolinc@nvidia.com>
+References: <cover.1783729633.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE9:EE_|SA1PR12MB8858:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6b45b0c4-9e02-4d05-2652-08dedee6c791
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|23010399003|36860700016|82310400026|6133799003|18002099003|22082099003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	wNsRuOL6fgLpwXzrciFdy3CPv7G/MWdhzrFxK49Q6fa80Lb7c4w+3Ag54l1c1mxqNj+4DfYghIZUxdAbviirmdOlvP+DwQJrdoCP+brGSj4nvSg0XMkCrpWpDBhgscUHYacecYHSVC3LA/ZVPsaTT7C84s7bp2rPyQdL/kBZrxnjdS0K04yREJDTU+WZlWLBWREvuf8USOGnN5xot1VK9BrGFOEsiXAnvak5z4ZpcXIhlSz16SzyJ89nAO47Acvai0fC1d+3aF6t9fx/uG4WL6Iz7iswjCfgwXKJlXtPb5G9KE/RB2BVZf9Tm/ZQ6q0zTV0yRDJMRIm8GXCmjHOikN2JWCSUoTtKlDJbDzVVEgTYAge+OPsTNrnw7UKgpV5aquX39uK46oRLihtzhNrCoGYYmuKPxy+yGnNeK+IJ+6AYYisrinch1t9bSWooZtokcUUoBgIuW5G2IIBSB6MjkSOgqDs/aXIrLzirouyoCEGyhoz2SHaRPQfUt6Wn1HDS+SqwZdNJyNj/UQlohGweNc8BaZvMndyS/5z4jr2ZRAD3iAqfGnMT+xsCd5jwGp/030Eqo90pOHyzvwABxXrJZZzo8DPVQuKQ9vmtEl6+AbS1EdHjXREWudVrA2j9oHakucMAfpOGcmvbgieOWG8knLtiqIQnWdijs2SlQfgAXVaDY4+Rew6kHU7yXVhk0ZyvUngQp4zxJpDtQouAcaFRUw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(36860700016)(82310400026)(6133799003)(18002099003)(22082099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	GEzr1kUs1P1jhj6IElF+nUlJyhOzNug3Dx92XZFX4KuGXDDXNlyQUOkgRUk6OfqddLmoM2FR0t8/4kUwQqcfSFYmuu41J6dt681SgdXdcE1ZaEshUGTVisFnvHVXR/yzV2rJ1P7QgL3cGQanSxNhTZfeTbgfFhBPhtaicFfEJUUn+cbarXGvj95RPWtmafxNk23MJYW36VA/G9Vz5uY6nvZqJCjWjFJvL7IDp8b7LE00KPefcinD+bg+3jA7oOy3S7/lN3sumNgIjEVk1gpvy4ymzjY7XUj1xn4KkC0zqM2kgEwI0ERA0ijULHltIXWcGUDip9N4iP369ruqQvPcA+kD+zpCsm0l9B1fRDUZkzZ2JX3KQvDPDJAq9W22WLUAN0xSiKYbgcbwvE6hcjR1QqWPcEtSlHOdDEK/jaadDeG676iGQKTE8WVltO9zlP26
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2026 00:53:10.4815
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b45b0c4-9e02-4d05-2652-08dedee6c791
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE9.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8858
 
-On Fri, 10 Jul 2026 21:16:41 +0100 Lorenzo Stoakes <ljs@kernel.org> wrote:
+The vmid_map ida is only destroyed in arm_smmu_device_remove(), which does
+not run when the probe fails. This is currently harmless, as the ida stays
+empty until the first S2 domain allocation, which can only happen after a
+successful probe.
 
-> This series performs a series of cleanups and improvements around how the
-> vma->vm_pgoff field is used.
+An upcoming change will start reserving the crashed kernel's VMIDs in this
+ida, at the probe time of a kdump kernel. A probe failure would then leak
+the ida's internal allocations.
 
-Thanks, I'll add this to mm-new.
+Register a devres action right after ida_init(), making devres the single
+owner that covers both the unbind and probe failure paths.
 
-Sashiko wasn't able to apply it :(
+Assisted-by: Claude:claude-fable-5
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-There were some minor collisions in ksm.c, thanks to
-https://lore.kernel.org/20260703162510242nxmjbcLy5ccp1dbZSK3EU@zte.com.cn.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index a1a91b6635129..2fb28eb2b8895 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4505,6 +4505,13 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+ 	return 0;
+ }
+ 
++static void arm_smmu_deinit_strtab(void *data)
++{
++	struct arm_smmu_device *smmu = data;
++
++	ida_destroy(&smmu->vmid_map);
++}
++
+ static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+@@ -4523,7 +4530,8 @@ static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+ out:
+ 	ida_init(&smmu->vmid_map);
+ 
+-	return 0;
++	return devm_add_action_or_reset(smmu->dev, arm_smmu_deinit_strtab,
++					smmu);
+ }
+ 
+ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+@@ -5564,7 +5572,6 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&smmu->iommu);
+ 	arm_smmu_device_disable(smmu);
+ 	iopf_queue_free(smmu->evtq.iopf);
+-	ida_destroy(&smmu->vmid_map);
+ }
+ 
+ static void arm_smmu_device_shutdown(struct platform_device *pdev)
+-- 
+2.43.0
 
-(You'd think His Royal AIness could figure out how to resolve a few
-dopey patch rejects.  Oh well.)
