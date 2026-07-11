@@ -1,72 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCFD82264C0;
-	Sat, 11 Jul 2026 06:34:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94A2F2C21DD;
+	Sat, 11 Jul 2026 16:58:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783751700; cv=none; b=uSDqagBLneyuuMUSdBi6QtHTBHrD4PchsXKCEXxXNeEgrqi2hDeBRqQJHxMMbeDULtXcFs6SDdkdZSIEc5dz7ouPqV2PNXK97lNguL7zMj5s6t3t/DQenAHNeIE3bM3wh93sbc0sMHtskDLRIx9ADelhsOu9+iGGW7liQiurw0o=
+	t=1783789131; cv=none; b=NY1oru+EK3HE5nIo6pNoisXTIreonejCDq/Es6vfY4WdczUkcG07VQVPbMFEYfXSlUfluTSKTYFtWkd+DN4s7nfSgNNYzp1IiRCNQmOeVvgaY3MiZvOHxSjJ9mFtH8GsvRVJsy81q1BQG/xBPG3QkyXI6sVH63z3SJVlBdy1YVE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783751700; c=relaxed/simple;
-	bh=LcVpu5n9Px0aNntls5Ti5FkbgET7fFzrYzyLaRzMgKA=;
+	s=arc-20240116; t=1783789131; c=relaxed/simple;
+	bh=Q332TfGMszY4YqhvlmsBVuAgFQPSKMmj4sMy+oYviH8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OnpGrt3MJV3iBzgqAGgnrzZ3jQk817B14BLTSFfYSREBIEFszHba3vsdJ0zTXQJCiomTHN88Tz/Cdy4UsRX7CNt2ndbwaHKaVfLOVMLWu3JHfMWDVOyAtDX3+th5xL91dU/OaK72Xdy4Q30b/psyGIJ9Cbe6TRq7y6Qs+fSppEA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OSFAG2xz; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=d3Dm5IDIiVlSqr8O+CYgIT+v2Yh+hMQlwDuZegbaljBEHbPjyMfHGWisuvMGEUVt0x4XVbJifPpRa0fxGvxJRivFD5ZmdQ0i9cfy8V4wFPpngiKFkoDPidQqeyt5ixufLZc3dXQghUzNELJAjwPEy73bJH32uZlxd/fMSAFo3DI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U+5P7hSy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OSFAG2xz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E831F000E9;
-	Sat, 11 Jul 2026 06:34:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U+5P7hSy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C6A1F000E9;
+	Sat, 11 Jul 2026 16:58:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783751699;
-	bh=GJJhsK9UGkbC0fJg0T/BshNksgm9QoTCT4bawaC+z7g=;
+	s=k20260515; t=1783789130;
+	bh=xJMk5wfqfmZ8Km+K3oUYO2vXzYnu5TIhfjfCYG6aJXw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=OSFAG2xzhmr/8YQvg4NEImxF07jxqbUEEh7NwCiLHgeM7x3UggZev3LSdvaUAskdK
-	 yMdFPgyqXym8+YxpIqdArYXwrA1e31glpfB+vT/AGy+UyHYaEl3EbzmDMBMqm6oS9S
-	 rV8S1zftmc37pBGjvzyZ/9mf/PmAlQDTR2GR/5LsbXiF9Yys9XqwBQ/oO5Iu/PACIz
-	 T34DpydP7RCQVGW7fAb+/e81YQv/kgHEj2uwBZjxXoCQIImeX4HjT8vV8otTJkUR3J
-	 rJWAp3wgwbORSmHnmAU7zE5h3zYF3v1IbJdUxD0WIe4MXsxHGIBwL2tCYLpNTApr1C
-	 S5LVbRXET280g==
-Date: Sat, 11 Jul 2026 07:34:36 +0100
-From: Lorenzo Stoakes <ljs@kernel.org>
-To: Gregory Price <gourry@gourry.net>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, Rik van Riel <riel@surriel.com>, 
-	Harry Yoo <harry@kernel.org>, Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>, 
-	Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>, 
-	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
-	Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
-	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
-	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
-	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>, 
-	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
-	Miaohe Lin <linmiaohe@huawei.com>, Naoya Horiguchi <nao.horiguchi@gmail.com>, 
-	Xu Xin <xu.xin16@zte.com.cn>, Chengming Zhou <chengming.zhou@linux.dev>, 
-	SJ Park <sj@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
-	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>, Byungchul Park <byungchul@sk.com>, 
-	Huang Rui <ray.huang@amd.com>, Matthew Auld <matthew.auld@intel.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>, 
-	Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, 
-	Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	kasan-dev@googlegroups.com, linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
-	linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
-	Russell King <linux+etnaviv@armlinux.org.uk>
-Subject: Re: [PATCH v2 32/33] tools/testing/vma: default VMA, mm flag bits to
- 64-bit
-Message-ID: <alHjzZxfXOTMOC4I@lucifer>
-References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
- <20260710-b4-pre-scalable-cow-v2-32-2a5aa403d977@kernel.org>
- <alFewd7j_uiNP1Vw@gourry-fedora-PF4VCD3F>
+	b=U+5P7hSywsTiAsJxEmNblQnkreLzh//QvBfQVoqGeDPv9YhhOZtsMI1JwZkV6u6O4
+	 bC+6NNJkM0x8+E9m6xDDWuMmIVwLNuotSvuWcr+D5EjuAMT+Xh+77Wym/tszw5KmDn
+	 +ho4taDk06q2GHDiDD9HjNMLg0xWSGlyOHZXASpiuu8HBUFE+wjmiSBQDRP/Ush2Hz
+	 LLFXUkg73o0KMBKfA6N+/F2r+oigE+8Uj/0wGmxynlJnpId7lCAuNe3DwJh1pj2A+R
+	 lZY3xRP+d5UmnCJZsA4lpySmeLNkHOJpQxi1fR6/dtYSh7ov/gpFd7rBz+EC2lX/P5
+	 3s+YCvQPP2bvg==
+Date: Sat, 11 Jul 2026 11:58:46 -0500
+From: Bjorn Andersson <andersson@kernel.org>
+To: esteuwu@proton.me
+Cc: Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>, 
+	Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
+	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-phy@lists.infradead.org
+Subject: Re: [PATCH 0/8] SM8450 QoL changes
+Message-ID: <alJ1EGIa8WM-iRRN@baldur>
+References: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,53 +50,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alFewd7j_uiNP1Vw@gourry-fedora-PF4VCD3F>
+In-Reply-To: <20260622-sm8450-qol-v1-0-37e2ee8df9da@proton.me>
 
-On Fri, Jul 10, 2026 at 05:08:30PM -0400, Gregory Price wrote:
-> On Fri, Jul 10, 2026 at 09:17:13PM +0100, Lorenzo Stoakes wrote:
-> > With all of the sanitisers turned on, setting the VMA and mm flag bits
-> > depth to 128 by default results in overly long build times.
-> >
-> > Reduce this to 64 - we can always manipulate these later for testing of
-> > larger bitmaps as needed.
-> >
-> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
->
-> I've never had a "too main recipients" error with my email client
-> before.  Bravo.
+On Mon, Jun 22, 2026 at 08:54:21PM -0400, Esteban Urrutia via B4 Relay wrote:
+> Hello. This is my first attempt at contributing to the Linux kernel.
 
-Yeah I kinda just let b4 add recipients unlike the 1st where I trimmed. Any v3
-will be trimmed again because even my usually super reliable mail client is
-err... slow on this thread :)
+Welcome! A very good first attempt, I hope you will keep doing this!
 
-(Apologies all for noise...!)
+> 
+> I've been mainlining an SM8475 based device for quite some time now and
+> I feel now's the proper time to start submitting patches.
+> I'm starting with the smallest part which are mostly modifications
+> regarding the current support for the SM8450 SoC.
+> 
+> Regards,
+> Esteban
+> 
+> Signed-off-by: Esteban Urrutia <esteuwu@proton.me>
+> ---
+> Esteban Urrutia (8):
+>       clk: qcom: dispcc-sm8450: Fix mdss clocks
+>       arm64: dts: qcom: sm8450: Remove unneeded reserved memory nodes
+>       arm64: dts: qcom: sm8450: Modify GPU operating points
+>       arm64: dts: qcom: sm8450: Add missing PCM_OUT port
+>       iommu/arm-smmu-qcom: Add SM8450 MDSS compatible
+>       phy: qcom: qmp-combo: Drop qmp_v4_calibrate_dp_phy
+>       phy: qcom: qmp-combo: Correct pre-emphasis table for QMP v4 DP PHYs
+>       arm64: defconfig: Add SM8450 camcc
 
->
-> Reviewed-by: Gregory Price <gourry@gourry.net>
+Sending the patches as a single series implies that there's some sort of
+dependency/relationship between them, but as far as I can tell there
+isn't.
 
-Thanks!
+The changes applies to 4 different maintainers/subsystems. If you group
+patches based on their dependencies and who is going to merge them, each
+group will be easier to review and merge.
 
->
-> > ---
-> >  tools/testing/vma/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/vma/Makefile b/tools/testing/vma/Makefile
-> > index e72b45dedda5..ef6cc558afe1 100644
-> > --- a/tools/testing/vma/Makefile
-> > +++ b/tools/testing/vma/Makefile
-> > @@ -10,7 +10,7 @@ OFILES = $(SHARED_OFILES) main.o shared.o maple-shim.o
-> >  TARGETS = vma
-> >
-> >  # These can be varied to test different sizes.
-> > -CFLAGS += -DNUM_VMA_FLAG_BITS=128 -DNUM_MM_FLAG_BITS=128
-> > +CFLAGS += -DNUM_VMA_FLAG_BITS=64 -DNUM_MM_FLAG_BITS=64
-> >
-> >  main.o: main.c shared.c shared.h vma_internal.h tests/merge.c tests/mmap.c tests/vma.c ../../../mm/vma.c ../../../mm/vma_init.c ../../../mm/vma_exec.c ../../../mm/vma.h include/custom.h include/dup.h include/stubs.h
-> >
-> >
-> > --
-> > 2.55.0
-> >
+Regards,
+Bjorn
 
-Cheers, Lorenzo
+> 
+>  arch/arm64/boot/dts/qcom/sm8450.dtsi       | 50 ++++++------------------------
+>  arch/arm64/configs/defconfig               |  1 +
+>  drivers/clk/qcom/dispcc-sm8450.c           |  6 ++--
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c |  1 +
+>  drivers/phy/qualcomm/phy-qcom-qmp-combo.c  | 33 +-------------------
+>  5 files changed, 16 insertions(+), 75 deletions(-)
+> ---
+> base-commit: 948efecf22e49aa4bf55bb73ec79a0ddcfd38571
+> change-id: 20260622-sm8450-qol-466b8c07eb5f
+> 
+> Best regards,
+> --  
+> Esteban Urrutia <esteuwu@proton.me>
+> 
+> 
