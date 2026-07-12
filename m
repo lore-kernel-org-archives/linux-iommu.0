@@ -1,65 +1,65 @@
 Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C45E3A6B78
-	for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 13:45:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 615723403E0
+	for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 15:29:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783863905; cv=none; b=rhMwUEA/M+DziLpNC+HjNEdEGBXPO0/6+x2ZLCNJzHXELeBAFjipugHAaqIQkcFSETKeRRRZZoKx8h8wprvLoGQuGhX6CQvnm9qCkuRlaC8W0v9vMC+7Hwp8YUM7wRMmlYLjT23F36l3YmOE70cRJTaveHF9EOeqfR5BbBLbGWA=
+	t=1783870165; cv=none; b=WxzthByTYYHN6l1Rq8onuoXs8seM7H3HGVaC8W0/yMF1KPO/p3Aqr9FiEQJLkuOPsmjJNAN2fTyet4kuo/gS52MkVAtyc3coQrICYyiY6o6nMiR0Z4KkveBuf4lYOijL8Q/wszUzri1FnNZB60KGzneiT+Xnp/8yeEPmxyYLxp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783863905; c=relaxed/simple;
-	bh=AXZGh2qsEnhsJBJ9tb/EgXIirhdjZjiMPZit1Z9ULxQ=;
+	s=arc-20240116; t=1783870165; c=relaxed/simple;
+	bh=HoZm1K0Vxq8QHY4OY0M4l3Gq05opjZyzIxiVdYJMT64=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fSmcco7GKmRdfjR5DJF3csNOhr8mNLr4poJAEaMp7oq4PFJnsr5Sz7yQI83WdjN3UE+eFYdLXgyXIf0jvmI0SzBMhRFpEkOLwFSSPaE46bsxTClq7C3oJ/G9l/z+b7bBMYVSkhPaAS2Tv1RL4wXdWxTeVOPtgz0LM5GjvAtMT2g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=m/aEVz9q; arc=none smtp.client-ip=209.85.128.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=oYk9XYb8lN2xxl5lqNSECQdJ5/+7hPbAbypvYdrhJbCZR1ZLE/8sqd6uLa03qowvddOr0MZNrry2N8EBa+I/ZqY6/nPsMVJJe5Yg1hzAhvOaxfmCxDeJpu1jZDcUWmKGCIzE3oZPrWOYBXYUxBUK0zFFiHygtd6SecftpiB8v+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GDcdk/ls; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="m/aEVz9q"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-493c556ada3so56005e9.0
-        for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 06:45:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GDcdk/ls"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-493b8d92a4eso50195e9.1
+        for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 08:29:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783863902; x=1784468702; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=cB15QmrcA0tyUGkN33GVVZ7yR2pDZvCE9+bOTq+KGW8=;
-        b=m/aEVz9qBoA7c3SAe4FILtDer3TQ01jgcyE3j+cEsujYo8WsZBmlVKZ9OCTBG5xvox
-         q1FSMitIQB3Nm5QRI/8SGroIpjirX9k8dh70aODe+u1Thxt6NphOrRaTCTAomf+Nae+P
-         DwmC4ZuSSdVLo6VO+5K1UMR5rqMjJqRdzHhe5KfyyMlliGweN/s/5SBkTZFvlynYBwIw
-         f8u7vRIAJnnsq26M/WVvI3eo+kTCn7oFsrhY+ZAVSvKa/2ttpeF0t35Y2OG/HTcMs14P
-         KS12+wBInYNhfivG3GGV0WC/Dc26MYZQIDQ9k8pu3tr3Y+5fVM4vUCKnYNujbaymCbts
-         WW9Q==
+        d=google.com; s=20251104; t=1783870162; x=1784474962; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EB4yDpb44w+GJHdAYOL5yRV8WP3HkDbon7ZVHvgT3yQ=;
+        b=GDcdk/lstbPRrqtei+2HPYtqxHS5vlKveCKG84Q+2qC8Cj6GvWU0ddu/QfuNzwYtXB
+         dFyC5p4cVFnO7fmESsn9Wt9Db+aev+SMHQvHDBLZuqQ8Zs+YAh1e+NbW9Qf/idHeY9E1
+         J1bth6azhCesJlJ6Gy/Pue0b2kP9B9lqcJnjixvihAQYVYkKvJpEy+HlHRlK4bkuA4tY
+         57hoXV3cF8zMapjPdHypLIahFvtfK2RNG2A6kPDQUD0MZoFplB5zrDE10uWIQK6hTUyn
+         Rp+VZhI+bpDV5PIwiw78FcrNBnuM5gf+RmpSL1HwcvI9dyzOFyXTJlbCTZ3aHO8hN8VE
+         C6AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783863902; x=1784468702;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=cB15QmrcA0tyUGkN33GVVZ7yR2pDZvCE9+bOTq+KGW8=;
-        b=ReismBaom+sI2M0gSvu0oUwXsPv0xYGLrX6hyACEuGELdNdBb0DXJ1pfT8KV8gBVaY
-         FxFqUmqVuzGs93GrMZwKrIVkND4irlNeZrq7ye7mle8+LsMw4bGGCcHTO74YCHOpa6wt
-         zMhJhtT9udLU/9HwvkzxCxoMvNm2g4lJrZ1wu3PCskDJFwTryFoFK63fOdl+5peAkqDb
-         gLxGa7wF/BTMrLwBi5YyGrlCBFlb7Uu+6aoUm+Ltuwi/DNzKQ/k1V/jhRN8ALGdr26N1
-         vNL47L2ip+YK84OLEOUAZCWG1ImFKgntnCP44uXdX5MSiTnh928dZyg6KbI9mDp7w0TT
-         Ac3A==
-X-Forwarded-Encrypted: i=1; AHgh+Rqrya8pzn5bORZUJSl/Qyj5ccoFR23SSXMIs8y58NXkMfA5kaKN8SDSOxo9MulputYyINZ5GQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwqKcKU5Np73ke4Elh4fCwGJrMp2zL8vz73ONvR0AJtXAEOh+Ch
-	+/X01e68/SZuyH37AKRk6IR7ug3K0ieQfSD4v1/+wb/4pN+zB9DX4fVnAfPf1uscjQ==
-X-Gm-Gg: AfdE7clfpSSH/rZDNqziCAJIS6qOQfvRr7dJbOXaxKe/lr3lYRaDl27ZrQWMtNQ6Iy3
-	ZYBx/QGuA+vMz1sxWUiAaInrt92X/lauMnneFsW6VVAjUw+Ni0ORyNSlbQuY+Z7Uh2cPJaBLz5C
-	ffK6hzn+kJimYCBAAo+8/JNfJSvdMKrjrRAMV4YrliljAuk4sNHvRGyinzceipZsN/ObktpsBJ5
-	84BKxyVf+5zMBS8TDX/m0Ikks1h1pUINhqLFURt/SC8n24Xq7tE5GsbT91k5T9PbsSJWBfZLe/a
-	dLUUr2kkY8nYA8vrSfJOf/5pNHmuFxUSWymqLLnGHRVk1FOxMdrbV4WrQr5SWYX7V0o5FzRc/+D
-	JTJRpwoBGi5ehAIfK+ir8bxVc3N7zuGyCYxR1jlujL6jz8WAdSQt7tHln2Rki5C6QTgen+igp4K
-	WwhAUFLS4rZduG/LCxeRh72JmqYADeOeRBqJAK8j9b+LDv41qVrJdsMCGPBlM=
-X-Received: by 2002:a05:600c:17c5:b0:493:b47f:a24 with SMTP id 5b1f17b1804b1-493f85a0c29mr1695425e9.6.1783863901494;
-        Sun, 12 Jul 2026 06:45:01 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1783870162; x=1784474962;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=EB4yDpb44w+GJHdAYOL5yRV8WP3HkDbon7ZVHvgT3yQ=;
+        b=GXvigj57HsNwoQDad/PNqHgSS2pzpUdvvh3Sq2dP2ckuzuJ31HrQ+fO3RLKD2HNEYs
+         Qw68dIvxmzfFTeHHXQt/T9CUxID4shvvd2hU1oWgKtRQ2z/BuMxo6ZuphVMt7wB4Bzja
+         hsrkuyx/VhoHWF28prfn1BfTseA0oqx+3mv4uyUE8E/I4bPAefhCf85e7ykYf/sKQHa/
+         r5Jpq+/W8k+ZpFZ699ZLf/Y9XTbbiylZClrs00H1zGhM16k64pSBUCaP3TwDFnYDGTLW
+         1DvIAlQQjYcg7LuDZDEnSxxXxes0RyWi6muX6ocHBIzAfMeIe66nPa7OBiu9HdCdAeih
+         8JUw==
+X-Forwarded-Encrypted: i=1; AHgh+RpoFFVQSv7jXeZRU/sYReJu6FbO+YCrgzXu/TDDbAzvJKBFD8O9f+XmBCY4juo+mcKBZ9lmKA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw7+3OO2rXuIAX+K93SZs7UaJSDzxwt4X2VbETF7AwCVnp4zARp
+	hh/+nVmBSXJ4k3B4E+jJYkfFzD9YkogBG5xUupXAvrIZSTWKfLHwU0ch1TtfXvv49w==
+X-Gm-Gg: AfdE7cmnyyPfVsvrH5Fja2ypMc9teVpJciEIasetb9u05goGiHlelgSXjh2FJnolUiK
+	7UfADleymv45gNRToup0bQaNO6x8Rbgw/JVOQm4JBliWZQ1vVnzFgQT5Ot5/nOvG+R6ORcxGY/i
+	abH4Ce5lO8/o/aHXVqeb7WY2FiXRDh7F8ip65q9yiA2e1bBsNuVFo7aXlyiVHc+9Juy4rO13zRP
+	AEtztSQDiGhfOFXn50BJ8+3dmUUPT+LBLxeAx4E36fUwAaiHKtoKyCTzE1GZlYmHMBnHSDBsruU
+	p+qhU1lEkht6brFxfb0YUEP8HFnoFcRxKkeZbbliJWSo4bMbyka6eAU9uJ1RyPAkKCONO8w4QNa
+	BdCCe6XoEfPKmHn0FLI+UudPvFmlKNqwgzYxVzORJtKplugh25ivV7O6Crk/FCyBmeWdl7cFd7z
+	tbRwl6s4XjW4fOaFq1qGF8Ed/9WLngcvBHVQy4iiMiMW9qk6pQ
+X-Received: by 2002:a05:600c:8889:20b0:493:a96b:f9fe with SMTP id 5b1f17b1804b1-493f856ecc9mr2162265e9.4.1783870161311;
+        Sun, 12 Jul 2026 08:29:21 -0700 (PDT)
 Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47a9de1e785sm76064126f8f.8.2026.07.12.06.44.58
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493eb742d0esm297830905e9.13.2026.07.12.08.29.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2026 06:44:59 -0700 (PDT)
-Date: Sun, 12 Jul 2026 13:44:55 +0000
+        Sun, 12 Jul 2026 08:29:20 -0700 (PDT)
+Date: Sun, 12 Jul 2026 15:29:16 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Vincent Donnefort <vdonnefort@google.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -69,217 +69,285 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
 	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
 	tabba@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 01/25] KVM: arm64: Generalize trace clock
-Message-ID: <alOaV1q7t2mn_jOn@google.com>
+Subject: Re: [PATCH v6 02/25] KVM: arm64: Donate MMIO to the hypervisor
+Message-ID: <alOyzOL16dhYk724@google.com>
 References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-2-smostafa@google.com>
- <alD_hwRhUZ0IPTte@google.com>
+ <20260501111928.259252-3-smostafa@google.com>
+ <alEnH98wFppYjmnE@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <alD_hwRhUZ0IPTte@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <alEnH98wFppYjmnE@google.com>
 
-Hi Vincent,
-
-On Fri, Jul 10, 2026 at 03:19:51PM +0100, Vincent Donnefort wrote:
-> Hi Mostafa,
-> 
-> Sorry I should have looked at this a while ago!
-> 
-> On Fri, May 01, 2026 at 11:19:03AM +0000, Mostafa Saleh wrote:
-> > IOMMU drivers need to track time, mainly for timeouts.
-> > Generalize the tracing clock functions in the hypervsior, so they can
-> > be used from IOMMU drivers.
+On Fri, Jul 10, 2026 at 06:08:47PM +0100, Vincent Donnefort wrote:
+> On Fri, May 01, 2026 at 11:19:04AM +0000, Mostafa Saleh wrote:
+> > Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
+> > drivers can protect and access the MMIO of IOMMUs.
 > > 
-> > 1) Make the compilation independent from tracing.
+> > As donating MMIO is very rare, and we don’t need to encode the full
+> > state, it’s reasonable to have a separate function to do this.
+> > It will init the host s2 page table with an invalid leaf with the owner ID
+> > to prevent the host from mapping the page on faults.
 > > 
-> > 2) As drivers might need to use that quite early, provide default
-> >    values for the clock data based on cntfrq_el0, the driver can
-> >    keep using these values without calling hyp_clock_update() as
-> >    they don't need to sync with the host timers.
+> > Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
+> > stage-2 PTEs, as this can be triggered from recycle logic under memory
+> > pressure. There is no code relying on this, as all ownership changes is
+> > done via kvm_pgtable_stage2_set_owner()
 > > 
-> > This is mainly used for timeouts, so a malicious host can DoS the
-> > system or cause premature timeouts which likely end up in hyp panic,
-> > that should be acceptable as neither of those would undermine the
-> > security guarantees.
-> 
-> This still sounds very risky if the usage shift, and as I explain later I don't
-> believe this is completely OK as regard to mult/shift updates.
-
-I see, I still think it is not a security risk though.
-My main concern is switching banks between polling might cause
-problems.
-
-> 
+> > For the error path in IOMMU drivers, add a function to donate MMIO
+> > back from hyp to host. However, that leaks the hypervisor virtual
+> > address range which should be acceptable as this is quite rare and
+> > it matches the behaviour of fix_map/block.
 > > 
 > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > > ---
-> >  arch/arm64/kvm/hyp/include/nvhe/clock.h | 11 ++-----
-> >  arch/arm64/kvm/hyp/nvhe/Makefile        |  4 +--
-> >  arch/arm64/kvm/hyp/nvhe/clock.c         | 44 ++++++++++++++++++++++---
-> >  arch/arm64/kvm/hyp/nvhe/setup.c         |  5 +++
-> >  arch/arm64/kvm/hyp/nvhe/trace.c         |  4 +--
-> >  5 files changed, 51 insertions(+), 17 deletions(-)
+> >  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |   2 +
+> >  arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 119 +++++++++++++++++-
+> >  arch/arm64/kvm/hyp/pgtable.c                  |   9 +-
+> >  3 files changed, 121 insertions(+), 9 deletions(-)
 > > 
-> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/clock.h b/arch/arm64/kvm/hyp/include/nvhe/clock.h
-> > index 9f429f5c0664..e6a0e43af88d 100644
-> > --- a/arch/arm64/kvm/hyp/include/nvhe/clock.h
-> > +++ b/arch/arm64/kvm/hyp/include/nvhe/clock.h
-> > @@ -5,12 +5,7 @@
+> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > index 3cbfae0e3dda..ff440204d2c7 100644
+> > --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > @@ -36,6 +36,8 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+> >  int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+> >  int __pkvm_host_unshare_hyp(u64 pfn);
+> >  int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
+> > +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr);
+> > +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size);
+> 
+> Can we have u64 pfn, u64 nr_pages here to match all the other functions?
+> 
+
+I see the convention is that phys_addr_t is used for physical addresses
+as (addr_is_memory(), host_stage2_idmap_locked(()...) while u64 is used
+for pfn.
+
+> Also, as this is used by a "module" perhaps a sort of kerneldoc would be nice,
+> especially to explain this isn't mapped into the hyp idmap range.
+
+Sure I can add a comment.
+
+> 
+> >  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
+> >  int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
+> >  int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> > index 28a471d1927c..2fb20a63a417 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> > @@ -353,6 +353,38 @@ int __pkvm_prot_finalize(void)
+> >  	return 0;
+> >  }
 > >  
-> >  #include <asm/kvm_hyp.h>
-> >  
-> > -#ifdef CONFIG_NVHE_EL2_TRACING
-> > -void trace_clock_update(u32 mult, u32 shift, u64 epoch_ns, u64 epoch_cyc);
-> > -u64 trace_clock(void);
-> > -#else
-> > -static inline void
-> > -trace_clock_update(u32 mult, u32 shift, u64 epoch_ns, u64 epoch_cyc) { }
-> > -static inline u64 trace_clock(void) { return 0; }
-> > -#endif
-> > +void hyp_clock_update(u32 mult, u32 shift, u64 epoch_ns, u64 epoch_cyc);
-> > +u64 hyp_clock_ns(void);
-> > +int hyp_clock_init(void);
-> >  #endif
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
-> > index 62cdfbff7562..89d0533921f9 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/Makefile
-> > +++ b/arch/arm64/kvm/hyp/nvhe/Makefile
-> > @@ -26,10 +26,10 @@ hyp-obj-y := timer-sr.o sysreg-sr.o debug-sr.o switch.o tlb.o hyp-init.o host.o
-> >  	 hyp-main.o hyp-smp.o psci-relay.o early_alloc.o page_alloc.o \
-> >  	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o stacktrace.o ffa.o
-> >  hyp-obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
-> > -	 ../fpsimd.o ../hyp-entry.o ../exception.o ../pgtable.o ../vgic-v5-sr.o
-> > +	 ../fpsimd.o ../hyp-entry.o ../exception.o ../pgtable.o ../vgic-v5-sr.o clock.o
-> >  hyp-obj-y += ../../../kernel/smccc-call.o
-> >  hyp-obj-$(CONFIG_LIST_HARDENED) += list_debug.o
-> > -hyp-obj-$(CONFIG_NVHE_EL2_TRACING) += clock.o trace.o events.o
-> > +hyp-obj-$(CONFIG_NVHE_EL2_TRACING) += trace.o events.o
-> >  hyp-obj-y += $(lib-objs)
-> >  
-> >  # Path to simple_ring_buffer.c
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/clock.c b/arch/arm64/kvm/hyp/nvhe/clock.c
-> > index 32fc4313fe43..53d0bd55e866 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/clock.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/clock.c
-> > @@ -18,7 +18,41 @@ static struct clock_data {
-> >  		u64 cyc_overflow64;
-> >  	} data[2];
-> >  	u64 cur;
-> > -} trace_clock_data;
-> > +} clock_data;
-> 
-> I believe this should be separated. the trace_clock is "unsafe" but synchronised
-> with the host. the clock you need must be "safe" but we don't really need to be
-> synchronised. 
-> 
-> So overall, I would keep all the trace_clock_* interface unchanged and introduce
-> in the same file a hyp_clock, with its own hyp_clock_data.
-
-Makes sense, I will do that, I will make the file compile outside of
-tracing but I will keep the tracing code as is. I will introduce 2
-functions to read the system timer and to init the hypervisor which
-was similar to the earlier versions.
-
-> 
-> > +
-> > +#define HYP_CLK_SEC_TO_NS 1000000000UL
-> 
-> Not possible to use NSEC_PER_SEC?
->
-
-It should, we have to include include/vdso/time64.h for that.
-
-> > +
-> > +int hyp_clock_init(void)
+> > +/* Unmap MMIO region while skipping donated PTEs. */
+> > +static int host_stage2_unmap_mmio_region(u64 start, u64 size)
 > > +{
-> > +	u32 timer_freq = read_sysreg(cntfrq_el0);
-> > +	u32 shift = 32;
-> > +	u64 mult;
+> > +	struct kvm_pgtable *pgt = &host_mmu.pgt;
+> > +	u64 unmap_start = start;
+> > +	u64 addr = start;
+> > +	kvm_pte_t pte;
+> > +	int ret = 0;
+> > +	u8 level;
 > > +
+> > +	while (addr < start + size) {
+> > +		ret = kvm_pgtable_get_leaf(pgt, addr, &pte, &level);
+> > +		if (ret)
+> > +			return ret;
+> > +		if (!kvm_pte_valid(pte) && pte != 0) {
+> > +			if (addr > unmap_start) {
+> > +				ret = kvm_pgtable_stage2_unmap(pgt, unmap_start,
+> > +							       addr - unmap_start);
+> > +				if (ret)
+> > +					return ret;
+> > +			}
+> > +			addr += kvm_granule_size(level);
+> > +			unmap_start = addr;
+> > +		} else {
+> > +			addr += kvm_granule_size(level);
+> > +		}
+> > +	}
+> > +	if (addr > unmap_start)
+> > +		ret = kvm_pgtable_stage2_unmap(pgt, unmap_start, addr - unmap_start);
+> 
+> Ah shame, that's a lot of table walking. I guess we could:
+> 
+>  * create our own custom walker here but that would duplicate a lot of logic
+>    from pgtable.c. So doesn't look great.
+
+Yes, that seems too complicated.
+
+> 
+>  * Retry kvm_pgtable_stage2_unmap() as long as it return -EPERM... but then we
+>    it needs to return where it has stopped?
+
+Yes, that is not possible with its current interface.
+
+> 
+>  * Modify kvm_pgtable_stage2_unmap() to just skip the refcounted entries?
+>    There's already a flag something that looks like this: KVM_PGTABLE_WALK_IGNORE_EAGAIN
+> 
+
+I thought about this, my main concern is that now any unmap will fail
+silently if it hits a refcounted page. Propably not too bad as that only
+is used in recycling.
+
+> I am not so convinced by the first two points but the last one is probably worth
+> exploring.
+>  
+> > +	return ret;
+> > +}
+> > +
+> >  static int host_stage2_unmap_dev_all(void)
+> >  {
+> >  	struct kvm_pgtable *pgt = &host_mmu.pgt;
+> > @@ -363,11 +395,11 @@ static int host_stage2_unmap_dev_all(void)
+> >  	/* Unmap all non-memory regions to recycle the pages */
+> >  	for (i = 0; i < hyp_memblock_nr; i++, addr = reg->base + reg->size) {
+> >  		reg = &hyp_memory[i];
+> > -		ret = kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
+> > +		ret = host_stage2_unmap_mmio_region(addr, reg->base - addr);
+> >  		if (ret)
+> >  			return ret;
+> >  	}
+> > -	return kvm_pgtable_stage2_unmap(pgt, addr, BIT(pgt->ia_bits) - addr);
+> > +	return host_stage2_unmap_mmio_region(addr, BIT(pgt->ia_bits) - addr);
+> >  }
+> >  
+> >  /*
+> > @@ -1087,6 +1119,89 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+> >  	return ret;
+> >  }
+> >  
+> > +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr)
+> > +{
+> > +	kvm_pte_t pte;
+> > +	u64 offset;
+> > +	int ret;
+> > +
+> > +	/* Only before de-privilege. */
+> > +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> > +		return -EPERM;
+> > +
+> > +	if (!PAGE_ALIGNED(addr | size))
+> > +		return -EINVAL;
+> 
+> Would be nice here to have pfn_range_is_valid() even though this is only
+> used by modules? (ditto __pkvm_hyp_donate_host_mmio())
+
+Will do.
+
+> 
+> > +
+> > +	ret = __pkvm_create_private_mapping(addr, size, PAGE_HYP_DEVICE, haddr);
+> > +	if (ret)
+> > +		return ret;
+> 
+> Perhaps better to do it once it's been annotated into the host s2, so that we
+> don't burn the private range in case of failure.
+
+This really should not fail, or the system is already have bigger
+problems, and that also does not allocate much space (128K), I see
+that is easier to do this way than having to fix the host stage-2
+if the allocation fails.
+
+> 
+> > +
+> > +	host_lock_component();
+> > +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> > +		if (addr_is_memory(addr + offset)) {
+> > +			ret = -EINVAL;
+> > +			goto unlock;
+> > +		}
+> > +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> > +		if (ret)
+> > +			goto unlock;
+> > +		if (pte && !kvm_pte_valid(pte)) {
+> > +			ret = -EPERM;
+> > +			goto unlock;
+> > +		}
+> > +	}
 > > +	/*
-> > +	 * KVM will not initialize if FW didn't set cntfrq_el0, that is already
-> > +	 * part of the boot protocol.
+> > +	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
+> > +	 * - host aborts: host_stage2_adjust_range() would fail for invalid non zero PTEs.
+> > +	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would call
+> > +	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid ptes (counted).
+> > +	 * - other MMIO donation: Would fail as we check that the PTE is valid or empty.
 > > +	 */
-> > +	if (!timer_freq)
-> > +		return -ENODEV;
+> > +	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
+> > +			      addr, size, &host_s2_pool,
+> > +			      KVM_HOST_INVALID_PTE_TYPE_DONATION,
+> > +			      FIELD_PREP(KVM_HOST_DONATION_PTE_OWNER_MASK, PKVM_ID_HYP));
+> > +unlock:
+> > +	host_unlock_component();
+> > +	return ret;
+> > +}
 > > +
-> > +	/* Timer freq can't be larger than 1Ghz by spec. */
-> > +	if (timer_freq > HYP_CLK_SEC_TO_NS)
+> > +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size)
+> > +{
+> > +	kvm_pte_t pte;
+> > +	u64 offset;
+> > +	int ret = 0;
+> > +
+> > +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> > +		return -EPERM;
+> > +
+> > +	if (!PAGE_ALIGNED(addr | size))
 > > +		return -EINVAL;
 > > +
-> > +	/* Simplified logic from clocks_calc_mult_shift() */
-> > +	do {
-> > +		mult = (HYP_CLK_SEC_TO_NS << shift);
-> > +		mult = div_u64(mult, timer_freq);
-> > +		if (mult <= (~0U))
-> > +			break;
-> > +		shift--;
-> > +	} while (shift > 0);
-> > +
-> > +	clock_data.data[0].shift = shift;
-> > +	clock_data.data[0].mult = mult;
-> > +	clock_data.data[0].cyc_overflow64 = ULONG_MAX / mult;
+> > +	host_lock_component();
+> > +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> > +		if (addr_is_memory(addr + offset)) {
+> > +			ret = -EINVAL;
+> > +			goto unlock;
+> > +		}
+> > +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> > +		if (ret)
+> > +			goto unlock;
+> > +		if (!pte || kvm_pte_valid(pte)) {
+> > +			ret = -EINVAL;
+> > +			goto unlock;
+> > +		}
 > 
-> I don't know if we want to update this from time to time, but we can't rely on
-> host provided data. Perhaps the call to that clock could self-update?
-> 
-> Worst case we fallback on 128-bits mult. but perhaps this isn't a problem for a
-> wait loop()?
-> 
-> And as this is wait loop, perhaps we could reduce the resolution quite heavily,
-> so we reduce the risk of overflow?
+> It should probably verify it is also mapped as we expect into the hyp.
 
-As mentioned, I will drop this and rely on a wrapper for the system
-counter instead, and the caller can handle the overflow as in
-__delay()
+I thought about that, but the caller is be trusted and I was aiming
+for simplicity, so the check for PKVM_ID_HYP seemed enough, but no
+strong opinion.
 
 > 
-> > +	return 0;
-> > +}
-> >  
-> >  static u64 __clock_mult_uint128(u64 cyc, u32 mult, u32 shift)
-> >  {
-> > @@ -30,9 +64,9 @@ static u64 __clock_mult_uint128(u64 cyc, u32 mult, u32 shift)
-> >  }
-> >  
-> >  /* Does not guarantee no reader on the modified bank. */
 > 
->  ^
-> And here's another reason why you should have another clock. It works because of
-> tricks in the tracing interface.
+> > +		if (FIELD_GET(KVM_HOST_DONATION_PTE_OWNER_MASK, pte) != PKVM_ID_HYP) {
+> > +			ret = -EPERM;
+> > +			goto unlock;
+> > +		}
+> > +	}
+> > +	WARN_ON(host_stage2_idmap_locked(addr, size, PKVM_HOST_MMIO_PROT));
+> 
+> Perhaps we are better of simply zapping the entry and not map it proactively?
 
-Agreed, this was my concern too.
+I do not think it matters that much, this is a failure path, and the
+space is too small anyway. But no strong opinion also.
 
 > 
-> > -void trace_clock_update(u32 mult, u32 shift, u64 epoch_ns, u64 epoch_cyc)
-> > +void hyp_clock_update(u32 mult, u32 shift, u64 epoch_ns, u64 epoch_cyc)
-> >  {
-> > -	struct clock_data *clock = &trace_clock_data;
-> > +	struct clock_data *clock = &clock_data;
-> >  	u64 bank = clock->cur ^ 1;
-> >  
-> >  	clock->data[bank].mult			= mult;
-> > @@ -45,9 +79,9 @@ void trace_clock_update(u32 mult, u32 shift, u64 epoch_ns, u64 epoch_cyc)
-> >  }
-> >  
-> >  /* Use untrusted host data */
-> > -u64 trace_clock(void)
-> > +u64 hyp_clock_ns(void)
-> >  {
-> > -	struct clock_data *clock = &trace_clock_data;
-> > +	struct clock_data *clock = &clock_data;
-> >  	u64 bank = smp_load_acquire(&clock->cur);
+> And even if we can't "reclaim" the VA-space from the private range, it would be
+> good to unmap it. I have made a function for that as part of the allocator
+> series:
 > 
-> The whole bank system is not necessary if not updated by the host.
-
-But tracing can be enabled along side the SMMUv3.
+> https://lore.kernel.org/all/20260706175415.2604046-3-vdonnefort@google.com/
+>
+I do not think that is a big problem at the moment all the other
+users of the VA space leak it on failure, I can re-use this logic
+when the allocator seires lands, otherwise I'd avoid adding more code.
 
 Thanks,
 Mostafa
+
 
