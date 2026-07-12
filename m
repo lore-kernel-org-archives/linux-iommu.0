@@ -1,353 +1,229 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out13-173.antispamcloud.com (out13-173.antispamcloud.com [185.201.17.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 615723403E0
-	for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 15:29:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78E5F35E930;
+	Sun, 12 Jul 2026 21:19:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783870165; cv=none; b=WxzthByTYYHN6l1Rq8onuoXs8seM7H3HGVaC8W0/yMF1KPO/p3Aqr9FiEQJLkuOPsmjJNAN2fTyet4kuo/gS52MkVAtyc3coQrICYyiY6o6nMiR0Z4KkveBuf4lYOijL8Q/wszUzri1FnNZB60KGzneiT+Xnp/8yeEPmxyYLxp8=
+	t=1783891165; cv=none; b=NiUkDQpoTltfXjl7dcHienAcwDrKzX4dqK1skgO/V9DRh0YHddDgXN5tnE8d1ncBQfb9aog1Cw6BgyS2dnUijvW1xV/KD5uBzXVEA07t3Y3Ex6/mlD5Eqml+CLbNUURFeCtme5my73x7jtZGKypfds4o8CDlFN0XVVTS7pvbBAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783870165; c=relaxed/simple;
-	bh=HoZm1K0Vxq8QHY4OY0M4l3Gq05opjZyzIxiVdYJMT64=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oYk9XYb8lN2xxl5lqNSECQdJ5/+7hPbAbypvYdrhJbCZR1ZLE/8sqd6uLa03qowvddOr0MZNrry2N8EBa+I/ZqY6/nPsMVJJe5Yg1hzAhvOaxfmCxDeJpu1jZDcUWmKGCIzE3oZPrWOYBXYUxBUK0zFFiHygtd6SecftpiB8v+Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GDcdk/ls; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1783891165; c=relaxed/simple;
+	bh=QJ/vzn1Oja8eZ3GalWvgiUTZ4cPgSoO2DB6bv+DpObI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=m2uvUyI6ZTGT9verEc4BjAgWmT+ZRjAWEVhMZo/aDkQE7O4OaataGbTabOoQArdXZVugAXJzIU83qi8QjPiSmQaDzvUNqn0xX9aV6GK90buqme2MXqsM+IdIsw305QaQvOJpaqpt3X9GWmfTStv8QyhzqppJSaFpwrHPX5kvpDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=DV7yCnlp; arc=none smtp.client-ip=185.201.17.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GDcdk/ls"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-493b8d92a4eso50195e9.1
-        for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 08:29:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783870162; x=1784474962; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EB4yDpb44w+GJHdAYOL5yRV8WP3HkDbon7ZVHvgT3yQ=;
-        b=GDcdk/lstbPRrqtei+2HPYtqxHS5vlKveCKG84Q+2qC8Cj6GvWU0ddu/QfuNzwYtXB
-         dFyC5p4cVFnO7fmESsn9Wt9Db+aev+SMHQvHDBLZuqQ8Zs+YAh1e+NbW9Qf/idHeY9E1
-         J1bth6azhCesJlJ6Gy/Pue0b2kP9B9lqcJnjixvihAQYVYkKvJpEy+HlHRlK4bkuA4tY
-         57hoXV3cF8zMapjPdHypLIahFvtfK2RNG2A6kPDQUD0MZoFplB5zrDE10uWIQK6hTUyn
-         Rp+VZhI+bpDV5PIwiw78FcrNBnuM5gf+RmpSL1HwcvI9dyzOFyXTJlbCTZ3aHO8hN8VE
-         C6AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783870162; x=1784474962;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=EB4yDpb44w+GJHdAYOL5yRV8WP3HkDbon7ZVHvgT3yQ=;
-        b=GXvigj57HsNwoQDad/PNqHgSS2pzpUdvvh3Sq2dP2ckuzuJ31HrQ+fO3RLKD2HNEYs
-         Qw68dIvxmzfFTeHHXQt/T9CUxID4shvvd2hU1oWgKtRQ2z/BuMxo6ZuphVMt7wB4Bzja
-         hsrkuyx/VhoHWF28prfn1BfTseA0oqx+3mv4uyUE8E/I4bPAefhCf85e7ykYf/sKQHa/
-         r5Jpq+/W8k+ZpFZ699ZLf/Y9XTbbiylZClrs00H1zGhM16k64pSBUCaP3TwDFnYDGTLW
-         1DvIAlQQjYcg7LuDZDEnSxxXxes0RyWi6muX6ocHBIzAfMeIe66nPa7OBiu9HdCdAeih
-         8JUw==
-X-Forwarded-Encrypted: i=1; AHgh+RpoFFVQSv7jXeZRU/sYReJu6FbO+YCrgzXu/TDDbAzvJKBFD8O9f+XmBCY4juo+mcKBZ9lmKA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw7+3OO2rXuIAX+K93SZs7UaJSDzxwt4X2VbETF7AwCVnp4zARp
-	hh/+nVmBSXJ4k3B4E+jJYkfFzD9YkogBG5xUupXAvrIZSTWKfLHwU0ch1TtfXvv49w==
-X-Gm-Gg: AfdE7cmnyyPfVsvrH5Fja2ypMc9teVpJciEIasetb9u05goGiHlelgSXjh2FJnolUiK
-	7UfADleymv45gNRToup0bQaNO6x8Rbgw/JVOQm4JBliWZQ1vVnzFgQT5Ot5/nOvG+R6ORcxGY/i
-	abH4Ce5lO8/o/aHXVqeb7WY2FiXRDh7F8ip65q9yiA2e1bBsNuVFo7aXlyiVHc+9Juy4rO13zRP
-	AEtztSQDiGhfOFXn50BJ8+3dmUUPT+LBLxeAx4E36fUwAaiHKtoKyCTzE1GZlYmHMBnHSDBsruU
-	p+qhU1lEkht6brFxfb0YUEP8HFnoFcRxKkeZbbliJWSo4bMbyka6eAU9uJ1RyPAkKCONO8w4QNa
-	BdCCe6XoEfPKmHn0FLI+UudPvFmlKNqwgzYxVzORJtKplugh25ivV7O6Crk/FCyBmeWdl7cFd7z
-	tbRwl6s4XjW4fOaFq1qGF8Ed/9WLngcvBHVQy4iiMiMW9qk6pQ
-X-Received: by 2002:a05:600c:8889:20b0:493:a96b:f9fe with SMTP id 5b1f17b1804b1-493f856ecc9mr2162265e9.4.1783870161311;
-        Sun, 12 Jul 2026 08:29:21 -0700 (PDT)
-Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493eb742d0esm297830905e9.13.2026.07.12.08.29.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2026 08:29:20 -0700 (PDT)
-Date: Sun, 12 Jul 2026 15:29:16 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Vincent Donnefort <vdonnefort@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
-	tabba@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 02/25] KVM: arm64: Donate MMIO to the hypervisor
-Message-ID: <alOyzOL16dhYk724@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-3-smostafa@google.com>
- <alEnH98wFppYjmnE@google.com>
+	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="DV7yCnlp"
+Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
+	by mx195.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <dan@reactivated.net>)
+	id 1wj1Zx-00GoSN-M0; Sun, 12 Jul 2026 23:19:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=reactivated.net; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=1Mj67QcVmqs6wmRW2naVhRw1o1ZfYr/QnTH9zrVrifs=; b=DV7yCnlpn/0mTP4kaVCvoX0bvK
+	q/StrZFkYRAG4qJwh9bb1GtCjQBZPH1lpeSDiIIr74szX6BiaxY89rWXF7avxAT6PyNaTkwqwHUox
+	5slzsAghwP5/WClbQTpTFH6fZJOGaHiy5Oj0S2i1OyoI25sE/qVm+VxzA0owKOi58QzbBIGhLObl9
+	+lWxXtFm040f19qrc4RAjCC8cIDwRgL/ZYUrcIsNTva+WX+th2eg2u0nMufoZ48JzlaQK8KYUS4TE
+	a/HU8U+QAidog5jlAyDbrfn0L1MLYmW8VpwSQy58yMAupBtF+46FaW5QQRJoEjhV7wBCPr1WiFNpR
+	TD123p2Q==;
+Received: from [188.251.249.2] (port=43526 helo=[192.168.1.123])
+	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.99.4)
+	(envelope-from <dan@reactivated.net>)
+	id 1wj1Zu-0000000D6jk-38Hd;
+	Sun, 12 Jul 2026 21:19:11 +0000
+From: Daniel Drake <dan@reactivated.net>
+Date: Sun, 12 Jul 2026 22:18:53 +0100
+Subject: [PATCH 3/6] dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alEnH98wFppYjmnE@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260712-bcm2712-iommu-submit-v1-3-80e10cdde2ea@reactivated.net>
+References: <20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net>
+In-Reply-To: <20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Florian Fainelli <florian.fainelli@broadcom.com>, 
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
+ Daniel Drake <dan@reactivated.net>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
+ linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
+ Jason Gunthorpe <jgg@ziepe.ca>
+X-Mailer: b4 0.14.3
+X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
+X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
+X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
+X-Spampanel-Username: 192.250.231.249
+Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
+X-Spampanel-Outgoing-Class: ham
+X-Spampanel-Outgoing-Evidence: SB/global_tokens (0.00198314465392)
+X-Recommended-Action: accept
+X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVII5Q6oPCuB9qu4EA3zhr96uX8i5dKehwf
+ KC2SaWwUYSu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
+ M0i5ZAms0EHrvcCaVIPXALmPA8d+BGIw6ynmMqunGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
+ EetczWCulNo0fvnzmZPW3MC2/ZtQeB7itP8hgjDRserKv4bhb3RyZlCL9i3kc+ehInPHgYZWBb39
+ uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
+ j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5AyPIv7c2tg
+ uiTnO7hoWdxS2Euf+eM3l5KPnbp/eQthjVPLCh11+xKgET3fXj754wkhoRweeXUyelEFumxqJC98
+ W2Chcvueb7X9IVOP0nXi5ScUGZbDvQNAWVsKTgEVkGFZkrTBb08hz2+hQWIE/jMJBRjlXAPIIi6r
+ dxgy5Mnu2cDsZps7XJtkUNhIi117bsGJ7ren9RtRNyYim5e3GD8LGd17Yt5uvWRLqYZ7YcWBwuaj
+ bB9FLgbTIobDkucCu6K1Qts6ESwZ+TRkjY5CmPXd4fzFwV5PA+Zo1HkEWshOrnfOczv/Rq1TfV/y
+ 9sPCUZ0yjBqTnQMt5W0GKvZ5TPS+0sUsSnvAz6a57TzpYAKZxAOMmYkwXP3g8rtJn6lRuSHjV8Jw
+ 2Fxq1Vd7xIu/TP3zxxtadaYgn3OIzsUC2wDRiPKWwieZyauFYqHkIbFa+ipFHuOywN1cBSoAw5Iq
+ u8uD6H9vRamlPbOxG7rXq5Czwgf6xGEuqjPYHqCiHsRpKiyawVZCoGB4EfDx2fRuW8Y0o7OCze69
+ 5wqpq4Ow1lDfcfvX9sw5VBsaDF9CxNBjABkH3hTMjGc3lQAtuckU+MNQlLpWhjjykqbde3UjWoF9
+ cBo9q3T2iWmfFRW/Psbz8QFVy0V5rN3M2TZ9grsaBV7hOgCSkfEzb1aIdlnbLZp4DCYOuNFQ+5eG
+ III/qgXB3gv2NI/ukWuQBNrXV+EmIqM8SxKOhcObZXWnkEw+6F9CGyYC9AhR1ZLKC40YaZQ+trtn
+ Eh9wUysc4uCrhmcWLql8TBcwc7MLvLLf36yri656/naizxFc684o/A69h/CvHI/GeXW8oEyu47TQ
+ DqTi6GKwcIp24VOsP5eu885wo+t+ynT3Y80OmAux3oN13+ztUzneZGHdcUfaxYq0ZH+Cc9iqnocR
+ WxNUEo38DE53aa5lZFsy2onypIM6qetbKE/25wcBE3dCizsqYfBnHUM3oFa+qdoVIihnVzbm4Qzx
+ fUxUyvhr3Z1SFe+4OrB9Rro7EpOy1Um2iVRPSUxhtw3wz3yqYcOpyKA69LF1Ge2GaGfxmfp09oMS
+ l8c4ShQ//ve+MHzjs9MOb3HXByN6cty/LT6lgOv2AzRyYGlsi3xQeIJ6TM5o5F89lTjPCn99uwfA
+ g5wm8t3Xj/LzZ5s/OJg1L2asZ/4te3BTDYEBZZ1yPQnIH5IVn/pKnch3lmmwSrgldH+Ps9MOb3HX
+ ByN6cty/LT6lgO+c9AHZZ12442bv/l3jZJg=
+X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
+X-Complaints-To: abuse@master.antispamcloud.com
 
-On Fri, Jul 10, 2026 at 06:08:47PM +0100, Vincent Donnefort wrote:
-> On Fri, May 01, 2026 at 11:19:04AM +0000, Mostafa Saleh wrote:
-> > Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
-> > drivers can protect and access the MMIO of IOMMUs.
-> > 
-> > As donating MMIO is very rare, and we don’t need to encode the full
-> > state, it’s reasonable to have a separate function to do this.
-> > It will init the host s2 page table with an invalid leaf with the owner ID
-> > to prevent the host from mapping the page on faults.
-> > 
-> > Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
-> > stage-2 PTEs, as this can be triggered from recycle logic under memory
-> > pressure. There is no code relying on this, as all ownership changes is
-> > done via kvm_pgtable_stage2_set_owner()
-> > 
-> > For the error path in IOMMU drivers, add a function to donate MMIO
-> > back from hyp to host. However, that leaks the hypervisor virtual
-> > address range which should be acceptable as this is quite rare and
-> > it matches the behaviour of fix_map/block.
-> > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |   2 +
-> >  arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 119 +++++++++++++++++-
-> >  arch/arm64/kvm/hyp/pgtable.c                  |   9 +-
-> >  3 files changed, 121 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> > index 3cbfae0e3dda..ff440204d2c7 100644
-> > --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> > +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> > @@ -36,6 +36,8 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
-> >  int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
-> >  int __pkvm_host_unshare_hyp(u64 pfn);
-> >  int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
-> > +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr);
-> > +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size);
-> 
-> Can we have u64 pfn, u64 nr_pages here to match all the other functions?
-> 
+Add bindings for the Broadcom BCM2712 IOMMU and its shared TLB cache.
 
-I see the convention is that phys_addr_t is used for physical addresses
-as (addr_is_memory(), host_stage2_idmap_locked(()...) while u64 is used
-for pfn.
+Include compatibility with the cache phandle used in existing firmware
+shipped on Raspberry Pi 5, and also allow the iova-window to be omitted,
+which similarly will maintain compatibility with existing RPi5 firmware.
 
-> Also, as this is used by a "module" perhaps a sort of kerneldoc would be nice,
-> especially to explain this isn't mapped into the hyp idmap range.
+Signed-off-by: Daniel Drake <dan@reactivated.net>
+---
+ .../bindings/iommu/brcm,bcm2712-iommu.yaml         | 65 ++++++++++++++++++++++
+ .../bindings/iommu/brcm,bcm2712-iommuc.yaml        | 35 ++++++++++++
+ 2 files changed, 100 insertions(+)
 
-Sure I can add a comment.
+diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+new file mode 100644
+index 000000000000..0d91c513afc4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM2712 IOMMU
++
++maintainers:
++  - Daniel Drake <dan@reactivated.net>
++
++description: |
++  The BCM2712 IOMMU provides address translation for various hardware blocks
++  on the BCM2712 SoC, such as the VC6 display pipeline.
++
++properties:
++  compatible:
++    const: brcm,bcm2712-iommu
++
++  reg:
++    maxItems: 1
++
++  '#iommu-cells':
++    const: 0
++
++  brcm,iommu-cache:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Phandle to the shared IOMMU cache (IOMMUC).
++
++  cache:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Deprecated. Use brcm,iommu-cache instead.
++    deprecated: true
++
++  brcm,iova-window:
++    $ref: /schemas/types.yaml#/definitions/uint64-array
++    description: |
++      An array of two 64-bit integers specifying the IOVA aperture start
++      address and the aperture size. IOMMU mappings will be created inside
++      this aperture. All preceding address space is in identity/bypass mode.
++      The aperture start address must be 4GB-aligned.
++      Should be considered a required property, but it is technically optional
++      in order to maintain compatibility with historical firmware versions.
++      If absent, defaults to a 4GB window at 40GiB (0xa00000000).
++    items:
++      - description: IOVA window start address
++      - description: IOVA window size
++
++required:
++  - compatible
++  - reg
++  - '#iommu-cells'
++  - brcm,iommu-cache
++
++additionalProperties: false
++
++examples:
++  - |
++    iommu@5200 {
++        compatible = "brcm,bcm2712-iommu";
++        reg = <0x5200 0x80>;
++        brcm,iommu-cache = <&iommuc>;
++        #iommu-cells = <0>;
++        brcm,iova-window = /bits/ 64 <0xa00000000 0x100000000>;
++    };
+diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
+new file mode 100644
+index 000000000000..f22e9be2c473
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
+@@ -0,0 +1,35 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommuc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM2712 Shared IOMMU Cache (IOMMUC)
++
++maintainers:
++  - Daniel Drake <dan@reactivated.net>
++
++description: |
++  The BCM2712 IOMMU Cache (IOMMUC) provides a shared Translation Lookaside
++  Buffer (TLB) cache used by the primary BCM2712 IOMMUs to speed up address
++  translations.
++
++properties:
++  compatible:
++    const: brcm,bcm2712-iommuc
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    iommuc: iommu-cache@1001000 {
++        compatible = "brcm,bcm2712-iommuc";
++        reg = <0x1001000 0x100>;
++    };
 
-> 
-> >  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
-> >  int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
-> >  int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> > index 28a471d1927c..2fb20a63a417 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> > @@ -353,6 +353,38 @@ int __pkvm_prot_finalize(void)
-> >  	return 0;
-> >  }
-> >  
-> > +/* Unmap MMIO region while skipping donated PTEs. */
-> > +static int host_stage2_unmap_mmio_region(u64 start, u64 size)
-> > +{
-> > +	struct kvm_pgtable *pgt = &host_mmu.pgt;
-> > +	u64 unmap_start = start;
-> > +	u64 addr = start;
-> > +	kvm_pte_t pte;
-> > +	int ret = 0;
-> > +	u8 level;
-> > +
-> > +	while (addr < start + size) {
-> > +		ret = kvm_pgtable_get_leaf(pgt, addr, &pte, &level);
-> > +		if (ret)
-> > +			return ret;
-> > +		if (!kvm_pte_valid(pte) && pte != 0) {
-> > +			if (addr > unmap_start) {
-> > +				ret = kvm_pgtable_stage2_unmap(pgt, unmap_start,
-> > +							       addr - unmap_start);
-> > +				if (ret)
-> > +					return ret;
-> > +			}
-> > +			addr += kvm_granule_size(level);
-> > +			unmap_start = addr;
-> > +		} else {
-> > +			addr += kvm_granule_size(level);
-> > +		}
-> > +	}
-> > +	if (addr > unmap_start)
-> > +		ret = kvm_pgtable_stage2_unmap(pgt, unmap_start, addr - unmap_start);
-> 
-> Ah shame, that's a lot of table walking. I guess we could:
-> 
->  * create our own custom walker here but that would duplicate a lot of logic
->    from pgtable.c. So doesn't look great.
-
-Yes, that seems too complicated.
-
-> 
->  * Retry kvm_pgtable_stage2_unmap() as long as it return -EPERM... but then we
->    it needs to return where it has stopped?
-
-Yes, that is not possible with its current interface.
-
-> 
->  * Modify kvm_pgtable_stage2_unmap() to just skip the refcounted entries?
->    There's already a flag something that looks like this: KVM_PGTABLE_WALK_IGNORE_EAGAIN
-> 
-
-I thought about this, my main concern is that now any unmap will fail
-silently if it hits a refcounted page. Propably not too bad as that only
-is used in recycling.
-
-> I am not so convinced by the first two points but the last one is probably worth
-> exploring.
->  
-> > +	return ret;
-> > +}
-> > +
-> >  static int host_stage2_unmap_dev_all(void)
-> >  {
-> >  	struct kvm_pgtable *pgt = &host_mmu.pgt;
-> > @@ -363,11 +395,11 @@ static int host_stage2_unmap_dev_all(void)
-> >  	/* Unmap all non-memory regions to recycle the pages */
-> >  	for (i = 0; i < hyp_memblock_nr; i++, addr = reg->base + reg->size) {
-> >  		reg = &hyp_memory[i];
-> > -		ret = kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
-> > +		ret = host_stage2_unmap_mmio_region(addr, reg->base - addr);
-> >  		if (ret)
-> >  			return ret;
-> >  	}
-> > -	return kvm_pgtable_stage2_unmap(pgt, addr, BIT(pgt->ia_bits) - addr);
-> > +	return host_stage2_unmap_mmio_region(addr, BIT(pgt->ia_bits) - addr);
-> >  }
-> >  
-> >  /*
-> > @@ -1087,6 +1119,89 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
-> >  	return ret;
-> >  }
-> >  
-> > +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr)
-> > +{
-> > +	kvm_pte_t pte;
-> > +	u64 offset;
-> > +	int ret;
-> > +
-> > +	/* Only before de-privilege. */
-> > +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
-> > +		return -EPERM;
-> > +
-> > +	if (!PAGE_ALIGNED(addr | size))
-> > +		return -EINVAL;
-> 
-> Would be nice here to have pfn_range_is_valid() even though this is only
-> used by modules? (ditto __pkvm_hyp_donate_host_mmio())
-
-Will do.
-
-> 
-> > +
-> > +	ret = __pkvm_create_private_mapping(addr, size, PAGE_HYP_DEVICE, haddr);
-> > +	if (ret)
-> > +		return ret;
-> 
-> Perhaps better to do it once it's been annotated into the host s2, so that we
-> don't burn the private range in case of failure.
-
-This really should not fail, or the system is already have bigger
-problems, and that also does not allocate much space (128K), I see
-that is easier to do this way than having to fix the host stage-2
-if the allocation fails.
-
-> 
-> > +
-> > +	host_lock_component();
-> > +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
-> > +		if (addr_is_memory(addr + offset)) {
-> > +			ret = -EINVAL;
-> > +			goto unlock;
-> > +		}
-> > +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
-> > +		if (ret)
-> > +			goto unlock;
-> > +		if (pte && !kvm_pte_valid(pte)) {
-> > +			ret = -EPERM;
-> > +			goto unlock;
-> > +		}
-> > +	}
-> > +	/*
-> > +	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
-> > +	 * - host aborts: host_stage2_adjust_range() would fail for invalid non zero PTEs.
-> > +	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would call
-> > +	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid ptes (counted).
-> > +	 * - other MMIO donation: Would fail as we check that the PTE is valid or empty.
-> > +	 */
-> > +	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
-> > +			      addr, size, &host_s2_pool,
-> > +			      KVM_HOST_INVALID_PTE_TYPE_DONATION,
-> > +			      FIELD_PREP(KVM_HOST_DONATION_PTE_OWNER_MASK, PKVM_ID_HYP));
-> > +unlock:
-> > +	host_unlock_component();
-> > +	return ret;
-> > +}
-> > +
-> > +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size)
-> > +{
-> > +	kvm_pte_t pte;
-> > +	u64 offset;
-> > +	int ret = 0;
-> > +
-> > +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
-> > +		return -EPERM;
-> > +
-> > +	if (!PAGE_ALIGNED(addr | size))
-> > +		return -EINVAL;
-> > +
-> > +	host_lock_component();
-> > +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
-> > +		if (addr_is_memory(addr + offset)) {
-> > +			ret = -EINVAL;
-> > +			goto unlock;
-> > +		}
-> > +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
-> > +		if (ret)
-> > +			goto unlock;
-> > +		if (!pte || kvm_pte_valid(pte)) {
-> > +			ret = -EINVAL;
-> > +			goto unlock;
-> > +		}
-> 
-> It should probably verify it is also mapped as we expect into the hyp.
-
-I thought about that, but the caller is be trusted and I was aiming
-for simplicity, so the check for PKVM_ID_HYP seemed enough, but no
-strong opinion.
-
-> 
-> 
-> > +		if (FIELD_GET(KVM_HOST_DONATION_PTE_OWNER_MASK, pte) != PKVM_ID_HYP) {
-> > +			ret = -EPERM;
-> > +			goto unlock;
-> > +		}
-> > +	}
-> > +	WARN_ON(host_stage2_idmap_locked(addr, size, PKVM_HOST_MMIO_PROT));
-> 
-> Perhaps we are better of simply zapping the entry and not map it proactively?
-
-I do not think it matters that much, this is a failure path, and the
-space is too small anyway. But no strong opinion also.
-
-> 
-> And even if we can't "reclaim" the VA-space from the private range, it would be
-> good to unmap it. I have made a function for that as part of the allocator
-> series:
-> 
-> https://lore.kernel.org/all/20260706175415.2604046-3-vdonnefort@google.com/
->
-I do not think that is a big problem at the moment all the other
-users of the VA space leak it on failure, I can re-use this logic
-when the allocator seires lands, otherwise I'd avoid adding more code.
-
-Thanks,
-Mostafa
-
+-- 
+2.55.0
 
