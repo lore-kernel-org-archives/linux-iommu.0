@@ -1,212 +1,186 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4808E353A85;
-	Mon, 13 Jul 2026 18:19:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4343D3537E8
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 18:19:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783966759; cv=none; b=Z+pT8sFvrpf1yDkyHp7hsp9+yxypF7Ms+JD4oosirZhuR6TpGA2X0JIaE2tGs4VeZ3fIbZ2McYnLu8tPWsX+KzwKsqpEjEtqgpLQkYxhFy3iMAvU7LjyJTAxbs66Bkv11wOOSwVNengQREAvqVBNTo5wRHD0kSdfMQk3v5/pHIo=
+	t=1783966773; cv=none; b=OGV60ngPMAS0n7mZoRqshOpXeXdp1PviJstNDguHaUCG6MeBWIkeIT6/MpMpA7FnilfLeBtt6/7uYBdHYb2SR242gx/h3k5uDRQHwklmgcJn7UtwBZWi9XCf8pE/nMbZl9Bs4eespd5pCcUwvCjgwixIiHQY4ohwp+17qxaxz7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783966759; c=relaxed/simple;
-	bh=eD7Z08Gp17EWFUxPu/M8QXJ3B0rVwwJ/cuf0XULusYw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d/025ku05ZVfkU/77Yr5i2uGjPpZjYmSPD2IEIRVWVJveFsVk4XJcj+oTvXav1MV+d8bwvm9J7RmBLtKd3kwvRdIuz+3UN0oDkKMniVdhstHHobc6GY6UCb34VcPs4LwM1e8Y4FCeDV8qO0ShZNnRFPTYRS6f3A9vuMmoLOP/E4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m2L0dmvd; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783966773; c=relaxed/simple;
+	bh=XcDcA4ks+cWLMqfNxD6uU8FdP6C/NUsSvAF8nhH1dgo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eWeI8C8rMEhsGsqFqMG4QgfxjGxkxuj4heze2KVF3qgdj9avdD2IWzVF7f79TUi+E0fGOaTdPnaYXQ9jbHg0rBtnHs1ImT/n+25Ump+hfhDqEkYcIyqE6xvUVPEl0oHQfpEQDUDgNDzIqESfa3JNGJw8NfM+88bxnanO9mR1YHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=m+Lwq6Gk; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m2L0dmvd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 147BB1F000E9;
-	Mon, 13 Jul 2026 18:18:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783966757;
-	bh=AssdkOWa6aCLAEE7Hh+BmFEVrQ1Ylqr6hgPvApo58RI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=m2L0dmvddbtczpkvbIX8Tkam6L4D8umvoWFG8KrC3o6Qlsepc7EIW5CvtlVagnMJ2
-	 cLGwEBNC0gVZeRYpPREi/gUkfjfDm17vPk1LcipNVk67ah/tQhBBDmQL9UI2uPDl18
-	 7QOC8/vJN7ZZqG3nlVdkqBitQxcg2LEQicp/mREzbRgfHx3gnfESfmR9YG41KqNKA8
-	 DHj4rOC7BhkfczlCVe0bb+mcrr147/oxZG1FKSprQwK7LErfu6yf0Py9I9vsmTusaL
-	 y1MyO5daAaCmqEmJgd/4IFOhfko3MMneVZif9SP3nfjz+uWMc4N0blvo0yQvveOwWS
-	 s8DpRibSHNqDQ==
-Message-ID: <5a60f964-3756-42fe-9b03-11eecac9c249@kernel.org>
-Date: Mon, 13 Jul 2026 20:18:54 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="m+Lwq6Gk"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-493b8d99342so5655e9.1
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 11:19:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1783966770; x=1784571570; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=TRa3gkBurBR7N5v7ETtohTvNPFwYZWxGltJdYj43XxQ=;
+        b=m+Lwq6Gk7VPqcSJAD8yKKnllb7yIZUIAMABfgEnZQDmfDXh3zhyViA0pgkTQQHsug4
+         kr4kk2PLUm0PLE4p2baK9ZPc15Nc4NUy6ArC/+2ujdWYGcYrJ3eJZ8vHL1YW1S/kNLRK
+         hb9kl3xkjiWxituPt0ljzcpUSDEMOqgR/W5sP4hHprjULFemtO5AJWuNSBR4cFSdEViM
+         CqCdqXijQwS0eX4x+6OBKNXpHlyuyOjDiy64lhYH5TEYOLoMqJC/Qh3qAwHDdC8EsWet
+         MQTdoiTV9+mOkhUhVmWJ4/ojKlDmdm5X3JntaiVQypb3cqBlfwiD0bY+5qq5uMOl4kLf
+         qxFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783966770; x=1784571570;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=TRa3gkBurBR7N5v7ETtohTvNPFwYZWxGltJdYj43XxQ=;
+        b=tHXl1jbQDLpZiWFi9ogARrhU65/QFRgqzrFT1WVWce6AvSidByKt0e9nsdToWea3uu
+         GNBk9XNbBBwBC9g7fGsDbNu4lJ1K5yqPCe/slR1oF3rDNS3/9OH1DDoqsyXTh3lnLa08
+         Mo4kXRkM0TZqh/Rll7OdiQRPXxMwVUoL4hS3lPP90FfB4ZKrZWuZYXdql3lsMbLZdI+S
+         KK/4FAGa/wc+qSpK3HA9VNCaSWNNwyqiRvdAWSNetPIKrhvfWP7694tQUAvrwRuO4/WU
+         GyklUY45ZE5LjPGMaKvX2esCRaNRKB15PILDj0xd3fB0SeCtB5ihX8NK/VxNYZsc2cYU
+         nnQQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqW2ojoCJIOHx5S13oJOPukGc3goDH3fhaGY7ygCjoOLf/58neHmiqdmCJtBRceoXOoJAhBdw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyBYl2ocht6pQFpddhZa8icoAZnlqjOhTNeHY6pPToL/NhvQPyP
+	bqaRiFpsJTqAkTjsMlChlqW6t9SefFIZGSHiMqMvXzCWirAzn7EImoiy8qzn2zvlzA==
+X-Gm-Gg: AfdE7ckCUwlAVX+G7OjIXZzFtB2a7wrWggW4JTl9KV3axJS9qeS8bd9X7SnmiRTma82
+	VAdAXgZD4+1GsZM9/tg6R2gFsnsNt6wlSZN9p5XzD4dibadiGp4tEDRHOwgn4108uj+Rgoz2Z7K
+	oN703jRQPM6g6BEnfJ+QFwwoKa7aF5OXvQYKsgFbk7rxXjlo5ZCAZysqI538+hoP1UT30UEXOAG
+	Lp/jYZqRtnlXVzZBPrq4b/vR+ESB/983ktKa2wEXbVjEasIRMvnfZhxjiOSq9yj++t1z/aUL1gg
+	uJmCbNCA28ZgUiBugMHSnoxdlfO6xYfawTh955Y3TEkuW5cK+qwAYXyDGBR9ijPkyHCtJlaIs5Q
+	PIpYJ6RvAKNl/E5V96osUrrfauBOWvIc08t+Sw3NMvwl16zqKrhClUtk2DyH5U0uau7PlkoL1io
+	AcKdUW0w56cZ7/ujyLYpW6xQH0Vy2dNmfLvDPGrpd1xQ01Clih
+X-Received: by 2002:a05:600c:3f19:b0:493:adf3:d892 with SMTP id 5b1f17b1804b1-49462146d30mr789945e9.3.1783966770170;
+        Mon, 13 Jul 2026 11:19:30 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493f2a38b19sm215129925e9.0.2026.07.13.11.19.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2026 11:19:29 -0700 (PDT)
+Date: Mon, 13 Jul 2026 18:19:24 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
+	tabba@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 08/25] KVM: arm64: iommu: Shadow host stage-2 page
+ table
+Message-ID: <alUsLFBQ5qKFOgwQ@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-9-smostafa@google.com>
+ <alTnAy7jvjUamwUA@google.com>
+ <alTvf7iiOWn4PKE8@google.com>
+ <alUA7zsJO1FGnss-@google.com>
+ <alUJa5cbjjqZ8n72@google.com>
+ <alUMVU7DYcrvgAYi@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 14/33] mm/vma: clean up anon_vma_compatible()
-Content-Language: en-US
-To: Lorenzo Stoakes <ljs@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Hildenbrand <david@kernel.org>, "Liam R. Howlett"
- <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
- Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>,
- Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>,
- Dinh Nguyen <dinguyen@kernel.org>,
- Simon Schuster <schuster.simon@siemens-energy.com>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Helge Deller <deller@gmx.de>, Alexander Viro <viro@zeniv.linux.org.uk>,
- Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
- Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>,
- Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>,
- Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
- Arnaldo Carvalho de Melo <acme@kernel.org>,
- Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
- Adrian Hunter <adrian.hunter@intel.com>, James Clark
- <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>,
- Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>,
- Barry Song <baohua@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>,
- Naoya Horiguchi <nao.horiguchi@gmail.com>, Xu Xin <xu.xin16@zte.com.cn>,
- Chengming Zhou <chengming.zhou@linux.dev>, SJ Park <sj@kernel.org>,
- Matthew Brost <matthew.brost@intel.com>,
- Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>,
- Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>,
- Ying Huang <ying.huang@linux.alibaba.com>,
- Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>,
- Peter Xu <peterx@redhat.com>, Kees Cook <kees@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Andrey Konovalov
- <andreyknvl@gmail.com>, Alexander Potapenko <glider@google.com>,
- Dmitry Vyukov <dvyukov@google.com>, Steven Rostedt <rostedt@goodmis.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Jarkko Sakkinen <jarkko@kernel.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, Thomas Gleixner
- <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>,
- H Hartley Sweeten <hsweeten@visionengravers.com>,
- Lucas Stach <l.stach@pengutronix.de>,
- Christian Gmeiner <christian.gmeiner@gmail.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
- <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
- Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
- Thierry Reding <thierry.reding@kernel.org>,
- Mikko Perttunen <mperttunen@nvidia.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>,
- Matthew Auld <matthew.auld@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Yishai Hadas <yishaih@nvidia.com>, Shameer Kolothum
- <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>,
- Paolo Bonzini <pbonzini@redhat.com>, Shakeel Butt <shakeel.butt@linux.dev>,
- Usama Arif <usama.arif@linux.dev>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
- linux-perf-users@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- damon@lists.linux.dev, iommu@lists.linux.dev, kasan-dev@googlegroups.com,
- linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
- kvm@vger.kernel.org, Russell King <linux+etnaviv@armlinux.org.uk>
-References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
- <20260710-b4-pre-scalable-cow-v2-14-2a5aa403d977@kernel.org>
-From: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
-Autocrypt: addr=vbabka@kernel.org; keydata=
- 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
-In-Reply-To: <20260710-b4-pre-scalable-cow-v2-14-2a5aa403d977@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alUMVU7DYcrvgAYi@google.com>
 
-On 7/10/26 22:16, Lorenzo Stoakes wrote:
-> Break up the existing very large conditional, add comments and use
-> vma_[start/end]_pgoff() to make clearer what we're doing here.
+On Mon, Jul 13, 2026 at 05:03:33PM +0100, Vincent Donnefort wrote:
+> On Mon, Jul 13, 2026 at 03:51:07PM +0000, Mostafa Saleh wrote:
+> > On Mon, Jul 13, 2026 at 04:14:55PM +0100, Vincent Donnefort wrote:
+> > > On Mon, Jul 13, 2026 at 02:00:31PM +0000, Mostafa Saleh wrote:
+> > > > On Mon, Jul 13, 2026 at 02:24:19PM +0100, Vincent Donnefort wrote:
+> > > > > On Fri, May 01, 2026 at 11:19:10AM +0000, Mostafa Saleh wrote:
+> > > > > > Create a page-table for the IOMMU that shadows the host CPU stage-2
+> > > > > > to establish DMA isolation.
+> > > > > > 
+> > > > > > An initial snapshot is created after the driver init, then
+> > > > > > on every permission change a callback would be called for
+> > > > > > the IOMMU driver to update the page table.
+> > > > > > 
+> > > > 
+> > > > [...]
+> > > > 
+> > > > > > +	 */
+> > > > > > +	if (pte && !kvm_pte_valid(pte))
+> > > > > > +		return 0;
+> > > > > > +
+> > > > > > +	if (kvm_pte_valid(pte)) {
+> > > > > > +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
+> > > > > > +		/* If the range is mapped in a single PTE, it must be the same type.*/
+> > > > > > +		if (!addr_is_memory(start))
+> > > > > > +			prot |= IOMMU_MMIO;
+> > > > > > +
+> > > > > > +		return kvm_iommu_ops->host_stage2_idmap(start, end, prot);
+> > > > > 
+> > > > > Do we really need to do that when is_memory()? 
+> > > > > 
+> > > > > fix_host_ownership_walker() by calling host_stage2_idmap_locked() and
+> > > > > host_stage2_set_owner_locked() should already handle the memory region. That
+> > > > > would also get rid of kvm_idmap_initialized.
+> > > > > 
+> > > > > So this one here could only take care of the MMIO?
+> > > > > 
+> > > > > Overall we would have a common point of synchro which is
+> > > > > fix_host_ownership_walker() after which the host ownership is ready for both
+> > > > > CPU stage-2 and the IOMMU?
+> > > > > 
+> > > > 
+> > > > I am not sure I understand, this is another empty page table, so we
+> > > > have to walk all of the host CPU stage-2 page table to shadow it in the
+> > > > IOMMU. if you are refering to the case where it handle zero ptes for
+> > > > memory, I can drop that but it will not change much in this logic.
+> > > 
+> > > In fixup_host_ownership() we already walk the hyp pgtable to know what needs to be
+> > > map/unmapped from the host stage-2. Can't we rely on that for the IOMMU
+> > > page-table as well?
+> > > 
+> > > As of, fix_host_ownership() could handle the host stage-2 __and__ the iommu? 
+> > 
+> > fix_host_ownership() only walks the hypervisor page table, and fixes the
+> > hypervisor pages in the host.
 > 
-> No functional change intended.
+> Yeah, Looking closer I don't think my proposal simplify things so much in the
+> end.
 > 
-> Reviewed-by: Gregory Price <gourry@gourry.net>
-> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
-> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+> > That means that the IOMMU page table has
+> > to  be fully populated first, then we unmap the donated pages.
+> > That seems more complicated and it feels that decoupling the IOMMU
+> > logic outside of this would be better.
+> 
+> Why more complicated? That's actually another solution I was thinking about, to
+> just map everything as soon as possible and let host_stage2_idmap_locked() and
+> host_stage2_set_owner_locked() unmap what is needed here. (and also in
+> __pkvm_host_donate_hyp_mmio())
+> 
+> We wouldn't need any specific setup walker for the iommu at all.
 
-Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
+That would walk the table twice, first time with a massive map, then
+to unmap the pages that was just mapped, issuing TLB invalidations
+for all of those, also as the IOMMU page table code never frees tables
+that means we would immediately exahust the IOMMU pool.
 
-> ---
->  mm/vma.c | 21 ++++++++++++++++-----
->  1 file changed, 16 insertions(+), 5 deletions(-)
+Also, I believe that it is better to isolate the IOMMU page table
+shadowing logic from the core hypervisor page table setup, specially
+AFAICT, that was not what fix_host_ownership() was designed for, and
+seems the IOMMU will just piggyback on a existing walker.
+
 > 
-> diff --git a/mm/vma.c b/mm/vma.c
-> index 995de8198fbb..084afdf37385 100644
-> --- a/mm/vma.c
-> +++ b/mm/vma.c
-> @@ -1967,14 +1967,25 @@ static int anon_vma_compatible(struct vm_area_struct *a, struct vm_area_struct *
->  {
->  	vma_flags_t diff = vma_flags_diff_pair(&a->flags, &b->flags);
->  
-> +	/* Ignore flags that mprotect() can change. */
->  	vma_flags_clear_mask(&diff, VMA_ACCESS_FLAGS);
-> +	/* Ignore flags that do not impact merging. */
->  	vma_flags_clear_mask(&diff, VMA_IGNORE_MERGE_FLAGS);
->  
-> -	return a->vm_end == b->vm_start &&
-> -		mpol_equal(vma_policy(a), vma_policy(b)) &&
-> -		a->vm_file == b->vm_file &&
-> -		vma_flags_empty(&diff) &&
-> -		b->vm_pgoff == a->vm_pgoff + ((b->vm_start - a->vm_start) >> PAGE_SHIFT);
-> +	/* Must be adjacent. */
-> +	if (a->vm_end != b->vm_start)
-> +		return false;
-> +	/* Must have matching policy. */
-> +	if (!mpol_equal(vma_policy(a), vma_policy(b)))
-> +		return false;
-> +	/* Must both be anon or map the same file (MAP_PRIVATE case). */
-> +	if (a->vm_file != b->vm_file)
-> +		return false;
-> +	/* Flags must be equivalent modulo mprotect(). */
-> +	if (!vma_flags_empty(&diff))
-> +		return false;
-> +	/* Page offset must align. */
-> +	return vma_end_pgoff(a) == vma_start_pgoff(b);
->  }
->  
->  /*
+> > 
+> > Also, I rely on the IOMMU init to be done at the end of setup, so we
+> > do not have to clean the IOMMU init if any other part of KVM fails.
 > 
+> We could just leak those pages if it fails?
+
+It is not just about pages, the hypervisor will also configure the SMMU
+registers. Ideally, we would need a remove() driver ops for such cases
+but I added the IOMMU init call at the end to avoid making this series
+any bigger.
+
+Thanks,
+Mostafa
 
