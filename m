@@ -1,96 +1,117 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3025838F951
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 07:33:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA953955EF
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 08:02:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783928027; cv=none; b=r+K3thhLWrOYqi7p5z7PouEenBTfPXT5Mc0u7h0vSmvh+Cde8IRqHGytpaFuwA0jwJrTlyFekci//kDjtol3ZsrtDLJzykpLgKZ4nB9/1rRws69S4Y/Y8+i1Zzh7ZQges+fOWm+crx5d/F3KxqoD9HCRzmdCPWrxSTbHH7pNdWg=
+	t=1783929754; cv=none; b=JMx4CQ4xRu1lddmYc+HcO8FaObwjTJaNuJgRsnikwDFmjYv0aT9dwne3bgxM+m1+2F+/f4Z81jEtPgWZuO9E/jLypxcoeylbZVfc7BPVc36ivnl0Spu0Ne0E45eYNTpdqQRKyGvESi4v5s33EZGPDy/AeElGUfgIZRAv1fUE71Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783928027; c=relaxed/simple;
-	bh=SRtVRbjWYNNRDyRiYZpH0W/rD+O17i2Yez6W9J7PHOI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=JJcTc15qBKbzii3aYQJwhBZs+QBCGirubEP+ep88fz3gFu9yY6K69DgIL4sZy+rNGmd0X83v9b8CunMZbkuTQzusnC13hS168L0/N+ToGpfIwefrtEeSb9PAJjUwYuxJ1gp46ll13POjqf117MmPy7AeNOSwGJUh2+Ik8ndQnA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ElyawKgF; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1783929754; c=relaxed/simple;
+	bh=m/8+d0iWvD75nGF/mFl6+CovRtEZBA5npDgYM/wOznM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=RmYKbUL96KKmM0aaLJMFpaGU0DiU48LQTpAqx+MZfMRq0XyxvdNaG3PIpUIla5VMPLPDOXRtIVtXIGJPi7xIgKQvV2Azeus3wYrx6ixd6aXN7Bn57d+HpT4gQ3SfcfSCKjnY2ovFpBOUsjrLwZ6cP/8ojy47qJ3cpgwSI6s/Y/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ZNcDF3Ta; arc=none smtp.client-ip=220.197.31.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ElyawKgF"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260713073343euoutp0277ffc42cbeb060129a8a4f2d613b143e~ByRXsv4q52405024050euoutp023
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 07:33:43 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260713073343euoutp0277ffc42cbeb060129a8a4f2d613b143e~ByRXsv4q52405024050euoutp023
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1783928023;
-	bh=NLUW5dhApt4DncasEExekOkd+r4XUBra32jveDecPOo=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=ElyawKgFX4CTHiAxRO7yL8hA9weqJ5k89zO6IvER8U1HRZ/16UaFwVMkIbx+76hwQ
-	 hUVK4SqDrOb448hp150YRSSVhwqybNJq3SiBr1GSbhmwZfIIBO4C4MhgWpFdUjDnzi
-	 Epxa5pvuEvXOjqN+TTnAbYawmqyqfwji1aANAvIk=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260713073343eucas1p2167006eee7c5c0481ce9b04877f5e984~ByRXbabLP1939719397eucas1p2p;
-	Mon, 13 Jul 2026 07:33:43 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260713073342eusmtip1fa3fec8c52e72a0fdecbbed7fe68c0db~ByRW9c-kd2213022130eusmtip1W;
-	Mon, 13 Jul 2026 07:33:42 +0000 (GMT)
-Message-ID: <76732ad3-6533-48e2-87b7-e9cf36135c93@samsung.com>
-Date: Mon, 13 Jul 2026 09:33:42 +0200
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ZNcDF3Ta"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=m/8+d0iWvD75nGF/mFl6+CovRtEZBA5npDgYM/wOznM=; b=Z
+	NcDF3TasP428QpyuYUgJgDSf4+9xCV7gkGD9PR78xDU4SdaaDwmm7ptHuRXJ1hAL
+	Hy7tdwJqZ3Loas8ygjHMYYCy/yPpUm2huocSq0tNznUipizOPkB/JlLTPd8Y0V3m
+	RoJozJPVqLJru5yfL6wmlSrtbMG3l/zgj3HrK2Hr+s=
+Received: from 15927021679$163.com ( [116.128.244.169] ) by
+ ajax-webmail-wmsvr-40-119 (Coremail) ; Mon, 13 Jul 2026 16:02:03 +0800
+ (CST)
+Date: Mon, 13 Jul 2026 16:02:03 +0800 (CST)
+From: "Xiong Weimin" <15927021679@163.com>
+To: "Baolu Lu" <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, jean-philippe@linaro.org, jgg@nvidia.com,
+	xiongweimin <xiongweimin@kylinos.cn>
+Subject: Re:Re: [PATCH] iommu/virtio: Report faults via report_iommu_fault()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
+ 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
+In-Reply-To: <5a220346-2beb-4456-881c-27b9825d9cc3@linux.intel.com>
+References: <20260713010442.331096-1-15927021679@163.com>
+ <5a220346-2beb-4456-881c-27b9825d9cc3@linux.intel.com>
+X-NTES-SC: AL_Qu2TAfWZtk8p5SOabekckk8Ugeg8Xsewsvgh249ec/8Eti30+AcGdm9jI0vR8sOpOxyGjSi2UTVlzvhfT4N17myCW9ybv2uZg4dKRBzJAQ==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] kernel: dma: coherent: fix spacing coding style issue
-To: Vova Sharaienko <sharaienko@google.com>, Robin Murphy
-	<robin.murphy@arm.com>
-Cc: kernel-team@android.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260623000821.2269955-1-sharaienko@google.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260713073343eucas1p2167006eee7c5c0481ce9b04877f5e984
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260623000828eucas1p1bb57979dfbe5b3b03ce605db4db05f4c
-X-EPHeader: CA
-X-CMS-RootMailID: 20260623000828eucas1p1bb57979dfbe5b3b03ce605db4db05f4c
-References: <CGME20260623000828eucas1p1bb57979dfbe5b3b03ce605db4db05f4c@eucas1p1.samsung.com>
-	<20260623000821.2269955-1-sharaienko@google.com>
+Message-ID: <aa9aeb3.65c5.19f5a7f59c8.Coremail.15927021679@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:dygvCgD33918m1RqhMUcAA--.7278W
+X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC0hy1PmpUm3xlFgAA3v
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-On 23.06.2026 02:08, Vova Sharaienko wrote:
-> Fixed spacing around * coding style issue
->
-> Signed-off-by: Vova Sharaienko <sharaienko@google.com>
-
-
-Applied to dma-mapping-for-next with slightly changed subject prefix. Thanks!
-
-
-> ---
->  kernel/dma/coherent.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-> index bcdc0f76d2e8..480dd1766ece 100644
-> --- a/kernel/dma/coherent.c
-> +++ b/kernel/dma/coherent.c
-> @@ -28,7 +28,7 @@ static inline struct dma_coherent_mem *dev_get_coherent_memory(struct device *de
->  }
->  
->  static inline dma_addr_t dma_get_device_base(struct device *dev,
-> -					     struct dma_coherent_mem * mem)
-> +					     struct dma_coherent_mem *mem)
->  {
->  	if (mem->use_dev_dma_pfn_offset)
->  		return phys_to_dma(dev, PFN_PHYS(mem->pfn_base));
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+CgoKSGkgQmFvbHUsCgoKVGhhbmtzIGZvciB0aGUgcmV2aWV3LgoKClRoZSBjb25zdW1lciBpcyB3
+aG9ldmVyIHJlZ2lzdGVyZWQgYSBmYXVsdCBoYW5kbGVyIG9uIHRoZSBJT01NVSBkb21haW4Kdmlh
+IGlvbW11X3NldF9mYXVsdF9oYW5kbGVyKCkgoaogdGhlIHNhbWUgcGF0aCB1c2VkIGJ5IG90aGVy
+IElPTU1VCmRyaXZlcnMgKGUuZy4gQVJNIFNNTVUsIEFNRCwgTVRLKSB3aGVuIHRoZXkgY2FsbCBy
+ZXBvcnRfaW9tbXVfZmF1bHQoKS4KCgpJbiB2aXJ0aW8taW9tbXUgdG9kYXksIHZpb21tdV9mYXVs
+dF9oYW5kbGVyKCkgb25seSBwcmludHMgYSByYXRlbGltaXRlZAptZXNzYWdlIGFuZCBoYXMgYW4g
+ZXhwbGljaXQgVE9ETyB0byBjYWxsIHJlcG9ydF9pb21tdV9mYXVsdCgpLiBUaGlzCnBhdGNoIGNv
+bXBsZXRlcyB0aGF0IFRPRE86IHdoZW4gYSBmYXVsdCBjYXJyaWVzIGFuIGFkZHJlc3MgYW5kIHRo
+ZQplbmRwb2ludCBpcyBhdHRhY2hlZCB0byBhIGRvbWFpbiwgd2UgbG9vayB1cCB0aGUgZW5kcG9p
+bnQgYW5kIGZvcndhcmQKdGhlIGZhdWx0IHRvIHRoZSBkb21haW4gaGFuZGxlci4gSWYgbm8gaGFu
+ZGxlciBpcyBpbnN0YWxsZWQsCnJlcG9ydF9pb21tdV9mYXVsdCgpIHJldHVybnMgLUVOT1NZUyBh
+bmQgd2Uga2VlcCB0aGUgZXhpc3RpbmcgbG9nIGFzCmZhbGxiYWNrLgoKClRoaXMgaXMgbm90IHRo
+ZSBWRklPL0lPTU1VRkQgSU9QRiBwYXRoIChpb21tdV9yZXBvcnRfZGV2aWNlX2ZhdWx0KCkpOwpp
+dCBjb3ZlcnMgdmlydGlvLWlvbW11IERNQSBwcm90ZWN0aW9uIGZhdWx0cyAoZG9tYWluL21hcHBp
+bmcgZmF1bHRzKQpmb3IgZW5kcG9pbnRzIGJlaGluZCBhbiBJT01NVSBkb21haW4uCgoKVHlwaWNh
+bCBjb25zdW1lcnMgd291bGQgYmUgZGV2aWNlIGRyaXZlcnMgb3Igc3Vic3lzdGVtcyB0aGF0IGlu
+c3RhbGwgYQpkb21haW4gZmF1bHQgaGFuZGxlciChqiBmb3IgZXhhbXBsZSByZW1vdGVwcm9jIG9y
+IEdQVSBkcml2ZXJzIGluLXRyZWUuClRoZSBtYWluIGdvYWwgaXMgQVBJIGNvbXBsZXRlbmVzcyBh
+bmQgY29uc2lzdGVuY3kgd2l0aCBvdGhlciBJT01NVQpkcml2ZXJzLCBzbyB1cHBlciBsYXllcnMg
+Y2FuIHJlYWN0IGluc3RlYWQgb2Ygb25seSBzZWVpbmcgYSBwcmludGsuCgoKSGFwcHkgdG8gYWRk
+IGEgYnJpZWYgY29tbWVudCBpbiB0aGUgcGF0Y2ggY2xhcmlmeWluZyB0aGlzIGlmIHRoYXQgd291
+bGQKaGVscC4KCgpUaGFua3MsCldlaW1pbgoKCkF0IDIwMjYtMDctMTMgMTA6MDc6MjksICJCYW9s
+dSBMdSIgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4gd3JvdGU6Cj5PbiA3LzEzLzI2IDA5OjA0
+LCB3ZWltaW4geGlvbmcgd3JvdGU6Cj4+IEZyb206IHhpb25nd2VpbWluIDx4aW9uZ3dlaW1pbkBr
+eWxpbm9zLmNuPgo+PiAKPj4gRmF1bHQgZXZlbnRzIGN1cnJlbnRseSBvbmx5IHByaW50IGEgcmF0
+ZWxpbWl0ZWQgZXJyb3Igd2l0aCB0aGUgZW5kcG9pbnQKPj4gSUQuIFVwcGVyIGxheWVycyAoVkZJ
+TywgZHJpdmVycyB3aXRoIGRvbWFpbiBmYXVsdCBoYW5kbGVycykgY2Fubm90IHJlYWN0Lgo+PiAK
+Pj4gVHJhY2sgZW5kcG9pbnRzIGluIGFuIHhhcnJheSBrZXllZCBieSBlbmRwb2ludCBJRCBhdCBw
+cm9iZS9yZWxlYXNlIHRpbWUsCj4+IGFuZCBjYWxsIHJlcG9ydF9pb21tdV9mYXVsdCgpIHdoZW4g
+YSBmYXVsdCBjYXJyaWVzIGFuIGFkZHJlc3MgYW5kIHRoZQo+PiBlbmRwb2ludCBpcyBhdHRhY2hl
+ZCB0byBhIGRvbWFpbi4gS2VlcCB0aGUgZXhpc3RpbmcgbG9nIGFzIGEgZmFsbGJhY2sKPj4gd2hl
+biB0aGUgZW5kcG9pbnQgaXMgdW5rbm93biBvciBkZXRhY2hlZC4KPj4gCj4+IFNpZ25lZC1vZmYt
+Ynk6IHhpb25nd2VpbWluIDx4aW9uZ3dlaW1pbkBreWxpbm9zLmNuPgo+PiBDYzogaW9tbXVAbGlz
+dHMubGludXguZGV2Cj4+IENjOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGVA
+bGluYXJvLm9yZz4KPj4gQ2M6IEphc29uIEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+Cj4+IC0t
+LQo+PiAKPj4gLS0tIGEvZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYwo+PiArKysgYi9kcml2
+ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jCj4+IEBAIC0xOSw2ICsxOSw3IEBACj4+ICAgI2luY2x1
+ZGUgPGxpbnV4L3ZpcnRpb19jb25maWcuaD4KPj4gICAjaW5jbHVkZSA8bGludXgvdmlydGlvX2lk
+cy5oPgo+PiAgICNpbmNsdWRlIDxsaW51eC93YWl0Lmg+Cj4+ICsjaW5jbHVkZSA8bGludXgveGFy
+cmF5Lmg+Cj4+ICAgCj4+ICAgI2luY2x1ZGUgPHVhcGkvbGludXgvdmlydGlvX2lvbW11Lmg+Cj4+
+ICAgCj4+IEBAIC00Miw2ICs0Myw4IEBACj4+ICAgCXNwaW5sb2NrX3QJCQlyZXF1ZXN0X2xvY2s7
+Cj4+ICAgCXN0cnVjdCBsaXN0X2hlYWQJCXJlcXVlc3RzOwo+PiAgIAl2b2lkCQkJCSpldnRzOwo+
+PiArCS8qIGVuZHBvaW50IElEIC0+IHZpb21tdV9lbmRwb2ludCwgZm9yIGZhdWx0IHJlcG9ydGlu
+ZyAqLwo+PiArCXN0cnVjdCB4YXJyYXkJCQllbmRwb2ludHM7Cj4+ICAgCj4+ICAgCS8qIERldmlj
+ZSBjb25maWd1cmF0aW9uICovCj4+ICAgCXN0cnVjdCBpb21tdV9kb21haW5fZ2VvbWV0cnkJZ2Vv
+bWV0cnk7Cj4+IEBAIC01OTMsNyArNTk2LDEwIEBACj4+ICAgc3RhdGljIGludCB2aW9tbXVfZmF1
+bHRfaGFuZGxlcihzdHJ1Y3QgdmlvbW11X2RldiAqdmlvbW11LAo+PiAgIAkJCQlzdHJ1Y3Qgdmly
+dGlvX2lvbW11X2ZhdWx0ICpmYXVsdCkKPj4gICB7Cj4+ICsJc3RydWN0IHZpb21tdV9lbmRwb2lu
+dCAqdmRldjsKPj4gKwlzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4+ICAgCWNoYXIgKnJl
+YXNvbl9zdHI7Cj4+ICsJaW50IGZhdWx0X2ZsYWdzID0gSU9NTVVfRkFVTFRfUkVBRDsKPj4gICAK
+Pj4gICAJdTggcmVhc29uCT0gZmF1bHQtPnJlYXNvbjsKPj4gICAJdTMyIGZsYWdzCT0gbGUzMl90
+b19jcHUoZmF1bHQtPmZsYWdzKTsKPj4gQEAgLTYxMywxNiArNjE5LDI4IEBACj4+ICAgCQlicmVh
+azsKPj4gICAJfQo+PiAgIAo+PiAtCS8qIFRPRE86IGZpbmQgRVAgYnkgSUQgYW5kIHJlcG9ydF9p
+b21tdV9mYXVsdCAqLwo+PiAtCWlmIChmbGFncyAmIFZJUlRJT19JT01NVV9GQVVMVF9GX0FERFJF
+U1MpCj4+IC0JCWRldl9lcnJfcmF0ZWxpbWl0ZWQodmlvbW11LT5kZXYsICIlcyBmYXVsdCBmcm9t
+IEVQICV1IGF0ICUjbGx4IFslcyVzJXNdXG4iLAo+PiArCWlmIChmbGFncyAmIFZJUlRJT19JT01N
+VV9GQVVMVF9GX1dSSVRFKQo+PiArCQlmYXVsdF9mbGFncyA9IElPTU1VX0ZBVUxUX1dSSVRFOwo+
+PiArCj4+ICsJcmN1X3JlYWRfbG9jaygpOwo+PiArCXZkZXYgPSB4YV9sb2FkKCZ2aW9tbXUtPmVu
+ZHBvaW50cywgZW5kcG9pbnQpOwo+PiArCWlmICh2ZGV2ICYmIHZkZXYtPnZkb21haW4gJiYgKGZs
+YWdzICYgVklSVElPX0lPTU1VX0ZBVUxUX0ZfQUREUkVTUykpIHsKPj4gKwkJZG9tYWluID0gJnZk
+ZXYtPnZkb21haW4tPmRvbWFpbjsKPj4gKwkJcmVwb3J0X2lvbW11X2ZhdWx0KGRvbWFpbiwgdmRl
+di0+ZGV2LCBhZGRyZXNzLCBmYXVsdF9mbGFncyk7Cj4KPldobyBpcyB0aGUgY29uc3VtZXIgb2Yg
+dGhlIGZhdWx0IG1lc3NhZ2UgcmVwb3J0ZWQgaGVyZT8KPgo+VGhhbmtzLAo+YmFvbHUK
