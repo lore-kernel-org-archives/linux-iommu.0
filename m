@@ -1,87 +1,200 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B25862EEE84
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 06:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C78A986334
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 06:09:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783922427; cv=none; b=cM6lp3P6mgZh76ldnl3yJIYG/70XFv1C6hr08Xf3kGLSjNWlQNamrZ8HKRtgm1aUFabhdKxx8rPn5TxZtofi95icfPA+Z9slJkc8DGBhDQk/Yhq+giQ22iz0MS059aateTvgkdAjbdsnrf+/TqHAd3H6ugGMzRN9gYkKWoqsFlo=
+	t=1783922960; cv=none; b=QWzTQNhxZcsURJqayWYrlzKM5syRD4pRA+RBzeHhmunD8ZGpkXxNJdIizO2L+aY2sZy596/xNTWsUqJ4gc+nBrriHBdJ/ukzjdgoxvWjZcboY2VnHpZftUtJvjwYR38TfII4CFwhS+AfxyXL0bxyfLJSPVe0YEn72WEIHG/wUuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783922427; c=relaxed/simple;
-	bh=kEnXfjp0fB+NOAyrqx57XLwA3+Z7s1TSVi+KYTvMoLU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Oz+DNGJcfeTTPRn6iW1ISkrxGvYxf+r42zKP5EQgqyktRNBF5AZ5Ot3mxMQOk85KhHolM3s1AVdmwZH3kCPhOl0VL+1bK2dHYgH5EVQhuljl0vGok2iRASlF385+IjxOvbWRkYuKxXdrSc4x/rv2W+0oywD1gveG1Dr+8b+3VvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HoHuNKbB; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1783922960; c=relaxed/simple;
+	bh=dknP9TWgNosCi5sh1QkgEVJLOLrIREEdfpe+SqFEniQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=TWIFehlOeANrgJiAx1vwKFba7gWi46sbo7cxEl6AKu447YQSFK0/+3EmOfjnfzIXfWeimXZOQ7O2x5UrOEYoZAqr0p01sL7l2EJeQD/txKAHNg4g+8C0S+Ito3GXaYvBkhqovKY2VcCjlm7eRMf4n2MCH7t3JwPL+rE05XK+yEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=gHsgog38; arc=none smtp.client-ip=209.85.216.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HoHuNKbB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783922425; x=1815458425;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kEnXfjp0fB+NOAyrqx57XLwA3+Z7s1TSVi+KYTvMoLU=;
-  b=HoHuNKbBQIMWvYsJW+uRdlg0sxLIKIR64MrzlHBp0+EUwLWyhpZuYedG
-   LHb/J6hkYOW75xQuTybaotyrNN32nEIyWVYE0nACZIEarDKzdaM0QyRr4
-   H6wy3sCusg/dyInL8I6mQrXNiXpqx+JbgeOUW42Evs7sr/0iyTi9L0eTT
-   UTThrAekEZTZHO5TmygZmKweZWUDS/nnxEoWqgQf/Pzk2tX+6cLx7Jukv
-   0sfLYqtyWJ3EvoPM0By7FUGpnomkRl/scTP826Z73hhMhLH92Vx3/XP9Z
-   ZL3kwFg/MClCuX8A/IA/ZJzfb2OU1S+NN967/qnDeDlgiz7+0p76uLHU5
-   g==;
-X-CSE-ConnectionGUID: BnGEEohpQzawcj8Frm0SkA==
-X-CSE-MsgGUID: UEknmciqRFeK52DIk9Yrsg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84542322"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="84542322"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2026 23:00:25 -0700
-X-CSE-ConnectionGUID: jOjIs9VrR0moXBKd2/0f0A==
-X-CSE-MsgGUID: fNwrl5MnRh+AXC654m1byw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="279863040"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2026 23:00:22 -0700
-Message-ID: <6e3e3279-fcf0-41a8-92c6-f533d1dda422@linux.intel.com>
-Date: Mon, 13 Jul 2026 13:58:39 +0800
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="gHsgog38"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-38125cebfdaso3595838a91.1
+        for <iommu@lists.linux.dev>; Sun, 12 Jul 2026 23:09:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1783922958; x=1784527758; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=zRVFbRCCSU313/FdRD3Vin4a5GxhaG0qQy0/ly3lbz0=;
+        b=gHsgog38AjnuM8kSGZwqWxYC3LdWoDT8to0kTKbLvQpxrdnvlLSyndtAUGqBsSCM/T
+         VxWSg3iOQIZQNSKcvlTXCwOl83wkAqgp6yQrkIzZXfrdOw13ZtCYtkKpqlxvpCUMWeVs
+         akMJk4mVhzK2E8CUs/LQfIqv2qOAHdzkuc5IPan5KDpJ4VFzew787Y743SMpYMkzmDUY
+         MMy1gUXiCUaCY5kkq1Vy1aPvijx+myMW3kGv7+mb+yPGHKrB2tR1KX3NjggjrVTY+b/p
+         Aol53yeHztsACtVCpAflIBuPfa3UtjuO1hFD1+0E3ACvXeJbbCH3B+zS4YGy8EjkT+RL
+         3QqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783922958; x=1784527758;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=zRVFbRCCSU313/FdRD3Vin4a5GxhaG0qQy0/ly3lbz0=;
+        b=pKQXlDUUaibg1jHke+gIhM8ugKOxWs2KJbiPDH6y/BoaKz1e+/x+5U1PVB3lPLRVXI
+         KAj92uW1K2pbmh6wLUKbEVNSkGWzPUKOqoyP/PPR0j8aFd3/uvKeJD6v1AEWHgYmwotL
+         33fMiWTX9xeBzJhhYj3s/VNa6s/jL3WhSodRkmeJRml0ZrHj7myGe/3PjPpy6SEy/Iep
+         n7lGkcCg/0jSiusTk4ha0kFhGGXGAwgseJoozAe8s3m+7Kp/C/7J2NAxUEZ+JmtBvIA1
+         GM9ogazzOswruqgxF1Fjw2Ndf95AUUl6K37nAbIvSttOAekIg98KRMCtRFFtzpErpPZO
+         uihA==
+X-Forwarded-Encrypted: i=1; AHgh+RrNikSfWQkhx560Y2aN+j2b+2155pZIskwI2e2sdcPGegMsCGh/KN4ptCJOvjx6TJUBn4zwSQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwaCUoxtaQ0CXlseT4N6h5aQn1EcR2IWqTiRQedqKyJHhTiGUag
+	qXcX4D26UeIMJ0OuonCO1Fef08jiCxpUWk0OqGgnrmj1H+nlxV3CjBs6scq+TLvzsCw=
+X-Gm-Gg: AfdE7cna3Ypgb1MV7MgdPGMUSKWGvjBy3Hf/JQ/kj1RM358E7bjv1Cr7y6pTq/2GrcL
+	s894WR7pjK9CZZdShyuPw06La3kG9dKCpxN1gLryu33iRCgazzEDmni1RcyKuYlAhbo4cSqjq2A
+	2o7XhN/IYgr42UiVTX/wQFVq8aAwmf5Qd7ACiILAGGRU11LMQEk3LgvmA2ZqRJDGQwA7qyIX3J/
+	JLfFB97bN8kptCk7wTQCV40tE00GRxdKbGMRqtzD8HZjqDLreBeqVTIsnkK1XHaM/E5rud7Kwlt
+	Sfn2CHdeWkaWJtEC2ONDDzV0Oeo7hruyfpr3BwDQyYmmyMqix7jGfrAVmkUOExSh9mEhNp5ZMlm
+	1Aaa1EVD3SLnI042UlvE5apepCbAts9wA35TsPmBCjwFp4ozWf7QFc+fdYWzi/ayOKjFX+3yrTf
+	D3Q381vPD2SR0Xn3A4nL0TPTEDxwo43mUZ5xfavIspUBvrgt+kUaWiAIRvAYipfA==
+X-Received: by 2002:a17:90b:5863:b0:36d:b424:4f17 with SMTP id 98e67ed59e1d1-38dc73bcfdfmr7418132a91.1.1783922957998;
+        Sun, 12 Jul 2026 23:09:17 -0700 (PDT)
+Received: from FJ7FR2JRQ3.bytedance.net ([178.93.176.7])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38a5564f58csm6035548a91.8.2026.07.12.23.09.10
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 12 Jul 2026 23:09:17 -0700 (PDT)
+From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+To: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Guo Ren <guoren@kernel.org>,
+	David Laight <david.laight.linux@gmail.com>,
+	Vivian Wang <wangruikang@iscas.ac.cn>,
+	Zong Li <zong.li@sifive.com>,
+	cuiyunhui@bytedance.com,
+	yuanzhu@bytedance.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+Subject: [PATCH v2] iommu/riscv: Use 32-bit MMIO accesses for 64-bit registers
+Date: Mon, 13 Jul 2026 14:09:02 +0800
+Message-ID: <20260713060902.15161-1-zhangzhanpeng.jasper@bytedance.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/5] iommu/vt-d: Convert nested cache invalidation to
- the core array loop
-To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
- David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1783539724.git.nicolinc@nvidia.com>
- <15bf2bf57e7bca35fdfd8262d2524026bb7574d3.1783539724.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <15bf2bf57e7bca35fdfd8262d2524026bb7574d3.1783539724.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 7/9/26 03:44, Nicolin Chen wrote:
-> intel_nested_cache_invalidate_user() used to walk the whole request array
-> on its own, copying and then flushing one single entry at a time.
-> 
-> The iommufd core now iterates the request array itself and re-invokes the
-> op with the not-yet-handled sub-array, so handle just a single request per
-> call out of the front of that sub-array and report one handled entry via
-> the array->entry_num. An empty array keeps returning a success, used as a
-> probe of IOMMU_HWPT_INVALIDATE_DATA_VTD_S1 support.
-> 
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> Assisted-by:Claude:claude-opus-4-8
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> ---
->   drivers/iommu/intel/nested.c | 54 ++++++++++++++++++++----------------
->   1 file changed, 30 insertions(+), 24 deletions(-)
+The RISC-V IOMMU specification [1] permits 64-bit registers to be accessed
+using two 32-bit transactions, high half first, and leaves the single-copy
+atomicity of 8-byte IOMMU register accesses unspecified.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() helpers
+for ordinary 64-bit IOMMU registers. Poll DDTP.BUSY in the low half before
+reading the full register from high to low. HPM counter reads require a
+rollover-aware sequence and remain outside these accessors.
+
+This follows the 32-bit access direction proposed by Guo Ren [2] and uses
+the generic non-atomic MMIO helpers suggested by David Laight.
+
+[1] https://docs.riscv.org/reference/iommu/
+[2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
+
+Suggested-by: Guo Ren <guoren@kernel.org>
+Suggested-by: David Laight <david.laight.linux@gmail.com>
+Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+---
+Changes in v2:
+- Rework the patch based on Guo Ren's earlier proposal [1].
+- Drop the build-time option and use 32-bit accesses unconditionally.
+- Drop the global lock and use the generic high-low MMIO helpers, as
+  suggested by David Laight.
+- Poll DDTP.BUSY through its low half before reading the full register.
+
+Link to v1: [2]
+Specification discussion: [3]
+
+[1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
+[2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com
+[3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
+
+ drivers/iommu/riscv/iommu.c | 18 +++++++++++-------
+ drivers/iommu/riscv/iommu.h |  9 +++------
+ 2 files changed, 14 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index cec3ddd7ab1..14b572058ed 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -668,12 +668,16 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu)
+ 	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_PQCSR, 0);
+ }
+ 
+-#define riscv_iommu_read_ddtp(iommu) ({ \
+-	u64 ddtp; \
+-	riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp, \
+-				  !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10, \
+-				  RISCV_IOMMU_DDTP_TIMEOUT); \
+-	ddtp; })
++static u64 riscv_iommu_read_ddtp(struct riscv_iommu_device *iommu)
++{
++	u32 ddtp_lo;
++
++	riscv_iommu_readl_timeout(iommu, RISCV_IOMMU_REG_DDTP, ddtp_lo,
++				  !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY), 10,
++				  RISCV_IOMMU_DDTP_TIMEOUT);
++
++	return riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
++}
+ 
+ static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
+ {
+@@ -1501,7 +1505,7 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
+ 	 * regular boot flow and disable translation when we boot into a kexec
+ 	 * kernel and the previous kernel left them enabled.
+ 	 */
+-	ddtp = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
++	ddtp = riscv_iommu_read_ddtp(iommu);
+ 	if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+ 		return -EBUSY;
+ 
+diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+index 46df79dd549..1b03790fbe1 100644
+--- a/drivers/iommu/riscv/iommu.h
++++ b/drivers/iommu/riscv/iommu.h
+@@ -11,6 +11,7 @@
+ #ifndef _RISCV_IOMMU_H_
+ #define _RISCV_IOMMU_H_
+ 
++#include <linux/io-64-nonatomic-hi-lo.h>
+ #include <linux/iommu.h>
+ #include <linux/types.h>
+ #include <linux/iopoll.h>
+@@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu);
+ 	readl_relaxed((iommu)->reg + (addr))
+ 
+ #define riscv_iommu_readq(iommu, addr) \
+-	readq_relaxed((iommu)->reg + (addr))
++	hi_lo_readq_relaxed((iommu)->reg + (addr))
+ 
+ #define riscv_iommu_writel(iommu, addr, val) \
+ 	writel_relaxed((val), (iommu)->reg + (addr))
+ 
+ #define riscv_iommu_writeq(iommu, addr, val) \
+-	writeq_relaxed((val), (iommu)->reg + (addr))
+-
+-#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+-	readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, cond, \
+-			   delay_us, timeout_us)
++	hi_lo_writeq_relaxed((val), (iommu)->reg + (addr))
+ 
+ #define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+ 	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
+-- 
+2.50.1 (Apple Git-155)
