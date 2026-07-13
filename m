@@ -1,112 +1,157 @@
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46CBD3DCD86
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 09:02:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7CB368D4B;
+	Mon, 13 Jul 2026 09:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783933329; cv=none; b=iq1fvqfn8AY+QVQZlM+l0Lp4m6JNmah42sFKmkmnsEExMpLFSXEKgxZ/vp+NlGojSkltp9C8Sw4tdxyV8n4w+5ZuhiyTMf+yF5vSDJNtvNF2R3apWbxQXXXwbnOXwzg3whuKkZzKZSyXlES+Nj6QRnBaKl7YFyOtWvF0WpstDPY=
+	t=1783934171; cv=none; b=hfe7jewNPVCr5tOLoRfBRrKYzERzj98qu09RmFpH3W2bF4fIdCew5K4/2MesL22XGrpyh6f4N2ZQmBiDdRODVVVCUviYbSdgv9t15j4IhWydKVRxV2Pl91Hbuy+Xsq24zSbsoQ0YwCdQ8YGA+K1KMIke9NNeT8HGUEprWJqUVgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783933329; c=relaxed/simple;
-	bh=Mm3DudiQ0NLdWY95m4yw8nnpv5gnqKjs4IjZfwNLUi0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iKeNSpDo7WOEwSnxhNwMi2TbFxYBvIXrZXM40RXMuccTl4eTRlBbChQa5z4iNxbrgIVUzlS2wnT0R+MgUfWS/zk8FFWhOxqHAIg9NhHyS890MTJnB+S7MD4RG4WhzPRS6NTN4lIGajblOYdyzZ8upYgQW3EDM8Ps+k/EEDg1dW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=vbaib5bx; arc=none smtp.client-ip=54.204.34.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
+	s=arc-20240116; t=1783934171; c=relaxed/simple;
+	bh=qy4epiyYjdSjOA+l6Z5k+6LYOxC7LsuckhtI65J+MXs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Onmuc7eqF7mtzf4m7aYH1WuSu/35P4F5GZ5CgpTbRJ4b2GZ196KXeP9UfaDuiGTWecb9E5uKbzqkLsc8ZfgrFB1brV32THMqPEHRnOZIDTMGypaaGuZog/q0R2Gar7LfznrTVmnETqwPfcECubGklGNC5Sx8VR3hReyCyXKkXp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E7FwN/Jv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="vbaib5bx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1783933306;
-	bh=+AMDp3qfSOjQpwhSd+uo86N/mIuHR7Te84DEEwdSgUY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=vbaib5bxKm8Qg+4urv55jllWf0SQEV5rQn4VdyK5SsYwCV4zniQ3gYL41docxxvtq
-	 q+K3bwS9y0CiM51DKLYjLyEunASpVzJuX52WlDhljWxQcCuYAF/stEJK3dfkzkrLt8
-	 ZCrGNkPB9fP7s9jwG5TAofuXOap7+veiXBkZI/2c=
-X-QQ-mid: esmtpgz10t1783933300t20ff65bd
-X-QQ-Originating-IP: KraSYcYDCvYSqFrtbcBv/SuRzAM8C5tf23JFpUaR3KY=
-Received: from [127.0.0.1] ( [36.152.24.145])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 13 Jul 2026 17:01:37 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 13213782032879603792
-Message-ID: <EA5BF28D772F9B38+8825ec4a-f59f-4537-a99c-ac9e8f7eaf1c@smail.nju.edu.cn>
-Date: Mon, 13 Jul 2026 17:01:37 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E7FwN/Jv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A02E1F000E9;
+	Mon, 13 Jul 2026 09:16:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783934169;
+	bh=N30vr1xrRftm2nMobVAtxbwff06D+Jf4XX9jZoAnGTU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=E7FwN/Jv6m1e69kx632GqJLog3RwP12tN0ucav26FktzwqnDd4kBGbNenuLYwevaG
+	 1BGaAYWSOPpXQRSOjYHhBVIcbF6c6745HuTPWIJSEk8DBaXcYiJiRhiQHM0PuxFF6P
+	 BwYbJSu9iMhhF+DNNLmVWpQSpv2YXboLZUCWFoTXiDPKBMPB5Kbs7XTiLQtafM8HCh
+	 PNnPj9dcL0ZH08/cBg+D0N2/m6AGaFNxwZfAKu9PvpgM4thZA2L6/kvTerKA11bcS4
+	 O4pi77LeTOqxqk29h93wNbDV6E+GB/6u5CSeTYHY3YOHUOPR191DfJ6oc4ZrkSO5RK
+	 M/S7j7bXcZacQ==
+Date: Mon, 13 Jul 2026 11:16:05 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Daniel Drake <dan@reactivated.net>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 3/6] dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
+Message-ID: <20260713-corgi-of-striking-science-4afbdc@quoll>
+References: <20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net>
+ <20260712-bcm2712-iommu-submit-v1-3-80e10cdde2ea@reactivated.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [BUG] iommu: KASAN slab-use-after-free in
- iommufd_auto_response_faults
-To: "Tian, Kevin" <kevin.tian@intel.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "vasant.hegde@amd.com" <vasant.hegde@amd.com>, "Liu, Yi L"
- <yi.l.liu@intel.com>, "jpb@kernel.org" <jpb@kernel.org>
-References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
- <CO1PR11MB4835631ED64FF285D915CEBB8CFA2@CO1PR11MB4835.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-In-Reply-To: <CO1PR11MB4835631ED64FF285D915CEBB8CFA2@CO1PR11MB4835.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: N4i6KJsY5wDpfB0IB8sciMFnvEY0M/RKBi2eKTxT0trk/2cGV4ze3c+s
-	9XHiVxIKn1/l4nimUx3PTWEpYhbJFhDIGp++FS6W2OvbVTrrjGGBQU6GHRDHLLX9MCMEBPa
-	KFXFnjPQE+gWV66nHbH2vGDzdRjHjQOE188XEbLeiVBA9ry+tVCapaFb/vJvEV2shKEOhBw
-	giRFyhxtVZRk42JRt9BxEffWLedKYlBj9g20echiNHtn5y/CTE72argGQP8KuvfNC+fs2PE
-	PUH09e7CZlbJz171lzBcduOcbmqE//cjXcGlgOh1IxmilGC27u9g8Zf5jGTr7M3r2tV+96w
-	ZINPU6+UddcBOamxlBnc6rwN8PDAaoKZ0Uq7qDrR8sS/fDd3Cckj6RKdzqBCLmfSQM8EemV
-	t4qN1nyn1fjnMEnygWpCd1B/7sRf5U9dCMIdkaQdB57SxITmfoPdLNtnqWn+GmA8DaRS1ov
-	a18YE350GWH0kodvoRnGtHfOVrTSqPkH+fEjsijzIPXQFV3y+Lpwdp4glBqB/PjD/YetSC1
-	F9OrNehQ4nMPiy7fTupn89nx3J7PbPgXGY9iWyZ0H6vqmRadIj+5JWdWcFGcV4A3NmZS/3A
-	wcfbI2VmlTFahH6xUNL9w3l/y/+uq+LbOksdUZoO3hQTi8wypQFFsJBSwsM8hmCR6Bi5QNo
-	9fXgT1sYB3uvdWMqvGVFYMif8JhEp+Wyuj8hzdqGLedxSamqAzWxpXJRvHFM0uI0/W3wzPu
-	4a5nl0tV5sXHwRl/YVK80tI4m7xIgpZaV6cD0D6BxwB/549npoZugOBtyg18YqocvVLxR39
-	KBVqjf8vUaddHg2lW1TfgM3Oeh0M6eom0/3Z09QtXy9C9ckbQYQ8LHGA1enQGvOhnuN5qfZ
-	DXGdfOQSPj3XZGJL4i2ZxhChT1CCaqQPOsX3WZs79Od1rDdcCR2jLE9xSKYziM970KH4eEd
-	SNWpQxpEyGZyzHW/axxMeTwqqhPHGuetRM9MiKfN2cf/NOG8AYyeRB4ilbAMco3T3YNtxYk
-	OK8msEH4s7F3Xq0CZdxChT44/mh2yc30SDWOSVov5m9Fsm5keSoUfq1T+lOd+3k4LIQigM+
-	bz58ylaR20fSX0cPWIhzJ1yLVAcE3Np5V6M7zivxWkC
-X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260712-bcm2712-iommu-submit-v1-3-80e10cdde2ea@reactivated.net>
 
-On 2026/7/13 14:10, Tian, Kevin wrote:
->> From: Peiyang He <peiyang_he@smail.nju.edu.cn>
->> Sent: Tuesday, July 7, 2026 2:13 PM
->>
->> The analysis above goes through the iommufd selftest mock device (M). We
->> have not reproduced this on real Intel/AMD hardware, but the same lifetime
->> issue is not specific to the mock driver: Intel and AMD both have real detach
->> paths that can reach the very same iopf_queue_remove_device(). This is
->> exactly
->> what iommufd_hwpt_detach_device() triggers, via
->> iommu_detach_group_handle() /
->> iommu_detach_device_pasid(), right before it calls
->> iommufd_auto_response_faults().
+On Sun, Jul 12, 2026 at 10:18:53PM +0100, Daniel Drake wrote:
+> Add bindings for the Broadcom BCM2712 IOMMU and its shared TLB cache.
 > 
-> yeah it's certainly a bug - it doesn't make sense to have an object sitting
-> on two lists after its ownership is transferred. Suppose we should delete
-> the group from iopf queue then add it to the iommufd queue in
-> iommufd_fault_iopf_handler().
+> Include compatibility with the cache phandle used in existing firmware
+> shipped on Raspberry Pi 5, and also allow the iova-window to be omitted,
+> which similarly will maintain compatibility with existing RPi5 firmware.
 > 
-> Can you help send a fix accordingly?
+> Signed-off-by: Daniel Drake <dan@reactivated.net>
+> ---
+>  .../bindings/iommu/brcm,bcm2712-iommu.yaml         | 65 ++++++++++++++++++++++
+>  .../bindings/iommu/brcm,bcm2712-iommuc.yaml        | 35 ++++++++++++
+>  2 files changed, 100 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+> new file mode 100644
+> index 000000000000..0d91c513afc4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+> @@ -0,0 +1,65 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommu.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Broadcom BCM2712 IOMMU
+> +
+> +maintainers:
+> +  - Daniel Drake <dan@reactivated.net>
+> +
+> +description: |
 
-Hi Kevin,
-Thanks for your reply! No problem, I will try sending a patch very soon.
+Do not need '|' unless you need to preserve formatting.
 
-Best,
-Peiyang
+> +  The BCM2712 IOMMU provides address translation for various hardware blocks
+> +  on the BCM2712 SoC, such as the VC6 display pipeline.
+> +
+> +properties:
+> +  compatible:
+> +    const: brcm,bcm2712-iommu
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  '#iommu-cells':
+> +    const: 0
+> +
+> +  brcm,iommu-cache:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: Phandle to the shared IOMMU cache (IOMMUC).
+
+You need to explain what for, the purpose in hardware.
+
+> +
+> +  cache:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: Deprecated. Use brcm,iommu-cache instead.
+> +    deprecated: true
+
+Drop property, we do not take new bindings with deprecated properties.
+Existing FW is not an excuse, Raspberry 5 developers could reach out and
+ask if this is okay. They did not.
+
+> +
+> +  brcm,iova-window:
+> +    $ref: /schemas/types.yaml#/definitions/uint64-array
+> +    description: |
+> +      An array of two 64-bit integers specifying the IOVA aperture start
+> +      address and the aperture size. IOMMU mappings will be created inside
+> +      this aperture. All preceding address space is in identity/bypass mode.
+> +      The aperture start address must be 4GB-aligned.
+> +      Should be considered a required property, but it is technically optional
+> +      in order to maintain compatibility with historical firmware versions.
+> +      If absent, defaults to a 4GB window at 40GiB (0xa00000000).
+> +    items:
+> +      - description: IOVA window start address
+> +      - description: IOVA window size
+
+This looks a lot like reserved region, so why do you need a new
+property? If this is not a reserved memory, then why compatible does not
+imply the value?
+
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - '#iommu-cells'
+> +  - brcm,iommu-cache
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    iommu@5200 {
+> +        compatible = "brcm,bcm2712-iommu";
+> +        reg = <0x5200 0x80>;
+> +        brcm,iommu-cache = <&iommuc>;
+> +        #iommu-cells = <0>;
+> +        brcm,iova-window = /bits/ 64 <0xa00000000 0x100000000>;
+
+Best regards,
+Krzysztof
 
