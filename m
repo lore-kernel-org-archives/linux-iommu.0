@@ -1,53 +1,78 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 262FC32B114
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 16:46:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C98D543DA4B
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 16:53:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783961182; cv=none; b=Hn1Y6sodq0GRr6dEmEts8r/BmF8TQnSsU2FK4N2OqQxNKyOCaWeIQX+Be5nibmWKiUe5GPrFTpWnh7wi2ORCJ+dvbY6NzNi6MAGKLTCtw0waMDL2fyxgsCVNDVFXT+T6NlGY5xqwTmLuGFhJIRPpj1849RAkSyDyl5LeNelyDMQ=
+	t=1783961610; cv=none; b=broQ2619jIr1y+ImZ/WoICfx1bgD10bRzJ59RdKZ0WS6YgJpQkcCS0DKO+IPwuhGSUTJ+nxzJ37HmAanHieUl83rUbbhcsj7nen2X1qiTfKzIFZZdOWFMy1ZFkXsG6QW2pBkt1PY61/fuzP6eE02Dd/vBHbyxU4KDPpBnL/XI3A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783961182; c=relaxed/simple;
-	bh=Sem6KJo6jUTitXm7NbisqjqOR5BQYp0HkiBD76Cxjk0=;
+	s=arc-20240116; t=1783961610; c=relaxed/simple;
+	bh=W8h/pOX2A68/AN9GGx/hlGAI45Btx/6RAqn1jjPBzJ0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TM5q+IzoFBQ3TLo6gy5+8VpSh782YxYkCM3+sBwsVKcB/FOJZiIFB0TmW9RYD1tXjMcxpTaflWDBgEPkOySPEJeiNx1OqmPmboRPkUPXBR2FNjabz6gDnY+43s+hVwBDSAXZmmmSbBMx5jtVNh2H971Wqsa1EzOIT/GwxQhoCBo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TYdlTv69; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=WonYFSgQlesnQZjG5q/MXW2Q9WUuLRBxU22RmqWdC4WttVrDCWqyk7xVMX8Sb9h+/4ZVYn0gZ8OlSBxx+WShHgk7hbMSTvkNMwvIHq6gxbTWgrxm4oQ7QpAzzbB6g+jfXsc/qqUe3RycW5hi2hnE7/tVd8cXWlpcUL98DRnK3FM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=maAQifuG; arc=none smtp.client-ip=209.85.160.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TYdlTv69"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6718F20B7166;
-	Mon, 13 Jul 2026 09:46:12 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6718F20B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1783961172;
-	bh=GW97O9s/FqeNwr7q4Bm2RaJJPumMCy7wcDQxp5UqbLI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TYdlTv698y99d+W8mwAyKPyT7FCVp7+pKIW8pi9KkSOfQ4/s6MBvmCfJ5hNf9wwD3
-	 OW7Uf+GFIvI3ehv2UGqtaYl0oVCPWUyjR8heS33V+eU0lRqd9XtgREamqIW/DYZ4MK
-	 2jc87WSEX7SMB/sGmV6qdzj52oj6TUcL8SMpEbZM=
-Date: Tue, 14 Jul 2026 00:46:18 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
-	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
-	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
-	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
-	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>
-Subject: Re: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <3ty6yq6oftsvq52skrngjv5xpyixhsyfo3dndhoujt7emxsb2o@y6ischifpmfn>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
- <SN6PR02MB4157253E030D477FD91B7E26D4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <enpkphavwmqrkded73c43vprczslvei4755lkxuedof4z2k3kk@y2jtklbk4efz>
- <SN6PR02MB4157805F23ACA85A668FA065D4FC2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="maAQifuG"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-51c2a76536bso32220121cf.1
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 09:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1783961599; x=1784566399; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=1wy5cjU8bpodUKB+73h1Dg8HOClHzWqmvSatqxWWARE=;
+        b=maAQifuGUCGzpZ8RKtKwhvdga5V+cyXFDoPLQ69KztwQy1Ncc/Y9YzkdSvKNrPmHCo
+         581COMPcNcnXyTKyBJhJU/h7/o9JiNJZ5IFZQOd2JBBZ5XH7ShsWX86OcHac+8mP9fDC
+         QMLd6lucOqYb2EXNAvDNKK6JaXwaIOk0ACyPFejNMX7VNyyyihP8J5+k6ReGwOBlFFj3
+         xaDNEI98zMUGlvg3xyzM4Qmd8zmH00gUgch7V1srMgXM5bHMNMKWTdj/4NNEpBwjZg45
+         JzBVvvVQTBbpZCSbL0b+OszauDCyH/12ChmUON1tmab3ErfmaqyjGcistM0HsiOlbiXi
+         OO8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783961599; x=1784566399;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1wy5cjU8bpodUKB+73h1Dg8HOClHzWqmvSatqxWWARE=;
+        b=DtUwqh6YmHVk4rRdecN3AONcxcwn5Xj6VjZnv337kADGZqH1SvFCvFprfE/koohTGX
+         2V25CfUOQ6aIpT5qfl1MdBlyMhz1vx0yqyOWNcHs/dS6sHKmBlzJvqhs0yokDd7tkneH
+         BwgnsRWWZLj8VHlT1tRM/gf1qa4tNHLiyVSzT+i7cLfcbpguiX/DFBUen9l+0/F7F4NY
+         XidCwpnvlR7h0cxhdOvv8gzkJzH3GI5w/iZXgm6+CCemWF2nF13wnpmwMyeAN9qDpgJg
+         MOl3V6KMJUJISar9Wg63F+ZqJ1+8ZIzTpk1B9Xf2Z5M5BBN7aQw0x5wlc4Z6zhq8XcPT
+         6x+g==
+X-Forwarded-Encrypted: i=1; AHgh+RpA4x3Pq1P1uLnOgy92VA+PglORRmvRRM81TKUoN6yAVCmPbq9butANe8/hVhOmOkJCGnqzfg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVvdciuCHWKLq5TAhv+gZ63S3Cnowawg647BK6Ua1eJoSWPca9
+	mZsLvqKTrahCDy316PDge3gjaO/v2GsWFOz55GlS1g40Klljrc5G5T57kWHs193pTQQ=
+X-Gm-Gg: AfdE7cnwnsQC2dQ3xM7OnwfCjkAQ0TcMXGm8cR8oj7G/1PZ6LRhv1cftW5Tp+EVfu+i
+	cUvy9qO6edNoD/CSgh95Wjqr4FXqwELS/zwCiLsO3bSlCtYeQOLqEAMIfQyCgeszfxLAj5iKf1c
+	2rFlRsw6SIu8RL3KEHmVpIJDPVxshCNu4U226QFnLLwQH2KqRzl8D19+aERZl+XM5fZK3rVZ5i9
+	I/HstxiRnu6pWj/gDRygvsVosvGB9coFAdEj7v8kz3SnyFeh33LukRkge1gTwl9C+ycFegsy7J5
+	vVpYM+qDNgqLMch9PjHof7wz82LwRmVC5DTeX3Zg4aH9wKv+Sn3odSlRPmUi+qaV8S/O7Yd3T6H
+	n+GI1tufXpDW0Lzl4B4oSt2Wsc+i4tsFVAo957iQ9Iv2ElOyEYZDYaIGU1CmL
+X-Received: by 2002:ac8:6f12:0:b0:51a:8c9a:8fb7 with SMTP id d75a77b69052e-51cbf30ebd1mr99770401cf.72.1783961598776;
+        Mon, 13 Jul 2026 09:53:18 -0700 (PDT)
+Received: from ziepe.ca ([159.2.72.92])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51caab6e9f4sm88381971cf.2.2026.07.13.09.53.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2026 09:53:18 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wjJu9-0000000Dd2s-2yX2;
+	Mon, 13 Jul 2026 13:53:17 -0300
+Date: Mon, 13 Jul 2026 13:53:17 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Peiyang He <peiyang_he@smail.nju.edu.cn>
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
+	iommu@lists.linux.dev, robin.murphy@arm.com,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	nicolinc@nvidia.com
+Subject: Re: [PATCH] iommufd: Fix wrong hwpt passed to
+ iommufd_auto_response_faults on replace
+Message-ID: <20260713165317.GE3133966@ziepe.ca>
+References: <9D652384339C69D5+20260710122952.885325-1-peiyang_he@smail.nju.edu.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,152 +81,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SN6PR02MB4157805F23ACA85A668FA065D4FC2@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To: <9D652384339C69D5+20260710122952.885325-1-peiyang_he@smail.nju.edu.cn>
 
-On Sat, Jul 11, 2026 at 06:31:15PM +0000, Michael Kelley wrote:
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, July 10, 2026 12:34 AM
-> > 
-> > On Thu, Jul 09, 2026 at 07:08:26PM +0000, Michael Kelley wrote:
-> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Thursday, July 2, 2026 9:05 AM
-> > > >
-> > > > Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
-> > > > This driver implements stage-1 IO translation within the guest OS.
-> > > > It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
-> > > > for:
-> > > >  - Capability discovery
-> > > >  - Domain allocation, configuration, and deallocation
-> > > >  - Device attachment and detachment
-> > > >  - IOTLB invalidation
-> > > >
-> > > > The driver constructs x86-compatible stage-1 IO page tables in the
-> > > > guest memory using consolidated IO page table helpers. This allows
-> > > > the guest to manage stage-1 translations independently of vendor-
-> > > > specific drivers (like Intel VT-d or AMD IOMMU).
-> > > >
-> > > > Hyper-V consumes this stage-1 IO page table when a device domain is
-> > > > created and configured, and nests it with the host's stage-2 IO page
-> > > > tables, therefore eliminating the VM exits for guest IOMMU mapping
-> > > > operations. For unmapping operations, VM exits to perform the IOTLB
-> > > > flush are still unavoidable.
-> > > >
-> > > > To identify a device in its hypercall interface, the driver looks up the
-> > > > logical device ID prefix registered for the device's PCI domain (see the
-> > > > logical device ID registry in hv_common.c) and combines it with the PCI
-> > > > function number of the endpoint device.
-> > > >
-> > > > Co-developed-by: Wei Liu <wei.liu@kernel.org>
-> > > > Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> > > > Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > > > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > > > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > > > ---
-> > > >  arch/x86/hyperv/hv_init.c       |   4 +
-> > > >  arch/x86/include/asm/mshyperv.h |   4 +
-> > > >  drivers/iommu/Kconfig           |   1 +
-> > > >  drivers/iommu/hyperv/Kconfig    |  16 +
-> > > >  drivers/iommu/hyperv/Makefile   |   1 +
-> > > >  drivers/iommu/hyperv/iommu.c    | 620 ++++++++++++++++++++++++++++++++
-> > > >  drivers/iommu/hyperv/iommu.h    |  51 +++
-> > > >  7 files changed, 697 insertions(+)
-> > > >  create mode 100644 drivers/iommu/hyperv/Kconfig
-> > > >  create mode 100644 drivers/iommu/hyperv/iommu.c
-> > > >  create mode 100644 drivers/iommu/hyperv/iommu.h
-> > > >
-> > > > diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-> > > > index 55a8b6de2865..094f9f7ddb72 100644
-> > > > --- a/arch/x86/hyperv/hv_init.c
-> > > > +++ b/arch/x86/hyperv/hv_init.c
-> > > > @@ -578,6 +578,10 @@ void __init hyperv_init(void)
-> > > >  	old_setup_percpu_clockev = x86_init.timers.setup_percpu_clockev;
-> > > >  	x86_init.timers.setup_percpu_clockev = hv_stimer_setup_percpu_clockev;
-> > > >
-> > > > +#ifdef CONFIG_HYPERV_PVIOMMU
-> > > > +	x86_init.iommu.iommu_init = hv_iommu_init;
-> > > > +#endif
-> > > > +
-> > >
-> > > This approach to .iommu_init is a bit different from the Intel VT-d and
-> > > AMD IOMMU initialization. Those cases detect the existence of the
-> > > IOMMU first via a "detect" function that is called in pci_iommu_alloc().
-> > > If the detect function finds an IOMMU, it sets .iommu_init. Any
-> > > reason not to use the same approach for the Hyper-V pvIOMMU?
-> > > One problem with exactly the same approach is that Hyper-V
-> > > hypercalls aren't set up at the time pci_iommu_alloc() runs.
-> > 
-> > Yes. That's why I did not follow Intel VT-d and AMD IOMMU's approach -
-> > the hv_hypercall_pg is not ready yet.
-> > 
-> > > So you'd have to call the "detect" function here in hyperv_init(),
-> > > and have the detect function set .iommu_init if pvIOMMU
-> > > support is present.
-> > >
-> > 
-> > The detecion of the presense and capabilities of the pvIOMMU are done
-> > in one hypercall. But I guess we can:
-> > - do the HVCALL_GET_IOMMU_CAPABILITIES in hyperv_init();
-> > - check the presense and only set .iommu_init to hyperv_iommu_init()
-> >   if pvIOMMU is present;
-> > - and then do other capalibities check in hv_iommu_init();
-> > - only give the error log if an pvIOMMU is present yet its capabilities
-> >   are not legal.
-> > So below errors will not be printed for guest kernels built with
-> > CONFIG_HYPERV_PVIOMMU and running on a host w/o one.
+On Fri, Jul 10, 2026 at 08:29:52PM +0800, Peiyang He wrote:
+> iommufd_hwpt_replace_device() calls:
 > 
-> I see your point about detection and capabilities coming from
-> single hypercall, and that separating those two functions
-> would duplicate code. My biggest concern is about errors in the
-> dmesg log for a valid configuration where the host doesn't
-> supply a pvIOMMU. Fixing that problem in the context of the
-> current code structure would be acceptable.
+> 	iommufd_auto_response_faults(hwpt, old_handle);
 > 
-> A minor concern is arguably misusing the .iommu_init function
-> to do detection. But that function is only called once at boot
-> time, so leaving it set to hv_iommu_init() even if there isn't
-> a Hyper-V pvIOMMU is probably more a conceptual issue
-> than a real issue. I wouldn't object if you prefer to leave that
-> "as is" to avoid duplicating the hypercall.
+> passing the *new* hwpt together with the handle of
+> the device's *old* domain. This should be a parameter mismatch:
 > 
-> One new thought:  Have you considered the hibernate/resume
-> cycle? Does anything need to be done with the pvIOMMU to
-> make it functional again after resume? I see that the Intel and
-> AMD IOMMU drivers have suspend and resume functions. I
-> don't know enough about the Hyper-V pvIOMMU to know if it
-> might also need suspend and resume functions.
+> 1. Semantically, iommufd_auto_response_faults(x, handle) scans
+>    x->fault's deliver list and response xarray for groups matching
+>    "handle". A group is queued under the hwpt that was attached at
+>    fault-delivery time. old_handle is fetched *before* the domain switch,
+>    so its group lives on old->fault, not on the new hwpt->fault.
 > 
-
-Thanks for raising this, Michael. We have not considered such support.
-
-My understanding is that the Intel and AMD drivers only disable the
-IOMMU translation, flush the IOTLB during the suspend and re-enable/
-reload the preserved root tables and other HW state during in the
-resueme.
-
-But for pvIOMMU, I guess such job shall be done by the hypervisor? 
-For a device resumed on the same VM, its logical device ID should
-also remain unchanged?  And the corresponding Hyper-V domain objects,
-configuration, and device attachments shall be preserved and restored
-by hypervisor? I don't think the current Hyper-V ABI explicitly defines
-this. But maybe if we want such feature, it could be done by the
-hypervisor transparently?
-
-
-B.R.
-Yu
-
-> Michael
+> 2. Historically, the first argument was "old". The routine was
+>    introduced by commit b7d8833677ba ("iommufd: Fault-capable hwpt
+>    attach/detach/replace") as __fault_domain_replace_dev() in
+>    fault.c, correctly calling iommufd_auto_response_faults(old, curr).
+>    Commit fb21b1568ada ("iommufd: Make attach_handle generic than
+>    fault specific") moved this into iommufd_hwpt_replace_device() in
+>    device.c and swapped it to "hwpt". This should be a refactor regression,
+>    not an intentional change.
 > 
-> > 
-> > > While the code currently in this patch works, it generates boot
-> > > time errors if the kernel is built with CONFIG_HYPERV_PVIOMMU
-> > > but run in a guest on a host without pvIOMMU support:
-> > >
-> > > [    0.101673] Hyper-V pvIOMMU: HVCALL_GET_IOMMU_CAPABILITIES failed, status 2
-> > > [    0.101675] Hyper-V pvIOMMU: HVCALL_GET_IOMMU_CAPABILITIES failed: -22
-> > >
-> > > We really don't want errors if it's just the case that there's no
-> > > pvIOMMU support. A less alarming message (at INFO level instead
-> > > of ERROR level) about running without an IOMMU might be OK, but
-> > > perhaps is unnecessary since you have an INFO message if the
-> > > pvIOMMU is found and successfully initialized.
-> > >
+> Fix this by passing "old" instead.
 > 
+> Reported-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+> Fixes: fb21b1568ada ("iommufd: Make attach_handle generic than fault specific")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+> ---
+>  drivers/iommu/iommufd/device.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Applied
+
+Thanks,
+Jason
