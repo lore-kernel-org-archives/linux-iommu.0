@@ -1,134 +1,181 @@
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-186.mta1.migadu.com (out-186.mta1.migadu.com [95.215.58.186])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F6CE322B8C
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 19:08:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A728E353A66
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 19:09:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.186
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783969719; cv=none; b=amuj1FpSARyTpT4wlbM7QM9tt53QhUJ/WuHwJa3RaLp+MUKZdofbfnqVXfLB5YEzs3a4gHv9mWxokR2LnYXU/SH+hSBuh78L+YvZqFs5Et6c4Ap1V3eohJpydxy8nlNxQDw5QSsAX46528Rji88RSYqJw4ktzk/cthsF9qTutDg=
+	t=1783969763; cv=none; b=R7FTJtRgEVFpzvx1u10ATaZnOcYbS0+BODGMj3OAg3UfoqgXVSeTF0LWm+F5SkF5+jkatZDECLfaMdF55pv6EiK5DykSlEYm3PHTIDrU+QfTIbDrz/GwTcIEDoByp9lfUlU+YI1BdbqRgE4C8ZmhyO/1d4FNFD5qQWGw8Qrzq+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783969719; c=relaxed/simple;
-	bh=GJtnY2yRqKWNI1Dlg/xVBMh0aCykSCHp+2ZiZ1vJGtQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RJvazGmLUHV0ByUN5GqoyuTPyLp+P0Ncng/Grqx6kq0l+ryq2hxwY9YkXIUN4zd+48mzkSGdqpvNZ8otbicDVWkSJBCvQAP2wo8fVCPGVLfVpLj8FswaCNWDotMXbiO5wlycEehkXaoVjH6nb+QChG2qskysgF2Mq2ZGIFzj97U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=S7TM1GTu; arc=none smtp.client-ip=209.85.219.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1783969763; c=relaxed/simple;
+	bh=nhHMniB5o329beYkhgim27yilfQiRt1Q9Yt+NkIt/XU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FU7RPztHF5wFggFjTTqnTfBFdBfYunjF9duW58ri+ugulvQRetcRNMbATbNXQIX88bcI+mT6xM1RxTwuEhBhiQUSARSg171YYYBELg8fXqAXOZUmkc2qdIFnILhSZ/CTlYJ6kaxvVms95vMsGr1MdiepcgY447SK9LitZW7RYuU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=THkM4JHL; arc=none smtp.client-ip=95.215.58.186
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="S7TM1GTu"
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-8eefd0c5f59so2168106d6.3
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 12:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783969716; x=1784574516; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=xI/VqVGbyjLJTRr9oYnYDAONmrfr0w8bRuYGoSNi5Tw=;
-        b=S7TM1GTuioAjX2jtAYgGUY7O7lrvNuNIohe4J9zx44RaMCDIfVCYCVePp3ruilMMCE
-         hpcoY80D6C6jbz0KWt1PgBhE2+bt5WBm8Nz8wl4SVziEDa6l7bEgeFCDA6iMaJe99CPc
-         GnheGVbiyl4uK/ob40QBAIWZB0c+GRy8G3IC2wCPDfxGAGWDge/fRcUs8h+4TznucPNc
-         OWmRKteywp3zM86HqjkEcSK44ulsH81WWHLpAIYNhNJ4psw6CQuDi5VIl4iIv3COZExy
-         gWIlTOYpf4WL1Wf1SM7Mz3xMi0B9VAH4HDOlNUOMMkiMsgzp08H9QPHzIauSyKZoEOm1
-         FExA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783969716; x=1784574516;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xI/VqVGbyjLJTRr9oYnYDAONmrfr0w8bRuYGoSNi5Tw=;
-        b=kLFyN8WrU4+FldSTCanBD9N/AEPmmTT2OT4jHMcu2F0FBdnDljtoFHEsZfSNxMuUvS
-         l5NGHnIRZcivBfRd1KDfTWlQLLSltwQXlVZ7QWHP2/gctwyGwQJb7c4whqP3MEyOMORV
-         mC8usfBlxw1tDpAVpuCQPmD6wNhKqDV4i5f+saURlOj993bp1DNjnlvcHpWlVn/0qOOG
-         uuKMC6KPc4vPFtyrN3iqrS5+gOrV8iVtJcPqVZ1s+0g4LH8Uu48H0TdfOFNHKYEUEbrK
-         GOq+8zjQf0q7OjsZzPugUzKyFPqiiQ2meKXDDf6+7iwbOHkzNSjvTsMd1j49JX+MvNbU
-         pwzA==
-X-Gm-Message-State: AOJu0YwYMefZiWWVv3AKOWBkX6LFdwvIOURb2wAlFq9QhF3BFS5AjQUc
-	IihQLxfmuiA9q31bfagNzwwHnStzXesN6c7iSi0qRmh7zRlfzmNnVgB0TLf5eH5aT/M=
-X-Gm-Gg: AfdE7cnpbcSIrcLJZSIYkMVUedNn2oqC3SOgezKpAqc3gjBQCATKyVwK4Tpz5ekq+fZ
-	p2WMkBF0HhjX9BbjUzpRrOOi7LqPoyW8ff+mNFN6rcffxz9/atbSGRNmx2KNETlE2zJmstBaJu+
-	l9MS6k4saXGAR5y24uvlVOoiLiCZnAfFG3XO3SSPiVUeBS3sJIYwzeYM3YiSeWwlid8PHKOidgV
-	/tqhc8WDFQewCnv2mtZQ4DPGkv9SUW3WeQ0cW8DFyMHxhUeRG8nwKU2H3egxE4ZAQTtXFID1JrW
-	fwtpNLjFonp149+x1Kphf3LTp5g69CnqXkhiwqrZCS31RBY6HRDQ0W6XZqO38hkRqiYATdAoQUQ
-	vR+MCJUTWcOATeNI7j5qv8cxaEHe+ukykWXX0a/PSjdZmob2c+Us2UiD8X2Ig
-X-Received: by 2002:a05:6214:419c:b0:8ef:6c8a:e8db with SMTP id 6a1803df08f44-9040206aa9fmr110916776d6.47.1783969715612;
-        Mon, 13 Jul 2026 12:08:35 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd50e0811sm137651756d6.3.2026.07.13.12.08.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 12:08:35 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wjM14-0000000E3qf-1Q0G;
-	Mon, 13 Jul 2026 16:08:34 -0300
-Date: Mon, 13 Jul 2026 16:08:34 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v7 05/22] swiotlb: Preserve allocation virtual address
- for dynamic pools
-Message-ID: <20260713190834.GN3133966@ziepe.ca>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-6-aneesh.kumar@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="THkM4JHL"
+X-Forwarded-Encrypted: i=1; AHgh+RrVLJNTeTlakYK5k1E+8sEEAZr/um/xBR9JhA0gfu/Jn8GTBHXsOT3gZJ8H12wgqU6FKd+YNg==@lists.linux.dev
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1783969759;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=P+3EWmrn9TlytCVwvSjefnIQTVg7nZtucIhvwx2Wfn4=;
+	b=THkM4JHLHeWUCUid47ydFXBu9vyzM8orBLyiASfyyZez14q4CUTwmpPe4ACXLx0jTvDUvI
+	lg6RziQHzDJ38HRCKMl4WnVyEaqynv79+Z4tcpXMIU1mzSa3Ts/ihseIAJuR/Sy3GbUtM6
+	XqyGggJBuEczFrOCS7lTYYyCDnUTNr8=
+X-Gm-Message-State: AOJu0YyqSRCRvfbRY2vqx6wi//O3X9vnpACRLV54tCVR6y0qE6lgetnQ
+	XJzlzt9YFgsYNnxfk4dv+lLKzsVJH6PQokueYf9W6m2BrOQCKbGu8HWAnjGPr37srs/pBbLOxPI
+	nRaU5BX9aUN1pkX61CaVPVfj87lIJKxjbINDtdQjh
+X-Received: by 2002:a05:622a:4d47:b0:517:5e32:2d14 with SMTP id
+ d75a77b69052e-51d7bc5094cmr5957821cf.10.1783969731978; Mon, 13 Jul 2026
+ 12:08:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260701054926.825925-6-aneesh.kumar@kernel.org>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250529053513.1592088-11-yilun.xu@linux.intel.com> <20250602133009.GC233377@nvidia.com>
+ <CAEvNRgFpJWQ5M5sQhGpQUV3GbBq9N+MQhhaxdxa=D8ky94SCsw@mail.gmail.com>
+In-Reply-To: <CAEvNRgFpJWQ5M5sQhGpQUV3GbBq9N+MQhhaxdxa=D8ky94SCsw@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Fuad Tabba <fuad.tabba@linux.dev>
+Date: Mon, 13 Jul 2026 20:08:14 +0100
+X-Gmail-Original-Message-ID: <CA+EHjTwd9uku-ZV5y8xcK8VWdOfhcchyW=_fzjpCf5Vk2wQoGQ@mail.gmail.com>
+X-Gm-Features: AUfX_mw-84x_DmgF59r9sD3Wt_uWXnd6_ELlU4FK10Faaz6XnikTNIHgvUm1jO4
+Message-ID: <CA+EHjTwd9uku-ZV5y8xcK8VWdOfhcchyW=_fzjpCf5Vk2wQoGQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 10/30] vfio/pci: Export vfio dma-buf specific info for importers
+To: Ackerley Tng <ackerleytng@google.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org, 
+	sumit.semwal@linaro.org, christian.koenig@amd.com, pbonzini@redhat.com, 
+	seanjc@google.com, alex.williamson@redhat.com, dan.j.williams@intel.com, 
+	aik@amd.com, linux-coco@lists.linux.dev, dri-devel@lists.freedesktop.org, 
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
+	vivek.kasireddy@intel.com, yilun.xu@intel.com, linux-kernel@vger.kernel.org, 
+	lukas@wunner.de, yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, 
+	leon@kernel.org, baolu.lu@linux.intel.com, zhenzhong.duan@intel.com, 
+	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com, 
+	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com, 
+	aneesh.kumar@kernel.org, iommu@lists.linux.dev, kevin.tian@intel.com
+Content-Type: text/plain; charset="UTF-8"
+X-Migadu-Flow: FLOW_OUT
 
-On Wed, Jul 01, 2026 at 11:19:09AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> swiotlb_alloc_tlb() can allocate from the DMA atomic pool when a decrypted
-> pool is needed from atomic context. With CONFIG_DMA_DIRECT_REMAP, the
-> atomic pool is backed by remapped virtual addresses, which are not the same
-> as the direct-map addresses returned by phys_to_virt().
-> 
-> swiotlb_init_io_tlb_pool() currently reconstructs the pool virtual address
-> from the physical start address. For atomic-pool backed allocations this
-> stores the wrong address in pool->vaddr. Later, swiotlb_free_tlb() passes
-> that address to dma_free_from_pool(), which will fail to recognize the
-> chunk
-> 
-> Pass the virtual address returned by the allocation path into
-> swiotlb_init_io_tlb_pool(), and store that address in pool->vaddr. This
-> keeps the pool free path using the same virtual address as the allocator.
-> 
-> Fixes: 79636caad361 ("swiotlb: if swiotlb is full, fall back to a transient memory pool")
-> Tested-by: Michael Kelley <mhklinux@outlook.com>
-> Tested-by: Mostafa Saleh <smostafa@google.com>
-> Reviewed-by: Petr Tesarik <ptesarik@suse.com>
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->  kernel/dma/swiotlb.c | 31 +++++++++++++++++++------------
->  1 file changed, 19 insertions(+), 12 deletions(-)
+On Sun, 12 Jul 2026 at 02:02, Ackerley Tng <ackerleytng@google.com> wrote:
+>
+> Jason Gunthorpe <jgg@nvidia.com> writes:
+>
+> > On Thu, May 29, 2025 at 01:34:53PM +0800, Xu Yilun wrote:
+> >> Export vfio dma-buf specific info by attaching vfio_dma_buf_data in
+> >> struct dma_buf::priv. Provide a helper vfio_dma_buf_get_data() for
+> >> importers to fetch these data. Exporters identify VFIO dma-buf by
+> >> successfully getting these data.
+> >>
+> >> VFIO dma-buf supports disabling host access to these exported MMIO
+> >> regions when the device is converted to private. Exporters like KVM
+> >> need to identify this type of dma-buf to decide if it is good to use.
+> >> KVM only allows host unaccessible MMIO regions been mapped in private
+> >> roots.
+> >>
+> >> Export struct kvm * handler attached to the vfio device. This
+> >> allows KVM to do another sanity check. MMIO should only be assigned to
+> >> a CoCo VM if its owner device is already assigned to the same VM.
+> >
+> > This doesn't seem right, it should be encapsulated into the standard
+> > DMABUF API in some way.
+> >
+>
+> I'd like to propose an alternative. I've been working on guest_memfd and
+> new to the world of IO, please help me along! :)
+>
+> It seems like using dmabufs are used a little awkwardly here. IIUC
+> dmabufs were originally meant to expose memory of one device to another
+> device, mostly meant to share memory. Dmabufs do expose MMIO too, for
+> device to device communications. Without virtualization, userspace MMIO
+> would be done by mmap()-ing a VFIO fd and having the userspace program
+> write to the userspace addresses.
+>
+> Before CoCo, device passthrough (MMIO) is mostly handled by mmap()-ing a
+> VFIO fd and setting up the userspace address in a KVM memslot for the
+> guest.
+>
+> With CoCo, is the problem we're solving that we want KVM to know what
+> pfns to set up in stage 2 page tables, but not via userspace addresses?
+>
+> guest_memfd already does that for regular host memory, tracks the
+> private/shared-ness of the memory, tracks which struct kvm the memory
+> belongs to.
+>
+> guest_memfd functions as KVM's bridge to host memory. KVM already can
+> ask guest_memfd for the pfn to map into stage 2 page tables, and already
+> asks guest_memfd for the shared/private state of the memory. guest_memfd
+> already also blocks the host from faulting guest private memory
+> (mmap()-ing is always allowed).
+>
+>
+> Instead of using dmabuf as the intermediary between the MMIO PFNs and
+> KVM, why not use guest_memfd?
+>
+> What if we make guest_memfd accept a VFIO fd, or a dmabuf fd?
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+This is interesting for pKVM too, provided it covers more than MMIO.
 
-Jason
+We need guest_memfd to be backable by a dmabuf for ordinary guest memory, not
+only for device MMIO. There is mobile hardware that doesn't tolerate scattered
+private memory (DMA engines that can't gather, IOMMU page-table size
+constraints), and a CMA-backed dmabuf heap is the practical way to get
+contiguous memory at runtime. HugeTLB doesn't help, it wants boot-time
+reservation. Those pages are struct-page backed, so it's a different problem
+from the non-struct-page MMIO case, and the shared parts still need to be
+GUP-able.
+
+More important for the API shape: conversions have to work on subsets of such a
+region, at page granularity. A pKVM guest doesn't know what backs its memory, so
+it will issue share/unshare hypercalls over arbitrary ranges of whatever it was
+given. If a dmabuf-backed guest_memfd can only be converted as a whole, we can't
+use it for memory, and the guest can't be taught to care.
+
+Quentin made both points on the in-place conversion series [1], and covered the
+wider framing at KVM Forum [2].
+
+Cheers,
+/fuad
+
+[1] https://lore.kernel.org/all/od4dx6snqsl2qiocgf3jxm4dndxhrlvsfr22eveuno6nskgfdj@mxsywvku2jk5/
+[2] https://www.youtube.com/watch?v=zaBxoyRepzA
+
+>
+> guest_memfd can then take the mmap() calls from userspace and .fault()
+> from mm, and then forward them to VFIO or dmabuf. This way, VFIO/dmabuf
+> can stick to their original functions, and the changes to VFIO/dmabuf
+> would probably revolve around disabling access.
+>
+> Disabling access would probably involve some of these:
+>
+> + When guest_memfd receives the fd, it could return error for existing
+>   mappings, or perhaps it could just force-unmap.
+> + 1 extra flag or field to indicate that guest_memfd is controlling this
+>   file, so that if userspace tries to take some actions with the
+>   original VFIO or dmabuf fd, the request should be blocked.
+> + Perhaps just close the original fd, like dup2(oldfd, newfd) closes
+>   newfd?
+>
+>
+> I'm about to restart work on guest_memfd HugeTLB and I'm thinking about
+> a similar approach for guest_memfd HugeTLB, where perhaps the interface
+> could be that userspace will give guest_memfd a HugeTLB fd at creation
+> time, and then the original HugeTLB fd would be rendered unusable in the
+> same way as above, perhaps like with the S_IMMUTABLE inode flag, but
+> also blocking reads, and not userspace-modifiable.
+>
+>
+> In the course of a CoCo guest's operation, will the guest need to
+> convert between private/shared MMIO? Will the guest need some pages
+> shared and others private? If these are required operations, guest_memfd
+> already provides the tracking and is going to have a conversion ioctl
+> very soon. Instead of further extending dmabuf to track more things, how
+> about letting guest_memfd track it?
+>
