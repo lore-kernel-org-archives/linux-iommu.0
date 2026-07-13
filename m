@@ -1,78 +1,77 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C98D543DA4B
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 16:53:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4EC2346A04
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 17:23:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783961610; cv=none; b=broQ2619jIr1y+ImZ/WoICfx1bgD10bRzJ59RdKZ0WS6YgJpQkcCS0DKO+IPwuhGSUTJ+nxzJ37HmAanHieUl83rUbbhcsj7nen2X1qiTfKzIFZZdOWFMy1ZFkXsG6QW2pBkt1PY61/fuzP6eE02Dd/vBHbyxU4KDPpBnL/XI3A=
+	t=1783963420; cv=none; b=DSu72XnKtIUiVRJMrBVNgOHBeUyP+iNEGKKSDUEnj0W8aBOpsS0KMnkCFGzumXj4V01uyjspIrkzCk0Wea0fhV6xSIlPnVJIKPdhK8w9yHvrCzGr3/wHvkK45OEIUhDrMIMhzt+dLszGJEfsNXXO+3NlSqHoN6xuGzNVJ2cOQCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783961610; c=relaxed/simple;
-	bh=W8h/pOX2A68/AN9GGx/hlGAI45Btx/6RAqn1jjPBzJ0=;
+	s=arc-20240116; t=1783963420; c=relaxed/simple;
+	bh=wxEdqGJIuwK7FxHMypKlsv3XOm1Q2G8Mhu9SSr2IMQs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WonYFSgQlesnQZjG5q/MXW2Q9WUuLRBxU22RmqWdC4WttVrDCWqyk7xVMX8Sb9h+/4ZVYn0gZ8OlSBxx+WShHgk7hbMSTvkNMwvIHq6gxbTWgrxm4oQ7QpAzzbB6g+jfXsc/qqUe3RycW5hi2hnE7/tVd8cXWlpcUL98DRnK3FM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=maAQifuG; arc=none smtp.client-ip=209.85.160.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=kFf0dVQCtXf7VrUs2x/QmKhrgo6UKDfICm01aqqbC4DR0qMNA0aFAhKBChE9nwDdMgA1YuhkporgtcCtscAAZh3EOpvOdowiskiFUECPjqZ7PbzpOJ58H/WWf+6pfNowpVd2D51SN+w2bkh0lGji2UPGbBjF6DgwimUid0k/ajc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aLzo8ZaL; arc=none smtp.client-ip=209.85.160.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="maAQifuG"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-51c2a76536bso32220121cf.1
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 09:53:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aLzo8ZaL"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-51c0a81d286so762871cf.1
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:23:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783961599; x=1784566399; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1783963418; x=1784568218; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=1wy5cjU8bpodUKB+73h1Dg8HOClHzWqmvSatqxWWARE=;
-        b=maAQifuGUCGzpZ8RKtKwhvdga5V+cyXFDoPLQ69KztwQy1Ncc/Y9YzkdSvKNrPmHCo
-         581COMPcNcnXyTKyBJhJU/h7/o9JiNJZ5IFZQOd2JBBZ5XH7ShsWX86OcHac+8mP9fDC
-         QMLd6lucOqYb2EXNAvDNKK6JaXwaIOk0ACyPFejNMX7VNyyyihP8J5+k6ReGwOBlFFj3
-         xaDNEI98zMUGlvg3xyzM4Qmd8zmH00gUgch7V1srMgXM5bHMNMKWTdj/4NNEpBwjZg45
-         JzBVvvVQTBbpZCSbL0b+OszauDCyH/12ChmUON1tmab3ErfmaqyjGcistM0HsiOlbiXi
-         OO8A==
+        bh=uuXth6kM41aD+brEyw7ekEydi1QKQ14BXBpZiPQW7/0=;
+        b=aLzo8ZaLnhKlwOdWyDIxolPyRmbbg+NuvFed39GuD0RrCeqfpww+dcJzCu98uQZvh3
+         ynh+KnqrV9bbE9uNaSlPleUmG0ED8E+ZJZsutMeu1r8nfFf/9/uf8/ewsUquRllSZxu3
+         KtRARMhoD8EWN74IENcyoMy89tBBlmgoCNzrNVtfDS19hn8f9GC9cxdw9dVYFLChVnUI
+         g1PwTje73b4ORJW4cdpLq9sOV8heiq2OcZoABpqmNLNlOlGHBvKA1Q93MvOMxYhxce1s
+         g5sysVvE3cZbgWzUJK+HBPB9xEcya4S5AFEVPPDGSuS14Oq0IH0uQz7pU/2UoYQeGOSD
+         46Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783961599; x=1784566399;
+        d=1e100.net; s=20251104; t=1783963418; x=1784568218;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=1wy5cjU8bpodUKB+73h1Dg8HOClHzWqmvSatqxWWARE=;
-        b=DtUwqh6YmHVk4rRdecN3AONcxcwn5Xj6VjZnv337kADGZqH1SvFCvFprfE/koohTGX
-         2V25CfUOQ6aIpT5qfl1MdBlyMhz1vx0yqyOWNcHs/dS6sHKmBlzJvqhs0yokDd7tkneH
-         BwgnsRWWZLj8VHlT1tRM/gf1qa4tNHLiyVSzT+i7cLfcbpguiX/DFBUen9l+0/F7F4NY
-         XidCwpnvlR7h0cxhdOvv8gzkJzH3GI5w/iZXgm6+CCemWF2nF13wnpmwMyeAN9qDpgJg
-         MOl3V6KMJUJISar9Wg63F+ZqJ1+8ZIzTpk1B9Xf2Z5M5BBN7aQw0x5wlc4Z6zhq8XcPT
-         6x+g==
-X-Forwarded-Encrypted: i=1; AHgh+RpA4x3Pq1P1uLnOgy92VA+PglORRmvRRM81TKUoN6yAVCmPbq9butANe8/hVhOmOkJCGnqzfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzVvdciuCHWKLq5TAhv+gZ63S3Cnowawg647BK6Ua1eJoSWPca9
-	mZsLvqKTrahCDy316PDge3gjaO/v2GsWFOz55GlS1g40Klljrc5G5T57kWHs193pTQQ=
-X-Gm-Gg: AfdE7cnwnsQC2dQ3xM7OnwfCjkAQ0TcMXGm8cR8oj7G/1PZ6LRhv1cftW5Tp+EVfu+i
-	cUvy9qO6edNoD/CSgh95Wjqr4FXqwELS/zwCiLsO3bSlCtYeQOLqEAMIfQyCgeszfxLAj5iKf1c
-	2rFlRsw6SIu8RL3KEHmVpIJDPVxshCNu4U226QFnLLwQH2KqRzl8D19+aERZl+XM5fZK3rVZ5i9
-	I/HstxiRnu6pWj/gDRygvsVosvGB9coFAdEj7v8kz3SnyFeh33LukRkge1gTwl9C+ycFegsy7J5
-	vVpYM+qDNgqLMch9PjHof7wz82LwRmVC5DTeX3Zg4aH9wKv+Sn3odSlRPmUi+qaV8S/O7Yd3T6H
-	n+GI1tufXpDW0Lzl4B4oSt2Wsc+i4tsFVAo957iQ9Iv2ElOyEYZDYaIGU1CmL
-X-Received: by 2002:ac8:6f12:0:b0:51a:8c9a:8fb7 with SMTP id d75a77b69052e-51cbf30ebd1mr99770401cf.72.1783961598776;
-        Mon, 13 Jul 2026 09:53:18 -0700 (PDT)
+        bh=uuXth6kM41aD+brEyw7ekEydi1QKQ14BXBpZiPQW7/0=;
+        b=qbC5kqRnYHaMWNqu3IFbMe+NkI+6j1sc9QrbbxIX12JDAnPcN0H0WVDQ/3nHTzSb16
+         FwliGK8YBtr+uJ6+3VpifUPCSC1eJkyzlbw2g7f0D+6zcR7Ltb26S0XRPcb9ucNDZt5v
+         nvTgkOTJf3CuuHNDdrJE/tQ6ozTxdHbds7oZ7DJD66yZQgXuCNzfc/GqxGjnHvZvyx0C
+         M+erImIpSC6cccfGQRcF/cETh6h//nI91wZemSUGcf4N1/MURY+xTsPVTIdPWcGr6qpQ
+         pOsVfTPsWVU7roXrWRU5D/WwUjypRLtyhmPHA2QnK1IaJ9+WJaHydCcqcq5Zn3gOO0FC
+         a4Eg==
+X-Forwarded-Encrypted: i=1; AHgh+RqfQexMHADXMSAnx7dLRqpOj6KFxUCsArWpZNlIWvLa1PHil2DmTr/Noqs9UP7LXbQHXNb0dA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxCOuqChOANcZcV+JjARx5QzM3n0wjEEJoPml8HFg8IsQOHZVKj
+	YpWxvVJ7hS7NU4TdJs7GdxBLGpafuWm8wS8Z57SeWrDZGBTVFDGwu8DgF8qG6eiYT4o=
+X-Gm-Gg: AfdE7ckBif6ZZY09pSfZ5Agkob+58LZ9CNVXJl5TxWvuCqMzgZi/Lm9eZXx04MrRBqq
+	gu3VUhnLh7k408QUbfXdNalmFhpb8ln5gAW7IHaWLOjMUvukl0ykqtGxxY3xJ6WCpB78pN6JQIT
+	xh5LfbcqABqWRSTC7ZZy3sHhAUinlgRt04kKu1MX7Hd+0HzVWnONcpNOmYVa+U8tgRABlxfQar/
+	1mz90cDOft+2n8341XEIEd/Tvo3JCot3pdXyOPlw8UNcmtSsuxDVMi7IeYvo72NRfp33qEKXhZe
+	ZfAvw2cwUYdQuXnz4Pl33INLl0yPykEiUeUgefuEyZGc2U8YFXyyW/mwI9Grq8i9HhZxcQ5V/l+
+	l7lk1W6unNWvpdN75k0LKBW7+RdxJ5zOqLUPazPw01QEN7IeeX4Z2i2XxrO1S
+X-Received: by 2002:ac8:5850:0:b0:51c:7aa7:e0ed with SMTP id d75a77b69052e-51cbfae7cc2mr97664661cf.42.1783963417634;
+        Mon, 13 Jul 2026 10:23:37 -0700 (PDT)
 Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51caab6e9f4sm88381971cf.2.2026.07.13.09.53.18
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51caab6e9f4sm89206921cf.2.2026.07.13.10.23.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 09:53:18 -0700 (PDT)
+        Mon, 13 Jul 2026 10:23:37 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wjJu9-0000000Dd2s-2yX2;
-	Mon, 13 Jul 2026 13:53:17 -0300
-Date: Mon, 13 Jul 2026 13:53:17 -0300
+	id 1wjKNU-0000000Dlr8-09oi;
+	Mon, 13 Jul 2026 14:23:36 -0300
+Date: Mon, 13 Jul 2026 14:23:36 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Peiyang He <peiyang_he@smail.nju.edu.cn>
 Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
-	iommu@lists.linux.dev, robin.murphy@arm.com,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	nicolinc@nvidia.com
-Subject: Re: [PATCH] iommufd: Fix wrong hwpt passed to
- iommufd_auto_response_faults on replace
-Message-ID: <20260713165317.GE3133966@ziepe.ca>
-References: <9D652384339C69D5+20260710122952.885325-1-peiyang_he@smail.nju.edu.cn>
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [BUG] iommufd/selftest: fault injection in iommufd_get_object
+ can trigger a teardown UAF
+Message-ID: <20260713172336.GF3133966@ziepe.ca>
+References: <870BB9ADBBEDDD1A+37c5bfab-ad32-4fc5-a302-57c81a8432b5@smail.nju.edu.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,42 +80,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9D652384339C69D5+20260710122952.885325-1-peiyang_he@smail.nju.edu.cn>
+In-Reply-To: <870BB9ADBBEDDD1A+37c5bfab-ad32-4fc5-a302-57c81a8432b5@smail.nju.edu.cn>
 
-On Fri, Jul 10, 2026 at 08:29:52PM +0800, Peiyang He wrote:
-> iommufd_hwpt_replace_device() calls:
+On Fri, Jul 10, 2026 at 01:46:55PM +0800, Peiyang He wrote:
+> Hello Linux kernel developers and maintainers,
 > 
-> 	iommufd_auto_response_faults(hwpt, old_handle);
+> We found a KMSAN use-after-free in iommu_device_release_dma_owner
+> warning when fuzzing IOMMUFD with selftest with Syzkaller.
 > 
-> passing the *new* hwpt together with the handle of
-> the device's *old* domain. This should be a parameter mismatch:
+> After our digging, we believe this UAF has limited impact, but it
+> exposes a possible improvement on how fault injection is handled in
+> iommufd_device_pre_destroy().
 > 
-> 1. Semantically, iommufd_auto_response_faults(x, handle) scans
->    x->fault's deliver list and response xarray for groups matching
->    "handle". A group is queued under the hwpt that was attached at
->    fault-delivery time. old_handle is fetched *before* the domain switch,
->    so its group lives on old->fault, not on the new hwpt->fault.
-> 
-> 2. Historically, the first argument was "old". The routine was
->    introduced by commit b7d8833677ba ("iommufd: Fault-capable hwpt
->    attach/detach/replace") as __fault_domain_replace_dev() in
->    fault.c, correctly calling iommufd_auto_response_faults(old, curr).
->    Commit fb21b1568ada ("iommufd: Make attach_handle generic than
->    fault specific") moved this into iommufd_hwpt_replace_device() in
->    device.c and swapped it to "hwpt". This should be a refactor regression,
->    not an intentional change.
-> 
-> Fix this by passing "old" instead.
-> 
-> Reported-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-> Fixes: fb21b1568ada ("iommufd: Make attach_handle generic than fault specific")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-> ---
->  drivers/iommu/iommufd/device.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The root cause for this UAF is that iommufd_device_pre_destroy()
+> uses the fault-injectable iommufd_get_object(), causing it to
+> mistakenly assume that the vdev destruction has been taken over by
+> another thread.  More detailed analysis will be given below.
 
-Applied
+Yeah, I made a different fix for this than you suggested. See the
+patch I'll post..
 
 Thanks,
 Jason
