@@ -1,172 +1,114 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96FA73B9D91
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 11:49:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90AA13AB466
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 12:00:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783943356; cv=none; b=MzGIKZVJsmUe2VIF/NSaf2MY+rcVyhGNFGegN7+3HE3s3CRQ1LMnyOdZfFZT0L2e5QrDNtalLy1oVr1sKfiGLOjypIyGt24xgvc3Hq5VJGE+EpUY9aEOFiNOsrnMaaJafp5AFtHavx8z2EhsuGGZw3NgCh2BMkaPji79GJhX0AM=
+	t=1783944058; cv=none; b=Rp3g/7ejSNC3FGGZ1bNXJldhhdAQ/3Zcs4Jdn+gxYD8DR7N7FQcUxvdDlsbMmmp3ntMvmOzlD2VT2cQZKv0B138Z3q3UUYbxd5KNxY69IcbYhwU0kBfK7cM14WxmSeHhsXvZfVX6vz6MbfAvWkfsS58xbyAHtLUc6SJ5Af8GA3c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783943356; c=relaxed/simple;
-	bh=eWnSXz9Ty3uIb95SUsOqz5bA+W6Aati8Zka7C0DJr9A=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=BSfuUZQakcQCdINzb60H2kJtcv5N07R3FrUh+oheYnaKCGg/k0Mt5bIuIXGsWJ0yzCpt9lX9v/dlRug34xOL8wyDI4KzisrEgar8t2Ae6fOz/TdkakMbsrqbjEt16gNn8+g2zYkdAgDy2XqIzixMYbaempOVQAMPhDfaUo2JryA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cv8qm3dj; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1783944058; c=relaxed/simple;
+	bh=cw4aY6+xvzrYm0iCO2mGlo5F7FyS7T8m2XSxQSLnD5Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=R44eIi+qOfcXO0b1ZWJ7tHIZXAZU8jAU/veA18wh4JhdlRn44FO2qUZbpEMwFStdzUcqY1x7wgF5vJ6nvPKs0337N/bo2zsNvtK+1+D0k1FHBEkD3R1cgek8WnG3Onp9FukXNBMwDeby6KkHJBGdeLaJVOctGLf5kjGAtAviOmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=QnUNYp59; arc=none smtp.client-ip=209.85.222.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cv8qm3dj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783943345; x=1815479345;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=eWnSXz9Ty3uIb95SUsOqz5bA+W6Aati8Zka7C0DJr9A=;
-  b=Cv8qm3djwEI1P4Y5ZZigb1T97RcuGEJU9oRc62EkFB4F7lAUay/P8N2N
-   ZX4kTM9NkGVuCQgpK0+KcS50t1UlIc8iqdxYNBuYNn7cmPal/CNWErt/A
-   oy6jpLtWT8TKcmi0UdRhQumBCC4+oabCeUGjhi3cUoTyZEM4cRg34OTgY
-   ZS3no1uwI+Y1BMykz3Yp8h18GyGtOKhbuMPM9x/0MmayYd5/6Uc1Ws1+z
-   aKrzXZO/04lCeeRWVtEnQOzCo2PdgctGLNCHaVYLYgjAG+5Po+c278WZL
-   Ip8HirJJS2XAskMcsd1JQUZ8vgbr4hd2LkQiF5ePkkrpgonNwRxyFml1Z
-   Q==;
-X-CSE-ConnectionGUID: Oz+fAcddQBaGzO5oUh14XA==
-X-CSE-MsgGUID: qODxlZpcSDuBni72aOuQ9w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="95697226"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="95697226"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 04:49:01 -0700
-X-CSE-ConnectionGUID: N6iz91DlRpqeoIxV+DT4Zg==
-X-CSE-MsgGUID: ySaEXyB2T7mvKjfyUTuDwA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="259834074"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 04:48:56 -0700
-Message-ID: <a24597bc-28ff-4b23-818c-f9126be3bbf9@linux.intel.com>
-Date: Mon, 13 Jul 2026 19:48:53 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QnUNYp59"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-92e855da580so242450885a.1
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 05:00:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1783944055; x=1784548855; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=5HCZAcclosWUynw+gIE6OLmOTVWR8tes+S5wt04CaM8=;
+        b=QnUNYp59iEqsjLqp9g34zLI/dm2mokl92MXzQOudKq60YSqM/KifVJzsUk/OL/gTIS
+         8MA9f4YC5qHGuxL+XRtJ1qA8rsELZmSlsZ95bgrIJqybhHtGBAe87ktRgfu4aO9yAopt
+         YSSozUi+mfoMeLnmiCJmrjH2cxMrKVC8FacHuamQlkE6Rb4txWJyVA8khDPGHm2xFmMO
+         H0oPj3UazXfkcoNd3ZndkDM2Lw9cdjQAe8DtaVByf2JLqIh1WdgKEkzEz1/edw07hwjM
+         TkqfDp6L4odq7a8B8oeAA0hVwuIqs6v0Pl3lbmRtElpdDgw8gvuMr93a/kTpHuTvtCjq
+         NOsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783944055; x=1784548855;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=5HCZAcclosWUynw+gIE6OLmOTVWR8tes+S5wt04CaM8=;
+        b=kPXLe8fBiae//iBLEu+WWkdVbRhHHx+/K5ceKK1E8PCa+UExShaV7P8fqE3TQos1o2
+         0wxJRrHzl/98lgqXTzm/j43sNfJ68l+VoSmyKVx4hdL5qX8WW3soeDjLsCfkzuOIjOYJ
+         8UbWGgCWG7Ha7XRFtGPcdGkiDAoCWoP+rdEUw3PBEutX1wIRt+9otBxP4xv07AIL0VgV
+         E/vkGomDhxZcgnANnzCIRXRO2ZVpFVzdysT8eTSE904Q+11GN13BA3Yc0W1X2FU7Z1YS
+         BfrIl5WCz9voIorqS6Jl63jL1Z1u2zjTmOH54fESzHAL3zOzLlM0RBTASsL2crJTwzlZ
+         RuNw==
+X-Forwarded-Encrypted: i=1; AHgh+RpJpV8ELarGyjliIxb3VUzPGQEz2pp5BzwYIF57+TfELG6d3LJghVCDZzmTacYC8FOaYMyLug==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzXsAKJ5oAFFb5GqsEvsZoMjlhz+m3T8pDGaiKM6iSgdY4MwXXp
+	ktXU4EPMujDscpFKaIw9bnCfVeWzdtVWjnuCVogHEC2YR36chdD5pAls81Fih+Ga6E4=
+X-Gm-Gg: AfdE7ckgOVzVMvk2OLlbJdqIscsNvHUcr2rqC1O3wMAOgSvP5P0yE2uMLszmuNry36l
+	wsAEViJNsuzRazowVWi7GhVOD8sR5GfhIYglNGSigd/sHi6s1wvhMaRbCPj8cPkpwh1fdUbmItd
+	jn1Ahmhnl0/gDRECKdiYQ1i2mcTW9yX/9IXA0ItsaqQygBOgXhgSmN/2sw4I1ty+hMJStq+OXIn
+	wLwWheGhd6JRo9hJfxwCos4dGyiFfdudoSBAkrpB0Lgzsf8i140iUBFJtrHlcjB9MB0zgSefxqC
+	gI6YrG0ya2fKyczCUk8XCfmlY53sIWXquhW57hkYCXAduSps88Vzzy/Ue1xxs3eRLt2nwjzcTQq
+	1UeuU3m2TOe+vaCAV9ZOn13sX8HVzjrmvLBLuHXShUqZPaITbA2VIQRnsQdjXVseO01+iPGA=
+X-Received: by 2002:a05:620a:1712:b0:92e:5612:ba39 with SMTP id af79cd13be357-92ef2cb1651mr868484785a.44.1783944055161;
+        Mon, 13 Jul 2026 05:00:55 -0700 (PDT)
+Received: from ziepe.ca ([159.2.72.92])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92ee5cf9b7dsm1066306685a.23.2026.07.13.05.00.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2026 05:00:54 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wjFLB-0000000Cu4e-38Ps;
+	Mon, 13 Jul 2026 09:00:53 -0300
+Date: Mon, 13 Jul 2026 09:00:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Nick Hollinghurst <nick.hollinghurst@raspberrypi.com>
+Cc: Daniel Drake <dan@reactivated.net>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 4/6] iommu/generic_pt: Add Broadcom BCM2712 page table
+ format
+Message-ID: <20260713120053.GE1835788@ziepe.ca>
+References: <20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net>
+ <20260712-bcm2712-iommu-submit-v1-4-80e10cdde2ea@reactivated.net>
+ <CAPhyPA5CqCzsDZg1_Sfr=EP5G6uLnnvDmdd_REZPX_VpwS=VJA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Rafael J . Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Pranjal Shrivastava <praan@google.com>,
- Mostafa Saleh <smostafa@google.com>, Kevin Tian <kevin.tian@intel.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, vsethi@nvidia.com,
- Shuai Xue <xueshuai@linux.alibaba.com>
-Subject: Re: [PATCH v5 05/18] iommu: Pass in reset result to
- pci_dev_reset_iommu_done()
-To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <cover.1783044582.git.nicolinc@nvidia.com>
- <9306670b5bd647e477e36156b124557917baead3.1783044582.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <9306670b5bd647e477e36156b124557917baead3.1783044582.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhyPA5CqCzsDZg1_Sfr=EP5G6uLnnvDmdd_REZPX_VpwS=VJA@mail.gmail.com>
 
-On 7/3/2026 12:06 PM, Nicolin Chen wrote:
-> IOMMU drivers handle ATC cache maintenance. They may encounter ATC-related
-> errors (e.g., ATC invalidation timeout), indicating that the ATC cache may
-> have stale entries that can corrupt the memory. In this case, IOMMU driver
-> has no choice but to block the device's ATS function and wait for a device
-> recovery.
+On Mon, Jul 13, 2026 at 11:02:15AM +0100, Nick Hollinghurst wrote:
+> Hi Daniel,
 > 
-> The pci_dev_reset_iommu_done() called at the end of a reset function could
-> serve as a reliable signal to the IOMMU subsystem that the physical device
-> cache is completely clean. However, the function is called unconditionally
-> even if the reset operation had actually failed, which would re-attach the
-> faulty device back to a normal translation domain. And this will leave the
-> system highly exposed, creating vulnerabilities for data corruption:
->      IOMMU blocks RID/ATS
->      pci_reset_function():
->          pci_dev_reset_iommu_prepare(); // Block RID/ATS
->          __reset(); // Failed (ATC is still stale)
->          pci_dev_reset_iommu_done(); // Unblock RID/ATS (ah-ha)
+> On Sun, 12 Jul 2026 at 22:19, Daniel Drake <dan@reactivated.net> wrote:
+> >
+> > The BCM2712 IOMMU implements a 2-level page table format. It is relatively
+> > simple, with one unusual aspect: leaf entries can only be installed at
+> > Level 0.
 > 
-> Instead, pass in @reset_result to pci_dev_reset_iommu_done() from callers:
->      IOMMU blocks RID/ATS
->      pci_reset_function():
->          pci_dev_reset_iommu_prepare(); // Block RID/ATS
->          rc = __reset();
->          pci_dev_reset_iommu_done(rc); // Unblock or quarantine
+> I should admit that a single-level huge page mapping is possible, but
+> I was too lazy to implement it (and haven't much tested it).
 > 
-> On a successful reset, done() restores the device to its RID/PASID domains
-> and decrements group->recovery_cnt. On failure, the device remains blocked,
-> and concurrent domain attachment will be rejected until a successful reset.
-> 
-> Note: -ENOTTY is overloaded with different meanings by PCI reset functions.
-> Some of them indicate "reset was not attempted", while others indicate "try
-> the next reset method and the current method failed". IOMMU that must react
-> these two outcomes separately has no choice but to keep the device blocked
-> on -ENOTTY as well. Leave an inline FIXME and warning.
-> 
-> This introduces a new situation where a blocked device is being unplugged.
-> Decrement the group->recovery_cnt accordingly.
-> 
-> Suggested-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> ---
->   include/linux/iommu.h  |  5 ++--
->   drivers/iommu/iommu.c  | 62 ++++++++++++++++++++++++++++++++++++++++--
->   drivers/pci/pci-acpi.c |  2 +-
->   drivers/pci/pci.c      | 10 +++----
->   drivers/pci/quirks.c   |  2 +-
->   5 files changed, 69 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index d20aa6f6863ab..59ea7e601a2d7 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -1224,7 +1224,7 @@ void iommu_free_global_pasid(ioasid_t pasid);
->   
->   /* PCI device reset functions */
->   int pci_dev_reset_iommu_prepare(struct pci_dev *pdev);
-> -void pci_dev_reset_iommu_done(struct pci_dev *pdev);
-> +void pci_dev_reset_iommu_done(struct pci_dev *pdev, int reset_result);
->   #else /* CONFIG_IOMMU_API */
->   
->   struct iommu_ops {};
-> @@ -1554,7 +1554,8 @@ static inline int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
->   	return 0;
->   }
->   
-> -static inline void pci_dev_reset_iommu_done(struct pci_dev *pdev)
-> +static inline void pci_dev_reset_iommu_done(struct pci_dev *pdev,
-> +					    int reset_result)
->   {
->   }
->   #endif /* CONFIG_IOMMU_API */
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 342e8a5ad628c..6e2e607de8d8f 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -76,6 +76,7 @@ struct iommu_group {
->   enum gdev_blocked {
->   	BLOCKED_NO = 0, /* Not blocked */
->   	BLOCKED_RESETTING, /* PCI reset in flight */
-> +	BLOCKED_RESET_FAILED, /* PCI reset failed */
->   };
->   
->   struct group_device {
-> @@ -762,6 +763,9 @@ static void __iommu_group_remove_device(struct device *dev)
->   		if (device->dev != dev)
->   			continue;
->   
-> +		/* Must drop the recovery_cnt when removing a blocked device */
-> +		if (device->blocked && !WARN_ON(group->recovery_cnt == 0))
-> +			group->recovery_cnt--;
+> It can be done by setting bits 31, 30 and 28 of the top-level entry
+> (all other combinations of bits 31, 30 will point to a  next-level
+> table). The page number is in 4K units but must be 4MB aligned.
 
-I feel that the change above is unrelated to the purpose of this patch.
-It looks like an independent fix that belongs to a separate patch.
+Let's do that instead of the weird full level contiguation page thing
+please
 
-Otherwise, this looks good to me.
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Jason
