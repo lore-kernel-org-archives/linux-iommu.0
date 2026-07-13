@@ -1,38 +1,38 @@
-Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A103BD629
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 09:01:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.169.211.239
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46CBD3DCD86
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 09:02:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783933283; cv=none; b=dKct+KNjhA9PKQqvK/fiPC3TRx23x3uZdpTLlzRjF5ZwSnrCW0XJXAlKLkby3LumtdrbckwX5UBfv2mzVKqX+T1GdJQ0bwCpYYlHgCCQtImqbpldx46QuArHEQr0mmYieEzyHIj+7//VH5KNF1rjsHRZhjUn19c8cUB6TO9C/Y8=
+	t=1783933329; cv=none; b=iq1fvqfn8AY+QVQZlM+l0Lp4m6JNmah42sFKmkmnsEExMpLFSXEKgxZ/vp+NlGojSkltp9C8Sw4tdxyV8n4w+5ZuhiyTMf+yF5vSDJNtvNF2R3apWbxQXXXwbnOXwzg3whuKkZzKZSyXlES+Nj6QRnBaKl7YFyOtWvF0WpstDPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783933283; c=relaxed/simple;
-	bh=brG4punToi/QVZMcOiAxFIY3tK8FArsXXfXKOAc1Lh0=;
+	s=arc-20240116; t=1783933329; c=relaxed/simple;
+	bh=Mm3DudiQ0NLdWY95m4yw8nnpv5gnqKjs4IjZfwNLUi0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sqxs7yeqALU84WLpN2qkfrzmHwlB3OIrZ8rARc6uXOgnSi8S9tKthuX1GsDGmS+O5VvM3utKbipSJo/+hVTKXB8MbJpHCjkkMUeqBgohqGmFAhVikEuXfl9J47EMCfe8PfXbrJG3m2XTdQVA/jH020BB0/b9JdHuHzymenRy4bw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=FghWGFBu; arc=none smtp.client-ip=18.169.211.239
+	 In-Reply-To:Content-Type; b=iKeNSpDo7WOEwSnxhNwMi2TbFxYBvIXrZXM40RXMuccTl4eTRlBbChQa5z4iNxbrgIVUzlS2wnT0R+MgUfWS/zk8FFWhOxqHAIg9NhHyS890MTJnB+S7MD4RG4WhzPRS6NTN4lIGajblOYdyzZ8upYgQW3EDM8Ps+k/EEDg1dW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=vbaib5bx; arc=none smtp.client-ip=54.204.34.129
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="FghWGFBu"
+	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="vbaib5bx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1783933182;
-	bh=BFMvyiC2DCtmPYg5QWCM+o3YaMaFN7Rp9m1r80pW+l0=;
+	s=iohv2404; t=1783933306;
+	bh=+AMDp3qfSOjQpwhSd+uo86N/mIuHR7Te84DEEwdSgUY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=FghWGFBu/KT/mqxO9CBg92ra28jfl/l4d82Hw8cP/kgJbC76OfebIy6IQuBJSbZsN
-	 Inwv1/jKPb/m6HfigoH3l+t+VlHE5MzetcetCGIQkPClXZvdmLAUBnwwduYnKldh5A
-	 IHV6dAonM984mEErpGXAxnXXXII7tDKKlWzQhnak=
-X-QQ-mid: zesmtpgz9t1783933181t06373724
-X-QQ-Originating-IP: PL47oaHtcBmq07klp3P7KVA6E5BJWjci0tMvgqd6WM8=
+	b=vbaib5bxKm8Qg+4urv55jllWf0SQEV5rQn4VdyK5SsYwCV4zniQ3gYL41docxxvtq
+	 q+K3bwS9y0CiM51DKLYjLyEunASpVzJuX52WlDhljWxQcCuYAF/stEJK3dfkzkrLt8
+	 ZCrGNkPB9fP7s9jwG5TAofuXOap7+veiXBkZI/2c=
+X-QQ-mid: esmtpgz10t1783933300t20ff65bd
+X-QQ-Originating-IP: KraSYcYDCvYSqFrtbcBv/SuRzAM8C5tf23JFpUaR3KY=
 Received: from [127.0.0.1] ( [36.152.24.145])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 13 Jul 2026 16:59:39 +0800 (CST)
+	id ; Mon, 13 Jul 2026 17:01:37 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 5298362049264850985
-Message-ID: <45448501516EA311+ca2ef796-7533-4bab-92ad-ee2dbc4cb003@smail.nju.edu.cn>
-Date: Mon, 13 Jul 2026 16:59:38 +0800
+X-BIZMAIL-ID: 13213782032879603792
+Message-ID: <EA5BF28D772F9B38+8825ec4a-f59f-4537-a99c-ac9e8f7eaf1c@smail.nju.edu.cn>
+Date: Mon, 13 Jul 2026 17:01:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,73 +40,73 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommufd: Reject DMABUF pages from the access pin path
-To: "Tian, Kevin" <kevin.tian@intel.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Subject: Re: [BUG] iommu: KASAN slab-use-after-free in
+ iommufd_auto_response_faults
+To: "Tian, Kevin" <kevin.tian@intel.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <E8540D7D05768C91+8b2ef227-3368-494e-909d-7b28e1489dfb@smail.nju.edu.cn>
- <CD68F549BF3761B7+20260709050800.520607-1-peiyang_he@smail.nju.edu.cn>
- <CO1PR11MB48356388B36743AE8E083A3B8CFA2@CO1PR11MB4835.namprd11.prod.outlook.com>
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+ "vasant.hegde@amd.com" <vasant.hegde@amd.com>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, "jpb@kernel.org" <jpb@kernel.org>
+References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+ <CO1PR11MB4835631ED64FF285D915CEBB8CFA2@CO1PR11MB4835.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-In-Reply-To: <CO1PR11MB48356388B36743AE8E083A3B8CFA2@CO1PR11MB4835.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB4835631ED64FF285D915CEBB8CFA2@CO1PR11MB4835.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: Nl7eTg5yGHnwq5BHGlfQ52lnSdLbiyRf5Xc9U1uTQkcvjhe7CKYLk3o+
-	YX+miOIT45Zt2Z/d8laqBVuF+BK3usFhzSUxnReRkZFwEP3GMKoW1Ucrr9UgEUz4oh7SEV1
-	833MdLdT09LzIq/uCyStJt7T91RgK8fUzSIDVhYz1gX6+xkuuL3kQSLelxmi1W/ipLvx5bM
-	ABkCZy76oglFjoKRUDpPEyUYJxX0OVP6u8zOpKi92jB/wGw8zGNG00nRrxo3XsCF5fu2VDk
-	z9TUQR20lsLOM8SvTI2Vjb7RZwMKEpQqVMaSQY+gr1GNac6gAiAkaBSfpTzj6TyxMADTuOi
-	AFXZMyHkLxwKjWmaRLK4KqAp7aTFNpO6LeP0prwaChmGM3FZQVuGY2IUamBPGJIoi36LhU2
-	E+ayVo/tfZ1Sm1puKSPz4kQ+IMoaVWcu2zZxjJCGK/ku016QLYoH7HYnL7rgWiy4BPdb9Zl
-	/ir6huh0QCo5Iok0dVsij50svHlrb6hkbnmGPuybmLNghMYq9f04BH0z7jghHEY/2epAndv
-	wG76sZQ1Sm2o1OBcQRgM+RMD4/2TPLUe7Wyqu75VVG8QgDeR61uuK2xa+6DOHDxXslfidE+
-	2PFZjB7VXZwPVlxZIr/92IxsD0Z1vew2lZCK6tIdKDAMFyW6gXwEiolIq/rcn2PyW8fyGyX
-	ep6fLuBcYZqF66wPDQ6NqcWDnlkF5XUACu8wqXsYgbXpmmn1S0/qnDmZKMqjnWShFbV0XGz
-	B820XA83QVq8/Xi8yHpw67rpe0RwDVSBgMIYsiOdpv+f9azeoo1grd1nLhLj+Hp/yHTPhQ2
-	7iTw2/7a6wq+8SL53PR07bcnkmO8TffyghfzcKjX7M33lgZBLTTSYBF6M2ZXuY2qXOuFVXC
-	2GVWoVHruQS8OCibOU/tqEUPzxAUFAqb8Yu/oFDqDlJ6k6tt1D1iEw8IOyPMN2PzEcaxyMT
-	woxs+yxwTm/mWY2EFbMpNxg9oN3CdnxGyLibmgaaI0PkC+OBY4LvjYgmySzkbvAQ6dM3cCy
-	WzoYHoUk1a89Mg/M8CdB3fAqBWzvDHzoA6225jbhKTo5q/2SBQfl5mKPxADL0wqphdVBsQr
-	XPNCJLvqEd8ocf9dVu/YFQ=
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
+Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
+X-QQ-XMAILINFO: N4i6KJsY5wDpfB0IB8sciMFnvEY0M/RKBi2eKTxT0trk/2cGV4ze3c+s
+	9XHiVxIKn1/l4nimUx3PTWEpYhbJFhDIGp++FS6W2OvbVTrrjGGBQU6GHRDHLLX9MCMEBPa
+	KFXFnjPQE+gWV66nHbH2vGDzdRjHjQOE188XEbLeiVBA9ry+tVCapaFb/vJvEV2shKEOhBw
+	giRFyhxtVZRk42JRt9BxEffWLedKYlBj9g20echiNHtn5y/CTE72argGQP8KuvfNC+fs2PE
+	PUH09e7CZlbJz171lzBcduOcbmqE//cjXcGlgOh1IxmilGC27u9g8Zf5jGTr7M3r2tV+96w
+	ZINPU6+UddcBOamxlBnc6rwN8PDAaoKZ0Uq7qDrR8sS/fDd3Cckj6RKdzqBCLmfSQM8EemV
+	t4qN1nyn1fjnMEnygWpCd1B/7sRf5U9dCMIdkaQdB57SxITmfoPdLNtnqWn+GmA8DaRS1ov
+	a18YE350GWH0kodvoRnGtHfOVrTSqPkH+fEjsijzIPXQFV3y+Lpwdp4glBqB/PjD/YetSC1
+	F9OrNehQ4nMPiy7fTupn89nx3J7PbPgXGY9iWyZ0H6vqmRadIj+5JWdWcFGcV4A3NmZS/3A
+	wcfbI2VmlTFahH6xUNL9w3l/y/+uq+LbOksdUZoO3hQTi8wypQFFsJBSwsM8hmCR6Bi5QNo
+	9fXgT1sYB3uvdWMqvGVFYMif8JhEp+Wyuj8hzdqGLedxSamqAzWxpXJRvHFM0uI0/W3wzPu
+	4a5nl0tV5sXHwRl/YVK80tI4m7xIgpZaV6cD0D6BxwB/549npoZugOBtyg18YqocvVLxR39
+	KBVqjf8vUaddHg2lW1TfgM3Oeh0M6eom0/3Z09QtXy9C9ckbQYQ8LHGA1enQGvOhnuN5qfZ
+	DXGdfOQSPj3XZGJL4i2ZxhChT1CCaqQPOsX3WZs79Od1rDdcCR2jLE9xSKYziM970KH4eEd
+	SNWpQxpEyGZyzHW/axxMeTwqqhPHGuetRM9MiKfN2cf/NOG8AYyeRB4ilbAMco3T3YNtxYk
+	OK8msEH4s7F3Xq0CZdxChT44/mh2yc30SDWOSVov5m9Fsm5keSoUfq1T+lOd+3k4LIQigM+
+	bz58ylaR20fSX0cPWIhzJ1yLVAcE3Np5V6M7zivxWkC
+X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
 X-QQ-RECHKSPAM: 0
 
 On 2026/7/13 14:10, Tian, Kevin wrote:
 >> From: Peiyang He <peiyang_he@smail.nju.edu.cn>
->> Sent: Thursday, July 9, 2026 1:08 PM
+>> Sent: Tuesday, July 7, 2026 2:13 PM
 >>
->> DMABUF pages are not supported for iommufd access pinning.
->> iommufd_access_pin_pages() returns struct page pointers for
->> in-kernel CPU access, but DMABUF-backed iopt_pages do not carry
->> a userspace address that can be passed to the GUP path.
->>
->> iopt_pages_rw_access() already rejects IOPT_ADDRESS_DMABUF before
->> doing
->> CPU access. Apply the same rejection to iopt_area_add_access() before it
->> takes pages->mutex and calls iopt_pages_fill_xarray().
->> Otherwise a DMABUF-backed iopt_pages can reach the hole-fill path, where
->> pfn_reader_user_pin() interprets the union as uptr and
->> calls pin_user_pages_fast()/pin_user_pages_remote().
->>
->> This fix also avoids the lockdep warning reported from that path, where
->> pages_dmabuf_mutex_key is held while gup_fast_fallback() may acquire
->> mmap_lock.
->>
->> Reported-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+>> The analysis above goes through the iommufd selftest mock device (M). We
+>> have not reproduced this on real Intel/AMD hardware, but the same lifetime
+>> issue is not specific to the mock driver: Intel and AMD both have real detach
+>> paths that can reach the very same iopf_queue_remove_device(). This is
+>> exactly
+>> what iommufd_hwpt_detach_device() triggers, via
+>> iommu_detach_group_handle() /
+>> iommu_detach_device_pasid(), right before it calls
+>> iommufd_auto_response_faults().
 > 
-> this is not required when you are the author
+> yeah it's certainly a bug - it doesn't make sense to have an object sitting
+> on two lists after its ownership is transferred. Suppose we should delete
+> the group from iopf queue then add it to the iommufd queue in
+> iommufd_fault_iopf_handler().
+> 
+> Can you help send a fix accordingly?
 
 Hi Kevin,
-Thanks for your reply! Will send a V2 patch fixing this.
+Thanks for your reply! No problem, I will try sending a patch very soon.
 
 Best,
 Peiyang
-
 
