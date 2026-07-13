@@ -1,117 +1,262 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA953955EF
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 08:02:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783929754; cv=none; b=JMx4CQ4xRu1lddmYc+HcO8FaObwjTJaNuJgRsnikwDFmjYv0aT9dwne3bgxM+m1+2F+/f4Z81jEtPgWZuO9E/jLypxcoeylbZVfc7BPVc36ivnl0Spu0Ne0E45eYNTpdqQRKyGvESi4v5s33EZGPDy/AeElGUfgIZRAv1fUE71Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783929754; c=relaxed/simple;
-	bh=m/8+d0iWvD75nGF/mFl6+CovRtEZBA5npDgYM/wOznM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=RmYKbUL96KKmM0aaLJMFpaGU0DiU48LQTpAqx+MZfMRq0XyxvdNaG3PIpUIla5VMPLPDOXRtIVtXIGJPi7xIgKQvV2Azeus3wYrx6ixd6aXN7Bn57d+HpT4gQ3SfcfSCKjnY2ovFpBOUsjrLwZ6cP/8ojy47qJ3cpgwSI6s/Y/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ZNcDF3Ta; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3379D3AD524
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 08:24:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783931081; cv=pass; b=tlJ2Fwt1FimyMaICPxKj+lcNbmKWOkhWivOicTsC7FoNpEOR2X5g1z8OMe2RqhZqY2zVHHz6imCdSAw8koRikGVuVWgFSbL4DaCXg1VSRTCpt9+Cs5QitIdGKPLGgcRZjhu4uzr2QhajwElt5MPQ+UhrcZ5E59my70fxpMHk6sc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783931081; c=relaxed/simple;
+	bh=Pwf3ib3W1cn2rsmU9+xp117vdaE++X1Wu6jYG+3z83g=;
+	h=From:In-Reply-To:Mime-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Xtm+VOLw1l0EHNveUs4KbV305ros/hCzLhaklFZ6Jv/pzLdpNA3rMWkZptUeaNKu7/rGO1mI7igXd1ehd+eySk9GYr5qcFn2avoc6FThcqoOHmT/78K/p0H3SqSo4m5uVdcM93xOv+66DavSEbW2pk8fvQZzqL5CCQ+xwrhSdO8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=l2DMNCly; arc=pass smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ZNcDF3Ta"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=m/8+d0iWvD75nGF/mFl6+CovRtEZBA5npDgYM/wOznM=; b=Z
-	NcDF3TasP428QpyuYUgJgDSf4+9xCV7gkGD9PR78xDU4SdaaDwmm7ptHuRXJ1hAL
-	Hy7tdwJqZ3Loas8ygjHMYYCy/yPpUm2huocSq0tNznUipizOPkB/JlLTPd8Y0V3m
-	RoJozJPVqLJru5yfL6wmlSrtbMG3l/zgj3HrK2Hr+s=
-Received: from 15927021679$163.com ( [116.128.244.169] ) by
- ajax-webmail-wmsvr-40-119 (Coremail) ; Mon, 13 Jul 2026 16:02:03 +0800
- (CST)
-Date: Mon, 13 Jul 2026 16:02:03 +0800 (CST)
-From: "Xiong Weimin" <15927021679@163.com>
-To: "Baolu Lu" <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, jean-philippe@linaro.org, jgg@nvidia.com,
-	xiongweimin <xiongweimin@kylinos.cn>
-Subject: Re:Re: [PATCH] iommu/virtio: Report faults via report_iommu_fault()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <5a220346-2beb-4456-881c-27b9825d9cc3@linux.intel.com>
-References: <20260713010442.331096-1-15927021679@163.com>
- <5a220346-2beb-4456-881c-27b9825d9cc3@linux.intel.com>
-X-NTES-SC: AL_Qu2TAfWZtk8p5SOabekckk8Ugeg8Xsewsvgh249ec/8Eti30+AcGdm9jI0vR8sOpOxyGjSi2UTVlzvhfT4N17myCW9ybv2uZg4dKRBzJAQ==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="l2DMNCly"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5aeae350e0aso3350286e87.1
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 01:24:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783931077; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Al6hcigXI4wwHTjjbo8mxLbcw+3/Xzw+RB0nRIJoCTWBv/mnOxwPMVXMo+Hk+yOC7H
+         z/s+OM7QUAVS7lryLdHtC88f0vgQ56d2YjqViy0zGsFQzDAarumEgXhL+jE/N/xYu5DD
+         J5Y4dAHic6Osd0Slyyn30keNoSxNtD8Av1AbIqk573GJPjA+bMInNFKSdC5EgSUQnO4F
+         Ep+XWCw2Z3xKxUP2ycD/LzU2VTr0sfdJHxJH4PgF0UtWo8jt7+Uc/BL8ggK66RcoGJuj
+         vJ+gJPSd/NGNYuXtsgYtX3U6dnl3LFRmgenIpDFdhkEcF12XOp0EAixwErcpq3GIX6gj
+         YDvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:user-agent
+         :references:mime-version:in-reply-to:from:dkim-signature;
+        bh=rw64d6fpmrwwgrKtd9NfBoVHViSe69VHc1+TSY5ZOZA=;
+        fh=X7yy6GLBVdKOIvjF/ImVWtj4qVM6De31guOWbzkhgdE=;
+        b=RCqvxHsBK1v946aUasc2FoaziqX/Po4u1YQgH44sPsqQ8ntWpzNFZ5f0yE5f11tefI
+         IfuQN0JwlOXWyBKITJWVUsi6QM/jPknSx7uP0mD2z1Yg5TiAZ4wAyguwndYDD1Eb7s/B
+         PCl9jRUJ5JfDl76AMM5ACes2nBHU8s1VPliM+Po2vH8zJ5Mh1nj4/XxXLg8hPQj8t3LJ
+         FQ83/kVGY8VJWUZYK0VZH30vUK5RmZC4Vd3ZnkyfwbwgPhqdmQbjf/FtRQU1r84cEvHY
+         nnO+5LoVPRr4rc/FYwkCbmAqykNBkfQARsxA7AUBgurVxKsjmljx1JnHLBFg6yW4JURZ
+         BOnA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1783931077; x=1784535877; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:user-agent:references:mime-version:in-reply-to:from:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=rw64d6fpmrwwgrKtd9NfBoVHViSe69VHc1+TSY5ZOZA=;
+        b=l2DMNClyWeiVDBF8zIHIT2A4dz9UCDwewCVy1F8e/xYoaSbMl5W5D24KY+AphOknIW
+         0u6pDF2LfbLQ58welpd4o6oL5JN94WMUaec0BROvm3fl2dQHlT/W/hnUD3QxEpND/d1t
+         uHuES9+MuDPLeX0XUa8QJrXDgR0cankJ8hQIyFI2axmGIvXESLikY0TxxkjLHX6aS1GE
+         imVLhfSy+XZiLZBZL6vsuaFZGHbTvQV0SYqRjNf35WglwAMnvrahkrTwCEzQiy/yegoR
+         8rKoc02ktewV6O8D3nY2tXg5/rUobYd5WbbzaZ3wLaDEHbJ05IXplaEClzonfdTAPRpM
+         HSiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783931077; x=1784535877;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:user-agent:references:mime-version:in-reply-to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rw64d6fpmrwwgrKtd9NfBoVHViSe69VHc1+TSY5ZOZA=;
+        b=i4G7IFsPw5+tanRUneUMPdU5yjVChnebFbDPkAHNMZtxK9RmuLmy7REgcV8z8nyveV
+         Iv8dcX5RatD63+9qE02c1AzgQYGiHkA2dlHQaCEyyhvS259LhHX8U9z0sgs9Tkh0rZPZ
+         Sc8LdL1ftkLVaHVUkQLk6/whd50QV1ykhLr0xDpbeatxL0N7h47jb1xVHgY4BzbKNc81
+         v+jQEkHHsc63w+DFxK50XWE/tefXND8bzP9JY12fbiheNmK3uD/bUHhVMWj/ZWzM4ti0
+         cNkaaDEPbG7QAPMumj6JH9yCoEri2eepXM9l4DahXacC+uOderT8pB7Znx4Ys+vcreuI
+         Jr6Q==
+X-Forwarded-Encrypted: i=1; AHgh+RqOAOjD2lkiPOwA5wlBZD6CbkuN24oOq2BS02EQ5YtPsZ749vIN1K2e5J6o3fIUuQ7p5czXOg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwqvtO2JmwW0eK9qopU9eJLnOCghg44Eym6UCt/CGIrlO6Cmabw
+	cR0kDO6N32nd8I7PrHSWTX7mvBi2keFEz7ix+zcK8zZGSKJkJbMMd9LUKAkze1I73l//gH1n6AE
+	dKDMC/bLG8GiVKMeEtZYuUNO50nhsMwcQsLdjSgd2ZA==
+X-Gm-Gg: AfdE7cnB+I+gxVx1PXpUkDgxs9Fsii98aBBEJh0MKGUEF81O8lqlNXveOB/7lllMT1Q
+	QYW/At5s2Mm5thtPUUpGSWG56RIU5zYXyMKSF/ZCgJ+UW3ANFleUN7DpI4ceSSWR5Zjm//RlvOv
+	gEXz7REWZupkCSYqlatBAK90teSXqeoTO5DGtDBgK9VMeiX9eEnKhWADgN7YiStgMBvbSH6Wews
+	HPMoa0XrDO1WSLi7+y5jC4bgTOQp1ecwsFBPFXiXqeLg4kyTkKmZoSv5Ed4ukwX3qD15+P9ftEZ
+	9ng9ig==
+X-Received: by 2002:ac2:5933:0:b0:5b0:cce:da00 with SMTP id
+ 2adb3069b0e04-5b023568b5dmr1139987e87.1.1783931077230; Mon, 13 Jul 2026
+ 01:24:37 -0700 (PDT)
+Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
+ Mon, 13 Jul 2026 01:24:36 -0700
+Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
+ Mon, 13 Jul 2026 01:24:36 -0700
+From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+In-Reply-To: <CAJF2gTSFX87LTXbAB=Qzy33xTVuaFQdR3jxh96ZdOhehfy-=AQ@mail.gmail.com>
+X-Original-From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Message-ID: <aa9aeb3.65c5.19f5a7f59c8.Coremail.15927021679@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:dygvCgD33918m1RqhMUcAA--.7278W
-X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC0hy1PmpUm3xlFgAA3v
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Mime-Version: 1.0
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+ <20260713060902.15161-1-zhangzhanpeng.jasper@bytedance.com> <CAJF2gTSFX87LTXbAB=Qzy33xTVuaFQdR3jxh96ZdOhehfy-=AQ@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Date: Mon, 13 Jul 2026 01:24:36 -0700
+X-Gm-Features: AUfX_mzZvU7oa1oZHbOWG75hXLtmVhHOW5g3WnTef66HzvZC6b2_d2Iu5DRMHDw
+Message-ID: <CACnXVncuXtGNqv7NABFRcFQWwK7eyMSz=GQd6joVmskQ-fDLrg@mail.gmail.com>
+Subject: Re: Re: [PATCH v2] iommu/riscv: Use 32-bit MMIO accesses for 64-bit registers
+To: Guo Ren <guoren@kernel.org>
+Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <pjw@kernel.org>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Alexandre Ghiti <alex@ghiti.fr>, David Laight <david.laight.linux@gmail.com>, 
+	Vivian Wang <wangruikang@iscas.ac.cn>, Zong Li <zong.li@sifive.com>, cuiyunhui@bytedance.com, 
+	yuanzhu@bytedance.com, iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-CgoKSGkgQmFvbHUsCgoKVGhhbmtzIGZvciB0aGUgcmV2aWV3LgoKClRoZSBjb25zdW1lciBpcyB3
-aG9ldmVyIHJlZ2lzdGVyZWQgYSBmYXVsdCBoYW5kbGVyIG9uIHRoZSBJT01NVSBkb21haW4Kdmlh
-IGlvbW11X3NldF9mYXVsdF9oYW5kbGVyKCkgoaogdGhlIHNhbWUgcGF0aCB1c2VkIGJ5IG90aGVy
-IElPTU1VCmRyaXZlcnMgKGUuZy4gQVJNIFNNTVUsIEFNRCwgTVRLKSB3aGVuIHRoZXkgY2FsbCBy
-ZXBvcnRfaW9tbXVfZmF1bHQoKS4KCgpJbiB2aXJ0aW8taW9tbXUgdG9kYXksIHZpb21tdV9mYXVs
-dF9oYW5kbGVyKCkgb25seSBwcmludHMgYSByYXRlbGltaXRlZAptZXNzYWdlIGFuZCBoYXMgYW4g
-ZXhwbGljaXQgVE9ETyB0byBjYWxsIHJlcG9ydF9pb21tdV9mYXVsdCgpLiBUaGlzCnBhdGNoIGNv
-bXBsZXRlcyB0aGF0IFRPRE86IHdoZW4gYSBmYXVsdCBjYXJyaWVzIGFuIGFkZHJlc3MgYW5kIHRo
-ZQplbmRwb2ludCBpcyBhdHRhY2hlZCB0byBhIGRvbWFpbiwgd2UgbG9vayB1cCB0aGUgZW5kcG9p
-bnQgYW5kIGZvcndhcmQKdGhlIGZhdWx0IHRvIHRoZSBkb21haW4gaGFuZGxlci4gSWYgbm8gaGFu
-ZGxlciBpcyBpbnN0YWxsZWQsCnJlcG9ydF9pb21tdV9mYXVsdCgpIHJldHVybnMgLUVOT1NZUyBh
-bmQgd2Uga2VlcCB0aGUgZXhpc3RpbmcgbG9nIGFzCmZhbGxiYWNrLgoKClRoaXMgaXMgbm90IHRo
-ZSBWRklPL0lPTU1VRkQgSU9QRiBwYXRoIChpb21tdV9yZXBvcnRfZGV2aWNlX2ZhdWx0KCkpOwpp
-dCBjb3ZlcnMgdmlydGlvLWlvbW11IERNQSBwcm90ZWN0aW9uIGZhdWx0cyAoZG9tYWluL21hcHBp
-bmcgZmF1bHRzKQpmb3IgZW5kcG9pbnRzIGJlaGluZCBhbiBJT01NVSBkb21haW4uCgoKVHlwaWNh
-bCBjb25zdW1lcnMgd291bGQgYmUgZGV2aWNlIGRyaXZlcnMgb3Igc3Vic3lzdGVtcyB0aGF0IGlu
-c3RhbGwgYQpkb21haW4gZmF1bHQgaGFuZGxlciChqiBmb3IgZXhhbXBsZSByZW1vdGVwcm9jIG9y
-IEdQVSBkcml2ZXJzIGluLXRyZWUuClRoZSBtYWluIGdvYWwgaXMgQVBJIGNvbXBsZXRlbmVzcyBh
-bmQgY29uc2lzdGVuY3kgd2l0aCBvdGhlciBJT01NVQpkcml2ZXJzLCBzbyB1cHBlciBsYXllcnMg
-Y2FuIHJlYWN0IGluc3RlYWQgb2Ygb25seSBzZWVpbmcgYSBwcmludGsuCgoKSGFwcHkgdG8gYWRk
-IGEgYnJpZWYgY29tbWVudCBpbiB0aGUgcGF0Y2ggY2xhcmlmeWluZyB0aGlzIGlmIHRoYXQgd291
-bGQKaGVscC4KCgpUaGFua3MsCldlaW1pbgoKCkF0IDIwMjYtMDctMTMgMTA6MDc6MjksICJCYW9s
-dSBMdSIgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4gd3JvdGU6Cj5PbiA3LzEzLzI2IDA5OjA0
-LCB3ZWltaW4geGlvbmcgd3JvdGU6Cj4+IEZyb206IHhpb25nd2VpbWluIDx4aW9uZ3dlaW1pbkBr
-eWxpbm9zLmNuPgo+PiAKPj4gRmF1bHQgZXZlbnRzIGN1cnJlbnRseSBvbmx5IHByaW50IGEgcmF0
-ZWxpbWl0ZWQgZXJyb3Igd2l0aCB0aGUgZW5kcG9pbnQKPj4gSUQuIFVwcGVyIGxheWVycyAoVkZJ
-TywgZHJpdmVycyB3aXRoIGRvbWFpbiBmYXVsdCBoYW5kbGVycykgY2Fubm90IHJlYWN0Lgo+PiAK
-Pj4gVHJhY2sgZW5kcG9pbnRzIGluIGFuIHhhcnJheSBrZXllZCBieSBlbmRwb2ludCBJRCBhdCBw
-cm9iZS9yZWxlYXNlIHRpbWUsCj4+IGFuZCBjYWxsIHJlcG9ydF9pb21tdV9mYXVsdCgpIHdoZW4g
-YSBmYXVsdCBjYXJyaWVzIGFuIGFkZHJlc3MgYW5kIHRoZQo+PiBlbmRwb2ludCBpcyBhdHRhY2hl
-ZCB0byBhIGRvbWFpbi4gS2VlcCB0aGUgZXhpc3RpbmcgbG9nIGFzIGEgZmFsbGJhY2sKPj4gd2hl
-biB0aGUgZW5kcG9pbnQgaXMgdW5rbm93biBvciBkZXRhY2hlZC4KPj4gCj4+IFNpZ25lZC1vZmYt
-Ynk6IHhpb25nd2VpbWluIDx4aW9uZ3dlaW1pbkBreWxpbm9zLmNuPgo+PiBDYzogaW9tbXVAbGlz
-dHMubGludXguZGV2Cj4+IENjOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGVA
-bGluYXJvLm9yZz4KPj4gQ2M6IEphc29uIEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+Cj4+IC0t
-LQo+PiAKPj4gLS0tIGEvZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYwo+PiArKysgYi9kcml2
-ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jCj4+IEBAIC0xOSw2ICsxOSw3IEBACj4+ICAgI2luY2x1
-ZGUgPGxpbnV4L3ZpcnRpb19jb25maWcuaD4KPj4gICAjaW5jbHVkZSA8bGludXgvdmlydGlvX2lk
-cy5oPgo+PiAgICNpbmNsdWRlIDxsaW51eC93YWl0Lmg+Cj4+ICsjaW5jbHVkZSA8bGludXgveGFy
-cmF5Lmg+Cj4+ICAgCj4+ICAgI2luY2x1ZGUgPHVhcGkvbGludXgvdmlydGlvX2lvbW11Lmg+Cj4+
-ICAgCj4+IEBAIC00Miw2ICs0Myw4IEBACj4+ICAgCXNwaW5sb2NrX3QJCQlyZXF1ZXN0X2xvY2s7
-Cj4+ICAgCXN0cnVjdCBsaXN0X2hlYWQJCXJlcXVlc3RzOwo+PiAgIAl2b2lkCQkJCSpldnRzOwo+
-PiArCS8qIGVuZHBvaW50IElEIC0+IHZpb21tdV9lbmRwb2ludCwgZm9yIGZhdWx0IHJlcG9ydGlu
-ZyAqLwo+PiArCXN0cnVjdCB4YXJyYXkJCQllbmRwb2ludHM7Cj4+ICAgCj4+ICAgCS8qIERldmlj
-ZSBjb25maWd1cmF0aW9uICovCj4+ICAgCXN0cnVjdCBpb21tdV9kb21haW5fZ2VvbWV0cnkJZ2Vv
-bWV0cnk7Cj4+IEBAIC01OTMsNyArNTk2LDEwIEBACj4+ICAgc3RhdGljIGludCB2aW9tbXVfZmF1
-bHRfaGFuZGxlcihzdHJ1Y3QgdmlvbW11X2RldiAqdmlvbW11LAo+PiAgIAkJCQlzdHJ1Y3Qgdmly
-dGlvX2lvbW11X2ZhdWx0ICpmYXVsdCkKPj4gICB7Cj4+ICsJc3RydWN0IHZpb21tdV9lbmRwb2lu
-dCAqdmRldjsKPj4gKwlzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4+ICAgCWNoYXIgKnJl
-YXNvbl9zdHI7Cj4+ICsJaW50IGZhdWx0X2ZsYWdzID0gSU9NTVVfRkFVTFRfUkVBRDsKPj4gICAK
-Pj4gICAJdTggcmVhc29uCT0gZmF1bHQtPnJlYXNvbjsKPj4gICAJdTMyIGZsYWdzCT0gbGUzMl90
-b19jcHUoZmF1bHQtPmZsYWdzKTsKPj4gQEAgLTYxMywxNiArNjE5LDI4IEBACj4+ICAgCQlicmVh
-azsKPj4gICAJfQo+PiAgIAo+PiAtCS8qIFRPRE86IGZpbmQgRVAgYnkgSUQgYW5kIHJlcG9ydF9p
-b21tdV9mYXVsdCAqLwo+PiAtCWlmIChmbGFncyAmIFZJUlRJT19JT01NVV9GQVVMVF9GX0FERFJF
-U1MpCj4+IC0JCWRldl9lcnJfcmF0ZWxpbWl0ZWQodmlvbW11LT5kZXYsICIlcyBmYXVsdCBmcm9t
-IEVQICV1IGF0ICUjbGx4IFslcyVzJXNdXG4iLAo+PiArCWlmIChmbGFncyAmIFZJUlRJT19JT01N
-VV9GQVVMVF9GX1dSSVRFKQo+PiArCQlmYXVsdF9mbGFncyA9IElPTU1VX0ZBVUxUX1dSSVRFOwo+
-PiArCj4+ICsJcmN1X3JlYWRfbG9jaygpOwo+PiArCXZkZXYgPSB4YV9sb2FkKCZ2aW9tbXUtPmVu
-ZHBvaW50cywgZW5kcG9pbnQpOwo+PiArCWlmICh2ZGV2ICYmIHZkZXYtPnZkb21haW4gJiYgKGZs
-YWdzICYgVklSVElPX0lPTU1VX0ZBVUxUX0ZfQUREUkVTUykpIHsKPj4gKwkJZG9tYWluID0gJnZk
-ZXYtPnZkb21haW4tPmRvbWFpbjsKPj4gKwkJcmVwb3J0X2lvbW11X2ZhdWx0KGRvbWFpbiwgdmRl
-di0+ZGV2LCBhZGRyZXNzLCBmYXVsdF9mbGFncyk7Cj4KPldobyBpcyB0aGUgY29uc3VtZXIgb2Yg
-dGhlIGZhdWx0IG1lc3NhZ2UgcmVwb3J0ZWQgaGVyZT8KPgo+VGhhbmtzLAo+YmFvbHUK
+Hi Guo,
+
+On 7/13/26 3:00 PM, Guo Ren wrote:
+> On Mon, Jul 13, 2026 at 2:09=E2=80=AFPM Zhanpeng Zhang
+> <zhangzhanpeng.jasper@bytedance.com> wrote:
+>>
+>> The RISC-V IOMMU specification [1] permits 64-bit registers to be access=
+ed
+>> using two 32-bit transactions, high half first, and leaves the single-co=
+py
+>> atomicity of 8-byte IOMMU register accesses unspecified.
+>>
+>> Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() helpers
+>> for ordinary 64-bit IOMMU registers. Poll DDTP.BUSY in the low half befo=
+re
+>> reading the full register from high to low. HPM counter reads require a
+>> rollover-aware sequence and remain outside these accessors.
+>>
+>> This follows the 32-bit access direction proposed by Guo Ren [2] and use=
+s
+>> the generic non-atomic MMIO helpers suggested by David Laight.
+>>
+>> [1] https://docs.riscv.org/reference/iommu/
+>> [2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
+>>
+>> Suggested-by: Guo Ren <guoren@kernel.org>
+>> Suggested-by: David Laight <david.laight.linux@gmail.com>
+>> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+>> ---
+>> Changes in v2:
+>> - Rework the patch based on Guo Ren's earlier proposal [1].
+>> - Drop the build-time option and use 32-bit accesses unconditionally.
+>> - Drop the global lock and use the generic high-low MMIO helpers, as
+>>    suggested by David Laight.
+>> - Poll DDTP.BUSY through its low half before reading the full register.
+>>
+>> Link to v1: [2]
+>> Specification discussion: [3]
+>>
+>> [1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
+>> [2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpeng.jasp=
+er@bytedance.com
+>> [3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
+>>
+>>   drivers/iommu/riscv/iommu.c | 18 +++++++++++-------
+>>   drivers/iommu/riscv/iommu.h |  9 +++------
+>>   2 files changed, 14 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>> index cec3ddd7ab1..14b572058ed 100644
+>> --- a/drivers/iommu/riscv/iommu.c
+>> +++ b/drivers/iommu/riscv/iommu.c
+>> @@ -668,12 +668,16 @@ void riscv_iommu_disable(struct riscv_iommu_device=
+ *iommu)
+>>          riscv_iommu_writel(iommu, RISCV_IOMMU_REG_PQCSR, 0);
+>>   }
+>>
+>> -#define riscv_iommu_read_ddtp(iommu) ({ \
+>> -       u64 ddtp; \
+>> -       riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp, \
+>> -                                 !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10, \
+>> -                                 RISCV_IOMMU_DDTP_TIMEOUT); \
+>> -       ddtp; })
+>> +static u64 riscv_iommu_read_ddtp(struct riscv_iommu_device *iommu)
+>> +{
+>> +       u32 ddtp_lo;
+>> +
+>> +       riscv_iommu_readl_timeout(iommu, RISCV_IOMMU_REG_DDTP, ddtp_lo,
+>> +                                 !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY), 10=
+,
+>> +                                 RISCV_IOMMU_DDTP_TIMEOUT);
+>> +
+>> +       return riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
+> readq? Please ref [1]:
+>
+> #define riscv_iommu_read_ddtp(iommu) ({ \
+>    u64 ddtp; \
+> - riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp, \
+> -  !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10, \
+> + u32 ddtp_lo, ddtp_hi; \
+> + riscv_iommu_readl_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp_lo, \
+> +  !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY), 10, \
+>     RISCV_IOMMU_DDTP_TIMEOUT); \
+> + ddtp_hi =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_DDTP + 4); \
+> + ddtp =3D ((u64)ddtp_hi << 32) | ddtp_lo; \
+>    ddtp; })
+>
+Oops, thanks for catching that, it will re-read the low 32 bits. DDTP
+must retain that polled low-half value, read only the high half, and
+then compose the result.
+
+The macro one [1] is correct, I've fixed it in v3.
+
+>
+>> +}
+>>
+>>   static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
+>>   {
+>> @@ -1501,7 +1505,7 @@ static int riscv_iommu_init_check(struct riscv_iom=
+mu_device *iommu)
+>>           * regular boot flow and disable translation when we boot into =
+a kexec
+>>           * kernel and the previous kernel left them enabled.
+>>           */
+>> -       ddtp =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
+>> +       ddtp =3D riscv_iommu_read_ddtp(iommu);
+>>          if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+>>                  return -EBUSY;
+>>
+>> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+>> index 46df79dd549..1b03790fbe1 100644
+>> --- a/drivers/iommu/riscv/iommu.h
+>> +++ b/drivers/iommu/riscv/iommu.h
+>> @@ -11,6 +11,7 @@
+>>   #ifndef _RISCV_IOMMU_H_
+>>   #define _RISCV_IOMMU_H_
+>>
+>> +#include <linux/io-64-nonatomic-hi-lo.h>
+>>   #include <linux/iommu.h>
+>>   #include <linux/types.h>
+>>   #include <linux/iopoll.h>
+>> @@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_device *=
+iommu);
+>>          readl_relaxed((iommu)->reg + (addr))
+>>
+>>   #define riscv_iommu_readq(iommu, addr) \
+>> -       readq_relaxed((iommu)->reg + (addr))
+>> +       hi_lo_readq_relaxed((iommu)->reg + (addr))
+>>
+>>   #define riscv_iommu_writel(iommu, addr, val) \
+>>          writel_relaxed((val), (iommu)->reg + (addr))
+>>
+>>   #define riscv_iommu_writeq(iommu, addr, val) \
+>> -       writeq_relaxed((val), (iommu)->reg + (addr))
+>> -
+>> -#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, tim=
+eout_us) \
+>> -       readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, co=
+nd, \
+>> -                          delay_us, timeout_us)
+>> +       hi_lo_writeq_relaxed((val), (iommu)->reg + (addr))
+>>
+>>   #define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, ti=
+meout_us) \
+>>          readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, c=
+ond, \
+>> --
+>> 2.50.1 (Apple Git-155)
+>
+>
+>
+Thanks,
+Zhanpeng
