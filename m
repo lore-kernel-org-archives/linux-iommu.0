@@ -1,231 +1,309 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69C713E7179
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:29:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.180.131
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783938559; cv=pass; b=MQ6vAV3BGg4EIin6l6AUrCAqW0yw6SycvcAVo9gL+bEbCj6hZY5nFZZfqyv5mgayCXo1mqj31MqoMYWUIiIqgctNxytGSZHUGD29B+w4Bq6BX9o5O/iETvF6OwI37yeZy36nkhQYUxobNlWx2mCQ5QM2288MKJodg0XF/GsGnk8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783938559; c=relaxed/simple;
-	bh=g9PH7rit3zO//u5Hq2QTKSHhPM7nodoH6Z5rCiQghkY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XRbjfBUJ0nFnBhkDDIruLTCi/X4fpBHTZPkz3P1YCQU8jmGK8hCan0Iq3MJfCBoGCnKGV6bRscIBoxqmvpRxgoxukVLWZksQXpNFHX+SclDBxGziPCaVl3XK8YsZZI8LlQDBhgodpLxmiHkMB9M3FG7PjL8z+NuXt/oppWItSMw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=QNFOxgh3; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=goSfUZ54; arc=pass smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08B8C3368AA
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:35:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783938953; cv=none; b=Nc+s/tnHettU97Ii1jIGhbgv0AXaxmwI4XXTHTHkobmmKuo1TsYk7zwH1qpIpfBVp+XntAl2XBMQSoQdnt7pIU2YQJXjmToFJYMWjROgXtbz8TL+EVsgdepnYowBEl9VYf5HaEfI1pjAhuBuIarzVqNukFXrwiMXc9z/zC5Je+k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783938953; c=relaxed/simple;
+	bh=XMiCZTmiiA8F9BgpScMjYv+1HiDLmlR0kg2oIK8j4ko=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k2eWo2PhJfY7dD/ClU0zZn6BKBOsL7/QvGAsGR1y0mSUprgF4Eukv41e93xXM2OzFBlpdDMmO6tUUKwrvhw2yFc5HAX9bM7S1tfQsplYOaZkT9UyQSrhpBhOOZcVPlJqnpQkkqGyuwNrI6785WG638KnH4XPqeuYiAr6OUjrtEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=J47wgG0O; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="QNFOxgh3";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="goSfUZ54"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66D9ucSV1089703
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:29:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ooopbZ8BXUYSj2UczjbYKP/YkkGSe5M/iCnsrnvSEpM=; b=QNFOxgh31F+aQwWH
-	ovN+MuWYrQupUnEJ4E05qCBe2S9rP7KHAIzWX8QuWwVLkBnQCTy1Hz9uUXC1S7DF
-	8ziWPWrYXfAPxVQX7yIQ90tkfXiCc0VPr519QCrHicbq5mx/va6EOAY8OJvHnMC3
-	RZF+ARzvL1gWrkTRgAmMOSEPMRMgnJsk3tSucarsmgrls/L4q+xlgyoSuIM/bgkt
-	B+B96eVD2U0ghoOzlEzmHlymMGN9Zy4snq+v8VItrjMOWQ4hjzJIFO+xwOz3UgBn
-	1yZtKxrH/rfPDe0dXOHL2JQMVO51Kqi381IJox02JTjVELMpumm0HRsXH/c9hr2z
-	cyqT8w==
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com [209.85.219.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fcwu4r3qm-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:29:16 +0000 (GMT)
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-8eac2620cb0so51634306d6.3
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 03:29:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783938556; cv=none;
-        d=google.com; s=arc-20260327;
-        b=XDKrRe/gLluE3LrDcQbmiRdatCtui1rX55unkyxjpSiMzW8OpO2fVtblCt0xa0DedH
-         5oSiGVW7VzL5aXvNww3Eesg9mtOw5B2i/eQza+O0cqFC+VySR4qPxizWn6H3B5kUqHWb
-         GCCBqTeVq9in35oJP/cK+S63CLC8mmPF4zWcVrJ0psToGp14xmJF1aigVI9Xzq054Qyg
-         AEwS7kRZ296nImHcK2BMtKJGlbxpCtQCt7OWCephfYqu0d1ZLtkqfH0TEWzgeYVEGhfB
-         NP5BCK6vp2OdtjXaPoj80SVeYft+D1YVwNV+PQGRILG1zLsehZgYp+Gc03+C4pifTsri
-         W6fQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ooopbZ8BXUYSj2UczjbYKP/YkkGSe5M/iCnsrnvSEpM=;
-        fh=1l6puTAlFM4nVKFCvJ1kCb73Cd7qjmO6Ks21UbcPBgU=;
-        b=maDtgrksLdRHSP8D2IyCrANe8z2xqVNzOc8eRrqrpVjkKOhgroj2rF+r3hQMNdytJt
-         hZqngbstuMTZ+trpJ21xMZh8i3GvV6K9LJ7gVber3q9//OF6UfO1CJX5am0yYeFW6FU/
-         o7RwA8XlJRqBkuRov1CWIUyFT5RJRrl5fp2BHkyj/lIlkcNg8HakzvppCYw7Ws+raUp4
-         l09JeA3VrJ/NFrTB44qlWUJ8HAIgggPlXPxDefX6X25PIzuHrNyvAfnJi8p95Tp1wJAB
-         Hn868yncCnIbpf5xoGYa1Dz8MAn9iV2Tv80vMoqgAReERzlEkRc6/gXbnv9w1/uNqJci
-         EYTQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="J47wgG0O"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-493b8d92a4eso84505e9.1
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 03:35:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783938556; x=1784543356; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=google.com; s=20251104; t=1783938950; x=1784543750; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ooopbZ8BXUYSj2UczjbYKP/YkkGSe5M/iCnsrnvSEpM=;
-        b=goSfUZ543oEtgZDsjYw1l0t0GrV2PUtlV0/ZJO72tgkXp9fyKSK49q+uB+IvxvFT5P
-         yomVNsWnvJtmetbm1dmAgbGrH9WcmpAfdTfG1bEVB+Fjz/t4pYmHxuZRT3XubZSI0qdr
-         VhWOzpvM4YaCcJdA7w7Pg60PK799616dmQC8n4lmMaHLP66ywYisXhs9eHzMMSCapsUV
-         wE3Van87VnwQiP9lBCTsnR11ga1bvYcuQyAQn4ug2sQfPvmbQ8hn07+EWchFPSnqfp+z
-         FL0DDDsFQ7c9N25uikNXab5DBu4jU4TPiTInDFWFJ/juPWUf7pgoY0IA1E37OWXmWJHR
-         J98g==
+        bh=4DXPy0h679aPXo6JYjKQdkbMOuE0zeRtrYWKC8kOOJg=;
+        b=J47wgG0O/Z8lvfia0rw0Lu/GuvobpTpfY420CauGMKtLiWR9BUcufUtvB/4Lph2ape
+         f7lf4Wk1nNhCEiaiIkrbtJsoY9NnbHwRheyb/1EUFXLqpWzWPzBhjFvwpMOu+XMLvJ/p
+         yCdneqw141yG3whHJMBIXmMrd2pu4ACdKoLafmGv2iayv0zNUyiQAYHGWn/WXodayOLb
+         vsUGzRCy0P3dWgKMbEiijrmGxJCwdkl1V3JrpCX0ZauH01kXfFvz6pZ8tqjNahGeMbMM
+         UpKeb4KjSApT8aCYQmdmTN1I3GD38u7X6S9tqFdHd8qBDuaRLoNAibvU/fLqSScFi88k
+         80Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783938556; x=1784543356;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1783938950; x=1784543750;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ooopbZ8BXUYSj2UczjbYKP/YkkGSe5M/iCnsrnvSEpM=;
-        b=ByRlIJh+NKenn1ao9ovGnsZaX1LCB6Rs2F4BMw+3kvXHpMVA4q08OMVYizsHM1l7qm
-         RJmfcn4+P1BajxUTD1kOOHyVqsOVXlir4b9WdUEadTjarrdWMT+BeohVG/tn2D/i8G0B
-         3iMcdnhNUyfzAbABc/mGY4JsZILDAC9ZTYkQmZQE2gN8ZNp0sDBltvCwx/jDDZTYKHI8
-         OeCH9ruG0l0fAQEy49B6Jj/03lmLnA5KdVCDGImT/CIs7t6as+1Kh2maNLjfaJkFEt1Q
-         SIhJvMzbMUOIx+szglbM27brVXdteMKMnfL9y1mPZtXPyJ1kPubZzCTawp7X0abht1fC
-         8Cvw==
-X-Forwarded-Encrypted: i=1; AHgh+RoCXZrSfshJ29u37idh2waSK+tOJuk4qy311ZXJ4Kmf3gD3lekMoVQMimQnKE9tseiYMKr4rg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwMmLyCzO4b6HjwfCY2O8qAl95MqyusxUW03foOCHp2pRyAUdxp
-	NPYjs6iYIUJe1fe3B8sxXvX1RZGqz4QqDTYqpH71VQmDuenV+pYLCZjJvMQ/RBRqjZlWu17xEpI
-	vS80UFCqYBBwokrNFvYtuyWwLMF+C+ENwoRs424f36A8qeAKGTNwOctI2T+mc55TMdQ7kzzlUs3
-	0jLdSfd9S3sBeqYkfHNGyPDU+0kRlXpiD3
-X-Gm-Gg: AfdE7cmyWDaEDlZrvXODDlbKb21ZlVuvJYwPX0fdlBYQkAGlRbwsamh5/CkF36+XQQS
-	InHuYXrsX2g8oXFSzuLTbuC7Y+nJyjflTnTpHG440peRscA91aSzmsEZ0WSo8yk6GY+yJLKkXzB
-	gN9WtAlYHSmfaVltw0bDeLtGUArWiWF51QgjP9YQcIwCtF8kWw0XMdq7x9ZA+aOljZYP+7
-X-Received: by 2002:a05:6214:238f:b0:8dc:2c21:32bd with SMTP id 6a1803df08f44-903ff76144dmr97564376d6.1.1783938555892;
-        Mon, 13 Jul 2026 03:29:15 -0700 (PDT)
-X-Received: by 2002:a05:6214:238f:b0:8dc:2c21:32bd with SMTP id
- 6a1803df08f44-903ff76144dmr97564106d6.1.1783938555502; Mon, 13 Jul 2026
- 03:29:15 -0700 (PDT)
+        bh=4DXPy0h679aPXo6JYjKQdkbMOuE0zeRtrYWKC8kOOJg=;
+        b=Lk3waIsAD1edrxHYPhD8VOmyHxhOcz7YC7AV1TV8xExmN0RqN4mGPj5yKFC48Fm2p3
+         Ca/SLsRaTodG57hIQ8AChy1PO3s6AYWp8wadRvqb7VTiJ9eKGeNfYKO1RLe9aMTec0Q4
+         erJK99tVpD67aK3Y3OLhvde4UtWRIw0zCdJw14+udtv+TKnuBMy0xBP9ipzX0BORjn8n
+         /s9TppPmY6lSg3xpW4Z37A3F3WYF0n1SHsT4+nMnffHcLjqXfJgvvEHmXtA22Yh5Js/v
+         FME/ByzmjjEggP8Uj3RlbApVjemdFafKzXllhzFvFiSDrdsVgYa5yCyj3C18kJoYCZJT
+         kLBw==
+X-Forwarded-Encrypted: i=1; AHgh+Rq0BsoaTYOUJwjUW4zxT1GebUz0BTcsOQqNEfM3QMgY0bmSf75zmWwGqSJ570waooA/q0oihQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwmZCKKbDzfsGz/E6v2tamtR+q+ZHJXQcM1Ng8yrdzqRPj34A4X
+	dzRvlBQ7P2RsYzy8EzF2PxleHcd3KENstbPlx9G4iACt8Iai7R/MoYWwOqa5MD3kkQ==
+X-Gm-Gg: AfdE7cnJ3xP2uirujGiKERAKy0ZT0LIT9cVmn4nlPNm0g6iM4yCeI5s2CbnPHXbfjsT
+	blr74mjD7ahwZ/rz6/xVR1v3lDqueKdtaQuqgXeE9U4zqUMf7lJeydzAnaEqHmAMioZjA4qY1A9
+	qDBC04WihEQp2A1ndu39NgtgGgtJ0UDS6b6v647SeCMXT7gzG5k/TnW3oR8bflKGW98sXAgSB8F
+	py+wRfKYP0S8JbYPWS48duTgbXYWfWLr5Gy6ZhtDOO+CC6GQDkeOL5VoC4foSKiYl+r4FfcHW9s
+	FMy2S9pfw8XKlqYsBnyEuwIV0+sUAjiW8lJEmA9j+dS6G8zSFjmSMOkdmqGj+LG667+bEpQau75
+	MZH7f5FKlH71C2zYVfmpWT6wlMTitNLJA3KVjd5pMFGc8C5xbPeaILjJNSsoc/O0A6W/xX9nGRZ
+	KhJl13yq+csTvU5d1MqkD+9WiaXTW62QSRpvc0T6QhRWrc6+OeU402q0AMASw=
+X-Received: by 2002:a05:600c:828c:b0:493:b279:6012 with SMTP id 5b1f17b1804b1-4945e2be9femr228985e9.0.1783938949719;
+        Mon, 13 Jul 2026 03:35:49 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f2465ae8bsm28188355f8f.36.2026.07.13.03.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2026 03:35:48 -0700 (PDT)
+Date: Mon, 13 Jul 2026 10:35:44 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
+	tabba@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 09/25] KVM: arm64: iommu: Add memory pool
+Message-ID: <alS_gB5uSEbFV-jH@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-10-smostafa@google.com>
+ <alEeyoXnMC0J4zFQ@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260706-pdev-fwnode-ref-v3-0-1ff028e33779@oss.qualcomm.com> <20260706-pdev-fwnode-ref-v3-11-1ff028e33779@oss.qualcomm.com>
-In-Reply-To: <20260706-pdev-fwnode-ref-v3-11-1ff028e33779@oss.qualcomm.com>
-From: Ulf Hansson <ulf.hansson@oss.qualcomm.com>
-Date: Mon, 13 Jul 2026 12:29:04 +0200
-X-Gm-Features: AUfX_myf4-1EuuJEsM9iEruoBmhvEE1_shBmpnLHYi6rPSO8vgxEgiRb5eZm2os
-Message-ID: <CAPx+jO-P3Yt6T5Kb97MjmMB1mYeEgjStCkSACM_wsrqsBVFEvA@mail.gmail.com>
-Subject: Re: [PATCH v3 11/20] pmdomain: imx: use platform_device_set_of_node()
-To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Cc: Lee Jones <lee@kernel.org>,
-        Mark Brown <broonie@opensource.wolfsonmicro.com>,
-        Thierry Reding <thierry.reding@avionic-design.de>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andrew Lunn <andrew+netdev@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Srinivas Kandagatla <srini@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-        Andi Shyti <andi.shyti@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <florian.fainelli@broadcom.com>,
-        Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-        Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Peter Chen <peter.chen@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Hans de Goede <hansg@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>, brgl@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
-        driver-core@lists.linux.dev, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        iommu@lists.linux.dev, linux-pm@vger.kernel.org, imx@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org,
-        linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        mfd@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Authority-Analysis: v=2.4 cv=FMErAeos c=1 sm=1 tr=0 ts=6a54bdfc cx=c_pps
- a=7E5Bxpl4vBhpaufnMqZlrw==:117 a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=rJkE3RaqiGZ5pbrm-msn:22 a=EUspDBNiAAAA:8 a=8AirrxEcAAAA:8 a=QyXUC8HyAAAA:8
- a=VwQbUJbxAAAA:8 a=-ghbRyKqcrg4NgclPfMA:9 a=QEXdDO2ut3YA:10
- a=pJ04lnu7RYOZP9TFuWaZ:22 a=ST-jHhOKWsTCqRlWije3:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzEzMDEwOCBTYWx0ZWRfXy3CMZpi8zPaR
- BhgyitGUJMEditungRslifmLNqazixdNbWey/QWB8thNkmIXchDigOq58EQb0kvhoPEgiZjgBwd
- iNDn9rH2CdUPBDZgvgm18/SmWkeW1p0=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzEzMDEwOCBTYWx0ZWRfXwpMSpwNJ+zhf
- 2hLQoBKrdeQQ4g3OncwnVz56w2GtcqPQjLjxh3BxThK4MoKJRPvot1JnupqtIvTCygSVrv9VqNI
- TL4tPv0lTA59r/09K71q0FnzJfXwweImXR1Fdr9il+18gLt85IUL0V67FcfjiXeEU+G7TrWEB9T
- 5QD1mt0MTP/Zrrt2fkRcERPeBs9EsTdlHybV9orp7LinEzOLornlYuCNjLXXkbKCk2JZNBH2pXR
- 3u3C2J1VJ5Y/OO4cX0mOamVQN6yycAkIn88rYwcq72ZLWfGZlstSY4wP6gt+Vtyg3aIbf5QPJj2
- DIW0uljbcyFIxUN8FUXuc28/eXUajzXejQjGGstYNmfi9vmLx5fCkvZHWd9ZfSspebDrnAPhFJi
- lPURcWKtBxBcTIgRf0xVBTWd30hbxITLdf2v4AygFqgBheuXWV0lOWpx+UHN2rq4SjEAH11AusY
- TqSp2SfyOm+5EY3Dlug==
-X-Proofpoint-ORIG-GUID: 5oZ3Q2pXna9qYw78-SNZZvlWXC6NePZL
-X-Proofpoint-GUID: 5oZ3Q2pXna9qYw78-SNZZvlWXC6NePZL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-13_02,2026-07-10_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 adultscore=0 bulkscore=0 malwarescore=0 impostorscore=0
- suspectscore=0 priorityscore=1501 phishscore=0 spamscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607130108
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alEeyoXnMC0J4zFQ@google.com>
 
-On Mon, Jul 6, 2026 at 2:45=E2=80=AFPM Bartosz Golaszewski
-<bartosz.golaszewski@oss.qualcomm.com> wrote:
->
-> Ahead of reworking the reference counting logic for platform devices,
-> encapsulate the assignment of the OF node for dynamically allocated
-> platform devices with the provided helper.
->
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+On Fri, Jul 10, 2026 at 05:33:14PM +0100, Vincent Donnefort wrote:
+> On Fri, May 01, 2026 at 11:19:11AM +0000, Mostafa Saleh wrote:
+> > IOMMU drivers would require to allocate memory for the shadow page
+> > table. Similar to the host stage-2 CPU page table, the IOMMU pool
+> > is allocated early from the carveout and it's memory is added in
+> > a pool which the IOMMU driver can allocate from and reclaim at
+> > run time.
+> > 
+> > As this is too early for drivers to use init calls, set the number of
+> > page allocated from the kernel command line "kvm-arm.hyp_iommu_pages".
+> > 
+> > Later when the driver registers, it will pass how many pages it
+> > needs, and if it was less than what was allocated, it will fail
+> > to register.
+> > 
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >  .../admin-guide/kernel-parameters.txt         |  4 +++
+> >  arch/arm64/include/asm/kvm_host.h             |  3 +-
+> >  arch/arm64/kvm/hyp/include/nvhe/iommu.h       |  7 +++-
+> >  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c         | 21 +++++++++++-
+> >  arch/arm64/kvm/hyp/nvhe/setup.c               | 12 ++++++-
+> >  arch/arm64/kvm/iommu.c                        | 33 ++++++++++++++++++-
+> >  arch/arm64/kvm/pkvm.c                         |  1 +
+> >  7 files changed, 76 insertions(+), 5 deletions(-)
+> > 
+[...]
+> If we expect drivers to use that perhaps we should document a bit better (same
+> for kvm_iommu_reclaim_pages()
 
-If not too late, feel free to add:
+Will do.
 
-Acked-by: Ulf Hansson <ulfh@kernel.org>
+> 
+> > +void *kvm_iommu_donate_pages(u8 order);
+> > +void kvm_iommu_reclaim_pages(void *ptr);
+> > +
+> >  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> > index 1db52bd87c38..53cb5e4b0aac 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> 
+> Do we really need that subfolder iommu/ ?
 
-Kind regards
-Uffe
+Propably not, I will remove it.
 
-> ---
->  drivers/pmdomain/imx/gpc.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/pmdomain/imx/gpc.c b/drivers/pmdomain/imx/gpc.c
-> index 42e50c9b4fb9ffb96a20a462d4eb5168942a893c..abca5f449a226fbae4213926e=
-1395c413160c950 100644
-> --- a/drivers/pmdomain/imx/gpc.c
-> +++ b/drivers/pmdomain/imx/gpc.c
-> @@ -487,8 +487,7 @@ static int imx_gpc_probe(struct platform_device *pdev=
-)
->                         domain->ipg_rate_mhz =3D ipg_rate_mhz;
->
->                         pd_pdev->dev.parent =3D &pdev->dev;
-> -                       pd_pdev->dev.of_node =3D of_node_get(np);
-> -                       pd_pdev->dev.fwnode =3D of_fwnode_handle(np);
-> +                       platform_device_set_of_node(pd_pdev, np);
->
->                         ret =3D platform_device_add(pd_pdev);
->                         if (ret) {
->
-> --
-> 2.47.3
->
+> 
+> > @@ -15,6 +15,7 @@ struct kvm_iommu_ops *kvm_iommu_ops;
+> >  
+> >  /* Protected by host_mmu.lock */
+> >  static bool kvm_idmap_initialized;
+> > +static struct hyp_pool iommu_pages_pool;
+> >  
+> >  static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
+> >  {
+> > @@ -95,7 +96,7 @@ static int kvm_iommu_snapshot_host_stage2(void)
+> >  	return ret;
+> >  }
+> >  
+> > -int kvm_iommu_init(void)
+> > +int kvm_iommu_init(void *pool_base, unsigned int nr_pages)
+> >  {
+> >  	int ret;
+> >  
+> > @@ -103,6 +104,14 @@ int kvm_iommu_init(void)
+> >  	    !kvm_iommu_ops->host_stage2_idmap)
+> >  		return 0;
+> >  
+> > +	if (!nr_pages)
+> > +		return -ENOMEM;
+> > +
+> > +	ret = hyp_pool_init(&iommu_pages_pool, hyp_virt_to_pfn(pool_base),
+> > +			    nr_pages, 0);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	ret = kvm_iommu_ops->init();
+> >  	if (ret)
+> >  		return ret;
+> > @@ -120,3 +129,13 @@ int kvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
+> >  
+> >  	return kvm_iommu_ops->host_stage2_idmap(start, end, pkvm_to_iommu_prot(prot));
+> >  }
+> > +
+> > +void *kvm_iommu_donate_pages(u8 order)
+> > +{
+> > +	return hyp_alloc_pages(&iommu_pages_pool, order);
+> > +}
+> > +
+> > +void kvm_iommu_reclaim_pages(void *ptr)
+> > +{
+> > +	hyp_put_page(&iommu_pages_pool, ptr);
+> > +}
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+> > index 1f6b221db9a0..215014e42c27 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/setup.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+> > @@ -23,6 +23,9 @@
+> >  
+> >  unsigned long hyp_nr_cpus;
+> >  
+> > +/* See kvm_iommu_pages() */
+> > +unsigned int hyp_kvm_iommu_pages;
+> 
+> nit: we tend to use everywhere unsigned long or u64 for nr_pages.
+
+Initially it was size_t. However, the hyp allocator uses unsigned int
+so I was matching its type, I was considering to send a patch upstream
+for this but that is not really a problem at the moment as it only
+overflows if the system has ~2TB of memory.
+
+> 
+> > +
+> >  #define hyp_percpu_size ((unsigned long)__per_cpu_end - \
+> >  			 (unsigned long)__per_cpu_start)
+> >  
+> > @@ -34,6 +37,7 @@ static void *selftest_base;
+> >  static void *ffa_proxy_pages;
+> >  static struct kvm_pgtable_mm_ops pkvm_pgtable_mm_ops;
+> >  static struct hyp_pool hpool;
+> > +static void *iommu_base;
+> >  
+> >  static int divide_memory_pool(void *virt, unsigned long size)
+> >  {
+> > @@ -71,6 +75,12 @@ static int divide_memory_pool(void *virt, unsigned long size)
+> >  	if (!ffa_proxy_pages)
+> >  		return -ENOMEM;
+> >  
+> > +	if (hyp_kvm_iommu_pages) {
+> > +		iommu_base = hyp_early_alloc_contig(hyp_kvm_iommu_pages);
+> > +		if (!iommu_base)
+> > +			return -ENOMEM;
+> > +	}
+> > +
+> >  	return 0;
+> >  }
+> >  
+> > @@ -330,7 +340,7 @@ void __noreturn __pkvm_init_finalise(void)
+> >  	if (ret)
+> >  		goto out;
+> >  
+> > -	ret = kvm_iommu_init();
+> > +	ret = kvm_iommu_init(iommu_base, hyp_kvm_iommu_pages);
+> >  	if (ret)
+> >  		goto out;
+> >  
+> > diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
+> > index f247384fa193..213429ceb549 100644
+> > --- a/arch/arm64/kvm/iommu.c
+> > +++ b/arch/arm64/kvm/iommu.c
+> > @@ -7,10 +7,11 @@
+> >  #include <linux/kvm_host.h>
+> >  
+> >  extern struct kvm_iommu_ops *kvm_nvhe_sym(kvm_iommu_ops);
+> > +extern unsigned int kvm_nvhe_sym(hyp_kvm_iommu_pages);
+> >  
+> >  static DEFINE_MUTEX(kvm_iommu_reg_lock);
+> >  
+> > -int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
+> > +int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops, unsigned int pool_pages)
+> 
+> nit: kvm_iommu_init uses nr_pages. 
+> 
+> >  {
+> >  	guard(mutex)(&kvm_iommu_reg_lock);
+> >  
+> > @@ -21,6 +22,36 @@ int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
+> >  	if (kvm_nvhe_sym(kvm_iommu_ops))
+> >  		return -EBUSY;
+> >  
+> > +	/* See kvm_iommu_pages() */
+> > +	if (pool_pages > kvm_nvhe_sym(hyp_kvm_iommu_pages)) {
+> > +		kvm_err("Not enough memory for the IOMMU pool, need 0x%x pages, check kvm-arm.hyp_iommu_pages",
+> > +			pool_pages);
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> >  	kvm_nvhe_sym(kvm_iommu_ops) = hyp_ops;
+> >  	return 0;
+> >  }
+> > +
+> > +unsigned int kvm_iommu_pages(void)
+> > +{
+> > +	/*
+> > +	 * This is used very early during setup_arch() before any initcalls
+> > +	 * or any drivers are registered.
+> > +	 * This value is set by a command line option.
+> > +	 * Later, when the driver is registered, it will pass the number
+> > +	 * pages needed for it's page tables, if it was less that what
+> > +	 * the system has already allocated, the registration will fail.
+> > +	 */
+> > +	return kvm_nvhe_sym(hyp_kvm_iommu_pages);
+> > +}
+> 
+> Could we actually estimate the memory needed, based on the allocation for the
+> host stage-2 and an estimation of MMIO coverage? This would allow the whole
+> thing to run without setting this value as a best effort and to make it
+> optional, which is surely more user-friendly?
+
+Not really, this abstracts the IOMMU, so it does not have to match the
+host stage-2, in addition that the SMMUv3 driver requires extra pages
+for other in-memory data-structure.
+
+At the moment, this is set from the command line which is not really
+best effort as the driver later confirms how much memory it needs.
+
+> 
+> > +
+> > +/* Number of pages to reserve for iommu pool*/
+> > +static int __init early_hyp_iommu_pages(char *arg)
+> > +{
+> > +	if (!arg)
+> > +		return -EINVAL;
+> > +
+> > +	return kstrtouint(arg, 0, &kvm_nvhe_sym(hyp_kvm_iommu_pages));
+> 
+> How about using a memory size here with memparse()? This would be more
+> transparent for the commandline which can work on different page-size systems.
+
+Makes sense, will do.
+
+Thanks,
+Mostafa
