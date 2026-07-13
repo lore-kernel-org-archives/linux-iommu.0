@@ -1,163 +1,154 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012027.outbound.protection.outlook.com [40.107.200.27])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 552E13546DE
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 18:48:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783968495; cv=none; b=kwVpcRhfpqDwpe/oTvbosGdePfhwHUOt04hfAVCb+yqTSWQd2+anHu7gnUsANZPUnbOc8NuhT/Mo9d7kkZAn6ubVIXmHXacgMN6hf4dU/B/W4K6/JAZyw6z2i8SU5GEdAq5X3/2KBXi3N8DQDQO0qm0h7894nuRBeHS9xj726Us=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783968495; c=relaxed/simple;
-	bh=18BF4tvFtN7rb81d7yZbxHf143U9lHFn+oOlQiGvmi0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lLOKKm9Vpfxn3HmSt3GGAEjDZ9RfJsc/9otTauiIZ5HLcdfm5k9Po2i9Pq420PZlLdEPjaY9YULuDxTDan9ny5DrhjpuFAQ8115cm67z4MNG4kO5XlzwFyDbq54mfhcjsTr8Cre0rAwDqxdBGnxbGBxu4nD3tR0uGXFuZAApqGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dSEjc0Jh; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EAEC346A14
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 18:51:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.27
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783968669; cv=fail; b=QQQstlIgFo1x45W2Gbda33lfttcKWlRppoe6eUCDXC2xp91jb6SrxR5fP/2+O8Wq9mYAX9qWOqxq8Czxk22eqmVfKajByHv2Sqie88lqzswQ5mPa+iioqTVZOH//5bOCMYE6eWN1uOpU7J5UtdeKVe/cR1KUPtXgEcQCD+HkwhQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783968669; c=relaxed/simple;
+	bh=UcC2o2B0rZl3M8hNiGZxTh7tmSF+ENJA1ZCuhNJGtJ0=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CSfvNTeRzhsawVTdisoaA1wbYNPEBpXBkAxGc+RnrRAx7zpi72bQ9Q1OdUKyYK6Wz5vzqdIkTTL6vkYjGnao/rUeI55RypAqDaO9K/9FQ2TOMCCas+bHCyKOVB69f3D/1ivub11aunxbpJVgvcxJJEd8at/ttDdGXhPKUQdTAhw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=oETTL/mn; arc=fail smtp.client-ip=40.107.200.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dSEjc0Jh"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-8ff88549786so40962846d6.3
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 11:48:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1783968491; x=1784573291; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+4oaM697jjJh0i29DhT77Bw1lzVGGZ7UjxKZh4sSss8=;
-        b=dSEjc0JhoGM6UOpuHc6XII2x7cUJRO3dkm5Nk1xWHFQAEElLdZm2xJW+d9XhAnQMKr
-         tsp6EgSygFAw8CO5aPVWOCwy3z73QRJg1bzdcPO6bsWXD9U37nwQ0S/4V6UIW3GgRBWE
-         WiNvSP2TFNYjtTGH9amAGYUDrd0LU5RotoFRVpwHVpi+azAKNWueNuUvQd7lKI2vXJYl
-         yjYW0+hvu7Wxz+8w8TF0vg4zdf7KekOzMjhhqRncvP/p+nOI/32J6ifnMPb6I3HFSQb8
-         DnEl1q8GF3snn3N9/LUJtyYSjrjmSJXMfQyWHYKyvGqbrYb8jtEpiXpINxoLNoLq5p25
-         I4Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783968491; x=1784573291;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+4oaM697jjJh0i29DhT77Bw1lzVGGZ7UjxKZh4sSss8=;
-        b=LrlAMbyBrZF1HkBpcTF0ZaNM1/YI78xaEeXXZXCVJSfMAZywDmxenSkN5rni2LfA6I
-         Sg8cFvQ3/uaIx/HSW/LzRWN4hbrYJ5p7Dgmu3bJWUBpOt4xtU5PV/BXyYcMSe3zFVlRT
-         V8hLWYBKtZ8fDTqVXdjQZWAaHW/8zAJbzkUqomxE6izl3QuSjpaWhv6frBHB3HmwmPis
-         vkcJvePEp/6Yhpn9BPP2gp5igOHvj46oXAcUZRtsrLtBH6sqjbwdwE5zW9Mon0Xc/+ZT
-         MzyqPcPD+5+pBj3C+6hXdPsbzRZ7qWJ4My013NmHhThhnRALhQwTRo1VFWVArs7SINyC
-         TnrQ==
-X-Gm-Message-State: AOJu0YzcWZUpF5ZnVXh8XR9WKxsgOOedfqlm3SgbPCPPMIne1zsqn4Of
-	8j0AgnSwlyi8se4ub/1YNrJo60f5aVVo3ThVhEmMTkbp+vr7Qo1xnoZvIgNbNRWqU7A=
-X-Gm-Gg: AfdE7cmNeQRKkMhYeSqzHcaFNsbktajbbckzhi3S/m5E9j83/iwM5nopNsUmBJsEuML
-	MjFFW7402BspwbKvRTdIJjIhTsjl1OuZUmUB7PtRT7Uu5NObgciICPM6qnaSk9WAnHouqAI/AUQ
-	7NJQsSXgX0WUJwO7Xkfs7iiQBwrHxShp3locFOE9PWX8+BrivC3LuADxDkuuL9JBUcz/rRzF/Al
-	OW13yC5F5sSZ9s9wRFIzgcrbYkvzkc14256NKeaHY4DYGGEouRyST4YrjNAepq7YrycajhIn8aj
-	Iw+H/CVs4hEmKTSweEYMco1nYKKkhfjamVPuNIXfy8rv2a/OFumaszlhrcCv4MeXGW+uQlN4z0d
-	7ALbYchgLMcTMPWTb6Kq1UNVR/CyJ/bLpVJz0fS77yGdWbjkha16FOaaCwH9+aT1N3V+XR5I=
-X-Received: by 2002:a05:6214:e8c:b0:904:49fa:3085 with SMTP id 6a1803df08f44-90449fa364dmr123814316d6.18.1783968491378;
-        Mon, 13 Jul 2026 11:48:11 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd82e8ffdsm139962266d6.37.2026.07.13.11.48.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 11:48:10 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wjLhK-0000000E1oE-0kyB;
-	Mon, 13 Jul 2026 15:48:10 -0300
-Date: Mon, 13 Jul 2026 15:48:10 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v7 11/22] dma-pool: track decrypted atomic pools and
- select them via attrs
-Message-ID: <20260713184810.GM3133966@ziepe.ca>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-12-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="oETTL/mn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=r5qD45F9BwKJ2BbYHE9hi/rb8VzrDlCnR/wj50NVFBe9DCuojKRIi3ewP9y3h2HoRgCoWx15z7T8Ka8PI/74TyWXkQ4b+LyW7EGB2VPSpBOO0IW+WmAma6VxcHQPJGKWpufSrmbfcKxP981XJ3aL1ESLtS/h+ALx5zo3e9vezItsTg+Y1CFDns8DFdDQciPXSapcLamO5dM6t1FmjRD2M8PGN5k7+S7kv0I0cIicXfD+LnkW0iWGThI5cp9bRorDzFKa+ZJEZ5Y2GTn3nvPCrn1fKPALu+47OeEqBZUBCWlC+SQwqtv3L5fuRDIA9RUeWvy4qwgCy0J1rua/2gXkKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9xCUAaF3E+q9DGG0d5+j0bvgDxHGS+6lEf8jecnHXHw=;
+ b=g1rvG+KKlgwJ1XYB7FbUIDDaX8zGet5WX3GBIWG3qOijiuEs14mxOrUi1YfCI1/lGupC4povrQmVAgACFtFaIIlvZHBjyfT7Hu+wGKaFMInLLIa1zrl/DRlBhuFQXDu3mg76wRD2MtMp57fT5POZchCi/Iob1I45+y0qKbpBHFnfqf5MKPU4S3zXUwWpm4jAgfXN8eE47WdLbgahACuQsXOHx10wiApNQOf4cdLY7jcH0uw7AKii2hkkHcxvaoupC9HVg8zpJhyPMON4iwvnyHx2YNO86za4eyUh4Je/os5WaLnfqxyKX7Tm1xiAtLCdD+/P4Sy3+SbPAXWPFwXPJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9xCUAaF3E+q9DGG0d5+j0bvgDxHGS+6lEf8jecnHXHw=;
+ b=oETTL/mn1khXGHHdQEX10Mr0AR+Rl7ZBhdFAPSjX9PiGwmC5dSRKtMRObrc4sIlhQzMPfUQ1d+HqULH28IdWT6TC3NSNdILi6vZk6lRzQRgB4SBEZYZIEtVNSoI5at5ZE2MpXgJ3U41+eeGVuxNz6E+r5YsPbuEddJ28hDCs5ttXT4Vdv/EJo/T7x5TjDoHetGpw272qwcv03Qc86d4mbg4pg260OiIP2S5gJEsFUBxfWhzGw6tzqG1Jf2s5btQfg5+PuciDJ945TFIpBkeXGOyg6YuSBBdW7I6G/G9oqGrctsxvGEXhSI3SCZDYioLFpE559ZOHaOZJMhlDWfbHbw==
+Received: from DS7PR05CA0083.namprd05.prod.outlook.com (2603:10b6:8:57::29) by
+ PH7PR12MB6635.namprd12.prod.outlook.com (2603:10b6:510:210::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Mon, 13 Jul
+ 2026 18:50:55 +0000
+Received: from DS1PEPF0001708E.namprd03.prod.outlook.com
+ (2603:10b6:8:57:cafe::8b) by DS7PR05CA0083.outlook.office365.com
+ (2603:10b6:8:57::29) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.9 via Frontend Transport; Mon, 13
+ Jul 2026 18:50:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DS1PEPF0001708E.mail.protection.outlook.com (10.167.17.134) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.223.9 via Frontend Transport; Mon, 13 Jul 2026 18:50:54 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Mon, 13 Jul
+ 2026 11:50:40 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Mon, 13 Jul 2026 11:50:39 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Mon, 13 Jul 2026 11:50:37 -0700
+Date: Mon, 13 Jul 2026 11:50:35 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "Jason
+ Gunthorpe" <jgg@nvidia.com>, "Rafael J . Wysocki" <rafael@kernel.org>, "Len
+ Brown" <lenb@kernel.org>, Pranjal Shrivastava <praan@google.com>, "Mostafa
+ Saleh" <smostafa@google.com>, Kevin Tian <kevin.tian@intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>, Shuai Xue
+	<xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH v5 18/18] iommu/arm-smmu-v3: Block ATS for a master upon
+ an ATC invalidation timeout
+Message-ID: <alUzeyRh5FnzMiQ4@nvidia.com>
+References: <cover.1783044582.git.nicolinc@nvidia.com>
+ <939885143f3064811685b3f31f6f30f8a713c89e.1783044582.git.nicolinc@nvidia.com>
+ <9a85cccd-29ed-4c51-b9cb-140631966d20@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20260701054926.825925-12-aneesh.kumar@kernel.org>
+In-Reply-To: <9a85cccd-29ed-4c51-b9cb-140631966d20@linux.intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0001708E:EE_|PH7PR12MB6635:EE_
+X-MS-Office365-Filtering-Correlation-Id: 07f400e3-6169-4edb-0c08-08dee10fab34
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|23010399003|376014|82310400026|1800799024|36860700016|18002099003|56012099006|4143699003|11063799006|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	ASxgbWdqTuZobAGV7J22zT4aQdD9OCzmimID3DtlttfZQxrtkMT0x6pSTaMs1s8O2sC++lJCxbhTsWOif/TH047sdr6Q3rUGwZR5d8mERUTvyc+5GcdD9QjVqMpcmWPUjrOgPkEcNwNysdU4u9cjX2NMGAwXUCaFuyMiuKLUyu/tlx4iQa/abUzlmjL2iGNfbg1+CG2E85FSYhqyfCCr1gtEPYJzpZ99es0HKt67fXw+tou/W1Rqpv6NSeU5Stp59wxeL993xBnCdrzZsUmcRnAAnlW/xtKsmLJO9HDsT8flybLxw4fPnmJtf6B6kXSozNTP+Em9R09AuIVQ7lDOuSaJUDZSWhdHmpNHwUnyebdb7uj68k+X+l8o/Mj28OlovaS5C3ownAAewwgCPMWAxRE5yCcfe7/ZpzJM30vErwwqHsSiuk/4pg64ficiXsyw1jTt7KRuL27eHuqDyqri6uWxqXCNsTodx9Whi6dh+0WHADJs0kzNbkiyFrDAWOhGe8KTF5BSaq/GmlWCvNHiPHv4FHdopUoLlkMXRKVTcteZJSS0O9uq+mQDskKeqlOb7afPJy1+o4Qboj9X5kTkbwmgLzcTFRJKyZOpuB2RIjAQdLUSRK/OxUzNvf5Ahx1H7REMG/iZYF8+FcdvDuakdF1NqXay0Yo3fxpjAiHHTZcBleMpMhoAGaZSG+Vwabyp+f3jHV1/6v74awktKNGcmg==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(82310400026)(1800799024)(36860700016)(18002099003)(56012099006)(4143699003)(11063799006)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	O0bZ6NkaOvW7NvRp4oJwjvIrggbpn3epr8qkauqprYP2XF2iaDsqQbL07UGxtZFCXGuWUhGmxht7yTOJHV2ZeQiO1JQqAC94+b/GvL3vmLTMvnVXybdatCvUAZFs+NTtz0eId0UKnwCl7yJnMM9+54UwYqju0tvL9mZCCObaVjbLaKVchvAzo7Vzn+KRgpsQ03K5+FjLcaZ3WY7rst7PRuePZS/1gh+O2I8Z/dsh1Jjd9pXicCtTaiNfU2l8sffFTmhipMWEFBHFCi0sukpCiUWseOyBVE6xgiN6xUxG7VaUmLz7xXYmwFxZcaIMBlHbvNitYpVHfh4Ed3ry54BUWQaOjsLHBLi1L60iY+n7NZv1utOg06xMRS/pJP9zFMBVondDWE9tLlXKltV+qgzZ1jgcptwY6cOatfr8HUeHbTeUm8Jdwm2Gux14jCmvhiij
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2026 18:50:54.4921
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07f400e3-6169-4edb-0c08-08dee10fab34
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF0001708E.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6635
 
-On Wed, Jul 01, 2026 at 11:19:15AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> @@ -114,14 +120,17 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
->  	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
->  	 * shrink so no re-encryption occurs in dma_direct_free().
->  	 */
-> -	ret = set_memory_decrypted((unsigned long)page_to_virt(page),
-> -				   1 << order);
-> -	if (ret) {
-> -		leak_pages = true;
-> -		goto remove_mapping;
-> +	if (dma_pool->cc_shared) {
-> +		ret = set_memory_decrypted((unsigned long)page_to_virt(page),
-> +					   1 << order);
-> +		if (ret) {
-> +			leak_pages = true;
-> +			goto remove_mapping;
-> +		}
->  	}
+On Mon, Jul 13, 2026 at 08:20:29PM +0800, Baolu Lu wrote:
+> My understanding of the sequence to quarantine a faulty ATS device is
+> to:
+> 
+> 1. Identify the devices that encountered an ATC invalidation timeout
+>    failure.
+> 2. Have hardware block incoming DMA transfers and translation requests
+>    by clearing the corresponding bits in the device's context/
+>    translation table entries.
+> 3. Have software prevent the driver from submitting new invalidation
+>    requests or re-attaching a new domain to the device.
+> 
+> If this understanding is correct, then while steps 1 and 2 are hardware-
+> and driver-specific, step 3 seems completely generic.
 
-This makes the memory_decrypted conditional, but it doesn't change
-the lines a few above:
+Step 3 is kinda driver-specific too for a few reasons:
+a. This is in the iommu_unmap() context; called right before that
+   function puts the kernel page. So, all the steps must be done
+   before kernel reclaims the page (potentially to a new ATS for
+   the same device whose ATC is stale).
+b. Invalidation can be an IRQ context. So, can't use group->mutex,
+   which a generic helper would likely need.
+c. Given (a) and (b), extra driver-level spinlocks are required:
+   streams_lock and master_domains_lock in this patch.
+d. Step 3 actually has two small steps: disable ATS at the driver
+   level; disable ATS entries in the invalidation array, either of
+   which are currently driver-specific.
 
-	addr = dma_common_contiguous_remap(page, pool_size,
-			pgprot_decrypted(pgprot_dmacoherent(PAGE_KERNEL)),
-                            ^^^^^^^^^^^^
-			__builtin_return_address(0));
-	if (!addr)
-		goto free_page;
+Jason has a view of moving the arm_smmu_invs to the core. So, maybe
+step 3.2 (disabling it in the invalidation array) can be generic in
+the future.
 
-It is wrong to pass pgprot_decrypted() to the arch code if
-set_memory_decrypted() was not called.
-
-Also it looks at some point the nature of the atomic pool has become
-confused. Originally it was just to allocate atomic memory that had
-been vmap'd outside the atomic context (to set the non-coherent
-pgprot), so every caller was expecting non-cached memory.
-
-Then it was reused to also allocate CC shared memory outside the
-atomic context. That was fine for x86 that doesn't use DMA_REMAP but
-on ARM64 it now means all atomic pool CC memory is uncached? That
-doesn't seem to make any sense...
-
-I suppose along the lines of this patch the solution is to add a
-noncoherent property to the pool so we can select the correct
-combination:
-
- noncoherent !SHARED = vmap pgprot_noncached
-!noncoherent  SHARED= vmap pgprot_decrypted + set_memory_decrypted
- noncoherent  SHARED = (probably unrealistic in real systems)
-!noncoherent !SHARED = normal __dma_direct_alloc_pages()
-
-But I don't view this as that important, the CC hypervisor is probably
-going to use the S2 page table to force cachable on all system memory
-so the non-cached pgprot is a NOP, but the extra vmap is wasteful and
-it is confusing.. So maybe a little fixme is all that is needed here.
-
-Jason
+Nicolin
