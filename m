@@ -1,202 +1,220 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19012046.outbound.protection.outlook.com [52.103.23.46])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88E7734B662
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 17:38:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.23.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783964281; cv=fail; b=Kp3ImPAVcwdyLffeq/J9WK91Q6puziygF3Kb8q1YAuoAdOrpybzCnDSlCh54qyLmpVIxlv/HKLF+QBdnjllIXstQ/BMUwaqAqUuV41IH1DoIzOJMyTdcvtPEuMguzNMM5A9uyo4FmUXAOaVnVUcl94bn0s/Z66VwDFGvpAPpeZ8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783964281; c=relaxed/simple;
-	bh=VnKzvYCyXXkAWm9b/OjwjYm63qk0Q65V7c2n/7SeJDo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=h5b/aMUY8WoTiy7JqtD8UJEzLA1EekNFB546TlJa58FiZ13EHxsPBUdXDO1cYJsn7lg9A5YBXDDytVpDW4FjceAZ/c4liGvFrMBnMkVicfEKKSxLFpJFI60HQiuK//Dj2DlVHHLR4RC6SaGnxcZHqseVWvZrS+Na0TFxQm9Sbto=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=CYaXFDnP; arc=fail smtp.client-ip=52.103.23.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19FE8233927;
+	Mon, 13 Jul 2026 17:48:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783964925; cv=none; b=fmBowfq6WMTlDLVwpD5R0l+Wr19+F3S8pJ4hNbx/c7MKUqGwzRbJ5rQRgFSXLKUKL6LOKscin63KyIDMBXG1t0rmIPsPRb0fmZpvH18qC3b/iCXp5kvPZQb+AFwGKJRJ1jbY2Fo3cYIV4MF4BDiGkoKmmEgc00crkYD+kdJKsu0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783964925; c=relaxed/simple;
+	bh=elswOXGENSE02bniFB//+4GpuTocS2Nq9a4KJ9VylI0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HDpvgmUPvW3aOqfZC9+9mQ7KQA1eH2u4il4ayGkq/DectA+IY8EQnd1gmU/wkZb7Opq8IwgJ2f7Pke5kk71weXNsU0ADvbDX0vI5cUvjPqlSRgO7UqHpiP42inICvQ/5VMUjf3M5eLP6DDqqU2xd4oiKik8ZSN5/nyodJntNW6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=onjxB++n; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="CYaXFDnP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eGDxG7knbhY1OJTQb/Kd5T1PEyahcwK+kny1gkcFTbTsskM6GJxa5HECpB9UxbBDkrvyRe8yRMIYVu1LaZl76UEd1tTWyEEC5mQF7VPWWFtRC1MPkbYzp7Mw/zv4VeyxckYqADhn7MWK06h9bysOlUMRXbW/cqi3TzwCp9BUCLRAupfD1LsGn7Q/xQBgNZJtiWzBwwb73+0WaRWA7au2SVNPytseFLDLQSUHCGDM3nCYd0ROO5QFGHUTrzTV9NponJx/gnAXOc8AxCe4ZY2y+X9QCUeQGMju6TEDP7igqw09g5fpxoZtBLwe1dKxsJjDfT74bKgxKzXaFrqgbufZ7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Mkm0UTQBw8bDw5wqo8OQrDLCTSN1xFr0G0kLArLdDR8=;
- b=BrW9zxW93mPEL8LtWzaSLkIFnVrexvonTT8o0dNEqm8b+gqYFNpX02L6TiMpfBxseYoTwIsr+WPnGttPXe31wPQsIbkxy1j6/uqgIucC97powg6TKBExzv10LzI43zz43aungySKcARDaV4XzX2LqVThgzdt56mZO8IfA8KJ2pgl7H4E3m6v0uZvZZE7EzG4wKAz4Y9JvFnmTbCA7zLPcHe8cI3wvK7mGmLc9DVhrB6mLoavBNe89fBzpPxSK7MEm7bxXajeGC0rp5QZmyKqE1bxiK5pLLRpiSK3T6TF/a/kqZLu7YLrOY2FySLNoxAf9uyVUYL3qq3BXyHbNPL+1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Mkm0UTQBw8bDw5wqo8OQrDLCTSN1xFr0G0kLArLdDR8=;
- b=CYaXFDnPHfkPpri+j+LWXKqGyjvX7MVVnF27q67lc7lAxn5GNaFTvsZJP9UYR4zhIDu/VIqDxxfCc7PYSLpta4YAqPPLkkBjfFJGcxkUp+14mmAVt1ovL976Ylo99a6Ez9T9brN6d8I1Aet0gBlfmXCA3nyZMU0y3D7573+/rC1hb1B43HNijcCuoY/E0Rr59tIUdUcW9oNQwDc0BnfIDkw0ZBbTVW365vib0N82kPPclOipJjAZO4voDRC7WMyNzl0EqVsGIaeKmDT/5xPChaVOzpL6SmeVap6nIc0uX0p9sei6f3MODV5o5kgoFcMZO/QE/XoMSbT3cU2mH/a8uA==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by SA1PR02MB9758.namprd02.prod.outlook.com (2603:10b6:806:373::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Mon, 13 Jul
- 2026 17:37:51 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0202.014; Mon, 13 Jul 2026
- 17:37:51 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
-	"kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com"
-	<haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>,
-	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com"
-	<bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org"
-	<mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de"
-	<arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
-	"tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>,
-	"easwar.hariharan@linux.microsoft.com"
-	<easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com"
-	<mrathor@linux.microsoft.com>
-Subject: RE: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Thread-Topic: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Thread-Index: AQHdCjyk3FoDd2PvoEaR3JQ0We2DX7ZlmCnQgADQU4CAAknxcIADB1oAgAAOZJA=
-Date: Mon, 13 Jul 2026 17:37:51 +0000
-Message-ID:
- <SN6PR02MB41575E067DFEBEACF316CD35D4FA2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
- <SN6PR02MB4157253E030D477FD91B7E26D4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <enpkphavwmqrkded73c43vprczslvei4755lkxuedof4z2k3kk@y2jtklbk4efz>
- <SN6PR02MB4157805F23ACA85A668FA065D4FC2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <3ty6yq6oftsvq52skrngjv5xpyixhsyfo3dndhoujt7emxsb2o@y6ischifpmfn>
-In-Reply-To: <3ty6yq6oftsvq52skrngjv5xpyixhsyfo3dndhoujt7emxsb2o@y6ischifpmfn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA1PR02MB9758:EE_
-x-ms-office365-filtering-correlation-id: 331d68f2-8330-4403-c9be-08dee10576c0
-x-microsoft-antispam:
- BCL:0;ARA:14566002|25010399006|37011999003|24021099003|51005399006|15080799012|13091999003|8060799015|19110799012|8062599012|31061999003|12091999003|3412199025|440099028|102099032|40105399003;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?Kj/Qf861LN+zQB3HyRGM3oR3LzUqDTXWoAFnz8MCGdXVaYwQs5TGu4akYmXM?=
- =?us-ascii?Q?eJIivpKkj8yewZbwVvW5h6D56SikfH/35vzEp3RQVaVZXGejZUi7wxl9AK/u?=
- =?us-ascii?Q?ovhJWiaZ3rK1QW2ccBGZvVaHmcfL7K/GADyUG89so0qoCKpgtYVq5+KM4/ef?=
- =?us-ascii?Q?Ldeb3+TdkeGNg/GT9tCzPky7yqSvZT/EpmMKGuoK7M+2G63OHpKslAxFHsf6?=
- =?us-ascii?Q?WXz0tIb978fTiEW7GTDn2WxVjYtOgFiqrZR0lVSwMs3sHQdnGLmi5me9ioTd?=
- =?us-ascii?Q?71uoIkWFKzhVvlbWzhs21/I6q/MxsNLGUzfw44USxz6nYr/GMPL2cw+VmH0L?=
- =?us-ascii?Q?ihvgwkcSrFul/6W7EwkI9zi7Ox8Cfa7guHYE6IO1MOayluzspJQBUURz+yCn?=
- =?us-ascii?Q?uwy7Ovfpj60n65habH2n0JknLG5kUbV5QOvuIMAuejeBVLOetqHv+tdXnZdF?=
- =?us-ascii?Q?YczCUwv/NDdXB6F/uXiaEFsL9fXzdYM+0hDeR8VuL7hUy2gMkJDuMssgQfxa?=
- =?us-ascii?Q?tazvXk8vCGS4qt0Vcp6CEGw96i4l/SNF6bcCEC+YC3xVKduKPNo6zvWAaHTt?=
- =?us-ascii?Q?Cmc7pEgDN8FUME3IU52AymOncq89vCWnunk3qyGILO7fWYZY4GoTsEBHz7En?=
- =?us-ascii?Q?L/NGv44rkYZ64Uvw1qMFnqpgIUiCevJW4b7RzKhJ46OcKpCQXPScBe9d9Cnx?=
- =?us-ascii?Q?17M6OAwfmqAg6qDN8Qdmh+jOF4BhgL77DYPAvSkdOIDWd+szh4Y8q1IlmPfc?=
- =?us-ascii?Q?qTKgOndbrOnn79p01AsX/maeWxTr5TNvff1n28GiISbotgqGFv/uFOtpudrr?=
- =?us-ascii?Q?YsC/NAh79a89ZCM2vRTyJuntnlSqsV+WSw/9MoWtNcvsTE/8DTgg8tJsXor/?=
- =?us-ascii?Q?m79pF97xTzUp9NONntWEiC/pmKWaqnr13t26Z6CUvIx4+OJgCbh7S0YmnEsJ?=
- =?us-ascii?Q?ZnnURli0nYJeza83o0CG195n57EeJZhMeNvJDq9MWqvZo9rV+HO2cMMzK4OD?=
- =?us-ascii?Q?m1FalHmUqqk/mNHXLJaUBc08owHs+OJK8ZeNGbLJ6S7Ge80=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?ccYszQ+u9cY54G2ptaXD2rPdhYpd/TJthMNmsNEbclegOPY2RFvNyGcLy1U4?=
- =?us-ascii?Q?ivOk4/eAVq3XSL2L3ExU1LzoByoLfe4wB0G6fGsdo9AJBbmXU2n3UQC/jCn2?=
- =?us-ascii?Q?bGRQKfW9CzMdAfSemV+n7wt9S9ZgzQKuaUyRUg+k1PNgkEf+tLj0dhZys+Y4?=
- =?us-ascii?Q?dl7z0Rp94rV9NAEngWwaI2g6Pn4N/Yn5V5aDAG3YqbcEVn6QF2bHaVR+tB/7?=
- =?us-ascii?Q?lO+TrUZitE18pOhk3KIZEIrxU2x/ZoDqEZLS20Lia6/p1MtjA5El+8vAPJZZ?=
- =?us-ascii?Q?9JZx91tYZQwagM0Mk6z2EYc6L3Gstz9HkYsYv7wgdeA2lIwZRlDS4hSw1aHm?=
- =?us-ascii?Q?2dZe/E6muKEKq9zOqRNPh0JUDw8FXzRhn6fh76ZHoeMgYInGm5Qa4mai/Fu9?=
- =?us-ascii?Q?vjmVx3g6nSGvDSUuRdac7VD7RvcxcNN/eX30738/oEmblWhWDtKDBQ+85BVf?=
- =?us-ascii?Q?ha4KrUaQln6o8Oa/W+Uc7UPFU7gy2eiAGUQ7bupow7qR8OAD5Vb9ak7PvzPV?=
- =?us-ascii?Q?DLmlq95MRa07TcTtP+jbmrlw2k40KpihNvc7Tt0iCEMiD2fgm7gjMhj9aeuk?=
- =?us-ascii?Q?Hk+C4nvTo6y3BTyURgNhU0XQjUkixFPjTcbepax1QWX9dz2RFUPXAMc54JPk?=
- =?us-ascii?Q?/6pyjgawLImtH920REd43s1tMDkGIP6F9WO//7r+WNLynYCxM8BMYZhSjgy2?=
- =?us-ascii?Q?OjwLG7WbSPtt6fswchMEuF63+UdvUZKLSCT2wGT+iPOdvFSAze8OKj5rOTuj?=
- =?us-ascii?Q?BStIsnZ4q3eEaocd63l8QJPLPxDiBQAoqETSXLrQENpk6vZvvb+7+RScd6CA?=
- =?us-ascii?Q?UaVT0vSSXX7S3ba02SwPmY/bm4llLjhY3vZLWguVTcub8eWd5vVA/yJ9kLlM?=
- =?us-ascii?Q?mR0T1vEzVWCxNXRU9eql0cOHBupZ/FDKnWSEVimAKS1qs6NPIt78O978SUrS?=
- =?us-ascii?Q?0hBksTQ0jUaQW1rhqXRM9SXrJ4ctt8nKF23monR9tsIo+Nfk7PEECmEtcN1G?=
- =?us-ascii?Q?mWA/mJhaJvpjZGdPP0vjeJWBwyLWRVY3klrgAWThS5KhD6QQTitrhp063bf4?=
- =?us-ascii?Q?ugYuF5xMUaVFE9PjSO+vyZxqaCb+r/P4X3qSCmF5B5BjDUSXT7ar6EYRfZZi?=
- =?us-ascii?Q?qjGgem70GfgHf5Ht8wq5Y+jKDuajc79enJOqO6UYcG0k/bRu7TO+yOpJVSuW?=
- =?us-ascii?Q?jXO1OwqtLFG2Yvqzj5fpHFUidKyg2ieQP8pPtpANYXM+pwWOF7egaaI/J4+i?=
- =?us-ascii?Q?B6GGAX1IKMz9XYWl14KfltgvPqElNJJ8xgPeCKf8JZd0PjKI8vUEWhbVW3UG?=
- =?us-ascii?Q?MpRkSbpU1tDcy5j+qCFUshOR+ySwvgwrgxAwGAPXKt7YuoXtcOGYyspOH8/g?=
- =?us-ascii?Q?x/1x9yQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="onjxB++n"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 827251F000E9;
+	Mon, 13 Jul 2026 17:48:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783964923;
+	bh=eqsaQhz+Tm8HgoxeGaT5sBOLtHmA3ZLHG5CTvOWZ77w=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=onjxB++nlQDm7gMhTfmaNQDGH/rqBSYbLzfVEPq1lS1OhWdb6CrePXw7aLeTLGo0M
+	 pB+hJukV545xwSzfacCs6+xpPSowS++yQcA3kxVja2GEZejGL+Hf0WxMqbxsDeOECk
+	 UdHMAgyb07hAwBRvraqJw/dg9AeSA04LDY2AQwPOWSaAv5NIULkVGuWTgoHQOKjcws
+	 4tB7saNVwm9kU+nEYLQQmup00N7S4iEjniDnAmshu1Fop9Y+D7SzuW9SN/bp2Dc/iR
+	 UQQknMV48nrRokvLe9ipKdqqYp8uAlzqLTw1pQ+E9E6C7IvEIujYOTr3MYFQkIyYDN
+	 RQbf9q/HFuDdg==
+Message-ID: <8f3c1451-1b49-473a-b060-a8b95b2d44b4@kernel.org>
+Date: Mon, 13 Jul 2026 19:48:18 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 331d68f2-8330-4403-c9be-08dee10576c0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2026 17:37:51.6177
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB9758
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 05/33] mm/rmap: update mm/interval_tree.c comments
+Content-Language: en-US
+To: Lorenzo Stoakes <ljs@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, "Liam R. Howlett"
+ <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>,
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+ Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>,
+ Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>,
+ Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>,
+ Dinh Nguyen <dinguyen@kernel.org>,
+ Simon Schuster <schuster.simon@siemens-energy.com>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>, Alexander Viro <viro@zeniv.linux.org.uk>,
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+ Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>,
+ Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>,
+ Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>,
+ Arnaldo Carvalho de Melo <acme@kernel.org>,
+ Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+ Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
+ Adrian Hunter <adrian.hunter@intel.com>, James Clark
+ <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>,
+ Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>,
+ Barry Song <baohua@kernel.org>, Miaohe Lin <linmiaohe@huawei.com>,
+ Naoya Horiguchi <nao.horiguchi@gmail.com>, Xu Xin <xu.xin16@zte.com.cn>,
+ Chengming Zhou <chengming.zhou@linux.dev>, SJ Park <sj@kernel.org>,
+ Matthew Brost <matthew.brost@intel.com>,
+ Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>,
+ Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>,
+ Ying Huang <ying.huang@linux.alibaba.com>,
+ Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>,
+ Peter Xu <peterx@redhat.com>, Kees Cook <kees@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Andrey Konovalov
+ <andreyknvl@gmail.com>, Alexander Potapenko <glider@google.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Steven Rostedt <rostedt@goodmis.org>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Jarkko Sakkinen <jarkko@kernel.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Thomas Gleixner
+ <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>,
+ H Hartley Sweeten <hsweeten@visionengravers.com>,
+ Lucas Stach <l.stach@pengutronix.de>,
+ Christian Gmeiner <christian.gmeiner@gmail.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
+ <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
+ Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+ Thierry Reding <thierry.reding@kernel.org>,
+ Mikko Perttunen <mperttunen@nvidia.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Christian Koenig <christian.koenig@amd.com>, Huang Rui <ray.huang@amd.com>,
+ Matthew Auld <matthew.auld@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Yishai Hadas <yishaih@nvidia.com>, Shameer Kolothum
+ <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, Shakeel Butt <shakeel.butt@linux.dev>,
+ Usama Arif <usama.arif@linux.dev>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+ linux-perf-users@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ damon@lists.linux.dev, iommu@lists.linux.dev, kasan-dev@googlegroups.com,
+ linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+ freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+ kvm@vger.kernel.org, Russell King <linux+etnaviv@armlinux.org.uk>
+References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
+ <20260710-b4-pre-scalable-cow-v2-5-2a5aa403d977@kernel.org>
+From: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+Autocrypt: addr=vbabka@kernel.org; keydata=
+ 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
+In-Reply-To: <20260710-b4-pre-scalable-cow-v2-5-2a5aa403d977@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, July 13, 2026 9=
-:46 AM
->=20
-> On Sat, Jul 11, 2026 at 06:31:15PM +0000, Michael Kelley wrote:
-> > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, July 10, 20=
-26 12:34 AM
+On 7/10/26 22:16, Lorenzo Stoakes wrote:
+> Update the file comment to clarify that both file-backed and anonymous
+> interval trees are provided, referencing the relevant data types for
+> clarity.
+> 
+> Also add comments to indicate which parts of the file apply to each.
+> 
+> While we're here, convert the VM_BUG_ON_VMA() to VM_WARN_ON_ONCE_VMA().
+> 
+> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> Reviewed-by: Gregory Price <gourry@gourry.net>
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 
-[snip]
+Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
 
-> >
-> > One new thought:  Have you considered the hibernate/resume
-> > cycle? Does anything need to be done with the pvIOMMU to
-> > make it functional again after resume? I see that the Intel and
-> > AMD IOMMU drivers have suspend and resume functions. I
-> > don't know enough about the Hyper-V pvIOMMU to know if it
-> > might also need suspend and resume functions.
-> >
->=20
-> Thanks for raising this, Michael. We have not considered such support.
->=20
-> My understanding is that the Intel and AMD drivers only disable the
-> IOMMU translation, flush the IOTLB during the suspend and re-enable/
-> reload the preserved root tables and other HW state during in the
-> resueme.
->=20
-> But for pvIOMMU, I guess such job shall be done by the hypervisor?
-> For a device resumed on the same VM, its logical device ID should
-> also remain unchanged?  And the corresponding Hyper-V domain objects,
-> configuration, and device attachments shall be preserved and restored
-> by hypervisor? I don't think the current Hyper-V ABI explicitly defines
-> this. But maybe if we want such feature, it could be done by the
-> hypervisor transparently?
->=20
+> ---
+>  mm/interval_tree.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/interval_tree.c b/mm/interval_tree.c
+> index 344d1f5946c7..2d50bc6228c4 100644
+> --- a/mm/interval_tree.c
+> +++ b/mm/interval_tree.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+>  /*
+> - * mm/interval_tree.c - interval tree for mapping->i_mmap
+> + * mm/interval_tree.c - interval tree for address_space->i_mmap and
+> + * anon_vma->rb_root
+>   *
+>   * Copyright (C) 2012, Michel Lespinasse <walken@google.com>
+>   */
+> @@ -10,6 +11,8 @@
+>  #include <linux/rmap.h>
+>  #include <linux/interval_tree_generic.h>
+>  
+> +/* File-backed interval tree (address_space->i_mmap) */
+> +
+>  INTERVAL_TREE_DEFINE(struct vm_area_struct, shared.rb,
+>  		     unsigned long, shared.rb_subtree_last,
+>  		     vma_start_pgoff, vma_last_pgoff, /* empty */, vma_interval_tree)
+> @@ -23,7 +26,7 @@ void vma_interval_tree_insert_after(struct vm_area_struct *node,
+>  	struct vm_area_struct *parent;
+>  	unsigned long last = vma_last_pgoff(node);
+>  
+> -	VM_BUG_ON_VMA(vma_start_pgoff(node) != vma_start_pgoff(prev), node);
+> +	VM_WARN_ON_ONCE_VMA(vma_start_pgoff(node) != vma_start_pgoff(prev), node);
+>  
+>  	if (!prev->shared.rb.rb_right) {
+>  		parent = prev;
+> @@ -48,6 +51,8 @@ void vma_interval_tree_insert_after(struct vm_area_struct *node,
+>  			    &vma_interval_tree_augment);
+>  }
+>  
+> +/* Anonymous interval tree (anon_vma->rb_root) */
+> +
+>  static inline unsigned long avc_start_pgoff(struct anon_vma_chain *avc)
+>  {
+>  	return vma_start_pgoff(avc->vma);
+> 
 
-I agree with your and Jacob's comments that the guest doesn't have
-any responsibility for saving/restoring IOMMU hardware state, as the
-Intel and AMD IOMMU drivers do.
-
-But yes, I'm wondering about the Hyper-V domain objects and device
-attachments. I doubt Hyper-V can do anything to save and restore
-them. Hibernation is a Linux concept that the Hyper-V host doesn't
-know anything about.
-
-Hibernation is already complicated, and in a VM it is even worse. :-(
-As a start, see Documentation/virt/hyperv/hibernation.rst, which I
-wrote about 18 months ago. It provides some basics as well as outlines
-the additional complexity in a Hyper-V guest VM. I'll also try to spend
-some time thinking through the implications for a pvIOMMU, and let
-you know if I have any more thoughts.
-
-Michael
