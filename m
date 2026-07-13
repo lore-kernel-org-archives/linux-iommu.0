@@ -1,318 +1,271 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011049.outbound.protection.outlook.com [40.107.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BA83E5ED3
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:13:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783937601; cv=none; b=D+7KJB7crdLMbPNk7ePsNulFXdRBp52AuXwPlI3IK8PGDK4C3Q951n770kFQGCDnTAN9KgWq7df2uOhMOHiFWcPeqA09yMfsEDHPyn18wXiPzMpUod1K/qRjZBa4aAUD+C+tEWbx5GRHA8QjmndgoRhlH+7uLN7HGVn7j4L0KrI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783937601; c=relaxed/simple;
-	bh=u9moo65x03qWiVj+FNv6pjb8T63fO0FWXRaF/TZaVNc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LKvtj89gFPXPNtwKQuej/T1Z86bwRmQJp4f24wbPnhGTwbxd9a1rHd5Cz/VmE5klOjkzA1DR3gCTrRNT4l0aXYxVdLw1Rm/5+eNMnXN2oHcnvIgG3oo1uJRPMm7w6uRLsYQWIF7g1LJWrDAQ7Ysme+dAalu8tN0VglXNPYBPIA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GakUp5Oc; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09CFB3E63A8
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:13:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783937623; cv=fail; b=GDCW8yRlzBNp2xcPnWgywmVJUkryOgnYNid7/g1iyPWJiw4j4vnmi9CoxqHClHLzCeq6FLrzJ+VVdEPLecP7e1s2uCB+ZH+GQHXtjCJkki919lX5wpLtX+gJlgNNVI7C0NhiHz9nSdFgtuKYGNOFLhz8O8jOJ2dF5FAKF56bz2E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783937623; c=relaxed/simple;
+	bh=wZZY58ZHyZQN03UcXOTWVChlTCv33G8lk3x9RoI5q4c=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=afZ0UcXESScxc3qygh3p4S/p6ya49fU+0C5sf3mWe/aHDd5qgscLfgldlxV8En51lmQyPiTLKXX8kiUxV8PfZBcq2nLxEpFYn+BrAeti8VKq2oPcd+DGaIMDKD1pOyBNZcr8Ldk3Blg14WOI6Bwjz1hGmZ0ON41lCvhwpCnvkFs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=xpU+yrOe; arc=fail smtp.client-ip=40.107.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GakUp5Oc"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-493be0fbcc5so88375e9.0
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 03:13:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783937598; x=1784542398; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4FOjodbDLawuqaxqRGW5J71xttNR9yOzfD0eE/pV9Fc=;
-        b=GakUp5Oc1ARRNMKMdwYCDLZ7Q7inNRoK061V53GcuQAdBdyoL3JACUaBiUpQnLzLuo
-         uC7KU0VgYiHTlrJqYgy66UD7seo7h0urE2TRYGEVNtGtMbPw2iCFw0ZnSN7rWLvlMRm8
-         QqxGjWKmBI6NkA1Zn8btQMQsvsTPckI2Ku2tSbYbRTzmCD8Mq5VWyoUcI4R8hgSB5f5o
-         /BZsT8LlwlpY76OoYDwg5yRRHUhTzUFLnDneuNGFIruSgpQw7YJ7GJJRorEP4buRt2bu
-         PmttwuuXKhsxFGUqPseUfTN+HvTIlNAu39VQss0fvg8PpQM1SI0iwHLkdLAR86OfP2tj
-         4v8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783937598; x=1784542398;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4FOjodbDLawuqaxqRGW5J71xttNR9yOzfD0eE/pV9Fc=;
-        b=qdQnOM6wtyNJNurLld2Wresegq0KlxtSC0zD+BTHGlMxA73wyukBDdO08GIdJBP2pL
-         rBgTF7ZkvnzX6sXGKx6iBNIx3V9zIyqXta4+H3i+2rJ29i9dCRWYeahC5mu2A7FpmwrK
-         G97450vecouJ7oKqI9phi86x+a90XYNvcIBni26okCddf/GKCmN0DPOXWO66knojcFUV
-         SHak17yeBj4bQgSfXBASez/r9xJ24D/C9n1Ji84CYKV6fotZnwGX4aQ0Iv1DzrahqLwI
-         68IjjI0N0qBi9EdY+f6IxWRxY2dJIvCo0cnzrt4NeGSro01gvy0EcvdBcFaCA5ekKQwG
-         K3Aw==
-X-Forwarded-Encrypted: i=1; AHgh+RoIxwzZVIbQtyxUPF0AGO5pM0XP3E8asvjGgJj8KUjECQQtXZKeoHgGA59iMYFJltT3S3kpxQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyCF2B0sO89kScrSDc9S+3aDx3THXlvhwOJv8eogJA2bluC8GZQ
-	vwiIYQ7hSAz2ZJuHSIav6KGTnuFfWVuCG6UflQf0JweJA3sNMdurk8kPuZ9KHDt8qn75Uiy4vA6
-	vZlGjrg==
-X-Gm-Gg: AfdE7clJARxSsbBmWwAZXV3XjoTzzc55b6UVE5FPaX3SQoANVUclxGtKjuG7eVavo3+
-	30vx8IC/4rND4Y5KWdRghSvgCFxPcGWHV6Mg2z6ROCZ9eIdI88HNona7npKCnC5wJl1iNBb1Cj1
-	AySqJght8j6mpByo0//YoXvwUFVmAXNJH9Myd9L9JsI+uz2tTPEJIKdLJgqWirFbwwsiclAeCH+
-	PiRzrS/W3hSHVmS2Q49QrMhZmN7whnM76bbHJ+h9+zUO1MWvx4gXRgPIXzqCp9Ery2BUD0SEUzS
-	JEqfHgWHHNpwdJxil4AERJ52h0fb2bUoLtm8U7R4u8DiF/cB8vf0cVSOlaq96zWQrS4Xq/1fF3C
-	N3Jsg+y9WZHNd5s7qVaFcvnYQOzsTyK7/M4snG22W7oNeVn94+sVs98GLzSAyrox2WLPT1aXWK4
-	lRwaHBhFxn1PrD5becI355tcm4jcZwqWX/1Z3MPCBDdymiAmUQ
-X-Received: by 2002:a05:600c:4ec6:b0:493:aed4:8d03 with SMTP id 5b1f17b1804b1-49468883469mr153335e9.9.1783937597212;
-        Mon, 13 Jul 2026 03:13:17 -0700 (PDT)
-Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa039ae44sm80270824f8f.23.2026.07.13.03.13.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 03:13:15 -0700 (PDT)
-Date: Mon, 13 Jul 2026 10:13:09 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Vincent Donnefort <vdonnefort@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
-	tabba@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 07/25] KVM: arm64: iommu: Introduce IOMMU driver
- infrastructure
-Message-ID: <alS6NVzDahb2sCQP@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-8-smostafa@google.com>
- <alEbHFbmr_PvY6ZB@google.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="xpU+yrOe"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=JXPUb2l6lvHru5roYOcJsACGJS83XUIqp8ZNUQLVwxMl3nI4U2GZYYhyilbo5svp6A8lEFAQnNeS+fsg1ESJBZe/ucSxQPwPH6++Q/TlEq7/AIJBg2T8S8djISOSrFYn1PlDIr7px0eHuaRIM25CF+Lp7mHtKueQq3KDDiKo+cvmDhpCxPBRSA/A1Us5BjbbSGI86Pq+EMzKAl6NWuhx3vWnZ8hg/AdUa/0MFGotzaDljsjUh5p+PPOLduZ1uo2OP3ZuRh1DtFD1OWqRjCz9tZcxMXqlZqCiAVboU2rjwIoCW9e/gsZ8sKnvErqs0X2cyYHMdAfdUs+JEPSvKSJ9og==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FjOZcMfa56RChXSIZED5fTNY+2namciR6WMYxucM3UY=;
+ b=qU/gKRLT2OH19oL6eTZaESNLigNTQ+6hvkWtLvYAxC/WD5FD6cfwp0T+ILZGRRkoYVSJet/PSCGYKhiy33ZszxS0b87hlt+QWKIEAMYJKdZZESY8fPNxA+AFbz6K7oNpDI3sUecrHiPIKreNENPKOH5Gc0yIKeWr2Ae6513jwCTGrUUfODwWbl82ltqtVfdHQaYWehRnbmPIkUM7rmsZ3B4yioguaZA/HxrHLAc/8EJJRINUKn+Vb3PiDpjx8rUeUtzSJH9PUWj2oRobQGRffDJdRitMNWI7+2EL1+AI5YTR9Kfdc/n36VupBk295b1gQZ54kOaACFwrsU94+PV2dg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FjOZcMfa56RChXSIZED5fTNY+2namciR6WMYxucM3UY=;
+ b=xpU+yrOeNxAR9I+1erV0Pgmk3bNumU3mewZqDbRyPdKN+qAo+ckyErP6eqyL+outRKlvz747wZGx5Xi13W9HaGvM44rYWqEmIwQ0TcGOAHJrLvzON9Ilf6O7x1a6RBYQjdN2sBvIi4Pb27apK5mXYm0tWCtYLUP8G7Ug/POs/jk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CY8PR12MB7170.namprd12.prod.outlook.com (2603:10b6:930:5a::18)
+ by BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Mon, 13 Jul
+ 2026 10:13:33 +0000
+Received: from CY8PR12MB7170.namprd12.prod.outlook.com
+ ([fe80::7565:bdd3:383a:de5f]) by CY8PR12MB7170.namprd12.prod.outlook.com
+ ([fe80::7565:bdd3:383a:de5f%4]) with mapi id 15.21.0202.018; Mon, 13 Jul 2026
+ 10:13:33 +0000
+Message-ID: <5538f1c3-a665-42c9-ae96-89e2867ab470@amd.com>
+Date: Mon, 13 Jul 2026 18:13:27 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/dma: simplify dma_iova_destroy() and drop the
+ free_iova helper
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Ray.Huang@amd.com,
+ robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, leonro@nvidia.com
+References: <CGME20260703033750eucas1p21cd9472b9cd02f6611e8eeacf6e1610c@eucas1p2.samsung.com>
+ <20260703033729.455358-1-honghuan@amd.com>
+ <8c254797-a349-47a0-be4a-86a8ad09cf56@samsung.com>
+Content-Language: en-US
+From: "Huang, Honglei" <honghuan@amd.com>
+In-Reply-To: <8c254797-a349-47a0-be4a-86a8ad09cf56@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TP0P295CA0060.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:910:3::15) To CY8PR12MB7170.namprd12.prod.outlook.com
+ (2603:10b6:930:5a::18)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alEbHFbmr_PvY6ZB@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY8PR12MB7170:EE_|BL4PR12MB9505:EE_
+X-MS-Office365-Filtering-Correlation-Id: 67e0472d-f12e-42dc-ec55-08dee0c764de
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|18002099003|22082099003|4143699003|56012099006|5023799004|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	gTsBflkpkbf31BgQmxEBGumMycJPWAPnYB0cfze7WM7X/4pE6sprrVXWf1MXVIcT3yMJjI9k3iInoWv3xc8QnszEPh1d26DOBUH0atxuwJrtEkzCYvjfhIi/iown4OPdxNkTKBTgvRg0uCrP/DA/8U+th9Xw6WMn8ItKnwfdtoYGjbaQSelgy0zl9jtVSwPLCUxdPUYm3hN4Oa4YE0N21/vY616qeslLmYbbCzrNw1f3KMDLQojZw2ogg7+OkaECCDkSF4mjlqzqfiAiXevv8kq2zjHzujO414ASRlFNuiI/5HJC9mHV8CDFs4UnHOsW+EUTjqWEUEN9CmIjhUGXcy+VdmMeddq6zxWuh+EwoMr4vMUbRI2AxhEQVsYkfeLACWbNLVFUP82Cd3NnYJfm2cwaOeSlNJHBi3Vs9z5apHyKp4oBLyTX39biwdE3XyGdxnHQan491J56VW2Jl2NgSqKW06SDMjm0XL5XHEU7YzWnwXYXkwW45dmmuenViLNsxF6PLMr4vhi+Ku++ffZAm7uiaZtSeE6ETm8qkyb9f8ur593Xzgh7KK7MmCAAMq46KHksbEMcS30Bcmedsa4mnyZWRZwWVpZ0VgjQTMTAkH4S2cS/oss5Pela/DXYubwK9B3kRl2dzlzZPnABzcSD8SoytjA7goqU9/HaxWVHQ5s=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY8PR12MB7170.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(18002099003)(22082099003)(4143699003)(56012099006)(5023799004)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?L2RRelRKUFQrVjM3Ukt1aHRaMDFLS0twaFRNWlhZaGlKTmdic1ZwMHZuWHFG?=
+ =?utf-8?B?TW5zVk9ENWlBbEVFVEhydHlKb3Z3alJBdW5reE9Kd2JsRVpYRXkwT0Q3UzA3?=
+ =?utf-8?B?L3NyekdCZWNXTEVYRm5HY3VYUWFZbXZxQjdDM1BqVFVrTWxGZlZsTjIvb3Ux?=
+ =?utf-8?B?eGY1TklEb0JGVFpQa2Nra00raVdySWJLcmpRUmUwdnBIcGkxK0ZTak85UnRW?=
+ =?utf-8?B?V2EyZVlkMFRZVkd0dzVTa0RBTTh6TElFdEFHMGx3ZTVmSGV4RGRweG8yNTRa?=
+ =?utf-8?B?akRsRjR3TlVPY2UrdXVOMmZEckdsQ3hQQmlUWjRhNjBvbVBzTEFXN0d4RkhX?=
+ =?utf-8?B?c3BQa3N4QXNMK29qUVRoUkdDWWhRSytQNFdHcTFUNVdHTUZiSGtWSzI5RXo3?=
+ =?utf-8?B?cG9sTS9FbW1DMzhqTGUrNkgwRW9QM3lsK01xQUVaWjBOVVNGY0dDc1NtNVpq?=
+ =?utf-8?B?S05MNE1sUUkrWnl5OFdXVTUycys3b2F3NlB5aHpCT3dyTGNxVHJHZ2ZUNnE0?=
+ =?utf-8?B?WVB0UE10d282ei9vRUQxTDQ2UXZEdGdmSGQ0UjJRZmpnZ0lJN3U4STVJQWJC?=
+ =?utf-8?B?Vno5enZ6dW1LYndXOUx3cHNQS2hiN1ltUjZ0c1FHcnVmeW44NWc2VnNoYlJt?=
+ =?utf-8?B?Ky9kMk9mOVhRbmNNNEFLWmVXUzQxMFVnMC9RWi9YcUpNTHMzQk1rZlhBa3lu?=
+ =?utf-8?B?UGZDUW9RaW02akpjMHlKbTM5NmRWMWtGUkw4RDA2WmFsODZCR01pQzRWNEd3?=
+ =?utf-8?B?R3ptaEpmdmxnRzdQRlJYSCtLRFpWOUthdnBBNUtSNkdyVjJmR294cEQ5ekIw?=
+ =?utf-8?B?cmloNzEza1lTNHowbE0zTHFHa0VlbllzVkxYWEV4NEZsR1ZobGdSMFJhcndW?=
+ =?utf-8?B?WVRCVTU0VzVaaWFxcGx2VFVIOTZhaStTTFFwQ2tHWEoybzRSM3VoeWFwaXc4?=
+ =?utf-8?B?WTUzenFUaDBqR2h6VFh1RGtuTmhIQVNjSzdGdWNoZ0E0bWt4NjRTQkV6RDY0?=
+ =?utf-8?B?V2JkRy8yamljd1VrUDJVd3JzSVdYa1N1SEF5NDl0c3NPd3k0dW9UVGxCMThJ?=
+ =?utf-8?B?dTVIOTRxWG8wVVZwVHNBSEhnYkdMS1N2a0VsNTVLbHEreUxXTHgrSFNhR0Q5?=
+ =?utf-8?B?SGZ3OThuOFZoRHZqcmF4TC9BMUt4OGx6MXpEOUNaRFRKVmlJeWVwcEVYUytR?=
+ =?utf-8?B?RTl4RXNISmFPb3F2d3RybFhVOFJCdFlObkpIRXBPcE5sVGZ4K20xcGhxdFVY?=
+ =?utf-8?B?UERKRm80d0U0cGlYZmxVUnRvUlB2TWpud2ZhQnJwYk1kNEU0YzJMYUF0dzhI?=
+ =?utf-8?B?bW1DdXRRTlMxL0F6S1RicmJ6eDljUWZ1QkUvSFUzYVkzMnhacHNKSDlNcGRG?=
+ =?utf-8?B?ZCszd25TWDJhTXV6YTZDeXV5TW1zNEp5ZHZCMFd3ZGNNWVVTN0k4REU2ZEM2?=
+ =?utf-8?B?KzVPR3d1SFFtL1lmRmV2ZkduTngwQ2o1c1FRN0ZpbDhLb0l5dUNOWlFFRXhK?=
+ =?utf-8?B?QTI3VXlxNTY3dXRCcndhVVVFYUZmejYzK3I1aStrbHkvR3ZZbWNTTzVCR3FN?=
+ =?utf-8?B?aDd3bzdCeGZZeXBqaElCdGJMOVJ4MWlFNUp4ME9rWHYzQnVTMU44dWk4SW5E?=
+ =?utf-8?B?MGNETExsRmRwM1I5VjhicmJRWVRKQS9JZEh3UkhqK0FsUEk1amJna21MekhJ?=
+ =?utf-8?B?TG5FYmxzZ2RFVkEwNWhqWDJaS281VnBCbjM2MXp3SmdTUHdUUUd4ZmdDeno3?=
+ =?utf-8?B?ZHZBUS9mNEEweE5DL0dpc3Jkd3NGeXorOHg0MHZ6SnpXTGxTeVh5OGlEbGRv?=
+ =?utf-8?B?c05DSWFCWG13eDlzSUdyMExrQTRuSUY2YVNDYmw4RHJ0UzYya0xjUkR5MmJ4?=
+ =?utf-8?B?Z0tpeFNOcS9lbnVOU0F4NGppcmpFVlZLQTlpWk44Y3BHZjVVRURVZXlNM3FO?=
+ =?utf-8?B?ZnRNMmFJT3NMWXVIWXhWQmhsU2FueW9HeVpnc3N5VUF4UVZrd01EcWphNzQ4?=
+ =?utf-8?B?ZXZzVTNyazRYU2NXNW1keHY1eFVNUHBFZ2Vyd2ZxWEpaUVdkWlhYcmxzbXp4?=
+ =?utf-8?B?Zis3ZmZvdHpON2JIZlVXLzZiaHRpbDVPVkRXb3ZqbHg1SnF2VjUyTkJqQkY1?=
+ =?utf-8?B?cTJsRUNzK1Jlc0pWeGdBWUY4NW14cHlJVWpMVnlvbmkxc3c3MHBaZlZVL1N4?=
+ =?utf-8?B?dCtiNGR6K3lNRVFQTUU4NERxYVdKYnhmK3dOWitqdFFFU0VFK0tuMWxLa2Rh?=
+ =?utf-8?B?SGc0eXIzZlhqNnBVd0REKzZ6UVYybjY2VW1xSC9rNkRFN0lVSENtN1J3REM5?=
+ =?utf-8?Q?q15yDCvNiZLq8SvBfI?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67e0472d-f12e-42dc-ec55-08dee0c764de
+X-MS-Exchange-CrossTenant-AuthSource: CY8PR12MB7170.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2026 10:13:33.1120
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RJ4/s1UCSwHMpwJbxfdhSTgqyEYgfn2ny7/qC9OPZkltJc1NkDMeXk1qWFBgBaM8yl/LL0yGHuN2HQuXTrUKBw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL4PR12MB9505
 
-On Fri, Jul 10, 2026 at 05:17:32PM +0100, Vincent Donnefort wrote:
-> On Fri, May 01, 2026 at 11:19:09AM +0000, Mostafa Saleh wrote:
-> > To establish DMA isolation, KVM needs an IOMMU driver which provides
-> > ops implemented at EL2.
-> > 
-> > Only one driver can be used and is registered with
-> > kvm_iommu_register_driver() by passing pointer to the ops.
-> > 
-> > This must be called before module_init() which is the point KVM
-> > initializes.
+
+
+On 7/13/2026 3:33 PM, Marek Szyprowski wrote:
+> On 03.07.2026 05:37, Honglei Huang wrote:
+>> dma_iova_destroy() frees the IOVA space through __iommu_dma_iova_unlink()
+>> using a "free_iova" boolean, which duplicates the IOVA free logic in
+>> dma_iova_free(). And it frees using the unmapped @mapped_len, which for a
+>> partially linked reservation is smaller than the reserved size. This
+>> results in a benign waste as pointed out by Robin, not a leak. So this is
+>> a cleanup, not a fix.
+>>
+>> Drop the duplicated free path. Fold __iommu_dma_iova_unlink into
+>> dma_iova_unlink and remove the free_iova parameter so it only unmaps.
+>> dma_iova_destroy then unlinks the mapped range if mapped_len is set and
+>> unconditionally calls dma_iova_free, which frees the whole reservation
+>> via dma_iova_size. The freed size now always matches the reserved size,
+>> and destroy reads as unlink then free.
+>>
+>> Note that dma_iova_destroy() no longer routes the free through the flush
+>> queue; teardown now unmaps synchronously and frees directly, matching
+>> dma_iova_free().
+>>
+>> No functional change intended for callers.
+>>
+>> Suggested-by: Leon Romanovsky <leonro@nvidia.com>
+>> Signed-off-by: Honglei Huang <honghuan@amd.com>
 > 
-> Everywhere s/KVM/pKVM/ as this can be registered only if pKVM is enabled.
-
-Will do.
-
 > 
-> > 
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >  arch/arm64/include/asm/kvm_host.h       |  5 +++++
-> >  arch/arm64/kvm/Makefile                 |  2 +-
-> >  arch/arm64/kvm/hyp/include/nvhe/iommu.h | 13 +++++++++++++
-> >  arch/arm64/kvm/hyp/nvhe/Makefile        |  3 ++-
-> >  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 20 +++++++++++++++++++
-> >  arch/arm64/kvm/hyp/nvhe/setup.c         |  5 +++++
-> >  arch/arm64/kvm/iommu.c                  | 26 +++++++++++++++++++++++++
-> >  7 files changed, 72 insertions(+), 2 deletions(-)
-> >  create mode 100644 arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> >  create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> >  create mode 100644 arch/arm64/kvm/iommu.c
-> > 
-> > diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-> > index 851f6171751c..52898d2a3ec6 100644
-> > --- a/arch/arm64/include/asm/kvm_host.h
-> > +++ b/arch/arm64/include/asm/kvm_host.h
-> > @@ -1733,4 +1733,9 @@ static __always_inline enum fgt_group_id __fgt_reg_to_group_id(enum vcpu_sysreg
-> >  
-> >  long kvm_get_cap_for_kvm_ioctl(unsigned int ioctl, long *ext);
-> >  
-> > +#ifndef __KVM_NVHE_HYPERVISOR__
-> 
-> I think it's not necessary, a lot of things aren't guarded for
-> __KVM_NVHE_HYPERVISOR__.
+> Applied to dma-mapping-for-next. Thanks!
 
-That makes it clear that it is hypervisor code, but no strong opinion.
+Thanks for the merging!
 
-> 
-> > +struct kvm_iommu_ops;
-> 
-> Perhaps we can keep this private to hyp code by just using (void *) here?
-
-That does not leak the struct, it is just a forward declaration, I
-beleive it is more clear and readable this way.
-
-> 
-> > +int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops);
-> > +#endif
-> > +
-> >  #endif /* __ARM64_KVM_HOST_H__ */
-> > diff --git a/arch/arm64/kvm/Makefile b/arch/arm64/kvm/Makefile
-> > index 59612d2f277c..0ddef54f7434 100644
-> > --- a/arch/arm64/kvm/Makefile
-> > +++ b/arch/arm64/kvm/Makefile
-> > @@ -24,7 +24,7 @@ kvm-y += arm.o mmu.o mmio.o psci.o hypercalls.o pvtime.o \
-> >  	 vgic/vgic-mmio.o vgic/vgic-mmio-v2.o \
-> >  	 vgic/vgic-mmio-v3.o vgic/vgic-kvm-device.o \
-> >  	 vgic/vgic-its.o vgic/vgic-debug.o vgic/vgic-v3-nested.o \
-> > -	 vgic/vgic-v5.o
-> > +	 vgic/vgic-v5.o iommu.o
-> 
-> alphabetical order.
-
-That does not seem to be already sorted.
-
-> 
-> >  
-> >  kvm-$(CONFIG_HW_PERF_EVENTS)  += pmu-emul.o pmu.o
-> >  kvm-$(CONFIG_ARM64_PTR_AUTH)  += pauth.o
-> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> > new file mode 100644
-> > index 000000000000..1ac70cc28a9e
-> > --- /dev/null
-> > +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> > @@ -0,0 +1,13 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +#ifndef __ARM64_KVM_NVHE_IOMMU_H__
-> > +#define __ARM64_KVM_NVHE_IOMMU_H__
-> > +
-> > +#include <asm/kvm_host.h>
-> > +
-> > +struct kvm_iommu_ops {
-> > +	int (*init)(void);
-> > +};
-> > +
-> > +int kvm_iommu_init(void);
-> > +
-> > +#endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
-> > index 89d0533921f9..606c0e1b7bd0 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/Makefile
-> > +++ b/arch/arm64/kvm/hyp/nvhe/Makefile
-> > @@ -24,7 +24,8 @@ CFLAGS_switch.nvhe.o += -Wno-override-init
-> >  
-> >  hyp-obj-y := timer-sr.o sysreg-sr.o debug-sr.o switch.o tlb.o hyp-init.o host.o \
-> >  	 hyp-main.o hyp-smp.o psci-relay.o early_alloc.o page_alloc.o \
-> > -	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o stacktrace.o ffa.o
-> > +	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o stacktrace.o ffa.o \
-> > +	 iommu/iommu.o
-> >  hyp-obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
-> >  	 ../fpsimd.o ../hyp-entry.o ../exception.o ../pgtable.o ../vgic-v5-sr.o clock.o
-> >  hyp-obj-y += ../../../kernel/smccc-call.o
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > new file mode 100644
-> > index 000000000000..406c8fb9b3b9
-> > --- /dev/null
-> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > @@ -0,0 +1,20 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * IOMMU operations for pKVM
-> > + *
-> > + * Copyright (C) 2022 Linaro Ltd.
-> > + */
-> > +#include <nvhe/iommu.h>
-> > +
-> > +/* Only one set of ops supported */
-> > +struct kvm_iommu_ops *kvm_iommu_ops;
-> > +
-> > +
-> 
-> Empty line.
-> 
-
-Will remove it.
-
-> > +int kvm_iommu_init(void)
-> > +{
-> > +	/* Keep DMA isolation optional. */
-> > +	if (!kvm_iommu_ops || !kvm_iommu_ops->init)
-> > +		return 0;
-> 
-> The absence of the SME workaround on affected systems breaks pKVM init. So
-> perhaps the IOMMU should do the same? (see pkvm_check_sme_dvmsync_fw_call())
-> 
-
-I initially done something similar, but I was not sure if that is too
-limiting as now pKVM will not run on many hardware, I think the
-best option is to make this cmdline configurable wether DMA isolation
-is required or not.
-But for this series we can keep it optional.
-
-> > +
-> > +	return kvm_iommu_ops->init();
-> > +}
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
-> > index 8041f6e80cd1..1f6b221db9a0 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/setup.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/setup.c
-> > @@ -14,6 +14,7 @@
-> >  #include <nvhe/early_alloc.h>
-> >  #include <nvhe/ffa.h>
-> >  #include <nvhe/gfp.h>
-> > +#include <nvhe/iommu.h>
-> >  #include <nvhe/memory.h>
-> >  #include <nvhe/mem_protect.h>
-> >  #include <nvhe/mm.h>
-> > @@ -329,6 +330,10 @@ void __noreturn __pkvm_init_finalise(void)
-> >  	if (ret)
-> >  		goto out;
-> >  
-> > +	ret = kvm_iommu_init();
-> > +	if (ret)
-> > +		goto out;
-> > +
-> >  	ret = hyp_ffa_init(ffa_proxy_pages);
-> >  	if (ret)
-> >  		goto out;
-> > diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
-> > new file mode 100644
-> > index 000000000000..f247384fa193
-> > --- /dev/null
-> > +++ b/arch/arm64/kvm/iommu.c
-> > @@ -0,0 +1,26 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2025 Google LLC
-> > + * Author: Mostafa Saleh <smostafa@google.com>
-> > + */
-> > +
-> > +#include <linux/kvm_host.h>
-> > +
-> > +extern struct kvm_iommu_ops *kvm_nvhe_sym(kvm_iommu_ops);
-> > +
-> > +static DEFINE_MUTEX(kvm_iommu_reg_lock);
-> 
-> could be moved directly into the only user: kvm_iommu_register_driver
-
-No strong opinion, it seemed it can be easily re-used this way.
+Regards,
+Honglei
 
 > 
-> > +
-> > +int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
 > 
-> __init ?
-
-Will do.
-
+>> ---
+>> Changes since v1:
+>>   - Reframed from an IOVA-leak fix into a cleanup; dropped Fixes:/Cc: stable.
+>>   - Fold the free_iova helper into dma_iova_unlink() according to Leon's
+>>     diff, so destroy is unlink + dma_iova_free(). Added Suggested-by: Leon.
+>>
+>>   drivers/iommu/dma-iommu.c | 57 +++++++++++++++------------------------
+>>   1 file changed, 22 insertions(+), 35 deletions(-)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 9abaec0703e..5598ed4bff7 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -2068,10 +2068,20 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
+>>   		arch_sync_dma_flush();
+>>   }
+>>   
+>> -static void __iommu_dma_iova_unlink(struct device *dev,
+>> -		struct dma_iova_state *state, size_t offset, size_t size,
+>> -		enum dma_data_direction dir, unsigned long attrs,
+>> -		bool free_iova)
+>> +/**
+>> + * dma_iova_unlink - Unlink a range of IOVA space
+>> + * @dev: DMA device
+>> + * @state: IOVA state
+>> + * @offset: offset into the IOVA state to unlink
+>> + * @size: size of the buffer
+>> + * @dir: DMA direction
+>> + * @attrs: attributes of mapping properties
+>> + *
+>> + * Unlink a range of IOVA space for the given IOVA state.
+>> + */
+>> +void dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
+>> +		size_t offset, size_t size, enum dma_data_direction dir,
+>> +		unsigned long attrs)
+>>   {
+>>   	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+>>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>> @@ -2087,35 +2097,13 @@ static void __iommu_dma_iova_unlink(struct device *dev,
+>>   		iommu_dma_iova_unlink_range_slow(dev, addr, size, dir, attrs);
+>>   
+>>   	iommu_iotlb_gather_init(&iotlb_gather);
+>> -	iotlb_gather.queued = free_iova && READ_ONCE(cookie->fq_domain);
+>>   
+>>   	size = iova_align(iovad, size + iova_start_pad);
+>>   	addr -= iova_start_pad;
+>>   	unmapped = iommu_unmap_fast(domain, addr, size, &iotlb_gather);
+>>   	WARN_ON(unmapped != size);
+>>   
+>> -	if (!iotlb_gather.queued)
+>> -		iommu_iotlb_sync(domain, &iotlb_gather);
+>> -	if (free_iova)
+>> -		iommu_dma_free_iova(domain, addr, size, &iotlb_gather);
+>> -}
+>> -
+>> -/**
+>> - * dma_iova_unlink - Unlink a range of IOVA space
+>> - * @dev: DMA device
+>> - * @state: IOVA state
+>> - * @offset: offset into the IOVA state to unlink
+>> - * @size: size of the buffer
+>> - * @dir: DMA direction
+>> - * @attrs: attributes of mapping properties
+>> - *
+>> - * Unlink a range of IOVA space for the given IOVA state.
+>> - */
+>> -void dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
+>> -		size_t offset, size_t size, enum dma_data_direction dir,
+>> -		unsigned long attrs)
+>> -{
+>> -	 __iommu_dma_iova_unlink(dev, state, offset, size, dir, attrs, false);
+>> +	iommu_iotlb_sync(domain, &iotlb_gather);
+>>   }
+>>   EXPORT_SYMBOL_GPL(dma_iova_unlink);
+>>   
+>> @@ -2136,14 +2124,13 @@ void dma_iova_destroy(struct device *dev, struct dma_iova_state *state,
+>>   		unsigned long attrs)
+>>   {
+>>   	if (mapped_len)
+>> -		__iommu_dma_iova_unlink(dev, state, 0, mapped_len, dir, attrs,
+>> -				true);
+>> -	else
+>> -		/*
+>> -		 * We can be here if first call to dma_iova_link() failed and
+>> -		 * there is nothing to unlink, so let's be more clear.
+>> -		 */
+>> -		dma_iova_free(dev, state);
+>> +		dma_iova_unlink(dev, state, 0, mapped_len, dir, attrs);
+>> +
+>> +	/*
+>> +	 * We can be here if the first call to dma_iova_link() failed and
+>> +	 * there is nothing to unlink, so let's be more clear.
+>> +	 */
+>> +	dma_iova_free(dev, state);
+>>   }
+>>   EXPORT_SYMBOL_GPL(dma_iova_destroy);
+>>   
+>>
+>> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
 > 
-> > +{
-> > +	guard(mutex)(&kvm_iommu_reg_lock);
-> > +
-> > +	/* Only protected KVM before de-privilege. */
-> 
-> Don't think that comment brings much information, looking at the line below.
-
-I will remove it.
-
-> 
-> > +	if (!is_protected_kvm_enabled() || is_kvm_arm_initialised())
-> > +		return -EINVAL;
-> 
-> -EPERM?
-
-I can see it both ways, my thought that it is invalid to register a
-driver after a certain point, but -EPERM makes sense also.
-
-Thanks,
-Mostafa
+> Best regards
 
