@@ -1,309 +1,258 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010031.outbound.protection.outlook.com [52.101.46.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08B8C3368AA
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:35:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783938953; cv=none; b=Nc+s/tnHettU97Ii1jIGhbgv0AXaxmwI4XXTHTHkobmmKuo1TsYk7zwH1qpIpfBVp+XntAl2XBMQSoQdnt7pIU2YQJXjmToFJYMWjROgXtbz8TL+EVsgdepnYowBEl9VYf5HaEfI1pjAhuBuIarzVqNukFXrwiMXc9z/zC5Je+k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783938953; c=relaxed/simple;
-	bh=XMiCZTmiiA8F9BgpScMjYv+1HiDLmlR0kg2oIK8j4ko=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k2eWo2PhJfY7dD/ClU0zZn6BKBOsL7/QvGAsGR1y0mSUprgF4Eukv41e93xXM2OzFBlpdDMmO6tUUKwrvhw2yFc5HAX9bM7S1tfQsplYOaZkT9UyQSrhpBhOOZcVPlJqnpQkkqGyuwNrI6785WG638KnH4XPqeuYiAr6OUjrtEA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=J47wgG0O; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF3713E6DDD
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:51:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.31
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783939889; cv=fail; b=ChMfMEnrM1IgzvaPMZ7UJ8xybSl5zkeQG1SeM9fcxsBLRGjej7LVPCObIXkAbFYNjk47Yv2CxbW9ZKlIyNIAysEntlGT0AFj5yQe/eMPP6CzwgPj19Qrfx04Qa7N3XSyBRIaR72BNoHdJWY2EnAlOVcgv2I8FoRgLn54SsMClGQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783939889; c=relaxed/simple;
+	bh=vLh8Go6T5rcdA2B8UdaIPn0fJkjzrLaSKINgZIWIa9E=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Cy4f5DxwYqNwZR1B6gPFa8tvjcAvo6anvgmLFe5jaoshMNkOiMLw9gCF7ZdQlX66zc2NUlnLCVcrEQT660B+Jenyix2BnlvblYld+otXKAai/2+gkWcekgI00Ja3lfKJYrlVp89xSkUK29BZx0tghyggqL3yNqYC/yYRLgHv9uo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=IQ0yly/4; arc=fail smtp.client-ip=52.101.46.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="J47wgG0O"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-493b8d92a4eso84505e9.1
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 03:35:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783938950; x=1784543750; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4DXPy0h679aPXo6JYjKQdkbMOuE0zeRtrYWKC8kOOJg=;
-        b=J47wgG0O/Z8lvfia0rw0Lu/GuvobpTpfY420CauGMKtLiWR9BUcufUtvB/4Lph2ape
-         f7lf4Wk1nNhCEiaiIkrbtJsoY9NnbHwRheyb/1EUFXLqpWzWPzBhjFvwpMOu+XMLvJ/p
-         yCdneqw141yG3whHJMBIXmMrd2pu4ACdKoLafmGv2iayv0zNUyiQAYHGWn/WXodayOLb
-         vsUGzRCy0P3dWgKMbEiijrmGxJCwdkl1V3JrpCX0ZauH01kXfFvz6pZ8tqjNahGeMbMM
-         UpKeb4KjSApT8aCYQmdmTN1I3GD38u7X6S9tqFdHd8qBDuaRLoNAibvU/fLqSScFi88k
-         80Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783938950; x=1784543750;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4DXPy0h679aPXo6JYjKQdkbMOuE0zeRtrYWKC8kOOJg=;
-        b=Lk3waIsAD1edrxHYPhD8VOmyHxhOcz7YC7AV1TV8xExmN0RqN4mGPj5yKFC48Fm2p3
-         Ca/SLsRaTodG57hIQ8AChy1PO3s6AYWp8wadRvqb7VTiJ9eKGeNfYKO1RLe9aMTec0Q4
-         erJK99tVpD67aK3Y3OLhvde4UtWRIw0zCdJw14+udtv+TKnuBMy0xBP9ipzX0BORjn8n
-         /s9TppPmY6lSg3xpW4Z37A3F3WYF0n1SHsT4+nMnffHcLjqXfJgvvEHmXtA22Yh5Js/v
-         FME/ByzmjjEggP8Uj3RlbApVjemdFafKzXllhzFvFiSDrdsVgYa5yCyj3C18kJoYCZJT
-         kLBw==
-X-Forwarded-Encrypted: i=1; AHgh+Rq0BsoaTYOUJwjUW4zxT1GebUz0BTcsOQqNEfM3QMgY0bmSf75zmWwGqSJ570waooA/q0oihQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwmZCKKbDzfsGz/E6v2tamtR+q+ZHJXQcM1Ng8yrdzqRPj34A4X
-	dzRvlBQ7P2RsYzy8EzF2PxleHcd3KENstbPlx9G4iACt8Iai7R/MoYWwOqa5MD3kkQ==
-X-Gm-Gg: AfdE7cnJ3xP2uirujGiKERAKy0ZT0LIT9cVmn4nlPNm0g6iM4yCeI5s2CbnPHXbfjsT
-	blr74mjD7ahwZ/rz6/xVR1v3lDqueKdtaQuqgXeE9U4zqUMf7lJeydzAnaEqHmAMioZjA4qY1A9
-	qDBC04WihEQp2A1ndu39NgtgGgtJ0UDS6b6v647SeCMXT7gzG5k/TnW3oR8bflKGW98sXAgSB8F
-	py+wRfKYP0S8JbYPWS48duTgbXYWfWLr5Gy6ZhtDOO+CC6GQDkeOL5VoC4foSKiYl+r4FfcHW9s
-	FMy2S9pfw8XKlqYsBnyEuwIV0+sUAjiW8lJEmA9j+dS6G8zSFjmSMOkdmqGj+LG667+bEpQau75
-	MZH7f5FKlH71C2zYVfmpWT6wlMTitNLJA3KVjd5pMFGc8C5xbPeaILjJNSsoc/O0A6W/xX9nGRZ
-	KhJl13yq+csTvU5d1MqkD+9WiaXTW62QSRpvc0T6QhRWrc6+OeU402q0AMASw=
-X-Received: by 2002:a05:600c:828c:b0:493:b279:6012 with SMTP id 5b1f17b1804b1-4945e2be9femr228985e9.0.1783938949719;
-        Mon, 13 Jul 2026 03:35:49 -0700 (PDT)
-Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f2465ae8bsm28188355f8f.36.2026.07.13.03.35.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 03:35:48 -0700 (PDT)
-Date: Mon, 13 Jul 2026 10:35:44 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Vincent Donnefort <vdonnefort@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	jgg@ziepe.ca, mark.rutland@arm.com, qperret@google.com,
-	tabba@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 09/25] KVM: arm64: iommu: Add memory pool
-Message-ID: <alS_gB5uSEbFV-jH@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-10-smostafa@google.com>
- <alEeyoXnMC0J4zFQ@google.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="IQ0yly/4"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fJzXA9ne5IF/dkBNGe48ZW3XDCVt/KQ5uJ1lywc5tZ5oWtkA0f2gthHAYANNgHkndQ8aKruVY/PHRqfWKUUdPlP4mXEXq+ZaXEFN+tsbSSaYRJxpubmOsbxvY1M7jNrzULUUVL1thxEEVcWqxr2PVLVXnG1+m0iiBDHw1fPvUKe+P2JbNVYMIImf5FhhG6m7Nz+DWbSQOwiwc4ID0TOVWTm2OdIC8ro2pdYEYD4a9lVUQRcXFK8+p7tAVWq9BRAx8Di+S7gTURWJ7VYUv2dBFVl0v1VMyJjj9qSLJUS5A9UNjZXrblIQwFEG4zuH18lTO43XKbuPwX+Jfw6d3Icttw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/tN124K2AWwTxqllLX6/eu7IwKmpdZi26C9Q5X+NAJ0=;
+ b=wIp+h7VxP8UrXND6Q+tcmOMhfrrwiQle7YHw7uXpLpuyE4PiQYdoio9YQknOhlj5DWOhAReHkAtyGR/fAClkzYemW3ch9nn4ktgD3f5JbHaK0AfPU6HYZRoFhMa+7pjBVPwp7Aex4xjhdyjj8mBe7hub9FfOd6mdb5QpnwLiQbUm3ryCvDSst+TP2nB+BRGDwIXkPbf8a1tksK6QEXgPblMWyrV9ic+U1CYaP0nNHHmtw71CUJgb3tfKg/0zcI/0cEv57WQHj5We/GflmqFEzmE+rjBtY5g7Sma5trKM/6SSstJmRx0D9GTgIyaE9baVE6LhXGGuPML8g+rF3ywtVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/tN124K2AWwTxqllLX6/eu7IwKmpdZi26C9Q5X+NAJ0=;
+ b=IQ0yly/4nVi5EmhICPym2bES7sf/4vWee+vyhxCmdWC1P3Ebt9GN5mHwQ9XS1ehGXx+ElHiGrDT4DLaP3w5+9ON6lvG4cUwf48T0r66sTb6IbYv4BuzBd2jzT0a9rmMtt0RaIIB2TOmZAOxcmw8wVHjNUfcNil6rvF6arsl+nok=
+Received: from CH2PR17CA0012.namprd17.prod.outlook.com (2603:10b6:610:53::22)
+ by SA3PR12MB9159.namprd12.prod.outlook.com (2603:10b6:806:3a0::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.19; Mon, 13 Jul
+ 2026 10:51:13 +0000
+Received: from CH1PEPF0000A345.namprd04.prod.outlook.com
+ (2603:10b6:610:53:cafe::67) by CH2PR17CA0012.outlook.office365.com
+ (2603:10b6:610:53::22) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.202.19 via Frontend Transport; Mon,
+ 13 Jul 2026 10:51:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CH1PEPF0000A345.mail.protection.outlook.com (10.167.244.8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.223.9 via Frontend Transport; Mon, 13 Jul 2026 10:51:12 +0000
+Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 13 Jul
+ 2026 05:51:04 -0500
+From: Sairaj Kodilkar <sarunkod@amd.com>
+To: "Borislav Petkov (AMD)" <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, "Paul E. McKenney"
+	<paulmck@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Dapeng Mi
+	<dapeng1.mi@linux.intel.com>, Dave Hansen <dave.hansen@linux.intel.com>,
+	"Eric Biggers" <ebiggers@kernel.org>, Feng Tang
+	<feng.tang@linux.alibaba.com>, "Ingo Molnar" <mingo@redhat.com>, Jakub
+ Kicinski <kuba@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Li RongQing
+	<lirongqing@baidu.com>, Marco Elver <elver@google.com>, Paolo Bonzini
+	<pbonzini@redhat.com>, Randy Dunlap <rdunlap@infradead.org>, Robin Murphy
+	<robin.murphy@arm.com>, Sairaj Kodilkar <sarunkod@amd.com>, Sean
+ Christopherson <seanjc@google.com>, Shuah Khan <skhan@linuxfoundation.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Thomas Gleixner
+	<tglx@kernel.org>, "Vasant Hegde" <vasant.hegde@amd.com>, Will Deacon
+	<will@kernel.org>, <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>
+Subject: [RFC PATCH v3 0/6] Add support for AMD IOMMU GAPPI
+Date: Mon, 13 Jul 2026 16:20:27 +0530
+Message-ID: <20260713105033.15405-1-sarunkod@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alEeyoXnMC0J4zFQ@google.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000A345:EE_|SA3PR12MB9159:EE_
+X-MS-Office365-Filtering-Correlation-Id: faea52db-ac8f-4ce3-6759-08dee0cca7f5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|36860700016|7416014|23010399003|1800799024|82310400026|921020|13003099007|5023799004|11063799006|56012099006|18002099003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	RXvWDeM5M3o8sJI39cmkyQ3+zYzxs9fV6HAl/uxB8rFXDAPL6KJI7P0vtTnK6vmP1VcRIwThPaBIJDsu680/CC8AdptdEnQqlkJHQLva9j2OIeoJEPOM8m5giWXR891lwPnsX+geQXemun0UrvdYpbqhACPSUq1c4RELlSrUMBSFmcpoQxB0mbqVbMHYlktFEdd4THrpZcpBgcOIvlNAFEOfr/5jf87U30exXK055TJDWNs4eWUDiTWs9ZGH7NIS4kfS0YSzrVm9naF/GeJXIIKkYcRFGn+o1/vyUow6QF2lappGWuE5LMFd6mJgdy7K2OXSkxranfCvr/uT5bKlv+665HWuiiBGQLAjv1224326sDRu/JFuXbgpIivO4K67VX09ryLyqEWr2zRuVjBSYgWXAB02WlmsFQRkincc3GT+gLjT0AiA7X80/1LtHg7H3m8HCUtD9MzsJSf5EWAmzXBiAy5ZbiWiTLJJPGNaITacTrv1thqSzLQBpyGA7bi1vT9J4iw/nQ1yAaoILnL2DsmHq9VpHGrZvyCujfy5/TBEjb1ydEGCQaqoea8MwPqqXe4/upXIO/WWzEzP+Mp2IsUfuz+DkDeLK9Cjhx0Pg0DCGuRmdOU3/EV7vOssccvIlTrIOzrDtqXZPp3h/LIz8krm0AxCWJzsvXxYif6EIg4uUrGnuh/EnZwknCypng2D4uBx0ywu2huDdp3Txkbpc2Md601qe/dxvTsxdsYswoQjx/fS6Kl58rP9xYosG1aj
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(36860700016)(7416014)(23010399003)(1800799024)(82310400026)(921020)(13003099007)(5023799004)(11063799006)(56012099006)(18002099003)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	0ExwTKU35dokSp/NAc3XBnV1/9+4eEjlzcunmSIue5el9ta7e395NwsgLzOgGGJ97lKiiuT7JjjsYJ5QYp9RJFAhRW35LtuJpO3bOwkxw3osD2HBypA+JeZgFqdR4Syui9uJ/jzeoUYbuhh+O9voaPKLnYoSopaVHrLIRUZ6LNW2LnwMrqr4VIL0mbTH67KRExFMfCwZToqg5LfGNcK5IpF/0xJD5FYr3W/BEJ4bsurkHAnWOAVxJk9H/R3D+9WUwJtaSjd62rRMfqlE6o0uTlv0vQ+i89baMX2596QKlVHjpc1ZeajNtq/cCVA/EwI3G3aUM1tDFdkORF2B509jYNC9DfshSFuW8xhUAyWnVHlzZJAWg9SfyWUY6dkWSaJ6mjHeke8lEEWw4bFEtHrK+VK5HAdBega1Q11klo5kVHBMCV4mwZE2N0ljaZTQxIDy
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2026 10:51:12.8686
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: faea52db-ac8f-4ce3-6759-08dee0cca7f5
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH1PEPF0000A345.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9159
 
-On Fri, Jul 10, 2026 at 05:33:14PM +0100, Vincent Donnefort wrote:
-> On Fri, May 01, 2026 at 11:19:11AM +0000, Mostafa Saleh wrote:
-> > IOMMU drivers would require to allocate memory for the shadow page
-> > table. Similar to the host stage-2 CPU page table, the IOMMU pool
-> > is allocated early from the carveout and it's memory is added in
-> > a pool which the IOMMU driver can allocate from and reclaim at
-> > run time.
-> > 
-> > As this is too early for drivers to use init calls, set the number of
-> > page allocated from the kernel command line "kvm-arm.hyp_iommu_pages".
-> > 
-> > Later when the driver registers, it will pass how many pages it
-> > needs, and if it was less than what was allocated, it will fail
-> > to register.
-> > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >  .../admin-guide/kernel-parameters.txt         |  4 +++
-> >  arch/arm64/include/asm/kvm_host.h             |  3 +-
-> >  arch/arm64/kvm/hyp/include/nvhe/iommu.h       |  7 +++-
-> >  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c         | 21 +++++++++++-
-> >  arch/arm64/kvm/hyp/nvhe/setup.c               | 12 ++++++-
-> >  arch/arm64/kvm/iommu.c                        | 33 ++++++++++++++++++-
-> >  arch/arm64/kvm/pkvm.c                         |  1 +
-> >  7 files changed, 76 insertions(+), 5 deletions(-)
-> > 
-[...]
-> If we expect drivers to use that perhaps we should document a bit better (same
-> for kvm_iommu_reclaim_pages()
+Introduction
+============
+On newer generations of AMD processors, IOMMU AVIC/x2AVIC guest-mode interrupt
+remapping can use Guest APIC Physical Processor Interrupt (GAPPI) as an
+alternative host-notification path when device interrupts target a vCPU that
+is not running (IRTE[IsRun] = 0).
 
-Will do.
+With AVIC enabled, the IOMMU posts device interrupts into the guest virtual
+APIC backing page. When the vCPU is not running, KVM must additionally be
+notified so it can schedule the vCPU.
 
-> 
-> > +void *kvm_iommu_donate_pages(u8 order);
-> > +void kvm_iommu_reclaim_pages(void *ptr);
-> > +
-> >  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > index 1db52bd87c38..53cb5e4b0aac 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> 
-> Do we really need that subfolder iommu/ ?
+The legacy notification path is the GA log (GALOG): the IOMMU appends vCPU
+tags to a shared GA log buffer and raises a single GA log interrupt.  KVM
+registers a notifier and scans the buffer to decide which vCPUs to wake.
+Under heavy interrupt load this adds latency and can overflow the buffer
+because all wakeups funnel through one interrupt and one shared log.
 
-Propably not, I will remove it.
+Guest APIC Physical Processor Interrupt (GAPPI), defined in section 2.2.5.4
+of the AMD I/O Virtualization Technology (IOMMU) Specification [1], is an
+alternative.  With GAPPI enabled, the IOMMU still updates the guest vAPIC
+backing page IRR, but may deliver a physical APIC interrupt directly to
+IRTE[Destination], using IRTE[GATag][7:0] as the vector.  This distributes
+host wakeup notifications across CPUs instead of centralizing them in a
+log buffer.
 
-> 
-> > @@ -15,6 +15,7 @@ struct kvm_iommu_ops *kvm_iommu_ops;
-> >  
-> >  /* Protected by host_mmu.lock */
-> >  static bool kvm_idmap_initialized;
-> > +static struct hyp_pool iommu_pages_pool;
-> >  
-> >  static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
-> >  {
-> > @@ -95,7 +96,7 @@ static int kvm_iommu_snapshot_host_stage2(void)
-> >  	return ret;
-> >  }
-> >  
-> > -int kvm_iommu_init(void)
-> > +int kvm_iommu_init(void *pool_base, unsigned int nr_pages)
-> >  {
-> >  	int ret;
-> >  
-> > @@ -103,6 +104,14 @@ int kvm_iommu_init(void)
-> >  	    !kvm_iommu_ops->host_stage2_idmap)
-> >  		return 0;
-> >  
-> > +	if (!nr_pages)
-> > +		return -ENOMEM;
-> > +
-> > +	ret = hyp_pool_init(&iommu_pages_pool, hyp_virt_to_pfn(pool_base),
-> > +			    nr_pages, 0);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >  	ret = kvm_iommu_ops->init();
-> >  	if (ret)
-> >  		return ret;
-> > @@ -120,3 +129,13 @@ int kvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
-> >  
-> >  	return kvm_iommu_ops->host_stage2_idmap(start, end, pkvm_to_iommu_prot(prot));
-> >  }
-> > +
-> > +void *kvm_iommu_donate_pages(u8 order)
-> > +{
-> > +	return hyp_alloc_pages(&iommu_pages_pool, order);
-> > +}
-> > +
-> > +void kvm_iommu_reclaim_pages(void *ptr)
-> > +{
-> > +	hyp_put_page(&iommu_pages_pool, ptr);
-> > +}
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
-> > index 1f6b221db9a0..215014e42c27 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/setup.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/setup.c
-> > @@ -23,6 +23,9 @@
-> >  
-> >  unsigned long hyp_nr_cpus;
-> >  
-> > +/* See kvm_iommu_pages() */
-> > +unsigned int hyp_kvm_iommu_pages;
-> 
-> nit: we tend to use everywhere unsigned long or u64 for nr_pages.
+This series programs guest-mode IRTEs accordingly: IRTE[Destination] carries
+the target host physical APIC ID, IRTE[GATag] is set to
+POSTED_INTR_WAKEUP_VECTOR, and IRTE[GAPPIDis] / IRTE[GALogIntr] are set
+based on whether KVM requests host wakeup.  GAPPI is selected at boot via
+the amd_iommu=gappi kernel parameter on capable hardware, otherwise the
+existing GA log path is unchanged.
 
-Initially it was size_t. However, the hyp allocator uses unsigned int
-so I was matching its type, I was considering to send a patch upstream
-for this but that is not really a problem at the moment as it only
-overflows if the system has ~2TB of memory.
 
-> 
-> > +
-> >  #define hyp_percpu_size ((unsigned long)__per_cpu_end - \
-> >  			 (unsigned long)__per_cpu_start)
-> >  
-> > @@ -34,6 +37,7 @@ static void *selftest_base;
-> >  static void *ffa_proxy_pages;
-> >  static struct kvm_pgtable_mm_ops pkvm_pgtable_mm_ops;
-> >  static struct hyp_pool hpool;
-> > +static void *iommu_base;
-> >  
-> >  static int divide_memory_pool(void *virt, unsigned long size)
-> >  {
-> > @@ -71,6 +75,12 @@ static int divide_memory_pool(void *virt, unsigned long size)
-> >  	if (!ffa_proxy_pages)
-> >  		return -ENOMEM;
-> >  
-> > +	if (hyp_kvm_iommu_pages) {
-> > +		iommu_base = hyp_early_alloc_contig(hyp_kvm_iommu_pages);
-> > +		if (!iommu_base)
-> > +			return -ENOMEM;
-> > +	}
-> > +
-> >  	return 0;
-> >  }
-> >  
-> > @@ -330,7 +340,7 @@ void __noreturn __pkvm_init_finalise(void)
-> >  	if (ret)
-> >  		goto out;
-> >  
-> > -	ret = kvm_iommu_init();
-> > +	ret = kvm_iommu_init(iommu_base, hyp_kvm_iommu_pages);
-> >  	if (ret)
-> >  		goto out;
-> >  
-> > diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
-> > index f247384fa193..213429ceb549 100644
-> > --- a/arch/arm64/kvm/iommu.c
-> > +++ b/arch/arm64/kvm/iommu.c
-> > @@ -7,10 +7,11 @@
-> >  #include <linux/kvm_host.h>
-> >  
-> >  extern struct kvm_iommu_ops *kvm_nvhe_sym(kvm_iommu_ops);
-> > +extern unsigned int kvm_nvhe_sym(hyp_kvm_iommu_pages);
-> >  
-> >  static DEFINE_MUTEX(kvm_iommu_reg_lock);
-> >  
-> > -int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
-> > +int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops, unsigned int pool_pages)
-> 
-> nit: kvm_iommu_init uses nr_pages. 
-> 
-> >  {
-> >  	guard(mutex)(&kvm_iommu_reg_lock);
-> >  
-> > @@ -21,6 +22,36 @@ int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
-> >  	if (kvm_nvhe_sym(kvm_iommu_ops))
-> >  		return -EBUSY;
-> >  
-> > +	/* See kvm_iommu_pages() */
-> > +	if (pool_pages > kvm_nvhe_sym(hyp_kvm_iommu_pages)) {
-> > +		kvm_err("Not enough memory for the IOMMU pool, need 0x%x pages, check kvm-arm.hyp_iommu_pages",
-> > +			pool_pages);
-> > +		return -ENOMEM;
-> > +	}
-> > +
-> >  	kvm_nvhe_sym(kvm_iommu_ops) = hyp_ops;
-> >  	return 0;
-> >  }
-> > +
-> > +unsigned int kvm_iommu_pages(void)
-> > +{
-> > +	/*
-> > +	 * This is used very early during setup_arch() before any initcalls
-> > +	 * or any drivers are registered.
-> > +	 * This value is set by a command line option.
-> > +	 * Later, when the driver is registered, it will pass the number
-> > +	 * pages needed for it's page tables, if it was less that what
-> > +	 * the system has already allocated, the registration will fail.
-> > +	 */
-> > +	return kvm_nvhe_sym(hyp_kvm_iommu_pages);
-> > +}
-> 
-> Could we actually estimate the memory needed, based on the allocation for the
-> host stage-2 and an estimation of MMIO coverage? This would allow the whole
-> thing to run without setting this value as a best effort and to make it
-> optional, which is surely more user-friendly?
+SVM/AMD IOMMU interface changes
+===============================
+The first four patches refactor the SVM/AMD IOMMU interface ahead of GAPPI.
 
-Not really, this abstracts the IOMMU, so it does not have to match the
-host stage-2, in addition that the SMMUv3 driver requires extra pages
-for other in-memory data-structure.
+The cpu field is renamed to apicid because it carries the host physical
+APIC ID for IRTE[Destination], not a Linux CPU number.
 
-At the moment, this is set from the command line which is not really
-best effort as the driver later confirms how much memory it needs.
+The ga_log_intr boolean is renamed to wakeup_intr (and the synthetic
+AVIC_PHYSICAL_ID_ENTRY_GA_LOG_INTR shadow bit to
+AVIC_PHYSICAL_ID_ENTRY_WAKEUP_INTR). wakeup_intr describes KVM's intent
+(request host wakeup while the vCPU is not running), not a specific hardware
+mechanism.
 
-> 
-> > +
-> > +/* Number of pages to reserve for iommu pool*/
-> > +static int __init early_hyp_iommu_pages(char *arg)
-> > +{
-> > +	if (!arg)
-> > +		return -EINVAL;
-> > +
-> > +	return kstrtouint(arg, 0, &kvm_nvhe_sym(hyp_kvm_iommu_pages));
-> 
-> How about using a memory size here with memparse()? This would be more
-> transparent for the commandline which can work on different page-size systems.
+A separate is_running boolean is added to IOMMU interface because GAPPI
+requires a valid apicid in IRTE[Destination] even when the vCPU is not running. 
+The prior encoding (apicid >= 0 means running, apicid == -1 means not running)
+no longer works once apicid carries the GAPPI destination while IRTE[IsRun] is
+clear.  The IOMMU driver keys IRTE[IsRun] and destination programming off this
+explicit boolean instead of inferring running state from apicid.
 
-Makes sense, will do.
 
-Thanks,
-Mostafa
+KVM GAPPI wakeup scheme
+=======================
+SVM follows the Intel posted-interrupt wakeup model already used by VMX.
+Each pCPU maintains a list of blocked vCPUs that may be woken by a GAPPI
+delivery to that CPU.  When a vCPU blocks while waiting for a device
+interrupt, SVM enqueues it on the wakeup list of the pCPU on which it was
+previously running (gappi_cpu) and passes that pCPU's physical APIC ID to
+the IOMMU to program IRTE[Destination].  The rationale is that the vCPU is
+likely to run again on the same pCPU, which is common when vCPUs are pinned;
+targeting GAPPI notifications there reduces unnecessary VMEXITs from GAPPI
+deliveries on other CPUs.  When the vCPU is scheduled in again, it is
+removed from the list and IRTE[Destination] is updated to the current pCPU.
+
+SVM registers avic_gappi_wakeup_handler() via
+kvm_set_posted_intr_wakeup_handler().  On POSTED_INTR_WAKEUP_VECTOR delivery,
+the handler walks the local per-CPU list and wakes vCPUs with a pending
+LAPIC IRR.  The IOMMU has already posted the interrupt into the guest
+vAPIC; waking the vCPU lets it observe the pending interrupt and run.
+
+List maintenance is hooked into the existing AVIC vCPU and IRQ affinity
+paths: vCPU load/put through avic_update_iommu_vcpu_affinity(), the first
+IRQ affined to a non-running vCPU through avic_pi_update_irte() when ir_list
+was empty at put time, removal when the last IRTE is detached, and cleanup
+on vCPU destroy.  All GAPPI-specific logic is gated on amd_iommu_gappi.
+
+
+Changes since v2
+================
+https://lore.kernel.org/linux-iommu/20260708091408.12106-1-sarunkod@amd.com/
+
+Patch[1-6]
+  - Expand commit messages to explain GAPPI, the interface changes, and the
+    per-CPU wakeup list scheme [Sean].
+
+Patch[1-3]
+  - Split the monolithic SVM/IOMMU API refactor into four preparatory
+    patches [Sean]
+  - Rename posted_intr to wakeup_intr to reflect host wakeup intent, not
+    guest interrupt posting [Sean]
+  - Pass vCPU running status with a extra parameter (is_running) instead of
+    flags.
+
+Patch[4,5]
+  - Move ga_tag=POSTED_INTR_WAKEUP_VECTOR setting from IOMMU to SVM layer.
+
+
+Changes since V1:
+================
+https://lore.kernel.org/all/20260626105906.14577-1-sarunkod@amd.com/
+
+Patch4
+    - Disable interrupts while holding wakeup list lock inside [sashiko]
+      avic_add_vcpu_to_gappi_wakeup_list and avic_remove_vcpu_from_gappi_wakeup_list
+    - Unregister posted_intr_wakeup_handler during module unload [sashiko]
+
+Patch5
+    - Disable GAPPI feature during kexec and suspend path [sashiko]
+
+
+------
+[1] https://docs.amd.com/v/u/en-US/48882_3.11_IOMMU_PUB
+
+Sairaj Kodilkar (6):
+  iommu/amd: KVM: SVM: Rename cpu to apicid in IOMMU interface
+  iommu/amd: KVM: SVM: Rename ga_log_intr to wakeup_intr in IOMMU
+    interface
+  iommu/amd: KVM: SVM: Add explicit vCPU running state to IOMMU
+    interface
+  iommu/amd: Program guest-mode IRTEs for GAPPI wakeup when IRTE[IsRun]
+    = 0
+  KVM: SVM: Add support for AMD IOMMU Guest APIC Physical Processor
+    Interrupt (GAPPI)
+  iommu/amd: Provide kernel command line option to enable GAPPI
+
+ .../admin-guide/kernel-parameters.txt         |   3 +-
+ arch/x86/include/asm/irq_remapping.h          |   5 +-
+ arch/x86/include/asm/svm.h                    |   9 +-
+ arch/x86/kvm/svm/avic.c                       | 173 ++++++++++++++----
+ arch/x86/kvm/svm/svm.c                        |   2 +
+ arch/x86/kvm/svm/svm.h                        |   5 +
+ drivers/iommu/amd/amd_iommu.h                 |   1 +
+ drivers/iommu/amd/amd_iommu_types.h           |   6 +-
+ drivers/iommu/amd/init.c                      |  31 +++-
+ drivers/iommu/amd/iommu.c                     |  59 +++---
+ include/linux/amd-iommu.h                     |  13 +-
+ 11 files changed, 237 insertions(+), 70 deletions(-)
+
+
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+-- 
+2.34.1
