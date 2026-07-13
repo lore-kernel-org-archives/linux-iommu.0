@@ -1,253 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736B83E3163
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 09:58:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14BD33B951
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 10:02:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783936719; cv=fail; b=i2JM9YFTM+FTuky2AfdddWk+GSgPZ21MjtKZFTRlRgD+u6GAdRobOpNpbDF1h14vJUfg1G1F41GVBLrhKwbi+eMjnWNotFx1I1T4cmvZa3l2dy/ubsSiwlB1c3wZzrDG2kDHn/P9040tQ8rZWs95+PRzAQ1Qd2dfjaodXZYr9g8=
+	t=1783936955; cv=pass; b=qOsBk5yEUkMqz/WoZ4dpwsws+akarJsuEva763OWXm9H0I0AkYmkZANHFbE6NnCZ33SXIaux1qzDzIgs0Vig6EhJlGs9LGp1ufh9GYtBSBgpX/ha0hfEwbqBWdpzROs9fBAulY6Om2hlBMDXLNObgVXRohgnv2DtvszX8ufLtrE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783936719; c=relaxed/simple;
-	bh=PA1uEspqroVL1WSNsbd7f9dq4C9Mm8/FtobG4H6ErjQ=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=by8uLtc8yJ4HTbhG4YjqvegBC9lvvG25NCFWT+1nEYhjuQ5eX2wyOFypl4TtoiXKzvFiirOH3+dsy1slohl5LhFjFTAKqlCt6wursNR/cWtXBBIQJ1bYi2NXLo51Nn7sVcwfnjOzw9GMLW9bbfvkq+CMvwZRoh17phV9akttROw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i6/XYTO0; arc=fail smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783936955; c=relaxed/simple;
+	bh=ljYjSOU2rttv7S0DEe0C0TY92PtkIx5fBTSkNK4qXpY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Ka/agMFWOTQuCLeEHZUGr/K+zonW9sDoiDifIibK1IHA8QUCqqe2oL9fr2T7CE3/YfuyGe9fSOyTETN67qT++EvwzC+s3CdjpsQIWS2aac9WcE1daqSpg8wNitkFvZhr5xjMGdHxglv2hyHCoHlux8a92Ax3dY/KfcIlEqdiKt0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=raspberrypi.com; spf=pass smtp.mailfrom=raspberrypi.com; dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b=gQrXd5Gy; arc=pass smtp.client-ip=209.85.210.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=raspberrypi.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=raspberrypi.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i6/XYTO0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783936717; x=1815472717;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=PA1uEspqroVL1WSNsbd7f9dq4C9Mm8/FtobG4H6ErjQ=;
-  b=i6/XYTO0mV+A0WbUaRVCxzI4PdPZFXQbWvyBDwAfhoOux3irgOTxSR5l
-   ykVTxluLZ7B29pvYX7RbKv4WPyo8bpSjo3HAucdzRjdKa9mO3Cfr/0fzi
-   KQdH2p/gCGNmB53B3a+Nx0tcRajGttB9HnsC3QMsRbenIQcFcKYsO/FDG
-   YGpzMXHM4gF+39EtUqFeS8h6i47qpB+o4MPpt/T6E9Iy+tQQ8SySbfCAD
-   OjDZYd9DBU+Brw8Ulw28h4vn7mzS4LCfHRIiDR+446jnJUne3CBHvWJWs
-   m6WH238nwCusVK8IKtxcLAtzDmdzXdo79tLKqU7JV7E/VYV0Iq+VwDAMd
-   g==;
-X-CSE-ConnectionGUID: oJ0vMTIoSfiHf59vR+F7xQ==
-X-CSE-MsgGUID: GUbX0/EiRNaEHdd6w9pFbA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="87085873"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="87085873"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 02:58:36 -0700
-X-CSE-ConnectionGUID: y+SqoV6mQ5CtWcK3Yu0eww==
-X-CSE-MsgGUID: afnCEgbPROyt0Eennfmyhg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="278767777"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 02:58:36 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Mon, 13 Jul 2026 02:58:35 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43 via Frontend Transport; Mon, 13 Jul 2026 02:58:35 -0700
-Received: from PH7PR06CU001.outbound.protection.outlook.com (52.101.201.5) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Mon, 13 Jul 2026 02:58:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YDf3yv7S1voR16sIEytmeoLKh82lU0JuSXsxWxHzc8Ibz81p2h/klCGJ35Be1hkrzdXIlDdY/NGQv/eij8a6Fa37SaDWNX0JEJzKQutRqWL4mjNaLaZniocEh74zJA4jbXW1IsgfcI+ltVJ77f8QMFQUG+ruuJVhygxP/62xBZZqtQKq0qU2EPjimCLT3VSEWEiHMvdBMsqhG7ROy2NegOEcucpW4I70EWZCbP/SFU41rjkmbKGP3YxnpUm6JkSHbG1mxxzCLuMdEPYB1y6cshl1BuwYtv/+Oo3OTM86EBucMVN7YWjdLw1R56ioARWri5++3eNu+0TLYyGZRF2kaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m9hwHBjSB6IREr4JSpHyieBKRpaLgYanpaOrUlmA8Ow=;
- b=NI0oQTJ5MLYgDRU2AsLlaFpxRofS2cskWss8ciBwCNCsvkLr2nBohELdVPDQTtg+6BZMQF5CE/2AH6YR1nGqUnqZ1nNE+gBz22M+jaFatSwYE0E5AfOb52ffRkuStKGxt9J4G9Qc0z8UgkB+Oqg0MfXtNI9xitV370slIo4mmvWuBcigzYQW5TRADYXSfTj74s0NNHdGcD1A7f17mRYQ8GaKyfZ0LVsMI5qF5WZY0+wOeMdJ/2SzzKwg17RTgyIrQFAsAvFNXK//1aKyE1hyfH+VkOgFvUOL/gxn5iYhUi7JoCBh2+tk/ZA30ZGoA6TLU5zzrlf7AgxnJyWHld5d/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
- by DS0PR11MB9456.namprd11.prod.outlook.com (2603:10b6:8:290::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.14; Mon, 13 Jul
- 2026 09:58:33 +0000
-Received: from PH0PR11MB7424.namprd11.prod.outlook.com
- ([fe80::c448:1138:6981:52e2]) by PH0PR11MB7424.namprd11.prod.outlook.com
- ([fe80::c448:1138:6981:52e2%5]) with mapi id 15.21.0202.018; Mon, 13 Jul 2026
- 09:58:33 +0000
-From: Krzysztof Karas <krzysztof.karas@intel.com>
-To: <intel-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
-	<iommu@lists.linux.dev>
-CC: Andi Shyti <andi.shyti@linux.intel.com>, Robin Murphy
-	<robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	=?UTF-8?q?Micha=C5=82=20Grzelak?= <michal.grzelak@intel.com>, "Janusz
- Krzysztofik" <janusz.krzysztofik@linux.intel.com>, Sebastian Brzezinka
-	<sebastian.brzezinka@intel.com>, Krzysztof Niemiec
-	<krzysztof.niemiec@intel.com>, Krzysztof Karas <krzysztof.karas@intel.com>
-Subject: [PATCH v3 5/5] drm/i915/gem: Remove iterator and use while loop
-Date: Mon, 13 Jul 2026 09:58:12 +0000
-Message-ID: <20260713095812.1014365-6-krzysztof.karas@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260713095812.1014365-1-krzysztof.karas@intel.com>
-References: <20260713095812.1014365-1-krzysztof.karas@intel.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: DUZPR01CA0155.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:4bd::11) To PH0PR11MB7424.namprd11.prod.outlook.com
- (2603:10b6:510:287::7)
+	dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b="gQrXd5Gy"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7eb6573bd52so1662515a34.3
+        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 03:02:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783936947; cv=none;
+        d=google.com; s=arc-20260327;
+        b=cr1ZZ1YkHa9qmgAfcm/21r3n3Uzy4ThDU6acy/5cugvCHWLXXMZXG883mSlJGWhyT0
+         UEqTsDkhr/rHe5Xz9EiSQ+IFuqF5ta8cs8fIx6SfL48I1x5VkAojKikf++iPTq6OFiqp
+         w0KBq53HpsEwhZpz2WONxM0jAFURhqVbVsBmoJQAEJFkF9xIEVuMNP8f+phHRS7G39hr
+         ZNJ09Dazxwc98+4sBg7O6jyCdSQV+z6NP/xUb+xBWzu5EE065B8UAU+ndcWF7rtpYeUu
+         zZY8fQ8oXVW/jaPWB/A9XjWOi5fr4jZPPliFLZr0lBZEjZco7PEjfQrPI+tdS5Iwj+/C
+         UdNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=2P0GCpX7xQ5SgWYiQkKz/UKhv5/hqMLczhsTlA66oGk=;
+        fh=0KtCacvB7/88O82iWh6qouWj8jLD6tjErJxx5QVbNn8=;
+        b=iiJz3G1qQqN1DyBoaS1/sDRD7N8Ir3i4hnTLFETLmGEsZJs6WKNVR57tS+9mG6KAa5
+         Gsw7jun4LlOwYXByAomt66wya5xt3i86k82zkEFDutCAAewe+JIkUIFUjjQ2GO3ui7Z0
+         lSgXUAi+Mb1wABI/VK1kuMT60gKyTFWVwvyihR4kD95zZVbSpZH1dVqo9MyuEE47d+al
+         Mv6zIXpU8J4lzkIkhevMJTTwB7QfY9slq/6qGcpHCVKUSt3egXrNz6i3F/OjjZt58hCc
+         HbklbC7IFMzmaAObE+UyS17am8ER4EuWMUGQhj5wnXxstxg15zH9+pf6uQm97/Z89Gsw
+         Xxaw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.com; s=google; t=1783936947; x=1784541747; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=2P0GCpX7xQ5SgWYiQkKz/UKhv5/hqMLczhsTlA66oGk=;
+        b=gQrXd5Gyq8z2dOvOKnCD9f/sXuboV0e67+ZQAq8lD0FThs+Mm44mM+VXC87UwIRmdJ
+         1xql/VBXGG3yXIpAfr/hWlD0Wh4Ang3UwG7k9BnfxJeTFmQlo+ssqmQPvnTUyl06w6H2
+         J/v8hX2P4uNSqxzit6YEIh/Dov8Chi7yiGOnCUQYEl6pPVEgTa/oAzkBswoRR9IAv7SE
+         vRh2bT1AmRVqSbki9G2Mw/JN6OaLRC5EW60wCJT++4mj4OdL6EKwstY9XMzvUAh1XVJf
+         TKK0ulkgV2F++pgeuacDdoENucc54R0MsQTFPQ2sBESbm1p952QylUNXqJJQ4P1Nrp2Z
+         BEqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783936947; x=1784541747;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=2P0GCpX7xQ5SgWYiQkKz/UKhv5/hqMLczhsTlA66oGk=;
+        b=n1JArRGFolgvjKxMLxUyUhwcQt2f7vLa8DjNzF9PlSAbtEWnr/2MsoV50uZf8lmPXW
+         ExqDCjDyOSVvVAeWiqkED0InNA/NrkwaKN6K+UoGczw+UydWdZezPFIszbRpJWLCyuoD
+         y4HMz7qIsfDG9/jeQ84FNXHcdce+CzV05nG35CpHCdAI3xAJoK8+exJEsxGXwB95/svJ
+         CtL6uk8yu2EkJHgXnIsc8Sd+QcL2irZW6hGfHzWiYfGB6Jhb+CMNX7JLQhBaYA9S7z3G
+         yUVRYFhGWwdTM44rBAgFrSqS/KZsNMR5d+Ygy7NBKJenNmPkHCPscPWPrknZh6O93enw
+         b28A==
+X-Forwarded-Encrypted: i=1; AFNElJ/ELRzGpX/v3IGeLlzxc+4qi1P/Ulzv2dC4o2a52fyqBduj7jq6tupRYWBXLo8rs8ieIoJZyA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyFmqVUbTRnWaYIL+Uq8gyLAHhg4M1oz7WiamOGgk55RgYdbjH3
+	9qwZTcHK1WhBK0z6jkWE8qitZY0sAJJUNr5v01qaH3zXcWJ0xd0E+IvM8xYPXuPBlB0T96pZDtD
+	wWNacj5RZ4dyyLjCZMJLF+/08A6zPSzHieR1ATzPNyA==
+X-Gm-Gg: AfdE7cnhgFgwr6C2dt0AY8nLR8QQ0khY12zH2YHqS71s2U+UVeaA/kjj6ybvFIipCXP
+	RquIQWbr8At7ksi4ck/aLldPZtOe8cwE1x/Rkp6AASI+Izu0nsZJeQsST2dYnKxCcBtu20apnAc
+	aqXdajG9sPV4zS+m9I83nsr/DYav00JSlaUWm9JgFvk39+gwL8cWAu/c98FGVZIL6jwWQqTTo5O
+	RmQewjh+gCIMOgCm+PF0GLYdFXR70iR5RkX/Vl/tplC3pt1wjlMmhHgBQGnVpPZL/zmMECFpQFB
+	wsS8gqDU6SFlAofOXQtNfUDm8WEI
+X-Received: by 2002:a05:6808:1b99:b0:489:f199:42bb with SMTP id
+ 5614622812f47-4a42ac1bf5fmr6284861b6e.8.1783936946808; Mon, 13 Jul 2026
+ 03:02:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB7424:EE_|DS0PR11MB9456:EE_
-X-MS-Office365-Filtering-Correlation-Id: 34a22375-ea1d-446f-75d9-08dee0c54cf2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|18002099003|22082099003|3023799007|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info: dUGhtMSDDF4xPbkMP0obhMXMD7RAknzzlsAP629ZkjErdi6uXJVJJ1QyQHXEjkAbci0F8abklSGu6VL8cgYg6ABeH4K+3u3m2iCrPH0ZEzUnPt68gHxt4ypy/UTLLlG352wranQblJJmpXesaPrEaAOtzBA3+cq6EUjyaQFjHAYbdgkM30LcjtBHv0qoS7+Q30u9Zgp1cHLXHftVnk7MjrfTwV4UT5CeP37FOCTef3fyLfh9r0kf/XZFaG2B/MPJO2o5jw+sCuWTGwj6LRe9eLbJK1zlqSKmabi15VoX0Nhq20WaQAAbGfnjOte2uFVkkbzEc3/Pc/K7ZSgNjNtOZcjoB5WGaW0+bZE9kc+fw/tTZ3A+53Ic4JHOP+Oaq5a0ALVUsGzMC+pZqQziNdK84G9eRew3lhxoTKLscBq91bRbMD5mQ9TB6N1IbC9sLR07yzNGfrAK4LQPdlEriSFMNsBy+BVlZ+P+GpLsbMSKtbSTAlFsxitw1aXA/4DAaoLvzYP0Q09sgt5v/62YrlLjOykGm1s9Yy2rIeDyiHQvqfKkP3xMD7IFNkJD08ZVdXBUgTzlXUaAfhPcd/76AtDjhngtBfdcK3NHQn3nRhMG8L6bCPX7sDnEcbEeeoX+0C3bRyuacE6uQ10NX20oi2tkyxqJHsqi+sY8ZyMOHY45wF0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7424.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(18002099003)(22082099003)(3023799007)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yj6BN+rxKD7tu6QISFleUbReZ7wS8qVdva4tDuXsPerEb0MR6V7z0iGGiQhy?=
- =?us-ascii?Q?HAeaN8MteUfo1BZgQajo6K1k6dBt3bB8Nm3y7L+CVdmevnM6oA6oGOlHhbe5?=
- =?us-ascii?Q?G2Q0nMNCTsqYw5LanMoCxH38zEdQCmPJYJ2WXTepSslGL48blcRJZV9xqEGw?=
- =?us-ascii?Q?KTDTeXCTQ/pU5PlD/X1LTd9XWFQyxf5tXE2vsLV6ruLlM5YvhMQO3VcCpkvn?=
- =?us-ascii?Q?LC8ZJ6mAc90NN4+CcFgweY2TvDD0ErWTL1s5xoHAS7DVzr/1ZFz1agw9squW?=
- =?us-ascii?Q?+oQqYYVpRbQcNWe9IEKXkQBv0LTPBZMM58u70OCAGWAiwjWpUsY51oG1OgqT?=
- =?us-ascii?Q?lSUb5tRXz3osdtZfHZDcSDJWbNBRBbV/9wrS/yHV+2EulZakWo5DcFM/JEVN?=
- =?us-ascii?Q?oViTcG023dkgNmY4qlsb9W/51M3hBLobXJG4UrTYn3k+hepf6fIdieNndM95?=
- =?us-ascii?Q?yPeauosYeSDbIsJmc74kYiFH7ZknvgjlwKjSn27517fb7YdCot+u1C+rxVKs?=
- =?us-ascii?Q?wD/GSH9mS3XOlwd4Di6iWUaMfW0pnJoZwRGFZlt3pXbF+toyWVMPQkIA7cyo?=
- =?us-ascii?Q?QKLxKBi7XaESmUcTJuIs7ZF6agHwhjkbpQSc5sZsSRxp/yWbwAle7MZaC8Xa?=
- =?us-ascii?Q?PK3Em8gTvEF1DAW2/hCjOuGJ7CxwcYEo8o45y/5leb6Dg35au+qnzaeRf42Z?=
- =?us-ascii?Q?/T63EXiSQJHzpafhlk1Nwasr3yrNPxt7L83wdQH4IO7SJZmchhurkPSgM2i/?=
- =?us-ascii?Q?Wv25WgC9OJpYChlgp7UrtNezGjWYpCgxoY7KuBPg9ctOqvG+gA0XlKb+7vJn?=
- =?us-ascii?Q?e/BnLsDuF3N7jQFz7at0GGYkGFKdGJbCVyvGXU3zUWfzo4bGugX0Fl5Cs3u0?=
- =?us-ascii?Q?p3VD1+wjfv3iIpXM3CKiuUv2Kc9xUExwMCp+7mq5AlVkapZ9enCDeven4uKu?=
- =?us-ascii?Q?bYua4VFQY7G/BOK+QVUL9Pm3psnxUk64FT9BOXp5WSzblbqPziweI5eGyxo0?=
- =?us-ascii?Q?OgMWYv71QSblJLSAays9z14JgkD1mHLJ/lIL74X1D+nSbB/RJnUqQu7fKSTM?=
- =?us-ascii?Q?wh+uzl/27JcWzfMzHJ/qPHbjPqOM++Uk8Hm+v9BEEWkFK9RvQXc7o5CdSDoR?=
- =?us-ascii?Q?NVOG8o7WzxMU7b11tP2QX+hdmdyKp+9qrL7tZon7Tzk/YqranPJM3qij85ch?=
- =?us-ascii?Q?D9k08Aq0foc0lRL0Zq0S0kAZfJLBBxqMwaqDh3n/OMOQUzkwsaDtJx0C9p28?=
- =?us-ascii?Q?kvO+GPsLYlvGFiBd09wN7NCZ0MIRQZtW/eN75E3WZOMlEVV7vJM+qm/YiG9u?=
- =?us-ascii?Q?ZVJRSpipK6w/D15nVRbSN5VVzFNwSXEJWMoZdUPuBfi2grN4vb2BejTrTcuc?=
- =?us-ascii?Q?chq1zXBBmMuDGlQP+yYMmqcJyQKQJpc0UXnArkqGOc9pialc/Amzcfu0y3Cu?=
- =?us-ascii?Q?rscFUyX/6y1F2kvLSfLVPno9A1rs+hsOOTHQfnEQcqHTicQrHA0U0lkoRK1F?=
- =?us-ascii?Q?jyPDIsPMTzW3UA0ituGWGZ4Q5XjVDcivvIHUCUFwB+a1cj/0GZN2BUhVCpZE?=
- =?us-ascii?Q?7im7mkrKhI/GBwsTHlxFF5211CgYvwQB1aw4mr2I0y1U6tdoyKIHTqc1dHw2?=
- =?us-ascii?Q?Nu2fAebAvmVWHDLonFzAR6RksanNqkIyoSSAnBRyXK8+DFhW2ojWgJZCUvbv?=
- =?us-ascii?Q?Um3RvbyKmFznvarkIABBMLWjsXaQkUFQge5d4w7axELuu8A3oLLHXqkbA6Lm?=
- =?us-ascii?Q?mSrcxYyvyI9Mrm03Q+00pW34NnoYpLY=3D?=
-X-Exchange-RoutingPolicyChecked: Es8Mxx/0x6HJCyBvTWv6tBA8nxSHgycOQgb2MoF3KAZghWoExsSJf/YZ9KcV7ClvGJHCNIziOYqZQkxjAuOxki/6i5z3B/urBF68C84FRCXMWrQ1kXkx95QEPF2TD8Ff3D1Qk9nxh88XFwNZjYb2VMEYVJleAxWYMBCgLxIyD4aAfOYLyJDF7tFo8gYk+Wz3EFlDh5li2qjrCND9rI41x+8p8kFNQA631YD1EfVB3abXYfexk6TX8mOsGz/UKSZFjvbL3Ru/20cExXFWFX8KcqLsotxFN3DjuM9aXN4WbmujK33zt2on0vF/RYZpIW2ngKrfFh71WeiwAdxm0mr9qw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34a22375-ea1d-446f-75d9-08dee0c54cf2
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7424.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2026 09:58:33.8501
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YwZDD/2SRq0qEC7zU3SYaTHeF6JTW1hGfEtcd8GKpk6Z8b7b1xpQIVivGMs9KVya6Yk9i7gk1MnJYNw95nWfWBlYqi5eC6hYLmqfeD+BXS0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB9456
-X-OriginatorOrg: intel.com
+References: <20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net> <20260712-bcm2712-iommu-submit-v1-4-80e10cdde2ea@reactivated.net>
+In-Reply-To: <20260712-bcm2712-iommu-submit-v1-4-80e10cdde2ea@reactivated.net>
+From: Nick Hollinghurst <nick.hollinghurst@raspberrypi.com>
+Date: Mon, 13 Jul 2026 11:02:15 +0100
+X-Gm-Features: AVVi8Cf4LGOVn8UuEl-XzGEtPWPky3oSnqvul0wqNroMw9il-m2qt1JpocyTw0U
+Message-ID: <CAPhyPA5CqCzsDZg1_Sfr=EP5G6uLnnvDmdd_REZPX_VpwS=VJA@mail.gmail.com>
+Subject: Re: [PATCH 4/6] iommu/generic_pt: Add Broadcom BCM2712 page table format
+To: Daniel Drake <dan@reactivated.net>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	Jason Gunthorpe <jgg@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"
 
-Change the main "for" loop into "while" to get rid of obscure
-iterator "i" and use more descriptive name to indicate how many
-pages were already covered. Detect first loop with st->nents and
-put instructions for that case in their own block for easier
-reading.
+Hi Daniel,
 
-Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
----
-v3:
- * Split refactoring and put it after the fix in shmem folio
-  counting suggested by Andi.
+On Sun, 12 Jul 2026 at 22:19, Daniel Drake <dan@reactivated.net> wrote:
+>
+> The BCM2712 IOMMU implements a 2-level page table format. It is relatively
+> simple, with one unusual aspect: leaf entries can only be installed at
+> Level 0.
 
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 29 +++++++++++------------
- 1 file changed, 14 insertions(+), 15 deletions(-)
+I should admit that a single-level huge page mapping is possible, but
+I was too lazy to implement it (and haven't much tested it).
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index 7c8de8fe0a22..66d0f8f6ffcc 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -135,11 +135,11 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 	unsigned int page_count; /* restricted by sg_alloc_table */
- 	unsigned long next_pfn = 0; /* suppress gcc warning */
- 	unsigned long folio_start = 0;
-+	unsigned long pages_done = 0;
- 	unsigned long folio_end = 0;
- 	struct folio *folio = NULL;
- 	struct scatterlist *sg;
- 	gfp_t noreclaim;
--	unsigned long i;
- 	int ret;
- 
- 	page_count = size / PAGE_SIZE;
-@@ -163,15 +163,15 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 
- 	sg = st->sgl;
- 	st->nents = 0;
--	for (i = 0; i < page_count; i++) {
-+	while (pages_done < page_count) {
- 		unsigned long folio_page_index = 0;
- 		unsigned long nr_pages;
- 		gfp_t gfp = noreclaim;
- 
- 		/* Grab the next folio if we exhausted the current one. */
--		if (!i || i > folio_end) {
--			folio = shmem_shrink_get_folio(mapping, i, gfp,
--						       page_count, i915);
-+		if (!pages_done || pages_done > folio_end) {
-+			folio = shmem_shrink_get_folio(mapping, pages_done, gfp,
-+						       page_count - pages_done, i915);
- 			if (IS_ERR(folio)) {
- 				ret = PTR_ERR(folio);
- 				goto err_sg;
-@@ -181,7 +181,7 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 			folio_end = folio_start + folio_nr_pages(folio) - 1;
- 		}
- 
--		folio_page_index = i - folio_start;
-+		folio_page_index = pages_done - folio_start;
- 		if (WARN_ON_ONCE(folio_page_index >= folio_nr_pages(folio))) {
- 			ret = -EINVAL;
- 			folio_put(folio);
-@@ -190,16 +190,15 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 
- 		nr_pages = min_array(((unsigned long[]) {
- 					folio_nr_pages(folio) - folio_page_index,
--					page_count - i,
-+					page_count - pages_done,
- 					max_t(unsigned int, 1, max_segment / PAGE_SIZE),
- 				      }), 3);
--
--		if (!i ||
--		    sg->length >= max_segment ||
--		    folio_pfn(folio) + folio_page_index != next_pfn) {
--			if (i)
--				sg = sg_next(sg);
--
-+		if (!st->nents) {
-+			st->nents++;
-+			sg_set_page(sg, folio_page(folio, 0), nr_pages * PAGE_SIZE, 0);
-+		} else if (sg->length >= max_segment ||
-+			   folio_pfn(folio) + folio_page_index != next_pfn) {
-+			sg = sg_next(sg);
- 			st->nents++;
- 			sg_set_page(sg, folio_page(folio, folio_page_index),
- 				    nr_pages * PAGE_SIZE, 0);
-@@ -212,7 +211,7 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 		}
- 
- 		next_pfn = folio_pfn(folio) + folio_page_index + nr_pages;
--		i += nr_pages - 1;
-+		pages_done += nr_pages;
- 
- 		/* Check that the i965g/gm workaround works. */
- 		GEM_BUG_ON(gfp & __GFP_DMA32 && next_pfn >= 0x00100000UL);
--- 
-2.34.1
+It can be done by setting bits 31, 30 and 28 of the top-level entry
+(all other combinations of bits 31, 30 will point to a  next-level
+table). The page number is in 4K units but must be 4MB aligned.
 
+Regards,
+
+ Nick
