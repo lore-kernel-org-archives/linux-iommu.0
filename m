@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D501E3624BC
-	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 06:00:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B25862EEE84
+	for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 06:00:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783922411; cv=none; b=kk+4ifp9miQRWVlQXZ/xTyrpdqlHybii1nppfxsXpxNT+barsJ4cwecEu6OewPav5QnZVkv+yZiwX6tLkyM5RcMrYRTWXxt/TooR8Ow+4+drLpB3z9nTKlkhMSc7AV2WVB14oBDdAYTGhaOUyricc5md9fjULMIu1yWJQxcVv3Q=
+	t=1783922427; cv=none; b=cM6lp3P6mgZh76ldnl3yJIYG/70XFv1C6hr08Xf3kGLSjNWlQNamrZ8HKRtgm1aUFabhdKxx8rPn5TxZtofi95icfPA+Z9slJkc8DGBhDQk/Yhq+giQ22iz0MS059aateTvgkdAjbdsnrf+/TqHAd3H6ugGMzRN9gYkKWoqsFlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783922411; c=relaxed/simple;
-	bh=psSl44kQAmpduvXJgayiRWg2HnIuLxnednHA5OIgwc4=;
+	s=arc-20240116; t=1783922427; c=relaxed/simple;
+	bh=kEnXfjp0fB+NOAyrqx57XLwA3+Z7s1TSVi+KYTvMoLU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YNOpyPiIiihQmw91zKCB0b6dWVLW1Ms1tu4upkPzCbGmGdTIArfKDGzgxrN7eizk9HlmhNaPWyLwb5mzlaAkFxcMThxA+fRycPUoYGws9iklPtDZrlY3KP7/YGAYr36bHyw5/U888hFveW92k5Scer3Z7XoHJSd5s8UaKEZGz9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kDhtFa7M; arc=none smtp.client-ip=198.175.65.17
+	 In-Reply-To:Content-Type; b=Oz+DNGJcfeTTPRn6iW1ISkrxGvYxf+r42zKP5EQgqyktRNBF5AZ5Ot3mxMQOk85KhHolM3s1AVdmwZH3kCPhOl0VL+1bK2dHYgH5EVQhuljl0vGok2iRASlF385+IjxOvbWRkYuKxXdrSc4x/rv2W+0oywD1gveG1Dr+8b+3VvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HoHuNKbB; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kDhtFa7M"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HoHuNKbB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783922408; x=1815458408;
+  t=1783922425; x=1815458425;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=psSl44kQAmpduvXJgayiRWg2HnIuLxnednHA5OIgwc4=;
-  b=kDhtFa7MYi6iYYMeP2dc9Mx5lTQvQf2AVTQrCP32DWnTslTBRTPD4B4E
-   38mNRFQBz6l30vlRl+JHp95Sv8YaEjQA6q3sj844YgMo83Av5yWBOP6Ra
-   NdivoOwDvcZthOfD4x/L0NvsFq+knjRbi15mErGhAgQqjLdFfS9MkmW2j
-   p0lXQoA0qlSg6SBzEtIkIi8KrOtxAvV+vrKTRJnSQhBXBfRV0keDzoeDJ
-   o1vp7S2X7unWMPBahYd6CSyOkvg2h/nrz4tyybHzZ0Xr80/w4iYgcG71G
-   mTPUP04Ad9C3LfYopIkiEFgOWYovBRbnJg6l5V7ITk3IxsBlB76Wb7RJn
-   Q==;
-X-CSE-ConnectionGUID: 7KCWQkEOS0KHZ8iNnXhB3Q==
-X-CSE-MsgGUID: LSkOQLyTS7+eVs5iakRnyg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84542241"
+  bh=kEnXfjp0fB+NOAyrqx57XLwA3+Z7s1TSVi+KYTvMoLU=;
+  b=HoHuNKbBQIMWvYsJW+uRdlg0sxLIKIR64MrzlHBp0+EUwLWyhpZuYedG
+   LHb/J6hkYOW75xQuTybaotyrNN32nEIyWVYE0nACZIEarDKzdaM0QyRr4
+   H6wy3sCusg/dyInL8I6mQrXNiXpqx+JbgeOUW42Evs7sr/0iyTi9L0eTT
+   UTThrAekEZTZHO5TmygZmKweZWUDS/nnxEoWqgQf/Pzk2tX+6cLx7Jukv
+   0sfLYqtyWJ3EvoPM0By7FUGpnomkRl/scTP826Z73hhMhLH92Vx3/XP9Z
+   ZL3kwFg/MClCuX8A/IA/ZJzfb2OU1S+NN967/qnDeDlgiz7+0p76uLHU5
+   g==;
+X-CSE-ConnectionGUID: BnGEEohpQzawcj8Frm0SkA==
+X-CSE-MsgGUID: UEknmciqRFeK52DIk9Yrsg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84542322"
 X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="84542241"
+   d="scan'208";a="84542322"
 Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2026 23:00:08 -0700
-X-CSE-ConnectionGUID: 7YCWJH7ERM2Hvzz7QNTwpg==
-X-CSE-MsgGUID: VTmitOknRAWzZ+CF1zlFAQ==
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2026 23:00:25 -0700
+X-CSE-ConnectionGUID: jOjIs9VrR0moXBKd2/0f0A==
+X-CSE-MsgGUID: fNwrl5MnRh+AXC654m1byw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="279862934"
+   d="scan'208";a="279863040"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2026 23:00:05 -0700
-Message-ID: <06cfeb74-0cf5-49b0-bc94-5703524203fd@linux.intel.com>
-Date: Mon, 13 Jul 2026 13:58:22 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2026 23:00:22 -0700
+Message-ID: <6e3e3279-fcf0-41a8-92c6-f533d1dda422@linux.intel.com>
+Date: Mon, 13 Jul 2026 13:58:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,50 +52,36 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/5] iommufd: Iterate the cache invalidation array in
- the core
+Subject: Re: [PATCH v3 5/5] iommu/vt-d: Convert nested cache invalidation to
+ the core array loop
 To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
  Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>
 Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
  David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 References: <cover.1783539724.git.nicolinc@nvidia.com>
- <c19b7508428e9f14d6997ff9f5a41d9d5ba6cde5.1783539724.git.nicolinc@nvidia.com>
+ <15bf2bf57e7bca35fdfd8262d2524026bb7574d3.1783539724.git.nicolinc@nvidia.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <c19b7508428e9f14d6997ff9f5a41d9d5ba6cde5.1783539724.git.nicolinc@nvidia.com>
+In-Reply-To: <15bf2bf57e7bca35fdfd8262d2524026bb7574d3.1783539724.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 7/9/26 03:44, Nicolin Chen wrote:
-> The cache invalidation ops, cache_invalidate_user() for a nested HWPT and
-> the cache_invalidate() for a vIOMMU, are each handed the full user request
-> array and report how many of the array entries they handled by setting the
-> array->entry_num. Every driver therefore implements its own loop over the
-> array, and a driver wanting to process that array in fixed-size chunks
-> (e.g. to issue commands out of a fixed-size on-stack buffer) has to carry
-> the loop and its sub-array bookkeeping all on its own.
+> intel_nested_cache_invalidate_user() used to walk the whole request array
+> on its own, copying and then flushing one single entry at a time.
 > 
-> Move the iteration into the iommufd core instead. Invoke the op with a
-> sub-array that starts at the first not-yet-handled entry, let it handle a
-> prefix of that sub-array and report the count via array->entry_num, then
-> advance the base pointer and re-invoke the op until the entire array has
-> been consumed or until the op returns an error along the way.
+> The iommufd core now iterates the request array itself and re-invokes the
+> op with the not-yet-handled sub-array, so handle just a single request per
+> call out of the front of that sub-array and report one handled entry via
+> the array->entry_num. An empty array keeps returning a success, used as a
+> probe of IOMMU_HWPT_INVALIDATE_DATA_VTD_S1 support.
 > 
-> A driver that handles the entire window in one single call, as all of the
-> current drivers happen to do, finishes the loop in just one pass, so this
-> does not change any of the existing behavior. It instead lets each of the
-> drivers convert to bounded chunk processing on its own, done by each of the
-> subsequent changes.
-> 
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
 > Reviewed-by: Kevin Tian<kevin.tian@intel.com>
 > Assisted-by:Claude:claude-opus-4-8
 > Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
 > ---
->   include/linux/iommu.h                |  6 ++++--
->   include/linux/iommufd.h              |  2 ++
->   drivers/iommu/iommufd/hw_pagetable.c | 25 +++++++++++++++----------
->   3 files changed, 21 insertions(+), 12 deletions(-)
+>   drivers/iommu/intel/nested.c | 54 ++++++++++++++++++++----------------
+>   1 file changed, 30 insertions(+), 24 deletions(-)
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
