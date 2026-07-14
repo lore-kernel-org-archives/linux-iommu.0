@@ -1,164 +1,351 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010062.outbound.protection.outlook.com [52.101.193.62])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03F77427FBA
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 20:55:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.62
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784062557; cv=fail; b=JrtZSCX7ju3jdELhIRcHO6MDGKoMelKZbOPq8tHzSJO+06NutXphYWsxGQovndiu3ca/7ivaD379TVGjF1ZysJeblI91LHdSzdWnuXBlI7bXirCrLlOieqx8fOCzZhCQf2IOsgWXlaTbDw4aMdSxHRX/N/C12bNIrtOLIGy1t58=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784062557; c=relaxed/simple;
-	bh=yExzBTt2qPcj80DNM32crk940r4rNuxg0ljWZU5yrAw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DCKZkvPy+zUCouyPYlMyxzkrWIvybv1ny8Fkcc/qvvj2HUNRj8KcN2UPue4WmDhEigsj9Bds8n9j7vega4zFG9/wj4gyvuutdIWT8m4XnDUtVkd3UcGoFRBEYPCQ30baaJDmbTVVG8/Vjzm7bH0t32RHQzKXY5pMl4g9vrymmu4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Cl9MNCn8; arc=fail smtp.client-ip=52.101.193.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3848B42BC4E
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 21:02:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784062943; cv=none; b=qWfu+Igvqu62SVTZ2KLWhjbqn1bFaKDkWmM4X+K3ZQL0D3sTItAwLTCmsbEMM7E4tEMWkG0uhOsC/EUX3XGFuuzqQ+AoWMLdmiPyAVma783wlJItFzVKbm6vw0slTeeNE1mKCWwqCREOUYYunfwHB8Q05IvMoIrPWDozD5BOQic=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784062943; c=relaxed/simple;
+	bh=3Kno23UernUyxvsqyFovL/19JIeexLpAXGvyQAz+Pfo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Hqz1k1excPZkfMcP5ivDPqUaZoEmznke76f5Tj2Sk7Ce+qUqJeMfffClGg4ZRc/GdnJXhWAAjAZaRin7CFq/Q4IDkDGXYyHT+lHhG6azRiG+iK4Rhc8vYy3GI9kGeRyF4XOudnq1O3hgidTiZEQa/tzyV8m8k6Y3jvIkhb6lsfg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qRHjREHe; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Cl9MNCn8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rIVdruwgK7MjQKfx3BfutRdoZJ0XmGtwfwtRWv5qbhFDQuEcHnunY4tcnb8fegPuuFwkwKpSW662LY1vqhJrPrSxQ6oVm9NzlNht7u/3yhnOnEGC1dlWe1oTUrrXgum+t/LZA/KoqoxFgWJ8te9g+1XvIO3Cs+jYQJyGsZP/sjxrpJVraMBV9DsGllqpgPTDeySuYiBBctwxl8d3MpnsVDJaqTRB3zxl+B51P5jJRBQ9MHLvYYSon5uHi0hrdBHJw9XBDchwU9VWDzggl0ED5A8MCNed0KeftFkAwMd/KIgvzIUlCV5Ilv68zWv92o6RTzPx1i3MDXSZ3XYu9cUAaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XmpNk9qGPsz4Qzcw/ZGmi42J4ven8E8cs5INl9cFIKs=;
- b=qj17MmHyLknTBk6kBjOIWlvhCGXtHlp9AbN4a1VIMLXQxYTNQ21gGtlwi6Qw/pqp9mVCt2SfGy7rbnRABrNyKTCD0CLHHozSp+7OS95lV5Hc/ttpSZkz/RCjnPo4MKtenfeIQLlxIUtnrgMBpuJ400HlAJwjLIQp/ovCY99FcAPVirmhox3qHT87HIZYbWKovE3flLZwIDkKNy2a1mu7uNVEXzqZWghheelx9H6XmHPHBJFp25330AR6m/0B1aZH5fzuRKMObPAsn3KL9EnXmtEeAnzPVZPrQAjN/rXexDoP+5W3I/CvBaOGm6HSlwkFTSJJR7fsHJ0pAyjP51nwyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XmpNk9qGPsz4Qzcw/ZGmi42J4ven8E8cs5INl9cFIKs=;
- b=Cl9MNCn8fKwff+480sOHLbM/CQbRWUXLcoQ9uciow50narrORw55Zl8QY2n+OC1XCgAO+3mAXt8OSvdXQB0OhnhjnFTQCXiBMH+V0IHbQqGVpw1HGs7T+qq7+oWF9JVqAcdAJdM3l4dgn7vpoWmtBxOZl8SLMZGxAArPflNUzCcG5FMUvmv6qUVYlixttzGhXryj8Ed5MSodAlhemvmbTwZ2z2MhwfUF8j3gaLiFc9qgwRWYqDlKALnOvd4hoa+VNKjCdulJVJ469b4s1aGc1lvsN/F6TgFVaq/M2nzgVIU+qk3yAFPdUoGmsO0RTfnMg+Jx2c3qE52uTltrE9ywog==
-Received: from PH7PR17CA0036.namprd17.prod.outlook.com (2603:10b6:510:323::20)
- by PH8PR12MB7447.namprd12.prod.outlook.com (2603:10b6:510:215::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.23; Tue, 14 Jul
- 2026 20:55:43 +0000
-Received: from CY4PEPF0000FCBE.namprd03.prod.outlook.com
- (2603:10b6:510:323:cafe::8e) by PH7PR17CA0036.outlook.office365.com
- (2603:10b6:510:323::20) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.10 via Frontend Transport; Tue,
- 14 Jul 2026 20:55:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000FCBE.mail.protection.outlook.com (10.167.242.100) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.223.9 via Frontend Transport; Tue, 14 Jul 2026 20:55:40 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Tue, 14 Jul
- 2026 13:55:19 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Tue, 14 Jul 2026 13:55:19 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Tue, 14 Jul 2026 13:55:18 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>
-CC: Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)"
-	<joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-	<linux-tegra@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 11/11] iommu/tegra241-cmdqv: Rate-limit the error ISR's log message
-Date: Tue, 14 Jul 2026 13:55:08 -0700
-Message-ID: <2e9d088c059037d5fc23532820444720b870d2c7.1784059577.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1784059577.git.nicolinc@nvidia.com>
-References: <cover.1784059577.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qRHjREHe"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-4728c12ba97so2137260f8f.0
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 14:02:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784062939; x=1784667739; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=rF+I37AHgFT2tFAT9wyxmGe1KHl9HXqH6cXLVyI8Vxo=;
+        b=qRHjREHeNY5qlZ85MjdHR97nBTtFrzHTHe8CiXE1hPAKgUHVcxC0qcBuJoS0/QJ9zJ
+         Dckg6dQ1H774iCeHTGBnfaq2pj3axVvUMmTqOmAVvhsdMeYc9qvgznE+Vy5VJzmycBuW
+         N5EEESuLolTVSdqrMxLhBcp051AW8M6CNzbkr2nxW3MevYWOMIG7wqNYgu1uJ+qtR0A0
+         0YN8ric6itVxbhoSV08n2ct/IT6L5rwN7Gv4PaUAO2MEpeIaZOzfO4tHLfrrjkNgGqXC
+         LJ1eKd67feAOIiHFmJrrYEi82e0K58Kj2RtNBglP9V/qz2qGhg3tQIQf17LFZT52zVMd
+         Xacg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784062939; x=1784667739;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rF+I37AHgFT2tFAT9wyxmGe1KHl9HXqH6cXLVyI8Vxo=;
+        b=pWAe8v+9dTahRFXcjhLrRpc7azfChPVydhVab9rzIUkrGz55FI17zjCWD3ZhPk5tr+
+         IKInCFWwoM/4tvATgJLnYpKsWKHX2sPTIIAQ+crHJ9Z94YGG6eID+SNRiDzbZ7o2TzAR
+         nLPaELurdufvnBlrC9qugUBcpvNK1b4UoEL6TAwhiC180Gpcy2AjopyhtcyPvrDZ/tEV
+         OwQmNVmiEtkv++5e21q+70TqmvcpmTVTSHD6D+ApPDzVQgS1iwEvH4MlCrSb//gSrm0O
+         eeSEi7rzO+X0uiB0q+MYzEwqh7Rjw/fXKne58xfE9lqXSVhi760W1P0MNtmpucY+Cma2
+         DK+g==
+X-Forwarded-Encrypted: i=1; AHgh+RqTYM7YRTeIPgBmdrIzkYMlREqaeUY0BDJSCof4R4R5uDEvSDgeSzlRfCpHcJ4fYqvpq4Zx6Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxkalQJlRg7Gk9oGD8c5Vx41P6Dj4mISh/A/faAr1UnaaS5Ve0m
+	sjSaPULkwYin8YFGbcr3aL0cpe9KDkXlm0wPrK4wMqbeYiW5tC9MjF1S
+X-Gm-Gg: AfdE7cl04FpkFZgBfT+fs2ejeU2PpJk6vHII0yVquUlVLPrPJdgoJglKr5vmpww7OIY
+	YQx8+zVQ2lIf+82I/gA+6ItRc95qfpfwDOfntusSjnV+LPS3fXblvM5h6TrOgfv7ENdFItkZ1Mn
+	idNk0LMDB2d/paX0ZCghcsHd4mBxubeQ/Jr9NgY6N2YRrNm5vZJlfU1qLNr9TPcGr1jZLgxKVfM
+	QUt0ac7KtKDOmeLnIhd2q4MjH0h5DGjleUF5xNqjp6fcMemBKGPP2SdJitQb2EZ9xAQVVzgWRP/
+	zTRsCyePWg/APSmiJB8l/6gWlDvZOANFwagzSS+zExit301Jl/iuqR8o109N5jq9eQ44E98l/cT
+	84TLtxAxo1DuBvxm+2pqoQD/CVe+/lPOSCphN581xDplKyXEywVlgeuok7o0S3S4yCZRMGK17sD
+	CXzXHpcf7diQN5unrmrEk7LjyFpBkxMXi1c2gy/28SBa2yZaWaAw==
+X-Received: by 2002:a5d:6f19:0:b0:47e:96f4:4a5b with SMTP id ffacd0b85a97d-47f4fcef3cfmr20784f8f.51.1784062939220;
+        Tue, 14 Jul 2026 14:02:19 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464d6fa7sm10622252f8f.37.2026.07.14.14.02.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2026 14:02:18 -0700 (PDT)
+Date: Tue, 14 Jul 2026 22:02:17 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Guo Ren <guoren@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Zhanpeng Zhang
+ <zhangzhanpeng.jasper@bytedance.com>, Tomasz Jeznach
+ <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti
+ <alex@ghiti.fr>, Vivian Wang <wangruikang@iscas.ac.cn>, Zong Li
+ <zong.li@sifive.com>, cuiyunhui@bytedance.com, yuanzhu@bytedance.com,
+ iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit
+ registers
+Message-ID: <20260714220217.65055d98@pumpkin>
+In-Reply-To: <CAJF2gTS2Rw0MYaKMzd0t3ZJ-4ni47wUwLrgkm3pjaxKu7Y1R+A@mail.gmail.com>
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+	<20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
+	<3591a185-d0b5-4cb0-a0d5-ae9608a4e244@arm.com>
+	<CAJF2gTSscdfFxtLHMO5Lw_Yax_GHOV6iKyX_xqZ==p7A8=wDAQ@mail.gmail.com>
+	<20260714155310.2e17473c@pumpkin>
+	<CAJF2gTS2Rw0MYaKMzd0t3ZJ-4ni47wUwLrgkm3pjaxKu7Y1R+A@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCBE:EE_|PH8PR12MB7447:EE_
-X-MS-Office365-Filtering-Correlation-Id: b79a75eb-52fb-494c-33da-08dee1ea43ad
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700016|23010399003|1800799024|82310400026|56012099006|18002099003|22082099003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	l/YjfowV4yTR96luHjRLF+63+OSZr8Jb2k9HgBLY43gMa/zhSD5Mb1lFa2w7eIr9FHlD4bjLikakhR/k7ZgbUlTFcBAJGAXcI+mCuIGhEgsyOwCvZnFjWgayagKnrkiQb+UfsPlzufHC1Jg0gBOmDdzGUAdVjUzVlMaT9EH1CYmv5moAl0NvQLBpcDYAeVSYC9ketoKZc2TCRlnz7w6u4Tq5xy3PCtpYp3pxNvB7SA9Jt38zAzzgu8L8bxXbG7PrXt+l5AJWMm/Ey2HKcLf1I5xWhKnjW8I/Ep86uIzLOm8K5kiFk/O1aWTDY6pBrmiWkvKG3a+tLbTbI1NnBVL/plwh7Z+Yke36bJwfr1hktXKZUo6P8Iq6tG9xjVoo6Eu3ljaqZd0+OcamSx+ZxswJM+ktqRTI1nMAi07NVde3XLvWCeS+QNI2NjXvIkdUmOF3KBcMM2jpcWJFwaCcL5XiqfFhCFoh7Po+0S/VQnoY0EArv5ws65ZQPYdcRJemeAmt09YLCcpfc/bCAXC0AcVRqCQUsUb+86YzXQK++T3nB9gbvYmG8dxYsBD47BFs4HNddgJR1ul3zFO73RfIbt0BS7E5At6ZFuMOI1bq+Pwcx2dlSHhUOihSDBwiBHBnJrUfRse4oH6QSMeb7yXuKNct5tBYMCFkxc8ipafsNBdZZXatjxo9xN/UHo2FMpfi02pj8CCLgh9wbzRLihDsaOsiGg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700016)(23010399003)(1800799024)(82310400026)(56012099006)(18002099003)(22082099003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	ZgxprbMR3v7QDSCXf/fb4u0+URPvhKBdxcYo4gcxka3dQ3sS6djjTeIQPawQEEJryblTwYEgkX1sz8ZDzDzZOIrve9Clkup+ry5p0FBpIHhzyYM04q++L8MPrxQWZDsGYPVrdEEMd4oGrji0d8gPablbgqZroeMyHQlRLya8h10HEVLk5bvvKhDbyvmbCYo+DtSAopEfzjQwAqydB2ePoEuCFLZixu0nFcttMCxzjYhzTg3T0bFcZ63VeWF4IWdixszsvkt7FHx39u2MkmAvh7nmDf2+KogZQdcqSmmkFaA56XvVBR5Tyrmz6DiSqhHs/qUynL7fkA8XtG9MheoF0/bkQBArP3fv5LYnahRY9uQUQwOOq6MiDEW2e8owo5vg9NizQ53udF73/+SnP7UjyJ/hsPUrDc22quYylDGSOymBswsGm8hp/47hcqIaiXgY
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 20:55:40.6296
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b79a75eb-52fb-494c-33da-08dee1ea43ad
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCBE.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7447
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-tegra241_cmdqv_isr() logs the error-map registers on every error interrupt.
-A malfunctioning device, or a guest deliberately faulting its own VCMDQs,
-can raise these interrupts rapidly, and the unconditional dev_warn() then
-floods the kernel log.
+On Wed, 15 Jul 2026 00:53:06 +0800
+Guo Ren <guoren@kernel.org> wrote:
 
-Rate-limit the message with dev_warn_ratelimited(), and pass the error-map
-registers straight to it so their four MMIO reads run only when the limiter
-prints, instead of building the string on every interrupt.
+> On Tue, Jul 14, 2026 at 10:53=E2=80=AFPM David Laight
+> <david.laight.linux@gmail.com> wrote:
+> >
+> > On Tue, 14 Jul 2026 21:24:19 +0800
+> > Guo Ren <guoren@kernel.org> wrote:
+> > =20
+> > > On Tue, Jul 14, 2026 at 8:27=E2=80=AFPM Robin Murphy <robin.murphy@ar=
+m.com> wrote: =20
+> > > >
+> > > > On 13/07/2026 1:29 pm, Zhanpeng Zhang wrote: =20
+> > > > > The RISC-V IOMMU specification [1] permits 64-bit registers to be=
+ accessed
+> > > > > using two 32-bit transactions, high half first, and leaves the si=
+ngle-copy
+> > > > > atomicity of 8-byte IOMMU register accesses unspecified.
+> > > > >
+> > > > > Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() =
+helpers
+> > > > > for ordinary 64-bit IOMMU registers. For DDTP, poll BUSY in the l=
+ow half,
+> > > > > then read the high half and compose the register value from the p=
+olled low
+> > > > > half. HPM counter reads require a rollover-aware sequence and rem=
+ain
+> > > > > outside these accessors.
+> > > > >
+> > > > > This follows the 32-bit access direction proposed by Guo Ren [2] =
+and uses
+> > > > > the generic non-atomic MMIO helpers suggested by David Laight.
+> > > > >
+> > > > > [1] https://docs.riscv.org/reference/iommu/
+> > > > > [2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kern=
+el.org
+> > > > >
+> > > > > Suggested-by: Guo Ren <guoren@kernel.org>
+> > > > > Suggested-by: David Laight <david.laight.linux@gmail.com>
+> > > > > Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+> > > > > ---
+> > > > > Changes in v3:
+> > > > > - Use the DDTP access sequence from [1]: retain the low half retu=
+rned by
+> > > > >    BUSY polling, read only the high half, and compose the DDTP va=
+lue from
+> > > > >    those two 32-bit reads.
+> > > > >
+> > > > > Changes in v2:
+> > > > > - Rework the patch based on Guo Ren's earlier proposal [1].
+> > > > > - Drop the build-time option and use 32-bit accesses unconditiona=
+lly.
+> > > > > - Drop the global lock and use the generic high-low MMIO helpers,=
+ as
+> > > > >    suggested by David Laight.
+> > > > > - Poll DDTP.BUSY through its low half.
+> > > > >
+> > > > > Link to v1: [2]
+> > > > > Specification discussion: [3]
+> > > > >
+> > > > > [1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@ker=
+nel.org
+> > > > > [2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpe=
+ng.jasper@bytedance.com
+> > > > > [3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
+> > > > >
+> > > > >   drivers/iommu/riscv/iommu.c | 9 ++++++---
+> > > > >   drivers/iommu/riscv/iommu.h | 9 +++------
+> > > > >   2 files changed, 9 insertions(+), 9 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/io=
+mmu.c
+> > > > > index cec3ddd7ab1..d647b71ebec 100644
+> > > > > --- a/drivers/iommu/riscv/iommu.c
+> > > > > +++ b/drivers/iommu/riscv/iommu.c
+> > > > > @@ -670,9 +670,12 @@ void riscv_iommu_disable(struct riscv_iommu_=
+device *iommu)
+> > > > >
+> > > > >   #define riscv_iommu_read_ddtp(iommu) ({ \
+> > > > >       u64 ddtp; \
+> > > > > -     riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, dd=
+tp, \
+> > > > > -                               !(ddtp & RISCV_IOMMU_DDTP_BUSY), =
+10, \
+> > > > > +     u32 ddtp_lo, ddtp_hi; \
+> > > > > +     riscv_iommu_readl_timeout((iommu), RISCV_IOMMU_REG_DDTP, dd=
+tp_lo, \
+> > > > > +                               !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY=
+), 10, \
+> > > > >                                 RISCV_IOMMU_DDTP_TIMEOUT); \
+> > > > > +     ddtp_hi =3D riscv_iommu_readl((iommu), RISCV_IOMMU_REG_DDTP=
+ + 4); \ =20
+> > > >
+> > > > It looks like whenever you read DDTP you're only really looking at =
+the
+> > > > BUSY/MODE fields anyway, so does this actually need to read the upp=
+er
+> > > > bits of PPN at all? (The spec says they don't even need to be writt=
+en on
+> > > > RV32 either) =20
+> > >
+> > > The motivation is not RV32 compatibility. It addresses RV64 platforms
+> > > where the IOMMU control plane can only be accessed via 32-bit MMIO.
+> > > =20
+> > > > =20
+> > > > > +     ddtp =3D ((u64)ddtp_hi << 32) | ddtp_lo; \
+> > > > >       ddtp; })
+> > > > >
+> > > > >   static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *i=
+ommu)
+> > > > > @@ -1501,7 +1504,7 @@ static int riscv_iommu_init_check(struct ri=
+scv_iommu_device *iommu)
+> > > > >        * regular boot flow and disable translation when we boot i=
+nto a kexec
+> > > > >        * kernel and the previous kernel left them enabled.
+> > > > >        */
+> > > > > -     ddtp =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
+> > > > > +     ddtp =3D riscv_iommu_read_ddtp(iommu);
+> > > > >       if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+> > > > >               return -EBUSY;
+> > > > >
+> > > > > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/io=
+mmu.h
+> > > > > index 46df79dd549..1b03790fbe1 100644
+> > > > > --- a/drivers/iommu/riscv/iommu.h
+> > > > > +++ b/drivers/iommu/riscv/iommu.h
+> > > > > @@ -11,6 +11,7 @@
+> > > > >   #ifndef _RISCV_IOMMU_H_
+> > > > >   #define _RISCV_IOMMU_H_
+> > > > >
+> > > > > +#include <linux/io-64-nonatomic-hi-lo.h>
+> > > > >   #include <linux/iommu.h>
+> > > > >   #include <linux/types.h>
+> > > > >   #include <linux/iopoll.h>
+> > > > > @@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_d=
+evice *iommu);
+> > > > >       readl_relaxed((iommu)->reg + (addr))
+> > > > >
+> > > > >   #define riscv_iommu_readq(iommu, addr) \
+> > > > > -     readq_relaxed((iommu)->reg + (addr))
+> > > > > +     hi_lo_readq_relaxed((iommu)->reg + (addr)) =20
+> > > >
+> > > > This seems unnecessary (similarly for writeq() below) - once you've
+> > > > included the header, then it automatically provides readq{_relaxed}=
+()
+> > > > for RV32 via the non-atomic implementation, and wherever atomicity
+> > > > doesn't matter, then as written there seems to be no reason for RV6=
+4 to
+> > > > stop using the regular arch readq().
+> > > >
+> > > > Not that it makes any difference to me either way, but I don't see =
+any
+> > > > real issue with the spec - if software *may* make a 64-bit access t=
+o any
+> > > > 64-bit register unconditionally, then that can only imply that hard=
+ware
+> > > > *must* be able to accommodate RV64 software choosing to do so, and
+> > > > therefore must support *both* 32b and 64b accesses in general, exce=
+pt
+> > > > perhaps on RV32-only systems if software could never make 64b acces=
+ses
+> > > > in the first place. If 64b single-copy atomicity is not
+> > > > required/specified then it should be valid to achieve that by just
+> > > > sticking a downsizer in the upstream interconnect to split 64b acce=
+sses
+> > > > into 32bx2 incremental bursts.
+> > > >
+> > > > If do actually you need this as an erratum workaround to support
+> > > > specific hardware which has misinterpreted the spec then I think you
+> > > > should be clear about that. Otherwise, adding speculative "workarou=
+nds"
+> > > > which (slightly) penalise hardware that got it right, while inviting
+> > > > future hardware to get it wrong, doesn't seem like the right way to=
+ go
+> > > > at all... =20
+> > >
+> > > The only three 64-bit registers the driver ever touches are DDTP,
+> > > CAPABILITIES, and MSI_CFG_TBL_ADDR. None of them is on any
+> > > performance-critical or hot path. Even if native 64-bit MMIO accesses
+> > > were used, there would be no observable performance benefit.
+> > > Therefore, this change does not penalize any hardware.
+> > >
+> > > Regarding the specification, there remains substantial disagreement
+> > > over whether 64-bit accesses are mandatory. The relevant sentence uses
+> > > the word =E2=80=9Cmay=E2=80=9D (=E2=80=9Cmay be accessed using either=
+ a 32-bit or a 64-bit
+> > > access=E2=80=9D). Per RFC 2119, =E2=80=9Cmay=E2=80=9D does not expres=
+s a requirement. Because
+> > > every existing implementation already provides working 32-bit MMIO
+> > > access, we believe the safer and less controversial choice is to use
+> > > the portable 32-bit path via the generic hi-lo helpers.
+> > > =20
+> >
+> > There is also this clause:
+> >         The 8-byte IOMMU registers are defined in such a way that softw=
+are can
+> >         perform two individual 4-byte accesses, or hardware can perform=
+ two
+> >         independent 4-byte transactions resulting from an 8-byte access,
+> >         to the high and low halves of the register, in that order, as l=
+ong as
+> >         the register semantics, with regard to side-effects, are respec=
+ted
+> >         between the two software accesses, or two hardware transactions,
+> >         respectively.
+> >
+> > I'm not sure what the relevance of the high-low order is.
+> > It could mean, for example, that a read of the high word can latch the =
+low
+> > for the next read - so that you get an atomic 64bit read.
+> > That might be ok if hardware splits the 64bit read, but if software doe=
+s it
+> > it isn't going to go well unless the driver locks all (and it might be =
+all)
+> > slave accesses.
+> > In the worst case there might be a single latch for all odd word reads.
+> > Writes could be worse!
+> >
+> > Hardware can be that broken.
+> > I remember a PCI slave that terminated reads requesting 'cycle rerun'
+> > and then assumed that the following reads would be repeats of the same
+> > read, not reads of a different address by the other cpu.
+> > It didn't do writes properly either, I've forgotten the exact details
+> > but I think a second (third?) write overwrite some latches. =20
+>=20
+> This is precisely why the specification leaves the single-copy
+> atomicity of an 8-byte IOMMU register access UNSPECIFIED. If a 64-bit
+> MMIO register were implemented with atomic semantics, 32-bit accesses
+> using lw/sw might require implicit mechanisms, such as latching half
+> the register for subsequent accesses. Such mechanisms could lead to
+> exactly the kind of interleaving problem you described.
 
-Assisted-by: Claude:claude-opus-4-8
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+Right, but it also says you must do high-low.
+The only reason for that would be to allow hardware that requires
+that ordering - which means the software better do both accesses
+in that order.
+The second half of the sentence seems to let the hardware update
+half the register from a 32bit access (as you might expect).
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-index d27ee215032f7..6fa981574db9f 100644
---- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-@@ -353,21 +353,19 @@ static irqreturn_t tegra241_cmdqv_isr(int irq, void *devid)
- {
- 	struct tegra241_cmdqv *cmdqv = (struct tegra241_cmdqv *)devid;
- 	void __iomem *reg_vintf_map = REG_CMDQV(cmdqv, VINTF_ERR_MAP);
--	char err_str[256];
- 	u64 vintf_map;
- 
- 	/* Use readl_relaxed() as register addresses are not 64-bit aligned */
- 	vintf_map = (u64)readl_relaxed(reg_vintf_map + 0x4) << 32 |
- 		    (u64)readl_relaxed(reg_vintf_map);
- 
--	snprintf(err_str, sizeof(err_str),
--		 "vintf_map: %016llx, vcmdq_map %08x:%08x:%08x:%08x", vintf_map,
--		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(3))),
--		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(2))),
--		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(1))),
--		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(0))));
--
--	dev_warn(cmdqv->dev, "unexpected error reported. %s\n", err_str);
-+	dev_warn_ratelimited(
-+		cmdqv->dev,
-+		"unexpected error reported. vintf_map: %016llx, vcmdq_map %08x:%08x:%08x:%08x\n",
-+		vintf_map, readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(3))),
-+		readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(2))),
-+		readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(1))),
-+		readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(0))));
- 
- 	/* Handle VINTF0 and its LVCMDQs */
- 	if (vintf_map & BIT_ULL(0)) {
--- 
-2.43.0
+The whole thing is misleading/confusing.
+And, reading the full page, the system that doesn't support 64bit
+accesses is probably non-conformant as well.
+
+	David
+
+
+>=20
+> This is one reason hardware may favor straightforward, latch-free
+> 32-bit MMIO transactions. The example you mentioned further
+> illustrates the robustness of treating each 32-bit MMIO access as an
+> independent transaction without relying on hidden latch semantics.
+>=20
+> Using 32-bit MMIO accesses for DDTP, CAPABILITIES, and
+> MSI_CFG_TBL_ADDR in this driver introduces no meaningful performance
+> overhead and provides broader compatibility without disadvantaging any
+> RISC-V IOMMU implementation.
+>=20
 
