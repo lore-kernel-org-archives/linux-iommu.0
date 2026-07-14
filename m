@@ -1,195 +1,211 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7B5136F42A
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 02:02:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08D137B03C
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 02:03:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783994543; cv=none; b=Vc77ak5QqJ5hhWdydsjHnfuhiT8TKd4E6HMI+ncb5aR0Rk/14CKTctI+CUdZBgqrpeSbDF3ovLsPaYZ4B2MRAd+w8eav2akIAwpWEmrWtHJ2/aXK9YkwxCQPxeL55Wj9mVjXcWCvtPe8g3LeEli2INHFZ6zP53x3sjaSHTaBkf0=
+	t=1783994600; cv=none; b=ftP2WLY0zXosedIJbNMH+YOVgF+CDcEV8lPxRgS/hT6p5fAx7sfNvU7vWl4DUrE73sdKboWNwdfWrN1ddVXdVfRtpq9aFtdKQWWUt8w0ruRYJEDKkdY8pN4X8SKsYZp7h56GTYIlFMFYTjqeOdErjkCTiG0F3J3//ZcsBe/3Y6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783994543; c=relaxed/simple;
-	bh=AshqqY2sSjRgs6kJ4C0zvRMw7Vsqtm19l81b+jHhBCc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dvHtBw1kFrFcoL9LyA9wXkhhnVib+/0dTWYKFqc9Dg8AEjAKcmIbieaH7e1wrz4I9mRZ2sByVsgBv28nQBGBC8Ar3IkGAfAn6Y64hCPh8efBzhUGSkbp6Rsgxf+Yu3b6FMvh7Rqq0jQtHINu50yS2ubodqkIu2LZ6I/hrc9SmxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CYtxoeVG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783994600; c=relaxed/simple;
+	bh=F/dkUauOyGpoEe18K/1eGkOgm1xHJJZXLEkrWNpcWMc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=OUOIjRM4KDcSnUUnMPoFyZON2nJ25eoxQGxFWPVJXNihMpt1ixIZ36BJ6ptedq1uB+z9dhUkraKwnzq11oM/QJYKb+6ZDRpR1OfgOAJYc4coptd632PYfHcmpCs6Uvw2Svw8ARn4oME9BLF9KnHU2O6O2XeAlJjmq/AjJZfwHsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Q8hQ0poO; arc=none smtp.client-ip=220.197.31.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CYtxoeVG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 376FF1F00AC4
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 02:02:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783994538;
-	bh=JPG8KJkkby84Nl2p+va7Q/OZia1JnxQSsep3QJTzGik=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=CYtxoeVGMI2VeLL+qKdcAcEbbzTCJwn3jA7RwyUyFDLzXrOrGxkYQVTJOWDMUn3ff
-	 Wu4HEThhVkvxU4Y799ThqjM0hycUl3dOCHsnvEiKDRy518R/gVGAuy2i1siJEbaNk7
-	 aBJuXAmJzYvGt3oOpnFHHh/sUwzHp95JEleAUfWXpJllw388wmp9yUrBCA6AareiaD
-	 S8tQrDg0pANOUPpftTr20fHEzWzABqnGn/dL9R7G2mDBJgA90YlsN2id9M837v0OnM
-	 d7sSiP0qSMp7AiGTqmxk08Brp6ICl3FrCVmtTztNmV0g3pLh3Bl2khBbign1yVuheg
-	 mwGNFeyQVFVAA==
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-47f3e6cc44aso1502913f8f.3
-        for <iommu@lists.linux.dev>; Mon, 13 Jul 2026 19:02:18 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RonOws6V/sMh3Aae9n0JVOm/j1Dq0dmVRoVuUb44n+Lv6DB9YesysoXZR8VMvW8UeYRa8k3sw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw7DiDp0TL5NUbnQNQ3ZcP8ihL7Q2G5e4rkaNRS/2Hwa/NiMIqv
-	OxSU9h377PloeWjmDgocGgo0jpqPYeIgWMcyvWh7nie0sZg/V9TbaXCasIO6OOMH4BUbUf8nfGt
-	XquGpz5ucvjJhXex2nB7aPYTgVBHKqEw=
-X-Received: by 2002:a05:6000:25fc:b0:47d:eb17:3bee with SMTP id
- ffacd0b85a97d-47f4884871emr464793f8f.6.1783994536738; Mon, 13 Jul 2026
- 19:02:16 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Q8hQ0poO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=A5
+	aMnFNkUrpPv50lSdrPDKTy96S9FQDuMfU2uCS37JE=; b=Q8hQ0poO8I7JV0xdKy
+	U2DVe5QKot0/Z8j8YzwuiLGNHtfYiCV7JLL3IP22W0+5A8CG+wt3NkrAMQefnzvq
+	XE0Asb6B5MpLXEvMDSoX7Pf9Ww56N2dUrwSeBoI5VxeUgOnHIiuv0CHihsFzCWrQ
+	k6zpRynRQwxZqICabfSUzxAvc=
+Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
+	by gzsmtp2 (Coremail) with SMTP id PSgvCgCX1fPLmFVqoFhHGg--.38350S2;
+	Tue, 14 Jul 2026 10:02:51 +0800 (CST)
+From: weimin xiong <15927021679@163.com>
+To: iommu@lists.linux.dev
+Cc: baolu.lu@linux.intel.com,
+	jean-philippe@linaro.org,
+	jgg@nvidia.com,
+	xiongweimin <xiongweimin@kylinos.cn>
+Subject: [PATCH v2] iommu/virtio: Report faults via report_iommu_fault()
+Date: Tue, 14 Jul 2026 10:02:51 +0800
+Message-ID: <20260714020251.175824-1-15927021679@163.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260713010442.331096-1-15927021679@163.com>
+References: <20260713010442.331096-1-15927021679@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com> <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
-In-Reply-To: <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
-From: Guo Ren <guoren@kernel.org>
-Date: Tue, 14 Jul 2026 10:02:04 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTRsE=sHeK+qHdSp5_mAZF_=3JYOg3O7uZqUtXLUte+y8g@mail.gmail.com>
-X-Gm-Features: AUfX_mxv-rDVQ-sRl5v_ZvLetOTEQcTb4z6swSsoJc6I4J4f-kN-VaGIj5bIac4
-Message-ID: <CAJF2gTRsE=sHeK+qHdSp5_mAZF_=3JYOg3O7uZqUtXLUte+y8g@mail.gmail.com>
-Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit registers
-To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <pjw@kernel.org>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Alexandre Ghiti <alex@ghiti.fr>, David Laight <david.laight.linux@gmail.com>, 
-	Vivian Wang <wangruikang@iscas.ac.cn>, Zong Li <zong.li@sifive.com>, cuiyunhui@bytedance.com, 
-	yuanzhu@bytedance.com, iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:PSgvCgCX1fPLmFVqoFhHGg--.38350S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3AryxCw1DAF1xJFWxGr4UArb_yoW7GFW7pF
+	Z5Cay5KrW7Xr1IgF43Jw4Uur1Fva1vqF47Wr15Kw4q9r13Kryrta18Cryrtw4fCFZrC3W7
+	t3WDKa9ruF4UCaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jn6pPUUUUU=
+X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC8wtI0GpVmMucYgAA3y
 
-LGTM!
+From: xiongweimin <xiongweimin@kylinos.cn>
 
-Reviewed-by: Guo Ren (Alibaba DAMO Academy) <guoren@kernel.org>
-Co-developed-by: Guo Ren (Alibaba DAMO Academy) <guoren@kernel.org>
-Signed-off-by: Guo Ren (Alibaba DAMO Academy) <guoren@kernel.org>
+Fault events currently only print a ratelimited error with the endpoint
+ID. Drivers that registered a domain fault handler with
+iommu_set_fault_handler() cannot react.
 
-On Mon, Jul 13, 2026 at 8:29=E2=80=AFPM Zhanpeng Zhang
-<zhangzhanpeng.jasper@bytedance.com> wrote:
->
-> The RISC-V IOMMU specification [1] permits 64-bit registers to be accesse=
-d
-> using two 32-bit transactions, high half first, and leaves the single-cop=
-y
-> atomicity of 8-byte IOMMU register accesses unspecified.
->
-> Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() helpers
-> for ordinary 64-bit IOMMU registers. For DDTP, poll BUSY in the low half,
-> then read the high half and compose the register value from the polled lo=
-w
-> half. HPM counter reads require a rollover-aware sequence and remain
-> outside these accessors.
->
-> This follows the 32-bit access direction proposed by Guo Ren [2] and uses
-> the generic non-atomic MMIO helpers suggested by David Laight.
->
-> [1] https://docs.riscv.org/reference/iommu/
-> [2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
->
-> Suggested-by: Guo Ren <guoren@kernel.org>
-> Suggested-by: David Laight <david.laight.linux@gmail.com>
-> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-> ---
-> Changes in v3:
-> - Use the DDTP access sequence from [1]: retain the low half returned by
->   BUSY polling, read only the high half, and compose the DDTP value from
->   those two 32-bit reads.
->
-> Changes in v2:
-> - Rework the patch based on Guo Ren's earlier proposal [1].
-> - Drop the build-time option and use 32-bit accesses unconditionally.
-> - Drop the global lock and use the generic high-low MMIO helpers, as
->   suggested by David Laight.
-> - Poll DDTP.BUSY through its low half.
->
-> Link to v1: [2]
-> Specification discussion: [3]
->
-> [1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
-> [2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpeng.jaspe=
-r@bytedance.com
-> [3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
->
->  drivers/iommu/riscv/iommu.c | 9 ++++++---
->  drivers/iommu/riscv/iommu.h | 9 +++------
->  2 files changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index cec3ddd7ab1..d647b71ebec 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -670,9 +670,12 @@ void riscv_iommu_disable(struct riscv_iommu_device *=
-iommu)
->
->  #define riscv_iommu_read_ddtp(iommu) ({ \
->         u64 ddtp; \
-> -       riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp, \
-> -                                 !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10, \
-> +       u32 ddtp_lo, ddtp_hi; \
-> +       riscv_iommu_readl_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp_lo,=
- \
-> +                                 !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY), 10,=
- \
->                                   RISCV_IOMMU_DDTP_TIMEOUT); \
-> +       ddtp_hi =3D riscv_iommu_readl((iommu), RISCV_IOMMU_REG_DDTP + 4);=
- \
-> +       ddtp =3D ((u64)ddtp_hi << 32) | ddtp_lo; \
->         ddtp; })
->
->  static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
-> @@ -1501,7 +1504,7 @@ static int riscv_iommu_init_check(struct riscv_iomm=
-u_device *iommu)
->          * regular boot flow and disable translation when we boot into a =
-kexec
->          * kernel and the previous kernel left them enabled.
->          */
-> -       ddtp =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
-> +       ddtp =3D riscv_iommu_read_ddtp(iommu);
->         if (ddtp & RISCV_IOMMU_DDTP_BUSY)
->                 return -EBUSY;
->
-> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 46df79dd549..1b03790fbe1 100644
-> --- a/drivers/iommu/riscv/iommu.h
-> +++ b/drivers/iommu/riscv/iommu.h
-> @@ -11,6 +11,7 @@
->  #ifndef _RISCV_IOMMU_H_
->  #define _RISCV_IOMMU_H_
->
-> +#include <linux/io-64-nonatomic-hi-lo.h>
->  #include <linux/iommu.h>
->  #include <linux/types.h>
->  #include <linux/iopoll.h>
-> @@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_device *i=
-ommu);
->         readl_relaxed((iommu)->reg + (addr))
->
->  #define riscv_iommu_readq(iommu, addr) \
-> -       readq_relaxed((iommu)->reg + (addr))
-> +       hi_lo_readq_relaxed((iommu)->reg + (addr))
->
->  #define riscv_iommu_writel(iommu, addr, val) \
->         writel_relaxed((val), (iommu)->reg + (addr))
->
->  #define riscv_iommu_writeq(iommu, addr, val) \
-> -       writeq_relaxed((val), (iommu)->reg + (addr))
-> -
-> -#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, time=
-out_us) \
-> -       readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> -                          delay_us, timeout_us)
-> +       hi_lo_writeq_relaxed((val), (iommu)->reg + (addr))
->
->  #define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, time=
-out_us) \
->         readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, con=
-d, \
-> --
-> 2.50.1 (Apple Git-155)
+Track endpoints in an xarray keyed by endpoint ID at probe/release time,
+and call report_iommu_fault() when a fault carries an address and the
+endpoint is attached to a domain. Keep the existing log as a fallback
+when the endpoint is unknown, detached, or no handler is installed
+(report_iommu_fault() returns -ENOSYS).
 
---=20
-Best Regards
- Guo Ren
+This completes the TODO in viommu_fault_handler() and matches other
+IOMMU drivers. It is not the VFIO/IOMMUFD IOPF path
+(iommu_report_device_fault()); it covers DMA protection faults for
+virtio endpoints.
+
+Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
+---
+ drivers/iommu/virtio-iommu.c | 52 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 47 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 587fc1319..3a46d97f2 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -19,6 +19,7 @@
+ #include <linux/virtio_config.h>
+ #include <linux/virtio_ids.h>
+ #include <linux/wait.h>
++#include <linux/xarray.h>
+ 
+ #include <uapi/linux/virtio_iommu.h>
+ 
+@@ -42,6 +43,8 @@ struct viommu_dev {
+ 	spinlock_t			request_lock;
+ 	struct list_head		requests;
+ 	void				*evts;
++	/* endpoint ID -> viommu_endpoint, for fault reporting */
++	struct xarray			endpoints;
+ 
+ 	/* Device configuration */
+ 	struct iommu_domain_geometry	geometry;
+@@ -593,7 +596,10 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ static int viommu_fault_handler(struct viommu_dev *viommu,
+ 				struct virtio_iommu_fault *fault)
+ {
++	struct viommu_endpoint *vdev;
++	struct iommu_domain *domain;
+ 	char *reason_str;
++	int fault_flags = IOMMU_FAULT_READ;
+ 
+ 	u8 reason	= fault->reason;
+ 	u32 flags	= le32_to_cpu(fault->flags);
+@@ -613,16 +619,28 @@ static int viommu_fault_handler(struct viommu_dev *viommu,
+ 		break;
+ 	}
+ 
+-	/* TODO: find EP by ID and report_iommu_fault */
+-	if (flags & VIRTIO_IOMMU_FAULT_F_ADDRESS)
+-		dev_err_ratelimited(viommu->dev, "%s fault from EP %u at %#llx [%s%s%s]\n",
++	if (flags & VIRTIO_IOMMU_FAULT_F_WRITE)
++		fault_flags = IOMMU_FAULT_WRITE;
++
++	rcu_read_lock();
++	vdev = xa_load(&viommu->endpoints, endpoint);
++	if (vdev && vdev->vdomain && (flags & VIRTIO_IOMMU_FAULT_F_ADDRESS)) {
++		domain = &vdev->vdomain->domain;
++		report_iommu_fault(domain, vdev->dev, address, fault_flags);
++		rcu_read_unlock();
++	} else if (flags & VIRTIO_IOMMU_FAULT_F_ADDRESS) {
++		rcu_read_unlock();
++		dev_err_ratelimited(viommu->dev,
++				    "%s fault from EP %u at %#llx [%s%s%s]\n",
+ 				    reason_str, endpoint, address,
+ 				    flags & VIRTIO_IOMMU_FAULT_F_READ ? "R" : "",
+ 				    flags & VIRTIO_IOMMU_FAULT_F_WRITE ? "W" : "",
+ 				    flags & VIRTIO_IOMMU_FAULT_F_EXEC ? "X" : "");
+-	else
++	} else {
++		rcu_read_unlock();
+ 		dev_err_ratelimited(viommu->dev, "%s fault from EP %u\n",
+ 				    reason_str, endpoint);
++	}
+ 	return 0;
+ }
+ 
+@@ -1037,15 +1055,33 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
+ 	INIT_LIST_HEAD(&vdev->resv_regions);
+ 	dev_iommu_priv_set(dev, vdev);
+ 
++	for (ret = 0; ret < fwspec->num_ids; ret++) {
++		int err = xa_insert(&viommu->endpoints, fwspec->ids[ret], vdev,
++				   GFP_KERNEL);
++		if (err) {
++			while (ret--)
++				xa_erase(&viommu->endpoints, fwspec->ids[ret]);
++			ret = err;
++			goto err_free_dev;
++		}
++	}
++
+ 	if (viommu->probe_size) {
+ 		/* Get additional information for this endpoint */
+ 		ret = viommu_probe_endpoint(viommu, dev);
+ 		if (ret)
+-			goto err_free_dev;
++			goto err_unreg;
+ 	}
+ 
+ 	return &viommu->iommu;
+ 
++err_unreg:
++	{
++		int i;
++
++		for (i = 0; i < fwspec->num_ids; i++)
++			xa_erase(&viommu->endpoints, fwspec->ids[i]);
++	}
+ err_free_dev:
+ 	iommu_put_resv_regions(dev, &vdev->resv_regions);
+ 	kfree(vdev);
+@@ -1056,8 +1092,12 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
+ static void viommu_release_device(struct device *dev)
+ {
+ 	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	int i;
+ 
+ 	viommu_detach_dev(vdev);
++	for (i = 0; i < fwspec->num_ids; i++)
++		xa_erase(&vdev->viommu->endpoints, fwspec->ids[i]);
+ 	iommu_put_resv_regions(dev, &vdev->resv_regions);
+ 	kfree(vdev);
+ }
+@@ -1167,6 +1207,7 @@ static int viommu_probe(struct virtio_device *vdev)
+ 
+ 	spin_lock_init(&viommu->request_lock);
+ 	ida_init(&viommu->domain_ids);
++	xa_init(&viommu->endpoints);
+ 	viommu->dev = dev;
+ 	viommu->vdev = vdev;
+ 	INIT_LIST_HEAD(&viommu->requests);
+@@ -1261,6 +1302,7 @@ static void viommu_remove(struct virtio_device *vdev)
+ 	virtio_reset_device(vdev);
+ 	vdev->config->del_vqs(vdev);
+ 
++	xa_destroy(&viommu->endpoints);
+ 	dev_info(&vdev->dev, "device removed\n");
+ }
+ 
+-- 
+2.43.0
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
+
