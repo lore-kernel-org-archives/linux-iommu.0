@@ -1,195 +1,116 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37CAC448CE0
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 12:27:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44A14448CF0
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 12:29:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784032082; cv=none; b=e+P0OU8uBJKxP77F66c8A6FY5OTutPQ/SwTqYbdwne6WJd48JTQGL+AxLuCDbPAbzLegYoL/fWTS7gmAtVJVFqxNJMAf31BZcEtfSsBW25FpDrF9CrKfTXKNoRJ2lugVQeu6jVKocveqTU7YLAoeh8F3D4jWG8BrslO3hTWBK/c=
+	t=1784032168; cv=none; b=iC11kaJtzCdmUqoCnvvXPhJJJ8uyCqxqOrkGi1alKHWOpDjS03no0tAZMQtFbE9MT9ncVnqIVgHeii19yUkOoACcP4pQ72TozxUNxiiYbTP0Iw/liXiSon5rXOgToijjjA9go+n7fkzB+As6dlGwGynl/F+Yn0OTwzVAqak1kfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784032082; c=relaxed/simple;
-	bh=zzEYaVVhSuGCuAAvI0y0XEVUpmDQVjrHVxuT2tgpuUk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IImG+bS9r3qpNThH17GCcrtqmlC/x7bEEj+DBPmOColWsk3uqbVuVCUARaaYE3xMrcKubGgno9jGKXL+uZnVxp1xU6DFITmQ2IYVqJeqknExctW2ffhuyh9gRADzA6Dn6E6oNNrtLQhQ/KlUeYs3cViC3NOC2EIIxYH0AuJ8Q2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=DsN8zTDv; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1784032168; c=relaxed/simple;
+	bh=gmsT/6hGiTgG3nhnsb9gPpjrDpYzwYt2AkwBPDl85/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OUS3uj5nVTFOR3P2X8EVr8JMLQ8FW2BOmneX2fL665rZ+0aQd3cXDNek+kwtePNhOt608lOPfAN9rAM5ZlzFNH5kMX13sdeBZ8y8R+6aVEnDrbZTGQg8bFPZVVAazSkcpyZ6wNIXZSKRbSf7YmCwd3KdKLE7g6LCNBHIxW6km3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ldMJ9uju; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="DsN8zTDv"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23AE11476;
-	Tue, 14 Jul 2026 05:27:53 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 224FE3F7B4;
-	Tue, 14 Jul 2026 05:27:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1784032077; bh=zzEYaVVhSuGCuAAvI0y0XEVUpmDQVjrHVxuT2tgpuUk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=DsN8zTDveK+mVBpv6T2NXbyfwS9iLZFlYhMP6iJHbw5XNQF6IRrdDhP2N2W2jVV0T
-	 oyemgLXS4Eeupb/X2xIpG0ZH/ptgErYr6CN/H5wqksizy12oqfoMVHzDWP3N6RiPwI
-	 WV1hcCRMd24mHGvGYJELvV4RKgwKnzUuWWMh9e+g=
-Message-ID: <3591a185-d0b5-4cb0-a0d5-ae9608a4e244@arm.com>
-Date: Tue, 14 Jul 2026 13:27:53 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ldMJ9uju"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cede6375caso118635ad.0
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 05:29:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784032157; x=1784636957; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=6cCQA9k6bE3JnyYuduP9TfMmZZN2aOdMtIN4G4eRzms=;
+        b=ldMJ9ujuGE8MSJPegHUNjhuy+J7bXHbH2nMCjO2ZHQ15yi6HUMJoqYb9iJh2IPjYpI
+         mvpewBpfE3OqJwrIZGTvznomDNsnnY+NKGiq+TP4U0LLsRIQHkHGIPtgY35GGiYWtfXm
+         atKyYalI02sbWaxrZJR4ATk2uI/pIBXZx1x1VxEL323uT/jETrCj8+5wmStzC+EOXbDM
+         3TiMjHVsw5XrDszTQ9hNVXQZNUBz3FiOMTG3fAUMsH0CmFoDmZL3NL2CyowITSI7qvds
+         wAlD5lqkM/d8GD7GMpyITC0SJFj58/cwJlTIoviPXGfEAIr9BVju6pINHEA+IJigApX3
+         4N5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784032157; x=1784636957;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6cCQA9k6bE3JnyYuduP9TfMmZZN2aOdMtIN4G4eRzms=;
+        b=KeLOSyN+0tHEpF2hLduXO28d6ptBjkiFeyDZ0t7mkYILyGONTL5ftmaJ4f9Y2UdLtE
+         rTW4bV6ThqS4U12yct8C0Z68mBTUy3qL9b7p+NrL/XKLulin3z+EZCztcGslnfTa1jF/
+         tqA3dEMdLC4gAS1nwvZPbeimgzg/QHAzc62sC71SZK0GN+re5CMcDNGpa+igtSpD0iQJ
+         EP1OsuWwpFYSZFfx2syZUiI2EZy6k+jpsEo0EddPgroexaSCF+0A+gf77+dsfReFmQGG
+         2cNZcQdZM/SQTI5sn3RHY1Dq8fMx0x5X7j1F45aF9AXcW2bxAu/Bs+AvV67/W+56rBk/
+         b6iQ==
+X-Forwarded-Encrypted: i=1; AHgh+Ro86s9VqY2IokJc/zXxyV6BYKMI7T9Pd2E8mgL3+0mJ1NQtWoSTp4JvWowTVTXiiagFZnlfnA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzoTvw7AIGNElwgC9jPhBlmG2GReVn5jBCdKXO7hnOYBt6tEuUB
+	oHn1yFdTsD+mJAjxHn3srvCCRrq1abwo6I1B2ng5F8/T3uFGuwcpKGihl42sIYqRnA==
+X-Gm-Gg: AfdE7clQlQQ1k+FFxOmV0wtb32s45fnh+vxtkm2YacRdZSTEyPF40+PWg7CTtKoLJfD
+	KN53mMJmrv0SRwi0qqjwJ9x22QGzmI1YeuVIdIil3Lq620GCvYQiAbU5+SB4ctwuxHMUETePtF8
+	qEdspqbcik7fKErFmWFVz2R2vGAfoWDzCeevaXD9nbfTuM2btgOAscTdoUm7s//eEHrl43HkYNU
+	RqpIHWmQFm3fZ10NoTYbABs+93xGcA6hjHHHeFeC4boJRH4EkUmqGoPGyHlAdqOvCzEEtg/a92H
+	R7no/vRTmZx4XRMh6vaUGftkuOIZ91Y9b66VaBHMHGmuKENW9PdTZDGmqZ7tbAbPqyH2dGSLJY1
+	fLqezJQGVS7sQtsy19O3k2zHOeSbASC1kng9WMZBgnh0iBQWg6/XTI/fdwpCc5z7v2Jf0I188AZ
+	X2YMUAWrlJY6PqxxCMepVIducw6ojXkXRJKAfRVNiPggMUYeo=
+X-Received: by 2002:a17:902:c94a:b0:2cc:a859:d404 with SMTP id d9443c01a7336-2cee1cab7bamr5500905ad.23.1784032156142;
+        Tue, 14 Jul 2026 05:29:16 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9d1ea7fsm115135605ad.38.2026.07.14.05.29.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2026 05:29:15 -0700 (PDT)
+Date: Tue, 14 Jul 2026 12:29:08 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/5] iommufd: Iterate the cache invalidation array in
+ the core
+Message-ID: <alYrlMPtCDfz1jRv@google.com>
+References: <cover.1783539724.git.nicolinc@nvidia.com>
+ <c19b7508428e9f14d6997ff9f5a41d9d5ba6cde5.1783539724.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit
- registers
-To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>,
- Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
- Guo Ren <guoren@kernel.org>, David Laight <david.laight.linux@gmail.com>,
- Vivian Wang <wangruikang@iscas.ac.cn>, Zong Li <zong.li@sifive.com>,
- cuiyunhui@bytedance.com, yuanzhu@bytedance.com, iommu@lists.linux.dev,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c19b7508428e9f14d6997ff9f5a41d9d5ba6cde5.1783539724.git.nicolinc@nvidia.com>
 
-On 13/07/2026 1:29 pm, Zhanpeng Zhang wrote:
-> The RISC-V IOMMU specification [1] permits 64-bit registers to be accessed
-> using two 32-bit transactions, high half first, and leaves the single-copy
-> atomicity of 8-byte IOMMU register accesses unspecified.
+On Wed, Jul 08, 2026 at 12:44:17PM -0700, Nicolin Chen wrote:
+> The cache invalidation ops, cache_invalidate_user() for a nested HWPT and
+> the cache_invalidate() for a vIOMMU, are each handed the full user request
+> array and report how many of the array entries they handled by setting the
+> array->entry_num. Every driver therefore implements its own loop over the
+> array, and a driver wanting to process that array in fixed-size chunks
+> (e.g. to issue commands out of a fixed-size on-stack buffer) has to carry
+> the loop and its sub-array bookkeeping all on its own.
 > 
-> Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() helpers
-> for ordinary 64-bit IOMMU registers. For DDTP, poll BUSY in the low half,
-> then read the high half and compose the register value from the polled low
-> half. HPM counter reads require a rollover-aware sequence and remain
-> outside these accessors.
+> Move the iteration into the iommufd core instead. Invoke the op with a
+> sub-array that starts at the first not-yet-handled entry, let it handle a
+> prefix of that sub-array and report the count via array->entry_num, then
+> advance the base pointer and re-invoke the op until the entire array has
+> been consumed or until the op returns an error along the way.
 > 
-> This follows the 32-bit access direction proposed by Guo Ren [2] and uses
-> the generic non-atomic MMIO helpers suggested by David Laight.
+> A driver that handles the entire window in one single call, as all of the
+> current drivers happen to do, finishes the loop in just one pass, so this
+> does not change any of the existing behavior. It instead lets each of the
+> drivers convert to bounded chunk processing on its own, done by each of the
+> subsequent changes.
 > 
-> [1] https://docs.riscv.org/reference/iommu/
-> [2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
-> 
-> Suggested-by: Guo Ren <guoren@kernel.org>
-> Suggested-by: David Laight <david.laight.linux@gmail.com>
-> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-> ---
-> Changes in v3:
-> - Use the DDTP access sequence from [1]: retain the low half returned by
->    BUSY polling, read only the high half, and compose the DDTP value from
->    those two 32-bit reads.
-> 
-> Changes in v2:
-> - Rework the patch based on Guo Ren's earlier proposal [1].
-> - Drop the build-time option and use 32-bit accesses unconditionally.
-> - Drop the global lock and use the generic high-low MMIO helpers, as
->    suggested by David Laight.
-> - Poll DDTP.BUSY through its low half.
-> 
-> Link to v1: [2]
-> Specification discussion: [3]
-> 
-> [1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
-> [2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com
-> [3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
-> 
->   drivers/iommu/riscv/iommu.c | 9 ++++++---
->   drivers/iommu/riscv/iommu.h | 9 +++------
->   2 files changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index cec3ddd7ab1..d647b71ebec 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -670,9 +670,12 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu)
->   
->   #define riscv_iommu_read_ddtp(iommu) ({ \
->   	u64 ddtp; \
-> -	riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp, \
-> -				  !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10, \
-> +	u32 ddtp_lo, ddtp_hi; \
-> +	riscv_iommu_readl_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp_lo, \
-> +				  !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY), 10, \
->   				  RISCV_IOMMU_DDTP_TIMEOUT); \
-> +	ddtp_hi = riscv_iommu_readl((iommu), RISCV_IOMMU_REG_DDTP + 4); \
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Assisted-by: Claude:claude-opus-4-8
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-It looks like whenever you read DDTP you're only really looking at the 
-BUSY/MODE fields anyway, so does this actually need to read the upper 
-bits of PPN at all? (The spec says they don't even need to be written on 
-RV32 either)
-
-> +	ddtp = ((u64)ddtp_hi << 32) | ddtp_lo; \
->   	ddtp; })
->   
->   static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
-> @@ -1501,7 +1504,7 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
->   	 * regular boot flow and disable translation when we boot into a kexec
->   	 * kernel and the previous kernel left them enabled.
->   	 */
-> -	ddtp = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
-> +	ddtp = riscv_iommu_read_ddtp(iommu);
->   	if (ddtp & RISCV_IOMMU_DDTP_BUSY)
->   		return -EBUSY;
->   
-> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 46df79dd549..1b03790fbe1 100644
-> --- a/drivers/iommu/riscv/iommu.h
-> +++ b/drivers/iommu/riscv/iommu.h
-> @@ -11,6 +11,7 @@
->   #ifndef _RISCV_IOMMU_H_
->   #define _RISCV_IOMMU_H_
->   
-> +#include <linux/io-64-nonatomic-hi-lo.h>
->   #include <linux/iommu.h>
->   #include <linux/types.h>
->   #include <linux/iopoll.h>
-> @@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu);
->   	readl_relaxed((iommu)->reg + (addr))
->   
->   #define riscv_iommu_readq(iommu, addr) \
-> -	readq_relaxed((iommu)->reg + (addr))
-> +	hi_lo_readq_relaxed((iommu)->reg + (addr))
-
-This seems unnecessary (similarly for writeq() below) - once you've 
-included the header, then it automatically provides readq{_relaxed}() 
-for RV32 via the non-atomic implementation, and wherever atomicity 
-doesn't matter, then as written there seems to be no reason for RV64 to 
-stop using the regular arch readq().
-
-Not that it makes any difference to me either way, but I don't see any 
-real issue with the spec - if software *may* make a 64-bit access to any 
-64-bit register unconditionally, then that can only imply that hardware 
-*must* be able to accommodate RV64 software choosing to do so, and 
-therefore must support *both* 32b and 64b accesses in general, except 
-perhaps on RV32-only systems if software could never make 64b accesses 
-in the first place. If 64b single-copy atomicity is not 
-required/specified then it should be valid to achieve that by just 
-sticking a downsizer in the upstream interconnect to split 64b accesses 
-into 32bx2 incremental bursts.
-
-If do actually you need this as an erratum workaround to support 
-specific hardware which has misinterpreted the spec then I think you 
-should be clear about that. Otherwise, adding speculative "workarounds" 
-which (slightly) penalise hardware that got it right, while inviting 
-future hardware to get it wrong, doesn't seem like the right way to go 
-at all...
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
 Thanks,
-Robin.
-
->   
->   #define riscv_iommu_writel(iommu, addr, val) \
->   	writel_relaxed((val), (iommu)->reg + (addr))
->   
->   #define riscv_iommu_writeq(iommu, addr, val) \
-> -	writeq_relaxed((val), (iommu)->reg + (addr))
-> -
-> -#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
-> -	readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, cond, \
-> -			   delay_us, timeout_us)
-> +	hi_lo_writeq_relaxed((val), (iommu)->reg + (addr))
->   
->   #define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
->   	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
-
+Praan
