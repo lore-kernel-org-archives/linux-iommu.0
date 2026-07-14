@@ -1,68 +1,68 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011050.outbound.protection.outlook.com [40.107.208.50])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012057.outbound.protection.outlook.com [40.107.209.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16F7B377A8E
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 18:49:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11C3439CD1F
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 18:49:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.57
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784054990; cv=fail; b=O006kXSjXQsDeSuVR7AZceOOwnkIs6ut+O9F+/dbKvM9a9aJ0pHB/Kn5f5y4ts52p3zLsyIAKfAesbQV/6ZlK48v2fgFFs+FbEeKFz0euWJcH2hT5+29nNQcQIYpazsbtOLC5DjTTCFWW2SK0Uv5PQtTDptztY5pdBveaApQ0RA=
+	t=1784054994; cv=fail; b=GTTAYaC1jR6OJMh0P/cDon4P0OsaZAzg6vPckAKjiImUsga1ZdW+vBq4bB7jmsUJlWHvCWcafg2SpZZACtC8rWiBD5tgvNWUUH+rMVbiPcezuP34QZiM0wTBg3Jz5wefFUbaXMuvPlOKKliu8NKiXcxZPO33ET6RCzI2ncF7dZ4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784054990; c=relaxed/simple;
-	bh=3z5FiJYOBlG3bp3h1+HfREzWU2GuY8wqYCOePyFLfpc=;
+	s=arc-20240116; t=1784054994; c=relaxed/simple;
+	bh=fA4GBagE0Hgl3PTpEi4GCJ5CIH6TC8NPcWTOuGm827U=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=POW5XzbDXURr1jPuP9LzCkevTAaBQC/xrqfC+A+LQFCjQHRWvr5n+tOjWmGNt7D446ewa40E/r0BN8rRrb8sL/ubnfaKZObwOQxEJFl1TGu0CTGrwssDoP2tw6noFEE8UxMXSAyt4+jyjsE3sYCnQQulmF4Ny8EVDVIlY27HFgY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=QFIBvWqF; arc=fail smtp.client-ip=40.107.208.50
+	 MIME-Version:Content-Type; b=KOEDwlj1tcXk5TPkhknQDTHu2MYdWiyIdnsOoaIyzbq4dC1diKKqThV4VZ9M3BMy1zUJuHlqjlXqTwySqUxlKrjW9BmzpFM+ixXeUuABbUbnhYu/xpeB+38vxP4BkXyPrr+kArrT/VIuuyfOzL+V4/VcuGbwgJ8mZ+frhy/f74k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=igtyEauS; arc=fail smtp.client-ip=40.107.209.57
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="QFIBvWqF"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="igtyEauS"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FGrJVm1SN1j6K1E87p411J1aqtLNvPdbYGfJpnzzCDPxIkQK9WT02jdsYXMt72Fhz+imo/pfjC0BgwneW61+eij9yIeKRI4TOWz4/cT3OWMCuG9TsAKO36tTksrel2ZnxM6Npwv0hLkhdo3SSYSSTZqZd0nP0+UGkIjh7woh+so76KBWeEHjHom/ZBgfAteWG4T1Mla73Fnm2F8Xnb2/qN2yrZTfPkt4zPogGax39iq54HHenwM8wGkDwVilaP6dgpa//YyopTbrdXEQ6Hd+weydnsWrpW+ut/OMw+i8OtG8CS8akMzfUw0f+Z9zZGLfd2IIrzF7WTFXsEayIHtb8w==
+ b=I8xRAlSupCNElN0e9DomvqLQNydq77UsWVDZIQdKwC85oh0feVGq/05Z47yE53kLX1y1e7WcWHX3zRFeOZEip0vCwY0VGhjYLs8WEBQLfTgz/9C7/HCt7KsP4uNsNUJvopeIkEpIMJlEO6XqtL5JVZA6bnCS8KkHgjXs7Nsd443iurNzzccnQf0L94wa39AUJ+gVDu5tmPmluVdU1aFNz13GKWL0a4R7iC/OInNJN9/WAOBOUQsQkq7GxH5KCAAcLoAU/3TC3T9MXmP0EXIbmfrVeIVP3iZ9PdMqXVUFvS4uuZXnT7MoYaoGuUg1o5oXF7UhJYgGvRgRFui9zFoVEA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2kHouXK6Nt6M9Rsk/xWF8aeIpWHaFYDAPur/bFB/sdI=;
- b=jHpfe2ek3FLC6bToTnb9VoZ7WHAbEECF4v4zcdag0sSK5Rap9P81OYbah/xOcCvce3bOmrNASzHX0WYydf/fVk9kCDfabGajPczdXMbHAWvzMtXepuK9oMxS5aGU6MFaZoWmdgFLcg1m3GRDTN1r74decA2nD5RAfRx/rnwSvVC1SPOvWgaq3mJqNo+EYdP7RfFe2NKEWq+pvW0Ct8dTuGT3XFWsRwY/bbvIMmUGEVup40auujbx60p9yeTxtIBedQ3hqt+Az7JO6EAt/HCC9f6bihktTUFv9/BIHvqGvbh8s850Rpe1kcHs2sE9ZtUTds3sisMQE7uBYiq9sMu/mQ==
+ bh=gqFpwz9zKyNZPGIeIRh6+wXm14o1BuoGQbs/Iw0QgiU=;
+ b=feST5TIHr7upHFUTEB9cgKsvbHBnIDq9GavnMlbafqmGEoqP5szYMKbbMDwtjgv2n5GhEh6b4bUeM20G4xxcImQAbk5znYGpWS8fwdBdDzBbcsjPsyYUqAWkcrWHmsR/gwE9uxSVjlmTdZM/GEsgaNE23VWdmJFAKrwczKZ6U+Jx6eXuwpQ8iijzgCSutAOFdu+MDShqAwUV95YqxXWWUfnxp96RQTUfMCUmqFfBvVWeJOOZw+30a31MEmu2P7V9X3IBs2C/QWZT/9QCGhJSJepilhVRIfyZ8kYd5YCFtnkZxous9K6Xmv2qHLJQfFTtiOeSGLW3Hto153ocTfJwHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2kHouXK6Nt6M9Rsk/xWF8aeIpWHaFYDAPur/bFB/sdI=;
- b=QFIBvWqFg9f/X7XFRb/hVkM8fSyISRMdg/FNK5EAbHopgoqSy3/NTqlBX64iqJCAwjcR3I5XRqt2lXiI85hcPdpdhWkoQUiDBA+CsYa99fnO+/ctQsuRGzj6VxvtIRhQ5DKnbdwXY4NKjR7ChlePt19nOJPvTPY0HdmpBiSN3sRx7Awt7Xw1U9ml/nC6PHkcZGzvrqfbjqs65J8mvYfbfj7Gq3grXXiBJKOIerczwef7SD9hMX4Qqrj9UJsTmk7DCvntVyCAZq8M/vcu88t58IqN+4N0A6KSMUG8WwrChJh7YGRSfRoGJGicznI2l42/YMps7sq2bZfP2slPio80/A==
-Received: from SJ0PR13CA0093.namprd13.prod.outlook.com (2603:10b6:a03:2c5::8)
- by SA3PR12MB7998.namprd12.prod.outlook.com (2603:10b6:806:320::13) with
+ bh=gqFpwz9zKyNZPGIeIRh6+wXm14o1BuoGQbs/Iw0QgiU=;
+ b=igtyEauS0wZYPavrj9NrFFY0atgbZvcUosVHnVJTo+IA34COCEgydCk16Ac/KjBLcgAOwqoMsUVWuCWy5FvxNmN6RIsukm3dxv9mWDfcNPeCd6dwb9HCsFpj4DDEXu57keY+W8UvWin2ktF+QGbx32DHos2dQj5iLdXaYb8aD9rQwCClmiOTLQ/nJ82Pfwm9rnmPn9PjgsdGAzm4q13F1OCH8BSUo6Gij44/3VzyzEJezCIuu/x1NcyLq7Lq6WJ7kKrqvlAheKUF+TzHTHwGaWRFlgXYiHe1imNfb8807x82NArMkgD2pHXjdhVrW0e/QMI2yphwV6dZU3N3lxM26Q==
+Received: from CH2PR02CA0017.namprd02.prod.outlook.com (2603:10b6:610:4e::27)
+ by SJ1PR12MB6028.namprd12.prod.outlook.com (2603:10b6:a03:489::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.9; Tue, 14 Jul
- 2026 18:49:41 +0000
-Received: from CO1PEPF000075F0.namprd03.prod.outlook.com
- (2603:10b6:a03:2c5:cafe::5c) by SJ0PR13CA0093.outlook.office365.com
- (2603:10b6:a03:2c5::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.10 via Frontend Transport; Tue,
- 14 Jul 2026 18:49:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Tue, 14 Jul
+ 2026 18:49:45 +0000
+Received: from BN3PEPF0000B36D.namprd21.prod.outlook.com
+ (2603:10b6:610:4e:cafe::9b) by CH2PR02CA0017.outlook.office365.com
+ (2603:10b6:610:4e::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.9 via Frontend Transport; Tue, 14
+ Jul 2026 18:49:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF000075F0.mail.protection.outlook.com (10.167.249.39) with Microsoft
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN3PEPF0000B36D.mail.protection.outlook.com (10.167.243.164) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.223.9 via Frontend Transport; Tue, 14 Jul 2026 18:49:40 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.245.3 via Frontend Transport; Tue, 14 Jul 2026 18:49:44 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 14 Jul
- 2026 11:49:22 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ 2026 11:49:18 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 14 Jul
- 2026 11:49:22 -0700
+ 2026 11:49:18 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Tue, 14 Jul 2026 11:49:21 -0700
+ Transport; Tue, 14 Jul 2026 11:49:17 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, "Kevin
  Tian" <kevin.tian@intel.com>
@@ -70,9 +70,9 @@ CC: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, David Woodhouse
 	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<linux-kernel@vger.kernel.org>, Pranjal Shrivastava <praan@google.com>
-Subject: [PATCH v4 6/6] iommu/vt-d: Convert nested cache invalidation to the core array loop
-Date: Tue, 14 Jul 2026 11:48:52 -0700
-Message-ID: <6fc43e814362d65d4c2b7d22c6fcc50ff56378c4.1784054606.git.nicolinc@nvidia.com>
+Subject: [PATCH v4 3/6] iommufd: Iterate the cache invalidation array in the core
+Date: Tue, 14 Jul 2026 11:48:49 -0700
+Message-ID: <10d92026fce6d6f3e74e1d41edbd03da8bec7e3f.1784054606.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1784054606.git.nicolinc@nvidia.com>
 References: <cover.1784054606.git.nicolinc@nvidia.com>
@@ -87,122 +87,151 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000075F0:EE_|SA3PR12MB7998:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b55edda-b6cd-4fed-29cc-08dee1d8a9ab
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B36D:EE_|SJ1PR12MB6028:EE_
+X-MS-Office365-Filtering-Correlation-Id: 771dde1b-018e-4cdb-0772-08dee1d8ac19
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|82310400026|1800799024|7416014|376014|23010399003|6133799003|18002099003|56012099006|11063799006|5023799004|22082099003;
+	BCL:0;ARA:13230040|376014|1800799024|7416014|36860700016|82310400026|23010399003|18002099003|22082099003|6133799003|3023799007|11063799006|5023799004|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	+0bfizfZ++x6OfvOzDmSUcyzWH41LnRfhALkb2obHrf0OcYzSaRZR4OMLru88sNdq43pb72pVJUKrmk9rOmK+698j3z6MuUQK7nk2ODP3KM5lBr5GCRgxIRusd/2AHOtdaZ5ptuLZ5wctzrK7fro9XgnlNaGcTFcHKxew08PPdr5aDiEkKcuaYHL9SN3lxZhaRN/YOL5YxJGfWhWbqzirsZcdLTgxtM8nfy2dN6GtMwt7gCqmxkgVNGerxyF7nsLOsRI7o/wUPkn/Xtl6KGaMOmS0Pbm2OHJNr8XE6T4Upe8JXbeKyyZ2NXL/umeADlTonHakXXTcuBw7lKNv9OCjzelyjdy5qrBEjgkNwF0mPbL70fdJJiTJ5LeSv6vWdM7szEcdEAhrTvmwPeONLWak5422KwsaGCTFMgdCN+aHZxA4StC/Ukllek5W9pWj0dy9hyYJsJDm98O8G05HMEeVe3JSJ2r6oY3DGzwbNZQUUkVuuVM/6pYQCslfTOIl6zHdojp1tLeD5Y3bZtiD3aZu8WmKncEGYvtrYhzLTSt1Y+V6SJ3EDiu3+0rJIzAfqZ4tPHZoU5dV26keN0fNgSWqBgLQcYtejfZ9TgZMhGDok169im7XYK5WR2Xo297kbHi1qyo0SRqEN9cS+DMzHGvW4XmnsI9gPH5vIWvxIyR4YNU1sN83xe7LBo8ED7Bpp2s8N+Uw/BDa4CwxmydNnFSOA==
+	Nn9JkyvI2e+lutPatp0OEcxIGePDQ+AUFvmHXk6cbeIYZ2UQM/T8UEFfpRupqoKJDacSA2CHw7E8n0aMpaevYyRfUjCDK8+mzxLKWPQHuifTZdWiHCMTENlW/jFwOkg+lD0BEqbahatsXlwz61qNjuaCXonTvquFN92385+5qNz3KOkMXRU0MaDLbBrPTQVoHJMcNAVmBAMNM6Ztw2BLBkLwfInllqAsph2k7loErNn5y2WhuvavZFK75G0rlEzpt9vgeBLFSUS/pkcwygZbok7NJkH30LizTjlJYKttqI3JTiQCm1vq4cU4tWQZqBSEERXvP5iNbuUVuM7EQMs/P2UZMxLJs3bwmaOKbFeNQslzQbKr8skDuPH80YB5e+OAEpZJ0EDF3HPG8n4dnPj2fSBr/QNKGrMrYFhboURgNYv+Hpif7vwE8CPaQYXJ3hmUmCxc3xK0qROlpyjofKej647awoFLrYIewrK2k0IqtSVMhKRESIG86fgh4xu8mpTsZhS2ovJ3EBPebbdB5TBQlCFIpEQ916mgvC628y3IMcjor9bZgzsulM8jcPEsJ26S8uOsMmUXj0Cdmoa+szUPUkJzVPcXvazWg8mGnlRgg4k99D4SjM6oOufej26lsN7jfufd1R8tatx+tLaCNxzLpQHg1VS2e4a2W3pE/mAfxZsrtZ9bfhFfQvbCSoi8TmTOYW0AsdQp09kSSJylCrV3rA==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(1800799024)(7416014)(376014)(23010399003)(6133799003)(18002099003)(56012099006)(11063799006)(5023799004)(22082099003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(36860700016)(82310400026)(23010399003)(18002099003)(22082099003)(6133799003)(3023799007)(11063799006)(5023799004)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	sfSSziw5H7xH340qd7hDFfu7vutgHsl6B5xqygCpp/8QlL+jbY5lEI9CU3NV1Eba5ershPrHAabysJyVO/YAk7LVMCl694+7DcVTh2I+SZGfvrlESl+Dme+6YrGDTb/BEkSrEgZW2Ni75JMZAftCHW/612BQGG77ii4LA46Ac2LKnogwpXJ0nogykj6RzzAn47QKu/fqCodvLmwvW/P8yGnEY10/Z7J5pgwNkbB3LT2e+0AG1dM1OLYJL3eXkKtC4yNLxqjaeJjy7/Any1LjpgGGxRByMSE4XeuvabRBoPLhal5S9JRRtU6qBF3WCIENwkOXPQ+vhTcinHOeuEIZ8+zkOUY7rJw/NWt+AdtkbufhC0wyhFdsAe3UTOcZP1ExyhjCihhVtQLe2hDMatXc9BYRPzjxZgaY4L4rbRXyOCceFpqlxiDM5ttT89JO3W41
+	OE2MK0MQf5UuVxSOrf3R0bP7oirZsWAvbdlo3OqcUObkLQJB+RTqkSMtrtBhg4m3UYnOqpDVAofonmSCSC8tTVSM8txgIgPKJUbiiO12y+SzyjDGSfDwjmWUY/xcJ4gE9nllPPXSpTkfzDxlRg5dhKCNZmEnizL7s3vSZxM3gwRIUH5dXx7/X0Hwk6+vHeORpaB6pE/YFdOhO+XoeVUb6Ef4Xw0oA9fTVYdtklIMRVqTgF9p2P0DtlA1oEjL4QK1SCq3VU7GFZQmlc+hq0eUzNE8nOeeJzP252IUL6XELft/AHdBxi8wmGGW0ZmGHXNoqTZOfMUmDjb6m6+zKiZQQSREVpcv6UCb+uGCfmC63rYqV+ibrnQic5gtN1cqfiEZ4k1dwjgXGFFQr1yvjReQS5W+ASseMAymo4ENqeLtU/tK6kFnTQW/PdxKXHt/+vQX
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 18:49:40.7999
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 18:49:44.7875
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b55edda-b6cd-4fed-29cc-08dee1d8a9ab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 771dde1b-018e-4cdb-0772-08dee1d8ac19
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000075F0.namprd03.prod.outlook.com
+	BN3PEPF0000B36D.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7998
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6028
 
-intel_nested_cache_invalidate_user() used to walk the whole request array
-on its own, copying and then flushing one single entry at a time.
+The cache invalidation ops, cache_invalidate_user() for a nested HWPT and
+the cache_invalidate() for a vIOMMU, are each handed the full user request
+array and report how many of the array entries they handled by setting the
+array->entry_num. Every driver therefore implements its own loop over the
+array, and a driver wanting to process that array in fixed-size chunks
+(e.g. to issue commands out of a fixed-size on-stack buffer) has to carry
+the loop and its sub-array bookkeeping all on its own.
 
-The iommufd core now iterates the request array itself and re-invokes the
-op with the not-yet-handled sub-array, so handle just a single request per
-call out of the front of that sub-array and report one handled entry via
-the array->entry_num. An empty array keeps returning a success, used as a
-probe of IOMMU_HWPT_INVALIDATE_DATA_VTD_S1 support.
+Move the iteration into the iommufd core instead. Invoke the op with a
+sub-array that starts at the first not-yet-handled entry, let it handle a
+prefix of that sub-array and report the count via array->entry_num, then
+advance the base pointer and re-invoke the op until the entire array has
+been consumed or until the op returns an error along the way.
 
+A driver that handles the entire window in one single call, as all of the
+current drivers happen to do, finishes the loop in just one pass, so this
+does not change any of the existing behavior. It instead lets each of the
+drivers convert to bounded chunk processing on its own, done by each of the
+subsequent changes.
+
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 Assisted-by: Claude:claude-opus-4-8
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/intel/nested.c | 54 ++++++++++++++++++++----------------
- 1 file changed, 30 insertions(+), 24 deletions(-)
+ include/linux/iommu.h                |  6 ++++--
+ include/linux/iommufd.h              |  2 ++
+ drivers/iommu/iommufd/hw_pagetable.c | 25 +++++++++++++++----------
+ 3 files changed, 21 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 2b979bec56cef..36e0e8e85c065 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -93,7 +93,7 @@ static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct iommu_hwpt_vtd_s1_invalidate inv_entry;
--	u32 index, processed = 0;
-+	u32 processed = 0;
- 	int ret = 0;
- 
- 	if (array->type != IOMMU_HWPT_INVALIDATE_DATA_VTD_S1) {
-@@ -101,31 +101,37 @@ static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d20aa6f6863ab..969758f87e445 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -773,8 +773,10 @@ struct iommu_ops {
+  *                         passes in the cache invalidation requests, in form
+  *                         of a driver data structure. The driver must update
+  *                         array->entry_num to report the number of handled
+- *                         invalidation requests. The driver data structure
+- *                         must be defined in include/uapi/linux/iommufd.h
++ *                         invalidation requests. A driver may handle fewer than
++ *                         the requested, in which case the core re-invokes the
++ *                         op for the remainder. The driver data structure must
++ *                         be defined in include/uapi/linux/iommufd.h
+  * @iova_to_phys: translate iova to physical address
+  * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
+  *                           including no-snoop TLPs on PCIe or other platform
+diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+index 6e7efe83bc5d8..3087f5b2def84 100644
+--- a/include/linux/iommufd.h
++++ b/include/linux/iommufd.h
+@@ -154,6 +154,8 @@ struct iommufd_hw_queue {
+  *                    The @array passes in the cache invalidation requests, in
+  *                    form of a driver data structure. A driver must update the
+  *                    array->entry_num to report the number of handled requests.
++ *                    A driver may handle fewer than the requested entry_num, in
++ *                    which case the core re-invokes the op for the remainder.
+  *                    The data structure of the array entry must be defined in
+  *                    include/uapi/linux/iommufd.h
+  * @vdevice_size: Size of the driver-defined vDEVICE structure per this vIOMMU
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 623cc608ca0cd..644daf18849f4 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -501,6 +501,8 @@ int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd)
+ 		.entry_len = cmd->entry_len,
+ 		.entry_num = cmd->entry_num,
+ 	};
++	struct iommufd_hw_pagetable *hwpt = NULL;
++	struct iommufd_viommu *viommu = NULL;
+ 	struct iommufd_object *pt_obj;
+ 	u32 done_num = 0;
+ 	int rc;
+@@ -527,31 +529,34 @@ int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd)
  		goto out;
  	}
- 
--	for (index = 0; index < array->entry_num; index++) {
--		ret = iommu_copy_struct_from_user_array(&inv_entry, array,
--							IOMMU_HWPT_INVALIDATE_DATA_VTD_S1,
--							index, __reserved);
--		if (ret)
--			break;
+ 	if (pt_obj->type == IOMMUFD_OBJ_HWPT_NESTED) {
+-		struct iommufd_hw_pagetable *hwpt =
+-			container_of(pt_obj, struct iommufd_hw_pagetable, obj);
 -
--		if ((inv_entry.flags & ~IOMMU_VTD_INV_FLAGS_LEAF) ||
--		    inv_entry.__reserved) {
--			ret = -EOPNOTSUPP;
--			break;
--		}
++		hwpt = container_of(pt_obj, struct iommufd_hw_pagetable, obj);
+ 		if (!hwpt->domain->ops ||
+ 		    !hwpt->domain->ops->cache_invalidate_user) {
+ 			rc = -EOPNOTSUPP;
+ 			goto out_put_pt;
+ 		}
+-		rc = hwpt->domain->ops->cache_invalidate_user(hwpt->domain,
+-							      &data_array);
+ 	} else if (pt_obj->type == IOMMUFD_OBJ_VIOMMU) {
+-		struct iommufd_viommu *viommu =
+-			container_of(pt_obj, struct iommufd_viommu, obj);
 -
--		if (!IS_ALIGNED(inv_entry.addr, VTD_PAGE_SIZE) ||
--		    ((inv_entry.npages == U64_MAX) && inv_entry.addr)) {
--			ret = -EINVAL;
--			break;
--		}
--
--		cache_tag_flush_range(dmar_domain, inv_entry.addr,
--				      inv_entry.addr + nrpages_to_size(inv_entry.npages) - 1,
--				      inv_entry.flags & IOMMU_VTD_INV_FLAGS_LEAF);
--		processed++;
-+	/*
-+	 * The core re-invokes this op for the remaining requests, so handle one
-+	 * request per call. A zero-length array only probes the type, validated
-+	 * above.
-+	 */
-+	if (!array->entry_num)
-+		return 0;
-+
-+	ret = iommu_copy_struct_from_user_array(
-+		&inv_entry, array, IOMMU_HWPT_INVALIDATE_DATA_VTD_S1, 0,
-+		__reserved);
-+	if (ret)
-+		goto out;
-+
-+	if ((inv_entry.flags & ~IOMMU_VTD_INV_FLAGS_LEAF) ||
-+	    inv_entry.__reserved) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	if (!IS_ALIGNED(inv_entry.addr, VTD_PAGE_SIZE) ||
-+	    (inv_entry.npages == U64_MAX && inv_entry.addr)) {
-+		ret = -EINVAL;
-+		goto out;
++		viommu = container_of(pt_obj, struct iommufd_viommu, obj);
+ 		if (!viommu->ops || !viommu->ops->cache_invalidate) {
+ 			rc = -EOPNOTSUPP;
+ 			goto out_put_pt;
+ 		}
+-		rc = viommu->ops->cache_invalidate(viommu, &data_array);
+ 	} else {
+ 		rc = -EINVAL;
+ 		goto out_put_pt;
  	}
  
-+	cache_tag_flush_range(dmar_domain, inv_entry.addr,
-+			      inv_entry.addr +
-+				      nrpages_to_size(inv_entry.npages) - 1,
-+			      inv_entry.flags & IOMMU_VTD_INV_FLAGS_LEAF);
-+	processed = 1;
- out:
- 	array->entry_num = processed;
- 	return ret;
+-	done_num = data_array.entry_num;
++	do {
++		if (viommu)
++			rc = viommu->ops->cache_invalidate(viommu, &data_array);
++		else
++			rc = hwpt->domain->ops->cache_invalidate_user(
++				hwpt->domain, &data_array);
++
++		done_num += data_array.entry_num;
++		data_array.uptr += data_array.entry_num * data_array.entry_len;
++		data_array.entry_num = cmd->entry_num - done_num;
++	} while (!rc && done_num != cmd->entry_num);
+ 
+ out_put_pt:
+ 	iommufd_put_object(ucmd->ictx, pt_obj);
 -- 
 2.43.0
 
