@@ -1,226 +1,181 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazolkn19011027.outbound.protection.outlook.com [52.103.13.27])
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011005.outbound.protection.outlook.com [40.93.194.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B6349550A
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 15:29:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.13.27
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA7B48C404
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 15:36:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.5
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784042969; cv=fail; b=KILLMzLLuIwZcAUJtQDKc30NboByUCgRd/xwThFGQF76Z56JsUTv5ybZaHNKkQyUmdsUEFEaZhFcBtwBalNjtc8YbMKQGCkybqTA82uANAAg5hYize0GLLtEI7pZzJYVv8wJpxfNeOQPAXioaAEZOXAgYgsxv/7dCxa5XBILxNA=
+	t=1784043415; cv=fail; b=giIk2ETdEtxvlu0dFrlK1ScKGYYVfyBBS05pMAr0CEWbJO86eKA+BJ4RDoCcv43jjfYMQNJJMTfr6A7mXNXRYJcL4g9k8TVFq3F/fKwzCqcg/0YlIjoa9hQ3V9J5Nxr51xX071na83GYukFIJPZFKIMIkK0FaboxecZ2HUTXaw4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784042969; c=relaxed/simple;
-	bh=7m59XRU8Iwuj3fN+10f5xbmLKNW++Yb7Shq3eq6DXbU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=pyCRdc9YiT45ykEidkR61kSaHelPdfg4PZOAOP+JKFlGkGQlxV+9fQhJ+AWegcG1WGkCEZRfgYzi9n0PK6BXNv44rKRfUHMjnS7Sg96iz1cFSRa4eqxgK1MdA3IuCqS3KL8TmjX4kXS+zAVSQHxBZITWTJqGG5+TDHMe+6oTpOM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=EXPX0fmi; arc=fail smtp.client-ip=52.103.13.27
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1784043415; c=relaxed/simple;
+	bh=NUPNZMWncZegx32U3wF5WgQyQGpvxqlDBIiMJRI4Upk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=skmD/fAcLgUkqZ+LAGrZyJBHDTEaz6d0/1oPd09+trL5ePYK/PM+2C6PCVI06HngsxCVRLkMjyunV8OfyMQ9j2STd959Fv1xBpALMVOViHZ7QAGLLg5E9hiu0+jmEsg+Xgbyy8ASvuDaj8DtjyQLu6RMfE0mTV+F4GBrgcOkuKQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NfIH9/dD; arc=fail smtp.client-ip=40.93.194.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="EXPX0fmi"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NfIH9/dD"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Rag/vBGJI983edUTMnXCoLEIXZHDieQOZOJCrlUIcECXhZzMOOhy0NvUAJ43qr5p+ZUL5C2F1ePKQLzgJ0lubFXZK5vh0vc1lmQHSLEcTXvy23Gm6ZU+57/Kryfot5wGupw74kf3wjqFU3vGfJNkVZFLe/3DIxExgMp18MLkTx3OpzioFPeEGv750yovhswO3d1IwOXhzpVk+ftU+VWfWmLmGoXZwFDKUTX+aSH4k9tAMbbg8Csp90sczVqqm8UuESvofvbH2iVDN0XoPlcwfxjPl3+d/RtWAwFBM2JEjypbzyK3i3lEJfxHyZuDTrEmmUHqaF8q/cBXoctaqLTcUA==
+ b=rgahEUiZQlniTnAmTqviTLWaEPQ8d9IXKO2QHOMQL9yXKpey7ajRhWnHa7wG8FFwkuXf+MmmfPbxOyPmP8jEvitJzZgk4cxr7OkSrSHVIkQjD+aE4sjxVTi5a05uFw0TAhcPcUz92DYDJ5GZD66tfNjB+XwM0upOWZv8PDvHw1AsjoHX9O9VvozFDxUk4paZp8cT3GAgPcyymWKtgBI8pCPEDvnyQBuDXwFniZvIkSz5JgRp6MlEIfTjyhmTKrK5NbuSDPc7jiVpDWiFOtByvNFXWetVfHu1VumvFxzIRLeoBGN4HVnuC22ouRr+hWiF4kz2var8B4yj8R49ZPfjow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rQQZy3zBnhSKDBJe5HA0hMMiPFmLZZfZIT91Z2W44LA=;
- b=GHZZG1d4TgQC7k1UXE78JskqicOGux7WC6gORC8Z8fH4YatX4HY6zkg0ev1C080f8Mp+TJlMLOkkr/JHGhjLiT63M8nJFtx8Z2yWXWTxsS+6tNN5tFzogDkES/Kmju2edhMExF9oxF3PVpnXKixG+072uI06QLUrZL0dCn5szf5/3S9TTR6ngMEGrO1yPwhJvGIymHT0L5FQhgKi5ZM8crs+oue/Rq3BZ/gb51Dy6sXTNwl7GQuWbAc0BrwCZcLqtRLCZrNYbTFo4kBuVWiGszMJnzJjXt2/qODMkruX7bB4+I9S8A6xlOUyP0blzvF3gozGUJKmOjLtgFLGl5eHdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
+ bh=0E/tuJ7DEMtniFev/IlmbCE46gjlv/qOOvdOk9mgOXc=;
+ b=f9rXGk6DEv0quIl0MjKjdNNxT7ps9/XAFKtLC8tAEQMSYORVlRceH2vp5360KyFQxyhy4f5iI/1Ul59F5jbFWyvWTGXZztC2r1jiOUsKL623YIa7hOePygd4CPR/pc5WAMsbxFI0xIW/1OYPeYE7VHyPTJyqgw7ynvb1AEYFq/pZSRQmBi4qXFo7gYbAjNbnj3KXDfVcoTFQ26a99P0J5Dw6xr2Vl63G0GGUVcYzpee/iZuyYXKdTnhHMqtyuyCuVpK7Vo73VD5F78e3iv0Z3RzdCliRJ0RxpM9/YdICdUoUqmZAMR9y1bMz6nV2QlznBFuwSDASGttaEn65Oodf6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rQQZy3zBnhSKDBJe5HA0hMMiPFmLZZfZIT91Z2W44LA=;
- b=EXPX0fmiERCHLd1t7h7YHQlkDr3sh+n7W6P7wbZsGO4DxT1m+izmDOg4KwI5p41TkAO+w/DAFKfBd8EnkiAcEx/+osuU4ElJeduntgVXJNgYqD4qxjPG+VbHzqId42LSY7WH3O+DW+2zgZYxKZDZopCahDNxNscKUZiU/xdX8B+744W2MMadRu8jsbjEnlIYM6P0RUhSsX21ZpewX50BEdKZUnJqrRWx0H25ciGQby3LruQFlv0xl45ifRDFh1dtW584gbVT44Ssn8jzeTGNZk+Ijp4FQibhSg/dsJOvxLxEFrA774GErASUqqlaa+hKwZLP4bb3ma0fAksxGZxOEQ==
-Received: from BN7PR02MB4148.namprd02.prod.outlook.com (2603:10b6:406:f6::17)
- by CH3PR02MB9907.namprd02.prod.outlook.com (2603:10b6:610:173::12) with
+ bh=0E/tuJ7DEMtniFev/IlmbCE46gjlv/qOOvdOk9mgOXc=;
+ b=NfIH9/dDhtSIRRhpEByzy03V0cmCNGQ6nv20wxsJl1icj6ALhfYKI60DYqinfLAUYP8MlkVE4qqNFpOcNKG430VLSupC2r5o1r0XU9fvs1LMBCLdBnCYFPDs72GUPA1AAAp3RIu56IUPLgHnoQmqV9a4kzfAzIiMC4e6M6Q2BQKmvfi+mqh70NiD5OtnTEbxAgRBlYRAX0dFXGq82kd95cEmQKU6FI8QCdvvvFrtgKbi28Pd68HhiLDvRVpm5ozswEqf8pqsm5Tm4OzYCGHL9ezwA10N1HsuGOPB/ESwbz/BLIYG+BY3jDdZahZGRzB8GfCm//LWIxNGJpoRMwpBhw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SJ0PR12MB5635.namprd12.prod.outlook.com (2603:10b6:a03:42a::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.10; Tue, 14 Jul
- 2026 15:29:23 +0000
-Received: from BN7PR02MB4148.namprd02.prod.outlook.com
- ([fe80::6007:d1a1:bcf9:58ef]) by BN7PR02MB4148.namprd02.prod.outlook.com
- ([fe80::6007:d1a1:bcf9:58ef%6]) with mapi id 15.21.0223.008; Tue, 14 Jul 2026
- 15:29:23 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>, Michael Kelley
-	<mhklinux@outlook.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
-	"kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com"
-	<haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>,
-	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com"
-	<bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org"
-	<mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de"
-	<arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
-	"tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>,
-	"easwar.hariharan@linux.microsoft.com"
-	<easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com"
-	<mrathor@linux.microsoft.com>
-Subject: RE: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Thread-Topic: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Thread-Index:
- AQHdCjyk3FoDd2PvoEaR3JQ0We2DX7ZlmCnQgADQU4CAAknxcIADB1oAgAAOZJCAAKasgIAAx8IQ
-Date: Tue, 14 Jul 2026 15:29:23 +0000
-Message-ID:
- <BN7PR02MB4148E7619638D5710CDB4532D4F92@BN7PR02MB4148.namprd02.prod.outlook.com>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
- <SN6PR02MB4157253E030D477FD91B7E26D4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <enpkphavwmqrkded73c43vprczslvei4755lkxuedof4z2k3kk@y2jtklbk4efz>
- <SN6PR02MB4157805F23ACA85A668FA065D4FC2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <3ty6yq6oftsvq52skrngjv5xpyixhsyfo3dndhoujt7emxsb2o@y6ischifpmfn>
- <SN6PR02MB41575E067DFEBEACF316CD35D4FA2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <r35cz2l3yz2wyi5d663mxwqoiz2rrl6kzpiw6rsruh7ofk6vu6@temnhcfsp6fa>
-In-Reply-To: <r35cz2l3yz2wyi5d663mxwqoiz2rrl6kzpiw6rsruh7ofk6vu6@temnhcfsp6fa>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN7PR02MB4148:EE_|CH3PR02MB9907:EE_
-x-ms-office365-filtering-correlation-id: 04cacbac-eedf-4d2d-21e3-08dee1bcaee2
-x-microsoft-antispam:
- BCL:0;ARA:14566002|13091999003|51005399006|8060799015|19110799012|8062599012|31061999003|15080799012|37011999003|24021099003|25010399006|40105399003|12091999003|102099032|3412199025|440099028|1710799026;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?lmO0Emh8HErjPAYK1Gy/AeeUY8FVcZhlMDoO2da5pKEYB3zL3x8KW1g69mnf?=
- =?us-ascii?Q?IhkCzeqXGydbfAHeX+EnBQKUdWJjRh/R6kbWecC16LtRoEs/PvDZZTpt5dIZ?=
- =?us-ascii?Q?F0VPKc0lJeuM1yYo5VKKmERqrMhIgksZMzVj3oI7TNfYSbnaavGx2b9PnlJf?=
- =?us-ascii?Q?WDcASS32L787j1ns2CoEf/adbt2FTKyxUxdCAQH+pk6RtzHh3Ig56O8jjzmM?=
- =?us-ascii?Q?mcG2D/hnAZ44TtPRkkBTYQ0WBRPiTZitI4iAW9+1wvgKtoXMKSKqO4ggeiKs?=
- =?us-ascii?Q?CxlcU+1X3GZxkbYHgjAEU6i4z/mrTCtTESXAX7shN/jYRq3RMPks9WhRkFza?=
- =?us-ascii?Q?1LxcZXECVzkBpLdFq1S/KYodX2PDZJ+P8vIQaETs8weeB+jbGfr0EV2qbSsG?=
- =?us-ascii?Q?9YxqXRfpO/LQ/Z1XwiM+v73e/JMEY5Xv8ZkexDkEgyrvsfohLrsFQ21B9Ogl?=
- =?us-ascii?Q?vKnAXlfP7wKRF/TD6CNDuWes9KbfGv3d8i6UAAlKIt5sruQr82aBFUtzh+k6?=
- =?us-ascii?Q?T+Zxiwvnk7Kf2YNlLBt7UfjHjglM+hBD0MjSoz9ATjN7kgPvjX3UYaeQ8u/C?=
- =?us-ascii?Q?CWtMtZWrnwphMERwYcgew8O/U+baFOUjeJa82GxmKMxDgqNmoj8AG+zTQXm6?=
- =?us-ascii?Q?Zp1o9Vbpgu43tfOexaXzAxEppPuI4VfDh77UeuzoDBXD+aX4KluisXw3X4dn?=
- =?us-ascii?Q?avCdQih5lIneekaSlSNWPTW1JrpYe1x1GQQzz3QrzfKR3lc4qQ96rQx8BmI6?=
- =?us-ascii?Q?Na+p7fbnTrszfEMFtZekcYnTnFsg40qmo/9S4CI94ZNlJMbCSzbHJulshjfu?=
- =?us-ascii?Q?HCDgn90Gr1tYmxBT9vbCWmroeIsoYDxcyLLeGVuCRevA81RDpK84eHS+pLtA?=
- =?us-ascii?Q?oWCOXA0smzXypvBD7+EloEuyXXlhzwtVyMdN8ePherI2qwO71QMaD6NuYDVm?=
- =?us-ascii?Q?NTF+aeQvKDLL4CeiUMlwZIFxbzN8NhpfyXh66CxjkM/A88kuyYB6SE43z6N8?=
- =?us-ascii?Q?NmVtoo23l8cgb3b6K8q6PctQMEwccaA5K8ltUwyRTF3EcAL0az0i2EKWlI1B?=
- =?us-ascii?Q?TA4n0zUP?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?cTqe3VCLFDPjMjHYTye+u4PLJr2hZCqrBOe+aN/OAW7zej4JhMkKnCekmpaX?=
- =?us-ascii?Q?+NGpHW/5aso9QqKicae8gLZ8KG08WTAspUQv5mBhDlbgoVs+69Qvs+DINn+H?=
- =?us-ascii?Q?p38xWly+OgwAZ0bNQrUilogXQj5lcXh0Prj4lCWuthnwV2u5uAxusrDSlOPR?=
- =?us-ascii?Q?WXlt+txnTtADavDaMVSyisHq6LUBLnnQaNXKRCLxLJMSWGZ4CZtiRkCVyCAi?=
- =?us-ascii?Q?DGsEwEAwCqz00MuMNIoOvR6uGZQBhcBa1OWP2Jw8UJFPexSWeXVO1wo6P4xf?=
- =?us-ascii?Q?zhTgudC/1IQOum+SQD3woYfPIHmSq0IK5P7HZXd/f6CFBemLl/PLXl/j5CQz?=
- =?us-ascii?Q?m8y2wXqR7Hbta+kVvX6gcspfpct955vZTAaefCk3Mo8w73AynAxQAa401jZR?=
- =?us-ascii?Q?2EYrdfGyVvF68iCa4Xif6fFW5SrW9emH6BRUv8q3PKQUqeuAtrJIMufSU9Iq?=
- =?us-ascii?Q?EFssDqPdgccdSgddD+9CD5WEMt3twxrx6R4sXyD+2IcbN7wQMQ97dfigBWtS?=
- =?us-ascii?Q?oZ628hq5yonK8oqoXhMNKQYEaR/cBlLAU74Of4UWTpY1e54m/Ujv7AOeThgz?=
- =?us-ascii?Q?J+zjRR/WuS2zCdw03UGKWlxvIS0ccLuhp1XUxWl0Wf55y4wrjObVzLBc1ZCA?=
- =?us-ascii?Q?QEQKzDf/AAyvuQmccY8fYDyR+5GeR3zljYH3RdlGuvNfq7q+YrGDyseW+iay?=
- =?us-ascii?Q?jd8gE1YIsWEoTsx/ohRHkyQ/1+kbaZbVzq0PnEVgHYomcmqDy6vDL6NsdOuC?=
- =?us-ascii?Q?SGueOrF0mb4O+s8lVmnTAZwYuxD7Dq736PHh048b6m24tRjTsY2BMUn5J2ji?=
- =?us-ascii?Q?+/66uVpjTrL2oYbolOvRFcbDchQBzNjp6POq5+qb6Q48wA3V8uZ466IeWAB8?=
- =?us-ascii?Q?lZCRWlficvJf4JjTa9AG9U2fvWoHnqhgc3vVcm2UBJGffu08iP4xn8cjF41R?=
- =?us-ascii?Q?CXxOKVZklOzEUEg+Dit8+67eTTmSzekxCTkdWIDRdPDLtvj/oFwcdg7ZgxaM?=
- =?us-ascii?Q?PVO5ujXsRjc7Pt0J82RLdKImNiuxmzx+RpNvhLkfuVSnGdyRoeVg+I+bWhus?=
- =?us-ascii?Q?W1Ijul8HmWb88vtipkGfL76MzhAVGNjj1+96APipRBWrFkRAKVK7wN8bGulP?=
- =?us-ascii?Q?bNusqtMkEOo8oJVAq54q+yNeJnZOiUF7LMaVFzP3cqNnu2TQUP7SZTKMd0WO?=
- =?us-ascii?Q?Uwy7tW/mAXRpX4nrx84pgc6owNiYntXfcNMzohfnWQX0h5PifrzmH3hLXlPJ?=
- =?us-ascii?Q?/S5P8e4Sqm7QnS9Pa6zfdJ3MMt96kXVFkzwWlDYzIq2NGTrQRoaXy1fJ3Etj?=
- =?us-ascii?Q?j5bciHQyo8SiFBlI/GKqTSMjokfjR+c7igWOAVgWNg3/codYDMkiox/47fPN?=
- =?us-ascii?Q?DhRrhd4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Tue, 14 Jul
+ 2026 15:36:29 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0202.014; Tue, 14 Jul 2026
+ 15:36:29 +0000
+Date: Tue, 14 Jul 2026 12:36:28 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>,
+	Mostafa Saleh <smostafa@google.com>,
+	David Matlack <dmatlack@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Saurabh Sengar <ssengar@linux.microsoft.com>, skhawaja@google.com,
+	pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v10 0/6] iommufd: Enable noiommu mode for cdev
+Message-ID: <20260714153628.GC3695849@nvidia.com>
+References: <cover.1783360051.git.jacob.pan@linux.microsoft.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1783360051.git.jacob.pan@linux.microsoft.com>
+X-ClientProxiedBy: BN9PR03CA0438.namprd03.prod.outlook.com
+ (2603:10b6:408:113::23) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SJ0PR12MB5635:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8dc422ac-946f-4be3-9233-08dee1bdac6b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|1800799024|366016|376014|7416014|18002099003|22082099003|6133799003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	WAqAtAS5WDI7/jVqZRoO8QJGsiJNF/zL69cQgSb3Nq3qBwBouQoz7MWK+hW7WJ9mypgZM+R0eKfn0MbFpJnKvUzeYJcHoTzmjwVl6hpYtCZ33qFn8vQURqzL0itbr9zXtgtNeMvYveAXTy2cr8xLk0USCmJpqsNtsamQrL6DmoL9wAQXzPJcDad/x6NLeKTlDjSX6E9pabIQbAk0jqMAP3EbsrcHQtKBLIzeZDsrZZznBwQH3Xk55vj8wNUbMFYUHXPUe3KHT+7Xh03rgrqq0mBDQ+ihegMU2RexqcIfXafYlMnJutEPNUrKaBJgotpNiKvT4LwMkCIj4IVOBQW0TZIAE3TuAwOr4cTbF+wzd3DxAj8LRLw7LBVFDKU/1WJ8lkpJPXzwUIC9N9D2lhbcYP+wf5M0q6nnkq17mdSG9KzDaSd76ZageDF6eSC44e3DXMNut4SbwRm6kz4TUnWsFrUkqVIqVQNImWPaNiAk3l9MKa5FyKw5q44qeASTwtWrub4IkbNrAvTcFWG5f+IBrCi7Z0LqKTYEM7PWR+1BXyn/cUlOizM1sdoAZQTdEBCQ1UJr2n2/kVC4PwQUumg1KKiIkARll1Y8xRobXX6IHvYmoU4jf2BAyfcBZPMSMD8GOx/BZvEkOZSw8VdT2wheAQA7IvoAL2eWmCojYYEoLug=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(376014)(7416014)(18002099003)(22082099003)(6133799003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?q+B+eo88T68j1b2gHDhw9kLo+d5FFUfGqbhSYj9sWKwyNxwAicu3DNTA4S0Q?=
+ =?us-ascii?Q?6Ycvy0mq5oT728kpKVEZhpEp8NBbwTAht4HJGJk53EVt0bvNiyj7Ciyd9b9g?=
+ =?us-ascii?Q?rSIk4690Cm++kKgwEf0xFWZCwdkD2ffz64uazUI/x8LJ+kBdJuo2wtEQVnnx?=
+ =?us-ascii?Q?+j77Oq1DL0KVN2yIhUDi0R/b96ouf4I8Hz7gakh2HHwiaigHSjAKlP0AFS+b?=
+ =?us-ascii?Q?LfKikOxirQo44AUqOYN1wSrOKNdBM9QbIzOVcTXlfhENCfXUkAyfPzn2Lko3?=
+ =?us-ascii?Q?xFI1Z7GEp1r+0mDe/xCSduuGSMOgsC2iiW2OgWypTFjeLI93kz9XmB7SExok?=
+ =?us-ascii?Q?AXm6sxxOhM0WoUV4oIKKLKjgywH0NYA+bBAlkD3MyQ1EOWjFl3pjFXX9Lc5t?=
+ =?us-ascii?Q?U2J2WZJjVZbU12kiW5jhV7rF+NNpdIgPo1xsjWEzpew73TEQc2HBT+8o8e2i?=
+ =?us-ascii?Q?EfC1rh8pjIiWeFWIsEgFx+TcRs54m5oJNsL7/IO+1qVeA3D34On+BlfXvZYY?=
+ =?us-ascii?Q?PgI1l0KWxSmB3sgnqyX/6Ycxp3FxTnBSqmxF2chdd7Y1oA37J9eSZSZzI9pS?=
+ =?us-ascii?Q?WIjwkxJ3obHoRQrF1vBSLAABC9eyUP1HBUKTW/KpJVFQ1SFKETrsGD32bSkC?=
+ =?us-ascii?Q?zWODBO9qm5ietaIacyJAiVksLFeHPHET29Ay2t0rRS41+hY+CPnETsbhm0Ey?=
+ =?us-ascii?Q?8gVCi8SM26NZmsgbx8JUppk9d/2Lxx9at6mw/Hcsjhutlzv0qhgsrKQRr1vw?=
+ =?us-ascii?Q?jjaiwgnxl+MjTZxL7pZufrRQULujF+7PBMN4xmcP3PLgBPHveo/rXBLcH/cR?=
+ =?us-ascii?Q?MMz41qy7GzKTZIGQX9g+7EkhiFY2qYi6cxAMf7TRbwaYrd0KA8UmOXg2uhEb?=
+ =?us-ascii?Q?gaSJopIowIaroISqBvRlHAH29i/+v1x3wIT47woeuHwV2thbM/0pWMt6mHxi?=
+ =?us-ascii?Q?3qnJ9bDBYnYfziv5T6klNCYAYwUdXxYGFus2GDCoXvUJxDGAelUb5TZTzahy?=
+ =?us-ascii?Q?bsmsBJKGjMKh3s+CbI9Y6KeoOUkYtyAmoDL+nv4ouR8D4vXEps5t6Tx1Svay?=
+ =?us-ascii?Q?Fr/DVudGzPwZLQThAAUbjH4fFNj2mCadbUkrsszSJubMdo7bYIyQ8c3Scz3u?=
+ =?us-ascii?Q?9uVVFNlfmjZi5tg/fK4O4v9NBwnLosQshs2zACXDTYGqVJGVf/6jM5yPfkW6?=
+ =?us-ascii?Q?bLv8Lyjkuj5GaNjS0oVXxuKObmVFRAhRCmFArBOz6HQtvYYAh/dNM0TqRAq1?=
+ =?us-ascii?Q?+SZ3ujb7p72pTLAdzORXdq9DZ05ZDR71lA34aaTu6aKSTDqXe5kEYSsjgpqm?=
+ =?us-ascii?Q?3tDhNrlUUi6AhdCFYQDvVO+Z2RBAhgmZztoc0hMzQbP3Gj+7o+AKrF4MzIXt?=
+ =?us-ascii?Q?gOu5FPU5Ob7ZP0AISmqZtWXDMFGpHPIFMLCmZly7fM0LZ50MeH/uuWXXmvna?=
+ =?us-ascii?Q?yJDn6RgNthzX+0xESk98JbUQClPEDtMKJLkxmnBHxib/ng+hDaMZdE3b5adk?=
+ =?us-ascii?Q?2x/BJmPFJChnoEZH1TrtB3pHZBCp+rA76wDTa18abJQWd6r8nuuVz9V4jUzj?=
+ =?us-ascii?Q?hmwn94KM+YPiFhlww3VXg/hjOPOTsQ7WiWhqTePWex6pSVYLciYWHZtYU15C?=
+ =?us-ascii?Q?9KBsCSybdQCR03qzCKbPrMT1U8QEOIParlE2zta2KrF4DndJ0y+Nmdrzkzi5?=
+ =?us-ascii?Q?nsFW29Vz6KFgeGedyCfEknni8cuHJJXwXGRVeD2Lur10u0Kz?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dc422ac-946f-4be3-9233-08dee1bdac6b
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN7PR02MB4148.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04cacbac-eedf-4d2d-21e3-08dee1bcaee2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2026 15:29:23.6968
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 15:36:29.2850
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR02MB9907
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rBz36P7TBuB/ViabjdC/hny9pu0I/NA76iJYXENKSe7C99/G7Mu5w2+vc3QGmGxD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5635
 
-From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, July 13, 2026 8=
-:34 PM
->=20
-> On Mon, Jul 13, 2026 at 05:37:51PM +0000, Michael Kelley wrote:
-> > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, July 13, 20=
-26 9:46 AM
-> > >
-> > > On Sat, Jul 11, 2026 at 06:31:15PM +0000, Michael Kelley wrote:
-> > > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, July 10=
-, 2026 12:34 AM
-> >
-> > [snip]
-> >
-> > > >
-> > > > One new thought:  Have you considered the hibernate/resume
-> > > > cycle? Does anything need to be done with the pvIOMMU to
-> > > > make it functional again after resume? I see that the Intel and
-> > > > AMD IOMMU drivers have suspend and resume functions. I
-> > > > don't know enough about the Hyper-V pvIOMMU to know if it
-> > > > might also need suspend and resume functions.
-> > > >
-> > >
-> > > Thanks for raising this, Michael. We have not considered such support=
-.
-> > >
-> > > My understanding is that the Intel and AMD drivers only disable the
-> > > IOMMU translation, flush the IOTLB during the suspend and re-enable/
-> > > reload the preserved root tables and other HW state during in the
-> > > resueme.
-> > >
-> > > But for pvIOMMU, I guess such job shall be done by the hypervisor?
-> > > For a device resumed on the same VM, its logical device ID should
-> > > also remain unchanged?  And the corresponding Hyper-V domain objects,
-> > > configuration, and device attachments shall be preserved and restored
-> > > by hypervisor? I don't think the current Hyper-V ABI explicitly defin=
-es
-> > > this. But maybe if we want such feature, it could be done by the
-> > > hypervisor transparently?
-> > >
-> >
-> > I agree with your and Jacob's comments that the guest doesn't have
-> > any responsibility for saving/restoring IOMMU hardware state, as the
-> > Intel and AMD IOMMU drivers do.
-> >
-> > But yes, I'm wondering about the Hyper-V domain objects and device
-> > attachments. I doubt Hyper-V can do anything to save and restore
-> > them. Hibernation is a Linux concept that the Hyper-V host doesn't
-> > know anything about.
-> >
-> > Hibernation is already complicated, and in a VM it is even worse. :-(
-> > As a start, see Documentation/virt/hyperv/hibernation.rst, which I
-> > wrote about 18 months ago. It provides some basics as well as outlines
-> > the additional complexity in a Hyper-V guest VM. I'll also try to spend
-> > some time thinking through the implications for a pvIOMMU, and let
-> > you know if I have any more thoughts.
-> >
->=20
-> Thank you, Michael, and thanks for pointing us to the documentation. I
-> need some time to better understand the Linux guest hibernation and resum=
-e
-> flow and its implications for pvIOMMU.
->=20
-> Meanwhile, do you think this limitation should be documented in the
-> commit message or the cover letter?
->=20
+On Mon, Jul 06, 2026 at 11:48:28AM -0700, Jacob Pan wrote:
+> VFIO's unsafe_noiommu_mode has long provided a way for userspace drivers
+> to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD also
+> supports No-IOMMU mode for group-based devices under vfio_compat mode.
+> However, IOMMUFD's native character device (cdev) does not yet support
+> No-IOMMU mode, which is the purpose of this patch.
+> 
+> In summary, we have:
+> 
+> |-------------------------+------+---------------|
+> | Device access mode      | VFIO | IOMMUFD       |
+> |-------------------------+------+---------------|
+> | group /dev/vfio/$GROUP  | Yes  | Yes           |
+> |-------------------------+------+---------------|
+> | cdev /dev/vfio/devices/ | No   | This patch    |
+> |-------------------------+------+---------------|
+> 
+> Beyond enabling cdev for IOMMUFD, this patch also addresses the following
+> deficiencies in the current No-IOMMU mode suggested by Jason[1]:
+> - Devices operating under No-IOMMU mode are limited to device-level UAPI
+>   access, without container or IOAS-level capabilities. Consequently,
+>   user-space drivers lack structured mechanisms for page pinning and often
+>   resort to mlock(), which is less robust than pin_user_pages() used for
+>   devices backed by a physical IOMMU. For example, mlock() does not prevent
+>   page migration.
+> - There is no architectural mechanism for obtaining physical addresses for
+>   DMA. As a workaround, user-space drivers frequently rely on /proc/pagemap
+>   tricks or hardcoded values.
+> 
+> By allowing noiommu device access to IOMMUFD IOAS and HWPT objects, this
+> patch brings No-IOMMU mode closer to full citizenship within the IOMMU
+> subsystem. In addition to addressing the two deficiencies mentioned above,
+> the expectation is that it will also enable No-IOMMU devices to seamlessly
+> participate in live update sessions via KHO [2].
+> 
+> Furthermore, these devices will use the IOMMUFD-based ownership checking model for
+> VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an iommufd_access object
+> as required in a previous attempt [3].
+> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> 
+> Jacob Pan (3):
+>   iommufd: Add an ioctl to query PA from IOVA for noiommu mode
+>   vfio: Enable cdev noiommu mode under iommufd
+>   Documentation: Update VFIO NOIOMMU mode
+> 
+> Jason Gunthorpe (3):
+>   iommufd: Support a HWPT without an iommu driver for noiommu
+>   iommufd: Move igroup allocation to a function
+>   iommufd: Allow binding to a noiommu device
 
-Yes, I'd say that the lack of hibernation/resume support should be noted in
-a commit message, probably with Patch 3 of the series.
+Applied to for-next
 
-Michael
+Thanks,
+Jason
