@@ -1,98 +1,106 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFEC3D7A01;
-	Tue, 14 Jul 2026 06:06:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3043016F7
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:10:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784009192; cv=none; b=jbzCmUA+ItoHgcQ9g3ackbIyHwv6zdl/9J/cYZi0gv9YPCpc/NYWEbRIL9u9YbE9wn3J0dvuhDybZ4Dpj1tjoV99/w4HRBuTlaE7c1xbAGUgGQEfgnz0pPdtWW9NDZ4f63KVoBbCHO/Hm7DcSkGz9FRenckBmJ8zTIHu9u2U794=
+	t=1784009425; cv=none; b=Bq9/ZaFooFVaNt2CFTeAAijzNhaa4atdtK1IGzzcv2yG7i4uF6Im+fuDUWMCxe28RGhGgomwXuYJylK+5rB44IH8jT0uyzLBluIOVyqGW+jf7Y4LUgp7JeKnkx19FF9YiDYFXPgtoNfu/esi6TcPTf091ILYKqZWXwG2HQxyjqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784009192; c=relaxed/simple;
-	bh=XaIlS9fgd3AEanAj5vg/Kvs5bTs9A2Sp7Z1J4nmBJGY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=tcjb2pbVLMwMejvJ/LQ2Q9pUHV5sup143+a5DcRpvlpliAs84CXFFiLht8SnizDfiK45tEAZ4mjjG6c25Sg/nR3r/xTt2gfYWTEKcUwoYym6pfOU9UPqt5l3B2SIrF3krNHoypqTBwN88tnxL8kF+12zn9SZGjcnsl8Ku0uAWGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ZmTRfa3d; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1784009425; c=relaxed/simple;
+	bh=h1rcSZIJCx1s78fckibab2t0DEvvfwOPISuMFxICZCI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Upc+Rt6MKigpO+uZHNF2kf6GpJug+LWoljoTzTWta4mizAq2J8DJVskgoGQzs2fBder9o+akTLiT1zc0AG+zkzupLO5VgRhz4hMUDAZ25eKZxFZIh6lT4jQfp6Px250Ml94yr1sV3CH3Du0TYck561Q9H1XFhgvWW3PWOGzpqMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=iqI/ShWL; arc=none smtp.client-ip=117.135.210.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ZmTRfa3d"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260714060628euoutp01cbda150c069210e5715ab2648f4e44a1~CEue2A0331287012870euoutp01N;
-	Tue, 14 Jul 2026 06:06:28 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260714060628euoutp01cbda150c069210e5715ab2648f4e44a1~CEue2A0331287012870euoutp01N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1784009188;
-	bh=DIRiSHikDbk3Q53e+YjP2I19kY7qxurY8Pb5lmd5nSc=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=ZmTRfa3dChwOjLkZGeEMSnDLvOnVbXVLWi/yY8oYelFIbUKhjxrUwNtWWyt9jGG57
-	 zLrE3UwKmxXKyqmroZgcu+zD6Pbp7nUy338G8F1TCB+JxTfBCdRlT5n+ocrtCDB3hF
-	 sBgzrXGbIcPqqW8KQ2dQeq3cV4UO/lgDK3/yDeeA=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260714060628eucas1p1de9b3680fe41ab77cb6ab5e0681da787~CEuesp4gf1760517605eucas1p1P;
-	Tue, 14 Jul 2026 06:06:28 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260714060627eusmtip1653aae226e9613f0154d29407d6f5622~CEudQw15C0714907149eusmtip1g;
-	Tue, 14 Jul 2026 06:06:27 +0000 (GMT)
-Message-ID: <cd5d0504-1592-4b48-89ea-1efe8aa57968@samsung.com>
-Date: Tue, 14 Jul 2026 08:06:26 +0200
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="iqI/ShWL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=fO
+	rVLDpGjRjUa+f8VzrtP6B9hFELin8qYtwTJlLmQHk=; b=iqI/ShWLN0QGPUqjSJ
+	HV4sJ1rtMWL3tWOLVElIvwBK6ZSAS4vfu0sssBfLo/bYGEpI3L73sIP+ni1SSqUT
+	CmAr7QEESbFj+puJ3v3C2uYKuvXUwn8posOU/mE9sIfmLZjymxF95WZIUJm21bsD
+	UnPKkFa6CVRl/0wW+XDTRAaMM=
+Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
+	by gzsmtp4 (Coremail) with SMTP id PygvCgAnwyab0lVqrG_HHA--.5129S5;
+	Tue, 14 Jul 2026 14:09:48 +0800 (CST)
+From: weimin xiong <xiongwm2026@163.com>
+To: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	weimin xiong <xiongwm2026@163.com>
+Subject: [PATCH v1 3/4] iommu/vsi: Fix fwnode lookup lifetime handling
+Date: Tue, 14 Jul 2026 14:09:29 +0800
+Message-ID: <20260714060930.220277-4-xiongwm2026@163.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260714060930.220277-1-xiongwm2026@163.com>
+References: <20260714060930.220277-1-xiongwm2026@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v7 00/22] dma-mapping: Track shared DMA state through
- direct, pool and swiotlb paths
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, Will Deacon
-	<will@kernel.org>, Marc Zyngier <maz@kernel.org>, Steven Price
-	<steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin
-	Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Mostafa
-	Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>, Alexey
-	Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, Xu
-	Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Alexander Gordeev
-	<agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
-	<svens@linux.ibm.com>, x86@kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260713194323.GC3133966@ziepe.ca>
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260714060628eucas1p1de9b3680fe41ab77cb6ab5e0681da787
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260707080628eucas1p13fa8a57e60ef5dd3ec651e19e42af0a1
-X-EPHeader: CA
-X-CMS-RootMailID: 20260707080628eucas1p13fa8a57e60ef5dd3ec651e19e42af0a1
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
-	<CGME20260707080628eucas1p13fa8a57e60ef5dd3ec651e19e42af0a1@eucas1p1.samsung.com>
-	<yq5av7argr65.fsf@kernel.org>
-	<fc804746-4fb8-4ea9-997f-a4cae9ba8c14@samsung.com>
-	<20260713194323.GC3133966@ziepe.ca>
+X-CM-TRANSID:PygvCgAnwyab0lVqrG_HHA--.5129S5
+X-Coremail-Antispam: 1Uf129KBjvJXoW7KFyrGF1DJw1fCw47uF45Jrb_yoW8Ww45pF
+	WUGayYkrWUXF10gF47C3W5CFyYvws2va4I9rW5tw4v9w1rtrW8ta4UJryjqryrCFZ5J3W7
+	Kw13ta97CFy5A3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jeg4fUUUUU=
+X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbCzgzPX2pV0qyd0gAA3c
 
-On 13.07.2026 21:43, Jason Gunthorpe wrote:
-> On Tue, Jul 07, 2026 at 03:03:48PM +0200, Marek Szyprowski wrote:
->> I'm fine with merging on top of the topic branch and I assume that this
->> patchset is mature enough to give it a try in linux-next, but first I
->> would like to get a review or at least acks from others with good CC
->> knowledge or experience.
-> I think it is good to go from a CC perspective, there are still some
-> more items to fix up (like the MMIO) but I'd rather they be followups
-> at this point.
+bus_find_device_by_fwnode() returns a device with its reference count
+incremented. vsi_iommu_get_from_dev() drops that reference before
+reading the driver data, which leaves the returned pointer derived from
+a device after its reference has been released.
 
-Great. Aneesh, any chance You could send v8 with the remaining items fixed till end of this week? I will be happy to push it to dma-mapping-for-next for testing in linux-next asap.
+Read the driver data before put_device(). Also make
+vsi_iommu_probe_device() fail with -ENODEV when the IOMMU cannot be
+found instead of dereferencing a NULL pointer.
 
-Best regards
+Signed-off-by: weimin xiong <xiongwm2026@163.com>
+---
+ drivers/iommu/vsi-iommu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
+index 42c424496..d19db561e 100644
+--- a/drivers/iommu/vsi-iommu.c
++++ b/drivers/iommu/vsi-iommu.c
+@@ -220,10 +220,15 @@ static struct vsi_iommu *vsi_iommu_get_from_dev(struct device *dev)
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct device *iommu_dev = bus_find_device_by_fwnode(&platform_bus_type,
+ 							     fwspec->iommu_fwnode);
++	struct vsi_iommu *iommu;
++
++	if (!iommu_dev)
++		return NULL;
+ 
++	iommu = dev_get_drvdata(iommu_dev);
+ 	put_device(iommu_dev);
+ 
+-	return iommu_dev ? dev_get_drvdata(iommu_dev) : NULL;
++	return iommu;
+ }
+ 
+ static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
+@@ -619,6 +624,9 @@ static struct iommu_device *vsi_iommu_probe_device(struct device *dev)
+ 	struct vsi_iommu *iommu = vsi_iommu_get_from_dev(dev);
+ 	struct device_link *link;
+ 
++	if (!iommu)
++		return ERR_PTR(-ENODEV);
++
+ 	link = device_link_add(dev, iommu->dev,
+ 			       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+ 	if (!link)
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.43.0
 
