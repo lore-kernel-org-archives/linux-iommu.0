@@ -1,98 +1,97 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35DBF3E274B
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 12:38:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 804F428751B
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 12:51:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784032713; cv=none; b=n5S+b4gK528OtaqbelmsFWiTBs5BGXkaDiwl5QzK+faXycsba6SYPqGAuPwYISB/peHNJBr/XAjyzbt4t9m0ibutkyDdJvOrj+Sf5miUE99yLUG+MOmbXvtrLoeubyNSdwZ0JDrqQrmkStd1CjAYUshFwAIaCQFYJLWsaYeovbc=
+	t=1784033482; cv=none; b=bFJVCIpwn7e3Fjj6qEM5kOAvUTxQBj32nt+72vdyMjxkW1ksIvk4Vm/RDUqtrZfac+mkfpKnVsfIskquKj/DWsIe2Rk69NGVZmS6trET0iHi6/YkWSOc8sX7XRJd0GbJjwoKNf8ErI5lZITRrF1yPsCFugmoTGBH7nO7rqtxvAo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784032713; c=relaxed/simple;
-	bh=8TqqkY3IBsbzBVYw+q3ktkE/39IeQWw7Bw8XDmzpVyQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BezqEoTFtFRWyefvnlbDON8P4xISLryx7yQDv1w5CCyVAR65nEH3V1xDDbI2a5ueC2hxcN8gKwddHrxxNTWf4/UvvRmhbVIuqP+lkl466MdSkJWTcJqlCUJyI0JNOlDt9vToVYK8c2hUW14ZrSlsYkoO+B5vqzDTxdznKk1nuWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UW/IRRja; arc=none smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1784033482; c=relaxed/simple;
+	bh=/lpDdtNSPY0POuS74Ecigk0Qtq7wKCr3iLNFGRcTMxA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=bxOeX0f9BBnhPkp3HwE+iOILaBMBdvqkf5jngnZ0NALklYS+ruqeUwK+JUvGhaa/4p4rSDDa0iHryZHk32Ke4LxSAhqsfQuIt3RXJNUL3nAAyhTnO3ZgqGH7ROWpHUvcsPwVsMQYvmCWzXmvwUL52MHXVQmW/2QZe/+UKzjJ+ck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=jcX9gOBW; arc=none smtp.client-ip=115.124.30.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UW/IRRja"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-51c01089e8aso6871091cf.2
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 05:38:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1784032708; x=1784637508; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=DxC8uHlWMD2PYfvhPMzueM09X2E4SQiFlwC0qjYAtc8=;
-        b=UW/IRRjak+tmu7vHvZozUtgwRtm0wIcrMPXb9USofdCpANOnt/qNHzpP+zZChHbhvs
-         CNCYjIuNd4/eKKPoY2GkoMC6w2l2UI3XjW5ybw6siATM0QM+mHbM4CY/SUDuMNcE9Qzs
-         9yThNnsN+TpHZl9vJlELnGD3np38ueSV+G7aWqR+69pejna3Ml5QH0ABUdjh58obs4ji
-         x9b3At2DlenJmeyDC20Ridy+PQd1C4ac0FyclkAccRyftcw/a0EEAWMeNeZ3SXRlz/o3
-         CRplyblQ//03cAGaNEfj6SeW4uDHFVZXDr8Ga0brEqmVQuKolcGZvIqEu+JBjzsLOrmA
-         wDOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784032708; x=1784637508;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DxC8uHlWMD2PYfvhPMzueM09X2E4SQiFlwC0qjYAtc8=;
-        b=IoWMdEITdYdBbevWCmMuU/mTC8uiDO12gx/tw8QKn0O/yz9FCTjgWzgfOLVNpPqWas
-         ekOWvJHu60L/SsLhQKYaPpnMpXxcu2m1RQM0RNEEUHQjjRZ/MhA8xllZ8C167zLDDHn1
-         dqqOJpS7KR4wYtUG9IjVlL38+41EaN/ezD2s3N+enfXnBjQOl+1O3R/5P3gb2h0IUiUa
-         Vj8c7gn4cerMbpWMHyyOTlaJt9U4dppBHE8+i1rnUzZgDyGi4FMejvDqS1sL2qO+PZRL
-         1SV6tepjoS/Q6XU2Xnz2/Im2Pt0iAGVawFLLBYv2LuMQvoi8+TJBY0kO9U6tVQzN394+
-         pH+Q==
-X-Gm-Message-State: AOJu0Yw02Bg8RCMtQ+4hF7DHGs0BXm14eS3DFsoGaXW9EHoUlxBfQ9mJ
-	1xiugrez1fzzA+LoFPZCmPQK+zj6AV25thMrezo3TMtG+3DnB+Q+LBcjbTmxjY3OnvFeUVYT7pn
-	IfyEX
-X-Gm-Gg: AfdE7cm6DR4mr35GkFBp/TMhuRsya0E0ixoXDY0DZ0sD4EgTTem7+F3AKkMa4z9t0dg
-	AjQSuoxsBJp0uPYhVu8or867MP5QbColzC5lcSGAtv6dBz1B2IRovC9XmjjtIRB+nmRElPXAtAv
-	ACcEoZagYcEdMSowgvGbfXCxDOpe+A2HcwiwifuKknCNGwSqGlIW+iZctJOUOmsvCwkIPDSeVR+
-	OlA35FrEQOL842cc4jdjrYt54p4NzkkSwaLTGBfmBTFe+ZQb4XYlHE9OjoSPCFcwBvZuPBLC6yE
-	7kFV1N75s2i4GUfyHpcHWJ6fiO2HcjfEO9EHyg7AaZqNhHI+jZBGC8dL9Kegc+Lz9has1fkQ3eg
-	fW0watzz6wVDpKQrsdczr5qYOjSaHsW4KaBZvorNbm3bXGj8/D/WgwTSI8L87Gk2QkRa+YM4=
-X-Received: by 2002:ac8:5d4f:0:b0:51c:164b:b241 with SMTP id d75a77b69052e-51cbf05b77cmr128588831cf.13.1784032708276;
-        Tue, 14 Jul 2026 05:38:28 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51caaf611e5sm110460461cf.23.2026.07.14.05.38.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 05:38:27 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wjcP5-0000000FSx8-15jL;
-	Tue, 14 Jul 2026 09:38:27 -0300
-Date: Tue, 14 Jul 2026 09:38:27 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: weimin xiong <15927021679@163.com>
-Cc: iommu@lists.linux.dev, kevin.tian@intel.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com,
-	xiongweimin <xiongweimin@kylinos.cn>
-Subject: Re: [PATCH] iommufd: fix grammar and spelling in comments
-Message-ID: <20260714123827.GI3133966@ziepe.ca>
-References: <20260714024440.188358-1-15927021679@163.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="jcX9gOBW"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1784033475; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=PlXcFe9PGrAD8oJJaTsvKAGmMOdAO7oL5qurnCWKNFY=;
+	b=jcX9gOBWTDZ7yhi/2ujl7XFBo7h396aTXBPQpITuzOpo3DLBROudjI+gTy+LBSOUUdJGKDtzRzLP4EDnb6LtyRTueq4g8tX0itns38Xyu+Ar5du/vpxb/PTd1BLOjdsapAblTiXJCjKuLFKN0UFr171acj5vKKcQg6PaoczUz0s=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=cp0613@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0X74eRpR_1784033455;
+Received: from DESKTOP-S9E58SO.localdomain(mailfrom:cp0613@linux.alibaba.com fp:SMTPD_---0X74eRpR_1784033455 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 14 Jul 2026 20:51:14 +0800
+From: Chen Pei <cp0613@linux.alibaba.com>
+To: Zong Li <zong.li@sifive.com>
+Cc: tjeznach@rivosinc.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	mark.rutland@arm.com,
+	andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org,
+	david.laight.linux@gmail.com,
+	zhangzhanpeng.jasper@bytedance.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH v4 0/2] RISC-V IOMMU HPM support
+Date: Tue, 14 Jul 2026 20:50:47 +0800
+Message-ID: <20260714125055.1974-1-cp0613@linux.alibaba.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260714083625.1083606-1-zong.li@sifive.com>
+References: <20260714083625.1083606-1-zong.li@sifive.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260714024440.188358-1-15927021679@163.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 14, 2026 at 10:44:40AM +0800, weimin xiong wrote:
-> From: xiongweimin <xiongweimin@kylinos.cn>
-> 
-> Correct detach kdoc ("device/pasid from"), article use before
-> IOMMUFD_OBJ_*, and "propogated" -> "propagated".
-> 
-> Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
-> ---
->  drivers/iommu/iommufd/device.c       | 6 +++---
->  drivers/iommu/iommufd/io_pagetable.c | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
-
-Applied thanks
-
-Jason
+On Tue, Jul 14, 2026 at 01:36:20AM -0700, Zong Li wrote:=0D
+> This series implements support for the RISC-V IOMMU hardware performance=
+=0D
+> monitor.=0D
+>=0D
+> The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver=
+=0D
+> created by the parent RISC-V IOMMU driver. Therefore, the child driver=0D
+> can obtain resources and information from the parent device, such as=0D
+> the MMIO base address and IRQ number.=0D
+=0D
+I tested this series on QEMU and it works as expected.=0D
+=0D
+Test setup:=0D
+ - Base: v7.2-rc2, both patches applied cleanly.=0D
+ - Kernel: rv64 defconfig with CONFIG_RISCV_IOMMU=3Dy, CONFIG_RISCV_IOMMU_P=
+CI=3Dy,=0D
+   CONFIG_RISCV_IOMMU_PMU=3Dy and CONFIG_PERF_EVENTS=3Dy.=0D
+ - QEMU 10.2.0: -M virt,aia=3Daplic-imsic -device riscv-iommu-pci=0D
+   (hpm-counters=3D31).=0D
+=0D
+Results:=0D
+ - The RISC-V IOMMU probes, the auxiliary device is created and the PMU=0D
+   driver registers successfully:=0D
+     riscv_iommu_pmu ...: Registered with 32 counters=0D
+ - The PMU shows up under=0D
+   /sys/bus/event_source/devices/riscv_iommu_pmu_<BDF> with the expected=0D
+   9 events (cycle, untranslated_req, translated_req, ats_trans_req,=0D
+   tlb_miss, dd_walk, pd_walk, s_vs_pt_walks, g_pt_walks) and 7 format=0D
+   attributes; "perf list" enumerates all of them.=0D
+ - No oops/WARN/KASAN splat during boot or driver bring-up.=0D
+=0D
+Tested-by: Chen Pei <cp0613@linux.alibaba.com>=0D
+=0D
+Thanks,=0D
+Pei=0D
+=0D
