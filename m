@@ -1,45 +1,41 @@
 Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71E033A381D;
-	Tue, 14 Jul 2026 02:59:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34AA83A381D
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 03:25:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783997993; cv=none; b=CIHpboDI5q5NtbTWhedIlSGJOUS6Laq3Kz/+Xl1J+B+fAxO1PspREoickQvijAeoqq8Zwcde8lEY7l2C6HhoV/hWA3EofRDFsH1u7LYL0kLhTFJoxWFFfFPZOOT3E94y2h+mD0bapk0jYdy6LI/0DjlCnuxljVn7iipJgeg4ZxU=
+	t=1783999519; cv=none; b=iU3zD5XgAt5164UvIYZCNVoIZIQIsSS8IsJyel+nC0HSjcTesR7giCJ0VkNipC+ypWHKFfU1WuAQtD7wytTQgJkNspdK/vADprf/yvre171kUXDL5c7kTXNFBNFxqLgNtRRMsMLibChpYh7Dk1Bn+OfTXQpNO6gbVNreG/Zjq9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783997993; c=relaxed/simple;
-	bh=U4zm0NbUyWOtwjIaogLD31LYoHgMaECzne8hEE3A+FI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=iyel2y+WCJupVHGkHWOjD1pibPeyUIVMkaailmCqV2gb33jNVB8N+mZqaqmIeCRH1pWwtM+NxXTNeRvUZHfHmeFP1amSBcQbR7SIL/Q+BMqRK89MCJ/uX4J+WELZ6V2HsCubFqmXy7QL2mIvp/tQx9EGs57D0S3uJYFnO/5TPuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=J58lV9VP; arc=none smtp.client-ip=117.135.210.5
+	s=arc-20240116; t=1783999519; c=relaxed/simple;
+	bh=/dFc0pugWrsgZkM6LI1nyzCJEM8Nz6rchJWaq2iqfG8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=n/NCtovEKYHvxAfUyawgekUNZyWTtmJVExf/O2ElV+/KEUKIu5RN2cdrcs5lLZTrIfc3ldgFJfbnwDbSewTk1SYg5AnHPydKfYnFpu2lio2h0Ry/apKOjjR49TDKZmwIWA7NkIMAUPHT6ORMIPB2q5hKEln9uOaR1LcvdiL3qxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=csX+o3gZ; arc=none smtp.client-ip=117.135.210.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="J58lV9VP"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="csX+o3gZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=T5
-	cE0KN11dI/E52Yvv7eqo+cESpCYIhwJSXgrjLqYyQ=; b=J58lV9VPw/vvkt6724
-	bNPKPQENki4SxJkJ3wygKCY3ctytfYQ5JQ6g5ynV6I3Ms+BnoGwEVuNM+H3OmsmO
-	I1IaCZKkRwnRRcWRWIz3s5G5UYJ+0N6PTSdnOg93ErHqJAl8zgOzoVpkiUBbpLKf
-	JePPImSFl3kCjIBPNCPNAY4zs=
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=/I
+	yw589EVgHH/fhkFRnPD5WO5FsPMkVamqMpmsEwbvY=; b=csX+o3gZL8Mnw90TsQ
+	nlTbvilqth1BXbcV6Du2D8FV5BEefUfizfLMp8zQaFw+51nQfuGj4fYfl2Fa6ots
+	C+k4r8FCWZXjRW/xLRSZYjw60H0M7r2nheRaspjf57No+xXDfEjZpHjohuwZVuHF
+	m++XdUc4VMDE1C4jimJCdWF2Y=
 Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
-	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wD3b_8CplVqBxNXJA--.48351S3;
-	Tue, 14 Jul 2026 10:59:22 +0800 (CST)
-From: weimin xiong <15927021679@163.com>
-To: Jean-Philippe Brucker <jpb@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	virtualization@lists.linux.dev,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Xiong Weimin <xiongweimin@kylinos.cn>
-Subject: [PATCH v1 1/2] iommu/virtio: Set driver data before enabling virtqueues
-Date: Tue, 14 Jul 2026 10:59:13 +0800
-Message-ID: <20260714025914.193580-2-15927021679@163.com>
+	by gzga-smtp-mtada-g1-4 (Coremail) with SMTP id _____wD3Or7mq1VqjYDmJg--.50453S2;
+	Tue, 14 Jul 2026 11:24:23 +0800 (CST)
+From: weimin xiong <xiongwm2026@163.com>
+To: iommu@lists.linux.dev
+Cc: baolu.lu@linux.intel.com,
+	dwmw2@infradead.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	xiongweimin <xiongweimin@kylinos.cn>
+Subject: [PATCH] iommu/vt-d: fix typo in comment
+Date: Tue, 14 Jul 2026 11:24:22 +0800
+Message-ID: <20260714032422.201378-1-xiongwm2026@163.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260714025914.193580-1-15927021679@163.com>
-References: <20260714025914.193580-1-15927021679@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,63 +43,39 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3b_8CplVqBxNXJA--.48351S3
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tFyDur1rWF13CFW3XrWxCrg_yoW8Ww43pF
-	4DCas8GrWjqFyfGa43Jw4UZFWYvwsava4IgFW5Xan5Wr1Ykr90yFy2yFyUtw1xArWkGa1a
-	va48X3ZFyFn8uFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jseOXUUUUU=
-X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC0QqbJGpVpgqTpQAA3B
+X-CM-TRANSID:_____wD3Or7mq1VqjYDmJg--.50453S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtFWxXrW5WrWxKr4DJryrZwb_yoWfGFg_Gr
+	10grykWry5ZFyFvrWj9FZxua4Yyw42grZ2yFZYgay3Zw1xZrs8KFZ3ZryUXFs8W3yjkFZI
+	krWYkryxZFWrAjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5jAp7UUUUU==
+X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbCzQcUo2pVq+fmIQAA3J
 
-From: Xiong Weimin <xiongweimin@kylinos.cn>
+From: xiongweimin <xiongweimin@kylinos.cn>
 
-The event virtqueue callback retrieves the driver state through
-vq->vdev->priv. viommu_probe() currently initializes that pointer only
-after virtio_device_ready() and after the event queue is populated.
+Correct "assocaition" to "association".
 
-Store the driver data before creating the virtqueues so callbacks always
-see initialized driver state once the device is made ready. Clear the
-pointer again on probe failure.
-
-Signed-off-by: Xiong Weimin <xiongweimin@kylinos.cn>
+Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
 ---
- drivers/iommu/virtio-iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/irq_remapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 9118377d7..4c91a82d2 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1173,11 +1173,12 @@ static int viommu_probe(struct virtio_device *vdev)
- 	ida_init(&viommu->domain_ids);
- 	viommu->dev = dev;
- 	viommu->vdev = vdev;
-+	vdev->priv = viommu;
- 	INIT_LIST_HEAD(&viommu->requests);
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 25c26f706..cc2eca08a 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -953,7 +953,7 @@ static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
+ }
  
- 	ret = viommu_init_vqs(viommu);
- 	if (ret)
--		return ret;
-+		goto err_clear_priv;
- 
- 	virtio_cread_le(vdev, struct virtio_iommu_config, page_size_mask,
- 			&viommu->pgsize_bitmap);
-@@ -1238,8 +1239,6 @@ static int viommu_probe(struct virtio_device *vdev)
- 	if (ret)
- 		goto err_free_vqs;
- 
--	vdev->priv = viommu;
--
- 	ret = iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
- 	if (ret)
- 		goto err_remove_sysfs;
-@@ -1254,6 +1253,7 @@ static int viommu_probe(struct virtio_device *vdev)
- 	iommu_device_sysfs_remove(&viommu->iommu);
- err_free_vqs:
- 	vdev->config->del_vqs(vdev);
-+err_clear_priv:
- 	vdev->priv = NULL;
- 
- 	return ret;
+ /*
+- * Finds the assocaition between IOAPIC's and its Interrupt-remapping
++ * Finds the association between IOAPIC's and its Interrupt-remapping
+  * hardware unit.
+  */
+ static int __init parse_ioapics_under_ir(void)
 -- 
 2.43.0
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
 
