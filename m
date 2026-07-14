@@ -1,110 +1,208 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9486143E9CE;
-	Tue, 14 Jul 2026 10:00:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3EA3644CF;
+	Tue, 14 Jul 2026 10:17:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784023221; cv=none; b=Xc0i2ax40Z3o682M2RffHpzqHiQYef/piGxhOnyZtUpZB4hhki2KZUMnNyAl8tE9NKf1+eUllThcoHvz/O83fF1nwZlZVFFhmYzH0IVIttTq/8+z2xrO268OUQbdRXJJNN7k+Cboa0QqRnXtVhRhoQ8GHce2BG6ed/ZfL1DtuBI=
+	t=1784024268; cv=none; b=KoARJtzUTnXChmf2Ufmh6BWVO6FMgt/WqrkkainQ9/6YkXo72jB14UASOGPznSGKiNKf08VcP09hEZCQXvPVuTF5gZQKaIYMWMn0Fd2fmP63+SPTkE+54Rg5bmIWrpKrjKMLQTR5FfOtdrPgVhhJkLvWSOpUIxWQMiM/y2seVFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784023221; c=relaxed/simple;
-	bh=oe7+UusSV/9zSaGQDbO7QrUpA1hbAEzSMWsSFJ1AoNw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=oLR8UCJa1R74Yrk/6PKDk1gIbNdAYIWovEtBKs1viy8jjrTL1ditl8WG5F9xqpZ37tFX6tIafMfgpvygU42tX/iDzOoOsF0kXq9MEIm0xytHFshUSWYfHilZpk0dS89/EOSDaJ8eeVC1J2voB8KCkqRUUSFQXpaZ8S2mc/dAmgk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=NMjfCsqZ; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1784024268; c=relaxed/simple;
+	bh=4DH5a6ve/auP/7V1bjyB0V4QG2dck0UzPWpYqC6/K2k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gLcLeuk+BDUCgI/Utnn9318eE4ks4juatKBtAsY3GwsxdDJJIB9hXvBcw29WAMPdf0cMeZ/V9I45Joos8rwZ9/pQiT2fRKXgox9poFtuzrL+1YB0g85Pt/QWBmivN9agjPbS8XPa+vaIaW6HuPUPUfJgVdQaKE/EsD0EEfaOEmk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fy6x3ScG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="NMjfCsqZ"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260714100016euoutp010b64ed20ec9ba1c6447f10b7abae08b8~CH6nFLiNZ1160011600euoutp01a;
-	Tue, 14 Jul 2026 10:00:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260714100016euoutp010b64ed20ec9ba1c6447f10b7abae08b8~CH6nFLiNZ1160011600euoutp01a
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1784023216;
-	bh=IUra5EJSRaUGl/khGQ/hVpRAn7fp80t3QbcNAonpnHo=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=NMjfCsqZ5hnUEU0WETu01Q9nOdFTV987l1OyEpSxVC3qsrjuo+pdKGHJOn1P/uqy9
-	 0ML3iTMDQp8jsFJA5eqo2WdyOclP9r+hDHP0Qb9E1dtE0XTKwa/FLLs+p4+9q/ScPz
-	 8vhb3Wq8om+OapgJr8LiPPxclNzpInm/pkQwvQpQ=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260714100016eucas1p2bbfe02d5fc02fcf561dc5409c7ecb5ab~CH6mtujgB0401004010eucas1p2d;
-	Tue, 14 Jul 2026 10:00:16 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260714100014eusmtip1f8ce1c67533271011f679d0bcf054f91~CH6lJz-Yt2122621226eusmtip1M;
-	Tue, 14 Jul 2026 10:00:14 +0000 (GMT)
-Message-ID: <6f35eaae-f3d2-48fb-abce-9a2cc124b0ef@samsung.com>
-Date: Tue, 14 Jul 2026 12:00:13 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fy6x3ScG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C4FE1F00A3A;
+	Tue, 14 Jul 2026 10:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784024267;
+	bh=m1KwIxFOjH59vMqkPqvNJy2V0MLfN207LfncRH5TxDo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Fy6x3ScGp4SvjcLCb2EYasEF7Bg+N3JfXA1S2rYhDdGa8fr4+6eT9Z5sUIb80sT2r
+	 12V6KN+91XeSPeyZyRfBCNnMtsE0Z3zX1AfM0d9+BaPvnE/m8+pkUwQTaWwez7DEAX
+	 40QuoDzKqfzY1GCwuoG58CjBJE29XwBLRxM4TLNdmwQj8Blhck0AkxR92okiojzvMx
+	 WvMiVcF3zrA3KFpoksv9rfWx4gssKNluZWhtd5duC3QeTgeKUloBSHGktJzF0RJITM
+	 VrXH2ihLGQi0Xivwew6+5RuBX85r1ZYghiUkt5mTAu6e5JRNfb657XTWVfzpRGcHfX
+	 762G6nWtq/nvw==
+Date: Tue, 14 Jul 2026 11:17:11 +0100
+From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+To: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	David Hildenbrand <david@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
+	Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>, 
+	Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>, 
+	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+	Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
+	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>, 
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+	Miaohe Lin <linmiaohe@huawei.com>, Naoya Horiguchi <nao.horiguchi@gmail.com>, 
+	Xu Xin <xu.xin16@zte.com.cn>, Chengming Zhou <chengming.zhou@linux.dev>, 
+	SJ Park <sj@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>, Byungchul Park <byungchul@sk.com>, 
+	Gregory Price <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, 
+	Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>, 
+	Kees Cook <kees@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
+	Alexander Potapenko <glider@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	Thomas Gleixner <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	Christian Gmeiner <christian.gmeiner@gmail.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
+	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, 
+	Thierry Reding <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Christian Koenig <christian.koenig@amd.com>, 
+	Huang Rui <ray.huang@amd.com>, Matthew Auld <matthew.auld@intel.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>, 
+	Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	nvdimm@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, damon@lists.linux.dev, iommu@lists.linux.dev, 
+	kasan-dev@googlegroups.com, linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
+	linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	Russell King <linux+etnaviv@armlinux.org.uk>
+Subject: Re: [PATCH v2 13/33] mm/vma: introduce and use vmg_pages(),
+ vmg_[start, end]_pgoff()
+Message-ID: <alYMZkJKJABhPsa6@lucifer>
+References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
+ <20260710-b4-pre-scalable-cow-v2-13-2a5aa403d977@kernel.org>
+ <508301c5-5460-40e8-bc34-6410be5be40a@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v7 00/22] dma-mapping: Track shared DMA state through
- direct, pool and swiotlb paths
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Jason Gunthorpe
-	<jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev, Robin Murphy
-	<robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Marc Zyngier
-	<maz@kernel.org>, Steven Price <steven.price@arm.com>, Suzuki K Poulose
-	<Suzuki.Poulose@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Jiri
-	Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>, Petr Tesarik
-	<ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
-	<dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Madhavan
-	Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)"
-	<chleroy@kernel.org>, Alexander Gordeev <agordeev@linux.ibm.com>, Gerald
-	Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens
-	<hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian
-	Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
-	<svens@linux.ibm.com>, x86@kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <yq5aldbdnbj8.fsf@kernel.org>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260714100016eucas1p2bbfe02d5fc02fcf561dc5409c7ecb5ab
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260707080628eucas1p13fa8a57e60ef5dd3ec651e19e42af0a1
-X-EPHeader: CA
-X-CMS-RootMailID: 20260707080628eucas1p13fa8a57e60ef5dd3ec651e19e42af0a1
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
-	<CGME20260707080628eucas1p13fa8a57e60ef5dd3ec651e19e42af0a1@eucas1p1.samsung.com>
-	<yq5av7argr65.fsf@kernel.org>
-	<fc804746-4fb8-4ea9-997f-a4cae9ba8c14@samsung.com>
-	<20260713194323.GC3133966@ziepe.ca>
-	<cd5d0504-1592-4b48-89ea-1efe8aa57968@samsung.com>
-	<yq5aldbdnbj8.fsf@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <508301c5-5460-40e8-bc34-6410be5be40a@kernel.org>
 
-On 14.07.2026 11:52, Aneesh Kumar K.V wrote:
-> Marek Szyprowski <m.szyprowski@samsung.com> writes:
->> On 13.07.2026 21:43, Jason Gunthorpe wrote:
->>> On Tue, Jul 07, 2026 at 03:03:48PM +0200, Marek Szyprowski wrote:
->>>> I'm fine with merging on top of the topic branch and I assume that this
->>>> patchset is mature enough to give it a try in linux-next, but first I
->>>> would like to get a review or at least acks from others with good CC
->>>> knowledge or experience.
->>> I think it is good to go from a CC perspective, there are still some
->>> more items to fix up (like the MMIO) but I'd rather they be followups
->>> at this point.
->> Great. Aneesh, any chance You could send v8 with the remaining items
->> fixed till end of this week? I will be happy to push it to
->> dma-mapping-for-next for testing in linux-next asap.
->>
-> Sure. You need this rebased on top of the pKVM changes, right?
-> Otherwise, we'll end up with conflicts when you do the final pull
-> request.
-Ah, indeed. I forgot about the pKVM changes. If there is a stable
-branch with those patches, please base v8 on top of it.
+On Mon, Jul 13, 2026 at 08:12:24PM +0200, Vlastimil Babka (SUSE) wrote:
+> On 7/10/26 22:16, Lorenzo Stoakes wrote:
+> > In the VMA logic we often need to determine the number of pages in the
+> > specified merge range, as well as the start and end page offsets of that
+> > range.
+> >
+> > Introduce and use helpers for these purposes.
+> >
+> > No functional change intended.
+> >
+> > Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> > Reviewed-by: Gregory Price <gourry@gourry.net>
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+>
+> Uh, the PHYS_PFN() usage here was quite an abuse. Good riddance.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Yeah and mine :)) but absolutely agree it was wrong and glad to fix my own
+mistake in using that ;)
 
+> Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
+
+Thanks!
+
+>
+> > ---
+> >  mm/vma.c | 11 ++++-------
+> >  mm/vma.h | 17 +++++++++++++++++
+> >  2 files changed, 21 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/mm/vma.c b/mm/vma.c
+> > index 35ba3475128f..995de8198fbb 100644
+> > --- a/mm/vma.c
+> > +++ b/mm/vma.c
+> > @@ -197,11 +197,9 @@ static void init_multi_vma_prep(struct vma_prepare *vp,
+> >   */
+> >  static bool can_vma_merge_before(struct vma_merge_struct *vmg)
+> >  {
+> > -	pgoff_t pglen = PHYS_PFN(vmg->end - vmg->start);
+> > -
+> >  	if (is_mergeable_vma(vmg, /* merge_next = */ true) &&
+> >  	    is_mergeable_anon_vma(vmg, /* merge_next = */ true)) {
+> > -		if (vmg->next->vm_pgoff == vmg->pgoff + pglen)
+> > +		if (vmg_end_pgoff(vmg) == vma_start_pgoff(vmg->next))
+> >  			return true;
+> >  	}
+> >
+> > @@ -221,7 +219,7 @@ static bool can_vma_merge_after(struct vma_merge_struct *vmg)
+> >  {
+> >  	if (is_mergeable_vma(vmg, /* merge_next = */ false) &&
+> >  	    is_mergeable_anon_vma(vmg, /* merge_next = */ false)) {
+> > -		if (vmg->prev->vm_pgoff + vma_pages(vmg->prev) == vmg->pgoff)
+> > +		if (vma_end_pgoff(vmg->prev) == vmg_start_pgoff(vmg))
+> >  			return true;
+> >  	}
+> >  	return false;
+> > @@ -759,7 +757,7 @@ static int commit_merge(struct vma_merge_struct *vmg)
+> >  	 */
+> >  	vma_adjust_trans_huge(vma, vmg->start, vmg->end,
+> >  			      vmg->__adjust_middle_start ? vmg->middle : NULL);
+> > -	vma_set_range(vma, vmg->start, vmg->end, vmg->pgoff);
+> > +	vma_set_range(vma, vmg->start, vmg->end, vmg_start_pgoff(vmg));
+> >  	vmg_adjust_set_range(vmg);
+> >  	vma_iter_store_overwrite(vmg->vmi, vmg->target);
+> >
+> > @@ -962,8 +960,7 @@ static __must_check struct vm_area_struct *vma_merge_existing_range(
+> >  		 *    middle     next
+> >  		 * shrink/delete extend
+> >  		 */
+> > -
+> > -		pgoff_t pglen = PHYS_PFN(vmg->end - vmg->start);
+> > +		const pgoff_t pglen = vmg_pages(vmg);
+> >
+> >  		VM_WARN_ON_VMG(!merge_right, vmg);
+> >  		/* If we are offset into a VMA, then prev must be middle. */
+> > diff --git a/mm/vma.h b/mm/vma.h
+> > index 8e4b61a7304c..527716c8739d 100644
+> > --- a/mm/vma.h
+> > +++ b/mm/vma.h
+> > @@ -230,6 +230,23 @@ static inline bool vmg_nomem(struct vma_merge_struct *vmg)
+> >  	return vmg->state == VMA_MERGE_ERROR_NOMEM;
+> >  }
+> >
+> > +static inline pgoff_t vmg_start_pgoff(const struct vma_merge_struct *vmg)
+> > +{
+> > +	return vmg->pgoff;
+> > +}
+> > +
+> > +static inline pgoff_t vmg_pages(const struct vma_merge_struct *vmg)
+> > +{
+> > +	const unsigned long size = vmg->end - vmg->start;
+> > +
+> > +	return size >> PAGE_SHIFT;
+> > +}
+> > +
+> > +static inline pgoff_t vmg_end_pgoff(const struct vma_merge_struct *vmg)
+> > +{
+> > +	return vmg_start_pgoff(vmg) + vmg_pages(vmg);
+> > +}
+> > +
+> >  /* Assumes addr >= vma->vm_start. */
+> >  static inline pgoff_t vma_pgoff_offset(struct vm_area_struct *vma,
+> >  				       unsigned long addr)
+> >
+>
+
+Cheers, Lorenzo
