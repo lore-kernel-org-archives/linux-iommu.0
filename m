@@ -1,305 +1,162 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012046.outbound.protection.outlook.com [52.101.48.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A35A74DB546
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 16:53:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784048003; cv=none; b=qtQEAFDnAd5b6LCCa5S7M8qs5JMudoxKMHfKyKOG91oN9d3zKLD+3EkTNRUmKCk1REGEoQ2xjXE3CVLzEtLcyXWygWv4KgYYA5ra6FWdTm3/rKqILrxtUjXsRVs3WOOwuJfqr4+zxw/ILnXVWPuV5LLS6Xzm8rdE9crzFbycX1w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784048003; c=relaxed/simple;
-	bh=Li0kszrpNQX4EtdpsU/K4+asOP+3UJIkPXwD9+u1XX8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oft2TK+Yway+zuTigDTs6xRGgNgfWZFxF/cw9C5N9vqySrh4idE/f4TBpXwPxOGZep/PQ9UZo24Mw9fZcT0HmCcKRJGCqCPvT1lpZNEa3NJKJc8Iqep7ofGmwiogu7KygwvneAl1hO01uGAUIp/mWQwdzMWR2KqpJ+GalqfBr0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E1r3uY+x; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DCB4377A9F;
+	Tue, 14 Jul 2026 18:41:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784054509; cv=fail; b=fSC41e5t+2mqCSdHFDmIhX91w/IHFRvGzx3aqsLK0uRXM9N4+BzLT+mpfTedRGpDU9QEKJ4585+HdEqzMgxHyJuSA9UYOtU3U1epdON3H446pjdka0rafyqo0zVnRSIj4WzYAaJozlZA7/is2ZD/iXQ0EOwE6yBwb/mhA7y3ZPU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784054509; c=relaxed/simple;
+	bh=qR7FLjKd7kwmOA2iTzIqA7ir/ptalznNKRbEz24l4tg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=KnK7JJhBtxex6f6f1ZQG0prOuNEOGpmyE766rJT6vUS5WDcy2uYdNE4e8hK0F6uK6z7j8l3hz4Dca3gxkmkQp2RlSIFNrNyJVfg8gLAW+qkbaA164/BVqu6dpHreMMygja9Jr90mLXvZMtxU8tw/ntV88oRxYNpmJYd9C7b4ZeQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NeA7DqFb; arc=fail smtp.client-ip=52.101.48.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E1r3uY+x"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 747DC1F00AC4
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 16:53:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784048001;
-	bh=0VzhcQ3TbNcRXUGeYBueFZFv24RV1o/OXjdezi1v6tQ=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=E1r3uY+x+WGH6+VjJnl1AH6Mj+sWlH1aOQPD8gTXX56nmK5h1DAY79kRgMZPKSkph
-	 mAlARgqUdXxCNg7hbt/r1xN/TnzHiY/t0ql9yBvc1Y7fj03rxbivvR+Zc0mbRoeUpE
-	 OphxUNuHoMlsTs+ATHs/sfYomKKAMLCka5kCs/R9oRioPYqiKMG/fZ51nbKS5Gw4V3
-	 8u0o4LWA2lRR5fnkc8LlFo+a+j6ropkJ98gc1tXjqbNbVxhJ3VBekVjiKa3VzbcekO
-	 F7+dQSh4KAMpQNJdH69PY6RNGpTJTU+sgywChLif7diH8TZ4BYJP8ODo4QAwi9CAsw
-	 fa0h/eadwyjpg==
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-47c6e9a694bso2520610f8f.1
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 09:53:21 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RpLlGByUdqAIfBOb4RUNEhkEQhgFW/ISAwTULf6MhoUyVeDYhsgOvFw65hi7AiLltw301fyWA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyJylCsv3netlCou7l+oSzUKYrbI3pXp3nL9IoCL/cRW+O+wlEH
-	WEpp1gajMg5uvbgj+WWlHBXSi4FznoYB2hkWujDReIwFMjz/XYxBqgZxYBnsGpVRhDhltmSSiQv
-	QsGZ5hK/dMYgiHYZ+kT7kLUg8SpmEdkA=
-X-Received: by 2002:a5d:6f02:0:b0:47f:4c5a:dc76 with SMTP id
- ffacd0b85a97d-47f4c5adc92mr2158778f8f.56.1784048000025; Tue, 14 Jul 2026
- 09:53:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NeA7DqFb"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wEuIYqc0bWpvl6syfRElPG6Aj99H6oAOf6GpsjH7CfU4qh19tsohCCFhmUTPrZxcJiFGqYPH3jzU1gOeEPIuEjAHKyUTbeweUD7ISuDEVTRu7xKDUiWeZ6+E6K1u9mLXlqla9ZRiNVD5WSSCwgRHTaBIQgaQowqbuejji17aiab4dyJuQK5VTyWUsNlJBMCKYDa8yBMMqCRU8LehGftc4HfG5VI5ztrCd/UDcUtVpcIgcrN4bmWYZBVyXRKWxHxmofEIwcINm8HvV4zP4TFfTkjRCBBd6tvNjHwwpcUQ+TDMP9T9g7tV63cF8xb02x1thSr0B365YwL2LeiHhDliJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kyKpYWck3zmqwg+nyC5UHfrN45kAGNxzHQXPYTkyVG8=;
+ b=szw097Mdj1VJTsaK5wj8/Jj87BG2xl0IiQrrc5FKLnNMYlwOUMktn5J8xvRp405xPeHYT3quYiKxpZzoXlQ7oNcQYySLiNhv145O1djTpcyAF8c0Cj/9noheRhfgQCR+RXmdFRlU4uwrD9uulNMiNBx8RyAnYNDBZVbEyn4Cssy/FymrKhagEwLBgfu53RrIT5goIdZcVn7pn/3pzmuEH2FcIQ+LetXMyHJUBs0blypwlwd98inqZAgRKmwbgWYbrHdb1F/4hEJEZx2Bn4YJvCAk8iB6fXBTtXDTbTzg434aFSliQbP2tEw67uBw+qVl1q4+qN0QJCOKK5x3CuDvLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kyKpYWck3zmqwg+nyC5UHfrN45kAGNxzHQXPYTkyVG8=;
+ b=NeA7DqFbrDWrJEFPcmwkvM0c3MosLt6YNxrhG6AAKgAPTva1+gGtzMYJmRLCPa9xBT60GS/lFWNLb7Pe4iNVVOjQ10SwUnWdCc8CtXEe1WXh3c1oDkotIWNVKwNf27f+Ai9U/ATNpcyx5MMgONozV1QKAoIRiCFAuehscrIyc1OrUZTGNIeiVjc0fGlBxcRxSnMKM1nGD1a8Lj+HdOuQA7JUUntaDj4W3caMl0RSo1XHKMVrKsw0gvf0gh3FyQKXHLI63rqBQmqtmVJCEAnU54FGueMxzQs67AywcLtgLjKfgLY7SV0cTpTFDiBY/ufZ05K/YAI9uhstLdLyfPtpAQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SJ5PPFC41ACEE7B.namprd12.prod.outlook.com (2603:10b6:a0f:fc02::9a0) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.10; Tue, 14 Jul
+ 2026 18:41:37 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0202.014; Tue, 14 Jul 2026
+ 18:41:37 +0000
+Date: Tue, 14 Jul 2026 15:41:36 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Move pgsize out of arm_smmu_inv
+Message-ID: <20260714184136.GB1636147@nvidia.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <2-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <akzh9qFEfi2umwDW@google.com>
+ <20260707180811.GB226829@nvidia.com>
+ <CAE2F3rDoBK8MeGJb=ZDRyjSYdjZac7R8-KiZf5WJnvUPfxbgbQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rDoBK8MeGJb=ZDRyjSYdjZac7R8-KiZf5WJnvUPfxbgbQ@mail.gmail.com>
+X-ClientProxiedBy: YT4PR01CA0227.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:eb::20) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
- <3591a185-d0b5-4cb0-a0d5-ae9608a4e244@arm.com> <CAJF2gTSscdfFxtLHMO5Lw_Yax_GHOV6iKyX_xqZ==p7A8=wDAQ@mail.gmail.com>
- <20260714155310.2e17473c@pumpkin>
-In-Reply-To: <20260714155310.2e17473c@pumpkin>
-From: Guo Ren <guoren@kernel.org>
-Date: Wed, 15 Jul 2026 00:53:06 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTS2Rw0MYaKMzd0t3ZJ-4ni47wUwLrgkm3pjaxKu7Y1R+A@mail.gmail.com>
-X-Gm-Features: AUfX_mxUG4JDOr_aCDQ6KxqLKnoL2Q3SIMy_T89bCZi2fahn_0CYpA5etLAVIss
-Message-ID: <CAJF2gTS2Rw0MYaKMzd0t3ZJ-4ni47wUwLrgkm3pjaxKu7Y1R+A@mail.gmail.com>
-Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit registers
-To: David Laight <david.laight.linux@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, 
-	Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>, 
-	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
-	Vivian Wang <wangruikang@iscas.ac.cn>, Zong Li <zong.li@sifive.com>, cuiyunhui@bytedance.com, 
-	yuanzhu@bytedance.com, iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SJ5PPFC41ACEE7B:EE_
+X-MS-Office365-Filtering-Correlation-Id: b5724fef-73ea-4daf-9316-08dee1d7894a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|23010399003|7416014|1800799024|11063799006|56012099006|4143699003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	N1soSzhIWIFThPYKIbsBvlRfBvQaN0bxqG5AriqWi0XXJCIpbylY1bhlg7a2WQCroG19xBE8V0+L21n5WOQxvOjOa9Y2cbkoT4yTrtriiWDURAgczbbBniUqQh6ihnjsRM1TX+Ov3bq2kdYNyNIzHZ6AE7kFX+0UKUq5b+yzKuKuWhalrh8gGZWT7jBkO+j2gfVw0wWOtoPCLrKsWKximNad7S7/elgYxL5xQba1VcqCSqyElVimvHSkmUoSA8RTmF6luC3VA3D+/onBVzKZQtXd0qXuJGgQmRDq7rOM78N248uUZdye93f2OWQ6VR6yuPNnLaP0BVwpDJ/VLmmpT0yakl1R06RmnA8JiDzTRNQ6Dul4laXRLHD6c37xzhSIhLRcYSeJb65PEngs5ws+zUiAvlI2zry+7pMiAsYejI72fUveb97G2j6VIUcyM39xOgUtYJNPocV09GUrN/Pm+b8mOW0htKcZVox13HZgjjOedq7N4HLpFa8QGWLG6uliMS2NRg6HtzQd1ft9jtCNHu+JkZsEVK1y751ej2HyklHG1tzDpsCgqahlMI4BxoZxUfSrpSjOr8fXWF0c+AoPaE6UNHBvuo5G5IUj4I/airQDn/sABLFFCZNJSuy0Di1n59eGHh7hEsOZbuSgtiWD0HaZHKTp+Ypqo6l6QdVPwks=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(23010399003)(7416014)(1800799024)(11063799006)(56012099006)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RVVQUnVnZzBBb0N3SHpkZkY0Z1BpYUwxTnNJdXJpUGlFaWFiZ1dCZWE2dytL?=
+ =?utf-8?B?aDdRRlJtYjk4NkI0QUZBK3BHeFRnWWJoWHp0S0FETkRtZHVkVkxmdVNFTmFN?=
+ =?utf-8?B?dC9SUXEySXpvb0UyV1dXWkJ0SWFZVmhFMnpKYjQ5enFVSzJpOTlBVXhJbGNP?=
+ =?utf-8?B?WndMcGNlOHV5ak5ja0hSNVBnTnNiZmpvUHlHUDk3akUzSktyRWdPVm9sOC9y?=
+ =?utf-8?B?L042Mk1jYVVrS1dnSmZSaWRnWUZzQ0ZSWjJrNnBvUDYrdWV6MUtJU2JmRS84?=
+ =?utf-8?B?RDVYT2FEd3VWMU5JSXJZZ29aT3V0bmJqM3BvUlByN0xhQkt4d0dYOHJ3SjFX?=
+ =?utf-8?B?UWZHWnZQSDI4MHBoT3BxdkNrZ3Awa1FhNHVuOWRFMlJHRWhDUXRoTmE1SEFX?=
+ =?utf-8?B?d25FNXFDcVdJZzlUdm1KUW1EVlZndkd6a2pnZk1ZQktjNk9ma2JuWnBVTjRr?=
+ =?utf-8?B?S0RwY1hZWWhXL0R4UGhSbnlQYXpSbm9md0daRE1Xa2RQUGNnSS9RK1YrWVNh?=
+ =?utf-8?B?Undpb3lFQTNibnBzaDZ6ZEEzWGxsdDFybGZ3dW5rRTNOTFphRUZPWkJiSlRO?=
+ =?utf-8?B?c3RQUE5FN01zY2RUQlI4cFRFdTRncmY4c2pRMHBEQ1JPd29iVnVSd2pnU0Z3?=
+ =?utf-8?B?UlpwSGpRVlVpLzhobytWUE94UEM0TzR5TWp6aFI4RTdpMkNqSWM0WDR3VlJE?=
+ =?utf-8?B?SDZuOFFXYmlvMGJ0UFdub3g1TnVGaFA2d3YyQ2hIeW9rZVJFTHpIZWZVZDhF?=
+ =?utf-8?B?QjVoSG4raldVQVJYVy84dWx2cjJPSTlBbEFhS0xoelpCa3g0N2N5MUxNVnFG?=
+ =?utf-8?B?VFkxMmRuenJtNldHdEtSaVJnUG1jckhCSmY2dUpONktnZnNWcDBEZVZrRTFN?=
+ =?utf-8?B?L2hJNVJKYU9OWlcrVzdCeTlYbmRQWFpoRVg3bkwwS2dCK3dKWWFLQ2Vadjk1?=
+ =?utf-8?B?clBxUG53MGI3SmJHNUlMaXUzNGZDUnpyc0FHOGlWRnVjbXlGaVBScDcrWCtM?=
+ =?utf-8?B?NUhQUDFUUXBKUzVEbDJ1MFBhT1Y3QmdSSW9VQUFMUmJMWjhJVE1MOUlEMUpZ?=
+ =?utf-8?B?dUg3VktQUHc5ZXNuSHBpTW5SR0FZUlYyT1k3N204L1VFMjRpb1o2L0VQT29w?=
+ =?utf-8?B?QWo1eVBINGVWRE83VFpuRyt3c3Jzd1NrVk96NVkyMXRyZGFrR3ZoMy9MVXBa?=
+ =?utf-8?B?SmtWYktHZHNSdnB6L2RLUFhYUEk2SGdmR0VHVUl4anMxc1Z6UWpjTFl3QW91?=
+ =?utf-8?B?SXY3R0l1Tm1wbU13UENMNjlxcml3T1YwV055Mno2Q1ozNjVlOXM0Uk10RFps?=
+ =?utf-8?B?SW9zT1U0MWJrOU5rcWdHR29BVzJ1MnZDZ2Y4VUpwSTRtcDM4TjZaam1xTzRt?=
+ =?utf-8?B?dEhZekhiTXNRSlpFT1ZubXNjNHdXeHpocVJTblM3UFBCcERNTE0vQWhtVE5l?=
+ =?utf-8?B?eVZPMTlTcUVuQTVIQnhydjgwM3gvRXJmRS9OYkxDTUEvWUZWcWoybFp0bjZp?=
+ =?utf-8?B?Q0JJZWdkckV3N2ZRSFBOOFJQMDFGRXl2RnhpNGdtcEhhOStQajFCUGY5SHhH?=
+ =?utf-8?B?c3lsZWVWWXJnMTVuYjRqdXA4RUV4SUQ5KzVCb1dRUHJLZVZVQ3JDaDhhTXBG?=
+ =?utf-8?B?eVpBVTE3Q2Q5UVR1ZXdVQmhwSUFqMG1xbUxZSFpTb2RhSHRHL3ZDTldlQXNF?=
+ =?utf-8?B?TEJheGxzTVBORmJoM1d5OHpIUHRDaTAwRjA3VDZZL1ZpRUwwcGhpb3M5Mzdr?=
+ =?utf-8?B?VE5UbUNXT3RBblNvRFdkR2hIT3FWL0RUR2MrQjlhMy9VdnRsU25pK2RqSkNR?=
+ =?utf-8?B?YkpTVkc5SUR5bEM1aE5tdFIvRXJDQmEwbHMySlFJbUt1V2JNdjM5c05qc0ZK?=
+ =?utf-8?B?S2djSDl3RzFVOGpYdDltZTdCazZ0NW5PYVNLcFA0M0pOdlFJVlAvRG9sT0d6?=
+ =?utf-8?B?VUZMdmw0Y1pLQy9vWEdNQ2t1NXBZbC9tblU2YU1VdkRWWEZUT21MeGNtMllv?=
+ =?utf-8?B?dm5vQXZGVTVLRkE2YVIxV2xEbXBNTjR6Y3laaE8vc0hsV09hbXFnMENIUXVL?=
+ =?utf-8?B?M0tzSnFDcW5SUEhmckVFczlvZWFQMmpMTDErWnh4N2l3ZEhDajdwNGZiZGtM?=
+ =?utf-8?B?SUYzaTlWOSs3bHhzYXhKcmJkbjVsTnMrVkFyR3pISkVBdm42SVBqdXVLRGZL?=
+ =?utf-8?B?Mk14Q090TE1IRmFSMUdWaG9wc2NuQ29VS2JEckdOTmdWU0lpellDUS9sVFhD?=
+ =?utf-8?B?MVNPdW1FU3hndGRpaXowc2t3TmgvL3R1VTEyU1A1OFFDYkJjdW1mWW9YOGFK?=
+ =?utf-8?Q?dk/QFv51eiu9JbotEA?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5724fef-73ea-4daf-9316-08dee1d7894a
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 18:41:37.3481
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FM+NaJ+CL0Ig7Ibm3W8vGqiKXYS7n4jqlnvrqEQgBKQWQ1CpYRCHOTiLCmU8HfmX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPFC41ACEE7B
 
-On Tue, Jul 14, 2026 at 10:53=E2=80=AFPM David Laight
-<david.laight.linux@gmail.com> wrote:
->
-> On Tue, 14 Jul 2026 21:24:19 +0800
-> Guo Ren <guoren@kernel.org> wrote:
->
-> > On Tue, Jul 14, 2026 at 8:27=E2=80=AFPM Robin Murphy <robin.murphy@arm.=
-com> wrote:
-> > >
-> > > On 13/07/2026 1:29 pm, Zhanpeng Zhang wrote:
-> > > > The RISC-V IOMMU specification [1] permits 64-bit registers to be a=
-ccessed
-> > > > using two 32-bit transactions, high half first, and leaves the sing=
-le-copy
-> > > > atomicity of 8-byte IOMMU register accesses unspecified.
-> > > >
-> > > > Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() he=
-lpers
-> > > > for ordinary 64-bit IOMMU registers. For DDTP, poll BUSY in the low=
- half,
-> > > > then read the high half and compose the register value from the pol=
-led low
-> > > > half. HPM counter reads require a rollover-aware sequence and remai=
-n
-> > > > outside these accessors.
-> > > >
-> > > > This follows the 32-bit access direction proposed by Guo Ren [2] an=
-d uses
-> > > > the generic non-atomic MMIO helpers suggested by David Laight.
-> > > >
-> > > > [1] https://docs.riscv.org/reference/iommu/
-> > > > [2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel=
-.org
-> > > >
-> > > > Suggested-by: Guo Ren <guoren@kernel.org>
-> > > > Suggested-by: David Laight <david.laight.linux@gmail.com>
-> > > > Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-> > > > ---
-> > > > Changes in v3:
-> > > > - Use the DDTP access sequence from [1]: retain the low half return=
-ed by
-> > > >    BUSY polling, read only the high half, and compose the DDTP valu=
-e from
-> > > >    those two 32-bit reads.
-> > > >
-> > > > Changes in v2:
-> > > > - Rework the patch based on Guo Ren's earlier proposal [1].
-> > > > - Drop the build-time option and use 32-bit accesses unconditionall=
-y.
-> > > > - Drop the global lock and use the generic high-low MMIO helpers, a=
-s
-> > > >    suggested by David Laight.
-> > > > - Poll DDTP.BUSY through its low half.
-> > > >
-> > > > Link to v1: [2]
-> > > > Specification discussion: [3]
-> > > >
-> > > > [1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@kerne=
-l.org
-> > > > [2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpeng=
-.jasper@bytedance.com
-> > > > [3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
-> > > >
-> > > >   drivers/iommu/riscv/iommu.c | 9 ++++++---
-> > > >   drivers/iommu/riscv/iommu.h | 9 +++------
-> > > >   2 files changed, 9 insertions(+), 9 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iomm=
-u.c
-> > > > index cec3ddd7ab1..d647b71ebec 100644
-> > > > --- a/drivers/iommu/riscv/iommu.c
-> > > > +++ b/drivers/iommu/riscv/iommu.c
-> > > > @@ -670,9 +670,12 @@ void riscv_iommu_disable(struct riscv_iommu_de=
-vice *iommu)
-> > > >
-> > > >   #define riscv_iommu_read_ddtp(iommu) ({ \
-> > > >       u64 ddtp; \
-> > > > -     riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp=
-, \
-> > > > -                               !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10=
-, \
-> > > > +     u32 ddtp_lo, ddtp_hi; \
-> > > > +     riscv_iommu_readl_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp=
-_lo, \
-> > > > +                               !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY),=
- 10, \
-> > > >                                 RISCV_IOMMU_DDTP_TIMEOUT); \
-> > > > +     ddtp_hi =3D riscv_iommu_readl((iommu), RISCV_IOMMU_REG_DDTP +=
- 4); \
-> > >
-> > > It looks like whenever you read DDTP you're only really looking at th=
-e
-> > > BUSY/MODE fields anyway, so does this actually need to read the upper
-> > > bits of PPN at all? (The spec says they don't even need to be written=
- on
-> > > RV32 either)
+On Sat, Jul 11, 2026 at 10:38:15AM -0700, Daniel Mentz wrote:
+> On Tue, Jul 7, 2026 at 11:08 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
 > >
-> > The motivation is not RV32 compatibility. It addresses RV64 platforms
-> > where the IOMMU control plane can only be accessed via 32-bit MMIO.
+> > On Tue, Jul 07, 2026 at 11:24:38AM +0000, Mostafa Saleh wrote:
 > >
-> > >
-> > > > +     ddtp =3D ((u64)ddtp_hi << 32) | ddtp_lo; \
-> > > >       ddtp; })
-> > > >
-> > > >   static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iom=
-mu)
-> > > > @@ -1501,7 +1504,7 @@ static int riscv_iommu_init_check(struct risc=
-v_iommu_device *iommu)
-> > > >        * regular boot flow and disable translation when we boot int=
-o a kexec
-> > > >        * kernel and the previous kernel left them enabled.
-> > > >        */
-> > > > -     ddtp =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
-> > > > +     ddtp =3D riscv_iommu_read_ddtp(iommu);
-> > > >       if (ddtp & RISCV_IOMMU_DDTP_BUSY)
-> > > >               return -EBUSY;
-> > > >
-> > > > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iomm=
-u.h
-> > > > index 46df79dd549..1b03790fbe1 100644
-> > > > --- a/drivers/iommu/riscv/iommu.h
-> > > > +++ b/drivers/iommu/riscv/iommu.h
-> > > > @@ -11,6 +11,7 @@
-> > > >   #ifndef _RISCV_IOMMU_H_
-> > > >   #define _RISCV_IOMMU_H_
-> > > >
-> > > > +#include <linux/io-64-nonatomic-hi-lo.h>
-> > > >   #include <linux/iommu.h>
-> > > >   #include <linux/types.h>
-> > > >   #include <linux/iopoll.h>
-> > > > @@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_dev=
-ice *iommu);
-> > > >       readl_relaxed((iommu)->reg + (addr))
-> > > >
-> > > >   #define riscv_iommu_readq(iommu, addr) \
-> > > > -     readq_relaxed((iommu)->reg + (addr))
-> > > > +     hi_lo_readq_relaxed((iommu)->reg + (addr))
-> > >
-> > > This seems unnecessary (similarly for writeq() below) - once you've
-> > > included the header, then it automatically provides readq{_relaxed}()
-> > > for RV32 via the non-atomic implementation, and wherever atomicity
-> > > doesn't matter, then as written there seems to be no reason for RV64 =
-to
-> > > stop using the regular arch readq().
-> > >
-> > > Not that it makes any difference to me either way, but I don't see an=
-y
-> > > real issue with the spec - if software *may* make a 64-bit access to =
-any
-> > > 64-bit register unconditionally, then that can only imply that hardwa=
-re
-> > > *must* be able to accommodate RV64 software choosing to do so, and
-> > > therefore must support *both* 32b and 64b accesses in general, except
-> > > perhaps on RV32-only systems if software could never make 64b accesse=
-s
-> > > in the first place. If 64b single-copy atomicity is not
-> > > required/specified then it should be valid to achieve that by just
-> > > sticking a downsizer in the upstream interconnect to split 64b access=
-es
-> > > into 32bx2 incremental bursts.
-> > >
-> > > If do actually you need this as an erratum workaround to support
-> > > specific hardware which has misinterpreted the spec then I think you
-> > > should be clear about that. Otherwise, adding speculative "workaround=
-s"
-> > > which (slightly) penalise hardware that got it right, while inviting
-> > > future hardware to get it wrong, doesn't seem like the right way to g=
-o
-> > > at all...
+> > > The smmu_domain is only used for the tgsz_lg2, can’t we add that
+> > > directly instead? Decoupling the invalidation form the domain would
+> > > make it easier for KVM to re-use the code.
 > >
-> > The only three 64-bit registers the driver ever touches are DDTP,
-> > CAPABILITIES, and MSI_CFG_TBL_ADDR. None of them is on any
-> > performance-critical or hot path. Even if native 64-bit MMIO accesses
-> > were used, there would be no observable performance benefit.
-> > Therefore, this change does not penalize any hardware.
-> >
-> > Regarding the specification, there remains substantial disagreement
-> > over whether 64-bit accesses are mandatory. The relevant sentence uses
-> > the word =E2=80=9Cmay=E2=80=9D (=E2=80=9Cmay be accessed using either a=
- 32-bit or a 64-bit
-> > access=E2=80=9D). Per RFC 2119, =E2=80=9Cmay=E2=80=9D does not express =
-a requirement. Because
-> > every existing implementation already provides working 32-bit MMIO
-> > access, we believe the safer and less controversial choice is to use
-> > the portable 32-bit path via the generic hi-lo helpers.
-> >
->
-> There is also this clause:
->         The 8-byte IOMMU registers are defined in such a way that softwar=
-e can
->         perform two individual 4-byte accesses, or hardware can perform t=
-wo
->         independent 4-byte transactions resulting from an 8-byte access,
->         to the high and low halves of the register, in that order, as lon=
-g as
->         the register semantics, with regard to side-effects, are respecte=
-d
->         between the two software accesses, or two hardware transactions,
->         respectively.
->
-> I'm not sure what the relevance of the high-low order is.
-> It could mean, for example, that a read of the high word can latch the lo=
-w
-> for the next read - so that you get an atomic 64bit read.
-> That might be ok if hardware splits the 64bit read, but if software does =
-it
-> it isn't going to go well unless the driver locks all (and it might be al=
-l)
-> slave accesses.
-> In the worst case there might be a single latch for all odd word reads.
-> Writes could be worse!
->
-> Hardware can be that broken.
-> I remember a PCI slave that terminated reads requesting 'cycle rerun'
-> and then assumed that the following reads would be repeats of the same
-> read, not reads of a different address by the other cpu.
-> It didn't do writes properly either, I've forgotten the exact details
-> but I think a second (third?) write overwrite some latches.
+> > Sure, done
+> 
+> I downloaded a newer version from your jgunthorpe repository, and
+> found that arm_smmu_tlbi and arm_smmu_domain are using the data types
+> unsigned int and u8 for tgsz_lg2, respectively. Can we align on a
+> single data type?
 
-This is precisely why the specification leaves the single-copy
-atomicity of an 8-byte IOMMU register access UNSPECIFIED. If a 64-bit
-MMIO register were implemented with atomic semantics, 32-bit accesses
-using lw/sw might require implicit mechanisms, such as latching half
-the register for subsequent accesses. Such mechanisms could lead to
-exactly the kind of interleaving problem you described.
+Yeah I updated it to use u8 in the structs, but at least iommupt has
+the general style to use unsigned int for lg2 type locals that I will
+still follow there.
 
-This is one reason hardware may favor straightforward, latch-free
-32-bit MMIO transactions. The example you mentioned further
-illustrates the robustness of treating each 32-bit MMIO access as an
-independent transaction without relying on hidden latch semantics.
-
-Using 32-bit MMIO accesses for DDTP, CAPABILITIES, and
-MSI_CFG_TBL_ADDR in this driver introduces no meaningful performance
-overhead and provides broader compatibility without disadvantaging any
-RISC-V IOMMU implementation.
-
---=20
-Best Regards
- Guo Ren
+Thanks,
+Jason
