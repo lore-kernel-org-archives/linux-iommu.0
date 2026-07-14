@@ -1,81 +1,79 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10C033BA253
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:00:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C56146AEDF
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784034049; cv=none; b=GyN2CHNQX4TLXkTZ+geWqlt3AFpMSe7wjYWnzZIJAqEPtyu+nnKxcOeWhr3KfpbXl9CXu6cvGyJ+F435VSsRhQM46Ozy3hhPP0iDCVBwOx75kJf/zU0nwIPX18bwhTEDjW4PCh3NFb33i02hdVm+RB30YUJYY97E+cC+W2AzIBU=
+	t=1784034426; cv=none; b=kvf/OCrcKX0jYgz0QnB9NdZr6Ci5/ZfredfecuddAQF4TeL5bDQY2pLY00TZqp6lr6aGyXBI+MlQPlkQSwWCJqe4jV62qn/w/IjPB2R5vc+AoQFahJXbtSgsYlCCbZfW324uGG1i5+eMXzac6iviimDSJO+eLlRLAjIefitFFKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784034049; c=relaxed/simple;
-	bh=6JVdvVNVt572PUZ7EuMOb+NxVezh363Z8fGIp8Tm+bw=;
+	s=arc-20240116; t=1784034426; c=relaxed/simple;
+	bh=V44+/Ji704/zeo6ZHmgziwcNG650omqFD+V0jFjANf0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pkMxUh5IsxzJxUO25ZbKYmSOgmB9ovaACmPWbKZmyqISE6BMGGPzb9vqvz43hdqSFBSy/KXWTiUK2c1cYQonWOaN2Nh4yWlas1gcYQkH2kUVKadB8w48F8g1X5JbuBjiW4wTNdQrkmjI+b+hdk1YQuArIBWn21+NVcthfDeIf9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UBry9/Im; arc=none smtp.client-ip=209.85.160.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=KE20FNNGto+k3S/AANU9khHX+bYWFkcrivd+B34Gc3Dh64FPioLjvaECsZomVMSsiO2XxaMAQ79XARmdMz7Mf/j+PsnEJNoSeNEVMf5RfYhbA0142xgzTOZ/zmaL4aZZmzsKg451H9TSPlciel04RjAofz89wqS+tV8a6RITwwQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sBVxG9A4; arc=none smtp.client-ip=209.85.214.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UBry9/Im"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-51c10ed63c0so274431cf.1
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:00:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sBVxG9A4"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2cacef7d299so119585ad.1
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784034047; x=1784638847; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1784034424; x=1784639224; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=uIGZ/z4hY5ZNRt8p1qIWG745rMH9lv/GU7QvdqB/JiE=;
-        b=UBry9/Im2exajT94zL34zx/1sMwlf+AGVJ7CiFBUeVlrG5i4QC7P2Qp++8ufb2WfSE
-         oW4+hzz2oL8WqHO5gClhMBlElX7c6qK3QbqZ1UkskjaKVHhpB4hr4LZIT/uyDkiCVQLz
-         LScX+Mq3Za5w6z/uN/gJP1EgLfHKLIlbqFYN7/piwBpQqeUfCC3XI98I+zCmzP3yZx7V
-         yLyKjh5CWXN5CsRncpYbDafHGueGoFK7XLz4waYYQkqNOUp9VCFO2HhGawB8nJXbF0PG
-         pZUIdjsiCyaxhkvJ/so5dr4eWLElQy8mkqncRdzjdckYArIdNKozZRCyEIcGsPInGUuE
-         3lJQ==
+        bh=34EVAP3xEJbniYxw7KzDG6VhCOQxXOAP3siy7t1YUHk=;
+        b=sBVxG9A4BH/cHW5lRCLD4ErYXbgLA1jwtP4HCsVXd2RD8AyLpYvhUopeJwgrX3srKH
+         3fcIS3SaeIFad1AX1spiGWHvl9UvLXwzEEG5CVPmeqgPT5iEjIbmrmG5WHBJfK/NFGja
+         FOlChIAnjIXHmgEUpLrhMxujvanrwTiV43WNdro6wf9fF0FIMk4RDkQyhQqrcI39oUCa
+         JQvBIFX08Byv0HsGhlTt6qbN+tZpeHomsmcnHW+ibj9ZUVVU4Muvv9hGUpTVQcq350a6
+         kYPS8m9ar48XwSD00j1UYOsPxSs/7S4bMBhMm6BkGG/Swy1htiJJdK625cpZ/yZH2b8p
+         byVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784034047; x=1784638847;
+        d=1e100.net; s=20251104; t=1784034424; x=1784639224;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=uIGZ/z4hY5ZNRt8p1qIWG745rMH9lv/GU7QvdqB/JiE=;
-        b=kAD1bv6uqG9EAu88t/3aMuA7Qodnu05ki5PXZuWExtKpa5ydXl18/M7EL9+yvVoUmB
-         ODUFBqmiY6qm9++THpGt2N74f1DYuIhUqjPCjDGp/MGdvdsxNXvKmvl9I4WrhIifITLR
-         YwBSynsjjRSeyn533Qf4CRuLixRlDRT6ey8KqEqDMRagKeMV7doNoX9P/XcffAw+83ME
-         94Cy/87+G9Ungul5BBjiEb+dnNHAwWNauVKLo9ND9eOb84G5xxmfIMQL4xqS/eKdWOou
-         z9njW4O5vL/pv+Q4OVMnqYQe2tH8K2hltm4nkYk4nV5Z+JCNhrNGunVn+mjgFRZjODBt
-         p4VA==
-X-Forwarded-Encrypted: i=1; AHgh+Rob7L087wrqn3wAfbBYqlV71buNqJJXNpw9XlXm9c8Vu2hd2O+2qtup2rgiTVaxVk8qW3dVRg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz6kJItrELzcuyGxJD5pDIkYpbNFgsiorxhan2x2jLh7XG3lP58
-	9l8SldwA9sfYqVJI9axr8iVEfTe1JdEiqKbueinS3XFqvQfDJ65HVxb24KtwTZD7vw==
-X-Gm-Gg: AfdE7ckCdtZXNoOkqhlUGw5FFVaqja3d9sbeba5jOXwicaIAktc8HGARPjilWCIge3V
-	Bayp5wi0ht21DCTTJ1XgfdBkbQB9fNGwuGfDal/lEX/SDpeN8T1ubwbk3XmMfu0rS6B320nE2de
-	3XNZdTk5wbg7RgBcO/P+RCkCJcfHP0VEgm/MmCgl7gVDHaOAv3RVqN1wdrx8gZCZfdQbwQ4Z/6W
-	Fqv59zbkTGIZzU5t2NYgR9CXnJ+iCuD4759I5UBIt5FZkCyMcjjUchPEawdgRVgSKBp34IpuMOd
-	QBLDPlDVzsCIyOnoF7KKY79W68WDSmsHOribZ0NY+bDn/Xt9rqEDL5bhMx1L05cmWkI9AjlWJuj
-	J64e8XPHDuvpzq6UnfMkxstbuhGtlFZt/sdB20pcc8Mk8LTjnhIJif90pvzrtgWXp51ondtFqsi
-	/+EBuPKGQl5nX81p3drah157ETLz+vQXipuFg92oSGUWOMduc=
-X-Received: by 2002:ac8:5d56:0:b0:517:5c70:46bd with SMTP id d75a77b69052e-51d7bc73cecmr14531951cf.11.1784034043910;
-        Tue, 14 Jul 2026 06:00:43 -0700 (PDT)
+        bh=34EVAP3xEJbniYxw7KzDG6VhCOQxXOAP3siy7t1YUHk=;
+        b=MNVK7kq5lh1QMjzcRNWPPL304fUkaNEWPX9TpTISAixmssKWC9HdZCASX+wWzvhubA
+         AlB4kSsn3gZX4vrenBbtVmqN0/PSjsRMUvPQn7DZvQGene0SK84AmzlJo+ceumOnAnkF
+         LmvXNuBQ1hY8eFQGh4j8LgiTZOzCUPrABkNUocoHCQJQ8Z3j8RyH+E/D0ew++JnKSTNS
+         Y5zam3FQ/sxx6sappw/qsZVoJa7Q8vbax+1fxHlAVWD4NDervUtFjdgnjNdyRT1vnOUn
+         5MXSnmcWOgJchjNdCl3Rxh6uXLTMy1ycoWZvrIpJj5vTU6mS4KwtbXYnV5mPs7ZbOb+h
+         58NA==
+X-Forwarded-Encrypted: i=1; AHgh+Rp+59aJ3jnwF1Ytfl+ebxcvjA8/ar7OjyriXVgwh8iVP8vOBJySy/shaETOwtFOZyIoRmLFew==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwFS6DAyRCirx99Vw8i0l990Xj9NQzMrFXIqa7LrkQmvtntW6kO
+	rScbi0YcDtr/VE3UtPiYkRK48ukIcY3uZTmwtMi8hmGulKsGdsycEnAPr1KjGZNNLg==
+X-Gm-Gg: AfdE7ck2klxNBaW/4JP5XoTk8p1O9ckR/4z70GgUH6YtfdmR1IZ/wvUS0GHe54se2Ou
+	qeSlf9xeVHKe3tzkeHAqX0xhO1+7O8aKTBbJL8QHglgoIXwdrhAaR9b4omXEQfg1wW/Cbk22u31
+	EHFRTUXF6iesJFp/pqR0ypLGr3IJTXeEy5VLVRbCPcN0mYFOxNNUOXlz4pUoI+xJBrZvAXaK10D
+	AVnRhzEbIrujxxQ6X5DM0/b6IUko2gDoM+1dMOBV40btuAb62/l656CozaxwWvMoq7Ki5j9d/e5
+	tyfcjxFgU7DRV3uYOTB2/DZCNAw38qNKDyKwceB/xohOST4j5Bh/xkuIcWv4OBvKpRURPsg8Htd
+	k2zfZpepFTQUmBug6f51zv93nUu1/8OUiiOYiUeFhMpfKbwhf3N2Z5NDlfgJWUCE7WNMf95HF6s
+	Vm1GTLPuSrjF1JvQfX17oab16Ob6SmBZB/TZsIuNP/ckIM1+s=
+X-Received: by 2002:a17:903:1ac6:b0:2ca:cbe5:c3af with SMTP id d9443c01a7336-2cee169252cmr5952975ad.7.1784034423917;
+        Tue, 14 Jul 2026 06:07:03 -0700 (PDT)
 Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bface91766sm6434972e0c.10.2026.07.14.06.00.40
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bdb775sm116995885ad.2.2026.07.14.06.07.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 06:00:43 -0700 (PDT)
-Date: Tue, 14 Jul 2026 13:00:36 +0000
+        Tue, 14 Jul 2026 06:07:03 -0700 (PDT)
+Date: Tue, 14 Jul 2026 13:06:57 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
 	David Woodhouse <dwmw2@infradead.org>,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/5] iommu/arm-smmu-v3-iommufd: Reject unsupported
- bits in invalidation commands
-Message-ID: <alYy9GMeIPMWeD-9@google.com>
+Subject: Re: [PATCH v3 3/5] iommufd/selftest: Convert cache invalidation
+ mocks to the core array loop
+Message-ID: <alY0ceR2leyRxXTy@google.com>
 References: <cover.1783539724.git.nicolinc@nvidia.com>
- <194fec44b30b7b4233d218686cd76d63208932ff.1783539724.git.nicolinc@nvidia.com>
- <alYC3bNbXY9l0eVn@google.com>
- <20260714121451.GJ674038@nvidia.com>
+ <4383c0afeba9795c9ae312826443fd7d5fc3fb58.1783539724.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,34 +82,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260714121451.GJ674038@nvidia.com>
+In-Reply-To: <4383c0afeba9795c9ae312826443fd7d5fc3fb58.1783539724.git.nicolinc@nvidia.com>
 
-On Tue, Jul 14, 2026 at 09:14:51AM -0300, Jason Gunthorpe wrote:
-> On Tue, Jul 14, 2026 at 09:35:25AM +0000, Pranjal Shrivastava wrote:
-> > > +	u8 ttl = FIELD_GET(CMDQ_TLBI_1_TTL, cmd->cmd.data[1]);
-> > > +	u8 tg = FIELD_GET(CMDQ_TLBI_1_TG, cmd->cmd.data[1]);
-> > > +
-> > > +	/* NUM, SCALE and TTL are RES0 when TG == 0 */
-> > > +	if (!tg)
-> > > +		return (range || ttl) ? -EIO : 0;
-> > > +	/* TTL == 0b01 with a 16KB TG requires SMMU_IDR5.DS */
-> > > +	if (tg == 2 && ttl == 1 && !(smmu->features & ARM_SMMU_FEAT_DS))
-> > 
-> > I agree we must check this but I'm a little confused, How is a user /
-> > VMM depending on the IDR5.DS bit today? The IDR5 is exposed to the user
-> > via hw_info AND in the uAPI documentation block we explicitly mention 
-> > for struct iommu_hw_info_arm_smmuv3 the following valid fields for IDR5:
-> >
-> > idr[5]: VAX, GRAN64K, GRAN16K, GRAN4K
+On Wed, Jul 08, 2026 at 12:44:18PM -0700, Nicolin Chen wrote:
+> The vIOMMU and the nested-domain selftest invalidation mocks each used to
+> walk the whole request array on their own, with the vIOMMU mock even
+> allocating a buffer sized to the entire array in order to do so first.
 > 
-> Probably soon we will add DS to that comment and it will be fully
-> backwards compatible so a new VMM following the new guidance can just
-> read DS.
+> The iommufd core now iterates the request array itself and re-invokes the
+> op with the not-yet-handled sub-array, so handle just a single request per
+> call out of the front of that sub-array and report one handled entry via
+> the array->entry_num. Drop both of the loops and the kzalloc_objs() in the
+> viommu callback function, and keep returning a success for an empty array
+> as a probe of the selftest data type.
 > 
-> Thus we can't have any kernel release that doesn't work with a VMM
-> following DS...
-> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Assisted-by: Claude:claude-opus-4-8
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+ 
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
-Ack. Understood.
-
+Thanks,
 Praan
