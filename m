@@ -1,61 +1,63 @@
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3A124657DA
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3629247276E
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784034437; cv=none; b=H3FrAYuLGToofVqzWP5HkxpAbwgzZv5CNRSf74l4+7/qM/x5+oDvx0dl3TqbjaQbxfgYXIiV/AWJV6eAvG1xPdWmbTNnTRwQFe9joNcVWq3pjJk+ZBb+x/mZ5chxNGi5Al10K7i1gdrTObNtOMtXnFPiiPsi9tZohQtMaXZCq5c=
+	t=1784034447; cv=none; b=MeqGfIRtKpVdVDikBjc3kbAeCxVKuNVXXty9uBH4lMZO1g4+fgxcE/WumQBZB3LBQ/z4CsWJithFmw9SfYQdgjoGVmRW88LrjO8pZ61BvMa6aZ/A2/FPD6KzuaFQp1mA/DG/78qKMYf89wzBj0Vx+vZwRQBHfXzRx/t0tVtM55M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784034437; c=relaxed/simple;
-	bh=aWDiGhV/lDLqtQxlDd4E/xz/jeCA3Oakf6qbhhaXsOw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UU/VdZDprRPsAv/qWPIgljG4Y9EX76mbzlX1dAaMltjwjc7BuFwfQP1lLPP8zbCRUTr/XQdCEpeQZl55oG0ryzRfezh0lovDtFeNhHds4YZacisamL/JBh67fpW2c0FVwIn78wLbeEMFU/sa9uKz+dqYFoa0rupwAboYgu6R0V0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=RiTLAZJg; arc=none smtp.client-ip=209.85.210.41
+	s=arc-20240116; t=1784034447; c=relaxed/simple;
+	bh=K94VRwZaVExISaYH+2jjkBkd/38Sf/HsRBDFWlaligk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=suBRcXKeOBaNiYLza4xyoET/z2cBRn2a8FBZcNzdGL5CMGSRusdem658yPaVpBYhUpkjJb1lW/uxFnt3X3BAhJnNPjUuy2io8C4+dbHhL4cVGISzCTNCj6ueROF9b8VPa9Z0bD+FlxfMdMVj2OISkILDolpN6sHmaJXCyNL10ws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=hX3ywesa; arc=none smtp.client-ip=209.85.210.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="RiTLAZJg"
-Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-7e9ecb1e13bso1675162a34.2
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="hX3ywesa"
+Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7e9d7464b71so1392908a34.0
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1784034433; x=1784639233; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Zu2x7nRWgqnkpJB6Jzio2t+71M646t61MeaMLyeHe/o=;
-        b=RiTLAZJgyBe7VbpK3w+lD4FS6Angz52RAXYYtMvnfW0VLYT8MKpz2khr4B2RuaRioL
-         71ydZgMb0EGK22gkDF0dCIZZ/8E2vp/8l+8Sts2hETbyor9SpBV9jGyOcnpoC6RBY8BI
-         mNplUE2brz36chjnlZOct7TXcfTXnBTgdUY2CnVnvvGqQRmQGNclzIrQthonRn9NvPx5
-         GV5TqA6Iw1YYcoLQFntVVzStmfCsKfaoNBf0R66idAnTovT/4aSvmPOhsP2pcy+ZZUlW
-         yPPGfKmMGDiFVfklycQkJ2V5cvOnTO2ImrBUhkfSgLUdULzdkNkFQCkv18MVHtqYXshX
-         SibQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784034433; x=1784639233;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=bytedance.com; s=google; t=1784034444; x=1784639244; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Zu2x7nRWgqnkpJB6Jzio2t+71M646t61MeaMLyeHe/o=;
-        b=WWwbPqFukNzrBbKdBDCrwlvI8Ajju54f9F6I954DhrJ+ZSUU9j1etY7TdDn98Afpme
-         i0qdriYAnLShuh/On8h9ZCYBQhxCl3tcqkwDKyQ+3grgxuqjZkvewI9vHhpEgAsaR/HF
-         xi4i9zuuwT5dPta/6PsMRh/6pHSH5Vgc+buRMKtCmJpxWy+dDFM3uhixzC62jCoouYbk
-         c6zV/BGs3c+1qAzIivzu3Pw4ggtPALLO+f2uhc3xg74rW329M6ifPN/8KzOgkDWcI0sB
-         Klf6Eps9tAWJb6p87ZPhdKz+jqsGlxUP2JPVxSw7Tc2/H1ouOjmp6YhPGnaO7tBbx12W
-         OMBw==
-X-Forwarded-Encrypted: i=1; AFNElJ/k7zA2aT0xBaUCay2e9pK/j2jC98VYu209lZQI9wM2rnnROnctfFQll3DM8Ph9zH7iUI2qHw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yytk/jAQNdt/3VZGdPj15diEQGUYD+l0/Y6+jxDei33zHQy7ZdH
-	YZEjsE7NlN4WNMGKQoEbK4abcHQiC8DvQ8XgxHLYR3uD1/Caep647ybraFgx52564/c=
-X-Gm-Gg: AfdE7cmySDI8DcaRFY8gCtwYcX6B6fkwVqe29Y7qOmxqoRN7/Py+56zs9O3caOxb8I0
-	n91gc4A4mGzr1zdk+M79jZlewkdfxA2F0vJiPpOoGqjZjRmuBkAvj4z3JslxAqaVdvsjBXBKhlx
-	VFvOBAHrXjDlfFXm0E5+dB//Ar5Xfkg/bb3kKjj6PX6aZHkhlLW0VvyK4CABhNEaI05WyCTrVK6
-	OJ2Zg/LBdK0x+cVtX2aO+yQ2kWkGL9MzyoPJ+E2lBFhFTIZw4Z5WbDue9uVRVECAn/TAWAAGm4d
-	cCOxQ7JMUVvFPIWf3ppXmmH5sPtZzLGlZb1E/NKZgKLhNlx9PNc93eosWBfSJo6pSEuU+zs72PZ
-	m1djow1JnZoNydnao24u6saF20EEsqSLlYamhKvPZs9fO6IeYLivv4Ak8wDMMe6Jvmvu+MGtijr
-	+JHWOUiJhK0qRqYdfshRbBXcyRbyfSyQflNQe2I8cJ4mwJrRFijEGLnslwJiSGXA==
-X-Received: by 2002:a05:6830:4412:b0:7e7:45f:ce3c with SMTP id 46e09a7af769-7ec096ac473mr7449408a34.14.1784034432564;
-        Tue, 14 Jul 2026 06:07:12 -0700 (PDT)
+        bh=SD1E2b021BNT8K5FqPsuJFYVGZ1yPqvbXL/PhK3jvMg=;
+        b=hX3ywesafbkedC3pEn+O3xXYHHuY0RSeoEJ8g+ST9afvVpCHhdRMIdv108pFoiR2E1
+         7kxq1NBNcguDT/Mm/0lOWmSFIhR8+Y85lOmo9soYqZcff0KbEqVokrowzDsq0zmIKnRs
+         3VJP1eiVvBqSdgWNRXhFpH48EuUc2GR38WN6t7GELxlw83FRC4/rkk98GuVtGD/e8v5j
+         JRRzEtra8Rc9B//YJnZpO2ueuFBn3n1uT5ZB6XumJOFDql1+LYLbsktgJCOJwlbb+ti+
+         r7bhrK4EjLNuP6/9sxwj2FPw9UUMiaDumhb410ATNk9E+1fxOHJ7ekCrtBwmsHUu8ctd
+         wT+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784034444; x=1784639244;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=SD1E2b021BNT8K5FqPsuJFYVGZ1yPqvbXL/PhK3jvMg=;
+        b=j2HIlZ9vzaOh3dnR8oA7ctRF6XoSLZ0XcrNwvQdtJY3KSMRbcZfflaaAHI//OtwbWt
+         Z1t7DYqZ1oIxt+PvqmwF1g5a8rWTJm/WL5dGFl/gF5RbGy1TXxbWmVxthU8X2Cx24wGz
+         aXMDIGvo1KdRRnoZ1egUJWGBCCh2BKlx2KIkvQ40J2FuENyK+LvX/tATabg2XwRiqWq6
+         q5LoSGE4qP1q+E5r8MIUZpCJo8vx0khTMsLFv4eP7yQWDN/pBWTcoeWFbVRnhrmeWbux
+         /oJ78RJT5+bTyoT/v6sobpZVoCHdaeoWqB12v87ghCUhf+5dPPYAZKBHxJXsMpVpsdHK
+         bMqg==
+X-Forwarded-Encrypted: i=1; AFNElJ+wzSM1Xjp9RuBiohmo+qal3gp7jb6TCRBHs+CDfmlKN8uzkxq2q3qxFRK5Dgf6Xvs1SseLug==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlNwdmr+9XcVA4+4yd7HS338ipeFYpbAwOD0/IAC7PCutDoEXH
+	RLwQ8BnS3C900ZUVqmAk1qS57Jc2z93YO1K5rZ77MV9Oj0kyqETnbpjihuCbBQVlMCg=
+X-Gm-Gg: AfdE7cmN3ca9COiLKM+2nn7kOcO1ZNuleqPs+DSQvchZo4mnTGL1m3kqSGb2gsHcv0n
+	LslU92l9LRWPSB0MFokEp/K1zra1AhfstiCyIhhHmbPxNpMeoSMdcajt6cD/QZyEPqvtKZjb0n3
+	V+X+oSFPGridmZOLcjlJoBD00xe5NJyfQQx9cpds5v5FsaiTxkE6JWkrIxFzYOwYjgwQnsRVMMQ
+	hfB360dDY5TqkRshZkil4JZZ61Nzf0mxm0gNjphiIDDJM3vYNbLEXzu72BQNiURWZnOhUfRl264
+	ohHOHHdmHpDmO8yt/QFDXi5eFlfFYTwHFWryQTGHLpUHjpHZAyk0HpWkkFvH/p5ZRLBTiTTO2OD
+	yvyDM+WtIdHATtaUouN1atwyTHHjLzhaHaRZtRFeGxrldfJjI8VGZV54c/3+eMqq93CXzyBBY7z
+	LGj51jvEAwsukw+P8V4mWDyAIuqUgO1PWeLiuz0sOj7EeFrfRYAoUuEH3lfllb0w==
+X-Received: by 2002:a05:6830:4182:b0:7e6:c9eb:535a with SMTP id 46e09a7af769-7ec4a768626mr991961a34.6.1784034443908;
+        Tue, 14 Jul 2026 06:07:23 -0700 (PDT)
 Received: from FJ7FR2JRQ3.bytedance.net ([178.93.176.7])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcab8efc3sm14657738a34.0.2026.07.14.06.07.01
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcab8efc3sm14657738a34.0.2026.07.14.06.07.13
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 14 Jul 2026 06:07:12 -0700 (PDT)
+        Tue, 14 Jul 2026 06:07:23 -0700 (PDT)
 From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 To: joro@8bytes.org,
 	palmer@dabbelt.com,
@@ -83,10 +85,12 @@ Cc: will@kernel.org,
 	linux-doc@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	x86@kernel.org
-Subject: [RFC PATCH 0/7] riscv: iommu: Add QoS ID support for resctrl device assignment
-Date: Tue, 14 Jul 2026 21:06:50 +0800
-Message-ID: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
+Subject: [RFC PATCH 1/7] iommu: Add group lookup by ID
+Date: Tue, 14 Jul 2026 21:06:51 +0800
+Message-ID: <20260714130657.46963-2-zhangzhanpeng.jasper@bytedance.com>
 X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
+References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -95,138 +99,263 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This RFC extends RISC-V CBQRI/resctrl support to external requesters
-behind a RISC-V IOMMU.
+Add iommu_group_get_by_id() so callers can resolve an IOMMU group from
+the numeric ID used in /sys/kernel/iommu_groups.
 
-The RISC-V IOMMU QoS ID extension associates a resource-control ID
-(RCID) and monitoring ID (MCID) with IOMMU-related memory requests [2].
-For a translated device request, the IOMMU obtains the IDs from the
-device context translation attributes (DC.ta) and supplies them to the
-I/O bridge after a successful translation. The bridge and downstream
-CBQRI-controlled resources can then apply their existing allocation and
-monitoring policy to the request.
+An ID lookup must keep the group object alive without also keeping an
+otherwise empty group active. Embed the devices kobject in struct
+iommu_group so its address remains valid until the parent group is
+released, and return a reference on the parent kobject to ID lookup
+callers. Add iommu_group_put_by_id() to release that reference and
+iommu_group_is_active() to detect when the devices kobject has become
+inactive.
 
-The series is based directly on Drew Fustini's v4 RISC-V Ssqosid and
-CBQRI resctrl series [1]. That dependency provides CPU-side QoS ID
-plumbing and CBQRI-backed resctrl support. This series extends the same
-resctrl identity to device requests translated by a RISC-V IOMMU.
+Serialize lookup against group teardown with iommu_group_kset_mutex and
+only return groups whose devices kobject still has a live reference.
+This prevents a concurrent lookup from dereferencing a stale child
+kobject while allowing external users to discard bindings to empty
+groups.
 
-The RISC-V names map to the existing resctrl identifiers as follows:
+Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+---
+ drivers/iommu/iommu.c | 107 +++++++++++++++++++++++++++++++++++++-----
+ include/linux/iommu.h |  17 +++++++
+ 2 files changed, 113 insertions(+), 11 deletions(-)
 
-    resctrl CLOSID  ->  RISC-V RCID
-    resctrl RMID    ->  RISC-V MCID
-
-Userspace first creates a resctrl resource group. The new "devices"
-file then assigns an external requester to that group:
-
-    userspace
-       |
-       | mkdir /sys/fs/resctrl/<group>
-       |
-       | echo "iommu_group:<id>" > /sys/fs/resctrl/<group>/devices
-       v
-    generic resctrl devices file
-       |
-       | (closid, rmid)
-       v
-    RISC-V CBQRI IOMMU binding backend
-       |
-       | (rcid, mcid)
-       v
-    RISC-V IOMMU DC.ta.{RCID,MCID}
-
-The "devices" file is an assignment and membership interface only. It
-does not describe a new resctrl resource, schema, or monitoring domain;
-resource policy remains in the existing schemata and info files.
-
-Common IOMMU helpers:
-
-The userspace ABI names an IOMMU group by the numeric ID already used by
-/sys/kernel/iommu_groups. Patch 1 adds iommu_group_get_by_id() as a
-narrow, reference-counted lookup for that existing identifier.
-
-Updating a group also needs stronger iteration semantics than separate
-iommu_group_for_each_dev() calls can provide. All devices must be
-validated before any device context is changed, and group membership
-must not change between validation and update. Patch 2 therefore adds
-iommu_group_update_devices():
-
-    lock group->mutex
-      for each device: check()          /* may fail, no state changed */
-      for each device: update()         /* non-failing callback */
-    unlock group->mutex
-
-The helper contains no resctrl or QoS policy. It only provides an
-all-or-none validation boundary for a group-wide update while keeping
-IOMMU group internals private. The RISC-V IOMMU QoS code is its first
-caller.
-
-RISC-V IOMMU programming:
-
-For translated device requests, the per-device-context QoS IDs are
-programmed in DC.ta. Active contexts are invalidated after an update so
-cached translations do not retain stale IDs. BARE mode cannot safely
-represent per-IOMMU-group assignment because only the per-IOMMU
-iommu_qosid global default is available, so group assignment rejects
-BARE mode.
-
-The RISC-V IOMMU also has a per-IOMMU iommu_qosid register. The series
-exposes it as:
-
-    /sys/class/iommu/<iommu>/qosid
-
-This sysfs attribute programs the global RCID and MCID used for
-IOMMU-originated DDT, CQ, FQ, PQ, and MSI accesses. In BARE mode,
-device-originated requests also use these IDs. It is not a resctrl group
-assignment interface.
-
-Open questions for this RFC:
-
-  * whether a common resctrl "devices" file is the right ABI for
-    associating external requesters with a resource group;
-  * whether iommu_group_get_by_id() is an acceptable narrow common
-    helper for resolving the numeric IOMMU group ID passed through that
-    ABI; and
-  * whether iommu_group_update_devices() provides the right common
-    contract for checked group-wide updates.
-
-[1] Drew Fustini's CBQRI v4 series:
-https://lore.kernel.org/linux-riscv/20260706-dfustini-atl-sc-cbqri-dt-v4-0-e75c20201d64@kernel.org/
-[2] RISC-V IOMMU QoS ID extension:
-https://docs.riscv.org/reference/cbqri/qos_iommu.html
-
-Zhanpeng Zhang (7):
-  iommu: Add group lookup by ID
-  iommu: Add checked group device update helper
-  resctrl: Add a devices file for external requester assignment
-  iommu/riscv: Program QoS IDs for assigned groups
-  iommu/riscv: Expose global QoS IDs in sysfs
-  riscv_cbqri: Assign IOMMU groups to resource groups
-  selftests/iommu: Add RISC-V IOMMU QoS smoke test
-
- .../ABI/testing/sysfs-class-iommu-riscv-iommu |  27 +
- Documentation/filesystems/resctrl.rst         |  26 +
- MAINTAINERS                                   |  12 +
- arch/Kconfig                                  |   6 +
- arch/riscv/include/asm/qos.h                  |  28 +
- drivers/iommu/iommu.c                         | 140 +++-
- drivers/iommu/riscv/iommu-bits.h              |  15 +
- drivers/iommu/riscv/iommu.c                   | 419 ++++++++++-
- drivers/iommu/riscv/iommu.h                   |  22 +-
- drivers/resctrl/Kconfig                       |   6 +
- drivers/resctrl/Makefile                      |   1 +
- drivers/resctrl/cbqri_iommu.c                 | 276 ++++++++
- fs/resctrl/rdtgroup.c                         | 206 +++++-
- include/linux/iommu.h                         |  30 +
- include/linux/resctrl.h                       |  45 ++
- tools/testing/selftests/iommu/Makefile        |   2 +
- .../selftests/iommu/iommu_qos_smoke.sh        | 649 ++++++++++++++++++
- 17 files changed, 1886 insertions(+), 24 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-riscv-iommu
- create mode 100644 drivers/resctrl/cbqri_iommu.c
- create mode 100755 tools/testing/selftests/iommu/iommu_qos_smoke.sh
-
-
-base-commit: ab754eba620f5a66e7277b7b2d0e706aa7743e8a
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index e8f13dcebbde..da269d10f6bf 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -40,6 +40,7 @@
+ #include "iommu-priv.h"
+ 
+ static struct kset *iommu_group_kset;
++static DEFINE_MUTEX(iommu_group_kset_mutex);
+ static DEFINE_IDA(iommu_group_ida);
+ static DEFINE_IDA(iommu_global_pasid_ida);
+ 
+@@ -52,7 +53,8 @@ enum { IOMMU_PASID_ARRAY_DOMAIN = 0, IOMMU_PASID_ARRAY_HANDLE = 1 };
+ 
+ struct iommu_group {
+ 	struct kobject kobj;
+-	struct kobject *devices_kobj;
++	/* Embedded so it remains addressable until the parent group is released. */
++	struct kobject devices_kobj;
+ 	struct list_head devices;
+ 	struct xarray pasid_array;
+ 	struct mutex mutex;
+@@ -729,7 +731,7 @@ static void __iommu_group_free_device(struct iommu_group *group,
+ {
+ 	struct device *dev = grp_dev->dev;
+ 
+-	sysfs_remove_link(group->devices_kobj, grp_dev->name);
++	sysfs_remove_link(&group->devices_kobj, grp_dev->name);
+ 	sysfs_remove_link(&dev->kobj, "iommu_group");
+ 
+ 	trace_remove_device_from_group(group->id, dev);
+@@ -1058,6 +1060,14 @@ static const struct kobj_type iommu_group_ktype = {
+ 	.release = iommu_group_release,
+ };
+ 
++static void iommu_group_devices_release(struct kobject *kobj)
++{
++}
++
++static const struct kobj_type iommu_group_devices_ktype = {
++	.release = iommu_group_devices_release,
++};
++
+ /**
+  * iommu_group_alloc - Allocate a new group
+  *
+@@ -1091,17 +1101,22 @@ struct iommu_group *iommu_group_alloc(void)
+ 	}
+ 	group->id = ret;
+ 
++	mutex_lock(&iommu_group_kset_mutex);
+ 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
+ 				   NULL, "%d", group->id);
+ 	if (ret) {
+ 		kobject_put(&group->kobj);
++		mutex_unlock(&iommu_group_kset_mutex);
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	group->devices_kobj = kobject_create_and_add("devices", &group->kobj);
+-	if (!group->devices_kobj) {
++	kobject_init(&group->devices_kobj, &iommu_group_devices_ktype);
++	ret = kobject_add(&group->devices_kobj, &group->kobj, "devices");
++	if (ret) {
++		kobject_put(&group->devices_kobj);
+ 		kobject_put(&group->kobj); /* triggers .release & free */
+-		return ERR_PTR(-ENOMEM);
++		mutex_unlock(&iommu_group_kset_mutex);
++		return ERR_PTR(ret);
+ 	}
+ 
+ 	/*
+@@ -1114,15 +1129,18 @@ struct iommu_group *iommu_group_alloc(void)
+ 	ret = iommu_group_create_file(group,
+ 				      &iommu_group_attr_reserved_regions);
+ 	if (ret) {
+-		kobject_put(group->devices_kobj);
++		kobject_put(&group->devices_kobj);
++		mutex_unlock(&iommu_group_kset_mutex);
+ 		return ERR_PTR(ret);
+ 	}
+ 
+ 	ret = iommu_group_create_file(group, &iommu_group_attr_type);
+ 	if (ret) {
+-		kobject_put(group->devices_kobj);
++		kobject_put(&group->devices_kobj);
++		mutex_unlock(&iommu_group_kset_mutex);
+ 		return ERR_PTR(ret);
+ 	}
++	mutex_unlock(&iommu_group_kset_mutex);
+ 
+ 	pr_debug("Allocated group %d\n", group->id);
+ 
+@@ -1286,7 +1304,7 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+ 		goto err_remove_link;
+ 	}
+ 
+-	ret = sysfs_create_link_nowarn(group->devices_kobj,
++	ret = sysfs_create_link_nowarn(&group->devices_kobj,
+ 				       &dev->kobj, device->name);
+ 	if (ret) {
+ 		if (ret == -EEXIST && i >= 0) {
+@@ -1431,7 +1449,7 @@ struct iommu_group *iommu_group_get(struct device *dev)
+ 	struct iommu_group *group = dev->iommu_group;
+ 
+ 	if (group)
+-		kobject_get(group->devices_kobj);
++		kobject_get(&group->devices_kobj);
+ 
+ 	return group;
+ }
+@@ -1446,7 +1464,7 @@ EXPORT_SYMBOL_GPL(iommu_group_get);
+  */
+ struct iommu_group *iommu_group_ref_get(struct iommu_group *group)
+ {
+-	kobject_get(group->devices_kobj);
++	kobject_get(&group->devices_kobj);
+ 	return group;
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_ref_get);
+@@ -1461,10 +1479,77 @@ EXPORT_SYMBOL_GPL(iommu_group_ref_get);
+ void iommu_group_put(struct iommu_group *group)
+ {
+ 	if (group)
+-		kobject_put(group->devices_kobj);
++		kobject_put(&group->devices_kobj);
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_put);
+ 
++/**
++ * iommu_group_get_by_id - Lookup an IOMMU group by its sysfs ID
++ * @id: group ID matching /sys/kernel/iommu_groups/<id>
++ *
++ * Return a group with a reference on its parent kobject, or NULL if no active
++ * group exists for @id. The caller must release the returned group with
++ * iommu_group_put_by_id(). Keeping this reference does not keep an empty
++ * group's devices kobject active.
++ */
++struct iommu_group *iommu_group_get_by_id(int id)
++{
++	struct kobject *group_kobj;
++	struct iommu_group *group = NULL;
++	char name[12];
++
++	if (!iommu_group_kset || id < 0)
++		return NULL;
++
++	snprintf(name, sizeof(name), "%d", id);
++	mutex_lock(&iommu_group_kset_mutex);
++	group_kobj = kset_find_obj(iommu_group_kset, name);
++	if (!group_kobj)
++		goto unlock;
++
++	group = container_of(group_kobj, struct iommu_group, kobj);
++	if (!kobject_get_unless_zero(&group->devices_kobj)) {
++		kobject_put(group_kobj);
++		group = NULL;
++		goto unlock;
++	}
++
++	kobject_put(&group->devices_kobj);
++unlock:
++	mutex_unlock(&iommu_group_kset_mutex);
++	return group;
++}
++EXPORT_SYMBOL_GPL(iommu_group_get_by_id);
++
++/**
++ * iommu_group_put_by_id - Release a group returned by ID lookup
++ * @group: group returned by iommu_group_get_by_id()
++ */
++void iommu_group_put_by_id(struct iommu_group *group)
++{
++	if (group)
++		kobject_put(&group->kobj);
++}
++EXPORT_SYMBOL_GPL(iommu_group_put_by_id);
++
++/**
++ * iommu_group_is_active - Test whether a referenced group can accept devices
++ * @group: referenced IOMMU group
++ *
++ * Return true while the devices kobject still has a live reference. Once the
++ * group loses its last device and external device reference, it cannot become
++ * active again.
++ */
++bool iommu_group_is_active(struct iommu_group *group)
++{
++	if (!group || !kobject_get_unless_zero(&group->devices_kobj))
++		return false;
++
++	kobject_put(&group->devices_kobj);
++	return true;
++}
++EXPORT_SYMBOL_GPL(iommu_group_is_active);
++
+ /**
+  * iommu_group_id - Return ID for a group
+  * @group: the group to ID
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d20aa6f6863a..e771b4a92f5b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -989,6 +989,9 @@ extern void iommu_group_remove_device(struct device *dev);
+ extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
+ 				    int (*fn)(struct device *, void *));
+ extern struct iommu_group *iommu_group_get(struct device *dev);
++struct iommu_group *iommu_group_get_by_id(int id);
++void iommu_group_put_by_id(struct iommu_group *group);
++bool iommu_group_is_active(struct iommu_group *group);
+ extern struct iommu_group *iommu_group_ref_get(struct iommu_group *group);
+ extern void iommu_group_put(struct iommu_group *group);
+ 
+@@ -1401,6 +1404,20 @@ static inline struct iommu_group *iommu_group_get(struct device *dev)
+ 	return NULL;
+ }
+ 
++static inline struct iommu_group *iommu_group_get_by_id(int id)
++{
++	return NULL;
++}
++
++static inline void iommu_group_put_by_id(struct iommu_group *group)
++{
++}
++
++static inline bool iommu_group_is_active(struct iommu_group *group)
++{
++	return false;
++}
++
+ static inline void iommu_group_put(struct iommu_group *group)
+ {
+ }
 -- 
 2.50.1 (Apple Git-155)
+
