@@ -1,123 +1,109 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 613612C11FE
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 03:34:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E786230C63B;
+	Tue, 14 Jul 2026 03:35:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784000065; cv=none; b=iQgpuwSEqnLftCV8h+wIQOoM8MXVh3eURzWkrmwSKuz5YPf2ND0Q4ER20WvFlQT9ABNMVUgTdhEHLetK+F7Df3f3vSrA6eAMAJHJ52BoyFEIAyf07odPOSuAALvSEiF7M12gmrS/nWIUiXmcCdZRouLvFBjAinxahDpyq64008k=
+	t=1784000139; cv=none; b=HTIslSVkiImKpi5MFvd7SiVGlVDf8CSxDaogzFAB8llQb7pOjf8oVYquS7rkIib/3Jpkui0XHyLIUXeIi6JbzL5ecma+naOWJPl70qrjpp+QrCmpQBm3NBH1chwbyZRSRxgJ+r4k+2qwxE7LaSvzisKeuNjOZke2Mupmyqp5Ce4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784000065; c=relaxed/simple;
-	bh=B6QjqsTCceglXTjrdbHmu3Fd6hA0gffWs3PjsBDdmhI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KP8lhThu65SIpBwAzbAsBC840VjOxCI3amkdIcC/K3C2bOywZPsvc0AvY56CSwhAOI2KPoMf2zbXqBRUJ5PO9osUzUoG0TD61UWISmBjG/5YFf3noF6QZTrOw+tSwdEhzhL37xiJ+qo9CwvapoK9HVnWDFUq2Rr/H+Flayv700g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TEQ4mSyc; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1784000139; c=relaxed/simple;
+	bh=oPcAVwulTEZqwgt+ROBzzFLUXbQYJQG9mLa7fFzzZ0o=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=GFg6G9wCLH/cJ2Kw7XMDhPTAdWUzPSy4S9o4kAjoXvZiP3IrcLTYkgrju6zCOwxmtJW94pGg/zN2DyhpS9nJWEvL6sm2U80vhfao8RWnHryJZkL0fCS5OwKpfPc6u5Tykouep5aTGoOYZwoxHN71krJcyy9N2JQJkuFYG1wdkk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EcW9AEgv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TEQ4mSyc"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 57B3D20B7166;
-	Mon, 13 Jul 2026 20:34:15 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 57B3D20B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1784000055;
-	bh=KAZQv62H0azYxiU1DuGKBqf//wlcUoJu/KF5uIUpZhI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TEQ4mSycKUDcvlPTFdFVgJOwUO52dEvB5haGH+yL3kfCTyhw2CV0/cGTmkH25mNW9
-	 NPg3Th2kOLW0HTUfobsvEIptk3eR4uUi93bOkQgPGgKIafD5dRPYUsE0qyWVN8jB4s
-	 cJS0DeK2mHrYyaMpEzppezoGVATrnK1mC4UF+3Ag=
-Date: Tue, 14 Jul 2026 11:34:21 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
-	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
-	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
-	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
-	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>
-Subject: Re: [PATCH v2 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <r35cz2l3yz2wyi5d663mxwqoiz2rrl6kzpiw6rsruh7ofk6vu6@temnhcfsp6fa>
-References: <20260702160518.311234-1-zhangyu1@linux.microsoft.com>
- <20260702160518.311234-4-zhangyu1@linux.microsoft.com>
- <SN6PR02MB4157253E030D477FD91B7E26D4FE2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <enpkphavwmqrkded73c43vprczslvei4755lkxuedof4z2k3kk@y2jtklbk4efz>
- <SN6PR02MB4157805F23ACA85A668FA065D4FC2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <3ty6yq6oftsvq52skrngjv5xpyixhsyfo3dndhoujt7emxsb2o@y6ischifpmfn>
- <SN6PR02MB41575E067DFEBEACF316CD35D4FA2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EcW9AEgv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3675A1F000E9;
+	Tue, 14 Jul 2026 03:35:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784000138;
+	bh=J8EROicyvyqBHzNN9rE23d0T/JySclZqP++7t7T4RaE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=EcW9AEgvcMudcqLdd5C8/BiDRQ3ckffoh+3joXtfcvQArty1Bqy7GiIydvzIBCLJI
+	 ZYtj7PhBn7KY5xOXpbDoYrxVdGcfi3vpdsHKGCNWFha4MIt+IhEV5jDEBjBoyWy2iq
+	 bj05AAquiv+sKEDadr4DNLJ3+mfRTpc6qQeInr7Odr7bDn+pbXtO5yQMpfS+FUvAU4
+	 8ZpHoUc5+sQxY4Zemd+uQ3SKfXOCSJ2Ui1KfmTI6rr1/awo2nLjrYkhAKzaSTOFy+Z
+	 5A/hh2E0gsAAMZGguGSuY4n+PIlelCOb6vjM8CYbnyg5x9L/brWLTpdEsmw8Hz8Ctc
+	 KsvvwB6a/KzRw==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v7 02/22] dma-pool: fix page leak in
+ atomic_pool_expand() cleanup
+In-Reply-To: <20260713175433.GI3133966@ziepe.ca>
+References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
+ <20260701054926.825925-3-aneesh.kumar@kernel.org>
+ <20260713175433.GI3133966@ziepe.ca>
+Date: Tue, 14 Jul 2026 09:05:25 +0530
+Message-ID: <yq5azezumef6.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN6PR02MB41575E067DFEBEACF316CD35D4FA2@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Type: text/plain
 
-On Mon, Jul 13, 2026 at 05:37:51PM +0000, Michael Kelley wrote:
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, July 13, 2026 9:46 AM
-> > 
-> > On Sat, Jul 11, 2026 at 06:31:15PM +0000, Michael Kelley wrote:
-> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, July 10, 2026 12:34 AM
-> 
-> [snip]
-> 
-> > >
-> > > One new thought:  Have you considered the hibernate/resume
-> > > cycle? Does anything need to be done with the pvIOMMU to
-> > > make it functional again after resume? I see that the Intel and
-> > > AMD IOMMU drivers have suspend and resume functions. I
-> > > don't know enough about the Hyper-V pvIOMMU to know if it
-> > > might also need suspend and resume functions.
-> > >
-> > 
-> > Thanks for raising this, Michael. We have not considered such support.
-> > 
-> > My understanding is that the Intel and AMD drivers only disable the
-> > IOMMU translation, flush the IOTLB during the suspend and re-enable/
-> > reload the preserved root tables and other HW state during in the
-> > resueme.
-> > 
-> > But for pvIOMMU, I guess such job shall be done by the hypervisor?
-> > For a device resumed on the same VM, its logical device ID should
-> > also remain unchanged?  And the corresponding Hyper-V domain objects,
-> > configuration, and device attachments shall be preserved and restored
-> > by hypervisor? I don't think the current Hyper-V ABI explicitly defines
-> > this. But maybe if we want such feature, it could be done by the
-> > hypervisor transparently?
-> > 
-> 
-> I agree with your and Jacob's comments that the guest doesn't have
-> any responsibility for saving/restoring IOMMU hardware state, as the
-> Intel and AMD IOMMU drivers do.
-> 
-> But yes, I'm wondering about the Hyper-V domain objects and device
-> attachments. I doubt Hyper-V can do anything to save and restore
-> them. Hibernation is a Linux concept that the Hyper-V host doesn't
-> know anything about.
-> 
-> Hibernation is already complicated, and in a VM it is even worse. :-(
-> As a start, see Documentation/virt/hyperv/hibernation.rst, which I
-> wrote about 18 months ago. It provides some basics as well as outlines
-> the additional complexity in a Hyper-V guest VM. I'll also try to spend
-> some time thinking through the implications for a pvIOMMU, and let
-> you know if I have any more thoughts.
-> 
+Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-Thank you, Michael, and thanks for pointing us to the documentation. I
-need some time to better understand the Linux guest hibernation and resume
-flow and its implications for pvIOMMU.
+> On Wed, Jul 01, 2026 at 11:19:06AM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> @@ -115,8 +116,10 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>>  	 */
+>>  	ret = set_memory_decrypted((unsigned long)page_to_virt(page),
+>>  				   1 << order);
+>> -	if (ret)
+>> +	if (ret) {
+>> +		leak_pages = true;
+>>  		goto remove_mapping;
+>> +	}
+>
+> Truely these _set_memory_decrypted() things are an insane API. So a if
+> it fails to decrypt it can be in any messy state?
+>
 
-Meanwhile, do you think this limitation should be documented in the
-commit message or the cover letter?
+Yes, we could possibly try to encrypt the page again and, if that
+succeeds, avoid leaking it. We might want to do that tree-wide in a
+separate patch.
 
-B.R.
-Yu
+>
+>> @@ -130,14 +133,15 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>>  				   1 << order);
+>>  	if (WARN_ON_ONCE(ret)) {
+>>  		/* Decrypt succeeded but encrypt failed, purposely leak */
+>> -		goto out;
+>> +		leak_pages = true;
+>
+> At least this one makes some sense..
+>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>
+> Jason
 
-> Michael
+-aneesh
