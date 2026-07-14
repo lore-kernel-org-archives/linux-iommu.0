@@ -1,106 +1,232 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C56146AEDF
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3A124657DA
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784034426; cv=none; b=kvf/OCrcKX0jYgz0QnB9NdZr6Ci5/ZfredfecuddAQF4TeL5bDQY2pLY00TZqp6lr6aGyXBI+MlQPlkQSwWCJqe4jV62qn/w/IjPB2R5vc+AoQFahJXbtSgsYlCCbZfW324uGG1i5+eMXzac6iviimDSJO+eLlRLAjIefitFFKY=
+	t=1784034437; cv=none; b=H3FrAYuLGToofVqzWP5HkxpAbwgzZv5CNRSf74l4+7/qM/x5+oDvx0dl3TqbjaQbxfgYXIiV/AWJV6eAvG1xPdWmbTNnTRwQFe9joNcVWq3pjJk+ZBb+x/mZ5chxNGi5Al10K7i1gdrTObNtOMtXnFPiiPsi9tZohQtMaXZCq5c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784034426; c=relaxed/simple;
-	bh=V44+/Ji704/zeo6ZHmgziwcNG650omqFD+V0jFjANf0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KE20FNNGto+k3S/AANU9khHX+bYWFkcrivd+B34Gc3Dh64FPioLjvaECsZomVMSsiO2XxaMAQ79XARmdMz7Mf/j+PsnEJNoSeNEVMf5RfYhbA0142xgzTOZ/zmaL4aZZmzsKg451H9TSPlciel04RjAofz89wqS+tV8a6RITwwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sBVxG9A4; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1784034437; c=relaxed/simple;
+	bh=aWDiGhV/lDLqtQxlDd4E/xz/jeCA3Oakf6qbhhaXsOw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UU/VdZDprRPsAv/qWPIgljG4Y9EX76mbzlX1dAaMltjwjc7BuFwfQP1lLPP8zbCRUTr/XQdCEpeQZl55oG0ryzRfezh0lovDtFeNhHds4YZacisamL/JBh67fpW2c0FVwIn78wLbeEMFU/sa9uKz+dqYFoa0rupwAboYgu6R0V0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=RiTLAZJg; arc=none smtp.client-ip=209.85.210.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sBVxG9A4"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2cacef7d299so119585ad.1
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="RiTLAZJg"
+Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-7e9ecb1e13bso1675162a34.2
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784034424; x=1784639224; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=34EVAP3xEJbniYxw7KzDG6VhCOQxXOAP3siy7t1YUHk=;
-        b=sBVxG9A4BH/cHW5lRCLD4ErYXbgLA1jwtP4HCsVXd2RD8AyLpYvhUopeJwgrX3srKH
-         3fcIS3SaeIFad1AX1spiGWHvl9UvLXwzEEG5CVPmeqgPT5iEjIbmrmG5WHBJfK/NFGja
-         FOlChIAnjIXHmgEUpLrhMxujvanrwTiV43WNdro6wf9fF0FIMk4RDkQyhQqrcI39oUCa
-         JQvBIFX08Byv0HsGhlTt6qbN+tZpeHomsmcnHW+ibj9ZUVVU4Muvv9hGUpTVQcq350a6
-         kYPS8m9ar48XwSD00j1UYOsPxSs/7S4bMBhMm6BkGG/Swy1htiJJdK625cpZ/yZH2b8p
-         byVg==
+        d=bytedance.com; s=google; t=1784034433; x=1784639233; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Zu2x7nRWgqnkpJB6Jzio2t+71M646t61MeaMLyeHe/o=;
+        b=RiTLAZJgyBe7VbpK3w+lD4FS6Angz52RAXYYtMvnfW0VLYT8MKpz2khr4B2RuaRioL
+         71ydZgMb0EGK22gkDF0dCIZZ/8E2vp/8l+8Sts2hETbyor9SpBV9jGyOcnpoC6RBY8BI
+         mNplUE2brz36chjnlZOct7TXcfTXnBTgdUY2CnVnvvGqQRmQGNclzIrQthonRn9NvPx5
+         GV5TqA6Iw1YYcoLQFntVVzStmfCsKfaoNBf0R66idAnTovT/4aSvmPOhsP2pcy+ZZUlW
+         yPPGfKmMGDiFVfklycQkJ2V5cvOnTO2ImrBUhkfSgLUdULzdkNkFQCkv18MVHtqYXshX
+         SibQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784034424; x=1784639224;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=34EVAP3xEJbniYxw7KzDG6VhCOQxXOAP3siy7t1YUHk=;
-        b=MNVK7kq5lh1QMjzcRNWPPL304fUkaNEWPX9TpTISAixmssKWC9HdZCASX+wWzvhubA
-         AlB4kSsn3gZX4vrenBbtVmqN0/PSjsRMUvPQn7DZvQGene0SK84AmzlJo+ceumOnAnkF
-         LmvXNuBQ1hY8eFQGh4j8LgiTZOzCUPrABkNUocoHCQJQ8Z3j8RyH+E/D0ew++JnKSTNS
-         Y5zam3FQ/sxx6sappw/qsZVoJa7Q8vbax+1fxHlAVWD4NDervUtFjdgnjNdyRT1vnOUn
-         5MXSnmcWOgJchjNdCl3Rxh6uXLTMy1ycoWZvrIpJj5vTU6mS4KwtbXYnV5mPs7ZbOb+h
-         58NA==
-X-Forwarded-Encrypted: i=1; AHgh+Rp+59aJ3jnwF1Ytfl+ebxcvjA8/ar7OjyriXVgwh8iVP8vOBJySy/shaETOwtFOZyIoRmLFew==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwFS6DAyRCirx99Vw8i0l990Xj9NQzMrFXIqa7LrkQmvtntW6kO
-	rScbi0YcDtr/VE3UtPiYkRK48ukIcY3uZTmwtMi8hmGulKsGdsycEnAPr1KjGZNNLg==
-X-Gm-Gg: AfdE7ck2klxNBaW/4JP5XoTk8p1O9ckR/4z70GgUH6YtfdmR1IZ/wvUS0GHe54se2Ou
-	qeSlf9xeVHKe3tzkeHAqX0xhO1+7O8aKTBbJL8QHglgoIXwdrhAaR9b4omXEQfg1wW/Cbk22u31
-	EHFRTUXF6iesJFp/pqR0ypLGr3IJTXeEy5VLVRbCPcN0mYFOxNNUOXlz4pUoI+xJBrZvAXaK10D
-	AVnRhzEbIrujxxQ6X5DM0/b6IUko2gDoM+1dMOBV40btuAb62/l656CozaxwWvMoq7Ki5j9d/e5
-	tyfcjxFgU7DRV3uYOTB2/DZCNAw38qNKDyKwceB/xohOST4j5Bh/xkuIcWv4OBvKpRURPsg8Htd
-	k2zfZpepFTQUmBug6f51zv93nUu1/8OUiiOYiUeFhMpfKbwhf3N2Z5NDlfgJWUCE7WNMf95HF6s
-	Vm1GTLPuSrjF1JvQfX17oab16Ob6SmBZB/TZsIuNP/ckIM1+s=
-X-Received: by 2002:a17:903:1ac6:b0:2ca:cbe5:c3af with SMTP id d9443c01a7336-2cee169252cmr5952975ad.7.1784034423917;
-        Tue, 14 Jul 2026 06:07:03 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bdb775sm116995885ad.2.2026.07.14.06.07.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 06:07:03 -0700 (PDT)
-Date: Tue, 14 Jul 2026 13:06:57 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/5] iommufd/selftest: Convert cache invalidation
- mocks to the core array loop
-Message-ID: <alY0ceR2leyRxXTy@google.com>
-References: <cover.1783539724.git.nicolinc@nvidia.com>
- <4383c0afeba9795c9ae312826443fd7d5fc3fb58.1783539724.git.nicolinc@nvidia.com>
+        d=1e100.net; s=20251104; t=1784034433; x=1784639233;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Zu2x7nRWgqnkpJB6Jzio2t+71M646t61MeaMLyeHe/o=;
+        b=WWwbPqFukNzrBbKdBDCrwlvI8Ajju54f9F6I954DhrJ+ZSUU9j1etY7TdDn98Afpme
+         i0qdriYAnLShuh/On8h9ZCYBQhxCl3tcqkwDKyQ+3grgxuqjZkvewI9vHhpEgAsaR/HF
+         xi4i9zuuwT5dPta/6PsMRh/6pHSH5Vgc+buRMKtCmJpxWy+dDFM3uhixzC62jCoouYbk
+         c6zV/BGs3c+1qAzIivzu3Pw4ggtPALLO+f2uhc3xg74rW329M6ifPN/8KzOgkDWcI0sB
+         Klf6Eps9tAWJb6p87ZPhdKz+jqsGlxUP2JPVxSw7Tc2/H1ouOjmp6YhPGnaO7tBbx12W
+         OMBw==
+X-Forwarded-Encrypted: i=1; AFNElJ/k7zA2aT0xBaUCay2e9pK/j2jC98VYu209lZQI9wM2rnnROnctfFQll3DM8Ph9zH7iUI2qHw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yytk/jAQNdt/3VZGdPj15diEQGUYD+l0/Y6+jxDei33zHQy7ZdH
+	YZEjsE7NlN4WNMGKQoEbK4abcHQiC8DvQ8XgxHLYR3uD1/Caep647ybraFgx52564/c=
+X-Gm-Gg: AfdE7cmySDI8DcaRFY8gCtwYcX6B6fkwVqe29Y7qOmxqoRN7/Py+56zs9O3caOxb8I0
+	n91gc4A4mGzr1zdk+M79jZlewkdfxA2F0vJiPpOoGqjZjRmuBkAvj4z3JslxAqaVdvsjBXBKhlx
+	VFvOBAHrXjDlfFXm0E5+dB//Ar5Xfkg/bb3kKjj6PX6aZHkhlLW0VvyK4CABhNEaI05WyCTrVK6
+	OJ2Zg/LBdK0x+cVtX2aO+yQ2kWkGL9MzyoPJ+E2lBFhFTIZw4Z5WbDue9uVRVECAn/TAWAAGm4d
+	cCOxQ7JMUVvFPIWf3ppXmmH5sPtZzLGlZb1E/NKZgKLhNlx9PNc93eosWBfSJo6pSEuU+zs72PZ
+	m1djow1JnZoNydnao24u6saF20EEsqSLlYamhKvPZs9fO6IeYLivv4Ak8wDMMe6Jvmvu+MGtijr
+	+JHWOUiJhK0qRqYdfshRbBXcyRbyfSyQflNQe2I8cJ4mwJrRFijEGLnslwJiSGXA==
+X-Received: by 2002:a05:6830:4412:b0:7e7:45f:ce3c with SMTP id 46e09a7af769-7ec096ac473mr7449408a34.14.1784034432564;
+        Tue, 14 Jul 2026 06:07:12 -0700 (PDT)
+Received: from FJ7FR2JRQ3.bytedance.net ([178.93.176.7])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcab8efc3sm14657738a34.0.2026.07.14.06.07.01
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 14 Jul 2026 06:07:12 -0700 (PDT)
+From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+To: joro@8bytes.org,
+	palmer@dabbelt.com,
+	tony.luck@intel.com,
+	reinette.chatre@intel.com,
+	tomasz.jeznach@linux.dev
+Cc: will@kernel.org,
+	robin.murphy@arm.com,
+	fustini@kernel.org,
+	pjw@kernel.org,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	Dave.Martin@arm.com,
+	james.morse@arm.com,
+	babu.moger@amd.com,
+	corbet@lwn.net,
+	shuah@kernel.org,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	cuiyunhui@bytedance.com,
+	yuanzhu@bytedance.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	x86@kernel.org
+Subject: [RFC PATCH 0/7] riscv: iommu: Add QoS ID support for resctrl device assignment
+Date: Tue, 14 Jul 2026 21:06:50 +0800
+Message-ID: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4383c0afeba9795c9ae312826443fd7d5fc3fb58.1783539724.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jul 08, 2026 at 12:44:18PM -0700, Nicolin Chen wrote:
-> The vIOMMU and the nested-domain selftest invalidation mocks each used to
-> walk the whole request array on their own, with the vIOMMU mock even
-> allocating a buffer sized to the entire array in order to do so first.
-> 
-> The iommufd core now iterates the request array itself and re-invokes the
-> op with the not-yet-handled sub-array, so handle just a single request per
-> call out of the front of that sub-array and report one handled entry via
-> the array->entry_num. Drop both of the loops and the kzalloc_objs() in the
-> viommu callback function, and keep returning a success for an empty array
-> as a probe of the selftest data type.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Assisted-by: Claude:claude-opus-4-8
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
- 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+This RFC extends RISC-V CBQRI/resctrl support to external requesters
+behind a RISC-V IOMMU.
 
-Thanks,
-Praan
+The RISC-V IOMMU QoS ID extension associates a resource-control ID
+(RCID) and monitoring ID (MCID) with IOMMU-related memory requests [2].
+For a translated device request, the IOMMU obtains the IDs from the
+device context translation attributes (DC.ta) and supplies them to the
+I/O bridge after a successful translation. The bridge and downstream
+CBQRI-controlled resources can then apply their existing allocation and
+monitoring policy to the request.
+
+The series is based directly on Drew Fustini's v4 RISC-V Ssqosid and
+CBQRI resctrl series [1]. That dependency provides CPU-side QoS ID
+plumbing and CBQRI-backed resctrl support. This series extends the same
+resctrl identity to device requests translated by a RISC-V IOMMU.
+
+The RISC-V names map to the existing resctrl identifiers as follows:
+
+    resctrl CLOSID  ->  RISC-V RCID
+    resctrl RMID    ->  RISC-V MCID
+
+Userspace first creates a resctrl resource group. The new "devices"
+file then assigns an external requester to that group:
+
+    userspace
+       |
+       | mkdir /sys/fs/resctrl/<group>
+       |
+       | echo "iommu_group:<id>" > /sys/fs/resctrl/<group>/devices
+       v
+    generic resctrl devices file
+       |
+       | (closid, rmid)
+       v
+    RISC-V CBQRI IOMMU binding backend
+       |
+       | (rcid, mcid)
+       v
+    RISC-V IOMMU DC.ta.{RCID,MCID}
+
+The "devices" file is an assignment and membership interface only. It
+does not describe a new resctrl resource, schema, or monitoring domain;
+resource policy remains in the existing schemata and info files.
+
+Common IOMMU helpers:
+
+The userspace ABI names an IOMMU group by the numeric ID already used by
+/sys/kernel/iommu_groups. Patch 1 adds iommu_group_get_by_id() as a
+narrow, reference-counted lookup for that existing identifier.
+
+Updating a group also needs stronger iteration semantics than separate
+iommu_group_for_each_dev() calls can provide. All devices must be
+validated before any device context is changed, and group membership
+must not change between validation and update. Patch 2 therefore adds
+iommu_group_update_devices():
+
+    lock group->mutex
+      for each device: check()          /* may fail, no state changed */
+      for each device: update()         /* non-failing callback */
+    unlock group->mutex
+
+The helper contains no resctrl or QoS policy. It only provides an
+all-or-none validation boundary for a group-wide update while keeping
+IOMMU group internals private. The RISC-V IOMMU QoS code is its first
+caller.
+
+RISC-V IOMMU programming:
+
+For translated device requests, the per-device-context QoS IDs are
+programmed in DC.ta. Active contexts are invalidated after an update so
+cached translations do not retain stale IDs. BARE mode cannot safely
+represent per-IOMMU-group assignment because only the per-IOMMU
+iommu_qosid global default is available, so group assignment rejects
+BARE mode.
+
+The RISC-V IOMMU also has a per-IOMMU iommu_qosid register. The series
+exposes it as:
+
+    /sys/class/iommu/<iommu>/qosid
+
+This sysfs attribute programs the global RCID and MCID used for
+IOMMU-originated DDT, CQ, FQ, PQ, and MSI accesses. In BARE mode,
+device-originated requests also use these IDs. It is not a resctrl group
+assignment interface.
+
+Open questions for this RFC:
+
+  * whether a common resctrl "devices" file is the right ABI for
+    associating external requesters with a resource group;
+  * whether iommu_group_get_by_id() is an acceptable narrow common
+    helper for resolving the numeric IOMMU group ID passed through that
+    ABI; and
+  * whether iommu_group_update_devices() provides the right common
+    contract for checked group-wide updates.
+
+[1] Drew Fustini's CBQRI v4 series:
+https://lore.kernel.org/linux-riscv/20260706-dfustini-atl-sc-cbqri-dt-v4-0-e75c20201d64@kernel.org/
+[2] RISC-V IOMMU QoS ID extension:
+https://docs.riscv.org/reference/cbqri/qos_iommu.html
+
+Zhanpeng Zhang (7):
+  iommu: Add group lookup by ID
+  iommu: Add checked group device update helper
+  resctrl: Add a devices file for external requester assignment
+  iommu/riscv: Program QoS IDs for assigned groups
+  iommu/riscv: Expose global QoS IDs in sysfs
+  riscv_cbqri: Assign IOMMU groups to resource groups
+  selftests/iommu: Add RISC-V IOMMU QoS smoke test
+
+ .../ABI/testing/sysfs-class-iommu-riscv-iommu |  27 +
+ Documentation/filesystems/resctrl.rst         |  26 +
+ MAINTAINERS                                   |  12 +
+ arch/Kconfig                                  |   6 +
+ arch/riscv/include/asm/qos.h                  |  28 +
+ drivers/iommu/iommu.c                         | 140 +++-
+ drivers/iommu/riscv/iommu-bits.h              |  15 +
+ drivers/iommu/riscv/iommu.c                   | 419 ++++++++++-
+ drivers/iommu/riscv/iommu.h                   |  22 +-
+ drivers/resctrl/Kconfig                       |   6 +
+ drivers/resctrl/Makefile                      |   1 +
+ drivers/resctrl/cbqri_iommu.c                 | 276 ++++++++
+ fs/resctrl/rdtgroup.c                         | 206 +++++-
+ include/linux/iommu.h                         |  30 +
+ include/linux/resctrl.h                       |  45 ++
+ tools/testing/selftests/iommu/Makefile        |   2 +
+ .../selftests/iommu/iommu_qos_smoke.sh        | 649 ++++++++++++++++++
+ 17 files changed, 1886 insertions(+), 24 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-riscv-iommu
+ create mode 100644 drivers/resctrl/cbqri_iommu.c
+ create mode 100755 tools/testing/selftests/iommu/iommu_qos_smoke.sh
+
+
+base-commit: ab754eba620f5a66e7277b7b2d0e706aa7743e8a
+-- 
+2.50.1 (Apple Git-155)
