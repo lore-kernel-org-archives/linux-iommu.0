@@ -1,38 +1,38 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F731DFFB
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C2E838839F
 	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 02:45:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783997121; cv=none; b=RGe6THFiBrOM2wp0/gQlBno0vHb7GQ+sANpVykdZflz0w1Dxhpsr2yK1Nksx59kqYkuoASjuCOqTQLaEMhkJ6S7mmPZfWk0UQQXYmmtDFG0UrzhkOQRNa4rIVz+imQq+I6Lot7vaG0EXWPGFwN6M+GAWS/1dZggKxJTyPaMZH+8=
+	t=1783997121; cv=none; b=byPhQC8WL+VVAAMs2OfPX9KkHwHqEpNmytGKglH1q4GPWw9Z4fPnPaOj+h6Y0GcaRevyNpandF5VYn2nonMtW+ZnluqX9zfPojD0tHkWOTOikeVTRjCS250qJ2XmdpgI6dMaEujtnTS0moXcofVkgQ2L8VYo9gHQYBHBnZqCUT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783997121; c=relaxed/simple;
-	bh=NDCbVRFZZ/9i3d6rW3RpKJTKK+I5L16gReAEKpNqPFo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oD/vtSOyJ4omaFmxBFJGe6jhM3vg3MVnpVVczC+Bjb+p5m0kMY3ulRK3Y/6SWA5TE0W6Hw6OvwzKY9yPsE6+/4bz/YU9+pVKcRm1/2t6ObPRaxlua6JlbkYyY5zgVDBULyYQ0h7Kk8joiUZ1SjCNT87hXcULTHSIA39ijyLyeHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=gwmuTxKb; arc=none smtp.client-ip=220.197.31.3
+	bh=kNfpHNgDdLsVAKI2G171THdkygX7Ggj7nl3ICPcY/FY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FUkekX/rYfbiWluCjjYLBmhz0yoqrEL6F0JaiV9ouA9lpHI9lJPhJW4FIVMawie42EKNkQVtCYvDcJA4fifzxOtwi09fsnODSmIDRUnFozOTFEtJCG3a19h7yiL7K4JVyblkOiD7kJU/ha9FtB9LNaK5Y9yY55XgbhE8rr65jiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=CeQ8gIYe; arc=none smtp.client-ip=220.197.31.2
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="gwmuTxKb"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="CeQ8gIYe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=oZ
-	CtDx6VcqxgeosNH4Gx5FE52g+SWnLQtt5aEvhp+o8=; b=gwmuTxKbMJr6irYCAE
-	nPQJs8G8JutSJSeFVb7pqwGyr/vf2W0W88b/FX327OW+7zAu4HiqUDAyA2nlZDV3
-	N1c7VDZ7vxnITwRf0gXXZsVFuXUw75GOW1VPp8bBrwqOBskeGfVO23IymCtpssUs
-	V+peJelgbigq8pM+DdxS/DEsE=
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=FF
+	vbzYcgT7IoWAHDYjfEMPVs39LWnzaD4nevpSW3s40=; b=CeQ8gIYe0u7+ZADZIM
+	nLykGfzwd3UJmni7ztuk9NPyNjsePDjFlfBufLKbrozAR2Z3XC8Fe1+5DAj9EY9T
+	a1uyI6g1TFaiGfaBwNV1HekMg7vlDfrKAXrKoXfHDCDuVJ/qFSecU967ZWCP3yFm
+	QakxitCbqcKYTPLBq4I9zE5Bc=
 Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
-	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wDnzU2jolVqR7utJg--.39248S2;
-	Tue, 14 Jul 2026 10:44:51 +0800 (CST)
+	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wCn1bKpolVqwVzpIw--.26757S2;
+	Tue, 14 Jul 2026 10:44:57 +0800 (CST)
 From: weimin xiong <15927021679@163.com>
 To: iommu@lists.linux.dev
-Cc: joro@8bytes.org,
+Cc: robin.murphy@arm.com,
+	joro@8bytes.org,
 	will@kernel.org,
-	robin.murphy@arm.com,
 	xiongweimin <xiongweimin@kylinos.cn>
-Subject: [PATCH] iommu: fix possessive its in group remove kdoc
-Date: Tue, 14 Jul 2026 10:44:51 +0800
-Message-ID: <20260714024451.188415-1-15927021679@163.com>
+Subject: [PATCH] iova: fix spelling of reserved in comment
+Date: Tue, 14 Jul 2026 10:44:56 +0800
+Message-ID: <20260714024457.188474-1-15927021679@163.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -41,41 +41,35 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDnzU2jolVqR7utJg--.39248S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Wr47WF4xXw1ktF45Jw1DWrg_yoWkXrb_G3
-	WxZry0gry8Gr40vF1jgrW3ZrZ09a9FvrZ3XF95K3Z3GF1xX392qFy8ZrnFqay7uw4qkFnI
-	vrZxKr1IvryUCjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8vPfPUUUUU==
-X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC0gPASWpVoqONzwAA3k
+X-CM-TRANSID:_____wCn1bKpolVqwVzpIw--.26757S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZr1xXrWrWr4xGr15ZrWxCrg_yoW3XFc_Gr
+	yvqr1kKr15ur1jvF10qry3ZryY9FZI9rWkXr4rKa1fX348Xws8Ga97ur18Aa47Gr4xGF9I
+	yr4Yqr43A3yrJjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8vD73UUUUU==
+X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC9AnCS2pVoqnQogAA3y
 
 From: xiongweimin <xiongweimin@kylinos.cn>
 
-Use "its" rather than "it's" when referring to the device's current
-group.
+Correct "reserver" to "reserved".
 
 Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
 ---
- drivers/iommu/iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/iova.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e8f13dceb..a3dea7353 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1345,11 +1345,11 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- EXPORT_SYMBOL_GPL(iommu_group_add_device);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 021daf652..aa5a3f405 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -538,7 +538,7 @@ reserve_iova(struct iova_domain *iovad,
+ 				break;
+ 	}
  
- /**
-- * iommu_group_remove_device - remove a device from it's current group
-+ * iommu_group_remove_device - remove a device from its current group
-  * @dev: device to be removed
-  *
-  * This function is called by an iommu driver to remove the device from
-- * it's current group.  This decrements the iommu group reference count.
-+ * its current group.  This decrements the iommu group reference count.
-  */
- void iommu_group_remove_device(struct device *dev)
- {
+-	/* We are here either because this is the first reserver node
++	/* We are here either because this is the first reserved node
+ 	 * or need to insert remaining non overlap addr range
+ 	 */
+ 	iova = __insert_new_range(iovad, pfn_lo, pfn_hi);
 -- 
 2.43.0
 
