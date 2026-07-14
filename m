@@ -1,63 +1,63 @@
 Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CB0146AEF5
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2F747276C
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 13:07:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784034458; cv=none; b=jIGsA3F3HLGRB+3wp8ve7+XN6krlG3H5FUz0oGJFyMrXfSnhm2pSwlNGvlsBGMUNvK3GoYWmux4CYhqhp1yPdNPOqvFr98hjvog5AKEH5w4OJOSo69H+cXWvHV2ph0o67DeKGhrpv6QJPZJo1vw/8CNp60Py7qS45SElFoYeyJ8=
+	t=1784034470; cv=none; b=DcchmO9mpg9azlhmT5btvBNiiyF0gJFA4C5/PVaF6owxzdonKVGkF0Ds6oPq340j7P70aaLX5PBALx+XQIqvnZ+5xft8DSmNwXGL89ZueV3IGXAYQcv3WKCn+4sT0i02NjR+d8Mo3U7CKjJeCz5N6ewiwGgmOkcMAR3otQ0mxY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784034458; c=relaxed/simple;
-	bh=zWI3HgS6VNdfgTHEihXvnUhJkpLl5h08ZrZ1Oj9J3pg=;
+	s=arc-20240116; t=1784034470; c=relaxed/simple;
+	bh=lv5kWIUDJUDMWlaCosjBEeMFcK6y35rawRF3K3p6LiM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AdzpBomYOTCMs0iAkLCQCJudfiS+JRqahIKLVCh++bVfjHuEleTxh/ZAqWIO4fPJLy6I8xizh9mzb+SdULGVpB2vN/KshsRAoA+ynfuZvelKlNu6IO4VuhQcM/AS6MnoSbO1AFwHi3JVX29teuXqF+bXahBDkUY5y7MVlJEMgR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=loZFoESy; arc=none smtp.client-ip=209.85.210.50
+	 MIME-Version; b=ciz9QoUM51ilY74ASNJt02E1xNANauhuYMK7/vLWOjlfesrFzHvyE6+5mC2VhVg5eJIdnELeu+WYsh43jIGingV9xDMof5k29If++GfDu81rbPVeKMdZ7LtEuqof0aGeicsrb/XMUbxo+AvsjTAv+VH9AO+AAlMdojSawhr2UoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=a/Q/TBCD; arc=none smtp.client-ip=209.85.210.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="loZFoESy"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7e9f69ee6f4so699591a34.2
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="a/Q/TBCD"
+Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7ebd88be784so468559a34.2
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:07:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1784034455; x=1784639255; darn=lists.linux.dev;
+        d=bytedance.com; s=google; t=1784034467; x=1784639267; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=PgO28qqQ1xeK9Yvst4+iTUEqQXClh8oO6Jm7DHD/RdA=;
-        b=loZFoESyzDTwM5tRYV6HSPxjKyQZW4+qoAv2OAD9hXniWpUihlXwqA+PnEI3od+i0U
-         /VHy94JUIpA+yfDNn3SsgQOHkE2SdgmlLukNLVw6t21N2YylxfyFdn2Y3QnBtry7EH1D
-         edGvuAGLQvfySTMTSCE/NRpTh5Dqx00bpLb8QuV/jEg7phkBK2hw1B715bbEC7QQOJjR
-         KhdeV7Fx20qnb+OeJ3SgKXDblUgVB9bjQAwUgdo3TujnE/5t7dzZiEWe8hIxbJ8TxxnJ
-         Q0tURtNximUQQwtGJURZWaAUhdZPepHPO4DoKkIeUoV+lcDNhddNwm1RowOhs5O1dXnX
-         Y4jw==
+        bh=kK72RdH/1XE7usLQ2kyIcth7swn3eieDHyIRvr+BBH8=;
+        b=a/Q/TBCDl0nbI/d1CrcSsp5CeZ+4fBzT77vqw/0YCfElfuzqe4QM0ZEwdMdbicZm2I
+         xQQy+2xBZze50K2mRjl/6oHMj4gBiTaPgeiPbspeGpsOvJjSgUIuOhnOnon1TpaFwNot
+         huBJpGGhKKQOAMXoLmYpehflC9lmdFxi/dtARwWsh759wFwlKZxzFLfmXxw+JxsnEiue
+         +9GapxdzcL/Y4MbLwxtC0OesI4T/wRf8oWHVPTUgPDc/fkzeL1x6ZgX2QoTcGeSsEscI
+         /BepLU4TN4t+in00Bm1pWpjwtkgTpbweg7dbtg8qm2dFf/cKluiwikEISctZDp4SXk8F
+         NRRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784034455; x=1784639255;
+        d=1e100.net; s=20251104; t=1784034467; x=1784639267;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PgO28qqQ1xeK9Yvst4+iTUEqQXClh8oO6Jm7DHD/RdA=;
-        b=pJ0DtvRv4n4bxcWejn4TPzik4keSpAnL/BkCuY8ljmWNEPeecskY+kdlkYd2UF+Gwn
-         Egf/LMG8quC4IX74Zaz1b2dFTHFt8ei/gQ25cYHTZavkajk5YVdDybtkEHr/h0kGf57b
-         DG3ACUrbbQmgQWpcAz1kNyZTP0pB0K8I+OfpnVO3iStjbnkkgnvHteAAB7OO+jPIOIsM
-         bx3txljO53L1ejsDbbnrUcXQ69NBCS59L6R7NKW5ATqXhiitCf332+KntMCRhJMKcf/l
-         FFlq8YUXT3qZrLQrOpfxxVYr6u4vI2pLROBib7jJcn3mvhBxacaW/AIWJLQYHMEyY5jn
-         RjHg==
-X-Forwarded-Encrypted: i=1; AFNElJ/9boIwjgNO6Xtrk3w9VPlIToixoBg8XMf5G22qhbvAi561b3PWhZp4XeusWIz0XoSjXvmOGQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyG+no7s3PnfNwkk0/iwaGiNssScS0yACxCVKD/tAz9f4Kskmsq
-	AdqomeAfs0SEfxnB1WsWKHXrvbM4eDw1GkUnQ/VXJwfn1X7xTliSNGgtXcWg36LqEKc=
-X-Gm-Gg: AfdE7clOocih6RdkCzH5U4uAQfs+tOFmDGAwgmwfrgRqUlKy6mVK6GycQtZvkyPu41l
-	ni/oWhjK0xVUFDkSlrjprR2vYlbqy6os8K6Wq2Dci9PPC2AuEkuJEsvuH2lAHgSl1DejKPcTXsS
-	HoR72bfOg1Z0Y9im/+TqOxqMNQjwKXXT60BSMrsjzUBh1Bp0bDJ3Ra7uFoJkzIdfuHNwGaABDxE
-	hhVWTI4MyMQ5Oo8Eo10hgw9bu/mrpx5n1m4YzQWB42YP5RFi5rGIWmY6sjRyMt4rr34m/MZL01x
-	ZTSHtAIuDKh76ZSE/SeIc/7I8upIW3mAvRZqbzANzFthDULTgFVpZPqexz8l3gIMk+ZMxKzabA2
-	fldXMWZwFLX74YC79eYPTeGpQSZqboFYwuXncMHmUACcjlNbyxosIercUuUjQFaQ4J3H5reEU2/
-	sJR3/AW8ifC37Z2atW21YedDIhFUfjtBPbP9Zi6wNfcC+YVPxjt6w4rMs1EmXpdw==
-X-Received: by 2002:a05:6830:f88:b0:7e9:fe5f:4406 with SMTP id 46e09a7af769-7ec0997528bmr8084846a34.30.1784034455345;
-        Tue, 14 Jul 2026 06:07:35 -0700 (PDT)
+        bh=kK72RdH/1XE7usLQ2kyIcth7swn3eieDHyIRvr+BBH8=;
+        b=DcZ0LrJz8YRyXMS13p7+WH4cZkXLUPPSucgvYBCTgRSWrbCXxBT6SvY2hlOGXf0Jyw
+         1t22AZI3gjgR0v9MluTKdrpWa3nyRht3TMCRjzNKX1yD9FZBEiHbsY0c1K5W/bdmCf7J
+         jolAl/PBs8Nx6xTk3Qbc//4EhrGHiCep/GBdCPsJuiSygY/cal7fTOz9iey0i4A1hA/y
+         IBQZ5NkigjuqPJyirfwuTZ/DTJMxaSkbqeFIPqXjPXoSwnPlYe1qZteDaU0TOy7iApDo
+         +LakgJXwX5EBG8UHHjNvRYCprJn3PGdfGj2EJHZ0DFvVLHdpwKyp8eMNrrvfBeF4vZlO
+         P4cQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9h81NTzMwf0sWVDDTbNootj2C70jMwDNTLdKfnYhyq4Gg7LZTU5WzezVCb9L5shn/j6lBq2g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzj9XWZh3/UajQHxww4oXLGePxeUijNUE54IZ0Otlh8p5FgzNIq
+	WSt/qN8O0wN0HubfF4SQjxkBmkTfbCd7PJQpnZpSLfrOhOETakQ7KJK5mJ8BfB4EBis=
+X-Gm-Gg: AfdE7cnNUcuH/mZmhxXQJCLdk4qBTMS7+ug/sXIv6tIDGQTL0xAcWSdMTYKWxIu2Dn2
+	5n+HyO3GEpNiSZpHnSgBJtcXkad6rOWUg4s5LugNQHtejE7KnAUv+4YScd/bLryTfYkPpDbgGsZ
+	IEbZ0x/wqnnpyFeF90DMPyXgzv5GcMXxQhpFICZfXHjYM2aRgOCKoo/tVr2gkQVI/PQQe9OMAy1
+	aVRWx4uyBYV4ZC13gPOllYMdrmSXxI4V3r8ifIX6AL+mEJwREBnD8LHNgnMXWuHVGOtLCZxKvsA
+	lm8JDeI65JmcB9XIE/DXAEBiN5N25Ch5/LL04Ki9AWSD3z2j33xK2JujfMQrRSQtzWCWsSn85+V
+	K0/vt7hNCrUKrNYRdYsk50W94mOjy0TTEMCTK/KmsfCrpNQPSrKUgabSTwrsSbCgZO6RlZe4p0q
+	8wFtasJDqoypdqIFAGyc+GQnNckgMryoPX9KGj9RBmWdu6i4kx1Uv12FMsuyUyKw==
+X-Received: by 2002:a05:6830:3492:b0:7e9:bd00:c6ad with SMTP id 46e09a7af769-7ec097e11c2mr8750217a34.16.1784034466935;
+        Tue, 14 Jul 2026 06:07:46 -0700 (PDT)
 Received: from FJ7FR2JRQ3.bytedance.net ([178.93.176.7])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcab8efc3sm14657738a34.0.2026.07.14.06.07.24
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcab8efc3sm14657738a34.0.2026.07.14.06.07.35
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 14 Jul 2026 06:07:34 -0700 (PDT)
+        Tue, 14 Jul 2026 06:07:46 -0700 (PDT)
 From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 To: joro@8bytes.org,
 	palmer@dabbelt.com,
@@ -85,9 +85,9 @@ Cc: will@kernel.org,
 	linux-doc@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	x86@kernel.org
-Subject: [RFC PATCH 2/7] iommu: Add checked group device update helper
-Date: Tue, 14 Jul 2026 21:06:52 +0800
-Message-ID: <20260714130657.46963-3-zhangzhanpeng.jasper@bytedance.com>
+Subject: [RFC PATCH 3/7] resctrl: Add a devices file for external requester assignment
+Date: Tue, 14 Jul 2026 21:06:53 +0800
+Message-ID: <20260714130657.46963-4-zhangzhanpeng.jasper@bytedance.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
 References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
@@ -99,96 +99,422 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Some group-wide operations must validate every member before changing
-any device. Separate iommu_group_for_each_dev() calls cannot provide
-that guarantee because group membership may change between traversals.
+Do not overload the resctrl tasks file with architecture-specific
+non-PID tokens. The tasks ABI remains a list of task IDs, while the new
+devices file carries external requesters assigned to a resctrl group.
 
-Add iommu_group_update_devices() to keep the group membership mutex held
-across a validation pass and a non-failing update pass. This provides
-all-or-none validation without exposing IOMMU group internals to
-callers.
+Add architecture hooks for assigning and showing those external
+objects, and reject group removal, reparenting, or pseudo-lock setup
+while devices are still assigned. The teardown path performs a
+best-effort reset to the default group.
+
+The devices file is an assignment interface only. It does not describe
+a new resource schema or domain; resource allocation and monitoring
+policy remain described by the existing schemata and info files.
 
 Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 ---
- drivers/iommu/iommu.c | 33 +++++++++++++++++++++++++++++++++
- include/linux/iommu.h | 13 +++++++++++++
- 2 files changed, 46 insertions(+)
+ Documentation/filesystems/resctrl.rst |  26 ++++
+ arch/Kconfig                          |   6 +
+ fs/resctrl/rdtgroup.c                 | 206 +++++++++++++++++++++++++-
+ include/linux/resctrl.h               |  45 ++++++
+ 4 files changed, 280 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index da269d10f6bf..9a6c4a7e7df6 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1436,6 +1436,39 @@ int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- }
- EXPORT_SYMBOL_GPL(iommu_group_for_each_dev);
+diff --git a/Documentation/filesystems/resctrl.rst b/Documentation/filesystems/resctrl.rst
+index e4b66af55ffb..fce61d019114 100644
+--- a/Documentation/filesystems/resctrl.rst
++++ b/Documentation/filesystems/resctrl.rst
+@@ -581,6 +581,32 @@ All groups contain the following files:
+ 	idle tasks. Instead, a CPU's idle task is always considered as a
+ 	member of the group owning the CPU.
  
-+/**
-+ * iommu_group_update_devices - Check and update every device in a group
-+ * @group: the group
-+ * @data: caller data passed to both callbacks
-+ * @check: validates whether one device can be updated
-+ * @update: updates one device after every check has succeeded
-+ *
-+ * Keep group membership stable while first checking every device and then
-+ * applying an update which cannot fail. No device is updated if a check fails.
-+ */
-+int iommu_group_update_devices(struct iommu_group *group, void *data,
-+			       int (*check)(struct device *, void *),
-+			       void (*update)(struct device *, void *))
-+{
-+	struct group_device *device;
-+	int ret = 0;
++"devices":
++	On architectures that support external requester assignment through
++	resctrl, reading this file shows the devices or device groups assigned
++	to this resource group. Writing an architecture-specific device token
++	moves that external requester to the group. Multiple tokens can be
++	separated by commas and are processed sequentially. A failure aborts the
++	write, but requesters moved before the failure remain in their new groups.
 +
-+	mutex_lock(&group->mutex);
-+	for_each_group_device(group, device) {
-+		ret = check(device->dev, data);
-+		if (ret)
-+			goto unlock;
++	On RISC-V, an IOMMU group is identified by the following token::
++
++		 iommu_group:<group-id>
++
++	Each assigned IOMMU group is reported on a separate line when the file is
++	read. Writing the token to the root control group's devices file restores
++	the IOMMU group to the reserved default QoS IDs. Default assignments are
++	not listed in the root devices file.
++
++	This file only controls external requester membership. Resource
++	allocation and monitoring policy remains described by schemata and
++	info files.
++
++	Resource groups with assigned devices cannot be removed or reparented.
++	Move devices to another group first.
++
++	Failures will be logged to /sys/fs/resctrl/info/last_cmd_status.
++
+ "cpus":
+ 	Reading this file shows a bitmask of the logical CPUs owned by
+ 	this group. Writing a mask to this file will add and remove
+diff --git a/arch/Kconfig b/arch/Kconfig
+index fa7507ac8e13..36a4f4fbb164 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1615,6 +1615,12 @@ config ARCH_HAS_CPU_RESCTRL
+ 	  monitoring and control interfaces provided by the 'resctrl'
+ 	  filesystem (see RESCTRL_FS).
+ 
++config ARCH_HAS_RESCTRL_DEVICES
++	bool
++	help
++	  An architecture selects this option to indicate that external
++	  device objects can be attached to resctrl resource groups.
++
+ config HAVE_ARCH_COMPILER_H
+ 	bool
+ 	help
+diff --git a/fs/resctrl/rdtgroup.c b/fs/resctrl/rdtgroup.c
+index af2cbab14497..2e424c911049 100644
+--- a/fs/resctrl/rdtgroup.c
++++ b/fs/resctrl/rdtgroup.c
+@@ -99,13 +99,32 @@ void rdt_last_cmd_puts(const char *s)
+ 	seq_buf_puts(&last_cmd_status, s);
+ }
+ 
++void resctrl_last_cmd_puts(const char *s)
++{
++	rdt_last_cmd_puts(s);
++}
++
++static void rdt_last_cmd_vprintf(const char *fmt, va_list ap)
++{
++	lockdep_assert_held(&rdtgroup_mutex);
++	seq_buf_vprintf(&last_cmd_status, fmt, ap);
++}
++
+ void rdt_last_cmd_printf(const char *fmt, ...)
+ {
+ 	va_list ap;
+ 
+ 	va_start(ap, fmt);
+-	lockdep_assert_held(&rdtgroup_mutex);
+-	seq_buf_vprintf(&last_cmd_status, fmt, ap);
++	rdt_last_cmd_vprintf(fmt, ap);
++	va_end(ap);
++}
++
++void resctrl_last_cmd_printf(const char *fmt, ...)
++{
++	va_list ap;
++
++	va_start(ap, fmt);
++	rdt_last_cmd_vprintf(fmt, ap);
+ 	va_end(ap);
+ }
+ 
+@@ -766,6 +785,151 @@ static int rdtgroup_move_task(pid_t pid, struct rdtgroup *rdtgrp,
+ 	return ret;
+ }
+ 
++static bool rdtgroup_effective_ids(struct rdtgroup *r,
++				   struct resctrl_group_ids *ids)
++{
++	if (!r || !ids)
++		return false;
++
++	if (r->type == RDTMON_GROUP)
++		ids->closid = r->mon.parent->closid;
++	else if (r->type == RDTCTRL_GROUP)
++		ids->closid = r->closid;
++	else
++		return false;
++
++	ids->rmid = r->mon.rmid;
++	return true;
++}
++
++#ifdef CONFIG_ARCH_HAS_RESCTRL_DEVICES
++static void show_rdt_devices(struct rdtgroup *r, struct seq_file *s)
++{
++	struct resctrl_group_ids ids;
++
++	if (rdtgroup_effective_ids(r, &ids))
++		resctrl_arch_devices_show(s, ids);
++}
++
++static int rdtgroup_reset_all_devices(struct rdtgroup *to)
++{
++	struct resctrl_group_ids default_ids;
++
++	if (!to || !rdtgroup_effective_ids(to, &default_ids))
++		return 0;
++
++	return resctrl_arch_devices_reset_all(default_ids);
++}
++
++static bool rdtgroup_arch_devices_assigned(struct rdtgroup *rdtgrp)
++{
++	struct resctrl_group_ids ids;
++
++	if (!rdtgroup_effective_ids(rdtgrp, &ids))
++		return false;
++
++	return resctrl_arch_devices_assigned(ids);
++}
++
++static bool rdtgroup_child_arch_devices_assigned(struct rdtgroup *rdtgrp)
++{
++	struct rdtgroup *crgrp;
++
++	list_for_each_entry(crgrp, &rdtgrp->mon.crdtgrp_list, mon.crdtgrp_list) {
++		if (rdtgroup_arch_devices_assigned(crgrp))
++			return true;
 +	}
 +
-+	for_each_group_device(group, device)
-+		update(device->dev, data);
++	return false;
++}
++
++static int rdtgroup_reject_assigned_devices(struct rdtgroup *rdtgrp,
++					    bool include_children,
++					    const char *operation)
++{
++	if (!rdtgroup_arch_devices_assigned(rdtgrp) &&
++	    (!include_children || !rdtgroup_child_arch_devices_assigned(rdtgrp)))
++		return 0;
++
++	rdt_last_cmd_printf("Move devices out before %s group\n", operation);
++	return -EBUSY;
++}
++
++static ssize_t rdtgroup_devices_write(struct kernfs_open_file *of,
++				      char *buf, size_t nbytes, loff_t off)
++{
++	struct resctrl_group_ids ids;
++	struct rdtgroup *rdtgrp;
++	char *tok;
++	int ret = 0;
++
++	rdtgrp = rdtgroup_kn_lock_live(of->kn);
++	if (!rdtgrp) {
++		rdtgroup_kn_unlock(of->kn);
++		return -ENOENT;
++	}
++	rdt_last_cmd_clear();
++
++	if (rdtgrp->mode == RDT_MODE_PSEUDO_LOCKED ||
++	    rdtgrp->mode == RDT_MODE_PSEUDO_LOCKSETUP) {
++		ret = -EINVAL;
++		rdt_last_cmd_puts("Pseudo-locking in progress\n");
++		goto unlock;
++	}
++
++	if (!rdtgroup_effective_ids(rdtgrp, &ids)) {
++		ret = -EINVAL;
++		goto unlock;
++	}
++
++	while ((tok = strsep(&buf, ","))) {
++		tok = strim(tok);
++		if (!*tok) {
++			rdt_last_cmd_puts("Device list parsing error\n");
++			ret = -EINVAL;
++			break;
++		}
++
++		ret = resctrl_arch_devices_write(tok, ids);
++		if (ret)
++			break;
++	}
 +
 +unlock:
-+	mutex_unlock(&group->mutex);
++	rdtgroup_kn_unlock(of->kn);
++
++	return ret ?: nbytes;
++}
++
++static int rdtgroup_devices_show(struct kernfs_open_file *of,
++				 struct seq_file *s, void *v)
++{
++	struct rdtgroup *rdtgrp;
++	int ret = 0;
++
++	rdtgrp = rdtgroup_kn_lock_live(of->kn);
++	if (rdtgrp)
++		show_rdt_devices(rdtgrp, s);
++	else
++		ret = -ENOENT;
++	rdtgroup_kn_unlock(of->kn);
++
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(iommu_group_update_devices);
-+
- /**
-  * iommu_group_get - Return the group for a device and increment reference
-  * @dev: get the group that this device belongs to
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e771b4a92f5b..befba0683e06 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -988,6 +988,9 @@ extern int iommu_group_add_device(struct iommu_group *group,
- extern void iommu_group_remove_device(struct device *dev);
- extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- 				    int (*fn)(struct device *, void *));
-+int iommu_group_update_devices(struct iommu_group *group, void *data,
-+			       int (*check)(struct device *, void *),
-+			       void (*update)(struct device *, void *));
- extern struct iommu_group *iommu_group_get(struct device *dev);
- struct iommu_group *iommu_group_get_by_id(int id);
- void iommu_group_put_by_id(struct iommu_group *group);
-@@ -1399,6 +1402,16 @@ static inline int iommu_group_for_each_dev(struct iommu_group *group,
- 	return -ENODEV;
- }
- 
-+static inline int iommu_group_update_devices(struct iommu_group *group,
-+					     void *data,
-+					     int (*check)(struct device *,
-+							  void *),
-+					     void (*update)(struct device *,
-+							    void *))
++#else
++static inline int rdtgroup_reset_all_devices(struct rdtgroup *to)
 +{
-+	return -ENODEV;
++	return 0;
 +}
 +
- static inline struct iommu_group *iommu_group_get(struct device *dev)
++static inline int rdtgroup_reject_assigned_devices(struct rdtgroup *rdtgrp,
++						   bool include_children,
++						   const char *operation)
++{
++	return 0;
++}
++#endif
++
+ static ssize_t rdtgroup_tasks_write(struct kernfs_open_file *of,
+ 				    char *buf, size_t nbytes, loff_t off)
  {
- 	return NULL;
+@@ -1491,6 +1655,11 @@ static ssize_t rdtgroup_mode_write(struct kernfs_open_file *of,
+ 		rdtgrp->mode = RDT_MODE_EXCLUSIVE;
+ 	} else if (IS_ENABLED(CONFIG_RESCTRL_FS_PSEUDO_LOCK) &&
+ 		   !strcmp(buf, "pseudo-locksetup")) {
++		ret = rdtgroup_reject_assigned_devices(rdtgrp, true,
++						       "entering pseudo-locksetup");
++		if (ret)
++			goto out;
++
+ 		ret = rdtgroup_locksetup_enter(rdtgrp);
+ 		if (ret)
+ 			goto out;
+@@ -2067,6 +2236,16 @@ static struct rftype res_common_files[] = {
+ 		.seq_show	= rdtgroup_tasks_show,
+ 		.fflags		= RFTYPE_BASE,
+ 	},
++#ifdef CONFIG_ARCH_HAS_RESCTRL_DEVICES
++	{
++		.name		= "devices",
++		.mode		= 0644,
++		.kf_ops		= &rdtgroup_kf_single_ops,
++		.write		= rdtgroup_devices_write,
++		.seq_show	= rdtgroup_devices_show,
++		.fflags		= RFTYPE_BASE,
++	},
++#endif
+ 	{
+ 		.name		= "mon_hw_id",
+ 		.mode		= 0444,
+@@ -3061,6 +3240,8 @@ static void rmdir_all_sub(void)
+ 	/* Move all tasks to the default resource group */
+ 	rdt_move_group_tasks(NULL, &rdtgroup_default, NULL);
+ 
++	WARN_ON_ONCE(rdtgroup_reset_all_devices(&rdtgroup_default));
++
+ 	list_for_each_entry_safe(rdtgrp, tmp, &rdt_all_groups, rdtgroup_list) {
+ 		/* Free any child rmids */
+ 		free_all_child_rdtgrp(rdtgrp);
+@@ -3970,6 +4151,11 @@ static int rdtgroup_rmdir_mon(struct rdtgroup *rdtgrp, cpumask_var_t tmpmask)
+ 	struct rdtgroup *prdtgrp = rdtgrp->mon.parent;
+ 	u32 closid, rmid;
+ 	int cpu;
++	int ret;
++
++	ret = rdtgroup_reject_assigned_devices(rdtgrp, false, "removing");
++	if (ret)
++		return ret;
+ 
+ 	/* Give any tasks back to the parent group */
+ 	rdt_move_group_tasks(rdtgrp, prdtgrp, tmpmask);
+@@ -4020,6 +4206,11 @@ static int rdtgroup_rmdir_ctrl(struct rdtgroup *rdtgrp, cpumask_var_t tmpmask)
+ {
+ 	u32 closid, rmid;
+ 	int cpu;
++	int ret;
++
++	ret = rdtgroup_reject_assigned_devices(rdtgrp, true, "removing");
++	if (ret)
++		return ret;
+ 
+ 	/* Give any tasks back to the default group */
+ 	rdt_move_group_tasks(rdtgrp, &rdtgroup_default, tmpmask);
+@@ -4093,7 +4284,10 @@ static int rdtgroup_rmdir(struct kernfs_node *kn)
+ 	    rdtgrp != &rdtgroup_default) {
+ 		if (rdtgrp->mode == RDT_MODE_PSEUDO_LOCKSETUP ||
+ 		    rdtgrp->mode == RDT_MODE_PSEUDO_LOCKED) {
+-			ret = rdtgroup_ctrl_remove(rdtgrp);
++			ret = rdtgroup_reject_assigned_devices(rdtgrp, true,
++							       "removing");
++			if (!ret)
++				ret = rdtgroup_ctrl_remove(rdtgrp);
+ 		} else {
+ 			ret = rdtgroup_rmdir_ctrl(rdtgrp, tmpmask);
+ 		}
+@@ -4210,6 +4404,12 @@ static int rdtgroup_rename(struct kernfs_node *kn,
+ 		goto out;
+ 	}
+ 
++	if (rdtgrp->mon.parent != new_prdtgrp) {
++		ret = rdtgroup_reject_assigned_devices(rdtgrp, false, "reparenting");
++		if (ret)
++			goto out;
++	}
++
+ 	/*
+ 	 * Allocate the cpumask for use in mongrp_reparent() to avoid the
+ 	 * possibility of failing to allocate it after kernfs_rename() has
+diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
+index 73ff522448a0..a4b5c2d5e814 100644
+--- a/include/linux/resctrl.h
++++ b/include/linux/resctrl.h
+@@ -8,6 +8,8 @@
+ #include <linux/pid.h>
+ #include <linux/resctrl_types.h>
+ 
++struct seq_file;
++
+ #ifdef CONFIG_ARCH_HAS_CPU_RESCTRL
+ #include <asm/resctrl.h>
+ #endif
+@@ -18,6 +20,49 @@
+ 
+ #define RESCTRL_PICK_ANY_CPU		-1
+ 
++/**
++ * struct resctrl_group_ids - resctrl control and monitoring IDs
++ * @closid: resource control class ID
++ * @rmid: resource monitoring ID
++ */
++struct resctrl_group_ids {
++	u32 closid;
++	u32 rmid;
++};
++
++void resctrl_last_cmd_puts(const char *s);
++void resctrl_last_cmd_printf(const char *fmt, ...) __printf(1, 2);
++
++#ifdef CONFIG_ARCH_HAS_RESCTRL_DEVICES
++int resctrl_arch_devices_write(char *tok, struct resctrl_group_ids ids);
++void resctrl_arch_devices_show(struct seq_file *s,
++			       struct resctrl_group_ids ids);
++bool resctrl_arch_devices_assigned(struct resctrl_group_ids ids);
++int resctrl_arch_devices_reset_all(struct resctrl_group_ids default_ids);
++#else
++static inline int resctrl_arch_devices_write(char *tok,
++					     struct resctrl_group_ids ids)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline void resctrl_arch_devices_show(struct seq_file *s,
++					     struct resctrl_group_ids ids)
++{
++}
++
++static inline bool resctrl_arch_devices_assigned(struct resctrl_group_ids ids)
++{
++	return false;
++}
++
++static inline int
++resctrl_arch_devices_reset_all(struct resctrl_group_ids default_ids)
++{
++	return 0;
++}
++#endif
++
+ #ifdef CONFIG_PROC_CPU_RESCTRL
+ 
+ int proc_resctrl_show(struct seq_file *m,
 -- 
 2.50.1 (Apple Git-155)
 
