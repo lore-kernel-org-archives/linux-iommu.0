@@ -1,184 +1,169 @@
-Received: from mx.swemel.ru (mx.swemel.ru [95.143.211.150])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011044.outbound.protection.outlook.com [40.107.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1EFB35F615
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 22:21:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.143.211.150
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784067701; cv=none; b=HJOchCFQsGHEATviLn/HDL2Pu0+bB84dkfVykF8q8iB4dC7t74a/Xk+yxNlq8ltWpKnaly99mgRzmoy8sLKsuBaSabIYqO58YGQzr4bAaBtnH5BA/uNniizpnfWATaytFxXd33FINagIp6w76G8fTKgQ+KwPc3z9x5j4kKlCUh4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784067701; c=relaxed/simple;
-	bh=IaD5t0LBOWr6KMudIZ1Y148ufQxnJjDnaqzUil2vMrU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=VlZnTrx7zFzl3A9b/+MiuK3iYtXjNviRNae4g/vqWynlFr/ZNQzHjAWKyL3o69bsNlc1wlZgWeGXoIj3J3TQgdAwWI1lLk27IMAMxxEKv4dd8Eu4MGk5ZayMyP1Bh0K6WtqwDVnyDvi2IU0GNkhamhm/XhkDeKKLFJWEB4IQJiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=swemel.ru; spf=pass smtp.mailfrom=swemel.ru; dkim=pass (1024-bit key) header.d=swemel.ru header.i=@swemel.ru header.b=mdJ4xqfR; arc=none smtp.client-ip=95.143.211.150
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=swemel.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=swemel.ru
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35DC137268B;
+	Tue, 14 Jul 2026 23:09:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784070584; cv=fail; b=M6yjv9iWEF9821AhANBAwqFXrPI0D49AVMdXhzst//ZtI7iJOMplWOToefIGG0V8CPWsfikm5fimdPEETg2Qz1lCBNjH6T79cnNCgVbCmHGsYI4ABs0oAMUh7TuIbPQwCDvN7H0y4YvlONCytV6Mivuxc1EGgjEFr6ZuL0lyqDY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784070584; c=relaxed/simple;
+	bh=mUrOZA9Bq82diRwCQsKScgDVs25nOJ8f0w6f2vlRv2s=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FicF4nkdkY33oU99e1yjxJ1qz4ToqCMG8TkukfgjTzPKBL/RhxT5yFOGanG6ag1TlrlnCuq/e7tDfx70qBKp5KtANNN6ORLa6/aAcAy9CXKeDMzZpHbveoWRZdfKRWARN0StltQAjcG1lGBw11Mwda6hKTNZJ948/QIzBTtUaT8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ADN1QfoF; arc=fail smtp.client-ip=40.107.208.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=swemel.ru header.i=@swemel.ru header.b="mdJ4xqfR"
-From: Konstantin Andreev <andreev@swemel.ru>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=swemel.ru; s=mail;
-	t=1784067684;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=0lt14j5LIzqlXoMtLk8NSNIDUzznDwimtXlMInsAM4A=;
-	b=mdJ4xqfRbONBHqx5E8K/zKDQinIH1hHH4wC7JZUMwSVSkwWvhvb9nuvLYMurmxTBDTQAWB
-	hdz9iHqbAuHnZa9h6b1/AxWH+ED9QlHRrJz5+bHJse+TnbguCVnNzev7yaMnxUBNyua4nR
-	j/6pky+UnIcQ3Xb67WCjWkPV7/zXb54=
-To: stable@vger.kernel.org
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmytro Maluka <dmaluka@chromium.org>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Keshavamurthy, Anil S" <anil.s.keshavamurthy@intel.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Adrian Bunk <bunk@stusta.de>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 6.12.y] iommu/vt-d: Clear Present bit before tearing down context entry
-Date: Wed, 15 Jul 2026 01:21:23 +0300
-Message-ID: <20260714222124.1906678-1-andreev@swemel.ru>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ADN1QfoF"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=WjcSpwpeYNDUMACccEB6n2EkZ9HIBawrUU4CUC1EYmIhb3ksiJR0czWzS1+Y/5XAZzAbhg/26OUbFcw2nCvYQKb2vawVHm2bA8hjAsyQQeFu6N6/ihR6EWrsDsds0I5VzihTtaF/0hcWWj55vp+y5s3uYCooR/rwZuBzjXcjmGM6cWucFED6XZly+6L/xLIh3pkSxPK8YS4zilf7Is1eg/frNNpAJYDnWoexVqgaAZSgbWfZNp0fxXRUzlm7+rmAppergcyDaWfYm+B57Co6y4QX5jMZ1jxoB3ragryS1xC49j6oqcxUupJhmpcZSpP1Fb3nqXY9PzQU6kAOQmDLEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ovu+MJpfmO8hWq7ZdCSjO3yz9NllpzQkyfrDB5S72dY=;
+ b=H4KcJkkcgPQ+Jzx+yeItMnbl8bGMjweQEys8VRNmJHM9VXbm68ZIjypDIG1KDZeRRDY9t0nx0AXgi4TGh5Nr8CHRR1QV94Jm0ujB7GPffWom8Ug7HMczW1AO7HjD8e6QQpbPhkGYglieOKCZV5ip4bK6QgZE4aGboTcEfpj2ab4sERkzym8PJ0ko+wNZ9+VmWIlj5CyRRsS8LP0dPDsGipC7Yk2+x23KArCXwOONnusdFB8Wtm5m3wP2XvbX/oV8YOwoIGiRbuVgde427HnxRNC/k7U7Iv68DFXgno9zGN+JmAMI5P7C4YrakoocR4FCjiMgMYFVuxnTCaL7pHhbmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ovu+MJpfmO8hWq7ZdCSjO3yz9NllpzQkyfrDB5S72dY=;
+ b=ADN1QfoFphFOKR3TBvQkXbiJfVz8L7PqAOIfWxyX3JWCTIgEWE9maJO7zc9v69CokgcnZgfCo4fZgpFWpEpPWaLgkD+9JE7WLYtvAcIYZPaDk7g6JbxkQNARdS+0CFJz7cQdvHZ6tEaBa+KWuBfsCSfSiOhZkKbjxmxPpeHg+D82cjRKQH/pFBeUVqtRd6DiTcybvHT3eBqnULj27gOc2/W3XDrtV9QmVjA5N3UkHF4wCDbq4nh+nP8SdebmcoYL5S6nIRkEkQ4x7fCxpB+bQmmcUo++S4srAP2xRnd11cfBO1S575ar3WV0AD05VAQglQTw+uf6PPHfgxrObPS+Kg==
+Received: from SJ0PR13CA0098.namprd13.prod.outlook.com (2603:10b6:a03:2c5::13)
+ by PH7PR12MB5620.namprd12.prod.outlook.com (2603:10b6:510:137::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Tue, 14 Jul
+ 2026 23:09:33 +0000
+Received: from SJ5PEPF000001F7.namprd05.prod.outlook.com
+ (2603:10b6:a03:2c5:cafe::24) by SJ0PR13CA0098.outlook.office365.com
+ (2603:10b6:a03:2c5::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.9 via Frontend Transport; Tue, 14
+ Jul 2026 23:09:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ SJ5PEPF000001F7.mail.protection.outlook.com (10.167.242.75) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.223.9 via Frontend Transport; Tue, 14 Jul 2026 23:09:33 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Tue, 14 Jul
+ 2026 16:09:23 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Tue, 14 Jul 2026 16:09:23 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 14 Jul 2026 16:09:22 -0700
+Date: Tue, 14 Jul 2026 16:09:21 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>, "Pasha
+ Tatashin" <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, "Pranjal
+ Shrivastava" <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v3 7/8] iommu/arm-smmu-v3: Change how the tlbi describes
+ the invalidation
+Message-ID: <albBoVkI4KIh+spI@nvidia.com>
+References: <0-v3-4e7f64f4e094+85e-smmu_tlbi_jgg@nvidia.com>
+ <7-v3-4e7f64f4e094+85e-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7-v3-4e7f64f4e094+85e-smmu_tlbi_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001F7:EE_|PH7PR12MB5620:EE_
+X-MS-Office365-Filtering-Correlation-Id: d8c954f7-62e2-4754-a496-08dee1fcf752
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|1800799024|36860700016|376014|82310400026|23010399003|18002099003|22082099003|11063799006|56012099006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	haDhMwbRthmTRygkdfkmbnH9DZkG3hR3/TJ+yaCTEESPQnPy9Az1DN1vV7NPSkQ1yLM28PbwVCZJdlNq3I4777OQ+nqvsWE6oON4fWQA9YmsabTT0J9V9g3c4PJkDQf7IvNaF6kPXMG7rE5qomEeUPW7XTvLJtFcH12rML82cgGfsPmXTZpnmaffTWCFe8YobZLJPivMiZzuUMp5kU0n17PBxuil/Z1/MkqQGXvzG1OBq4JgSZ4LAs/cYveLY1z20ReUTPriQWDnSgBE/EQYPMsnjx05dgVk1ZptRUPX/1SVVvpBcXtJklgdEGx3GTODO1u5aQDN4viAmuIUSDIg6GjB5wAjUNVu5ztepvdSLLPTPzCq3eYkWA9KIYkiBWAN4/moimN8foX2vuTvCdczVbNRXUt9fVRFjJUc6QrTLr8sNtGcoBfAp8pamVlCWfZBLMKrEyR10MbP/3Zdfvt5znE4T//ZVLjpMLzO240sU2N6tkOJG9u9umnz0KuB231TUQseM8N9sd1HExA9vZMfHy6XrqiQ3PmWROvUUl6rM35LpLDRmY/39XopIFu9MmhcdzO8DIw46aUADsg4J7aDNJojoSc0PmZRMer+vLgk7hu0URia0Kib/5gntxVuXdI+eC1CSHWgpdG2qFFM24AdaUZb/KunZ4r+B0iTlcTA/rrfkvQZCNzsCiGQVqTjinfSvoS6UDnrwbUTC8lo7rjp9w==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(36860700016)(376014)(82310400026)(23010399003)(18002099003)(22082099003)(11063799006)(56012099006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	1DM3AOsM9UlcCusii+FSh03GqRphPTgvky6I4BT+xZXZ+PRQN+Bu65D1+io6/gy8geEIe0QI0PaFqBV3l2Ksz1y6auNaszYEmolRIUEAEMxEgukVhhIPafEBALXewOaTKMnkwaaOoB8Drwyv9G91B6R4+VBJ/VeycNd7JMpDFYw40x1gyqJTAMhu61Y6zeR9tbriYPtAyzcHNLMrO4EX1WqYU062A5I2IrvzNNgx+95TM0XCaDT1BmIR+ZCkwUcTmgeey4rbRl5HYCaF8PqMHdhw0gzmcgZMJzfZrUaD+F4rka7nd0RUo2tI9EQdeoucPp5tytaE/Mu2v8Mv7+mZucGt2lIgqwujzUIZucMPc0a8P2UCXE//VXKRCPeJKS9mh8OifBrH0WZm2uucUHmpRieOELwyeShDNw4dV1Vhq4mhrrHZON3colyJ3PLVaUEE
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 23:09:33.0382
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8c954f7-62e2-4754-a496-08dee1fcf752
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001F7.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5620
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+On Tue, Jul 14, 2026 at 03:46:07PM -0300, Jason Gunthorpe wrote:
+> +static unsigned int arm_smmu_compute_ttl(u8 leaf_bitmap, u8 table_bitmap,
+> +	} else {
+> +		/* Both bitmaps zero is not allowed */
+> +		return 0;
+> +	}
 
-[ Upstream commit c1e4f1dccbe9d7656d1c6872ebeadb5992d0aaa2 ]
+"not allowed" reads like we need a WARN_ON?
 
-When tearing down a context entry, the current implementation zeros the
-entire 128-bit entry using multiple 64-bit writes. This creates a window
-where the hardware can fetch a "torn" entry — where some fields are
-already zeroed while the 'Present' bit is still set — leading to
-unpredictable behavior or spurious faults.
+Otherwise, should it be reworded?
 
-While x86 provides strong write ordering, the compiler may reorder writes
-to the two 64-bit halves of the context entry. Even without compiler
-reordering, the hardware fetch is not guaranteed to be atomic with
-respect to multiple CPU writes.
+> +static u8 arm_smmu_tlbi_calc_stride(struct arm_smmu_tlbi *tlbi)
+> +{
+> +	u8 combined = tlbi->table_levels_bitmap | tlbi->leaf_levels_bitmap;
+> +	u8 tg_szlg2 = tlbi->tgsz_lg2;
+> +
+> +	if (!combined)
+> +		return U8_MAX;
 
-Align with the "Guidance to Software for Invalidations" in the VT-d spec
-(Section 6.5.3.3) by implementing the recommended ownership handshake:
+As the code checks "combined", ...
 
-1. Clear only the 'Present' (P) bit of the context entry first to
-   signal the transition of ownership from hardware to software.
-2. Use dma_wmb() to ensure the cleared bit is visible to the IOMMU.
-3. Perform the required cache and context-cache invalidation to ensure
-   hardware no longer has cached references to the entry.
-4. Fully zero out the entry only after the invalidation is complete.
+> +	 * If leaf_levels_bitmap is 0 then this is a walk cache only
+> +	 * invalidation. If table_levels_bitmap is 0 then this is a leaf only
+> +	 * invalidation.
 
-Also, add a dma_wmb() to context_set_present() to ensure the entry
-is fully initialized before the 'Present' bit becomes visible.
+..., how about listing all combinations in this kdocs:
+       * The pair (table, leaf) below selects the invalidation scope:
+       *   table!=0, leaf==0 : walk cache only
+       *   table==0, leaf!=0 : leaves only
+       *   table!=0, leaf!=0 : walk cache + leaves
+       *   table==0, leaf==0 : a full invalidation
+?
 
-Fixes: ba39592764ed2 ("Intel IOMMU: Intel IOMMU driver")
-Reported-by: Dmytro Maluka <dmaluka@chromium.org>
-Closes: https://lore.kernel.org/all/aTG7gc7I5wExai3S@google.com/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Dmytro Maluka <dmaluka@chromium.org>
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20260120061816.2132558-3-baolu.lu@linux.intel.com
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
-Signed-off-by: Konstantin Andreev <andreev@swemel.ru>
----
-Backport of the CVE-2026-45944 fix to 6.12.y LTS
-The fix first appeared in mainline v7.0-rc1,
-then was backported to 6.19.y stable and 6.18 LTS branches,
-but was not backported to earlier LTS kernels.
+> +	 * Level bitmaps use iommupt numbering: bit 0 is the leaf-only level
+> +	 * (ARM level 3), bit 1 is the next level up (ARM level 2), etc.
 
-Probably, upstream commit was not backported to 6.12.y
-as it does not apply cleanly due to minor diff context change.
+Also, the driver calculates ttl via the inverted numbering noted
+here. How about:
 
-The patch applies on top of linux-6.12.y tag v6.12.95
+static inline int arm_smmu_bitmap_to_level(u8 bitmap)
+{
+      return 3 - (int)__ffs(bitmap);
+}
 
- drivers/iommu/intel/iommu.c |  4 +++-
- drivers/iommu/intel/iommu.h | 21 ++++++++++++++++++++-
- drivers/iommu/intel/pasid.c |  5 ++++-
- 3 files changed, 27 insertions(+), 3 deletions(-)
+?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cce5a19b5d33..18022d17c492 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1914,10 +1914,12 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
- 	}
- 
- 	did = context_domain_id(context);
--	context_clear_entry(context);
-+	context_clear_present(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
- 	intel_context_flush_present(info, context, did, true);
-+	context_clear_entry(context);
-+	__iommu_flush_cache(iommu, context, sizeof(*context));
- }
- 
- static int domain_setup_first_level(struct intel_iommu *iommu,
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index b33d8888d7eb..e46eb1d3fba2 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -958,7 +958,26 @@ static inline unsigned long virt_to_dma_pfn(void *p)
- 
- static inline void context_set_present(struct context_entry *context)
- {
--	context->lo |= 1;
-+	u64 val;
-+
-+	dma_wmb();
-+	val = READ_ONCE(context->lo) | 1;
-+	WRITE_ONCE(context->lo, val);
-+}
-+
-+/*
-+ * Clear the Present (P) bit (bit 0) of a context table entry. This initiates
-+ * the transition of the entry's ownership from hardware to software. The
-+ * caller is responsible for fulfilling the invalidation handshake recommended
-+ * by the VT-d spec, Section 6.5.3.3 (Guidance to Software for Invalidations).
-+ */
-+static inline void context_clear_present(struct context_entry *context)
-+{
-+	u64 val;
-+
-+	val = READ_ONCE(context->lo) & GENMASK_ULL(63, 1);
-+	WRITE_ONCE(context->lo, val);
-+	dma_wmb();
- }
- 
- static inline void context_set_fault_enable(struct context_entry *context)
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 74be6b547fc0..5e63b5d4577f 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -804,7 +804,7 @@ static int device_pasid_table_setup(struct device *dev, u8 bus, u8 devfn)
- 	}
- 
- 	if (context_copied(iommu, bus, devfn)) {
--		context_clear_entry(context);
-+		context_clear_present(context);
- 		__iommu_flush_cache(iommu, context, sizeof(*context));
- 
- 		/*
-@@ -824,6 +824,9 @@ static int device_pasid_table_setup(struct device *dev, u8 bus, u8 devfn)
- 		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
- 		devtlb_invalidation_with_pasid(iommu, dev, IOMMU_NO_PASID);
- 
-+		context_clear_entry(context);
-+		__iommu_flush_cache(iommu, context, sizeof(*context));
-+
- 		/*
- 		 * At this point, the device is supposed to finish reset at
- 		 * its driver probe stage, so no in-flight DMA will exist,
--- 
-2.47.3
+Then, arm_smmu_compute_ttl() would read slightly better.
 
+With that,
+
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
