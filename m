@@ -1,115 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6A62D12F3
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 05:48:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD22C3D3CF0
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:03:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784008118; cv=none; b=Nn6b5dkVjmJ3ono16K1IKg0M48g8AXoElrf9BZWJ4zlEhMlQNByp4SHzlT5Mf/f8m74lxhRxKPrU4WSy+whhHMaAHg//BwkofWAV0Xwi3Nbp2+EZI781geDPWP+0q0SbG/ZuptXi31hdGhfCG9C1RhC33quJGmvCXdiDODIejNY=
+	t=1784009010; cv=none; b=hzNg3808ulHm9W+wigwED1N+EFmo1Vk93xxMBaa8CrHpyMMe9Llt2DBuB72iFMoFco4WjVRCC1QDJNB3Zd/kcH2JFSzeMpy7ESbwlYNqyrUn1nYFBD9hXpbIHoiYQYroxxyoIhJdZjTdnlr5V4bZmvse+GDyJtveCMoEf0XyUZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784008118; c=relaxed/simple;
-	bh=iaWPYz/PEYpLtc8hcV+XI7U4ojKHzqm3RCvrB1jQoY8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PhKelMqIP1JmGODeUNQnuWjczKnwPmJBdL6bYGw+A7ElKayDqTBO7wAJ9ouQBVKG21sEsMvzS0c0ypxR1kXMAK6bGRCC7qbCxvGuD//oF93ZtrOpyszQvg4eJ3DNqJzaVTi/gOFBgAIXOua4r/J/iP1hI6qR/Q3imQs/5F3VbK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CL3zdTHX; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1784009010; c=relaxed/simple;
+	bh=COk2wX2jZD2d1qPp4lpPQ8FViO903xhrrRx35WjWdBs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=bNmGuwxHKo5nTMQV3S6J/7YSPt7TMgHtb8WoSyOOe7LAc2CcsBaRBPIp0XK8ONgt7m6lClgNkqmYBsaExxoQptOz9VfeXix41kTBdi5zwyVz/PikKVk4pp2uIH/0xvo9vcdFoOLM90cjXTlmt2v43HV+2tToZIXWUfqBzgMn74E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=LcPyg8h2; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CL3zdTHX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784008117; x=1815544117;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=iaWPYz/PEYpLtc8hcV+XI7U4ojKHzqm3RCvrB1jQoY8=;
-  b=CL3zdTHXWnj6a9tbPe4odchk12n9wPlTlcqnfIxZWzwglfLYG5Oegegi
-   GGeAF58CLR/xl+PR+7MCUsPm/G9xKnWkUeDFRUozD6uytArM3od83C7Ee
-   xekwiXbnOA9V3e1LHeHgQ6OHldN5QzqQ2kAxC4suT63370HTTWFNPbDnH
-   03kPzosdOt+928BOTlVaRgo2d3LPVtOQ7Y0NXgZ8E1NjwL35C3n1RAdFt
-   W6DKgjlrwB3HKgKVcGx6x7dETzCscNeDK3uAVPgNzC6ER2GvUTzRaGmb7
-   j0/nyjn78MBlxNcFdS7PWDFpik0/hobxYBklaQLar1HjhzgGSKXWNIL4L
-   g==;
-X-CSE-ConnectionGUID: lQJV1UAHRZKvxjUHND607g==
-X-CSE-MsgGUID: FYYfAUYVTyS6K0iMS21EgA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11846"; a="84741772"
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="84741772"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 22:48:37 -0700
-X-CSE-ConnectionGUID: YVfgNPWqQ4qIPwEDh/lsyw==
-X-CSE-MsgGUID: owHzFtAaSI+EfbxjhDEj4Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="280176911"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 22:48:33 -0700
-Message-ID: <d119314e-613f-4077-b141-747e7d6f0501@linux.intel.com>
-Date: Tue, 14 Jul 2026 13:46:48 +0800
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="LcPyg8h2"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260714060326euoutp015b81c4ed544ac17034729d2c420c0d5e~CEr1R1k4t1284012840euoutp01p
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 06:03:26 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260714060326euoutp015b81c4ed544ac17034729d2c420c0d5e~CEr1R1k4t1284012840euoutp01p
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1784009006;
+	bh=KypV5XK/i5AsnFlkCRUYoYt76EM3bVkCa2DsWaCExGo=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=LcPyg8h20ro764c8dkiKZP0bWxk2m0Hl2LRrz+3BEGwkfeVRzDsZPsvYcQWWMrJKS
+	 6x+SZpomRWoj/xeAf2KIMkQSdxruRIa0k2HpT1idhshVDtSU7YYx4KcqG1FVNGsAVp
+	 Kk+p0ia8SURLZphdr+ueDTa/rC7XxFOBDjCbP1Po=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260714060326eucas1p2f7547611257961d9a1e96db1fbc9285c~CEr04H8Xl1399113991eucas1p2M;
+	Tue, 14 Jul 2026 06:03:26 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260714060325eusmtip192d532ed69f133cf9753eeda5bd08839~CEr0aQdeL0881908819eusmtip1g;
+	Tue, 14 Jul 2026 06:03:25 +0000 (GMT)
+Message-ID: <ccfb5781-9964-4812-a67b-121ea6f79648@samsung.com>
+Date: Tue, 14 Jul 2026 08:03:25 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 18/18] iommu/arm-smmu-v3: Block ATS for a master upon
- an ATC invalidation timeout
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Jason Gunthorpe <jgg@nvidia.com>, "Rafael J . Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Pranjal Shrivastava <praan@google.com>,
- Mostafa Saleh <smostafa@google.com>, Kevin Tian <kevin.tian@intel.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, vsethi@nvidia.com,
- Shuai Xue <xueshuai@linux.alibaba.com>
-References: <cover.1783044582.git.nicolinc@nvidia.com>
- <939885143f3064811685b3f31f6f30f8a713c89e.1783044582.git.nicolinc@nvidia.com>
- <9a85cccd-29ed-4c51-b9cb-140631966d20@linux.intel.com>
- <alUzeyRh5FnzMiQ4@nvidia.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma-direct: Improve readability of the
+ dma_direct_map_sg() for P2PDMA case
+To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Luis Chamberlain <mcgrof@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>,
+	Christoph Hellwig <hch@lst.de>, Li RongQing <lirongqing@baidu.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <alUzeyRh5FnzMiQ4@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260713083022.1110993-1-m.szyprowski@samsung.com>
 Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260714060326eucas1p2f7547611257961d9a1e96db1fbc9285c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260713083036eucas1p12b33a500ff4fef0b5d8db94f694bdb24
+X-EPHeader: CA
+X-CMS-RootMailID: 20260713083036eucas1p12b33a500ff4fef0b5d8db94f694bdb24
+References: <CGME20260713083036eucas1p12b33a500ff4fef0b5d8db94f694bdb24@eucas1p1.samsung.com>
+	<20260713083022.1110993-1-m.szyprowski@samsung.com>
 
-On 7/14/26 02:50, Nicolin Chen wrote:
-> On Mon, Jul 13, 2026 at 08:20:29PM +0800, Baolu Lu wrote:
->> My understanding of the sequence to quarantine a faulty ATS device is
->> to:
->>
->> 1. Identify the devices that encountered an ATC invalidation timeout
->>     failure.
->> 2. Have hardware block incoming DMA transfers and translation requests
->>     by clearing the corresponding bits in the device's context/
->>     translation table entries.
->> 3. Have software prevent the driver from submitting new invalidation
->>     requests or re-attaching a new domain to the device.
->>
->> If this understanding is correct, then while steps 1 and 2 are hardware-
->> and driver-specific, step 3 seems completely generic.
-> 
-> Step 3 is kinda driver-specific too for a few reasons:
-> a. This is in the iommu_unmap() context; called right before that
->     function puts the kernel page. So, all the steps must be done
->     before kernel reclaims the page (potentially to a new ATS for
->     the same device whose ATC is stale).
-> b. Invalidation can be an IRQ context. So, can't use group->mutex,
->     which a generic helper would likely need.
-> c. Given (a) and (b), extra driver-level spinlocks are required:
->     streams_lock and master_domains_lock in this patch.
+On 13.07.2026 10:30, Marek Szyprowski wrote:
+> Improve readability of the sg_dma_len assignment in the P2PDMA cases by
+> removing duplicated code, which was a direct result of the d0d08f4bd7f6
+> ("dma-direct: Fix missing sg_dma_len assignment in P2PDMA bus mappings")
+> fix. No functional change.
+>
+> Suggested-by: Leon Romanovsky <leon@kernel.org>
+> Link: https://lore.kernel.org/all/20260604071856.GA245424@unreal/
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Pushed to dma-mapping-for-next.
+> ---
+>  kernel/dma/direct.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4391b797d4db..d8219efe3273 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -486,15 +486,14 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+>  				goto out_unmap;
+>  			}
+>  			break;
+>  		case PCI_P2PDMA_MAP_BUS_ADDR:
+>  			sg->dma_address = pci_p2pdma_bus_addr_map(
+>  				p2pdma_state.mem, sg_phys(sg));
+> -			sg_dma_len(sg) = sg->length;
+>  			sg_dma_mark_bus_address(sg);
+> -			continue;
+> +			break;
+>  		default:
+>  			ret = -EREMOTEIO;
+>  			goto out_unmap;
+>  		}
+>  		sg_dma_len(sg) = sg->length;
+>  	}
 
-Yes, fair enough. The locking constraints here are tight, so keeping
-this logic inside the iommu driver makes things simpler.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-> d. Step 3 actually has two small steps: disable ATS at the driver
->     level; disable ATS entries in the invalidation array, either of
->     which are currently driver-specific.
-> 
-> Jason has a view of moving the arm_smmu_invs to the core. So, maybe
-> step 3.2 (disabling it in the invalidation array) can be generic in
-> the future.
-
-Thanks,
-baolu
