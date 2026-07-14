@@ -1,177 +1,94 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19010017.outbound.protection.outlook.com [52.103.23.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C71162D0610;
-	Tue, 14 Jul 2026 15:46:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.23.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784044004; cv=fail; b=cxSDz98MjQTYlhcSo7igz5Bqj3FY8u5KG+6ieqQdDY/dnCb++Kx4CJ4uplnBMk0hc7Z/9fUUucaqfNRvcwjrFVdin8X/xjMk0U1bEWSNCRveS0YtW9k+/NcONMBLptHCDSpAcjBZ6sNocwOWBnqaD+KGqqgbxmfa8UPlN2kML8Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784044004; c=relaxed/simple;
-	bh=q7jIaElpU2sFTVf/3GSHfVP06Tf7CBhAk+SrQxcL5KQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=WGbvp6Ot05XzBTpcKl40GggaDBWl9ed7A07d7UBzJp4tvlzfOyuF15ZH3/e1vH7cv8uyv/vN/qnVquLk7NAxA2r6O98vSQWC8TzHVR0B5APCt+CWr54xQ7HUPNvmYcHfZMwqeHnHpF6KlkKBKM1JgkgnY7s16spOZcJftRGXzzk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=UTxpF5so; arc=fail smtp.client-ip=52.103.23.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBAE6496915
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 15:56:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784044616; cv=none; b=pI4nWyT+tlHLaAoo/6rI/v5PWZ6clqwfRmSMgoUjAmND8xIB+wMfunW/FAfXqjCCVAlqSpIP9z7nhdsF6TzfNHytvG/eFaUeo4UHyKNBZ+F5aLiyW4/zZBbLDqJFtl5Ygi44O7CrX4Oj0JYekjRCA/na98c9LJwxF77NuNRAnT4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784044616; c=relaxed/simple;
+	bh=jlDWHc+QVt9k7HkTB6RbuYA4PZFVH9ssR+9+zo3598c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nKIzfxCQGC9q3ub5DxZIJvdYX8k8OBqUz49YhRQdoyWUQKSONb/+TIE9is27JwtfRxjR3CwrhruDkA1fRMWQHy5cwehqtoIXNwyUJkLaavb3lhAidH3M5jwECc8jRRcC6KQ3QkPF3Xa9OQqh7/ugpFEw6r3uIzqwXX/X8M+MNU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Ab/B3gqk; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="UTxpF5so"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nVHY8Y26798GAgW5ItQvwTbtGcTRE1B52slJ1weVhuRHVsDLgD4pYm1iruHP++tB5gcK3BEqAS9KeqJ2/BNiLHIxSw42DLZNiEw4BK3hNLNifoxV/gZlQAI2vqEkyb3TfTZOMqr0ABWi4CAFvChwCKb3P+iYdDWS+iuBH1HNrjZmJ+qYjfHh7kJwuT6+afmqQS+/HdC7WyQ9LDtXwmecsod5fdZmgiu0cixaik9pevpuh2M2ViEV0cbqDt5SYwcn58+oZ9RCxnUXCYrcGaBrzzHo8O6TSIUcgJIP4cwNCLEv4gIJiNwssglsgDLmHNCWr0hjpgQ6bdmALKJMUG6O0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AkxJFdvFImNHaUkEOP56gpJG+1IskAsN9CBJ7CIBpzs=;
- b=wjd3BTPJGIsXCtSwvzQazqIw+f7sBwhfTGdrSm4Guzxj9sXkPTPEdTJI9jRYdKLYJdthej26Q1tmR33cOtvu1rMdkIs/37K/OQ1UR3UXkbW+13L5EQQlNa34tlOgcSToopQz/yvHPaJd51FozSZqptKc5agDSzjEk8bU7bqglSe6lt8G2uYSao013PmASZ1gl/tkolRC3U9uyNAsIdy4q7pAeA9veIQVqREAL/eWBwtqUvZIKhLX+3+Hxa146cMM0HL7V74mHnV9tOu3y+VaO+GpVB2zx9rQMOCQ8CqqKQmVG9hg7MSzd6A0d1JBQwekw2Js+w4432OgQgnGRKjxHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AkxJFdvFImNHaUkEOP56gpJG+1IskAsN9CBJ7CIBpzs=;
- b=UTxpF5so6xwu0mYpO0rPzvjYkSwK6iCbvS8oRdKD3QhFdlpr/r3Gp2CpmQd22Z+lVZYe+JoV5neQJ2AJ5K25tXRjJlP/NpgXHuosnNxJv4HxnwGBi3vR/vAfBTu6tOGjQHOU2gFixqf5zvRoCjD0+58bfIj+AdK/fCIjrL5OXKkpQZhdOuQrLv0mdr5cfT7KaKLKE1iC70n8gS6lVcR6GWPhoHEX1nEUEl7yLXLstJ2ZAiaMwrkHF5wEuuO8ZpRzk/hxKtj9mmHwBr0pYm9YpfA3t244X9etzNYjYs9brNvw9Ge5GTuxXHOJ2GPruXjJ7KCqhOQ+AWC2yGi+/F7Eow==
-Received: from BN7PR02MB4148.namprd02.prod.outlook.com (2603:10b6:406:f6::17)
- by SJ0PR02MB7613.namprd02.prod.outlook.com (2603:10b6:a03:322::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Tue, 14 Jul
- 2026 15:46:38 +0000
-Received: from BN7PR02MB4148.namprd02.prod.outlook.com
- ([fe80::6007:d1a1:bcf9:58ef]) by BN7PR02MB4148.namprd02.prod.outlook.com
- ([fe80::6007:d1a1:bcf9:58ef%6]) with mapi id 15.21.0223.008; Tue, 14 Jul 2026
- 15:46:37 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-coco@lists.linux.dev"
-	<linux-coco@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, Marc
- Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, Suzuki K
- Poulose <Suzuki.Poulose@arm.com>, Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>, Petr
- Tesarik <ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
-	<dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, Madhavan
- Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)"
-	<chleroy@kernel.org>, Alexander Gordeev <agordeev@linux.ibm.com>, Gerald
- Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger
-	<borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>,
-	"x86@kernel.org" <x86@kernel.org>, Jiri Pirko <jiri@nvidia.com>, Michael
- Kelley <mhklinux@outlook.com>
-Subject: RE: [PATCH v7 11/22] dma-pool: track decrypted atomic pools and
- select them via attrs
-Thread-Topic: [PATCH v7 11/22] dma-pool: track decrypted atomic pools and
- select them via attrs
-Thread-Index: AQHdCR21HzJYiEbtiU2dmeozUbuIfbZrz5EAgACpXoCAAIxuAIAAOE7g
-Date: Tue, 14 Jul 2026 15:46:37 +0000
-Message-ID:
- <BN7PR02MB41480896D46601E8B7F6166DD4F92@BN7PR02MB4148.namprd02.prod.outlook.com>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-12-aneesh.kumar@kernel.org>
- <20260713175616.GJ3133966@ziepe.ca> <yq5atsq2md64.fsf@kernel.org>
- <20260714122504.GG3133966@ziepe.ca>
-In-Reply-To: <20260714122504.GG3133966@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN7PR02MB4148:EE_|SJ0PR02MB7613:EE_
-x-ms-office365-filtering-correlation-id: ae017260-74a3-488f-95c6-08dee1bf1732
-x-microsoft-antispam:
- BCL:0;ARA:14566002|24021099003|15080799012|19110799012|8062599012|8060799015|31061999003|13091999003|25010399006|51005399006|37011999003|40105399003|102099032|3412199025|440099028|1710799026;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?Red/QiJYwYIJ8CicvWHgzRvBK/ghVQ0p5dTfV8s1p7GHqfaYmvTZuKtNC6ev?=
- =?us-ascii?Q?2pYDoqikZN4IRI7VUZ46HprR8vCVEtF7uXX3MDQvy9HHTA2FQlkum8pqzju1?=
- =?us-ascii?Q?AvOWKv9DxGVIkbvNKGnEvaj//VbAxVEA4UhQ+lvqU86Kz5IcC4k6t9quU492?=
- =?us-ascii?Q?u9fC7v4fxlgfxfsC133Q7Tf7qhnZ7buAEEiY6LahU4vOOt43kYygP15VP3YZ?=
- =?us-ascii?Q?2a+4/n5EtOLctGMZPAztZLc5OQv0UHmVV29aIBfX76wCXa/57HniOLNCXYZf?=
- =?us-ascii?Q?KNFbMskluj3AfcXZSqDmhdkhJM1mFVmi+ZgtY1utWjX5RxwHf49GouI9ix0X?=
- =?us-ascii?Q?Z3Fiqy4IHurPFcIKX65IQrWvuDv4NRN/xt0KBDf1dO1Pr8DrSKvnvk+dmTYQ?=
- =?us-ascii?Q?0LCUJ652Iv5pI8vXqoUuSzafiZwSib01jMZPzU+2/Ue3Ujo52P2EnHwOoj63?=
- =?us-ascii?Q?XCVD+G0XQPTE6JTvrlZ6gbLihNGwoFvfEap042/n+l6NC3oUin3RHkvcOVyu?=
- =?us-ascii?Q?mPDVCQQVCakhoO3e1fiCL83docgEBQYeGCbAVigVKj+Ah9wHyEND0JDgxUE5?=
- =?us-ascii?Q?sOSjm30pznXqqF4akJsXewvJsiPolfvG1LqaxfRLjXUy+gPnBNuSM1JdBXZD?=
- =?us-ascii?Q?9lJoHiVCz1EW2qHQY/p1Y1qiaZjDmngmrInOTN/NS9iwPhkyZqTuJ5eUAdbR?=
- =?us-ascii?Q?SYDlgOHukaE5YVa3P/imJKR6VyDOHMAge2ez4dw1WF0pJz4T8dzu/D1ZD8/d?=
- =?us-ascii?Q?ugdDi05TEczpz33yU7gTIB1hS3GLZoGIlwSfw1/Mdr25VgFjKTTZlpZHDSi3?=
- =?us-ascii?Q?m1ZheAp+P/3BNpJFyqk2avbkQkBJexmW7AkOpRZTHmc5CEVVfRlp9Cr+N7by?=
- =?us-ascii?Q?5A10AfsSvXXsL5wUmByNkdCbE4C72/dlkyoHjx8KTDGrIsd+0/xt1XNdqM5i?=
- =?us-ascii?Q?E/bET8TPilxTQF0KP3UudptVwtuTwQR7srVQNY64L1VbUg7SOE2EXTKfoFq0?=
- =?us-ascii?Q?lKDhHeJ59BXNy3YiMaL7bUAPgQ=3D=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?+fZINyrI1VxSyC5Zw09hM84dNk+TMVMSlLnMzx9+n3GHdRDh2UPTqPzIJfAj?=
- =?us-ascii?Q?SNF2lr7bTCm7Zd471BslTAt08q4fKTF3L8DiW7PrNpRsFV1+dUaPPFQaSt5k?=
- =?us-ascii?Q?z8b7aRvY9L3YBM9SJtsrr+Pluj+RyE0VaIiHv3nmYG9yyPy/4BFSRK3kyOoR?=
- =?us-ascii?Q?NKQEcc49pZKQnbIrUkEPab4d7SA7YowHcePzEuvLFsnb24KTZC8b0M5zQsv9?=
- =?us-ascii?Q?P4NNC01W9mfqZNxaUyxonBIMCG9q2MoTvsdazTXj9sLK9Wxv27hggXYrhofp?=
- =?us-ascii?Q?HTWXWRv181i6e4fu63ZPsqTzWIN/H5ROJFVZ4gCh+f965tnuCgQOuPtPACEk?=
- =?us-ascii?Q?5t5zTf/Cpx11rX4oAOcyr29Dh9FQLNZM1B0gTNAPm6qdSZ/AYlC7RMMYniDY?=
- =?us-ascii?Q?sB9LP8TLcR42dAv9/E4a1G4ZTsg7ew62vWGrk76xfAcnwaeJMzZ0R8zqbLAi?=
- =?us-ascii?Q?dlvWCBcEGG7vzylGC7KWKjCFHQ9ca5XHTJCNW3A8fsDd3LF1FK2TPKKfF76T?=
- =?us-ascii?Q?W307dbpd2s6HPSOBruybPXL2O6gNPM5W3Kwp1wa/tQz8q/DBEk/h+q0hJgpI?=
- =?us-ascii?Q?TxiaipaCuUv2e1JVOTRy2yV+6L8L7W/C3DXv2xMtkdn4KerfNA+1dVQNUAfj?=
- =?us-ascii?Q?ZeJ45/AWJXMJjaiLs9vYTu1rV0ZSU3DAhZU5BHErAbGFl+1kOhs0euy2AA6J?=
- =?us-ascii?Q?ncdWAt673nXkueFHFHeQbn+9dHaRDt2EASqe5TyRZjatIgP+Wrc8sNPCCUuF?=
- =?us-ascii?Q?vdvO+7faEzs1XOP0CG1ItTbo8DIwteBLpX/ybla8PvlG0bhB6+jsGtUvILcm?=
- =?us-ascii?Q?Neg7pgxmnPV3/YxCZsZskdclY7mASeeKb5HEQ6iQvqAVfudrlHcJnabsW9AC?=
- =?us-ascii?Q?X86yzb+ahwp1TBt2qVTPGO0vsgnuc6W/RcMsxNy/we0YEyPp2fPQ9MVvJrNa?=
- =?us-ascii?Q?RvCwamgDhln+TOGBRl+yzdiG0vWibkgZ05Z9k5+L+aMglj+91SrdFfcrASla?=
- =?us-ascii?Q?HWnULMU58tePO9TT150itdaCICDJB3rMTCywouEHTtfWlMUU5pXIWpl495NQ?=
- =?us-ascii?Q?w/CMP3RBWC9cw+c8Mc1If424R3R5q/i/aikY95nAz4mo6FWZoFhLxzBDfpP0?=
- =?us-ascii?Q?krmtpYSeGIwtApM8C1sOr+dMzi84Q3cEs8nxNyGyk5j6jp6n14PxfuHWCfi8?=
- =?us-ascii?Q?9K3sODTHDfGJcWdOa8zmpgUx1k2ccjhu43oMHQA/2swwu1M2g0qiguRuKasg?=
- =?us-ascii?Q?anPRd2TFac3qATumidrXMUEdegb/R24OGM+fAohxEQMavTIQ+ePrfR1OuUsQ?=
- =?us-ascii?Q?cKMu2lydhQZ3HMKPNbNVGvcg7PD5XhFdRJ4e8NuGWANdObXJv/rLrPw9MFRN?=
- =?us-ascii?Q?kazUgyc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Ab/B3gqk"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 15AFD339;
+	Tue, 14 Jul 2026 08:56:50 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2A0223F915;
+	Tue, 14 Jul 2026 08:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1784044614; bh=jlDWHc+QVt9k7HkTB6RbuYA4PZFVH9ssR+9+zo3598c=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Ab/B3gqkVvxeSWk9m22lT60CDPxipry6LYSeJo0GLLNUbs9fhDIntrVO0Eu6x8Hgb
+	 h5xnMvaElwcevH+hvea19kQ3qUVqh4vQ0tItMzcOFYaeLFcnomQj67iUdQiexxoY56
+	 jljvdomivta+hgdUgK4J+9LD+PT4oDA5vK/4Rj94=
+Message-ID: <0e405cb3-1227-4ad2-96ff-aa0db3124381@arm.com>
+Date: Tue, 14 Jul 2026 16:56:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN7PR02MB4148.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae017260-74a3-488f-95c6-08dee1bf1732
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2026 15:46:37.6833
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB7613
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 0/4] iommu: Fix device lookup lifetime and probe
+ cleanup
+To: Pranjal Shrivastava <praan@google.com>, weimin xiong <xiongwm2026@163.com>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20260714060930.220277-1-xiongwm2026@163.com>
+ <alZCbIIuawpugaQe@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <alZCbIIuawpugaQe@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Jason Gunthorpe <jgg@ziepe.ca> Sent: Tuesday, July 14, 2026 5:25 AM
->=20
-> On Tue, Jul 14, 2026 at 09:32:27AM +0530, Aneesh Kumar K.V wrote:
->=20
-> > If we want to warn about such failures, we should add the warning
-> > consistently across the code. We may also want to handle decrypt
-> > failures by encrypting the page again to avoid leaking it.
-> >
-> > I will work on that as a tree-wide change in a separate patch.
->=20
-> IMHO the WARN should be inside set_memory_encrypted(), and maybe it
-> should be a BUG_ON...
+On 14/07/2026 3:06 pm, Pranjal Shrivastava wrote:
+> On Tue, Jul 14, 2026 at 02:09:26PM +0800, weimin xiong wrote:
+>> Fix a few IOMMU driver lifetime and error-path issues found while
+>> auditing fwnode-based device lookup and probe cleanup paths.
+>>
+>> The first three patches avoid deriving driver private data after
+>> dropping the device reference returned by bus_find_device_by_fwnode().
+>> They also make the ARM SMMU v2 and VSI probe paths fail cleanly when the
+>> IOMMU lookup fails.
+> 
+> I'm not sure if that's really needed? All these drivers are doing is
+> dropping the "extra" refcount (incremented by calling find_device)  back
+> to the state *before* the fwnode function call. If you find that this
+> put_device caused the count to drop to 0, I believe that's the real
+> problem/bug. These fwnode functions are usually called in probe and the
+> refcount shouldn't be 0 inside probe.
+> 
+> Could you share your observation / failing logs where this fails? Maybe
+> something else is wrong with the system?
 
-There was a discussion about this a while back. The decision was
-to embed the WARNs,  and that callers should not output any error
-messages upon failure.
+I don't have any trace of the original patches (thanks, Microsoft...) 
+but looking on lore, yes these "lifetime" concerns are spurious; it's 
+just a particular situation where due to the API, the drivers are taking 
+a slightly roundabout route to look up their own valid device instance.
 
-The x86 implementation of set_memory_decrypted() and
-set_memory_encrypted() has an embedded WARN_ON_ONCE()
-that triggers on a failure. The arm64 realm encrypt/decrypt ops also
-have an embedded WARN().
+The IOMMU device must already have at least one held reference from way 
+back in its device_initialise(), which will not be released unless and 
+until device_unregister() is called (which is probably never for a 
+non-hotpluggable platform device once it has been successfully created). 
+If someone unregistered a platform device while it still had a driver 
+bound, or the IOMMU driver could be unbound without unregistering the 
+iommu_device through which its ->of_xlate or ->probe_device could be 
+called, so many other things would be blowing up already that this would 
+still be irrelevant.
 
-The pkvm encrypt/decrypt ops do not, so that's maybe where it should
-be added.
+Since 17de3f5fdd35 ("iommu: Retire bus ops") these lookups should also 
+never return NULL for the same reasons, so do feel free to clean up 
+those redundant checks if it helps make things a bit clearer.
 
-Michael
+Thanks,
+Robin.
