@@ -1,122 +1,195 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A82448D03
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 12:26:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37CAC448CE0
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 12:27:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784032008; cv=none; b=ahgv1YeUfChIvkHybyv5LugDvFUNb2rhNhWo9I4AQZUfde/i+Gn1cSRKu5LsWbHJi3AZNrCqVGr1fZC5n1fbQ8+m1JwdvDSxAcF/nRwXJ6g6SM9OWz1R+6hV/Chl7euSHMOkK5IPAoK0JtSnJ340gNewEJIJWg4hL7/dP3OcnJE=
+	t=1784032082; cv=none; b=e+P0OU8uBJKxP77F66c8A6FY5OTutPQ/SwTqYbdwne6WJd48JTQGL+AxLuCDbPAbzLegYoL/fWTS7gmAtVJVFqxNJMAf31BZcEtfSsBW25FpDrF9CrKfTXKNoRJ2lugVQeu6jVKocveqTU7YLAoeh8F3D4jWG8BrslO3hTWBK/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784032008; c=relaxed/simple;
-	bh=EyC6N0xAwYeQ07+jukS70K/lUL1qxajRoHTimoin/A8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UiExc3flOLoK33F71owPem4ZyDM12pPh9lSyfdnGn6AvTmJXOhjpCTo2Z3MRVW00gXYNT6dBV2jpdB/2oE/ytWfiCKsXLSQvyh+haP7Xp9iQxYVWhqLbDt66JREwrnYMpcrITJp4+W2U4CvG3xWf0OaQ6hdDbhqwPweIVHP5SvM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=L0yA85kH; arc=none smtp.client-ip=209.85.219.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1784032082; c=relaxed/simple;
+	bh=zzEYaVVhSuGCuAAvI0y0XEVUpmDQVjrHVxuT2tgpuUk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IImG+bS9r3qpNThH17GCcrtqmlC/x7bEEj+DBPmOColWsk3uqbVuVCUARaaYE3xMrcKubGgno9jGKXL+uZnVxp1xU6DFITmQ2IYVqJeqknExctW2ffhuyh9gRADzA6Dn6E6oNNrtLQhQ/KlUeYs3cViC3NOC2EIIxYH0AuJ8Q2k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=DsN8zTDv; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="L0yA85kH"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8f18d92172aso12773556d6.2
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 05:26:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1784032000; x=1784636800; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=AuDF+BU2wT5tVoACVa1l/BwLN4UR/axOeynKCGX6Iio=;
-        b=L0yA85kHQF8+wkjsigpzExY4sdESVtijrkU3MU4WO/zUtiYbcb6mE2h9IIxVRY++BP
-         3w/01FtRvxbseCKNxuxiS7gCdVIMUV82KEECbN8LpslqP/dw2Upku8Lg5EtxqGxJze+W
-         dYad37BnH29imANUVOVQiVosB25zD3Tbug1xqfDHrDSHI8gSg7WoBN/Jkq2+PqTdVDFc
-         QeLT5ECLisoWd/xmz/c2fnc6L+/4e+4Vw7WkLBsPduuZVoW95erELlzJm+zAhh5n+4mR
-         tqBQlGVLUtN8A6mEN1zI/GkIXsKgSnQnUOMG7sx+TAR+AY/K2k4vEhuE9O0so2/mrC1E
-         x+Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784032000; x=1784636800;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=AuDF+BU2wT5tVoACVa1l/BwLN4UR/axOeynKCGX6Iio=;
-        b=Wb4Dh8J7j6dmFLKvaIc1tVfzgBVM8HJbSMA6wCIbJ0gkRNo/wdxVVrAsmg39WPLJWF
-         aVo60CPP7Is30eH3LzVnr93Q+9BoZTaLq/wzDpnLDNONIKAAt64CUCOHltjc6Ds+oqDY
-         EDJsdmzSoRHNy7MEEvn5XE1qibYWFC/EmIvwbrihcx+xaY0ozxhzdnJmmeTo3L4Cw2+U
-         EFxj4PfLaruj/2AUfRH55n+A+XffcXUHG3K4XN9tgy7fklMJpgI458ecOsV4XB0qoXgl
-         8aHtx/pMUhV5ZHYAQFcoAgjCv0hBXsBf2vwbTj5NVeCYHUCh9NJiFvmHp9si8aOfMtuo
-         dfXg==
-X-Gm-Message-State: AOJu0YwIhJ1YONX49sletYPx4aNuGKcKr6uwwJFsgHAQZ0pNqJsOJB+c
-	PdKnbwD6xQnTcaYWn1ZSlgr8hoMw4aGWsb87YqetXqQXnL5UaGUKFGjJBMVrQMmDhfSIBWpg9i4
-	1lLzu
-X-Gm-Gg: AfdE7cmnW5bmdPzTAD+Q5JWx+9/aEa4hCk4TlGI+M9zSod3tZQfNrKSpYRf4J4TmYT7
-	I10Ezz7DjtTy8CS9MnkxHJ1DMwGqjVZXklcGgLyQ+07L0ehrSF7RNmjkRwws3/DEYIowtGmkNze
-	cXHK8bibv+sULR7ugsxYna5mUY4wi34QOOS7HoBCiqa2Q8jfuH3nkkrkajM1UK4NEewQAAg0Rif
-	BucpZlQJJSA68zid5lHdzGO/FBUDNr/Ike3Hp2pDywhvvafS3cHE5ZoTtSrgS1iPgw9QBDFe/dr
-	aGJcGVU4+hrfyVBz2y0H6oSit/MLvEQGB7afj0AF7k2ZU9YOBzrO+YeTGup9EH1kVCA7ox2+Sej
-	Gzl+RkaqyjSTOZG13o2nDXLU/Tp96jT5o2uKQ2GGT0P30tzNul7hAI4P0jlP7
-X-Received: by 2002:a05:6214:1cc6:b0:8e9:f5de:d629 with SMTP id 6a1803df08f44-9040423dcecmr141353846d6.56.1784032000167;
-        Tue, 14 Jul 2026 05:26:40 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ffd7c1ec84sm168106996d6.29.2026.07.14.05.26.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 05:26:39 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wjcDf-0000000FRvu-0Ugk;
-	Tue, 14 Jul 2026 09:26:39 -0300
-Date: Tue, 14 Jul 2026 09:26:39 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v7 11/22] dma-pool: track decrypted atomic pools and
- select them via attrs
-Message-ID: <20260714122639.GH3133966@ziepe.ca>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-12-aneesh.kumar@kernel.org>
- <20260713184810.GM3133966@ziepe.ca>
- <yq5aqzl6mc00.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="DsN8zTDv"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23AE11476;
+	Tue, 14 Jul 2026 05:27:53 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 224FE3F7B4;
+	Tue, 14 Jul 2026 05:27:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1784032077; bh=zzEYaVVhSuGCuAAvI0y0XEVUpmDQVjrHVxuT2tgpuUk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=DsN8zTDveK+mVBpv6T2NXbyfwS9iLZFlYhMP6iJHbw5XNQF6IRrdDhP2N2W2jVV0T
+	 oyemgLXS4Eeupb/X2xIpG0ZH/ptgErYr6CN/H5wqksizy12oqfoMVHzDWP3N6RiPwI
+	 WV1hcCRMd24mHGvGYJELvV4RKgwKnzUuWWMh9e+g=
+Message-ID: <3591a185-d0b5-4cb0-a0d5-ae9608a4e244@arm.com>
+Date: Tue, 14 Jul 2026 13:27:53 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5aqzl6mc00.fsf@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit
+ registers
+To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>,
+ Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+ Guo Ren <guoren@kernel.org>, David Laight <david.laight.linux@gmail.com>,
+ Vivian Wang <wangruikang@iscas.ac.cn>, Zong Li <zong.li@sifive.com>,
+ cuiyunhui@bytedance.com, yuanzhu@bytedance.com, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+ <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jul 14, 2026 at 09:57:43AM +0530, Aneesh Kumar K.V wrote:
-> >
-> > But I don't view this as that important, the CC hypervisor is probably
-> > going to use the S2 page table to force cachable on all system memory
-> > so the non-cached pgprot is a NOP, but the extra vmap is wasteful and
-> > it is confusing.. So maybe a little fixme is all that is needed here.
-> >
+On 13/07/2026 1:29 pm, Zhanpeng Zhang wrote:
+> The RISC-V IOMMU specification [1] permits 64-bit registers to be accessed
+> using two 32-bit transactions, high half first, and leaves the single-copy
+> atomicity of 8-byte IOMMU register accesses unspecified.
 > 
-> Something like?
+> Use the generic hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() helpers
+> for ordinary 64-bit IOMMU registers. For DDTP, poll BUSY in the low half,
+> then read the high half and compose the register value from the polled low
+> half. HPM counter reads require a rollover-aware sequence and remain
+> outside these accessors.
+> 
+> This follows the 32-bit access direction proposed by Guo Ren [2] and uses
+> the generic non-atomic MMIO helpers suggested by David Laight.
+> 
+> [1] https://docs.riscv.org/reference/iommu/
+> [2] https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
+> 
+> Suggested-by: Guo Ren <guoren@kernel.org>
+> Suggested-by: David Laight <david.laight.linux@gmail.com>
+> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+> ---
+> Changes in v3:
+> - Use the DDTP access sequence from [1]: retain the low half returned by
+>    BUSY polling, read only the high half, and compose the DDTP value from
+>    those two 32-bit reads.
+> 
+> Changes in v2:
+> - Rework the patch based on Guo Ren's earlier proposal [1].
+> - Drop the build-time option and use 32-bit accesses unconditionally.
+> - Drop the global lock and use the generic high-low MMIO helpers, as
+>    suggested by David Laight.
+> - Poll DDTP.BUSY through its low half.
+> 
+> Link to v1: [2]
+> Specification discussion: [3]
+> 
+> [1]: https://lore.kernel.org/r/20250903144217.837448-1-guoren@kernel.org
+> [2]: https://lore.kernel.org/r/20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com
+> [3]: https://github.com/riscv-non-isa/riscv-iommu/issues/765
+> 
+>   drivers/iommu/riscv/iommu.c | 9 ++++++---
+>   drivers/iommu/riscv/iommu.h | 9 +++------
+>   2 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index cec3ddd7ab1..d647b71ebec 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -670,9 +670,12 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu)
+>   
+>   #define riscv_iommu_read_ddtp(iommu) ({ \
+>   	u64 ddtp; \
+> -	riscv_iommu_readq_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp, \
+> -				  !(ddtp & RISCV_IOMMU_DDTP_BUSY), 10, \
+> +	u32 ddtp_lo, ddtp_hi; \
+> +	riscv_iommu_readl_timeout((iommu), RISCV_IOMMU_REG_DDTP, ddtp_lo, \
+> +				  !(ddtp_lo & RISCV_IOMMU_DDTP_BUSY), 10, \
+>   				  RISCV_IOMMU_DDTP_TIMEOUT); \
+> +	ddtp_hi = riscv_iommu_readl((iommu), RISCV_IOMMU_REG_DDTP + 4); \
 
-Yeah
+It looks like whenever you read DDTP you're only really looking at the 
+BUSY/MODE fields anyway, so does this actually need to read the upper 
+bits of PPN at all? (The spec says they don't even need to be written on 
+RV32 either)
 
-Jason
+> +	ddtp = ((u64)ddtp_hi << 32) | ddtp_lo; \
+>   	ddtp; })
+>   
+>   static int riscv_iommu_iodir_alloc(struct riscv_iommu_device *iommu)
+> @@ -1501,7 +1504,7 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
+>   	 * regular boot flow and disable translation when we boot into a kexec
+>   	 * kernel and the previous kernel left them enabled.
+>   	 */
+> -	ddtp = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
+> +	ddtp = riscv_iommu_read_ddtp(iommu);
+>   	if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+>   		return -EBUSY;
+>   
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> index 46df79dd549..1b03790fbe1 100644
+> --- a/drivers/iommu/riscv/iommu.h
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -11,6 +11,7 @@
+>   #ifndef _RISCV_IOMMU_H_
+>   #define _RISCV_IOMMU_H_
+>   
+> +#include <linux/io-64-nonatomic-hi-lo.h>
+>   #include <linux/iommu.h>
+>   #include <linux/types.h>
+>   #include <linux/iopoll.h>
+> @@ -70,17 +71,13 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu);
+>   	readl_relaxed((iommu)->reg + (addr))
+>   
+>   #define riscv_iommu_readq(iommu, addr) \
+> -	readq_relaxed((iommu)->reg + (addr))
+> +	hi_lo_readq_relaxed((iommu)->reg + (addr))
+
+This seems unnecessary (similarly for writeq() below) - once you've 
+included the header, then it automatically provides readq{_relaxed}() 
+for RV32 via the non-atomic implementation, and wherever atomicity 
+doesn't matter, then as written there seems to be no reason for RV64 to 
+stop using the regular arch readq().
+
+Not that it makes any difference to me either way, but I don't see any 
+real issue with the spec - if software *may* make a 64-bit access to any 
+64-bit register unconditionally, then that can only imply that hardware 
+*must* be able to accommodate RV64 software choosing to do so, and 
+therefore must support *both* 32b and 64b accesses in general, except 
+perhaps on RV32-only systems if software could never make 64b accesses 
+in the first place. If 64b single-copy atomicity is not 
+required/specified then it should be valid to achieve that by just 
+sticking a downsizer in the upstream interconnect to split 64b accesses 
+into 32bx2 incremental bursts.
+
+If do actually you need this as an erratum workaround to support 
+specific hardware which has misinterpreted the spec then I think you 
+should be clear about that. Otherwise, adding speculative "workarounds" 
+which (slightly) penalise hardware that got it right, while inviting 
+future hardware to get it wrong, doesn't seem like the right way to go 
+at all...
+
+Thanks,
+Robin.
+
+>   
+>   #define riscv_iommu_writel(iommu, addr, val) \
+>   	writel_relaxed((val), (iommu)->reg + (addr))
+>   
+>   #define riscv_iommu_writeq(iommu, addr, val) \
+> -	writeq_relaxed((val), (iommu)->reg + (addr))
+> -
+> -#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> -	readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, cond, \
+> -			   delay_us, timeout_us)
+> +	hi_lo_writeq_relaxed((val), (iommu)->reg + (addr))
+>   
+>   #define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+>   	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
+
