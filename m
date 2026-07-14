@@ -1,40 +1,38 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EC123815CB
-	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 02:45:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F731DFFB
+	for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 02:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783997119; cv=none; b=Nrhoy/o8Wsuj8j9h0BxK9aUCEosg/46xZJZWmB5Z7kukCBw5nblv8C4bA8GO1fVnHMWQdsdigFGUVHP3R2sJy+C3FBFywki/exeZncIVz3KobiH9xnPSZbMCIDh8nlYNpm0Wz2Ez7HNkw/KrKGWFGimZTIIbobmMU0zIXsxn4Ys=
+	t=1783997121; cv=none; b=RGe6THFiBrOM2wp0/gQlBno0vHb7GQ+sANpVykdZflz0w1Dxhpsr2yK1Nksx59kqYkuoASjuCOqTQLaEMhkJ6S7mmPZfWk0UQQXYmmtDFG0UrzhkOQRNa4rIVz+imQq+I6Lot7vaG0EXWPGFwN6M+GAWS/1dZggKxJTyPaMZH+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783997119; c=relaxed/simple;
-	bh=bI/RLZI5ieSSpy1w9a9UjxYKL6mdMMQDeZ3K0RdNQ7o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dw7uKl7cLH3u5pug1lQ0/famHa725Y1UNwCNzmMBGaRBMw50WmWaJ9OoBfUDu5cPMSzLtEezDRcqVWQlHwvH9nixf/TkXTjsefaLrK6jR+O2oG2P3m91XSftrh3DzY6/gx2Tc0+9yBPIxBbNgrkQat340IjK+kNmN0KXIaSvkIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=SlAWzHc7; arc=none smtp.client-ip=117.135.210.3
+	s=arc-20240116; t=1783997121; c=relaxed/simple;
+	bh=NDCbVRFZZ/9i3d6rW3RpKJTKK+I5L16gReAEKpNqPFo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oD/vtSOyJ4omaFmxBFJGe6jhM3vg3MVnpVVczC+Bjb+p5m0kMY3ulRK3Y/6SWA5TE0W6Hw6OvwzKY9yPsE6+/4bz/YU9+pVKcRm1/2t6ObPRaxlua6JlbkYyY5zgVDBULyYQ0h7Kk8joiUZ1SjCNT87hXcULTHSIA39ijyLyeHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=gwmuTxKb; arc=none smtp.client-ip=220.197.31.3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="SlAWzHc7"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="gwmuTxKb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=ye
-	O0o3YHGMSFYG7mdyIM3TH2ArtkAO+UvzTw6LiRN5Q=; b=SlAWzHc7DgtOg9KnN4
-	FH6XDOJhH3TsbwZJfWwcy6PmyUsypDXZn9iGrvSa6JB0TOILQERWnZ91r3BNKtM8
-	0JOeaR+2uqcArMraWlyr4q8qdBz2UGMMCgqO+BYKwFF7MCnEpxBm/raUWzfiexFb
-	mmp73FM9LX5WOG845x1p30bJg=
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=oZ
+	CtDx6VcqxgeosNH4Gx5FE52g+SWnLQtt5aEvhp+o8=; b=gwmuTxKbMJr6irYCAE
+	nPQJs8G8JutSJSeFVb7pqwGyr/vf2W0W88b/FX327OW+7zAu4HiqUDAyA2nlZDV3
+	N1c7VDZ7vxnITwRf0gXXZsVFuXUw75GOW1VPp8bBrwqOBskeGfVO23IymCtpssUs
+	V+peJelgbigq8pM+DdxS/DEsE=
 Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
-	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wDHpaWdolVqHLitJg--.35054S2;
-	Tue, 14 Jul 2026 10:44:46 +0800 (CST)
+	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wDnzU2jolVqR7utJg--.39248S2;
+	Tue, 14 Jul 2026 10:44:51 +0800 (CST)
 From: weimin xiong <15927021679@163.com>
 To: iommu@lists.linux.dev
 Cc: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
 	will@kernel.org,
 	robin.murphy@arm.com,
 	xiongweimin <xiongweimin@kylinos.cn>
-Subject: [PATCH] iommu/amd: fix grammar and typos in comments
-Date: Tue, 14 Jul 2026 10:44:45 +0800
-Message-ID: <20260714024445.188383-1-15927021679@163.com>
+Subject: [PATCH] iommu: fix possessive its in group remove kdoc
+Date: Tue, 14 Jul 2026 10:44:51 +0800
+Message-ID: <20260714024451.188415-1-15927021679@163.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -43,63 +41,41 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDHpaWdolVqHLitJg--.35054S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7AFyDCF1UAFWrGr4xuF4xCrg_yoW8ur15pF
-	47GrWYqFyUWF1kGa47X3y5ZFy5t397Aa4FkrWFkwsIgr1DGFyrCF95Ka4xt3s3JrZ5Ja43
-	Zw1qvrsrZFnaqr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jwl19UUUUU=
-X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC0h6-SGpVop6NPgAA3L
+X-CM-TRANSID:_____wDnzU2jolVqR7utJg--.39248S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Wr47WF4xXw1ktF45Jw1DWrg_yoWkXrb_G3
+	WxZry0gry8Gr40vF1jgrW3ZrZ09a9FvrZ3XF95K3Z3GF1xX392qFy8ZrnFqay7uw4qkFnI
+	vrZxKr1IvryUCjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8vPfPUUUUU==
+X-CM-SenderInfo: jprvmjixqsilmxzbiqqrwthudrp/xtbC0gPASWpVoqONzwAA3k
 
 From: xiongweimin <xiongweimin@kylinos.cn>
 
-Correct possessive "its", article before acpihid, and a couple of
-mangled sentences in IOMMU flush/irq comments.
+Use "its" rather than "it's" when referring to the device's current
+group.
 
 Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
 ---
- drivers/iommu/amd/iommu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iommu/iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 563f9c267..824a585df 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -456,7 +456,7 @@ static void clone_aliases(struct amd_iommu *iommu, struct device *dev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index e8f13dceb..a3dea7353 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1345,11 +1345,11 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ EXPORT_SYMBOL_GPL(iommu_group_add_device);
  
- 	/*
- 	 * The IVRS alias stored in the alias table may not be
--	 * part of the PCI DMA aliases if it's bus differs
-+	 * part of the PCI DMA aliases if its bus differs
- 	 * from the original device.
- 	 */
- 	clone_alias(pdev, iommu->pci_seg->alias_table[pci_dev_id(pdev)], pdev);
-@@ -505,7 +505,7 @@ static struct iommu_dev_data *find_dev_data(struct amd_iommu *iommu, u16 devid)
- }
- 
- /*
--* Find or create an IOMMU group for a acpihid device.
-+* Find or create an IOMMU group for an acpihid device.
- */
- static struct iommu_group *acpihid_device_group(struct device *dev)
- {
-@@ -1268,7 +1268,7 @@ static void build_inv_dte(struct iommu_cmd *cmd, u16 devid)
- 
- /*
-  * Builds an invalidation address which is suitable for one page or multiple
-- * pages. Sets the size bit (S) as needed is more than one page is flushed.
-+ * pages. Sets the size bit (S) as needed if more than one page is flushed.
+ /**
+- * iommu_group_remove_device - remove a device from it's current group
++ * iommu_group_remove_device - remove a device from its current group
+  * @dev: device to be removed
+  *
+  * This function is called by an iommu driver to remove the device from
+- * it's current group.  This decrements the iommu group reference count.
++ * its current group.  This decrements the iommu group reference count.
   */
- static inline u64 build_inv_address(u64 address, u64 last)
+ void iommu_group_remove_device(struct device *dev)
  {
-@@ -3687,7 +3687,7 @@ static void fill_msi_msg(struct msi_msg *msg, u32 index)
- 	/*
- 	 * The struct msi_msg.dest_mode_logical is used to set the DM bit
- 	 * in MSI Message Address Register. For device w/ 2K int-remap support,
--	 * this is bit must be set to 1 regardless of the actual destination
-+	 * this bit must be set to 1 regardless of the actual destination
- 	 * mode, which is signified by the IRTE[DM].
- 	 */
- 	if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
 -- 
 2.43.0
 
