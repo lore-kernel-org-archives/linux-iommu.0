@@ -1,351 +1,159 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011016.outbound.protection.outlook.com [40.93.194.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1D5446BF7
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 18:43:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784141022; cv=none; b=AdUj2FfpHWAbDpxOa1qGqJYFmhqvQk9eJh6VvtdRPBRcfiHtdyEwE6YvS7BA2eTAsD0G011JbiOwsKf/cQ4dB08KMDNGu8RhfNQfOzbYr4M5uj8U3P/B7ra53WPvPCdwUG2PbeWnmTqp3C++Yv0vvE4CDrmfTt6OTEiWGrCk6AU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784141022; c=relaxed/simple;
-	bh=vrkkyP98rQHenSpfx7wBuzH0PFQjBLdF0aw4z7GFrdo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZkcapokJ7aUlCKhP0GfP/bnm4wfH9SdCxqS2QThsmUOT38n4WbmwlbFxrg/xLJDXGUYn8JonSDW5uASYxQHGgpanoSn9UqgVVWGpUy9xxH60OByrYaMpbs8n2cn/AErVCVIhkXbPEYo2js/Nw0v+jtTJmdCYVzeLWaS5ZRxlS18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kXWxi4lg; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E71E64398FC
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 18:59:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784141955; cv=fail; b=kYArTQ5EnhVNLf+U6SRw0PhG/E2Cynv857VAQGcXT2TBQzve/+avkmKkgc1Hn6AWdumpfUWyir1lGYOBHhUn2ov5cYJ7CK7WKEQeiG6hBdl6Up8wtzhTCOBVdna6y/PZMwtrNSfRB2NP6LHnJ7RqAnKr0jbWquCzUCXZSmF2ju8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784141955; c=relaxed/simple;
+	bh=qDCjOyJYx8Rw6cn/4nGA8Fj8/XlMkzaw5UH2MhkEY5E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=GRLI5HSFUA0LQ4miGdNZaGvPmGSyey/qOMWvlomMBQmLNngeGHCooH2w8UIzIChsXGrsYoc8p17uQ+GqHxH7uZJOT0qqWlyN/zSoeLsuf81jsjzsrNctCONCjYEY8j94oki2t3FWnnzcowzWf3i2qNbAq/L1AbvN2e5+AZKwSnE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=q0tsUjxg; arc=fail smtp.client-ip=40.93.194.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kXWxi4lg"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-493c556ada3so9005e9.0
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 11:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784141006; x=1784745806; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ONrkZYCh5Okv7WFSmS8LJPVH6J3l7WkmLNTE/oBXpcg=;
-        b=kXWxi4lgPeJHP0Ig3C1Lntc1maPXenFEM+/cI5G4t9mfmgjjOZnlaHcWDFxEn4Z5af
-         edbPRGBBfvr3YqGY/AZkAfIuDUDlYJdwWH0FCPpVlklM9NxIHkiA3RsvvV0BDnMU3qDy
-         kNfpnzMGzTtxFGGYcNl4D13JWT9PQViLfL0I4LVPt//JJ2I7nhtJn1RK4W00vovFnsYc
-         /yRgQ+Aq2PAaJo3XSqh1j9/YxtPxoOst9iM3cnEqfAUCk5T2sLf5FlJZf1eOBZzS1WZ1
-         OxuXSOP9KV8hFmn6FlxMvEqN2Kdr7WVBagDLTKiiKnVw9CO6mS4jLDgYCXVgLyhx+DxF
-         bJew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784141006; x=1784745806;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ONrkZYCh5Okv7WFSmS8LJPVH6J3l7WkmLNTE/oBXpcg=;
-        b=Z4Zd8FjNUxDhkVLmR74fMh/oxoeTdGLBJAZB9oFP0Ss1bekjHqehSAxLDdzNHTYM0K
-         u6bN/46+k/pnYUGsdGIU2hzGCV31MA8UXU1Vw1pTFudn3HTvclJxUMGPUR2xikq1Pz65
-         o0LHl7MGQd1I2QNImYhz0gu1R41xGtZBD0XB5jk/4cnl3xRLoLNuI5HmNAPMeRxLVruN
-         UyGhs94JqAjZ8U0URns6lESxAGIDTPCwbS2ht29Wmtkc4lfnKzvZop5Kr4Lus4HqoeSF
-         pcOV1nlbLKANA0sELRtdz603thyGDDNBmJTgwWij8nGoDKJEsFuz7AW1hZ/8ByIm1esL
-         Bv/A==
-X-Forwarded-Encrypted: i=1; AHgh+RqWWjom32PwcjmDXhIumC0AmQmi0Od30OH93bJ37pL8UAk/KXmw2TOSDaHS/eTCZgMXGs+h8g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy6dHqWxPtISM/uJgSNsJTdCQAv3vsbseZIpvt7ehaezsaX5GlX
-	yTCcQcnbtUI5K/eKhoE9wXOlwsSmFYN/iWv+O7jUfMfcp8hvwVDkrk/rqEwo+OKYLA==
-X-Gm-Gg: AfdE7cnn9RaPayCE0K7O9BiAs6NLVFA7sSZ3TSQbbZzJ2BN0bN3hdDffPeJcsta6x7t
-	7hJqJ2c/oWWVcX90DhjcImnxT0F0uRjO6mXTM4J+eBUjfOLGwC3m1YPIXZ1jVk1lAFDAeBURVqb
-	RsZPS9og7mwbzwYXL/pQNEXJTMkt6zIGYxi5ps3Bf61a3bbTBRKImu4wkr1xWu9WyIbFo2pjo5n
-	4xOFQlyILwTRpLkmZTx9ihavDlCD4shDeMnI7PrcnF6+8JUqsyq7IX/CSKmUsKugpBzOUZTyzLI
-	9LcPqZsD96qCxOGgFYMX474/UsLtXoXBbLZrVIQhXCYuomWW9AVblGrx19DaaDPpTCFi6/90G1h
-	m4O5HiR+/XIyg3PrNK58n8wTFwQhtZ9R6V7lrzaS2T+ZfddB4OZoSph70f4NwIoorlthG1OXhnL
-	4CWcoW9ddJ6zfHl9YiBO5L6KbQDgQxoExZZIvOnzpmCMAf9PP/4EbLD00bv2o=
-X-Received: by 2002:a05:600c:605a:b0:490:b2ae:44ca with SMTP id 5b1f17b1804b1-49541e9a8ccmr10545e9.5.1784141005664;
-        Wed, 15 Jul 2026 11:43:25 -0700 (PDT)
-Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4953c704bfasm77694915e9.2.2026.07.15.11.43.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 11:43:24 -0700 (PDT)
-Date: Wed, 15 Jul 2026 18:43:21 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Vincent Donnefort <vdonnefort@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v7 07/24] KVM: arm64: iommu: Shadow host stage-2 page
- table
-Message-ID: <alfUyfyAIFURy39W@google.com>
-References: <20260715115906.2664882-1-smostafa@google.com>
- <20260715115906.2664882-8-smostafa@google.com>
- <alfJ0cLRSw-qmCrP@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="q0tsUjxg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=PtoS7qoJKhJxB3VH+KmKbPmtU3YdAHiG/8ji4ns/CA3sClTRZqzIHrGWxpW/DC/3EQvTx94p0PTxcnHNUt+9GX5h8newUUc0q4HBY0eMG2U26tsk/Y4xwuLP84Zi21g5rHkD03ar2FuvoEDjGaoppdI5dvMfuR72OJj3dkRUmitQ9IorX2PUz/GaY9DED+Fhed8PEq39tRWMwwswh78iT+RBEvmou4w6kj67/7+rWw8WVjDSXLAU9vHb9no31CrAE1RNN13WvtSJoud5l8bN7JAz/NcJe8yYQ92bchGbqkfjUxk7BphvblIdALo4HF02N8+FOlh2ZtFuqRoxbpcAUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vQzpQKpMUhvzdTzsB6le0Y+bAokOOa4Ihbl4cXMcb5M=;
+ b=cNL6tiB3hMNiTwoiety/fnF4R8MwVHll8xGB6au7UPQhNIQulUKd4F0MBJ0XrOjcCc/2yzl1QOVoGOh82AZU4z8Wr6gEqSXuHB4Am86NAe7yB9/8y+obFQVJyeg0BqdoX+4au2/q/BvNDmQEW/6UqzrUvi1wcZUZXDgS/HCSYeHMVSe7lUbC65NSACFd4+PGoKQ2zTU+iE7hTdhL9U0IUj+8HkKmrLZhD3ELh767cwMLj3pI34Vg5PMcD1BInK7ztsRB4F7NGOANOKqHj0L8gANJHxOAIHy5R2zm9BRxeCpjfrlW/FKbIo5lREQJuaz0c9H6dEhUmPuCaGmZXbilSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vQzpQKpMUhvzdTzsB6le0Y+bAokOOa4Ihbl4cXMcb5M=;
+ b=q0tsUjxg758eXl+b7ww5TP0V7hOn2i5MkdHup/496M2DQTaQP2V/XSaneGrzc+JoA2wrxalerFQHjd2cqLqAj6ILRlhKb+9qSKhjmFLuX5948SboTz1BIY9LKR5S/IUh/rYD9ZtpJd7twNTf/HictJPR5qq+8+4Ac/9GGXYyAD0wU5YY1S19rGhe2N6E7VZf2ZW25BK2Y2oYimlgCYKY425NDt1hx4bYt7hWOs3oR99rOhw39qkhQBkGfYjRZBebnAfrc5t5a70676Aj4ez3zWxr/RE+KX9lkc0qwz2qgCYS7OGLC8XQHxPOJY8OvSrtV2p/Rc1MUlyevU/mXDzEyA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SA5PPFCAFD069B8.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8e1) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.11; Wed, 15 Jul
+ 2026 18:58:59 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0202.014; Wed, 15 Jul 2026
+ 18:58:59 +0000
+Date: Wed, 15 Jul 2026 15:58:58 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Pranjal Shrivastava <praan@google.com>
+Subject: Re: [PATCH v4 1/6] iommu/arm-smmu-v3: Support IDR5.DS and widen the
+ TLBI SCALE field
+Message-ID: <20260715185858.GG3775915@nvidia.com>
+References: <cover.1784054606.git.nicolinc@nvidia.com>
+ <3f0c3e7b7e9177586d7e545d8089ead4ef7890f0.1784054606.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3f0c3e7b7e9177586d7e545d8089ead4ef7890f0.1784054606.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: YT4PR01CA0069.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:111::25) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alfJ0cLRSw-qmCrP@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SA5PPFCAFD069B8:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8e728cee-ca78-4f83-5a07-08dee2a320fb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|7416014|376014|11063799006|56012099006|4143699003|6133799003|3023799007|22082099003|18002099003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	z0hmDNObh1vBw/TGVoiC763qWCsm/JPv9PxEzwLqoKyNwOi/nnpoXFoUm05zWgZihS34oQW3T0fC4xKsxwhKeO0spHs7D1/FouyB4ondmNSX68/1lzAImlFnzleI+Jl4oyoEqMOGNsArLoFmwo1Ghliv3JyQ7pTT4NgvGF1+l/9Zyf7RolcOzlGfYFCErljhNRyDX5+RcfBoSr/dQifdtsJQD71gNLn5kWQcYfbRZDPAWWRS/pvzXhlUVGsRlhobNqRgWoP/FFRQNOWKBesMxSNYKDgqj6sqxzFtVHEgIwDUQmuEVCNwKhlDDD86omTeVUxe+uIBp4kafHxM6Rnm1k7zTA3OQWcXaZQRc22lY11/i6YzEgtnjl7wH+t+MrgOsWdvUSWe13vDPCoDF3CWalZ7ZZg2K6JT1WmwzC7TgtPUejng22fmH/R+FfLvRsLqAVG7ct/1X0L93l1NqPADO3kqC96+XhdPWJcIKaYgEbWDgUI4Wb+pVWjZw4PxztOq6KO7HhHOoBFNgT8+hJRW/Rdnc1ilCVJjDe8I2qXl1uRfvdn6kILhWOcEm9H0m8CBJ1r+aKO0+P8mRiivUIBZlMGuI7iYlVf3u9iq8GnidB4iCHAsUd35m3C81hmWb8GbNwJtZUttJNL1zOQrZ3MCiIrUk8gEqFiuJP6AGw3IVM8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(7416014)(376014)(11063799006)(56012099006)(4143699003)(6133799003)(3023799007)(22082099003)(18002099003)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?iTISHHLXNZ5MwacbPzNsZcrr5cloeC+t+yUw2VgsvrdBoXXAIv2aj+zs1Wu4?=
+ =?us-ascii?Q?OZlj/YoBlTd6nl4fwurpyw0eeDSXDQ2DN+Gc87sc0Nw9GNTVNkPKQvcesMhq?=
+ =?us-ascii?Q?M3OMortQuYSboU8Xm7oVJhRqJ5yBvrtFX0fQtARuqjNnRYlksxSXoKnxazpu?=
+ =?us-ascii?Q?27/1tGrzuGRssKSU5pdNuPm0XOLD4WWBo/h5mJGanf12pvCuqCivkGuhACgv?=
+ =?us-ascii?Q?hdPLykjj2bm19YEOCJeJv3S2egOv87klCPvRR4ZI6QErF7+pYXiS6QX3RhAk?=
+ =?us-ascii?Q?eNJynZMhHSQHQfmbf8qneuEB850FpyDCDcDTbz/6ocXsd5zwPBc9pM+FUUeQ?=
+ =?us-ascii?Q?uNqGJO9OAbOfw0hh7QaXdLnUvFHLeGWuq6lm8TMpDEwZs9/xv+YDlXnUwZWc?=
+ =?us-ascii?Q?1vn6NlBZaLdvr4bBPuI2s+tTbQpXyv/xZa07Ui92UsxBciajRMI+XiyI2aC7?=
+ =?us-ascii?Q?52a5QrUAE82xUbUa+qfyoewoYHDUL+rbwmU+K7pfqgTET4OlEMs6Bc5VH9iv?=
+ =?us-ascii?Q?X9cfFciz3Ln5pW+bCAsMrNKx8RNfv4um+fYYOOFVOUZXQdGu23U3VhDehPvv?=
+ =?us-ascii?Q?VG//oHxsiDNIK0Hwuif5VvIhtmIDtzfweBIxygVIFO2PpAI8ni9hiCgkiJYR?=
+ =?us-ascii?Q?/PpnX9rTFipnSLvhjwygNxi8wJ/U/LUip9FGPsP0Xq/G4C32bfltjNE97b92?=
+ =?us-ascii?Q?74UO94sWoqBuXoy05p8X8vVm9sXgaTiPpgUcZJKYNciyDKEMmDHS6P31ZnpH?=
+ =?us-ascii?Q?OyhIQnUQ/Urf0TRY+eY7G3RTj+LuOEhxtGkwVIMBvBNNVjcZlCyM0hYzlEB9?=
+ =?us-ascii?Q?/yj1UTMP096kVuYb1UsPbfP7UeqqqPVF8mKSOGU5iMpBTQDiHU1nVFZFFeLj?=
+ =?us-ascii?Q?ieIpATx70Klzk0A3z9mJJS+/kxKTGZeO4OupS7s6IocyEhNfgJGaJczLlosp?=
+ =?us-ascii?Q?7pIjl8Wf86n9lA8fUZLNUlUYSYTesiLuEh/LnexjwcPRFxgKgHyAvZMXwYgz?=
+ =?us-ascii?Q?wRB/K+wwD2Zswq+Cw2G1ls/ce2qa+WtBI6hci1prJ0MzheBPu06jSMWUfuDk?=
+ =?us-ascii?Q?yfIsXZULS2dmrnJ/kkZtcg0GlEKCEmqQZlUe6P2Kx3pjRCGR56luR+/sr+x+?=
+ =?us-ascii?Q?GT+w+HMd+CmUT7iuxq7S7jZI7Vde4wA3ksoHE7IALxEkmw35IxZTmnJEB8t9?=
+ =?us-ascii?Q?HX4p7pSiuJjkH+dKOvvVDZRXxP2yAtlQ4GzPIzjMXXWPJA0UownRm7XxX9HP?=
+ =?us-ascii?Q?9NB5vZm6eHzxwzOl32f/asr2oor11VxRaOBH0c2kIqKZRTdX+VPa+kMEQmhH?=
+ =?us-ascii?Q?zzRkJzHi9BcsiLz268cO3gOhwGB/JuxTk6PFLqZgklmq83vY4VjFxtqR3XTJ?=
+ =?us-ascii?Q?G4LH9wcOgJXCr2LO/mVp7JuVSltzCJJMgeo1wu0C7TbZN3uuLbFLm7mhxHWM?=
+ =?us-ascii?Q?fHLx2yA7/v6uATaQ+JD784DZ40WWpXhwb3MDxIQluHj5exsWYaM1+ICACs3R?=
+ =?us-ascii?Q?5pmbRp4FSIod26RhIDZISw/zkC4+RpLLuPB6DWTuBVl+gUgQCKMFhhnkuOKC?=
+ =?us-ascii?Q?id43an2Y4Fqqij45aCy94ZucngDvqGyBvG0DpZW2hgZ6lop5MI8ahsKamjLY?=
+ =?us-ascii?Q?bx8tUYN9fOOMKW22daqGsCmNjdkBcJAZ5bTHCUJnjPkk21Ub0pOPvDu+eAOd?=
+ =?us-ascii?Q?63Ht+7umOdfWDzZ9j8J7yENtjnptn2goS6ZOpKkqfF4rq6yc?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e728cee-ca78-4f83-5a07-08dee2a320fb
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 18:58:59.5603
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: I4L/tnqQIWks8XpkAbesaF8xKdmo6mHHuHWuG6Bnwo57CWUiyCdYMOlQPN9TcSH8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPFCAFD069B8
 
-On Wed, Jul 15, 2026 at 06:56:33PM +0100, Vincent Donnefort wrote:
-> On Wed, Jul 15, 2026 at 11:58:48AM +0000, Mostafa Saleh wrote:
-> > Create a page-table for the IOMMU that shadows the host CPU stage-2
-> > to establish DMA isolation.
-> > 
-> > An initial snapshot is created after the driver init, then
-> > on every permission change a callback would be called for
-> > the IOMMU driver to update the page table.
-> > 
-> > There are 3 different ways to add the callback:
-> > 1) In the high level memory transitions: (__pkvm_host_donate_hyp(),
-> >   __pkvm_host_donate_guest()...
-> > 
-> > 2) In Lower level functions covering all transitions
-> >   - host_stage2_set_owner_metadata_locked() which covers:
-> >    - __pkvm_host_donate_hyp()
-> >    - __pkvm_host_donate_guest()
-> >    - __pkvm_host_donate_hyp()
-> >    - __pkvm_guest_unshare_host()
-> >   - host_stage2_set_owner_locked() only for ID_HOST which covers:
-> >    - __pkvm_hyp_donate_host()
-> >    - __pkvm_host_force_reclaim_page_guest()
-> >    - __pkvm_host_reclaim_page_guest()
-> >   - __pkvm_guest_share_host()
-> > 
-> > 3) In the lowest level function __host_update_page_state(), which
-> >    requires only one callback. However, in that case the page state
-> >    is not enough as we might need to know the old state also.
-> > 
-> > Option #2 was implemented here.
-> > 
-> > For some cases, an SMMUv3 may be able to share the same page-table
-> > used with the host CPU stage-2 directly.
-> > 
-> > However, this is too strict and requires changes to the core hypervisor
-> > page-table code, plus it would require the hypervisor to handle IOMMU
-> > page-faults. This can be added later as an optimization for SMMUV3.
-> > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >  arch/arm64/kvm/hyp/include/nvhe/iommu.h       |   4 +
-> >  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |   1 +
-> >  arch/arm64/kvm/hyp/nvhe/iommu.c               | 129 +++++++++++++++++-
-> >  arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  27 ++--
-> >  4 files changed, 145 insertions(+), 16 deletions(-)
-[...]
-> > +
-> > +/*
-> > + * IOMMU page tables are shadowed and not shared, that is mainly because:
-> > + * - Possible inconsistency between IOMMU and CPU features or format.
-> > + * - KVM relies on handling in page faults (BBM, lazy mapping).
-> > + */
-> > +static int __snapshot_host_stage2(const struct kvm_pgtable_visit_ctx *ctx,
-> > +				  enum kvm_pgtable_walk_flags visit)
-> > +{
-> > +	u64 start = ctx->addr;
-> > +	u64 block_end = ALIGN_DOWN(ctx->addr, kvm_granule_size(ctx->level)) +
-> > +			kvm_granule_size(ctx->level);
+On Tue, Jul 14, 2026 at 11:48:47AM -0700, Nicolin Chen wrote:
+> An SMMU implementing SMMU_IDR5.DS extends the range invalidation commands:
+> the SCALE field grows a 6th bit, raising its maximum value from 31 to 39,
+> and TTL == 0b01 becomes a valid level hint for a 16KB translation granule.
 > 
-> nit: I believe that for more complex init like that we should just put it after
-> the declarations.
-
-I see, I will fix it.
-
+> Add a new ARM_SMMU_FEAT_DS feature detecting the DS bit, and widen the
+> CMDQ_TLBI_0_SCALE field to its architectural 6 bits. Mask the scale value
+> explicitly in arm_smmu_cmdq_batch_add_range(), so the range invalidation
+> path emits the same commands as before, keeping the pre-existing 5-bit
+> truncation of a scale above 31.
 > 
-> > +	u64 end = min(ctx->end, block_end);
-> > +	kvm_pte_t pte = *ctx->ptep;
-> > +	bool is_memory = *(bool *)ctx->arg;
-> > +	int prot;
-> > +
-> > +	/*
-> > +	 * Keep annotated PTEs unmapped, and map everything else even lazily
-> > +	 * mapped PTEs(0), as the IOMMU can't handle page faults.
-> > +	 * That maps the whole address space which can be large, but that doesn't
-> > +	 * use a lot of memory as it will be mostly large block (1 GB with 4kb pages)
-> > +	 */
-> > +	if (pte && !kvm_pte_valid(pte))
-> >  		return 0;
-> >  
-> > -	return pkvm_iommu_ops->init();
-> > +	if (kvm_pte_valid(pte))
-> > +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
-> > +	else
-> > +		prot = IOMMU_READ | IOMMU_WRITE;
-> > +
-> > +	if (!is_memory)
-> > +		prot |= IOMMU_MMIO;
-> > +
-> > +	return pkvm_iommu_ops->host_stage2_idmap(start, end, prot);
-> > +}
-> > +
-> > +static int pkvm_iommu_snapshot_host_stage2(void)
-> > +{
-> > +	struct kvm_pgtable *pgt = &host_mmu.pgt;
-> > +	bool is_memory;
-> > +	struct kvm_pgtable_walker walker = {
-> > +		.cb	= __snapshot_host_stage2,
-> > +		.flags	= KVM_PGTABLE_WALK_LEAF,
-> > +		.arg	= &is_memory,
-> > +	};
-> > +	int ret = 0, i;
-> > +	u64 start = 0;
-> > +
-> > +	hyp_spin_lock(&host_mmu.lock);
-> > +	for (i = 0; i < hyp_memblock_nr; i++) {
-> > +		struct memblock_region *reg = &hyp_memory[i];
-> > +
-> > +		if (start < reg->base) {
-> > +			is_memory = false;
-> > +			ret = kvm_pgtable_walk(pgt, start, reg->base - start, &walker);
+> Also list DS as a valid IDR5 field in the iommu_hw_info_arm_smmuv3 kdoc:
+> iommufd has always reported the raw IDR5 register, so a VMM may conclude
+> from that bit alone that it can expose DS to its guest.
 > 
-> nit: You could have a helper? So is_memory isn't passed as a reference.
-> 
-> __snapshot_host_stage2(u64 start, u64 end, bool is_memory)
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Fixes: d68beb276ba2 ("iommu/arm-smmu-v3: Support IOMMU_HWPT_INVALIDATE using a VIOMMU object")
+> Cc: stable@vger.kernel.org # needed by the subsequent fix
 
-Not sure I understand, the function signature is defined by the walker,
-or do you mean __snapshot_host_stage2() should call another function
-were we pass is_memory? That does not seem necessary, the function
-is small already.
+I think you don't include these tags, the stable maintainers seem to
+figure it out with scripts when things don't compile, as the next
+patch wouldn't compile..
 
-> > +			if (ret)
-> > +				goto out_unlock;
-> > +		}
-> > +
-> > +		is_memory = true;
-> > +		ret = kvm_pgtable_walk(pgt, reg->base, reg->size, &walker);
-> > +		if (ret)
-> > +			goto out_unlock;
-> > +
-> > +		start = reg->base + reg->size;
-> > +	}
-> > +
-> > +	if (start < BIT(pgt->ia_bits)) {
-> > +		is_memory = false;
-> > +		ret = kvm_pgtable_walk(pgt, start, BIT(pgt->ia_bits) - start, &walker);
-> > +		if (ret)
-> > +			goto out_unlock;
-> > +	}
-> > +
-> > +	pkvm_idmap_initialized = true;
-> > +
-> > +out_unlock:
-> > +	hyp_spin_unlock(&host_mmu.lock);
-> > +	return ret;
-> > +}
-> > +
-> > +int pkvm_iommu_init(void)
-> > +{
-> > +	int ret;
-> > +
-> > +	/* Keep DMA isolation optional. */
-> > +	if (!pkvm_iommu_ops || !pkvm_iommu_ops->init ||
-> > +	    !pkvm_iommu_ops->host_stage2_idmap)
-> > +		return 0;
-> > +
-> > +	ret = pkvm_iommu_ops->init();
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return pkvm_iommu_snapshot_host_stage2();
-> > +}
-> > +
-> > +int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
-> > +				enum kvm_pgtable_prot prot)
-> > +{
-> > +	hyp_assert_lock_held(&host_mmu.lock);
-> > +
-> > +	if (!pkvm_idmap_initialized)
-> > +		return 0;
-> > +
-> > +	return pkvm_iommu_ops->host_stage2_idmap(start, end, pkvm_to_iommu_prot(prot));
-> 
-> Out of curiosity, why is it "host_stage2_idmap" and not just "idmap" ?
-> 
+> Assisted-by: Claude:claude-fable-5
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 4 +++-
+>  include/uapi/linux/iommufd.h                | 4 ++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 6 +++++-
+>  3 files changed, 10 insertions(+), 4 deletions(-)
 
-Well it's a host stage-2 idmap :), maybe one day we support guests also!
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> >  }
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> > index d803b3dd4cb4..ce610274bda0 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> > @@ -17,6 +17,7 @@
-> >  
-> >  #include <nvhe/arm-smccc.h>
-> >  #include <nvhe/gfp.h>
-> > +#include <nvhe/iommu.h>
-> >  #include <nvhe/memory.h>
-> >  #include <nvhe/mem_protect.h>
-> >  #include <nvhe/mm.h>
-> > @@ -596,16 +597,15 @@ static int host_stage2_set_owner_metadata_locked(phys_addr_t addr, u64 size,
-> >  	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
-> >  			      addr, size, &host_s2_pool,
-> >  			      KVM_HOST_INVALID_PTE_TYPE_DONATION, annotation);
-> > -	if (!ret) {
-> > -		/*
-> > -		 * After stage2 maintenance has happened, but before the page
-> > -		 * owner has changed.
-> > -		 */
-> > -		pkvm_sme_dvmsync_fw_call();
-> > -		__host_update_page_state(addr, size, PKVM_NOPAGE);
-> > -	}
-> > -
-> > -	return ret;
-> > +	if (ret)
-> > +		return ret;
-> > +	/*
-> > +	 * After stage2 maintenance has happened, but before the page
-> > +	 * owner has changed.
-> > +	 */
-> > +	pkvm_sme_dvmsync_fw_call();
-> > +	__host_update_page_state(addr, size, PKVM_NOPAGE);
-> > +	return pkvm_iommu_host_stage2_idmap(addr, addr + size, 0);
-> 
-> On error here the host stage-2 annotation needs to be reverted. Or just
-> WARN_ON() here. It also probably better to do it before the page-state has
-> changed, even if we hold the host stage-2 lock.
-> 
-
-I saw that all the callers will WARN on failure, that's why I did
-not handle the failure. I can move it earlier.
-
-> >  }
-> >  
-> >  int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id)
-> > @@ -618,8 +618,10 @@ int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id)
-> >  			return -EPERM;
-> >  
-> >  		ret = host_stage2_idmap_locked(addr, size, PKVM_HOST_MEM_PROT);
-> > -		if (!ret)
-> > -			__host_update_page_state(addr, size, PKVM_PAGE_OWNED);
-> > +		if (ret)
-> > +			break;
-> > +		__host_update_page_state(addr, size, PKVM_PAGE_OWNED);
-> > +		ret = pkvm_iommu_host_stage2_idmap(addr, addr + size, PKVM_HOST_MEM_PROT);
-> >  		break;
-> >  	case PKVM_ID_HYP:
-> >  		ret = host_stage2_set_owner_metadata_locked(addr, size,
-> > @@ -1022,6 +1024,7 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn)
-> >  				       pkvm_mkstate(KVM_PGTABLE_PROT_RWX, PKVM_PAGE_SHARED_OWNED),
-> >  				       &vcpu->vcpu.arch.pkvm_memcache, 0));
-> >  	WARN_ON(__host_set_page_state_range(phys, PAGE_SIZE, PKVM_PAGE_SHARED_BORROWED));
-> > +	WARN_ON(pkvm_iommu_host_stage2_idmap(phys, phys + PAGE_SIZE, PKVM_HOST_MEM_PROT));
-> 
-> Ha ok I understand your remark yesterday. I thought you'd put
-> pkvm_iommu_host_stage2_idmap() into host_stage2_idmap_locked()... but then it
-> means it tries to map on very host abort. 
-
-Yes, actually this version is less efficient than v6, as now on VM
-teardown we re-map all the VM pages including the shared ones which
-are already in the IOMMU. It's is not terrible but the but the
-io-pgtable detects that and return -EEXIST which I added new code
-in this version to ignore.
-
-> 
-> (same though as host_stage2_set_owner_metadata_locked(), I would first update
-> the iommu and then update the page-state)
-
-Will do.
-
-Thanks,
-Mostafa
-
-> 
+Jason
