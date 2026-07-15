@@ -1,167 +1,192 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011005.outbound.protection.outlook.com [52.101.62.5])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB9CA1FECCD
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:32:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.5
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784089941; cv=fail; b=ifUwgBRdmDGFMnQyQ8HpvHfODxMObAzwN1DtdF7XUK1jyMyzwhMsWPQQPX6rX35sjnhMDBbwxnF30/ODFl1Cde8s5uIvyqQz3UCFTgclkba3QvPTqOR+1EtILijNyppCAN0bqgbTpW3oPs5DpXUdYrtUQ7f3z7fVP0GnPdy1dwQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784089941; c=relaxed/simple;
-	bh=1Nn+XXNoHMjNn5NM/AwG9ZdRkCNfPnsw3DY/Aw8zBD4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lta4uiYUQ62OxaEs8x7RXgbW9QhCPR0+q8lO2D4LgtP/qn09vJugj4buJsWVnLLBw1rU9lTR3bWgxmgpnrIcDAv3lTlGDZEYvauAp3NTspTcl/DcqAhK98TeDgv4CdzmmJIi4josxyFrvlbRgzhTCDClvJSV59BV7dRp+4sasDM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=eTrMp/Gk; arc=fail smtp.client-ip=52.101.62.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76DE53B71AD
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 05:55:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784094962; cv=none; b=FcCPfv4aK9IP1Kb+vqFSr42R3aox5w9lG3j0Q1icQIFQxebegRtQfiISqqKI1BTC+xGpHeWjaZkkZCYfiE1gDl0p6l6mpIN2FpoAyjwnl0NzsEyYPo44J8+HIvIqSLy7DcgNeIrP7gnzQq3KF20Ll5JTrNJnEhjxwIC8YrWKbas=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784094962; c=relaxed/simple;
+	bh=5HTXX++gicPMEiTjJp/dz1aR1JmBPBM9RA7EJEs+w58=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cgMzW82icWCts+ptC+u2e2xUcVXhzyyxmQFIMjkfN3BpCGJHfrJHiq3+AoR+wgmoeqr61mzT11RygY4C0V/QsrSDEe5TBcxJE7En7O319mjlZdi8tgIbZHRz/t9wp8qgKMyi7zxPie4b3eYe0RE1jwQgo40b1lAZji6nkvnRXf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=L9w7LnyF; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=dN9d5aMI; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="eTrMp/Gk"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FlrdjUvxDescnHgAUwvT02fPk3LEb20yrMI+QumlubNQaSiHk2Qggv+YQU3XTj7kSs4B5L4Dn2b/ZqZn97b8tAFrKkcVm7Tv0WlAwSRmX7sbRsJj5qRWARjlnHtv766tuQNcRN2nMsvgJXsR4wrvEz2aI9NwE455XZjHaqT//qIlBTRdFNdVpDW5tUzIymxOA+vDeuaRD6P66NCecndZhdaNpThPf+6oWsH2tZ6q9hhDtrBBaqvINx9hylYXz7fVKgMyTf2ioMXxm7BohDNXSpfPuOCQoHqoNxkm9uRntgp8mIAV50AQHEjDbkZNUoeAcxQo5jTjYAy7u0/kKqJxJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OVzatFhBkuW0DXEJzAtw68uired0JKJIIGkK8TB37Tg=;
- b=bSUjOlXNQsU36QG+lvwIcFoG8V6SwRhernqH1HQsSxuBQ9cPP5yyLptqNFE2IPtkys+1IxkyW+3xx5HD2YZnnBjBW2nssdCeuU3YhraJfFRzcwvrc8msoVJ+nDOkGD5SVC6Vl02sTLlujrHSaDbx7E8mt2L227BKZ51ShRTv/qv66HM8zHEYY+5/NGePn2aFuWCK3fif/tkjJhfMmE/IeNaf5wnJCuiNyqvJWilM7CYoZ3lhCQJBLStwSE64xQNJ5j4T1XuZDP+0v0IjJYTcjLt/Vek6vbotPFWFmLPmD/LkIMf4J2KbuXYyx6v6dzS+qeFHV6++WUlQokHfExHjsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=163.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OVzatFhBkuW0DXEJzAtw68uired0JKJIIGkK8TB37Tg=;
- b=eTrMp/GkMDmdM/UF8w4gJu8fNHvj07uGX+qj/a3EDzH7DKU4hhQ1kfmeC2ZG60NaKYTjHX4ARGBhukHGloBx6vlRQ2zro0qTrNwdHxSYSGOlyDqDg9F245V1Kd/X3SRI3cmp8VIh/DwtYCTefgt/aO/Elz0DwqPlkMb1HKIqzuc=
-Received: from BYAPR21CA0019.namprd21.prod.outlook.com (2603:10b6:a03:114::29)
- by DS2PR12MB9687.namprd12.prod.outlook.com (2603:10b6:8:27b::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Wed, 15 Jul
- 2026 04:32:15 +0000
-Received: from MWH0EPF000C6191.namprd02.prod.outlook.com
- (2603:10b6:a03:114:cafe::40) by BYAPR21CA0019.outlook.office365.com
- (2603:10b6:a03:114::29) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.3 via Frontend Transport; Wed, 15
- Jul 2026 04:32:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- MWH0EPF000C6191.mail.protection.outlook.com (10.167.249.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.223.9 via Frontend Transport; Wed, 15 Jul 2026 04:32:15 +0000
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Tue, 14 Jul
- 2026 23:32:15 -0500
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41 via Frontend
- Transport; Tue, 14 Jul 2026 23:32:12 -0500
-Date: Wed, 15 Jul 2026 04:32:03 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: weimin xiong <15927021679@163.com>
-CC: <iommu@lists.linux.dev>, <joro@8bytes.org>,
-	<suravee.suthikulpanit@amd.com>, <vasant.hegde@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, xiongweimin <xiongweimin@kylinos.cn>
-Subject: Re: [PATCH] iommu/amd: fix grammar and typos in comments
-Message-ID: <4qwivdxrruelzxbqd4hmsfecjvmptxl7nzwu63k5cfqja3q7ql@s6opowatnxww>
-References: <20260714024445.188383-1-15927021679@163.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="L9w7LnyF";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="dN9d5aMI"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66F3l6er2596174
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 05:55:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	pB/j4DvH2ZOcHrab8vDDXcKtg1x5ii9LH73zX87n3Ko=; b=L9w7LnyFUmzSTGLy
+	yK2/duhNZU8lZP+CmJGkP12TeN1qlqOHUgI4rMbR7OQVLjvLvgd9afCBbQuXrUr+
+	ZqJUp0wmuFzSDngL1udumNVEj0hCuv08mZi1Y2f9SeZsv8+/6spv5FTfgza4x1IF
+	fNEce1u0eLMc5e/suI5aYAfswvCcbnoxb+MC1trsZc9S2iMNwSOubGNTP+7mFl6w
+	j5tRExgm3kDrWzzjXAwC5XmQawIX6IpFwNBjUGbBhyQ72BR3dfVOv5rnoBg3q3EA
+	zO5nNb/j9MRaK7z/baBtednwF0k0s6KGI6KBvG3WvqWoA7pjyfnVoLg+huXqN/eS
+	F/iVzg==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fdmjq3f13-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 05:55:57 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-38e22137fb3so828406a91.0
+        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 22:55:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1784094957; x=1784699757; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pB/j4DvH2ZOcHrab8vDDXcKtg1x5ii9LH73zX87n3Ko=;
+        b=dN9d5aMIre6XKXahAVbQjJ580LgQ0rpLOH1y3MIbTel9KgHCgRXJfZyv3snfqKS46z
+         lroOc55kEz+EdM2uW80Hnd7szPQehYji4EZSJh/KMkKU6VTtNBf51sFUoU7JiirVVGnd
+         tJ5G9BvZlOUp9tQ0ETnt8SHM+W1830d+MCTy/dfSNm0Cd3tc32/GzwMoBpcH8rwafGSv
+         xsYmD0aJ94hhXlNWFgU+EWxNd0a25ia1ogzliNY0NRLa3kv2o93H7w5kaPL0Sr89Fr7f
+         rkiPRBJT0Avbc3kEb19+p9PJdBhKCNFXaODuhrufR1bYgcVMtFtuXutCd/0Nl9AqQc/o
+         JkPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784094957; x=1784699757;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=pB/j4DvH2ZOcHrab8vDDXcKtg1x5ii9LH73zX87n3Ko=;
+        b=Cper/etwvVKPVWtxTnADuSwxtpKstp+VS++Ck2yNpzVj+HeQQBI1gm/JLyrXWz7H6s
+         zhmIQiw/ydHGaSDbd2Jr4mSAaKkIYH5AT1xvxW+sJLDY/KbfhHuUx/yyAkZH5FpS8IQ+
+         Cb5nxMpseyU+FU41YrklIQXZ/8PBstYehbOGdTE5+aGPa3+8g23DxVi7Dj5uc+Y/v+YK
+         hsKsFDrb72PQzJDk+DdQHLO8HFf31ingeqb++gQpvUZ611t84kUYXHcLNe+MBHA+iK+S
+         +wCpKkXWC01AP5sUbSyPVpj8+jdgleDiywNLs6nXAYiFxM3HzPNG0Nm87goFPF3QGbRs
+         7W7w==
+X-Forwarded-Encrypted: i=1; AHgh+RpQob/PZxX2SkXQ8UXIYud0KTSbXTiq7iy22MQ1mivdQBSoxkxoTx7qhNkt8c/wqWZAUEilog==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw1tDSJXbc+rTUJHZkzq1uQ5N2YZyOZsIpdw4o7bvbSFbNOCFxr
+	k0ODcrCKr3T53dwQVI/icdfYsFYKnT1TDmDA9fvYFGzZKrakQBNQUmdtat5sdCH4SozHDLdjOmW
+	Tft4PiWfqTuXl+ZI99nqdHsce1hTob9lC5id5WyfszClERo4tic+ML+cxlw==
+X-Gm-Gg: AfdE7clUAwzTYtEKX83NZK0/67ZR4vx82s+hxzL7LnFEAuXzCyJpaJW4nXqVXupX/mz
+	sG+p/O+KjT1f62jx5TNRLjGhbmDhqN5LkEWmmmLDrt5bAGYc2EEC8mEqDhvcPEMbAcedgcHKmzq
+	MtBd5ICeNajU/5KvH5dI7VYieVjJIhX7dIPdd61oihROdwL9IxG3wLtGkh0kxsx/8mY9wJt7mFz
+	bQCjyD+cj/pI23/PYtD0ntI5WTE8Js1CkrfRYMefK7RH5rUnCLeAAuCnxIQCtL/a/HrzLew16TQ
+	w6wcEEMsSx9LMtaSXGWJP4kLoSYPeD7GyckNgTFHQGCXWNql+pYCVMOzuv1EBGQmKG0+SawmU9f
+	6WgCSM4ehjrLe2Xv4tzitbJM+9v7B+XSIIF9l7FFl1mDN
+X-Received: by 2002:a17:90b:4a:b0:388:cf45:d72c with SMTP id 98e67ed59e1d1-38e1aedd604mr5217133a91.15.1784094956852;
+        Tue, 14 Jul 2026 22:55:56 -0700 (PDT)
+X-Received: by 2002:a17:90b:4a:b0:388:cf45:d72c with SMTP id 98e67ed59e1d1-38e1aedd604mr5217113a91.15.1784094956377;
+        Tue, 14 Jul 2026 22:55:56 -0700 (PDT)
+Received: from [10.218.39.50] ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e172fd17asm2560963a91.12.2026.07.14.22.55.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jul 2026 22:55:56 -0700 (PDT)
+Message-ID: <b7224dff-7e51-49cb-8421-14d090492dfc@oss.qualcomm.com>
+Date: Wed, 15 Jul 2026 11:25:42 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260714024445.188383-1-15927021679@163.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000C6191:EE_|DS2PR12MB9687:EE_
-X-MS-Office365-Filtering-Correlation-Id: eeb0a246-ff13-4f6c-0f02-08dee22a0c4c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|23010399003|1800799024|376014|36860700016|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	eVBXfHZIpRVcJnxYrq46mbXZ64yg1NaXV9UxbZz1j/XxJLI1UAG7yHYZ8JERZdZhTQdGcVn4FSXGE3izk1YnvYnhzy2IVXOgD2tyXNQv5MPNGf81cuVL1Tk8ob/htDjf1J+9K3kRkFE1tah0eWeVRlvvhW5xgD9jK3zDU8jriAgbBO+0CYF53ErLiFbXE3AStgi3HIBhh/VebAimld5dAidHvm6E9aW5HGQ0zIeuhrYvmoIr6WTkcARKLIwHhyyd7VWrZaZjsuthKP2GIvOvyYQWngW1soE/9S3cHbpBwFmOsC+ulTQ1QYyn+hnR5qFbmUeDlDhZYZEvu7yfKew6ShaVXATu/yRkUKVDGXveWaboDM2HB4MPpoI9/qtA/nDONhut6uT8r3Hf5u5oMbHUiV8NAZA2BmGJhQW7HCkdkvE0T+A/p/VLiw+L6lXCXrrhVHCsU3d0aLOBCF+EqzhUTKdDgQTFr+ZHv/jbnnpMvCLG3MTS5UlwVtpHjP6tQqUa2ZMl749FCobP0ZPwTw3TIY0SD4UXvU4lFfNGNIS7i9PDyBg/BCjDu7v0SsJ5r4H51ufHT3JzfPdpjgJZf/wNCCtGyrdSLDsi2X6VhdNs6Qp/L0vC5zirn1CWv37P0b10SoPAeD85bCNlRqNm28aSmKOAruQkB8uwzrxNP2DueQiPIJdJ+B0KexEboEIaFwMu65c78/ThYJMYgRl2MMiYkw==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(23010399003)(1800799024)(376014)(36860700016)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	0/ysBDUGFBPN4Ni/uZvVMR3d8DyNvBzqY5BsjkNO+lgsajUcmFsllJV+JWwt+cHzYO6VR9wIpVv7LuQgiTO2TJgVh2/4e+WHjQLR40BlDjDvd7vitG5ofbyiP2kvWRWXCfRpqw8CWM/oBzi6emXeuWmxYOnFYMorSs0QKtZcAU7H6nV7Fm6ruO43w/JlFWIc9XcoGgjjraiK5P8oK8TPM156gB6Ov3w1t0h6K1QnhWLEMMrYKD2Y5gSXuEbWoVdFKfARHQNC6tID/5N8iJg+zS9ivPdJXf7zGMbyS2epDS+uZU6+8pw5lOPLS3bBXnzDlccxIa2IlgZFHuU5kKSNWJGdO+42x+o1EBZIESKPL2viVvU8+y1akcjHJQ/g9w47WF0Itw3ZUclTz5FM186UfyzmnR1zg9Ni+IimIe9E2LSrY4xfyuKFKlh/smlMdF7l
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 04:32:15.5256
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: eeb0a246-ff13-4f6c-0f02-08dee22a0c4c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000C6191.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS2PR12MB9687
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Add support for contiguous hint bit
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+References: <20260618-iommu_contig_hint-v1-1-4502a59e6388@oss.qualcomm.com>
+ <20260703161228.GA1948451@nvidia.com>
+Content-Language: en-US
+From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+In-Reply-To: <20260703161228.GA1948451@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=LqmiDHdc c=1 sm=1 tr=0 ts=6a5720ed cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=EUspDBNiAAAA:8 a=fcmBhDXz9gjiIA-sPNYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-GUID: Hee3AmMoiLpAN9-5OkcCmZqNJOwnYYkk
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE1MDA1MyBTYWx0ZWRfX0rPL52zRtsMG
+ GqH54WEjizqCDIWeCaZJZGgSOozoZn1H2LMCXb/PYcWYNevPaWhXymcmCg49gO/mD669dl9FvnX
+ MUUqWpnPlvH3kiefUoxu/BhkNPKrodkVnoCSbKNzEwh62IYUXu+HJsVk6HjZ34YLeJ2pKiiQLHa
+ vasaZWfBugJuDtfTKZ2vFlVJrHCUb/vPk+vxFSLoCYwqO2sExS9gaCBQW31eLefymWCRMlBVv+l
+ kTEHCkitn5Tb2yWhTWu2icWhFY/1Tf0xPa5Qrv4JsLGuHXCPD1jxIMQtocwdjQYHIH8o9GmdHh+
+ HmXeGIzly9zxY+FyEIMAdIK5uXYArgIUxkCtIa4Z1VrwaF7q0oOV0Tl/MF9n5wkDZWIsdNnS4B/
+ a0UOoEvHVlh6ojDw5s34XCYkr5T8UDMqa/i76JVJpfGlZRFtCUqqRbad0tuOOx8aMvtn8uduD0S
+ IO4Tp4p2xk3vNgRQ9gA==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE1MDA1MyBTYWx0ZWRfXwHKpGIdSyEMM
+ C54RlOf+5uUQ6IL5ujn61MbO/erfkNhx4QeJIzq0mRKwA3AM8olJeew9F/6osSGUXY8p7hOdeYk
+ DU91GHYc5yzq7ZzBNXiHkuPKGLBiBB8=
+X-Proofpoint-ORIG-GUID: Hee3AmMoiLpAN9-5OkcCmZqNJOwnYYkk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-15_02,2026-07-14_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0 spamscore=0
+ bulkscore=0 clxscore=1015 adultscore=0 impostorscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607150053
 
-On Tue, Jul 14, 2026 at 10:44:45AM +0800, weimin xiong wrote:
-> From: xiongweimin <xiongweimin@kylinos.cn>
-> 
-> Correct possessive "its", article before acpihid, and a couple of
-> mangled sentences in IOMMU flush/irq comments.
-> 
-> Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
 
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
 
-> ---
->  drivers/iommu/amd/iommu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+On 7/3/2026 9:42 PM, Jason Gunthorpe wrote:
+> On Thu, Jun 18, 2026 at 02:32:09PM +0530, Vijayanand Jitta wrote:
+>> From: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+>>
+>> Add support for the contiguous hint (CONT) bit in ARM LPAE page tables.
+>> When a set of consecutive PTEs map a naturally-aligned contiguous block
+>> of memory, the CONT bit can be set on all entries in the group to allow
+>> the hardware to combine them into a single TLB entry, improving TLB
+>> utilization.
+>>
+>> The contiguous hint sizes per granule are:
+>>
+>>   Page Size | CONT PTE |  PMD  | CONT PMD
+>>   ----------+----------+-------+---------
+>>       4K    |   64K    |   2M  |   32M
+>>      16K    |    2M    |  32M  |    1G
+>>      64K    |    2M    | 512M  |   16G
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 563f9c267..824a585df 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -456,7 +456,7 @@ static void clone_aliases(struct amd_iommu *iommu, struct device *dev)
->  
->  	/*
->  	 * The IVRS alias stored in the alias table may not be
-> -	 * part of the PCI DMA aliases if it's bus differs
-> +	 * part of the PCI DMA aliases if its bus differs
->  	 * from the original device.
->  	 */
->  	clone_alias(pdev, iommu->pci_seg->alias_table[pci_dev_id(pdev)], pdev);
-> @@ -505,7 +505,7 @@ static struct iommu_dev_data *find_dev_data(struct amd_iommu *iommu, u16 devid)
->  }
->  
->  /*
-> -* Find or create an IOMMU group for a acpihid device.
-> +* Find or create an IOMMU group for an acpihid device.
->  */
->  static struct iommu_group *acpihid_device_group(struct device *dev)
->  {
-> @@ -1268,7 +1268,7 @@ static void build_inv_dte(struct iommu_cmd *cmd, u16 devid)
->  
->  /*
->   * Builds an invalidation address which is suitable for one page or multiple
-> - * pages. Sets the size bit (S) as needed is more than one page is flushed.
-> + * pages. Sets the size bit (S) as needed if more than one page is flushed.
->   */
->  static inline u64 build_inv_address(u64 address, u64 last)
->  {
-> @@ -3687,7 +3687,7 @@ static void fill_msi_msg(struct msi_msg *msg, u32 index)
->  	/*
->  	 * The struct msi_msg.dest_mode_logical is used to set the DM bit
->  	 * in MSI Message Address Register. For device w/ 2K int-remap support,
-> -	 * this is bit must be set to 1 regardless of the actual destination
-> +	 * this bit must be set to 1 regardless of the actual destination
->  	 * mode, which is signified by the IRTE[DM].
->  	 */
->  	if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
-> -- 
-> 2.43.0
+> My series to convert smmuv3 to the iommupt takes care of this and
+> supports all the orders too. I'd rather we move forward with that then
+> try to patch up this.
 > 
+
+Thanks for details, I have gone through your series. As this patch
+targets io-pgtable-arm.c directly and would benefit all its users (SMMUv2,
+Apple DART, etc.), not just SMMUv3. I think there will still be value in
+this patch for the other users.
+
+>> Support is gated behind CONFIG_IOMMU_IO_PGTABLE_CONTIG_HINT, which
+>> provides a compile-time opt-out for hardware affected by SMMU errata
+>> related to the contiguous bit.
 > 
-> No virus found
-> 		Checked by Hillstone Network AntiVirus
+> I reviewed the errata and didn't find any related to contig that
+> required disabling contig, the driver was OK with the ones I
+> found.. Did you find something specific?
 > 
+>> On the unmapping side, the CONT bit is cleared from all PTEs in the
+>> affected contiguous group before any individual entry is invalidated,
+>> following the Break-Before-Make requirement of the architecture.
+> 
+> BBM means you make it non-present and flush, it doesn't mean you clear
+> CONT, this is wrong..
+> 
+> Jason
+
+You're right. The arm_lpae_cont_clear() step was introduced to support
+partial unmaps of a contiguous group — clearing CONT first so that
+individual entries could then be invalidated one by one. However, as
+Daniel also pointed out, partial unmap of a contiguous group should not
+be supported at all. Since v2 will enforce that an unmap must exactly
+match the full aligned contiguous range, arm_lpae_cont_clear() is no
+longer needed and will be removed. The unmap path will simply write
+invalid entries for all PTEs in the contiguous group and issue a single
+range TLB flush covering the entire range thereby following BBM.
+
+Thanks,
+Vijay
