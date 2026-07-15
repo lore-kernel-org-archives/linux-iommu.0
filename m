@@ -1,185 +1,170 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 439D94779A8
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 14:11:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2F936F905
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 14:14:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784124706; cv=none; b=Xpn83Zg+VhRlD+Gb8ranmj6hO/jKNGsl1VNXJsKO79W6d/jhExsuUiykLVZ4NoQBkRQ5xVz46BzLr6QEEWsuxKDFPvXeJ1ctjb+783Vh52r8UbFTTrkvQiY5+1pkyTqJfmHFLzdn9izIw69lmk4E59wOlWbFYEbJHYKi4fC+4SY=
+	t=1784124844; cv=none; b=W8h5kXcFzUlgEKdLQWekqO7PcnppqUxEOsYe0EMadX9ikK0W9Jl6NpEEgDa9QcciU8sBErxJB6WH8mRMzTmQ+uk6WJgvBApQXx0zvFE+HSAfyJds04gFec0CrGHhEje49HCp3JxVzjXfRZNeHIL4T4fTvFGZjuBDNMXBGzZE7fQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784124706; c=relaxed/simple;
-	bh=HKovxLVfXVSwQAXngyNlJki7rLoRBolhkZVsnfCS6gI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=L+AvhPqDFSp65pw7IMGd2arGrI1kUzfv9h8ci1K5DIFmq7bXK7pz4a/TEXOP0vGb5TZ/a4Ur5g5Q2bnceR1h2XQKvBr3H3NGi+Ap+y+9K0KKHJ5KStFHxjMd+gj/VT/GKguiUYA1nVXi4VdHcKhFafurWjHVlgXXZup5BB9DlD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=dCXW4hbx; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aoDlfjzw; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1784124844; c=relaxed/simple;
+	bh=37qnbmZCuNkZ+6dYWTfpjL+Tk8c9g+fKdG6uaAwDjBU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=c6Mt2ffKyzCWi3V/F/0jdJFLuy197yjnYOjBNO10020jvZUR0dbt2b57OBeCgh0MKZUzLYDYxLkjcrdBr+CJXQvZWDn4THDrkHoL1ALprOst0nD4CQYTnTXZHQK0moJZF832fmV2SBnNzN1Hgp2HUg40spWJ4kdXuriQe6w1m/U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GqhtvUI8; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="dCXW4hbx";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aoDlfjzw"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66FE3Z74850956
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 14:11:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	DQ47DDAfNPWgexHv1Ma19CgalnyaHgiZ1WcVnWQbsZw=; b=dCXW4hbxx4hC4ym3
-	o2dppgNycVguLGhSpLiu8d4Th1o8MDTqko7B46IsiaQ2v3VxJj6p0Otj2oRbOZdt
-	rYTKS0ZlbU9hOebV5QF49IlVgQBqKFIwio4vEgd7bg+QdkyvUBw51RlL83jAHfVC
-	l6lOUhrivXTA2aqv2Nh2gj1B8/Jthmfk1w5lw/++zRwQtuZZsYioITf1piBBhKhN
-	Op8sMZOrT2UfJwDD/82VMT/kYTSfFu5TnNihEGK6fQZmB6ATqPcZDjzdXRzJTv86
-	InRyoyKnrkDE/cxtXd4SShaUqk2Ykae9LCwZmc8RYfoYXW0XX6KQ72XLgCq+1f3i
-	sm6Dvg==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fe68wsekd-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 14:11:44 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2ccafc5e82cso26988545ad.3
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 07:11:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GqhtvUI8"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-493be0fbcc5so43935e9.0
+        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 07:14:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784124704; x=1784729504; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=DQ47DDAfNPWgexHv1Ma19CgalnyaHgiZ1WcVnWQbsZw=;
-        b=aoDlfjzwmR92n2Fpua8qcpTBms6U4KTmKVBWoj+gsICCJK9ZxtGQI08uro94gIsCl6
-         ukme2iZM/fLQ2r0wCvLJ0+yPPen0VSFhYYxfhSjVblbT0bqwrIr2BZ2TehBw0RlAqiYi
-         1x9bX3BbA7RVtoXV4xR7tquS8EIFWR8G7Z/yEx4YZIbhttXHCScjithhuI9VhOgC+Q5g
-         bpP1Bzn9ZUHiNAdiXlhUrwuNQeKVBkdA+H3ThjjvgtT/j1w7mV3cco4YPwzWXSaVh0Pi
-         ka1r4v+wMePdNiEaDOOqQNWzojtl3Kvg10ADeYJHoSaf45AZm4Adoe1xBlCI+YsaXqg8
-         xArQ==
+        d=google.com; s=20251104; t=1784124841; x=1784729641; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=KgbwbSIUrCAJoYAPbbnt1Im9GqwGuzBgACzlnjm4QXs=;
+        b=GqhtvUI8Jei2DtxMQYFrJkCZwUlUQTKTX0+h6TZtWnQJV0rVa75TaOffbSr9K1vT4T
+         6hMD9pHI99zHsxXLrQkZw7MrdxCLlVwoFEPaaV+IkKUxctoMKB+baCIT/6LAw7nUrG+2
+         IrAKJlL6L770SGbzvw8RoILDdRnYgmrfjd+ocCHGB21a+GMZeageSUo+Vxg9Z7U6AS+U
+         L5QZDNDuWe3JYcu0nir9fqYMQhIf3C6FyLHl2TqAG4CxZYSAT0VhyyMQQ6g0ZDtFv8v+
+         7MN8/8/xIdA7hobD65UtIazo7/5ToFY/67vb25LgiwoCBp/v4MnGc5oXLSsVfVHdt9YX
+         6iYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784124704; x=1784729504;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20251104; t=1784124841; x=1784729641;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=DQ47DDAfNPWgexHv1Ma19CgalnyaHgiZ1WcVnWQbsZw=;
-        b=Tk0UNee9Ra4tjiW98ZEd5YI08xy3W+nfQPzyHza8RKE7La1Q9rz9Kn3nsNDhNJwCBl
-         GdEEfCmGAGdQpEvpG3TBNfWyATjJpKsGHKcqeG7TLfBcsT0sbuSM3+41tTOkJU+vptku
-         qX+FU3xzJHncOOHrnmu1p4eSNAnEs8zWEbVD0KvR7WODAufQqpuAcQgZSMm1WqRqoNMX
-         zr+1BDx0LBroyHv3Q5NcjGpiUsC3nq9YZkw1Fs8T+N3ykmCSdmOw5EINYiaCk38S0Z02
-         omfp2ud+34sy34PliPk8tRB5qr6Wy+poepoREW4v4AjJ/kp7dzzNZGQi10cpVG9xH/6/
-         PY/A==
-X-Forwarded-Encrypted: i=1; AHgh+RqdB8/vtwvyJhB2473voHfNJ9XV1St/V4V76Z0PdoU7WWosdxjUYjQwNgtmQZ7wkoCdwJnKcg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy+pQL+DPZM4ZtYM4cr9E5uvGRzie2MK3nILz72eeQOGZ+dsdxC
-	LiCUdSfXGpCm3Qp22goEkoK9h7gpsA9hxYEgOrvEgoSrLdoo7LaOitqqyJNnr/Cu5mkKGosxrXj
-	RnbZoPqspnA1YQD12Iy3W1oxiaPGr+wXYgr1ArJhi05LbNZxvQzCqLENSNQ==
-X-Gm-Gg: AfdE7cmpTf4gZXsastVOkbZFfiLbMqkkfF0g/taMYgzQCVYCpU6zCpQNRt5jqdNT9Nv
-	gnY+Ds0eZ7+OMiGaUkToGWYzLBloxcACSZ/knC9xCfdrsUZaiac06VCWn+4Dr3MkPzMY/dx3m45
-	/peWKpWJtlB5ZEgAbFvETqRxwy5SZq4gZMuXyFe8Gj+vYRiwEZ9bKmCzBPO2/Uehgz9HmS3CnTv
-	KRMhMtWNy3V18Wd+vujGRMjFhNggq6bSpdrwX4s3rXOHPqgMY1Goq44H3ymMeq22CYGwtvVZ3VD
-	Rqijx/t9cQcxnc6o9mAsIhlLVRrvOyGZ6s/WO1iGCBvQSWzjpORjO8O2qsCQajpXhoOy6qEh3iK
-	yZvQrdc3OjlnuszvLnLPOTjWiMmAQ7ALlWrUQ5E1ezbuX
-X-Received: by 2002:a17:902:db0b:b0:2cc:6b7a:dfcb with SMTP id d9443c01a7336-2ce9f028b80mr162598915ad.33.1784124703951;
-        Wed, 15 Jul 2026 07:11:43 -0700 (PDT)
-X-Received: by 2002:a17:902:db0b:b0:2cc:6b7a:dfcb with SMTP id d9443c01a7336-2ce9f028b80mr162598645ad.33.1784124703496;
-        Wed, 15 Jul 2026 07:11:43 -0700 (PDT)
-Received: from hu-bvisredd-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf1070b68dsm2913215ad.79.2026.07.15.07.11.37
+        bh=KgbwbSIUrCAJoYAPbbnt1Im9GqwGuzBgACzlnjm4QXs=;
+        b=aDbz6OtgFMhnO+tbUUAze3dfroz5YeYXZN3p6oVSNbGMvxY7t0D61r8XWH09dqLKVy
+         3lVxcUxdX59ikVDpxn+phnEje6yvpPeBvqDH6Awes0XfA90OyUwFYbyk1mwIL/VD/HwD
+         7MQ6R7x4BY+f2cN0VH/akOH2dvnniuQ1miE43gpV5k0DO+NlEZMAoESYfO5QK3P1Tj03
+         eB5HcDOCqUGBXlm3FFxyn77vkPx5gzRw/mt8lK0GqMdUW2JqAv9PT3XegOq71snwtCNW
+         yGLr6XZp5qpZVVAgJFjxMLyj51hRT/OzXh1HZLGQI4QqHnSQSSnWLLHzUMy2VZ9jno7c
+         ReDw==
+X-Forwarded-Encrypted: i=1; AHgh+RpjdsnOAtOND+iQUStYIuI3QLKxqLcarHi5M6UVSrV3LdA74b1xVsgf3StFcSnwkIf+bNPPCw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YysfJg6qsVFQi6i0gFcc+kYLVhQr+ruINLscrOFDEpAK5pOQx/2
+	2cyf/OfiWkHZbfZ7y2Qelo8HpNOAdb/yZAgaLrsdfwODjFWUiA9GbjW9JHL3mTRdZA==
+X-Gm-Gg: AfdE7ck+3Y+92dXjccHhr/ROVBCwpOoG9m7gBdFtzHqwCwaMt0S4pue+H4g8e4nTSy7
+	m1Mec1ThIxR9wWCfp8aui5iTY+5M+CnmAnZ6k7eWyjnEhD5QNaDj1R3/hLT7qCJBaH2fo41eDmQ
+	2YyFZv6o4lw+h3JJ7EbXsJ4mFq5b6ifW+IImHV7MOwMx34Ycx5yr7SDCivmtPV/4N0sqRH7rb/F
+	mJRNvEO4zA7ezr0jVI1wpjrMwBj+tVm4BEflNZeTqszkcwS+tN7RlUbuIdXNpTzzY+zqSie6tAx
+	1Z7blVoSVJsOivS5Z0SdWsf+EpM+2W6G6P9ZODQdb0aDDZxsEmyqW9S0pWlBOjaEjOOf3X5NinI
+	l7RXlmhOD+b9AyrDhL5zuriHDa6Gp2U8q/bsyQRzEuj4hYAxqWk6gps0zsknh4X0VhwLov3Vtls
+	D7FalNX1jzuFA8bOVBowpD4jauWoLxPHrLHB1e89D5H7T2hkM4
+X-Received: by 2002:a05:600c:14b:b0:48a:5618:b4d4 with SMTP id 5b1f17b1804b1-495156d9fddmr2601775e9.1.1784124839966;
+        Wed, 15 Jul 2026 07:13:59 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464a9879sm17605107f8f.22.2026.07.15.07.13.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 07:11:43 -0700 (PDT)
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Date: Wed, 15 Jul 2026 19:40:08 +0530
-Subject: [PATCH v9 14/14] arm64: dts: qcom: glymur-crd: Enable iris video
- codec node
+        Wed, 15 Jul 2026 07:13:59 -0700 (PDT)
+Date: Wed, 15 Jul 2026 14:13:55 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v7 01/24] KVM: arm64: Add a generic clock
+Message-ID: <aleVozZEcxiGE4Y3@google.com>
+References: <20260715115906.2664882-1-smostafa@google.com>
+ <20260715115906.2664882-2-smostafa@google.com>
+ <alePwq2eKV5g_7Gc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260715-glymur-v9-14-8cf2cbe12a07@oss.qualcomm.com>
-References: <20260715-glymur-v9-0-8cf2cbe12a07@oss.qualcomm.com>
-In-Reply-To: <20260715-glymur-v9-0-8cf2cbe12a07@oss.qualcomm.com>
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784124602; l=1011;
- i=busanna.reddy@oss.qualcomm.com; s=20260216; h=from:subject:message-id;
- bh=HKovxLVfXVSwQAXngyNlJki7rLoRBolhkZVsnfCS6gI=;
- b=Yj06tNo9W4Sz5F9Y8NffrAmj+GAbIKN79t2NNC+0Y4uOLP55xyUcSy6bwfJTvc7P1yLclr8us
- u1O80vjjnzBAU1bFxQc8ueCpHZwWR0/+xWybbd3MF9B/1V6E7Pb58UY
-X-Developer-Key: i=busanna.reddy@oss.qualcomm.com; a=ed25519;
- pk=9vmy9HahBKVAa+GBFj1yHVbz0ey/ucIs1hrlfx+qtok=
-X-Proofpoint-ORIG-GUID: 53mVVma31VdNhqsZOsyY1W8y1NiVqvHN
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE1MDE0MSBTYWx0ZWRfXyyx+MnSRD+AE
- dgmuxy1IN6WQM2OWCXgbYfuXy/c1gPMtEIXzrh4wdxV2wZ5QZqg2WMjqLoc2F+hYpQzIYIDTfTg
- y0mED7wQshe7AvK7iI+7NsSwpnT8KLn5ZPKH8/rKixA4fC6mBeGOhJUzjIxpGDEGZdQ7PxQutyi
- EubM4uMkS/S63hf9kda7R6DpLyyEtNihZKYvSpe+RgKL6cUr3ZbfryMs80jLByVjX5vR4inlEyG
- mhBfUIh2KwUl93XT3tl7Y156Lskd0k1kXt8I8m98DmOfYpkYLyF0QHT+Ws0K3TgDeLkeTJ816ZL
- ftOZTzLcD0+WJC4Etu1ukcTzPj5jtt3SONH+fxWDRcMOFZrv8OWfGOmDYSElTf7QnoHGJgnyGi6
- 2B//1DxDeluv+IcaUNK9PDrf0imU+HoGEwFdCadbd3uxBvDUkZ6B6VO1q3oPYWA1g74GRjSaUeW
- gd/9tHw5sqHKC3h9HQQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE1MDE0MSBTYWx0ZWRfX5oNWlcHCDF1b
- v5psbLmEuwXeaGfhUlnY1SfhgRiwpkWqM929zHd8t9GQ/fkQUM2DvHwSqAG+Kel2Ff5DP3jknBD
- wrfmkV2w/kzB61iuAqy7waDaq+7Iruo=
-X-Authority-Analysis: v=2.4 cv=LbgMLDfi c=1 sm=1 tr=0 ts=6a579520 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=EUspDBNiAAAA:8 a=Dn0IJEph4XI5J7oltBAA:9 a=QEXdDO2ut3YA:10
- a=GvdueXVYPmCkWapjIL-Q:22
-X-Proofpoint-GUID: 53mVVma31VdNhqsZOsyY1W8y1NiVqvHN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-15_03,2026-07-15_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 impostorscore=0 suspectscore=0 adultscore=0 clxscore=1015
- phishscore=0 priorityscore=1501 malwarescore=0 lowpriorityscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607150141
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alePwq2eKV5g_7Gc@google.com>
 
-The iris hardware block is described in the glymur SoC DTSI, and enabling
-it here allows the media iris driver to probe and use the video codec
-functionality.
+On Wed, Jul 15, 2026 at 02:48:50PM +0100, Vincent Donnefort wrote:
+> [...]
+> 
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/clock.c b/arch/arm64/kvm/hyp/nvhe/clock.c
+> > index f3e2619db4e4..43d2cba4f810 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/clock.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/clock.c
+> > @@ -8,7 +8,12 @@
+> >  
+> >  #include <asm/arch_timer.h>
+> >  #include <asm/div64.h>
+> > +#include <linux/math64.h>
+> > +#include <vdso/time64.h>
+> >  
+> > +static u32 timer_freq;
+> > +
+> > +#ifdef CONFIG_NVHE_EL2_TRACING
+> >  static struct clock_data {
+> >  	struct {
+> >  		u32 mult;
+> > @@ -66,3 +71,27 @@ u64 trace_hyp_clock(void)
+> >  
+> >  	return (u64)ns + clock->data[bank].epoch_ns;
+> >  }
+> > +#endif /* CONFIG_NVHE_EL2_TRACING */
+> > +
+> > +int hyp_clock_init(void)
+> > +{
+> > +	timer_freq = read_sysreg(cntfrq_el0);
+> > +	/*
+> > +	 * KVM will not initialize if FW didn't set cntfrq_el0, that is already
+> > +	 * part of the boot protocol.
+> > +	 */
+> > +	if (!timer_freq)
+> > +		return -ENODEV;
+> > +
+> > +	/* Timer freq can't be larger than 1Ghz by spec. */
+> > +	if (timer_freq > NSEC_PER_SEC)
+> > +		return -EINVAL;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +/* Return time in ns. */
+> > +u64 hyp_clock_ns(void)
+> > +{
+> > +	return mul_u64_u32_div(__arch_counter_get_cntvct(), NSEC_PER_SEC, timer_freq);
+> 
+> IIUC, this will overflow the u64 mult very quickly (in few minutes) and also I
+> see that we don't need such small nanoseconds accuracy.
+> 
+> So here we could always fallback to 128-bits mult... or update the epoch from
+> time to time. But I have something completely different to propose:
+> 
 
-Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
----
- arch/arm64/boot/dts/qcom/glymur-crd.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+It should not overflow because mul_u64_u32_div() handles this.
 
-diff --git a/arch/arm64/boot/dts/qcom/glymur-crd.dtsi b/arch/arm64/boot/dts/qcom/glymur-crd.dtsi
-index b314c6dd423c..3ade94220667 100644
---- a/arch/arm64/boot/dts/qcom/glymur-crd.dtsi
-+++ b/arch/arm64/boot/dts/qcom/glymur-crd.dtsi
-@@ -695,6 +695,16 @@ touchscreen@38 {
- 	};
- };
- 
-+&iris {
-+	firmware-name = "qcom/vpu/vpu36_p4_s7.mbn";
-+
-+	status = "okay";
-+
-+	firmware {
-+		iommus = <&apps_smmu 0x19e2 0x0>;
-+	};
-+};
-+
- &lpass_vamacro {
- 	pinctrl-0 = <&dmic01_default>, <&dmic23_default>;
- 	pinctrl-names = "default";
+> Instead of using a "clock" how about we just modify smmu_wait?
+> 
+> #define smmu_wait() {
+>     static u32 window = arch_timer_get_cntfrq() / ARM_SMMU_EL2_POLL_TIMEOUT_US
+>     u64 timeout = __arch_counter_get_cntvct() + window;
+>     u64 cur;
+> 
+>     ...
+> 
+>     while (!(__cond)) {
+>       ...
+> 
+>       cur = __arch_counter_get_cntvct();
+>       if (cur >= timeout)
+>           __ret = -ETIMEOUT;
+> 
+> 
+> No risk of overflowing u64
+> No init necessary
 
--- 
-2.34.1
+It believe init will be needed as caching arch_timer_get_cntfrq()
+is much better that re-reading everytime. But I can make all of this
+contained in the SMMUv3 driver and remove this patch.
+
+Thanks,
+Mostafa
 
