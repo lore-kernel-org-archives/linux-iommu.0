@@ -1,79 +1,98 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BDD4A2E0E
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 17:56:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A88400988;
+	Wed, 15 Jul 2026 18:06:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784138202; cv=none; b=VbnDJez30a/IFnHsInFGeokVjc4Hb6HXxVuC72eXPXiGR6+OI5eGuZYXYrhHwdp0BMaRvnFjzDecIAv8iBqNiV1eugbl+5wijQ2gbpjskOvFMlzWclZemkqGtztftobpZTzbhsb6W4nyWPvuJ/i7aahnmom0PBH5sHZUqd+ssJs=
+	t=1784138830; cv=none; b=PQG9e110S12X4yDp8uaVoqIjdSXbhK9Op+xoBQ0yIy60xYYs0RMWL88BVbVimR6RbzoYeLYLX8rqnaf0IGWPEZng3nYAR5pumzGBJkpC9XSXUd28CcD7W1bhwF6G35cRQ9jp9EvY68qxBUKJ03nsN+Y0QtbWsom+KyA339rUOfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784138202; c=relaxed/simple;
-	bh=xuSvc9yhBFGzX8mnmE6RyQN6QrXCLz6PDQHp+6SjUaU=;
+	s=arc-20240116; t=1784138830; c=relaxed/simple;
+	bh=676EW54ZjlPi1U7mS9yBnZCxtv8/ZyBZqJfh6gJIWHc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O2Une2oDnUUibrz3ToKwPW4oFwbJUzk3qT2vOu8tJ5LZe/OlAoNTcXtYeHbiTBk+MZXyBuiLXlKxukJ64qQrlXPspuXNGfA0wZGR5OquM/hDyTtry9/jXT2m7IKo5gDCOELcYlQDARMycGA6rLopczos0fBQ+MvXpQdNLSwE3iA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QdPfcC2u; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=VHR6BRrb0N9A/x+n5NR8gt4DfK6OvMfqC5DLBse+SBwZzXdpTxL8cgdsKBKxIUeU4Rm9wB+sQJZf3gEbHr83nRUWE9rwAEg1EbugNm3zncI5FP1Q/gOViEBcY4GmEUwWgJX1RIGWMqB8dV4GuB9ozJzaPkvVsj4BPZAcWSQxkXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ep4rwIOo; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QdPfcC2u"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-493c733f15aso51685815e9.0
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 10:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784138198; x=1784742998; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=0V1FTARVtoHKDhD2y26WaLiZ0OdS9Qk3q3wsxYlCeSQ=;
-        b=QdPfcC2uy44DYLHkFIBNA5mrwqBvZ3NWP0GisFgbdSoZF7m35fMwQIt4AJQp+O+qeM
-         7BRRDNqmBaDnsFnSTYUWZWtyW0s25RK74DQgk49UyJlxwcUl3oC1fXLk9A1qhff/I4nc
-         uwRNVG/EEuiBSW2a11+YpUDtN1epp4EqANhYoDeL6ZrxmztxYL7clPJICWYRouvDD2fy
-         U2EKGHyMcm0B/z+O+TOUTlCP9UpPKZqSfXAxT17VNq9+WnjI5k3TE+qaotKZIch+DMt9
-         tqItnuSm2z3DWAP6tHfEeLNnxk1X6jnBYCTcJwmzT85RJ5sbBbWi4c7cAdNTDq0EWjDG
-         FrFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784138198; x=1784742998;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0V1FTARVtoHKDhD2y26WaLiZ0OdS9Qk3q3wsxYlCeSQ=;
-        b=JjbPm5ek66t9yVpZZ/pNB6tfP5oGyRLoqNS4upmEpPzu0OszbrRjRfxGtqvtxGlBOV
-         dRVXpVIsQX3qE6+rR5wId3mUvG0Yhp1joDzszbsdfw61NzML0Du8QNNxp/gGM8smPJIk
-         a8rQQIDQdupWk9NSA2qGD4gj0C5quBNZ0EB0zQns2zEGizwFEv+yPwXiumwiGJJZcgPz
-         Ql8m8f75QH9hHq9QWbtC0D6nsqaZEMpbL2Wp9ScSVLsKG1KyP5VB4YvYlHL7kjmXsGB+
-         00cNNQLQZ1jeGpExHQx1LnyisfshbcXR9FQONExCpheh8TAz++r92MwYp+igFmslTNGs
-         parg==
-X-Forwarded-Encrypted: i=1; AHgh+RpX79Re3ECVB+Py4Sy03abSjxsURw/eQrxpnbdHHLQfDQpV5SGld/Ynb9GDSHi2xrX/zsZlkA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxtITm7Z6uzKcu7wHHkwf6aOra6m1TI6t8cMRECSPsvOYCEs9Z4
-	x6nRXVzFSvBjQzdAhqWCa+vXxAS8iIFDENJiwLF6UqYX0RB4BSAWZNzOVEtcdxOA/A==
-X-Gm-Gg: AfdE7ckr9Yy02N5dnmeVGa03EuRXbmwblY8m5NNZwLNVCGM8vkQq+j7QeKsQCWEa/0Y
-	u/YQuzHcDV8ENIwOYLJaFVjBYs1TYAzvoXwAsW3UgwSOaZ4YgT44MdqlhQSfzg1bKp4jKVY1dKq
-	dAWpDHnsx5c2jcIVXcsy448OKIHi2D7ujTQybRClyp4rpVEufVdKKvc1iuLl0EAAgaLcAWThozd
-	Z4NnSKszzYpXbDPB4mvZGAX8sFr4RJaC/rNWe1JzNYBdXlDDL6LNGYRsX7FaPXPl/ALjSy8I/ud
-	ZURwSopLQRmvQApnEg5fbYFjQA0ginuvI1WH9GC7rzcOKk3A/Kfm4Q6mnLqF6n4thl83vjwlbmC
-	4XNinq/V+uT+WGEhLk0XofFrlieNTL7dVJ+FKnDuTZz4deFj7ERfh/p9sT9rk1Dui0R11uPxJi6
-	gT1HXCX+gq/RhvO3+ni3r4b3VFj3RpZbRbXTfqUmllx5aH1A1xtOQ=
-X-Received: by 2002:a05:600c:a00b:b0:493:f261:d295 with SMTP id 5b1f17b1804b1-4953f1552bfmr26635515e9.4.1784138197915;
-        Wed, 15 Jul 2026 10:56:37 -0700 (PDT)
-Received: from google.com (137.69.77.34.bc.googleusercontent.com. [34.77.69.137])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49508728019sm163467455e9.5.2026.07.15.10.56.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 10:56:36 -0700 (PDT)
-Date: Wed, 15 Jul 2026 18:56:33 +0100
-From: Vincent Donnefort <vdonnefort@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v7 07/24] KVM: arm64: iommu: Shadow host stage-2 page
- table
-Message-ID: <alfJ0cLRSw-qmCrP@google.com>
-References: <20260715115906.2664882-1-smostafa@google.com>
- <20260715115906.2664882-8-smostafa@google.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ep4rwIOo"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=qngtohDCDGKOAZ2UVf9Yg6jMkSiGUEfIvWoLem96Mp4=; b=ep4rwIOo/ExvDfJmbtyA8cKzMw
+	0K/f7VDtaU/DLWnU8uwYuMWewE/dC3S1ac1go5eVbtwF80qPWn5KvA3OvHqfcuRIXpW4OY5odfN5U
+	weSzRKDDHCZ2JEhPfQKlDUbJQdhIg5wO+rloHvOBdYg7m1s/mQdTBwtZ0KOy4bDybM+1nE6KlB7Ux
+	57bMIakkBMvb4B9//cOXUVMiSdXw67CFBTK9w74YZdPjPkP37w3eKwbO9XcT9HNqvpacpkQaqu1I2
+	3hGgEFOXqCguSeUIllYGOWMxmlxPIA4nF3mzmcU+fuz7v4+2Qrd3UJCpm6P357Gsn91/sNfi6dOHa
+	ZDhmCkMg==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wk3zd-0000000FcKu-2dgd;
+	Wed, 15 Jul 2026 18:06:01 +0000
+Date: Wed, 15 Jul 2026 14:05:42 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	David Hildenbrand <david@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
+	Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>, 
+	Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>, 
+	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+	Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
+	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>, 
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+	Miaohe Lin <linmiaohe@huawei.com>, Naoya Horiguchi <nao.horiguchi@gmail.com>, 
+	Xu Xin <xu.xin16@zte.com.cn>, Chengming Zhou <chengming.zhou@linux.dev>, 
+	SJ Park <sj@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>, Byungchul Park <byungchul@sk.com>, 
+	Gregory Price <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, 
+	Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>, 
+	Kees Cook <kees@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
+	Alexander Potapenko <glider@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	Thomas Gleixner <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	Christian Gmeiner <christian.gmeiner@gmail.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
+	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, 
+	Thierry Reding <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Christian Koenig <christian.koenig@amd.com>, 
+	Huang Rui <ray.huang@amd.com>, Matthew Auld <matthew.auld@intel.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>, 
+	Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	nvdimm@lists.linux.dev, linux-perf-users@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, damon@lists.linux.dev, iommu@lists.linux.dev, 
+	kasan-dev@googlegroups.com, linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
+	linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	Russell King <linux+etnaviv@armlinux.org.uk>
+Subject: Re: [PATCH v2 01/33] mm: move vma_start_pgoff() into mm.h and clean
+ up
+Message-ID: <uqfnbb7knn5gs2symluouczdbxehpwuubek3ypziavv776jncb@l7r4zlatslxd>
+References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
+ <20260710-b4-pre-scalable-cow-v2-1-2a5aa403d977@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,315 +101,96 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260715115906.2664882-8-smostafa@google.com>
+In-Reply-To: <20260710-b4-pre-scalable-cow-v2-1-2a5aa403d977@kernel.org>
 
-On Wed, Jul 15, 2026 at 11:58:48AM +0000, Mostafa Saleh wrote:
-> Create a page-table for the IOMMU that shadows the host CPU stage-2
-> to establish DMA isolation.
+On 26/07/10 09:16PM, Lorenzo Stoakes wrote:
+> vma_last_pgoff() already lives there, so it's a bit odd to keep
+> vma_start_pgoff() in mm/interval_tree.c. Move them together.
 > 
-> An initial snapshot is created after the driver init, then
-> on every permission change a callback would be called for
-> the IOMMU driver to update the page table.
+> These each return unsigned long, which pgoff_t is typedef'd to. Make this
+> consistent and have these functions return pgoff_t instead.
 > 
-> There are 3 different ways to add the callback:
-> 1) In the high level memory transitions: (__pkvm_host_donate_hyp(),
->   __pkvm_host_donate_guest()...
+> Additionally, express vma_last_pgoff() in terms of vma_start_pgoff(), since
+> we wrap the vma->vm_pgoff access, we may as well use it here.
 > 
-> 2) In Lower level functions covering all transitions
->   - host_stage2_set_owner_metadata_locked() which covers:
->    - __pkvm_host_donate_hyp()
->    - __pkvm_host_donate_guest()
->    - __pkvm_host_donate_hyp()
->    - __pkvm_guest_unshare_host()
->   - host_stage2_set_owner_locked() only for ID_HOST which covers:
->    - __pkvm_hyp_donate_host()
->    - __pkvm_host_force_reclaim_page_guest()
->    - __pkvm_host_reclaim_page_guest()
->   - __pkvm_guest_share_host()
+> Also while we're here, const-ify the VMA and cleanup a bit.
 > 
-> 3) In the lowest level function __host_update_page_state(), which
->    requires only one callback. However, in that case the page state
->    is not enough as we might need to know the old state also.
+> Also update the VMA userland tests to reflect the change.
+
+This patch could have been 01/35?  Disappointing, but I will try to get
+over it.
+
 > 
-> Option #2 was implemented here.
+> No functional change intended.
 > 
-> For some cases, an SMMUv3 may be able to share the same page-table
-> used with the host CPU stage-2 directly.
-> 
-> However, this is too strict and requires changes to the core hypervisor
-> page-table code, plus it would require the hypervisor to handle IOMMU
-> page-faults. This can be added later as an optimization for SMMUV3.
-> 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> Reviewed-by: Gregory Price <gourry@gourry.net>
+> Acked-by: David Hildenbrand (Arm) <david@kernel.org>
+> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
+> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+
+Reviewed-by: Liam R. Howlett (Oracle) <liam@infradead.org>
+
 > ---
->  arch/arm64/kvm/hyp/include/nvhe/iommu.h       |   4 +
->  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |   1 +
->  arch/arm64/kvm/hyp/nvhe/iommu.c               | 129 +++++++++++++++++-
->  arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  27 ++--
->  4 files changed, 145 insertions(+), 16 deletions(-)
+>  include/linux/mm.h              | 9 +++++++--
+>  mm/interval_tree.c              | 5 -----
+>  tools/testing/vma/include/dup.h | 5 +++++
+>  3 files changed, 12 insertions(+), 7 deletions(-)
 > 
-> diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> index df3d0cc5d4db..857d7dd2ebc3 100644
-> --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> @@ -3,11 +3,15 @@
->  #define __ARM64_KVM_NVHE_IOMMU_H__
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 25e669632d2c..09b06d8fea74 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -4307,9 +4307,14 @@ static inline unsigned long vma_pages(const struct vm_area_struct *vma)
+>  	return (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
+>  }
 >  
->  #include <asm/kvm_host.h>
-> +#include <asm/kvm_pgtable.h>
->  
->  struct pkvm_iommu_ops {
->  	int (*init)(void);
-> +	int (*host_stage2_idmap)(phys_addr_t start, phys_addr_t end, int prot);
->  };
->  
->  int pkvm_iommu_init(void);
->  
-> +int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
-> +				 enum kvm_pgtable_prot prot);
->  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
-> diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> index 51b0eb3844a9..99b821b3cf65 100644
-> --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> @@ -59,6 +59,7 @@ int __pkvm_host_test_clear_young_guest(u64 gfn, u64 nr_pages, bool mkold, struct
->  int __pkvm_host_mkyoung_guest(u64 gfn, struct pkvm_hyp_vcpu *vcpu);
->  
->  bool addr_is_memory(phys_addr_t phys);
-> +
->  int host_stage2_idmap_locked(phys_addr_t addr, u64 size, enum kvm_pgtable_prot prot);
->  int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id);
->  int kvm_host_prepare_stage2(void *pgt_pool_base);
-> diff --git a/arch/arm64/kvm/hyp/nvhe/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu.c
-> index ef456eff42d2..08009609ec59 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/iommu.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/iommu.c
-> @@ -4,16 +4,137 @@
->   *
->   * Copyright (C) 2022 Linaro Ltd.
->   */
-> +#include <linux/iommu.h>
-> +#include <asm/kvm_pkvm.h>
-> +
->  #include <nvhe/iommu.h>
-> +#include <nvhe/mem_protect.h>
-> +#include <nvhe/spinlock.h>
->  
->  /* Only one set of ops supported */
->  struct pkvm_iommu_ops *pkvm_iommu_ops;
->  
-> -int pkvm_iommu_init(void)
-> +/* Protected by host_mmu.lock */
-> +static bool pkvm_idmap_initialized;
-> +
-> +static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
+> -static inline unsigned long vma_last_pgoff(struct vm_area_struct *vma)
+> +static inline pgoff_t vma_start_pgoff(const struct vm_area_struct *vma)
 >  {
-> -	/* Keep DMA isolation optional. */
-> -	if (!pkvm_iommu_ops || !pkvm_iommu_ops->init)
-> +	int iommu_prot = 0;
-> +
-> +	if (prot & KVM_PGTABLE_PROT_R)
-> +		iommu_prot |= IOMMU_READ;
-> +	if (prot & KVM_PGTABLE_PROT_W)
-> +		iommu_prot |= IOMMU_WRITE;
-> +
-> +	/* We don't understand that, might be dangerous. */
-> +	WARN_ON(prot & ~PKVM_HOST_MEM_PROT);
-> +	return iommu_prot;
+> -	return vma->vm_pgoff + vma_pages(vma) - 1;
+> +	return vma->vm_pgoff;
 > +}
 > +
-> +/*
-> + * IOMMU page tables are shadowed and not shared, that is mainly because:
-> + * - Possible inconsistency between IOMMU and CPU features or format.
-> + * - KVM relies on handling in page faults (BBM, lazy mapping).
-> + */
-> +static int __snapshot_host_stage2(const struct kvm_pgtable_visit_ctx *ctx,
-> +				  enum kvm_pgtable_walk_flags visit)
+> +static inline pgoff_t vma_last_pgoff(const struct vm_area_struct *vma)
 > +{
-> +	u64 start = ctx->addr;
-> +	u64 block_end = ALIGN_DOWN(ctx->addr, kvm_granule_size(ctx->level)) +
-> +			kvm_granule_size(ctx->level);
-
-nit: I believe that for more complex init like that we should just put it after
-the declarations.
-
-> +	u64 end = min(ctx->end, block_end);
-> +	kvm_pte_t pte = *ctx->ptep;
-> +	bool is_memory = *(bool *)ctx->arg;
-> +	int prot;
-> +
-> +	/*
-> +	 * Keep annotated PTEs unmapped, and map everything else even lazily
-> +	 * mapped PTEs(0), as the IOMMU can't handle page faults.
-> +	 * That maps the whole address space which can be large, but that doesn't
-> +	 * use a lot of memory as it will be mostly large block (1 GB with 4kb pages)
-> +	 */
-> +	if (pte && !kvm_pte_valid(pte))
->  		return 0;
->  
-> -	return pkvm_iommu_ops->init();
-> +	if (kvm_pte_valid(pte))
-> +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
-> +	else
-> +		prot = IOMMU_READ | IOMMU_WRITE;
-> +
-> +	if (!is_memory)
-> +		prot |= IOMMU_MMIO;
-> +
-> +	return pkvm_iommu_ops->host_stage2_idmap(start, end, prot);
-> +}
-> +
-> +static int pkvm_iommu_snapshot_host_stage2(void)
-> +{
-> +	struct kvm_pgtable *pgt = &host_mmu.pgt;
-> +	bool is_memory;
-> +	struct kvm_pgtable_walker walker = {
-> +		.cb	= __snapshot_host_stage2,
-> +		.flags	= KVM_PGTABLE_WALK_LEAF,
-> +		.arg	= &is_memory,
-> +	};
-> +	int ret = 0, i;
-> +	u64 start = 0;
-> +
-> +	hyp_spin_lock(&host_mmu.lock);
-> +	for (i = 0; i < hyp_memblock_nr; i++) {
-> +		struct memblock_region *reg = &hyp_memory[i];
-> +
-> +		if (start < reg->base) {
-> +			is_memory = false;
-> +			ret = kvm_pgtable_walk(pgt, start, reg->base - start, &walker);
-
-nit: You could have a helper? So is_memory isn't passed as a reference.
-
-__snapshot_host_stage2(u64 start, u64 end, bool is_memory)
-
-> +			if (ret)
-> +				goto out_unlock;
-> +		}
-> +
-> +		is_memory = true;
-> +		ret = kvm_pgtable_walk(pgt, reg->base, reg->size, &walker);
-> +		if (ret)
-> +			goto out_unlock;
-> +
-> +		start = reg->base + reg->size;
-> +	}
-> +
-> +	if (start < BIT(pgt->ia_bits)) {
-> +		is_memory = false;
-> +		ret = kvm_pgtable_walk(pgt, start, BIT(pgt->ia_bits) - start, &walker);
-> +		if (ret)
-> +			goto out_unlock;
-> +	}
-> +
-> +	pkvm_idmap_initialized = true;
-> +
-> +out_unlock:
-> +	hyp_spin_unlock(&host_mmu.lock);
-> +	return ret;
-> +}
-> +
-> +int pkvm_iommu_init(void)
-> +{
-> +	int ret;
-> +
-> +	/* Keep DMA isolation optional. */
-> +	if (!pkvm_iommu_ops || !pkvm_iommu_ops->init ||
-> +	    !pkvm_iommu_ops->host_stage2_idmap)
-> +		return 0;
-> +
-> +	ret = pkvm_iommu_ops->init();
-> +	if (ret)
-> +		return ret;
-> +
-> +	return pkvm_iommu_snapshot_host_stage2();
-> +}
-> +
-> +int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
-> +				enum kvm_pgtable_prot prot)
-> +{
-> +	hyp_assert_lock_held(&host_mmu.lock);
-> +
-> +	if (!pkvm_idmap_initialized)
-> +		return 0;
-> +
-> +	return pkvm_iommu_ops->host_stage2_idmap(start, end, pkvm_to_iommu_prot(prot));
-
-Out of curiosity, why is it "host_stage2_idmap" and not just "idmap" ?
-
+> +	return vma_start_pgoff(vma) + vma_pages(vma) - 1;
 >  }
-> diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> index d803b3dd4cb4..ce610274bda0 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> @@ -17,6 +17,7 @@
 >  
->  #include <nvhe/arm-smccc.h>
->  #include <nvhe/gfp.h>
-> +#include <nvhe/iommu.h>
->  #include <nvhe/memory.h>
->  #include <nvhe/mem_protect.h>
->  #include <nvhe/mm.h>
-> @@ -596,16 +597,15 @@ static int host_stage2_set_owner_metadata_locked(phys_addr_t addr, u64 size,
->  	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
->  			      addr, size, &host_s2_pool,
->  			      KVM_HOST_INVALID_PTE_TYPE_DONATION, annotation);
-> -	if (!ret) {
-> -		/*
-> -		 * After stage2 maintenance has happened, but before the page
-> -		 * owner has changed.
-> -		 */
-> -		pkvm_sme_dvmsync_fw_call();
-> -		__host_update_page_state(addr, size, PKVM_NOPAGE);
-> -	}
+>  static inline unsigned long vma_desc_size(const struct vm_area_desc *desc)
+> diff --git a/mm/interval_tree.c b/mm/interval_tree.c
+> index 32bcfbfcf15f..344d1f5946c7 100644
+> --- a/mm/interval_tree.c
+> +++ b/mm/interval_tree.c
+> @@ -10,11 +10,6 @@
+>  #include <linux/rmap.h>
+>  #include <linux/interval_tree_generic.h>
+>  
+> -static inline unsigned long vma_start_pgoff(struct vm_area_struct *v)
+> -{
+> -	return v->vm_pgoff;
+> -}
 > -
-> -	return ret;
-> +	if (ret)
-> +		return ret;
-> +	/*
-> +	 * After stage2 maintenance has happened, but before the page
-> +	 * owner has changed.
-> +	 */
-> +	pkvm_sme_dvmsync_fw_call();
-> +	__host_update_page_state(addr, size, PKVM_NOPAGE);
-> +	return pkvm_iommu_host_stage2_idmap(addr, addr + size, 0);
-
-On error here the host stage-2 annotation needs to be reverted. Or just
-WARN_ON() here. It also probably better to do it before the page-state has
-changed, even if we hold the host stage-2 lock.
-
+>  INTERVAL_TREE_DEFINE(struct vm_area_struct, shared.rb,
+>  		     unsigned long, shared.rb_subtree_last,
+>  		     vma_start_pgoff, vma_last_pgoff, /* empty */, vma_interval_tree)
+> diff --git a/tools/testing/vma/include/dup.h b/tools/testing/vma/include/dup.h
+> index bf26b3f48d3a..668650067c7c 100644
+> --- a/tools/testing/vma/include/dup.h
+> +++ b/tools/testing/vma/include/dup.h
+> @@ -1301,6 +1301,11 @@ static inline unsigned long vma_pages(const struct vm_area_struct *vma)
+>  	return (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
 >  }
 >  
->  int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id)
-> @@ -618,8 +618,10 @@ int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id)
->  			return -EPERM;
->  
->  		ret = host_stage2_idmap_locked(addr, size, PKVM_HOST_MEM_PROT);
-> -		if (!ret)
-> -			__host_update_page_state(addr, size, PKVM_PAGE_OWNED);
-> +		if (ret)
-> +			break;
-> +		__host_update_page_state(addr, size, PKVM_PAGE_OWNED);
-> +		ret = pkvm_iommu_host_stage2_idmap(addr, addr + size, PKVM_HOST_MEM_PROT);
->  		break;
->  	case PKVM_ID_HYP:
->  		ret = host_stage2_set_owner_metadata_locked(addr, size,
-> @@ -1022,6 +1024,7 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn)
->  				       pkvm_mkstate(KVM_PGTABLE_PROT_RWX, PKVM_PAGE_SHARED_OWNED),
->  				       &vcpu->vcpu.arch.pkvm_memcache, 0));
->  	WARN_ON(__host_set_page_state_range(phys, PAGE_SIZE, PKVM_PAGE_SHARED_BORROWED));
-> +	WARN_ON(pkvm_iommu_host_stage2_idmap(phys, phys + PAGE_SIZE, PKVM_HOST_MEM_PROT));
-
-Ha ok I understand your remark yesterday. I thought you'd put
-pkvm_iommu_host_stage2_idmap() into host_stage2_idmap_locked()... but then it
-means it tries to map on very host abort. 
-
-(same though as host_stage2_set_owner_metadata_locked(), I would first update
-the iommu and then update the page-state)
-
->  unlock:
->  	guest_unlock_component(vm);
->  	host_unlock_component();
+> +static inline pgoff_t vma_start_pgoff(const struct vm_area_struct *vma)
+> +{
+> +	return vma->vm_pgoff;
+> +}
+> +
+>  static inline int vfs_mmap_prepare(struct file *file, struct vm_area_desc *desc)
+>  {
+>  	return file->f_op->mmap_prepare(desc);
+> 
 > -- 
-> 2.55.0.141.g00534a21ce-goog
+> 2.55.0
 > 
