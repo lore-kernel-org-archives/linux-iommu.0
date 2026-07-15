@@ -1,98 +1,79 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F28312D1F1;
-	Wed, 15 Jul 2026 19:54:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56B253C10AD
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 19:54:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784145251; cv=none; b=dq7WBbljD4YhYejPinc9jCWAATXaU3F9v2iEIbTaSSqDxcC38wuqSEO5L/hLSlXJ+t2301YMVvmEUM0jal1z+b5vuKK/8UKJv5a86i8+WiJWFkaw8R6PVjeT3BTFOaAjkrfxIX42yO5wVkpcbQw+U98vORC6nx4cD9JkurxQamE=
+	t=1784145272; cv=none; b=Xv0zCQuGd7O8eEWm87p8VRDETFGyMibh0lb7stS/6dRpE2bfFTI2SOeifeo1N6Jkci+DAWoGWCN0Po4WZdVVybGVlbtHjtwXlAMJoYwxa3ySF0uiPQJSlb43MV9l59V526UpfO8E7+RwDQhnqO+JlHsKYsR+9R0oZR+YtevLoRY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784145251; c=relaxed/simple;
-	bh=8IBeSTH79zEd/85B3I13OSGp6abiS7I1hygz8VGy0EY=;
+	s=arc-20240116; t=1784145272; c=relaxed/simple;
+	bh=4qb8T6qmU1ERimycQggw6mEfG7vDR8984uwJV16kjJw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZSyvtdMvIJQNuKE/gj8uRA66TZ5EUWsQ/VlRqqZi2EmHGchtmBshFwUnRAsm1OORLRFW10OxbLZB1+yz37fcixp3InqXPOB7AEAGFKoewgPT4Wz0E2RvqVS34zwGLT+livD9cCVjnYOthsf/CroCENLt1P3a8/3JQRtmoMcpUNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=G9Ads1/5; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=Pc8+T0Z+rf5iPnrRv9bE2wMD6zhFeNRx/+R8RlFViCf4cVI64Rye281xwVTisWc29Jalu1r2S0Tz8/iKtibrZy08CSeLK3m/yQLyC+vOnsDzoVWhGsE5QBq1tOEo8QL1iJ0HffMfyiyoNV+vIw7AsrfmMeXiNFXtbKaRMg/2U9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tBbDac7H; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="G9Ads1/5"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=u1xTcKNYwdOUdwgNpbyIzAcPowaOLgUaHPOaAeLqzfg=; b=G9Ads1/50L6jZQcaHXYJq/Psc7
-	AryEJZcuGxV76jnQvR75aByyQN2+s4KISlfDdk2TV92ezj8Mb4OV3LQF0ZVYbq4Bwq7lXV48A3koM
-	4dW7xh0EelhZHZsLKX5Terjo3G/wY4H4bI5wxUs6ArdrtWB1DCY3d3mbi6Xxwegu+cmC0ufKyHXMu
-	AqLncMI+gSugHyCRPWyTnaJ8K+c0jt3rkv99sJlwJf7PJ+dQ563sPdXLBXOHRlyBfZi2YB6bdEe6v
-	/P14vLsGTAZrR7gY0vy5J00O3llg1vnu5Lm0yJTpk8XtVFADXa9x0/iPQC2akptOn3wrnWTNwWmxS
-	CaBTrBPw==;
-Received: from [38.23.173.23] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wk5fh-0000000FpH0-1NIX;
-	Wed, 15 Jul 2026 19:53:33 +0000
-Date: Wed, 15 Jul 2026 15:53:23 -0400
-From: "Liam R. Howlett" <liam@infradead.org>
-To: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
-	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	Michal Hocko <mhocko@suse.com>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
-	Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>, 
-	Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>, 
-	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
-	Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
-	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
-	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
-	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>, 
-	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
-	Miaohe Lin <linmiaohe@huawei.com>, Naoya Horiguchi <nao.horiguchi@gmail.com>, 
-	Xu Xin <xu.xin16@zte.com.cn>, Chengming Zhou <chengming.zhou@linux.dev>, 
-	SJ Park <sj@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
-	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>, Byungchul Park <byungchul@sk.com>, 
-	Gregory Price <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, 
-	Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>, 
-	Kees Cook <kees@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
-	Alexander Potapenko <glider@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	Thomas Gleixner <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>, 
-	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
-	Christian Gmeiner <christian.gmeiner@gmail.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Rob Clark <robin.clark@oss.qualcomm.com>, 
-	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
-	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, 
-	Thierry Reding <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, Christian Koenig <christian.koenig@amd.com>, 
-	Huang Rui <ray.huang@amd.com>, Matthew Auld <matthew.auld@intel.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>, 
-	Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Usama Arif <usama.arif@linux.dev>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	nvdimm@lists.linux.dev, linux-perf-users@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, damon@lists.linux.dev, iommu@lists.linux.dev, 
-	kasan-dev@googlegroups.com, linux-sgx@vger.kernel.org, etnaviv@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
-	linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
-	Russell King <linux+etnaviv@armlinux.org.uk>
-Subject: Re: [PATCH v2 03/33] tools/testing/vma: use vma_start_pgoff() in
- merge tests
-Message-ID: <p6bhkbzvrdz6bb4a6cdmd6bmlwuwxfjd3lx5opq334o7nwjhwa@ctqdd3i2daon>
-References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
- <20260710-b4-pre-scalable-cow-v2-3-2a5aa403d977@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tBbDac7H"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2cacef7d299so2035ad.1
+        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 12:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784145269; x=1784750069; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=m53R6Qi+zQcNj87e/Jawa3dfMVvzT1k6XowiuqLX1eY=;
+        b=tBbDac7Hy/DXvXd/oX6Yqz+Lxn2ZERy5z4xBxsRfH2QCvyFR7jigdO1Cpx6Ft4JL1d
+         V5rSCcbhYnwVJP+/asKhZ3xfH/OP4h/emzocC01+cAypDjWTUFUAbQmdhpjnRi2dvMA5
+         B+wSzgAYPVobq6Z1Iz90MXqq3E0Rog5W/DxlBBD+PgXvJTHBifXTsI4kA/6LT+A+8vs5
+         2CZzL80NpQJ73HyQq8JO6dJb8cDWQ6Wx0oKSD1lQ9bCCcRYhm5k3Feo3FuZdbm+YhkZc
+         7GCeH4MsFihiIFYt1tf03Smwj05Oy0XyxaxGjWC1lX8xHaqeG+x6lan9PFchNdDPcfj8
+         tKPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784145269; x=1784750069;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=m53R6Qi+zQcNj87e/Jawa3dfMVvzT1k6XowiuqLX1eY=;
+        b=h0bBrYYinB1PS/TDAINCQZEvAL5Jiu091EU8L1REkHKvekaXu0FRU/qCsdArdBuQ7R
+         4JOe/XJLl3n57IxqzPXro3cN71/ZIXnJYgMG2Iuac/ru+phV6ktLQd+1UhVI8gJ/aVX8
+         SLmgNnAxSU3Aku85e2oPh5DvgUvoozH5lEL6IvJKcADv9GGPEzuX+JUTbBP82lB50rJW
+         +F1lGzzYmwMEqyYmjaVrjIyyxX3iQO18fyUUHTl5lk6tm8py0Qr0FXJCXiErEB3H561J
+         bPp+qy5BBAMABmwP1MxeyREXt39GceWvRAwgBceeorStcTuIwsNUw6JCFzFka8bPQvkK
+         8m0A==
+X-Forwarded-Encrypted: i=1; AHgh+RoLm6fBZ4FVoTlJEsfGgbRA6rqeaU3oftVH8MfBKgrFiCHfspM/yt3z+VCAhHegYNSFMmS1Hg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx+mTK5PvaC9KLlQlQnpZnOcLMBP9tjABtiAAnq8FHwRr+PIVid
+	1sQ9vO+1BMFB88/Jq4lbWSArZvhNpeKdtiWt5NSYCXbpAEUjYW/VBPnQSPzvMWvfHw==
+X-Gm-Gg: AfdE7ckaAQPvoVjrgqdQ5art6eKTrYRsMmXx/HDgwQV+E3+aeNqoYGYMFs8mpN3vt26
+	FJjZXDjfcpgN122SYPI40RaCsuJJ/eJW6r2HuM6aMeM1/y0tFmUJhvGc3NDKFAqoci/xQ4FgC0T
+	tZ1zq9Da+towmtOqPKhIpvJOAbGjFHakluqrGJX4gBz4JwHubzrKP41QFXK1rWlfgbN6dj2dvNm
+	Mq17iV8cc6CUboCRLQQ+5OLcRuOpyZVPRuBOTphTH/pQzBx6BtWd+FRfzyBHXOs9fGdTidN4lyf
+	LtYqiGqQ/PHPDePvZCtPnhTBr4CknqqfC+0SGuHCuLTbx+6Gcounu2c+H7IRoHM7OwjnCLvfcYe
+	RzsO4hSvhlkYH9hWOTGepEt0+emEr93j4m/rr8FFd3VcWlRt9eCbny+QTxAYUKyhajXDwJX33Zn
+	wVZkDyXeQGHAZFohMfgYTOL17nUCA3h0Ru6JF4tYBW60IQvCs=
+X-Received: by 2002:a17:902:e804:b0:2ca:bf8e:360b with SMTP id d9443c01a7336-2cf1a93edebmr466595ad.9.1784145269137;
+        Wed, 15 Jul 2026 12:54:29 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84a4f271ddbsm3883142b3a.18.2026.07.15.12.54.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2026 12:54:27 -0700 (PDT)
+Date: Wed, 15 Jul 2026 19:54:21 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/6] iommu/arm-smmu-v3-iommufd: Reject unsupported
+ bits in invalidation commands
+Message-ID: <alflbbClvEp_k6u-@google.com>
+References: <cover.1784054606.git.nicolinc@nvidia.com>
+ <5c70a336821e3cea176356470d94ff18329ff867.1784054606.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -101,201 +82,103 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260710-b4-pre-scalable-cow-v2-3-2a5aa403d977@kernel.org>
+In-Reply-To: <5c70a336821e3cea176356470d94ff18329ff867.1784054606.git.nicolinc@nvidia.com>
 
-On 26/07/10 09:16PM, Lorenzo Stoakes wrote:
-> Now we have the vma_start_pgoff() helper, update the merge tests to make
-> use of it for consistency.
+On Tue, Jul 14, 2026 at 11:48:48AM -0700, Nicolin Chen wrote:
+> The arm_vsmmu_cache_invalidate() op hands a guest's invalidation commands
+> to the trusted main command queue after enforcing only the VMID or the SID,
+> and passes the rest of the command through to the queue unchanged.
 > 
-> No functional change intended.
-> 
-> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
-> Reviewed-by: Gregory Price <gourry@gourry.net>
-> Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
-> Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
 
-Reviewed-by: Liam R. Howlett (Oracle) <liam@infradead.org>
+[...]
 
-> ---
->  tools/testing/vma/tests/merge.c | 38 +++++++++++++++++++-------------------
->  1 file changed, 19 insertions(+), 19 deletions(-)
-> 
-> diff --git a/tools/testing/vma/tests/merge.c b/tools/testing/vma/tests/merge.c
-> index 03b6f9820e0a..f8666a755749 100644
-> --- a/tools/testing/vma/tests/merge.c
-> +++ b/tools/testing/vma/tests/merge.c
-> @@ -118,7 +118,7 @@ static bool test_simple_merge(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x3000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_FLAGS_SAME_MASK(&vma->flags, vma_flags);
->  
->  	detach_free_vma(vma);
-> @@ -150,7 +150,7 @@ static bool test_simple_modify(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0x1000);
->  	ASSERT_EQ(vma->vm_end, 0x2000);
-> -	ASSERT_EQ(vma->vm_pgoff, 1);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 1);
->  
->  	/*
->  	 * Now walk through the three split VMAs and make sure they are as
-> @@ -162,7 +162,7 @@ static bool test_simple_modify(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x1000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  
->  	detach_free_vma(vma);
->  	vma_iter_clear(&vmi);
-> @@ -171,7 +171,7 @@ static bool test_simple_modify(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0x1000);
->  	ASSERT_EQ(vma->vm_end, 0x2000);
-> -	ASSERT_EQ(vma->vm_pgoff, 1);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 1);
->  
->  	detach_free_vma(vma);
->  	vma_iter_clear(&vmi);
-> @@ -180,7 +180,7 @@ static bool test_simple_modify(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0x2000);
->  	ASSERT_EQ(vma->vm_end, 0x3000);
-> -	ASSERT_EQ(vma->vm_pgoff, 2);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 2);
->  
->  	detach_free_vma(vma);
->  	mtree_destroy(&mm.mm_mt);
-> @@ -209,7 +209,7 @@ static bool test_simple_expand(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x3000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  
->  	detach_free_vma(vma);
->  	mtree_destroy(&mm.mm_mt);
-> @@ -231,7 +231,7 @@ static bool test_simple_shrink(void)
->  
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x1000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  
->  	detach_free_vma(vma);
->  	mtree_destroy(&mm.mm_mt);
-> @@ -324,7 +324,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  	ASSERT_TRUE(merged);
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x4000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 3);
-> @@ -343,7 +343,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  	ASSERT_TRUE(merged);
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x5000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 3);
-> @@ -364,7 +364,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  	ASSERT_TRUE(merged);
->  	ASSERT_EQ(vma->vm_start, 0x6000);
->  	ASSERT_EQ(vma->vm_end, 0x9000);
-> -	ASSERT_EQ(vma->vm_pgoff, 6);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 6);
->  	ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 3);
-> @@ -384,7 +384,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  	ASSERT_TRUE(merged);
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x9000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 2);
-> @@ -404,7 +404,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  	ASSERT_TRUE(merged);
->  	ASSERT_EQ(vma->vm_start, 0xa000);
->  	ASSERT_EQ(vma->vm_end, 0xc000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0xa);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0xa);
->  	ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 2);
-> @@ -423,7 +423,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  	ASSERT_TRUE(merged);
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0xc000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 1);
-> @@ -443,7 +443,7 @@ static bool __test_merge_new(bool is_sticky, bool a_is_sticky, bool b_is_sticky,
->  		ASSERT_NE(vma, NULL);
->  		ASSERT_EQ(vma->vm_start, 0);
->  		ASSERT_EQ(vma->vm_end, 0xc000);
-> -		ASSERT_EQ(vma->vm_pgoff, 0);
-> +		ASSERT_EQ(vma_start_pgoff(vma), 0);
->  		ASSERT_EQ(vma->anon_vma, &dummy_anon_vma);
->  
->  		detach_free_vma(vma);
-> @@ -805,7 +805,7 @@ static bool test_vma_merge_new_with_close(void)
->  	ASSERT_EQ(vmg.state, VMA_MERGE_SUCCESS);
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x5000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_EQ(vma->vm_ops, &vm_ops);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 2);
-> @@ -865,7 +865,7 @@ static bool __test_merge_existing(bool prev_is_sticky, bool middle_is_sticky, bo
->  	ASSERT_EQ(vma_next->anon_vma, &dummy_anon_vma);
->  	ASSERT_EQ(vma->vm_start, 0x2000);
->  	ASSERT_EQ(vma->vm_end, 0x3000);
-> -	ASSERT_EQ(vma->vm_pgoff, 2);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 2);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_TRUE(vma_write_started(vma_next));
->  	ASSERT_EQ(mm.map_count, 2);
-> @@ -931,7 +931,7 @@ static bool __test_merge_existing(bool prev_is_sticky, bool middle_is_sticky, bo
->  	ASSERT_EQ(vma_prev->anon_vma, &dummy_anon_vma);
->  	ASSERT_EQ(vma->vm_start, 0x6000);
->  	ASSERT_EQ(vma->vm_end, 0x7000);
-> -	ASSERT_EQ(vma->vm_pgoff, 6);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 6);
->  	ASSERT_TRUE(vma_write_started(vma_prev));
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 2);
-> @@ -1416,7 +1416,7 @@ static bool test_merge_extend(void)
->  	ASSERT_EQ(vma_merge_extend(&vmi, vma, 0x2000), vma);
->  	ASSERT_EQ(vma->vm_start, 0);
->  	ASSERT_EQ(vma->vm_end, 0x4000);
-> -	ASSERT_EQ(vma->vm_pgoff, 0);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 0);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(mm.map_count, 1);
->  
-> @@ -1456,7 +1456,7 @@ static bool test_expand_only_mode(void)
->  	ASSERT_EQ(vmg.state, VMA_MERGE_SUCCESS);
->  	ASSERT_EQ(vma->vm_start, 0x3000);
->  	ASSERT_EQ(vma->vm_end, 0x9000);
-> -	ASSERT_EQ(vma->vm_pgoff, 3);
-> +	ASSERT_EQ(vma_start_pgoff(vma), 3);
->  	ASSERT_TRUE(vma_write_started(vma));
->  	ASSERT_EQ(vma_iter_addr(&vmi), 0x3000);
->  	vma_assert_attached(vma);
-> 
-> -- 
-> 2.55.0
-> 
+> +
+> +static int arm_vsmmu_validate_user_cmd(struct arm_vsmmu *vsmmu, u64 data[2])
+> +{
+> +	struct arm_smmu_device *smmu = vsmmu->smmu;
+> +	u64 allowed[2] = { CMDQ_0_OP };
+> +
+> +	/* Collect the fields userspace is allowed to set for each opcode */
+> +	switch (data[0] & CMDQ_0_OP) {
+> +	case CMDQ_OP_TLBI_NH_VA:
+> +		/* An SMMU with 8-bit ASIDs treats the upper 8 bits as RES0 */
+> +		allowed[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID,
+> +					 GENMASK(smmu->asid_bits - 1, 0));
+> +		fallthrough;
+> +	case CMDQ_OP_TLBI_NH_VAA:
+> +		/* NUM/SCALE/TG/TTL are range fields gated on FEAT_RANGE_INV */
+> +		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> +			if (arm_vsmmu_validate_range(smmu, data))
+> +				return -EIO;
+> +			allowed[0] |= CMDQ_TLBI_0_NUM | CMDQ_TLBI_0_SCALE;
+> +			allowed[1] |= CMDQ_TLBI_1_TG | CMDQ_TLBI_1_TTL;
+> +			/* SCALE bit 25 (values above 31) is RES0 without DS */
+> +			if (!(smmu->features & ARM_SMMU_FEAT_DS))
+> +				allowed[0] &= ~FIELD_PREP(CMDQ_TLBI_0_SCALE,
+> +							  BIT(5));
+> +		}
+> +		allowed[0] |= CMDQ_TLBI_0_VMID;
+> +		allowed[1] |= CMDQ_TLBI_1_LEAF | CMDQ_TLBI_1_VA_MASK;
+> +		break;
+> +	case CMDQ_OP_TLBI_NH_ASID:
+> +		/* An SMMU with 8-bit ASIDs treats the upper 8 bits as RES0 */
+> +		allowed[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID,
+> +					 GENMASK(smmu->asid_bits - 1, 0));
+> +		fallthrough;
+> +	case CMDQ_OP_TLBI_NH_ALL:
+> +		allowed[0] |= CMDQ_TLBI_0_VMID;
+> +		break;
+> +	case CMDQ_OP_ATC_INV:
+> +		/* ATC_INV is illegal unless the SMMU implements ATS */
+> +		if (!(smmu->features & ARM_SMMU_FEAT_ATS))
+> +			return -EIO;
+> +		/* A Size above 52 (invalidate-all) may raise a CERROR_ILL */
+> +		if (FIELD_GET(CMDQ_ATC_1_SIZE, data[1]) > ATC_INV_SIZE_ALL)
+> +			return -EIO;
+> +		/*
+> +		 * SSV/SSID/Global need substream support. SSID and Global are
+> +		 * IGNORED (not RES0) when SSV == 0, so they need no SSV check.
+> +		 */
+> +		if (smmu->ssid_bits)
+> +			allowed[0] |= CMDQ_0_SSV | CMDQ_ATC_0_SSID |
+> +				      CMDQ_ATC_0_GLOBAL;
+> +		allowed[0] |= CMDQ_ATC_0_SID;
+> +		allowed[1] |= CMDQ_ATC_1_SIZE | CMDQ_ATC_1_ADDR_MASK;
+> +		break;
+> +	case CMDQ_OP_CFGI_CD:
+> +		/* No SSV for CFGI_CD; SSID requires substream support */
+> +		if (smmu->ssid_bits)
+> +			allowed[0] |= CMDQ_CFGI_0_SSID;
+> +		allowed[1] |= CMDQ_CFGI_1_LEAF;
+> +		fallthrough;
+> +	case CMDQ_OP_CFGI_CD_ALL:
+> +		allowed[0] |= CMDQ_CFGI_0_SID;
+> +		break;
+
+Nit: Although, the convert_user_cmd would check the CMDQ_OP again, it
+seems like validate_user_cmd would return 0 for an unsupported cmd that
+doesn't match any of the above cases, should we add a default case and
+return -EIO there?
+
+> +	}
+> +
+> +	/*
+> +	 * Reject any other bit, e.g. a RES0 bit or a Secure bit, before the
+> +	 * command reaches the trusted main cmdq, so a guest cannot wedge the
+> +	 * shared queue for every device with a CERROR_ILL.
+> +	 *
+> +	 * By contrast, an out-of-range address or ID value does not need a
+> +	 * check: the spec defines it as CONSTRAINED UNPREDICTABLE, which is
+> +	 * scoped to the guest itself and does not raise a CERROR_ILL.
+> +	 */
+> +	if ((data[0] & ~allowed[0]) || (data[1] & ~allowed[1]))
+> +		return -EIO;
+> +	return 0;
+> +}
+> +
+
+Apart from that,
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+
+Thanks,
+Praan
