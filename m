@@ -1,290 +1,167 @@
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011005.outbound.protection.outlook.com [52.101.62.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 132111A8F7B
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784089672; cv=none; b=cZP1CBI360W1dHDr7FG26xIHBoBZTfXdi2xASXwWtxd3brLeM5BQfgxMMTFLdJzfIbFfYacQvpG0tk9GWDVfrh0UDVIPIktOQ3qjjzMS4y0STpSiusS4O4pe58lgMY83/aUD+0fk6Cu61Mc3T2NkmYS0PagUf/gE8GLZbjvofpQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784089672; c=relaxed/simple;
-	bh=373DrC1YOBPI6BMrnWNYq92CGThNVRPeHXqgFedPuWg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OYwvSTzSM6DkFhNpJslMDWCiTCqe2e/IYuvDkTFK/6U9CjicoXSg+qvrKFuMr5R+dxX57ASj4aAMO2BD1kZqvlhAbubiVPB8SLkJX3sk0EDW49Dwsb8RtN0KvQa9/CmZbe+Iw6jVTjFHhPzeIvIsRHECI1H+z3a1tUIzOM+Fag4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=aMM3QsOa; arc=none smtp.client-ip=54.204.34.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB9CA1FECCD
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.5
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784089941; cv=fail; b=ifUwgBRdmDGFMnQyQ8HpvHfODxMObAzwN1DtdF7XUK1jyMyzwhMsWPQQPX6rX35sjnhMDBbwxnF30/ODFl1Cde8s5uIvyqQz3UCFTgclkba3QvPTqOR+1EtILijNyppCAN0bqgbTpW3oPs5DpXUdYrtUQ7f3z7fVP0GnPdy1dwQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784089941; c=relaxed/simple;
+	bh=1Nn+XXNoHMjNn5NM/AwG9ZdRkCNfPnsw3DY/Aw8zBD4=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lta4uiYUQ62OxaEs8x7RXgbW9QhCPR0+q8lO2D4LgtP/qn09vJugj4buJsWVnLLBw1rU9lTR3bWgxmgpnrIcDAv3lTlGDZEYvauAp3NTspTcl/DcqAhK98TeDgv4CdzmmJIi4josxyFrvlbRgzhTCDClvJSV59BV7dRp+4sasDM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=eTrMp/Gk; arc=fail smtp.client-ip=52.101.62.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="aMM3QsOa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1784089609;
-	bh=lHxidtjdAo7GwmpR0PhZAD/LbldvKjYzf6Qy9HMkSJU=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=aMM3QsOaRtfcbeYY2V30p2uCx1xolLLjSskm6V73ss/a38GVsV8YpltXr+w3y3f9a
-	 MVG0zNEz6n4A2MM7Rjc0ALOgAI2/jFvgdRrEn6woniRAt+97HkQAr+br6v273xWTgh
-	 hyu0GPBW7Bvl6ZKea47veA65zDoEn8VfDuuD3HV0=
-X-QQ-mid: zesmtpgz1t1784089601t5282b16e
-X-QQ-Originating-IP: nDK6nTZV82Ov3yA9IieSUS5sTE9mA5SijtXfOCcnbb4=
-Received: from hepeiyang-vm.wu.lxd ( [218.94.142.72])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Wed, 15 Jul 2026 12:26:39 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 3352090239258274162
-EX-QQ-RecipientCnt: 10
-From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-To: joro@8bytes.org,
-	will@kernel.org,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com
-Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	baolu.lu@linux.intel.com,
-	Peiyang He <peiyang_he@smail.nju.edu.cn>
-Subject: [PATCH] iommu/iommufd: Fix IOPF group ownership UAF
-Date: Wed, 15 Jul 2026 12:24:21 +0800
-Message-ID: <9BE255A7A4AB5AAA+20260715042421.3148159-1-peiyang_he@smail.nju.edu.cn>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
-References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="eTrMp/Gk"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=FlrdjUvxDescnHgAUwvT02fPk3LEb20yrMI+QumlubNQaSiHk2Qggv+YQU3XTj7kSs4B5L4Dn2b/ZqZn97b8tAFrKkcVm7Tv0WlAwSRmX7sbRsJj5qRWARjlnHtv766tuQNcRN2nMsvgJXsR4wrvEz2aI9NwE455XZjHaqT//qIlBTRdFNdVpDW5tUzIymxOA+vDeuaRD6P66NCecndZhdaNpThPf+6oWsH2tZ6q9hhDtrBBaqvINx9hylYXz7fVKgMyTf2ioMXxm7BohDNXSpfPuOCQoHqoNxkm9uRntgp8mIAV50AQHEjDbkZNUoeAcxQo5jTjYAy7u0/kKqJxJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OVzatFhBkuW0DXEJzAtw68uired0JKJIIGkK8TB37Tg=;
+ b=bSUjOlXNQsU36QG+lvwIcFoG8V6SwRhernqH1HQsSxuBQ9cPP5yyLptqNFE2IPtkys+1IxkyW+3xx5HD2YZnnBjBW2nssdCeuU3YhraJfFRzcwvrc8msoVJ+nDOkGD5SVC6Vl02sTLlujrHSaDbx7E8mt2L227BKZ51ShRTv/qv66HM8zHEYY+5/NGePn2aFuWCK3fif/tkjJhfMmE/IeNaf5wnJCuiNyqvJWilM7CYoZ3lhCQJBLStwSE64xQNJ5j4T1XuZDP+0v0IjJYTcjLt/Vek6vbotPFWFmLPmD/LkIMf4J2KbuXYyx6v6dzS+qeFHV6++WUlQokHfExHjsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=163.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OVzatFhBkuW0DXEJzAtw68uired0JKJIIGkK8TB37Tg=;
+ b=eTrMp/GkMDmdM/UF8w4gJu8fNHvj07uGX+qj/a3EDzH7DKU4hhQ1kfmeC2ZG60NaKYTjHX4ARGBhukHGloBx6vlRQ2zro0qTrNwdHxSYSGOlyDqDg9F245V1Kd/X3SRI3cmp8VIh/DwtYCTefgt/aO/Elz0DwqPlkMb1HKIqzuc=
+Received: from BYAPR21CA0019.namprd21.prod.outlook.com (2603:10b6:a03:114::29)
+ by DS2PR12MB9687.namprd12.prod.outlook.com (2603:10b6:8:27b::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.18; Wed, 15 Jul
+ 2026 04:32:15 +0000
+Received: from MWH0EPF000C6191.namprd02.prod.outlook.com
+ (2603:10b6:a03:114:cafe::40) by BYAPR21CA0019.outlook.office365.com
+ (2603:10b6:a03:114::29) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.3 via Frontend Transport; Wed, 15
+ Jul 2026 04:32:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ MWH0EPF000C6191.mail.protection.outlook.com (10.167.249.106) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.223.9 via Frontend Transport; Wed, 15 Jul 2026 04:32:15 +0000
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Tue, 14 Jul
+ 2026 23:32:15 -0500
+Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41 via Frontend
+ Transport; Tue, 14 Jul 2026 23:32:12 -0500
+Date: Wed, 15 Jul 2026 04:32:03 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: weimin xiong <15927021679@163.com>
+CC: <iommu@lists.linux.dev>, <joro@8bytes.org>,
+	<suravee.suthikulpanit@amd.com>, <vasant.hegde@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, xiongweimin <xiongweimin@kylinos.cn>
+Subject: Re: [PATCH] iommu/amd: fix grammar and typos in comments
+Message-ID: <4qwivdxrruelzxbqd4hmsfecjvmptxl7nzwu63k5cfqja3q7ql@s6opowatnxww>
+References: <20260714024445.188383-1-15927021679@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: OQ0f9NOPxbniyW7Gd/h3Is1IGnTEDrSt2ZdY+CNLZEqL9L/Y3/YItkbb
-	LGe9eJva17PDGqX8cBfJ9VP8w8MRhU5nMdA59Cp7Zr3Zh5wcJBXJ+UAKzQCVcK9KOt/fOZN
-	IUagK+OBeEYWMPdmh3garP9TAXq/nlh7HRGnR7ybAyeQbCHevMODR0/CzBq6nfqiR7vwS1I
-	oSRP3Q3qRvR6UDX96YPrFrD0zBf22Ky1czf7QQ9XLDAoxBFfnWHf3ktT20L5EbvuavlsEv/
-	K2rvB/kgAHjbgjNRtNgEqfJ4Tuabibzen+tsUDnJP3SYWAgigNNcd69GIVwKeP06Gp+N3g4
-	tzsWyw8h9HY/GYpvCuniXBIJDfQs0sIUYGqkoL20A5DpOtf0fm4TG9dPc5H7mn+MxssjvVH
-	hR9IBbK0KVaBNfDjm5vL+GTqV2Gh3AuksqJcBeblOSRtGIdnOimIxVdWaK8qksSaNcmuq2s
-	/bPX4IE3r0QExcszRkc7LSZgjBhAmC3L4LJZ7SzfvUlgIaM27vbLOX4FjRRreuNkxxkiF92
-	7SyDFgRVNXJCYVUXSIRoS8WJ0op6qjGpn33mOLLV1Hs1gAWHEMFHgWVd5XgOcUU+3YdyeUs
-	axcuanq7ppflGi7hfs+neBk8hG96v/nm/rD6duUSgao0JvuT8ZLdWfDS1KtEAnleozdBkca
-	t9Kjvr0qek0VbWENcOXdhzGGNKDLQFuU0IUhnn/cgAvJqO5DUAQD4IXKpQtsywE4f+ALmNI
-	aWYgce8nEumyQHdeIADMMSnhs/t1MLsLcefBvjKQJNRwLegHAJRcfYrvNpeFBOQubwhdcSr
-	cNXIuC2YmrC3jX7buyysx4syORk8Bm3OiQILyQgKaqc0Fk3sxOKiVY0IW9/Jx58zpPYtYvN
-	2Zz04PBPqUP/Raoh+kTZgslfHdFGc+ddGNALUpKfWTPadwnPMOYfveWtp1Vgrj6+G17oRhE
-	sv47WInPUJvahxbggHkqRj1R6OQxlOIq/V4lVSn4WXIygUP0GXCwcnbAmWvr/9F1AZV5ioz
-	TVOvv/2z+nJTKwKbarlQmKb8UGKePPx1qk1vUrbTg2T00BkIpyNgETa0ZSNr7vFkBlQ9C6H
-	Bq3+V7tvtex
-X-QQ-XMRINFO: Nq+8W0+stu50tPAe92KXseR0ZZmBTk3gLg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260714024445.188383-1-15927021679@163.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000C6191:EE_|DS2PR12MB9687:EE_
+X-MS-Office365-Filtering-Correlation-Id: eeb0a246-ff13-4f6c-0f02-08dee22a0c4c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|23010399003|1800799024|376014|36860700016|56012099006|11063799006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	eVBXfHZIpRVcJnxYrq46mbXZ64yg1NaXV9UxbZz1j/XxJLI1UAG7yHYZ8JERZdZhTQdGcVn4FSXGE3izk1YnvYnhzy2IVXOgD2tyXNQv5MPNGf81cuVL1Tk8ob/htDjf1J+9K3kRkFE1tah0eWeVRlvvhW5xgD9jK3zDU8jriAgbBO+0CYF53ErLiFbXE3AStgi3HIBhh/VebAimld5dAidHvm6E9aW5HGQ0zIeuhrYvmoIr6WTkcARKLIwHhyyd7VWrZaZjsuthKP2GIvOvyYQWngW1soE/9S3cHbpBwFmOsC+ulTQ1QYyn+hnR5qFbmUeDlDhZYZEvu7yfKew6ShaVXATu/yRkUKVDGXveWaboDM2HB4MPpoI9/qtA/nDONhut6uT8r3Hf5u5oMbHUiV8NAZA2BmGJhQW7HCkdkvE0T+A/p/VLiw+L6lXCXrrhVHCsU3d0aLOBCF+EqzhUTKdDgQTFr+ZHv/jbnnpMvCLG3MTS5UlwVtpHjP6tQqUa2ZMl749FCobP0ZPwTw3TIY0SD4UXvU4lFfNGNIS7i9PDyBg/BCjDu7v0SsJ5r4H51ufHT3JzfPdpjgJZf/wNCCtGyrdSLDsi2X6VhdNs6Qp/L0vC5zirn1CWv37P0b10SoPAeD85bCNlRqNm28aSmKOAruQkB8uwzrxNP2DueQiPIJdJ+B0KexEboEIaFwMu65c78/ThYJMYgRl2MMiYkw==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(23010399003)(1800799024)(376014)(36860700016)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	0/ysBDUGFBPN4Ni/uZvVMR3d8DyNvBzqY5BsjkNO+lgsajUcmFsllJV+JWwt+cHzYO6VR9wIpVv7LuQgiTO2TJgVh2/4e+WHjQLR40BlDjDvd7vitG5ofbyiP2kvWRWXCfRpqw8CWM/oBzi6emXeuWmxYOnFYMorSs0QKtZcAU7H6nV7Fm6ruO43w/JlFWIc9XcoGgjjraiK5P8oK8TPM156gB6Ov3w1t0h6K1QnhWLEMMrYKD2Y5gSXuEbWoVdFKfARHQNC6tID/5N8iJg+zS9ivPdJXf7zGMbyS2epDS+uZU6+8pw5lOPLS3bBXnzDlccxIa2IlgZFHuU5kKSNWJGdO+42x+o1EBZIESKPL2viVvU8+y1akcjHJQ/g9w47WF0Itw3ZUclTz5FM186UfyzmnR1zg9Ni+IimIe9E2LSrY4xfyuKFKlh/smlMdF7l
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 04:32:15.5256
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: eeb0a246-ff13-4f6c-0f02-08dee22a0c4c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000C6191.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS2PR12MB9687
 
-iopf_group_alloc() links each last-page IOPF group into the generic IOPF
-pending list before invoking the domain fault handler.
-iommufd_fault_iopf_handler() also queued an accepted group in the
-IOMMUFD deliver list without removing it from the generic pending list.
+On Tue, Jul 14, 2026 at 10:44:45AM +0800, weimin xiong wrote:
+> From: xiongweimin <xiongweimin@kylinos.cn>
+> 
+> Correct possessive "its", article before acpihid, and a couple of
+> mangled sentences in IOMMU flush/irq comments.
+> 
+> Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
 
-When detach or HWPT replacement drops the device's IOPF reference count
-to zero, an IOMMU driver may call iopf_queue_remove_device(). That
-function responds to and frees groups through the generic pending list
-without removing the same groups from IOMMUFD's deliver list or response
-xarray. A later read, response, or cleanup can then access the freed
-group and cause a UAF.
+Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
 
-Fix this by separating response state from generic ownership.
-Add iopf_group::response_pending to track whether a device response
-is still owed, independently of generic pending-list membership,
-and update that state under iommu_fault_param::lock in a helper.
-Before publishing an accepted group to the IOMMUFD deliver list, call
-iopf_group_take_ownership() to remove it from the generic pending list.
-IOMMUFD then becomes the sole owner responsible for responding to and
-freeing the group.
-
-Closes: https://lore.kernel.org/all/B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn/
-Fixes: 34765cbc679c ("iommufd: Associate fault object with iommufd_hw_pgtable")
-Cc: stable@vger.kernel.org
-Tested-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Assisted-by: Codex:gpt-5.6-sol
----
-I have tested this patch agaist my PoC which can stably trigger the UAF,
-and the UAF is gone after applying this patch.
-
-I also ran the iommufd selftest. Some testcases already fail before
-this patch, and this patch does not make more testcases fail.
-
- drivers/iommu/io-pgfault.c     | 64 +++++++++++++++++++++++-----------
- drivers/iommu/iommufd/device.c |  2 +-
- drivers/iommu/iommufd/eventq.c |  2 ++
- include/linux/iommu.h          |  7 ++++
- 4 files changed, 53 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index cca52a34d0ed..b873aef8d97d 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -98,6 +98,7 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
- 	group->last_fault.fault = evt->fault;
- 	INIT_LIST_HEAD(&group->faults);
- 	INIT_LIST_HEAD(&group->pending_node);
-+	group->response_pending = true;
- 	list_add(&group->last_fault.list, &group->faults);
- 
- 	/* See if we have partial faults for this group */
-@@ -314,13 +315,8 @@ int iopf_queue_flush_dev(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
- 
--/**
-- * iopf_group_response - Respond a group of page faults
-- * @group: the group of faults with the same group id
-- * @status: the response code
-- */
--void iopf_group_response(struct iopf_group *group,
--			 enum iommu_page_response_code status)
-+static void iopf_group_response_locked(struct iopf_group *group,
-+				       enum iommu_page_response_code status)
- {
- 	struct iommu_fault_param *fault_param = group->fault_param;
- 	struct iopf_fault *iopf = &group->last_fault;
-@@ -332,16 +328,51 @@ void iopf_group_response(struct iopf_group *group,
- 		.code = status,
- 	};
- 
-+	lockdep_assert_held(&fault_param->lock);
-+
- 	/* Only send response if there is a fault report pending */
--	mutex_lock(&fault_param->lock);
--	if (!list_empty(&group->pending_node)) {
--		ops->page_response(dev, &group->last_fault, &resp);
-+	if (!group->response_pending)
-+		return;
-+
-+	ops->page_response(dev, &group->last_fault, &resp);
-+	group->response_pending = false;
-+	if (!list_empty(&group->pending_node))
- 		list_del_init(&group->pending_node);
--	}
-+}
-+
-+/**
-+ * iopf_group_response - Respond a group of page faults
-+ * @group: the group of faults with the same group id
-+ * @status: the response code
-+ */
-+void iopf_group_response(struct iopf_group *group,
-+			 enum iommu_page_response_code status)
-+{
-+	struct iommu_fault_param *fault_param = group->fault_param;
-+
-+	mutex_lock(&fault_param->lock);
-+	iopf_group_response_locked(group, status);
- 	mutex_unlock(&fault_param->lock);
- }
- EXPORT_SYMBOL_GPL(iopf_group_response);
- 
-+/**
-+ * iopf_group_take_ownership - Take ownership of a group of page faults
-+ * @group: the group of faults whose ownership is transferred to the fault handler
-+ *
-+ * Remove the group from the generic IOPF pending list. The fault handler is
-+ * responsible for responding to and freeing the group after this returns.
-+ */
-+void iopf_group_take_ownership(struct iopf_group *group)
-+{
-+	struct iommu_fault_param *fault_param = group->fault_param;
-+
-+	mutex_lock(&fault_param->lock);
-+	list_del_init(&group->pending_node);
-+	mutex_unlock(&fault_param->lock);
-+}
-+EXPORT_SYMBOL_GPL(iopf_group_take_ownership);
-+
- /**
-  * iopf_queue_discard_partial - Remove all pending partial fault
-  * @queue: the queue whose partial faults need to be discarded
-@@ -454,7 +485,6 @@ void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
- 	struct iopf_group *group, *temp;
- 	struct dev_iommu *param = dev->iommu;
- 	struct iommu_fault_param *fault_param;
--	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 
- 	mutex_lock(&queue->lock);
- 	mutex_lock(&param->lock);
-@@ -469,15 +499,7 @@ void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
- 		kfree(partial_iopf);
- 
- 	list_for_each_entry_safe(group, temp, &fault_param->faults, pending_node) {
--		struct iopf_fault *iopf = &group->last_fault;
--		struct iommu_page_response resp = {
--			.pasid = iopf->fault.prm.pasid,
--			.grpid = iopf->fault.prm.grpid,
--			.code = IOMMU_PAGE_RESP_INVALID
--		};
--
--		ops->page_response(dev, iopf, &resp);
--		list_del_init(&group->pending_node);
-+		iopf_group_response_locked(group, IOMMU_PAGE_RESP_INVALID);
- 		iopf_free_group(group);
- 	}
- 	mutex_unlock(&fault_param->lock);
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 7deb3346cb78..d244a97a6325 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -582,7 +582,7 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 	if (rc)
- 		goto out_free_handle;
- 
--	iommufd_auto_response_faults(hwpt, old_handle);
-+	iommufd_auto_response_faults(old, old_handle);
- 	kfree(old_handle);
- 
- 	return 0;
-diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
-index 5129e3bf5461..70fd245356a4 100644
---- a/drivers/iommu/iommufd/eventq.c
-+++ b/drivers/iommu/iommufd/eventq.c
-@@ -484,6 +484,8 @@ int iommufd_fault_iopf_handler(struct iopf_group *group)
- 	hwpt = group->attach_handle->domain->iommufd_hwpt;
- 	fault = hwpt->fault;
- 
-+	iopf_group_take_ownership(group);
-+
- 	spin_lock(&fault->common.lock);
- 	list_add_tail(&group->node, &fault->common.deliver);
- 	spin_unlock(&fault->common.lock);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d20aa6f6863a..c2180a505ac0 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -133,6 +133,8 @@ struct iopf_group {
- 	size_t fault_count;
- 	/* list node for iommu_fault_param::faults */
- 	struct list_head pending_node;
-+	/* True if the device still needs a response for this group. */
-+	bool response_pending;
- 	struct work_struct work;
- 	struct iommu_attach_handle *attach_handle;
- 	/* The device's fault data parameter. */
-@@ -1704,6 +1706,7 @@ void iopf_free_group(struct iopf_group *group);
- int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
- void iopf_group_response(struct iopf_group *group,
- 			 enum iommu_page_response_code status);
-+void iopf_group_take_ownership(struct iopf_group *group);
- #else
- static inline int
- iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
-@@ -1749,5 +1752,9 @@ static inline void iopf_group_response(struct iopf_group *group,
- 				       enum iommu_page_response_code status)
- {
- }
-+
-+static inline void iopf_group_take_ownership(struct iopf_group *group)
-+{
-+}
- #endif /* CONFIG_IOMMU_IOPF */
- #endif /* __LINUX_IOMMU_H */
-
-base-commit: 8062148046e1a6417d44e2ed86c04e66c2f4f2a1
--- 
-2.43.0
+> ---
+>  drivers/iommu/amd/iommu.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 563f9c267..824a585df 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -456,7 +456,7 @@ static void clone_aliases(struct amd_iommu *iommu, struct device *dev)
+>  
+>  	/*
+>  	 * The IVRS alias stored in the alias table may not be
+> -	 * part of the PCI DMA aliases if it's bus differs
+> +	 * part of the PCI DMA aliases if its bus differs
+>  	 * from the original device.
+>  	 */
+>  	clone_alias(pdev, iommu->pci_seg->alias_table[pci_dev_id(pdev)], pdev);
+> @@ -505,7 +505,7 @@ static struct iommu_dev_data *find_dev_data(struct amd_iommu *iommu, u16 devid)
+>  }
+>  
+>  /*
+> -* Find or create an IOMMU group for a acpihid device.
+> +* Find or create an IOMMU group for an acpihid device.
+>  */
+>  static struct iommu_group *acpihid_device_group(struct device *dev)
+>  {
+> @@ -1268,7 +1268,7 @@ static void build_inv_dte(struct iommu_cmd *cmd, u16 devid)
+>  
+>  /*
+>   * Builds an invalidation address which is suitable for one page or multiple
+> - * pages. Sets the size bit (S) as needed is more than one page is flushed.
+> + * pages. Sets the size bit (S) as needed if more than one page is flushed.
+>   */
+>  static inline u64 build_inv_address(u64 address, u64 last)
+>  {
+> @@ -3687,7 +3687,7 @@ static void fill_msi_msg(struct msi_msg *msg, u32 index)
+>  	/*
+>  	 * The struct msi_msg.dest_mode_logical is used to set the DM bit
+>  	 * in MSI Message Address Register. For device w/ 2K int-remap support,
+> -	 * this is bit must be set to 1 regardless of the actual destination
+> +	 * this bit must be set to 1 regardless of the actual destination
+>  	 * mode, which is signified by the IRTE[DM].
+>  	 */
+>  	if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
+> -- 
+> 2.43.0
+> 
+> 
+> No virus found
+> 		Checked by Hillstone Network AntiVirus
+> 
