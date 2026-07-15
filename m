@@ -1,158 +1,290 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49F763ABD83
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 02:55:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.177
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784084121; cv=pass; b=YQ+ZUCrRrm+vaPibTnYFKYVY//BhCqED0fYE3PLVZ+mG9f8IbhT8NCBMBxmj54ZPNa9OulsohNedejKyCM9zvc3MsFKgAsWb7Xri8rj0Yz7tmVvQd0laAj38hJ2nJts4gx9Jek9KbaTA10rtXUwsbVS6IlmnFsYFKQlP1CyuY4s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784084121; c=relaxed/simple;
-	bh=6eBwj4et6Kll0SOF/dlQ0iXDfU2skh9D1bcyDgpLDWQ=;
-	h=Mime-Version:References:From:In-Reply-To:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KPT11PTXRFe/hqosmz/Jt40/7k8lkgcGmpycbgGVjgBTZWz0ZtD1nDwB/Lb2dOlGVEYxgxk3fiA+LEcmZ85gCjbjF16kajBys1dM6XGJVA9LYD9y6JRw/AlGdOSEGsjX/fL+ts6wAMg4tQ4D6rmAnFJtmAdwMzR7XRic//6eSWI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=UU0vJ4yt; arc=pass smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 132111A8F7B
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784089672; cv=none; b=cZP1CBI360W1dHDr7FG26xIHBoBZTfXdi2xASXwWtxd3brLeM5BQfgxMMTFLdJzfIbFfYacQvpG0tk9GWDVfrh0UDVIPIktOQ3qjjzMS4y0STpSiusS4O4pe58lgMY83/aUD+0fk6Cu61Mc3T2NkmYS0PagUf/gE8GLZbjvofpQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784089672; c=relaxed/simple;
+	bh=373DrC1YOBPI6BMrnWNYq92CGThNVRPeHXqgFedPuWg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=OYwvSTzSM6DkFhNpJslMDWCiTCqe2e/IYuvDkTFK/6U9CjicoXSg+qvrKFuMr5R+dxX57ASj4aAMO2BD1kZqvlhAbubiVPB8SLkJX3sk0EDW49Dwsb8RtN0KvQa9/CmZbe+Iw6jVTjFHhPzeIvIsRHECI1H+z3a1tUIzOM+Fag4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=aMM3QsOa; arc=none smtp.client-ip=54.204.34.129
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="UU0vJ4yt"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2cabc0a1ab6so59633485ad.0
-        for <iommu@lists.linux.dev>; Tue, 14 Jul 2026 19:55:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784084119; cv=none;
-        d=google.com; s=arc-20260327;
-        b=M8MWc2gPMxX+1S3AEp9xCi5HFHWhXX0TvBJ61p89MXxbagXs4C2IFRFS26GRePnhNI
-         bnwpKuo7rOYey84Cb+KpVsDv/pmVed27BplXTHCQZxBAsYc+f8rlmqqXZCVtrdpdPbij
-         5pCK62jKVIHSO5ZhqDs8SvfYwLA6DyCiA1FGK8vdYUjrJb8wujttNKiQXB/yRtkd1dQY
-         uBOaLFcOPkckcS7iQghk2SuKVZK57k9/x4ODCnXizAgKHwqIebSmxwipGwZa61JfAEi/
-         Lip9elwEJlGfE+vdL8NbMKTpn1klMdljPX869ZTe1W7exEc8V8yF7NJJ9gFF90xqtRxN
-         kidg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:in-reply-to:from:references
-         :user-agent:mime-version:dkim-signature;
-        bh=onc8LBGsosWpMb6oO+llEi3YzErTQezwilYi6725L7E=;
-        fh=WD/i7nBMI5MeYvxEeETRhmSRB3OVj7PXJHOlfCRhIuk=;
-        b=Fcuj17CL5qZehsRfOjnODKBxWQD1hoVDpnSsqb68Mreks89pyck/qR7BBuucPQE4rp
-         Nn2Wuo8pKUQDkjp8NMYbxCV8ZELSNcumphrrkyf3n/uxxFJC4WaARgiKARgIOPLRVkPW
-         DPDa/cXHMWyx1TcIFisODWecI9B8fl5XV2ahlNY5d0hhLBXBwUH5tYjOtC9NciO8OwuG
-         Uq3o+kcx27DC6LaihIqTkS3elZK1AI/ITP06+bUdMd/E5AiVlUN+s4EGLRth1xqLhe56
-         mko5X7dxnz+u1yD+EknGYYZI5c6SQ5SwxQvjxoSxxlWwPKeHVkQOwLZ2bgvkP1yDfjye
-         RucQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1784084119; x=1784688919; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:in-reply-to:from
-         :references:user-agent:mime-version:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=onc8LBGsosWpMb6oO+llEi3YzErTQezwilYi6725L7E=;
-        b=UU0vJ4ytSQV74RBuxJNdu/cYyZRKhjl76wtRe3cQVW+Z8gwZ51K5ynKrtFQsXGifUP
-         3nKzQXh9VIzIpkDqp/+eYmJiGm+ZG4dOHPRzTy6S7m941yJi5DWQeSzNkRlM/Ycm84EH
-         i8kUt/YGhVANcsb2UkKtDh7nyxQF4a6WyMF1ovQ3Yqb2ZdW6utq1F/GrUFhHWbekehtJ
-         E3ZPXdwUB4upS5d5V1azBcN/AjaSsaa2ajXvfiCy2UEmwKVr3Nx2Ic8dBXhj+XHudpEW
-         3PkYnpnlz81gwKGBRE7etGJ9oewXJA+39U7bG4/fBlvlnADyHtHBEn4Efll9r9kpXcaZ
-         CZKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784084119; x=1784688919;
-        h=content-type:cc:to:subject:message-id:date:in-reply-to:from
-         :references:user-agent:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=onc8LBGsosWpMb6oO+llEi3YzErTQezwilYi6725L7E=;
-        b=XTZIdGumbI2uw/AbS0X+DmCeT703MrLJUmI23X5S9f2cUh5SxO2SRNLoBXqZ4gv3Gp
-         LGDywG9IYnPFb1H2hJuXavxTSROIqHTiVkUu4VJCtCM5KzzvTFxS78w6TzS9WmHQG33x
-         pFk6yPG7r/Pupf+0/gV3/R42IBALh52cbwebGOjzon9Kx5F7fhKLlupgl88O7+txS7Tb
-         pnNkaQjcwWi6fG5g9A72Tls9YwKWnWs9Qbe3dApXOYpK7ZAEfkn5DIee/DgVOXMtgW/R
-         N8SEWD3fYmohDbIOYKUZKHsJ9wJ+yTA6spmi+slsCfGvIacYS8cDA4USixcsai3CC6eY
-         FSOw==
-X-Forwarded-Encrypted: i=1; AHgh+Rou2vXaVjEpz8BZVzJ/8nlqDkDED/KDq9tmIADezbBFO564VUIt6cG7iM5H3pKxuCtOEIumsw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxJDv6/MK8kqXCp2vbsYosV0WVHOJ0DnD9+9agfytUHlnK//DDJ
-	Yi0+mgOMoOuZPB6W5owmqeqz5VTQF9dIUM4h3iuCuqIp55jkxciI8mzPGTonb+GgDIhfKh7Jf+6
-	0UTiQTBzMkYHRX/jVbRkg/Yi8UMWlTxoAJXn9tYl7Og==
-X-Gm-Gg: AfdE7cnHMuLOQImJx5MWysOS4PpOhu8nWKN6q6HHJx6rCE6lx/RoUoA+HkFWcpUuNvz
-	eHtvGtjZ5L5Hoz7OSY+ATEyz5mSHLx48H1z103TPHDK0BpRLKg0Xsz+GdMCzQC5VRT7APEKaJge
-	gS4zpptEvmdAojs7ue4f0KmASfMWtIS9VnIuj36KwtM2foq1hwSM2rFdk3re2TiYAzrcaQIKf7x
-	LiE9bJ3l+i/t8QhXnPPIodEQHNYrVWl0d+dfiiOIviI2NSLrws0MjbeNbnhrUTXN9Xpdy4=
-X-Received: by 2002:a17:902:f64d:b0:2ca:5d24:720b with SMTP id
- d9443c01a7336-2cee9b82e93mr60194075ad.39.1784084119427; Tue, 14 Jul 2026
- 19:55:19 -0700 (PDT)
-Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Tue, 14 Jul 2026 21:55:16 -0500
-Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Tue, 14 Jul 2026 21:55:16 -0500
+	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="aMM3QsOa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
+	s=iohv2404; t=1784089609;
+	bh=lHxidtjdAo7GwmpR0PhZAD/LbldvKjYzf6Qy9HMkSJU=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=aMM3QsOaRtfcbeYY2V30p2uCx1xolLLjSskm6V73ss/a38GVsV8YpltXr+w3y3f9a
+	 MVG0zNEz6n4A2MM7Rjc0ALOgAI2/jFvgdRrEn6woniRAt+97HkQAr+br6v273xWTgh
+	 hyu0GPBW7Bvl6ZKea47veA65zDoEn8VfDuuD3HV0=
+X-QQ-mid: zesmtpgz1t1784089601t5282b16e
+X-QQ-Originating-IP: nDK6nTZV82Ov3yA9IieSUS5sTE9mA5SijtXfOCcnbb4=
+Received: from hepeiyang-vm.wu.lxd ( [218.94.142.72])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Wed, 15 Jul 2026 12:26:39 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 3352090239258274162
+EX-QQ-RecipientCnt: 10
+From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+To: joro@8bytes.org,
+	will@kernel.org,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com
+Cc: robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	baolu.lu@linux.intel.com,
+	Peiyang He <peiyang_he@smail.nju.edu.cn>
+Subject: [PATCH] iommu/iommufd: Fix IOPF group ownership UAF
+Date: Wed, 15 Jul 2026 12:24:21 +0800
+Message-ID: <9BE255A7A4AB5AAA+20260715042421.3148159-1-peiyang_he@smail.nju.edu.cn>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-User-Agent: Mozilla Thunderbird
-References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
- <20260714130657.46963-2-zhangzhanpeng.jasper@bytedance.com> <20260714140336.GA3716926@ziepe.ca>
-From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-X-Original-From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-In-Reply-To: <20260714140336.GA3716926@ziepe.ca>
-Date: Tue, 14 Jul 2026 21:55:16 -0500
-X-Gm-Features: AUfX_mwCsBOf_hgb5yUzS2yT7xbSqsn1sQG_-ZF1ldFSOzP_jx_ehBg3xh3TSj4
-Message-ID: <CACnXVnc4T40uUJKViZH0dzp8=RBjgC08KG6Pjz8btjPJ+aiG8Q@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/7] iommu: Add group lookup by ID
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com, 
-	reinette.chatre@intel.com, tomasz.jeznach@linux.dev, will@kernel.org, 
-	robin.murphy@arm.com, fustini@kernel.org, pjw@kernel.org, 
-	aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com, 
-	james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net, shuah@kernel.org, 
-	kevin.tian@intel.com, cuiyunhui@bytedance.com, yuanzhu@bytedance.com, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
+X-QQ-XMAILINFO: OQ0f9NOPxbniyW7Gd/h3Is1IGnTEDrSt2ZdY+CNLZEqL9L/Y3/YItkbb
+	LGe9eJva17PDGqX8cBfJ9VP8w8MRhU5nMdA59Cp7Zr3Zh5wcJBXJ+UAKzQCVcK9KOt/fOZN
+	IUagK+OBeEYWMPdmh3garP9TAXq/nlh7HRGnR7ybAyeQbCHevMODR0/CzBq6nfqiR7vwS1I
+	oSRP3Q3qRvR6UDX96YPrFrD0zBf22Ky1czf7QQ9XLDAoxBFfnWHf3ktT20L5EbvuavlsEv/
+	K2rvB/kgAHjbgjNRtNgEqfJ4Tuabibzen+tsUDnJP3SYWAgigNNcd69GIVwKeP06Gp+N3g4
+	tzsWyw8h9HY/GYpvCuniXBIJDfQs0sIUYGqkoL20A5DpOtf0fm4TG9dPc5H7mn+MxssjvVH
+	hR9IBbK0KVaBNfDjm5vL+GTqV2Gh3AuksqJcBeblOSRtGIdnOimIxVdWaK8qksSaNcmuq2s
+	/bPX4IE3r0QExcszRkc7LSZgjBhAmC3L4LJZ7SzfvUlgIaM27vbLOX4FjRRreuNkxxkiF92
+	7SyDFgRVNXJCYVUXSIRoS8WJ0op6qjGpn33mOLLV1Hs1gAWHEMFHgWVd5XgOcUU+3YdyeUs
+	axcuanq7ppflGi7hfs+neBk8hG96v/nm/rD6duUSgao0JvuT8ZLdWfDS1KtEAnleozdBkca
+	t9Kjvr0qek0VbWENcOXdhzGGNKDLQFuU0IUhnn/cgAvJqO5DUAQD4IXKpQtsywE4f+ALmNI
+	aWYgce8nEumyQHdeIADMMSnhs/t1MLsLcefBvjKQJNRwLegHAJRcfYrvNpeFBOQubwhdcSr
+	cNXIuC2YmrC3jX7buyysx4syORk8Bm3OiQILyQgKaqc0Fk3sxOKiVY0IW9/Jx58zpPYtYvN
+	2Zz04PBPqUP/Raoh+kTZgslfHdFGc+ddGNALUpKfWTPadwnPMOYfveWtp1Vgrj6+G17oRhE
+	sv47WInPUJvahxbggHkqRj1R6OQxlOIq/V4lVSn4WXIygUP0GXCwcnbAmWvr/9F1AZV5ioz
+	TVOvv/2z+nJTKwKbarlQmKb8UGKePPx1qk1vUrbTg2T00BkIpyNgETa0ZSNr7vFkBlQ9C6H
+	Bq3+V7tvtex
+X-QQ-XMRINFO: Nq+8W0+stu50tPAe92KXseR0ZZmBTk3gLg==
+X-QQ-RECHKSPAM: 0
 
-Hi Jason,
+iopf_group_alloc() links each last-page IOPF group into the generic IOPF
+pending list before invoking the domain fault handler.
+iommufd_fault_iopf_handler() also queued an accepted group in the
+IOMMUFD deliver list without removing it from the generic pending list.
 
-On 7/14/26 10:03 PM, Jason Gunthorpe wrote:
-> On Tue, Jul 14, 2026 at 09:06:51PM +0800, Zhanpeng Zhang wrote:
->> Add iommu_group_get_by_id() so callers can resolve an IOMMU group from
->> the numeric ID used in /sys/kernel/iommu_groups.
->>
->> An ID lookup must keep the group object alive without also keeping an
->> otherwise empty group active. Embed the devices kobject in struct
->> iommu_group so its address remains valid until the parent group is
->> released, and return a reference on the parent kobject to ID lookup
->> callers. Add iommu_group_put_by_id() to release that reference and
->> iommu_group_is_active() to detect when the devices kobject has become
->> inactive.
->>
->> Serialize lookup against group teardown with iommu_group_kset_mutex and
->> only return groups whose devices kobject still has a live reference.
->> This prevents a concurrent lookup from dereferencing a stale child
->> kobject while allowing external users to discard bindings to empty
->> groups.
->>
->> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
->> ---
->>   drivers/iommu/iommu.c | 107 +++++++++++++++++++++++++++++++++++++-----
->>   include/linux/iommu.h |  17 +++++++
->>   2 files changed, 113 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index e8f13dcebbde..da269d10f6bf 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -40,6 +40,7 @@
->>   #include "iommu-priv.h"
->>
->>   static struct kset *iommu_group_kset;
->> +static DEFINE_MUTEX(iommu_group_kset_mutex);
->>   static DEFINE_IDA(iommu_group_ida);
->
-> I think it would be better to change the ida to an xarray than to use
-> a string search on a kset..
->
-> Jason
+When detach or HWPT replacement drops the device's IOPF reference count
+to zero, an IOMMU driver may call iopf_queue_remove_device(). That
+function responds to and frees groups through the generic pending list
+without removing the same groups from IOMMUFD's deliver list or response
+xarray. A later read, response, or cleanup can then access the freed
+group and cause a UAF.
 
-Agreed. Using an XArray as both the ID allocator and the group lookup
-table avoids the string-based kset lookup and the additional mutex.
+Fix this by separating response state from generic ownership.
+Add iopf_group::response_pending to track whether a device response
+is still owed, independently of generic pending-list membership,
+and update that state under iommu_fault_param::lock in a helper.
+Before publishing an accepted group to the IOMMUFD deliver list, call
+iopf_group_take_ownership() to remove it from the generic pending list.
+IOMMUFD then becomes the sole owner responsible for responding to and
+freeing the group.
 
-I will refactor it in the next revision.
+Closes: https://lore.kernel.org/all/B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn/
+Fixes: 34765cbc679c ("iommufd: Associate fault object with iommufd_hw_pgtable")
+Cc: stable@vger.kernel.org
+Tested-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+Assisted-by: Codex:gpt-5.6-sol
+---
+I have tested this patch agaist my PoC which can stably trigger the UAF,
+and the UAF is gone after applying this patch.
 
-Thanks,
-Zhanpeng
+I also ran the iommufd selftest. Some testcases already fail before
+this patch, and this patch does not make more testcases fail.
+
+ drivers/iommu/io-pgfault.c     | 64 +++++++++++++++++++++++-----------
+ drivers/iommu/iommufd/device.c |  2 +-
+ drivers/iommu/iommufd/eventq.c |  2 ++
+ include/linux/iommu.h          |  7 ++++
+ 4 files changed, 53 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+index cca52a34d0ed..b873aef8d97d 100644
+--- a/drivers/iommu/io-pgfault.c
++++ b/drivers/iommu/io-pgfault.c
+@@ -98,6 +98,7 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
+ 	group->last_fault.fault = evt->fault;
+ 	INIT_LIST_HEAD(&group->faults);
+ 	INIT_LIST_HEAD(&group->pending_node);
++	group->response_pending = true;
+ 	list_add(&group->last_fault.list, &group->faults);
+ 
+ 	/* See if we have partial faults for this group */
+@@ -314,13 +315,8 @@ int iopf_queue_flush_dev(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
+ 
+-/**
+- * iopf_group_response - Respond a group of page faults
+- * @group: the group of faults with the same group id
+- * @status: the response code
+- */
+-void iopf_group_response(struct iopf_group *group,
+-			 enum iommu_page_response_code status)
++static void iopf_group_response_locked(struct iopf_group *group,
++				       enum iommu_page_response_code status)
+ {
+ 	struct iommu_fault_param *fault_param = group->fault_param;
+ 	struct iopf_fault *iopf = &group->last_fault;
+@@ -332,16 +328,51 @@ void iopf_group_response(struct iopf_group *group,
+ 		.code = status,
+ 	};
+ 
++	lockdep_assert_held(&fault_param->lock);
++
+ 	/* Only send response if there is a fault report pending */
+-	mutex_lock(&fault_param->lock);
+-	if (!list_empty(&group->pending_node)) {
+-		ops->page_response(dev, &group->last_fault, &resp);
++	if (!group->response_pending)
++		return;
++
++	ops->page_response(dev, &group->last_fault, &resp);
++	group->response_pending = false;
++	if (!list_empty(&group->pending_node))
+ 		list_del_init(&group->pending_node);
+-	}
++}
++
++/**
++ * iopf_group_response - Respond a group of page faults
++ * @group: the group of faults with the same group id
++ * @status: the response code
++ */
++void iopf_group_response(struct iopf_group *group,
++			 enum iommu_page_response_code status)
++{
++	struct iommu_fault_param *fault_param = group->fault_param;
++
++	mutex_lock(&fault_param->lock);
++	iopf_group_response_locked(group, status);
+ 	mutex_unlock(&fault_param->lock);
+ }
+ EXPORT_SYMBOL_GPL(iopf_group_response);
+ 
++/**
++ * iopf_group_take_ownership - Take ownership of a group of page faults
++ * @group: the group of faults whose ownership is transferred to the fault handler
++ *
++ * Remove the group from the generic IOPF pending list. The fault handler is
++ * responsible for responding to and freeing the group after this returns.
++ */
++void iopf_group_take_ownership(struct iopf_group *group)
++{
++	struct iommu_fault_param *fault_param = group->fault_param;
++
++	mutex_lock(&fault_param->lock);
++	list_del_init(&group->pending_node);
++	mutex_unlock(&fault_param->lock);
++}
++EXPORT_SYMBOL_GPL(iopf_group_take_ownership);
++
+ /**
+  * iopf_queue_discard_partial - Remove all pending partial fault
+  * @queue: the queue whose partial faults need to be discarded
+@@ -454,7 +485,6 @@ void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
+ 	struct iopf_group *group, *temp;
+ 	struct dev_iommu *param = dev->iommu;
+ 	struct iommu_fault_param *fault_param;
+-	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 
+ 	mutex_lock(&queue->lock);
+ 	mutex_lock(&param->lock);
+@@ -469,15 +499,7 @@ void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
+ 		kfree(partial_iopf);
+ 
+ 	list_for_each_entry_safe(group, temp, &fault_param->faults, pending_node) {
+-		struct iopf_fault *iopf = &group->last_fault;
+-		struct iommu_page_response resp = {
+-			.pasid = iopf->fault.prm.pasid,
+-			.grpid = iopf->fault.prm.grpid,
+-			.code = IOMMU_PAGE_RESP_INVALID
+-		};
+-
+-		ops->page_response(dev, iopf, &resp);
+-		list_del_init(&group->pending_node);
++		iopf_group_response_locked(group, IOMMU_PAGE_RESP_INVALID);
+ 		iopf_free_group(group);
+ 	}
+ 	mutex_unlock(&fault_param->lock);
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 7deb3346cb78..d244a97a6325 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -582,7 +582,7 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
+ 	if (rc)
+ 		goto out_free_handle;
+ 
+-	iommufd_auto_response_faults(hwpt, old_handle);
++	iommufd_auto_response_faults(old, old_handle);
+ 	kfree(old_handle);
+ 
+ 	return 0;
+diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
+index 5129e3bf5461..70fd245356a4 100644
+--- a/drivers/iommu/iommufd/eventq.c
++++ b/drivers/iommu/iommufd/eventq.c
+@@ -484,6 +484,8 @@ int iommufd_fault_iopf_handler(struct iopf_group *group)
+ 	hwpt = group->attach_handle->domain->iommufd_hwpt;
+ 	fault = hwpt->fault;
+ 
++	iopf_group_take_ownership(group);
++
+ 	spin_lock(&fault->common.lock);
+ 	list_add_tail(&group->node, &fault->common.deliver);
+ 	spin_unlock(&fault->common.lock);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d20aa6f6863a..c2180a505ac0 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -133,6 +133,8 @@ struct iopf_group {
+ 	size_t fault_count;
+ 	/* list node for iommu_fault_param::faults */
+ 	struct list_head pending_node;
++	/* True if the device still needs a response for this group. */
++	bool response_pending;
+ 	struct work_struct work;
+ 	struct iommu_attach_handle *attach_handle;
+ 	/* The device's fault data parameter. */
+@@ -1704,6 +1706,7 @@ void iopf_free_group(struct iopf_group *group);
+ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
+ void iopf_group_response(struct iopf_group *group,
+ 			 enum iommu_page_response_code status);
++void iopf_group_take_ownership(struct iopf_group *group);
+ #else
+ static inline int
+ iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
+@@ -1749,5 +1752,9 @@ static inline void iopf_group_response(struct iopf_group *group,
+ 				       enum iommu_page_response_code status)
+ {
+ }
++
++static inline void iopf_group_take_ownership(struct iopf_group *group)
++{
++}
+ #endif /* CONFIG_IOMMU_IOPF */
+ #endif /* __LINUX_IOMMU_H */
+
+base-commit: 8062148046e1a6417d44e2ed86c04e66c2f4f2a1
+-- 
+2.43.0
