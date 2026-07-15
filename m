@@ -1,57 +1,56 @@
-Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A3D442124
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 11:59:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9130144C672
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 11:59:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784116759; cv=none; b=j6l/BQp3E/QZU8E2NMlTXKrn+bJqkhYntaHV7wUU1qXC05kMeN0owJ936CfQnQLykDyYgeVKB7TNCwMI+ltqkyuyNbaBUZVP4mqtA/x14CG3VpfnfWR9VksyQI3/bNu11sDYZthVfladneg/iGivOpD2krL1mBDFYNbY+gRq8RA=
+	t=1784116761; cv=none; b=JjRUmrYy3usNmkm5/anFaw3sHOTfkvxhrktEmQlN4Rt/GkSrJzk55+4HPDU2d04vNXZx1etg7HZRjDdXLo3dS4RHT0MUMK1MuQ7WT5/+qxS1Afb4HOmL1980v07XKZrErYzdlz28SxWLMOL32jkNBp9Thk26ieNtADXeHNLuuJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784116759; c=relaxed/simple;
-	bh=Ep2a0G/52eGsYrTUgu5RVlmketd92FEfjFvjwS2XdcA=;
+	s=arc-20240116; t=1784116761; c=relaxed/simple;
+	bh=6CKFHoNklLN4PCvtNpy9VDBy22n6jqUSWu7UMjm+Lpo=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=OEmO+IUVvVvrPOTjQhhGgONVIztzEdREWNXlIUWuULKpyVllJSsYqqp7hMbJpSnjPPEXSCP9krBNfc6xVAoUiE54+NKsOufgT+uGLlQztiXjktchvViWn4W5fzy/gLv18MvZz8EpaVwsdYeAa+HzrnjhFRgVvGPYkXB4DwJaOCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KAnAtEoe; arc=none smtp.client-ip=209.85.221.74
+	 To:Cc:Content-Type; b=ahVLNGcjA9H3CCLA8w3Ow8Zwq4eLsm1bR572QcdiClmArc0eZH4W8T8I6J4TAUm8AEdEa1qf0YYFSlU6gXxZpNQ5Tsvrwrb7uaRTaPvsIcwikoNYA+uovPo9DaQ8Lli8mZfJnaTweVziuLzhO+r7sKhUfVpb3JOPvGM0oVaJRMk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ey1u3qyr; arc=none smtp.client-ip=209.85.128.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KAnAtEoe"
-Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-47f3e6cc5c4so1198828f8f.3
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:59:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ey1u3qyr"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-493bdf90adaso19755695e9.2
+        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784116755; x=1784721555; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=M3eZs1fgfcJqE0urG21tDoGKs0yo1icKieB+aaaZBxk=;
-        b=KAnAtEoe3e+YV4/sZS2A1isiZ5UjVOPGlkaqdt2OdX+icS5/kyDWpajKgORfQElNuW
-         7l+dJlkWqq6xJTR1GFGLMzNZJTM65ctWQ4/+AVZrXbJ38qQ7iVWg65MObXTSBGMxQskk
-         fmCg2599lL6jQ20r99+6h09U5it+bf/eDTCLryIYZkjl7k3Fi2xdenwZJf/VGW4bHMxn
-         ksZQ8ZbVOyjE9AxIrnGHK2k9b5mc0PJ7zyi6DfoEuxWOqyOGanhiP000Zj1NQ3uvXNuX
-         0fG2JUiYq1/3c4Dx41r0UXb1PHkakTDIqpeNYcIXvxvcIcW42W56Iq9UKGBpJTuLSBde
-         xPjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784116755; x=1784721555;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=google.com; s=20251104; t=1784116757; x=1784721557; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=M3eZs1fgfcJqE0urG21tDoGKs0yo1icKieB+aaaZBxk=;
-        b=Bkinef+13gT+898Pmx/qg4rfU8Hr3eP7HXOoOOPD9bysFvAMNEVARDKu9YhbOCZTyM
-         0CN+0COwsGHLWNt1ELQsbEONhCn0z2mjp7cpObzBPHjfYauKD0bK4uCUueXCE6zRe1bk
-         N5W6bR9bH2a+872XfgdZ2dTvwH5wVJT0IrZ52OeKX63VVCEGbdpxRrLupLjE51VoR8Q8
-         xEfKiCSngtaIlNGq4ZEbLYncHN/mq3bESEcU01D9+jkED65/G1r2LwsJ13qgHNGofWCc
-         VG8uuvMHXOtlFVuwuFarNtZ51PuejfTFQef3prItmc6fKN3zVSQHpvSvrdDnsYV+qNIR
-         3HPw==
-X-Forwarded-Encrypted: i=1; AHgh+Rr3yXY/2ni01quj3s7Ufon+9C7MHH7pZJCsZpbpKgY98mBGROHa0SqiLJ+R9JStC4L63fJT+g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwaUPfoP/1Y53FTIAMgXiTDJIHcvjwiTUq4Z7G0p5UcICmJkMGF
-	3NBLbKofFiUI2ZYfOwVpATaLUjTR/AbaosXiFXcWyJXxdBYp/yCmh5pYyZzQ6qRyKS59XcfAu3d
-	VTYiiQY1J0FimXA==
-X-Received: from wmdn11.prod.google.com ([2002:a05:600c:294b:b0:494:415:3ecd])
+        bh=KxyxCQ/BZUglxoL2L1s1Xxp7lH/IsK4WtW57NYwUHLs=;
+        b=ey1u3qyrlYAOi00B8q6DSRNqDgTnNceTJlPmzYNYfTB0QfIwGEjElMpc+9YpOVISLk
+         ic1FYWB1oYkSAOGA6wBW70AX+JhAQqaXKxMiPIdLzhTjzBKgi0NGCkXlICIFJknJnjbS
+         vWrryQnsmkP8++adWFfx4jFwDMS5YTYMnmFaTcDMVSSGx40YGq8lCy1C8EvlmoNmZ1VV
+         vHtreCNXLKq+obBUT/d+QQI5jZ0LrYRIeEtZGbvgSwfNL/ezGw0f9ZWEycXh0IqDGDrA
+         cIlR8LSsr5x6NKFM/z3ez4i4CDrHNcJGvdBpHMT2HXT6rkbAcOG7qcsZ8d0raYtzBW/2
+         bIOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784116757; x=1784721557;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KxyxCQ/BZUglxoL2L1s1Xxp7lH/IsK4WtW57NYwUHLs=;
+        b=gTxi5zrKX48JaXI+LKWR7QGYfXHIN91DqWBJRoDo7QoyE/bluuHw+W3k5WRWD2NH0p
+         lOfYEu5DvySIhdnmvIYbaZCqdOwoCmtHn7ydptNjneK34xw5MnwSXax6POm7psMBKkZT
+         7N0RHpSwvMZiEV3xdBH9NyBrCCxsSXp2SjX3vGMPCH/fm3F8wyqLzzO+fFg0reTw0uRS
+         38bfCuxtFputGc/Tkpm9KKiNY+40DNns+VxEsOinWDik3ET/l7r+fpJIN6u3jcI7wTBS
+         O6HS4PzDkP697DxVr7M9eIx2StS5dLSrGf67wt2evqMiiSbmddbVuFiM1M3i7UezjuFx
+         +e1w==
+X-Forwarded-Encrypted: i=1; AHgh+RoVsdQXbXpEyEJTBeZ4nDRGzNIFrkHS+e29DkfHLKWZwQF0UwSgvZgBPgvW8N1G0lnZdUEkTA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxJYU8x4EGu/kR/FYI3nUyVvgq6dn5duBAK0CqDjiX4nD+lCwa2
+	SqL8FLNOn9KnVQsnwU096Dgby9NJ4xJdZi5tiHuQantZj8ohj1zZeebhXK9+95PliCMFiCs8acu
+	n+4+TqDhODgNRYw==
+X-Received: from wmbez3.prod.google.com ([2002:a05:600c:83c3:b0:493:c274:1b7b])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:621b:b0:493:faf3:3ead with SMTP id 5b1f17b1804b1-4952cc3c566mr74288995e9.4.1784116755156;
- Wed, 15 Jul 2026 04:59:15 -0700 (PDT)
-Date: Wed, 15 Jul 2026 11:58:43 +0000
+ 2002:a05:600d:8496:10b0:492:5bb6:6d4b with SMTP id 5b1f17b1804b1-493f8833b6bmr131609825e9.34.1784116756444;
+ Wed, 15 Jul 2026 04:59:16 -0700 (PDT)
+Date: Wed, 15 Jul 2026 11:58:44 +0000
 In-Reply-To: <20260715115906.2664882-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260715115906.2664882-1-smostafa@google.com>
 X-Mailer: git-send-email 2.55.0.141.g00534a21ce-goog
-Message-ID: <20260715115906.2664882-3-smostafa@google.com>
-Subject: [PATCH v7 02/24] KVM: arm64: Donate MMIO to the hypervisor
+Message-ID: <20260715115906.2664882-4-smostafa@google.com>
+Subject: [PATCH v7 03/24] iommu/arm-smmu-v3: Split code with hyp
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	kvmarm@lists.linux.dev, iommu@lists.linux.dev
@@ -73,195 +72,186 @@ Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
 	sebastianene@google.com, keirf@google.com, 
 	Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
-drivers can protect and access the MMIO of IOMMUs.
-
-As donating MMIO is very rare, and we don=E2=80=99t need to encode the full
-state, it=E2=80=99s reasonable to have a separate function to do this.
-It will init the host s2 page table with an invalid leaf with the owner ID
-to prevent the host from mapping the page on faults.
-
-Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
-stage-2 PTEs, as this can be triggered from recycle logic under memory
-pressure. There is no code relying on this, as all ownership changes is
-done via kvm_pgtable_stage2_set_owner()
-
-For the error path in IOMMU drivers, add a function to donate MMIO
-back from hyp to host. However, that leaks the hypervisor virtual
-address range which should be acceptable as this is quite rare and
-it matches the behaviour of fix_map/block.
+The KVM SMMUv3 driver would re-use some of the cmdq and ste code
+inside the hypervisor, move these functions to the header file that
+is shared between the host kernel and the hypervisor.
 
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  7 ++
- arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 91 ++++++++++++++++++-
- arch/arm64/kvm/hyp/pgtable.c                  | 11 +--
- 3 files changed, 102 insertions(+), 7 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 59 --------------------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 60 +++++++++++++++++++++
+ 2 files changed, 60 insertions(+), 59 deletions(-)
 
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm=
-/hyp/include/nvhe/mem_protect.h
-index 29935c7da1de..51b0eb3844a9 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-@@ -36,6 +36,13 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, =
-u64 gfn);
- int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
- int __pkvm_host_unshare_hyp(u64 pfn);
- int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
-+/*
-+ * Donate MMIO range to the hypervisor, it will be mapped in the hyperviso=
-r's
-+ * private range and unmapped from the host stage-2.
-+ */
-+int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned lo=
-ng *haddr);
-+/* Remaps MMIO range in the host, typically used in error path. */
-+int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size);
- int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
- int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
- int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
-diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvh=
-e/mem_protect.c
-index 4e329e39a695..d803b3dd4cb4 100644
---- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-+++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-@@ -378,7 +378,11 @@ static int host_stage2_unmap_dev_all(void)
- 	u64 addr =3D 0;
- 	int i, ret;
-=20
--	/* Unmap all non-memory regions to recycle the pages */
-+	/*
-+	 * Unmap all non-memory regions to recycle the pages.
-+	 * That relies on kvm_pgtable_stage2_unmap() not clearing
-+	 * counted PTEs which include hypervisor MMIO.
-+	 */
- 	for (i =3D 0; i < hyp_memblock_nr; i++, addr =3D reg->base + reg->size) {
- 		reg =3D &hyp_memory[i];
- 		ret =3D kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
-@@ -1119,6 +1123,91 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index a10affb483a4..2a2289d4a3f3 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -125,33 +125,6 @@ static void parse_driver_options(struct arm_smmu_device *smmu)
+ }
+ 
+ /* Low-level queue manipulation functions */
+-static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
+-{
+-	u32 space, prod, cons;
+-
+-	prod = Q_IDX(q, q->prod);
+-	cons = Q_IDX(q, q->cons);
+-
+-	if (Q_WRP(q, q->prod) == Q_WRP(q, q->cons))
+-		space = (1 << q->max_n_shift) - (prod - cons);
+-	else
+-		space = cons - prod;
+-
+-	return space >= n;
+-}
+-
+-static bool queue_full(struct arm_smmu_ll_queue *q)
+-{
+-	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
+-	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
+-}
+-
+-static bool queue_empty(struct arm_smmu_ll_queue *q)
+-{
+-	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
+-	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
+-}
+-
+ static bool queue_consumed(struct arm_smmu_ll_queue *q, u32 prod)
+ {
+ 	return ((Q_WRP(q, q->cons) == Q_WRP(q, prod)) &&
+@@ -170,12 +143,6 @@ static void queue_sync_cons_out(struct arm_smmu_queue *q)
+ 	writel_relaxed(q->llq.cons, q->cons_reg);
+ }
+ 
+-static void queue_inc_cons(struct arm_smmu_ll_queue *q)
+-{
+-	u32 cons = (Q_WRP(q, q->cons) | Q_IDX(q, q->cons)) + 1;
+-	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
+-}
+-
+ static void queue_sync_cons_ovf(struct arm_smmu_queue *q)
+ {
+ 	struct arm_smmu_ll_queue *llq = &q->llq;
+@@ -207,12 +174,6 @@ static int queue_sync_prod_in(struct arm_smmu_queue *q)
  	return ret;
  }
-=20
-+int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned lo=
-ng *haddr)
-+{
-+	kvm_pte_t pte;
-+	u64 offset;
-+	int ret;
-+
-+	/* Only before de-privilege. */
-+	if (static_branch_unlikely(&kvm_protected_mode_initialized))
-+		return -EPERM;
-+
-+	if (!PAGE_ALIGNED(addr | size) ||
-+	    !pfn_range_is_valid(hyp_phys_to_pfn(addr), size >> PAGE_SHIFT))
-+		return -EINVAL;
-+
-+	ret =3D __pkvm_create_private_mapping(addr, size, PAGE_HYP_DEVICE, haddr)=
-;
-+	if (ret)
-+		return ret;
-+
-+	host_lock_component();
-+	for (offset =3D 0; offset < size; offset +=3D PAGE_SIZE) {
-+		if (addr_is_memory(addr + offset)) {
-+			ret =3D -EINVAL;
-+			goto unlock;
-+		}
-+		ret =3D kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
-+		if (ret)
-+			goto unlock;
-+		if (pte && !kvm_pte_valid(pte)) {
-+			ret =3D -EPERM;
-+			goto unlock;
-+		}
-+	}
-+	/*
-+	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
-+	 * - host aborts: host_stage2_adjust_range() would fail for invalid non z=
-ero PTEs.
-+	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would cal=
-l
-+	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid pte=
-s (counted).
-+	 * - other MMIO donation: Would fail as we check that the PTE is valid or=
- empty.
-+	 */
-+	ret =3D host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
-+			      addr, size, &host_s2_pool,
-+			      KVM_HOST_INVALID_PTE_TYPE_DONATION,
-+			      FIELD_PREP(KVM_HOST_DONATION_PTE_OWNER_MASK, PKVM_ID_HYP));
-+unlock:
-+	host_unlock_component();
-+	return ret;
-+}
-+
-+int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size)
-+{
-+	kvm_pte_t pte;
-+	u64 offset;
-+	int ret =3D 0;
-+
-+	if (static_branch_unlikely(&kvm_protected_mode_initialized))
-+		return -EPERM;
-+
-+	if (!PAGE_ALIGNED(addr | size) ||
-+	    !pfn_range_is_valid(hyp_phys_to_pfn(addr), size >> PAGE_SHIFT))
-+		return -EINVAL;
-+
-+	host_lock_component();
-+	for (offset =3D 0; offset < size; offset +=3D PAGE_SIZE) {
-+		if (addr_is_memory(addr + offset)) {
-+			ret =3D -EINVAL;
-+			goto unlock;
-+		}
-+		ret =3D kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
-+		if (ret)
-+			goto unlock;
-+		if (!pte || kvm_pte_valid(pte)) {
-+			ret =3D -EINVAL;
-+			goto unlock;
-+		}
-+		if (FIELD_GET(KVM_HOST_DONATION_PTE_OWNER_MASK, pte) !=3D PKVM_ID_HYP) {
-+			ret =3D -EPERM;
-+			goto unlock;
-+		}
-+	}
-+	WARN_ON(host_stage2_idmap_locked(addr, size, PKVM_HOST_MMIO_PROT));
-+unlock:
-+	host_unlock_component();
-+	return ret;
-+}
-+
- int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages)
+ 
+-static u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
+-{
+-	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + n;
+-	return Q_OVF(q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
+-}
+-
+ static void queue_poll_init(struct arm_smmu_device *smmu,
+ 			    struct arm_smmu_queue_poll *qp)
  {
- 	u64 phys =3D hyp_pfn_to_phys(pfn);
-diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
-index 91a7dfad6686..3073184cf6ad 100644
---- a/arch/arm64/kvm/hyp/pgtable.c
-+++ b/arch/arm64/kvm/hyp/pgtable.c
-@@ -1161,13 +1161,12 @@ static int stage2_unmap_walker(const struct kvm_pgt=
-able_visit_ctx *ctx,
- 	kvm_pte_t *childp =3D NULL;
- 	bool need_flush =3D false;
-=20
--	if (!kvm_pte_valid(ctx->old)) {
--		if (stage2_pte_is_counted(ctx->old)) {
--			kvm_clear_pte(ctx->ptep);
--			mm_ops->put_page(ctx->ptep);
--		}
-+	/*
-+	 * That also ignores stage2_pte_is_counted() instead of clearing
-+	 * the PTE as the MMIO can be owned by the hypervisor.
-+	 */
-+	if (!kvm_pte_valid(ctx->old))
- 		return 0;
--	}
-=20
- 	if (kvm_pte_table(ctx->old, ctx->level)) {
- 		childp =3D kvm_pte_follow(ctx->old, mm_ops);
---=20
+@@ -240,14 +201,6 @@ static int queue_poll(struct arm_smmu_queue_poll *qp)
+ 	return 0;
+ }
+ 
+-static void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
+-{
+-	int i;
+-
+-	for (i = 0; i < n_dwords; ++i)
+-		*dst++ = cpu_to_le64(*src++);
+-}
+-
+ static void queue_read(u64 *dst, __le64 *src, size_t n_dwords)
+ {
+ 	int i;
+@@ -1731,18 +1684,6 @@ static void arm_smmu_free_cd_tables(struct arm_smmu_master *master)
+ }
+ 
+ /* Stream table manipulation functions */
+-static void arm_smmu_write_strtab_l1_desc(struct arm_smmu_strtab_l1 *dst,
+-					  dma_addr_t l2ptr_dma)
+-{
+-	u64 val = 0;
+-
+-	val |= FIELD_PREP(STRTAB_L1_DESC_SPAN, STRTAB_SPLIT + 1);
+-	val |= l2ptr_dma & STRTAB_L1_DESC_L2PTR_MASK;
+-
+-	/* The HW has 64 bit atomicity with stores to the L2 STE table */
+-	WRITE_ONCE(dst->l2ptr, cpu_to_le64(val));
+-}
+-
+ struct arm_smmu_ste_writer {
+ 	struct arm_smmu_entry_writer writer;
+ 	u32 sid;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index c909c9a88538..e93489841ec7 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -1212,6 +1212,66 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+ 				struct arm_smmu_cmd *cmds, int n,
+ 				bool sync);
+ 
++/* Queue functions shared between kernel and hyp. */
++static inline bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
++{
++	u32 space, prod, cons;
++
++	prod = Q_IDX(q, q->prod);
++	cons = Q_IDX(q, q->cons);
++
++	if (Q_WRP(q, q->prod) == Q_WRP(q, q->cons))
++		space = (1 << q->max_n_shift) - (prod - cons);
++	else
++		space = cons - prod;
++
++	return space >= n;
++}
++
++static inline bool queue_full(struct arm_smmu_ll_queue *q)
++{
++	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
++	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
++}
++
++static inline bool queue_empty(struct arm_smmu_ll_queue *q)
++{
++	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
++	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
++}
++
++static inline u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
++{
++	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + n;
++	return Q_OVF(q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
++}
++
++static inline void queue_inc_cons(struct arm_smmu_ll_queue *q)
++{
++	u32 cons = (Q_WRP(q, q->cons) | Q_IDX(q, q->cons)) + 1;
++	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
++}
++
++static inline void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
++{
++	int i;
++
++	for (i = 0; i < n_dwords; ++i)
++		*dst++ = cpu_to_le64(*src++);
++}
++
++static inline void arm_smmu_write_strtab_l1_desc(struct arm_smmu_strtab_l1 *dst,
++						 dma_addr_t l2ptr_dma)
++{
++	u64 val = 0;
++
++	val |= FIELD_PREP(STRTAB_L1_DESC_SPAN, STRTAB_SPLIT + 1);
++	val |= l2ptr_dma & STRTAB_L1_DESC_L2PTR_MASK;
++
++	/* The HW has 64 bit atomicity with stores to the L2 STE table */
++	WRITE_ONCE(dst->l2ptr, cpu_to_le64(val));
++}
++
+ #ifdef CONFIG_ARM_SMMU_V3_SVA
+ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
+ void arm_smmu_sva_notifier_synchronize(void);
+-- 
 2.55.0.141.g00534a21ce-goog
 
