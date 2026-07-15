@@ -1,116 +1,163 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3529D44682C
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 12:14:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784117664; cv=none; b=hvPnFLjv/Fy5k7MO/JD5VkR/CItMz/qj1g5RgSzeutZZ3t/HrUQSksBcSTWXBPit9JRNUlK+4CDgjuNAxe6VZReOhuIcUfxqrih195Su7LTmX5KTWoSLH0ucP+eq1byeEqKFl/fa8cQUR89zEM6oy1PQ0V71irbUWMPnILR8oJ0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784117664; c=relaxed/simple;
-	bh=Oo24supxqHGQF/xR33i1jri7lLQABYTzlem84t/Uj/k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YuoyatTEI59cJPr1oB2qUJP/CIEo+Q70DWKkhhbp1MGiQ/kW5y69CEyYNktKNWF/hesaCbutqIs3aDzJEuDc8nnOO/a2o5bTPAUSPTl5IC1UUZrPiwCW4GLolfpAzqXemAlayYyJNDkh4aW4PESAsJCNoCh0CXvL+c8f2AfYo0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=k9B32DcQ; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013060.outbound.protection.outlook.com [40.93.196.60])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C68AC46AEF2
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 12:28:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784118518; cv=fail; b=rpURK3QgyOpGNHVfX7MWTJ4XqcYK1ofIdqQuta2MbVuTnkABWuqRW64fzr//RhowUxys54ZRH7uAQ24wOUOdhJgk4IO5m6o2hfRL77dlIv186D/noZLvxldSgw4hmsT+wSdQ1pRGJlfSDRppXG5JuYXTiPMj7/pfwo+9gDtnafA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784118518; c=relaxed/simple;
+	bh=jc03ho4zpTeiZIgkmXzmDdigVbSwdPFXwIv5PN+rEj8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=oKY4APBfoS9ToFowNL7bBuv0TdSlOhDkNyy7mq4SF1ugiq2VLT1Y9Rfd4rwlUcBsb7dtUEnTo9Z0INCVHrIe0hnp4+iXRIpcTHXe5swU8Eg2DJdetL5n1RuNr10tLfB9Svdd8H+OfvNlp9pMT7CLCsvwHHP6GvTsaKCbQb4LcZg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=AnYDMpKw; arc=fail smtp.client-ip=40.93.196.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="k9B32DcQ"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5DCBC2F;
-	Wed, 15 Jul 2026 05:14:17 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 29C2F3F7B4;
-	Wed, 15 Jul 2026 05:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1784117661; bh=Oo24supxqHGQF/xR33i1jri7lLQABYTzlem84t/Uj/k=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=k9B32DcQJrkF5e4lot+BTUtvQC5lX8mMTfzEwECqdCFlZu8Rdhq4wGKx62YjotCNz
-	 CSr6EVSxOhQzpJVOGdeOFGSQTyp5VHbWYK1ZdrL6PZnP8c8sapp2kujSgyyotgXdgN
-	 AH33LRK42Nfo4NT0qt9RVcYAoWh7fLTcTyap/j6I=
-Message-ID: <2ce09e84-c57f-4087-9dda-07245fadfc02@arm.com>
-Date: Wed, 15 Jul 2026 13:14:18 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="AnYDMpKw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cWD/8JbH3A7wLsCX4CTQ+bfRbn28WbRjk33D0KE9ZJs0LPnptHZToV+GkjTzE3nLjdDDUhZAD++qgfNQDYnC5l0qjZfuiad9WxpHSv8RLErvAh8sCH8JX8jXbELdxll5DsTm4iTKwWdCJwoypeKvb+gOUnHinSzHYZksGReUVFgEjJWJYaa9dlo6DvDn5Y/GqPMiVjwxvGxx5c3MxPBfV/zJ3FmfJ+5jalxrkPvD/gNtnxgHgVH6Oj6/PZl6cQOyU5mj8R9Sa4J/3lUwCwig9p7LeYk6pXYpFSabD5L4m3vtDj0TWosyVZo31xzXecIMQ0RKJUXPtomjER+QnQ2zYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OqlFfh1vcigZYeBrbeHJVURj7mAIuSTt1J48yfaOaIM=;
+ b=x6EREodjo41IFyNsn6bwxgdfRqKhiFYlaRC7Tnx1wqCdm+1rvNSJZZGTb4FwmcGgTcTIHzkcTOyuAAyj9RzAE+hgik8mk/4GB/jECQwfZKJIHSSfw08p9Idl4f0pQbkZ/CscGsAt3TGFt+nyvH+z5xCs+VrIz4MmY3R67gkSNA3zxMJVlIU30N0LuIE7sSQ3FmdRaFBueNHoE2F954mpuyg2AGjkq+wIDv1JA2f1mU+iWqAt2ihoRpiwn0lK3zbd69LxCRy5RD9vyq1tbr71X8Qa8y/By7Ni4OjX6r4g2ubliW5FyHZAS7NZIf8SGMLEBk0UzY2GReYJJp5XNnKJWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OqlFfh1vcigZYeBrbeHJVURj7mAIuSTt1J48yfaOaIM=;
+ b=AnYDMpKwhXmG7Q1gyjDq9KKToDowyLbQdZ78vvPNYLLM2IBuEpgEA//VYAj/HSORxW+FkO0/nU0zKRV1+5Mht2LT4CaYeQU3umXm9AyHXPn8y9+kkcFWxDHx4cgxEVebsuzMKl8/tZkbYuBplDEAtmSCkeIKIkDqXGY+D0SD6Ml3ZdaUHsXhdFilpoorYI/GFiojxV4a0qcpSVIH4Nm99UeYTqRn0NuJjvro8/7BhiCkDu05syrzGsVOB+y9LSSECV7t5ViC/gSyEt7SXb6JbScaI+2j5d6r5JMZciFNyEQ8/6VmsOhqB4rk4ZWn51WcEB4E3/kOk1+vTrt4Dm/r7g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by MW4PR12MB7240.namprd12.prod.outlook.com (2603:10b6:303:226::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.10; Wed, 15 Jul
+ 2026 12:28:31 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0202.014; Wed, 15 Jul 2026
+ 12:28:31 +0000
+Date: Wed, 15 Jul 2026 09:28:30 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Add support for contiguous hint bit
+Message-ID: <20260715122830.GB3775915@nvidia.com>
+References: <20260618-iommu_contig_hint-v1-1-4502a59e6388@oss.qualcomm.com>
+ <20260703161228.GA1948451@nvidia.com>
+ <b7224dff-7e51-49cb-8421-14d090492dfc@oss.qualcomm.com>
+ <20260715113913.GA3775915@nvidia.com>
+ <ald3CuddY6I7gml1@willie-the-truck>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ald3CuddY6I7gml1@willie-the-truck>
+X-ClientProxiedBy: MN2PR06CA0025.namprd06.prod.outlook.com
+ (2603:10b6:208:23d::30) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Add support for contiguous hint bit
-To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Prakash Gupta <prakash.gupta@oss.qualcomm.com>
-References: <20260618-iommu_contig_hint-v1-1-4502a59e6388@oss.qualcomm.com>
- <20260703161228.GA1948451@nvidia.com>
- <b7224dff-7e51-49cb-8421-14d090492dfc@oss.qualcomm.com>
- <20260715113913.GA3775915@nvidia.com> <ald3CuddY6I7gml1@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <ald3CuddY6I7gml1@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|MW4PR12MB7240:EE_
+X-MS-Office365-Filtering-Correlation-Id: 59cf8531-af0e-44b6-e8f1-08dee26c94a7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|23010399003|1800799024|366016|18002099003|22082099003|10067099003|56012099006|11063799006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	1PHnyWYD4zoC7R4+ytze2fwZ5xtnoFb++C1Diqm0zd23X10AEOXvlAn+paizOuoBvIbjDe1g1sysCDtobYWgVY1j5rSJoAYtJJZyyyP3zXZIGmtswVePOZ6ay6hpFQZjHitCTZdONDo24bmgl8jfhoPFfXiUjpcTDEDZblfP2OUwKE3VEf7akRYxnX+yxuR66at+DpZaXV9fHsZ2TjFYAnpsoIXUk23UxeVVbgmlDXw/T6AkxE7F1YA/kbXD88YSxaPL45SAzKHIi2vRfCUU15yPpTENLnlWo4GUn6iMx3zBR4nHslQquJ6SoY0ExBdLF7m0Yoh0xnh9Czq25xoobMYjMOX2Y6x0v/7H7KpmqbGm5GQ2y62UKlLp1SFjWfHBapYqtjMrdu7k4+aNMMv0B6RLMXP2a/6oWIKUle83TOOMPdlU9CVolnQTOo06hx7ePThvKnohgP91svSb3VHz/o+eylCkHl0sNsrDwoL2qMdiSreHQJRVgi7VXckQjdNYVeKURj/ZHRvh3Obnz9msxhInpgBvptGu1KwQYZVQH2cYsRBDA7eodH8KFbI14Bsm4VXhkLrHsrYKTLNTI+KUREnznUQahhu2ItI8OWGFXmyhG7mAqVv4pHu5qp9fnf3arjChb1l4px/sJBWWnjXVBRWZPXG0PCeyhq8gkeAy+ew=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(366016)(18002099003)(22082099003)(10067099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?nW4lhVJL6VvF/ZQoBZBP+vUW+zwHaRggfGyRIy9IEE8dS2JPLE0l9hpnZMhS?=
+ =?us-ascii?Q?IZJ0rBMqsqd1ZuHhYIW18/dYJTqkVo1DwOkzLW1bgDg8Yg3UWikk3+QMTRuz?=
+ =?us-ascii?Q?gn8sl1lWbafEORLJhCMjILZy2zmIQajVHlEUVpn9YIJk6YlQFaYK0jbXWR5I?=
+ =?us-ascii?Q?p/alXF/vV/iBN8Gyc8st+QRlJQztk0peSGmVtTnUf+S7vkMK9gFsp4lzl59E?=
+ =?us-ascii?Q?RJQTntjGsTCMBP9+dp/JOik9gTdsunqIsuS7M/V1M550XRERtcbF7rmdrDMl?=
+ =?us-ascii?Q?nlGLQkvpMhIUOhv9Zg8WczkX5Ew7Lm6F4rzbW7LHquaVu5eB3T16oBsjso/A?=
+ =?us-ascii?Q?/feGVa28Igw9dfh4OI+DA+Dwvsm5hE/Ncc2nL7gd9tJwOtQ/djhcPS6CDLJg?=
+ =?us-ascii?Q?52LSZgByyhcSI/zAUxSLUh4/aCG0WKDKuiHgGZ82rlf+1kmxeHW7fwOg5A0S?=
+ =?us-ascii?Q?wqcVE1+81AcVx1ez6qu3CErEwDOr67OMv2d2DYLPbzImWCmIXKpq77kAu8uW?=
+ =?us-ascii?Q?6blPEX1By5fiFUGYa3s0TXjdgKuJFBNVJ1MhuAPIJoSUHMaR1afKaS+x/Y6i?=
+ =?us-ascii?Q?F8a0XrHAoogHUlPwQX74U3Fo+hI1S4XwrQxLxR8dqH2o+aEsTqDk5YwY99rC?=
+ =?us-ascii?Q?WDdvOp5jfvWd+mwLsn7dZmNvKkAxFcKBGPJH3VYC7uBA6wYgmsmjS/c+rKXu?=
+ =?us-ascii?Q?5Q5Vrq1fjPGzWA6AitbKvE9AT9zbXGPYrjfB8ry8jR+YAo802qc+5UGZ0w60?=
+ =?us-ascii?Q?6ESctdQ0MrJ6rbEns16N0Q6RvnRyDB76a1e+Kv+pfE+CKEVxyJujPmdCnYl7?=
+ =?us-ascii?Q?NlYNH6AOk54tvDUHJzc8OmSP3hiFrWZlmxaALBqZNe1yecuylJNKJRUhv1Wy?=
+ =?us-ascii?Q?vpo1V9ApuXeZ1DTM/pFW99Y8gaHO8wDpKm+joEz86+QaUK5KzppmfcjcB+af?=
+ =?us-ascii?Q?XVtInpJgjXjAQABpyqpd7UZG0Uf61ceWhUMNZNgR1gO1I8PERrHeobybTUJS?=
+ =?us-ascii?Q?c/vndO+1HWpUSEYGLmRJrbxZxM7a3S2ZHA5MbcslgPrzbyIM+lZWdk7SNWAu?=
+ =?us-ascii?Q?5wEHpO4eTMvZhlGY88VTeqGp90tTC8+W/vIgqr0ytYbhcx+7g4bKqAtqyu8B?=
+ =?us-ascii?Q?Zzpv+1sxDYHKJ+rH3X5DooQtJyEbwzgQSSXGU86rn3NKAQWOOeZv3DjN2adg?=
+ =?us-ascii?Q?zMCUsYTTW5UeQAK9ZRwMLsAGJcT4h+cpDS3iPY3aRZg3P5n9vHgLOZGDuiUI?=
+ =?us-ascii?Q?bCmXzhT0OkRc0yW1DtVQpOLhug7PZxQnxCdpFJT3mBIfM1A+xcwnzPE/teL3?=
+ =?us-ascii?Q?DV8NVF+ZIjJPrUg5H2bhn7ioo8h+LJkNS17MNs4g5bfx8PewZdN0CBDW+o/B?=
+ =?us-ascii?Q?LNJzCE745qpQwuVyZ/ncG79+/9Cbek2AV60URc8DMrxo0PbaDJHROkQCP48h?=
+ =?us-ascii?Q?3y6arV/+aIOZXcD/6D8zOAL5wk5eLUZ2q94CBMfV/YfudcljLBjrS9JbFhH7?=
+ =?us-ascii?Q?uP+dYKlYMxqZZu1s9lD939n1mVdCILwvRWKa+Y5CDWzxVsNkIkMVnPuhd1l7?=
+ =?us-ascii?Q?qAOx41tYZzHCbYJUsB+EazWqpkxxCGpG3nyWHjO+sTPZlj6awP1eU9w2WDNL?=
+ =?us-ascii?Q?gnDuUKqDBY6vcP49P06Lximw43YilWE4+a7tHAB2/7e+i7Jeni6kQXVIPP/k?=
+ =?us-ascii?Q?fNftWFzyU5AJAZeEtT7VhHlj+JnQTdDzECjfy2GdQhZ1lmyk?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59cf8531-af0e-44b6-e8f1-08dee26c94a7
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 12:28:31.3162
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cQD9aDI+DbkVHgtUSBQA18xhWNfslw8VV0L9we2Htu/id3HQMFlLpqjS4O3myAZ5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7240
 
-On 15/07/2026 1:03 pm, Will Deacon wrote:
-> On Wed, Jul 15, 2026 at 08:39:13AM -0300, Jason Gunthorpe wrote:
->> On Wed, Jul 15, 2026 at 11:25:42AM +0530, Vijayanand Jitta wrote:
->>> On 7/3/2026 9:42 PM, Jason Gunthorpe wrote:
->>>> On Thu, Jun 18, 2026 at 02:32:09PM +0530, Vijayanand Jitta wrote:
->>>>> From: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
->>>>>
->>>>> Add support for the contiguous hint (CONT) bit in ARM LPAE page tables.
->>>>> When a set of consecutive PTEs map a naturally-aligned contiguous block
->>>>> of memory, the CONT bit can be set on all entries in the group to allow
->>>>> the hardware to combine them into a single TLB entry, improving TLB
->>>>> utilization.
->>>>>
->>>>> The contiguous hint sizes per granule are:
->>>>>
->>>>>    Page Size | CONT PTE |  PMD  | CONT PMD
->>>>>    ----------+----------+-------+---------
->>>>>        4K    |   64K    |   2M  |   32M
->>>>>       16K    |    2M    |  32M  |    1G
->>>>>       64K    |    2M    | 512M  |   16G
->>>>
->>>> My series to convert smmuv3 to the iommupt takes care of this and
->>>> supports all the orders too. I'd rather we move forward with that then
->>>> try to patch up this.
->>>
->>> Thanks for details, I have gone through your series. As this patch
->>> targets io-pgtable-arm.c directly and would benefit all its users (SMMUv2,
->>> Apple DART, etc.), not just SMMUv3. I think there will still be value in
->>> this patch for the other users.
->>
->> If other users care they should also be converted to iommupt, there
->> are many benefits to this besides just cont support.
-> 
-> I really have no interest in maintaining two copies of the page-table
-> code, so I agree that we should convert users of the architectural (long
-> descriptor) page-table format over to iommupt with a view to removing
-> the io-pgtable implementation eventually. If you want two parallel
-> implementations, then one should really be in rust :)
-> 
->  From what I can tell, the fiddly parts for iommupt will be:
-> 
->    1. Hardware bugs / quirks. Some of the simpler ones could probably be
->       handled but for the more invasive stuff like the Mali format
->       format, io-pgtable will probably need to hang around. Perhaps
->       it becomes io-pgtable-mali.c?
-> 
->    2. The pKVM work from Mostafa. We'll probably end up with something
->       separate at EL2 for this (ideally, just reusing the CPU page-table
->       code when it learns about BBML3).
-> 
->    3. Non-coherent walkers, although I think this might actually be fine
->       because x86 needs it anyway?
-> 
-> So, for now, I wouldn't require new drivers to use iommupt but I'm not
-> particularly keen about teaching io-pgtable new architectural tricks
-> either.
+On Wed, Jul 15, 2026 at 01:03:22PM +0100, Will Deacon wrote:
 
-Conversely though, I really wouldn't want to have to maintain arm-smmu 
-supporting two completely different pagetable APIs simultaneously either :/
+> From what I can tell, the fiddly parts for iommupt will be:
+> 
+>   1. Hardware bugs / quirks. Some of the simpler ones could probably be
+>      handled but for the more invasive stuff like the Mali format
+>      format, io-pgtable will probably need to hang around. Perhaps
+>      it becomes io-pgtable-mali.c?
 
-Thanks,
-Robin.
+I briefly looked at Mali a while back and it didn't seem so bad, but
+that was for a GPU driver not the iommu so a bit different
+issue. Exactly what the GPU drivers should be doing is less clear to
+me, they don't really fit well with the iommu focused interface (eg
+the memory preload issues/etc).
+
+>   2. The pKVM work from Mostafa. We'll probably end up with something
+>      separate at EL2 for this (ideally, just reusing the CPU page-table
+>      code when it learns about BBML3).
+
+Yeah, I'm not sure here, it isn't great that is adding another user
+and open coding some of the logic (eg smmu_pgsize_idmap). It would be
+much better if it could just use all the existing flow more directly
+somehow.
+
+>   3. Non-coherent walkers, although I think this might actually be fine
+>      because x86 needs it anyway?
+
+This is done already, the smmuv3 conversion I've posted supports it.
+
+> So, for now, I wouldn't require new drivers to use iommupt but I'm
+
+The recently posted broadcom driver used iommupt and I thought it
+turned out very clean, it actually seems like less work to do it this
+way than try to write your own page table like that rockchip driver
+did which required several review rounds.
+
+Jason
