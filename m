@@ -1,56 +1,56 @@
 Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C165A4657CD
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 11:59:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E86844C645
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 11:59:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784116767; cv=none; b=eRl6KcUrlYPUZPnm2hn3d0/1S3Zm2++yCgYBIBb8lsWJ41y29iHxYWYGEVGxcSno147CWQaIWD65CZuKzRH6mBF10Ngzyr1/pxndGdZMadjXSta91SdfuXfK21V65S36pcv0uNHgj5FVb5Io+5frtiqqkpAQBQycVgKORm46MjE=
+	t=1784116768; cv=none; b=dANPgNh4SlGNgJMYAljkINu7N9LmbL1NmasbFereEAyoiJgMO+QO6M1aB4Wft4NCHmd0zxYB6AHAIliNMa62cv2Rjkwdjt92HbZxKhSzgoTVY931B82Y5GPvdhgcfn2muVqlvyrU3cu9QNuea4rCZ2ccTiswTY6mlUP/XiImr0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784116767; c=relaxed/simple;
-	bh=BKXOjPm4HibB0zKKPDg8mVqvFcn5okB02q1ktl64G/I=;
+	s=arc-20240116; t=1784116768; c=relaxed/simple;
+	bh=rlfx3qfyVRl3021fgkWqxMtUcvwBDWvKZgNJzUwlcHU=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Wdk7kzm2DvEViTuyOU1o1rnN1upUCKW7C/NUKvH5Q1BPHfg+2wPBhyxF38ZMULivBDAfxpErNFj6yaDT+LEcbrEorR4LnBFhoNW8z9jMbDbj14vHMauERrPf3R9EUBvCWhqolzZQpVp4b0Z7f9/p6pV433DxRaTUYAPfSqxwmBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bJNGuYkK; arc=none smtp.client-ip=209.85.128.74
+	 To:Cc:Content-Type; b=WiCfBQ/7EqWXZoBo6g36NTwLvs+ZxCCSVM136M08dVKTxUZWJox14NkU7Or1tu4vD5kWX2y+x3ewVVBnG5WGL76rIPNrEBMXE0ynUpvFfVYNR8aNpiLTpoF2uh8nzwL+t54yEW8IqENnmeoNNGQQ8xU97EWxneDtLgrGbtmC1oI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sNvtOe0v; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bJNGuYkK"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-493e94719e7so35025165e9.0
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:59:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sNvtOe0v"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-490a767c7dcso40591525e9.2
+        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 04:59:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784116763; x=1784721563; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1784116764; x=1784721564; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=4P0vhJSxO+G+Vc4nk48G6MnzTMo1FQyjg7u/hgjKJK4=;
-        b=bJNGuYkKFuj1zX1Sq9vkgq3/OxkukYLf/ftu20rnE+N13Ms7iM38ua4aTRvqnNNcJ2
-         UkEmShvjYFGk14Bwz9AYiUZLcmAjl9zokzqfjV+R2eN8qFX6NI77DjHj4ThJ7Ta3YWI6
-         QOpQRlDkS6VpXIJhNRqKe8LawSKz+suYzFfl66iJdIr9/J4JAWH6KJTxXQP0KhSik1xf
-         m9VcoVhI1mQD4QQNPulHUvEf2hZyLMYrhHg7+HCpqvLw7yie+zwBfFFLnV+fKVRa2HhA
-         T/1ghYa69XVqqSc2gkFurFmTto0Jva9VDpwb0TYKaOuTrqBDVx7WtAiF4AUwZKCPgiIs
-         NKcQ==
+        bh=nojqcuetD+/ikKOr3q9aYEmPsN9V6B5kzgOM/WeBKUw=;
+        b=sNvtOe0vt0EB4ZJh1ShIxn/XVyyU754p9UImHJ0LHA8GfOHpG28RArG6RoYNSSIz9l
+         24ynyq2pzIGpl/vTZ5+PMt1PUGx075j/KFPFkgOTn33B4g1Q+wF6t8K43DPzMy2Km843
+         lh2T58M6ScvCkb4aHN70qDwuC4jtL8hYOoQgH9gjB+EvSNFs4s4yIDKfWQNZM12tHDCv
+         YISXb+ztCLior6dpl0lPX0e+k31BTL6toOQyG5iSx44fUA5BlpRD6oegI+rBa2JXf/tM
+         8yLE1xOCAFkwCPdRb6MwcMrwosujPyRyitC4CIp3SeraswitZ5tuT6kBuVppCwwq+2Bj
+         bpFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784116763; x=1784721563;
+        d=1e100.net; s=20251104; t=1784116764; x=1784721564;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=4P0vhJSxO+G+Vc4nk48G6MnzTMo1FQyjg7u/hgjKJK4=;
-        b=ST7RmHqItK6RtQ6w1fNT8lLsaC8LQIlMEs17zqcGsUHk8xdqd9G9/6RaZOoaW/lCYw
-         X8Ry2sRTyirXc1ysDozdWw/1e2gdzPpdJENdEplhUDz45edJ3rRgacLyTeVaSyQKVlu5
-         KYx2PZC9sylD8icc5HrMAVkKEAhgDquuzCmOLgqZMxKNFMSDlK3Bd+sjbdL3TFiJBdlZ
-         bRGnwtXg2JEC57A04czfel4ZQX/TXijsnWQt/eYC6ZqWuehiM1Ig0vx6rmysSOuSFBsG
-         GmHhp5pPIQp5E/hD2FjdW3lq/FJMnRdVKtShiug7F4CSekftjr+/Ya9UDq9pSW4H8lIa
-         /aBw==
-X-Forwarded-Encrypted: i=1; AHgh+RpUXV80xhHM+MX8pcbja5PsQIygGWuav9zVbR6HxvT7lpW6ggOAMEV76+6WjnYWXL2uXJKVww==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyvhRcM2ZL/oB+qsV/nhqA55crZdNGD+MBrnbST/P+phTgHh+HT
-	cbJEe6JxwCeQwzrpn1CdIhvHweRsSCoIZv+wAv/rUrQOdQ9NG3TGNbJOaVOhRpQz3wtP86PGSgd
-	rARPGYXcROLVn2w==
-X-Received: from wmga19.prod.google.com ([2002:a05:600c:2d53:b0:495:3dd3:e994])
+        bh=nojqcuetD+/ikKOr3q9aYEmPsN9V6B5kzgOM/WeBKUw=;
+        b=HSfWc3ygSfZHluyK7arvgyVJsn/Habu3aP9ZlwbCc8hROD0/lHFeXAqPZVZf7bwB19
+         jZoLLxWbxTht5x9Jq6LVqjNdk77kXhG/IkU1iiUkLEM4SlvZgCJTVTKMPxbLnKeIpaDh
+         KBiUZXd53W+n/vafjVjjgiE6ZRcYGXhehuBkkn02ojxXmkbGsSLn53x8DSGApf9YAvfk
+         Ac62MY0u2iekXRO+aDUY/aLtHqr358Y2bcqSqJtP1ly/1vPoXzPWrxn4rcsPqzYX042g
+         a8SDEU1QYvtqPivQbpg/8FkI879SO1nfLOrgLTq/LjrZMa/OPghgHUrNjZpXchN/Hi0j
+         rULg==
+X-Forwarded-Encrypted: i=1; AHgh+RpUzEJ6aM+gtwsmkhTEcvU+hL3JeplPZfIWfhFSuCMlNugfj6EV2c7n5Yp58b46qOhxhage7Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx2gloWcH68kMWoszNdOYo9MaYfsy/CZnIxlt45mkrGxMMdR8I6
+	CmkNOuYwv5E/hqBXknMczX8Xh0hm0rOYmd6rARpY81AexrJ+DmXZhtwYB4+jfFkB3SekYMNnJUh
+	yRNrem5kSyoo/kg==
+X-Received: from wmbdx5.prod.google.com ([2002:a05:600c:63c5:b0:493:f781:b52f])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:c16a:b0:493:b89b:9a27 with SMTP id 5b1f17b1804b1-495389d2a9cmr64618175e9.9.1784116762784;
- Wed, 15 Jul 2026 04:59:22 -0700 (PDT)
-Date: Wed, 15 Jul 2026 11:58:49 +0000
+ 2002:a05:600c:5656:b0:493:c77c:108a with SMTP id 5b1f17b1804b1-4953c2897b9mr17716955e9.36.1784116763927;
+ Wed, 15 Jul 2026 04:59:23 -0700 (PDT)
+Date: Wed, 15 Jul 2026 11:58:50 +0000
 In-Reply-To: <20260715115906.2664882-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260715115906.2664882-1-smostafa@google.com>
 X-Mailer: git-send-email 2.55.0.141.g00534a21ce-goog
-Message-ID: <20260715115906.2664882-9-smostafa@google.com>
-Subject: [PATCH v7 08/24] KVM: arm64: iommu: Add memory pool
+Message-ID: <20260715115906.2664882-10-smostafa@google.com>
+Subject: [PATCH v7 09/24] KVM: arm64: iommu: Support DABT for IOMMU
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	kvmarm@lists.linux.dev, iommu@lists.linux.dev
@@ -73,247 +73,102 @@ Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
 	Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-IOMMU drivers need to allocate memory for the shadow page table.
-Similar to the host stage-2 CPU page table, the IOMMU pool
-is allocated early from the carveout and it's memory is added to
-a pool which the IOMMU driver can allocate from and reclaim to at
-run time.
+The pKVM SMMUv3 driver needs to trap and emulate access to the MMIO
+space of the SMMUv3 to provide emulation for the kernel driver.
 
-As this is too early for drivers to use initcalls, the number of
-pages allocated is set from command line "kvm-arm.iommu_pgt_mem".
-
-Later when the driver registers, it will pass how many pages it
-needs, and if it was less than what was allocated, it will fail
-to register.
+Add a handler for DABTs for IOMMU drivers to be able to do so.
+In case the host causes a data abort, check if it's part of IOMMU
+emulation first.
 
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- .../admin-guide/kernel-parameters.txt         |  4 ++
- arch/arm64/include/asm/kvm_host.h             |  3 +-
- arch/arm64/kvm/hyp/include/nvhe/iommu.h       |  8 +++-
- arch/arm64/kvm/hyp/nvhe/iommu.c               | 21 +++++++++-
- arch/arm64/kvm/hyp/nvhe/setup.c               | 11 ++++-
- arch/arm64/kvm/iommu.c                        | 42 ++++++++++++++++++-
- arch/arm64/kvm/pkvm.c                         |  1 +
- 7 files changed, 85 insertions(+), 5 deletions(-)
+ arch/arm64/kvm/hyp/include/nvhe/iommu.h |  3 ++-
+ arch/arm64/kvm/hyp/nvhe/iommu.c         | 15 +++++++++++++++
+ arch/arm64/kvm/hyp/nvhe/mem_protect.c   | 15 +++++++++++++++
+ 3 files changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index b5493a7f8f22..5cbac46bc941 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3253,6 +3253,10 @@ Kernel parameters
- 			trap: set WFI instruction trap
- 
- 			notrap: clear WFI instruction trap
-+	kvm-arm.iommu_pgt_mem=nn[KMG]
-+			[KVM, ARM, EARLY]
-+			Memory allocated for the IOMMU pool from the KVM carveout
-+			when running in protected mode.
- 
- 	kvm_cma_resv_ratio=n [PPC,EARLY]
- 			Reserves given percentage from system memory area for
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index 43821767ccab..8d3b4500b360 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -1713,7 +1713,8 @@ long kvm_get_cap_for_kvm_ioctl(unsigned int ioctl, long *ext);
- 
- #ifndef __KVM_NVHE_HYPERVISOR__
- struct pkvm_iommu_ops;
--int pkvm_iommu_register_driver(struct pkvm_iommu_ops *hyp_ops);
-+int pkvm_iommu_register_driver(struct pkvm_iommu_ops *hyp_ops, unsigned int nr_pages);
-+unsigned int pkvm_iommu_pages(void);
- #endif
- 
- #endif /* __ARM64_KVM_HOST_H__ */
 diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-index 857d7dd2ebc3..028e89a3448d 100644
+index 028e89a3448d..8b7521135792 100644
 --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
 +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-@@ -10,8 +10,14 @@ struct pkvm_iommu_ops {
+@@ -8,6 +8,7 @@
+ struct pkvm_iommu_ops {
+ 	int (*init)(void);
  	int (*host_stage2_idmap)(phys_addr_t start, phys_addr_t end, int prot);
++	bool (*dabt_handler)(struct user_pt_regs *regs, u64 esr, u64 addr);
  };
  
--int pkvm_iommu_init(void);
-+int pkvm_iommu_init(void *pool_base, unsigned int nr_pages);
- 
- int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
- 				 enum kvm_pgtable_prot prot);
-+
-+/* Allocate pages from the IOMMU carveout, returns zeroed memory. */
-+void *pkvm_iommu_donate_pages(u8 order);
-+/* Free pages from pkvm_iommu_donate_pages(). Must use same size */
-+void pkvm_iommu_reclaim_pages(void *ptr);
-+
+ int pkvm_iommu_init(void *pool_base, unsigned int nr_pages);
+@@ -19,5 +20,5 @@ int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
+ void *pkvm_iommu_donate_pages(u8 order);
+ /* Free pages from pkvm_iommu_donate_pages(). Must use same size */
+ void pkvm_iommu_reclaim_pages(void *ptr);
+-
++bool pkvm_iommu_host_dabt_handler(struct user_pt_regs *regs, u64 esr, u64 addr);
  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
 diff --git a/arch/arm64/kvm/hyp/nvhe/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu.c
-index 08009609ec59..8891cb7920c4 100644
+index 8891cb7920c4..8ea9c8c23985 100644
 --- a/arch/arm64/kvm/hyp/nvhe/iommu.c
 +++ b/arch/arm64/kvm/hyp/nvhe/iommu.c
-@@ -16,6 +16,7 @@ struct pkvm_iommu_ops *pkvm_iommu_ops;
- 
- /* Protected by host_mmu.lock */
- static bool pkvm_idmap_initialized;
-+static struct hyp_pool iommu_pages_pool;
- 
- static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
- {
-@@ -112,7 +113,7 @@ static int pkvm_iommu_snapshot_host_stage2(void)
- 	return ret;
- }
- 
--int pkvm_iommu_init(void)
-+int pkvm_iommu_init(void *pool_base, unsigned int nr_pages)
- {
- 	int ret;
- 
-@@ -121,6 +122,14 @@ int pkvm_iommu_init(void)
- 	    !pkvm_iommu_ops->host_stage2_idmap)
- 		return 0;
- 
-+	if (!nr_pages)
-+		return -ENOMEM;
+@@ -4,6 +4,10 @@
+  *
+  * Copyright (C) 2022 Linaro Ltd.
+  */
++#include <asm/kvm_hyp.h>
 +
-+	ret = hyp_pool_init(&iommu_pages_pool, hyp_virt_to_pfn(pool_base),
-+			    nr_pages, 0);
-+	if (ret)
-+		return ret;
++#include <hyp/adjust_pc.h>
 +
- 	ret = pkvm_iommu_ops->init();
- 	if (ret)
- 		return ret;
-@@ -138,3 +147,13 @@ int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
+ #include <linux/iommu.h>
+ #include <asm/kvm_pkvm.h>
  
- 	return pkvm_iommu_ops->host_stage2_idmap(start, end, pkvm_to_iommu_prot(prot));
+@@ -157,3 +161,14 @@ void pkvm_iommu_reclaim_pages(void *ptr)
+ {
+ 	hyp_put_page(&iommu_pages_pool, ptr);
  }
 +
-+void *pkvm_iommu_donate_pages(u8 order)
++bool pkvm_iommu_host_dabt_handler(struct user_pt_regs *regs, u64 esr, u64 addr)
 +{
-+	return hyp_alloc_pages(&iommu_pages_pool, order);
++	if (pkvm_iommu_ops && pkvm_iommu_ops->dabt_handler &&
++	    pkvm_iommu_ops->dabt_handler(regs, esr, addr)) {
++		/* DABT handled by the driver, skip to next instruction. */
++		kvm_skip_host_instr();
++		return true;
++	}
++	return false;
++}
+diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+index ce610274bda0..b798a36e0ddb 100644
+--- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
++++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+@@ -751,6 +751,12 @@ static void host_inject_mem_abort(struct kvm_cpu_context *host_ctxt)
+ 	inject_host_exception(esr);
+ }
+ 
++static bool is_mmio_dabt(u64 esr)
++{
++	return (ESR_ELx_EC(esr) == ESR_ELx_EC_DABT_LOW) &&
++		(esr & ESR_ELx_ISV);
 +}
 +
-+void pkvm_iommu_reclaim_pages(void *ptr)
-+{
-+	hyp_put_page(&iommu_pages_pool, ptr);
-+}
-diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
-index c6698ecea4a2..39d59ff30f34 100644
---- a/arch/arm64/kvm/hyp/nvhe/setup.c
-+++ b/arch/arm64/kvm/hyp/nvhe/setup.c
-@@ -23,6 +23,8 @@
- 
- unsigned long hyp_nr_cpus;
- 
-+unsigned int hyp_kvm_iommu_pages;
-+
- #define hyp_percpu_size ((unsigned long)__per_cpu_end - \
- 			 (unsigned long)__per_cpu_start)
- 
-@@ -34,6 +36,7 @@ static void *selftest_base;
- static void *ffa_proxy_pages;
- static struct kvm_pgtable_mm_ops pkvm_pgtable_mm_ops;
- static struct hyp_pool hpool;
-+static void *iommu_base;
- 
- static int divide_memory_pool(void *virt, unsigned long size)
+ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
  {
-@@ -71,6 +74,12 @@ static int divide_memory_pool(void *virt, unsigned long size)
- 	if (!ffa_proxy_pages)
- 		return -ENOMEM;
+ 	struct kvm_vcpu_fault_info fault;
+@@ -773,6 +779,15 @@ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
+ 	BUG_ON(!(fault.hpfar_el2 & HPFAR_EL2_NS));
+ 	addr = FIELD_GET(HPFAR_EL2_FIPA, fault.hpfar_el2) << 12;
  
-+	if (hyp_kvm_iommu_pages) {
-+		iommu_base = hyp_early_alloc_contig(hyp_kvm_iommu_pages);
-+		if (!iommu_base)
-+			return -ENOMEM;
-+	}
-+
- 	return 0;
- }
- 
-@@ -339,7 +348,7 @@ void __noreturn __pkvm_init_finalise(void)
- 	 * that would be leaked if the hypervisor fails after as there is no
- 	 * remove_iommu_driver() ops at the moment, that can be added later if necessary.
- 	 */
--	ret = pkvm_iommu_init();
-+	ret = pkvm_iommu_init(iommu_base, hyp_kvm_iommu_pages);
- 	if (ret)
- 		goto out;
- 
-diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
-index 6492285012a4..c80663b506c0 100644
---- a/arch/arm64/kvm/iommu.c
-+++ b/arch/arm64/kvm/iommu.c
-@@ -7,10 +7,11 @@
- #include <linux/kvm_host.h>
- 
- extern struct pkvm_iommu_ops *kvm_nvhe_sym(pkvm_iommu_ops);
-+extern unsigned int kvm_nvhe_sym(hyp_kvm_iommu_pages);
- 
- static DEFINE_MUTEX(pkvm_iommu_reg_lock);
- 
--int __init pkvm_iommu_register_driver(struct pkvm_iommu_ops *hyp_ops)
-+int pkvm_iommu_register_driver(struct pkvm_iommu_ops *hyp_ops, unsigned int nr_pages)
- {
- 	guard(mutex)(&pkvm_iommu_reg_lock);
- 
-@@ -20,6 +21,45 @@ int __init pkvm_iommu_register_driver(struct pkvm_iommu_ops *hyp_ops)
- 	if (kvm_nvhe_sym(pkvm_iommu_ops))
- 		return -EBUSY;
- 
-+	/* See kvm_iommu_pages() */
-+	if (nr_pages > kvm_nvhe_sym(hyp_kvm_iommu_pages)) {
-+		kvm_err("IOMMU pool needs 0x%x pages, check kvm-arm.iommu_pgt_mem", nr_pages);
-+		return -ENOMEM;
-+	}
-+
- 	kvm_nvhe_sym(pkvm_iommu_ops) = hyp_ops;
- 	return 0;
- }
-+
-+unsigned int pkvm_iommu_pages(void)
-+{
 +	/*
-+	 * This is used very early during setup_arch() before any initcalls
-+	 * or any drivers are registered.
-+	 * This value is set by a command line option.
-+	 * Later, when the driver is registered, it will pass the number
-+	 * pages needed for it's page tables, if it was more than what
-+	 * the system has already allocated, it will fail registration.
++	 * Emulate data aborts for IOMMU drivers, other access will be denied
++	 * by host_stage2_adjust_range()
 +	 */
-+	return kvm_nvhe_sym(hyp_kvm_iommu_pages);
-+}
++	if (is_mmio_dabt(esr) && !addr_is_memory(addr) &&
++	    pkvm_iommu_host_dabt_handler(&host_ctxt->regs,
++					 esr, addr | FAR_TO_FIPA_OFFSET(fault.far_el2)))
++		return;
 +
-+/* Number of pages to reserve for iommu pool*/
-+static int __init early_iommu_pgt_mem(char *arg)
-+{
-+	unsigned long long requested_size;
-+
-+	if (!arg)
-+		return -EINVAL;
-+
-+	requested_size = memparse(arg, NULL);
-+
-+	if (requested_size > UINT_MAX) {
-+		kvm_err("kvm-arm.iommu_pgt_mem is too large\n");
-+		return -EINVAL;
-+	}
-+
-+	kvm_nvhe_sym(hyp_kvm_iommu_pages) = requested_size >> PAGE_SHIFT;
-+	return 0;
-+}
-+early_param("kvm-arm.iommu_pgt_mem", early_iommu_pgt_mem);
-diff --git a/arch/arm64/kvm/pkvm.c b/arch/arm64/kvm/pkvm.c
-index 053e4f733e4b..72ca1393c504 100644
---- a/arch/arm64/kvm/pkvm.c
-+++ b/arch/arm64/kvm/pkvm.c
-@@ -63,6 +63,7 @@ void __init kvm_hyp_reserve(void)
- 	hyp_mem_pages += hyp_vmemmap_pages(STRUCT_HYP_PAGE_SIZE);
- 	hyp_mem_pages += pkvm_selftest_pages();
- 	hyp_mem_pages += hyp_ffa_proxy_pages();
-+	hyp_mem_pages += pkvm_iommu_pages();
- 
- 	/*
- 	 * Try to allocate a PMD-aligned region to reduce TLB pressure once
+ 	switch (host_stage2_idmap(addr)) {
+ 	case -EPERM:
+ 		host_inject_mem_abort(host_ctxt);
 -- 
 2.55.0.141.g00534a21ce-goog
 
