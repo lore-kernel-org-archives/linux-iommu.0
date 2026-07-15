@@ -1,173 +1,105 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013036.outbound.protection.outlook.com [40.107.201.36])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CF7D363095;
-	Wed, 15 Jul 2026 19:13:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.36
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784142821; cv=fail; b=ABYUTSsfquuEQXtKPm1njplgDVABu1bqPdkcTzSHfWUBMHuIFCZiahVkJcRp+mDSqiNonzvFloFGr1qspCbTlC7vTRhXwkg9dE30Fhu2SBNXLsBl3pbwrhGkw0aeEE6HCebk08mG7saqS0tZe/7iEzp+Z9K0FvXEdAQlseqLNvg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784142821; c=relaxed/simple;
-	bh=efSRo0Wi3jlFciP+MaqMJhEuEW8wgjever7SYnQITrY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=U2kYH35LXU8QqWmpvJRG2nWKEs7HkLto8ZFJSYjBK/5v8mQD3sV34/GAJbvtFYTUh9fMec6NudtARzUUlHTs0aR+fYU+7MDG4zUdmrsMfQdMIdZj7fgPHM5LKa7rOvXM6oHgC6Nz7NujwfgbZArIbIedhHh0a1cHo3unAthijW0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qZ4l0Ao9; arc=fail smtp.client-ip=40.107.201.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C203B894B
+	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 19:37:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784144257; cv=none; b=CO7/hf0JZVgomLTjxmEDiBnxWPKLelukTV69f/Qw5Lrb0J5iN2op+Ad5askjnJlYrVx7LUNc/deJUJbsb2bnMK6jUqhXYCY/UJlMteCc3Yo6If/0O/4puZhIXUmXykgzZyXeg9WJq2fl3T2SWILRCs9maioVwkFY0rMObkrfrvo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784144257; c=relaxed/simple;
+	bh=eYNN6RWU07VAIXpqxw2a0aPtaKc6eCAW3usyhGGWdKI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H9teJcTjsQKrymXHSPmQYvhi2iapXrdjiOEcMMVrgS+uznWYPWtL2k5B4vVBe6o5w8jjCufC4vfY+ovitRwo93UTpKd0q5pPCps4loZ5zwKdHptW3tkGbc1upo37Muu2ErA/o9N3vDPiMIh5+2s4248B0OIKsY1CThQ2x3f2qJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=O+CcPxwK; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qZ4l0Ao9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hPHMGDhAWlizBcw6eMtCIvwqx+QmaPJeulUPhJFzIxD2BDvCot4T34f6gHoww9NoW4/Ag0W0e+Vh22xZxh94V0m1mFAdEK5AheFhF7qTpx4FJqmxGxRzZfQ9yjKNiy9QyZGgxkDM31qUcaVxyCsvjfNctAK47IXzCYDuNHdc567DdS2JRwh4sbtwhA35INTiqi3ExuAWMk+1urtQ/G9fgKsEisIPDgpQXkHHy7aR2n2XoFLgoJq4MO9IYYyWAfaU+z16ydTJA38Fy2v9+y6/vU0OQa2yhD5a5U6GmcNqWNzuGmGaIVCPIS5xW1ePH5p/e8FGfnwnOHHWQG/Hic3PyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2FYF/AUOaoIBPSufVeUWPqjrKF83lwRFcgmerDNFjAI=;
- b=MIOqYCsrLcs8udWKAzzm7ue/QduqQBTMr6cMuysadTPizXq04reMI6g52NEx7fRSoBcmdthfxOqykFfMsrwAr9xSxYGVOgLnwOUtpSe5v+nC8XptxhxXnLbKxG6GmWurFXMCo9yNS70jYWgaycDnGd6pIM4H5L7tpISKbzGLCi+37aD8E0xq5qJkKfOxsa4AnNouPH+XTupznkDDAmDPAUhktjyU5+RYqod85C/Zy6XJxSw1vdX0PfWtTixfsSzYHESoEdP70v1FGLp+6b1997CfY8WpXs1dImYgbOMgXZ9aQS0cWCGnQdMY2pGhB3WesY9OWaYFYYj5X9SUIqI5QA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2FYF/AUOaoIBPSufVeUWPqjrKF83lwRFcgmerDNFjAI=;
- b=qZ4l0Ao9guqU9K+ddIP4tJN8zMIYDmVyGMVAW7VPwgFRMG9PBGmt7nq6fnibjrFpcS90QfCHQ7DRg52DdaFZwgGteyvA90A8PqS6HPjPDOFlyltabVNqqgk7DngrTtDjZEWpPd9FVTsz4RcBqNOHML3oF9PuLsHkTuabVklaLnGdXWgjaqqpnsBHH20hogpUZ21F4gEFGEt1cim0o8mchsFdEebaNxBVTigCxRCbm5dEUbr6aaPN7vK96LGnneNCPsmKspKWB7c6Mh5Tnc8r9Fjd39LnjorqnbWfUmXwYjtYfZz1qL3k55vvxlXR+zr4RKVXpei7D7mkt1yRNuVhpQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by BN3PR12MB9595.namprd12.prod.outlook.com (2603:10b6:408:2cb::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.9; Wed, 15 Jul
- 2026 19:13:03 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0202.014; Wed, 15 Jul 2026
- 19:13:03 +0000
-Date: Wed, 15 Jul 2026 16:13:01 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v3 7/8] iommu/arm-smmu-v3: Change how the tlbi describes
- the invalidation
-Message-ID: <20260715191301.GB103013@nvidia.com>
-References: <0-v3-4e7f64f4e094+85e-smmu_tlbi_jgg@nvidia.com>
- <7-v3-4e7f64f4e094+85e-smmu_tlbi_jgg@nvidia.com>
- <albBoVkI4KIh+spI@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <albBoVkI4KIh+spI@nvidia.com>
-X-ClientProxiedBy: BN9PR03CA0625.namprd03.prod.outlook.com
- (2603:10b6:408:106::30) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="O+CcPxwK"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-92e622cc874so399833385a.0
+        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 12:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1784144254; x=1784749054; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=OujpRFSpw/QAEHNMk5YVjM7csawMlwgTgeHiHNUlLio=;
+        b=O+CcPxwKri+8zWsYtWADfLky7zxHh2GrnaeMS9x/qMfPm7J9fP+qYAswv0cughqhPc
+         rji1rJl8gCyLmOOvLX+lGrvYo6loA8BW0QpSPlE+jozZ14zQlhdwCpxhqtmzxvUrVtY0
+         vXM+bweroAKPE1SGQy7jwEUWkpQR8FMLwHQuyrlwt//ThZKOIexhn7rRRxpdRmK02btS
+         m07H/KGQ4nfB7wJorIVmX94LC6Odauh9VOLVpNz9pv6ZPQV7pmpLZfuMVIwt1hMIzfeX
+         A6V1TxoxlMi5FFoEWmp6jleJ56bF7SR0YuK0oKpnUq1O0porAeSn78aQD4fn1uHPryhN
+         rplQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784144254; x=1784749054;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=OujpRFSpw/QAEHNMk5YVjM7csawMlwgTgeHiHNUlLio=;
+        b=jo2nLiUA96EG6YxgTB7HjmvTQouDB0GmpE8eiIHPk+xoThRKd4jAywt0L0ME/xWB+t
+         MwwI0fJir/9l6/+3tjTyA4/vAMdLoR84FVWtOvmLH5J8gGfuoQOO1U3YZGZ0soE7+2m+
+         Y/P8ymTfuUBq1rir09HoaKINEnjLMdMOXViOzhbdyndAnxLcuDC6f3CITduLJMioIrxU
+         Qjl1loW9JENV6dDCFeGXgECxvr12wSzFXbtSF+c/WwM9NqDHRsnc/OJCMHRIWT3q2DUA
+         mobOybLMO//MTNoaNT72MC2I8JIU3ljv+BVfjQF7i6ix9j3aUA+HEvPZJn2S1MJ13F6x
+         y3OQ==
+X-Forwarded-Encrypted: i=1; AHgh+RploLiWMJEsaOlrmngJlyUQWC59ON0SwxJ0zCfdhPd5RPvvYpwIE9aQq7h2V2Lu36mlgZoQeQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyIkegiIMMHelLDomyH0JZBAG9uB27DietNrZlPuloW6SWDiI1/
+	F/xh6pGe1+Z8UIQQkMrmKF/4C9BSHG+AMisxegWX0afWmA59QAsGybRZ3pSCHigYdVQ=
+X-Gm-Gg: AfdE7clx3Xjy+grp28mIy8xvSRWMSg8T3Cg6PmI1H71/B5rMIttwNRcDdaqJ/1L3186
+	eCjlB6pqrxwyIEXg3MUjxoU1khq3Oja9SB2XcWbIKGQMm1oJ9dPpkkDKjVOwoxaLTes+pGnkCey
+	OPBBQz7G7lsDEHZjzRkfb0pivhqOIW9O5Vx+t9A7d1yXzYg9Nvxq69s8ILtgL6o4SU+jYR1TfAk
+	e7jtJ83ZJXS2nZlZq3V3R4k4P4gNXxfpxsJzbTWhp6VFFqBJw+mKv+bRAPTcUvBrqEmWeeFP7VQ
+	6L+pZJcZ3bxcNb/FTSoP2r/Q48gimTtMo85DBgluVBMU6JaTVyZ9aKffAFTyS9+drM5DH2RNsoP
+	BUwgCgFZy1DNGvYjI6pBDkQ14GNfEffWMX5KrXci2aenzgSr+Lq6MdzvTWXxU
+X-Received: by 2002:ac8:5805:0:b0:51c:12bf:d4a3 with SMTP id d75a77b69052e-51e3c2cc193mr94283961cf.52.1784144253535;
+        Wed, 15 Jul 2026 12:37:33 -0700 (PDT)
+Received: from ziepe.ca ([159.2.72.92])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51caab6e9f4sm144211471cf.2.2026.07.15.12.37.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2026 12:37:32 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wk5QC-00000000tnI-0nFm;
+	Wed, 15 Jul 2026 16:37:32 -0300
+Date: Wed, 15 Jul 2026 16:37:32 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: weimin xiong <xiongwm2026@163.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v1 2/4] iommu/arm-smmu-v3: Fix fwnode lookup lifetime
+ handling
+Message-ID: <20260715193732.GA210048@ziepe.ca>
+References: <20260714060930.220277-1-xiongwm2026@163.com>
+ <20260714060930.220277-3-xiongwm2026@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|BN3PR12MB9595:EE_
-X-MS-Office365-Filtering-Correlation-Id: 76674801-ccf4-420f-728e-08dee2a517c6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|10067099003|4143699003|11063799006|56012099006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	ZBizITFbOSY0qxDD+hFWiaA5dc23fA+Ja0yIbsxM1jr0iOS9nExwBj7e6MQgbvaM806E7BZbewOWxlO34S2I/iWdxR7xRMm7cT0D8UrXujWJPkv0KfE0263J6BCuTjgmYX44u1Sl7PFWQPWtPTfEK4QpuBdh0PkZfQJXpyKn6DY1iv/Qvv/YFjclUkPiRc9hjD2ZUpvsj2OwaPFKEabLQe6JirJNLW1r9+BwXVgzAZBh5hC+eDV4YVK8TLo1rbi8nzf7XneR0sY/m/IXN4Rd6xiN6iO7y5m8zq7GRTmPFqbC8sPRre4iBrq6wLR52LG9UUDgLaVowIgpPopwGtqWhkbF+XuLFKfUIjvGSM3QCMhABEicjGsKNs1oDA7DKxYSQdRzsiJaTnDelAhKPc5QZS+iT589VqV20qANSYcS8lt/2xBe3FeAAWkLeAx9OKpizjLHxfoAMNftE4h8K5ZFv+/11J4tMTX59y203PeAM/kefHWFrEX79+syq3r52XVUZXZwkkv9Xh1f5hqZECkwKBAPVK2YDS8vigzN5wNABziTm8ndVtgeKZDTciPXwFx21obbEGncGYxyVzA8u0lYtql/uxu652u6jiu6lfLS+pSDa4AZVYLrcKs9+/IFHu/OaoGLxGWP2eA1iQHTJrzo1OpYYimMBZCxSD7bDSEC158=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(10067099003)(4143699003)(11063799006)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?z8P148F1Q2GqlWFOPE2vxkCYKNGX6w4zafZO7v3jp9gyFCNse6hbhPvKTl7S?=
- =?us-ascii?Q?2ZeEXtyUoiD0gPi6KIq7u5BOGKN5XTAmSyaMB8Dism/gGVgRQDyMmjiv1GH6?=
- =?us-ascii?Q?PUcCM8DjwgpN9VgRt/iGZmkt/4idzGATsGg3dqSu4U0t/B2chpZNe1jIGgnh?=
- =?us-ascii?Q?+86D8jxXDSeh8Du2sRPqNyErZri5Pet7I1oXnU2AeLMpwEaNL6hrJZJBKndX?=
- =?us-ascii?Q?KP2Yl12Hoe/ALC5DqX0WT2c7BG0yTJ0zfmlW+eCjN5xqakVb+BLryH2IpTWx?=
- =?us-ascii?Q?TFpry4YFYY0b9AGZT2lgAglvplGJ/AFKUTVVpiRGX3EVh2oYOwYgPXftjT60?=
- =?us-ascii?Q?8WydnuXzl458lezoRn4YyHlnCYYH/vDMumcHp0tYAMAjc7d93oNp+3TA6YOn?=
- =?us-ascii?Q?jr5EmeLVY8ZVptee7T6xmN+eprZexOOdA9MHQGwxgwNvYgnUNLj2YfZLVPav?=
- =?us-ascii?Q?1gGJ9Bx06u42263NkfiF1uYamMfBWRqFjqUucF78bdngkXOwZhwKa40kBk7y?=
- =?us-ascii?Q?JyXNsQC8C1HKoT2y2DOxDuVuQhvJS8t2DNDc/W7u+zrfhQFSBc2bAcazNjSS?=
- =?us-ascii?Q?hVLBLJlrwC6Q9epSONOCNI+V7vSmSLuuEdtR4IxxlDAhI1uSaZ+Us3dp8jp6?=
- =?us-ascii?Q?QcLq3mM0FIzhxtRAJFGAbXLPX1Wx4cYCOU2p4As2rHIORiF4tO/U4ki2S7WL?=
- =?us-ascii?Q?e+AIjg9r2c2zR5fq4bzukVqpExd3CEoqsZonUIKtLBHyaP9Ho92mZaDdRuZ6?=
- =?us-ascii?Q?rEXXC618/qkuD+hkhqBH7RPX/flXhhFN274GZxsr/IUdFsYpeWTLQrJooAzH?=
- =?us-ascii?Q?iDFaQlCenMIk9ssynInDG6KQPVFwZrT0c/wC4ACR07+FoT1HzO8JPr2DKMeN?=
- =?us-ascii?Q?+gqeN2dl6S7mFWzHxqeyYhDHf415xhkFuc16vCR2JbeICb/HnliZH7XibNOE?=
- =?us-ascii?Q?faXpdUlnvachfU/wXCey5giGo49zqZUVSP4EJbaIdE/M/EIxPjucCxmUQzHD?=
- =?us-ascii?Q?L9w/vTXMSkit93qIIJlPvchIXLk08fQ9zgdbO4fcjlYCx4Rnv+UHC/E3Lcl9?=
- =?us-ascii?Q?0mNyhvOI3aIP8cyMjANs+BVlCd7/s5f9V+w1IMVv7GtFeUaP10wTgPoy7g0t?=
- =?us-ascii?Q?noCRtHTBp/a0jwTz+URUJQnZdrfp0loIi8zBN8Qs+hO+i3nkR0JcSTv4Veys?=
- =?us-ascii?Q?mlRgZSMZ1udpjBUbOe1Xy0i5sPoDnNTe+HMwrtn9PBH+NJ0+tGCQ4H2o7hoL?=
- =?us-ascii?Q?O0d6p90Xwet2dt7ACRKVeyotxIkPlmbdRNwkTNVQ98vdg+4QjsitTekRwvwV?=
- =?us-ascii?Q?+/n5lHOssIoPC3tFNDs57psvMsS9+7Nm8T06gy6v6FBWwUlj0PMyYCazULaO?=
- =?us-ascii?Q?FTgWN0pseCT7chbFrw0/YM51Ek/zDmsgM3Ywf2MeeKS5VKEL5gO4wjhGockC?=
- =?us-ascii?Q?vCrYYIAnpUSeBPOj0Q4r3EG9d5QiIiR3OLrOA9z9wTas3ID/FgLUAzqmzNfP?=
- =?us-ascii?Q?yozCWWcZOfNoDtjuHT2SGPTid8EfPR3FWdFeF7jhqiHQW5lNQVHTd97eIsOP?=
- =?us-ascii?Q?OgiqoMh3rJTK1lWZ2VCESV7kcVrFhbOOCLY7sxNjSntdPePJkTWiFke1FyqE?=
- =?us-ascii?Q?BeOsuBHtVl4cuK5Hx6KclYDGbZBPFc4PmjD9/i2O4PmSZCPQTMnpPsBa8OSX?=
- =?us-ascii?Q?660NX0XwE37hLsm8aBzzUAVGbQhVvPvOwUmDvSpcKf+LQYkC?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76674801-ccf4-420f-728e-08dee2a517c6
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 19:13:03.2745
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DYYkOyGgrMYjqQqXce3116et7ZN4S+ThkXQm1sVxONNa7nyVZY9Ufc1FjSWkWGGN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN3PR12MB9595
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260714060930.220277-3-xiongwm2026@163.com>
 
-On Tue, Jul 14, 2026 at 04:09:21PM -0700, Nicolin Chen wrote:
-> On Tue, Jul 14, 2026 at 03:46:07PM -0300, Jason Gunthorpe wrote:
-> > +static unsigned int arm_smmu_compute_ttl(u8 leaf_bitmap, u8 table_bitmap,
-> > +	} else {
-> > +		/* Both bitmaps zero is not allowed */
-> > +		return 0;
-> > +	}
+On Tue, Jul 14, 2026 at 02:09:28PM +0800, weimin xiong wrote:
+> bus_find_device_by_fwnode() returns a device with its reference count
+> incremented. arm_smmu_get_by_fwnode() drops that reference before
+> reading the driver data, which leaves the returned pointer derived from
+> a device after its reference has been released.
 > 
-> "not allowed" reads like we need a WARN_ON?
-
-Yes
-
+> Read the driver data before put_device() and return NULL directly when
+> the lookup fails.
 > 
-> > +static u8 arm_smmu_tlbi_calc_stride(struct arm_smmu_tlbi *tlbi)
-> > +{
-> > +	u8 combined = tlbi->table_levels_bitmap | tlbi->leaf_levels_bitmap;
-> > +	u8 tg_szlg2 = tlbi->tgsz_lg2;
-> > +
-> > +	if (!combined)
-> > +		return U8_MAX;
-> 
-> As the code checks "combined", ...
+> Signed-off-by: weimin xiong <xiongwm2026@163.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 
-This should be a WARN_ON too
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> > +	 * If leaf_levels_bitmap is 0 then this is a walk cache only
-> > +	 * invalidation. If table_levels_bitmap is 0 then this is a leaf only
-> > +	 * invalidation.
-> 
-> ..., how about listing all combinations in this kdocs:
->        * The pair (table, leaf) below selects the invalidation scope:
->        *   table!=0, leaf==0 : walk cache only
->        *   table==0, leaf!=0 : leaves only
->        *   table!=0, leaf!=0 : walk cache + leaves
->        *   table==0, leaf==0 : a full invalidation
-> ?
-
-I did add this table below the above comment in the header
-
-> Then, arm_smmu_compute_ttl() would read slightly better.
-
-Yeah it is a bit tighter
-
-Thanks,
 Jason
