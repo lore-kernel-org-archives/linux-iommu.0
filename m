@@ -1,169 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A312E3815DF
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 04:04:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0359A31A556
+	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 05:48:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784174672; cv=none; b=CgeB/IHDQbkCSL1A7yTqfDHIDWGP0vIgEL9RghP5yfLnTkCzTC9Z25PnRiTStsXI5bScBdcbvmDfiVQghvUX+KsYllvHrvF6vTKnxAjDHN2mP/spfHXGD7I/TOEeh2TT2JamYDoBtWiMwQE76XrX70RMdWCkxgAu4QmCzsWVH7g=
+	t=1784180893; cv=none; b=sFsYChwgf6TPJ56gaadQ3JfKXqqZRjIqBbdpWiN72mRW10b+QVs53t/mqMO1cXq0eoh38xO4/rYl00vg7eUYsHBqsMk9Z/3pyq6M/kLKYULnP5Kqfm+EMhkD8XR5tC4sVmP6MWQNLBhAYGKi6uikuULhGz/iNSOi4YQ9YOazSnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784174672; c=relaxed/simple;
-	bh=Fg94SJn9u78gDw8siCO7WM02w6Epyqex4JqIlKwaAzE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Da6O/Lh2As6idUGUgaOrcokHJnVDa+OtyTRMXaLEK4CnKFD6lAPTZ1VV2HyR/kMkt5vJrIeju7XnnnJNZp53h7Qh6d+XyL11smCIuiWYsAvMY0Z6FvcqZvj1KaR1nBEPTyCbyyIAwS1fg9Gk5f+GGQxWE2aWheahFjKvXRLG6N0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aiCEY2Zn; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784180893; c=relaxed/simple;
+	bh=QbUFyYi+EsTelhCpbmY3t0Th5ATBkJa6qvL4V4XKWd8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uAp3Zl5JqO9OTEYxn2M9E8tVzUVl9bUOiEkGWRVdNmgYbASuo8nu35r1PaymJIzPBjAsDwsYKHT7vaqk3UpWmNLmfQjikM290Vrrbj+ht4cDjtA+3mvUYtxw7tunujbP0QyfYh7s7QvhrYlLrHuLxzq0jhwYGGt5KdmEmqlYqcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XsFed8My; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aiCEY2Zn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 476291F00AC4
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 04:04:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784174671;
-	bh=Fg94SJn9u78gDw8siCO7WM02w6Epyqex4JqIlKwaAzE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=aiCEY2ZnI36PlbsS0Dnca0aUGUuB93v2+rNSdP7sTvxx63CkeSiJun7SJ9/pa6cYV
-	 N+wQCTB2GC0K/u/xrCu7m7SWlK9wT4iFGM++K4vDlZJfNWvOsRL1gcv2Ayul0pSWDE
-	 JR+8uISKgcGnS/90no5aTvzy6nAD2+OmxoGrNadSbXmTdwA5GZ5GrCGtjt/NW98kye
-	 GC8pzxeQ56DIeKU7w9rnAM3inE0xMvO5rcSZ9Y9oart1PHbcWu1/9QZvdtcKvuOZKY
-	 EGbjr9aucS1hsb6DVbxSrwksi5TdT6OkkxXFhBqolcVG03Cr8rlZ9DBvlV8IjJKw38
-	 9mjRFv2wReTIQ==
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-4799b3f7c83so4504402f8f.2
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 21:04:31 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rr1YkYYRG1LUx2k6awm419nfUcXFZdyr9wy6BCG7T3KS77Bct1q4sJRYOk8RsszCq2nAJhouw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxphZfpAUQegNUxUec0deFQ3tSBdjR7fNCmsKpPtpmn4wUH5lID
-	Xv2m+qe5HNTXRz0+k1BVMnsZR6VsK9lMSGYEpU8fReumw6382Qzj8LXIsSjpPmBQXxXS+A5xcQK
-	n+CzHbRVuyDdQAzvRYHp3vUathjOdqMw=
-X-Received: by 2002:a05:6000:2dc7:b0:46a:8fab:eb44 with SMTP id
- ffacd0b85a97d-47f4fcc818bmr6139658f8f.1.1784174669875; Wed, 15 Jul 2026
- 21:04:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XsFed8My"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784180892; x=1815716892;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QbUFyYi+EsTelhCpbmY3t0Th5ATBkJa6qvL4V4XKWd8=;
+  b=XsFed8My/AAobxOkPXssQ0xCKj12VFalVLFxsn7u4N4Z8mdvtLT0zhyk
+   Z9oJWPaAasOLugMIBQYFNFdXXN6xAgTPWsmmq1UrD3/RtgbA2L1umqD2R
+   TOEGJN4MlEps8NcJVtC6Hd9o+0ubIN8djy162KAzRMEug/9V192CRsW24
+   7XfHTqH0ol7sgR0AY220qCVpjgtK1ifZacBzenU6TJ6eiSIiq6wAiQvil
+   zhodxET4DJlef85ZDnNm5B80vnFYKp67Lc9SyiHFsyT7/pXIVPJee/Mo+
+   lgofqoUxn/iKjolDXSzx7B/9ylQqvR4F5S93YjAu4VtgifWsQo5mzLkyO
+   w==;
+X-CSE-ConnectionGUID: HWRfGKchRuiZ420U9whkhw==
+X-CSE-MsgGUID: c6Y/TkWKSyWhN6jyYbJrvA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="84870519"
+X-IronPort-AV: E=Sophos;i="6.25,166,1779174000"; 
+   d="scan'208";a="84870519"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 22:48:11 -0700
+X-CSE-ConnectionGUID: sLCXD+pMS0eVHv059TSHIA==
+X-CSE-MsgGUID: gFZDL19LQ5yHLneEP+8HEw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,166,1779174000"; 
+   d="scan'208";a="261320008"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa005.fm.intel.com with ESMTP; 15 Jul 2026 22:48:09 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Disallow SVA if page walk is not coherent
+Date: Thu, 16 Jul 2026 13:35:53 +0800
+Message-ID: <20260716053554.1642374-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
- <3591a185-d0b5-4cb0-a0d5-ae9608a4e244@arm.com> <CAJF2gTT7TPA+K+JgkvvUtb0x5BSzfox+s5rG8OtrP0QzPetHFw@mail.gmail.com>
- <20260715094305.2783-1-cp0613@linux.alibaba.com> <CANXhq0pvrXDJyE_dA-3z2tHnVndvxOm7kLRvnF9T+_r8cUHXug@mail.gmail.com>
-In-Reply-To: <CANXhq0pvrXDJyE_dA-3z2tHnVndvxOm7kLRvnF9T+_r8cUHXug@mail.gmail.com>
-From: Guo Ren <guoren@kernel.org>
-Date: Thu, 16 Jul 2026 12:04:16 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSr5dCma3xgPdFpe9RNUg+V2U1io8_0tJWuCuCPFhWyfA@mail.gmail.com>
-X-Gm-Features: AUfX_mysGsAvg7iNzvdRvGw-pNaOqcW0q9z1nRCbVt3xaj4MNFhD3CndE7GiKE0
-Message-ID: <CAJF2gTSr5dCma3xgPdFpe9RNUg+V2U1io8_0tJWuCuCPFhWyfA@mail.gmail.com>
-Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit registers
-To: Zong Li <zong.li@sifive.com>
-Cc: Chen Pei <cp0613@linux.alibaba.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>, 
-	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
-	David Laight <david.laight.linux@gmail.com>, Vivian Wang <wangruikang@iscas.ac.cn>, 
-	cuiyunhui@bytedance.com, yuanzhu@bytedance.com, iommu@lists.linux.dev, 
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jul 16, 2026 at 11:13=E2=80=AFAM Zong Li <zong.li@sifive.com> wrote=
-:
->
-> On Wed, Jul 15, 2026 at 5:43=E2=80=AFPM Chen Pei <cp0613@linux.alibaba.co=
-m> wrote:
-> >
-> > On Tue, Jul 14, 2026 at 09:55:19PM +0800, Guo Ren wrote:
-> > > The specification is deliberately precise. It uses "may", not "shall"
-> > > or "must". We should not introduce speculative implications that brea=
-k
-> > > the spec's consistency on RV32. The safe and portable interpretation
-> > > is that software is explicitly allowed to use 32-bit accesses for
-> > > these registers on any system, which is exactly what this patch does.
-> >
-> > The RV32 argument is quite compelling. The RISC-V IOMMU is a
-> > platform-level IP that must serve both RV32 and RV64 software stacks.
-> > Mandating 64-bit MMIO accesses would directly conflict with RV32, where
-> > such accesses are impossible =E2=80=94 so any interpretation that turns=
- "may be
-> > accessed using either a 32-bit or a 64-bit access" into an implicit
-> > hardware requirement for 64-bit accesses breaks the spec's own
-> > consistency on RV32.
-> >
-> > The RFC 2119 argument is equally strong. In RFC 2119 terms, "MAY" means
-> > an item is truly optional =E2=80=94 a specification should express obli=
-gations
-> > through these well-defined normative keywords, not leave them to be
-> > inferred from everyday-language intuition. If the spec authors had
-> > intended to require hardware to support 64-bit accesses, they would hav=
-e
-> > said "must" or "shall".
-> >
-> > Given both points, treating 32-bit MMIO accesses as the default for the
-> > RISC-V IOMMU driver is the safe, portable, and more inclusive choice: i=
-t
-> > is explicitly permitted on every conformant implementation, whereas
-> > 64-bit access atomicity is left unspecified.
-> >
-> > Acked-by: Chen Pei <cp0613@linux.alibaba.com>
-> >
->
-> It seems that we might not need to worry about RV32. The
-> io-64-nonatomic-hi-lo.h header will automatically replace writeq/readq
-> with hi_lo_writeq/readq in RV32 build. Therefore, perhaps we can just
-> focus our discussion on RV64: whether the driver should use
-> readq/writeq to access 64-bit registers on RV64 systems.
+Hardware implementations report Scalable-Mode Page-walk Coherency Support
+via the SMPWCS field in the extended capability register. If the hardware
+does not support page-walk coherency, a clflush is required every time
+the page table entries (which are walked by the IOMMU hardware) are
+updated.
 
-The RV32 argument here concerns the interpretation of the
-specification, not the Linux implementation. Some people interpret the
-statement, =E2=80=9CRegisters that are 64-bit wide may be accessed using
-either a 32-bit or a 64-bit access,=E2=80=9D as imposing an obligation on
-every hardware implementation to support native 64-bit MMIO accesses.
-However, RV32 provides a direct counterexample that undermines the
-validity of this interpretation. The IOMMU is a platform-level
-component that may be controlled either by an RV32 MCU running an RTOS
-or by an RV64 processor running Linux. On an RV32 platform, software
-can access a 64-bit register only through multiple 32-bit
-transactions. How, then, can this sentence be interpreted as
-unconditionally requiring the hardware to support native 64-bit MMIO
-accesses?
+In the SVA case, page tables are managed by the CPU mm core, not by the
+IOMMU driver. Because the IOMMU driver has no way of knowing whether the
+CPU page table management code has ensured coherency via clflush, the
+driver must deny SVA if the hardware does not support coherent paging.
 
-Moreover, even if =E2=80=9Cmay=E2=80=9D is interpreted in the RFC 2119 sens=
-e, MAY does
-not impose a mandatory requirement. We should therefore avoid
-inferring hardware obligations from assumptions or implications that
-are not explicitly stated in the specification.
+Fixes: ff3dc6521f78 ("iommu/vt-d: Fix CPU and IOMMU SVM feature matching checks")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> Actually, in my previous IOMMU PMU series, I shared a similar view to Rob=
-in's:
-> "Revisiting the spec regarding the UNSPECIFIED 8-byte atomic access,
-> this might imply that the hardware itself will handle the split into
-> two 4-byte accesses and internally manage its own trigger logic.
-> Because of this, for RV64 systems, software might simply use standard
-> 8-byte writes (e.g., writeq). Delegating the access handling to the
-> hardware is likely the best way to maximize compatibility across all
-> vendor implementations."
-> More details: https://lists.infradead.org/pipermail/linux-riscv/2026-July=
-/094099.html
->
-> I also checked the GitHub discussions. The IOMMU spec author seems to
-> have clarified that the hardware should be able to handle naturally
-> aligned 64-bit accesses from the software.
-> More details: https://github.com/riscv-non-isa/riscv-iommu/issues/765
->
-> From my perspective, since the author has already clarified the
-> intent, it might be better for us to focus on improving and updating
-> the spec to make it clearer. This could be a better approach than
-> changing the driver to fit an unclear spec.
-> What does everyone think about this? If we all agree, I would be happy
-> to send a new version of the IOMMU PMU series using 64-bit accesses
-> again for RV64.
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 0636987f03c8..432e35723ce9 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -27,7 +27,7 @@
+ 
+ void intel_svm_check(struct intel_iommu *iommu)
+ {
+-	if (!pasid_supported(iommu))
++	if (!pasid_supported(iommu) || !ecap_smpwc(iommu->ecap))
+ 		return;
+ 
+ 	if (cpu_feature_enabled(X86_FEATURE_GBPAGES) &&
+-- 
+2.43.0
 
-This issue has already become highly contentious and directly affects
-real hardware implementations. Any attempt to revise the specification
-must first clarify whether the current wording actually mandates
-support for 64-bit MMIO accesses. If the specification is unclear on
-this point, then no such mandatory requirement can reasonably be
-imposed on existing hardware implementations.
-
---
-Best Regards
- Guo Ren
