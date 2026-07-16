@@ -1,39 +1,42 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BC6822301;
-	Thu, 16 Jul 2026 01:25:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA74F333442
+	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 01:32:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784165141; cv=none; b=r5ByWOTOsM7BptZgi24Wbqpjx/U5SRW2kv3WA70ZlsWWHIFgTzzDIJOs9TASM43nZy3rKA9+CJTn/RdmhOmOSeoDDpe2S3bvuW1KLkMQIXvMFqOPgTbJoEJrvxjUxvzqTYR1QyVMOyTCJ2tyGoUiMynQIdyvE5JsCT4dCoHlECs=
+	t=1784165574; cv=none; b=drhXWjuCgXbtY21iY+4IkR3fgujTcgjGAkvnd5G1s6QFWA3Sz3W+nir6snGzAGr4QjA1WTsNTPrYabu0O9itQ38cJS4Y50a3ZKsCTmjHEGDD18oDVxvS8H/Tm42VyidYko187TP2KWv2bAR7uMTsoA8jY01LoCvKtnz048a2giY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784165141; c=relaxed/simple;
-	bh=o+2Etr9Yn40LIkKBZoSSZGteKeHuGTa1bIsdLdlAubU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qR2cKmZdBlRazVfIG7SsV6JJynko+lUOwaCJhgenhHYyJYIJ7S0X4EpZKkU75FTP5pQjEFeRiI6ibj5He7LzXy+fUe5iKvk9laCWk7G2VcLiJ5TTVpCMWhWgtT6sWED5nX7YLqu1013OPOVS/b4KbmfjSeuMgfYcvBwayvh9evk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=KldsCUs0; arc=none smtp.client-ip=220.197.31.4
+	s=arc-20240116; t=1784165574; c=relaxed/simple;
+	bh=MoUiGA8lZFM8779lGKcGXkGFvzzd8jwTgTIQQe2JRXU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=K3Y9V9sl/3DUshbTVEWBA8Qwqbwl6yqaqveNc+qLhhiq/5vZlp/WDXeYYW/R3ER4HB40iV3L8WnQu5InVhRw9eQcqNlYGmNKh/5XluGFdiUpDRc45aFCA8hcw8kqK92j68Iacg8+Kw8OYwjXioofymGmSAsS3zToCbGRdpeeYjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=jMr03f2H; arc=none smtp.client-ip=220.197.31.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="KldsCUs0"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="jMr03f2H"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=o+
-	2Etr9Yn40LIkKBZoSSZGteKeHuGTa1bIsdLdlAubU=; b=KldsCUs0OuTei3TFM3
-	iX2b2lcrGHD5tLwLlSUCxcaUeh+fQ8dFv0idCwPnzCP3vkYEOozcOoZHnLDLSDTL
-	+rySnESCvWaE5/lCG/wlgexZoTvPXH5iiHKpyd6h+FVJFhD9DG+Reh8xUBvL9Cw7
-	xPyvcN0HkmPhcSKQfqd7n8eLo=
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=YT
+	9Try4G2bN+d1xevRCFOkvBPYlxDLC9/j5TFdr7Wi8=; b=jMr03f2HdWVKfBpDLk
+	bJgMdNXFq8oAuZicEUul+BOqtBWPkFIVkkezToMz1q7cEgl5Rzgv5TAT/MIRqW0A
+	QDKBVoFngvC+qi3wrnc7vj+iZiOP6t2PhGG7psxH9V/U5aoOsrey7To4UEz8Z4C+
+	8JYr8JKwsQW59zWeRt5Ql3bqg=
 Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
-	by gzga-smtp-mtada-g1-2 (Coremail) with SMTP id _____wD3V3r1MlhqRHIIJw--.18383S2;
-	Thu, 16 Jul 2026 09:25:10 +0800 (CST)
+	by gzga-smtp-mtada-g0-3 (Coremail) with SMTP id _____wDX6H+pNFhqb+8yJw--.4732S2;
+	Thu, 16 Jul 2026 09:32:25 +0800 (CST)
 From: Weimin Xiong <xiongwm2026@163.com>
-To: virtualization@lists.linux.dev
-Cc: iommu@lists.linux.dev,
-	jpb@kernel.org,
+To: robin.clark@oss.qualcomm.com,
 	joro@8bytes.org,
 	will@kernel.org,
 	robin.murphy@arm.com
-Subject: Re: [PATCH 1/2] iommu/virtio: Set driver data before enabling virtqueues
-Date: Thu, 16 Jul 2026 09:25:13 +0800
-Message-ID: <20260716012513.89178-1-xiongwm2026@163.com>
+Cc: linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Weimin Xiong <xiongwm2026@163.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] iommu/msm: unwind probe state on registration failure
+Date: Thu, 16 Jul 2026 09:32:29 +0800
+Message-ID: <20260716013229.91014-1-xiongwm2026@163.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -42,11 +45,73 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3V3r1MlhqRHIIJw--.18383S2
-X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUVXTmDUUUU
-X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbC8BZ6CmpYMvb6fAAA3m
+X-CM-TRANSID:_____wDX6H+pNFhqb+8yJw--.4732S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Zr45Kry5CrWkWFykuryDJrb_yoW8urWkpF
+	WUWFWYgrykK3WxGF47A3W7uF9Yk3yqya4rur4rG39F9r15ArW5Ar93tFW0qr15JrWkGF47
+	ta4fJrsYkF45Cr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U17KsUUUUU=
+X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbCzgrnd2pYNKq0WgAA3W
 
-Sorry for the noise. The two patches are duplicates of what I already
-sent earlier. Please ignore this series.
+msm_iommu_probe() adds its devm-managed IOMMU object to
+qcom_iommu_devices before adding the IOMMU sysfs device and registering
+it with the IOMMU core.
+
+If iommu_device_sysfs_add() fails, probe returns with the object still on
+qcom_iommu_devices. The driver core then releases the devm allocation,
+leaving a dangling list entry that later list walks may dereference.
+
+If iommu_device_register() fails, the same dangling list entry remains
+and the sysfs device is left registered as well.
+
+Unwind the sysfs device and global list entry in reverse setup order on
+the corresponding failure paths.
+
+Fixes: 42df43b36163 ("iommu/msm: Make use of iommu_device_register interface")
+Cc: stable@vger.kernel.org
+Signed-off-by: Weimin Xiong <xiongwm2026@163.com>
+---
+Changes in v2:
+- Resend the former patch 4/4 independently; patches 1-3 from v1 are
+  dropped.
+- Explain the dangling list entry and stale sysfs device consequences.
+- Add Fixes and stable tags.
+- No code changes.
+
+v1: https://lore.kernel.org/r/20260714060930.220277-5-xiongwm2026@163.com
+
+ drivers/iommu/msm_iommu.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 0ad5ff431..d0d926be7 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -784,19 +784,25 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 				     "msm-smmu.%pa", &ioaddr);
+ 	if (ret) {
+ 		pr_err("Could not add msm-smmu at %pa to sysfs\n", &ioaddr);
+-		return ret;
++		goto err_remove_list;
+ 	}
+ 
+ 	ret = iommu_device_register(&iommu->iommu, &msm_iommu_ops, &pdev->dev);
+ 	if (ret) {
+ 		pr_err("Could not register msm-smmu at %pa\n", &ioaddr);
+-		return ret;
++		goto err_remove_sysfs;
+ 	}
+ 
+ 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
+ 		iommu->base, iommu->irq, iommu->ncb);
+ 
+ 	return ret;
++
++err_remove_sysfs:
++	iommu_device_sysfs_remove(&iommu->iommu);
++err_remove_list:
++	list_del(&iommu->dev_node);
++	return ret;
+ }
+ 
+ static const struct of_device_id msm_iommu_dt_match[] = {
 
