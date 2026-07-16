@@ -1,155 +1,288 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013069.outbound.protection.outlook.com [40.107.201.69])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C34E4329E6C
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 15:18:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784215135; cv=fail; b=iYNPO/r2FcqBovCWfeoPG9zRQkhKn5oH8qFxGLeuTviQqcYyOubpARrvElopcQmCCWqiR41dze1zY/BvdRF3OzGhqImk+l8h3nxoUkvAimiWVQ+6fVzKmzl983HKCo7HAtCnyF2HNBqEsXmzSRQ/xV3AOT4eCkAbPFBcefaKKFg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784215135; c=relaxed/simple;
-	bh=pmpPI07MDN4xgipSR+CFFFlaIM5YWSQWsm1yzre5g5s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=VV87NNiPC55bulOSYvbSLqCVkhWSVhkJzuFmXcphXG3kGq6Wk0Na04q7C7h9+h61xVodDlh7sImpRgWiI/6ZVPuP8y9aEb5075+CL4aLEPxS01Xd6HOrU82DxAK0FQqrmZntIi61Zzaihdx1LxzgeJaTkr1AW/x8b7yki32nxdI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Kwj4lKCz; arc=fail smtp.client-ip=40.107.201.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E385D329E7E;
+	Thu, 16 Jul 2026 15:22:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784215339; cv=none; b=V1JvYbPlcn8mLPqXfTBBB+rdmp+g5LxOWj7VryoDVegC2H3SiAVQ1/D+lUYdnaXFO3Ht5RsC3ZCBC5Kn0re71OneGlFQMtamKaGLpELEn+b7T9BsA9HHqxJOIEuVQcntmdBuqh0NhrE7X2ax8RaKabFY+MSVsvhJd8lTAR5EsB0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784215339; c=relaxed/simple;
+	bh=rxpuCNuKpyTBiIKuxYfszGMJHS6b0plXNAx2ALfLmhg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lobKjzxDpltL3ftPO+/8Kg/PhD+xCW12Fd/yBypuST0ZqvyCoPZxyk9wfcBwEwqcc0Rg3b4pSOx9qRfAIzyGIf7E9KlVon4WXkG9yVWNID4vQb/AQXCjFoPksWNsH9AdIY4p4nQoBKHvoXOEuT/naW7UAP/OPdZwYZ2Cz7MVmLg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MhItb7t5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Kwj4lKCz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UqzoSfaJBStZslUZsOeLsmf+gqcMS5u6YxCfqdhr9Kx7dVlX00hMjZJtTyTnzcsF4wyRaC2sbDw0huBbv9osutTukDElAJCdSZ/Fdq93H9SBAQKr8OJAel2f8esgEC9FvemBeLsE14w7/qtNuW9YpKywwmVh7u7aOZw2oWelkiZnQFUyx74Op8UzlgwYv7k9SSDH4VyieOJNVqgu+9O5VlXo2XeNueUrl+fkGpXF/YpNCz6CO7Gz8+LxrscYo1S/MZsc66U4P/Rk3Te0z4eoVx6Q4kcC0XFZ6M9q4pI6xbte6mJR3NDtYGlLQKPIsRuyexjYeJCrCC5/Qhe+zusMAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XokQrfMF6zAUhbROxE+ZUpCq7eoabTlLvVf2YrOd0BI=;
- b=JyaGKna4qOxm4KojgQz3f8KrQsHS4hYkib98Y+A+Pm55yV6EO8vR8ckUktijRjPi4pFZi29YTSn5WZe4Npt6KjxtmSXKGbsSm4ikXYw1OvnF+Z3qdNk5TO4OTi+N4w4XYYaVP8qTibiQM2LAcHMTsbA4aqlIkwnykVF/irMoTTWSfhJmFz3fDkStmEXqzJ+H9eBAl2QVXZrm0y2EuzyssMOWoW082tbdd1aOixj1h1sP7edEmEv2b6/e6qWkyUnM+D7KDmAinTBlaWtNJPvnBb9Rrn7GjJuyGQkNchn5o3PycBeD/gV1SzFv7aXnCgT51qucxXpJUe18dXO3qto15w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XokQrfMF6zAUhbROxE+ZUpCq7eoabTlLvVf2YrOd0BI=;
- b=Kwj4lKCzaZTsWYmv0QOJodWyImMVWl4zksyL/LO9Gh2j+bnFr1nArWQC3mVEkzY8g7EHq0YOOuJy5zxieI4UfIX2SzAOxGtIsqxZ0ZRGHWXgoO6aD9q6IPNt2Ej/rMkXdYdDDAt7UNKRwhXNrzC1eMvb4Uudn4aP7Xre33T3YaN0T6x02dAfN9kO7iPiqZ9DheJFjygfSre/CiqYg7qFiDQxgXyLsc54VW5ujetOIpcDdd2mMYveEYDuR6CouBb0zsW4Wcjgn8FNST+nBZSZmZQu8D6lDGqMA8DPLhEItHNawTtB7vWzUB6WUv8cj87fwjWGTJj8SUBqxsHa2zooVQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DM6PR12MB4316.namprd12.prod.outlook.com (2603:10b6:5:21a::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.12; Thu, 16 Jul
- 2026 15:18:46 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0202.014; Thu, 16 Jul 2026
- 15:18:46 +0000
-Date: Thu, 16 Jul 2026 12:18:45 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Pranjal Shrivastava <praan@google.com>
-Subject: Re: [PATCH v4 0/6] iommufd: Iterate the cache invalidation array in
- the core
-Message-ID: <20260716151845.GO3775915@nvidia.com>
-References: <cover.1784054606.git.nicolinc@nvidia.com>
- <20260715201521.GL3775915@nvidia.com>
- <alft3llhZ79t17j8@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alft3llhZ79t17j8@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0421.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::6) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MhItb7t5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FB81F000E9;
+	Thu, 16 Jul 2026 15:22:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784215337;
+	bh=9iUKaKWQgUmhoByo8PPUUf8IwOUE3JnNHfIAyoMta5w=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=MhItb7t5ytZUlRsU1B0Bk/pzL+kLJfVLF6hJZHugPO4vEngLOFShgLkBy/n1TDXIA
+	 g3DCLjmgWeIMhcCrnZDrYeVh15CoaJkgIurVoX/7Ndo4WFvwiPdBsCI3kFYEqh/Uia
+	 AW6egms8Hv2+ShjUIBdIlEqqE8XCMI+i6sWcZxUQ2F7LUStZf6VS0goN+HF3ZrnFjv
+	 KdZ7ZpMBP1f1MaT1ZUC4eBJwAiKmIXWgxG+2KDB6u0kA6Q5Zp+eEczO2IX7LF3Ip2x
+	 SqMIe+3nvJwy6/gpWEFiicWbPp4qM0Pm7tPHhRZB0+cNw8v6QrWUUAjWtsMX7KtBOk
+	 /LtacDoJduqww==
+Message-ID: <73d3c545-dd8a-4131-9826-1a7096dd619a@kernel.org>
+Date: Thu, 16 Jul 2026 17:22:06 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM6PR12MB4316:EE_
-X-MS-Office365-Filtering-Correlation-Id: dc3bdced-687f-412c-db78-08dee34d879c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|7416014|11063799006|4143699003|56012099006|10067099003|18002099003|3023799007|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	mjfTRxba0WRAM54CyAlcm6G9Vu6Lip+/jbhcL6P+ymRqsLa0nYLWJXEfZj36ZVkFESCiPiRU4SxNdnfaE2VNII3O6f0EhR29D9y3NUQR6k69EFcn7JStCyz7GMwO7VDFBVpnBWji7OVnXeJYiK8IvCOmPB5eRJ5NtEX/5xn+n5Z6nlxOMjw0Ljix2F+LlLDw8K3J6T1xcW2bADs9pRf5me4vmUOyCjAmrQ2wkeIEM4fJ1XGy0cqYQSP/aGqZsHzFAS23fBCPRZ2+NDv2x4zVLVh9JAMtkHCUDac6Mu8dxlugQNw5RZStIv3yPvZE8gudO6pvuNrxCG+g+QV4ZKifcRC0aTdDaFeU1VzG7AbwMGwi1KJJI0uQVRL98XjkWZXbL8ThtpsjEKHSfSRv6hZUhwQxGZ2Qyb3WCvWat8c3tLOelkaoDyS8Z38EcfM3krD1wb980IJLLQnsa4duv2jm7Ji/DnGHBIaKy0VjwVnWyezC5pek8nswmVfL8nRYnhDqgGv+/kaIsyMKR/nmGgUS+QpAXZEo0FE821+27yZBzN3fQZ+BxM+TbLLpYI9f1U7Ihb4fzdrQqqOTyCmo9A+rAhYRMnrThHFB/p3FvD79s27zMX4tLUtR/26u/0gSD3cKYIlCmtm1igG4eV2LKuHNJbuDh5gC2+dthwy0V0+x2eo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(7416014)(11063799006)(4143699003)(56012099006)(10067099003)(18002099003)(3023799007)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?g6KQ4g/aEke3greBEqmoD4JDmaoNX9SH/VvH31Eb2GmXLl6lCbgcyElMqsk/?=
- =?us-ascii?Q?vDwAGvOD6o9ZEofomZxt2f1P4By/sfKLjo9qZAoQ29dyVLE2s0HwQ99dbBTq?=
- =?us-ascii?Q?yb9oPvgEMfK9KwZDtCVIWvQD6JPwLJ7nSeIdKbAsVn0NujSXiEG5v5Ll9+ha?=
- =?us-ascii?Q?Zc3xkOaAw9DJN7Xu3tminrV6UPw1knxvw/1TAXVZXjUiD9uaMi5zEeAf2ZAA?=
- =?us-ascii?Q?OIwnourOR4XDOIZ6T7NhiYtQfIRvaYOP2/raSuktYjRMLsPNsMA8yA8mSuyb?=
- =?us-ascii?Q?DKM6FIha83DyPYg9AIz48ClF7jjrwILbQCrl4Zscb+Z64YPKJTi5jDUmF6Ax?=
- =?us-ascii?Q?MQlTuUN8uzYpKozjhmZYQmvAHFpHXQRF3zJc96K/j29KUmynFWejaEfCkkcu?=
- =?us-ascii?Q?cixn5m6R5osTB3Co87TDhDEpTWrSZOqklw+fsoRdva75+SwQy5p3y+rMUab9?=
- =?us-ascii?Q?NX1dhwrpYZczhlZF4bpwTwp8wDMBiDcfNX88FLf1xZxE9yTH72L40tHb23+A?=
- =?us-ascii?Q?P+1JkRjyhjjpA4eGlPcdd0l7z4emQfFDg5NRbmVoolG7kjZAOKfXwXp0rFUc?=
- =?us-ascii?Q?hnMAOXYBARZyqz4vDXPwzccVmtrGdUvlHXr9/ZF+YUCKd52JentR1W23i//2?=
- =?us-ascii?Q?XhDuylFmxcmbOqP1d+CWF5sAK1a1jd7p4EscnCQhMCTNTqFnK5mvSlt4erBg?=
- =?us-ascii?Q?/JGRWr1EXbNsDXhJgryXiyzVs3pNrmaBq8yYrhB7RqZoN0xlmCobDj7LXysu?=
- =?us-ascii?Q?qqvYhVKIKgNpWflgInIq2QoKnpiObDAvv97HqqYKpKpWWQX89kKefGdCA0Cz?=
- =?us-ascii?Q?FPQfEyNcEvpotfSMAdeyoDSCOkG0181BTtUrXeJIofJkPUH+Vns1tWqwzfJR?=
- =?us-ascii?Q?aQPnz3VdLeUo8lz1FLUD2ivx/KX4Jjza+1pttIaTX4k4ZEDz2PHcVoXvOZ9N?=
- =?us-ascii?Q?h+Rxn7Vj4ieXYEVgPWImAAa3sNcVLXiG9Ys03HQu1KuNGHYUg6tBIsNMdxJK?=
- =?us-ascii?Q?GFPic3KvPES/ZyAaXxyVdrZ8BviCaVp6KKNsibbsesC6zkv6JCLblvlIFs9D?=
- =?us-ascii?Q?0w6l5k/LtdYjQkeSgpbCyrK57YTMHwFFavKJ1BSpNfe8KQzvGYnuMddMi+D7?=
- =?us-ascii?Q?71buMPvP0qvOUt928Kbo4XIcyxUWAgOnLgj845fA6WBWK1Tz2NZtkPjM2Uli?=
- =?us-ascii?Q?XyEXspQYVAU4oTWE+X5gt9XDF94rlpYCTF5BVgC0dudwv9hvHpvfD4zOPN1v?=
- =?us-ascii?Q?GXJMSA1jKAI667eeYqkwsNmpUjraB/jQ7qdYRA4WPC1imT6RYRGAWcuXWsNy?=
- =?us-ascii?Q?Nf+NHbMyTwmuCYzfoNp53dcLKCY+pHOK28waB+LpOe3zOBq+gD4S+m94/4go?=
- =?us-ascii?Q?6dR392qOrYJavsoz7jXQiZOzFB25SAAMFaL2N3rzJfkpnGhbc2adq+mEN8lE?=
- =?us-ascii?Q?PHZ1hbxvgz2SpbuP+PPmwZwkUDJpCyD0gDnWPo70YTC2A3uzYo1WwFxj9zON?=
- =?us-ascii?Q?BuMRg6ArsNYrSr7ez8zRk8qtGexYwk7GaF/hjI+FZNdnoYUlDRBwPd1RgbXB?=
- =?us-ascii?Q?Dhi//hX0dE8x+a4sg3lN4oZlrCK70buYUfk62p2JEMasgdxtBWOegUe0FOLt?=
- =?us-ascii?Q?mrnvOB2QX2Kiod6q5gIpoMmL1e3Iusm2HEHjkHPbC9lcepUN1DOtnSXR4S0f?=
- =?us-ascii?Q?NueLiCm5U2lXVX4iPYkgibgtnTRuEPqe5zIEBUZq86WiPxNl?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dc3bdced-687f-412c-db78-08dee34d879c
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2026 15:18:46.2314
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: as5QRYlpyFVYGmPA6U9RQvyayvWRTlvfiZmzVPIQORHUUhjLdPQQ3zPLtNELwoaj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4316
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] mm: move internal mempolicy APIs to new internal
+ header
+Content-Language: en-US
+To: Brendan Jackman <jackmanb@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ "Liam R. Howlett" <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>,
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
+ "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+ Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
+ Gregory Price <gourry@gourry.net>, Ying Huang
+ <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
+ Hugh Dickins <hughd@google.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, Chris Li <chrisl@kernel.org>,
+ Kairui Song <kasong@tencent.com>, Kemeng Shi <shikemeng@huaweicloud.com>,
+ Nhat Pham <nphamcs@gmail.com>, Baoquan He <baoquan.he@linux.dev>,
+ Barry Song <baohua@kernel.org>, Youngjun Park <youngjun.park@lge.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Huacai Chen <chenhuacai@kernel.org>,
+ WANG Xuerui <kernel@xen0n.name>, Thomas Gleixner <tglx@kernel.org>,
+ Chuck Lever <cel@kernel.org>, Jeff Layton <jlayton@kernel.org>,
+ NeilBrown <neil@brown.name>, Olga Kornievskaia <okorniev@redhat.com>,
+ Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
+ Trond Myklebust <trondmy@kernel.org>, Anna Schumaker <anna@kernel.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev,
+ loongarch@lists.linux.dev, linux-nfs@vger.kernel.org, netdev@vger.kernel.org
+References: <20260716-folio-alloc-cleanups-v1-0-5363b8e92d33@google.com>
+ <20260716-folio-alloc-cleanups-v1-1-5363b8e92d33@google.com>
+From: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+Autocrypt: addr=vbabka@kernel.org; keydata=
+ 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
+In-Reply-To: <20260716-folio-alloc-cleanups-v1-1-5363b8e92d33@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jul 15, 2026 at 01:30:22PM -0700, Nicolin Chen wrote:
-> On Wed, Jul 15, 2026 at 05:15:21PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Jul 14, 2026 at 11:48:46AM -0700, Nicolin Chen wrote:
-> > > Nicolin Chen (6):
-> > >   iommu/arm-smmu-v3: Support IDR5.DS and widen the TLBI SCALE field
-> > >   iommu/arm-smmu-v3-iommufd: Reject unsupported bits in invalidation
-> > >     commands
-> > >   iommufd: Iterate the cache invalidation array in the core
-> > >   iommufd/selftest: Convert cache invalidation mocks to the core array
-> > >     loop
-> > >   iommu/arm-smmu-v3-iommufd: Convert cache invalidation to the core
-> > >     array loop
-> > >   iommu/vt-d: Convert nested cache invalidation to the core array loop
-> > 
-> > I was tempted to take this through the iommufd tree, but Will, I think
-> > the first two ought to go to -stable through iommu ?
-> > 
-> > If you do that then maybe I'll pick up the rest
+On 7/16/26 16:30, Brendan Jackman wrote:
+> There are no external users for this surface, reduce the scope.
 > 
-> PATCH-5 touches arm-smmu-v3-iommufd. Merging via the iommufd tree
-> will conflict with the PATCH-2 in Ashish's series (via iommu):
-> https://lore.kernel.org/all/20260714104202.1664187-1-amhetre@nvidia.com/
+> Ulterior motive: a later patch will add an alloc_flags arg to some parts
+> of this.
 > 
-> Maybe it needs a shared branch; and then, Ashish can rebase?
+> Note it might seem like this could just go in internal.h, since it's
+> pretty small, but actually it will eventually need to import
+> page_alloc.h, we don't want to import that from internal.h so best to
+> proactively created this header now.
 
-Urk this is a pain. I think Ashish's errata fix should go first so it
-is easier to backport.
+Hmm, maybe it could just go to page_alloc.h then? After all this is just
+bunch of internal page allocation functions, which just take the mempolicy
+pointer?
 
-Jason
+> Signed-off-by: Brendan Jackman <jackmanb@google.com>
+> ---
+>  MAINTAINERS         |  1 +
+>  include/linux/gfp.h |  9 ---------
+>  mm/filemap.c        |  2 ++
+>  mm/mempolicy.c      |  1 +
+>  mm/mempolicy.h      | 31 +++++++++++++++++++++++++++++++
+>  mm/shmem.c          |  1 +
+>  mm/swap_state.c     |  1 +
+>  7 files changed, 37 insertions(+), 9 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 8813d5d7eb0c1..9cde99c259639 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -17068,6 +17068,7 @@ F:	include/uapi/linux/mempolicy.h
+>  F:	include/linux/migrate.h
+>  F:	include/linux/migrate_mode.h
+>  F:	mm/mempolicy.c
+> +F:	mm/mempolicy.h
+>  F:	mm/migrate.c
+>  F:	mm/migrate_device.c
+>  
+> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> index 872bc53f32ec8..e4e974a6e5f90 100644
+> --- a/include/linux/gfp.h
+> +++ b/include/linux/gfp.h
+> @@ -11,7 +11,6 @@
+>  #include <linux/sched.h>
+>  
+>  struct vm_area_struct;
+> -struct mempolicy;
+>  
+>  /* Helper macro to avoid gfp flags if they are the default one */
+>  #define __default_gfp(a,b,...) b
+> @@ -274,8 +273,6 @@ struct page *alloc_pages_node_noprof(int nid, gfp_t gfp_mask, unsigned int order
+>  #ifdef CONFIG_NUMA
+>  struct page *alloc_pages_noprof(gfp_t gfp, unsigned int order);
+>  struct folio *folio_alloc_noprof(gfp_t gfp, unsigned int order);
+> -struct folio *folio_alloc_mpol_noprof(gfp_t gfp, unsigned int order,
+> -		struct mempolicy *mpol, pgoff_t ilx, int nid);
+>  struct folio *vma_alloc_folio_noprof(gfp_t gfp, int order, struct vm_area_struct *vma,
+>  		unsigned long addr);
+>  #else
+> @@ -287,11 +284,6 @@ static inline struct folio *folio_alloc_noprof(gfp_t gfp, unsigned int order)
+>  {
+>  	return __folio_alloc_node_noprof(gfp, order, numa_node_id());
+>  }
+> -static inline struct folio *folio_alloc_mpol_noprof(gfp_t gfp, unsigned int order,
+> -		struct mempolicy *mpol, pgoff_t ilx, int nid)
+> -{
+> -	return folio_alloc_noprof(gfp, order);
+> -}
+>  static inline struct folio *vma_alloc_folio_noprof(gfp_t gfp, int order,
+>  		struct vm_area_struct *vma, unsigned long addr)
+>  {
+> @@ -301,7 +293,6 @@ static inline struct folio *vma_alloc_folio_noprof(gfp_t gfp, int order,
+>  
+>  #define alloc_pages(...)			alloc_hooks(alloc_pages_noprof(__VA_ARGS__))
+>  #define folio_alloc(...)			alloc_hooks(folio_alloc_noprof(__VA_ARGS__))
+> -#define folio_alloc_mpol(...)			alloc_hooks(folio_alloc_mpol_noprof(__VA_ARGS__))
+>  #define vma_alloc_folio(...)			alloc_hooks(vma_alloc_folio_noprof(__VA_ARGS__))
+>  
+>  #define alloc_page(gfp_mask) alloc_pages(gfp_mask, 0)
+> diff --git a/mm/filemap.c b/mm/filemap.c
+> index 1dbb4c6f824e9..0dd8e2a15d746 100644
+> --- a/mm/filemap.c
+> +++ b/mm/filemap.c
+> @@ -52,6 +52,7 @@
+>  
+>  #include <asm/tlbflush.h>
+>  #include "internal.h"
+> +#include "mempolicy.h"
+>  
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/filemap.h>
+> @@ -63,6 +64,7 @@
+>  
+>  #include <asm/mman.h>
+>  
+> +#include "mempolicy.h"
+>  #include "swap.h"
+>  
+>  /*
+> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+> index 5720f7f54d942..31c4e9f49b5e9 100644
+> --- a/mm/mempolicy.c
+> +++ b/mm/mempolicy.c
+> @@ -119,6 +119,7 @@
+>  #include <linux/memory.h>
+>  
+>  #include "internal.h"
+> +#include "mempolicy.h"
+>  #include "page_alloc.h"
+>  
+>  /* Internal flags */
+> diff --git a/mm/mempolicy.h b/mm/mempolicy.h
+> new file mode 100644
+> index 0000000000000..d80fe4c559786
+> --- /dev/null
+> +++ b/mm/mempolicy.h
+> @@ -0,0 +1,31 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*
+> + * mm-internal API for mempolicy.c. Public API lives in
+> + * include/linux/mempolicy.h.
+> + */
+> +#ifndef __MM_MEMPOLICY_H
+> +#define __MM_MEMPOLICY_H
+> +
+> +#include <linux/gfp.h>
+> +#include <linux/mempolicy.h>
+> +
+> +#ifdef CONFIG_NUMA
+> +struct folio *folio_alloc_mpol_noprof(gfp_t gfp, unsigned int order,
+> +		struct mempolicy *mpol, pgoff_t ilx, int nid);
+> +#else
+> +static inline struct folio *folio_alloc_mpol_noprof(gfp_t gfp, unsigned int order,
+> +		struct mempolicy *mpol, pgoff_t ilx, int nid)
+> +{
+> +	return folio_alloc_noprof(gfp, order);
+> +}
+> +#endif
+> +
+> +#define folio_alloc_mpol(...)			alloc_hooks(folio_alloc_mpol_noprof(__VA_ARGS__))
+> +
+> +unsigned long alloc_pages_bulk_mempolicy_noprof(gfp_t gfp,
+> +				unsigned long nr_pages,
+> +				struct page **page_array);
+> +#define  alloc_pages_bulk_mempolicy(...)				\
+> +	alloc_hooks(alloc_pages_bulk_mempolicy_noprof(__VA_ARGS__))
+> +
+> +#endif /* __MM_MEMPOLICY_H */
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index 5071177059a96..69f561332bb93 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -41,6 +41,7 @@
+>  #include <linux/swapfile.h>
+>  #include <linux/iversion.h>
+>  #include <linux/unicode.h>
+> +#include "mempolicy.h"
+>  #include "swap.h"
+>  
+>  static struct vfsmount *shm_mnt __ro_after_init;
+> diff --git a/mm/swap_state.c b/mm/swap_state.c
+> index 5be825911e645..8ccd03c39a407 100644
+> --- a/mm/swap_state.c
+> +++ b/mm/swap_state.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/shmem_fs.h>
+>  #include <linux/sysctl.h>
+>  #include "internal.h"
+> +#include "mempolicy.h"
+>  #include "swap_table.h"
+>  #include "swap.h"
+>  
+> 
+
