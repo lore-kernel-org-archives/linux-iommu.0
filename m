@@ -1,37 +1,37 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEE76318146;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEF643191CE;
 	Thu, 16 Jul 2026 15:17:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784215034; cv=none; b=ihTznV+xOleXpSS1S9NPnwAziSEzUpEiSDMSRbTRjeynkB5uo5uWlFVRspgVRQshxLQkWm1RLIYWrXAL3ck5+9kJpMt1JbD+RarnIkjjJuKNW7b9ZlkXJlX9i8qtaSwvWIiyouaw6IT9XciVxHtyaV4D5632+roXII2SBhNkcX4=
+	t=1784215036; cv=none; b=cJqdnnbTsZhzyXENvOelZQY6jhRncflCIbiS6+u3KBDgiiqPh/x3GkZH1c0b+bRr3gmUOek/oMEqu6xaLt3xH9tqetWkWvDYFWE3KVRN3KhOW/su3Ny1wCRNKvTlYEhv3bjD/m7+cAxMStHXhjTBX0529Cfesjan/RxROqIfYWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784215034; c=relaxed/simple;
-	bh=TjhqJy+5Ugidr1xvDMqCN+u7PFOVsr4vq7Ut2lOoUg4=;
+	s=arc-20240116; t=1784215036; c=relaxed/simple;
+	bh=WXbAlKnSzuKzSG5uA2tXLu0mvst5mEQG51/R0yyEOsg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TXdOck/oIP6yb0+SyHxCl7q0qUqW3Ty/AEqAbIMXvUURCO6kz6DcAEHEzkpGYIfpnykm57N6HC7PpTWPIPBfkSM2RW9fdwRVNJJriJedM7IfoWPSxepy6IVkRNaGC7FimUr6vVxZ1j/TIzE4Udv8aF5cbAx1NKUMrBWjzlov6m0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=HS++1uoM; arc=none smtp.client-ip=90.155.50.34
+	 MIME-Version; b=FHiVU97lUr+M7ZgEHoI03M71OEJJmCLaDTccd9lR3pGrnNlcoqFCX9YwIpeDGgob9ISSHlKJmCzmElasYjbiujdB5hEZyTgtCI98LwMS9PrcSojRmCCvU+tFr27xPcjP6lcHGyXhKGyxpp6xUsrDswGATwQ41bTTHXTLMLghBVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=AjCpaaG8; arc=none smtp.client-ip=90.155.50.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="HS++1uoM"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AjCpaaG8"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
 	Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=GTHIrhHvcUG8/tD5uBJopZ/Rj0rXLsmqhUefdkxikN0=; b=HS++1uoM7E5qtarYIMUkV/1EuE
-	tl9Rn8Dh3nZj8UiZoEQYvnIxAW4vlOyP5bN9Xaq4l9l6B5TZKpk+f6U/tJS0XvyNNwrQ7BimdbFZd
-	GpwE2LNTMVCABQTuw9hE0UVDRTUR8zhyIEgmAf762qUsBKPAKeMtn3egkZKfoXN2GX8HnnJ4azGov
-	e2UIsT2XO7WhtFbLFfYtuWrFYdkD2j9/YA1mf4oy79KP14B9+B7H1LEurDTpvRaWcQkwQIBcS0rEl
-	I9jUBFM1VKjH9V27/PwBGFb/LBx+mHVBxBLsF4g6uUxL+OD831WL6ju4RMtQmYFaztp8G7xwrVqdW
-	yfYM7LqQ==;
+	bh=I36zes5J1OBHNIkYSgvnduT5T8HFGBEcGRVQg15PSEI=; b=AjCpaaG8ZlH7o1ACCuMzTe9dB5
+	lzoHB4aavR1XoMNcl5eqOw+QFWK0zLi3QRYgd4RWD9tgSp4nkMreUuAfO0evEwJKed1RNjEY82QWK
+	IxrA8+H6Tks+qEqRt+BWS5Geb6SX2veRS/pn7G+jswM4oCkVUclO8D2bzQpRQyZsr9/pmOrMgiSnH
+	aCnooDMoHAXOcsQReou4P2Bv94UHtd0NI3dGPHfRMOsBXMkxZn7uYXGZRBw6CoC77K0AAQ2akDOFL
+	wLTBVeTzH990/256HpHQZlIJHvl73faz1uia6lZXfm9KgidBNxgAXwbZRRBNRRf68zq0kOn5FvZsJ
+	IloqYmJQ==;
 Received: from [2001:8b0:10b:1::425] (helo=i7.infradead.org)
 	by casper.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wkNpj-00000002l0F-1dP3;
+	id 1wkNpj-00000002l0G-2ZXB;
 	Thu, 16 Jul 2026 15:17:07 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wkNpj-000000012sq-04E5;
+	id 1wkNpj-000000012t6-1JXK;
 	Thu, 16 Jul 2026 16:17:07 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: Sean Christopherson <seanjc@google.com>,
@@ -72,12 +72,12 @@ Cc: linux-kernel@vger.kernel.org,
 	graf@amazon.de,
 	fgriffo@amazon.co.uk,
 	David Woodhouse <dwmw@amazon.co.uk>
-Subject: [RFC PATCH 01/11] KVM: selftests: sev_smoke_test: Only run VM types the host offers
-Date: Thu, 16 Jul 2026 10:31:21 +0100
-Message-ID: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
+Subject: [RFC PATCH 05/11] iommufd: Look up private-interconnect phys via exporter symbols
+Date: Thu, 16 Jul 2026 10:31:25 +0100
+Message-ID: <23bae967aa2bf38b7696c5cbcdf003cf43e98358.1784194290.git.dwmw@amazon.co.uk>
 X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260716151706.244987-1-dwmw2@infradead.org>
-References: <20260716151706.244987-1-dwmw2@infradead.org>
+In-Reply-To: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
+References: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,43 +90,63 @@ X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.
 
 From: David Woodhouse <dwmw@amazon.co.uk>
 
-sev_smoke_test ran the plain SEV subtest unconditionally, gated only on
-the X86_FEATURE_SEV CPUID bit, while gating SEV-ES and SNP on the
-KVM_CAP_VM_TYPES bits.  CPUID reporting SEV does not mean KVM offers the
-SEV VM type: when all SEV ASIDs are assigned to SEV-SNP, KVM_X86_SEV_VM
-is unavailable even though X86_FEATURE_SEV is set.  On such a host the
-test aborts in KVM_CREATE_VM instead of exercising the available modes.
+The dma-buf phys-map dispatch used by iommufd's IOMMU_IOAS_MAP_FILE path
+currently knows only about the VFIO PCI exporter (looked up via
+symbol_get(vfio_pci_dma_buf_iommufd_map)).  Widen the dispatch so
+additional exporters can advertise the same well-known symbol name
+convention and have their dma-bufs mapped without an explicit iommufd
+dependency in each exporter's module.
 
-Gate the SEV subtest on KVM_CAP_VM_TYPES like the others, so the test
-runs the VM types the host actually offers.
+For now the dispatch tries the sample guest_memfd provider's exporter
+first, then falls back to VFIO PCI, both via symbol_get.  This mirrors
+the pattern the in-tree comment already flags:
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+	"iommufd and vfio have a circular dependency.  Future work for a
+	 phys based private interconnect will remove this."
+
+The eventual formal negotiated dma_buf_ops op that returns phys plus a
+memory-type descriptor will subsume both of these lookups.  The next
+patch plumbs the memory type through iommufd; a follow-up will convert
+the symbol lookups to the negotiated op.
+
+Based on a proof-of-concept by Connor Williamson <connordw@amazon.com>
+
+Signed-off-by: David Woodhouse (Kiro) <dwmw@amazon.co.uk>
 ---
- tools/testing/selftests/kvm/x86/sev_smoke_test.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iommu/iommufd/pages.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/x86/sev_smoke_test.c b/tools/testing/selftests/kvm/x86/sev_smoke_test.c
-index 6b2cbe2a90b7..bf27b6187afa 100644
---- a/tools/testing/selftests/kvm/x86/sev_smoke_test.c
-+++ b/tools/testing/selftests/kvm/x86/sev_smoke_test.c
-@@ -247,7 +247,14 @@ int main(int argc, char *argv[])
- {
- 	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SEV));
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 03c8379bbc34..2d4ea41460fd 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -1470,6 +1470,26 @@ sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+ 	if (rc != -EOPNOTSUPP)
+ 		return rc;
  
--	test_sev_smoke(guest_sev_code, KVM_X86_SEV_VM, 0);
 +	/*
-+	 * Only exercise VM types the host actually offers.  CPUID reporting
-+	 * SEV does not guarantee KVM offers the SEV VM type: when all SEV
-+	 * ASIDs are assigned to SEV-SNP, KVM_X86_SEV_VM is unavailable even
-+	 * though X86_FEATURE_SEV is set.  Gate every type on KVM_CAP_VM_TYPES.
++	 * Prototype: try the sample gmem provider's dma-buf exporter.  This
++	 * mirrors the vfio-pci private-interconnect hook, and (like it) is
++	 * meant to be replaced by a formal negotiated exporter op returning
++	 * phys for iommufd.
 +	 */
-+	if (kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM))
-+		test_sev_smoke(guest_sev_code, KVM_X86_SEV_VM, 0);
++	{
++		extern int gmem_provider_dma_buf_iommufd_map(
++			struct dma_buf_attachment *, struct phys_vec *);
++		typeof(&gmem_provider_dma_buf_iommufd_map) gfn;
++
++		gfn = symbol_get(gmem_provider_dma_buf_iommufd_map);
++		if (gfn) {
++			rc = gfn(attachment, phys);
++			symbol_put(gmem_provider_dma_buf_iommufd_map);
++			if (rc != -EOPNOTSUPP)
++				return rc;
++		}
++	}
++
+ 	if (!IS_ENABLED(CONFIG_VFIO_PCI_DMABUF))
+ 		return -EOPNOTSUPP;
  
- 	if (kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_ES_VM))
- 		test_sev_smoke(guest_sev_es_code, KVM_X86_SEV_ES_VM, SEV_POLICY_ES);
-
-base-commit: 0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
 -- 
 2.54.0
 
