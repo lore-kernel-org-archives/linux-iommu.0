@@ -1,94 +1,105 @@
-Received: from mail-10698.protonmail.ch (mail-10698.protonmail.ch [79.135.106.98])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98CB83CB2CF
-	for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 21:20:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C46AE329391;
+	Thu, 16 Jul 2026 01:22:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784150440; cv=none; b=QQkafGhpwMDIQBZmVQTv+Xn0UNlW4v/Eynf7WSFVdkYsUC5kWUSp/AiyyZLpft85I+n572ABeHMVSy0wMSN4djRDitoaJRqD4DNydDgC1YB0GIsvwtast/WKYHxZJ44xNkDgxP7hJxnmJTLzqweHSttXfK0BodwUA3SNctijLy8=
+	t=1784164948; cv=none; b=jYoy6Aq3Q/99YJrYGk6jetnHeu/K40PzGEGJitEHeoqi3CJoI91EZwrTTksGaBpuZd/3sp3OZo+s9qSgDGoP7KdwBNoo92ECeKz6vUCdvzZ830v+UwI4x319bpF0GACbW7APBHFDpJh1RTE7StnXk6I/aIaFC9nLLkQq9ua8J7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784150440; c=relaxed/simple;
-	bh=JF5L/01d+U8TRMfJr4PhJNK5TqgM6rTRPXGecgTdUnI=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IL3qgMYdGxxrJtFl0ZQYt1eNW1htWXzaCgi91kPxsUl/iRoKyICs/Vw7c89tIXqr1IjTu8Y10FJESySsqq8bTvlanXMgf8nQQnTBvqG6QslrkLZ464781bhqoNznOhE5DXNZmM4geGKxVuh8ATztwDpL2c8nhkyLPm1z81RmlfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=eLfH487C; arc=none smtp.client-ip=79.135.106.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1784164948; c=relaxed/simple;
+	bh=U4zm0NbUyWOtwjIaogLD31LYoHgMaECzne8hEE3A+FI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=F/a73s4815lMJs6AOfNyTMGilVJy57ZitCPRvvBH9vQkXi3ZGUHQF7ulHI4QZUj2e9M7S84zU8+paqVDxUrGyyHltBh1OJxc6LoWwOao2Yx98PT/J+ozavuBzgKcMMgE0uMqptiBK0t2svduVtNv2uVPQHXCBk7m63YEYjgwI+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=FfuFh/JL; arc=none smtp.client-ip=117.135.210.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="eLfH487C"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1784150430; x=1784409630;
-	bh=H/ZH1jIZHpyF6Chr6IwVrkgx+DUg//7CYU1Mql7/Q+g=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=eLfH487CKb7X4ejAlG4rJcMZcoOHh9r1rFJs9nZFNSgD8d7kk5+xT3GVL3LDkyRO/
-	 YZYf7pnVXDhVT1tiCSh1G7C/FTK30aKkrW8I062/W6Df0u43YG4CHrL9+6AMfP3Yuc
-	 rpgDGLouMXPyjZo+k5xeyC3O8AyL0PV3IsCVe0m2uk4WE35BXBNSYqyvGIuDNSA+WV
-	 lUGBWpLPM2eGHZC+kN7XFe/STG5ZCGZ696pxRHolGN7hgqqQwQ0YE5T5rnbNc+/ruc
-	 bns7IVPeLdB+AEgKSZD8N55HoHDwHXw4xETnmHKpCRRYJOz31Qft7F84SdUU0MBvS9
-	 MRF5y8bQFKGpw==
-Date: Wed, 15 Jul 2026 21:20:23 +0000
-To: "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-From: 70sp <70sp@protonmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "regressions@leemhuis.info" <regressions@leemhuis.info>
-Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or a98db518dde2
-Message-ID: <X7nc9tQqVxmuR76GYNJnMRkqUTwNVlXTWpH0wGvJeiAHlcLaibPZHRN037p0359GpdmopB_wI2tF2x6EqZF4oY9J697tcTGYwfYMK96FcUs=@protonmail.com>
-In-Reply-To: <82662a17-f9e2-46dd-9881-792412c1dc50@linux.intel.com>
-References: <z7Rkts0EsooZcnCjNfJaK6ursftFU8ubOkH0hcNjzxugEAwGsHLMblOdfoAx-gJzBZ-TMmeUtD7iWBngbFY5UCJCwdSmYqmCVMy-yhbirUk=@protonmail.com> <56ce85d5-e0b9-407c-9a86-708111a8a509@linux.intel.com> <C4BK-Bp_FII0EkxSHQxBS2wO-Age-UxFrp_KfmYzb8cnQ8ZndzBBIPD8S9T86wOifBP0tysQGCFtGQsBsBvG2IzIMw3jb3NF5HGbS3tsawA=@protonmail.com> <d6a7f70c-5a8a-4be6-abdd-5b3decbb602a@linux.intel.com> <7ec374cb-9a0a-4e30-8410-3a028e46cacd@linux.intel.com> <5bVscg7a2_H1PPW3HmVtrYv_Xwtti2hzjD065W4OdwsD9rC2gw7sGVEg-2U596VZn8O2LAEfhWeZklRk63ymqNW9220R6R_jjif7BaWol9o=@protonmail.com> <82662a17-f9e2-46dd-9881-792412c1dc50@linux.intel.com>
-Feedback-ID: 144929603:user:proton
-X-Pm-Message-ID: d0f33c660aa3b72aef5ea1abbea21fda3d488817
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="FfuFh/JL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=T5
+	cE0KN11dI/E52Yvv7eqo+cESpCYIhwJSXgrjLqYyQ=; b=FfuFh/JLduTN1T1iKh
+	rJX2mmrhwk1+Dw3Sq1Nv1tpTMMn9s02RjbwYs1Sufendp3+eceipqpg1FkEVc76y
+	5XajCMiB3/Fhi/2F+oBxVrQ4ku+kALmo0jyFms8e0V2RojPC7M8wdtQnCm2EadOH
+	p0t01pHje6LvfciuGcR+XE2wo=
+Received: from xwm-TianYi510Pro-14IMB.. (unknown [])
+	by gzsmtp4 (Coremail) with SMTP id PygvCgCHriIxMlhqnYbvHQ--.48099S2;
+	Thu, 16 Jul 2026 09:21:54 +0800 (CST)
+From: Weimin Xiong <xiongwm2026@163.com>
+To: virtualization@lists.linux.dev
+Cc: iommu@lists.linux.dev,
+	jpb@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/virtio: Set driver data before enabling virtqueues
+Date: Thu, 16 Jul 2026 09:21:56 +0800
+Message-ID: <20260716012157.88769-1-xiongwm2026@163.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:PygvCgCHriIxMlhqnYbvHQ--.48099S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tFyDur1rWF13CFW3XrWxCrg_yoW8Ww43pF
+	4DCas8GrWjqFyfGa43Jw4UZFWYvwsava4IgFW5Xan5Wr1Ykr90yFy2yFyUtw1xArWkGa1a
+	va48X3ZFyFn8uFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j_EfOUUUUU=
+X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbCzRJJ2GpYMjJbiwAA3s
 
-Hello,
+From: Xiong Weimin <xiongweimin@kylinos.cn>
 
-this regression thread became abandoned unfortunately.
+The event virtqueue callback retrieves the driver state through
+vq->vdev->priv. viommu_probe() currently initializes that pointer only
+after virtio_device_ready() and after the event queue is populated.
 
-In case there's anybody who would like to help me (or generally) solve this=
- regression, I am sending all information about what I've found out.
+Store the driver data before creating the virtqueues so callbacks always
+see initialized driver state once the device is made ready. Clear the
+pointer again on probe failure.
 
-I had a private conversation with Lu Baolu regarding this issue and we foun=
-d out several new facts about this. I am currently working on creating and =
-testing my own patches to add backward compatibility for hardware affecting=
- this issue with my limited knowledge of C and IOMMU.
+Signed-off-by: Xiong Weimin <xiongweimin@kylinos.cn>
+---
+ drivers/iommu/virtio-iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-This issue consists of improper GPU passthrough into VM on a specific platf=
-orm (Haswell) or a specific GPU (NVIDIA Maxwell - GTX 970). I personally be=
-lieve (could be incorrect), that it is caused by the GPU being too old and =
-becoming unsupported by referenced commits. The GPU doesn't seem to be usin=
-g all levels of PTE properly and some data need to be trimmed for proper pa=
-ssthrough but the patches seem to remove (or alter) the trimming functional=
-ity.
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 9118377d7..4c91a82d2 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -1173,11 +1173,12 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	ida_init(&viommu->domain_ids);
+ 	viommu->dev = dev;
+ 	viommu->vdev = vdev;
++	vdev->priv = viommu;
+ 	INIT_LIST_HEAD(&viommu->requests);
+ 
+ 	ret = viommu_init_vqs(viommu);
+ 	if (ret)
+-		return ret;
++		goto err_clear_priv;
+ 
+ 	virtio_cread_le(vdev, struct virtio_iommu_config, page_size_mask,
+ 			&viommu->pgsize_bitmap);
+@@ -1238,8 +1239,6 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	if (ret)
+ 		goto err_free_vqs;
+ 
+-	vdev->priv = viommu;
+-
+ 	ret = iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
+ 	if (ret)
+ 		goto err_remove_sysfs;
+@@ -1254,6 +1253,7 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	iommu_device_sysfs_remove(&viommu->iommu);
+ err_free_vqs:
+ 	vdev->config->del_vqs(vdev);
++err_clear_priv:
+ 	vdev->priv = NULL;
+ 
+ 	return ret;
+-- 
+2.43.0
 
-The issue is caused by one of these commits:
-a98db518dde246e01ead53617dc0a30d6aaa3752
-c376a3456d8bef43ec556a98c0a04c35086c2737
-
-The IOMMU code changed a lot since these commits were merged.
-
-With IOMMU DebugFS enabled these messages appear in dmesg on affected kerne=
-ls:
-[  107.365019] DMAR: DRHD: handling fault status reg 3
-[  107.365021] DMAR: [DMA Read NO_PASID] Request device [01:00.0] fault add=
-r 0x37fff1000 [fault reason 0x0c] non-zero reserved fields in PTE
-[  107.365023] DMAR: Dump dmar1 table entries for IOVA 0x37fff1000
-[  107.365024] DMAR: root entry: 0x00000004034fc001
-[  107.365025] DMAR: context entry: hi 0x0000000000000202, low 0x000000008b=
-da5001
-[  107.365026] DMAR: pte level: 4, pte value: 0x00000000846ce403
-[  107.365027] DMAR: pte level: 3, pte value: 0x00000003c0000883
-
-I would be grateful for any useful information or help so I can finally for=
-get about this and freely use newer kernels. I also know that there are sev=
-eral other people experiencing this issue, and I would be happy if we solve=
-d this for everybody affected.
-
-Thanks to everybody,
-70sp
