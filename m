@@ -1,143 +1,241 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F117938F65C
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 14:52:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DED5814ABE;
+	Thu, 16 Jul 2026 15:17:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784213575; cv=none; b=LxrXeDQhr8v3lpvLCeV6lHWkVE7xEo8WtcxZAa9+lRpitCUJGfn42yspxuJMuMqr9EU1w3Afp2oy+7e8Z9WLNSRzB/ClQ6NPHqa9qCTXO6OnmYxHmR0H1rDuZgd4mQsYENUJKXJ31pQikt9ivbXu1nogurICXqe73cdkaZnsNRM=
+	t=1784215034; cv=none; b=mQshv7XW24+9T2zuPXsgpIKAXOXJIYl3DHP0dpmNPDFfi4M06SnVPyAOUtP6zBzWuPcJw5Zo/1N8SQMEr0VI/Kh+qwEfFkG9g7/W8wZvRlNl9EDJjlgzqYL74iXpD1UZ0BvRz2Wy37K3SiasjBGwwcCI38qWR2zNo5BT43CxOgQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784213575; c=relaxed/simple;
-	bh=Kt8BJTiDI+f7OuSjZH0CFB0i0A4B8tJakd1pImozOd4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bVuUA87Zfu2jFI82lZnLmnEAA2oH9k2Fpw/yEestg6MrNzMVA3MM5b9trR1HKGFrgD/6yvh9RDUs8b2ETmHBoHS76Wa57A0W2ckvswwMPFOiYr2eaVZ8OAi0qcLjezjcEm7Jt/mkhiaHKr9UA8NN5CSIdGMUowt20TO9hpV5jgU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fd33zY9+; arc=none smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1784215034; c=relaxed/simple;
+	bh=1j6qktNxJNvvQOXlRbjiHTlJ2AZTm5in0SjIZpIrZYw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hIhr/BEy4Pi0Uxq5wYtYt6W3fVBbVnOyMZ+WpGBI7gTI5+rWegNqiBt9DpG9QpoZG6aCOPKZ0F7cIHk6uyRfDDSO5ng7f36AYCyxnrTryoGXbVQhvSM+0YDuaXfnZAhI+9KIZye9EkEfxdnjggNo6GcAVB2pya9d03nTm759Rvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=S2CfLZpb; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fd33zY9+"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-51c05dcdf49so72956951cf.0
-        for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 07:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1784213573; x=1784818373; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=M86Ir7wes1y7r8ERYu4z2fhecNCYpHaDZuovfA+lIDI=;
-        b=fd33zY9+Qs7CAdcEII5iSAMKpFhJVOkSL2vKe7n6wTo6XZpTdEMwBSUOV+EjPkg0l3
-         rIEzoRac/6nfrp7xFODPAk6Gw6MkD+8VBGtqvqE6ZYwu4TWsDWi9alPq1YKqisaLHsd3
-         DAsl1gFPbbtklwWTNEUe8vubJwWrGC91Ze2B0Af5J6T21I1O6xY2sA6LI7qm27ksiDe5
-         Llt+qcl5J5gD5Q1tf5pENNenAiWOgH/6cBzl8Oeq2Jn1X5b88x9O9Inr4FH/zY1Hd/Wh
-         X7nblgJl7z3z/B7GwhZQqJAnK03EBUfVfItRPrVQRNWL+JuIZ+0ACFOizd60e1wT1X6w
-         LNEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784213573; x=1784818373;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=M86Ir7wes1y7r8ERYu4z2fhecNCYpHaDZuovfA+lIDI=;
-        b=OQjZ3m0gJcmtTFGdzj/A4oG4p53q/AnfomNKef/LR5zgWSpMb9CpnepZGklNEeTbQg
-         fMsYOy7Ef+1NOICZmVg+dmd4RrJFpvOAnr6syjKBEQ+w0kfyAX2vRAX5qO9JhIcNaIra
-         xYCi4POgv2fTTtn8D6+HBbm5QhO24EQI1QTsQ2u19gMPl6a6BHUFF5ALBvR62MbIqBBC
-         +1iPRBtHsu5bW/qPuhhUyY239t9g9ni8BjE69woPg5870E4l9LEdpdfTXg4jAk+jEug2
-         UlnoVsM3HNVnMFBY1bfBY3JRDhSCSbkUy7odNEGBexIRa1N8nVLMJwVf0WBE66QDlLAI
-         /OWw==
-X-Forwarded-Encrypted: i=1; AHgh+RoKfOikl8z/+uobi8QiYHYCf+VNNNiUb/P4AVVe1/5sDRRUsFmlukSTqHXQNqrS5QSVBUcAww==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxXu+/rFJ5DaS2SPytMMuXCQJrOZPMDQfuCYHfs3Rr5Azc3AbbV
-	pAZEfgtuZNgo7upd1uoHJNoSsL9VykeT73Crk9q1fknPHMK00DaiPJgQIPQ9UYojHKo=
-X-Gm-Gg: AfdE7cmKYLRbUh7MmvbKvSI6VTPXI/Cf+cMdzC7KsP9ZViSUMeX/gxaeyX9gcY2sdc2
-	setIR8jfyp4H/wEwVtMCUk+Ygl40Gom5LcUBc8lfm3CouV+ercQmn6JmDm/3C0Q+fgfZsbkf/OP
-	9HR3BMIAo7oOU7Mt8WLQUaTyerXzLYMpkxUL5fTQ9t2vvvfIpBwr62y+CWPRO+rdv18fc7MnfbO
-	Sw+JY0ClgTNdipVOjLQ5ZRQXq8x3N9tlt93LSb5USdwgSHoJL1Mw7ivu6+pZ9TtpbKjOSkuNnKB
-	eHyEAyILgtDhcwgXVOcdAg4DlxxO5kUCNeegQEigSna/zT6BmGu4d7izyeRDylmh33MuBHqaW/A
-	XvTlcqkQ0G5ZF8jjuCheBxHY1/K9MiEt+F0pumntg9+whYvBTOw==
-X-Received: by 2002:a05:622a:1b88:b0:51c:1811:6eae with SMTP id d75a77b69052e-51e4f0a757dmr78823321cf.47.1784213572745;
-        Thu, 16 Jul 2026 07:52:52 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51ec9fef211sm28849141cf.0.2026.07.16.07.52.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2026 07:52:51 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wkNSF-00000002ZDm-0DPq;
-	Thu, 16 Jul 2026 11:52:51 -0300
-Date: Thu, 16 Jul 2026 11:52:51 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v7 16/22] dma-direct: make dma_direct_map_phys() honor
- DMA_ATTR_CC_SHARED
-Message-ID: <20260716145251.GE210048@ziepe.ca>
-References: <20260701054926.825925-1-aneesh.kumar@kernel.org>
- <20260701054926.825925-17-aneesh.kumar@kernel.org>
- <ak42F240d-53QeFN@arm.com>
- <yq5apl0xgy89.fsf@kernel.org>
- <9d83ec13-3b1e-4c1b-8bab-16ea057cfba0@amd.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="S2CfLZpb"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+	Reply-To:Content-Type:Content-ID:Content-Description;
+	bh=SAZ8/BhCMnGmySiPyEgDtcYdmMNZhlXkPyz2Lr2GfpU=; b=S2CfLZpbUOxQcVH235CtAPFqKy
+	+/KX3Ho76hCmOE45SOVu0AuEYQDT10HVStFLpeUPbGCNJUdYl5V9eBN2Lnpw8OEZrQlUmXz3XVI/l
+	xRHhrZ7UFrAiw38lCpD6Hj7HJWLWwHsgm9mG3/teoDKAj0LlnddfvjJ2dcP28i5myDOarinnZYO9P
+	INlGCXdTg6GfJOW8ncN3Dvyd0+M7Icz1Ld5Bteiz+y4jqR/b0leVgrbPTn3fNzOVHJ5laEvZsgE9G
+	kMjdMVQbpKEn6lYvG+3XDmufWJoSkSXlQxrtaeNsT04AzDsVHtSmDtaZ4phTRm9/sAP7LVWOI1bqC
+	Xks20TLg==;
+Received: from [2001:8b0:10b:1::425] (helo=i7.infradead.org)
+	by casper.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wkNpj-00000002l0J-2rOR;
+	Thu, 16 Jul 2026 15:17:08 +0000
+Received: from dwoodhou by i7.infradead.org with local (Exim 4.99.2 #2 (Red Hat Linux))
+	id 1wkNpj-000000012tA-1k9i;
+	Thu, 16 Jul 2026 16:17:07 +0100
+From: David Woodhouse <dwmw2@infradead.org>
+To: Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H . Peter Anvin" <hpa@zytor.com>,
+	x86@kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Tycho Andersen <tycho@kernel.org>,
+	Kees Cook <kees@kernel.org>,
+	Ashish Kalra <ashish.kalra@amd.com>,
+	Connor Williamson <connordw@amazon.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Zhou Yuhang <zhouyuhang@kylinos.cn>,
+	Zi Li <zi.li@linux.dev>,
+	Dan Williams <djbw@kernel.org>,
+	Eric Biggers <ebiggers@kernel.org>,
+	Colin Ian King <colin.i.king@gmail.com>,
+	connordw@amazon.co.uk,
+	graf@amazon.de,
+	fgriffo@amazon.co.uk,
+	David Woodhouse <dwmw@amazon.co.uk>
+Subject: [RFC PATCH 06/11] iommufd: Plumb dma-buf memory-type (RAM vs MMIO) through the phys map
+Date: Thu, 16 Jul 2026 10:31:26 +0100
+Message-ID: <a716d496ec095e1f71bb5fc8be3e2559bbe914cc.1784194290.git.dwmw@amazon.co.uk>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
+References: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9d83ec13-3b1e-4c1b-8bab-16ea057cfba0@amd.com>
+Content-Transfer-Encoding: 8bit
+Sender: David Woodhouse <dwmw2@infradead.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
-On Thu, Jul 16, 2026 at 11:55:20AM +1000, Alexey Kardashevskiy wrote:
-> > > For AMD/SME, on host with memory encryption we now end up setting the C
-> > > bit for DMA_ATTR_MMIO. This is fine for RAM but not sure whether
-> > > some other MMIO bus understands this attribute. Maybe we should stick to
-> > > something like __phys_to_dma() for the !CC_SHARED && MMIO path. Or,
-> > > since this is not universally defined, just use the old dma_addr = phys
-> > > if MMIO and ignore any unlikely DMA offsets.
-> > > 
-> > 
-> > Considering for AMD/SME system an unencrypted dma addr is one without C
-> > bit, will this be good?
-> 
-> Normally both encrypted and unencrypted DMA addresses do not have
-> Cbit, with the only exception of "iommu=pt" (which is not the
-> default afaik). And in this case, having Cbit in DMA handles only
-> makes sense if p2p trafic goes via the root port (== IOMMU in
-> passthrough mode, and I am not sure even about if the root port will
-> convert this Cbit to T=1 MMIO in this mode) but if it goes via some
-> PCI bridge - then Cbit won't mean encryption for sure. But I do not
-> know much about p2p (never touched). But in any case
-> force_dma_unencrypted() seems to make no sense here.
+From: David Woodhouse <dwmw@amazon.co.uk>
 
-True p2p through a switch does not call the DMA API at all, it
-directly stuffs the physical MMIO BAR address of the target into the
-dma_addr_t - which won't have a C bit.
+iommufd's dma-buf import path programmed the IOMMU unconditionally with
+BATCH_MMIO (IOMMU_MMIO set, IOMMU_CACHE cleared).  This is correct for
+the VFIO PCI dma-buf exporter -- its phys is PCI BAR (MMIO) memory --
+but it is the wrong prot for a dma-buf whose phys is RAM: on AMD-Vi the
+device DMA silently misroutes (Identify Controller against a
+gmem-provider-backed target completes with status=0 but the target
+region is not written).
 
-The DMA API is only involved if the p2p will transit through the root
-port, so adding the C bit is correct.
+Carry the exporter's memory type through to the fill routine:
 
-AFAICT it is iommu=!pt that doesn't work at all since the AMD IOMMU
-driver always does __sme_set() even for MMIO when forming the IOPTE,
-which I guess is wrong for MMIO.
+  - Add is_cpu_ram to iopt_pages_dmabuf and pfn_reader_dmabuf.
+  - Make sym_vfio_pci_dma_buf_iommufd_map() also fill *is_cpu_ram.
+    VFIO PCI's exporter is MMIO (false); the sample gmem provider's
+    exporter is CPU RAM (true).
+  - pfn_reader_fill_dmabuf() picks BATCH_CPU_MEMORY vs BATCH_MMIO based
+    on the captured kind.
 
-Jason
+The eventual formal negotiated exporter op should return phys and
+memory type together in one call, replacing both symbol_get() lookups.
+
+Signed-off-by: David Woodhouse (Kiro) <dwmw@amazon.co.uk>
+---
+ drivers/iommu/iommufd/io_pagetable.h |  7 ++++++
+ drivers/iommu/iommufd/pages.c        | 33 +++++++++++++++++++++++-----
+ 2 files changed, 34 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
+index 27e3e311d395..887ed94474c7 100644
+--- a/drivers/iommu/iommufd/io_pagetable.h
++++ b/drivers/iommu/iommufd/io_pagetable.h
+@@ -206,6 +206,13 @@ struct iopt_pages_dmabuf {
+ 	/* Always PAGE_SIZE aligned */
+ 	unsigned long start;
+ 	struct list_head tracker;
++	/*
++	 * true if the exporter's phys is CPU RAM (map with IOMMU_CACHE, no
++	 * IOMMU_MMIO); false for MMIO/BAR memory (map with IOMMU_MMIO).  Set
++	 * by the exporter dispatch at map time; consulted by
++	 * pfn_reader_fill_dmabuf() to pick BATCH_CPU_MEMORY vs BATCH_MMIO.
++	 */
++	bool is_cpu_ram;
+ };
+ 
+ /*
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 2d4ea41460fd..f9b2ae6d7e96 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -1080,6 +1080,7 @@ static int pfn_reader_user_update_pinned(struct pfn_reader_user *user,
+ struct pfn_reader_dmabuf {
+ 	struct phys_vec phys;
+ 	unsigned long start_offset;
++	bool is_cpu_ram;
+ };
+ 
+ static int pfn_reader_dmabuf_init(struct pfn_reader_dmabuf *dmabuf,
+@@ -1091,6 +1092,7 @@ static int pfn_reader_dmabuf_init(struct pfn_reader_dmabuf *dmabuf,
+ 
+ 	dmabuf->phys = pages->dmabuf.phys;
+ 	dmabuf->start_offset = pages->dmabuf.start;
++	dmabuf->is_cpu_ram = pages->dmabuf.is_cpu_ram;
+ 	return 0;
+ }
+ 
+@@ -1106,9 +1108,15 @@ static int pfn_reader_fill_dmabuf(struct pfn_reader_dmabuf *dmabuf,
+ 	 * always filled using page size aligned PFNs just like the other types.
+ 	 * If the dmabuf has been sliced on a sub page offset then the common
+ 	 * batch to domain code will adjust it before mapping to the domain.
++	 *
++	 * The exporter's memory type (CPU RAM vs MMIO/BAR) selects the batch
++	 * kind so downstream iommu_map sets IOMMU_CACHE for cache-coherent RAM
++	 * or IOMMU_MMIO for BAR memory.  The kind was captured at map time by
++	 * the exporter dispatch.
+ 	 */
+ 	batch_add_pfn_num(batch, PHYS_PFN(dmabuf->phys.paddr + start),
+-			  last_index - start_index + 1, BATCH_MMIO);
++			  last_index - start_index + 1,
++			  dmabuf->is_cpu_ram ? BATCH_CPU_MEMORY : BATCH_MMIO);
+ 	return 0;
+ }
+ 
+@@ -1459,22 +1467,31 @@ static const struct dma_buf_attach_ops iopt_dmabuf_attach_revoke_ops = {
+  * iommufd and vfio have a circular dependency. Future work for a phys
+  * based private interconnect will remove this.
+  */
++/*
++ * Look up the exporter's phys accessor for iommufd's private-interconnect
++ * path.  Also fills *is_cpu_ram: true if the exporter's memory is normal
++ * cache-coherent RAM (needs BATCH_CPU_MEMORY / IOMMU_CACHE), false for MMIO
++ * (needs BATCH_MMIO / IOMMU_MMIO).  This will be replaced by a formal
++ * exporter op that returns phys + memory type together.
++ */
+ static int
+ sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+-				 struct phys_vec *phys)
++				 struct phys_vec *phys, bool *is_cpu_ram)
+ {
+ 	typeof(&vfio_pci_dma_buf_iommufd_map) fn;
+ 	int rc;
+ 
+ 	rc = iommufd_test_dma_buf_iommufd_map(attachment, phys);
+-	if (rc != -EOPNOTSUPP)
++	if (rc != -EOPNOTSUPP) {
++		*is_cpu_ram = false;	/* test hook mimics VFIO MMIO */
+ 		return rc;
++	}
+ 
+ 	/*
+ 	 * Prototype: try the sample gmem provider's dma-buf exporter.  This
+ 	 * mirrors the vfio-pci private-interconnect hook, and (like it) is
+ 	 * meant to be replaced by a formal negotiated exporter op returning
+-	 * phys for iommufd.
++	 * phys + memory type.  The provider serves RAM, so mark it CPU_RAM.
+ 	 */
+ 	{
+ 		extern int gmem_provider_dma_buf_iommufd_map(
+@@ -1485,8 +1502,10 @@ sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+ 		if (gfn) {
+ 			rc = gfn(attachment, phys);
+ 			symbol_put(gmem_provider_dma_buf_iommufd_map);
+-			if (rc != -EOPNOTSUPP)
++			if (rc != -EOPNOTSUPP) {
++				*is_cpu_ram = true;
+ 				return rc;
++			}
+ 		}
+ 	}
+ 
+@@ -1498,6 +1517,7 @@ sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+ 		return -EOPNOTSUPP;
+ 	rc = fn(attachment, phys);
+ 	symbol_put(vfio_pci_dma_buf_iommufd_map);
++	*is_cpu_ram = false;	/* VFIO PCI dma-buf carries BAR (MMIO) memory */
+ 	return rc;
+ }
+ 
+@@ -1526,7 +1546,8 @@ static int iopt_map_dmabuf(struct iommufd_ctx *ictx, struct iopt_pages *pages,
+ 	if (rc)
+ 		goto err_detach;
+ 
+-	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
++	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys,
++					      &pages->dmabuf.is_cpu_ram);
+ 	if (rc)
+ 		goto err_unpin;
+ 
+-- 
+2.54.0
+
