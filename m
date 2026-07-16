@@ -1,148 +1,153 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EACED3B6C19
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 09:42:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF5F38F251;
+	Thu, 16 Jul 2026 09:42:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784194968; cv=none; b=ifvuDron/VDzpNm+HWPn81LfS1mXiXEOKQWBT4mSGQWfef9zs34M3Zf5RoEu9zHcDDPeKz6kcULnM6k7+cq8tOZG4bJx77HbRtuz/tVh1qiNhjEEEmKR8zvj4tgmhlhCEn0IvADeNRZMYAcp9EFWCV3wYo7fywQN3goazwueXg4=
+	t=1784194969; cv=none; b=Zq6HEtkhD2Pard9c8YlfwdZUUrk7pSgENmX5cUoHYgB6y3Sw/dqHlPvsogy9HghTb8Gik3p+MK8Fh/zVQEYkhcdV/oqK/WoEKk2rOuNTHayfaYf4Pz2KivGO1kEsvzlZ4S5wn7KcEiAMtysA+RvLAWvUqXxcyGe/T745w7bU4Pw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784194968; c=relaxed/simple;
-	bh=5HkbT5VTjQEbCphRnfj+qtVR3I6tfp3ysrSh9PXdd8g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FIWIKM4Z39pW02PHd3D66Af8GgOu4AONvM0qlOii93pTqmBtGp66XQXFSoz5aaPH+jJdSaQJkEr5bmncrathufHWrzuThYBfffFynzj83rzzi29yZmvhhTs35OJHsQJmjyG7cFatMaM4tH8RGmo5gNKW+7G9ER4n5xZBmSv71mU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HaDXCFgl; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NCFj3A1K; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1784194969; c=relaxed/simple;
+	bh=7JChzyPx9x6gEu4NPAGqzUtqrZl0/gc9rPBKKPo6c0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pikebJY1M7825xM1/ct9qS3fuYT9I8l6m7HyyiCqn6hseC3Fcv1dDL7pzQaOyQUS7qr/pFk0LYK8Ro9wMAHIkRLJILrQslxQZb+JQW2Et/6OIayoKUtEigZ4GPhUnlqRjloD0EzgtFBVMlUpSm3Nsr6BccZnzN8CuhKUy07nasc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UbqoaKug; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HaDXCFgl";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NCFj3A1K"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66G7XOjQ2175862
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 09:42:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	HzsM35EiZJ/yzPPIs0XjKw5tRsijyewrzXg6CrcCnPo=; b=HaDXCFglMZs0ti8S
-	pzu3gBUeeawMCDZsYTLiTxpDkYKE9KNf+CRRt9U1jbC8Fb/hQYixA8KGO7puSrsS
-	7ljMkbD2umyqmI97nEHvFoMZZ4wdLNRNQ0DtSqg/lZWVq8TYBp0FweIWkAmeCSNC
-	tjLLDpCvEKHKaCfNFRSlStd/xTDo0kfdu9B+TGGSCq1/tNXthCMFKlIziL22xBHs
-	quYjWGBaIyx9hqWsE6lJq+2lAv8P86Y81cojjd1XLeG2U0XqOUBDtgZ6PuXOeRpD
-	b766iclZDEZkSd6cjegBOWvS/Pv+AIbD7X41mO+NV+elMXqkA6iyNGXDTWXDqvar
-	C9OlzA==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4feu108fse-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 09:42:45 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-9309b0f05fcso30539785a.1
-        for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 02:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784194965; x=1784799765; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HzsM35EiZJ/yzPPIs0XjKw5tRsijyewrzXg6CrcCnPo=;
-        b=NCFj3A1KTjeInJwMY6KM+5PbA2aiZBUq8pxgjee9wNkNER8e/TvnCm1A170cjgKaBi
-         M81dyQlupZ12kUTw2YDigq7qPD5q/Ao3d0OTk9YOmJchOOSrTi6ji/2ySkzS6dLlbcJJ
-         gcglEYITPwRMidzOYfGe0zM4cGoDckhQOB8giyuqcpErlg23jERaHCIhNa6BZAE/DQN2
-         YH3zvuneMKqAuYpJc3r15YLRenJ6dPpzDWATE16bDLgiRuYQYu5Sqi+7NWVo/isbAeRj
-         OcKLHy3nchD393WzBJ/RRjhPzw1BlZxz9qFftm3eR/k0hgTbci6NJduOriU6dqqXrHK+
-         gDqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784194965; x=1784799765;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HzsM35EiZJ/yzPPIs0XjKw5tRsijyewrzXg6CrcCnPo=;
-        b=rgwPbxqpblgx9B+xfF+ClCigwPMB1+c54xLCmW+KOjUaAEVmBKpqEmhk+u7sL3Iixg
-         KPUEmnYMaWS9x30WMDBNG3+OMV70fY4dJFRhNPf34fbLWJoUhQZV46WlEXBghxCdLfot
-         fIU2ykw84P9u/b5ZqFSTzPK9pp8Dnyn/FXaunPpkZvl3/P4/R/YLpmAqlxyJT2GTi2B4
-         xJg7uP6cBOMMPwrnFkYOODUgxGDmKP+gSqKe9jkJc3g6stMwH7CH9TlTMqYpSVezRndG
-         Ia18MeFr12inrl/nOV6jioyP5cqDOx5eAmcXgPl3NPRyjgjBUaHxfmIAt3pRHCjqAlPk
-         Qz7Q==
-X-Forwarded-Encrypted: i=1; AHgh+Rrs337SeZwVmOmTX38lO94F7MOYAlrC8ZRbodnLz1253zxGpbRW5ZGb59kkmSrcZ47m0HL1iA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxkExaVj+ixpBt8LTvHJaCgkyNWNHPuAhfuMOqRBB4cMAMSZoH7
-	KUB55C1NxxPDHKSZb9T8ur0XoMPyFtB0GKTkyjbOtoZ1EiozmYmCSzhI3gaP2j2j496gYX/QB0U
-	btTpQlPXZeO8vt0qXryMvZEViP2Y0R47fhN9ZhgVOP2Ccis/YB8UH7ATjs4fPtZ8fFw==
-X-Gm-Gg: AfdE7cmydMtB7DnRCA+UeanylpuPzMjntLeR+nbjD2VU/uPcQDtsCxNLC/J0ed/Kdyr
-	Flo8mF2cEzQoCTFm/1Q+xbzM6YAwjB4Iug6F3GN/VSCAwnegXiXkmMqWNnpMR+60xXfyDPLVB8i
-	VN4BPOwYS3qDJNXaEEFCHnZPPCLEKtp3/Qab0QXwsNLrkpAGskfF0QGzbHbqi/gPO+hVKqChiwm
-	KaQ+C+3F58DcfkUfcyRRtsFhWOO6t1fm5QVA/kINRjxCHY8lkEAMcrkDKBNlIIdCxVNEk+uj5tZ
-	mfaAaOij/4LQ0VBOJTUPE9nG0YKA/CJfOA5hA+Fd3NPat6wgOHcRM2pBLGn2sU6izZALbtkdbsQ
-	sRXEyvLumDwq0d6bwretlIrX2
-X-Received: by 2002:a05:620a:318f:b0:92e:705f:1626 with SMTP id af79cd13be357-92ef2c65077mr1810282185a.6.1784194965155;
-        Thu, 16 Jul 2026 02:42:45 -0700 (PDT)
-X-Received: by 2002:a05:620a:318f:b0:92e:705f:1626 with SMTP id af79cd13be357-92ef2c65077mr1810281085a.6.1784194964806;
-        Thu, 16 Jul 2026 02:42:44 -0700 (PDT)
-Received: from [192.168.120.193] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c16871264basm176210666b.7.2026.07.16.02.42.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jul 2026 02:42:44 -0700 (PDT)
-Message-ID: <6caf8ca0-8be5-4935-9766-10d21c71ac37@oss.qualcomm.com>
-Date: Thu, 16 Jul 2026 11:42:41 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UbqoaKug"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C67341F00A3F;
+	Thu, 16 Jul 2026 09:42:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784194967;
+	bh=7JChzyPx9x6gEu4NPAGqzUtqrZl0/gc9rPBKKPo6c0U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=UbqoaKugtwtE/wDtLrJxAq1xy+ElsA1g+mbgtfCD/5OvxdjKHTTRYZ5WnYQZMraZA
+	 s/qXgxaWfSdXO9TYDTQ8V5c+CSQtCmeQD1D3DJ+8BVJcY5zY7RJ0RmJmCm0eZZ1Apv
+	 mQiBmOU1yyDPMd/S9GbJ27QKXbDCGyLzgmvbEndiHmIeJHb5Th7QoviGbQ1X2ltPxu
+	 Pb+9DafqsJAKJhM6IR5VnRB4i5dJiGSaPoRzgh+2Ozrm6HeSwUnJy+qkFvAA2fn4xT
+	 h+X+MW8bHAp8Adnk1lscXc7/h92BcL1poIw+CmARj5GUyYNB21u2bjEtTKBp1jHtrH
+	 eJYCIO11YTewg==
+Date: Thu, 16 Jul 2026 10:42:12 +0100
+From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+To: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	David Hildenbrand <david@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, Rik van Riel <riel@surriel.com>, Harry Yoo <harry@kernel.org>, 
+	Jann Horn <jannh@google.com>, Lance Yang <lance.yang@linux.dev>, 
+	Pedro Falcato <pfalcato@suse.de>, Russell King <linux@armlinux.org.uk>, 
+	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+	Dan Williams <djbw@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
+	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Oleg Nesterov <oleg@redhat.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
+	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, Zi Yan <ziy@nvidia.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <npache@redhat.com>, 
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+	Miaohe Lin <linmiaohe@huawei.com>, Naoya Horiguchi <nao.horiguchi@gmail.com>, 
+	Xu Xin <xu.xin16@zte.com.cn>, Chengming Zhou <chengming.zhou@linux.dev>, 
+	SJ Park <sj@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>, Byungchul Park <byungchul@sk.com>, 
+	Gregory Price <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, 
+	Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>, 
+	Kees Cook <kees@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
+	Alexander Potapenko <glider@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Jarkko Sakkinen <jarkko@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	Thomas Gleixner <tglx@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>, Lucas Stach <l.stach@pengutronix.de>, 
+	Christian Gmeiner <christian.gmeiner@gmail.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Patrik Jakobsson <patrik.r.jakobsson@gmail.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
+	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, 
+	Thierry Reding <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Christian Koenig <christian.koenig@amd.com>, 
+	Huang Rui <ray.huang@amd.com>, Matthew Auld <matthew.auld@intel.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>, 
+	Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, 
+	linux-perf-users@vger.kernel.org, linux-trace-kernel@vger.kernel.org, damon@lists.linux.dev, 
+	iommu@lists.linux.dev, kasan-dev@googlegroups.com, linux-sgx@vger.kernel.org, 
+	etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org, kvm@vger.kernel.org, 
+	Russell King <linux+etnaviv@armlinux.org.uk>
+Subject: Re: [PATCH v2 30/33] mm/vma: correct incorrect vma.h inclusion
+Message-ID: <alimfeUEoGdnEd9W@lucifer>
+References: <20260710-b4-pre-scalable-cow-v2-0-2a5aa403d977@kernel.org>
+ <20260710-b4-pre-scalable-cow-v2-30-2a5aa403d977@kernel.org>
+ <a273faf8-452d-499a-90e1-b3c9dc2395d0@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iommu/msm: Fix dangling list entry on probe failure
-To: Weimin Xiong <xiongwm2026@163.com>
-Cc: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>, robin.clark@oss.qualcomm.com,
-        joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20260716013229.91014-1-xiongwm2026@163.com>
- <20260716085313.207069-1-xiongwm2026@163.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260716085313.207069-1-xiongwm2026@163.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: AD1HvxC0t5wjU78aWFG99BrL5hXC9na3
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE2MDA5OSBTYWx0ZWRfX0xwb1eErs9I7
- KyRNJikM8qCJIm2HPr3fgCJXIOL22eUv/jl2WO3VCT0Xd1OiPfaY2+uosstxMYka0IgzkxroeD+
- zDWt540uYCFkFKwfeJ9/OVgIwdBrVtkunTBaflsULwWEahZKh9ylSSKafBy4ZVHdjkq6sBwDM4c
- CYf9fHxkNf/JWeNYkFWMT+S2ASIsFwiJbz1a20VEKAg4Uj0UtCyT+mkQ0HaM/er961uuZVduZz+
- ETTKmkpEKz/Nd3iK0KwxUjeVbz5loNSxwVdcoXRXuu/+Lwosdpv9iV0Ec4cB/Vbani2vqERQ9kA
- BcHTvKh7o0hU6o8INr3qFAySAuTPn4t3dKLVw86gy/11sGI/faqdEP5hlZlWvvb7+HK9ZULMT78
- zymrhQyXYd9dkyAE5mtmrkaHcJVTpwxbIGZNatTbcITybkMSRL8w+G2drn7B2Z+psLlZlb9ZRdc
- iaO7LEg1WL1pTlg/Dzw==
-X-Proofpoint-GUID: AD1HvxC0t5wjU78aWFG99BrL5hXC9na3
-X-Authority-Analysis: v=2.4 cv=BPODalQG c=1 sm=1 tr=0 ts=6a58a795 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=n3OY92c7DukLRWByAxYA:9 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE2MDA5OSBTYWx0ZWRfX9E5mSvJWHkSM
- 1PNb80FFIaqWvGzglBxZx19pTj9huP4FxJRd59mMA1k6EfI3tpAxisuAkV+opNW8rqv9FaDTvXv
- PfMSeLkkdczR9oc5xfTpCImSfgWTIPo=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-16_03,2026-07-15_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 suspectscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
- priorityscore=1501 phishscore=0 bulkscore=0 spamscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607160099
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a273faf8-452d-499a-90e1-b3c9dc2395d0@kernel.org>
 
-On 7/16/26 10:53 AM, Weimin Xiong wrote:
-> Move the list_add() call to the end of msm_iommu_probe() instead of
-> adding cleanup paths, which avoids the dangling list entry problem
-> entirely (suggested by Mukesh Ojha).
-> 
-> This approach simplifies the code by ensuring the iommu device is
-> never added to the global list until after all potential failure
-> points have passed.
-> 
-> Changes in v3:
-> - Move list_add() to the end instead of adding cleanup labels
->   (suggested by Mukesh Ojha)
+On Thu, Jul 16, 2026 at 10:38:00AM +0200, Vlastimil Babka (SUSE) wrote:
+> On 7/10/26 22:17, Lorenzo Stoakes wrote:
+> > The only files which should be including vma.h are the implementation files
+> > for the core VMA logic - vma.c, vma_init.c, and vma_exec.c.
+> >
+> > This is in order to allow for userland testing of core VMA logic. In this
+> > cases, vma_internal.h and vma.h are included, providing both the
+> > dependencies upon which the core VMA logic requires and its declarations.
+> >
+> > Userland testable VMA logic is achieved by having separate vma_internal.h
+> > implementations for userland and kernel.
+> >
+> > Callers other than the core VMA implementation should include internal.h
+> > instead. This header does not need to include vma_internal.h as it only
+> > contains the vma.h declarations, for which the includes already present
+> > suffice.
+> >
+> > Update code to reflect this, update comments to reflect the fact there are
+> > 3 VMA implementation files and document things more clearly.
+> >
+> > While we're here, slightly improve the language of the comment describing
+> > vma_exec.c.
+> >
+> > No functional change intended.
+> >
+> > Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> > Reviewed-by: Gregory Price <gourry@gourry.net>
+> > Signed-off-by: Lorenzo Stoakes <ljs@kernel.org>
+>
+> Reviewed-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
 
-I think this approach introduces a race condition, because e.g.
-iommu_ops->of_xlate() depends on the item being present in this list
+Thanks!
 
-Konrad
+>
+> But given Mike's efforts [1] I wonder if there's a way to change the vma
+> header system in the future to stop requiring users of vma functions to
+> include the whole internal.h, while of course still allow the userland
+> testability.
+>
+> [1]
+> https://lore.kernel.org/all/20260709-internal-h-v1-0-956d5092782d@kernel.org/
+
+Yeah we can always put a (correctly formed) vma.h include in any split off headers.
+
+There's also Pedro's suggestion (my reply to that at [0]) which I plan to do as
+a follow up :)
+
+[0]:https://lore.kernel.org/all/akzWq08xwXKqwwtq@lucifer/
+
+>
+>
+
+Cheers, Lorenzo
