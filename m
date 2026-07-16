@@ -1,86 +1,123 @@
-Received: from out-177.mta1.migadu.com (out-177.mta1.migadu.com [95.215.58.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 616E1434E5D
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 17:00:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA7943370EA
+	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 19:50:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784221255; cv=none; b=ZrjZx3n3+wWVjddSm2mc+vqHK6Wcr52FOyag8Hpi/E58kD7Kwq73GmLrLCsVxV4Vnmrn9rImeniv8oV3X4AgsG8Se/6O9xm1ik3lJmrTk5h5zEzdg1ak7cm6IdYoCTrFi/68yBAUxAeiXRGOBj+PI8jt8k7aBJiAlgY/JTGyHUM=
+	t=1784231457; cv=none; b=BYY6eZRNBBdDh7A9vbnNAnfsvdncIsiR6a31+6r0D+2wuVMErhOx4hSzevqMOZJ1GlnNYtx5M/VgrNB+MFlWh07UC2X2otcYMhXaCtkR+4PkxuPGAFlghIHBiOqUae7AGNhAmnoN58/+B9/3/MjMjB/uOw8M6IXSHOublwmT8wc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784221255; c=relaxed/simple;
-	bh=ryLZfzu7w/33tZHMEAX5YS1AtIi6A75xAvSnQuDhpy8=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
-	 References:In-Reply-To; b=K4CgQvOU50sAP8hvDID10GIa0U4xctAl1hdCbl9mSJ0GHNqWbr7VlHpTa3ZRiD5EJj+dQK1XORvxeEQgsrtGGTlCi2Ww2ujK2S4G7YL8BVQ0MXtUnsB4Rx7otg7ocF8HkNTicBI7nwQc8x8nzmw11M4xLecE2jaSehKotFB186A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=gKXuKFc/; arc=none smtp.client-ip=95.215.58.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1784231457; c=relaxed/simple;
+	bh=06y8sZb/aVmdw3hkUbIEltKcjw5Xo9uoz7ulecfx6e8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kQFY1zeoA1Lh0SvR7yokoq/7Oo9jL0FwYo03K47I3uLcCoByuL+mO2tAYqb/KWjgCdRqD55ifci0cf7sxa6EI5DLyp6pUlJblYFFdfZ/npuq+yya8Vvdsfyyu5JrjBTdsiRWpx/NOxgz1nYBZfBN8bg/snJgLGJ+z+0OFmpCr1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vcxPumif; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="gKXuKFc/"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vcxPumif"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2ccdf36f63dso59255ad.0
+        for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 12:50:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784231454; x=1784836254; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pPEy0FEptLG0+wnEJxoQBykPLINVwp+l5W/GjXL8Dv4=;
+        b=vcxPumiffs3nTC57i/rH2G2Zd/D/BfuEultymE4u96wW5r9XbVsMhYvgvYck52m7w+
+         eV+0PJ1MhNWs801xtb/XsRiCTf93pw5oq3axffCRmOc+iFwJN5XjHgbtkVF+jmc7W3P7
+         GjIrOYZIwyvsVA9c+XzykK5fjmlR26YPeCxdUIbuAUPOOszeL37G9F+mlnSS6XFgi+5j
+         0D4YGhWA98Uu+v1gJqwnkgnIahoe0+k3F+lJ5hngs5DTNg2Qnd1RNnj3pbLIo2HJ7OI9
+         XwMNh71SH0f7LSgtsD+d/Ri2UIGcb7yDOJwLLP/GrlMoH6ZrMqA3BpQrgw7yPAeNboOV
+         f/ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784231454; x=1784836254;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pPEy0FEptLG0+wnEJxoQBykPLINVwp+l5W/GjXL8Dv4=;
+        b=JVj4u3kpiHYsQBCfumDNBhpMz4niF1OGUfNPi3E4QCX+nFemwA6/M4fM3MU5zv5hJj
+         DATh931+QjBlZadcpS0Kda9rD/Lr1gTit1gm1HEPL8OGvdiBa2J87g+yiNKkMfi7VSAw
+         HFv4MKXvYd7V6Y2mjqi7uWBj+ZRkr7L73/hVxlKjSi3cbCaVkqUu4ZB6LQ5R4He5uRe4
+         QTjv9944+of2U2WMkbMHrczYt+ysHHBrCK8Xyb6SqF9Xe6ZKXM+/6oDEgrIhICj2sFNd
+         knEtTDZRN1OYHRbmJLbEtyme2qct/s3Wo8hjDUaDzxzcTutr55wDKBZEFNBI0dfxMre5
+         dQQQ==
+X-Forwarded-Encrypted: i=1; AHgh+RplHq/J5hG1pHCsaBSFgG6l2a2oFA3RKbnHaUAq795cMY52UU2AulEZ86B36OsnvWU0KYmvfw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxfRkEEkBHKkVcScOWiyCoKpBJ/Lo1SkfUK6kX/kEH/MfSqpvwy
+	5q5PeXCZjJm7f6naQP64c5EmCX+FPNwzfU+B7Ot37QzB2bQWzZsPrOWvryezOIh2bsiwWphiTmJ
+	ZRmU0MQ==
+X-Gm-Gg: AfdE7cmu8khs74RvQBngBWltki/pTscq0FtraZolLhVev5hTWUMXv7Dlg6TABKpRjpa
+	inTheXqYSXSvAjAELbAYcKor8zGsolPGFKGT7+VCVXAiLtNdO132jyMh/0sygvO0iNs2KwvwX2i
+	2NSJq8vWSz+JylGyfSh7Z2+5m6jrv7x4P+DyxsHxIlkD2cyC4GvbgYRyEJBckdfsR66OhHWcov7
+	5tg82PVOfsHFxXjL+hYtoNExRrWhAFxm/5F8tOm6amimVAzQpBH4i1vSxHYLLb7zm68n5Pdmw3a
+	e8hc/WZB/khP0p12lmBzv9QgLe/l2MR2ISLehPfHbfTDqOBFikE8mOd0V0o1BfG5PqdvTchvutQ
+	yfK+oJyIdOGUKv83ewmyFL6R182Oc4MvZiSnOtzNdzky0tegjnWYL7aR4wBBLWx+pdPIwmV81jk
+	p+i+gJxgFfddYeQqEHWOcQ+tSoT0l5eFTuvS0wt4ODSzIzC5Cu5JFETrlodtYjIHdU3BQBXBAD
+X-Received: by 2002:a17:903:24c:b0:2ca:e0ff:eaa0 with SMTP id d9443c01a7336-2cf2f74087fmr845355ad.2.1784231453825;
+        Thu, 16 Jul 2026 12:50:53 -0700 (PDT)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf1055cd5esm25047755ad.39.2026.07.16.12.50.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2026 12:50:53 -0700 (PDT)
+Date: Thu, 16 Jul 2026 19:50:49 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Disallow SVA if page walk is not coherent
+Message-ID: <alk14o48y7lR05Mg@google.com>
+References: <20260716053554.1642374-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1784221248;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ryLZfzu7w/33tZHMEAX5YS1AtIi6A75xAvSnQuDhpy8=;
-	b=gKXuKFc/Zc+x61YZilf5Od0LX0/TnweLJkY6B0iS5dDK1rmx2rZT6ibR+q4XB4vp98ECAJ
-	usgRE3P9Y3i2YNrl1JiIwqE/t23GTZbcDGdg5R0zMUXBaD+s+ENmZK2riqG0XJstPAQl7N
-	n59nA6ONzcF/mPCm/md31OknwLidCVI=
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 16 Jul 2026 17:00:38 +0000
-Message-Id: <DK05N5JBJWQB.2QSODJ6JABRIN@linux.dev>
-To: "Brendan Jackman" <jackmanb@google.com>, "Andrew Morton"
- <akpm@linux-foundation.org>, "David Hildenbrand" <david@kernel.org>,
- "Lorenzo Stoakes" <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
- "Vlastimil Babka" <vbabka@kernel.org>, "Mike Rapoport" <rppt@kernel.org>,
- "Suren Baghdasaryan" <surenb@google.com>, "Michal Hocko" <mhocko@suse.com>,
- "Johannes Weiner" <hannes@cmpxchg.org>, "Zi Yan" <ziy@nvidia.com>, "Matthew
- Wilcox (Oracle)" <willy@infradead.org>, "Jan Kara" <jack@suse.cz>, "Joshua
- Hahn" <joshua.hahnjy@gmail.com>, "Byungchul Park" <byungchul@sk.com>,
- "Gregory Price" <gourry@gourry.net>, "Ying Huang"
- <ying.huang@linux.alibaba.com>, "Alistair Popple" <apopple@nvidia.com>,
- "Hugh Dickins" <hughd@google.com>, "Baolin Wang"
- <baolin.wang@linux.alibaba.com>, "Chris Li" <chrisl@kernel.org>, "Kairui
- Song" <kasong@tencent.com>, "Kemeng Shi" <shikemeng@huaweicloud.com>, "Nhat
- Pham" <nphamcs@gmail.com>, "Baoquan He" <baoquan.he@linux.dev>, "Barry
- Song" <baohua@kernel.org>, "Youngjun Park" <youngjun.park@lge.com>, "Joerg
- Roedel (AMD)" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, "Huacai Chen" <chenhuacai@kernel.org>,
- "WANG Xuerui" <kernel@xen0n.name>, "Thomas Gleixner" <tglx@kernel.org>,
- "Chuck Lever" <cel@kernel.org>, "Jeff Layton" <jlayton@kernel.org>,
- "NeilBrown" <neil@brown.name>, "Olga Kornievskaia" <okorniev@redhat.com>,
- "Dai Ngo" <Dai.Ngo@oracle.com>, "Tom Talpey" <tom@talpey.com>, "Trond
- Myklebust" <trondmy@kernel.org>, "Anna Schumaker" <anna@kernel.org>, "David
- S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>,
- "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>,
- "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
- <linux-fsdevel@vger.kernel.org>, <iommu@lists.linux.dev>,
- <loongarch@lists.linux.dev>, <linux-nfs@vger.kernel.org>,
- <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/3] mm, treewide: replace __folio_alloc_node() with
- folio_alloc_node()
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: "Brendan Jackman" <brendan.jackman@linux.dev>
-References: <20260716-folio-alloc-cleanups-v1-0-5363b8e92d33@google.com>
- <20260716-folio-alloc-cleanups-v1-2-5363b8e92d33@google.com>
-In-Reply-To: <20260716-folio-alloc-cleanups-v1-2-5363b8e92d33@google.com>
-X-Migadu-Flow: FLOW_OUT
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20260716053554.1642374-1-baolu.lu@linux.intel.com>
 
-On Thu Jul 16, 2026 at 2:30 PM UTC, Brendan Jackman wrote:
-> Commit 5b584d2d22dca ("mm: remove __alloc_pages_node()") removed the __
+On Thu, Jul 16, 2026 at 01:35:53PM +0800, Lu Baolu wrote:
+>Hardware implementations report Scalable-Mode Page-walk Coherency Support
+>via the SMPWCS field in the extended capability register. If the hardware
+>does not support page-walk coherency, a clflush is required every time
+>the page table entries (which are walked by the IOMMU hardware) are
+>updated.
+>
+>In the SVA case, page tables are managed by the CPU mm core, not by the
+>IOMMU driver. Because the IOMMU driver has no way of knowing whether the
+>CPU page table management code has ensured coherency via clflush, the
+>driver must deny SVA if the hardware does not support coherent paging.
+>
+>Fixes: ff3dc6521f78 ("iommu/vt-d: Fix CPU and IOMMU SVM feature matching checks")
+>Cc: stable@vger.kernel.org
+>Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>---
+> drivers/iommu/intel/svm.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+>index 0636987f03c8..432e35723ce9 100644
+>--- a/drivers/iommu/intel/svm.c
+>+++ b/drivers/iommu/intel/svm.c
+>@@ -27,7 +27,7 @@
+>
+> void intel_svm_check(struct intel_iommu *iommu)
+> {
+>-	if (!pasid_supported(iommu))
+>+	if (!pasid_supported(iommu) || !ecap_smpwc(iommu->ecap))
+> 		return;
+>
+> 	if (cpu_feature_enabled(X86_FEATURE_GBPAGES) &&
+>-- 
+>2.43.0
+>
+>
 
-Oh, I just remembered this commit hash is unstable. In fact it's already
-wrong.
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
 
-> variant of alloc_pages_node(), after users had been migrated off it,
-> since it just complicates the API (requiring users to handle
-> NUMA_NO_NODE, or risking hotplug bugs) for no real benefit.
-
+Thanks,
+Sami
