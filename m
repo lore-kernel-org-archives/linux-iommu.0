@@ -1,37 +1,37 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEDA7405F7;
-	Thu, 16 Jul 2026 15:17:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13AFF42F6FE;
+	Thu, 16 Jul 2026 15:17:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784215036; cv=none; b=eagkdhDvJgz0Rio8BjAU8zIQlDk4feC0Ab89P3oX8uCrWYmvQUSdUn+UZFiWeRZrsb4gBAzgazjifudE8XmCN8Hiq/5XFvUKbYcupp7MpKiVrHUePTseU8/H6mdYIMXfvvGdwlKe3Q10kBZwbwdPtfQ8d8AMQlvlaRXr96Fvt6U=
+	t=1784215045; cv=none; b=bRhf/x6Tps0rRHRxsgLd/Gccoo35Y3xs7YXEfAOaImC+tQdyBC3qiDKWt7w4tIgDpzQOhL+Sv4jqm8GEkb96Gt8ajCMlgFMPGB1cRq4n9VKzvHiZnIH2Q4SyNR6l9yJDXt3qAHrOLarjqkMGC5sBBqzdXLOB5/uZpj5DKv5ObfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784215036; c=relaxed/simple;
-	bh=UQMD1xtN3fdHnopxRhbGBjTrKmIjmbvnZOMmK5kYADU=;
+	s=arc-20240116; t=1784215045; c=relaxed/simple;
+	bh=LimHJDn02kH6EVDCW5Qwd2F2UYDCgZsSzBepLB8Sdn4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=W0eIGd4LsfEOvIfCFSp7eEuRW3A/QxW86W86nQsgNBiV6fVR/lCGsKgbi1oevi7YfT2Nw5Sa09riudBQDmIlDy+r2I1I/NWjWewtBzFRFfpZ+O2d2tB0QizIH0sH0EdzaefmqABHpaMEDZjgLoO5mAJ83h6RqpFedf1sauClejg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=cc1TtiAQ; arc=none smtp.client-ip=90.155.50.34
+	 MIME-Version; b=GavYhYXuSRvJSkDgfx0MAArR9WHeqayG+Zc6wxZC/G1odrKyf8HXRuRpna0mG1s99FQezcuJM1zlBWP3vQq9yWVOZNzygBczwv1W+hSmp4pigOHLcEEKZ+slAy9qH2QMaOxlPRISv/xPdm9S8wWW1Vp/yHi3kubGfFsCV5+j2zY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=desiato.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=h8BkMDuS; arc=none smtp.client-ip=90.155.92.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=desiato.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="cc1TtiAQ"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="h8BkMDuS"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
+	d=infradead.org; s=desiato.20200630; h=Sender:Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
 	Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=iLMkXQPoO9bJTen1/DML3UcjON7B/Jg/kBSza579AWA=; b=cc1TtiAQFQ8DOZRUX6MuTqORxo
-	3ArYsOwxxvOD/iW2RtooPUh6L79VtTHcclwoLE8wFqC2jU0zr4pLMWD47YDQx7LiEI/oU2OddxTIL
-	345PQewaiOjESgY5996NoB0YdB/vaEzdYBV/vmaxgc3HqyyUNxHztPPc87SKB7EiPigeKBCgKBBGa
-	fhmdPYmN69FijEmwHI1b25K3ZNnGS65fhdcyZDM3J1OvImZRL6Pw/9w717ok/BqAe8DVrpWkakfij
-	zX7U2VO/Cu+7KEHVeKwuqskTKjlvQoSjNeXnatCABHjczvS8y5ipVAr1nawllh2wxMxYsAjbTPvyb
-	narHY3Zw==;
+	bh=20bps9/KzJj440NwL3aT0z2O5aOFBhPC7RprH+HfUWc=; b=h8BkMDuSTJQSJ6leJbqpaIPOOz
+	pIVVJe0UcWrvnYM+VS7JFcUlp/aBSEc+GeAZr2UxjRfw+fN28yL0EP8lmkmWhn9g8QnJZ+MBhg44n
+	+40m031ceC0XzQwsBBngvBgtCAMJ9TLEFRlxgLuviWcDLAVn3zCi9jHmb/pomTGM+fzSCWwcpBMX4
+	caTNlLTL12tw/OdVsto8aB6ySb9v379xXBCqA79H4uFEapYC6WqfganPUYW7OwN6FU9R5dHBxXwTK
+	KHyQb5gvAwDB9NyDTgtWzir6fZHjI1BYFdYEk4EYVZ+hJTXqibNn48B7ep45Zl1Pfz3niA6p6jHxo
+	EUTdT9bQ==;
 Received: from [2001:8b0:10b:1::425] (helo=i7.infradead.org)
-	by casper.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wkNpj-00000002l0U-37sL;
-	Thu, 16 Jul 2026 15:17:08 +0000
+	by desiato.infradead.org with esmtpsa (Exim 4.99.2 #2 (Red Hat Linux))
+	id 1wkNpl-0000000E9NE-49RN;
+	Thu, 16 Jul 2026 15:17:10 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wkNpj-000000012tE-24AB;
+	id 1wkNpj-000000012st-0HyT;
 	Thu, 16 Jul 2026 16:17:07 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: Sean Christopherson <seanjc@google.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	graf@amazon.de,
 	fgriffo@amazon.co.uk,
 	David Woodhouse <dwmw@amazon.co.uk>
-Subject: [RFC PATCH 07/11] KVM: guest_memfd: Add ops-driven page revocation
-Date: Thu, 16 Jul 2026 10:31:27 +0100
-Message-ID: <05c8944cb77fa68163303cefe1c922ff142ceb07.1784194290.git.dwmw@amazon.co.uk>
+Subject: [RFC PATCH 02/11] KVM: selftests: sev_init2_tests: Derive SEV availability from KVM
+Date: Thu, 16 Jul 2026 10:31:22 +0100
+Message-ID: <4710ad35dcfd1a85a24d15fb56dbf233ac05ad49.1784194290.git.dwmw@amazon.co.uk>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
 References: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
@@ -86,114 +86,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: David Woodhouse <dwmw2@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by desiato.infradead.org. See http://www.infradead.org/rpr.html
 
 From: David Woodhouse <dwmw@amazon.co.uk>
 
-Add kvm_gmem_invalidate_range(): a guest_memfd backing calls it to zap
-the guest secondary-MMU mapping for a gfn range so the next access
-re-faults through ops->get_pfn().  Mirrors the existing internal
-__kvm_gmem_invalidate_start() for a single bound slot, bracketing the
-unmap with the mmu_invalidate window so a racing vCPU fault retries
-rather than installing a stale mapping.
+The test asserted that the X86_FEATURE_SEV CPUID bit exactly matches
+whether KVM offers KVM_X86_SEV_VM.  That is not an invariant: when all
+SEV ASIDs are assigned to SEV-SNP, KVM does not offer the SEV VM type
+even though CPUID reports SEV, so the test aborts on an SNP-only host.
 
-The existing ops->invalidate callback is KVM -> implementation
-(cleanup); this new symbol is the implementation -> KVM path, useful
-for an overcommit manager or any subsystem that reclaims pages from a
-running guest.  Export it for module use and add it to the KVM
-external-export allowlist.
+Derive SEV availability from KVM_CAP_VM_TYPES (as already done for SEV-ES
+and SNP), assert only the one-way implication that a type offered by KVM
+is also reported in CPUID, and TEST_REQUIRE() the SEV VM type so the test
+skips cleanly when it is unavailable.
 
-Signed-off-by: David Woodhouse (Kiro) <dwmw@amazon.co.uk>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- arch/x86/kvm/Makefile    |  3 ++-
- include/linux/kvm_host.h |  9 +++++++++
- virt/kvm/guest_memfd.c   | 39 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 50 insertions(+), 1 deletion(-)
+ .../testing/selftests/kvm/x86/sev_init2_tests.c  | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
-index 77337c37324b..cb963d6ecaab 100644
---- a/arch/x86/kvm/Makefile
-+++ b/arch/x86/kvm/Makefile
-@@ -63,7 +63,8 @@ exports_grep_trailer := --include='*.[ch]' -nrw $(srctree)/virt/kvm $(srctree)/a
- 				-e kvm_write_track_remove_gfn \
- 				-e kvm_get_kvm \
- 				-e kvm_get_kvm_safe \
--				-e kvm_put_kvm
-+				-e kvm_put_kvm \
-+				-e kvm_gmem_invalidate_range
+diff --git a/tools/testing/selftests/kvm/x86/sev_init2_tests.c b/tools/testing/selftests/kvm/x86/sev_init2_tests.c
+index 8db88c355f16..689390c10f7c 100644
+--- a/tools/testing/selftests/kvm/x86/sev_init2_tests.c
++++ b/tools/testing/selftests/kvm/x86/sev_init2_tests.c
+@@ -130,12 +130,18 @@ int main(int argc, char *argv[])
+ 			    KVM_X86_SEV_VMSA_FEATURES,
+ 			    &supported_vmsa_features);
  
- # Force grep to emit a goofy group separator that can in turn be replaced with
- # the above newline macro (newlines in Make are a nightmare).  Note, grep only
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index b33d2f475042..04fa0cb126f6 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -701,6 +701,15 @@ static inline bool is_kvm_gmem_file(struct file *file)
- 	return file && file->f_op == &kvm_gmem_fops;
- }
+-	have_sev = kvm_cpu_has(X86_FEATURE_SEV);
+-	TEST_ASSERT(have_sev == !!(kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM)),
+-		    "sev: KVM_CAP_VM_TYPES (%x) does not match cpuid (checking %x)",
+-		    kvm_check_cap(KVM_CAP_VM_TYPES), 1 << KVM_X86_SEV_VM);
++	/*
++	 * Whether a VM type is available depends on KVM, not just CPUID: e.g.
++	 * when all SEV ASIDs are assigned to SEV-SNP, KVM does not offer the
++	 * SEV VM type even though X86_FEATURE_SEV is set.  Derive availability
++	 * from KVM_CAP_VM_TYPES and only assert the one-way implication that a
++	 * type offered by KVM must also be reported in CPUID.
++	 */
++	have_sev = kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM);
++	TEST_ASSERT(!have_sev || kvm_cpu_has(X86_FEATURE_SEV),
++		    "sev: SEV_VM supported without SEV in CPUID");
  
-+/*
-+ * Outbound (implementation -> KVM) revocation: zap the guest's secondary MMU
-+ * (NPT/EPT) mapping for a gfn range so the next guest access re-faults
-+ * through the ops' get_pfn().  This is the reverse of ->invalidate (which is
-+ * KVM -> implementation) and is what a backing that manages its own memory
-+ * (e.g. an overcommit manager) uses to reclaim a page from a running guest.
-+ */
-+void kvm_gmem_invalidate_range(struct kvm *kvm, gfn_t start, gfn_t end);
-+
- #endif /* CONFIG_KVM_GUEST_MEMFD */
+-	TEST_REQUIRE(kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM));
++	TEST_REQUIRE(have_sev);
+ 	have_sev_es = kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_ES_VM);
  
- static inline bool kvm_slot_dirty_track_enabled(const struct kvm_memory_slot *slot)
-diff --git a/virt/kvm/guest_memfd.c b/virt/kvm/guest_memfd.c
-index 2b277468a12f..6c13742de068 100644
---- a/virt/kvm/guest_memfd.c
-+++ b/virt/kvm/guest_memfd.c
-@@ -738,6 +738,45 @@ int kvm_gmem_create(struct kvm *kvm, struct kvm_create_guest_memfd *args)
- 	return __kvm_gmem_create(kvm, size, flags);
- }
- 
-+/*
-+ * Outbound (implementation -> KVM) revocation: an implementation zaps the
-+ * guest's secondary MMU mapping for a gfn range so the next guest access
-+ * re-faults through ops->get_pfn().  Mirrors __kvm_gmem_invalidate_start()
-+ * for a single bound slot, bracketing the unmap with the mmu_invalidate
-+ * window so a racing vCPU fault retries rather than installing a stale
-+ * mapping.
-+ */
-+void kvm_gmem_invalidate_range(struct kvm *kvm, gfn_t start, gfn_t end)
-+{
-+	struct kvm_memory_slot *slot;
-+	bool flush = false;
-+	int idx;
-+
-+	idx = srcu_read_lock(&kvm->srcu);
-+
-+	slot = gfn_to_memslot(kvm, start);
-+	if (slot) {
-+		struct kvm_gfn_range gfn_range = {
-+			.slot		= slot,
-+			.start		= start,
-+			.end		= min(end, slot->base_gfn + slot->npages),
-+			.may_block	= true,
-+			.attr_filter	= KVM_FILTER_SHARED | KVM_FILTER_PRIVATE,
-+		};
-+
-+		KVM_MMU_LOCK(kvm);
-+		kvm_mmu_invalidate_start(kvm);
-+		flush = kvm_mmu_unmap_gfn_range(kvm, &gfn_range);
-+		if (flush)
-+			kvm_flush_remote_tlbs(kvm);
-+		kvm_mmu_invalidate_end(kvm);
-+		KVM_MMU_UNLOCK(kvm);
-+	}
-+
-+	srcu_read_unlock(&kvm->srcu, idx);
-+}
-+EXPORT_SYMBOL_GPL(kvm_gmem_invalidate_range);
-+
- static const struct kvm_gmem_ops *kvm_gmem_get_ops(struct file *file)
- {
- 	if (!is_kvm_gmem_file(file))
+ 	TEST_ASSERT(!have_sev_es || kvm_cpu_has(X86_FEATURE_SEV_ES),
 -- 
 2.54.0
 
