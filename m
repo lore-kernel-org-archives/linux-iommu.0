@@ -1,38 +1,37 @@
 Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13AFF42F6FE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 133CB32B135;
 	Thu, 16 Jul 2026 15:17:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784215045; cv=none; b=bRhf/x6Tps0rRHRxsgLd/Gccoo35Y3xs7YXEfAOaImC+tQdyBC3qiDKWt7w4tIgDpzQOhL+Sv4jqm8GEkb96Gt8ajCMlgFMPGB1cRq4n9VKzvHiZnIH2Q4SyNR6l9yJDXt3qAHrOLarjqkMGC5sBBqzdXLOB5/uZpj5DKv5ObfI=
+	t=1784215045; cv=none; b=VuqrTDSXgfxAa+BbsMH8dMtXSFBZuiAsggw5qaNeEqsnD/ShYuyclK6aoPg2DIrt6umuv9RMpE97JuVNUyc9k6odZiE+rz7Notx/dKzcK1f2RUhkfLxFsWdETpZURdFyFZiBvF+cH+1ewzaTqocAl+2ZdOgH276t7iCthrYhoAY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784215045; c=relaxed/simple;
-	bh=LimHJDn02kH6EVDCW5Qwd2F2UYDCgZsSzBepLB8Sdn4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=GavYhYXuSRvJSkDgfx0MAArR9WHeqayG+Zc6wxZC/G1odrKyf8HXRuRpna0mG1s99FQezcuJM1zlBWP3vQq9yWVOZNzygBczwv1W+hSmp4pigOHLcEEKZ+slAy9qH2QMaOxlPRISv/xPdm9S8wWW1Vp/yHi3kubGfFsCV5+j2zY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=desiato.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=h8BkMDuS; arc=none smtp.client-ip=90.155.92.199
+	bh=HERYvfwuK+kIwT6xoaDWlaS1Ew1kH5zdTkRoaK6bFX4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=VcpGqozutC+8meGUbhtUNs5VyLbPnr5JavB1ty2CdtiPLjWOBnJYMsT+IdUI+PQ3pNAnR4Pu3miMtOM+MM4RE1O/yysulpjQ0IQLeoRV0xWdqbVvhdueaDGgSNLq7IAk68xepnXmUysAVDwUvLhAJDKqbyX3ZoDJn6/du0k7s3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=desiato.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=XsXsYOZ/; arc=none smtp.client-ip=90.155.92.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=desiato.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="h8BkMDuS"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XsXsYOZ/"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=desiato.20200630; h=Sender:Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-	Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=20bps9/KzJj440NwL3aT0z2O5aOFBhPC7RprH+HfUWc=; b=h8BkMDuSTJQSJ6leJbqpaIPOOz
-	pIVVJe0UcWrvnYM+VS7JFcUlp/aBSEc+GeAZr2UxjRfw+fN28yL0EP8lmkmWhn9g8QnJZ+MBhg44n
-	+40m031ceC0XzQwsBBngvBgtCAMJ9TLEFRlxgLuviWcDLAVn3zCi9jHmb/pomTGM+fzSCWwcpBMX4
-	caTNlLTL12tw/OdVsto8aB6ySb9v379xXBCqA79H4uFEapYC6WqfganPUYW7OwN6FU9R5dHBxXwTK
-	KHyQb5gvAwDB9NyDTgtWzir6fZHjI1BYFdYEk4EYVZ+hJTXqibNn48B7ep45Zl1Pfz3niA6p6jHxo
-	EUTdT9bQ==;
+	Content-Type:MIME-Version:Message-ID:Date:Subject:Cc:To:From:Reply-To:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=H5JZBL4uxCbxe0SE5uQe2ASNO8RCuyJLMxN8Jb1Qq/4=; b=XsXsYOZ/Ct32ecd0lk/FZbxGbv
+	TIQrrOLYBa7MgiU56uoUOrFzihJC/YPUvUxRSht2CpUS/WX/zb3RZffmNmCbWhprGw7Ksom/8fpmi
+	GqXx8FLQ3VaRl6VdV2U9hNfDpBmAOfzJAKP2/mDua4QaFq5q+YsfeymwiSus3dMdzqLjhCdkPQybh
+	LoZey4Bu0xpTZAFSJKeiVnmZeD8rTcyU0x8kg/HkKhEWh+eT21Ffm7w4eJnEtfEV70/Rw9Jz0c+vK
+	n6rld3BPFeuSNBwzxx6vqDK+E4qx6Fyz7edutiVLmBUvsgaNYFYp1Hh1HMh9ISqjwdGVKD+kYacbF
+	eZw2rVbw==;
 Received: from [2001:8b0:10b:1::425] (helo=i7.infradead.org)
 	by desiato.infradead.org with esmtpsa (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wkNpl-0000000E9NE-49RN;
+	id 1wkNpl-0000000E9ND-49SG;
 	Thu, 16 Jul 2026 15:17:10 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wkNpj-000000012st-0HyT;
-	Thu, 16 Jul 2026 16:17:07 +0100
+	id 1wkNpi-000000012sn-3yZ3;
+	Thu, 16 Jul 2026 16:17:06 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: Sean Christopherson <seanjc@google.com>,
 	Paolo Bonzini <pbonzini@redhat.com>,
@@ -70,69 +69,100 @@ Cc: linux-kernel@vger.kernel.org,
 	Colin Ian King <colin.i.king@gmail.com>,
 	connordw@amazon.co.uk,
 	graf@amazon.de,
-	fgriffo@amazon.co.uk,
-	David Woodhouse <dwmw@amazon.co.uk>
-Subject: [RFC PATCH 02/11] KVM: selftests: sev_init2_tests: Derive SEV availability from KVM
-Date: Thu, 16 Jul 2026 10:31:22 +0100
-Message-ID: <4710ad35dcfd1a85a24d15fb56dbf233ac05ad49.1784194290.git.dwmw@amazon.co.uk>
+	fgriffo@amazon.co.uk
+Subject: [RFC PATCH 00/11] KVM: Allow alternative providers of guest_memfd backed by PFNMAP memory
+Date: Thu, 16 Jul 2026 10:31:20 +0100
+Message-ID: <20260716151706.244987-1-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.54.0
-In-Reply-To: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
-References: <f09647f427565c1789a6979470045aab78661563.1784194290.git.dwmw@amazon.co.uk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: David Woodhouse <dwmw2@infradead.org>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by desiato.infradead.org. See http://www.infradead.org/rpr.html
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+For dedicated hosting environments, there are a few reasons to prefer
+using external PFNMAP memory for guests, rather than kernel-managed
+memory:
 
-The test asserted that the X86_FEATURE_SEV CPUID bit exactly matches
-whether KVM offers KVM_X86_SEV_VM.  That is not an invariant: when all
-SEV ASIDs are assigned to SEV-SNP, KVM does not offer the SEV VM type
-even though CPUID reports SEV, so the test aborts on an SNP-only host.
+ • No struct page overheads
 
-Derive SEV availability from KVM_CAP_VM_TYPES (as already done for SEV-ES
-and SNP), assert only the one-way implication that a type offered by KVM
-is also reported in CPUID, and TEST_REQUIRE() the SEV VM type so the test
-skips cleanly when it is unavailable.
+ • Easily managed in 1GiB pages (or larger chunks); no fragmentation/THP
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
----
- .../testing/selftests/kvm/x86/sev_init2_tests.c  | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ • Faster kexec/KHO live update (every millisecond spend faffing around
+   with memory management is an extra millisecond of steal time taken
+   from guests)
 
-diff --git a/tools/testing/selftests/kvm/x86/sev_init2_tests.c b/tools/testing/selftests/kvm/x86/sev_init2_tests.c
-index 8db88c355f16..689390c10f7c 100644
---- a/tools/testing/selftests/kvm/x86/sev_init2_tests.c
-+++ b/tools/testing/selftests/kvm/x86/sev_init2_tests.c
-@@ -130,12 +130,18 @@ int main(int argc, char *argv[])
- 			    KVM_X86_SEV_VMSA_FEATURES,
- 			    &supported_vmsa_features);
- 
--	have_sev = kvm_cpu_has(X86_FEATURE_SEV);
--	TEST_ASSERT(have_sev == !!(kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM)),
--		    "sev: KVM_CAP_VM_TYPES (%x) does not match cpuid (checking %x)",
--		    kvm_check_cap(KVM_CAP_VM_TYPES), 1 << KVM_X86_SEV_VM);
-+	/*
-+	 * Whether a VM type is available depends on KVM, not just CPUID: e.g.
-+	 * when all SEV ASIDs are assigned to SEV-SNP, KVM does not offer the
-+	 * SEV VM type even though X86_FEATURE_SEV is set.  Derive availability
-+	 * from KVM_CAP_VM_TYPES and only assert the one-way implication that a
-+	 * type offered by KVM must also be reported in CPUID.
-+	 */
-+	have_sev = kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM);
-+	TEST_ASSERT(!have_sev || kvm_cpu_has(X86_FEATURE_SEV),
-+		    "sev: SEV_VM supported without SEV in CPUID");
- 
--	TEST_REQUIRE(kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_VM));
-+	TEST_REQUIRE(have_sev);
- 	have_sev_es = kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_SEV_ES_VM);
- 
- 	TEST_ASSERT(!have_sev_es || kvm_cpu_has(X86_FEATURE_SEV_ES),
--- 
-2.54.0
+Today, there is only one implementation of guest_memfd: the internal
+shmem-based page cache in virt/kvm/guest_memfd.c. This series allows
+for other code to provide "a guest_memfd". This is an early path-
+finding proof of concept tested with AMD SEV-SNP as well as non-CoCo
+guests on x86 and arm64. I'm planning to build a memory-based file
+system which gives files for both guest_memfd as well as memory-based
+storage to allow things like userspace VM and orchestrator stateallows
+to be passed over KHO/kexec.
+
+This series lifts guest_memfd's operations into a small ops struct and
+converts KVM's own gmem to use it, so it becomes one implementation
+among peers rather than the only game in town.  It also adapts the
+SEV-SNP fast paths to page-less operation, plumbs iommufd to map a
+guest_memfd-backing dma-buf as CPU RAM (not MMIO), and adds the
+provider->KVM revocation primitive that makes overcommit-style reclaim
+possible.
+
+It's largely AI-built at the moment. My main design concerns are around
+that we tell that a given file is "a guest_memfd", and how we plug into
+IOMMUFD. Presenting a dma-buf was the less intrusive choice because that
+path already has support for taking pages away, but I'm less convinced
+that it's the cleaner choice in the long term.
+
+I'll continue to bikeshed it myself, but this is at least functional
+enough to show the direction and solicit further opinions...
+
+https://git.infradead.org/?p=users/dwmw2/linux.git;a=shortlog;h=gmem-provider
+
+Connor Williamson (1):
+      KVM: SEV: Remove struct page dependency from SNP gmem paths
+
+David Woodhouse (10):
+      KVM: selftests: sev_smoke_test: Only run VM types the host offers
+      KVM: selftests: sev_init2_tests: Derive SEV availability from KVM
+      KVM: guest_memfd: Introduce guest memory ops and route native gmem through them
+      iommufd: Look up private-interconnect phys via exporter symbols
+      iommufd: Plumb dma-buf memory-type (RAM vs MMIO) through the phys map
+      KVM: guest_memfd: Add ops-driven page revocation
+      samples/kvm: Add guest_memfd backing sample
+      selftests/kvm: gmem_provider KVM-only tests
+      selftests/kvm: gmem_provider iommufd tests
+      samples/kvm, selftests/kvm: Allow the gmem_provider NVMe DMA test on arm64
+
+
+ arch/x86/kvm/Makefile                              |   4 +-
+ arch/x86/kvm/svm/sev.c                             |  83 ++-
+ arch/x86/virt/svm/sev.c                            |  27 +-
+ drivers/iommu/iommufd/io_pagetable.h               |   7 +
+ drivers/iommu/iommufd/pages.c                      |  49 +-
+ include/linux/kvm_host.h                           |  91 +++
+ samples/Kconfig                                    |  18 +
+ samples/Makefile                                   |   1 +
+ samples/kvm/Makefile                               |   2 +
+ samples/kvm/gmem_provider.c                        | 651 +++++++++++++++++++++
+ samples/kvm/gmem_provider.h                        |  53 ++
+ tools/testing/selftests/kvm/Makefile.kvm           |   6 +
+ .../selftests/kvm/gmem_provider_nvme_dma_test.c    | 365 ++++++++++++
+ .../kvm/x86/gmem_provider_hugepage_test.c          | 130 ++++
+ .../selftests/kvm/x86/gmem_provider_iommufd_test.c | 150 +++++
+ .../selftests/kvm/x86/gmem_provider_revoke_test.c  | 134 +++++
+ .../testing/selftests/kvm/x86/gmem_provider_test.c | 195 ++++++
+ .../selftests/kvm/x86/gmem_provider_vfio_test.c    | 134 +++++
+ tools/testing/selftests/kvm/x86/sev_init2_tests.c  |  16 +-
+ tools/testing/selftests/kvm/x86/sev_smoke_test.c   |   9 +-
+ virt/kvm/guest_memfd.c                             | 377 +++++++++---
+ virt/kvm/kvm_main.c                                |   6 +-
+ virt/kvm/kvm_mm.h                                  |   4 +-
+ 23 files changed, 2410 insertions(+), 102 deletions(-)
 
