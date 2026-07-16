@@ -1,163 +1,174 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DE6E33ADAE
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 03:00:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784170807; cv=none; b=tIAM1auUh5ygoipHEPylRHzcayyMUMPVPJPFVpDJ/pdEX2Tm+fNAyLCstJs1ozsBI51F7yFvw4xhiTxBdERR2+Tn1T6/2qFZHtd/+Dwh0aGf5MOP6EeS0b174/BYDT2yVObi9CmhftUD8sUJZbwsqHVWwPr/VmbqIy7VjmGLm5U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784170807; c=relaxed/simple;
-	bh=xXS328NenWYdWrVxSjmVOn+66dLmS7vGg6SlIgkpuh4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=se8UE6Pha6m6wBOseaalVTJK55mA2ZTU02Yh91iaoZ4mwYlvStJ06BGM+IJsFM2oIZxSv8hLkBrRhNabz5lM+6RprTAPrXbytu9l8PG0G/78XiUEQFiaHo52xnx1mil5iQea3KtFXLHG3b1eAgy3V2tyvgm0Mpw3znP93Jd5vec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=a+s2EVqL; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=fz09Bgus; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D90BD2EEE6C
+	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 03:13:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784171622; cv=pass; b=YN8jyvH66GUye/mEiEfW0CJxTLuMZ37XLHISogqURAvUMtshoraM5Y/OtAIDnETANYFSAEjylKd93FGnljx5UyE9a1GBFZDlOpz1PtnxcaJqtPCYQtL8QbYOfmmvqf6J0zfAISNNZS08hyAIwMyc+V58GullY9J9WJUHaiD4l90=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784171622; c=relaxed/simple;
+	bh=UM2OezOyRvHBevtE0lxLMLuRathg1UInDTjZPXP8nn0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=umDG4ZktQT79QDbivF/A6rmU9uLQ46gBF/y+EZ5+gQPo0TNyny96//D6D930CuMNEvX+zbbbj2l2VLnuXDny8ucFsCP4QHjKzivV12pUh4QnGXu9Da6flB+Gq59u0qJFQhH2zTjCXlHfvmr8Q3PVnzBTnU88S2hOzPX+dOMfGVI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=RDV1eWxf; arc=pass smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="a+s2EVqL";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="fz09Bgus"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66G0Xtrn1160955
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 03:00:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	xXS328NenWYdWrVxSjmVOn+66dLmS7vGg6SlIgkpuh4=; b=a+s2EVqLXf9v6Fdn
-	9NQE/H5sHVS3yfE5C7hFH5wdv+geYr5SerZ9X8sy2qefOLLsJpezdCkXtdwt7dIy
-	oyoj3TWGTcPlBgC6w0sfm1uVz3YhECQFPCVuBDxGq6EEqxWemnuZxAUB438YDMmW
-	aoRGQJFqjnhjL3ekE2H6JHioTahXEFBTeG52Dld19of6DZtyE/39uZSKLP5xOmac
-	OoSJDcncz6Ur6GzcnyjesZhWBz9xjpAQ2HSdh09aVqIEbpaEMbM/bl8RfdFwo5JY
-	vN9OChJjomPWSjL2+4RWsIAfp4O6e/whRhCPV3oxi1L2ttb99foapYmjzUW3nJE0
-	JMtuBg==
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4feayfjvk8-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 03:00:04 +0000 (GMT)
-Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-c8952346bb9so5198132a12.2
-        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 20:00:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="RDV1eWxf"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-69c5fda04a8so9544223a12.1
+        for <iommu@lists.linux.dev>; Wed, 15 Jul 2026 20:13:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784171619; cv=none;
+        d=google.com; s=arc-20260327;
+        b=nc5cLKH7aocNRujTUhmhAmOiAyUd+jcjCi9nx71b3KnCARwaljNuwwH0aOeMDTqQIN
+         BHSuq+/rSZPk+Ral1tQs90hrgO2C+FkGanbcQ89g3+jfjVsyGrb5ljp2MUDWtD7eEx3X
+         v8p0YzIj58PGVliwzmqENon9WQ0sRTKxlXS0JXM7Zg/JAg4qXJBgsDcRviMS+DqpGvJ8
+         6ZDYl+pBSkUYDsP5uuxhGTL/0Kfuw0j4mib5FihpVHULjFGzao3i3/ePG1SEO4vlkGo+
+         Ifb1kI8ay3z7BaYZxDDbGZAzGuq9GBeaCezAUMdeYoUc9dCTQDBcV5luZMXUreg34b2c
+         jroQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=UM2OezOyRvHBevtE0lxLMLuRathg1UInDTjZPXP8nn0=;
+        fh=BSwWxPb2Y5SIP4MJkSxWcVztUl9cOCLqhU1D5zl/ujQ=;
+        b=LzKsi3xL6SLNUh8HJRyzyIHsEe16JVLJ1T/NLF4SD/vKLOAhTCgG4m/ZZbOz/A1kLk
+         aPQuDEk5qreL0mKAUqbYt2Q1aTMkvavDpGD+dczQOa6g6X078nSQuanJQvR2jdMijBwY
+         CvFh3weeOT7KpQ9ywWEorsUNGsbhRODujaQi4DywPM1UDxOUU0yzNyQ2DcLBRQRP3xcF
+         dc0lLCU1vFP27JI5sj7QJN2xA8amQ5qeQUQH6iz61aoOK/ckiaWYGZCR1ujBWfeP9i+W
+         JJLybvOh2U9bBUwFqT9bs09wRZjYPUHG4c2CYNlWEh0Crc7K+5sjjQ30bvEiOTdjevJA
+         xO3g==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784170804; x=1784775604; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xXS328NenWYdWrVxSjmVOn+66dLmS7vGg6SlIgkpuh4=;
-        b=fz09BgusSzkr8NPaxw9KnTEhQ2S6IjNLiq6N+kK3NefAbm+QZbGBQYwchIHDLyGFHu
-         1QFkLBy5MFb4nEy8JK6GJqIjJvJHq7OPfSiMVIcISgHFFFsjw+8cJVz6Ms709Y41kHfx
-         qleDd4vl3c0jgPLkXkHBX/E7l/f6N7Mt41PuLpIRy8xjaJGyZT7lxQWkheiPzMU6qcdh
-         HcLiN0Lifz1DBFdNYWGO/OlyXwGBWPLNDyf3snDeunoYhUJElll/rZAzfCfYKfvA6Ctw
-         N2Kzz4QcOCtg0T4zkk9vTkLHHbEaj/2OlvzlfzDaU0srip/NZWOzIhS7w5KkW+IcaeIl
-         Asyw==
+        d=sifive.com; s=google; t=1784171619; x=1784776419; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=UM2OezOyRvHBevtE0lxLMLuRathg1UInDTjZPXP8nn0=;
+        b=RDV1eWxfYlZ+DBfrkdcoK3LTMibPTc4GvXULyZi/cxCb2HD3FhrEkwOhUmIGQA/n4m
+         WThQpMX3cnq97xw3UWcnujx4xOAEjsryzn8dzhke4ZxdPPdKe/E+WUwY8F6jPLQIh6jY
+         UkDQZAURKij1z66kmL1n+g0qrBiHxOylQw7b+vRxUyGViU9ebYJXyxatcDna2mkvQstP
+         gtWYozUZ0bNodYUaautQ8YnKHNaPGs7fvjH4Ow0OLo4X8LcLNKTyNV537qvYUDHg6L/F
+         yvxGM1jLtKZDx5VKB9elG9n3au6ItpD41I0u1i3sLHOkPXlMTJsfC3uOAJlM17qKkN3E
+         mFEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784170804; x=1784775604;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=xXS328NenWYdWrVxSjmVOn+66dLmS7vGg6SlIgkpuh4=;
-        b=aEJEIfrTDd27vlNuVh29WbQ/5lqaQVxcGF9uKvVchrGs6IfTLqJkef/m2Px2CI3Ecc
-         kUsI/k7AUJJougv+xIK1WzqmZakJJhArb+AuDVld4Tf58K9aDPSuhD/6y4kOD8kb0d3y
-         2lI0ijl/GuBJncnFIccFxsVT/tsCmTqAMozmtrSFB0gVoFkkxtCNaEPAdReOd/C00qrI
-         n8Xg+cFR345516wD/FaZMwUjOIRbi0m+osgaZuPZ/qw0fSZ/RhzVQjbrYOtTXVHgHrJL
-         phNTpGZOlL0aSfb6fiiVf8ev9Su2wPWxV3QB11xgF1gHu/EbdrP0sZ3pfBgg9Dp/2PGu
-         Lv3A==
-X-Forwarded-Encrypted: i=1; AHgh+RrEj4hO52hcm5fFmxJ0Uwefp1CpYCiA6U56vsK6bKJn9rGZX8wA/GLdnXVUStLWbVdLRaA8SA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywva0jVl3CO8cE4dYkB2Mn8GR+cfHFRYXh/hYWM4cJWears/CNv
-	nyuKp/CiD304crAd5W6B8ywjvjksnlSIKifnMOaLot/Kwa7339n+EUny+HZunJrKQR3ikdadlzj
-	vN/vLbLWvzhjkK3dYMVIZOROQLYMZxcQmG+nVreFYaaYKQkHpA81RdcZWsA==
-X-Gm-Gg: AfdE7cnnR5DDwnANujT+eBUsaDufl5Mnqg7TMa58dMNT4O2PvYFoXJwDR5+S4CAmUab
-	HIIG5yAWml0EeNEoWMjWYNuRgaZAt+knZtrSUg6yeN9/+3md81z+f/a8oVJT5YC3q5PlC15NYm5
-	QystFNSdp1O5Sm+spA0v/8JFlBVv28M7cyqvkMTO8U/7o3jm/junUmerHt+CBGKORg7G4P4u7Qx
-	rXlskxlvbiuJqmI4txnyvDn2A9DAWfaxilzjANwkzuq0UoIvjwFLzJYuTYcfPZBkdabfkrOtNYC
-	F7TguRgus/ichI15gDl3FBCRWccEX3SBuVFhjtqZo/CCJNosDF6JyGI5NoP4mW5m68bD8tg5003
-	mfheBYmV1VOVpF7p4h4x/eOaoihLxseNB
-X-Received: by 2002:a05:6a20:6a09:b0:3c0:9c19:65a4 with SMTP id adf61e73a8af0-3c36c465036mr5496343637.76.1784170803873;
-        Wed, 15 Jul 2026 20:00:03 -0700 (PDT)
-X-Received: by 2002:a05:6a20:6a09:b0:3c0:9c19:65a4 with SMTP id adf61e73a8af0-3c36c465036mr5496321637.76.1784170803467;
-        Wed, 15 Jul 2026 20:00:03 -0700 (PDT)
-Received: from [10.206.105.200] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13cd4359166sm5611519c88.14.2026.07.15.19.59.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2026 20:00:02 -0700 (PDT)
-Message-ID: <205236d6-6d0f-b88d-99fd-b03decba6fa6@oss.qualcomm.com>
-Date: Thu, 16 Jul 2026 08:29:54 +0530
+        d=1e100.net; s=20251104; t=1784171619; x=1784776419;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=UM2OezOyRvHBevtE0lxLMLuRathg1UInDTjZPXP8nn0=;
+        b=kbYcORXgu7WADj94polcR2mU4WWpM8LCp3/fKn4u664IDlxjHYPnJymY2foYZNgAx3
+         LwoUrDkKn5qpa60pB1UOXiyoNKS1LEMLWDPn7xqBiByit59MUR60pynkryQWplGhu2Qn
+         UFTXTAe3lwqKiqm8dCiHz3JaLHVIyt2wvIjYOhOjm4nvGf6BchkPR9NcDow9K/r/q2jh
+         UcpvUIYfyztLEyErJtBIZxBnuV/BafdAngWAEethooptmDgiiNuYV2mOMnWCUoo/1F0T
+         uzvdJObdI3xxnhTcF7xtSPuR069LASn1TM3ouEr66Gerjx9EuC/Pm27SFfqlCrcXF0aL
+         1A2Q==
+X-Forwarded-Encrypted: i=1; AHgh+RooIHUDQmJqXp6xBEqtX6lY80QeHGze5FtKC+4StAt/CUTKINNZw37F5rLyn+y+nDMiqXgX+g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyz+6DF5AY8R6N+sgfTz4tbgE/993/gpOyfKAmVeDm0mo9EQTjm
+	DW+U9goaJvFx/mezIstIgysw+dJ+rHwlMN96F0gkMD0YHicRacV7CiKIacIUmO4n+G4jkQhsQ0N
+	YPBg343T+xZlAgcq7dLpodJyg16vHJnGndvR6l5CtZA==
+X-Gm-Gg: AfdE7cm6uNI1vv71fnnhxlNzlmfO1/g9GRzkA87A5BgPRS/m/P8DlnxznZlR3BpUxfU
+	3nDpem5qglxGeyaNL16Df/5cSe13hmgzG2q62Rp+4fqrlOZJYBICStmP4+KUeiQ4uPKwz6wCoGf
+	JPUouUSlz0Hw7ul4S4Ttr39r0crCVy4qvoiCoXiiPy6HX5kVDlgCfRCTjt3B2qT9VWynfqFnZFK
+	JZHzLHZYRuUGxGEceUL4hmQiYIFsUVEtYFKO+ZcqiBfQpPsFB0OQMMAoqLGTZh9
+X-Received: by 2002:a05:6402:d0e:b0:697:d475:9692 with SMTP id
+ 4fb4d7f45d1cf-69cd2a0067cmr5743576a12.11.1784171619065; Wed, 15 Jul 2026
+ 20:13:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v9 11/14] media: iris: Add hooks for pixel and non-pixel
- context banks
-To: Bryan O'Donoghue <bod@kernel.org>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, Daniel J Blueman <daniel@quora.org>
-References: <20260715-glymur-v9-0-8cf2cbe12a07@oss.qualcomm.com>
- <5bXXsqVEXaFsaBMxPP6AkG6XZFXCBP5B8YfjHjhTXuqrGd-XmP2eWPhNhH3LWxKQ_PWHTbdgIRh9AvROtnEHog==@protonmail.internalid>
- <20260715-glymur-v9-11-8cf2cbe12a07@oss.qualcomm.com>
- <65e09849-a27c-4d6c-9afe-934f08f802ed@kernel.org>
-Content-Language: en-US
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-In-Reply-To: <65e09849-a27c-4d6c-9afe-934f08f802ed@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: wSruV8BTC2WaDsZbjCpxCOlWZw4gdaL1
-X-Authority-Analysis: v=2.4 cv=WoMb99fv c=1 sm=1 tr=0 ts=6a584934 cx=c_pps
- a=rz3CxIlbcmazkYymdCej/Q==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=wOmbOZ9kRXkywvreR9UA:9 a=QEXdDO2ut3YA:10 a=bFCP_H2QrGi7Okbo017w:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE2MDAyOCBTYWx0ZWRfX33AytiRBTHtA
- LatY+DRULptYTkbtxmzhI2yiNv0bCLMul/pjlBG50MLa0GyLnZK9gMLcErIwBNO80CLVfoC+vPx
- o7x0+eYywp/j9px4JlS/e7+6lR0OdMBHsD/TMnopArh18rS2xZuWhOV/CaesfrsEsuDJIgBfltQ
- WKWK3sjiAaa2n+yQcOJKwGDiD4jB1zHL+tCerCCbYxe9+Ct2fHJJbjr1Ymn8f0IxYtQFF1nX/me
- 8OKdsL3tSRpyTEiN0gvsfmXXMhC0LxxUkbNNdr5P3yN/lcGL2Z2m1AQaZGDEVcuxvdxr+E604Vw
- YwZ7aVMGMYxlUV3q9d0W5ivdVCq7bnMyZfewx2wBAF6stu96ZulYQgbxfqYLJc7cRI60pE4TwG/
- NR2x0ikXoWgSKCw+XnXOUazbkVERS1Rv8e9W+Jwa8+WQUWrCAsSmMkOaHKL3MKWGSEbM1kOmdSF
- 6jSay7BBUiVrAOA0emw==
-X-Proofpoint-ORIG-GUID: wSruV8BTC2WaDsZbjCpxCOlWZw4gdaL1
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE2MDAyOCBTYWx0ZWRfX96uS2Yxo7dJt
- tdMaTgEpe5vpjZ9nOvidFt1PKNjeR77gVlkE6z5jBt+C19iJlgunsUMJiEuMs8NntSlRr1RVZsl
- 2jskSeRyDZsA5YelpaJe9DuwzB3Gj5Q=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-16_01,2026-07-15_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 bulkscore=0 clxscore=1015 spamscore=0 lowpriorityscore=0
- suspectscore=0 priorityscore=1501 malwarescore=0 phishscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607160028
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+ <20260713122903.9458-1-zhangzhanpeng.jasper@bytedance.com>
+ <3591a185-d0b5-4cb0-a0d5-ae9608a4e244@arm.com> <CAJF2gTT7TPA+K+JgkvvUtb0x5BSzfox+s5rG8OtrP0QzPetHFw@mail.gmail.com>
+ <20260715094305.2783-1-cp0613@linux.alibaba.com>
+In-Reply-To: <20260715094305.2783-1-cp0613@linux.alibaba.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Thu, 16 Jul 2026 11:13:28 +0800
+X-Gm-Features: AUfX_mwSlLuBkXLYWkCx82Cd69Su-eA8XLoXsfXduJDZmMHngIn0tQiburCm1Ms
+Message-ID: <CANXhq0pvrXDJyE_dA-3z2tHnVndvxOm7kLRvnF9T+_r8cUHXug@mail.gmail.com>
+Subject: Re: [PATCH v3] iommu/riscv: Use 32-bit MMIO accesses for 64-bit registers
+To: Chen Pei <cp0613@linux.alibaba.com>
+Cc: Guo Ren <guoren@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>, 
+	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
+	David Laight <david.laight.linux@gmail.com>, Vivian Wang <wangruikang@iscas.ac.cn>, 
+	cuiyunhui@bytedance.com, yuanzhu@bytedance.com, iommu@lists.linux.dev, 
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-On 7/15/2026 8:57 PM, Bryan O'Donoghue wrote:
-> On 15/07/2026 15:10, Vishnu Reddy wrote:
->> Add platform hooks to create and destroy those
->> subdevices, and wire them up for the affected platforms.
+On Wed, Jul 15, 2026 at 5:43=E2=80=AFPM Chen Pei <cp0613@linux.alibaba.com>=
+ wrote:
 >
-> All platforms are affected no ?
+> On Tue, Jul 14, 2026 at 09:55:19PM +0800, Guo Ren wrote:
+> > The specification is deliberately precise. It uses "may", not "shall"
+> > or "must". We should not introduce speculative implications that break
+> > the spec's consistency on RV32. The safe and portable interpretation
+> > is that software is explicitly allowed to use 32-bit accesses for
+> > these registers on any system, which is exactly what this patch does.
+>
+> The RV32 argument is quite compelling. The RISC-V IOMMU is a
+> platform-level IP that must serve both RV32 and RV64 software stacks.
+> Mandating 64-bit MMIO accesses would directly conflict with RV32, where
+> such accesses are impossible =E2=80=94 so any interpretation that turns "=
+may be
+> accessed using either a 32-bit or a 64-bit access" into an implicit
+> hardware requirement for 64-bit accesses breaks the spec's own
+> consistency on RV32.
+>
+> The RFC 2119 argument is equally strong. In RFC 2119 terms, "MAY" means
+> an item is truly optional =E2=80=94 a specification should express obliga=
+tions
+> through these well-defined normative keywords, not leave them to be
+> inferred from everyday-language intuition. If the spec authors had
+> intended to require hardware to support 64-bit accesses, they would have
+> said "must" or "shall".
+>
+> Given both points, treating 32-bit MMIO accesses as the default for the
+> RISC-V IOMMU driver is the safe, portable, and more inclusive choice: it
+> is explicitly permitted on every conformant implementation, whereas
+> 64-bit access atomicity is left unspecified.
+>
+> Acked-by: Chen Pei <cp0613@linux.alibaba.com>
 >
 
-Agreed, it's applicable to all platforms. Will update commit description.
+It seems that we might not need to worry about RV32. The
+io-64-nonatomic-hi-lo.h header will automatically replace writeq/readq
+with hi_lo_writeq/readq in RV32 build. Therefore, perhaps we can just
+focus our discussion on RV64: whether the driver should use
+readq/writeq to access 64-bit registers on RV64 systems.
 
-Thanks,
-Vishnu Reddy.
+Actually, in my previous IOMMU PMU series, I shared a similar view to Robin=
+'s:
+"Revisiting the spec regarding the UNSPECIFIED 8-byte atomic access,
+this might imply that the hardware itself will handle the split into
+two 4-byte accesses and internally manage its own trigger logic.
+Because of this, for RV64 systems, software might simply use standard
+8-byte writes (e.g., writeq). Delegating the access handling to the
+hardware is likely the best way to maximize compatibility across all
+vendor implementations."
+More details: https://lists.infradead.org/pipermail/linux-riscv/2026-July/0=
+94099.html
 
-> ---
-> bod
+I also checked the GitHub discussions. The IOMMU spec author seems to
+have clarified that the hardware should be able to handle naturally
+aligned 64-bit accesses from the software.
+More details: https://github.com/riscv-non-isa/riscv-iommu/issues/765
+
+From my perspective, since the author has already clarified the
+intent, it might be better for us to focus on improving and updating
+the spec to make it clearer. This could be a better approach than
+changing the driver to fit an unclear spec.
+What does everyone think about this? If we all agree, I would be happy
+to send a new version of the IOMMU PMU series using 64-bit accesses
+again for RV64.
+
+> Thanks,
+> Pei
+>
