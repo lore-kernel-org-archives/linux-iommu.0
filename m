@@ -1,171 +1,194 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011052.outbound.protection.outlook.com [52.101.52.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6A82931CC
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 21:17:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784323033; cv=fail; b=STC8rR7ELs+Z8+obcdlxI/unsn/7zy7kd6fuR1cUEcoOA4iIL/Y0hYOW4O3hyB/eRw6LqdKVaQEFW/f86bn2kWYQtGytDnwOXwdhUx88DLtyeOMqf97nzWE6haRfJTUY00azSOGzgOsx4LqWEMiATXXxzexQvfJRnwDOh87+oo0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784323033; c=relaxed/simple;
-	bh=2ToBXVtMisecpw40zoPSHu+bqDSS8wh5ZXYFXOnVFwQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Cy2BWiEnpZwBHLV04uA74f5A14UJMuGIsGoBG7z55ngS7nlSl6Ejr1mx1neZ34HrWRsG58ryJ1cXyqDDMC7A2NSCg72Z6DZ2SsdL3IYnBowOjtNEwXIHFtFxsAtINVdIKzLIRg+9P8hhZeBZlgOVspxlBBUeVoqBojXN19o+d0I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=VjJyuEgt; arc=fail smtp.client-ip=52.101.52.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86CC8367B76
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 21:43:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784324614; cv=none; b=Virtn7N3GxU0ULjg7gSEffaBFjUWSlsZST+jAdY3btwCN81K6gpa0gYf8fPtzB9JXoOhAnawracesmO2jmynaVX8J2hXHYpFMpwPW5MdGwfkQPsAZ7owppLTkr/bTLFr7FnZYC9Qfq4+RTNQ7GWrOhm+HCCubCe+QXHx+Q6KCF0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784324614; c=relaxed/simple;
+	bh=hnpcUpkk///hUDHKjCL3LkQz9YwT/XI/fDVujSOOcRE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jpMBFMnMOfFDwh7CS1Amq0HOcRBVcuSm3hFhTPoSaFaxMdceclhC2k4a+z5Y5iCDTOU9TfwmvtpQ904riI5Ma76/lutBu+IICDbJk6mseKdXlEhrWAzUSTgtAXPLtlALN7PJ9TpO4gj4w72v3Maw/BLIYlpq1RvHLpJrtrW0Kz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=blPDLjut; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="VjJyuEgt"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=T6IyvfebBC2/VfVbiaPMUIwhNOLnm33zrVNgnc/GYJx+huzkbm3VX+eM8OjHXC6qpDBIrpQuMXuj7+Z2MoRbyeXg4owOraQMG5o6o+ZqRBwRSeS18V4/OlU859j9uawYAm5+EhqJkyvSrtQkg/9AVXZ+Xd4aF74pROSrNIImdVqzstQ3oRmC/uxBPVCLwij47MYTgPxrH4QPsSHQpwtofdJGx2iSnnReEQua4VLDKTKxrS3QaTR4ZPXJo1hxZVkSdFLfT3LnpRrtRIwpidKIcRpwr629ArQP9rb06qUj18Zg8bKFDHwPicPgJ54eveo/tWDJoaLpdqyqa1WaL0VqqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1CT0EbR6A+J8pw2YOPlSdewjShPvq9O9oTH0IwGZ6kg=;
- b=IpElM/hnTO0pzXc9Js9r28Yingl/kHK4mRCfpj5IVosloJIB9AMwzAQH04BUwHwgQ54Zxe6V0PXoFTESqRtMwSKmNiLLqCFdQ4hh68DWpiYeYCr8MK9dZMp/MkXmUrpKraxKaTRXLvZ8CP/IHIV/8c1insmnIpkBkv2EdEBUMxBkfjIM8aOB461Q2QbX0/wE+w0POc3c4FfBu6rGqBPqXPGhpHJpFBArJelLIvP1N6rUbmUs4j/sY5z7F8IrSwIV0zSBN76UCyt+ctZE9RwZnm12PN0DMDqEoyvlmMWLh0v63BHgOe24d2RDX3ln8iMwOjpmJL9wtkr9dwPT2w3/uQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1CT0EbR6A+J8pw2YOPlSdewjShPvq9O9oTH0IwGZ6kg=;
- b=VjJyuEgt5BJS5a6zepbkZSd/Fsjs11Jt558lQg+QeBI2O4eF7AH0P5nW7afk183yHvY1j6/fbdVKLwM7LP/tHXFVOGQe1Pq/uXCLdyrPVrxI4fcMcDApULE3M3W3ZBiJTW0/sN7ppPkUt8LH08uy1NyiFM2veVBq1XQ2y3S4rPW5b24GcbARbq7kGGmwt43wqgeNa1G+qncXY/jmgcPKHT1L0G1WK61z79Oy6urFnO6Fz1DMZ3jP0TrBkS57XIyXN3uPFrqOZUTjz4WRIKIY9A8xIOezcKSGpSWKLEPOp6yfByPXuxc4xecBpZ1CGINj2LmI4lvChctk6j+csiG9VQ==
-Received: from CH0P223CA0008.NAMP223.PROD.OUTLOOK.COM (2603:10b6:610:116::19)
- by BN7PPF0D942FA9A.namprd12.prod.outlook.com (2603:10b6:40f:fc02::6c7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.13; Fri, 17 Jul
- 2026 21:17:07 +0000
-Received: from CH2PEPF0000009F.namprd02.prod.outlook.com
- (2603:10b6:610:116:cafe::5c) by CH0P223CA0008.outlook.office365.com
- (2603:10b6:610:116::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.223.13 via Frontend Transport; Fri,
- 17 Jul 2026 21:17:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CH2PEPF0000009F.mail.protection.outlook.com (10.167.244.21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.245.5 via Frontend Transport; Fri, 17 Jul 2026 21:17:06 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Fri, 17 Jul
- 2026 14:16:58 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Fri, 17 Jul 2026 14:16:57 -0700
-Received: from nvidia.com (10.127.8.12) by mail.nvidia.com (10.126.190.180)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 17 Jul 2026 14:16:55 -0700
-Date: Fri, 17 Jul 2026 14:16:53 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: Ashish Mhetre <amhetre@nvidia.com>, <catalin.marinas@arm.com>,
-	<will@kernel.org>, <corbet@lwn.net>, <skhan@linuxfoundation.org>,
-	<robin.murphy@arm.com>, <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-doc@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH v7 2/3] iommu/arm-smmu-v3: Introduce CFGI/TLBI-repeat
- workaround infrastructure
-Message-ID: <alqbxaKVYFX1BZR5@nvidia.com>
-References: <20260714104202.1664187-1-amhetre@nvidia.com>
- <20260714104202.1664187-3-amhetre@nvidia.com>
- <20260717201841.GC701389@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="blPDLjut"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2cacef7d299so223195ad.1
+        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 14:43:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784324612; x=1784929412; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=IOoEkiQgKR8GN4dBbuTr1zjhYxhyxaeDiS2y4HIEAzc=;
+        b=blPDLjutyaLv++s5jtV0qTvhIRoQr8DAPqVFIbmPxQSmay2mgpj4uEm7a9i0skdJB/
+         uFTdtfPUMXdtbGhxEPUqcz7HoF3LMZzq1zfYhoBVoPJemz8Hi7gp4j1B8dZI41y1/JLc
+         7FG9KKVha1XutHfU/QeqxmZBUra37AG0jblkge20lmkjYBg1yvGzNqUgbe34Wh1WTv83
+         moOUy4fwWq/AVMuCjwLq1WEN2iBqxAF2y0zfd6/wM0rsgGaJZGlsDGmcI34BVpmGBm8Z
+         o9ubI5G25QhCyPJiPugXHM3DRZiepGItMmo8BQcXUg7+aRR/u8N1ykUAe67aw6WKJmVB
+         W0pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784324612; x=1784929412;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=IOoEkiQgKR8GN4dBbuTr1zjhYxhyxaeDiS2y4HIEAzc=;
+        b=pQt/OzIMbdEZwhynw3ugo45ILID0KDBIOd3ohh7VH53fF47b5XjlW5OOZ8p1VPMMv+
+         PcnluA4DNMNxA4mMsgwhxabkZZYzg/1Pq007Un6HR0ND+V8K9yEbsvvWkQ//pgrT3Qtj
+         LYHx2LLeeDWk2s2w/HUBoTiVQfUld90tc1jOUFkbiO3bGhOj+/S5xzBiUCk882WBrWai
+         Ro5SSffpSnid287I43TpMgKey9jZfQC8eEMCNL3Hn4Bd5kzZtgRoFSUNXE/45CbnN+BO
+         cS0k411UXUXov6sw/NQDEcaDhn4xDO1SpGkS0iPP6rG82QiRc45TKvNmR2lnCpc1jkVh
+         Mm4A==
+X-Forwarded-Encrypted: i=1; AHgh+RoFXAAi0A3jfIEIUrwHfP9LzLm1XjE+OXjdqKXdWYrVybiAgvecf6EXtbp0BSBQiMQxi6K0Dw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwN2oGLtxAnIOREyuvu0ulb2vAbKK6df2jIsK+BmPnXUpjC1GPm
+	PpFQBeswT2GVEGpKARkcFwh05d0yCkTHf2arS8XLVqqzWMCt7P5s9JW/WHF995KVBQ==
+X-Gm-Gg: AfdE7clmnyrC4yYnbWLsWLXRhnccWj+eHOhnSXlhQbaqDVLYSib5X9AkG7M+88jByHQ
+	K0cpLIFy8ab52O2aRHVIO4q/LrYMFzmRymUkyIO7qqTKMHzGFmqFWFGwRXX1VpvuRSv9QT1F+/6
+	cFktmO09NoWck39h2ucvPa93E33qndM4eAQ/R6futPt1wfCtwl3YUrVph4bH07TdWJK5LcDfZ/X
+	1+9yAatUhgPYnK5wzTnS4qPDD9kAXaUjhmErWFCnvM8RR3TuBioxuqaQWOzXMui5VOxd0fx9shW
+	wJ/6imwcjtJVNC9aGDwIQiUU8TdfujcCwsfsKHFD8/a9wuyT8E5830P2of4zQ2zjs/LDgUfsQIm
+	C8lXOBcbuhBkuNo3hp+/D0Y+0YbZ6dFtKBeV88Pe7iZNOk8tRDR1t2HaZcFyYx7r/tk4GjiNpYG
+	Zr5y2Rv2BSPzcHA/tJNp0WFyFErr/prVD9fWcmYrkkjSUuwOQ=
+X-Received: by 2002:a17:902:da85:b0:2cc:9473:97a1 with SMTP id d9443c01a7336-2cf45aa8fc1mr1052835ad.22.1784324611243;
+        Fri, 17 Jul 2026 14:43:31 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3142a20b1f3sm10613093eec.26.2026.07.17.14.43.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2026 14:43:30 -0700 (PDT)
+Date: Fri, 17 Jul 2026 21:43:24 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+	kevin.tian@intel.com, smostafa@google.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, jamien@nvidia.com
+Subject: Re: [PATCH v8 0/9] iommu/arm-smmu-v3: Adopt the crashed kernel's
+ stream table for kdump
+Message-ID: <alqh_NVatGn84o0i@google.com>
+References: <cover.1783729633.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260717201841.GC701389@ziepe.ca>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000009F:EE_|BN7PPF0D942FA9A:EE_
-X-MS-Office365-Filtering-Correlation-Id: 442c223d-dea6-4aac-a97e-08dee448c178
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|82310400026|1800799024|7416014|376014|23010399003|6133799003|3023799007|5023799004|4143699003|11063799006|56012099006|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	j1KL3XNOyAPaS9KtfVJCeR8lJ7NbrNuDBqsp9PSTBAxS3fNLp+xdhQQpiIzOaW0jWH2bxSsgRJTMDnvIkXYz+KXSWMicUM9MfIWORTf+DuaBkh/NutyRkhJq6zJLjwBjBjPJvy8v3JyVkrmiO8GmGZc+O26YbtdKX5Z2iVgDjfu0FU+tDmhYOVK9SfzqPIO0lrYpvEd0N8R1WBvJM4BjmrLH5UfV+OC/6bxBTKo6b077MmMNwdr9M5J7rO/6/3ZWisdHN4GtFPWhf7/PjJ6VKLr6t1HP0oOWlSOSFxyn16dbDkGFSwCTv6JSGq4U8NsR5DxcXZqFev+AgRxb0RjS5RD1twxM10Z7d0bp/ufT1LZXrYsYDvHGpxoosB7oqNt+mdqpMjhc8g3Zqt0Arxq9G6opXIuhS8ubnchccJm/yZeUCouzY6W9/xDEqGKXbhAcDNDvzChNVzHexSouye8UxBlbrjvvZk0PGjgEZMcb4j719LL3PNeoqkSfoRud8UaWRNBHYQlNZPvbnvyMYhFRbehkadOrnDIIUuLrZ9zLsQsTeRccjYPBiG6szteKktQGB08HiFsYm1nhV0hVOqhU6VgWlf55W0lwzlNOiL2DCMBGbPdfm5EXfJ4SYTN6L5FLaJjHuw4xdMHzGftdfyy+Y3P4DBsQ4CervfHN0LVusMAwSSzP1pDFoA1J7w+17wLqkJ0jwwl982JxFDH1/AN7vQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(1800799024)(7416014)(376014)(23010399003)(6133799003)(3023799007)(5023799004)(4143699003)(11063799006)(56012099006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	WF+oZbWQYg/Q+tdWeeC/9EYKxMlsbs2T2ZIlxl8PrzIrZsOpjAIfK9xyzUaZ3yzFn77yeF96Y18VIv5yjxGcL1QZOblssUXXAqmLev01PFy0dPKahEkTFcOgdBGJxfNt0sGGkE/pZ6hFj2PXL/Q7vbHuLhdDBT7JbpE6cYprk5Q+ktUOKVYFE89jMtY6kQYiwBQd3SWIY9Pi80RdFi8UUdqcJoiJk+svZTA9pOPkTK/7NlkuWURnxIQGMzEtXT8z93JQl3ARwcGKqc4E0FGhdZUBjLfHdTbirv0nUhGKwAgD4P+uSJ7aRGQNIZ3kD/DbFXF1oPUnSIsutXXGnBm4FJTHCXF5vnfvqP2vTHj3e/PskxDQLs9zhpA7ypIQ6upO/FoYOxRPQXg/7xCBCjvfJ4QHVzVFSCTGJurrOaHqocDlbdB6ZY460zlxtFi0D5XO
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2026 21:17:06.6581
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 442c223d-dea6-4aac-a97e-08dee448c178
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000009F.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PPF0D942FA9A
+In-Reply-To: <cover.1783729633.git.nicolinc@nvidia.com>
 
-On Fri, Jul 17, 2026 at 05:18:41PM -0300, Jason Gunthorpe wrote:
-> On Tue, Jul 14, 2026 at 10:42:01AM +0000, Ashish Mhetre wrote:
-> Because the VM has access to VCMDQ/etc it can issue commands directly
-> (maybe not on this chip, but as a general comment), thus invalidation
-> errata need to be made visible to the VM and we need to expect the VM
-> will generate invalidations to properly deal with any errata.
+On Fri, Jul 10, 2026 at 05:52:41PM -0700, Nicolin Chen wrote:
+
+Hi Nicolin,
+
+> When transitioning to a kdump kernel, the primary kernel might have crashed
+> while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
+> driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
+> and setting the Global Bypass Attribute (GBPA) to ABORT.
 > 
-> Ie I'd expect the VM to see a "nvidia,tegra264-smmu" compatible string
-> to activate the errata fix.
+> In a kdump scenario, this aggressive reset is highly destructive:
+> a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
+>    PCIe AER or SErrors that may panic the kdump kernel
+> b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
+>    the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
 > 
-> If so then we will already get duplicated invalidations here and then
-> we will duplicate them again. That's not great.
-
-Oh, that's a good point.
-
-> On the other hand if you want to emulate a generic and actually
-> functional SMMU device that has nothing like VCMDQ/etc then you must
-> do something like this in this patch.
-
-Tegra264 has virtualization use case. And It's built with VCMDQ,
-which should be the default case than the generic vSMMU case.
-
-> I was imagining a general direction that we would expose the errata
-> information to the guest and the guest would have to deal with it.
+> To safely absorb in-flight DMA, the kdump kernel must leave SMMUEN=1 intact
+> and avoid modifying STRTAB_BASE. This allows HW to continue translating in-
+> flight DMA using the crashed kernel's page tables until the endpoint device
+> drivers probe and quiesce their respective hardware.
 > 
-> Given this is the opposite I wonder if we want to do it. It does make
-> sense for a chip that probably doesn't have vCMDQ and I don't think
-> qemu can even create a DT description to trigger the errata anyhow.
-
-I don't have the source code of the VMM used on Tegra264, but I
-believe the guest kernel can be the same copy of kernel as the
-host. So, its VMM is likely to use the "nvidia,tegra264-smmu" DT
-compatible string, to trigger the errata at the guest level.
-
-> But it starts to become confusing down the road if we decide other
-> invalidation errata (like the CONT must be RIL thing) must be delt
-> with by the guest.
+> However, the ARM SMMUv3 architecture specification states that updating the
+> SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
+> 
+> This leaves a kdump kernel no choice but to adopt the stream table from the
+> crashed kernel.
+> 
+> In this series:
+>  - Introduce an ARM_SMMU_OPT_KDUMP_ADOPT
+>  - Skip SMMUEN and STRTAB_BASE resets in arm_smmu_device_reset()
+>  - Skip EVENTQ/PRIQ setup including interrupts and their handlers
+>  - Memremap the crashed kernel's stream tables into the kdump kernel [*]
+>  - Reserve the crashed kernel's in-use ASIDs and VMIDs, preventing any TLB
+>    aliasing with the kdump kernel's own domains
+>  - Defer any default domain attachment to retain STEs until device drivers
+>    explicitly request it.
+> Most of the kdump code is added to a new arm-smmu-v3-kdump.c that is only
+> built when CONFIG_CRASH_DUMP is enabled.
+> 
+> [*] For verification reasons, this series only fixes coherent SMMUs.
+> 
+> For non-ARM_SMMU_OPT_KDUMP_ADOPT cases, keep a status quo since the commit
+> 3f54c447df34f ("iommu/arm-smmu-v3: Don't disable SMMU in kdump kernel"):
+> full reset followed by driver-initiated reattach, potentially rejecting any
+> in-flight DMA.
+> 
+> Note that this series is no longer treated as a bug fix, since it has grown
+> fairly big and most of the kdump code now resides in a separate file. For
+> folks interested in back-porting the change: a v6.12+ kernel (since commit
+> 85196f54743d ("iommu/arm-smmu-v3: Reorganize struct arm_smmu_strtab_cfg"))
+> would be still compatible with this series.
 >
-> So.. Maybe add a comment why this one is different, or maybe just
-> disable FEAT_NESTING if there isn't a use case?
 
-Given the use cases on Tegra264, instead of patching the iommufd
-path as this patch does, perhaps we should simply spit a WARN in
-arm_vsmmu_init():
+[...]
 
-	if (static_branch_unlikely(&arm_smmu_erratum_repeat_tlbi_cfgi_key))
-		dev_warn(smmu->dev,
-			 "guest must WAR the repeat_tlbi_cfgi erratum\n");
+> 
+> Nicolin Chen (9):
+>   iommu/arm-smmu-v3: Do not enable EVTQ/PRIQ interrupts in kdump kernel
+>   iommu/arm-smmu-v3: Skip EVTQ/PRIQ setup in kdump kernel
+>   iommu/arm-smmu-v3: Add ARM_SMMU_OPT_KDUMP_ADOPT for kdump kernel
+>   iommu/arm-smmu-v3: Destroy vmid_map ida via devres
+>   iommu/arm-smmu-v3-kdump: Reserve crashed kernel's ASIDs and VMIDs
+>   iommu/arm-smmu-v3-kdump: Implement is_attach_deferred()
+>   iommu/arm-smmu-v3: Retain CR0_SMMUEN during kdump device reset
+>   iommu/arm-smmu-v3: Skip RMR bypass for kdump adoption
+>   iommu/arm-smmu-v3: Detect ARM_SMMU_OPT_KDUMP_ADOPT in probe()
+> 
+>  drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  48 ++
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c | 579 ++++++++++++++++++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 246 ++++++--
+>  4 files changed, 806 insertions(+), 68 deletions(-)
+>  create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c
 
-?
+This series seems to align with the restore part of my SMMUv3 Live Update
+(Kexec Handover) support. I have a WIP series in dev on github:
+https://github.com/pran005/linux/tree/wip-arm-smmu-lu 
 
-Thanks
-Nicolin
+While going through the Stream Table adoption code in this series, I 
+realized there is significant overlap between how kdump adopts a crashed
+kernel's SMMU structures and how we restore preserved SMMU state via 
+Kexec HandOver (KHO) during a live update
+
+For e.g., the KHO preservation hook in my series explicitly tracks and
+serializes the physical addresses of all active L1/L2 tables into the 
+KHO Device Tree so the incoming kernel can kho_restore them.
+
+However, looking at your approach, I think I can slightly rework my 
+preservation logic and instead of bloating the KHO ABI with physical
+addresses, I could re-use your exact table-walking logic during probe
+to parse the live L1/L2 structures directly from registers, identify 
+the valid tables, and kho/dma_restore them. There could me small 
+differences though, for example instead of memremap stuff, we'd have to
+use the kho/dma_restore API (which can be done by passing some op like 
+the data structure writers we have?) Similarly, maybe reserving ASID/VMID 
+can be potentially re-used as well..
+
+Since, I plan to introduce another file: arm-smmu-v3-liveupdate.c and
+given how much of this adoption and restoration logic is re-usable 
+(parsing STRTAB_BASE, walking the L1 array, restoring L2s (not deferred
+for KHO), I wanted to start a discussion to see if it makes sense to 
+factor this common code out into an arm-smmu-v3-kexec.c (or similar)?
+
+I'm not trying to delay this series by any chance and I would be more
+than happy to rebase my Live Update series on top of this series and
+refactor to share this core logic between the 2 new files: 
+arm-smmu-v3-kdump.c & arm-smmu-v3-liveupdate.c 
+
+I just wanted to start and early discussion since there's some overlap
+and align on a way forward.
+
+Thanks,
+Praan
