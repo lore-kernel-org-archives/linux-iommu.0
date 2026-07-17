@@ -1,151 +1,132 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB73E2D77F7
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 15:23:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CFA7315D40
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 16:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784301797; cv=none; b=HBiL1sMmRKNR6XYQSlPIN7xHOnFDCx9P07Ci4UYC6RyJR9J38ru5XyTFguWrFqjVzHRnAwMy72CJEMy1/KTN1oe/FWf12okS8zsN35G3DOXB54XKfkoyNuvU61hHNLkRxaxN4WUgK1jALZWXe21Gsdm9ibGlXivpt2e9t1XzDTw=
+	t=1784304441; cv=none; b=UCSxuD5lfeTAkRPjQvedG+BQ9/3pK7nqpcNo/3/OKAW21IJm/zCLBYvdLAfzgxomYkwtPWepf+Wm6sxQZZAOFEMFpPFVxhL7fY9yDfpM2VPWU7phVyVdrSk8DY6JviZqCO18DMa/qh9r2Aaiy7aYwK8cqdwxX6RXMIb5o1/AGpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784301797; c=relaxed/simple;
-	bh=PXO7mXcDt61ktsRe7mrMIbSAZ/ex/y1WeRT/rwpn2TA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=amU9U236mkbLuGVntA93LSeltr6jQMolhiuiPNryjVH+f0KBaplbZiUh8QJaOoStu9oa71tFeQLW+RLUgQLsL2HKgAADg2BmrC2SZ4OBrI0dBvcS6rQuhocZS/Cw1a05LSD1l5aYi/DXQh1LWdtBnyQx0cLfA+WyRINmugbfrCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=JWp6PcNk; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=T8z+wuJs; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1784304441; c=relaxed/simple;
+	bh=iVyrSwrZmNx4bprcJ7yvv2W/LjWegRQAvxGt7YUy2mg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DtdAhWJezAiTyNecyYM+4+oA5gmNSXDPys+NJaYClV4tuhNQjm/KaOR+voxY6mOsp5Itucm1BV3PJqE4NwFVMta3KtaYm7/w0sIxIDY7nZlB9Pt4dfOXnofSYZxYmAmh74Gwx5TgEOHSq77p5nnmbmzmvsLnZ54IN5Iwee99V4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PVglpI6y; arc=none smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="JWp6PcNk";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="T8z+wuJs"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66HE7sLl1838948
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 15:23:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Kg+DjNoJWRRRaQne0rluuevQFJgkNzMrGtxjrFO36JQ=; b=JWp6PcNkNCnGbC5p
-	6ZlhQ53/tdiuHSSgP7E9U2cmke6LOok1RO+KLkO5WfgBJgq7dECSQHGU0TRQmtTH
-	QZ4L3gUJ70lG6kt8FIZiPnapSwS78kkqGt8lbP8bI8kb1P00yBwYbB+WIbkyYbB3
-	MRYNk8r0Fv36FIz6agGaOevGWb2ojofmKtvYvoFOcCsPANZXHLTrc7ONzGxbm+7d
-	xHdcTTjGmmRl0cwUb72l4OaiieFszXFpbMtjYzYE+HJJZsmUCfc0c6cOlB4l9Khh
-	cmld+nrpkLQDtpjiR3gdHRg+m0uFfo0vVBqVjvfmD/2jCDpX8OReHYzDzeWUun2Q
-	xfCtHw==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fffag9wsm-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 15:23:15 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-51cab6f7517so11875661cf.0
-        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 08:23:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PVglpI6y"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-51c0cea8883so19574881cf.1
+        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 09:07:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784301794; x=1784906594; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Kg+DjNoJWRRRaQne0rluuevQFJgkNzMrGtxjrFO36JQ=;
-        b=T8z+wuJsBkxYFdR7ZRW0sPOox4BGVALDi4wmEqgeM5wzB59ZE3KbRFbVu12XmVk/ex
-         QGeW0Y3Ap0++wpU02uFiihF76P4zu3L9S3z5bplEhAbUSuAGwnJvk1qIfJar/PJP0tei
-         XLhaw7CEMd5WVp/d8ctSJ8FJ8GIWdKjyYuwP/H4dBBJi+mOHK0X/S1Rv6Jt5CSuzlmkK
-         /C+Zb/fLxS+Xd12qJHxYixFvp5sdRVwt3RxwsoaaFqB5GQgLJAOf9qsg89sGljfVindb
-         6TXQBdZ19z88gBLH1DaaHAiADHwNPHAbv6Yqiu0QvvVl2Vxsxd8STCEwaOFiFWdHsN24
-         xOFg==
+        d=ziepe.ca; s=google; t=1784304439; x=1784909239; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=iVyrSwrZmNx4bprcJ7yvv2W/LjWegRQAvxGt7YUy2mg=;
+        b=PVglpI6yiChV2alwRp3ErX1BpiZbP/8QBkBderHcls/e4tJy7TUv46ML3xoI8myZ69
+         6y2WpURhUl0TkkGdVB0d/9mVGYkkFBN2aLAiMPAoxcNccgBn02/C66tdyAb29HhOTVTM
+         S5e6p/p/224RNNXDVu6vPBbh47Yi8lLWjforRuIbaQEb3alxXLvMaZoYNJYSdXqsf2x4
+         R0//Uzh+qexhRWP90BBQpV4AbBtLZTgRKfmi1Xm0VLd8PHTJduaPSU6xZD+Xl67bR1C4
+         FEzj7WSaPnP+5xCXG590f67KolT9nFvymUR7n6rAc2JcgP0fXrj43nFU7gPvmVY4PoxW
+         HTfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784301794; x=1784906594;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Kg+DjNoJWRRRaQne0rluuevQFJgkNzMrGtxjrFO36JQ=;
-        b=lVKdWpje9LvK8mDGr9Ztu5FiYEc5IgwLGib5m8/wHaeW5eCZFWsYO47KGB5rxOUpZL
-         5IDGM2w9Nv1W4slAYPFLmOPy2HaOfdSwf9ktrjx0p8rP5aKQhs+N8zBvRgNSQ3tEcNue
-         JQGaPV+Zk9cey35F6kzwVghRiJwZNaYYLQl1rgRplimnAfUPbFlYEO232WVQD0TpcC3h
-         upzlVP/wroO8JlrV9o8M3Yq6thaGarHyTslDh8BTDTWEa/7O+FJqg0qWBJ4nXMd1WzIs
-         UEPC3ExImqDw4mKU9otRkggvYpaVtBIdswqWtZlWSm9ztaTZ1kw3hBc9wrK9lJw2xufa
-         exfA==
-X-Forwarded-Encrypted: i=1; AHgh+RoybWrUDx705UxkTV3KKa2w5G+QeyWcB92/4ebrwC7GLfLN9tm5qcLC87BHfwLJn3bH7T1JEQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx0eLjEtWgJQZaS0H0hSxbNF2akS90REaWliOcf4iRrCmXnQlZk
-	u/wawiPVQx0fLdgLrUfVx9163Mrx4T0Ew5a/Dis8zLqFO0duros59qfNzxDvGsaNUELfUmz67fH
-	RJa9w/MWnEB/Lg69iLXk/VIEP+psStOYn2LA/kQJpg/NA7/FUpRynlO1NVA==
-X-Gm-Gg: AfdE7ckJr1GOhSpaOTmgWP0/68dHQRb4av2zAeMnrvRRmGsVXH0z+2mGYuR7G7gXMp7
-	rRwmjiLX5nndpoPrkIdpf9qXiNXZRV8ru1exdYzvqicE9YiksVNdajQxZQt7YhAPXItuGl4vqrq
-	hsnf4AJVZQEYrqYr4vZi7QxhrjfEwC6SPxM2x9LzmV2zt7FcVTelYqNO5NMgaO8nUFu6NJt55kC
-	wiOCuxK+9o16XDnKkPwSMzp6OF9T2/0z5230LB75NPHsEcSTiIg8hajwcKzfoZPQuV2Bkv9aevP
-	cUY9AYVsQrKtRC9dvVTnI3ZYOGhwo9qX0+LLZ0g3QSF7prwS6zPja5ygzxjT+pjVkHEqrxYzeER
-	MZ+p369WJ/LF0/MfigS3jpNeM
-X-Received: by 2002:a05:622a:aa43:20b0:50e:6311:7380 with SMTP id d75a77b69052e-5213f861e58mr17403901cf.6.1784301794119;
-        Fri, 17 Jul 2026 08:23:14 -0700 (PDT)
-X-Received: by 2002:a05:622a:aa43:20b0:50e:6311:7380 with SMTP id d75a77b69052e-5213f861e58mr17403631cf.6.1784301793724;
-        Fri, 17 Jul 2026 08:23:13 -0700 (PDT)
-Received: from [192.168.120.193] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1724f50b83sm93452766b.45.2026.07.17.08.23.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jul 2026 08:23:12 -0700 (PDT)
-Message-ID: <1648f409-afab-4b2a-907d-a90de62d6bb2@oss.qualcomm.com>
-Date: Fri, 17 Jul 2026 17:23:09 +0200
+        d=1e100.net; s=20251104; t=1784304439; x=1784909239;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=iVyrSwrZmNx4bprcJ7yvv2W/LjWegRQAvxGt7YUy2mg=;
+        b=FM3XArBjDwHSRKHeuF2zQYrOyft5zga5kvYs2kQRRvuHZeOZQ3naMCnh326uY6xnMD
+         YNNmUY3cQ0z3ecAmoLpJuE4Uy8CAD5Hq7JketFxBROOpAWi7WXPStWGcPeILQDMy+2Cr
+         G9HfyxlHQB0NFZ5PLTjXxuWctrJcvJp7DYfPhUjzz7yORQKEfmmBtKQAt+wNG4YOVFvP
+         FitBZJTieB0f9NhvT0gUcW/YtVR9O88Wjbc5+bTqafauFs7Grw/p4zU+o5wrZr1MMpCN
+         jlLJi7IxAg2RVaLh5rgkpkWtOXm7fExRhDjHxyvcr6bh0Hd/z1856A3dw93Ztl4xKEbr
+         snzQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpRcejqXKSnzB17aPAA2Rbv/GAuRax5419ZPKas3YiFBBuDZq2BKJX/25YXNVhzHAVZwp9Hzw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTjy0XIc8BfhdyCAStziA3F1+iBokypdGcoYHx24xW6dHU1Jgl
+	ka3/VqZgmAoEa++QzcwRfd0YB5ENYsVX5adNiwHYyD2EnZ9AUoTAyY10aw+9aoq4hjY=
+X-Gm-Gg: AfdE7cmPJbzL2Q7XfG8nTLSm3TQikfxxmHcidwUQb27KTP61Rq3hNdgZfpjc9x3nTze
+	a9wy5RiqxU5WQgxcy0INRtG19j1P+EVCEJ3wNtcbcsKzi1BsxJWxiQ2nHoE8k9c43C4uTQV/gKC
+	0m8aEpH3aIH6SnT/thirCApqNWLaaSJTOUHPEMvCPkqwJ4wfXA0S4XMeMAtLo9WrBLewMSBtp1Q
+	FZh7qjgwyzJd+vJBLoUYsUnu2nAk+a/Ro+Kh92wwcqJ1BU7OrKAElVwNFiBGAm7QsJ2JVBr3Uw+
+	p/VZNKmHUnf+edu5QrXpyAUZJa0tWZGH2IvBThq2RklxaUcZbBSzYdDwboW+u54Ls7ll9OVoEGo
+	2OtbVcP0GzexLcK1a1DXxZr+KkfbIDUIEALhoI6d3mbt01ez3KA==
+X-Received: by 2002:a05:622a:1b12:b0:51c:558:cbbd with SMTP id d75a77b69052e-51fc214bd5emr69273551cf.41.1784304438760;
+        Fri, 17 Jul 2026 09:07:18 -0700 (PDT)
+Received: from ziepe.ca ([159.2.72.92])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9077871d06csm20242736d6.43.2026.07.17.09.07.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2026 09:07:17 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wkl5o-00000004hEV-4513;
+	Fri, 17 Jul 2026 13:07:16 -0300
+Date: Fri, 17 Jul 2026 13:07:16 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Konrad Dybcio <konradybcio@gmail.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>,
+	Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+	will@kernel.org, m.szyprowski@samsung.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, dikshita.agarwal@oss.qualcomm.com,
+	Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Robin Clark <robclark@qti.qualcomm.com>,
+	Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+	Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
+	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+	Loic Poulain <loic.poulain@oss.qualcomm.com>
+Subject: Re: [PATCH] dma-iommu: Introduce API to reserve IOVA regions for
+ dynamically created devices
+Message-ID: <20260717160716.GA701389@ziepe.ca>
+References: <cfd23f75-8952-4463-abd5-815b995031b0@arm.com>
+ <bb59f07e-ca7e-f012-6a4b-0a148350b69c@oss.qualcomm.com>
+ <20260612172649.GM1066031@ziepe.ca>
+ <da77c21d-25b3-46c3-a48f-71f0549e9f5f@oss.qualcomm.com>
+ <20260615125257.GS1066031@ziepe.ca>
+ <dcc0d02e-91fb-ddbe-399a-0191bab94c4f@oss.qualcomm.com>
+ <20260617194038.GC231643@ziepe.ca>
+ <e9e76c9f-b3b1-4ffd-9547-183556f6bb60@kernel.org>
+ <20260618151745.GD231643@ziepe.ca>
+ <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/6] iommu/qcom: Use devm_pm_runtime_enable() in
- qcom_iommu_device_probe()
-To: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        Alex Williamson <alex@shazbot.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20260717144608.3216274-1-mukesh.ojha@oss.qualcomm.com>
- <20260717144608.3216274-3-mukesh.ojha@oss.qualcomm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260717144608.3216274-3-mukesh.ojha@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDE1NyBTYWx0ZWRfX1eYkpZzYT74O
- sNnAri7iMtLmYX1kA1XkYMVr3TPFYyN4h7ei0w/nCwp9nnwG9oNB9tlVF859WxpO/SZluXjxYLj
- iex0eiyW/4yGNXn8oZa81dMVpDFZHxHiduMKyt+mWY7Qqrjs6p/ue2inblbAjwt+062Vm+bGnEV
- /62DjFtbcvKO1AMT4bUJQnH30N3qNfljx32ysF62XH0GdEsbYHq+bHuabGstwfErJGTW0yo9s8u
- 2eGTB6QVUVgLT4eiSsID3pSPRRAnilKt5nN7mAZYlLDOMLyRsszXCef3K/Xc5n+Zk9c7qnjN6ok
- vrnkDgb6nQrnKbhj8rLc4FGB+DyMS88++ZN2Kauk4Q6HXZOl4hAPJ6q9vZHqcfLMaAP2RbCFGDb
- 5lHs3l2SAZSAVW4VnE6oBlkLPHxYUyCiwK5qSmnLJUCE/nn0nus+cEJ9ahpSAnjxTFK3gpwQOVA
- Q537mQ+0r/L3qDuh6jQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDE1NyBTYWx0ZWRfX50bjAskkOJfV
- Hhxw9INt+/I/nDmdGYRm1C8pjIS4KlPrAcHdSobMTaUL6LdutIY47pAgq0yJDH3ccjgXrHbNLUn
- yl8eMXR7zJJspRt/1Uu3wga1KB0614A=
-X-Authority-Analysis: v=2.4 cv=KZfidwYD c=1 sm=1 tr=0 ts=6a5a48e3 cx=c_pps
- a=WeENfcodrlLV9YRTxbY/uA==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
- a=EUspDBNiAAAA:8 a=xoj3hry2uz_LQgjbiWAA:9 a=QEXdDO2ut3YA:10
- a=kacYvNCVWA4VmyqE58fU:22
-X-Proofpoint-GUID: VfT4K8nFrDzyI98J-At2SR8_WmR46GC5
-X-Proofpoint-ORIG-GUID: VfT4K8nFrDzyI98J-At2SR8_WmR46GC5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-17_04,2026-07-17_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 suspectscore=0 clxscore=1015 malwarescore=0 spamscore=0
- adultscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170157
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
 
-On 7/17/26 4:46 PM, Mukesh Ojha wrote:
-> Switch from pm_runtime_enable() to devm_pm_runtime_enable() so that
-> the matching pm_runtime_disable() is handled automatically via devres,
-> both on probe failure and on device removal.
-> 
-> This removes the err_pm_disable error label from the probe function and
-> the explicit pm_runtime_disable() call from qcom_iommu_device_remove().
-> 
-> Signed-off-by: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-> ---
+On Fri, Jul 17, 2026 at 12:44:54PM +0200, Konrad Dybcio wrote:
 
-the single-use goto could be inlined now, but anyway
+> I was kinda hoping there would be more buy-in to follow what PCIe
+> does, but to my understanding you're opposed to it because "vpu_bus"
+> is not dynamically discoverable.
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+PCIe allows describing devices in DT. What this weird vpu_bus thing
+seems to be about is to actively avoid describing the devices in DT
+while simultaenously treating them like devices. I think it makes no
+sense..
 
-Konrad
+IMHO the approach inverts the thing, you start the main driver then
+use vpu_bus to dynamically create a bunch of struct device DMA handles
+for the main driver to use.
+
+I think it is much better if you start the main driver, use the new
+component stuff:
+
+https://docs.kernel.org/driver-api/component.html
+
+To aggregate a driver from the struct device DMA handles that DT will
+create automatically. ie the reversed flow, the struct devices
+pre-exist created by DT instead of being created by code in your
+driver.
+
+Jason
