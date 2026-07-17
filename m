@@ -1,192 +1,129 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B8D13EDE69
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 10:44:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DB73AC0FB;
+	Fri, 17 Jul 2026 10:57:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784285102; cv=none; b=V4k0mOCwaKyUMi/F7ds+M7pwgIOAneUuxsy1i8mjrc7d9rTEztxv/lvK/oVIItWf4ebvRYq3RytP+/ATPPCq+EqKNTF20VZIpY2nAP17/kRKWRdgbrpDPeIK/s/Lbdql80W/DiRo7TKqz7jEKbC5X53Pp3epD35KrUVCDRZaeVI=
+	t=1784285872; cv=none; b=DpEAzk7IIi2gxEeOD7LW+YK5lN4SQRE0eIjf9P6/s2XQQMyPv7WnDRxvjyFVjLDbaHS8rTLLnLMg8gNg4CzCFVlDlqSdAwec2ApJtEPsHjgNNwB9luWqevFvXK24gJzOTlRziI/olC8sI5PvBVF4m5xXwwU3YEUQamAZxNZrKSo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784285102; c=relaxed/simple;
-	bh=2pEd2PoX7gxj2uadPnEorYAgEq8J/PjNx7zkix44hD8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bqXPwzUj5wFcdAPlaKut5UPMU4bY80v4a+SRjPwydKV5lbuvvBMI6/I1CGbaA2DD3QFPLtvfqT6HbI7YrMDSj2ZXlfauKkidnUua5uloRp0mhhY6GCFea+xr6s/kf9gcN/AbYBWuXJttFeVDBTptpYEtKtpkx5fqsKFfYQTmGyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=puxOJNuX; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784285872; c=relaxed/simple;
+	bh=0QV8OHlMHbs20KiCCXNY7HrNlDmvZ8yQiELqy6wUlbY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZOL0y4GHtCV3bN4A/C7ooQqsJMoDwqbn62FZgT5aTY3KDqIarQSdt46ES7ud4etnc73bfS2t3YCBANexpbKTSLvzcSiPxbtAIrir2FWszwfO3wUYsK7SSKWEdRK3K8srTM+PP0/nz7gY8mDWtpGM9iNMisFk3fD2/cz7a5+28jI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=I0isksLf; arc=none smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="puxOJNuX"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-c15e592da74so943258366b.1
-        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 03:44:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784285098; x=1784889898; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=GHMjre5IwjmjoZwiytENVYpWI2A7IWIyRw+/ii0+cJ8=;
-        b=puxOJNuXO5SI9VkteRcXyXeyvIZXTmjnMvcNmPnHglmiOSJApzZiGlEIHs1PUJ9yS1
-         DRZ4iMSsraPv3x6LopHZt5xwHTtEPLCd9FDuEs25AW7gceylkUZ6Hu8EUajpqME5tWnW
-         5NucDa1Hvy18saqTlW3ovTEEYWTBd0ox67ufF2NInHM4UGYyZ2s9ImCM37pndiZ5mJhH
-         2DbYUs0lj+phu8NHK92h/yOpTdwuWV2ueC5jmzP9dx6AiUAjLEo5uh3SnYxrBRJf5jas
-         Xv68z3gdMwdBXHlOLbKRchkS6lpIOFHbAWei6nVdJlaiMmpPqcXPSFWWGIiiQElY2mPf
-         1H9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784285098; x=1784889898;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=GHMjre5IwjmjoZwiytENVYpWI2A7IWIyRw+/ii0+cJ8=;
-        b=LqFnQLmn+SK3d5QlvueGXP2j8ynDpaW0kNAkhlN/NrSUthv/FhXjRrfPoKtyPAQedJ
-         VgkzGPJKS+8TjparFqe7UPl7aRq9Y6GLLTEazf3yKmu4/8+F4E8dAbbXrs5LriOHTVsp
-         /ju+H9AP8HMuVaOmQuxa6ppEJn7aKYpJU5jHEATt3Lp2wbu82aYYz691MrEzjZgwJ2u6
-         3m5Q7K+zwNYCkJtzoEdnuxoUtArZmoG4OiL6NT9wqL3aGhYZ7qg2A+1HKl4PPKdsYu4K
-         fY1nBz0UigcjRlylMoMnkTwiMLISc5Y+m1gFeXsCB9ryRXSmP9Xk3k0G2chLA3IWfjv/
-         +Kug==
-X-Forwarded-Encrypted: i=1; AHgh+Rovqo0BBuVd/09xVBHBsKr3j18EnY375t66dLGjAEh2IOBXQbm8CzqVhb3sCFmCdCdjlOJuiA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy1U1H4qFtSXJxJeTMRxXst8vV2tJpZ82L2y5r0xVI/U8s2xoOl
-	C+Q5EqUj+DFt8gZOmTZaPasAGYgI24C9cyhvWF0KWFyePenAwuiGtsn3
-X-Gm-Gg: AfdE7cmvgIKj7j43bfkw8EqwWMnTGQvdjBl0i29Y5GaxTEwC9VekFjI6LjTEeHpYrcO
-	zOT/9IF8Ofwf9uE/2+nPFKE5aIkX2aOpYTr3SFBs9lG1MX3DEtx6+oPc8oGbobAQ2wnOKboLyV4
-	3HP2DtBUKxSy5Xa+NfEiYVA08M6VP6iXEJ+rlcC1mrgM/yOEj6v7yTIpap9fozaXtcI20tJEDAr
-	bdr5ZWqJ8u0ve2UyL4XBcXYCm8T2ksDEOKSQ3kLaN5yYRQDWLtv0xrnuzFEj36S4WHJ9OzzTeuX
-	7kf/lkpQ+LnAcUTQN056ZxOGOwds1GM5wKlBx+AXUqq8i4zVsMXjuDZUEa5Cja9V18iRhi2vmz/
-	2HowYyztHzWo3jOnMdkzcpLrwbgcwMjSqTuU3hPgXxIzdgABYqt6gG76fqqxlKouROmRPi1jgzp
-	yKO+WmyPcYxCbj3g==
-X-Received: by 2002:a17:907:841:b0:c16:66dc:3abe with SMTP id a640c23a62f3a-c16b46fe83dmr88156066b.28.1784285097922;
-        Fri, 17 Jul 2026 03:44:57 -0700 (PDT)
-Received: from [192.168.120.193] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1740bf91bdsm52739366b.63.2026.07.17.03.44.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jul 2026 03:44:57 -0700 (PDT)
-Message-ID: <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
-Date: Fri, 17 Jul 2026 12:44:54 +0200
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="I0isksLf"
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66H3BlrB2862211;
+	Fri, 17 Jul 2026 10:57:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=corp-2025-04-25; bh=9YN3M1nnkvw+IScH3bnfz7DHnHiMg
+	W1MsLHE9T21g0E=; b=I0isksLf7qOmOEXvMnW3eegysUCpk0IwAFXiefFibWqs/
+	600XpqXKoGhl8UtYK1yXVUTrQ1qHirrIZuTCENlmCqnx0/NLlGLR+5XJe1qlsnu0
+	klTZhXdmcVLaQTa4jzykQfcHDtCQ/itFaedKPMQ891tqV0CcXiBR5DW3ToQF8J8u
+	rUkPPv+41WwnPo2f7+uyutHRUXrHMGRfanC0D2OsuiksTky2OCJg1CRRzEzBaKAg
+	lLuCFWLPK0ZKMI133RMbVGQGfD+Nl85wBiqzCNuP5oDmH7vBgO0zaDVy1jgGUXvE
+	eVzPfDV4uv3f5AQ0T83vBzOJVhwMyJtES1+j5U7zw==
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4fdhn0ek73-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 17 Jul 2026 10:57:25 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.7/8.18.1.7) with ESMTP id 66HArBp5032493;
+	Fri, 17 Jul 2026 10:57:24 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4fbc9hevwd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 17 Jul 2026 10:57:24 +0000 (GMT)
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 66HAvNDc005954;
+	Fri, 17 Jul 2026 10:57:23 GMT
+Received: from lmerwick-vm-ol9.osdevelopmeniad.oraclevcn.com (lmerwick-vm-ol9.allregionaliads.osdevelopmeniad.oraclevcn.com [100.100.253.75])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 4fbc9hevvq-1;
+	Fri, 17 Jul 2026 10:57:23 +0000 (GMT)
+From: Liam Merwick <liam.merwick@oracle.com>
+To: stable@vger.kernel.org
+Cc: vasant.hegde@amd.com, joerg.roedel@amd.com, iommu@lists.linux.dev,
+        dheerajkumar.srivastava@amd.com, bp@alien8.de, Michael.Roth@amd.com,
+        sashal@kernel.org, linux-coco@lists.linux.dev, liam.merwick@oracle.com
+Subject: [PATCH linux-6.12.y v1 0/2] Backporting SEV-SNP CVE-2023-20585 to linux-stable
+Date: Fri, 17 Jul 2026 10:49:07 +0000
+Message-ID: <20260717104909.3850331-1-liam.merwick@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-iommu: Introduce API to reserve IOVA regions for
- dynamically created devices
-To: Jason Gunthorpe <jgg@ziepe.ca>, Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
- m.szyprowski@samsung.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, dikshita.agarwal@oss.qualcomm.com,
- Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Robin Clark <robclark@qti.qualcomm.com>,
- Akhil P Oommen <akhilpo@oss.qualcomm.com>,
- Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
- Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
- Loic Poulain <loic.poulain@oss.qualcomm.com>
-References: <20260119054936.3350128-1-busanna.reddy@oss.qualcomm.com>
- <cfd23f75-8952-4463-abd5-815b995031b0@arm.com>
- <bb59f07e-ca7e-f012-6a4b-0a148350b69c@oss.qualcomm.com>
- <20260612172649.GM1066031@ziepe.ca>
- <da77c21d-25b3-46c3-a48f-71f0549e9f5f@oss.qualcomm.com>
- <20260615125257.GS1066031@ziepe.ca>
- <dcc0d02e-91fb-ddbe-399a-0191bab94c4f@oss.qualcomm.com>
- <20260617194038.GC231643@ziepe.ca>
- <e9e76c9f-b3b1-4ffd-9547-183556f6bb60@kernel.org>
- <20260618151745.GD231643@ziepe.ca>
-Content-Language: en-US
-From: Konrad Dybcio <konradybcio@gmail.com>
-In-Reply-To: <20260618151745.GD231643@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-17_03,2026-07-15_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ mlxlogscore=999 lowpriorityscore=0 suspectscore=0 adultscore=0 phishscore=0
+ malwarescore=0 mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2606160000 definitions=main-2607170109
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDExMCBTYWx0ZWRfX8silSO2j5NL6
+ it9WPkmIGemMuLTeN6sGg0kOqxtXqzfrEAakDh3oOyk2wf8OtO/UpW+otYU1alDUoYUMlPxUbeP
+ ASjX5Nck2q3izsOARic+esbngq/o1c2SQm25IoV35WjmDtYfdtKG
+X-Proofpoint-GUID: 7alL5ygC0RPWyoKnMciRR_WgFSdlCvWt
+X-Authority-Analysis: v=2.4 cv=ddewG3Xe c=1 sm=1 tr=0 ts=6a5a0a95 cx=c_pps
+ a=XiAAW1AwiKB2Y8Wsi+sD2Q==:117 a=XiAAW1AwiKB2Y8Wsi+sD2Q==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=jiCTI4zE5U7BLdzWsZGv:22
+ a=BqU2WV_vvsyTyxaotp0D:22 a=zd2uoN0lAAAA:8 a=VwQbUJbxAAAA:8
+ a=Hx8qFWEpdy21kD9xy8sA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDExMCBTYWx0ZWRfX2Iy/SGFiAEQp
+ MoZjRdY2RtAVC17bzglWG8Qfr3uJ/zXTPviYQrtKCZ9JXeqrau7gDP50t7fAgLqYruIi+I2efbT
+ 3DRqNRYtSp6XtMG3vmP2VOlrkLRn4M7hwpBBBdEMy6uWXNovDG6sg6M9OaO2UtLd1n+WTheqRTj
+ e+f8SLEfI9MgYOCJocsvwuGLS2n4Apwh7Mqgg1rl+Rzj5FVYRt1GINrbXRDLKz+To8XP3ylc2Ib
+ jPvDrTym/9xpj5heVJ2tcAhf21s7KqoFq6lImn9EYGzuJOPIfkyyBsSwoyc/NJlgO/1wks5jags
+ ukrdLbPYl1ylA9paAWeaGmiMLQ8Nbs6IYkxRkXva0gr+G3l0ouYwAImjpXPIAAC5MjBthXxzp/9
+ VKj12KJTMpGUZz98zRkcMBqWb9/c0BVWAX70ro8k6yK7u0QqJw7nkgGQGCwb8w0SBrLHVhJcKN6
+ l8/RWPKiHrlvtK6I6AQ==
+X-Proofpoint-ORIG-GUID: 7alL5ygC0RPWyoKnMciRR_WgFSdlCvWt
 
-On 6/18/26 5:17 PM, Jason Gunthorpe wrote:
-> On Thu, Jun 18, 2026 at 01:57:40PM +0200, Krzysztof Kozlowski wrote:
+Two commits from Linux 7.1-rc3 fix CVE-2023-20585 which affects SEV-SNP.
 
-[...]
+"Insufficient checks of the RMP on host buffer access in IOMMU may allow an
+attacker with privileges and a compromised hypervisor to trigger an out of
+bounds condition without RMP checks, resulting in a potential loss of
+confidential guest integrity." [1]
 
-> So, if we are going to do a hack in DT to accomodate Linux, I argue to
-> choose explicit child devices so VPU does not need to create a special
-> bus, call of_dma_configue, or hack in new DMA API things that only it
-> will ever use.
+These are suitable candidates for stable branches but stable@vger.kernel.org 
+wasn't CC'ed at the time. 
 
-Bit late to the party, but I'll chime in with some more "amazing news"..
+1f44aab79bac ("iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19") [v7.1-rc3~24^2~2]
+58c0ac6125d8 ("iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19") [v7.1-rc3~24^2~3]
 
-All of the multimedia HW on QC platforms (camera, display, GPU, video
-and their specialized variations) has at least part of the same problems:
+The upstream commits apply cleanly to linux-7.0.y and linux-6.18.y
+and an AUTOSEL email[2] was sent (but not pulled so far).
+[ The AI analysis in the AUTOSEL patch said that the patches didn't apply
+ cleanly to linux-6.18.y but that is not my experience. ]
 
-* Multiple SID groups that need to be accommodated for different purposes
-  (normal vs secure buffers provided by the same device, different
-  "logical functions" generally speaking) apply to all of them
+There are conflicts applying them to linux-6.12.y due to the lack of upstream
+AMD IOMMU kdump buffer reuse code, introduced to v6.18 by commit 
+f32fe7cb0198 ("iommu/amd: Add support to remap/unmap IOMMU buffers for kdump")
+so I have included patches here which address those.
 
-* Different IOVA limitations per SID group seems to also concern at
- least the camera uC ("ICP") (but not all of camera hw)
+Tested on AMD machines with Zen4 (impacted) and Zen5 (not impacted) CPUs.
 
-* Remoteprocs (and therefore also the audio stack) expose a number of
-  subfunctions, some of which we currently model as subnodes (although
-  many arguably only exist as such because someone decided it was
-  convenient to express them this way). This, for example led to the
-  representation of each SID group associated with the remoteproc
-  (fastrpc/"run compute on rproc") as a separate node:
+[1] https://www.amd.com/en/resources/product-security/bulletin/amd-sb-3016.html
+[2] https://lore.kernel.org/all/20260520111944.3424570-59-sashal@kernel.org 
 
--- qcom/hamoa.dtsi
-remoteproc_adsp: remoteproc@6800000 {
-	[...]
+Vasant Hegde (2):
+  iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19
+  iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19
 
-	// no iommus OR iommus used for another purpose (fw loading)
+ drivers/iommu/amd/amd_iommu.h       |  3 +
+ drivers/iommu/amd/amd_iommu_types.h | 21 ++++---
+ drivers/iommu/amd/init.c            | 90 ++++++++++++++++++++++-------
+ drivers/iommu/amd/iommu.c           |  2 +-
+ drivers/iommu/amd/ppr.c             | 10 ++--
+ 5 files changed, 92 insertions(+), 34 deletions(-)
 
-	fastrpc {
-		// no iommus
+-- 
+2.52.0
 
-		compute-cb@3 {
-			compatible = "qcom,fastrpc-compute-cb";
-			reg = <3>;
-			iommus = <&apps_smmu 0x1003 0x80>,
-				 <&apps_smmu 0x1063 0x0>;
-			dma-coherent;
-		};
-
-		compute-cb@4 {
-			compatible = "qcom,fastrpc-compute-cb";
-			reg = <4>;
-			iommus = <&apps_smmu 0x1004 0x80>,
-				 <&apps_smmu 0x1064 0x0>;
-			dma-coherent;
-		};
-
-		[...] (there's a lot of them)
-	};
-};
-
-There may be more hiding in plain sight, but those are the ones I'm
-aware of.
-
-
-I was kinda hoping there would be more buy-in to follow what PCIe
-does, but to my understanding you're opposed to it because "vpu_bus"
-is not dynamically discoverable. PCIe generally obviously is, but
-we already have prior art regarding hardwired/onboard devices - many
-qcom DTs carry per-board iommu-map overrides to please the allocator
-with known-in-advance BDF values (because the HW has only so many
-SIDs):
-
--- qcom/qcs6490-rb3gen2-industrial-mezzanine.dtso
-iommu-map = <0x0 &apps_smmu 0x1c00 0x1>,
-            <0x100 &apps_smmu 0x1c01 0x1>,
-            <0x208 &apps_smmu 0x1c04 0x1>,
-            <0x210 &apps_smmu 0x1c05 0x1>,
-            <0x218 &apps_smmu 0x1c06 0x1>,
-            <0x300 &apps_smmu 0x1c07 0x1>,
-            <0x400 &apps_smmu 0x1c08 0x1>,
-            <0x500 &apps_smmu 0x1c09 0x1>,
-            <0x501 &apps_smmu 0x1c10 0x1>;
-
-Although it seems to me that it's more of a hack than anything else..
-
-
-With that in mind, do you still prefer that this is handled through
-separate nodes, presumably for all of the aforementioned cases?
-
-Konrad
