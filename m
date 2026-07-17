@@ -1,132 +1,273 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CFA7315D40
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 16:07:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EB8127AC4C;
+	Fri, 17 Jul 2026 18:05:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784304441; cv=none; b=UCSxuD5lfeTAkRPjQvedG+BQ9/3pK7nqpcNo/3/OKAW21IJm/zCLBYvdLAfzgxomYkwtPWepf+Wm6sxQZZAOFEMFpPFVxhL7fY9yDfpM2VPWU7phVyVdrSk8DY6JviZqCO18DMa/qh9r2Aaiy7aYwK8cqdwxX6RXMIb5o1/AGpE=
+	t=1784311502; cv=none; b=PlfqKGA5PqD2/lTP5TyJ2U4E3FnOZmEz/M36GseQDyM/urWWTiJQUswRm09JCgfodv28rXVhuo9lrkL62Lr/Cjc4flc/+bn9LxjeD8hiqfrhqGzz8QijvPmwopn2zTRHYhe/7nFXySEMiMmaubXvAfJ1GysP2cc/JKm7Elxje5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784304441; c=relaxed/simple;
-	bh=iVyrSwrZmNx4bprcJ7yvv2W/LjWegRQAvxGt7YUy2mg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DtdAhWJezAiTyNecyYM+4+oA5gmNSXDPys+NJaYClV4tuhNQjm/KaOR+voxY6mOsp5Itucm1BV3PJqE4NwFVMta3KtaYm7/w0sIxIDY7nZlB9Pt4dfOXnofSYZxYmAmh74Gwx5TgEOHSq77p5nnmbmzmvsLnZ54IN5Iwee99V4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PVglpI6y; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1784311502; c=relaxed/simple;
+	bh=qxk9PmkWIsmw2SIk/aN/40OHqvY9sjrUBrxmzV6fKBQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=scVLiwVTZvWSfQlJ5qQGqU8zyHiRh5Nchz6hnJtDGjgCrRlckW2Tzr2kJJUjT4463MfmpsXXcHEMjxi9QJJ3kUTl66zJfv4eXgY5nj77f0l+VZbtR5RWHGhNHgMCNtaxtx9Fm1+7X4Ekd+SatBtFVIWHA34KeV7PXLTBvjzJtZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EUsbeMjD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PVglpI6y"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-51c0cea8883so19574881cf.1
-        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 09:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1784304439; x=1784909239; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=iVyrSwrZmNx4bprcJ7yvv2W/LjWegRQAvxGt7YUy2mg=;
-        b=PVglpI6yiChV2alwRp3ErX1BpiZbP/8QBkBderHcls/e4tJy7TUv46ML3xoI8myZ69
-         6y2WpURhUl0TkkGdVB0d/9mVGYkkFBN2aLAiMPAoxcNccgBn02/C66tdyAb29HhOTVTM
-         S5e6p/p/224RNNXDVu6vPBbh47Yi8lLWjforRuIbaQEb3alxXLvMaZoYNJYSdXqsf2x4
-         R0//Uzh+qexhRWP90BBQpV4AbBtLZTgRKfmi1Xm0VLd8PHTJduaPSU6xZD+Xl67bR1C4
-         FEzj7WSaPnP+5xCXG590f67KolT9nFvymUR7n6rAc2JcgP0fXrj43nFU7gPvmVY4PoxW
-         HTfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784304439; x=1784909239;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=iVyrSwrZmNx4bprcJ7yvv2W/LjWegRQAvxGt7YUy2mg=;
-        b=FM3XArBjDwHSRKHeuF2zQYrOyft5zga5kvYs2kQRRvuHZeOZQ3naMCnh326uY6xnMD
-         YNNmUY3cQ0z3ecAmoLpJuE4Uy8CAD5Hq7JketFxBROOpAWi7WXPStWGcPeILQDMy+2Cr
-         G9HfyxlHQB0NFZ5PLTjXxuWctrJcvJp7DYfPhUjzz7yORQKEfmmBtKQAt+wNG4YOVFvP
-         FitBZJTieB0f9NhvT0gUcW/YtVR9O88Wjbc5+bTqafauFs7Grw/p4zU+o5wrZr1MMpCN
-         jlLJi7IxAg2RVaLh5rgkpkWtOXm7fExRhDjHxyvcr6bh0Hd/z1856A3dw93Ztl4xKEbr
-         snzQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpRcejqXKSnzB17aPAA2Rbv/GAuRax5419ZPKas3YiFBBuDZq2BKJX/25YXNVhzHAVZwp9Hzw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyTjy0XIc8BfhdyCAStziA3F1+iBokypdGcoYHx24xW6dHU1Jgl
-	ka3/VqZgmAoEa++QzcwRfd0YB5ENYsVX5adNiwHYyD2EnZ9AUoTAyY10aw+9aoq4hjY=
-X-Gm-Gg: AfdE7cmPJbzL2Q7XfG8nTLSm3TQikfxxmHcidwUQb27KTP61Rq3hNdgZfpjc9x3nTze
-	a9wy5RiqxU5WQgxcy0INRtG19j1P+EVCEJ3wNtcbcsKzi1BsxJWxiQ2nHoE8k9c43C4uTQV/gKC
-	0m8aEpH3aIH6SnT/thirCApqNWLaaSJTOUHPEMvCPkqwJ4wfXA0S4XMeMAtLo9WrBLewMSBtp1Q
-	FZh7qjgwyzJd+vJBLoUYsUnu2nAk+a/Ro+Kh92wwcqJ1BU7OrKAElVwNFiBGAm7QsJ2JVBr3Uw+
-	p/VZNKmHUnf+edu5QrXpyAUZJa0tWZGH2IvBThq2RklxaUcZbBSzYdDwboW+u54Ls7ll9OVoEGo
-	2OtbVcP0GzexLcK1a1DXxZr+KkfbIDUIEALhoI6d3mbt01ez3KA==
-X-Received: by 2002:a05:622a:1b12:b0:51c:558:cbbd with SMTP id d75a77b69052e-51fc214bd5emr69273551cf.41.1784304438760;
-        Fri, 17 Jul 2026 09:07:18 -0700 (PDT)
-Received: from ziepe.ca ([159.2.72.92])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9077871d06csm20242736d6.43.2026.07.17.09.07.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 09:07:17 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wkl5o-00000004hEV-4513;
-	Fri, 17 Jul 2026 13:07:16 -0300
-Date: Fri, 17 Jul 2026 13:07:16 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Konrad Dybcio <konradybcio@gmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>,
-	Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-	Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-	will@kernel.org, m.szyprowski@samsung.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, dikshita.agarwal@oss.qualcomm.com,
-	Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Robin Clark <robclark@qti.qualcomm.com>,
-	Akhil P Oommen <akhilpo@oss.qualcomm.com>,
-	Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
-	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
-	Loic Poulain <loic.poulain@oss.qualcomm.com>
-Subject: Re: [PATCH] dma-iommu: Introduce API to reserve IOVA regions for
- dynamically created devices
-Message-ID: <20260717160716.GA701389@ziepe.ca>
-References: <cfd23f75-8952-4463-abd5-815b995031b0@arm.com>
- <bb59f07e-ca7e-f012-6a4b-0a148350b69c@oss.qualcomm.com>
- <20260612172649.GM1066031@ziepe.ca>
- <da77c21d-25b3-46c3-a48f-71f0549e9f5f@oss.qualcomm.com>
- <20260615125257.GS1066031@ziepe.ca>
- <dcc0d02e-91fb-ddbe-399a-0191bab94c4f@oss.qualcomm.com>
- <20260617194038.GC231643@ziepe.ca>
- <e9e76c9f-b3b1-4ffd-9547-183556f6bb60@kernel.org>
- <20260618151745.GD231643@ziepe.ca>
- <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EUsbeMjD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 693A61F000E9;
+	Fri, 17 Jul 2026 18:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784311501;
+	bh=ncpsGFMWEl9T9gCC5g1veSLwl+Av6zTadCXYF2SNSp8=;
+	h=From:To:Cc:Subject:Date;
+	b=EUsbeMjD3AJTUht8Jd5qLBmAe3HzO4ixUuj8Y0Fqw8zkjDfDI3PWhb3Dr1JVwUo/j
+	 G2pwkeR0zH8iMpgg2/MNowZwYBEQcNbqvZdmJv+EBF6urlHyMI5218QRGC5FDpllZF
+	 Jd6ieEBUcf4joS+D1b1+3sixzCadjFj+dIWfiv2jlY+Ihc0bD6ztW/ZnO17Hc+IFVs
+	 6B3//L0o2quZN/L3RKKlcY5+VURB0SFC7mLtrXeafNihQJbHWxAHkpyGhYy+zG+mqg
+	 fk+Jfy+SML3/GqnhdJGY1nOnzfiBmPhbRYRV0N+/AB5VpFG7/jt7wTql2bTgnp6WiQ
+	 TqwCKQn2Z5ipA==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	x86@kernel.org
+Subject: [PATCH v8 00/23] dma-mapping: Track shared DMA state through direct, pool and swiotlb paths
+Date: Fri, 17 Jul 2026 23:34:18 +0530
+Message-ID: <20260717180442.110954-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jul 17, 2026 at 12:44:54PM +0200, Konrad Dybcio wrote:
+This series tracks confidential-computing shared DMA state through the
+dma-direct, dma-pool, and swiotlb paths so that encrypted and decrypted
+DMA buffers are handled consistently.
 
-> I was kinda hoping there would be more buy-in to follow what PCIe
-> does, but to my understanding you're opposed to it because "vpu_bus"
-> is not dynamically discoverable.
+Today, the direct DMA path mostly relies on force_dma_unencrypted() for
+shared/decrypted buffer handling. This series consolidates the
+force_dma_unencrypted() checks in the top-level functions and ensures
+that the remaining DMA interfaces use DMA attributes to make the correct
+decisions.
 
-PCIe allows describing devices in DT. What this weird vpu_bus thing
-seems to be about is to actively avoid describing the devices in DT
-while simultaenously treating them like devices. I think it makes no
-sense..
+The series separates mapping and allocation state:
+- DMA_ATTR_CC_SHARED describes the DMA address attribute requested for a
+  mapping. It tells the DMA mapping path that the DMA address must target
+  shared/decrypted memory.
+- __DMA_ATTR_ALLOC_CC_SHARED is an internal DMA-mapping attribute used only
+  by allocation paths after the DMA core decides that the backing pages
+  must be allocated as shared/decrypted memory.
 
-IMHO the approach inverts the thing, you start the main driver then
-use vpu_bus to dynamically create a bunch of struct device DMA handles
-for the main driver to use.
+The series:
+- moves swiotlb-backed allocations out of __dma_direct_alloc_pages(),
+- uses __DMA_ATTR_ALLOC_CC_SHARED through the dma-direct alloc/free paths
+- teaches the atomic DMA pools to track encrypted versus decrypted
+  state
+- tracks swiotlb pool encryption state and enforces strict pool
+  selection
+- centralizes encrypted/decrypted pgprot handling in dma_pgprot() using
+  DMA attributes
+- passes DMA attributes down to dma_capable() so capability checks can
+  validate whether the selected DMA address encoding matches
+  DMA_ATTR_CC_SHARED
+- makes dma_direct_map_phys() choose the DMA address encoding from
+  DMA_ATTR_CC_SHARED and fall back to swiotlb when a shared DMA request
+  cannot use the direct mapping, which lets arm64 and x86 CCA guests stop
+  relying on SWIOTLB_FORCE for DMA mappings
+- use the selected swiotlb pool state to derive the returned DMA
+  address
+- reports CC_ATTR_GUEST_MEM_ENCRYPT for arm64 Realms, powerpc secure
+  guests, and s390 protected virtualization guests.
 
-I think it is much better if you start the main driver, use the new
-component stuff:
+Dependency:
+This series depends on the pKVM changes posted at:
+https://lore.kernel.org/all/20260603110522.3331819-1-smostafa@google.com
 
-https://docs.kernel.org/driver-api/component.html
+Please merge this series only after the pKVM changes above are merged.
+Otherwise pKVM will be broken.
 
-To aggregate a driver from the struct device DMA handles that DT will
-create automatically. ie the reversed flow, the struct devices
-pre-exist created by DT instead of being created by code in your
-driver.
+Changes since v7:
+https://lore.kernel.org/all/20260701054926.825925-1-aneesh.kumar@kernel.org
+* Rebased onto dma-mapping-for-next
+* Prepared the series on top of the prerequisite pKVM changes, resolving
+  conflicts so it can be applied directly to the pKVM topic branch once ready.
+  https://git.gitlab.arm.com/linux-arm/linux-cca/-/commits/scratch/pkvm/testing
+* Added comments documenting possible follow-up improvements for CC_SHARED
+  atomic pools and physical-address-based pool freeing.
+* Retained virtual-address-based pool freeing when
+  CONFIG_DMA_DIRECT_REMAP is disabled.
+* Applied pgprot_decrypted() only when expanding a CC_SHARED atomic pool.
 
-Jason
+Changes since v6:
+https://lore.kernel.org/all/20260604083959.1265923-1-aneesh.kumar@kernel.org
+* Rebase onto the latest kernel.
+* Add __DMA_ATTR_ALLOC_CC_SHARED for allocation paths. DMA_ATTR_CC_SHARED
+  is now used to describe the requested DMA mapping address attribute,
+  while __DMA_ATTR_ALLOC_CC_SHARED is used internally when allocating
+  shared/decrypted backing pages.
+* Report CC_ATTR_GUEST_MEM_ENCRYPT for arm64 Realms, powerpc secure
+  guests, and s390 protected virtualization guests.
+* Add CC_ATTR_HOST_MEM_ENCRYPT and swiotlb=force fixes.
+
+Changes since v5:
+https://lore.kernel.org/all/20260522042815.370873-1-aneesh.kumar@kernel.org
+* Add Tested-by
+* Drop the pKVM patch, which has now been posted separately:
+  https://lore.kernel.org/all/20260603110522.3331819-1-smostafa@google.com
+* Remove the DO_NOT_MERGE tag from the s390 change.
+* Add a patch to drop the SWIOTLB_FORCE flag.
+* Rebase onto the latest kernel.
+
+Changes since v4:
+https://lore.kernel.org/all/20260512090408.794195-1-aneesh.kumar@kernel.org
+* Add new patches based on Sashiko review:
+  swiotlb: Preserve allocation virtual address for dynamic pools
+  dma: free atomic pool pages by physical address
+  dma: swiotlb: handle set_memory_decrypted() failures
+  dma: swiotlb: free dynamic pools from process context
+  iommu/dma: Check atomic pool allocation result directly
+* Include pKVM and s390 changes as dependent patches. These are not yet
+  ready to merge and are waiting for subsystem testing feedback.
+* Drop the AMD GART patch because it requires wider testing.
+* Update swiotlb_tbl_map_single() to take attrs by reference.
+* Switch swiotlb_free() to use rcu_work.
+* Avoid calling swiotlb_find_pool() multiple times in the free path.
+* Make DMA_ATTR_MMIO imply DMA_ATTR_CC_SHARED for devices requiring unencrypted DMA.
+
+Changes from v3:
+https://lore.kernel.org/all/20260427055509.898190-1-aneesh.kumar@kernel.org
+* Handle DMA_ATTR_MMIO correctly in dma_direct_map_phys()
+* Address most of sashiko review
+* Rebase to latest kernel
+* drop SWIOTLB_FORCE for s390 and powerpc secure guest.
+
+Changes from v2:
+https://lore.kernel.org/all/20260420061415.3650870-1-aneesh.kumar@kernel.org
+* pass attrs to dma_capable() and update direct, swiotlb, Xen swiotlb, and
+  x86 GART paths so the capability checks see the DMA address attr value
+  DMA_ATTR_CC_SHARED.
+* rework dma_direct_map_phys() so DMA_ATTR_CC_SHARED selects
+  phys_to_dma_unencrypted() while the default path uses
+  phys_to_dma_encrypted(), with swiotlb fallback when the requested
+  shared/private state cannot be satisfied by a direct DMA address.
+* stop relying on SWIOTLB_FORCE for arm64 and x86 CC guest DMA mappings;
+  swiotlb is still enabled there, but shared mappings is now selected
+  through the generic dma_direct_map_phys()/dma_capable() decision instead
+  of a global force-bounce flag.
+
+Changes from v1:
+https://lore.kernel.org/all/20260417085900.3062416-1-aneesh.kumar@kernel.org
+* rebased to latest kernel (change from DMA_ATTR_CC_DECRYPTED -> DMA_ATTR_CC_SHARED)
+* update the alloc path so DMA_ATTR_CC_SHARED is not a caller-visible attribute.
+
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mostafa Saleh <smostafa@google.com>
+Cc: Petr Tesarik <ptesarik@suse.com>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-s390@vger.kernel.org
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: x86@kernel.org
+
+Aneesh Kumar K.V (Arm) (23):
+  dma-direct: return struct page from dma_direct_alloc_from_pool()
+  dma-pool: fix page leak in atomic_pool_expand() cleanup
+  iommu/dma: Check atomic pool allocation result directly
+  dma: free atomic pool pages by physical address
+  swiotlb: Preserve allocation virtual address for dynamic pools
+  s390: Expose protected virtualization through cc_platform_has()
+  dma-direct: swiotlb: handle swiotlb alloc/free outside
+    __dma_direct_alloc_pages
+  coco: arm64: s390: powerpc: Mark secure guests with
+    CC_ATTR_GUEST_MEM_ENCRYPT
+  dma-mapping: Add internal shared allocation attribute
+  dma-direct: use __DMA_ATTR_ALLOC_CC_SHARED in alloc/free paths
+  dma-pool: track decrypted atomic pools and select them via attrs
+  dma: swiotlb: pass mapping attributes by reference
+  dma: swiotlb: track pool encryption state and honor DMA_ATTR_CC_SHARED
+  dma-mapping: make dma_pgprot() honor __DMA_ATTR_ALLOC_CC_SHARED
+  dma-direct: pass attrs to dma_capable() for DMA_ATTR_CC_SHARED checks
+  dma-direct: Move dma_direct_map_phys() to dma/direct.c
+  dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED
+  dma-direct: set decrypted flag for remapped DMA allocations
+  dma-direct: select DMA address encoding from
+    __DMA_ATTR_ALLOC_CC_SHARED
+  dma-direct: rename ret to cpu_addr in alloc helpers
+  dma: swiotlb: free dynamic pools from process context
+  dma: swiotlb: handle set_memory_decrypted() failures
+  swiotlb: remove unused SWIOTLB_FORCE flag
+
+ Documentation/core-api/dma-attributes.rst    |  29 ++
+ arch/arm64/mm/init.c                         |   5 +-
+ arch/powerpc/platforms/pseries/cc_platform.c |   1 +
+ arch/powerpc/platforms/pseries/svm.c         |   2 +-
+ arch/s390/Kconfig                            |   1 +
+ arch/s390/mm/init.c                          |  17 +-
+ arch/x86/kernel/amd_gart_64.c                |  30 +-
+ arch/x86/kernel/pci-dma.c                    |   4 +-
+ drivers/iommu/dma-iommu.c                    |  20 +-
+ drivers/xen/swiotlb-xen.c                    |   8 +-
+ include/linux/dma-direct.h                   |  20 +-
+ include/linux/dma-map-ops.h                  |   3 +-
+ include/linux/dma-mapping.h                  |   8 +
+ include/linux/swiotlb.h                      |  25 +-
+ include/trace/events/dma.h                   |   3 +-
+ kernel/dma/direct.c                          | 326 ++++++++++++++-----
+ kernel/dma/direct.h                          |  56 +---
+ kernel/dma/mapping.c                         |  25 +-
+ kernel/dma/pool.c                            | 237 ++++++++++----
+ kernel/dma/swiotlb.c                         | 292 +++++++++++++----
+ 20 files changed, 810 insertions(+), 302 deletions(-)
+
+-- 
+2.43.0
+
