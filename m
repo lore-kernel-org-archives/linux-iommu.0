@@ -1,149 +1,205 @@
-Received: from flow-b8-smtp.messagingengine.com (flow-b8-smtp.messagingengine.com [202.12.124.143])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A8863E51DB
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 08:55:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.143
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BF4E3B42F6
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 09:59:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784278524; cv=none; b=aZbvetzrPrzznRTkj1LhQ7NaOeKv8uT0GGeRID7E2RGKuc0FbtVhlC67vgVunPuxGRWo4tkI6soEG8hSwQSSZBbH//Oqz7/F2kviypgv7rOs+Stvjv3QxMLQaw7QtRrViVwvLb3GeZH8CK0qOFpIXLUoz/SDQrxQrOfU3frKQxI=
+	t=1784282363; cv=none; b=jj1ZsXgnYFCrHEGxsUpu5+YJ0IkI9YLPVmBltAWgqMihckakH0K73NWcT7XGrBZ0Rbw3VKFeJaORJi4ZnsbPheMxO+zPLiXCzNxf7yfaxzmXh7eTfUspN3LEcJHy4hWqp36e2rJ2H5lKzm67gEXFJaHDMYEafdb+ClvXdV+PoYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784278524; c=relaxed/simple;
-	bh=xwyTtf8+JfQD1dpFKE+tIj/qERhLNymFR9/Nw9qnYNI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cYC5K+GLkXgBIxS/kX4bR0PuvK6K7/fhRC1SNJSUNP2XynBOhgP+FK9UAzv4RwRq/d5W39f9YbvbAGf0Wlg+74/dXVCFVQ8nJgI7WuOU8HpxZjYm/+rxLTdi1UaYsw1gAUXMaYSmnZZGZJPBJCk7M+Yy2z5zDTaUl+alVNyH3Cc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=EgKc7488; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=c2N3OeLE; arc=none smtp.client-ip=202.12.124.143
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	s=arc-20240116; t=1784282363; c=relaxed/simple;
+	bh=jL3mrOok8MADLcpmY7jdHUknhxvySR86Mx3M++52+aw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PIfBTbSC3JlQJbNlVEQOot+PoJB2cPM+gzN3AUG6Ngqgbezqw2/tTNJeIkeix4L1foTn1OfRqmEnPoKAVq19/u45JUf0OZAuWgD10PCpNI1vM961cjeksbfsuL4IetA+IAk+k2ZNZbd7dUEe4G7sei9T625a1B4vxlFux/7Uu6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Qov3sl3X; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Jzy5RM7u; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="EgKc7488";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="c2N3OeLE"
-Received: from phl-compute-10.internal (phl-compute-10.internal [10.202.2.50])
-	by mailflow.stl.internal (Postfix) with ESMTP id 999A013002E9;
-	Fri, 17 Jul 2026 04:55:21 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-10.internal (MEProxy); Fri, 17 Jul 2026 04:55:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1784278521; x=
-	1784282121; bh=Zvd1osMYewGqon41SsFYB9MFb6slH1HcdKHtX5RAEpk=; b=E
-	gKc7488I5Z9VTl7QMWXAF/psMQGuTz+k6DzFkDtAGftumnkGTZfPk2hkAncjLENy
-	3lhd+L/wvAV+XUcWtlBqrHwn+s0Ptx3qMEb6EBdCH2cIee+3P6sk/vOURW+EgVq9
-	UB41pWP9mMx4qIiuvzzglXlEyCdQnFKwtbCnfnoG9hX+JHHAnWgGHy38UYsPmYyl
-	w2FFb1uX313jG54k9GbVvswxVZDI6FqJ3B/oOwQIAwYhYKNcDJETZHF/1Mh5RuLj
-	C6ETziDGp6s+mtmZo9GMsnX4xv1sA5kJdPq0bri+aR2EkdYFiIJitjBE2Tv0RN1K
-	HBvKSWRdbBfLKrgyBb15Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm2; t=1784278521; x=1784282121; bh=Z
-	vd1osMYewGqon41SsFYB9MFb6slH1HcdKHtX5RAEpk=; b=c2N3OeLEOynyxMYUC
-	uxfQfjDMA5BKinX4c5noX8w1esmnWz6udH74WmYHNk6ijpjIyYSUC6JeJ3heqsW8
-	+X9qarILtjVfgUKbDdG6OZFZO95Ompz1vYt97/hBxxEJkHxjhMojT8GRDwqjaBbX
-	p347mov/v+8CGtA8l4iE6+ayXlg3ZPf7SutFipH9kxejEBPVJQPYCb2/h2Akb5L7
-	NKY78pA4xhlGqQXpH3twO+qDTPXjme8bEFlgPFBRx1FfNi+p47b0LcUlsweUwaz4
-	qPxi/VXQA3ZIBWfGG7nyDmVZhxTK7aVaGXBPX7xX2lldUDzvLPXBiOk7PXjaNqHF
-	tCtUQ==
-X-ME-Sender: <xms:-e1ZaoVfHSjGr1nlzAKFMGWoA5RK0prc2QUfW2FUjNjNVS-R6MLu1g>
-    <xme:-e1ZaqQQA-bVOBEHyNh1qnX3EWAbXpdZg7HEETfVhVrPMO4Bje_DT2yTd2GS_38n6
-    QG-eHX1sR7GVVTH22BVqHRL_oXPCWyPNsyVtSkc1-4M0K8KdTnw_bk>
-X-ME-Received: <xmr:-e1ZauJX5JIzCi9JD54MACly-_OVPhXCvAkAeF0WEx1kMHhOhKMHh19qK0lFe6LClM5dIjEZUT5uDwmXUvc>
-X-ME-Proxy-Cause: dmFkZTFS7GW/vS+PGg3aNaRtXNWwH13wr4t6a3PsYvzLEfoa0d1tCLQMk4kuPOyqJxWYg8
-    zWRgYifu3Q3qEvL/I6D+A7sONbehMF6Fzv0Jx15W8Bp0zPI2L6EoHnTvsn7KCzlmdcjq5Z
-    AMiUX8pm/4UU/5q2rly/ctUYuGrpfv6aggolOMe4+7cw+YQgQv04wJ8otXu77hR4cT4fFc
-    rauulgYGXJAH/ttinZ2FdpHwYOQghdgc8wZDZhtrydZHcBfVIkqxRabCZivPsjLLb49//R
-    HUixI1q1RTZqMytwufV0grN2inkZxcvjyE8RnYSpDV3z9U1hNPWgMeNXqfzcYN3TNROTMi
-    g6lcYmPvi0ApJCuAabf56PdATqWvLMqqCJcKwwqf0txVfcxEFd+NU5gwyCeb3MzCwQHT4s
-    EYXLpjKzizp+/UuGKB61wzx+QKsc4bJ+eA7Tcughh+f+oX0EK2E+8ajqxfHbtGhkgMdraU
-    j2th4GtLuUd00xhVbvRlL17mbuXgmQPIe9KShH84oXetiVFix/VxRfbJKcEiu+tPu/4qAy
-    6LzMCGZJzCC1rlQBrFP+2s18jy5eOZIAJrxhuQdL/iREbdthHA9uD4/9o++C0Vyo1Cw8lp
-    6h4ZTMPnLU/gcmGCjyf19X1ADFp+MT0enTqyJ9/FtLX4vM858uFBQaTmIZkg
-X-ME-Proxy: <xmx:-e1Zaj0w8i3RrzWEFcY0cU0LA94nT7bQjStr-o09z17slP2zF-n_rg>
-    <xmx:-e1ZapLuDEa9Ai3K5-cem91ym2X2ttXYudxavBycRNLI2jl11rKsEw>
-    <xmx:-e1ZarnhOgaW2dVFhx5xqBl6qj9s1vXpHOhHHWAa7fjvQEVJpa5DVg>
-    <xmx:-e1ZavMFedxs_IZnYYaxtmNo7DwoKzbKJuDKYPp6VtNWI1I7ZxDd7w>
-    <xmx:-e1Zao_01By5GE1USQQXBduANFFQiDaHpbJdzBRF5QXfuV3sR617AdTI>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 17 Jul 2026 04:55:15 -0400 (EDT)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: tomeu@tomeuvizoso.net,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org
-Cc: dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: [RFC PATCH 9/9] arm64: dts: rockchip: rk3576-rock-4d: enable NPU
-Date: Fri, 17 Jul 2026 20:50:47 +1200
-Message-ID: <20260717085220.3212274-10-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260717085220.3212274-1-gahing@gahingwoo.com>
-References: <20260717085220.3212274-1-gahing@gahingwoo.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Qov3sl3X";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Jzy5RM7u"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66H6cTsn851707
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 09:59:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	4m4mhHCdwe+iD4gbi28L8euNiv4IB7P2LYKO26utpc4=; b=Qov3sl3XOGvuaaS9
+	FzJ64v8p+4oY/aWx3GR75C+9X6OpIO2Ur6Y/TrlskZq7xyE4qWVcdLzgAK1OkjcW
+	/O1PfaH+hCukscfvU0Usf//CEk+9veVwA/G6+tNr3UL5NsUHHrdRVPTjn/Y0TlEb
+	LEVvhlslkKG67+QUs0vgfT3Af3AdvBk+sINzKnG390ybx+UpMIayENdJnYE4m9q+
+	c7Cr5MyXPrw54nkerytxqHoMPPoGxBTdNvngbm3R4fwW13K8hB0gqkBkCFZ1fwq/
+	eESdJxByGALHzIP2JC5Y3tAe5udjJlu/OgjRhjaDv5y/gVkCUi4NqZU3eFfD3YZG
+	4XXPdw==
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fff9p8rx4-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 09:59:20 +0000 (GMT)
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-92e9c0c4492so152839385a.2
+        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 02:59:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1784282359; x=1784887159; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=4m4mhHCdwe+iD4gbi28L8euNiv4IB7P2LYKO26utpc4=;
+        b=Jzy5RM7u1TVQ1smKSaI2Bxc7gwxM15cdJGHwgC410MT3iD4CRsAc5rkZchuE7EExWE
+         b9AXQCiXJSaNkpYQ0PZ8MChCFUSFjd2VlHVlZttAx/zS2t5iXRqTOBImTX/1zXNoTyiU
+         9q/8ntLzW7hq7SyJGzFKBLgRtweiDqFeOEarK0tZGE/DCiv2zz5gyLBpHJHtZCor+UXD
+         EvmVBRXdYoek/YIfs7Kijlp2RmcPmtHSVjCLf4GdX1E57shXuloACx80tMUtm7BTro7y
+         LZ3S/rGoAnuZTrBy3CxenPEbD8jc0s2/+9+jtNwW1oQ3kvzl703hMiFLh6DeTl7i74sn
+         K7Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784282359; x=1784887159;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4m4mhHCdwe+iD4gbi28L8euNiv4IB7P2LYKO26utpc4=;
+        b=SkV/oqeZBAmldg7fPtEVnll3+a/rn6rqI5r6vxpM/RDIE8fkkVSkMxcM2xkQPg0DeT
+         zR8UHW82lozUGtKR0vgAx/pvlMN49Uc9/tUcXHWoAH0dYLnL9QkGQbpXT5FjajnsNsy2
+         lapLC3XfVhwy7QrqmoyUCaaTwE1CQ4HNvFHS9TDjWdzI/LPiAOQqlb5IpsrNqoygrtC1
+         2JCIiQ+/xt3dlobHQ5bJDkQ28hQJgSzb4lGwuzrI2DGtlcykXPLh4SyOGZQJrks4CFpk
+         tyxayQUFoUzIWkhTgJyMm/oS+YHyQ0JjTkm7rjS+bB+p9GNsDCf+uMHEktNtWL6kHFfr
+         stEg==
+X-Forwarded-Encrypted: i=1; AHgh+RrPL36nsSZChJS7gTPmTQPUpa5sE325Q89hW88cHFqsbgw2IOyCrdSZ4psmlo25ZHEM3Wv2mQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx55UL+QYEcYowgJqDAwS7Rw9OID2dpQg853bYAX5ebmuE015wu
+	8TJcz0cRqL9gpTq+Y20njyN/hHkc7vcUCIH7LqFVBRMoGG+YugO0yhoRTLAoDbRXpPA3rXaisYL
+	sdWxvz84sDV6XE8e+LBbiCjUuKCbKj1s6NGF1ABgpPoYkFOuc8Gf+GnrhqQ==
+X-Gm-Gg: AfdE7cmWVQ2AXgiHAK/rWLmLhlttIYdeqNid91dVL5iPBsykDT1ncHApu6JUy0KUi7s
+	yEp+g/Hxfj8rIInum6iJR3ujp6iLU5YyXUlpdxlA2B7pwuSW0UtedmfLXEfVd7KCZoWL8m1il3B
+	K5ngTBdM3tak+F8wNEz02YrP3hckMIiVxNPPyovxs/O+NBbeHfJiZcKX9AjyXPLZKhtHZJHcHEV
+	+QdQ+0rdkXbRBpxmQYm/w1Tl4Z3+pjVYRpELXfdDXCbaXUoyBa2iDmGUfaJ9FGMWa8aZ2dGgewg
+	bGNDJ2wAnF4TntuqCh+ZoU4CSLN4iKeuA8fDq0amgjCzdPBv1jv5+DzbGbrlYUqNwfz+fs01zmz
+	rwgRWC2WIqe7FZxi1G/vvas2E
+X-Received: by 2002:a05:620a:4396:b0:92a:228:1bfc with SMTP id af79cd13be357-930b3e2e4famr170491285a.2.1784282359422;
+        Fri, 17 Jul 2026 02:59:19 -0700 (PDT)
+X-Received: by 2002:a05:620a:4396:b0:92a:228:1bfc with SMTP id af79cd13be357-930b3e2e4famr170487485a.2.1784282359012;
+        Fri, 17 Jul 2026 02:59:19 -0700 (PDT)
+Received: from [192.168.120.193] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1740bf5df5sm50044466b.61.2026.07.17.02.59.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jul 2026 02:59:18 -0700 (PDT)
+Message-ID: <f7de5852-c255-4a17-b87d-c9a4542255f7@oss.qualcomm.com>
+Date: Fri, 17 Jul 2026 11:59:14 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 6/8] arm64: dts: qcom: eliza: Add GPU SMMU node
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>,
+        Abel Vesa <abel.vesa@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>
+References: <20260705-eliza-gpu-v1-0-c9f1354dbd29@oss.qualcomm.com>
+ <20260705-eliza-gpu-v1-6-c9f1354dbd29@oss.qualcomm.com>
+ <10b0ad51-8766-449c-a51c-979364e6c781@oss.qualcomm.com>
+ <5fcc0bc1-7f9e-4611-be77-42860e0f4c74@oss.qualcomm.com>
+ <e8255fe2-a67c-490e-a905-ed056c6af950@oss.qualcomm.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <e8255fe2-a67c-490e-a905-ed056c6af950@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: JtI346X1FDNTcd3aY5cgN7YSOi8U3ctc
+X-Proofpoint-ORIG-GUID: JtI346X1FDNTcd3aY5cgN7YSOi8U3ctc
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDA5OSBTYWx0ZWRfXzrNLr//oTCaN
+ Lj5UcC3lDDDrUQUplWBQ7izI1TrsvpjIqSJmf+ER/tg0gJ+KLNSrMmyM7NkEdawxf9tOAorEeuQ
+ GQjKnvufhuqv58oLmcKl1yE0Fuq+lt0AvPqDZqoXqF0rGPlPobwOLDyR7A98kHTtYyxEhZGZcsf
+ iYpeufhihdZrNKTwXvuJG3BT7CkS8c25YGb0SVqV34h8gqJCyjlJXfiOgJJ8XaEGk5d2IdWCwWS
+ 9lB4WMYLc6BE5XkYZ6jQNxZ5TUIK/CmVLyZhmk6UEkzXi3Kd/MBZIO4Uc376G8vSmX5LFGZbWNB
+ dzp59SUKS6W/UbVxR4i8mShGeYiRdPBg2qrQFrb8/bVzZ9me42WHxrcY3Dco6miSacl2vdEg2Qf
+ pEBDwLDho2kpnvusXePgwVpwfz67A8EVc9/m8Sjhg15xwIoa6kDAuFYQg/x2KeJLxBEeHE7ab2m
+ LwX2+peYfp43sOM2sFg==
+X-Authority-Analysis: v=2.4 cv=TaqmcxQh c=1 sm=1 tr=0 ts=6a59fcf8 cx=c_pps
+ a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=hbrWYzUuUx-UyiL5C5EA:9 a=QEXdDO2ut3YA:10
+ a=PEH46H7Ffwr30OY-TuGO:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDA5OSBTYWx0ZWRfX2h1My8/wPmg4
+ P6YUMK/mpCU7Usyrh4oDZASZbs8WxUuXx/wSJ1DM65Bt1Qr6c7zgU0g4345rdNWAuz9ofZIPAh9
+ L+rVZp81cu6EafJJoTYLAxih/jnMw+g=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-17_02,2026-07-15_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 impostorscore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
+ adultscore=0 spamscore=0 bulkscore=0 priorityscore=1501 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170099
 
-Enable rknn_core_0 and rknn_mmu_0 on the Radxa ROCK 4D. Supply the NPU
-rail (vdd_npu_s0) via npu-supply; it is marked regulator-always-on for
-now because the NPU power sequencing is still being brought up (see the
-cover letter) -- happy to switch to proper runtime control once the
-compute path is sorted.
+On 7/13/26 9:47 PM, Akhil P Oommen wrote:
+> On 7/6/2026 4:38 PM, Konrad Dybcio wrote:
+>> On 7/6/26 1:07 PM, Konrad Dybcio wrote:
+>>> On 7/5/26 10:14 AM, Akhil P Oommen wrote:
+>>>> From: Abel Vesa <abel.vesa@oss.qualcomm.com>
+>>>>
+>>>> Add the nodes to describe the GPU SMMU.
+>>>>
+>>>> Signed-off-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+>>>> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+>>>> ---
+>>>>  arch/arm64/boot/dts/qcom/eliza.dtsi | 38 +++++++++++++++++++++++++++++++++++++
+>>>>  1 file changed, 38 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/qcom/eliza.dtsi b/arch/arm64/boot/dts/qcom/eliza.dtsi
+>>>> index c5635f22e2a7..e5b8377e6c3a 100644
+>>>> --- a/arch/arm64/boot/dts/qcom/eliza.dtsi
+>>>> +++ b/arch/arm64/boot/dts/qcom/eliza.dtsi
+>>>> @@ -2674,6 +2674,44 @@ mdss_dp0_out: endpoint {
+>>>>  			};
+>>>>  		};
+>>>>  
+>>>> +		adreno_smmu: iommu@3da0000 {
+>>>> +			compatible = "qcom,eliza-smmu-500", "qcom,adreno-smmu",
+>>>> +				     "qcom,smmu-500", "arm,mmu-500";
+>>>> +			reg = <0x0 0x03da0000 0x0 0x40000>;
+>>>> +			#iommu-cells = <2>;
+>>>> +			#global-interrupts = <1>;
+>>>> +			interrupts = <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
+>>>
+>>> 674 is the correct globla
+>>
+>> (modulo the issue i explained below)
+>>
+>> [...]
+>>
+>>> This list is not quite correct. It must be sorted by the context index,
+>>> to which a given interrupt corresponds to - the driver relies on that
+>>> to give you information about where a context fault happens
+>>>
+>>> Moreover, I see that the interrupt sheet has the bug where some
+>>> interrupts are offset by 32 from the base vector, and others are offset
+>>> by 31 (i.e. the SPI number doesn't equal irq vector - 32) - please find
+>>> out which mapping is correct with the right folks
+> 
+> I reviewed this and looks correct to me. Also, this matches the
+> downstream configuration. Did you confuse with Dest Port vs Vector ID in
+> the documentation?
 
-Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
----
- arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+What I'm trying to say is that the documentation is confusing, we've had
+that issue in the past on other platforms. If you see that the correct
+irqs are firing, it's fine
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-index 272af1012..09d2fc98b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-@@ -442,6 +442,7 @@ regulator-state-mem {
- 			};
- 
- 			vdd_npu_s0: dcdc-reg2 {
-+				regulator-always-on;
- 				regulator-boot-on;
- 				regulator-enable-ramp-delay = <400>;
- 				regulator-min-microvolt = <550000>;
-@@ -869,3 +870,18 @@ vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
- 		remote-endpoint = <&hdmi_in_vp0>;
- 	};
- };
-+
-+&rknn_core_0 {
-+	npu-supply = <&vdd_npu_s0>;
-+	/*
-+	 * Power BOTH NPU domains (NPU0 + NPU1) like the vendor's single NPU node,
-+	 * even though rocket computes only on core 0: the CBUF->CMAC read path is
-+	 * only fully powered with NPU1 up. rocket attaches the multi-PD list.
-+	 */
-+	power-domains = <&power RK3576_PD_NPU0>, <&power RK3576_PD_NPU1>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_0 {
-+	status = "okay";
-+};
--- 
-2.43.0
-
+Konrad
