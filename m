@@ -1,267 +1,194 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CCB3DE440
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 12:00:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1879C3DCDA3
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 12:21:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784289610; cv=none; b=Jg5wAha976D9bBtS6E7Cvzy8HUTzMTncAPZyRCpuREIEL0UfiEw0guS6Alu/rFukgfMeGk4bLx/FPTrWIsdEVef6BczM1q4gvSAQWITIOInE7ZqVnlqoryhLzgsXagmxN6p5Al6cLRHtrEcdHx9XhQ0MvVq4KnmzGR2x7PnJ0Oc=
+	t=1784290883; cv=none; b=gecZGaLIrUP5QC+C1NL416+JTwYsHFCDLodcBhEBi6T/LmypofAnU1dQ7FD8ZAZR5sX2r+6tlEAc/kZG8hVyE/EEyid6gMvZ5+6nUG+xHjI0OisscJYVK59uxKQPwIGwHwYG0truuemZRDt0DMsYliHJ89/PmCMncXldWzxhq90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784289610; c=relaxed/simple;
-	bh=k1XNn44v3qsaD0EI0G0pfPOXJSQRZQe0hXtKXACW6ys=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PrpU+1HXPAFn5483vq1fqQpRr4BtMLEFmorfjN8Ekh5SZLkZ77gkwQv7o+475CGpKnNDXOr/4KzxAFoqTC4SPOajZFTlCWUbM7/uE6tApKcNqQsfsK2pflx7BJzEhj0/5Cb48lPQHCNppEn8cP5cMX1ZOqKr/VaHJUKeJgu6OPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TXCwAYOr; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1784290883; c=relaxed/simple;
+	bh=12JKqVcIZ52E2RLSxqShm8ptLKwpwxt2fZwzEHcI1Sk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qAQQZU1ssbhT5u1df2YpKeFuI8cnldpWRxL1RgRbDBzDk+X611Wf26qVquNybPZQtcK6hvXOa0697Sg6Z2gjog6Im8v4fOswoSmhPX+i3yM91UIHV2kvJlcomIhxJyGHKZWlg1GlsCVWHNWDY3WKyQIcY63FrNiBBwrK3kGwSjU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=s02f0Fj0; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TXCwAYOr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1784289606;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KNMO1oYrbjElfFaSy7vQKoIRJB+LB6OR3rh+O+eE0CA=;
-	b=TXCwAYOrTYiC6dMfv5eJlIEnLNjRE8ZTsXoGV0elMpg+dTEkb5AmYWQoptG9qBVL/dIKRO
-	19qN+xUmrRTD2UYx6K9RhOF077VK3D9OA6wzpjc6X1/vgz+0/sMP7oJZaNxID+QTEH9L10
-	BLVLYFpA+VremmXGhVlxCmooMpk/pJM=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-218-M0pH4sFcOPyUzSTgWRI98g-1; Fri, 17 Jul 2026 08:00:04 -0400
-X-MC-Unique: M0pH4sFcOPyUzSTgWRI98g-1
-X-Mimecast-MFC-AGG-ID: M0pH4sFcOPyUzSTgWRI98g_1784289603
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-49001defc4dso11047415b6e.3
-        for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 05:00:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784289603; x=1784894403;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=KNMO1oYrbjElfFaSy7vQKoIRJB+LB6OR3rh+O+eE0CA=;
-        b=sWRcZd77U7vXJhxlVWIfIuUwaAjhEqgohZLlZmCzHjX22qL5o86AK1UOMuixHQ10ZQ
-         krasBzZxbLH/+0rpVem/+iAaNUrz3fKwGPrcMyui+VTiALxsX+RYrWrjlNIso11HFMJF
-         72iS9X+V7YDJ9cmhT6trAbEtE7P4S2UPzcrz/0h2hvBpkH5/AlsvIoFbszTnWVB9efTJ
-         Kv/ldsNzeEMqT19kfrHsDL9kWG2GpYZtIeyNAIv+Taf0ZLWu9sE5lxwzIU48VjxWoMgk
-         SaN5ow2hSRZCoP06v/4k1ItGCIgwijuGY2RCs4bzxAF2Rgp7u5xl3qRlsODR86/l+MpP
-         gylg==
-X-Forwarded-Encrypted: i=1; AHgh+Rrha867ZXcI3alf330FzuKOAU1dngrKvSIknXqAEiJPw709PabAzV8blhZGiVq/WXegpecsYw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxmDZFb/A6HQ2GhlpSwp79Inq1oNMFlBLMMdx39AFWfgD/xQecV
-	G6knzZSc2BdbMXE78LUqyaj9sld3coZpXFyO0wTmwoCRCvpoRRcdDbzDrp6XFTVBgB5FC40sGv2
-	wO/UtX+IOfPkuLEebpswTik6/7gZRowFzbxGsyCO3QoB21fDpJim9fRxf7ejQ4+AMp6T3JyF6px
-	zWf25667R38vQLj8gXfX1HmS+kG9Gzat8=
-X-Gm-Gg: AfdE7cnEAEiYVFeJRmy1fmQOJzV6KeaOm70Qe1t9hBvXlNhgp4UuuZ2v83psgPH294O
-	Iv3F27ht691+HxpZkKBptiv3j7IZ5Nlp5NuOf+ItF+0bVFrd4TwDPT9y7SVCsqLUAzemUxM9YoE
-	kL/6Rus+upRPB+GBGpxBYF0k4AL0ieTvb2wdcXkdQFoN8ZeZ42znhZdeh02gKj5tIfQeE8863cA
-	dEX4BfwMuSBLt0Q9Q==
-X-Received: by 2002:a05:6808:6902:b0:496:1009:ec5a with SMTP id 5614622812f47-4a4d0160614mr1146337b6e.1.1784289603057;
-        Fri, 17 Jul 2026 05:00:03 -0700 (PDT)
-X-Received: by 2002:a05:6808:6902:b0:496:1009:ec5a with SMTP id
- 5614622812f47-4a4d0160614mr1146300b6e.1.1784289602009; Fri, 17 Jul 2026
- 05:00:02 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="s02f0Fj0"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DB7571476;
+	Fri, 17 Jul 2026 05:21:15 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6CD653F7B4;
+	Fri, 17 Jul 2026 05:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1784290879; bh=12JKqVcIZ52E2RLSxqShm8ptLKwpwxt2fZwzEHcI1Sk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=s02f0Fj0gEDxPOKdbFt0hj9bVWROJ4+nqGTlH7fJYt6Am1SLtfGBpHaK+s+YcsjUn
+	 68WVavT9WpIVJBPQE0hhc2YB33mvKz08BXVzgDu8MTXC2UIcZC8JhxaZ+DHPjxMB0z
+	 LxTIM8ClFctMv13i6Txtm3vaqEYPcdva7jAS8I74=
+Message-ID: <f61a0a67-2cb5-4fac-818e-70eb9ed69f95@arm.com>
+Date: Fri, 17 Jul 2026 13:21:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260629144837.3244851-1-desnesn@redhat.com>
-In-Reply-To: <20260629144837.3244851-1-desnesn@redhat.com>
-From: Desnes Nunes <desnesn@redhat.com>
-Date: Fri, 17 Jul 2026 08:59:49 -0300
-X-Gm-Features: AUfX_mzpKeLRkWyX5IJziXQww7lPcrKAFEzEkmYK5hcKf6-cJXL-hIHQkRlAgFA
-Message-ID: <CACaw+eyE+Rk3NeGaWmo=Psw+aDNp4=Ggzj3DnrkL-fp04NZc+g@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/vt-d: Fix UCTP context table slot when copying
- root entries
-To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	stable@vger.kernel.org
-Cc: baolu.lu@linux.intel.com, dwmw2@infradead.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: IN_QYLy3Mn5JdrfKh9atHbh7TO_MkKr3b3mqEFvmdDE_1784289603
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-iommu: Introduce API to reserve IOVA regions for
+ dynamically created devices
+To: Konrad Dybcio <konradybcio@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ Vikash Garodia <vikash.garodia@oss.qualcomm.com>, joro@8bytes.org,
+ will@kernel.org, m.szyprowski@samsung.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, dikshita.agarwal@oss.qualcomm.com,
+ Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Robin Clark <robclark@qti.qualcomm.com>,
+ Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+ Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
+ Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+ Loic Poulain <loic.poulain@oss.qualcomm.com>
+References: <20260119054936.3350128-1-busanna.reddy@oss.qualcomm.com>
+ <cfd23f75-8952-4463-abd5-815b995031b0@arm.com>
+ <bb59f07e-ca7e-f012-6a4b-0a148350b69c@oss.qualcomm.com>
+ <20260612172649.GM1066031@ziepe.ca>
+ <da77c21d-25b3-46c3-a48f-71f0549e9f5f@oss.qualcomm.com>
+ <20260615125257.GS1066031@ziepe.ca>
+ <dcc0d02e-91fb-ddbe-399a-0191bab94c4f@oss.qualcomm.com>
+ <20260617194038.GC231643@ziepe.ca>
+ <e9e76c9f-b3b1-4ffd-9547-183556f6bb60@kernel.org>
+ <20260618151745.GD231643@ziepe.ca>
+ <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <dba037fa-0f21-4a50-8727-076a3b177c47@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello Baolu,
+On 17/07/2026 11:44 am, Konrad Dybcio wrote:
+> On 6/18/26 5:17 PM, Jason Gunthorpe wrote:
+>> On Thu, Jun 18, 2026 at 01:57:40PM +0200, Krzysztof Kozlowski wrote:
+> 
+> [...]
+> 
+>> So, if we are going to do a hack in DT to accomodate Linux, I argue to
+>> choose explicit child devices so VPU does not need to create a special
+>> bus, call of_dma_configue, or hack in new DMA API things that only it
+>> will ever use.
+> 
+> Bit late to the party, but I'll chime in with some more "amazing news"..
+> 
+> All of the multimedia HW on QC platforms (camera, display, GPU, video
+> and their specialized variations) has at least part of the same problems:
+> 
+> * Multiple SID groups that need to be accommodated for different purposes
+>    (normal vs secure buffers provided by the same device, different
+>    "logical functions" generally speaking) apply to all of them
+> 
+> * Different IOVA limitations per SID group seems to also concern at
+>   least the camera uC ("ICP") (but not all of camera hw)
+> 
+> * Remoteprocs (and therefore also the audio stack) expose a number of
+>    subfunctions, some of which we currently model as subnodes (although
+>    many arguably only exist as such because someone decided it was
+>    convenient to express them this way). This, for example led to the
+>    representation of each SID group associated with the remoteproc
+>    (fastrpc/"run compute on rproc") as a separate node:
+> 
+> -- qcom/hamoa.dtsi
+> remoteproc_adsp: remoteproc@6800000 {
+> 	[...]
+> 
+> 	// no iommus OR iommus used for another purpose (fw loading)
+> 
+> 	fastrpc {
+> 		// no iommus
+> 
+> 		compute-cb@3 {
+> 			compatible = "qcom,fastrpc-compute-cb";
+> 			reg = <3>;
+> 			iommus = <&apps_smmu 0x1003 0x80>,
+> 				 <&apps_smmu 0x1063 0x0>;
+> 			dma-coherent;
+> 		};
+> 
+> 		compute-cb@4 {
+> 			compatible = "qcom,fastrpc-compute-cb";
+> 			reg = <4>;
+> 			iommus = <&apps_smmu 0x1004 0x80>,
+> 				 <&apps_smmu 0x1064 0x0>;
+> 			dma-coherent;
+> 		};
+> 
+> 		[...] (there's a lot of them)
+> 	};
+> };
+> 
+> There may be more hiding in plain sight, but those are the ones I'm
+> aware of.
+> 
+> 
+> I was kinda hoping there would be more buy-in to follow what PCIe
+> does, but to my understanding you're opposed to it because "vpu_bus"
+> is not dynamically discoverable. PCIe generally obviously is, but
+> we already have prior art regarding hardwired/onboard devices - many
+> qcom DTs carry per-board iommu-map overrides to please the allocator
+> with known-in-advance BDF values (because the HW has only so many
+> SIDs):
 
-Can I further assist with any more requests or answering any remaining
-questions since the v1 review?
+It's not really about dynamic discoverability, it's more the fact that 
+PCI requester IDs are a real and well-defined thing.
 
-Best regards,
+> -- qcom/qcs6490-rb3gen2-industrial-mezzanine.dtso
+> iommu-map = <0x0 &apps_smmu 0x1c00 0x1>,
+>              <0x100 &apps_smmu 0x1c01 0x1>,
+>              <0x208 &apps_smmu 0x1c04 0x1>,
+>              <0x210 &apps_smmu 0x1c05 0x1>,
+>              <0x218 &apps_smmu 0x1c06 0x1>,
+>              <0x300 &apps_smmu 0x1c07 0x1>,
+>              <0x400 &apps_smmu 0x1c08 0x1>,
+>              <0x500 &apps_smmu 0x1c09 0x1>,
+>              <0x501 &apps_smmu 0x1c10 0x1>;
+> 
+> Although it seems to me that it's more of a hack than anything else..
 
-Desnes
+No, that is describing a genuine mapping of physical PCIe requester ID 
+values to physical SMMU StreamID values which exists in the system, and 
+which any OS needs to understand in order to be able to configure the 
+SMMU correctly at all. Sure, that mapping probably is programmed in a 
+lookup table in the root complex by the bootloader in a board-specific 
+manner (like I know the NXP Layerscape platforms do, for instance) but 
+it's still a real description of the system configuration, and it's 
+perfectly fine if StreamIDs and/or LUT entries are limited to only 
+configure BDFs known to be present at boot (if there's no SR-IOV or 
+hotplug to worry about), since it's a reasonable expectation that an OS 
+won't go arbitrarily renumbering buses just for fun.
 
-On Mon, Jun 29, 2026 at 11:49=E2=80=AFAM Desnes Nunes <desnesn@redhat.com> =
-wrote:
->
-> When translation is already enabled at boot (e.g. kdump), the vt-d driver
-> copies context tables from the previous kernel's root table. In scalable
-> mode, buses that only populate the upper root half (UCTP, devfn >=3D 0x80=
-)
-> should be written to ctxt_tbls[tbl_idx + 1] through copy_context_table().
-> However, the current copy path always uses tbl[tbl_idx + 0] in this situa=
--
-> tion. Since idx wraps to 0 at devfn 0x80 due to a zeroed LCTP, new_ce for
-> LCTP will be NULL and keep pos equals to 0. Thus, UCTP entries will be co=
--
-> pied into tbl[tbl_idx + 0] instead of tbl[tbl_idx + 1], and written after=
--
-> wards to root_entry[bus].lo instead of .hi in copy_translation_tables().
->
-> In short, devices on bus 0x80 with devfn >=3D 0x80 fail DMA with fault 0x=
-39,
-> which will break drivers running in kernels with translation pre-enabled.
-> This fixes NO_PASID DMAR faults for UCTP-only buses such as:
->
-> DMAR: [DMA Read NO_PASID] Request device [80:14.0] fault addr 0xe81759000=
- [fault reason 0x39] SM: Present bit in Root Entry is clear
->
-> For instance, this fault yielded to locking issues between systemd and
-> xHCI, blocking a system's reboot after a vmcore was captured with kdump:
->
-> [   72.987601] systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=
-=3D2193 is taking a long time
-> [  132.237566] dracut-initqueue[277]: Timed out while waiting for udev qu=
-eue to empty.
-> [  202.988014] systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=
-=3D2193 killed
-> [  202.998059] systemd-udevd[246]: usb3: Worker [255] terminated by signa=
-l 9 (KILL).
-> ...
-> [  206.288378] kdump[569]: saving vmcore complete
-> ...
-> [  206.821258] systemd-shutdown[1]: Rebooting.
-> [  246.858495] INFO: task kworker/0:1:11 blocked for more than 122 second=
-s.
-> [  246.865319]       Not tainted 7.0.0-clean #1
-> [  246.869663] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disable=
-s this message.
-> [  246.877623] task:kworker/0:1     state:D stack:0     pid:11 tgid:11   =
- ppid:2      task_flags:0x4208160 flags:0x00080000
-> [  246.888942] Workqueue: usb_hub_wq hub_event
-> [  246.893202] Call Trace:
-> [  246.895690]  <TASK>
-> [  246.897828]  __schedule+0x299/0x5c0
-> [  246.901378]  schedule+0x27/0x80
-> [  246.904572]  schedule_timeout+0xbd/0x100
-> [  246.908565]  __wait_for_common+0x97/0x1b0
-> [  246.912644]  ? __pfx_schedule_timeout+0x10/0x10
-> [  246.917252]  xhci_alloc_dev+0x9e/0x2b0
-> [  246.921068]  usb_alloc_dev+0x7a/0x3b0
-> [  246.924795]  hub_port_connect+0x285/0x960
-> [  246.928873]  hub_port_connect_change+0x94/0x290
-> [  246.933482]  port_event+0x4bb/0x840
-> [  246.937030]  hub_event+0x141/0x460
-> [  246.940489]  process_one_work+0x196/0x390
-> [  246.944569]  worker_thread+0x1af/0x320
-> [  246.948383]  ? __pfx_worker_thread+0x10/0x10
-> [  246.952724]  kthread+0xe3/0x120
-> [  246.955921]  ? __pfx_kthread+0x10/0x10
-> [  246.959736]  ret_from_fork+0x199/0x260
-> [  246.963550]  ? __pfx_kthread+0x10/0x10
-> [  246.967362]  ret_from_fork_asm+0x1a/0x30
-> [  246.971355]  </TASK>
-> [  369.738508] INFO: task systemd-shutdow:1 blocked for more than 122 sec=
-onds.
-> [  369.745593]       Not tainted 7.0.0-clean #1
-> [  369.749935] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disable=
-s this message.
-> [  369.757897] task:systemd-shutdow state:D stack:0     pid:1 tgid:1   pp=
-id:0      task_flags:0x400100 flags:0x00080000
-> [  369.769128] Call Trace:
-> [  369.771616]  <TASK>
-> [  369.773752]  __schedule+0x299/0x5c0
-> [  369.777299]  schedule+0x27/0x80
-> [  369.780493]  schedule_preempt_disabled+0x15/0x30
-> [  369.785188]  __mutex_lock.constprop.0+0x547/0xac0
-> [  369.789974]  device_shutdown+0xac/0x1b0
-> [  369.793877]  kernel_restart+0x3a/0x70
-> [  369.797603]  __do_sys_reboot+0x147/0x240
-> [  369.801595]  do_syscall_64+0x11b/0x6a0
-> [  369.805407]  ? handle_mm_fault+0x110/0x350
-> [  369.809574]  ? do_user_addr_fault+0x206/0x680
-> [  369.814006]  ? irqentry_exit+0x7a/0x4d0
-> [  369.817907]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> [  369.823046] RIP: 0033:0x7fe2958da917
-> [  369.826684] RSP: 002b:00007ffc5c458618 EFLAGS: 00000206 ORIG_RAX: 0000=
-0000000000a9
-> [  369.834383] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe29=
-58da917
-> [  369.841639] RDX: 0000000001234567 RSI: 0000000028121969 RDI: 00000000f=
-ee1dead
-> [  369.848893] RBP: 00007ffc5c458790 R08: 0000000000000069 R09: 00000000f=
-fffffff
-> [  369.856148] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000=
-0000000
-> [  369.863402] R13: 0000000000000000 R14: 00007ffc5c4588b8 R15: 000000000=
-0000000
-> [  369.870659]  </TASK>
-> [  369.872888] INFO: task systemd-shutdow:1 is blocked on a mutex likely =
-owned by task kworker/0:1:11.
->
-> Fixes: 091d42e43d21 ("iommu/vt-d: Copy translation tables from old kernel=
-")
-> Signed-off-by: Desnes Nunes <desnesn@redhat.com>
-> ---
-> V1 -> V2: Updated commit message and added xHCI stack trace as requested
->
-> v1: https://lore.kernel.org/linux-iommu/ajnlKDglN6wEBBrS@google.com/T/#t
->
->  drivers/iommu/intel/iommu.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 4d0e65bc131d..737936f942a0 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1443,7 +1443,7 @@ static int copy_context_table(struct intel_iommu *i=
-ommu,
->                               struct context_entry **tbl,
->                               int bus, bool ext)
->  {
-> -       int tbl_idx, pos =3D 0, idx, devfn, ret =3D 0, did;
-> +       int tbl_idx, tbl_slot =3D 0, idx, devfn, ret =3D 0, did;
->         struct context_entry *new_ce =3D NULL, ce;
->         struct context_entry *old_ce =3D NULL;
->         struct root_entry re;
-> @@ -1459,10 +1459,9 @@ static int copy_context_table(struct intel_iommu *=
-iommu,
->                 if (idx =3D=3D 0) {
->                         /* First save what we may have and clean up */
->                         if (new_ce) {
-> -                               tbl[tbl_idx] =3D new_ce;
-> +                               tbl[tbl_idx + tbl_slot] =3D new_ce;
->                                 __iommu_flush_cache(iommu, new_ce,
->                                                     VTD_PAGE_SIZE);
-> -                               pos =3D 1;
->                         }
->
->                         if (old_ce)
-> @@ -1484,6 +1483,9 @@ static int copy_context_table(struct intel_iommu *i=
-ommu,
->                                 }
->                         }
->
-> +                       /* Track if saving UCTP or LCTP entries in scalab=
-le mode */
-> +                       tbl_slot =3D ext && devfn >=3D 0x80 ? 1 : 0;
-> +
->                         ret =3D -ENOMEM;
->                         old_ce =3D memremap(old_ce_phys, PAGE_SIZE,
->                                         MEMREMAP_WB);
-> @@ -1512,7 +1514,7 @@ static int copy_context_table(struct intel_iommu *i=
-ommu,
->                 new_ce[idx] =3D ce;
->         }
->
-> -       tbl[tbl_idx + pos] =3D new_ce;
-> +       tbl[tbl_idx + tbl_slot] =3D new_ce;
->
->         __iommu_flush_cache(iommu, new_ce, VTD_PAGE_SIZE);
->
-> --
-> 2.54.0
->
+It's another thing entirely to have a bunch of distinct logical devices 
+whose only physical identifier is already an SMMU StreamID, then invent 
+a fake mapping of made-up numbers to StreamIDs in order to pretend they 
+can use common infrastructure, except still needing invasive hacks at 
+almost every level of said common infrastructure in order to even try to 
+make it actually work.
+
+How anyone can read, let alone write "This creates a limitation when 
+child requires a different iommu-address range than its parent, as 
+device tree cannot express the reservation per child." and not 
+immediately conclude that the Devicetree binding must be wrong because 
+it is unable to adequately describe the properties and requirements of 
+the hardware, frankly I struggle to imagine...
+
+Thanks,
+Robin.
+
+> 
+> 
+> With that in mind, do you still prefer that this is handled through
+> separate nodes, presumably for all of the aforementioned cases?
+> 
+> Konrad
 
