@@ -1,172 +1,217 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4633148A8
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 03:48:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784260118; cv=none; b=JPAlzcviDuugpKPlOy94yvbQEmmJMNaeARGUARaJRvbtvGjohEuNHzynYM1k+B1FITb0Wda3wnArtXPQItI9Ss8KmPr7NVyhyGRT6xkdYHFzgoEuNFMjt1Lpxq9FakzWWtI4AwBsftdK15uXVr3Re/RBuOWnP0dnqyQBSqQLcnc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784260118; c=relaxed/simple;
-	bh=Sa3wk56MV2g/ndnDgfSJgHE84Rp9SbiopO4rIgP3Ijc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P/y8+hY9HMLqpsSW3MLB4/W7oE9SSLcldqCntztFSieM1bdGBBerBfz9Y811TBKJe4zH4awpe1ecVmu4om6EXjox8vPCwWSnM8XOibHB7SXZhw+By0PoLrkdhXXV3tEVAbdap2LNh6pZZjmMpPPRUkaLG+dTtxy7uKj0iXSB4Pc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Jqmxyi0B; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=bjnfVtc5; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5E7F23D283
+	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 08:00:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784275253; cv=fail; b=Jb10ANXA2ypeubFYSlfwz9t6eaqUf0+ncPWrn9LVQTfMapw2vVvRXJQJAv6ZBJsYBjJLUpGjv0FWF4qThxSqNqn6S6Efp8CDNIbJa6cqI4NCipia/kCSAkrRkW8pMZfb60BrEdksucd3PzrT5+ZKr/NM+2AoRyIclCvUejDoPHo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784275253; c=relaxed/simple;
+	bh=ex7LqQkNtc75LMZkz2zFxLQrQg3D3NgR6YF1IH1v0xI=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=HRC2qKOYS0FI15s25cPhTUX14+hXITsZxN1VmP6ZTHP3nhe9nRqQcwFPsXAuUPSSxjgOpmtjoqDNWT71frSfisVWGOpmAuECwyx5uiCPnItjE4DvT4ALfjp5n/PLmqUvniIyWBAkwAhSHI+UmYeF/d3Rb/sMBgjY6dP58/S+PZg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EG2wfPtQ; arc=fail smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Jqmxyi0B";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="bjnfVtc5"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66H33rgu607310
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 03:48:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Sa3wk56MV2g/ndnDgfSJgHE84Rp9SbiopO4rIgP3Ijc=; b=Jqmxyi0BoBIbO7SH
-	m4Ze+Co4+zLo2mX7ah0CABGEPhAjxVMyzc71vmcub7tF7atTvUJkSB44okuHQQcP
-	awn8Iz15DQw4Sj9zMck6wwsJ/Gek6PjVqht7DBltNUJgKWUVQsgDIba344ThT8db
-	eu54JqhePGGKoamLY+e8C3vKaEfleJx2mbpS0+vxcmxDGPTqLtRxYgSOSz7C7RH7
-	30SGP307HrIG7NGIEcwgV5LKq3apqmMKpcG9lse66cO4HO++QSeAGKUrKo8qb1ms
-	arGsRtJvB1OEUvCm7Oz2SbzSxhP8uAm+myA6oV+RBwNrxoY1eA9iaR6m7gh3ojY1
-	1BWKCg==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4feu10cgp5-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 17 Jul 2026 03:48:35 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2cee894b3d8so71866045ad.2
-        for <iommu@lists.linux.dev>; Thu, 16 Jul 2026 20:48:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784260114; x=1784864914; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Sa3wk56MV2g/ndnDgfSJgHE84Rp9SbiopO4rIgP3Ijc=;
-        b=bjnfVtc5hcgQIYZsUwGcyufcIvl4syCWpQCqQSfreeoXVaEwCno/MhEc7L01NLMHSZ
-         qoOXjuT6MFI/jPExUb49W91Ku1R7mHTEQYLYTZ7li46dPn58B/PP5Qnd0R5WlWB0lRfI
-         u6K6jaBJOheF4DoPomyXGtCyzOhj6EPiELEG3+dEfWdGS8K5RTM+herpCkeNETX1Sj2F
-         ZltpZdVv99irHsbt4Evl1BeeBR1f0yySSOJoe06g/udvvv0+pjmWu1xbJ9nWpOSy+Ng5
-         OSMsumejWvBrEkrJRYyWH2ULsSrGuqFRdjajwZq3HGg1DS4oSN2wkI248iIe0koMFj18
-         zhfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784260114; x=1784864914;
-        h=content-transfer-encoding:content-type:in-reply-to:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Sa3wk56MV2g/ndnDgfSJgHE84Rp9SbiopO4rIgP3Ijc=;
-        b=hT+Rn2UMAwMf7rOnZPECo2vQA4YJptUNsEbB2ldjYajZeP9GA4wPHH+csNWRFox3pT
-         XOGoFsJcJBPk2tkkYY7YXmLiLDG34agUuE3Jal3gMrevp2lA6NIfyjiM+6nW1ZysLrAk
-         ZriMpgLTIVA+tGZ6/P0WAmxJOYurmpHjoHx1W4sqAvN5n5gNZczZrB45Dv+yqKy7N0Se
-         r5kDI2SPS/DwWuuSMaIQCC0nFZ6chwPrdpsezhE1SWuqkJW3IP5xBKRj2mahCJ3GJnqG
-         nv/uL2DVwxF/Og/STFGHIbCUNQPvy1ZbfJuUvihegrbCKcyg9iA2Y12Dp3LRBDbIuDCK
-         4w7A==
-X-Forwarded-Encrypted: i=1; AHgh+RrxIPo0XAFnAfubfe4pHspVJDxyF/OleuWVGp/d5USbPcT4LJmC+QuOShOMQQORs0c0QalioQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyVW5eGTq1cfQ3AP+CwOiRrc24EpN1VT+gwZiKfNRkL+1dI9SMl
-	fhGey+mdroYhCp9z71O6GS6TT2LAVgh0rUX5AYR4V3QOwnpPO8EYSSJAkfZIVOh4srAFY9HopRM
-	dzcDAtjuwglHsrnKeNc5ztPmXFifXwIiGM2IcVvlQQOamd0Le9Sx6P8xTsg==
-X-Gm-Gg: AfdE7cnJcST9Oku3Y1gk5MSmuskafaHnrJYsHOFQdJ+WiyGh+eC52y0dlvy02IF8oli
-	B8EFXGSNG15ZK+bgY8+rtgL/5W1ccCTA/mJyynC6DZBKD6YMDacpsJR39u4hNCsf7rTZbK6b8nJ
-	K4Loe3XzwBd+IjBGVG2uS71s2xSX8tldASALYWVTTA3zuR11jawQUP0kduA33t3KQqa68x4WO68
-	vPykMhcqVW3O83t2yt51/cCBsqp14T18rNeT5BcqWXEyFzhI5r2Oc8fZbeQ1WRIv3iVdqXs0vmk
-	ECgCgtbvkQg77BYWGvcNPbhN3mTHGdm1bFCTTx7oAaFtJFAkWAY4w7Dam+VeClL6GaorTdH+xQe
-	eDiLQSEEJbB7JyipmNR0CAtLg8S16G10R
-X-Received: by 2002:a17:90b:4c48:b0:387:df8f:1402 with SMTP id 98e67ed59e1d1-38e4b57e9aamr785473a91.35.1784260114125;
-        Thu, 16 Jul 2026 20:48:34 -0700 (PDT)
-X-Received: by 2002:a17:90b:4c48:b0:387:df8f:1402 with SMTP id 98e67ed59e1d1-38e4b57e9aamr785438a91.35.1784260113651;
-        Thu, 16 Jul 2026 20:48:33 -0700 (PDT)
-Received: from [10.206.105.200] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31429fe4677sm1547122eec.11.2026.07.16.20.48.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jul 2026 20:48:32 -0700 (PDT)
-Message-ID: <8ebd304d-b03d-a8cd-2bf5-a45763780098@oss.qualcomm.com>
-Date: Fri, 17 Jul 2026 09:18:24 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EG2wfPtQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784275250; x=1815811250;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ex7LqQkNtc75LMZkz2zFxLQrQg3D3NgR6YF1IH1v0xI=;
+  b=EG2wfPtQaTlpxPSrqlrTrrgNXH0ULneOdAW/h8GuWMQDcWvyvkyNtWrt
+   6qG/+l860znkobg7ng0qLrCOlTPhhNn/1m1KPh4G847Xkzs7OXFlPhc+4
+   +xXfSyR8xBc7fTbF/mgvAw4k28RhedaYallWYKsfm8USAAFfd2OBnjIiT
+   jRCRIUEskYD1aoeys67vO+tWeIODwMC9UQO7hiPfmPea0qadoleIslFFV
+   Xy7kY1qFqJsuOmJLGDnGHc3/W4JTg2sr6DcBU0AOd2AflfwKKHGrIQDzd
+   YodwEXkadFrwUIpPII6zXH04OkIpN6f0L1/IhddINMFy19ZXDb4T58lb+
+   w==;
+X-CSE-ConnectionGUID: rUcVpu8XQYCI6O/5SIUioQ==
+X-CSE-MsgGUID: SptEK1YGSPqElCCa6ufJHQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11848"; a="83927686"
+X-IronPort-AV: E=Sophos;i="6.25,168,1779174000"; 
+   d="scan'208";a="83927686"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 01:00:44 -0700
+X-CSE-ConnectionGUID: tM2PBFUNRse2km3hl0B/dQ==
+X-CSE-MsgGUID: jHizv9b4Q2uvTex7pbYoCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,168,1779174000"; 
+   d="scan'208";a="254950642"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 01:00:42 -0700
+Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43; Fri, 17 Jul 2026 01:00:40 -0700
+Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
+ FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43 via Frontend Transport; Fri, 17 Jul 2026 01:00:40 -0700
+Received: from CO1PR03CU002.outbound.protection.outlook.com (52.101.46.26) by
+ edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43; Fri, 17 Jul 2026 01:00:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=QvAI1T3LG9oekBY35tXiIlF+QcURI/hWEFD0tbzdC9OUZPAWuM3pRBaRdWFYeJjcFuATNIXqORIK6gwtVCZLYx5MH72KgtV8e0itM9tcPVCyHB+++BHXiLT5xT4j0irI9H3YmVgw2H3lJgs+uriYqlUd8JEOxSY8FBkAJxUwIIZFhPrxoPD7GrPCWlu9ZfUHTZaKHczdzFgS3iBIWhvzEtgTZmrGhmfekb7ySt5YUDP4bHKjMUCQKPgUJ8IL33NdX9I881lgz0/ut/uyJnNGB8BZ7KQug6xHq7VT9G8jmur/SuexYN4w0Omu6kDLvPESHUbP8M3tzCwjb0xiJSL6UQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rv210SFYEMRFW5bV8xjBJtWOZpPoQ4DKBxPJlWPGvwI=;
+ b=VuNnGNAjwBK6Vwzg8irw1ZAd7hBzZW4/bPocwyZxmBZJhVlgZaNXgC6Eolofh+j0mHcvl5qOZa/cN2s0bLy7X9oVFKR2SyuqI8KzqNpyvJ/I6spR/BBuH/1kY0lfnJ01xgwUxQ1xWzb7zZcvdJoL7bscHhNk+ovVSJYJBQz4KpspIYC6vBcIu/Urm9AiTxkhKtDOKrB6ixQ+GANLC0io4c83ttqRlDYPuR9NYFfNExt7pP7CZug7E4l6h36Z7ck/dZFoE42j+459hJ2qtZ9WY9x0ZApotAeeOuwcnOgHdr7nZDoUOyp3KVg2mlJZqhCEjomNo33oo1Mr7vQAz3b2Cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SA2PR11MB4844.namprd11.prod.outlook.com (2603:10b6:806:f9::6)
+ by BL1PR11MB5977.namprd11.prod.outlook.com (2603:10b6:208:384::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.13; Fri, 17 Jul
+ 2026 08:00:35 +0000
+Received: from SA2PR11MB4844.namprd11.prod.outlook.com
+ ([fe80::61e5:7b38:b8a4:1abb]) by SA2PR11MB4844.namprd11.prod.outlook.com
+ ([fe80::61e5:7b38:b8a4:1abb%4]) with mapi id 15.21.0223.008; Fri, 17 Jul 2026
+ 08:00:35 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Peiyang He <peiyang_he@smail.nju.edu.cn>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "jgg@ziepe.ca"
+	<jgg@ziepe.ca>
+CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+Subject: RE: [PATCH] iommu/iommufd: Fix IOPF group ownership UAF
+Thread-Topic: [PATCH] iommu/iommufd: Fix IOPF group ownership UAF
+Thread-Index: AQHdFBI8V/YFzAQRO0upS1WRBF9f2bZxWYfw
+Date: Fri, 17 Jul 2026 08:00:35 +0000
+Message-ID: <SA2PR11MB484486F27784FF0AA0C2D7858CC62@SA2PR11MB4844.namprd11.prod.outlook.com>
+References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+ <9BE255A7A4AB5AAA+20260715042421.3148159-1-peiyang_he@smail.nju.edu.cn>
+In-Reply-To: <9BE255A7A4AB5AAA+20260715042421.3148159-1-peiyang_he@smail.nju.edu.cn>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SA2PR11MB4844:EE_|BL1PR11MB5977:EE_
+x-ms-office365-filtering-correlation-id: 99a5308e-89f6-4811-c633-08dee3d97bb9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|376014|23010399003|18002099003|22082099003|38070700021|10067099003|56012099006|11063799006|4143699003;
+x-microsoft-antispam-message-info: E6GEtyqU6+OyeoqzwQmXcmsdfxsbgfzqMZB5WiM+BnJuIi0AcO0CHq0Svz4V2RpMulhXDbMeEPDkeoEOS+WDsx3Q9p6B9DnVXH1kHwK3lfalMT3m3wfPvowEzpM1/BBDV8KzZFauv9AZkipMfXon2Ae3heAiU346yxXox7W0VQFrEh3xQ0y/PJuPkGuEY1GAkVaWFSzn2fyMtQBPUwojhSykJ5UfdQMCcGjCp3ciqgax1DCXO+LyI6SySWdkfSBWRNu8Rq8q9lMMangA5KwKqLiFh2SkOYeZ3oKlCQnUmjO9a1rGa+/b/PursJSYnt8wuVA6stmJ8xInCyULfnnNM3Tiy+SeSxk1G1qftDQnGYR4R4RB4BlK3vjkPJK8zPlkYPAOlhtNjigUNpTyMHEpNwEx3dDvbE9iHKjmeP9gevRZ6q/qfUcACvNzLLyh9YDPOZKJQYhN0X8u6TeZjvXF0JBGEJzFHTfPAsDMkOUE4XPQVfLPAmO7WbEkysZjJE6NXoRia6J6RbyMJnnvuJ3qBnzAwf6AdZ/VCJvov+ad6G8QeiYqdA6YruFacXsEodbGUfjjk7JKb5qWhJt8Wh800GMlZGBRirhPJg92tycsbLMrsZHyH36I/XvaqFOk4l0a61PuPsAh1Jxtu1N5gp6BDZtqSIKbaHwGo87x/6/gHAmaGa/XRNPWBk7JWsYrQ9zqUD6vofrkJrBubd3bj28gxyJIxpsv97gJQYA0zyiND4g=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB4844.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(23010399003)(18002099003)(22082099003)(38070700021)(10067099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?go+n0blrDl1MhhzHxZFQn+78rGsvI2cOiPwSRgv7p+8kRSSudA3aw2OJQyR2?=
+ =?us-ascii?Q?q+/Du09P4Dcc+xM01srqKFPNTU5mKHrY9cS4jRFCJWJCW1g+RiH+3goxFWiR?=
+ =?us-ascii?Q?NxdCq2BaQEGXV2tgtJTDq+PkufQl7XlozMvMGx9pZaX0hsmqcUTCEXrUg5hw?=
+ =?us-ascii?Q?9Jc7AFohD3V7AFw2DTok74Iz4YAixPoz6vxK0fmApm7csQ5Fz30PjEZQ1XfL?=
+ =?us-ascii?Q?kKRZZEaT5oNFimac6ko+vJz1VQXaRKizlYMxLQeOfLZx5ZRp0lfgkCutml+Z?=
+ =?us-ascii?Q?Myck6SQnOYEeUq7e3ivZXFZi0iTEc/sOFAZZpLMAGT23SG1MPbTAP8HZaWuL?=
+ =?us-ascii?Q?J2ptTj+hpkwnKzytMsOuBonJAmNagRlSmtNNp7W5r+7sCg8djQU5Ug+VTBH+?=
+ =?us-ascii?Q?Dsrxb0y1jopE/IkcyHQlkdZHnPILyrC86bPdrnvf7mGaDoQHyjoUzOl2PdQs?=
+ =?us-ascii?Q?3r2BsU0sDijURc1pnnyytkkU5AX669C+LS4W+dO3K4KxYtYSS2jzcVaFHiOG?=
+ =?us-ascii?Q?DbqB5nlXX8R06Y5h3A+GpNzbBO5cBfIA0STFf32UMvuL5fbafDpi46si0TwX?=
+ =?us-ascii?Q?rbkdiia+TkoUukowJRZTEhF4LPnE0RriO2Pr2XBHk47qNeD/8LzBtcrj4+5c?=
+ =?us-ascii?Q?WGqTCyUaBXSrttUJ2aKntz2mDEkHgkpnAH7oseHOeDPA2w4OABdAZbxM+euw?=
+ =?us-ascii?Q?473Np0LZIIVcW2H/4xnvmzboTwWZOU+CMAAUeVerCWP0jle5XS0+l4jZKVP+?=
+ =?us-ascii?Q?xZIgnExIgD3nvvHZsxY/xfQuvkzGwB4QqZSz97JmbUHqCNRpQF/UfcdmrP/9?=
+ =?us-ascii?Q?yYtG5hN1t50u0Tf0NE4JZzdkGXmdmgxWsg2sfy+y1d6ov5MnhxG4jhsHhWpA?=
+ =?us-ascii?Q?FEC7pPOHpNFf7ZU9DXykZM/EfOJcoUyy2gz/sZCFQ4Wyy+OG0hZ22cCrMOu9?=
+ =?us-ascii?Q?PBEw3IwvPfGIZBrjJY8UB7biFPevuWcC2HJ1S8m1ifigbpV4xKRIZR4+f5Sc?=
+ =?us-ascii?Q?22jm9SgJ3+hvAIO0+QvLKkYgg1yBryhwu2x4VaedoZRND0ULq1RY8fBx2jG7?=
+ =?us-ascii?Q?BlOmNbtfPgrNQ1NsJ4cZRdyN8h9Sx0i/oyOlhK8WxQUQYcXXxWNBlL+nXSqN?=
+ =?us-ascii?Q?7pMgY1cY7EgXjlCpOt7GxhZYksFT9T9d5y9k/jKANVZ6X4MssJEcvPLgKFR5?=
+ =?us-ascii?Q?mQEAf02ApYYFlidgXTNmhP6LJ1fJ9FjrMqD6rKd7bLgr68gzQKHSz3smNPx2?=
+ =?us-ascii?Q?MrqNuq51FEC45RJc1WQsO2nr8i8InXtso5BfI+StBDxdWX1H1xQpiu8BLgWw?=
+ =?us-ascii?Q?01EVVTHGQwpnRfGcZ1U45bo0Zv3RGT3qBZ9y8XCBPRYKrJe/8ANJ3Wqfsxnj?=
+ =?us-ascii?Q?+AHjesqtwxbGqJtsptDluRRZs8s7XlCZzJhHRIiexXbYNt9yVenP5x54g+cQ?=
+ =?us-ascii?Q?anFALY+0RqJ/WUmYiO5GnliIe5Mr3NAtEKB9/d61kWvFsTK/qm1hWlTjZ9ln?=
+ =?us-ascii?Q?znWDB3M3N6wF1pxvb2PqSunnF1X8iSAgWrerc7BI/XO76h9Ek2SNqGj1DwYG?=
+ =?us-ascii?Q?FizyzkKZcSDbe5elfnQFY1oQ/vqWSeSl5nc9Yr4wK34QAiK8jQQggL3RJOAu?=
+ =?us-ascii?Q?IRCckRHfQP5GCTCo2VI6P+bjyyfgN/Hcfv/lc5Z08BErCsX+1zr08jRt5tMp?=
+ =?us-ascii?Q?l+JX+zHsDPk0S/GeTikoWNpZ5jUoPzyeqp4BnprTbJwyHGm7?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v9 01/14] dt-bindings: media: qcom,glymur-iris: Add glymur
- video codec
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-References: <20260715-glymur-v9-0-8cf2cbe12a07@oss.qualcomm.com>
- <20260715-glymur-v9-1-8cf2cbe12a07@oss.qualcomm.com>
- <20260716-soft-dexterous-adder-badb49@quoll>
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-In-Reply-To: <20260716-soft-dexterous-adder-badb49@quoll>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: YzyrlJ3kgDSU1M_RhFYIlfjmyRPqUROR
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDAzMiBTYWx0ZWRfXwzmjrn42N9ce
- Vju75bH5SNQCTLwQZZY8HQqW0qD5GHfz2bEaQvi0N+Oi5x/pMwEcP6X0JEUhnKqxa9TIijWWG/v
- 5zN0sbmiBysgzqV1Rd+vM8F8h9vS8K2QXDSLZuhX+2aB7o9wNzpn1lu0A06RRb+yhzJuvaxlNiX
- qbZqdtJj9JWP0js/1m73VdvDx5sF0ZOCV6m4CWnfVmRqFaFW4VtGUotkX0C4I5Q5vrI7ai1BUv7
- giD0bZ/tt4b4RYp9oGnp3LCReOk+CsMxW8O7WkQmlwnmdA+nJP9VvLoKYR9JU7c8w17zdl6wDK6
- 9VqZhWtX91dszg31Ssh9UsZmIrYKUTBT6Dzsh3lJcphLiDEhxheU7LZnLUbe8bry1n71pf7oOck
- fWKsYFXthvewuWdvfw1ejx1uvpUUGjuETt+OGnuMaSy8QScPUrT1Kg8gH0HIxJlTQUj75irXGhB
- czFPEsesk42WPzQvAXw==
-X-Proofpoint-GUID: YzyrlJ3kgDSU1M_RhFYIlfjmyRPqUROR
-X-Authority-Analysis: v=2.4 cv=BPODalQG c=1 sm=1 tr=0 ts=6a59a613 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=EUspDBNiAAAA:8 a=Mf6ET5Z485SzACLcFDwA:9 a=QEXdDO2ut3YA:10
- a=GvdueXVYPmCkWapjIL-Q:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDAzMiBTYWx0ZWRfX5SBuH8F8GO+Y
- hpTVu+gLc5xykeO2TGbaqWLhGJldezSdBlQ3zd2tIQPbFlFhc5wyLsZjDch75ssll9TWThga9j2
- 8o5lmgBkj17wYj0mfB9uTB6UgK1I9K0=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-17_01,2026-07-15_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 suspectscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
- priorityscore=1501 phishscore=0 bulkscore=0 spamscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170032
+X-Exchange-RoutingPolicyChecked: aa8a3MASXreLaSnXlw550rjwf6ujYLzibi0EEg8DaqsLJxtwXTLqsv6XW8EZbGPNLW41yfnCTSmpunYiOp091xFn5hz9+owsOHpDOa/R9ZIwL3UaFKg0gNmtbGZO4QnXDdV+jdB+YW4aumLg72KCM0S1ht+iubO7B0KfrbVOMY6VBBqrdwQTytjDuhQSoa9kD2yWptkVEPXsIJwYKGmdgSqKgja3ZSbqCcHdb93YbeV2rXaRa4mkTxJiw5uvzO7I2nL1A1sQZhfUCUsTrXQhf0JptvJJ2BdxL1MgaMLBcP0A8u74GX9vuLkh7Ipv9l0RUlH6yYIPoFG/xP7sM1O4Ew==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB4844.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99a5308e-89f6-4811-c633-08dee3d97bb9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2026 08:00:35.5784
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /JXjKLOjs6JGKPt9HbOGAkp7QzrbZg94WDu0p0AlJ3MHsWo50UaXzs6Ise5jhlM+ytsravi9ag1VEVsI6IMiNw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5977
+X-OriginatorOrg: intel.com
 
+> From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+> Sent: Wednesday, July 15, 2026 12:24 PM
+>=20
+> iopf_group_alloc() links each last-page IOPF group into the generic IOPF
+> pending list before invoking the domain fault handler.
+> iommufd_fault_iopf_handler() also queued an accepted group in the
+> IOMMUFD deliver list without removing it from the generic pending list.
+>=20
+> When detach or HWPT replacement drops the device's IOPF reference count
+> to zero, an IOMMU driver may call iopf_queue_remove_device(). That
+> function responds to and frees groups through the generic pending list
+> without removing the same groups from IOMMUFD's deliver list or response
+> xarray. A later read, response, or cleanup can then access the freed
+> group and cause a UAF.
+>=20
+> Fix this by separating response state from generic ownership.
+> Add iopf_group::response_pending to track whether a device response
+> is still owed, independently of generic pending-list membership,
+> and update that state under iommu_fault_param::lock in a helper.
+> Before publishing an accepted group to the IOMMUFD deliver list, call
+> iopf_group_take_ownership() to remove it from the generic pending list.
+> IOMMUFD then becomes the sole owner responsible for responding to and
+> freeing the group.
 
-On 7/16/2026 1:10 PM, Krzysztof Kozlowski wrote:
-> On Wed, Jul 15, 2026 at 07:39:55PM +0530, Vishnu Reddy wrote:
->> Add device tree binding for the Qualcomm Glymur Iris video codec. Glymur
->> is a new generation of video IP that introduces a dual-core architecture.
->> The second core brings its own power domain, clocks, and reset lines,
->> requiring additional power domains and clocks in the power sequence.
->> The current maxItems constraints for clocks and power-domains in the
->> common venus schema were sized for platforms available at the time of
->> authoring. The glymur platform introduces a dual core architecture
->> that requires more clocks and power domains, exceeding these limits.
->> Raise maxItems for clocks, clock-names, power-domains and
->> power-domain-names to accommodate the glymur platform.
->> The glymur platform-specific schema have fixed constraints for these
->> properties, so the common schema only acts as an upper bound.
->>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> You must drop the tag, you changed the binding significantly without any
-> doubts.
+this is ok but could be simplified.
 
-Ack
+There is no use case in which we allow a group staying in the pending
+list after its response has been sent. Actually every iopf_group_response()
+is followed by iopf_free_group().
 
-> Best regards,
-> Krzysztof
->
+so let's just remove the list_empty() check in iopf_group_response().
+
+better - move iopf_free_group() into iopf_group_response() (with a special
+handling in err unwinding of iommu_report_device_fault()).
+
+> +/**
+> + * iopf_group_take_ownership - Take ownership of a group of page faults
+> + * @group: the group of faults whose ownership is transferred to the fau=
+lt
+> handler
+> + *
+> + * Remove the group from the generic IOPF pending list. The fault handle=
+r is
+> + * responsible for responding to and freeing the group after this return=
+s.
+> + */
+> +void iopf_group_take_ownership(struct iopf_group *group)
+
+iopf_group_dequeue()
+
+> @@ -582,7 +582,7 @@ static int iommufd_hwpt_replace_device(struct
+> iommufd_device *idev,
+>  	if (rc)
+>  		goto out_free_handle;
+>=20
+> -	iommufd_auto_response_faults(hwpt, old_handle);
+> +	iommufd_auto_response_faults(old, old_handle);
+
+this belongs to another patch already queued by Jason.
