@@ -1,375 +1,147 @@
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A251427A
-	for <iommu@lists.linux.dev>; Sat, 18 Jul 2026 04:34:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.206.34.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C15D62E11B9
+	for <iommu@lists.linux.dev>; Sat, 18 Jul 2026 04:56:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.92.39.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784349262; cv=none; b=Ngom2sQZfCLt2bheWJFAW81z2W+Y/EqUKQE4CfF5egkAO30Lf3Cm2G76FeGKNQAYSdlZWMEHl6+PzaoXQrCQ9oPF98u6gTEvHfzXG+Maf9htVsdHVo+ryher0A8PkOrFhbNuDgRPwzy4MNdWUakkqTLj6Xm5oPDt1geZTTikX+0=
+	t=1784350583; cv=none; b=AXpPSwthzmcEWMdSCDUQ4ZJUMRkn0cTfI6yO8KHbgIuhNe5CcjYXZcH187EnLMZT72IcTXHnvx1GOIIDPMSq+UJnHFi7LqVLaP5FbQxr/LgP4tPTm+7ULwa/4IY9SKFV43qjWxDQsWhnU/wdgJJaqpzYobUdQbtBxDNelpkzFCs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784349262; c=relaxed/simple;
-	bh=XlZDNOoihjnhHSkoTh8oZ95o077tOQyiT1ck5T+SFJw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sDOeAQCGOdcbbIHursi+bbXbkpJIiUrkueKoKhoxtxx3BXbaoy1P+W+HUPY+5svlSxDQBQ9AVFqUD3IpYF6vDl7wOBaQJhDeGngWFM4G1Hl0pO6JviKowTNNgQud2HvdIUcsSNtwQY1VLipYANiwopE/v0QqSW7NgYTcItc0n/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=yNj2hSF1; arc=none smtp.client-ip=54.206.34.216
+	s=arc-20240116; t=1784350583; c=relaxed/simple;
+	bh=43j02/lHfdIU9W1w14GAjkVTT7/TUiKZk5i8QdLvw6A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jwsTHvSLHUH8pDRR7V6tESylGliGCcicHbE5KfIeY98csSXt8tQ9gYC7+BFMoqbmQR0kyGlONFIuGhUvE74DaISFNBnnI8WCeUTaeqQ5whK2SCdtGO861KRkZFVxaZDpl8LSz7hWpmnjSQpmjjVtqfmlYDOXd/qZowMJGOb6p+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=NUmhS8Z1; arc=none smtp.client-ip=54.92.39.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="yNj2hSF1"
+	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="NUmhS8Z1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1784349190;
-	bh=Ocy0nXdCryk+JKcRXg93dEP/KwQND5rPw7dygrrAKss=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=yNj2hSF1USZ7prPpGgfuAE+DujTAPjXBAav3gAa53eJvmHXAh1KrMQhiEtIDtk0BO
-	 maLZmONfqMB6/iGlcPqjv7kDAJZtLJeyEzWvbFXeaD4hsshSZGJlOkct8I9fmSurvP
-	 MTh9GDOalruW6kI4QI2Dzllh+qh1xIIeUdA0b3yU=
-X-QQ-mid: zesmtpsz3t1784349183t6f825507
-X-QQ-Originating-IP: ckwN0mNVgOPRi+1oaTZGzfuRKBkyIDLz8RoLByK5AJQ=
-Received: from hepeiyang-vm.wu.lxd ( [218.94.142.195])
+	s=iohv2404; t=1784350526;
+	bh=Q/pyZY0DdHNUC4u3NjOVXwZgQU9zqflnqZH/B/PFBV4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From;
+	b=NUmhS8Z1KjIO54y+5hWyizw3IATtUc6C+7RTD9QLVGRujdTnDGLoflbe4z+KK6+pJ
+	 wKJnpTX8YDf4qqNkYmT4WIlLptHNCfLoDJXl6U8L1IiMcXQg9AdBF1QR04xN9M6m42
+	 uqfCs1qpSY8Z2XDeuQWdrexNeiAaIyoeIJIiOz7s=
+X-QQ-mid: esmtpgz14t1784350518te0b5efe8
+X-QQ-Originating-IP: ZXM8ov0nZslofLfrmJw4Lk4AcNaqjgEVt+WRQllxOiQ=
+Received: from [127.0.0.1] ( [36.152.24.129])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sat, 18 Jul 2026 12:33:00 +0800 (CST)
+	id ; Sat, 18 Jul 2026 12:55:16 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 54948482259443969
-EX-QQ-RecipientCnt: 10
-From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-To: joro@8bytes.org,
-	will@kernel.org,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com
-Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	baolu.lu@linux.intel.com,
-	Peiyang He <peiyang_he@smail.nju.edu.cn>
-Subject: [PATCH v2] iommu/iommufd: Fix IOPF group ownership UAF
-Date: Sat, 18 Jul 2026 12:32:39 +0800
-Message-ID: <B474F106872C2E5C+20260718043239.3898247-1-peiyang_he@smail.nju.edu.cn>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
-References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+X-BIZMAIL-ID: 7271053026370203753
+Message-ID: <FCE172839ADB7A63+1133eef1-621d-4d73-ae86-f5039b6673ee@smail.nju.edu.cn>
+Date: Sat, 18 Jul 2026 12:55:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/iommufd: Fix IOPF group ownership UAF
+To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org"
+ <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "jgg@ziepe.ca" <jgg@ziepe.ca>
+Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+References: <B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn>
+ <9BE255A7A4AB5AAA+20260715042421.3148159-1-peiyang_he@smail.nju.edu.cn>
+ <SA2PR11MB484486F27784FF0AA0C2D7858CC62@SA2PR11MB4844.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+In-Reply-To: <SA2PR11MB484486F27784FF0AA0C2D7858CC62@SA2PR11MB4844.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: MD5XEDocxEOL6EhkXljgviKVH+Sv+d7EoMjBkOLUzobLnM/zLZiaG9/m
-	zAe4t0D0aegYDlbd4m7KOkDAyZTCctfIJdXTqay5xpmLndwkIwKmb6pPnEzeQNTJ7WBupuR
-	dRQX9w5GKA9wvZ1bsE2M/sW4MZmajeqL68nP3xb2TfIX91IBauSz06GL+4etybwnfe1D6fr
-	W2ohHewHoiZ5VrpZvcYNIPlYbTrKUoZtEgpHlMCAZYhdeSposIBvFFjIkMmsAsUWv2GH8uG
-	mjp+JmeTS2uBnlKVZaDMVdeXpSfvI66aKbSEcnRzUSKEGCrMWy1azwteKZagFm8oYplS0Lc
-	TTHS/T2WCO1245Nl81nKI0y07RGlp3/XgNidgSYLABVl2r8g2O98VhSzAimWBMMWss0Gf3F
-	S8YZU6TcM2jLm6xDtHZP+sq7mSZfrI07xI2AaT0s+N0v5bHLsR5l+UNA8zZyVcXRv3xZkGV
-	T1d4x2C/QxxVdglJ5mJCW8h7KF8N1SB+Qjn8ZOIG7FskCvBiLBhZoKRjCMB7349oN2yObR0
-	nYKeN3S4jJUW36B1/kqQxkA269S8OlhzVumtBgftlFanvomLboIAjy1geebmBV0edhBrq8R
-	zgjetD0FOycczNplGkEBBcNJb+19koWyH6rI4lmeEKRyYQTddQRNNqlP0z9gxG+djbKy+Ub
-	u8gNQ1CutUVYY2jZ9afesLa4d+1/2x6vfs0CBrEK/kMeApiiXCdfbIi7Gvg1Qr/cI5OwalQ
-	AO8YZu94pBp+uZkkUXPG3+TnnH13LRxlRJUf45fDnx7FodIsO+XWly/zHDBWmVjBTE6vtSU
-	gmy/GO9IMpySo14QnLwj6EwZzFpfP5qc5KJVv1t3bWv8EvlmMyCHsxK79oASFr35txBLlI2
-	8HoVf1e5DWhZtPuqQnbThsal5jpjG7pfGm8tZWG+oP0xwxr+hIqyL8L9NrJ8xXQVaE+/6jf
-	H8tryYy3V4FCLM0F0UXAANv1n3ecZfYvOnG+H7nYJ3BAqd3pxU7QjNzTR9nqytiCpVjtASQ
-	1LrsKoyPaVlGVAmQHyC/r+JV/mfcGQH02q87RP07a+TVWWL6Xd
-X-QQ-XMRINFO: Nq+8W0+stu50tPAe92KXseR0ZZmBTk3gLg==
+Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
+X-QQ-XMAILINFO: NzOHSugmTg7XGPPDjG7j/6TlXNj2kVZ0pwrm/CxNsaRkItG/QHvo/0u/
+	xdWutc/rcqcFeJWiCbc2J20+q+JR/714qn4iSA12Eh5CuU9SmGfBa6vFSU7lmN3QHQvL3mD
+	CLAoPeVW/VCjuGxIYt+Oq91qtbKpUdwsjia9AByGvX6Tz5URsNNCVD1+cpDwaVCyfzGmHnH
+	cD1yupOUDL75i2hcNfpJThpLZhSGN4QF/17AVo/Bp253qXyt6YFIBWGFVLGajnrtPro8Tno
+	K2GO76uTJv+JqV5f8DxFlrXn5szZmhqqfi4sVKlh13w72Vd+crAf6YL+SzXYSEOP5cRZpsb
+	MDPWiLAcIKOyOvgj7KSlXyUiiIefAgu62vqC2306lXk1pfW3HCF9E8wH9bCWpwLCzblkZZw
+	jyGgPDTN6C9FRUK6um1wVjfLYDrqsWGP8N6DjVglxAeB4/9dQwzEu16o6nzFg3GxK4DuKKB
+	QoprNtTiuIt/puPmet2npFtyHtHQj4zIoodzElEhRnpJE5CLbglaIbEl6AXC6URij0m0qg5
+	1IuqFjIextrSRVSk06mdHjcg+kv7LBmMDTikDvzc5SDWWDlpFq/7/+WSjK23YOKWKReZbkI
+	jihNIopdYLM8T601LTKGh34gcxuiUwVPUbVrXwdSbULNGU5w/NGfOjLnYHLyh/7p6spMMc/
+	ep7vOL8MfPSR8kyjnPiOmygEek7UeFvkALlgGHY6JDJ3T8pNJHzhptWlZPEnaJICHvVMb/6
+	++y/dJIctYTh84UYAsa9TVQEDlySRTK//herNphTKSHUu/L1wWBTfviqdASyzoHxY7YAw8D
+	xc+dStLZLi7yAmA0ZGYYxC8E/38BJJlI+jOTYmsIXCfO14r/zvm529VcYDCoWapc1ZSWgNq
+	wpgXgsJ4ctkyomyU/HGIYeDUONyrYYJTda2ZHjHTW8+gcD1YC5O2HDRqF2RxvY0nC/o3Bl+
+	1U/l8S2WlIitbd5+84kjWIdPVYZ68lf/ZA/sB4/oV8x6ULeWbhDgnEARe5zmc1q00IwkYOg
+	t+0+sXNeQlA42CLFWeosXiJZ/AJwtxAGFLkU3u1a6JvAA6z/EZ
+X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
 X-QQ-RECHKSPAM: 0
 
-iopf_group_alloc() links each last-page IOPF group into the generic IOPF
-pending list before invoking the domain fault handler.
-iommufd_fault_iopf_handler() also queued an accepted group in the
-IOMMUFD deliver list without removing it from the generic pending list.
+On 2026/7/17 16:00, Tian, Kevin wrote:
+>> From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+>> Sent: Wednesday, July 15, 2026 12:24 PM
+>>
+>> iopf_group_alloc() links each last-page IOPF group into the generic IOPF
+>> pending list before invoking the domain fault handler.
+>> iommufd_fault_iopf_handler() also queued an accepted group in the
+>> IOMMUFD deliver list without removing it from the generic pending list.
+>>
+>> When detach or HWPT replacement drops the device's IOPF reference count
+>> to zero, an IOMMU driver may call iopf_queue_remove_device(). That
+>> function responds to and frees groups through the generic pending list
+>> without removing the same groups from IOMMUFD's deliver list or response
+>> xarray. A later read, response, or cleanup can then access the freed
+>> group and cause a UAF.
+>>
+>> Fix this by separating response state from generic ownership.
+>> Add iopf_group::response_pending to track whether a device response
+>> is still owed, independently of generic pending-list membership,
+>> and update that state under iommu_fault_param::lock in a helper.
+>> Before publishing an accepted group to the IOMMUFD deliver list, call
+>> iopf_group_take_ownership() to remove it from the generic pending list.
+>> IOMMUFD then becomes the sole owner responsible for responding to and
+>> freeing the group.
+> 
+> this is ok but could be simplified.
+> 
+> There is no use case in which we allow a group staying in the pending
+> list after its response has been sent. Actually every iopf_group_response()
+> is followed by iopf_free_group().
+> 
+> so let's just remove the list_empty() check in iopf_group_response().
+> 
+> better - move iopf_free_group() into iopf_group_response() (with a special
+> handling in err unwinding of iommu_report_device_fault()).
+> 
+>> +/**
+>> + * iopf_group_take_ownership - Take ownership of a group of page faults
+>> + * @group: the group of faults whose ownership is transferred to the fault
+>> handler
+>> + *
+>> + * Remove the group from the generic IOPF pending list. The fault handler is
+>> + * responsible for responding to and freeing the group after this returns.
+>> + */
+>> +void iopf_group_take_ownership(struct iopf_group *group)
+> 
+> iopf_group_dequeue()
+> 
+>> @@ -582,7 +582,7 @@ static int iommufd_hwpt_replace_device(struct
+>> iommufd_device *idev,
+>>  	if (rc)
+>>  		goto out_free_handle;
+>>
+>> -	iommufd_auto_response_faults(hwpt, old_handle);
+>> +	iommufd_auto_response_faults(old, old_handle);
+> 
+> this belongs to another patch already queued by Jason.
+> 
 
-When detach or HWPT replacement drops the device's IOPF reference count
-to zero, an IOMMU driver may call iopf_queue_remove_device(). That
-function responds to and frees groups through the generic pending list
-without removing the same groups from IOMMUFD's deliver list or response
-xarray. A later read, response, or cleanup can then access the freed
-group and cause a UAF.
+Hi Kevin,
 
-Fix this by dequeuing an accepted group from the generic pending list
-before IOMMUFD queues it for userspace response, and by making
-iopf_group_response() free the group as well after sending the response.
-The abort_group cleanup in iommu_report_device_fault() keeps
-using the locked helper, since abort_group is stack-allocated
-and must not be freed by iopf_group_response().
+v2 patch has addressed all these issues and passed my PoC. Thanks for your feedback!
 
-Closes: https://lore.kernel.org/all/B4F28798E2E784CA+d29f723c-b2b5-4b67-8d1c-4f7b9b0b27cb@smail.nju.edu.cn/
-Fixes: 34765cbc679c ("iommufd: Associate fault object with iommufd_hw_pgtable")
-Cc: stable@vger.kernel.org
-Tested-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Assisted-by: Codex:gpt-5.6-sol
----
-Changes in v2:
-  - simplify the fix by moving group freeing into iopf_group_response()
-    (suggested by Kevin)
-  - rename iopf_group_take_ownership() to iopf_group_dequeue()
-    (suggested by Kevin)
-  - drop changes in iommufd_hwpt_replace_device (suggested by Kevin)
-  - rebase to 12f16a37f298
+Best,
+Peiyang
 
- drivers/iommu/io-pgfault.c     | 84 +++++++++++++++++++++-------------
- drivers/iommu/iommu-sva.c      |  1 -
- drivers/iommu/iommufd/eventq.c |  7 +--
- include/linux/iommu.h          | 10 ++--
- 4 files changed, 58 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index cca52a34d0ed69273f23d9ce7793f7065388273f..e5d3a32fc2a6c02acc120e7f7a95972ae658a223 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -52,12 +52,11 @@ static void __iopf_free_group(struct iopf_group *group)
- 	iopf_put_dev_fault_param(group->fault_param);
- }
- 
--void iopf_free_group(struct iopf_group *group)
-+static void iopf_free_group(struct iopf_group *group)
- {
- 	__iopf_free_group(group);
- 	kfree(group);
- }
--EXPORT_SYMBOL_GPL(iopf_free_group);
- 
- /* Non-last request of a group. Postpone until the last one. */
- static int report_partial_fault(struct iommu_fault_param *fault_param,
-@@ -168,6 +167,25 @@ static void iopf_error_response(struct device *dev, struct iopf_fault *evt)
- 	ops->page_response(dev, evt, &resp);
- }
- 
-+static void iopf_group_response_locked(struct iopf_group *group,
-+				       enum iommu_page_response_code status)
-+{
-+	struct iommu_fault_param *fault_param = group->fault_param;
-+	struct iopf_fault *iopf = &group->last_fault;
-+	struct device *dev = fault_param->dev;
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct iommu_page_response resp = {
-+		.pasid = iopf->fault.prm.pasid,
-+		.grpid = iopf->fault.prm.grpid,
-+		.code = status,
-+	};
-+
-+	lockdep_assert_held(&fault_param->lock);
-+
-+	ops->page_response(dev, &group->last_fault, &resp);
-+	list_del_init(&group->pending_node);
-+}
-+
- /**
-  * iommu_report_device_fault() - Report fault event to device driver
-  * @dev: the device
-@@ -255,10 +273,7 @@ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 
- 	group->attach_handle = attach_handle;
- 
--	/*
--	 * On success iopf_handler must call iopf_group_response() and
--	 * iopf_free_group()
--	 */
-+	/* On success iopf_handler must call iopf_group_response(). */
- 	if (group->attach_handle->domain->iopf_handler(group))
- 		goto err_abort;
- 
-@@ -267,11 +282,14 @@ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- err_abort:
- 	dev_warn_ratelimited(dev, "iopf with pasid %d aborted\n",
- 			     fault->prm.pasid);
--	iopf_group_response(group, IOMMU_PAGE_RESP_FAILURE);
--	if (group == &abort_group)
-+	if (group == &abort_group) {
-+		mutex_lock(&group->fault_param->lock);
-+		iopf_group_response_locked(group, IOMMU_PAGE_RESP_FAILURE);
-+		mutex_unlock(&group->fault_param->lock);
- 		__iopf_free_group(group);
--	else
--		iopf_free_group(group);
-+	} else {
-+		iopf_group_response(group, IOMMU_PAGE_RESP_FAILURE);
-+	}
- 
- 	return 0;
- 
-@@ -318,30 +336,39 @@ EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
-  * iopf_group_response - Respond a group of page faults
-  * @group: the group of faults with the same group id
-  * @status: the response code
-+ *
-+ * The group will be freed as well and must not be accessed after
-+ * this function returns.
-  */
- void iopf_group_response(struct iopf_group *group,
- 			 enum iommu_page_response_code status)
- {
- 	struct iommu_fault_param *fault_param = group->fault_param;
--	struct iopf_fault *iopf = &group->last_fault;
--	struct device *dev = group->fault_param->dev;
--	const struct iommu_ops *ops = dev_iommu_ops(dev);
--	struct iommu_page_response resp = {
--		.pasid = iopf->fault.prm.pasid,
--		.grpid = iopf->fault.prm.grpid,
--		.code = status,
--	};
- 
--	/* Only send response if there is a fault report pending */
- 	mutex_lock(&fault_param->lock);
--	if (!list_empty(&group->pending_node)) {
--		ops->page_response(dev, &group->last_fault, &resp);
--		list_del_init(&group->pending_node);
--	}
-+	iopf_group_response_locked(group, status);
- 	mutex_unlock(&fault_param->lock);
-+	iopf_free_group(group);
- }
- EXPORT_SYMBOL_GPL(iopf_group_response);
- 
-+/**
-+ * iopf_group_dequeue - Dequeue a page fault group from the pending list
-+ * @group: the group to dequeue
-+ *
-+ * The fault handler is responsible for responding to the group after
-+ * this function returns.
-+ */
-+void iopf_group_dequeue(struct iopf_group *group)
-+{
-+	struct iommu_fault_param *fault_param = group->fault_param;
-+
-+	mutex_lock(&fault_param->lock);
-+	list_del_init(&group->pending_node);
-+	mutex_unlock(&fault_param->lock);
-+}
-+EXPORT_SYMBOL_GPL(iopf_group_dequeue);
-+
- /**
-  * iopf_queue_discard_partial - Remove all pending partial fault
-  * @queue: the queue whose partial faults need to be discarded
-@@ -454,7 +481,6 @@ void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
- 	struct iopf_group *group, *temp;
- 	struct dev_iommu *param = dev->iommu;
- 	struct iommu_fault_param *fault_param;
--	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 
- 	mutex_lock(&queue->lock);
- 	mutex_lock(&param->lock);
-@@ -469,15 +495,7 @@ void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
- 		kfree(partial_iopf);
- 
- 	list_for_each_entry_safe(group, temp, &fault_param->faults, pending_node) {
--		struct iopf_fault *iopf = &group->last_fault;
--		struct iommu_page_response resp = {
--			.pasid = iopf->fault.prm.pasid,
--			.grpid = iopf->fault.prm.grpid,
--			.code = IOMMU_PAGE_RESP_INVALID
--		};
--
--		ops->page_response(dev, iopf, &resp);
--		list_del_init(&group->pending_node);
-+		iopf_group_response_locked(group, IOMMU_PAGE_RESP_INVALID);
- 		iopf_free_group(group);
- 	}
- 	mutex_unlock(&fault_param->lock);
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index bc7c7232a43e2d5edde679b953e85380413a7f2b..caccaa315461c6d18ca936e84dfa1cefa5e33e4a 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -292,7 +292,6 @@ static void iommu_sva_handle_iopf(struct work_struct *work)
- 	}
- 
- 	iopf_group_response(group, status);
--	iopf_free_group(group);
- }
- 
- static int iommu_sva_iopf_handler(struct iopf_group *group)
-diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
-index 5129e3bf5461cb1ef85c550369c9d1b2aa771829..62110fe8f78f511c96be4fa4c2bf8fb552083f38 100644
---- a/drivers/iommu/iommufd/eventq.c
-+++ b/drivers/iommu/iommufd/eventq.c
-@@ -40,7 +40,6 @@ void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
- 	list_for_each_entry_safe(group, next, &free_list, node) {
- 		list_del(&group->node);
- 		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
--		iopf_free_group(group);
- 	}
- 
- 	xa_for_each(&fault->response, index, group) {
-@@ -48,7 +47,6 @@ void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
- 			continue;
- 		xa_erase(&fault->response, index);
- 		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
--		iopf_free_group(group);
- 	}
- 	mutex_unlock(&fault->mutex);
- }
-@@ -70,12 +68,10 @@ void iommufd_fault_destroy(struct iommufd_object *obj)
- 	list_for_each_entry_safe(group, next, &fault->common.deliver, node) {
- 		list_del(&group->node);
- 		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
--		iopf_free_group(group);
- 	}
- 	xa_for_each(&fault->response, index, group) {
- 		xa_erase(&fault->response, index);
- 		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
--		iopf_free_group(group);
- 	}
- 	xa_destroy(&fault->response);
- 	mutex_destroy(&fault->mutex);
-@@ -217,7 +213,6 @@ static ssize_t iommufd_fault_fops_write(struct file *filep, const char __user *b
- 		}
- 
- 		iopf_group_response(group, response.code);
--		iopf_free_group(group);
- 		done += response_size;
- 	}
- 	mutex_unlock(&fault->mutex);
-@@ -484,6 +479,8 @@ int iommufd_fault_iopf_handler(struct iopf_group *group)
- 	hwpt = group->attach_handle->domain->iommufd_hwpt;
- 	fault = hwpt->fault;
- 
-+	iopf_group_dequeue(group);
-+
- 	spin_lock(&fault->common.lock);
- 	list_add_tail(&group->node, &fault->common.deliver);
- 	spin_unlock(&fault->common.lock);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d20aa6f6863ab35a5932911219705f2ffd0e3352..f16c88d9266180df79b4da515f5e3094ac61f9df 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1700,10 +1700,10 @@ int iopf_queue_flush_dev(struct device *dev);
- struct iopf_queue *iopf_queue_alloc(const char *name);
- void iopf_queue_free(struct iopf_queue *queue);
- int iopf_queue_discard_partial(struct iopf_queue *queue);
--void iopf_free_group(struct iopf_group *group);
- int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
- void iopf_group_response(struct iopf_group *group,
- 			 enum iommu_page_response_code status);
-+void iopf_group_dequeue(struct iopf_group *group);
- #else
- static inline int
- iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
-@@ -1735,10 +1735,6 @@ static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
- 	return -ENODEV;
- }
- 
--static inline void iopf_free_group(struct iopf_group *group)
--{
--}
--
- static inline int
- iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- {
-@@ -1749,5 +1745,9 @@ static inline void iopf_group_response(struct iopf_group *group,
- 				       enum iommu_page_response_code status)
- {
- }
-+
-+static inline void iopf_group_dequeue(struct iopf_group *group)
-+{
-+}
- #endif /* CONFIG_IOMMU_IOPF */
- #endif /* __LINUX_IOMMU_H */
-
-base-commit: 12f16a37f2982028e21919466401179647f603c7
--- 
-2.43.0
