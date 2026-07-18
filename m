@@ -1,100 +1,86 @@
 Received: from flow-a2-smtp.messagingengine.com (flow-a2-smtp.messagingengine.com [103.168.172.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B30712C237E
-	for <iommu@lists.linux.dev>; Sat, 18 Jul 2026 03:13:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 702072BEC5F
+	for <iommu@lists.linux.dev>; Sat, 18 Jul 2026 03:13:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.137
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784344411; cv=none; b=VsJRq6VB6RBeIDP51U+jP/pkx3LV8yOGQGNzCqFmA6RI/XIp0JHEvU7xsZvY0JToEzUKz5o/4+6OkuXAxKPqS5ZkvvnrzEJIjgwK+Xq7SsG8/EzHhqz++Hw2tNFaT5oQr5373oNlrk2Bpaysv+XrHLbmWc1cYfz8XXjmVTAJcc0=
+	t=1784344429; cv=none; b=o7Wnb/aUIkZY2GveTrB6Bi65eCAJ6iwMZSmN31eUsPiXqrEMVsALanasoKYJseZ2P/Eyq6m4KzGS/fdBO9Jh0pZ7XvzuT684KUpP/2qTVOtq/0h5Oun4OQQdFeYxYhn/SZCim6C+XjLNSnqTTx2k1A70jfiMp8GL7umGp98zjmI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784344411; c=relaxed/simple;
-	bh=Uf+TTksccwhXVXwKc1h0XX0L562Gla3BGVJmfHenAKI=;
+	s=arc-20240116; t=1784344429; c=relaxed/simple;
+	bh=/c2KdlXPq8uQryzXq7B/jdkuwAtn+b4yUbc4F3ytHgU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=b6djalImbiqQpl+oXQQ+TVvY74cRqSrOUE9nXYzbYN2pDoALCc5zfSpUZtku8OfSf6zQ95Ic74uivKXBBKdulpN/KX7srWT8ljK6jev3tLEvLMD7wSX3Lg1WasNa/IgX5d5T76bu1A5C129H9j53CAwmLfbn+QucM1ju05lutDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=f4+2uIhA; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=FEv7vYl3; arc=none smtp.client-ip=103.168.172.137
+	 MIME-Version; b=EIvt7s809dq4f5e++R4bO208a6nf0D6Qbg4nZvXb0l85jeBoqjO7k0QorGkQTuK7+w03Z9r04BtHP6zLDNzrgCeAujSfHP8QpWvGVQ5DYzX/Yw2bTkzX0ZmFuY0rsahgZh29L6ZT7fvaTPHHz2LzfRLm/6nrJWdl7D2+wmFDi4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=ImTZVw3t; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=YnLwGgyC; arc=none smtp.client-ip=103.168.172.137
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="f4+2uIhA";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="FEv7vYl3"
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailflow.phl.internal (Postfix) with ESMTP id 96C621380331;
-	Fri, 17 Jul 2026 23:13:28 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="ImTZVw3t";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="YnLwGgyC"
+Received: from phl-compute-10.internal (phl-compute-10.internal [10.202.2.50])
+	by mailflow.phl.internal (Postfix) with ESMTP id 64F9D1380333;
+	Fri, 17 Jul 2026 23:13:47 -0400 (EDT)
 Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-02.internal (MEProxy); Fri, 17 Jul 2026 23:13:28 -0400
+  by phl-compute-10.internal (MEProxy); Fri, 17 Jul 2026 23:13:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
 	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
 	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1784344408; x=
-	1784348008; bh=YN8hcc7LHmdlR/Uog1WmzdV1gpimyXqpsnNhBwVT+7c=; b=f
-	4+2uIhAusfUol4rxC2dMLYoC9KnygfD5PaCWftweDogHfD1Pp5zajB3+yuEVXa76
-	mt7m15J2jk4pziHy9NkPY3d7UGF6HUct/5UJGe7rKRyPS1ODGcrw0WeC8DfK+Nyk
-	yQ2j+rOltDpK27ul2KVhpzzK/4oavW/InO5GqT5jSu6d5bPgpvZgWcrJ9kpFcUao
-	3DYJHLDRFkZB3gU4bpXNZeFAA+FqHdjKMcssmWCwD7jPBa4fK6IhBZYRApPR0Tey
-	qJT3uLN7ggcHJM9usHld60Z7KqMZ91NLpW8fkytDHQ/OalJ/7SOdpdDpy/9zvOOw
-	yy+UILUUJ9ndqu1WIea3g==
+	:reply-to:subject:subject:to:to; s=fm1; t=1784344427; x=
+	1784348027; bh=dBBJ1bbYoAzjdUY7u3ln2vHxvkn+rSX00R1jTCDwEPY=; b=I
+	mTZVw3tCoMfDmx34w3CnyD5vGUaVNX4eXiOR/1tRpFMS+4XQRkSmSMNKTqQ26gU3
+	zpp1AxlcJ/xFJ2A83FDu3STgyKy95WxXyC6Fyj3B2G6/O3WW9X+N7PWZQB7bmy4t
+	KhK+Ag+FzpPYp8oHeJC9j0wEW0Bc9+qAcURE7/gWzdga9Q/GAWJFxdJ9lWj84G2k
+	jxOOyDjNexpScRTTPiJretlI9pFGmvQQaFW+FitJ84j2QtNd5xzTJlvYNuQgQBxb
+	9YalzkLCOcp4QkO+TsWiDlmmdsc8LLLSy7AhudYP32XHZV8SoqEj/A/rGSmcDA4D
+	QgOPK1my6tHp6Du6RCO/g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm2; t=1784344408; x=1784348008; bh=Y
-	N8hcc7LHmdlR/Uog1WmzdV1gpimyXqpsnNhBwVT+7c=; b=FEv7vYl3eSjTFiTJK
-	hifT8+DxYPkP0CoXACUzlbd+jbHSFBxu83xjh1VCH6smVg+grMVc4LVP+YWreYVH
-	PCM9U2b1y8nG1m5YuKOCzpwgjOEsEvty34Bu8em8Nt46W+YeWkwZhx1Fy6DJ8hUt
-	QV5emtL0Sinl56sEJon6bo1vDnyNUY10CvmIeFZaoJ5hcCMEa0Mbu92fZTu1g6Jc
-	8D+nXPEwS+n5tQHxrv1DqnCJowreGufzQzSHdUAI7G2LpS8nCdmAbKcPTMe0Nzyl
-	5GJBbiwqMajqSJR6mbLrH4acIP5g+C5mIF0ubydyoB5Nt5J1rgMuoeVxpXy2+4cL
-	aa2WQ==
-X-ME-Sender: <xms:WO9aaq2awbw2ry2nB7Yjzv6XjedsVQkGwaz-o3Sky-6ugzV1ZurkEQ>
-    <xme:WO9aatf98LaOu0OjVOXed4eKH3McXkXl_szhHg85Ml8o89F0tN1Du8Jji41XM5sPX
-    1nQMXeC3rUfGSz_65RPxG753kuWQvMtEa1e91VW3un-lmK0zAQxfKY>
-X-ME-Received: <xmr:WO9aakBMmVtG9ddQlMKjxwrYxlygba_qASdW3Yp3-O7G2p4s-IRUwRJ2zxoFQprhQz1MCMqDngByMmnGhdc>
-X-ME-Proxy-Cause: dmFkZTGo/Hd4L5rRwOTvh0WCJISmOoXEdIqPuYccPV++DcxWf8Powz1Ybe2qRyZPFweND+
-    SC523aTq5VzMTUw6xzE3TE+6TtlEB8vrrH4BUWnWvZIVs8l+O8kw8bSbEXZq4tcxWLKFnA
-    IwLpvCvHFvCqvDLsht2am+N9qIBZJoYs9mEGKuttiOELjod/llVLMCR0u1IHVoIgucxxIW
-    anxc0LTCCqkvsrJPqxq1atY24kesrMc6Brp/3dB1YLFs+ElyHTkaHO2ZOqSszleqXA0zXU
-    HezeftBat/hbrTwvfrp/eJrkQh8GYvdSWkVFdy401SIxYsUskCWq+ozS3QCLOeylVm+ac4
-    mhkUCZfzedlPV217ifuS7BuzBzAZj5FR8Vb3i70lAsAb4Tz616O2qLJCUSo8KHCxill/Sv
-    x/SOTD1uo27taJZ6UzFY1U86vK2BYoaOLXtnvWBMKKuEm2BRAfuduUFBpUqGS7Hte7s7Bc
-    2lEdCQ7R4kNrjhIxju+zU/BKmehiamiYQfbZUH4ImzbwfCU45zE7lc8py6MOqCAGwoB+Ft
-    evDgxSzO37rdydZ98RNpUU5W3UWgd3kOpqaKP9C/N7+qPe6OEamMoDhPLR83GD6j5Nn+BU
-    oa/R4skBzef0HKnUgmwkOiMugYbnwO/SOlJUhRqWzz/Yh090llGEL/ekQGkg
-X-ME-Proxy: <xmx:WO9aan2omCOwlURAYbXOEylDkALHO5j2Mp7ttuunQQ7zIk2nFlgg2A>
-    <xmx:WO9aasMPy6N3GQDS8uqr4iLhbVtzI8dobNroC35_m21_45kaFyHiHQ>
-    <xmx:WO9aatePHnr1NvVjEFPqWNxXLKHikvbSzJbAZASGNgF7TEkd03lQxg>
-    <xmx:WO9aagMGmMbhQi_jC6k8ObMxKh3PGvxDtYjaFNy_uLsKIgxOLjApzw>
-    <xmx:WO9aas7Ck9Id7mPQYJwG_Sv7-QsZpBZEOKmtUPYQv5ZrLs-aZzTbqyu7>
+	:x-me-sender:x-sasl-enc; s=fm2; t=1784344427; x=1784348027; bh=d
+	BBJ1bbYoAzjdUY7u3ln2vHxvkn+rSX00R1jTCDwEPY=; b=YnLwGgyCY1CHjMUyl
+	4v8YMgYFDg8fbKVQWlbOU8cLzWhildo3/DQC5fJjY+wQqfBM5Ppa1zpSIqCVlLFw
+	bouGpk1PTsZUEAIqlHwXnG2MlcWLhUPzjyudZF+bMbolDf3T2uN7fcX9bUTvK1TN
+	Ce0bYWpshWHP+nBq5kYNlJm8RIKujyZNyW+i/Rp5wAQbYnaup0JTv/3XJNiiqwKf
+	RK+f0SsQ5JwdPdoIlWaeyvYVcZ5pb3wTKvDwGFN/BIyUgF2Ipt3Hdtg0b+Qhfyic
+	Lce6hneHtt+YheR/hjI1zbTrn+/bFzGPjc8thMRzNxOZf1eCm703r2904JRbfxVl
+	Lw1vQ==
+X-ME-Sender: <xms:a-9aahaw-ofwL8joj24tZnLvoVy1q_vUq6V41gf-hThlLxZJtyTPAg>
+    <xme:a-9aahstJmxl5kMbqosYMa28OFHTiD1zslDL5IRv5NH_oExey7VlrcztRei8gOF17
+    CCzm15-6qB4-FO4Ok1BJ0jUBk8O7k5Lf4AluqWT2ba6MOx-teBx5iI>
+X-ME-Received: <xmr:a-9aarNFIb5o3C6blz1cfxwCFUorB_f46Wys2BGxXRtO1Vk7lnny-cVaYWes2y0SB5S-JPAygVmThiXuurY>
+X-ME-Proxy-Cause: dmFkZTGGTTbRjNfuyXXY8KUIMiXjqovuz4CSj+LGNj3GLNMZc2bZPFngC0QVgbb6YxmVgd
+    uyAb33TlOo/IOXNfH14Cim8fmEJrSqvc2Wq2VnzHOBQgkW0lQcfmJxLdxIFilfXAzJ/deN
+    c+l0qxxOUMCX7fcx4cEJrFF8CovPGPWouH1k7N2/iS8bGB00BByuzOPY7+gHVPXrd52QSI
+    pnOK34Er16RoF5+Bli1hKQsWzsLkHLQj5yoaVEYSc08eSPUtndErx8/wXs64HgW3ycW9T7
+    0cQKyl1o+8LCd2AXkpQsgf7zH5IVcIric4xCyvbz3ZB3aSvmWRI/TLnAJa9mdz1EsyhTNG
+    jt3l3PrG3VIwjtoruYFib/ktde/M0OSCjn+SS8ao8Tj1ovc2u0VfJYiGTUSHPfZcezWjz9
+    /eaYuCHgvX6s5r/9U0sh9nRCWur/AzkAwFFJeI5PA4I6mcDB9aXGKYB6TqtebW6xX9mBvn
+    DjCA27gSxD9vFnimA4oQIQajS2RywYRkIIjWi7afViebD8leBwxt52aayyPa0pdUDYiKti
+    OHjt7gjQMTiMqRfZOwKsc0vWp9aYsEdNq1fQDcsWsMKz71IinpmNNNWqxWBMyiMQxwyPQr
+    7SVm0W0qgAtT2YauSMvt6N49Ek5Ycdt7PBgAv8em1PDnYz6ibI/66QeJsW3g
+X-ME-Proxy: <xmx:a-9aag6e_eL5DkQgbBY0OliUm_xzoGPAGboCqByuOMoZsVuXbAhvyQ>
+    <xmx:a-9aapRW7WgnRPOTENVusHx0vRNFvJxvFwPjicmSo_guFd3gzlvTQA>
+    <xmx:a-9aalDZFBB7LbpyG2_OmOWBhcR2KlpIPYD07MFvvQ658sIR-6OdUw>
+    <xmx:a-9aahFDIjWSYh-KR4wQnXf9RGClLwHvoNrvH74AWs_U2D4SJRre8A>
+    <xmx:a-9aavw303-Vs7KjFSNMqkDHovvhvQjzyrTSXa7eECKxlpjOQjn-5mjd>
 Feedback-ID: i7a5e4b5f:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 17 Jul 2026 23:13:20 -0400 (EDT)
+ 17 Jul 2026 23:13:44 -0400 (EDT)
 From: Jiaxing Hu <gahing@gahingwoo.com>
-To: tomeu@tomeuvizoso.net,
+To: chaoyi.chen@rock-chips.com
+Cc: tomeu@tomeuvizoso.net,
 	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org
-Cc: chaoyi.chen@rock-chips.com,
-	dri-devel@lists.freedesktop.org,
 	linux-rockchip@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
 	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: [RFC PATCH v2 8/8] arm64: dts: rockchip: rk3576-rock-4d: enable NPU
-Date: Sat, 18 Jul 2026 15:11:46 +1200
-Message-ID: <20260718031146.3368811-9-gahing@gahingwoo.com>
+Subject: Re: [RFC PATCH 4/9] iommu/rockchip: skip orphaned-fault banks in rk_iommu_is_stall_active
+Date: Sat, 18 Jul 2026 15:13:41 +1200
+Message-ID: <20260718031341.3369185-1-gahing@gahingwoo.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260718031146.3368811-1-gahing@gahingwoo.com>
-References: <20260718031146.3368811-1-gahing@gahingwoo.com>
+In-Reply-To: <b7d71a44-eb65-4b09-a378-225249276f65@rock-chips.com>
+References: <b7d71a44-eb65-4b09-a378-225249276f65@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -103,45 +89,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Enable rknn_core_0 and rknn_mmu_0 on the Radxa ROCK 4D and supply the
-NPU rail (vdd_npu_s0) via npu-supply.
+Hi Chaoyi, thanks for looking.
 
-Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
----
- arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+You're right -- this was treating the symptom. I traced it:
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-index 272af1012..09d2fc98b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-@@ -442,6 +442,7 @@ regulator-state-mem {
- 			};
- 
- 			vdd_npu_s0: dcdc-reg2 {
-+				regulator-always-on;
- 				regulator-boot-on;
- 				regulator-enable-ramp-delay = <400>;
- 				regulator-min-microvolt = <550000>;
-@@ -869,3 +870,18 @@ vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
- 		remote-endpoint = <&hdmi_in_vp0>;
- 	};
- };
-+
-+&rknn_core_0 {
-+	npu-supply = <&vdd_npu_s0>;
-+	/*
-+	 * Power BOTH NPU domains (NPU0 + NPU1) like the vendor's single NPU node,
-+	 * even though rocket computes only on core 0: the CBUF->CMAC read path is
-+	 * only fully powered with NPU1 up. rocket attaches the multi-PD list.
-+	 */
-+	power-domains = <&power RK3576_PD_NPU0>, <&power RK3576_PD_NPU1>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_0 {
-+	status = "okay";
-+};
--- 
-2.43.0
+The bank carries PAGE_FAULT_ACTIVE from boot firmware, and rk_iommu_enable()
+runs rk_iommu_enable_stall() *before* rk_iommu_force_reset().  So the stale
+fault is still set when enable_stall() polls for STALL_ACTIVE, and that bank
+never stalls -- that's the timeout the two "skip" patches worked around.
+(On the RK3576 NPU force_reset() was itself returning -EFAULT, "MMU_DTE_ADDR
+is not functioning", until the MMU clocks were fixed, so the fault never got
+cleared that way either.)
 
+For v2 I dropped both skip patches and instead acknowledge the stale fault
+with CMD_PAGE_FAULT_DONE before enabling stall, so every bank starts from a
+clean state and the normal stall sequence applies to all of them -- which is
+what you were getting at, deal with the fault rather than route around it.
+Confirmed on a ROCK 4D: no more raw-reset error, no stall timeout, the NPU
+brings up and runs to completion.
+
+v2:
+https://lore.kernel.org/all/20260718031146.3368811-1-gahing@gahingwoo.com/
+
+Thanks,
+Jiaxing
