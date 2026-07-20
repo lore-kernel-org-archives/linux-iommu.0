@@ -1,72 +1,98 @@
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 680FF3BBFA3;
-	Mon, 20 Jul 2026 18:29:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64E14426687
+	for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 18:29:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784572154; cv=none; b=ICFez2zcg/5XExLuRs0Uz7320ULKSlFxHaLXAL7smDHTCta/twI84c18zmooLkb947/5MCOeOGEJrHs+kCFXVReG/T03ZNYa69tCWHVaA1LvL/AYoyJTPTKM4Yk+yS86Mtt5lsGsuX1/ugzRdb7RkgKtMGtBvR1S1oR2AisGrrQ=
+	t=1784572185; cv=none; b=KDgz7AqYThY+wBDbZn/HB1ZDsxwO1xnWp2vcY11SAMan48QqQ5FNrLOlYpmPkizHkQb49Nrw98Zj8d3tl884qj0WqhSuyioqBWPO9pxI3pJlkEMcuK9+IWGPfEwxetRvB7AKouM9S3aJu0Wl1ulMquT+fII1X9NPMG66mrpE8+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784572154; c=relaxed/simple;
-	bh=tfVWCL5gWoa3QiT5HZTS6PeE9CWbDfu6g4fGN5mDciM=;
+	s=arc-20240116; t=1784572185; c=relaxed/simple;
+	bh=bZ1i/ob8RAwD2ONrC55boLi9X2aDJHrAWwM59fdDkbs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IXY+/Sw+K3XP6ICabAiAnICEoU68sMmsppgZYGp+SCpJBjaxpdVMIQAEUDGRiZ2hgyrb+UxfdD36ZoBnjkBM+8XT7b0xdY3WFDuyW3pOHITxnxaD6fXf7xCz51nLyHrW7EsoF24oFCp+QA6fqL5RANDPAi0wJzM0R26W7uIgiVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=aXfSe1ax; arc=none smtp.client-ip=156.67.10.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	 Content-Type:Content-Disposition:In-Reply-To; b=A2Y7+v+IRs8vZolzmZx/Gf4GU9bYp4WobHSmQ7HFvCxbiD01iL1GBBbLcwhX+HYNNl2kv4V2YWAm/8YIZBJzA1HVtrcDcidcEjcOxVRKG1xXqHM7pBkv5+tfLO4mzaVtYTQLtLlXOdxg6yxJ/XWJLEKHTNxqYgV/HHklytY3a2k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net; spf=pass smtp.mailfrom=gourry.net; dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b=hhMCqvzR; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="aXfSe1ax"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=yLMgkHL29YuNPW+/3QaUsRDGEETcaDq11JerkMxi71U=; b=aXfSe1axWn1ivOd2Cu9BO1RFeq
-	hWgF1UgIJeW3prZhNqGQBXWrgbuTuwyexLgmgUNYx2N/ldKGruFnJsUHlN1z27mAm6jFGqs2hs9gA
-	ahOJFCbMr0Yi7Jx28dCpVd/erX67Wj6OVBy/j8nQ7Y54VjyLQTQQ9WeRLH9Gg27QXLhQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1wlsjH-00DJ6A-QN; Mon, 20 Jul 2026 20:28:39 +0200
-Date: Mon, 20 Jul 2026 20:28:39 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Bartosz Golaszewski <brgl@kernel.org>
-Cc: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Doug Berger <opendmb@gmail.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>,
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-	Srinivas Kandagatla <srini@kernel.org>, driver-core@lists.linux.dev,
-	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-	linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
-	netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	mfd@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-sound@vger.kernel.org
-Subject: Re: [PATCH 7/8] net: mv643xx: use platform_device_set_fwnode()
-Message-ID: <3e14e41f-ecd5-432b-9f52-690a05b38a8a@lunn.ch>
-References: <20260720-pdev-set-fwnode-instead-of-of-node-v1-0-2dee93f42c54@oss.qualcomm.com>
- <20260720-pdev-set-fwnode-instead-of-of-node-v1-7-2dee93f42c54@oss.qualcomm.com>
- <86b2aba7-b049-47e6-bc94-6cb499b30ce4@lunn.ch>
- <CAMRc=Mduv_KiB42d4AZddTrFSHmKogd2wh6vBDXomW6ssdfq9A@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.b="hhMCqvzR"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-51c0c45c580so90814061cf.0
+        for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 11:29:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gourry.net; s=google; t=1784572182; x=1785176982; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=EvlY+ZnuMunvG4k74l6eGWIXWbaZN9lfqhpu+ESLMPs=;
+        b=hhMCqvzRb6DU220urbuIqPeYVbaC91qLJzAepC0xCkiKE+5GG+NEgsY7uYoo0B+rAQ
+         fZzKRmT+uTGNCp7a/kwAfMRyt0UjxPvbSICgULZP+ZysSmBzmYsvfFilDlCAJwo7QQ1x
+         bBL4/3i0hgYDmOmhGcACPdQvsoIGUyy2vJt4UHbBhF9/A9m7EE+Qd9Fy33i+TT8fuvf7
+         B/Pyw/wF2GI0bYYEYOEf09WtkPULcxntBnLS4KdwH2RN7zP79L35YVomrdsxRyAySwVE
+         JP7piRYC7YRgmqM0FI7nZzpoYTV1o+/5FL0hsyoUU7kMxPCMFOnJIDruj01bnT+p4jJr
+         0Orw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784572182; x=1785176982;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=EvlY+ZnuMunvG4k74l6eGWIXWbaZN9lfqhpu+ESLMPs=;
+        b=dZuuyjs7JM77hKM7dYNg4n0D1GkkMk4EF1MKaPCqV7X1m+Ddk4IJWOZNLZJTTntqey
+         0j1mIEXty14ifSC1h5ujpupx5Ov/jfECeBJDXxbCSqPxQ17hieIXO1N4dAWhE8mvMSkZ
+         I5JRUvkOsAthOc9FwAX2sWYFCQW8CkIy8w657v6BngtSPId21GuKRIM/mNZtqNY3zYGE
+         oKfUfxiRgI2kWKY7ZWkvOPI7J2y9YAC4esv8pCmH25jaG/ZhmcnC0jzwQ2VEHOpDe+bk
+         mFF6Jo5SWIiwHAbyEJbLQ7TaLDGuxy7CERs/kIcbqAFKj/I9tWRFw/QXALVEWQMfIKEW
+         aYAw==
+X-Forwarded-Encrypted: i=1; AHgh+RqDRqMOEPoEIpXLguED5Tmk+KvG7JoThmLPQ0st8LCQdU1IVbfVuFjB9E4KGa85q2+RauYQqg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx8tzsk3HMrCmy3R/es3UcrnVcyN+7MsXmqBNLwhibR/VM2gNT+
+	Y2Cj7InLp9b6bYCIU0syoCJvRqJ/WCT8zCSYA2Qtc/94CYBK98v3+1ou4C4p+UgF/pg=
+X-Gm-Gg: AfdE7ck7A2NGe+47pJ2MOIwew0x+nUpIHYbxWc0EJQ4LepXer/jGFZClyJo76e519UA
+	cCEor2tVOqTfAlJ5ZbkhvRTJfeXH7LS6GvRIyxtv+IW6K0Joi6T0MosE29c/1ewNkmXeRNn5rHo
+	wwqb4dMD+z+qJ+i1yc6mdHMZaWJZb6OavV06OF9y1O4+Sw0G9RDf7NsOgbFR7lMqXBTEYvl9fOf
+	EaQNkZkz8bGAD3PiOKgAYdyqX3jl5ejbXpOvkRbH/KhmWsQH3ej049k7Tume312ZMxUtK2WVJbg
+	FL6SHbygzV96yNrVGHs8t0+eVKtJZyU+mC7uRltpYF5wQ8wjM+3GmkwTQKLq2+Qv1VHwUkabdTu
+	zL7bPbRuAn+rrDFbFDDSNzjKdJDVUiWzliKT7VHjn/QzFaiRF/ejXYmkXKLQK2MltE2J4pF6qMR
+	u2rNEGKuVDdC6pqfgL9lEsDfDLSRg+nZRbaOqhllmEK6AxGr/qppES3ZkKo3nBplfZZu2m
+X-Received: by 2002:ac8:5714:0:b0:51c:1857:b622 with SMTP id d75a77b69052e-5213e082210mr141591671cf.54.1784572182072;
+        Mon, 20 Jul 2026 11:29:42 -0700 (PDT)
+Received: from gourry-fedora-PF4VCD3F (pool-173-79-60-52.washdc.fios.verizon.net. [173.79.60.52])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5214c5cc8d5sm80304611cf.6.2026.07.20.11.29.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2026 11:29:41 -0700 (PDT)
+Date: Mon, 20 Jul 2026 14:29:36 -0400
+From: Gregory Price <gourry@gourry.net>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Brendan Jackman <brendan.jackman@linux.dev>, 
+	Brendan Jackman <jackmanb@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>, 
+	Jan Kara <jack@suse.cz>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
+	Byungchul Park <byungchul@sk.com>, Ying Huang <ying.huang@linux.alibaba.com>, 
+	Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Chris Li <chrisl@kernel.org>, Kairui Song <kasong@tencent.com>, 
+	Kemeng Shi <shikemeng@huaweicloud.com>, Nhat Pham <nphamcs@gmail.com>, Baoquan He <baoquan.he@linux.dev>, 
+	Barry Song <baohua@kernel.org>, Youngjun Park <youngjun.park@lge.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Huacai Chen <chenhuacai@kernel.org>, 
+	WANG Xuerui <kernel@xen0n.name>, Thomas Gleixner <tglx@kernel.org>, Chuck Lever <cel@kernel.org>, 
+	Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
+	Olga Kornievskaia <okorniev@redhat.com>, Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>, 
+	Trond Myklebust <trondmy@kernel.org>, Anna Schumaker <anna@kernel.org>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-fsdevel@vger.kernel.org, 
+	iommu@lists.linux.dev, loongarch@lists.linux.dev, linux-nfs@vger.kernel.org, 
+	netdev@vger.kernel.org
+Subject: Re: [PATCH 1/3] mm: move internal mempolicy APIs to new internal
+ header
+Message-ID: <al5ldslYontDDKPJ@gourry-fedora-PF4VCD3F>
+References: <20260716-folio-alloc-cleanups-v1-0-5363b8e92d33@google.com>
+ <20260716-folio-alloc-cleanups-v1-1-5363b8e92d33@google.com>
+ <alkLSzQvzT9zJbY1@casper.infradead.org>
+ <DK05KUIDJVLZ.61UIWOL0K3OT@linux.dev>
+ <al5gQgnBCjNCSD_4@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,62 +101,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMRc=Mduv_KiB42d4AZddTrFSHmKogd2wh6vBDXomW6ssdfq9A@mail.gmail.com>
+In-Reply-To: <al5gQgnBCjNCSD_4@casper.infradead.org>
 
-On Mon, Jul 20, 2026 at 06:01:37PM +0200, Bartosz Golaszewski wrote:
-> On Mon, 20 Jul 2026 16:43:40 +0200, Andrew Lunn <andrew@lunn.ch> said:
-> > On Mon, Jul 20, 2026 at 11:24:54AM +0200, Bartosz Golaszewski wrote:
-> >> Prefer the higher-level platform_device_set_fwnode() over the
-> >> OF-specific platform_device_set_of_node() for dynamically allocated
-> >> platform devices.
-> >>
-> >> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-> >> ---
-> >>  drivers/net/ethernet/marvell/mv643xx_eth.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> >> index 9caa1e47c174c9d7a161b7f2e2ee12a829b813d4..2f2d6cce8d852b9ec3ab42678a04a7915d1f00cc 100644
-> >> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-> >> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> >> @@ -2780,7 +2780,7 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
-> >>  		goto put_err;
-> >>  	}
-> >>  	ppdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
-> >> -	platform_device_set_of_node(ppdev, pnp);
-> >> +	platform_device_set_fwnode(ppdev, of_fwnode_handle(pnp));
-> >
-> > This is definitely an OF only driver. There are no other calls to
-> > fwnode functions in this driver, so this is the wrong thing to do.
-> >
-> > Sorry, NACK.
-> >
+On Mon, Jul 20, 2026 at 06:52:02PM +0100, Matthew Wilcox wrote:
 > 
-> I'm not going to die on this hill but drivers are OF-only until they're not.
-> For example, Qualcomm is now working on a hybrid ACPI-OF approach for
-> laptops[1] and we may end up needing to start converting drivers to fwnode
-> after all.
+> > ... With the ulterior motive that I want to add a new parameter to it
+> > that actually _is_ mm-internal. Namely, alloc_flags, so I can add
+> > ALLOC_UNMAPPED to implement AS_NO_DIRECT_MAP, i.e. the next iteration of
+> > [0]. So basically this is
+> > about trying to extend the allocator without creating a GFP flag.
 > 
-> There's no real benefit to sticking to OF-specific APIs unless you need to
-> iterate over all properties of a node or use some other functionality not
-> available in fwnode. The overhead is minimal and it's never a hot path.
+> Yeah.  I'm not sold on the whole alloc_flags thing, but I'm too busy to
+> sit down and think it through properly to get involved in a proper
+> argument about how it should work.
+> 
+> My entirely unresearched and ill-considered opinion is that the __GFP
+> flags should _be_ the ALLOC flags.  We shoudn't be translating GFP flags
+> into ALLOC flags that are what the allocator actually uses, the
+> translation should be done at compile time.  So if GFP_KERNEL and
+> GFP_ATOMIC need to be composed of different flags with different
+> semantics, then we should do that, not invent a different set of flags
+> that special people can use for special purposes.
+> 
 
-There is a lot of benefit to sticking to OF specific APIs, because
-within the kernel OF is well maintained, has active maintainers, there
-are tools to validate bindings, etc. ACPI is a Wild West, each driver
-is a snow flake, there is no review, no binding documentation, no
-validation tools etc.
+alloc_flags is putting me between a rock and a hard place.
 
-I hope you allow plenty of time to convert any networking drivers,
-where Linux is driving the hardware, to ACPI. Your first stop will be
-the UEFI forum making a proposal for MDIO busses, because that
-currently is not part of ACPI. You will then need to spend time
-understanding the DT bindings, and figuring out which properties are
-deprecated so need to stay OF only, and which can be converted to dual
-OF/ACPI. I've seen too many naive attempts which blindly convert
-everything, copying all the past errors in the DT binding into the
-brand new ACPI binding. That will get NACKed.
+I figured out a clean isolation mechanism with zonelists (new rfc is
+posting today, i'm doing one last proofread), but it required me to
+extend some of the mm/ internal interfaces with a zonelist selector.
 
-OF != ACPI
+Since Brendan's base work made it in mm-new, i decided to replace
+the zonelist selector with ALLOC_ZONELIST_PRIVATE as the selector
+to avoid *yet more* arguments.
 
-	Andrew
+I'll be posting with ALLOC_ZONELIST_PRIVATE on top of mm-new, but
+the churn is getting painful.
+
+It really seems like we just want an mm/ internal interface that
+exposes struct alloc_context for specific *mm/* callers
+(see: compaction_context, migration_context, etc), and interfaces
+that keep this nonsense transparent for everyone else.
+
+Then if you want access to alloc_context interface, you need to get
+export approval for that component (similar to EXPORT_FOR_MODULES).
+
+Just spitballing here, but the churn is killing me.
+
+~Gregory
+
