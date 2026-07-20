@@ -1,109 +1,107 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0611941B358;
-	Mon, 20 Jul 2026 12:59:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E66743CE0A7
+	for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 13:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784552347; cv=none; b=UNyoewOa9kEed1t1SUbo0f+bCff5BFr7dsZDK1oSj9/EU5pcXA6uncOJ08xo9og3hRrAfkUSBpFELiFHvWkrjPL0OE0qfPSpSeQ48RLnkZ1RVRGT7/T654vNBR2Ngs5QK2Jv37UJVcnBdgj8KwqaMM/xI7IALH0GALcZfCT5Cug=
+	t=1784554788; cv=none; b=iH3RIIWmnEoeCe8Op6SQ7GjUeufgMNkcKHvDXiGXdOJf0mufRYCX0vRCXBhH/cMNDWRqilYd85XDtBTuOIAc44A4b5CAV6fYObeL+26Lz7NYqu5ZZh5NoXwqEZ612GTv9TO3GFX0efUa3BTHo3eE/fu/H1I2eQA0j/6xCHCPyMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784552347; c=relaxed/simple;
-	bh=tj7DETiWrYqcYhPQBV0lQIQF5ojnhC7kaKJUMMnBNUs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uGppQ2KRZX+kqr+alDOlU7LkR7DipqQLs24YCHKHCNSgZH6k9hDLDyzmXwb1RUWwz9NHqQyYU/4cdrs70cjxLmCsot4k+x11lnFlJnSpG16UGSAPzRbO0EfTtLLhmWjH0wPnhx1aYutwk4QroSyKAC3AT0ktGSuNWogtnVEHUWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=dKmABXHE; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1784554788; c=relaxed/simple;
+	bh=hEfQm+fNIIIRf5G5yrPlpKCXyKnl5+VCOUdK6KCQ6M0=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=AthoBdr/5Voh5Mi6s/RdaeGdc8gY4NARIBTI1+WtUfI+KBg/CEYXz2567LMawPW/iTiNbstD/n5g5mzaMQcUOoXSjNoiCznESZCXKm5ouQuCWORnAZAxIjGyZNK8TXgSqG/2TcIxS+0jnJRTEviCP/eHu2ugHCeoCM4ZVDdoMg8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P753WMTt; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="dKmABXHE"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F0EC2B;
-	Mon, 20 Jul 2026 05:59:01 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B928E3F99C;
-	Mon, 20 Jul 2026 05:58:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1784552345; bh=tj7DETiWrYqcYhPQBV0lQIQF5ojnhC7kaKJUMMnBNUs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=dKmABXHEllSGT7FeFg6oxaG2ujJktWVxIXZ3hFzKw45EJWrXdCv86Cdi8Lk3ybb+P
-	 2eyzZw9sSqz4kKd+F7OoRuZNUZsH093wu+fiiSmVRvRLMFKAt3uEPGr18dcBdv9V/F
-	 kKFNdv+XlRp4DjEuV/4GCCvpzaekEZeXf66xmNSY=
-Message-ID: <e4f9b266-8d9e-48fe-99c0-58b61e02c9bd@arm.com>
-Date: Mon, 20 Jul 2026 13:58:27 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P753WMTt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD2A91F00ADF
+	for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 13:39:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784554786;
+	bh=hEfQm+fNIIIRf5G5yrPlpKCXyKnl5+VCOUdK6KCQ6M0=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=P753WMTtN3N/cdKM2rY2AoaIhkA7WYrrYCdJsRLRzCRtZ2BULO9ng7zimHh1IdaCs
+	 fbCxpr5ThdzfdSwVSQDaUivRYyRuMuJEf5/fqVibX4WYKdyOebzVqndyuRjnB/sNhA
+	 9WPq67iiivZuCEeNkfPelDbHJRNWUvq9pAELM04tvM2V8ICy5f/zflDt+bbrRlCP95
+	 WZL33cEVROLzn1dW+DKptxGGr9LPvRP4ciXAIH7uRXsSWzOKBMeIHS95tmiFM8ZXzt
+	 L2jzwUEBWKVVmJZLSkO6sk38+BxkCWahA9EDVYUN8GZ7DmvJpSZUPYcvLenowKtbyn
+	 llmHGxpg0L1Bw==
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-39c7ef2b1e2so88908781fa.1
+        for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 06:39:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RqTibcjlsl+5AjWHrEFYaPQspVNQhwzZloyLHxGsnovgxSkh/OKfz2oaiQrr43kqK2tJ7q9dw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzKhzlUqTnN7IHi+DMLu1ww3JFizd7r7e1kTQKSx8yl9qRXzI0r
+	azNKkCenTSsw+d18TzelpQ8rQkdviXpdpDXNUT574ref3bgbR5LRJnW5yVeAT3Dqxxohyu68qEx
+	zB5mo9RKHPZ+NrRQ9ZXUJbhvps3m0c8TiPLW7MTZpkw==
+X-Received: by 2002:a2e:be29:0:b0:39c:a06f:12ba with SMTP id
+ 38308e7fff4ca-39eb294c61dmr29234131fa.40.1784554785347; Mon, 20 Jul 2026
+ 06:39:45 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 20 Jul 2026 15:39:44 +0200
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 20 Jul 2026 15:39:44 +0200
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <e4f9b266-8d9e-48fe-99c0-58b61e02c9bd@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/8] iommu/fsl: use platform_device_set_fwnode()
-To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Andi Shyti <andi.shyti@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Doug Berger <opendmb@gmail.com>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Andrew Lunn
- <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Ulf Hansson <ulfh@kernel.org>,
- Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>,
- Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
- Srinivas Kandagatla <srini@kernel.org>
-Cc: brgl@kernel.org, driver-core@lists.linux.dev,
- linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- linux-i2c@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org,
- linux-pm@vger.kernel.org, imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, mfd@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org
 References: <20260720-pdev-set-fwnode-instead-of-of-node-v1-0-2dee93f42c54@oss.qualcomm.com>
  <20260720-pdev-set-fwnode-instead-of-of-node-v1-3-2dee93f42c54@oss.qualcomm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260720-pdev-set-fwnode-instead-of-of-node-v1-3-2dee93f42c54@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <e4f9b266-8d9e-48fe-99c0-58b61e02c9bd@arm.com>
+Date: Mon, 20 Jul 2026 15:39:44 +0200
+X-Gmail-Original-Message-ID: <CAMRc=MefqCMgVv-o5hWoRwS2iXPQNs5nH2qHiz55+ew162LfSA@mail.gmail.com>
+X-Gm-Features: AUfX_mzO2mZAcAjFU14cJl1wZGPQmD5GzWNsNbZLHTzrF2PNrvf-Va6RwZ7OmuY
+Message-ID: <CAMRc=MefqCMgVv-o5hWoRwS2iXPQNs5nH2qHiz55+ew162LfSA@mail.gmail.com>
+Subject: Re: [PATCH 3/8] iommu/fsl: use platform_device_set_fwnode()
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: brgl@kernel.org, driver-core@lists.linux.dev, 
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, mfd@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Doug Berger <opendmb@gmail.com>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Ulf Hansson <ulfh@kernel.org>, 
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>, 
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Srinivas Kandagatla <srini@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 20/07/2026 10:24 am, Bartosz Golaszewski wrote:
-> Prefer the higher-level platform_device_set_fwnode() over the
-> OF-specific platform_device_set_of_node() for dynamically allocated
-> platform devices.
+On Mon, 20 Jul 2026 14:58:27 +0200, Robin Murphy <robin.murphy@arm.com> said:
+> On 20/07/2026 10:24 am, Bartosz Golaszewski wrote:
+>> Prefer the higher-level platform_device_set_fwnode() over the
+>> OF-specific platform_device_set_of_node() for dynamically allocated
+>> platform devices.
+>
+> This is very much non-portable code specific to OF-only platforms, but
+> if the intention is to remove platform_device_set_of_node() again
+> already, then FWIW,
+>
 
-This is very much non-portable code specific to OF-only platforms, but 
-if the intention is to remove platform_device_set_of_node() again 
-already, then FWIW,
+Providing platform_device_set_of_node() and using it was done to make the
+transision to expanding reference counting to all firmware nodes possible.
+I don't think we'll remove it just yet as it doesn't make sense to convert
+the code under drivers/of/ to using the fwnode variant.
 
-Acked-by: Robin Murphy <robin.murphy@arm.com>
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+>
+> (Although I'm slightly puzzled by the cover letter - AFAICS in -next,
+> platform_device_set_of_node() is itself very much a user of
+> platform_device_set_fwnode(), however in terms of symbol exports,
+> perhaps the former could now just be a static inline wrapper?)
+>
 
-(Although I'm slightly puzzled by the cover letter - AFAICS in -next, 
-platform_device_set_of_node() is itself very much a user of 
-platform_device_set_fwnode(), however in terms of symbol exports, 
-perhaps the former could now just be a static inline wrapper?)
+Sure that can be done independently later.
 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-> ---
->   drivers/iommu/fsl_pamu.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-> index c83bbc3faad56d6ee1c89b0a7f74028af02c81e9..268a1f752fbceab4fd24013aeea5df1b6982fbb1 100644
-> --- a/drivers/iommu/fsl_pamu.c
-> +++ b/drivers/iommu/fsl_pamu.c
-> @@ -975,7 +975,7 @@ static __init int fsl_pamu_init(void)
->   		goto error_device_alloc;
->   	}
->   
-> -	platform_device_set_of_node(pdev, np);
-> +	platform_device_set_fwnode(pdev, of_fwnode_handle(np));
->   
->   	ret = pamu_domain_init();
->   	if (ret)
-> 
-
+Bart
