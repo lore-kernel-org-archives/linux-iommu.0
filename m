@@ -1,188 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5A430F819;
-	Mon, 20 Jul 2026 18:34:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12A430148B
+	for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 20:01:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784572498; cv=none; b=Xx1xEDacKkdJdoGw8kLht04og/u+ksBvFe+dtAxkdxh5wGmzRfJ0mfeC05y0Lw8MGsgjp/zd9cAh/4KItYD1t3Q833EvzGBaBh28d+5cq3rZnykr95X4K0F1lKh/PKGFUBc1OB1TimsTAjuiPCfJ8IZd9O4zvFD66CZ47lZrOII=
+	t=1784577666; cv=none; b=Kyk2DDzkIXidlkUlW0WkPGgZsPjFfWFXLts/yjHlD4r95bzmaewhkne2amkZAz803atWDRPxZI+KFQtWPF+tEj6vj0H76FfzjFBx82rbCZhyo1fB6ef/eDjF0Zwe+QFonBWceWp/XLum6Fl3P8LOjBacTxlkdLwxaNkzsMjlSSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784572498; c=relaxed/simple;
-	bh=qah1/aSKPEDFSj7W77/Rln10asl9Y/DbD1Rx8TyGT6k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lp686Dmsv/wwwVf4iEiAADQr8Rkq5feQqZMeMN7J0F/tjh/q0Vo7gf8ujdQ90x1tcgKVuffRjqbfQgn8RZg+ok2C56iGEnGuPWTxfNVbx/0tEKmo62u/0giIkL4qW/LE4JIX07UH4BebwuIcyZWK6RX0304yJ0l06C9mNhK8GvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZiqkYHDV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784577666; c=relaxed/simple;
+	bh=fh9vsor5ESw9tLp2QbVw66m9no3crF0ZgJPINwiuibM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ellQJmyFtTLNKWylETLzVNxDZakphlVBixPz9DJg3UK5f3ZclGkqaRFeFxCIrMwnMLZIINxkNCTPjt7lfhwasG5OJ+z/sIMSM44sJp4BX0dFj/vSpxOYNN3nVYLIXtH2p5Hpd3Yax4tzaDFk8EamUWg6pSvheE4aZh/+sLmXA00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mdMkONyu; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZiqkYHDV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1DD11F000E9;
-	Mon, 20 Jul 2026 18:34:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784572496;
-	bh=12wl43ytAtcYJQLm/kZ5324fHnyuY88/G9Pd9OM4gBc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=ZiqkYHDVP2qkeVDecGOc/AL68ExHIOa+N9wf6zpElcuP8BjzityNR3fXpRouD6Ehq
-	 SdhdP31mB10JONwQr43IdwScZQ0O9KA+2TbSs4W6g+buFus1/MlM8ZHq2/r01JZlM9
-	 x7sClSPxNJzz/QvGIHJW2TFFLwGz+7DH1e8xjftrXWo+THqHwQo/1NyW/TLiNO3Mob
-	 /ybNNXpfQVmyYt1dGckJaW1LhAkeXWYiZSJRhtLaLkwXbgcehTU18uwEXF7aDRKC5U
-	 VuVs7WZtYZqcDvudkDPLsNWDkBan+T70HzWEq+a/NRI3WoVrCkG9e7VBh1ExQsde45
-	 +F1UqfaKQKX/g==
-Message-ID: <51810eba-2a60-49f9-b879-7f806546e600@kernel.org>
-Date: Mon, 20 Jul 2026 20:34:44 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mdMkONyu"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2ceb096e675so104437025ad.0
+        for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 13:01:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784577664; x=1785182464; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=nHyzRN69SIvrGhU2BxqAEaCwqvk6nXUkdLyvQIyO8KI=;
+        b=mdMkONyuQUSL66JzKYkyaAMj75G/VrGHm9c1xPiUy043y7OpzDWi5mq34Ome5Z+iBg
+         fhENMWh82KJ/sbQ5K22GMe8YydcEXxirCJNh3QcuvPBZBuWottP8KJRhYNgxiWInJtwH
+         SXMyjOnyF7uCotFWxA6RYALyN+QrRmC1RmmCllPEWC7qXdBQZbvRfi/5KG1bKakbGOkj
+         M5P8129JcDbB8TWPolVIimuizb9JiUgSMxUxN/69fCafnIxbiUWDhW3U79nsP39X5Ch9
+         hiyYGsjqpBC8rS9U1PaypjyvNrAkslimM9QtxuCcxqvVO+W+JzjFL/+siRWbSV8eJ0Uz
+         t9IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784577664; x=1785182464;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=nHyzRN69SIvrGhU2BxqAEaCwqvk6nXUkdLyvQIyO8KI=;
+        b=Y5kVQvLybml0fKnvxpAYefTjZ4KQ7yTdgfovJ2IjSkx+RZKulH3AjnnFuRFdUBCa+y
+         WpjGpu1OArmsH1Gw26DlGruxBYxDat9NZeKv7I2MvZWwL9nmQVMj2pyVjqbj1vuk8feo
+         19aeKxSVowD7+aAZFuvu5jrcXRPE4oM4rZcV/saZ66KwTgGuJlwSfqvPiFA8Scy2RH5k
+         5NDCsmfdef9xYQCyL6DmQaSlWe8+5XwT7NDnsm4AA7nFn+LXZd6aEWa0yL9W54DYJ5LX
+         YuL9MFFgTkM4Q92m00/0kyYnJBr0n0YB6K36TTLkW3fDBYg9Q2pJl3bs14l9/9yRIGDF
+         SNkg==
+X-Forwarded-Encrypted: i=1; AHgh+RqVBKpxroamumxwacEy993VsTie5RB1oIOZg37TpTT/Eky+uzeKi20xVO5L6qYqlwhnAJqxKg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzaKBsedhtlKOLUoEitEjoFHEKHS4HJNlypUNgmiQTJb0dX1rLL
+	T9VYAHPTij+cUQZaMi/b9JgJpalBT4bn/4STOaO4Rl6ex+ly3DiH3L4O
+X-Gm-Gg: AR+sD10KyWWAb4gEuAuHRDNgYZjxwaDbf1A6QHO1ioRsIR5ui2hW+hPU/TTzzXbvbBF
+	0c6W71rAmhIm0+dE/Gm7dca1xS7rT/gVOTx8syptRW3y9amDgyydmFG8IGXe5T4P3FxzY5ydXBq
+	DqPp5s5TBOQXgxM8AaHg6hTnACTE++xFCKQYl5vhPMoQVALk1F6X5Z2jKYO78pWncrkNI/MqLZ7
+	uvpapVEBzOUOygYFJ5leU0iCInKfwmH2x2ICojhbDlohH1xx+oEbkzfnqMaiouK+el6HNbFd6+u
+	ZyNnI6cs8ZrqZOQT7qh2LQOboX2/PGuG5dTuRsxEQMQlk8DPeZhzKKfmtxCywD0UeNhvlk91hQP
+	g0aAyA3cKCSHM3pUC6mZAQsOCJN/qJMbc4Z9vg8jNb5rzoWJ849feAXx7VMk9fW+6sV7lCLuZiO
+	+XkP3Evy97NxXErvu28JXCwX9W4ZBcrqeHIg==
+X-Received: by 2002:a17:902:eccb:b0:2c9:ff83:41fa with SMTP id d9443c01a7336-2cf3496204fmr169889025ad.24.1784577664139;
+        Mon, 20 Jul 2026 13:01:04 -0700 (PDT)
+Received: from fedora ([2601:644:937c:6c90:6d4e:7b2d:4a39:fb0c])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf3476f70esm61611825ad.77.2026.07.20.13.01.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2026 13:01:03 -0700 (PDT)
+Date: Mon, 20 Jul 2026 13:01:00 -0700
+From: Vishal Moola <vishal.moola@gmail.com>
+To: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, Kiryl Shutsemau <kas@kernel.org>,
+	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] x86/mm/pat: allocate split page tables as kernel page
+ tables
+Message-ID: <al5-fDRStgU6gjk6@fedora>
+References: <20260720-fix-cpa-kernel-pagetables-v1-1-0766e782cefe@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] mm: move internal mempolicy APIs to new internal
- header
-Content-Language: en-US
-To: Matthew Wilcox <willy@infradead.org>,
- Brendan Jackman <brendan.jackman@linux.dev>
-Cc: Brendan Jackman <jackmanb@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
- "Liam R. Howlett" <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
- Jan Kara <jack@suse.cz>, Joshua Hahn <joshua.hahnjy@gmail.com>,
- Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>,
- Ying Huang <ying.huang@linux.alibaba.com>,
- Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Chris Li <chrisl@kernel.org>,
- Kairui Song <kasong@tencent.com>, Kemeng Shi <shikemeng@huaweicloud.com>,
- Nhat Pham <nphamcs@gmail.com>, Baoquan He <baoquan.he@linux.dev>,
- Barry Song <baohua@kernel.org>, Youngjun Park <youngjun.park@lge.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Huacai Chen <chenhuacai@kernel.org>,
- WANG Xuerui <kernel@xen0n.name>, Thomas Gleixner <tglx@kernel.org>,
- Chuck Lever <cel@kernel.org>, Jeff Layton <jlayton@kernel.org>,
- NeilBrown <neil@brown.name>, Olga Kornievskaia <okorniev@redhat.com>,
- Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
- Trond Myklebust <trondmy@kernel.org>, Anna Schumaker <anna@kernel.org>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Simon Horman <horms@kernel.org>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev,
- loongarch@lists.linux.dev, linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-References: <20260716-folio-alloc-cleanups-v1-0-5363b8e92d33@google.com>
- <20260716-folio-alloc-cleanups-v1-1-5363b8e92d33@google.com>
- <alkLSzQvzT9zJbY1@casper.infradead.org> <DK05KUIDJVLZ.61UIWOL0K3OT@linux.dev>
- <al5gQgnBCjNCSD_4@casper.infradead.org>
-From: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
-Autocrypt: addr=vbabka@kernel.org; keydata=
- xsFNBFZdmxYBEADsw/SiUSjB0dM+vSh95UkgcHjzEVBlby/Fg+g42O7LAEkCYXi/vvq31JTB
- KxRWDHX0R2tgpFDXHnzZcQywawu8eSq0LxzxFNYMvtB7sV1pxYwej2qx9B75qW2plBs+7+YB
- 87tMFA+u+L4Z5xAzIimfLD5EKC56kJ1CsXlM8S/LHcmdD9Ctkn3trYDNnat0eoAcfPIP2OZ+
- 9oe9IF/R28zmh0ifLXyJQQz5ofdj4bPf8ecEW0rhcqHfTD8k4yK0xxt3xW+6Exqp9n9bydiy
- tcSAw/TahjW6yrA+6JhSBv1v2tIm+itQc073zjSX8OFL51qQVzRFr7H2UQG33lw2QrvHRXqD
- Ot7ViKam7v0Ho9wEWiQOOZlHItOOXFphWb2yq3nzrKe45oWoSgkxKb97MVsQ+q2SYjJRBBH4
- 8qKhphADYxkIP6yut/eaj9ImvRUZZRi0DTc8xfnvHGTjKbJzC2xpFcY0DQbZzuwsIZ8OPJCc
- LM4S7mT25NE5kUTG/TKQCk922vRdGVMoLA7dIQrgXnRXtyT61sg8PG4wcfOnuWf8577aXP1x
- 6mzw3/jh3F+oSBHb/GcLC7mvWreJifUL2gEdssGfXhGWBo6zLS3qhgtwjay0Jl+kza1lo+Cv
- BB2T79D4WGdDuVa4eOrQ02TxqGN7G0Biz5ZLRSFzQSQwLn8fbwARAQABzSNWbGFzdGltaWwg
- QmFia2EgPHZiYWJrYUBrZXJuZWwub3JnPsLBsAQTAQoAWhYhBKlA1DSZLC6OmRA9UCJPp+fM
- gqZkBQJqFFy6GxSAAAAAAAQADm1hbnUyLDIuNSsxLjEyLDIsMgIbAwUJGtCBUAULCQgHAwUV
- CgkICwUWAgMBAAIeBQIXgAAKCRAiT6fnzIKmZJIUEADFx/tREzUImHrEwVHeSvDFmA7tJysI
- UVrlvrM09E7GIuzphzv7jYmo8n3ANpCczLEVr4G0syYQdTigaZgv3+FQDIIzhKih1IHhu1Ei
- XHlywNWKnQxxQEUNi5Mwx43wQz5XVw9F1A7gtKBKNtfogO511hAbrzagrYajyQacEJ/+sfhZ
- 9Da8ltHIXD8pcYaHUfQgEusCgmEd9+KrUwrTbckFKmYq5chuE6yJ4J0EmWknL096jIE6CnzF
- FRslQ3B1UKDjxVsm1ZHfir5NeWszLkTvGFsddFaWTgh8UycESG6VQzKXjjewXu2pG7YQYRpj
- QKm1W5X2TkwWkXRBZTmfmbhxIUMh3+zf5wQ463rSmDN/8v81tdqBtAW6rH/kzg1GvkaTHXn0
- 507yEHFzBksk2viAuIxxr7km8+/KARYLIdGtx30EG8cKzAUZOK6WqxtNCsXUJNrVE8CWrCaD
- icoNu7Fs1c5hmPHdSTnU48ce67449DdnO4neLSNhRiGlMHJgfJUmgrxu/hcYeOZ3haWmEQ2w
- uW1Mh01OHi8QZHCEyAbABrPs9GUgccc/4eYXX9hIgxfSkYzn8f+8NuIFPWl/0uTvjgqU29FQ
- SbzOLxHq9439Ox40G5mS5eZXRGxITYR+6TXvRGI6P/264jvflnr/pDGUttaikU+0W+1uxgKH
- cmYbEc7ATQRbGTU1AQgAn0H6UrFiWcovkh6EXVcl+SeqyO6JHOPm+e9Wu0Vw+VIUvXZVUVVQ
- La1PQDUi6j00ChlcR66g9/V0sPIcSutacPKfdKYOBvzd4rlhL8rfrdEsQw5ApZxrA8kYZVMh
- FmBRKAa6wos25moTlMKpCWzTH84+WO5+ziCTsTUZASAToz3RdunTD+vQcHj0GqNTPAHK63sf
- bAB2I0BslZkXkY1RLb/YhuA6E7JyEd2pilZOrIuBGl/5q2qSakgnAVFWFBR/DO27JuAksYnq
- +aH8vI0xGvwn75KqSk4UzAkDzWSmO4ZHuahKtQgZNsMYV+PGayRBX9b9zbldzopoLBdqHc4n
- jQARAQABwsF8BBgBCgAmAhsMFiEEqUDUNJksLo6ZED1QIk+n58yCpmQFAmfIHFQFCRYU6J8A
- CgkQIk+n58yCpmS2PA//bqN1LfcotmArgElsa+0EGZSQlYgK48pm8WAeTXTngudP9IJ4SuKY
- HR5RNjHcBeqN+Me0zxRqYzRb8nGanHEkDyf4Im8DQM8d6vbyU+FcPmG4skud4kgS1zMHnlVd
- SXfSIwKC/hKgdHG8aBV7545Lz9X6Iohea+94wneD0aw/hqF+QWewGZhWJriWAZtvEkzNjQOi
- 4U9F/trLten/x7bpphDSnDMKJtITbtzATT1Dq7o7VpIUK1nCTQALMuMjKCdi8OdU/+V+R3O4
- 0PXWvX8qrvqYapVbZ+9KqT74FsuB0Ya9uXwgBF2Q6cRuETZk5vqaqKxzqoQZCO8AOz/58j6O
- 2RHNy/mZEN+7tJ5Tsq42zVJ4jxsT8b9YplavCMsnBgDeRWhcbYhCyttoL7nYISyWg4kQYZ/P
- wIV3OuNv2f8iKYsxNsRuClOAF82+gvqOy1/1pprFjy8uo2pkoOrb63aOP3vO5VHnRKgra6dq
- NcaZ+c6J4H+nEJGi2SkHAUJz5oBzuThvPudLvPA/SK8sKoM01IRxSihev/S/5WLazXB1PGem
- OCbvzC1IjWJJraxiDJ5IygokapUa2RP7+WBR22skQ3SSl6G107QgWKSyTOGWEaRmV53vxQLV
- jXuCmzSSasTL60zq5yGrT4/DYQVSNEUiUbG4pYekxJujNeEDkUlky0Y=
-In-Reply-To: <al5gQgnBCjNCSD_4@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260720-fix-cpa-kernel-pagetables-v1-1-0766e782cefe@kernel.org>
 
-On 7/20/26 19:52, Matthew Wilcox wrote:
-> On Thu, Jul 16, 2026 at 04:57:37PM +0000, Brendan Jackman wrote:
->> On Thu Jul 16, 2026 at 4:48 PM UTC, Matthew Wilcox wrote:
->> > On Thu, Jul 16, 2026 at 02:30:10PM +0000, Brendan Jackman wrote:
->> >> There are no external users for this surface, reduce the scope.
->> >> -struct folio *folio_alloc_mpol_noprof(gfp_t gfp, unsigned int order,
->> >> -		struct mempolicy *mpol, pgoff_t ilx, int nid);
->> >
->> > Hm.  So what we're saying is that allocations which respect mempolicy are
->> > only for core mm and not for, eg, device drivers to do.  Is that really
->> > what we want to say?  I don't think so, because that's inconsistent
->> > with having just widened __filemap_get_folio_mpol to allow guest_memfd
->> > to specify a mempolicy.
-
-guest_memfd is practically mm internal though, IMHO.
-
->> Yeah I agree, mempolicy definitely seems like a "public concept".  All
->> I'm saying here is this specific function doesn't have any external
->> users so it doesn't need to be an external header. 
+On Mon, Jul 20, 2026 at 10:27:29AM +0100, Lorenzo Stoakes (ARM) wrote:
+> When splitting a large page in CPA in __split_large_page() we allocate a
+> PTE directly without going through the standard page table allocation
+> routines such as pte_alloc_one_kernel().
 > 
-> I don't think that should be the metric for moving things to internal.h.
-> To me, internal.h is a signifier that these interfaces should only be
-> used by the MM.  Not that "all current users are within the MM".
-
-Perhaps. It can be also useful to move them outside only when someone asks.
-
->> ... With the ulterior motive that I want to add a new parameter to it
->> that actually _is_ mm-internal. Namely, alloc_flags, so I can add
->> ALLOC_UNMAPPED to implement AS_NO_DIRECT_MAP, i.e. the next iteration of
->> [0]. So basically this is
->> about trying to extend the allocator without creating a GFP flag.
+> This means the page table constructor is never called nor is the page table
+> marked as a kernel page table.
 > 
-> Yeah.  I'm not sold on the whole alloc_flags thing, but I'm too busy to
-> sit down and think it through properly to get involved in a proper
-> argument about how it should work.
-
-Well it's basically a workaround for limited gfp flags space. So we can
-extend it without making that a cost for everybody, as long as those that
-need the new functionality are limited.
-
-> My entirely unresearched and ill-considered opinion is that the __GFP
-> flags should _be_ the ALLOC flags.  We shoudn't be translating GFP flags
-> into ALLOC flags that are what the allocator actually uses, the
-
-It uses both.
-
-> translation should be done at compile time.  So if GFP_KERNEL and
-
-That would assume the gfp flags are also known at compile time, which is not
-always the case.
-
-> GFP_ATOMIC need to be composed of different flags with different
-
-The flags we are adding/considering to add are not about GFP_KERNEL vs
-GFP_ATOMIC context, however.
-
-> semantics, then we should do that, not invent a different set of flags
-> that special people can use for special purposes.
-
-Yep it's ugly and pragmatic, as usual. At least it's not immortalized as an
-UAPI, so we can deal with exploring in a wrong direction and fixing it later.
-
->> So I'm envisaging if an external user arises for it later, we'd slap two
->> underscores on the beginning of the internal one, (with the alloc_flags
->> arg), and then bring back the public one as a wrapper.
->> 
->> Does that make sense?
+> The former results in the folio associated with the page table not being
+> marked as a page table (__pagetable_ctor() is never called thus neither is
+> __folio_set_pgtable()) nor are statistics updated to reflect
+> it (lruvec_stat_add_folio() is never called).
 > 
-> We have a long history of people just moving stuff around in patches
-> without knowing what the intent was if it should be moved.
+> The latter issue of failing to mark the page table as a kernel page
+> table (ptdesc_set_kernel() is never called) is far more problematic.
+> 
+> Since commit 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page
+> tables") kernel page table freeing has been batched and since the
+> subsequent commit e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries
+> for kernel address space") IOTLB cache entries for kernel page tables have
+> been invalidated upon being freed.
+> 
+> Since split page tables are freed without this invalidation, the IOTLB can
+> contain stale entries for them.
+> 
+> Resolve the issue by using the ordinary PTE allocation API at split time.
+> 
+> This results in these kernel page tables invoking a page table constructor,
+> and thus requires a page table destructor.
+> 
+> Since we cannot assume one is always present (early allocated direct map
+> page tables are not marked as such), we conditionally call
+> pagetable_dtor_free() if the PG_table folio flag for the ptdesc is set,
+> otherwise we free the page table via pagetable_free().
+> 
+> Regardless of which path is taken page tables marked as kernel page tables,
+> which now includes split page tables, take the correct route through
+> pagetable_free_kernel().
+> 
+> There is a user-visible side effect in that split page tables will appear
+> in nr_page_table_pages in /proc/vmstat (as do other kernel page tables
+> allocated after early boot), however this is a positive change.
+> 
+> This issue started being markedly problematic after commit
+> 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page tables") so
+> choose this as the Fixes target.
+> 
+> Fixes: 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page tables")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lorenzo Stoakes (ARM) <ljs@kernel.org>
+> ---
+>  arch/x86/mm/pat/set_memory.c | 21 ++++++++++++---------
+>  1 file changed, 12 insertions(+), 9 deletions(-)
+> 
+> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+> index 301fb9e77d91..a67ca33b9dd1 100644
+> --- a/arch/x86/mm/pat/set_memory.c
+> +++ b/arch/x86/mm/pat/set_memory.c
+> @@ -439,7 +439,11 @@ static void __cpa_collapse_large_pages(struct cpa_data *cpa)
+>  
+>  	list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
+>  		list_del(&ptdesc->pt_list);
+> -		pagetable_free(ptdesc);
+> +
+> +		if (folio_test_pgtable(ptdesc_folio(ptdesc)))
+> +			pagetable_dtor_free(ptdesc);
+> +		else
+> +			pagetable_free(ptdesc);
 
-I guess this patch is not critical to the rest, if that's an issue.
+Lets not introduce more folio-ptdesc crossovers, we're trying to get
+rid of them :)
+
+I believe pagetable_dtor_free() should do what you're looking for on its
+own anyway.
