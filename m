@@ -1,95 +1,109 @@
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF58D4014A1
-	for <iommu@lists.linux.dev>; Mon, 20 Jul 2026 11:46:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0611941B358;
+	Mon, 20 Jul 2026 12:59:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784547989; cv=none; b=owyjK/7p+H7OxdQz+irkrufmjtSc3Zd7AX4tcbTryFmJmyXzHACQisHrXKpKmC0jZwDRJfyuIAmK04H+E+ZGhr53T+u5pj723S8/TFecbV0ujT/NNrtpBV+Oi9LrOGfxeYrYP7yqAkuSl0kU+eGnZ9IpCoUc4pjC0KLctUWHS/g=
+	t=1784552347; cv=none; b=UNyoewOa9kEed1t1SUbo0f+bCff5BFr7dsZDK1oSj9/EU5pcXA6uncOJ08xo9og3hRrAfkUSBpFELiFHvWkrjPL0OE0qfPSpSeQ48RLnkZ1RVRGT7/T654vNBR2Ngs5QK2Jv37UJVcnBdgj8KwqaMM/xI7IALH0GALcZfCT5Cug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784547989; c=relaxed/simple;
-	bh=6YuLdYYA9D6BnpuXS9x3E3B13sbag1xENXAyfYSuLWo=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=VEYul7I6Gmkub+1aY39StcJTcohZm6ZhLPVIlyxb2ICi0e19YGEBqj7OFmMN3TxlGcqoHsQRf+76bz5OdT10C8TYk7sPRhrcHpVtbGraPJOjI1qZYcln+zdrRBfn4pX0WJTuSBqCZvB3ktVRr2xT/miDLRdlV5zMoy9HA/Q73s0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost.localdomain (unknown [111.196.245.140])
-	by APP-05 (Coremail) with SMTP id zQCowADHND+FCl5qZpqIAA--.52370S2;
-	Mon, 20 Jul 2026 19:46:13 +0800 (CST)
-From: Pengpeng Hou <pengpeng@iscas.ac.cn>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Ankit Soni <Ankit.Soni@amd.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Pengpeng Hou <pengpeng@iscas.ac.cn>
-Subject: [PATCH v2] iommu/amd: bound the early ACPI HID map
-Date: Mon, 20 Jul 2026 19:46:13 +0800
-Message-ID: <20260720114613.92391-1-pengpeng@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1
-Content-Type: text/plain; charset="utf-8"
+	s=arc-20240116; t=1784552347; c=relaxed/simple;
+	bh=tj7DETiWrYqcYhPQBV0lQIQF5ojnhC7kaKJUMMnBNUs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uGppQ2KRZX+kqr+alDOlU7LkR7DipqQLs24YCHKHCNSgZH6k9hDLDyzmXwb1RUWwz9NHqQyYU/4cdrs70cjxLmCsot4k+x11lnFlJnSpG16UGSAPzRbO0EfTtLLhmWjH0wPnhx1aYutwk4QroSyKAC3AT0ktGSuNWogtnVEHUWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=dKmABXHE; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="dKmABXHE"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F0EC2B;
+	Mon, 20 Jul 2026 05:59:01 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B928E3F99C;
+	Mon, 20 Jul 2026 05:58:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1784552345; bh=tj7DETiWrYqcYhPQBV0lQIQF5ojnhC7kaKJUMMnBNUs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=dKmABXHEllSGT7FeFg6oxaG2ujJktWVxIXZ3hFzKw45EJWrXdCv86Cdi8Lk3ybb+P
+	 2eyzZw9sSqz4kKd+F7OoRuZNUZsH093wu+fiiSmVRvRLMFKAt3uEPGr18dcBdv9V/F
+	 kKFNdv+XlRp4DjEuV/4GCCvpzaekEZeXf66xmNSY=
+Message-ID: <e4f9b266-8d9e-48fe-99c0-58b61e02c9bd@arm.com>
+Date: Mon, 20 Jul 2026 13:58:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowADHND+FCl5qZpqIAA--.52370S2
-X-Coremail-Antispam: 1UD129KBjvJXoWrKFyDJF43ZF48Wr15urWxWFg_yoW8JrW7pF
-	4jgr12krnYgFWxGFsxAa4UZa45GanxAFWIyFZ0kwn5Zr1UZFy8GrZ5ua40qr1kJrsrKF4a
-	yr10qay5Ca45Ga7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-	0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-	jxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-	1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0En4kS14v26r1q
-	6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-	0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y
-	0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-	W8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-	IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU13ku3UUUU
-	U==
-X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/8] iommu/fsl: use platform_device_set_fwnode()
+To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
+ Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+ Andi Shyti <andi.shyti@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Doug Berger <opendmb@gmail.com>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Andrew Lunn
+ <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Ulf Hansson <ulfh@kernel.org>,
+ Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>,
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+ Srinivas Kandagatla <srini@kernel.org>
+Cc: brgl@kernel.org, driver-core@lists.linux.dev,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ linux-i2c@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org,
+ linux-pm@vger.kernel.org, imx@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, mfd@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org
+References: <20260720-pdev-set-fwnode-instead-of-of-node-v1-0-2dee93f42c54@oss.qualcomm.com>
+ <20260720-pdev-set-fwnode-instead-of-of-node-v1-3-2dee93f42c54@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260720-pdev-set-fwnode-instead-of-of-node-v1-3-2dee93f42c54@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The ivrs_acpihid command-line parser appends entries to a fixed
-four-element early_acpihid_map array. Unlike the sibling IOAPIC and HPET
-parsers, it does not reject a fifth entry before incrementing the map size.
+On 20/07/2026 10:24 am, Bartosz Golaszewski wrote:
+> Prefer the higher-level platform_device_set_fwnode() over the
+> OF-specific platform_device_set_of_node() for dynamically allocated
+> platform devices.
 
-Check the capacity at the common found label before parsing the HID and
-UID or writing the entry.
+This is very much non-portable code specific to OF-only platforms, but 
+if the intention is to remove platform_device_set_of_node() again 
+already, then FWIW,
 
-Fixes: ca3bf5d47cec ("iommu/amd: Introduces ivrs_acpihid kernel parameter")
-Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
----
-Changes since v1: https://lore.kernel.org/all/20260704011601.62087-1-pengpeng@iscas.ac.cn/
-- move the capacity check to the start of the found path
-- describe the condition as a full map rather than an invalid option
-- rebase onto v7.2-rc4
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
- drivers/iommu/amd/init.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+(Although I'm slightly puzzled by the cover letter - AFAICS in -next, 
+platform_device_set_of_node() is itself very much a user of 
+platform_device_set_fwnode(), however in terms of symbol exports, 
+perhaps the former could now just be a static inline wrapper?)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index e93bcb5eef70..e7d7b4cb9337 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3864,6 +3864,12 @@ static int __init parse_ivrs_acpihid(char *str)
- 	return 1;
- 
- found:
-+	if (early_acpihid_map_size == EARLY_MAP_SIZE) {
-+		pr_err("Early ACPI HID map overflow - ignoring ivrs_acpihid%s\n",
-+		       str);
-+		return 1;
-+	}
-+
- 	p = acpiid;
- 	hid = strsep(&p, ":");
- 	uid = p;
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+> ---
+>   drivers/iommu/fsl_pamu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+> index c83bbc3faad56d6ee1c89b0a7f74028af02c81e9..268a1f752fbceab4fd24013aeea5df1b6982fbb1 100644
+> --- a/drivers/iommu/fsl_pamu.c
+> +++ b/drivers/iommu/fsl_pamu.c
+> @@ -975,7 +975,7 @@ static __init int fsl_pamu_init(void)
+>   		goto error_device_alloc;
+>   	}
+>   
+> -	platform_device_set_of_node(pdev, np);
+> +	platform_device_set_fwnode(pdev, of_fwnode_handle(np));
+>   
+>   	ret = pamu_domain_init();
+>   	if (ret)
+> 
 
