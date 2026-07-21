@@ -1,150 +1,148 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3F022AD2E;
-	Tue, 21 Jul 2026 07:44:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9418B43784E
+	for <iommu@lists.linux.dev>; Tue, 21 Jul 2026 07:58:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784619852; cv=none; b=qB3fdSQZdgXEYMDmCqJwoVy2tFY44KUKtRAiTEUu2C2MnKnuDajc3mQUHeJxUR7/JTswr65AN3c3n/w1CCq53FEQV1WaIExJ39qc8ySa3HqOrcagFE/ozAbSVXsT52t9++UJPUAN28mVSaGWU3cJ37BuQIPMfWuT4wioCzE3uGk=
+	t=1784620683; cv=none; b=UTx2UddMSsdP+J3FM+1wuV/b6o6UIF/F+zRf37qorLZbw/Wo4bbJy8jA45gjk6ND3wM00ITYK7LrPETsm6nbi9AHwuMs6u9WCk2bbJ2NssrqFGJGq3XRrU9IKJxqx3vfGSeCHHebAZurXNxtt/7t7pdRIK9qVYDhOUHtWSDF8Ko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784619852; c=relaxed/simple;
-	bh=P9+8o3CEmRiRW0R69M4PMmizB7JpG1wjznlS8R2G5wQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zujx0xaMrGrYtgeBtVpS2Yg3q7KkFmt5dPl1G3+lQZqAAc4wgDsP6vkVpfHC6eVpKeBIMWlj6eZqvR3HEd7tDUPkIhnqxSTVviLnufV1b9MxIDT+QL3x78qEXyG/2+DUhvnBu4Cj0IbN2FUXtDX0t3UpLeVQTVjbrqYBSzdmoMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ha9IS53O; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784620683; c=relaxed/simple;
+	bh=Qu6V/jFa3L0ra7v1UlZyzgbe/1V/e5d4AsjK/MKCp8c=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Wj5SSL1fD7xGnQIGXzA/hCH5vvE8MjoNj7AgosozPpu5xVQYHWEYEnaELpuaWNrpJMIOlCr9NAx0VX0Ybejsq5SdrxotIj1y4sSb8+UJSQeKXoIRgK4+jzs7ZrEF2rOuohBNBUUtHL46yFAXUGMLnsY13ymHrWdAmd3a5Z09sEE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JTzAvTvr; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ha9IS53O"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E83491F000E9;
-	Tue, 21 Jul 2026 07:44:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JTzAvTvr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7341F00ADF
+	for <iommu@lists.linux.dev>; Tue, 21 Jul 2026 07:57:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784619850;
-	bh=rtFkn/mfMTIuYOWYRQFzEbxdk2PyFOEa96NYZZ89cn8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Ha9IS53OCz37rW2lp5eXzb0wUrip7zSDnqnZ989Svkz/RICacEJWMriB4qEXAuEWx
-	 FQGmHuwGklOwD7GtieTS+QuDS5HTY52UVqf+5sSVrhelirehT+/EampviUu1taWD08
-	 rQiw6RRDliszAEvWi9fNVDEzDFds/TudFWRymwY4WFasELLb5iGZ6Nue8TONB1j+1W
-	 T2nBsJC9Ve8POYVJ4/0Mj5n0h6za1r+yTpq0EnIG+68oPpYMSPMcqMFSc5xrCywEud
-	 2drX/ljX6usPah/mfJwJ+gjFZQ0YPhctgDCALycA1l32PBnV1J1LaNkstLFExwz0HV
-	 HhcAXpT6XspBg==
-Date: Tue, 21 Jul 2026 08:43:51 +0100
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
-To: Vishal Moola <vishal.moola@gmail.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>, 
-	Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>, 
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	Kiryl Shutsemau <kas@kernel.org>, iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH] x86/mm/pat: allocate split page tables as kernel page
- tables
-Message-ID: <al8hE_ded6qyWiDv@lucifer>
-References: <20260720-fix-cpa-kernel-pagetables-v1-1-0766e782cefe@kernel.org>
- <al5-fDRStgU6gjk6@fedora>
- <al5_Le9QlD4zlt25@fedora>
+	s=k20260515; t=1784620680;
+	bh=y8ZQiTN586DKOzGjE0xQTVjSc0oG6CWcbCqpe2Jy2M4=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=JTzAvTvrEZMMKQCko+0HPPhkpoj5NWd5ycVDtjgNCicdqaixDwIGJDkzLLwYat9TM
+	 C9mR1HA+lbm5tGRpNv7yM7oowRCtR49RpldiZ0s0afqG/fHGPWWe5xE71/IdDcn9jZ
+	 YvOak8XUWsPiyTPrbh1iy0CO9ZAW9R0tD6PfLce5NdPZWTdcnsA+7XPw0glvkYBIEd
+	 wbwpZeCK/YPSMdyfZhH8MYA3+1ywQebQPPxSKHhCM3gsSxU0zlYzEjWz2K94m1HN3N
+	 PmwyjR1LUtCfqiZB2b+99HhnojNuzzDu6aEbXMs8lFfKr7CmOPyWnQUl39S7FgLjK0
+	 gl1RxyLdRIb8g==
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5aec201b582so11102338e87.1
+        for <iommu@lists.linux.dev>; Tue, 21 Jul 2026 00:57:59 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RqEZ/4pN0WtkVP4C9IpS7gwU/FZqcz2A1459hB46kfEIMjCJjuajcTB36IUwShwnyhl0fEsfA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxxjVA2aQwnjsHhvL5j/VjrLecXhovN+VSyddCcwkKDmCbmLCIr
+	KAgClpLB2JqoAgzDQYA71hLXgCsrlBYI8avt+IlB/mM/hCVlST8kYarocRzNRN7hRpeVkfIrGUr
+	sCw/4z7xFcJEyxqxw+5yjQaBnkWMDaLVzFTaI/aOaFQ==
+X-Received: by 2002:ac2:554c:0:b0:5ae:bcf8:e7d0 with SMTP id
+ 2adb3069b0e04-5b28f9bd551mr2209166e87.55.1784620678478; Tue, 21 Jul 2026
+ 00:57:58 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 21 Jul 2026 00:57:57 -0700
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 21 Jul 2026 00:57:56 -0700
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <3e14e41f-ecd5-432b-9f52-690a05b38a8a@lunn.ch>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <al5_Le9QlD4zlt25@fedora>
+References: <20260720-pdev-set-fwnode-instead-of-of-node-v1-0-2dee93f42c54@oss.qualcomm.com>
+ <20260720-pdev-set-fwnode-instead-of-of-node-v1-7-2dee93f42c54@oss.qualcomm.com>
+ <86b2aba7-b049-47e6-bc94-6cb499b30ce4@lunn.ch> <CAMRc=Mduv_KiB42d4AZddTrFSHmKogd2wh6vBDXomW6ssdfq9A@mail.gmail.com>
+ <3e14e41f-ecd5-432b-9f52-690a05b38a8a@lunn.ch>
+Date: Tue, 21 Jul 2026 00:57:56 -0700
+X-Gmail-Original-Message-ID: <CAMRc=Md_zUwYW5KL+p=BRixSaf3Rrc5jnBA3x8Ze+fK+fAOctQ@mail.gmail.com>
+X-Gm-Features: AUfX_mxrzWF5f1w8uOBbvKVmYCYI9DGFBZVEBrX2uI1sc7agH6iCfKo0CQST8Mw
+Message-ID: <CAMRc=Md_zUwYW5KL+p=BRixSaf3Rrc5jnBA3x8Ze+fK+fAOctQ@mail.gmail.com>
+Subject: Re: [PATCH 7/8] net: mv643xx: use platform_device_set_fwnode()
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Doug Berger <opendmb@gmail.com>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Ulf Hansson <ulfh@kernel.org>, 
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>, 
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Srinivas Kandagatla <srini@kernel.org>, 
+	driver-core@lists.linux.dev, linuxppc-dev@lists.ozlabs.org, 
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	iommu@lists.linux.dev, netdev@vger.kernel.org, linux-pm@vger.kernel.org, 
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	mfd@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	linux-sound@vger.kernel.org, Bartosz Golaszewski <brgl@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jul 20, 2026 at 01:03:57PM -0700, Vishal Moola wrote:
-> On Mon, Jul 20, 2026 at 01:01:00PM -0700, Vishal Moola wrote:
-> > On Mon, Jul 20, 2026 at 10:27:29AM +0100, Lorenzo Stoakes (ARM) wrote:
-> > > When splitting a large page in CPA in __split_large_page() we allocate a
-> > > PTE directly without going through the standard page table allocation
-> > > routines such as pte_alloc_one_kernel().
-> > >
-> > > This means the page table constructor is never called nor is the page table
-> > > marked as a kernel page table.
-> > >
-> > > The former results in the folio associated with the page table not being
-> > > marked as a page table (__pagetable_ctor() is never called thus neither is
-> > > __folio_set_pgtable()) nor are statistics updated to reflect
-> > > it (lruvec_stat_add_folio() is never called).
-> > >
-> > > The latter issue of failing to mark the page table as a kernel page
-> > > table (ptdesc_set_kernel() is never called) is far more problematic.
-> > >
-> > > Since commit 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page
-> > > tables") kernel page table freeing has been batched and since the
-> > > subsequent commit e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries
-> > > for kernel address space") IOTLB cache entries for kernel page tables have
-> > > been invalidated upon being freed.
-> > >
-> > > Since split page tables are freed without this invalidation, the IOTLB can
-> > > contain stale entries for them.
-> > >
-> > > Resolve the issue by using the ordinary PTE allocation API at split time.
-> > >
-> > > This results in these kernel page tables invoking a page table constructor,
-> > > and thus requires a page table destructor.
-> > >
-> > > Since we cannot assume one is always present (early allocated direct map
-> > > page tables are not marked as such), we conditionally call
-> > > pagetable_dtor_free() if the PG_table folio flag for the ptdesc is set,
-> > > otherwise we free the page table via pagetable_free().
-> > >
-> > > Regardless of which path is taken page tables marked as kernel page tables,
-> > > which now includes split page tables, take the correct route through
-> > > pagetable_free_kernel().
-> > >
-> > > There is a user-visible side effect in that split page tables will appear
-> > > in nr_page_table_pages in /proc/vmstat (as do other kernel page tables
-> > > allocated after early boot), however this is a positive change.
-> > >
-> > > This issue started being markedly problematic after commit
-> > > 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page tables") so
-> > > choose this as the Fixes target.
-> > >
-> > > Fixes: 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page tables")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Lorenzo Stoakes (ARM) <ljs@kernel.org>
-> > > ---
-> > >  arch/x86/mm/pat/set_memory.c | 21 ++++++++++++---------
-> > >  1 file changed, 12 insertions(+), 9 deletions(-)
-> > >
-> > > diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-> > > index 301fb9e77d91..a67ca33b9dd1 100644
-> > > --- a/arch/x86/mm/pat/set_memory.c
-> > > +++ b/arch/x86/mm/pat/set_memory.c
-> > > @@ -439,7 +439,11 @@ static void __cpa_collapse_large_pages(struct cpa_data *cpa)
-> > >
-> > >  	list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
-> > >  		list_del(&ptdesc->pt_list);
-> > > -		pagetable_free(ptdesc);
-> > > +
-> > > +		if (folio_test_pgtable(ptdesc_folio(ptdesc)))
-> > > +			pagetable_dtor_free(ptdesc);
-> > > +		else
-> > > +			pagetable_free(ptdesc);
-> >
-> > Lets not introduce more folio-ptdesc crossovers, we're trying to get
-> > rid of them :)
-> >
-> > I believe pagetable_dtor_free() should do what you're looking for on its
-> > own anyway.
+On Mon, 20 Jul 2026 20:28:39 +0200, Andrew Lunn <andrew@lunn.ch> said:
+> On Mon, Jul 20, 2026 at 06:01:37PM +0200, Bartosz Golaszewski wrote:
+>> On Mon, 20 Jul 2026 16:43:40 +0200, Andrew Lunn <andrew@lunn.ch> said:
+>> > On Mon, Jul 20, 2026 at 11:24:54AM +0200, Bartosz Golaszewski wrote:
+>> >> Prefer the higher-level platform_device_set_fwnode() over the
+>> >> OF-specific platform_device_set_of_node() for dynamically allocated
+>> >> platform devices.
+>> >>
+>> >> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+>> >> ---
+>> >>  drivers/net/ethernet/marvell/mv643xx_eth.c | 2 +-
+>> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> >>
+>> >> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+>> >> index 9caa1e47c174c9d7a161b7f2e2ee12a829b813d4..2f2d6cce8d852b9ec3ab42678a04a7915d1f00cc 100644
+>> >> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
+>> >> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+>> >> @@ -2780,7 +2780,7 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
+>> >>  		goto put_err;
+>> >>  	}
+>> >>  	ppdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+>> >> -	platform_device_set_of_node(ppdev, pnp);
+>> >> +	platform_device_set_fwnode(ppdev, of_fwnode_handle(pnp));
+>> >
+>> > This is definitely an OF only driver. There are no other calls to
+>> > fwnode functions in this driver, so this is the wrong thing to do.
+>> >
+>> > Sorry, NACK.
+>> >
+>>
+>> I'm not going to die on this hill but drivers are OF-only until they're not.
+>> For example, Qualcomm is now working on a hybrid ACPI-OF approach for
+>> laptops[1] and we may end up needing to start converting drivers to fwnode
+>> after all.
+>>
+>> There's no real benefit to sticking to OF-specific APIs unless you need to
+>> iterate over all properties of a node or use some other functionality not
+>> available in fwnode. The overhead is minimal and it's never a hot path.
 >
-> Actually, looking at it closer, maybe not because of the conditional
-> portion? But that makes me think it might be better to just replace the
-> ptdesc_clear_kernel() with pagetable_dtor() in the free function...
+> There is a lot of benefit to sticking to OF specific APIs, because
+> within the kernel OF is well maintained, has active maintainers, there
+> are tools to validate bindings, etc. ACPI is a Wild West, each driver
+> is a snow flake, there is no review, no binding documentation, no
+> validation tools etc.
+>
+> I hope you allow plenty of time to convert any networking drivers,
+> where Linux is driving the hardware, to ACPI. Your first stop will be
+> the UEFI forum making a proposal for MDIO busses, because that
+> currently is not part of ACPI. You will then need to spend time
+> understanding the DT bindings, and figuring out which properties are
+> deprecated so need to stay OF only, and which can be converted to dual
+> OF/ACPI. I've seen too many naive attempts which blindly convert
+> everything, copying all the past errors in the DT binding into the
+> brand new ACPI binding. That will get NACKed.
+>
+> OF != ACPI
+>
 
-Well some kernel page tables are still allocated without ctor (early allocated
-direct map for isntance), and if you did pagetable_dtor_free() it
-unconditionally calls pagetable_dtor().
+I've never said that and ACPI is actually irrelevant to this discussion. Fwnode
+is the abstraction layer and OF happens to implement it. Unless you need
+fine-grained control (only exposed by the lower-level abstraction) or
+performance - neither of which is the case here - you should use the top-level
+API. As I said: there's no good reason to stick to OF-specific interfaces for
+drivers that don't really require it - and even then, we should strive to fill
+the gaps in the fwnode API instead.
 
-The ptlock_free() and __folio_clear_pgtable() there would be harmelss (no locks
-assigned for kernel page table, and if PG_table never set clearing it is a noop)
-but the lruvec_stat_sub_folio() would cause an unbalanced decrement of
-nr_page_table_pages.
-
-It sucks, but until everything is updated to call the ctor we have to do it this
-way :>)
-
-Cheers, Lorenzo
+Bart
