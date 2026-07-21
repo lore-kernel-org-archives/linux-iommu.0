@@ -1,50 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DC7128725A;
-	Tue, 21 Jul 2026 12:21:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A7C6242D89;
+	Tue, 21 Jul 2026 12:21:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784636502; cv=none; b=BTGBnLSkfWXEt3e1tgdNhvdIJeNbLFj7xFFR9USs4t3Wr8rJf0nQ3cw+07fWL1Uaup3zSseVRWfsfd5kr5UOq3rlxEljOTIWR7l5u6YqsPnJHfRgKgEnq4C7bl69/YluN5NDsntatrcxYl3VRYaY5o+xdOQcbv0xceagiB9267Q=
+	t=1784636505; cv=none; b=Djxx+nK9tvBd3fyrF7vatHnh4mzwUHxOZwaXdIvaGMeopYAyC7xnw2D8nSQ1eWko7AHvdTAfb7Y/ZYCTf8hUlfnwqqjOSrcZZYBiS2NKNB/czx3D2hzL+JyXWSm1sMkJ8yt3Qb3c7Vj4/VwB6rdHKjcIRYGbq0my4LMzyqPuZHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784636502; c=relaxed/simple;
-	bh=OlBgQEaiNFP7Ihb8u12X6Tqpu5mB6VRrvPahbnoL6ms=;
+	s=arc-20240116; t=1784636505; c=relaxed/simple;
+	bh=J4yQo382ZxP9a+wipusO1+rSEqtDYVVPEu5bHf+mvlI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=egmghK2wjXCWPKhkBqpTxtAk7soZWMZNBcmYcGtO4P4J9u8x0MQNuOdh4Xgq3/Eo/kXWU4XkeZbFdCc0KJB+smW/zAG+iCwvjZMF/7l2Oh9C89BrK9BJprUbNNsSC2aJoKAXB+Rat3wkJE2FG+BjR5xyzLuZKPm5Cgvx2Sv74po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=INvoAsVx; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=j9cVVacOM2c8/Fc+qbLnSdV7R9Yk1nHYCkCU53m2AuZp09RMglxwKMHQIAbFxG6xJKGMBYkcdN6UDn8bGvFXdukD7HQ1K85TiSU348eIoVKnW9VL9I3sfrKQ2Oq7+9YuXCYtSOTxaxP5pJFFuK1VN7UWfIb/g1Fxj8H8HmhKwzQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PP/3FFHG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="INvoAsVx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E14721F00A3A;
-	Tue, 21 Jul 2026 12:21:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PP/3FFHG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C645B1F000E9;
+	Tue, 21 Jul 2026 12:21:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784636501;
-	bh=7pahCQCJZkWB7Bt6RnXNNi3n/LzIVxTF2meGjyULJeo=;
+	s=k20260515; t=1784636503;
+	bh=M6erG6xmIVZCNNJpsWHHodQwAAWDLIRP6W2sNe+aaAQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=INvoAsVx1Qz4m5Co6R4hwejAJd2SGDA3PnJ/7fJX7oerJJMPX4npQnJ5ptAIigMi4
-	 fCraErsdfMug87oKHlhU7yKKrgdfKvCKGX1RrtbWJCeuH8pDiwN0hK4NgM7Pk1noiT
-	 gFkVt8rQ9xDdU16Hd8Ziv8WGGnYb9PThBpUE/xyABwglgUhUSwHJMJa2NNJ2yxnXBv
-	 wianVoeFPLatYRimSW9cRvCzEYXzVHDjpmvJ2xO/i1abL8+H6jZ7/4S+v1FnipL4sE
-	 qU5UjF8fUHLBbVIkG87c83AdJ1PPj6WkGz/2r38vhhJ6WQJS3Qxpuiwh6mOyIKZZhD
-	 pSmJ9oSH1wdCA==
+	b=PP/3FFHGgsS2oN4ORsXUiMvtCpP8ogksmphyHC29BFAJxYwuldu8rgvMsjR9X2wrb
+	 B2gxvEdncfl6EzdEhXtRwPdmZRIe44UAvt1Gr65Cv92+5bU7lzVdluMJqCaMePek++
+	 uowZIL4G8Kn50FQezAXIXP9HrVCMXWJRjsI4Xw5NGtj8cwUBLnCLEIx+ZUgC+lMSde
+	 KASLW4CwwT0EzGrTsHFwBhLkxNPdiwZAr39afz9sjn8BHVGThduNT9hzXBegaGIXXG
+	 9iMF0Too9dzJz3vcEWe7AGOVgcxUFwQnH2GnXTmSWw5NQ8vzPhpxbMiGypQamoVS8D
+	 slUxt+S5Arj8w==
 From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	robin.murphy@arm.com,
+To: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev,
-	Guanghui Feng <guanghuifeng@linux.alibaba.com>
+	linux-kernel@vger.kernel.org,
+	lirongqing <lirongqing@baidu.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	xlpang@linux.alibaba.com,
-	oliver.yang@linux.alibaba.com
-Subject: Re: [PATCH] iommu/amd: Wait for completion instead of returning early in iommu_completion_wait()
-Date: Tue, 21 Jul 2026 13:21:27 +0100
-Message-ID: <178463143320.206840.9481565301808596283.b4-ty@kernel.org>
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] iommu/intel: fix out-of-bounds memset in dmar_latency_disable()
+Date: Tue, 21 Jul 2026 13:21:28 +0100
+Message-ID: <178463365358.220184.8467214471810541204.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260716141622.325032-1-guanghuifeng@linux.alibaba.com>
-References: <20260716141622.325032-1-guanghuifeng@linux.alibaba.com>
+In-Reply-To: <20260721093410.2465-1-lirongqing@baidu.com>
+References: <20260721093410.2465-1-lirongqing@baidu.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,23 +52,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Thu, 16 Jul 2026 22:16:22 +0800, Guanghui Feng wrote:
-> need_sync is a per-IOMMU flag shared by all domains and devices behind
-> that IOMMU. It is set whenever a command is queued with sync == true and
-> cleared when a completion-wait (CWAIT) command is queued. However, a
-> cleared need_sync only means that a covering CWAIT has been queued, not
-> that all previously queued commands have actually completed in hardware.
+On Tue, 21 Jul 2026 17:34:10 +0800, lirongqing wrote:
+> dmar_latency_disable() intends to zero out only the single
+> latency_statistic entry for the given type, but the memset size was
+> computed as sizeof(*lstat) * DMAR_LATENCY_NUM, which clears the entire
+> array starting from &lstat[type].
 > 
-> iommu_completion_wait() read need_sync locklessly and returned early
-> when it was false. This breaks the "block until all previously queued
-> commands have completed" contract in a multi-CPU scenario:
+> When type > 0, this writes beyond the end of the allocated array,
+> corrupting adjacent memory.
 > 
 > [...]
 
 Applied to iommu (fixes), thanks!
 
-[1/1] iommu/amd: Wait for completion instead of returning early in iommu_completion_wait()
-      https://git.kernel.org/iommu/c/1e75a8255f11
+[1/1] iommu/intel: fix out-of-bounds memset in dmar_latency_disable()
+      https://git.kernel.org/iommu/c/754f8efe45f8
 
 Cheers,
 -- 
