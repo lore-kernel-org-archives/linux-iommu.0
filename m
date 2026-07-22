@@ -1,47 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25FA243B3CC;
-	Wed, 22 Jul 2026 21:40:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 866224457A7;
+	Wed, 22 Jul 2026 21:40:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784756419; cv=none; b=HTmBQHIqOXBLJ1hQ89gvrWl+MFgVRICvCHnFjzIL0BvM/PXMGulGrvM7mEuL0fcQzOK064eBT5IapVuBY7gGzz1jjgdOxo26USzxafr3sZnXXDb+RXpPVVlWG1lAD7Nq894X24Lm5AnvoLwAViMs+gIOBEn8mSohO0CFHYticF8=
+	t=1784756423; cv=none; b=pCdaaZ8CLKq6V6uQFVZqCmPrTmW3JrMtl+u+AEuONeIXuXldYyMC5Nz+TpJR/OlwIqBbDMaRyVh0Y08GTqvwqzZYoBdgPowxXsLtBM0HRWFLbs/EEsyoPC+wgpvT9Ly3GKof/HMkpFqc9k9wZwXoYlKwX2hN/wWpIGS8eLlSXug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784756419; c=relaxed/simple;
-	bh=B2AieRQjmNsCYhlv3dnKrmCE+NXpZHH2UZaqHYyHTFg=;
+	s=arc-20240116; t=1784756423; c=relaxed/simple;
+	bh=0ps2TbuGQzLAxzzNGQ2T0kgdpgzyuCGvfkqmTmKwnPM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qwl3y3ZyfSHawzhDPkatdpySeoViyYOLVpctfhxne1TwweiytYGZ9hAezPxSWEN+3A0zahQrzPbBVLqj/Wen5N6aWXgxzW6YgWLBrfgwc4AQtwvWbtU4dSJoCSSzEogYDUag5PtOqZor1APoa1SfYF63x5P8GVKSMl8V21B3Et0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mWq32WqV; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=f+k/TuAcdmI59TWvjBCLcSgc68TnGv3IpiiKLmRHG+6HLPeAw7UNBSOvh5u5sNA7a0y4Dl89+AqFTlftmgXbu1k/p9YirVpmphkMOexKhcW9l5phO6ZGCI2xHLJKEOkeBNd1Trr6igerIIarZ0m7Ut1KQEcSyHMx/Wo8ULfDGuY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XsxSfqqI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mWq32WqV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 171E11F00A3A;
-	Wed, 22 Jul 2026 21:40:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XsxSfqqI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8255F1F000E9;
+	Wed, 22 Jul 2026 21:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784756416;
-	bh=i2PBsDBT7W9UmWyflEORLKtWJxT93D5ckxn7eveqgmM=;
+	s=k20260515; t=1784756418;
+	bh=YLBLkO3ZQoZMlC/tPHSeXWmswMsTjNkljwGg5hBLKVI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=mWq32WqV6l186tO2OqrQDUwjihMaVEX2wTrGsG97yyeQdPrsdoW1IWvTMppQD7mwf
-	 0zEvYOMXS8JmRd6FjOfDtzO4vbF3ZGyduVzOPq6KVG9fJNFPM4fl4Aon/F3xaegTh/
-	 WG9F6NSUW3eaZcnQ4OrnQR0cIVWpw4lMLBxe1yvX0vlkFxVBlrSHiW/qMjz4bB0G0l
-	 uqvCOKa+GwLrqvCj/+TDR6l1Bg5ceZ1+JZM4Yi8NRbDJJkdBSsfCgVJmd3F2OyYt1Q
-	 Jsaj699uqQh/L6sc0ifgdaUTd1lX6jDLiapIqS74XP8uELK9pApV44vI5hBt2iPOkp
-	 fFzGKnctloK4A==
+	b=XsxSfqqIzfaV9Vwa6XccyjNRzIWbQbrUxFe3aoOLJ1Czi09FcZRODEegTP70WW5Lk
+	 zo2YDIvUWACJ4HHj+wQ0vW+moD69bWw//uGnxZI1aqNYgAB+xqoJolyGVuLjSCwway
+	 dg0P6kEQXhj5XrlbSQTeolyBvd2FtlVlqg3+iKUg5qvjU+P+7YndM1DebMl835TXoF
+	 P9YI3IvrW6DubLrBsH21mGUwp8ZKnhL27IbaLgPLHZO7wY9jl/OUvOi5Kmxv4j4AaN
+	 78tP3TjlER0nx40Ca5HmB3CjxyLXYR8KBCSUFms+PGYms1WE/jLtqgP9MhUGtkwzp6
+	 iJCoDbaxBMlHA==
 From: Will Deacon <will@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	lirongqing <lirongqing@baidu.com>
+To: Rob Clark <robin.clark@oss.qualcomm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Alex Williamson <alex@shazbot.org>,
+	Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] iommu/amd: Fix undefined behavior in devid_write debugfs function
-Date: Wed, 22 Jul 2026 22:39:26 +0100
-Message-ID: <178472357092.2860701.3018630153871589753.b4-ty@kernel.org>
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] iommu/qcom: Misc Fixes
+Date: Wed, 22 Jul 2026 22:39:27 +0100
+Message-ID: <178472567878.2875601.1864864907076566245.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260601121240.2474-1-lirongqing@baidu.com>
-References: <20260601121240.2474-1-lirongqing@baidu.com>
+In-Reply-To: <20260717144608.3216274-1-mukesh.ojha@oss.qualcomm.com>
+References: <20260717144608.3216274-1-mukesh.ojha@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,21 +54,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Mon, 01 Jun 2026 08:12:40 -0400, lirongqing wrote:
-> When for_each_pci_segment() loop completes without finding a matching
-> segment, the pci_seg pointer is not NULL but points to an invalid memory
-> location (the list head). Accessing pci_seg->id after the loop causes
-> undefined behavior.
+On Fri, 17 Jul 2026 20:16:02 +0530, Mukesh Ojha wrote:
+> Series to address fixes in legacy qcom_iommu driver, it is based on top
+> of  https://lore.kernel.org/lkml/20260623071245.1985938-1-haoxiang_li2024@163.com/
 > 
-> Fix this by handling the successful case inside the loop and returning
-> -EINVAL after the loop if no matching segment is found.
+> Changes in v1: https://lore.kernel.org/lkml/20260623122034.1166295-1-mukesh.ojha@oss.qualcomm.com/
+>  - Used devm_pm_runtime_enable in 2/6 as per comment.
+>  - Dropped 6/8 and 8/8 from the last series.
+>  - Added R-b  and fixes tag.
 > 
 > [...]
 
-Applied to iommu (amd/amd-vi), thanks!
+Applied to iommu (arm/smmu/updates), thanks!
 
-[1/1] iommu/amd: Fix undefined behavior in devid_write debugfs function
-      https://git.kernel.org/iommu/c/843e14998966
+[1/6] iommu/qcom: Fix inverted fault report check in qcom_iommu_fault()
+      https://git.kernel.org/iommu/c/1f33b8208a19
+[2/6] iommu/qcom: Use devm_pm_runtime_enable() in qcom_iommu_device_probe()
+      https://git.kernel.org/iommu/c/bf69e515b180
+[3/6] iommu/qcom: Check pm_runtime_resume_and_get() return in probe
+      https://git.kernel.org/iommu/c/e910315ae08a
+[4/6] iommu/qcom: Fix pgtbl_ops leak in qcom_iommu_init_domain() error path
+      https://git.kernel.org/iommu/c/3c748a5554f9
+[5/6] iommu/qcom: Publish pgtbl_ops before releasing init_mutex
+      https://git.kernel.org/iommu/c/a05b67cd45ad
+[6/6] iommu/qcom: Enable clocks before hardware access in qcom_iommu_ctx_probe()
+      https://git.kernel.org/iommu/c/cb776a03a534
 
 Cheers,
 -- 
