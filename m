@@ -1,63 +1,63 @@
-Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F293BB134
-	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 23:38:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 701ED459AE7
+	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 23:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784763512; cv=none; b=hkdviKqwse4P70dtoxhJHRBr9odu7vK9GIKsGqWsAt0Doecmisw/mYqVl9b6yOWk7zyRdxjVMTSrqDCrGk0nqI3c8BHIce/KAY8yIM+JapS1AK5eJF/XiucuoHfxtQU7Z7aqSW+mrQ6W4+Cwh9OrORe4MMZx7uC8+s47qbJ7QxA=
+	t=1784763582; cv=none; b=o/m8mmPF9XROf1uMVSjsxzk2Pb6XweG3fGANFQ8bFda1dI8MWrpDxrRUabndQKhyEHoc8+EbfesUVkutmSQwAbg/A4e8hCzV0ITk2JpsFtviGNZS0vyjE1Hb1k3/RFMCqIfwlhj3tz0ryJGkcMkvvTOWxeC8+ZxwH+UmOl98KvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784763512; c=relaxed/simple;
+	s=arc-20240116; t=1784763582; c=relaxed/simple;
 	bh=482j/rlGL/MyUIfK5vi1HCJAff/SkFOJEYzr2v72u54=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NJL7RL+xwMQkl7Xf0CqS9J0WQm5osXFl5y4v8DsHwtbklJ/gDxkpGT663/SgUS2d5KvLnF8Cb3V7JFLKKBKCHkDSuvy+h03lNHUNUQhtaggkDv2FAV8CQ5ZGcu1En2lcZgXy7xKwrr/qaG5Mc5/U9AubHUeQIArUk/YNxcHb8S4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=x6u.co; spf=pass smtp.mailfrom=x6u.co; dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b=dXYIarEg; arc=none smtp.client-ip=74.125.224.46
+	 MIME-Version; b=R5O1t586o+eP2s5Rx/ECk/8VnVpuAmzDwR2jUvkfQUu//OJjZIEJNed86dEYVZwyQM8wnlMdH6FY/gOYSAhKjrOSgi2YybHGUYFsT3r6FSFSqw8+A19JniOAmxcxVfmruitWkn2F8FunEslfbb7x49WO+idUr1krtYmJ2fILknA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=x6u.co; spf=pass smtp.mailfrom=x6u.co; dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b=WVsw7Sor; arc=none smtp.client-ip=209.85.128.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=x6u.co
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=x6u.co
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b="dXYIarEg"
-Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-6688a2dceb8so4931d50.3
-        for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 16:38:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b="WVsw7Sor"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-81e69a2db34so803897b3.0
+        for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 16:39:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=x6u.co; s=google; t=1784763508; x=1785368308; darn=lists.linux.dev;
+        d=x6u.co; s=google; t=1784763578; x=1785368378; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
         bh=czUeoqytFwl2f4wSjedp4ua+inBVMuooqHyWYibjU+0=;
-        b=dXYIarEgTmVO1sqQ/CFPQZFAQdCPctyeJKNwcgu116xTT6hfaI4TceL1UCSRDZWKgi
-         F1ulYYocSYSbmZptW41HJZt55jK3bGUaUm93YdD2nF/l3IRwkQX5ssZ6dvn/GODNKypy
-         kadUKrmxfhEJFx5cpxsxV3phIW/sPLjYfLaLUL2zQ8rREIbXKZw4ObtjHx1kYAMPbIQs
-         CbxdtxXk3xnKRf0/LW/PT93PaNxxs8xS3KPdsNpzPBX9RL4yWxyaoYRHq82/7wj7SlDf
-         qt4Mf3hYW2JCRCuAyr5owX632rig1+VDEGv45ijhxJrTIkWJNsftw4eUVXQvC9lhGr0P
-         AhJw==
+        b=WVsw7Sor/G2y9jVwsrrQEwFCNAAS/0JtnTWlaiY0+Mga09HLOeKAWzEatK1ACjafOW
+         8QGJeP/0ZOPxEi08toL+JfGCLMb20GlMkGgMF3PJ2iDAuYC53w1ileQ3aKG8qBrBNAut
+         AQtnYMfzfjfG3j4+y3kLzJgFI8Wb293qnrkN7heCYMEASFs6xQlDojiov0RNb2l6c9l+
+         W3e5UZgKc7nbpOMvGhFGjl7GjEalo+k14mTEJOtn/VQb+BFDOJMIn027vvHQ9WN3ZyjP
+         8zA1+72kh711VkAWJAd9/DRdCdCo/vRI/xu0mRJbHlTcOhLCiNbrYOaYmD5w5wJ3rZq/
+         7FDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784763508; x=1785368308;
+        d=1e100.net; s=20251104; t=1784763578; x=1785368378;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
         bh=czUeoqytFwl2f4wSjedp4ua+inBVMuooqHyWYibjU+0=;
-        b=YGH8Xw5M3oCbr5arCIIEMtBRJrOAnQhQ9s55aGHssJO1Xxp+tWJjeCyfhywvkSun5o
-         p+JTTkK7fbvLsaIdUersiobVqpy5NU/jtJ5jztqoDClAXyJKDjc8Lu3/d4uF+4jeJHk6
-         Ronm1BleDo6HN4KZCSHtMnVDyvmcxSrqDm2sSZys/CPaLhcfJSHxsrSD7y67U+F/wM/m
-         va2X/OkHBAmHIpuTuah5Cpw+oF6PnO3/56Ca+M52ZxDQIRborNOMIFZkBbLRTi7lzndP
-         mhM/jr5utJ3BfOnTjG6h4bk8FyhoH8jYHuppAKCdBskI4BEWLonkHsTL5yn5Uq0YNCKN
-         bp5w==
-X-Forwarded-Encrypted: i=1; AHgh+Rr+hX1MRIk3IReDVMx/Xxg9d+pMxIBLhUUx3FdcJeR1rEDpD7B/FeVcPjrVwEfFqJPTPjPKmA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzXKsmAdKzoOtXJ4ukIU+K06+e8HOrHPMt0z8GkNuUaFgfN7g6Z
-	VLjFcUcebCa3Ff1wYcUIrQYnBOxBREHYBwxzTqJsUArBd0u/Ojb98f97dkXyuPerzj6k
-X-Gm-Gg: AR+sD13tR0kM+6Xjilc1fDG/61hNcpcrpjgUkE5Rmxpt2ShejFga1acE6O9jjfuTuqD
-	vbnnRBwON/FFXpSBcxZlwNX3yrxHKpT0xhRL1eTE/t6Ui7uAOyo7U7imrRJz0IhSXjYxU1mw3Xv
-	ZjYlPCBG0GEvvXRT6HZbO+lZO+FAiyAdQnn70sRD+DugBNsvwmwwRGxzgcBUl/Fs10RVXGNCYK4
-	LeKs57kXZy64Afx0+AtzopqlO5hB+cvam/D9RZokGm8e83L1A/shEEbpmjRbg8etATTg/ueSbmX
-	i8n5mmG0RFk/WVWtRZYW3rDTN1a5EtAel22TXYldNsKJDf1oKGoe72VKJCvWW/PNKR1nAesWAaz
-	U/wDUmeW9e3UFLgn2ib9bFMB8PzDXJOfOcNOkNv33N5rqlg4n3rIp/pd8jDr+im1jluxvf0idZ9
-	C4xBkzJFopcwlDdVQAnLvRHWoJfeM0eKFrogfEOksXgZKkMA0O74CETpX0
-X-Received: by 2002:a53:ce84:0:b0:667:af05:2e8d with SMTP id 956f58d0204a3-668a4fbd261mr142804d50.79.1784763507854;
-        Wed, 22 Jul 2026 16:38:27 -0700 (PDT)
+        b=kDkit2ZFTHjusiJp6vOqe0AdN3RNJAQFA+pGNboiv2nKd418HYbhzDAV3LvJ5up45I
+         QdDOzb5X4nH5YJb+iTWKn8KUKO3DNQFCkQo3UqFiRrMKN3fA26G+CUT60mUmTevy6WDQ
+         ZgR+GiMhDqXKONwDq4uqlOrX64EGf+aBiXuB6RJHXu3owg2K6lz2IM6bhHOeoGT8xI5N
+         1QtwH1LIAZzLLRuVfBbw5YYvCPisGBUK8a2IQ37iLgOFacBfwG3gjyIYwTnuUSkmP2p/
+         82YaOcwyUFpWl/lQ2IwAM7jAKah+iqXuy/rBKwqCGExot1jM0PI4FRPalxQu3HmpsIL4
+         wVVA==
+X-Forwarded-Encrypted: i=1; AHgh+RpkqkKeahXAkItn+fZnQHbier8ZHWm8uz0qgIL26TfCpob5dKniDU/ew/jZZdlamnRCa2FUZw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxPlqlo/LeS/SqRGOBjRfYkcbZYaKp2B3VVpOUb4Y8/7eMxLR9X
+	phvRVa2w3mMQU99b0F+jLOOihAn8NNVRETnZcRxoyeWsr3mFNttNlHqnpPMYM8i1dEvn
+X-Gm-Gg: AR+sD10poHW4OeaQ8K6CMb1G/PHAFgTl/KwG16CP0DfWyLCB6xUuptsDT34K60pyoLK
+	hfI4A/S8U9L5NBh9yerHL4CojoccgspNHBaZ0pmv4rsum4wlM32+6Asjech0Ol8j2IazZBKof0F
+	GEzrSpG4h89JtaCcurFFPqtJ6bPzIIxXNpZhlj6gG1LnDW863PEmg0hwwcJUQzUN4jJ6X32UsD6
+	p4OSeaKMO6atLDiDyF6bDpHERxyAZ+HyNgCpnYC3ykRRVcEt6SjfhE5QYSWL9kxJbP+HpF+IFP/
+	+r8EaHwuRKkiipVHcOI6omEfYmm9/mMC0SOR7ni85r1EPdmlk5qLjSCVy+X7U3SuTpi0O69a2ty
+	8sO0ryRGuZv0TyPErUQiur1CB8u1k8c1C5ZVtMIStd3Hdgazt6S0Ekj/7Mb3ocIWMVdKCYyGWfF
+	arhJZv7v0ZGwA4mNmTvoinpiNLW563wzbtNziKLT92X5YFapC4d1ml2ThHu94MQjewCiA=
+X-Received: by 2002:a05:690c:9a87:b0:7ff:19d6:74ee with SMTP id 00721157ae682-81f4c31fe46mr2273147b3.33.1784763577509;
+        Wed, 22 Jul 2026 16:39:37 -0700 (PDT)
 Received: from worldpeace10.c.googlers.com.com (234.207.85.34.bc.googleusercontent.com. [34.85.207.234])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66890521188sm2193219d50.1.2026.07.22.16.38.26
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66890794b1asm2152505d50.20.2026.07.22.16.39.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2026 16:38:27 -0700 (PDT)
+        Wed, 22 Jul 2026 16:39:37 -0700 (PDT)
 From: dhu@x6u.co
 To: Sumit Semwal <sumit.semwal@linaro.org>,
 	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
@@ -82,8 +82,8 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	xuehaohu@google.com,
 	sashiko-bot <sashiko-bot@kernel.org>
 Subject: [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk
-Date: Wed, 22 Jul 2026 23:38:06 +0000
-Message-ID: <20260722233806.3922093-1-dhu@x6u.co>
+Date: Wed, 22 Jul 2026 23:39:32 +0000
+Message-ID: <20260722233932.3997681-1-dhu@x6u.co>
 X-Mailer: git-send-email 2.55.0.229.g6434b31f56-goog
 In-Reply-To: <20260623015459.1153884-1-xuehaohu@google.com>
 References: <20260623015459.1153884-1-xuehaohu@google.com>
