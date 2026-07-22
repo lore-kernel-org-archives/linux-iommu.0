@@ -1,48 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 405374582DB;
-	Wed, 22 Jul 2026 21:40:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71A39459AD7;
+	Wed, 22 Jul 2026 21:40:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784756429; cv=none; b=mF+UMNskJDcSYTAsK4xvQ1NxijMfIffullO3kiitY8qeKAHHFtUMM95cuByg3zExsF290ZGx10NKvC7SUY524TvI9aEJzahhDoshNxLbaHrlo/o48ED574uez7nocqCs1IHcIooJ95RfK2ckoej/Zn0SuQMsX7rBQudfrmIiioM=
+	t=1784756435; cv=none; b=VV5rc7EPZ2T6lYE7b07MR7RylMHcWGPjeTU6DgEwjqtZnEoDvH0mgCI7t+lxDhES1G9TzInT9unQ20ZagB9wMV5JhrKF+1+16SKh8xMaxYKbbxZein1tpU0xlayPhSV77GijldvcREXdl+hm2LQiLROjDSdJWaAo6uDP1AIaKcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784756429; c=relaxed/simple;
-	bh=cAK1m0jRx2oGVZbqTr746Kz0YuF5w8cW39RxHYxq7DI=;
+	s=arc-20240116; t=1784756435; c=relaxed/simple;
+	bh=N7iI8rnxXRMK6eyTyS1PfEFDsGgE+WOZVUiA270cwPw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LkPJSwW7uiQ900CkM6I8AnYLx9SsZU5C5stDwb4A4Fe7MulpPS+ejXIHs4JSylVBtCTle8TyUuYaxondNmhJs/1ceajcKpY0YiCNx3F7nXlwJGWf8ea65REZDbsJ8CjgfYOMLPvCiTQgf1I7uBk8TmYdiUiBs0MQUrwiivZ7rtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lioNtIfD; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Sd8/uCsrt+VInDhA/zczdIZbozNrsUy0yQ3a7PrPd/td0LQ5Mt+AGkDwtHwu2DZg16KYbn1qk+qK2TduIZ06nkY/DiSjcD8YcJuHbn1dfZ13KuUxsTIMq6h1O5xaXDduB++aiOnPR+0oylO851nU65gwQ8QtnKikZsnGzjLjN2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J4D6ypM3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lioNtIfD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F071F000E9;
-	Wed, 22 Jul 2026 21:40:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J4D6ypM3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A5DB1F00A3F;
+	Wed, 22 Jul 2026 21:40:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784756428;
-	bh=fcPjP1500/6eSY0DtnbEdodYBbhS6k80C9bYmrehPN0=;
+	s=k20260515; t=1784756434;
+	bh=EEinb8x1n/52ikO4dgPpIDNXRcccL4tQe99OcpqrHQA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=lioNtIfDo5fWV4Om7SNXEaKHNkEkxqMGFM8iDj2f1HcKZs31pHwF19zT048wauxL9
-	 Bt7x77wl2KDm8s6KAykydg/JdRl6oTxwTDgksupKKlbtL2hGQ+rxEypiSfqeoYP9jW
-	 AqBmfMTG4v6Oof8+thx/gwn7H2ZvYMr7Z97z8zgEdom2sFdQzhLOyHfDk6bTFZRMTM
-	 yup00lxBdfG7Tdt1xFV0VXNvFxZlavA31S4MqcBW20LQG1sTG5qhTvAovkINfrLzH9
-	 3Kt1x/m72jUazCt2IjQwHNNTjK0x/2OkUzle/I1Pb5NKUCCBE4c738AOHtZARJR7Lz
-	 fsjxPXN3D4TbA==
+	b=J4D6ypM3TPGTNABv/hy3lXYHz1JJ9mUQaxzoPi1r8kH5TsAvIb8+y3Z6y2X/eyXM6
+	 rJVzRJDuMdBmHLDCSH6R9PKI2Z7+5INC0C1B2P8Ili1m5AjSHWrhRcq071ezmTtJ1j
+	 vjpMzq0ge7hRviDfdBr3wNt+oJHnqU6h08geXPitkeEt+hwuzTFc3CgQRPljc7LzAe
+	 jHxOxVMA9SHmwFS6Hmz1Vo2ZFoeS33z3sbQdYVUoucbMj/KpFnZdAfD+EUR92zGKRU
+	 6ZiDyhXlGUB03EXQoCYEhU8wsjJdqt95ehEovB8WZMhoh6s9HrCi4ECs66UlFkhIJr
+	 xyaLH66dJlN+A==
 From: Will Deacon <will@kernel.org>
-To: Rob Clark <robin.clark@oss.qualcomm.com>,
-	Pengpeng Hou <pengpeng@iscas.ac.cn>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Shameer Kolothum <skolothumtho@nvidia.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-msm@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/msm: limit the per-master Machine ID list
-Date: Wed, 22 Jul 2026 22:39:30 +0100
-Message-ID: <178472600067.2879317.10684251320770300003.b4-ty@kernel.org>
+	nicolinc@nvidia.com,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	robin.murphy@arm.com,
+	nathanc@nvidia.com,
+	mochs@nvidia.com
+Subject: Re: [PATCH v3 0/2] iommu/arm-smmu-v3: Fix Tegra241 CMDQV CMD_SYNC use-after-free
+Date: Wed, 22 Jul 2026 22:39:32 +0100
+Message-ID: <178472672974.2884042.6708017212584302884.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260722041619.17735-1-pengpeng@iscas.ac.cn>
-References: <20260722041619.17735-1-pengpeng@iscas.ac.cn>
+In-Reply-To: <20260629094106.251694-1-skolothumtho@nvidia.com>
+References: <20260629094106.251694-1-skolothumtho@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,21 +55,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 22 Jul 2026 12:16:19 +0800, Pengpeng Hou wrote:
-> The OF translation path appends each unique stream ID from an IOMMU
-> specifier to the fixed mids array in the per-master object. It currently
-> has no capacity check before storing at mids[num_mids] and incrementing
-> num_mids.
+On Mon, 29 Jun 2026 10:41:04 +0100, Shameer Kolothum wrote:
+> Changes from v2:
+>  https://lore.kernel.org/linux-iommu/20260611084205.686559-1-skolothumtho@nvidia.com/
 > 
-> Return -ENOSPC when the array is full rather than writing the next ID
-> beyond it.
+>  -Addressed feedback and picked up R-by tags(Thanks!).
+>  -Use explicit type casts in devm action callbacks(patch #1)
+>  -Add Cc: stable to patch #1 as it is a pre requisite for patch #2.
 > 
 > [...]
 
-Applied to iommu (qualcomm/msm), thanks!
+Applied to iommu (arm/smmu/updates), thanks!
 
-[1/1] iommu/msm: limit the per-master Machine ID list
-      https://git.kernel.org/iommu/c/e283e646ee89
+[1/2] iommu/arm-smmu-v3: Manage teardown with devm
+      https://git.kernel.org/iommu/c/2bd22a0d4050
+[2/2] iommu/tegra241-cmdqv: Fix CMD_SYNC use-after-free on teardown
+      https://git.kernel.org/iommu/c/9ff145a25c5c
 
 Cheers,
 -- 
