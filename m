@@ -1,79 +1,74 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E387459AE4;
-	Wed, 22 Jul 2026 21:40:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D28243C051
+	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 21:41:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784756440; cv=none; b=Jar/HjsFPZWeDcL/HiazDxVE0VbhPdtQHK5YwCMK2121Op0j1UxuuxO199X8LsBe+5neOBfAvS/5/O0HCK0BSKLnLrTC3303HFa9wj+6owpPVhNTmv2atNtCW0C2yjw11Xo0iwHHLTUU29Ruc7kJaoWZByViW1o/Qvxgejo+w/Y=
+	t=1784756494; cv=none; b=eKBh8a6DTDLTinb9yj1Le/U95g5zC2wdN6WWerhbGN0O3ZlgHqYvdOSFlQETBJPvrOOoHh9LLSeBAN82VS2fmd49vSrDZBaqHBS1FJhZnWudIT3NEX9b3TQQfNdQXvI/9TglHRaoqAkVBENTR31nnUAE2304ANrz8TYlymGtyPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784756440; c=relaxed/simple;
-	bh=MckdYUhkymM6GJqClufqPlW4QCBKQDuDeQJK4GjLGs0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oNEPHru5mCKrrxEt96rGFjUKLG/lNjhTkj5p9LIrBHt01SSmqPLuVHcBp3gyqWIJsuBC32bqLEGyyW1HelFVHpmwWawGrJGuukNt+IK/M5yJKR9NnCQ/uhYA0Md9pWZrADD9NU9qMALY63u7wNIAT4bLNi8v2yg76b1JznjCVXA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E1Ne4bJa; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784756494; c=relaxed/simple;
+	bh=mS82Sqrmfy31wBFBmhkYtVARVlZixEJzT0A8V6kXh3M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MOwxynJsDMts6B/CSnH/HXrr5RScM3om4KOIpcrIkjsvW7dI5Ao1sJaLGswKsM7e6g090D86ILU26AL8IHCvDqWlNl1WGqfHz661jMRVvsWdleJVGulQu8Kb9bgJl9Vd1gxlurWuOSJ/3qNcCamIW48Lx6QWFsv6UHDNjn5mW3s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=efhNUBJK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E1Ne4bJa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 992F91F00ACA;
-	Wed, 22 Jul 2026 21:40:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="efhNUBJK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1369B1F000E9;
+	Wed, 22 Jul 2026 21:41:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784756439;
-	bh=VreZlR22uIJSW9Y1Ny3sD1w9jpLjsK3e+y886oL7jrU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=E1Ne4bJaCJ6d0m5q+gRM/kubemSTa4N9Nxm1NyQoDSzfrQ55KFZMIDGKEqF0dK7G8
-	 ZFxbURFfbJIIi8x1x6fybFglWS+XiUvfytF2Dkv2pxwVLXbKhz+MASkpIKCJ5dDckk
-	 z7rA477DpoMFzLCy3ApiCmg6cJ0Shdcc8DXUWySgBEBmCsv60L49ObDolWZyAFhiKo
-	 v5du64nAFF4LhCRNTnv/PjVPv9Xqrb+Q9bYiPemIkUMk325MqpJ0yWILei2EY3R1eG
-	 XQoizIyuiN6SRZMjWEe9o33kOiKQTdEsl1jUCESZx2e+IHEs26jAPVe+3COSAXyUIh
-	 teANA0TY0Eqng==
+	s=k20260515; t=1784756493;
+	bh=dMBR3RblX1R9eqpdwhEwEKJ+UC89Iidu44yGOa3ijEg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=efhNUBJKqg8rwflf5T8G6cE6MOrBLBJcxNvb80Pp0cHZwRTmst2/zYXEAu5RvOGNB
+	 LojGPzScFflxCyqUqMyBwG0pxWUcQzyqXnlIg4nQ/iG8kZw5G/3QT1SGXKRfQgpWGP
+	 CUWhsAYgzZSdH6khCSdsavDebEvxDbC9lCID34MTvuSlbpLUh+8mrWotiBgPMdOLfn
+	 k4hEyfTvzx3AbUfgTpvLZkQoNzhluq7N90E4qoNTSfSlsWLrUrTXVnzPr4C5VASuOB
+	 vqpQKmzeMdj89XjB3LwSP238CtFU9I2hZQ26ljQKciuUsscYll30PstHXWoZaU76cg
+	 BbyNz+ClSl87Q==
+Date: Wed, 22 Jul 2026 22:41:29 +0100
 From: Will Deacon <will@kernel.org>
-To: Weimin Xiong <xiongwm2026@163.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>,
-	robin.clark@oss.qualcomm.com,
-	joro@8bytes.org,
-	robin.murphy@arm.com,
-	linux-arm-msm@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v3] iommu/msm: Fix dangling list entry on probe failure
-Date: Wed, 22 Jul 2026 22:39:34 +0100
-Message-ID: <178472575580.2876636.12194314237571577379.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260716085313.207069-1-xiongwm2026@163.com>
-References: <20260716013229.91014-1-xiongwm2026@163.com> <20260716085313.207069-1-xiongwm2026@163.com>
+To: weimin xiong <15927021679@163.com>
+Cc: iommu@lists.linux.dev, robin.murphy@arm.com, joro@8bytes.org,
+	xiongweimin <xiongweimin@kylinos.cn>
+Subject: Re: [PATCH] iommu/dma: fix grammar in comments
+Message-ID: <amE5CSp8bTSjm-ii@willie-the-truck>
+References: <20260714024502.188501-1-15927021679@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260714024502.188501-1-15927021679@163.com>
 
-On Thu, 16 Jul 2026 16:53:12 +0800, Weimin Xiong wrote:
-> Move the list_add() call to the end of msm_iommu_probe() instead of
-> adding cleanup paths, which avoids the dangling list entry problem
-> entirely (suggested by Mukesh Ojha).
+On Tue, Jul 14, 2026 at 10:45:02AM +0800, weimin xiong wrote:
+> From: xiongweimin <xiongweimin@kylinos.cn>
 > 
-> This approach simplifies the code by ensuring the iommu device is
-> never added to the global list until after all potential failure
-> points have passed.
+> Clarify two slightly mangled DMA-IOMMU mapping comments.
 > 
-> [...]
+> Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
+> ---
+>  drivers/iommu/dma-iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 9abaec070..2c28b951f 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1489,7 +1489,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>  		 *   based purely on segment lengths without needing to know
+>  		 *   the actual addresses beforehand.
+>  		 * - The mask must be a power of 2, so pad_len == 0 if
+> -		 *   iova_len == 0, thus we cannot dereference prev the first
+> +		 *   iova_len == 0, thus we cannot dereference prev, the first
 
-Applied to iommu (qualcomm/msm), thanks!
+I don't think adding the extra comma makes much sense here:        ^.
 
-[1/1] iommu/msm: Fix dangling list entry on probe failure
-      https://git.kernel.org/iommu/c/6bea37b176b8
+I'll hoover up your other typo fixes onto their own 'typo' branch and
+leave it up to Joerg as to whether he decides to apply/squash/ignore
+them.
 
-Cheers,
--- 
 Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
