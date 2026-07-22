@@ -1,74 +1,74 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCCD3E5A14
-	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 19:57:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 312EA3F58F7
+	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 19:59:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784750233; cv=none; b=EDRgASuOlnIO0p6dSx9o3eMBifK0Mf8efriucRzoXxfyO8X0ZI5mJFoQbcwOjF1bM6iNPnpUadsf2MmMNNaujrWe6zPTG1o40NZAx3TtM9J47IHGmeP27tCJ69l1zFMq+EeTDxHCittsd7GoKWkGeV4ENHUZKeAAAQzzxsCoA1s=
+	t=1784750355; cv=none; b=FRugZWsEeNAR87SbwLslm6nT1sZ8MIRhxLofVkmBCW/jl1PI5yRcR7QFrbQuYNmq3LZ/2Gfciu9YmAavg7c4JNEqWOSUbfxqLens5L7VvXacn7PkglIIhpJf3AhO7eR4w/Gt0ZtWmJQ4QzD+agU+G9SgDG0ymhQ0V/yi2s6rIr8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784750233; c=relaxed/simple;
-	bh=tJmj53zfWsNVLl4x+pL+wraxm36ZaOa5Vnqva167EKc=;
+	s=arc-20240116; t=1784750355; c=relaxed/simple;
+	bh=QzKGPAMMMcYp8C3yznRY+b0+buzB7XKjOZxs2Zi0vAE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YYRt4Y3NNEvqi//tzdbBWMDrhffBwMnMQf2AB0wQ4dbMWx43IM6JYyJL732/LMZYXVEE0qbSMBzIkT/vJgqxNFrFGRCl4U9F4EuQofcVfyZQMYu26hBgjZ7+HhOJvFsbdUjIm16eWDlJKjbN7o6p/870vmFOBnmOd1XG+1B7lf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AubK3zkp; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=OmKpyGPOTGdNKz5Z1OsX1vJNvlHvIjUbxC6bXoAn9P9o0Gq8Wwm2oO9CTOkhO2HE4P+IHBw2BCoYCKV7Mx5Qi7bvqsH7VzFY3pkyX/mLEwOCCb8by98C0z2UKj2wHh5yFXphsmhJui9X3LE6+7sBM0nkmmGs5EcZfe0koaw2MY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=H9csLC28; arc=none smtp.client-ip=209.85.216.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AubK3zkp"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2cc61541f8cso78858245ad.0
-        for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 12:57:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="H9csLC28"
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-38e041ea211so10836898a91.0
+        for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 12:59:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1784750231; x=1785355031; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1784750353; x=1785355153; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=N2NbIgCir1Hq8D+FOL5JeKeK13r88FeOdRS8YSok+dE=;
-        b=AubK3zkpJ7EzouobdSCXTTRV7Z6DmLNisldaNwZy+oEh0/tM/T0Gff1Fdh8w+/liZi
-         OTUsbwKl3GDSyy83nwLgR1peIipv2ofDJK3ykK5vZd+LEwMM/i+nHQHtB959XWXJ8Ma8
-         XBysroa63cgLhP6gzivTclfsrxqPBIIDZhGWSqTbW21WeMVO804O/ghNVZ0Jkathp8w0
-         fshL4sjpG+iZyZhNmPegc/1hOBVYHDrZaRat6CzbJ6JshQh/ZTyoKHu4UXAIlTwrGrM/
-         Xbh3u4UitHIR/CwLUHc5WZ4nuhE4FfvdiwI9xcYk9IoefqTdvEQFUvkYJpLBFpy/7W4q
-         oLeA==
+        bh=EEIQnXJI41GVGpHCEj7IDcqZ+AmiiYPwRk5ZlYk7rZE=;
+        b=H9csLC28/ZAPe6vHxt6my0W1xxhJkcjL4Ozd9cBAbgcLB78XyoiSwW1KCYRKAf+RgD
+         3iHymI41ISFHPnlIhSr36J8mJ7BJRGnhse4QRr+7iUYAYSEGe4ylZn9fJW4RnI58VnHh
+         iOIjGnTf+Acwq1R0Y6YYkrYy/SDFQM1KQBvwvvuu5p1cHy2rZVo88D+zuiPxRcda3w5G
+         vPhMn76VRUhE0HL+l3TUTYfq6iSS3CF0oWyZ2Ma5K9P9SJ67AQubJcY8sttQs/UzssWo
+         V6dviVfc8prPyNdvi/L5wOhO+vlmCNlJ1vtaox2c+4t/QpHSEoQ5wwfOqgrzK9cBz8cy
+         NUnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784750231; x=1785355031;
+        d=1e100.net; s=20251104; t=1784750353; x=1785355153;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=N2NbIgCir1Hq8D+FOL5JeKeK13r88FeOdRS8YSok+dE=;
-        b=n0dJV7uKCvikKLkjLCrVx6Bt5pFpPH+u5A+hrMph8+zD87w7onUTp/+1yEQTQ/IUkI
-         y1aS5dNt0P+teWb/o0+eUor8u7rrtmjg2WoPr4hUkPwU8ULH2bQkw62+pBnwr2rWNILp
-         fflyVqFfvG73Q28ku0Zy5nA2PvQmpVyMOZsn2/S20IChn8/Vd0inowG8y/nfKuSnh4c9
-         z/xJUQGPBLM8tJ17BEaPBjFjclR/lp5SOawS01C0gDzPKixy3iTwVGHQhFmW8Bi3elpb
-         jCe4LF8zB8p+xziTLKfqyZpJopVDzy4w8gYE17bVbz+E5K7bSpElwqliAmkL5lP1wc+h
-         Hbaw==
-X-Forwarded-Encrypted: i=1; AHgh+RqzFqaZ1ZbefN17HBAnVt3xHcv+oAXGgU4nF98yjE96XcIpEni5QtH5Jm6vqzt1eFwxMHwrzg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyMxIjJ54maFQ5Fnp4ohAX00PA0nfBTByRxvwgdi61MHcrBMSm5
-	rY+1+OA5aRWxigHpD9z0/JhbxuljMXawR/9G/cYGJT2F5zbfiSvDH5l22yPyrAFKR/s=
-X-Gm-Gg: AR+sD10fvFX1Xl3G2cl+5J3CUBuAI0RE3tbPyiA3y0xZNaqerwoZK9DSV12dzXy37vM
-	3ay7+qZmPK0EjRUSEVMKOK0/MKv8pahlNGqNX8cIh50+D34oQWx6Y8FHD9ZeFBo44uwWs0LfFrh
-	NVZ82VYFDI/EJJCphvC9GvrK8uGVJgZic2lBSn3VqVmAfxyR2We5BNFqeiHA/8yvXdfxRnDIj8T
-	QKmbcwJvZs2GjCCma9NFS7qE0bQRT9ZNOt8C71cbu5lyfepJjZGp64pi/7u0cC/B3/kJjI1pUCT
-	9YBRhO5SMpVGFla9itmVFBzGZCU/RpEXiYJWxwHeBRlVZzfePZEEh852V0SzPZWRWY+6HIpPRG7
-	XvSEO8X9H3CjqCW5h8KcukznwIbivKiQN63bV/mHSxOY6Sjg/xRxx
-X-Received: by 2002:a17:903:4410:b0:2cb:402:70cc with SMTP id d9443c01a7336-2cf8df30504mr51520965ad.28.1784750231136;
-        Wed, 22 Jul 2026 12:57:11 -0700 (PDT)
+        bh=EEIQnXJI41GVGpHCEj7IDcqZ+AmiiYPwRk5ZlYk7rZE=;
+        b=VrbeNdaV4bWdO3BmKV2/wrqztRMK2pPCqB+KL3IsoOLC2dtrnlsmhSsAz3VHgUR/Bx
+         icsJaeBUEf37KorisizJcJwj8L9KTg5MeDpNu0xMbu1qjsOMc7FsKzM46qG6K0Rf66Jz
+         kU9sJUBgWV7FQ9wQ/H1Lf+pNRz7HUPnB+eVOcCiH97sDeW0gQrWY9n1ILmPypQi2AykL
+         n/AkUiQ4tLUx/2hkFFBH/m1SzioEPxEEGytGPTBrSN6XwnVvm4t+7hnzpNNff0mQIEY0
+         5rQ90yVFEpPil+3vca0VQ1rF4ZFWY/0rwvh2OebtHpM1yjjMSBfkuAcbiJ736ag1Nf9B
+         bvkw==
+X-Forwarded-Encrypted: i=1; AHgh+RpAfNgqWZdxvbPqoq45rqqUmXdLjvin7EevaiQ2mSJs4vKpad68a/fB2MXSPLhQ1LOeDd7DPg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy3fq5+kPWqH2j/0OJceKlTyAKgJcJNx1oMfwJpMkzdKsY4/4pr
+	o0g4oLsozuBw06NV4NhMQHOEt48IwKFXfQv8Fgr2R7pWD5tOjnnl8XLyeV7CwsIsPsA=
+X-Gm-Gg: AR+sD117PAnJq8/Peho/07qFWmX85aG+e9BN1Nq2TNQfq8QRBELRnShcXnmmWy7RKrG
+	vtwjuQS3/NE8KnMbSCL0eZdtHxfxjqkB1qK4HcJtfZ4n/tOUKdeJ+UkpMp1Zd4NpPEm5hjEwKIp
+	XmfPDAMkGRSSLAfwN8K2HBJCbrnUG5lduAup0w+gWbtd+/BAIJgUhrWPeHTzTFgLXGqHX0CKSs4
+	PHL+y2AlY3yf6qR/tbLlTruUPItqr7OHBBNeTfEzZ1KebF5D5Rf07jR8dd42AOfJvRjz1qqurF8
+	yy3m+1r0rFMeXq4l27Jrbd6aHbr9RmDrxKkVkRRatKHnQYAtroiaMxCYfrulzVnUHsx5/teaMrW
+	tSBgcX9xLm+xu5knuN7vUwyb76U4uuGjGptwE59DpkexHHCX2AULg
+X-Received: by 2002:a17:90b:28c5:b0:38e:7080:b4c0 with SMTP id 98e67ed59e1d1-38ec6979bc6mr98413a91.10.1784750353408;
+        Wed, 22 Jul 2026 12:59:13 -0700 (PDT)
 Received: from ziepe.ca ([216.228.115.8])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3147dc6162csm11833170eec.7.2026.07.22.12.57.10
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13d13003f12sm14809771c88.2.2026.07.22.12.59.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2026 12:57:10 -0700 (PDT)
+        Wed, 22 Jul 2026 12:59:12 -0700 (PDT)
 Received: from jgg by NV-9X0Z6D3.localdomain with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wmd42-000000002HD-06RY;
-	Wed, 22 Jul 2026 16:57:10 -0300
-Date: Wed, 22 Jul 2026 16:57:09 -0300
+	id 1wmd60-000000002O0-1hvF;
+	Wed, 22 Jul 2026 16:59:12 -0300
+Date: Wed, 22 Jul 2026 16:59:12 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Leon Romanovsky <leon@kernel.org>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
 	Steven Price <steven.price@arm.com>,
 	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
@@ -88,12 +88,18 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Heiko Carstens <hca@linux.ibm.com>,
 	Vasily Gorbik <gor@linux.ibm.com>,
 	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v8 00/23] dma-mapping: Track shared DMA state through
- direct, pool and swiotlb paths
-Message-ID: <amEglRH3u6UFFnIQ@ziepe.ca>
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	stable@vger.kernel.org, Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v8 01/23] dma-direct: return struct page from
+ dma_direct_alloc_from_pool()
+Message-ID: <amEhEKQW0_HJ9cLN@ziepe.ca>
 References: <20260717180442.110954-1-aneesh.kumar@kernel.org>
- <20260721124056.GK110966@unreal>
+ <20260717180442.110954-2-aneesh.kumar@kernel.org>
+ <20260721115456.GI110966@unreal>
+ <yq5atsps77c5.fsf@kernel.org>
+ <20260721142921.GN110966@unreal>
+ <yq5ao6g0750v.fsf@kernel.org>
+ <20260721153321.GO110966@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -102,20 +108,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260721124056.GK110966@unreal>
+In-Reply-To: <20260721153321.GO110966@unreal>
 
-On Tue, Jul 21, 2026 at 03:40:56PM +0300, Leon Romanovsky wrote:
+On Tue, Jul 21, 2026 at 06:33:21PM +0300, Leon Romanovsky wrote:
 
-> Why don't we continue the effort to remove "struct page" entirely
-> from the DMA API internals?
+> Something like, but probably void* needs to be phys_addr_t:
 > 
-> IMHO, everything not exposed to DMA API users should use
-> phys_addr_t, including the DMA address pool.
+> static inline struct page *dma_phys_to_page(void *addr)
+> {
+> #ifdef CONFIG_DMA_DIRECT_REMAP
+> 	return vmalloc_to_page(addr);
+> #else
+> 	return virt_to_page(addr);
+> #endif
+> }
 
-The alloc interfaces return a struct page, that is why this stuff is
-organized like this. Look at dma_alloc_pages()
-
-There is also an API that forms a scatterlist that has to be struct
-page as well
+I don't like this, we don't know for sure the addr will be in a vmap
+and this will fail if it isn't.
 
 Jason
