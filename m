@@ -1,134 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 285C043B6E0;
-	Tue, 21 Jul 2026 22:03:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95074367293
+	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 04:16:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784671428; cv=none; b=tWvsXfX6p5sKsMnsSuZa0SuGF9UWpkDQBSfcAjPXz3LnghUyBG1Bk9vrm+/x2O+VEJQ5FJov+SkYPh4CohXhquDU3Bi2/e/Y93YaieLCthHy+ZA+3Ye4PltP73kQM8/lZQgl0SlO17ISPNXAKb7sesEGsfKQ4fnG67+OJ9zz4jI=
+	t=1784693812; cv=none; b=YpHBQCKQSTdfnvTSFk5KM/qSNaP7om0bzLaXx/JEjd5MMlp3bxtHIHJNnv1UXItSi/ZXKqhyDCfJct+infT2qfY5VaHWjsjX8LbEsdTmJEcXpkWBxQ+UKtkUQOVgZ4aOFfB3cUbFWMXAGGuMP5xg9J0AiPJEryh306sa49y/qz0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784671428; c=relaxed/simple;
-	bh=bCxbVfN6V5pHCC3mEwGYgsl5FA2XAsw3WeKrawYV32k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TF+u6LJRes4lbrJFIfski0uwUUw8AEvFeskcEPN8XSN9vPcTBXfLr7Ew7aQfNAnO020mbOIABqflHku6U9+7TCiRiCcQL+1Y92KLck8BN3gdQbZmOYA6MJZOCeE3byx3PXkrW8zRVKsDeEmQK/Jj1WI2wFHVAKUJ3DJwh24VB8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=auTW/WBC; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="auTW/WBC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69CBE1F000E9;
-	Tue, 21 Jul 2026 22:03:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784671427;
-	bh=6P8NXzkwEgiAM58tQMpUy9Cb9CjVa4MDzbpmorHECA0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=auTW/WBCYQ0i42fuTPQW5kc5UvlmEvZwzOscJ/H5askVmaHpCz5oe7Xc77FDAmBf7
-	 HuSI/X2oAg49afP3BY15c4kYsbK71P2r1sTA+qN5oMF7zXJHZ/+EfpBA48swTG1PU1
-	 GyqDjnCxi1H7ILYAhFUmPLPU8jaRX2p2ajBgZ0NGYTc+c4962eVQ5X1W5mxMGpnm3w
-	 OmUi/MGOMxwuu/5HgzT7mctMXWDq32jVGyihEoZ+IXIWwG/OgeGAM6j78cxpCvwUgh
-	 nMLR9HTw40xcK1muaX5lBIQxaV/V0VdR+JuZeolXGVTr3VsRx80yFn5RLXqMgqMr5x
-	 Ii/qx9fk+Ymng==
-Date: Tue, 21 Jul 2026 23:03:40 +0100
-From: Will Deacon <will@kernel.org>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	s=arc-20240116; t=1784693812; c=relaxed/simple;
+	bh=COjXA8CR44dXJ+KXqC60mO8/CY2qkCCBkKILyKl5rYg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I4rpAroo0X8azNRNxZwXm1fjYnXWpHuWh6IK/sVgZc5GYhFxzY4JrQAMEoYOMtBfFO0Fq7vAWW2ki/uikb7AAOGF4aHVPCbSFasJlBMGNEhohpl6G7ygqqCS+pg8YqtfWPC36UKUUEpBogdmf0677e3U6IFwKNhG69sScUm0Bw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost.localdomain (unknown [111.196.245.140])
+	by APP-05 (Coremail) with SMTP id zQCowAB35T8TRGBqWy67AA--.34064S2;
+	Wed, 22 Jul 2026 12:16:19 +0800 (CST)
+From: Pengpeng Hou <pengpeng@iscas.ac.cn>
+To: Rob Clark <robin.clark@oss.qualcomm.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>
-Subject: Re: [PATCH v5 08/10] arm64: realm: Move Realm memory encryption ops
- to RSI code
-Message-ID: <al_svOwkb5SleTWg@willie-the-truck>
-References: <20260706060432.1375570-1-aneesh.kumar@kernel.org>
- <20260706060432.1375570-9-aneesh.kumar@kernel.org>
+	linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Pengpeng Hou <pengpeng@iscas.ac.cn>
+Subject: [PATCH] iommu/msm: limit the per-master Machine ID list
+Date: Wed, 22 Jul 2026 12:16:19 +0800
+Message-ID: <20260722041619.17735-1-pengpeng@iscas.ac.cn>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260706060432.1375570-9-aneesh.kumar@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:zQCowAB35T8TRGBqWy67AA--.34064S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZr4DGFW3GrW8ZFyDtw45GFg_yoWfJFX_CF
+	1rXas7Ar4qkFW8CF12ywsrur9IkasFvFn7GFZagwsxGasrXr1xCFy0vrZ8X39rGr48tF9r
+	urnrua4fAry7CjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbxkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+	6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+	1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+	6xIIjxv20xvE14v26r1q6rW5McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr
+	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0En4kS14v2
+	6r126r1DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+	AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
+	c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267
+	AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWU
+	JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUj
+	d-PUUUUUU==
+X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
 
-On Mon, Jul 06, 2026 at 11:34:30AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> Realm memory encryption callbacks are CCA-specific. Keep the Realm callback
-> registration with the RSI initialization code instead of pageattr.c, which
-> only needs to provide the low-level page-attribute transition helper.
-> 
-> Export __set_memory_enc_dec() within arm64 so the RSI code can wrap it with
-> the Realm-specific encrypt/decrypt callbacks and warning policy.
-> 
-> No functional changes in this patch.
-> 
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->  arch/arm64/include/asm/mem_encrypt.h |  3 +--
->  arch/arm64/kernel/rsi.c              | 34 +++++++++++++++++++++++++
->  arch/arm64/mm/pageattr.c             | 38 +---------------------------
->  3 files changed, 36 insertions(+), 39 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/mem_encrypt.h b/arch/arm64/include/asm/mem_encrypt.h
-> index 314b2b52025f..f6325f30e844 100644
-> --- a/arch/arm64/include/asm/mem_encrypt.h
-> +++ b/arch/arm64/include/asm/mem_encrypt.h
-> @@ -15,8 +15,7 @@ int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops);
->  
->  int set_memory_encrypted(unsigned long addr, int numpages);
->  int set_memory_decrypted(unsigned long addr, int numpages);
-> -
-> -int realm_register_memory_enc_ops(void);
-> +int __set_memory_enc_dec(unsigned long addr, int numpages, bool encrypt);
->  
->  static inline bool force_dma_unencrypted(struct device *dev)
->  {
-> diff --git a/arch/arm64/kernel/rsi.c b/arch/arm64/kernel/rsi.c
-> index 1fb2abd79800..5c566700974c 100644
-> --- a/arch/arm64/kernel/rsi.c
-> +++ b/arch/arm64/kernel/rsi.c
-> @@ -143,6 +143,40 @@ static int realm_ioremap_hook(phys_addr_t phys, size_t size, pgprot_t *prot)
->  	return 0;
->  }
->  
-> +static int realm_set_memory_encrypted(unsigned long addr, int numpages)
-> +{
-> +	int ret = __set_memory_enc_dec(addr, numpages, true);
-> +
-> +	/*
-> +	 * If the request to change state fails, then the only sensible cause
-> +	 * of action for the caller is to leak the memory
-> +	 */
-> +	WARN(ret, "Failed to encrypt memory, %d pages will be leaked",
-> +	     numpages);
-> +
-> +	return ret;
-> +}
-> +
-> +static int realm_set_memory_decrypted(unsigned long addr, int numpages)
-> +{
-> +	int ret = __set_memory_enc_dec(addr, numpages, false);
-> +
-> +	WARN(ret, "Failed to decrypt memory, %d pages will be leaked",
-> +	     numpages);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct arm64_mem_crypt_ops realm_crypt_ops = {
-> +	.encrypt = realm_set_memory_encrypted,
-> +	.decrypt = realm_set_memory_decrypted,
-> +};
-> +
-> +static int realm_register_memory_enc_ops(void)
-> +{
-> +	return arm64_mem_crypt_ops_register(&realm_crypt_ops);
-> +}
+The OF translation path appends each unique stream ID from an IOMMU
+specifier to the fixed mids array in the per-master object. It currently
+has no capacity check before storing at mids[num_mids] and incrementing
+num_mids.
 
-It's good to move these out of pageattr.c but I still don't think any
-of this stuff should be in arch/arm64. This is a firmware interface,
-just like PSCI, so it should live in drivers/firmware/ along with all
-the other Arm firmware interfaces (SDEI, FFA, SCMI, PSCI, SMCCC, ...).
+Return -ENOSPC when the array is full rather than writing the next ID
+beyond it.
 
-Will
+Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+---
+ drivers/iommu/msm_iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 0ad5ff431d5b..0cc7a87037ce 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -622,6 +622,9 @@ static int insert_iommu_master(struct device *dev,
+ 			return 0;
+ 		}
+ 
++	if (master->num_mids >= MAX_NUM_MIDS)
++		return -ENOSPC;
++
+ 	master->mids[master->num_mids++] = spec->args[0];
+ 	return 0;
+ }
+-- 
+2.43.0
+
