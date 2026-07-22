@@ -1,73 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 264833E3177;
-	Wed, 22 Jul 2026 21:39:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D98A43F4C3;
+	Wed, 22 Jul 2026 21:39:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784756397; cv=none; b=VMpQiKP3dDXgbDdG9+cGW1aVZaYBlZYk3J/xssl2HrB8xSjas0Rgt+YLA8s7t0XS4WGikSocDoDZIo/IIODTT2m71juge2tkal5mG15OEPbqR2PBu2WFiC/sfOLyfGIPlUyB3pTIesWWYsbhFKuc5pTX6uiJAdpN4RwyWPwqpHM=
+	t=1784756400; cv=none; b=WlEEYj+bD2I/23J03ZeYRoxeQ6i/Zjc8Bpu2KyYVQ9snEgHmySC837mlynOfde7zimrMb245fumKlCxP0dp52L+nKMOtvZVxtXeLU1H/h5qbMN/M54HkysCcOwPcAC9/sAqKDtm4sD6FAEk2nDIZBB4dX3WHjvgQt/WXr7NYIaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784756397; c=relaxed/simple;
-	bh=x0Vctnx3llfCo40eIELT2VVY6L8u1/hh7NJ3J/k6MxI=;
+	s=arc-20240116; t=1784756400; c=relaxed/simple;
+	bh=9+xzSvJGToT5d6yYZEBVMvz2tq94dZTg+cEmYvs6cRA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GP1zzeWVxTlvcqY3KWSK65plzTvqNqZC0Wlf7iBiF6ZgfRQ7nnZhasbQOJG5Qv7IQctu3hfBLACh+14hYbyA8iWarf3EKcthTXMbfYSfiIvBwG+akfm1v7NaX5BK1ULCYIICnqS8tCYRvF50ZX08Y+qM6jRbFS42wAHmEU7THck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FV3up+hK; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=admwK90F8S8KJ6YTdeXNNO8X9StZOhFjyeCeTbXKuphRt0VvEZgDGk2cS0cT3WMaYUBggqfXLwgKAuz/CYV2XWFLwnvoxLNWw7c7xkpHegqEeUEWpS7iaRs9jYKSvMfDsYmmWIxPxnUaQH0bKSD2t7W+QeQnBYoHA9oUb2z54E0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g2T0ggEP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FV3up+hK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B77A1F00A3A;
-	Wed, 22 Jul 2026 21:39:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g2T0ggEP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB331F000E9;
+	Wed, 22 Jul 2026 21:39:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784756395;
-	bh=f1wOx0e4PjnlF3z9WLHEYARB2GSoN4b0UX9bWrnaH3c=;
+	s=k20260515; t=1784756398;
+	bh=eYJOxwafJl8OVO7ncar+6PV1o72DMzw1345lwAkie64=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=FV3up+hKKYgBreJt+xgk9qax0vNTRVcRIerlpcYvJJHFkhgMsoucwlRE5dVJVQAUk
-	 NOlaCo6qFmrDUWShS2RAfkllGOVrpRZeeBAfEj2xXaL65AFASCVyoQ1w+/xtYmJPQG
-	 BhW19lZxp72vmGZyaxEo/cuhnq3Uvz0D04ymSYpQ3dyGhCLwEdYwB4s8Dimd1+FQut
-	 4IkAqpkLCT+q8XwUidRGtcQQM59e6Pm/Jrv9mUfVZnryPkH43Sl4l2BM2NKVEPK4zF
-	 lT3HNeglZh+8GdzQ2CFnty4o8eBGg+9m9WuRIR4RJZ0NxY4rW7uCfcTv++ZdOnHzGC
-	 Yn1nhDKXxPlLg==
+	b=g2T0ggEP+OzKgwGT1ua3fLRCEfsJHCUoE8FKfLu3rnKwkTwl4OJh4SY5bVUZGP20Z
+	 ycu63WdemDnA4UHLqyRNyMJ7QDhBuZsNWPVsTb5RReFpLEwdiW5x85yqL858gXVBHD
+	 2SbD5Qjb2Br81+olXRINqIV5qrw8U8x52zk9Et1epHCO5GDbboegW6SSAUq4cN4dZO
+	 aOf9+DV94dTf6HUPM6m20DbTqXqMDK0XrZoli/ySD1i3Oxxx3SSw2+bEGxNRrHwnu5
+	 lHLAqWw9fEreSZyWtuDLA+E679GcXpSQNFCmunk2SrLeiQQ7jYSRrW89JP7tv8pLhj
+	 7veJ2m+sxh3DQ==
 From: Will Deacon <will@kernel.org>
 To: Rob Clark <robin.clark@oss.qualcomm.com>,
-	Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Jessica Zhang <jesszhan0024@gmail.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Akhil P Oommen <akhilpo@oss.qualcomm.com>
+	Esteban Urrutia <esteuwu@proton.me>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
-	linux-arm-msm@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	freedreno@lists.freedesktop.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	Aditya Sherawat <asherawa@qti.qualcomm.com>,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-	Aastha Pandey <aastha.pandey@oss.qualcomm.com>
-Subject: Re: [PATCH v6 0/7] drm/msm: Add support for Shikra GPU (A704)
-Date: Wed, 22 Jul 2026 22:39:20 +0100
-Message-ID: <178472212670.2848256.16113852617483173149.b4-ty@kernel.org>
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	phone-devel@vger.kernel.org,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Add SM8450 MDSS compatible
+Date: Wed, 22 Jul 2026 22:39:21 +0100
+Message-ID: <178472263086.2852085.5726009348827145429.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260710-shikra-gpu-v6-0-b388ec5dce77@oss.qualcomm.com>
-References: <20260710-shikra-gpu-v6-0-b388ec5dce77@oss.qualcomm.com>
+In-Reply-To: <20260711-sm8450-qol-smmu-v2-1-41a6fba41c3e@proton.me>
+References: <20260711-sm8450-qol-smmu-v2-1-41a6fba41c3e@proton.me>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,20 +55,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Fri, 10 Jul 2026 00:11:59 +0530, Akhil P Oommen wrote:
-> Adreno A704 GPU found in Shikra is an IP reuse of A702 GPU with very
-> minimal changes. The only KMD facing difference is the chipid and the
-> zap firmware which is specified via devicetree.
+On Sat, 11 Jul 2026 23:14:01 -0400, Esteban Urrutia wrote:
+> Add the compatible for the MDSS client on the Snapdragon 8 Gen 1 so it can
+> be properly configured by the IOMMU driver.
 > 
-> Mesa side support is already merged:
-> https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/41762
+> Otherwise, there is an unhandled context fault, because the framebuffer is
+> already configured in UEFI.
+> 
 > 
 > [...]
 
-Applied bindings update to iommu (arm/smmu/bindings), thanks!
+Applied to iommu (arm/smmu/updates), thanks!
 
-[3/7] dt-bindings: arm-smmu: Document GPU SMMU for Shikra SoC
-      https://git.kernel.org/iommu/c/20b4f0f120ea
+[1/1] iommu/arm-smmu-qcom: Add SM8450 MDSS compatible
+      https://git.kernel.org/iommu/c/d149c8b2c014
 
 Cheers,
 -- 
