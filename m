@@ -1,50 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92371442B0E;
-	Wed, 22 Jul 2026 21:40:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED6443F4C3;
+	Wed, 22 Jul 2026 21:40:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784756406; cv=none; b=sDlfvQyJPyHnYlSPv0oTt5lrmWdHDsSbSvcGc04UEOvH8GthEpK7vYDkGKxIF9+sN8JnLMTJUDhMr6cM1krEMkXcYJ+K35Yk6Q1M4cY+AKrCy8FRoUpLECHKfmcjRxpycELQ+yVujdAxaV885NVTBpyqztlc/lq5NhbjB6+7k8U=
+	t=1784756411; cv=none; b=dt7c+kJoZXQwNLwidivV2KXh3aJwZYdiQsdksP3XSqTrozUnruWnsLPJ/riN0h/mIkqrQBd9gjfanKtt0kJtk1mlO6S2BD4pb9sAIGiY/+wizNuNUmdXjUwun3YzO0k6OppuFanFfkp9+YTwIBJ16Q5jvqksgd3tqMcCSMp/oLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784756406; c=relaxed/simple;
-	bh=/T10fwFcswnv4wXG25SyhHCxP9YXE7aQuqnILjAFjvo=;
+	s=arc-20240116; t=1784756411; c=relaxed/simple;
+	bh=iO2C2TCzTYyoOfr+nBCShMJNsYZhomSajQ5SesrpfY0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RHgX/MDjys+6ZSHoWTW13CuBxtxYIKdR25gcWtDb6pEpByNlOLimqjcavgzj1bJGFXDGWTjGEvwNvvY8m4G27EwIBUa5prrjKAdTLQgtY0+7CdC4ceXGJ/56fb5CooQodS/9ECRn/IdnUcn+vTID97f11kUR73VwZRUyfnRoZ/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S1Dfi8Yy; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KRRY2kyb7/rnYYZa42/uTmhZzAze4zmKvFUHxXE69Qx6jdJIqqOLnULzd+QEOXWvRXI+8ChG68dMwof8qyAD8tGfKMJQyFwqX2bVm7z34Me+lmWPY76DAPEQSx5sObuYR6dRurtDMgaV+aOeZVZ8AKGdlhGGj8hDO530/JKaYXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G8hbSMwb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S1Dfi8Yy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7948E1F00A3F;
-	Wed, 22 Jul 2026 21:39:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G8hbSMwb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7134D1F00A3A;
+	Wed, 22 Jul 2026 21:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784756401;
-	bh=yWtHuqnTqW9SLdraO93l+DGah0VpZgdlob2IbGFczGM=;
+	s=k20260515; t=1784756405;
+	bh=05DcLXUDBODwTIC/vFQe4/Jl8OY9tG5M3Vtaqo3cTGI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=S1Dfi8YyEl6vyEKr83gS8maBJDojpNuLsez2F6xCXFPd9wfppENt0wP+Oor03fqkQ
-	 DgfrQMtlorzPtISyAqKmWwSuY8DXHp9xZdfonj/SYO9fzbml6TO/+O2g0/Nqxv22lE
-	 rumzQUoJmozPC9BkIW7g5Jl7Y+BBQ5gsgO8lDhsceTWV9mkP+TxIU7H4K7ThvYNrXR
-	 mT4bpemgptfKJgvpdsta6a20PRK0TZC/1GDiF4dsK6FDnDCRtvtFtCj+16E50hbRco
-	 kcIFATpABOo0hUdhuKunynEgrlMqEDaBxDRryANaSg6wZEvq66e+cJxH3Ig3g028wo
-	 3kDh+kVEkIqdQ==
+	b=G8hbSMwbhorpP8YW6MEw1xzEr2qN/8gxtpYyBUGh/eaMySTyxcshoFe9w/jvSvWtW
+	 I8lIoDXg3yO83foGab+2Vsr59WmDNU6UsnsU/NOdQh8Qc3FGUC9Hhijm27GEZ/6d1A
+	 t+fYoeb3xEjZunSXmICB3QIpJZyA7Rob9bOHNLYTpYHB3E8cYoQP2vecQ+NF6FPj7E
+	 6zhKHGH8VQu47v1eOLz2iUtUjfpKzOQOozHZf90kVIz6ai7YF9ON3BtHeL+hzWH++a
+	 vpoWV9LECDQWSU0WOq7BO5Dc7si6bFz2pVVo+c+GzmwIqNEF/+y3rR1w0hFXro2NgZ
+	 3jBXoJnYtSjtg==
 From: Will Deacon <will@kernel.org>
-To: robin.clark@oss.qualcomm.com,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	jroedel@suse.de,
-	Haoxiang Li <haoxiang_li2024@163.com>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bhargav Joshi <j.bhargav.u@gmail.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
 	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/qcom: Remove sysfs device on probe failure path
-Date: Wed, 22 Jul 2026 22:39:22 +0100
-Message-ID: <178472514942.2872651.16544710591935905775.b4-ty@kernel.org>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	goledhruva@gmail.com,
+	m-chawdhry@ti.com,
+	daniel.baluta@gmail.com,
+	simona.toaca@nxp.com
+Subject: Re: [PATCH v2] dt-bindings: iommu: ti,omap-iommu: Convert to DT schema
+Date: Wed, 22 Jul 2026 22:39:23 +0100
+Message-ID: <178472680334.2885136.1405870694545530359.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260623071245.1985938-1-haoxiang_li2024@163.com>
-References: <20260623071245.1985938-1-haoxiang_li2024@163.com>
+In-Reply-To: <20260708-ti-omap-iommu-v2-1-612d4a6644ba@gmail.com>
+References: <20260708-ti-omap-iommu-v2-1-612d4a6644ba@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,17 +58,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Tue, 23 Jun 2026 15:12:45 +0800, Haoxiang Li wrote:
-> In qcom_iommu_device_probe(), if iommu_device_register()
-> fails, the sysfs device created by iommu_device_sysfs_add()
-> is not released. Add a goto label to do the cleanup.
+On Wed, 08 Jul 2026 22:21:43 +0530, Bhargav Joshi wrote:
+> Convert Texas Instruments OMAP2+ IOMMU from text to DT schema. Make the
+> 'ti,hwmods' property optional and mark it deprecated as it is no longer
+> used, it is kept to support legacy dtbs.
 > 
 > 
 
-Applied to iommu (arm/smmu/updates), thanks!
+Applied to iommu (ti/omap), thanks!
 
-[1/1] iommu/qcom: Remove sysfs device on probe failure path
-      https://git.kernel.org/iommu/c/c579f18e7959
+[1/1] dt-bindings: iommu: ti,omap-iommu: Convert to DT schema
+      https://git.kernel.org/iommu/c/57f63e7082f6
 
 Cheers,
 -- 
