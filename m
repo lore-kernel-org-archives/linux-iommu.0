@@ -1,332 +1,132 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CAA32305670
-	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 17:35:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784741744; cv=none; b=DGXhpuEVcqaLaIwn4Y7CYTjstWLBw+c7TrZ7JjCMXnX9r90EVuo/MVX+mNkIiCUU703SLFqYuvHH7dDIWewVL7bHti+6/xsVWD61/EE55PTugs3D8vIZck5LxBLmH6zI1vd7LouRdKGLaK4pwUVC/gUdc2s3wt5q5uu5IktJX0s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784741744; c=relaxed/simple;
-	bh=Doh3mUJDYwOhvgHP9u0NtOQTz30+j1JyC4YJU4QzEok=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dNrJUzSE8Fo2qLsTvGzZpuiAvaP/AvTKB5qg3Qbk1d1/i5tI6JHCdhOyoCa3Ec37FcsK+IcjAlCg4J06oOn38gmNrADC/R/oOf3IotNMimCyPPX95n2wuBO8C6NUhd1CWg5548g99WFhaFDqTQPNm3gqVfu6VC9idJ1BBRm2qAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=kYPkqXIr; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011018.outbound.protection.outlook.com [52.101.57.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61A5470E88
+	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 19:03:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784747020; cv=fail; b=OTPEHfatJYbXsmITCtA/NwORq0ie7ibkEZN5OGvhZ1ZJCeLFtZcX6SjZbd+hOuJ8NfF48CkNGc/h5nv07QyURuiEKZuCDlSIJgCsq+xNI17dCgo5wr0bocsXPlo0ZWH2PvLRox7si+KKfJ4znCzGFLHYf4qcf0qFjbIM5wnL1Wk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784747020; c=relaxed/simple;
+	bh=engaHWERp9cX/gscSBpxDl0S9rv4LGVZCtHOYiG767U=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LLdd/Kas6BGCReMPbv3+I+tQlxA1q6CuON/UCw7oJLghwHwJVmTFiIzBefEjq5JR4kVR8eYBRqeh/YfNiw5L3GajWDFgCHZ9k8j8d7L1mRxjyPNufSMNMKX75Snxlpwumqp5DdkSR/r9paKIvzHZR9SugmYHU2OKE6q++O6+J0I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UowvK/OP; arc=fail smtp.client-ip=52.101.57.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="kYPkqXIr"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 029251595;
-	Wed, 22 Jul 2026 10:35:38 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A85363F66F;
-	Wed, 22 Jul 2026 10:35:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1784741742; bh=Doh3mUJDYwOhvgHP9u0NtOQTz30+j1JyC4YJU4QzEok=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=kYPkqXIr1auHkNWCpSBNQDVNj+PB1720mOK5x76sWN7ylhnlVrAUTp2kbyfEJAPYF
-	 uqCWbOlwsofejB7FFzlLJS8ZxfCe+wID6Y6/YGOxLoPUcaN2GvmnlsVbK9FJCryxRQ
-	 VJOi6QVdckLRe7KZ8KzUJRuSfw76ppKSvzNT9vvI=
-Message-ID: <8a2073d3-b65f-4ba9-b784-7414002965e2@arm.com>
-Date: Wed, 22 Jul 2026 18:35:37 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UowvK/OP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wniiWiFSfBmzPCBjjUK4gKPwpePlO1avKT5jZ/tgW99kXBhvYIZQSOyZf0zbP7oWHWIbAeQgDPh4BkMNOlpweA0k9tXi8kwICLswdy2u8ngqZsz1VA13hr3ttAPW3Dhk1TLHBpFqzNkDZrZ/GdgWyNeXjFakR9/POCYLYKow/FSR8O0fwz8sq1Mrox8/x9O41ufRcCz+U8KkdTpTFBHxtilXe5BSlPEygul4WxzbVw4VMdNh5Uj2HWMdZ8f+sYT1RXO1LHvvZW8svjn1Hlub1KUT65ojj10f9xIL55GJ0meB3m/QT2OFX5BoBHUWUP+fblNnq8L9yvdA790F/aGF0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5KicxVulK3HqmHrROj2ARhu8cuKUS1FsISSK81263eY=;
+ b=TLum72O6HvyC/AvaMi/VGj/k0wKqpJwOj/ltGTxS+5FztrNsF4oRbfrlo9ekWR0yeZFqAA22Ce35IrYNakOI3zTd3c+zxBthvZrKK+TBavL/gd51gR8MwBCCI3l/lbMQxYwVE4deyCnrg8Zu2ncPUURFKQPZKeDN+LiIesLyHAE7aPPRj+AuRebu+B4BqHZIyyoF21g7mGHy4pezcTmzF91XP/HAFRvxAsTpa0kN0JwaU0qGyTk8kDnBLP85vEIBxxKCxu4Ta2pTURd2WyUdDYhvzw5gyLEwYKX9FHvy6OF8JcFl9ulTMC/w8MebuNuIgWHUdsULVXi119S9saeeuw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5KicxVulK3HqmHrROj2ARhu8cuKUS1FsISSK81263eY=;
+ b=UowvK/OPqtivwpD74pxtRzuRkEn6J9yibrjEeJaRzMaX4TlCct1r+ru/sSHmXopkn2mYQuLw3VbqfZ757Z70OtouxetQGJ55BkoUJ9gtVAtVyF9n33YTVmRtk4G8ruBESN2bILoOJ3AiqLPDG5BSQYnOa5DotegjzwOEiFnyg1Wc5KCkV3EfIl1MmWS2I+e93nDYxD62IBJZy23AFS8iJ/nhj/v4aYYLPo1noymkMwhKkWE7IIU1yLk5gNTRbkyLs2HMjsixGiBxe9Rm5RwMF/PYTL0Pya745t3+idnVGnViAwuFvVK3wxvY/1Wk18F0xdLWuYTULSyxr2L2d2aA+A==
+Received: from SJ0PR13CA0106.namprd13.prod.outlook.com (2603:10b6:a03:2c5::21)
+ by SN7PR12MB7204.namprd12.prod.outlook.com (2603:10b6:806:2ab::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.10; Wed, 22 Jul
+ 2026 19:03:28 +0000
+Received: from SJ1PEPF000026C5.namprd04.prod.outlook.com
+ (2603:10b6:a03:2c5:cafe::8e) by SJ0PR13CA0106.outlook.office365.com
+ (2603:10b6:a03:2c5::21) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.10 via Frontend Transport; Wed,
+ 22 Jul 2026 19:03:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ1PEPF000026C5.mail.protection.outlook.com (10.167.244.102) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.245.5 via Frontend Transport; Wed, 22 Jul 2026 19:03:28 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 22 Jul
+ 2026 12:03:00 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 22 Jul
+ 2026 12:03:00 -0700
+Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Wed, 22 Jul 2026 12:02:59 -0700
+Date: Wed, 22 Jul 2026 12:02:58 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Ashish Mhetre <amhetre@nvidia.com>
+CC: <catalin.marinas@arm.com>, <will@kernel.org>, <corbet@lwn.net>,
+	<skhan@linuxfoundation.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<jgg@ziepe.ca>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <linux-tegra@vger.kernel.org>, Jason Gunthorpe
+	<jgg@nvidia.com>
+Subject: Re: [PATCH v8 2/3] iommu/arm-smmu-v3: Introduce CFGI/TLBI-repeat
+ workaround infrastructure
+Message-ID: <amETqr7ZBtgt2DKu@nvidia.com>
+References: <20260722102033.1122277-1-amhetre@nvidia.com>
+ <20260722102033.1122277-3-amhetre@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iommu/rockchip: Drop global rk_ops in favor of
- per-device ops
-To: Simon Xue <xxm@rock-chips.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Heiko Stuebner <heiko@sntech.de>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260722073511.403252-1-xxm@rock-chips.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260722073511.403252-1-xxm@rock-chips.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260722102033.1122277-3-amhetre@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C5:EE_|SN7PR12MB7204:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f23fddd-d67c-4d7a-7140-08dee823ea18
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|23010399003|36860700016|22082099003|18002099003|11063799006|10067099003|56012099006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	v9Fjq+3Gku4JNpMuypQ9962zCf31x3T0R4Cb2MUBpGgi8zjSr1WfDLxoUjKgAqfXi8JWxo1jbhKleXf0bjdGtUZcGXg1+gEGR3yPpwgT5WjU8ajqY/lFtayoDrAt4dnqKvj5iZP+SGdvfyqSmK47bDcpdmCf1b2nznon+TFQ3T7yeK9QpBOXammnb70N9DzIOSih6igBdATpH6O/7aROq9HXvbXFRneBCeWwtqFF6GtsYNVdAwbb07tCX6Omirtmz97KxR3gbgkgM45FV+E89HDUwtnc/WF9p30HcsTij/r1KZsOp2++4wceKi4n0fCa57SMebx3bG+q9lBE034ZpHMiNmW4j9OR4g/xGcJVQEIICt7JZ++K0KE/glZNH5JeFdY9FajvMNOb4vTRuaDzrcqWqwWfexEDA1ILPLctk6pYxeR2dL40SpYuGZjSwa0ThlLltZG82CLtQpJTAnEvrOVdJ9OE5dpAO6zI6lXUtl/ezXYdo9Tyb6bo4Ro93rFeIKZAIornqX3gQRQc13HK6e+bo1t6dQGnC22870oYXJe38PtGGnkmQaFVaTuvd5OXA4HjHYbYXmNN1z9MOw2i2stAZR/t4Qrk3KooxLULjTnP1eYa4X5+ce8ol3wWkWqsUi7vwWqbhjr0Sj0Shl10j5Wn91xkQGnBkPqRH+GL/7i1JpwPQWF2tNAKXv/5L7zb+VwMeKMnk09RWpjjvfI2HA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(23010399003)(36860700016)(22082099003)(18002099003)(11063799006)(10067099003)(56012099006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	J4Jp6cdtqM7XZx+htLaP5Juh2BvsN5SiNSbPa5/7JHRDGo8TNfaO+oNlHaheqKAx9EaWVpPt67Ro6F0srqR+85a+MdKh35LEttKWklu+Udjf+5IDvf4kEBjhdHZbm3jvCajD6vprBjKbd+UYjCf5zwqJQkGaUF4uYjUeGT8y9lCY6SvnmZw6y1tblmu43sijZOUlWUMP2uBpV2H9g07DmfYF3tyD1vdwnQiSCWFaS23rWRBYkXqVy9zBzmtGDM/20D+ZEsf+ubUmk1GhMDgLS8D1buTgjqX3cyQPibkr+ALRHq6Bp1cpfixlBmuG0Shfgfbj8RMqsqMrzudPCM5nkKFcRZhIzONges9AtoLjj9BCGVRMNhdmWrl3bryQFRR2Bj98uhFfmJEUX+gQWPqLVieksHzr0RgdOAPwtv9uRp3feqcLAXgbNz75iZewGYna
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2026 19:03:28.1853
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f23fddd-d67c-4d7a-7140-08dee823ea18
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF000026C5.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7204
 
-On 22/07/2026 8:35 am, Simon Xue wrote:
-> The driver currently uses a global rk_ops pointer, forcing all IOMMU
-> instances to share the same operations. This restricts the driver from
-> supporting SoCs that might integrate different versions of IOMMU hardware.
-> 
-> Since the IOMMU framework passes the master device information to
-> iommu_paging_domain_alloc(), the global variable is no longer needed.
-> 
-> Fix this by moving rk_ops into struct rk_iommu and struct rk_iommu_domain.
-> Initialize it per-device during probe via of_device_get_match_data(),
-> and replace all global references with the instance-specific pointers.
+On Wed, Jul 22, 2026 at 10:20:32AM +0000, Ashish Mhetre wrote:
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index c909c9a88538..9508bf50d14c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -1207,10 +1207,15 @@ void arm_smmu_attach_commit(struct arm_smmu_attach_state *state);
+>  int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+>  				struct arm_smmu_cmdq *cmdq,
+>  				struct arm_smmu_cmd *cmds, int n,
+>  				bool sync);
+> +bool arm_smmu_erratum_cmd_needs_repeating(struct arm_smmu_cmd *cmd);
+ 
+Is this needed?
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: Simon Xue <xxm@rock-chips.com>
-> ---
-> v3:
->   - Restore rk_ops compatibility check, moved into rk_iommu_attach_device()
-> v2:
->   - Remove the one-time-used 'ops' variable in rk_iommu_probe()
-> 
->   drivers/iommu/rockchip-iommu.c | 74 +++++++++++++++++-----------------
->   1 file changed, 36 insertions(+), 38 deletions(-)
-> 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 0013cf196c57..7d1642366b8b 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -82,6 +82,14 @@
->     */
->   #define RK_IOMMU_PGSIZE_BITMAP 0x007ff000
->   
-> +struct rk_iommu_ops {
-> +	phys_addr_t (*pt_address)(u32 dte);
-> +	u32 (*mk_dtentries)(dma_addr_t pt_dma);
-> +	u32 (*mk_ptentries)(phys_addr_t page, int prot);
-> +	u64 dma_bit_mask;
-> +	gfp_t gfp_flags;
-> +};
-> +
->   struct rk_iommu_domain {
->   	struct list_head iommus;
->   	u32 *dt; /* page directory table */
-> @@ -89,6 +97,7 @@ struct rk_iommu_domain {
->   	spinlock_t iommus_lock; /* lock for iommus list */
->   	spinlock_t dt_lock; /* lock for modifying page directory table */
->   	struct device *dma_dev;
-> +	const struct rk_iommu_ops *rk_ops;
->   
->   	struct iommu_domain domain;
->   };
-> @@ -98,14 +107,6 @@ static const char * const rk_iommu_clocks[] = {
->   	"aclk", "iface",
->   };
->   
-> -struct rk_iommu_ops {
-> -	phys_addr_t (*pt_address)(u32 dte);
-> -	u32 (*mk_dtentries)(dma_addr_t pt_dma);
-> -	u32 (*mk_ptentries)(phys_addr_t page, int prot);
-> -	u64 dma_bit_mask;
-> -	gfp_t gfp_flags;
-> -};
-> -
->   struct rk_iommu {
->   	struct device *dev;
->   	void __iomem **bases;
-> @@ -117,6 +118,7 @@ struct rk_iommu {
->   	struct iommu_device iommu;
->   	struct list_head node; /* entry in rk_iommu_domain.iommus */
->   	struct iommu_domain *domain; /* domain to which iommu is attached */
-> +	const struct rk_iommu_ops *rk_ops;
->   };
->   
->   struct rk_iommudata {
-> @@ -124,7 +126,6 @@ struct rk_iommudata {
->   	struct rk_iommu *iommu;
->   };
->   
-> -static const struct rk_iommu_ops *rk_ops;
->   static struct iommu_domain rk_identity_domain;
->   
->   static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
-> @@ -510,7 +511,7 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
->   	 * and verifying that upper 5 (v1) or 7 (v2) nybbles are read back.
->   	 */
->   	for (i = 0; i < iommu->num_mmu; i++) {
-> -		dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
-> +		dte_addr = iommu->rk_ops->pt_address(DTE_ADDR_DUMMY);
->   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
->   
->   		if (dte_addr != rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR)) {
-> @@ -551,7 +552,7 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
->   	page_offset = rk_iova_page_offset(iova);
->   
->   	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
-> -	mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
-> +	mmu_dte_addr_phys = iommu->rk_ops->pt_address(mmu_dte_addr);
->   
->   	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
->   	dte_addr = phys_to_virt(dte_addr_phys);
-> @@ -560,14 +561,14 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
->   	if (!rk_dte_is_pt_valid(dte))
->   		goto print_it;
->   
-> -	pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
-> +	pte_addr_phys = iommu->rk_ops->pt_address(dte) + (pte_index * 4);
->   	pte_addr = phys_to_virt(pte_addr_phys);
->   	pte = *pte_addr;
->   
->   	if (!rk_pte_is_page_valid(pte))
->   		goto print_it;
->   
-> -	page_addr_phys = rk_ops->pt_address(pte) + page_offset;
-> +	page_addr_phys = iommu->rk_ops->pt_address(pte) + page_offset;
->   	page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
->   
->   print_it:
-> @@ -663,13 +664,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
->   	if (!rk_dte_is_pt_valid(dte))
->   		goto out;
->   
-> -	pt_phys = rk_ops->pt_address(dte);
-> +	pt_phys = rk_domain->rk_ops->pt_address(dte);
->   	page_table = (u32 *)phys_to_virt(pt_phys);
->   	pte = page_table[rk_iova_pte_index(iova)];
->   	if (!rk_pte_is_page_valid(pte))
->   		goto out;
->   
-> -	phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
-> +	phys = rk_domain->rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
->   out:
->   	spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
->   
-> @@ -730,7 +731,7 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
->   	if (rk_dte_is_pt_valid(dte))
->   		goto done;
->   
-> -	page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_ops->gfp_flags,
-> +	page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_domain->rk_ops->gfp_flags,
->   					  SPAGE_SIZE);
->   	if (!page_table)
->   		return ERR_PTR(-ENOMEM);
-> @@ -742,13 +743,13 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
->   		return ERR_PTR(-ENOMEM);
->   	}
->   
-> -	dte = rk_ops->mk_dtentries(pt_dma);
-> +	dte = rk_domain->rk_ops->mk_dtentries(pt_dma);
->   	*dte_addr = dte;
->   
->   	rk_table_flush(rk_domain,
->   		       rk_domain->dt_dma + dte_index * sizeof(u32), 1);
->   done:
-> -	pt_phys = rk_ops->pt_address(dte);
-> +	pt_phys = rk_domain->rk_ops->pt_address(dte);
->   	return (u32 *)phys_to_virt(pt_phys);
->   }
->   
-> @@ -790,7 +791,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
->   		if (rk_pte_is_page_valid(pte))
->   			goto unwind;
->   
-> -		pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
-> +		pte_addr[pte_count] = rk_domain->rk_ops->mk_ptentries(paddr, prot);
->   
->   		paddr += SPAGE_SIZE;
->   	}
-> @@ -812,7 +813,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
->   			    pte_count * SPAGE_SIZE);
->   
->   	iova += pte_count * SPAGE_SIZE;
-> -	page_phys = rk_ops->pt_address(pte_addr[pte_count]);
-> +	page_phys = rk_domain->rk_ops->pt_address(pte_addr[pte_count]);
->   	pr_err("iova: %pad already mapped to %pa cannot remap to phys: %pa prot: %#x\n",
->   	       &iova, &page_phys, &paddr, prot);
->   
-> @@ -849,7 +850,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
->   	pte_index = rk_iova_pte_index(iova);
->   	pte_addr = &page_table[pte_index];
->   
-> -	pte_dma = rk_ops->pt_address(dte_index) + pte_index * sizeof(u32);
-> +	pte_dma = rk_domain->rk_ops->pt_address(dte_index) + pte_index * sizeof(u32);
->   	ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
->   				paddr, size, prot);
->   
-> @@ -887,7 +888,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
->   		return 0;
->   	}
->   
-> -	pt_phys = rk_ops->pt_address(dte);
-> +	pt_phys = rk_domain->rk_ops->pt_address(dte);
->   	pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
->   	pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
->   	unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma, size);
-> @@ -945,7 +946,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->   
->   	for (i = 0; i < iommu->num_mmu; i++) {
->   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
-> -			       rk_ops->mk_dtentries(rk_domain->dt_dma));
-> +			       iommu->rk_ops->mk_dtentries(rk_domain->dt_dma));
->   		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
->   		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
->   	}
-> @@ -1027,6 +1028,9 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
->   	if (iommu->domain == domain)
->   		return 0;
->   
-> +	if (rk_domain->rk_ops != iommu->rk_ops)
-> +		return -EINVAL;
-> +
->   	ret = rk_iommu_identity_attach(&rk_identity_domain, dev, old);
->   	if (ret)
->   		return ret;
-> @@ -1068,17 +1072,19 @@ static struct iommu_domain *rk_iommu_domain_alloc_paging(struct device *dev)
->   	if (!rk_domain)
->   		return NULL;
->   
-> +	iommu = rk_iommu_from_dev(dev);
-> +	rk_domain->rk_ops = iommu->rk_ops;
-> +
->   	/*
->   	 * rk32xx iommus use a 2 level pagetable.
->   	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
->   	 * Allocate one 4 KiB page for each table.
->   	 */
-> -	rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | rk_ops->gfp_flags,
-> +	rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | rk_domain->rk_ops->gfp_flags,
->   					     SPAGE_SIZE);
->   	if (!rk_domain->dt)
->   		goto err_free_domain;
->   
-> -	iommu = rk_iommu_from_dev(dev);
->   	rk_domain->dma_dev = iommu->dev;
->   	rk_domain->dt_dma = dma_map_single(rk_domain->dma_dev, rk_domain->dt,
->   					   SPAGE_SIZE, DMA_TO_DEVICE);
-> @@ -1117,7 +1123,7 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
->   	for (i = 0; i < NUM_DT_ENTRIES; i++) {
->   		u32 dte = rk_domain->dt[i];
->   		if (rk_dte_is_pt_valid(dte)) {
-> -			phys_addr_t pt_phys = rk_ops->pt_address(dte);
-> +			phys_addr_t pt_phys = rk_domain->rk_ops->pt_address(dte);
->   			u32 *page_table = phys_to_virt(pt_phys);
->   			dma_unmap_single(rk_domain->dma_dev, pt_phys,
->   					 SPAGE_SIZE, DMA_TO_DEVICE);
-> @@ -1197,7 +1203,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   	struct device *dev = &pdev->dev;
->   	struct rk_iommu *iommu;
->   	struct resource *res;
-> -	const struct rk_iommu_ops *ops;
->   	int num_res = pdev->num_resources;
->   	int err, i;
->   
-> @@ -1211,16 +1216,9 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   	iommu->dev = dev;
->   	iommu->num_mmu = 0;
->   
-> -	ops = of_device_get_match_data(dev);
-> -	if (!rk_ops)
-> -		rk_ops = ops;
-> -
-> -	/*
-> -	 * That should not happen unless different versions of the
-> -	 * hardware block are embedded the same SoC
-> -	 */
-> -	if (WARN_ON(rk_ops != ops))
-> -		return -EINVAL;
-> +	iommu->rk_ops = of_device_get_match_data(dev);
-> +	if (!iommu->rk_ops)
-> +		return -ENOENT;
->   
->   	iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
->   				    GFP_KERNEL);
-> @@ -1286,7 +1284,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   			goto err_pm_disable;
->   	}
->   
-> -	dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
-> +	dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
->   
->   	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
->   	if (err)
-
+Nicolin
