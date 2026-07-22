@@ -1,54 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED6443F4C3;
-	Wed, 22 Jul 2026 21:40:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42ECB43CE6D;
+	Wed, 22 Jul 2026 21:40:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784756411; cv=none; b=dt7c+kJoZXQwNLwidivV2KXh3aJwZYdiQsdksP3XSqTrozUnruWnsLPJ/riN0h/mIkqrQBd9gjfanKtt0kJtk1mlO6S2BD4pb9sAIGiY/+wizNuNUmdXjUwun3YzO0k6OppuFanFfkp9+YTwIBJ16Q5jvqksgd3tqMcCSMp/oLA=
+	t=1784756414; cv=none; b=tdrl7gAEgt5K/sdrxTNC8jd+JBZDHsNyn90IcFsHp8zIAvcdwftgDPKI0y+asij6stVLLTUXFuWNtUSH8KE0ow6GkeDX8cCZw0IQNMDmtlEAEK9NAlPTk4j6VMFnOeIkAgMmkRaqi77Fq11Qc7nGpoXbDojb6ViVMVNVpPaA09M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784756411; c=relaxed/simple;
-	bh=iO2C2TCzTYyoOfr+nBCShMJNsYZhomSajQ5SesrpfY0=;
+	s=arc-20240116; t=1784756414; c=relaxed/simple;
+	bh=w5Ag+iM/cYHWn8rDgwEBXQtG92U3dJRuvwOAsj9HR4o=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KRRY2kyb7/rnYYZa42/uTmhZzAze4zmKvFUHxXE69Qx6jdJIqqOLnULzd+QEOXWvRXI+8ChG68dMwof8qyAD8tGfKMJQyFwqX2bVm7z34Me+lmWPY76DAPEQSx5sObuYR6dRurtDMgaV+aOeZVZ8AKGdlhGGj8hDO530/JKaYXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G8hbSMwb; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=t2JDja/jgZKeASlwDmeiWoL20awbaQEOSnd5u1GCKQxq1ZUShhWpV8dBAHKWKRn0bX4LSiZzrfG5IcVoNQT3NgFDYlBLNjW4pZMLdjl7FFcZHIgmI7YcseOx9EI2IvfUbPuLzwwyi/pAy7hy8M65aAXYQjr2gRLogorfBiHFiTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GRFVJwQU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G8hbSMwb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7134D1F00A3A;
-	Wed, 22 Jul 2026 21:40:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GRFVJwQU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 252371F000E9;
+	Wed, 22 Jul 2026 21:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784756405;
-	bh=05DcLXUDBODwTIC/vFQe4/Jl8OY9tG5M3Vtaqo3cTGI=;
+	s=k20260515; t=1784756409;
+	bh=2G9r8fYaB8St4kBB8vENlcvsH0RfySNRNVJF+kfQiu4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=G8hbSMwbhorpP8YW6MEw1xzEr2qN/8gxtpYyBUGh/eaMySTyxcshoFe9w/jvSvWtW
-	 I8lIoDXg3yO83foGab+2Vsr59WmDNU6UsnsU/NOdQh8Qc3FGUC9Hhijm27GEZ/6d1A
-	 t+fYoeb3xEjZunSXmICB3QIpJZyA7Rob9bOHNLYTpYHB3E8cYoQP2vecQ+NF6FPj7E
-	 6zhKHGH8VQu47v1eOLz2iUtUjfpKzOQOozHZf90kVIz6ai7YF9ON3BtHeL+hzWH++a
-	 vpoWV9LECDQWSU0WOq7BO5Dc7si6bFz2pVVo+c+GzmwIqNEF/+y3rR1w0hFXro2NgZ
-	 3jBXoJnYtSjtg==
+	b=GRFVJwQUBcgIyLolEYyvXJuKd3lKIxn9edV9NAE2+3Fe4+Z+GtuDjBP0XkgwUDNc6
+	 iEZnKI3p3194E9CeZWpkJGoc/ffJoduQa5ntardIArgzrEtAB78EvLZvGxIJHPpptC
+	 01EvEELLoqDIdBbO+DsulNqnyfe16P7b15ZjzUIzzs9zaLrtapuq6RZB9vfl+IF5pI
+	 CGyIURFRjaw1EfLTCFEJd4l9tpYxzaK5fsVhH2zUxItNOY+SUTGjUlf039LCNDjQ0w
+	 AhBBCoEX6k4eZa1xYaSjZiTd6r7BJrcvi1ZZmlUyrQUpbqkhO5pLOCjSZYBT9DRbIm
+	 LZHN3HzH7EEgA==
 From: Will Deacon <will@kernel.org>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
+To: Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Bhargav Joshi <j.bhargav.u@gmail.com>
+	Jingyi Wang <jingyi.wang@oss.qualcomm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
+	aiqun.yu@oss.qualcomm.com,
+	tingwei.zhang@oss.qualcomm.com,
+	trilok.soni@oss.qualcomm.com,
+	yijie.yang@oss.qualcomm.com,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	goledhruva@gmail.com,
-	m-chawdhry@ti.com,
-	daniel.baluta@gmail.com,
-	simona.toaca@nxp.com
-Subject: Re: [PATCH v2] dt-bindings: iommu: ti,omap-iommu: Convert to DT schema
-Date: Wed, 22 Jul 2026 22:39:23 +0100
-Message-ID: <178472680334.2885136.1405870694545530359.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] dt-bindings: arm-smmu: qcom: Add compatible for Maili SoC
+Date: Wed, 22 Jul 2026 22:39:24 +0100
+Message-ID: <178472685795.2885692.14366470703772895331.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260708-ti-omap-iommu-v2-1-612d4a6644ba@gmail.com>
-References: <20260708-ti-omap-iommu-v2-1-612d4a6644ba@gmail.com>
+In-Reply-To: <20260703-maili-smmu-v3-1-b48de6f5ae4a@oss.qualcomm.com>
+References: <20260703-maili-smmu-v3-1-b48de6f5ae4a@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,17 +59,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 08 Jul 2026 22:21:43 +0530, Bhargav Joshi wrote:
-> Convert Texas Instruments OMAP2+ IOMMU from text to DT schema. Make the
-> 'ti,hwmods' property optional and mark it deprecated as it is no longer
-> used, it is kept to support legacy dtbs.
+On Fri, 03 Jul 2026 00:50:33 -0700, Jingyi Wang wrote:
+> Qualcomm Maili SoC includes apps smmu that implements arm,mmu-500,
+> which is used to translate device-visible virtual addresses to
+> physical addresses. Add compatible for it.
 > 
 > 
 
-Applied to iommu (ti/omap), thanks!
+Applied to iommu (arm/smmu/bindings), thanks!
 
-[1/1] dt-bindings: iommu: ti,omap-iommu: Convert to DT schema
-      https://git.kernel.org/iommu/c/57f63e7082f6
+[1/1] dt-bindings: arm-smmu: qcom: Add compatible for Maili SoC
+      https://git.kernel.org/iommu/c/7b97226bfb4f
 
 Cheers,
 -- 
