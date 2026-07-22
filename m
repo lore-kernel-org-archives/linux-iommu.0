@@ -1,171 +1,383 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010018.outbound.protection.outlook.com [40.93.198.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-37.ptr.blmpb.com (va-2-37.ptr.blmpb.com [209.127.231.37])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F15B5385509
-	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 09:18:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784711897; cv=fail; b=FhbL0vdXnQVwRsaIlRmbhif1FNo6vOi0+0Ffe84so/rEuHXw4Lwbny1U5OJ/Rx3qS0nyMfEPNfgs/rXjrc3GmP0L26Oh0RuKxFyKAggnzz392OZPNKgkDne+TCnA3cM62paBQSJTV554mUzcJeuQrQ+Kb5BCDllVbuP1QuYpEgc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784711897; c=relaxed/simple;
-	bh=tzKpX0XJuJtOO9HEPXILZzjZ5+zqxzBxfABjq2xMEUg=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=i5Go7C5a6S+xWoTYzKN0IKYxCMIYou+NA0ahaPnd9WQELbL0yQBy94QAdvdvtCeKwEiFbS8XWWZtqFlgyNN/7hbhwLoY8LZ5EOn9vnr/FEG1mOOaKepm/4wzUqWJdkzK9v2K/OmTFg1wc/QlNE+EkhwGIvsdnuC9UIM9l/dTotk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=a6NNjWDQ; arc=fail smtp.client-ip=40.93.198.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 372D93C09F4
+	for <iommu@lists.linux.dev>; Wed, 22 Jul 2026 09:32:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.37
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784712778; cv=none; b=kwPBLZXFY/KPqF9KjNtbsFN4MoP3UznuN/9sDKihQ5SGk9rcnicp9dNbkVEC7RKJvIqDvsGLF2Ilm6xoL5QcGiw6eJecvKH4SBY3NfSn/aeH05QWfYkz7Qg3mtTCrSmCNpozmcQ+ry+oQOgp78TQ+RTQaS6zBHZHk7AyTO6LtY0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784712778; c=relaxed/simple;
+	bh=+0hIzfumEyhl/39sYSf7qDn1J7KlgOrXQ788oZX6+ls=;
+	h=Message-Id:In-Reply-To:Subject:Content-Type:Cc:From:Mime-Version:
+	 References:To:Date; b=PQodCgkQHAI/DeNgh4LSkZtT5bjJJ0M/CBWySmc+RlIvWbagqb5g81V9DQvXYTRv8O0APTnWdgtEzcC98KjjTM08q7ZNxa3kypP+RNvCloligtb1p/XNRoDaqgRn1XOEK1mUpnchLd9dQdF7HoMl7HxDMvf50cEvHlklQU98xOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=F/VJsXUb; arc=none smtp.client-ip=209.127.231.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="a6NNjWDQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KZm4bMPycPeAEPL887jbeRYB+4mLridaNifeVutDP030f66Z531dvEOnEHOIwfOif8QqU1aaHfHmATHuM0RDh3mFHuDqkcB7E5Kl7/0nrGu08pQ9SYfaSn32G4VRhzJvKqshbC4+REAQjtFmb9KGOReaZRId8Du9p2F0UdZ/y2ZE4S4tqj0rJjH38t5qGxUOBKD9nrNieZi53Kx9XO6i3LHHpGR93tOn3Aeq1jQcF5G+dNUkZJRdpLd+JH1uW1VcrmZi845NcXLcnHJJC5VMBeQDDH7Swu73IebcTq5rlKjTCjnBmnqOhivm7/9YLH1Pdyeq74NG6pIMn8IyHYPKTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=getyTihLNPxCpwGeRLn5Tr/nocJFCUyLOXjr2RMPKGs=;
- b=naEDCCkxRCBbhKxCmdNKSCY6BthRcuecDOhms5/+joAHADrvI7pFnMLOpLUhQcQ6xYwLhMBK32vVrGCd/MW1YEqaF4sLFhPz5rpQJPCErdAX38ydJQNtygGxDnb/fQJoZz7DDxRi9nAIx7LM6JLxpR4rvvdju2ac/GAYAPWAxTr5xmm4/H5T42KJRANi1AAVRmu1jKrJZAaMgmtJrGWRC9MsL/je39syqvDBPbVAywonxW2ygY9Jg6IgErSKBSIxjmllqjhlAdYjvqURY9LMvlThAeCM2F+9ozukteIwH6J39fFwC0PkKGontlpfd1EDiF7ByIN/H2IstBEdm02bow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=getyTihLNPxCpwGeRLn5Tr/nocJFCUyLOXjr2RMPKGs=;
- b=a6NNjWDQmJhSgftXfzDzRk8oi9c6dvwDqALIhnkbq1lTR7TYlZaZ7LlBtqlv85TdomwXCHbPWbKPEKFO1MNzcpCgCHMu5ofRj65pUe23VROy3TLTbzc1H5LhjhmifrX0sRuT27RHSRMSe9WqvpWiK/7ynSSjZlsnVwvFDubhIPh7azLygZGnZkVDy7JHHOlMwb28XNcs9u1eZACNtcaWMwKTcRy7ud66dGi+DGY4/0LSTUEF+WS/wenb70OoOF//HfANSttHLi+EHtoiEf//PAt4ad86eOopMSwLg21zU8QQIR8sGSdBKy2/9hCn3HqL5V5xcVvnYZvgWBiR6Q9UUQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BN5PR12MB9511.namprd12.prod.outlook.com (2603:10b6:408:2a9::14)
- by DS0PR12MB7557.namprd12.prod.outlook.com (2603:10b6:8:130::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.10; Wed, 22 Jul
- 2026 09:18:11 +0000
-Received: from BN5PR12MB9511.namprd12.prod.outlook.com
- ([fe80::4d8d:5f91:6c3c:dc8c]) by BN5PR12MB9511.namprd12.prod.outlook.com
- ([fe80::4d8d:5f91:6c3c:dc8c%4]) with mapi id 15.21.0245.009; Wed, 22 Jul 2026
- 09:18:11 +0000
-Message-ID: <f7cff418-0849-4c58-8d3e-1ce8e1ca1134@nvidia.com>
-Date: Wed, 22 Jul 2026 14:48:02 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/3] iommu/arm-smmu-v3: Introduce CFGI/TLBI-repeat
- workaround infrastructure
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: catalin.marinas@arm.com, will@kernel.org, corbet@lwn.net,
- skhan@linuxfoundation.org, robin.murphy@arm.com, joro@8bytes.org,
- linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-tegra@vger.kernel.org
-References: <20260714104202.1664187-1-amhetre@nvidia.com>
- <20260714104202.1664187-3-amhetre@nvidia.com>
- <20260717201841.GC701389@ziepe.ca> <alqbxaKVYFX1BZR5@nvidia.com>
- <20260718164548.GI701389@ziepe.ca> <al01gEzqzCO8KqTO@nvidia.com>
+	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="F/VJsXUb"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604151535; d=picoheart.com; t=1784712764; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=1Kqyi0ysuYpmgHmrFixSzvfimSePy8nS2aJGtglB4pI=;
+ b=F/VJsXUbRbZdigPC+My6D3MtWYjYOUhK6wTxCKsqzrpTE2OFRUb3JfKrQKebauwebbr/lc
+ 5E+pZSlJS7dPxk39EE+fwGlm2EVcAdGl58Kmz9jf2+R/fB0BF3BXrbdfK2qcNK3rX06z9Q
+ epxQrO44Fdu8hDbDv0VLqWTR2S2tqUbHylrTQeTifHWOIX+e02OHmmZz/MlsMFeMhbvwtH
+ WqzLbnBNCIeNBz9u4FodoPVdr3dSfk7DIotTV3r/0mzg2Kz7C6Y8oxXTrvuYW5llwwE0kw
+ OL5zmXAzCrxaKPp23i5gO8hTEwIqCBPpAivNqErePrf+ezrXjlXCfWnyRZDd6Q==
 Content-Language: en-US
-From: Ashish Mhetre <amhetre@nvidia.com>
-In-Reply-To: <al01gEzqzCO8KqTO@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0073.namprd03.prod.outlook.com
- (2603:10b6:a03:331::18) To BN5PR12MB9511.namprd12.prod.outlook.com
- (2603:10b6:408:2a9::14)
+Message-Id: <47de2c31-04e0-4095-84a2-81e18b5fc855@picoheart.com>
+In-Reply-To: <CANXhq0o1t5D76pscjqHteLjGJB4Z2iSS1a=o0+JCjKQtdPJ+vQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+X-Lms-Return-Path: <lba+26a608e3a+c94ec9+lists.linux.dev+yang.yicong@picoheart.com>
+Content-Type: text/plain; charset=UTF-8
+Cc: <yang.yicong@picoheart.com>, <tjeznach@rivosinc.com>, <joro@8bytes.org>, 
+	<will@kernel.org>, <robin.murphy@arm.com>, <pjw@kernel.org>, 
+	<palmer@dabbelt.com>, <aou@eecs.berkeley.edu>, <alex@ghiti.fr>, 
+	<mark.rutland@arm.com>, <andrew.jones@oss.qualcomm.com>, 
+	<guoren@kernel.org>, <david.laight.linux@gmail.com>, 
+	<zhangzhanpeng.jasper@bytedance.com>, <iommu@lists.linux.dev>, 
+	<linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>, 
+	<linux-perf-users@vger.kernel.org>
+From: "Yicong Yang" <yang.yicong@picoheart.com>
+X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN5PR12MB9511:EE_|DS0PR12MB7557:EE_
-X-MS-Office365-Filtering-Correlation-Id: 97b8f259-3c54-4009-b448-08dee7d2269b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|7416014|18002099003|22082099003|3023799007|4143699003|10067099003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	sfmG6rJURq7KpvsLMFtL1N91PRcvd9upuqIsXXi95GH/V7mwr/1c5DvKon+Eq+m/QMm7BZ2ij6y+Y+mnrnc8p3/y5cbwgd+o0uONhDB/z3ycJS2RFZt3EkxAdYsObkoeIXpssTAgqed4vWhxJtyv2azluSNSd9QXOadOXqyQ/SasA1yv1OJ4zOnWMl/iGnlAObdv4QDIBgZqHabto4K8WEh6/E8IkyPHzyt0Mp0yJdvGIFil6uu0+XTOxrKKSuQQJbj6gm+XdhlywSXHAO+lXFz8Ad7ma76MzbqoxJfmjTwj33zKJrvoDlc2xjduFJD9lZSFRnorZAK5EEeAKi6TzplEW3Oxi8I18N42piy1X48cm3pbiKP0Fad/uTb42jrPk7nzRfG/e/Qd8ekiYCi+BBSsrGgO233556xjYc0HQJuaEZvW9q8wUI90rcQ9QSo33Fkb58xMEuZ2Jx98mP8nozeKeQLEVm4QsT94rQdPqbAGuY0QnyqIkzSaVCI7NOjsyRFMTkqmpZ2X/XdvCQNQbeoXdbzdjXlAcxigitK8EHe7UYfBkzYdtZd7PGfAalgNmBarv/hEPehdyPPP1B8DSmbdZMkNqf0W+cL67KU1l9x10o+KVQBn7jQA4/zR0ku4nyiNGC2qpNNio6H9kJYiYg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN5PR12MB9511.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(7416014)(18002099003)(22082099003)(3023799007)(4143699003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bDI1SHdkeHVPUWdNZGxnYVpNT2NLdW80K3RnL0hMd3J5QTMyNWN6OXoyWVdV?=
- =?utf-8?B?R2xqcDRTRGdPWlh5UklhM0YvWE8zNTUvZm5FZnNja1B1RXlNN081QkJwdUlY?=
- =?utf-8?B?aDZBYXJReS9aNGNmcjZGVnBJcS9QZGUvOXUwblBKR0pHS3VJR3FRVFgvWW04?=
- =?utf-8?B?eXRtZU92YnZuRkkrMTIzRUM2S2REcFltdUgzM1ZVbWpaSG5RVEZnYUN5VjhZ?=
- =?utf-8?B?a2ZjMUQ3cjZjZDUxUHR2eE90Mlg1amxtODhCZU5LWitNemg1Q2V2MmtTbEww?=
- =?utf-8?B?SHBROXpHS3NNYzk0cklxVFBKSEM4dlFENzJ1V084Uk83Vk5BTW9VYWlqY0NX?=
- =?utf-8?B?ejd5VGRPZ0VNaUZaT0NEeUJpYTA3ZTRVUnA5WVdmY1ZhSGlLM3lQa1JsNkdM?=
- =?utf-8?B?cnVxcDRUMVJWOWxLQTcwK3VnVld2cnlWYXJtdFhKMmJzQlRYN21Gb3ZwR01r?=
- =?utf-8?B?a090ay9WbXlpdXpsblJYWTB5a2RWT3prQkJEd1pXMkhkd2hBUzAvZXhHclFn?=
- =?utf-8?B?NUVlY2hYOWZBWnByNy9QM1IzS1IwQWxFTlh3bGc3VUtLTFlnQkorTW5sTDRE?=
- =?utf-8?B?V0lmVC9VVlA5NWo4TDdkcmk5TkZLRzRyd2JLc3VORUI5UVorUW5nTVU3NjZs?=
- =?utf-8?B?bktYdVJTNnZ0NUhmaFkvMHlLaVhoQ1JZR094TWtIbWZlVWUvYkxERnJ5V0Zw?=
- =?utf-8?B?cWFVZ2VLMzNrWmcwWXMyTXptMW9XdklMUm11Y29NVUZoWXd2WWVIdVo5RlFD?=
- =?utf-8?B?cjh5UFJVWHo2bkZpK0k4Z2ppNGl6UnhweU1GWFpDZ2pDSk16STlHZDQ4N1pU?=
- =?utf-8?B?MVVjUEdIeERZWHRoOWMvbHFqTWMvNzJCdDFFZmxLaURpQ1Z3VHUzTGtoYUY0?=
- =?utf-8?B?OHNQQ3FJQ2pTZVUzU25zeVpYQlNJZUc5ZmVibHdlcGxQRnNIaHl0REI4MGxT?=
- =?utf-8?B?cnhJWDVhQzZQVXBhQWVrZmtNTEM4Q1VVaDkralEyZ0hOd0NleWo3RU5CVVc2?=
- =?utf-8?B?Q295VmM5WFhPYk13dExzQjBMYTN1cGpScVo5QWlnUHo1Zkc5a3hwWEMyckRK?=
- =?utf-8?B?aWNxVGNSWHpGcHhwV2UvQTdrOFhFcGtkQnhmZGkxTmlET01aWTFheUpBTlM1?=
- =?utf-8?B?UE1ZSVN3SEprcjZHOWtxWnhOZVBlYlUySUFaRVorUFdjNHZxczFRZ0lwanVj?=
- =?utf-8?B?TXpWWFNnRndSV1Bmck1saTN0Q2M2bFU4S3lGR0ExTXdRL2szV2YzMVhIV2Nh?=
- =?utf-8?B?ZEtQdlB4NUlpUDBhSGFPWmRBbGNSa1ZSU0JhSWNMM3QwQVk0M2ZBalJLS3dW?=
- =?utf-8?B?NktqaFFhcGRqQ1B2LzkxOVdlVllDN3lNVDc0S1RPakdrc2pzd0NldHovSDBm?=
- =?utf-8?B?cFNGajJoL3NpRVBnbE0rcHFSc1cyTmpqN3JRd0Q2a0MwNjNIOXdIMVhIVlky?=
- =?utf-8?B?OWRXcUY4VUJqblV2MG1MTEFuT1kxdXBraHJHUk83VFFtT2hGL2o2VDhJb2Nu?=
- =?utf-8?B?QkRybkJSVVhwMkgrVzh3UTdhUjdJYzlMWmx6eDAwWXVtcVhUeGVjM2F5NUxW?=
- =?utf-8?B?TVh4akpLV0lna2RZWGxlQmtjQ25MVVJ6R3dwN3pVNCt5M21NNzN6cWZJTkM2?=
- =?utf-8?B?YW55ckQrRStrT3Z4L3NFcTJBNXBVTU9kL1VaM3lYMDlRMUlvZ2x0eUEvWjAw?=
- =?utf-8?B?SWVORi8wQmlQd0JadEExYzBRMWxLUk52NmxLUHB6YWFDcjJ5OUwrYW9mM2hw?=
- =?utf-8?B?dlIvaGhibTNOdTZZR2xTdWRya1BvZnVPZ0lkTktqNlFXdGx1TXB1QjRFTlVx?=
- =?utf-8?B?ckw4MWt4Vkg1eWNaQzMxMU1ZQlRiZTQ1Qmtub2I0aFNXb3BSd2pKZ0Y2VW1q?=
- =?utf-8?B?WUlNRSs5L3V2UGF3ZkRPRytYYnhZS01PYUVlbjJpaEloN1pBUUp4d1RRci8v?=
- =?utf-8?B?QzJ2UVVua0lGQjR3QmNBY3pGbDdPdnpQODh4TCtwMVNSUzlpY0l0MVZHazd1?=
- =?utf-8?B?eUNENGc5Z0xpNEZ3MnB5YVVJTWVVTzdhMEkvK25neW03VGQvdlhyWEJIZWsy?=
- =?utf-8?B?YXNRc3pBVTFTc0Q5SmJ2VHQyTXFzcjJ5OCs4eVBUVzdPNldoQWU3Mll3NWxW?=
- =?utf-8?B?aGp3V2pJK2hIMFRNbmQ1QVlscEkzOUlXRFVWWXBYSEFHZzMzTjVvc1FmUTht?=
- =?utf-8?B?b3JJMG9FUFdCbklmczIwM3R3TXZZaEdLNlNWalVjWWZKdWozRGlRdGVPRnhG?=
- =?utf-8?B?OEN0eGcrYkUvWnkvYkEwYTdPRzVpRXFoS2U4OWg1UXNBTDNFRmc1MFhpL2ZM?=
- =?utf-8?B?Q29sVjlUc1lKYW5JK3hWeXJ4R1d3RytTZHd2Tk1zT2xOeWxBbUxrUT09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97b8f259-3c54-4009-b448-08dee7d2269b
-X-MS-Exchange-CrossTenant-AuthSource: BN5PR12MB9511.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2026 09:18:11.1112
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ks5N8FpBfMHkN+hL3a5syFIoklH6VAHZc/z55R5bXQWLUtSfWaRfKuhoznN9yNTueKrk9NqXI0+bykTuVIleDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7557
+Mime-Version: 1.0
+Received: from [100.86.216.128] ([120.234.91.241]) by smtp.feishu.cn with ESMTPS; Wed, 22 Jul 2026 17:32:41 +0800
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+References: <20260714083625.1083606-1-zong.li@sifive.com> <20260714083625.1083606-2-zong.li@sifive.com> <6a5dc092-d0b5-4304-acfb-9de161f2bfd6@picoheart.com> <CANXhq0o1t5D76pscjqHteLjGJB4Z2iSS1a=o0+JCjKQtdPJ+vQ@mail.gmail.com>
+To: "Zong Li" <zong.li@sifive.com>
+Date: Wed, 22 Jul 2026 17:32:38 +0800
+
+On 7/22/26 1:15 PM, Zong Li wrote:
+> On Mon, Jul 20, 2026 at 3:29=E2=80=AFPM Yicong Yang <yang.yicong@picohear=
+t.com> wrote:
+>>
+>> Hi Zong,
+>>
+>> On 7/14/26 4:36 PM, Zong Li wrote:
+>>> Add a new driver to support the RISC-V IOMMU PMU. This is an auxiliary
+>>> device driver created by the parent RISC-V IOMMU driver.
+>>>
+>>> The RISC-V IOMMU PMU separates the cycle counter from the event counter=
+s.
+>>> The cycle counter is not associated with iohpmevt0, so a software-defin=
+ed
+>>> cycle event is required for the perf subsystem.
+>>>
+>>> The number and width of the counters are hardware-implemented and must
+>>> be detected at runtime.
+>>>
+>>> The performance monitor provides counters with filtering support to
+>>> collect events for specific device ID/process ID, or GSCID/PSCID.
+>>>
+>>> According to RISC-V IOMMU specification Chapter 6:
+>>> Whether an 8 byte access to an IOMMU register is single-copy atomic is
+>>> UNSPECIFIED. Use two separate 4 byte accesses for hardware
+>>> compatibility.
+>>>
+>>> PMU-related definitions are moved into the perf driver, where they are
+>>> used exclusively.
+>>>
+>>> Suggested-by: David Laight <david.laight.linux@gmail.com>
+>>> Suggested-by: Guo Ren <guoren@kernel.org>
+>>> Link: https://lore.kernel.org/linux-riscv/20260618143634.7f3dd6c5@pumpk=
+in/
+>>> Signed-off-by: Zong Li <zong.li@sifive.com>
+>>> ---
+>>>  drivers/iommu/riscv/iommu-bits.h |  61 ---
+>>>  drivers/perf/Kconfig             |  12 +
+>>>  drivers/perf/Makefile            |   1 +
+>>>  drivers/perf/riscv_iommu_pmu.c   | 722 +++++++++++++++++++++++++++++++
+>>>  4 files changed, 735 insertions(+), 61 deletions(-)
+>>>  create mode 100644 drivers/perf/riscv_iommu_pmu.c
+>>>
+
+[...]
+
+>>> +
+>>> +static irqreturn_t riscv_iommu_pmu_irq_handler(int irq, void *dev_id)
+>>> +{
+>>> +     struct riscv_iommu_pmu *pmu =3D (struct riscv_iommu_pmu *)dev_id;
+>>> +     DECLARE_BITMAP(ovf_bitmap, RISCV_IOMMU_HPM_COUNTER_NUM);
+>>> +     u32 ovf, idx;
+>>> +
+>>> +     /* Check whether this interrupt is for PMU */
+>>> +     if (!(readl_relaxed(pmu->reg + RISCV_IOMMU_REG_IPSR) & RISCV_IOMM=
+U_IPSR_PMIP))
+>>> +             return IRQ_NONE;
+>>> +
+>>> +     /* Process PMU IRQ */
+>>> +     riscv_iommu_pmu_stop_all(pmu);
+>>> +
+>>> +     ovf =3D readl(pmu->reg + RISCV_IOMMU_REG_IOCOUNTOVF);
+>>> +     if (!ovf)
+>>> +             return IRQ_NONE;
+>>> +
+>>> +     bitmap_from_u64(ovf_bitmap, ovf);
+>>> +     for_each_set_bit(idx, ovf_bitmap, pmu->num_counters) {
+>>> +             struct perf_event *event =3D pmu->events[idx];
+>>> +
+>>> +             if (WARN_ON_ONCE(!event))
+>>> +                     continue;
+>>> +
+>>> +             riscv_iommu_pmu_update(event);
+>>> +             riscv_iommu_pmu_set_period(event);
+>>> +             riscv_iommu_pmu_clear_ovf(event, idx);
+>>> +     }
+>>> +
+>>> +     /* Clear performance monitoring interrupt pending bit */
+>>> +     writel_relaxed(RISCV_IOMMU_IPSR_PMIP, pmu->reg + RISCV_IOMMU_REG_=
+IPSR);
+>>> +
+>>> +     riscv_iommu_pmu_start_all(pmu);
+>>> +
+>>> +     return IRQ_HANDLED;
+>>> +}
+>>> +
+>>> +static unsigned int riscv_iommu_pmu_get_irq_num(struct riscv_iommu_dev=
+ice *iommu)
+>>> +{
+>>> +     /* Reuse ICVEC.CIV mask for all interrupt vectors mapping */
+>>> +     int vec =3D (iommu->icvec >> (RISCV_IOMMU_INTR_PM * 4)) & RISCV_I=
+OMMU_ICVEC_CIV;
+>>> +
+>>> +     return iommu->irqs[vec];
+>>> +}
+>>> +
+>>> +static int riscv_iommu_pmu_request_irq(struct riscv_iommu_device *iomm=
+u,
+>>> +                                    struct riscv_iommu_pmu *pmu)
+>>> +{
+>>> +     return devm_request_irq(iommu->dev, pmu->irq, riscv_iommu_pmu_irq=
+_handler,
+>>> +                             IRQF_NOBALANCING | IRQF_SHARED, dev_name(=
+iommu->dev), pmu);
+>>
+>> need IRQF_NO_THREAD to avoid force thread of the handler.
+>>
+>> it's a PMU exclusive interrupt, reason to make it IRQF_SHARED?
+>=20
+> PMU interrupt can be shared with the queue's interrupt (such as the
+> command queue, fault queue, and so on). Also, in the IOMMU driver,
+> these queue interrupts are handled as threaded IRQ
+>=20
+
+you can keep iommu's handler threaded while pmu's still in
+the top half, so it doesn't matter to set IRQF_SHARED.
+
+if so we cannot ensure the count's updated in the atmoic
+context on event->cpu, which is required by the perf core
+to keep serializaiton. e.g. possible for the other users
+bind this irq to another cpu other than event->cpu?
 
 
+>>
+>>> +}
+>>> +
+>>> +static int riscv_iommu_pmu_probe(struct auxiliary_device *auxdev,
+>>> +                              const struct auxiliary_device_id *id)
+>>> +{
+>>> +     struct  riscv_iommu_device *iommu_dev =3D dev_get_platdata(&auxde=
+v->dev);
+>>> +     struct riscv_iommu_pmu *iommu_pmu;
+>>> +     void __iomem *addr;
+>>> +     char *name;
+>>> +     int ret;
+>>> +
+>>> +     iommu_pmu =3D devm_kzalloc(&auxdev->dev, sizeof(*iommu_pmu), GFP_=
+KERNEL);
+>>> +     if (!iommu_pmu)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     iommu_pmu->reg =3D iommu_dev->reg;
+>>> +
+>>> +     /* Counter number and width are hardware-implemented. Detect them=
+ by write 1s */
+>>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOCOUNTINH;
+>>> +     writel(RISCV_IOMMU_IOCOUNTINH_HPM, addr);
+>>> +     iommu_pmu->num_counters =3D hweight32(readl(addr));
+>>> +
+>>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOHPMCYCLES;
+>>> +     riscv_iommu_pmu_writeq(RISCV_IOMMU_IOHPMCYCLES_COUNTER, addr);
+>>> +     iommu_pmu->cycle_cntr_mask =3D riscv_iommu_pmu_readq(addr);
+>>> +
+>>> +     /* Assume the width of all event counters are the same */
+>>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOHPMCTR_BASE;
+>>> +     riscv_iommu_pmu_writeq(RISCV_IOMMU_IOHPMCTR_COUNTER, addr);
+>>> +     iommu_pmu->event_cntr_mask =3D riscv_iommu_pmu_readq(addr);
+>>> +
+>>> +     iommu_pmu->pmu =3D (struct pmu) {
+>>> +             .module         =3D THIS_MODULE,
+>>> +             .parent         =3D &auxdev->dev,
+>>> +             .task_ctx_nr    =3D perf_invalid_context,
+>>> +             .event_init     =3D riscv_iommu_pmu_event_init,
+>>> +             .add            =3D riscv_iommu_pmu_add,
+>>> +             .del            =3D riscv_iommu_pmu_del,
+>>> +             .start          =3D riscv_iommu_pmu_start,
+>>> +             .stop           =3D riscv_iommu_pmu_stop,
+>>> +             .read           =3D riscv_iommu_pmu_read,
+>>> +             .attr_groups    =3D riscv_iommu_pmu_attr_grps,
+>>> +             .capabilities   =3D PERF_PMU_CAP_NO_EXCLUDE,
+>>> +     };
+>>> +
+>>> +     auxiliary_set_drvdata(auxdev, iommu_pmu);
+>>> +
+>>> +     name =3D devm_kasprintf(&auxdev->dev, GFP_KERNEL,
+>>> +                           "riscv_iommu_pmu_%s", dev_name(iommu_dev->d=
+ev));
+>>
+>> this name is a bit unfriendly for a platform iommu. perf use ":" as
+>> a special delimiter, so I need to double quote the event like:
+>>
+>>   perf stat -e "'riscv_iommu_pmu_RSCV0004:00'/cycle/"
+>>
+>> possible to make it something like riscv_iommu_pmu_RSCV0004_00?
+>=20
+> Ok, this will also happen in the PCIe case. Let's find a way to modify
+> it. Or do you have any idea for the name?
+>=20
 
-On 7/20/2026 2:07 AM, Nicolin Chen wrote:
-> On Sat, Jul 18, 2026 at 01:45:48PM -0300, Jason Gunthorpe wrote:
->> On Fri, Jul 17, 2026 at 02:16:53PM -0700, Nicolin Chen wrote:
->>> Given the use cases on Tegra264, instead of patching the iommufd
->>> path as this patch does, perhaps we should simply spit a WARN in
->>> arm_vsmmu_init():
->> Nope, in this case you need to make the errata discoverable through
->> the viommu info so the VMM can validate the right DT is used, or apply
->> the WAR itself before submitting commands to the kernel.
-> OK.
->
->> Some kind of new flag in the viommu struct I guess
-> struct iommu_hw_info_arm_smmuv3 has an unused "flags" field:
->
-> /**
->   * enum iommu_hw_info_smmuv3_flags - Flags for ARM SMMUv3 hw_info
->   * @IOMMU_HW_INFO_SMMUV3_ERRATA_REPEAT_TLBI_CFGI: If set, user space must issue
->   *                                                TLBI/CFGI+SYNC commands twice
->   *                                                due to a hardware erratum:
->   *                                                <link-to-erratum>
->   */
-> enum iommu_hw_info_smmuv3_flags {
-> 	IOMMU_HW_INFO_SMMUV3_ERRATA_REPEAT_TLBI_CFGI = 1 << 0,
-> };
->
-> Thanks
-> Nicolin
+maybe just replace ":" with "_" or use the PFN to distinguish
+like arm smmu pmcg. the latter one will eliminate the
+implementation differences (platform or pci device) but may
+not suitable since it's hard to find the connection between
+iommu and it's related pmu as iommu is still named by device
+name.
 
-Ack, I am sending v8 addressing this.
+I see the PCIe based IOMMU is named in the raw BDF encoding
+in fengyu's test [1] but it should be separate by ":", did
+I miss something for the name of PCIe based IOMMU?
 
-Thanks,
-Ashish Mhetre
+[1] https://lore.kernel.org/linux-riscv/20260714083625.1083606-1-zong.li@si=
+five.com/T/#m847cd5cba7f53e9191e09e64ef604c7c38fd0173
+
+>>
+>>> +     if (!name) {
+>>> +             dev_err(&auxdev->dev, "Failed to create name riscv_iommu_=
+pmu_%s\n",
+>>> +                     dev_name(iommu_dev->dev));
+>>> +             return -ENOMEM;
+>>> +     }
+>>> +
+>>> +     /* Bind all events to the same cpu context to avoid race enabling=
+ */
+>>> +     iommu_pmu->on_cpu =3D raw_smp_processor_id();
+>>
+>> smp_processor_id() should be enough.
+>=20
+> Perhaps we should try to get the local CPU of iommu as above.
+>=20
+>>
+>>> +     iommu_pmu->irq =3D riscv_iommu_pmu_get_irq_num(iommu_dev);
+>>> +     WARN_ON(irq_set_affinity(iommu_pmu->irq, cpumask_of(iommu_pmu->on=
+_cpu)));
+>>> +
+>>> +     ret =3D riscv_iommu_pmu_request_irq(iommu_dev, iommu_pmu);
+>>> +     if (ret) {
+>>> +             dev_err(&auxdev->dev, "Failed to request irq %s: %d\n", n=
+ame, ret);
+>>> +             return ret;
+>>> +     }
+>>> +
+>>> +     ret =3D cpuhp_state_add_instance_nocalls(cpuhp_state, &iommu_pmu-=
+>node);
+>>> +     if (ret) {
+>>> +             dev_err(&auxdev->dev, "Failed to register hotplug %s: %d\=
+n", name, ret);
+>>> +             return ret;
+>>> +     }
+>>> +
+>>> +     ret =3D perf_pmu_register(&iommu_pmu->pmu, name, -1);
+>>> +     if (ret) {
+>>> +             dev_err(&auxdev->dev, "Failed to registe %s: %d\n", name,=
+ ret);
+>>> +             goto err_unregister;
+>>> +     }
+>>> +
+>>> +     dev_info(&auxdev->dev, "%s: Registered with %d counters\n",
+>>> +              name, iommu_pmu->num_counters);
+>>> +
+>>> +     return 0;
+>>> +
+>>> +err_unregister:
+>>> +     cpuhp_state_remove_instance_nocalls(cpuhp_state, &iommu_pmu->node=
+);> +  return ret;
+>>> +}
+>>> +
+>>> +static const struct auxiliary_device_id riscv_iommu_pmu_id_table[] =3D=
+ {
+>>> +     { .name =3D "iommu.pmu" },
+>>
+>> it's clear and consistent to name it as "riscv-iommu.pmu".
+>> you've already have this "riscv" prefix in other places
+>> like the name of the PMU.
+>=20
+> Ok. Let's add prefix in the next version
+>=20
+>>
+>>> +     {}
+>>> +};
+>>> +MODULE_DEVICE_TABLE(auxiliary, riscv_iommu_pmu_id_table);
+>>> +
+>>> +static struct auxiliary_driver iommu_pmu_driver =3D {
+>>> +     .probe          =3D riscv_iommu_pmu_probe,
+>>
+>> need ->remove() to clean up the resources like PMU and cpuhp instance
+>> on driver unbind. otherwise you can use devm_add_action_or_reset()
+>> to make them device managed.
+>=20
+> As suggested by Robin in my v1 version,  we might be inclined to just
+> leave out all the dead cleanup code if the PMU driver is tied to the
+> IOMMU driver and can never realistically be removed. So in my
+> subsequent versions, I didn't add any cleanup code.
+>=20
+
+ok, thanks for the background.
+
+then need to ensure there will be no possible removal from the
+userspace, e.g. at least set driver::suppress_bind_attrs to
+avoid manual unbind.
+
+in fact it's the auxiliary device tied to the iommu driver
+rather than this auxiliary driver. as only the pmu and
+cpuhp registration lack cleanups (you've already made
+other resources device managed), it'll be easy to do
+the cleanups and support this driver as a module. but it's
+up to you.
+
+thanks.
+
+>>
+>>> +     .id_table       =3D riscv_iommu_pmu_id_table,
+>>> +};
+>>> +
+>>> +static int __init riscv_iommu_pmu_init(void)
+>>> +{
+>>> +     int ret;
+>>> +
+>>> +     cpuhp_state =3D cpuhp_setup_state_multi(CPUHP_AP_ONLINE_DYN,
+>>> +                                           "perf/riscv/iommu:online",
+>>> +                                           riscv_iommu_pmu_online_cpu,
+>>> +                                           riscv_iommu_pmu_offline_cpu=
+);
+>>> +     if (cpuhp_state < 0)
+>>> +             return cpuhp_state;
+>>> +
+>>> +     ret =3D auxiliary_driver_register(&iommu_pmu_driver);
+>>> +     if (ret)
+>>> +             cpuhp_remove_multi_state(cpuhp_state);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +module_init(riscv_iommu_pmu_init);
+>>
+>> it'll be easy to make it a module for debug and test.
+>>
+>> thanks.
