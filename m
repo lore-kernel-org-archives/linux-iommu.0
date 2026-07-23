@@ -1,212 +1,315 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010058.outbound.protection.outlook.com [52.101.85.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A523859CB
-	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 06:16:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.58
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D741F3F6C2A
+	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 07:50:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784787408; cv=fail; b=V0MtR4w9oh5N8j3yPJuBTbg+1/cYvrFlwOKzku6y70I2Lzv4bTxJbV+CTJrNvU7qmZ+YlhFc0WCSaYFPQkqVFsSCy+SKC8xaBWfrMPq2wBfTZK98YU7ZSJvOkkcMspRo2PJZOVZpTCb3Uf0DpcsTV2pQGDGQPLhbUUbDAoi74Aw=
+	t=1784793039; cv=pass; b=cCXZudfUe29BMP50P7D/ex4xNgHEGFIpDcQt9fdiYdIzuoMfOmWu+SJr1PaIBkrvdSbeznUzTHK+Eggnj4NW+PHIDpuz8B8/9KKZ+CWbFnkq58chWyaH8pJEU5nivr4E7q/QzaGKpJ4EyArczLZVJCPzCqgmyKL5Y7PUSpLGRDk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784787408; c=relaxed/simple;
-	bh=0ZpYzBsVZbR8vf7yK0oDvbwVQJ4ajYq6Dqhe24scB38=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Qmul6w67O3MqE3lyPf9RebGJRF42Jag6RM/BX5TaZ+aQwk8elv+hucPo+0V3XkAVofPhmGH1Dqb26jxrZfWxpCSm0MVJnNTDDncxQbh6yAUBzz2F5QcXFRKLXM023PP0MOizs6UZ1j3yF2/SXfGIQ/Dh7cquMXtWxYzkcoHV/Xc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=RdR7Yym0; arc=fail smtp.client-ip=52.101.85.58
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1784793039; c=relaxed/simple;
+	bh=6mzCw2SRODucVsRA/uemTkC0IDQToNI4yxBuFQz9PNg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sRAmigylte9YvpkX+Za5NL2La/gtcG9BizLQ1k3qOocc3VUvtOgbHRWg8DSZBAkXqtYfsC5YwRYIpveYyTxdVoX63IikcuiWHH11M1tSOR34thjwedfXKyi4vt4ppTxs3/E/bma1u1dj+TcuKONX3AZjX7v/WougYyZAuNnEgzI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=dzjgdPaD; arc=pass smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RdR7Yym0"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YE/yxJtgm3IpBK5LPoANpN9fNtGJ+Adao2NDX4YN7zTTr7YN2iJb5e3vGl5hLg6Jv2RjH66qCUu5InlFfvx48cpMoP6/SA/AZVNZO5qlzMc6u+D0axvIJb6zYcMFPeV+w1/vyjyaW66CZaYp5Yav0yx5LNCijafzzzSClI4tsi7LATqU8QHaHOHc3OTHghpnOeyxJll9zwWQ/jBgEpPFYw6wgPk6J2Agvt7qTLzSHNTaeaaq0SBnw4fyl69N3bxM1rqy8LAceZecXaGvSGucGbBgi9ACbc9ym1U9hvF10nDe9UKyJmtxH8PmW6m8zywStN4am5rjtYzn8xU+YJt6UQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uy7FI4wW8MCJCntFGLpvpojzS0+j2n7yPGWymeQcndo=;
- b=uRB+o9cQNqC01sUbotMTxwbIC7WdfpMDjth9AhuOWs3Pbnqq0fun2uRGE1P/hnRqx9jOLnOCpNWYrqwWEP4eypdy16LIyTFpnDlpHgf9nIimJnRixZCfF9Xb+MqA6RUZ0btqotlf5Kqt6br+k8mmigyqNUEqfNTrstF+w9bB9LuWSuq0oyKc9SjJNnPQ1AUqepbeYy2QsZBs41ctVnYhkeFri0wFIQRLATgaI+hyDLKaFd0eD03bOVj8a1RoUIM47kd2wCLKeNGLNRxTIQjdvvVR4iisDINx0k3OGGF7PflJNbPX9DMtvcBiTX+PB5jJtdpILXuOG0hdVjq3CavmfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uy7FI4wW8MCJCntFGLpvpojzS0+j2n7yPGWymeQcndo=;
- b=RdR7Yym0I3jjLAHq7DdGMuToKz1AQj6BbdtVX5D1+WYIYrGV8zX4nNMGEm+T30fuunC5dedn8vPBtC4Rz7lypLlGRpK/Y2qmlP9ER68QZM0BB6cvp07FteFzjRJqEwzRCqrDnNCwaDfFtBTXu41zsRQt+cNXkH/bxvS1J0OxDpY=
-Received: from BN9PR03CA0314.namprd03.prod.outlook.com (2603:10b6:408:112::19)
- by MW3PR12MB4412.namprd12.prod.outlook.com (2603:10b6:303:58::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.11; Thu, 23 Jul
- 2026 06:16:41 +0000
-Received: from BN1PEPF0000468E.namprd05.prod.outlook.com
- (2603:10b6:408:112:cafe::85) by BN9PR03CA0314.outlook.office365.com
- (2603:10b6:408:112::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.10 via Frontend Transport; Thu,
- 23 Jul 2026 06:16:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BN1PEPF0000468E.mail.protection.outlook.com (10.167.243.139) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.270.5 via Frontend Transport; Thu, 23 Jul 2026 06:16:41 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 23 Jul
- 2026 01:16:37 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <linux-pci@vger.kernel.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, <bhelgaas@google.com>,
-	<alexander.deucher@amd.com>, <mario.limonciello@amd.com>, <jgg@ziepe.ca>,
-	Vasant Hegde <vasant.hegde@amd.com>, Amandeep Kaur Longia
-	<AmandeepKaur.Longia@amd.com>
-Subject: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
-Date: Thu, 23 Jul 2026 06:15:48 +0000
-Message-ID: <20260723061548.10187-3-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260723061548.10187-1-vasant.hegde@amd.com>
-References: <20260723061548.10187-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="dzjgdPaD"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-698aa7ba320so414438a12.1
+        for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 00:50:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784793035; cv=none;
+        d=google.com; s=arc-20260327;
+        b=DkhPbzqvYfMnHnyP7e4XJZwCmrcMRNLTDyFyBgFSJ2jTRwbO27RvdoJYUHwutpaqXV
+         KQxBbKGfLR9MQQy0r47ITOwqaZxdRt33QbJi8DRJL2qSED0hSEkDyAdmqqbvv7kYlk91
+         T+/xMWAk0wRtyBCU1LLULZBO6oA/CgMXwD/SIRAwXO/wCI9jxTQBwCOx5Xjcs/gRu1yu
+         TnB8tQjNau8Ahp4YH3RBiDfljH+6ESu07eyPBfYxPKl/P27iL3M8Ek/0KIQlVfDgVHI+
+         tw10lD6fexrgaZHun7YLJqvmVyt8EcySACEOyETVGWHZLASKrTRIwNpzCI3dopUzwCBh
+         9ttA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=OQU7tHiWIG/hwSP5pM1ZCdJt6OQTXlTxKddLqTxHVsk=;
+        fh=L2ouEz809mlRWEavno0DoTXoBuTb+Koo8TiegY4motE=;
+        b=UYI62acUpQ+iuyz1sk9AxkBXk8IxOBiPE1xJ5xTCClVAXBtmSYQoJriwmoXh/tc8mi
+         pje4NpvFaAHBBox4nVciYWMfma0C2mzajaqQgCVGbQAG3q7EoWD5bCf8zEUc1ETBIGPP
+         f+VwXMRtKn3eozNaU4upT35Sk338Kt/OGBdaE8mAv2SeJYc8EGLnsDm39+zTj+T19Gnh
+         qoR5jKlmFJMiKgGH7eVf8Q9k+Rg1UHZ3lo2VRv1GRxFEEWZsNlcPqdJTohZhKUgxqcUt
+         4BXU6kGvVCp+dWdY2q9fJvKC+1eBWSDZUZmyoBTXzDVkhdmswj0YbrJPK8j74Kh1uPKK
+         51oQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1784793035; x=1785397835; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=OQU7tHiWIG/hwSP5pM1ZCdJt6OQTXlTxKddLqTxHVsk=;
+        b=dzjgdPaDaihbfdy+b+4lBhkGTmB1d8o2xIjpqzoiuq6w6Hr3Gyo/nlYJuRHma29jBk
+         puFlJqIwpcl5+Zjrf+PRKqd+4zfnNjlEqMITpK7m/Ykyf/KfVx8fMSk2VEmtVxdCROw4
+         GsBmQMFemb6+hNO1gVjmTqNk9yId1E2IoH4P7yDhXax1+JY8rNAFPAQUW7NGqYPFL4G7
+         od5CmNzjvJnoHt0MVKxPqnN3S9TWJDaX6VgKf82gst4QVdd+Cg+BP+vZeosF/o7FPRxB
+         82r2aYsRcBhlhD/cTmK4BD7u0l6+6s6c8HvPW7HKQO7KflIWGRQmztKHmWuc8aEHWPGy
+         PhMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784793035; x=1785397835;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=OQU7tHiWIG/hwSP5pM1ZCdJt6OQTXlTxKddLqTxHVsk=;
+        b=SNM1wxr10XfUUZTZ2Pul1F3soZDUbbpug/Xx/ONsbmbAhEQ286O1ycCMu2mUCs/YqW
+         Xe8M7U8e+4t1HfxR03+Opc4XzHsUcJF9aPnq7cOC0rZwbcKizIJXsSI2LF3j+qgelbh/
+         pvuH1Pl1kCgiRFMySGpQR5UHEdU2TI7qo5Fum5eGetyy7YzIYFbDS9Lxjhw5XpVm+/H0
+         GbOY48U9dkMMC9WPXYpJEXvn2M8P4EJFntjFEsO3nw6addAICq2Xjios08hXgXTc0UDZ
+         ZeVyCMNfGB+GCML/5NyOylT0Gw17WzOn9Xkk9ubq/mm53aoTElocNLX0WAW04KbPHOLu
+         FAMQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rq4339Umb5kOrHpep8f0x6oZ2w3wENOfRAz8P4w1FjwARfUmnWexoaWTmeKFUzWOQ9+Mi6RbQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTlFv4Ye5kZenOxghMHxc7GlmaH3D2f8ZdEHqUGbGBYkMnfieS
+	3gnMNo6M7SWPcON1qQm/K6AH7KW40SVGX2RvFoJxBfb/kbeaxUtUFXisKYnRc3hkuJM3XjOv8bM
+	bppcxqK2smx41wTP9FGFGVF5D+6r0rCyrpBHUSKYcYg==
+X-Gm-Gg: AR+sD10UNdbMKf21Rxq1j0Y44PiD0AmHVwOd34GOX2sd49AJ1MPS8tgQbE42XXR6Qp6
+	awVcHOzp1IH/qDOTKq6aWZHsCr4Boq+MdAX9RncYfVL4Bs9AwnFSnfa8SUkIjhC6c8EdiKYcgIs
+	oRQ8VIR2vega1WyEM4VCqQy/vcSAvDKr53zsmhhrBmK6EstuCMiedb3qHuhEWKP4+uZUvsqCw01
+	Pk15lINXdcyTmteoTp6OaTBWPWZONT5tPGHwT38lBlYGZSdI7uQFiAYsveEs0he
+X-Received: by 2002:a05:6402:52d8:b0:698:86ce:8dc8 with SMTP id
+ 4fb4d7f45d1cf-69f7489d94emr543897a12.10.1784793034999; Thu, 23 Jul 2026
+ 00:50:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF0000468E:EE_|MW3PR12MB4412:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3a39d995-83f8-4401-f3c1-08dee881f639
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|36860700016|82310400026|1800799024|11063799006|5023799004|56012099006|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	FBE/ecvVymbnMlCuKPtDeLjAvdLN/cFkbBZ3c4eKwEiLH/OwTpYn500U18cMSFueRBMlAIo++VE5yt4YDyHAUvDhG9SA9nzYBD54icqUWpFiqfLot0N7c/JOJ0fqJSGV6JTlQU+iIn7UohOXgFczCo0QMoWKYCmpXqoxhJPYWT8wo7+jdMPCJ8iCmuUMHRNaSV9KLfH4Msh8jZ/i1OuC2WQTmu+vr/zz4T3Fo93fd25niG4d7LxfkVucvvexKrUwaKJl7Gm21t2Gwb+znLR6Ebi9cU913oE4BHNPL/pec2yYKathSv4181eiTrUhu35ymwZ6OHrt+KSLoaZrHKljfpy1CBCFabovZRcAXUu+uFVWcPpU7e5vAly7jNZcpjl5aimoWqMQnpUdJuHNNP6J+W0eghe0wGvL6Khecm1zczsSDlaN2IVQCxY4oyrTSyE2QDbFmPpBbnCLXU31Ngs/xVo6iY8P3oIzoRgEYBkj/x9g5CIkhz4opieyPhYG1In9m49fnGcitW7GYb9/ifCsfnlR4oyG1+mXd1PVB330djfbD4BEKVlxueNThgZhJ0IgXVsPilk2FUCmcX6cIdCQv+0rW/7ieJnd2ewgxZ4+j12mcwwhSJIbqO3DV2lnxPtd0+v2m6lPlXW3K0WUEq6n8k9Uoyj0jf1v/E9U49MhtCwOWQYMDPd7wa91MHkIX/wuFu5ur7CkeQIDRPqoQB8wNg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(376014)(36860700016)(82310400026)(1800799024)(11063799006)(5023799004)(56012099006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	QdPD2/7XXeEZEcCGAqSYf0u5iJ/ZxInsQlqgtqfCeLNV6L8BYo153rhxaEIz8Hp6NW1gnpQOaCgXUJKIbPHuRWWIVwjd+2TmJyOawh4SfovLjkMcGeMgaQV5CjLoMVS7zB49TLqY53QPzIGgcGR0MgP8L7i8U4G7EVb8AsnXnJBUsd4batIVTtG8NNrdXgLOsGLgLj12TyRJq6kCC/r/zGc/IbQQCHvhv6sCUcttD52URbV59/mF3Rf6Cdqs4fS2Fi3XBBTi76BBHgBfmlgZyTEdE/UUzGjqNvowV3AcKLuZoKaQ7rrmJgiZYsCXNsNolKooBnuG7s4PJwlu8FtSoQkyuEJD9Ar5QTy/E0wU4ucJyZv2Y9f5a0kzEoLVi+Dz9x/7LlZx0ytxxiQghT+kMhorW2v2nxYYJq+cuwNSL3etFUh0Kmoe3tsQx6g1QN3T
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2026 06:16:41.2180
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a39d995-83f8-4401-f3c1-08dee881f639
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF0000468E.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4412
+References: <20260630023042.837926-1-zong.li@sifive.com> <e2b13e82-f762-4fb0-83cb-d4bef57be427@linux.dev>
+In-Reply-To: <e2b13e82-f762-4fb0-83cb-d4bef57be427@linux.dev>
+From: Zong Li <zong.li@sifive.com>
+Date: Thu, 23 Jul 2026 15:50:24 +0800
+X-Gm-Features: AUfX_mxFZmusICHXCVp6ZDU9TkhSVPe-xkYvzhJLVb2IgZi-tVZ_1R3SfWYnipg
+Message-ID: <CANXhq0r=g5Gh6wAkVUz3DCunZ2jRVOWbC=8qr3KbXY8oFcUauQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/riscv: Replace illegal command with dummy
+ IOFENCE to prevent hardware lockup
+To: Tomasz Jeznach <tomasz.jeznach@linux.dev>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, 
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Certain AMD GPU's must always be in identity mode. Currently its enforced
-using PASID check. It worked fine as most GPU's has PASID feature. But
-this means, identity mode enforcement is done for all PASID capable devices.
+On Fri, Jul 17, 2026 at 9:46=E2=80=AFPM Tomasz Jeznach <tomasz.jeznach@linu=
+x.dev> wrote:
+>
+> Hi,
+>
+> On 6/29/26 7:30 PM, Zong Li wrote:
+> > When the RISC-V IOMMU encounters an illegal command, the hardware
+> > stops processing and the HEAD register remains pointing at the
+> > illegal command. If software does not handle this properly, the
+> > hardware will be stuck at this index indefinitely, preventing any
+> > further command queue operations.
+>
+> The definition of proper handling was included in the spec. This patch
+> simply implements logic to ignore real hardware errors and move forward,
+> leaving the system in an unspecified state. The driver should not allow
+> the system to pretend that everything is fine.
+>
+> > This patch implements a recovery mechanism by replacing the illegal
+> > command with a dummy IOFENCE instruction (all operands are zero):
+> >
+> > 1. Prevents hardware lockup: By overwriting the illegal command with
+> >     a valid instruction, the hardware can continue processing from the
+> >     current position instead of being stuck.
+> Currently, there is no clear way of communicating mapping
+> synchronization failures in the IOMMU/DMA path. The only reasonable
+> fault handler is either to panic or to make the fault visible to the
+> user with a very long timeout. The timeout approach has been chosen in
+> this driver; there are pros and cons to this, but let's not get into
+> that discussion here.
+>
+> By overwriting an illegal command without any notification to the user,
+> we are simply hiding e.g. TLB invalidation faults and likely causing
+> use-after-free errors for DMA transfers. I would prefer not to go that wa=
+y.
+>
+> > 2. Enables user recovery: After replacing the illegal command, the
+> >     user/driver has an opportunity to retry the original failed
+> >     operation rather than losing all queued work.
+> Unfortunately user/driver has no way to know if any retry is required.
+>
+> > 3. Minimal hardware impact: A dummy IOFENCE behaves as a NOP, it
+> >     it performs no cache invalidation operations and has no side
+> >     effects on the system state. This is the safest replacement
+> >     instruction.
+> In the first place, an illegal command should not be enqueued into the
+> command queue. If there is one, it's a driver/software bug or a hardware
+> incompatibility with the specification. We should address this problem
+> first. If a command has been interpreted as illegal, there might be
+> other possible reasons for the fault - e.g., reading commands from an
+> incorrect memory location or some other memory corruption related
+> issues. Overwriting it with a "NOP" might not resolve this at all.
+>
+> I agree there is error handling needed for cmd_ill / timeout / fault
+> errors, but so far the only reasonable way to handle those is to make
+> the fault loud and annoying to the user (applications), with the IOMMU
+> driver reporting errors via the kernel log.
+>
+> Is this patch trying to solve a real problem of a hardware faulting on
+> illegal instructions, or is this a theoretical scenario with the
+> implementation mimicking the SMMU implementation?
+>
+> > Signed-off-by: Zong Li <zong.li@sifive.com>
+> > ---
+> >
+> > The main goal is to at least prevent the hardware from getting stuck
+> > and crashing the entire system.
+> >
+> > Here are the main issues we would need to solve if we fully follow the =
+spec:
+> >
+> > 1. IOFENCE index shift: After an illegal command, if another thread is
+> > waiting for subsequent IOFENCE to finish, resubmitting commands will
+> > change that IOFENCE's index in the queue. This means the waiting
+> > thread in 'riscv_iommu_cmd_sync' might finish too early because the
+> > 'prod' value should be changed as well. We could fix this by making
+> > IOFENCE write a sequence number to a specific address, and having the
+> > thread wait for that data instead.
+>
+> Unfortunately, there is already a 'fix' added in the driver to exit the
+> sync wait loop if a fault is reported on the command queue (line #381).
+> There is a race with the fault interrupt handler that should be
+> addressed and fixed.
+>
+> > 2. Timeout errors: If an illegal command happens while another thread
+> > is trying to write a command, that thread might be waiting for the
+> > tail to move (in 'riscv_iommu_queue_send'), and exit the wait due to a
+> > timeout. This leads to errors in the caller subsystem (like DMA). So
+> > it seems even if the resubmit finishes later, it might not help much.
+> >
+> > 3. Queue tail mismatch: Similar to point 2 situation, a thread waiting
+> > in 'riscv_iommu_queue_send' expects prod =3D=3D queue->tail. If we
+> > resubmit commands quickly, queue->tail is updated asynchronously to a
+> > farther value. The waiting thread might never see the condition met
+> > and time out.
+> >
+> > 4. Shadow queue overhead: Inside the threading IRQ handler, we cannot
+> > easily know what the illegal command was just by checking the current
+> > command queue. We would need to create a "shadow command queue" to
+> > keep a history. This would break the current driver design. We would
+> > also need to add locks to prevent race conditions on shadow command
+> > queue, which would reduce the driver's performance.
+> >
+> > Considering these trade-offs, I prefer not to make the driver much
+> > more complex and slower just to handle rare hardware errors.
+> > Treating this hardware fault as a fatal error without trying to
+> > recover it in software might be too extreme and would require a
+> > hardware reset. Therefore, this patch might be a good middle ground.
+>
+> As an alternative trade-off, maybe consider reporting and storing the
+> fault for the IOMMU instance and failing all subsequent page map
+> requests. Instead of a long timeout, this would fail quickly, giving
+> users a clear signal that the DMA subsystem using this IOMMU device is
+> no longer usable.
+>
+> An alternative error-handling mechanism I've considered in the past was
+> to shut down the command queue, quiesce all IOMMU interfaces (PRI/ATS),
+> and completely reprogram the IOMMU from scratch (setting up the DDTP and
+> re-enabling the command queue). As per the specification, restarting the
+> command queue clears cmd_ill/timeout/fault errors. Once the IOMMU
+> configuration is restarted, we can unblock any pending
+> riscv_iommu_queue_wait() calls with a simpler sequence lock.
+>
+> > It prevents the hardware lockup. Even though we might lose some command=
+s
+> > and cause incorrect results for the user, it at least keeps the system
+> > alive and gives the user a chance to retry their operation again.
+> I think this patch only hides hardware errors, potentially masking
+> not-so-rare real faults.
+>
 
-Previously it made sense as domain allocation API
-(iommu_ops->domain_alloc()) was just passing domain type. So it couldn't
-check device capability and decide best suited page table type (v1 or
-v2). With recent enhancement to driver code, it uses
-domain_alloc_paging_flags() ops for all paging mode domain allocation.
-This can check device/flags and allocate best suited page table (v1 or v2).
-Hence fix amd_iommu_def_domain_type() to force identity mapping for selected
-GPUs only.
+Hi Tomasz,
+I totally agree with your prespective. This patch tries to recover the
+IOMMU hardware from lockup, but it doesn't recover the command. It
+might introduce potential errors. I would not continue with this patch
+until we can solve it properly. Thanks
 
-With this change system booted with DMA translation mode will select:
- * Guest (v2) page table for PASID capable device
- * Host (v1) page table for non-PASID capable device
-
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Tested-by: Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
----
- drivers/iommu/amd/iommu.c | 56 +++++++++++++++++++++++++++++++--------
- 1 file changed, 45 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 563f9c2672d5..fe642e33c87d 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3112,6 +3112,32 @@ static bool amd_iommu_is_attach_deferred(struct device *dev)
- 	return dev_data->defer_attach;
- }
- 
-+static bool quirks_force_identity_mapping(struct pci_dev *pdev)
-+{
-+	struct pci_dev *root_port;
-+	int class = pdev->class >> 8;
-+
-+	/* AMD GPU vendor ID */
-+	if (pdev->vendor != PCI_VENDOR_ID_ATI)
-+		return false;
-+
-+	/* GPU class */
-+	if (class != PCI_CLASS_DISPLAY_VGA &&
-+	    class != PCI_CLASS_DISPLAY_OTHER)
-+		return false;
-+
-+	root_port = pcie_find_root_port(pdev);
-+	if (!root_port)
-+		return false;
-+
-+	/* If bridge vendor is not ATI then its APU and force IDENTITY mode */
-+	if (root_port->vendor != PCI_VENDOR_ID_ATI)
-+		return true;
-+
-+	/* Rest all are dGPUs and works fine with DMA mode */
-+	return false;
-+}
-+
- static int amd_iommu_def_domain_type(struct device *dev)
- {
- 	struct iommu_dev_data *dev_data;
-@@ -3120,20 +3146,28 @@ static int amd_iommu_def_domain_type(struct device *dev)
- 	if (!dev_data)
- 		return 0;
- 
-+	if (!dev_is_pci(dev))
-+		return 0;
-+
- 	/* Always use DMA domain for untrusted device */
--	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
-+	if (to_pci_dev(dev)->untrusted)
- 		return IOMMU_DOMAIN_DMA;
- 
--	/*
--	 * Do not identity map IOMMUv2 capable devices when:
--	 *  - memory encryption is active, because some of those devices
--	 *    (AMD GPUs) don't have the encryption bit in their DMA-mask
--	 *    and require remapping.
--	 *  - SNP is enabled, because it prohibits DTE[Mode]=0.
--	 */
--	if (pdev_pasid_supported(dev_data) &&
--	    !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
--	    !amd_iommu_snp_en) {
-+	/* Apply device specific quirks */
-+	if (quirks_force_identity_mapping(to_pci_dev(dev))) {
-+
-+		/*
-+		 * When memory encryption is active, some of these devices
-+		 * don't have the encryption bit in their DMA-mask and
-+		 * require remapping.
-+		 */
-+		if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-+			return 0;
-+
-+		/* DTE[Mode]=0 is prohibited when SNP is enabled */
-+		if (amd_iommu_snp_en)
-+			return 0;
-+
- 		return IOMMU_DOMAIN_IDENTITY;
- 	}
- 
--- 
-2.31.1
-
+>
+> Best,
+> - Tomasz
+>
+> >
+> > Changed in v1:
+> > - Added more comments
+> > - Rebased on v7.2-rc1
+> >
+> >   drivers/iommu/riscv/iommu.c | 32 +++++++++++++++++++++++++++++++-
+> >   1 file changed, 31 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> > index cec3ddd7ab10..c009c1906e23 100644
+> > --- a/drivers/iommu/riscv/iommu.c
+> > +++ b/drivers/iommu/riscv/iommu.c
+> > @@ -464,13 +464,43 @@ static unsigned int riscv_iommu_queue_send(struct=
+ riscv_iommu_queue *queue,
+> >   static irqreturn_t riscv_iommu_cmdq_process(int irq, void *data)
+> >   {
+> >       const struct riscv_iommu_queue *queue =3D (struct riscv_iommu_que=
+ue *)data;
+> > -     unsigned int ctrl;
+> > +     struct riscv_iommu_command cmd;
+> > +     unsigned int ctrl, head;
+> >
+> >       /* Clear MF/CQ errors, complete error recovery to be implemented.=
+ */
+> >       ctrl =3D riscv_iommu_readl(queue->iommu, queue->qcr);
+> >       if (ctrl & (RISCV_IOMMU_CQCSR_CQMF | RISCV_IOMMU_CQCSR_CMD_TO |
+> >                   RISCV_IOMMU_CQCSR_CMD_ILL | RISCV_IOMMU_CQCSR_FENCE_W=
+_IP)) {
+> > +
+> > +             /*
+> > +              * Resubmitting all commands submitted since the last IOF=
+ENCE that
+> > +              * successfully completed will introduce various race con=
+ditions.
+> > +              * Use a dummy IOFENCE instead of the illegal command to =
+prevent
+> > +              * hardware lockup.
+> > +              * Please note that some commands might be lost, includin=
+g:
+> > +              *  - The task from the illegal command itself
+> > +              *  - The commands submitted between the last IOFENCE and=
+ illegal one
+> > +              * However, this gives the user or driver a chance to ret=
+ry the
+> > +              * failed operation without resetting the enitre system
+> > +              */
+> > +             if (ctrl & RISCV_IOMMU_CQCSR_CMD_ILL) {
+> > +                     /*
+> > +                      * The head pointer is not updated by the hardwar=
+e, it
+> > +                      * still points to the index of illegal command
+> > +                      */
+> > +                     riscv_iommu_readl_timeout(queue->iommu, Q_HEAD(qu=
+eue), head,
+> > +                                               !(head & ~queue->mask),=
+ 0,
+> > +                                               RISCV_IOMMU_QUEUE_TIMEO=
+UT);
+> > +
+> > +                     memset(&cmd, 0, sizeof(cmd));
+> > +                     cmd.dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE=
+,
+> > +                                             RISCV_IOMMU_CMD_IOFENCE_O=
+PCODE);
+> > +                     memcpy(queue->base + head * sizeof(cmd), &cmd, si=
+zeof(cmd));
+> > +                     dma_wmb();
+> > +             }
+> > +
+> >               riscv_iommu_writel(queue->iommu, queue->qcr, ctrl);
+> > +
+> >               dev_warn(queue->iommu->dev,
+> >                        "Queue #%u error; fault:%d timeout:%d illegal:%d=
+ fence_w_ip:%d\n",
+> >                        queue->qid,
+>
