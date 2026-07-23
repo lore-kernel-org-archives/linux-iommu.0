@@ -1,30 +1,31 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23B3326A0A7
-	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 14:19:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 415F433A71B
+	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 14:19:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784816393; cv=none; b=YjTGhlMccc+qFqXqDF6sM9P8wJJy+SHotOwTORugc5bhULvXwgfftTQ5oFOZarlglfN+ewhEaxfU7e6UT1N+VoU7rG1Z9mSqnjXd7ykJu+WTck9iKypAUdnYjTJdnIEVn57TTsRgAiIGex5xvwO6P8sjGURNVlADl9XqH53Qa9U=
+	t=1784816394; cv=none; b=SzDK1RJJqKeJN4QZcsxjtDjWcamcsy5lA0ARIG0Ui75EOdpeB651Z+HmXjE2J8OqC2TReELkyNo/gv5hrIN8m0InOdSNCn4CvifrxQbpIAxw5qa66i1iTPAzzR4ulKDwMX5+VLUEOOGEC1cxteWFqU18+TfIO1APjmBpr58pk/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784816393; c=relaxed/simple;
-	bh=xotGZCcqGk4Abt5amgAtbtEB69CUE008GfZhtAtUor8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VT6kumw5oWQlqc1++bFR7e/F1z+TAjtxKngjOS5K9vYhhf39zUgyVpv80G0r/0V0sW46z7rIuecHVA4c/I14Q3fsG4HhxFsCERYyHKnQQAR2DpkrvJUwaa+oVmtrv1ETm1KDdxN3SxSrhQ3rkRytiYF3TDKBb/8N6rZ6WnR3WdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=vTsWg/h+; arc=none smtp.client-ip=217.140.110.172
+	s=arc-20240116; t=1784816394; c=relaxed/simple;
+	bh=EwrQVot4cmcTM5KcsFRbSmgUmpJMtRHsIr/Kjf+gCrA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=JlqEx3Lc4m+ugWYBQ2Lms2YBViCsFPnDaAPtRRsqF9RR5aZT+kircnSYGbi2eMhF+GY4hd6MvLuZSPSAgz3NUB/Tl4l8zx/qHyS5MhuzBHe58AFXOYhIEXuSljEXgKKUOK1HxYTYVS14PoK7TM6BwPwf8LAdCY5XeHNkbyV9+A0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=IA8sgFuj; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="vTsWg/h+"
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="IA8sgFuj"
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 07B471477;
-	Thu, 23 Jul 2026 07:19:46 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 764C31595;
+	Thu, 23 Jul 2026 07:19:47 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 091D03F59E;
-	Thu, 23 Jul 2026 07:19:48 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7DBDB3F59E;
+	Thu, 23 Jul 2026 07:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1784816390; bh=xotGZCcqGk4Abt5amgAtbtEB69CUE008GfZhtAtUor8=;
-	h=From:To:Cc:Subject:Date:From;
-	b=vTsWg/h+6NaqsdqnazNd81BA5VKVRkVpxobgONsG0oHUSLSI7QJZRRM3uUKG7XOpl
-	 O0BqmyIr2Y5SqrV1ITi890y+nUIEvHiHl2o40kuE6r/YBOvx4gXuS/6VAktN+VEDsv
-	 fLCgQwEX2sgTtE547hUgAlXJ1owsHwvWTYoZ7FII=
+	t=1784816391; bh=EwrQVot4cmcTM5KcsFRbSmgUmpJMtRHsIr/Kjf+gCrA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=IA8sgFujhWScnzYq4HUs032KSzT3/hjhpGOUSLQAmTkKZyNLCkpOuc8iiyjvu9izo
+	 sHLs2VYxZNjrVscKNyJyMQM97bqaruSkaS4YYkMJrx3R/7nfmOP56y0TUnU7d0CCVo
+	 Bfj/CEU0FOGuNrOv9slsxT9rToE7VSQz166kD94s=
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org,
 	catalin.marinas@arm.com,
@@ -33,10 +34,12 @@ Cc: jpb@kernel.org,
 	jgg@nvidia.com,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 0/2] iommu/arm-smmu-v3: Fix SVA vs. HAFT issues
-Date: Thu, 23 Jul 2026 15:19:42 +0100
-Message-ID: <cover.1784814923.git.robin.murphy@arm.com>
+Subject: [PATCH v2 1/2] arm64: Add override for MMFR1.HAFDBS
+Date: Thu, 23 Jul 2026 15:19:43 +0100
+Message-ID: <d7b31cbcd984c1efa61d2fc97111150cc18e21b0.1784814923.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.54.0.dirty
+In-Reply-To: <cover.1784814923.git.robin.murphy@arm.com>
+References: <cover.1784814923.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,28 +48,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-v1: https://lore.kernel.org/all/878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com/
+In general it might be nice to have the ability to disable hardware
+access/dirty bit management for debugging or performance comparison
+purposes without having to rebuild the kernel. However once FEAT_HAFT
+comes into the picture we also start to have a real functional concern
+where the decision to use HAFT based on the boot CPUs can prevent SVA
+or late-onlining if SMMUs/CPUs are later found to lack HAFT support.
 
-Per the discussion on v1, the aim here is just to make things safe and
-functionally correct for now, and now with a command-line option for
-distro users to get themselves out of a corner if they really need to,
-I think that's reasonable enough for HAFT being a very new feature.
+To that end, add the appropriate MMFR1 override, with an easy "nohaft"
+alias for the significant case, partly since the feature/field naming
+isn't the most obvious, but also so it could potentially be redirected
+if someone wanted to attempt a higher-level means of turning off just
+HAFT usage independently from FEAT_HDBSS in future.
 
-Thanks,
-Robin.
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
+v2: New
 
-Robin Murphy (2):
-  arm64: Add override for MMFR1.HAFDBS
-  iommu/arm-smmu-v3: Add HAFT support for SVA
+OK, turns out this was actually incredibly easy, thanks Marc for
+making the framework so idiot-proof!
 
  Documentation/admin-guide/kernel-parameters.txt | 3 +++
  arch/arm64/kernel/pi/idreg-override.c           | 2 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 5 +++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 9 ++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 3 +++
- 5 files changed, 21 insertions(+), 1 deletion(-)
+ 2 files changed, 5 insertions(+)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index b5493a7f8f22..7f23e5b8dc44 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -565,6 +565,9 @@ Kernel parameters
+ 	arm64.nogcs	[ARM64] Unconditionally disable Guarded Control Stack
+ 			support
+ 
++	arm64.nohaft	[ARM64] Unconditionally disable Hardware managed Access
++			Flag for Table descriptors support
++
+ 	arm64.nomops	[ARM64] Unconditionally disable Memory Copy and Memory
+ 			Set instructions support
+ 
+diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/idreg-override.c
+index bc57b290e5e7..0e051fec5afe 100644
+--- a/arch/arm64/kernel/pi/idreg-override.c
++++ b/arch/arm64/kernel/pi/idreg-override.c
+@@ -64,6 +64,7 @@ static const struct ftr_set_desc mmfr1 __prel64_initconst = {
+ 	.override	= &id_aa64mmfr1_override,
+ 	.fields		= {
+ 		FIELD("vh", ID_AA64MMFR1_EL1_VH_SHIFT, mmfr1_vh_filter),
++		FIELD("hafdbs", ID_AA64MMFR1_EL1_HAFDBS_SHIFT, NULL),
+ 		{}
+ 	},
+ };
+@@ -246,6 +247,7 @@ static const struct {
+ 	{ "arm64.nomte",		"id_aa64pfr1.mte=0" },
+ 	{ "nokaslr",			"arm64_sw.nokaslr=1" },
+ 	{ "rodata=off",			"arm64_sw.rodataoff=1" },
++	{ "arm64.nohaft",		"id_aa64mmfr1.hafdbs=2" },
+ 	{ "arm64.nolva",		"id_aa64mmfr2.varange=0" },
+ 	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=1" },
+ 	{ "arm64.nompam",		"id_aa64pfr0.mpam=0 id_aa64pfr1.mpam_frac=0" },
 -- 
 2.54.0.dirty
 
