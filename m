@@ -1,221 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F069430CC1
-	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 10:27:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784802453; cv=fail; b=Cuqj34U4ki9wl0aVlbM8rSQ8QTLjt9PlYsGVQzHsYEfuwZ7mnfv2LY30Mfqpb3qockKQHq2IlntwygKxJ2KQOi4xUXCxGLBITGCQDSv1NRzLnaVTgmZ/gViY0m7Flrp+DuaIp3pCpmftwiWA5422/82rZtyaNiDSYuUlB/Gk4no=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784802453; c=relaxed/simple;
-	bh=OcVzp0o+pgdL42ZbTLH4uV2+hcCPw4bsNkWqStjXVlM=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=PmrB7dqUk+Wev/tRJudybMu450Z8INUW79b+tDpgrRzuo/z/jvaSVpxm/vG7Jnug3NToy3yd8dfarHKFnVN1Ij2yfGKOR3gvCAglvJiyNR/Gp8R2s51IMHEVKgLWdcMeDuoAUxSC1Gcg4audp6+9oN3ontIlAdg9jjmoNBUkJdE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g9yJ4gB0; arc=fail smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FDF947254B;
+	Thu, 23 Jul 2026 11:44:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784807081; cv=none; b=je5Vr13QJwmnsP45wsGdOaEfQ6iiZHkxZSha3Ja6tpckQOv93mC0N49QxYjMbd/4KjCFs3DtQOzsbT8ArGLWiPE07XgKIIh3rDYepaYl54us0cfmOy2A13vWuSgfWWL1YxWFSpNcbcgsYcQdyrsf4L+hRGkEFBr5E4ojeIVsc2I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784807081; c=relaxed/simple;
+	bh=faN5FLxrifRz4PphzzLpmeGAPXxZHRR1gJE62V7Awnw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jIcy2VoFtq/S9OcnnBf21mlKy9ncV/TZ2jiZ8RSTWkj70yb4/pfR1Wb2TvK8nFwcsFfiQg8HN5ThE8Vc2KiCy+UW8txkyeNWqOdp9a5GRBkom5/ChjTnSsxs6XQVf2ZCzQtf7y5p3cI6IQpRNH3mbwueiwOfwieWDtV5gni46ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ln43s12Y; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g9yJ4gB0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784802451; x=1816338451;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=OcVzp0o+pgdL42ZbTLH4uV2+hcCPw4bsNkWqStjXVlM=;
-  b=g9yJ4gB0dktkJ/lABegdAbJIsyMRS3gi2gJI4iF4mPOgqOyXGpbR2fvw
-   fbx1LSIuC3VDuIyrl2K+EAOan6ybuWGlJI5H3Z7FvFCBgoBVHvu29NCQu
-   8L/ZfsXW1q++cRSv/65HpSf/x+tvWSgkNxVhPp8q5SOz3DjzIhToNsuBw
-   qlN0mWXGcgnHNC6o+zBhEorhfmUAsxVyrfYksVLTXXUuWwgbqNts/IZsX
-   qgPUlROkKLHEjtjKSo2wVyvBAUqwxgZD+H2mjfdLTFotiHATWd58MIIl3
-   rTNc/bbxzJax0UJiUekrypStl5U+hBM7mGZkRBgn8lx1cwkr6f65sTK8w
-   Q==;
-X-CSE-ConnectionGUID: qqS04/43T2m5/Thz0QTlCw==
-X-CSE-MsgGUID: +8iO+aDkQf2b2WJicglfHw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11854"; a="87995341"
-X-IronPort-AV: E=Sophos;i="6.25,180,1779174000"; 
-   d="scan'208";a="87995341"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2026 03:26:09 -0700
-X-CSE-ConnectionGUID: kZSPhi74QkinESUvK12mXA==
-X-CSE-MsgGUID: qXimyc+iTKO6eAzCsUBE4A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,180,1779174000"; 
-   d="scan'208";a="296588869"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2026 03:26:09 -0700
-Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Thu, 23 Jul 2026 03:26:08 -0700
-Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43 via Frontend Transport; Thu, 23 Jul 2026 03:26:08 -0700
-Received: from DM1PR04CU001.outbound.protection.outlook.com (52.101.61.39) by
- edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Thu, 23 Jul 2026 03:26:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wCckBSzB+aVpYmr2d2BtL2jOumOCd1X2ghdpnUuuKvPaBxkqNbonv3LHmRAE5di6OTyR8qaoRN2wQqvU20tWs2ol38Up2CEjazhNVakOsfVNRR9iNanKQEYqot1lBBy7+c9aaF8qv9j1/LkkGhTNO/zihGPaQXJnUiokplLDZiRVwwMB6TI27jO5KBFLtgOKueNmw2mt/LVsvtBd+h//eeuruqENDU9qnRKAfRFJl2x2mooaPPHVbqJ9EswTEOurFmdhYr+XokPl9sj0QAE9GHoJ3SolqBrMmLVQKyf45rW4iBUKkqBpAApkmyTsxzSvjSzaRVJagQKU62XdYQbIjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vn39aRCAQcaqXD//Cpu+kI0Bv1EuNE8Rkk6pCAhSb6Q=;
- b=FkQ3XO8nbqZe3D3sWgRmuglG2u62QZwqQa+r4uynT03YcI1ipfECTseFuGmwNhlOye+uFkUBNDyABtpKNcm3XEJehQi93Y/9erjxHyixGio82WmDXvnFtI8dw8hjiGhYgkvXiKXcCtGC7O7RbhtXwGqVOKbxsmTJxyh5zG9j5jcRw+AsRZdQBFskphu8+CatAPU4Vg+L+tq1u4WMyGkGmQGYfoTD2ZS4CqfmtxY14KRLtK+Sd5VsgL4iQRpgI1OfEUysXPLJQ5Qv0jaaSa7BW6cl3OcpOqUno4cz4ULK9gBcHwNX+2PReyzDdxjgvMs3HwXBpRAwsxaYBUcN1Sxhzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
- by EAYPR11MB9969.namprd11.prod.outlook.com (2603:10b6:303:2d7::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.10; Thu, 23 Jul
- 2026 10:26:06 +0000
-Received: from PH0PR11MB7424.namprd11.prod.outlook.com
- ([fe80::c448:1138:6981:52e2]) by PH0PR11MB7424.namprd11.prod.outlook.com
- ([fe80::c448:1138:6981:52e2%5]) with mapi id 15.21.0245.009; Thu, 23 Jul 2026
- 10:26:06 +0000
-From: Krzysztof Karas <krzysztof.karas@intel.com>
-To: <intel-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
-	<iommu@lists.linux.dev>
-CC: Andi Shyti <andi.shyti@linux.intel.com>, Robin Murphy
-	<robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	=?UTF-8?q?Micha=C5=82=20Grzelak?= <michal.grzelak@intel.com>, "Janusz
- Krzysztofik" <janusz.krzysztofik@linux.intel.com>, Sebastian Brzezinka
-	<sebastian.brzezinka@intel.com>, Krzysztof Niemiec
-	<krzysztof.niemiec@intel.com>, Krzysztof Karas <krzysztof.karas@intel.com>
-Subject: [PATCH v4 3/5] drm/i915/gem: Pull out size validation into a separate function
-Date: Thu, 23 Jul 2026 10:25:40 +0000
-Message-ID: <20260723102542.3245495-4-krzysztof.karas@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260723102542.3245495-1-krzysztof.karas@intel.com>
-References: <20260723102542.3245495-1-krzysztof.karas@intel.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TLZP290CA0004.ISRP290.PROD.OUTLOOK.COM
- (2603:1096:950:9::15) To PH0PR11MB7424.namprd11.prod.outlook.com
- (2603:10b6:510:287::7)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ln43s12Y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 822D31F00A3A;
+	Thu, 23 Jul 2026 11:44:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784807075;
+	bh=o/DcFd9/mnZO7b3nnVmoZyOJJ9tOaQwy/piU8sLT4a8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ln43s12Y44AFoc4g5LllpSgsZfo7p20SNLUK31snRDNNVdfR5jrTPeNm/3F77EDRo
+	 hSjhovfOSftQ4fVhiOZeYnyMjWZ1k0Chd9bd04nO65sXvBE6y/x/Am6CR/E33tmgO0
+	 uu/u+kyalq1SprJUurDLVNenh+RwyYyGDymJH090ITKmp/VzPobCZoLaXCjSM4kQTm
+	 XgLEbpkTKfaptZBPIA2ET+aVSXvYw7nwTsPevr7Kuw5nQQFWqKF1lUn0mVhsuqH6hU
+	 21wtETB3K+mRtS0GzVJEXsGuwHBsBXr7xW07gOrCXTnAIiQ7d9FaB97Ovy2Ae5JiyS
+	 dW9E0zWyWeN8w==
+Date: Thu, 23 Jul 2026 12:44:25 +0100
+From: Will Deacon <will@kernel.org>
+To: Xiong Weimin <xiongwm2026@163.com>
+Cc: iommu@lists.linux.dev, robin.murphy@arm.com,
+	linux-kernel@vger.kernel.org, joro@8bytes.org
+Subject: Re: [PATCH v3 0/2] iommu/virtio: Probe fixes for proper driver state
+Message-ID: <amH-mV8IdK7lwVk5@willie-the-truck>
+References: <20260714025913.2042-1-xiongweimin@kylinos.cn>
+ <6A61897E.2B9DC0.17686@m16.mail.163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB7424:EE_|EAYPR11MB9969:EE_
-X-MS-Office365-Filtering-Correlation-Id: 337aafdb-39e6-4f2e-7e83-08dee8a4cde4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|56012099006|11063799006|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info: z17gBtHLPZmmb0x+w7OE4tEQ0Q61M7NrWP40glFqGJE9l9hU6VlGLtRPkbKBWOKequYphS2+i2TA9HiDJiC5YYFBgLplunQv/6PsMkHDzSYNcLEwHd+/1frtfNn1KhWEKrTwr9HHvLgk2SomUkXVhnG792UvjDEGjt3klW9+Vnq+/2Sv15udoT7xBwdItfj3fZc9W3fLeXCl2nVxWDYQzarzlRrktY6cANZt351YQVLirGEMzpaPPpkvhvoGRM+WNLtNNWi2GZOMX6FBj9BvGwTYgjbbBxOmpbNnvwhUNbSNMqEiHgknH2ARUa6CSHUmbbpPQdEEslDtxxeWhLN07KdW2Zs12H2lEm+ll5YfXyI0Fip3btck0xLW6L45OGLs8naP19YwoRbmTJkBcgRGFYr0ISM/Ge/tgkGJM7XBw39QqWP5P+I84WNvBxxfiqbIUBvtcqIntZdnvCEThTLY5Dv/KKzcf4+osbqWytTo0aC5S+ys+ZJgQ/fk/Te58Dres2vdgNAmt6PsuyXEdsJ2TefhSjgzBwSl+RQKZaNPX7NtxwCJX+J0NIQVpmp4aMNBSHqHRe0ovUoDnhB9j6SxFIpS44k8Zkl8oFhC8REr1IgPIHZDMdrgPONVTz5RnkQgLlHzu60nckIjIlMKoV9+0bzfetocVBrsLttmB0VPqPI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7424.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lliqp7QNIxkPvMxrwTTqluMAfD3N7AZ1I1Gk4jAOvhlsRfqfVQjewHwTwxGP?=
- =?us-ascii?Q?Sl3BENp/fWFmU+G2ezUpkH1oizB3vSpUq/AckR6308Zk0nWOmh3ZIBa2Hr2W?=
- =?us-ascii?Q?OQNKUbVmChDn+vNDcWF5FKmAzxlfKAiHey2E7d4ZU1YCvZakh5DMbqWTZo5F?=
- =?us-ascii?Q?gCVBkvJq528fHe8iIomIa1xiXAK1oaGXy/jWWEACIlgVXJOFH6PMbSlEEdEo?=
- =?us-ascii?Q?Cw1LL/RkaZ34kKjjmCGgbOZtRZk0i7YK8lbVtyah3F1gqxOViJloPesk+pKR?=
- =?us-ascii?Q?Yhi2Pb1uWCZ/AOfHTSOG1orReTLb9gN5FREj5st+04XnK4DLpvFBPAOvR5BZ?=
- =?us-ascii?Q?0ki+vkB+f8A2cDNoqLU9d38k5HrjK2npnyVhImg83v5FyMkHv9CFCR+YI/1E?=
- =?us-ascii?Q?uKVrPnWpbvA9kQSRG/k5Uus3IhRKkLbREAl1UspXAc+fEXDnGgOA+WekIGJI?=
- =?us-ascii?Q?rV5+yCIDPOB0hdE/MYvh4KJciRcHOPmWIuuuFBJ2N/ZjYobOJvEDTMcnS7Tw?=
- =?us-ascii?Q?1B6K0QIbpuKk8DldLqaCWqNWlkPhZZK3Lp0vYV76C7E2otN1tYoOOHytirGT?=
- =?us-ascii?Q?BDzyoYGg8jZW9kuiVxmaxaBM9Fx7awOAP0hiTNINYKfpGQegH5uDbBNs6lYY?=
- =?us-ascii?Q?Q+pNgUO2yJfYfH/lsCxe4w6ijTNfd3JWTNnYOVLgMvDw0izFVr6JX0T/5YIQ?=
- =?us-ascii?Q?3sQSEd4Z/CwcR6ASM4D9KRMNX2IUpPrjd5KJzGR87Be+WT7Ks5vy27WtQcFc?=
- =?us-ascii?Q?EL7olzkpS3OqROIVtBe2z0E89/B9/iFRYTKrqlqrw4q4nh4q4dLBl3cs5zTe?=
- =?us-ascii?Q?2Sa4RRkvesNgOzGaHMLDi9xWi9k6ThMjn7MZk4B+1W31q4KpW5xqWongtAOd?=
- =?us-ascii?Q?22HZIOLckmMTktPYC+gGHLxkMlL8+P/49A0gv9dUWly3SNhvBTyi56uRj6tK?=
- =?us-ascii?Q?2skAj8oDhMig6PqJjFmAhUAQtwK3VYEF3HkYnFKVhim0Ra2DUoA84TfH6pS/?=
- =?us-ascii?Q?F1maTNeEUJOFAmXk+YIK55GsJZodA0rmSEfCJjmjn2ubH8QaZHzpOWm6kHUY?=
- =?us-ascii?Q?er6tl9M5HnG/hqPz/fggM2/xpNYLZQaW4wYn+YswsOoF8ChTwRA/PASJrr6g?=
- =?us-ascii?Q?myE+DE84OINqShmCF+ku9Ov8vW90510AJDKE50zt6mnueqWVw1ARXsm+tKbI?=
- =?us-ascii?Q?adDiDvCiFb7YSjuXSDUUJRwudrWgOfm/pGukF7+S0odE2fSPOy1I46xqKh4w?=
- =?us-ascii?Q?gzksfpsor5KR8cIMhkRxGyiXgFqZlSM7dWisdkNyWzZbF4rZlAv4c0dgJhoa?=
- =?us-ascii?Q?AuAGDx77m5V9oLz04g355QfVd0aEDYll3T+wyY6a8/RTAUdXusmelhwBXbO3?=
- =?us-ascii?Q?edMr4XsGvl3KV1qa8QabmNWi4wuexsMI64Hxgar+W+XjntLdOSmvsAheU6h9?=
- =?us-ascii?Q?JQPMtlLzlQrYp3YvV5WuBqWd8VSZ3GwPZOoh53ldvz6tu655BPo1FeztUCVd?=
- =?us-ascii?Q?Wn7WdBWn486bRMsCwWoMsM77Su4p5d/YXXll+75KtvixV3OubnK7lBL1+B02?=
- =?us-ascii?Q?hy7sbI8Z060hFxnFlCJMX6G7xMvPj+ed9z7xSGZA/R9qkfionnCtzhpK6GLy?=
- =?us-ascii?Q?olSt+fX9/u49e74DXtXslqPEdpUDjF4hXSABg3Hr1aEF7GJqOKnyUUI/QnDk?=
- =?us-ascii?Q?V9ghScgaW3kgbUc0IV9jbEp82wMTDKeaISfOhNA9QaxJ0erbaVStQX6P9DQT?=
- =?us-ascii?Q?k/4NN1oRYVlX+L6enzCSDQbprvRAa+o=3D?=
-X-Exchange-RoutingPolicyChecked: M4bAoxwDqdU+Kuq5FGdWyt6m9BJTua5geoeHUVVHEmq8ZX5BiyvJAAkQrz4APikCKyFrfLFY1nxVUlAGt6SQY+UrSuQdKtpA8tyYDUs5zAaXCI72y8e1PO9wMztjQtx0+OfaL635cyCWNsCkCzzpCIpZRyKqrInsmJOaFOO2A1d2U15Id5LxUfzAEx/72/lPjZcKW7UyQF7Z2k153qMw32jdPvIDpYIE9FiZZC14EB3wvlJJyvrp/yYM8imBYvuzMckOovnGPvx/Bn27DTnlET8xPouZtj2pqSzPgM2+fj7/r2pMl7sSSeD+5ZOidJAo6nepCoa8TuNquJ1cBG8OYw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 337aafdb-39e6-4f2e-7e83-08dee8a4cde4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7424.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2026 10:26:06.1441
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jV6FCtgxnSRmaCPGw1rm+tjtiuLmZ4OZ3K1FNlhhmBSG85mN4weyBwU1IzrcdYx/vivzMB4/KLz8MCm5IucOYjCrWEsijm+ClxCfemwn0Wc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: EAYPR11MB9969
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6A61897E.2B9DC0.17686@m16.mail.163.com>
 
-shmem_sg_alloc_table is a very large and hard to read function,
-so reduce the number of operations it is responsible for by
-placing "size" validation ind "page_count" assignment n a new
-helper.
+On Thu, Jul 23, 2026 at 11:24:46AM +0800, Xiong Weimin wrote:
+> From: Xiong Weimin <xiongweimin@kylinos.cn>
+> Subject: [PATCH v3 0/2] iommu/virtio: Probe fixes for proper driver state
+> In-Reply-To: <20260714025913.2042-1-xiongweimin@kylinos.cn>
+> References: <20260714025913.2042-1-xiongweimin@kylinos.cn>
+> 
+> This is v3 of the patch series. v2 is now obsolete.
 
-Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
----
-v4:
- * Changed helper function to validate size and set page_count
-  (Janusz);
+Sorry, I'm going to ignore this until you figure out your mail setup. This
+is a cover letter with no patches in reply to it but meanwhile you've also
+sent some new v2 patches at [1], one of which has already been rejected by
+Jean-Philippe in a previous (identical) posting [2].
 
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 30 +++++++++++++++--------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+Will
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index af195db63038..f35b7efa1fc2 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -62,6 +62,23 @@ void shmem_sg_free_table(struct sg_table *st, struct address_space *mapping,
- 	sg_free_table(st);
- }
- 
-+static int set_page_count_from_size(size_t size, unsigned int *page_count,
-+			 struct intel_memory_region *mr)
-+{
-+	if (overflows_type(size / PAGE_SIZE, *page_count))
-+		return -E2BIG;
-+
-+	/*
-+	 * If there's no chance of allocating enough pages for the whole
-+	 * object, bail early.
-+	 */
-+	if (size > resource_size(&mr->region))
-+		return -ENOMEM;
-+
-+	*page_count = size / PAGE_SIZE;
-+	return 0;
-+}
-+
- int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 			 size_t size, struct intel_memory_region *mr,
- 			 struct address_space *mapping,
-@@ -77,16 +94,9 @@ int shmem_sg_alloc_table(struct drm_i915_private *i915, struct sg_table *st,
- 	unsigned long i;
- 	int ret;
- 
--	if (overflows_type(size / PAGE_SIZE, page_count))
--		return -E2BIG;
--
--	page_count = size / PAGE_SIZE;
--	/*
--	 * If there's no chance of allocating enough pages for the whole
--	 * object, bail early.
--	 */
--	if (size > resource_size(&mr->region))
--		return -ENOMEM;
-+	ret = set_page_count_from_size(size, &page_count, mr);
-+	if (ret < 0)
-+		return ret;
- 
- 	if (sg_alloc_table(st, page_count, GFP_KERNEL | __GFP_NOWARN))
- 		return -ENOMEM;
--- 
-2.34.1
-
+[1] https://lore.kernel.org/r/20260723095100.1-xiongweimin@kylinos.cn
+[2] https://lore.kernel.org/all/20260709095518.GA1752964@myrica/
