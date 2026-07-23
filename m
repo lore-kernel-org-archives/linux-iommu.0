@@ -1,105 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B385B3C1097;
-	Thu, 23 Jul 2026 21:02:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F6AB36AB5A
+	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 22:21:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784840569; cv=none; b=tiFOQdwXJ0EGykBaGWEgV6uqDrdMtLHc/l5cXCFJ7P5sxoAJB2j+RQNKHk1znTyYbDfkiTktZQ1Q4/Z32LEMcO0KbSlrkugyfQvpGCUWiaXD+XEgFb4zN+ZS9SM2EP/TLGRByWQnDGbCdEiQePI1gEt6u8fdmi1Q77ApSORl4Ls=
+	t=1784845300; cv=none; b=jg/JPuerBDVvK18yx+/uOhCeNEUGvhGTcFMjifqOMtCJNYhsFVbVlml7ou1ciD3H2BIQobKWib7xJ3ipGtAWzqbl4CT0bT6hId/OvNNsQCVt1KQDctRl6zdaLrf6b3oYd38Vtp8IhfFbCm5LD6jg0XnFv9RJVFDqQrrN9cKsyK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784840569; c=relaxed/simple;
-	bh=YjNRzJD2CRV1QZk0fZHE8UwrrZonxcGYW8gLmOB6pnA=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=GKgpw1cbYVCafAPMxLAv9A5ZVC9ap1SpkBjQEzligN8sltBdI6Nu4aLNEUJbeYLSvw1ryp668bSKqmidjxUXDVlySIiruYggPHNRWmcWkHj2mlDJQdEWoJcPXMR6IfibBASOqpB1AQqPf6ZcleWCp1LlPBOrfD/jDVRvQSck9tg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O+GNuK1J; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784845300; c=relaxed/simple;
+	bh=jRjNU63euG8u6Q0ohvAKCusnzjz1gtBjg+sRRcaZvYc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HQ8g5/ThVh8MlJnSz9GJmltrz18bzdgkG4b2z0wyEPkbEmJTVAMM7Yyb/03X9ZXfB+sfuu1thRdlLvu21RKK3xiU5kww9YCt0chB300RKfNhFWAjQF8ihHKPnBMiTRm3NsShGOrjfQE9m6iR2797XPwzw7nwUUsJLRZvQX7wi6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Wwzh2zQj; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O+GNuK1J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2966C1F000E9;
-	Thu, 23 Jul 2026 21:02:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784840568;
-	bh=8Aq0VIIJ8LKClnnjnBMW8rUxAJy/+/z70CBPVRyzrLw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=O+GNuK1JbjE16BdqOXqI8IKCVj+MdNkhqVyqEb4qzBB4AH09EWLP83uZieUjayUPr
-	 rGMnTc3nG2DuHMEFQWs5jTM4Hne7LNYtnPmpeO0E3oJ1SSPvGYITVWwLL12zs4HJ59
-	 m5VE//wKqmA7hw/MzeBVd2YuUAFb6aKv2dJAQqGzoL4eXVGhA9NHgEeQ1N2KCP7I75
-	 0xHu5KtZoambog7Ju7R8yKcayHleu8WLHurc/ijKaStanCfIl8tMs70rP6SOwxCJUF
-	 9qthbt0O3H3JUglxSJuVDrt0bFfTZRDvsYoMrhrVAw7UnJyIrLIHTBl8jJHuKl3qYQ
-	 XkK04+eusd1kg==
-Date: Thu, 23 Jul 2026 16:02:46 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Mario Limonciello <mario.limonciello@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org, linux-pci@vger.kernel.org, will@kernel.org,
-	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
-	bhelgaas@google.com, alexander.deucher@amd.com, jgg@ziepe.ca,
-	Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Alex Williamson <alex@shazbot.org>
-Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
-Message-ID: <20260723210246.GA856455@bhelgaas>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Wwzh2zQj"
+Received: from localhost (unknown [52.148.171.5])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 2CEDE20B7167;
+	Thu, 23 Jul 2026 15:21:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2CEDE20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1784845280;
+	bh=0xpxcb1kD++/7ds8cxGz7zRhCeEmlS8zeWkpqy5r6UI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Wwzh2zQjr3xmAuvDfe18XRboCe+xANsOpQ6QRgj3mc6pTfti+ngXxEeiG36Kmj5fL
+	 A+W+vzxRZI6EorRnX3zMDp8qF43D6dKmF7MXXzsbIzz+9RagiaYXERdVOhZwIpARyx
+	 tCezr3yT+4iMq7vVOR7GNIU+KftKHTnC7VcDFICM=
+Date: Thu, 23 Jul 2026 15:21:32 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+ wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+ namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+ anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
+ haiyangz@microsoft.com, decui@microsoft.com, longli@microsoft.com,
+ tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, joro@8bytes.org,
+ will@kernel.org, lpieralisi@kernel.org, kwilczynski@kernel.org,
+ bhelgaas@google.com, arnd@arndb.de, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V4 1/9] mshv: Provide a way to get partition ID if
+ running in a VMM process
+Message-ID: <20260723152132.000033d0@linux.microsoft.com>
+In-Reply-To: <20260718021949.926306-2-mrathor@linux.microsoft.com>
+References: <20260718021949.926306-1-mrathor@linux.microsoft.com>
+	<20260718021949.926306-2-mrathor@linux.microsoft.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <70e6d40b-3e13-4efd-b1e7-62195ff66e91@amd.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-[+cc Gerd, Alex]
+Hi Mukesh,
 
-On Thu, Jul 23, 2026 at 02:58:14PM -0500, Mario Limonciello wrote:
-> On 7/23/26 14:53, Bjorn Helgaas wrote:
-> > On Thu, Jul 23, 2026 at 11:32:49AM -0500, Mario Limonciello wrote:
-> > > On 7/23/26 11:23, Vasant Hegde wrote:
-> > > > On 7/23/2026 9:41 PM, Mario Limonciello wrote:
-> > > > > On 7/23/26 10:59, Bjorn Helgaas wrote:
-> > > > > > On Thu, Jul 23, 2026 at 06:15:48AM +0000, Vasant Hegde wrote:
-> > > > > > > Certain AMD GPU's must always be in identity mode. Currently its enforced
-> > > > > > > using PASID check. It worked fine as most GPU's has PASID feature. But
-> > > > > > > this means, identity mode enforcement is done for all PASID capable devices.
-> > > ...
-> > 
-> > > > +static bool quirks_force_identity_mapping(struct pci_dev *pdev)
-> > > > +{
-> > > > +       struct pci_dev *root_port;
-> > > > +       int class = pdev->class >> 8;
-> > > > +
-> > > > +       /* AMD GPU vendor ID */
-> > > > +       if (pdev->vendor != PCI_VENDOR_ID_ATI)
-> > > > +               return false;
-> > > > +
-> > > > +       /* GPU class */
-> > > > +       if (class != PCI_CLASS_DISPLAY_VGA &&
-> > > > +           class != PCI_CLASS_DISPLAY_OTHER)
-> > > > +               return false;
-> > > > +
-> > > > +       if (pci_upstream_bridge(pdev) &&
-> > > 
-> > > I don't think you need to check for pci_upstream_bridge() to be
-> > > non-NULL.  You already checked that it's an endpoint by looking at
-> > > the class.  So an endpoint will be connected to a bridge of some
-> > > sort (either a switch internal to the dGPU or to a root port).
-> > 
-> > I think devices can be passed through to virtualized guests with
-> > no upstream bridge visible to the guest, can't they?
+On Fri, 17 Jul 2026 19:19:41 -0700
+Mukesh R <mrathor@linux.microsoft.com> wrote:
+
+> Many PCI passthru related hypercalls require partition ID of the
+> target guest. Guests are actually managed by MSHV driver and the
+> partition ID is only maintained there. Add a field in the partition
+> struct in MSHV driver to save the tgid of the VMM process creating
+> the partition, and add a function there to retrieve partition ID if
+> the current process is a VMM process.
 > 
-> None of the GPUs in APUs support SRIOV, so there isn't a VF to be
-> passed in to a guest.  But I guess you could pass the whole endpoint
-> in.
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
+> ---
+>  drivers/hv/mshv_root.h         |  1 +
+>  drivers/hv/mshv_root_main.c    | 22 ++++++++++++++++++++++
+>  include/asm-generic/mshyperv.h |  5 +++++
+>  3 files changed, 28 insertions(+)
 > 
-> When passed into a guest doesn't it end up associated behind a root
-> port in the guest though?
+> diff --git a/drivers/hv/mshv_root.h b/drivers/hv/mshv_root.h
+> index 1f086dcb7aa1..a85c24dcc701 100644
+> --- a/drivers/hv/mshv_root.h
+> +++ b/drivers/hv/mshv_root.h
+> @@ -138,6 +138,7 @@ struct mshv_partition {
+>  
+>  	struct mshv_girq_routing_table __rcu *pt_girq_tbl;
+>  	u64 isolation_type;
+> +	pid_t pt_vmm_tgid;
+>  	bool import_completed;
+>  	bool pt_initialized;
+>  #if IS_ENABLED(CONFIG_DEBUG_FS)
+> diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
+> index bd1359eb58dd..02c107458be9 100644
+> --- a/drivers/hv/mshv_root_main.c
+> +++ b/drivers/hv/mshv_root_main.c
+> @@ -1908,6 +1908,27 @@ mshv_partition_release(struct inode *inode,
+> struct file *filp) return 0;
+>  }
+>  
+> +/* Given a process tgid, return partition id if it is a VMM process
+> */ +u64 mshv_current_partid(void)
+> +{
+> +	struct mshv_partition *pt;
+> +	int i;
+> +	u64 ret_ptid = HV_PARTITION_ID_INVALID;
+> +
+> +	rcu_read_lock();
+> +
+> +	hash_for_each_rcu(mshv_root.pt_htable, i, pt, pt_hnode) {
+> +		if (pt->pt_vmm_tgid == current->tgid) {
+> +			ret_ptid = pt->pt_id;
+> +			break;
+> +		}
+> +	}
+> +
+> +	rcu_read_unlock();
+> +	return ret_ptid;
+> +}
+> +EXPORT_SYMBOL_GPL(mshv_current_partid);
+> +
+>  static int
+>  add_partition(struct mshv_partition *partition)
+>  {
+> @@ -2073,6 +2094,7 @@ mshv_ioctl_create_partition(void __user
+> *user_arg, struct device *module_dev) goto cleanup_irq_srcu;
+>  
+>  	partition->pt_id = pt_id;
+> +	partition->pt_vmm_tgid = current->tgid;
+I wonder how robust this mechanism is to identify target partition via
+tgid.
+1) what prevents a VMM process create more than one partition? in that
+case each partition would have the same tgid.
+2) IIUC, the lifetime of the partition is tied to FD, which is
+different than the lifetime of a PID. The partition FD can be
+inherited or passed to another process. The VMM tg can exit while
+the FDs can be alive. Then the tgid can be reused by another unrelated
+process, right?
 
-I don't think the Root Port is always passed into the guest.  From
-1ae8c4ce1570 ("PCI: Enable AtomicOps only if Root Port supports
-them"):
+Would it be more robust to based this on the partition FD instead of
+tgid?
 
-  On s390 and many virtualized guests, the Endpoint is visible but the
-  Root Port is not.  In this case, pci_enable_atomic_ops_to_root()
-  previously enabled AtomicOps in the Endpoint even though it can't
-  tell whether the Root Port supports them as a completer.
+>  	ret = add_partition(partition);
+>  	if (ret)
+> diff --git a/include/asm-generic/mshyperv.h
+> b/include/asm-generic/mshyperv.h index bf601d67cecb..e8cbc4e3f7ad
+> 100644 --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -350,6 +350,7 @@ int hv_call_add_logical_proc(int node, u32
+> lp_index, u32 acpi_id); int
+> hv_call_notify_all_processors_started(void); bool hv_lp_exists(u32
+> lp_index); int hv_call_create_vp(int node, u64 partition_id, u32
+> vp_index, u32 flags); +u64 mshv_current_partid(void);
+>  
+>  #else /* CONFIG_MSHV_ROOT */
+>  static inline bool hv_root_partition(void) { return false; }
+> @@ -380,6 +381,10 @@ static inline int hv_call_create_vp(int node,
+> u64 partition_id, u32 vp_index, u3 {
+>  	return -EOPNOTSUPP;
+>  }
+> +static inline u64 mshv_current_partid(void)
+> +{
+> +	return HV_PARTITION_ID_INVALID;
+> +}
+>  #endif /* CONFIG_MSHV_ROOT */
+>  
+>  static inline int hv_deposit_memory(u64 partition_id, u64 status)
 
-Maybe Alex will chime in and tell us more about non-s390 guests.
