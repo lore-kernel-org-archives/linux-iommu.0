@@ -1,71 +1,129 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011061.outbound.protection.outlook.com [40.107.208.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2049130BF69
-	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 03:25:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784777112; cv=none; b=WgmAYLvbNpIafvHJuH0ubWN/8d3akf9NvUzADTHDqrN/E15s47KUkGdjHzQ2Y2FzS8fI2KPmdZMFb42g9EXyyrtbIDY4c0sgIAg9zqG6TxJTlLCYPrBRwshtMpiiIHnKRfMfzfKmMQ8ZTl3vxn93A8cQwscxb1swbtkQQPdfQcM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784777112; c=relaxed/simple;
-	bh=1UN7C0fK0fJmjVpLzOE52hlhKm9fO3l/YRKJ9BTDRSs=;
-	h=Content-Type:MIME-Version:From:To:Cc:Subject:In-Reply-To:
-	 References:Message-Id:Date; b=R/Ddom0+eveRMKcsVSFR4dIS6oz9IoN/Lqd587OOQlxStqzzaqk9ovp+zbqC0dFjtkDv9F3AQVIvmEkVvIRTSabpnGBpnsnaJeM3DzFYY3eHnPO9UURGfAaE+tRJ8GQFenA4H2c0wl+GcbIQn2KC9e/KXIbRqUnt1DDEHKYo/ZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=IGsPYUbA; arc=none smtp.client-ip=117.135.210.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BC3F37A856
+	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 06:16:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784787376; cv=fail; b=qS/NuiOQfnJn6zsQgaP7vI5hs/jc5fzkX0ES8Q86aCavse+SLrV6ggqLmns0tMUleL5S+1U8x8qAlh5LCkggdm9QODr/JNgHKjhy12/WpVSsWnTYQiTeTyPMJZmA0QEBmEV1ST9WTRHcEh8+7zL0BeI/OV84JNjSuquIBATtYbw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784787376; c=relaxed/simple;
+	bh=Mdyj5Ajc+RonpxRHCRnovRvWPb/TkrWf7dDFV2K03CE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=By9fCjFyUMEZ1OwLXWA6ugn6mnWaSF+E7F9TnXVs/ogr3u92W6KTr0/5DeUjuoMuDD1jYtxbPM/fr1xsvs1JElvQEV3PoPFScawQvLvDMCqZ9783QSQZhqyufPMhwKE7xSKqx0mxJOmhFjM77xhhRrOwGWd2KdsqsAtdOxakCi8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=YNAta5sE; arc=fail smtp.client-ip=40.107.208.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="IGsPYUbA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Content-Type:MIME-Version:From:To:Subject:
-	Message-Id:Date; bh=1UN7C0fK0fJmjVpLzOE52hlhKm9fO3l/YRKJ9BTDRSs=;
-	b=IGsPYUbALmHC/4sSwIS3LgYoCmz86BFipasQevtA8PgRMTc6MAKK3f9IFUO6d+
-	ko9UvALDyQWscmhYx8w020aieqzr8kax4ypL3nI6+g0hO57P+5fwkj5tqigDDf6s
-	On3Jx9I968mJIQIjeHzNFA8ULeKiIt90jUlcQor24xz+Y=
-Received: from [127.0.1.1] (unknown [])
-	by gzsmtp4 (Coremail) with SMTP id PygvCgCnfhp+iWFq43qNIg--.20117S2;
-	Thu, 23 Jul 2026 11:24:46 +0800 (CST)
-Content-Type: multipart/mixed; boundary="===============2756315878551801467=="
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="YNAta5sE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OTEUXf4+hpDcfuE96f7lFdCjlCMj1RZJ0xtPRVka/QDFN5+bbGzrosOfb9ZanDwlTZP5nKN05rgxppRBqrKLGtv+g7IwUSA1tJOE46/5XV+GyWcZ3P9HVdM4vFflTqYAzatwIgPjvLnpJNfDWlknYk9/u3ga0TUwvrX4EKwIJ0rnldTf4bIwZeCjMHCh+JHtBT6vforrm6k0Abf/IMl6f1T5JNVSR12BVB1Fk6wbEZlCvAOmVpAm62pcVR95JO41s0Jvn5iKg+njLJSyozs8FSO0I9hToMGP9Xi9xVrlQB34QsmjiMHqQgG0Sm1hil9va6N0o0oJhuuToUl/WyNe6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3Eppdagq+EsDUeCqbI+mBNGddByBeZjBO06e7mPXZzs=;
+ b=gNSANf8EWhA2+eZTQbxCYHRm/o+fWpDJVHcHfh6ebhakUgbEfYofIDzhYzm4CLktY6dSdqm/6ZESPdMnF0FriArRlksDklg565Bf4fJm4Uyw69cpHRb7i1HHNf1xPVrgcIXIBmQ54G0rUMegR3mqq420YCQ63MPvc5AWd7ziMeGd5YA2VHYCYmER3BVC180ftebAHcGAG73KkxfeVAlDyBeYCfIOVVWW+nXHIl3Sx9PQeNn21vEUygLc52uAljc3z7T1uWJWzezBoqO8c0lyK/Jw99tOu3/ThvWrJG3cshfax/3dOenzJSLA8GJn01Q7wCPkDwLOODrVWSkfbDwkTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Eppdagq+EsDUeCqbI+mBNGddByBeZjBO06e7mPXZzs=;
+ b=YNAta5sEMjvGAkNYFXeu8vleOvEtNM/04gACgbdJDhxj6EPdxqtSOKYtynklUra1Tx+NwoS36KHUbpwX7Vu9KcpbvTEHEgol3YWKElV0X4NW4jxo7nmiNXKN+B0IC3jz8wF3id9a2d70Rwrdp2QIojeOPgAjKbKwiKB4LFpSsyI=
+Received: from BN9PR03CA0604.namprd03.prod.outlook.com (2603:10b6:408:106::9)
+ by MW4PR12MB6998.namprd12.prod.outlook.com (2603:10b6:303:20a::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.10; Thu, 23 Jul
+ 2026 06:16:10 +0000
+Received: from BN1PEPF0000468C.namprd05.prod.outlook.com
+ (2603:10b6:408:106:cafe::f) by BN9PR03CA0604.outlook.office365.com
+ (2603:10b6:408:106::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.10 via Frontend Transport; Thu,
+ 23 Jul 2026 06:16:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BN1PEPF0000468C.mail.protection.outlook.com (10.167.243.137) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.270.5 via Frontend Transport; Thu, 23 Jul 2026 06:16:09 +0000
+Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 23 Jul
+ 2026 01:16:05 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <linux-pci@vger.kernel.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>,
+	<suravee.suthikulpanit@amd.com>, <bhelgaas@google.com>,
+	<alexander.deucher@amd.com>, <mario.limonciello@amd.com>, <jgg@ziepe.ca>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH 0/2] iommu/amd:  Fix default domain selection for PASID-capable devices
+Date: Thu, 23 Jul 2026 06:15:46 +0000
+Message-ID: <20260723061548.10187-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Xiong Weimin <xiongwm2026@163.com>
-To: iommu@lists.linux.dev
-Cc: will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org, joro@8bytes.org
-Subject: =?utf-8?q?=5BPATCH_v3_0/2=5D_iommu/virtio=3A_Probe_fixes_for_proper_driver_state?=
-In-Reply-To: <20260714025913.2042-1-xiongweimin@kylinos.cn>
-References: <20260714025913.2042-1-xiongweimin@kylinos.cn>
-X-CM-TRANSID:PygvCgCnfhp+iWFq43qNIg--.20117S2
-Message-Id:<6A61897E.2B9DC0.17686@m16.mail.163.com>
-X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUSf-PDUUUU
-Date: Thu, 23 Jul 2026 11:24:46 +0800 (CST)
-X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbC7x50BGphiX4zjAAA3C
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN1PEPF0000468C:EE_|MW4PR12MB6998:EE_
+X-MS-Office365-Filtering-Correlation-Id: 38bc00dc-7deb-4b32-8ef4-08dee881e386
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|82310400026|36860700016|1800799024|23010399003|11063799006|5023799004|10067099003|56012099006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	DehZqERzV75Xa40LtXJgG1AMncDnVtZqTtQfbphsFcsIoXVGUdviay7oU9J/Obg1QK6QsXFKMexuRgFfhDoDiEG8vEuaqyaBS2lzAQGKJN2DgrJDTZg1b79s6ymp4Rljp62UpTCEUgmDZHIaONUR4RfxBrCmF/Do0SozwDHm0wb2wecAZ5+yItjoEBhgeX3T2TJZzULxYUNtVgrUmmCl+/nzM4C8zfA7Ekr3KX1ufEpQhfy/Pi0SrlHpmYvqoDZEGbLJK6m24W8bY4Aoa6bOTh2V5WjQAjgiRhPOkVb8uyvgojSEM41jIYVoJyGmeyF6sZOa5Rwee3uffD4FcfxsvszqgsMtIwUHLsOdrmUx4a58OEOAI8xvSeMoINlsS37vrfr4yXaXoRHnS1VEmnwIglOLGBXMDi/78ktnBYbjfJ5uVEPuubRhoDQuMlpWqdvUpZv+y7IOPHxZZW6xi9URWplVcJwl205S+zsn25jZre150NOZ+v8sSMtmNZ4XYnGrwMYPsSBGrK5oZ2sYYQjo+/iTVCrTIy5lIdZOL+CIXYTAnilhY4FyXX+aMcIHMgX6ae5Xfji8pKz77qb+kZbhq2xcCzufRpdvDFDzNV2qT3SUf62QcLbnryhVCeCgFjBSTrP9z9LITCgn+pr0S2uBPVTBrDQN5+aNVtMEsvSiuiut4KarfHXFQRXPruBH1al6RaoZG5cVB2eaMA9ZHLQVjQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(82310400026)(36860700016)(1800799024)(23010399003)(11063799006)(5023799004)(10067099003)(56012099006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	tZ+k7uHaFj/M79vUkayWIAYyIOGYBSZeQibA3AOlPnJRhlxKlEVb/fMqZ5KH/POPdEGcQz/Xn2hqxCBbWgda7Oqa/DzEPZSLielkbw0kPr+lSEaaZlO0+wQYBIjqnRElLM6bihi9lmC2xW8Nn1CS0ZknWQ9YZUZxy3PITlYyUlqDKQArzVsNdDNfg1weK+NQZ85tjNZFx1JSsR1KsNfNahbDGk/k0aB3GX7Ai8LpozTPgPMIxGpZEDproUFX+NpVvQKX1EmKtdoEvrzPH9RlffHONXMStICMvNNiAqgoVPxx3dTyvAMzk4PByV+u7UXNexB64HSbYOI79MuyQsppo1Mue7qAIOck4htFsbuG2gvPnOzfDocRFea5hmNJiwVeodR/ZiUootnNbCyc2Xgf+dYoHIEcCDdz6aQOtwuKzMidk0RUpDpP0sBvtFC+nUwn
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2026 06:16:09.8458
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 38bc00dc-7deb-4b32-8ef4-08dee881e386
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN1PEPF0000468C.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6998
 
---===============2756315878551801467==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="0000-cover-letter.patch"
+This series addresses a long-standing issue in the default domain
+selection path of the AMD IOMMU driver.
 
-RnJvbTogWGlvbmcgV2VpbWluIDx4aW9uZ3dlaW1pbkBreWxpbm9zLmNuPgpTdWJqZWN0OiBbUEFU
-Q0ggdjMgMC8yXSBpb21tdS92aXJ0aW86IFByb2JlIGZpeGVzIGZvciBwcm9wZXIgZHJpdmVyIHN0
-YXRlCkluLVJlcGx5LVRvOiA8MjAyNjA3MTQwMjU5MTMuMjA0Mi0xLXhpb25nd2VpbWluQGt5bGlu
-b3MuY24+ClJlZmVyZW5jZXM6IDwyMDI2MDcxNDAyNTkxMy4yMDQyLTEteGlvbmd3ZWltaW5Aa3ls
-aW5vcy5jbj4KClRoaXMgaXMgdjMgb2YgdGhlIHBhdGNoIHNlcmllcy4gdjIgaXMgbm93IG9ic29s
-ZXRlLgoKQ2hhbmdlcyBzaW5jZSB2MjoKLSBSZWJhc2VkIG9udG8gbGF0ZXN0IHVwc3RyZWFtCi0g
-UGF0Y2ggMyAoIlJlamVjdCBzaG9ydCBldmVudCBidWZmZXJzIikgaGFzIGJlZW4gZHJvcHBlZCBh
-cyBpdCB3YXMKICBpbmRlcGVuZGVudGx5IHN1Ym1pdHRlZCBieSBYdSBSYW8KLSBBcyBzdWdnZXN0
-ZWQgYnkgV2lsbCBEZWFjb24sIG1vZGlmaWVkIHZpb21tdV9pbml0X3ZxcygpIHRvIHRha2UgdmRl
-dgogIGluc3RlYWQgb2YgdmlvbW11LCBzaW5jZSB0aGV5IGFyZSBub3cgbGlua2VkIHZpYSB2ZGV2
-LT5wcml2CgotLS0KClhpb25nIFdlaW1pbiAoMik6CiAgaW9tbXUvdmlydGlvOiBTZXQgZHJpdmVy
-IGRhdGEgYmVmb3JlIGVuYWJsaW5nIHZpcnRxdWV1ZXMKICBpb21tdS92aXJ0aW86IEhhbmRsZSBp
-b21tdV9kZXZpY2VfcmVnaXN0ZXIoKSBmYWlsdXJlcwoKIGRyaXZlcnMvaW9tbXUvdmlydGlvLWlv
-bW11LmMgfCAxNyArKysrKysrKysrKysrLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRp
-b25zKCspLCA1IGRlbGV0aW9ucygtKQoKLS0KCjIuNDMuMAoK
+Currently, the driver unconditionally forces an identity domain on all
+devices that support PASID (Process Address Space ID).
 
---===============2756315878551801467==--
+This series introduces a more targeted approach: instead of applying identity
+domain assignment globally to all PASID-capable devices, quirks are added only
+for specific GPUs. All remaining PASID-capable devices are now allowed to boot
+with a paging domain, enabling proper use of page tables (v2 page table).
+
+In addition, this series adds an ATS (Address Translation Service) quirk
+for the "Radeon GPU WX 4100" to ensure correct operation when booted
+with a paging domain.
+
+Vasant Hegde (2):
+  PCI: Mark Radeon Pro WX 4100 ATS as broken
+  iommu/amd: Force identity mode for selected GPUs only
+
+ drivers/iommu/amd/iommu.c | 56 +++++++++++++++++++++++++++++++--------
+ drivers/pci/quirks.c      |  2 ++
+ 2 files changed, 47 insertions(+), 11 deletions(-)
+
+-- 
+2.31.1
 
