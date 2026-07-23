@@ -1,126 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F88C415F11;
-	Thu, 23 Jul 2026 09:46:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 27C3540B10C
+	for <iommu@lists.linux.dev>; Thu, 23 Jul 2026 10:17:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784799993; cv=none; b=EthHmA48uEyditzzD1KRcIcvNiD4ZldyWxaEVWz1DSLWoGiicIW2QHbHCQwZ5kjaU0E744/F1fnIOiWQUokSVZY11OsuRbD55WzksL7wK37NoiEBEj0WV51PT3x0OjKqY56avJvC34ItuI7nYHpJdBbPGjVmXuKQG/ixqpvk50g=
+	t=1784801853; cv=none; b=APzZQiugBjFTZe6EIfQqJHmLod1HXRMqOzZR5BBlc1kqGlnJHmLB5RdFtPzZJW8PScKMB0R8SoK+rrVZyOirfx7k021b1i8FvGHDdKAId71WVrtFOZwYVDdwGTUPJlCjjLycFMiKvx+EL1v/d9RCKKTuO+p43ncm6I//omD/Arc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784799993; c=relaxed/simple;
-	bh=I51YcB7e+RTugdi4EcB4Djcjqe67zrc/AJsdTHcGQXI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bj/tmroXc4w1RHz/ANa4sBdoWi+UAKpHWRGW5/4GMq0SAqv0YH6hGEM0mXcz6a14uhJDrS08y0/y7UBU8zHsuo1tfd5xT3LFC4LolMDEbsYo86B8ZPeN2MMvIQp96d8JH7JFUeu1nVC/3OLSKjNGVhark7c/fvEfq5qpArT+RYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BORfaAEg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784801853; c=relaxed/simple;
+	bh=L1m3MUf9HdB6smbydn/5kyJHGKIZREc1qWiC8Gfmw2Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eR9whBWb2xZats1OT4yzTgs3zD5PrFd+KyIbdxv3Yz4ku/Gj+R0smNoYTSxQ9MPc7iljQN+RnDNP7YyikrSAf0KjX36ayZApmwUOU7rwKicif64883RxIaNaUeWrg5Uz0N5G5Wfb75XTz0Gj9yhLCURt1EOpzyrzxQUrOR83JbU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=dDm9HslZ; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BORfaAEg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F9451F000E9;
-	Thu, 23 Jul 2026 09:46:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784799991;
-	bh=c0op309bUfGA0ctk/Gc5xRw/LObUAXSQRptCHu8HqRc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=BORfaAEge2bgsh1GovGRFQT20U8KHorncsr/Je6lcz0PutT6rInv5N412OjzzkKk8
-	 dhQrpekbotopVTjFwaNQK/reH7peBqOamowxX3NHAnHLDLwo7wRJ4Q0yzqxZ7RGBc2
-	 mnhyaTvavdKHoJiG6dIfg2QNSRwlznpF0b+D9ceDuUbf6+Xo2kczew4bwaF278ss/x
-	 qDUAHZNmNX+HXAbKw5Acszie/fh7C2yo/oqQHjMHEsnTnAogKclcpNYxJAMETetRyk
-	 uAgp9PGUeswlZGJ0oK5alUchC6wY7joT8jWl8zJVNayhioHnJ68Ok8ucNqvwDEYpC1
-	 SWGKwaK0Tp5kw==
-Date: Thu, 23 Jul 2026 12:46:25 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: dhu@x6u.co
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	David Laight <david.laight.linux@gmail.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Pranjal Shrivastava <praan@google.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	stable@vger.kernel.org, jmoroni@google.com, kpberry@google.com,
-	chriscli@google.com, viursachi@google.com, xuehaohu@google.com,
-	sashiko-bot <sashiko-bot@kernel.org>
-Subject: Re: [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk
-Message-ID: <20260723094625.GE110966@unreal>
-References: <20260623015459.1153884-1-xuehaohu@google.com>
- <20260722233932.3997681-1-dhu@x6u.co>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="dDm9HslZ"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 397561477;
+	Thu, 23 Jul 2026 03:17:27 -0700 (PDT)
+Received: from [10.57.84.160] (unknown [10.57.84.160])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 26FD13F86F;
+	Thu, 23 Jul 2026 03:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1784801851; bh=L1m3MUf9HdB6smbydn/5kyJHGKIZREc1qWiC8Gfmw2Y=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=dDm9HslZhm45IuPb1j5hpjkORQpy9s/ibxROOurSfSxxTLupEUTjDIM3R+MiA7P3b
+	 FeQUE7b5KDyyhVy0cjpTZGBE87mN8YsakvXmD6uUF0bDmF2sHHLZIzrP90P8GT+seF
+	 rkleTBScwDj7RkXQo3F8sIfE+lfvTQbwjsTBocrE=
+Message-ID: <2772e7ec-9310-4669-83dd-b0fd9d4f8b6e@arm.com>
+Date: Thu, 23 Jul 2026 11:17:28 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260722233932.3997681-1-dhu@x6u.co>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/dma: fix grammar in comments
+To: Will Deacon <will@kernel.org>, weimin xiong <15927021679@163.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org,
+ xiongweimin <xiongweimin@kylinos.cn>
+References: <20260714024502.188501-1-15927021679@163.com>
+ <amE5CSp8bTSjm-ii@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <amE5CSp8bTSjm-ii@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jul 22, 2026 at 11:39:32PM +0000, dhu@x6u.co wrote:
-> From: David Hu <xuehaohu@google.com>
+On 2026-07-22 10:41 pm, Will Deacon wrote:
+> On Tue, Jul 14, 2026 at 10:45:02AM +0800, weimin xiong wrote:
+>> From: xiongweimin <xiongweimin@kylinos.cn>
+>>
+>> Clarify two slightly mangled DMA-IOMMU mapping comments.
+>>
+>> Signed-off-by: xiongweimin <xiongweimin@kylinos.cn>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 9abaec070..2c28b951f 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -1489,7 +1489,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>>   		 *   based purely on segment lengths without needing to know
+>>   		 *   the actual addresses beforehand.
+>>   		 * - The mask must be a power of 2, so pad_len == 0 if
+>> -		 *   iova_len == 0, thus we cannot dereference prev the first
+>> +		 *   iova_len == 0, thus we cannot dereference prev, the first
 > 
-> Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
-> This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
-> first entry, resulting in non-page-aligned DMA addresses for all
-> subsequent entries.
-> 
-> While the underlying IOMMU mapping may be contiguous, hardware
-> DMA engines often require explicit address alignment (e.g., page,
-> cacheline, or storage sector boundaries). Passing unaligned
-> addresses and lengths can cause explicit failures in DMA descriptor
-> creation or silent data corruption if lower unaligned bits are
-> truncated.
-> 
-> In addition, a non-page-aligned sgl length will trigger an edge case
-> in `ib_umem_find_best_pgsz()`. In case of a discontinuity in later
-> buffers, we will have a `va` with lowest bit set to 1. That will lead
-> to `ib_umem_find_best_pgsz()` always return 0, and break the promise
-> to find best page size for the mapping on the NIC side.
-> 
-> Fix this by splitting the scatterlist by the largest possible page
-> aligned chunk within `UINT_MAX` (`ALIGN_DOWN(UINT_MAX, PAGE_SIZE)`).
-> This ensures all scatterlist DMA addresses and lengths remain page
-> aligned, while minimizing the total number of sgl entries.
-> 
-> Page-aligned entries allow the system to cleanly chunk payloads into
-> PCIe MaxPayloadSize (MPS) (e.g., 128 bytes, 256 bytes, 512 bytes).
-> As a result, this may help reduce TLP fragmentation in P2P transfers
-> and alleviate potential congestion within a logical PCIe switch
-> partition, especially when Relaxed Ordering is not possible due to
-> hardware constraints.
-> 
-> Reported-by: sashiko-bot <sashiko-bot@kernel.org>
-> Closes: https://lore.kernel.org/all/20260609165431.778061F00893@smtp.kernel.org/
-> Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: David Hu <xuehaohu@google.com>
-> ---
->  Changes in v3:
->  - Removed the type cast for `min` (David Laight)
->  - Reverted max ent size to be `ALIGN_DOWN(UINT_MAX, PAGE_SIZE)` and
->    updated commit message to reflect that (Jason Gunthorpe)
->  - Updated commit message to reflect that this also fixes an edge case
->    in `ib_umem_find_best_pgsz()`
-> 
->  Changes in v2:
->  - Updated commit title and message to reflect the switch to 2G chunks
->  - Switch to using 2G as the max sg entry size as it naturally aligns
->    with most hardware boundaries, while allowing compiler optimizations
->    with bit shifts (David Laight)
->  - Optimized away division calculation for `nent`, and multiplication
->    calculation for sgl address, by dropping the `for` loop in favor of a
->    `while (length)` loop (David Laight)
->  - Dropped `min_t` in favor of `min()` to maintain a strict type
->    checking safety net (David Laight)
-> 
->  drivers/dma-buf/dma-buf-mapping.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
+> I don't think adding the extra comma makes much sense here:        ^.
 
-Could you please avoid sending patches as replies? It severely disrupts
-the reading flow when using mutt's threaded view.
+Indeed, "the first time through here" is not a separate clause, it makes 
+no grammatical sense on its own. The existing sentence is correct.
 
-Regarding the patch,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+("it the address" does appear to be botched editing on my part though, 
+oops!)
 
-Thanks
+Thanks,
+Robin.
+
+(Whose email provider sends 163.com and various other domains straight 
+to /dev/null, not even quarantine...)
+
+> I'll hoover up your other typo fixes onto their own 'typo' branch and
+> leave it up to Joerg as to whether he decides to apply/squash/ignore
+> them.
+> 
+> Will
+
