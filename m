@@ -1,195 +1,181 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013064.outbound.protection.outlook.com [40.93.196.64])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE60039CCF8
-	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 07:35:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784878523; cv=fail; b=Zy7LiGi6Nvu3eKcVQah4FvRALKMzrA1+do/Dufv1d0CqGF3VlnG9XJvH5jQl8GIWgS6YmD3xyziK0545/2rDKYlQGrpfto0pfKCXq67SbhNmfIoCOgQjgO18phsyksYVzPLmVNQSQA9kxafzoXj8cIJ3dcVfSkGcwdi9Zwb3kAk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784878523; c=relaxed/simple;
-	bh=NIYi+73/qQIikaUwKX+NpxBhk0qAWrz90xVPl/cknkg=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=G1CT+5BvM1ignXQn3/pyScIIXpeDuOyRG1yohLNc8dKXjkgEXfPOECCs8HnAh/pXCeGnzaovPNS0eY0rdYu9IJ2vFHxWXwiiH0+3Neksevam1Ls8dSzmrEfcWIqct8mXdgFSR80hgf+3I1ia4mUPiUiatELlMX7N9KO6C8nJ/f8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Z1kLCIQA; arc=fail smtp.client-ip=40.93.196.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D3FD39B954
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 11:30:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784892638; cv=none; b=YuXBaWihCul9WiMrT86vo9FYBzNM4geobdC8my9OckaR159HxfqOHIka13MX6MqWQ2DWpSINv8wKcUFiYKCfaUmnBwWCm6HQcEwpV+NLODOG+NmsOCbwzCX8ArvpAV9FwT0PTibe0tJMRkWw8Q7qE6AjkiGYDvx7TTzSKgqIRts=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784892638; c=relaxed/simple;
+	bh=v9CE0NZgeV5DlI/DjX5s89yBEYtQGbY9EDY4vDxz7xw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f4OQYfcCTWL7122OA0iVh9czBwNP5fvaaGOnhp67lTHTWKGbj3DcclMHZ8+xI4Tfhz1TqPDlUaLkTP/7BlbwBN/YLC9oj2fJJclRnqQJKDTPU45ol06tqor68zfCnIvLGY5xnVz2qVRUHTYjaFqbxAWH1LM+mK0qdY08kayrWfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=AzYsxphn; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=IavHyyQD; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Z1kLCIQA"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TlgMMIEXy+bukH6wWck/8Ygw5VzUnDRIt5hPr4vbHiqpTzuVheufFdR+JiMRcbZYE4eDAKMazzdVdXtLpayyodvpD8cJC6+aRV3H2Amv+fhrI6fKuOgLpQCnI+OCHzr2+sRrQUaow9iDUK5Xvu29lkHwQvEv1d3ZO1IAeScanpstTC8el1G4zmYE1PY9gHPgy+CtYWN1bMMzKy5fRe5rbUm7Dq7YMAsh1xwTEMzzuCpQEDeNDGpiPX6WUJNUxuidGdTTpfNebnImmCcRw//UT7jY/M2vMQIA5UdVy/O8AM1UmZbdEs1K0rJnidOm8OjjSDcDkIY68weXf1jq6mNcVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HmNs6zlLLLzTGshwkLKmVl3NgvLBspeik4teEj7aPpQ=;
- b=CrHFitWPFa33mHL8zKucndprshRVTFjhVUPqw1b7eyOXvKtSf0aqb6s/3AVkwwTziknw0D7m1wx6QDhirUA6uBHor9jju1R67BBsS2Gbfsz9lgvLo4pA//EDa4cNqVBVVEtZbh5GM4vLILjM2YneOE1Q/3Nzeb1pux1oonXnZJcpcaXvYbN3WEqtFPWYVuUzBpmWORe85YlWWloypX2VHkpXPdYTITZqLQXI3sw2HABh0wcvWTtsTrqjQ2ljb6XkrB2Fyfoc5IkbmLOVG3atRvoanL+6CyS0wid2M6W/vfC3r5pFXzKq9TobH7oF20g3MhpBtY2TeoWsODM+5NW/Cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HmNs6zlLLLzTGshwkLKmVl3NgvLBspeik4teEj7aPpQ=;
- b=Z1kLCIQAOUPce/cY4K9ASQJMQJExCzHHvYU+T6D+QpSsc7wDYzOs6mZLhWb7mf4APHp4qnSchKJRNnisjdRiK/1JzniD0TSTxfIpYzkbB4HhT6LgKLF6hpuEvqi8HvENWEuDony2c/vAypWEYX9QgaFsoUHiWhl8Yt4iWo2Gp8Zo5/yXs8LWbPYJfzva8HBGcEBvJG8nGAeMshfBihRdTPuy7AKj2kg2J5RgQY7/CXLxciTeLERX0CjWAcgYEET4FguTLYStch/OmkP/luP7O6DQeXYmJEXqOM46JpKenXAoaKGk3BjH/svRQNr1DNB8qd/wxropUXBjsPN2y9osIg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
- by DS0PR12MB8217.namprd12.prod.outlook.com (2603:10b6:8:f1::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.11; Fri, 24 Jul
- 2026 07:35:17 +0000
-Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
- ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
- ([fe80::d9d1:8c49:a703:b017%6]) with mapi id 15.21.0245.010; Fri, 24 Jul 2026
- 07:35:16 +0000
-From: Mikko Perttunen <mperttunen@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>,
- linux-tegra@vger.kernel.org, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject:
- Fixing TegraDRM on multi_v7_defconfig / Enabling DMA API with tegra-smmu
-Date: Fri, 24 Jul 2026 16:35:07 +0900
-Message-ID: <erKxvAxkSpOaODz6rOpDbQ@nvidia.com>
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
-X-ClientProxiedBy: TYCP301CA0077.JPNP301.PROD.OUTLOOK.COM
- (2603:1096:405:7b::19) To SJ2PR12MB9161.namprd12.prod.outlook.com
- (2603:10b6:a03:566::20)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="AzYsxphn";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="IavHyyQD"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66OADaQv2720682
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 11:30:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=ifhK8jF0fZ9P81kr75lgN2ov
+	xxuOE8Gi3gW8iorSRjM=; b=AzYsxphnwEvoFrjj2ct2dVpTyT4wuylQpTaRYmk9
+	YwYg6Y2GF7tVOo39jVowCMUiobRWJ/NOoqfl0r5uCU9w7hRysnfmN30Vi+hGIjNE
+	Qp14rhVgwsUu2v6jVlo6bJ4Htd9c/L1VdD4Nkao5Ep75EfH9nrso9KUtrNqSkn7T
+	fRenBAkO8Ql3W397zwOCke9LdDKe/WfcKi/ZvvsEu+AMzLoZlZbhe8OfTyruRc6U
+	eOI8qlgT8zUfjmLnQajcrftnlz98Np+ysoCxK59j7r5EDmcLbQWIvAwsc45xGifn
+	DMq6efJCE4u2nWodMALhfjOLi2mft+PW2cvNL0PjgLKQKQ==
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fm5yagamg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 11:30:34 +0000 (GMT)
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-52769fc3f2eso5330141cf.0
+        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 04:30:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1784892634; x=1785497434; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ifhK8jF0fZ9P81kr75lgN2ovxxuOE8Gi3gW8iorSRjM=;
+        b=IavHyyQDhk/kOAyFhQ+HrcVBSE92NbMQheGP+U0tgBWtKa25x71W1sA4xAI+d9v1i+
+         b0aauwBZKo7QnEXuPsCicHXw4uXbJTAAozPa/S3wr8mtXTQmIzfueC8Tyk2LOQ8WEpjj
+         xy+EP6MZEU6jcAlNKAhulevMS5DZfcJHb/7AWJ+YahE4aGOUJevkEmH91ZYET4nbGDrl
+         rDW6C+M54IrkWjRgcnJIyjz3tjrN6RMXgPx3lrb9VFKemdovfoupMjNBIr/c4AyW4Fhm
+         kIsNI+3WcTJ3p+/htmXB8x96dKMGpQmiSpAXTYpvDNvax02SUXAZZrEQnnbwWjRercxV
+         VSMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784892634; x=1785497434;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ifhK8jF0fZ9P81kr75lgN2ovxxuOE8Gi3gW8iorSRjM=;
+        b=siBdOJKIFXRpKAt4YuLy3tNBNNZ/KgGfuKzg7a3APvJ8fFemgwm3SQbkeq0Q2vtDHT
+         Uj2spBq/YKHzvSf93A0KbSC4cTbWEh7tIw51YCQjolBrOSELGq/s76MKFLn4L9JzlsKN
+         F0UFz/A/SWpi0Uf5EGokzNvopAI2BqG9U+kUsyPxhDTitl178M3G+3OxmE+LcxnpQvr7
+         hysiuy6cTysS7/Uuv3DcWsMbfEi3zwi89K7Kv3AWRCj52VQ+gRqpzN3Z88fnOs3/vAWk
+         zU0dRp3wq8iRjColl+raaCNH/4yZhkp9QkNrfc4UY1FaU4Wckwb8Kb8CnORlcxXDJ2Av
+         lGpg==
+X-Forwarded-Encrypted: i=1; AHgh+Ro6AkBP0XkWvgjonqxdl42EOWTW3Id4e2ruez1Ky/nAZpjk2hqT2gmBHp0uRXX8XOF6qggB9w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YydWehsvj8AIwKeu50tUt+2ky4nRo3lDOJ24odGkuI/BfzZU6Os
+	SuVx6qKYRxyAf+rG+FdvGNJi8F39CpeWnNiC7Pmz8E0lf0Q669+SFJZ3o8k+bu1c94lF+7sT5sB
+	MYljwf+Cn8zwC7J1FGktyT15txsy/lA7c5XEwrYubfyt6Kba9YLrWYsJvWQ==
+X-Gm-Gg: AR+sD116Iu0fDapljkiaautcVya8d9ZYz2W5GT5YVdY7R0az7PU/fd79Tbhi5a2h3/8
+	QCWklVv08OYVEpg0PbKrgMyDOpITkMYBuiDdL7e7AtSRaxbxqyezqCau/dnIR6AaMktOY+uI41C
+	EtNesSujYgwrj9ujfoIDWkQFVMtNAf2esLSBOyK4u+Qj7WKJFE0YFacKtcopFhf7xk7G3ZPjMNr
+	pXLAgXV9KzYNLu/Evjf1VVlZ/fzAjSNBoNLHo6Okf3Rf4XjQa+yIuDPlMMr9tD8gPm15E5RoPOf
+	rDEUTHxXB2tVIFmpcqEV82+4n+9NiBwEf8LSEX44GYoKvmoGGGbT5jwN8mzZOAMUKe7ZTK3OeJw
+	U8G+YiN835csgfqwy/GAONW4aVVXFn3A4sn6SGz9TWwTxpZg3WfQTxftyfwmu3AlSsnjekm0JM+
+	d3fjulbnhWtIRUzA==
+X-Received: by 2002:a05:622a:1350:b0:51c:83ee:e42e with SMTP id d75a77b69052e-5283dffc205mr65522841cf.77.1784892633947;
+        Fri, 24 Jul 2026 04:30:33 -0700 (PDT)
+X-Received: by 2002:a05:622a:1350:b0:51c:83ee:e42e with SMTP id d75a77b69052e-5283dffc205mr65522211cf.77.1784892633423;
+        Fri, 24 Jul 2026 04:30:33 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b2a9b8c9f8sm1459645e87.14.2026.07.24.04.30.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 04:30:31 -0700 (PDT)
+Date: Fri, 24 Jul 2026 14:30:29 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: Re: [PATCH v9 01/14] dt-bindings: media: qcom,glymur-iris: Add
+ glymur video codec
+Message-ID: <frmpjyrk3epa26oebskil52sony6k672a5mkcamviiz3vdjlj5@eenvztuikja5>
+References: <20260715-glymur-v9-0-8cf2cbe12a07@oss.qualcomm.com>
+ <20260715-glymur-v9-1-8cf2cbe12a07@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|DS0PR12MB8217:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1488706a-adcb-445f-dbec-08dee9561b2d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|10070799003|23010399003|366016|376014|1800799024|56012099006|10067099003|11063799006|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	Hu8+6CZDYIGkj3c1DSMsYtNXohkcndP/eBIAmC+u069pDGGJYmpqsU6xgZCTFE61NJ4ufWIVytqCYwytk2YTeQ31UsEwfg5gbX9OgBipQeSsoWydjjlhDgiAqdH6VisJ5Nnj45o/+kEVxlcmCen2tt9esWoQLE6igo6xXYoV3Ux2SQB8cHQzwDmHux4naK8CrxIBZgy0qG6Ap6fxdLeoZ4Re32kM8XZDaGaUgnEOeaw/bDXoaidDsitFVAeo+iavqGGxSo905G8ZCZ8zi2QQcd/WRLO0/+FqyBiXup8cRjVtWOvDrbFPlwRFlHEhKDnbqAgGUXXecWFRz3I7KjJvwezcNu0n9vrgWE03dZgHzTsuf0shEDKo08/0mqqDNic9s4Igyxaryjplb5Xu1bb0UZXuLKKrr5t9d6nrcTx3bEdiDOrgqYTQ5CLt9IATi7BKuUexQs5gH4qHkV/m1QVTglnVRyCIhJxEINHDSuM+XNrIxNeywPhpOXc4/3pTw5C56RLsKuJzKnvedj1JxLFDP2z648ybmxfyTgMCUArFFRrhJj/waxzwX/yysVfhkd0uXFmSSArqntVRgGMyAoq2xT2UgmsaLe8eIWWyDjrRDBCcvzLihomwRrUpYJRlJ0vKAnWjdN+EYjxoIQ9lAyG1SiHh98ieKuiTmhpd/1SBmXM=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(23010399003)(366016)(376014)(1800799024)(56012099006)(10067099003)(11063799006)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?S0dTT1RqdjErRnhmL2RwdW92MHM3b2JWOVhLUUJiWmZjOCsxSC9kemZnZkll?=
- =?utf-8?B?RE9kNnFSSzlMb29aS1hLY1NuWU0yWDNlUE82a1hnVmcxUEovSWlScms0empt?=
- =?utf-8?B?SFpIYjNuNVpPTXVjNGJYZC9wRmRIZ2pmYmxkYXhtMSt1SGVHUjZ3bzVGMVhC?=
- =?utf-8?B?YldYUlo3ak5JNVQ4bG9jbkI2WERZL2JRZkJzcTFvbmNlbFZhYktBMUVjVE1H?=
- =?utf-8?B?ZGJKdTgrZjUxK252QzgvTlNlaEdER2Y2Q25ER3pwZ291c3UvZUY0OVc0a0ZQ?=
- =?utf-8?B?dUJ3NmVNejJDZlN5dXJpREpTbUJLVThEQllxQzc1eEFpb0VxNklWWGNwT2Rp?=
- =?utf-8?B?RTVsRE5iSjRhZ1lPSEJXZG85Q1g2cVhFM3NQT29WRHl4UWNvYm1IVCt5bzhq?=
- =?utf-8?B?RXh0elRHeGtNSnJkSi94WnptT1daeHp4d3RBOEUxcVdZWEkzdVRNUFl5WmZO?=
- =?utf-8?B?SGFDODBtd0Mva2NIKzBpTmYwTGFGVVBYandCaytSMzRodU02cXh6emh1QXJz?=
- =?utf-8?B?YWR5ck9Qa1NUUHlzcWJZTkdtWDA0TWdVQ2tDYVQ4SitmZFNnZS85bGw4UFRG?=
- =?utf-8?B?MnNTdDF1dWVacitJdCswcmZtN2ZHaDBBRGRLc2pva29uVit2SkdjNFJ6K2s0?=
- =?utf-8?B?MjRHa0hrYUtudFNIUXdiZ2VObmZRbmp4VW91SGhLWTExdHNhNzZ3bzY0OEJB?=
- =?utf-8?B?bkRRc1BBTkI3NmtxWVhoL0wwVVpnMkIxR0szQ2dhTzNra2lxeTBPcDZSZElt?=
- =?utf-8?B?eVBYQ1FNRnoxTmw5SEV6ZUdWbmUyQXQxcHJoZ0JRMDZva1BKcFA1UWtvcGIx?=
- =?utf-8?B?em52SU13RmNoVW00OHZCRGFZUG1xblVXSG8xQitlazNtRGpRcUc0cFhYNHVK?=
- =?utf-8?B?S2pjNEtGZ2ZGaGp2QmJxSUVaNm4rU0xaNUNtNEVyVW4zRmo1WjVvR2w3UDRT?=
- =?utf-8?B?V2VkekFoTTMvUmFoVm93dVgvQnJ5RWl3WTMzblhqbm5iZzhvbmsyVjRCVldP?=
- =?utf-8?B?TW1pSEtBVDJsanl0VThtOTNncXE3WjBURlgzS2VIbGRoN2h0UTltc0Rya2Mr?=
- =?utf-8?B?UW9hTUd0MVkxQUE5SXJjOWxaeDgzSFJDQ3dnejNQMjBzNk5zRkVXb0FyVTMz?=
- =?utf-8?B?N1FEcWhXS1hjZEF0YzVRb3E1MDhnSmUzKzBSU0xMNFdzRDZiV0czUnZNcDdp?=
- =?utf-8?B?VGM3K1ZudEpROWdvV2grUGRPQlNNMnRUc0FoemI4c2ZxVEJGd3YrRlhiRWtS?=
- =?utf-8?B?TEw5MDRod29FcHoyeDJXeE1RVUM1UjNFNkFXQUJ5STlTT3dMS09vbEJTS1dG?=
- =?utf-8?B?VDk4Tkltd2hJbDJHWGpvN2JQU3VuYlNIVDNUYTVYWEo2eHppdUZEVnBpN0tn?=
- =?utf-8?B?Q2xPcS9LU0VJdE45ZUJnc3Z6bFZzaDArb0tlclBVT21IRVBQTmdkck9FWHpo?=
- =?utf-8?B?MWw3WXNSTjZKcnQwa29JQXM1K2pYVVpzTG84czhWbGpyb2tEMm5XcVdianIy?=
- =?utf-8?B?UVZkeUhVVm5NZzRNeXdDRERRNUZQcXdFM3IrSkdoYURyaWxzNDFDdlVucExO?=
- =?utf-8?B?dFZEZXVQVzhQbTNKeE0xQUhHT1pHeUVZakhOYkRLRFpLamMxcGdnM0pwL1Yy?=
- =?utf-8?B?MWJSMGQ3QjNvMVkyYXBKcXgweHpaUEpNUW5hTW1RZ3ZqbmErZEU1QUxsbDhW?=
- =?utf-8?B?ZDAyaTY4TTNSRTFvdkhTaHB0UVBsS1VJQXFTMzRFYTFOVEY3c3Q3TEtjMk9F?=
- =?utf-8?B?UHE5WllGb1lMK3NtVzlmb1JlSWlwcEx3dEtoTHBuMXg5djhxUVozYktHK3JQ?=
- =?utf-8?B?amN4RGRmcFYwVUFIUWluT1hWQVo1VkIreXpiNXZHR1AvZCtpekszMUtyYkF0?=
- =?utf-8?B?L1l0RnNmMUVJeEZlVHkwSDZ3cGtEVkU4VHhNZXlOazN3aE1KazNwckRZcUpI?=
- =?utf-8?B?T2NBL1RWVEJCZm1XZnpmcmdNSE51Q0dVSEdsUjBjdlJqdXhJQm9UTUl4c3NB?=
- =?utf-8?B?ckJoUzlBZDZ0Q3Z5c280eW1EczJheGtNTlN2L1NPTU01Y1BPVEVtUlpOTGR5?=
- =?utf-8?B?T3JLMFM5SjMxNzJycEJiN1RFZ2ZhS2lSVFJYMzkrWmh6UE1mMlFmUXplYWZq?=
- =?utf-8?B?azdVcytnU2dJS0xEWjBTOFQyRHVpK0Y0MmltYmtBYStrdUMxejNxMjg4bVRu?=
- =?utf-8?B?OXFJSGlIZW1pZmo2SzR2Y2JaeERRQ2tHR2NweTB0YjNsdXVabzR4aHlmVlVI?=
- =?utf-8?B?YWFpTDE1ajRCdkJ5T1ZwK0t4dlIwSUQ4dEs3dXI4MTdnMXlIK253Z1lGWHVE?=
- =?utf-8?B?N2p3VVAwZWxTaW1lMlo5SVZlQ3FGOGdITEVrY0lUUitXbTAxRVpDYjBBVzZJ?=
- =?utf-8?Q?P++snRqUunK1zPjV3lAB097LMiLb0q09mXJD4d/bPPSw5?=
-X-MS-Exchange-AntiSpam-MessageData-1: Z1BwZi/vVFBiRA==
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1488706a-adcb-445f-dbec-08dee9561b2d
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2026 07:35:16.8894
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Fmwq+h7o17tMRxUexYyZRR35tsz5X3M9M/BFkkLUtN4R3Vel6agqwBkpsYT+6fgFqiZa3FCq4NzTImrULBViIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8217
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260715-glymur-v9-1-8cf2cbe12a07@oss.qualcomm.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI0MDEwNCBTYWx0ZWRfX3cUtWeEJVoYN
+ +piXFMvI2EfX7eTSYM8HPJ1OJFleoDIrzWN9wIKlH9SrkEIKqPZrmFe0AYvzWZmJJcH/ep9Ya5K
+ P7Oh+Nf5v6YH1S6EKwEzYdFJQkRA6tw=
+X-Authority-Analysis: v=2.4 cv=Rtz16imK c=1 sm=1 tr=0 ts=6a634cda cx=c_pps
+ a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22 a=EUspDBNiAAAA:8
+ a=l6FLTy858EcHa7FfVjsA:9 a=CjuIK1q_8ugA:10 a=a_PwQJl-kcHnX1M80qC6:22
+X-Proofpoint-GUID: OAHZLDljoW6irwknLil5nQlWCA1XUgPf
+X-Proofpoint-ORIG-GUID: OAHZLDljoW6irwknLil5nQlWCA1XUgPf
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI0MDEwNCBTYWx0ZWRfXyawbFus32Lc8
+ jK7gqX9l2eUnbdeMWquohCiItGNOJRNxEFB6UEILcOX4Gkm29YWWlie3aNfVXSi22rXdihabP3e
+ nxJI0F0mHexZp9O4RCTIf+ytQeVRb7RFzDpgIHSQsoYwpHJPAOtiISv3pKTOiGtUyd4lp1D7KiK
+ qIMLs4SoLJTzr7+5EScKXPVMMR3XpHk0SO/7c/YqJCxBAeO6qrpY6FKOmBYcm1tLII24lc8KvsT
+ LUSpnZpYHBXCiDYnfZN2vfUT11XAmUwr55e41HI+fEbFIzEFXyw45zsXulepdIzpJI8UuNnUk57
+ +hNPEDQH9Gdgq/gN8EMZq13v3NiNW2w40hzpHt8+OXiN2eZNZrRMtbrCgmfR5bnNM0HQ8WgI0DU
+ LfWHmf4Z9zB0Vvohx7zKzC7nzq69hhA4P/lpQDDHliUqVtPkA9Ckd+HX2QVgZqkdDF7P+l1KcJB
+ eWi+gr1xFpFkNjz3M3g==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-24_02,2026-07-22_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 phishscore=0 priorityscore=1501 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607240104
 
-Greetings everyone.
+On Wed, Jul 15, 2026 at 07:39:55PM +0530, Vishnu Reddy wrote:
+> Add device tree binding for the Qualcomm Glymur Iris video codec. Glymur
+> is a new generation of video IP that introduces a dual-core architecture.
+> The second core brings its own power domain, clocks, and reset lines,
+> requiring additional power domains and clocks in the power sequence.
+> The current maxItems constraints for clocks and power-domains in the
+> common venus schema were sized for platforms available at the time of
+> authoring. The glymur platform introduces a dual core architecture
+> that requires more clocks and power domains, exceeding these limits.
+> Raise maxItems for clocks, clock-names, power-domains and
+> power-domain-names to accommodate the glymur platform.
+> The glymur platform-specific schema have fixed constraints for these
+> properties, so the common schema only acts as an upper bound.
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> ---
+>  .../bindings/media/qcom,glymur-iris.yaml           | 255 +++++++++++++++++++++
+>  .../bindings/media/qcom,venus-common.yaml          |   8 +-
+>  2 files changed, 259 insertions(+), 4 deletions(-)
+> 
+> +
+> +  firmware:
 
-I've been looking at enabling more CI for 32-bit Tegra platforms 
-recently, and I ran into a problem with TegraDRM not probing on 
-tegra30-cardhu, but only on multi_v7_defconfig.
+video-firmware. Please follow the prior art that existed for venus.
 
-I traced the issue to the following sequence of events:
+> +    type: object
+> +    description:
+> +      Context bank for the VPU firmware processing domain.
+> +    properties:
+> +      iommus:
+> +        maxItems: 1
+> +    required:
+> +      - iommus
+> +    additionalProperties: false
+> +
 
-1. On multi_v7_defconfig, CONFIG_ARM_DMA_USE_IOMMU is enabled, while on 
-   tegra_defconfig it is not. This causes arm_setup_iommu_dma_ops to run 
-   on TegraDRM devices.
-
-2. Some of these devices will be placed in a single IOMMU group by the 
-   tegra-smmu driver. When arm_setup_iommu_dma_ops is called, depending 
-   on probe deferrals, the group may have only the currently probing 
-   device, or a previously deferred device and the new device.
-
-   arm_setup_iommu_dma_ops calls iommu_attach_device. If the device is 
-   alone in its group, this succeeds. If not, this fails. If 
-   iommu_attach_device fails for every device in the group, everything 
-   is "fine" and TegraDRM goes to probe and work fine. Hence let's 
-   assume we have one device that succeeded the attach.
-
-3. iommu_device_use_default_domain gets called and succeeds on the first 
-   device in the group. On the second device in the group, it fails 
-   since group->owner_cnt was already 1. The custom ARM DMA IOMMU 
-   implementation uses a custom UNMANAGED domain so the domain != 
-   default_domain check evaluates to true.
-
-4. Devices fail to probe which leads TegraDRM overall not to probe.
-
-I've thought of the following options to fix this:
-
-1. Match behavior with tegra_defconfig: Figure out a way to not run 
-   arm_setup_iommu_dma_ops for this situation (ideally any multi-device 
-   group situation). However, I'd also like to enable DMA API with 
-   tegra-smmu to get rid of the manual IOMMU API code paths in TegraDRM, 
-   so this is not a particularly satisfying route.
-
-2. Improve the legacy path: Fix the ARM IOMMU DMA code to support 
-   groups, and add an exception in iommu_device_use_default_domain. But 
-   I presume we don't want such non-trivial modifications to that code 
-   at this point.
-
-3. Modernize: Support CONFIG_IOMMU_DMA on ARM -- since there is an issue 
-   with per-SoC quirks, I think this should be done one SoC at a time. 
-   So come up with a way to dynamically pick between the legacy and 
-   IOMMU_DMA paths. Perhaps if the SMMU driver explicitly requests the 
-   DMA domain type, use the modern path. Currently, CONFIG_IOMMU_DMA and 
-   CONFIG_ARM_DMA_USE_IOMMU are mutually exclusive so that has to be 
-   changed.
-
-FWIW, if we are to move to using DMA API with TegraDRM, one blocker 
-would have to be resolved: boot splashes scanning out while the DMA 
-domain is being set up. Since we cannot really use the iommu-addresses 
-reserved-region device tree bindings with these old devices, my thought 
-is to leave the display memory clients in bypass in tegra-smmu until the 
-display driver has quiesced the hardware and can then call into 
-tegra-smmu to enable translation.
-
-Please let me know what you think and whom I missed in the To/Cc fields.
-
-Thank you
-Mikko
-
-
-
+-- 
+With best wishes
+Dmitry
