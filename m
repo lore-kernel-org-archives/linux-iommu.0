@@ -1,84 +1,153 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1D70391E52;
-	Thu, 23 Jul 2026 23:41:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C745312815
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 02:33:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784850088; cv=none; b=QOggmjj3YL5Wu+/j/bo4cnDDUxu7QxHkjji0mlbmGl2xeGuCz58uPEYu504EvQO8Z+WzVTNa7+juil4kNKcgqfJ6R00iWY53pwXwUgtehQewUH9Osq/JVV+ZochEL6/xFeiodftht/P6yuIJEciy48QxlBA2dMSdJObmHq/EXPE=
+	t=1784860442; cv=none; b=VtwkKz1BznurCr0veJjfvCPhVoZD+9O7txicwXJJYjy2JntOCV3u5pOLbMMMlSZbEGlmnAs2yPn4pTHi+mD/pRl3YRaX9JlbFwfN+zvANa3EIMizOXO9q42C1ocqzvMgXjeVjZsosuejtn3TeaM3jFe25Ff8DR+euXv+Pu7wCJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784850088; c=relaxed/simple;
-	bh=rsLBmWPt+d8HynrSKwwtAyKBlpprMn+1W/b6KFlRyoQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=suyJy93I60GYPhH8KIUfIxbKiHwou3T0C8E0b954sifcGKASN/nd6FFzqCt9Qw9sNu82E8cNd5lLn5Rk3cfSEgvAi8BUvFJw1LGQQF66f98BV5V+uUJWfbQ9+4azJakVAATAFF50z1uh/GxKGCwXfcg2Z0zwHWJE9uK+xgUAlEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kpEjksWj; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784860442; c=relaxed/simple;
+	bh=ZL4JTSZNEKuVRKhIFZ1Ry1YAQpJgLG26WjaYZc6wSgI=;
+	h=Content-Type:MIME-Version:From:To:Cc:Subject:In-Reply-To:
+	 References:Message-Id:Date; b=OH23NKuhoYyvw3K5TLTcTULvNOD0xAtq8NU4GCg/s4cImo7zfX8l7cc1Izj2jto39InxKikje6Lf8tozSY1lFwCyw+oq8DgNGwQ3rgVtJEdrVjsSaJJ1bLQPJxXmjZp8VdbRGnlbfvU+E/r8SmYspZSNMKgAoDzJ063k+0KyXRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=SZPA9/Jc; arc=none smtp.client-ip=117.135.210.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kpEjksWj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDB031F000E9;
-	Thu, 23 Jul 2026 23:41:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784850087;
-	bh=aTz69KdUrI3yfZjC00J0USCMLwe6vP8ekewkBIJx+Jo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=kpEjksWjdQXtZwWWaMoVcRqzfxVl8o/AELIT483th2iPV4PHPE/tXzOrxye73GGrd
-	 0BduEfPAauWn/khDpp+SpMMp5BWZvjrO1h6Lrojf3nqUJGzS/WLpuRDW/gTlJmL4Vg
-	 +Zd57H+BfepSW0VaRvrbPBkJ909SGIvyXaANU5sn/1GxbMrwPXrtbu5drYbbCKzDM2
-	 IGVmciX6iYsLqEMnwMp03bZa5ucXZSmDr4/K8XqYsjTBbHYyB1gofwdafgzCkK5TkZ
-	 OdF0R/ZVRPfKlT8yEMf2WRFGE10m8S8sEtQmLe04rNEvyhBP35pujz6Rl6lppsYd1Y
-	 ua08B36pmYRYg==
-Date: Thu, 23 Jul 2026 18:41:26 -0500
-From: Rob Herring <robh@kernel.org>
-To: Wandun Chen <chenwandun1@gmail.com>
-Cc: chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, saravanak@kernel.org,
-	bhe@redhat.com, rppt@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, kexec@lists.infradead.org,
-	iommu@lists.linux.dev, zhaomeijing@lixiang.com,
-	catalin.marinas@arm.com, will@kernel.org, alex@ghiti.fr,
-	akpm@linux-foundation.org, pasha.tatashin@soleen.com,
-	pratyush@kernel.org, ruirui.yang@linux.dev,
-	m.szyprowski@samsung.com, robin.murphy@arm.com
-Subject: Re: [PATCH v4 00/10] kdump: reduce vmcore size and capture time
-Message-ID: <20260723234126.GA3253409-robh@kernel.org>
-References: <20260630074715.4126796-1-chenwandun1@gmail.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="SZPA9/Jc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Content-Type:MIME-Version:From:To:Subject:
+	Message-Id:Date; bh=ZL4JTSZNEKuVRKhIFZ1Ry1YAQpJgLG26WjaYZc6wSgI=;
+	b=SZPA9/Jcy+HDmlvlN2gY1RHaRbdVPRE3unJSOoVfBoRlqHz7wN29g76LlbLWy1
+	+/++EMODpLWH1ebAWhLZbyem/XXlvTRxh/URiu7cPjOUug5M07TE6aG1lKdIf1p9
+	bWGJMZJbhG0/++O4AgL2xm6S/m+THOykqqZMDTp86wccE=
+Received: from [127.0.1.1] (unknown [])
+	by gzsmtp4 (Coremail) with SMTP id PygvCgD3nzX7zmJqHTkwIw--.42220S2;
+	Fri, 24 Jul 2026 10:33:33 +0800 (CST)
+Content-Type: multipart/mixed; boundary="===============0184347701026817401=="
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260630074715.4126796-1-chenwandun1@gmail.com>
+From: Xiong Weimin <xiongwm2026@163.com>
+To: iommu@lists.linux.dev
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org
+Subject: =?utf-8?q?=5BPATCH_v3_0/2=5D_iommu/virtio=3A_Probe_fixes_for_proper_driver_state?=
+In-Reply-To: <20260714025913.2042-1-xiongweimin@kylinos.cn>
+References: <20260714025913.2042-1-xiongweimin@kylinos.cn>
+X-CM-TRANSID:PygvCgD3nzX7zmJqHTkwIw--.42220S2
+Message-Id:<6A62CEFD.2C7C40.17686@m16.mail.163.com>
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUS2QDUUUUU
+Date: Fri, 24 Jul 2026 10:33:33 +0800 (CST)
+X-CM-SenderInfo: x0lr0wdzpsijqw6rljoofrz/xtbCzh0mtWpizv1tVwAA3B
 
-On Tue, Jun 30, 2026 at 03:47:04PM +0800, Wandun Chen wrote:
-> From: Wandun Chen <chenwandun@lixiang.com>
-> 
-> On SoCs that carve out large firmware-owned reserved memory (GPU
-> firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
-> those carveouts as part of system RAM even though their contents are
-> firmware state that is not useful for kernel crash analysis.
+--===============0184347701026817401==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="0000-cover-letter.patch"
 
-What about reserved regions on ACPI based systems?
+RnJvbTogWGlvbmcgV2VpbWluIDx4aW9uZ3dlaW1pbkBreWxpbm9zLmNuPgpTdWJqZWN0OiBbUEFU
+Q0ggdjMgMC8yXSBpb21tdS92aXJ0aW86IFByb2JlIGZpeGVzIGZvciBwcm9wZXIgZHJpdmVyIHN0
+YXRlClRvOiBpb21tdUBsaXN0cy5saW51eC5kZXYKQ2M6IHdpbGxAa2VybmVsLm9yZywgcm9iaW4u
+bXVycGh5QGFybS5jb20sIGpvcm9AOGJ5dGVzLm9yZwpJbi1SZXBseS1UbzogPDIwMjYwNzE0MDI1
+OTEzLjIwNDItMS14aW9uZ3dlaW1pbkBreWxpbm9zLmNuPgpSZWZlcmVuY2VzOiA8MjAyNjA3MTQw
+MjU5MTMuMjA0Mi0xLXhpb25nd2VpbWluQGt5bGlub3MuY24+CgpUaGlzIGlzIHYzIG9mIHRoZSBw
+YXRjaCBzZXJpZXMuIHYyIGlzIG5vdyBvYnNvbGV0ZS4KCkNoYW5nZXMgc2luY2UgdjI6Ci0gUmVi
+YXNlZCBvbnRvIGxhdGVzdCB1cHN0cmVhbQotIFBhdGNoIDMgKCJSZWplY3Qgc2hvcnQgZXZlbnQg
+YnVmZmVycyIpIGhhcyBiZWVuIGRyb3BwZWQgYXMgaXQgd2FzCiAgaW5kZXBlbmRlbnRseSBzdWJt
+aXR0ZWQgYnkgWHUgUmFvCi0gQXMgc3VnZ2VzdGVkIGJ5IFdpbGwgRGVhY29uLCBtb2RpZmllZCB2
+aW9tbXVfaW5pdF92cXMoKSB0byB0YWtlIHZkZXYKICBpbnN0ZWFkIG9mIHZpb21tdSwgc2luY2Ug
+dGhleSBhcmUgbm93IGxpbmtlZCB2aWEgdmRldi0+cHJpdgoKLS0tCgpYaW9uZyBXZWltaW4gKDIp
+OgogIGlvbW11L3ZpcnRpbzogU2V0IGRyaXZlciBkYXRhIGJlZm9yZSBlbmFibGluZyB2aXJ0cXVl
+dWVzCiAgaW9tbXUvdmlydGlvOiBIYW5kbGUgaW9tbXVfZGV2aWNlX3JlZ2lzdGVyKCkgZmFpbHVy
+ZXMKCiBkcml2ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jIHwgMTcgKysrKysrKysrKysrKy0tLS0t
+CiAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKCi0tCjIu
+NDMuMAo=
 
-> This series introduces an opt-in 'dumpable' flag [1] on struct
-> reserved_mem and uses it to filter the elfcorehdr PT_LOAD ranges on
-> DT-based architectures (arm64, riscv, loongarch). By default reserved
-> regions are treated as non-dumpable; CMA regions are explicitly opted
-> in because their pages are returned to the buddy allocator and may
-> carry key crash-analysis data.
+--===============0184347701026817401==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="0001-iommu-virtio-Set-driver-data-before-enabling-virtque.patch"
 
-I never like seeing the same change being made to each architecture. 
-That's generally a sign of restructuring needed. loongarch and arm64 
-prepare_elf_headers() look about the same. riscv version uses 
-walk_system_ram_res() for some reason. 
+RnJvbSBmZGE1OTcxNzMzMGZkOTA3ZjFjZDNmZGJiYTdlMGIwODg4YjU0NTI0IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiB4aW9uZ3dlaW1pbiA8eGlvbmd3ZWltaW5Aa3lsaW5vcy5jbj4K
+RGF0ZTogVGh1LCAyMyBKdWwgMjAyNiAxMToxODo1MCArMDgwMApTdWJqZWN0OiBbUEFUQ0ggdjMg
+MS8yXSBpb21tdS92aXJ0aW86IFNldCBkcml2ZXIgZGF0YSBiZWZvcmUgZW5hYmxpbmcKIHZpcnRx
+dWV1ZXMKVG86IGlvbW11QGxpc3RzLmxpbnV4LmRldgpDYzogd2lsbEBrZXJuZWwub3JnLAogICAg
+cm9iaW4ubXVycGh5QGFybS5jb20sCiAgICBqb3JvQDhieXRlcy5vcmcKClRoZSBldmVudCB2aXJ0
+cXVldWUgY2FsbGJhY2sgcmV0cmlldmVzIHRoZSBkcml2ZXIgc3RhdGUgdGhyb3VnaAp2cS0+dmRl
+di0+cHJpdi4gdmlvbW11X3Byb2JlKCkgY3VycmVudGx5IGluaXRpYWxpemVzIHRoYXQgcG9pbnRl
+ciBvbmx5CmFmdGVyIHZpcnRpb19kZXZpY2VfcmVhZHkoKSBhbmQgYWZ0ZXIgdGhlIGV2ZW50IHF1
+ZXVlIGlzIHBvcHVsYXRlZC4KClN0b3JlIHRoZSBkcml2ZXIgZGF0YSBiZWZvcmUgY3JlYXRpbmcg
+dGhlIHZpcnRxdWV1ZXMgc28gY2FsbGJhY2tzIGFsd2F5cwpzZWUgaW5pdGlhbGl6ZWQgZHJpdmVy
+IHN0YXRlIG9uY2UgdGhlIGRldmljZSBpcyBtYWRlIHJlYWR5LiBDbGVhciB0aGUKcG9pbnRlciBh
+Z2FpbiBvbiBwcm9iZSBmYWlsdXJlLgoKQXMgc3VnZ2VzdGVkIGJ5IFdpbGwgRGVhY29uLCBwYXNz
+IHZkZXYgaW5zdGVhZCBvZiB2aW9tbXUgdG8KdmlvbW11X2luaXRfdnFzKCksIHNpbmNlIHdlIGFs
+cmVhZHkgbGlua2VkIHRoZW0gdG9nZXRoZXIuCgpTdWdnZXN0ZWQtYnk6IFdpbGwgRGVhY29uIDx3
+aWxsQGtlcm5lbC5vcmc+ClNpZ25lZC1vZmYtYnk6IFhpb25nIFdlaW1pbiA8eGlvbmd3ZWltaW5A
+a3lsaW5vcy5jbj4KUmV2aWV3ZWQtYnk6IFdpbGwgRGVhY29uIDx3aWxsQGtlcm5lbC5vcmc+Ci0t
+LQogZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYyB8IDExICsrKysrKystLS0tCiAxIGZpbGUg
+Y2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvdmlydGlvLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5j
+CmluZGV4IDU4N2ZjMTMxOS4uZjNmNzRmZGMxIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L3Zp
+cnRpby1pb21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvdmlydGlvLWlvbW11LmMKQEAgLTExMTAs
+OSArMTExMCw5IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzIHZpb21tdV9vcHMgPSB7
+CiAJfQogfTsKIAotc3RhdGljIGludCB2aW9tbXVfaW5pdF92cXMoc3RydWN0IHZpb21tdV9kZXYg
+KnZpb21tdSkKK3N0YXRpYyBpbnQgdmlvbW11X2luaXRfdnFzKHN0cnVjdCB2aXJ0aW9fZGV2aWNl
+ICp2ZGV2KQogewotCXN0cnVjdCB2aXJ0aW9fZGV2aWNlICp2ZGV2ID0gZGV2X3RvX3ZpcnRpbyh2
+aW9tbXUtPmRldik7CisJc3RydWN0IHZpb21tdV9kZXYgKnZpb21tdSA9IHZkZXYtPnByaXY7CiAJ
+c3RydWN0IHZpcnRxdWV1ZV9pbmZvIHZxc19pbmZvW10gPSB7CiAJCXsgInJlcXVlc3QiIH0sCiAJ
+CXsgImV2ZW50IiwgdmlvbW11X2V2ZW50X2hhbmRsZXIgfSwKQEAgLTExNjksMTEgKzExNjksMTIg
+QEAgc3RhdGljIGludCB2aW9tbXVfcHJvYmUoc3RydWN0IHZpcnRpb19kZXZpY2UgKnZkZXYpCiAJ
+aWRhX2luaXQoJnZpb21tdS0+ZG9tYWluX2lkcyk7CiAJdmlvbW11LT5kZXYgPSBkZXY7CiAJdmlv
+bW11LT52ZGV2ID0gdmRldjsKKwl2ZGV2LT5wcml2ID0gdmlvbW11OwogCUlOSVRfTElTVF9IRUFE
+KCZ2aW9tbXUtPnJlcXVlc3RzKTsKIAotCXJldCA9IHZpb21tdV9pbml0X3Zxcyh2aW9tbXUpOwor
+CXJldCA9IHZpb21tdV9pbml0X3Zxcyh2ZGV2KTsKIAlpZiAocmV0KQotCQlyZXR1cm4gcmV0Owor
+CQlnb3RvIGVycl9jbGVhcl9wcml2OwogCiAJdmlydGlvX2NyZWFkX2xlKHZkZXYsIHN0cnVjdCB2
+aXJ0aW9faW9tbXVfY29uZmlnLCBwYWdlX3NpemVfbWFzaywKIAkJCSZ2aW9tbXUtPnBnc2l6ZV9i
+aXRtYXApOwpAQCAtMTI0Niw2ICsxMjQ3LDggQEAgc3RhdGljIGludCB2aW9tbXVfcHJvYmUoc3Ry
+dWN0IHZpcnRpb19kZXZpY2UgKnZkZXYpCiAKIGVycl9mcmVlX3ZxczoKIAl2ZGV2LT5jb25maWct
+PmRlbF92cXModmRldik7CitlcnJfY2xlYXJfcHJpdjoKKwl2ZGV2LT5wcml2ID0gTlVMTDsKIAog
+CXJldHVybiByZXQ7CiB9Ci0tIAoyLjQzLjAKCg==
 
-Perhaps the dumpable flag belongs in memblock instead? Then at least we 
-wouldn't need more DT APIs exposed to the arch code, and the code stays 
-independent of the firmware API.
+--===============0184347701026817401==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="0002-iommu-virtio-Handle-iommu_device_register-failures.patch"
 
-I'd really like Marek's review on the reserved memory code changes.
+RnJvbSAzZjk0ZjIyNjZiYzM1YzMxMjM0YjE5YzFlOWFjYjg0N2ZmN2U0NDVjIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiB4aW9uZ3dlaW1pbiA8eGlvbmd3ZWltaW5Aa3lsaW5vcy5jbj4K
+RGF0ZTogVGh1LCAyMyBKdWwgMjAyNiAxMToxOTowNyArMDgwMApTdWJqZWN0OiBbUEFUQ0ggdjMg
+Mi8yXSBpb21tdS92aXJ0aW86IEhhbmRsZSBpb21tdV9kZXZpY2VfcmVnaXN0ZXIoKSBmYWlsdXJl
+cwpUbzogaW9tbXVAbGlzdHMubGludXguZGV2CkNjOiB3aWxsQGtlcm5lbC5vcmcsCiAgICByb2Jp
+bi5tdXJwaHlAYXJtLmNvbSwKICAgIGpvcm9AOGJ5dGVzLm9yZwoKQ2hlY2sgdGhlIHJldHVybiB2
+YWx1ZSBvZiBpb21tdV9kZXZpY2VfcmVnaXN0ZXIoKSBhbmQgcHJvcGVybHkgY2xlYW4gdXAKc3lz
+ZnMgZW50cmllcyBvbiBmYWlsdXJlLiBUaGlzIGVuc3VyZXMgdGhhdCB0aGUgZGV2aWNlIHN5c2Zz
+IGRpcmVjdG9yeQppcyByZW1vdmVkIGlmIHJlZ2lzdHJhdGlvbiBmYWlscy4KClJldmlld2VkLWJ5
+OiBXaWxsIERlYWNvbiA8d2lsbEBrZXJuZWwub3JnPgpTaWduZWQtb2ZmLWJ5OiBYaW9uZyBXZWlt
+aW4gPHhpb25nd2VpbWluQGt5bGlub3MuY24+Ci0tLQogZHJpdmVycy9pb21tdS92aXJ0aW8taW9t
+bXUuYyB8IDYgKysrKystCiAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAxIGRlbGV0
+aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYyBiL2RyaXZl
+cnMvaW9tbXUvdmlydGlvLWlvbW11LmMKaW5kZXggZjNmNzRmZGMxLi4yODhlZWEzODYgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvaW9tbXUvdmlydGlvLWlvbW11LmMKKysrIGIvZHJpdmVycy9pb21tdS92
+aXJ0aW8taW9tbXUuYwpAQCAtMTIzNyw3ICsxMjM3LDkgQEAgc3RhdGljIGludCB2aW9tbXVfcHJv
+YmUoc3RydWN0IHZpcnRpb19kZXZpY2UgKnZkZXYpCiAKIAl2ZGV2LT5wcml2ID0gdmlvbW11Owog
+Ci0JaW9tbXVfZGV2aWNlX3JlZ2lzdGVyKCZ2aW9tbXUtPmlvbW11LCAmdmlvbW11X29wcywgcGFy
+ZW50X2Rldik7CisJcmV0ID0gaW9tbXVfZGV2aWNlX3JlZ2lzdGVyKCZ2aW9tbXUtPmlvbW11LCAm
+dmlvbW11X29wcywgcGFyZW50X2Rldik7CisJaWYgKHJldCkKKwkJZ290byBlcnJfZnJlZV9zeXNm
+czsKIAogCWRldl9pbmZvKGRldiwgImlucHV0IGFkZHJlc3M6ICV1IGJpdHNcbiIsCiAJCSBvcmRl
+cl9iYXNlXzIodmlvbW11LT5nZW9tZXRyeS5hcGVydHVyZV9lbmQpKTsKQEAgLTEyNDUsNiArMTI0
+Nyw4IEBAIHN0YXRpYyBpbnQgdmlvbW11X3Byb2JlKHN0cnVjdCB2aXJ0aW9fZGV2aWNlICp2ZGV2
+KQogCiAJcmV0dXJuIDA7CiAKK2Vycl9mcmVlX3N5c2ZzOgorCWlvbW11X2RldmljZV9zeXNmc19y
+ZW1vdmUoJnZpb21tdS0+aW9tbXUpOwogZXJyX2ZyZWVfdnFzOgogCXZkZXYtPmNvbmZpZy0+ZGVs
+X3Zxcyh2ZGV2KTsKIGVycl9jbGVhcl9wcml2OgotLSAKMi40My4wCgo=
 
-Rob
+--===============0184347701026817401==--
+
