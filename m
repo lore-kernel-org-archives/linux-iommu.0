@@ -1,67 +1,68 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CEEC418A2C
-	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 12:40:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50477424D73
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 12:40:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784896804; cv=none; b=i9Ulo3qTB3YbluBQVHCEM7vniQlEXsfePBV3eGn2qBNmyqoX9BLMEQfe4XJWkm1As/rOfF2L/a3KaO35cMz+QPCFKe20lRm4ieMRHmXL4VVCW0ceepZDh70qmKIbxlAwDUD382IKL3976ySV22m6nucsdFq+8mBlkAn2YoPNINg=
+	t=1784896804; cv=none; b=up+uzzU4036JuuYGtWRv64JOFik8LjPUiK0EdYHAF2i8/F6ApLLpjJg1/KN8OKwzrGV0uqr5HVqEOFlpNLBpNvRbAgbyBqn/QXdisD3mzVp60VjSQ89z9C6I2fOLLKfq1hoOQ77CmNy9ruelFNmWvu0KQ3VqGmZPc34GKUlYqRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784896804; c=relaxed/simple;
-	bh=+LKKqb5ZqdPr77qli5tmJ/6wZb62O/rS93RulG8b1G8=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=fnuveF9jbHh3eAxE43JyEkBp+30gvQ/xLhksx0MlJazXdicjrL/iPN4I8uK3lrtWeGHGTnZbeP9yr1HLLFBck0wXlrMyiVPpSnvVodgx92Dv92l9vdKhilTFoJf/xqzyh6fU9lv/3logNa3FpBXTjES8W7LaHvCBitDKhsbtNLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=kd7rV4Ko; arc=none smtp.client-ip=209.85.128.54
+	bh=grNzaIZhTarizm1uEFeEaqFDbVnPHTcu7XioeAt/FBg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=A1mjhva4je1L+xGVwOoegbNJNAokdRCJLqrKgRCzyRleCDOcXMF7S2hwKYzkI6hppqBi6mM1SsZDTiH4MLLNWHKzYPa8Wy1L8iLXjzf3xs1TpuKcKjSP71acn8G9CAsgc3q6+tfqFty+Ud0cHrTABMQVJuPfzRzFO6whhopAHUU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=jobC8pqg; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kd7rV4Ko"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4955de8797cso3089045e9.3
-        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 05:40:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jobC8pqg"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-47f703a9d05so297030f8f.0
+        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 05:40:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1784896800; x=1785501600; darn=lists.linux.dev;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=NBrUSC1O0WOQ9emuFEGS5d8tSVoT5Yvw626g9QceW3U=;
-        b=kd7rV4KoGIikXOpMSxaIFoZW+i0T4oVTz/AvHd7Ufs/rEEroEoZHQ8taCToA6+79Zs
-         5cX2h8A2LTKsPiSkxrXG4FXwh1FfG14Avimxtz5LQtc6C0WAJ93ITj8S+mRb/ltYzKxp
-         FA9vowicLn30H23tID7QCXAziSmkn8kMvs96EfEM0j5MXkh0Hw/4+OxkkEi7MXTARKLm
-         bKXlPy5weTWlSByxHCwQkOfjG2BULdQmLx71K36/iHE+1TZlYTu83xXHXu1OR7YPUivf
-         nYfI83tdRIzL3g/JfkZ1TgtOJxs/os9We/S8uK3bCM9dj2YFRsA91XYIKtydUaXJhFeu
-         64cQ==
+        d=linaro.org; s=google; t=1784896801; x=1785501601; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Pb0xWtZMy3wb+Efco3IddiNHPbPPr5N2NAxGlPTtloA=;
+        b=jobC8pqgqJBDzG6CY9TjB8L9jsi00a+MWcBtzTxhnmjo/H0BVxBsfuiwlO1UJzvvBx
+         +8MRHWDOZXwJT7apwE9D1Bwhgj7Ep+kLGr+KU/XjaTI7HxzPrX1qisP4oLQkntGIc2yi
+         5PTzq7N2u78m04x1dZXQgwh+QukVaTGRJpRfUQX0EColnfWjlkZM49QtU9b90935Xzot
+         zSi8Y82npYY13ef8NeL5UuiratWFuFkCEPTtygX/LeOwZLTF1fu7dWd4CNKn/WtRubF8
+         c3+iGRjvLa8cObchU8ZexrpTTdI7JrvCe0aHxI5/MjbypX1AMnjtE3PNtUmyXL9hqmR9
+         F92Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784896800; x=1785501600;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=NBrUSC1O0WOQ9emuFEGS5d8tSVoT5Yvw626g9QceW3U=;
-        b=rC21Gy7bCDfGQNLzBlD51JhGEW074VnwJoEIYrabBCLQ9Rfms1I1F3N1/5JCTT7V9t
-         Cw0SacRNvVx6tgQcDLFmBgHNuyqS7TxoSm0+os+a8BYnKR3yZ8dDAKQ4fPYYJdWbrsta
-         hLgXcJXy4xIyHo4tHYQ+yqx3WLgK04tpFcpS4h4DcB33FbSwgZqshXq971N4EQGif87I
-         wlGI8Xfgl+bD9PYHnc8MxF+8g/NaY7ZDQtTVlcpJLGfE2IAELu9wCOmazSts+Jy5VmhI
-         wtrAD3mJSIuqbqM0DTxoYbZjXXfQMEdVM4BJeQR2x+WTSzq5gjiCKcHG3HT4QXu+Pn0o
-         UFiw==
-X-Forwarded-Encrypted: i=1; AHgh+RqlmUH53CtKnQxUx3juFx1AbFQUSjQZDHgdvblnWjU/0rRmyt5XPNMQDmVFj02UcTv2pIS1Mg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz8OSTAaYraAyW030m30iSQw4bhter5y2D7HWU2dLRInP9HfF6L
-	/qU+RcGhyrb2ptE6aVQX2jXoRTplzAt8hlQfZPr+8/bIE7OTN52xmcH54cLFfFdZ3TU=
-X-Gm-Gg: AR+sD13+UAGn/UuWZ7rCTEKtuO9DlrNHdVICOX0+PU5brs0MN2+Ah3cZGrAAAos4cCQ
-	aXWsTidBzQJ6l25YrOeAMjAiMDRpQqd2AjYsvwxn6aRb3lpdlvKJseaVGzO3ZsnvqZk4tqe9PSh
-	9ZtxRQhpWeYQPvBApqv9VDMisctEv9XKLvnIajUD3i+TIhviVWDZEUnk6cuUEFYOcKsM6XftM0w
-	WyHEqT+8JSTnPmOFI5O3T0alJrrIGQHxMaEXsWo+lp/DxawI4RPqkVZqv0zS/GHidnQ6WKmqiL3
-	BjQgtxl1PiiBTC87zxHlhRekEy/ADYCffDDHj4ERC6gz53TjE848tkplhj3Uq2lrKqajvGXyFuB
-	pD7Ye7PZImXwA5yzLG6ZtsWvbo+9j0MlprLCgI9mpwUSSPx2mvk06V125GXD9osTqDtZNnUVKNq
-	+m36KXgu73pqbbXnowdlknrqkYwv21ghnTwl0=
-X-Received: by 2002:a05:600c:4f86:b0:495:6a24:a92d with SMTP id 5b1f17b1804b1-49573cd8af8mr83332165e9.22.1784896800602;
-        Fri, 24 Jul 2026 05:40:00 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1784896801; x=1785501601;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Pb0xWtZMy3wb+Efco3IddiNHPbPPr5N2NAxGlPTtloA=;
+        b=C/27czcqSPX4ZvQQpF1WKB2GT+FsKL+SUG0ZfAqfHR5Nc27DguAOWYCbmlDUOWIv/d
+         pFD6h/xfeyok8ta0C4E8SxF83GBDz5fof5xpNeUmnWqYmUpglsLCn195aU6Pq3d+YeP+
+         4wDNXy0AV8SDWPzYCR5JFZhOSUVHYtjcysNXwNPxIi7rb3TiG/GcwDIAepAuupXE1s2J
+         kINq7c6aKHLaKJpgd2/EEJTHj42+V9cUCuzpAbjYEUBxF2qMUFC0mAZjLckIWb4Yc+Z8
+         IATYTZ+yMdMNfKNAXulmeCMqLxhL4iYE/YK4p2n/lxNkyzMH0IZfCo0g5RTHa5iV5pMs
+         6Lkg==
+X-Forwarded-Encrypted: i=1; AHgh+Rqnrf5pLcEyjZb5Y5mMnlQ9EOth/j3fjmCembH2q0z3ND0lWcjEkhOuKCIjuTcZWtLlN3AR2w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyQZrh6UzSNUkrLrBz1AhHhireTzjtR33TsOLtmmsaxRiRVLlAu
+	5IOSiN6Y9hEUgSx+BUL+L/70M+f48AouGyRW1Npzh1fIdYWsj0m18UgZQ6Ke1A/ULp4=
+X-Gm-Gg: AR+sD13fk1Z7G5jdxIOJnPfSKYz6ML8DvuKH6nKHaIzYwlE2kh8/Vt9sRzk7pyECtyL
+	zJ/b/4ZnqhKTcIJPIlak9Dh0hi4bvpXDjwEKhDfjbAbrQXf1wu8rvngl78ktnD/wai0ddBgJxFz
+	+++sBwnY/4c2OWxyBVXAOWIZKP32THOy23VqnyLUx4shxoqkPI2tA8eMJ1XKQSSzWSE1I7Nloe6
+	ErgJHIw3iGXIpz79o8hyrlkZSxa5aKpc3TmRS5w1dJ3NolVonT51oqyREpJfemy32g0euul4UH3
+	WVwD//an7k5mLBCsG6Gt+kuPyJbp2Ul/YcnzEa3PlXJXqalIJWGscs2TiikRVolKmyJ6OGp0w8l
+	4mP4lh1zYL+w1Jdmgx7gApzn7Bk6pEGceVHoRlleP3/iETd/rRbeOrPmBMYCTTEZ2a66uGis5s0
+	uZg/NMTgZ2r7KiV+ogjDn1lRfXdFXKHK9DwmM=
+X-Received: by 2002:a05:600c:c059:20b0:495:63e6:5fb8 with SMTP id 5b1f17b1804b1-49573c9bbdcmr62628475e9.12.1784896801561;
+        Fri, 24 Jul 2026 05:40:01 -0700 (PDT)
 Received: from gpeter-l.roam.corp.google.com ([2a00:23c7:314c:4601:a07c:a901:acc1:9287])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4957af6b10esm71556795e9.5.2026.07.24.05.39.59
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4957af6b10esm71556795e9.5.2026.07.24.05.40.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 05:39:59 -0700 (PDT)
+        Fri, 24 Jul 2026 05:40:01 -0700 (PDT)
 From: Peter Griffin <peter.griffin@linaro.org>
-Subject: [PATCH 0/2] Add arm-smmu-v3 support for instcfg data override
- feature
-Date: Fri, 24 Jul 2026 13:39:41 +0100
-Message-Id: <20260724-arm-smmu-v3-instcfg-override-v1-0-e7acf4a8a525@linaro.org>
+Date: Fri, 24 Jul 2026 13:39:42 +0100
+Subject: [PATCH 1/2] dt-bindings: iommu: add arm,instdata-override property
+ documentation
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,10 +71,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAA1dY2oC/x3MSwqFMAwAwKtI1i9Q6w+8iryF2lSzaJVEiyDe3
- eJyNnODkjAp9MUNQomVt5hR/gqY1zEuhOyywRrbms7WOEpADeHEVCFHPWa/4JZIhB3h1LSN8W7
- yVNWQi13I8/X1w/95Xm9No+BuAAAA
-X-Change-ID: 20260724-arm-smmu-v3-instcfg-override-b5650fdbfe34
+Message-Id: <20260724-arm-smmu-v3-instcfg-override-v1-1-e7acf4a8a525@linaro.org>
+References: <20260724-arm-smmu-v3-instcfg-override-v1-0-e7acf4a8a525@linaro.org>
+In-Reply-To: <20260724-arm-smmu-v3-instcfg-override-v1-0-e7acf4a8a525@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
  "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -86,71 +86,58 @@ Cc: Pranjal Shrivastava <praan@google.com>,
  willmcvicker@google.com, jyescas@google.com, 
  Peter Griffin <peter.griffin@linaro.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2030;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1430;
  i=peter.griffin@linaro.org; h=from:subject:message-id;
- bh=+LKKqb5ZqdPr77qli5tmJ/6wZb62O/rS93RulG8b1G8=;
- b=owEBbQKS/ZANAwAKAc7ouNYCNHK6AcsmYgBqY10b8hqtiFJgZNPKKmccvQiXiJ207C2BIrxZG
- XX6WJTAaLqJAjMEAAEKAB0WIQQO/I5vVXh1DVa1SfzO6LjWAjRyugUCamNdGwAKCRDO6LjWAjRy
- uuE8D/wJJ4iuiOHoo3Ba+E2kIrjoJF0Fvyyi8zfBoy0a23Ep3SQHV2ozGw44bn3MM+AnFDe0kQo
- K7n+PTewI3MkJc3c3ZQ0ERKIPmcEsiIsn2gX26ShPCn1rlmjJuEhpiBfXA7VU2++AVuTV07n6uc
- rLH6Zos/1Zuv6p/lZyzOd316J87sgMuNP+AYzfX8TWnGn0OYhxrltSPRBOuXFy2C/EG6CAlFMpE
- Myu8NAzTuIBjapLrJLT6JNILVZkAliNhmMZhXClskp7XqTcGxJrnu92RW0gq0zMndxQixO7AO3H
- se508EAQJvHN8sc+cHzOyV3PMsnX+6OmzWPf1ZZq5YcMFaec/bGJvHaSMCVE3zLSn53o41UL3q9
- McQs1kU7P0M3XH1COuT+ySU1KUbj96wW2bR4eDXmm9iJuk8nKGPP5EGeb9U8iAmz8zM3gv8z5MH
- TbABDCW574tZXzCJo5deKVsFzeIp6ea5zstz7iFiSAy34/IV9+520H5EjRtZFKI+MMszucOqiG7
- Zxr9bX8aw/T33kLylD6ih1LV0lW9Eabw7soCRVy9YF1Bn2r5GMIerZ/njASPT2lCLYv4193TXP8
- EH0i9rOUrX26e3ETtY1PY/4i5wSk8kTUR4Qz4x+Ge8KlX6MbADzr5auS6HEKqUnf5uJG/ULAM9l
- wtz0zmXjoy+6v8Q==
+ bh=grNzaIZhTarizm1uEFeEaqFDbVnPHTcu7XioeAt/FBg=;
+ b=owEBbQKS/ZANAwAKAc7ouNYCNHK6AcsmYgBqY10eAg0RYUiLSa+cCoQ/bi2kFDEdZd0AvKhcp
+ BNevQec4jCJAjMEAAEKAB0WIQQO/I5vVXh1DVa1SfzO6LjWAjRyugUCamNdHgAKCRDO6LjWAjRy
+ ujuwD/4vdtU14qtM7zY1gR4pBiw1bskRRH+U/hdF6Efn1OO0Dw9syoJjGIukFMdeUZ7ZazcigE0
+ Ehf2cje464+yA/9S/eHT+2+6J992g8bI3b8A7sFNJE4nSStrgA154nK+Ns8okuYn0Uykyllx8sT
+ oFOyohXlpjSkV0YXzwZIoBpXULUeiSXNdPJCb+NvM6dE0VfqD+6LCu6+qjz5q9pLnN9PFPYL+qa
+ ml7zGOyKfLE/Vbw/HrWZ9n2p333/reyCw/zvIce1ZPKjqCaN8udMSLBqBRYr1GIZ2GkI2XRoDCN
+ 4IXAwaoUcXTqyV08728bh9c9G/kkTs56cNRWIRwaYWxFGPAxqZruRFs7GD6HnjpXr0WYGeb71lA
+ u9DMtcE3AF3K3wWQ7TlymI2zAZCtwna7WdqbvGnUvgfuOt+R3Q10rZ+kcHqE0KLKL/egHYO+Ymw
+ pZiQrylLK51/pxVqZK1fc5DL2LGs1XLkp1rOIYak/c7Hs/oiRgmvRXDsGjhN1y0AHmuQZKpoiXZ
+ DEZmtJa00EsMsFit8+YC9WQ9JxtTj3dCY+c1t8dGdkDzc8hTymLXl2avvWuEf92eMr/Qenub7K7
+ vYypUP1/G5BP2nku6FoVTv7lOz3Vu1lOZK4PNEkZi5BBbmTULXr+HLWFZ6QpFFdoYmTwn5WwR3C
+ voMklnr0DyOl/Ug==
 X-Developer-Key: i=peter.griffin@linaro.org; a=openpgp;
  fpr=0EFC8E6F5578750D56B549FCCEE8B8D6023472BA
 
-Hi folks,
+Add a new arm,instdata-override DT property used to enable the incoming
+attributes override feature to Data.
 
-These two patches add support for a new "arm,instdata-override" DT property
-that enables the override of the instruction/data attribute of incoming
-traffic to Data by setting the INSTCFG override bits.
-
-It is intended to be specified when the smmu can't guarantee that these
-attributes are provided correctly from the client device.
-
-One SoC that requires this for some IP instances is the Google Laguna SoC
-found in Pixel 10 phones. The initial device tree for the platform is
-proposed in
-https://lore.kernel.org/lkml/20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org/
-but other drivers like USB glue and phy are already merged upstream.
-
-Downstream code has used "arm,instdata-override" DT property name, which I
-have continued with in this series. Existing options upstream tend to use a
-vendor property e.g. hisilicon,broken-prefetch-cmd or
-cavium,cn9900-broken-page1-regspace. So an alternative name could be 
-google,lga-instdata-override or possibly google,lga-instcfg-data-override.
-
-So far I kept the original downstream name as the override feature is
-specified in the Arm SMMU architecture specification and could potentially
-be useful for other SoCs.
-
-Arm SMMU spec that documents these registers can be found here:
-https://developer.arm.com/documentation/ihi0070/ha/
-
-regards,
-
-Peter
+This is used, when the smmu can't guarantee that these attributes are
+provided correctly from the client device. One such example is Google
+Laguna SoC due to silicon errata on some IP instances.
 
 Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 ---
-Peter Griffin (2):
-      dt-bindings: iommu: add arm,instdata-override property documentation
-      iommu/arm-smmu-v3: Override for Inst/Data attribute
-
- .../devicetree/bindings/iommu/arm,smmu-v3.yaml     |  9 ++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 26 ++++++++++++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  7 ++++++
- 3 files changed, 38 insertions(+), 4 deletions(-)
 ---
-base-commit: b4515cf4156356e8f4fe6e0fdc17f59adab9772f
-change-id: 20260724-arm-smmu-v3-instcfg-override-b5650fdbfe34
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Best regards,
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+index 82957334bea2..23ea5e8880d4 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+@@ -83,6 +83,15 @@ properties:
+       register access with page 0 offsets. Set for Cavium ThunderX2 silicon that
+       doesn't support SMMU page1 register space.
+ 
++  arm,instdata-override:
++    type: boolean
++    description:
++      Override the instruction/data attribute of incoming traffic to Data
++      by setting the INSTCFG override in all Stream Table Entries. Used
++      when the smmu can't guarantee that these attributes are provided
++      correctly from the client device. Google Laguna SoC is one such
++      example for some smmu instances.
++
+ allOf:
+   - if:
+       not:
+
 -- 
-Peter Griffin <peter.griffin@linaro.org>
+2.55.0.229.g6434b31f56-goog
 
