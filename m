@@ -1,111 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8FD9448B88;
-	Fri, 24 Jul 2026 16:25:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F03CF445AD0
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 16:42:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784910350; cv=none; b=N3g2UQgItrUSHsELcB6lRpFHjCOeFmyO4wH89tMd6UZ72SPTbFQnas5VBIfJpyyCpumMY8An/fLy7CskmjzguwWYidJFi4qmkB/q5qSfE5xrUu/kSIwlZBCiT09QFLyutArtJEA/MpXSuEw7NYGQ70CyeZYSxQOfFErYILs1CTo=
+	t=1784911331; cv=none; b=b/Ty++h9IrhyzuGnLqzZNOurJ60+CiJbqQppyj5VnpNczbTBf84n1DSZ/ZCBJRXS3VgSZCutRw8NxSmwY132YWXwLQzJg6dECbUORp7gI3Jg7lOPFDsnWCmRGhbd/PNqZPLtL6J7ac0V3K+5FbFzUG7sFKbSSl1mtJLGhFKKcBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784910350; c=relaxed/simple;
-	bh=FtzfiRO/VYG3z5T4hJjhgITwKLPiuSaxepprLBlTKew=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=tzkj9aCDLdm/TLDiqo0pLDI3N9pebdCYK2ViFtHTkbUoRrw2GR4WBMZhAT2K0tpEprFE9KHtxC22Ck0TGyNfCG9x2/uL79G5YjedCkrs3o9FsdnIv4mmzPc7VZJY+c4vkVbes2Q/WPjP7nhq1fY+KABmnj2OTs8hQ85nypMwXSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LoqFHaVq; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784911331; c=relaxed/simple;
+	bh=sbVTyw7sc+JNV3stUuyGzQwo3H+5w3zwl49ls9VQJOs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ErQSBvhyHX6ipvZpmbwvHSNwkACCQM1w5wdAfmMjNqQcCoQCb2kLsaiElsmxQOWxUnFjBGCRKiO2dLsdYx86c/ufW69rNnVuRy+jsA6WdkcWvXtA5S753MzjkPi0xm88ls6V8gO350ivGEL2rjTZDi3D8TJI9xsyGUFkLI3/630=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Vz5FLGOE; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LoqFHaVq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F7EA1F000E9;
-	Fri, 24 Jul 2026 16:25:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784910349;
-	bh=Nsh3J7UmAD7PZtvxxi0Nkd97tRZuuQ0MJgzkidOe7RQ=;
-	h=Date:From:To:Cc:Subject;
-	b=LoqFHaVqsqUqzZUdPnKWtSgomRa6IGALtOeMrCKwHmSzbnuBXnToyPKG0fsNo1lz/
-	 /UZU0a9c+JytGwaypF7QsFZ32JpBQImb1xR6cJxktkNj6iouPNwhmjhG0iypEtzGsC
-	 w9Q28FJDm+uh3fSoI9YrOC3PO+HNCfrEjSGMJO8b7Snkb/yDQG0VDeQaRqGlJuBECq
-	 +MqcTSzvFbdEmj8D28u6bbUALAkrY0A2naqWUNBcZV9spniY3N+vap7L0rxANk0wA5
-	 WOIVtX2RoINQu5zaIvvnBNEH4yWhv9ZtRkRLoOYjvNhgT0OJZHqam0cXx6hdXnFpmK
-	 IiJm/o7oG1d9A==
-Date: Fri, 24 Jul 2026 17:25:44 +0100
-From: Will Deacon <will@kernel.org>
-To: torvalds@linux-foundation.org
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] IOMMU Fixes for Linux v7.2-rc5
-Message-ID: <amOSCGEa5N4lEUFM@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Vz5FLGOE"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AE9E01476;
+	Fri, 24 Jul 2026 09:42:04 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 065EA3F66F;
+	Fri, 24 Jul 2026 09:42:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1784911328; bh=sbVTyw7sc+JNV3stUuyGzQwo3H+5w3zwl49ls9VQJOs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Vz5FLGOEw6ezkfl2Ma6R6QzDpsXFcFYJnWjh3tfRrqnC1b6OIisk/8HRsvnRepVpq
+	 ZuhOZqQqupnzk6Zx34V4zJ2Ff+GAkCXh611fWKPyAW925B1oHBRfg5lz6/6bTzoA6O
+	 EVK73rAmQae/YGytnE8y6C2bHoXK4mXIrf1Dh/Z4=
+Message-ID: <646496f6-88f2-47c1-a1b8-0ebaec7227f1@arm.com>
+Date: Fri, 24 Jul 2026 17:42:02 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add HAFT support for SVA
+To: Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>
+Cc: nicolinc@nvidia.com, joro@8bytes.org, jpb@kernel.org,
+ catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, stable@vger.kernel.org
+References: <878cd6bcbbe2d5677d2f63da13294c148268552c.1782927917.git.robin.murphy@arm.com>
+ <amDEmlcyC3Tfmkel@willie-the-truck>
+ <acd85a2a-af1f-4ebf-8370-773338d4fd15@arm.com>
+ <amFCQDrEowvL28O_@willie-the-truck> <amOD9GAz0j7wMMij@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <amOD9GAz0j7wMMij@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Linus,
+On 24/07/2026 4:25 pm, Jason Gunthorpe wrote:
+> On Wed, Jul 22, 2026 at 11:20:48PM +0100, Will Deacon wrote:
+> 
+>>> We might block traffic in the process of _explicitly blocking traffic_!?
+>>> Whoop-de-do, surely?
+>>
+>> Hmm. I have very vague memories that there were some virtualisation (?)
+>> cases where Jason and Nicolin cared about the type of event that would
+>> be generated by concurrent DMA (e.g. bad CD vs translation fault) but
+>> maybe I'm misremembering.
+> 
+> Yeah, it is actually important for that special SVA mm drop/release
+> case. We need to write a CD that blocks walking but always generates
+> translation fault.
+> 
+> I'm away from my computer right now, but if sashiko is saying that the
+> SVA flow that uses EPD generates a racy bad CD then that is a bug that
+> needs to be fixed. Possibly by ignoring HAFT in the used calculation
+> for the EPD cases.
 
-Joerg's away at the moment so I've been looking after the IOMMU tree in
-his absence. In the process of doing that, I've hoovered up a handful
-of fixes for the AMD and Intel drivers which address a combination of
-the usual out-of-bounds/locking/leak bugs as well as some logical issues
-around SVA and command completion.
+Again, HAFT has nothing whatsoever to do with EPD0. Guess what happens 
+if we were to ignore it as nonsensically suggested? Oh look, C_BAD_CD 
+again, since a valid CD with HA=0 and HAFT=1 is architecturally illegal.
 
-Summary in the tag; please pull.
+I also wouldn't consider this a "regression", as I'm not aware of any 
+SMMU actually implementing HAFT yet - this is more just about ensuring 
+architectural correctness is in place ready for the future. There should 
+be plenty of time to figure out if and how you could still do what you 
+want to do on future hardware, but if the SMMUv3 architecture itself 
+breaks your idea of how the SMMUv3 driver should work, then forgive me 
+for not having all that much sympathy, since my responsibility is 
+primarily to support the architecture and correct usage thereof.
 
-Cheers,
-
-Will
-
---->8
-
-The following changes since commit 8cdeaa50eae8dad34885515f62559ee83e7e8dda:
-
-  Linux 7.2-rc2 (2026-07-05 14:44:06 -1000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.2-rc5
-
-for you to fetch changes up to 754f8efe45f87e3a9c6871b645b2f9d46d1b407b:
-
-  iommu/intel: Fix out-of-bounds memset in dmar_latency_disable() (2026-07-21 11:34:51 +0000)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v7.2-rc5
-
-- AMD:
-  * Fix lockdep splat from nested domain allocation
-
-  * Fix nested domain leak
-
-  * Fix broken synchronisation of command completion
-
-  * Fix OOB write in "ivrs_acpihid" command-line parsing
-
-- VT-d:
-  * Prevent SVA for IOMMUs with non-coherent page-table walker
-
-  * Fix OOB write in PMU driver.
-
-----------------------------------------------------------------
-Guanghui Feng (1):
-      iommu/amd: Wait for completion instead of returning early in iommu_completion_wait()
-
-Li RongQing (1):
-      iommu/intel: Fix out-of-bounds memset in dmar_latency_disable()
-
-Lu Baolu (1):
-      iommu/vt-d: Disallow SVA if page walk is not coherent
-
-Pengpeng Hou (1):
-      iommu/amd: Bound the early ACPI HID map
-
-Tycho Andersen (AMD) (2):
-      iommu/amd: Fix IRQ unsafe locking in gdom allocation
-      iommu/amd: Fix nested domain leak
-
- drivers/iommu/amd/init.c   |  6 ++++++
- drivers/iommu/amd/iommu.c  | 22 ++++++++++++++++------
- drivers/iommu/amd/nested.c | 34 +++++++++++++++++++---------------
- drivers/iommu/intel/perf.c |  2 +-
- drivers/iommu/intel/svm.c  |  2 +-
- 5 files changed, 43 insertions(+), 23 deletions(-)
+Thanks,
+Robin.
