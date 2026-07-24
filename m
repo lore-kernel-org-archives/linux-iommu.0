@@ -1,64 +1,64 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81B26387378
-	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 19:24:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4086935F170
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 19:26:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784921052; cv=none; b=oZRx8LSGHxrI5KYwLPpAuqwXQbSgHD6iEa1j+Jh1qLyZrBkFJYZok5he/bsp5Zgkh/4YV+LvMldpx8Lc7DGPpx5QpQDHROtwWLmmaxN5qG/CZhcIcbDGslcqs/Qz8kun4Q8b5E9ydHcyWKiQg9N3QSpUX2jsMHXq6zj9ZHYZ5VU=
+	t=1784921176; cv=none; b=m9Hdkgo5EvUbRlRRn4q1BTDamSj/W2dHyeW24pimbWP1Iq2Iv7nw2GNHAQWRrS9XDPe4r/Hw7+52UgVqvMz2ITKzh+qghXe3/Z1+49SxyptIV4/mPvuJ0ni67n4Tjejrpg8IsFWLao7zOcDgk/oTs2HJg2D1vvxX3VXJ3kxM+Eo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784921052; c=relaxed/simple;
-	bh=6n0PrMBWoS0sPQXahu2AXqIyzUhB0AuhgYBoeZAZIvc=;
+	s=arc-20240116; t=1784921176; c=relaxed/simple;
+	bh=0HQlirkEYCWCz8l1vNkcmjQBrUCbF0fQBQEtNkiVrDo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vovdt7n6haAbhKS0+qdwBNvj+1AWcHyVeO1vI87vg/UUyIxStF6pCI9TvW6hoelOjSpyfF2OV8RTcjK+IS1XY8Pu7dMbg5Iz5COxxab0F3BG9ypAErU+2Uibk5iCnZwuxwsUxGirLc48XizVJKvWGaqs0bkkfq29oxlXngsIItQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sf5q2sm9; arc=none smtp.client-ip=209.85.128.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=d2quXLLI2ETlLqO9IErEK6DKjPZ91c9Ao2ivazZHLOvo1vkTX7nulNFqTChpKeg9Gt4Q9rc/ZgPDOJbgakAx2UK2JiKcKy2/BTH7XYsLqpAemAlRb2xZv/EVAf7WHwcmi9vnXNDF7mY9dAmmYM8JVvds3ScKP4A1WaxmA6amdq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mShK68X5; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sf5q2sm9"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4954bb689dfso115e9.1
-        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 12:24:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mShK68X5"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-493be0fbcc5so9725e9.0
+        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 12:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784921049; x=1785525849; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1784921173; x=1785525973; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=fW3/tPOjJ9YD7ga7B9qWjKJD0av7wYJVzQ+5i41ieOQ=;
-        b=sf5q2sm95EbeVhJXXOu6D4HwKo0V0TgRGHxLEZ4xSGjJ2gTW0jExRAHxqxktb2pkAN
-         udV4PEdb3QgTH7gl2lZ1ns0WfVltcKvZVeIdEZtxXk2Bvt5sQhv637AH+asXu7NG8TKd
-         seFxT/OidWIaIxXGy7Ki8wU0xovWLcuXfMEc9MIgWQA8cgUA2yTbi6JRH3XBFLRMOI6e
-         vk8pnoBe68PENHoRimKZGOQklFDo1l6PV8jAkEsNeIBS3XHKyde8x/31/SXB3rG2n7kr
-         3OMIrw3q3MuT/LYEM5jAD0z9+FeGvSEXgdd0/I+JWXR1DRSNRQdWSAaSkOZOhXnUY83K
-         yEWQ==
+        bh=MzVdoK4UkN4wvU8WsKv82P8uCjeb8Sfe3uyjAreWqHc=;
+        b=mShK68X5I9a7f0YcD/e3lReBNz0N63A2is5ltCK8doDdQk0evlUxZxAxEBe/1mnDxv
+         u/Ftfp/65p4uA9gK9/iLyZUCKy8qV1gBwdMnGTilzsGb+HZSA2Eg0RWAD6+XXPjJ5ZvT
+         jygG0tRyOpLgTf0L3vseVV5jZ2URg5LugNn9J4OVgElzvnPetP+3s6XX6z2YaL0tgzxO
+         NlNZSmr2WdTeBTD+SLOI0hmDETuQTBwosZ4ElAtHWzk15g0KBMaeb2atHTeQ8u8sWP+Y
+         C9Ao4TVVVZlVe+A4Lfvq6vp71WkHeWO3DghBqXHNAjhm92/5IRuQBt9vS4LmYj1jihqd
+         0PZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784921049; x=1785525849;
+        d=1e100.net; s=20251104; t=1784921173; x=1785525973;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=fW3/tPOjJ9YD7ga7B9qWjKJD0av7wYJVzQ+5i41ieOQ=;
-        b=nSTm78lH+27PuUtYtMoaNYfAoJb6l60N2CV8J5qatTlxVRKTo1qzBUDI1k8XjCoY27
-         RXA8xyoNAb/sBgiJUxeWe/XFTkzo6lArpSU3WxxbIEGiThbB2TR65s70owz9lfxdxRFE
-         EjpiTXRxubfnEko38dENRzQVMDxPBjBCHGwmtOEn919jmwaV5Pr92N0ahBHXOr6KMwqC
-         Btl3QL2m2ZaMmA2jDIOnIeJbyswZGIo0YXMrOACmCdmulHBGBFExjlW5I+YXH/7j3v8i
-         nIS+iqmoF5aW7lr9XQi1yqwGnehdprHjKu0I+9EvROVTBi+bLEX/MpMhd5oZemTk9AjT
-         wY3g==
-X-Gm-Message-State: AOJu0YxPmvB6jpGArLGksU62ot+JTL1yxyHPTPiX0odVE6ydFdXsJz9N
-	gcZVdw1PmMniRqwqWHQtJ9S1QOvKgnfKYA0VqWlRiySSUPR5Cj8I4TOVae53+cMCbQ==
-X-Gm-Gg: AR+sD10kJOIXiJDyVSWpdiYfNqYmelV7w4Wf8sfSBukqpGJpyj4DOo+ntEEoyNWqnhT
-	WTZ7ytJtOEfQTSjsF8pDbEGIaFE6zRABz/U7ZL/NJmqgb7KbcdXQ8dDUNQM2DbgFB967zc3fvAj
-	T+mAye+EebiRESC2czKIDVVLYXDUTedwPBrYihfon4T8KLyQATeXYdsWTlLPVPNlIYU11LPLlGI
-	3cxc47i4VXwCPdhl4ZTBYc2MZdEgiBIMLmUfDzJwwVyFioWNxkCrat8cPOnyOADHYyY8tHQ+nGO
-	b7L6WNRbEb1MYKh1bHSeaXdqx02O0udgiWmLRuCphz4ITxLe2raHXWseouACs3ByKvaxld1WUiF
-	x6T8J963sjZvPE/cLOh1RhRYSnzXha7kK0Bv8EMlbQxYbInOq2RzFacf2cnmUg1SzQCgFB092RX
-	BwI0EJ/KdNOOkr3TVj0AshiOk/+1KhxQT9XLH5eg==
-X-Received: by 2002:a05:600c:6a8d:b0:493:b47f:a24 with SMTP id 5b1f17b1804b1-496b4d2f236mr156575e9.6.1784921047918;
-        Fri, 24 Jul 2026 12:24:07 -0700 (PDT)
+        bh=MzVdoK4UkN4wvU8WsKv82P8uCjeb8Sfe3uyjAreWqHc=;
+        b=UZr/md1sawB0dupLp4d6rftgy/oVGBm6t0UkfzxX/UnjxSpmLRACv+8HNJc3hHDIZv
+         flHpLR3DXhl/rPRhDY/E1n6eT+Kd/E4S76DBeMyvPM1R8frLvJW0ImKNTiksESVvpPu6
+         yC/K2mC/nmPDr5rrWd6b05T+KEkVV5zifrtRZ1EhDn9Ggl5T0HtgSkfc1NBPRpJ6vks9
+         i2X0KmMeP5baSjphne1+VWYpbFJoZIpMQXxECtGQfkAl0yc3gI+vwr3ML8BiM0noUpWb
+         GdWKizl8DfE6WjJEOKARuC07GpNDJeguCckHwasjsMDdTn5XtJpk+2+lgTDOMwbhJlLJ
+         M6bg==
+X-Gm-Message-State: AOJu0YwCE+2QWbFA3xxmHrR/4wmUoHh2ok9mc6RWULiALwCcuLT4r910
+	rLcn6dL39bW0EVYYKF8A57B3XXczTCx5ltG/yVOipZGzhL/jYRZ7Sss4yO4k9Txiag==
+X-Gm-Gg: AR+sD10AbQyy+mmX4Cc6sDWWMs63/DSlTPVPpjV2x5T5d1RXpovocajNZUAfL7+JWr0
+	Gc5XgSuzBa+91Slb42UWpoLaccEbvlYCdll+vqf6V4+lX6D9NjtRpF4VNmRsUOQbc4C+BfDmWnm
+	vD3HDc8r370qU+W3jyoRrbMtZoDxmch6pl2gDlWfVdVvA5bbQT9/puGbbRBUtoy18mp6JmBfGjt
+	zNvqnx8P+lmd/JprgLZ9++2IFPlTge6LHi0YCIQnUFRtC1F8GkZV3N7eocL3DTeLaZ/x+UlAc69
+	JaBMgZW9CO6nlT06sl/IYcQZm1RVqb3i44aKNkQQDK8HkFycVjmEyLtaFsql90SGa0IvPy+U+gt
+	Ic8hqlO25yXz1QtnWytE0NLygydoT2f5ldNKAplYzA1YEqrCKWMJYIAzyPUCLgzsnrTbEIPy37G
+	qEDnvuWJdyMyLPPEXsBX0EOEG8dsCMp5BvNkibTg==
+X-Received: by 2002:a05:600c:4583:b0:493:aca0:32e2 with SMTP id 5b1f17b1804b1-496b4cf6c36mr246435e9.4.1784921172928;
+        Fri, 24 Jul 2026 12:26:12 -0700 (PDT)
 Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85c66cebsm26168326f8f.30.2026.07.24.12.24.07
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-496b4ed5f93sm11566705e9.1.2026.07.24.12.26.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 12:24:07 -0700 (PDT)
-Date: Fri, 24 Jul 2026 19:24:03 +0000
+        Fri, 24 Jul 2026 12:26:12 -0700 (PDT)
+Date: Fri, 24 Jul 2026 19:26:08 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
@@ -69,10 +69,10 @@ Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
 	Pranjal Shrivastava <praan@google.com>,
 	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH 3/7] iommupt: Add the 64 bit ARMv8 page table format
-Message-ID: <amO70_Bx0hM10xUn@google.com>
+Subject: Re: [PATCH 4/7] iommu/arm-smmu-v3: Remove io-pgtable-arm from sva.c
+Message-ID: <amO8UPHuxrvoiXq7@google.com>
 References: <0-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
- <3-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
+ <4-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,474 +81,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
+In-Reply-To: <4-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
 
-On Mon, Jul 06, 2026 at 01:29:09PM -0300, Jason Gunthorpe wrote:
-> The features, format and naming is taking from the ARMv8 VMSAv8-64
-> chapter. By far ARMv8 is the most complex format supported by generic page
-> table, with the largest number of options and configurations.
-> 
-> ARMv8 uses almost all the features of the common implementation:
-> 
->  - Contiguous pages
->  - Leaf pages at many levels
->  - Variable starting top level
->  - Variable size top level supporting concatenated tables with a high
->  - order top table allocation
->  - Dirty tracking
->  - Low (TTB0) or high (TTB1) starting VA
->  - Software bits
-> 
-> Compared to the io-pgtable version this also implements the contiguous
-> page hint, and supports dirty readback from the S2. It implements the
-> original io-pgtable intention of always using S2 concatenated tables
-> instead of only when mandatory.
-
-I believe the intention of the original code was to use concatenation
-at level 0 to reduce the table walk. Always using concatenation will
-have a trade-off between high order allocations at runtime which can
-happen late with VFIO vs walk length .
-
-> 
-> iommupt's incoherent flushing algorithm was modeled after the ARM
-> io-pgtable version so there is no change here.
-> 
-> Additionaly it includes implementations for the LPA, LVA, and LPA2
-> features however they will be compiled off for the iommu build until a
-> driver actually needs thems. With these features it can support the "level
-> -1" to produce a 5 level table similar to x86, as well as all the
-> different placements of OA bits defined by the spec.
-> 
-> This is supported by a compare test that creates parallel iommupt and
-> io-pgtable instances with matching parameters and validates that every
-> tree level is the "same" across several meaningful tests. It covers the S2
-> concatenated pages, the recent bugs found in the io-pgtable logic and a
-> range of VA sizes.
+On Mon, Jul 06, 2026 at 01:29:10PM -0300, Jason Gunthorpe wrote:
+> This is only being used to get some STE constants. Put local
+> constants along side the register definitions instead.
 > 
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/generic_pt/.kunitconfig      |    1 +
->  drivers/iommu/generic_pt/Kconfig           |   12 +
->  drivers/iommu/generic_pt/fmt/Makefile      |    2 +
->  drivers/iommu/generic_pt/fmt/armv8.h       | 1124 ++++++++++++++++++++
->  drivers/iommu/generic_pt/fmt/defs_armv8.h  |   23 +
->  drivers/iommu/generic_pt/fmt/iommu_armv8.c |   13 +
->  include/linux/generic_pt/common.h          |   42 +
->  include/linux/generic_pt/iommu.h           |   73 ++
->  8 files changed, 1290 insertions(+)
->  create mode 100644 drivers/iommu/generic_pt/fmt/armv8.h
->  create mode 100644 drivers/iommu/generic_pt/fmt/defs_armv8.h
->  create mode 100644 drivers/iommu/generic_pt/fmt/iommu_armv8.c
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 13 ++++++-------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     |  7 +++++++
+>  2 files changed, 13 insertions(+), 7 deletions(-)
 > 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 0e670c92469b2f..f82a513ede09c9 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -11,7 +11,6 @@
+>  #include <kunit/visibility.h>
+>  
+>  #include "arm-smmu-v3.h"
+> -#include "../../io-pgtable-arm.h"
+>  
+>  static void __maybe_unused
+>  arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_domain *smmu_domain)
+> @@ -41,10 +40,10 @@ static u64 page_size_to_cd(void)
+>  	static_assert(PAGE_SIZE == SZ_4K || PAGE_SIZE == SZ_16K ||
+>  		      PAGE_SIZE == SZ_64K);
+>  	if (PAGE_SIZE == SZ_64K)
+> -		return ARM_LPAE_TCR_TG0_64K;
+> +		return ARM_SMMU_TCR_TG0_64K;
+>  	if (PAGE_SIZE == SZ_16K)
+> -		return ARM_LPAE_TCR_TG0_16K;
+> -	return ARM_LPAE_TCR_TG0_4K;
+> +		return ARM_SMMU_TCR_TG0_16K;
+> +	return ARM_SMMU_TCR_TG0_4K;
+>  }
+>  
+>  VISIBLE_IF_KUNIT
+> @@ -85,10 +84,10 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
+>  				   64ULL - vabits_actual) |
+>  			FIELD_PREP(CTXDESC_CD_0_TCR_TG0, page_size_to_cd()) |
+>  			FIELD_PREP(CTXDESC_CD_0_TCR_IRGN0,
+> -				   ARM_LPAE_TCR_RGN_WBWA) |
+> +				   ARM_SMMU_TCR_RGN_WBWA) |
+>  			FIELD_PREP(CTXDESC_CD_0_TCR_ORGN0,
+> -				   ARM_LPAE_TCR_RGN_WBWA) |
+> -			FIELD_PREP(CTXDESC_CD_0_TCR_SH0, ARM_LPAE_TCR_SH_IS));
+> +				   ARM_SMMU_TCR_RGN_WBWA) |
+> +			FIELD_PREP(CTXDESC_CD_0_TCR_SH0, ARM_SMMU_TCR_SH_IS));
+>  
+>  		target->data[1] = cpu_to_le64(virt_to_phys(mm->pgd) &
+>  					      CTXDESC_CD_1_TTB0_MASK);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 95186cf84e9abb..99ca96db0d0401 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -203,6 +203,13 @@ struct arm_vsmmu;
+>  #define Q_MAX_SZ_SHIFT			(PAGE_SHIFT + MAX_PAGE_ORDER)
+>  #endif
+>  
+> +/* Constants used for CD TCR and STE VTCR fields */
+> +#define ARM_SMMU_TCR_TG0_4K	0
+> +#define ARM_SMMU_TCR_TG0_64K	1
+> +#define ARM_SMMU_TCR_TG0_16K	2
+> +#define ARM_SMMU_TCR_RGN_WBWA	1
+> +#define ARM_SMMU_TCR_SH_IS	3
 
-[...]
-
-> +}
-> +#define pt_full_va_prefix armv8pt_full_va_prefix
-> +
-> +static inline unsigned int armv8pt_num_items_lg2(const struct pt_state *pts)
-> +{
-> +	/* It is not allowed to call pt_num_items_lg2() at the top level */
-> +	PT_WARN_ON(pts->level == pts->range->top_level);
-
-This is a bit confusing, there is not a similar check at
-armv8pt_table_item_lg2sz(), that's because the core code assumes this
-does not deal with concatenation and uses max_vasz_lg2 to figure it
-out. I think we should have consistent semantics for this.
-
-> +	return armv8pt_granule_lg2sz(pts) - ilog2(sizeof(u64));
-> +}
-> +#define pt_num_items_lg2 armv8pt_num_items_lg2
-> +
-> +static inline enum pt_entry_type armv8pt_load_entry_raw(struct pt_state *pts)
-> +{
-> +	const u64 *tablep = pt_cur_table(pts, u64) + pts->index;
-> +	u64 entry;
-> +
-> +	pts->entry = entry = READ_ONCE(*tablep);
-> +	if (!(entry & ARMV8PT_FMT_VALID))
-> +		return PT_ENTRY_EMPTY;
-> +	/* R_RWMFF/Table D8-48: ARM level 3 has only Page descriptors */
-> +	if (pts->level != ARML3 && (entry & ARMV8PT_FMT_TABLE))
-> +		return PT_ENTRY_TABLE;
-> +
-> +	/*
-> +	 * Suppress returning OA for levels that cannot have a page to remove
-> +	 * code.
-> +	 */
-> +	if (!armv8pt_can_have_leaf(pts))
-> +		return PT_ENTRY_EMPTY;
-
-If this is not a valid PTE and not a table as checked above, what
-does this check catch?
-
-> +
-> +	/* Must be a block or page, don't check the page bit on level 0 */
-> +	return PT_ENTRY_OA;
-> +}
-
-[...]
-
-> +static inline void armv8pt_clear_entries(struct pt_state *pts,
-> +					 unsigned int num_contig_lg2)
-> +{
-> +	u64 *tablep = pt_cur_table(pts, u64) + pts->index;
-> +
-> +	if (num_contig_lg2 == 0)
-> +		WRITE_ONCE(*tablep, 0);
-> +	else
-> +		memset64(tablep, 0, log2_to_int(num_contig_lg2));
-
-I am not sure about that, memset64 just uses raw pointers,
-I believe we need WRITE_ONCE for PTEs.
-
-> +}
-> +#define pt_clear_entries armv8pt_clear_entries
-> +
-> +/*
-> + * Call fn over all the items in an entry. If the entry is contiguous this
-> + * iterates over the entire contiguous entry, including items preceding
-> + * pts->va. always_inline avoids an indirect function call.
-> + */
-> +static __always_inline bool armv8pt_reduce_contig(const struct pt_state *pts,
-> +						  bool (*fn)(u64 *tablep,
-> +							     u64 entry))
-> +{
-> +	u64 *tablep = pt_cur_table(pts, u64);
-> +
-> +	if (pts->entry & ARMV8PT_FMT_CONTIG) {
-> +		unsigned int num_contig_lg2 = armv8pt_contig_count_lg2(pts);
-> +		u64 *end;
-> +
-> +		tablep += log2_set_mod(pts->index, 0, num_contig_lg2);
-> +		end = tablep + log2_to_int(num_contig_lg2);
-> +		for (; tablep != end; tablep++)
-> +			if (fn(tablep, READ_ONCE(*tablep)))
-> +				return true;
-> +		return false;
-> +	}
-> +	return fn(tablep + pts->index, pts->entry);
-> +}
-> +
-> +static inline bool armv8pt_check_is_dirty_s1(u64 *tablep, u64 entry)
-> +{
-> +	return (entry & (ARMV8PT_FMT_DBM |
-> +			 FIELD_PREP(ARMV8PT_FMT_AP, ARMV8PT_AP_RDONLY))) ==
-> +	       ARMV8PT_FMT_DBM;
-> +}
-> +
-> +static bool armv6pt_clear_dirty_s1(u64 *tablep, u64 entry)
-
-Typo, we do not want to support so old hardware :)
-
-> +{
-> +	WRITE_ONCE(*tablep,
-> +		   entry | FIELD_PREP(ARMV8PT_FMT_AP, ARMV8PT_AP_RDONLY));
-> +	return false;
-> +}
-> +
-> +static inline bool armv8pt_check_is_dirty_s2(u64 *tablep, u64 entry)
-> +{
-> +	const u64 DIRTY = ARMV8PT_FMT_DBM |
-> +			  FIELD_PREP(ARMV8PT_FMT_S2AP, ARMV8PT_S2AP_WRITE);
-> +
-> +	return (entry & DIRTY) == DIRTY;
-> +}
-> +
-> +static bool armv6pt_clear_dirty_s2(u64 *tablep, u64 entry)
-
-Another typo.
-
-> +{
-> +	WRITE_ONCE(*tablep, entry & ~(u64)FIELD_PREP(ARMV8PT_FMT_S2AP,
-> +						     ARMV8PT_S2AP_WRITE));
-> +	return false;
-> +}
-> +
-> +static inline bool armv8pt_entry_is_write_dirty(const struct pt_state *pts)
-> +{
-> +	if (!pts_feature(pts, PT_FEAT_ARMV8_S2))
-> +		return armv8pt_reduce_contig(pts, armv8pt_check_is_dirty_s1);
-> +	else
-> +		return armv8pt_reduce_contig(pts, armv8pt_check_is_dirty_s2);
-> +}
-> +#define pt_entry_is_write_dirty armv8pt_entry_is_write_dirty
-> +
-> +static inline void armv8pt_entry_make_write_clean(struct pt_state *pts)
-> +{
-> +	if (!pts_feature(pts, PT_FEAT_ARMV8_S2))
-> +		armv8pt_reduce_contig(pts, armv6pt_clear_dirty_s1);
-> +	else
-> +		armv8pt_reduce_contig(pts, armv6pt_clear_dirty_s2);
-> +}
-> +#define pt_entry_make_write_clean armv8pt_entry_make_write_clean
-> +
-> +static inline bool armv8pt_entry_make_write_dirty(struct pt_state *pts)
-> +{
-> +	u64 *tablep = pt_cur_table(pts, u64) + pts->index;
-> +	u64 new = pts->entry;
-> +
-> +	if (!(pts->entry & ARMV8PT_FMT_DBM))
-> +		return false;
-> +
-> +	if (!pts_feature(pts, PT_FEAT_ARMV8_S2)) {
-> +		new &= ~(u64)ARMV8PT_FMT_AP;
-
-Wouldn't that clear the ARMV8PT_AP_UNPRIV?
-
-> +		new |= FIELD_PREP(ARMV8PT_FMT_AP, 0);
-> +	} else {
-> +		new &= ~(u64)ARMV8PT_FMT_S2AP;
-> +		new |= FIELD_PREP(ARMV8PT_FMT_S2AP, ARMV8PT_S2AP_WRITE);
-
-Same, wouldn't that make the page write-only?
-
-> +	}
-> +
-> +	return try_cmpxchg64(tablep, &pts->entry, new);
-> +}
-> +#define pt_entry_make_write_dirty armv8pt_entry_make_write_dirty
-> +
-> +static inline bool armv8pt_dirty_supported(struct pt_common *common)
-> +{
-
-[...]
-
-> +
-> +/*
-> + * Validate the S2 initial lookup level against D8.2.
-> + *
-> + *   Table D8-8: "Effective minimum value of T0SZ" (R_DTLMN)
-> + *   Table D8-9: "Implications of the effective minimum T0SZ value
-> + *                on the initial stage 2 lookup level" (R_TDJSG)
-> + *
-> + * ARM initial lookup level = 3 - top_level. Table D8-9 constrains the
-> + * shallowest allowed initial lookup level per PA size and granule:
-> + *
-> + *   4K:  ARM level 0 (top_level 3) requires PA >= 44
-> + *   16K: ARM level 1 (top_level 2) requires PA >= 42
-> + *   64K: ARM level 1 (top_level 2) requires PA >= 44
-> + *
-> + * The valid level set grows monotonically with PA size, so checking
-> + * against IAS (vasz_lg2 <= PA size) is conservative.
-> + *
-> + * R_SRKBC: 4K granule at ARM level 3 (single entry level) requires
-> + * FEAT_TTST.
-> + */
-> +static inline void armv8pt_s2_validate_level(unsigned int top_level,
-> +					     unsigned int granule_lg2sz,
-> +					     unsigned int vasz_lg2, bool lpa2)
-
-I do not understand this, the iommupt is the one choosing the level,
-and it calculates the table topology, so it should not have bugs in
-the configuration and should clearly reject certain bad inputs.
-Running this at then is more of a debug check that I do not think it
-should exist in the default config (maybe with kunit)
-
-> +{
-> +	unsigned int max_top_level;
-> +
-> +	switch (granule_lg2sz) {
-> +	case SZLG2_4K:
-> +		if (lpa2)
-> +			max_top_level =
-> +				vasz_lg2 >= 52 ?
-> +					ARMLn1 :
-> +					(vasz_lg2 >= 44 ? ARML0 : ARML1);
-> +		else
-> +			max_top_level = vasz_lg2 >= 44 ? ARML0 : ARML1;
-> +		break;
-> +	case SZLG2_16K: /* ARM level 1 requires PA >= 42 */
-> +		max_top_level = vasz_lg2 >= 42 ? ARML1 : ARML2;
-> +		break;
-> +	case SZLG2_64K: /* ARM level 1 requires PA >= 44 */
-> +		max_top_level = vasz_lg2 >= 44 ? ARML1 : ARML2;
-> +		break;
-> +	default:
-> +		return;
-> +	}
-> +
-> +	PT_WARN_ON(top_level > max_top_level);
-> +}
-> +
-> +static inline int armv8pt_oasz_to_ps(unsigned int oasz_lg2)
-> +{
-> +	/* Stream Table Entry: S2PS section, Context Descriptor: IPS section */
-> +	switch (oasz_lg2) {
-> +	case 32:
-> +		return 0;
-> +	case 36:
-> +		return 1;
-> +	case 40:
-> +		return 2;
-> +	case 42:
-> +		return 3;
-> +	case 44:
-> +		return 4;
-> +	case 48:
-> +		return 5;
-> +	case 52:
-> +		return 6;
-> +	default:
-> +		return -1;
-> +	}
-> +}
-> +
-> +static inline int armv8pt_iommu_fmt_init(struct pt_iommu_armv8 *iommu_table,
-> +					 const struct pt_iommu_armv8_cfg *cfg)
-> +{
-> +	struct pt_armv8 *armv8pt = &iommu_table->armpt;
-> +	unsigned int vasz_lg2 = cfg->common.hw_max_vasz_lg2;
-> +	unsigned int oasz_lg2 = cfg->common.hw_max_oasz_lg2;
-> +	unsigned int granule_lg2sz = cfg->granule_lg2sz;
-> +	unsigned int max_top_level;
-> +	unsigned int levels;
-> +
-> +	if (granule_lg2sz != SZLG2_4K && granule_lg2sz != SZLG2_16K &&
-> +	    granule_lg2sz != SZLG2_64K)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_AARCH32)) {
-
-Was that added for smmu-v2? as the smmu-v3 driver does not use it.
-
-> +		/*
-> +		 * VMSAv8-32 Long-descriptor format (G5.5):
-> +		 * Uses the same 64-bit LPAE descriptors as AArch64 but with
-> +		 * tighter constraints on address ranges and granule size.
-> +		 * FEAT_BTI (Guard Page) is not supported either.
-> +		 */
-> +
-> +		if (granule_lg2sz != SZLG2_4K)
-> +			return -EOPNOTSUPP;
-> +
-> +		if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2)) {
-> +			if (vasz_lg2 > 40)
-> +				return -EOPNOTSUPP;
-> +		} else {
-> +			if (vasz_lg2 > 32)
-> +				return -EOPNOTSUPP;
-> +		}
-> +
-> +		if (oasz_lg2 > 40)
-> +			return -EOPNOTSUPP;
-> +
-> +		if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA) ||
-> +		    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA2) ||
-> +		    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2FWB) ||
-> +		    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LVA) ||
-> +		    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_DBM))
-> +			return -EOPNOTSUPP;
-> +	}
-> +
-> +	armv8pt->granule_lg2sz = granule_lg2sz;
-> +	max_top_level =
-> +		armv8pt_max_top_level(granule_lg2sz, armv8pt->common.features);
-> +
-> +	/* The NS quirk doesn't apply at stage 2 */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_NS) &&
-> +	    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2))
-> +		return -EOPNOTSUPP;
-> +
-
-This seems a bit random, there are others incompatible features as
-PT_FEAT_ARMV8_TTBR1 && PT_FEAT_ARMV8_S2 and PT_FEAT_ARMV8_S2FWB &&
-!PT_FEAT_ARMV8_S2. Maybe there should be a validate() function to
-make sure all features work together.
-
-> +	/* LPA2 (DS=1) is only valid for 4K and 16K granules */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA2) &&
-> +	    granule_lg2sz == SZLG2_64K)
-> +		return -EOPNOTSUPP;
-> +
-> +	/* LPA is only valid for the 64K granule */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA) &&
-> +	    granule_lg2sz != SZLG2_64K)
-> +		return -EOPNOTSUPP;
-> +
-> +	/* LVA is only valid for 64K granule Stage 1 */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LVA) &&
-> +	    (granule_lg2sz != SZLG2_64K ||
-> +	     pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2)))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (vasz_lg2 <= granule_lg2sz)
-> +		return -EINVAL;
-
-When can this happen?
-
-> +
-> +	/* R_QQQSJ: Limit the OA to what the format supports */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA2) ||
-> +	    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA))
-> +		armv8pt->common.max_oasz_lg2 = min(52, oasz_lg2);
-> +	else
-> +		armv8pt->common.max_oasz_lg2 = min(48, oasz_lg2);
-> +
-> +	if (armv8pt_oasz_to_ps(armv8pt->common.max_oasz_lg2) < 0)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (WARN_ON(armv8pt->common.max_oasz_lg2 > PT_MAX_OUTPUT_ADDRESS_LG2))
-> +		return -EOPNOTSUPP;
-> +
-> +	/*
-> +	 * Limit the VA/IPA to what the format supports:
-> +	 *  - LPA2: 52-bit VA for 4K/16K (S1 and S2)
-> +	 *  - LVA:  52-bit VA for 64K S1
-> +	 *  - LPA:  52-bit IPA for 64K S2
-> +	 */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA2) ||
-> +	    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LVA) ||
-> +	    (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2) &&
-> +	     pt_feature(&armv8pt->common, PT_FEAT_ARMV8_LPA)))
-> +		armv8pt->common.max_vasz_lg2 = min(52, vasz_lg2);
-> +	else
-> +		armv8pt->common.max_vasz_lg2 = min(48, vasz_lg2);
-> +	vasz_lg2 = armv8pt->common.max_vasz_lg2;
-> +
-> +	levels = DIV_ROUND_UP(vasz_lg2 - granule_lg2sz,
-> +			      granule_lg2sz - ilog2(sizeof(u64)));
-> +	if (levels > max_top_level + 1)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * R_SRKBC: For the 4KB granule, an initial lookup level of 3 is
-> +	 * only supported if FEAT_TTST is implemented. See Table D8-9 and
-> +	 * Table D8-24. FEAT_TTST is not supported.
-> +	 */
-> +	if (pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2) &&
-> +	    granule_lg2sz == SZLG2_4K && levels == 1)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * D8.2.2: Always use the S2 concatenated tables feature (I_TDMHR)
-> +	 * to fold a top level of up to 16 tables into the next lower
-> +	 * level. Since FEAT_TTST is not supported single level cannot be
-> +	 * selected here either. Notice that there are a number of cases
-> +	 * in the spec that require concatenated tables (eg R_DXBSH),
-> +	 * since this always uses them it is OK. See commit 4dcac8407fe1
-> +	 * ("iommu/io-pgtable-arm: Fix stage-2 concatenation with 16K")
-> +	 */
-> +	if (!pt_feature(&armv8pt->common, PT_FEAT_DYNAMIC_TOP) &&
-
-Should not PT_FEAT_DYNAMIC_TOP be always false for armv8?
-
-> +	    pt_feature(&armv8pt->common, PT_FEAT_ARMV8_S2) && levels > 1) {
-> +		unsigned int topsz_lg2 =
-> +			vasz_lg2 -
-> +			(granule_lg2sz +
-> +			 (granule_lg2sz - ilog2(sizeof(u64))) * (levels - 1));
-> +		if (topsz_lg2 <= ilog2(16))
-> +			levels--;
-> +	}
-
-I am not sure that applies for AARCH32, spec says:
-	This use of concatenated translation tables is:
-	[...]
-	Supported for a stage 2 translation with an input address range of
-	31-34 bits
-
+Can the driver use the ones in generic_pt/armv.h instead of
+re-defining them?
 
 Thanks,
 Mostafa
 
+> +
+>  /*
+>   * Stream table.
+>   *
+> -- 
+> 2.43.0
+> 
