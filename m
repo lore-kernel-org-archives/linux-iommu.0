@@ -1,91 +1,54 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCBC392803;
-	Fri, 24 Jul 2026 21:48:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C4D83EE1DB
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 22:08:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784929717; cv=none; b=lmE59OT/cc2rq/lI2LdfzBtVYT4hzbls+hc/puzRBhJuGm5j3xEmP2kIvVItV5pC2Rbi4lxgGHbhKrDYEeTMrCN1eC8XOcA3xGjJrP+l+yZU9CCMN/DkacPClBgHbF7NqUdmEDbAb+4Nfiq1T1e5DIcnUFOO5ofjo7aK41epYhc=
+	t=1784930908; cv=none; b=FaHF6GmwvgH2tpoohSN7qtBbwqOCdSuG0N09LVxz+iZXz6QCm8c0Zzz13wy9AhYabA2GENbKWE7PXg5pEPT+8bYZk9prfdpq9EhtzgvGzWXNqbnIHRr2wCFKqSTfOWgfwbTrzQYqKGi1Yv8Nbo2doFIPXfXOcBjJXjpKUOKUpXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784929717; c=relaxed/simple;
-	bh=GTdZSgSwBlfAlIxva5M6ZU/kD9VYoe26BBxVBJ5WdPE=;
+	s=arc-20240116; t=1784930908; c=relaxed/simple;
+	bh=l0U3dZ28LyDdd2d58YSyrNZlaRmSuLvYsNCrSGDqRY0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f0dWPJXuJkkHlQ5NLOuD9Ax5Gho1OuqyiVb7t0nd5oWleu8UvKWZ0I9ZwliB4KZE49TmmB6QFpuZUZCvhsdQzWUJFHk39L78Jrb5jzWdYLl7N97uSjvi3jiv7Dfm4rIqq0HGBt3VlUk4FDbtEfdYIBkLNyeZ2WbbL7Xj7V2F1Co=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bhpTuvSZ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rExAlkqtyaUWAXvxyIFZ64xzX/cr93wJEouvjyE2D8A0LYf5iH9usibtoCsMLxYINccIw4UfIM4EkCQfLtUHmtpvg5kp+SymuNiFX67/+sYJ1ETKnBv4vmpcLIObbJCPnMcFHsPXhmsBbLyZzH1ZtBWdwf6sKfbuj3y+rGDexbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=g9HnKJXw; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bhpTuvSZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A6FC1F000E9;
-	Fri, 24 Jul 2026 21:48:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784929705;
-	bh=GTdZSgSwBlfAlIxva5M6ZU/kD9VYoe26BBxVBJ5WdPE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bhpTuvSZWBV7iq9keKc8+pixk18qLEuyMz3ZTlqKcB81KF/CnyeLGI6JSyvHGt9tA
-	 E+SxQVBXcXsXsZgtn3HAr+6nPULrU5HRAYu13tTfnL5ffRJr3w0sXxS3y6FSy3SRlS
-	 Qe3XQkADPgbjY9nioQHCBPR4pvKP4dL5d3HxM/ORX/63JYStNE+wqJy61XHcdbEpWF
-	 xaZAuoqTpynwYjXBJP4BY73AhLP471MMWjcWFGi91teQEabAfmboMZJJ2AI9mVl919
-	 5Vj52Ap+SYxCLa6sCvz56w/tCisRBng0kD6I+yiTKpyHAoJV1VexiywmsHK9mBuUsB
-	 8QLvkwcrgPftA==
-Date: Fri, 24 Jul 2026 14:48:22 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Sang-Heon Jeon <ekffu200098@gmail.com>
-Cc: Julia.Lawall@inria.fr, Alex Deucher <alexander.deucher@amd.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Andrew Lunn <andrew@lunn.ch>, Andrew
- Morton <akpm@linux-foundation.org>, Arkadiusz Kubalewski
- <arkadiusz.kubalewski@intel.com>, Borislav Petkov <bp@alien8.de>, Christian
- =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>, Daniel Lezcano
- <daniel.lezcano@kernel.org>, David Airlie <airlied@gmail.com>, "David S.
- Miller" <davem@davemloft.net>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Eric Dumazet <edumazet@google.com>, Florian Westphal <fw@strlen.de>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Hans de Goede
- <hansg@kernel.org>, Hans Verkuil <hverkuil@kernel.org>, Heikki Krogerus
- <heikki.krogerus@linux.intel.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, Ilpo =?UTF-8?B?SsOkcnZpbmVu?=
- <ilpo.jarvinen@linux.intel.com>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>, Jani Nikula
- <jani.nikula@linux.intel.com>, Jaroslav Kysela <perex@perex.cz>, Jason
- Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>, "Joerg Roedel
- (AMD)" <joro@8bytes.org>, Johan Hovold <johan@kernel.org>, Jonathan Cameron
- <jic23@kernel.org>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
- Julian Anastasov <ja@ssi.bg>, Leon Romanovsky <leon@kernel.org>, Liam
- Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>, Maarten
- Lankhorst <maarten.lankhorst@linux.intel.com>, Mark Brown
- <broonie@kernel.org>, "Martin K. Petersen" <martin.petersen@oracle.com>,
- Matthew Sakai <msakai@redhat.com>, Mauro Carvalho Chehab
- <mchehab@kernel.org>, Maxime Ripard <mripard@kernel.org>, Michael Turquette
- <mturquette@baylibre.com>, Mike Rapoport <rppt@kernel.org>, Miri Korenblit
- <miriam.rachel.korenblit@intel.com>, Nicolas Palix <nicolas.palix@imag.fr>,
- Pablo Neira Ayuso <pablo@netfilter.org>, Paolo Abeni <pabeni@redhat.com>,
- Ping-Ke Shih <pkshih@realtek.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>, Sebastian Reichel <sre@kernel.org>,
- Shuah Khan <shuah@kernel.org>, Simona Vetter <simona@ffwll.ch>, Simon
- Horman <horms@verge.net.au>, Stephen Boyd <sboyd@kernel.org>, Steve French
- <sfrench@samba.org>, Takashi Iwai <tiwai@suse.com>, Thomas Renninger
- <trenn@suse.com>, Thomas Zimmermann <tzimmermann@suse.de>, Tony Luck
- <tony.luck@intel.com>, Tvrtko Ursulin <tursulin@ursulin.net>, Vadim
- Fedorenko <vadim.fedorenko@linux.dev>, Vinod Koul <vkoul@kernel.org>, Will
- Deacon <will@kernel.org>, Yazen Ghannam <Yazen.Ghannam@amd.com>,
- cocci@inria.fr, amd-gfx@lists.freedesktop.org, dmaengine@vger.kernel.org,
- dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
- intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
- iommu@lists.linux.dev, linux-cifs@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
- linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mm@kvack.org, linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
- linux-rtc@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-sound@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
- lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
- netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
- platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH 00/36] treewide: remove conditional returns with no
- effect
-Message-ID: <20260724144822.6af8213f@kernel.org>
-In-Reply-To: <20260723184538.3888637-1-ekffu200098@gmail.com>
-References: <20260723184538.3888637-1-ekffu200098@gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="g9HnKJXw"
+Received: from localhost (unknown [20.191.74.188])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 41AB220B7167;
+	Fri, 24 Jul 2026 15:08:11 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 41AB220B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1784930892;
+	bh=PneHZPZl/NkHqkk5l4fHfLS0UqzueCtDxEOMC/7Vibs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=g9HnKJXwSrSFtOmYBvW27/+B+EVq1VupYBhB239eDqO48ckvjYjgKKMnuXOHmeOQ7
+	 nxuezF8GF4k+Svha8uP8GFtUa64ikLRIYIzvEneuQvObtP4OouSsKKLFEcCwFvCJsg
+	 uLxl/8bNNZmq+oq55HzeaLhVAmtReB6YpyTUl/hw=
+Date: Fri, 24 Jul 2026 15:08:24 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+ wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+ namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+ anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
+ haiyangz@microsoft.com, decui@microsoft.com, longli@microsoft.com,
+ tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, joro@8bytes.org,
+ will@kernel.org, lpieralisi@kernel.org, kwilczynski@kernel.org,
+ bhelgaas@google.com, arnd@arndb.de, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V4 1/9] mshv: Provide a way to get partition ID if
+ running in a VMM process
+Message-ID: <20260724150824.000075a7@linux.microsoft.com>
+In-Reply-To: <95a1bed4-dd5a-654b-9e7a-7d5a453e3966@linux.microsoft.com>
+References: <20260718021949.926306-1-mrathor@linux.microsoft.com>
+	<20260718021949.926306-2-mrathor@linux.microsoft.com>
+	<20260723152132.000033d0@linux.microsoft.com>
+	<95a1bed4-dd5a-654b-9e7a-7d5a453e3966@linux.microsoft.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -95,19 +58,104 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Jul 2026 03:45:02 +0900 Sang-Heon Jeon wrote:
-> Patch 1 adds a Coccinelle script that matches the pattern, including
-> negation and constant-comparison variants. Where a local variable is
-> assigned right before the check, the assignment and the two returns
-> turn into a single return of the assigned expression.
+Hi Mukesh,
 
-Huh, I thought we already had such script. Various script children have
-been sending such "cleanups" in the past.
+On Fri, 24 Jul 2026 12:14:08 -0700
+Mukesh R <mrathor@linux.microsoft.com> wrote:
 
-> Patches 2-36 are generated by the script, with hand fixes to restore
-> unexpectedly removed comments and to fix the formatting checkpatch.pl
-> complained about.
+> On 7/23/26 15:21, Jacob Pan wrote:
+> > Hi Mukesh,  
+> 
+> Hey Jacob, pl see inline..
+> 
+> > On Fri, 17 Jul 2026 19:19:41 -0700
+> > Mukesh R <mrathor@linux.microsoft.com> wrote:  
+> 
+>    ... snip...
+> 
+> >>   static int
+> >>   add_partition(struct mshv_partition *partition)
+> >>   {
+> >> @@ -2073,6 +2094,7 @@ mshv_ioctl_create_partition(void __user
+> >> *user_arg, struct device *module_dev) goto cleanup_irq_srcu;
+> >>   
+> >>   	partition->pt_id = pt_id;
+> >> +	partition->pt_vmm_tgid = current->tgid;  
+> > I wonder how robust this mechanism is to identify target partition
+> > via tgid.
+> > 1) what prevents a VMM process create more than one partition? in
+> > that case each partition would have the same tgid.  
+> 
+> Currently, none of the VMMs we support do that, and doesn't look like
+> there is much of a demand for it.
+> 
+My point is that from kernel UAPI pov, we cannot count on user behavior
+nor current VMM's implementation.
 
-Please post patches 4,7,8,9 as a separate series. Since you only CCed
-netdev on subset of the series patchwork thinks there are patches
-missing and doesn't kick off any CI.
+> > 2) IIUC, the lifetime of the partition is tied to FD, which is
+> > different than the lifetime of a PID. The partition FD can be
+> > inherited or passed to another process. The VMM tg can exit while
+> > the FDs can be alive. Then the tgid can be reused by another
+> > unrelated process, right?  
+> 
+> yeah, AI keeps telling me that, but not super accurate imo.
+> 
+> we are using tgid and not pid. tgid is process group id, and that will
+> stay around as long as there is at least one process in it. if we used
+> pid, then that would be the case.
+> 
+I understand it is tgid but don't think tgid makes difference in terms
+of FD lifetime.
+e.g. process A creates a partition, then passes the partition fd to
+process B over a Unix socket. Process A can then exit while process B
+still holds a reference to the partition file. At that point the tgid
+that was stored in pt_vmm_tgid can be reused by an unrelated process C,
+while the partition's file object remains alive.
+
+> > Would it be more robust to based this on the partition FD instead of
+> > tgid?  
+>   
+> it might be, but problem with that is we need pt-id in other cases
+> where that is not available: for example in
+> hv_iommu_domain_alloc_paging and in irq remapping paths for direct
+> attached devices. if we can sort that out somehow, then we can do
+> that. but i suspect, it would take some time to figure that out, so i
+> hope we can make that a future enhancement.
+> 
+> For now, i've been thinking of just putting a check and returning
+> ENOTSUPP if a vmm tries to create another partition.
+> 
+IMHO, that only solves the uniqueness issue of partition ID but not the
+lifetime issue.
+maybe EEXIST instead of ENOTSUPP?
+
+> Thanks,
+> -Mukesh
+> 
+> >>   	ret = add_partition(partition);
+> >>   	if (ret)
+> >> diff --git a/include/asm-generic/mshyperv.h
+> >> b/include/asm-generic/mshyperv.h index bf601d67cecb..e8cbc4e3f7ad
+> >> 100644 --- a/include/asm-generic/mshyperv.h
+> >> +++ b/include/asm-generic/mshyperv.h
+> >> @@ -350,6 +350,7 @@ int hv_call_add_logical_proc(int node, u32
+> >> lp_index, u32 acpi_id); int
+> >> hv_call_notify_all_processors_started(void); bool hv_lp_exists(u32
+> >> lp_index); int hv_call_create_vp(int node, u64 partition_id, u32
+> >> vp_index, u32 flags); +u64 mshv_current_partid(void);
+> >>   
+> >>   #else /* CONFIG_MSHV_ROOT */
+> >>   static inline bool hv_root_partition(void) { return false; }
+> >> @@ -380,6 +381,10 @@ static inline int hv_call_create_vp(int node,
+> >> u64 partition_id, u32 vp_index, u3 {
+> >>   	return -EOPNOTSUPP;
+> >>   }
+> >> +static inline u64 mshv_current_partid(void)
+> >> +{
+> >> +	return HV_PARTITION_ID_INVALID;
+> >> +}
+> >>   #endif /* CONFIG_MSHV_ROOT */
+> >>   
+> >>   static inline int hv_deposit_memory(u64 partition_id, u64
+> >> status)  
+
