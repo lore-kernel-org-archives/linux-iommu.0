@@ -1,175 +1,303 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011055.outbound.protection.outlook.com [52.101.62.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6773E2FF65F
-	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 04:24:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784867091; cv=fail; b=pUfUZClhm3eKIDNn0FDz7N4VQe8cv21jqjRu84I91Lvht1YroDlD6515tXqmf0UoaefOO9aBZN+WeVf6ddxLH6nY2OgOoVo1Bl/X5/h2yCTKr9vJzb5Njsyc5sP8yRbFCtyOCO/9TM+RKiTNFCe9XGn3NUvI+kGAbmRkYdCTxh8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784867091; c=relaxed/simple;
-	bh=tusE0WFbyx5V0dmbDc9gBoHrD20lxKx8RFCIx5zKqK8=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=mfuXkOeEjIktyhe5xMYq8PWHeF4dlthqv+bqB0Zu7UdNNnxIwrulLZiHN9I9dbN/cxjKiPeBrHjPO2X4xMFe85f//RXW5IY3e3BYwxuNrovDYj6rF/Viprpl9WzF8+MUDQ8C6C2mHgK1TA3AWXDffZryh7OVD9YfetdihrcJYWM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=TB87qlXY; arc=fail smtp.client-ip=52.101.62.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ABED3A963A
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 07:30:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784878205; cv=none; b=RUzfZ0r56GA+dLXAiHaEjJhbtdYTnks88AzRWtIEkMbz7fC5nGU4yvMkBRO3GV4pDtm39rE9BqMMaek8KwYoG5EJFua2M6vk9MnMSTRKed6PW8BAAAFnvzbdbzF41kza/s7O8eif7ufYXFj2nD7leJrJ5+++cY5SteWmFy79Cfw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784878205; c=relaxed/simple;
+	bh=yY+6nGGoC7SvCNPy9+SB9sPivvMfP9TGKwCk8wJLH3I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=auLQiMPUjSEhQB+wfVpE86R7JbpH0Xojy2FCvfnxkhmAe7OHUdan8fwSVbJa9yOX6OSfWkq3+XSyoXMNmTotkb4/0Bc524ciLSNOABGoViHoHkVm74+sV6YRJ5OfqySqT6rnRMoarsLNQBTZhfbK3AEon0EhOem1NGqu3qzS/ds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QEXs8C3k; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="TB87qlXY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ackJSV0uNFS8LXQA2V2MiscXOTYygixYjXRNNblgYeTH2Fjrhk9nIUm2ib6xSfzBpCbMT4cGzz6lOJXigp+Qh8lJyPKLaeSjwZSLd+JcmP9iyP3T53eq5inuuGT4KHTL6rvgTPQYJq2urdtCFEnTSAuTUBZtogXaatyNiU7Sxh1Hv8WBlZqXxZ092oS6ZpfLaPy2o5hg50lU7+UakIZPoRpF6VRXsRDcL7PEsW75HWYc6I1N5R2KSMW7aStGe8ZHerQvvZxcLv1hWIWQEgZb/LTpTIuTNHnv2Zc1t/zWO4uk9zAwv/L5CrZD0asbadXk1p0w2Kj+GYCtJKlHevHSHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1iX4cfEy5VSKd83LDJGV9ZDk/v96kIL2Mlo2mBS265E=;
- b=BxUk3r6LhGudFqMNUTrcnRhQ2k7VILGCreKA3TDXlDEwbx2tdOXlef/+ta1RqrKaE5+3VTWaiYcyIQLEStl3S6PubB3N9PbarQMEGwgho9x+dXYnCzngs6FUI2oBBR1tBlm11fGe/zQ8/ssXPyDMG6wCS5m5h6PFJN+ECNqJCYVi4S4riZai1FQ5RY9GI/iIIB67tfPMpmMrU5wCYCBNmfqwubieU1vfcQFYRqXq94/jgRnhhYyu3uKxXKQCRT2ayLSiW18Dj9fsAZWK2JxK4FdCQZU0w0I/lEb9opC9Myt7i1hnOO+e46X75YHBDsat0Rkl3M29u3MPkPzLsvx8FQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1iX4cfEy5VSKd83LDJGV9ZDk/v96kIL2Mlo2mBS265E=;
- b=TB87qlXYXYWZYWeGY69UqNGJVHEk9O3iC+RDU2DeUXlDWDliKoAJM31pCzPoE3nZqVFVipS5lzntwZ83f4zJpkcqRkMOgH/FfFlBLXx2pL7+g7EioCEroNE63YGz4/uuU9T3zgMvvRqxgW7QBeCa8pSQLC0n8X7v/F8GhCX8PydnnU5NDOMAwpump5i7avWQICeu76RGPalaKfKZ0mMNxWFpIpeXQj2vrJhQA8yVjNWt5tcOF6OeLRvlaa6F9Qt0xr/WpzYr5+DyGB5asBPwKxlQ5XutFl1l2HsJ6odCc3fT7pmMw9m8TPpayMtb4bXnpV245KVAr22Q07ZIFkM5Jg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BN5PR12MB9511.namprd12.prod.outlook.com (2603:10b6:408:2a9::14)
- by CH1PPF2D39B31FF.namprd12.prod.outlook.com (2603:10b6:61f:fc00::60a) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.11; Fri, 24 Jul
- 2026 04:24:45 +0000
-Received: from BN5PR12MB9511.namprd12.prod.outlook.com
- ([fe80::4d8d:5f91:6c3c:dc8c]) by BN5PR12MB9511.namprd12.prod.outlook.com
- ([fe80::4d8d:5f91:6c3c:dc8c%4]) with mapi id 15.21.0245.010; Fri, 24 Jul 2026
- 04:24:45 +0000
-Message-ID: <49816faf-2bb3-4aba-86f4-d46798a110c0@nvidia.com>
-Date: Fri, 24 Jul 2026 09:54:37 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 3/3] iommu/arm-smmu-v3: Enable CFGI/TLBI-repeat
- workaround on Tegra264
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: catalin.marinas@arm.com, will@kernel.org, corbet@lwn.net,
- skhan@linuxfoundation.org, robin.murphy@arm.com, joro@8bytes.org,
- jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-tegra@vger.kernel.org
-References: <20260722102033.1122277-1-amhetre@nvidia.com>
- <20260722102033.1122277-4-amhetre@nvidia.com> <amEXBlsOiDyAvZ0w@nvidia.com>
-Content-Language: en-US
-From: Ashish Mhetre <amhetre@nvidia.com>
-In-Reply-To: <amEXBlsOiDyAvZ0w@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0168.namprd05.prod.outlook.com
- (2603:10b6:a03:339::23) To BN5PR12MB9511.namprd12.prod.outlook.com
- (2603:10b6:408:2a9::14)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QEXs8C3k"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4954bb689dfso14165e9.1
+        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 00:30:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784878201; x=1785483001; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=FQTURpMAeObF7dJ+XksltfWeYZ6LOjkjOUPDqZ3O/F4=;
+        b=QEXs8C3kP4F0IQ8dvH8QzalCiXp20fTTldVSXs1A5BpVpsrHBlbHviz5VjrjTRj/+d
+         R/Pz79mEYTLf72vHvaP3F12b10kVLQKma9RL6NFthEzhjabylAcEVDoOmme9/jhTXD3k
+         v3xM4GWqQKymkwQqaAfJtO1a2q16J9CiPnn9IBZ2D/XdPijS7c8F/mcthbCwFMQBOC8T
+         RjqLWV/fAjHs5Fz/5iSMbfqYslIIJhqbFfRKz5bYdxfGxRWXrNm2mP0Vyfy90elzvC/X
+         uIh13H19+OIZnOh8dhYQUpR9v56zsM2ZXb3n7+v0vB8HBIg+uwzkqKycwryhq4uSf1uZ
+         3WVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784878201; x=1785483001;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FQTURpMAeObF7dJ+XksltfWeYZ6LOjkjOUPDqZ3O/F4=;
+        b=js4zz8/AdPL/UBjPeOdHoaRRSSCScy5S0sKcwHGV2YkTiB7G2JrjJM3RSgws2ZsP63
+         iTllAJ8TjHbK1SWM4J0nHlrmqxVG0u/Nbt1CCu4XLVRmn+FhEjvaoQhdcMU7w69GwLh3
+         jMbXah154qXNzpqHoxu72yzv62plMWb0oQcejz09YhJ3ho/fNEJfqJ6XFhYGMvA1iUcn
+         +sg9PrzjKSY1ya6YqNc7K4hVSQ1xs8BJK3miQG+Z0zHQir5+vNHj6+LvLO7B+sU7CL2/
+         +UBPPMxkBcfFDF0rluVWLN45Vx62EvbwdE6KLu0n7xIwkFpZHOiDc/oqvXsbaFPW1h/4
+         AMsA==
+X-Forwarded-Encrypted: i=1; AHgh+Rqe8AgDfYDoaC0V+iTHx+w12JJujmR5uC7d+LNSrPL1uCbSyPnlVhXCyr5GpZMPP5yU79pFrA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyLQRz0wiPz8zs18zE2GAfCyiJx0oouiPBZyRW1N8gEwqWf8Ycd
+	5dcS0S5Y6Zi5Z0nmWB82Sq2YGS6N2emjhiAqKdAYzbZWVyO8iB+SqaE+1gntlcZPIA==
+X-Gm-Gg: AR+sD12cI2a3d41tC6EwDC+9Crjrmy/gAI03POKCg0qA1vlvQaY/Wbq3XzsVH41WkgY
+	vvWwXutkn4Rx4bAfYuGT2MSVEu/TGYTxc51Coof7hFGbFuJtExERXoqYNQk46/xOKTsfPL7oTqB
+	rDFvak3jtVHSGYc7kkQuagS5hRmDgFFJYJ//qq7P9qV8NxFwFOGEd5sXDphE0V1HjiZP1husa+z
+	IINS+T9I2F30wPT5JKB203/3uz2+MWHbPVPnnBsf0kzGr3sM/KATSXBerubDANgzHOOSLGKLF3C
+	UlNQavdzFB+schdQ2FT6xe+vCJVxLHxmdq/STTR5noEFVIHRdnWxbyh0gQFg2D585rEjXtF0Qov
+	8dRTxEf1kTrtw7j4rJjY/tu/mCXzjI6Sy1mqK2d/2TOdf/GtozdOJeQC5JGXpwButad/yF73+Xo
+	0frl7QKJy9buBnkh7jwi0NTaBjdl+LczQl8+3tAHjY646hVUgq
+X-Received: by 2002:a05:600c:5354:b0:493:b169:784d with SMTP id 5b1f17b1804b1-4957bce335cmr934215e9.8.1784878200153;
+        Fri, 24 Jul 2026 00:30:00 -0700 (PDT)
+Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85c531basm21931338f8f.19.2026.07.24.00.29.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 00:29:59 -0700 (PDT)
+Date: Fri, 24 Jul 2026 07:29:55 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Sebastian Ene <sebastianene@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, keirf@google.com
+Subject: Re: [PATCH v7 07/24] KVM: arm64: iommu: Shadow host stage-2 page
+ table
+Message-ID: <amMUc79daKqAGNFM@google.com>
+References: <20260715115906.2664882-1-smostafa@google.com>
+ <20260715115906.2664882-8-smostafa@google.com>
+ <amIzYUiVWGoepmkG@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN5PR12MB9511:EE_|CH1PPF2D39B31FF:EE_
-X-MS-Office365-Filtering-Correlation-Id: db6fc649-98b3-4cf4-0dad-08dee93b7d75
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|376014|7416014|1800799024|22082099003|18002099003|3023799007|10067099003|56012099006|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	ybbspy1KcX2bClJ7TTJ8sPChEJ2JC8zjgRs6ndYwUlilGax8FQxI6TZJmf2Z5yRBE7fYCmzHnk7V/rHdqrpyqJQyCK7aJg4THzExZ9vB1JcIj26DhaTVFzRO9xjjimCQHMJ8yUp9UTRPWlvcqC62eGVZCXeengTClJbjS/QjiM1xwh3JIr3wtngKuQC6QfKoxiFdxAdJW02rr1Dhjzx7lIdz/3+2808hhvzk2DL09eRofk0vnpzrLj9MD0nTSTFRRPhCQLUwClck/D2DXL3FsEHbRoeyxiq93JnDtOduVqOkMLwX9JIx6QF56F2qVG7et4fERBE8JrWxqdRX9auAAgZv4s7jNUEC0U3ve+iwybQFtoRnCsVWoIzAATBh22SkBJw290Ss6hRO26VMOQFnCxsu4WWpphGL3On4aDHdD5mhid6jo/hMxUGXVx2Mu6MBSh70vM1+opeyRe81sw7p62yKo+aJQLjtKumFQPJgBozROolMSjKp2aG9rL6OIruEKtmwNpyHK84ZvvuYyIwg02tQ5RGQzhVkw6VAWDgE90EiVJFUPEBCGVhc8Caf3OM9Xjlt7Ay3+5syAvigKLw1PB5B+7Ozb+ghRuCwRMbs6D3RWOT5Ck3Zw38gje/wTVHQKBkxb3N6+T2+jNle6sHVqg/1qozMSK4FPYcBgrFl7Hk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN5PR12MB9511.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(7416014)(1800799024)(22082099003)(18002099003)(3023799007)(10067099003)(56012099006)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YjNBYmxCM0FaY0kxTlAvbkVDNGNSK1llQ3c1SENlV0V3U2c2NnZiUDhJNXZi?=
- =?utf-8?B?RThHWVVjVTZXZjVBS0hkMGowQjdId0dOcFg5Nkp3bHNYaXV6L1UyVHY0T2JG?=
- =?utf-8?B?bDY4ZFd3S2FpZUZ3aHVQVVRSdUNTRlhWSWZnOUdLK3dxS1UxYSs2bFZiUkg3?=
- =?utf-8?B?Q2V5M1RXVUJ5WHhJTWJsV0Zxb2V2L3pWWDFUaEFsNUROUWREL0VrS21QU2xG?=
- =?utf-8?B?T0wwSVM5TlFINGZaazNtRktFZng0MVhPT1ExVEZqRDlNM1JJcC81TTAvYWhE?=
- =?utf-8?B?R2NGSjhjUldlTjZJbk0xalFrY1NQamtWQzdzbHowZXo4bVo3WkZBVGJQdHVs?=
- =?utf-8?B?dUZqVjNpYXJQSmNaSi96SlVaampuUGd6VWhFLzh3KzVyaGJzdTgrdlRNUTVx?=
- =?utf-8?B?c3FtcDQ0Qkwwa1d6R0M5TzArWXRiazVqdVMyUEtCVDREZHBpc1pRNVBiai9o?=
- =?utf-8?B?anhvYWdBblQ4QWR3c3hLNTNHa0QrTHdieTBGODNGcEVnT3R0STc0QzVLQWpm?=
- =?utf-8?B?UUp6ZTVuOGxWS1MybEVKU2N2cWRMamNPL2phN3gvV1dtK0NQY1dYTFFRRTll?=
- =?utf-8?B?RnFaSTdVdDdidzZISHVhYzlIbDBDdmc5SUYzcDdoS1hhQmNYSzZEbG1yMzhy?=
- =?utf-8?B?RW0yZDdnUjEyRlorbGFSb2NNbTY3M2xDNGFSRTZGY01RUVFUblhSenYxUXV3?=
- =?utf-8?B?aE1tTTFnbEV3UndBS2VtcFlKK2NMUTdxZDFMRmEyeTBrb0pnTHBRZUtERUd1?=
- =?utf-8?B?VjFqS1dGbkk5WWR4aDNKK0lHMmpJL0JZZExuMHFEVzVhWVA5S1RoVHJlSGlW?=
- =?utf-8?B?blZ4ZzNzWmhrbDlLTDA5Qkp3dnpTZVp0Ull0TGorRWU1UHJtK29YNTdmdkww?=
- =?utf-8?B?WW4yNEU5dmZhZUl2RW5BNHV5N3NXbFdzSGx3eWxkM0E1dTNHeUx5WXpxdUg4?=
- =?utf-8?B?dGZUdWcvZk1kc29iSGlqemVvdFpBbDhTTEVNQ1Bwd2g2TVV3UXpoN1gzRDIx?=
- =?utf-8?B?Y3Y0RUVWUXpYNzdOMDk4Y2pTRkNGTEhyQkMvNlJ2emxuR2tIMWp5TmlOMlB2?=
- =?utf-8?B?RXNCMnNxaXZhSGJ5QUVtbTkzNWZBQUpNbENKTFZiVGRhci9GV2xwZ0Q2Zi9a?=
- =?utf-8?B?UzJWbFFXMGlUK0owb2tpL3ZEVkNaOGxsVUVDRXNZWGhOdnBSakExLy9sZGRI?=
- =?utf-8?B?SW9LNGRRUXJQRUhwV21QSklVdmJzTzBhMEtNN3J1WVYza3VGYVZZUldwMyts?=
- =?utf-8?B?U2dBV1dMdWxFb0J1bkZOWWxMYzRUN3JKeWRMQlBVb2FrbGlOQUFXNEYwc3k5?=
- =?utf-8?B?RWs0d3BSNTQ1aXI3d2pDNmhCcm82VHpCVS9HcHJwTWpEdnVoUFdEaHRPaU0v?=
- =?utf-8?B?QUpLQkt4RGVlM09uamFNZEN2ZUNsRW9lRm94STloRjJlOUZtK0diRjg5SERz?=
- =?utf-8?B?eHRiUjRHTFBRWitCZm4vRVkwcTVUcGRUVTd0ZXV6aUxBbERoSHFpcFRTcytJ?=
- =?utf-8?B?K3Jubk1RU21XWEs5c05aaVhpNEVYSWNtSzRzK3c5V24vK0dkN3VySWVKNVM4?=
- =?utf-8?B?aVZqTnR1S21xeGFVYWJyMzVrTkVsYTJiNmZPcHRxNzd0aE5KSElWc2ZTSXQr?=
- =?utf-8?B?SkY1VWdDbW10U0NhNXFGRkpVWXlEbndPeWJoUHV1SGM4b0Y3eUtINTN1ZnlQ?=
- =?utf-8?B?UTk0RTJYUlIzN3pOQjl4YVAzYnVqL3J5MTJlSTZhaEtVVjZQZEVwWnVERlQx?=
- =?utf-8?B?WVFiamhoRGZ3SVhNK2ZKZC9xbHZjQytaNVpYYzNjQnFIRFIxY0N1bDFiR1lr?=
- =?utf-8?B?eVRNbzhCNHdtNDBML0piN0ZRUVZ3TWxGUDJubWh2aWNUb05mTGRVVkFZc0Iy?=
- =?utf-8?B?Z0NUUUZVdWtXRE9IZGdEWHZmbGtkckVtTzFxaDlmOXJlMmc0c2RqSjAyLzRK?=
- =?utf-8?B?WUNUQ09GdGZNVjB6a2dialcyeEh1YkRZVDgyS2tWWlg2bWZxa2YvbjRtUUhT?=
- =?utf-8?B?Y3kyV0trTkRzNVdtRzlXWVYvbnJUM2JRWEVLUlI1bDNNMVFhOElwYWZSd3Zq?=
- =?utf-8?B?RzA1OGNUbmRzZkxBWVJaN1Q2U09zb0xvc3liTHdBRTdhTXpsRjNRS09hVkVo?=
- =?utf-8?B?U0ZUSGpDRHlZMEJNUnFIb0plWStTVHBmeEFyQ2hUNk1yU05YeHBIR3FnNG9W?=
- =?utf-8?B?bGRRczhoUzFWMnlkbWwwNFRIK1Vxb1E0cnV6NU4zNVBIc21NYi94b095T2dq?=
- =?utf-8?B?N3NTWXoyZFlGMnJhc0ZlTkJ3TkNuUzJvd2Yvby9sZE0rbWY1eis1YnRHTWEx?=
- =?utf-8?B?aTZsY1IyRkhveDhRT0hKQmxDSEtPYXhDMjMvVHZMaWp4Y2ljSHB3UT09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db6fc649-98b3-4cf4-0dad-08dee93b7d75
-X-MS-Exchange-CrossTenant-AuthSource: BN5PR12MB9511.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2026 04:24:45.1691
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yfOCccPETB4cwVKKDkLfL7oLemyxlLDsq7OnrStqWls/0MW3aSfkfYnZ8DMo6S+6hq6ebZiXSHrRPPtFiICniA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PPF2D39B31FF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <amIzYUiVWGoepmkG@google.com>
 
+Hi Seb,
 
+On Thu, Jul 23, 2026 at 03:29:37PM +0000, Sebastian Ene wrote:
+> On Wed, Jul 15, 2026 at 11:58:48AM +0000, Mostafa Saleh wrote:
+> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+> > index df3d0cc5d4db..857d7dd2ebc3 100644
+> > --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+> > +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+> > @@ -3,11 +3,15 @@
+> >  #define __ARM64_KVM_NVHE_IOMMU_H__
+> >  
+> >  #include <asm/kvm_host.h>
+> > +#include <asm/kvm_pgtable.h>
+> >  
+> >  struct pkvm_iommu_ops {
+> >  	int (*init)(void);
+> > +	int (*host_stage2_idmap)(phys_addr_t start, phys_addr_t end, int prot);
+> 
+> Hi Mostafa,
+> 
+> Maybe host_stage2_idmap_locked, since it is invoked while the host
+> stage-2 lock is acquired ?
 
-On 7/23/2026 12:46 AM, Nicolin Chen wrote:
-> On Wed, Jul 22, 2026 at 10:20:33AM +0000, Ashish Mhetre wrote:
->> The host repeats only the invalidations it issues itself. On a nesting
->> setup the guest submits its own invalidations, either directly through
->> VCMDQ or via the iommufd user-invalidation path, so the guest is the one
->> that has to apply the workaround there. Report the erratum to user space
->> through the new IOMMU_HW_INFO_ARM_SMMUV3_ERRATA_REPEAT_TLBI_CFGI hw_info
->> flag so a VMM can confirm the guest runs a matching "nvidia,tegra264-smmu"
->> (or otherwise double the commands itself). The host therefore does not
->> repeat the guest's user-issued invalidations, which would otherwise be
->> doubled a second time.
-> I think this "enable" patch is doing a bit too much.
->
-> All the iommufd-related changes can be added separately
->
-> I would do a cleanup:
->   - arm-smmu-v3: Factor force_sync
->   - arm-smmu-v3: Add arm_smmu_erratum_repeat_tlbi_cfgi_key and WAR
->   - arm-smmu-v3-iommufd: Add IOMMU_HW_INFO_ARM_SMMUV3_ERRATA_REPEAT_TLBI_CFGI
->   - arm-smmu-v3: Set arm_smmu_erratum_repeat_tlbi_cfgi_key
->    
+Vincent mentioned in earlier version that it can be called idmap()
+also, I believe as this is not a function but a pointer, we do not
+have over descirbe the name, but no strong opionion.
 
-Okay, I will add one more patch to series for iommu-fd related changes 
-in v9.
+> 
+> >  };
+> >  
+> >  int pkvm_iommu_init(void);
+> >  
+> > +int pkvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
+> > +				 enum kvm_pgtable_prot prot);
+> >  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
+> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > index 51b0eb3844a9..99b821b3cf65 100644
+> > --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > @@ -59,6 +59,7 @@ int __pkvm_host_test_clear_young_guest(u64 gfn, u64 nr_pages, bool mkold, struct
+> >  int __pkvm_host_mkyoung_guest(u64 gfn, struct pkvm_hyp_vcpu *vcpu);
+> >  
+> >  bool addr_is_memory(phys_addr_t phys);
+> > +
+> >  int host_stage2_idmap_locked(phys_addr_t addr, u64 size, enum kvm_pgtable_prot prot);
+> >  int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id);
+> >  int kvm_host_prepare_stage2(void *pgt_pool_base);
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu.c
+> > index ef456eff42d2..08009609ec59 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/iommu.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu.c
+> > @@ -4,16 +4,137 @@
+> >   *
+> >   * Copyright (C) 2022 Linaro Ltd.
+> >   */
+> > +#include <linux/iommu.h>
+> > +#include <asm/kvm_pkvm.h>
+> > +
+> >  #include <nvhe/iommu.h>
+> > +#include <nvhe/mem_protect.h>
+> > +#include <nvhe/spinlock.h>
+> >  
+> >  /* Only one set of ops supported */
+> >  struct pkvm_iommu_ops *pkvm_iommu_ops;
+> >  
+> > -int pkvm_iommu_init(void)
+> > +/* Protected by host_mmu.lock */
+> > +static bool pkvm_idmap_initialized;
+> > +
+> > +static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
+> >  {
+> > -	/* Keep DMA isolation optional. */
+> > -	if (!pkvm_iommu_ops || !pkvm_iommu_ops->init)
+> > +	int iommu_prot = 0;
+> > +
+> > +	if (prot & KVM_PGTABLE_PROT_R)
+> > +		iommu_prot |= IOMMU_READ;
+> > +	if (prot & KVM_PGTABLE_PROT_W)
+> > +		iommu_prot |= IOMMU_WRITE;
+> > +
+> > +	/* We don't understand that, might be dangerous. */
+> > +	WARN_ON(prot & ~PKVM_HOST_MEM_PROT);
+> > +	return iommu_prot;
+> > +}
+> > +
+> > +/*
+> > + * IOMMU page tables are shadowed and not shared, that is mainly because:
+> > + * - Possible inconsistency between IOMMU and CPU features or format.
+> > + * - KVM relies on handling in page faults (BBM, lazy mapping).
+> > + */
+> > +static int __snapshot_host_stage2(const struct kvm_pgtable_visit_ctx *ctx,
+> > +				  enum kvm_pgtable_walk_flags visit)
+> > +{
+> > +	u64 start = ctx->addr;
+> > +	u64 block_end = ALIGN_DOWN(ctx->addr, kvm_granule_size(ctx->level)) +
+> > +			kvm_granule_size(ctx->level);
+> > +	u64 end = min(ctx->end, block_end);
+> > +	kvm_pte_t pte = *ctx->ptep;
+> > +	bool is_memory = *(bool *)ctx->arg;
+> > +	int prot;
+> > +
+> > +	/*
+> > +	 * Keep annotated PTEs unmapped, and map everything else even lazily
+> > +	 * mapped PTEs(0), as the IOMMU can't handle page faults.
+> > +	 * That maps the whole address space which can be large, but that doesn't
+> > +	 * use a lot of memory as it will be mostly large block (1 GB with 4kb pages)
+> > +	 */
+> > +	if (pte && !kvm_pte_valid(pte))
+> >  		return 0;
+> 
+> >  
+> > -	return pkvm_iommu_ops->init();
+> > +	if (kvm_pte_valid(pte))
+> > +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
+> > +	else
+> > +		prot = IOMMU_READ | IOMMU_WRITE;
+> 
+> If it's invalid in the host stage-2 why do you make it read/write in the IOMMU
+> ? Shouldn't it be an invalid descriptor in the IOMMU pagetables as well
+> ?
+> 
 
->> +/**
->> + * enum iommu_hw_info_arm_smmuv3_flags - Flags for ARM SMMUv3 hw_info
->> + * @IOMMU_HW_INFO_ARM_SMMUV3_ERRATA_REPEAT_TLBI_CFGI: If set, user space must
->> + *	issue TLBI/CFGI+SYNC commands twice due to a hardware erratum T264-SMMU-3.
->> + *	See the description at arm_smmu_erratum_repeat_tlbi_cfgi_key.
-> You can follow the kdoc style as enum iommufd_option.
->
-> Nicolin
+These are invalid and empty PTEs as a few lines up we return early for
+invalid non-empty ones. For the empty PTEs, they are owned by the host
+but lazily mapped. The IOMMU page table need to eagrly map those as it
+can not handle page faults like the CPU.
 
-Ack, I will fix it in v9.
+> > +
+> > +	if (!is_memory)
+> > +		prot |= IOMMU_MMIO;
+> > +
+> > +	return pkvm_iommu_ops->host_stage2_idmap(start, end, prot);
+> > +}
+> > +
+> > +static int pkvm_iommu_snapshot_host_stage2(void)
+> > +{
+> > +	struct kvm_pgtable *pgt = &host_mmu.pgt;
+> > +	bool is_memory;
+> > +	struct kvm_pgtable_walker walker = {
+> > +		.cb	= __snapshot_host_stage2,
+> > +		.flags	= KVM_PGTABLE_WALK_LEAF,
+> > +		.arg	= &is_memory,
+> > +	};
+> > +	int ret = 0, i;
+> > +	u64 start = 0;
+> > +
+> > +	hyp_spin_lock(&host_mmu.lock);
+> > +	for (i = 0; i < hyp_memblock_nr; i++) {
+> > +		struct memblock_region *reg = &hyp_memory[i];
+> > +
+> > +		if (start < reg->base) {
+> > +			is_memory = false;
+> > +			ret = kvm_pgtable_walk(pgt, start, reg->base - start, &walker);
+> > +			if (ret)
+> > +				goto out_unlock;
+> > +		}
+> > +
+> > +		is_memory = true;
+> > +		ret = kvm_pgtable_walk(pgt, reg->base, reg->size, &walker);
+> > +		if (ret)
+> > +			goto out_unlock;
+> > +
+> > +		start = reg->base + reg->size;
+> > +	}
+> > +
+> > +	if (start < BIT(pgt->ia_bits)) {
+> > +		is_memory = false;
+> > +		ret = kvm_pgtable_walk(pgt, start, BIT(pgt->ia_bits) - start, &walker);
+> > +		if (ret)
+> > +			goto out_unlock;
+> > +	}
+> > +
+> > +	pkvm_idmap_initialized = true;
+> > +
+> > +out_unlock:
+> > +	hyp_spin_unlock(&host_mmu.lock);
+> > +	return ret;
+> > +}
+> > +
+> > +int pkvm_iommu_init(void)
+> > +{
+> > +	int ret;
+> > +
+> > +	/* Keep DMA isolation optional. */
+> > +	if (!pkvm_iommu_ops || !pkvm_iommu_ops->init ||
+> > +	    !pkvm_iommu_ops->host_stage2_idmap)
+> > +		return 0;
+> 
+> Shouldn't this scream or return not supported ? 
+> 
+
+This was the case in the earlier versions, but I figured it would
+regress so many setups, so I made DMA isolation optinal for now, I
+think long term this can be a cmdline option. But t's up to the
+maintainers how do they want to support this. I am happy to bring
+the error return back.
+
+> > +
+> > +	ret = pkvm_iommu_ops->init();
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return pkvm_iommu_snapshot_host_stage2();
+> 
+> If pkvm_iommu_snapshot_host_stage2() fails would you have to provide a
+> ->deinit() corresponding callback ?
+> 
+
+Good point, I tried to avoid having a deinit by making the IOMMU the
+last thing done during setup as I did not want to make the patches
+bigger.
+
+Maybe WARN_ON() is enough for now? I need to think more about it.
 
 Thanks,
-Ashish Mhetre
+Mostafa
