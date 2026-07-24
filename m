@@ -1,64 +1,64 @@
 Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF01B3E8C56
-	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 19:30:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E0C3320A00
+	for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 19:36:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784921453; cv=none; b=sq4tElN6WekVnT8Ng/4/BylfGK7OLgZsLR13B9jFUjSD7Yr1aKFN24dvqIyEeulurCG59C35VgHrS3jxm+Ola+N3ltaPOu6Te6S/jFb/8faDq79IjpVnaUygbyvapTyxPXo7DpPf8CSQQoaIpqsKJEAKw8PzZkpXojvsRAAmZ6c=
+	t=1784921790; cv=none; b=OQvfu6UgsJDCowf8dX3vVRbHB2o2Paj22e4xIYzfs7YHGr09h6Ra+fYFdwIsVRCcMMNGoEi5Qu/6Gj/rXePd+LzU5cjeVZs8oiAcF7GUQWza5niUDVxiACus3+rNVJYe8/q8nTw0iLs00iovQsf+srU1cEqFSDmT28R1RGPf3Hw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784921453; c=relaxed/simple;
-	bh=yq0tR9Yube9b7CYNkxubagoJauADeRUs64fe+jfXpS0=;
+	s=arc-20240116; t=1784921790; c=relaxed/simple;
+	bh=aMya5tQiN0F1uPgAuPCS0suQWAdKZjYIqdsg2smfte4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BTomPrN4kTwrBJLYlzAeDBo8UM+YkIwn322uDiVLrCfnyCy5IAOcaTkcDVnFqU02amPmgifSBL74pHnyDbf9I5XUglf0vzRNkyFtZ5RQKWA2wYv5d7vmwYLGV8tXb3UYox+8oZGS4eIlCU8OcJZwOFo8m6+r57AEZcMKKhD7Dj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VNcbmLSP; arc=none smtp.client-ip=209.85.128.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=L90BYEaaG490HisCGO4GX0v7hhD3X0pqzsphx0mv9YkmlZrJ+DjPNS77y0Q2lPtbGI0zy9cGNfdfx5D44MgL09EMRnPDEDlwrgJXRe0csclszG1dg+iuwfj/HBOe+wcKbBE7LvODLxgzkmT1iTsExdBdfpNJ4Eptmrsj3Xo6zZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F21+5UUN; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VNcbmLSP"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4954d5d814fso11755e9.0
-        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 12:30:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F21+5UUN"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-495509b08ebso755e9.1
+        for <iommu@lists.linux.dev>; Fri, 24 Jul 2026 12:36:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784921445; x=1785526245; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1784921781; x=1785526581; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=qMYgbX2E5STWJ3B50MJvZqK+f3UjOUURTR7CU8KzNb4=;
-        b=VNcbmLSPF8yptmIxGETvSmIzjXF/TgpXr0wkeBniLvX0qAvcO2BaBIcSsGcAWS/jmO
-         xhHwue4ca4v9EpYyGyqq9u+xX23Hh1EvkLz/5nTvO0dcRBqpyyGHmolhBhjqH1/qrNos
-         bdIK2jau4rIoPe9ivo9VkGzL0NrKD+fp8Gb0wCnGgJ0iZAhky4IefnYJ2JM3OSUs4UOH
-         c/3KgqyAqByavoWDI2ks6BZ8/AEx/nloulPgt02QRVSsVvulP3L6nqP2zAGzSNmpu1Le
-         h8QrFiRvj8ZlfLvH+WKJ0Mgue8a5UO2dYjIQ/aU6RkyZGoMR6Inmwu0gYW+MJ2N95iqv
-         EfWw==
+        bh=vvsKfAGO1/G1RkKRO+bqMq0Jxexy/5+6v+o5lfiDScQ=;
+        b=F21+5UUNZ1UgBzk9tgUp+HC7fOjKMfaTlfqpaa2KqgX9aH2tI4lDwZEBH72YfNpylI
+         qROW/1G5MQAU31t7wYNKs8ID1sH/UxPWhopQyNNQNzY+4TF84S2qiio3XKr6tys3CYIB
+         3MEexcQL0n5djKXivawKyU0z4QyCHqLlkU4tEqdRgq+L7667faGV1F3CGqNFXC8Ql9WP
+         EY/mix2AuugDorQPJ9jVTTuJTVPwGnfxM9BzZ0NVIddxSguyIrDxGUWd1+BLOce6SRic
+         tAbgzjG0PtR2tVpPliMz0aGzagCP9qWRFXIVd10t85JPBrYy7M2kRtB73gDeh8IMsE4l
+         aUUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784921445; x=1785526245;
+        d=1e100.net; s=20251104; t=1784921781; x=1785526581;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=qMYgbX2E5STWJ3B50MJvZqK+f3UjOUURTR7CU8KzNb4=;
-        b=Rze+Hdy6NbF3LF4EGuh1bbbXAomyI1DqHbHTj8MMg0rJ1b2GhjQ7VCOenQx4AIJRDF
-         CA50Gl9pFw8S7YR9LeqZ1Iud9PXywdTZ0WG6Dcb8ORYm80HdDDh7h4R+4acP3/4Q8ZJV
-         5ow/rkcGqdprCUZbf1YjrCli4wg4d1haFkFI2D68zG4SFW7ku66k8zhJn+rFiby8+zQZ
-         Km5wVaPB9CJZ1eay8Z89k1aQkK+NypVjvA1EaSjksVV9THjRNGVKkXpAfB78Unzr7jo8
-         HmJjACVUYKcQn35tcOIfI10SttvHgRE73/9X0yV5g1JOI76NHgPznvSvdpBlsSlL1l9T
-         YVnQ==
-X-Gm-Message-State: AOJu0YwY3fK4NoWfbgQEauGtKaMYW+GBUxzpSx80IRGVcC/Y5ynLUTtd
-	C0Indzytg6arU7xru3euayDpzwB+mg54UCt/zpxvZVHpM+E68asYli88RZCUAlYTyQ==
-X-Gm-Gg: AR+sD10iHB2UMUPlSE9SvtZj6mgth2JsB4LvzX7Ug0HRQhus9MQe/TE6cjH9uogsxdm
-	k1dlQRVgXGjOBdH9fo0ADXStEH7YjiztXfJsFudnUsbC2k7iC85TCqbb+x2NWPv39VDhPwhJVBm
-	v4fG7dnAaXY66asM2c2vZ0P7yODFllohRRSZa1Dqe1cvqViCiTalMjizPifpyTUav9RSR2zddcu
-	u9+BxaTyNCYoNJwH2uyVf6gooRwy6DF0tvTycNKuha9W16NoH8R3jUsvxQ7KybFDQ+VdW7qBECR
-	Ywgz3twYyYlt1jGuefMEtzoPleFdQ9pHO/ArXp9nzBtV5S8naZJ6RBxWen88R1lbAZaYmdNkmQr
-	HxzjTgxn5K8hOKQJF61ntJBFEZSDyHln2zQm0HsbPkSb4QxdwM56mJycj4VxBlN7pRv0I6FF4Qa
-	0MlHLX2Q/zyzlvGePPCAKDH3tjOUJcs4FgmDZXlA==
-X-Received: by 2002:a05:600c:8709:b0:493:be38:fa5a with SMTP id 5b1f17b1804b1-496b4d388e8mr268615e9.10.1784921444576;
-        Fri, 24 Jul 2026 12:30:44 -0700 (PDT)
+        bh=vvsKfAGO1/G1RkKRO+bqMq0Jxexy/5+6v+o5lfiDScQ=;
+        b=HZ7PbxIckQfRDGxPmmcucZqkC7t4Ps20ix1cOWGPiASUUJ9CjkL+VUwq6sOm7Zr7gq
+         coUO4I3Iwhx+ChWCJbdR1NnFrv9ErjCziTC/wVkxDenxNu5yHHymchu+heQAj9OfjU/C
+         Fu3i2khcTrNsLnlZ3nPziy1BsSLUEqHgFV1LPrg7ZMkos1TRsCntGooKhhNo1JDmdDmL
+         UvFg4Y9V/R0WTpfQMM5nbInLZzgE3OksVUy/edr0AQqGLGNTo2vMoz7kFg6ImTPDhty6
+         3aCoPyTtvgzjtYpVRi6fInkNl7/IFc07MYFv+FqiwwazGZkCgh1WpBcMktExbBrPUwGl
+         BQPw==
+X-Gm-Message-State: AOJu0YzqsHNBhZdyZpFn7NUoy+BqI2kbzEWrnidomvn1o4eIzjmIkaVt
+	QptWawzducQBoI/NHejXy+kCo3ON2efXNh8jeaJgONARqpdnkCQR9R+dAt5GCxeU+w==
+X-Gm-Gg: AR+sD13n5SkV2mxKByUOte1xGsSVbC1PTqgIwkW4fTMJdNtEGIPX3Mw1lbo3zBnZbb1
+	DbGsrPhh8mUB2ELG3lnUucXJFlBwUD3aw+06w2brrBILGfZYFZOJ656xh0GICXOFKhxhtmAVspm
+	Y/dETLDwdVawwy9P44Ld3uCgpLNHrGezl4sTXj7LvAsEbfZ9gpzMQ+kvv8bkm2PjzBClTOSoFqa
+	Y9fCxw8hCXztHfOmWBAoWpshBpfjkSTv1rKYqUa+EBlT+rbzjFHEHjtQye7vR0tpLnrt8YVL6UB
+	oRrUc6QcexIOSVcPhSgnqliZcAwtpNykngEutzpep3XgEh+2CqZAxCs5rjiI1ZjV52/xp5zSk+U
+	wdxJy4AXByOjixu2GaGkqbvakF5fnPfcCwXWci1OjsN8C7bv2rBjEgE/5+yQ6jg92NKnINXL4g5
+	6aY59BYj4SA/ouESE/rV6opdXooi142CnwVbjSMs6xQgpkPFdT
+X-Received: by 2002:a7b:c311:0:b0:48a:623c:8859 with SMTP id 5b1f17b1804b1-496b4d58803mr116215e9.7.1784921780558;
+        Fri, 24 Jul 2026 12:36:20 -0700 (PDT)
 Received: from google.com (220.60.76.34.bc.googleusercontent.com. [34.76.60.220])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85a2573csm25874209f8f.0.2026.07.24.12.30.43
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-496b480fafasm17596165e9.0.2026.07.24.12.36.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 12:30:43 -0700 (PDT)
-Date: Fri, 24 Jul 2026 19:30:39 +0000
+        Fri, 24 Jul 2026 12:36:19 -0700 (PDT)
+Date: Fri, 24 Jul 2026 19:36:16 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
@@ -69,10 +69,9 @@ Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
 	Pranjal Shrivastava <praan@google.com>,
 	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH 6/7] iommu/arm-smmu-v3: Use the generic iommu page table
-Message-ID: <amO9X2vBl3_jIttb@google.com>
+Subject: Re: [PATCH 0/7] Use the generic iommu page table for SMMUv3
+Message-ID: <amO-sGlWsmtcPsDZ@google.com>
 References: <0-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
- <6-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,73 +80,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
+In-Reply-To: <0-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com>
 
-On Mon, Jul 06, 2026 at 01:29:12PM -0300, Jason Gunthorpe wrote:
-> Switch to use the iommupt provided page table. This is fairly
-> straightforward now since the page table construction and hwinfo are very
-> similar to io-pgtable-arm.
+On Mon, Jul 06, 2026 at 01:29:06PM -0300, Jason Gunthorpe wrote:
+> [ This is the last patch to move SMMUv3 over to the generic page
+>   table:
+> 1) Organize the SMMUv3 invalidation flow so iommupt can use it
+>   ..
+> 2) Use the generic iommu page table for SMMUv3
 > 
-> The struct pt_iommu_armv8_hw_info is a direct replacement for 'tcr' and I
-> have a kunit compare test validating that the fields have identical values
-> for identical configurations.
+> It depends on #1
 > 
-> Quirks are replaced by features
->  IO_PGTABLE_QUIRK_ARM_HD -> PT_FEAT_ARMV8_DBM
->  IO_PGTABLE_QUIRK_ARM_S2FWB -> PT_FEAT_ARMV8_S2FWB
+> The whole branch is here:
+>    https://github.com/jgunthorpe/linux/commits/iommu_pt_arm64/
+> ]
 > 
-> SMMU features are mapped to iommupt features:
->  ARM_SMMU_FEAT_COHERENCY -> PT_FEAT_DMA_INCOHERENT
->  ARM_SMMU_FEAT_VAX -> PT_FEAT_ARMV8_LVA
->  ARM_SMMU_FEAT_S2FWB -> PT_FEAT_ARMV8_S2FWB
+> Introduce the generic page table for what the ARM spec calls VMSAv8-64
+> (ie the long 64 bit PTE page table, io-pgtable-arm.c) and use it for
+> SMMUv3. ARM is by far the most complex page table of all the ones
+> implemented, it has the most runtime behavior variations and a lot of
+> features.
 > 
-> Remove the iommu_flush_ops entirely, iommupt only uses gathers for
-> invalidation. Wire the tlbi directly to the gather.
+> Like the othe architectures, the page table itself is supported by a kunit
+> compare test that runs operations through both io-pgtable-arm.c and the
+> new code then checks for identical PTEs. This is on the github link above
+> but I don't intend to merge it.
 > 
-> Remove the trampoline for map/unmap/iova/read_and_clear_dirt. iommupt
-> directly provides the domain ops. Domain initialization is largely moved
-> into iommupt common code.
+> The existing kunit tests for iommupt will automatically cover the new
+> format as well.
 > 
-> Change the kunit to fully create a page table to generate the tcr bits for
-> testing.
+> This is the final series migrating the SMMUv3 driver over to use the new
+> functions and remove io-pgtable-arm.c usage. In principle the other iommu
+> drivers that use io-pgtable-arm could be converted someday as well.
 > 
-> Compared to io-pgtable-arm iommupt has a number of key differences:
->  - CONT support, including always using RIL to avoid errata 3673557
->  - Unmap yields a single gather which generates a single tlbi operation
->     * free_list is always used to free after invalidate
->     * walk cache and leaf invalidation are combined for non-RIL cases
->       instead of being duplicated
->     * non-RIL cut over to all-invalidate covers walk invalidation now too,
->       umap -> single gather -> single all invalidate.
->     * RIL flushes the walk cache and leafs together with a good TTL hint.
->     * RIL always generates one command from any gather.
+> Robin once mentioned there were errata about contiguous bits, I only found
+> 3673557 and it is mitigated in this design by always using RIL. I'm
+> assuming that RIL is always available in SMMUs that are effected by
+> 3673557? I have a patch add a FEAT if for contiguous bits if that is
+> required.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/Kconfig                     |   4 +-
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  |  45 +--
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 256 ++++++------------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  11 +-
->  4 files changed, 110 insertions(+), 206 deletions(-)
-> 
+> Jason Gunthorpe (7):
+>   iommupt: Remove the sanity check for pt_num_items_lg2() at the top
+>     level
+>   iommupt/kunit: Skip test configs without supported features
+>   iommupt: Add the 64 bit ARMv8 page table format
+>   iommu/arm-smmu-v3: Remove io-pgtable-arm from sva.c
+>   iommu/arm-smmu-v3: Move the DMA API comment to flush_iotlb_all
+>   iommu/arm-smmu-v3: Use the generic iommu page table
+>   iommu: Remove pgsize from iommu_iotlb_gather
 
-[...]
+I went through the series, it seems the arm work plug in nicely with
+the iommupt stuff, I left some comments around, but I feel that
+patches 1,2 and 5 can be sent separately.
 
-> -
->  static bool arm_smmu_dbm_capable(struct arm_smmu_device *smmu)
->  {
->  	u32 features = (ARM_SMMU_FEAT_HD | ARM_SMMU_FEAT_COHERENCY);
-> @@ -2831,7 +2785,6 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
->  	case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
->  		return arm_smmu_master_canwbs(master);
->  	case IOMMU_CAP_NOEXEC:
-> -	case IOMMU_CAP_DEFERRED_FLUSH:
-
-Why this is removed? That would drop support for FQ domains.
+And patch 8 it too large to review, it would be better to split into
+3-6 patches, I was thinking: base support, dirty tracking, contig bit
+aarch32 and kunit.
 
 Thanks,
 Mostafa
 
->  		return true;
->  	case IOMMU_CAP_DIRTY_TRACKING:
->  		return arm_smmu_dbm_capable(master->smmu);
+> 
+>  drivers/iommu/arm/Kconfig                     |    4 +-
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   13 +-
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  |   45 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  287 ++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   18 +-
+>  drivers/iommu/generic_pt/.kunitconfig         |    1 +
+>  drivers/iommu/generic_pt/Kconfig              |   12 +
+>  drivers/iommu/generic_pt/fmt/Makefile         |    2 +
+>  drivers/iommu/generic_pt/fmt/armv8.h          | 1124 +++++++++++++++++
+>  drivers/iommu/generic_pt/fmt/defs_armv8.h     |   23 +
+>  drivers/iommu/generic_pt/fmt/iommu_armv8.c    |   13 +
+>  drivers/iommu/generic_pt/iommu_pt.h           |   14 -
+>  drivers/iommu/generic_pt/kunit_iommu.h        |   10 +
+>  include/linux/generic_pt/common.h             |   42 +
+>  include/linux/generic_pt/iommu.h              |   73 ++
+>  include/linux/iommu.h                         |   62 +-
+>  16 files changed, 1452 insertions(+), 291 deletions(-)
+>  create mode 100644 drivers/iommu/generic_pt/fmt/armv8.h
+>  create mode 100644 drivers/iommu/generic_pt/fmt/defs_armv8.h
+>  create mode 100644 drivers/iommu/generic_pt/fmt/iommu_armv8.c
+> 
+> 
+> base-commit: 8cd13c14dcc29762766ff9ca2f67e3bae7c7cb77
+> -- 
+> 2.43.0
+> 
