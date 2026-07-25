@@ -1,62 +1,127 @@
-Received: from va-2-16.ptr.blmpb.com (va-2-16.ptr.blmpb.com [209.127.231.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47B2E387369
-	for <iommu@lists.linux.dev>; Sat, 25 Jul 2026 02:45:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BBD92F8E8F;
+	Sat, 25 Jul 2026 07:09:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784947516; cv=none; b=Rt4/qHRTokygDH+Dc9NdMd0++4NvZ15vLLD/6VYxCkhv9rUPd4IV2jqeYOFfCgsxfX/GVd34tx9BMIIf7C457qZ2x+3vJW+SJawAACjyUdlGlJeuEKySpDtPNegxf8jEc9juqGMS7i8X0nJ/cZQUjugCeRn39zyPqDdVjX7g0us=
+	t=1784963366; cv=none; b=FkyQhoOjryiZeUOSMGHdDINE6PSDByhz/cmwzH2MNky+8it29vkU3VpBPyl3DPNyznTqjiV5fRl2ktURo/5zfIYIr3LoCqmZ7VYQzIEpumTfaGAKuOlYoYFpHCPfe2/6UyzPtA/1XiqXkY3L2T6uJ1DhvegEW2P3+EJAKbxkSRk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784947516; c=relaxed/simple;
-	bh=RKokfwrCMvEWzzUNkYeiib5xPiE4ygIwDXSNCzA7EPs=;
-	h=From:To:Cc:Date:Content-Type:References:In-Reply-To:Subject:
-	 Message-Id:Mime-Version; b=XD3826lIltAtDcf08fF8h+aT4dLr4lTVYzX6lqgiMGzfuEL9GO/uGGhYKXqVSjUQV9p67NqZOuCmutGws2JALXXJv0zpw0cSMgUfMX4C50/2ZerU/nHbXqoRcFLmfJs3dqku650Q/10cbhG1FY1AFqdo8pavJD0EEGhK4S4HlVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=liuxiaozhen.dev; spf=pass smtp.mailfrom=liuxiaozhen.dev; dkim=pass (2048-bit key) header.d=liuxiaozhen.dev header.i=@liuxiaozhen.dev header.b=i9LKjGea; arc=none smtp.client-ip=209.127.231.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=liuxiaozhen.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=liuxiaozhen.dev
+	s=arc-20240116; t=1784963366; c=relaxed/simple;
+	bh=eWusWs1g22nWRtTHqO0ChFU1rsQZo1oLrBl2Wf7xDF8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=B4I+eHV13oY5Agp2OtIlifcJjY23OnbMNRuyrbUkd88q2atr7BV/BjYwJBwD2uIJ7jRWn6OIV6HDobSDas9Vh9nWvZORnxZTxxbermAatfqcPUD8AdJEq9GcsPh1NuFPWx+6dN2KCc0CUKg9iDD0TWc0DWT5yVFpAr3ELpW8CVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UViRD/vP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=liuxiaozhen.dev header.i=@liuxiaozhen.dev header.b="i9LKjGea"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2602171341; d=liuxiaozhen.dev; t=1784947496;
-  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
- reply-to:content-type:mime-version:in-reply-to:message-id;
- bh=RKokfwrCMvEWzzUNkYeiib5xPiE4ygIwDXSNCzA7EPs=;
- b=i9LKjGea76gbN9K2rgFdyYpUJMX9Xj81qRVnO64gn1vcH214hmRkqy5cdch23jAHrTMpXG
- 8+cbFKHZs2PlZ5Mi7s7wgN4ZYIAmN6OIF7VgjKqa9tI9T5sPm2jcNCyEjpAVdn2GsOD2Le
- RDy0DJrhUc3W23f5ArS2znM0DPI4/lMz4E9Iqf+qSAiW88dg74ohfzKfV5jD6IQs9VmiEq
- fytpNTZCMxdI23fBIBU4OXHfPzaN0ATDucZ9AKT0ieF17bgnNXP022kpHnwMOtYsBkzhyi
- WDZfCAO48Ia0O5fMDcsgLWjkC4nvwyYthSARNd9V7Cmtscy1J38YARyGanVyFQ==
-From: "Oliver Lin" <oliver@liuxiaozhen.dev>
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-To: "Baolu Lu" <baolu.lu@linux.intel.com>
-Cc: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, 
-	<joro@8bytes.org>, <robin.murphy@arm.com>, <will@kernel.org>, 
-	<oliver@liuxiaozhen.dev>
-Date: Sat, 25 Jul 2026 10:44:46 +0800
-Content-Type: text/plain; charset=UTF-8
-X-Original-From: Oliver Lin <oliver@liuxiaozhen.dev>
-References: <b744ef83-6cab-4f4f-a22a-251e08b62656@linux.intel.com> <20260703092348.17583-1-oliver@liuxiaozhen.dev> <775d3d16-f43d-4a5f-9629-4912a4cabd91@linux.intel.com> <0c9256b0-19ad-4d1d-baea-0ccd3b827d0f@liuxiaozhen.dev>
-Received: from [172.16.0.2] ([104.28.158.228]) by smtp.feishu.cn with ESMTPS; Sat, 25 Jul 2026 10:44:54 +0800
-User-Agent: Mozilla Thunderbird
-In-Reply-To: <0c9256b0-19ad-4d1d-baea-0ccd3b827d0f@liuxiaozhen.dev>
-Subject: Re: [PATCH v3] iommu/vt-d: Disable IOMMU by default on Lenovo ThinkPad P50s
-Message-Id: <ecec6b5c-f143-4fc8-92a4-a07f3388edd6@liuxiaozhen.dev>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UViRD/vP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4FF01F000E9;
+	Sat, 25 Jul 2026 07:09:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784963364;
+	bh=hkeoESYmG7m48wiu7DFgnzkgoaFnDkiRgmmBzEi4GuA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=UViRD/vP1cLupXloQti86AXEHd5Oqhs081layDqXo6b+RZ4Y82x9x4afggJK229+a
+	 Z+Yh1HMf6iUyBzHMniRMzOJOjGgX8/rmQVSfmwkUgXZ+kWSvMa1Sgpcojx9SrWMcgB
+	 KcPws98KPcszn5zlm+ZGjTfjdG2IbmfOXkGuIIKxYOCQZnC1J+O/zd6xcvj+NvctrH
+	 GOhr4BGexYASpkNSEDhYVdp4wzEoZLqqAAI00JxT4ZGJQliwuyn0a/tF1jAsMRBUQF
+	 GXMAh2heA1Axq+PkzXqbXUf+5yjbzncmCve2s3LU0TkmEGx25k+AGhlZEcH1i8rD/X
+	 k2xKELi60Uw9w==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v8 00/23] dma-mapping: Track shared DMA state through
+ direct, pool and swiotlb paths
+In-Reply-To: <20260717180442.110954-1-aneesh.kumar@kernel.org>
+References: <20260717180442.110954-1-aneesh.kumar@kernel.org>
+Date: Sat, 25 Jul 2026 12:39:10 +0530
+Message-ID: <yq5azezfeeax.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Lms-Return-Path: <lba+26a642326+074ac8+lists.linux.dev+oliver@liuxiaozhen.dev>
+MIME-Version: 1.0
+Content-Type: text/plain
 
-Hi Baolu,
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
 
-Just following up on this patch.
+> This series tracks confidential-computing shared DMA state through the
+> dma-direct, dma-pool, and swiotlb paths so that encrypted and decrypted
+> DMA buffers are handled consistently.
+>
+> Today, the direct DMA path mostly relies on force_dma_unencrypted() for
+> shared/decrypted buffer handling. This series consolidates the
+> force_dma_unencrypted() checks in the top-level functions and ensures
+> that the remaining DMA interfaces use DMA attributes to make the correct
+> decisions.
+>
+> The series separates mapping and allocation state:
+> - DMA_ATTR_CC_SHARED describes the DMA address attribute requested for a
+>   mapping. It tells the DMA mapping path that the DMA address must target
+>   shared/decrypted memory.
+> - __DMA_ATTR_ALLOC_CC_SHARED is an internal DMA-mapping attribute used only
+>   by allocation paths after the DMA core decides that the backing pages
+>   must be allocated as shared/decrypted memory.
+>
+> The series:
+> - moves swiotlb-backed allocations out of __dma_direct_alloc_pages(),
+> - uses __DMA_ATTR_ALLOC_CC_SHARED through the dma-direct alloc/free paths
+> - teaches the atomic DMA pools to track encrypted versus decrypted
+>   state
+> - tracks swiotlb pool encryption state and enforces strict pool
+>   selection
+> - centralizes encrypted/decrypted pgprot handling in dma_pgprot() using
+>   DMA attributes
+> - passes DMA attributes down to dma_capable() so capability checks can
+>   validate whether the selected DMA address encoding matches
+>   DMA_ATTR_CC_SHARED
+> - makes dma_direct_map_phys() choose the DMA address encoding from
+>   DMA_ATTR_CC_SHARED and fall back to swiotlb when a shared DMA request
+>   cannot use the direct mapping, which lets arm64 and x86 CCA guests stop
+>   relying on SWIOTLB_FORCE for DMA mappings
+> - use the selected swiotlb pool state to derive the returned DMA
+>   address
+> - reports CC_ATTR_GUEST_MEM_ENCRYPT for arm64 Realms, powerpc secure
+>   guests, and s390 protected virtualization guests.
+>
+> Dependency:
+> This series depends on the pKVM changes posted at:
+> https://lore.kernel.org/all/20260603110522.3331819-1-smostafa@google.com
+>
+> Please merge this series only after the pKVM changes above are merged.
+> Otherwise pKVM will be broken.
+>
 
-I was wondering if there are any further concerns about the approach,
-or if additional testing/logs from other ThinkPad P50s systems would help
-evaluate whether a DMI quirk is appropriate.
+pKVM topic branch is now available 
 
-Thanks,
-Oliver
+https://lore.kernel.org/all/178467286876.125042.12010461715645610054.b4-ty@kernel.org/
+
+https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/coco
+
+-aneesh
+
