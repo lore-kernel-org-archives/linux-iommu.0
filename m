@@ -1,60 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59035258EF9;
-	Sun, 26 Jul 2026 15:01:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9920B258EF9;
+	Sun, 26 Jul 2026 15:01:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785078077; cv=none; b=FGLEerzTsvt0KqlaZIQEb4Ws1dOE8d1yDHjCkIbRmYe7Ci7HxrNNCq3c5OeoWLVxevooEJK29EtN36EJM217S7CXXE69UxBh0ZsQkZt+Wt1svsNn+AUAkcSMrBH7mp5jwfGjT1S4SDtqvEbhQLYzSBlxV2IdGctTvVSuAeBIBPU=
+	t=1785078081; cv=none; b=XtvjbY2gMXE2eEKdDwPVaresCbfp3QvXHBx7y/psSllTl6VHE56coXZ6/6JvDOwWBFC/UHA2y/O9GBx3be7UxiMNJZG4s2VzHeruwoD5Or5uceD34ogphFbw4R7ke47hL17P5oGBm1LW9Wbyy/GB7G1FQ4LZCzqnGa24RQpynTE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785078077; c=relaxed/simple;
-	bh=Co/haKjVOYZQ+2iJ7vMmnKszHHqfkBsokaFLudtYZ1c=;
+	s=arc-20240116; t=1785078081; c=relaxed/simple;
+	bh=MnBhYTViu8kxdfK0cwwHJQCbn/Sg9K2EF91ir/yFaFg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sfcaFlctnDGSEjg5Epbv/CRGkbIRDSZgGm+9ubv6V1znsejNoXHCB1vdypt8kVoXKJUbJE7BP0ME1qyPBdHHLseNy1ZFD6Ku1PIyoEUNWvA7SDhkgOH/h1ir37Fo4C1EqPzNKpikKsHGwZEgPzP5usfl7cF5BsDvGsUwOhR7JMc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k8ADJwIM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=EEQgOu4lJDOBEaqkVp4S8Bqy+J0spHS4yOyhjkvspT9gwZtiRCePTd5dS3Urb8eHO+yN8/fZnbi9EZWQonR79TE/ehztj0D6OM+5M7FC/e40Tgk/ZOPBtSGpTZ/c6zLkVrNJu7a0pXtq9i4RCIHsJw8Ujvi5Q8MFRBDjN1fJUy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SKN/3Nra; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k8ADJwIM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B267C1F00A3D;
-	Sun, 26 Jul 2026 15:01:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SKN/3Nra"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52BF11F000E9;
+	Sun, 26 Jul 2026 15:01:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785078076;
-	bh=KF3WLDnzhawv1E63jb1eZQJNVi9jAWSGddOpTswPwi8=;
+	s=k20260515; t=1785078080;
+	bh=DPkoltX9TEEEGuCWddp6fep3WTxy0zq+YUKjB2+nxBU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=k8ADJwIM/9K4aDbthIc6E0Kkyy/oEv6J9w5YEtQwANBLNeCvAdtfmcvcKBClC7kgS
-	 Vu4oxdUR9yQ9vPt0xvaXnpDtb/pLbjmJ39fp9kFIozkvK45h8UiK7QV0Gwfck02YMQ
-	 3s88yuKoxxEgdEoY2v6/gk2rt2+mORJE8CcVZwhObDIWMsdIxJBvZqvjW9MITAl+q+
-	 2Zje31YvYIGq+fQqg00uLmyEqb95ZlKqG93iprGDDNSCeqqJQaLAUiYDkMdyUQE2Fh
-	 ql+wTAFv5Udl1ZNbbrbSTUno603bDlMWXmeWUjbEkUnEK13zCEjloPgCr9R7+Mz5nX
-	 mz0TuyBRixPNg==
+	b=SKN/3NraiKo1BeqbR80B42/Kfu8bBunap31U7N8WIucCKiFzNUxJl29OVZKEqrstI
+	 UftN8JQ6Ouf6F3Tgy8hZMju87HClqaEnH1dZLUTXgindLnC4iuvXdOy+O95JV1MBn3
+	 2EVKfvA/5T+0UpxUx/b9L/Aw5x+88hRWD5fWfQisxacw2EZGkDBHgIFDIO+qyC1xNl
+	 u4U/k7k8kRnyo0Z0UOLx50rB9LVyRZOcxbiSs83iHyLwNJA6KsjJ9lkBjbjJ9z+GF4
+	 KK/Bj+5CgYAuh9sPufNeou4BsJibUcUj4B8D8JupbQ9tVwhZlXIq6Q/aFXNpeplu5y
+	 sWBHVLMIbhVSg==
 From: Will Deacon <will@kernel.org>
-To: tomeu@tomeuvizoso.net,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Simon Xue <xxm@rock-chips.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	chaoyi.chen@rock-chips.com,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 0/8] accel/rocket: RK3576 NPU (RKNN) enablement
-Date: Sun, 26 Jul 2026 16:00:53 +0100
-Message-ID: <178507139795.2055528.4355657426833307310.b4-ty@kernel.org>
+Subject: Re: [PATCH v3] iommu/rockchip: Drop global rk_ops in favor of per-device ops
+Date: Sun, 26 Jul 2026 16:00:55 +0100
+Message-ID: <178506896133.2040068.17210762744367310935.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260718031146.3368811-1-gahing@gahingwoo.com>
-References: <20260718031146.3368811-1-gahing@gahingwoo.com>
+In-Reply-To: <20260722073511.403252-1-xxm@rock-chips.com>
+References: <20260722073511.403252-1-xxm@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,26 +53,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Sat, 18 Jul 2026 15:11:38 +1200, Jiaxing Hu wrote:
-> This adds RK3576 NPU support to accel/rocket.  RFC: the NPU brings up and
-> runs, but full inference is not correct yet, and I would rather get
-> feedback now than sit on it.
+On Wed, 22 Jul 2026 15:35:10 +0800, Simon Xue wrote:
+> The driver currently uses a global rk_ops pointer, forcing all IOMMU
+> instances to share the same operations. This restricts the driver from
+> supporting SoCs that might integrate different versions of IOMMU hardware.
 > 
-> Tested on a Radxa ROCK 4D.  The NPU probes, powers on, brings up its
-> IOMMUs, and runs jobs to completion (rocket + Mesa Teflon).  Getting there
-> took a few fixes outside the driver too: a power-domain settle delay and
-> reset cycling (else a cold power-on throws an async SError), the full
-> clock set on the MMU nodes, clearing a stale firmware page fault, and both
-> NPU power domains on the core.
+> Since the IOMMU framework passes the master device information to
+> iommu_paging_domain_alloc(), the global variable is no longer needed.
 > 
 > [...]
 
-Applied driver changes to iommu (rockchip), thanks!
+Applied to iommu (rockchip), thanks!
 
-[4/8] iommu/rockchip: take all DT clocks
-      https://git.kernel.org/iommu/c/841363ebb508
-[5/8] iommu/rockchip: clear stale page faults before enabling stall
-      https://git.kernel.org/iommu/c/b10d5920cafa
+[1/1] iommu/rockchip: Drop global rk_ops in favor of per-device ops
+      https://git.kernel.org/iommu/c/414cb6f3ac62
 
 Cheers,
 -- 
