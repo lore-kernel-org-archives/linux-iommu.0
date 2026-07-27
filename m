@@ -1,200 +1,207 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010044.outbound.protection.outlook.com [52.101.46.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74B9F41A921
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 13:54:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADAC941D4C0
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 14:45:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785160446; cv=pass; b=jrh0CNLdl6/u1Y6QsyMmZoEA1DA3PIcZJr/Bba67XgwV0phfF3tFqgmP134DRSCFloOjcoyRWuSQP7a8I6QYBy1JUTZfm4VCy7ioWU4X2j6II2A4SlE3S6A9pJX7zu8lVmnYyFmiyxOJFBaB2GeKGm3GpgVwYu9M9foTUkksIBc=
+	t=1785163545; cv=fail; b=GbG/+6iC3PIBdPCgjxO/M/rMWWA5rjq3J9sM4bgxUolbg8Y5ymtOmsodvpTnauzBT6O3xXlxmb61h+IHETeZwW+Y5wykqgrdZbSKcYy9qa+2XSJ8ODMsfYk2FOiidlUWcgbERUl1/qkBQXKptXWUDnoTq6o01b0MKEklfNd/V24=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785160446; c=relaxed/simple;
-	bh=fQJyxDv643pqDMxn0ByaDWbHqZIiq7Rg1W4GA2fAA2Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uda1la21B5SLMBQbYcSyfoR20A9Ge08cJ/RhjlhjR3/tCkdHAU90lTElDKA6U78gGHjbJ1gVXBNOVQduyEL/59pxVNkiY6PQOAsq+JzmLfoT9cnIidcvqFLx1zFOIhRDUmoDV+QKJwGGiyvACFQcba6tClO3YWdsmr55VkdsFDA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b=Yqb5sFBo; arc=pass smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
+	s=arc-20240116; t=1785163545; c=relaxed/simple;
+	bh=K1JGik9qhHrZ4klCEItZfX329Dct6cKzvfpSqJf8ABw=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=e3eWBQfiaO2gEbC0hCtczN7YBNkXNQn7yod5KMIX5ZT9DUzGlJ9/fMxYACFPo/goxLVBKtXvvk9XcZPYhLmrrZH4xWV6DLWz58lbUGeOFyvWSPfV9UxacblEsPysokO8VGcb8fgKGox5tXyOw35Zm4aOyvFbwu9/hYlKGlONUKg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=cBPScNi/; arc=fail smtp.client-ip=52.101.46.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b="Yqb5sFBo"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4954c0833b4so20610835e9.1
-        for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 06:54:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785160443; cv=none;
-        d=google.com; s=arc-20260327;
-        b=jk9wrrhL1qyV9a1AJy0e9vwrlphG0+O60VhybSPdsc0K97t7VJunvO/fmzse3DhXge
-         XQkroJqcp4cHwms2YznPhqXDdF1sTwd/g2gt3XsYHxVJHsz3ObhEImOLUZ/oCJouEZrE
-         oSxmbWLQSD9y03AVgiDgAuOXbVDNOkUdd2QYr2rdhQnt9cMkmCtjJgopn7A7fwNs2HUU
-         zmGr0tPQUG0ijHnr6J2+sMBt3mQK5oBT9OFCaGXj59lMjTKtJtGDhLab1eE37gR6JWLf
-         S75Z9g8Z0WapMEw18CUZAbnBhqrR5pxyegYUD/VCx69e8KscnKxEm2K1k4PxkBN4cpbe
-         6gHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=LkTARaNCDvTrxIcriRua7Id7ovFdqPl8CcOFZ930Vas=;
-        fh=mE8huzmPmNbBWhO2gRf2s3isvZp/gP+eg/b40h+RiCc=;
-        b=ZHQwAd3SNGBKlhlfA3+iIUg94k+LBv8YoUglE7ItwNECPijiSKuZA/20I/2vB8NFif
-         70eAoapMIZvtR/lSBzev9BDyzvZuLg5U2NJC3YHUUCEWNSebpQJjwJ3CNCA1THwV2lMv
-         W1l1/9t6XzUv+QBgHoYKde2nCnwcmScQSCRL6Q6RUK+P0hmHD3jL5C+7nfGhhDonCipb
-         J5f/QjCjvrTw8p0/l8CB9zz7tqalGSS8p3p/MNEXHjzwT509o9qyyuI4iOFEkGi/1bc6
-         7a6BWHCXHgIDrlJd5ORQk3iLciJHQobykVkaHCrEj3xnuVwkwWamK9Q7SpnusaEEq6VN
-         jL2w==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20251104.gappssmtp.com; s=20251104; t=1785160443; x=1785765243; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=LkTARaNCDvTrxIcriRua7Id7ovFdqPl8CcOFZ930Vas=;
-        b=Yqb5sFBo5iZTonjyZciO5I16vLKV2n9lT/AG0pc9aFHyyMYmBdFtQtgzd2y1J8765N
-         Qu2qmcdD5dYfLIR2QhJXR6ruNzd1HQrknPRBeyNtesGLH9F80a3oe4bFxUXvyWiRukNt
-         5HEUlDmIPlixLBuWPBHibbJDcxzjvOrHKgWhRnsthl4LNKj8lqmLgeRdMKd5Gg4OXZVz
-         eqkv8wbFWa/dtpHtkCmefGTmuDz56Huy4VmK3mdHg15k7JVGMU8qU0Yy+xBg9fZg+uia
-         ThTLracJOWkT0bzZYOyg4dTfAM9oEOGfMyoQ4TUVVzXyLWJ3LedYerwNn++HlxVbLzRk
-         RR6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785160443; x=1785765243;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LkTARaNCDvTrxIcriRua7Id7ovFdqPl8CcOFZ930Vas=;
-        b=rMOwUOeLVHthRaOiHRfle88RynFVR2C285dqV2hg4ojs0uIA04R+TnDkrLCLVDzVSb
-         7vvow9xytuMCtsRgDjR56/3Jm4UGT7LMKgBeTxlZUxxaFsV8x+W2bYH7HiQLfY2xg5S9
-         1i7ua2OJ/n9W2FRL+3Qw+tR/kkJzPelQkiY42t1i3Tb0ARcqabPOiXhI09I6Q3Z0WpF2
-         4+lWqnv8O3pMWyixfehGnhGD58kA/axvI9wjVMMO7i0oWpEUQp2FnSz7VdKGaObyhDJ0
-         9m02R/+4ZyBMy4DYgWZZqNFdtfQ1x+PwW+r4rzG1mzrDpS+8CiuAE3nnxY9SqlU9tgbT
-         crDQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpDstIzqfBNpPeb+fDiq9S47cDVF/n3+4Csy2sXN9cb5z3gU3QAVkExCFWeFk7m5IEUOozEyw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwTU5K0xL526wvUKjn1zTH+x/8hcwuQv9rJXVyNDzvE8MCPqLap
-	CP+vplmLd3igrjAB1XZSiFI/JUJgZdSSagCYL5pXFgkIhuDaaf0jLbBH0yD+YoM/5a5wqF3PBaM
-	uVB4exjvkka0RmnzTGY4pL8QDPlqFbTPpoI0rmV/vYw==
-X-Gm-Gg: AR+sD1108q8852Uh34kwFIHnEgByF817qsn520Egtrq0zl0o6uWrRhmEQh9T4uqvJpI
-	1zz5fHrDuyGPEbWGRZZ/egpjowQrMjHvOQFbnQwt9DUx8M9lmz/FAWvmTJsrtAKjp5RHZZNzqy+
-	z1qYUUVkZfavDs1Wi1zJH7xAEutJTqYb6xmmuB1ZbsPW3ZHx+xubQ/QEZ2SHH5kynNtNsO8ooiv
-	jfIM9PD7jI1UKccd9LICvVmuJ1Aie0woCNYswIHH9/YcDDk8hIcQyI8e3du2mGJB9QlcTv/hEHa
-	R6rjYr84RrGEULDRrHFin5X/KC6d5DrwaSz8xXWPtN3b14LzvtdYTrRYNBMk/fyHc/x1cPcULnO
-	L//0z
-X-Received: by 2002:a05:600c:a12:b0:493:eccb:8cb2 with SMTP id
- 5b1f17b1804b1-496b57297b8mr114877045e9.30.1785160442437; Mon, 27 Jul 2026
- 06:54:02 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="cBPScNi/"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dOMvNMNnF9tjD5r0ULRjySaPU4fHUNpIzuN/GfkVcnlEkPYCSlSfS33SlflFWlukrP8BHbJbcl/o1ELgszSWNIbN61u8Q397DH4uPphs+EMOahtcI+AxCyH0/JwGRq1paaWZhIGSZ7UT5Fvi9fHhWRspYarj9euRvuo+YYufZx2A2vN99lN2gUwd+0T/C152xiGD4WZVtdtHn9tv+8ixEfihJSsQKuj8nFWUxxJrpdJBRHWjZTD1HNqoKzCunP/nFYUrXReKEDzsCY3rkp+OkDsZ4W48Rm6SoQU/oxMYwXIGvZ8jF2Ejck4G8sqahd3sef1+Cn9f+7ghHrQKtGTuwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RcYQm9qaKKWNfj3kXp9uejgXSe5bnex7DYBnOlGkheM=;
+ b=peF9DcsosdBjyfnRpxKaOCh5vBn1WHeVAjiP9BJ77tQPceHO5VwK2hQnnJqsZgN77u+u2GOPAbutuy85m6Ul+VSwih/ZZGL9d//4e6n/F51CZbyBXNCYVnRo0ENwFNAR9rG9Var/C7RuuA4f79plWCEGpsnjdmPL0C8k95W2MjAvvccC9vazMfkmlAl7cB7Dq+N56aoxDfAjd6ouJHiJRjvOuDTFbnHEWNYMle2wQ3waCf8hFMxz1aGOnuinyLMA4bDpkQh9lidztFK2zmlj8r74cn5088Gy3ESIVvRhKha1fgCUW66ksO7/HV5BENGf4i/0nTwZnamehdgU12CwBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RcYQm9qaKKWNfj3kXp9uejgXSe5bnex7DYBnOlGkheM=;
+ b=cBPScNi/NMuLsVlMFdDUUl4ThvoP2XdK8G6Z1AsXxZBUgwbnS51UUAqS2ZXjcdWE8301edoD9omfDj3NmI7OWuJq3RiRTY4K/m1bSgF+tonn+qHu1uZ6mha7Vx7ZOl1vNMG+i/A7aaRvC/GHkEx6e77OC1TiIEed9Do2tPhPwDA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH8PR12MB6914.namprd12.prod.outlook.com (2603:10b6:510:1cb::21)
+ by IA0PR12MB8973.namprd12.prod.outlook.com (2603:10b6:208:48e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
+ 2026 14:45:39 +0000
+Received: from PH8PR12MB6914.namprd12.prod.outlook.com
+ ([fe80::2893:177a:72b0:6000]) by PH8PR12MB6914.namprd12.prod.outlook.com
+ ([fe80::2893:177a:72b0:6000%6]) with mapi id 15.21.0245.012; Mon, 27 Jul 2026
+ 14:45:38 +0000
+Message-ID: <ed296c0d-246f-492b-970b-49c45e25f5f6@amd.com>
+Date: Mon, 27 Jul 2026 09:45:36 -0500
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
+Content-Language: en-US
+To: Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, linux-pci@vger.kernel.org,
+ will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ bhelgaas@google.com, Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
+References: <20260723061548.10187-1-vasant.hegde@amd.com>
+ <20260723061548.10187-3-vasant.hegde@amd.com> <amOBkJ4BaZ4qnkpc@ziepe.ca>
+ <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
+In-Reply-To: <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA1P222CA0111.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:3c5::8) To PH8PR12MB6914.namprd12.prod.outlook.com
+ (2603:10b6:510:1cb::21)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260727084003.1951324-1-anup.patel@oss.qualcomm.com> <71fd5b46-4388-4106-aee9-b4510069975f@arm.com>
-In-Reply-To: <71fd5b46-4388-4106-aee9-b4510069975f@arm.com>
-From: Anup Patel <anup@brainfault.org>
-Date: Mon, 27 Jul 2026 19:23:50 +0530
-X-Gm-Features: AUfX_my4QjrER3hRFjzxXael861bKnyaiQylY-XLFhSCxIc_XNnqTG1sq5MogY4
-Message-ID: <CAAhSdy2cDHO2w8VX34WV1kBxHQ6N0H0Ra_r6aDKK86250nWFSA@mail.gmail.com>
-Subject: Re: [PATCH v2] driver core: platform: Setup device MSI domain just
- before driver probe
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Anup Patel <anup.patel@oss.qualcomm.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <pjw@kernel.org>, Alexandre Ghiti <alex@ghiti.fr>, Thomas Gleixner <tglx@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Danilo Krummrich <dakr@kernel.org>, 
-	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	"Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
-	Saket Dumbre <saket.dumbre@intel.com>, Rahul Pathak <rahul@summations.net>, 
-	Atish Patra <atish.patra@linux.dev>, Andrew Jones <andrew.jones@oss.qualcomm.com>, 
-	linux-acpi@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	driver-core@lists.linux.dev, iommu@lists.linux.dev, 
-	acpica-devel@lists.linux.dev, Sunil V L <sunilvl@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH8PR12MB6914:EE_|IA0PR12MB8973:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3733bad0-a1a2-4964-3af7-08deebedb97a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|11063799006|5023799004|56012099006|4143699003|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	ZQ2fcLijrI0mvKMgidOrWl+kB58sQtZGJWwmH/TTmoh3BjX4VPC3npWHfBZH4vd977ZYc8rzfpWX4N+I+YILMbNZeIwM98Bh2wLhbKLkrIfxo/SGKRx1QVjNxAI14fMkYmuAgmRa4uSmrmXQpD4nQsSX0I7DhXS2FIyK4F8kHYyoUcdnnOqBM1tib50puuAI1NP5Nk6M3UuKxZTJ8NexZa/5v6p9wbnpwupuvMsTftrFfcBaDbjaWHYbMs0DcipWdg5rbHJlhEILiH7pfovhuY/90MmFcXc6zwyMFavOVvgFqetywfH6/tPoaSUIY+4UsVw1GpxtM4RqhxrzIBxpnTHohcaQZOJF8Seen+SoEImP/vcEWpGk3N65/HkCAXdD9nwU+fU0jcnkqsxHDAmI1sW5KM/e5hZ611dlfyobvWRjC9SB3762vqQJrbJao9IeNxBU4o+ypBwYEtA+sIToFL6C5fAw3L3oqTOUCLAq9z1iPNqNnhlE3HNugfMOjUJHKHytRmZB3D1f48o0cdLv3mcWMcrFGFyjjZxvKF9SsaGgkI/vuh2FEjXpWwVzmYMNj78srlxiZpe8zSnvBdA7pq9SWa/rtfTyVaEuaf43VwCr3Q2Exl8jhV2kxiOaZBVZ2RYZpym1ZP4ceHuMu3pQ1UCllpgkCtSjlB9dKXUWKxs=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR12MB6914.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(11063799006)(5023799004)(56012099006)(4143699003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dktBTm5zcEp0dlRGeVVCaDlzVjhBS3RBdEhpbElNQ0R1V2VhSnNYaEJxMlBG?=
+ =?utf-8?B?bmFJeTBjb2VpbmsvVnkvbzNoWTExc2VXVkJMQ2dYQ1lpZEFSeHl5ZWRZUFNy?=
+ =?utf-8?B?UlBzQ3dFYUM5SWM4S2sva0RaRlc0MHgwQ1pPc1FpWFgwL0lUQTB1b1g4SFpD?=
+ =?utf-8?B?TlZyS3NjY1N1WVJPOGN1QnM4dS9QK3FmaVZWOEJ1aTRSb0V0eWpnRFdkeXN1?=
+ =?utf-8?B?TTlvY0dySU9WMEE5eGJrUG4rNEdPbVB5TkR4RGgrV0Izc2ZaT0xmcjF0NU5k?=
+ =?utf-8?B?eTI2K0l0b2VTUlJwWWdNanhIUVVHYnZ0TmUydnJlVmM2R2w2dVFhTUhXYWJ3?=
+ =?utf-8?B?LzA5WGFQd2pPdVFSdjdkbzQ0ZGlVZ0xud0RmcXQzeGhpTlB0aHFXOWZDeUVF?=
+ =?utf-8?B?MTBIUmYyNHBna2gxWVY2elZUd0IrazQrQitQZ0Z0UzlMamhtMjAzQXNhcXRJ?=
+ =?utf-8?B?YmVyTnRZblpabnF4dEMzNHJoUDFpZjVZTEo4RzBkVWpudnh3UHo4VTVndnNV?=
+ =?utf-8?B?THJxUHFwTnRCNjIxV2pjNVpTMmdtSmZaQk9ZdHRtTm90aWdlcXlISzhxUkZw?=
+ =?utf-8?B?ZDRXYVJWeUFHUkhMZ0p0VXlyUDFXZkVCVU45dFhKV0FIQ043Z0ppTUpweWk0?=
+ =?utf-8?B?SDRmcmJOUFRjTGhXOG1EZ0pWS3dqaWxhOEx0aTNiaFdiQm95d09VeFpvR0h0?=
+ =?utf-8?B?WlJtWWlkSDgzT0I3ekxFUHAzYzRwWTdFQ0xPSkNFYTg5VThwZ3o2VWdLbmFj?=
+ =?utf-8?B?VE9wdzYvRDdsYlYzdUdsVnphakZSNWU5ZEYya3p0VURLK0xWVUZueTI5QzMw?=
+ =?utf-8?B?YlhvRTR4RkNyRWNGN0t0eEtZWGpGOUxmdGtYYlYyei9MeXRHKzJSOGM5MVo4?=
+ =?utf-8?B?b1ZjcytyMmMrVXRxVUJQQ28xUGZSQmV0OEZaNzhJMGkvZkxHeWZJT3FnL1Bt?=
+ =?utf-8?B?Q0pDSzRJQmF5SVNFNzNaZncxdUc1cUZIRWlIcVc4YXpwcU9pYS9PV1NCMG81?=
+ =?utf-8?B?dVVEZ0tlblpzbXpQUVVRcDhSNENuNm5sNStvK2hQWDBRamIyYXlnOXVSMTRu?=
+ =?utf-8?B?UjBvaVNCQkJRYnl6WndiQk01OCtyejFON0dvU2t3bFpUbEZxaHduN09DQllF?=
+ =?utf-8?B?QmxxN0J3Vmp6NXRWQmlHWGRtK1gwTjVmTnlWekJDUVdKQmtPVG4rWmtBWHha?=
+ =?utf-8?B?RDE3NkordjdlbGYrN3JpMjNyZENOMDJlUXRWWnUyRTEzQWdKa1M5ZVJWRHR0?=
+ =?utf-8?B?Y3RqSzA1M3BGbHBzTEd6YUM4UTFlL0dsSkFxSTdqaG1IcHJaZG41UFNpdlhH?=
+ =?utf-8?B?ei9udnpoZ29vbE1wM1lnSzFKRUtaTHMwQWpYUUcxaythRmhGRDFoMjIrcXoz?=
+ =?utf-8?B?aFhuM25Vb3VjZmxSQUFYQW9xS0xDVnFvbnI0QlJnYWxKRlZ5TC91Rng2L3NM?=
+ =?utf-8?B?d2lnelZlbXFlcytnU0NyaDZkTTdkbi84bUY2VWY4S2c5aGMzd3ZpZWFoNVgv?=
+ =?utf-8?B?QlJod05OR09rUUFnRll0d1RUTWpzdmpaNHZhZnFpNS9pT3RtNUxMc1E3Vzk1?=
+ =?utf-8?B?UVFQK0c3UG9sOEkxbWFRR21HVm95ckgyUFdya01WMXF1RHYrQ3ZLV2ZMS3Ra?=
+ =?utf-8?B?MTY5QWgwaGJsbDlLRzRzY1lVN3BROFloV3hPZ0pkQ2l0TThraXdLSEJ0QjRk?=
+ =?utf-8?B?ck5vNk9walhPNUNtWWRWTHc3OGFyNnRPK2dUUm8xSE5VUERtRkp0aWg3cWUw?=
+ =?utf-8?B?QjFiQXZ6eDRNLzhXYXpEYnpWNFBiNjF1b1d0MFlyb2J5N1o1LzQrQWpDc1R6?=
+ =?utf-8?B?KzM4b0owWnhQNkMwM2o1UmhpeUJnUCttM1N5Y1hMZ1NyS2xUQVc2Uk1hU0Jl?=
+ =?utf-8?B?TWtNTzVWeHQycFhpQVRub0dRUjAyVHEvbUVxb1kwdk1sS1FFR2JTTVdRNDMv?=
+ =?utf-8?B?cWM1WGU2elpGSnRBZWNTYi9KdEowRUJyUG9iWHR3RytPQXZ2SXBieVpyN2t5?=
+ =?utf-8?B?dEorQmR4Ny9YbXZaUjZSWlZFNE0ySGFGMnNmVTJHT1B3ZkdrdmcvaTdoMDdl?=
+ =?utf-8?B?QUxRdlJsSnpVdDBqWXo2dG5hQUFERldqZVdzaGlFeXIyVFU5b1o5MzBMVDFN?=
+ =?utf-8?B?WkZrR1V1S05FbkkwdFhoRlVRY1VpNlNJR2hzSVBvTDNsUndVcEd1bzRtK3hh?=
+ =?utf-8?B?a0d0MHY5UUI4V2YwMWJwUVNVL0tqckU0NlMyc3NLQkVPK3VOTW9CM0NxQ0lU?=
+ =?utf-8?B?YmtBaUlDSUQ1cndDOFV4K1l0bUhqQTMwNU9TNTdmNXZXSXo0eDVGaHZiV1BJ?=
+ =?utf-8?Q?InkCpNvHDaIRhUs90i?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3733bad0-a1a2-4964-3af7-08deebedb97a
+X-MS-Exchange-CrossTenant-AuthSource: PH8PR12MB6914.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 14:45:38.7056
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ky2tFYIqlcgMCy0A8kwZtGg/BY8IJd9hugZOBVkGTYLsLCHF9yF1mldNnb+dTtyzGf8pTh0d9zY7UmS4bDs8sQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8973
 
-On Mon, Jul 27, 2026 at 5:46=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 27/07/2026 9:40 am, Anup Patel wrote:
-> > On RISC-V, the MSI controller (aka RISC-V IMSIC) is probed as a regular
-> > platform device and MSI client drivers are always probed after the MSI
-> > controller driver using fw_devlink. Unfortunately, this is not sufficie=
-nt
-> > to ensure device MSI domain is set for MSI client devices before driver
-> > probe because OF framework sets device MSI domain at the time of platfo=
-rm
-> > device creation whereas ACPI framework expects arch specific code to se=
-t
-> > the device MSI domain at the time of platform device creation.
-> >
-> > Currently, to address the problem of device MSI domain being not set
-> > correctly, various RISC-V MSI client drivers explicitly set device
-> > MSI domain in the driver probe function using below code pattern:
-> >
-> >       /*
-> >        * The device MSI domain for platform devices on RISC-V architect=
-ure
-> >        * is only available after the MSI controller driver is probed so=
-,
-> >        * explicitly configure here.
-> >        */
-> >       if (!dev_get_msi_domain(dev)) {
-> >               /*
-> >                * The device MSI domain for OF devices is only set at th=
-e
-> >                * time of populating/creating OF device. If the device M=
-SI
-> >                * domain is discovered later after the OF device is crea=
-ted
-> >                * then we need to set it explicitly before using any pla=
-tform
-> >                * MSI functions.
-> >                */
-> >               if (is_of_node(fwnode)) {
-> >                       of_msi_configure(dev, dev_of_node(dev));
-> >               } else if (is_acpi_device_node(fwnode)) {
-> >                       struct irq_domain *msi_domain;
-> >                       msi_domain =3D irq_find_matching_fwnode(imsic_acp=
-i_get_fwnode(dev),
-> >                                                             DOMAIN_BUS_=
-PLATFORM_MSI);
-> >                       dev_set_msi_domain(dev, msi_domain);
-> >               }
-> >
-> >               if (!dev_get_msi_domain(dev))
-> >                       return -EPROBE_DEFER;
->
-> I stand by my previous comment that relying on ACPI initcall order and
-> assuming fw_devlink is enabled doesn't really seem robust enough to
-> justify dropping proper handling of this case, especially if pretending
-> it's a generic interface.
 
-I think you still fail to understand the root-cause of the msi_domain not
-being set correctly in the struct device. There is no issue with the probe
-order (or probe deferral) rather the issue is msi_domain being set very
-early by OF / ACPI framework at the time of device creation when there
-is no MSI domain registered.
 
-Let's take the case of OF based platform devices with RISC-V:
+On 7/26/26 23:19, Vasant Hegde wrote:
+> 
+> 
+> On 7/24/2026 8:45 PM, Jason Gunthorpe wrote:
+>> On Thu, Jul 23, 2026 at 06:15:48AM +0000, Vasant Hegde wrote:
+>>> @@ -3120,20 +3146,28 @@ static int amd_iommu_def_domain_type(struct device *dev)
+>>>   	if (!dev_data)
+>>>   		return 0;
+>>>   
+>>> +	if (!dev_is_pci(dev))
+>>> +		return 0;
+>>> +
+>>>   	/* Always use DMA domain for untrusted device */
+>>> -	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
+>>> +	if (to_pci_dev(dev)->untrusted)
+>>>   		return IOMMU_DOMAIN_DMA;
+>>
+>> The core code does this, it shouldn't be in a driver?
+> 
+> Right. I didn't realized core has this check. I will drop this check in next
+> version.
+> 
+>>
+>>> -	/*
+>>> -	 * Do not identity map IOMMUv2 capable devices when:
+>>> -	 *  - memory encryption is active, because some of those devices
+>>> -	 *    (AMD GPUs) don't have the encryption bit in their DMA-mask
+>>> -	 *    and require remapping.
+>>> -	 *  - SNP is enabled, because it prohibits DTE[Mode]=0.
+>>> -	 */
+>>> -	if (pdev_pasid_supported(dev_data) &&
+>>> -	    !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
+>>> -	    !amd_iommu_snp_en) {
+>>> +	/* Apply device specific quirks */
+>>> +	if (quirks_force_identity_mapping(to_pci_dev(dev))) {
+>>> +
+>>> +		/*
+>>> +		 * When memory encryption is active, some of these devices
+>>> +		 * don't have the encryption bit in their DMA-mask and
+>>> +		 * require remapping.
+>>> +		 */
+>>> +		if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>>> +			return 0;
+>>
+>> I think this can probably be dropped now? There is no intersection of
+>> this old broken embedded GPU and a CPU that supports CC right?
+> 
+> 
+> I did consider dropping these two checks, but I was not entirely sure. So I kept
+> as is for now. Once these series settles and I can go with next step of dropping
+> these two checks.
+> 
+> @Alex, @Mario, Any suggestions ?
+> 
 
-1) The OF framework set the msi_domain at the time of platform
-    device creation but unfortunately the RISC-V MSI controller
-    driver is also a platform device (aka RISC-V IMSIC driver) which
-    is probed much latter hence the msi_domain for all OF platform
-    devices is set to NULL.
-    (Refer call path,  of_platform_device_create_pdata() ->
-of_msi_configure() -> dev_set_msi_domain()
+The background comes from this series:
 
-2) The fw_devlink based probe ordering in the Linux DD framework
-    ensures that RISC-V MSI controller driver is probed before the
-    MSI client drivers (such as RISC-V APLIC MSI driver, RISC-V
-    system MSI driver, etc) but still when these MSI client drivers
-    are probed the msi_domain remains NULL for the platform device
-    of MSI client.
+https://lore.kernel.org/all/20200824105415.21000-1-joro@8bytes.org/
 
-3) Due to #1 and #2 above, the MSI client driver have to explicitlly
-    call of_msi_configure() on RISC-V because no one updates the
-    msi_domain of all platform devices after RISC-V MSI controller
-    registers a MSI irqdomain.
+> -Vasant
+> 
+>>
+>>> +
+>>> +		/* DTE[Mode]=0 is prohibited when SNP is enabled */
+>>> +		if (amd_iommu_snp_en)
+>>> +			return 0;
+>>
+>> Ditto?
+>>
+>> Jason
+> 
 
-This patch eliminates the #3 above by calling of_msi_configure()
-right before probing the OF platform device.
-
-Regards,
-Anup
