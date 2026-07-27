@@ -1,265 +1,200 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011019.outbound.protection.outlook.com [52.101.52.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5B8741A545
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 13:32:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74B9F41A921
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 13:54:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785159146; cv=fail; b=H8V/sTM7tr04mEJbM1wxrkfLrd9P2Z4jX3jFu4JRx/JpG1S4tiwWJoy2pIXoLvDDb3z1RP1uwK99e+7JTTZHtmJLNS/2YKQnkoVDFG880i3eA+tMC8VluerBCiu3d6CuNlIA/o5MGSgaH9vf+n1JBTAWPMBMxf90vM1vsj2ZYMQ=
+	t=1785160446; cv=pass; b=jrh0CNLdl6/u1Y6QsyMmZoEA1DA3PIcZJr/Bba67XgwV0phfF3tFqgmP134DRSCFloOjcoyRWuSQP7a8I6QYBy1JUTZfm4VCy7ioWU4X2j6II2A4SlE3S6A9pJX7zu8lVmnYyFmiyxOJFBaB2GeKGm3GpgVwYu9M9foTUkksIBc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785159146; c=relaxed/simple;
-	bh=5L9OebVLjA0eoRNkxlTE44ZaFoduR0RahNEvV39zatc=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=H1E9lS/Nf+tFSLbjdp9xBDyufiujiU6uszNVP2HxQV2QTA3Ebxdf3LUwxLUC4DGN2E7GNYKniQf5CcKQhS/eQ/n5jROE20CoO+Pvfe9EdqPNszG2+wSe0XqmitC3Lgs9VHU1jiCRjqHFfQIaQlgiu9VrBToFoJeJNG0RhdNYEDs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gIyWzA83; arc=fail smtp.client-ip=52.101.52.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1785160446; c=relaxed/simple;
+	bh=fQJyxDv643pqDMxn0ByaDWbHqZIiq7Rg1W4GA2fAA2Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uda1la21B5SLMBQbYcSyfoR20A9Ge08cJ/RhjlhjR3/tCkdHAU90lTElDKA6U78gGHjbJ1gVXBNOVQduyEL/59pxVNkiY6PQOAsq+JzmLfoT9cnIidcvqFLx1zFOIhRDUmoDV+QKJwGGiyvACFQcba6tClO3YWdsmr55VkdsFDA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b=Yqb5sFBo; arc=pass smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gIyWzA83"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ur9meqC6hra1J1uIfpSIqnucBRK9ydZgJSR5vwRTFykR2STqT/tyPCQXBE0DDYgy9j6sNi+Fso/2wnbzU0cSJayaymVQ+gBVwvk9oXqEL+K5S4zz90L99nc+gqhwp5pQ9GQ0fWY9gxG9ReTIv//POmYYi5Iev8jRY+YA/L+fy76mAskMggFxvcTEqNG0/bAbVC3ZLRVCE3sFmsiWJAxOjYCm3mu353LYNU0+r3W2vMdHwKCYAUXK/j7zwSn1EdTWRgVLES716OKVMEZj45km5Nbmp5stuKEkI+1r+SOB8vi6r3v8gNM1g6iHkGeJpNI1CeTWcSlu/+nWpnPUzp+xfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P+c4sOqgxWO2kPvoRWharVX+lmUaCOi/yVIGDTPj1Lw=;
- b=W+aU+cxybzh1WqL7WjXScY3ph5m2C6E2VlMk8ZTXABHbe0t3QzoaGgAgciKgnqg8O5TXwdE825g9NeyYUYNFLhSQrJYh0dF3ILSb7OgmxMLS66mL9tbnLVuxkVSzXKnPwtYiDo+gESRXgGVue0zraYicyObOJDvC4c8qQpQj9/FDsqvI9c9WK5v76X/eXPp8pJhSC6QSja5/Ao640y45RfQyqnI53VALieBAxPVVdHpiGZ8jZKdiDLhJ1FAJaTPK7Dzj9GVyYpgFr1B1dpWGpvLUDEJ1qTJDnnhMqKA5iC67A9IQ56VWEvoPe0mVXDBtGq69562I6ExloRzwcLyGWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P+c4sOqgxWO2kPvoRWharVX+lmUaCOi/yVIGDTPj1Lw=;
- b=gIyWzA83eohtpCZEKukCcrw4G3KPGUHxZZ9cPj2521ejnHKXolxIr9uny6zJO6SjXeiwc6El/f9jmiPGdsu8fdeSMTUe4mMRLJI6fpkgQt7fgTx66vpdFsNCnPnHnHO/3yxlMc7Nag4KxkA0SmYZMpeyLZVMn2vhbJf91ku3Hqk=
-Received: from SA1P222CA0176.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:3c4::12)
- by CY8PR12MB7633.namprd12.prod.outlook.com (2603:10b6:930:9c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
- 2026 13:32:18 +0000
-Received: from SN1PEPF000397B2.namprd05.prod.outlook.com
- (2603:10b6:806:3c4:cafe::90) by SA1P222CA0176.outlook.office365.com
- (2603:10b6:806:3c4::12) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.13 via Frontend Transport; Mon,
- 27 Jul 2026 13:32:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- SN1PEPF000397B2.mail.protection.outlook.com (10.167.248.56) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.270.5 via Frontend Transport; Mon, 27 Jul 2026 13:32:17 +0000
-Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 27 Jul
- 2026 08:32:10 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<joro@8bytes.org>, <jgg@nvidia.com>
-CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
-	<vasant.hegde@amd.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
-	<Sairaj.K@amd.com>, <jay.chen@amd.com>, <wvw@google.com>, <wnliu@google.com>,
-	<dantuluris@google.com>, <chriscli@google.com>, <kpsingh@google.com>,
-	<alejandro.j.jimenez@oracle.com>, <joao.m.martins@oracle.com>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>
-Subject: [PATCH 24/24] iommu/amd: Relocate vIOMMU translate-device-id on PCI reserve
-Date: Mon, 27 Jul 2026 13:29:13 +0000
-Message-ID: <20260727132913.22475-25-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
-References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b="Yqb5sFBo"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4954c0833b4so20610835e9.1
+        for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 06:54:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785160443; cv=none;
+        d=google.com; s=arc-20260327;
+        b=jk9wrrhL1qyV9a1AJy0e9vwrlphG0+O60VhybSPdsc0K97t7VJunvO/fmzse3DhXge
+         XQkroJqcp4cHwms2YznPhqXDdF1sTwd/g2gt3XsYHxVJHsz3ObhEImOLUZ/oCJouEZrE
+         oSxmbWLQSD9y03AVgiDgAuOXbVDNOkUdd2QYr2rdhQnt9cMkmCtjJgopn7A7fwNs2HUU
+         zmGr0tPQUG0ijHnr6J2+sMBt3mQK5oBT9OFCaGXj59lMjTKtJtGDhLab1eE37gR6JWLf
+         S75Z9g8Z0WapMEw18CUZAbnBhqrR5pxyegYUD/VCx69e8KscnKxEm2K1k4PxkBN4cpbe
+         6gHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=LkTARaNCDvTrxIcriRua7Id7ovFdqPl8CcOFZ930Vas=;
+        fh=mE8huzmPmNbBWhO2gRf2s3isvZp/gP+eg/b40h+RiCc=;
+        b=ZHQwAd3SNGBKlhlfA3+iIUg94k+LBv8YoUglE7ItwNECPijiSKuZA/20I/2vB8NFif
+         70eAoapMIZvtR/lSBzev9BDyzvZuLg5U2NJC3YHUUCEWNSebpQJjwJ3CNCA1THwV2lMv
+         W1l1/9t6XzUv+QBgHoYKde2nCnwcmScQSCRL6Q6RUK+P0hmHD3jL5C+7nfGhhDonCipb
+         J5f/QjCjvrTw8p0/l8CB9zz7tqalGSS8p3p/MNEXHjzwT509o9qyyuI4iOFEkGi/1bc6
+         7a6BWHCXHgIDrlJd5ORQk3iLciJHQobykVkaHCrEj3xnuVwkwWamK9Q7SpnusaEEq6VN
+         jL2w==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20251104.gappssmtp.com; s=20251104; t=1785160443; x=1785765243; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=LkTARaNCDvTrxIcriRua7Id7ovFdqPl8CcOFZ930Vas=;
+        b=Yqb5sFBo5iZTonjyZciO5I16vLKV2n9lT/AG0pc9aFHyyMYmBdFtQtgzd2y1J8765N
+         Qu2qmcdD5dYfLIR2QhJXR6ruNzd1HQrknPRBeyNtesGLH9F80a3oe4bFxUXvyWiRukNt
+         5HEUlDmIPlixLBuWPBHibbJDcxzjvOrHKgWhRnsthl4LNKj8lqmLgeRdMKd5Gg4OXZVz
+         eqkv8wbFWa/dtpHtkCmefGTmuDz56Huy4VmK3mdHg15k7JVGMU8qU0Yy+xBg9fZg+uia
+         ThTLracJOWkT0bzZYOyg4dTfAM9oEOGfMyoQ4TUVVzXyLWJ3LedYerwNn++HlxVbLzRk
+         RR6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785160443; x=1785765243;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=LkTARaNCDvTrxIcriRua7Id7ovFdqPl8CcOFZ930Vas=;
+        b=rMOwUOeLVHthRaOiHRfle88RynFVR2C285dqV2hg4ojs0uIA04R+TnDkrLCLVDzVSb
+         7vvow9xytuMCtsRgDjR56/3Jm4UGT7LMKgBeTxlZUxxaFsV8x+W2bYH7HiQLfY2xg5S9
+         1i7ua2OJ/n9W2FRL+3Qw+tR/kkJzPelQkiY42t1i3Tb0ARcqabPOiXhI09I6Q3Z0WpF2
+         4+lWqnv8O3pMWyixfehGnhGD58kA/axvI9wjVMMO7i0oWpEUQp2FnSz7VdKGaObyhDJ0
+         9m02R/+4ZyBMy4DYgWZZqNFdtfQ1x+PwW+r4rzG1mzrDpS+8CiuAE3nnxY9SqlU9tgbT
+         crDQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpDstIzqfBNpPeb+fDiq9S47cDVF/n3+4Csy2sXN9cb5z3gU3QAVkExCFWeFk7m5IEUOozEyw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwTU5K0xL526wvUKjn1zTH+x/8hcwuQv9rJXVyNDzvE8MCPqLap
+	CP+vplmLd3igrjAB1XZSiFI/JUJgZdSSagCYL5pXFgkIhuDaaf0jLbBH0yD+YoM/5a5wqF3PBaM
+	uVB4exjvkka0RmnzTGY4pL8QDPlqFbTPpoI0rmV/vYw==
+X-Gm-Gg: AR+sD1108q8852Uh34kwFIHnEgByF817qsn520Egtrq0zl0o6uWrRhmEQh9T4uqvJpI
+	1zz5fHrDuyGPEbWGRZZ/egpjowQrMjHvOQFbnQwt9DUx8M9lmz/FAWvmTJsrtAKjp5RHZZNzqy+
+	z1qYUUVkZfavDs1Wi1zJH7xAEutJTqYb6xmmuB1ZbsPW3ZHx+xubQ/QEZ2SHH5kynNtNsO8ooiv
+	jfIM9PD7jI1UKccd9LICvVmuJ1Aie0woCNYswIHH9/YcDDk8hIcQyI8e3du2mGJB9QlcTv/hEHa
+	R6rjYr84RrGEULDRrHFin5X/KC6d5DrwaSz8xXWPtN3b14LzvtdYTrRYNBMk/fyHc/x1cPcULnO
+	L//0z
+X-Received: by 2002:a05:600c:a12:b0:493:eccb:8cb2 with SMTP id
+ 5b1f17b1804b1-496b57297b8mr114877045e9.30.1785160442437; Mon, 27 Jul 2026
+ 06:54:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000397B2:EE_|CY8PR12MB7633:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ae5c88f-0fea-42df-5919-08deebe37a98
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|23010399003|376014|7416014|1800799024|36860700016|10067099003|18002099003|22082099003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	IbBHizV65erOgTGFrarDYntyXdIHeZy+guhwMFIL2yPh1sw5hr26t0c+Lp+dJlMWi4K3zv8ngujQjCj8BkPMr4Z7SV0AAHPsJHnqY2LVgdTWQr437nNEYBzTVnwrqVN/06KYUXBaH1N2e0wZm0sMfrQhEVHbam71nJYpuoqXIJ5HZ9WnN7uVK+1pEACO+XbyAfreMSC2o/hrYDKnbpNIqwoLcGfrJQLgyGapay4voTa3wtb3pE+jGXfNLgtD2rxZ1Sjef3BuIxvYcY2t3VlVmPn4jGcc2rHw47IUOGcHbR8NLgkqG6jucnouz355Ndgq95UdnuRkMpemAuY54UfWPUWHccO+m3Za0RiUDeHlEExh8stDclxWJSdFJdn86v0Mdz8ZirzSnncG0ryfKmoRtyfUqSvDiNuIFlLSeUz/KOBD0yIYleGxPeYuLYwmsrGIaxICaOiHT+xRylJM27F7/ghEUxmrGzRRS+Gy6/zd5HVT/a3Bg+nAO18ZYIjdVkK/6Jt/koDCY57PFkhn9M8qZ2HngxIF2fjbFU5/PinsawFPRzeOEZTYWxr0cUIqcNS/Jf8ojZxhCDFnDm9I/vquhXPB7Twfxz0UXzmg5wSFI96i6TZ5pHfWgBPlppJskqs/JPRUpZwTxpcfQIyDoGxOBe+UcqMTV1vnMJGuR9turXXhxsYTcaOYidaj7AbIgbjHj6FHd9cM9cUC8G6PMinNMg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(23010399003)(376014)(7416014)(1800799024)(36860700016)(10067099003)(18002099003)(22082099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Mq7mB/SM1T5SP4hCJDpS0Usa4W+OCG5ohr//T4ivVgods5HhiCx4nqt8mnK+CZ0vdKIhb65eril8GCEJmtovbYCBN9moQMMVYYmEMfn/3PqQKk8i9yQqDicWJXhrrtsrABTsG95EWS9blWgquyH6eGAuA9BXXaRukgQz2PInX4GgFZnr3PASy7vVvO9lXysE+Vw6OTfQV7WlSUw5+zIJ4r4YmEThbNhQU4aA8+Vj4zJgGQCl95ffW/XlSwh4KE7lsoeu+3ee6ylAbetlYLroJU1l62b7+AZQvrA2f2+7QMSgimHMqu+zVzgeewMnLo9+y9cCvyzxTFpcPJaOww00iO+wdZSl1dn4G2EPQ35x6RXD32i0fPSFZRM+AbWWfOU56A406W2mR5tFWUmpmTmO4HvuhDobBpQznfBo8F9Fm9QqVXbefuD62WE+3i0vVZWo
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 13:32:17.9359
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ae5c88f-0fea-42df-5919-08deebe37a98
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000397B2.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7633
+References: <20260727084003.1951324-1-anup.patel@oss.qualcomm.com> <71fd5b46-4388-4106-aee9-b4510069975f@arm.com>
+In-Reply-To: <71fd5b46-4388-4106-aee9-b4510069975f@arm.com>
+From: Anup Patel <anup@brainfault.org>
+Date: Mon, 27 Jul 2026 19:23:50 +0530
+X-Gm-Features: AUfX_my4QjrER3hRFjzxXael861bKnyaiQylY-XLFhSCxIc_XNnqTG1sq5MogY4
+Message-ID: <CAAhSdy2cDHO2w8VX34WV1kBxHQ6N0H0Ra_r6aDKK86250nWFSA@mail.gmail.com>
+Subject: Re: [PATCH v2] driver core: platform: Setup device MSI domain just
+ before driver probe
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Anup Patel <anup.patel@oss.qualcomm.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Paul Walmsley <pjw@kernel.org>, Alexandre Ghiti <alex@ghiti.fr>, Thomas Gleixner <tglx@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	"Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
+	Saket Dumbre <saket.dumbre@intel.com>, Rahul Pathak <rahul@summations.net>, 
+	Atish Patra <atish.patra@linux.dev>, Andrew Jones <andrew.jones@oss.qualcomm.com>, 
+	linux-acpi@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	driver-core@lists.linux.dev, iommu@lists.linux.dev, 
+	acpica-devel@lists.linux.dev, Sunil V L <sunilvl@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When PCI attach reserves a BDF already allocated to a vIOMMU, relocate
-that vIOMMU to a newly allocated translate-device-id before marking the
-BDF reserved for the device.  Reprogram translation DTE and VFctrl under
-trans_devid_lock; roll back the pool on failure.
+On Mon, Jul 27, 2026 at 5:46=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
+>
+> On 27/07/2026 9:40 am, Anup Patel wrote:
+> > On RISC-V, the MSI controller (aka RISC-V IMSIC) is probed as a regular
+> > platform device and MSI client drivers are always probed after the MSI
+> > controller driver using fw_devlink. Unfortunately, this is not sufficie=
+nt
+> > to ensure device MSI domain is set for MSI client devices before driver
+> > probe because OF framework sets device MSI domain at the time of platfo=
+rm
+> > device creation whereas ACPI framework expects arch specific code to se=
+t
+> > the device MSI domain at the time of platform device creation.
+> >
+> > Currently, to address the problem of device MSI domain being not set
+> > correctly, various RISC-V MSI client drivers explicitly set device
+> > MSI domain in the driver probe function using below code pattern:
+> >
+> >       /*
+> >        * The device MSI domain for platform devices on RISC-V architect=
+ure
+> >        * is only available after the MSI controller driver is probed so=
+,
+> >        * explicitly configure here.
+> >        */
+> >       if (!dev_get_msi_domain(dev)) {
+> >               /*
+> >                * The device MSI domain for OF devices is only set at th=
+e
+> >                * time of populating/creating OF device. If the device M=
+SI
+> >                * domain is discovered later after the OF device is crea=
+ted
+> >                * then we need to set it explicitly before using any pla=
+tform
+> >                * MSI functions.
+> >                */
+> >               if (is_of_node(fwnode)) {
+> >                       of_msi_configure(dev, dev_of_node(dev));
+> >               } else if (is_acpi_device_node(fwnode)) {
+> >                       struct irq_domain *msi_domain;
+> >                       msi_domain =3D irq_find_matching_fwnode(imsic_acp=
+i_get_fwnode(dev),
+> >                                                             DOMAIN_BUS_=
+PLATFORM_MSI);
+> >                       dev_set_msi_domain(dev, msi_domain);
+> >               }
+> >
+> >               if (!dev_get_msi_domain(dev))
+> >                       return -EPROBE_DEFER;
+>
+> I stand by my previous comment that relying on ACPI initcall order and
+> assuming fw_devlink is enabled doesn't really seem robust enough to
+> justify dropping proper handling of this case, especially if pretending
+> it's a generic interface.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/trans_devid.c | 116 +++++++++++++++++++++++++++++++-
- 1 file changed, 115 insertions(+), 1 deletion(-)
+I think you still fail to understand the root-cause of the msi_domain not
+being set correctly in the struct device. There is no issue with the probe
+order (or probe deferral) rather the issue is msi_domain being set very
+early by OF / ACPI framework at the time of device creation when there
+is no MSI domain registered.
 
-diff --git a/drivers/iommu/amd/trans_devid.c b/drivers/iommu/amd/trans_devid.c
-index 9d7d93c5dcdb..6fb1ba3c9444 100644
---- a/drivers/iommu/amd/trans_devid.c
-+++ b/drivers/iommu/amd/trans_devid.c
-@@ -82,16 +82,120 @@ void amd_iommu_pci_seg_trans_devid_fini(struct amd_iommu_pci_seg *pci_seg)
- 	xa_destroy(&pci_seg->trans_devid_xa);
- }
- 
-+/**
-+ * trans_devid_do_relocate - move vIOMMU translation DTE from @old_id to @new_id
-+ *
-+ * Caller holds @aviommu->trans_devid_lock.  Pool xarray already records @new_id
-+ * as allocated to @aviommu and @old_id as reserved.
-+ */
-+static int trans_devid_do_relocate(struct amd_iommu_viommu *aviommu,
-+				   u16 old_id, u16 new_id)
-+{
-+	struct iommufd_viommu *viommu = &aviommu->core;
-+	struct amd_iommu *iommu =
-+		container_of(viommu->iommu_dev, struct amd_iommu, iommu);
-+	int ret;
-+
-+	aviommu->trans_devid = new_id;
-+
-+	ret = amd_iommu_set_translate_dte(viommu);
-+	if (ret)
-+		goto err_restore_id;
-+
-+	amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, new_id);
-+
-+	if (search_dev_data(iommu, old_id))
-+		amd_iommu_clear_translate_dte(iommu, old_id);
-+
-+	return 0;
-+
-+err_restore_id:
-+	aviommu->trans_devid = old_id;
-+	return ret;
-+}
-+
-+/**
-+ * trans_devid_relocate - move an allocated id to a new slot and reserve @from_id
-+ *
-+ * Called when PCI attach needs a BDF that a vIOMMU already owns.  Updates the
-+ * per-segment pool, then reprograms DTE and VFctrl on the owning vIOMMU.
-+ *
-+ * Locking: takes @aviommu->trans_devid_lock, then pci_seg->trans_devid_mutex
-+ * (same order as destroy).  Hardware steps run with the viommu lock held and
-+ * the segment mutex dropped.
-+ */
-+static int trans_devid_relocate(struct amd_iommu_pci_seg *pci_seg, u16 from_id,
-+				struct amd_iommu_viommu *aviommu)
-+{
-+	u16 new_id;
-+	int ret;
-+
-+	mutex_lock(&aviommu->trans_devid_lock);
-+
-+	mutex_lock(&pci_seg->trans_devid_mutex);
-+	if (trans_devid_xa_owner(xa_load(&pci_seg->trans_devid_xa, from_id)) !=
-+	    aviommu) {
-+		ret = -ENOENT;
-+		goto unlock_seg;
-+	}
-+
-+	if (aviommu->trans_devid != from_id) {
-+		ret = -EINVAL;
-+		goto unlock_seg;
-+	}
-+
-+	new_id = trans_devid_find_free_locked(pci_seg);
-+	if (new_id < 0) {
-+		ret = new_id;
-+		goto unlock_seg;
-+	}
-+
-+	ret = trans_devid_xa_install_allocated_locked(pci_seg, new_id, aviommu);
-+	if (ret)
-+		goto unlock_seg;
-+
-+	ret = trans_devid_xa_install_reserved_locked(pci_seg, from_id);
-+	if (ret) {
-+		xa_erase(&pci_seg->trans_devid_xa, new_id);
-+		goto unlock_seg;
-+	}
-+
-+	mutex_unlock(&pci_seg->trans_devid_mutex);
-+
-+	ret = trans_devid_do_relocate(aviommu, from_id, new_id);
-+	if (ret) {
-+		mutex_lock(&pci_seg->trans_devid_mutex);
-+		xa_erase(&pci_seg->trans_devid_xa, new_id);
-+		trans_devid_xa_install_allocated_locked(pci_seg, from_id,
-+							aviommu);
-+		mutex_unlock(&pci_seg->trans_devid_mutex);
-+	}
-+
-+	mutex_unlock(&aviommu->trans_devid_lock);
-+	return ret;
-+
-+unlock_seg:
-+	mutex_unlock(&pci_seg->trans_devid_mutex);
-+	mutex_unlock(&aviommu->trans_devid_lock);
-+	return ret;
-+}
-+
- /**
-  * amd_iommu_trans_devid_reserve - occupy @id so it is never returned by alloc
-  *
-  * Reservation is done when attaching device to a domain (see amd_iommu_attach_device()).
-  *
-- * Return: 0 on success.  A second reserve of an already-reserved @id succeeds.
-+ * When @id is allocated to a vIOMMU (e.g. after PCI hot-plug), the driver relocates
-+ * that vIOMMU to a newly allocated translate-device-id and reserves @id for the PCI
-+ * function.
-+ *
-+ * Return: 0 on success, %-ENOSPC if relocation cannot find a free id, or another
-+ * errno from relocation.  A second reserve of an already-reserved @id succeeds.
-  */
- int amd_iommu_trans_devid_reserve(struct amd_iommu_pci_seg *pci_seg, u16 id)
- {
- 	void *entry;
-+	struct amd_iommu_viommu *aviommu;
- 	int ret = 0;
- 
- 	mutex_lock(&pci_seg->trans_devid_mutex);
-@@ -99,6 +203,16 @@ int amd_iommu_trans_devid_reserve(struct amd_iommu_pci_seg *pci_seg, u16 id)
- 	if (trans_devid_xa_is_reserved(entry))
- 		goto unlock;
- 
-+	aviommu = trans_devid_xa_owner(entry);
-+	if (aviommu) {
-+		mutex_unlock(&pci_seg->trans_devid_mutex);
-+		ret = trans_devid_relocate(pci_seg, id, aviommu);
-+		if (!ret)
-+			pr_debug("%s: Reserved trans_devid %#x after relocation (seg %#x)\n",
-+				 __func__, id, pci_seg->id);
-+		return ret;
-+	}
-+
- 	ret = trans_devid_xa_install_reserved_locked(pci_seg, id);
- unlock:
- 	mutex_unlock(&pci_seg->trans_devid_mutex);
--- 
-2.34.1
+Let's take the case of OF based platform devices with RISC-V:
 
+1) The OF framework set the msi_domain at the time of platform
+    device creation but unfortunately the RISC-V MSI controller
+    driver is also a platform device (aka RISC-V IMSIC driver) which
+    is probed much latter hence the msi_domain for all OF platform
+    devices is set to NULL.
+    (Refer call path,  of_platform_device_create_pdata() ->
+of_msi_configure() -> dev_set_msi_domain()
+
+2) The fw_devlink based probe ordering in the Linux DD framework
+    ensures that RISC-V MSI controller driver is probed before the
+    MSI client drivers (such as RISC-V APLIC MSI driver, RISC-V
+    system MSI driver, etc) but still when these MSI client drivers
+    are probed the msi_domain remains NULL for the platform device
+    of MSI client.
+
+3) Due to #1 and #2 above, the MSI client driver have to explicitlly
+    call of_msi_configure() on RISC-V because no one updates the
+    msi_domain of all platform devices after RISC-V MSI controller
+    registers a MSI irqdomain.
+
+This patch eliminates the #3 above by calling of_msi_configure()
+right before probing the OF platform device.
+
+Regards,
+Anup
