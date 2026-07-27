@@ -1,77 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74B0A393DDB
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 02:53:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4BEB3BD62E
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 03:02:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785120801; cv=none; b=BPJFEQ1vL78WvyY0LFbAptxBkpI/AObR8g2xFjUa69/jpw+Yj8QgLhde8HMFu/aYAq1yBV5UG+3u0r9OLxJoUYyJNhL3xoAw6M31WqAEaxf0PATPfL8gt5mWrsy7/5XNOIppJH2bglETGw5ka4Ymb+OD7m7+gh6OCO+0ugRhz5M=
+	t=1785121344; cv=none; b=f1/qPnOEvpYN4cUKAuY3mQ7XEBHqXc2F+a9Rb3aQM0wu4fIygrChfFJvry6DjZYKG4BcDrGl1L0PyOK2Tdq6aEy0IfU2zajnRmHpHjnLP7N3Ic8j5g3UhzRxZFVDeXD4GmXIOedUnSl4cl9dQQuHKaGWcsWOqCyHcO/drYQNc4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785120801; c=relaxed/simple;
-	bh=8EdsphQ5OQ2t2aNq2urG7f9+JHxltMx8yHXvmDTCXw8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MRAPjVmK0xWVA0Vhj19qL5pU/JBMdojosqSRdUWZ9JVDoN8e2Tv65EORn1wTPt6OQAS/eDLvusfnAdsQuCCvzoagd9Zc+CoYkyknqlgs0rwmaLardcgGN21aD01k58oTtkkBx2FcD8I2rn4BzbuLfUBc3//Zw0nDT7LCV7HAniQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BqkRexgW; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1785121344; c=relaxed/simple;
+	bh=RUjVCufh8DNtD/XbA8ITwSZlqCIY3eXpqUdR6cgCDMo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sg5vOCLqesInOuN1dZXExYWQ8aLS8GiYw//BUTGymvT70buyC0mZWm4AjcQ2gUhl3h1/pd3k6yL4RaaULutE5gglOUj6igXn9NMDevGWavbN90eKhW+/oCoQmNdNfnP50LMKll7OkTExTTvHHqlQ7l8KB3v+Z6Ev78NW2vOjHKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=yOeH2hRS; arc=none smtp.client-ip=115.124.30.110
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BqkRexgW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785120799; x=1816656799;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8EdsphQ5OQ2t2aNq2urG7f9+JHxltMx8yHXvmDTCXw8=;
-  b=BqkRexgWmSdcJUc37HOuNoipGwYd8xlijK+IQiqF88+ThaFLV16DdbgL
-   gyKEI5hrGBAhm1WhQItr5MPsXEJjH9oZ7W8/HAT8ArVtL/i7UyFd6SuL+
-   CpMvz/gwNtMsGTi7Yw3I+tfL39BQrE2uxP1NWbH3c6XMQIl5WAkhiUVDU
-   vpUAdmqSaiOJJQx1DF5zVNS2/VE3e5J37XPltSx0KqIhiiwGdyRf9lK5w
-   LCOXQ9bhZy/XaZF+1NmRMsbd9C2HmnINOqbMiUusRYkhk9FtR0st+NSuW
-   YHvm6RDKIVmm14ng53ue+8142FXcRwQJ9OpJ/89YgIWynMimex1g/wmGv
-   Q==;
-X-CSE-ConnectionGUID: bxKdP/ezRSGW3N6+pOIUMA==
-X-CSE-MsgGUID: eQUg9FYvQOmH7f2zY86p9w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11857"; a="85873234"
-X-IronPort-AV: E=Sophos;i="6.25,187,1779174000"; 
-   d="scan'208";a="85873234"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2026 19:53:18 -0700
-X-CSE-ConnectionGUID: ucNnDqWcRS+GSCHeKbcM4Q==
-X-CSE-MsgGUID: ucihsfAJSwew1Rr0BJqarg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,187,1779174000"; 
-   d="scan'208";a="264286239"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2026 19:53:16 -0700
-Message-ID: <96cd129e-80a4-470e-af61-916bbf6874a0@linux.intel.com>
-Date: Mon, 27 Jul 2026 10:51:26 +0800
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="yOeH2hRS"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1785121334; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=LxXIBDLLpab+C/qEPjDCIRPvwyjFSCaYrsQpDKOrf5k=;
+	b=yOeH2hRSo17LiCCxHlWx9UEzdx3W1fQitKL9xDEeZQv3mS3Y7OuXvgZx/xI00tYupLVZPlOXfu4ff/LU52lnnDuDqN4KiPMyhALVo6FxRd1ya1ZIm4VFAjDQN9jTwGWFwJ55ICBZZrPDBobMaauAbgkL3/lmK0ZyJUJrIk+Tvkw=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R411e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0X7ogeJH_1785121332;
+Received: from localhost.localdomain(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0X7ogeJH_1785121332 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Mon, 27 Jul 2026 11:02:13 +0800
+From: Shuai Xue <xueshuai@linux.alibaba.com>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: bhelgaas@google.com,
+	oliver.yang@linux.alibaba.com,
+	zhuo.song@linux.alibaba.com,
+	xueshuai@linux.alibaba.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/amd: Put PCI device after handling PPR faults
+Date: Mon, 27 Jul 2026 11:02:12 +0800
+Message-Id: <20260727030212.51759-1-xueshuai@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: use kstrtoint_from_user() in
- dmar_perf_latency_write()
-To: Dmitry Antipov <dmantipov@yandex.ru>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
-References: <20260624070819.773161-1-dmantipov@yandex.ru>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260624070819.773161-1-dmantipov@yandex.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 6/24/26 15:08, Dmitry Antipov wrote:
-> Simplify 'dmar_perf_latency_write()' by using the convenient
-> 'kstrtoint_from_user()'.
-> 
-> Signed-off-by: Dmitry Antipov<dmantipov@yandex.ru>
-> ---
->   drivers/iommu/intel/debugfs.c | 16 ++++------------
->   1 file changed, 4 insertions(+), 12 deletions(-)
+iommu_call_iopf_notifier() looks up the requester with
+pci_get_domain_bus_and_slot(), which returns a PCI device with its
+reference count incremented.
 
-Queued for v7.3-rc1. Thanks a lot!
+Neither the successful iommu_report_device_fault() path nor the abort
+path drops that reference, so every handled PPR request leaks a PCI
+device reference.
+
+This is the same ownership rule that was fixed for the old iommu_v2
+ppr_notifier() path by commit 6cf0981c2233 ("iommu/amd: Fix pci device
+refcount leak in ppr_notifier()"), but iommu_call_iopf_notifier() was
+added later as a separate PPR/IOPF notifier path.
+
+Drop the PCI device reference after handling the PPR entry.
+
+Fixes: 978d626b8f1a ("iommu/amd: Add IO page fault notifier handler")
+Cc: stable@vger.kernel.org
+Assisted-by: Qoder:Qwen-3.8-MAX-Preview
+Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
+---
+ drivers/iommu/amd/ppr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
+index 1f8d2823bea4..80369ca1e316 100644
+--- a/drivers/iommu/amd/ppr.c
++++ b/drivers/iommu/amd/ppr.c
+@@ -151,7 +151,7 @@ static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
+ 
+ 	/* Submit event */
+ 	iommu_report_device_fault(&pdev->dev, &event);
+-
++	pci_dev_put(pdev);
+ 	return;
+ 
+ out:
+@@ -159,6 +159,7 @@ static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
+ 	amd_iommu_complete_ppr(&pdev->dev, PPR_PASID(raw[0]),
+ 			       IOMMU_PAGE_RESP_FAILURE,
+ 			       PPR_TAG(raw[0]) & 0x1FF);
++	pci_dev_put(pdev);
+ }
+ 
+ void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
+-- 
+2.39.3
+
