@@ -1,44 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18F9F368D42
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 08:12:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6DE43DA7C0;
+	Mon, 27 Jul 2026 08:15:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785139981; cv=none; b=oMg2HWgtYjb7tF3l395+RDNKHtgQzlZhLXUN64pKMMV12btz0t8dENMgWpKL6gtB0TCPh78nU/K8augjTMBdB4ZsHqwobEi36rRPHukR3SudD1t297T2v2NV/TpAIb7ruNdArNYkQjv3syr1kz9VS48wHYODgpQ6cB+ReBgvHn0=
+	t=1785140152; cv=none; b=hACq3PGWzxO6jZc6LbHk92sLLE8mIjPZonytJ9zeKam1rkT5Jk0RkQL0CJA1UqAb2rdg4zhm8OP6vZ0dwxZMhJgDjnCduAk+p1jUwrLotfstmfEDOiXUHWmL/nqkZzKrIa3zBJKtbBWY1X4OwCrrtQrRepSiF8CPx8bUwe8kpL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785139981; c=relaxed/simple;
-	bh=kbHJIPJ7x9nRjIym1XHLFNhbMagzeFzaEueO/Wygejw=;
+	s=arc-20240116; t=1785140152; c=relaxed/simple;
+	bh=c/JwRFWIZ9zKWmIisrWsLLITsUXgfGHW/PYJKN+RYSY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=groGhGgIoTbFz1EMsQWKZIx/DoZj8JAWIfKUqARr0187ctv0xx0ttHzQHvSC8UH+VmK9dPeaDHv8oTQ5/dN/qwwjsRRFIjYdKmJIiIE9uuV7UnnhpP7npglFy3DdLO3PNUM6crTikpQcg5ruMpDOfhT7TiCTdhzS936QPV9s+wg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=He1e+qXx; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=IFizJa0dnE9yayXX9VrHKyaUBJoWF8fWLuqR/AMFR+BYXzPH/WWjmvusF2GaptvBFUcGBtd9ZKz5+BrQrSS4RpcaZstQidUikPDQV2UpdkMAV/uN6r3tM65RFJGy/DXSWXeep9nqUGmkhktwK3uNGECFt3wuScSVHz1A5TXjHio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ipst8riV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="He1e+qXx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3621F000E9;
-	Mon, 27 Jul 2026 08:12:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ipst8riV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B15021F000E9;
+	Mon, 27 Jul 2026 08:15:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785139979;
-	bh=OqVw4hn9qYQIGv2zQRg01CGwV4FIX3vH2ne+HmEOylA=;
+	s=k20260515; t=1785140150;
+	bh=aMp6H9FlzJc2nODG9Er85yscBE4n5OQfZGhO+4vG+3Y=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=He1e+qXxG78Mw62hrMKR8jcgC9E9ssqW84dJxLuuSAv3qeEybPnW/d41RnvjZfoY6
-	 UIz8SQXAtd3ePejXZdLJs3Bb4/dcfdmABQwALQEFqRu1dJUMkvXQKp6RlmVP1CUl3h
-	 3mm9byXkbnhPGu8/H0Vxo8u9LQ+8POYboTHGK0GVDBQKpAJLL+aT40cbX/FFtGK3GV
-	 V8TwASDhXKeTy4VAdM/UnnDgJixTtvaAcj4ftV1vrG8lj0KDHRslFCN7ynrWOv+05w
-	 Ivt9rvwEa29xBs1WaOn4Rv12YxHRZiJcpXjo8KIC0yLEP37BBqngmhsSQIf4V80AGM
-	 L1vH5wRJ9yzxQ==
-Date: Mon, 27 Jul 2026 09:12:54 +0100
+	b=ipst8riV1ZO430ela6U164edPoPnXojBF2s233/J5vbVn37/TyEw0BKUZtwkU6e+O
+	 3zASlFlsBero08dq9hNqrH0LTY1MNyxIIMz9fICwQg6tC5V4e2OYlcJP3fGvO7C+LO
+	 D2kx1citiPvOTjurS9wiVSuzVIl4Z3GMSmUwdlWud3JebnuTojbSSf593447ketuww
+	 NjTW3D1sqEPbjh/rQQDHFGm/2frBKFHPpuhrgYYtEjOHSM5PEyYyYPpYAuUOdqbK/R
+	 mOvFcClt9NPBgvmS/r6VSCd/LJfwM+K5KayO6VNg1Fqzmrm1/gqn3jcSEt9SYjE65u
+	 lvXKIZW/k95kQ==
+Date: Mon, 27 Jul 2026 09:15:45 +0100
 From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com,
-	joro@8bytes.org, jpb@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3: Add HAFT support for SVA
-Message-ID: <amcTBlw16RKuZC8y@willie-the-truck>
-References: <cover.1784814923.git.robin.murphy@arm.com>
- <57ae366ec501a142bd20f2cc7d18b3eca8eeac25.1784814923.git.robin.murphy@arm.com>
- <amTH7xHBY2ol4LHw@nvidia.com>
- <amX25rcF-ETdnUPj@willie-the-truck>
- <amYxa51b2j/Cdw/6@nvidia.com>
+To: Weimin Xiong <xiongwm2026@163.com>
+Cc: Jean-Philippe Brucker <jpb@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	virtualization@lists.linux.dev, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 0/2] iommu/virtio: Probe fixes for proper driver state
+Message-ID: <amcTsZj6wAmT1gUd@willie-the-truck>
+References: <6A66AA54.2EBEFC.17686@m16.mail.163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,39 +43,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <amYxa51b2j/Cdw/6@nvidia.com>
+In-Reply-To: <6A66AA54.2EBEFC.17686@m16.mail.163.com>
 
-On Sun, Jul 26, 2026 at 01:10:19PM -0300, Jason Gunthorpe wrote:
-> On Sun, Jul 26, 2026 at 01:00:38PM +0100, Will Deacon wrote:
-> > On Sat, Jul 25, 2026 at 11:27:59AM -0300, Jason Gunthorpe wrote:
-> > > On Thu, Jul 23, 2026 at 03:19:44PM +0100, Robin Murphy wrote:
-> > > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> > > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> > > > @@ -102,6 +102,8 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
-> > > >  			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
-> > > >  		if (master->smmu->features & ARM_SMMU_FEAT_HD)
-> > > >  			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
-> > > > +		if (master->smmu->features & ARM_SMMU_FEAT_HAFT && system_supports_haft())
-> > > > +			target->data[1] |= cpu_to_le64(CTXDESC_CD_1_HAFT);
-> > > >  	} else {
-> > > >  		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_EPD0);
-> > > 
-> > > Based on the Sashiko remark and your note you should lift all the
-> > > HA/HD/HAFT bits outside this if (mm) block.
-> > > 
-> > > AFAICT it is fine for HA/HD/HAFT to be set with EPD0, the HW won't
-> > > process any PTEs so they won't have any effect.
-> > 
-> > I'm not sure about that. The spec says this about CD.HAFT:
-> 
-> Sorry I see this was unclear
-> 
-> I ment to move all *three* bits outside the if.
-> 
-> There is no reason for EPD0 to also require setting any of those three
-> bits to zero, AFAICT.
+[Please line-wrap your messages]
 
-Ah, gotcha! And even if we did want to get to that configuration, I
-guess you could set EPD0, then clear HAFT, then clear HA+HD?
+On Mon, Jul 27, 2026 at 08:46:12AM +0800, Weimin Xiong wrote:
+> Subject: Re: [PATCH v3 0/2] iommu/virtio: Probe fixes for proper driver state
+> Thank you for your patience and I'm really sorry for the issues you raised.
+> 
+> Please note: I sent a combined patch earlier (around 10:42 on July 24)
+> that supersedes this v3 series. Your reply below may have been based on
+> the earlier version. The combined patch addressed all the issues mentioned
+> below.
+
+That "combined patch" used attachments, from what I can see.
 
 Will
