@@ -1,32 +1,33 @@
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D473F412B
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 10:15:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 112B230F523
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 10:27:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785147310; cv=none; b=rx6OKbW54UR2XvC8L5KXiigl0A8TAOydZeEpmyEGaM0Uqn7j0zS/rGnaLV07s8NfUVUMvB/QAhuIy6bPipmktEv9a8AnWot3nenTx4v1u+iaYDRFh/EMGfYgOCJ81/TyNdhQ6GiaJsxFi/XimTpRfMAmLShEEeUk9bt3OKBp26Y=
+	t=1785148075; cv=none; b=jSmFIKrBmMk+I8g/ueq8yMs2+TdLAGJRQ7ISNdmVKbb5J0cMInOlIb1PjBpKryFfLdKTu46ni7OPmAoaOUiYyiHyyoGdNyBOUH3NweLWJQ93JJTC7fFb7ckaaYjnDfLk5Oc72Hm0dF+RcptZ7N3cpyjiAWL9gNeXMl8dmkFZxp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785147310; c=relaxed/simple;
-	bh=VDnyyVNThEQV9k6MNnaFpUVWWjgDaNBDg5/X8Fevi0Y=;
+	s=arc-20240116; t=1785148075; c=relaxed/simple;
+	bh=q0EI4rNp2Py4ipVMPcubth22UfENKlUF51C+O+Q0xL4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lznTOiHAPvWgSt89VBvkiwPGAIkuP84xHQUy1Wp3IlrUbZbkvCYyYWwtRNpL1YVAk0Frr3ALlHmx5whWGndGoGAvepPNaAVxYvfvjllxWEo4XEfnxebIaOFN1uIoFrq7GjxdGQXdh+qxHP9zPN3Mgj5ZXXSEhFQJSlas7vas/pk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=IjDSVMEc; arc=none smtp.client-ip=115.124.30.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	 In-Reply-To:Content-Type; b=cdp3F3MeLSdaKkhU9FdINKBf9Bo9YtWPYV/THR0GGXdUgs1eWwcht2j2D8Psh8htGni9htXQwOPAYZgmydQ4QGP+QmZkY5gLtctQ2lEirBvU3Sh67dICR7I8Fel7xPpFlG8a3wJCBo/KsMG90jYSI7wvzO7KuvM9uRzFeB0gjQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=rQreKK17; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="IjDSVMEc"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1785147300; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=4CYvgooI6FI1FO4hfa2QyxZtukpG/urkU0Q8oDj3wFY=;
-	b=IjDSVMEcHgZFyOX+V18xIPYoJI9+sME2wl0ea7Jff/45A6x5YYLNsIXUtkKDeRYVF20DQ5YODVOjLPfvIByxLuV9SD5EnxHc8cex51pG6b2gcy19GJp6GgllUFdejoXQ8TuFCPZ/dQm2R7h1NmGFvJ62Ot9b5HfOnNefPb42dZc=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R511e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0X7torup_1785147297;
-Received: from 30.246.177.244(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0X7torup_1785147297 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 27 Jul 2026 18:14:58 +0800
-Message-ID: <5da226e5-4e84-4b9e-8f46-140323d22706@linux.alibaba.com>
-Date: Mon, 27 Jul 2026 18:14:57 +0800
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="rQreKK17"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E6645143D;
+	Mon, 27 Jul 2026 03:27:45 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EC6B53FA21;
+	Mon, 27 Jul 2026 03:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1785148070; bh=q0EI4rNp2Py4ipVMPcubth22UfENKlUF51C+O+Q0xL4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=rQreKK17p11RuffLSZL52pe4G7oyjENlF76bAH8Tc0miNBvJGEdSJrVFAZ2U69EzS
+	 YFJhBYHt4KuU4N6RuXOVNOGOMUBT+gBi2uH6OWdLEzrjSQadWgTd6NRuxZsl5lTdbY
+	 pMpI/WRQiaPODBFdKuph2q5yqgUrw17w3Trm+aIs=
+Message-ID: <0a10a19d-690c-42ee-aedc-83906b9fd9e0@arm.com>
+Date: Mon, 27 Jul 2026 11:27:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,69 +35,64 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] iommu/sva: Set handle->dev before the SVA handle is
- visible
-To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org"
- <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "oliver.yang@linux.alibaba.com" <oliver.yang@linux.alibaba.com>,
- "zhuo.song@linux.alibaba.com" <zhuo.song@linux.alibaba.com>
-References: <cover.1785050951.git.xueshuai@linux.alibaba.com>
- <c22e9af74d113b110348b995879baf2fd4734fe7.1785050951.git.xueshuai@linux.alibaba.com>
- <CO1PR11MB4835CBEA67280A7722E8DCA68CCC2@CO1PR11MB4835.namprd11.prod.outlook.com>
-From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <CO1PR11MB4835CBEA67280A7722E8DCA68CCC2@CO1PR11MB4835.namprd11.prod.outlook.com>
+Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3: Add HAFT support for SVA
+To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: catalin.marinas@arm.com, joro@8bytes.org, jpb@kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <cover.1784814923.git.robin.murphy@arm.com>
+ <57ae366ec501a142bd20f2cc7d18b3eca8eeac25.1784814923.git.robin.murphy@arm.com>
+ <amTH7xHBY2ol4LHw@nvidia.com> <amX25rcF-ETdnUPj@willie-the-truck>
+ <amYxa51b2j/Cdw/6@nvidia.com> <amcTBlw16RKuZC8y@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <amcTBlw16RKuZC8y@willie-the-truck>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
-
-On 7/27/26 5:38 PM, Tian, Kevin wrote:
->> From: Shuai Xue <xueshuai@linux.alibaba.com>
->> Sent: Sunday, July 26, 2026 3:43 PM
+On 27/07/2026 9:12 am, Will Deacon wrote:
+> On Sun, Jul 26, 2026 at 01:10:19PM -0300, Jason Gunthorpe wrote:
+>> On Sun, Jul 26, 2026 at 01:00:38PM +0100, Will Deacon wrote:
+>>> On Sat, Jul 25, 2026 at 11:27:59AM -0300, Jason Gunthorpe wrote:
+>>>> On Thu, Jul 23, 2026 at 03:19:44PM +0100, Robin Murphy wrote:
+>>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>>>>> @@ -102,6 +102,8 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
+>>>>>   			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
+>>>>>   		if (master->smmu->features & ARM_SMMU_FEAT_HD)
+>>>>>   			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
+>>>>> +		if (master->smmu->features & ARM_SMMU_FEAT_HAFT && system_supports_haft())
+>>>>> +			target->data[1] |= cpu_to_le64(CTXDESC_CD_1_HAFT);
+>>>>>   	} else {
+>>>>>   		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_EPD0);
+>>>>
+>>>> Based on the Sashiko remark and your note you should lift all the
+>>>> HA/HD/HAFT bits outside this if (mm) block.
+>>>>
+>>>> AFAICT it is fine for HA/HD/HAFT to be set with EPD0, the HW won't
+>>>> process any PTEs so they won't have any effect.
+>>>
+>>> I'm not sure about that. The spec says this about CD.HAFT:
 >>
->> iommu_attach_device_pasid() installs the new SVA attach handle in the
->> group PASID lookup before iommu_sva_bind_device() returns. A concurrent
->> bind can therefore find and reuse the same handle after iommu_sva_lock is
->> dropped.
+>> Sorry I see this was unclear
 >>
->> handle->dev was initialized after dropping iommu_sva_lock. This leaves a
->> window where a racing bind can return a handle whose dev pointer is still
->> NULL. A subsequent iommu_sva_unbind_device() can then dereference it via
->> handle->dev->iommu_group.
-> 
-> ideally this will bail out early:
-> 
->          mutex_lock(&iommu_sva_lock);
->          if (!refcount_dec_and_test(&handle->users)) {
->                  mutex_unlock(&iommu_sva_lock);
->                  return;
->          }
-> 
-
-Thanks Kevin for pointing this out.
-
-Yes, the non-last reference case should bail out before using
-handle->dev. I will wait a bit for other review comments and then decide
-whether a v2 is needed to clarify the commit message.
-
+>> I ment to move all *three* bits outside the if.
 >>
->> Initialize handle->dev before releasing iommu_sva_lock so any visible SVA
->> handle is fully initialized.
->>
->> Fixes: be51b1d6bbff ("iommu/sva: Refactoring
->> iommu_sva_bind/unbind_device()")
->> Cc: stable@vger.kernel.org
->> Assisted-by: Qoder:Qwen-3.8-MAX-Preview
->> Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
+>> There is no reason for EPD0 to also require setting any of those three
+>> bits to zero, AFAICT.
 > 
-> but the fix is correct.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Ah, gotcha! And even if we did want to get to that configuration, I
+> guess you could set EPD0, then clear HAFT, then clear HA+HD?
 
-Thanks for the review.
+Indeed, it also occurred to me on the way home on Friday that in this 
+case we probably could get away with just setting HA/HD/HAFT 
+consistently in all SVA CDs irrespective of the mm. Strictly, EPD0 only 
+forbids *new* walks from using TTB0, so there might potentially be some 
+outstanding PTE updates still made in the window between the config 
+update and the TLBI at the end of arm_smmu_mm_release(), but that 
+shouldn't be harmful.
 
-Best Regards,
-Shuai
+Lemme spin a v3...
+
+Cheers,
+Robin.
+
