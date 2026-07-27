@@ -1,207 +1,144 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010044.outbound.protection.outlook.com [52.101.46.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADAC941D4C0
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 14:45:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785163545; cv=fail; b=GbG/+6iC3PIBdPCgjxO/M/rMWWA5rjq3J9sM4bgxUolbg8Y5ymtOmsodvpTnauzBT6O3xXlxmb61h+IHETeZwW+Y5wykqgrdZbSKcYy9qa+2XSJ8ODMsfYk2FOiidlUWcgbERUl1/qkBQXKptXWUDnoTq6o01b0MKEklfNd/V24=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785163545; c=relaxed/simple;
-	bh=K1JGik9qhHrZ4klCEItZfX329Dct6cKzvfpSqJf8ABw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=e3eWBQfiaO2gEbC0hCtczN7YBNkXNQn7yod5KMIX5ZT9DUzGlJ9/fMxYACFPo/goxLVBKtXvvk9XcZPYhLmrrZH4xWV6DLWz58lbUGeOFyvWSPfV9UxacblEsPysokO8VGcb8fgKGox5tXyOw35Zm4aOyvFbwu9/hYlKGlONUKg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=cBPScNi/; arc=fail smtp.client-ip=52.101.46.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ADEA930C142
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 14:51:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785163905; cv=none; b=KdRjIsd5IYx1CyIlJ6jhSquXB2WZCPTd9x1hPoRl1//LoOy6zKSY65lewZbg4AXILYEvTPOZdwqciT2YqP3RgGanwRiOcaHjyjAh4OmaoRgCWQ6T08SkN/8Me+R1F8SJe7AMioHWFauI/omc4eZ56v0mdiAj7zM6vdmm9vPxQMI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785163905; c=relaxed/simple;
+	bh=Fv4Qq52Od0IG4/8dw1STkdtFPA5yd3S8c31Fe9oTN7E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ng4zEG7m3f1PT6bNtpgfGpr/ypbaGOAnGo7TkG50ZYxdMrQLI3R76OZijpbVGI+ANU9OwLeTkbOwy8jSIEEqDRmO8ZFoS+dXJUoRtQxsQODu7cxlPriMZrtGPVNMAmNCApmgW8nP9igPvULTb2HJtKVocPcPTVDaih1AemAu0Yk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=WBKT8Pqx; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="cBPScNi/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dOMvNMNnF9tjD5r0ULRjySaPU4fHUNpIzuN/GfkVcnlEkPYCSlSfS33SlflFWlukrP8BHbJbcl/o1ELgszSWNIbN61u8Q397DH4uPphs+EMOahtcI+AxCyH0/JwGRq1paaWZhIGSZ7UT5Fvi9fHhWRspYarj9euRvuo+YYufZx2A2vN99lN2gUwd+0T/C152xiGD4WZVtdtHn9tv+8ixEfihJSsQKuj8nFWUxxJrpdJBRHWjZTD1HNqoKzCunP/nFYUrXReKEDzsCY3rkp+OkDsZ4W48Rm6SoQU/oxMYwXIGvZ8jF2Ejck4G8sqahd3sef1+Cn9f+7ghHrQKtGTuwQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RcYQm9qaKKWNfj3kXp9uejgXSe5bnex7DYBnOlGkheM=;
- b=peF9DcsosdBjyfnRpxKaOCh5vBn1WHeVAjiP9BJ77tQPceHO5VwK2hQnnJqsZgN77u+u2GOPAbutuy85m6Ul+VSwih/ZZGL9d//4e6n/F51CZbyBXNCYVnRo0ENwFNAR9rG9Var/C7RuuA4f79plWCEGpsnjdmPL0C8k95W2MjAvvccC9vazMfkmlAl7cB7Dq+N56aoxDfAjd6ouJHiJRjvOuDTFbnHEWNYMle2wQ3waCf8hFMxz1aGOnuinyLMA4bDpkQh9lidztFK2zmlj8r74cn5088Gy3ESIVvRhKha1fgCUW66ksO7/HV5BENGf4i/0nTwZnamehdgU12CwBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RcYQm9qaKKWNfj3kXp9uejgXSe5bnex7DYBnOlGkheM=;
- b=cBPScNi/NMuLsVlMFdDUUl4ThvoP2XdK8G6Z1AsXxZBUgwbnS51UUAqS2ZXjcdWE8301edoD9omfDj3NmI7OWuJq3RiRTY4K/m1bSgF+tonn+qHu1uZ6mha7Vx7ZOl1vNMG+i/A7aaRvC/GHkEx6e77OC1TiIEed9Do2tPhPwDA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH8PR12MB6914.namprd12.prod.outlook.com (2603:10b6:510:1cb::21)
- by IA0PR12MB8973.namprd12.prod.outlook.com (2603:10b6:208:48e::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
- 2026 14:45:39 +0000
-Received: from PH8PR12MB6914.namprd12.prod.outlook.com
- ([fe80::2893:177a:72b0:6000]) by PH8PR12MB6914.namprd12.prod.outlook.com
- ([fe80::2893:177a:72b0:6000%6]) with mapi id 15.21.0245.012; Mon, 27 Jul 2026
- 14:45:38 +0000
-Message-ID: <ed296c0d-246f-492b-970b-49c45e25f5f6@amd.com>
-Date: Mon, 27 Jul 2026 09:45:36 -0500
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
-Content-Language: en-US
-To: Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- "Deucher, Alexander" <Alexander.Deucher@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, linux-pci@vger.kernel.org,
- will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
- bhelgaas@google.com, Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
-References: <20260723061548.10187-1-vasant.hegde@amd.com>
- <20260723061548.10187-3-vasant.hegde@amd.com> <amOBkJ4BaZ4qnkpc@ziepe.ca>
- <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
-From: Mario Limonciello <mario.limonciello@amd.com>
-In-Reply-To: <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SA1P222CA0111.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:3c5::8) To PH8PR12MB6914.namprd12.prod.outlook.com
- (2603:10b6:510:1cb::21)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="WBKT8Pqx"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C5BA91682;
+	Mon, 27 Jul 2026 07:51:37 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 275623F86F;
+	Mon, 27 Jul 2026 07:51:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1785163901; bh=Fv4Qq52Od0IG4/8dw1STkdtFPA5yd3S8c31Fe9oTN7E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=WBKT8PqxYEsdfiqhz5lApHSw8bmvY8ZftVOYhzc7A9GWLBkAZK5ixHk/m/HgE/0sz
+	 puonVk8rEZ95mq0umcLqb56wYu1fhTwkD83/uFOgJ/KDI3IQWhtESjZWXBPTy3d5Ur
+	 Wt9HYMnpUnRlpINkpZ0BGKfYmdewHxd8E/RHLtJg=
+Message-ID: <910d1492-ad3b-4201-93c6-208be1dcde7d@arm.com>
+Date: Mon, 27 Jul 2026 15:51:32 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR12MB6914:EE_|IA0PR12MB8973:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3733bad0-a1a2-4964-3af7-08deebedb97a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|11063799006|5023799004|56012099006|4143699003|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	ZQ2fcLijrI0mvKMgidOrWl+kB58sQtZGJWwmH/TTmoh3BjX4VPC3npWHfBZH4vd977ZYc8rzfpWX4N+I+YILMbNZeIwM98Bh2wLhbKLkrIfxo/SGKRx1QVjNxAI14fMkYmuAgmRa4uSmrmXQpD4nQsSX0I7DhXS2FIyK4F8kHYyoUcdnnOqBM1tib50puuAI1NP5Nk6M3UuKxZTJ8NexZa/5v6p9wbnpwupuvMsTftrFfcBaDbjaWHYbMs0DcipWdg5rbHJlhEILiH7pfovhuY/90MmFcXc6zwyMFavOVvgFqetywfH6/tPoaSUIY+4UsVw1GpxtM4RqhxrzIBxpnTHohcaQZOJF8Seen+SoEImP/vcEWpGk3N65/HkCAXdD9nwU+fU0jcnkqsxHDAmI1sW5KM/e5hZ611dlfyobvWRjC9SB3762vqQJrbJao9IeNxBU4o+ypBwYEtA+sIToFL6C5fAw3L3oqTOUCLAq9z1iPNqNnhlE3HNugfMOjUJHKHytRmZB3D1f48o0cdLv3mcWMcrFGFyjjZxvKF9SsaGgkI/vuh2FEjXpWwVzmYMNj78srlxiZpe8zSnvBdA7pq9SWa/rtfTyVaEuaf43VwCr3Q2Exl8jhV2kxiOaZBVZ2RYZpym1ZP4ceHuMu3pQ1UCllpgkCtSjlB9dKXUWKxs=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR12MB6914.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(11063799006)(5023799004)(56012099006)(4143699003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dktBTm5zcEp0dlRGeVVCaDlzVjhBS3RBdEhpbElNQ0R1V2VhSnNYaEJxMlBG?=
- =?utf-8?B?bmFJeTBjb2VpbmsvVnkvbzNoWTExc2VXVkJMQ2dYQ1lpZEFSeHl5ZWRZUFNy?=
- =?utf-8?B?UlBzQ3dFYUM5SWM4S2sva0RaRlc0MHgwQ1pPc1FpWFgwL0lUQTB1b1g4SFpD?=
- =?utf-8?B?TlZyS3NjY1N1WVJPOGN1QnM4dS9QK3FmaVZWOEJ1aTRSb0V0eWpnRFdkeXN1?=
- =?utf-8?B?TTlvY0dySU9WMEE5eGJrUG4rNEdPbVB5TkR4RGgrV0Izc2ZaT0xmcjF0NU5k?=
- =?utf-8?B?eTI2K0l0b2VTUlJwWWdNanhIUVVHYnZ0TmUydnJlVmM2R2w2dVFhTUhXYWJ3?=
- =?utf-8?B?LzA5WGFQd2pPdVFSdjdkbzQ0ZGlVZ0xud0RmcXQzeGhpTlB0aHFXOWZDeUVF?=
- =?utf-8?B?MTBIUmYyNHBna2gxWVY2elZUd0IrazQrQitQZ0Z0UzlMamhtMjAzQXNhcXRJ?=
- =?utf-8?B?YmVyTnRZblpabnF4dEMzNHJoUDFpZjVZTEo4RzBkVWpudnh3UHo4VTVndnNV?=
- =?utf-8?B?THJxUHFwTnRCNjIxV2pjNVpTMmdtSmZaQk9ZdHRtTm90aWdlcXlISzhxUkZw?=
- =?utf-8?B?ZDRXYVJWeUFHUkhMZ0p0VXlyUDFXZkVCVU45dFhKV0FIQ043Z0ppTUpweWk0?=
- =?utf-8?B?SDRmcmJOUFRjTGhXOG1EZ0pWS3dqaWxhOEx0aTNiaFdiQm95d09VeFpvR0h0?=
- =?utf-8?B?WlJtWWlkSDgzT0I3ekxFUHAzYzRwWTdFQ0xPSkNFYTg5VThwZ3o2VWdLbmFj?=
- =?utf-8?B?VE9wdzYvRDdsYlYzdUdsVnphakZSNWU5ZEYya3p0VURLK0xWVUZueTI5QzMw?=
- =?utf-8?B?YlhvRTR4RkNyRWNGN0t0eEtZWGpGOUxmdGtYYlYyei9MeXRHKzJSOGM5MVo4?=
- =?utf-8?B?b1ZjcytyMmMrVXRxVUJQQ28xUGZSQmV0OEZaNzhJMGkvZkxHeWZJT3FnL1Bt?=
- =?utf-8?B?Q0pDSzRJQmF5SVNFNzNaZncxdUc1cUZIRWlIcVc4YXpwcU9pYS9PV1NCMG81?=
- =?utf-8?B?dVVEZ0tlblpzbXpQUVVRcDhSNENuNm5sNStvK2hQWDBRamIyYXlnOXVSMTRu?=
- =?utf-8?B?UjBvaVNCQkJRYnl6WndiQk01OCtyejFON0dvU2t3bFpUbEZxaHduN09DQllF?=
- =?utf-8?B?QmxxN0J3Vmp6NXRWQmlHWGRtK1gwTjVmTnlWekJDUVdKQmtPVG4rWmtBWHha?=
- =?utf-8?B?RDE3NkordjdlbGYrN3JpMjNyZENOMDJlUXRWWnUyRTEzQWdKa1M5ZVJWRHR0?=
- =?utf-8?B?Y3RqSzA1M3BGbHBzTEd6YUM4UTFlL0dsSkFxSTdqaG1IcHJaZG41UFNpdlhH?=
- =?utf-8?B?ei9udnpoZ29vbE1wM1lnSzFKRUtaTHMwQWpYUUcxaythRmhGRDFoMjIrcXoz?=
- =?utf-8?B?aFhuM25Vb3VjZmxSQUFYQW9xS0xDVnFvbnI0QlJnYWxKRlZ5TC91Rng2L3NM?=
- =?utf-8?B?d2lnelZlbXFlcytnU0NyaDZkTTdkbi84bUY2VWY4S2c5aGMzd3ZpZWFoNVgv?=
- =?utf-8?B?QlJod05OR09rUUFnRll0d1RUTWpzdmpaNHZhZnFpNS9pT3RtNUxMc1E3Vzk1?=
- =?utf-8?B?UVFQK0c3UG9sOEkxbWFRR21HVm95ckgyUFdya01WMXF1RHYrQ3ZLV2ZMS3Ra?=
- =?utf-8?B?MTY5QWgwaGJsbDlLRzRzY1lVN3BROFloV3hPZ0pkQ2l0TThraXdLSEJ0QjRk?=
- =?utf-8?B?ck5vNk9walhPNUNtWWRWTHc3OGFyNnRPK2dUUm8xSE5VUERtRkp0aWg3cWUw?=
- =?utf-8?B?QjFiQXZ6eDRNLzhXYXpEYnpWNFBiNjF1b1d0MFlyb2J5N1o1LzQrQWpDc1R6?=
- =?utf-8?B?KzM4b0owWnhQNkMwM2o1UmhpeUJnUCttM1N5Y1hMZ1NyS2xUQVc2Uk1hU0Jl?=
- =?utf-8?B?TWtNTzVWeHQycFhpQVRub0dRUjAyVHEvbUVxb1kwdk1sS1FFR2JTTVdRNDMv?=
- =?utf-8?B?cWM1WGU2elpGSnRBZWNTYi9KdEowRUJyUG9iWHR3RytPQXZ2SXBieVpyN2t5?=
- =?utf-8?B?dEorQmR4Ny9YbXZaUjZSWlZFNE0ySGFGMnNmVTJHT1B3ZkdrdmcvaTdoMDdl?=
- =?utf-8?B?QUxRdlJsSnpVdDBqWXo2dG5hQUFERldqZVdzaGlFeXIyVFU5b1o5MzBMVDFN?=
- =?utf-8?B?WkZrR1V1S05FbkkwdFhoRlVRY1VpNlNJR2hzSVBvTDNsUndVcEd1bzRtK3hh?=
- =?utf-8?B?a0d0MHY5UUI4V2YwMWJwUVNVL0tqckU0NlMyc3NLQkVPK3VOTW9CM0NxQ0lU?=
- =?utf-8?B?YmtBaUlDSUQ1cndDOFV4K1l0bUhqQTMwNU9TNTdmNXZXSXo0eDVGaHZiV1BJ?=
- =?utf-8?Q?InkCpNvHDaIRhUs90i?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3733bad0-a1a2-4964-3af7-08deebedb97a
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR12MB6914.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 14:45:38.7056
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ky2tFYIqlcgMCy0A8kwZtGg/BY8IJd9hugZOBVkGTYLsLCHF9yF1mldNnb+dTtyzGf8pTh0d9zY7UmS4bDs8sQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8973
+User-Agent: Mozilla Thunderbird
+Subject: Re: Fixing TegraDRM on multi_v7_defconfig / Enabling DMA API with
+ tegra-smmu
+To: Mikko Perttunen <mperttunen@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ linux-tegra@vger.kernel.org, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <erKxvAxkSpOaODz6rOpDbQ@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <erKxvAxkSpOaODz6rOpDbQ@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 24/07/2026 8:35 am, Mikko Perttunen wrote:
+> Greetings everyone.
+> 
+> I've been looking at enabling more CI for 32-bit Tegra platforms
+> recently, and I ran into a problem with TegraDRM not probing on
+> tegra30-cardhu, but only on multi_v7_defconfig.
+> 
+> I traced the issue to the following sequence of events:
+> 
+> 1. On multi_v7_defconfig, CONFIG_ARM_DMA_USE_IOMMU is enabled, while on
+>     tegra_defconfig it is not. This causes arm_setup_iommu_dma_ops to run
+>     on TegraDRM devices.
+> 
+> 2. Some of these devices will be placed in a single IOMMU group by the
+>     tegra-smmu driver. When arm_setup_iommu_dma_ops is called, depending
+>     on probe deferrals, the group may have only the currently probing
+>     device, or a previously deferred device and the new device.
+> 
+>     arm_setup_iommu_dma_ops calls iommu_attach_device. If the device is
+>     alone in its group, this succeeds. If not, this fails. If
+>     iommu_attach_device fails for every device in the group, everything
+>     is "fine" and TegraDRM goes to probe and work fine. Hence let's
+>     assume we have one device that succeeded the attach.
+> 
+> 3. iommu_device_use_default_domain gets called and succeeds on the first
+>     device in the group. On the second device in the group, it fails
+>     since group->owner_cnt was already 1. The custom ARM DMA IOMMU
+>     implementation uses a custom UNMANAGED domain so the domain !=
+>     default_domain check evaluates to true.
+> 
+> 4. Devices fail to probe which leads TegraDRM overall not to probe.
+> 
+> I've thought of the following options to fix this:
+> 
+> 1. Match behavior with tegra_defconfig: Figure out a way to not run
+>     arm_setup_iommu_dma_ops for this situation (ideally any multi-device
+>     group situation). However, I'd also like to enable DMA API with
+>     tegra-smmu to get rid of the manual IOMMU API code paths in TegraDRM,
+>     so this is not a particularly satisfying route.
+> 
+> 2. Improve the legacy path: Fix the ARM IOMMU DMA code to support
+>     groups, and add an exception in iommu_device_use_default_domain. But
+>     I presume we don't want such non-trivial modifications to that code
+>     at this point.
+> 
+> 3. Modernize: Support CONFIG_IOMMU_DMA on ARM -- since there is an issue
+>     with per-SoC quirks, I think this should be done one SoC at a time.
+>     So come up with a way to dynamically pick between the legacy and
+>     IOMMU_DMA paths. Perhaps if the SMMU driver explicitly requests the
+>     DMA domain type, use the modern path. Currently, CONFIG_IOMMU_DMA and
+>     CONFIG_ARM_DMA_USE_IOMMU are mutually exclusive so that has to be
+>     changed.
+> 
+> FWIW, if we are to move to using DMA API with TegraDRM, one blocker
+> would have to be resolved: boot splashes scanning out while the DMA
+> domain is being set up. Since we cannot really use the iommu-addresses
+> reserved-region device tree bindings with these old devices, my thought
+> is to leave the display memory clients in bypass in tegra-smmu until the
+> display driver has quiesced the hardware and can then call into
+> tegra-smmu to enable translation.
+> 
+> Please let me know what you think and whom I missed in the To/Cc fields.
 
+TBH I rather feel like the time for converting ARM to iommu-dma has 
+passed - there are drivers which rely on specific behaviours of the ARM 
+IOVA allocator which iommu-dma does not match, and meanwhile iommu-dma 
+continues to grow more server-specific features which would be nothing 
+but bloat on ARMv7 systems with <=2GB of RAM and no virtualisation. At 
+this point I'm inclined to treat the existing DMA ops as legacy code 
+like with alpha/sparc/etc.
 
-On 7/26/26 23:19, Vasant Hegde wrote:
-> 
-> 
-> On 7/24/2026 8:45 PM, Jason Gunthorpe wrote:
->> On Thu, Jul 23, 2026 at 06:15:48AM +0000, Vasant Hegde wrote:
->>> @@ -3120,20 +3146,28 @@ static int amd_iommu_def_domain_type(struct device *dev)
->>>   	if (!dev_data)
->>>   		return 0;
->>>   
->>> +	if (!dev_is_pci(dev))
->>> +		return 0;
->>> +
->>>   	/* Always use DMA domain for untrusted device */
->>> -	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
->>> +	if (to_pci_dev(dev)->untrusted)
->>>   		return IOMMU_DOMAIN_DMA;
->>
->> The core code does this, it shouldn't be in a driver?
-> 
-> Right. I didn't realized core has this check. I will drop this check in next
-> version.
-> 
->>
->>> -	/*
->>> -	 * Do not identity map IOMMUv2 capable devices when:
->>> -	 *  - memory encryption is active, because some of those devices
->>> -	 *    (AMD GPUs) don't have the encryption bit in their DMA-mask
->>> -	 *    and require remapping.
->>> -	 *  - SNP is enabled, because it prohibits DTE[Mode]=0.
->>> -	 */
->>> -	if (pdev_pasid_supported(dev_data) &&
->>> -	    !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
->>> -	    !amd_iommu_snp_en) {
->>> +	/* Apply device specific quirks */
->>> +	if (quirks_force_identity_mapping(to_pci_dev(dev))) {
->>> +
->>> +		/*
->>> +		 * When memory encryption is active, some of these devices
->>> +		 * don't have the encryption bit in their DMA-mask and
->>> +		 * require remapping.
->>> +		 */
->>> +		if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
->>> +			return 0;
->>
->> I think this can probably be dropped now? There is no intersection of
->> this old broken embedded GPU and a CPU that supports CC right?
-> 
-> 
-> I did consider dropping these two checks, but I was not entirely sure. So I kept
-> as is for now. Once these series settles and I can go with next step of dropping
-> these two checks.
-> 
-> @Alex, @Mario, Any suggestions ?
-> 
+While there is technically an option 4, to have tegra-smmu do what 
+ipmmu-vmsa and mtk_iommu_v1 do and go coercing the ARM dma_iommu_mapping 
+into groups behind the arch code's back, I am also still hoping to get 
+rid of that and the messy probe_finalize step altogether. FWIW my 
+preference would be some form of option 2 - off-hand I imagine you could 
+probably get most of the way there by propagating the ARM mapping 
+through group->iommudata (ironically tegra-smmu being the only driver in 
+the way of that - looks like it could probably do its internal group 
+accounting explicitly in release_device instead), plus one or two 
+special cases to recognise ARM DMA domains in the core code as you say. 
+The more involved, but ultimately neater, option would be to turn the 
+ARM mapping inside-out and make it a proper domain cookie type with the 
+ARM code providing its own definitions of iommu_{get,put}_dma_cookie() 
+and iommu_setup_dma_ops(), so it could then work as a proper 
+IOMMU_DOMAIN_DMA default domain, and we can lose the current 
+ARM-specific identity domain bodges as well. I reckon the impact of that 
+to core code shouldn't be much worse than the existing special-cases it 
+would replace, while on the arch side it should effectively only really 
+redistribute the current arm_setup_iommu_dma_ops() path, so functionally 
+pretty low risk as well. It's just liable to be fiddly to do in 
+manageable steps rather than one giant patch changing everything at once...
 
-The background comes from this series:
-
-https://lore.kernel.org/all/20200824105415.21000-1-joro@8bytes.org/
-
-> -Vasant
-> 
->>
->>> +
->>> +		/* DTE[Mode]=0 is prohibited when SNP is enabled */
->>> +		if (amd_iommu_snp_en)
->>> +			return 0;
->>
->> Ditto?
->>
->> Jason
-> 
-
+Cheers,
+Robin.
