@@ -1,31 +1,31 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5E0E3FADE0
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 12:03:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6015962809
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 12:03:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785153820; cv=none; b=Vr+Ckk2N7mBiZHmVG1uza7JGq4tfgygnlsrM/dHaeXsctzKS7en0rZeSaya+mAx+FRB02fx2eRFIZGGd0trxMgRxNQRH/P6PqWqMfT0QpKhA+vq7ptomcDRjXCO0pyijLLLmvEFrGu1pL2ILoimLrRv9i0XgWN4erfL9p2MYRqM=
+	t=1785153821; cv=none; b=kywuI/NTfUWS/nZg5PWf2azhJowTuuKFNa2pqCsrsVBJ5LhTlNLFOJkkMWPwBhs2OoMp/a95ztFWT71x0fx3awECrT0bCI0CEwIuLfl+4kQqN4ebE1V/jmTnE80xR7qdDKFzgIf2aNMJVJQaPyULi8U6ShmBKhQBxORrwqTsouM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785153820; c=relaxed/simple;
-	bh=EwJdYx0DkFLGAQ/IekPy/OuBYhXLLgmLidlbPoNrYxo=;
+	s=arc-20240116; t=1785153821; c=relaxed/simple;
+	bh=pPbk3JrquoOrp7mUJ2q1dVdxnnLQvl3I6n/QjgbKBBQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oIXzIFO6iCiPN8osgtp9nEbvKhCrJ41MMAD+s8O1WIAnQBiarNn8uk6RkE6gSQkVDX4UGVQwkhcGSM69Agm0zj0aigl9O+latrawwygNg2szwNISjxsnSwGEfsiqx7SILb8LQld208uOR1VWLwHlDu+d2H8SCqxEHzvxs+AOWHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Jioxe4ZQ; arc=none smtp.client-ip=217.140.110.172
+	 MIME-Version; b=GfVSZ6lgK6ofZ5/32BW9B6vSvC8RYKkqGFH0X8smfegZzQHsRAjl0tNhlDnxwuJOfyYceP1nadgilI7Dc6rw2OLf02GsAc8YChv922scJYyeRr4Qeqzh2QqwNsjEEoqKqBThRgkWr0XtOyFOTz4Gg/nrNbI2w09o+/hSnRQI1MU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=S3yFmYsS; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Jioxe4ZQ"
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="S3yFmYsS"
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 483641476;
-	Mon, 27 Jul 2026 05:03:33 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79F881596;
+	Mon, 27 Jul 2026 05:03:34 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 736C93F86F;
-	Mon, 27 Jul 2026 05:03:36 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A54103F86F;
+	Mon, 27 Jul 2026 05:03:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1785153817; bh=EwJdYx0DkFLGAQ/IekPy/OuBYhXLLgmLidlbPoNrYxo=;
+	t=1785153818; bh=pPbk3JrquoOrp7mUJ2q1dVdxnnLQvl3I6n/QjgbKBBQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Jioxe4ZQQ2Z46lc7rSt5XFqxuDmRTAsNx2R1s6JvTpcRq56XiwnJwQzDNd4KhcEWw
-	 IQSMYSwtlk4axVxA0H2V5tNgCKHwiuoLNBdU+wUl0v8EHTiSZIo8OOqUH6KRnMNQDu
-	 ysEmWcA8jDa3SHHmD1iXZrmuwnp/gUxwGvGJJyWw=
+	b=S3yFmYsSSanHZBACdAo989g4AKDAdOVvp1VurOoMv5tZ4XejtSK8FL3yqk9I/Hnn+
+	 G5srGczrKQtrW3KwqJQCsNYoYOtug5ZXf00hSVpPizIpQMYJOQczH31jZN+bCs5RqJ
+	 cdAvC+dH2xnJsxpR3F3iJ1pOhLmoIYJR7CLM1UW4=
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org,
 	catalin.marinas@arm.com,
@@ -34,9 +34,9 @@ Cc: jpb@kernel.org,
 	jgg@nvidia.com,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 1/2] arm64: Add override for MMFR1.HAFDBS
-Date: Mon, 27 Jul 2026 13:03:28 +0100
-Message-ID: <d7b31cbcd984c1efa61d2fc97111150cc18e21b0.1785153415.git.robin.murphy@arm.com>
+Subject: [PATCH v3 2/2] iommu/arm-smmu-v3: Add HAFT support for SVA
+Date: Mon, 27 Jul 2026 13:03:29 +0100
+Message-ID: <829b1d7eee64869d5c4231e80747367acb41b82b.1785153415.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.54.0.dirty
 In-Reply-To: <cover.1785153415.git.robin.murphy@arm.com>
 References: <cover.1785153415.git.robin.murphy@arm.com>
@@ -48,62 +48,132 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In general it might be nice to have the ability to disable hardware
-access/dirty bit management for debugging or performance comparison
-purposes without having to rebuild the kernel. However once FEAT_HAFT
-comes into the picture we also start to have a real functional concern
-where the decision to use HAFT based on the boot CPUs can prevent SVA
-or late-onlining if SMMUs/CPUs are later found to lack HAFT support.
+Since table access flags cannot be software-managed, if process
+pagetables are using HAFT then SVA must require the SMMU to support and
+enable it too, otherwise page aging is liable to get out of whack.
 
-To that end, add the appropriate MMFR1 override, with an easy "nohaft"
-alias for the significant case, partly since the feature/field naming
-isn't the most obvious, but also so it could potentially be redirected
-in future if someone wanted to attempt a higher-level means of turning
-off just HAFT usage independently from FEAT_HDBSS.
+For unbinding, we can't disable HAFT atomically with HA as might be
+desired, but luckily we can get away with just not disabling HA either.
 
+Cc: <stable@vger.kernel.org>
+Fixes: 62df5870ebf7 ("arm64: Enable ARCH_HAS_NONLEAF_PMD_YOUNG")
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-v3: No change.
+v3: Make all HTTU settings unconditional WRT mm.
 
- Documentation/admin-guide/kernel-parameters.txt | 3 +++
- arch/arm64/kernel/pi/idreg-override.c           | 2 ++
- 2 files changed, 5 insertions(+)
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 24 +++++++++++--------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  9 ++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 +++
+ 3 files changed, 25 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index b5493a7f8f22..7f23e5b8dc44 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -565,6 +565,9 @@ Kernel parameters
- 	arm64.nogcs	[ARM64] Unconditionally disable Guarded Control Stack
- 			support
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index 1ed8a6f29dc4..4cd60d3c450a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -92,16 +92,6 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
  
-+	arm64.nohaft	[ARM64] Unconditionally disable Hardware managed Access
-+			Flag for Table descriptors support
+ 		target->data[1] = cpu_to_le64(virt_to_phys(mm->pgd) &
+ 					      CTXDESC_CD_1_TTB0_MASK);
+-
+-		/*
+-		 * Enable Hardware Access and Dirty updates (DBM) if supported.
+-		 * This is safe to enable by default, as PTE_WRITE and PTE_DBM
+-		 * share the same bit.
+-		 */
+-		if (master->smmu->features & ARM_SMMU_FEAT_HA)
+-			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
+-		if (master->smmu->features & ARM_SMMU_FEAT_HD)
+-			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
+ 	} else {
+ 		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_EPD0);
+ 
+@@ -114,6 +104,17 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
+ 			target->data[0] &=
+ 				cpu_to_le64(~(CTXDESC_CD_0_S | CTXDESC_CD_0_R));
+ 	}
++	/*
++	 * Enable Hardware Access and Dirty updates (DBM) if supported. This is
++	 * safe to enable by default, as PTE_WRITE and PTE_DBM share the same bit,
++	 * while the EPD0 config can't get as far as fetching any PTEs anyway.
++	 */
++	if (master->smmu->features & ARM_SMMU_FEAT_HA)
++		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
++	if (master->smmu->features & ARM_SMMU_FEAT_HD)
++		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
++	if (master->smmu->features & ARM_SMMU_FEAT_HAFT && system_supports_haft())
++		target->data[1] |= cpu_to_le64(CTXDESC_CD_1_HAFT);
+ 
+ 	/*
+ 	 * MAIR value is pretty much constant and global, so we can just get it
+@@ -211,6 +212,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ 	if (system_supports_bbml2_noabort())
+ 		feat_mask |= ARM_SMMU_FEAT_BBML2;
+ 
++	if (system_supports_haft())
++		feat_mask |= ARM_SMMU_FEAT_HAFT;
 +
- 	arm64.nomops	[ARM64] Unconditionally disable Memory Copy and Memory
- 			Set instructions support
+ 	if ((smmu->features & feat_mask) != feat_mask)
+ 		return false;
  
-diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/idreg-override.c
-index bc57b290e5e7..0e051fec5afe 100644
---- a/arch/arm64/kernel/pi/idreg-override.c
-+++ b/arch/arm64/kernel/pi/idreg-override.c
-@@ -64,6 +64,7 @@ static const struct ftr_set_desc mmfr1 __prel64_initconst = {
- 	.override	= &id_aa64mmfr1_override,
- 	.fields		= {
- 		FIELD("vh", ID_AA64MMFR1_EL1_VH_SHIFT, mmfr1_vh_filter),
-+		FIELD("hafdbs", ID_AA64MMFR1_EL1_HAFDBS_SHIFT, NULL),
- 		{}
- 	},
- };
-@@ -246,6 +247,7 @@ static const struct {
- 	{ "arm64.nomte",		"id_aa64pfr1.mte=0" },
- 	{ "nokaslr",			"arm64_sw.nokaslr=1" },
- 	{ "rodata=off",			"arm64_sw.rodataoff=1" },
-+	{ "arm64.nohaft",		"id_aa64mmfr1.hafdbs=2" },
- 	{ "arm64.nolva",		"id_aa64mmfr2.varange=0" },
- 	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=1" },
- 	{ "arm64.nompam",		"id_aa64pfr0.mpam=0 id_aa64pfr1.mpam_frac=0" },
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index a10affb483a4..14e5b3f08962 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4921,10 +4921,14 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ 
+ static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
+ {
+-	u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD);
++	u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD |
++					    ARM_SMMU_FEAT_HAFT);
+ 	u32 hw_features = 0;
+ 
+ 	switch (FIELD_GET(IDR0_HTTU, reg)) {
++	case IDR0_HTTU_ACCESS_DIRTY_HAFT:
++		hw_features |= ARM_SMMU_FEAT_HAFT;
++		fallthrough;
+ 	case IDR0_HTTU_ACCESS_DIRTY:
+ 		hw_features |= ARM_SMMU_FEAT_HD;
+ 		fallthrough;
+@@ -5256,6 +5260,9 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 
+ 	switch (FIELD_GET(ACPI_IORT_SMMU_V3_HTTU_OVERRIDE, iort_smmu->flags)) {
++	case IDR0_HTTU_ACCESS_DIRTY_HAFT:
++		smmu->features |= ARM_SMMU_FEAT_HAFT;
++		fallthrough;
+ 	case IDR0_HTTU_ACCESS_DIRTY:
+ 		smmu->features |= ARM_SMMU_FEAT_HD;
+ 		fallthrough;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index c909c9a88538..61a7df5afb99 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -40,6 +40,7 @@ struct arm_vsmmu;
+ #define IDR0_HTTU			GENMASK(7, 6)
+ #define IDR0_HTTU_ACCESS		1
+ #define IDR0_HTTU_ACCESS_DIRTY		2
++#define IDR0_HTTU_ACCESS_DIRTY_HAFT	3
+ #define IDR0_COHACC			(1 << 4)
+ #define IDR0_TTF			GENMASK(3, 2)
+ #define IDR0_TTF_AARCH64		2
+@@ -369,6 +370,7 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
+ #define CTXDESC_CD_0_ASET		(1UL << 47)
+ #define CTXDESC_CD_0_ASID		GENMASK_ULL(63, 48)
+ 
++#define CTXDESC_CD_1_HAFT		(1UL << 3)
+ #define CTXDESC_CD_1_TTB0_MASK		GENMASK_ULL(51, 4)
+ 
+ /*
+@@ -921,6 +923,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_HD		(1 << 22)
+ #define ARM_SMMU_FEAT_S2FWB		(1 << 23)
+ #define ARM_SMMU_FEAT_BBML2		(1 << 24)
++#define ARM_SMMU_FEAT_HAFT		(1 << 25)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
 -- 
 2.54.0.dirty
 
