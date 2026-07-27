@@ -1,219 +1,158 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010006.outbound.protection.outlook.com [52.101.61.6])
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010017.outbound.protection.outlook.com [52.101.193.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E961A380FFD
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 05:40:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01353BBFB1
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 05:55:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785130857; cv=fail; b=VAGuoCES8S9NRL/UIHnZTVFLuWJ/ihB3J/GZfDq6zlMIZJ3m8v8vdvBGFqrSmtFg2iOn5AqpVaDzj9FC/EhK9L56zmEzbkWgllN5wQdCpnaOmeXR4xFXVYBdjZFB5AR9e+H8A010zD6rQMVvCnCHrysCzTlKJloem/DqB+f/hSM=
+	t=1785131705; cv=fail; b=R+sDxWowfEbTHGsqTm6zxrpQ+LqtViAOiIgJb+RoOf9AO+Wb+K53l1lkCBSdAbimMHHmgjev1mdem8biIBvHdpH1OFwbgxnFD4yVdZLQqWLyeAKb68Yp70rFL2RxyaBnAh6pql+/lOI99KFzkryTm8AGlUbCB0SlpBgOkG0vzEE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785130857; c=relaxed/simple;
-	bh=41I/ROgBKh/dJ61xccFROaDeGDeveHtKWExVX3UKi5g=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BclpwQhRNbDSitMVgZrc+qsU3VsGURUwoTgmla28m96Rw/UXNO/lgK2H7WofiAuBAIDlvwePgQy2ISvnSCex6jFXaChmPD7eOHKdN4aFX0rN1o4mnsDASX4hCnqO26gzQXgmP1UBR10eTECFDv/Spb91VcNMdXkc23WxvrK8H/w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=SbFFfpMp; arc=fail smtp.client-ip=52.101.61.6
+	s=arc-20240116; t=1785131705; c=relaxed/simple;
+	bh=T5UmgoKjDolZlmK5GBerzPmfUP/H/Gn3gTBsXhyfNH8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=amfLn6mbc0VS/tpznX2QCHw5aQxKPLSU3WAHBWLZXdmYxPecVqRGUP3cJlXisLZBHvtbpQssLgfEsP9KciOFKZX/+9KqH2oNQ/1vlnhUTP7h3XhKBwjV8MRR/kR9QrfZO58OMypBqNs5h/Ou0+dPyC5Gn3Mhz87jEUosATizGhs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=acN+XoNg; arc=fail smtp.client-ip=52.101.193.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="SbFFfpMp"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="acN+XoNg"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nbnG51YbZt9fT8+H73R8BFZjcbkpuvrSwWWsJboMPtFz9ihSVmokwdxe2fSRCBy35P3LAcmOu5gHiGj/S+FS0fPFIJ60gKnKZf79rsYSP6G/TxTu8rsxuWe0ezPDROEZxYK+/rncgoHOUH0mWXbG3VuuLJUWpBKjaaGRFqscRSUicn8Wo8ZpR18K+726uxX5iIrIotsPPaY7ZwNmsEiyVekzxU44iGmO6vEE4Gq9fWNL/Y1HGIMoSasCc21YJ0B90TArsAiVYpw8NQ1rgD1K4xqBaRNU752h5ePZwDK6W5mJrhtPDMM+njuVYQKRqINXN7/E4eaipQ5nz81OoMClSw==
+ b=aOAWom1hivOFQFsAeBD0K8A+cKVHOpE8WQMCbFBUVNbz5IC7F7kAFltlOjXelW46Yjrm+42CL3vkqmqcTWuV2vjWM4yhxCvi8d6PV1Od43LN4Z4u4u2A24UIIpjLNGLlFAedoX+1hSO+b61LZ9liIom0CkyDSvCaBkuNheeU/iP5DsKDAo9PYJMxuePwO2hpv0WBWOdIWv9GKcmB95BabrVTFYw0KitnleyiLxqfW1rggbNDpn26fHYDQRhd+gvPkbmWIhXXPLmrCLMAn5aAsKvo2VUqqj2IDi2OqL609zxCrcLN8k+y1q5+d/gS0fxsTOpMRshJ7Lf1othqH5hUZw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i6vQyINY6XMNkWgDTal1ng7KUelXBvGRziSa7oKFWFw=;
- b=se0QEeHFEFZ0b/PL8E6NhLgvq9E18Bs60vXbC/9ReDzR58cWw3h7+lDTbkYIGXv9WDnyEKEHlVPhbQXg3Yg0leou7wE3AYFRhkF+/sWhA13WhazMAzPAdDKZAJMfFTcbULx+KQqQHamzX8DTf2gMn93vZOQ5zcVC+d/Npbk2qo4oXctsh0AXTw2gtiEh9R0AZLPUMQwTD4p+u67YovepP2SWDk2s+VAwv68u7R7d7yXAKGPNBKrsJ0+bRwez7+QB83PlS7qvI6/fxjbZTkKFYa5m5+8vciiQjQLoAiZ5JYNepFm2htserCzSQJ7CqkYs7YKsKxkkWR8/otz9lS8pAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
+ bh=OmcY0uVy6erEFYIUrHwvpF+3u3yKFQEk4EHmGbWY2Rg=;
+ b=usc89r79pBg0efDwVYE3LUkOFvZULbwFHLDP4lsE+n0eSxigoqYQtWMRgrryNzTp70gMk0DKEgvggZDHEfpTfzojBNQrQdH36O5A5WtVbPXkBdzswYpU/VtlXOAveQ1ECBnOKkMA15WlDBNZUR+jtEpORv8wAKUas9Jp5lvCrkVIYbDe5Twahv/KmR/IlFbfLqnLRAF14qglqrdsLQuGOeDsc/4X5Y0s8y7ayp0RM/x2krUF9053YRwlfoGghUpVK0+g0+Y5G19mGsCK+EGJHVnYGlrSutp0efv6N5FZVr1Lko31q3ESJJUQPvI66f5iyn0+qJOE4X2GrvDMUun7Zg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i6vQyINY6XMNkWgDTal1ng7KUelXBvGRziSa7oKFWFw=;
- b=SbFFfpMpE8wrNqeVgprqqUZVLZPesKlZVYH8cyt6ulAaJGCh7u/qa8Zx8Qlw7+TmHsfxJpG+tP3kcnMRo5vLZhnByNQEa/81ufTgEi6MrKodDwnjMTYuQ3xqSU/DT97H9ziCiLhGhJdg/8Ez2g/e8qhf17tSc4mC3w9EZtWT1zE=
-Received: from CH0PR13CA0006.namprd13.prod.outlook.com (2603:10b6:610:b1::11)
- by MW4PR12MB7031.namprd12.prod.outlook.com (2603:10b6:303:1ef::6) with
+ bh=OmcY0uVy6erEFYIUrHwvpF+3u3yKFQEk4EHmGbWY2Rg=;
+ b=acN+XoNgWW0/RkdskNuLl8KnYQHnv1o/51n4PJpXp7wuNZcsUovWihHoV0+q5Thi3gZD3wUHmabYG7cHdFpVVaYrSbunQtTXDh/ho1ntzw0paZ4qmJfS3s+4Qb9bOIWckefMNFuQjm1MMFZuUiPvgvho6Yi8CMkbYYSSFVE4eeM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com (2603:10b6:8:75::12) by
+ LV3PR12MB9332.namprd12.prod.outlook.com (2603:10b6:408:20f::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
- 2026 05:40:51 +0000
-Received: from CH3PEPF0000000C.namprd04.prod.outlook.com
- (2603:10b6:610:b1:cafe::2) by CH0PR13CA0006.outlook.office365.com
- (2603:10b6:610:b1::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.270.12 via Frontend Transport; Mon,
- 27 Jul 2026 05:40:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CH3PEPF0000000C.mail.protection.outlook.com (10.167.244.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.270.5 via Frontend Transport; Mon, 27 Jul 2026 05:40:51 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 27 Jul
- 2026 00:40:49 -0500
+ 2026 05:54:57 +0000
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e]) by DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e%3]) with mapi id 15.21.0223.013; Mon, 27 Jul 2026
+ 05:54:56 +0000
+Message-ID: <1b84076a-6395-43f1-837c-d5fac9a76dcd@amd.com>
+Date: Mon, 27 Jul 2026 11:24:47 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Put PCI device after handling PPR faults
+To: Shuai Xue <xueshuai@linux.alibaba.com>, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com
+Cc: bhelgaas@google.com, oliver.yang@linux.alibaba.com,
+ zhuo.song@linux.alibaba.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260727030212.51759-1-xueshuai@linux.alibaba.com>
+Content-Language: en-US
 From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH 5/5] iommu/amd: Fix GN bit setting in COMPLETE_PPR_REQUEST command
-Date: Mon, 27 Jul 2026 05:39:07 +0000
-Message-ID: <20260727053907.7622-6-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260727053907.7622-1-vasant.hegde@amd.com>
-References: <20260727053907.7622-1-vasant.hegde@amd.com>
+In-Reply-To: <20260727030212.51759-1-xueshuai@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5PR01CA0159.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1cf::9) To DS7PR12MB5766.namprd12.prod.outlook.com
+ (2603:10b6:8:75::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PEPF0000000C:EE_|MW4PR12MB7031:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1da2385c-ca5e-4723-3291-08deeba19e7a
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5766:EE_|LV3PR12MB9332:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f04ba65-ab21-4844-d358-08deeba395ef
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|23010399003|376014|82310400026|11063799006|5023799004|10067099003|56012099006|6133799003|22082099003|18002099003;
+	BCL:0;ARA:13230040|376014|366016|1800799024|23010399003|56012099006|11063799006|10067099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	Mj5lcJzSVmnwK4k0Suv624cCOAORpeit4LRa/AJKXAF0TvBJXU8EGTGMKTp3p5lDzuKdgBLMFzgA0Yjsn0fp4Ixla3QygAT4KjEuKeFM8HueGh29vhVr9dyeGGiTkGlpVukwb+wt1qwVdVLYNTr464+MBJnP/7fkMIsmV+o+FFjbc+87lSjd/uFGpUUjGOXe89xzJinT/eKvTBVPYhlFLuYjHVcUzGDDAveSizQ9lMbqc9ZXVw1WRqvEpgE5wgQ/H2xN8hulm65A2Yxl7AwmBLot1Kc/86XG3B2tW0CdrgZckzmNP8qHkI6V9qOTP1sMCcgsovlc1hhxoEv71N619CP3bxu96XdCNwTug2SMZUhG8KHiXNqkuJflrSQky8rhpR71ziXS89LDKC3jcoMnQrE+KaBI0nrQd3oQygZWP7ff3r7PUifCCl/gHqErnZLDgzWhFwpnlzhOXvLmqnxeLpwbTXYyT5jju1DlgxmQ7WjNrgLFjWMKh7PqJBPhNvwaeYvyGyW2C4uX+H1yuCItsKyt7hHCIdLnUnz7W3UIQyjZJYnRqcL1yYC8OewhVkG7XFfL5qWOLIk6sYlSmA6i0N7OY/jDeXuDpyam9q0ux21IWiYi/X1o6rQ1Q34WyEtLT2DQ0ysUT+6zJF3AsMXVqxEaYyJnG/qjgU69Fp/AXvQWGx+WL5RUit5J7TUeXY5oJq5T0pp5Vzo6XFCr+oWEhg==
+	CXRAymEteuvjpQB8hx/9X+m3znquKNc+yjk4Zs1ifYJnju3O321XGv7slkbR4V2qfsv/EVJJmNKwUk6hG6iIvQso+gquSNWDPlFPf5Fx0NDmkr8JuXr/nNMGj5yloqrtyxbPJULpWBrMFeR241iA1DgbYAC+f2C1QltnLOGmF2aEQOjqVa70niG5OWJw0S85r/R7CLrrSBC2GB6NIX0foLq9zoPv9AHBFqt8wxAm8iF1US5eL8Mbs3AcU8xOnVkAAZeZYf+q4G7yruztgJ7cXV9sMlxSTFVHgjrxS+CPSVzDp9LeoAAT2orgNO4pkPD4A9lpK18VQi7UN7+k8t8mZOkrhMF8WEdg1+62w79HGtA7WeCuHkeLJzciasXg8cscWxRvRbB/pWPu0ofEXgLN1BxHWnq2bonKVn3fumfIBAyeRDJUNJ7bP+QdeF8kiSkgRNEEyENM0IfZXFuBFnZ9YYVHFxaJ7wKYE9VZ8LC77FUqRtlm+l2c7BLV0Lx+9deMsAnW3XAWTO25N5AnsUJbTJ+4lMZhB1KHLKOJVvgd4JXYGk0np+AiTgsnS83/Qomt2XXbg+DT5OyHVKdg+bFhAfBP3zM7KDCh1w5zfxTdb0hZFS8JVdZ+NwhQ55UqoSereZJUa8z8mmZe7pSLqHfnOg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(23010399003)(376014)(82310400026)(11063799006)(5023799004)(10067099003)(56012099006)(6133799003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB5766.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(23010399003)(56012099006)(11063799006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	/kS+RuCl69UL5lJImy7xLpw/GplcutHtNktWetpZ3v8hT9TqLu9WYmKbA/viZNaoAW9iP36dedWnd5KVNcxxM4zZxH8V7CPmMQY7z+pTV1/m9syY8oBfxnyx9xqLNU3sPNYkMMfx7Aux0JueuhmKPEJ48OBx7M8qGdV6NC0LdR6nR+i8+7OcCvQBeta/f8w7hzEwy10rnRfA+yzoWcGKWdUsSSmuSGSKcoPtbRxDWRaddTu5hSoWjCjkgVr3hL7anpX1nzVOjfNQ7oGNNAPX+RU+28t4MFrDoCxh2XbS+wevtet4XOEsfWCEXXv0y729cEXGHbnKXS93Ed3mPXRTpr3HO4h9X+wP8rKXC5c9TUblwJsj4nBJh4w36AkCfCH9r2IakBgdf10oXw01HauPhsgb/gqch+sH5G1jPtulByLWxWRhdd5be5ltIBMRQnb6
+	=?utf-8?B?amtLMllKa1pHK0tPSEdIbXIyeEFTaUZwSGNLeVdNV3V4eUN5NkZ3ZDl5TVBu?=
+ =?utf-8?B?a2xOWW9jbW5BdWhyejZ0UUt6aEpmMUo3anM1dXU2WHVXd0dWeUtFd1BxNDBQ?=
+ =?utf-8?B?cVU1STJiZlkxclhHZ3Jna1Y4V2ZFT0Q3YTNPTHJpTUx4QkhiR0NHRzlOMHla?=
+ =?utf-8?B?US95MkZTUW9sdUYwN1N3YjdKR1Z4ZmQzSVQzSTl4d3ZZSkJxZ0F2b3pIWW9o?=
+ =?utf-8?B?emFMZktvYzU3ZXlWWHY0cmlKbE56U3hPNWNWRTFqNDM2VzNBT1BDSjljdEtw?=
+ =?utf-8?B?WERXZ1p3YnlBcUVBQk5WQndPUW9nYTBVL1k0elg3RmVGeXhaUUlUSDREOU5k?=
+ =?utf-8?B?bU5MWUxvdXFxb1N3eDUvTG1NajA3M3AxeGcvQUNMemRFVlVXZ2R4NGVTQW9O?=
+ =?utf-8?B?dVF1a2VRNlNhNWZtbXlPOEo1cmRQb3l5VDB4cHNkL3hielFUYW1pbkc2bU1r?=
+ =?utf-8?B?cHk3WjlmZDRhRkJhTDY1SXJCTmJwWTdIYlFzaGVQQ1VvZ0ZtdCtYdG1JeWI1?=
+ =?utf-8?B?dm1HM2lXQlZqMVZ2NzdNSmFNM2oydnNXcUEwVHhNamRxZzY2Zkw2UjFkT1FM?=
+ =?utf-8?B?Ym5HZ0srNjd3NnFnaEo1Qmg0MllHcFBkSWYwb0o4bi9peWswNU03ZDYxTVB6?=
+ =?utf-8?B?ZDNmemtUd3gzUXdITDhBUk11MjdpWjdhWllMTWVLR0U4V25QWHlPSjh2ODdW?=
+ =?utf-8?B?OHdzR0JLaC9UY2JwMkJnc3BaT0pUcGpuaVlWUzJRcFpRbDY5bU9yOXIzZVg1?=
+ =?utf-8?B?eWJ1alE1VnVJOUZXSUNMcUhlaUd3WUVuazY1bmlBMGxneWl1MldObjhIOFU5?=
+ =?utf-8?B?UWE3YXdYWUtMYktFOGRjVTlDYjVrcmtMVjZEbmo3NzQ4dGxTcnpTbVEvM0Nn?=
+ =?utf-8?B?MzNoVHhUelF2T3ZyZk9CZ2Q0TWVlbCtqZ3lTSHVUbUtiZjVyNUQvRW1tbkh5?=
+ =?utf-8?B?WVNhZnpLMTBxVWxmV0hZWlc5SVF5elQvZGppNHFsOGlaUG51SjZ4cFZ2RU5l?=
+ =?utf-8?B?Q25QMEJCaDBTLzRZSk1jQWU5STB6bnhMYmtGZEk0T0ZhREF3VFBLYjFvK0ZF?=
+ =?utf-8?B?amtndVIvd3p2YXBLdFZLQlJEWWtLWEpNaUJQOXFHMnZpUThWRjFUWUZEV1JD?=
+ =?utf-8?B?cU5Ib0IxQklHaGtIaXFVb0VjK1k0YTJ5ZGJFcGU0SDAzTkI1Q1kyL25Zc2x0?=
+ =?utf-8?B?V3R6NU4zbGlGWmRyV0Z6dUhYSnBrcjdCL2tmSFhlcjIvL0p5M3EzVkRBNGtE?=
+ =?utf-8?B?aXlsTmRsUVp3QnZ5WUZIYWpVWkNBZE5LM1hGMTA2dFVkUnZaemF4SjY1T2RZ?=
+ =?utf-8?B?YmNOcTJlbXVNSHp0WWNldXh1NkFLU0E4ZFF3d3ZEZ2Q0R1hwRUtCT2ZuUkVG?=
+ =?utf-8?B?Vk1WRDgvUk94emtTeDY3dXdhZEZCZlFiWjIyckFkdDJqZXlwcjdLWGVybklr?=
+ =?utf-8?B?NVVGVEdJZmcwUnNkdEJMWHMxcG9xSzhtTkZYeklwSmtVZW9ISlVJaVhONGZB?=
+ =?utf-8?B?c1NURy9oSDlPb3RrcVUzWSs0WWFQTDRvUjhaaE1KLzBma1lXcG1LRTJpNlBY?=
+ =?utf-8?B?NGNLS2U5WGhyNDVCMElId3lwY0x0dHFycXU5cFFHV2dRVW1zWEd2MnYvWUNV?=
+ =?utf-8?B?NkQwa2h0SUg5aTg5QVRFc1JsOFZHdTEzQzlMOWRLUHF4Syt1anV1WEpjR0E0?=
+ =?utf-8?B?ZE1FQlhMY25YSzMzNG9XMENIL1lkWDBmTkRXemhYbGFRZXJYQXc0NEo1aWp4?=
+ =?utf-8?B?WFErT1NPNjROWkJsQ1d1eFZ6Sks0bllJYVVoWXRBZXJYU3VmSzN2ZlJvNUFC?=
+ =?utf-8?B?YmhZSnBJdEVYd0hGc1ZFczFzRkI1dXZJNzBWczdVSnltZGlDRXVRdDA2dzBP?=
+ =?utf-8?B?TExYNlVieFhyMEdRMHNUbjJnTTduMUgyZUQ1MFF5cGJUT3FtK3lBaHp3RnUv?=
+ =?utf-8?B?ZjlCd1pxOEQvVVo2UnBrejJkRW1zV2NHVWxsZUxETVNBdGRkYWtVazB5L1Fy?=
+ =?utf-8?B?cGhrV2E3NUVqQjlYbXVXaStXcWU1V3RJbVFMa05RMnFsZzNKQUZHRHo4cm5k?=
+ =?utf-8?B?RGszYXplcG10NC8xQWtEQ3ovYWxRVHp4a3lEV082djZQcXBTeldMNVpNeEUz?=
+ =?utf-8?B?TlFUMURWTTE1QjRzWWI0bTZNaVA0RVpkWmVkY3hFa2Npcml0QlVPNVlXOWZk?=
+ =?utf-8?B?WlFrYUk2bXZwK3JQK2xlUHV5WWowSGhHdzJ0YmhpSEQ1Vk4vVmg0aFlSV1pS?=
+ =?utf-8?B?clk2aDI4QWtsOFNvNS9COHUrWTdud2hNK0xUbFUzZEdjLzNKeUpzcmJEa3dl?=
+ =?utf-8?B?dDloTFBWK0paSk4xUDFNZG90Q2FRejFMSXB4cW1iZE9STFgzeUhXdz09?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 05:40:51.3942
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f04ba65-ab21-4844-d358-08deeba395ef
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB5766.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 05:54:56.4469
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1da2385c-ca5e-4723-3291-08deeba19e7a
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH3PEPF0000000C.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7031
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UA3UZGP63Mucbltk/5Tzk9e5ozEmulBtKKEWbx1KDEVmlOb94FXgxsnWMApGggyZAmMxFQZlpfoUs8yOUqnqTw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9332
 
-The GN bit in the COMPLETE_PPR_REQUEST command indicates whether the
-device is operating under a guest (v2) page table. Currently,
-dev_data->pri_tlp is incorrectly used to derive this bit. However,
-pri_tlp indicates whether the device uses PRI TLP which is unrelated
-to page table mode.
 
-Fix this by refactoring amd_iommu_complete_ppr() into a static internal
-helper __amd_iommu_complete_ppr() that accepts an explicit 'gn' argument.
-The amd_iommu_complete_ppr() wrapper then derives the GN bit correctly
-from the device's active protection domain via pdom_is_v2_pgtbl_mode().
 
-In the INVALID_PPR_REQUEST error handling path, the device's protection
-domain may not be accessible, so derive the GN bit directly from the
-EVENT_FLAG_PPR_GN flag in the event log entry instead.
+On 7/27/2026 8:32 AM, Shuai Xue wrote:
+> iommu_call_iopf_notifier() looks up the requester with
+> pci_get_domain_bus_and_slot(), which returns a PCI device with its
+> reference count incremented.
+> 
+> Neither the successful iommu_report_device_fault() path nor the abort
+> path drops that reference, so every handled PPR request leaks a PCI
+> device reference.
+> 
+> This is the same ownership rule that was fixed for the old iommu_v2
+> ppr_notifier() path by commit 6cf0981c2233 ("iommu/amd: Fix pci device
+> refcount leak in ppr_notifier()"), but iommu_call_iopf_notifier() was
+> added later as a separate PPR/IOPF notifier path.
+> 
+> Drop the PCI device reference after handling the PPR entry.
+> 
+> Fixes: 978d626b8f1a ("iommu/amd: Add IO page fault notifier handler")
+> Cc: stable@vger.kernel.org
+> Assisted-by: Qoder:Qwen-3.8-MAX-Preview
+> Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
 
-While at it, change the 'gn' parameter type in build_complete_ppr()
-from u8 to bool to better reflect its semantics.
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/iommu.c           | 26 +++++++++++++++++++++-----
- 2 files changed, 22 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 500952e752b4..36c0df418ce5 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -160,6 +160,7 @@
- #define EVENT_FLAG_RW		0x020
- #define EVENT_FLAG_I		0x008
- #define EVENT_FLAG_PPR_RX	0x001
-+#define EVENT_FLAG_PPR_GN	0x200
- 
- /* feature control bits */
- #define CONTROL_IOMMU_EN	0
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 17df9b28ebaf..856948a5192c 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -92,6 +92,9 @@ static void clone_aliases(struct amd_iommu *iommu, struct device *dev);
- 
- static int iommu_completion_wait(struct amd_iommu *iommu);
- 
-+static int __amd_iommu_complete_ppr(struct device *dev, u32 pasid,
-+				    int status, int tag, bool gn);
-+
- /****************************************************************************
-  *
-  * Helper functions
-@@ -912,6 +915,7 @@ static void amd_iommu_report_ppr_err(struct amd_iommu *iommu, volatile u32 *even
- 	struct device *dev = iommu->iommu.dev;
- 	u32 pasid = PPR_PASID(*((u64 *)event));
- 	int tag = event[1] & 0x03FF;
-+	bool gn;
- 
- 	dev_err_ratelimited(dev, "Event logged [INVALID_PPR_REQUEST device=%04x:%02x:%02x.%x "
- 			    "pasid=0x%05x address=0x%llx flags=0x%04x tag=0x%03x]\n",
-@@ -932,7 +936,9 @@ static void amd_iommu_report_ppr_err(struct amd_iommu *iommu, volatile u32 *even
- 		return;
- 	}
- 
--	amd_iommu_complete_ppr(&pdev->dev, pasid, IOMMU_PAGE_RESP_FAILURE, tag);
-+	gn = (flags & EVENT_FLAG_PPR_GN);
-+
-+	__amd_iommu_complete_ppr(&pdev->dev, pasid, IOMMU_PAGE_RESP_FAILURE, tag, gn);
- 	pci_dev_put(pdev);
- }
- 
-@@ -1372,7 +1378,7 @@ static void build_inv_iotlb_pages(struct iommu_cmd *cmd, u16 devid, int qdep,
- }
- 
- static void build_complete_ppr(struct iommu_cmd *cmd, u16 devid, u32 pasid,
--			       int status, int tag, u8 gn)
-+			       int status, int tag, bool gn)
- {
- 	memset(cmd, 0, sizeof(*cmd));
- 
-@@ -1867,7 +1873,8 @@ static void dev_flush_pasid_all(struct iommu_dev_data *dev_data,
- 	amd_iommu_dev_flush_pasid_pages(dev_data, pasid, 0, U64_MAX);
- }
- 
--int amd_iommu_complete_ppr(struct device *dev, u32 pasid, int status, int tag)
-+static int __amd_iommu_complete_ppr(struct device *dev, u32 pasid,
-+				    int status, int tag, bool gn)
- {
- 	struct iommu_dev_data *dev_data;
- 	struct amd_iommu *iommu;
-@@ -1876,12 +1883,21 @@ int amd_iommu_complete_ppr(struct device *dev, u32 pasid, int status, int tag)
- 	dev_data = dev_iommu_priv_get(dev);
- 	iommu    = get_amd_iommu_from_dev(dev);
- 
--	build_complete_ppr(&cmd, dev_data->devid, pasid, status,
--			   tag, dev_data->pri_tlp);
-+	build_complete_ppr(&cmd, dev_data->devid, pasid, status, tag, gn);
- 
- 	return iommu_queue_command(iommu, &cmd);
- }
- 
-+int amd_iommu_complete_ppr(struct device *dev, u32 pasid, int status, int tag)
-+{
-+	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-+	bool gn;
-+
-+	gn = pdom_is_v2_pgtbl_mode(dev_data->domain);
-+
-+	return __amd_iommu_complete_ppr(dev, pasid, status, tag, gn);
-+}
-+
- /****************************************************************************
-  *
-  * The next functions belong to the domain allocation. A domain is
--- 
-2.31.1
+-Vasant
 
