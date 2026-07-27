@@ -1,47 +1,48 @@
-Received: from out13-173.antispamcloud.com (out13-173.antispamcloud.com [185.201.17.173])
+Received: from out13-174.antispamcloud.com (out13-174.antispamcloud.com [185.201.17.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F21BE3D3D1A;
-	Mon, 27 Jul 2026 21:39:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716DC427FA8;
+	Mon, 27 Jul 2026 21:41:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785188368; cv=none; b=GW8MuI7WiSfkbiVtbyPyjXnCz4zcEFALjPsZVUPtVq2haY+fvv15Z6Fy+1ylvGS3TJon7RWuV0f7bQlLthRZ4MqV4jMlLvCKNKA3n9js0tm1PDpnIY/7Gl637j3+BX3nTIkcURLssPM92HqvSLytBtGyixYzWmZVP7LLNOghjvA=
+	t=1785188516; cv=none; b=MvSnWSm2pqwaoP4N1tAi9zZqh1sBK2VGI8Z/DpkQe0H0jwtAB0McMKqLPNLPv+RwXF6xFxoFtmh9CZptgRHQl0W3CqOvD8gc2LlxKkXF7Sz/ECPRxNV/n+OeyfreCJ6bwlQb/mcR8ZPG9QKzb4fqCNBzo4ZiuysqLuSgfn+p4YI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785188368; c=relaxed/simple;
-	bh=d4zjJdIwcHczMNqdY476mj23XpDAZKi9k/4c0bq0zkg=;
+	s=arc-20240116; t=1785188516; c=relaxed/simple;
+	bh=u5r5dsQ48lmVdQ+G9PZwIoTlFiOPuFmmyDjA2lKhMNA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MwjM1rW15iIEuuuJy9WqN6ZLM4N4exHpKUPlU0tiOUtVT336ZaBBmk1AlGnsLsOJaT+t5rrnyxj4qE38K1MLfMSyXf2Y26S+zQpyb45e0u71M9sai4OZarj/U7s+B8kfcfT4yuELzETw4V5OIGH9+Sj6xiif2bdfSnc6HGAb4dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=BgOLaFAG; arc=none smtp.client-ip=185.201.17.173
+	 In-Reply-To:To:Cc; b=kZaqv8xmxXqUseko+pyGXhKYxmVo7w8pE8A0QX/EF6ZQzfDBzcVJBjlc/kecxgGaMOP2CwryVXaWdrmpoCE8s870QUu/6H/Qe9cGcuytqcH7i143K65v6JbgmN9IJtjPiG2U7eGwY8jjI7PG+oLPqpLbdbs7XzNCHVfUWLqWAJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=On8ZNFYl; arc=none smtp.client-ip=185.201.17.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="BgOLaFAG"
+	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="On8ZNFYl"
 Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
 	by mx198.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <dan@reactivated.net>)
-	id 1woSCC-00FEEF-Cw; Mon, 27 Jul 2026 22:45:10 +0200
+	id 1woSC6-00FE3e-Uo; Mon, 27 Jul 2026 22:45:05 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=reactivated.net; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
 	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
 	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=BOnbdDiMwWKdqXx4ZZNq5BH85t2ZrQYR+6wWd34lUAs=; b=BgOLaFAG72R5oCByNbVsyFUDDa
-	0RWxTWZFP3la3/+W0Vi8w38AWmNND4RugG7SCNzVaF1s77uKrY+FHJsnQwRi5IRm1CPSmeGKLLN5g
-	MOF3G+S6zH7vg9R9ySNHDFgHhdr9hPy7LewVqrc+XLu13YWql9ejDXZssAq3vEAbNX/0nqzZB+jdh
-	3ijTfLEylI+wu+nG6nDbNKoHerKbQuUJXR/gwdyj3ry8kT7ZMhUbV4awP6eXTue1mT/qtoCPVMQ02
-	YNegcdceMkAYhr9nyWLw+3cHwIY74EXYka+s3GaNZR9OEB0Vvjq6fknmJgrWp+pOs7asT0qI1qmJ9
-	A2KBH/fA==;
+	bh=YvKrPG7wXSe34W5AglWqnp93vGlewdDzeUOiEfvTYmQ=; b=On8ZNFYlVsVWa1FQ4NTedIsSRP
+	7nhAHE4kpS2TuK54lH26W3Pe+K1W4mby1fR8oPzmBG7OVn+D3s3MqCmcgkTxAH5qdfuRs7OuMTj/C
+	DcbKJ/jkgc0boo4pnKI6HurbM9bzXxo5X3YLS77rvNCG/1suEWUPCfH+wQ3TiJQbBeo3AW5C4fjfH
+	AVPPuJHvDut3JPqcyL0xYP3LdAgWdG4DBC37YZETXXArZWqMa0t/0cLjNFWO+FR54QB+yhplo5sBl
+	D2HZ+jdq8MtsjRQcGyVQWiK32txwH1RapUlnV1JSPaI060NCBK7+b2BX3K+VtM97uy9rf8qdyphch
+	YqaMU3BA==;
 Received: from [188.251.249.2] (port=52006 helo=[192.168.1.123])
 	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.99.4)
 	(envelope-from <dan@reactivated.net>)
-	id 1woSC9-0000000AlhO-2Hl0;
-	Mon, 27 Jul 2026 20:45:06 +0000
+	id 1woSC4-0000000AlhO-2dba;
+	Mon, 27 Jul 2026 20:45:00 +0000
 From: Daniel Drake <dan@reactivated.net>
-Date: Mon, 27 Jul 2026 21:43:59 +0100
-Subject: [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
+Date: Mon, 27 Jul 2026 21:43:58 +0100
+Subject: [PATCH v2 3/5] iommu/generic_pt: Add Broadcom BCM2712 page table
+ format
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,7 +51,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
+Message-Id: <20260727-bcm2712-iommu-submit-v2-3-0247b5c03de8@reactivated.net>
 References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
 In-Reply-To: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -71,11 +72,11 @@ X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
 X-Spampanel-Username: 192.250.231.249
 Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
 X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: SB/global_tokens (4.49693510207e-09)
+X-Spampanel-Outgoing-Evidence: SB/global_tokens (2.04711461543e-06)
 X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVe5sHjjcHNSP7JySLyeeJ0ChjzQ3JIZVFF
- 8HV60IETFiu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVINLViA6pm/mgZ0tVGjVHOl0GnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
+X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVzj7ouivDTWGPH5FoP4Kkh8QsYYqY/Coa1
+ ospiJlZ3tyu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
+ M0i5ZAms0EHrvcCaVIO/94J7/pmBUUMRH2/87nPNGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
  EetczWAIN4GsiK0O3K+JEByc7IobeB7itP8hgjDRserKv4bhb/pXHHNX+LCF5x5jewa7FkNWBb39
  uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
  j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5AyO3cajqKP
@@ -89,754 +90,480 @@ X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVe5sHjjcHNSP7JySLyeeJ0Chj
  PBvIRkiU4E8H4e7X9sw5VBsaDF9CxNBjABkH3hTMjGc3lQAtuckU+MNQlLpWhjjykqbde3UjWoF9
  cBo9q3T2iWmfFRW/Psbz8QFVy0V5rN3M2TZ9grsaBV7hOgCSkfEzb1aIdlnbLZp4DCYOuNFQ+5eG
  III/qgXB3gv2NI/ukWuQBNrXV+EmIqM8SxKOhcObZXWnkEw+6F9CGyYC9AhR1ZLKC40YaZQ+trtn
- c3HOUHNRces2OQfEVEXjAsYl3paTjCdkz1uVfqR10baizxFc684o/A69h/CvHI/GeXW8oEyu47TQ
+ c3HOUHNRces2OQfEVEXjAs190pw9vbXB/fDYbK4zbQOizxFc684o/A69h/CvHI/GeXW8oEyu47TQ
  DqTi6GKwcIp24VOsP5eu885wo+t+ynT3Y80OmAux3oN13+ztUzneZGHdcUfaxYq0ZH+Cc9iqnocR
- WxNUEo38DE53aa5lZFsy2onypIM6qetbKE/25wcBj1Zw6At5OpS0NLmXUCpUyuCvqo6hG77HGS00
- JiNovIJr3Z1SFe+4OrB9Rro7EpOy1Um2iVRPSUxhtw3wz3yqYcOpyKA69LF1Ge2GaGfxmfp09oMS
+ WxNUEo38DE53aa5lZFsy2onypIM6qetbKE/25wcBNqo/0fwiRTLlHdXA0y/rguAKl2WEToNozZ+h
+ HTgqsldr3Z1SFe+4OrB9Rro7EpOy1Um2iVRPSUxhtw3wz3yqYcOpyKA69LF1Ge2GaGfxmfp09oMS
  l8c4ShQ//ve+MHzjs9MOb3HXByN6cty/LT6lgOv2AzRyYGlsi3xQeIJ6TM5o5F89lTjPCn99uwfA
  g5wm8t3Xj/LzZ5s/OJg1L2asZ/4te3BTDYEBZZ1yPQnIH5IVn/pKnch3lmmwSrgldH+Ps9MOb3HX
  ByN6cty/LT6lgO+c9AHZZ12442bv/l3jZJg=
 X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
 X-Complaints-To: abuse@master.antispamcloud.com
 
-This IOMMU translates memory access requests for the VC6 display
-pipeline and various multimedia devices in the Broadcom BCM2712 SoC used
-on Raspberry Pi 5.
+Implement generic_pt support for the 2-level page table format used by
+the BCM2712 IOMMUs.
 
-This driver places a 4GB aperture at a high memory address in which the
-IOMMU mappings are operated. All addresses outside this window bypass the
-translation logic and give direct access to physical memory.
-
-Also includes support for the IOMMU cache, which is shared between
-all the IOMMU devices found on the SoC.
-
-Adapted from Raspberry Pi's downstream bcm2712-iommu driver
-(original author Nick Hollinghurst).
+Adapted from Raspberry Pi's downstream bcm2712-iommu driver (original
+author Nick Hollinghurst).
 
 Signed-off-by: Daniel Drake <dan@reactivated.net>
 ---
- drivers/iommu/Kconfig               |  15 +
- drivers/iommu/Makefile              |   1 +
- drivers/iommu/bcm2712-iommu-cache.c |  73 +++++
- drivers/iommu/bcm2712-iommu.c       | 582 ++++++++++++++++++++++++++++++++++++
- drivers/iommu/bcm2712-iommu.h       |   4 +
- 5 files changed, 675 insertions(+)
+ drivers/iommu/bcm2712-iommu.h                |  22 +++
+ drivers/iommu/generic_pt/.kunitconfig        |   1 +
+ drivers/iommu/generic_pt/Kconfig             |  10 +
+ drivers/iommu/generic_pt/fmt/Makefile        |   2 +
+ drivers/iommu/generic_pt/fmt/bcm2712.h       | 283 +++++++++++++++++++++++++++
+ drivers/iommu/generic_pt/fmt/defs_bcm2712.h  |  18 ++
+ drivers/iommu/generic_pt/fmt/iommu_bcm2712.c |   8 +
+ include/linux/generic_pt/common.h            |   6 +
+ include/linux/generic_pt/iommu.h             |  12 ++
+ 9 files changed, 362 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6e07bd69467a..f2c8788158b0 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -386,6 +386,21 @@ config VSI_IOMMU
- 	  Say Y here if you want to use this IOMMU in front of these
- 	  hardware blocks.
- 
-+config BCM2712_IOMMU
-+	bool "BCM2712 IOMMU driver"
-+	depends on (ARCH_BCM && ARM64) || COMPILE_TEST
-+	select IOMMU_API
-+	select GENERIC_PT
-+	select IOMMU_PT
-+	select IOMMU_PT_BCM2712
-+	help
-+	  Support for IOMMU on BCM2712 SoC. This IOMMU can be used by the
-+	  display controller and various multimedia devices to perform
-+	  efficient memory management.
-+
-+	  Say Y here if you want to use this IOMMU in front of these
-+	  hardware blocks.
-+
- config IOMMU_DEBUG_PAGEALLOC
- 	bool "Debug IOMMU mappings against page allocations"
- 	depends on DEBUG_PAGEALLOC && IOMMU_API && PAGE_EXTENSION
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 2f05725eaab1..29a26d2a3af1 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -37,4 +37,5 @@ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
- obj-$(CONFIG_VSI_IOMMU) += vsi-iommu.o
-+obj-$(CONFIG_BCM2712_IOMMU) += bcm2712-iommu.o bcm2712-iommu-cache.o
- obj-$(CONFIG_IOMMU_DEBUG_PAGEALLOC) += iommu-debug-pagealloc.o
-diff --git a/drivers/iommu/bcm2712-iommu-cache.c b/drivers/iommu/bcm2712-iommu-cache.c
+diff --git a/drivers/iommu/bcm2712-iommu.h b/drivers/iommu/bcm2712-iommu.h
 new file mode 100644
-index 000000000000..d97a8cda448e
+index 000000000000..18969b703e8c
 --- /dev/null
-+++ b/drivers/iommu/bcm2712-iommu-cache.c
-@@ -0,0 +1,73 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/drivers/iommu/bcm2712-iommu.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _BCM2712_IOMMU_H
++#define _BCM2712_IOMMU_H
++
++#include <linux/sizes.h>
++
 +/*
-+ * IOMMU driver for BCM2712 TLB cache
++ * Define an aperture inside which IOMMU mappings are operated.
 + *
-+ * Copyright (c) 2023 Raspberry Pi Ltd.
++ * This aperture must be placed within a high, unused part of the address space:
++ * the IOMMU hardware caps the maximum reachable address at the top of the
++ * aperture, and we ensure that regular RAM/MMIO is available to non-IOMMU-users
++ * by creating a bypass window for all addresses below the aperture start.
++ *
++ * The aperture is hardcoded to 40GiB here, which is safely above RAM/MMIO
++ * on the BCM2712 SoC.
 + */
++#define BCM2712_APERTURE_BASE    (40ULL << 30)
++#define BCM2712_APERTURE_SIZE    SZ_4G
++#define BCM2712_APERTURE_END     (BCM2712_APERTURE_BASE + BCM2712_APERTURE_SIZE)
 +
-+#include <linux/err.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/spinlock.h>
-+#include <linux/iopoll.h>
++#endif
+diff --git a/drivers/iommu/generic_pt/.kunitconfig b/drivers/iommu/generic_pt/.kunitconfig
+index 0bb98fe581fe..a3da74328f12 100644
+--- a/drivers/iommu/generic_pt/.kunitconfig
++++ b/drivers/iommu/generic_pt/.kunitconfig
+@@ -7,6 +7,7 @@ CONFIG_IOMMU_PT_AMDV1=y
+ CONFIG_IOMMU_PT_VTDSS=y
+ CONFIG_IOMMU_PT_RISCV64=y
+ CONFIG_IOMMU_PT_X86_64=y
++CONFIG_IOMMU_PT_BCM2712=y
+ CONFIG_IOMMU_PT_KUNIT_TEST=y
+ 
+ CONFIG_IOMMUFD=y
+diff --git a/drivers/iommu/generic_pt/Kconfig b/drivers/iommu/generic_pt/Kconfig
+index f4ed1add58b7..2a81dac960ac 100644
+--- a/drivers/iommu/generic_pt/Kconfig
++++ b/drivers/iommu/generic_pt/Kconfig
+@@ -72,6 +72,15 @@ config IOMMU_PT_X86_64
+ 
+ 	  Selected automatically by an IOMMU driver that uses this format.
+ 
++config IOMMU_PT_BCM2712
++	tristate "IOMMU page table for Broadcom BCM2712"
++	help
++	  iommu_domain implementation for the Broadcom BCM2712 IOMMU found on
++	  Raspberry Pi 5. It supports 4K page sizes over a 2-level page table
++	  format.
 +
-+#include "bcm2712-iommu.h"
++	  Selected automatically by an IOMMU driver that uses this format.
 +
-+struct bcm2712_iommu_cache {
-+	spinlock_t hw_lock;
-+	void __iomem *reg_base;
-+};
+ config IOMMU_PT_KUNIT_TEST
+ 	tristate "IOMMU Page Table KUnit Test" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+@@ -79,6 +88,7 @@ config IOMMU_PT_KUNIT_TEST
+ 	depends on IOMMU_PT_RISCV64 || !IOMMU_PT_RISCV64
+ 	depends on IOMMU_PT_X86_64 || !IOMMU_PT_X86_64
+ 	depends on IOMMU_PT_VTDSS || !IOMMU_PT_VTDSS
++	depends on IOMMU_PT_BCM2712 || !IOMMU_PT_BCM2712
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable kunit tests for GENERIC_PT and IOMMU_PT that covers all the
+diff --git a/drivers/iommu/generic_pt/fmt/Makefile b/drivers/iommu/generic_pt/fmt/Makefile
+index ea024d582594..82ca3c36823d 100644
+--- a/drivers/iommu/generic_pt/fmt/Makefile
++++ b/drivers/iommu/generic_pt/fmt/Makefile
+@@ -9,6 +9,8 @@ iommu_pt_fmt-$(CONFIG_IOMMU_PT_RISCV64) += riscv64
+ 
+ iommu_pt_fmt-$(CONFIG_IOMMU_PT_X86_64) += x86_64
+ 
++iommu_pt_fmt-$(CONFIG_IOMMU_PT_BCM2712) += bcm2712
 +
-+#define MMUC_CONTROL_ENABLE   1
-+#define MMUC_CONTROL_FLUSH    2
-+#define MMUC_CONTROL_FLUSHING 4
-+
-+void bcm2712_iommu_cache_flush(struct bcm2712_iommu_cache *cache)
-+{
-+	unsigned long flags;
-+	u32 val;
-+
-+	spin_lock_irqsave(&cache->hw_lock, flags);
-+
-+	/* Enable and flush the TLB cache */
-+	writel(MMUC_CONTROL_ENABLE | MMUC_CONTROL_FLUSH, cache->reg_base);
-+
-+	/* Wait for flush to complete: it should be very quick */
-+	readl_poll_timeout_atomic(cache->reg_base, val,
-+				  !(val & MMUC_CONTROL_FLUSHING), 0, 1000);
-+
-+	spin_unlock_irqrestore(&cache->hw_lock, flags);
-+}
-+
-+static int bcm2712_iommu_cache_probe(struct platform_device *pdev)
-+{
-+	struct bcm2712_iommu_cache *cache;
-+
-+	cache = devm_kzalloc(&pdev->dev, sizeof(*cache), GFP_KERNEL);
-+	if (!cache)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, cache);
-+	spin_lock_init(&cache->hw_lock);
-+
-+	cache->reg_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(cache->reg_base))
-+		return PTR_ERR(cache->reg_base);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id bcm2712_iommu_cache_of_match[] = {
-+	{ .compatible = "brcm,bcm2712-iommuc" },
-+	{ /* sentinel */ },
-+};
-+
-+static struct platform_driver bcm2712_iommu_cache_driver = {
-+	.probe = bcm2712_iommu_cache_probe,
-+	.driver = {
-+		.name = "bcm2712-iommu-cache",
-+		.of_match_table = bcm2712_iommu_cache_of_match,
-+		.suppress_bind_attrs = true,
-+	},
-+};
-+builtin_platform_driver(bcm2712_iommu_cache_driver);
-diff --git a/drivers/iommu/bcm2712-iommu.c b/drivers/iommu/bcm2712-iommu.c
+ IOMMU_PT_KUNIT_TEST :=
+ define create_format
+ obj-$(2) += iommu_$(1).o
+diff --git a/drivers/iommu/generic_pt/fmt/bcm2712.h b/drivers/iommu/generic_pt/fmt/bcm2712.h
 new file mode 100644
-index 000000000000..55678009f9c4
+index 000000000000..83af4e5fa53b
 --- /dev/null
-+++ b/drivers/iommu/bcm2712-iommu.c
-@@ -0,0 +1,582 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/drivers/iommu/generic_pt/fmt/bcm2712.h
+@@ -0,0 +1,283 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
-+ * IOMMU driver for Broadcom BCM2712
-+ *
-+ * Copyright (c) 2023-2025 Raspberry Pi Ltd.
 + * Copyright (c) 2026 Daniel Drake
 + *
-+ * Each BCM2712 IOMMU has multiple devices hardwired into it, whose
-+ * DMA transactions all route through the IOMMU. There is no stream ID tagging
-+ * or any other kind of segmentation to differentiate between requests from
-+ * different devices. It is also not possible to toggle a specific device
-+ * between iommu-mapped and bypass modes.
-+ *
-+ * With these limitations in mind, we configure the hardware to operate over two
-+ * windows:
-+ *  1. The lower part of the address space operates in identity/bypass mode.
-+ *     This enables non-IOMMU-consumer devices to work as normal (including
-+ *     devices set up by the firmware, devices that don't require large DMA
-+ *     allocations, devices that handle scatter-gather natively, etc.)
-+ *  2. A 4GB translation aperture is defined at a fixed, high address, beyond
-+ *     regular RAM and MMIO space. Mappings are operated in this aperture for
-+ *     devices that wish to take advantage of the IOMMU.
-+ *
-+ * The BCM2712 SoC contains multiple independent IOMMU hardware instances.
-+ * The same aperture address is used across all of them; they do not conflict
-+ * because these IOVA spaces are strictly localized to each IOMMU instance.
-+ *
-+ * The page table format is a two-level format handled by generic_pt/bcm2712.
++ * BCM2712 IOMMU simple two level page table
 + */
++#ifndef __GENERIC_PT_FMT_BCM2712_H
++#define __GENERIC_PT_FMT_BCM2712_H
 +
-+#include <linux/dma-mapping.h>
-+#include <linux/err.h>
-+#include <linux/iommu.h>
-+#include <linux/iopoll.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/spinlock.h>
++#include "defs_bcm2712.h"
++#include "../pt_defs.h"
++
++#include <linux/bitfield.h>
++#include <linux/container_of.h>
++#include <linux/log2.h>
 +#include <linux/sizes.h>
-+#include <linux/generic_pt/iommu.h>
 +
-+#include "iommu-pages.h"
-+#include "bcm2712-iommu.h"
++#include "../../bcm2712-iommu.h"
 +
-+/* BCM2712 IOMMU is organized around 4Kbyte pages */
-+#define IOMMU_PAGE_SHIFT       12
-+#define IOMMU_PAGE_SIZE        (1ul << IOMMU_PAGE_SHIFT)
-+/* A PTE is 4 bytes */
-+#define PTE_SIZE_SHIFT         2
-+/* L1/L2 table sizing (IOMMU hardware pages): 1024 entries per page */
-+#define PTES_PER_IOPG_SHIFT    (IOMMU_PAGE_SHIFT - PTE_SIZE_SHIFT)
-+/* An iommu hugepage covers 4MB  */
-+#define IOMMU_HUGEPAGE_SHIFT   (IOMMU_PAGE_SHIFT + PTES_PER_IOPG_SHIFT)
++enum {
++	/* Hardware provides a two-level page table */
++	PT_MAX_TOP_LEVEL = 1,
 +
++	/* Hardware page size is strictly 4kb */
++	PT_GRANULE_LG2SZ = ilog2(SZ_4K),
++	PT_TABLEMEM_LG2SZ = PT_GRANULE_LG2SZ,
 +
-+#define MMMU_CTRL_OFFSET                       0x00
-+#define MMMU_CTRL_CAP_EXCEEDED                 BIT(27)
-+#define MMMU_CTRL_CAP_EXCEEDED_ABORT_EN        BIT(26)
-+#define MMMU_CTRL_CAP_EXCEEDED_INT_EN          BIT(25)
-+#define MMMU_CTRL_CAP_EXCEEDED_EXCEPTION_EN    BIT(24)
-+#define MMMU_CTRL_PT_INVALID                   BIT(20)
-+#define MMMU_CTRL_PT_INVALID_ABORT_EN          BIT(19)
-+#define MMMU_CTRL_PT_INVALID_INT_EN            BIT(18)
-+#define MMMU_CTRL_PT_INVALID_EXCEPTION_EN      BIT(17)
-+#define MMMU_CTRL_PT_INVALID_EN                BIT(16)
-+#define MMMU_CTRL_WRITE_VIOLATION              BIT(12)
-+#define MMMU_CTRL_WRITE_VIOLATION_ABORT_EN     BIT(11)
-+#define MMMU_CTRL_WRITE_VIOLATION_INT_EN       BIT(10)
-+#define MMMU_CTRL_WRITE_VIOLATION_EXCEPTION_EN BIT(9)
-+#define MMMU_CTRL_BYPASS                       BIT(8)
-+#define MMMU_CTRL_TLB_CLEARING                 BIT(7)
-+#define MMMU_CTRL_STATS_CLEAR                  BIT(3)
-+#define MMMU_CTRL_TLB_CLEAR                    BIT(2)
-+#define MMMU_CTRL_STATS_ENABLE                 BIT(1)
-+#define MMMU_CTRL_ENABLE                       BIT(0)
++	/* Table entries and leaf entries are 32 bits */
++	PT_ITEM_WORD_SIZE = sizeof(pt_bcm2712_entry_t),
 +
-+#define MMMU_CTRL_OPERATING_FLAGS (\
-+	MMMU_CTRL_CAP_EXCEEDED_ABORT_EN    | \
-+	MMMU_CTRL_PT_INVALID_ABORT_EN      | \
-+	MMMU_CTRL_PT_INVALID_EN            | \
-+	MMMU_CTRL_WRITE_VIOLATION_ABORT_EN | \
-+	MMMU_CTRL_STATS_ENABLE             | \
-+	MMMU_CTRL_ENABLE)
++	/* Leaf entries encode a 28-bit PFN */
++	PT_MAX_OUTPUT_ADDRESS_LG2 = 28 + PT_GRANULE_LG2SZ,
 +
-+#define MMMU_PT_PA_BASE_OFFSET                 0x04
++	/*
++	 * For simplicity, only manage mappings within an address space of
++	 * exactly 4GB. This is because our Level 1 directory page will be 4kb
++	 * in the smallest case, permitting 1024 entries pointing at Level 0
++	 * pages, each permitting 4mb of mapped memory.
++	 */
++	PT_MAX_VA_ADDRESS_LG2 = ilog2(SZ_4G),
 +
-+#define MMMU_ADDR_CAP_OFFSET                   0x14
-+#define MMMU_ADDR_CAP_ENABLE                   BIT(31)
-+#define ADDR_CAP_SHIFT                         ilog2(SZ_256M)
-+
-+#define MMMU_SHOOT_DOWN_OFFSET                 0x18
-+#define MMMU_SHOOT_DOWN_SHOOTING               BIT(31)
-+#define MMMU_SHOOT_DOWN_SHOOT                  BIT(30)
-+
-+#define MMMU_BYPASS_START_OFFSET               0x1c
-+#define MMMU_BYPASS_START_ENABLE               BIT(31)
-+
-+#define MMMU_BYPASS_END_OFFSET                 0x20
-+#define MMMU_BYPASS_END_ENABLE                 BIT(31)
-+
-+#define MMMU_MISC_OFFSET                       0x24
-+#define MMMU_MISC_SINGLE_TABLE                 BIT(31)
-+
-+#define MMMU_ILLEGAL_ADR_OFFSET                0x30
-+#define MMMU_ILLEGAL_ADR_ENABLE                BIT(31)
-+
-+#define MMMU_DEBUG_INFO_OFFSET                 0x38
-+#define MMMU_DEBUG_INFO_VERSION_MASK           0x0000000Fu
-+#define MMMU_DEBUG_INFO_VA_WIDTH_MASK          0x000000F0u
-+#define MMMU_DEBUG_INFO_PA_WIDTH_MASK          0x00000F00u
-+#define MMMU_DEBUG_INFO_BIGPAGE_WIDTH_MASK     0x000FF000u
-+#define MMMU_DEBUG_INFO_SUPERPAGE_WIDTH_MASK   0x0FF00000u
-+#define MMMU_DEBUG_INFO_BYPASS_4M              BIT(28)
-+#define MMMU_DEBUG_INFO_BYPASS                 BIT(29)
-+
-+struct bcm2712_iommu {
-+	struct device *dev;
-+	struct iommu_device iommu;
-+	struct bcm2712_iommu_domain *domain;
-+	struct bcm2712_iommu_cache *cache;
-+	void __iomem *reg_base;
-+	spinlock_t hw_lock;
-+	size_t bigpage_size;
-+	size_t superpage_size;
++	/* Level 1 base address is programmed as a 32-bit PFN */
++	PT_TOP_PHYS_MASK = GENMASK_ULL(31 + PT_GRANULE_LG2SZ, PT_GRANULE_LG2SZ),
 +};
 +
-+struct bcm2712_iommu_domain {
-+	union {
-+		struct iommu_domain base;
-+		struct pt_iommu_bcm2712 pt;
-+	};
-+	struct bcm2712_iommu *mmu;
-+	void *default_page;
++/* PTE bits */
++enum {
++	BCM2712PT_VALID = BIT(28),
++	BCM2712PT_WRITE = BIT(29),
++	BCM2712PT_PAGESIZE = GENMASK(31, 30),
++	BCM2712PT_PFN = GENMASK(27, 0),
 +};
 +
-+#define MMU_WR(off, val)  writel(val, mmu->reg_base + (off))
-+#define MMU_RD(off)       readl(mmu->reg_base + (off))
++#define common_to_bcm2712pt(common_ptr) \
++	container_of_const(common_ptr, struct pt_bcm2712, common)
++#define to_bcm2712pt(pts) common_to_bcm2712pt((pts)->range->common)
 +
-+#define domain_to_mmu(d) \
-+	(container_of(d, struct bcm2712_iommu_domain, base)->mmu)
-+
-+static struct bcm2712_iommu_domain *
-+to_bcm2712_domain(struct iommu_domain *domain)
++static inline pt_oaddr_t bcm2712pt_table_pa(const struct pt_state *pts)
 +{
-+	return container_of(domain, struct bcm2712_iommu_domain, base);
++	return oalog2_mul(FIELD_GET(BCM2712PT_PFN, pts->entry),
++			  PT_GRANULE_LG2SZ);
 +}
-+
-+static void bcm2712_iommu_init(struct bcm2712_iommu *mmu)
-+{
-+	unsigned int bigpage_width, superpage_width;
-+	u32 u = MMU_RD(MMMU_DEBUG_INFO_OFFSET);
-+	u32 pa_width = FIELD_GET(MMMU_DEBUG_INFO_PA_WIDTH_MASK, u);
-+
-+	dev_dbg(mmu->dev, "DEBUG_INFO = 0x%08x\n", u);
-+	WARN_ON(FIELD_GET(MMMU_DEBUG_INFO_VERSION_MASK, u) < 4 ||
-+		FIELD_GET(MMMU_DEBUG_INFO_VA_WIDTH_MASK, u) < 6 ||
-+		pa_width < 6 || !(u & MMMU_DEBUG_INFO_BYPASS));
-+
-+	dma_set_mask_and_coherent(mmu->dev, DMA_BIT_MASK(pa_width + 30u));
-+
-+	bigpage_width = FIELD_GET(MMMU_DEBUG_INFO_BIGPAGE_WIDTH_MASK, u);
-+	if (bigpage_width)
-+		mmu->bigpage_size = IOMMU_PAGE_SIZE << bigpage_width;
-+
-+	superpage_width = FIELD_GET(MMMU_DEBUG_INFO_SUPERPAGE_WIDTH_MASK, u);
-+	if (superpage_width)
-+		mmu->superpage_size = IOMMU_PAGE_SIZE << superpage_width;
-+
-+	/* Disable MMU and clear sticky flags; meanwhile flush the TLB */
-+	MMU_WR(MMMU_CTRL_OFFSET, MMMU_CTRL_CAP_EXCEEDED | MMMU_CTRL_PT_INVALID |
-+					 MMMU_CTRL_WRITE_VIOLATION |
-+					 MMMU_CTRL_STATS_CLEAR |
-+					 MMMU_CTRL_TLB_CLEAR);
-+
-+	/* Put MMU into 2-level mode */
-+	MMU_WR(MMMU_MISC_OFFSET,
-+	       MMU_RD(MMMU_MISC_OFFSET) & ~MMMU_MISC_SINGLE_TABLE);
-+}
++#define pt_table_pa bcm2712pt_table_pa
++#define pt_item_oa bcm2712pt_table_pa
 +
 +/*
-+ * Since the BCM2712 IOMMU is address-based (not device based), we don't
-+ * need to change any hardware state to support identity mapping.
-+ * The IOMMU is natively bypassed for addresses outside the aperture.
++ * IOPTEs placed within the page table correspond to addresses within the
++ * preconfigured aperture.
 + */
-+static int bcm2712_iommu_identity_attach(struct iommu_domain *identity_domain,
-+					 struct device *dev,
-+					 struct iommu_domain *old)
++static inline pt_vaddr_t
++bcm2712pt_full_va_prefix(const struct pt_common *common)
 +{
-+	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
-+	unsigned long flags;
++	return BCM2712_APERTURE_BASE;
++}
++#define pt_full_va_prefix bcm2712pt_full_va_prefix
 +
-+	spin_lock_irqsave(&mmu->hw_lock, flags);
-+	MMU_WR(MMMU_CTRL_OFFSET, 0);
-+	mmu->domain = NULL;
-+	spin_unlock_irqrestore(&mmu->hw_lock, flags);
++static inline bool bcm2712pt_can_have_leaf(const struct pt_state *pts)
++{
++	return true;
++}
++#define pt_can_have_leaf bcm2712pt_can_have_leaf
 +
++/* 4MB pages are installed at level 1, everything else at level 0 */
++static inline unsigned int bcm2712pt_pgsz_lg2_to_level(struct pt_common *common,
++						       unsigned int pgsize_lg2)
++{
++	return pgsize_lg2 == ilog2(SZ_4M) ? 1 : 0;
++}
++#define pt_pgsz_lg2_to_level bcm2712pt_pgsz_lg2_to_level
++
++static inline pt_vaddr_t bcm2712pt_possible_sizes(const struct pt_state *pts)
++{
++	struct pt_bcm2712 *table = common_to_bcm2712pt(pts->range->common);
++
++	if (pts->level == 1)
++		return SZ_4M;
++
++	return SZ_4K |
++	       (table->bigpage_lg2 ? BIT_ULL(table->bigpage_lg2) : 0) |
++	       (table->superpage_lg2 ? BIT_ULL(table->superpage_lg2) : 0);
++}
++#define pt_possible_sizes bcm2712pt_possible_sizes
++
++static inline unsigned int
++bcm2712pt_entry_num_contig_lg2(const struct pt_state *pts)
++{
++	struct pt_bcm2712 *table = common_to_bcm2712pt(pts->range->common);
++	u32 pgsz = FIELD_GET(BCM2712PT_PAGESIZE, pts->entry);
++
++	if (pts->level != 0 || !(pts->entry & BCM2712PT_VALID))
++		return 0;
++
++	/*
++	 * Superpage/bigpage contiguous mapping (really just hinting) is handled
++	 * via PAGESIZE bits on each leaf entry.
++	 */
++	if (pgsz == 2 && table->superpage_lg2)
++		return table->superpage_lg2 - PT_GRANULE_LG2SZ;
++	else if (pgsz == 1 && table->bigpage_lg2)
++		return table->bigpage_lg2 - PT_GRANULE_LG2SZ;
 +	return 0;
 +}
++#define pt_entry_num_contig_lg2 bcm2712pt_entry_num_contig_lg2
 +
-+static struct iommu_domain bcm2712_identity_domain = {
-+	.type = IOMMU_DOMAIN_IDENTITY,
-+	.ops = &(const struct iommu_domain_ops) {
-+		.attach_dev = bcm2712_iommu_identity_attach,
-+	},
-+};
-+
-+static int bcm2712_iommu_blocking_attach(struct iommu_domain *blocking_domain,
-+					 struct device *dev,
-+					 struct iommu_domain *old)
++static inline unsigned int bcm2712pt_num_items_lg2(const struct pt_state *pts)
 +{
-+	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&mmu->hw_lock, flags);
-+
-+	/*
-+	 * To completely block DMA:
-+	 * 1. Disable the bypass window (requests outside aperture will abort).
-+	 * 2. Set the address cap to 0 (requests inside aperture will abort).
-+	 */
-+	MMU_WR(MMMU_BYPASS_START_OFFSET, 0);
-+	MMU_WR(MMMU_BYPASS_END_OFFSET, 0);
-+	MMU_WR(MMMU_ADDR_CAP_OFFSET, MMMU_ADDR_CAP_ENABLE);
-+
-+	MMU_WR(MMMU_CTRL_OFFSET, MMMU_CTRL_OPERATING_FLAGS);
-+
-+	mmu->domain = NULL;
-+	spin_unlock_irqrestore(&mmu->hw_lock, flags);
-+
-+	return 0;
++	return PT_TABLEMEM_LG2SZ - ilog2(PT_ITEM_WORD_SIZE);
 +}
++#define pt_num_items_lg2 bcm2712pt_num_items_lg2
 +
-+static struct iommu_domain bcm2712_blocking_domain = {
-+	.type = IOMMU_DOMAIN_BLOCKED,
-+	.ops = &(const struct iommu_domain_ops) {
-+		.attach_dev = bcm2712_iommu_blocking_attach,
-+	},
-+};
-+
-+static int bcm2712_iommu_attach_dev(struct iommu_domain *domain,
-+				    struct device *dev,
-+				    struct iommu_domain *old)
++static inline enum pt_entry_type bcm2712pt_load_entry_raw(struct pt_state *pts)
 +{
-+	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
-+	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
-+	struct pt_iommu_bcm2712_hw_info info;
-+	u32 default_page_pfn, u;
-+	unsigned int byp_shift;
-+	unsigned long flags;
++	const pt_bcm2712_entry_t *tablep =
++		pt_cur_table(pts, pt_bcm2712_entry_t);
 +
-+	spin_lock_irqsave(&mmu->hw_lock, flags);
++	pts->entry = READ_ONCE(tablep[pts->index]);
++	if (!(pts->entry & BCM2712PT_VALID))
++		return PT_ENTRY_EMPTY;
 +
-+	if (mmu->domain == mydomain)
-+		goto unlock;
-+
-+	mmu->domain = mydomain;
-+
-+	/*
-+	 * This driver is for VC IOMMU version >= 4 and assumes at least 36
-+	 * bits of virtual and physical address space.
-+	 */
-+	u = MMU_RD(MMMU_DEBUG_INFO_OFFSET);
-+	byp_shift = (u & MMMU_DEBUG_INFO_BYPASS_4M) ? IOMMU_HUGEPAGE_SHIFT :
-+						      ADDR_CAP_SHIFT;
-+
-+	/*
-+	 * Set address cap and bypass range (note unintuitive off-by-ones).
-+	 * Requests to the bypass window pass straight through unchanged: this
-+	 * is useful for blocks which share an IOMMU with other blocks whose
-+	 * drivers are not IOMMU-aware.
-+	 */
-+	MMU_WR(MMMU_ADDR_CAP_OFFSET,
-+	       MMMU_ADDR_CAP_ENABLE +
-+	       (BCM2712_APERTURE_END >> ADDR_CAP_SHIFT) - 1);
-+	MMU_WR(MMMU_BYPASS_START_OFFSET, 0);
-+	MMU_WR(MMMU_BYPASS_END_OFFSET,
-+	       MMMU_BYPASS_END_ENABLE + (BCM2712_APERTURE_BASE >> byp_shift));
-+
-+	/*
-+	 * When the IOMMU handles a request, it adds the PT_PA_BASE_OFFSET to
-+	 * (IOVA>>32) to calculate the PFN of the corresponding L1 directory page.
-+	 * IOVA bits [31:22] are then used to fetch the L1 descriptor within
-+	 * (which in turn points to the L2 table).
-+	 * This clever logic would allow for a L1 table larger than 4kb (and hence
-+	 * a larger aperture.
-+	 */
-+	pt_iommu_bcm2712_hw_info(&mydomain->pt, &info);
-+	MMU_WR(MMMU_PT_PA_BASE_OFFSET, (info.pt_base >> IOMMU_PAGE_SHIFT) -
-+				       (BCM2712_APERTURE_BASE >> 32));
-+
-+	/* Set up a default (error) page used to catch illegal reads/writes */
-+	default_page_pfn = virt_to_phys(mydomain->default_page) >>
-+			   IOMMU_PAGE_SHIFT;
-+	MMU_WR(MMMU_ILLEGAL_ADR_OFFSET,
-+	       MMMU_ILLEGAL_ADR_ENABLE + default_page_pfn);
-+
-+	/* Flush (and enable) the shared TLB cache; enable this MMU. */
-+	bcm2712_iommu_cache_flush(mmu->cache);
-+	MMU_WR(MMMU_CTRL_OFFSET, MMMU_CTRL_OPERATING_FLAGS);
-+
-+unlock:
-+	spin_unlock_irqrestore(&mmu->hw_lock, flags);
-+	return 0;
-+}
-+
-+static void bcm2712_iommu_shootdown_range(struct bcm2712_iommu *mmu,
-+					  unsigned long iova, size_t size)
-+{
-+	unsigned long iova_end = iova + size - 1;
-+	unsigned int page_group;
-+	u32 val;
-+
-+	/* Shootdown register deals with 4 pages at a time */
-+	for (page_group = iova >> (IOMMU_PAGE_SHIFT + 2);
-+	     page_group <= iova_end >> (IOMMU_PAGE_SHIFT + 2); page_group++) {
-+		MMU_WR(MMMU_SHOOT_DOWN_OFFSET,
-+		       MMMU_SHOOT_DOWN_SHOOT + (page_group << 2));
-+		readl_poll_timeout_atomic(
-+			mmu->reg_base + MMMU_SHOOT_DOWN_OFFSET, val,
-+			!(val & MMMU_SHOOT_DOWN_SHOOTING), 0, 1000);
++	if (pts->level == 1) {
++		if (FIELD_GET(BCM2712PT_PAGESIZE, pts->entry) == 3)
++			return PT_ENTRY_OA;
++		return PT_ENTRY_TABLE;
 +	}
++
++	return PT_ENTRY_OA;
 +}
++#define pt_load_entry_raw bcm2712pt_load_entry_raw
 +
-+static int bcm2712_iommu_sync_range(struct iommu_domain *domain,
-+				    unsigned long iova, size_t size)
++static inline void
++bcm2712pt_install_leaf_entry(struct pt_state *pts, pt_oaddr_t oa,
++			     unsigned int oasz_lg2,
++			     const struct pt_write_attrs *attrs)
 +{
-+	struct bcm2712_iommu *mmu = domain_to_mmu(domain);
-+	unsigned long flags;
-+	u32 val;
++	pt_bcm2712_entry_t *tablep = pt_cur_table(pts, pt_bcm2712_entry_t);
++	pt_bcm2712_entry_t entry;
 +
-+	spin_lock_irqsave(&mmu->hw_lock, flags);
-+	bcm2712_iommu_cache_flush(mmu->cache);
++	if (!pt_check_install_leaf_args(pts, oa, oasz_lg2))
++		return;
 +
-+	/* If invalidating more than 16MB, just do a full TLB clear */
-+	if (size >= SZ_16M) {
-+		MMU_WR(MMMU_CTRL_OFFSET,
-+		       MMMU_CTRL_OPERATING_FLAGS | MMMU_CTRL_TLB_CLEAR);
-+		readl_poll_timeout_atomic(mmu->reg_base + MMMU_CTRL_OFFSET, val,
-+					  !(val & MMMU_CTRL_TLB_CLEARING), 0,
-+					  1000);
++	entry = BCM2712PT_VALID | attrs->descriptor_bits |
++		FIELD_PREP(BCM2712PT_PFN, oalog2_div(oa, PT_GRANULE_LG2SZ));
++
++	if (pts->level == 1) {
++		/* Level 1 hugepage (4MB) */
++		entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 3);
++		WRITE_ONCE(tablep[pts->index], entry);
++		pts->entry = entry;
++		return;
++	}
++
++	if (oasz_lg2 == PT_GRANULE_LG2SZ) {
++		WRITE_ONCE(tablep[pts->index], entry);
++		pts->entry = entry;
 +	} else {
-+		bcm2712_iommu_shootdown_range(mmu, iova, size);
-+	}
++		struct pt_bcm2712 *table =
++			common_to_bcm2712pt(pts->range->common);
++		u32 *end;
 +
-+	spin_unlock_irqrestore(&mmu->hw_lock, flags);
++		tablep += pts->index;
++		end = tablep + log2_to_int(oasz_lg2 - PT_GRANULE_LG2SZ);
++
++		/*
++		 * Leaf entries can contain hints indicating bigpage/superpage
++		 * contiguous mappings to permit TLB optimization
++		 */
++		if (oasz_lg2 == table->superpage_lg2)
++			entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 2);
++		else if (oasz_lg2 == table->bigpage_lg2)
++			entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 1);
++
++		pts->entry = entry;
++		for (; tablep != end; tablep++, entry++)
++			WRITE_ONCE(*tablep, entry);
++	}
++}
++#define pt_install_leaf_entry bcm2712pt_install_leaf_entry
++
++static inline bool bcm2712pt_install_table(struct pt_state *pts,
++					   pt_oaddr_t table_pa,
++					   const struct pt_write_attrs *attrs)
++{
++	pt_bcm2712_entry_t entry =
++		BCM2712PT_VALID |
++		FIELD_PREP(BCM2712PT_PFN,
++			   oalog2_div(table_pa, PT_GRANULE_LG2SZ));
++
++	return pt_table_install32(pts, entry);
++}
++#define pt_install_table bcm2712pt_install_table
++
++static inline void bcm2712pt_attr_from_entry(const struct pt_state *pts,
++					     struct pt_write_attrs *attrs)
++{
++	attrs->descriptor_bits = pts->entry & BCM2712PT_WRITE;
++}
++#define pt_attr_from_entry bcm2712pt_attr_from_entry
++
++/* --- iommu */
++#include <linux/generic_pt/iommu.h>
++#include <linux/iommu.h>
++
++#define pt_iommu_table pt_iommu_bcm2712
++
++/* The common struct is in the per-format common struct */
++static inline struct pt_common *common_from_iommu(struct pt_iommu *iommu_table)
++{
++	return &container_of(iommu_table, struct pt_iommu_table, iommu)
++			->bcm2712pt.common;
++}
++
++static inline struct pt_iommu *iommu_from_common(struct pt_common *common)
++{
++	return &container_of(common, struct pt_iommu_table, bcm2712pt.common)
++			->iommu;
++}
++
++static inline int bcm2712_pt_iommu_set_prot(struct pt_common *common,
++					    struct pt_write_attrs *attrs,
++					    unsigned int iommu_prot)
++{
++	attrs->descriptor_bits = 0;
++	if (iommu_prot & IOMMU_WRITE)
++		attrs->descriptor_bits |= BCM2712PT_WRITE;
 +	return 0;
 +}
++#define pt_iommu_set_prot bcm2712_pt_iommu_set_prot
 +
-+static void bcm2712_iommu_sync(struct iommu_domain *domain,
-+			       struct iommu_iotlb_gather *gather)
++static inline int bcm2712_pt_fmt_init(struct pt_iommu_table *fmt_table,
++				      const struct pt_iommu_bcm2712_cfg *cfg)
 +{
-+	bcm2712_iommu_sync_range(domain, gather->start,
-+				 gather->end - gather->start + 1);
-+}
++	fmt_table->bcm2712pt.bigpage_lg2 = cfg->bigpage_lg2;
++	fmt_table->bcm2712pt.superpage_lg2 = cfg->superpage_lg2;
 +
-+static int bcm2712_iommu_sync_map(struct iommu_domain *domain,
-+				  unsigned long iova, size_t size)
-+{
-+	return bcm2712_iommu_sync_range(domain, iova, size);
-+}
-+
-+static void bcm2712_iommu_sync_all(struct iommu_domain *domain)
-+{
-+	size_t aperture_size = domain->geometry.aperture_end -
-+			       domain->geometry.aperture_start + 1;
-+
-+	bcm2712_iommu_sync_range(domain, domain->geometry.aperture_start,
-+				 aperture_size);
-+}
-+
-+static void bcm2712_iommu_domain_free(struct iommu_domain *domain)
-+{
-+	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
-+	struct bcm2712_iommu *mmu = mydomain->mmu;
-+
-+	if (mmu && mmu->domain == mydomain) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&mmu->hw_lock, flags);
-+		MMU_WR(MMMU_CTRL_OFFSET, 0);
-+		mmu->domain = NULL;
-+		spin_unlock_irqrestore(&mmu->hw_lock, flags);
-+	}
-+
-+	pt_iommu_deinit(&mydomain->pt.iommu);
-+	if (mydomain->default_page)
-+		iommu_free_pages(mydomain->default_page);
-+	kfree(mydomain);
-+}
-+
-+static const struct iommu_domain_ops bcm2712_paging_domain_ops = {
-+	IOMMU_PT_DOMAIN_OPS(bcm2712),
-+	.attach_dev	 = bcm2712_iommu_attach_dev,
-+	.iotlb_sync      = bcm2712_iommu_sync,
-+	.iotlb_sync_map  = bcm2712_iommu_sync_map,
-+	.flush_iotlb_all = bcm2712_iommu_sync_all,
-+	.free		 = bcm2712_iommu_domain_free,
-+};
-+
-+static struct iommu_domain *bcm2712_iommu_domain_alloc(struct device *dev)
-+{
-+	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
-+	struct bcm2712_iommu_domain *domain;
-+	struct pt_iommu_bcm2712_cfg cfg;
-+	int ret;
-+
-+	domain = kzalloc_obj(*domain);
-+	if (!domain)
-+		return NULL;
-+
-+	domain->mmu = mmu;
-+	domain->pt.iommu.iommu_device = mmu->dev;
-+	memset(&cfg, 0, sizeof(cfg));
-+	cfg.common.features = BIT(PT_FEAT_DMA_INCOHERENT);
-+
-+	/* Bigpage and superpage sizes are typically 64K and 1M, but may vary */
-+	if (mmu->bigpage_size)
-+		cfg.bigpage_lg2 = ilog2(mmu->bigpage_size);
-+	if (mmu->superpage_size)
-+		cfg.superpage_lg2 = ilog2(mmu->superpage_size);
-+
-+	/* 2-level format: 10-bit L1 + 10-bit L2 + 12-bit page offset */
-+	cfg.common.hw_max_vasz_lg2 =
-+		(2 * PTES_PER_IOPG_SHIFT) + IOMMU_PAGE_SHIFT;
-+
-+	/* PTEs encode a 28-bit output address PFN */
-+	cfg.common.hw_max_oasz_lg2 = 28 + IOMMU_PAGE_SHIFT;
-+
-+	ret = pt_iommu_bcm2712_init(&domain->pt, &cfg, GFP_KERNEL);
-+	if (ret)
-+		goto err;
-+
-+	/* Set up a default (error) page used to catch illegal reads/writes */
-+	domain->default_page = iommu_alloc_pages_sz(GFP_KERNEL, PAGE_SIZE);
-+	if (!domain->default_page)
-+		goto err;
-+
-+	domain->base.geometry.aperture_start = BCM2712_APERTURE_BASE;
-+	domain->base.geometry.aperture_end = BCM2712_APERTURE_END - 1;
-+	domain->base.geometry.force_aperture = true;
-+	domain->base.ops = &bcm2712_paging_domain_ops;
-+	return &domain->base;
-+
-+err:
-+	bcm2712_iommu_domain_free(&domain->base);
-+	return NULL;
-+}
-+
-+static struct bcm2712_iommu *
-+bcm2712_iommu_get_by_fwnode(struct fwnode_handle *fwnode)
-+{
-+	struct device *dev =
-+		bus_find_device_by_fwnode(&platform_bus_type, fwnode);
-+	struct bcm2712_iommu *mmu;
-+
-+	if (!dev)
-+		return NULL;
-+
-+	mmu = dev_get_drvdata(dev);
-+	put_device(dev);
-+	return mmu;
-+}
-+
-+static struct iommu_device *bcm2712_iommu_probe_device(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct bcm2712_iommu *mmu;
-+
-+	if (!fwspec || !fwspec->iommu_fwnode)
-+		return ERR_PTR(-ENODEV);
-+
-+	mmu = bcm2712_iommu_get_by_fwnode(fwspec->iommu_fwnode);
-+	if (!mmu)
-+		return ERR_PTR(-ENODEV);
-+
-+	dev_iommu_priv_set(dev, mmu);
-+
-+	return &mmu->iommu;
-+}
-+
-+static int bcm2712_iommu_of_xlate(struct device *dev,
-+				  const struct of_phandle_args *args)
-+{
-+	return iommu_fwspec_add_ids(dev, args->args, 0);
-+}
-+
-+static const struct iommu_ops bcm2712_iommu_ops = {
-+	.identity_domain = &bcm2712_identity_domain,
-+	.blocked_domain = &bcm2712_blocking_domain,
-+	.domain_alloc_paging = bcm2712_iommu_domain_alloc,
-+	.probe_device = bcm2712_iommu_probe_device,
-+	.device_group = generic_single_device_group,
-+	.of_xlate = bcm2712_iommu_of_xlate,
-+};
-+
-+static const struct of_device_id bcm2712_iommu_of_match[] = {
-+	{ .compatible = "brcm,bcm2712-iommu" },
-+	{ /* sentinel */ }
-+};
-+
-+static int bcm2712_iommu_init_cache(struct bcm2712_iommu *mmu,
-+				    struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct platform_device *cache_pdev;
-+	struct device_node *cache_np;
-+
-+	cache_np = of_parse_phandle(dev->of_node, "brcm,iommu-cache", 0);
-+
-+	/* Fall back on 'cache' property used in old/downstream firmware */
-+	if (!cache_np)
-+		cache_np = of_parse_phandle(dev->of_node, "cache", 0);
-+
-+	if (!cache_np)
-+		return dev_err_probe(dev, -ENOENT,
-+				     "missing brcm,iommu-cache property\n");
-+
-+	cache_pdev = of_find_device_by_node(cache_np);
-+	of_node_put(cache_np);
-+	if (!cache_pdev)
-+		return -EPROBE_DEFER;
-+
-+	mmu->cache = platform_get_drvdata(cache_pdev);
-+	if (!mmu->cache) {
-+		put_device(&cache_pdev->dev);
-+		return -EPROBE_DEFER;
-+	}
-+
-+	put_device(&cache_pdev->dev);
++	pt_top_set_level(&fmt_table->bcm2712pt.common, PT_MAX_TOP_LEVEL);
 +	return 0;
 +}
++#define pt_iommu_fmt_init bcm2712_pt_fmt_init
 +
-+static int bcm2712_iommu_probe(struct platform_device *pdev)
++static inline void
++bcm2712pt_iommu_fmt_hw_info(struct pt_iommu_bcm2712 *table,
++			    const struct pt_range *top_range,
++			    struct pt_iommu_bcm2712_hw_info *info)
 +{
-+	struct device *dev = &pdev->dev;
-+
-+	struct bcm2712_iommu *mmu;
-+	int ret;
-+
-+	mmu = devm_kzalloc(dev, sizeof(*mmu), GFP_KERNEL);
-+	if (!mmu)
-+		return -ENOMEM;
-+
-+	mmu->dev = dev;
-+	spin_lock_init(&mmu->hw_lock);
-+
-+	mmu->reg_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(mmu->reg_base))
-+		return PTR_ERR(mmu->reg_base);
-+
-+	ret = bcm2712_iommu_init_cache(mmu, pdev);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, mmu);
-+	bcm2712_iommu_init(mmu);
-+
-+	ret = iommu_device_sysfs_add(&mmu->iommu, dev, NULL, dev_name(dev));
-+	if (ret)
-+		return ret;
-+
-+	ret = iommu_device_register(&mmu->iommu, &bcm2712_iommu_ops, dev);
-+	if (ret) {
-+		iommu_device_sysfs_remove(&mmu->iommu);
-+		return ret;
-+	}
-+
-+	return 0;
++	info->pt_base = virt_to_phys(top_range->top_table);
++	PT_WARN_ON(info->pt_base & ~PT_TOP_PHYS_MASK);
 +}
++#define pt_iommu_fmt_hw_info bcm2712pt_iommu_fmt_hw_info
 +
-+static struct platform_driver bcm2712_iommu_driver = {
-+	.driver	= {
-+		.name		= "bcm2712-iommu",
-+		.of_match_table	= bcm2712_iommu_of_match,
-+		.suppress_bind_attrs = true,
++#if defined(GENERIC_PT_KUNIT)
++static const struct pt_iommu_bcm2712_cfg bcm2712_kunit_fmt_cfgs[] = {
++	[0] = {
++		.common.hw_max_vasz_lg2 = 32,
++		.common.hw_max_oasz_lg2 = 40,
++		.bigpage_lg2 = 16,
++		.superpage_lg2 = 20,
 +	},
-+	.probe	= bcm2712_iommu_probe,
 +};
-+builtin_platform_driver(bcm2712_iommu_driver);
++#define kunit_fmt_cfgs bcm2712_kunit_fmt_cfgs
++enum { KUNIT_FMT_FEATURES = 0 };
++#endif
 +
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Daniel Drake <dan@reactivated.net>");
-+MODULE_DESCRIPTION("Broadcom BCM2712 IOMMU driver");
-diff --git a/drivers/iommu/bcm2712-iommu.h b/drivers/iommu/bcm2712-iommu.h
-index 18969b703e8c..30e08b3729d9 100644
---- a/drivers/iommu/bcm2712-iommu.h
-+++ b/drivers/iommu/bcm2712-iommu.h
-@@ -19,4 +19,8 @@
- #define BCM2712_APERTURE_SIZE    SZ_4G
- #define BCM2712_APERTURE_END     (BCM2712_APERTURE_BASE + BCM2712_APERTURE_SIZE)
++#endif
+diff --git a/drivers/iommu/generic_pt/fmt/defs_bcm2712.h b/drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+new file mode 100644
+index 000000000000..f1d983be1716
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __GENERIC_PT_FMT_DEFS_BCM2712_H
++#define __GENERIC_PT_FMT_DEFS_BCM2712_H
++
++#include <linux/generic_pt/common.h>
++#include <linux/types.h>
++
++typedef u32 pt_bcm2712_entry_t;
++typedef u64 pt_vaddr_t;
++typedef u64 pt_oaddr_t;
++
++struct bcm2712pt_write_attrs {
++	pt_bcm2712_entry_t descriptor_bits;
++	gfp_t gfp;
++};
++#define pt_write_attrs bcm2712pt_write_attrs
++
++#endif
+diff --git a/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c b/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+new file mode 100644
+index 000000000000..855a3a07fb63
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+@@ -0,0 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#define PT_FMT bcm2712
++#define PT_SUPPORTED_FEATURES (BIT(PT_FEAT_DMA_INCOHERENT) | BIT(PT_FEAT_NO_SW_BIT))
++/* BCM2712 has no spare software bits for tracking cache flushes */
++#define PT_FORCE_ENABLED_FEATURES BIT(PT_FEAT_NO_SW_BIT)
++
++#include <linux/generic_pt/iommu.h>
++#include "iommu_template.h"
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index 9e8001f7b069..073332de7400 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -220,4 +220,10 @@ enum {
+ 	PT_FEAT_X86_64_AMD_ENCRYPT_TABLES = PT_FEAT_FMT_START,
+ };
  
-+struct bcm2712_iommu_cache;
++struct pt_bcm2712 {
++	struct pt_common common;
++	u8 bigpage_lg2;
++	u8 superpage_lg2;
++};
 +
-+void bcm2712_iommu_cache_flush(struct bcm2712_iommu_cache *cache);
+ #endif
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index dd0edd02a48a..13ebb72a67de 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -346,6 +346,18 @@ struct pt_iommu_x86_64_hw_info {
+ 
+ IOMMU_FORMAT(x86_64, x86_64_pt);
+ 
++struct pt_iommu_bcm2712_cfg {
++	struct pt_iommu_cfg common;
++	u8 bigpage_lg2;
++	u8 superpage_lg2;
++};
 +
++struct pt_iommu_bcm2712_hw_info {
++	phys_addr_t pt_base;
++};
++
++IOMMU_FORMAT(bcm2712, bcm2712pt);
++
+ #undef IOMMU_PROTOTYPES
+ #undef IOMMU_FORMAT
  #endif
 
 -- 
