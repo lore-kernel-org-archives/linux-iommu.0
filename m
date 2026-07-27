@@ -1,48 +1,98 @@
-Received: from out13-173.antispamcloud.com (out13-173.antispamcloud.com [185.201.17.173])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9796663B9;
-	Mon, 27 Jul 2026 22:46:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E0E431ED80;
+	Mon, 27 Jul 2026 22:56:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785192373; cv=none; b=Yo+tN+E0N8+FfD7tBC0r5qNWD1LWqI4bE7ZMshww9DuC4luuTO5+0mjuTa8UqV5BcxLDlqGa2YIr81mY6IP0+Z3ZI/eGscYeq6JLl+DancAoCRjFgWH3ahpwP3FmseiEM2tnnRkzCZtAWCH6Nap5/q+dbk6Ojk3jysiljrWYOkI=
+	t=1785192965; cv=none; b=U47DxFXbM4HSYkKH1TZ2axzuplxkbkf8KKI8o1YJlm97sd6Vkubuxi8O654JlElW0yvVMZzBYkSuCr/NebeLhb2YdPtHCZrDD7LLM/ubRugmef+vTmzSCKxUYUwXXIsPXodYrFJ6Y+1EMO6jKxWheLj50mPo595YuRGvLB71gDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785192373; c=relaxed/simple;
-	bh=CicsgFggvW1eANd8ZDR3bX7ikXQsWDx/XYgM89ppqXo=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Q2Dr4v03xJCvIvYbcTYW1BVf4MA/IMk14fSQnPr7r+V4wDxsKVuFAVmISPjbXB+fouh2LOq4MdcIB3GpFc5gwIsLTz2WVgu7N0GXPFyDv67Eoo1HB/ifGJ2ONDbLj3SvlrpNWvl1EGtQ27c8oXV1LUd/rofCoEZZDp5VQsIbff8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=UCilzL4M; arc=none smtp.client-ip=185.201.17.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1785192965; c=relaxed/simple;
+	bh=oEgoEtojyQ9PC8g7uhG7viM9B7fGAJubrsCe9lk5/YY=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=DIUMCMU2SIQHdp3QhJBxNx+FOc7dtpZh/E2wUrQZvOXlkSOCbHcf1/2BOUUe0jVtPq7Su0hSdgrWmxjKIeQQu1q/E/Tl6qozvJU2kZidb6zjqZGsFuVg61zAcbaZzOtFBM5Or0IMMa3V9lkaygGaDwUriiaKa2QrMZIm+0LQ1gY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iwaG5uRX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="UCilzL4M"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx198.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1woSC0-00FDwj-1a; Mon, 27 Jul 2026 22:45:00 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Cc:To:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Message-Id:Date:Subject:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=hyHKtkGi7woybfIrgSqWUmKJ5jpuveV8TLON1rwbb2c=; b=UCilzL4M7m0SVntEPlx3EZVZbq
-	OCUFSTSBPx1w6789Pg4NrwhivmgA5C5LHWUVCFiEXSz8WVeiQdjIgicW6rFKyIVGsH2rSwuIFftGo
-	keS4N6yUCiTgdyB2RMgczLEZlpR3AxHk1R0j/9bCNOtewXta8vX1/HL8VT1KDTpFFxdB+DcB09/CJ
-	xhjAGSpHrt1ekxpsk5o4DvMLOKE+9ODL1CBuIg4ZoDt3gGl7iMdtj0LLLbY5lMo2/Vhh6HSUD97Kw
-	btwyiO/Z/l6a0q4iXyimFbUtvXIrWbeKS6cq+usZKPSUU7+UPqEUzVLdwzgCvNNE4uWVRLId9gbt5
-	UV6nXhlA==;
-Received: from [188.251.249.2] (port=52006 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.99.4)
-	(envelope-from <dan@reactivated.net>)
-	id 1woSBr-0000000AlhO-1LDa;
-	Mon, 27 Jul 2026 20:44:47 +0000
-From: Daniel Drake <dan@reactivated.net>
-Subject: [PATCH v2 0/5] Add support for Broadcom BCM2712 IOMMU driver
- (Raspberry Pi 5)
-Date: Mon, 27 Jul 2026 21:43:55 +0100
-Message-Id: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iwaG5uRX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04CDB1F000E9;
+	Mon, 27 Jul 2026 22:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785192964;
+	bh=QggSvxtNQ67iS+XUwqrDlrH2xraHrxGb+vgcG7y0WsY=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=iwaG5uRX32rTgcSQn1oI8cDhvVdBgF7xNVMcmwA5nB2roQEpjWkBM9/elDUKMWR+e
+	 A0p9zb+3tSs36tELwjTyibEs5znVgnOoeBgaUwvlk+h9jnbCN1e+v9elShDExZRawl
+	 S9FIBGMRZSowIq2RtsqIUQJ/GKy2epEJEkS13zWkXc/uH+dFvxm4jWJtqykilYp8FZ
+	 n/dZuVVGnI4Oh8Jv/TOV8zbNHWDjAXhVQbUPhHErbAZOrGNAAwjAULYVaj3h2kBbW9
+	 ED2feS2pNPbAGb5xCgo1ctL4J3aD2Ir+AJmF+Wa3lGIyvJ/mNC9waIoSbc3rE33Rm4
+	 vgzkKLQuteGUQ==
+From: Mark Brown <broonie@kernel.org>
+To: Julia.Lawall@inria.fr, Alex Deucher <alexander.deucher@amd.com>, 
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, 
+ Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, 
+ Borislav Petkov <bp@alien8.de>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, 
+ David Airlie <airlied@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+ Eric Dumazet <edumazet@google.com>, Florian Westphal <fw@strlen.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Hans de Goede <hansg@kernel.org>, Hans Verkuil <hverkuil@kernel.org>, 
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+ Herbert Xu <herbert@gondor.apana.org.au>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Jakub Kicinski <kuba@kernel.org>, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ Jani Nikula <jani.nikula@linux.intel.com>, Jaroslav Kysela <perex@perex.cz>, 
+ Jason Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Johan Hovold <johan@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, 
+ Julian Anastasov <ja@ssi.bg>, Leon Romanovsky <leon@kernel.org>, 
+ Liam Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ "Martin K. Petersen" <martin.petersen@oracle.com>, 
+ Matthew Sakai <msakai@redhat.com>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, 
+ Maxime Ripard <mripard@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Mike Rapoport <rppt@kernel.org>, 
+ Miri Korenblit <miriam.rachel.korenblit@intel.com>, 
+ Nicolas Palix <nicolas.palix@imag.fr>, 
+ Pablo Neira Ayuso <pablo@netfilter.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Ping-Ke Shih <pkshih@realtek.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Sebastian Reichel <sre@kernel.org>, 
+ Shuah Khan <shuah@kernel.org>, Simona Vetter <simona@ffwll.ch>, 
+ Simon Horman <horms@verge.net.au>, Stephen Boyd <sboyd@kernel.org>, 
+ Steve French <sfrench@samba.org>, Takashi Iwai <tiwai@suse.com>, 
+ Thomas Renninger <trenn@suse.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Tony Luck <tony.luck@intel.com>, Tvrtko Ursulin <tursulin@ursulin.net>, 
+ Vadim Fedorenko <vadim.fedorenko@linux.dev>, Vinod Koul <vkoul@kernel.org>, 
+ Will Deacon <will@kernel.org>, Yazen Ghannam <Yazen.Ghannam@amd.com>, 
+ Sang-Heon Jeon <ekffu200098@gmail.com>
+Cc: cocci@inria.fr, amd-gfx@lists.freedesktop.org, 
+ dmaengine@vger.kernel.org, dm-devel@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, 
+ linux-cifs@vger.kernel.org, linux-clk@vger.kernel.org, 
+ linux-crypto@vger.kernel.org, linux-edac@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, 
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pm@vger.kernel.org, 
+ linux-rdma@vger.kernel.org, linux-rtc@vger.kernel.org, 
+ linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, 
+ linux-sound@vger.kernel.org, linux-usb@vger.kernel.org, 
+ linux-wireless@vger.kernel.org, lvs-devel@vger.kernel.org, 
+ netdev@vger.kernel.org, netfilter-devel@vger.kernel.org, 
+ nouveau@lists.freedesktop.org, platform-driver-x86@vger.kernel.org
+In-Reply-To: <20260723184538.3888637-1-ekffu200098@gmail.com>
+References: <20260723184538.3888637-1-ekffu200098@gmail.com>
+Subject: Re: (subset) [PATCH 00/36] treewide: remove conditional returns
+ with no effect
+Message-Id: <178515520105.50339.6347304746485042237.b4-ty@b4>
+Date: Mon, 27 Jul 2026 13:26:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,134 +101,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNTQ7CIBhEr2JYiwGitXXlPUwX/Iz2W0ANUKJpe
- nehF3A1ecnMvJUlREJit8PKIgolmkMFdTwwO+nwAidXmSmhOnGVihvrVUuavV94WoynzBXE0A8
- Duos9szp9Rzzps98+xspGJ3ATdbBTO/M6ZcRWnCjlOX53fZGt/sdUJBe8F5DCOgcFfY/QNlPRG
- e4UkNm4bdsPOm+Qq9cAAAA=
-X-Change-ID: 20260712-bcm2712-iommu-submit-2e09899e65c4
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Daniel Drake <dan@reactivated.net>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- Jason Gunthorpe <jgg@ziepe.ca>
-X-Mailer: b4 0.14.3
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: SB/global_tokens (0.00825616671873)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVffZzyKMhQU0ACUwGAB5Z6/maTn/LEP0vD
- mTmuk24ExCu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVINPDEsL21EZksVf1uOFaoUYGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWAIN4GsiK0O3K+JEByc7IobeB7itP8hgjDRserKv4bhb/pXHHNX+LCF5x5jewa7FkNWBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
- j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5AyO3cajqKP
- N2TQucmsPqkADN9YaMSDrgb8f3EnZj8JSSVcMQtcPaBj0oM3kYoQzFFh/1fSrLRlrfqhJUG8z4R9
- /uECIyfb59UKcPyKB7/seAhbEXLAIlQO41grCDpV7x4SG0sbLPkEPwaTR9JCgIIwUaKDJQlUrg+c
- sO2wlDq1j4FhXBjpwUH3T5DwogMcW3n9eq+zqef+wJHXDp70tdmxlpLzlnjbD/7Y4GiVM0Vs+iZc
- VYJfyg12CBbscT1cNN1Jsfa3HCw6gGU1+SdwTBKf9HkMLWk/C0vLNlLzxrmqyasitZFgJIlVn1LH
- h1zXo+HQWBsS3EZt9a+xyS/dOq7TUqYyGJZd46kBXaReSYigCAhlVRgJDS0AzAOltsq3PRbZ63Kg
- QzPNdZuTKxU6aj16VjYz3CPunnl+LI7l5fzInLuGrwLN0VeqvzLlcRxwGgEvNMtirEVgSD8PZy6W
- zRj7WHIZl76lsW55eQV2n2lY9hpC2YtTBQO/Nu6TVwO6CV7e9KZY7AUftyem5JXm2HSubn2WKeN5
- PBvIRkiU4E8H4e7X9sw5VBsaDF9CxNBjABkH3hTMjGc3lQAtuckU+MNQlLpWhjjykqbde3UjWoF9
- cBo9q3T2iWmfFRW/Psbz8QFVy0V5rN3M2TZ9grsaBV7hOgCSkfEzb1aIdlnbLZp4DCYOuNFQ+5eG
- III/qgXB3gv2NI/ukWuQBNrXV+EmIqM8SxKOhcObZXWnkEw+6F9CGyYC9AhR1ZLKC40YaZQ+trtn
- c3HOUHNRces2OQfEVEXjAoud+gYHJw+dy/si0pxrjF6izxFc684o/A69h/CvHI/GeXW8oEyu47TQ
- DqTi6GKwcIp24VOsP5eu885wo+t+ynT3Y80OmAux3oN13+ztUzneZGHdcUfaxYq0ZH+Cc9iqnocR
- WxNUEo38DE53aa5lZFsy2onypIM6qetbKE/25wcBuDp1Y8rQ6lypv7mCnLyLSvvyr/35XrlgUw0d
- o1iX+nVr3Z1SFe+4OrB9Rro7EpOy1Um2iVRPSUxhtw3wz3yqYcOpyKA69LF1Ge2GaGfxmfp09oMS
- l8c4ShQ//ve+MHzjs9MOb3HXByN6cty/LT6lgOv2AzRyYGlsi3xQeIJ6TM5o5F89lTjPCn99uwfA
- g5wm8t3Xj/LzZ5s/OJg1L2asZ/4te3BTDYEBZZ1yPQnIH5IVn/pKnch3lmmwSrgldH+Ps9MOb3HX
- ByN6cty/LT6lgO+c9AHZZ12442bv/l3jZJg=
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1395; i=broonie@kernel.org;
+ h=from:subject:message-id; bh=oEgoEtojyQ9PC8g7uhG7viM9B7fGAJubrsCe9lk5/YY=;
+ b=owEBbQGS/pANAwAKASTWi3JdVIfQAcsmYgBqZ+HxlIWhtS7M/+/D/kSsIotZNE7ycdvTNKMa6
+ lyMcsUy1YGJATMEAAEKAB0WIQSt5miqZ1cYtZ/in+ok1otyXVSH0AUCamfh8QAKCRAk1otyXVSH
+ 0NGoB/9aZSWKSSxB+DoiO9o+r0R7LvQ0b9P0b+u/ow+7Ti4Va043c7UzGI2RzCGdUpf18XgLn6f
+ SgEv95GzlB+upqVsxmPG9VHhXWw4Ho9J4p/hSGXTDgAS8ErF8GjIkiAzWtWwlF1NwqBzKdr1HBU
+ 4bzLooMHmkm+sRhw0K+K8vYxKzoIVIF4rw3OtvuVpbcnMjoni4zgFcLTc5cd+g7gZ+ms/PpNPge
+ 1bCGwvXOdpSE1Sx0RqUVVFnzDZUByQ/Qgq4t95aAwkznICTyGzRGtCagn7hNdby/Adb/VqLQiGG
+ EXfGwi5kgCay4GMGfP+CcNTcNXARRSisUOfJQUCdGh8to0xz
+X-Developer-Key: i=broonie@kernel.org; a=openpgp;
+ fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
 
-Hi,
+On Fri, 24 Jul 2026 03:45:02 +0900, Sang-Heon Jeon wrote:
+> treewide: remove conditional returns with no effect
+> 
+> Hello,
+> 
+> While reading mm/memblock, I found a conditional return where both
+> branches return the same value:
+> 
+> [...]
 
-This series adds a driver for the Broadcom BCM2712 IOMMU found on
-Raspberry Pi 5, and hooks up the display controller IOMMU for efficient
-management of graphics memory. This is adapted from the downstream driver
-from Raspberry Pi (original author Nick Hollinghurst), with main changes:
- - Implement the page table management using generic_pt
- - Implement brcm,iommu-cache as standards-compliant DT property, while
-   maintaining compatibility with existing shipped RPi firmware
- - Drop the dma-iova-offset hack, used to work around some issue seen with
-   dma-ranges. This will need to be investigated separately and solved
-   properly. (It's not needed for display controller iommu support included
-   here.)
- - Misc simplifications/standardisations/cleanups
- 
-The IOMMU works strictly with 4KB pages. This means that unfortunately
-when the kernel is compiled with PAGE_SIZE=16KB (the Raspberry Pi 5
-kernel default), 12KB is wasted in each page that is allocated for page
-tables. I plan to address this in followup work.
+Applied to
 
-It has been tested on Raspberry Pi 5 using a 3D-accelerated graphical
-environment which causes plenty of IOMMU maps & unmaps.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-7.3
 
-Feedback and testing welcome!
+Thanks!
 
-Changes in v2:
-- Use iommu_fwspec in xlate & probe_device
-- Add blocked_domain support
-- Simplify page size configuration between iommu driver and format
-- Introduce PT_FEAT_NO_SW_BIT flag to allow formats to explicitly opt-in to
-  a defensive flushing algorithm when no sw bit is available
-- Implement 4MB pages at Level 1; this is more efficient and means the
-  "allow full-table contiguous leaves in unit tests" commit has been
-  dropped because it is no longer needed.
-- Hardcode the aperture in an unused part of the address space, removing
-  it from DT (it's a software-specific decision, not an attribute of the
-  hardware), adding more explanatory comments
-- Use pt_full_va_prefix to have the PT format operate within the aperture
-  space, enabling use of IOMMU_PT_DOMAIN_OPS
-- Add more dt-bindings explanation to brcm,iommu-cache and drop docs
-  around the cache property used in RPi firmware (the driver still supports
-  this however, for fw compat reasons)
-- Correct iommu device address in bcm2712.dtsi
-- Link to v1: https://lore.kernel.org/r/20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net
+[14/36] ASoC: remove conditional return with no effect
+        https://git.kernel.org/broonie/misc/c/ca9b51f41c9d
+[28/36] regulator: wm831x-isink: remove conditional return with no effect
+        https://git.kernel.org/broonie/misc/c/9396a1d9e142
 
----
-Daniel Drake (5):
-      generic_pt: allow missing sw bit in DMA_INCOHERENT case
-      dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
-      iommu/generic_pt: Add Broadcom BCM2712 page table format
-      iommu: Add Broadcom BCM2712 IOMMU driver
-      arm64: dts: broadcom: bcm2712: Add GPU IOMMU and IOMMU cache nodes
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
- .../bindings/iommu/brcm,bcm2712-iommu.yaml         |  48 ++
- .../bindings/iommu/brcm,bcm2712-iommuc.yaml        |  35 ++
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi          |  14 +
- drivers/iommu/Kconfig                              |  15 +
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/bcm2712-iommu-cache.c                |  73 +++
- drivers/iommu/bcm2712-iommu.c                      | 582 +++++++++++++++++++++
- drivers/iommu/bcm2712-iommu.h                      |  26 +
- drivers/iommu/generic_pt/.kunitconfig              |   1 +
- drivers/iommu/generic_pt/Kconfig                   |  10 +
- drivers/iommu/generic_pt/fmt/Makefile              |   2 +
- drivers/iommu/generic_pt/fmt/bcm2712.h             | 283 ++++++++++
- drivers/iommu/generic_pt/fmt/defs_bcm2712.h        |  18 +
- drivers/iommu/generic_pt/fmt/iommu_bcm2712.c       |   8 +
- drivers/iommu/generic_pt/iommu_pt.h                |  13 +-
- drivers/iommu/generic_pt/pt_fmt_defaults.h         |   7 +
- include/linux/generic_pt/common.h                  |  13 +
- include/linux/generic_pt/iommu.h                   |  12 +
- 18 files changed, 1156 insertions(+), 5 deletions(-)
----
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
-change-id: 20260712-bcm2712-iommu-submit-2e09899e65c4
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-Best regards,
--- 
-Daniel Drake <dan@reactivated.net>
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
 
