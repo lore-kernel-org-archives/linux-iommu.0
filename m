@@ -1,98 +1,150 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 112B230F523
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 10:27:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785148075; cv=none; b=jSmFIKrBmMk+I8g/ueq8yMs2+TdLAGJRQ7ISNdmVKbb5J0cMInOlIb1PjBpKryFfLdKTu46ni7OPmAoaOUiYyiHyyoGdNyBOUH3NweLWJQ93JJTC7fFb7ckaaYjnDfLk5Oc72Hm0dF+RcptZ7N3cpyjiAWL9gNeXMl8dmkFZxp8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785148075; c=relaxed/simple;
-	bh=q0EI4rNp2Py4ipVMPcubth22UfENKlUF51C+O+Q0xL4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cdp3F3MeLSdaKkhU9FdINKBf9Bo9YtWPYV/THR0GGXdUgs1eWwcht2j2D8Psh8htGni9htXQwOPAYZgmydQ4QGP+QmZkY5gLtctQ2lEirBvU3Sh67dICR7I8Fel7xPpFlG8a3wJCBo/KsMG90jYSI7wvzO7KuvM9uRzFeB0gjQw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=rQreKK17; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011048.outbound.protection.outlook.com [40.93.194.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4849F3890FB
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 10:38:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785148719; cv=fail; b=eXmgmZ3EMOTL7IXzzc4jiXcrjnJWfEjRpGYkNIF2LJSsdvKyr3+KYeaRT88wJfWwzT/UoB45GoLJeweKB95Dpn6VwpfmLVT8UcOae3H/kwHpwwWEFZGwFDlQnrZdIF8dN2FKOjdtaawa6OXS0fHjX+/ckshFdw+LAfmRUCELitc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785148719; c=relaxed/simple;
+	bh=gYkIfP5VfZiqRvynuFJOeepRV9AxF7nZNEpjJIGG9K8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=QHIo0Z9CEi0fzWXWhKoAyQHqWaBrcgv5d6CUodUNA3Fm7VqKfjjHfE8Zl78x4QMs/4Sj7oGrTHdY2E6Zfw8/x7icNvWZSBAaibuYYxVemi+9X/P5lbb6T4AaeuosSDUlyE2ILCGhcujYj3oyK4iJK/HGvQ8VXIGxQoiS/JbW8Mw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=aAto3MuL; arc=fail smtp.client-ip=40.93.194.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="rQreKK17"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E6645143D;
-	Mon, 27 Jul 2026 03:27:45 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EC6B53FA21;
-	Mon, 27 Jul 2026 03:27:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1785148070; bh=q0EI4rNp2Py4ipVMPcubth22UfENKlUF51C+O+Q0xL4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=rQreKK17p11RuffLSZL52pe4G7oyjENlF76bAH8Tc0miNBvJGEdSJrVFAZ2U69EzS
-	 YFJhBYHt4KuU4N6RuXOVNOGOMUBT+gBi2uH6OWdLEzrjSQadWgTd6NRuxZsl5lTdbY
-	 pMpI/WRQiaPODBFdKuph2q5yqgUrw17w3Trm+aIs=
-Message-ID: <0a10a19d-690c-42ee-aedc-83906b9fd9e0@arm.com>
-Date: Mon, 27 Jul 2026 11:27:47 +0100
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="aAto3MuL"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ma3NzOpDlGHX2QU2HIdsa3F/4zrQNcL9aqtOARLabiZjhPjZ/STNbdtzQCHgqNrm4Au/iK1TOE9n/eopYc+Yq/lewUj6G29UJ3YK/J318/aaikmpwriBClKkRPE3/BMThpwErCX4QrAgm1wVsvGmWiLEWCK2YO3hVvR6sv/mBve88eOoctYPapzaHWsqoEUWhT/klPIQIAzhFD+0hRjpN43DgnBE5APKsFzejHVCL7siXgbfSccJKCSrfzuASQQ+XvlPVOHiOcVoRxdqj/ClioyeIjkVtbvSyyRnqmW4pndQJb64+eNDNZy9b4MepKpKm6M2koiiZowBMAuAUgdvzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zvILWDWhCWGS/Buz3oDd//qhtaHIJ/QC6wkfKcV4Hac=;
+ b=IRwMA8DrEvxzhD38BU2ia0byyzNt9Km6GwfrfH2PhP9+9BAl+NWPw5KXlSjjud3I3y85/fCMyyA/MKZ5afmqBhVw7IcWRSC0HFerkDwXeUlV191peDIKuJeIOLwq9uoqgjcgSdmSMqMr6xgdX7bhvDawUB2JAf6AxYmnV8ohnMUHkLiQA/YqqVoopA6cirytE7f8TIH01PJxpw7YMOV9Wj4wC77LTmwbW6iuTTT2czTWZgMwqaJ+q1kW7i7sxC5tQo17iWMHYNmInP3Ns5nmDHgJ6c+E0Yj9iqF1MGmpJDGsxTVnrH9VlXeSfQGjUeU/BQkYGtUHSKqUl7V4xXeklg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zvILWDWhCWGS/Buz3oDd//qhtaHIJ/QC6wkfKcV4Hac=;
+ b=aAto3MuL+Dp++4ljEWX9hqYGzRRbbLynT9l5Jam5Dd+bg7GOyUfZJ1zqH9otdGgE3eFq/4lKzfwcxYELdNTcKqOHYDdLrOO9oPmmqy3Pm9ajNYEDYPDc7jzuB6CxW0SYD+bV13DqlPbprP+kUptNIqC72DxzO++egTqeTwjtXls=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com (2603:10b6:8:75::12) by
+ MW4PR12MB7192.namprd12.prod.outlook.com (2603:10b6:303:22a::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
+ 2026 10:38:34 +0000
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e]) by DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e%3]) with mapi id 15.21.0223.013; Mon, 27 Jul 2026
+ 10:38:33 +0000
+Message-ID: <7e10f25d-dd4f-4df1-9d40-c9d890641ca4@amd.com>
+Date: Mon, 27 Jul 2026 16:08:24 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] x86/events/amd/iommu: Fix cpumask of IOMMU events
+To: linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+ peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+ namhyung@kernel.org, mark.rutland@arm.com,
+ alexander.shishkin@linux.intel.com, jolsa@kernel.org, irogers@google.com,
+ adrian.hunter@intel.com, james.clark@linaro.org
+Cc: x86@kernel.org, dave.hansen@linux.intel.com, tglx@kernel.org,
+ bp@alien8.de, hpa@zytor.com, iommu@lists.linux.dev, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, sandipan.das@amd.com
+References: <20260517114026.6817-1-vasant.hegde@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260517114026.6817-1-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5P287CA0053.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1d3::18) To DS7PR12MB5766.namprd12.prod.outlook.com
+ (2603:10b6:8:75::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3: Add HAFT support for SVA
-To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: catalin.marinas@arm.com, joro@8bytes.org, jpb@kernel.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <cover.1784814923.git.robin.murphy@arm.com>
- <57ae366ec501a142bd20f2cc7d18b3eca8eeac25.1784814923.git.robin.murphy@arm.com>
- <amTH7xHBY2ol4LHw@nvidia.com> <amX25rcF-ETdnUPj@willie-the-truck>
- <amYxa51b2j/Cdw/6@nvidia.com> <amcTBlw16RKuZC8y@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <amcTBlw16RKuZC8y@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5766:EE_|MW4PR12MB7192:EE_
+X-MS-Office365-Filtering-Correlation-Id: 23bd99a6-fe6d-4aa8-1de7-08deebcb3530
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|366016|376014|1800799024|23010399003|921020|56012099006|11063799006|10067099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	XtrX4Gem9bi/NB2BD8UeWRzciPthc4YWPT/WNT6jO3e9i2mQaGTLcnWC/PGn0NfJkk0siskV2H3eM80mG0n6NkSc6ZOx7F3RO7ivFd2d1PXx4l2bHU/eG90HmY+NHceFiLyugahjHTt+e/XmNhIc3jrrbECYqMO7/J59CigYLNMZICe7t62+3AQKW5uNfnDE1w8u+kj73LYHlQdIApk7DVlePCCIuxU063SXDkOnMfFC2/pEdIKgSuAeSIptA1FYyXw7Oa4RJ6AIsXHIN2ac9YE9Z0VdtnxlLLjhNch/l+dG1bV61t25yp5WYlboaHCj9nkl1YLPgnZGfxOnLtq4BVXoCJBnGtqWZMHrYmW6cFLVRVXKIKsWAAVtu6wlVizCfmFFYu+BHyfeHItFRpWNXwfsiBmLxO5TgdvnSRu5nlvvMZTMZPe5zLAMVq3a8SSHIP7mTPvzM4a0/YxEwbV3JAeXlaijVqkjzyGnfnlENO1DQnPJWg+Jsit3qjQLDnnFq7zzx4IAuBsiALg/WqLs8d5tMcvNhFvzw0QUh+zWF2jRRYv/NG29aKrT0Sk0+i6lWG5zDut+5oBvG7tAjAMOjcaIZnwtvxRpH75h5QPFQFUq4TPzg1D6U71GP6dfn/hZvZaqTFR0QW9TqN+LNaLxb4BV1DNbk0lN22HV8rHM/NRHXsjQ+MFFCSHzGukbOgsUPKhSyjrkPH0Q7c0WZhbgRg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB5766.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(366016)(376014)(1800799024)(23010399003)(921020)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?a3BEemJSUTRPUVUya3IwTk83dVRCbU5kRDIxejlaRVRaSHB1cTNWWWxCcnJn?=
+ =?utf-8?B?RnhHVzUyb1BZWUpDNHUvQ29MbCs2MmZPWU55N1N3amRRZmFnd1dBK0pmazg2?=
+ =?utf-8?B?MFZUVUQrMGRIUlNYVTJ3ZVBVTVNVWmZvMnM1Ui9UaFkybEZ1T2FGcFZiZEpM?=
+ =?utf-8?B?R09iRGdxMW45bnJvbTdnYU9UYXBUUlFTYThmNmJCei9QdUxsWmJScmhUanBT?=
+ =?utf-8?B?K3RJSEVGT0xkN0MvWmdJRDI1bTQzNmlvMEtCWU1wZE1TQ2dPWW8xc2NHNUlo?=
+ =?utf-8?B?OFdFRXNQTDFPZ1RuK0RQTmVzbzR2MGw3TGxHblFrbTVQR1J2SmlFNWpSY3dw?=
+ =?utf-8?B?d291WVY4cms2d3Y1RUx1amk1Sm9xM0xMSWlvYWxkM0hxQmZZL3RiQy9RUkFP?=
+ =?utf-8?B?SUZWY3VsenhrbVluMm91bGVGaTNiK3hhTllZWk5HVmF4akhqb1RNS2QxT2pG?=
+ =?utf-8?B?UGZ1S28xOXRHWFhQUjNZU1ZURnZHczcwMmhBYW40NVZLd0c3WGJrTFlyL3dr?=
+ =?utf-8?B?Mnl4SWVtczVVQ1U1ZjQ0QTlUclh3VHB6a0pKMGxaUCt2ZkZsUHU3clVpRUcr?=
+ =?utf-8?B?KzhNMkpZUjAyb3JwOE4ycG1HNXM5K2Q1c3IzZk1OQWxNRlJQYnRHVUs1aVBR?=
+ =?utf-8?B?OVRvSXQ0d0laNVFBeU5SU3RtRTNQNXdEajVhUDRKSGlhQXJOZkE4cFhzMy9U?=
+ =?utf-8?B?L0IwbEthS2JvV0RLMy9uOExQQVVXTmplZURaRmJvWmJWek1aODNSWlBXam82?=
+ =?utf-8?B?anFNQlJadVJvNXhCYytjaHMrenBjRE5VcWVra2hvUy9Malp3QXA2MHFDTEVR?=
+ =?utf-8?B?aklESnl0VGcwdHpyYUFYMGlpOFltV2owQVRTc2pPcytWM080WHpwQkpTUlNh?=
+ =?utf-8?B?Y1VQTjRiN2tWU1NzVkROL0VNR3RKU29zTjZnUTlnV1FBTW1PY2hLcUNmbDFF?=
+ =?utf-8?B?YkdxS0gzRkc1ZFBTMFJ3SGEzdmtGcCtWblBrb2FGVWd5dSs0bVJLT0RxVUVp?=
+ =?utf-8?B?d1pKMURLZG00enNOZVBUdzhoRzRZT0JhRERCMW5GR3doajIxMnQrR3N3NU1i?=
+ =?utf-8?B?TmhVdy9XTGZ0Q3Ixb2dPQ0pzYkgxMzF6WlQzRnJ3c1JodThDL2hJTHh4T0ps?=
+ =?utf-8?B?QkV0SXoyUmY3MDlnS0o1Z1N6ZXpRSFIxSWx2aWNjSGthYkRaVlFqcVloMUVi?=
+ =?utf-8?B?SEd1aFhqZVNKdk52bEpEb3BOYlhxNjRKYnlFRXhDNnRmazVDV2lLT1pZVGpt?=
+ =?utf-8?B?UnAwREV0dlBQczh1MUZJOVVxUk13b1VMbFFOVG5OTWVyV2RKMzdUVlpqbHEy?=
+ =?utf-8?B?aHd0VFVTZmk1Rks0TVRmZUtlNDdYdzdnazZFNFpkUmd2ajZNelFLWnVuS2xG?=
+ =?utf-8?B?TnJzY3JibE9YcDVZZHcwK2RaRFdYdFRMNkc5TGRVNkt0SkRxVzA3MWdGdXVv?=
+ =?utf-8?B?a016RHpzcVJRd1NDK2FLTGQ5ZFBjbG5Vb2YwSHVvdVdDaGRseHZvOEpuc25i?=
+ =?utf-8?B?SGRDVUpoQ1orbThaQ1BYUXhUWFhwS2ZxWHFYVlJsTUFpVDREMWJUVUdYY0pX?=
+ =?utf-8?B?bzM2K2ppT09uZjMyVS9wcFRKN0dwL3hmOWNRSnZVa3pBZGJMeFhsNzNJNld5?=
+ =?utf-8?B?N0l2Q0hxRXozL1lGRFVWcUd2Mm5rSjdVSnZOeFNhK3hTdUNnRTYwaFJ1WDRx?=
+ =?utf-8?B?RnhoUHJScHczeFJtQmxWWHJhNDRtbnplamJEcFJjZ2M3Z29hZ2x4bUY5RHVZ?=
+ =?utf-8?B?dGRMdm13Q1hlSURuN3JWT0VWRHJwZ2tuRElFblAwK1lQT3diZCsxOU55ODc5?=
+ =?utf-8?B?ZjVBK28vbkJFSU9ZQ0tRdmErN1F5Q1kxdzZRaWY2c3hWT0NqLzI5UHViK2dN?=
+ =?utf-8?B?MlhwK2JYdHVpOE42VXBGTEhaWkFZbVp0cDdXWndwWHZNRDdzNTNEMFdnaTFu?=
+ =?utf-8?B?S0Z5RENsRWtnSEQzelh2eTFJdXBRYVZrRlR1cDV2eUFDTEtuUHM3UjVBRlhL?=
+ =?utf-8?B?R3Jib2tJNzNnODJNSlBueGRuWFppeUZGL25qYjE1ZVVha1hvdGM1UzRJREVx?=
+ =?utf-8?B?ZW44OEp6TnlJUUVJdkZvMEQvcVM4VUk2aWFFOGVHTHVuS05rblBHdU5qSlFD?=
+ =?utf-8?B?YThPK04vMGoyNTFqOXZPUEJJL3lhRGZiS1hxRFVRSWRJWW9pUFlPZW1WcC90?=
+ =?utf-8?B?TUlhSWZLWVNpTUhwVHJhQiszU3AzTXNzNjVKV25LQ0JDWENJR3h3dW5tYTR2?=
+ =?utf-8?B?bDJrckhuRVpvcFJFVStBRlFKOVVFWEg5c250WnkzNkNFN01EaVlDNDBXMUgv?=
+ =?utf-8?B?eGttcDhGSzBrRDBoV3c4NlFRN1Zwc3Y1T2hqZU1NdlQ2akFoMmU1UT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23bd99a6-fe6d-4aa8-1de7-08deebcb3530
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB5766.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 10:38:33.8137
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lzi6q603XWz+P4busSy5agWFSisEx2upChtljkL6JfammWP55iGmgOrOnhP5ZBze47kpNdZKsvE+IfDW2Q7H/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7192
 
-On 27/07/2026 9:12 am, Will Deacon wrote:
-> On Sun, Jul 26, 2026 at 01:10:19PM -0300, Jason Gunthorpe wrote:
->> On Sun, Jul 26, 2026 at 01:00:38PM +0100, Will Deacon wrote:
->>> On Sat, Jul 25, 2026 at 11:27:59AM -0300, Jason Gunthorpe wrote:
->>>> On Thu, Jul 23, 2026 at 03:19:44PM +0100, Robin Murphy wrote:
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->>>>> @@ -102,6 +102,8 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
->>>>>   			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
->>>>>   		if (master->smmu->features & ARM_SMMU_FEAT_HD)
->>>>>   			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
->>>>> +		if (master->smmu->features & ARM_SMMU_FEAT_HAFT && system_supports_haft())
->>>>> +			target->data[1] |= cpu_to_le64(CTXDESC_CD_1_HAFT);
->>>>>   	} else {
->>>>>   		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_EPD0);
->>>>
->>>> Based on the Sashiko remark and your note you should lift all the
->>>> HA/HD/HAFT bits outside this if (mm) block.
->>>>
->>>> AFAICT it is fine for HA/HD/HAFT to be set with EPD0, the HW won't
->>>> process any PTEs so they won't have any effect.
->>>
->>> I'm not sure about that. The spec says this about CD.HAFT:
->>
->> Sorry I see this was unclear
->>
->> I ment to move all *three* bits outside the if.
->>
->> There is no reason for EPD0 to also require setting any of those three
->> bits to zero, AFAICT.
+Hi,
+
+On 5/17/2026 5:10 PM, Vasant Hegde wrote:
+> IOMMU performance counters are accessed via MMIO space. Currently IOMMU
+> PMUs uses a single global cpumask (iommu_cpumask) shared across all AMD
+> IOMMU PMU instances. This prevents collecting per-socket numbers
+> (ex: perf stat --per-socket).
 > 
-> Ah, gotcha! And even if we did want to get to that configuration, I
-> guess you could set EPD0, then clear HAFT, then clear HA+HD?
+> Fix this by adjusting cpumask based on IOMMUs NUMA node.
 
-Indeed, it also occurred to me on the way home on Friday that in this 
-case we probably could get away with just setting HA/HD/HAFT 
-consistently in all SVA CDs irrespective of the mm. Strictly, EPD0 only 
-forbids *new* walks from using TTB0, so there might potentially be some 
-outstanding PTE updates still made in the window between the config 
-update and the TLBI at the end of arm_smmu_mm_release(), but that 
-shouldn't be harmful.
 
-Lemme spin a v3...
+Can you please review/pick this patch?
 
-Cheers,
-Robin.
+-Vasant
+
 
