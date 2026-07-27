@@ -1,52 +1,67 @@
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010049.outbound.protection.outlook.com [52.101.61.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F2C31F9BC
-	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 05:24:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.206.34.216
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785129868; cv=none; b=LWm9wNsAdz/fr2avPUgpRS6VhbLQGOm8kDNv3Mo2wvzj+3m2AZsRxKzT7pB5OqL+5T1W3g3gPu2oAVZIlHmQHg93o/FsMug6+nqAQmfbMdeHS6zn3ZkMMXzSqr6MoTgDb/srxv6veUARgMLVvVJJy/K1vpBXzPSR4tQTyWAG7Uo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785129868; c=relaxed/simple;
-	bh=ZQvxZGp1h9Ulxkr1U7xbFjvu1Z3jvoqE26uf3FDecR0=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=V0lAjVqavgvhNWecC1U4ilN4zGzqjW5Ixy87R61fsDyysuZbeJbfhHqFbeGCz7H7qYo/i5bozHf7/kq0XzpMvu6qF8PLl2buO4JnCKEAg46K+C3N9ZzwX8BZvexT5ObhG1W7oMdQ/qt/sb4UrcH+/QOyXBTGxHGLfGo2m6zMUj0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=TTJKlxoH; arc=none smtp.client-ip=54.206.34.216
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013DB380FFD
+	for <iommu@lists.linux.dev>; Mon, 27 Jul 2026 05:39:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785130778; cv=fail; b=NJGW8lvdi/a//fyetyg1gOgwdFvCd9ZwylxWPu86Z2HD6esKBdlUeRIo4+z++blSvTo7b5ujoAwLL3LuLIqd/hpWHyzSQxSLiCNrUVs47dgFhQepCu1sKdaVGgKur+fbauk9N43CtBFhhv7uh6UYbdUJdkYhI5spNlkxZLzcK/o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785130778; c=relaxed/simple;
+	bh=uVw8kHsCCpt4h76xdwerzre+OJ++9V7/+Z46D923r9o=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CUB+mMAAyCdOpXalBrEfk5macHyRDB2sz5wfsQRU4jsIeNGKDTv9iduSyjyUxmcKXpEGAZY+Lr/mT4UvbytlOulrtToqgSOMh0Aorc3YJjewbGuyC41tqSO4AuVGID8bdHm+UsafbFQ+8eTcUv8+GCGenpAZIjOrSzxe3y6W3Xo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=AIndJD7C; arc=fail smtp.client-ip=52.101.61.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="TTJKlxoH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1785129786;
-	bh=BAuW2MK6wM+qCED91Wqpl/CmYXEHnr0GEbI9EIdL8m8=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=TTJKlxoHfGePcrZI1ahw1zHDdhMh5v/cY9fYKkES7vr6g84NzN2w9OyPIJK8eikUv
-	 OKiAsCCdnaPP0GnbvXzO6xkJBAOT6L5vntgg6zceS5NZ0tXBbhHyumrxzGOCV+BdfG
-	 fyCxcltwNEgw2g5lhW+SOKONL0Covcpn6lYqEcto=
-X-QQ-mid: zesmtpgz5t1785129780td75847cf
-X-QQ-Originating-IP: xLEKETNoSQQ0KXfijPay7abwGUwlNQyeNjsySuE94Hw=
-Received: from localhost.localdomain ( [1.202.39.170])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 27 Jul 2026 13:22:47 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 7335713737154730387
-EX-QQ-RecipientCnt: 8
-From: ZhaoJinming <zhaojinming@uniontech.com>
-To: baolu.lu@linux.intel.com
-Cc: dwmw2@infradead.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	ZhaoJinming <zhaojinming@uniontech.com>
-Subject: [PATCH v2] iommu/vt-d: Fix copied_tables bitmap leak on error in copy_translation_tables
-Date: Mon, 27 Jul 2026 13:22:40 +0800
-Message-Id: <20260727052240.3483567-1-zhaojinming@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <367f963a-d337-4d49-9d5b-a558fcba813a@linux.intel.com>
-References: <367f963a-d337-4d49-9d5b-a558fcba813a@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="AIndJD7C"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=rF1RcJgCBr3fRUMq0CdZApqqkGe6Bv8B3PNjDwD+WCKcrW3aAJxbD1fdFkIzwroNAVx37SyAD6TDLaMXjMCOdALxU0fRLknrRiuyUZLfksrYex45eytjtHKFuwkh3i5b87QHnOZ3fi7cU4i6ka4jisxRf0mt2Zmh8aFsBs48UHxMXfbh2qUuFfsnLpKy1TpSzBzjQ111Fs6rrDpuip5u8EyIhgdQoYlbqhDodWcX6gVu0P3qR7zCrxxUeypcDmcvPJ0ywyo3a+q765hX2tcDxHDYTMIIh5yIRV/xPPxFw+4gsuszWItEjVgEKc/ZKlr39yyGqSk0f+it1kegboodIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HhHcxvd7Mp3PDrarYtED0U08OioG3kc2nNrYU1MToMg=;
+ b=oufpIJ51TsqtrudPBjBW8VhzmwMw97ADll7GRJtd4BtPpr9vs4ZAxBmDXZbokndRAw4kXW5H2+iljzHdXC1iL/SsxVbqcjPyDIbGTiGD2e4IJ7hqIHtf9mnRRmu5yuhx4ZWKceKO5j7f6zEIVTNXxHb0vr6+BKgMhW83+bGP9Cv7Dso+vw5zG7wYlAGRLNe1KqK3sZtdFvIish4XVvMzgx/d6jV3J6ectnTSP32vu3IfU3CJKyuziHOPeiJezyCUKI6rAsH28zkD/trQ5+6lYX1xWnClOZMpGpYHxTqPbsPzOb+rLWCZmAtGA1jmmw3OEkdsKnsEHYpoX+9U8hH6hw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HhHcxvd7Mp3PDrarYtED0U08OioG3kc2nNrYU1MToMg=;
+ b=AIndJD7CfFwcr9ym3DdV5c6vi0iwQtb5s1OOeV+k45YcZv752dtJ6gqWn6nqjpIz8gFkTWolwoKjU+myy3TyRzZh7TXJUV/FuhJ5o8EKDAXng2hsetx22dtbY0Rr48IcflZsOtvPEQfedCqFMrvV9gAOQrHq3gq/uAWlGhcoCQ8=
+Received: from CH0PR13CA0004.namprd13.prod.outlook.com (2603:10b6:610:b1::9)
+ by SJ1PR12MB6075.namprd12.prod.outlook.com (2603:10b6:a03:45e::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
+ 2026 05:39:31 +0000
+Received: from CH3PEPF0000000C.namprd04.prod.outlook.com
+ (2603:10b6:610:b1:cafe::87) by CH0PR13CA0004.outlook.office365.com
+ (2603:10b6:610:b1::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.270.11 via Frontend Transport; Mon,
+ 27 Jul 2026 05:39:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CH3PEPF0000000C.mail.protection.outlook.com (10.167.244.39) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.270.5 via Frontend Transport; Mon, 27 Jul 2026 05:39:30 +0000
+Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 27 Jul
+ 2026 00:39:28 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>,
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH 0/5] iommu/amd: PRI related cleanup and fixes
+Date: Mon, 27 Jul 2026 05:39:02 +0000
+Message-ID: <20260727053907.7622-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,105 +69,54 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:uniontech.com:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: N98Jd4LrBU+SHEzBemJOf3Ti0CRFQ6Y6eTKhqg7IkA/X3sCPJQBVG+bU
-	bsN1f8w3sHc/XsWgsdxGOnrb+T9Tk1JzZoDsrIqHoh/1NOEVlm7lVEVvf+e4xwomFxYomGW
-	KyjuViomLsUO0UpjUP0OXA8vqWjcvmYbBhRFFRCrArboF68GOAArXemzz/vJfygSYOO/dNy
-	9vcyKpH2L63bUu+U6WT7734TAWQSWChAElBGuj7Vr1YZHR81fR/dI+6CM6uprEdKlq/1813
-	N9sD3nAdgwT20lR6NWJvDltEEdDWJ/Djk3yam77igGUscGzXyRqzjVaOuHkYtIFcbP/e1cA
-	XH0vrTuOzgzOdKzlOVGSDsDp6KvChra68WLFyeC/PqWHK9u03QL/8CdolMnXW8m7cy3Fg21
-	F8AaKRk4cFjqaO/U9dMzfEfv6imK6BWoym9SivEsmd30o1TBqKRjEmqOf5tkMrzOe/bJR+E
-	U/Ct7Vow0uko2DkgfncCmXqhjqM00l3FcZmVcXvK7+woXmLG2darF1yp87Ac/IhGRw5kzQ+
-	M6fbnuisXCpfNmPsCe0jBaaVTa3QDtVeo7Q3VvVJ15QcSs1jNB5C1kBi5XZYueYM7fwsia7
-	CO5b/am8VqxpuF3H1/nb2FDWO7nusD9e9BY5/5OalJbEnmJAF6SE5fUQU3lcdWg6wXwIVqW
-	0otbozU0Ks8cmPMAbDzINjQRvf4H4SfmGi9WH4slCHYUcR+zfZIClNHOqv0d6A/S3HAo8Bk
-	/Z6bYvfr4CzsTgt7JAmqYpmjSxcUts3NA2gVzz180ovvBEU9dVH5IzBhL+7OxFQNvvCw/Wc
-	kS7o2gDpD5X3SbAf2nueW1a/yObrJxU3S27i6WnE3U08cYO54ksUEFX0qnyS+hDIc4ZFnji
-	YAGQwxeS2gOUqi4Vpl0XAS1zut9Imz4DSM20OWTGYiIL4zdj1lNj9x0mDBp2A7Il2kP7qDi
-	Lukj/68p4bpuCRv4OTXkUyM1QtPdtQg7nZsdYqjmlbpcU6U8k9lbz2LYSMzFSqwzaIv3p1Y
-	7ggJ7iC9OP7RgR41TBEVK2oQSJHoSwsz9QpU703wH6lO5jcyhjSjoyzKbxxqurQtoaeZ6yb
-	g==
-X-QQ-XMRINFO: NS+P29fieYNwqS3WCnRCOn9D1NpZuCnCRA==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PEPF0000000C:EE_|SJ1PR12MB6075:EE_
+X-MS-Office365-Filtering-Correlation-Id: 567af677-af47-4708-40a9-08deeba16e61
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|23010399003|376014|82310400026|11063799006|10067099003|56012099006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	Nex+UjyHjErSMmxOz+Kz6b6qQtEvkcoIyr5+792uf52wqKl7fh/QMjk2NJJbZjzcTDEnr8IItsbxD9kMoEMswaFSa4k+IJYSr79zdo12d0dmawFMLxS2uqXU/BCjkPPC82u3BvRru5pzLzkYf2QwIO3GyaAwVAMJnIYP3Y0mMlQHYhWL7w54uWji47JlwBPw4+nB0/GfFqWAKasjJn039nyu6vQ/BJArBWGQ0BRE1cBJo4mkfDp9JOOWlYzSMYSTuvgSC49ymIr8o8X6cPWqnzCntExJUm6pWboitKXkyNd4KUDZu/Is6HallGSnX2HG9bwryVvcIcU/Bw7ixim50w/UOMqbcHDhfJavXGYNmQPz5vX+Ud/KIq3l/IqwkFYpE1w2rFKiZI6GYcRzkgXs+iom9NkNQv66TaJJyHb/LggmACPLbBztnCz5QvApA/f0PiYL3Kbh75x29fXSCWiMmo2UvGLMdwi9lPE/Qy1GRdZ+IppWdJpEsow6Uij0JnVxNfiIu8kMLCy0Uf8Q9GyTL3wat9er7aN09Tr07fh+QJuqiSTukJuZd9it3Xod6KowBYaA3KbiAYjfSWPAy/w0Bae3DXpslZJb/1nEKH/Bqa11H56ZsWi81SNbCaGBAZy2o+KHh2FYrVmtJNYnEjGG0NcrpyFx8GdSHSQz2zmJtS4uPt++Ma6gLAmr7i/veQ1pbwWnqE/VzBshKqB3R+EwJA==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(23010399003)(376014)(82310400026)(11063799006)(10067099003)(56012099006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	9PZ1lml9eoounl5R2pCB5PbemW6HGja4jmvTUIXP5SPEszpdxm2/Q6wOh2qnMqB1gXja48C/8Ril8MLu9iSw915qIUkqHiNLOelJqhRrKI0x3HSjnhhy565sMEb1DJOi9eHA4cZ3j9YdB9MqPxeJf7bC6t/TUl33lYYvJ2Sj9LgREsJmhwRWga4nnKcR3uEtL2f2VtYo7fkzZ9QamTi7TwGLT/I5GOWpCE1WAMcxqGwm42rCwCALlBFoNPLp1/wb+wahucVhfST5+6PsnEfp9gpO3fLTHbyt9bmd/P4JCI0gI7ATR01+JpzWT4XeAn2DU0CJjoj5+4RQzDYnv86NZcylmAcV5+qZ3VMxEtEcucTMpFKJom0Hg5Ex3PEiwlYSDeSnH4sZ3PzszPcmkSjpu8HWEMxE11Hg12a5k17nBCrPOIccjiWryCjzD1ZS73Vq
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2026 05:39:30.6986
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 567af677-af47-4708-40a9-08deeba16e61
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH3PEPF0000000C.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6075
 
-The iommu->copied_tables bitmap was introduced by the IOMMU live
-update series to track which context entries have been copied from
-the previous kernel.  The allocation via bitmap_zalloc() was added
-inside copy_translation_tables(), but the error paths were not
-updated to free it:
+This series does few cleanup and fixes to PRI related code.
 
-  1. When old_rt_phys is 0 (invalid root table address)
-  2. When memremap(old_rt_phys) fails
-  3. When kcalloc for ctxt_tbls fails (goto out_unmap, which only
-     unmaps old_rt without releasing the bitmap)
+I will have followup series to re-arrange PASID/PRI enablement code
+and then eventually enable PRI support without PASID.
 
-The bitmap is only cleaned up by free_dmar_iommu(), which is
-called from the free_iommu error label in init_dmars().  However,
-when copy_translation_tables() fails, init_dmars() does not jump
-to free_iommu -- it logs the error, falls through, and continues
-with the next IOMMU.  As a result, copied_tables is leaked.
 
-Fix this by converting the two early returns to goto a new
-err_free_bitmap label, and by making out_unmap fall through to
-it so that the bitmap is always freed on any error path.  The
-success path performs memunmap(old_rt) inline and returns 0
-directly, since copied_tables must remain allocated for
-subsequent use.
----
+Vasant Hegde (5):
+  iommu/amd: Fix incorrect device ID in invalid PASID error message
+  iommu/amd: Introduce PPR_TAG_LAST_PAGE() macro
+  iommu/amd: Fix missing CMD_COMPLETE_PPR response for invalid PPR requests
+  iommu/amd: Rate limit INVALID_PPR_REQUEST error logging
+  iommu/amd: Fix GN bit setting in COMPLETE_PPR_REQUEST command
 
-v2:
-- On the success path, call memunmap(old_rt) before returning 0
-  instead of returning directly, fixing a memunmap leak introduced
-  in v1.  Suggested by Baolu Lu.
+ drivers/iommu/amd/amd_iommu_types.h |  5 ++-
+ drivers/iommu/amd/iommu.c           | 63 ++++++++++++++++++++++++-----
+ drivers/iommu/amd/ppr.c             |  9 ++---
+ 3 files changed, 61 insertions(+), 16 deletions(-)
 
-Signed-off-by: ZhaoJinming <zhaojinming@uniontech.com>
----
- drivers/iommu/intel/iommu.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 849d06dfe1ae..05376a7231a0 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1554,12 +1554,16 @@ static int copy_translation_tables(struct intel_iommu *iommu)
- 		return -ENOMEM;
- 
- 	old_rt_phys = rtaddr_reg & VTD_PAGE_MASK;
--	if (!old_rt_phys)
--		return -EINVAL;
-+	if (!old_rt_phys) {
-+		ret = -EINVAL;
-+		goto err_free_bitmap;
-+	}
- 
- 	old_rt = memremap(old_rt_phys, PAGE_SIZE, MEMREMAP_WB);
--	if (!old_rt)
--		return -ENOMEM;
-+	if (!old_rt) {
-+		ret = -ENOMEM;
-+		goto err_free_bitmap;
-+	}
- 
- 	/* This is too big for the stack - allocate it from slab */
- 	ctxt_table_entries = ext ? 512 : 256;
-@@ -1603,11 +1607,14 @@ static int copy_translation_tables(struct intel_iommu *iommu)
- 
- 	__iommu_flush_cache(iommu, iommu->root_entry, PAGE_SIZE);
- 
--	ret = 0;
-+	memunmap(old_rt);
-+	return 0;
- 
- out_unmap:
- 	memunmap(old_rt);
--
-+err_free_bitmap:
-+	bitmap_free(iommu->copied_tables);
-+	iommu->copied_tables = NULL;
- 	return ret;
- }
- 
 -- 
-2.20.1
+2.31.1
 
