@@ -1,152 +1,861 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010000.outbound.protection.outlook.com [40.93.198.0])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f228.google.com (mail-pl1-f228.google.com [209.85.214.228])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEC353B992C
-	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 22:17:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.0
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785277070; cv=fail; b=rwBv94OQz7cYKLkXBq7mk8YgVLTPPVohAR7wU3GcH5mx26VvnPK5jLBEWxGdj2CqTkgHMsJPC7IzZXn0sOZyjUQj2iZtxi1NcjgSUsGDlWx3tsfIoMfccTMgBmAGGvQ5U/8W8v7Jk7zZVOqHqvOXEqcAU89rG6v6HhYSdXNK4QU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785277070; c=relaxed/simple;
-	bh=WZ3NNOZIRnVdQIC4/POGlJxofhRSuv6W0lCzgJw3Q/w=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KzeG6cYHnsx5ZkdusCmPLC2BVxOhghIg2+8xIP0IVD6ggQovId3b/u54/J81533uGiJouxdUcUrG7r5Df9DIUynE/q3eCbt2fCFFT1Q3Wg9k3IVk+W3No7XBJxnHQuUvL7Un9nfc4peS8Ak2kUIPYaNgt9m1o1wRngO7zW/mwxk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=uFA7GkCI; arc=fail smtp.client-ip=40.93.198.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B0FD3BBFB4
+	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 22:57:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.228
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785279459; cv=none; b=HQvrIlUNVbcZ4Njys5NCjZQ6KdGO8NAX++fHq9zc+yyIkpi++vVuKe5g28ZukTJFgPDpz4BQq1op8AajnVn1e4HQi9/7v065jm+bkG7pyf7UkLdVHzqmbX8CidYTl2aJysj6ZAGGqbTuVvbh4czCKzyv5GPsnPAQzBHzT1N0EmI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785279459; c=relaxed/simple;
+	bh=Zcxu8mYYJK1pAghbKrj+d4pQVDpyB+p3XnFtuh21p2I=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=YPijFstGWm81MUT/xOC/9yd9gxXsEUVaO/ls4d0+8QcHmlz+A9W+qJokmyU4qRRTGOIqLnaxax9wrBW/fV9EnudnsqrGoFwFgT3+j+tOC9/5mD/J2tl/XR9dr4Wt/5vnrty/4taWTJAjuOJBmmiVolpgS6bibUiy4vmg3wyztX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=X9gA/GO+; arc=none smtp.client-ip=209.85.214.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="uFA7GkCI"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ejoanU68lurvSeYRDOpCUKObLv8KwGVT7IKv0ixtyffRxZukmOSy/AaVSQ2j6bBySXVLcvoeYYIhbY6vuV80NDrDOpUYcnbyNT/xLxI1SZNv4d3gLhaLz2ZsAW6H8goX+KbmFxhfwxd99iOuMR6zQkglvV6uB+X0tTGzlJFMNNv0vRRC0kJTDthZHYH2pbQ5pCxRujSAeDZxoXUe3s/M8E9NBkSwAiOCIKAnDE7IZoHPbs0ZDQ79s//uff09TYB1ubzQidTyz0sfFDQYxiGR/9nKaQ5jydZfPrimbnyJ404mnfMPuvSE8/DkZ7+3EBNRxFrVTuoKryGfkwj6RzXziQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hit4GzZWS3y+tbzR9/tf8FQud6luTTuIR6e8vWwpt9s=;
- b=X+gvYPS9yHMkel+dHxTfJPcdJJE8XQd2VlSKHLPFGVWaRmAT4PPNM2+f+u5Tw9ou5cp8+Wm2R57fdVYeuPdyidrSoJMeyAroD55cwSATAYIPDCWyNrbYkgllj8Z3BmyAqKwysCIrRyo9SIjtaw9kof0NkKqaMSs8kb7uEXOW6RuuwNEirscNfJgI2LNrUBvcDylDGAHEzGEQGxKJIINXfU/r7sbRplA32o40ZHzGLTwhjVHT4r993YSOkbHhS26QfN418XJRHEdguekmZIcvgS2gLhFbX/PTT4tH5AkmgeaImG+0qNSPmvViTQy+PChG91xGO+5LvFEZfyKWS59lMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hit4GzZWS3y+tbzR9/tf8FQud6luTTuIR6e8vWwpt9s=;
- b=uFA7GkCIOoTlpRS6RVamvXJFiahtoDtbvItn5FFLy+7DcLKUeKjGpQYdnyzjPIG1P2m6WLNDEeR0N2iQA2gRDj168F3vWHbpGmz4EDExdfK4V1EXbcV5O1xleRO3MJ6hnjHxs8SR8Y5f1h6Ti+d2oLsAP3U1ldsHWfvMWEKJRUniZUKkBrVXO+FWD2itJqEW4AwwPujIjqgey2U6VWa0EGOe4YtFzTbHz3gT6l4+D0SIOYwCxCVP96GDQjIguyUJMLilnE4fzN7nLofreTzUtjpjguRTmFHntJ8oF/n41g87JeG7RuSVuRp5xk/7bYFpHeeVZyz3HnOlUZayDaUV/Q==
-Received: from SA9PR13CA0055.namprd13.prod.outlook.com (2603:10b6:806:22::30)
- by MN6PR12MB8565.namprd12.prod.outlook.com (2603:10b6:208:47d::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Tue, 28 Jul
- 2026 22:17:36 +0000
-Received: from SA2PEPF00001509.namprd04.prod.outlook.com
- (2603:10b6:806:22:cafe::33) by SA9PR13CA0055.outlook.office365.com
- (2603:10b6:806:22::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.181.8 via Frontend Transport; Tue, 28
- Jul 2026 22:17:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF00001509.mail.protection.outlook.com (10.167.242.41) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.270.5 via Frontend Transport; Tue, 28 Jul 2026 22:17:35 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Tue, 28 Jul
- 2026 15:17:16 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 28 Jul
- 2026 15:17:15 -0700
-Received: from nvidia.com (10.127.8.11) by mail.nvidia.com (10.129.68.9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Tue, 28 Jul 2026 15:17:11 -0700
-Date: Tue, 28 Jul 2026 15:17:09 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<joro@8bytes.org>, <bhelgaas@google.com>, <kevin.tian@intel.com>,
-	<kees@kernel.org>, <smostafa@google.com>, <baolu.lu@linux.intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-	<skaestle@nvidia.com>, <mmarrid@nvidia.com>, <skolothumtho@nvidia.com>,
-	<bbiber@nvidia.com>
-Subject: Re: [PATCH v2 03/11] iommu/arm-smmu-v3: Add
- arm_smmu_drain_queue_for_iopf() helper
-Message-ID: <amkqZbPJs9qly4pH@nvidia.com>
-References: <cover.1779944354.git.nicolinc@nvidia.com>
- <a62db13ab63916e9a62cddeec41a74a98cdf6a8f.1779944354.git.nicolinc@nvidia.com>
- <amkcQRVylEe_t-yP@google.com>
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="X9gA/GO+"
+Received: by mail-pl1-f228.google.com with SMTP id d9443c01a7336-2cacf197759so5717465ad.2
+        for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 15:57:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785279457; x=1785884257;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:dkim-signature:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1X9T3f9kWSLf7tClL5gEgWbqFN/d0U3M9+QcMC9KWqc=;
+        b=idew5Pr4v0MidddBi0IuXptBsYspjGgaaBA3dnXjKmQ0eEzaaiwUw/zCquKXGQkci1
+         42swKk71EgL37fyjsmGnSGaQaNChyDJkXjxCU7CXbUqRQbGK2Ak8suzmpuyH/GywaYd9
+         EmS5euHDIoSIk8TUXTgCztsZeJQ7NI3uNejzrbHwbbyB4RvVPmTFRDK/8xQFya6AZq3q
+         RnfFmVMlVvz6rEHa8nu/vSZccWiPXDocRm8blo9sDiIgcfZFlV9gHQFMqBWWDhKhmwit
+         oUZ6buCKwAhOXO3M3A6YISDUnl+DpiFQgsiszYSvNFVA7osDfgjhiycYXUpx0NQg5gLF
+         EreQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rr/77OEwIgOzsSi5Aj1belNIxMF83k2uNa5mOKUi/jjy/bP5ymTnci9IQyP4CS7Nms70UcBNQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyi2X/HkbgXFSYWk2sKRstBDW8DpKvcBB5NwpT6EkjU487hHDQp
+	LSclCxzgaE/3dqL2iYhG54fiNFeld8dencV+sDxFo5dSnQVzGfKw7NgQQh4yHuHWSweDzA74J/V
+	FNR+Gn0ikcBtBtmB3ZyrEqIkZ+FBilnbADbjMQWuN1kHjAbfCdL1lDUgtsiApNg5/xbWCVMdsUC
+	txLWrSmAFGncz2ToE0t7oW3mBo+xsnOifkucH96/Pr6Hc0HkB749vmb/wG1fVa2SwLUUFjhVQg8
+	ii+4DDzF5Q=
+X-Gm-Gg: AR+sD10Eh6S4Y6YxHZxzgfxHnSxY08ZuQVaDc/fAW/HIH8TNLr2sdmuuMXMuQioPG0z
+	eCZjc8LyDnr1a533yntaryTLcAescf+gxm9uBPNwuADiWrQoFUbwViiw9Vc5eK38o77CRYgoe2N
+	atRZzfZbsnp7agueQBG/mm/D/ROfkBx9POc2lpT4bgKehX7my4hnSutMV5bBMITNu9NU1fjzaXW
+	Q1XWrqPFW6HS5LioB86oTvH7M1GTJIzOgE3sa09q8/wqw5rbaW9K6Th9z9lRPPFzVvXYIuKdlOW
+	V1ZjC+8yyZMZnbitZYtjzXGBShUhe94XIe3AGsHxFnmUAIY9ZviNe4bSMSSLs2FdtkQiXdVBgpY
+	jaI1BKRDttdwRjanwHytaa/xKCSZIhhwd3DwscqW2JG6ht6CIbzmmtYJ2wh34INZKvxNxOtnAGb
+	ZgdCBDAaWBt14cwHdro5O6yDykNHrdIexTZlcx
+X-Received: by 2002:a17:903:32ce:b0:2cc:fd6c:c5ae with SMTP id d9443c01a7336-2d01605016emr46311505ad.38.1785279456894;
+        Tue, 28 Jul 2026 15:57:36 -0700 (PDT)
+Received: from smtp-us-east1-p01-i01-si01.dlp.protect.broadcom.com (address-144-49-247-26.dlp.protect.broadcom.com. [144.49.247.26])
+        by smtp-relay.gmail.com with ESMTPS id d9443c01a7336-2d022beef82sm506885ad.35.2026.07.28.15.57.36
+        for <iommu@lists.linux.dev>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 Jul 2026 15:57:36 -0700 (PDT)
+X-Relaying-Domain: broadcom.com
+X-CFilter-Loop: Reflected
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-caf5fa127d4so462798a12.0
+        for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 15:57:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1785279455; x=1785884255; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=1X9T3f9kWSLf7tClL5gEgWbqFN/d0U3M9+QcMC9KWqc=;
+        b=X9gA/GO+PDmzhFmamb6Yv3lvK4AU5/WzzOx1+ZEZZ4VVR6ECBVe5xpANsCYU5xpK1F
+         GGlR4JIervOyEGSxT8DIz/yjNcGqBqQgKw0qeFIA8EvrqRr9idTRjkgKvBh+nc/s1zmy
+         3KIfggBCHRjGVYEB5AzyOWD9phHPjXWME5zag=
+X-Forwarded-Encrypted: i=1; AHgh+RoJhNvCIqULPJs5nhDhoL1YXGO/JwhVUHbYvl1SMxGjHbkgqaVTPTN2tydBk+cGh+3vd6NnDA==@lists.linux.dev
+X-Received: by 2002:a05:6a21:2d43:b0:3c3:64cb:9b99 with SMTP id adf61e73a8af0-3c8aafc0b5amr5440811637.6.1785279454861;
+        Tue, 28 Jul 2026 15:57:34 -0700 (PDT)
+X-Received: by 2002:a05:6a21:2d43:b0:3c3:64cb:9b99 with SMTP id adf61e73a8af0-3c8aafc0b5amr5440791637.6.1785279454272;
+        Tue, 28 Jul 2026 15:57:34 -0700 (PDT)
+Received: from stband-bld-1.and.broadcom.net ([192.19.144.250])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504baa01dsm2872289eec.12.2026.07.28.15.57.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2026 15:57:33 -0700 (PDT)
+From: Jim Quinlan <james.quinlan@broadcom.com>
+To: dan@reactivated.net
+Cc: bcm-kernel-feedback-list@broadcom.com,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	florian.fainelli@broadcom.com,
+	iommu@lists.linux.dev,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	krzk+dt@kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-rpi-kernel@lists.infradead.org,
+	nick.hollinghurst@raspberrypi.com,
+	robh@kernel.org,
+	robin.murphy@arm.com,
+	will@kernel.org
+Subject: Re:  [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
+Date: Tue, 28 Jul 2026 18:57:27 -0400
+Message-Id: <20260728225727.148778-1-james.quinlan@broadcom.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
+References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <amkcQRVylEe_t-yP@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001509:EE_|MN6PR12MB8565:EE_
-X-MS-Office365-Filtering-Correlation-Id: 610209c6-d94b-42d8-6d10-08deecf60736
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|376014|7416014|36860700016|82310400026|4143699003|10067099003|11063799006|56012099006|18002099003|22082099003|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	hrpPFWeGqspN01V+LOnsYayJNdrQIaHd8syZ726zpMURIJ1Tv3w4+X9ghEmSRHWW5/EvUtbg5Xs3ZbmEuF8ba3g2IJBEd6S441rsxyzln9YsZriEo7iwKCBZrlf+adDshiIKYVg+olEl/JZCsa5beF2QBlQ+K0VCiBYO1Ur47wwU/x4HS2wKMT0TFfawKOx889Ovwlx6Vvisx4K5O5ei11oTNFSaTrbvyA+Izocuo+LIh/SUD5LwA1xmZBHfqFVpqQP4oGHQgg3UDbPna69tyzIKQHCV9BYE79D0vxsTApe9mAwSR3i3cKoJB4YsgQL8fZ/64jSKls4eTW787Ahzdpq95Tm3Kl4UixGR4MzNKlzGukm0JDGomZY0XnGu1VOW/VR91Cfdtm+gZrmNf6MavW0+FjXWmCld8FrN4fYwFHfL7ATkOdtAQG6sf15OAKAKh5UWE3FEC8v8Bm1qEuH0c+PQNvkejkhlQMsvulOSwaFikllcBLSzHMimYTZ7a2IAkD55q9yDgyeW4cvMHdYePZuGY6mUGWqpo2izbkdqIFq8HzfcHFvCALfLSUF99OKQV5HGLVtIkC29S22ODK3bkgSx4cmkI+2Ptc62sECsbe7j6Uju/ZT9EmlFyBn0WFTSr/bfvBunR2MfHrX2IkRWb95PxURODcX+mqlxT1Fbdv67KlP6FQ1dYBr7uOhZCcY6p0uPWOWp6Ajf/Lt58+cvkQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(7416014)(36860700016)(82310400026)(4143699003)(10067099003)(11063799006)(56012099006)(18002099003)(22082099003)(13003099007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	BqAvGzTkN2sH/jW4JhvIRQK7cwJM9H+cC/sN8ir77aCMOILrcww+onSqFsQSqZqlPrc1e+tYBuDBbgFmfTl4U32o2LLXZxKcJfLnPrxTJKB9skGk0OlK3uHSXkGsURvd294LWRTQip75UHuWEkB1RXFsE3iLGPEP5IaIi1Ez8OoDD5j9XeLGCn334m5CDGwZyotPkM/uFL+9ukF71yFehIUxCgMqyUcVR5eSU6WiwRxhoOnY5LLbvwxl0PGdMg3ucaTVSEaKfbUAvfjhbvF7EOiTneMO+f1kPACVJQTyrqkwSxNkt4I5PXOqAg0xWISRXUBvwajL9/Jh8LpK9M4X15Og9z9jKq1QP+5va1WfWgM5Nv29cRmhyJWRDtauxvaggmF15jowi3UvhrCh4wIhmhHuTjbYlmijpjQRdLn6C5WWwtlJkMmBJKICuJCHQMz7
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2026 22:17:35.5897
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 610209c6-d94b-42d8-6d10-08deecf60736
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001509.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8565
+Content-Transfer-Encoding: 8bit
+X-DetectorID-Processed: b00c1d49-9d2e-4205-b15f-d015386d3d5e
 
-On Tue, Jul 28, 2026 at 09:16:49PM +0000, Pranjal Shrivastava wrote:
-> The following is a unified drain_queue helper, that also attempts to
-> address Sashiko's concerns. This applies on top of my runtime PM v9
-> series [1], please see if it works for you:
+>     This IOMMU translates memory access requests for the VC6 display
+>     pipeline and various multimedia devices in the Broadcom BCM2712 SoC used
+>     on Raspberry Pi 5.
+>     
+>     This driver places a 4GB aperture at a high memory address in which the
+>     IOMMU mappings are operated. All addresses outside this window bypass the
+>     translation logic and give direct access to physical memory.
+>     
+>     Also includes support for the IOMMU cache, which is shared between
+>     all the IOMMU devices found on the SoC.
+>     
+>     Adapted from Raspberry Pi's downstream bcm2712-iommu driver
+>     (original author Nick Hollinghurst).
+>     
+>     Signed-off-by: Daniel Drake <dan@reactivated.net>
 > 
-> Subject: [PATCH] iommu/arm-smmu-v3: Add a unified arm_smmu_drain_queue()  helper
-> 
-> Introduce a unified arm_smmu_drain_queue() helper to replace queue
-> specific polling loops. The helper handles both snapshot-based cohort
-> draining (for IOPF) and full queue draining (required for Runtime PM).
-> 
-> The Runtime PM explicitly gates the CMDQ (via CMDQ_PROD_STOP_FLAG) prior
-> to draining, this allows a single, snapshot-based target to natively
-> handle all drain scenarios.
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 6e07bd69467a..f2c8788158b0 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -386,6 +386,21 @@ config VSI_IOMMU
+>  	  Say Y here if you want to use this IOMMU in front of these
+>  	  hardware blocks.
+>  
+> +config BCM2712_IOMMU
+> +	bool "BCM2712 IOMMU driver"
+> +	depends on (ARCH_BCM && ARM64) || COMPILE_TEST
+> +	select IOMMU_API
+> +	select GENERIC_PT
+> +	select IOMMU_PT
+> +	select IOMMU_PT_BCM2712
+> +	help
+> +	  Support for IOMMU on BCM2712 SoC. This IOMMU can be used by the
+> +	  display controller and various multimedia devices to perform
+> +	  efficient memory management.
+> +
+> +	  Say Y here if you want to use this IOMMU in front of these
+> +	  hardware blocks.
+> +
+>  config IOMMU_DEBUG_PAGEALLOC
+>  	bool "Debug IOMMU mappings against page allocations"
+>  	depends on DEBUG_PAGEALLOC && IOMMU_API && PAGE_EXTENSION
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 2f05725eaab1..29a26d2a3af1 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -37,4 +37,5 @@ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+>  obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+>  obj-$(CONFIG_APPLE_DART) += apple-dart.o
+>  obj-$(CONFIG_VSI_IOMMU) += vsi-iommu.o
+> +obj-$(CONFIG_BCM2712_IOMMU) += bcm2712-iommu.o bcm2712-iommu-cache.o
+>  obj-$(CONFIG_IOMMU_DEBUG_PAGEALLOC) += iommu-debug-pagealloc.o
+> diff --git a/drivers/iommu/bcm2712-iommu-cache.c b/drivers/iommu/bcm2712-iommu-cache.c
+> new file mode 100644
+> index 000000000000..d97a8cda448e
+> --- /dev/null
+> +++ b/drivers/iommu/bcm2712-iommu-cache.c
+> @@ -0,0 +1,73 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * IOMMU driver for BCM2712 TLB cache
+> + *
+> + * Copyright (c) 2023 Raspberry Pi Ltd.
+> + */
+> +
+> +#include <linux/err.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/iopoll.h>
+> +
+> +#include "bcm2712-iommu.h"
+> +
+> +struct bcm2712_iommu_cache {
+> +	spinlock_t hw_lock;
+> +	void __iomem *reg_base;
+> +};
+> +
+> +#define MMUC_CONTROL_ENABLE   1
+> +#define MMUC_CONTROL_FLUSH    2
+> +#define MMUC_CONTROL_FLUSHING 4
+> +
+> +void bcm2712_iommu_cache_flush(struct bcm2712_iommu_cache *cache)
+> +{
+> +	unsigned long flags;
+> +	u32 val;
+> +
+> +	spin_lock_irqsave(&cache->hw_lock, flags);
+> +
+> +	/* Enable and flush the TLB cache */
+> +	writel(MMUC_CONTROL_ENABLE | MMUC_CONTROL_FLUSH, cache->reg_base);
+> +
+> +	/* Wait for flush to complete: it should be very quick */
+> +	readl_poll_timeout_atomic(cache->reg_base, val,
+> +				  !(val & MMUC_CONTROL_FLUSHING), 0, 1000);
+> +
+> +	spin_unlock_irqrestore(&cache->hw_lock, flags);
+> +}
+> +
+> +static int bcm2712_iommu_cache_probe(struct platform_device *pdev)
+> +{
+> +	struct bcm2712_iommu_cache *cache;
+> +
+> +	cache = devm_kzalloc(&pdev->dev, sizeof(*cache), GFP_KERNEL);
+> +	if (!cache)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, cache);
+> +	spin_lock_init(&cache->hw_lock);
+> +
+> +	cache->reg_base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(cache->reg_base))
+> +		return PTR_ERR(cache->reg_base);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id bcm2712_iommu_cache_of_match[] = {
+> +	{ .compatible = "brcm,bcm2712-iommuc" },
+> +	{ /* sentinel */ },
+> +};
+> +
+> +static struct platform_driver bcm2712_iommu_cache_driver = {
+> +	.probe = bcm2712_iommu_cache_probe,
+> +	.driver = {
+> +		.name = "bcm2712-iommu-cache",
+> +		.of_match_table = bcm2712_iommu_cache_of_match,
+> +		.suppress_bind_attrs = true,
+> +	},
+> +};
+> +builtin_platform_driver(bcm2712_iommu_cache_driver);
+> diff --git a/drivers/iommu/bcm2712-iommu.c b/drivers/iommu/bcm2712-iommu.c
+> new file mode 100644
+> index 000000000000..55678009f9c4
+> --- /dev/null
+> +++ b/drivers/iommu/bcm2712-iommu.c
+> @@ -0,0 +1,582 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * IOMMU driver for Broadcom BCM2712
+> + *
+> + * Copyright (c) 2023-2025 Raspberry Pi Ltd.
+> + * Copyright (c) 2026 Daniel Drake
+> + *
+> + * Each BCM2712 IOMMU has multiple devices hardwired into it, whose
+> + * DMA transactions all route through the IOMMU. There is no stream ID tagging
+> + * or any other kind of segmentation to differentiate between requests from
+> + * different devices. It is also not possible to toggle a specific device
+> + * between iommu-mapped and bypass modes.
+> + *
+> + * With these limitations in mind, we configure the hardware to operate over two
+> + * windows:
+> + *  1. The lower part of the address space operates in identity/bypass mode.
+> + *     This enables non-IOMMU-consumer devices to work as normal (including
+> + *     devices set up by the firmware, devices that don't require large DMA
+> + *     allocations, devices that handle scatter-gather natively, etc.)
+> + *  2. A 4GB translation aperture is defined at a fixed, high address, beyond
+> + *     regular RAM and MMIO space. Mappings are operated in this aperture for
+> + *     devices that wish to take advantage of the IOMMU.
+> + *
+> + * The BCM2712 SoC contains multiple independent IOMMU hardware instances.
+> + * The same aperture address is used across all of them; they do not conflict
+> + * because these IOVA spaces are strictly localized to each IOMMU instance.
+> + *
+> + * The page table format is a two-level format handled by generic_pt/bcm2712.
+> + */
+> +
+> +#include <linux/dma-mapping.h>
+> +#include <linux/err.h>
+> +#include <linux/iommu.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/sizes.h>
+> +#include <linux/generic_pt/iommu.h>
+> +
+> +#include "iommu-pages.h"
+> +#include "bcm2712-iommu.h"
+> +
+> +/* BCM2712 IOMMU is organized around 4Kbyte pages */
+> +#define IOMMU_PAGE_SHIFT       12
+> +#define IOMMU_PAGE_SIZE        (1ul << IOMMU_PAGE_SHIFT)
+> +/* A PTE is 4 bytes */
+> +#define PTE_SIZE_SHIFT         2
+> +/* L1/L2 table sizing (IOMMU hardware pages): 1024 entries per page */
+> +#define PTES_PER_IOPG_SHIFT    (IOMMU_PAGE_SHIFT - PTE_SIZE_SHIFT)
+> +/* An iommu hugepage covers 4MB  */
+> +#define IOMMU_HUGEPAGE_SHIFT   (IOMMU_PAGE_SHIFT + PTES_PER_IOPG_SHIFT)
+> +
+> +
+> +#define MMMU_CTRL_OFFSET                       0x00
+> +#define MMMU_CTRL_CAP_EXCEEDED                 BIT(27)
+> +#define MMMU_CTRL_CAP_EXCEEDED_ABORT_EN        BIT(26)
+> +#define MMMU_CTRL_CAP_EXCEEDED_INT_EN          BIT(25)
+> +#define MMMU_CTRL_CAP_EXCEEDED_EXCEPTION_EN    BIT(24)
+> +#define MMMU_CTRL_PT_INVALID                   BIT(20)
+> +#define MMMU_CTRL_PT_INVALID_ABORT_EN          BIT(19)
+> +#define MMMU_CTRL_PT_INVALID_INT_EN            BIT(18)
+> +#define MMMU_CTRL_PT_INVALID_EXCEPTION_EN      BIT(17)
+> +#define MMMU_CTRL_PT_INVALID_EN                BIT(16)
+> +#define MMMU_CTRL_WRITE_VIOLATION              BIT(12)
+> +#define MMMU_CTRL_WRITE_VIOLATION_ABORT_EN     BIT(11)
+> +#define MMMU_CTRL_WRITE_VIOLATION_INT_EN       BIT(10)
+> +#define MMMU_CTRL_WRITE_VIOLATION_EXCEPTION_EN BIT(9)
+> +#define MMMU_CTRL_BYPASS                       BIT(8)
+> +#define MMMU_CTRL_TLB_CLEARING                 BIT(7)
+> +#define MMMU_CTRL_STATS_CLEAR                  BIT(3)
+> +#define MMMU_CTRL_TLB_CLEAR                    BIT(2)
+> +#define MMMU_CTRL_STATS_ENABLE                 BIT(1)
+> +#define MMMU_CTRL_ENABLE                       BIT(0)
+> +
+> +#define MMMU_CTRL_OPERATING_FLAGS (\
+> +	MMMU_CTRL_CAP_EXCEEDED_ABORT_EN    | \
+> +	MMMU_CTRL_PT_INVALID_ABORT_EN      | \
+> +	MMMU_CTRL_PT_INVALID_EN            | \
+> +	MMMU_CTRL_WRITE_VIOLATION_ABORT_EN | \
+> +	MMMU_CTRL_STATS_ENABLE             | \
+> +	MMMU_CTRL_ENABLE)
 
-[..] 
->  	queue_poll_init(smmu, &qp);
-> +	qp.wfe = is_cmdq;
+Hello,
 
-The callers of this drain() will be RPM and PRI, either of which
-needs busy-waiting. So, I have added a different drain() helper.
-I run Sashiko locally; it also gives a clean result.
+Why not request the MMU interrupt and use the "INT_EN" version, e.g.
+MMMU_CTRL_PT_INVALID_INT_EN?  It seems better than "ABORT", as with an
+interrupt you have a fighting chance of the handler printing out something
+helpful and shutting down gracefully.
 
-Commit:
-https://github.com/nicolinc/iommufd/commit/d10325ff40fd45c476bc98d484d8dd2cdc7fdf95
+> +
+> +#define MMMU_PT_PA_BASE_OFFSET                 0x04
+> +
+> +#define MMMU_ADDR_CAP_OFFSET                   0x14
+> +#define MMMU_ADDR_CAP_ENABLE                   BIT(31)
+> +#define ADDR_CAP_SHIFT                         ilog2(SZ_256M)
+> +
+> +#define MMMU_SHOOT_DOWN_OFFSET                 0x18
+> +#define MMMU_SHOOT_DOWN_SHOOTING               BIT(31)
+> +#define MMMU_SHOOT_DOWN_SHOOT                  BIT(30)
+> +
+> +#define MMMU_BYPASS_START_OFFSET               0x1c
+> +#define MMMU_BYPASS_START_ENABLE               BIT(31)
+> +
+> +#define MMMU_BYPASS_END_OFFSET                 0x20
+> +#define MMMU_BYPASS_END_ENABLE                 BIT(31)
+> +
+> +#define MMMU_MISC_OFFSET                       0x24
+> +#define MMMU_MISC_SINGLE_TABLE                 BIT(31)
+> +
+> +#define MMMU_ILLEGAL_ADR_OFFSET                0x30
+> +#define MMMU_ILLEGAL_ADR_ENABLE                BIT(31)
+> +
+> +#define MMMU_DEBUG_INFO_OFFSET                 0x38
+> +#define MMMU_DEBUG_INFO_VERSION_MASK           0x0000000Fu
+> +#define MMMU_DEBUG_INFO_VA_WIDTH_MASK          0x000000F0u
+> +#define MMMU_DEBUG_INFO_PA_WIDTH_MASK          0x00000F00u
+> +#define MMMU_DEBUG_INFO_BIGPAGE_WIDTH_MASK     0x000FF000u
+> +#define MMMU_DEBUG_INFO_SUPERPAGE_WIDTH_MASK   0x0FF00000u
+> +#define MMMU_DEBUG_INFO_BYPASS_4M              BIT(28)
+> +#define MMMU_DEBUG_INFO_BYPASS                 BIT(29)
+> +
+> +struct bcm2712_iommu {
+> +	struct device *dev;
+> +	struct iommu_device iommu;
+> +	struct bcm2712_iommu_domain *domain;
+> +	struct bcm2712_iommu_cache *cache;
+> +	void __iomem *reg_base;
+> +	spinlock_t hw_lock;
+> +	size_t bigpage_size;
+> +	size_t superpage_size;
+> +};
+> +
+> +struct bcm2712_iommu_domain {
+> +	union {
+> +		struct iommu_domain base;
+> +		struct pt_iommu_bcm2712 pt;
+> +	};
+> +	struct bcm2712_iommu *mmu;
+> +	void *default_page;
+> +};
+> +
+> +#define MMU_WR(off, val)  writel(val, mmu->reg_base + (off))
+> +#define MMU_RD(off)       readl(mmu->reg_base + (off))
+> +
+> +#define domain_to_mmu(d) \
+> +	(container_of(d, struct bcm2712_iommu_domain, base)->mmu)
+> +
+> +static struct bcm2712_iommu_domain *
+> +to_bcm2712_domain(struct iommu_domain *domain)
+> +{
+> +	return container_of(domain, struct bcm2712_iommu_domain, base);
+> +}
+> +
+> +static void bcm2712_iommu_init(struct bcm2712_iommu *mmu)
+> +{
+> +	unsigned int bigpage_width, superpage_width;
+> +	u32 u = MMU_RD(MMMU_DEBUG_INFO_OFFSET);
+> +	u32 pa_width = FIELD_GET(MMMU_DEBUG_INFO_PA_WIDTH_MASK, u);
+> +
+> +	dev_dbg(mmu->dev, "DEBUG_INFO = 0x%08x\n", u);
+> +	WARN_ON(FIELD_GET(MMMU_DEBUG_INFO_VERSION_MASK, u) < 4 ||
+> +		FIELD_GET(MMMU_DEBUG_INFO_VA_WIDTH_MASK, u) < 6 ||
+> +		pa_width < 6 || !(u & MMMU_DEBUG_INFO_BYPASS));
+> +
+> +	dma_set_mask_and_coherent(mmu->dev, DMA_BIT_MASK(pa_width + 30u));
+> +
+> +	bigpage_width = FIELD_GET(MMMU_DEBUG_INFO_BIGPAGE_WIDTH_MASK, u);
+> +	if (bigpage_width)
+> +		mmu->bigpage_size = IOMMU_PAGE_SIZE << bigpage_width;
+> +
+> +	superpage_width = FIELD_GET(MMMU_DEBUG_INFO_SUPERPAGE_WIDTH_MASK, u);
+> +	if (superpage_width)
+> +		mmu->superpage_size = IOMMU_PAGE_SIZE << superpage_width;
+> +
+> +	/* Disable MMU and clear sticky flags; meanwhile flush the TLB */
+> +	MMU_WR(MMMU_CTRL_OFFSET, MMMU_CTRL_CAP_EXCEEDED | MMMU_CTRL_PT_INVALID |
+> +					 MMMU_CTRL_WRITE_VIOLATION |
+> +					 MMMU_CTRL_STATS_CLEAR |
+> +					 MMMU_CTRL_TLB_CLEAR);
+> +
+> +	/* Put MMU into 2-level mode */
+> +	MMU_WR(MMMU_MISC_OFFSET,
+> +	       MMU_RD(MMMU_MISC_OFFSET) & ~MMMU_MISC_SINGLE_TABLE);
+> +}
+> +
+> +/*
+> + * Since the BCM2712 IOMMU is address-based (not device based), we don't
+> + * need to change any hardware state to support identity mapping.
+> + * The IOMMU is natively bypassed for addresses outside the aperture.
+> + */
+> +static int bcm2712_iommu_identity_attach(struct iommu_domain *identity_domain,
+> +					 struct device *dev,
+> +					 struct iommu_domain *old)
+> +{
+> +	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&mmu->hw_lock, flags);
+> +	MMU_WR(MMMU_CTRL_OFFSET, 0);
+> +	mmu->domain = NULL;
+> +	spin_unlock_irqrestore(&mmu->hw_lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct iommu_domain bcm2712_identity_domain = {
+> +	.type = IOMMU_DOMAIN_IDENTITY,
+> +	.ops = &(const struct iommu_domain_ops) {
+> +		.attach_dev = bcm2712_iommu_identity_attach,
+> +	},
+> +};
+> +
+> +static int bcm2712_iommu_blocking_attach(struct iommu_domain *blocking_domain,
+> +					 struct device *dev,
+> +					 struct iommu_domain *old)
+> +{
+> +	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&mmu->hw_lock, flags);
+> +
+> +	/*
+> +	 * To completely block DMA:
+> +	 * 1. Disable the bypass window (requests outside aperture will abort).
+> +	 * 2. Set the address cap to 0 (requests inside aperture will abort).
+> +	 */
+> +	MMU_WR(MMMU_BYPASS_START_OFFSET, 0);
+> +	MMU_WR(MMMU_BYPASS_END_OFFSET, 0);
+> +	MMU_WR(MMMU_ADDR_CAP_OFFSET, MMMU_ADDR_CAP_ENABLE);
+> +
+> +	MMU_WR(MMMU_CTRL_OFFSET, MMMU_CTRL_OPERATING_FLAGS);
+> +
+> +	mmu->domain = NULL;
+> +	spin_unlock_irqrestore(&mmu->hw_lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct iommu_domain bcm2712_blocking_domain = {
+> +	.type = IOMMU_DOMAIN_BLOCKED,
+> +	.ops = &(const struct iommu_domain_ops) {
+> +		.attach_dev = bcm2712_iommu_blocking_attach,
+> +	},
+> +};
+> +
+> +static int bcm2712_iommu_attach_dev(struct iommu_domain *domain,
+> +				    struct device *dev,
+> +				    struct iommu_domain *old)
+> +{
+> +	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
+> +	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
+> +	struct pt_iommu_bcm2712_hw_info info;
+> +	u32 default_page_pfn, u;
+> +	unsigned int byp_shift;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&mmu->hw_lock, flags);
+> +
+> +	if (mmu->domain == mydomain)
+> +		goto unlock;
+> +
+> +	mmu->domain = mydomain;
+> +
+> +	/*
+> +	 * This driver is for VC IOMMU version >= 4 and assumes at least 36
+> +	 * bits of virtual and physical address space.
+> +	 */
+> +	u = MMU_RD(MMMU_DEBUG_INFO_OFFSET);
+> +	byp_shift = (u & MMMU_DEBUG_INFO_BYPASS_4M) ? IOMMU_HUGEPAGE_SHIFT :
+> +						      ADDR_CAP_SHIFT;
+> +
+> +	/*
+> +	 * Set address cap and bypass range (note unintuitive off-by-ones).
+> +	 * Requests to the bypass window pass straight through unchanged: this
+> +	 * is useful for blocks which share an IOMMU with other blocks whose
+> +	 * drivers are not IOMMU-aware.
+> +	 */
+> +	MMU_WR(MMMU_ADDR_CAP_OFFSET,
+> +	       MMMU_ADDR_CAP_ENABLE +
+> +	       (BCM2712_APERTURE_END >> ADDR_CAP_SHIFT) - 1);
+> +	MMU_WR(MMMU_BYPASS_START_OFFSET, 0);
+> +	MMU_WR(MMMU_BYPASS_END_OFFSET,
+> +	       MMMU_BYPASS_END_ENABLE + (BCM2712_APERTURE_BASE >> byp_shift));
+> +
+> +	/*
+> +	 * When the IOMMU handles a request, it adds the PT_PA_BASE_OFFSET to
+> +	 * (IOVA>>32) to calculate the PFN of the corresponding L1 directory page.
+> +	 * IOVA bits [31:22] are then used to fetch the L1 descriptor within
+> +	 * (which in turn points to the L2 table).
+> +	 * This clever logic would allow for a L1 table larger than 4kb (and hence
+> +	 * a larger aperture.
+> +	 */
+> +	pt_iommu_bcm2712_hw_info(&mydomain->pt, &info);
+> +	MMU_WR(MMMU_PT_PA_BASE_OFFSET, (info.pt_base >> IOMMU_PAGE_SHIFT) -
+> +				       (BCM2712_APERTURE_BASE >> 32));
+> +
+> +	/* Set up a default (error) page used to catch illegal reads/writes */
+> +	default_page_pfn = virt_to_phys(mydomain->default_page) >>
+> +			   IOMMU_PAGE_SHIFT;
+> +	MMU_WR(MMMU_ILLEGAL_ADR_OFFSET,
+> +	       MMMU_ILLEGAL_ADR_ENABLE + default_page_pfn);
+> +
+> +	/* Flush (and enable) the shared TLB cache; enable this MMU. */
+> +	bcm2712_iommu_cache_flush(mmu->cache);
+> +	MMU_WR(MMMU_CTRL_OFFSET, MMMU_CTRL_OPERATING_FLAGS);
+> +
+> +unlock:
+> +	spin_unlock_irqrestore(&mmu->hw_lock, flags);
+> +	return 0;
+> +}
+> +
+> +static void bcm2712_iommu_shootdown_range(struct bcm2712_iommu *mmu,
+> +					  unsigned long iova, size_t size)
+> +{
+> +	unsigned long iova_end = iova + size - 1;
+> +	unsigned int page_group;
+> +	u32 val;
+> +
+> +	/* Shootdown register deals with 4 pages at a time */
+> +	for (page_group = iova >> (IOMMU_PAGE_SHIFT + 2);
+> +	     page_group <= iova_end >> (IOMMU_PAGE_SHIFT + 2); page_group++) {
+> +		MMU_WR(MMMU_SHOOT_DOWN_OFFSET,
+> +		       MMMU_SHOOT_DOWN_SHOOT + (page_group << 2));
+> +		readl_poll_timeout_atomic(
+> +			mmu->reg_base + MMMU_SHOOT_DOWN_OFFSET, val,
+> +			!(val & MMMU_SHOOT_DOWN_SHOOTING), 0, 1000);
 
-This will be in my pri-v3 series:
-https://github.com/nicolinc/iommufd/commits/smmuv3_pri-v3
+I think it would be prudent to have this function return the
+readl_poll_timeout_atomic() result and then do a dev_{warn,err}() call once
+you are out of the containing spinlock.  Also, why 1ms -- seems a long
+time to have a spinlock.
 
-We have too many SMMUv3 under review now. So, I will post it once
-some of them are merged.
+> +	}
+> +}
+> +
+> +static int bcm2712_iommu_sync_range(struct iommu_domain *domain,
+> +				    unsigned long iova, size_t size)
+> +{
+> +	struct bcm2712_iommu *mmu = domain_to_mmu(domain);
+> +	unsigned long flags;
+> +	u32 val;
+> +
+> +	spin_lock_irqsave(&mmu->hw_lock, flags);
+> +	bcm2712_iommu_cache_flush(mmu->cache);
+> +
+> +	/* If invalidating more than 16MB, just do a full TLB clear */
+> +	if (size >= SZ_16M) {
+> +		MMU_WR(MMMU_CTRL_OFFSET,
+> +		       MMMU_CTRL_OPERATING_FLAGS | MMMU_CTRL_TLB_CLEAR);
+> +		readl_poll_timeout_atomic(mmu->reg_base + MMMU_CTRL_OFFSET, val,
+> +					  !(val & MMMU_CTRL_TLB_CLEARING), 0,
+> +					  1000);
 
-Nicolin
+Same comment as above.
+
+Regards,
+Jim Quinlan
+Broadcom STB/CM
+
+
+> +	} else {
+> +		bcm2712_iommu_shootdown_range(mmu, iova, size);
+> +	}
+> +
+> +	spin_unlock_irqrestore(&mmu->hw_lock, flags);
+> +	return 0;
+> +}
+> +
+> +static void bcm2712_iommu_sync(struct iommu_domain *domain,
+> +			       struct iommu_iotlb_gather *gather)
+> +{
+> +	bcm2712_iommu_sync_range(domain, gather->start,
+> +				 gather->end - gather->start + 1);
+> +}
+> +
+> +static int bcm2712_iommu_sync_map(struct iommu_domain *domain,
+> +				  unsigned long iova, size_t size)
+> +{
+> +	return bcm2712_iommu_sync_range(domain, iova, size);
+> +}
+> +
+> +static void bcm2712_iommu_sync_all(struct iommu_domain *domain)
+> +{
+> +	size_t aperture_size = domain->geometry.aperture_end -
+> +			       domain->geometry.aperture_start + 1;
+> +
+> +	bcm2712_iommu_sync_range(domain, domain->geometry.aperture_start,
+> +				 aperture_size);
+> +}
+> +
+> +static void bcm2712_iommu_domain_free(struct iommu_domain *domain)
+> +{
+> +	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
+> +	struct bcm2712_iommu *mmu = mydomain->mmu;
+> +
+> +	if (mmu && mmu->domain == mydomain) {
+> +		unsigned long flags;
+> +
+> +		spin_lock_irqsave(&mmu->hw_lock, flags);
+> +		MMU_WR(MMMU_CTRL_OFFSET, 0);
+> +		mmu->domain = NULL;
+> +		spin_unlock_irqrestore(&mmu->hw_lock, flags);
+> +	}
+> +
+> +	pt_iommu_deinit(&mydomain->pt.iommu);
+> +	if (mydomain->default_page)
+> +		iommu_free_pages(mydomain->default_page);
+> +	kfree(mydomain);
+> +}
+> +
+> +static const struct iommu_domain_ops bcm2712_paging_domain_ops = {
+> +	IOMMU_PT_DOMAIN_OPS(bcm2712),
+> +	.attach_dev	 = bcm2712_iommu_attach_dev,
+> +	.iotlb_sync      = bcm2712_iommu_sync,
+> +	.iotlb_sync_map  = bcm2712_iommu_sync_map,
+> +	.flush_iotlb_all = bcm2712_iommu_sync_all,
+> +	.free		 = bcm2712_iommu_domain_free,
+> +};
+> +
+> +static struct iommu_domain *bcm2712_iommu_domain_alloc(struct device *dev)
+> +{
+> +	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
+> +	struct bcm2712_iommu_domain *domain;
+> +	struct pt_iommu_bcm2712_cfg cfg;
+> +	int ret;
+> +
+> +	domain = kzalloc_obj(*domain);
+> +	if (!domain)
+> +		return NULL;
+> +
+> +	domain->mmu = mmu;
+> +	domain->pt.iommu.iommu_device = mmu->dev;
+> +	memset(&cfg, 0, sizeof(cfg));
+> +	cfg.common.features = BIT(PT_FEAT_DMA_INCOHERENT);
+> +
+> +	/* Bigpage and superpage sizes are typically 64K and 1M, but may vary */
+> +	if (mmu->bigpage_size)
+> +		cfg.bigpage_lg2 = ilog2(mmu->bigpage_size);
+> +	if (mmu->superpage_size)
+> +		cfg.superpage_lg2 = ilog2(mmu->superpage_size);
+> +
+> +	/* 2-level format: 10-bit L1 + 10-bit L2 + 12-bit page offset */
+> +	cfg.common.hw_max_vasz_lg2 =
+> +		(2 * PTES_PER_IOPG_SHIFT) + IOMMU_PAGE_SHIFT;
+> +
+> +	/* PTEs encode a 28-bit output address PFN */
+> +	cfg.common.hw_max_oasz_lg2 = 28 + IOMMU_PAGE_SHIFT;
+> +
+> +	ret = pt_iommu_bcm2712_init(&domain->pt, &cfg, GFP_KERNEL);
+> +	if (ret)
+> +		goto err;
+> +
+> +	/* Set up a default (error) page used to catch illegal reads/writes */
+> +	domain->default_page = iommu_alloc_pages_sz(GFP_KERNEL, PAGE_SIZE);
+> +	if (!domain->default_page)
+> +		goto err;
+> +
+> +	domain->base.geometry.aperture_start = BCM2712_APERTURE_BASE;
+> +	domain->base.geometry.aperture_end = BCM2712_APERTURE_END - 1;
+> +	domain->base.geometry.force_aperture = true;
+> +	domain->base.ops = &bcm2712_paging_domain_ops;
+> +	return &domain->base;
+> +
+> +err:
+> +	bcm2712_iommu_domain_free(&domain->base);
+> +	return NULL;
+> +}
+> +
+> +static struct bcm2712_iommu *
+> +bcm2712_iommu_get_by_fwnode(struct fwnode_handle *fwnode)
+> +{
+> +	struct device *dev =
+> +		bus_find_device_by_fwnode(&platform_bus_type, fwnode);
+> +	struct bcm2712_iommu *mmu;
+> +
+> +	if (!dev)
+> +		return NULL;
+> +
+> +	mmu = dev_get_drvdata(dev);
+> +	put_device(dev);
+> +	return mmu;
+> +}
+> +
+> +static struct iommu_device *bcm2712_iommu_probe_device(struct device *dev)
+> +{
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct bcm2712_iommu *mmu;
+> +
+> +	if (!fwspec || !fwspec->iommu_fwnode)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	mmu = bcm2712_iommu_get_by_fwnode(fwspec->iommu_fwnode);
+> +	if (!mmu)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	dev_iommu_priv_set(dev, mmu);
+> +
+> +	return &mmu->iommu;
+> +}
+> +
+> +static int bcm2712_iommu_of_xlate(struct device *dev,
+> +				  const struct of_phandle_args *args)
+> +{
+> +	return iommu_fwspec_add_ids(dev, args->args, 0);
+> +}
+> +
+> +static const struct iommu_ops bcm2712_iommu_ops = {
+> +	.identity_domain = &bcm2712_identity_domain,
+> +	.blocked_domain = &bcm2712_blocking_domain,
+> +	.domain_alloc_paging = bcm2712_iommu_domain_alloc,
+> +	.probe_device = bcm2712_iommu_probe_device,
+> +	.device_group = generic_single_device_group,
+> +	.of_xlate = bcm2712_iommu_of_xlate,
+> +};
+> +
+> +static const struct of_device_id bcm2712_iommu_of_match[] = {
+> +	{ .compatible = "brcm,bcm2712-iommu" },
+> +	{ /* sentinel */ }
+> +};
+> +
+> +static int bcm2712_iommu_init_cache(struct bcm2712_iommu *mmu,
+> +				    struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct platform_device *cache_pdev;
+> +	struct device_node *cache_np;
+> +
+> +	cache_np = of_parse_phandle(dev->of_node, "brcm,iommu-cache", 0);
+> +
+> +	/* Fall back on 'cache' property used in old/downstream firmware */
+> +	if (!cache_np)
+> +		cache_np = of_parse_phandle(dev->of_node, "cache", 0);
+> +
+> +	if (!cache_np)
+> +		return dev_err_probe(dev, -ENOENT,
+> +				     "missing brcm,iommu-cache property\n");
+> +
+> +	cache_pdev = of_find_device_by_node(cache_np);
+> +	of_node_put(cache_np);
+> +	if (!cache_pdev)
+> +		return -EPROBE_DEFER;
+> +
+> +	mmu->cache = platform_get_drvdata(cache_pdev);
+> +	if (!mmu->cache) {
+> +		put_device(&cache_pdev->dev);
+> +		return -EPROBE_DEFER;
+> +	}
+> +
+> +	put_device(&cache_pdev->dev);
+> +	return 0;
+> +}
+> +
+> +static int bcm2712_iommu_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +
+> +	struct bcm2712_iommu *mmu;
+> +	int ret;
+> +
+> +	mmu = devm_kzalloc(dev, sizeof(*mmu), GFP_KERNEL);
+> +	if (!mmu)
+> +		return -ENOMEM;
+> +
+> +	mmu->dev = dev;
+> +	spin_lock_init(&mmu->hw_lock);
+> +
+> +	mmu->reg_base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(mmu->reg_base))
+> +		return PTR_ERR(mmu->reg_base);
+> +
+> +	ret = bcm2712_iommu_init_cache(mmu, pdev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	platform_set_drvdata(pdev, mmu);
+> +	bcm2712_iommu_init(mmu);
+> +
+> +	ret = iommu_device_sysfs_add(&mmu->iommu, dev, NULL, dev_name(dev));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = iommu_device_register(&mmu->iommu, &bcm2712_iommu_ops, dev);
+> +	if (ret) {
+> +		iommu_device_sysfs_remove(&mmu->iommu);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver bcm2712_iommu_driver = {
+> +	.driver	= {
+> +		.name		= "bcm2712-iommu",
+> +		.of_match_table	= bcm2712_iommu_of_match,
+> +		.suppress_bind_attrs = true,
+> +	},
+> +	.probe	= bcm2712_iommu_probe,
+> +};
+> +builtin_platform_driver(bcm2712_iommu_driver);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Daniel Drake <dan@reactivated.net>");
+> +MODULE_DESCRIPTION("Broadcom BCM2712 IOMMU driver");
+> diff --git a/drivers/iommu/bcm2712-iommu.h b/drivers/iommu/bcm2712-iommu.h
+> index 18969b703e8c..30e08b3729d9 100644
+> --- a/drivers/iommu/bcm2712-iommu.h
+> +++ b/drivers/iommu/bcm2712-iommu.h
+> @@ -19,4 +19,8 @@
+>  #define BCM2712_APERTURE_SIZE    SZ_4G
+>  #define BCM2712_APERTURE_END     (BCM2712_APERTURE_BASE + BCM2712_APERTURE_SIZE)
+>  
+> +struct bcm2712_iommu_cache;
+> +
+> +void bcm2712_iommu_cache_flush(struct bcm2712_iommu_cache *cache);
+> +
+>  #endif
