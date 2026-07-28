@@ -1,181 +1,133 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D16C0447801
-	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 13:51:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8111A6811
+	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 13:53:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785246709; cv=none; b=dOvtAJ4y8FIx6CgBTdQHahTIc9RuMqI1og8qHsSnZ6Eu+fcYBNLekWNeoJkkO5Zp2dhUgfo/XZEzY2+bhk5hc//0PyjszvZkgqoWyTno4nzmT/+uGWntsm+DkD94e+dXImT6VtTkb4yFQ0BnXODLfIYUTGEBjOkxR5zPnszcwl8=
+	t=1785246801; cv=none; b=rGFP8PU5Q6kgcHRDCTVPW786CC6nB/7g6/gKams5yqTAS5nJL2au+2SNEa4xhRS0EzBpeTSVo+iSmgSAcid8e1Pb0LzmR4GrwzZl7TfX+dp5qim9KwFpE/8c+weoRCJJlC8M2KzmjjDbUaXpAN0CSILSlLwU00NTTzzNzy73Jfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785246709; c=relaxed/simple;
-	bh=F8JqCEUZCnqauzjAs5jZGcc+J0w+8Ob3vvg8pg8CrcE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qfE7L/X5LZDW4V0Bycb1ih48Ilq0wYFOzOlcUjuT7OZ7OBC1ah/l4vyFewra3F5mNkM7iWAHMZDYkbX8LYw0DVt01FKIqC8lkLL/Er5p/Ob+xTtv1DG+4/I9lTCCHBaxGoyayyMWHQ7zhNj/erHQelJUHMM1JLMYEuj+jYb6pUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=SkVLcSv+; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1785246801; c=relaxed/simple;
+	bh=imuE4PNPFHf5oCEer2I166z57PQH+MP2tjkHlVlz5F8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=r9IrG4YMF1K9cs0XRmbGm+r879A1CoyC0/PIn7rNKWFHDA0qHxmfH7uWaqLUmampTGePDFIBgS+pfv1zPdXGNA/XttlFxOyuzSL2gDWTT/Jomm+x6qJ1jdA1QoHyXOOdyfgfidynvLEftuuTwjhC0DrA+loUO/eMEW5cwYj+2es=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GWm0oifX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="SkVLcSv+"
-Received: from CPC-namja-026ON.redmond.corp.microsoft.com (unknown [4.213.232.16])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1836420B7166;
-	Tue, 28 Jul 2026 06:51:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1836420B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1785246691;
-	bh=3H7xhAHQ0X63v5hUyk6AAKnVi6DW/8Wo8Qka+XWg7U4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=SkVLcSv+x+9HiqsVlCLbqAh4TgXJngvclNnvAIGI1S8CLulntsv2u9q9/KJfwIZNf
-	 96znWa0cEUTGPb+Say6wpduWvAv+Ons6517mNP7eRnF04iRU6aZr5vOz++QDboQKMM
-	 0C4APx1gXZqgtG7IfRffxovF/qoyXp9zqUY62fUU=
-From: Naman Jain <namjain@linux.microsoft.com>
-To: "K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: x86@kernel.org,
-	Jake Oshins <jakeo@microsoft.com>,
-	linux-hyperv@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GWm0oifX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C0D1F00A3D;
+	Tue, 28 Jul 2026 13:53:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785246800;
+	bh=zi06wgX4NrhXeDcGXM6A7FKpeV6U5LtjTPi0mPx8QKc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=GWm0oifXI4fDUr41a9e8ilrfZhHR1uCtAXzugHSjYwDy54+poa9Bn2N4E5Y5sdKSr
+	 fG2QhbIFc+8GypB1fsK/h2cZ0aGZ1iBCJqzKtG1k/IYanW8C1Cm4+yQdyWoacQyEWY
+	 niODpy/x9SVL8GDM6/LHrAbfpculnvFEiJcSHMJZ/AHaD6BeMiCYD96VzWw7M6218/
+	 Sf63MDYkWVndFqJDjuW1Fd3ydwQ2dHDNEZE4g9vw+ppPMzFpRzWn/O3+t8DoD3rsDu
+	 sDhf1ITL6G2er8i8aDCg3dIiIIuhhWYKIGaDaPlX9lZzORyefZLCV96XAurQb2BItU
+	 b3agORiChJIAw==
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfauth.phl.internal (Postfix) with ESMTP id 962ACF40068;
+	Tue, 28 Jul 2026 09:53:18 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-05.internal (MEProxy); Tue, 28 Jul 2026 09:53:18 -0400
+X-ME-Sender: <xms:TrRoarpIjNHLMfmY1_X495x0wNuALIv5d60wRaVKrU4lEJsnxymNZQ>
+    <xme:TrRoahEl05i9DzyIjFj-afCejCTgOrcXQMTkaMzic1pthC-7JQ5w3LE6mKLOLEyKN
+    ZlAKn8r3_8dGrQfRKkb_DgTQVKFakMRR3Oz_bwBFy8Z0TJEJWLXTOA>
+X-ME-Received: <xmr:TrRoam400f5udQYFnh12wcUeS4mEwo6MxrHXoiOXzKEaYETbXjDT1_ps7iDk1A>
+X-ME-Proxy-Cause: dmFkZTEOfimKXa+dIMDT+2FfHsPQI6Hsl535JXxG6sk7f2fJm2SJtIxsM//yga5mXBviZQ
+    OpIM3Ob8Z1T9YovhOYdmEyTG9hU5JbUF9VhmYSp+SzN94pd10sq+Fl/eixu3DAfZUPMqgM
+    TlTxajDxvciP2dLaY40WGPj9KGntkiuGVE5uAJ4DV29XaSDAibiOn8IrlsqnpcJ8RY8Kgt
+    pmDU27VCsOw2EZf+V9EQiHbZpkYRW57DVGD/JVDlSOmL4OLLjSNxS/EYtTeMDwGjWr5Hk/
+    8cMP3kv0PurgNMbDBC/XzNBCIplLL6ipd9DeUnn3nQmK2ptzCTgCEBkzJY8lZGLAOa07ax
+    3BTY75884uzGxObLU2KoVBPMq9frh2kaSKedFtqY3Rt0fpUTr9+jvLHZjqq6kdFrIcic29
+    1xVRDTvfKoZGsJn6AQXUmxopbiA7HZLQCG5eOr+0tzPVP1ZWfJ618QG85O1v5mrBk2E9pj
+    nYBejrEAncxlEEioiTBv8IgBia+5NEmFu5a46aTua7VmIA7TO/mGikY2myZGjG3ds2hiHh
+    QzcBb8yFzS7azZW4MW5gQWtdWRW/X7glcJf6gra7Xi7Mdy6jFxPa6lVlsiHxH48kt4jPDQ
+    Y1cLDHtoiddoXrBRMjY2Hxb046GanbYpqIJx4a6RQaF2uvwXftYv+PBt7MpQ
+X-ME-Proxy: <xmx:TrRoasBVOIbdYHx_T4QlJs70I-UWtWVH2Jvbt4jf8smo2pu10S5MMw>
+    <xmx:TrRoahRPUXhdbWZDcqtUY8o08oPobuaKP_aJrV5O7Qr_r-Pa8RaEow>
+    <xmx:TrRoasc-dxkBby-UK6k9kpiC62efbwHYaSxRm7spbc8AqHdBdl0Azg>
+    <xmx:TrRoaqQ1n2iR0Oe0KykbzzINdDlfRaCI9mIye9E1egqB9gNPaAVkDQ>
+    <xmx:TrRoao0kmppHgEgYo1rVPItvKSoG4RcI6cLTb4uQ6Zb2WMgP4a9jh-PZ>
+Feedback-ID: i10464835:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 28 Jul 2026 09:53:18 -0400 (EDT)
+Date: Tue, 28 Jul 2026 14:53:16 +0100
+From: Kiryl Shutsemau <kas@kernel.org>
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Pranjal Shrivastava <praan@google.com>, Breno Leitao <leitao@debian.org>, Kyle McMartin <jkkm@meta.com>, 
+	Usama Arif <usama.arif@linux.dev>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] x86/irq, iommu/amd, PCI: Drop redundant irq_retrigger inits
-Date: Tue, 28 Jul 2026 13:51:17 +0000
-Message-ID: <20260728135117.2888175-4-namjain@linux.microsoft.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260728135117.2888175-1-namjain@linux.microsoft.com>
-References: <20260728135117.2888175-1-namjain@linux.microsoft.com>
+Subject: Re: [PATCH v3] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
+ kdump kernel
+Message-ID: <amiz6GQZ-XGlH706@thinkstation>
+References: <20260706084708.8072-1-kas@kernel.org>
+ <amiBagGKn-Aym1DK@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <amiBagGKn-Aym1DK@willie-the-truck>
 
-With fixup_irqs() now using irq_chip_retrigger_hierarchy() and the generic
-resend path (try_retrigger()) already falling back to it, installing
-irq_chip_retrigger_hierarchy() as the irq_retrigger() callback on the
-outermost domain chips is no longer required. The hierarchy walk reaches
-the x86 vector domain's apic_retrigger_irq() for all of these stacked
-domain chips.
+On Tue, Jul 28, 2026 at 11:16:10AM +0100, Will Deacon wrote:
+> On Mon, Jul 06, 2026 at 09:47:08AM +0100, Kiryl Shutsemau (Meta) wrote:
+> > All SMMU queues are sized from the maxima the hardware advertises in IDR1,
+> > which can be several megabytes each, and are allocated at probe. The kdump
+> > kernel already disables the event and PRI queues (arm_smmu_device_reset()
+> > drops CR0_EVTQEN/CR0_PRIQEN) but still allocates them at full size. On
+> > systems with many SMMUv3 instances that cost is paid per instance and adds
+> > up to tens of megabytes of coherent DMA in the capture kernel.
+> > 
+> > A kdump capture kernel runs from a small crashkernel reservation and only
+> > has to drive the few devices used to save the dump, so deep queues serve
+> > no purpose. The queues are not on the DMA data path, so dump throughput is
+> > unaffected; a shallower command queue only bounds how many commands may be
+> > in flight before a sync, which does not matter for the capture kernel's
+> > small device count and modest I/O.
+> > 
+> > Clamp every queue to a single page when is_kdump_kernel() is true. Doing
+> > it in arm_smmu_init_one_queue() covers the command, event and PRI queues
+> > in one place. The command queue still holds at least one batch plus a sync
+> > (256 entries on a 4K-page kernel, well above CMDQ_BATCH_ENTRIES), so
+> > command batching keeps working.
+> 
+> Wouldn't we be better of not allocating unused queues in the first place?
+> That's what this patch does:
+> 
+> https://lore.kernel.org/r/0b035c53cb401acde8244b805d4b6a0312b83708.1782799827.git.nicolinc@nvidia.com
 
-Remove the now redundant irq_retrigger() initializations from the outermost
-domain interrupt chips.
-msi_set_affinity() is the only site that invoked the outermost chip's
-irq_retrigger() directly. Convert it to irq_chip_retrigger_hierarchy() so
-the x86_init_dev_msi_info() initialization can be dropped as well.
+Maybe I'm reading it wrong, but I couldn't find the allocation change in
+there. That patch seems to only touch arm_smmu_device_reset() -- skipping
+the EVTQ/PRIQ base/prod/cons writes and the CR0_EVTQEN/CR0_PRIQEN enables
+instead of the current enable-then-mask-out.
 
-No functional change intended.
+I went through the rest of the series too and didn't see
+arm_smmu_init_queues() or arm_smmu_init_one_queue() touched anywhere, so
+as far as I can tell the kdump kernel still allocates full-size
+evtq/priq, and the cmdq is not affected either.
 
-Suggested-by: Thomas Gleixner <tglx@kernel.org>
-Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
----
- arch/x86/kernel/apic/io_apic.c      | 2 --
- arch/x86/kernel/apic/msi.c          | 4 +---
- arch/x86/kernel/hpet.c              | 1 -
- drivers/iommu/amd/init.c            | 1 -
- drivers/pci/controller/pci-hyperv.c | 1 -
- 5 files changed, 1 insertion(+), 8 deletions(-)
+Is the allocation side handled somewhere else that I've missed?
 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 7d7175d012288..18f49a251f23b 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -1857,7 +1857,6 @@ static struct irq_chip ioapic_chip __read_mostly = {
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_eoi		= ioapic_ack_level,
- 	.irq_set_affinity	= ioapic_set_affinity,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED |
- 				  IRQCHIP_AFFINITY_PRE_STARTUP,
-@@ -1871,7 +1870,6 @@ static struct irq_chip ioapic_ir_chip __read_mostly = {
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_eoi		= ioapic_ir_ack_level,
- 	.irq_set_affinity	= ioapic_set_affinity,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE |
- 				  IRQCHIP_AFFINITY_PRE_STARTUP,
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 66bc5d3e79db3..aad2f15eb2176 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -137,7 +137,7 @@ msi_set_affinity(struct irq_data *irqd, const struct cpumask *mask, bool force)
- 	 * IRR.
- 	 */
- 	if (lapic_vector_set_in_irr(cfg->vector))
--		irq_data_get_irq_chip(irqd)->irq_retrigger(irqd);
-+		irq_chip_retrigger_hierarchy(irqd);
- 
- 	return ret;
- }
-@@ -246,7 +246,6 @@ static bool x86_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
- 	info->ops->msi_prepare		= x86_msi_prepare;
- 
- 	info->chip->irq_ack		= irq_chip_ack_parent;
--	info->chip->irq_retrigger	= irq_chip_retrigger_hierarchy;
- 	info->chip->flags		|= IRQCHIP_SKIP_SET_WAKE |
- 					   IRQCHIP_AFFINITY_PRE_STARTUP;
- 
-@@ -313,7 +312,6 @@ static struct irq_chip dmar_msi_controller = {
- 	.irq_mask		= dmar_msi_mask,
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_set_affinity	= msi_domain_set_affinity,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_compose_msi_msg	= dmar_msi_compose_msg,
- 	.irq_write_msi_msg	= dmar_msi_write_msg,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED |
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 8dc7b710e1250..2bb7a6f466af3 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -509,7 +509,6 @@ static struct irq_chip hpet_msi_controller __ro_after_init = {
- 	.irq_mask = hpet_msi_mask,
- 	.irq_ack = irq_chip_ack_parent,
- 	.irq_set_affinity = msi_domain_set_affinity,
--	.irq_retrigger = irq_chip_retrigger_hierarchy,
- 	.irq_write_msi_msg = hpet_msi_write_msg,
- 	.flags = IRQCHIP_SKIP_SET_WAKE | IRQCHIP_AFFINITY_PRE_STARTUP,
- };
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index ea3377e61aa5c..0c362e86a09d9 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2468,7 +2468,6 @@ static struct irq_chip intcapxt_controller = {
- 	.irq_unmask		= intcapxt_unmask_irq,
- 	.irq_mask		= intcapxt_mask_irq,
- 	.irq_ack		= irq_chip_ack_parent,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_set_affinity       = intcapxt_set_affinity,
- 	.irq_set_wake		= intcapxt_set_wake,
- 	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_MOVE_DEFERRED,
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index 89816a2bd7cd3..cfc8fa403dad6 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -2119,7 +2119,6 @@ static bool hv_pcie_init_dev_msi_info(struct device *dev, struct irq_domain *dom
- 	info->ops->msi_prepare = hv_msi_prepare;
- 
- 	chip->irq_set_affinity = irq_chip_set_affinity_parent;
--	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
- 
- 	if (IS_ENABLED(CONFIG_X86))
- 		chip->flags |= IRQCHIP_MOVE_DEFERRED;
+> so help reviewing that series would be much appreciated!
+> 
+> If you want to reduce the cmdq size, I'd prefer a cmdline option rather
+> than special-casing kdump (as I've had other folks ask about configuring
+> the cmdq size for other reasons).
+
+Fair enough for the cmdq. I'm less sure what to do about evtq/priq: they
+get disabled in the kdump kernel anyway, so I don't know what a size knob
+would mean for them, other than every kdump config having to pass it to
+get back the memory.
+
+Would skipping their allocation when is_kdump_kernel() be acceptable on
+its own, or would you rather see it done differently?
+
 -- 
-2.43.0
-
+  Kiryl Shutsemau / Kirill A. Shutemov
