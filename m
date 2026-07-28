@@ -1,137 +1,90 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3EF51422E23
-	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 10:51:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D798D429CE9;
+	Tue, 28 Jul 2026 11:15:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785235882; cv=none; b=es1QO8F51ds2Hm0BLFQDn5jCOWV/jsEtwPWyjSCgmcIHT2qEB4ouupA6FUQGO2g8a/8xUuJM1ud7jt+ksZ3Kao40MEfT280a4Anh2n0ItBWD3E1SiS2ohn3aVILeHM8Ku8ilerEFrGBJrESY44G5BgaxiZ4ZDxlcupEtMHTSZNY=
+	t=1785237337; cv=none; b=mdZ4I6SYQfLEhiAA7zrJKN3k4hEpqDAlHgljb4FiCXeY16iVlgkvBLEc7A79uvK3DqrTYB+zgfK77ZeiZOf4octL98h+hZjLrE9W5PYj9arEu48Dz5/cfZvnDMstY2PQ5dBIiahcqV6hhNSm2XWwmcw7AUk1P1uewKzKoOgpaZg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785235882; c=relaxed/simple;
-	bh=aoYVGfnSBH0ng6djWFow4DX/7VPpJNIQwf3sIJ/WmBQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=htWFxmAzVXSy+XrcECcrAw2huJVA6Eh8sH0Ub1Cl5dbzvNyVCdzMBa7TNIfaG/D8e/S1tRegYrrkwaMHj+AUA7O+QMK0DUpQmP2vzToczuooV230rI6fbI7IhJRjJfApn8NiroddVN/+XqKsvkA58do3sFKDLLOIOPzTLubQyi8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=nYGJuYFU; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1785237337; c=relaxed/simple;
+	bh=2YzGoUOiBWCpu1CFlEi9Uh2kzNaxNi/VgNlVwy+xycY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UNyWMU7G32KoAtYd6vglrjAdedGFstoQOs6pjPoItqGu7MXYr5vXnm7tmLaAIMVh735HWI54jJyNtsBt9u37mIqLZgruFnBjxY8f+b39OCMdCe9BF1hoJEEB3PWRnAhop8tyUjH7/5LOcrGcMsY7+98OsrCauHdYlvUDITJYaNU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RTVV0RhH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="nYGJuYFU"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1744B1A9A;
-	Tue, 28 Jul 2026 03:51:08 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E83D3F66F;
-	Tue, 28 Jul 2026 03:51:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1785235872; bh=aoYVGfnSBH0ng6djWFow4DX/7VPpJNIQwf3sIJ/WmBQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=nYGJuYFUyqJWwkSFtHnRVoNV4GDMyo2yP7jeOpVqExQuUG92X0f3XnGMpuxTeMCyr
-	 V6wDOx0Zdk5ODt8z4VfEY/lJ5ZZwiAHX2yq/3CaILUn4VrnYsW4W8mV5aHkaR6UQOY
-	 Z8LDlxMBoZr/eju+iozXirt3jsBndrUjp0uOFqKA=
-Message-ID: <3e7ba95b-51e7-48e4-aea5-f86db1739ac2@arm.com>
-Date: Tue, 28 Jul 2026 11:51:04 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RTVV0RhH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B80911F00A3A;
+	Tue, 28 Jul 2026 11:15:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785237335;
+	bh=v1UAkumH+1EWeKiYH4cUN+rYvQoUWuyKXbz54U/PDZw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=RTVV0RhHbnYNukT6I0Qj9A9B2O4mnKjEYZU44W0ZwfANvyMazmgbQAkltRWtdTETF
+	 o4IuVxS51G3o/OhApT8JT9wZT/EmUG48xRiW2rwe++MOGp2OG9R7QiIOcDoiXsJCxy
+	 +aH9bjpFxpH53MZ3WRdXvOaujugbKE8xsMFN/A59rFFaK1Uo25FNHkIC4iFCyecuIF
+	 a/n256CvZAkLtUP9qCcxFCr6RAEATmSacbk5QKulpB4BQItDkh/IkjIK1KVylQZtbs
+	 uCcUwzgvJMRB5fzuVM+XOJSgZoeZnniPogmLh8PYXSIuaerfr2Dr4fWBrsownqYI/a
+	 dX4HLzDr1rjBA==
+From: Will Deacon <will@kernel.org>
+To: catalin.marinas@arm.com,
+	corbet@lwn.net,
+	skhan@linuxfoundation.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	nicolinc@nvidia.com,
+	jgg@ziepe.ca,
+	Ashish Mhetre <amhetre@nvidia.com>
+Cc: kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v9 0/4] iommu/arm-smmu-v3: Tegra264 invalidation workaround
+Date: Tue, 28 Jul 2026 12:15:24 +0100
+Message-ID: <178523218770.339148.16144926256012413621.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260726081904.1408859-1-amhetre@nvidia.com>
+References: <20260726081904.1408859-1-amhetre@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
-To: Daniel Drake <dan@reactivated.net>, "Joerg Roedel (AMD)"
- <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
- <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On 27/07/2026 9:43 pm, Daniel Drake wrote:
-[...]
-> + * Each BCM2712 IOMMU has multiple devices hardwired into it, whose
-> + * DMA transactions all route through the IOMMU. There is no stream ID tagging
-> + * or any other kind of segmentation to differentiate between requests from
-> + * different devices. It is also not possible to toggle a specific device
-> + * between iommu-mapped and bypass modes.
+On Sun, 26 Jul 2026 08:19:00 +0000, Ashish Mhetre wrote:
+> Nvidia Tegra264 SMMUs are affected by an erratum where a TLB entry can
+> survive an invalidation that races with concurrent traffic targeting
+> the same entry. The hardware-recommended software workaround is to
+> issue every CFGI/TLBI command (each followed by CMD_SYNC) twice.
+> The second issue must execute only after the first issue's CMD_SYNC
+> has completed, giving the sequence:
+> 
+> [...]
 
-Hmm, so it's kind of like an IOMMU and a GART had a baby?
+Applied to iommu (arm/smmu/updates), thanks!
+But please check the comments from Sashiko if you get a chance:
 
-> + * With these limitations in mind, we configure the hardware to operate over two
-> + * windows:
-> + *  1. The lower part of the address space operates in identity/bypass mode.
-> + *     This enables non-IOMMU-consumer devices to work as normal (including
-> + *     devices set up by the firmware, devices that don't require large DMA
-> + *     allocations, devices that handle scatter-gather natively, etc.)
-> + *  2. A 4GB translation aperture is defined at a fixed, high address, beyond
-> + *     regular RAM and MMIO space. Mappings are operated in this aperture for
-> + *     devices that wish to take advantage of the IOMMU.
-[...]
-> +static struct iommu_domain *bcm2712_iommu_domain_alloc(struct device *dev)
-> +{
-> +	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
-> +	struct bcm2712_iommu_domain *domain;
-> +	struct pt_iommu_bcm2712_cfg cfg;
-> +	int ret;
-> +
-> +	domain = kzalloc_obj(*domain);
-> +	if (!domain)
-> +		return NULL;
-> +
-> +	domain->mmu = mmu;
-> +	domain->pt.iommu.iommu_device = mmu->dev;
-> +	memset(&cfg, 0, sizeof(cfg));
-> +	cfg.common.features = BIT(PT_FEAT_DMA_INCOHERENT);
-> +
-> +	/* Bigpage and superpage sizes are typically 64K and 1M, but may vary */
-> +	if (mmu->bigpage_size)
-> +		cfg.bigpage_lg2 = ilog2(mmu->bigpage_size);
-> +	if (mmu->superpage_size)
-> +		cfg.superpage_lg2 = ilog2(mmu->superpage_size);
-> +
-> +	/* 2-level format: 10-bit L1 + 10-bit L2 + 12-bit page offset */
-> +	cfg.common.hw_max_vasz_lg2 =
-> +		(2 * PTES_PER_IOPG_SHIFT) + IOMMU_PAGE_SHIFT;
-> +
-> +	/* PTEs encode a 28-bit output address PFN */
-> +	cfg.common.hw_max_oasz_lg2 = 28 + IOMMU_PAGE_SHIFT;
-> +
-> +	ret = pt_iommu_bcm2712_init(&domain->pt, &cfg, GFP_KERNEL);
-> +	if (ret)
-> +		goto err;
-> +
-> +	/* Set up a default (error) page used to catch illegal reads/writes */
-> +	domain->default_page = iommu_alloc_pages_sz(GFP_KERNEL, PAGE_SIZE);
-> +	if (!domain->default_page)
-> +		goto err;
-> +
-> +	domain->base.geometry.aperture_start = BCM2712_APERTURE_BASE;
-> +	domain->base.geometry.aperture_end = BCM2712_APERTURE_END - 1;
-> +	domain->base.geometry.force_aperture = true;
+https://sashiko.dev/#/patchset/20260726081904.1408859-1-amhetre@nvidia.com
 
-...and thus (as things stand) this is a lie :(
+[1/4] iommu/arm-smmu-v3: Factor out CMDQ batch force-sync conditions
+      https://git.kernel.org/iommu/c/097bf4a02f2d
+[2/4] iommu/arm-smmu-v3: Add CFGI/TLBI-repeat workaround
+      https://git.kernel.org/iommu/c/95ed2da20283
+[3/4] iommu/arm-smmu-v3-iommufd: Report CFGI/TLBI-repeat erratum
+      https://git.kernel.org/iommu/c/d501d66815ee
+[4/4] iommu/arm-smmu-v3: Enable CFGI/TLBI-repeat workaround on Tegra264
+      https://git.kernel.org/iommu/c/06b15ddcfbc0
 
-If you want to operate like an IOMMU, then the translation aperture and 
-the bypass window should really be mutually-exclusive; conversely if you 
-want to operate like a GART then you can't really pretend to support 
-blocking domains which will also disrupt devices outside the IOMMU 
-group. Trying to compromise leaves you with rather a 
-worst-of-both-worlds setup as-is...
+Cheers,
+-- 
+Will
 
-Thanks,
-Robin.
-
-> +	domain->base.ops = &bcm2712_paging_domain_ops;
-> +	return &domain->base;
-> +
-> +err:
-> +	bcm2712_iommu_domain_free(&domain->base);
-> +	return NULL;
-> +}
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
