@@ -1,27 +1,28 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012045.outbound.protection.outlook.com [52.101.43.45])
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011067.outbound.protection.outlook.com [52.101.62.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D8B2332EAD
-	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 17:34:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B28A3A7F7C
+	for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 17:34:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.67
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785260058; cv=fail; b=dircQeN30N0TJJYVC2yqk6McjYMaiQeFT4H7mIlMAwqL75AFzWaA0lkJkmtTEU5ZmKv+x2hcVvAXf0l6WCtNEdvGgzY7ydkm6MccUPYVeOa/m5EV40PBWyM6d8x8PKsOSD8eFJSbDbZnoMiQI3erIkd8zes2IhfmQvFEN/iU0oQ=
+	t=1785260061; cv=fail; b=lSXSLTdDr9JT72peOJOrDDMFYr8+MxDWAOCn+0iy0W8K9Ygg7CVsvGcDzBDcONoBl6FVFx0LUkq9aVMrCCoKPJ0Fr+MxTMpI+JBHVJcDNBb1u8tyTP3Wi1qNUqDNJgkRlMtTWkUsEPhuJSbk6kTJOOdkDlGl1rlrp7pT+EEGrZ0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785260058; c=relaxed/simple;
-	bh=ml+4xuSWkrwJrmIuvgsggTfvDRYKnMfZlOAxCgs1lfY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Y0qKVDBhtWYETi4enmtiabR0yQqmyB7S7iVDTx5MD8vtKV9Uta2qBMsP6s2Y3sI4/U+4ZxNujHN87if7g4loT8ZBr2NAVuuaoU/BtaYb1aWdeXVooJCbaKdtwXNz92YMxgFw8YDyH8ac384ygHMARoScdAFFUSHzmyhmR+prAvE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hIrC+tCn; arc=fail smtp.client-ip=52.101.43.45
+	s=arc-20240116; t=1785260061; c=relaxed/simple;
+	bh=yD+foXCBZIqHTRhxjxNNnsWQDGcxcBnIrkyqlv/20q0=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FzUUnV/3BBBEmbT6Abgabis3+D8ZGWEEcsHeQGoYc1KCa1AuKZh9BPu1eY1YQpwY34EjsPA2rRn3wSZu0Mkwkt3bJJGz6MHmMKfY4Tv39nk0hv7RAcEEbOlXs4/yoIzkbp5fOkcfuFVyLIV89nXKtwAGKl60HR3gb8hk6x7E/QU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YD4UpFEM; arc=fail smtp.client-ip=52.101.62.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hIrC+tCn"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YD4UpFEM"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PgHyjB2gcCluxt7Btrnmb2MFpFMBPpJzCeHMGmOFtb9/OdV5zoNYOXhn/9+dErEBhnS/QMqAKZReGGEghkIpdhxxIRkW8d+gyCVB16VSo2f79Y4io6t1IVCrAh8SEm8S9mtDHzK/meGtPHxK0bf53YoYs/M/TBM1cgOwBt4Vay/OWKvHGY6zcPskjV/2JoSbxHyV3PpZtpPCnz/njYYt8C+ParsqR6o5UrUbDe4iABGXtggfLe63BFWHmhAAuRNSN0GN0TtIpqBnqkCYh/FizFArWpkY5Bvk6aWabFcZ5L5XSiGCFmHw+fK2l1X78Hl3UcE/Rn5qBiEEGerf47DXNg==
+ b=M3hZCPd0bVldFFJtmIdq7eO6tYKfJMmqQnkD+qTFNsUkxye3CcNkD58zkTlRru5TKEPDazJu8x8/05LTa/zte2hcyNkuMnLETJyBNrfeaY9skLDj/rXvXLWe3w9eAGEPTu6jJH9d0kcttRgjmNG8+DG8uVrc3/Ul29gHs7FDcRxBk8gisWRF+NJQZlRkVPmMjdq9Lsh2/Ea3Et9UnAu5k+jELU/3ywnCr5GFTVapwD9ac742enJRk4wPOe99PebMWT2GhbFlJ2tlbA8xhl7nhooQY1rHuzsHNcFJYRxK2O5Zj0EwQiMLUYxoZZG0IfxKbTWfwKWXfjL5HfIbjHFCXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I4ouknJ6ouyObU/Wmuf/u96aJ0ihFHT18F8q5urg/Lw=;
- b=u/zwCbYPXqYMlgAs8GzqgTFT+tyk1CL7VuxQlTXkRok9yQ764tSj13cFIuCOIBcMOBhgz33H9hlh4EQ1jj8DfyQ1nqoYvozuVQKFEn6NYNxiV+IyFbRpJlTDC9Uv5GlmCrOYY0CvDPPNwpMHg7LylWMEoP3ZkvtjBl0PhQfZs+sM/z8vp0i4/TzpQTCA1C5O7BrQpelvbjpEhW7YiSMkW2OuuOzF1wYa0UY6dMnJHSi59ngiwky0Ra4QACzDUjXtDRkFfXNSAlswlcUvk5zcRdOpPQm4mzFF/2JOz0ARKrS6w9728xEBze4kd38xe2bgH8MiuT9bI27Au2854oHrLg==
+ bh=YpwkolTSIl1qtoJrGkA843PQu9VpG1bJhIeeyTPmtAk=;
+ b=kNi7GJ4nwJ+vRP1lOGmfn3p7dkrtK2wFHv9MzgouS1yjaGVbu29FLTUgJgmGbiCTpsaVX7gXtOLaCPZwUIMOoPgmN1Gt0k3bpbVB0lSfDndKKPbOw329a9pW1nOrVKA3kjqEzC+C5lk9JLHNVau8L9fifLZ7JE5jdqiM15MftTmFqYIusCJLzPGtfl6vzm0mPpkxo44Be3S4BHXI1NWzAc/D8Dp4f4Y4cP/QUKMQq4oxBfOff19KX2SWagVZ8Vv/2ZKxUI/nXu3i0vHunSkvB8vWIdcDrCZXc4HBvpGlBpF11+7T06/ZD7NJin4i4c9eTxUlymMcPPXSJohaLXhhxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -29,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I4ouknJ6ouyObU/Wmuf/u96aJ0ihFHT18F8q5urg/Lw=;
- b=hIrC+tCnwYkcQvRuWFAcKZes+4fO9ZaG0swUvn0hC5bqv4OBvvWg2w0EpqT9WWIkafJB2j7MlTuLde2I4jXMnmjDQ/EzggXGBXCXS6qFYhgiHlhvm0ORzjX4OLk10IothTQ2ZVMyj2LYQBth7s0rNi+Vx4/eGMWLTOsyQxh+p2/jqXawQRZnrKcfZNVA2cNmz5fq7+EvDWWVQ04N2QTrqWv7yxk0nh37RKR7EDaLjezxx/lM0t4n/CL0YiBmjxlOTckMGcsi/dpXjXLHkilkUR1caf+0VIeYg4skh6sIYMSidRc3m9Py9C08ZM4vS34+yRkaq6dLkTMHmQwzkvJ95Q==
-Received: from DS1PR07CA0019.namprd07.prod.outlook.com (2603:10b6:8:44d::10)
- by DS7PR12MB9525.namprd12.prod.outlook.com (2603:10b6:8:251::12) with
+ bh=YpwkolTSIl1qtoJrGkA843PQu9VpG1bJhIeeyTPmtAk=;
+ b=YD4UpFEMQQyuOYuEphHOpMCu+w1Wi+QsgvaFSWfw8hnB+SbBz+wGdPVMHSFpHgvcqeIbhpwe+T9Bs8YSKg3l3KUOXCqJHiozD2RPS57AuU2BZdWxO164g5H7eM7QKWe0sDkABdBveettU//nzm/H4MMreU3Rf97T1pdMGW4hk+hpeJ5B+7Pzcgc8xwnk/QDKI4nCBTFa+ZtE5CDHl1sWRsV/PIO9V7isNc4d72XargUOKV7TvGv3uGSNAqaEULIXY4CtNGmOUcwZBav+yF5lHI53pHFL48om1dVFhPBs2Bd/BTCCy1M6Y6Lo1EeOccKEAfs8wIiu86wEDXpurEHUdg==
+Received: from DS7PR03CA0076.namprd03.prod.outlook.com (2603:10b6:5:3bb::21)
+ by SA1PR12MB9489.namprd12.prod.outlook.com (2603:10b6:806:45c::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Tue, 28 Jul
- 2026 17:34:07 +0000
-Received: from DS1PEPF0001709C.namprd05.prod.outlook.com
- (2603:10b6:8:44d:cafe::94) by DS1PR07CA0019.outlook.office365.com
- (2603:10b6:8:44d::10) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 17:34:09 +0000
+Received: from DS1PEPF00017096.namprd05.prod.outlook.com
+ (2603:10b6:5:3bb:cafe::20) by DS7PR03CA0076.outlook.office365.com
+ (2603:10b6:5:3bb::21) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.270.12 via Frontend Transport; Tue,
- 28 Jul 2026 17:34:07 +0000
+ 28 Jul 2026 17:34:09 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -48,20 +49,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- DS1PEPF0001709C.mail.protection.outlook.com (10.167.18.106) with Microsoft
+ DS1PEPF00017096.mail.protection.outlook.com (10.167.18.100) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.270.5 via Frontend Transport; Tue, 28 Jul 2026 17:34:07 +0000
+ 15.21.270.5 via Frontend Transport; Tue, 28 Jul 2026 17:34:08 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Tue, 28 Jul
- 2026 10:33:45 -0700
+ 2026 10:33:46 -0700
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 28 Jul
- 2026 10:33:45 -0700
+ 2026 10:33:46 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Tue, 28 Jul 2026 10:33:44 -0700
+ Transport; Tue, 28 Jul 2026 10:33:45 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
 CC: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, Kevin Tian
@@ -69,10 +70,12 @@ CC: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, Kevin Tian
 	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
 	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, Pranjal Shrivastava
 	<praan@google.com>
-Subject: [PATCH v5 0/6] iommufd: Iterate the cache invalidation array in the core
-Date: Tue, 28 Jul 2026 10:33:32 -0700
-Message-ID: <cover.1785258826.git.nicolinc@nvidia.com>
+Subject: [PATCH v5 1/6] iommu/arm-smmu-v3: Support IDR5.DS and widen the TLBI SCALE field
+Date: Tue, 28 Jul 2026 10:33:33 -0700
+Message-ID: <1b35fa8c417a21ac80a4a3f19db34d81ef6ca490.1785258826.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1785258826.git.nicolinc@nvidia.com>
+References: <cover.1785258826.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,139 +87,133 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0001709C:EE_|DS7PR12MB9525:EE_
-X-MS-Office365-Filtering-Correlation-Id: 961779af-b158-4e55-5e71-08deecce6d64
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017096:EE_|SA1PR12MB9489:EE_
+X-MS-Office365-Filtering-Correlation-Id: d8f84eb4-43af-4f66-fc2a-08deecce6e3d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|82310400026|1800799024|7416014|376014|36860700016|56012099006|5023799004|11063799006|10067099003|6133799003|18002099003|3023799007|13003099007;
+	BCL:0;ARA:13230040|23010399003|1800799024|376014|7416014|36860700016|82310400026|10067099003|11063799006|5023799004|6133799003|56012099006|18002099003|3023799007|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	cqjTbUYC1lR+7oT6djks0bUiXFdrHmNVP4Q6hM8YqCgmZ+QNAbbHyG/ZTclPmLgiPOsRTXbO1oS4aw4QBvLcwayGW/7LD+OBzoEZHJFwXPkeyhxg/0NUCuarMqrAiGlN57jgacwciKmm1WzN89sdYpsqHU0jIcGGB7GD0/NrWEm7H9g0CVd76X8E39660pTKk6r6fBeLfPBNTf4c2t42gyxf5FnXf5gSaCw/Wjsrg7cHsHhruB1jK3obqk050UVc1iz/1WNSksbgsWXl+UDvb9J8WOnAqjbr2lgPQPaHLfdFOX92P9HkYQgjMBjyrOzdx1m/KaDQDwA6P7xSHHf/ZzxRYqEdgZY2jPZ2xpurulA+/95yLTOpU8Q2THrN2h+YRcwtVcg7liY2/dHJcTzjRw404yNoudcf3MBPcCoJ31pkFjPbQSq5+bHYEFEqb/kK95sKMx8co0QIzsjMMIyYz5x0fxfRroASgtK7bux9S9CiRhp31Hbekv5r8JQ7QAxdCUhzVmRvnfxGNqTEBAmHucHRnoRsSxcD4unaAZKkYBng3+G9jqZUHSGmEjWkleVjTa1sWsin71ekl7xGlAf7VgmBeBMbNF3XZjE5jvB9h4Te6NCAiNKT9tE3rzZhKIRi4NzlbdfSBbIfcUeGqWiR33g+xxnuxsdRcrN1aVUMQzUU7uiGGyDWhTPiLbJciEYDAEwmzVTtvwa8HeoHr1T9wA==
+	VdYMNY3o/fOAsw0bCJMn/DczQdVjX7zC+g5TqXcLNo+dok9Ap6zL8txDebOeIkPVOhMVKXytlwu/KPJtc8yXCfNkmROBXmMHekTKm3VyU+9WigSMmwd1I49E6YB9UCS4bmMn4tgC4KlaTJnHVVaHhcEsDEq8BHKA+2taph+plbaznB+hjvxzKpMSBbQX2eW8ERLGnw5Q9w3Vw1p1K21G77kvrwPTd3dE/Ssn2GEF18VISqpsL1vkWdzaGkoV/FKpVTSFbbctfdzIbIjFNaXuewR5+xxXs8Icnn/okXLcx1eqvQpH3Z6Jznyeoluh9Yz9pdraiLmpoCqV3yJ3a8vhiVmbFtAG/hjxg/24JjitCW10dWZQN2kOGEbQCTOCfQOeplp5BrXFcNm/4oFMV1tQmD1UOG36+d4apENn04p5WB3k4gDqGAGTWS7ZL97puMEVN2CwJp7yxK4u78gdWi7ku4IJ7mI7cVFHt64aim6bFAdo70OJPLhxlnOPffvYa8w/Gxd93VC2GOzREhXENkdZxIoaSHaXIkl9vedlQJba3x4rBHPUIdble2nLmYM+Mp41GgtwhHBWbk4NyFFstR/38+q9a72rTXyMIWEciQ+L5tK7N5zmGYkG3Xnc+ubk+MNsfQ8LnxIzfl5CX4i+U+X/cpAdXy3lvpRKW88plYq30hFODPlIxG/kM/SPP6RdO+9NQuhJalZHQgmBRbFqzM6tKw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(1800799024)(7416014)(376014)(36860700016)(56012099006)(5023799004)(11063799006)(10067099003)(6133799003)(18002099003)(3023799007)(13003099007);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(7416014)(36860700016)(82310400026)(10067099003)(11063799006)(5023799004)(6133799003)(56012099006)(18002099003)(3023799007)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	Gx6qzoqvPExTM8SkRIr3Raw/i2/gYQEND+NJiZVNLQg8GzQR6PnZRg6ZFTUeP6wKnOeXlFn4MIeHY5TLuSODDLcVFdb3fNXdyAF9hMoD3dQu7oMIzlgpH2iY3QHBNT1Gv/owiGQvZbSkZNjK2rnJkksJB2uoznDdTp+Kgu7dvgQkWnx8Ynd9yBAL/MwPayU6giCVMlKDZjgAurysF4fO8ewE49CWFGhiXVfJ+EYzLvVgz5VtqgyY0A4ySfB1MRKzEVgV3K4DhaPEA9yCUb9u3I9reyOmjDmLxTEFWL5Di1cp49zIhfMnaGBg+kBnUXjsP92oYIw8I7/yhUkuzeluoPn3gUYS2f/zKQZVg/wNm1JzR9pa5r6mGfns8GfFsL3Kr0frLbZ7+qAcnF9Umiwn85o+5Zvprcawt/5WhwDBcdeI7fOCsQidrHfBpIKw/aTP
+	dUy7nAf5/bAcq+B81vW0GX7ZDwRg4kcxz9rv+wgeLX73LfIAjMKBG1LmfeX0LR2vF0FX80gQxFY5XBvXi4MYVzxVn/cjZfA8aDSg5fRr3FPy5pcIOZFMZi8CEbaJoC5Z0XvxGKbBrW006KqWUyyNsxqtrDjf4d7MFWIodpXUsaUVYDc72/mhVEDtZY1ZztY2fiCrOSDh7nykNkLsXVy4BtLLnP5+gqFmewu4mXX46f+Mnc//Qgtvt9MXcm87OAnj13HKPUrst1hMOMkH2zoYOXiubVgtf2o968IA5teJehL2z84LwH/eMv9PJLqabQPb0hWiLdb/++yNwV3mXfqjmi+IXD3ckaVpIDc0QF8EKGNUxMqihLdDKyJXVtYIhFsqYDQ4RYh5n83a3sen1U8HqgnxzPmYw3RJ4MMLYXs5AfAG6pHxUGFNNOsdSr8KP9h8
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2026 17:34:07.4467
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2026 17:34:08.8235
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 961779af-b158-4e55-5e71-08deecce6d64
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8f84eb4-43af-4f66-fc2a-08deecce6e3d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF0001709C.namprd05.prod.outlook.com
+	DS1PEPF00017096.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB9525
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB9489
 
-The vIOMMU cache_invalidate() and the nested-HWPT cache_invalidate_user()
-ops are each handed the full user invalidation array and must report, via
-array->entry_num, how many of its entries they handled. That makes every
-driver open-code the same array walk, with real downsides:
+An SMMU implementing SMMU_IDR5.DS extends the range invalidation commands:
+the SCALE field grows a 6th bit, raising its maximum value from 31 to 39,
+and TTL == 0b01 becomes a valid level hint for a 16KB translation granule.
 
- - each driver carries its own loop and sub-array bookkeeping;
- - the ARM SMMUv3 driver allocates a buffer sized to the whole array just
-   to iterate over it;
- - hand-rolling the loop left the ARM SMMUv3 driver with two long-standing
-   bugs:
-    1) on a conversion failure it counts commands that it converted but
-       never issued, so user space skips invalidations that never reached
-       the cmdq;
-    2) it rejects a zero-length array, which the uAPI documents as a valid
-       request that only probes the data type.
+Add a new ARM_SMMU_FEAT_DS feature detecting the DS bit, and widen the
+CMDQ_TLBI_0_SCALE field to its architectural 6 bits. Mask the scale value
+explicitly in arm_smmu_cmdq_batch_add_range(), so the range invalidation
+path emits the same commands as before, keeping the pre-existing 5-bit
+truncation of a scale above 31.
 
-The walk is identical for every driver, so move it into the iommufd core.
+Also list DS as a valid IDR5 field in the iommu_hw_info_arm_smmuv3 kdoc:
+iommufd has always reported the raw IDR5 register, so a VMM may conclude
+from that bit alone that it can expose DS to its guest.
 
-The core now drives the iteration:
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Assisted-by: Claude:claude-fable-5
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 4 +++-
+ include/uapi/linux/iommufd.h                | 4 ++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 6 +++++-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
- - it invokes the op on a sub-array starting at the first not-yet-handled
-   entry;
- - the op handles one chunk from the front of that sub-array and reports
-   the count via array->entry_num;
- - the core advances and re-invokes until the whole array is consumed or
-   the op returns an error.
-
-A driver then only has to handle one bounded chunk per call, e.g. the ARM
-SMMUv3 op copies a single cmdq batch into a fixed on-stack buffer and drops
-its whole-array allocation. An op still handling the entire array in one
-call keeps working, so each driver converts independently.
-
-All the bugs fixed here are long-standing ones rather than regressions in
-this cycle, so the series targets for-next, not for-rc. The stable tag on
-the second patch takes care of the backport.
-
-This is on Github:
-https://github.com/nicolinc/iommufd/commits/iommufd_invalidation_loop-v5
-
-[Note to Jason and Will]
-This is based on the arm/smmu/updates branch, which integrates Ashish's
-CFGI/TLBI-repeat series. I've run Sashiko locally: v5 is still clean.
-
-Changelog
-v5
- * Rebase on top of arm/smmu/updates branch
- * Add "Reviewed-by" from Jason and Pranjal
- * Patch-1: Drop the Fixes and Cc stable tags
- * Patch-2: Reject an unsupported opcode in the validation helper
- * Patch-2: Add an explicit NSNH_ALL case to the allowlist switch
-v4
- https://lore.kernel.org/all/cover.1784054606.git.nicolinc@nvidia.com/
- * Add "Reviewed-by" from Baolu and Pranjal
- * Split the DS support out of the reject patch into a new patch-1,
-   also listing DS in the iommu_hw_info_arm_smmuv3 kdoc
- * Patch-2: Add "!!" to the bool range assignment
- * Patch-2: Factor the allowlist into arm_vsmmu_validate_user_cmd()
-v3
- https://lore.kernel.org/all/cover.1783539724.git.nicolinc@nvidia.com/
- * Patch-1: Add a minimal FEAT_DS detection and allow the two DS-only
-   range encodings on a DS-capable SMMU
- * Patch-1: Mask the host's scale value to keep its 5-bit truncation
-v2
- https://lore.kernel.org/all/cover.1783363477.git.nicolinc@nvidia.com/
- * Add "Reviewed-by" from Kevin to patches 2-5
- * Patch-1: Allow the ATC_INV Global bit gated on ssid_bits, correcting
-   the wrong every-device claim: per the spec it only broadens a single
-   device's invalidation across its PASIDs
- * Patch-1: Move the FEAT_ATS check into the allowlist switch
- * Patch-1: Gate the TTL range field on FEAT_RANGE_INV too
- * Patch-1: Accept only asid_bits of the ASID field
- * Patch-1: Reject Reserved range field value combinations
- * Patch-1: Reject an ATC_INV Size above 52
- * Patch-1: Add local smmu and data variables to simplify the long lines
- * Patch-1: Document the valid-command contract in the uAPI header
- * Patch-1: Note that unchecked out-of-range values are UNPREDICTABLE
- * Patch-1: Note that SSID/Global are IGNORED, not RES0, when SSV == 0
- * Patch-2: Consolidate the two invalidation loops into one
- * Patch-2: Multiply by the size_t entry_len to avoid a u32 overflow
- * Patch-3/5: Return 0 directly on a zero-length array
- * Patch-4: Use a processed counter and an out label like the mock driver
-v1
- https://lore.kernel.org/all/cover.1782767398.git.nicolinc@nvidia.com/
-
-Nicolin Chen (6):
-  iommu/arm-smmu-v3: Support IDR5.DS and widen the TLBI SCALE field
-  iommu/arm-smmu-v3-iommufd: Reject unsupported bits in invalidation
-    commands
-  iommufd: Iterate the cache invalidation array in the core
-  iommufd/selftest: Convert cache invalidation mocks to the core array
-    loop
-  iommu/arm-smmu-v3-iommufd: Convert cache invalidation to the core
-    array loop
-  iommu/vt-d: Convert nested cache invalidation to the core array loop
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   4 +-
- include/linux/iommu.h                         |   6 +-
- include/linux/iommufd.h                       |   2 +
- include/uapi/linux/iommufd.h                  |   8 +-
- .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 197 ++++++++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   6 +-
- drivers/iommu/intel/nested.c                  |  54 ++---
- drivers/iommu/iommufd/hw_pagetable.c          |  25 ++-
- drivers/iommu/iommufd/selftest.c              | 147 +++++++------
- 9 files changed, 292 insertions(+), 157 deletions(-)
-
-
-base-commit: a86c36163c9722545d27e92bdad8418fdcaa8b1d
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 43f4d24e78472..79216f2c0a98c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -64,6 +64,7 @@ struct arm_vsmmu;
+ 
+ #define ARM_SMMU_IDR5			0x14
+ #define IDR5_STALL_MAX			GENMASK(31, 16)
++#define IDR5_DS				(1 << 7)
+ #define IDR5_GRAN64K			(1 << 6)
+ #define IDR5_GRAN16K			(1 << 5)
+ #define IDR5_GRAN4K			(1 << 4)
+@@ -415,7 +416,7 @@ struct arm_smmu_cmd {
+ 
+ #define CMDQ_TLBI_0_NUM			GENMASK_ULL(16, 12)
+ #define CMDQ_TLBI_RANGE_NUM_MAX		31
+-#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(24, 20)
++#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(25, 20)
+ #define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
+ #define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
+ #define CMDQ_TLBI_1_LEAF		(1UL << 0)
+@@ -922,6 +923,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_HD		(1 << 22)
+ #define ARM_SMMU_FEAT_S2FWB		(1 << 23)
+ #define ARM_SMMU_FEAT_BBML2		(1 << 24)
++#define ARM_SMMU_FEAT_DS		(1 << 25)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index f73a392b3d3f7..c6851c7655c66 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -605,7 +605,7 @@ enum iommu_hw_info_arm_smmuv3_flags {
+  * idr[0]: ST_LEVEL, TERM_MODEL, STALL_MODEL, TTENDIAN , CD2L, ASID16, TTF
+  * idr[1]: SIDSIZE, SSIDSIZE
+  * idr[3]: BBML, RIL
+- * idr[5]: VAX, GRAN64K, GRAN16K, GRAN4K
++ * idr[5]: VAX, GRAN64K, GRAN16K, GRAN4K, DS
+  *
+  * - S1P should be assumed to be true if a NESTED HWPT can be created
+  * - VFIO/iommufd only support platforms with COHACC, it should be assumed to be
+@@ -613,7 +613,7 @@ enum iommu_hw_info_arm_smmuv3_flags {
+  * - ATS is a per-device property. If the VMM describes any devices as ATS
+  *   capable in ACPI/DT it should set the corresponding idr.
+  *
+- * This list may expand in future (eg E0PD, AIE, PBHA, D128, DS etc). It is
++ * This list may expand in future (eg E0PD, AIE, PBHA, D128 etc). It is
+  * important that VMMs do not read bits outside the list to allow for
+  * compatibility with future kernels. Several features in the SMMUv3
+  * architecture are not currently supported by the kernel for nesting: HTTU,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 3a9cbd7d8a00e..4b600cd0f907c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2511,9 +2511,10 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
+ 			/* Determine how many chunks of 2^scale size we have */
+ 			num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
+ 
++			/* Keep the pre-DS 5-bit truncation when scale > 31 */
+ 			cmd->data[0] = orig_data0 |
+ 				FIELD_PREP(CMDQ_TLBI_0_NUM, num - 1) |
+-				FIELD_PREP(CMDQ_TLBI_0_SCALE, scale);
++				FIELD_PREP(CMDQ_TLBI_0_SCALE, scale & 0x1f);
+ 
+ 			/* range is num * 2^scale * pgsize */
+ 			inv_range = num << (scale + tg);
+@@ -5192,6 +5193,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	/* Maximum number of outstanding stalls */
+ 	smmu->evtq.max_stalls = FIELD_GET(IDR5_STALL_MAX, reg);
+ 
++	if (reg & IDR5_DS)
++		smmu->features |= ARM_SMMU_FEAT_DS;
++
+ 	/* Page sizes */
+ 	if (reg & IDR5_GRAN64K)
+ 		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
 -- 
 2.43.0
 
