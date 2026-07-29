@@ -1,162 +1,147 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A921426B2AD
-	for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 15:34:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A2C336F8F5;
+	Wed, 29 Jul 2026 15:50:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785339244; cv=none; b=g0evLD+fj5v8ltNG7KYXSwFQxCalqNL1dGjVug9WL5H82AIfQWiDo4V62YyrL9Eu3Liv3NGFBwGgDdvJShLW9k7pRIS4QBoV8fA5KnOJavGRJ7w98aAric6Y0OU3gjDRLVun2yTW6sUwhcIGjzh6ztiLTMQntk91Bx6HOkCLmpI=
+	t=1785340202; cv=none; b=LM3QCmbZlBL0NnlHkQKZ0nfTOPQB6gUxXRl+HKL6YWOjATvF3CQ+ut6DseVI64WOgK95nBBz2wZIkWWPoadUjNgJpSXgHaOWG4o5l/uyv1SeRXGEqIqnS4YZr7eB/1KlAPXIXZBfocnuIZWE62djcV8xpsf2d2jQIXwOWKwUrXQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785339244; c=relaxed/simple;
-	bh=uusaHKhdZOOIa+jdubg/4lcDVO9Mun7Egkmmk4lZfXc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=akLpxXmYqE3GJqlUg9Hjd5t6u7I6LRZ+bYEp3qYCcGy5929OgxjbXIz6HxFX/clPijWkqeJxeinPgV/kt5wv+CbP09FE2GKM6p+ecBikqnW/99I7z1vbiXJTfvogbPeemGSONmaSUty5Kmvx38WsaADPRqMRIEVB6pQ0NS0bZ6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kwCMMNCN; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=SJFItXvn; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1785340202; c=relaxed/simple;
+	bh=x04hNIWP3F2RYs13zaEW1Bd/cYuzTrGhoh9g72rRRkE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mvFNhzNfYc+T/3cX81TxlnmUAEbvljYQbYevQgYWKYXxmL/NpDu5v67l9B0aXAeq9qr9F/C0ayP5pnGIB92sE5PEgctSuzm4Ooi1xYNuHnYOHkcX7oZf4MttIYwEDgGMQA67zUKs9p2RVn4wAD9LZ/LhLvvZuUE+qOLpZ8vNi/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jvXgUWyC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kwCMMNCN";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="SJFItXvn"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66TF2VSe2591758
-	for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 15:34:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=QUnH+rERyXcOOevFVTmjG9tv
-	hkhekENrGxjVVTyR66s=; b=kwCMMNCNfZnAf8pOQmuZW8mEiYknC552j6RhMaKD
-	QXbtrnsTBy7EJkGrp4cS3030eX0kyMc2YW166MHlRYIC1mAUmvq0XDJ06OHyOp7I
-	CYMDK4gZXqTeIUAuOEdwc5/eNP2UBCRsPkM8OIKcMMP5ffkc4YZLeZcosdHyuZae
-	86elXKl2WFhpzbKu2A6A86zZ8V3csxh0usCmIot+Iv2MdGu0Ew1fQZQT2gqN1EQD
-	lR4ZvTPWqoWFWH0u7kJqX2xe0DPwjzXxnuaWENzg6/xXjHZe5bKcaYt6rSykmnaf
-	dQDd6YLy1lotbwrf1iTiN7QfniDWmdOvFlpw6GgwyIzMOg==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fqke08che-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 15:34:03 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-51c26012cd0so10535681cf.0
-        for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 08:34:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1785339242; x=1785944042; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QUnH+rERyXcOOevFVTmjG9tvhkhekENrGxjVVTyR66s=;
-        b=SJFItXvnI+vP3maTs5Xdzv9hNAZtfBphSFN7YwuljHJT5r5F1wkPH0oo1HxcOtcSL/
-         aaWXjvyfBI7YMP0K/yAsiw2sVNAT4ojLVLa//+UICgw2coeqenLCfVWN98qTZuaJcr5I
-         tlQTzb0+RRCFUUstP2lkk0G1NoBbpc3EnQ2x/5FWl//NDShc8o4eZfkD03hVSFWlgT+R
-         gSZTCDRqFadEo63EgUhXGWAeDhZw3pPik4GtbLwBiEXEGSCfWTVJtHxgM3RDy5j2Sixe
-         qXDGyB50b4WRAgM8u3Kz8gTGfXaPkekQe8vHcHnY+MdmuCrmHbcWrWMZrwnboFsHBnx3
-         03QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785339242; x=1785944042;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QUnH+rERyXcOOevFVTmjG9tvhkhekENrGxjVVTyR66s=;
-        b=qCFAl2gSkH5tM4BmAmu6xixYN4JfYIb/MGSbC6kj2lqW0UBYID6XIfgdx0iOYyMlxT
-         s9IndEiyLlh6itZDapNRe1lnccJks7CgWJYctM+7RqFpDO24ntUjMrBWAkKbo80rVpd9
-         lyXDbKb9/4bwXDlL9ID7iMPWVR1+mme+UmNj4K2GAjv+GgIOUGM8yzZ7XaJJgO9AXZrv
-         AJ06ev5h2THp9ukwCah6yipb1NyHlEb5qQPay5b4seHz6txA3fGtJ753moNMgoEaKwHg
-         ngiK32+HhQIylDKJ30EXHcdst2F+/ax6iaIYmsEPWb0JID8LIxq6m4qgTX0jv2wsxxMJ
-         uVTA==
-X-Forwarded-Encrypted: i=1; AHgh+RobnF+qCLPWu8ExFtHeBhKgAnysW5h6AI57+wdxpCrEhdEYGKzMcY7k7qH+bXrrOGjFgHY8dQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzQLXS6jzQcOo10KiAQkemsN4aX3C9KlX1n/k4yPHiBmtyr3vn2
-	R8WviY/SeJPiGhYGmS4wrqEBfJ66IfiVjGVFoUkOC0ygqFIFttJzbpqVMsKBvTujLg8QFVacVKs
-	RW01iAwkOLi+LhCmAzLczWc/9T4J3VLdwscVmbbdDmfqqayNf3I5zFuEJtg==
-X-Gm-Gg: AR+sD13fpmdPDZHM3VW/tuqQ8MouoEYaiwosUCFCuyfN7SRay2eqUq9hgT0hoOtPA0s
-	oIvFogk81RvFc3iOZiYDrDO3J7TMjUokA9XLkEStzyN1IcoZND6Z8C41/45woPx5MGHWUkGV/0E
-	YPwWJE1JrDb8O8+ICrWhg/ZyERUHnAs4oDBM8/H3phT8VRCAa+2Bs395s8NfQb/kZpstOeD1/wg
-	bWw0Oc4HRpyiQZfbLK98Ilbl6i7PkOG0vvWxnQgdAOggkUOpDaCqc2X91R1D61/6EkVu7Ie9Pc3
-	u3aaplOQL68iUZbBlsukzu8W7L0jvbRQNV649iVlA+jiI0r+/OdOhPHpmtitgqCZB0k2YXXAqUW
-	3pVVAKi/hr5gkbSQ=
-X-Received: by 2002:ac8:5885:0:b0:51c:640:231f with SMTP id d75a77b69052e-529d70d6591mr71296531cf.45.1785339241907;
-        Wed, 29 Jul 2026 08:34:01 -0700 (PDT)
-X-Received: by 2002:ac8:5885:0:b0:51c:640:231f with SMTP id d75a77b69052e-529d70d6591mr71295911cf.45.1785339241231;
-        Wed, 29 Jul 2026 08:34:01 -0700 (PDT)
-Received: from oss.qualcomm.com ([86.121.163.114])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fb6aa3b1csm9218589f8f.1.2026.07.29.08.33.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2026 08:34:00 -0700 (PDT)
-Date: Wed, 29 Jul 2026 18:33:57 +0300
-From: Abel Vesa <abel.vesa@oss.qualcomm.com>
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Subject: Re: [PATCH v2 7/9] arm64: dts: qcom: eliza: Add GPU nodes
-Message-ID: <gpqulnkjhpp3oqin3xouxcyytfpnaw6bckmmutbzdebfmnrdvv@ylnrzbznwwcn>
-References: <20260718-eliza-gpu-v2-0-64379dbebd7a@oss.qualcomm.com>
- <20260718-eliza-gpu-v2-7-64379dbebd7a@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jvXgUWyC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 543911F00A3E;
+	Wed, 29 Jul 2026 15:49:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785340201;
+	bh=uqKH4VCTe9vViQKnNAGVZMzkIEeNzEW45NjzvfGwTZs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=jvXgUWyCn8XO+hR+RwLHFAVOIo01qZlqspdWH/BNHlSiFPe7kSMNF/A1WYJmGNB3L
+	 RQLKNV8Qo8/JmQRx30K3TLy2qPL5PbMKemIEIGYGMqw/qKZ63svwxGqC3mbCW5jeEM
+	 rSv7seblRC66ZHEnDAPVVIRhwDwOSEcNisu8/pl9BJIYLi2UVJWoU2lRlHFlOi62G0
+	 JkCdUm/Q8pfT/XDZtkpyqJY2U2AtCU55GtuepP4B6IKruYGPSyDitFBOSABshdKbD4
+	 2x4RqDWO9ezy8shRf2nFROlynmUDeY9yZtbbcBhIf8A+tRCymg06vD7S7oHKjtZbj3
+	 we2dKTxCl8PQA==
+Message-ID: <63960288-5240-4b94-b22d-f389911366c8@kernel.org>
+Date: Wed, 29 Jul 2026 17:49:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260718-eliza-gpu-v2-7-64379dbebd7a@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI5MDEyNSBTYWx0ZWRfX1zmmewWV4WC6
- TzKFvmCCRhf77Yu/hPcnBn91oTI3sXcj30nQuIu7S2xWSRIpY9WS6c4uNWysTiMf6y5B63GvrPy
- jgDGvLdirvs0/pMQ8CuUhdKarXl3VKR6w+BDLvHgAH8Sps11+OS4bkXeRBlLfW9Yk5iSYb0yoEA
- GQylqCVku4vymbcM/RJcCLNuwr2izRQVBovRI4pTi++jkBXkgTAq3Vw60eQBVnC+r8zjq/QTAKE
- /Wjffr7dVTaad1gXw5c0rHteRV62R6vljXlj6NKkWjqsj4EtDtMvJegA7z30TsExfyXUWstWXN6
- iLTC++U/gjB9uzWBSVkgYUwdBaIUhMLHQJ/SwCLeOEtrj/lmRigYLB/c41fh+KWsvioFvZehyft
- HM9OOXpzxAJ8KDJfN5e7gylYM5bWm+HyD1FX17/mRCm1VRTltZgnkHWA1hQqCUocAWNlCSJneYC
- UU/6hzSKNymz8PrTtUA==
-X-Proofpoint-GUID: xGneNYbLGc6czXfsJQ85GHFDK4-gbWz0
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI5MDEyNSBTYWx0ZWRfX0VYWWpbjZGqL
- 8mrTrWuK0B/NoVXKfbenb6Bsm4TRZhbAG0RrPCJSuGJbwjBOxsGMwC+9i9PAcgj2frfTrODvFdV
- nj/ADye5BrZN1xjf5da/UvCSjoBwQq4=
-X-Authority-Analysis: v=2.4 cv=ONYXGyaB c=1 sm=1 tr=0 ts=6a6a1d6b cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=6dw9+iwJWV8PcCi9M4lOBg==:17
- a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=EUspDBNiAAAA:8 a=LzKdWfoJb4QxxMUDPeAA:9 a=CjuIK1q_8ugA:10
- a=a_PwQJl-kcHnX1M80qC6:22
-X-Proofpoint-ORIG-GUID: xGneNYbLGc6czXfsJQ85GHFDK4-gbWz0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-29_06,2026-07-29_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
- priorityscore=1501 suspectscore=0 bulkscore=0 clxscore=1015 phishscore=0
- malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607290125
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] mm: move internal mempolicy APIs to new internal
+ header
+Content-Language: en-US
+To: Brendan Jackman <brendan.jackman@linux.dev>,
+ Matthew Wilcox <willy@infradead.org>
+Cc: Brendan Jackman <jackmanb@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ "Liam R. Howlett" <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>,
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
+ Jan Kara <jack@suse.cz>, Joshua Hahn <joshua.hahnjy@gmail.com>,
+ Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>,
+ Ying Huang <ying.huang@linux.alibaba.com>,
+ Alistair Popple <apopple@nvidia.com>, Hugh Dickins <hughd@google.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Chris Li <chrisl@kernel.org>,
+ Kairui Song <kasong@tencent.com>, Kemeng Shi <shikemeng@huaweicloud.com>,
+ Nhat Pham <nphamcs@gmail.com>, Baoquan He <baoquan.he@linux.dev>,
+ Barry Song <baohua@kernel.org>, Youngjun Park <youngjun.park@lge.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Huacai Chen <chenhuacai@kernel.org>,
+ WANG Xuerui <kernel@xen0n.name>, Thomas Gleixner <tglx@kernel.org>,
+ Chuck Lever <cel@kernel.org>, Jeff Layton <jlayton@kernel.org>,
+ NeilBrown <neil@brown.name>, Olga Kornievskaia <okorniev@redhat.com>,
+ Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
+ Trond Myklebust <trondmy@kernel.org>, Anna Schumaker <anna@kernel.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev,
+ loongarch@lists.linux.dev, linux-nfs@vger.kernel.org, netdev@vger.kernel.org
+References: <20260716-folio-alloc-cleanups-v1-0-5363b8e92d33@google.com>
+ <20260716-folio-alloc-cleanups-v1-1-5363b8e92d33@google.com>
+ <alkLSzQvzT9zJbY1@casper.infradead.org> <DK05KUIDJVLZ.61UIWOL0K3OT@linux.dev>
+ <al5gQgnBCjNCSD_4@casper.infradead.org>
+ <51810eba-2a60-49f9-b879-7f806546e600@kernel.org>
+ <DK5767A146ZW.3LV5JXS7T4W1C@linux.dev> <DKB16T0X5I9D.2GCNPBS9VC95V@linux.dev>
+From: "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+Autocrypt: addr=vbabka@kernel.org; keydata=
+ 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
+In-Reply-To: <DKB16T0X5I9D.2GCNPBS9VC95V@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 26-07-18 02:11:32, Akhil P Oommen wrote:
-> From: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>
+On 7/29/26 13:50, Brendan Jackman wrote:
+> On Wed Jul 22, 2026 at 3:15 PM UTC, Brendan Jackman wrote:
+> ...
+>>>> We have a long history of people just moving stuff around in patches
+>>>> without knowing what the intent was if it should be moved.
+>>>
+>>> I guess this patch is not critical to the rest, if that's an issue.
+>>
+>> Well, for ALLOC_UNMAPPED we really do need an alloc_flags arg for this
+>> function, but we can always just go straight to what I described above.
+>> I.e. I can create the __ variant + wrapper from the start. It's just a
+>> question of whether we prefer:
+>>
+>> - "Yuck, there's a public wrapper here that we don't actually need", or
+>>
+>> - "We hid this mempolicy API and people might think we'd NACK a patch to
+>>   un-hide it".0
+>>
+>>   https://lore.kernel.org/all/20260703-alloc-trylock-v5-2-c87b714e19d3@google.com/
 > 
-> Adreno 722 found in Eliza chipset belongs to the A7x GEN1 family. It is
-> derived from A730 and shares the same IP-level configurations: HWCG
-> registers, protected registers, GBIF CX registers and gmu_cgc_mode.
-> Major differences include lower cache/core counts, 1MB GMEM, no
-> Concurrent Binning & LPAC support. Some of the peripheral blocks like
-> RSCC are from A740 that resulted in updates to RSC layout.
+> Uh yeah so in v3 I did not depend on this patch, I just went straight to
+> creating __folio_alloc_mpol_noprof() here:
 > 
-> Add the necessary devicetree nodes to describe this GPU.
+> https://lore.kernel.org/all/20260726-page_alloc-unmapped-v3-25-6f5729aa9832@google.com/
 > 
-> Signed-off-by: Puranam V G Tejaswi <puranam.tejaswi@oss.qualcomm.com>
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+> So yeah I'd say we can just drop this controversial patch and move
+> forwards with the other two?
 
-Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+Ack.
