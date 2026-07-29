@@ -1,110 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AB103B52F4
-	for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 05:39:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 913303A6B71
+	for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 05:46:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785303580; cv=none; b=N0aW7Pv3NnyXurplim6vxVckj/UTrC0h25CVE+s+Y75AAy+Fptrtlzykgv0sr2eqPn7BItSEwwrmTV9yKWYxsdDmIdFs/0HOk7subN+6qGbDTq5INLSrDNkIY4svsQRV9wZVmqRp2TJetK1hqfMKKRT6Uus41SqcxR3iyEfyahc=
+	t=1785303993; cv=none; b=Ldh7zulJH6bfUm+JrFI3b6syDivoOvSSk6bYct9U1vkrXc5zeJaG75QsiVd4vwVmfKHpn9QVy7hQJ3LH77oqo8haW6UK9xOOVFdDtEn5eIzL1mIcFhcaRr/XUDT6IxFV1/rem2Tjy5v12NehvZoAo/4Y59/LIewzpoPmz4SwL7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785303580; c=relaxed/simple;
-	bh=MVuDxY6zTAmNDCxjaulL9KV8llzBrqvd4EV6u6U7bY4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tg+Z8AyXMH0dKjoeCY1XzggyWLhFtnVWzM/1qK+TADcVBPc3f8k875ld2BC+WpSe9nYLbHPyxcT7GsQnLD4u/y58u5aKLAKeC6135oI50wt+eIipjm+VHriy9BNKZJgI8htQVNQvPkBgxgzxxlymTSmFT89j1gf1a+3Q7M2VTVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L4naFJXV; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1785303993; c=relaxed/simple;
+	bh=ydP+87D/K348FSpdC9NbnctdfuYDb3MlvkZ+qPWf4JA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lB/kWlcWdPLl1aISI2tJ/Upaz6y3kyzYqijnpvOq/iSpgSNvZPfqK8UR3oEekV/JMYAgwxasWXsr/sc67r5hm5uGik0IKoFJFh4XA3pbWwPxN7qz9tkbJzTYs0l/9at326FnJyzl5kZEafmg/5JfJJEdv4dRvgKQH07MtyFZF54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hc2SrVDY; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L4naFJXV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785303577; x=1816839577;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MVuDxY6zTAmNDCxjaulL9KV8llzBrqvd4EV6u6U7bY4=;
-  b=L4naFJXVvsngMwPnvq77RQcCL47XsEXgwW3dZDt/1hbWm4WMIFlTcTEK
-   DxP2PQyXD+iUrklJ1JX/nL2VDTRSl+5eioT9hgOTx2zQ2dN2Zby7uJdGy
-   XlgrmSWtR759ebnj/HU/XMpYmgeicWtsOQ0p7+iG/OAqtwXC84oDh2KB0
-   vhxMx2+SogKeAMNMHAOV0vjTFc8qNqeCUFqx6ndR7u0MZhe9L5YZE0dkX
-   UYLTHyN9qha7vLP2rEtLaBE8j+bk0wER1N1hE8UpzaD4F5rP7gN90Z9bn
-   KaqcweBP5d6qT4GCl1TzyQN5m/l3hvm0ZBi6WFSlDYnCnSDvfVdk0ECVw
-   Q==;
-X-CSE-ConnectionGUID: b1Q8717cQVGvAfDboaBgKw==
-X-CSE-MsgGUID: 65WHBgZHQZGCR7Dg1FzXkg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11859"; a="97412586"
-X-IronPort-AV: E=Sophos;i="6.25,191,1779174000"; 
-   d="scan'208";a="97412586"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2026 22:39:36 -0700
-X-CSE-ConnectionGUID: +AxouIw1TbWmJEF4OOAKrw==
-X-CSE-MsgGUID: wF3SOInaTtO51/OmLlam4w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,191,1779174000"; 
-   d="scan'208";a="255608255"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2026 22:39:35 -0700
-Message-ID: <fbf39948-af54-4907-9040-8b1b630fa49c@linux.intel.com>
-Date: Wed, 29 Jul 2026 13:37:41 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hc2SrVDY"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2ccdf36f63dso73085ad.0
+        for <iommu@lists.linux.dev>; Tue, 28 Jul 2026 22:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1785303992; x=1785908792; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=KUrSKghuESWPVo/dW96oFPOfRQeq5DnIatYi5FWLDOg=;
+        b=hc2SrVDYiRkxEC6P6Fvkcme7YMbaS660w74hw0nzzVfya72V66+Ias6m4AQBQKN+tG
+         +/jE3Ra6yK/YvDZbYrIKyViIKeVmjmbl829RTytcm2caNghWBrM58nCYS5PrQqkRRgaI
+         GVHN0YQUW9Oug2ZW+NbZM/YmdHiryoQI4YVqaz9iur5NAQYumsfKrOdtHMbrZCKoEk96
+         UtZ21xTvWGuP5dH+cBsoTt+13wAbuLQup2PrCvRDSQ6aCD4iHJaa9SnNWMXu8ROXsaHm
+         kC6Rpytij3vUQhS+Qx6rJyUoHCOBMWLNOj1PySAJWnpW5SnLeHW02Z8rOdB1phjAeZiq
+         ucgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785303992; x=1785908792;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KUrSKghuESWPVo/dW96oFPOfRQeq5DnIatYi5FWLDOg=;
+        b=delrIm10aGV3MGSxCL3nfB4E64uxD9QtnXr6PJQ8agkNe3ZEIZnzbYodDpfY3j5Sc/
+         v3g783ebGXSXh19RflqZ+koonklwroRKzIqzYnv3NFxi/lWOdYYfkgksKjKQ+3pACFYq
+         srj5o+etXMCHuaI5DdpVLcyE+PWLlZ1W3BF3P9IiEKWDpkRqGvPksMlcEQJnVHiAheKa
+         w6ykKZ0cWLi8CZhVrrN645x3xe19zEcoxIye+9SfgpUR/eenLjG9OdmDdkS4sGIHHOfL
+         0jxqn+EKDCE0Fu9d5duOhIEnPBFwfhxF5wNEPfinmKxFdOq8flnZp6XDdmvufzCm5TYk
+         7Grw==
+X-Forwarded-Encrypted: i=1; AHgh+RrY5JU1ZRL+dsb3d0HEAXVAgrmuqaDWPZg5s2uhE899yyZWeMghGDjR8Ici4uyz/EF+/pJoyw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyPXEc+hs/uWdEVlAil2xH3milO0NMrIx3JUVP7MHfVvCvUGbtS
+	hkDXA8fDhyriOI7EinQf/xtyUB/zrcH2sGbi+sCvqnExILHCRH023hqPOKAJJS9bYg==
+X-Gm-Gg: AR+sD13C7XETOzUHI200rQtKOIk/LQV5KxdkYiZgJPC/MfqRvNQvm8QKmLNe6kug3rh
+	gfLPcHv6GnWH1LT8kwXSyvL1X3fkD4AP+I2HyWzsiFzfhmYF4YBdAKkskGiPPDjI8PdNGlTIk+E
+	j5REvqDIvTCIfc3quY3Qx8mmgDSxXMDkd4MZzNpUHD2xnepYk1N0tG7GHhxKv7WUGoiSMNXL7BH
+	AU5Az4Ly+RRaAVJkEkOaw0sxCUXyPTgyY+/QLQzXQ3vxcwyHPhtedVVx+bjiOxuuBZlUX+sObNG
+	ERHV1udC7UJ5bsL4yz9j3Rx/8LzxK0t+cMnjLC1joVQRPiwbXcsoNR941mPnVF4ajtqCgZR9kWG
+	aSgCr/EbLPWi7b0o1JJNQHwNIYvHgI4EW6RNqr1f8mSQOVz3Qx89d+opLMeKcHVfv4hWLoP0LTJ
+	T0C4DvPtUpCrIKYqBGP3HviDVSdsmOxAOz8NOu4lbS3rCDrAuCL8yTAY6sjHyamh5bJJwM2ijt4
+	zI3Jgt3h6zJwpOaBvOeRdc=
+X-Received: by 2002:a17:903:4091:b0:2ca:be81:b469 with SMTP id d9443c01a7336-2d026c4dcc4mr1313315ad.0.1785303991374;
+        Tue, 28 Jul 2026 22:46:31 -0700 (PDT)
+Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38f642fbf74sm2219437a91.17.2026.07.28.22.46.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2026 22:46:30 -0700 (PDT)
+Date: Wed, 29 Jul 2026 05:46:23 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+	bhelgaas@google.com, kevin.tian@intel.com, kees@kernel.org,
+	smostafa@google.com, baolu.lu@linux.intel.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	skaestle@nvidia.com, mmarrid@nvidia.com, skolothumtho@nvidia.com,
+	bbiber@nvidia.com
+Subject: Re: [PATCH v2 03/11] iommu/arm-smmu-v3: Add
+ arm_smmu_drain_queue_for_iopf() helper
+Message-ID: <ammTr2kvjpiOHkbT@google.com>
+References: <cover.1779944354.git.nicolinc@nvidia.com>
+ <a62db13ab63916e9a62cddeec41a74a98cdf6a8f.1779944354.git.nicolinc@nvidia.com>
+ <amkcQRVylEe_t-yP@google.com>
+ <amkqZbPJs9qly4pH@nvidia.com>
+ <ammMf5z-Gl-Wygk6@google.com>
+ <ammO+4W/dGC8kTCr@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/vt-d: Fix copied_tables bitmap leak on error in
- copy_translation_tables
-To: ZhaoJinming <zhaojinming@uniontech.com>
-Cc: dwmw2@infradead.org, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <367f963a-d337-4d49-9d5b-a558fcba813a@linux.intel.com>
- <20260727052240.3483567-1-zhaojinming@uniontech.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260727052240.3483567-1-zhaojinming@uniontech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ammO+4W/dGC8kTCr@nvidia.com>
 
-On 7/27/26 13:22, ZhaoJinming wrote:
-> The iommu->copied_tables bitmap was introduced by the IOMMU live
-> update series to track which context entries have been copied from
-> the previous kernel.  The allocation via bitmap_zalloc() was added
-> inside copy_translation_tables(), but the error paths were not
-> updated to free it:
+On Tue, Jul 28, 2026 at 10:26:19PM -0700, Nicolin Chen wrote:
+> On Wed, Jul 29, 2026 at 05:15:43AM +0000, Pranjal Shrivastava wrote:
+> > For PRIQ/EVTQ, my only worry was the HW producing more events,
+> > say Device A is detached (we call drain from attach_release) but Device B
+> > (still attached) starts an agressive DMA with multiple PRI requests/evts.
+> > 
+> > Maybe we should go back to snapshot based polling for that?
 > 
->    1. When old_rt_phys is 0 (invalid root table address)
->    2. When memremap(old_rt_phys) fails
->    3. When kcalloc for ctxt_tbls fails (goto out_unmap, which only
->       unmaps old_rt without releasing the bitmap)
+> If you look closely, "pending" is the snapshot, regardless of the
+> growing prod.
 > 
-> The bitmap is only cleaned up by free_dmar_iommu(), which is
-> called from the free_iommu error label in init_dmars().  However,
-> when copy_translation_tables() fails, init_dmars() does not jump
-> to free_iommu -- it logs the error, falls through, and continues
-> with the next IOMMU.  As a result, copied_tables is leaked.
+>  * With @until_empty == false (for EVTQ/PRIQ), exit once "drained" reaches its
+>  * target: "pending" (i.e. prod0 - cons0, frozen at the entry time):
+>  *
+>  *   cons0                cons                 prod0         (prod)
+>  *     |<---- drained ---->|                     |             |
+>  *  ---+###################+=====================+=============+--->
+>  *     |<--------------- pending --------------->|
 > 
-> Fix this by converting the two early returns to goto a new
-> err_free_bitmap label, and by making out_unmap fall through to
-> it so that the bitmap is always freed on any error path.  The
-> success path performs memunmap(old_rt) inline and returns 0
-> directly, since copied_tables must remain allocated for
-> subsequent use.
-> ---
-> 
-> v2:
-> - On the success path, call memunmap(old_rt) before returning 0
->    instead of returning directly, fixing a memunmap leak introduced
->    in v1.  Suggested by Baolu Lu.
-> 
-> Signed-off-by: ZhaoJinming<zhaojinming@uniontech.com>
 
-Your signed-off-by should be placed above the "---" line.
+Right, but we write back cons to cons_reg only after we see queue_empty()
+We have a do { .. } while (!queue_empty(llq)); and then we call
+queue_sync_cons_ovf(q). Same  for PRIQ handler.
 
-> ---
->   drivers/iommu/intel/iommu.c | 19 +++++++++++++------
->   1 file changed, 13 insertions(+), 6 deletions(-)
+IIUC the helper relies on cons_reg being updated:
 
-Queued for iommu/next with the above change applied manually.
+cons = readl_relaxed(q->cons_reg);
+drained += Q_POS(&q->llq, cons - prev);
 
-Thanks,
-baolu
+Thus, if we get a storm of pri reqs / evts, we may never leave that loop
+and queue_sync_cons_ovf(q).
+
+Let me know if I m missing anything?
+
+Praan
