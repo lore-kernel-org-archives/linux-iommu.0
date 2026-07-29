@@ -1,122 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F276480DF3;
-	Wed, 29 Jul 2026 12:42:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67D45481674
+	for <iommu@lists.linux.dev>; Wed, 29 Jul 2026 12:43:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785328986; cv=none; b=AxppMETLBPUnsacNBOoj+Yl0lANPyF2ulrwHSUOjhNYrQIE95Xire9u6Vw8xam7ml8Z0BXHw4cIJqX0Oig13J2u3nGkxIGECuJ5WKilfI3A2oDmaI0NfuCvDFM7Q9YMakR2HXnhWc5PYYxfERv9W872xZNhK31IjIGQbgSb7+kU=
+	t=1785329001; cv=none; b=kcOnbVCO1l1XIlcFtnfUKl8aX6ejhfG/73iFbcwR3qBS9FhmLSkMWeInb6q4OVU3QAxfXb673QpJi9CVDNMVcnCxdDJvL+IYM/y1wgFsOAm3FNpSpVxe+RTHuqP0Gkr0tDdzn7UapvSzNZfAl26Ikawst8vHB4GqZBq0R891sMU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785328986; c=relaxed/simple;
-	bh=Ia8/vfH7EGUbV4SUqITPF9OFmdFVzi+jxxqYzv7h8FY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=pBcLonfEVpruYRFIiY+Yfop9JtcQiZUZspoKQJQ44O+S3YdrOH7hjvTflDpuPVJ4SU5qxKGiQnooP2gfnJWIKcfAuVV2vkXkpmH56EVPPEZ6PVvCXuyQWBS5PzWSfo2RmJU+xLk2XxvOTiwcBBbg1iS8paivOf2y1hfPuc1Iz3o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fk51lgHO; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785329001; c=relaxed/simple;
+	bh=WQuy6wDcjMkD2ClUQsZ/7ZMCTaygWPENfKsVb3uRDfk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DrbSoZQHALAofDu3lykjKZRdTrvft+sWfw6MtYx/n0R29UxFDYqETXMM+Ogptm2ui7/Zla6LPrNxwQqpp6NzlWogMsFyKleilbB7JTG6isjwls8HwhE5EvXhxxTUSqDtIko6m7UFSDiJu0K3Nmva6/efW201S8IQ3FIxBRgoi0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=cza126NN; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fk51lgHO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71AFC1F00A3A;
-	Wed, 29 Jul 2026 12:42:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785328976;
-	bh=Bj9zUQeAnHt3kbxhKKqsrB/Vw/2J1kCjeLL3HysJ+OQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=fk51lgHOMjZ7UJy7rfHUcnROpoZJbqgvZ+c4OYkSOe9jR6EyxJQLtCRvfMrkzVzx/
-	 Rf5/RAEHf7GArTBqQ2VB+DFRw0QyG2ql7V72s/sHnBfMKNLGNkKhrriLiArX2QJ6cx
-	 1qjqorspgFLmPUCGw/ASAMk1xr2Hf3oQaNKGeNdpiutzp0s+nYTRSZ/CF0deF+AX7m
-	 j+0tciNij7lI/yw9EWy9c9F87NR3fNmwd7IBMyco2FdZOP3CL96MBIgHeLxBgXTGUm
-	 RadyiuP8fXfsneErpOdP7H1gRrbUQIP2TUtweQLf125QqSdmlDtS8C9gom80W6A0AG
-	 Isf/jYJgsYTQQ==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v8 12/23] dma: swiotlb: pass mapping attributes by
- reference
-In-Reply-To: <amnRB98ZZIysHuM3@google.com>
-References: <20260717180442.110954-1-aneesh.kumar@kernel.org>
- <20260717180442.110954-13-aneesh.kumar@kernel.org>
- <ami_mpd_1pF4Tmdu@google.com> <yq5a5x1ygo7z.fsf@kernel.org>
- <amnRB98ZZIysHuM3@google.com>
-Date: Wed, 29 Jul 2026 18:12:38 +0530
-Message-ID: <yq5acxw6dl1d.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="cza126NN"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 957571684;
+	Wed, 29 Jul 2026 05:43:10 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 970013F66F;
+	Wed, 29 Jul 2026 05:43:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1785328994; bh=WQuy6wDcjMkD2ClUQsZ/7ZMCTaygWPENfKsVb3uRDfk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=cza126NNeWRrJvg3V4NcGUBbwBV+9Z9nCo1So7P8Rht1Ta/l9Pav8RDYgc08M10HT
+	 QPHuLOBp87wGZOCGd79CK7eQ8zq+F3UcF2zW8QJGhHsxpx6JbjdRV4VzGLhNh+Iq82
+	 ahablYuII2UapL3ll2JkPs5goXnlDYIpWA0Kiknw=
+Message-ID: <766354f0-968e-4bb3-a824-589398174d1f@arm.com>
+Date: Wed, 29 Jul 2026 13:43:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/5] iommu/dma: Catch scatterlist length overflows
+To: Sebastian Brzezinka <sebastian.brzezinka@intel.com>,
+ Krzysztof Karas <krzysztof.karas@intel.com>,
+ intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+ iommu@lists.linux.dev
+Cc: Andi Shyti <andi.shyti@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ =?UTF-8?Q?Micha=C5=82_Grzelak?= <michal.grzelak@intel.com>,
+ Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
+ Krzysztof Niemiec <krzysztof.niemiec@intel.com>
+References: <20260723102542.3245495-1-krzysztof.karas@intel.com>
+ <20260723102542.3245495-3-krzysztof.karas@intel.com>
+ <DKB1JMBPFCNM.2PUIUI31WOCHF@intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <DKB1JMBPFCNM.2PUIUI31WOCHF@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Mostafa Saleh <smostafa@google.com> writes:
+On 29/07/2026 1:07 pm, Sebastian Brzezinka wrote:
+> Hi,
+> On Thu Jul 23, 2026 at 12:25 PM CEST, Krzysztof Karas wrote:
+>> It is possible, when a very large mapping uses only one
+>> scatterlist, that padding overflows scatterlist's length field.
+>> This results in:
+>>   1) silently wrapping the value
+>>   2) smaller than desired mappings produced by iommu_map_sg
+>>   3) leaving mapped bytes in memory (no iommu_unmap)
+>>
+>> Address this issue by adding overflow detection for scatterlist
+>> length field.
+>>
+>> Fixes: 809eac54cdd6 ("iommu/dma: Implement scatterlist segment merging")
+>> Signed-off-by: Krzysztof Karas <krzysztof.karas@intel.com>
+>> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>> v4:
+>>   * Added value wrap check before s->length assignment (Robin);
+>>
+>>   drivers/iommu/dma-iommu.c | 20 +++++++++++++++++++-
+>>   1 file changed, 19 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 381b60d9e7ce..3ca3196a41b0 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -21,6 +21,7 @@
+>>   #include <linux/iommu-dma.h>
+>>   #include <linux/iova.h>
+>>   #include <linux/irq.h>
+>> +#include <linux/limits.h>
+>>   #include <linux/list_sort.h>
+>>   #include <linux/memremap.h>
+>>   #include <linux/mm.h>
+>> @@ -1477,6 +1478,12 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>>   		sg_dma_len(s) = s_length;
+>>   		s->offset -= s_iova_off;
+>>   		s_length = iova_align(iovad, s_length + s_iova_off);
+>> +		if ((s_length & UINT_MAX) == 0) {
+> Might be better to go with  s_length > UINT_MAX . Right now it's 64 &
+> 32, so only the lower bits count. Or just ignore this comment  it if
+> it's intended.
 
-> On Wed, Jul 29, 2026 at 02:35:36PM +0530, Aneesh Kumar K.V wrote:
->> Mostafa Saleh <smostafa@google.com> writes:
->> 
->> > On Fri, Jul 17, 2026 at 11:34:30PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> >> Change swiotlb_tbl_map_single() to take the DMA mapping attributes by
->> >> reference and update the direct callers accordingly.
->> >> 
->> >> This is a preparatory change for a follow-up patch which updates the
->> >> attributes based on the selected swiotlb pool. Keeping the signature change
->> >> separate makes the follow-up patch easier to review.
->> >> 
->> >
->> > I do not understand the point of this, why would
->> > swiotlb_tbl_map_single() force attrs over the caller which should
->> > already know the context (whether DMA is shared or not) which case
->> > would this be useful to force from the SWIOTLB code?
->> >
->> 
->> The mapping request was for private memory, but the device could not use
->> it because the dma_capable() (force_dma_unencrypted() == true) check
->> failed. As a result, dma_direct_map_phys() allocated a swiotlb bounce
->> buffer, which is shared. Since the DMA now targets the shared bounce
->> buffer rather than the original private memory, the attributes must be
->> updated to reflect the new shared mapping.
->> 
->> dma_addr = phys_to_dma(dev, phys);
->> if (unlikely(!dma_capable(dev, dma_addr, size, true)))
->> 	if (is_swiotlb_active(dev))
->> 		return swiotlb_map(dev, phys, size, dir, attrs);
->> 
->> 
->
-> But it does not make sense to me to have it in such a low level
-> function, and it shouldn't change the attrs that was passed.
->
-> dma_direct_map_phys() is the right place to do this it should set
-> the correct attrs before calling swiotlb_map().
->
+Yes, this code also needs to support 32-bit size_t, wherein the overflow 
+already happens within the calculation of s_length itself.
 
-There is a possibility that we may support io_tlb_mem with cc_shared =
-false in the future. As a result, only swiotlb_map() knows which type of
-bounce buffer was used, making it the only place where the attributes
-can be updated correctly.
-
--aneesh
+Thanks,
+Robin.
