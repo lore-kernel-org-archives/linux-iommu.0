@@ -1,240 +1,243 @@
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [80.241.56.172])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BF84411689
-	for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 15:54:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19E5450903
+	for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 16:04:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785426856; cv=none; b=LNS7uXZofu9U92wZdvzCom/ZQMTWc+GeglQAdTznznTiBURLaGQrO4c2cP7Tlvd3qOmYK4/SBxM1BBvU9iwv1/+WEuPe9vMm/SuRa/K6cdpHETbltv5KofU54kOYmiYFVuiGzBHzr61RHU9/qLOmaVdsP3ZYiVha3iMVpLv2p+8=
+	t=1785427501; cv=none; b=n4ptbzPF+bKhDf36wlTeFmOZu1RaNB0V+kNVQPrabquTjtTHwr4INQdj4YlsCJ0s1uO+PDFz2yqCmQnKICad8i8go8qV5RFL+CNrKieqDvLAwv9MOYzEyHa6js4MgXmh/nnX+knxJgdbIzA3uNirYP5UFbmTgPtyLdtUewikals=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785426856; c=relaxed/simple;
-	bh=bmfBA5mRv8hn73jUW4quitx0Repbh0KXjCuOgOAf/ew=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=JndAHINdOgwsQ3CKkOBIUo1JNOQ0OQR5tCzonCjZ3fA7Whqu/3X+RnjpOxJkNuIgRtaITbnBYiDlJpPBXIuKvqUKa7K+7R8GnmHff7+QzTYS7GCCjuXXQjZ1OVRm8ohKZdl7YwY1Lsh1lqFsH2gX9Ht2cnt1N4tbn8bAB8haxmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=steffen.cc; spf=pass smtp.mailfrom=steffen.cc; dkim=pass (2048-bit key) header.d=steffen.cc header.i=@steffen.cc header.b=ABZbzREX; arc=none smtp.client-ip=80.241.56.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=steffen.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=steffen.cc
+	s=arc-20240116; t=1785427501; c=relaxed/simple;
+	bh=BHH+L9EWf1eI35feeV2M9kSj2Yp6qdSNKH4O3ElD7TY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=cGN/fm2dkKZeuiPQgjikfChYnfs5+dxtQisCXZE5eiWccfXo1iBSsSNdZFbP9UlkVGoI4VccF3pEvgWCi3qOlOhwHlhLhmYT8mMjr0BLKSVVGLkLqi+jrv4VykVL8xOz3ztZ4dIZb23IwcM0E2MiOumJulqW3Owk678Y94TxzEw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=QusIGmhp; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=CE8vGtrk; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=steffen.cc header.i=@steffen.cc header.b="ABZbzREX"
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4h9tzb1p9xzMlLY;
-	Thu, 30 Jul 2026 17:54:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=steffen.cc; s=MBO0001;
-	t=1785426843;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zksK9+idUghCnssEho47J7vh5F4rjyXM/CYHhLvbBuI=;
-	b=ABZbzREXVJlaEcXgHG6Q5/DFAD8yXognsvS9ozhwczAK4KfoCrR/A72xRMgHKDC8YIEHLe
-	Xn9qtIxZSPiNPKquwlhB7/1Gk8XTwi+J/r4tMfnpBk8xvYMaNwPIfm5PordRc43ww97P00
-	Jlrtk6YZxv7VAyXc4t/t4Of00EpMpJPiV1bC2yiM0VkDlHg5kd84sxdZjKKVFFm+ryM5F5
-	gpZQ+9ahyq7YOxjG1mAXkh90nWU5n1iyir5FMhbDOuJ9g/if5fIUcTwCcw6hoKXwSm8boK
-	9O+X6szUa5iUHT7GicwTLGH+AVMEvUXawnKwHceK1hVijvcn2WaBoaByTd+shQ==
-Authentication-Results: outgoing_mbo_mout;
-	dkim=none;
-	spf=pass (outgoing_mbo_mout: domain of lists@steffen.cc designates 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=lists@steffen.cc
-Message-ID: <555ea1d43a12c30a8f1eaf10c899b3790d728f33.camel@dirkwinkel.cc>
-Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
-From: Steffen Dirkwinkel <lists@steffen.cc>
-To: "Mike Rapoport (Microsoft)" <rppt@kernel.org>, Dave Hansen
-	 <dave.hansen@linux.intel.com>, "Denis V. Lunev" <den@openvz.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Andy Lutomirski
- <luto@kernel.org>,  Borislav Petkov	 <bp@alien8.de>, David CARLIER
- <devnexen@gmail.com>, David Hildenbrand	 <david@kernel.org>, Ingo Molnar
- <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,  Juergen Gross
- <jgross@suse.com>, Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau
- <kas@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, Lorenzo Stoakes
- <ljs@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,  "H. Peter Anvin"	
- <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, Shakeel Butt	
- <shakeel.butt@linux.dev>, Suren Baghdasaryan <surenb@google.com>, Thomas
- Gleixner <tglx@kernel.org>, Toshi Kani <toshi.kani@hpe.com>, Vishal Moola
- <vishal.moola@gmail.com>,  Vlastimil Babka <vbabka@kernel.org>, Will Deacon
- <will@kernel.org>, iommu@lists.linux.dev, 	linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, stable@vger.kernel.org, 	x86@kernel.org,
- syzbot@syzkaller.appspotmail.com
-Date: Thu, 30 Jul 2026 17:53:50 +0200
-In-Reply-To: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
-References: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="QusIGmhp";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="CE8vGtrk"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UFQx2x1225954
+	for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 16:04:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=iFXm/EtDVHs2U2W42SOddH
+	PDOyqIH60tAMkZpM5gLvE=; b=QusIGmhp6mW6EyGv9twO/Zq+NzUdxELCLpc6Zg
+	0idyNnFuvkQeS+7XVwCljDSKUjhUY7RIyFUO90beTfhaT+Smi+EP8jcIFuHPvTxK
+	1eyWN/iGIX+DxHiZPG3JUedz04ZnwDzN0rW8wL3G62t0QQZkOH/M6LRf0p71Uv7S
+	p4/R5mX63+WsoKPQJ8m0X9flvaHodWTWCmlHABg9gsBvOIHUdbwY0i55PIKZCOqB
+	J3FxLi6u7YFN1WKI69dYyIfas1HEMCLi/oX7CwescZKc3dMVS81rvQ+id4LJ2cUp
+	UyJGeGKT3vLL3aa+kwNwLThD6XP1Thtzgcfmdonz5xS30MIw==
+Received: from mail-ua1-f71.google.com (mail-ua1-f71.google.com [209.85.222.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fr8kn0gks-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 16:04:58 +0000 (GMT)
+Received: by mail-ua1-f71.google.com with SMTP id a1e0cc1a2514c-97754551136so239580241.2
+        for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 09:04:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1785427498; x=1786032298; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=iFXm/EtDVHs2U2W42SOddHPDOyqIH60tAMkZpM5gLvE=;
+        b=CE8vGtrkpYuZgcKmBHvTxzp4cz8ANGdToYqCAy6u+alFUOp2y2YfxahX9CN/AdNCyn
+         IHcScTXV+Ji1Kxkx97VRqctW4FvicV3gT/DKckchXW+V1+BAMT6lTetisWsID6JogXkm
+         3jVo+DqgHnUJRTSUqVU2UGmhDZ0PYsLh0xPAFvYABDHpbTFhzMkqvKPJya0dkZdbrtGc
+         mVWqpg7O24RbOnX0hyatvuWd85fx6nqOILJZ43vPtsakRy+T/uTpib4BvFVjN5/TDpV7
+         VaEIsrUlLQdY8z13FfVE5VQ9QpmwWIc3s6isYNJa3EC1wUw74Zao5ywT/A6i3lRK2UQy
+         QvPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785427498; x=1786032298;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=iFXm/EtDVHs2U2W42SOddHPDOyqIH60tAMkZpM5gLvE=;
+        b=dYvbjjqMSDPtNosGvrLb+AI5fjO6ItPhZaL10prTVE7SQVFct3jJtxaVDCeZhaCQ6F
+         WjhbmzESzcTGgLVbAY5MJAtRg2axGOuabeYY72Izjx4hIVw3IwZ9VZYQIG9G92qg5fsB
+         ug++p9R6QdgS/dvNHtPyHgVkQzIXStotnM8HtkulIYURedqkfW8dZ6sZdaspsHWK2AWy
+         irdUaXte3Ccw0i+C2saGQQaeR4sodJOC9V3FsnGyDVpnffJvrPRIj+FKYq8ImSS6IEUO
+         H2NWjrtYzYxeLOAq0MUkBM4V2yE8hVB3B5ZGuRaSjJr1Ks4GM6MYT899AHMYHLF493Mj
+         0UTQ==
+X-Gm-Message-State: AOJu0YwQ4TTlK/3w46XJNap++BqJlRJVqm+jrFXN5lD+abu4l7xnx/Re
+	TBl9ecuelmsO8/EXXzawArPQZquI4MUKwteTFKOgY8lhuuO9XZfpiAPlXgHfTseL+GPH4OMDKZZ
+	0lPBT2RvqykM30DXTCSABG1v/pEw3KvJb/MwlCm6R0gAzUSaW4oY5GzM7jQ==
+X-Gm-Gg: AR+sD12AiE2Nxbj7mPcaw0kY3xSdX/9K7hIqzA41k/Q2ORrEhketEdvRrZtAehdDDmi
+	QaMfyMA3xy5YLap991KUwQu/9fN6JCYqy9ZD9PU+2Rjl4NDQAT4pwD7DivBW9I9Yn6KjpP54iSR
+	KfT9vztL/zg1jUy8LbxmUQ75IR9lLF4m3JfJMKeU4Z+/Okpr+okixM+Fr0nQ0dNKrAnMwOuiOjL
+	OsGFSbawvFVBTfLujyZwv0Dnw+690cA/FrMY7mdVCpBF6Bdh5p/GOruuaCmXy/ilytDOvYhasUI
+	gI0YmJI49MCmZBLIA0ANlTsyBz4VC4kMryfzWbdfJLnI6Q/7xExKTJ3yKGqIigcI03PyqU+ydLt
+	v9K41jg3eqAnIybd8os/lmLR4//arO/F5P5DjhDzQNIuJMEb/6DWyE0vgHqO1jzzPq4GsMG+253
+	6Mhkw3mzTP17DeLg==
+X-Received: by 2002:a05:6102:3e8c:b0:73f:7bca:217d with SMTP id ada2fe7eead31-7574fa3ba08mr1029612137.20.1785427497791;
+        Thu, 30 Jul 2026 09:04:57 -0700 (PDT)
+X-Received: by 2002:a05:6102:3e8c:b0:73f:7bca:217d with SMTP id ada2fe7eead31-7574fa3ba08mr1029575137.20.1785427497269;
+        Thu, 30 Jul 2026 09:04:57 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b2db8a3bbbsm455174e87.0.2026.07.30.09.04.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2026 09:04:55 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Subject: [PATCH v2 0/3] Fix GPU and display on ARM32 platforms using the
+ MSM IOMMU
+Date: Thu, 30 Jul 2026 19:04:53 +0300
+Message-Id: <20260730-fix-qcom-smmu-v2-0-18e0daf2d836@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4h9tzb1p9xzMlLY
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIACV2a2oC/12P3W6DMAxGXwXleu5CKOHnau8x9SIEd2RaYMQBd
+ ap49zrQadJuLH3S53PsuyAMDkm02V0EXB25aeSgXjJhBzN+ILies1BSaVmpAq7uBrOdPJD3C3R
+ l1dRWl72uG8E73wG5sPPeL0empftEGxPk2Qg4LyyKR+3Pw9pfiye/m2wwNEBt80Ip2TdnXbZrn
+ jCdIQQ+w7vYZiPe4qs3FDGIZB0cxSn87E9xPUkOciH/3b/mIKHL1dVIXdXyjG8T0WlezFdin3i
+ Iy7ZtDyLZA5knAQAA
+X-Change-ID: 20260723-fix-qcom-smmu-b5798c65d689
+To: Robin Murphy <robin.murphy@arm.com>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Sricharan Ramabadhran <quic_srichara@quicinc.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3859;
+ i=dmitry.baryshkov@oss.qualcomm.com; h=from:subject:message-id;
+ bh=BHH+L9EWf1eI35feeV2M9kSj2Yp6qdSNKH4O3ElD7TY=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBqa3YnzXUe8LbXC2C3A+oEnLgKRB++0m7O/7hCb
+ Kdljnb8F8iJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCamt2JwAKCRCLPIo+Aiko
+ 1QAAB/40QNIv6eWzYMBfkNAG/IWHLSeopWBSj9IuGGh+y3n0U2PsnvmupUFge4UGzK/jZkHbvVF
+ kIFu+pfiSMmcmXeZNrLv4cGbM5DhT/hlWEmAZT1SKsmPGa7CHgNBW0ghINKEPeKrNCmDmRr0wiC
+ FVbeq3T0PK5r9vQ1nCOhdW+dmQb0noPxhBq8gzdkdZ0t3bltjHAtBOH0dOKJ2SyIKAwfwodCMqp
+ S1Nzq/OZ1MuKwEpitAjq2piPoYNNm/q57FPnoxKtow5u/9MfNI6SGTIO+d7kcGOoHvBqS1yvA6p
+ jnn614YdJ5rEs6LZd1UrTWGCv6zi74/8nVASY7z9PK2deEKM
+X-Developer-Key: i=dmitry.baryshkov@oss.qualcomm.com; a=openpgp;
+ fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDEyMSBTYWx0ZWRfX94LrDUv0Rzt1
+ z0UyFWkBf7zJYjF0MT9O/jsB6UObSgA+h2Cs3D/MqsAynerep8TFDYbkAOF3KfpkNqQUR7TdWcM
+ eB55zgfdP2KlGsTzRDGcItb/8zSS2bA=
+X-Proofpoint-GUID: opHNXJDkb8A_jX9LJg9xFOwyTF0E1gg_
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDEyMSBTYWx0ZWRfX/Gog/uxxy3z+
+ ofck0d0gvR7J1F8XDIMjPCNOmnE0ALIGy3Kq9dqUJ+Bbgxkm/GgwRVMrnV5Jj00FK4JmiZFtv4t
+ xMJa4ylxjWPGziqfgS9Z0Ore2xMUvCVji5HmY6kzX/Uud8fWAqCgi0fdQmFA5t7WQoyhK/30Ya1
+ NW/5VA9Yg2Mfq5rcLPuSNFkv3O34209IUyFO6rqDXaDwrlJTQn8A7YcxZUTMJyuhKNcWzN8kokh
+ Cq2MHvYbWZN+U6yD/ZiV4Q6g8rojO2AuHD3QGvjEC9SLPVMSw9pkS+DLLLhACDN9meoxR+YJt3k
+ oQxKhgnO9/XSApu51IObeZeAswOAPJyldayoZZVabJFi/OXd3Fu24+eUGPjU8rSGZxJG/l6Mv+9
+ +lLZ12wsMhlU5GsmcPGikM46SodvtNr84Ek2uMbGKwmOUsiKi86xtkac5Yui64yJ+VmHECwktmc
+ dgv6ZXMcJ9lp6moq+lQ==
+X-Authority-Analysis: v=2.4 cv=V7NNF+ni c=1 sm=1 tr=0 ts=6a6b762a cx=c_pps
+ a=KB4UBwrhAZV1kjiGHFQexw==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22 a=bC-a23v3AAAA:8
+ a=EUspDBNiAAAA:8 a=tA7aZXjiAAAA:8 a=VwQbUJbxAAAA:8 a=7CQSdrXTAAAA:8
+ a=COk6AnOGAAAA:8 a=pGLkceISAAAA:8 a=tVI0ZWmoAAAA:8 a=e5mUnYsNAAAA:8
+ a=JfrnYn6hAAAA:8 a=CmaK_EYR3W9A6RVS5Z0A:9 a=QEXdDO2ut3YA:10
+ a=o1xkdb1NAhiiM49bd1HK:22 a=FO4_E8m0qiDe52t0p3_H:22 a=kIIFJ0VLUOy1gFZzwZHL:22
+ a=a-qgeE7W1pNrGK8U0ZQC:22 a=TjNXssC_j7lpFel5tvFf:22 a=-BPWgnxRz2uhmvdm1NTO:22
+ a=Vxmtnl_E_bksehYqCbjh:22 a=1CNFftbPRP8L7MoqJWF3:22
+X-Proofpoint-ORIG-GUID: opHNXJDkb8A_jX9LJg9xFOwyTF0E1gg_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-30_04,2026-07-30_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1015 priorityscore=1501
+ impostorscore=0 phishscore=0 suspectscore=0 malwarescore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607300121
 
-Hello,
+On apq8064 (tested on the IFC6410 board) neither the GPU nor the display
+controller comes up in mainline: with CONFIG_ARM_DMA_USE_IOMMU enabled
+both devices either fail to probe with -EBUSY or take the kernel down
+during the ensuing unwind. Three independent problems stack up on that
+path, one in each of three subsystems, and only fixing all of them makes
+the board usable.
 
+First, the MSM IOMMU driver does not handle a device that is attached to
+several IOMMU instances, which is exactly how apq8064 describes both the
+GPU (&gfx3d and &gfx3d1) and the display controller (&mdp_port0 and
+&mdp_port1). It keyed the per-device bookkeeping off two mismatched
+things, a per-IOMMU list and a per-device pointer, so only one of the
+instances ever got programmed with the stream IDs. That had been merely
+wrong for years, but it turned into a NULL dereference once the IOMMU
+core started deferring probe per instance, so today the board does not
+even reach a shell with the display enabled.
 
-On Tue, 2026-07-28 at 16:07 +0300, Mike Rapoport (Microsoft) wrote:
-> There are a couple of CPA fixes floating around:
->=20
-> Denis Lunev fixed races between split and collapse of the large mappings:
->=20
-> https://lore.kernel.org/all/20260715183453.2381141-1-den@openvz.org
+Second, on ARM32 the arch code gives every IOMMU-backed device a
+dma_iommu_mapping of its own and attaches it. drm/msm manages its address
+spaces itself and cannot take over a device whose group already has that
+foreign domain attached. The other ARM32 DRM drivers that are in the same
+position (tegra, rockchip, exynos) drop the arch mapping first; drm/msm
+has to do the same.
 
-We saw the error below and I was wondering if it might be related to these =
-fixes
-or a similar case that's unfixed still. Seems to have happened during concu=
-rrent
-kernel module loading of kvm and i915 (similar to the case in the patch fro=
-m
-Denis Lunev). But we got it without KASAN and the stack looks a little
-different. I was not able to reproduce this with a ~16 hour concurrent modu=
-le
-load unload loop so far.
+Third, arm_iommu_detach_device() undoes things in the opposite order from
+the one arm_iommu_attach_device() set them up in. An IOMMU driver that
+allocates its page tables during attach therefore frees them with the
+IOMMU DMA ops installed rather than the direct ops that mapped them,
+which ends in a NULL pointer dereference. This is trivially reachable as
+soon as any of the probe failures above unwinds, and it is what turns the
+GPU probe failure into a crash rather than an error message.
 
-Kernel: v7.1.5, PREEMPT_RT, tainted because of /dev/msr access
-CPU: Elkhart Lake Atom X6214RE, 2 cores, isolcpus=3D1-N
+The three patches are independent and are expected to be picked up by
+three different maintainers.
 
-------------[ cut here ]------------
-kernel BUG at arch/x86/kernel/alternative.c:2644!
-Oops: invalid opcode: 0000 [#1] SMP NOPTI
-CPU: 0 UID: 0 PID: 559 Comm: (udev-worker) Tainted: G S                  7.=
-1.5-
-rt1-bhf-369933-f1a4ee1dd787 #1 PREEMPT_{RT,(lazy)}=20
-Tainted: [S]=3DCPU_OUT_OF_SPEC
-Hardware name: Beckhoff Automation GmbH & Co. KG MC6015-0030/MC15083, BIOS =
-Bxx83
-- 0.11a PxeFailTst4.2 01/07/2026
-RIP: 0010:__text_poke+0x356/0x3d0
-Code: 00 10 00 00 77 26 48 85 c0 0f 85 74 fd ff ff e9 2d ff ff ff 48 89 ea =
-4c 89
-f6 48 89 df e8 22 0a 33 01 85 c0 0f 84 90 fe ff ff <0f> 0b>
-RSP: 0018:ffffa8bb010afa70 EFLAGS: 00010006
-RAX: 0000000000000088 RBX: ffffffffc07402b9 RCX: 0000000000000000
-RDX: 0000000000000004 RSI: ffffffffb793166b RDI: ffffffffc07402b9
-RBP: 0000000000000004 R08: 0000000000000033 R09: 8000000000000063
-R10: 0000000000000001 R11: 0000000000000000 R12: ffffffffb435e470
-R13: 00004b8f944092b9 R14: ffffffffb793166b R15: 00000000000002bd
-FS:  00007f205444c9c0(0000) GS:ffff9964b8518000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffc66a0ed18 CR3: 0000000106551000 CR4: 0000000000350ef0
-Call Trace:
- <TASK>
- smp_text_poke_batch_finish+0x1aa/0x3a0
- ? vmx_switch_vmcs+0xc8/0xd0 [kvm_intel]
- __static_call_transform+0xfa/0x1f0
- ? vmx_switch_vmcs+0xc8/0xd0 [kvm_intel]
- ? __pfx_preempt_schedule_thunk+0x10/0x10
- arch_static_call_transform+0x57/0xa0
- ? vmx_switch_vmcs+0xc8/0xd0 [kvm_intel]
- __static_call_init+0x1aa/0x230
- ? __SCT__tp_func_kvm_mmu_split_huge_page+0x8/0x8
- ? __SCT__tp_func_kvm_mmu_split_huge_page+0x8/0x8
- static_call_module_notify+0x11f/0x150
- notifier_call_chain+0x60/0xe0
- blocking_notifier_call_chain_robust+0x64/0xc0
- load_module+0x1bc7/0x2000
- ? security_kernel_post_read_file+0x46/0x110
- ? kernel_read_file+0x2e5/0x2f0
- init_module_from_file+0xc8/0xe0
- idempotent_init_module+0xfe/0x2f0
- __x64_sys_finit_module+0x71/0xe0
- do_syscall_64+0xa6/0x690
- ? clear_bhb_loop+0x30/0x80
- entry_SYSCALL_64_after_hwframe+0x76/0x7e
-RIP: 0033:0x7f2054faa7b9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
-48 89
-d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d>
-RSP: 002b:00007ffc66a14c58 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-RAX: ffffffffffffffda RBX: 000055f431ad34a0 RCX: 00007f2054faa7b9
-RDX: 0000000000000000 RSI: 00007f205375b44d RDI: 0000000000000021
-RBP: 0000000000000000 R08: 0000000000000000 R09: 000055f431a72e60
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f205375b44d
-R13: 0000000000020000 R14: 000055f431ad01b0 R15: 0000000000000000
- </TASK>
-Modules linked in: kvm_intel(+) i915(+) drm_buddy drm_client_lib ttm
-drm_display_helper drm_kms_helper cfg80211 cec nft_ct nf_conntrack nf_>
----[ end trace 0000000000000000 ]---
-RIP: 0010:__text_poke+0x356/0x3d0
-Code: 00 10 00 00 77 26 48 85 c0 0f 85 74 fd ff ff e9 2d ff ff ff 48 89 ea =
-4c 89
-f6 48 89 df e8 22 0a 33 01 85 c0 0f 84 90 fe ff ff <0f> 0b>
-RSP: 0018:ffffa8bb010afa70 EFLAGS: 00010006
-RAX: 0000000000000088 RBX: ffffffffc07402b9 RCX: 0000000000000000
-RDX: 0000000000000004 RSI: ffffffffb793166b RDI: ffffffffc07402b9
-RBP: 0000000000000004 R08: 0000000000000033 R09: 8000000000000063
-R10: 0000000000000001 R11: 0000000000000000 R12: ffffffffb435e470
-R13: 00004b8f944092b9 R14: ffffffffb793166b R15: 00000000000002bd
-FS:  00007f205444c9c0(0000) GS:ffff9964b8518000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffc66a0ed18 CR3: 0000000106551000 CR4: 0000000000350ef0
-note: (udev-worker)[559] exited with irqs disabled
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+---
+Changes in v2:
+- dropped dev_warn -> dev_dbg chunk (Konrad)
+- rewrote second patch to use correct device inside msm_iommu unmapping
+  (Robin)
+- Link to v1: https://patch.msgid.link/20260730-fix-qcom-smmu-v1-0-b12fa067804e@oss.qualcomm.com
 
+To: Rob Clark <robin.clark@oss.qualcomm.com>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Joerg Roedel <jroedel@suse.de>
+To: Sricharan Ramabadhran <quic_srichara@quicinc.com>
+To: Dmitry Baryshkov <lumag@kernel.org>
+To: Abhinav Kumar <abhinav.kumar@linux.dev>
+To: Jessica Zhang <jesszhan0024@gmail.com>
+To: Sean Paul <sean@poorly.run>
+To: Marijn Suijten <marijn.suijten@somainline.org>
+To: David Airlie <airlied@gmail.com>
+To: Simona Vetter <simona@ffwll.ch>
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: freedreno@lists.freedesktop.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-rockchip@lists.infradead.org
 
-Best Regards
-Steffen
+---
+Dmitry Baryshkov (3):
+      iommu/msm: track a context master per device and IOMMU
+      iommu/msm: use the IOMMU device for page table allocation
+      drm/msm: detach the ARM DMA mapping before attaching our own domain
 
->=20
-> Lorenzo Stoakes fixed UAF caused by races between CPA and ptdump:
->=20
-> https://lore.kernel.org/all/20260723-series-vmap-race-fix-v6-0-8cc77dcc00=
-18@kernel.org
->=20
-> and an issue with stale page tables in IOMMU:
->=20
-> https://lore.kernel.org/all/20260721-fix-cpa-kernel-pagetables-v2-1-2b255=
-deed710@kernel.org
->=20
-> Mike Rapoport fixed a check of RW attribute in lookup_address_in_pgd_attr=
-()
-> used for the verification of RWX:
->=20
-> https://lore.kernel.org/all/20260715144519.934289-1-rppt@kernel.org
->=20
-> Some of the fixes got merged into x86 tree, some of them got merged into =
-mm
-> tree and some are still hanging in the air.
->=20
-> Beside the fixes there was a supposed simplification of cpa_lock locking=
-=20
-> that looked like removal of an optimization for DEBUG_PAGEALLOC, but it
-> turned out that it was not an optimization but rather a correctness
-> guard because with DEBUG_PAGEALLOC the locks could be taken in an atomic
-> context and couldn't use plain spin_lock()/spin_unlock().
->=20
-> The changes here are collected from all these fixes into a sinlge coheren=
-t
-> set on top of tip/x86/mm:
-> =20
-> * update to cpa_lock handling with DEBUG_PAGEALLOC
-> * fix for races between CPA and ptdumpi causing UAF
-> * fix for stale page tables in IOMMU
-> * update to the fix of the race between split and collapse of large
->   mappings
-> * fix for effective RW computation in lookup_address_in_pgd_attr()
->=20
-> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> ---
-> Lorenzo Stoakes (ARM) (3):
->       x86/mm/pat: acquire init_mm write lock on collapse to avoid UAF
->       x86/mm/pat: acquire init_mm read lock on attribute change to avoid =
-UAF
->       x86/mm/pat: allocate split page tables as kernel page tables
->=20
-> Mike Rapoport (Microsoft) (2):
->       x86/mm/pat: introcude cpa_lock() and cpa_unlock()
->       x86/mm/pat: fix effective RW computation in lookup_address_in_pgd_a=
-ttr()
->=20
->  arch/x86/mm/pat/set_memory.c | 95 +++++++++++++++++++++++++++++++-------=
-------
->  include/linux/mmap_lock.h    |  2 +
->  2 files changed, 70 insertions(+), 27 deletions(-)
-> ---
-> base-commit: a5a162fe1ae130e3d2ceefef3f43afe3773c1d56
-> change-id: 20260727-cpa-fixes-d3c73c075672
->=20
-> --
-> Sincerely yours,
-> Mike.
+ drivers/gpu/drm/msm/msm_iommu.c | 22 +++++++++++++
+ drivers/iommu/msm_iommu.c       | 68 +++++++++++++++++++++++++++++++----------
+ 2 files changed, 74 insertions(+), 16 deletions(-)
+---
+base-commit: 78bc8af4affb9a732504eb22eeac7d1e50883853
+change-id: 20260723-fix-qcom-smmu-b5798c65d689
+prerequisite-change-id: 20260723-msm-fix-crash-8c13220d9465:v1
+prerequisite-patch-id: 3556d41e924ad64e8e9c06cc5bd1972c66957f42
+
+Best regards,
+--  
+With best wishes
+Dmitry
+
