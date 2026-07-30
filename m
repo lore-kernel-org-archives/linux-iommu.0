@@ -1,134 +1,206 @@
-Received: from out-176.mta1.migadu.com (out-176.mta1.migadu.com [95.215.58.176])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012006.outbound.protection.outlook.com [40.107.209.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20BD54014B2
-	for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 11:01:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785409295; cv=none; b=hMpzri15dxcmYXRZszte4EVTxFJhZr6ICl+eow8a986sPDYo9tQkNGTgaiuTo8I058o6D9nQFRz49rINFDiNFtPLpwlqWHaZx+4QA1BVV6GiLDkOhL+evw1HYOdRJhdJhj5PU/+u9BGiRouYPY5328wVr0aqQ7ohggWiP6eV4cw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785409295; c=relaxed/simple;
-	bh=MTbnHVaGs+oJ8/iRE8SGUTfgRyNeD2t1YHYfV3s4MaU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aJQH00q2L+SeyfxfU4T7/0KDCC3l9uUy3myg+19tNmepfCBmZoaAdKj6KbfJSo6ot6Rl+g0WblQhm4SNILgqcAqR8VFFrG8vs6YLX8KwxF5y4+/RnU/9637iuJKUim+xy1opwdNPNWeium/vyiyTEuysMsIe6asbkUUL6mvMtpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=XPunOCj+; arc=none smtp.client-ip=95.215.58.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01A2F3FE36A
+	for <iommu@lists.linux.dev>; Thu, 30 Jul 2026 11:26:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.6
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785410814; cv=fail; b=JieSitT+SSf5U3Npxw5uOgxmzJkbCffIMHyRWKEI/rCiuHrGB8mM1qWcFDuhQhGph02joAu86qeMaKEFWTrRfl6m23FZsnP+e0CNX7jaC1NYjTwsTc7UZLXTorri8ZeGUv0faFrg8LhcAgYcV6N4PJO+xDhz9KODZM6J+5Ji5R0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785410814; c=relaxed/simple;
+	bh=i6mBSYO7/NBZJWdb2mf68FmF5aCfnErDTdvXY0iz+f8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=YIXD7/KphAlefY/tqPf1JbY8ZF+4y1KvRDmXTtT75oHz3ckunX9pBAX2GvJubRZM46guL5mrwArDfeVbtZ5WFLlABO5GSkO6+HaotDpMVXP7l9+i1CeASw3luMI+ODCbwbXAirTKRiAxkBVdae3h5NQBTp70rrJ5cCJgkOdzX20=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=z1qRNk42; arc=fail smtp.client-ip=40.107.209.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="XPunOCj+"
-X-Forwarded-Encrypted: i=1; AHgh+RohKzmP0BjdofRNvlCXCfaC7xI8mJG/gphfGq6wbK2STD98KWG7dEcuGFNK+U5OEfHRYpBqsQ==@lists.linux.dev
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1785409291;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=e/kRpQrpUg02tctY6yhu6jWBSJHpdY77PwAU3jL1bxM=;
-	b=XPunOCj+C07+mE3VD0ae9WmsjTXwP05Hs98pvQ+hpWIIbAT6ihCaUnXB+LP0ekFugP90XZ
-	WBHlclB3WX0vzLe0MvSeKrhmESidC4ZLli75jU+GoHobvG9kWvoxrgk+t8CL9YnBQ5BKrO
-	v5Wb0PPTOUIeLyXv6p4UI6c1Jb2biLo=
-X-Gm-Message-State: AOJu0YwSaCVqW+j0C1lbX4NHZfF4QP+6pXt86DnbklK4+3ZSGVCjedPG
-	oJYjYmu9j9e8w26IzMTL/o4vCZFswtOJ1edL7pKcXHOvdmhnN4+H119FeXubZ8xx2WGqwLauV83
-	PZ4I33KdcgW6OXBrJKo8EPrMDIOo/wgSwb9fzjZv8
-X-Received: by 2002:a05:622a:684e:20b0:517:5ac7:332e with SMTP id
- d75a77b69052e-52b3933f844mr9328641cf.6.1785409276641; Thu, 30 Jul 2026
- 04:01:16 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="z1qRNk42"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MmLmnDYqpSeXcyEJI5Z+xrVBJ2kta6u6WWKUOdovi4lYUrnOiajpKMjQR/aELLk0r9wu/hBCuc/V8fZBaa8c9okNLkm0xNqtNI5EgnwXUmNXUH+tQ/uMoIvuBSSxRvK7gGiiRfDWDT1A5SpCYjSo3SHVTFkrxyNPXCzXWxwUMtDODWpsEVxlK6OJfp0VAomLOmK9f9XrQp7cx+F8aGkXVNNFAJ0tlvxLa5OeKVoWGuGd7lmu4V4c/CiQl1KZ/lDGsum7qAO1FU5P+0yrReZWT/PG+idAhVefBzcxAV3L8avNGZpwtCLxPJrnbK9zkm8YWc+aAdpyrJHS5OtIbE6jzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0T6BGghxBoxn6nKIQdlWQT5eV17RvmZWSc/l/StRXgE=;
+ b=grhTaQ8lKhQya6AMXgddAEj228SHUo7ReC13LShXiHvojrmA194juxA5P1nq6quQfZGxnmYyaPglStMtply5pT/Kn0slBompyRxmmONLsm6PLqiEi/CX0mh2eVt/3y1s5gmh4XpBWOq1yuAy3VsEjtQsyFNL/oh40kQ+zWzSW3hErpw5mmg3ywZEu4ewSnVYAnQzRMKDoCK/xrWMNUiXxZomRgDwTrMHWIjYIImv8NVvfZogm9p8ccARBoZwKo4zA19rNEypIlO6zJTNOp3jSmuFTPLONT5nTglfXVFt41Y59dJEM3I8yrMoTMo/ZaRWmQ6811eqwIsndPrAO3/M+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0T6BGghxBoxn6nKIQdlWQT5eV17RvmZWSc/l/StRXgE=;
+ b=z1qRNk42ff0gBEy4zYlErQa/u4Cv7mCx6wGIYQaWnScSGEhT75whOwhXI75KpbZzEi/ytgmuWqPs4gnsXtwlCrEYg69BYL2kCx3RDNdW8/huUC9ARcGsG21Q/OqG8a6SK6l/zyn74ka1OEjLxb8Dgd66NdcYSmIIDbB1dRWZckQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com (2603:10b6:8:75::12) by
+ CH2PR12MB4119.namprd12.prod.outlook.com (2603:10b6:610:aa::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.270.15; Thu, 30 Jul 2026 11:26:45 +0000
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e]) by DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e%3]) with mapi id 15.21.0270.009; Thu, 30 Jul 2026
+ 11:26:45 +0000
+Message-ID: <08f2e48e-6e98-4fde-af71-cb8cde666bdf@amd.com>
+Date: Thu, 30 Jul 2026 16:56:37 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
+To: Mario Limonciello <mario.limonciello@amd.com>,
+ "Kuehling, Felix" <felix.kuehling@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, linux-pci@vger.kernel.org,
+ will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ bhelgaas@google.com, Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
+References: <20260723061548.10187-1-vasant.hegde@amd.com>
+ <20260723061548.10187-3-vasant.hegde@amd.com> <amOBkJ4BaZ4qnkpc@ziepe.ca>
+ <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
+ <ed296c0d-246f-492b-970b-49c45e25f5f6@amd.com>
+ <f4355034-d40a-4d11-ab98-eef0f2991f33@amd.com>
+ <838281e9-8ee7-433a-b06c-68675e9b285f@amd.com>
+ <2f400c7f-eada-45e3-9079-7b5727ecb5c3@amd.com>
+ <bacdf160-8ab2-4bd6-aa9d-ab63b16527fa@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <bacdf160-8ab2-4bd6-aa9d-ab63b16527fa@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA5PR01CA0181.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1a9::13) To DS7PR12MB5766.namprd12.prod.outlook.com
+ (2603:10b6:8:75::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
- <20250529053513.1592088-11-yilun.xu@linux.intel.com> <20250602133009.GC233377@nvidia.com>
- <CAEvNRgFpJWQ5M5sQhGpQUV3GbBq9N+MQhhaxdxa=D8ky94SCsw@mail.gmail.com>
- <20260712221934.GF674038@nvidia.com> <CAEvNRgEo2kLUmaGU-Vsgx2sTQvU_NNUJ4bRp5Z4Ygs_xvVLOYA@mail.gmail.com>
- <amcdueQI1voXWPQb@yilunxu-OptiPlex-7050>
-In-Reply-To: <amcdueQI1voXWPQb@yilunxu-OptiPlex-7050>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Fuad Tabba <fuad.tabba@linux.dev>
-Date: Thu, 30 Jul 2026 12:00:39 +0100
-X-Gmail-Original-Message-ID: <CA+EHjTz82R_hJXHfPG2OLqkB9kVq1=exE_9Cn=2GXQYpbtaBkQ@mail.gmail.com>
-X-Gm-Features: AUfX_mze5Bz4sCJxR7dQfrTfBjLkX9Ma4V02Tb4h9t58N81ewiYYgPohtp6A6lI
-Message-ID: <CA+EHjTz82R_hJXHfPG2OLqkB9kVq1=exE_9Cn=2GXQYpbtaBkQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 10/30] vfio/pci: Export vfio dma-buf specific info for importers
-To: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: Ackerley Tng <ackerleytng@google.com>, Jason Gunthorpe <jgg@nvidia.com>, kvm@vger.kernel.org, 
-	sumit.semwal@linaro.org, christian.koenig@amd.com, pbonzini@redhat.com, 
-	seanjc@google.com, alex.williamson@redhat.com, dan.j.williams@intel.com, 
-	aik@amd.com, linux-coco@lists.linux.dev, dri-devel@lists.freedesktop.org, 
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
-	vivek.kasireddy@intel.com, yilun.xu@intel.com, linux-kernel@vger.kernel.org, 
-	lukas@wunner.de, yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, 
-	leon@kernel.org, baolu.lu@linux.intel.com, zhenzhong.duan@intel.com, 
-	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com, 
-	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com, 
-	aneesh.kumar@kernel.org, iommu@lists.linux.dev, kevin.tian@intel.com
-Content-Type: text/plain; charset="UTF-8"
-X-Migadu-Flow: FLOW_OUT
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5766:EE_|CH2PR12MB4119:EE_
+X-MS-Office365-Filtering-Correlation-Id: 614b32a4-114a-4478-7097-08deee2d7013
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|23010399003|1800799024|56012099006|4143699003|5023799004|11063799006|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	RtXiwZzvzIjOxotuZ7jnAtvbHlraB0bgG/S27m9x9blvILvucfS9x6QbBs44hk7K9UnkA5JxxPW8UrYpfjR4+IXhyTtDe1aquJ3iUgocsCfPewe63gDfm6FwfiQcVl7cb+X7Zudf8YZjyUAIxQDziQ+15gVvVE5+zvJIWdggaCTYAaoLrg1k8AnDSrQQKHqqWRbdFojysDR6uJEmzGFTZHBos4runYnt2oUqn/7ZDcDXYDayfvSNAxztq7i8P7GK08nNF+W0C3+ZnjTvXGBGyzepSyEzfp0Mxj0VWSv6cIAc164RL5B+drVkzZ2BfOvWVkdxYQqDadtmh6lS6WEh6/INm616kvkaj9prdRgkl+LYFtK5nnfl3T4zYHf0vbLW/Rcc9ZHVs0kpju51SAuwjoI+gj69rdFvQQJrh0LMvB+4YqHBaFwVxsAUy74CPNc3oemyiYBlfn7OuCo4taXagIJFg7BQ2uklNVDMzy60gQx3IRE4wSB7oODSIbh9BuBoWIUgjVQP4oMwzoHB4XAI0BtaQvENzkycYbV53D3uCbBW6JglGB6xs5ZY8h5PGzEeW+MkqxWMJ0ftSe4mBzxJJ+ONb1CLXQg/fWmaR88UtWBl8fJurIxnFrHg2GYzRLE7ncZY3tZsrX9MtFJ9cmkhzMcE1k1BiLvCF7Ii3bU5/rE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB5766.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(23010399003)(1800799024)(56012099006)(4143699003)(5023799004)(11063799006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?blZ3ZTErS2tGeGxBQUdoRHQ0dGt5cks2NXNhVnk5Ylh6VmQ2Yk80SHZqVWZL?=
+ =?utf-8?B?K1lZUXFEOHB2OVhITERHdWs0WWVFeHlKUVhHTzg1OEx6cFYvcG0wdUtrdktN?=
+ =?utf-8?B?WmNGdGNJdGRTZGxqbDlmMU5ZZmNNRUlPRGE4bEp1MWxmZTFGYWtsZ1Z3bks0?=
+ =?utf-8?B?WWpyYVRnQ0tQQTVPZ0tUTlVUWEVrMWxRVjh6bzQrSENSd21UTWZwc09XZWti?=
+ =?utf-8?B?STJoRVV3Ukt2eWFlTnMzaVpLQzZGd1MyOFBHdHhvQ2xtcGM5ZFY0d25JVjha?=
+ =?utf-8?B?aHpBMnZCbVFLK1BhbWs2dWF5ZEtKMFFiTzljRmE5aFhvSkZkNVpkT3lUUHB0?=
+ =?utf-8?B?TmtDNWFMcTRKSksvMEdIelZ2OGd4NFR6cTlSYzZjZG1DYXlTemVFL01ZYU9V?=
+ =?utf-8?B?WTFnMUJIdm5NWDBuS25WSEZkZnlDRzQ3bnNvb3NtRm03L3NyQzc5MjVQMlYy?=
+ =?utf-8?B?NDVQOW5yN0NvVjRJNENvajd0TWtzLzhybVZhZkFhTDh3eHVyNis2S0J5d0ds?=
+ =?utf-8?B?SzFlZEtpbGk3VGxTTjA5WXhpK21tZVUzNkJSZFQ1d0tONjUwdEsyME5TUTho?=
+ =?utf-8?B?amhIdlFlc0ZRakpCSHZxRGlGS2ZGTWk5WGNKRmxWanJ4eHAzVTBLTE82YVQy?=
+ =?utf-8?B?RFU4QVFEempDci9SU051Z1Y5N2MvTHRrcUdCQnpURTNqTkNhYy9nbklLMm1o?=
+ =?utf-8?B?ZHpIOERrMzQ5cysrbTk1SEZMbUJNYUtMd3VRSzlzcGFOVEJuNWl4MVRRNzBx?=
+ =?utf-8?B?NERSY1lFOHplR0JUc0RaTGsyclkyNTJJMTJCSm1VWm5JVFdqbGp0cXBDZko3?=
+ =?utf-8?B?ZlN3dDA4cEZvNmttcFRSWnhpRHU5UkR2NmdhOS9OL0Z6V0dRRDhLQnc5VDJp?=
+ =?utf-8?B?TDBZSk9zUjR6S01TSmwxWHdKNzFlUzJ0Y2lSdzRCZlFFOURSWE5zY0N2NGUz?=
+ =?utf-8?B?QVVzRHgxbEhPSURpREJLTU5uUTRUK094MFRIMU0wRWwzSjBqOWdUUjFEL3lL?=
+ =?utf-8?B?WktzSHg0Z1JUUmRQTWJobTdoU3V1YVh5NStiZE9VM0U0UkoyaUxQcENjTEsw?=
+ =?utf-8?B?VHNGNXpZNkxGeTg2WFdMR21PaEl5eEZVb0F3OXRvMHV4MFFJM0dPakdwSW8z?=
+ =?utf-8?B?Qnpmc20wYUJ3azQ1dWJzQk5sZUdHd0JBR2F3d3JJYU0xeGZ6MHJiL3hEMm9k?=
+ =?utf-8?B?a3VZT2hzYytsem9iQjA0QlU0RWhJK1VPd2xKc0lpM3E2dXFOZ0l1cGYvVUlw?=
+ =?utf-8?B?bndSaGoremlPY3RKVmQxSEk4OFNYOVF4RVY0ZVJZUFhHcmRQUUdHN1VRMHJH?=
+ =?utf-8?B?ajdYMVdBQWNJNDVKdlc3R0xzOEFCaWtQNzd0WklnQVRQSmV6ZkVQcUY2UUxs?=
+ =?utf-8?B?RkhaTFBXZW5LdlFJdDhxcXc3eXBxVGFDZXF1NjdmUFNlTTFpbkJUS0pGcmIr?=
+ =?utf-8?B?VFpmRGRCc3FOb2VKL1BNWFI5QXpybjJKUHRTeklIaXZ2dFZpVHhib2RjTGcv?=
+ =?utf-8?B?eGVzenM5cVZKV2JOdkhFam16U1VKU0tUOHNmZnplR3hRdzd5emRyeUdOTG5o?=
+ =?utf-8?B?ajkrKzdQRENEcWZuWXZvZWQ5ODREeVFETUZCZE1xcTB1OXBQckpsaE10N0Ji?=
+ =?utf-8?B?MmJNU2pMS0JvbW1UeDdMdytaSWl3bjFtczJRaXdaVENENlBqWXNaRXcxWnZm?=
+ =?utf-8?B?Wmt5TFZkVVJrM3p0SFQwRXF0U2VOZmE4dEM1QVdDbnFjNDVDdzNoRm0zRjVR?=
+ =?utf-8?B?VjFxZ2QrVU5ObUpiMHFDK2k3WWRNcDhJY2JicXIwNTd5REpQQ2dYaE5qY2ZO?=
+ =?utf-8?B?NXB3NHVDQmIrMXQydXBmSitRMnJtSHhBaDNoVEZ6L3JTbnY1bklBTVQ3aVJL?=
+ =?utf-8?B?R3VwVWllZkRUbFlOV0J4cHE2UjRTWktzQzk1YnBDUjgxUGlTRmFLWXhqcHJ6?=
+ =?utf-8?B?cU5ZaWNucFlleVZuQ2NSMXkza2RGMzdwM21TNForSlpnMm5QVGh1YnJFd0p3?=
+ =?utf-8?B?ekkyMU1jSC9wTU1QWnltZmNqTXZ5a1VMU2oxVGhvckdxNFZma3hDOU9XWlhH?=
+ =?utf-8?B?RGh0YjUwaFZja0xBY1N3TTBZNUNQMFBvSUpnWlZLRlp3UmQvclM4NDI3ZmFj?=
+ =?utf-8?B?RDI0eEJHd0JtM0pIcCt2MjI0aW1vYXFMb29VVGV2alBwRm9jMlI0bHVtb3Rp?=
+ =?utf-8?B?V00xdXFFVXpPL25Ca08vQWdINytOL0dsOWQ2emxwNGtCaHNhTVE3Z3VIbHdq?=
+ =?utf-8?B?OU9zV3IreEU1Qy93NEZhVThyVENub2tDVnJOOS9zQS9WaDZxdzRBc05JeGFH?=
+ =?utf-8?B?OGs2WVNrL0hrYjdwWWdTTFV1a292NkNacURHeVJRRTZmaWloeHY2UT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 614b32a4-114a-4478-7097-08deee2d7013
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB5766.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2026 11:26:45.5866
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LSIz/1Fj08qJ8bKOZvd362h+1iAvLfxEM4obqgGSbi4koJ8wpSsbZwHfLb/EGvx31Ao/ofgMQ8rkLaWwBWU+DA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4119
 
-On Mon, 27 Jul 2026 at 10:03, Xu Yilun <yilun.xu@linux.intel.com> wrote:
->
-> > > If VFIO can create one
->
-> It is an interesting idea to let VFIO create a guest_memfd instance, if
-> DMABUF doesn't work. But to achieve this goal, I think we still need to
-> refactor guest_memfd to allow for different memory/MMIO resource
-> exporters/creators, and different resource importers/users like KVM MMU
-> & IOMMUFD.
-
-I don't have a strong view on which side creates the fd, and the
-argument that MMIO lifecycle belongs to VFIO makes sense to me. But
-the refactor you describe is the part I'd like to make sure we get
-right for the non-MMIO case, because pKVM needs ordinary guest RAM to
-keep working through it.
-
-Two properties we depend on today, both of which are easy to lose if
-guest_memfd grows an exporter abstraction designed around MMIO:
-
-Conversion has to stay page-granular on subsets of a region. A pKVM
-guest shares and unshares ranges with hypercalls and has no idea what
-is backing them, so we can't require whole-region transitions. This is
-fine for assigned MMIO, where the shared parts are static, but it
-isn't a property we can give up for memory.
-
-Shared pages have to stay mmapable by the VMM and GUP-able through
-those mappings. That's what the VMM does I/O on. It's the reason a
-CMA-heap dmabuf turned out not to work for us, since that mmap path is
-VM_PFNMAP.
-
-So my suggestion is narrow: if guest_memfd grows a notion of an
-external exporter, could the memory case keep going through the normal
-guest_memfd allocation and mapping paths, rather than being folded
-into whatever form the MMIO case needs? I'm not asking for anything
-new here, just that the refactor not quietly close the door.
-
-Cheers,
-/fuad
-
+Mario, Alex, Felix,
 
 
-> > At guest_memfd creation time, guest_memfd is always created for a
-> > KVM. This is the first place where it is bound to a kvm instance. This
-> > is one place where it helps Yilun with Confidential VMs, so KVM can be
-> > sure that the memory was meant for a specific CoCo kvm and not any VM.
-> >
-> > I think it might be weird to have VFIO take a kvm fd to create a
-> > guest_memfd?
->
-> I think having VFIO create a guest_memfd is better than having KVM
-> create a guest_memfd on behalf of VFIO.
->
-> The lifecycle of the MMIO resources should be managed by VFIO, cause
-> the availability of these MMIO resouces are impacted by device
-> operations, e.g., device reset, PCI Memory Space Enable (MSE) ...
-> You can't export MMIO resources to KVM MMU without VFIO's awareness.
->
-> And VFIO doesn't have to take a kvm fd paramter to create a guest_memfd,
-> VFIO has got the kvm instance via KVM_DEV_VFIO_FILE_ADD.
->
-> >
-> > I was thinking that the userspace VMM could do something like:
-> >
-> >   int vfio_fd = open("/dev/vfio/devices/vfio0");
-> >   int gmem_fd = ioctl(KVM_CREATE_GUEST_MEMFD, { .fd = vfio_fd });
->
+On 7/29/2026 1:27 AM, Mario Limonciello wrote:
+> 
+> 
+> On 7/28/26 14:10, Kuehling, Felix wrote:
+>> On 2026-07-28 01:31, Mario Limonciello wrote:
+>>> +Felix
+>>>
+>>> On 7/27/26 23:52, Vasant Hegde wrote:
+>>>> Mario,
+
+
+.../...
+
+> 
+> Hmm, I just had a try with this on a few years old APU (PHX).  It's flicker
+> central with this (7.2-rc5~ish tree):
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 29dc18d3d22e5..1e792cee7f4cd 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -3134,19 +3134,6 @@ static int amd_iommu_def_domain_type(struct device *dev)
+>         if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
+>                 return IOMMU_DOMAIN_DMA;
+> 
+> -       /*
+> -        * Do not identity map IOMMUv2 capable devices when:
+> -        *  - memory encryption is active, because some of those devices
+> -        *    (AMD GPUs) don't have the encryption bit in their DMA-mask
+> -        *    and require remapping.
+> -        *  - SNP is enabled, because it prohibits DTE[Mode]=0.
+> -        */
+> -       if (pdev_pasid_supported(dev_data) &&
+> -           !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
+> -           !amd_iommu_snp_en) {
+> -               return IOMMU_DOMAIN_IDENTITY;
+> -       }
+> -
+>         return 0;
+>  }
+> 
+> The flicking is reminencent of issues moving BOs between VRAM and GTT from a few
+> years ago.
+> 
+> So I don't think it can be dropped (just) yet.
+
+Based on discussion so far in this thread and the link Mario shared earlier [1]:
+  - We still need identity mapping for APUs. I will fine tune the patch based on
+the discussion in this thread.
+  - Its fine to drop SNP check
+  - I am still not sure its safe to drop SME check (CC_ATTR_MEM_ENCRYPT)
+    Because here were are putting all APUs in identity mode.
+    Commit ea68573d408f explicitly error out for RAVEN and some of the older APU
+platform didn't support SME. But not sure about newer ones.
+
+
+So I am inclined to keep SME check for now. Once this patch stabilized we can
+revisit the SME check?
+
+
+[1] https://lore.kernel.org/all/20200824105415.21000-1-joro@8bytes.org/
+
+-Vasant
+
+
