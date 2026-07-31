@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D221361DB5
-	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 05:54:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB6F361958
+	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 05:54:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785477290; cv=none; b=LW4QdQ5BLCzHSs/sfmo8iyLX+6tAYEeeBAu98dJJfnvqZ8deUpHqu9qHQDR3t9IELpN8a/Si5vCWlrTZbGLt73wvho8LVjWQzNmBgkBUKV67MvtOjirIiFHDLQJrx7T5PJHwSVX2ZTKVEt1oIFXUbYQtJtc6zKzrOOIXeTg/NCE=
+	t=1785477294; cv=none; b=sWQdQP21fEmf1DmoSBNn+t96Wol/6AKUrD49oqcGDAx+TwKWnQJBKjVtLC8dUPf8ZpnmZAZbJ3eZCVRmdy1G0K8uefS/zaumxeKF5LRrZBhfIxvQ/hQZb99GHTr0KeEvEQx/j9ttZjDYNls3mET9TgG2UcBkHA7D/3KP8peOlJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785477290; c=relaxed/simple;
-	bh=w1DmIJJT/VVqp1LJKvA//Zkogd2iy0ulo2WljJSVg0g=;
+	s=arc-20240116; t=1785477294; c=relaxed/simple;
+	bh=/oApGxpXT2Dh+5iXlhTAd0ujuNkuxeR/SwYYQ008Nbs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=goI7w5JH9a7FTRekVXB7chYn8oymCy6A038V20Eu/HBrKTHG9BR8JI3SNHmjo7GlNXWxtK+EpmEfcQd9/pMdeHSADIyjft8rosc/UuRlh/mpcjcMHKoqoBE/73aBnzySQ6LR+nzCydK4lFDNb94mvKbyLnr3yQzcXVVVEyN3+34=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MSPqOwzZ; arc=none smtp.client-ip=198.175.65.12
+	 MIME-Version:Content-Type; b=DHoi9KkdZS752O9aeIBc/L6b+ZSIB/3bvSObxttm+BZDyW4OPJthBo7m+D0jGIyunNq1ToTf+MhsuubWhH0nQMkm2PcmAhdpvD8k4VUdRi0raTbGrtO0TtwY3LIrYZ1Yblr8qMFDtHBWvNTsSsW9hISwJyxRcfDqtjgM84O0sas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LDJHNpAu; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MSPqOwzZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LDJHNpAu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785477289; x=1817013289;
+  t=1785477292; x=1817013292;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=w1DmIJJT/VVqp1LJKvA//Zkogd2iy0ulo2WljJSVg0g=;
-  b=MSPqOwzZH5qCNvA4KqFqn2FfO8hcnAhIjHgQbw+8WVQ8AKTsa+crTE9F
-   7d3+pQNhXaYZFlZ0d1XYCkjl+nsrA5X9SXI6a+wxi1QFGOkrz5nZbAYdW
-   r8bzsAnd0hu0+V9Ge3RAWOUK4yDGIHHBgHgdcVCdWz6LogwqIT7nJqTNl
-   u3DmH7Hz1Svz4hczeF8szXzH7RNp7Zy579cB2+e8TwZuOahHDhZZ/JhXx
-   tUHWsLoknTcqx0Uf6ZAGb9HDUYx4v5XLbY89kSlLQb9ZKH8aQ9KcKVCbE
-   OkzS9isV92GfjQCbvwZReN5MegwJ9+68D74xxUwKoXak4AZH8lLJKrxOS
+  bh=/oApGxpXT2Dh+5iXlhTAd0ujuNkuxeR/SwYYQ008Nbs=;
+  b=LDJHNpAudunFacsVtDt64XUPLeY1mx/3QyDw+dJ56HhJJfKYActD4/+r
+   /WAWoUGFZBD1p/SML/FXtHAqTuo3JAc86G7kASQ20n3cX/rJjadYGW/Dl
+   r2fuk8qdtgo+TLEko136d3s24YF00Z1k+m2aG/KGrpaKnc8vvRQK1oAi3
+   kLJq898IXYgyc7DnBjvcAI0Ed9aufdLoR0ZoWbuFBixGS430vVHHsfJPO
+   BS7qLCRnaKXzFMbfTZfSZvbA0sjLgvgb5N0xnkZZSCCTgd1Elca7Ma5Jm
+   sjKmx+oFrur4Soc9ElvwehF1lxX+WUOw+XpbrVXRIExos+4Pckj5+EXB8
    g==;
-X-CSE-ConnectionGUID: UrZjiV85RVa/W5hmU2/7TA==
-X-CSE-MsgGUID: Gvb9CMc4RQ21puSy4y/npQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11860"; a="97615898"
+X-CSE-ConnectionGUID: 5+SU7oRBSPacq5XRwEqEJQ==
+X-CSE-MsgGUID: h5sss2YwQXWQ223lWL1OmQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11860"; a="97615904"
 X-IronPort-AV: E=Sophos;i="6.25,195,1779174000"; 
-   d="scan'208";a="97615898"
+   d="scan'208";a="97615904"
 Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2026 22:54:49 -0700
-X-CSE-ConnectionGUID: d24gsISwQROuymQQ562PUg==
-X-CSE-MsgGUID: NjXJmz07Sru8bNEAVmDr/A==
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2026 22:54:51 -0700
+X-CSE-ConnectionGUID: 1CcK+V+CSDytip6LlDCpDg==
+X-CSE-MsgGUID: q9Ufuxk7RSaZ060tsP6Xfg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,195,1779174000"; 
-   d="scan'208";a="298695479"
+   d="scan'208";a="298695482"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa001.jf.intel.com with ESMTP; 30 Jul 2026 22:54:47 -0700
+  by orviesa001.jf.intel.com with ESMTP; 30 Jul 2026 22:54:49 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -53,9 +53,9 @@ Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Sashiko <sashiko-bot@kernel.org>
-Subject: [PATCH 4/5] iommu/vt-d: Tear down scalable-mode context on probe failure
-Date: Fri, 31 Jul 2026 13:43:28 +0800
-Message-ID: <20260731054329.2948252-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 5/5] iommu/vt-d: Flush context cache with correct SID when tearing down aliases
+Date: Fri, 31 Jul 2026 13:43:29 +0800
+Message-ID: <20260731054329.2948252-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
 References: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
@@ -68,52 +68,96 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-intel_pasid_setup_sm_context() walks a PCI device’s DMA aliases via
-pci_for_each_dma_alias() and programs a scalable-mode context entry for
-each RID. For a device with a dma_alias_mask, the callback is invoked
-once for the device’s own RID and once for each alias bit, all with the
-same pci_dev, so device_pasid_table_setup() runs for multiple RIDs.
+domain_context_clear_one() and device_pasid_table_teardown() are both
+invoked once per DMA alias of a device. Each function locates the context
+entry using the bus/devfn pair provided by the pci_for_each_dma_alias()
+callback, then calls intel_context_flush_no_pasid(), which constructs a
+device-selective context-cache invalidation from info->bus and
+info->devfn (that is, always the requester ID of the device itself).
 
-pci_for_each_dma_alias() stops at the first callback error. Therefore, a
-failure partway through the walk can leave context entries for already
-processed RIDs present and still pointing to the device’s PASID table.
+As a result, for every alias other than the device’s own RID, the context
+entry that was just cleared in memory is never invalidated in the context
+cache. Hardware may continue using that stale cached entry. In the
+scalable-mode teardown path, intel_pasid_free_table() can then free the
+PASID directory still referenced by that stale entry, allowing the IOMMU
+to walk freed memory.
 
-On this error path, intel_iommu_probe_device() currently jumps directly
-to intel_pasid_free_table(), which frees the PASID table without
-first tearing down those context entries. The IOMMU may then walk a
-present context entry whose PASID table pointer references freed
-memory.
+Fix this by passing the source ID of the entry being torn down to
+intel_context_flush_no_pasid(), instead of deriving it from @info.
 
-intel_iommu_release_device() already performs teardown before freeing the
-table. Apply the same ordering on the probe failure path.
-
-device_pasid_table_teardown() safely handles RIDs that were never
-programmed: iommu_context_addr() returns NULL when no context table has
-been allocated, and clearing the Present bit of an already non-present
-entry is a no-op. So unwind is safe for both the alias that failed and
-any aliases not yet reached.
-
-Fixes: 301f1a80487fd ("iommu/vt-d: Setup scalable mode context entry in probe path")
+Fixes: f90584f4beb84 ("iommu/vt-d: Add helper to flush caches for context change")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://sashiko.dev/#/patchset/20260602233426.357499-1-baolu.lu%40linux.intel.com
 Assisted-by: Claude:claude-opus-5
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/intel/iommu.h | 2 +-
+ drivers/iommu/intel/iommu.c | 2 +-
+ drivers/iommu/intel/pasid.c | 9 ++++++---
+ 3 files changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 8a59c7c9d0a6..7f01620bf3a1 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1249,7 +1249,7 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
+ 			      unsigned long end);
+ 
+ void intel_context_flush_no_pasid(struct device_domain_info *info,
+-				  struct context_entry *context, u16 did);
++				  struct context_entry *context, u16 did, u16 sid);
+ 
+ int intel_iommu_enable_prq(struct intel_iommu *iommu);
+ int intel_iommu_finish_prq(struct intel_iommu *iommu);
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 6baf1c075dc9..489e9ab5f698 100644
+index 489e9ab5f698..2e3b3ab216f8 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -3342,6 +3342,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+@@ -1257,7 +1257,7 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
+ 	context_clear_present(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ 	spin_unlock(&iommu->lock);
+-	intel_context_flush_no_pasid(info, context, did);
++	intel_context_flush_no_pasid(info, context, did, PCI_DEVID(bus, devfn));
+ 	context_clear_entry(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ }
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 81353fd46b37..e4f24d3f19a6 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -751,7 +751,7 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
+ 	context_clear_present(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ 	spin_unlock(&iommu->lock);
+-	intel_context_flush_no_pasid(info, context, did);
++	intel_context_flush_no_pasid(info, context, did, PCI_DEVID(bus, devfn));
+ 	context_clear_entry(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ }
+@@ -955,9 +955,12 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
+  * This helper can only be used when IOMMU is working in the legacy mode or
+  * IOMMU is in scalable mode but all PASID table entries of the device are
+  * non-present.
++ *
++ * @sid identifies the context entry that was modified, which may be a DMA
++ * alias of @info->dev rather than its own requester ID.
+  */
+ void intel_context_flush_no_pasid(struct device_domain_info *info,
+-				  struct context_entry *context, u16 did)
++				  struct context_entry *context, u16 did, u16 sid)
+ {
+ 	struct intel_iommu *iommu = info->iommu;
  
- 	return &iommu->iommu;
- free_table:
-+	intel_pasid_teardown_sm_context(dev);
- 	intel_pasid_free_table(dev);
- clear_rbtree:
- 	device_rbtree_remove(info);
+@@ -967,7 +970,7 @@ void intel_context_flush_no_pasid(struct device_domain_info *info,
+ 	 * when operating in scalable mode. Therefore the @did value doesn't
+ 	 * matter in scalable mode.
+ 	 */
+-	iommu->flush.flush_context(iommu, did, PCI_DEVID(info->bus, info->devfn),
++	iommu->flush.flush_context(iommu, did, sid,
+ 				   DMA_CCMD_MASK_NOBIT, DMA_CCMD_DEVICE_INVL);
+ 
+ 	/*
 -- 
 2.43.0
 
