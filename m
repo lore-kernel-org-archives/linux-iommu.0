@@ -1,190 +1,177 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010018.outbound.protection.outlook.com [52.101.85.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9F1B3769E0
-	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 20:19:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785529197; cv=fail; b=uxNYy47wcmuuAWPJcfVYPUmNFB956YTav1S8T+JjPLKcmlm9YuwX8c+ZyoTsyTtfrfbH1hhm0arzccJgBh2C2dQxoIKz+ZQvjZpcyVp+gbi6VZ/NmCmaepTeVqBm/n7IVNgcIz+TXZ14apgK8xapock53noTMe1e1uFavxO0PYk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785529197; c=relaxed/simple;
-	bh=Un8jHOhFQZ6EbTQansQ2ClG3fSw0F1eJbGUhSGMqeNg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=mXOeNjKANvKTg5aAu27G+0CmRwrpZlLzGFrfmpy8dOFggCcxAf8n6VaBvcb67OT5qgzi4fDW1wjJDbRrjUe2mln+jYZd0gQtgY3gnXCMGPHweURqru2zoXra+t9KLlZBFUbRl3o89F7uQWte5CeQW79oGk2ZEym7iM6RaHOt5EY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=oLdI6+eM; arc=fail smtp.client-ip=52.101.85.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="oLdI6+eM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lmFvx/ORorUnN00qAl0ELnpch+tXba2sb6kcCcrBXdEqFOhoVtR4xy4lUuHbWcOUQ9kwajpXoXqbDU+oQIDkv+oQYQQrBzSQkGC87cDJJc7ehSkFQdYHG5e6BBizBFgGDzx3GPSIzdGN4KVt9cKiOwm3Ue6MOhv3TDjSuMPIVyLOg21STIkR1kSotKAEyXabh+aVMXmAJyU6/Zkg9FqAkQjCxit17DEetG6zLes9d6GWLzfaqaAX+CXYEjs33aYtsUf0Bjd0YO9HzZaxPAyIJV3UbDxre62SxFzJpg+7ISijq7VgBmzefzHTgYiEN1uIJY9eApfsU+gqREk46B1WOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Un8jHOhFQZ6EbTQansQ2ClG3fSw0F1eJbGUhSGMqeNg=;
- b=DhUZg9qMbwN9xFdekENvXLG/3VfBC7r5NO4tOLQYP2XV+G48NsvDngPVzdF/saynh8apG1yZAtW/jrgBaUJzcDJhP2fZkK2Vx4WwizsqF7XROITRUcNxR7Hxdvmhbpt783KTDhEFTmXS7DAuLXeDFR6S3Z3r/xKpztqZwvfCn+SdHfD6OWXA6xCjZegUkRf6otn12nHjdUvHCIz1Ki46d4qAKLAZ6uplOEuKxwtWz4J6y0pI3LP1t5UQCrmHlxX1DCnlU84LjmdDDwMgfI+mJQy5XKU2inUkY+3SiXUTo/13EifFtvuAdHAEtSGl1vmN8enaFb56pg9AmwtIaczBhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Un8jHOhFQZ6EbTQansQ2ClG3fSw0F1eJbGUhSGMqeNg=;
- b=oLdI6+eMFRiC/dQveQSn1f939P4UcVybWyPM+q7rHeX3I2ti6JAzR/sy/Xpvl5iS5p5kzf9mow4NJUQ/yKQQxd1MY0hMNg2k+SVz3JSj+LvWEERIn5JX7EpXBLRPQHRUcdsyo7A9EM5PBe15liEgXgREdjMRQIjQrTbxATzmr7I=
-Received: from BN9PR12MB5146.namprd12.prod.outlook.com (2603:10b6:408:137::16)
- by PH0PR12MB5678.namprd12.prod.outlook.com (2603:10b6:510:14e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.12; Fri, 31 Jul
- 2026 20:19:49 +0000
-Received: from BN9PR12MB5146.namprd12.prod.outlook.com
- ([fe80::535a:591e:27f6:c23]) by BN9PR12MB5146.namprd12.prod.outlook.com
- ([fe80::535a:591e:27f6:c23%3]) with mapi id 15.21.0270.015; Fri, 31 Jul 2026
- 20:19:48 +0000
-From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
-To: "Limonciello, Mario" <Mario.Limonciello@amd.com>, "Hegde, Vasant"
-	<Vasant.Hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, "Kuehling, Felix"
-	<Felix.Kuehling@amd.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "joro@8bytes.org"
-	<joro@8bytes.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "Suthikulpanit, Suravee"
-	<Suravee.Suthikulpanit@amd.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
-	"Longia, Amandeep Kaur" <AmandeepKaur.Longia@amd.com>
-Subject: RE: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
-Thread-Topic: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs
- only
-Thread-Index:
- AQHdGmrXXVaTvXvBoEGo7Q2TpyKmibZ8ya8AgAP/o4CAAK8DAIAA7JgAgAAKzQCABayL0A==
-Date: Fri, 31 Jul 2026 20:19:48 +0000
-Message-ID:
- <BN9PR12MB514646ACCBDBD8F03A2401BCF7C82@BN9PR12MB5146.namprd12.prod.outlook.com>
-References: <20260723061548.10187-1-vasant.hegde@amd.com>
- <20260723061548.10187-3-vasant.hegde@amd.com> <amOBkJ4BaZ4qnkpc@ziepe.ca>
- <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
- <ed296c0d-246f-492b-970b-49c45e25f5f6@amd.com>
- <f4355034-d40a-4d11-ab98-eef0f2991f33@amd.com>
- <838281e9-8ee7-433a-b06c-68675e9b285f@amd.com>
-In-Reply-To: <838281e9-8ee7-433a-b06c-68675e9b285f@amd.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_Enabled=True;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_SetDate=2026-07-31T20:09:54.0000000Z;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_Name=AMD
- General
- v26;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_ContentBits=3;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_Method=Standard
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR12MB5146:EE_|PH0PR12MB5678:EE_
-x-ms-office365-filtering-correlation-id: c8bc575c-e04a-4e67-3a90-08deef411220
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|56012099006|11063799006|4143699003|10067099003|22082099003|18002099003|38070700021;
-x-microsoft-antispam-message-info:
- u53Wze8J2f3m/2BP7pxv6lkQIf+3OIG+gS/2ysLlARui5SnzLA1gk9b24YNReSJLMHTv4Cv7IWIRITq6S1wKRv8seUjcHFgyFF+93h/KIsUv2H0gpphVEVcuxP8MVuqkDHrI1Tl50tkx4j90V0t+JZ4t23CQfLbBZBrv/9glBZsD2ZDBuzLsNzKZZl9R70qVth/+A/9KeaYuDPCZZoNZAP/3VdxbY6H1jLI2Ym93g1OqkA6drdf3PFjBoJtvv/zB5h8yZ5G7YqTwiTbm3+Q8/T2nS54LK/RwJizPYMa4Sp5z6cIio1jZR+Ik/rplP3e703QvieO3rvX5rhK6/xWtKfsyjaxGlvWgabrx64CYctoJpfIzxllFC8Qwi4O+rM1+9Yd//FoT5Jt/JkVa/jGx2OcccaoKly/nbSlDNidhp81XvlS4Fk5Ey02pqzz2rkp7Z34Zgj++fqgp6WOSu7zVOkkZ2saU2H36L/9uNxFb7dejboBAXrTGChtBOLGUJ2QF7piMF8zlRggkZgTVUOXTcamGQHwxaH6lY5xHUHa15H/6BR+BkUfLQGHf/zaZhdvL18PMQfyEhsULgwixP7xI9qhjmvTtjGU6jFpA1ZKd/s4PbzsDOsZKPTBsYp6GSx5MbI92Q9oWTx/5NQka2FYgRkuTFRmgzhwSNe04PhPr8Cif/DtzPwSm7+Bhmdzz3S8I0QW/0zaqkoo6bOUFZX3+ep8pIOt25/j3i9oLC/rMJv4=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5146.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(56012099006)(11063799006)(4143699003)(10067099003)(22082099003)(18002099003)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?Q05xdGpUcXRaajFWc09BdFZNLzJzVmFsQkF3ajFKU2tPSTVtcXpxOVhVcWY2?=
- =?utf-8?B?alRhL04yKzd2bGw3WVV4VlkzL3RTa3BaNTBCR2VRbFRSNXFVUkxmM3B4SHpH?=
- =?utf-8?B?VVE4d3RiWFo0bWxRWG5nbm9pZHJ1N0Zmb1lnYmVoUm44emkrdmdlZ0F6RVk4?=
- =?utf-8?B?WTlzNDl6aWZHdW1IQkpUTUpIR2tKMHpiTjBhNVlmSi9BOXVtSEsrQzY4cDMy?=
- =?utf-8?B?R2RRN2N5aEtoNmxhNkVhZzdlN2JSNUNLRlBsYWpPb3l1UVJpbXhuQ2RpR2g0?=
- =?utf-8?B?YlozdzFCL0JsY2o2Sitabng0NkVkb3FkQ0dGY3NyL1p1dThPQ2Q3ZWN1TVlh?=
- =?utf-8?B?dXFkVVBWSGE1ZUhGVFJKSW94Sm1kT0VZU3FuMEZsVm1qbjY0RVpBYVJOMUtJ?=
- =?utf-8?B?Z3NabWo3SkRLcVQ0NFJHNHY4WXBPcVBuNVZtNGJCaXVkTVpWYVRkTEl0eElu?=
- =?utf-8?B?eVFNbzFBUW9RMHpocmo5THppaXZQZHNCL2pnRVFMT0hiQThVam9BREZ4Qyt5?=
- =?utf-8?B?Qkp5MUM2Z24yQ254NElRdW9QYkk4NmpuSkpQaGNTVkdmdlRPTFA4ckdDUGVw?=
- =?utf-8?B?alg0QklMR1p2ZGxRNlY0SEFxSUlzSjQwaXVmWVBGVksxd0ZsVi9SaDlVWlBt?=
- =?utf-8?B?K1dFaHhqS3lybzFzSGp4UkRQMmowVnlMOTk2eFl6ZlNUUEFxVkVSUnJPRjRn?=
- =?utf-8?B?cmlCY1pwVlhOMnZEYXNjQ3h6YUVjL3pwVkVNWktHWmtGeGtNWkY3ejkrbTdG?=
- =?utf-8?B?YmRBQU5mbEpXaitYa1FidzNwQk5QNWc1Zi9rSzNRZ2U5QXBkd2hXYmI0UmNE?=
- =?utf-8?B?b0lrSStFQ1BqTDFTNEJtSXZFQXhWTWh0emsyelJ6NjZibmlOWFd1Sk51YktV?=
- =?utf-8?B?ZWprRm1oY0ptOTVXWXp4TllCR0l2ZnNKNlI3dURhOW13MUF4elpSZmNsMlNJ?=
- =?utf-8?B?aUd5MEs1TTBXUkVvZVFMOStQUDdDUkIweGJYTTdHMFZsZU5WZE84bXIrZ0RZ?=
- =?utf-8?B?S3pNekoyODBueGlzbUVzNnBtUjZFMEJDMFNWTTFOczdGL2FlZEpyTEtMdDc5?=
- =?utf-8?B?NWF2dStaN1dTdi8wSFVpWmRlbmh5bWNaOVhma3JINkdlN09oTlZ6c2VBanpV?=
- =?utf-8?B?ek1TRjVJajlPNkhZb2duT28rYlB2b1M3a3lHWXZ1R3NjZTdBNTNtV0tNVHNx?=
- =?utf-8?B?NElXMSthZFhtTUhlNXdFOFl3NDdGYnM1MitPNUhhRXpMNFFKOXJMWU44Rmdv?=
- =?utf-8?B?VGt2TVgrL2NXQzVUNVJORlF6cE9qYnBoSTJYYjdtcDJLRm9aSkNUMXQ5UDRU?=
- =?utf-8?B?QUljVmZGUDFVRXRzSmVoWlVraUV6Sk9mcm9GQzd2emNCRVpQRWZveVZybE5Q?=
- =?utf-8?B?ODYvZjBHczd1bXVhSTgrOENENFdKSjJTSldrNXo1M2xqV0xwMDM3T05RcGU2?=
- =?utf-8?B?bW1PbFd1aGNwaWRxK1ZoamZ0eXZyM1NJTGdzUjdRZTBGTUNZd2hWdkh6ZEJR?=
- =?utf-8?B?UkRlMyt5bWNHaXNpTHYwQUg2VGMxMWU3QytybDZtVDIvcnA1Z3Nwd3RvNnhE?=
- =?utf-8?B?UEFxSjdGSm9HOTA2ckt3dS90NXRaOHlGQ1hCTzRLdTU1Y1crUHNEa0dUUW5H?=
- =?utf-8?B?QkZrK0ptaGdRcDBlbjI0enJDZURPVjA2TTdCeTFoSmI5b3pHVkRkeEpBcXgz?=
- =?utf-8?B?SU9rcnprWFloR0dCRy8yZXRYZXRPV3c5Sk8xM0VteUxtYXlBSnh3bDd4bjk4?=
- =?utf-8?B?c1AzdXNsUTE5clIvWTVkaUZFbENDbmh4YjF2NGVVQXhnNzRBbzNobEcxbmV3?=
- =?utf-8?B?UURZWktmTU05ZFd3dVVyTDBBcVRya3pwYXFKU2U0ZHFGQTNIVmNMOEJkRFhC?=
- =?utf-8?B?RkFOZEdraTF3L1dEVFJDakc1MHdrNmE0OTNhSkV2TTFmWEYwekMzbzA3dWtZ?=
- =?utf-8?B?QjFpVmVoYitOUm9oRFh4ckN3QlVldXBkUUpSdmhWVFVmVWlIYWlBRitVRG9u?=
- =?utf-8?B?MTFPRU9rNlRRL1dtcEsxTm9CeGljYXROdFVITlVFWTFhSkVqUW91cGl5Rzkr?=
- =?utf-8?B?YW1SMU9qajdINEhGMnZoeGQxMCtmOGhMVlBQTXNRaERwa2dzRkZqYTA2bmgw?=
- =?utf-8?B?bTBudHoxallkRTZiY3NrVTFzajF6MG9qbnNSRzZ6eE9wa0xzdldkVEdLZ2Iz?=
- =?utf-8?B?SmdaTWFHWWJMaCtmQTZrd2JWWHIxZ0pLR0JCUDJSUzFPNjRnWnBqWHFDSkFt?=
- =?utf-8?B?d0xya1Z4UE5nV3VZbEZ6Nkt3MXczdlQ1OUEzRHc4Y2lZVFp3Z1duVXd5dWRs?=
- =?utf-8?Q?WveH39XOuDg/UTA+8y?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A05C3769E0
+	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 20:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785529367; cv=none; b=jrfWrEleW5AhmpOOgeFD3TtB95581kiCP6iEWhRX7pTLZKc0sT1boXAUe2lIphkATzGnWZ2doCm35Q2Ao5g5Kv2HSltET1iOz0or+TYHvnrLdE/zQJpirip1pO3h7I2P8hS6l2a+16mc30FF395Eu1Leer27ZwEmZSMjOqVuOB0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785529367; c=relaxed/simple;
+	bh=ODFxmISHVX8EchUHZB7K9XrBqrp4gzoOkBwwuVYI1Xc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Gf0eCsmcotShzS0DxR8n3Ha6W5PlHx/L1xKAsaCjn8JCfcSm0M77koSZ4Pc3kLZsn+iegslfHJoNoCCNhPW+2Rk7DKKY2j9NCtsvp2GVTn/Ij71yUaBwIbzDKs8JmqTns58jCGvYNgAhmB8JJatl3wighVDPP5E5jnjKcHZFxYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-4720f3bf164so1612492f8f.1
+        for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 13:22:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785529364; x=1786134164;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=D3E8q6SLFA2ZLcc8B4L7d4FJiaa1UbNh29dUR+fF9fY=;
+        b=Fc5SVHTi9pxpBChuG5SRMYa9clTLKPbzyEJwDt8e7Z+1v4yzolwMvVr9/yjolA5lQq
+         06T4hRMXr6mzMrymJSbOgQYOJTmPuLRaWPh/na98U8tdaRjGUFWLW8xAL0WhZINhKdzX
+         PuXpjmHPgPGECNy3Yt0fi9hnxgLmeVqtJNZZyIUQ1bFKSEAHAJvmIHkmPunf1SGH8C2G
+         CILOe/EtYTe4OrPEN0EOMEyBr7eEiBTXlTbB1pd4JAJyijFFXMvfFp+AsAr7sZPcY7u+
+         HkYIJ5/+bEt/8ohuwD32l1B6CAnBszfKOuiltg/yc0ds4UrW6Acu2RiV1/NV6s4wqKoD
+         +yCg==
+X-Forwarded-Encrypted: i=1; AHgh+RpLOslhC5g308snMbEPp2FPUEdKCWR2vtSsPMLoI5JRAvDDNudeQDyDkxWxclF8D+teZ3FlvA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxTp2cOl/i8iM4ZtmbsgJSD3DaCwEh1k4V1EToAh32IPWPSUbaq
+	ADCsR2H/VmEp9191SfYZVcV6c0YRTFMygiAktJ5w3BbXrkh4fkbZKEwD
+X-Gm-Gg: AR+sD11qacXmt+wH8NVklwiXhyP80IIxZQyI+c7e55cxg0Urc4iVUvuJ9BhbAWS25Ic
+	kEOFBLjPhX0+Babua7qMqJJ63Cw2WnSS464oBrBmv0JrUzHOvmFuLbzWhCAb04ltZyeUB7pyeJd
+	P5iNXPO86h1VoSxqCmCeKxshiO+Hrcp60r+cg6jK2dBVoncivF6IdpoHF8Yqr6jnzxEn9jvUALz
+	tyVx125+I02QEq2ppTqdECfqtgkbd5JpIfmR0Xju7oNgbs7YAcKjRH+YD2VEKybiJXnL0PhCa2r
+	jgLROu8jlgjFPpbYRjooH+Ekd2vRoiBiYay8/FNtNTjGOjieuHVgNgsqi4Z3DCF9w3ATDHY3jFE
+	1KeRoYgl0iyv15YD5ngTCr8k4aWOPYwQCuzyEtsr6Efz/As0Pg/s135qNROEF+HM0/B0HVHoxb7
+	nyVQnSN/tEvK+9eyVGMfWgKPNJYuUTzVE7WUG3isXL1zKCIM1JBfqOkx0F+UTQwrKPU3ylQkE4M
+	3MjqCh9WoBTUjSiGcF9usK5kzYJBst2pZIZczu+Ad79kwkSAAp92iSPEQJ0+FN2wJVv
+X-Received: by 2002:a05:6000:25f3:b0:47f:90f1:68c8 with SMTP id ffacd0b85a97d-47fd32b19d0mr7598242f8f.1.1785529364463;
+        Fri, 31 Jul 2026 13:22:44 -0700 (PDT)
+Received: from ?IPV6:2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183? ([2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd4562a38sm9066484f8f.21.2026.07.31.13.22.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2026 13:22:43 -0700 (PDT)
+Message-ID: <d6bb859e-c1e7-428e-b765-7b471e1ce005@reactivated.net>
+Date: Fri, 31 Jul 2026 21:22:42 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5146.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8bc575c-e04a-4e67-3a90-08deef411220
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2026 20:19:48.8683
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 05i07LjSIZ8B1cedix0GpqPnpJ6Rqshb2FFsSUUfx1fyKdMXRotO+6bS8naAfy0kcz1f5vL7PlIC7iWfSybwAA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5678
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
+To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ nick.hollinghurst@raspberrypi.com
+References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
+ <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
+ <3e7ba95b-51e7-48e4-aea5-f86db1739ac2@arm.com> <amlE8rEgryPqrUZd@ziepe.ca>
+Content-Language: en-US
+From: Daniel Drake <dan@reactivated.net>
+In-Reply-To: <amlE8rEgryPqrUZd@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-QU1EIEdlbmVyYWwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBMaW1v
-bmNpZWxsbywgTWFyaW8gPE1hcmlvLkxpbW9uY2llbGxvQGFtZC5jb20+DQo+IFNlbnQ6IFR1ZXNk
-YXksIEp1bHkgMjgsIDIwMjYgMTozMSBBTQ0KPiBUbzogSGVnZGUsIFZhc2FudCA8VmFzYW50Lkhl
-Z2RlQGFtZC5jb20+OyBKYXNvbiBHdW50aG9ycGUNCj4gPGpnZ0B6aWVwZS5jYT47IERldWNoZXIs
-IEFsZXhhbmRlciA8QWxleGFuZGVyLkRldWNoZXJAYW1kLmNvbT47DQo+IEt1ZWhsaW5nLCBGZWxp
-eCA8RmVsaXguS3VlaGxpbmdAYW1kLmNvbT4NCj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LmRldjsg
-am9yb0A4Ynl0ZXMub3JnOyBsaW51eC1wY2lAdmdlci5rZXJuZWwub3JnOw0KPiB3aWxsQGtlcm5l
-bC5vcmc7IHJvYmluLm11cnBoeUBhcm0uY29tOyBTdXRoaWt1bHBhbml0LCBTdXJhdmVlDQo+IDxT
-dXJhdmVlLlN1dGhpa3VscGFuaXRAYW1kLmNvbT47IGJoZWxnYWFzQGdvb2dsZS5jb207IExvbmdp
-YSwNCj4gQW1hbmRlZXAgS2F1ciA8QW1hbmRlZXBLYXVyLkxvbmdpYUBhbWQuY29tPg0KPiBTdWJq
-ZWN0OiBSZTogW1BBVENIIDIvMl0gaW9tbXUvYW1kOiBGb3JjZSBpZGVudGl0eSBtb2RlIGZvciBz
-ZWxlY3RlZCBHUFVzDQo+IG9ubHkNCj4NCj4gK0ZlbGl4DQo+DQo+IE9uIDcvMjcvMjYgMjM6NTIs
-IFZhc2FudCBIZWdkZSB3cm90ZToNCj4gPiBNYXJpbywNCj4gPg0KPiA+DQo+ID4gT24gNy8yNy8y
-MDI2IDg6MTUgUE0sIE1hcmlvIExpbW9uY2llbGxvIHdyb3RlOg0KPiA+Pg0KPiA+Pg0KPiA+PiBP
-biA3LzI2LzI2IDIzOjE5LCBWYXNhbnQgSGVnZGUgd3JvdGU6DQo+ID4+Pg0KPiA+Pj4NCj4gPg0K
-PiA+IC4uLi8uLi4NCj4gPg0KPiA+Pj4+DQo+ID4+Pj4gSSB0aGluayB0aGlzIGNhbiBwcm9iYWJs
-eSBiZSBkcm9wcGVkIG5vdz8gVGhlcmUgaXMgbm8gaW50ZXJzZWN0aW9uDQo+ID4+Pj4gb2YgdGhp
-cyBvbGQgYnJva2VuIGVtYmVkZGVkIEdQVSBhbmQgYSBDUFUgdGhhdCBzdXBwb3J0cyBDQyByaWdo
-dD8NCj4gPj4+DQo+ID4+Pg0KPiA+Pj4gSSBkaWQgY29uc2lkZXIgZHJvcHBpbmcgdGhlc2UgdHdv
-IGNoZWNrcywgYnV0IEkgd2FzIG5vdCBlbnRpcmVseQ0KPiA+Pj4gc3VyZS4gU28gSSBrZXB0IGFz
-IGlzIGZvciBub3cuIE9uY2UgdGhlc2Ugc2VyaWVzIHNldHRsZXMgYW5kIEkgY2FuDQo+ID4+PiBn
-byB3aXRoIG5leHQgc3RlcCBvZiBkcm9wcGluZyB0aGVzZSB0d28gY2hlY2tzLg0KPiA+Pj4NCj4g
-Pj4+IEBBbGV4LCBATWFyaW8sIEFueSBzdWdnZXN0aW9ucyA/DQo+ID4+Pg0KPiA+Pg0KPiA+PiBU
-aGUgYmFja2dyb3VuZCBjb21lcyBmcm9tIHRoaXMgc2VyaWVzOg0KPiA+Pg0KPiA+PiBodHRwczov
-L2xvcmUua2VybmVsLm9yZy9hbGwvMjAyMDA4MjQxMDU0MTUuMjEwMDAtMS1qb3JvQDhieXRlcy5v
-cmcvDQo+ID4NCj4gPg0KPiA+IFRoYW5rcyBmb3Igb2xkIGxpbmsuIFNvIGl0IGxvb2tzIGxpa2Ug
-d2UgYXJlIGdvb2QgdG8gZHJvcCBTTUUgY2hlY2s/DQo+DQo+IFllYWggSSB0aGluayBzby4NCj4N
-Cj4gPg0KPiA+IEFsc28gaXMgaXQgc2FmZSB0byBhc3N1bWUgU05QIGlzIG5vdCBlbmFibGVkIG9u
-IHRoZXNlIHBsYXRmb3JtIGFuZA0KPiA+IGRyb3AgdGhhdCBjaGVjaz8gQW55d2F5IFNOUCByZXF1
-aXJlbWVudCAod2hpY2ggZG9lc24ndCBzdXBwb3J0DQo+ID4gaWRlbnRpdHkgbWFwcGluZykgYW5k
-IEFQVSByZXF1aXJlbWVudCAobmVlZHMgaWRlbnRpdHkgbWFwcGluZykgaXMNCj4gY29uZmxpY3Rp
-bmcuDQo+ID4NCj4NCj4gVGhlIGN1cnJlbnQgcGxhdGZvcm1zIEkgdGhpbmsgdGhpcyBpcyBhIHNh
-ZmUgYXNzdW1wdGlvbi4NCj4NCj4gRmVsaXgsDQo+DQo+IENhbiB3ZSByZXZpc2l0IHRoZSByZXF1
-aXJlbWVudCBvZiBpZGVudGl0eSBtYXBwaW5nIGZvciBBUFU/ICBEb2VzIGl0IHN0aWxsIGhvbGQN
-Cj4gd2l0aCB0aGUgY3VycmVudCBoYXJkd2FyZSBhbmQgc29mdHdhcmU/DQo+DQo+IEknbSB3b25k
-ZXJpbmcgaWYgd2UgY2FuIGp1c3QgYXBwbHkgaXQgdG8gUmF2ZW4gYW5kIGxvb3NlbiB1cCBlbHNl
-d2hlcmUgYW5kDQo+IHdoYXQgZ2l2ZXMgaWYgd2UgZG8gdGhhdC4NCg0KDQpUaGlzIGlzc3VlIG9u
-bHkgYXBwbGllcyB0byB0aGUgZWFybHkgcmF2ZW4vcGljYXNzbyBmYW1pbGllcy4gIFRoZSBkaXNw
-bGF5IGhhcmR3YXJlIGhhZCBzb21lIGhhcmR3YXJlIGFkZHJlc3NpbmcgYnVnIHdpdGggSU9WQXMg
-c28gaXQgaGFzIHRvIGhhdmUgSU9WQSA9IElPUEEuICBUaGUgcmVzdCBvZiB0aGUgR1BVIGNhbiBo
-YW5kbGUgSU9WQXMganVzdCBmaW5lLiBUaGlzIHdhcyBmaXhlZCBvbiBSZW5vaXIgSUlSQy4NCg0K
-QWxleA0KDQo=
+On 29/07/2026 01:10, Jason Gunthorpe wrote:
+> If paging is attached then it sets MMMU_CTRL_OPERATING_FLAGS and
+> places the aperture at 40G. Based on the comments about blocking I
+> wonder if the "bypass" even works when paging is on?
+> 
+> If blocking is attached then it sets MMMU_CTRL_OPERATING_FLAGS with
+> some 0 address cap which aborts everything?
+
+The hardware lets two regions be configured:
+
+1. Bypass window
+Configured as BYPASS_START_OFFSET..BYPASS_END_OFFSET
+Any device access to addresses in this range go straight through to the 
+same addresses in physical memory. There is no PT translation.
+
+2. IOVA Aperture
+Configured as BYPASS_END_OFFSET..ADDR_CAP_OFFSET
+Any device access to addresses in this region go through page table 
+translation before reaching physical memory.
+
+The bypass must come before the aperture.
+
+Access to any address above ADDR_CAP_OFFSET will abort.
+
+So the blocking domain is implemented by setting both of those ranges to 
+0, which means ADDR_CAP_OFFSET=0 as part of that. (I'm going with the 
+interpretation that a blocking domain is like a killswitch and should 
+abort all memory accesses.)
+
+However, the blocking domain implementation should be removed (see below).
+
+The bypass works fine when paging is on - did you spot something that 
+makes you suspect otherwise?
+
+> It looks to me like some of those comments and choices don't reflect
+> what the driver actually does. Since there is only ever one
+> translation we never need to be worried about where the aperture is,
+> it could be anything so long as the HW gives it priority to bypass.
+> 
+> Could the aperture be placed at 0 with the bypass fully disabled? Then
+> it would basically be a normal iommu.
+Please let me know which comments/choices you are finding unclear, I 
+tried to make this driver readable and would like to fix that.
+
+The aperture could be placed anywhere, but the key idea in the current 
+driver structure is that we deliberately place it above physical memory, 
+so that we can have the bypass window operational for all regular 
+physical addresses, meaning that iommu-unaware devices can operate as 
+normal.
+
+Each of the 3-4 IOMMUs has around 5 devices hardwired into it. When the 
+IOMMU is switched on (effectively via setting CTRL_OPERATING_FLAGS), 
+*all* of the hardwired devices are subject to the IOMMU operation, 
+uniformly. There is no gating where you can have one of the devices in 
+standard passthrough mode and the rest using the IOMMU. Also there is no 
+Stream ID in the transactions, there is no way to configure per-device 
+page tables.
+
+Among the devices hardwired to the IOMMUs we might have:
+  - Devices already set up by the firmware and relying on regular access
+    to physical memory
+  - Devices that don't require large contiguous DMA allocations and would
+    prefer not to have the translation overhead of the iommu
+  - Devices that handle scatter-gather natively and prefer not to have
+    the translation overhead of the iommu
+  - & devices that want to use the IOMMU :) so that they can work with
+    large contiguous allocations which are actually scattered in
+    underlying physical memory
+
+So we have multiple needs to tend to, which is why the driver currently 
+sets up the bypass in the regular address space (serving the first 3 
+above), and the IOMMU aperture in a high, unused part of the address 
+space (for the devices that do want to take advantage of the IOMMU).
+
+Are those good enough reasons to set up the driver in this way? Or are 
+there other approaches to consider?
+
+Let's take an example where the aperture gets placed at address 0 (and 
+hence there is no bypass window). Now it is operating more like a 
+"normal" IOMMU (except without per-device configurable behaviour, stream 
+IDs, etc). The system boots and the firmware sets up the display 
+controller rendering some early boot screens. Then the kernel boots and 
+takes over the framebuffer using efifb or simpledrm. Then it loads a 
+device driver for, let's say, an image processor. This turns on one of 
+the iommus and puts it in paging mode. The aperture gets placed at 
+address 0, no bypass window. But, whoops, that iommu happened to *also* 
+have the display controller hardwared into it. Now we have a big visual 
+glitch and the display output has stopped. And maybe the kernel doesn't 
+even have the vc4 display driver available to correct that later, 
+because the expectation was just to use the simple fw-configured 
+framebuffer.
+
+This is also why I think the blocking domain implementation should be 
+removed. It causes collateral damage to all the devices which might not 
+have had any idea they were influenced by an iommu.
+
+Thanks for your help!
+
+Daniel
+
