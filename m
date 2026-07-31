@@ -1,138 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033ED30F92D;
-	Fri, 31 Jul 2026 06:59:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E65803314A1;
+	Fri, 31 Jul 2026 07:34:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785481145; cv=none; b=tcxi1tiDZCrmYe7hCrUH8KRUk/mPRxNmCn0Ur5NKUpViRb4HRgf5BsJL9EaL7rp5986c/pS2+8cuZ2mriGhesocrcTCiRkzQ+61cnnQWGSOidis8LC5UuCkhTqjq+Vu0ueaHM77wpamsy6aPK5Wn+MERhJz+tz87jMDGqMgQbPc=
+	t=1785483249; cv=none; b=Dr9roTm6nwJ1hcLy+388mWgPRaPoFjFGgDoW71oa6n/85NzbS+2ynx8jj2zmrvxpWBWVGYEIJ2smGSnPHZ7HjsEzYbgp8UqY9S7ITiirMT57LainGZTUXzIhwR3Jmm7YkHLNr+M5qes+zcLHJIMF1daNHMRLpw6h4dZLCey67HE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785481145; c=relaxed/simple;
-	bh=t3fu4ERIgAp3SPftQhcSUQl7vnnwo5MlU0VgTL4EBzw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=koFjhWLZqx7VqQFL53fCLT6OAVq72uo0Cj9BeCD5+IR4zSBCCseaYiyTWnutXz0jinbmuX3fKWQng3WgNHlgPi+QegAmet78x/goFDIRk6wHDHiKNGrXmh2ata4z847v9xDHbBnjtOGH4ZF44KgaKUtkGkUwrfT/UqRs7ItAjpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cFukX1pp; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785483249; c=relaxed/simple;
+	bh=gt/cqMD5KNfHJG+3PoldXcwl4vYWkvMaM5QiMj5ArPQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=ako6pxnKT2QyWVip31FkeNi3qxThvpqkRhamnODzaJzxGI5ffQTsnSbNRd+QuLEuJw356OVVTmSQhUKaEa70xPK5Sc1JSgdeHUZ4obARvelsmpcmOPKJgSjNXw5Jj2Y6ro413atC05u7T0uPcJhcU7AYmM1kRbsDFLNH7eCD83U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=h2vFzdGP; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cFukX1pp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727131F000E9;
-	Fri, 31 Jul 2026 06:59:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785481142;
-	bh=TSAEgxrMlqybf5QIJudXURJtL6q614aZdpapzyJXnNY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=cFukX1ppkHNLJ/1aKTfYLg9GSZZSV/FFnQ1SsB4u6/pHnQ1onDN6bp/V+1W9c0KRP
-	 zP5qq+ZMXGYscUg3ZGOH2IO5hW1c4dN0oiMPn8R+EBKBR21EBb1PMjRXje9OmLVKMh
-	 Ny0+qXfNWtHtl1cf7sFvqD64coB2vFIi10F1K8NxmONkp17u2stmHUs2C9NszJz90c
-	 FDMKRLQ84NBQbDpz+uG1v/0vl6B5jTO0CT/NsmtX80xDE3gzEUGyCM7xva4VyYRatm
-	 ncra0Zp/Y1i3B7ssOcbDnp53JvJDrcyVz3udKLmVKHiZ7HUhgB5+As99YgHcJgL3pl
-	 AbqpV1eS61neQ==
-Date: Fri, 31 Jul 2026 08:58:58 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>, 
-	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
-	Bryan O'Donoghue <bod@kernel.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.k.varbanov@gmail.com>, 
-	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	iommu@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v10 01/14] dt-bindings: media: qcom,glymur-iris: Add
- glymur video codec
-Message-ID: <20260731-voracious-supportive-kraken-edb2fb@quoll>
-References: <20260726-glymur-v10-0-de451559e88b@oss.qualcomm.com>
- <20260726-glymur-v10-1-de451559e88b@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="h2vFzdGP"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260731073359euoutp01b326523e6f9dce2fa68dcdf5a4089e5b~HT4vhc6Cs1162311623euoutp01Z;
+	Fri, 31 Jul 2026 07:33:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260731073359euoutp01b326523e6f9dce2fa68dcdf5a4089e5b~HT4vhc6Cs1162311623euoutp01Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1785483239;
+	bh=N3Jgur6eGpI5uF6i9kwDYaTQ48SNIpZ5QYt0ueN9Z1A=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=h2vFzdGPU5rK6aIg9RL7QWF075tsWv+IJpqYD+rwoehY/vNWBMRBWGrq2fWusmWGk
+	 J790EJlBOERW4eikBs6SJ0XQKF/mLNr0HDnXFmef70VwH7PnAlB0ueKl/8aXpOpDw3
+	 NAWoNOdVoKDxcVtSBMhZr5p81NEbyYPO8PB+QGI0=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260731073359eucas1p2ff8cd0f84dea171a8b4f0061154dc5ae~HT4vTnQXs1993519935eucas1p2y;
+	Fri, 31 Jul 2026 07:33:59 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260731073350eusmtip181b6e9861358d1e9a24ec292d0634e20~HT4nVsXtj0839208392eusmtip1O;
+	Fri, 31 Jul 2026 07:33:50 +0000 (GMT)
+Message-ID: <85be992d-9567-433e-ae2e-64ae5483964d@samsung.com>
+Date: Fri, 31 Jul 2026 09:33:47 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260726-glymur-v10-1-de451559e88b@oss.qualcomm.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v8 00/23] dma-mapping: Track shared DMA state through
+ direct, pool and swiotlb paths
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Marc
+	Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, Suzuki K
+	Poulose <Suzuki.Poulose@arm.com>, Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh
+	<smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>, Alexey
+	Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, Xu
+	Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Alexander Gordeev
+	<agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
+	<svens@linux.ibm.com>, x86@kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <yq5azezfeeax.fsf@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260731073359eucas1p2ff8cd0f84dea171a8b4f0061154dc5ae
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260725070930eucas1p16cbafb514de7a2e7531d0e4ae158acfb
+X-EPHeader: CA
+X-CMS-RootMailID: 20260725070930eucas1p16cbafb514de7a2e7531d0e4ae158acfb
+References: <20260717180442.110954-1-aneesh.kumar@kernel.org>
+	<CGME20260725070930eucas1p16cbafb514de7a2e7531d0e4ae158acfb@eucas1p1.samsung.com>
+	<yq5azezfeeax.fsf@kernel.org>
 
-On Sun, Jul 26, 2026 at 11:19:31AM +0530, Vishnu Reddy wrote:
-> Add device tree binding for the Qualcomm Glymur Iris video codec. Glymur
-> is a new generation of video IP that introduces a dual-core architecture.
-> The second core brings its own power domain, clocks, and reset lines,
-> requiring additional power domains and clocks in the power sequence.
-> The current maxItems constraints for clocks and power-domains in the
-> common venus schema were sized for platforms available at the time of
-> authoring. The glymur platform introduces a dual core architecture
-> that requires more clocks and power domains, exceeding these limits.
-> Raise maxItems for clocks, clock-names, power-domains and
-> power-domain-names to accommodate the glymur platform.
-> The glymur platform-specific schema have fixed constraints for these
-> properties, so the common schema only acts as an upper bound.
-> 
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> ---
->  .../bindings/media/qcom,glymur-iris.yaml           | 257 +++++++++++++++++++++
->  .../bindings/media/qcom,venus-common.yaml          |   8 +-
->  2 files changed, 261 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/media/qcom,glymur-iris.yaml b/Documentation/devicetree/bindings/media/qcom,glymur-iris.yaml
-> new file mode 100644
-> index 000000000000..1bb16206d859
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/qcom,glymur-iris.yaml
-> @@ -0,0 +1,257 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/qcom,glymur-iris.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Glymur SoC Iris video encoder and decoder
-> +
-> +maintainers:
-> +  - Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> +
-> +description:
-> +  The Iris video processing unit on Qualcomm Glymur SoC is a video encode and
-> +  decode accelerator.
-> +
-> +properties:
-> +  compatible:
-> +    const: qcom,glymur-iris
-> +
-> +  clocks:
-> +    maxItems: 9
-> +
-> +  clock-names:
-> +    items:
-> +      - const: core_iface
-> +      - const: core
-> +      - const: vcodec0_core
-> +      - const: vcodec0_iface
-> +      - const: core_freerun
-> +      - const: vcodec0_core_freerun
-> +      - const: vcodec1_iface
-> +      - const: vcodec1_core
-> +      - const: vcodec1_core_freerun
-> +
-> +  dma-coherent: true
-> +
-> +  interconnects:
-> +    maxItems: 2
-> +
-> +  interconnect-names:
-> +    items:
-> +      - const: cpu-cfg
-> +      - const: video-mem
-> +
-> +  '#address-cells':
-> +    const: 2
-> +
-> +  '#size-cells':
-> +    const: 2
+On 25.07.2026 09:09, Aneesh Kumar K.V wrote:
+> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+>> This series tracks confidential-computing shared DMA state through the
+>> dma-direct, dma-pool, and swiotlb paths so that encrypted and decrypted
+>> DMA buffers are handled consistently.
+>>
+>> Today, the direct DMA path mostly relies on force_dma_unencrypted() for
+>> shared/decrypted buffer handling. This series consolidates the
+>> force_dma_unencrypted() checks in the top-level functions and ensures
+>> that the remaining DMA interfaces use DMA attributes to make the correct
+>> decisions.
+>>
+>> The series separates mapping and allocation state:
+>> - DMA_ATTR_CC_SHARED describes the DMA address attribute requested for a
+>>   mapping. It tells the DMA mapping path that the DMA address must target
+>>   shared/decrypted memory.
+>> - __DMA_ATTR_ALLOC_CC_SHARED is an internal DMA-mapping attribute used only
+>>   by allocation paths after the DMA core decides that the backing pages
+>>   must be allocated as shared/decrypted memory.
+>>
+>> The series:
+>> - moves swiotlb-backed allocations out of __dma_direct_alloc_pages(),
+>> - uses __DMA_ATTR_ALLOC_CC_SHARED through the dma-direct alloc/free paths
+>> - teaches the atomic DMA pools to track encrypted versus decrypted
+>>   state
+>> - tracks swiotlb pool encryption state and enforces strict pool
+>>   selection
+>> - centralizes encrypted/decrypted pgprot handling in dma_pgprot() using
+>>   DMA attributes
+>> - passes DMA attributes down to dma_capable() so capability checks can
+>>   validate whether the selected DMA address encoding matches
+>>   DMA_ATTR_CC_SHARED
+>> - makes dma_direct_map_phys() choose the DMA address encoding from
+>>   DMA_ATTR_CC_SHARED and fall back to swiotlb when a shared DMA request
+>>   cannot use the direct mapping, which lets arm64 and x86 CCA guests stop
+>>   relying on SWIOTLB_FORCE for DMA mappings
+>> - use the selected swiotlb pool state to derive the returned DMA
+>>   address
+>> - reports CC_ATTR_GUEST_MEM_ENCRYPT for arm64 Realms, powerpc secure
+>>   guests, and s390 protected virtualization guests.
+>>
+>> Dependency:
+>> This series depends on the pKVM changes posted at:
+>> https://lore.kernel.org/all/20260603110522.3331819-1-smostafa@google.com
+>>
+>> Please merge this series only after the pKVM changes above are merged.
+>> Otherwise pKVM will be broken.
+>>
+> pKVM topic branch is now available 
+>
+> https://lore.kernel.org/all/178467286876.125042.12010461715645610054.b4-ty@kernel.org/
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/coco
+I've just got back from my holiday's and I see that there is everything ready to give
+this patchset some tests in linux-next. I hope nothing will break.
 
-Rob already commented on these. And then he clarified, so you cannot
-send the same code.
+I've applied this patchset to dma-mapping-for-next, on top of pKVM topic branch with
+patch "[PATCH v8 17/23] dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED"
+rebased onto latest changes in arch/arm64/mm/init.c.
 
-Best regards,
-Krzysztof
+The remaining items pointed in the review can be fixed incrementally.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
