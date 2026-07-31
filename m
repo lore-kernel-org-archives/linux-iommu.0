@@ -1,111 +1,189 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2298C24A067
-	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 20:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 651E11F3D56
+	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 22:34:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785530048; cv=none; b=ZZZhrrx7kC8wZ/uAtTKGVVan8xlDV2tmna067Fb/VXWbp39rCsL5rO1yRXCwceL1MU8jTa3PFnnP3HVHZil6MSfSSCpGsWvJuJJ1fCyjWoLtAdsv9O+lnzScmQok8lhXfCvjD7naC6P0XZ1PLLi3QshxcxBFrN0HWgwAa95v6/A=
+	t=1785537281; cv=none; b=LaR4jn4y5tRgEzKQARzlKovfUPKkS6LVSXGRbQ1i0C3Tbm5bIVYj/NqZmT+Lz1AedyGE2zcxwEUvQG2jMPYojEoPCD845V+1jwvb/MEMXW5kTYXYxwwnD8qxm1vjL68eMzK2DoZGhcg0g/qpww/9JLpPCRLyOU5fcvtcEC63Ar4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785530048; c=relaxed/simple;
-	bh=NXZDspMbrOv5vkONMoM2L5ggiE2EAR+AQYiQEdJNcHo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fZxvxlpLFst8Nhwz8BuH6ffU/9YYe/lxuCm4Gj249TTqsN3lLDWZwTPCqN42nLHmyMrnuuaAfYS4F5TuhJC2kAnbMgz1nMxBhvxIx80ssb9exOoYZzDsVGtotW7jmpSPB2ICNmoFE+6YRPNGDNhZmfSAZDQQMVsOyHP+0o9P/Jw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-4720f3bf164so1619658f8f.1
-        for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 13:34:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785530045; x=1786134845;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Se3TlLpuysYiEG2DYm26v81iW1ITt60yQ73LdmliEgA=;
-        b=S/boMCJP+kZXUkvC1hOO2Noq0wZ+05AZtK30GjfWxUzvxVGGawc16t1H9Q6dMuxazd
-         4GjBGvezGuAeFpFHclEBGMTu8QDL37RDCmvmTqe0jepiIvgg8CZhCri0zmX1T9K7Dk+Y
-         Tsni4+kW6VQ4C4pPnPD6uCvhq4DydGlzxIe3d5bJ8pqx6M1EFKyv3eLoJ5GLoilwUU8+
-         6+7MpBSUzyCZgKWgm1sNHs8Z6CWavFHH7Riz6uqgw3DPe+cmOVbc+zxfTgByIASKaHUH
-         4rVhmqhKJzkYPCG9oBRSUl34eBAbC70jRiekA/gCuU2+cyJy6SoUpSXK83l7UmxtMQ2d
-         JcWQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqUqHtjOxpCT97pZ7EWVCKR5qqisaKNjEnOdPWUykSmHY1Vh0ru9Tvdo1oMzZDGHqqt2hgJ8g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz5kEJlFO9IWljBVqDghZSKHGrWIe397A8z3EZI7MBKAaiuiRHQ
-	k5ZFLpSFx7gPnU86XhiD7Z+aDq4FndENPY1Gcr5VoNl9Yt8MiJ0EJj3C
-X-Gm-Gg: AR+sD137xM7cQ/dJ3wjCsbEOejmOcOvxaNi6YbxP+AiK/RjZRXgI3AeknZ8/nc3sG3K
-	sT8uRVis9Yh5Asw3ehGdnPJnG/yq4orWv5uN4VM+GF4XnsdGiiD15J0dbQeVex//lFlaMXL+mDv
-	H7Lp9T3rjIQGoKJthFmExqxOyueM/uDc6z3rdMFptDgS+dXZxoCBGdz9cr74FaOXMaTNE1FwQ1I
-	D5HDGU6WqDk6IsutdOY70PRrd0jZpZIA2PKUtaJ+9dVV7JdJac68kjiDUt9w196beGD0CsRmq/M
-	L75PobS3PrGRAE7qlXWEDhL3HjRSbNpHjDjYCx9K/4xQlLet0m5feZGglewVSc9zPsTm7Ef6/1d
-	u7jHQbfM9J98rq/rHrFRwk8RkVWghWd+sBmKt87zMHYps2G5ANVuGaSxwwQqhsc7+45GQlyZGAj
-	VYjWzqpuHV0PA/WE5NPQ19fCO7DscJpcTBaaBkSxhqbAxWGWnHuXP2kLXxBHa3/ParSD/s0E7Pf
-	6u70Qfd+wz/0rIkZBsZkIPkZRV6a/2bR7SvPsFGnpAK4oJ9bOhxUiH4SPwA0ysXt3fe
-X-Received: by 2002:a05:6000:1846:b0:47f:6e8b:699c with SMTP id ffacd0b85a97d-47fd729208fmr2040027f8f.14.1785530045266;
-        Fri, 31 Jul 2026 13:34:05 -0700 (PDT)
-Received: from ?IPV6:2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183? ([2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd456a6d7sm9618856f8f.19.2026.07.31.13.34.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Jul 2026 13:34:04 -0700 (PDT)
-Message-ID: <6d9b28ec-0905-4cb0-9a62-980c7fa69572@reactivated.net>
-Date: Fri, 31 Jul 2026 21:34:02 +0100
+	s=arc-20240116; t=1785537281; c=relaxed/simple;
+	bh=Go56wDtdxVSIjd60pcKnP/EUz+fKoX4bdkYeJ4wav/0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NX5R9iNseHKa+myvoi/woN/haypXmnrLrVDj9wH9mVE0jBUDXOYSTI5XRPEGjlE8jjgWEbOpfKmf1DLwmS/mAPl5Ii4zYc/thcKU52+uWTEuxnzIoQw30NVvHw/GrGqhl1hw3oLl3fr0wJJuiLeNRSjn1VS/LVYo4lSVqnLynI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ZGKvFfbb; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ZGKvFfbb"
+Received: from mrdev.corp.microsoft.com (unknown [40.78.13.173])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6DB1720B7166;
+	Fri, 31 Jul 2026 15:34:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6DB1720B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1785537261;
+	bh=WF931toiOijalALrtjOOqmAvlDdB9X6QNv8FHrD3gKk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ZGKvFfbb1DSpuSsfU1MglpIIWkzzBtYpSTk9Xfl3sMFNMf+JKYIf15GlBtI+SZSFI
+	 y96U/cFJOFSe49ynWfnT8MH5czZJZ2iRctOup0v1ojddl/JnSfbG8bCyr79L3L398s
+	 3cQjtLaXhXd+S+pssxS80OwTPg8YINNn1LxyFy7c=
+From: Mukesh R <mrathor@linux.microsoft.com>
+To: hpa@zytor.com,
+	robin.murphy@arm.com,
+	robh@kernel.org,
+	wei.liu@kernel.org,
+	mrathor@linux.microsoft.com,
+	mhklinux@outlook.com,
+	muislam@microsoft.com,
+	namjain@linux.microsoft.com,
+	magnuskulke@linux.microsoft.com,
+	anbelski@linux.microsoft.com,
+	linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	linux-arch@vger.kernel.org
+Cc: jgg@nvidia.com,
+	kys@microsoft.com,
+	haiyangz@microsoft.com,
+	decui@microsoft.com,
+	longli@microsoft.com,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	lpieralisi@kernel.org,
+	kwilczynski@kernel.org,
+	bhelgaas@google.com,
+	arnd@arndb.de,
+	jacob.pan@linux.microsoft.com
+Subject: [PATCH v5 0/9] PCI passthru on Hyper-V
+Date: Fri, 31 Jul 2026 15:34:18 -0700
+Message-ID: <20260731223427.2554388-1-mrathor@linux.microsoft.com>
+X-Mailer: git-send-email 2.51.2.vfs.0.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- nick.hollinghurst@raspberrypi.com, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
- <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
- <20260730-small-solid-spoonbill-8a8bbd@quoll>
-Content-Language: en-US
-From: Daniel Drake <dan@reactivated.net>
-In-Reply-To: <20260730-small-solid-spoonbill-8a8bbd@quoll>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 30/07/2026 08:00, Krzysztof Kozlowski wrote:
-> On Mon, Jul 27, 2026 at 09:43:59PM +0100, Daniel Drake wrote:
->> +static int bcm2712_iommu_init_cache(struct bcm2712_iommu *mmu,
->> +				    struct platform_device *pdev)
->> +{
->> +	struct device *dev = &pdev->dev;
->> +	struct platform_device *cache_pdev;
->> +	struct device_node *cache_np;
->> +
->> +	cache_np = of_parse_phandle(dev->of_node, "brcm,iommu-cache", 0);
->> +
->> +	/* Fall back on 'cache' property used in old/downstream firmware */
->> +	if (!cache_np)
->> +		cache_np = of_parse_phandle(dev->of_node, "cache", 0);
-> 
-> NAK.
-> 
-> You cannot have undocumented ABI. I asked you to drop this at v1.
-Is there any approach I should consider here in order to support 
-existing shipped firmware versions that use the 'cache' property, or 
-should I simply break compatibility?
+Implement passthru of PCI devices to unprivileged virtual machines
+(VMs) when Linux is running as a privileged VM on Microsoft Hyper-V
+hypervisor. This support is made to fit within the workings of VFIO
+framework. This supports both full device passthru and SR-IOV based VFs.
 
-While I was working on another issue recently there was a lean towards 
-supporting existing/wrong DTs at the end of
-https://lore.kernel.org/all/878q898ulx.wl-maz@kernel.org/
+At a high level, the hypervisor supports traditional paging iommu domains
+that use explicit map and unmap hypercalls for mapping and unmapping
+guest RAM into the iommu subsystem. Hyper-V also has a concept of direct
+attach devices (DDA) whereby the iommu subsystem simply uses the guest
+HW page table (ept/npt/..). This series adds support for the former.
 
-but admittedly that case has some different parameters: it was incorrect 
-DT values (not incorrect ABI) and also was more severe (breaks boot). In 
-this case if the system were to boot without iommu support it is not the 
-end of the world.
+This series rebased to: a4ffc59238be (origin/hyperv-next)
+
+Testing:
+ o Most testing done on hyperv-next:a4ffc59238be using Cloud Hypervisor (51).
+ o All tests involved passthru of devices using MSIx.
+ o Tested on Baremetal dom0/root: 
+       test 1: Mellanox ConnectX-6 Lx passthru
+       test 2: NVIDIA Tesla Tesla T4 GPU.
+       test 3: Both of above simultaneous passthru
+ o VF: Mellanox ConnectX-6 Lx passthru 
+
+This series strives to establish a base line. Some pending work items:
+ o arm64 : some delta to make this work on arm64 (in progress).
+ o Qemu and OpenVMM support (in progress).
+ o device sleep/wakeup.
+ o More stress testing with high end GPUs
+
+Changes in V5:
+ o enforce no multiple vms per vmm instance
+ o make struct mshv_vfio_device_ops const
+ o add WARN to iommu call. delete mappings in domain free
+ o mmio_mfn++ in large page check in hv_map_mmio_pages()
+ o no need to pass gfn to hv_map_mmio_pages()
+ o use region access to make mmio mappings ro or rw
+
+Changes in V4:
+ o Completely remove direct device attach (DDA) support 
+ o Remove first two patches that were submitted separately and are
+   already merged.
+ o Change hv_iommu_unmap_pages() to unmap in batches of HV_REP_COUNT_MAX,
+   otherwise if a physical range happens to be larger than that, there would 
+   be errors from the hypercall.
+ o Use large page (2M) flag for mmio mappings as internal testing found
+   that to speed things up greatly.
+ o rename hv_no_movbl_pgs to hv_memreg in last patch.
+
+Changes in V3:
+ o patch #8: fix compiler issues incase of !CONFIG_HYPERV. Also, do forward
+   declaration of struct pci_dev instead of including pci.h.
+ o patch #9: minor changes to comments. Pass hv_domain instead of 
+   iommu_domain to hv_iommu_detach_dev() since that's what it needs. Set
+   device private to null if attach fails. Clam down number of PFNs passed
+   to hv_iommu_map_pgs().
+
+Changes in V2:
+ o rebase to 5170a82e8921
+ o minor fixes for arm64 build
+ o drop patch 03: "x86/hyperv: add insufficient memory support in irqdomain.c" 
+     as it that path is no longer used
+ o drop patch 08: "PCI: hv: rename hv_compose_msi_msg .. " and do it separately
+   outside this series.
+ o minor updates to commit messages
+
+Changes in V1:
+ o patch 1: Don't tie hyperv-irq.c to CONFIG_HYPERV_IOMMU.
+ o patch 4: Redesigned to address security vulnerability found by copilot 
+            with passing tgid as a parameter.  Also, do tgid setting right 
+            after setting pt_id.
+ o patch 5: Remove unused type parameter from mshv_device_ops.device_create
+ o patch 7: mshv_partition_ioctl_create_device cleanup on copy_to_user.
+ o patch 10: Add export of hv_build_devid_type_pci here to get rid of 
+             patch 11.
+ o patch 12: Move functions to build device ids from patch 11 here for
+             the benefit of arm64. Rename file to: hyperv-iommu-root.c.
+ o patch 13: removed to be made part of interrupt part II of this support.
+ o patch 14: get rid of fast path to reduce review noise.
+ o New (last) patch to pin ram regions if device passthru to a VM.
 
 Thanks,
-Daniel
+-Mukesh
+
+Mukesh R (9):
+  mshv: Provide a way to get partition ID if running in a VMM process
+  mshv: Add declarations and definitions for VFIO-MSHV bridge device
+  mshv: Introduce basic mshv bridge device for VFIO to build upon
+  mshv: Add ioctl support for MSHV-VFIO bridge device
+  mshv: Import data structs around device passthru from hyperv headers
+  PCI: hv: Export hv_build_devid_type_pci() and change return type
+  x86/hyperv: Implement Hyper-V virtual IOMMU
+  mshv: Populate mmio mappings for PCI passthru
+  mshv: Disable movable regions upfront if device passthru
+
+ arch/x86/hyperv/irqdomain.c          |   9 +-
+ arch/x86/include/asm/mshyperv.h      |   6 +
+ arch/x86/kernel/pci-dma.c            |   2 +
+ drivers/hv/Makefile                  |   3 +-
+ drivers/hv/mshv_root.h               |  24 +-
+ drivers/hv/mshv_root_hv_call.c       | 104 +++-
+ drivers/hv/mshv_root_main.c          | 287 ++++++++++-
+ drivers/hv/mshv_vfio.c               | 211 ++++++++
+ drivers/iommu/Kconfig                |   1 +
+ drivers/iommu/hyperv/Kconfig         |  15 +
+ drivers/iommu/hyperv/Makefile        |   1 +
+ drivers/iommu/hyperv/hv-iommu-root.c | 706 +++++++++++++++++++++++++++
+ include/asm-generic/mshyperv.h       |   8 +
+ include/hyperv/hvgdk_mini.h          |   8 +
+ include/hyperv/hvhdk_mini.h          |  67 +++
+ include/linux/hyperv.h               |   6 +
+ include/uapi/linux/mshv.h            |  31 ++
+ 17 files changed, 1440 insertions(+), 49 deletions(-)
+ create mode 100644 drivers/hv/mshv_vfio.c
+ create mode 100644 drivers/iommu/hyperv/Kconfig
+ create mode 100644 drivers/iommu/hyperv/hv-iommu-root.c
+
+-- 
+2.51.2.vfs.0.1
 
