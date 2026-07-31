@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F1E7360ED2
-	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 05:54:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 932A7361956
+	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 05:54:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785477286; cv=none; b=W0Sr6iY7T0Oic6cMbZ6D76aO8YvyFwJq8IeCRZ4QTGvor1xNhpaGw1wVx1Hg1lpSwIXaBD7fO5pA+3a6jY+WDvm8S1an3N6PkKKroeA/zikJ7T/weAFcuo30vo24bh2iYsCixRB2esUKwiTlH1QuzfVK+5XczEqwsRUT1dxct8o=
+	t=1785477288; cv=none; b=N9ur0kjz07vWpn/2yvVfXOlpbbubH52uQ+Qrjk1YjOSsseQI4P/mCYeWRl8XtmQsyxExmJpNy7nlksfByuXwdAJoadhN7dJebXAcPweeTDtDCiWdlH3jpI8CkMa8J0o9rzREa7O4uwXF97Z3pcmGu6Bv/kdJv5YlQ9iwRAHCq3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785477286; c=relaxed/simple;
-	bh=Y/X/Ba6YIuDetywzLYJFUFjzzynh/RHM+bsBpMwRxzE=;
+	s=arc-20240116; t=1785477288; c=relaxed/simple;
+	bh=nGcEK5ov3lgzx/0z00CAYMXlEb958viLjmsm0F0bSks=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YHEre+pNu/6AoAbf8C2UyuAGnH/toH1Kh9z1Keg1YCxluXLrboZqWaLw0gjEx8zhF5e+BDQj1/9Cb+LCMZoTCJivXOeXsZFXKbEifoEGsWjfkeN3t6m0+OdGy+d/x1Te3TwgAi7GMdTimsiPYukBu02wGePOzZJxhmeHDe2X0bA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eF3V2wYJ; arc=none smtp.client-ip=198.175.65.12
+	 MIME-Version; b=MvZfM/vITPVP+K66CnQ+/km+MZWd0nKpolhErRwt3t086+MOu0tfluzoyxK3JnWxwoyCPgEAM8BJg2XDbWKjN6Nt/UfUmcLjCPa6ZAQKRNA5IxxJAb7aYTV0X1CqI+yUyO1z0pqVirPeyCzBeqshDDMhVDK8q+nnXhWXHgH8YVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FzdrTL6E; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eF3V2wYJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FzdrTL6E"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785477285; x=1817013285;
+  t=1785477287; x=1817013287;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Y/X/Ba6YIuDetywzLYJFUFjzzynh/RHM+bsBpMwRxzE=;
-  b=eF3V2wYJMlaNfYz+SymZve8+YOOTlmu25lC9gcWEMJTDxSZB0/z4/TvW
-   5B2aynLgduR781FGeSlnK4Df3q7VbedyU4FDwfWTJhsT2nhnNpU4woDWS
-   yVp7BmMFxW0skd+sI7z+c73tkpXkhcRk59TDljwHXejwy6A9s3K9P5QKC
-   dnm6GvM8kAX0poqkJNuOsvqw/HHKFHCqWIHR28QfJgoDUCYwtNlMFdQtW
-   cvqCg7UV1lKjVjq4peYdVBaBhHYNfC0CnEgaz8e9jLvqizIRYkkKnWEhc
-   ZWgTADeqzSjHj9v0TGZcyHpYOsS/ekwaEurZFXyX4DNvuV22OtidQioIg
-   A==;
-X-CSE-ConnectionGUID: DTJxZuhUQ5SudNlHeRYhXA==
-X-CSE-MsgGUID: 0QnogjAgQDapgYN32YL3UA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11860"; a="97615884"
+  bh=nGcEK5ov3lgzx/0z00CAYMXlEb958viLjmsm0F0bSks=;
+  b=FzdrTL6E+fPetRljnbuzCY1Q1thYzB8z46vk26fxdhsZJH/8AQCbtveR
+   4E57ITdMR3hIyN6vfz6zzBxJ/94K1nwre6JO6IvYeRIoIMpO+6f3rcjrY
+   YulH+NSzBcWBEmlBo6IUw3w7Te1a6qgkxHBgKG13e0xSvV13lQt5OqKkd
+   BC46XZsFHCr33o+4n1xBkCXbqCGQd4Pt5P2ctiAbossygjpBiajTfsWnm
+   1qFrFXp2RxaeINb2qk5xPmOaj7fvERuXj4MhEwna2fKtGJI9gjpxcK3ad
+   aCCfOwKSgUlVSDOlA9xipBfOab7BKf5wMVH6gfaHXHXKWIQaXk1uzw6IO
+   Q==;
+X-CSE-ConnectionGUID: YnaMBR9oS8ub2f6fqPZlfA==
+X-CSE-MsgGUID: xuwX4FsRQGmVwVxHv/eFQw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11860"; a="97615892"
 X-IronPort-AV: E=Sophos;i="6.25,195,1779174000"; 
-   d="scan'208";a="97615884"
+   d="scan'208";a="97615892"
 Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2026 22:54:45 -0700
-X-CSE-ConnectionGUID: Cjc+GTTeSrK4LjrmUwfBkg==
-X-CSE-MsgGUID: WnNwPufJTRyiVIBTMiFIWw==
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2026 22:54:47 -0700
+X-CSE-ConnectionGUID: Dx19Gj6pTZW/pGsEoSYhUg==
+X-CSE-MsgGUID: ZXRAU9DDS3+5f5MXlzTX5w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,195,1779174000"; 
-   d="scan'208";a="298695472"
+   d="scan'208";a="298695476"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa001.jf.intel.com with ESMTP; 30 Jul 2026 22:54:43 -0700
+  by orviesa001.jf.intel.com with ESMTP; 30 Jul 2026 22:54:45 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -53,9 +53,9 @@ Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Sashiko <sashiko-bot@kernel.org>
-Subject: [PATCH 2/5] iommu/vt-d: Clear Present bit before tearing down copied context entry
-Date: Fri, 31 Jul 2026 13:43:26 +0800
-Message-ID: <20260731054329.2948252-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 3/5] iommu/vt-d: Fix iopf_refcount leak on RID domain replacement
+Date: Fri, 31 Jul 2026 13:43:27 +0800
+Message-ID: <20260731054329.2948252-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
 References: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
@@ -67,58 +67,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-copied_context_tear_down() zeroes the 128-bit context entry with
-context_clear_entry() while the Present bit is still set, and only then
-issues the context-cache and IOTLB invalidations.  This leaves a window
-in which hardware can fetch a torn entry, with some fields already zeroed
-while Present is still set, leading to unpredictable behaviour or
-spurious faults.  While x86 provides strong write ordering, the compiler
-may reorder the writes to the two 64-bit halves of the entry, and the
-hardware fetch is not guaranteed to be atomic with respect to multiple
-CPU writes.
+intel_iommu_attach_device() enables IOPF for the new domain but never
+disables it for the old one.  device_block_translation(), called at the
+start of the function, tears down translation but does not touch any IOPF
+state; blocking_domain_attach_dev() has to call iopf_for_domain_remove()
+explicitly before invoking it for exactly this reason.
 
-There is no cacheline flush before the invalidation either, so on an
-IOMMU without coherent access to the context table the zeroed entry may
-not be visible to hardware at the point the invalidation is submitted.
+identity_domain_attach_dev() has the same problem.  Its comment claims
+that no PRI handling is needed because the device has been put in the
+blocking state, but the blocking state and the IOPF reference count are
+independent of each other.
 
-Apply the same ownership handshake described in the VT-d spec, Section
-6.5.3.3 ("Guidance to Software for Invalidations"): clear only the Present
-bit, flush it out to the IOMMU, perform the invalidations, and only then
-zero the remainder of the entry.
+As a result, replacing a domain that has an iopf_handler with another
+domain at RID level leaks a reference in info->iopf_refcount.  The count
+never drops back to zero, so iopf_queue_remove_device() is never called
+and iommu_disable_pci_pri() triggers its WARN_ON(info->iopf_refcount)
+when the device is released.
 
-Fixes: c7191984e5aad ("iommu/vt-d: Factor out helpers from domain_context_mapping_one()")
+The PASID paths already handle this correctly by way of
+iopf_for_domain_replace(); convert the two RID paths to do the same.
+Using the replace helper rather than a bare remove keeps the enable
+before the disable, so the reference count does not transiently reach
+zero and evict the device from the IOPF queue.
+
+Fixes: 17fce9d2336d ("iommu/vt-d: Put iopf enablement in domain attach path")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://sashiko.dev/#/patchset/20260602233426.357499-1-baolu.lu%40linux.intel.com
 Assisted-by: Claude:claude-opus-5
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 058967b669d9..528b59e5f4ce 100644
+index 528b59e5f4ce..6baf1c075dc9 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1115,7 +1115,8 @@ static void copied_context_tear_down(struct intel_iommu *iommu,
- 	assert_spin_locked(&iommu->lock);
+@@ -3158,13 +3158,13 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	if (ret)
+ 		return ret;
  
- 	did_old = context_domain_id(context);
--	context_clear_entry(context);
-+	context_clear_present(context);
-+	__iommu_flush_cache(iommu, context, sizeof(*context));
+-	ret = iopf_for_domain_set(domain, dev);
++	ret = iopf_for_domain_replace(domain, old, dev);
+ 	if (ret)
+ 		return ret;
  
- 	if (did_old < iommu->max_domain_id) {
- 		iommu->flush.flush_context(iommu, did_old,
-@@ -1126,6 +1127,9 @@ static void copied_context_tear_down(struct intel_iommu *iommu,
- 					 DMA_TLB_DSI_FLUSH);
- 	}
+ 	ret = dmar_domain_attach_device(to_dmar_domain(domain), dev);
+ 	if (ret)
+-		iopf_for_domain_remove(domain, dev);
++		iopf_for_domain_replace(old, domain, dev);
  
-+	context_clear_entry(context);
-+	__iommu_flush_cache(iommu, context, sizeof(*context));
-+
- 	clear_context_copied(iommu, bus, devfn);
+ 	return ret;
  }
+@@ -3870,10 +3870,13 @@ static int identity_domain_attach_dev(struct iommu_domain *domain,
+ 		return 0;
  
+ 	/*
+-	 * No PRI support with the global identity domain. No need to enable or
+-	 * disable PRI in this path as the iommu has been put in the blocking
+-	 * state.
++	 * The identity domain has no iopf_handler, so no IOPF reference is
++	 * taken for it.  The reference held by the old domain must still be
++	 * released here; putting the device in the blocking state above does
++	 * not affect the IOPF reference count.
+ 	 */
++	iopf_for_domain_remove(old, dev);
++
+ 	if (sm_supported(iommu))
+ 		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
+ 	else
 -- 
 2.43.0
 
