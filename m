@@ -1,571 +1,218 @@
-Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazon11022097.outbound.protection.outlook.com [52.101.126.97])
+Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazolkn19012059.outbound.protection.outlook.com [52.103.43.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EB2E222580;
-	Fri, 31 Jul 2026 01:52:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.126.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB742DB780
+	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 04:25:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.43.59
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785462727; cv=fail; b=QqK65VIJJNGm6tlk2oXvRBiVd1QBO9ISOrko3xYYeI37c5uJTeOgNLbtMwmebuJjYh9NkeWxxITwNj4YDK3YQLLX/HuQZXUBG0iFPUN3w+5W8gTnMvPTXf/ZANoI0x9Gam5/Z7097gbx4Hvk3SI7NUFYzfA+9ViBy66UsI8Ol1k=
+	t=1785471960; cv=fail; b=YhgIjX2ElwQglIshIDPhCB2kX+4nTagORVxU2BXq6mDdnXlwQxkH038EXnw4G85RF0v6okjfdoFjiSI9yGLQ75g/uvcuO45BFblF2ZGhPupDlnUCY7zJxPfWbNyCJkcWyr6h6fGN7FA4UMltTuiQMJXOjScUlmdTcbD0TGzHnts=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785462727; c=relaxed/simple;
-	bh=voO1PxT7RcO36PMo4QwZsU+4YSk5RTJC7Oj2zj8UZmU=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=ma6esnBcjEkjcnpoWzusEkREaA3Wbcf/dUdwtjHBDQWKfbiJryNh/oi2MT7GkuN0PXuAb6JQLfXu7l5BilSyoBvTUejV4/htuhHQJVFxBEs8fbqiSG66IKr3Btl2H9QHpd+hivH9YEL4a1Kvl1saBGL6gziRm0Mq6FDqDUiz3Ng=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=jaguarmicro.com; spf=pass smtp.mailfrom=jaguarmicro.com; dkim=pass (2048-bit key) header.d=jaguarmicro.com header.i=@jaguarmicro.com header.b=D1GRgwH3; arc=fail smtp.client-ip=52.101.126.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=jaguarmicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jaguarmicro.com
+	s=arc-20240116; t=1785471960; c=relaxed/simple;
+	bh=l2ecWjcPlY6lTEQe3iURbG7zH+CjaH86aZ9B4fcYPYQ=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=gai1thG9uUeVvbYUP82WV1DvVD3SfaIS5/IJT0911oik7xMjsTvkbpW/+ypUtOLF7+iiLBP2xPGB+iWRdffnpmtYWDjA56QJ0s1eCpyKLcbd9xtGOE9TSU0pnqHRWiTKzkUAaH0eHXNTHjpBtFquwwVsw8KbLxGZysfbxl3Oomg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=LDOX1D5a; arc=fail smtp.client-ip=52.103.43.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jaguarmicro.com header.i=@jaguarmicro.com header.b="D1GRgwH3"
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="LDOX1D5a"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=L5uNkyHFmdq+4sclOXvFKV4ruhyv8Ubdub7QRCRjxSexg3K/uoWqoes4qZ5Z8XYebJbl0aaA1FwOF2zImooEXMNaMLDHq5NWIHj2whW96FblKzsZV5d9YvIqnDk9iOVbe6rhxEy36HHfaFlKqHanik3MpLl3/CAWu5V/0SruR7FRK67qV1NUTstVlp9YBo62QeJHDOzc+UEKpF+v8B/CX2lkh3/QzCPfxeqHyFB91eyoLT6XOhhTU3GGFpjnIMRnmp06MDMCSYlMrzyGi7qdB1ytlCMX5quRMFVqMYX5BJlX1RkQ7l5ox1yLzjj80Q7reN3d706EHCsPkBt01HSiSw==
+ b=WR/4b5GmUFZS8l4+ftAbxeZKqVuiWUKlzXvZ4RDPmH188Uihi5Jazon12dIlPkEmKhuTrfN5xm+M6AeJksorIMrA4FjPUaYt+aAc4L64Y6H9HytHALKm+u8rnKiYBq5DXAAH19JZO0dA3i3/KBYOxjrSmgjGfKVCJrPXQtsAOnvVkKZns5yMIjwx4ZuEsbMuCgS4gpr6ZxlinNn55c/hWv78GjlnyfYAe3X50SgsK+PPPIb+DSZhfyJl3DLUOr2Btn05k84wCbY3UhF+fL1Z+NqW1Xh/VrHFyj4O8jrgUaxAGCTQnW7Ro0U6mHlOw+jAh5J1AhKiN8RctyY+6nYuWg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pQCDlRbCQANbswfhIXs/b1GESoiw2Fp+ZI8gXYxOjMw=;
- b=xem+nd8SZmugRo14laNBmmGBy2uoo5vxh6C1JVtG23P7MUNtT9drq1WqXeRQUbeQoTBeKz/oVE2eiJJD32+4wy1rhZVeELlWU5G5xmeUiXdXsLgPP2xGhaTptyL3qAD4cDIcdxP1P39udtcK01+Z09E1p3jxCrOYQl7/oH2qnoToAh3xxDgre4wVFxKu4dGE/IkPYzdFAWJ+kj59yMHz4s2qjHuWLvBMlVISbbYLv5hqsARkWNgHufxs234/ILd85TEBLM82aqLsWvm++OxEumODWYY8SOJ2updGHZZU4NzROzB4c9f9kDp85gv1jPt6PjTzedlI3PJpUahHzAniIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=jaguarmicro.com; dmarc=pass action=none
- header.from=jaguarmicro.com; dkim=pass header.d=jaguarmicro.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jaguarmicro.com;
- s=selector2;
+ bh=gYgVr3z06QfdeVM+cZKFwOMEqQm623cGmpcHjIrT65c=;
+ b=OI09P+DyUflmKdnb8dvKUT/GR4eJkYM//Of+uIA/7vWyNTSavMFSPVXrCysm6J9SDBnf0EV5IZHBaJde/+3kCX+K+zeg68f9wnaeTegadA5bO563ToskBW2TPWI0NSh/yAjv5U89rYgMFFSJ7xU8LtVeUlLkCC/jux9cijMmDPwDwAvQzSLooBgcGXS8BNaWFljcuGkYW5DWfjFS8a2Uy3tEV+PZ/3UqMcqGyf1Q+HbaAHm/eZO2yLnkOah1H5QRwmS40sWXzsZ8nvP8d/mcxoum2F3tWhTxn2Us6qtYXQ4A9yigU8zfWYHDz7AD8el0DUzFygTWkgKBTCDgUxcidA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pQCDlRbCQANbswfhIXs/b1GESoiw2Fp+ZI8gXYxOjMw=;
- b=D1GRgwH3ktWF26jyjQQOddE4e215P6acZP+YOnz7hOJoBbC51oTKbt0iUIDt7rtnaS2YhAj2aDBza7xk6He+HGroQZWz1Hg2B9sSF7tlWanouQj7wG52rDCSbH/tIvoi8Qi4asNdmwy3wulQ2z4xvTcpUIBWSFVKMo5zFp5ZP4ioFEt+YQkU51NrmGNmeF1yolHcvHWWfRIHov+Uxmpq3fJ0aqUhcLMl7BnW3kgNjvo7fAXJJfTwEOjYWVm3ttrDQWJvMCKZI7k9Z9M4iY7FFTNMbg1vPWoWWoGeRw5PWTFScYUEtq6vL6TpBrK9Q1L8cUUkYqGgqrUJA9zkx01ZaA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=jaguarmicro.com;
-Received: from PSAPR06MB3942.apcprd06.prod.outlook.com (2603:1096:301:2b::5)
- by JH0PR06MB6656.apcprd06.prod.outlook.com (2603:1096:990:2f::7) with
+ bh=gYgVr3z06QfdeVM+cZKFwOMEqQm623cGmpcHjIrT65c=;
+ b=LDOX1D5aD8JXRg9ecjLO0sCscjXWQiHqubjZZscnsrGuBM0LNL2FMu+eJVm3dlw6ZSpEhCf3fSKiWqqEV5CmeB7NSdUtcbdoyRJtitNN3IAYP7oYzgYlNMnqz1XNV5D/KnsirCpUjaCWZkXKdYfeCP15KUPmqcflZcUl4njt8FOBIWwvPF6WKuwVFeq8G6dTe6PrizSjym0TQlFfzXrdTu362uQx9U0YOsmPtTL1vRNWdPdqCaMaX6lUGcLArBzGTrdOLHsn16TWvl4avC964PXKqNySolEdG8FNCEJmvUWw/y6+r7LCSIpR4XZ4+USVEvBY+DfQVJECp2b4O9IiYg==
+Received: from SE3PR04MB8922.apcprd04.prod.outlook.com (2603:1096:101:2e9::7)
+ by KU4PR04MB9296.apcprd04.prod.outlook.com (2603:1096:d10:7d::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.15; Fri, 31 Jul
- 2026 01:51:55 +0000
-Received: from PSAPR06MB3942.apcprd06.prod.outlook.com
- ([fe80::3dd6:8bad:93db:74a3]) by PSAPR06MB3942.apcprd06.prod.outlook.com
- ([fe80::3dd6:8bad:93db:74a3%4]) with mapi id 15.21.0270.012; Fri, 31 Jul 2026
- 01:51:55 +0000
-From: LiMing Wu <liming.wu@jaguarmicro.com>
-To: Jean-Philippe Brucker <jpb@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	virtualization@lists.linux.dev,
-	iommu@lists.linux.dev,
-	angus.chen@jaguarmicro.com,
-	Liming Wu <liming.wu@jaguarmicro.com>
-Subject: [PATCH] iommu/virtio: Add debugfs state dump
-Date: Fri, 31 Jul 2026 09:48:38 +0800
-Message-ID: <20260731014838.31187-1-liming.wu@jaguarmicro.com>
-X-Mailer: git-send-email 2.49.0.windows.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI3PR01CA0012.apcprd01.prod.exchangelabs.com
- (2603:1096:4:296::11) To PSAPR06MB3942.apcprd06.prod.outlook.com
- (2603:1096:301:2b::5)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.10; Fri, 31 Jul
+ 2026 04:25:52 +0000
+Received: from SE3PR04MB8922.apcprd04.prod.outlook.com
+ ([fe80::3450:f139:5238:8f58]) by SE3PR04MB8922.apcprd04.prod.outlook.com
+ ([fe80::3450:f139:5238:8f58%5]) with mapi id 15.21.0292.009; Fri, 31 Jul 2026
+ 04:25:52 +0000
+Message-ID:
+ <SE3PR04MB892283365E2966E3FBD23775F3C82@SE3PR04MB8922.apcprd04.prod.outlook.com>
+Date: Fri, 31 Jul 2026 12:25:43 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/dma: Restore locking around msi_page_list
+To: Andrew Jones <andrew.jones@oss.qualcomm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+ nicolinc@nvidia.com, jgg@ziepe.ca
+References: <20260730132323.1428473-1-andrew.jones@oss.qualcomm.com>
+Content-Language: en-US
+From: "Nutty.Liu" <nutty.liu@hotmail.com>
+In-Reply-To: <20260730132323.1428473-1-andrew.jones@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR01CA0183.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::16) To SE3PR04MB8922.apcprd04.prod.outlook.com
+ (2603:1096:101:2e9::7)
+X-Microsoft-Original-Message-ID:
+ <c40c5fdd-fc8b-4593-be26-9a7c73b7d1c3@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PSAPR06MB3942:EE_|JH0PR06MB6656:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4d52bc19-fdb6-436c-bd04-08deeea64c74
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
+X-MS-TrafficTypeDiagnostic: SE3PR04MB8922:EE_|KU4PR04MB9296:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9c40848b-7b8f-4daa-38f9-08deeebbce0f
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|52116014|376014|23010399003|10067099003|6133799003|56012099006|18002099003|38350700014;
+	BCL:0;ARA:14566002|23021999003|19101099003|55001999006|15080799012|5072599009|6090799003|25010399006|4140399003|8060799015|19110799012|22091999003|24121999003|3412199025|4302099013|440099028|10035399007|52005399003|40105399003|26121999007|2607281247196008|1602099012|1141799003;
 X-Microsoft-Antispam-Message-Info:
-	tGGoxzgtNiKtnVo6yuMtg5CLU0VM14JbOicTKISJQmICMPAluIdgwRp1iKkLZegI6n1kXatZ2WoA6M0/Q0EnQ4NxDGzGVNMbZbz8GRgCdaUtxhMXEpLspeTE/qfI8l2+/QpZ8orGK+R0QZEkq0IyPqm4V+Gzcwuuhkj6KK5Q9J9xVl4LM3GF0U2fN9z3IOC3wIgzA1JTwxNs1O3ugDC3+Q1OTjue6QiJ/d5LToZBYxPRnEGBEBltiXd9WZt+0KDCE12qvwERHncbiVGJ/GaKLqyU7FjZ3S/Dq5Wo7ht3Nl2cVGI5BD7rwKYxH5nuIRFBQSuyi/uO6JHTXmRkSJDITPAA+obscM0KZ2+z2FMLKZo7tvOVQt6IW+v+3vAPxoL7wO3MvlP+7hzj9OFXQ94NSsSLMI59p6mRwlE42EsRa7H8T8T8VnVYLWY78JFs41W7l6ZdTdgFM+R+sIvNuoz1kxawqHe3o5SkHpebER1gpN+QpXWYCtUab9fAPGBhn85qV7ME/JGh+USvTw+pHiTNhGjq7JT0exuBwmkN3szcWm+5Buft6pOBJANmDXLRQrn+c87aBs0xgQyVLmD4KODMpMCGbMCZuBW7V3OARmSHGVZCZdWT8uG26PUuC19RKyBXq4iqqDvWphPO3qy6Y/LqaVHLdKUg4hPUndCcjCRq4nbWwP9Z7s4R5lVAECddKVj2EcCfLMfjq2Xrr2K63aOGkC2xMtUvNJAT8RZvp2NoGNY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PSAPR06MB3942.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(52116014)(376014)(23010399003)(10067099003)(6133799003)(56012099006)(18002099003)(38350700014);DIR:OUT;SFP:1102;
+	=?utf-8?B?Zm9tc3FaQVRNbVZBeC94M3JxRWZUZUN3ckxWcEtwcDd4T1J3V0IwNTdHTXUr?=
+ =?utf-8?B?R3oyaDVOT1lCYm13MlVPRFV1T1NrSHJ6cjZpL0FTdHR2OTJEQkpQNHpKemE2?=
+ =?utf-8?B?K2JHcDdOV3JVdHlmSFR5TmZQMUREcHdhc1RyTFIxaWtYRUppL0NNSkVTVnZX?=
+ =?utf-8?B?eWIrV0lkYUlkYXpBeXZOL1BXbTYzY05JdXQ1RXpYckRObW41TDJiYWhvRUFz?=
+ =?utf-8?B?Z1NTV3BvUXJLcm04b09uZ0hTRk81Uzg0Sk1SQ1RFTCtzREx4Z1I1SWNGcTRq?=
+ =?utf-8?B?cllZZ3FVb0tHMWpmRDN1UCs0ZE5RSzl3RWlEd1JzRlkrR0QwUG1UT2VFQ21x?=
+ =?utf-8?B?S2FOYXFCQk43NzVYNXJReXJ3bDRDZEczbFA1bFZ1M1FiZmhXZnU3Slh1NHhh?=
+ =?utf-8?B?U2lTQmRXbTl0S3llVVpSbjdGQmJtK1RldkhvMGJyQ2pJbHVpUFRZYmo0WnBy?=
+ =?utf-8?B?ZWlZMENtK3RRcVozK3Z0SElhTFI0YkRQZER6N1lWcTFzY3dROXpFUUhnTmlB?=
+ =?utf-8?B?SWhhcHRUcGhmYSs2NjludnFyUnhjQ0JZNWF0dWVJbllkMm5CVEJCdlk0RmlC?=
+ =?utf-8?B?RUJFcFFSRGNLNVByd1JHeFcxdVBPL3FXakFlYzMvSGRvaHQrSXYrUGNIQ1pW?=
+ =?utf-8?B?Q0NEczIwT1ZTTlRBRzFUYy9IRzBqNkNPUXIrb0wwSDdaSUxFbVhzSkxYTkdN?=
+ =?utf-8?B?WjlaQWVDVGpQNEZJRkhHU0t1aEZxdXdRTUUxc25pL0t1Z01SZlYwZGlJVnFw?=
+ =?utf-8?B?ampoZXNMdlRmSG5kQ2Q3eWVBclI3c2dwbTZKZVpzS29ZTFBmc3BNUmFDQ0lJ?=
+ =?utf-8?B?cXd6VEcvT3JXdWtCbjNIbnJGZmdQOHVHQ21Sd3BpSXAyYVI5eUlydE9tWXpx?=
+ =?utf-8?B?bmthVEgxcFRlVFNScGxIc3RoSm1acTloVHZKNlZMTS9mQnpNSDdSNnRRdDRD?=
+ =?utf-8?B?THZKNUNSVFl4M1JjaWJqVGhtVU5COFJjdnZDRXZ3cmdLMmEyQ3FFbi9qV2RW?=
+ =?utf-8?B?RXduT1Buam5lZUVlWGdDUWRmWXlwWld4Mjd2cGFyMjJJSzFVWVN4d21MTVhB?=
+ =?utf-8?B?SWR6RTVHWVJTbERZTjJGZjdBOVdCZHVYZTRSbXJMdExDdW05NStoSHpsTitz?=
+ =?utf-8?B?RlFjSExNa0tLRmlEaW1pRm1mOVlXZ1dZZUErdzQybjQyN1ZldXlDMFoxbnl3?=
+ =?utf-8?B?NkhyK2FiRlcrODZUVUREZXozdSttQWkrUThqQWRHZHRITG90NnhMRVJyWTdZ?=
+ =?utf-8?B?cDRtcmJ0U2lyWUJEUkZBdTF3OGxncjdpdkUvdWZiQXc1S0p5MVJsOVo0aERM?=
+ =?utf-8?B?NEZMVWZPZFRZUXRwOURobzBVc3Z4WGQ3MjhTWlhJVUgwUk5iZGlYU0RBcm44?=
+ =?utf-8?B?TDBEb3FFckMrQ2swMThRZXZJeXNIMGxIUStCeDNQZjZ3RnJldFgvcnA4bVN0?=
+ =?utf-8?B?UnBuTWZWSmlNTmZwUHh2aXdmWXdLWGs2bzE0eHNxa0R2V1N1MllSd2Y2aUNH?=
+ =?utf-8?B?RzEvakFqZWxZUEFVeGNVaktDTEFFcWJ5dE5udU9BMFlpRXRjRHlpTFFyU0pn?=
+ =?utf-8?B?Zk9DZz09?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?8IMsCl6mX3Hre2MaxfaLYM712T02vJkJH+8nn9Q934YwYP8gP5VPcUr/djKk?=
- =?us-ascii?Q?W7wvmT/XyHvI9XNRA80aHPFYZ8pgAml/whElRpSyEH97Oo9LUKlZ9/ALpia7?=
- =?us-ascii?Q?sai4zoWeyuDbnwEO65ekAcEfCkH8MWDSAGSTyJeDqAgnZjPHk8iJNBohlvRw?=
- =?us-ascii?Q?9sKFoLI4QlzbpmYw0TtgiSJc1Vw2VNh1y+8bVyJSvS5GgtKweE/ewvAUd6E/?=
- =?us-ascii?Q?MzrvW1B/OWakqlenh0K2VItlG/n4g4NAen7TS7HwB4pPOQmyK1L0/QxGpIAV?=
- =?us-ascii?Q?6/uA0n6KedRjoCu6O50qD/SzF6ajIJvbnA6jFup5wiHyTz6M2xP6FRAIPHXt?=
- =?us-ascii?Q?M39tp7Ii5rBUZXe2MUjWCJkxk46kGCaQKDYxfOT8TN/AuUZqzQ8T4bMDOp7V?=
- =?us-ascii?Q?36m22bJevVFRZanpZcMN/pq933fHMiTM7ObeR1XrZ4LKSQSkXe+3pjcLLGD5?=
- =?us-ascii?Q?FvJlcTIUS2TVwLu8jS1EgOCZubVpH7uh4OYaSmlIiUmWw0ijFqYBRh+ktr78?=
- =?us-ascii?Q?m/xqX7Z3M83cc2DbBt6M4u0ECDTFv7v8KAjSDa1fvnXGFNWOX61XfgyyS6kX?=
- =?us-ascii?Q?+521u+5hxvydnY2iS1HbaKowdQsJaQSbrWxdkkPVwbfGqr5f+Nw3kG6q/Ngi?=
- =?us-ascii?Q?FERMODX85jT1+jacKnnehLlgY+N8zkWPstb6DgVqTdDL2KK/RAiDEhlVSJaJ?=
- =?us-ascii?Q?1IFV6KN1K7y+ZpQw+mr1xDrlHiZN+tx/tBy9raJBdLHo8N4tv9a99cSs9hG8?=
- =?us-ascii?Q?gR0r4Oyy/Ihi3ch8A39luOOKxDYphYrGkVJgn1dT7YE9PEASkfdA+LBgWtFg?=
- =?us-ascii?Q?aiYO2wo9BMKWmF7+2li7o/Ip/zCEA+SA2RvhnKTy1FBiaiLxBdly/+8EFZq6?=
- =?us-ascii?Q?XjYopBlQKa71pBzYcqB22ZZGBBBwKplHSIrXmR9HxmJadWoNOsKZTW6cC1LK?=
- =?us-ascii?Q?kX6gID5SYjjrE7MiUp5PxWQZM3N8BmFuYi0oEl8kqeansRWFjEnzB0tjskeX?=
- =?us-ascii?Q?3YvukqQD6GRzZZjSOab8q6YVeEWugjWQ1rmTwyA9b2PswB9kFppp/CQuK73u?=
- =?us-ascii?Q?bCKmykdt09Qpi4ZxKbJeJ3UG9OqMg4aQq+JZMBCcC+omwdsMKujqz+bwtJIJ?=
- =?us-ascii?Q?yQJc0izDmoLNDJTOSVVupaWFXUX1dk0cf4EMRjC2QV0ttnGUGSCblbqMi1F0?=
- =?us-ascii?Q?ce0FCOc2HSTfNS7lntNzgT6WOfaX4YNXxXfRSVhShEw7xh36e+XUSqGO+dCy?=
- =?us-ascii?Q?6iSetrkWnb6rE41T+0uQNyiutfH5e6pauN5XGkne31B95/1E3NmIfjD3kvaP?=
- =?us-ascii?Q?mQ/YV9xWv7vpDN8Miub80Xw3tuStX8TMeOVKdOQKu2wZCGcUlPx9ZRBQ7IC6?=
- =?us-ascii?Q?/l9ZCSjzEFLbP79LPMCEWtC1rMbx7owX7Jr0+2IiQtW+jgiFtZADK2ukPgy5?=
- =?us-ascii?Q?p4MmKPIp241i9l7rB0kX/54aMH+diEhzJjACXPXPPMukLDiecQSEXt9MirsN?=
- =?us-ascii?Q?wyXwFO0Kfem36KrKHtYZNrpjo0zjHRfKp9j0rREfYxjKn1CMJRlGSYJ5fzQ5?=
- =?us-ascii?Q?D5RzVvzUWFkU0faK43tcdTHPWrhx4ZjaCjBGLkMmemHgkODC4a99gcPoZaDG?=
- =?us-ascii?Q?PMvYjw9yUdTgRJhv9etbDjn79sYkvRA3n24PvcE21zUHrDhMOJsD3WVI7a5A?=
- =?us-ascii?Q?M9c1xjogJriKl8FCxAWNLsMiSTVDDEDVKEnzYHqjI77qIV1kMfhN2BLOqjZ5?=
- =?us-ascii?Q?7peIusYO4Q=3D=3D?=
-X-OriginatorOrg: jaguarmicro.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d52bc19-fdb6-436c-bd04-08deeea64c74
-X-MS-Exchange-CrossTenant-AuthSource: PSAPR06MB3942.apcprd06.prod.outlook.com
+	=?utf-8?B?NVB2NjkxWkZ3RXNqcERMTnZTdmoxajEvdlVEUGpKc2IzM3V0VU4xUFozQThO?=
+ =?utf-8?B?M3JRM0FVQzhQdlJZbGtQRjhOLzV6WnB0bHc5QXhId2VvRkZGcFVkNitDY2Jj?=
+ =?utf-8?B?b1hVU1VzZFB5cjZTb1RnR0hUR2tGNTN0SExHS0RXNHBvZ1V5N0M2SHc0Qzh0?=
+ =?utf-8?B?MlVjSUNkaXJTRUQzSXNwQXlJaVllemJEYXVLamdiRmQzWmxrSTE0WWFKNm0w?=
+ =?utf-8?B?ZlFHeHRiZHg4S1FwYkdZOFlKbVJsL25IdHNrQXJGc0dzWUxZVkhtbUxoWEhV?=
+ =?utf-8?B?TERPVldyV1VBb3ZvUDM4WlpBYXpReEoyZ2tvdEZrOCtocUR1NkdrMHBlYlNk?=
+ =?utf-8?B?ZlFXaTZVRjFqaHF3cXo0cHhCUS9DUy9EYjlQdWk0emdOczZhS3ZhL2dMTEZM?=
+ =?utf-8?B?Yzdtek0xYlh1VUsxWDJrYVJDUUhudnBYQnFIMUFSWllldkpNMjJmUS9zYmVP?=
+ =?utf-8?B?OFVMRm9MVWZ2QlM2K2FJS25yRUVkMlBneEZRY0hYaU45M2RHNDlscCtRWUVM?=
+ =?utf-8?B?c1JsWElYczM4R2xIR1NaRDNnL2hCNlNoSmdYUkVBd1hJem05ZEVuYno3Vy8v?=
+ =?utf-8?B?NU5OVjB1a0lqZk54TGFkaEx0QlEzRG5XVDhhYlFWYStSVjVyTTJCNU9DendX?=
+ =?utf-8?B?SGJKRGNNVXBLQ3pvdi9JWkhoOEhUT292WDE5RkRvUDdpdlc1TGZMNFdiQlVG?=
+ =?utf-8?B?WWYreUZvNCtiWGRhbDZ0UUtWZEVkZzRvbVQyUzhxTGtrRHk3WVlLaVo5WWdr?=
+ =?utf-8?B?UU1KbmVPN2tVLzhqaGJFaHlJUllHNkVQK1FFMGhQRmFwUXZ4WTNGNnlHK0pP?=
+ =?utf-8?B?VGZ4L2xEK0NibmtlRkxSbGJuZk5YV2dwWStMNnlLOEFrdnVwN3RmNnlOamVx?=
+ =?utf-8?B?aGdxM0dpQTVwZm5YRUJ3Qkt4SUVlNldKeUN3Yk43QVdRZ3lDYWNQdkVPQ2dE?=
+ =?utf-8?B?WVAxNkpxc1JZcjdxNmxIZmtybzVVOE5uWCtqMHRzamJIRHpTQmR4WDN4Q2Rs?=
+ =?utf-8?B?bjQrd2ZDamtaRC9Ba1dLU292cUk5RG9oR2hDQ0c4RzhSckdvWHlOcHNDalNE?=
+ =?utf-8?B?eURIVXVsR0ZUMU1adXBvbXcyOWVFckFhS1JDaFlBb1o4RzJQRUV1QTBQSkht?=
+ =?utf-8?B?cWlaS2FVdFExQUw0TUp0UVFmdzZJMzVDdW9JaUs0d0hXM3VxTGdCdG1VK0wx?=
+ =?utf-8?B?VDB6L3ptSFBZdktINmhZK1grYUZFUVg2c0IyMmJqS25wTjY3Y3pyck5CTzU2?=
+ =?utf-8?B?YWwzbTBnQlJBMC9sNlRwU3RWQ1dxcWh5QlJWc2VLQ054bUNzbTFRaTB2MVZ1?=
+ =?utf-8?B?c3hXVXpsQzdjMGtiNU5hNTZZb28xME1YT1ZSMXRnanJuU21CS3RHQ1lWV2pv?=
+ =?utf-8?B?NGw3eHdCY1ZMQWw0S3ZBekZJTnpQdkw3dFhuaDlBT3JicjdLc3FwVXl1am9Y?=
+ =?utf-8?B?amE1V2JwWDZqd0xWNEJDVDk2SGNKNXQ2aGppY0VOakk0ZGhmUGtyZWhUbXlE?=
+ =?utf-8?B?Sit6K2dTZE4xcHkyajI1Nmo0bm5XcXExdDhsWFRMaFp6ekZOZVlKdGlLR2Nv?=
+ =?utf-8?B?dE1ha3dNL05FWHM2dk5TQkM4OTNKK3A5MU1HUTVJSVVSR1ZGamtRTmc1eXUz?=
+ =?utf-8?B?b2dOWG04Nks4cTJWV21oNCtzSEJmQnZ5YkdnWWZ5M2FBcnEybmQ0WUZFUnBL?=
+ =?utf-8?B?RUhyeUROMmJZN2dPR000cGh1djVjemVnVWNwUzJQT2xIMnhpUXRTU1BqNjAr?=
+ =?utf-8?B?Rm9yRWtJSnRDN1RMZ2hUWER3bThDdEd3UlhMV29xdXNuNzNtODE4cTlNWFpu?=
+ =?utf-8?B?ZUlVTGVaRG1CWlE0b2I3QkJ6UjdKZkUvc0JmMFd4RW1rWnVLaStxSitKQXhV?=
+ =?utf-8?Q?OlJBISa4U9K90?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-c3e7a.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c40848b-7b8f-4daa-38f9-08deeebbce0f
+X-MS-Exchange-CrossTenant-AuthSource: SE3PR04MB8922.apcprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 01:51:55.1526
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 04:25:52.3659
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1e45a5c2-d3e1-46b3-a0e6-c5ebf6d8ba7b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cVuZ4JYC5ljpXfK8RR57klLAtGgMrW8gl1ObDGxTktmoHH9qTcDGfT29GAbLsmW5ZLpBbX//EvYV9u5Wa0xJfvmoS5e9Yx+TGnCV2NPeGM8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: JH0PR06MB6656
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KU4PR04MB9296
 
-From: Liming Wu <liming.wu@jaguarmicro.com>
 
-Expose basic virtio-iommu runtime state through debugfs so that the
-relationship between endpoints, IOMMU groups, domains and active mappings
-can be inspected from a running guest.
+On 7/30/2026 9:23 PM, Andrew Jones wrote:
+> Unlike a group's default domain, which is always freshly allocated
+> and privately owned (iommu_group_alloc_default_domain()), VFIO type1's
+> legacy container merges any newly attached group into an existing
+> domain whenever their iommu_ops and cache-coherency enforcement match.
+>
+> iommu_dma_get_msi_page() only asserts the caller's own group mutex is
+> held (iommu_group_mutex_assert()). On an IOMMU that publishes
+> IOMMU_RESV_SW_MSI, e.g. ARM SMMU, a VM with two such devices assigned
+> through the legacy container can have their guest drivers probe and
+> allocate MSIs in parallel; each host-side VFIO_DEVICE_SET_IRQS lands
+> on a different device fd and group mutex, but both devices' domains
+> are the same merged domain, so both can enter
+> iommu_dma_get_msi_page() concurrently and corrupt msi_page_list.
+>
+> commit 288683c92b1a ("iommu: Make iommu_dma_prepare_msi() into a
+> generic operation") dropped the prior msi_prepare_lock on the
+> reasoning that "each iommu_domain is unique to a group," which holds
+> for default domains but not this VFIO type1 case. Restore the static
+> lock, since it's only guarding a corner case and will likely never
+> be contended.
+>
+> iommufd avoids the equivalent problem by having its own callers
+> (iommufd_sw_map_msi()) take a ctx-wide sw_msi_lock before ever
+> reaching the shared list. VFIO type1 can't mirror that since it
+> dispatches to iommu_dma_sw_msi() which is outside VFIO's jurisdiction.
+>
+> Fixes: 288683c92b1a ("iommu: Make iommu_dma_prepare_msi() into a generic operation")
+> Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
+Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
 
-Create per-device files under /sys/kernel/debug/iommu/virtio/:
-
-  status    - negotiated virtio-iommu features and geometry
-  endpoints - endpoint, group and attached domain information
-  domains   - domain type, endpoint count and mapping count
-  mappings  - active IOVA mappings tracked by the driver
-
-Assisted-by: Codex:gpt-5.5
-Signed-off-by: Liming Wu <liming.wu@jaguarmicro.com>
----
- drivers/iommu/virtio-iommu.c | 317 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 316 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 587fc13197f1..9f2355bcf144 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -8,13 +8,16 @@
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
- #include <linux/delay.h>
-+#include <linux/debugfs.h>
- #include <linux/dma-map-ops.h>
- #include <linux/freezer.h>
- #include <linux/interval_tree.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/of.h>
- #include <linux/pci.h>
-+#include <linux/seq_file.h>
- #include <linux/virtio.h>
- #include <linux/virtio_config.h>
- #include <linux/virtio_ids.h>
-@@ -52,6 +55,14 @@ struct viommu_dev {
- 	/* Supported MAP flags */
- 	u32				map_flags;
- 	u32				probe_size;
-+
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+	struct dentry			*debugfs_dir;
-+	/* Protects debugfs_domains and debugfs_endpoints. */
-+	struct mutex			debugfs_lock;
-+	struct list_head		debugfs_domains;
-+	struct list_head		debugfs_endpoints;
-+#endif
- };
- 
- struct viommu_mapping {
-@@ -70,6 +81,10 @@ struct viommu_domain {
- 	struct rb_root_cached		mappings;
- 
- 	unsigned long			nr_endpoints;
-+
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+	struct list_head		debugfs_node;
-+#endif
- };
- 
- struct viommu_endpoint {
-@@ -77,6 +92,10 @@ struct viommu_endpoint {
- 	struct viommu_dev		*viommu;
- 	struct viommu_domain		*vdomain;
- 	struct list_head		resv_regions;
-+
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+	struct list_head		debugfs_node;
-+#endif
- };
- 
- struct viommu_request {
-@@ -101,6 +120,283 @@ static struct viommu_domain viommu_identity_domain;
- #define to_viommu_domain(domain)	\
- 	container_of(domain, struct viommu_domain, domain)
- 
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+static struct dentry *viommu_debugfs_root;
-+
-+static const char *viommu_domain_type_name(unsigned int type)
-+{
-+	switch (type) {
-+	case IOMMU_DOMAIN_BLOCKED:
-+		return "blocked";
-+	case IOMMU_DOMAIN_IDENTITY:
-+		return "identity";
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		return "unmanaged";
-+	case IOMMU_DOMAIN_DMA:
-+		return "dma";
-+	case IOMMU_DOMAIN_DMA_FQ:
-+		return "dma-fq";
-+	case IOMMU_DOMAIN_SVA:
-+		return "sva";
-+	case IOMMU_DOMAIN_PLATFORM:
-+		return "platform";
-+	case IOMMU_DOMAIN_NESTED:
-+		return "nested";
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static void viommu_debugfs_feature(struct seq_file *s,
-+				   struct viommu_dev *viommu,
-+				   unsigned int feature,
-+				   const char *name)
-+{
-+	seq_printf(s, "  %-24s %s\n", name,
-+		   virtio_has_feature(viommu->vdev, feature) ? "yes" : "no");
-+}
-+
-+static int viommu_debugfs_status_show(struct seq_file *s, void *unused)
-+{
-+	struct viommu_dev *viommu = s->private;
-+
-+	seq_printf(s, "device: %s\n", virtio_bus_name(viommu->vdev));
-+	seq_printf(s, "input_range: %#llx-%#llx\n",
-+		   viommu->geometry.aperture_start,
-+		   viommu->geometry.aperture_end);
-+	seq_printf(s, "page_size_mask: %#llx\n", viommu->pgsize_bitmap);
-+	seq_printf(s, "domain_range: %u-%u\n", viommu->first_domain,
-+		   viommu->last_domain);
-+	seq_printf(s, "identity_domain_id: %u\n",
-+		   viommu->identity_domain_id);
-+	seq_printf(s, "probe_size: %u\n", viommu->probe_size);
-+	seq_printf(s, "map_flags: %#x\n", viommu->map_flags);
-+	seq_puts(s, "features:\n");
-+	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_MAP_UNMAP,
-+			       "map_unmap");
-+	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_INPUT_RANGE,
-+			       "input_range");
-+	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_DOMAIN_RANGE,
-+			       "domain_range");
-+	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_PROBE, "probe");
-+	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_MMIO, "mmio");
-+	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_BYPASS_CONFIG,
-+			       "bypass_config");
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(viommu_debugfs_status);
-+
-+static void viommu_debugfs_print_endpoint(struct seq_file *s,
-+					  struct viommu_endpoint *vdev)
-+{
-+	int i;
-+	u32 domain_id = 0;
-+	const char *domain_type = "none";
-+	struct iommu_group *group;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(vdev->dev);
-+
-+	if (vdev->vdomain) {
-+		domain_type = viommu_domain_type_name(vdev->vdomain->domain.type);
-+		if (vdev->vdomain == &viommu_identity_domain)
-+			domain_id = vdev->viommu->identity_domain_id;
-+		else
-+			domain_id = vdev->vdomain->id;
-+	}
-+
-+	group = iommu_group_get(vdev->dev);
-+	seq_printf(s, "endpoint=%s group_id=%d domain_type=%s",
-+		   dev_name(vdev->dev), group ? iommu_group_id(group) : -1,
-+		   domain_type);
-+	if (vdev->vdomain)
-+		seq_printf(s, " domain_id=%u", domain_id);
-+	if (fwspec) {
-+		seq_puts(s, " ids=");
-+		for (i = 0; i < fwspec->num_ids; i++)
-+			seq_printf(s, "%s%u", i ? "," : "", fwspec->ids[i]);
-+	}
-+	seq_putc(s, '\n');
-+
-+	iommu_group_put(group);
-+}
-+
-+static int viommu_debugfs_endpoints_show(struct seq_file *s, void *unused)
-+{
-+	struct viommu_dev *viommu = s->private;
-+	struct viommu_endpoint *vdev;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	list_for_each_entry(vdev, &viommu->debugfs_endpoints, debugfs_node)
-+		viommu_debugfs_print_endpoint(s, vdev);
-+	mutex_unlock(&viommu->debugfs_lock);
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(viommu_debugfs_endpoints);
-+
-+static unsigned long viommu_debugfs_count_mappings(struct viommu_domain *vdomain)
-+{
-+	unsigned long count = 0;
-+	struct interval_tree_node *node;
-+
-+	for (node = interval_tree_iter_first(&vdomain->mappings, 0, ULLONG_MAX);
-+	     node; node = interval_tree_iter_next(node, 0, ULLONG_MAX))
-+		count++;
-+
-+	return count;
-+}
-+
-+static void viommu_debugfs_print_domain(struct seq_file *s,
-+					struct viommu_domain *vdomain)
-+{
-+	unsigned long flags;
-+	unsigned long mappings;
-+
-+	spin_lock_irqsave(&vdomain->mappings_lock, flags);
-+	mappings = viommu_debugfs_count_mappings(vdomain);
-+	spin_unlock_irqrestore(&vdomain->mappings_lock, flags);
-+
-+	seq_printf(s,
-+		   "id=%u type=%s endpoints=%lu mappings=%lu aperture=%#llx-%#llx pgsize_bitmap=%#lx map_flags=%#x\n",
-+		   vdomain->id, viommu_domain_type_name(vdomain->domain.type),
-+		   vdomain->nr_endpoints, mappings,
-+		   vdomain->domain.geometry.aperture_start,
-+		   vdomain->domain.geometry.aperture_end,
-+		   vdomain->domain.pgsize_bitmap, vdomain->map_flags);
-+}
-+
-+static int viommu_debugfs_domains_show(struct seq_file *s, void *unused)
-+{
-+	struct viommu_dev *viommu = s->private;
-+	struct viommu_domain *vdomain;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	if (viommu_identity_domain.nr_endpoints) {
-+		seq_printf(s, "id=%u type=%s endpoints=%lu mappings=identity\n",
-+			   viommu->identity_domain_id,
-+			   viommu_domain_type_name(viommu_identity_domain.domain.type),
-+			   viommu_identity_domain.nr_endpoints);
-+	}
-+	list_for_each_entry(vdomain, &viommu->debugfs_domains, debugfs_node)
-+		viommu_debugfs_print_domain(s, vdomain);
-+	mutex_unlock(&viommu->debugfs_lock);
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(viommu_debugfs_domains);
-+
-+static void viommu_debugfs_print_mapping(struct seq_file *s,
-+					 struct viommu_domain *vdomain)
-+{
-+	unsigned long flags;
-+	struct viommu_mapping *mapping;
-+	struct interval_tree_node *node;
-+
-+	spin_lock_irqsave(&vdomain->mappings_lock, flags);
-+	for (node = interval_tree_iter_first(&vdomain->mappings, 0, ULLONG_MAX);
-+	     node; node = interval_tree_iter_next(node, 0, ULLONG_MAX)) {
-+		mapping = container_of(node, struct viommu_mapping, iova);
-+		seq_printf(s,
-+			   "domain_id=%u iova=%#lx-%#lx phys=%pa size=%#lx flags=%#x\n",
-+			   vdomain->id, mapping->iova.start, mapping->iova.last,
-+			   &mapping->paddr,
-+			   mapping->iova.last - mapping->iova.start + 1,
-+			   mapping->flags);
-+	}
-+	spin_unlock_irqrestore(&vdomain->mappings_lock, flags);
-+}
-+
-+static int viommu_debugfs_mappings_show(struct seq_file *s, void *unused)
-+{
-+	struct viommu_dev *viommu = s->private;
-+	struct viommu_domain *vdomain;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	list_for_each_entry(vdomain, &viommu->debugfs_domains, debugfs_node)
-+		viommu_debugfs_print_mapping(s, vdomain);
-+	mutex_unlock(&viommu->debugfs_lock);
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(viommu_debugfs_mappings);
-+
-+static void viommu_debugfs_init(struct viommu_dev *viommu)
-+{
-+	struct dentry *parent;
-+
-+	if (!iommu_debugfs_dir)
-+		return;
-+
-+	if (!viommu_debugfs_root)
-+		viommu_debugfs_root = debugfs_create_dir("virtio",
-+							 iommu_debugfs_dir);
-+
-+	parent = viommu_debugfs_root ?: iommu_debugfs_dir;
-+	viommu->debugfs_dir = debugfs_create_dir(virtio_bus_name(viommu->vdev),
-+						 parent);
-+	if (IS_ERR_OR_NULL(viommu->debugfs_dir))
-+		return;
-+
-+	debugfs_create_file("status", 0444, viommu->debugfs_dir, viommu,
-+			    &viommu_debugfs_status_fops);
-+	debugfs_create_file("endpoints", 0444, viommu->debugfs_dir, viommu,
-+			    &viommu_debugfs_endpoints_fops);
-+	debugfs_create_file("domains", 0444, viommu->debugfs_dir, viommu,
-+			    &viommu_debugfs_domains_fops);
-+	debugfs_create_file("mappings", 0444, viommu->debugfs_dir, viommu,
-+			    &viommu_debugfs_mappings_fops);
-+}
-+
-+static void viommu_debugfs_remove(struct viommu_dev *viommu)
-+{
-+	debugfs_remove_recursive(viommu->debugfs_dir);
-+	viommu->debugfs_dir = NULL;
-+}
-+
-+static void viommu_debugfs_add_domain(struct viommu_domain *vdomain)
-+{
-+	struct viommu_dev *viommu = vdomain->viommu;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	list_add_tail(&vdomain->debugfs_node, &viommu->debugfs_domains);
-+	mutex_unlock(&viommu->debugfs_lock);
-+}
-+
-+static void viommu_debugfs_remove_domain(struct viommu_domain *vdomain)
-+{
-+	struct viommu_dev *viommu = vdomain->viommu;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	list_del(&vdomain->debugfs_node);
-+	mutex_unlock(&viommu->debugfs_lock);
-+}
-+
-+static void viommu_debugfs_add_endpoint(struct viommu_endpoint *vdev)
-+{
-+	struct viommu_dev *viommu = vdev->viommu;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	list_add_tail(&vdev->debugfs_node, &viommu->debugfs_endpoints);
-+	mutex_unlock(&viommu->debugfs_lock);
-+}
-+
-+static void viommu_debugfs_remove_endpoint(struct viommu_endpoint *vdev)
-+{
-+	struct viommu_dev *viommu = vdev->viommu;
-+
-+	mutex_lock(&viommu->debugfs_lock);
-+	list_del(&vdev->debugfs_node);
-+	mutex_unlock(&viommu->debugfs_lock);
-+}
-+#else
-+static void viommu_debugfs_init(struct viommu_dev *viommu) {}
-+static void viommu_debugfs_remove(struct viommu_dev *viommu) {}
-+static void viommu_debugfs_add_domain(struct viommu_domain *vdomain) {}
-+static void viommu_debugfs_remove_domain(struct viommu_domain *vdomain) {}
-+static void viommu_debugfs_add_endpoint(struct viommu_endpoint *vdev) {}
-+static void viommu_debugfs_remove_endpoint(struct viommu_endpoint *vdev) {}
-+#endif
-+
- static int viommu_get_req_errno(void *buf, size_t len)
- {
- 	struct virtio_iommu_req_tail *tail = buf + len - sizeof(*tail);
-@@ -676,6 +972,9 @@ static struct iommu_domain *viommu_domain_alloc_paging(struct device *dev)
- 
- 	spin_lock_init(&vdomain->mappings_lock);
- 	vdomain->mappings = RB_ROOT_CACHED;
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+	INIT_LIST_HEAD(&vdomain->debugfs_node);
-+#endif
- 
- 	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
- 			      viommu->last_domain, GFP_KERNEL);
-@@ -691,6 +990,7 @@ static struct iommu_domain *viommu_domain_alloc_paging(struct device *dev)
- 
- 	vdomain->map_flags = viommu->map_flags;
- 	vdomain->viommu = viommu;
-+	viommu_debugfs_add_domain(vdomain);
- 
- 	return &vdomain->domain;
- }
-@@ -702,8 +1002,10 @@ static void viommu_domain_free(struct iommu_domain *domain)
- 	/* Free all remaining mappings */
- 	viommu_del_mappings(vdomain, 0, ULLONG_MAX);
- 
--	if (vdomain->viommu)
-+	if (vdomain->viommu) {
-+		viommu_debugfs_remove_domain(vdomain);
- 		ida_free(&vdomain->viommu->domain_ids, vdomain->id);
-+	}
- 
- 	kfree(vdomain);
- }
-@@ -1035,6 +1337,9 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
- 	vdev->dev = dev;
- 	vdev->viommu = viommu;
- 	INIT_LIST_HEAD(&vdev->resv_regions);
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+	INIT_LIST_HEAD(&vdev->debugfs_node);
-+#endif
- 	dev_iommu_priv_set(dev, vdev);
- 
- 	if (viommu->probe_size) {
-@@ -1044,6 +1349,8 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
- 			goto err_free_dev;
- 	}
- 
-+	viommu_debugfs_add_endpoint(vdev);
-+
- 	return &viommu->iommu;
- 
- err_free_dev:
-@@ -1057,6 +1364,7 @@ static void viommu_release_device(struct device *dev)
- {
- 	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 
-+	viommu_debugfs_remove_endpoint(vdev);
- 	viommu_detach_dev(vdev);
- 	iommu_put_resv_regions(dev, &vdev->resv_regions);
- 	kfree(vdev);
-@@ -1170,6 +1478,11 @@ static int viommu_probe(struct virtio_device *vdev)
- 	viommu->dev = dev;
- 	viommu->vdev = vdev;
- 	INIT_LIST_HEAD(&viommu->requests);
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+	mutex_init(&viommu->debugfs_lock);
-+	INIT_LIST_HEAD(&viommu->debugfs_domains);
-+	INIT_LIST_HEAD(&viommu->debugfs_endpoints);
-+#endif
- 
- 	ret = viommu_init_vqs(viommu);
- 	if (ret)
-@@ -1237,6 +1550,7 @@ static int viommu_probe(struct virtio_device *vdev)
- 	vdev->priv = viommu;
- 
- 	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
-+	viommu_debugfs_init(viommu);
- 
- 	dev_info(dev, "input address: %u bits\n",
- 		 order_base_2(viommu->geometry.aperture_end));
-@@ -1254,6 +1568,7 @@ static void viommu_remove(struct virtio_device *vdev)
- {
- 	struct viommu_dev *viommu = vdev->priv;
- 
-+	viommu_debugfs_remove(viommu);
- 	iommu_device_sysfs_remove(&viommu->iommu);
- 	iommu_device_unregister(&viommu->iommu);
- 
--- 
-2.34.1
-
+Thanks,
+Nutty
+> ---
+> Sashiko reported this issue while reviewing a riscv iommu series[1].
+> I've only compile-tested this fix.
+>
+> [1] https://sashiko.dev/#/patchset/20260724151218.965929-1-andrew.jones@oss.qualcomm.com
+>
+> v2:
+>   - switched back to statick lock as 288683c92b1a had [Robin]
+>
+>
+>   drivers/iommu/dma-iommu.c | 13 +++++++++++++
+>   1 file changed, 13 insertions(+)
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 9abaec0703ef..9a07eb39336e 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -2204,6 +2204,19 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   	dma_addr_t iova;
+>   	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>   	size_t size = cookie_msi_granule(domain);
+> +	static DEFINE_MUTEX(msi_prepare_lock);
+> +
+> +	/*
+> +	 * Normally a device's default domain is only ever attached to that
+> +	 * device's own group, and the group mutex held by
+> +	 * iommu_group_mutex_assert()'s callers is enough on its own. A VFIO
+> +	 * type1 container is the one case that breaks that assumption: it
+> +	 * can merge devices from different groups onto one domain, so two
+> +	 * devices' group mutexes don't serialize each other here. A static
+> +	 * lock is sufficient due to the expectation that this is a corner
+> +	 * case that will never be contended in practice.
+> +	 */
+> +	guard(mutex)(&msi_prepare_lock);
+>   
+>   	msi_addr &= ~(phys_addr_t)(size - 1);
+>   	list_for_each_entry(msi_page, msi_page_list, list)
