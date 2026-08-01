@@ -1,152 +1,137 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEE1C382281
-	for <iommu@lists.linux.dev>; Fri, 31 Jul 2026 22:34:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6473321CFE0;
+	Sat,  1 Aug 2026 09:15:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785537300; cv=none; b=klReMKF9Myp/WzNpBaf2JlFlUhZWHdOU7rWCZSTxI44qlywGQp0/Cr9XqNbgejJA8cybzxgHXB2NN3NwBubSgmNvTwUGMKvIGxCrqFWaVDzUhFW+hBATIQNFIj5FPAnWciPeKtBLQhdqY4Z3uJn7QFQi1iMHtJzeQY1Lnq+ic2A=
+	t=1785575748; cv=none; b=FdjVtyjUuWTaL2EuKZooUoAy4e9lNg4Jv6Nr3Ho9jtXLPZBmK93Y4UBQhjkvLUM2qZqAcIf+RNqJY0d7cti8uZ03emwuTCNkxk+gAzldWj4C5AdvZGSE+WVtf5rI2K4+SpubymRzxK3HlzMF37b6/nlFq580uzVIi81h84kxWOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785537300; c=relaxed/simple;
-	bh=Fieq2+CcBIpYuNMICZgtEYSYF55oNOQl/qvmFkWtLBU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cEHvzO+E4eth86Be8gchuR8dFcEUplCqt491L7W1D06BOoPtXuvz31LUXLdVVDmGYz9G0NCVndSmKVPvUiZ8dIn8S4OpcQoSX5FY9cat9O0ab689bHAliCpz1suGSX9n+IoMfC+y0iVmrH7ZgmnYmUerIa9jueJh2/VAfwuRmgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Xh4nwk4D; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1785575748; c=relaxed/simple;
+	bh=LJIVZvS3OYDMdT4pTQ80fpHLxX4s2Sc3spWBb7Iz70A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Yq3ZMnyZadgU62l6Zw46LieTOXCuaRnR17dnfjRGh7rOIC1hE3z/BpAGraEI3ZeQhHOtom2dsgpFSXgkfPYJSPMkF08CBNuXgJoA9BweHRb9WkXBM7/nXEKMnuNFaRCtlfJjyQnsyM5qmM0c4c95LqsGAdZ7VXiN1/EakellDNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JCjrXHF/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Xh4nwk4D"
-Received: from mrdev.corp.microsoft.com (unknown [40.78.13.173])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 422AE20B7167;
-	Fri, 31 Jul 2026 15:34:39 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 422AE20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1785537280;
-	bh=+MSRPstDoMUEReU7MiOeICHeAj4r3vsTAnoy3+ct7U8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Xh4nwk4DK2x8VH/H4vXiId4BeeT5Z49owcdGxmhYmW2qoZ90NfjvK9i5ddZJGOVJn
-	 b64XOgcWgbLAILYr6GzdYxWaJ/eEqQnr2QDkY9NVD8cX7L3fjnVFB28Ts8RJSd/qHU
-	 Orb+4BUQhssJxMliUF4IYniS/DQZSEO4GcgVTkKc=
-From: Mukesh R <mrathor@linux.microsoft.com>
-To: hpa@zytor.com,
-	robin.murphy@arm.com,
-	robh@kernel.org,
-	wei.liu@kernel.org,
-	mrathor@linux.microsoft.com,
-	mhklinux@outlook.com,
-	muislam@microsoft.com,
-	namjain@linux.microsoft.com,
-	magnuskulke@linux.microsoft.com,
-	anbelski@linux.microsoft.com,
-	linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org
-Cc: jgg@nvidia.com,
-	kys@microsoft.com,
-	haiyangz@microsoft.com,
-	decui@microsoft.com,
-	longli@microsoft.com,
-	tglx@kernel.org,
-	mingo@redhat.com,
-	bp@alien8.de,
-	dave.hansen@linux.intel.com,
-	x86@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	lpieralisi@kernel.org,
-	kwilczynski@kernel.org,
-	bhelgaas@google.com,
-	arnd@arndb.de,
-	jacob.pan@linux.microsoft.com
-Subject: [PATCH v5 9/9] mshv: Disable movable regions upfront if device passthru
-Date: Fri, 31 Jul 2026 15:34:27 -0700
-Message-ID: <20260731223427.2554388-10-mrathor@linux.microsoft.com>
-X-Mailer: git-send-email 2.51.2.vfs.0.1
-In-Reply-To: <20260731223427.2554388-1-mrathor@linux.microsoft.com>
-References: <20260731223427.2554388-1-mrathor@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JCjrXHF/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0CD81F00AC4;
+	Sat,  1 Aug 2026 09:15:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785575747;
+	bh=qL0KvT6fbFFpjOaD2pGDIh9KKgpsACQZ4AgSBffUuOk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=JCjrXHF/qPdYFDron/ySP3kKVRTkPb0I18WPTxbnebb9+AVeLvaquYaldcYbmz6ip
+	 ztOOpVpcvgn8So3sj2OtiLuzD9IHRw8PPGiPO/1Rp2VpyeqYKEXLSbq0CZm6CGpdX9
+	 07wrQkPEnzIkZ9tCrH+6UlW08OnoM1hVoNpUTMpOXGNMLM3Fi4CEyCGhpx4Lkmd2RV
+	 aC0rup/Gvqn/xsSNKlvBElgYeZGa02zzFi5pAvaAhi6Tpf/B8TFUTN92AtG+G7+i0T
+	 cFJdOrUBhgqUtacr8LKwIiuU01tNCnbW+x7ZhZ8Mlg/J5yAiLp8rfEtbgQ5Q/xddBB
+	 Os0QP2Kxytjag==
+Message-ID: <e4dece11-ef3d-42e1-b179-cb710c501622@kernel.org>
+Date: Sat, 1 Aug 2026 11:15:38 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
+To: Daniel Drake <dan@reactivated.net>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ nick.hollinghurst@raspberrypi.com, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
+ <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
+ <20260730-small-solid-spoonbill-8a8bbd@quoll>
+ <6d9b28ec-0905-4cb0-9a62-980c7fa69572@reactivated.net>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <6d9b28ec-0905-4cb0-9a62-980c7fa69572@reactivated.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-If a VM is started with device attached, the mem regions must be marked
-non-movable as the device attach hypercall right away allows the use of
-SLAT for IOMMU. Marking them non-movable forces mapping of the entire
-guest RAM in the SLAT at the time of region creation along with the region
-pinned. Also, because a device could be dynamically attached much later
-in a VM, create a module parameter to allow a user to pin them upfront
-if they anticipate such an action. It is understood that VFIO pins the
-regions also, so there will be double pinning. This will be enhanced in
-the near future with a third region type that is not movable nor pinned.
+On 31/07/2026 22:34, Daniel Drake wrote:
+> On 30/07/2026 08:00, Krzysztof Kozlowski wrote:
+>> On Mon, Jul 27, 2026 at 09:43:59PM +0100, Daniel Drake wrote:
+>>> +static int bcm2712_iommu_init_cache(struct bcm2712_iommu *mmu,
+>>> +				    struct platform_device *pdev)
+>>> +{
+>>> +	struct device *dev = &pdev->dev;
+>>> +	struct platform_device *cache_pdev;
+>>> +	struct device_node *cache_np;
+>>> +
+>>> +	cache_np = of_parse_phandle(dev->of_node, "brcm,iommu-cache", 0);
+>>> +
+>>> +	/* Fall back on 'cache' property used in old/downstream firmware */
+>>> +	if (!cache_np)
+>>> +		cache_np = of_parse_phandle(dev->of_node, "cache", 0);
+>>
+>> NAK.
+>>
+>> You cannot have undocumented ABI. I asked you to drop this at v1.
+> Is there any approach I should consider here in order to support 
+> existing shipped firmware versions that use the 'cache' property, or 
+> should I simply break compatibility?
 
-Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
----
- drivers/hv/mshv_root.h      |  1 +
- drivers/hv/mshv_root_main.c | 15 ++++++++++++++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+Kernel is being shipped with DTB for Rpi, because firmware is not
+embedded into some lower fixed storage, so there is no problem of
+compatibility with some out of tree, unsupported DTB.
 
-diff --git a/drivers/hv/mshv_root.h b/drivers/hv/mshv_root.h
-index 2ef781cf8e83..f5747c43ad82 100644
---- a/drivers/hv/mshv_root.h
-+++ b/drivers/hv/mshv_root.h
-@@ -141,6 +141,7 @@ struct mshv_partition {
- 	pid_t pt_vmm_tgid;
- 	bool import_completed;
- 	bool pt_initialized;
-+	bool pt_regions_pinned;
- #if IS_ENABLED(CONFIG_DEBUG_FS)
- 	struct dentry *pt_stats_dentry;
- 	struct dentry *pt_vp_dentry;
-diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
-index 14a640750ccf..e24b44051456 100644
---- a/drivers/hv/mshv_root_main.c
-+++ b/drivers/hv/mshv_root_main.c
-@@ -46,6 +46,10 @@ MODULE_DESCRIPTION("Microsoft Hyper-V root partition VMM interface /dev/mshv");
- #define HV_VP_COUNTER_ROOT_DISPATCH_THREAD_BLOCKED 95
- #endif
- 
-+static uint hv_memreg;  /* mshv_mem_region allocations type */
-+module_param(hv_memreg, uint, 0644);
-+MODULE_PARM_DESC(hv_memreg, "0: movable (default), 1: pinned");
-+
- struct mshv_root mshv_root;
- 
- enum hv_scheduler_type hv_scheduler_type;
-@@ -1302,6 +1306,12 @@ static void mshv_async_hvcall_handler(void *data, u64 *status)
- 	*status = partition->async_hypercall_status;
- }
- 
-+static bool mshv_do_pt_regions_pinned(struct mshv_partition *pt)
-+{
-+	return pt->pt_regions_pinned || mshv_partition_encrypted(pt) ||
-+	       hv_memreg == 1;
-+}
-+
- /*
-  * NB: caller checks and makes sure mem->size is page aligned
-  * Returns: 0 with regionpp updated on success, or -errno
-@@ -1332,7 +1342,7 @@ static int mshv_partition_create_region(struct mshv_partition *partition,
- 
- 	if (is_mmio)
- 		rg->mreg_type = MSHV_REGION_TYPE_MMIO;
--	else if (mshv_partition_encrypted(partition) ||
-+	else if (mshv_do_pt_regions_pinned(partition) ||
- 		 !mshv_region_movable_init(rg))
- 		rg->mreg_type = MSHV_REGION_TYPE_MEM_PINNED;
- 	else
-@@ -1818,6 +1828,9 @@ static long mshv_partition_ioctl_create_device(struct mshv_partition *partition,
- 	if (copy_to_user(uarg, &devargk, sizeof(devargk)))
- 		return -EFAULT;    /* cleanup in mshv_device_fop_release() */
- 
-+	/* For now, just mark regions pinned if there is device passthru. */
-+	partition->pt_regions_pinned = true;
-+
- 	return 0;
- 
- undo_out:
--- 
-2.51.2.vfs.0.1
+And no, you cannot use argument of undocumented, unreviewed ABI in
+downstream forks as reason to add such ABI. This defeats the very
+purpose of having upstream.
 
+With this approach basically why even reviewing anything? Just accept
+everything anyone ever shipped downstream, right?
+
+Best regards,
+Krzysztof
