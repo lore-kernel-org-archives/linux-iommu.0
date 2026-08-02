@@ -1,134 +1,96 @@
-Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BE293368A3;
-	Sat,  1 Aug 2026 21:56:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52C931EEE6;
+	Sun,  2 Aug 2026 09:23:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785621402; cv=none; b=qLyZEKNs+vNPX6LNhYzv941O7iKRmh180nQat+KFQMFseKoOMGq3L5cGSPVNW2XnPH3LYpSg6+Cif85ccTAm7l7/9n2DKKJ+YjTeK+VW6Mhsm4S2pUWQOjiwbhsl3dcP4oLBgWiO1u67SFFzFKGaoQejYfJrjEBUZXf8ADH0Amc=
+	t=1785662636; cv=none; b=PcY5kflsz6aga1tsqG8fqtYHKyzp3mGFv2M1nk1T32cD1FxGBkOo2owTf77YxrMGr1R9S25Z8kickRfwSqsndxvnH38hv76NI9EXgbJEAiZCQ8NcCVWD4j/K0lWiAYM5Iuduyso4MGdb5jTAJLNiqC8suQLk8YuukLzWRGTuvmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785621402; c=relaxed/simple;
-	bh=t7EzEiPFxc4GuN5FmnkOGyt8BqSvWGuuHx+k4MnQxMU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FqLyHyxMPMlDZC+JjFr2qGBSM3VUIvLJIEYBY30DzjobxwbeJDOnPUycv7HBf1m7kFrqSWV3SHmTQj5VzSSXh21yfZyOG14/5ZU97CQH95dFi1h+H6SOU8cS2GpPvMnUwdFYOFU1gBEm0M6c8l0JNJ9fo+KnR7XrOvUkFX0y79w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=Xmddp+7G; arc=none smtp.client-ip=195.39.247.168
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
+	s=arc-20240116; t=1785662636; c=relaxed/simple;
+	bh=PSxnvGUauozifoiIH/ceGwSr2O7otF86t5dKfvql0eY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M4FlUd9yvOtH4Ipjd4Ed/0ad5A2dNuN6r08pG/tp369z9ekHQvDkuc/gIqq36+YAOw2CUMYW0f/O2Eq9JM3WjDkWpGUx6zxqZIYxCQIb4D2ywL3obMeqNmF+CGPDua0B0i+y3a9WzuVRf9w7Wgk5uoBAhpDaY/Nl/HbPYwH7vh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kBdnCxCz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="Xmddp+7G"
-Message-ID: <03eb4c22-045e-470e-8259-ebf9b1cfe2ed@cyberchaos.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1785621398;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8oEGy8rqwZ/gqYzJNGC0Im+DxBJzFqohOOWzha3aJP0=;
-	b=Xmddp+7GQRTeX/CMdkkJE6vw4Zyu/9477fXl54HZRSDhJInS9Ax5tLWR0X9sCOkZ/OIk/D
-	DgwY4x69kYBw+2X2mAi6YDH1umCIvjCrb47alfpFuLgGU8krLzUPrd8newkgtva2O/gaYW
-	lHaQ6KbmX3Dgj+Bl6ZryVS/IGtW9Ek8=
-Date: Sat, 1 Aug 2026 23:56:20 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kBdnCxCz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB62D1F000E9;
+	Sun,  2 Aug 2026 09:23:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785662634;
+	bh=DiXxJ7FfxIMWhg+QWHNrDA/BR14L2eXTYivLTU47jAQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kBdnCxCzKEyzCd72YuQeTcXLzo/D5xWX8++RW5ux61t4DNRa0+qQfBrwxatVx92rp
+	 J9nGEJp1+cpcNSU9Xq5hHbuo9FYyT/B6Bg975Lrg93ecwafYvOYRf0X2pDoeySHu4f
+	 HDaTqpW8or0bLwDw47kL5Uyx6wpSLLaSC3uwlHe8gGIflLSIJyFKVLyX4ST7EzRCjQ
+	 CwyyicjWwy/6DRS/O9DOKYNDZTPLd81BQ5ccVuRClHyLsX1PMM6Au5dJLT0X1cQIoU
+	 5QoZyeC6KMi7SYk1j0kF5EZqO5nea+1FpFDztxzoSZ3OYwhqufjZGZ9RE5eqW7sFkw
+	 jdLEEdDMMenFQ==
+Date: Sun, 2 Aug 2026 10:23:48 +0100
+From: Will Deacon <will@kernel.org>
+To: Kuan-Wei Chiu <visitorckw@gmail.com>, nicolinc@nvidia.com
+Cc: joro@8bytes.org, akpm@linux-foundation.org, robin.murphy@arm.com,
+	cychu@google.com, hhchung@google.com, amitamishra@google.com,
+	marscheng@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	jserv@ccns.ncku.edu.tw, eleanor15x@gmail.com
+Subject: Re: [PATCH 1/2] iommu/arm-smmu-v3: Replace sort_nonatomic() with
+ sort()
+Message-ID: <am8MpGR14HAg58Gd@willie-the-truck>
+References: <20260730181216.2709088-1-visitorckw@gmail.com>
+ <20260730181216.2709088-2-visitorckw@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [PATCH 08/10] HID: apple: Add DockChannel HID transport driver
-To: Michael Reeves <michael.reeves077@gmail.com>,
- Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
- Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Kosina <jikos@kernel.org>,
- Benjamin Tissoires <bentiss@kernel.org>, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-input@vger.kernel.org
-References: <20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com>
- <20260630-apple-mtp-keyboard-final-v1-8-506d936a1707@gmail.com>
- <05d39c4d-8405-4fe7-a798-c8a9c92699ed@cyberchaos.dev>
- <CANpmGNs3s2yLw05jkpZ9mscQNZ9JvfbqEgyW8V=cMD29aU8c2A@mail.gmail.com>
-Content-Language: en-US
-From: Yureka Lilian <yureka@cyberchaos.dev>
-In-Reply-To: <CANpmGNs3s2yLw05jkpZ9mscQNZ9JvfbqEgyW8V=cMD29aU8c2A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260730181216.2709088-2-visitorckw@gmail.com>
 
-On 7/1/26 16:32, Michael Reeves wrote:
-> Hi Yureka,
->
-> Thank you for the review and the feedback.
->
-> On Tue, Jun 30, 2026 at 11:21 PM Yureka Lilian <yureka@cyberchaos.dev> wrote:
-> [...]
->>> +     strscpy(hid->uniq, dchid->serial, sizeof(hid->uniq));
->> If the keyboard appeared before stm, dchip->serial might be uninitialized.
-> Yes, true, thank you for picking this up!
-> [...]
->>> +     /*
->>> +      * Prefer to enable STM first, since it provides device IDs. Some
->>> +      * firmware versions do not expose STM, so let the keyboard start
->>> +      * without it.
->>> +      */
->>> +     if (iface->dchid->id_ready || !strcmp(iface->name, "stm") ||
->>> +         !strcmp(iface->name, "keyboard"))
->> I specifically asked for a mechanism to let the keyboard probe even on
->> devices which do not expose/have stm. Thanks for adding that!
->> However, I think this might need some more sophisticated mechanism to
->> decide whether the stm is still going to appear after the keyboard, or
->> not at all. I'm not sure if there is a way to tell this at this point,
->> or we need to add a timeout for the stm to appearing, which needs to
->> expire before we create the other interfaces with fake serials.
->>
-> I do not think there is a way to tell at this point, unfortunately.
->
-> I think the best way to resolve this would be to implement a delayed work
-> item that is scheduled during probe. If STM appears and initalises before
-> the timer (I'm not sure how long it should be right now, I will prototype and
-> experiment) we cancel the delayed work, get the real serial, and spin up
-> the keyboard. If the timeout expires without seeing the STM interface, we
-> assume the platform does not have one, mark id_ready as true, and
-> proceed to init the keyboard.
+On Thu, Jul 30, 2026 at 06:12:15PM +0000, Kuan-Wei Chiu wrote:
+> The number of master->num_streams per master device is typically very
+> small in practice. Sorting this array takes a very small amount of
+> time, so there is no practical risk of triggering a soft lockup that
+> would necessitate calling cond_resched() during the sort.
+> 
+> Replace sort_nonatomic() with the standard sort(). Since this is the
+> only remaining in-tree caller of sort_nonatomic(), this change paves
+> the way to eventually remove the unused sort_nonatomic() API from the
+> core library.
+> 
+> Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> ---
+> Build-tested only.
+> 
+> I'm not really familiar with this driver or smmu internals.
+> Based on my limited knowledge, master->num_streams should be small
+> enough to safely switch from sort_nonatomic() to sort(), but I could be
+> wrong. 
+> 
+> Please review carefully and let me know if there are any cases where
+> num_streams could actually be large enough to cause issues.
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a10affb483a4..dcb6be2df95e 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -4047,9 +4047,9 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+>  	}
+>  
+>  	/* Put the ids into order for sorted to_merge/to_unref arrays */
+> -	sort_nonatomic(master->streams, master->num_streams,
+> -		       sizeof(master->streams[0]), arm_smmu_stream_id_cmp,
+> -		       NULL);
+> +	sort(master->streams, master->num_streams,
+> +	     sizeof(master->streams[0]), arm_smmu_stream_id_cmp,
+> +	     NULL);
 
-I see three ways forward (no specific order):
+Makes sense to me. Nicolin, did you choose the nonatomic version
+specifically?
 
-1) Implement the timeout as you described.
-
-2) Use the approach that always waits for the stm to appear, and is 
-proven to work well on the M2 devices targeted by this series. A 
-different behavior that does not wait for the stm / determines the 
-serials using other means can be added at a later point in the same 
-driver but with a different compatible string.
-
-3) Add an stm subnode (like the downstream Asahi device trees have for 
-their dockchannel-mtp nodes [1]) which indicates whether the stm is 
-present. Check for the existence of this subnode to decide whether to 
-wait for the stm or add the HID devices with fake serials. Support for 
-other methods of retrieving the serials can be added later and indicated 
-by other subnodes.
-
-I would appreciate feedback from all of you on which of these options we 
-should move forward with.
-
->
-> I will work on this and experiment to see if it's the best solution or
-> if there's
-> any others as well as to find the ideal timeout, and submit as part of v2.
-> [...]
->
-> Thanks again,
-> Michael
-
-
-Thanks,
-
-- Yureka
-
-Link: 
-https://github.com/AsahiLinux/linux/blob/asahi-7.1.5-2/arch/arm64/boot/dts/apple/t8112-j413.dts#L260 
-[1]
-
+Will
