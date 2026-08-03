@@ -1,131 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C586D29BDAA;
-	Mon,  3 Aug 2026 15:14:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 204A242DA58
+	for <iommu@lists.linux.dev>; Mon,  3 Aug 2026 18:06:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785770080; cv=none; b=CTS3YoEBAtdz/25k4QrXdG3OTWxbW/LMhgpH7XOFQDe/5PnkLl/SVpw+8djehNJq8wE+Yae1ut9uN5sMrDDZJkNN9Qa1V4ENDEnEAftZhAMmG1znbS90gPLRU6Zzf09r3spJXGGpPjmvjOmFCjuiXjiZqIO5jB0m3cp3oSfl1UY=
+	t=1785780371; cv=none; b=kKubrtnj8u+flhLfzsuKBbEXPE9vQX/8Q/pevxBCXgI1OEAiS3nkZ1V2CnPE37Uc5InZhEy1qOPNYitxFbyiWJnt6wK7EkMVCNjciTIFXEelizIMwmn8NJqIYztd9zZPWehDOlknC3OvyBGEsv8SWDk5foCtSWir7Y+ZmYk351Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785770080; c=relaxed/simple;
-	bh=KKk3WtLKjexT3Ex51exX+4KxnHu4UtIIzmN7NgXdCuc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JLed7O6/pL0G/N4k0ggR3ya3cBYvsdJkpKyAArYFM8Dy5r7i9EueG9eEn+cqwb9agKwbKACIe9+gKDwbxLmzfmdL1pOg5zOXRw1MxeebJbEK2msRly2xLvLwP4tG8GhMjsNXwvuF2hcO7Z5ArKevVE/OSS9OA3Sq0cInORljSq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vzlq/5g+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785780371; c=relaxed/simple;
+	bh=c54gsormIwsur8nIUH7Sp2Sm/IFHjGgHIhB9EJH6QaI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eBEmsWdUCYV5vsqoNKWnzz/zTsW0MbaR5gmt+1nUtYByEgHgVhpYHHBQ8Ta9w7SRqt31kyeZfRb3mK36NUbWbIvLVl0d8v/gVuT1RpGvwmp8IpYI2/I756hEWSBA26ZD4OA9d8thjnlP3yvmmSEuMWKA4b5hII2CQAdugkh04HQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Q+QP8Cvz; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vzlq/5g+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC91A1F000E9;
-	Mon,  3 Aug 2026 15:14:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785770078;
-	bh=jxpSlS7fw1sw+jv/kLILYNNHEAmkhzbCu2EmmYNqlJY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Vzlq/5g+ZM8dG9vHbh4TD57opi++DNF81m2TQVy2RYsQyN0pzjJAMexGSS+Q8mNDB
-	 Jf7LIuUrrx1JK+4ohZhTwFnu6d1cXwaIg2A2F3E9SdD4/vIywwlQpe08Xbt9sg6iFO
-	 CDDU9qVyT1E44okjSeeTmASarl2PQDxEh6rV0J300Sv1sGdbBxdQUXtfidCC7pfBkG
-	 5vgdgpKK3P1JG0FSb/QuNlcD4Dhz8PvTTfl7JU4lsTLdQwMEvBHxL+AUNBJW1gwO7v
-	 jejBsVHnSD+uc3mfeYd0/uiOMiAROHdPYhO1FhX/bVSilxznmRPJmgiip5jH5YJJ8t
-	 tF6fpoaRiestQ==
-Date: Mon, 3 Aug 2026 18:14:25 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Dave Hansen <dave.hansen@linux.intel.com>,
-	Peter Zijlstra <peterz@infradead.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
-	David CARLIER <devnexen@gmail.com>,
-	David Hildenbrand <david@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Juergen Gross <jgross@suse.com>, Kevin Tian <kevin.tian@intel.com>,
-	Kiryl Shutsemau <kas@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Thomas Gleixner <tglx@kernel.org>, Toshi Kani <toshi.kani@hpe.com>,
-	Vishal Moola <vishal.moola@gmail.com>,
-	Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, stable@vger.kernel.org, x86@kernel.org,
-	syzbot@syzkaller.appspotmail.com
-Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
-Message-ID: <anCwUb9lV18v6mfN@kernel.org>
-References: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Q+QP8Cvz"
+Received: from [192.168.1.71] (unknown [103.172.5.253])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6D5CB20B7168;
+	Mon,  3 Aug 2026 11:05:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6D5CB20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1785780350;
+	bh=l75URa6NxkEZDaloy4fDYW6DlbosrDiag8Qm0LfpBwg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Q+QP8CvzqSWkIrMXYUtxwlqU0y+lWoyrnzWdXWTcGTt+KB+DtNPgCYUrNFtGvzfcZ
+	 XI0TCnNSIlpKgWj1MHF/AuH7Ga3fpThj6RGzkMKGyChpJRWMJYlw08jhTQ1g+kRL+W
+	 4zYWMrbS/V1RMZR5ZBgfT979jIURyXDIYvCGQNrg=
+Message-ID: <9b7dd08d-c007-47ed-9c75-ecfd735f26f8@linux.microsoft.com>
+Date: Mon, 3 Aug 2026 23:35:57 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] PCI: hv: Set irq_retrigger callback for the Hyper-V
+ PCI MSI irqchip
+To: Naman Jain <namjain@linux.microsoft.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Rob Herring <robh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Cc: x86@kernel.org, Jake Oshins <jakeo@microsoft.com>,
+ linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260728135117.2888175-1-namjain@linux.microsoft.com>
+ <20260728135117.2888175-2-namjain@linux.microsoft.com>
+Content-Language: en-US
+From: Aditya Garg <gargaditya@linux.microsoft.com>
+In-Reply-To: <20260728135117.2888175-2-namjain@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-@Dave, @Peter, how do you want to proceed with these?
-
-On Tue, Jul 28, 2026 at 04:07:43PM +0300, Mike Rapoport (Microsoft) wrote:
-> There are a couple of CPA fixes floating around:
+On 28-07-2026 19:21, Naman Jain wrote:
+> The Hyper-V vPCI MSI irqchip never installs an irq_retrigger() callback.
 > 
-> Denis Lunev fixed races between split and collapse of the large mappings:
+> On CPU hot-unplug fixup_irqs() migrates the interrupts which are affine to
+> the outgoing CPU to a new target. If an interrupt still has its pending bit
+> set in the outgoing CPU's IRR at that point, fixup_irqs() resends it on the
+> new target through the irqchip's irq_retrigger() callback. As the Hyper-V
+> PCI/MSI chip does not provide that callback, the pending interrupt is
+> silently dropped, which can result in lost interrupts, stalls and "No irq
+> handler for vector" messages during CPU hotplug.
 > 
-> https://lore.kernel.org/all/20260715183453.2381141-1-den@openvz.org
+> Install irq_chip_retrigger_hierarchy() as the irq_retrigger() callback for
+> the Hyper-V PCI/MSI irqchip, so that a pending interrupt is resent on its
+> new target CPU via the parent x86 vector domain.
 > 
-> Lorenzo Stoakes fixed UAF caused by races between CPA and ptdump:
-> 
-> https://lore.kernel.org/all/20260723-series-vmap-race-fix-v6-0-8cc77dcc0018@kernel.org
-> 
-> and an issue with stale page tables in IOMMU:
-> 
-> https://lore.kernel.org/all/20260721-fix-cpa-kernel-pagetables-v2-1-2b255deed710@kernel.org
-> 
-> Mike Rapoport fixed a check of RW attribute in lookup_address_in_pgd_attr()
-> used for the verification of RWX:
-> 
-> https://lore.kernel.org/all/20260715144519.934289-1-rppt@kernel.org
-> 
-> Some of the fixes got merged into x86 tree, some of them got merged into mm
-> tree and some are still hanging in the air.
-> 
-> Beside the fixes there was a supposed simplification of cpa_lock locking 
-> that looked like removal of an optimization for DEBUG_PAGEALLOC, but it
-> turned out that it was not an optimization but rather a correctness
-> guard because with DEBUG_PAGEALLOC the locks could be taken in an atomic
-> context and couldn't use plain spin_lock()/spin_unlock().
-> 
-> The changes here are collected from all these fixes into a sinlge coherent
-> set on top of tip/x86/mm:
->  
-> * update to cpa_lock handling with DEBUG_PAGEALLOC
-> * fix for races between CPA and ptdumpi causing UAF
-> * fix for stale page tables in IOMMU
-> * update to the fix of the race between split and collapse of large
->   mappings
-> * fix for effective RW computation in lookup_address_in_pgd_attr()
-> 
-> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> Fixes: 4daace0d8ce85 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
+> Cc: stable@vger.kernel.org
+> Suggested-by: Long Li <longli@microsoft.com>
+> Suggested-by: Thomas Gleixner <tglx@kernel.org>
+> Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
 > ---
-> Lorenzo Stoakes (ARM) (3):
->       x86/mm/pat: acquire init_mm write lock on collapse to avoid UAF
->       x86/mm/pat: acquire init_mm read lock on attribute change to avoid UAF
->       x86/mm/pat: allocate split page tables as kernel page tables
+>   drivers/pci/controller/pci-hyperv.c | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> Mike Rapoport (Microsoft) (2):
->       x86/mm/pat: introcude cpa_lock() and cpa_unlock()
->       x86/mm/pat: fix effective RW computation in lookup_address_in_pgd_attr()
-> 
->  arch/x86/mm/pat/set_memory.c | 95 +++++++++++++++++++++++++++++++-------------
->  include/linux/mmap_lock.h    |  2 +
->  2 files changed, 70 insertions(+), 27 deletions(-)
-> ---
-> base-commit: a5a162fe1ae130e3d2ceefef3f43afe3773c1d56
-> change-id: 20260727-cpa-fixes-d3c73c075672
-> 
-> --
-> Sincerely yours,
-> Mike.
-> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index cfc8fa403dad6..89816a2bd7cd3 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -2119,6 +2119,7 @@ static bool hv_pcie_init_dev_msi_info(struct device *dev, struct irq_domain *dom
+>   	info->ops->msi_prepare = hv_msi_prepare;
+>   
+>   	chip->irq_set_affinity = irq_chip_set_affinity_parent;
+> +	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
+>   
+>   	if (IS_ENABLED(CONFIG_X86))
+>   		chip->flags |= IRQCHIP_MOVE_DEFERRED;
 
--- 
-Sincerely yours,
-Mike.
+Reviewed-by: Aditya Garg <gargaditya@linux.microsoft.com>
