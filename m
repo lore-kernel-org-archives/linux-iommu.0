@@ -1,98 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73B833DAAB8;
-	Mon,  3 Aug 2026 09:24:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785749095; cv=none; b=QoF9A1Hbr6dA9Z04EZsT0M+jGDbA1ghJzDdUjDq7yfKs5zMnmDN5S3xWbfNWjlJrjIENo7lEUapxEcujG/Ky9EGouRrmvWLlWgFXEXBbtqvmGnE4DhSh7dBEmND6Ngu3e6Bq11xyg/FVhB/jT/LR2MBuMsRoAJ8uP0lRQkqkWcs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785749095; c=relaxed/simple;
-	bh=YQYuT1eQUJ5sbgihp/9aDuky6NeB3KIGJ0/tsgnhjIM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j3fr9biWserAXnQS4aaRWrKc9I2YN8OYyxzTDo/C8Nc/ettkq4MdaGE7arsXZur81pKqU068k9kD31U4Ide+GAem4XSOROiMsjVFsZaZv/zfyGQJG4uEMD3BH3pZMnZunAn6o/urq5ubIImeTLUdzJRRbi3Kwi1AI1k/ZfI/Tso=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S2FHA2WL; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F90133A71B
+	for <iommu@lists.linux.dev>; Mon,  3 Aug 2026 10:54:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.175
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785754449; cv=pass; b=Kxq036G3bKt8ZjPytKoz6Mmro4Tcm+wLUEDmM/H4wKWTA9aalXblQ+QgPpObsat/7o+3M1oFQrC/Oz81ZRL/qS3RDmnAfuDanme8G8DNhfo+8jGryYmURKyiV/ohB2unuS2v3qefje/LYe9JXdi5eKU30RSTBVX4ZznryBKBk8k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785754449; c=relaxed/simple;
+	bh=xzCairU6IJG5sPtRT7A/BsD2wq9hPxLyZpXhYTWkbGg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RdLo67v89UwqgS8OrnscgNoNz83ueq5zAQkkdAp9BkScXHRCMArTZhox/YGQ4+fPIyWCEOJrtb1r35OYCurw/k2e1N0RgzK4gDszo8gCT45dNC0KiwG30Pd467kkMZS9z9Nm0CIaypRX9S2Lto5hRBmFIttEPr8IkhnhuKjIjfo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=raspberrypi.com; spf=pass smtp.mailfrom=raspberrypi.com; dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b=aVPZ/jvl; arc=pass smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=raspberrypi.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=raspberrypi.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S2FHA2WL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3121F000E9;
-	Mon,  3 Aug 2026 09:24:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785749094;
-	bh=uyH3qhosLLWNc3FlTO/a9hJUBB7/XU0dA3zhQ3V9g8s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=S2FHA2WLBpGOYwvhxQ26xqrrS99RC6nBijLDWagQvxTndISOzIlcoSeXZKELvTay0
-	 pT/TxUe8bhR3mYgsyVdQCyI0hr5gaJPBIaDk+PlLYZWixKqlS5bhyhG7GlJ31MYnuf
-	 1jdFzL//DgDD/Kb2GK1riQDwMCbDBUSQSfYaDy3Rr546Nn+DBzLRbR/jKv7/Qo+oNt
-	 72MWSi+uozNa8NxDao3PDtZrqgAKm1qlkc2tPjU7/ZyhNBGB5/UkQAa0cbxx4TG+Rj
-	 urQmLBNm+9Wlz+u8UrPbUkzs7V73qg/grslfa6+PX38Q1XPYx9SU2V6ZNN3gXo50oL
-	 sO2w1+u0dLtKw==
-Date: Mon, 3 Aug 2026 11:24:50 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: qcom: add compatible for
- IPQ9650 SoC
-Message-ID: <20260803-therapeutic-coua-of-judgment-5c6cdf@quoll>
-References: <20260731-ipq9650_smmu_binding-v2-1-143a51c8ffce@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=raspberrypi.com header.i=@raspberrypi.com header.b="aVPZ/jvl"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-4ab70b882c5so1859034b6e.2
+        for <iommu@lists.linux.dev>; Mon, 03 Aug 2026 03:54:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785754446; cv=none;
+        d=google.com; s=arc-20260327;
+        b=NeEqURIPEbN0Hp9hVACE1cHX6CxEZW8nPPRT6Lrjq9Tuas0w197q8tWk3OixOQ/4zt
+         FDdsNzb60XPPy6bkFjiWGIUXo5+0GPnh/K4XS5qAfi9ZpV6YrXai9AJtqJvvE9vuSjCO
+         a3f3rJNxvmMFdYYXl8SuaNv2YOnqKNAa/kmQEYO332kiTmp0kbT28id3QQ/7OHawyFG3
+         3JJlpVXGS96MKwcIsJDGWJr+9u8CJO/GQwnJVPUuvtk3oPjtEZOTLqZzMJUCA7tRSL5d
+         ytezwFU/h6ShOUIzlOcV3kYyzM284PvoqM7tIihKZZxZ27kxa9p1T18v2dGsghCzO7gI
+         UCCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=WkMM4gx2K8iT6OacR97bokA0kWNfszhjDnUN6+5+1Tg=;
+        fh=K8PojrLRzZKq/N+fZ1qU1KTZX16pZ5fcNhA6VewAHNU=;
+        b=ZH9qn9Kyhy1BlQbgHcFGH6XjKOlzZtjFPL6QPfBRMC+K8DMs91hzFvqrvkYT+HZEn2
+         4MToWKiXJuF3pC3aXME8v7mqvHrCqeahBubAtW7uGGkGIIbd/O4bGPUEOAbfGvEKvOK1
+         pEHVcOW4gHByUz/uIQCi2n3qtlkUS/QcPtfOCXV1j/MiSRipHGSjWvD2b4ZF2nuhFWxk
+         5TXSFGrDvL3ZuiiFlN37/9fBEZT2pywtPOdj9Zk+xL6oO69nm3HJvDAp8DMx/GQ3l0Sx
+         vYCEt5xbwkMaVjteRbxelZOeole5pHhYgM7MK4g2UtoR4q4yXarft8qVnSZI7gQDGRr6
+         0qXg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.com; s=google; t=1785754446; x=1786359246; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WkMM4gx2K8iT6OacR97bokA0kWNfszhjDnUN6+5+1Tg=;
+        b=aVPZ/jvlBu4p7QPskWdBb5k866vh7QyQUVgQ7Dhd7y6aqeekj0aQjx59oDhiN1IBR5
+         rJ7AzuqmyzMSpyPvkLxwmyivRTAo8RcEhwQogdb7ldgMorF1n4PM1YjJgi7MGLfFM4Vx
+         eOT6hIlK9+DAxwqBz6Ighc09SKfHpmZDpvqL1fITQ5Ew99L1keQFk3saZAeP7vcI7Npz
+         mLQRattYemsLOnMozzfO6vDYgt4o9bKQIN8yotsPLmX3Ffle8Z3YQt3f7s1Jj+6U/Xql
+         SapKpQ0kNJv6Od6tk1lzORLPQC4SzZo3XxRKoV1xFrf7+RcjDUqDHmN9k/ImvYMSk09N
+         ksWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785754446; x=1786359246;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=WkMM4gx2K8iT6OacR97bokA0kWNfszhjDnUN6+5+1Tg=;
+        b=DKwZAXm2YbxjeLfOLNqeg4BANDVX818m6XIKQF0EvzXSjZAiqaUPokG/Xq7ESd8Hux
+         ePkMm+xjw18fhXWKDvmo6H2+enu3q79cP5nFgJ77F9W7S12rL0TVt6JHAggOoS6QssYd
+         /3AzRrzl/rXW6e7WIBS9bGhm8abRuixtNKrOMEVKHZjPPKPk7NQfG7BmB0hGYU2os9MQ
+         TnAmW1+LwXLVXD6A1VTA+gEKdRQNiaXdUvJnDFKmqkiBiYev5a/PFGSvYIM4nvfbmuE6
+         EeFZpxnJaea6ahOrN2ypgf8dO1KwYdkY2kLDpjaQGPJTkjT911paKXUR136D1YkNlsJL
+         XEhw==
+X-Forwarded-Encrypted: i=1; AHgh+RpqZR7WCy4GdZ44jqakMBFOw26j/uEj4CZbNz/5we7sgIR492EzKxu4fTjYZmWsBl+zoZdtOA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YykGplewLnEce24wYHPilGOZS/K/hyUe+VS0IPR+OARW8nqkPyT
+	fRt1yreXr6AE0sGkkuPAVswQDyjTPgRDXhcenYMonLUM9lSRJDG1D1tRMkUbajQSQbLKkSD1Gnq
+	e8AEnGq0qvQcd07Q0+QBcIZpZsH8agEgMA8XDgC1WHA==
+X-Gm-Gg: AR+sD13I8CcFuOt8hTcoUSMayFrvpvm9dJbAi6lqsrDE93ANJSUO8nRYxnQJV2L/ten
+	zGzDubNWKoC9NY9eVCvALNGLPEbTtrLOVbyP3Yob3stgYaMvgxgYUMFPQltL5bawmiQtX8Di6sv
+	WD4DQwBJijkOtWqlWeakeguArdChS7v/Jr1YmS7rSt3fSshZ2V347v4aqmCUkOUErmS2dQI62VZ
+	KdX1GCm1gB+/YQcUSw387CIOni5lT4Rv91zeRY5S0imkjY9Lf7aKpbeOgQpCIJv97VFwJXN+9aK
+	fW8jG4u9/2L7frvJSknmFHYw7u5Lg4tjMlg8NwQX6F/4Yv5lVt5KVtqiScVUDDRET1jfFwDY/4U
+	F
+X-Received: by 2002:a05:6808:159c:b0:489:a387:1e29 with SMTP id
+ 5614622812f47-4af5e3016cemr15807503b6e.20.1785754446430; Mon, 03 Aug 2026
+ 03:54:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260731-ipq9650_smmu_binding-v2-1-143a51c8ffce@oss.qualcomm.com>
+References: <20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net>
+ <20260727-bcm2712-iommu-submit-v2-4-0247b5c03de8@reactivated.net>
+ <20260730-small-solid-spoonbill-8a8bbd@quoll> <6d9b28ec-0905-4cb0-9a62-980c7fa69572@reactivated.net>
+ <e4dece11-ef3d-42e1-b179-cb710c501622@kernel.org>
+In-Reply-To: <e4dece11-ef3d-42e1-b179-cb710c501622@kernel.org>
+From: Nick Hollinghurst <nick.hollinghurst@raspberrypi.com>
+Date: Mon, 3 Aug 2026 11:53:54 +0100
+X-Gm-Features: AUfX_mytTkO-AkNzCG_mHrIojcRJSCw-VpYldbwKB1TRQ_LSnTcKOsfcIgvxdHU
+Message-ID: <CAPhyPA5K6nBAoSiUOyx3EF7mu7AHP6pEo5u72Jr+r5WiLo7cNg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] iommu: Add Broadcom BCM2712 IOMMU driver
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Daniel Drake <dan@reactivated.net>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	Jason Gunthorpe <jgg@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Jul 31, 2026 at 11:01:26AM +0530, Kathiravan Thirumoorthy wrote:
-> Add the compatible string for the APPS SMMU present on the Qualcomm
-> IPQ9650 SoC.
-> 
-> Signed-off-by: Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
-> ---
-> Changes in v2:
-> - Add the proper constraints - no clocks needed for IPQ9650
-> - Link to v1: https://patch.msgid.link/20260512-ipq9650_smmu_binding-v1-1-04defdaa140c@oss.qualcomm.com
-> 
-> To: Will Deacon <will@kernel.org>
-> To: Robin Murphy <robin.murphy@arm.com>
-> To: "Joerg Roedel (AMD)" <joro@8bytes.org>
-> To: Rob Herring <robh@kernel.org>
-> To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> To: Conor Dooley <conor+dt@kernel.org>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: iommu@lists.linux.dev
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index f2188942f877..ffa33b7f4a96 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -38,6 +38,7 @@ properties:
->                - qcom,eliza-smmu-500
->                - qcom,glymur-smmu-500
->                - qcom,hawi-smmu-500
-> +              - qcom,ipq9650-smmu-500
->                - qcom,kaanapali-smmu-500
->                - qcom,maili-smmu-500
->                - qcom,milos-smmu-500
-> @@ -625,6 +626,7 @@ allOf:
->                  - qcom,eliza-smmu-500
->                  - qcom,glymur-smmu-500
->                  - qcom,hawi-smmu-500
-> +                - qcom,ipq9650-smmu-500
+Hello,
 
-This will disallow clocks also for the Adreno one, so confirm that it
-also does not have clocks.
+On Sat, 1 Aug 2026 at 10:15, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>
+> On 31/07/2026 22:34, Daniel Drake wrote:
+> > On 30/07/2026 08:00, Krzysztof Kozlowski wrote:
+> >> On Mon, Jul 27, 2026 at 09:43:59PM +0100, Daniel Drake wrote:
+> >>> +static int bcm2712_iommu_init_cache(struct bcm2712_iommu *mmu,
+> >>> +                               struct platform_device *pdev)
+> >>> +{
+> >>> +   struct device *dev = &pdev->dev;
+> >>> +   struct platform_device *cache_pdev;
+> >>> +   struct device_node *cache_np;
+> >>> +
+> >>> +   cache_np = of_parse_phandle(dev->of_node, "brcm,iommu-cache", 0);
+> >>> +
+> >>> +   /* Fall back on 'cache' property used in old/downstream firmware */
+> >>> +   if (!cache_np)
+> >>> +           cache_np = of_parse_phandle(dev->of_node, "cache", 0);
+> >>
+> >> NAK.
+> >>
+> >> You cannot have undocumented ABI. I asked you to drop this at v1.
+> > Is there any approach I should consider here in order to support
+> > existing shipped firmware versions that use the 'cache' property, or
+> > should I simply break compatibility?
+>
+> Kernel is being shipped with DTB for Rpi, because firmware is not
+> embedded into some lower fixed storage, so there is no problem of
+> compatibility with some out of tree, unsupported DTB.
+>
+> And no, you cannot use argument of undocumented, unreviewed ABI in
+> downstream forks as reason to add such ABI. This defeats the very
+> purpose of having upstream.
 
-Best regards,
-Krzysztof
+The IOMMU cache is a separate block, shared between multiple IOMMU
+instances. This ought to be described in DT, one way or another.
 
+Of course, there's no need for back-compatibility with any downstream
+DTS, which can easily be updated.
+
+Regards,
+
+ Nick
