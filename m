@@ -1,118 +1,180 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0155142C506
-	for <iommu@lists.linux.dev>; Mon,  3 Aug 2026 18:19:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14113421242
+	for <iommu@lists.linux.dev>; Mon,  3 Aug 2026 18:28:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785781183; cv=none; b=HQJ0mVEglr8PLrFWAD++nIJqTaUhjNDooyk/i0IaZGa17hXPZBsZKUWEXkqUt2Tobv8b08MpRyF83ygqUzCvDzjTpIkZRH5829VyiZljUY04mdbbx/7TpFMxwEo9HPBhTKceCSlW4UJMtWtMGr85xUqtx/l1mXLtwRsNJhEzVg0=
+	t=1785781741; cv=none; b=A/w9AYmljQClDXIVxTE6pjitnM7L1R3feQMLE97cAhAB/KKWy6aLoIhSh5lNU88brQlymW2WB+3JlSI8TCFft9zsIelYPTm0+I3uC+v5eM1NsGvlum7sqOye1vcujKD390dCTdNWyVHIvmW0gIyPo5RwaxsrIZsKNQmYeMbaSZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785781183; c=relaxed/simple;
-	bh=dT3CK7NGp5t69RaPY8skYZh7DTJ8Ou8/q30Q/gQN4VE=;
+	s=arc-20240116; t=1785781741; c=relaxed/simple;
+	bh=5dAW2wmbtidI5gVpvg/cVrzbBBJdhnVmI6fLJTdKrrY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JexUMYSlq5uU91y1MdL6ZIoH9PzQjbO+/EV9y/19RGkDA9wBjCtlwJB6S241Iqy182pLBgJ5Fzgdi0e6AoPHVNaFB8716qWI62ulQw7Kj4SkaPtcMCAO+X2si264rb8np5cRW+raubvmdiDKnhPnVammgEU/k04x5FZBr/XRQ/k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=E384cUOt; arc=none smtp.client-ip=209.85.214.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=mmI64Bu4KR3i3TiObq7xwNXnwkJRPUTXU70wbbgxeXLPE4O3Vn2y/WFRWOPaaZ3khrBHG+MSI5v0bU+1vnh+5QiC0snWkFVFJuO2WZTjNQPNk6rdKTxWE2+1ERoeqkjEHxs5BkywT99LZKh9tRzRww0AG4ecWJMEraNRelqpv1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iSixAR2W; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="E384cUOt"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cab97c86bdso21735ad.1
-        for <iommu@lists.linux.dev>; Mon, 03 Aug 2026 11:19:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iSixAR2W"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2cab97c86bdso23075ad.1
+        for <iommu@lists.linux.dev>; Mon, 03 Aug 2026 11:28:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1785781181; x=1786385981; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=dT3CK7NGp5t69RaPY8skYZh7DTJ8Ou8/q30Q/gQN4VE=;
-        b=E384cUOtMtmi4UipKWGrB4l61Zj0kjF6l9Oh0P0GOA0iYR3Jf7oubc5CkQE+/+83T9
-         WSFeQNRvu5I+yXDxMUndWq2yEH0Mlg+/T/rBVnTLh/BssRohGC3AWCA3I2Zz5c1E3gnv
-         MNdDgk/EYnq3PTy1VccLIG3S40I2vgKWBPyNf0MWdhWLcmN2lakUcYXbnGvysePemfuv
-         KuIDX38yUpOMBaTepG3cH78WTjLGuW0hl62cFV3SYr+hUmrfJKrOmalxwWX9ODdZALfa
-         b/KacSEbealLuEaGbGPY8B0BJXQHdu0rtA7G5NnZjMg9Mht//gWlrxikhoai5ksuOxuX
-         LqsA==
+        d=google.com; s=20251104; t=1785781739; x=1786386539; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=YCj2r/JqY5u5nyX++s6hFCTol5l9mZg/fkApmxyULqA=;
+        b=iSixAR2WqlJkXGg7pLRBoqTq8SEMHrOKD0LCHxJIVUmjZsIzqzM3bnkhYr28AcOUGJ
+         gv6gX42w1bX3Kzr7PO5NaW25Kl4wzpQNflok0XTRhlH4svKKq/TZY3S8tNiaIJJBizZE
+         +wbyUaylIdjJc/5W4rT6VcCgpVRhXwIu9pcqG5QmRQj06dlaKBo8rMRIPwadai2yUMuF
+         +P9KEsDXR5w5e02L21g/OZckpEZoysGbb/hDc50dzlQtUot1awdfyDKx+iEnDKPKi4Sa
+         sG+DNSgxScfyZgkJh9/EuKyL2oxLzPxodFcH9TSOZik7algptSmrHpixuOSgUHrSiKN7
+         B2Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785781181; x=1786385981;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=dT3CK7NGp5t69RaPY8skYZh7DTJ8Ou8/q30Q/gQN4VE=;
-        b=INFFMkn/P4QMifV0zIMRvlKT/eCycG8/xvXqQ45kQmkKEuNTHOTvRGXY9AuKPCs0lF
-         L1wIiV5fX575zANKfY216sVXNdrpSOuoH+uiBoSlp9CTApZqnwTFl+9zHeYvJB1HbBta
-         CSw37vmMvbjTrsaGxM6d3X53fS2HWKXkDtT+rUZd9COa7BunYRlKGDowuzt1fzwYHucu
-         AutIKoloUxbIotA2hEPGZGcNLA22EzOtaxmkPE8ROguzut+mga6v6/32YHu/47Oz7gmF
-         gK7EC9JOLjEEvU5mWVxvqGcbX0pHfGDvjLoscbDutvpp5/4VtdiQMytk5QYxn3RK9RQD
-         /Ltg==
-X-Forwarded-Encrypted: i=1; AHgh+RpVDYUCqNBm8o/vdJKdKAEJ+2v3e405SsZ+5swYZoF72YroPacq7CPBhJQ2aemKmqhDEy7fHA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwVBXlUrXlForoT9+HdJFzPDB5+WX1gRytwrnPXjWWSj4vwfjO0
-	83T9Ox80ljdrH8dDb7s+PGuaFc4NF9JCpczI4IWcoyTfBsjOP8LTA50Zz8WlHAL56Q==
-X-Gm-Gg: AR+sD12yOmht7LUdeQR6DnFnw/dDS0DD++8JIP6Xnn9taydFakGIppFPowf274Sq8LV
-	/gjXD8gcGR2lxxeCAUnQnpcorVEYlKGpiCBI8AgEahAmnW+D5mcZIQ/UsM3hf1/njo35qbc7wTT
-	s49FhIqHVQaHnfKLLqr02iilJz8BNVg6hXIqndWQpETEkK+iq4UqUvdPCqiSKTDv0oOYT++F+Y2
-	ehzEjsVcJlRPDhM7t6xxOTaSfTaWjPmwVtgEma/humF1nuLuh21ie+T95ouk4MxyYjCwTe8ysGt
-	lv7be/NTfVrlQCBcmnIf1N3jnlAucXQpCy4CMNiuqZDKIa67jNsRr0J9GBo5hPrvk2CJCy7+pKA
-	G1wIYN+N15rmizn25LyJpQrRcl3aRo2W+CCi7DeMB6PpMrMJZ3QRmxB91+ud7L+MUpzzQ9oGxOR
-	9TW32YVLR5iN9h2XtuSMLCh6dzS73qZkVfaQHy0nEqa46+9DNsRpSFGRibXPV6ej48glL0kCq8H
-	aAr0KD8+T+6hrUuHiqZgLnWmIXxD37SKH62nn7Zj+1dW8t/CzjfXYV6bxc=
-X-Received: by 2002:a17:903:8cd:b0:2c0:defb:557e with SMTP id d9443c01a7336-2d08cda9b92mr1073765ad.1.1785781180682;
-        Mon, 03 Aug 2026 11:19:40 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1785781739; x=1786386539;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YCj2r/JqY5u5nyX++s6hFCTol5l9mZg/fkApmxyULqA=;
+        b=S2Evl2PIQBNfwDIaSORWIYAy9JS73dH6vqa4J9SlDpm8Ta6FutGH0FQsyC+s+BsptX
+         e4COgNJrpeZN7es2lfzpjjyhUXJoaQMEAOFwkGbtls4L72/Z8dra1HjFWExqa/WDU7x8
+         h3k0GSNeISlewRxTbsUqu5fsPQJPKWFICfBeSeDvNwdVjzCdS1Mg25aywHIrHMbs39Tm
+         km4VFt7j6zQMyD1zZUt7yTGKLOONZw9fxsqvmIqEOXbV5byUKDpwvGYLsJQweCzTliUi
+         YTFfFKML2lwtXJv/HHFXZeFp0aM7XFbZ0zbKX+DPW9eKx2QvH9TRP5o4/WW6n8SZxFhx
+         +ZNQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rqpif1fYWXv4ZL4G6NvSVwSj5jze3IhiwY2tcfU07n9H+Wc81when1WiEG286hkRWVoGje0mQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyln6bCxsa3o4naDW/rJ2frVjhPn5nFTl/reR2x81Vki3SXY5iG
+	ljKby5dCdBEFdDIXAk84kgPZCEQpHABc8vG/g45IvF/MRCgb9dMMB2HUtvgB0kA38Q==
+X-Gm-Gg: AR+sD11iDDbq2/jZQ17n20ZEaIVJHT+CUnQ6/cTrFdKwiP/Xz+UylEZQRfGq1zf6JEZ
+	4qKbFSX3Oa7Y7y0hSUJLSo7jjBPgu9Au1AoK595nvZeMPBoQFDbRvyXHYXAAkKswe+bYRKbVCX9
+	Ge0fHTfppeyBAzNIaw/YVlxVbR7I9cEAIud2hIlqZZ41JtczWcTmsWH4winM0yX+65tc3/SdAVj
+	mEzoZqFQYJuX+ok2tN95k/0o7nNWeJWYquMOjqj+FF83kq0aGTCQfvWW9LvvHahCIjTGmIcaglV
+	CuQd8jXuhYhW+mXhHgV6E1Vg2/yK5bm/KR1pau+VbxvDmIit+h6vqBphEW6CfQwVVaoUcZPt8vW
+	NPwzT/G7f2sAAfMW/rAMvToTzDHhvRLrod6jvwY2W6K83AlFmt03cGuVCr1Fe9GAlFLlZaJFtq9
+	tWa/plfUIP8COzQuNn/nQdHFR4QUMOy8BajWVHKnvFYeEv4zwh+moNgcx30cJ/eKAd2lpTxwPTw
+	42sbAuXdcACp8Qb97VafoRVED1Tgs/NZ+Alqo6BYOy0xDr8ZTRQBAb05w+0NQAXsqXuUQ==
+X-Received: by 2002:a17:902:ea0b:b0:2ce:b436:272a with SMTP id d9443c01a7336-2d08cdb06a7mr964365ad.3.1785781738650;
+        Mon, 03 Aug 2026 11:28:58 -0700 (PDT)
 Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d04b165e99sm41804515ad.83.2026.08.03.11.19.40
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cbe396ea598sm4113578a12.19.2026.08.03.11.28.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 11:19:40 -0700 (PDT)
-Date: Mon, 3 Aug 2026 18:19:36 +0000
+        Mon, 03 Aug 2026 11:28:58 -0700 (PDT)
+Date: Mon, 3 Aug 2026 18:28:55 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
 	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Sashiko <sashiko-bot@kernel.org>
-Subject: Re: [PATCH 5/5] iommu/vt-d: Flush context cache with correct SID
- when tearing down aliases
-Message-ID: <anDbfCdtFJ7SViYU@google.com>
+	stable@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>
+Subject: Re: [PATCH 1/5] iommu/vt-d: Fix shift overflow in
+ qi_desc_dev_iotlb_pasid()
+Message-ID: <anDd37AO0g0Budzu@google.com>
 References: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
- <20260731054329.2948252-6-baolu.lu@linux.intel.com>
+ <20260731054329.2948252-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260731054329.2948252-6-baolu.lu@linux.intel.com>
+In-Reply-To: <20260731054329.2948252-2-baolu.lu@linux.intel.com>
 
-On Fri, Jul 31, 2026 at 01:43:29PM +0800, Lu Baolu wrote:
->domain_context_clear_one() and device_pasid_table_teardown() are both
->invoked once per DMA alias of a device. Each function locates the context
->entry using the bus/devfn pair provided by the pci_for_each_dma_alias()
->callback, then calls intel_context_flush_no_pasid(), which constructs a
->device-selective context-cache invalidation from info->bus and
->info->devfn (that is, always the requester ID of the device itself).
+On Fri, Jul 31, 2026 at 01:43:25PM +0800, Lu Baolu wrote:
+>Callers request a full Device-TLB flush by passing MAX_AGAW_PFN_WIDTH
+>(64 - VTD_PAGE_SHIFT == 52) as @size_order.  Two shifts in
+>qi_desc_dev_iotlb_pasid() are not prepared for a value that large:
 >
->As a result, for every alias other than the device’s own RID, the context
->entry that was just cleared in memory is never invalidated in the context
->cache. Hardware may continue using that stale cached entry. In the
->scalable-mode teardown path, intel_pasid_free_table() can then free the
->PASID directory still referenced by that stale entry, allowing the IOMMU
->to walk freed memory.
+>  unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
+>  ...
+>  if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
 >
->Fix this by passing the source ID of the entry being torn down to
->intel_context_flush_no_pasid(), instead of deriving it from @info.
+>The first evaluates to 1UL << 63.  On 32-bit builds this is undefined
+>behaviour; in practice x86 masks the shift count to 5 bits, so the
+>expression yields 1UL << 31 and ~mask becomes 0x7fffffff.  That value is
+>zero-extended when it is applied to the 64-bit descriptor, so
 >
->Fixes: f90584f4beb84 ("iommu/vt-d: Add helper to flush caches for context change")
+>  desc->qw1 &= ~mask;
+>
+>clears qw1[63:32] as well as bit 31.  The ADDR field, which had just been
+>filled with ones to request the widest possible range, collapses to
+>0x7ffff000.  As the S bit remains set, hardware decodes the least
+>significant zero bit of ADDR and invalidates only 2GiB instead of the
+>entire address space.  Device-TLB entries above that boundary survive the
+>unmap, leaving an ATS-capable device able to keep accessing memory that
+>has already been freed.
+>
+>The second shift, VTD_PAGE_SIZE << size_order, is 1UL << 64 and is
+>therefore undefined on 64-bit builds too.  On x86_64 the shift count
+>masks to zero, IS_ALIGNED(addr, 1) is trivially true and the sanity check
+>silently degrades into a no-op.
+>
+>Compute both quantities in 64-bit and clamp @size_order to the largest
+>range the ADDR field can encode.  Capping at 63 - VTD_PAGE_SHIFT keeps
+>the intended "flush everything" behaviour: qw1[62:12] is set, bit 62 is
+>cleared as the size indicator and the S bit is set.  The non-PASID
+>variant qi_desc_dev_iotlb() already uses 1ULL and is unaffected.
+>
+>Fixes: f701c9f36bcb7 ("iommu/vt-d: Factor out invalidation descriptor composition")
+>Cc: stable@vger.kernel.org
 >Reported-by: Sashiko <sashiko-bot@kernel.org>
->Closes: https://sashiko.dev/#/patchset/20260602233426.357499-1-baolu.lu%40linux.intel.com
+>Closes: https://sashiko.dev/#/patchset/20260623060122.3796325-1-guanghuifeng%40linux.alibaba.com
 >Assisted-by: Claude:claude-opus-5
 >Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 >---
-> drivers/iommu/intel/iommu.h | 2 +-
-> drivers/iommu/intel/iommu.c | 2 +-
-> drivers/iommu/intel/pasid.c | 9 ++++++---
-> 3 files changed, 8 insertions(+), 5 deletions(-)
+> drivers/iommu/intel/iommu.h | 16 ++++++++++++----
+> 1 file changed, 12 insertions(+), 4 deletions(-)
+>
+>diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>index c00f44db0020..8a59c7c9d0a6 100644
+>--- a/drivers/iommu/intel/iommu.h
+>+++ b/drivers/iommu/intel/iommu.h
+>@@ -1105,12 +1105,20 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
+> 					   unsigned int size_order,
+> 					   struct qi_desc *desc)
+> {
+>-	unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
+>-
+> 	desc->qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
+> 		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
+> 		QI_DEV_IOTLB_PFSID(pfsid);
+>
+>+	/*
+>+	 * The invalidation range is encoded in the ADDR field, which only
+>+	 * covers bits 63:12.  Clamp @size_order so that callers asking for a
+>+	 * full flush (e.g. with MAX_AGAW_PFN_WIDTH) do not overflow the
+>+	 * shifts below.  The clamped value still spans the whole range that
+>+	 * the descriptor is able to express.
+>+	 */
+>+	if (size_order > 63 - VTD_PAGE_SHIFT)
+>+		size_order = 63 - VTD_PAGE_SHIFT;
+>+
+> 	/*
+> 	 * If S bit is 0, we only flush a single page. If S bit is set,
+> 	 * The least significant zero bit indicates the invalidation address
+>@@ -1120,7 +1128,7 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
+> 	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
+> 	 * ECAP.
+> 	 */
+>-	if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
+>+	if (!IS_ALIGNED(addr, BIT_ULL(VTD_PAGE_SHIFT + size_order)))
+> 		pr_warn_ratelimited("Invalidate non-aligned address %llx, order %d\n",
+> 				    addr, size_order);
+>
+>@@ -1136,7 +1144,7 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
+> 		desc->qw1 |= GENMASK_ULL(size_order + VTD_PAGE_SHIFT - 1,
+> 					VTD_PAGE_SHIFT);
+> 		/* Clear size_order bit to indicate size */
+>-		desc->qw1 &= ~mask;
+>+		desc->qw1 &= ~BIT_ULL(VTD_PAGE_SHIFT + size_order - 1);
+> 		/* Set the S bit to indicate flushing more than 1 page */
+> 		desc->qw1 |= QI_DEV_EIOTLB_SIZE;
+> 	}
+>-- 
+>2.43.0
+>
 >
 
 Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
-
-Sami
