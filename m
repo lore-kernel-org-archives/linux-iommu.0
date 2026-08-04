@@ -1,180 +1,93 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14113421242
-	for <iommu@lists.linux.dev>; Mon,  3 Aug 2026 18:28:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7A13F4DD6
+	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 02:28:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785781741; cv=none; b=A/w9AYmljQClDXIVxTE6pjitnM7L1R3feQMLE97cAhAB/KKWy6aLoIhSh5lNU88brQlymW2WB+3JlSI8TCFft9zsIelYPTm0+I3uC+v5eM1NsGvlum7sqOye1vcujKD390dCTdNWyVHIvmW0gIyPo5RwaxsrIZsKNQmYeMbaSZs=
+	t=1785810518; cv=none; b=jMjLMd1toM9LH1GYdbXz8+B8BIm0CPTnQbqeW7ACDLtCC4rIBaBNF6CYQzR9jSHwClhQtNc7gU8cSNfYDfQmliL5p56exqIaXD5YPjjFQO8kUdbGyi17CuBOuln9YFej48yEk0egXjJ2nb4kOWgHFOhLCTX9jwx+t/PSKU9CInQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785781741; c=relaxed/simple;
-	bh=5dAW2wmbtidI5gVpvg/cVrzbBBJdhnVmI6fLJTdKrrY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mmI64Bu4KR3i3TiObq7xwNXnwkJRPUTXU70wbbgxeXLPE4O3Vn2y/WFRWOPaaZ3khrBHG+MSI5v0bU+1vnh+5QiC0snWkFVFJuO2WZTjNQPNk6rdKTxWE2+1ERoeqkjEHxs5BkywT99LZKh9tRzRww0AG4ecWJMEraNRelqpv1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iSixAR2W; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1785810518; c=relaxed/simple;
+	bh=nMrFaoho3m9K0kzIRUJEfZYH3xSTX1xjNzE8+wtcYDA=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=O10JgHcKTayxeyKdWrBuzsV5GEKKgXBq5/i3MUsu/ROid/m07qWyMazeeISu0ZjCE+DwsaJ51Zday/Mz+SkfMaAxZJONu4iI+pg6duoSdZDlceixWU/5oDRaESJGRgjGjiffLBKUdLIrvk1cdaZ9vovgTMVowmGxRx7AX3OrsFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ACfZEfQO; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iSixAR2W"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2cab97c86bdso23075ad.1
-        for <iommu@lists.linux.dev>; Mon, 03 Aug 2026 11:28:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1785781739; x=1786386539; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=YCj2r/JqY5u5nyX++s6hFCTol5l9mZg/fkApmxyULqA=;
-        b=iSixAR2WqlJkXGg7pLRBoqTq8SEMHrOKD0LCHxJIVUmjZsIzqzM3bnkhYr28AcOUGJ
-         gv6gX42w1bX3Kzr7PO5NaW25Kl4wzpQNflok0XTRhlH4svKKq/TZY3S8tNiaIJJBizZE
-         +wbyUaylIdjJc/5W4rT6VcCgpVRhXwIu9pcqG5QmRQj06dlaKBo8rMRIPwadai2yUMuF
-         +P9KEsDXR5w5e02L21g/OZckpEZoysGbb/hDc50dzlQtUot1awdfyDKx+iEnDKPKi4Sa
-         sG+DNSgxScfyZgkJh9/EuKyL2oxLzPxodFcH9TSOZik7algptSmrHpixuOSgUHrSiKN7
-         B2Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785781739; x=1786386539;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=YCj2r/JqY5u5nyX++s6hFCTol5l9mZg/fkApmxyULqA=;
-        b=S2Evl2PIQBNfwDIaSORWIYAy9JS73dH6vqa4J9SlDpm8Ta6FutGH0FQsyC+s+BsptX
-         e4COgNJrpeZN7es2lfzpjjyhUXJoaQMEAOFwkGbtls4L72/Z8dra1HjFWExqa/WDU7x8
-         h3k0GSNeISlewRxTbsUqu5fsPQJPKWFICfBeSeDvNwdVjzCdS1Mg25aywHIrHMbs39Tm
-         km4VFt7j6zQMyD1zZUt7yTGKLOONZw9fxsqvmIqEOXbV5byUKDpwvGYLsJQweCzTliUi
-         YTFfFKML2lwtXJv/HHFXZeFp0aM7XFbZ0zbKX+DPW9eKx2QvH9TRP5o4/WW6n8SZxFhx
-         +ZNQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rqpif1fYWXv4ZL4G6NvSVwSj5jze3IhiwY2tcfU07n9H+Wc81when1WiEG286hkRWVoGje0mQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyln6bCxsa3o4naDW/rJ2frVjhPn5nFTl/reR2x81Vki3SXY5iG
-	ljKby5dCdBEFdDIXAk84kgPZCEQpHABc8vG/g45IvF/MRCgb9dMMB2HUtvgB0kA38Q==
-X-Gm-Gg: AR+sD11iDDbq2/jZQ17n20ZEaIVJHT+CUnQ6/cTrFdKwiP/Xz+UylEZQRfGq1zf6JEZ
-	4qKbFSX3Oa7Y7y0hSUJLSo7jjBPgu9Au1AoK595nvZeMPBoQFDbRvyXHYXAAkKswe+bYRKbVCX9
-	Ge0fHTfppeyBAzNIaw/YVlxVbR7I9cEAIud2hIlqZZ41JtczWcTmsWH4winM0yX+65tc3/SdAVj
-	mEzoZqFQYJuX+ok2tN95k/0o7nNWeJWYquMOjqj+FF83kq0aGTCQfvWW9LvvHahCIjTGmIcaglV
-	CuQd8jXuhYhW+mXhHgV6E1Vg2/yK5bm/KR1pau+VbxvDmIit+h6vqBphEW6CfQwVVaoUcZPt8vW
-	NPwzT/G7f2sAAfMW/rAMvToTzDHhvRLrod6jvwY2W6K83AlFmt03cGuVCr1Fe9GAlFLlZaJFtq9
-	tWa/plfUIP8COzQuNn/nQdHFR4QUMOy8BajWVHKnvFYeEv4zwh+moNgcx30cJ/eKAd2lpTxwPTw
-	42sbAuXdcACp8Qb97VafoRVED1Tgs/NZ+Alqo6BYOy0xDr8ZTRQBAb05w+0NQAXsqXuUQ==
-X-Received: by 2002:a17:902:ea0b:b0:2ce:b436:272a with SMTP id d9443c01a7336-2d08cdb06a7mr964365ad.3.1785781738650;
-        Mon, 03 Aug 2026 11:28:58 -0700 (PDT)
-Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cbe396ea598sm4113578a12.19.2026.08.03.11.28.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 11:28:58 -0700 (PDT)
-Date: Mon, 3 Aug 2026 18:28:55 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>
-Subject: Re: [PATCH 1/5] iommu/vt-d: Fix shift overflow in
- qi_desc_dev_iotlb_pasid()
-Message-ID: <anDd37AO0g0Budzu@google.com>
-References: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
- <20260731054329.2948252-2-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ACfZEfQO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1785810516; x=1817346516;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=nMrFaoho3m9K0kzIRUJEfZYH3xSTX1xjNzE8+wtcYDA=;
+  b=ACfZEfQOH/cGJl0kv9ozykOfPxoYZAQuvalFsa1TDkte3raREZMdgmpp
+   6plm4xi2RbznIhBftIIPtJzOdQh1JFKpw11ivECJHDtIw3YKqetFcOlyH
+   9K7u1xTqBpvsLLlAtM8X4SjYd3AZ9KC0rjoHp84otQoPUNQn9OZRycjte
+   414xisOKfWHIUE2gJu0KbWusgM9iMqbgD7FcowpCqZ9F2LDIjpkITLUr+
+   y3WMJNN+UQXHRSuDPjQ6jNuux8aiAsY4s4t7iaY19rEhsD95vzVLOZTFY
+   jdp82ovNO9tIbTaROmqY59k+sI+HP6gZD/Z2uYjqsGxiw+DZqx6LDaaGX
+   g==;
+X-CSE-ConnectionGUID: 8NDIu3OkTi2haiwGd7uozQ==
+X-CSE-MsgGUID: q1tFrBZ9SxyDDmu3670HAA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11864"; a="97007294"
+X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
+   d="scan'208";a="97007294"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 19:28:35 -0700
+X-CSE-ConnectionGUID: hWpXkJAEROmeZw43x9a5mg==
+X-CSE-MsgGUID: 4qFAvWu/Qbuv7LXEzC7+qg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
+   d="scan'208";a="260780364"
+Received: from unknown (HELO [10.238.0.222]) ([10.238.0.222])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 19:28:33 -0700
+Message-ID: <af65db88-23e2-4c74-bfde-13587da360f0@linux.intel.com>
+Date: Tue, 4 Aug 2026 10:28:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20260731054329.2948252-2-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] iommu/vt-d: Fixes for issues reported by Sashiko
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
+References: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260731054329.2948252-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 31, 2026 at 01:43:25PM +0800, Lu Baolu wrote:
->Callers request a full Device-TLB flush by passing MAX_AGAW_PFN_WIDTH
->(64 - VTD_PAGE_SHIFT == 52) as @size_order.  Two shifts in
->qi_desc_dev_iotlb_pasid() are not prepared for a value that large:
->
->  unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
->  ...
->  if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
->
->The first evaluates to 1UL << 63.  On 32-bit builds this is undefined
->behaviour; in practice x86 masks the shift count to 5 bits, so the
->expression yields 1UL << 31 and ~mask becomes 0x7fffffff.  That value is
->zero-extended when it is applied to the 64-bit descriptor, so
->
->  desc->qw1 &= ~mask;
->
->clears qw1[63:32] as well as bit 31.  The ADDR field, which had just been
->filled with ones to request the widest possible range, collapses to
->0x7ffff000.  As the S bit remains set, hardware decodes the least
->significant zero bit of ADDR and invalidates only 2GiB instead of the
->entire address space.  Device-TLB entries above that boundary survive the
->unmap, leaving an ATS-capable device able to keep accessing memory that
->has already been freed.
->
->The second shift, VTD_PAGE_SIZE << size_order, is 1UL << 64 and is
->therefore undefined on 64-bit builds too.  On x86_64 the shift count
->masks to zero, IS_ALIGNED(addr, 1) is trivially true and the sanity check
->silently degrades into a no-op.
->
->Compute both quantities in 64-bit and clamp @size_order to the largest
->range the ADDR field can encode.  Capping at 63 - VTD_PAGE_SHIFT keeps
->the intended "flush everything" behaviour: qw1[62:12] is set, bit 62 is
->cleared as the size indicator and the S bit is set.  The non-PASID
->variant qi_desc_dev_iotlb() already uses 1ULL and is unaffected.
->
->Fixes: f701c9f36bcb7 ("iommu/vt-d: Factor out invalidation descriptor composition")
->Cc: stable@vger.kernel.org
->Reported-by: Sashiko <sashiko-bot@kernel.org>
->Closes: https://sashiko.dev/#/patchset/20260623060122.3796325-1-guanghuifeng%40linux.alibaba.com
->Assisted-by: Claude:claude-opus-5
->Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->---
-> drivers/iommu/intel/iommu.h | 16 ++++++++++++----
-> 1 file changed, 12 insertions(+), 4 deletions(-)
->
->diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->index c00f44db0020..8a59c7c9d0a6 100644
->--- a/drivers/iommu/intel/iommu.h
->+++ b/drivers/iommu/intel/iommu.h
->@@ -1105,12 +1105,20 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
-> 					   unsigned int size_order,
-> 					   struct qi_desc *desc)
-> {
->-	unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
->-
-> 	desc->qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
-> 		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
-> 		QI_DEV_IOTLB_PFSID(pfsid);
->
->+	/*
->+	 * The invalidation range is encoded in the ADDR field, which only
->+	 * covers bits 63:12.  Clamp @size_order so that callers asking for a
->+	 * full flush (e.g. with MAX_AGAW_PFN_WIDTH) do not overflow the
->+	 * shifts below.  The clamped value still spans the whole range that
->+	 * the descriptor is able to express.
->+	 */
->+	if (size_order > 63 - VTD_PAGE_SHIFT)
->+		size_order = 63 - VTD_PAGE_SHIFT;
->+
-> 	/*
-> 	 * If S bit is 0, we only flush a single page. If S bit is set,
-> 	 * The least significant zero bit indicates the invalidation address
->@@ -1120,7 +1128,7 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
-> 	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
-> 	 * ECAP.
-> 	 */
->-	if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
->+	if (!IS_ALIGNED(addr, BIT_ULL(VTD_PAGE_SHIFT + size_order)))
-> 		pr_warn_ratelimited("Invalidate non-aligned address %llx, order %d\n",
-> 				    addr, size_order);
->
->@@ -1136,7 +1144,7 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
-> 		desc->qw1 |= GENMASK_ULL(size_order + VTD_PAGE_SHIFT - 1,
-> 					VTD_PAGE_SHIFT);
-> 		/* Clear size_order bit to indicate size */
->-		desc->qw1 &= ~mask;
->+		desc->qw1 &= ~BIT_ULL(VTD_PAGE_SHIFT + size_order - 1);
-> 		/* Set the S bit to indicate flushing more than 1 page */
-> 		desc->qw1 |= QI_DEV_EIOTLB_SIZE;
-> 	}
->-- 
->2.43.0
->
->
+On 7/31/2026 1:43 PM, Lu Baolu wrote:
+> Hi,
+> 
+> This collects a number of pre-existing issues that were reported by
+> Sashiko while reviewing recent VT-d patches. None of them are
+> regressions from the patches under review; they are latent problems in
+> code those patches happened to touch. They are independent of each other
+> and can be applied in any order.
+> 
+> Thanks,
+> baolu
+> 
+> Lu Baolu (5):
+>    iommu/vt-d: Fix shift overflow in qi_desc_dev_iotlb_pasid()
+>    iommu/vt-d: Clear Present bit before tearing down copied context entry
+>    iommu/vt-d: Fix iopf_refcount leak on RID domain replacement
+>    iommu/vt-d: Tear down scalable-mode context on probe failure
+>    iommu/vt-d: Flush context cache with correct SID when tearing down
+>      aliases
+> 
+>   drivers/iommu/intel/iommu.h | 18 +++++++++++++-----
+>   drivers/iommu/intel/iommu.c | 22 +++++++++++++++-------
+>   drivers/iommu/intel/pasid.c |  9 ++++++---
+>   3 files changed, 34 insertions(+), 15 deletions(-)
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+Queued for iommu/vt-d.
