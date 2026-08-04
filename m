@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5BE446063
-	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 23:54:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5D844AB67
+	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 23:54:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785887672; cv=none; b=t3ejjgE2WsyviusunkyJm/rg0v8BtmRRHhJJFmyiVDgq4gz6qFCyXmvGbQoY6uHhPp8y2xuMAMEekViFYUyud4+MoZRvHlOK0DmpvE4WCQ1R4DioJbrGM6AyJUppSFoyeVfPvnPHmJlJ/3oIZbOmSKXPELXNKSqqEgoe8PNgPX4=
+	t=1785887673; cv=none; b=q8YgZG7ekuIieVyIdhL84ZmK0rYR8NKNYPTwpTBTGW2DOoNY3SBgDedVBNAaHD/G8bQvwnAZrSs02SYT2ozCaHPfdj1u5jzjRrlv4W4zLtTH7BmNCBbzmzkIshwnvGXZsgCQH8TObBhkWUDLL5uPI2aPj7/vg527eBqqx6zLDGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785887672; c=relaxed/simple;
-	bh=sC0Psn9+T0aC5GxdGeCxklvUUEZ395pym97oWYEJoOM=;
+	s=arc-20240116; t=1785887673; c=relaxed/simple;
+	bh=wvs5/3Vc8ATiENqbwg9FKEU2eKqwenz/FQk2i2ewikk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=in8j+VKjxdQsThnzAhKkYdX6+F3cl5tE3iWMTDZmQMCfKhzVD5Dj5JIM1iFcMHRYjLH9cd5oSvNFXNOM3c2899X63KUtG961P40DqjYgKEcqPKhiof7fgNYe+F0aVTpfzyz8wwdreOMqR2sqnYd/GERsMYAUBaxlDP9qCNwrpCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HUvnf8th; arc=none smtp.client-ip=192.198.163.12
+	 MIME-Version; b=pQ2fSiim2NPhihJ/9B9nSR+NpS6qDAeNKx7EjO4lmMTQ4xQhQomEPYQgbNy+N+63w8mltsuBPwT0rwCxAPl2NrYJc0ubPRNxHBsVIlxg94AuG/PFxqnQHrtQNQTbdZy6pkTgooMJ/m3zqhC0gVmcTA+qtYdX5+eeO4UeVaT2BkI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e/wUSe9H; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HUvnf8th"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e/wUSe9H"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785887671; x=1817423671;
+  t=1785887673; x=1817423673;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sC0Psn9+T0aC5GxdGeCxklvUUEZ395pym97oWYEJoOM=;
-  b=HUvnf8thyrF+exWNyttE5FAsj1pen+4B9muf7kZMBAH+OaEUbL49Jdf5
-   nHaJ5zv91dDmFP9l5j/FnDEyxwzB000yf3q30YvFFnXmPcl5Sd+dMX4Yv
-   gYXoetfKuG9UCJ6cCi1VO+caD9esaFf+l3q/fUrcVBxRs7+EoskhkYJwu
-   8N96ukcjyPwWw/JCD/Eb6ymetuzcnRLMCeVP83wVQij0VNqouwJwLMylG
-   0h0TZjH8ChltZFR3ilS0kH4IxGEq2E9yJ0AIjvw9xdPeuJ8MoY9XCWgag
-   6KvV7FR+Jp9FptMay2NjajjwSSyA2HU9moIfsTIrjBmlElMl9hDgDveeL
-   g==;
-X-CSE-ConnectionGUID: VkhvNKuJRIu6iphZY/oGgg==
-X-CSE-MsgGUID: EBBNHkecSp+zwGk45Sd5oA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11865"; a="90263212"
+  bh=wvs5/3Vc8ATiENqbwg9FKEU2eKqwenz/FQk2i2ewikk=;
+  b=e/wUSe9HiV+DLPYqnunMgodpkfRnhfawuGHjE/zV0H/F+vDxNVaImBIm
+   f5waLkiL8Cp2qGnys2kUF3Xe719dGZmreyQlbIu8Z8wPmrgZ5Y8CNr6gM
+   ojtx7cCrYcSs7eh24BAFqYqqxmvFvvyvLJ9boCNpWMvL7M3wAn2tnlAQ5
+   LHFZrVptwGxGSIPkRxXrWHefqfORZdnGVAu1z1k1vjFuSDOgEiDdOqPaf
+   6iHPYa2ctDh5YcuCdSrYfmr4lv5/AKrwALQTOJ6RzNR8AHZE58mrBbwM+
+   rxsbpOInwPTLaMZROEzb1dYzpCAeHFv6/rYQRqCmiVKpyhehrltr7AD3B
+   w==;
+X-CSE-ConnectionGUID: P0hH54tjRhy0hhq7IVx4cQ==
+X-CSE-MsgGUID: 7//qUfIGT7WBcPSTv95/6g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11865"; a="90263220"
 X-IronPort-AV: E=Sophos;i="6.25,205,1779174000"; 
-   d="scan'208";a="90263212"
+   d="scan'208";a="90263220"
 Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2026 16:54:30 -0700
-X-CSE-ConnectionGUID: BPeWgJm/SMWcLZtekETYcQ==
-X-CSE-MsgGUID: ONHNiWFMS2uPP3bA/0+hIA==
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2026 16:54:32 -0700
+X-CSE-ConnectionGUID: rE9v6iQqTuu/ww1Z+8UMKA==
+X-CSE-MsgGUID: ZeV1DN5CQsmYMzngrZjmBA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,205,1779174000"; 
-   d="scan'208";a="257324319"
+   d="scan'208";a="257324328"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa006.fm.intel.com with ESMTP; 04 Aug 2026 16:54:28 -0700
+  by fmviesa006.fm.intel.com with ESMTP; 04 Aug 2026 16:54:30 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: ZhaoJinming <zhaojinming@uniontech.com>,
@@ -53,9 +53,9 @@ Cc: ZhaoJinming <zhaojinming@uniontech.com>,
 	Desnes Nunes <desnesn@redhat.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 03/19] iommu/vt-d: Fix CACHE_TAG_NESTING_DEVTLB polluting shared variables in flush loop
-Date: Wed,  5 Aug 2026 07:42:57 +0800
-Message-ID: <20260804234314.3087110-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 04/19] iommu/vt-d: Use kstrtoint_from_user() in dmar_perf_latency_write()
+Date: Wed,  5 Aug 2026 07:42:58 +0800
+Message-ID: <20260804234314.3087110-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260804234314.3087110-1-baolu.lu@linux.intel.com>
 References: <20260804234314.3087110-1-baolu.lu@linux.intel.com>
@@ -67,58 +67,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+From: Dmitry Antipov <dmantipov@yandex.ru>
 
-In cache_tag_flush_range(), the CACHE_TAG_NESTING_DEVTLB case modifies the
-shared local variables 'addr' and 'mask' before falling through to
-CACHE_TAG_DEVTLB. This causes all subsequent CACHE_TAG_DEVTLB entries in
-the same loop iteration to incorrectly use the full-range flush parameters
-(addr=0, mask=MAX_AGAW_PFN_WIDTH) instead of the precisely calculated PSI
-range. This is not the intended behavior, as regular DEVTLB entries should
-always perform targeted range-based invalidation.
+Simplify 'dmar_perf_latency_write()' by using the convenient
+'kstrtoint_from_user()'.
 
-Fix this by having CACHE_TAG_NESTING_DEVTLB directly call
-cache_tag_flush_devtlb_psi() with the full-range constants and break,
-instead of modifying shared variables and falling through. This ensures
-CACHE_TAG_DEVTLB always uses the original calculated addr and mask for
-precise range flush.
-
-This change slightly affects trace_cache_tag_flush_range() behavior.
-Previously, after addr/mask were overwritten, the tracepoint could record
-a full-range flush even when the caller requested a narrower range.
-
-The tracepoint should reflect caller intent. Although this helper may
-widen the actual hardware invalidation range for implementation reasons,
-that does not change what the caller requested, so logging the requested
-range is the correct behavior.
-
-If the actual invalidation range sent to hardware is needed, it is already
-visible via the qi_submit trace event, which records the invalidation
-descriptors emitted by the driver.
-
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
+Signed-off-by: Dmitry Antipov <dmantipov@yandex.ru>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/cache.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/debugfs.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
-index fdc88817709f..26a758b0f501 100644
---- a/drivers/iommu/intel/cache.c
-+++ b/drivers/iommu/intel/cache.c
-@@ -454,9 +454,8 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
- 			 * affected by a change in S2. So just flush the entire
- 			 * device cache.
- 			 */
--			addr = 0;
--			mask = MAX_AGAW_PFN_WIDTH;
--			fallthrough;
-+			cache_tag_flush_devtlb_psi(domain, tag, 0, MAX_AGAW_PFN_WIDTH);
-+			break;
- 		case CACHE_TAG_DEVTLB:
- 			cache_tag_flush_devtlb_psi(domain, tag, addr, mask);
- 			break;
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index 21e4e465ca58..d87408ebb830 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -690,19 +690,11 @@ static ssize_t dmar_perf_latency_write(struct file *filp,
+ {
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+-	int counting;
+-	char buf[64];
++	int ret, counting;
+ 
+-	if (cnt > 63)
+-		cnt = 63;
+-
+-	if (copy_from_user(&buf, ubuf, cnt))
+-		return -EFAULT;
+-
+-	buf[cnt] = 0;
+-
+-	if (kstrtoint(buf, 0, &counting))
+-		return -EINVAL;
++	ret = kstrtoint_from_user(ubuf, cnt, 0, &counting);
++	if (ret)
++		return ret;
+ 
+ 	switch (counting) {
+ 	case 0:
 -- 
 2.43.0
 
