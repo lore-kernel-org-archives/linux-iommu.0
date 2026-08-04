@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E2003542F8
-	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 02:48:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BAAB386422
+	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 02:48:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785811707; cv=none; b=R7ga/pdj0b8eToVrIQe5/aaF1EmWsss//gQlq7FtparJ1RevJeOvvteY9nOmi9iLjRbCPDkWu6WE7jYmMcEWurOSlEgY92pYsHAXKVuA7UL+wxT8KSTFkwyIva6cGbjNGC2kKTUc/M/kxFTMu2d9mOgVLaeiXS5xg0447UNl1Nc=
+	t=1785811708; cv=none; b=T9Ak0iFac70Juq/Aca6iLZ7p1Sj15kuHq1hMEUWcpmeHNrO2ia58RB8F6wylmnFl4F1APkBhbqGnbK4QoNsa4vE/vKmU6ddYywIJykr6xsBNywYXUBpSfeuskgsU+pPWJtrlBZ+2jSBTh4myyI34SKYRwHXD1HZFdcopY2MFEq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785811707; c=relaxed/simple;
-	bh=CQ3W1/2aj/o3UHC3E6D/HiOGxzV152+uyIZW7yTXbkg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SmTxnZCZ1S+CPgtbnpiDlcsiBul/2gjt2IcSQnCNMP9uLNkmBqaEo8scoR3rCybgm+ZvW+kflztj3Y/4kbt2fk5D8bny1NIyhaojRMFM676CTs7vXdi+Eir1u2nUOlASIF7xf7dG5mAgF60PKJPydEaK0rx98zqB/Zsl+XVKS6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JLWZlipE; arc=none smtp.client-ip=192.198.163.17
+	s=arc-20240116; t=1785811708; c=relaxed/simple;
+	bh=fSdEyytzPOzQz2lGc2NNfCDE0HdpxFXJSWsj0N4NZno=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=G8NaY7LFvnAdCKSujix8kMsFAvGqW2Zx1DPqZM5YTvhZAZb/LGKIkxBIkAlFHjFOCMAldtyj4/DnvHp+B61pr5bJpM4O8flwR4OyGd9bZ0/+omKNtfDs1sM6+2kCliN4TaktqjvuT+wHKkNWn1nqYOCgSJE2ZAmqtODubsBFmeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GYFpQv/H; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JLWZlipE"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GYFpQv/H"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785811704; x=1817347704;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CQ3W1/2aj/o3UHC3E6D/HiOGxzV152+uyIZW7yTXbkg=;
-  b=JLWZlipEobnPlJEJ4a8QZ9m5/PqqKmpiU0Tvurcb1M+lbmzzzd8ggkC/
-   i/nDcFfa1IpzVhe3q2Mk8+DYL0vF8SI9dvUQYETzEqGM06tg8gvK/jRgc
-   5y0t/aLOIIMAa/MLGdG3Ppq6zGqZtMHZtJqmdqooSROAkbvWVtdL5RduA
-   DgSR7QOHqt6WCkGQ8dAfnrSZtICqxl9VZmPXo+TJEdx/5+l3fSW4ztJzr
-   qTjjDFH8cwlKMOhhRJFuIxvCjp35sH8SUa6t/kSzLk7jNhevNkL2rE3yr
-   cQFqH28M3WQBJnGHUKulwEf1Sd2OdbisSIGQ+hXRo86vLoiqa5SaGe4Hi
-   g==;
-X-CSE-ConnectionGUID: WcxA9yfyTbWnp/vs24h0Qg==
-X-CSE-MsgGUID: E1/qRFH1TmizkXhYqlfHvg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11864"; a="86231215"
+  t=1785811707; x=1817347707;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fSdEyytzPOzQz2lGc2NNfCDE0HdpxFXJSWsj0N4NZno=;
+  b=GYFpQv/HHunsF982W1K42/meydh0NV+x5jbg0L6ImA9CAYCTwfg7WpM8
+   AlR6hMrbhVaBJf9IRHCSev+eTkYi0NORnsm6BeZima/777TUJeN3Ar3TS
+   9wybkgbdv468ymTBsj4l2WgwKkHQa/2ZgqNYGVJFFELJ8UlJz1f93kDRS
+   L0YAjY0hokoUd6fSdIaUn9CUbJ2iCeMaqecy1zhkIBNEwpYVHJyrt6/7d
+   7AHeJIQaaFejegzpKi+iHQEbJbv+fyan2dMgpz22rRNWZONAY96uw5a7r
+   68F3+80sTFySm4LgWJ/PWyTUM6VAyNJJw3VbYO7k/WEoQrK0Hh4XbLx0w
+   Q==;
+X-CSE-ConnectionGUID: yULE8qJwQrmMqguJn5UUsg==
+X-CSE-MsgGUID: 9UYQd/5dSlSQDZ7CYR4XQg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11864"; a="86231224"
 X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
-   d="scan'208";a="86231215"
+   d="scan'208";a="86231224"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 19:48:24 -0700
-X-CSE-ConnectionGUID: dm+6HSFyR+qvPuN3K3Acgg==
-X-CSE-MsgGUID: tEWU+kzWQ3GLw/csNbjErg==
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 19:48:26 -0700
+X-CSE-ConnectionGUID: 8MEKhmSASJ6FRK5VIRwXzg==
+X-CSE-MsgGUID: AsScwTSGQ7yVnFSvUjfpBg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
-   d="scan'208";a="259587381"
+   d="scan'208";a="259587393"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa006.jf.intel.com with ESMTP; 03 Aug 2026 19:48:22 -0700
+  by orviesa006.jf.intel.com with ESMTP; 03 Aug 2026 19:48:24 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: ZhaoJinming <zhaojinming@uniontech.com>,
@@ -52,10 +53,12 @@ Cc: ZhaoJinming <zhaojinming@uniontech.com>,
 	Desnes Nunes <desnesn@redhat.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 00/20] [PULL REQUEST] Intel IOMMU updates for v7.3
-Date: Tue,  4 Aug 2026 10:36:54 +0800
-Message-ID: <20260804023714.3080506-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 01/20] iommu/vt-d: Fix UCTP context table slot when copying root entries
+Date: Tue,  4 Aug 2026 10:36:55 +0800
+Message-ID: <20260804023714.3080506-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260804023714.3080506-1-baolu.lu@linux.intel.com>
+References: <20260804023714.3080506-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,79 +67,143 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Joerg,
+From: Desnes Nunes <desnesn@redhat.com>
 
-The following changes are queued for v7.3-rc1. This update introduces
-new features, quick fixes and several refactorings, including:
+When translation is already enabled at boot (e.g. kdump), the vt-d driver
+copies context tables from the previous kernel's root table. In scalable
+mode, buses that only populate the upper root half (UCTP, devfn >= 0x80)
+should be written to ctxt_tbls[tbl_idx + 1] through copy_context_table().
+However, the current copy path always uses tbl[tbl_idx + 0] in this situa-
+tion. Since idx wraps to 0 at devfn 0x80 due to a zeroed LCTP, new_ce for
+LCTP will be NULL and keep pos equals to 0. Thus, UCTP entries will be co-
+pied into tbl[tbl_idx + 0] instead of tbl[tbl_idx + 1], and written after-
+wards to root_entry[bus].lo instead of .hi in copy_translation_tables().
 
-- Consolidation of complex enablement logic into a clean, priority-based
-  state machine.
-- Support for the DMA_REMAP_OPT_OUT flag from the VT-d v5.2
-  specification.
-- An update to cache_tag_flush_devtlb_psi() to use full-range constants
-  instead of modifying shared variables for CACHE_TAG_NESTING_DEVTLB.
-- A fix for the UCTP context-table slot when copying root entries.
-- Fixes for several pre-existing issues reported by Sashiko.
-- General code cleanup and refinement.
+In short, devices on bus 0x80 with devfn >= 0x80 fail DMA with fault 0x39,
+which will break drivers running in kernels with translation pre-enabled.
+This fixes NO_PASID DMAR faults for UCTP-only buses such as:
 
-These patches are based on v7.2-rc6. The full series is also available
-on GitHub:
+DMAR: [DMA Read NO_PASID] Request device [80:14.0] fault addr 0xe81759000
+      [fault reason 0x39] SM: Present bit in Root Entry is clear
 
-https://github.com/LuBaolu/intel-iommu/commits/iommu/vt-d/next
+For instance, this fault yielded to locking issues between systemd and
+xHCI, blocking a system's reboot after a vmcore was captured with kdump:
 
-Please consider pulling this series into the iommu/vt-d branch.
+ systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=2193 is taking a long time
+ dracut-initqueue[277]: Timed out while waiting for udev queue to empty.
+ systemd-udevd[246]: usb3: Worker [255] processing SEQNUM=2193 killed
+ systemd-udevd[246]: usb3: Worker [255] terminated by signal 9 (KILL).
+ ...
+ kdump[569]: saving vmcore complete
+ ...
+ systemd-shutdown[1]: Rebooting.
+ INFO: task kworker/0:1:11 blocked for more than 122 seconds.
+       Not tainted 7.0.0-clean #1
+ "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ task:kworker/0:1 state:D stack:0 pid:11 tgid:11 ppid:2 task_flags:0x4208160 flags:0x00080000
+ Workqueue: usb_hub_wq hub_event
+ Call Trace:
+  <TASK>
+  __schedule+0x299/0x5c0
+  schedule+0x27/0x80
+  schedule_timeout+0xbd/0x100
+  __wait_for_common+0x97/0x1b0
+  ? __pfx_schedule_timeout+0x10/0x10
+  xhci_alloc_dev+0x9e/0x2b0
+  usb_alloc_dev+0x7a/0x3b0
+  hub_port_connect+0x285/0x960
+  hub_port_connect_change+0x94/0x290
+  port_event+0x4bb/0x840
+  hub_event+0x141/0x460
+  process_one_work+0x196/0x390
+  worker_thread+0x1af/0x320
+  ? __pfx_worker_thread+0x10/0x10
+  kthread+0xe3/0x120
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork+0x199/0x260
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork_asm+0x1a/0x30
+  </TASK>
+ INFO: task systemd-shutdow:1 blocked for more than 122 seconds.
+       Not tainted 7.0.0-clean #1
+ "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ task:systemd-shutdow state:D stack:0 pid:1 tgid:1 ppid:0 task_flags:0x400100 flags:0x00080000
+ Call Trace:
+  <TASK>
+  __schedule+0x299/0x5c0
+  schedule+0x27/0x80
+  schedule_preempt_disabled+0x15/0x30
+  __mutex_lock.constprop.0+0x547/0xac0
+  device_shutdown+0xac/0x1b0
+  kernel_restart+0x3a/0x70
+  __do_sys_reboot+0x147/0x240
+  do_syscall_64+0x11b/0x6a0
+  ? handle_mm_fault+0x110/0x350
+  ? do_user_addr_fault+0x206/0x680
+  ? irqentry_exit+0x7a/0x4d0
+  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+ RIP: 0033:0x7fe2958da917
+ RSP: 002b:00007ffc5c458618 EFLAGS: 00000206 ORIG_RAX: 00000000000000a9
+ RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe2958da917
+ RDX: 0000000001234567 RSI: 0000000028121969 RDI: 00000000fee1dead
+ RBP: 00007ffc5c458790 R08: 0000000000000069 R09: 00000000ffffffff
+ R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
+ R13: 0000000000000000 R14: 00007ffc5c4588b8 R15: 0000000000000000
+  </TASK>
+ INFO: task systemd-shutdow:1 is blocked on a mutex likely owned by task kworker/0:1:11.
 
-Best regards,
-baolu
+Fixes: 091d42e43d21 ("iommu/vt-d: Copy translation tables from old kernel")
+Signed-off-by: Desnes Nunes <desnesn@redhat.com>
+Tested-by: Tao Liu <ltao@redhat.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Desnes Nunes (1):
-  iommu/vt-d: Fix UCTP context table slot when copying root entries
-
-Dmitry Antipov (1):
-  iommu/vt-d: Use kstrtoint_from_user() in dmar_perf_latency_write()
-
-Guanghui Feng (1):
-  iommu/vt-d: Fix CACHE_TAG_NESTING_DEVTLB polluting shared variables in
-    flush loop
-
-Kevin Tian (9):
-  iommu/vt-d: Fix no_iommu to disable platform opt-in
-  iommu/vt-d: Force requesting ACS when tboot is enabled
-  iommu/vt-d: Remove dead code when CONFIG_INTEL_IOMMU is not set
-  iommu/vt-d: Consolidate dmar policy management and force_on logic
-  iommu/vt-d: Use dmar_can_force_on() for platform opt-in
-  iommu/vt-d: Call dmar_can_force_on() for tboot opt-in
-  iommu/vt-d: Remove the 'force_on' variable
-  iommu/vt-d: Remove dmar_disabled
-  iommu/vt-d: Support the new DMA_REMAP_OPT_OUT flag bit
-
-Li RongQing (1):
-  iommu/vt-d: Use logical OR operator for privilege mode check
-
-Lu Baolu (6):
-  iommu/vt-d: Cache max domain ID to avoid redundant calculation
-  iommu/vt-d: Fix shift overflow in qi_desc_dev_iotlb_pasid()
-  iommu/vt-d: Clear Present bit before tearing down copied context entry
-  iommu/vt-d: Fix iopf_refcount leak on RID domain replacement
-  iommu/vt-d: Tear down scalable-mode context on probe failure
-  iommu/vt-d: Flush context cache with correct SID when tearing down
-    aliases
-
-ZhaoJinming (1):
-  iommu/vt-d: Fix copied_tables bitmap leak on error in
-    copy_translation_tables
-
- drivers/iommu/intel/iommu.h   |  89 +++++++++++++++++-----
- include/linux/dmar.h          |   1 +
- drivers/iommu/intel/cache.c   |   5 +-
- drivers/iommu/intel/debugfs.c |  16 +---
- drivers/iommu/intel/dmar.c    |  96 ++++++++++++++++++++---
- drivers/iommu/intel/iommu.c   | 139 +++++++++++++++++++---------------
- drivers/iommu/intel/pasid.c   |   9 ++-
- drivers/iommu/intel/prq.c     |   2 +-
- drivers/iommu/intel/svm.c     |   2 +-
- 9 files changed, 250 insertions(+), 109 deletions(-)
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 849d06dfe1ae..cf5f92619943 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1446,7 +1446,7 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 			      struct context_entry **tbl,
+ 			      int bus, bool ext)
+ {
+-	int tbl_idx, pos = 0, idx, devfn, ret = 0, did;
++	int tbl_idx, tbl_slot = 0, idx, devfn, ret = 0, did;
+ 	struct context_entry *new_ce = NULL, ce;
+ 	struct context_entry *old_ce = NULL;
+ 	struct root_entry re;
+@@ -1462,10 +1462,9 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 		if (idx == 0) {
+ 			/* First save what we may have and clean up */
+ 			if (new_ce) {
+-				tbl[tbl_idx] = new_ce;
++				tbl[tbl_idx + tbl_slot] = new_ce;
+ 				__iommu_flush_cache(iommu, new_ce,
+ 						    VTD_PAGE_SIZE);
+-				pos = 1;
+ 			}
+ 
+ 			if (old_ce)
+@@ -1487,6 +1486,9 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 				}
+ 			}
+ 
++			/* Track if saving UCTP or LCTP entries in scalable mode */
++			tbl_slot = ext && devfn >= 0x80 ? 1 : 0;
++
+ 			ret = -ENOMEM;
+ 			old_ce = memremap(old_ce_phys, PAGE_SIZE,
+ 					MEMREMAP_WB);
+@@ -1515,7 +1517,7 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 		new_ce[idx] = ce;
+ 	}
+ 
+-	tbl[tbl_idx + pos] = new_ce;
++	tbl[tbl_idx + tbl_slot] = new_ce;
+ 
+ 	__iommu_flush_cache(iommu, new_ce, VTD_PAGE_SIZE);
+ 
 -- 
 2.43.0
 
