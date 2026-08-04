@@ -1,164 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from outbound.baidu.com (mx16.baidu.com [111.202.115.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BA4433BD4
-	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 02:49:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957F93FA5D0
+	for <iommu@lists.linux.dev>; Tue,  4 Aug 2026 03:18:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.202.115.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785811749; cv=none; b=fPTcPGt7qPgBIVO54igXil/eVwEU5jaDbEFAxy0f4zWWwiJiXDmosuX4dU2SVTyyg7ErvJ6utvMRYzciGTd92JcWNKfe3v/VEw/kyfOiKle1zDjAWVs9GcmSlZm6MDltkmCrGgrKsfH2VfKBXAl1ExvJk8lOdm4e3DQ6N3OPBpg=
+	t=1785813539; cv=none; b=QJL14nOLd426VP+WfBGtD30ZtxzSlPgjKfqA3hDruQZQrJcyoFudKqKGlDV3ShPla5x03pB6np2JX+KsTaryol0OaiPQmGOro6bFhF2QAZfqk6rwjGZGpgsKoE/aBNdevUxE6g7DQznbaGKfR9ICOsBhwwCnksbN43pfUDs7VVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785811749; c=relaxed/simple;
-	bh=3HfRHapNOd8eFbig6h3On+s2w+9CPPL+mb6DqLlngQY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Bz/RUoDtpgAeAdV3LQMG3m9sdAIXGTtEMD/Z20DabQDpDNI88mkWlOSYavSXQsQkf9BHz1BLGFHT633Vm2RkPnLda5nShnOPWa5ESFa7Y5lgLX9oUZg/u1t36hYbC87bND7ghC/spuNbPU15SFSX/9BdO0QmhP7WHnE1Apd0xoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QNluOD+2; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1785813539; c=relaxed/simple;
+	bh=4RHsWvtLOPNmOi0/uipM+uK9FZxxhapozy5IbzHcDus=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=SpiiFhKRxJ5FX4+34DK6CvyYeop98iXg4Or3YXDxt1A7Bcqf19B5HQ0VjDfiBOqH9R6SlwbviF8jIHBK9lNKGCktgPRJEJ4sN2IG56j20W7xnVcQOlXexYbLMewtkrjY2r9Wn3/y9EzWoJEPPRG3NKvHmxB2wPpERFL2bWh7Y04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=OqDqolrG; arc=none smtp.client-ip=111.202.115.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QNluOD+2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785811749; x=1817347749;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3HfRHapNOd8eFbig6h3On+s2w+9CPPL+mb6DqLlngQY=;
-  b=QNluOD+2rP6sYnRHO3N6JQCdWy5H2FRRBb+fVjSnBUh6dxJ//0WygqR2
-   lKUdoghP+2XdKdWvEmb1HGmqGw+Hczpn2tWV+C1A2vTF/CU2tcGwmtVmz
-   qpnNbUCTGvcMUCOmRDQm0ksrLihwTYAl54uL4j7J/a8amLYIQw2uW0+xk
-   e8vHQlP7pSG4bsVoH4kujeu27IYPRfWCuYjm/Xbg1Wwh4Gg9RRwtD/NUq
-   e02k1gfgzkDUoGPcvk1XHI1JSqwMWvqbJlRnOionhHt8SgX51ADKRBGyi
-   RN2r/TYiz7pEFOW3OZkOcqr/BO+mW/YNCY0urJkSH4/3d8U072VaUdGh5
-   g==;
-X-CSE-ConnectionGUID: DzZ76HlSQ/Ct+H6lhentPA==
-X-CSE-MsgGUID: v2CsL0egSQSqTEjaQ+gUuQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11864"; a="86231396"
-X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
-   d="scan'208";a="86231396"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 19:49:08 -0700
-X-CSE-ConnectionGUID: +AALB5NWQTWpIyQmAPfYGg==
-X-CSE-MsgGUID: U/6aMd1pRvCtyuNT0CMnGQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
-   d="scan'208";a="259587656"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa006.jf.intel.com with ESMTP; 03 Aug 2026 19:49:06 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: ZhaoJinming <zhaojinming@uniontech.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Dmitry Antipov <dmantipov@yandex.ru>,
-	Guanghui Feng <guanghuifeng@linux.alibaba.com>,
-	Li RongQing <lirongqing@baidu.com>,
-	Desnes Nunes <desnesn@redhat.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 20/20] iommu/vt-d: Flush context cache with correct SID when tearing down aliases
-Date: Tue,  4 Aug 2026 10:37:14 +0800
-Message-ID: <20260804023714.3080506-21-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260804023714.3080506-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="OqDqolrG"
+X-MD-Sfrom: lirongqing@baidu.com
+X-MD-SrcIP: 172.31.3.13
+From: "Li,Rongqing" <lirongqing@baidu.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+CC: ZhaoJinming <zhaojinming@uniontech.com>, Kevin Tian
+	<kevin.tian@intel.com>, Dmitry Antipov <dmantipov@yandex.ru>, Guanghui Feng
+	<guanghuifeng@linux.alibaba.com>, Desnes Nunes <desnesn@redhat.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW83isr/Tyrz+XSBbUEFUQ0ggMDMvMjBdIGlvbW11L3Z0LWQ6IEZp?=
+ =?gb2312?B?eCBDQUNIRV9UQUdfTkVTVElOR19ERVZUTEIgcG9sbHV0aW5nIHNoYXJlZCB2?=
+ =?gb2312?Q?ariables_in_flush_loop?=
+Thread-Topic: =?gb2312?B?W83isr/Tyrz+XSBbUEFUQ0ggMDMvMjBdIGlvbW11L3Z0LWQ6IEZpeCBDQUNI?=
+ =?gb2312?B?RV9UQUdfTkVTVElOR19ERVZUTEIgcG9sbHV0aW5nIHNoYXJlZCB2YXJpYWJs?=
+ =?gb2312?Q?es_in_flush_loop?=
+Thread-Index: AQHdI7u9PHLwW8ne3kuSib2E6t7S+7aNNg3A
+Date: Tue, 4 Aug 2026 03:16:33 +0000
+Message-ID: <d507f3039cec41a0be8782df1196294f@baidu.com>
 References: <20260804023714.3080506-1-baolu.lu@linux.intel.com>
+ <20260804023714.3080506-4-baolu.lu@linux.intel.com>
+In-Reply-To: <20260804023714.3080506-4-baolu.lu@linux.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
+	s=selector1; t=1785813401;
+	bh=4RHsWvtLOPNmOi0/uipM+uK9FZxxhapozy5IbzHcDus=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
+	b=OqDqolrGs9Jz0HtxU/3LUl+MvFSAJGcT0ziraKKS8pso5/KMRgfyZPkFx8ve7GGZq
+	 XxQVnCBVfhp2O7ZkT1q5YALDTP5qwjqcAxnpkqoiSRt6P0rpdHw7S1t0vRxFLc9gQ4
+	 8y/bm/zDbzHLw3/o8gZJbW/gfeHmm5/YG7lDLfabqqHqDoLRE371tG3JrniuUeAFKt
+	 LOKHW1Ua6H8mriJyvTUMIGqJYeyP+1g0QSKAILvlA5mPEnpca7+Q1/mFiij4HSW56v
+	 a9ZRki86jXcVe+/+t+a1KWayJfoHFUM2PYalw4XchSnUrbDiX7ZVin8FQtGz1uqmDL
+	 vdPAmer42HwTA==
 
-domain_context_clear_one() and device_pasid_table_teardown() are both
-invoked once per DMA alias of a device. Each function locates the context
-entry using the bus/devfn pair provided by the pci_for_each_dma_alias()
-callback, then calls intel_context_flush_no_pasid(), which constructs a
-device-selective context-cache invalidation from info->bus and
-info->devfn (that is, always the requester ID of the device itself).
-
-As a result, for every alias other than the device’s own RID, the context
-entry that was just cleared in memory is never invalidated in the context
-cache. Hardware may continue using that stale cached entry. In the
-scalable-mode teardown path, intel_pasid_free_table() can then free the
-PASID directory still referenced by that stale entry, allowing the IOMMU
-to walk freed memory.
-
-Fix this by passing the source ID of the entry being torn down to
-intel_context_flush_no_pasid(), instead of deriving it from @info.
-
-Fixes: f90584f4beb84 ("iommu/vt-d: Add helper to flush caches for context change")
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/patchset/20260602233426.357499-1-baolu.lu%40linux.intel.com
-Assisted-by: Claude:claude-opus-5
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
----
- drivers/iommu/intel/iommu.h | 2 +-
- drivers/iommu/intel/iommu.c | 2 +-
- drivers/iommu/intel/pasid.c | 9 ++++++---
- 3 files changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 8a59c7c9d0a6..7f01620bf3a1 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1249,7 +1249,7 @@ void cache_tag_flush_range_np(struct dmar_domain *domain, unsigned long start,
- 			      unsigned long end);
- 
- void intel_context_flush_no_pasid(struct device_domain_info *info,
--				  struct context_entry *context, u16 did);
-+				  struct context_entry *context, u16 did, u16 sid);
- 
- int intel_iommu_enable_prq(struct intel_iommu *iommu);
- int intel_iommu_finish_prq(struct intel_iommu *iommu);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 489bab4999fb..6d81644c66bc 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1251,7 +1251,7 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
- 	context_clear_present(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
--	intel_context_flush_no_pasid(info, context, did);
-+	intel_context_flush_no_pasid(info, context, did, PCI_DEVID(bus, devfn));
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- }
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 81353fd46b37..e4f24d3f19a6 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -751,7 +751,7 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
- 	context_clear_present(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- 	spin_unlock(&iommu->lock);
--	intel_context_flush_no_pasid(info, context, did);
-+	intel_context_flush_no_pasid(info, context, did, PCI_DEVID(bus, devfn));
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
- }
-@@ -955,9 +955,12 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
-  * This helper can only be used when IOMMU is working in the legacy mode or
-  * IOMMU is in scalable mode but all PASID table entries of the device are
-  * non-present.
-+ *
-+ * @sid identifies the context entry that was modified, which may be a DMA
-+ * alias of @info->dev rather than its own requester ID.
-  */
- void intel_context_flush_no_pasid(struct device_domain_info *info,
--				  struct context_entry *context, u16 did)
-+				  struct context_entry *context, u16 did, u16 sid)
- {
- 	struct intel_iommu *iommu = info->iommu;
- 
-@@ -967,7 +970,7 @@ void intel_context_flush_no_pasid(struct device_domain_info *info,
- 	 * when operating in scalable mode. Therefore the @did value doesn't
- 	 * matter in scalable mode.
- 	 */
--	iommu->flush.flush_context(iommu, did, PCI_DEVID(info->bus, info->devfn),
-+	iommu->flush.flush_context(iommu, did, sid,
- 				   DMA_CCMD_MASK_NOBIT, DMA_CCMD_DEVICE_INVL);
- 
- 	/*
--- 
-2.43.0
-
+DQoNCj4gRnJvbTogR3VhbmdodWkgRmVuZyA8Z3VhbmdodWlmZW5nQGxpbnV4LmFsaWJhYmEuY29t
+Pg0KPiANCj4gSW4gY2FjaGVfdGFnX2ZsdXNoX3JhbmdlKCksIHRoZSBDQUNIRV9UQUdfTkVTVElO
+R19ERVZUTEIgY2FzZSBtb2RpZmllcyB0aGUNCj4gc2hhcmVkIGxvY2FsIHZhcmlhYmxlcyAnYWRk
+cicgYW5kICdtYXNrJyBiZWZvcmUgZmFsbGluZyB0aHJvdWdoIHRvDQo+IENBQ0hFX1RBR19ERVZU
+TEIuIFRoaXMgY2F1c2VzIGFsbCBzdWJzZXF1ZW50IENBQ0hFX1RBR19ERVZUTEIgZW50cmllcyBp
+bg0KPiB0aGUgc2FtZSBsb29wIGl0ZXJhdGlvbiB0byBpbmNvcnJlY3RseSB1c2UgdGhlIGZ1bGwt
+cmFuZ2UgZmx1c2ggcGFyYW1ldGVycw0KPiAoYWRkcj0wLCBtYXNrPU1BWF9BR0FXX1BGTl9XSURU
+SCkgaW5zdGVhZCBvZiB0aGUgcHJlY2lzZWx5IGNhbGN1bGF0ZWQgUFNJDQo+IHJhbmdlLiBUaGlz
+IGlzIG5vdCB0aGUgaW50ZW5kZWQgYmVoYXZpb3IsIGFzIHJlZ3VsYXIgREVWVExCIGVudHJpZXMg
+c2hvdWxkIGFsd2F5cw0KPiBwZXJmb3JtIHRhcmdldGVkIHJhbmdlLWJhc2VkIGludmFsaWRhdGlv
+bi4NCj4gDQo+IEZpeCB0aGlzIGJ5IGhhdmluZyBDQUNIRV9UQUdfTkVTVElOR19ERVZUTEIgZGly
+ZWN0bHkgY2FsbA0KPiBjYWNoZV90YWdfZmx1c2hfZGV2dGxiX3BzaSgpIHdpdGggdGhlIGZ1bGwt
+cmFuZ2UgY29uc3RhbnRzIGFuZCBicmVhaywgaW5zdGVhZCBvZg0KPiBtb2RpZnlpbmcgc2hhcmVk
+IHZhcmlhYmxlcyBhbmQgZmFsbGluZyB0aHJvdWdoLiBUaGlzIGVuc3VyZXMNCj4gQ0FDSEVfVEFH
+X0RFVlRMQiBhbHdheXMgdXNlcyB0aGUgb3JpZ2luYWwgY2FsY3VsYXRlZCBhZGRyIGFuZCBtYXNr
+IGZvcg0KPiBwcmVjaXNlIHJhbmdlIGZsdXNoLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogR3Vhbmdo
+dWkgRmVuZyA8Z3VhbmdodWlmZW5nQGxpbnV4LmFsaWJhYmEuY29tPg0KPiBTaWduZWQtb2ZmLWJ5
+OiBHdWl4aW4gTGl1IDxrYW5pZUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTog
+THUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL2lv
+bW11L2ludGVsL2NhY2hlLmMgfCA1ICsrLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRp
+b25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUv
+aW50ZWwvY2FjaGUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvY2FjaGUuYyBpbmRleA0KPiBmZGM4
+ODgxNzcwOWYuLjI2YTc1OGIwZjUwMSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9pbnRl
+bC9jYWNoZS5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvY2FjaGUuYw0KPiBAQCAtNDU0
+LDkgKzQ1NCw4IEBAIHZvaWQgY2FjaGVfdGFnX2ZsdXNoX3JhbmdlKHN0cnVjdCBkbWFyX2RvbWFp
+bg0KPiAqZG9tYWluLCB1bnNpZ25lZCBsb25nIHN0YXJ0LA0KPiAgCQkJICogYWZmZWN0ZWQgYnkg
+YSBjaGFuZ2UgaW4gUzIuIFNvIGp1c3QgZmx1c2ggdGhlIGVudGlyZQ0KPiAgCQkJICogZGV2aWNl
+IGNhY2hlLg0KPiAgCQkJICovDQo+IC0JCQlhZGRyID0gMDsNCj4gLQkJCW1hc2sgPSBNQVhfQUdB
+V19QRk5fV0lEVEg7DQo+IC0JCQlmYWxsdGhyb3VnaDsNCj4gKwkJCWNhY2hlX3RhZ19mbHVzaF9k
+ZXZ0bGJfcHNpKGRvbWFpbiwgdGFnLCAwLA0KPiBNQVhfQUdBV19QRk5fV0lEVEgpOw0KPiArCQkJ
+YnJlYWs7DQo+ICAJCWNhc2UgQ0FDSEVfVEFHX0RFVlRMQjoNCj4gIAkJCWNhY2hlX3RhZ19mbHVz
+aF9kZXZ0bGJfcHNpKGRvbWFpbiwgdGFnLCBhZGRyLCBtYXNrKTsNCj4gIAkJCWJyZWFrOw0KPiAt
+LQ0KPiAyLjQzLjANCg0KVGhpcyBwYXRjaCBpbnRyb2R1Y2VzIGEgc3VidGxlIHNpZGUgZWZmZWN0
+IG9uIHRoZSB0cmFjaW5nIGxvZ2ljIGxhdGVyIGluIHRoaXMgZnVuY3Rpb24uIA0KQXQgdGhlIGVu
+ZCBvZiBjYWNoZV90YWdfZmx1c2hfcmFuZ2UoKSwgdHJhY2VfY2FjaGVfdGFnX2ZsdXNoX3Jhbmdl
+KHRhZywgc3RhcnQsIGVuZCwgYWRkciwgbWFzaykgaXMgY2FsbGVkIHRvIGxvZyANCnRoZSBmbHVz
+aCBvcGVyYXRpb24uIA0KDQpXaXRoIHRoaXMgcGF0Y2g6IGJ5cGFzc2VkIHRoZSBhc3NpZ25tZW50
+IGFuZCB1c2VkIGJyZWFrLCBhZGRyIGFuZCBtYXNrIHJldGFpbiB0aGVpciBvcmlnaW5hbCByYW5n
+ZSB2YWx1ZXMuIA0KVGhpcyBjYXVzZXMgdGhlIHRyYWNlcG9pbnQgdG8gbG9nIGFuIGluY29ycmVj
+dCwgc21hbGxlciByYW5nZSB3aGlsZSB0aGUgYWN0dWFsIGhhcmR3YXJlIGV4ZWN1dGlvbiB3YXMg
+YSBmdWxsLXJhbmdlIGZsdXNoLg0KDQpNeSBwYXRjaCBoYXMgbm90IHRoaXMgaXNzdWU6DQpodHRw
+czovL2xvcmUua2VybmVsLm9yZy9saW51eC1pb21tdS8yMDI2MDYwNTAwMzk1MC4xNzIwLTEtbGly
+b25ncWluZ0BiYWlkdS5jb20vDQoNCnRoYW5rcw0KDQpbTGksUm9uZ3FpbmddIA0KDQoNCg==
