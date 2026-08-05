@@ -1,91 +1,102 @@
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 491AB3C9EE6
-	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 04:20:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.113
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD6EE2773D8
+	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 04:44:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785903634; cv=none; b=Hw0zhxLqqOdrsiJaio31Z+3cfqZu9lAiLKhYX29249EkBjvkxcgXlPIYN8/LT+gSkd7PRiJftai84mIAkr2cxf3m6QsMzK90Ccc1VWG0lazd23ALUCOpmqbwCl8UQE+iywC8sjcwd/TqecFE8JhwKyZzY8nVUQ4QHOPWG5GzPyw=
+	t=1785905043; cv=none; b=AuHJLlfiNnODcR98XZoSQXwr1wMp5LiHSX6cZ78yWyEfmrVHw3QtGHwRVUwH3Ugu6XRCXnZwwEsqRkbVQsDmYVOVXXvCJnV9ucxdDwzbNJP14Q8utveGTPLV1LpaDYh0Pcv03yTi1ZpJXRhpC3HWldYzPCaIwRb+SXv65p3f2oA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785903634; c=relaxed/simple;
-	bh=2mTxLEZZHRX66QWhlcyMv8CxW70Ble7AYSdF/5GnDSs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Enbppdjk0g8P9NB+AMavNosHFu4hJDHKFK5LUDLYlnvmhlkuQVO9Ut99SDOVYyHkclQvE3n9QEeMKA0V8D28F5YIaj+ggZ4R6FkNkKZ+kTYgknPssi69HG1VQqBcOeAQgiG6SY4DuCRbFPgW2okqNNE/CNtXTaOj546yBhvVKXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=socP7tjX; arc=none smtp.client-ip=115.124.30.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1785905043; c=relaxed/simple;
+	bh=n2P6idRe3RqOB1keZ96ibxRUsaj0qnSuENYCvkqZ2E4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dtZJVj/DxgR+QR4aXxLBxd2AR3EBkcj/E73pHD68oweNCHUxj3s72bPe+JicLJQ9hvz/JKgjeDGlB2fIu9OtcXE3+lhvwa6D15EjMJ3M66XMrZJkk3Ft5ZGLUNxH71gdMfGrqJnz1btG7rVmivQ9TzbvMofD8QoDqSwAn87BNMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=VOfJdR5V; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="socP7tjX"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1785903621; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=6PbQk7Ljeu2Nh5gx4GLKOoas/XpSlt4pFhaaMaIb66I=;
-	b=socP7tjXS46hERDTXeN2NmG/TvQepf5d8QMqRwb0U10Ec/egQxwhB4KSl3F6BSret6hcfqiE10VCy4NEqYrqpQJdikz9MCvUBDDou6DakSrgo8fF2iXVs5E1gmunoQM83+A1eL7Ktzf8+vcN0dYzKt5P4T57EJI0Vsoh+gsEw6Y=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0X8Q-Oda_1785903612;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X8Q-Oda_1785903612 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 05 Aug 2026 12:20:20 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/vt-d: Fix IQE handling to cover all descriptors in submission range
-Date: Wed,  5 Aug 2026 12:20:12 +0800
-Message-ID: <20260805042012.2363698-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="VOfJdR5V"
+Received: from [10.7.58.6] (unknown [4.194.122.162])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A423420B7169;
+	Tue,  4 Aug 2026 21:43:31 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A423420B7169
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1785905021;
+	bh=CRiTfhhHlWQ+Wky5oSEnJr3z9b/fF7IvnlsFt1kRh1o=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=VOfJdR5VPx/n8VqYGq2vionMO1cw1homB43MhJCFnPjYAnK6wgb1aYjSoTI+BKaPw
+	 bcWFBRY0CuUsAvuGDeJI0Vwg3rkezK4+Jo/yddqIMF5vmvKtwSXy6y7JUtcYF8hNv6
+	 C2z5aex/xEHzLKPraj0lg4auiprjbwRvjj605VoE=
+Message-ID: <750adee2-e934-4907-ae54-d01e7d3defc4@linux.microsoft.com>
+Date: Wed, 5 Aug 2026 10:13:47 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/3] x86/irq: Fix lost interrupts on CPU hot-unplug for
+ Hyper-V PCI/MSI
+To: Shradha Gupta <shradhagupta@linux.microsoft.com>
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Rob Herring <robh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+ Jake Oshins <jakeo@microsoft.com>, linux-hyperv@vger.kernel.org,
+ linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260728135117.2888175-1-namjain@linux.microsoft.com>
+ <anHYJEeHlszuj/38@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+Content-Language: en-US
+From: Naman Jain <namjain@linux.microsoft.com>
+In-Reply-To: <anHYJEeHlszuj/38@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Currently, qi_check_fault() only handles IQE (Invalidation Queue Error)
-when the faulting descriptor index exactly matches the first descriptor
-of the current submission (head == index). This is too restrictive in
-multi-descriptor submissions where the error could occur at any
-descriptor within the batch.
 
-If the IQE is triggered by a descriptor that belongs to the current
-submission but is not at the starting index, the function returns 0
-without clearing the IQE fault status. Since hardware stops fetching
-new descriptors until IQE is cleared, this leads to an indefinite wait
-on the wait descriptor completion - effectively a deadlock.
 
-Fix this by expanding the IQE handling condition to cover all descriptors
-within the circular range [index, wait_index]. Use explicit bounds
-checking that properly handles the wrap-around case of the circular
-queue.
+On 8/4/2026 5:46 PM, Shradha Gupta wrote:
+> On Tue, Jul 28, 2026 at 01:51:14PM +0000, Naman Jain wrote:
+>> On CPU hot-unplug, fixup_irqs() re-injects interrupts that are still
+>> pending in the outgoing CPU's IRR via the irqchip's irq_retrigger()
+>> callback. The Hyper-V vPCI MSI irqchip never installs one, so such a
+>> pending interrupt is silently dropped, leading to lost interrupts, stalls
+>> and "No irq handler for vector" messages.
+>>
+>> Patch 1 is the minimal, backportable fix (Fixes:/Cc: stable) that installs
+>> irq_chip_retrigger_hierarchy() on the Hyper-V PCI/MSI chip. Patch 2 then
+>> switches fixup_irqs() to call irq_chip_retrigger_hierarchy() directly, so
+>> the retrigger works for any stacked irqchip without a per-chip callback.
+>> Patch 3 drops the now-redundant irq_retrigger() initializations.
+>> This way, patch 2 and 3 do not need to be backported.
+> 
+> Thanks Naman, the series looks good to me.
+> 
+> I just have a small nit. In the old code, VECTOR_RETRIGGERED is set
+> unconditionally after calling chip->irq_retrigger(), regardless of its
+> return value. In the new code, VECTOR_RETRIGGERED is only set when
+> irq_chip_retrigger_hierarchy() returns non-zero. So retrigger failures
+> would now result in VECTOR_UNUSED instead of VECTOR_RETRIGGERED.
+> 
+> In practice this doesn't matter since apic_retrigger_irq() always returns
+> 1, but it is technically a behavior change and I think it is a correct
+> one. Just that it might be worth noting this in the commit message to
+> avoid confusion.
+> 
+> Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+> 
+>>
 
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Signed-off-by: bikuan.zbk <bikuan.zbk@alibaba-inc.com>
----
- drivers/iommu/intel/dmar.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Thank you Shradha. I'll address this in the next patch version.
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 767ec092accd..8ae513593406 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1290,8 +1290,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 	 * is cleared.
- 	 */
- 	if (fault & DMA_FSTS_IQE) {
-+		int head_idx;
-+
- 		head = readl(iommu->reg + DMAR_IQH_REG);
--		if ((head >> shift) == index) {
-+		head_idx = head >> shift;
-+		if (index <= wait_index ?
-+		    (head_idx >= index && head_idx <= wait_index) :
-+		    (head_idx >= index || head_idx <= wait_index)) {
- 			struct qi_desc *desc = qi->desc + head;
- 
- 			/*
--- 
-2.43.7
+Regards,
+Naman
 
