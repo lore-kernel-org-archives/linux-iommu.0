@@ -1,492 +1,232 @@
-Received: from out-183.mta0.migadu.com (out-183.mta0.migadu.com [91.218.175.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7A146A602
-	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 12:52:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCDE471CED
+	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 13:42:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785934367; cv=none; b=WYRKEVp3ehBPyYrgFrSslNsChceU1MB6IZDzUGqr5DbpZfFDiNY/QRN0rTZTsekZNwsA/U+s+dO+KTuJ5vk4zY9MZ0MD3mUJnZ2ONEUCHSn/91JSVTlq2UjfLyKSxnZg2zwkvNMSEgckWEL64O41ZVgx4QIsDFJi4ecThcDVxB8=
+	t=1785937339; cv=none; b=M9db5lea/rPjHNfKwD98sy5C9Kc53fnS/uAS6Z0xyBZ6vVqMVMhb47/USTC61hHGjUYWXRmq0sCcjYt0hDjQcvFBBHv9fgHNjlZPtDkRM9k24bldGWi/qcsmvFjV/Lxwq6BOqBAJONSgKK58h9yT+1tKRZ+MqoI95S2Jcn9kfSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785934367; c=relaxed/simple;
-	bh=YfQnn/dbIuW54QfigKTTMf+yLHYtKM4CF9ZW/iqSJa0=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=OxVeFenMeDGPUc5644W1dlEYO23M68HIT4JGCrm+Ze1qsBM8yn8nD82R39m928hIM+F5c5Okhe++YRpKCf18gUZgE/x+iGkU5jOzFuTf5Sr3wVTSs6Ilg3QhVvHVj/PzaaungvUdPy9wZZxHs6spRANN32yFRwPhmjybcNV1F/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com; spf=pass smtp.mailfrom=cknow-tech.com; dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b=nIajNt3q; arc=none smtp.client-ip=91.218.175.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow-tech.com
+	s=arc-20240116; t=1785937339; c=relaxed/simple;
+	bh=7kUBW9e/onM1wKjYT9kKKmLLDlUPg1Zv1oWBBE9EUS4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NONoy494TWWboGJN4N2VxYsD+lq0iBSCDJ6X789freSP8HHIU8GYDyVbAbrSo3XAEowXKQNi7EOmB1BX9fiMWzZWJ7PtkcXROYlEb3JQ+UmkW4v7y3dI7oVJa8EkdJCMOMDMO6AGt6j686UafCrJvsekQlMf4IyE6BJxgLFgYsg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aws9DgOV; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b="nIajNt3q"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aws9DgOV"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-69fec8b4638so11670a12.0
+        for <iommu@lists.linux.dev>; Wed, 05 Aug 2026 06:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1785937336; x=1786542136; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=pHYWzmu6ZuPAY5Z9zsBk2vZkLf/NrY20M76Txnt8CKc=;
+        b=aws9DgOV84iz7f+c4G0fPm4yLdRfOfEOutxmHdd+NxzfMnMYC6Us1+GIqf4IdY7hhH
+         miKe8ZLnVEQYknCq09lz/Sb/gbE8NnRSf/Z6KRdkkOQf4MwSjgt+13Iui5WzhcT9ZCJY
+         TQ1CXG12JHuJxQNgted/xSzWxAHd8CPsgQXw5W7jC1cCx4T1W0t+i7UK1T0eRRYUz01b
+         T9jkBeI0VrPm7zR5ZD+fZyp0m8VES8WWWi/CVbGpgrO64TRsFXJvPtQJnsHRgSCXqbAe
+         yfy31gmXIKdQpIz484UEV51gePUc47R53tc930/iN58p+KFgF/ZSo/w67NVaibLH5i9l
+         M9uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785937336; x=1786542136;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=pHYWzmu6ZuPAY5Z9zsBk2vZkLf/NrY20M76Txnt8CKc=;
+        b=X4mvsWJ2clqlEbyWoDA0dtiaBNSOGOlzYV2jQYQv2SACyA6hfy/WU8x4B73YILdxAz
+         oxh/7sDG6puYcG+yC/kyg8BaCGydX6xsyM5NjY5d44yvb0rpEMqCOedhEg5tIStqpLoi
+         NxWS/mDOSBfW6EO+sQQy9oaljlFUsd91oxW1Nvbd39gEsKAqZP6KVNHg5dHtawYONr74
+         iE5k8RSwa0d/+cNPTq5kHagvPdGzFQwOmdhKve1UIrCRp7HnV91PvnkxBWozZQ9ITlSZ
+         x8D1OhXQS7+DE/voYSce0UiwPkSHnDI6NL4pcaQea//ORUkckHyuibU5+FdzWGLjD5qQ
+         SNFg==
+X-Forwarded-Encrypted: i=1; AHgh+RoeairxBiDZTiCLNymKEEKlJ5r1nSUtAxIlq5Wy7VPGKmLnc7hnujp3+spfaBjpb2zKvLPSIQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxq8s+lrVzt1elvCidPQUJ80Uij8nWvwFd4gBHL/acmDjq2AQmy
+	oPToGNXcFuC6184rF2gakoP/fQ9pAp28WGAl07k0uqvu2fnP9gb/dpuGXADxAbzPiQ==
+X-Gm-Gg: AR+sD10y18t+n8IynQMWjinCHjyt/FNtFKSD5oE3J07vobml9Q63Eq6qb18LvH/JLb9
+	7XEL3RCJEcJ/qymzZ7gkRsZn1dOazjmksiNjmbEjgAB2GfquC/UZzMD+Y1dEBxUIUf79OJQKmRM
+	er0YW7LsFQFoQbbLXHrrUb5ZWtXLDMhpp2ZivbvomZb4ZBs7WhS7CxEZ/Qm9pqJCplE5IoPKmN6
+	9/VyBxqaInj8w8xLTyfQKXb52MFU8aKzlVHd8J03rJPPnPpign64F2QfDMzT3gqGa9jlt7NtGdI
+	j8SEd+Q5ub35MrEhf7Q0U9xplRoxNNaCcE4C2XXHJHIEXto8xovNE8uE+ksCIdFua4Ax/xTdmF4
+	RHeNdTiWMLtzCGPf8izwW8jofKaHTJjOBdWtoRbGI+Fhvt75TxYcHx2aZ3/K6r2B3+J1FBCIccj
+	6mcQ+YNVWzODYhzv6N429eFgK7gNvlD0YjAvpjUNHInf+wilfaO2k/e2y/eyzL+Ir6H2OSEK1vL
+	dkHVhYHKormG7WDN8wwwr7RZ7xSuw==
+X-Received: by 2002:aa7:dbc1:0:b0:69f:d9cd:ec41 with SMTP id 4fb4d7f45d1cf-6a14fc57373mr57486a12.6.1785937335722;
+        Wed, 05 Aug 2026 06:42:15 -0700 (PDT)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c20560bab69sm8654166b.37.2026.08.05.06.42.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 06:42:14 -0700 (PDT)
+Date: Wed, 5 Aug 2026 13:42:10 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Sebastian Ene <sebastianene@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, keirf@google.com
+Subject: Re: [PATCH v7 02/24] KVM: arm64: Donate MMIO to the hypervisor
+Message-ID: <anM9sk_gXTt5F1Ie@google.com>
+References: <20260715115906.2664882-1-smostafa@google.com>
+ <20260715115906.2664882-3-smostafa@google.com>
+ <anMwxy9gEEt_Wu6M@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow-tech.com;
-	s=key1; t=1785934358;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=vNhnb6jBQpoGsN5TmbYgz5dCfwxd5/O/xYd00sVY3Ls=;
-	b=nIajNt3qjv825OzAIrvUT/uFNh0ISFr3TXlH+m6ASlKEJYrtZIdRHSRzaa6rXTOyMwX+RD
-	I9M4XqE6a/XBBcnqkSY1v30HbYin0iFQqd3GR26zX4rh1H7ibu/9QGTje+CsM7RVauwf1g
-	rO8Ov2a3emfdh78jieT8/+FjpEDkBJW3JAlOxiAeCchI9+W9tK67nol4ahmjXT033UIS6N
-	Te14tKFPuaF10sDGrdHWzvW5/BoVqjwxXWA/2LNr8TXC9vZch6t2lt42UNrmhw6rP6vAw7
-	Xa024CFdCT179KjLU526uh/AQko2rcZY61nAmkXWGCZolaytFvHkEQkCuMY+8Q==
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 05 Aug 2026 14:52:23 +0200
-Message-Id: <DKH0VYV0DMRB.3F9GXE6E2TSZ@cknow-tech.com>
-Cc: <royalnet026@gmail.com>, <alchark@flipper.net>,
- <chaoyi.chen@rock-chips.com>, <dri-devel@lists.freedesktop.org>,
- <linux-rockchip@lists.infradead.org>, <iommu@lists.linux.dev>,
- <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v5 v5 6/8] accel/rocket: add RK3576 NPU (RKNN)
- support
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: "Diederik de Haas" <diederik@cknow-tech.com>
-To: "Jiaxing Hu" <gahing@gahingwoo.com>, <tomeu@tomeuvizoso.net>,
- <heiko@sntech.de>, <robh@kernel.org>, <krzk+dt@kernel.org>,
- <conor+dt@kernel.org>, <joro@8bytes.org>, <will@kernel.org>,
- <robin.murphy@arm.com>, <ulfh@kernel.org>, <p.zabel@pengutronix.de>,
- <ogabbay@kernel.org>, <zhangqing@rock-chips.com>
-References: <20260805063826.95682-1-gahing@gahingwoo.com>
- <20260805063826.95682-7-gahing@gahingwoo.com>
-In-Reply-To: <20260805063826.95682-7-gahing@gahingwoo.com>
-X-Migadu-Flow: FLOW_OUT
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <anMwxy9gEEt_Wu6M@google.com>
 
-On Wed Aug 5, 2026 at 8:38 AM CEST, Jiaxing Hu wrote:
-> The RK3576 carries the same RKNN block as the RK3588, with two cores
-> instead of three and a few platform differences:
->
->  - the CBUF (convolution buffer) has its own clock domain, so the core
->    needs six clocks rather than four;
->  - the BIU reset moved into the power domain, leaving one reset here;
->  - the NPU spans two power domains, and a device with more than one is
->    skipped by the driver-core single-domain auto-attach, so the list has
->    to be attached explicitly;
->  - the DPU completion interrupt is armed exactly as on RK3588 but never
->    reaches the GIC. The completion is visible in INTERRUPT_RAW_STATUS,
->    so sample that from an hrtimer rather than wait for an interrupt that
->    does not come. The interrupt stays armed, so if it ever does arrive
->    the normal handler finalises the job first.
->
-> Select all of that from of_device_id match data so the RK3588 path keeps
-> its existing counts and behaviour unchanged.
+On Wed, Aug 05, 2026 at 12:47:03PM +0000, Sebastian Ene wrote:
+> On Wed, Jul 15, 2026 at 11:58:43AM +0000, Mostafa Saleh wrote:
+> > Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
+> > drivers can protect and access the MMIO of IOMMUs.
+> > 
+> > As donating MMIO is very rare, and we don’t need to encode the full
+> > state, it’s reasonable to have a separate function to do this.
+> > It will init the host s2 page table with an invalid leaf with the owner ID
+> > to prevent the host from mapping the page on faults.
+> > 
+> > Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
+> > stage-2 PTEs, as this can be triggered from recycle logic under memory
+> > pressure. There is no code relying on this, as all ownership changes is
+> > done via kvm_pgtable_stage2_set_owner()
+> > 
+> > For the error path in IOMMU drivers, add a function to donate MMIO
+> > back from hyp to host. However, that leaks the hypervisor virtual
+> > address range which should be acceptable as this is quite rare and
+> > it matches the behaviour of fix_map/block.
+> > 
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  7 ++
+> >  arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 91 ++++++++++++++++++-
+> >  arch/arm64/kvm/hyp/pgtable.c                  | 11 +--
+> >  3 files changed, 102 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > index 29935c7da1de..51b0eb3844a9 100644
+> > --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> > @@ -36,6 +36,13 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+> >  int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+> >  int __pkvm_host_unshare_hyp(u64 pfn);
+> >  int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
+> > +/*
+> > + * Donate MMIO range to the hypervisor, it will be mapped in the hypervisor's
+> > + * private range and unmapped from the host stage-2.
+> > + */
+> > +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr);
+> > +/* Remaps MMIO range in the host, typically used in error path. */
+> > +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size);
+> >  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
+> >  int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
+> >  int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> > index 4e329e39a695..d803b3dd4cb4 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> > @@ -378,7 +378,11 @@ static int host_stage2_unmap_dev_all(void)
+> >  	u64 addr = 0;
+> >  	int i, ret;
+> >  
+> > -	/* Unmap all non-memory regions to recycle the pages */
+> > +	/*
+> > +	 * Unmap all non-memory regions to recycle the pages.
+> > +	 * That relies on kvm_pgtable_stage2_unmap() not clearing
+> > +	 * counted PTEs which include hypervisor MMIO.
+> > +	 */
+> >  	for (i = 0; i < hyp_memblock_nr; i++, addr = reg->base + reg->size) {
+> >  		reg = &hyp_memory[i];
+> >  		ret = kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
+> > @@ -1119,6 +1123,91 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+> >  	return ret;
+> >  }
+> >  
+> > +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr)
+> > +{
+> > +	kvm_pte_t pte;
+> > +	u64 offset;
+> > +	int ret;
+> > +
+> > +	/* Only before de-privilege. */
+> > +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> > +		return -EPERM;
+> > +
+> > +	if (!PAGE_ALIGNED(addr | size) ||
+> > +	    !pfn_range_is_valid(hyp_phys_to_pfn(addr), size >> PAGE_SHIFT))
+> > +		return -EINVAL;
+> > +
+> > +	ret = __pkvm_create_private_mapping(addr, size, PAGE_HYP_DEVICE, haddr);
+> 
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	host_lock_component();
+> > +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> > +		if (addr_is_memory(addr + offset)) {
+> > +			ret = -EINVAL;
+> > +			goto unlock;
+> 
+> If this fails we are left with the mapping inside the hyp because the unlock
+> doesn't destroy the private mapping. Is this intended ?
+> 
 
-Would it make sense to split this patch up in 2 patches:
-1) Prepare for different NPU/RKNN implementations
-2) Add support for RK3576 NPU/RKNN
+Yes, there is no way to remove a private mapping at the moment, all
+the callers to __pkvm_create_private_mapping() will leak it on failure.
 
-It seems like you're changing the implementation for RK3588 in this patch
-AND add support for RK3576. It's often better to split those things out.
+> > +		}
+> > +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> > +		if (ret)
+> > +			goto unlock;
+> > +		if (pte && !kvm_pte_valid(pte)) {
+> > +			ret = -EPERM;
+> > +			goto unlock;
+> > +		}
+> > +	}
+> > +	/*
+> > +	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
+> > +	 * - host aborts: host_stage2_adjust_range() would fail for invalid non zero PTEs.
+> > +	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would call
+> > +	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid ptes (counted).
+> > +	 * - other MMIO donation: Would fail as we check that the PTE is valid or empty.
+> > +	 */
+> > +	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
+> > +			      addr, size, &host_s2_pool,
+> > +			      KVM_HOST_INVALID_PTE_TYPE_DONATION,
+> > +			      FIELD_PREP(KVM_HOST_DONATION_PTE_OWNER_MASK, PKVM_ID_HYP));
+> > +unlock:
+> > +	host_unlock_component();
+> > +	return ret;
+> > +}
+> > +
+> > +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size)
+> 
+> This function seems to only update the host stage-2 annotation but it
+> doesn't destroy the hyp mapping.
 
-Cheers,
-  Diederik
+Yes, as mentioned above there is no way to destroy it, and this was
+not desgined for frequent use. Typicaly, __pkvm_host_donate_hyp_mmio()
+is called at boot per area/device. And __pkvm_hyp_donate_host_mmio()
+is only used for failures.
 
-> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
-> ---
->  drivers/accel/rocket/rocket_core.c   |  26 +++++-
->  drivers/accel/rocket/rocket_core.h   |  20 ++++-
->  drivers/accel/rocket/rocket_device.c |   4 +
->  drivers/accel/rocket/rocket_drv.c    |  22 ++++-
->  drivers/accel/rocket/rocket_job.c    | 121 ++++++++++++++++++++++++---
->  5 files changed, 176 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/accel/rocket/rocket_core.c b/drivers/accel/rocket/ro=
-cket_core.c
-> index b3b2fa9ba..e08288c8c 100644
-> --- a/drivers/accel/rocket/rocket_core.c
-> +++ b/drivers/accel/rocket/rocket_core.c
-> @@ -8,6 +8,7 @@
->  #include <linux/err.h>
->  #include <linux/iommu.h>
->  #include <linux/platform_device.h>
-> +#include <linux/pm_domain.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/reset.h>
-> =20
-> @@ -21,14 +22,22 @@ int rocket_core_init(struct rocket_core *core)
->  	u32 version;
->  	int err =3D 0;
-> =20
-> +	/* RK3576 moves the BIU reset into its power domain and takes only srst=
-_a. */
->  	core->resets[0].id =3D "srst_a";
->  	core->resets[1].id =3D "srst_h";
-> -	err =3D devm_reset_control_bulk_get_exclusive(&pdev->dev, ARRAY_SIZE(co=
-re->resets),
-> +	err =3D devm_reset_control_bulk_get_exclusive(&pdev->dev, core->soc->nu=
-m_resets,
->  						    core->resets);
->  	if (err)
->  		return dev_err_probe(dev, err, "failed to get resets for core %d\n", c=
-ore->index);
-> =20
-> -	err =3D devm_clk_bulk_get(dev, ARRAY_SIZE(core->clks), core->clks);
-> +	core->clks[0].id =3D "aclk";
-> +	core->clks[1].id =3D "hclk";
-> +	core->clks[2].id =3D "npu";
-> +	core->clks[3].id =3D "pclk";
-> +	/* RK3576 clocks the CBUF separately; the compute path stalls without t=
-hese. */
-> +	core->clks[4].id =3D "aclk_cbuf";
-> +	core->clks[5].id =3D "hclk_cbuf";
-> +	err =3D devm_clk_bulk_get(dev, core->soc->num_clks, core->clks);
->  	if (err)
->  		return dev_err_probe(dev, err, "failed to get clocks for core %d\n", c=
-ore->index);
-> =20
-> @@ -65,6 +74,19 @@ int rocket_core_init(struct rocket_core *core)
->  		return err;
->  	}
-> =20
-> +	/*
-> +	 * RK3576 spans two power domains, and a multi-domain device is skipped
-> +	 * by the driver-core single-domain auto-attach, so attach the list her=
-e.
-> +	 */
-> +	if (core->soc->multi_power_domain) {
-> +		struct dev_pm_domain_list *pd_list;
-> +
-> +		err =3D devm_pm_domain_attach_list(dev, NULL, &pd_list);
-> +		if (err < 0)
-> +			return dev_err_probe(dev, err,
-> +					     "failed to attach NPU power domains\n");
-> +	}
-> +
->  	pm_runtime_use_autosuspend(dev);
-> =20
->  	/*
-> diff --git a/drivers/accel/rocket/rocket_core.h b/drivers/accel/rocket/ro=
-cket_core.h
-> index f6d738285..205ff070d 100644
-> --- a/drivers/accel/rocket/rocket_core.h
-> +++ b/drivers/accel/rocket/rocket_core.h
-> @@ -6,6 +6,7 @@
-> =20
->  #include <drm/gpu_scheduler.h>
->  #include <linux/clk.h>
-> +#include <linux/hrtimer.h>
->  #include <linux/io.h>
->  #include <linux/mutex_types.h>
->  #include <linux/reset.h>
-> @@ -27,16 +28,25 @@
->  #define rocket_core_writel(core, reg, value) \
->  	writel(value, (core)->core_iomem + (REG_CORE_##reg) - REG_CORE_S_STATUS=
-)
-> =20
-> +/* Per-SoC differences, selected by the of_device_id match data. */
-> +struct rocket_soc_data {
-> +	unsigned int num_clks;		/* clk_bulk count: 4 base, 6 with CBUF */
-> +	unsigned int num_resets;	/* reset_bulk count: 2 base, 1 on RK3576 */
-> +	bool multi_power_domain;	/* device spans more than one PM domain */
-> +	bool poll_completion;		/* completion IRQ never reaches the GIC */
-> +};
-> +
->  struct rocket_core {
->  	struct device *dev;
->  	struct rocket_device *rdev;
-> +	const struct rocket_soc_data *soc;
->  	unsigned int index;
-> =20
->  	int irq;
->  	void __iomem *pc_iomem;
->  	void __iomem *cna_iomem;
->  	void __iomem *core_iomem;
-> -	struct clk_bulk_data clks[4];
-> +	struct clk_bulk_data clks[6];
->  	struct reset_control_bulk_data resets[2];
-> =20
->  	struct iommu_group *iommu_group;
-> @@ -52,6 +62,14 @@ struct rocket_core {
->  		atomic_t pending;
->  	} reset;
-> =20
-> +	struct hrtimer poll_timer;
-> +	struct work_struct poll_work;
-> +	atomic_t poll_active;
-> +	unsigned int poll_ticks;
-> +	unsigned int poll_seq;
-> +	unsigned int poll_work_seq;
-> +	bool poll_dying;
-> +
->  	struct drm_gpu_scheduler sched;
->  	u64 fence_context;
->  	u64 emit_seqno;
-> diff --git a/drivers/accel/rocket/rocket_device.c b/drivers/accel/rocket/=
-rocket_device.c
-> index 46e6ee1e7..bfb00f967 100644
-> --- a/drivers/accel/rocket/rocket_device.c
-> +++ b/drivers/accel/rocket/rocket_device.c
-> @@ -31,6 +31,10 @@ struct rocket_device *rocket_device_init(struct platfo=
-rm_device *pdev,
->  		if (of_device_is_available(core_node))
->  			num_cores++;
-> =20
-> +	for_each_compatible_node(core_node, NULL, "rockchip,rk3576-rknn-core")
-> +		if (of_device_is_available(core_node))
-> +			num_cores++;
-> +
->  	rdev->cores =3D devm_kcalloc(dev, num_cores, sizeof(*rdev->cores), GFP_=
-KERNEL);
->  	if (!rdev->cores)
->  		return ERR_PTR(-ENOMEM);
-> diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rocket/roc=
-ket_drv.c
-> index 8bbbce594..7f7dfa374 100644
-> --- a/drivers/accel/rocket/rocket_drv.c
-> +++ b/drivers/accel/rocket/rocket_drv.c
-> @@ -176,6 +176,7 @@ static int rocket_probe(struct platform_device *pdev)
-> =20
->  	rdev->cores[core].rdev =3D rdev;
->  	rdev->cores[core].dev =3D &pdev->dev;
-> +	rdev->cores[core].soc =3D of_device_get_match_data(&pdev->dev);
->  	rdev->cores[core].index =3D core;
-> =20
->  	rdev->num_cores++;
-> @@ -213,8 +214,23 @@ static void rocket_remove(struct platform_device *pd=
-ev)
->  	}
->  }
-> =20
-> +static const struct rocket_soc_data rk3588_soc_data =3D {
-> +	.num_clks =3D 4,
-> +	.num_resets =3D 2,
-> +	.multi_power_domain =3D false,
-> +	.poll_completion =3D false,
-> +};
-> +
-> +static const struct rocket_soc_data rk3576_soc_data =3D {
-> +	.num_clks =3D 6,
-> +	.num_resets =3D 1,
-> +	.multi_power_domain =3D true,
-> +	.poll_completion =3D true,
-> +};
-> +
->  static const struct of_device_id dt_match[] =3D {
-> -	{ .compatible =3D "rockchip,rk3588-rknn-core" },
-> +	{ .compatible =3D "rockchip,rk3588-rknn-core", .data =3D &rk3588_soc_da=
-ta },
-> +	{ .compatible =3D "rockchip,rk3576-rknn-core", .data =3D &rk3576_soc_da=
-ta },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, dt_match);
-> @@ -240,7 +256,7 @@ static int rocket_device_runtime_resume(struct device=
- *dev)
->  	if (core < 0)
->  		return -ENODEV;
-> =20
-> -	err =3D clk_bulk_prepare_enable(ARRAY_SIZE(rdev->cores[core].clks), rde=
-v->cores[core].clks);
-> +	err =3D clk_bulk_prepare_enable(rdev->cores[core].soc->num_clks, rdev->=
-cores[core].clks);
->  	if (err) {
->  		dev_err(dev, "failed to enable (%d) clocks for core %d\n", err, core);
->  		return err;
-> @@ -260,7 +276,7 @@ static int rocket_device_runtime_suspend(struct devic=
-e *dev)
->  	if (!rocket_job_is_idle(&rdev->cores[core]))
->  		return -EBUSY;
-> =20
-> -	clk_bulk_disable_unprepare(ARRAY_SIZE(rdev->cores[core].clks), rdev->co=
-res[core].clks);
-> +	clk_bulk_disable_unprepare(rdev->cores[core].soc->num_clks, rdev->cores=
-[core].clks);
-> =20
->  	return 0;
->  }
-> diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/roc=
-ket_job.c
-> index bb77b6bf0..28845ac4e 100644
-> --- a/drivers/accel/rocket/rocket_job.c
-> +++ b/drivers/accel/rocket/rocket_job.c
-> @@ -7,6 +7,7 @@
->  #include <drm/drm_file.h>
->  #include <drm/drm_gem.h>
->  #include <drm/rocket_accel.h>
-> +#include <linux/hrtimer.h>
->  #include <linux/interrupt.h>
->  #include <linux/overflow.h>
->  #include <linux/iommu.h>
-> @@ -21,6 +22,15 @@
-> =20
->  #define JOB_TIMEOUT_MS 500
-> =20
-> +/*
-> + * RK3576 arms the same DPU completion as RK3588, but the interrupt neve=
-r
-> + * reaches the GIC. The completion itself is visible in INTERRUPT_RAW_ST=
-ATUS,
-> + * so sample that instead. The tick cap bounds jobs that never raise it =
-at all,
-> + * which is the same open problem as the wrong inference results.
-> + */
-> +#define RK3576_POLL_INTERVAL_NS	1000000LL	/* 1 ms */
-> +#define RK3576_POLL_MAX_TICKS	8
-> +
->  static struct rocket_job *
->  to_rocket_job(struct drm_sched_job *sched_job)
->  {
-> @@ -151,6 +161,14 @@ static void rocket_job_hw_submit(struct rocket_core =
-*core, struct rocket_job *jo
-> =20
->  	rocket_pc_writel(core, OPERATION_ENABLE, PC_OPERATION_ENABLE_OP_EN(1));
-> =20
-> +	if (core->soc->poll_completion) {
-> +		core->poll_ticks =3D 0;
-> +		core->poll_seq++;
-> +		atomic_set(&core->poll_active, 1);
-> +		hrtimer_start(&core->poll_timer, ns_to_ktime(RK3576_POLL_INTERVAL_NS),
-> +			      HRTIMER_MODE_REL);
-> +	}
-> +
->  	dev_dbg(core->dev, "Submitted regcmd at 0x%llx to core %d", task->regcm=
-d, core->index);
->  }
-> =20
-> @@ -341,25 +359,87 @@ static struct dma_fence *rocket_job_run(struct drm_=
-sched_job *sched_job)
->  	return ERR_PTR(ret);
->  }
-> =20
-> +static void rocket_job_handle_irq(struct rocket_core *core);
-> +
-> +static enum hrtimer_restart rocket_poll_timer_fn(struct hrtimer *timer)
-> +{
-> +	struct rocket_core *core =3D container_of(timer, struct rocket_core, po=
-ll_timer);
-> +	u32 raw;
-> +
-> +	if (!atomic_read(&core->poll_active))
-> +		return HRTIMER_NORESTART;
-> +
-> +	core->poll_work_seq =3D core->poll_seq;
-> +
-> +	raw =3D rocket_pc_readl(core, INTERRUPT_RAW_STATUS);
-> +	if ((raw & (PC_INTERRUPT_RAW_STATUS_DPU_0 | PC_INTERRUPT_RAW_STATUS_DPU=
-_1)) ||
-> +	    ++core->poll_ticks >=3D RK3576_POLL_MAX_TICKS) {
-> +		atomic_set(&core->poll_active, 0);
-> +		schedule_work(&core->poll_work);
-> +		return HRTIMER_NORESTART;
-> +	}
-> +
-> +	hrtimer_forward_now(timer, ns_to_ktime(RK3576_POLL_INTERVAL_NS));
-> +	return HRTIMER_RESTART;
-> +}
-> +
-> +/* Start the job's next task, or retire it. Caller holds job_lock. */
-> +static void rocket_job_next_locked(struct rocket_core *core)
-> +{
-> +	lockdep_assert_held(&core->job_lock);
-> +
-> +	if (!core->in_flight_job)
-> +		return;
-> +
-> +	if (core->in_flight_job->next_task_idx < core->in_flight_job->task_coun=
-t) {
-> +		rocket_job_hw_submit(core, core->in_flight_job);
-> +		return;
-> +	}
-> +
-> +	iommu_detach_group(NULL, iommu_group_get(core->dev));
-> +	dma_fence_signal(core->in_flight_job->done_fence);
-> +	pm_runtime_put_autosuspend(core->dev);
-> +	core->in_flight_job =3D NULL;
-> +}
-> +
-> +static void rocket_poll_work_fn(struct work_struct *work)
-> +{
-> +	struct rocket_core *core =3D container_of(work, struct rocket_core, pol=
-l_work);
-> +
-> +	pm_runtime_mark_last_busy(core->dev);
-> +
-> +	scoped_guard(mutex, &core->job_lock) {
-> +		/*
-> +		 * The interrupt can land while this work is queued, retire the job
-> +		 * and start the next task. poll_seq only moves under job_lock, in
-> +		 * hw_submit, so comparing it here says whether that happened. Doing
-> +		 * it outside the lock would leave the window open rather than close
-> +		 * it, and this work would then submit a task on top of a live one.
-> +		 */
-> +		if (READ_ONCE(core->poll_dying) || core->poll_work_seq !=3D core->poll=
-_seq)
-> +			return;
-> +
-> +		rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
-> +		rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
-> +
-> +		rocket_job_next_locked(core);
-> +	}
-> +}
-> +
->  static void rocket_job_handle_irq(struct rocket_core *core)
->  {
-> +	if (core->soc->poll_completion) {
-> +		atomic_set(&core->poll_active, 0);
-> +		hrtimer_cancel(&core->poll_timer);
-> +	}
-> +
->  	pm_runtime_mark_last_busy(core->dev);
-> =20
->  	rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
->  	rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
-> =20
->  	scoped_guard(mutex, &core->job_lock)
-> -		if (core->in_flight_job) {
-> -			if (core->in_flight_job->next_task_idx < core->in_flight_job->task_co=
-unt) {
-> -				rocket_job_hw_submit(core, core->in_flight_job);
-> -				return;
-> -			}
-> -
-> -			iommu_detach_group(NULL, iommu_group_get(core->dev));
-> -			dma_fence_signal(core->in_flight_job->done_fence);
-> -			pm_runtime_put_autosuspend(core->dev);
-> -			core->in_flight_job =3D NULL;
-> -		}
-> +		rocket_job_next_locked(core);
->  }
-> =20
->  static void
-> @@ -460,6 +540,10 @@ int rocket_job_init(struct rocket_core *core)
->  	int ret;
-> =20
->  	INIT_WORK(&core->reset.work, rocket_reset_work);
-> +	INIT_WORK(&core->poll_work, rocket_poll_work_fn);
-> +	hrtimer_setup(&core->poll_timer, rocket_poll_timer_fn, CLOCK_MONOTONIC,
-> +		      HRTIMER_MODE_REL);
-> +	atomic_set(&core->poll_active, 0);
->  	spin_lock_init(&core->fence_lock);
->  	mutex_init(&core->job_lock);
-> =20
-> @@ -501,8 +585,23 @@ int rocket_job_init(struct rocket_core *core)
-> =20
->  void rocket_job_fini(struct rocket_core *core)
->  {
-> +	/*
-> +	 * Stop the poll from starting hardware work before tearing anything
-> +	 * down: it submits the next task, and drm_sched_fini() does not wait
-> +	 * for work already queued. Cancel after the scheduler is gone, so a
-> +	 * job running now cannot re-arm the timer behind the cancel.
-> +	 */
-> +	if (core->soc->poll_completion)
-> +		WRITE_ONCE(core->poll_dying, true);
-> +
->  	drm_sched_fini(&core->sched);
-> =20
-> +	if (core->soc->poll_completion) {
-> +		atomic_set(&core->poll_active, 0);
-> +		hrtimer_cancel(&core->poll_timer);
-> +		cancel_work_sync(&core->poll_work);
-> +	}
-> +
->  	cancel_work_sync(&core->reset.work);
->  	destroy_workqueue(core->reset.wq);
->  }
+> 
+> I was looking to make use of this patch in an upcoming posting for the
+> v2 ITS hardening but in my case I don't need the private VA range
+> creation.
+
+I believe if you need to map MMIO, private range is the right way to
+do it as the linear map was mainly designed around system memory.
+
+Thanks,
+Mostafa
 
