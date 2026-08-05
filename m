@@ -1,65 +1,85 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010057.outbound.protection.outlook.com [52.101.85.57])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 626AA3BBFAD
-	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 18:12:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785953531; cv=fail; b=Z5bdxm01A7gjlMsJF279Z67It9Q8zw1kP0jk90qeYNc34PjB8HBD55ty9VW8igHH0G8G4rG+48VyoJlxLwyPFVciulkD+46wRMlLEFrwYEUGgiXTnCiF/yOJG6PyDXIWMJb7pGXMcPx1V1oPqb6zE9AKG12FMiuHiN1YTaG7mEo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785953531; c=relaxed/simple;
-	bh=hldtvvj54tEJTzlg1cuzNiRu+Hs47PrsLDenJkPfP5w=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=b4xxxR9zYeHwun+oQaBHbfO2H5wsckmD9OpWoYVCadPpzq+3nG/1E+/ZjorrV0eN87WsSznb5Zv7e8Abp9ll93rW8bsBxvPjBZLkEITf4T1wtGkKjrPs3bLE8a/T2mUyJU0DcNiFwrpeyhyTC50IX0O7tv/q5HFdyKaCoPU0JFs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=SUKrXDbB; arc=fail smtp.client-ip=52.101.85.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB9B63DAAD4
+	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 19:11:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785957080; cv=none; b=krNrSMfRR3UnlaQKjOr/b7awZUf2AtbwSTMve+XVg66ze4zzPt38r1uKJ3IA4HmEeea+1Skv0AlKtTjH3XEX1mnOZ+If4v23L3VzBy48FKKQrQasgk27GAlHseItH+LfNsou7Yrx5q6zdLWLM0GbBEd5J4JWabEscQppUYk9Tnw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785957080; c=relaxed/simple;
+	bh=g6HU23i5fSRX/KH4Y44SrBTLW+Efym3AnaxqepOQoxU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cFZ+rrfx5zlRVLz5veeT4W3x/iYA3cYXc8tId/rJ9BCva0mhF3IrTuyasqFcS+KFc2AumM4HS5zjFrazn18M6Mr+QAWIcQBk9yxNRc78YzY+QnaRtgnzuUnA7YcA6Oos/MTaU2cgqhhBsIPy43LRLBxBp6Ocopmmy4I7wiL0HKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ic8cgKZa; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="SUKrXDbB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PeetEQ3LwPU55GM8fnHZDzWTALta2MKeY19HP4UUKl+f696A83hECzKr7cDzcCk5slNw40xPq31vL5sc1pVKGrLHVNyDe65Na+BIBw1jXD7XfKKsKfgzB9igY47ofXLgEvaRE7xJaEiC+NdKh5FCnaDexXpWHcAVP6gx0KBnP0LAu6BFR64im9avIvW2pV7HkcNcvuf4RpFiL7UBYgeTrP54T+PRL4j3RRBAz8t/ckxPGVfLUpmKC4mv2b4++MarrZ8V1lj5j5g4M/TXrw+GvJQvv9ZLJSX+2jqBFurK91FydJGhbCj30ohF/p/tcNxr6+LIX2mp/lRiQhSYI2AmKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bfv/g9b1CaxzeUQIZZSRqWIV13/IPwNnomtZbaBNQdA=;
- b=J+QQKagPOKWma9qb0s2lRDSCsjqEMrDh8p1IlKc/GFGpwggIw9KtkU/dTpxP+0BX28QlRcHFALnC5sYKDrhq9fFZAR0WYLLevi+cCwpdigylmtivFwNfx8BKWPwEgdCtsgEHItvsw7w2eU7kw27XC1X+mvp91hxdjRkjyN7kKd0cdazePgjrQEOUuW24Jp2CxELG0Q3nB/bZQRekyKrpcX34hsl1CRd0dz+m3X3tFYZD+PHO11NXtIK06C3AFG64oxKeTPH3Qvs1KG85uhsP5YHnn+O1rng1WAaTxFQcRuuE7lAspv0abX0OIl4VmHzW7zhPRo4rF5tnHFbt27gYVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bfv/g9b1CaxzeUQIZZSRqWIV13/IPwNnomtZbaBNQdA=;
- b=SUKrXDbBI49UjTZ0OQ39L0orDxhB1nVHb5yaV8azshcQnvskh7LJLO7d9tYo/+ZgB9ji8FsDry9UnepmayhQSoG0p2kjtpRMHnFlVADUbJfBz2J4TNo5soWXzGjX9BXuFsR5nXX7aP6KyjtT4h2dEdo2dnwIytzscd10O5ylKdw=
-Received: from BN9PR12MB5146.namprd12.prod.outlook.com (2603:10b6:408:137::16)
- by SA5PPF9176ED2F1.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8d7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.18; Wed, 5 Aug
- 2026 18:12:05 +0000
-Received: from BN9PR12MB5146.namprd12.prod.outlook.com
- ([fe80::535a:591e:27f6:c23]) by BN9PR12MB5146.namprd12.prod.outlook.com
- ([fe80::535a:591e:27f6:c23%3]) with mapi id 15.21.0270.017; Wed, 5 Aug 2026
- 18:12:05 +0000
-From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: "Hegde, Vasant" <Vasant.Hegde@amd.com>, "Limonciello, Mario"
-	<Mario.Limonciello@amd.com>, "Kuehling, Felix" <Felix.Kuehling@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "joro@8bytes.org"
-	<joro@8bytes.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "Suthikulpanit, Suravee"
-	<Suravee.Suthikulpanit@amd.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ic8cgKZa"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-527e352a167so8915991cf.1
+        for <iommu@lists.linux.dev>; Wed, 05 Aug 2026 12:11:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1785957077; x=1786561877; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=b0xkTaFSxQkbT4PpYQuH0yFvquaeQpeK5woUXN7RqdE=;
+        b=Ic8cgKZaClklI6NVhyyJYZchxh/9iBeWgRpm7GQF05q5UuYXn8V3YEQsnIJXIlYpjk
+         cHsTH0e1vuIqdFv6NnW2Dx1m98pAg3zBRNGTMTBr27LraNl2zP/SYotHYLIUAw18aGlb
+         tU5345AVoqz3pR7/8FG6h1Ue7YEUNcKVim/ZhtwwVo5U+fPXT5AsWf1Sa5/sUA3NNL03
+         acAm8LravVx5vbdyMNO4fbQwtsvWIXTDe5NU0vWLvtlmgcq+bn0SM1B+NbqAdW8JTDU2
+         pxoAkGQBZU5N4UF9eokuy1R9nDPzc3P59cSRGpNZqaTvS2xUb+4n8rD0Txd9+vXqABjc
+         CUDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785957077; x=1786561877;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=b0xkTaFSxQkbT4PpYQuH0yFvquaeQpeK5woUXN7RqdE=;
+        b=Z7SwCcHwORUyKatqh3YnqcHUmmcomrQLQ3lDwanYl054gM0j2SkXL7qM4BF/ed5/yn
+         /ztrUw8Ej8/XNqA9cBoxqhUJELixMxpieWYzqB6oKVz6O5uGVtHTHJgg4cntSjpX8G40
+         DpW6R4rHwbX4tBdX2E8MqLhfoLA4eH48aNqhFMsy556Ww+nOyN9JHcsNhS+RN8Yz8okl
+         qbu8uFg/h0RD0Fl7UL8AM+/ES3Ux7XfVyZbzupgvMRj2ty78yx0rdHysOgq3fks8zxgI
+         Sq/DowHnkfdM+dGxIjcarHIOc/7wqNLG4ZrUHlweix9IMUaAhkREJupNnYOZxG/p+FLt
+         nGhA==
+X-Forwarded-Encrypted: i=1; AHgh+Rqvj3j3FoknauhPURkX627AqMJUpzgm/wJCbdceVDP7hTXhI4e22gMVjnV9H6zN8j5ufblg5A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyEki4hcsFEdyO6nrkMsoBqZze2mlHaacrQ+XM0kHK6wv4GSLQp
+	bPIzQDjV/R3l+Bn0dSSx/RdoN5t5PKj8Pdw9NzjZ20k1icdO04kNiEBX9DijBWHNGPw=
+X-Gm-Gg: AR+sD108uxhiY1HBPxUUneppyfAYZPPGBPQ/Bn3iVRlDWcmldmEo47a5EBWJc5zX4VT
+	anQuiup+6K6EQ86JQz4f6kQZsis8FH25G1EEa6n1JOQctSbjPboF6UETIN8x4I7Ox4vUgE1Itlw
+	MA38Tbtx5XUX2OiarfbusVWJ9oRa/FmD93mCHz2my4FIqvUNIFfVeImEzRECHUb3WK3O2Ls1rr0
+	A6gHeEland6Zix6S+6RboWHStjRLDLC2sPNXL9tGVienx0Mvler6Zhcfm3byMagvowFffc1SL7F
+	dbTHpTBgQMhHSu0HvgZlrrv5mi6Nth6PDUwN5hUkDl0z8wT+x2K/V2tVWCOnGWLJZ1A9X0FFjm/
+	xG6BiX9J0akJFoKOmb003hPH4RruZa0lCetVqgY9am7sLNITCE3WuCMpfERjcwlZP92bVykd2fS
+	4qq7rTpP2Sr4omU0inW23agDUu2gYsei31zXAsJg==
+X-Received: by 2002:a05:622a:480c:b0:51c:1c73:5943 with SMTP id d75a77b69052e-52ce6145233mr106545321cf.23.1785957077642;
+        Wed, 05 Aug 2026 12:11:17 -0700 (PDT)
+Received: from ziepe.ca ([142.166.156.215])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9087ffe0f93sm32516756d6.21.2026.08.05.12.11.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 12:11:16 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wrh1I-00000000NIN-0fnn;
+	Wed, 05 Aug 2026 16:11:16 -0300
+Date: Wed, 5 Aug 2026 16:11:16 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Cc: "Hegde, Vasant" <Vasant.Hegde@amd.com>,
+	"Limonciello, Mario" <Mario.Limonciello@amd.com>,
+	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
 	"Longia, Amandeep Kaur" <AmandeepKaur.Longia@amd.com>
-Subject: RE: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
-Thread-Topic: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs
- only
-Thread-Index:
- AQHdGmrXXVaTvXvBoEGo7Q2TpyKmibZ8ya8AgAP/o4CAAK8DAIAA7JgAgAAKzQCAAOUFgIAADS2AgAKVz4CACMDmAIAA4oQAgAAtKPCAAAlpAIAABJCg
-Date: Wed, 5 Aug 2026 18:12:05 +0000
-Message-ID:
- <BN9PR12MB51467229315BC8D731239E80F7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
-References: <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
- <ed296c0d-246f-492b-970b-49c45e25f5f6@amd.com>
- <f4355034-d40a-4d11-ab98-eef0f2991f33@amd.com>
+Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
+Message-ID: <20260805191116.GE28508@ziepe.ca>
+References: <f4355034-d40a-4d11-ab98-eef0f2991f33@amd.com>
  <838281e9-8ee7-433a-b06c-68675e9b285f@amd.com>
  <2f400c7f-eada-45e3-9079-7b5727ecb5c3@amd.com>
  <bacdf160-8ab2-4bd6-aa9d-ab63b16527fa@amd.com>
@@ -68,110 +88,44 @@ References: <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
  <39ce2a2f-3bb8-43e7-9446-a67551cce104@amd.com>
  <BN9PR12MB5146934D584CF0A2A9DD8CFCF7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
  <20260805175308.GD28508@ziepe.ca>
-In-Reply-To: <20260805175308.GD28508@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_2d0b1989-8fc8-4a69-bcac-d46889461ba5_Enabled=True;MSIP_Label_2d0b1989-8fc8-4a69-bcac-d46889461ba5_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;MSIP_Label_2d0b1989-8fc8-4a69-bcac-d46889461ba5_SetDate=2026-08-05T18:09:52.0000000Z;MSIP_Label_2d0b1989-8fc8-4a69-bcac-d46889461ba5_Name=AMD
- Public
- v26;MSIP_Label_2d0b1989-8fc8-4a69-bcac-d46889461ba5_ContentBits=3;MSIP_Label_2d0b1989-8fc8-4a69-bcac-d46889461ba5_Method=Privileged
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR12MB5146:EE_|SA5PPF9176ED2F1:EE_
-x-ms-office365-filtering-correlation-id: 9307b261-8374-46ad-0d05-08def31d0e6e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|376014|1800799024|23010399003|10067099003|11063799006|4143699003|5023799004|56012099006|22082099003|18002099003|38070700021;
-x-microsoft-antispam-message-info:
- +2evWL2MCgCxNh4kDf9gd87pTsFv7aZWbASFeUO6Va6FnlzXa2zWiENGrL5L822u0fsotHlFbm67n9wAI2GpAtgD11IYjcruUO6S5WZkCb69UfuXn1fAQco+MyfB3hxHiE4RffjkE8Pnvj78fx5NI7E6e6DqesmGR8UqZG2rxXG7JLVfJPATmz4/tw/MscozFYDSb8pwHkiuEr+xfT7uGIW0pzNPCEo7V/OPvjCLffbT1FSnNkAf5/1P7IqgG1dgOHmLI1eXze8nN6KdVI2sB4p1IS7hzPsUXv8GOXRjapQqZGpmFdMnuryKgXuLmd0GvzkpDvRzD0d135MXWe9KqaqswQ+evVjP0F0b8T/mtAIwZYvthrJ739kAbwG7GDJ720nA0Cvk/0CrZmd1kVgZPD5sBL+Kpgbwqn3SNfmPe+PlsMbVqejT6dMA+zsaHPqvuPt76AWzEjwsE/EIA5avlzpDk9G5MP9EEEKdZbWWVEWxfdU0Aas133W+De4XwuvxWfDV6NExHxKN3glOZeKjk96IoKWfOsHmLw8IScsRknYSS3NMIvO56pNItv53qZDoPwF7LRYk6Z0F0FSYQKUKDyWAHgG7T6eqX9wGeWJIawfb8xgSQAm65ROFlhiE3iFCMRvmADhC5NHUEm2ZY8IVYkxtWdi7sPXScG5tNl7tDggbXRWNSkdHv3IxUERcv2ayV8kn+kl/BnlGAAawmE3tHkSjsFrbh9/rpmT5iqUWNSw=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5146.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(23010399003)(10067099003)(11063799006)(4143699003)(5023799004)(56012099006)(22082099003)(18002099003)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?0sxY0Nmu7SKOCnmxQSa1rvRQgP/l5vtGY4WH3biKFHVmHjH2hHppCT31hEF5?=
- =?us-ascii?Q?N9iB7tpaAO9bR133BpFdSO/GV9TwcQRRrZ8lVA/iFrBzaH7wEn4zxMbPj2Ry?=
- =?us-ascii?Q?V701snQC0eO7RVsFBzkQZkkoCYvneAXESb4jsKt7LgKIb78MQpupU3A83tgj?=
- =?us-ascii?Q?H3TvYfIsVf5uVja5aLDaTxvku+ffNmGyYfAR75lQxfgJ3Tw5JzWGm9eGh12l?=
- =?us-ascii?Q?VIVFbZvd8yo9Sl8eTV0kUNe6g6NWvT5+hUWs6egbsHoXc+EoHlx7pY9WSBKK?=
- =?us-ascii?Q?DjZsbq3qMBPygJzsCbhJRVAIXiAhHc7Y4dEBqlV42phi+1XTQzmlDo549pq4?=
- =?us-ascii?Q?58mklZkp5bHW1LYYULotLSKXWEk+dt7mJ+Hm1EEjwkx/mPsTv+ja3i4W6nCd?=
- =?us-ascii?Q?LupYFX7To42dsESOM+2BmRZnvjP28NnY8ISd0WEfGJ3v8STOhXLpD15ZI6kj?=
- =?us-ascii?Q?z6b1awVEg3TGjfPCxmSt6BM4UoXNU6dU6eZrxQiLVgkCNm+cMWUc6gas0au9?=
- =?us-ascii?Q?FrrHLn9QJqP9mqjdlcdlHuz44DOQKPwvULZiu0uz0DpJqAu36Ybbz9VnWo4v?=
- =?us-ascii?Q?ERUf/g2UBM7Ka8AEz5QwhDKVpEyQBPduY4hTO+C+uT1yzdSFWaU541ciu4qc?=
- =?us-ascii?Q?9uqUdEthQ8cMAOMeCA1OYFa4AvxgIkK82qmvORubWFkGbGLw10nhmhD//ii5?=
- =?us-ascii?Q?0xVORzGT3Kau59357sa666CeXRquqNf4/jqRwSmPQwLcorUy1L1ybdfrqOof?=
- =?us-ascii?Q?1CO8X17E2qf/KpePqLdsqsbLkRKqGOmsNc6ROPTFLte16VRxp+a+vgmAWJ1E?=
- =?us-ascii?Q?I9PTJg7RUwgiRaimKz2WgF5u7+mGzgW+B9Xy1iu95v9shGmjuiBKknePfdyW?=
- =?us-ascii?Q?qLRaOeQkAXyIAq3dVZo87elYkPoPFKbrmc49h21JIwE3XyEPcclRM3ykSHi8?=
- =?us-ascii?Q?KJKEodgKX8+CUrJh1U6Y3vcjFhXGTOvDkI/MtaUWLroJ9/m2v1AEpDd401jN?=
- =?us-ascii?Q?GfYXhkPzfU/h7ia+sA+2U6WDj8RFG2yLzUUGAPvN/tfiJSoxyRYculHo8rkX?=
- =?us-ascii?Q?P9LOR0GngP5Y0BB543oo6nxLd4UptNL85dy4Xnet5aF08XEZaGaT+5H5Aa86?=
- =?us-ascii?Q?LMywid8WhZG6lI9NKDvqMFnzmqZNye7UOz7eQ7+Cwcei16uQ9rxCRShGa7vw?=
- =?us-ascii?Q?D1/uw7pa45kyoY7BqUHOWXDvSwMu0mE6cMX7lv5K4QVA83vasHLdGvn7qbxG?=
- =?us-ascii?Q?PA389c3C3PqW+oeHTdOWq+4XZVPz/2beNykAw9naeVlz4MnvidXaz+4oFltP?=
- =?us-ascii?Q?FCK6Bc5v0O09yASGoJbgA3V8qP/Wcl2GPishcD4R4lq1jiNJvv9lbkdX8PaQ?=
- =?us-ascii?Q?UssjU365EYEK0aXytzqJwIygxISzL0jMB6+ZykT7LnV5AAlH8ts0Xby4cv0n?=
- =?us-ascii?Q?c1+iA1GJLB5E8lPwv2ReMN+YtyYb1ngds6LnMKq5Xn26fL3Z89tZOPRjfGI7?=
- =?us-ascii?Q?yFYwq5TTs0xeLJJBodhr4f0FJxUrAaHWQvypN9lK5pp1TPdjWDljX99BxJyO?=
- =?us-ascii?Q?Hjz2zm2JVTtTZv+xwC50TH17Ll6IgxpFWp9EkKGT7HJ1tIvJOl8SiO+cCl16?=
- =?us-ascii?Q?3bmp9b0TrKne1Q+rbGeltUerW+QZQd33WjJaIHHhQDE3o7NZIj/D7Hz9Xu/+?=
- =?us-ascii?Q?Cqmjy36GBZSQGdVLwwEtf7Cact9uwHXkZnW3APebfEc8Ppu/?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <BN9PR12MB51467229315BC8D731239E80F7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5146.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9307b261-8374-46ad-0d05-08def31d0e6e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2026 18:12:05.4523
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PzkJICVKHvhp9Gn/x0UwWmWZjOkLNuiNbD1qC3gN1pKnLICH7sl47qJ5ra1a5M6YvyQZksA7mAnBajx+B9OR/Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPF9176ED2F1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR12MB51467229315BC8D731239E80F7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
 
-Public
+On Wed, Aug 05, 2026 at 06:12:05PM +0000, Deucher, Alexander wrote:
 
-> -----Original Message-----
-> From: Jason Gunthorpe <jgg@ziepe.ca>
-> Sent: Wednesday, August 5, 2026 1:53 PM
-> To: Deucher, Alexander <Alexander.Deucher@amd.com>
-> Cc: Hegde, Vasant <Vasant.Hegde@amd.com>; Limonciello, Mario
-> <Mario.Limonciello@amd.com>; Kuehling, Felix <Felix.Kuehling@amd.com>;
-> iommu@lists.linux.dev; joro@8bytes.org; linux-pci@vger.kernel.org;
-> will@kernel.org; robin.murphy@arm.com; Suthikulpanit, Suravee
-> <Suravee.Suthikulpanit@amd.com>; bhelgaas@google.com; Longia,
-> Amandeep Kaur <AmandeepKaur.Longia@amd.com>
-> Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs
-> only
->
-> On Wed, Aug 05, 2026 at 05:22:22PM +0000, Deucher, Alexander wrote:
->
-> > IIRC, they supported SME, but it wasn't usable due to other
-> > limitations (e.g., the requirement for identity mappings due to the
-> > display hw bug and the latency impact of encryption for displays in
-> > system memory).  Do you could effectively pick either SME or displays.
->
-> IMHO the GPU driver should fail if it cannot work because it can't reach =
-the
-> IOVA space requried for SME ...
->
-> I don't think this should be a iommu problem to deal with
+> > On Wed, Aug 05, 2026 at 05:22:22PM +0000, Deucher, Alexander wrote:
+> >
+> > > IIRC, they supported SME, but it wasn't usable due to other
+> > > limitations (e.g., the requirement for identity mappings due to the
+> > > display hw bug and the latency impact of encryption for displays in
+> > > system memory).  Do you could effectively pick either SME or displays.
+> >
+> > IMHO the GPU driver should fail if it cannot work because it can't reach the
+> > IOVA space requried for SME ...
+> >
+> > I don't think this should be a iommu problem to deal with
+> 
+> That means no display for the user which is a not a good user
+> experience. Most users of systems with integrated graphics would
+> probably prefer displays over SME.
 
-That means no display for the user which is a not a good user experience. M=
-ost users of systems with integrated graphics would probably prefer display=
-s over SME.
+You said IOVA translation doesn't work at all on these devices due to
+a bug, so what is the iommu even supposed to do? It can't select
+identity because the device doesn't work that way and it can't select
+paging because it doesn't work that way either.
 
-Alex
+Or are you saying paging sort of works enough to do something
+half-busted?
 
+Why did AMD even offer SME in the BIOS on these systems if it doesn't
+even work and turn it into Linux's problem?
+
+Jason
