@@ -1,303 +1,492 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010025.outbound.protection.outlook.com [52.101.61.25])
+Received: from out-183.mta0.migadu.com (out-183.mta0.migadu.com [91.218.175.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3EA420494
-	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 12:48:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.25
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785934125; cv=fail; b=LoJa1XwIBsURhyTIXNhPtrkiIP5XMxPwTjtV+FsNQsuAQohH3jcwezfPLAjTTKvJAm9NZVfSSakWS/oEEDPt8KFtL6ATszY5bUdkxGrskh1ZBpArjqx84PmHuqo4auDAqc8OWn10niMXuAiavYxC/F3jN/kA9rpZ06R9PB4iuWs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785934125; c=relaxed/simple;
-	bh=hcMuFzdX5cAzu8HlLbRqECTFtjYxf4tjVb2lkYzd98w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=SbIaiAUQQAXymTIFiga0tQNo5CWLTerW3TNrgZW8EJlCObaFHnATriCd+j0vXce9sqQhpMf6wRD0YdBot+0Cii685IGzpch3ox/HGkuDikfhL8QxdM/snc04pqbaM9lPfwR2hWHJvA5rH09WI4WqXZAi3nHGTe8WjNfIvyLRzZM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FiOyoeiY; arc=fail smtp.client-ip=52.101.61.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7A146A602
+	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 12:52:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.183
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785934367; cv=none; b=WYRKEVp3ehBPyYrgFrSslNsChceU1MB6IZDzUGqr5DbpZfFDiNY/QRN0rTZTsekZNwsA/U+s+dO+KTuJ5vk4zY9MZ0MD3mUJnZ2ONEUCHSn/91JSVTlq2UjfLyKSxnZg2zwkvNMSEgckWEL64O41ZVgx4QIsDFJi4ecThcDVxB8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785934367; c=relaxed/simple;
+	bh=YfQnn/dbIuW54QfigKTTMf+yLHYtKM4CF9ZW/iqSJa0=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=OxVeFenMeDGPUc5644W1dlEYO23M68HIT4JGCrm+Ze1qsBM8yn8nD82R39m928hIM+F5c5Okhe++YRpKCf18gUZgE/x+iGkU5jOzFuTf5Sr3wVTSs6Ilg3QhVvHVj/PzaaungvUdPy9wZZxHs6spRANN32yFRwPhmjybcNV1F/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com; spf=pass smtp.mailfrom=cknow-tech.com; dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b=nIajNt3q; arc=none smtp.client-ip=91.218.175.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow-tech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FiOyoeiY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=C1eBLRUg1lhUuDcyibtOMoVPR5CBy6Ph46NOi667cRnquFZKzKPl99EkONT7PsYz4AHagFShFlCyba0cHjzr2/zyaNEngbF+kNvo2i0kO25Ne3b5/bKgWHvn/doYmhzSds7ptMz16IX088NrHKZPbC9jjYZ7frrvnmP2HM1wqCfGYsKWr7QnJB6MGO0dRnDx/Q8RY8ubprfcD4VRVqHw5j9RdtiG6xuylBc0zlcUEvMjNvVcCj0gt0/ZUYBVFULejyrtldws1JNqAumS5DJyBLZMnMuua29nkrYs8XPTwK2ei8+2HqJOCv5nJJk4qoUr/jI5MWW2ncEu8FB7vJkB8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ycYvnxE/eOm6nqFDykATtT41QOY/J7JDOmwAeOSfjkc=;
- b=eqkadu0pWNRAcovIgdgMuzTQsB+s+I+ReIJXJq1ccnZXEJJuDiY6ZYIg/CSTdF8esSBoJCWp4W1NMUXQ5jfVgE9VXcPvzuqPI9e32YZpmabU5juo7LeqBJ1XJhqmXSyEw/6ZtJTCuCURkyzJ+s79xU44f+3Tes7gO0f5+O11vfbYk1Z7XvJWEd0y0Y0U+AMmiD9ToL3ynsoLAQfysmmHQ5SMxtHfBd84Hf4NarXKsVcoaM1ORzVSV8XHq7OcQQIIZEEePc8kXp/1y7yhDS9VwxKQolJGsyh7nPtpN2f8DQTC/OEc29hgmPnrvpxDfq9bIoDy+IfXkKAwNWB0F29U0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ycYvnxE/eOm6nqFDykATtT41QOY/J7JDOmwAeOSfjkc=;
- b=FiOyoeiYyWmxDRNu9hZCxVRWh9UzAZmEN9u9BFOYI4iD+8lJJ/4ZB4v/q8IWZN76Boohe6ymecFrXAannc8qpzwu+dbuMO50kOT8RadSDPQjgg7ztyIbJtFnyIfuRXcAdx/Yuv+1ub78CxCW/TQtyKRaxlc3WrOAV5LvVM50bSczvnLM/qpAFD1ngtrPVMfOY2Ynb5O3AANa2ETAABfJBcrpZT9rb7AoWQQDjdXHQcz0KGrRhUcqODzC81qGPjnxo0oONeyzFtEOZhYXvzlNIh0QOAi9NWNHKq+bdth8P7Asm11Ok0O2qcekkuQj+FO2S/7RKwuBeuO24Ihy3Eu1VQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CY8PR12MB7682.namprd12.prod.outlook.com (2603:10b6:930:85::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.19; Wed, 5 Aug
- 2026 12:48:39 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0292.015; Wed, 5 Aug 2026
- 12:48:39 +0000
-Date: Wed, 5 Aug 2026 09:48:38 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
-	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
-	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
-	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
-	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v5 7/9] x86/hyperv: Implement Hyper-V virtual IOMMU
-Message-ID: <20260805124838.GP27883@nvidia.com>
-References: <20260731223427.2554388-1-mrathor@linux.microsoft.com>
- <20260731223427.2554388-8-mrathor@linux.microsoft.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260731223427.2554388-8-mrathor@linux.microsoft.com>
-X-ClientProxiedBy: YT4PR01CA0491.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:10c::28) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b="nIajNt3q"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CY8PR12MB7682:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa83bf02-51f1-4223-2d69-08def2efdf55
-X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|23010399003|376014|366016|1800799024|10067099003|5023799004|11063799006|56012099006|4143699003|22082099003|18002099003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	EnQ+ie4+EsF6YgdEN418pctYbDeLyrZVn7dIWrdp1FT4d2zcaqY7VktWiIJTV3iprUl8hJFB7pLcLcC1ZQk1h/GJxdDb+80leRlrLWJ4M/Uovyf1lJ8R5lhwWZz8+ZdYUiLb+rufHT9df32BOgWhfcgGl5AmT7n52uunWOhRQvT6dlo21hGCx2z7DD0wpTwf+kmY33+TbZ3vBHYOg7RwyiPxk9WXX2mRdfHiwGi+4zwBad8iYRChdjE9Okg8jDMoFGlblLMp2gwcWQ50lUOR3dJhXXMovw8w9TyTngXQtT1vdDUYSirJ0lHH63CMst2QD9lTspOePV/qMWUqynTmG08O3ljEyOL+fu8R4Hn9vLkCu68cBki7GpwA/fs7JvhdGP5j32xj8wUXymUy+sW54QJfTsqjPI9mqBzZWKlC/YOdMhKRp0gW4RvA+duxogIV1Hj4Wi5QceG2PDhYvUol3bLYmZXnvVZw8nhfPlRkWnNP5xMmll+1FIZ+Hsavx1Y6Eyp/nxJhD+ks8RTsnuSH6eI37Y0OyqoFi5kOvIEi81NT9Twz0LOPrRkv59uXHC42At0vmif2isFb/kUGkFLq+4aJNWO/d0iT+WVJoTunLojmqptxZcwQfVihDVQuF7YkAXrjeQVRBsD6Khq/5sae1V2Wp60uMD1cY+HfMScqOJQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(366016)(1800799024)(10067099003)(5023799004)(11063799006)(56012099006)(4143699003)(22082099003)(18002099003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?7bIMdNG3ksBeVm7wITuJfzaGxczF9Io3E9Cknb3kXjR1Vwti38BKdIA/Pkyi?=
- =?us-ascii?Q?WZ4eHTtlt+r5Knx81Q9XrSNa/Sl2zsC3feBNLOb57kglIjC9j0NR9UTAlKVA?=
- =?us-ascii?Q?uH0a+FKbW0E5S5tVuFIo3f6S7fs8d+oXCN7SFg/hjsirtL5IrLZ47aIAcVNx?=
- =?us-ascii?Q?k0VQmhCeRFIeuOBdw8mjTD1pLd37jpUUoG0A0EOL5Rfx10fQt2C8TPzn5ja3?=
- =?us-ascii?Q?WGyF72zGbBFvUHKV98P9Ck0gycJ2iNfToXxShCip0/vbM/zovHBG8dg0+IjD?=
- =?us-ascii?Q?1oyj//ZC+hMuIOxxZPvJhIZXgsdTs7cdRBJlwEpEQNC9tDwGOIsVXeyQPFFW?=
- =?us-ascii?Q?91G7shoDeDx42Rd+bj+D887DufIZV42slNj8pOCEVYXTQANOsZlw0TaSiaZs?=
- =?us-ascii?Q?7WWaQYqcOTM2FD5d66vO2+uekaD3nCiL9VL6Hm5Vm0xOvpimXf+3RyKMBK26?=
- =?us-ascii?Q?UqCtKGBKzyYi39LZM0IhuHRcYgOpFsZX4AY3Nzjyvk2JTv3hCzJGAZG5vu4M?=
- =?us-ascii?Q?OtWMv12fcH/059sVwJ/niSFSIKcsnf1r8zyWe5zCkYmvO8MZ/wxPkuTNEply?=
- =?us-ascii?Q?8Yy/ONZ8OHIJY3mfKPS5L7RJe6d2iAEJPXH3TDEm00zpPUWTcb7G7yp0hWjh?=
- =?us-ascii?Q?1T0dIcvAWOZoC5Lqy8Hljm8bYqd4D3h8KTCUTD4B7KzkMDZ4H3MZjRR8ZYyP?=
- =?us-ascii?Q?voegasEgrOLICm5s48jaCxxOFgM+PWqTnGdyGGOjCFUdprrlH6kw5wMNFuwC?=
- =?us-ascii?Q?4+AH91bQHD0/1PHApbLOqxyD8WD4BDhiYHVhuIGAAmJ1N3VjBK2VZrrJScz3?=
- =?us-ascii?Q?RlkeN52T0zcpO0ASgbGaJ2lfAm89ydxWy4eIcYR1MYhEikfAL72c6m6gJwre?=
- =?us-ascii?Q?FGGgXxLx02tJJ4kyEZj2EDt+CMpJpKBrbiNfcvdKVf25cfUY71ZFSSY8Y4Iu?=
- =?us-ascii?Q?sCuFYpBTsD8/JtAfETSZZBgiXZHQeKahHrVDERU1Bdeb2TKMdKpkWXw1wYLA?=
- =?us-ascii?Q?CpH+miRRJ/5r83tTHo8f7l05NCZY2TE3AqtfX4qLA0HKzDhdicit5A44VYuT?=
- =?us-ascii?Q?TVTl97fhnuPtZ3/+jGuSO7EgfGyxifYR4Yvf3nOH6vIIrRviNl4JxpxlCdr1?=
- =?us-ascii?Q?eSpHxk1F1YO5VjLSa/+rf/+yP+ucUAQGpURrFDY3GRAzwCW//c7KKp00cPdA?=
- =?us-ascii?Q?pU9n5tAsZL2mESS2FSCwiaPBOP6EXXu3G6WNodROhx/YhO1XIQK5Dppme36J?=
- =?us-ascii?Q?T+zPi2D6R8rDj51cSXmwnofvLVA3eIKMcq/BT7Su+L/lP2bTn2zMImck54GH?=
- =?us-ascii?Q?9qniuhzZr1aZ3bs1tyrRK5fKdD6JaA3gyGMKYQxvzxib6ZCa5NgiNalq7jkZ?=
- =?us-ascii?Q?Zo7+dQ+0YAMOf4Ap0rbGN72P4h6xf5tuQLpC1xDFb4pyic8W7PMOBzjQk+xf?=
- =?us-ascii?Q?Fq+HEpPwgNrGaGsoxR4kbg9E7x7N7F/yeFXsrHYKFivhsjLBdDduRnQ8wL3U?=
- =?us-ascii?Q?pR4RR1O8w7gkyMh94UQXXN6arMBopE23NJrvHBFyIcquu4N4p5w2/GU+9AbN?=
- =?us-ascii?Q?3jvXqvXGMTYDG3ClucJHue5CrwsKqupXbsEiOwA3eQI51tAK9V/kRp1FQHGz?=
- =?us-ascii?Q?b7VfpNpyETSDpq6M4FIMAKpphb1R9NgRxn6AT+WhXSqxDj788ja20NZN4Ts7?=
- =?us-ascii?Q?/nXC2zSqxiRjtmWJNvF7e+zGxpiP+OUYtgr2ipTQMvjgubJe7/GcOa9xbxoD?=
- =?us-ascii?Q?opbw02otkA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa83bf02-51f1-4223-2d69-08def2efdf55
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2026 12:48:39.4634
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zpdtwQlOJgugqzbLb80PHStx8gzIQBv3vHIqCMt+S/8mBR6poRkv83j6CcEPyEP3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7682
+Mime-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow-tech.com;
+	s=key1; t=1785934358;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vNhnb6jBQpoGsN5TmbYgz5dCfwxd5/O/xYd00sVY3Ls=;
+	b=nIajNt3qjv825OzAIrvUT/uFNh0ISFr3TXlH+m6ASlKEJYrtZIdRHSRzaa6rXTOyMwX+RD
+	I9M4XqE6a/XBBcnqkSY1v30HbYin0iFQqd3GR26zX4rh1H7ibu/9QGTje+CsM7RVauwf1g
+	rO8Ov2a3emfdh78jieT8/+FjpEDkBJW3JAlOxiAeCchI9+W9tK67nol4ahmjXT033UIS6N
+	Te14tKFPuaF10sDGrdHWzvW5/BoVqjwxXWA/2LNr8TXC9vZch6t2lt42UNrmhw6rP6vAw7
+	Xa024CFdCT179KjLU526uh/AQko2rcZY61nAmkXWGCZolaytFvHkEQkCuMY+8Q==
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 05 Aug 2026 14:52:23 +0200
+Message-Id: <DKH0VYV0DMRB.3F9GXE6E2TSZ@cknow-tech.com>
+Cc: <royalnet026@gmail.com>, <alchark@flipper.net>,
+ <chaoyi.chen@rock-chips.com>, <dri-devel@lists.freedesktop.org>,
+ <linux-rockchip@lists.infradead.org>, <iommu@lists.linux.dev>,
+ <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v5 v5 6/8] accel/rocket: add RK3576 NPU (RKNN)
+ support
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Diederik de Haas" <diederik@cknow-tech.com>
+To: "Jiaxing Hu" <gahing@gahingwoo.com>, <tomeu@tomeuvizoso.net>,
+ <heiko@sntech.de>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+ <conor+dt@kernel.org>, <joro@8bytes.org>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <ulfh@kernel.org>, <p.zabel@pengutronix.de>,
+ <ogabbay@kernel.org>, <zhangqing@rock-chips.com>
+References: <20260805063826.95682-1-gahing@gahingwoo.com>
+ <20260805063826.95682-7-gahing@gahingwoo.com>
+In-Reply-To: <20260805063826.95682-7-gahing@gahingwoo.com>
+X-Migadu-Flow: FLOW_OUT
 
-On Fri, Jul 31, 2026 at 03:34:25PM -0700, Mukesh R wrote:
-> +struct iommu_domain_geometry default_geometry = (struct iommu_domain_geometry) {
-> +	.aperture_start = 0,
-> +	.aperture_end = -1UL,
-> +	.force_aperture = true,
-> +};
+On Wed Aug 5, 2026 at 8:38 AM CEST, Jiaxing Hu wrote:
+> The RK3576 carries the same RKNN block as the RK3588, with two cores
+> instead of three and a few platform differences:
+>
+>  - the CBUF (convolution buffer) has its own clock domain, so the core
+>    needs six clocks rather than four;
+>  - the BIU reset moved into the power domain, leaving one reset here;
+>  - the NPU spans two power domains, and a device with more than one is
+>    skipped by the driver-core single-domain auto-attach, so the list has
+>    to be attached explicitly;
+>  - the DPU completion interrupt is armed exactly as on RK3588 but never
+>    reaches the GIC. The completion is visible in INTERRUPT_RAW_STATUS,
+>    so sample that from an hrtimer rather than wait for an interrupt that
+>    does not come. The interrupt stays armed, so if it ever does arrive
+>    the normal handler finalises the job first.
+>
+> Select all of that from of_device_id match data so the RK3588 path keeps
+> its existing counts and behaviour unchanged.
 
-This should not exist
+Would it make sense to split this patch up in 2 patches:
+1) Prepare for different NPU/RKNN implementations
+2) Add support for RK3576 NPU/RKNN
 
-> +/*
-> + * If the current thread is a VMM thread, return the partition id of the VM it
-> + * is managing, else return HV_PARTITION_ID_INVALID.
-> + */
-> +static u64 hv_get_current_partid(void)
-> +{
+It seems like you're changing the implementation for RK3588 in this patch
+AND add support for RK3576. It's often better to split those things out.
 
-No, you cannot transparently detect VMMs and link them like this. The
-VMM makes it self visible to the iommu driver via the viommu interface
-and you get a kvm FD to fish your partid out of. This is hackery not OK.
+Cheers,
+  Diederik
 
-You should come with VMM support as a followup once you get a basic
-kernel-only iommu driver working.
-
-> +static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
-> +{
-> +	struct hv_domain *hvdom;
-> +	int rc;
-> +	u32 unique_id;
-> +	u64 ptid = hv_get_current_partid();
-> +
-> +	if (ptid == HV_PARTITION_ID_INVALID)
-> +		return NULL;
-> +
-> +	hvdom = kzalloc_obj(struct hv_domain);
-> +	if (hvdom == NULL)
-> +		return NULL;
-> +
-> +	spin_lock_init(&hvdom->mappings_lock);
-> +	hvdom->mappings_tree = RB_ROOT_CACHED;
-> +
-> +	unique_id = (u32)atomic_inc_return(&hv_unique_id);
-> +	if (unique_id == HV_DEVICE_DOMAIN_ID_S2_NULL)	/* ie, UINTMAX */
-> +		goto out_err;
-> +
-> +	hvdom->domid_num = unique_id;
-> +	hvdom->partid = ptid;
-> +	hvdom->iommu_dom.geometry = default_geometry;
-> +	hvdom->iommu_dom.pgsize_bitmap = HV_IOMMU_PGSIZES;
-
-This is the only place that needs it, and I somehow doubt -1 is the
-right end value since that isn't supported by most HW.
-
-> +static int hv_iommu_attach_dev(struct iommu_domain *immdom, struct device *dev,
-> +			       struct iommu_domain *old)
-> +{
-> +	struct pci_dev *pdev;
-> +	int rc;
-> +	struct hv_domain *hvdom_new = to_hv_domain(immdom);
-> +	struct hv_domain *hvdom_prev = to_hv_domain(old);
-> +
-> +	/* Only allow PCI devices for now */
-> +	if (!dev_is_pci(dev))
-> +		return -EINVAL;
-> +
-> +	pdev = to_pci_dev(dev);
-> +
-> +	/* There are no explicit detach calls, hence check if we need to detach
-> +	 * first. Also, in case of guest shutdown, it's the VMM thread that
-> +	 * attaches it back to the hv_def_identity_dom, and hvdom_prev will not
-> +	 * be null then. It is null during boot.
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+> ---
+>  drivers/accel/rocket/rocket_core.c   |  26 +++++-
+>  drivers/accel/rocket/rocket_core.h   |  20 ++++-
+>  drivers/accel/rocket/rocket_device.c |   4 +
+>  drivers/accel/rocket/rocket_drv.c    |  22 ++++-
+>  drivers/accel/rocket/rocket_job.c    | 121 ++++++++++++++++++++++++---
+>  5 files changed, 176 insertions(+), 17 deletions(-)
+>
+> diff --git a/drivers/accel/rocket/rocket_core.c b/drivers/accel/rocket/ro=
+cket_core.c
+> index b3b2fa9ba..e08288c8c 100644
+> --- a/drivers/accel/rocket/rocket_core.c
+> +++ b/drivers/accel/rocket/rocket_core.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/err.h>
+>  #include <linux/iommu.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_domain.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/reset.h>
+> =20
+> @@ -21,14 +22,22 @@ int rocket_core_init(struct rocket_core *core)
+>  	u32 version;
+>  	int err =3D 0;
+> =20
+> +	/* RK3576 moves the BIU reset into its power domain and takes only srst=
+_a. */
+>  	core->resets[0].id =3D "srst_a";
+>  	core->resets[1].id =3D "srst_h";
+> -	err =3D devm_reset_control_bulk_get_exclusive(&pdev->dev, ARRAY_SIZE(co=
+re->resets),
+> +	err =3D devm_reset_control_bulk_get_exclusive(&pdev->dev, core->soc->nu=
+m_resets,
+>  						    core->resets);
+>  	if (err)
+>  		return dev_err_probe(dev, err, "failed to get resets for core %d\n", c=
+ore->index);
+> =20
+> -	err =3D devm_clk_bulk_get(dev, ARRAY_SIZE(core->clks), core->clks);
+> +	core->clks[0].id =3D "aclk";
+> +	core->clks[1].id =3D "hclk";
+> +	core->clks[2].id =3D "npu";
+> +	core->clks[3].id =3D "pclk";
+> +	/* RK3576 clocks the CBUF separately; the compute path stalls without t=
+hese. */
+> +	core->clks[4].id =3D "aclk_cbuf";
+> +	core->clks[5].id =3D "hclk_cbuf";
+> +	err =3D devm_clk_bulk_get(dev, core->soc->num_clks, core->clks);
+>  	if (err)
+>  		return dev_err_probe(dev, err, "failed to get clocks for core %d\n", c=
+ore->index);
+> =20
+> @@ -65,6 +74,19 @@ int rocket_core_init(struct rocket_core *core)
+>  		return err;
+>  	}
+> =20
+> +	/*
+> +	 * RK3576 spans two power domains, and a multi-domain device is skipped
+> +	 * by the driver-core single-domain auto-attach, so attach the list her=
+e.
 > +	 */
-> +	if (hvdom_prev && !hv_special_domain(hvdom_prev))
-> +		hv_iommu_detach_dev(hvdom_prev, dev);
-
-What translation does this set? If it is anything other than blocking
-it is security broken for VFIO.
-
-If it is blocking then why does  this:
-
-> +	rc = hv_iommu_att_dev2dom(hvdom_new, pdev);
-
-Attach HV_DEVICE_DOMAIN_ID_S2_NULL ?
-
-> +	if (rc == 0)
-> +		dev_iommu_priv_set(dev, hvdom_new);  /* sets "private" field */
-
-The only thing the priv is used for is release_device ?
-
-It would be better to have a 'detach domain' as the
-release_domain so you don't need this.
-
-> +static void hv_iommu_probe_finalize(struct device *dev)
-> +{
-> +	struct iommu_domain *immdom = iommu_get_domain_for_dev(dev);
+> +	if (core->soc->multi_power_domain) {
+> +		struct dev_pm_domain_list *pd_list;
 > +
-> +	if (immdom && immdom->type == IOMMU_DOMAIN_DMA)
-> +		iommu_setup_dma_ops(dev, immdom);
-> +	else
-> +		set_dma_ops(dev, NULL);
+> +		err =3D devm_pm_domain_attach_list(dev, NULL, &pd_list);
+> +		if (err < 0)
+> +			return dev_err_probe(dev, err,
+> +					     "failed to attach NPU power domains\n");
+> +	}
+> +
+>  	pm_runtime_use_autosuspend(dev);
+> =20
+>  	/*
+> diff --git a/drivers/accel/rocket/rocket_core.h b/drivers/accel/rocket/ro=
+cket_core.h
+> index f6d738285..205ff070d 100644
+> --- a/drivers/accel/rocket/rocket_core.h
+> +++ b/drivers/accel/rocket/rocket_core.h
+> @@ -6,6 +6,7 @@
+> =20
+>  #include <drm/gpu_scheduler.h>
+>  #include <linux/clk.h>
+> +#include <linux/hrtimer.h>
+>  #include <linux/io.h>
+>  #include <linux/mutex_types.h>
+>  #include <linux/reset.h>
+> @@ -27,16 +28,25 @@
+>  #define rocket_core_writel(core, reg, value) \
+>  	writel(value, (core)->core_iomem + (REG_CORE_##reg) - REG_CORE_S_STATUS=
+)
+> =20
+> +/* Per-SoC differences, selected by the of_device_id match data. */
+> +struct rocket_soc_data {
+> +	unsigned int num_clks;		/* clk_bulk count: 4 base, 6 with CBUF */
+> +	unsigned int num_resets;	/* reset_bulk count: 2 base, 1 on RK3576 */
+> +	bool multi_power_domain;	/* device spans more than one PM domain */
+> +	bool poll_completion;		/* completion IRQ never reaches the GIC */
+> +};
+> +
+>  struct rocket_core {
+>  	struct device *dev;
+>  	struct rocket_device *rdev;
+> +	const struct rocket_soc_data *soc;
+>  	unsigned int index;
+> =20
+>  	int irq;
+>  	void __iomem *pc_iomem;
+>  	void __iomem *cna_iomem;
+>  	void __iomem *core_iomem;
+> -	struct clk_bulk_data clks[4];
+> +	struct clk_bulk_data clks[6];
+>  	struct reset_control_bulk_data resets[2];
+> =20
+>  	struct iommu_group *iommu_group;
+> @@ -52,6 +62,14 @@ struct rocket_core {
+>  		atomic_t pending;
+>  	} reset;
+> =20
+> +	struct hrtimer poll_timer;
+> +	struct work_struct poll_work;
+> +	atomic_t poll_active;
+> +	unsigned int poll_ticks;
+> +	unsigned int poll_seq;
+> +	unsigned int poll_work_seq;
+> +	bool poll_dying;
+> +
+>  	struct drm_gpu_scheduler sched;
+>  	u64 fence_context;
+>  	u64 emit_seqno;
+> diff --git a/drivers/accel/rocket/rocket_device.c b/drivers/accel/rocket/=
+rocket_device.c
+> index 46e6ee1e7..bfb00f967 100644
+> --- a/drivers/accel/rocket/rocket_device.c
+> +++ b/drivers/accel/rocket/rocket_device.c
+> @@ -31,6 +31,10 @@ struct rocket_device *rocket_device_init(struct platfo=
+rm_device *pdev,
+>  		if (of_device_is_available(core_node))
+>  			num_cores++;
+> =20
+> +	for_each_compatible_node(core_node, NULL, "rockchip,rk3576-rknn-core")
+> +		if (of_device_is_available(core_node))
+> +			num_cores++;
+> +
+>  	rdev->cores =3D devm_kcalloc(dev, num_cores, sizeof(*rdev->cores), GFP_=
+KERNEL);
+>  	if (!rdev->cores)
+>  		return ERR_PTR(-ENOMEM);
+> diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rocket/roc=
+ket_drv.c
+> index 8bbbce594..7f7dfa374 100644
+> --- a/drivers/accel/rocket/rocket_drv.c
+> +++ b/drivers/accel/rocket/rocket_drv.c
+> @@ -176,6 +176,7 @@ static int rocket_probe(struct platform_device *pdev)
+> =20
+>  	rdev->cores[core].rdev =3D rdev;
+>  	rdev->cores[core].dev =3D &pdev->dev;
+> +	rdev->cores[core].soc =3D of_device_get_match_data(&pdev->dev);
+>  	rdev->cores[core].index =3D core;
+> =20
+>  	rdev->num_cores++;
+> @@ -213,8 +214,23 @@ static void rocket_remove(struct platform_device *pd=
+ev)
+>  	}
+>  }
+> =20
+> +static const struct rocket_soc_data rk3588_soc_data =3D {
+> +	.num_clks =3D 4,
+> +	.num_resets =3D 2,
+> +	.multi_power_domain =3D false,
+> +	.poll_completion =3D false,
+> +};
+> +
+> +static const struct rocket_soc_data rk3576_soc_data =3D {
+> +	.num_clks =3D 6,
+> +	.num_resets =3D 1,
+> +	.multi_power_domain =3D true,
+> +	.poll_completion =3D true,
+> +};
+> +
+>  static const struct of_device_id dt_match[] =3D {
+> -	{ .compatible =3D "rockchip,rk3588-rknn-core" },
+> +	{ .compatible =3D "rockchip,rk3588-rknn-core", .data =3D &rk3588_soc_da=
+ta },
+> +	{ .compatible =3D "rockchip,rk3576-rknn-core", .data =3D &rk3576_soc_da=
+ta },
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(of, dt_match);
+> @@ -240,7 +256,7 @@ static int rocket_device_runtime_resume(struct device=
+ *dev)
+>  	if (core < 0)
+>  		return -ENODEV;
+> =20
+> -	err =3D clk_bulk_prepare_enable(ARRAY_SIZE(rdev->cores[core].clks), rde=
+v->cores[core].clks);
+> +	err =3D clk_bulk_prepare_enable(rdev->cores[core].soc->num_clks, rdev->=
+cores[core].clks);
+>  	if (err) {
+>  		dev_err(dev, "failed to enable (%d) clocks for core %d\n", err, core);
+>  		return err;
+> @@ -260,7 +276,7 @@ static int rocket_device_runtime_suspend(struct devic=
+e *dev)
+>  	if (!rocket_job_is_idle(&rdev->cores[core]))
+>  		return -EBUSY;
+> =20
+> -	clk_bulk_disable_unprepare(ARRAY_SIZE(rdev->cores[core].clks), rdev->co=
+res[core].clks);
+> +	clk_bulk_disable_unprepare(rdev->cores[core].soc->num_clks, rdev->cores=
+[core].clks);
+> =20
+>  	return 0;
+>  }
+> diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/roc=
+ket_job.c
+> index bb77b6bf0..28845ac4e 100644
+> --- a/drivers/accel/rocket/rocket_job.c
+> +++ b/drivers/accel/rocket/rocket_job.c
+> @@ -7,6 +7,7 @@
+>  #include <drm/drm_file.h>
+>  #include <drm/drm_gem.h>
+>  #include <drm/rocket_accel.h>
+> +#include <linux/hrtimer.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/overflow.h>
+>  #include <linux/iommu.h>
+> @@ -21,6 +22,15 @@
+> =20
+>  #define JOB_TIMEOUT_MS 500
+> =20
+> +/*
+> + * RK3576 arms the same DPU completion as RK3588, but the interrupt neve=
+r
+> + * reaches the GIC. The completion itself is visible in INTERRUPT_RAW_ST=
+ATUS,
+> + * so sample that instead. The tick cap bounds jobs that never raise it =
+at all,
+> + * which is the same open problem as the wrong inference results.
+> + */
+> +#define RK3576_POLL_INTERVAL_NS	1000000LL	/* 1 ms */
+> +#define RK3576_POLL_MAX_TICKS	8
+> +
+>  static struct rocket_job *
+>  to_rocket_job(struct drm_sched_job *sched_job)
+>  {
+> @@ -151,6 +161,14 @@ static void rocket_job_hw_submit(struct rocket_core =
+*core, struct rocket_job *jo
+> =20
+>  	rocket_pc_writel(core, OPERATION_ENABLE, PC_OPERATION_ENABLE_OP_EN(1));
+> =20
+> +	if (core->soc->poll_completion) {
+> +		core->poll_ticks =3D 0;
+> +		core->poll_seq++;
+> +		atomic_set(&core->poll_active, 1);
+> +		hrtimer_start(&core->poll_timer, ns_to_ktime(RK3576_POLL_INTERVAL_NS),
+> +			      HRTIMER_MODE_REL);
+> +	}
+> +
+>  	dev_dbg(core->dev, "Submitted regcmd at 0x%llx to core %d", task->regcm=
+d, core->index);
+>  }
+> =20
+> @@ -341,25 +359,87 @@ static struct dma_fence *rocket_job_run(struct drm_=
+sched_job *sched_job)
+>  	return ERR_PTR(ret);
+>  }
+> =20
+> +static void rocket_job_handle_irq(struct rocket_core *core);
+> +
+> +static enum hrtimer_restart rocket_poll_timer_fn(struct hrtimer *timer)
+> +{
+> +	struct rocket_core *core =3D container_of(timer, struct rocket_core, po=
+ll_timer);
+> +	u32 raw;
+> +
+> +	if (!atomic_read(&core->poll_active))
+> +		return HRTIMER_NORESTART;
+> +
+> +	core->poll_work_seq =3D core->poll_seq;
+> +
+> +	raw =3D rocket_pc_readl(core, INTERRUPT_RAW_STATUS);
+> +	if ((raw & (PC_INTERRUPT_RAW_STATUS_DPU_0 | PC_INTERRUPT_RAW_STATUS_DPU=
+_1)) ||
+> +	    ++core->poll_ticks >=3D RK3576_POLL_MAX_TICKS) {
+> +		atomic_set(&core->poll_active, 0);
+> +		schedule_work(&core->poll_work);
+> +		return HRTIMER_NORESTART;
+> +	}
+> +
+> +	hrtimer_forward_now(timer, ns_to_ktime(RK3576_POLL_INTERVAL_NS));
+> +	return HRTIMER_RESTART;
 > +}
-
-I've forgotten now, but I thought we had reached the point of getting
-rid of this from most drivers? amd and vtd do not implement this, why
-does this need it?
-
-> +static void hv_iommu_release_device(struct device *dev)
-> +{
-> +	struct hv_domain *hvdom = dev_iommu_priv_get(dev);
 > +
-> +	/* Need to detach device from device domain if necessary. */
-> +	if (hvdom)
-> +		hv_iommu_detach_dev(hvdom, dev);
-
-What does "detach" actually do? What translation will be in effect for
-the device?
-
-Ideally you should set the release_domain to blocking or identity and
-arrange things so that is enough to destroy the iommu attachment. But
-I see both blocking and identity do new attaches so IDK what this
-trying to do..
-
-> +static int hv_iommu_def_domain_type(struct device *dev)
+> +/* Start the job's next task, or retire it. Caller holds job_lock. */
+> +static void rocket_job_next_locked(struct rocket_core *core)
 > +{
-> +	/* The hypervisor always creates this by default during boot */
-> +	return IOMMU_DOMAIN_IDENTITY;
+> +	lockdep_assert_held(&core->job_lock);
+> +
+> +	if (!core->in_flight_job)
+> +		return;
+> +
+> +	if (core->in_flight_job->next_task_idx < core->in_flight_job->task_coun=
+t) {
+> +		rocket_job_hw_submit(core, core->in_flight_job);
+> +		return;
+> +	}
+> +
+> +	iommu_detach_group(NULL, iommu_group_get(core->dev));
+> +	dma_fence_signal(core->in_flight_job->done_fence);
+> +	pm_runtime_put_autosuspend(core->dev);
+> +	core->in_flight_job =3D NULL;
 > +}
-
-That isn't what this does, it overrides the policy set by Linux. Fully
-functional HW should not implement this function, please remove it.
-
-> +static struct iommu_ops hv_iommu_ops = {
-> +	.capable	    = hv_iommu_capable,
-> +	.domain_alloc_paging	= hv_iommu_domain_alloc_paging,
-> +	.probe_device	    = hv_iommu_probe_device,
-> +	.probe_finalize     = hv_iommu_probe_finalize,
-> +	.release_device     = hv_iommu_release_device,
-> +	.def_domain_type    = hv_iommu_def_domain_type,
-> +	.device_group	    = hv_iommu_device_group,
-> +	.default_domain_ops = &(const struct iommu_domain_ops) {
-> +		.attach_dev   = hv_iommu_attach_dev,
-> +		.map_pages    = hv_iommu_map_pages,
-> +		.unmap_pages  = hv_iommu_unmap_pages,
-> +		.iova_to_phys = hv_iommu_iova_to_phys,
-> +		.free	      = hv_iommu_domain_free,
-> +	},
-
-Please don't use default_domain_ops, this should a new struct
-hv_paging_domain_ops
-
-> +	.owner		    = THIS_MODULE,
-> +	.identity_domain = &hv_def_identity_dom.iommu_dom,
-> +	.blocked_domain  = &hv_null_dom.iommu_dom,
-
-Can we call null dom blocked dom please?
-
-> +static void __init hv_initialize_special_domains(void)
-> +{
-> +	hv_def_identity_dom.iommu_dom.type = IOMMU_DOMAIN_IDENTITY;
-> +	hv_def_identity_dom.iommu_dom.ops = &hv_special_domain_ops;
-> +	hv_def_identity_dom.iommu_dom.owner = &hv_iommu_ops;
-> +	hv_def_identity_dom.iommu_dom.geometry = default_geometry;
-> +	hv_def_identity_dom.domid_num = HV_DEVICE_DOMAIN_ID_S2_DEFAULT; /* 0 */
 > +
-> +	hv_null_dom.iommu_dom.type = IOMMU_DOMAIN_BLOCKED;
-> +	hv_null_dom.iommu_dom.ops = &hv_special_domain_ops;
-> +	hv_null_dom.iommu_dom.owner = &hv_iommu_ops;
-> +	hv_null_dom.iommu_dom.geometry = default_geometry;
-> +	hv_null_dom.domid_num = HV_DEVICE_DOMAIN_ID_S2_NULL;  /* INTMAX */
+> +static void rocket_poll_work_fn(struct work_struct *work)
+> +{
+> +	struct rocket_core *core =3D container_of(work, struct rocket_core, pol=
+l_work);
+> +
+> +	pm_runtime_mark_last_busy(core->dev);
+> +
+> +	scoped_guard(mutex, &core->job_lock) {
+> +		/*
+> +		 * The interrupt can land while this work is queued, retire the job
+> +		 * and start the next task. poll_seq only moves under job_lock, in
+> +		 * hw_submit, so comparing it here says whether that happened. Doing
+> +		 * it outside the lock would leave the window open rather than close
+> +		 * it, and this work would then submit a task on top of a live one.
+> +		 */
+> +		if (READ_ONCE(core->poll_dying) || core->poll_work_seq !=3D core->poll=
+_seq)
+> +			return;
+> +
+> +		rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
+> +		rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
+> +
+> +		rocket_job_next_locked(core);
+> +	}
+> +}
+> +
+>  static void rocket_job_handle_irq(struct rocket_core *core)
+>  {
+> +	if (core->soc->poll_completion) {
+> +		atomic_set(&core->poll_active, 0);
+> +		hrtimer_cancel(&core->poll_timer);
+> +	}
+> +
+>  	pm_runtime_mark_last_busy(core->dev);
+> =20
+>  	rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
+>  	rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
+> =20
+>  	scoped_guard(mutex, &core->job_lock)
+> -		if (core->in_flight_job) {
+> -			if (core->in_flight_job->next_task_idx < core->in_flight_job->task_co=
+unt) {
+> -				rocket_job_hw_submit(core, core->in_flight_job);
+> -				return;
+> -			}
+> -
+> -			iommu_detach_group(NULL, iommu_group_get(core->dev));
+> -			dma_fence_signal(core->in_flight_job->done_fence);
+> -			pm_runtime_put_autosuspend(core->dev);
+> -			core->in_flight_job =3D NULL;
+> -		}
+> +		rocket_job_next_locked(core);
+>  }
+> =20
+>  static void
+> @@ -460,6 +540,10 @@ int rocket_job_init(struct rocket_core *core)
+>  	int ret;
+> =20
+>  	INIT_WORK(&core->reset.work, rocket_reset_work);
+> +	INIT_WORK(&core->poll_work, rocket_poll_work_fn);
+> +	hrtimer_setup(&core->poll_timer, rocket_poll_timer_fn, CLOCK_MONOTONIC,
+> +		      HRTIMER_MODE_REL);
+> +	atomic_set(&core->poll_active, 0);
+>  	spin_lock_init(&core->fence_lock);
+>  	mutex_init(&core->job_lock);
+> =20
+> @@ -501,8 +585,23 @@ int rocket_job_init(struct rocket_core *core)
+> =20
+>  void rocket_job_fini(struct rocket_core *core)
+>  {
+> +	/*
+> +	 * Stop the poll from starting hardware work before tearing anything
+> +	 * down: it submits the next task, and drm_sched_fini() does not wait
+> +	 * for work already queued. Cancel after the scheduler is gone, so a
+> +	 * job running now cannot re-arm the timer behind the cancel.
+> +	 */
+> +	if (core->soc->poll_completion)
+> +		WRITE_ONCE(core->poll_dying, true);
+> +
+>  	drm_sched_fini(&core->sched);
+> =20
+> +	if (core->soc->poll_completion) {
+> +		atomic_set(&core->poll_active, 0);
+> +		hrtimer_cancel(&core->poll_timer);
+> +		cancel_work_sync(&core->poll_work);
+> +	}
+> +
+>  	cancel_work_sync(&core->reset.work);
+>  	destroy_workqueue(core->reset.wq);
+>  }
 
-These ones don't use geometry. Didn't I say this once before?
-
-Jason
