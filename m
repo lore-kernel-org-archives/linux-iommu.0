@@ -1,220 +1,282 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012064.outbound.protection.outlook.com [40.93.195.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B2333195FA;
-	Wed,  5 Aug 2026 12:30:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785933034; cv=fail; b=iVWoS5fU81WuaM6ruPQtArV0I5KJ3mh+OxNmhrf+WkMWGjNZgbPQGO4Htomoyy82auVTFza5+whHmNqbuxCSFXBy6Mj+STh5477KlLw46EHifLMMpf7kaZDEyJQ8X3RqsfLmxkc4gxQXHtsDz/Zlthx9MYJBs6nMrHzXen7/S+8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785933034; c=relaxed/simple;
-	bh=QTnLIjfA6T8toPS72sYvz72PXPXYr+HxZS3UJtNuWJ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=mYqKvmAbZOBw+X6KBH8oOqQHZSOUSElB4xGcZtM3ror6ZJv8qZVmE2ZGeIK5OFbH4Zh7wxurcOBAWID5mX8tYdGxpKwmT6e1d46zAzapSpzpgXxOZRZWECoDBbkm5YvNRJLX9QeHAEY4bS+Nm321Xv/WvPoD8iNT26yc5ZUx1II=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MKDGdRlK; arc=fail smtp.client-ip=40.93.195.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F03883BCD0B
+	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 12:47:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785934034; cv=none; b=jG5X9xbgoUyNDUg8OA62RFyMqThGbv4D4KpPptt3HD6/yccc6KADiAgDh9NUEqd6oO2DEIiUTfNyQrSZZw7zspWguWj72qRnrY/HZoESKYfNlADY2GbxjEFptIfasA8gm615Bwxpc+NIhiLB0biWNhBiVyA+BA1nrAzYQo4tJ34=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785934034; c=relaxed/simple;
+	bh=i6MiAQO2W3J8sXVcrnpitQrYRmdGuWqp7QnXGb4Whp4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GXRAzeMAq47rfhxnwX9KbaCtZtjhkMLeY/9j4WT67NZEgPqqbzzBJhg+MQJFNaBQ/piBhHUAp5orfnYy9HRO+RYgNSFPZANO+bln2oOXF2oV2Ndd4ZXm+48UbjjlAZp29M0W9yANVgGjeg/u1rAA43NwZ+BQ+z4W5CTZsjIH4TQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=EXqQ9XJL; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MKDGdRlK"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rHg7Pqy25T1EHcgljCMLNjJuRPyEm5Tm8xIwNQxi154dmvQaxxwQ5Sfk5Zr1bu+HYKYwn30v6FBIPFAAkSsohBd9qXxRaHAvXuyqtx0FuYmPa4wemPCRkMiuDAv4D86/ViFBDd94eZtEOpbSvAhMWFvPukWS9jGgvFXdgQUhd0/dsxzN94k1pfZeEa+x1iFAZliadFZaGTFhxfNaBZRSvX1v5v6HQGTPxA9h5YoLx/q3TV2/n0GU/MDYB0hsOWYKTaZs9VkoHoAY2Oq5BRHm4HQ1jV46GhoNcGtSdLgqNJLgp/bZm6Ve7PtRBJuhZyzzDjA2floBpGsApbNHKdIxyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ox2xbRLxNvdqpJFmgdEJg4jzYCu9Zb10QHH/V8E5mn0=;
- b=J5cAUlCPGO7XGnJjd968I77MnrobAxioxdSRBUM5FQpspKNsY/6F5pwSbUFD5rFdgyHQb3+ytihLz2wLViZ7x2vRY3oMf23x667ReFqT2GL+6uYN39bVg/ZGxR2eUBHDnFswYEE0ctM4M45IXJVTtM/d4XFTc7JynvGy/UUwtFusAZhQKajz5FTuwvAK1SVxv0DbbMYwqhuMTXyWgNTcKZIfYlZhF1eLyWoTo3PzfumItM5XN424YDKpl46axijZo0Zn8beaVzEhOt/wGX5qk6o2FwGjMlhTp184TXde4VAAYIJeb+QUbqxlpRfVbaVLD4vD0lBzUeQIwTsn6tckgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ox2xbRLxNvdqpJFmgdEJg4jzYCu9Zb10QHH/V8E5mn0=;
- b=MKDGdRlKhEgo7F2ULcO8dm44E0sNuHGjxPBIwyFLQU51nhvBCS7veG5Oa9Crj4LQJikt0LL1cTsw7dI/yJ1D+nnUuX0dfww+k4pznjZVeYtphfNfTCKan3kwMp2HXXZHPY9rgKauD2BHGoq1CBUbRT443eI1iJCAQHGh0erBq2fj6BxFyOHVghOyphLqgTVwbicP8ZMNW6vxUdgZIexCsT9XDv71/3SDrPZQ4KU1cUJleAvSEJg3CKz5BuynnJExBgY/o5tfWUsG1HhmeYisGrZUDGBXEwwmadQ94+nVV26w9rXznT7FiaayOsIWZdyqFSV6R8L6hnD78fexmViTbw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by EAYPR12MB999132.namprd12.prod.outlook.com (2603:10b6:303:2c2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.20; Wed, 5 Aug
- 2026 12:30:25 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0292.015; Wed, 5 Aug 2026
- 12:30:25 +0000
-Date: Wed, 5 Aug 2026 09:30:23 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EXqQ9XJL"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6a17c7c3c6eso5454a12.1
+        for <iommu@lists.linux.dev>; Wed, 05 Aug 2026 05:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1785934029; x=1786538829; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=XWYvdwwhHXOZMdpKG9po4fGYOA5/a+2jpomAjIrH0/E=;
+        b=EXqQ9XJLyENPdDzVB1T+opLoZrn41MpwW+BAronQBhn/fFVrHWbOp8aetwHZWe58Uo
+         SWH1rS9Om39rriTEK/yNOIFC4sYPWRYPYZYNPpVXUAdtKdM1/CtkwUkv5jBVUknIr2cW
+         3ryoXmRaCPyB5GvLqxl9x4MolZPSw3lXbPa5Cs8RRvfzLPTuNMq9lb7Vekn18lW18psh
+         bvhc4A7xm73Ip3wX1YIQVpIOagM43osF4T3nQ1v3+fGON+t1YpmxpdLs6DDoMAEgjB1A
+         b1EeZWASpsFLbvqIoGHCRnI9g+H6XrgiJ2cuaJoTiZ0rTn6ghn7lSLzKPOjGP2YBxpUw
+         tFlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785934029; x=1786538829;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=XWYvdwwhHXOZMdpKG9po4fGYOA5/a+2jpomAjIrH0/E=;
+        b=npua1h6jZVRNPAlx6goGjrSLt5gf5V3HHqKczZtote7UrMd0/kgbaEIvvnr5jJHYWH
+         PCRvfvs2sS2vg616dO7NmbUEeF/rE5LUiJcltsjpFXdr5m35XdU+GJNIejwIp0fPgoYh
+         gWRWSLb0dNLOB9QsfaNfLTn2TCrzMq3ZB8TZnq6O3R4GN7qBsPjm0vuFUWz41LianEa7
+         LXJKV8vAI+fntkVfdcHyMKVcJBlFOQM+v/GEShOGeA//9lXfuAL+PlKT6DwBKTuzCZKW
+         wOdok1OpmZScok1Mmj1K6HVfk2SzgQSVFm98PvF6aQtmTB+0ewH3k3zob6YFpbaBCg/x
+         w/Rw==
+X-Forwarded-Encrypted: i=1; AHgh+RoM2UfJ2e8QI3537W1o8MqNszw6C19UyDO5W7pF9jSTHQAk4ZbfqEoP2e+TFY6KoajHk0sJPA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxxNvkmqFpH+HGPQtUiY61l+qOcLZxgRQ6kTwNW9JjD+EYKhrCJ
+	8Ukqc5PPPOYGKvqyXkVU8oHMQ47pS9dySnVB1wpeAkwAUphwB7oJBpNnBVn/1Gpz2Q==
+X-Gm-Gg: AR+sD13N0I2xoCteZ34qTiBwFuCJSr9GbpAMPjU/PJgYeSRSKvnyHWsMTbom/HIs2D3
+	70Zx9hYmzDU7KBVMgmc+DcdFHVbl7Z8vzkytukKPIQodmMknrN7YHCefmgsG/1mQv+w4tAWMekQ
+	NMHuKlmr/g3Ekpq3W1WtQs4FgnXh3EN/jJlfjRwl3tZc8461dd5jwMLwGGZ/9aE1ZSXYO4qo6/Y
+	KCyIbYt5hcL31YFirlaplsUsCmGtMTIZLdTJ0H8PRkakZMsw1fu1TKyG2j4hzmqvA0ARXnjvSsQ
+	I1zBISidnGzyEd9h22vQZyr8anE05EuuRrhXd/vCKcda8wtonWzCYsO/BRK/bCvaBV6WOgWwK2X
+	DQ6YMgA5+i7C7t/fSdtY7CBnaz2Yb6Tv1qT/o4QRzMXLMMuaAEs9b3uqmEWqg+mHwHL4rw+1ZlX
+	9kH6MSQzOKpTpUximGvHlF40x+15GwIhHeVjXWIxhUPDpl/atJcuBOKFdLoejSplycP3SSLdeD4
+	nnQyx6X1E3GllpiH1Ybkc0ZjA14qInaHoy6bFlRPgMO
+X-Received: by 2002:aa7:d747:0:b0:6a1:8b8f:bec4 with SMTP id 4fb4d7f45d1cf-6a18b8fc391mr1793a12.4.1785934028557;
+        Wed, 05 Aug 2026 05:47:08 -0700 (PDT)
+Received: from google.com (63.235.189.35.bc.googleusercontent.com. [35.189.235.63])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a1453d3825sm2028486a12.0.2026.08.05.05.47.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 05:47:07 -0700 (PDT)
+Date: Wed, 5 Aug 2026 12:47:03 +0000
+From: Sebastian Ene <sebastianene@google.com>
 To: Mostafa Saleh <smostafa@google.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v8 12/23] dma: swiotlb: pass mapping attributes by
- reference
-Message-ID: <20260805123023.GO27883@nvidia.com>
-References: <20260717180442.110954-1-aneesh.kumar@kernel.org>
- <20260717180442.110954-13-aneesh.kumar@kernel.org>
- <ami_mpd_1pF4Tmdu@google.com>
- <yq5a5x1ygo7z.fsf@kernel.org>
- <amnRB98ZZIysHuM3@google.com>
- <yq5acxw6dl1d.fsf@kernel.org>
- <20260804142032.GC27883@nvidia.com>
- <anL9-OrDGqYQAWNV@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <anL9-OrDGqYQAWNV@google.com>
-X-ClientProxiedBy: YT4PR01CA0449.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:10d::21) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, keirf@google.com
+Subject: Re: [PATCH v7 02/24] KVM: arm64: Donate MMIO to the hypervisor
+Message-ID: <anMwxy9gEEt_Wu6M@google.com>
+References: <20260715115906.2664882-1-smostafa@google.com>
+ <20260715115906.2664882-3-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|EAYPR12MB999132:EE_
-X-MS-Office365-Filtering-Correlation-Id: 693df1b0-8bad-4c1b-433e-08def2ed530c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|23010399003|18002099003|22082099003|4143699003|11063799006|56012099006|6133799003|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	wtpreoMMSbMNkvVIQRVqvnZb64uPO/ftJxH026TyI2TzinjsLqw7pGLDEkAypUGJMmAcdbM2IY90FmH6YKekynfqyKGced4hUOuk9RfrciCspsz4NQJFTPsrpRl5z8AE+5yP7EfQEaHeDyVbP+mAexfUnm5PpXvtZ/vYMp/Th7N5r3q88w81hqhFqqWLuWxkXirkQvjH8GAhF2BjYZvOfAkjTJvGvqCSBheB05I/rJwAmuXhNMGSkBqD3gq4sLcuq5Xx8WOeOs5fu4zM6HE5ciMtyWNJZHXeyehPBcbaSyjngsvB5CWNz3umZ0gkaEw85yIuFxzWr+Ez8+J2ReLWnHOVbzCtZ/U0snRYGtVQKTFVTCP9NIQN2aumWCfasdKIILrze0GTmHp/SzOEc0Y/o7oYPSpJAq2LjRsZqGwRKMGE6pPWbEhfRrktnXm+Kej8dAV5Dd/YnExy1kJB3mkBEd9UE1MUqYCIZxDxhZP5FRAMX02KCbiP4y/Os86P5SG3d5iUCLFcX1fNlj8a7Duq2Uo8e54Lv18GMX7lhsMFgC0SJVk9tA91SAQrucfnwnkeCBy4rrQM9+3cMMVN4jUFO33344zWFqI3oEQRFdMI0B5rtI1sFZMTJdxfncy/3yqov9rEQaTCL06DYaZ9fwTE862u/SLRfklyfilqlxzi2i8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(23010399003)(18002099003)(22082099003)(4143699003)(11063799006)(56012099006)(6133799003)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?IhdvWWGfiwCzol3+AUKdUWMHHE4HWALFFNYMRE+RmFsR/2v0ODtmAbuAIrmW?=
- =?us-ascii?Q?++YuY5qxNSSGbhCE/uUqv1Zjre7UVbCER/qCW06WVTAImbxzFOP7BV0KHQju?=
- =?us-ascii?Q?vBuuCfhcl9vk3TVlXgbCJikyf4g9V69eZfKjeyHVYKjZCQUP6/96b9u2FrXy?=
- =?us-ascii?Q?EXkfC4LFf5h/97MPvBYj7HtXF/lW1Q72gmOXNPYUUYwmlNK9oLOBnS7uvtqg?=
- =?us-ascii?Q?+9KvvEN5Ap8UTSJxNyrcCyGm39bMV9f+msR9ieDkLSkEwZirn70aGektH7ul?=
- =?us-ascii?Q?Wir3QQsAufage7I47Xnxol6uEKRuCWyQo+2FxZlDl5rw2r35ZPHJzrhABDSV?=
- =?us-ascii?Q?nQ2OCr0uTwo+hd/CCA4BfENcsgXUNGDKNwyQ7C3yl6AVihvvU9oomRTSES9X?=
- =?us-ascii?Q?66CnYKuSc1TmuRXXaxtdf0f/mhsJh1NEeXxqP4MiLGub8FrdlDQaQsHiGo+O?=
- =?us-ascii?Q?bhE21Pn2LEjbrTVyZhtQYWw/xUiQ27AwYXKFS6KLOi/xawx4KlV19LK6o09U?=
- =?us-ascii?Q?0OigRMbjTxpbvEY6mHKRjOdc7fd1VW36PnM/JQ/4AobFA8EXl7IjJJ8oJmhV?=
- =?us-ascii?Q?QL/SE2wISFBJucIPsPumh62swZWFbj1Fl8HpiqfcbKc22jCeXnz5rnSngtrY?=
- =?us-ascii?Q?WoBioRTvqcEmBlOOsmPDMelFg3yqC+Hac9lKhr5B22c89P/v+2inJGhvUP5S?=
- =?us-ascii?Q?TadWy/uYUATQIbDhMBEoMQjgqmCoFoJ1e8Qa0S2TorUtCaAOfxHdnzpCYVaz?=
- =?us-ascii?Q?RZMm4pEJsbUuFwg1bUQs9cBjvAKqkvAwY18LtVIML/wLcCoxfog1FNJr1Xe7?=
- =?us-ascii?Q?0JI1ywQNQRuAJV1IEVNgJPIQVSJuc1MUxS5qDkD9HV69GKczAk+g38sa+vHx?=
- =?us-ascii?Q?7naYCd1KdDssmBcCL0e8DBr+kz9RgjbAu0hkP6JZFDht1PxbaZnshp2T1Ws2?=
- =?us-ascii?Q?j/an/bIzYWCs+GSsxmf4saCwUi9Qwt8p5ctqftcc2iOzU/aZNffGSWdcTWop?=
- =?us-ascii?Q?hHoCgzOarMuljYizaEyWVXAwzvBmaSwEJ5eLXxQWtjdDXDhqOyRSOiHP40+Z?=
- =?us-ascii?Q?mAeIZzTGQiNsNHrnaZrtgaLMMAClk2eSvN8qtLC48WvM0x4bk+GT/ZXv5HOm?=
- =?us-ascii?Q?Tww27yTLgyTCRHtucU4XbLgBxbeBTg3aKaF/Uf9nYBABBxbgSsCji7sMIcBR?=
- =?us-ascii?Q?o4qUUXOIGSAxDKY+DMqaxfQgQl0eouNSDdO9e1ZZ/OZicVV4bph6Tf7hnZHA?=
- =?us-ascii?Q?udQOE0V7OSTJEZRzRCfYATnyQCS9qkpkdk5QUs9F/EwcX35CHWxZfQ+l+tlQ?=
- =?us-ascii?Q?0UZqvFtnxhnoZECLAfOBTeVsBry1Lj7JEU0528cPZ/kWNRlbzMhRA5N6cFwb?=
- =?us-ascii?Q?91eIDW939hdE1zKt68NPqswU9YUPZ22jYJnFHhEwF/cBJmLMrCcRRlSAZ6PC?=
- =?us-ascii?Q?LYmutjcySr/n1pfCMmLcm1UCc4MsRx+SBQprC0bweGx8CULgSFYOQfF2KkXV?=
- =?us-ascii?Q?GgEcXTpWlUS5nX+VfBOVL/aKhyCJPJat0mgs8o4M/8RFCwZ92jeuLNiYIN/t?=
- =?us-ascii?Q?obhA4NG10RZeFaZB1rDR7JO4ZV8nObjNY8u8u8QBZLN4xX/gy+IEY9VXuTpr?=
- =?us-ascii?Q?6gyMbpy3WJ73qzF1SmH3e+HP/KeeY0iFDWjUEobitwCrGyJa5+3m+wtNrdKp?=
- =?us-ascii?Q?PKWjgiFUGpIO8Gn1hniVAlB7vMjyz+JRtEViMNPoGPScTyYfWmA0iRXChWL2?=
- =?us-ascii?Q?6a91FZ2B/A=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 693df1b0-8bad-4c1b-433e-08def2ed530c
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2026 12:30:24.9433
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SnEE0VCiRX+7FvTKRW2hbsqeIdcBOCg9gwb9qK8aHHGB4wwY9TBKfnxLggJ3Y/Xl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: EAYPR12MB999132
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260715115906.2664882-3-smostafa@google.com>
 
-On Wed, Aug 05, 2026 at 09:10:16AM +0000, Mostafa Saleh wrote:
-> On Tue, Aug 04, 2026 at 11:20:32AM -0300, Jason Gunthorpe wrote:
-> > On Wed, Jul 29, 2026 at 06:12:38PM +0530, Aneesh Kumar K.V wrote:
-> > > There is a possibility that we may support io_tlb_mem with cc_shared =
-> > > false in the future. As a result, only swiotlb_map() knows which type of
-> > > bounce buffer was used, making it the only place where the attributes
-> > > can be updated correctly.
-> > 
-> > Yeah, +1, the attribute should be changed at the same effective place
-> > the source memory is changed away from what the DMA API user
-> > provided. Only the thing providing the new memory (eg swiotlb) should
-> > know its properties.
+On Wed, Jul 15, 2026 at 11:58:43AM +0000, Mostafa Saleh wrote:
+> Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
+> drivers can protect and access the MMIO of IOMMUs.
 > 
-> I will keep the conversation here instead of 2 threads.
+> As donating MMIO is very rare, and we don’t need to encode the full
+> state, it’s reasonable to have a separate function to do this.
+> It will init the host s2 page table with an invalid leaf with the owner ID
+> to prevent the host from mapping the page on faults.
 > 
-> That seems like a big leap, I'd be worried about devices that operate
-> on confidential data that should not be shared/decrypted.
+> Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
+> stage-2 PTEs, as this can be triggered from recycle logic under memory
+> pressure. There is no code relying on this, as all ownership changes is
+> done via kvm_pgtable_stage2_set_owner()
+> 
+> For the error path in IOMMU drivers, add a function to donate MMIO
+> back from hyp to host. However, that leaks the hypervisor virtual
+> address range which should be acceptable as this is quite rare and
+> it matches the behaviour of fix_map/block.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  7 ++
+>  arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 91 ++++++++++++++++++-
+>  arch/arm64/kvm/hyp/pgtable.c                  | 11 +--
+>  3 files changed, 102 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> index 29935c7da1de..51b0eb3844a9 100644
+> --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> @@ -36,6 +36,13 @@ int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+>  int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *vcpu, u64 gfn);
+>  int __pkvm_host_unshare_hyp(u64 pfn);
+>  int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
+> +/*
+> + * Donate MMIO range to the hypervisor, it will be mapped in the hypervisor's
+> + * private range and unmapped from the host stage-2.
+> + */
+> +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr);
+> +/* Remaps MMIO range in the host, typically used in error path. */
+> +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size);
+>  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
+>  int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
+>  int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
+> diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> index 4e329e39a695..d803b3dd4cb4 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> @@ -378,7 +378,11 @@ static int host_stage2_unmap_dev_all(void)
+>  	u64 addr = 0;
+>  	int i, ret;
+>  
+> -	/* Unmap all non-memory regions to recycle the pages */
+> +	/*
+> +	 * Unmap all non-memory regions to recycle the pages.
+> +	 * That relies on kvm_pgtable_stage2_unmap() not clearing
+> +	 * counted PTEs which include hypervisor MMIO.
+> +	 */
+>  	for (i = 0; i < hyp_memblock_nr; i++, addr = reg->base + reg->size) {
+>  		reg = &hyp_memory[i];
+>  		ret = kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
+> @@ -1119,6 +1123,91 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+>  	return ret;
+>  }
+>  
+> +int __pkvm_host_donate_hyp_mmio(phys_addr_t addr, size_t size, unsigned long *haddr)
+> +{
+> +	kvm_pte_t pte;
+> +	u64 offset;
+> +	int ret;
+> +
+> +	/* Only before de-privilege. */
+> +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> +		return -EPERM;
+> +
+> +	if (!PAGE_ALIGNED(addr | size) ||
+> +	    !pfn_range_is_valid(hyp_phys_to_pfn(addr), size >> PAGE_SHIFT))
+> +		return -EINVAL;
+> +
+> +	ret = __pkvm_create_private_mapping(addr, size, PAGE_HYP_DEVICE, haddr);
 
-That seems like something very differnt.
+> +	if (ret)
+> +		return ret;
+> +
+> +	host_lock_component();
+> +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> +		if (addr_is_memory(addr + offset)) {
+> +			ret = -EINVAL;
+> +			goto unlock;
 
-> One example for this which exists in pKVM (this part is not
-> upstream yet) is non coherent devices that require bouncing but they
-> still want to keep the data private. In that case ideally they get
-> an encrypted SWIOTLB pool, but it's always better to fail than to use
-> a decrypted pool behind it's back.
+If this fails we are left with the mapping inside the hyp because the unlock
+doesn't destroy the private mapping. Is this intended ?
 
-We don't have any API for a DMA API caller to signal 'must be
-confidential'. If we want to add one it would be a flag to check
-before changing the physical address in swiotlb.
+> +		}
+> +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> +		if (ret)
+> +			goto unlock;
+> +		if (pte && !kvm_pte_valid(pte)) {
+> +			ret = -EPERM;
+> +			goto unlock;
+> +		}
+> +	}
+> +	/*
+> +	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
+> +	 * - host aborts: host_stage2_adjust_range() would fail for invalid non zero PTEs.
+> +	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would call
+> +	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid ptes (counted).
+> +	 * - other MMIO donation: Would fail as we check that the PTE is valid or empty.
+> +	 */
+> +	ret = host_stage2_try(kvm_pgtable_stage2_annotate, &host_mmu.pgt,
+> +			      addr, size, &host_s2_pool,
+> +			      KVM_HOST_INVALID_PTE_TYPE_DONATION,
+> +			      FIELD_PREP(KVM_HOST_DONATION_PTE_OWNER_MASK, PKVM_ID_HYP));
+> +unlock:
+> +	host_unlock_component();
+> +	return ret;
+> +}
+> +
+> +int __pkvm_hyp_donate_host_mmio(phys_addr_t addr, size_t size)
 
-As defined today the DMA API expressly copies from private to shared
-memory, that is baked into it's design and not a bug.
+This function seems to only update the host stage-2 annotation but it
+doesn't destroy the hyp mapping.
 
-My expectation is all these cases have to be solved by setting up the
-swiotlb properly so it provides suitable bounce buffers. Yes, this
-means we will eventually need both private and shared swiotlb pools.
+I was looking to make use of this patch in an upcoming posting for the
+v2 ITS hardening but in my case I don't need the private VA range
+creation.
 
-> I have not been following the work on T=1/T=0 devices, but IIRC, they
-> required some complexity to handle their stage-2 as these modes will
-> be emulated differently (for CCA, RMM vs untrusted host).
-> I was thinking that it might be easier to represent those to the
-> guest kernel as 2 separate devices (bounded to different groups...)
-> where one is trusted and the other is not, and that way the DMA-API
-> can have strict rules about memory sharing.
+Thanks,
+Sebastian
 
-No way! That's would be a giant disaster for the driver model.
-
-Each struct device will have a flag that shows if it is in T=1 or T=0
-state. The flag can only change while a driver is not bound, and
-changing the flag will update the DMA API configuration.
-
-A T=1 device should have the same issue as you point out for pkvm, it
-really needs to have a private SWIOTLB pool.
- 
-> Otherwise, SWIOTLB does not seem like the right place to me, as it
-> does not understand the context the device is operating in, and the
-> DMA-API should deduce that from the flags passed.
-
-It is exactly the right place because it is the one supplying the new
-memory. Context is irrelevant, the flag only describes what the new
-memory actually *IS*, and swiotlb knows 100% if the new memory is
-shared or private.
-
-For your issue it would be appropriate to add a debugging check that
-the new memory is not incompatible with the expected policy. eg a T=1
-device getting decrypted swiotlb memory is a bug in swiotlb setup that
-should be caught. But that's a debugging check, we expect the swiotlb
-to have selected the right kind of memory by construction. This isn't
-done yet since this series doesn't even yet support a T=1 device..
-
-Jason
+> +{
+> +	kvm_pte_t pte;
+> +	u64 offset;
+> +	int ret = 0;
+> +
+> +	if (static_branch_unlikely(&kvm_protected_mode_initialized))
+> +		return -EPERM;
+> +
+> +	if (!PAGE_ALIGNED(addr | size) ||
+> +	    !pfn_range_is_valid(hyp_phys_to_pfn(addr), size >> PAGE_SHIFT))
+> +		return -EINVAL;
+> +
+> +	host_lock_component();
+> +	for (offset = 0; offset < size; offset += PAGE_SIZE) {
+> +		if (addr_is_memory(addr + offset)) {
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+> +		ret = kvm_pgtable_get_leaf(&host_mmu.pgt, addr + offset, &pte, NULL);
+> +		if (ret)
+> +			goto unlock;
+> +		if (!pte || kvm_pte_valid(pte)) {
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+> +		if (FIELD_GET(KVM_HOST_DONATION_PTE_OWNER_MASK, pte) != PKVM_ID_HYP) {
+> +			ret = -EPERM;
+> +			goto unlock;
+> +		}
+> +	}
+> +	WARN_ON(host_stage2_idmap_locked(addr, size, PKVM_HOST_MMIO_PROT));
+> +unlock:
+> +	host_unlock_component();
+> +	return ret;
+> +}
+> +
+>  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages)
+>  {
+>  	u64 phys = hyp_pfn_to_phys(pfn);
+> diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
+> index 91a7dfad6686..3073184cf6ad 100644
+> --- a/arch/arm64/kvm/hyp/pgtable.c
+> +++ b/arch/arm64/kvm/hyp/pgtable.c
+> @@ -1161,13 +1161,12 @@ static int stage2_unmap_walker(const struct kvm_pgtable_visit_ctx *ctx,
+>  	kvm_pte_t *childp = NULL;
+>  	bool need_flush = false;
+>  
+> -	if (!kvm_pte_valid(ctx->old)) {
+> -		if (stage2_pte_is_counted(ctx->old)) {
+> -			kvm_clear_pte(ctx->ptep);
+> -			mm_ops->put_page(ctx->ptep);
+> -		}
+> +	/*
+> +	 * That also ignores stage2_pte_is_counted() instead of clearing
+> +	 * the PTE as the MMIO can be owned by the hypervisor.
+> +	 */
+> +	if (!kvm_pte_valid(ctx->old))
+>  		return 0;
+> -	}
+>  
+>  	if (kvm_pte_table(ctx->old, ctx->level)) {
+>  		childp = kvm_pte_follow(ctx->old, mm_ops);
+> -- 
+> 2.55.0.141.g00534a21ce-goog
+> 
