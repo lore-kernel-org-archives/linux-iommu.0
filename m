@@ -1,964 +1,183 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010028.outbound.protection.outlook.com [52.101.61.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9258438399D
-	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 14:36:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9545376A12
+	for <iommu@lists.linux.dev>; Wed,  5 Aug 2026 14:38:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.28
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785940579; cv=pass; b=Rtl6Lcq39aa+PbsIjpTeIg+YVqkXz8l6suLQBEDjgCUN2+1z3QM8a4cVYxdIDjQ9wXhDusY2pxhOA4/PSEBq/UtlrlaYNWT/xaNEqfNz2jRtXGbo3aGsz9TGSxiv5A/XqrmLqXgbqhjshZvPZ9xcipmpKuEdZldM4UeqhsMvZng=
+	t=1785940689; cv=fail; b=uV0LOa8CVnyENydpJc6BR+/mtEccocepBeK4vfZQMISZ9o0GzBaSGYxTitGMqbWvF+7epFv8/sBRRTHAgHwPNzxbxHHSWUez9ZGeuY0LTJAn2hK7woLnDS9tWxIOBVrVOgiVrAoceU7hpXIVHRnIiCYIKXl0XFuaYPbhwn+W4Ho=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785940579; c=relaxed/simple;
-	bh=xkyhIBywGn2/htYHrHxnjXLq3GQajVEMG4UkPyaO5iw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SHdf6J/P9l4cjDo7hBqZHpX8vYlYlJV46guhHU2b7RXXyyQlV7/bLvRquh0FkjudH7t4rVT99eXjeZv/od2UGjAIDiI8nJX1i9mAdjsmYhQme82TOhHQ8BipYJIgTu+PdTRw9WxOtqN4jOrthfIJkFr3h5f3Da3L0Z/YqkoJ0qI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bncM6XrG; arc=pass smtp.client-ip=209.85.128.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785940689; c=relaxed/simple;
+	bh=df1t0hYE7X+OCKovcvGFrcI0lHdqRbnup0WHuM8zyuM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=JkkKdNEpT8tPy77CTC9veKUDxtfw7Mpy2i5T2NvSQ4iiejovz32noWEqMczoDEmM4S6trE0rnmmhphsXeTXCUj3m+hQPTtH0N1EKOPJw1d1racwqX+o1hWP1DH1kbSMfMrr5Jfr7mBOz2rsEU9gKlmwcbsqraox2kdYb0zHTnto=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=vq+0PE+F; arc=fail smtp.client-ip=52.101.61.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bncM6XrG"
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-81f64f09164so682617b3.3
-        for <iommu@lists.linux.dev>; Wed, 05 Aug 2026 07:36:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785940570; cv=none;
-        d=google.com; s=arc-20260327;
-        b=XQhCkRxfqjZ0JWLu5//BopFUQDuI3Z6vWy8p2Ik/jVZ4NvELpFp+H7W7bMruihUAt8
-         4RyHNwZXlkchs92qX2kkb2qDLW0aD7bZgVGLQst8TlGb2IMNaKVEufOplWLGpqlZjRfY
-         aFRQYT45qrkf6MSXnjfYQhWqaf8gtEunh85EbX9NNuKq3heRSoh2S2ScmHbm+/MUV2dN
-         4ifGRB1L7XMbBo+2l5qdFMjQP6DQovJXNMBOMegM8XREMevYODZxYPYLQmbM+A93+W5K
-         K2nJ0iIm9/UgPJFYyxQLTDDiXZye/DlW7vXj1o9AFSl2CLjnvWnInJGoRWl2oH9WGBCE
-         3LOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=U85uKbgal4W+QuMA2gwqHRpQ8DSYBF3hsr5PWdLh8hY=;
-        fh=b2lCq3csMR66jl3fNXM7K61/J4VffhtRwfbEKcR5pK4=;
-        b=rGaoHU3vZz+7Wc5FIDlA7mHUnrm8O+6mIY6UOyJGlb37LMuZNPQbnW1Xa7uZRX8cw1
-         ddA0ov7ZuMDzNWdLQvkIzSf0NGbBcs/EPrbKv++/B7SOvAMQSxTID8Ya94wqG5sN6iCd
-         Zd3dUWdWEyrADmPlmu4vOg5NOiZVunKaKHGSk8VDzYYnEMHhKLPIf50LLyrsviLrHXCg
-         YgGL8I5zK5EXHN1nXoDmNYugoceBgTk9ZY4dnkKUO4IB1BMnfMHZDjaLuKjXH20Vc8Hf
-         byoVZgFb7Un1cYySfuTXm+MT4oVWvUuOlVi7icP3kwW1+JEsFofJVdQcAdOdJRt8Hzqm
-         T/Iw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785940570; x=1786545370; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=U85uKbgal4W+QuMA2gwqHRpQ8DSYBF3hsr5PWdLh8hY=;
-        b=bncM6XrG0Q4Dj+hehnvlaD6PVWMyFpyVErb35/2pDaPT+RbgJRDutIwUlUu8/Y4UhA
-         ONXffiW9LU1g/Ifk9uFDBmX+RIVv0XrW0XFY8pJOKLWINbHxO0dA7zHgk7hjzDuAffex
-         Peg4mtp7m1sc+BVZSiGOdnZuSKpagY3K6B3gUOsLQ4CpZszXQ1w74eywoK/2zH0Vb071
-         vZHrOx+VpyjQFGgRLatLHPqavteqn2ZYcItCM/pkobTSc1DZSFy17JYDeFm1YLpxubj3
-         RCXFwoe4G5DSub188dsfwbTfM/5gto7HEW59MagIgjlXCPnXBntNnP291OqML34ZnNC6
-         LyxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785940570; x=1786545370;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=U85uKbgal4W+QuMA2gwqHRpQ8DSYBF3hsr5PWdLh8hY=;
-        b=IEa8WSkTEJYohuKpwHiMiUFm55z3EJq2LsmiuC9Ct0E3gR19idIwKOnWT46Pmjm2Sc
-         f4dj9gTNocPYXIKw/CvsRmZqD8wpdxDt/Va085P8+bIBYDFFNks2BgheRLSAVN6SlRtM
-         VjVYYdflZCHRqo6d5wQkO1/BpwuxmmBCetumnoGVH9C6BbEOYG1PfnIx3SgQnCeppy/v
-         ciZrtpL8mCVdlwrYOIXQskaikRUEZMFi7zhvcWSPS3dYSm1vlzI3ybbD8MZiARG/0Gq9
-         lQNd9Yo9DH4AO2swIePPRcMz2W/ipvAWJDy3QKsZTyTAYf3jwdo0K3D2lmR7j/Uu/OUV
-         bjdw==
-X-Forwarded-Encrypted: i=1; AHgh+RoyEJZ2Ht1MfQHNo/uPwz1dsLc+HZplS3xAd7j1zjFJh990OtPP4UbNfGFqveg0G21O3i3CFQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwrdifUmgAtVnZM1gIUhfcA8GaHXthPn4/SPxZa86vihC0pylYk
-	zGssMi2zdmNWWDtxYf5VwmLaBgxxEd72BdsFV5/mWTUpPqzNYPu+Gg3DUlKzFF/zlXU47AIjuRT
-	A6C3WbYpcIwrmr4xnnR/HXHLO9p+j7po=
-X-Gm-Gg: AR+sD12XOeBFH219crMQEUtPoZbBL0r9RJ1uxULb+4bwWxhO8QY1vaZQzOEpGbWj+Lo
-	rgK52DsGKxgqGNLg48LxdHoIaworNhcPd4Aw3zbwhDri/HmaqbK1gVHwwExtW9sBeJQeG+dsOin
-	s7iEWiZXiqi4SLFYObOYO1tnUWntrnHiLW5ivXd8h71mFblVHAwYcnDLrqk2GoxkOvyLzb/j3bP
-	X0iDxEqnISEBIIotELiUA+egAJV8WEApgZ64rseGca4q/N1JERHB9wSUNvneYc7KlkDLN7RzW9s
-	q8dFebHuljDkZ1MwD3OdQkl8GCr9gIqBL1mNB0zVhzQAxOTWp44tdYLc09kmf2NYgJUPxA31PXy
-	OSKQ=
-X-Received: by 2002:a05:690c:89:b0:81f:c442:773f with SMTP id
- 00721157ae682-8201f0ba086mr35508127b3.1.1785940569418; Wed, 05 Aug 2026
- 07:36:09 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="vq+0PE+F"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=kJfFGvK5/RoVUwsraahNi3JLr9T6kM8zsXCxnIdyxTgaZV+/SAhOxo4waNMry9gmQ2bmGB2k0eK+vDB3x7D4UHbiinBIVnRoNnVcbeU9zNnoADa+nqeC5jeA4wm0l4G7XGsCmF8kBiamDZK+SIWAU8+2cSf+xLVlp0dfwsaGZTtqPkFPjBEuWrW85HjH8jn9EHzEejmpdFYo2fFHp0LbBJ4nW1YCqcBeFTsnNb7GWBNrA4H/SX4kcf1fys7VEkSDP5LKwtITVmogccSE9WnzHe2JWtmcfK/3YTp+ZiHKFH5MBW5NXf5PWW8QzE+P25M+vgTtf4bpfhp9q3DsFGbfPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yy/tT8AW5bLf6B0KGBkC9iszuBbdUSABlWI1rrAYTEw=;
+ b=oBQt10yYOJ9TLqGS/Ht9vjzifnP2+XNC3vV7df2vlSUlP1syMu85mRk57wDr1mXyiPqxPBZIgFFZTPM4Pz/9eocBAFD/cdwlh4Ig81JcWrXfPJPckgVEab5JhMakHM2CudtZMaU3gx0MDRBY0BWNptr3+O2kbNtQMZOjr5TCBqDEPVSsEclFQfijttLeUOAYRvPHUqNnCsEWVXyLcVsb3MLk15OkxuZ0TfbvNWEs8SQH4SLoPKrgIKPBl2HU8GAIbssdvihtSf5YRbnfREkx1yhvaJteyCkJb1lERad5m4Lm0ySd6r6V+fCyLHytJW3r7zKozs+JlTKDIBsKGRhTmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yy/tT8AW5bLf6B0KGBkC9iszuBbdUSABlWI1rrAYTEw=;
+ b=vq+0PE+FTsNLBC+hxPikfjm6oPERCNlkKPzLHxtOWcHEGAjmgV8OheuOMq9IfdDhhfcROxlzi3igGShsSfaUMeM+0T+R4VbA9OhIaBFKuZOxQ2PJ8q69fhsGxTICdW1b13bXafBD3aBIIcldH3+ueTIUuSqlx7j9zMilRm1V2EA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7SPRMB0047.namprd12.prod.outlook.com (2603:10b6:510:1f6::14)
+ by PH0PR12MB999114.namprd12.prod.outlook.com (2603:10b6:510:390::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.17; Wed, 5 Aug
+ 2026 14:37:58 +0000
+Received: from PH7SPRMB0047.namprd12.prod.outlook.com
+ ([fe80::b54e:e6eb:405a:218c]) by PH7SPRMB0047.namprd12.prod.outlook.com
+ ([fe80::b54e:e6eb:405a:218c%3]) with mapi id 15.21.0270.017; Wed, 5 Aug 2026
+ 14:37:57 +0000
+Message-ID: <39ce2a2f-3bb8-43e7-9446-a67551cce104@amd.com>
+Date: Wed, 5 Aug 2026 20:07:50 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mario Limonciello <mario.limonciello@amd.com>,
+ "Kuehling, Felix" <felix.kuehling@amd.com>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>, iommu@lists.linux.dev,
+ joro@8bytes.org, linux-pci@vger.kernel.org, will@kernel.org,
+ robin.murphy@arm.com, suravee.suthikulpanit@amd.com, bhelgaas@google.com,
+ Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
+References: <20260723061548.10187-1-vasant.hegde@amd.com>
+ <20260723061548.10187-3-vasant.hegde@amd.com> <amOBkJ4BaZ4qnkpc@ziepe.ca>
+ <a2f38742-c8a1-4dd5-9fcb-120c1c989203@amd.com>
+ <ed296c0d-246f-492b-970b-49c45e25f5f6@amd.com>
+ <f4355034-d40a-4d11-ab98-eef0f2991f33@amd.com>
+ <838281e9-8ee7-433a-b06c-68675e9b285f@amd.com>
+ <2f400c7f-eada-45e3-9079-7b5727ecb5c3@amd.com>
+ <bacdf160-8ab2-4bd6-aa9d-ab63b16527fa@amd.com>
+ <08f2e48e-6e98-4fde-af71-cb8cde666bdf@amd.com>
+ <20260805010706.GC28508@ziepe.ca>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260805010706.GC28508@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5PR01CA0243.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:223::18) To PH7SPRMB0047.namprd12.prod.outlook.com
+ (2603:10b6:510:1f6::14)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260805063826.95682-1-gahing@gahingwoo.com> <20260805063826.95682-7-gahing@gahingwoo.com>
- <DKH0VYV0DMRB.3F9GXE6E2TSZ@cknow-tech.com> <CAEWPSH7wEWYZK=sXo1BjQuJuKhNpgr+AzsSjOj7vHmAVDSDz6A@mail.gmail.com>
- <CAEWPSH5iQ=u78eXFt6p3KKQwHvszYz4GbOEKu2Ef9D1LYUH0Rg@mail.gmail.com>
-In-Reply-To: <CAEWPSH5iQ=u78eXFt6p3KKQwHvszYz4GbOEKu2Ef9D1LYUH0Rg@mail.gmail.com>
-From: Igor Paunovic <royalnet026@gmail.com>
-Date: Wed, 5 Aug 2026 16:35:57 +0200
-X-Gm-Features: AUfX_mylXKfSlhBTigtaIc87did1BE3k2IlhFP5Jqxel8z_MAAUXV1KTByC3gTw
-Message-ID: <CAEWPSH5F_Q+RjDxrxoH6KqbwqY50sY-opEVVcM_LmJ8i7D9+nQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v5 v5 6/8] accel/rocket: add RK3576 NPU (RKNN) support
-To: Diederik de Haas <diederik@cknow-tech.com>
-Cc: Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net, heiko@sntech.de, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com, ulfh@kernel.org, 
-	p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com, 
-	alchark@flipper.net, chaoyi.chen@rock-chips.com, 
-	dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7SPRMB0047:EE_|PH0PR12MB999114:EE_
+X-MS-Office365-Filtering-Correlation-Id: cf3b27a4-7220-4f80-15eb-08def2ff2478
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|23010399003|366016|56012099006|4143699003|10067099003|11063799006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	q5sTNTqa9uWGu0kTqKhcLwTyUy7ly9at/EIzuqkD5o+Onl7NyoQuO6P7R+25Xep7MO8Vl7XKlDaaZcQPZrtwZX56M8NAjS5y7MzzcxE7Qvb3qlgr/dNoQ5yZtlvW4cylffeexnyHj69BxZzsSb8fRy0jfLz+NPTpOxt5cyTAeF0Sxr/rmI5WXyURRAz4F/JyNmBok6F8bPeD0u3edToypxiajZqZmgvsyCRxUTXIlrGykDxCmXnLjAc6px7m+tjcJaCSJPO2uYFUWXGV10OdbD+H2gVRDGN8HE4BqmYAjZ2lNMTHvGRFPlEnDLtKfMix5kcNnkbFo2aU4UBn1cZXg8YjEFuXvdbSRE9UYYiWGOKBEMkIX2Zck+gm3mBxZzoa3VtvBUMIrREBFtzEECc2oUsQ7EDgWg/PdZc141aZ75/MpzJ8OB74b1d7xbWvAFL0QnemMgwZLkbbC5iqMSwh5LrGFGH5bYFZceisBBPbHPG5+2ytf2hTVv8lkwXa2uQ/1tmIZgtMUG0ybR8257d4jJZ6T6xIC5boV1mJRey/qja/WzsMjJOSrrnq7ANzP7SC43O3dwNPzRQmD/FWKZEWC9xbv1ZjYDor1j5479XRKpyrGc0gsMCSrfiE7Pb93gn/Mrx134NkYsNV9koJYFJ15uMs7vXKuM1hEv3Mev7/hKU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7SPRMB0047.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(366016)(56012099006)(4143699003)(10067099003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?eldhQi9XVjFmK2tQajlpak15OFpCd0xhZlpuOGpxL2FOdWxwaGY3djI3Rzd5?=
+ =?utf-8?B?YlpIQnhpWGRHRWd1WjJGM2FPOUR3T1p0a2krMW9lT09oNnI5WDdhOGdlZUJi?=
+ =?utf-8?B?ZmtKRVFZQmFFampvZ3JhdzBtZ2tjMjVaS3FOYzAyd3ZibDhYNkJ6eUdTQ2Na?=
+ =?utf-8?B?aVlIemNnTWRDUU50Sit2cnpucnZCQWd6YXU4M1Q5RXd3cHY0VjhkQkZJeTVL?=
+ =?utf-8?B?Q1ZLMXBUdUwyaW9veElzQmVOcXdKM0xqTmczZG95N2F3WTFPYUEwK0J2aFBq?=
+ =?utf-8?B?VENhbHFaZU8remtzTklHMlZEcmh1aFFadWRpa3NScHZZSmdvYWw3TjVpUmRi?=
+ =?utf-8?B?ckE3dEFyUWk0NTU1VHRlZTVhUVlxc1pGSVVsaUF4S1dKYlNvUjRhVWEyYnFE?=
+ =?utf-8?B?YUNadmFxQmsxM2ZaY3g2TTZxY1oxVEFVRWFYZnJ2RXhUbkRYV3p3Zmt6Z3Jz?=
+ =?utf-8?B?alJ6T1dJWWs2bm5reFQ3QndQN0tIWjVpZDZqbEpPQlR6eFhkWU8wUDBmOVdC?=
+ =?utf-8?B?NWlGKzhwcU00ekpEajNOV2NCNmVRSkhvTUJ1Q0VYaVdyNWlmQk52d1h0L2g3?=
+ =?utf-8?B?dCt0TkVqRmVzTXgxMmpQYTZDazlwMFMzL3czVytPWEJVSGdoa3B2Q3ZjTjFI?=
+ =?utf-8?B?OXNqb0NWMzI4OFIrMm9iM1JneTdvOGc5KzBNcnZST2hVNTdVSW8rQW93dkZT?=
+ =?utf-8?B?MXJ0cUhHeWtFYWZSL3UzNjRVVDNkYlhwTWUrbHhYc2pmZFFQTmhXSCtSUUE1?=
+ =?utf-8?B?RllFaDJ1VjR0OU5zYmFlSi9ZU090NFNZSERpQ1hFZUJLU3FpRm5wSElic0JV?=
+ =?utf-8?B?cVpBNkJaSDIvOWpHekp6NzVTcDVRb280TUppblpjMWhaalpZN2ZGdWxpbkJC?=
+ =?utf-8?B?bXVlNVpmbjJvOSs2S2pYUW5kK2VNaVF1YmtKL3lXT2tJRU55U211OXl4RUlL?=
+ =?utf-8?B?eXZBenNTd1VreXRhdlNVVTE5Q25mbDhESWEwRFB5a1d2dGo2dElKOGM3N1dl?=
+ =?utf-8?B?NVBYUVZleWVQOUlqTk8zbU1TbDR1L1BSTzFEbTZNL21PYnNjcEMyY25VMjd3?=
+ =?utf-8?B?YmFMano4YktQUjhWTFY0ZXFlaFJwMUdHYlZmMERwUlh1MGs3SVZ3bTVkcXJY?=
+ =?utf-8?B?N211ZGY0M1dvV1ZLNUYrVngyOHRMZUJacVZUci9BK0tVaENXejVuVUpmZE1a?=
+ =?utf-8?B?QnBYZ3Vzb01ZWDFxZ0ROMWJRaU9XNmg1ZVpaK0RVWW5RbUVZdXZqeE1Ldk5L?=
+ =?utf-8?B?WmVnSHZzWUNtK3NZcURGc3hXdnhYL2hLN1gvN3lta3ZBeE94dTE5SS93Tmdv?=
+ =?utf-8?B?WlFMK1RDYVZWWDdXdjh1cVdKdWVhZit6aVhNZGxWSmluRFdrWE13dHl6QVJZ?=
+ =?utf-8?B?N3JFSEpqTFZYalk0VUd4OGJrQVFpOFdZRHVYdzlMdkk1aGZkSzZYeXpSTG0r?=
+ =?utf-8?B?QzNkd3BHZWJreTVBMjRyVlU1R1NrVHRZd25Yd0tqTGRwUlVyemhmTmRTaUNF?=
+ =?utf-8?B?ekZPamo0VENITUlZaFlGZk1uVWIxV2pSd3JFQ2YwLzJIYytzbSt5MndRL1pO?=
+ =?utf-8?B?dEh5VkVHTU5xbXdpOUpkb0syWkNlK0dTUjFTWTMreHhCSTgvRGMyZnhjREJS?=
+ =?utf-8?B?aHFsQlhrWCs2UWtLOC8xZk4vdHFIQzdqYjZIODlMZnVFbUZ5bkdTb2Y0WlJy?=
+ =?utf-8?B?THB3cnJkNkRESmhGMjdOemFjL1VvdlZ0ZGtpWHNnL3ZXaUUvY0NFTnA3RnVo?=
+ =?utf-8?B?M1BLczAwRVdMYkl3NUliK2ZQT0xheWhqbktNNUtaeDdQcU9xRkMzVk1UUzM5?=
+ =?utf-8?B?bnlQTk1WaVN0S3R4QlgzL2FEUkkwNzduWXJzVTN6N1d2V01aTDVEdVV5d0E1?=
+ =?utf-8?B?NEFlUEQyNmRsSGk0eFhjcnFJQkRWUDF6bjVMK0NNMnNod29XTHRxVjZyS3ll?=
+ =?utf-8?B?VU1RWDdiQ0NSbmp1VUZURWZrdHN5bnRwSVp4cDdiL1RMWWZWWjhQT1hFS2xa?=
+ =?utf-8?B?YmNkeWZnbjN5MklUd2dXbzN4YXBXaGtENzNCVzdaLzUyTldpK2xGV2FTdUVx?=
+ =?utf-8?B?SmlXa1FuMW9zSFZzMGpUL3ArbXF5TlVQZno3enMwTzNzcG12M2VET2xpWTd6?=
+ =?utf-8?B?TVVWejJoVmVUSFRVZkswQ1lsdFVrS29RaEU4dDVMWGw5bW1XRUMrWnlxUCtO?=
+ =?utf-8?B?bk1QRVgrYjVidEhDYi9FSmlmWE1kUmM2M2YzRnNEdUNDOXN5TS80TEZtQ0Iz?=
+ =?utf-8?B?K00ycEZIaURzdXpldldmd2w1OWh3YnloWU1aQkpKRmY3UFhESHpJdURDdzM4?=
+ =?utf-8?B?aWxudlUvMmVXQU1IcVFuMGp2VXhBS3BBRHVoSG9iUzJWQWxiV2RjZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf3b27a4-7220-4f80-15eb-08def2ff2478
+X-MS-Exchange-CrossTenant-AuthSource: PH7SPRMB0047.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2026 14:37:57.7309
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8d/S0YDEOvhc/bx2ZoAE076OWQnc70zSiSSsr8zEbkTryUGXGZ2GnKEs/RpDIKjy7X/XEwLgYDyPmE41S3Id8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB999114
 
-Hi Jiaxing,
+Jason,
 
-Following up on my own caveat: I said the per-core unbind/rebind was
-runnable here and that I had not run it. I have now. It passes, and it
-also measures the thing I had only argued from the code.
 
-Same test module as before, srcversion 57A4D5369E495870E651EEC, which is
-v7.2-rc6 rocket plus my four in-flight fixes plus your 6/8 hand resolved.
-All three cores bound to start with. Between every step, one inference
-through the Teflon delegate on a freshly opened fd.
+On 8/5/2026 6:37 AM, Jason Gunthorpe wrote:
+> On Thu, Jul 30, 2026 at 04:56:37PM +0530, Vasant Hegde wrote:
+> 
+>> Based on discussion so far in this thread and the link Mario shared earlier [1]:
+>>   - We still need identity mapping for APUs. I will fine tune the patch based on
+>> the discussion in this thread.
+> 
+> IMHO if certain HW has broken support for PAGING (eg because it can't
+> handle the isochronous needs) then it should be quirked and blocked
+> properly.
+> 
+> I thought the issue here was the PASID check forcing identity and
+> accidently capturing these raven chips too? It should just be moved
+> out to a normal quirk..
+> 
+>>   - Its fine to drop SNP check
+>>   - I am still not sure its safe to drop SME check (CC_ATTR_MEM_ENCRYPT)
+>>     Because here were are putting all APUs in identity mode.
+>>     Commit ea68573d408f explicitly error out for RAVEN and some of the older APU
+>> platform didn't support SME. But not sure about newer ones.
+> 
+> That's quite a hacky check to make in that commit..
+> 
+>> So I am inclined to keep SME check for now. Once this patch stabilized we can
+>> revisit the SME check?
+> 
+> The SME check makes no sense either, but if you want to stage things
+> I'm OK with it.
 
-  step                inf/s   interrupts per inference        oracle
-  all three bound      88.3   irq70 41.74  irq71 1.02  irq74 0
-  core 2 unbound       88.1   irq70 41.74  irq71 1.02          pass
-  core 2 rebound       88.8   irq70 41.74  irq71 1.02  irq74 0  pass
-  core 0 unbound       74.7   irq71 41.88  irq74 1.02          pass
-  core 0 rebound       89.2   irq70 41.74  irq71 1.02  irq74 0  pass
-  all three, cycled    90.0   irq70 41.73  irq71 1.02  irq74 0  pass
+Right. Eventually it should remove SME as well. But I am concerned about any
+regression. Also I don't have all these devices to test it. Hence for now I will
+limit to APUs, keep SME check and drop SNP check. Once it settle, we can go with
+next step.
 
-The five reference tensor hashes are byte identical at every one of those
-six points, /dev/accel/accel0 keeps its minor throughout, and there is no
-rocket error, no WARNING, no oops and no call trace anywhere in the boot.
+I will respin the patch later this week.
 
-The interesting row is core 0 unbound with cores 1 and 2 still bound. The
-work retargets correctly: the 41 completions move to core 1 and the single
-one to core 2, and the result is still bit exact. That is the out-of-order
-unbind case, so it exercises the slot bookkeeping as well as your fini and
-probe changes.
+-Vasant
 
-Now the part that is worth more than the pass. It confirms, on hardware,
-the mechanism I described when I raised poll_dying, and it does so from the
-timestamps rather than from reading the code. "[drm] Initialized rocket
-0.0.0 for rknn on minor 0" appears only when the shared device is actually
-built:
-
-  16:23:20  module loaded, all three cores probe      -> Initialized
-  16:23:33  core 2 rebound, cores 0 and 1 stayed      -> no Initialized
-  16:23:46  core 0 rebound, cores 1 and 2 stayed      -> no Initialized
-  16:23:54  all three unbound, then all three rebound -> Initialized
-
-So a partial unbind leaves rdev and the devm_kcalloc'd core array alive and
-hands the rebinding core the same struct rocket_core back, while unbinding
-the last core runs rocket_device_fini(), nulls rdev, and makes the next
-probe allocate a fresh zeroed array. That is exactly the difference between
-a latch surviving and a latch being wiped, and it is why your ROCK 4D
-result is clean and correct: 8/8 enables one core, so every unbind there is
-the last one and always takes the reallocating path.
-
-On RK3576 with both cores enabled, the sequence in the third row above is
-the one that would leave poll_dying set on the rebinding core.
-
-What this still does not cover: poll_dying and rocket_poll_work_fn remain
-unreachable on RK3588, for the reason in my previous mail, so this says
-nothing about the latch itself or about the fini race, only about the
-struct lifetime that makes them reachable. And these unbinds were done
-between inferences, not during one, so "unbind under load" is still not
-tested.
-
-One observation that is about the driver rather than your patch, in case it
-matters for RK3576 where you have two cores rather than three. Unbinding
-core 2 costs nothing, 88.1 against 88.3, because this workload leaves it
-idle. Unbinding core 0 costs about 15%, 74.7 against 88.3, even though the
-work does move over correctly. Whatever the reason, on a two core part the
-core that goes away is more likely to be one that was carrying work.
-
-Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, Orange Pi 5 Plus
-
-Igor
-
-On Wed, Aug 5, 2026 at 4:07=E2=80=AFPM Igor Paunovic <royalnet026@gmail.com=
-> wrote:
->
-> Hi Diederik,
->
-> Seconding this, with a data point that may help make the case.
->
-> I have my own fix in flight that touches the same function, "accel/rocket=
-:
-> request the core clocks by name":
->
->   https://lore.kernel.org/linux-rockchip/20260729130743.128876-1-royalnet=
-026@gmail.com/
->
-> It carries Jiaxing's Reviewed-by and a Tested-by from Sidong Yang and is
-> waiting on Tomeu. Earlier today I built 6/8 on top of a tree that already
-> has it, to characterise the RK3588 side on hardware. git apply refused th=
-e
-> patch outright, and with fuzz everything applied except one hunk, the
-> resets-and-clocks hunk in rocket_core_init(), which I had to resolve by
-> hand. So the two RK3588-affecting changes in this patch are already
-> colliding in practice, not just in principle.
->
-> That hunk is doing three separate things at once: it re-adds the four
-> clks[].id assignments that my standalone fix adds, it grows the array and
-> switches both bulk counts to soc->num_clks and soc->num_resets, and it ad=
-ds
-> the two RK3576 CBUF entries. Only the last of those is RK3576 enablement.
-> The first is a bugfix that exists independently, and the middle one is
-> exactly the "prepare for different implementations" step you are asking
-> for.
->
-> Split the way you suggest, the ordering problem goes away on its own. The
-> preparation patch would carry the soc_data plumbing and the count changes=
-,
-> rebased on whatever landed first, and the RK3576 patch would carry the CB=
-UF
-> entries and the poll path. Nothing would need to be sequenced by hand, an=
-d
-> the commit message could stop claiming the RK3588 path is behaviourally
-> unchanged, which is the part I raised separately on this patch and which =
-is
-> only true once the bugfix is not being carried along with the enablement.
->
-> Igor
->
-> On Wed, Aug 5, 2026 at 4:06=E2=80=AFPM Igor Paunovic <royalnet026@gmail.c=
-om> wrote:
-> >
-> > Hi Jiaxing,
-> >
-> > Here is the RK3588 characterisation I promised on the cover letter. Sho=
-rt
-> > version: I cannot measure any effect from this patch on RK3588. The out=
-put
-> > is bit-identical and the interrupt accounting is unchanged to within
-> > 0.0001 interrupts per inference.
-> >
-> > What was compared
-> > -----------------
-> >
-> > Both sides were built from the same tree, from the same headers, with o=
-nly
-> > your 6/8 between them:
-> >
-> >   base: v7.2-rc6 rocket + the four fixes I have in flight
-> >         (Guangshuo Li's "clear rdev on device init failure", my two
-> >         lifecycle patches, and "request the core clocks by name")
-> >   test: the same tree + this patch, hand resolved, see below
-> >
-> >   running kernel 7.2.0-rc6-rk3588-igor-claude+, tree pinned at Collabor=
-a
-> >   rockchip-devel 8c70065a3207, which sits on 075b74841bd0 =3D Linux 7.2=
--rc6.
-> >   Not a v7.2 tag; that does not exist yet.
-> >
-> >   base module srcversion 97DECECF73741ABE56685D2
-> >   test module srcversion 57A4D5369E495870E651EEC
-> >
-> > I deliberately left my local devfreq work out of both sides. It touches
-> > rocket_job.c, you do not have it, and it would have changed the clock
-> > during the runs. The consequence is that the NPU ran at the firmware
-> > default rate rather than the rate I normally use, so the absolute numbe=
-rs
-> > below are around 89 inf/s where I would usually quote about 222. That d=
-oes
-> > not matter for a difference measurement, but it means these figures are=
- not
-> > comparable to any throughput number I have posted before.
-> >
-> > One thing worth reporting before the numbers: 6/8 does not apply cleanl=
-y on
-> > that base, for two separate reasons, and only one of them concerns you =
-and
-> > me.
-> >
-> > The first is the coordination point from my earlier mail, now measured
-> > rather than predicted. The clks[].id hunk in rocket_core.c conflicts wi=
-th
-> > my standalone "request the core clocks by name" fix. I resolved it by h=
-and,
-> > keeping your two CBUF entries and the soc->num_clks and soc->num_resets
-> > changes on top of the four named assignments that are already there.
-> >
-> > The second is not a conflict with anything I carry. The rocket_job.c hu=
-nk
-> > has "#include <linux/overflow.h>" in its context, and that line is neit=
-her
-> > in v7.2-rc6 rocket_job.c nor added by any patch in this series, so your
-> > tree is simply newer than v7.2-rc6 there. Mentioning it so that a clean
-> > apply on your side does not get read as a contradiction of the first po=
-int.
-> >
-> > That means this Tested-by is on the hand resolved form of 6/8, not on t=
-he
-> > posted hunks applied verbatim.
-> >
-> > Method
-> > ------
-> >
-> > Interleaved, with the order alternated per pair, because my first attem=
-pt
-> > was not interleaved at all. That attempt measured base and test in sepa=
-rate
-> > blocks and showed a 1.6% difference on the NPU part, once the first run=
- of
-> > each block is dropped. It is not your patch. The two blocks ran under
-> > measurably different conditions: NPU thermals 43.5-49.0 C and one minut=
-e
-> > load average 2.9-4.4 during the base block, against 39.8-44.4 C and 2.0=
--3.1
-> > during the test block. And one test run behaved like a base run: same
-> > module, CPU part 1.87 ms, where the other three test runs sat at 1.67-1=
-.68
-> > ms. I believe that was my desktop client compositing while I typed in i=
-t,
-> > but I did not isolate it as a controlled variable, so what I can actual=
-ly
-> > say is that the block to block gap was environmental, and that the
-> > interleaved rerun below shows nothing.
-> >
-> > So: three pairs, order base/test, then test/base, then base/test, modul=
-e
-> > swapped between every single run, no interactive use of the machine, on=
-ly
-> > the usual system timers. One honesty note on the design: the alternatio=
-n
-> > only balances fully over an even number of pairs, and I ended up with
-> > three, so base occupies series positions 1, 4 and 5 against test's 2, 3=
- and
-> > 6. The series does drift slowly downwards, NPU thermals falling from 39=
-.8 C
-> > to 37.9 C over the six runs, and that drift is therefore not entirely
-> > cancelled. It is well below the effect size discussed below, but it is
-> > there.
-> >
-> > Environment held constant: CPU governor performance at 1800/2400/2400 M=
-Hz,
-> > vdd_npu_s0 at 850 mV, NPU thermals 37.9-39.8 C. Those thermals are
-> > snapshots taken at the start and end of each run, not a continuous trac=
-e.
-> >
-> > MobileNetV1 through the Teflon TFLite delegate, effectively one core, 2=
-0 s
-> > x 3 blocks per run, per-run block spread 0.29-1.09%.
-> >
-> > Results, 3 runs per side
-> > ------------------------
-> >
-> >                     base              test           delta
-> >   throughput   89.0093 +-0.3568   88.9546 +-0.2270   -0.06%   inf/s
-> >   NPU part      9.7521 +-0.0434    9.7570 +-0.0364   +0.05%   ms/infere=
-nce
-> >   CPU part      1.4828 +-0.0022    1.4847 +-0.0106   +0.13%   ms/infere=
-nce
-> >
-> > The largest standard deviation on the NPU part is 0.0434 ms, 0.45% of t=
-he
-> > mean. The measured difference is 0.0049 ms, 0.05%, about an eighth of t=
-hat
-> > standard deviation. This does not say the patch costs nothing; it says =
-any
-> > cost is below what this bench resolves. With three runs per side the 95=
-%
-> > confidence bound on the difference is about +-0.9% of the mean, so one
-> > percent is the honest resolution figure, not half a percent.
-> >
-> > Interrupt accounting per inference:
-> >
-> >                     base                    test              delta
-> >   irq 99     41.11512 +-0.00046      41.11519 +-0.00029     +0.000071
-> >   irq 102     1.00281 +-0.00001       1.00281 +-0.00001     +0.000002
-> >   irq 103     0.00000 +-0.00000       0.00000 +-0.00000      0
-> >
-> > These are integer counters. The residual scatter is a window alignment
-> > artefact, because the counter window does not line up exactly with the
-> > counted iterations, which is also why the figure is 41.115 rather than =
-41.
-> > It is three orders of magnitude below one interrupt per inference, so a
-> > dropped or a doubled task boundary would be unmissable. This is the num=
-ber
-> > I care about most: the restructured completion path neither double coun=
-ts
-> > nor drops a task boundary. For this model 41 completions per inference =
-land
-> > on core 0 and one on core 1; irq 103 stays at zero because the third co=
-re
-> > is idle in this workload.
-> >
-> > The bit exact oracle passed on every run, and the reference hashes over=
- the
-> > five tracked tensors are identical across all six runs, 32044 inference=
-s
-> > in total. Top-1 unchanged at "military uniform", 0.867.
-> >
-> > The module was loaded 13 times over the session, reporting "[drm]
-> > Initialized rocket 0.0.0 for rknn on minor 0" with minor 0 every time, =
-and
-> > there is no rocket error or warning anywhere in that boot. Twelve of th=
-ose
-> > loads were unloaded normally. The thirteenth was still resident when th=
-e
-> > machine stopped, which is the last caveat below.
-> >
-> > What I did not test, and why
-> > ----------------------------
-> >
-> > Three things, and they are not the same kind of "not".
-> >
-> > The poll_dying latch and rocket_poll_work_fn() cannot be exercised on t=
-his
-> > SoC at all. The flag is written only under
-> >
-> >     if (core->soc->poll_completion)
-> >         WRITE_ONCE(core->poll_dying, true);
-> >
-> > poll_completion is false in rk3588_soc_data, and the poll timer is star=
-ted
-> > under the same guard in rocket_job_hw_submit(), so neither the timer
-> > function nor the work function can run here. The fini path race I raise=
-d on
-> > this patch needs RK3576 for the same reason.
-> >
-> > The per-core unbind/rebind I promised on the cover was runnable here an=
-d I
-> > did not run it. That distinction matters, so: the rocket platform drive=
-r
-> > exposes bind and unbind in sysfs, all three cores are bound here, and
-> > unbinding one while the other two stay bound does reach patched code on
-> > RK3588, through rocket_core_fini() and rocket_job_fini() on the way out=
-,
-> > and soc->num_clks and soc->num_resets on the way back in. That is not
-> > covered by an insmod/rmmod of the whole module. It is a gap in my testi=
-ng,
-> > not a limitation of the hardware, and I will run it before v6 if you wa=
-nt
-> > it.
-> >
-> > The module unload under load I also promised is not runnable in that fo=
-rm:
-> > rmmod is refused by the module refcount while a DRM fd is open, and my
-> > harness declines the swap rather than fight it. The runnable equivalent=
- is
-> > an unbind under load, which I also did not run. All 13 loads above happ=
-ened
-> > between benches with nothing attached.
-> >
-> > So the Tested-by covers what I actually measured: that this patch does =
-not
-> > regress the RK3588 path, in timing, in interrupt accounting or in outpu=
-t.
-> > The RK3576 specific paths are untested by me.
-> >
-> > Two caveats on the numbers.
-> >
-> > First, three runs per side rather than four. The machine went down part=
-way
-> > through the fourth pair, roughly 25 seconds into the test side, with yo=
-ur
-> > module loaded and inference in flight. I am describing it that way beca=
-use
-> > that is what the logs support: the journal for that boot ends mid-run w=
-ith
-> > no shutdown sequence at all, the bench's output file for that run is ze=
-ro
-> > bytes, my script's exit trap never ran, and the following boot logs an
-> > orphan cleanup and a journal marked uncleanly shut down. Whether the
-> > desktop or the whole machine went first is not recorded. There is no oo=
-ps,
-> > no kernel WARNING, no call trace and no rocket error anywhere in that b=
-oot,
-> > and nothing that ties it to this patch, but it did happen with this pat=
-ch
-> > loaded and I have no explanation for it. I power cycled and did not
-> > resume the series rather than mix a rebooted machine into it. I would
-> > rather report it than not.
-> >
-> > Second, the resolution bound of about one percent is a property of my
-> > bench, not of the patch.
-> >
-> > If there is an ordering or a workload you would rather I ran, say so an=
-d I
-> > will run it.
-> >
-> > Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, Orange Pi 5 =
-Plus
-> >
-> > Igor
-> >
-> > On Wed, Aug 5, 2026 at 2:52=E2=80=AFPM Diederik de Haas <diederik@cknow=
--tech.com> wrote:
-> > >
-> > > On Wed Aug 5, 2026 at 8:38 AM CEST, Jiaxing Hu wrote:
-> > > > The RK3576 carries the same RKNN block as the RK3588, with two core=
-s
-> > > > instead of three and a few platform differences:
-> > > >
-> > > >  - the CBUF (convolution buffer) has its own clock domain, so the c=
-ore
-> > > >    needs six clocks rather than four;
-> > > >  - the BIU reset moved into the power domain, leaving one reset her=
-e;
-> > > >  - the NPU spans two power domains, and a device with more than one=
- is
-> > > >    skipped by the driver-core single-domain auto-attach, so the lis=
-t has
-> > > >    to be attached explicitly;
-> > > >  - the DPU completion interrupt is armed exactly as on RK3588 but n=
-ever
-> > > >    reaches the GIC. The completion is visible in INTERRUPT_RAW_STAT=
-US,
-> > > >    so sample that from an hrtimer rather than wait for an interrupt=
- that
-> > > >    does not come. The interrupt stays armed, so if it ever does arr=
-ive
-> > > >    the normal handler finalises the job first.
-> > > >
-> > > > Select all of that from of_device_id match data so the RK3588 path =
-keeps
-> > > > its existing counts and behaviour unchanged.
-> > >
-> > > Would it make sense to split this patch up in 2 patches:
-> > > 1) Prepare for different NPU/RKNN implementations
-> > > 2) Add support for RK3576 NPU/RKNN
-> > >
-> > > It seems like you're changing the implementation for RK3588 in this p=
-atch
-> > > AND add support for RK3576. It's often better to split those things o=
-ut.
-> > >
-> > > Cheers,
-> > >   Diederik
-> > >
-> > > > Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
-> > > > ---
-> > > >  drivers/accel/rocket/rocket_core.c   |  26 +++++-
-> > > >  drivers/accel/rocket/rocket_core.h   |  20 ++++-
-> > > >  drivers/accel/rocket/rocket_device.c |   4 +
-> > > >  drivers/accel/rocket/rocket_drv.c    |  22 ++++-
-> > > >  drivers/accel/rocket/rocket_job.c    | 121 +++++++++++++++++++++++=
-+---
-> > > >  5 files changed, 176 insertions(+), 17 deletions(-)
-> > > >
-> > > > diff --git a/drivers/accel/rocket/rocket_core.c b/drivers/accel/roc=
-ket/rocket_core.c
-> > > > index b3b2fa9ba..e08288c8c 100644
-> > > > --- a/drivers/accel/rocket/rocket_core.c
-> > > > +++ b/drivers/accel/rocket/rocket_core.c
-> > > > @@ -8,6 +8,7 @@
-> > > >  #include <linux/err.h>
-> > > >  #include <linux/iommu.h>
-> > > >  #include <linux/platform_device.h>
-> > > > +#include <linux/pm_domain.h>
-> > > >  #include <linux/pm_runtime.h>
-> > > >  #include <linux/reset.h>
-> > > >
-> > > > @@ -21,14 +22,22 @@ int rocket_core_init(struct rocket_core *core)
-> > > >       u32 version;
-> > > >       int err =3D 0;
-> > > >
-> > > > +     /* RK3576 moves the BIU reset into its power domain and takes=
- only srst_a. */
-> > > >       core->resets[0].id =3D "srst_a";
-> > > >       core->resets[1].id =3D "srst_h";
-> > > > -     err =3D devm_reset_control_bulk_get_exclusive(&pdev->dev, ARR=
-AY_SIZE(core->resets),
-> > > > +     err =3D devm_reset_control_bulk_get_exclusive(&pdev->dev, cor=
-e->soc->num_resets,
-> > > >                                                   core->resets);
-> > > >       if (err)
-> > > >               return dev_err_probe(dev, err, "failed to get resets =
-for core %d\n", core->index);
-> > > >
-> > > > -     err =3D devm_clk_bulk_get(dev, ARRAY_SIZE(core->clks), core->=
-clks);
-> > > > +     core->clks[0].id =3D "aclk";
-> > > > +     core->clks[1].id =3D "hclk";
-> > > > +     core->clks[2].id =3D "npu";
-> > > > +     core->clks[3].id =3D "pclk";
-> > > > +     /* RK3576 clocks the CBUF separately; the compute path stalls=
- without these. */
-> > > > +     core->clks[4].id =3D "aclk_cbuf";
-> > > > +     core->clks[5].id =3D "hclk_cbuf";
-> > > > +     err =3D devm_clk_bulk_get(dev, core->soc->num_clks, core->clk=
-s);
-> > > >       if (err)
-> > > >               return dev_err_probe(dev, err, "failed to get clocks =
-for core %d\n", core->index);
-> > > >
-> > > > @@ -65,6 +74,19 @@ int rocket_core_init(struct rocket_core *core)
-> > > >               return err;
-> > > >       }
-> > > >
-> > > > +     /*
-> > > > +      * RK3576 spans two power domains, and a multi-domain device =
-is skipped
-> > > > +      * by the driver-core single-domain auto-attach, so attach th=
-e list here.
-> > > > +      */
-> > > > +     if (core->soc->multi_power_domain) {
-> > > > +             struct dev_pm_domain_list *pd_list;
-> > > > +
-> > > > +             err =3D devm_pm_domain_attach_list(dev, NULL, &pd_lis=
-t);
-> > > > +             if (err < 0)
-> > > > +                     return dev_err_probe(dev, err,
-> > > > +                                          "failed to attach NPU po=
-wer domains\n");
-> > > > +     }
-> > > > +
-> > > >       pm_runtime_use_autosuspend(dev);
-> > > >
-> > > >       /*
-> > > > diff --git a/drivers/accel/rocket/rocket_core.h b/drivers/accel/roc=
-ket/rocket_core.h
-> > > > index f6d738285..205ff070d 100644
-> > > > --- a/drivers/accel/rocket/rocket_core.h
-> > > > +++ b/drivers/accel/rocket/rocket_core.h
-> > > > @@ -6,6 +6,7 @@
-> > > >
-> > > >  #include <drm/gpu_scheduler.h>
-> > > >  #include <linux/clk.h>
-> > > > +#include <linux/hrtimer.h>
-> > > >  #include <linux/io.h>
-> > > >  #include <linux/mutex_types.h>
-> > > >  #include <linux/reset.h>
-> > > > @@ -27,16 +28,25 @@
-> > > >  #define rocket_core_writel(core, reg, value) \
-> > > >       writel(value, (core)->core_iomem + (REG_CORE_##reg) - REG_COR=
-E_S_STATUS)
-> > > >
-> > > > +/* Per-SoC differences, selected by the of_device_id match data. *=
-/
-> > > > +struct rocket_soc_data {
-> > > > +     unsigned int num_clks;          /* clk_bulk count: 4 base, 6 =
-with CBUF */
-> > > > +     unsigned int num_resets;        /* reset_bulk count: 2 base, =
-1 on RK3576 */
-> > > > +     bool multi_power_domain;        /* device spans more than one=
- PM domain */
-> > > > +     bool poll_completion;           /* completion IRQ never reach=
-es the GIC */
-> > > > +};
-> > > > +
-> > > >  struct rocket_core {
-> > > >       struct device *dev;
-> > > >       struct rocket_device *rdev;
-> > > > +     const struct rocket_soc_data *soc;
-> > > >       unsigned int index;
-> > > >
-> > > >       int irq;
-> > > >       void __iomem *pc_iomem;
-> > > >       void __iomem *cna_iomem;
-> > > >       void __iomem *core_iomem;
-> > > > -     struct clk_bulk_data clks[4];
-> > > > +     struct clk_bulk_data clks[6];
-> > > >       struct reset_control_bulk_data resets[2];
-> > > >
-> > > >       struct iommu_group *iommu_group;
-> > > > @@ -52,6 +62,14 @@ struct rocket_core {
-> > > >               atomic_t pending;
-> > > >       } reset;
-> > > >
-> > > > +     struct hrtimer poll_timer;
-> > > > +     struct work_struct poll_work;
-> > > > +     atomic_t poll_active;
-> > > > +     unsigned int poll_ticks;
-> > > > +     unsigned int poll_seq;
-> > > > +     unsigned int poll_work_seq;
-> > > > +     bool poll_dying;
-> > > > +
-> > > >       struct drm_gpu_scheduler sched;
-> > > >       u64 fence_context;
-> > > >       u64 emit_seqno;
-> > > > diff --git a/drivers/accel/rocket/rocket_device.c b/drivers/accel/r=
-ocket/rocket_device.c
-> > > > index 46e6ee1e7..bfb00f967 100644
-> > > > --- a/drivers/accel/rocket/rocket_device.c
-> > > > +++ b/drivers/accel/rocket/rocket_device.c
-> > > > @@ -31,6 +31,10 @@ struct rocket_device *rocket_device_init(struct =
-platform_device *pdev,
-> > > >               if (of_device_is_available(core_node))
-> > > >                       num_cores++;
-> > > >
-> > > > +     for_each_compatible_node(core_node, NULL, "rockchip,rk3576-rk=
-nn-core")
-> > > > +             if (of_device_is_available(core_node))
-> > > > +                     num_cores++;
-> > > > +
-> > > >       rdev->cores =3D devm_kcalloc(dev, num_cores, sizeof(*rdev->co=
-res), GFP_KERNEL);
-> > > >       if (!rdev->cores)
-> > > >               return ERR_PTR(-ENOMEM);
-> > > > diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rock=
-et/rocket_drv.c
-> > > > index 8bbbce594..7f7dfa374 100644
-> > > > --- a/drivers/accel/rocket/rocket_drv.c
-> > > > +++ b/drivers/accel/rocket/rocket_drv.c
-> > > > @@ -176,6 +176,7 @@ static int rocket_probe(struct platform_device =
-*pdev)
-> > > >
-> > > >       rdev->cores[core].rdev =3D rdev;
-> > > >       rdev->cores[core].dev =3D &pdev->dev;
-> > > > +     rdev->cores[core].soc =3D of_device_get_match_data(&pdev->dev=
-);
-> > > >       rdev->cores[core].index =3D core;
-> > > >
-> > > >       rdev->num_cores++;
-> > > > @@ -213,8 +214,23 @@ static void rocket_remove(struct platform_devi=
-ce *pdev)
-> > > >       }
-> > > >  }
-> > > >
-> > > > +static const struct rocket_soc_data rk3588_soc_data =3D {
-> > > > +     .num_clks =3D 4,
-> > > > +     .num_resets =3D 2,
-> > > > +     .multi_power_domain =3D false,
-> > > > +     .poll_completion =3D false,
-> > > > +};
-> > > > +
-> > > > +static const struct rocket_soc_data rk3576_soc_data =3D {
-> > > > +     .num_clks =3D 6,
-> > > > +     .num_resets =3D 1,
-> > > > +     .multi_power_domain =3D true,
-> > > > +     .poll_completion =3D true,
-> > > > +};
-> > > > +
-> > > >  static const struct of_device_id dt_match[] =3D {
-> > > > -     { .compatible =3D "rockchip,rk3588-rknn-core" },
-> > > > +     { .compatible =3D "rockchip,rk3588-rknn-core", .data =3D &rk3=
-588_soc_data },
-> > > > +     { .compatible =3D "rockchip,rk3576-rknn-core", .data =3D &rk3=
-576_soc_data },
-> > > >       {}
-> > > >  };
-> > > >  MODULE_DEVICE_TABLE(of, dt_match);
-> > > > @@ -240,7 +256,7 @@ static int rocket_device_runtime_resume(struct =
-device *dev)
-> > > >       if (core < 0)
-> > > >               return -ENODEV;
-> > > >
-> > > > -     err =3D clk_bulk_prepare_enable(ARRAY_SIZE(rdev->cores[core].=
-clks), rdev->cores[core].clks);
-> > > > +     err =3D clk_bulk_prepare_enable(rdev->cores[core].soc->num_cl=
-ks, rdev->cores[core].clks);
-> > > >       if (err) {
-> > > >               dev_err(dev, "failed to enable (%d) clocks for core %=
-d\n", err, core);
-> > > >               return err;
-> > > > @@ -260,7 +276,7 @@ static int rocket_device_runtime_suspend(struct=
- device *dev)
-> > > >       if (!rocket_job_is_idle(&rdev->cores[core]))
-> > > >               return -EBUSY;
-> > > >
-> > > > -     clk_bulk_disable_unprepare(ARRAY_SIZE(rdev->cores[core].clks)=
-, rdev->cores[core].clks);
-> > > > +     clk_bulk_disable_unprepare(rdev->cores[core].soc->num_clks, r=
-dev->cores[core].clks);
-> > > >
-> > > >       return 0;
-> > > >  }
-> > > > diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rock=
-et/rocket_job.c
-> > > > index bb77b6bf0..28845ac4e 100644
-> > > > --- a/drivers/accel/rocket/rocket_job.c
-> > > > +++ b/drivers/accel/rocket/rocket_job.c
-> > > > @@ -7,6 +7,7 @@
-> > > >  #include <drm/drm_file.h>
-> > > >  #include <drm/drm_gem.h>
-> > > >  #include <drm/rocket_accel.h>
-> > > > +#include <linux/hrtimer.h>
-> > > >  #include <linux/interrupt.h>
-> > > >  #include <linux/overflow.h>
-> > > >  #include <linux/iommu.h>
-> > > > @@ -21,6 +22,15 @@
-> > > >
-> > > >  #define JOB_TIMEOUT_MS 500
-> > > >
-> > > > +/*
-> > > > + * RK3576 arms the same DPU completion as RK3588, but the interrup=
-t never
-> > > > + * reaches the GIC. The completion itself is visible in INTERRUPT_=
-RAW_STATUS,
-> > > > + * so sample that instead. The tick cap bounds jobs that never rai=
-se it at all,
-> > > > + * which is the same open problem as the wrong inference results.
-> > > > + */
-> > > > +#define RK3576_POLL_INTERVAL_NS      1000000LL       /* 1 ms */
-> > > > +#define RK3576_POLL_MAX_TICKS        8
-> > > > +
-> > > >  static struct rocket_job *
-> > > >  to_rocket_job(struct drm_sched_job *sched_job)
-> > > >  {
-> > > > @@ -151,6 +161,14 @@ static void rocket_job_hw_submit(struct rocket=
-_core *core, struct rocket_job *jo
-> > > >
-> > > >       rocket_pc_writel(core, OPERATION_ENABLE, PC_OPERATION_ENABLE_=
-OP_EN(1));
-> > > >
-> > > > +     if (core->soc->poll_completion) {
-> > > > +             core->poll_ticks =3D 0;
-> > > > +             core->poll_seq++;
-> > > > +             atomic_set(&core->poll_active, 1);
-> > > > +             hrtimer_start(&core->poll_timer, ns_to_ktime(RK3576_P=
-OLL_INTERVAL_NS),
-> > > > +                           HRTIMER_MODE_REL);
-> > > > +     }
-> > > > +
-> > > >       dev_dbg(core->dev, "Submitted regcmd at 0x%llx to core %d", t=
-ask->regcmd, core->index);
-> > > >  }
-> > > >
-> > > > @@ -341,25 +359,87 @@ static struct dma_fence *rocket_job_run(struc=
-t drm_sched_job *sched_job)
-> > > >       return ERR_PTR(ret);
-> > > >  }
-> > > >
-> > > > +static void rocket_job_handle_irq(struct rocket_core *core);
-> > > > +
-> > > > +static enum hrtimer_restart rocket_poll_timer_fn(struct hrtimer *t=
-imer)
-> > > > +{
-> > > > +     struct rocket_core *core =3D container_of(timer, struct rocke=
-t_core, poll_timer);
-> > > > +     u32 raw;
-> > > > +
-> > > > +     if (!atomic_read(&core->poll_active))
-> > > > +             return HRTIMER_NORESTART;
-> > > > +
-> > > > +     core->poll_work_seq =3D core->poll_seq;
-> > > > +
-> > > > +     raw =3D rocket_pc_readl(core, INTERRUPT_RAW_STATUS);
-> > > > +     if ((raw & (PC_INTERRUPT_RAW_STATUS_DPU_0 | PC_INTERRUPT_RAW_=
-STATUS_DPU_1)) ||
-> > > > +         ++core->poll_ticks >=3D RK3576_POLL_MAX_TICKS) {
-> > > > +             atomic_set(&core->poll_active, 0);
-> > > > +             schedule_work(&core->poll_work);
-> > > > +             return HRTIMER_NORESTART;
-> > > > +     }
-> > > > +
-> > > > +     hrtimer_forward_now(timer, ns_to_ktime(RK3576_POLL_INTERVAL_N=
-S));
-> > > > +     return HRTIMER_RESTART;
-> > > > +}
-> > > > +
-> > > > +/* Start the job's next task, or retire it. Caller holds job_lock.=
- */
-> > > > +static void rocket_job_next_locked(struct rocket_core *core)
-> > > > +{
-> > > > +     lockdep_assert_held(&core->job_lock);
-> > > > +
-> > > > +     if (!core->in_flight_job)
-> > > > +             return;
-> > > > +
-> > > > +     if (core->in_flight_job->next_task_idx < core->in_flight_job-=
->task_count) {
-> > > > +             rocket_job_hw_submit(core, core->in_flight_job);
-> > > > +             return;
-> > > > +     }
-> > > > +
-> > > > +     iommu_detach_group(NULL, iommu_group_get(core->dev));
-> > > > +     dma_fence_signal(core->in_flight_job->done_fence);
-> > > > +     pm_runtime_put_autosuspend(core->dev);
-> > > > +     core->in_flight_job =3D NULL;
-> > > > +}
-> > > > +
-> > > > +static void rocket_poll_work_fn(struct work_struct *work)
-> > > > +{
-> > > > +     struct rocket_core *core =3D container_of(work, struct rocket=
-_core, poll_work);
-> > > > +
-> > > > +     pm_runtime_mark_last_busy(core->dev);
-> > > > +
-> > > > +     scoped_guard(mutex, &core->job_lock) {
-> > > > +             /*
-> > > > +              * The interrupt can land while this work is queued, =
-retire the job
-> > > > +              * and start the next task. poll_seq only moves under=
- job_lock, in
-> > > > +              * hw_submit, so comparing it here says whether that =
-happened. Doing
-> > > > +              * it outside the lock would leave the window open ra=
-ther than close
-> > > > +              * it, and this work would then submit a task on top =
-of a live one.
-> > > > +              */
-> > > > +             if (READ_ONCE(core->poll_dying) || core->poll_work_se=
-q !=3D core->poll_seq)
-> > > > +                     return;
-> > > > +
-> > > > +             rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
-> > > > +             rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
-> > > > +
-> > > > +             rocket_job_next_locked(core);
-> > > > +     }
-> > > > +}
-> > > > +
-> > > >  static void rocket_job_handle_irq(struct rocket_core *core)
-> > > >  {
-> > > > +     if (core->soc->poll_completion) {
-> > > > +             atomic_set(&core->poll_active, 0);
-> > > > +             hrtimer_cancel(&core->poll_timer);
-> > > > +     }
-> > > > +
-> > > >       pm_runtime_mark_last_busy(core->dev);
-> > > >
-> > > >       rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
-> > > >       rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
-> > > >
-> > > >       scoped_guard(mutex, &core->job_lock)
-> > > > -             if (core->in_flight_job) {
-> > > > -                     if (core->in_flight_job->next_task_idx < core=
-->in_flight_job->task_count) {
-> > > > -                             rocket_job_hw_submit(core, core->in_f=
-light_job);
-> > > > -                             return;
-> > > > -                     }
-> > > > -
-> > > > -                     iommu_detach_group(NULL, iommu_group_get(core=
-->dev));
-> > > > -                     dma_fence_signal(core->in_flight_job->done_fe=
-nce);
-> > > > -                     pm_runtime_put_autosuspend(core->dev);
-> > > > -                     core->in_flight_job =3D NULL;
-> > > > -             }
-> > > > +             rocket_job_next_locked(core);
-> > > >  }
-> > > >
-> > > >  static void
-> > > > @@ -460,6 +540,10 @@ int rocket_job_init(struct rocket_core *core)
-> > > >       int ret;
-> > > >
-> > > >       INIT_WORK(&core->reset.work, rocket_reset_work);
-> > > > +     INIT_WORK(&core->poll_work, rocket_poll_work_fn);
-> > > > +     hrtimer_setup(&core->poll_timer, rocket_poll_timer_fn, CLOCK_=
-MONOTONIC,
-> > > > +                   HRTIMER_MODE_REL);
-> > > > +     atomic_set(&core->poll_active, 0);
-> > > >       spin_lock_init(&core->fence_lock);
-> > > >       mutex_init(&core->job_lock);
-> > > >
-> > > > @@ -501,8 +585,23 @@ int rocket_job_init(struct rocket_core *core)
-> > > >
-> > > >  void rocket_job_fini(struct rocket_core *core)
-> > > >  {
-> > > > +     /*
-> > > > +      * Stop the poll from starting hardware work before tearing a=
-nything
-> > > > +      * down: it submits the next task, and drm_sched_fini() does =
-not wait
-> > > > +      * for work already queued. Cancel after the scheduler is gon=
-e, so a
-> > > > +      * job running now cannot re-arm the timer behind the cancel.
-> > > > +      */
-> > > > +     if (core->soc->poll_completion)
-> > > > +             WRITE_ONCE(core->poll_dying, true);
-> > > > +
-> > > >       drm_sched_fini(&core->sched);
-> > > >
-> > > > +     if (core->soc->poll_completion) {
-> > > > +             atomic_set(&core->poll_active, 0);
-> > > > +             hrtimer_cancel(&core->poll_timer);
-> > > > +             cancel_work_sync(&core->poll_work);
-> > > > +     }
-> > > > +
-> > > >       cancel_work_sync(&core->reset.work);
-> > > >       destroy_workqueue(core->reset.wq);
-> > > >  }
-> > >
