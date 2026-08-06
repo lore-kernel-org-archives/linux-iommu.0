@@ -1,115 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F74F2F7EF9;
-	Thu,  6 Aug 2026 13:00:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3C65311C07
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 13:17:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786021238; cv=none; b=AnKO2MnW0sJQXaIHr+zAfkgE7SgNrb19Yoa4751G83txSU1TTMwlmC2uOL9sMNjrLxiF2U+lLEtgaTKEdNvFdenX3O3q0MOukq7Vc6/9PfiHB+0vwXahklrv1DwET6TaFffaveBXr7WT1efFNAMWcCbqRu8PsJnzWoBiBfTetds=
+	t=1786022262; cv=none; b=W7b5rYNRXx+3/9xNBkR/mfWSoVclqZOSHyh+4+VzUx8iFr40QPvSurWUwU8u7fBoWRI4X5ryrjLazHJOdDkVGYtuSScwVdaAGF+hIBUP1EH5diqo1aivITNsotT9VXbWD9wliWF94k48idu/cYH71aZcbaYwuV5O8V4nlI6peGU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786021238; c=relaxed/simple;
-	bh=VnKGLBjKLa1ViHCd9+00d1v2tcASVXRCUxALBKBo9lE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rVW4xv2U2Jm20jtbRruoWHj9mnMV56s3zFqnXg7gnMfMV22Fu9Fi6ogA75N0HkH0QumFnYqycIpERO03lRRndLrKx9RmTSSUi1rAZrQ1aCbSInWcj35uDVdg8giZiu4vwmjr5VMDioeAkuOJTiV5bJ74nzE4E1zfgrM1SmidlmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a86oeqp4; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786022262; c=relaxed/simple;
+	bh=Xi0GI+CCHAN9OYhaAuPoCvL+bhIRpBxTXYrZjuadPO8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h9r6iI6S8US9NgIDxJ6jgYRpJF+oUb6CK3xib5sY4zIWe5yHTEAs/LnGpP8TMw0mcROsqjuyBvM8q+puuIHXXpFXa78J9PQKmB75iZIZPvtCkrN9Ll4qxN6F7FE1kq3MA6iQelEaODtplAd2gCGNlfu6TKDHyAHo1KnKCCo52/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=LH79uJ1J; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a86oeqp4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52E551F000E9;
-	Thu,  6 Aug 2026 13:00:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786021234;
-	bh=mW/OuZ6mDAqPwiWKjJo6a74gpl79w+/96YfJnOrsAnE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=a86oeqp4RR3VHaJpTt4R9aiSI/uw/jdngWhLSd2xywYg+BiVfBYpQynxbLq654MRU
-	 O0eRadyZulK73laweC/FpAtNgiIJQgHJdJFnaHTBjNnrblMOj60N2M91wUg+g7OVJC
-	 B4v0KVk4P2V+RwWdSjexPi1bzKlWMRWkXQW82wlZvdWz78EIedX7kjxAroGNoiUiXc
-	 8UURMYbrxTSFLK0DK7TKkezyaLdUnMTb3RgxoF0XMEi71Vf5TPw1FXBvR0dTbh/aq6
-	 jBlYPIfOnCUn+I37wjoXKkbxkUDieYBRJQdFx3yC3uPNcmDt8xci5B52/40FIT3qM0
-	 JoNnwfn81OOKQ==
-Date: Thu, 6 Aug 2026 14:00:28 +0100
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kiryl Shutsemau <kas@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Pranjal Shrivastava <praan@google.com>,
-	Breno Leitao <leitao@debian.org>, Kyle McMartin <jkkm@meta.com>,
-	Usama Arif <usama.arif@linux.dev>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iommu/arm-smmu-v3: Shrink command/event/PRI queues in
- kdump kernel
-Message-ID: <anSFbIHnigVt_3bJ@willie-the-truck>
-References: <20260706084708.8072-1-kas@kernel.org>
- <amiBagGKn-Aym1DK@willie-the-truck>
- <amiz6GQZ-XGlH706@thinkstation>
- <anHxBh-xGW9JXsa4@willie-the-truck>
- <20260804141704.GB27883@nvidia.com>
- <anINkO1l9Kz8lTVh@nvidia.com>
- <20260804161918.GG27883@nvidia.com>
- <anIXDd839UC/M2n/@nvidia.com>
- <20260804165905.GH27883@nvidia.com>
- <anIjwUVvfWOb9xa4@Asurada-Nvidia>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="LH79uJ1J"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6686A153B;
+	Thu,  6 Aug 2026 06:17:31 -0700 (PDT)
+Received: from [10.57.42.103] (unknown [10.57.42.103])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 388EF3F632;
+	Thu,  6 Aug 2026 06:17:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1786022255; bh=Xi0GI+CCHAN9OYhaAuPoCvL+bhIRpBxTXYrZjuadPO8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=LH79uJ1Jg2SNwztVGfB2pmdXfLorfNsLrP+Ftqm/LOL1yi7R7Vv98nZjRu+MQWYcz
+	 gpF5kVEPbHs+qGMcmFhnXyHGgHcIV+UHSR7a9RtQy8z1HG8Gp6lEVj+wqCp4t7y0+7
+	 stpowvv+zBdM0WV4ABt5UlPSRDHY3yqNgcX3f+DI=
+Message-ID: <7e66d67a-f63f-465c-acb0-c1238f534c07@arm.com>
+Date: Thu, 6 Aug 2026 14:17:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <anIjwUVvfWOb9xa4@Asurada-Nvidia>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] iommu/tegra241-cmdqv: Reject a VCMDQ base above the
+ 48-bit hardware limit
+To: Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260729220329.805417-1-nicolinc@nvidia.com>
+ <anSCXUjivdb_aOv_@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <anSCXUjivdb_aOv_@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 04, 2026 at 10:39:13AM -0700, Nicolin Chen wrote:
-> On Tue, Aug 04, 2026 at 01:59:05PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Aug 04, 2026 at 09:45:01AM -0700, Nicolin Chen wrote:
-> > > On Tue, Aug 04, 2026 at 01:19:18PM -0300, Jason Gunthorpe wrote:
-> > > > On Tue, Aug 04, 2026 at 09:04:32AM -0700, Nicolin Chen wrote:
-> > > > > On Tue, Aug 04, 2026 at 11:17:04AM -0300, Jason Gunthorpe wrote:
-> > > > > > On Tue, Aug 04, 2026 at 03:02:46PM +0100, Will Deacon wrote:
-> > > > > > > > Would skipping their allocation when is_kdump_kernel() be acceptable on
-> > > > > > > > its own, or would you rather see it done differently?
-> > > > > > > 
-> > > > > > > With Nicolin's patch, we can just avoid allocating the priq and the evtq
-> > > > > > > entirely in the kdump case. We can then add a cmdline option to control
-> > > > > > > the maximum size of the cmdq, which is useful regardless of kdump.
-> > > > > > 
-> > > > > > I would still prefer kdump do this re-sizing automatically, even if we
-> > > > > > do add a commandline. It makes it easire to deploy than having to know
-> > > > > > secret command lines :\
-> > > > > > 
-> > > > > > So functionally I still think this patch is fine, though yes it points
-> > > > > > out more things in Nicolin's work too.
-> > > > > 
-> > > > > I will send a v10 of mine, to skip the EVTQ/PRIQ allocations.
-> > > > 
-> > > > I think Robin's point is to structure the v10 so you introduce a bunch
-> > > > of tunables, including something like 0 size to disable a feature.
-> > > >
-> > > > Then have kdump default those tunables to the right thing
-> > > 
-> > > But in kdump, EVTQ/PRIQ are disabled, so my series should have
-> > > skipped their allocations regardless of the tunables.
-> > > 
-> > > So, I think the tunables can be done in a separate series. And
-> > > its use case might not be confined to kdump?
-> > 
-> > I think the ask is to do the tunables first and change your series to
-> > default the tunables instead of doing direct kdump overrides.
+On 2026-08-06 1:47 pm, Will Deacon wrote:
+> On Wed, Jul 29, 2026 at 03:03:29PM -0700, Nicolin Chen wrote:
+>> tegra241_vcmdq_alloc_smmu_cmdq() allocates the VCMDQ buffer via the common
+>> arm_smmu_init_one_queue(), which uses smmu->dev and its coherent DMA mask
+>> of DMA_BIT_MASK(smmu->oas). An SMMUv3 queue base holds a 52-bit address in
+>> Q_BASE_ADDR_MASK, but the VCMDQ_BASE register holds only 48 (VCMDQ_ADDR),
+>> so the masked write "q_base = base_dma & VCMDQ_ADDR" silently drops bits 48
+>> and up. The HW would then fetch its commands from a wrong memory location,
+>> which likely raises VCMDQ errors.
+>>
+>> Real hardware always pairs an SMMU OAS with a matching VCMDQ address field,
+>> so this cannot happen; it takes a VMM that gives a guest a mismatched OAS.
+>> Nor can the guest rely on the VMM to catch it: an SMMU CMDQ base keeps bits
+>> 48 and up in Q_BASE_ADDR_MASK, so a trapped CMDQ_BASE write still carries
+>> them, while a VCMDQ base goes straight to the hardware and loses them.
+>>
+>> Reject a base_dma with bits set outside VCMDQ_ADDR, the way the user-VCMDQ
+>> path already does for its base_addr_pa, failing the queue init rather than
+>> silently truncating the base. Use dev_warn_once() rather than WARN_ON(), as
+>> the OAS is VMM-controlled and a WARN_ON() would let it panic a guest booted
+>> with panic_on_warn.
+>>
+>> Assisted-by: Claude:claude-opus-5
+>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>> ---
 > 
-> You mean the driver can override the tunables to 0 in kdump mode,
-> right?
-> 
-> Well, we are skipping a lot of things in kdump mode already; it's
-> a very small change to skip EVTQ/PRIQ even without the tunables.
-> 
-> If Will prefers this merging sequence, I wouldn't mind changing my
-> series to overriding the tunables.
+> This still just sounds like something that a VMM shouldn't do?
 
-I was thinking that the tunable would only apply to the cmdq. We can extend
-it later if necessary, but since we're not going to enable the evtq/priq
-in kdump mode at all, I don't think we need tunables for those atm.
+Yeah, if a VMM is going out of its way to emulate obviously-broken 
+hardware, then in my opinion we should just give it what it wants and 
+let it deal with the consequences of its brokenness.
 
-I probably wouldn't make a size of 0 disable the queue, either. Have a
-minimum size of a page or something like that.
+But if we really do want to bother sanity-checking emulations, then why 
+allow them to still get away with being broken in the case that we do 
+happen to allocate queue memory at a sufficiently low PA anyway? Why not 
+actually validate smmu->oas itself (plus anything else relevant) in 
+__tegra241_cmdqv_probe()?
 
-Will
+Thanks,
+Robin.
