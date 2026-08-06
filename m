@@ -1,122 +1,200 @@
-Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f1.google.com (mail-pj2-f1.google.com [74.125.227.129])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4763D667D
-	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 09:23:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7870433E62
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 09:35:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.129
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786008241; cv=none; b=acQwcbJY6VHt8VfqrEHYAzZkTNkJMobyywFU33JfOYNmFYsdLuoqbosShuZdpqa6AfE1GF2U4vkQQAEtVxtPGbdHeTrscjDwYokiFaA0+AHAwrP6Pzv9D/JHo8h9fpUQj2X7tdAUSdZxVFWlSnjSS7MKZl9K5BlKnSLCy8y7xlk=
+	t=1786008943; cv=none; b=BFlkfjS3GVHZmDf5+PzXskDZlLGwMG+KEcxUtUDa0EXOgbmOHNKtuZ35eG/QGHxru5NeOsEdyPv5oSUl/43ttCzN77r3HvUqYgiBq/cf7R6lrfMmvejOwkZGfC5eMunhKCpwmeYGkya23HZNAYom0PzzVisrPoozCPdwOXHib/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786008241; c=relaxed/simple;
-	bh=2Bux34acxbkkdsfc7hWzKdEN3DqFCaMDm99n6apUicc=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=j1JztRRH/W5F7vlefJzy8hAFQVjb3Pj+oe1OdQszbvmKPp5NqIge9UF7ewVmfmgN+m/YR2bCtOAxvSDF54cRUMhNgj0xjsq+8BTf1Q7p7dq/RWvkLIpErK0mOqCQVGiZ2FfuvMQAejRaB8jHHnEopbdiYMKGB2H0y0FTsU4Pjek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com; spf=pass smtp.mailfrom=cknow-tech.com; dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b=aUsX59P/; arc=none smtp.client-ip=91.218.175.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow-tech.com
+	s=arc-20240116; t=1786008943; c=relaxed/simple;
+	bh=ZHLCtUVO6uYDOsdtlCc6ZAdxnR8tUMuzMFx7R4VBsvY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PtJyM66tg0O5tXLJ4/HiqbtJWYqQGTVdJ6/skXz4F69AItjcGCPYWNt83tHp6QD77vAZk4njooD5LH/XXHSPpYUNp6CQm7KonOknyS1hcIpvDLCfiFEhkV9H9Wq21rkve9E3iyPvVl51xk+rX2sZnBwqtkg4Gkb5n+FjXWQ8n5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NC7W8tF6; arc=none smtp.client-ip=74.125.227.129
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b="aUsX59P/"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NC7W8tF6"
+Received: by mail-pj2-f1.google.com with SMTP id d9443c01a7336-2cb3f5bb19aso7127085ad.1
+        for <iommu@lists.linux.dev>; Thu, 06 Aug 2026 02:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786008936; x=1786613736; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=iAi2qaVA1OaGq4fUWHi+grRNkf4AM4PgvPmY0Rr+XE4=;
+        b=NC7W8tF6H1RtB5RmviUNItlflOq48DOxESxqh7aZA9RwX2EBZlQCayPYSjhrFbu+Br
+         A07ut9VK57H9R2M9+5umpfLfNG50A4lTNlbgsbs/mBIlDSbvyMkDjS07TC5Lv2/eU0yf
+         5W4tWeSGzha5veIu9cFiZFsyUqmPj+8ocEGDWW+Ou5f9Fwsv6jBJU3xFltxa3VsC4/c1
+         usHlUtOTJ9bCz92FbDR0nB3kIfxIZp+c8YoN+6OingMts9ZROVwh8EeY0zOtxqX+6gnL
+         nloughZcsNXNoOjPOk+iSZ5HxgyEIRHoVJBLAz9ARxA4orEkflzk7SXJb+iwKKWC6paG
+         0SaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786008936; x=1786613736;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=iAi2qaVA1OaGq4fUWHi+grRNkf4AM4PgvPmY0Rr+XE4=;
+        b=grK/k+fdYV/cNjCHOAIeAcB7xjKGt6bR98Ux0HwoPQWXi/Rv8ijOTXXpMProKdCc+f
+         KfPhN7FJG6/IssqtGSBw6aPN3e5x+wjRMtSxdivB3hMqRdYs8WLBoEl56xrjyWm5m+6D
+         NfG7XwFAvJbDuWSUzPWsgrkncHb1wqzKOSwqb429dlh9N21AwsU8+yePcgfDf/uvX4zt
+         G01neqhvD3qVcpUydrtJJsbHXalX2RjPQYqJhNPbEhhBCbP+b2Kh76Lb0mHWsoj+xMsK
+         37w6lnq6UWDx1fmfCTCYKNHtA9KuG1MZElzK+8hthYqEiFKog9qw7ClmWBmn4FTI/oFB
+         7t7Q==
+X-Forwarded-Encrypted: i=1; AHgh+RoHL3fnOMXEatp/+njnuNPWYDpS2RsdlJOICFoy3ifoXB36OUp8CdscXTFjVUYp+rObI7tzrg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw1v4RGSzjFhGvzkBkJ+7iL3D00EGqBPMeGrQzftLgkhdrwLGIK
+	4IUb96B0zpebREUBW9TYROul52d+UbRiP+gfr2K98M+Bwgnilx0WRoFY
+X-Gm-Gg: AR+sD10h2qO1kHqf/kRSQoKIftjOmzJeyay4kc0EsYr+DUHzx/x5b5nb+2itxDbbEml
+	76RiwOFLNKGP0kzaoMg/3fh0jcIkaqT4L6Ist4xeQUmuouR+IQgpBOhToLCc9sSfI6yX1RMbGUf
+	8dp6eLmgHd9yo9aMB27Qp5Wfh7/7NIaC8/DBtCUYHev/3d2FOYPNxVQOW10tLtAvvt9WH3i3fxY
+	dKPIRRpDul31LG70YodXq9sNXSmLmhnyA1YlrbCjcKrk584mYb5uycFfVX/4CvZbj/YI7jvdY8r
+	421wIWyG2GGSak8n1qVMwnNRrwwQcWof0gs+XIfEZl4vs1i/MpYKxwC+KoxUhJLdz9ECPYzY1Oo
+	wP/aFAPU1kZSg+5DpPUT6JwL3Tcb1/MZ0Y0M/tbrRfa6vRPcV3MELTe+wlca5ewKhgruK32LQdL
+	trj4Dc8bLxdOk5+cSY3j1IIC5IZakioU9oWQx4DG7ZA+z0yFJ+z8bW4yhgAXLMd+A93Dw53YwHg
+	A==
+X-Received: by 2002:a05:6a00:9515:b0:84c:1cd2:142e with SMTP id d2e1a72fcca58-84f4fe9e75cmr58122b3a.23.1786008936445;
+        Thu, 06 Aug 2026 02:35:36 -0700 (PDT)
+Received: from intel.company.local ([210.184.73.204])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f453b0aeasm1043878b3a.13.2026.08.06.02.35.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Aug 2026 02:35:35 -0700 (PDT)
+From: Wandun Chen <chenwandun1@gmail.com>
+To: catalin.marinas@arm.com,
+	will@kernel.org,
+	chenhuacai@kernel.org,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	robh@kernel.org,
+	saravanak@kernel.org,
+	rppt@kernel.org,
+	baoquan.he@linux.dev,
+	pasha.tatashin@soleen.com,
+	pratyush@kernel.org,
+	m.szyprowski@samsung.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-mm@kvack.org,
+	kexec@lists.infradead.org,
+	iommu@lists.linux.dev
+Cc: kernel@xen0n.name,
+	alex@ghiti.fr,
+	akpm@linux-foundation.org,
+	ruirui.yang@linux.dev,
+	robin.murphy@arm.com
+Subject: [PATCH v5 0/8] kdump: reduce vmcore size and capture time
+Date: Thu,  6 Aug 2026 17:35:11 +0800
+Message-ID: <20260806093519.2907771-1-chenwandun1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow-tech.com;
-	s=key1; t=1786008236;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dA4vidVbXhTuIp9QqxNa6zPIHYzqdAruYLG2CSq3Ubg=;
-	b=aUsX59P/Rs0XtXz+pr6ZpDN3xLg2qhYYUcMwU5i5B/YJXki/xjKg/RXiIOPHD3m9wiyjvm
-	jjtHnKM1QWosaYFlpMX5nDchtabNJlbdbH7CS3g+9D2C9VSszWthR0ltCUX05RcmR4QMZ/
-	Xi0EOCqNBIStnzsROASC+WnMZmvfFI1x/8NpxUBVi1nbEflvD/gkv8vGZvdE3TsPPWwZXS
-	CjIV1ID7V6Fmx2Y3YC7X6gKgc9XTIS+8wMAGg2lykgDGb3mM1ENs3gD1WilT84k7Zw+lJc
-	7xdWzeqKxtFOe6gcU83DyeYCC7mrKZAkOp8H2qiDv6OHqQk0mQNkCccyFW6EDg==
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 06 Aug 2026 11:23:39 +0200
-Message-Id: <DKHR2P0XJF0B.OY937NT39DR7@cknow-tech.com>
-Cc: <royalnet026@gmail.com>, <alchark@flipper.net>,
- <chaoyi.chen@rock-chips.com>, <diederik@cknow-tech.com>,
- <dri-devel@lists.freedesktop.org>, <linux-rockchip@lists.infradead.org>,
- <iommu@lists.linux.dev>, <linux-pm@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v6 3/9] dt-bindings: iommu: rockchip: allow the
- RK3576 NPU MMU clock set
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: "Diederik de Haas" <diederik@cknow-tech.com>
-To: "Jiaxing Hu" <gahing@gahingwoo.com>, <tomeu@tomeuvizoso.net>,
- <heiko@sntech.de>, <robh@kernel.org>, <krzk+dt@kernel.org>,
- <conor+dt@kernel.org>, <joro@8bytes.org>, <will@kernel.org>,
- <robin.murphy@arm.com>, <ulfh@kernel.org>, <p.zabel@pengutronix.de>,
- <ogabbay@kernel.org>, <zhangqing@rock-chips.com>
-References: <20260806063413.350184-1-gahing@gahingwoo.com>
- <20260806063413.350184-4-gahing@gahingwoo.com>
-In-Reply-To: <20260806063413.350184-4-gahing@gahingwoo.com>
-X-Migadu-Flow: FLOW_OUT
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Thu Aug 6, 2026 at 8:34 AM CEST, Jiaxing Hu wrote:
-> The RK3576 NPU MMUs need more than aclk and iface. With only those two
-> enabled the MMU accepts reads but silently drops register writes: a
-> DTE_ADDR value written from the power domain, while the domain clocks
-> are still on, reads back correctly, and the write rk_iommu_resume() does
-> microseconds later does not land at all. The vendor DT names the CBUF
-> clocks as that MMU's interface clocks and its driver keeps every NPU
-> clock on for as long as the device is powered.
->
-> The driver side of this is already upstream, commit 841363ebb508
-> ("iommu/rockchip: Take all DT clocks"), which switched rk_iommu to
-> devm_clk_bulk_get_all(). Widen the schema to match so those nodes can
-> be described. minItems stays at 2, so every existing devicetree, which
-> all carry exactly aclk and iface, is unaffected.
+From: Wandun Chen <chenwandun@lixiang.com>
 
-I agree with all remarks Sashiko made wrt this patch:
-https://sashiko.dev/#/patchset/20260805063826.95682-1-gahing%40gahingwoo.co=
-m?part=3D3
+On SoCs that carve out large firmware-owned reserved memory (GPU,
+camera ISP, ...), kdump currently dumps those carveouts as part of
+system RAM even though their contents are firmware state that is not
+useful for kernel crash analysis.
 
-Now every MMU with "rockchip,rk3568-iommu", "rockchip,rk3588-iommu" or
-"rockchip,rk3576-iommu" is allowed to have a minimum of 2 clocks, instead
-of having exactly 2 clocks. That does not sound desirable.
+This series introduces a 'dumpable' flag on struct reserved_mem and a
+MEMBLOCK_NODUMP flag in memblock to filter vmcore ELF header on DT-based
+architectures (arm64, riscv, loongarch). Reserved regions default to
+non-dumpable and are marked MEMBLOCK_NODUMP so kdump omits them;
+reusable CMA regions are explicitly marked dumpable in rmem_cma_setup()
+because their pages are handed back to the buddy allocator and may carry
+crash-relevant data.
 
-Cheers,
-  Diederik
->
-> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
-> ---
->  .../devicetree/bindings/iommu/rockchip,iommu.yaml         | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml =
-b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> index 6ce41d11f..a3cedcaaa 100644
-> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> @@ -42,14 +42,22 @@ properties:
->      minItems: 1
-> =20
->    clocks:
-> +    minItems: 2
->      items:
->        - description: Core clock
->        - description: Interface clock
-> +      - description: Compute clock, RK3576 NPU MMUs only
-> +      - description: Convolution buffer core clock, RK3576 NPU MMUs only
-> +      - description: Convolution buffer interface clock, RK3576 NPU MMUs=
- only
-> =20
->    clock-names:
-> +    minItems: 2
->      items:
->        - const: aclk
->        - const: iface
-> +      - const: npu
-> +      - const: aclk_cbuf
-> +      - const: hclk_cbuf
-> =20
->    "#iommu-cells":
->      const: 0
+Since the reserved memory regions are filtered out, the vmcore is
+smaller in size and faster to produce. ACPI systems already filter
+reserved memory out of the vmcore through their existing path; only
+DT-based systems currently fail to filter these regions, which is what
+this series addresses. The flag lives in memblock itself rather than
+in a DT-only structure, so the mechanism is generic and both ACPI and
+DT systems can benefit from it (suggested by Rob, thanks).
 
+The series is based on linux-next and is organized as follows:
+  Patches 1-2: Introduce MEMBLOCK_NODUMP in memblock and the dumpable
+               flag on struct reserved_mem.
+  Patches 3-4: Mark non-dumpable /reserved-memory and /memreserve/
+               entries with MEMBLOCK_NODUMP.
+  Patch 5:     Switch riscv to memblock so the NODUMP flag is visible
+               to the vmcore ELF header builder; add (KEXEC_FILE &&
+               CRASH_DUMP) to riscv's ARCH_KEEP_MEMBLOCK condition.
+  Patches 6-8: Fold the duplicated per-arch memblock walks into the
+               weak defaults in crash_core, switch to
+               for_each_mem_region(), and exclude MEMBLOCK_NODUMP
+               regions from the vmcore ELF header.
+
+v4 --> v5:
+1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
+   (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
+   DT-only struct reserved_mem.
+
+2. Switch the riscv vmcore elf header preparation to use memblock
+   instead of the resource tree, aligning it with arm64 and loongarch,
+   so riscv also can exclude reserved memory from vmcore.
+
+3. Deduplicate the vmcore elf header preparation: arm64, riscv and
+   loongarch open-coded the same logic, so fold it into shared
+    __weak defaults in crash_core.
+
+4.  Drop the v4 patch that saved /memreserve/ entries into the
+    reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
+    directly.
+
+v3 --> v4:
+1. Rebase this series on v7.2-rc1.
+2. Add two cleanup patches (patch 02/03).
+3. Simplify patch 03 to avoid checking whether initial_boot_params is
+   NULL multiple times, suggested by Rob.
+
+v2 --> v3:
+1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.[2]
+2. Fix UAF issue when alloc_reserved_mem_array() fails.
+3. Add some prepare patches.
+
+v1 --> v2:
+1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+   feedback [1], v2 drop that property and exclude reserve memory
+   by default.
+2. Split some prepared patches from the original patches.
+3. Address coding-style comments on patch 5 from Rob.
+
+[1] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+[2] https://sashiko.dev/#/patchset/20260520091844.592753-1-chenwandun%40lixiang.com?part=4
+
+Wandun Chen (8):
+  memblock: introduce MEMBLOCK_NODUMP flag
+  of: reserved_mem: add dumpable flag to opt-in vmcore
+  of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+  of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+  riscv: build crash_mem ranges from memblock instead of resource tree
+  crash_core: fold duplicated memblock arch hooks into the weak default
+  crash_core: replace for_each_mem_range() with for_each_mem_region()
+  crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+    header
+
+ arch/arm64/kernel/machine_kexec_file.c     | 29 ------------------
+ arch/loongarch/kernel/machine_kexec_file.c | 27 -----------------
+ arch/riscv/Kconfig                         |  2 +-
+ arch/riscv/kernel/machine_kexec_file.c     | 33 --------------------
+ drivers/of/fdt.c                           |  2 ++
+ drivers/of/of_private.h                    |  1 +
+ drivers/of/of_reserved_mem.c               | 35 ++++++++++++++++++++++
+ include/linux/memblock.h                   |  9 ++++++
+ include/linux/of_reserved_mem.h            |  1 +
+ kernel/crash_core.c                        | 34 +++++++++++++++++++--
+ kernel/dma/contiguous.c                    |  1 +
+ mm/memblock.c                              | 16 ++++++++++
+ 12 files changed, 98 insertions(+), 92 deletions(-)
+
+-- 
+2.43.0
 
