@@ -1,151 +1,100 @@
-Received: from flow-b6-smtp.messagingengine.com (flow-b6-smtp.messagingengine.com [202.12.124.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D43672D249B
-	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 06:36:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.141
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 421FE41A519
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 08:42:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785998167; cv=none; b=ntIRiO93ZXbbYYBJqhLk0OXKfl0Bq3fJn1YeAtr+2ZlACX7MOpdRLH+bSZjK55vel8AcXkiYAsZ7SVwbXr6m6EhOGSAuzCzHM8EvcHo1qIxXDk8aAP3meqpd265sGslbWXR8lj5c/2JrSBgQXx9ApBoBwaGCxwRfFcfB45/SJRk=
+	t=1786005746; cv=none; b=cfL6SnreSezyyaXHme1FGmA+LWfazz8T4u4/qKI3MkbPRCkGez3nvFCIhI5NL0pCYG5Frg4y/b1rGLkcCYH0EtDTFbCaf2Rre++pccrtI2l4YYJ16aaF3lKy16XNmpAArPUZaJjti2TS6UzRDYEVCVpYCz7nHtAnZ8+1j58drsk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785998167; c=relaxed/simple;
-	bh=U4X+rhj/sXR+vtuG+XLMw3JDpabQzZVg4RMgkgdiYpU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Qi4gpfILn33lp2y6LrPmL0zl+SjeB3jCGvENRS0xSEpCNLd/Goke0f0NHvzcM3nSGP9mBA/ZL/SFOpbnEUd9NqVKebtyj41LS043ZZxHaC58q8QgX5A8apX+yD+PZcmVgx1nWDB4Dnihrse2nEfKTL7TL3sw0PWicMwyA9npfG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=1puoFuVj; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=G9C2+b4U; arc=none smtp.client-ip=202.12.124.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	s=arc-20240116; t=1786005746; c=relaxed/simple;
+	bh=1XZ52c7N7R/7ik+1Q56O2gFc7n1LYmIvcHRd9KWsOdo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bM05OBJ50FTjBGEA8FHTeTtOptbpiK845Vi59ixKaILG/DhpKi6ud+BBH464i3Bop2w1Ds+G2fiIdOwGkUNoOZv9GDY6QPuC55Xz84pgHqM16IhzB1X8lGMtkweKzD+J7hlQy5jm2SmuaNNnbKucE1N3/ExD/lIf2O74HR0/5gg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Vk3YFbse; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="1puoFuVj";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="G9C2+b4U"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailflow.stl.internal (Postfix) with ESMTP id 995101300165;
-	Thu,  6 Aug 2026 02:36:04 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-04.internal (MEProxy); Thu, 06 Aug 2026 02:36:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1785998164; x=
-	1786001764; bh=sgu7nAbq8Yx5koaOMKJWboxHdobCAGSow6z6pMfKPGU=; b=1
-	puoFuVjNERzwVWN0t22cIXz+deO4xgXn/Yn+6FkOmLHlXm7cnNgXO0QN68aO9ILC
-	LoiLk/7MWB9BDccQuLdx8iZlM8QB0Jg7YbzKXGuaMx/fTiGSrFIbyjbeKPFn1Hfy
-	Bj+DSKqFdmB4Y+W4TlE9mHo4istLQZGxbOp28FytrB9vz/A6I1uXYfu3sXedhMU7
-	jDtyFyVwjHm961xc6jzuZoa7jiKZlbM5oalpIVzDOaj4OaaT3mc0Ia8aaoWE9dDw
-	Fv6/nkCs/qPc9rLzraCJg5d77l4fW1Wm4Mn0SGsA7Z7rThzisURGdBadHAh9kS8p
-	NtUfBxsEp/Nrd10GoRg0g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1785998164; x=1786001764; bh=s
-	gu7nAbq8Yx5koaOMKJWboxHdobCAGSow6z6pMfKPGU=; b=G9C2+b4UWlPuB3JYP
-	uLtmvJRPN4B6+j0SXyZff2fi/mbZNtkI5BsPTzii57azW83r4JPGnJn+oP87LlXu
-	uzMK5FoIAp78F9XIfJDO/Bc9TlUCyZgtBB6LtaVq3KqvNDVgGlARRU9ZcwA03RKc
-	fWAVBiJLW510K8TZ0MmP4hqyECLKIb1p7Y2Nbjl2fdlg5z02GLLJHkfNvfKTRbOf
-	wxXfrhm2EfTTc3PgIb+AdKudyla9JZYzs5kR9mxlMLYtcjNaRG0cRj5wEtQilaQn
-	FRPxJxcXywGFvrJ2OGuDbUWjgzaHA8gAmW5PpzvYkkuFUuEqE/XlrdFVAAT3z6+A
-	2n0zA==
-X-ME-Sender: <xms:VCt0ast72_PppLC-vbFNWAr4fmvLj9QXF77FP7toQlx2Tuo0fLzMzg>
-    <xme:VCt0allGcodj5pUuAqPS3BSQ7an4MpprS47MBseXp7PZ33Qu6kor2-6nd80LEMab5
-    dZxXofTHPGKHO43iIf56rsw-fz1566dDA6MgxrLIGnnlfeKCaE__UaS>
-X-ME-Received: <xmr:VCt0ajk2MoeANJT9Wdyf_MA9nQ9R8p1RXOvXsjkJUd5R6CK5bMjlsYAnEc-dHw5vdIcMhPYTjg>
-X-ME-Proxy-Cause: dmFkZTFONgeA2O3pwjIbPcMCTqIJqr8rt4x9wj1HWpKtWqUM08CHxAytH4b3Wcxne+7M9Y
-    PXPM0VguFKPHRj7GsPgHOCGdBiHCvhUSS0VPsXiwRKvCWrXPAstwqnluAM2XfUZr49eWpS
-    e+UecSjujmJ2AT270+mwV76lh/D6/9znIOY6mQx5cMF79T+XdTHspX14zKQTkVq2imOTsH
-    vp93U39Lnk9e3xSvtrqjBURQNo6oCQMtbFhYzXBG6dEvWqKT8clHR5x+RedZsGjCkMON3x
-    w67ON4vBChW2U2GPv48gIMgNJJLmEWZg5zEIGItcQU7FX5BKLMjAr+kfs3S2cJ4Ku2vNei
-    eTyzZo7cemSdKbqcslTdF9+Fnu6Wnz4g9+SP/0PbxOIZE8eibAnqIUUyYrpwfADWd8/jkQ
-    lyZiACxDgx6oXDCrfC75glZna01b4xAevCxCiaFfAJqGJP9faeFM9Zqtowd3xeiNo9JDG8
-    sQZoBFeT/sjP33Sq6xmNDkviAk90SnbPS6sC/dCYlVmUFCE7qI6m0SKYsfQm7Z5BG1nfOl
-    I3/74cQkajuQVirurXoz2U6V0p2pKZC8lAqpTB9XLjVAYR1m08HfIcgnKVrE/pnSXn2IHW
-    kgORTPywBrs6TDNtcDLqwDCpnKfCeAZtwCPFUjdUjIzIasboxPsOfrMoZgqg
-X-ME-Proxy: <xmx:VCt0aojnAKsgkWNOX9a1LKyPFFgx-mQSnCJBRtXQd3VwGT7-mJ96lA>
-    <xmx:VCt0atF1xf1Ud6hOaB97940z0VNbJ5I2zp9gom9BP1Cd33SsAsOPrw>
-    <xmx:VCt0arblB6kuyR8R_IRRsl8evZYmQ2Dsa8DnadgUAAlAa30MJRqFpw>
-    <xmx:VCt0aoOv8qyUnC-n_2c3zzJCIcFdlDdVGqC-7N1M-nCs7C_2ygC27w>
-    <xmx:VCt0as3pvbaerTG75kRiWOpxwx6SbePvKk0caBaqAS4ASjQMqc-0KdN_>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 6 Aug 2026 02:35:56 -0400 (EDT)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: tomeu@tomeuvizoso.net,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org,
-	zhangqing@rock-chips.com
-Cc: royalnet026@gmail.com,
-	alchark@flipper.net,
-	chaoyi.chen@rock-chips.com,
-	diederik@cknow-tech.com,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: [RFC PATCH v6 9/9] arm64: dts: rockchip: rk3576-rock-4d: enable NPU
-Date: Thu,  6 Aug 2026 18:34:13 +1200
-Message-ID: <20260806063413.350184-10-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260806063413.350184-1-gahing@gahingwoo.com>
-References: <20260806063413.350184-1-gahing@gahingwoo.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Vk3YFbse"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B8811153B;
+	Thu,  6 Aug 2026 01:42:18 -0700 (PDT)
+Received: from [10.2.212.8] (e134344.arm.com [10.2.212.8])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 81F433F632;
+	Thu,  6 Aug 2026 01:42:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1786005742; bh=1XZ52c7N7R/7ik+1Q56O2gFc7n1LYmIvcHRd9KWsOdo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Vk3YFbseN1J/KkpXJV6XxeMhp8z09cM7QKEaGOWthnB2rK15LrGgVvARUQKfSIB3A
+	 q+/JfafIf6kUrbpn/GxsrT0SfxqyDag4S4foyW9/Kksq3ryx9lyhrhSqMaGBY5RWAa
+	 Z36t681xIH1xquFeoaBivxQxzxvg4wMqdvfwdNBs=
+Message-ID: <7cf591e8-e182-447f-9808-d8e328d28f79@arm.com>
+Date: Thu, 6 Aug 2026 09:42:11 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 0/7] riscv: iommu: Add QoS ID support for resctrl
+ device assignment
+To: Drew Fustini <fustini@kernel.org>,
+ Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+Cc: xiaqinxin@huawei.com, zengheng4@huawei.com, palmer@dabbelt.com,
+ tony.luck@intel.com, reinette.chatre@intel.com, tomasz.jeznach@linux.dev,
+ will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com,
+ james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net, shuah@kernel.org,
+ jgg@ziepe.ca, kevin.tian@intel.com, cuiyunhui@bytedance.com,
+ yuanzhu@bytedance.com, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org, x86@kernel.org
+References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
+ <anQaaQvpEXFTRYvS@x1>
+Content-Language: en-US
+From: Ben Horgan <ben.horgan@arm.com>
+In-Reply-To: <anQaaQvpEXFTRYvS@x1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Enable rknn_core_0 and its IOMMU on the Radxa ROCK 4D and supply the
-core from vdd_npu_s0.
+Hi Drew,
 
-The supply is marked always-on because the NPU power domains are what
-gate the block here, and dropping the rail underneath them takes an
-async SError on the next power-on rather than a clean retry. Only
-rknn_core_0 is enabled: the driver binds one core per node and the
-second core is left to whoever can test it.
+On 06/08/2026 06:23, Drew Fustini wrote:
+> On Tue, Jul 14, 2026 at 09:06:50PM +0800, Zhanpeng Zhang wrote:
+>> This RFC extends RISC-V CBQRI/resctrl support to external requesters
+>> behind a RISC-V IOMMU.
+> [..]
+>> Open questions for this RFC:
+>>
+>>   * whether a common resctrl "devices" file is the right ABI for
+>>     associating external requesters with a resource group;
+> 
+> I think a separate file is the right approach to avoid confusing iommu
+> groups with pids. 
+> 
+> I should note that James Morse had an ARM MPAM "extras" tree [1] which
+> carried an iommu_group assignment interface, using the same
+> iommu_group:<id> format, but writing it to the tasks file. However, Ben
+> Horgan clarified back in March [2] in a reply to Qinxin Xia that it is
+> no longer maintained. Ben also wrote that the interface would likely
+> change upstream. I've added Ben Horgan and Qinxin Xia to the CC list so
+> hopefully they can chime in.
 
-Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
----
- arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+I haven't thought about the interface much but Reinette let me know here [1], with good reasons,
+that we should consider the format of the tasks file fixed.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-index 272af1012..965e0906b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-@@ -442,6 +442,7 @@ regulator-state-mem {
- 			};
- 
- 			vdd_npu_s0: dcdc-reg2 {
-+				regulator-always-on;
- 				regulator-boot-on;
- 				regulator-enable-ramp-delay = <400>;
- 				regulator-min-microvolt = <550000>;
-@@ -869,3 +870,12 @@ vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
- 		remote-endpoint = <&hdmi_in_vp0>;
- 	};
- };
-+
-+&rknn_core_0 {
-+	npu-supply = <&vdd_npu_s0>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_0 {
-+	status = "okay";
-+};
--- 
-2.43.0
+Thanks,
+
+Ben
+
+[1] https://lore.kernel.org/all/f9b08563-4958-4f3c-ad6c-1e7fa3047896@intel.com/
+
+> 
+> I plan to review the patches in this series further but I didn't want to
+> delay any further in pointing out the above.
+> 
+> Thanks,
+> Drew
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/log/?h=mpam/snapshot%2Bextras/v6.18-rc1
+> [2] https://lore.kernel.org/lkml/d13fdc75-b647-44f3-9657-d592353e8a1a@huawei.com/
 
