@@ -1,51 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA14481235;
-	Thu,  6 Aug 2026 17:12:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A66E48A2D0;
+	Thu,  6 Aug 2026 17:12:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786036324; cv=none; b=XrESXIKKS7gyCOPpSqZ97/090GZEsCOh1nMxbe5q3xpQbATRLJPpiIbxb1xiSrt3RGSlgGUbhS1HO4j/yGupi/1GSYFNwfWNDFSfKGTQaSwsqRi+/W5QSoq3EG9uIyx5F5e/79q0BgMCNzwc1LgtCp+nJO6SuafDYIs4Ls83dyI=
+	t=1786036345; cv=none; b=gee/nPNYa83kxpk7powP53Qn7Y+tvcd2EGSxzWCZC9O5WsB70lta3G7DQeHv0fGdKTPrYcOu41eXCATpuE6OyknGJpQ5eOITFdcTA3HvBT8O3VL0JvFdQvn7JzXtk4z778ddIlb3efxoLSmoXk1OKXMVGW5W+rHzDELFpdgby74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786036324; c=relaxed/simple;
-	bh=BnLRLUuW0HCuDHD60R6MWgkjLx0zp31VP1O98JjARRs=;
+	s=arc-20240116; t=1786036345; c=relaxed/simple;
+	bh=QLazBSWJzmxdVM+o91IPuwP7fcMUPK4GBmcTiJxYhcg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nvCm53qoyuzw/l+235bGGKk8mqdb0CbUYN3c8P51yxjKPIPdHz/t1/B1h5NYk7b/D0fKqoKgTbecQ70i16zk4psNVMxMqQZlJKkmd5U7evXUelMtt5yzkjuMfsGaKSfb5ZGEMDsTgQMlAuyv7IRqT4fzCuTgsYAUQkLz0kx7fa4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HZGulFHm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=uB/et8qZC4Xbcd7C0iGZb8zfA9vd30fRKxfez0PNGCUbM7rHC87LxyP1YAR438LMT/fJzwHxkNkKoRez8VpfTxfVzn48TQHr8bOjpvCRFzbsEo9FBW5HE3tx4wY0pCwFXGmPiPIYQxWJlSJITR/6f0Feri4ZS4J4vTpLpR9IQkY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aJxprpj/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HZGulFHm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54EF11F00A3A;
-	Thu,  6 Aug 2026 17:12:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aJxprpj/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E4A1F00A3D;
+	Thu,  6 Aug 2026 17:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786036322;
-	bh=nc0GZEveyNsfDrAwQEPhop1DRFKVu2AYZuwNyht0URA=;
+	s=k20260515; t=1786036343;
+	bh=/22LGD1MGbC96K2zWOrMVz7tCsjDUPU9MbskXggav7I=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=HZGulFHmp2kRydQcX+HNixq1fQGz3Rl29xnmQfAkrAmykBfoHo8Nq/4xOrrNca27X
-	 jT9nyRtSD7+hhJr6wbZqIzOKhvh6uzLHz6x3LGYMd36xREbB3L4skkNe8umNghNmkp
-	 fwN4AvN48za6TfxrYVcSSyCnWEC5SVDENlzwePvwudD1bRqGdSJv1JnD/QtHhHIxAK
-	 yZ11HliiBp2Hwx3Z/T3qTZvtSA+vQ1I6pXvvurL57UkiRw0SkR82ciLI6/6vr161ze
-	 QPqEyzWDpI3ahaChlGle/uCNUp1V83hk+i+rVobryhSyQw0e2OOlh+tgTrWVTAvUV3
-	 iBLVZaG2TJ7OA==
+	b=aJxprpj/PmeLQcUf+DpkzRl7CnakIvyMWVwJ70+wVwNnKVtFvXGjz9FtIIsqYhKRj
+	 2OOcLN+Dxf5yEOIISv5TQstKp20rKTaODyTqJkqNj6cvGudQmR+9xhhp/GhKHGiuuU
+	 xWpyYCqfvdnRc0a3kl1pQCUd+JrBvsA9ONkfwP7m/XA55WtNMMZxEEaRLpiR1ck50h
+	 rY0hKPyeib0L68BZg6aAvD2PlbZ/Dfn7zjbMcdWWL2PGKq0jq9qw0nX7e4bwVolCL4
+	 WGclWlKRboI6O97q8rZ6Dg7dkkRLfrZvAOHMSqogW36MEkwYbZc/gZuyHSYOCgDYXG
+	 OqpoYDJhvAjbA==
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
+To: joro@8bytes.org,
+	akpm@linux-foundation.org,
+	Kuan-Wei Chiu <visitorckw@gmail.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
+	robin.murphy@arm.com,
+	nicolinc@nvidia.com,
+	cychu@google.com,
+	hhchung@google.com,
+	amitamishra@google.com,
+	marscheng@google.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: qcom: add compatible for IPQ9650 SoC
-Date: Thu,  6 Aug 2026 18:11:39 +0100
-Message-ID: <178601639875.384211.6516528975191609551.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org,
+	jserv@ccns.ncku.edu.tw,
+	Yu-Chun Lin <eleanor.lin@realtek.com>
+Subject: Re: [PATCH 0/2] lib/sort: Clean up sort_nonatomic() and sort_r_nonatomic()
+Date: Thu,  6 Aug 2026 18:11:46 +0100
+Message-ID: <178585154950.3657024.3915308246763901818.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260731-ipq9650_smmu_binding-v2-1-143a51c8ffce@oss.qualcomm.com>
-References: <20260731-ipq9650_smmu_binding-v2-1-143a51c8ffce@oss.qualcomm.com>
+In-Reply-To: <20260730181216.2709088-1-visitorckw@gmail.com>
+References: <20260730181216.2709088-1-visitorckw@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,16 +59,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Fri, 31 Jul 2026 11:01:26 +0530, Kathiravan Thirumoorthy wrote:
-> Add the compatible string for the APPS SMMU present on the Qualcomm
-> IPQ9650 SoC.
+On Thu, 30 Jul 2026 18:12:14 +0000, Kuan-Wei Chiu wrote:
+> Remove the sort_nonatomic() and sort_r_nonatomic() APIs from the kernel
+> library.
 > 
+> Currently, the arm-smmu-v3 driver is the sole in-tree user of
+> sort_nonatomic(). Because the array size being sorted is small in
+> practice, there is no real risk of triggering a soft lockup. Therefore,
+> the periodic cond_resched() calls provided by the _nonatomic variant
+> are unnecessary.
 > 
+> [...]
 
-Applied to iommu (arm/smmu/bindings), thanks!
+Applied driver change to iommu (arm/smmu/updates), thanks!
 
-[1/1] dt-bindings: arm-smmu: qcom: add compatible for IPQ9650 SoC
-      https://git.kernel.org/iommu/c/02f1359b1143
+[1/2] iommu/arm-smmu-v3: Replace sort_nonatomic() with sort()
+      https://git.kernel.org/iommu/c/340e3c5165d4
 
 Cheers,
 -- 
