@@ -1,144 +1,178 @@
-Received: from flow-b7-smtp.messagingengine.com (flow-b7-smtp.messagingengine.com [202.12.124.142])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50F99437852
-	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 09:56:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.142
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 105A043305C
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 10:11:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786010168; cv=none; b=Ov4bqE6f5uDrIgW2oOJKAg19thVSecYvkKCAyKfhxDP2eT7dvTqm6z4wrMPf+zRq59LxTIBuR7BDJS2oJ7R+2k3SOA/ZDpWNT/3bJ80ouXfyBpb/6aozYTUG6I/5l4VtfWqbbpllRQ6BVkzPawl9AoA/6rMDHdc7/xxSOoNUeUU=
+	t=1786011118; cv=none; b=bh9JFumQmQNVi4oD1q5Q6yoOuiFARLQZLvUoLu6dsOYjePRgXubVl4MwX/YJQqNKe+kYP3pRINcZjo/Wvx5lovJ4LvZaFQUS3RifYdb032et2hDa7aOD/6V5e7WEvYIFiiCNaOSSsXBcW67521hUx3dvCO2S+iPEFtDaujey4ko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786010168; c=relaxed/simple;
-	bh=qxr00s83vJNyr/uHKm204LYU2CSFNRD+vQQ1pSxB/JA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BJZ6PbjPyfkJYWbY6W3auYgXziyaOG18weTEgECIpFS3Uz6amLayZt7YMy0XAKCXgmxM4bphCxjISNuztbGREv6AIxx5wVEu6KoLx9rXfBnVZNhgcgTlKp00vJ4C7S6Kz3V8xtgnh3/m+xScZ8+D7by0Ew11vd13NkqdP2lbPBI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=YsXLvlWh; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=fgRxnaWn; arc=none smtp.client-ip=202.12.124.142
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	s=arc-20240116; t=1786011118; c=relaxed/simple;
+	bh=GrMks8wwD581o3AfzSr5fNGlq3w7/eLjXayhOzSr/3M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=oBIWL9V9qgyhKy5iKA1nodFB/tiH1Pq3XQ8debNa0c0IXzUOw75wDh1sxg9h2cbNXU326QiKtVhKyCVrMMJZl7GY/JXbG+5jlioSA9AAg/d7Vf4zkyV9CN7Ac/5uHhxfvKXj107Nm3Xup6JpHd2VAvC6Cqgd1dH+x92tzdVV8gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=hvQmoFjh; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="YsXLvlWh";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="fgRxnaWn"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailflow.stl.internal (Postfix) with ESMTP id 5F3391300290;
-	Thu,  6 Aug 2026 05:56:03 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-05.internal (MEProxy); Thu, 06 Aug 2026 05:56:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1786010163; x=
-	1786013763; bh=Hk5pDzV8LlRqCkk9aD2kVsGM1I+df21fePiYEfh2vC0=; b=Y
-	sXLvlWh2ZAKEZQbW5GYzkbQz38Y77eMpXhBpHzKoFP6Lo5dKRHyrlXr+ojb6wXST
-	n0gnEVpLXww8wUnFq8PAwbnOkHMip+Ly486OzFf85X0LULur1iLcjiT6Bh+3j/xR
-	R1SEcygIWtJcO5eArp9I/4AY5XMs/KtuVZ9uiGDvbOHzVSy/TdAR/45Mi9IPDxls
-	hGGTuUSmpsjs+68bHd8zbOEwdtw0YlPhGW3u2mAvAN1vqTw+KAMv1jGFXBnqv6P4
-	pjNHA+Y7/A7qEt+MTWcnFE0Y2bMmcGt+EGjFA+vLykiwThS5IITEjYKRbAdFx8I/
-	2RoOmghx1r/FnaLhFUcTQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1786010163; x=1786013763; bh=H
-	k5pDzV8LlRqCkk9aD2kVsGM1I+df21fePiYEfh2vC0=; b=fgRxnaWnMyveS1aXO
-	LjyxkQvlwukS0nrsYJrW86z0bKTxvrlI3X3na6OvG1caBb0sw5qKuVMTs0M+BGmc
-	2e5iAUasBvybW4Q3qlP3+mXgkpPRboLfwugPWTGNiQcC6qGjcJM3nksZDUVxrB2v
-	DEDT41AQlrOwc1O6Hys6SnHM4lmSTDX/8GS1o0Q9gaPfXY17GOyIG9SsihHjK2z2
-	i66wvziKLpOYffjwFS+l2Jz12LfIuXhqiFGuhXHObw3unoz4oXhKJ6eYknNAhKgh
-	HppF4WRDpS5+ufKw6KiOoKeqlYuK2Vel0/fYW2ECZiwWQpMzXyNTtCEiMK+ri2CI
-	keRng==
-X-ME-Sender: <xms:Mlp0ahS0yFPqV1DSkJ01rc_N8Nlb8Mh4K6XLjD4Vwm6bwjVzCK5Aqg>
-    <xme:Mlp0avp7gNVjSKDp4RJAF7xJDKQ0kXIyXdu-o3JGr2CEe5Wz7AXLjoNjU8v361IQQ
-    VMIsbdqVV_Pc8YyK2lUAw1EydPAfpsDa8btk-oveNlXdk6mLMfJ>
-X-ME-Received: <xmr:Mlp0avat26AMe5XEEB0D4mW8NMHpnj9Wu67efEZXmZx4J2HKR1WrG16OfZz3_-BTq5FnTNMIEQ>
-X-ME-Proxy-Cause: dmFkZTEwXjC8I/Apl6hZLAV8DofRZjARxHMzyBPZWfubTPbduEkENL3KBYf+BUJyXx3o1H
-    pohUIUznaqX7Fjr2lTk141FubMEVNnW5UMIuAi4J+njPSv/GG64EL2ET2Hgv347vEiQ3jc
-    KA0wugH9OtAy5ThKMtJS4rzVpp7fazWBBvvGSAaUJ/31Su1HTwA6ygKr329Xzd68/cfp/r
-    kUtih/tfoUuoXMiAlMz4P8El5uMHxKkC1uSTp9CIRwChyeiZFIqFoe0r9cbHs0y91twdaj
-    Ye8UZk8LuQZRgkNIKQp73lZNC19WmkBF37P4XI+j4jl1i7G99ToDHprnGUuph2QJtzRqhk
-    Y/xPeL3aF8NCvUAvbvOzrzZeJFY1DHMXKBPl5POz6R00Vq+rFf8y2F1dCrc9xkjPe7YfPZ
-    MjOxbmc0B5RRhOVoDZJsojJH79Y8knd2ukTaprVv1CJdGpf9/6JpqCv6nvRMe9n9QODaHA
-    Q+1gcsIdDf99agQbM218bGomKOlbXyVQJD/sUEyfT7eypXbzLpHMsTL8FMqfBeRJeU/vgl
-    SXyboeM44NX5RtS1p7+f+mwt7m/oVdEecoNVB4zu/bNgjjZwh24UsPNqSCE0LkkkpjyoXi
-    I52UEBI8XitE2CGOb0uoTffZzjGEuXBj+CKbrmmBfT6/QNoAja0KieikT1Lg
-X-ME-Proxy: <xmx:Mlp0aqRkn2pPE_-1_Gk6aKPEOvIxpvqZV_DT80w1B6u9jjBpMCp1pA>
-    <xmx:Mlp0atcYjaJmkcAgm5FI8QtorqjulkfFcdmBT0IbeJ7Rhg-RFIQJWA>
-    <xmx:Mlp0apmnC6Y0QLAUtxDLe_jhr_w0OD87HpgqAcktESrYlnLSGPL-0Q>
-    <xmx:Mlp0aiiLAdb0nEdrZ2TqARrl0VQSgN4lZ0BhgFK5YJ7skMXdwp4vbw>
-    <xmx:M1p0asBF4N3AsCWRS2JEJAFlWx9N7kdh1VpOIOmmYA_aW2bjq4YRkhS5>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 6 Aug 2026 05:55:54 -0400 (EDT)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: diederik@cknow-tech.com,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	tomeu@tomeuvizoso.net
-Cc: royalnet026@gmail.com,
-	alchark@flipper.net,
-	chaoyi.chen@rock-chips.com,
-	iommu@lists.linux.dev,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: Re: [RFC PATCH v6 3/9] dt-bindings: iommu: rockchip: allow the RK3576 NPU MMU clock set
-Date: Thu,  6 Aug 2026 21:55:51 +1200
-Message-ID: <20260806095551.368456-1-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <DKHR2P0XJF0B.OY937NT39DR7@cknow-tech.com>
-References: <20260806063413.350184-1-gahing@gahingwoo.com> <20260806063413.350184-4-gahing@gahingwoo.com> <DKHR2P0XJF0B.OY937NT39DR7@cknow-tech.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="hvQmoFjh"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260806101153euoutp01a12c21bfa5b10de0c30ee9125c1a6b80~JL6UR0KFv1891618916euoutp01F
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 10:11:53 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260806101153euoutp01a12c21bfa5b10de0c30ee9125c1a6b80~JL6UR0KFv1891618916euoutp01F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1786011113;
+	bh=IMZ8qkfhOLZiwmIb3BHX25zuCyq2Sc5EP83poQE1J/s=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=hvQmoFjhsU8p1u0MmlmWQL29zelrY+Be3zf5/NM0om2nSLLwwR8OCwjwyRhkzh+89
+	 I3vMFQhnKJhD6HIP4oad6vEoWfBmu1Nz/d9n4e3A7pkAPAn110O65kmbZUBmOTYOw2
+	 iQHtEA2bshV4VP0X4zV7Rhe85gM+nMNaHDF2ggf4=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260806101152eucas1p213e701b4891db43e93acd1f9d3447abe~JL6T8R35N1126211262eucas1p2s;
+	Thu,  6 Aug 2026 10:11:52 +0000 (GMT)
+Received: from [106.120.50.46] (unknown [106.120.50.46]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260806101151eusmtip1bacb3c8e11470851538ac16bd48c8b84~JL6Sik-9k2357923579eusmtip1r;
+	Thu,  6 Aug 2026 10:11:51 +0000 (GMT)
+Message-ID: <ef2c73d6-99ee-47fb-a3bc-620201a9ee83@samsung.com>
+Date: Thu, 6 Aug 2026 12:11:50 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v5 0/8] kdump: reduce vmcore size and capture time
+To: Wandun Chen <chenwandun1@gmail.com>, catalin.marinas@arm.com,
+	will@kernel.org, chenhuacai@kernel.org, pjw@kernel.org, palmer@dabbelt.com,
+	aou@eecs.berkeley.edu, robh@kernel.org, saravanak@kernel.org,
+	rppt@kernel.org, baoquan.he@linux.dev, pasha.tatashin@soleen.com,
+	pratyush@kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-mm@kvack.org, kexec@lists.infradead.org, iommu@lists.linux.dev
+Cc: kernel@xen0n.name, alex@ghiti.fr, akpm@linux-foundation.org,
+	ruirui.yang@linux.dev, robin.murphy@arm.com
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260806093519.2907771-1-chenwandun1@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260806101152eucas1p213e701b4891db43e93acd1f9d3447abe
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260806093541eucas1p169d6fcb31de09012bdfca326867e86d6
+X-EPHeader: CA
+X-CMS-RootMailID: 20260806093541eucas1p169d6fcb31de09012bdfca326867e86d6
+References: <CGME20260806093541eucas1p169d6fcb31de09012bdfca326867e86d6@eucas1p1.samsung.com>
+	<20260806093519.2907771-1-chenwandun1@gmail.com>
 
-Hi Diederik,
+On 06.08.2026 11:35, Wandun Chen wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
+>
+> On SoCs that carve out large firmware-owned reserved memory (GPU,
+> camera ISP, ...), kdump currently dumps those carveouts as part of
+> system RAM even though their contents are firmware state that is not
+> useful for kernel crash analysis.
+>
+> This series introduces a 'dumpable' flag on struct reserved_mem and a
+> MEMBLOCK_NODUMP flag in memblock to filter vmcore ELF header on DT-based
+> architectures (arm64, riscv, loongarch). Reserved regions default to
+> non-dumpable and are marked MEMBLOCK_NODUMP so kdump omits them;
+> reusable CMA regions are explicitly marked dumpable in rmem_cma_setup()
+> because their pages are handed back to the buddy allocator and may carry
+> crash-relevant data.
+>
+> Since the reserved memory regions are filtered out, the vmcore is
+> smaller in size and faster to produce. ACPI systems already filter
+> reserved memory out of the vmcore through their existing path; only
+> DT-based systems currently fail to filter these regions, which is what
+> this series addresses. The flag lives in memblock itself rather than
+> in a DT-only structure, so the mechanism is generic and both ACPI and
+> DT systems can benefit from it (suggested by Rob, thanks).
+>
+> The series is based on linux-next and is organized as follows:
+>   Patches 1-2: Introduce MEMBLOCK_NODUMP in memblock and the dumpable
+>                flag on struct reserved_mem.
+>   Patches 3-4: Mark non-dumpable /reserved-memory and /memreserve/
+>                entries with MEMBLOCK_NODUMP.
+>   Patch 5:     Switch riscv to memblock so the NODUMP flag is visible
+>                to the vmcore ELF header builder; add (KEXEC_FILE &&
+>                CRASH_DUMP) to riscv's ARCH_KEEP_MEMBLOCK condition.
+>   Patches 6-8: Fold the duplicated per-arch memblock walks into the
+>                weak defaults in crash_core, switch to
+>                for_each_mem_region(), and exclude MEMBLOCK_NODUMP
+>                regions from the vmcore ELF header.
+>
+> v4 --> v5:
+> 1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
+>    (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
+>    DT-only struct reserved_mem.
+>
+> 2. Switch the riscv vmcore elf header preparation to use memblock
+>    instead of the resource tree, aligning it with arm64 and loongarch,
+>    so riscv also can exclude reserved memory from vmcore.
+>
+> 3. Deduplicate the vmcore elf header preparation: arm64, riscv and
+>    loongarch open-coded the same logic, so fold it into shared
+>     __weak defaults in crash_core.
+>
+> 4.  Drop the v4 patch that saved /memreserve/ entries into the
+>     reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
+>     directly.
 
-> Now every MMU with "rockchip,rk3568-iommu", "rockchip,rk3588-iommu" or
-> "rockchip,rk3576-iommu" is allowed to have a minimum of 2 clocks, instead
-> of having exactly 2 clocks. That does not sound desirable.
+v5 looks much better, at least from the reserved memory regions perspective.
 
-You are right, and it is worse than sounding undesirable, it actually
-happens. I gave an RK3588 NPU MMU a bogus third clock and v6's schema
-accepted it without a word. That is a real loss of coverage for every
-existing Rockchip IOMMU and I should not have sent it that way.
 
-Fixed for v7 the way you and the bot suggest, with a compatible of its
-own:
+> v3 --> v4:
+> 1. Rebase this series on v7.2-rc1.
+> 2. Add two cleanup patches (patch 02/03).
+> 3. Simplify patch 03 to avoid checking whether initial_boot_params is
+>    NULL multiple times, suggested by Rob.
+>
+> v2 --> v3:
+> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.[2]
+> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
+> 3. Add some prepare patches.
+>
+> v1 --> v2:
+> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+>    feedback [1], v2 drop that property and exclude reserve memory
+>    by default.
+> 2. Split some prepared patches from the original patches.
+> 3. Address coding-style comments on patch 5 from Rob.
+>
+> [1] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+> [2] https://protect2.fireeye.com/v1/url?k=05b72ed7-643c3bed-05b6a598-74fe4860008a-295907342918bd15&q=1&e=c408484d-fdd8-4fe4-8eee-690e883afb73&u=https%3A%2F%2Fsashiko.dev%2F%23%2Fpatchset%2F20260520091844.592753-1-chenwandun%2540lixiang.com%3Fpart%3D4
+>
+> Wandun Chen (8):
+>   memblock: introduce MEMBLOCK_NODUMP flag
+>   of: reserved_mem: add dumpable flag to opt-in vmcore
+>   of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+>   of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+>   riscv: build crash_mem ranges from memblock instead of resource tree
+>   crash_core: fold duplicated memblock arch hooks into the weak default
+>   crash_core: replace for_each_mem_range() with for_each_mem_region()
+>   crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+>     header
+>
+>  arch/arm64/kernel/machine_kexec_file.c     | 29 ------------------
+>  arch/loongarch/kernel/machine_kexec_file.c | 27 -----------------
+>  arch/riscv/Kconfig                         |  2 +-
+>  arch/riscv/kernel/machine_kexec_file.c     | 33 --------------------
+>  drivers/of/fdt.c                           |  2 ++
+>  drivers/of/of_private.h                    |  1 +
+>  drivers/of/of_reserved_mem.c               | 35 ++++++++++++++++++++++
+>  include/linux/memblock.h                   |  9 ++++++
+>  include/linux/of_reserved_mem.h            |  1 +
+>  kernel/crash_core.c                        | 34 +++++++++++++++++++--
+>  kernel/dma/contiguous.c                    |  1 +
+>  mm/memblock.c                              | 16 ++++++++++
+>  12 files changed, 98 insertions(+), 92 deletions(-)
+>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-  compatible = "rockchip,rk3576-npu-iommu", "rockchip,rk3568-iommu";
-
-and an allOf that pins each side:
-
-  if compatible contains rockchip,rk3576-npu-iommu
-    then clocks/clock-names minItems: 5
-    else clocks/clock-names maxItems: 2
-
-so the NPU MMUs are required to carry all five and everything else is
-back to exactly two. Checked in both directions: the three clock RK3588
-node is rejected again, an NPU MMU with only aclk and iface is rejected,
-and every rockchip dtb in the tree validates clean.
-
-No driver change goes with it. rk_iommu matches only "rockchip,iommu"
-and "rockchip,rk3568-iommu", and the fallback stays, so the new string
-is documentation only.
-
-The name is the part I am least sure of. Everything else in that binding
-ends in -iommu, which is why I did not use -mmu to pair with the
-rknn-core node it belongs to. Happy to change it if Heiko or Krzysztof
-prefer something else.
-
-Thanks for catching it.
-
-Cheers,
-Jiaxing
