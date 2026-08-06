@@ -1,100 +1,122 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 421FE41A519
-	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 08:42:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4763D667D
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 09:23:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786005746; cv=none; b=cfL6SnreSezyyaXHme1FGmA+LWfazz8T4u4/qKI3MkbPRCkGez3nvFCIhI5NL0pCYG5Frg4y/b1rGLkcCYH0EtDTFbCaf2Rre++pccrtI2l4YYJ16aaF3lKy16XNmpAArPUZaJjti2TS6UzRDYEVCVpYCz7nHtAnZ8+1j58drsk=
+	t=1786008241; cv=none; b=acQwcbJY6VHt8VfqrEHYAzZkTNkJMobyywFU33JfOYNmFYsdLuoqbosShuZdpqa6AfE1GF2U4vkQQAEtVxtPGbdHeTrscjDwYokiFaA0+AHAwrP6Pzv9D/JHo8h9fpUQj2X7tdAUSdZxVFWlSnjSS7MKZl9K5BlKnSLCy8y7xlk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786005746; c=relaxed/simple;
-	bh=1XZ52c7N7R/7ik+1Q56O2gFc7n1LYmIvcHRd9KWsOdo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bM05OBJ50FTjBGEA8FHTeTtOptbpiK845Vi59ixKaILG/DhpKi6ud+BBH464i3Bop2w1Ds+G2fiIdOwGkUNoOZv9GDY6QPuC55Xz84pgHqM16IhzB1X8lGMtkweKzD+J7hlQy5jm2SmuaNNnbKucE1N3/ExD/lIf2O74HR0/5gg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Vk3YFbse; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1786008241; c=relaxed/simple;
+	bh=2Bux34acxbkkdsfc7hWzKdEN3DqFCaMDm99n6apUicc=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=j1JztRRH/W5F7vlefJzy8hAFQVjb3Pj+oe1OdQszbvmKPp5NqIge9UF7ewVmfmgN+m/YR2bCtOAxvSDF54cRUMhNgj0xjsq+8BTf1Q7p7dq/RWvkLIpErK0mOqCQVGiZ2FfuvMQAejRaB8jHHnEopbdiYMKGB2H0y0FTsU4Pjek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com; spf=pass smtp.mailfrom=cknow-tech.com; dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b=aUsX59P/; arc=none smtp.client-ip=91.218.175.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow-tech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Vk3YFbse"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B8811153B;
-	Thu,  6 Aug 2026 01:42:18 -0700 (PDT)
-Received: from [10.2.212.8] (e134344.arm.com [10.2.212.8])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 81F433F632;
-	Thu,  6 Aug 2026 01:42:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786005742; bh=1XZ52c7N7R/7ik+1Q56O2gFc7n1LYmIvcHRd9KWsOdo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Vk3YFbseN1J/KkpXJV6XxeMhp8z09cM7QKEaGOWthnB2rK15LrGgVvARUQKfSIB3A
-	 q+/JfafIf6kUrbpn/GxsrT0SfxqyDag4S4foyW9/Kksq3ryx9lyhrhSqMaGBY5RWAa
-	 Z36t681xIH1xquFeoaBivxQxzxvg4wMqdvfwdNBs=
-Message-ID: <7cf591e8-e182-447f-9808-d8e328d28f79@arm.com>
-Date: Thu, 6 Aug 2026 09:42:11 +0100
+	dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b="aUsX59P/"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/7] riscv: iommu: Add QoS ID support for resctrl
- device assignment
-To: Drew Fustini <fustini@kernel.org>,
- Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-Cc: xiaqinxin@huawei.com, zengheng4@huawei.com, palmer@dabbelt.com,
- tony.luck@intel.com, reinette.chatre@intel.com, tomasz.jeznach@linux.dev,
- will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
- aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com,
- james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net, shuah@kernel.org,
- jgg@ziepe.ca, kevin.tian@intel.com, cuiyunhui@bytedance.com,
- yuanzhu@bytedance.com, iommu@lists.linux.dev,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org, x86@kernel.org
-References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
- <anQaaQvpEXFTRYvS@x1>
-Content-Language: en-US
-From: Ben Horgan <ben.horgan@arm.com>
-In-Reply-To: <anQaaQvpEXFTRYvS@x1>
+Mime-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow-tech.com;
+	s=key1; t=1786008236;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dA4vidVbXhTuIp9QqxNa6zPIHYzqdAruYLG2CSq3Ubg=;
+	b=aUsX59P/Rs0XtXz+pr6ZpDN3xLg2qhYYUcMwU5i5B/YJXki/xjKg/RXiIOPHD3m9wiyjvm
+	jjtHnKM1QWosaYFlpMX5nDchtabNJlbdbH7CS3g+9D2C9VSszWthR0ltCUX05RcmR4QMZ/
+	Xi0EOCqNBIStnzsROASC+WnMZmvfFI1x/8NpxUBVi1nbEflvD/gkv8vGZvdE3TsPPWwZXS
+	CjIV1ID7V6Fmx2Y3YC7X6gKgc9XTIS+8wMAGg2lykgDGb3mM1ENs3gD1WilT84k7Zw+lJc
+	7xdWzeqKxtFOe6gcU83DyeYCC7mrKZAkOp8H2qiDv6OHqQk0mQNkCccyFW6EDg==
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Thu, 06 Aug 2026 11:23:39 +0200
+Message-Id: <DKHR2P0XJF0B.OY937NT39DR7@cknow-tech.com>
+Cc: <royalnet026@gmail.com>, <alchark@flipper.net>,
+ <chaoyi.chen@rock-chips.com>, <diederik@cknow-tech.com>,
+ <dri-devel@lists.freedesktop.org>, <linux-rockchip@lists.infradead.org>,
+ <iommu@lists.linux.dev>, <linux-pm@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v6 3/9] dt-bindings: iommu: rockchip: allow the
+ RK3576 NPU MMU clock set
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Diederik de Haas" <diederik@cknow-tech.com>
+To: "Jiaxing Hu" <gahing@gahingwoo.com>, <tomeu@tomeuvizoso.net>,
+ <heiko@sntech.de>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+ <conor+dt@kernel.org>, <joro@8bytes.org>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <ulfh@kernel.org>, <p.zabel@pengutronix.de>,
+ <ogabbay@kernel.org>, <zhangqing@rock-chips.com>
+References: <20260806063413.350184-1-gahing@gahingwoo.com>
+ <20260806063413.350184-4-gahing@gahingwoo.com>
+In-Reply-To: <20260806063413.350184-4-gahing@gahingwoo.com>
+X-Migadu-Flow: FLOW_OUT
 
-Hi Drew,
+On Thu Aug 6, 2026 at 8:34 AM CEST, Jiaxing Hu wrote:
+> The RK3576 NPU MMUs need more than aclk and iface. With only those two
+> enabled the MMU accepts reads but silently drops register writes: a
+> DTE_ADDR value written from the power domain, while the domain clocks
+> are still on, reads back correctly, and the write rk_iommu_resume() does
+> microseconds later does not land at all. The vendor DT names the CBUF
+> clocks as that MMU's interface clocks and its driver keeps every NPU
+> clock on for as long as the device is powered.
+>
+> The driver side of this is already upstream, commit 841363ebb508
+> ("iommu/rockchip: Take all DT clocks"), which switched rk_iommu to
+> devm_clk_bulk_get_all(). Widen the schema to match so those nodes can
+> be described. minItems stays at 2, so every existing devicetree, which
+> all carry exactly aclk and iface, is unaffected.
 
-On 06/08/2026 06:23, Drew Fustini wrote:
-> On Tue, Jul 14, 2026 at 09:06:50PM +0800, Zhanpeng Zhang wrote:
->> This RFC extends RISC-V CBQRI/resctrl support to external requesters
->> behind a RISC-V IOMMU.
-> [..]
->> Open questions for this RFC:
->>
->>   * whether a common resctrl "devices" file is the right ABI for
->>     associating external requesters with a resource group;
-> 
-> I think a separate file is the right approach to avoid confusing iommu
-> groups with pids. 
-> 
-> I should note that James Morse had an ARM MPAM "extras" tree [1] which
-> carried an iommu_group assignment interface, using the same
-> iommu_group:<id> format, but writing it to the tasks file. However, Ben
-> Horgan clarified back in March [2] in a reply to Qinxin Xia that it is
-> no longer maintained. Ben also wrote that the interface would likely
-> change upstream. I've added Ben Horgan and Qinxin Xia to the CC list so
-> hopefully they can chime in.
+I agree with all remarks Sashiko made wrt this patch:
+https://sashiko.dev/#/patchset/20260805063826.95682-1-gahing%40gahingwoo.co=
+m?part=3D3
 
-I haven't thought about the interface much but Reinette let me know here [1], with good reasons,
-that we should consider the format of the tasks file fixed.
+Now every MMU with "rockchip,rk3568-iommu", "rockchip,rk3588-iommu" or
+"rockchip,rk3576-iommu" is allowed to have a minimum of 2 clocks, instead
+of having exactly 2 clocks. That does not sound desirable.
 
-Thanks,
+Cheers,
+  Diederik
+>
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+> ---
+>  .../devicetree/bindings/iommu/rockchip,iommu.yaml         | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml =
+b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+> index 6ce41d11f..a3cedcaaa 100644
+> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+> @@ -42,14 +42,22 @@ properties:
+>      minItems: 1
+> =20
+>    clocks:
+> +    minItems: 2
+>      items:
+>        - description: Core clock
+>        - description: Interface clock
+> +      - description: Compute clock, RK3576 NPU MMUs only
+> +      - description: Convolution buffer core clock, RK3576 NPU MMUs only
+> +      - description: Convolution buffer interface clock, RK3576 NPU MMUs=
+ only
+> =20
+>    clock-names:
+> +    minItems: 2
+>      items:
+>        - const: aclk
+>        - const: iface
+> +      - const: npu
+> +      - const: aclk_cbuf
+> +      - const: hclk_cbuf
+> =20
+>    "#iommu-cells":
+>      const: 0
 
-Ben
-
-[1] https://lore.kernel.org/all/f9b08563-4958-4f3c-ad6c-1e7fa3047896@intel.com/
-
-> 
-> I plan to review the patches in this series further but I didn't want to
-> delay any further in pointing out the above.
-> 
-> Thanks,
-> Drew
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/log/?h=mpam/snapshot%2Bextras/v6.18-rc1
-> [2] https://lore.kernel.org/lkml/d13fdc75-b647-44f3-9657-d592353e8a1a@huawei.com/
 
