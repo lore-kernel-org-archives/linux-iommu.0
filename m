@@ -1,215 +1,187 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012027.outbound.protection.outlook.com [40.93.195.27])
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC6CA38C40E;
-	Wed,  5 Aug 2026 19:16:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.27
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785957378; cv=fail; b=WuQY+CVuuetpISCc+9DSShmvthVGgNQBUdTnZJcKPcogsQufVBJG2nYgE/cSaR4xFvHNmR2B+92l+M6DtmeA/CjSE7jGkKEzgOQ1Ax7qWZXBJfNuC/u80vTQ+rxPFwXSrA5gjbfqQL9DhHZrb32drHKSzzKYpiRcL6jFt0UDrfw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785957378; c=relaxed/simple;
-	bh=R1ymNjnjxEjP2bU2wfVJgkr8KWIk1X6hx4KFqixVV1A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=lzwy+6TQh9hhzuGiNoQOEWFvcK1B6qdY+zsMSZKoRQ9sMTCRSIU+yqX11dtpg0FNZuoj2bTCJcKohZSjJ2rHqs0Ek/n/22suSovlaWASbpwAvgeKYonm7v9k7qe6sFYs7N48F4UhpZIQYrVn/g/tZ9RnPY/rwzdveAWc0rEBxI0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=uke6k3Wg; arc=fail smtp.client-ip=40.93.195.27
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE2F71F2B88
+	for <iommu@lists.linux.dev>; Thu,  6 Aug 2026 04:52:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785991943; cv=none; b=eZY5cSRasGVd0BRT0ybvxbJMjic3XXoKBDskG86SmzgAR0QX41mTZTT++DQZ8vaAwOc61vJIRvqQzO+hVTVas9LAMfsbYxesrXtD1DF992tHrQMGKCy6+ozyj5isgJo1Q8L8yBZOp6d0DgVLBqX5B46YUvPCdXNTZ+gKYsR/1Ps=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785991943; c=relaxed/simple;
+	bh=TiJfNb66mP2MyjcByDXsllYoqfRCX/7hRV+xTd9aXfs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Dadb37ePJFso8BbFEUf6+nHDpsKiXN0NS0eYxYN4jf6vIEyih6rjgcQSU0sN3FaEeYJgV2wEBTO5FhGJVpaBRpxhCdHtN/CuvJRxUr9LwSmDuiFpeE5QhZNU7u0121xTR9ZQ8tTCsgAYLst1h2TYLrVlLgbNQTIIpobNPoAXJKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=lNDcclMi; arc=none smtp.client-ip=54.204.34.129
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="uke6k3Wg"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vFrPuyRLhwWbfEB++MQyB4xjkM6XboNM6GX11iThFagAvCVBBmJoxvNb4qcZQpndL+1fFS8uu3vckkXaiBIb/09rgdyCani0U2dkzKskyFUMtJCbY+Gr/549jB1e/r0rJfJGSZbc+Elq556uALKjS5pp7iCx4nfxbkQ5CPa+5VBxD72DSBg4o2FUOEFzqsNeSexdXDapLHaa6rAcGkgW0B5v2pLMxb0re+4eqvkEOMkZR4Ks/S9sbOqx4abpR+wT1wpEN5iAL+RgTBbvxcD884wP/YszPxRNli5NYo0z3aX4EPYZDaSM7aF0R20NaSa99+CKlJS2uJEJvQI3ZUTPAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V8W+0S94mPQBLLwvX8M2FCUUSZt78Rh3PyYlBoTxZDg=;
- b=tr+0PZW5Om3d8M2qA3hGUJHJCmArzFc5UESjnRjJQI1Z9WEk7V0skWgeGLijiFHKGCybxE9ea5S27+ivN3boSAGcuFCrSpAba1H6JgMpwT3gop46IHeYGFtMg9Oil0UuZWCpX7dgkEV6JFZH761jP48V+7reAdhhrxs80uQa4Z/U/loFEnn+PlJQmDmyR5HtbtFtFiLZIHHMiMuwnCzPHpzmxtpBlyY3ZM1+lWDdOtS2B4QdJCA5S/bZ0bTr6gdU8jL0GQvZVKNby83/w0HhEx08tmklLCn9qWGuHK5ASksyrcOFIshyl2doKsr4hkh010PoPhHAga/oWx7GDKsYsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V8W+0S94mPQBLLwvX8M2FCUUSZt78Rh3PyYlBoTxZDg=;
- b=uke6k3WgbdufYD6Zr9cLN2OBoFRZVpPZppURkLB7sdttZZWsNUniEPXLK1boqJnqYfSlgslVk/Th5IOIjMW/qqpAizYoQ3tU7GKGYyBX5gno2iIQxWOxrP37JAqW8Jecb945Y4JVMS7WRcvbVH46EOnywg+1ENXQub7v78DMhIa8Z+k/1Y28NJUUy0/yRYKB3r57A/XLyKVyEoceiJFR9dsS10Vw9Ha/KgtBXcsK4CTsQR+PvvNI5tpqnvFX6F2dPyh5K8g10WhmebXPJUFGiNuLXX6HqSP7/GaBEkscIPt3At0fV3FrYE6lNrHeapIK79V4O110UgcFfa4/dssnGQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com (2603:10b6:930:107::16)
- by PH8PR12MB7157.namprd12.prod.outlook.com (2603:10b6:510:22b::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.16; Wed, 5 Aug
- 2026 19:15:31 +0000
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3]) by CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3%4]) with mapi id 15.21.0270.017; Wed, 5 Aug 2026
- 19:15:31 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: David Matlack <dmatlack@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: [PATCH v4 8/8] iommu/arm-smmu-v3: Support the DS expansion of RIL's SCALE
-Date: Wed,  5 Aug 2026 16:15:26 -0300
-Message-ID: <8-v4-1802653d8886+492-smmu_tlbi_jgg@nvidia.com>
-In-Reply-To: <0-v4-1802653d8886+492-smmu_tlbi_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: YT4PR01CA0210.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:ad::13) To CY1PR12MB9601.namprd12.prod.outlook.com
- (2603:10b6:930:107::16)
+	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="lNDcclMi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
+	s=iohv2404; t=1785991897;
+	bh=pPf+IRtN+qJnqFd947Y1uPTqZ/TpQ1LSJUGm4TIevt0=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=lNDcclMiwdaWHTCS4znPKlqlZnynG976pKISN6UHK2hO2i07tTk/Me71xCzrzCnWl
+	 GL4NXYGYu9cAjNK/qkbq4mYlMFITSZ8d31kEReSzhpWCRp+EXcAzwDMHX9CZ05dwdQ
+	 oXkUwjnPL5HHVIJbGTLtaN8im0CHKprqA18ybPzI=
+X-QQ-mid: esmtpgz15t1785991889tc3be0055
+X-QQ-Originating-IP: gcAnknkBjeW/oTv++sm6mM2age806mXOFveq9vNK/a0=
+Received: from hepeiyang-vm.wu.lxd ( [218.94.142.72])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Thu, 06 Aug 2026 12:51:27 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 7100674086777323356
+EX-QQ-RecipientCnt: 10
+From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+To: kevin.tian@intel.com,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com,
+	steven.sistare@oracle.com,
+	stable@vger.kernel.org,
+	Peiyang He <peiyang_he@smail.nju.edu.cn>
+Subject: [PATCH] iommu/iommufd: Fix NULL pointer deref in iommufd_ioas_change_process when racing with iopt_map_file_pages
+Date: Thu,  6 Aug 2026 12:50:59 +0800
+Message-ID: <7344B7A7B9957A65+20260806045059.1884737-1-peiyang_he@smail.nju.edu.cn>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY1PR12MB9601:EE_|PH8PR12MB7157:EE_
-X-MS-Office365-Filtering-Correlation-Id: 28786a07-3113-49c0-e3da-08def325ea54
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|366016|23010399003|1800799024|56012099006|10067099003|11063799006|5023799004|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	K629BMGVWg9eEvB6TyuGGf8cuZtLZWANfEB9j0OWNMPq3ft+gPP8HqAq0r4do1H0tfwWGYk3qzifPj3fYowvsacxuMvuqQ3Md5K1Uy1xKW/uZnHsCWLCgGg2djkqZSIaLymu0pZJ5J1qfSd1GnroGKFzFISzMXLLp7dBpj9hPQKeg2sTaiGFdhKTDqJLjjCyyikMK0MKzhcoTQzVDclVGI5d/jf09S62SCQWZRztkq9vt0DNSrYL4dOlFJ9fDcsd1MwYmPHr4/R6CVU+uE9097HlNqUx5CDkez5GeKY8ZG1Ri+hD3WKhrHYgPBUlymLR/eLStEoI2GafIGAkW6QIBlhuRjJfWGM3Q3ohMKRNXQmFoYjwjZurTJ3WnmrC6Q1HKgwHtDvpro5/RVjk24TAqEFMPOBnEizGBEkxTcZAmh1lvxZ4376K8yQ5sDXJYZxufjTphCbU3e4s9yGcS8Jh3wFHvvFc5Bq1bwf9k2QmjBQEp/0ImcuHZ36TrN7jF5uUl/m/BWGRgJN2lN+MOCmS9Cx2qey2zRP5dYLr+zroqT4Ptj0ukD16WlPqwN4TdIgtQkuSws/6/8Zy3qnDVvWVGiz4AnPvPLRDUnPGurZo2G7xq12xl7IAQuu1GM3vBO4AUdAMoQlI7Ipf33bUzvhs02Wx3nROc8UQgEv1Oa2ciOA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9601.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(23010399003)(1800799024)(56012099006)(10067099003)(11063799006)(5023799004)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?gj3fzFZdg9vAwO03+VVjFZt43ao5wt9iDagEORlf15ZwteMvUUmDSb+nYAvJ?=
- =?us-ascii?Q?K9z6toopoylyhdKk+afvil+IjxSoPZXmeLOJfyzez+pSlqk3MkSYD74ynbrU?=
- =?us-ascii?Q?v/Dycrtxwm55IMQpitA6uZeCdWoDXBSiFgcR4kCXcx7zH6ZPlZ0p5775bVUX?=
- =?us-ascii?Q?6YnXCUvmKo/S9yE2aMemQmTFJHeaEY1tCM2Wj6qsdSsc33FLE63KUJWayY3h?=
- =?us-ascii?Q?h9ewMKRf9qx+PFCX4ap2xbzKbQeVrFaIiJJhTAbNowyX42RJmCj4TJw38lJE?=
- =?us-ascii?Q?Ni0g0MdlX/BQWu68SqdumkJ2cemH+ZgaYAwWpt2l8whdKS9GpSGAXvMvANmj?=
- =?us-ascii?Q?mdXE1CrUN5Z+OHGNqGQAomVYHZcQQY2V+hTfj6AYR1Uk34YLg5VQFFpmGuXF?=
- =?us-ascii?Q?rbJGSUOVGjILq+Lb9RSVLmo2Vzn9dgU0OPn9Y0a+Yp4jT0qDDYp0Lunddi8c?=
- =?us-ascii?Q?paH3VV1+qg9zqZzSVQTdkVcD+BOL8oneBsnPRPE+nZJnv02VxZxHudLQlWdv?=
- =?us-ascii?Q?/2JpDa8ajI+Ve7D5jufE4l3PsV3y9ZsxjZlpYlhAlWEZ4rEqFkxYYvtwbgKm?=
- =?us-ascii?Q?mPfiUq56Fpo5y4immecPJDRIyX9QXf3qFFdRfpmk4lfHmQwqNYc60dZZaT5Y?=
- =?us-ascii?Q?DWgcWIa+lnit8oIFJgYwml4ALY7IgiPbFE2rdwQtjnpkK6fUzancMvR/8+4T?=
- =?us-ascii?Q?53b0z1tY12JjtUlpa+x3CbfwNL/Z7RBALydgKJXd+/IPoUHEx7Jo02tdvM9F?=
- =?us-ascii?Q?obHljct2gQmbzBCOaxUBIcOq5lfrOCVcUF0fDj5axnSk0HF1ngjjiyNdsbwG?=
- =?us-ascii?Q?cXV05K2KhTkmcfZV4A4p23hqX91OhrADpqARn/3zZVsw/MYD+JPs/y+RBUhB?=
- =?us-ascii?Q?y5acNv0kHkkmSHb/ao4LvkYm7nNlTWY8CHsSVossTLosUqU/tL1DEeYYdP2r?=
- =?us-ascii?Q?7N6yfAjKRgBx+3PcMNZnF/suTL/zoOoDkpif/BMbChJasz246wvhVpZm6tbA?=
- =?us-ascii?Q?o+GhmnuUhXp20446f5EuzW3LUN5d+pLXqpBwg0i1LDX+tTspSsPoXgCU7lkH?=
- =?us-ascii?Q?fQ5eK7iibACtRruDNkklsZmLB1G6RxEVeOITpJFMtMNxv/BAEYfHCsihc3TW?=
- =?us-ascii?Q?1Q7xTN9yNdDYaNw0lCHE0QuJv4yBzt+q9FW5M0OQUBYAgOV/le9L6DZBzSLC?=
- =?us-ascii?Q?iyZHewO3QlBNSElDUnz6xwGSozu+t2lF+d0lhJcXsyqR5i7NWjq2wh6bgsda?=
- =?us-ascii?Q?a+aSv7CuVkr8WgNtYdIRXzdPYf5RYFIDHlAVpxUjULwIDhy2YbccQfDoHPse?=
- =?us-ascii?Q?wPmvLSRxsXQBiRP/RszGab21n2he37ttjYVdilqJb4bD4D16bBVT4K3LVP3T?=
- =?us-ascii?Q?6/RErY3NuhlLH0c7Zb6Zz1eG1s2VVMnYhoRPJlX9Co1b1/lycGlfUvfGxyRu?=
- =?us-ascii?Q?t2X/3HxXiu+7hUEb9pK9RV+7C/vd/H5R/RKPBATuKqHFmiawBJEZ/GiWSznm?=
- =?us-ascii?Q?NvCer6ZvLFYlDtNXkAiapvxfnjIS2Y5xYaPhzgir2bBkxnObvA67yc17z9bC?=
- =?us-ascii?Q?zKUnrVlM4KEpAOg3Q81kS9sRl28JvgqxlGbnsdtg6tZ3yBKy2lLLz4s/IQP7?=
- =?us-ascii?Q?ixanqFlzXorr98xQfnahlNWC3C1oMtF49FJjBHH22UbkHYwcO8jlC6bs1sEV?=
- =?us-ascii?Q?TkNLiFE2DphqlBB7K9ap6310jpomlhIyLoQivAOY+tZQXAm4Ogsil+zso8N4?=
- =?us-ascii?Q?A2r0Gg7YUw=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28786a07-3113-49c0-e3da-08def325ea54
-X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9601.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2026 19:15:30.6208
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D3dbgi4YF+Qxe8L9eAFst8IocdxC9bkF+QQ6hvau53NjZHA9NKLcVIyRH0PSnHPj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7157
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
+X-QQ-XMAILINFO: MxQ7rY5OAZZvd9yc5E5OHCVkUPvYeIJsDcrtIRgZ9PU52gP53VTyqdXu
+	deZyoDZRmQT59/FkbLX9L2l2xUU37bnc1X8MzQUeJvCADOehPMjuMtQj3hclxZv9W+yK7i2
+	LgmwaN2j10s84JkaZK2zc9lyt5ye3kocP5Y6HIKKq9iv3VessYCCkQtOmX24DPoXb8LNM1x
+	mznFso6uGmF18wCj9BlakA3WMK8qV/fcWHRfPFw5gGWokfLAF2pstJnIy8BHu9GCfGFOSBS
+	jjkdFfL6tJLapQRsZdup4QfpKodwRZ96+1UqW/GTD9m7m6Sd6HE6AiOWf9BkhynGyox5/np
+	ov1gD/gUOWuNaU+euy4Ro7ABk8WATvtT0u8JsT94rvo3EVHLtGxQngznQ1oeEbXQZeRMEUT
+	KhBKHiTuD+XRaSSd3B4glggPXS2dzr4yD+uFGbK1Yua61v7dSQ9i/DgTwARcobSTXcN0zdc
+	yFFPJ5k1DmFZXKDzEsM7z9H2JnxiAsf77Ip9VwJjBY+qtzsCIe/b8aLEYwftlgQ8ATTNvLC
+	W+7cfQWDrW28A7LtIJyHwZObBIXrdEmoAjiD4NGb8JCBQXupLwhmrvTxEAJ61d4ITe9Cny8
+	mnpJZYlw4n1cIx5gG2E9wrxhU9JU92ccNvZ9PcfCJvMKq5AKJZNgzrYmM69KgqVWnaBY1ok
+	DD5Zx5w8vEeR86xN9VvwB0GZHeudFdjexcbO+wqsr2GuUyHNcEa1UFpJUSz0MNFjmggBZH4
+	fJGSnH5Y1HEe5+iptfVpLmSBxqQqH8wF/U5EHFwYbz8k1Bcg3tElQ8Jhk0JMbK/lRcT8PXK
+	TdNHzFL/fAd8YhjQvvq2zhuHVH0e5Ks6YjM2ah/cNIKcW4pBEjXpxTmwMzp88D8hU3iprli
+	Z16KIrLyt5E6bDUs3ZSAh2xk1+Vs3qty/ky+wmEDB4XSmKu3DHLIgWCIvcTjfrZgmu1yqa5
+	5+QUe1fAN9+5RjkguNr8VzHBlurZM8sERPtxlu5djXEH9c4yMjDAHaTF6V3AqLo/DcpjF1K
+	nI/T20UYDZ1kspxO/1qYfjTPBhFgiydf1h16J9o9NYe83vxoVrRVJ8SiG1HvM=
+X-QQ-XMRINFO: NS+P29fieYNwqS3WCnRCOn9D1NpZuCnCRA==
+X-QQ-RECHKSPAM: 0
 
-If DS is supported then SCALE can go up to 39. Compute a scale max that is
-compatible for the entire invs list.
+iommufd_ioas_change_process() iterates every IOAS area while only
+holding every IOAS iova_rwsem, so it assumes every area has a non-NULL
+pages pointer. That assumption can be false when it runs concurrently
+with iopt_map_file_pages().
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+iopt_map_pages() executes in two phases. It first creates the area and
+inserts it into the interval tree under iova_rwsem, with area->pages
+still NULL. It then drops iova_rwsem and later fills area->pages
+under domains_rwsem. This leaves a window between area creation and
+area->pages fill where a concurrent iommufd_ioas_change_process()
+can observe the area and dereference a NULL area->pages pointer,
+leading to a NULL pointer dereference:
+
+BUG: kernel NULL pointer dereference, address: 00000000000000c0
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 4b655067 P4D 4b655067 PUD 0 
+Oops: Oops: 0000 [#1] SMP NOPTI
+CPU: 0 UID: 0 PID: 11841 Comm: syz.1.628 Not tainted 7.1.0 #3 PREEMPT(full) 
+Hardware name: QEMU Ubuntu 24.04 PC v2 (i440FX + PIIX, arch_caps fix, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+RIP: 0010:iommufd_ioas_change_process+0x419/0xd50 drivers/iommu/iommufd/ioas.c:538
+Code: 48 89 c3 48 85 c0 0f 84 cc 00 00 00 e8 10 f5 cb fd 48 8d 7b 68 e8 a7 b5 eb fd 48 8b 6b 68 48 8d bd c0 00 00 00 e8 17 b2 eb fd <8b> ad c0 00 00 00 bf 01 00 00 00 89 ee e8 85 ef cb fd 83 fd 01 74
+RSP: 0018:ffffc90015c17d28 EFLAGS: 00010246
+RAX: ffff8880186d5328 RBX: ffff88801d25e240 RCX: 0000000080000000
+RDX: 00000000000002d7 RSI: ffffffff83ba9e10 RDI: 00000000000000c0
+RBP: 0000000000000000 R08: ffffffff8e781eb8 R09: 0000000000000000
+R10: 00000000000000c0 R11: ffffffff83ba9e29 R12: ffff88802e216008
+R13: ffff88802e216000 R14: 0000000000000001 R15: 0000000000000000
+FS:  00007f4aea3f66c0(0000) GS:ffff8880b1fa1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000000000c0 CR3: 000000004b75c000 CR4: 0000000000350ef0
+Call Trace:
+ <TASK>
+ iommufd_fops_ioctl+0x287/0x400 drivers/iommu/iommufd/main.c:533
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl fs/ioctl.c:583 [inline]
+ __x64_sys_ioctl+0x120/0x170 fs/ioctl.c:583
+ x64_sys_call+0x1092/0x1fb0 arch/x86/include/generated/asm/syscalls_64.h:17
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x10a/0x680 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f4aec1a82bd
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f4aea3f6018 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f4aec436090 RCX: 00007f4aec1a82bd
+RDX: 0000200000000180 RSI: 0000000000003b92 RDI: 0000000000000003
+RBP: 00007f4aec250295 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4aec436128 R14: 00007f4aec436090 R15: 00007ffd04ef23e0
+ </TASK>
+Modules linked in:
+CR2: 00000000000000c0
+---[ end trace 0000000000000000 ]---
+RIP: 0010:iommufd_ioas_change_process+0x419/0xd50 drivers/iommu/iommufd/ioas.c:538
+Code: 48 89 c3 48 85 c0 0f 84 cc 00 00 00 e8 10 f5 cb fd 48 8d 7b 68 e8 a7 b5 eb fd 48 8b 6b 68 48 8d bd c0 00 00 00 e8 17 b2 eb fd <8b> ad c0 00 00 00 bf 01 00 00 00 89 ee e8 85 ef cb fd 83 fd 01 74
+RSP: 0018:ffffc90015c17d28 EFLAGS: 00010246
+RAX: ffff8880186d5328 RBX: ffff88801d25e240 RCX: 0000000080000000
+RDX: 00000000000002d7 RSI: ffffffff83ba9e10 RDI: 00000000000000c0
+RBP: 0000000000000000 R08: ffffffff8e781eb8 R09: 0000000000000000
+R10: 00000000000000c0 R11: ffffffff83ba9e29 R12: ffff88802e216008
+R13: ffff88802e216000 R14: 0000000000000001 R15: 0000000000000000
+FS:  00007f4aea3f66c0(0000) GS:ffff8880b1fa1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000000000c0 CR3: 000000004b75c000 CR4: 0000000000350ef0
+----------------
+Code disassembly (best guess):
+   0:	48 89 c3             	mov    %rax,%rbx
+   3:	48 85 c0             	test   %rax,%rax
+   6:	0f 84 cc 00 00 00    	je     0xd8
+   c:	e8 10 f5 cb fd       	call   0xfdcbf521
+  11:	48 8d 7b 68          	lea    0x68(%rbx),%rdi
+  15:	e8 a7 b5 eb fd       	call   0xfdebb5c1
+  1a:	48 8b 6b 68          	mov    0x68(%rbx),%rbp
+  1e:	48 8d bd c0 00 00 00 	lea    0xc0(%rbp),%rdi
+  25:	e8 17 b2 eb fd       	call   0xfdebb241
+* 2a:	8b ad c0 00 00 00    	mov    0xc0(%rbp),%ebp <-- trapping instruction
+  30:	bf 01 00 00 00       	mov    $0x1,%edi
+  35:	89 ee                	mov    %ebp,%esi
+  37:	e8 85 ef cb fd       	call   0xfdcbefc1
+  3c:	83 fd 01             	cmp    $0x1,%ebp
+  3f:	74                   	.byte 0x74
+
+Fix by mirroring the handling logic in iopt_unmap_iova_range(),
+i.e. return -EBUSY if area->pages is NULL.
+
+Fixes: 829ed626499c ("iommufd: Add IOMMU_IOAS_CHANGE_PROCESS")
+Cc: stable@vger.kernel.org
+Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 13 ++++++++++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
- 2 files changed, 12 insertions(+), 3 deletions(-)
+ drivers/iommu/iommufd/ioas.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 5d3fed4d13a217..22ff4aa01d208a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1056,6 +1056,8 @@ static inline int arm_smmu_invs_iter_next_cmp(struct arm_smmu_invs *invs_l,
- static void arm_smmu_invs_update_caps(struct arm_smmu_invs *invs,
- 				      const struct arm_smmu_inv *inv)
- {
-+	unsigned int scale_max;
-+
- 	if (arm_smmu_inv_is_ats(inv))
- 		invs->has_ats = true;
+diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
+index fed06c2b728e..71bffece84b5 100644
+--- a/drivers/iommu/iommufd/ioas.c
++++ b/drivers/iommu/iommufd/ioas.c
+@@ -535,6 +535,10 @@ int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd)
+ 		return rc;
  
-@@ -1063,6 +1065,9 @@ static void arm_smmu_invs_update_caps(struct arm_smmu_invs *invs,
- 		return;
- 
- 	invs->has_range_inv = true;
-+	scale_max = (inv->smmu->features & ARM_SMMU_FEAT_DS) ? 39 : 31;
-+	if (!invs->range_inv_scale_max || scale_max < invs->range_inv_scale_max)
-+		invs->range_inv_scale_max = scale_max;
- }
- 
- /**
-@@ -2558,7 +2563,8 @@ static unsigned int arm_smmu_compute_ttl(u8 leaf_bitmap, u8 table_bitmap,
-  * fits in the 5-bit NUM field (max 32 units of 2^SCALE pages). This may widen
-  * the invalidation range.
-  */
--static void arm_smmu_tlbi_calc_range(struct arm_smmu_tlbi *tlbi)
-+static void arm_smmu_tlbi_calc_range(struct arm_smmu_tlbi *tlbi,
-+				     unsigned int scale_max)
- {
- 	u8 tgsz_lg2 = tlbi->tgsz_lg2;
- 	unsigned int ttl = arm_smmu_compute_ttl(
-@@ -2607,7 +2613,7 @@ static void arm_smmu_tlbi_calc_range(struct arm_smmu_tlbi *tlbi)
- 	 * address beyond alignment to tg (so long as TTL=0).
- 	 */
- 	scale = fls64((num_tg - 1) / 32);
--	if (scale > 31) {
-+	if (scale > scale_max) {
- 		/*
- 		 * Range too large for a single command, use full invalidation.
- 		 */
-@@ -2859,7 +2865,8 @@ void arm_smmu_domain_tlbi(struct arm_smmu_tlbi *tlbi,
- 	 */
- 	if (invs->has_range_inv) {
- 		if (!tlbi->range.use_full_inv)
--			arm_smmu_tlbi_calc_range(tlbi);
-+			arm_smmu_tlbi_calc_range(tlbi,
-+						 invs->range_inv_scale_max);
- 	}
- 
- 	/*
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index e381fca5a2be6f..fc4fe43d7fe53b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -759,6 +759,7 @@ static inline bool arm_smmu_inv_is_ats(const struct arm_smmu_inv *inv)
-  * @rwlock: optional rwlock to fence ATS operations
-  * @has_ats: flag if the array contains an INV_TYPE_ATS or INV_TYPE_ATS_FULL
-  * @has_range_inv: flag if any entry's SMMU supports range invalidation
-+ * @range_inv_scale_max: max SCALE usable by all range-capable SMMUs
-  * @rcu: rcu head for kfree_rcu()
-  * @inv: flexible invalidation array
-  *
-@@ -789,6 +790,7 @@ struct arm_smmu_invs {
- 	rwlock_t rwlock;
- 	bool has_ats;
- 	bool has_range_inv;
-+	u8 range_inv_scale_max;
- 	struct rcu_head rcu;
- 	struct arm_smmu_inv inv[] __counted_by(max_invs);
- };
+ 	for_each_ioas_area(&ioas_list, index, ioas, area)  {
++		if (!area->pages) {
++			rc = -EBUSY;
++			goto out;
++		}
+ 		if (area->pages->type != IOPT_ADDRESS_FILE) {
+ 			rc = -EINVAL;
+ 			goto out;
 -- 
 2.43.0
 
