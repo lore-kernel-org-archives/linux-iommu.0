@@ -1,100 +1,54 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18E7D47607B
-	for <iommu@lists.linux.dev>; Fri,  7 Aug 2026 15:34:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D86A476CCE;
+	Fri,  7 Aug 2026 15:36:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786116900; cv=none; b=hvEwA/xWiIVyN9nDCzZ8x6cgp2qQ3vMBCo0drawgSLS1qnQjthCiiuZvqbJlkIj7+CRgjyUe5FlGKOrNNVWJ6LndxsrzKQGUSe9Dipbjk5Tglk3AIJxjLHaE9LmbsAZvl65hYaLoVZQi+HQKiim2SpCl9Q8PDn8w2fOZlBpmAAc=
+	t=1786116992; cv=none; b=j2xG9MqQKmdRDE0TzyhNnNnBGO6QgUogm0mF+JIZiZ9j8zd6DX2LV/dAagraa8tdkmiGhtXzUXs2hK6ttG/2KzEMjpJ1t58veRSXtLD9Tl+i1J00VhngjmiOraoadEMFjaFxkU6M5cAAm5KaiFaRFBs3wM9+eT5gWYBXsj6Exfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786116900; c=relaxed/simple;
-	bh=7a7AysVuynNFe1lOeN952FQuu+x6NVHG3FmBrbLqGgw=;
+	s=arc-20240116; t=1786116992; c=relaxed/simple;
+	bh=SSFWLx1laOvgyCO6arpgLCUV7YPAuIefRzLECfaVfeQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JFa4ySmSQnBK94xvmsaoD+rshfZ4sdqiegujqKZI93xM3rs3TXRlD3ZTcD/kpdHJQvgIufVN38B++yeZcIkrPLqYg2OxyzYDX0lNN5HoNV+pTwuXt9u1xUUWROmNsx+9VUWrqm7JvX8l5f/2D5Hm77vQKf7KgOUenlqH0zTtxhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SKfHPEq2; arc=none smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=UkRP2qxHHGNkuMbpcG6O/zNW+JCzf6Mt2OMkNsvCRNgnxShk+WiRQMW85uBmlVH1XmOjfxSkZlt7nSSY1QP88TvpEaKjDrnlwTlSdNnzdhUB9RCagh0zM/PI0G9729wmUI1AZBokcmEblzUBfDJwlBKfR/jHH6gWgefsUnOmqHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cu0OJSJm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SKfHPEq2"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-69fec8b4638so13953a12.0
-        for <iommu@lists.linux.dev>; Fri, 07 Aug 2026 08:34:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786116897; x=1786721697; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Az5wp+kAsSbtOjG5rv8pQmucG2yE4e6DGCCgwM57rEM=;
-        b=SKfHPEq2yfg6R+ejgn+BfxknOE1lQl5WhKDitPGgDiL1DWchH+CK7rvzQkzIJdUsnc
-         yHHI4h6M18YowmROwqv+zWwKwILwkC2igrblII8Jk546BgXGVuhS1Bg3Ab8AQmUcsx5I
-         eLXZlBetM7oj+pxA6liHdvL1/q7ERZjEeCSaLO2l/NwB7ikrY209XUXQt4jQTKroFrU1
-         qGm4TDi4KvGNJr7MzIzwNrBuZK/Hzu/4xi/IVvcJybLFrdE8z2ZXZwyQmUof959RJgIW
-         CxCTYqWfj2mK3HmwvdcBEUj1UC5+z+wgqpbNdqPsYQXuQ8fY5nynEk9fPYQDb5vEQerg
-         FpQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786116897; x=1786721697;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Az5wp+kAsSbtOjG5rv8pQmucG2yE4e6DGCCgwM57rEM=;
-        b=rSUNc+dD62R+RM/yVono/xthbeqd99fpSvGuz3y8u46GNjeDsgnWepYr1TwZejJmka
-         EZ+f3pL0Fu71DV4sGn9Pg9uclJEAAiIHZLNAvbgldxD3zDBJyb8G9YpICMeP/Dq42DEb
-         eSPSkKhxVP+J2rlEyHJagieFz9oU8Pn1+CAjCbVLXMR3+GLBAoaA0Ttx0/Duy5MhBorr
-         1Hb+SvayBuYtWj7xXS0d1KVSEZjDxlSV6bh1er0/sOSo8wH0B3L3Aq/2KGlM3RtY4AUj
-         TcORvb3F4x6z+CRYmbt++CAGh9N8O7mdhxJ2M7+Dq0IRLKYzVIih8JkbfByYFKzkMMcx
-         hQeQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqKEv6M/U4Eld/p/DR3ueZR+fg90HkFAvlnRqWOdIV0lwmU2+ihNEEhP1TdGL4iP+70MHcDUw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw8xJsAKuT9PDENmb06YhZHaamARC0acYa7foogANMhcjpuZ6dM
-	00AeBa1eac9bDaC0dJtqKSkT6gvLjU3GBqagVJaFYOvZ6/hFYaOijAGvZJR2JjzqMA==
-X-Gm-Gg: AR+sD134a0KAZqKfKQfoc7MRQoPnnjVC3eTNPSWRiI1AJKnrjg3BQ1MHszH+5VAA8Pl
-	ipT/3o2vPrKflRZDZDNSMJvlaLslzK/x1kVSxybQithbl956iMaxli+OFC7W/wktXisM3pIGIYR
-	HuZZDqfO7z0+bd4QYz5lxnhQ5e3HPVQLAbqAta70n0r5RfFDZ8o8DLRimHEHR5gCXfIUMSvVbcF
-	ZZW1nCdY+SQzYuQ+Y4TImztKrvesQ6VQ+e+2HLNRxDbFaPTK2b+Wt25kdVjWSFF0BeHgE1nIlnt
-	3/M/37s6fnntDzof1UzY4NtFx7b0eStDQkES3ggsrzl/3k5jbldNC84/vxHWpOaoXaXsXRQBis/
-	Jh9kOSX0OaFUNM8tzQRYRCuvwhUyy2hWJJShN82dXYTxVPs13ZwbMv5d649FNvkh7PPX6dcKqPT
-	t5oWYAgj/SV4tiFDIVhPukuiDAcVTfRfqt4DAixrjjEq7odeSQMIy4b6PgXp3NqGZRLCpjjvhif
-	bAfejeHul17t4d/+8qzzDKK3FYnrw==
-X-Received: by 2002:a05:6402:65a:b0:6a1:f088:9486 with SMTP id 4fb4d7f45d1cf-6a1f088972amr16113a12.4.1786116896722;
-        Fri, 07 Aug 2026 08:34:56 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a1e7d48f8dsm708475a12.17.2026.08.07.08.34.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 08:34:55 -0700 (PDT)
-Date: Fri, 7 Aug 2026 15:34:47 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Will Deacon <will@kernel.org>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH] arm64: swiotlb: Keep the default size for protected
- guests
-Message-ID: <anX7F7dnKOtAOIIe@google.com>
-References: <20260717180442.110954-18-aneesh.kumar@kernel.org>
- <20260807092612.2202005-1-aneesh.kumar@kernel.org>
- <anXIZSh9lq99VG9X@willie-the-truck>
- <yq5acxvu2ict.fsf@kernel.org>
- <anXbJ2O4DWgPxCeg@willie-the-truck>
- <20260807135810.GA200537@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cu0OJSJm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F07201F00A3A;
+	Fri,  7 Aug 2026 15:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786116990;
+	bh=fgzQSwnyKveUSkH039WF8E5aSqolmxNlWupXPUvrDd8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Cu0OJSJms7umCFfFD2TtQ2CVEwJIYzLaK4efGymX6txr4M1O6uFf+IuYgDIwBi3ui
+	 gwCUlwkcOoufwkMA35iaPsf6jltwQAT7qw6JUyBLxGVQn/PWSHCbByvffs2FIZs8RO
+	 +tD8pKSSRcGYcftcBdjN9r0T8Hp/JzXN/PHv2XZ435Wqv07ydSyAwPM08bPFz1gP0W
+	 9BRjVR4kDL2zRI8f6MTNrANTLdbpP3VouSpfiQkZtP7yxJQ5vYWIpHfIpnIUtgIu2z
+	 J+Z7lmyR0VcRj4XZgkmENrs/yRHb2AKZ99B+wZUQwajfusnEZ/XJlPI4IoZceA2tPY
+	 jVmFsFzc/1W/A==
+Date: Fri, 7 Aug 2026 16:36:08 +0100
+From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+To: Pedro Falcato <pfalcato@suse.de>
+Cc: Steffen Dirkwinkel <lists@steffen.cc>, 
+	"Mike Rapoport (Microsoft)" <rppt@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	"Denis V. Lunev" <den@openvz.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>, 
+	David CARLIER <devnexen@gmail.com>, David Hildenbrand <david@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, Juergen Gross <jgross@suse.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	"H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Shakeel Butt <shakeel.butt@linux.dev>, Suren Baghdasaryan <surenb@google.com>, 
+	Thomas Gleixner <tglx@kernel.org>, Toshi Kani <toshi.kani@hpe.com>, 
+	Vishal Moola <vishal.moola@gmail.com>, Vlastimil Babka <vbabka@kernel.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, stable@vger.kernel.org, x86@kernel.org, 
+	syzbot@syzkaller.appspotmail.com, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
+Message-ID: <anXvODEvV4f_Taj7@lucifer>
+References: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
+ <555ea1d43a12c30a8f1eaf10c899b3790d728f33.camel@dirkwinkel.cc>
+ <anCK3eWFMwZqq5ka@pedro-suse>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -103,49 +57,194 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260807135810.GA200537@ziepe.ca>
-
-On Fri, Aug 07, 2026 at 10:58:10AM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 07, 2026 at 02:18:31PM +0100, Will Deacon wrote:
-> 
-> > > I was under the impression that there is a possibility of using swiotlb
-> > > instead of restricted-dma-pool with pKVM.
-> > 
-> > Yes, that patch enables swiotlb as a possibility for protected guests
-> > but with your patch we avoid shrinking the swiotlb buffer even when
-> > restricted dma pools are being used and that's a waste of memory.
-> 
-> I also thought we switched pkvm to use CC-like swiotlb as part of the
-> alignment in this rework? Mostafa ?
-
-Yes, now protected VMs can use the SWIOTLB for bouncing. However for
-Android (and kvmtool), use restricted DMA. so SWIOTLB is not used.
-
-However, I do not think we should over engineer this in the code,
-swiotlb can be set from the cmdline and now through Kconfig also.
+In-Reply-To: <anCK3eWFMwZqq5ka@pedro-suse>
 
 Thanks,
-Mostafa
 
-> 
-> > > If that is not the case, then we could change:
-> > > 
-> > > !cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
-> > > 
-> > > to
-> > > 
-> > > !is_realm_world() &&
-> > 
-> > Perhaps, or you could just pass the swiotlb= option if the defaults don't
-> > work for you. Can you give more details about the slots exhaustion you're
-> > seeing under CCA?
-> 
-> We see badness with swiotlb too, it basically doesn't work out of the
-> box if you have to use it 100% for real devices. It easily runs out
-> of memory.
-> 
-> Auto tuning to higher levels makes sense to me, but I'd rather the
-> core code handled adjusting its size to the estimated need, not arch
-> code.
-> 
-> Jason
+If Mike's going to respin worth examining this.
+
+Let me paste in the attached patch to make life easier:
+
+>From time to time, the following BUG can be observed[0]:
+>
+>> kernel BUG at arch/x86/kernel/alternative.c:2576!
+>> Oops: invalid opcode: 0000 [#1] SMP NOPTI
+>> CPU: 0 UID: 0 PID: 355 Comm: (udev-worker) Not tainted 7.1.3-1-default #1 PREEMPT(full) openSUSE Tumbleweed  8c1795b03ec64f997e57a8ad38b1161e3b98da64
+>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS unknown 02/02/2022
+>> RIP: 0010:__text_poke+0x2aa/0x450
+>> Call Trace:
+>>  <TASK>
+>>  smp_text_poke_batch_finish+0x2a7/0x320
+>>  __static_call_transform+0xb7/0x220
+>>  arch_static_call_transform+0x5b/0xb0
+>>  __static_call_init+0xe9/0x270
+>>  static_call_module_notify+0x11f/0x150
+>>  notifier_call_chain+0x61/0xe0
+>>  blocking_notifier_call_chain_robust+0x63/0xc0
+>>  load_module+0x1c92/0x20c0
+>>  init_module_from_file+0xd8/0x140
+>>  idempotent_init_module+0x100/0x2f0
+>>  __x64_sys_finit_module+0x71/0xe0
+>>  do_syscall_64+0xe1/0x610
+>>  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+>
+>which matches the following BUG_ON in alternative.c:
+>	/*
+>	 * If something went wrong, crash and burn since recovery paths are not
+>	 * implemented.
+>	 */
+>	BUG_ON(!pages[0] || (cross_page_boundary && !pages[1]));
+
+Ugh yeah, it seems the CPA code is just teeming with this kind of thing.
+
+>
+>This can happen if vmalloc_to_page() fails, for any reason. Such can happen
+>if text poking races with CPA, which can possibly result in the collapsing
+>of page tables (or breaking of PMD hugepages). It is not a problem for most
+>users of vmalloc_to_page() (they solely own the vmalloc'd range) but, when
+>CONFIG_ARCH_HAS_EXECMEM_ROX=y, various modules own a single execmem vmalloc
+>range, and can call set_memory_*() in parallel on it. This can happen to
+>race against __text_poke and cause havoc in vmalloc_to_page().
+>
+>Fix it by excluding against CPA using the init_mm mmap read lock.
+>
+>Fixes: 64f6a4e10c05 ("x86: re-enable EXECMEM_ROX support")
+
+You'd need to somehow state the dependency on commit "x86/mm/pat: acquire
+init_mm write lock on collapse to avoid UAF" from this series because this
+depends on that.
+
+That only goes back to commit 41d88484c71c ("x86/mm/pat: restore large ROX pages
+after fragmentation") so you'd need to somehow indicate the backport would need
+to port my change even further back...
+
+>Reported-by: Jiri Slaby <jirislaby@kernel.org>
+>Link: https://bugzilla.opensuse.org/show_bug.cgi?id=1271202 [0]
+>Reported-by: Steffen Dirkwinkel <lists@steffen.cc>
+>Link: https://lore.kernel.org/linux-mm/555ea1d43a12c30a8f1eaf10c899b3790d728f33.camel@dirkwinkel.cc/
+>Cc: stable@vger.kernel.org
+>Signed-off-by: Pedro Falcato <pfalcato@suse.de>
+>---
+> arch/x86/kernel/alternative.c | 8 ++++++++
+> 1 file changed, 8 insertions(+)
+>
+>diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+>index 62936a3bde19..9071eb870eab 100644
+>--- a/arch/x86/kernel/alternative.c
+>+++ b/arch/x86/kernel/alternative.c
+
+Should include cleanup.h.
+
+>@@ -2559,6 +2559,14 @@ static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t l
+> 	 */
+> 	BUG_ON(!after_bootmem);
+>
+>+	/*
+>+	 * Exclude against change_page_attr() collapse in execmem ROX regions.
+>+	 * These are PMD sized and this module may not own the whole PMD,
+>+	 * thus breakdown/collapse may happen at any moment by concurrent module
+>+	 * loading, which races with vmalloc_to_page().
+>+	 */
+
+Worth saying what this pairs with. Right now the comment doesn't really explain
+why you're taking this lock.
+
+>+	guard(mmap_read_lock)(&init_mm);
+
+This is problematic.
+
+text_poke_kgdb() -> __text_poke() can be called from pretty much any
+context it seems. It's another debug_pagealloc type situation :)
+
+Claude tells me there's a in_dbg_master() variable you can check to avoid this
+and all other CPUs are stopped when it does this so it's safe anyway.
+
+>+
+> 	if (!core_kernel_text((unsigned long)addr)) {
+> 		pages[0] = vmalloc_to_page(addr);
+> 		if (cross_page_boundary)
+>--
+>2.55.0
+>
+
+I attach a patch (hand-written :) that addresses all this. Feel free to use it
+as you like.
+
+Cheers, Lorenzo
+
+----8<----
+From 2759f0ea4457e572c2972c7e5a0bbb39f2a9a2e5 Mon Sep 17 00:00:00 2001
+From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+Date: Fri, 7 Aug 2026 16:23:40 +0100
+Subject: [PATCH] fix
+
+---
+ arch/x86/kernel/alternative.c | 39 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 62936a3bde19..cafcac95e90e 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -6,6 +6,9 @@
+ #include <linux/vmalloc.h>
+ #include <linux/memory.h>
+ #include <linux/execmem.h>
++#include <linux/cleanup.h>
++#include <linux/kgdb.h>
++#include <linux/mmap_lock.h>
+
+ #include <asm/text-patching.h>
+ #include <asm/insn.h>
+@@ -2543,6 +2546,30 @@ static void text_poke_memset(void *dst, const void *src, size_t len)
+
+ typedef void text_poke_f(void *dst, const void *src, size_t len);
+
++static void poke_vmalloc_pages(struct page **pages, void *addr,
++			       bool cross_page_boundary)
++{
++	pages[0] = vmalloc_to_page(addr);
++	if (cross_page_boundary)
++		pages[1] = vmalloc_to_page(addr + PAGE_SIZE);
++}
++
++static void poke_vmalloc_pages_safe(struct page **pages, void *addr,
++				    bool cross_page_boundary)
++{
++	/*
++	 * execmem ROX ranges are shared between modules and can be collapsed to
++	 * huge PMD entries, and this collapse can happen concurrently with a
++	 * racing set_memory_rox().
++	 *
++	 * Prevent vmalloc_to_page() from racing by acquiring an init_mm read
++	 * lock which pairs with the init_mm write lock in
++	 * cpa_collapse_large_pages().
++	 */
++	guard(mmap_read_lock)(&init_mm);
++	poke_vmalloc_pages(pages, addr, cross_page_boundary);
++}
++
+ static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t len)
+ {
+ 	bool cross_page_boundary = offset_in_page(addr) + len > PAGE_SIZE;
+@@ -2560,9 +2587,15 @@ static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t l
+ 	BUG_ON(!after_bootmem);
+
+ 	if (!core_kernel_text((unsigned long)addr)) {
+-		pages[0] = vmalloc_to_page(addr);
+-		if (cross_page_boundary)
+-			pages[1] = vmalloc_to_page(addr + PAGE_SIZE);
++		/*
++		 * If called from kgdb cannot sleep, but all other CPUs stopped
++		 * anyway so safe.
++		 */
++		if (in_dbg_master())
++			poke_vmalloc_pages(pages, addr, cross_page_boundary);
++		else
++			poke_vmalloc_pages_safe(pages, addr,
++						cross_page_boundary);
+ 	} else {
+ 		pages[0] = virt_to_page(addr);
+ 		WARN_ON(!PageReserved(pages[0]));
+--
+2.55.0
