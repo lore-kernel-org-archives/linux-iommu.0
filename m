@@ -1,250 +1,197 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D86A476CCE;
-	Fri,  7 Aug 2026 15:36:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B250647124B;
+	Fri,  7 Aug 2026 15:54:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786116992; cv=none; b=j2xG9MqQKmdRDE0TzyhNnNnBGO6QgUogm0mF+JIZiZ9j8zd6DX2LV/dAagraa8tdkmiGhtXzUXs2hK6ttG/2KzEMjpJ1t58veRSXtLD9Tl+i1J00VhngjmiOraoadEMFjaFxkU6M5cAAm5KaiFaRFBs3wM9+eT5gWYBXsj6Exfo=
+	t=1786118092; cv=none; b=uPJLP02sk+Gh+xosOZ2MKUMGQCTnRuFYsNZMd/EOUsAq4XvixPROWa3LYFUiD65/Axi0VV7e6EyWJrQ3x05/rYjHsOlEYoQxdghG0lNLmssgjz9cza/mL0gX9ebRjM9v727vnr642+Bd8hBkudNhuO2xZTm2XrCIu2/V2BzDqd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786116992; c=relaxed/simple;
-	bh=SSFWLx1laOvgyCO6arpgLCUV7YPAuIefRzLECfaVfeQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UkRP2qxHHGNkuMbpcG6O/zNW+JCzf6Mt2OMkNsvCRNgnxShk+WiRQMW85uBmlVH1XmOjfxSkZlt7nSSY1QP88TvpEaKjDrnlwTlSdNnzdhUB9RCagh0zM/PI0G9729wmUI1AZBokcmEblzUBfDJwlBKfR/jHH6gWgefsUnOmqHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cu0OJSJm; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786118092; c=relaxed/simple;
+	bh=cNpFkM+ZcxbrYyXoZiVbDg/M+vrbqp/SW9+T2kNjvg8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=EA1tPNQbJ5Ou4en8qQMiBvD8VfFD63Aj8gfQEPBqd64x5ypLGb1ypFKKWORhHLG5qKyKLEvvno6H19fFA5IjYS/xs8qoxJLrVM/pEOf1F/jXhDi/ktjqlKHzCkf+NZLJUtWJjaW+k4vcx5bTF7GZU0rE7GNfPy11yMLhkVOHg8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RFetetgo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cu0OJSJm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F07201F00A3A;
-	Fri,  7 Aug 2026 15:36:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RFetetgo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92E8D1F000E9;
+	Fri,  7 Aug 2026 15:54:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786116990;
-	bh=fgzQSwnyKveUSkH039WF8E5aSqolmxNlWupXPUvrDd8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Cu0OJSJms7umCFfFD2TtQ2CVEwJIYzLaK4efGymX6txr4M1O6uFf+IuYgDIwBi3ui
-	 gwCUlwkcOoufwkMA35iaPsf6jltwQAT7qw6JUyBLxGVQn/PWSHCbByvffs2FIZs8RO
-	 +tD8pKSSRcGYcftcBdjN9r0T8Hp/JzXN/PHv2XZ435Wqv07ydSyAwPM08bPFz1gP0W
-	 9BRjVR4kDL2zRI8f6MTNrANTLdbpP3VouSpfiQkZtP7yxJQ5vYWIpHfIpnIUtgIu2z
-	 J+Z7lmyR0VcRj4XZgkmENrs/yRHb2AKZ99B+wZUQwajfusnEZ/XJlPI4IoZceA2tPY
-	 jVmFsFzc/1W/A==
-Date: Fri, 7 Aug 2026 16:36:08 +0100
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
-To: Pedro Falcato <pfalcato@suse.de>
-Cc: Steffen Dirkwinkel <lists@steffen.cc>, 
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	"Denis V. Lunev" <den@openvz.org>, Andrew Morton <akpm@linux-foundation.org>, 
-	Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>, 
-	David CARLIER <devnexen@gmail.com>, David Hildenbrand <david@kernel.org>, 
-	Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, Juergen Gross <jgross@suse.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	"H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Shakeel Butt <shakeel.butt@linux.dev>, Suren Baghdasaryan <surenb@google.com>, 
-	Thomas Gleixner <tglx@kernel.org>, Toshi Kani <toshi.kani@hpe.com>, 
-	Vishal Moola <vishal.moola@gmail.com>, Vlastimil Babka <vbabka@kernel.org>, 
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, stable@vger.kernel.org, x86@kernel.org, 
-	syzbot@syzkaller.appspotmail.com, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
-Message-ID: <anXvODEvV4f_Taj7@lucifer>
-References: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
- <555ea1d43a12c30a8f1eaf10c899b3790d728f33.camel@dirkwinkel.cc>
- <anCK3eWFMwZqq5ka@pedro-suse>
+	s=k20260515; t=1786118090;
+	bh=xDlurFDxUaKm0+DeKwG11I5Asqll1HaQOs3bWTM7T2A=;
+	h=From:Subject:Date:To:Cc;
+	b=RFetetgo7jgxk2hRoVBNP2thvqE1EPEabTG4g4lH092YzQbD/Odq965rNejDzleVE
+	 J3ckOBjT8nkXZ3wNy9Nx4RPTK6m+askAC7z4QSWoQpfG4MxebffJpKPmv69UDX+6OL
+	 iEVDLsrFQqAMjC3zb8GatM7NAYAeBLlhnRtZ8Mcce5gdM7SrXJqHkgyYk7Or7MAkVf
+	 1v73+4+H/NMIykEPIocARawL6LBt2xLJEDW2wFY+w7Ljr85NJJJx0OjEEz4tm8uqs7
+	 VRYlNv+S0gcff4TM8qKclQrd/ETGd8YPtZJh6hMl1H2rsh9+vs6QAXsneltbsqhXC2
+	 1o0k2EvBe+C8g==
+From: Thierry Reding <thierry.reding@kernel.org>
+Subject: [PATCH v4 00/10] dma-buf: heaps: Add support for Tegra VPR
+Date: Fri, 07 Aug 2026 17:54:20 +0200
+Message-Id: <20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <anCK3eWFMwZqq5ka@pedro-suse>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2WPwWrDMBBEfyXoXImVLNtyTvmP0oMtb+RtEzmsX
+ NEQ/O+1YkoLPQ7Me8M8REImTOJ4eAjGTInmuAX7chB+6mNASeOWhQHTQA2tXDBwL/ONpR/t4E0
+ NnbdebP0b45m+nq7Xtz2nz+Ed/VIEpTFRWma+P8eyLr3i3QxgdG2bCpSFynTOSi2XiZD5rhhHi
+ uEUrj1dlJ+voqiz+YEb0MboRgN0qnJN7Zz7D38gR7yomcNOV790C/rPpVxJkKODczu4Vg+DPcV
+ MI/X78Lqu36G64F8wAQAA
+X-Change-ID: 20260507-tegra-vpr-cd4bc2509c4c
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Thierry Reding <thierry.reding@kernel.org>, 
+ Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Sowjanya Komatineni <skomatineni@nvidia.com>, 
+ Luca Ceresoli <luca.ceresoli@bootlin.com>, 
+ Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
+ Russell King <linux@armlinux.org.uk>, 
+ Alexander Gordeev <agordeev@linux.ibm.com>, 
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+ Christian Borntraeger <borntraeger@linux.ibm.com>, 
+ Sven Schnelle <svens@linux.ibm.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+ "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+ Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+ Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Steven Rostedt <rostedt@goodmis.org>, 
+ Masami Hiramatsu <mhiramat@kernel.org>, 
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Chun Ng <chunn@nvidia.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, 
+ linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, 
+ linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+ linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4495; i=treding@nvidia.com;
+ h=from:subject:message-id; bh=cNpFkM+ZcxbrYyXoZiVbDg/M+vrbqp/SW9+T2kNjvg8=;
+ b=owEBbQKS/ZANAwAKAd0jrNd/PrOhAcsmYgBqdf/COeJXZyRFVSTKd7+3r7oFtNF7xrGETRn4j
+ DEXKT18h/KJAjMEAAEKAB0WIQSI6sMIAUnM98CNyJ/dI6zXfz6zoQUCanX/wgAKCRDdI6zXfz6z
+ oX86EACf3u52ZHWbNE0gzPHk1VCKvHipIKLbzawEbY/eyFL+F3hj0f1oRk5u22tUVgR+XqqdgdU
+ gwYJjdIxng+xk3RWveQ2oBaMIzwMJwiykwHMNXFjTMWO7RYuWiz8hLNjGRNX/h6RZRGUa7rSqpc
+ ODAcuSqcvfgjqo//n+HcYlrTTme0RgMivbMPVwq/G7KLmDX/7m9mryCILkoR90jXSg0Ha1q8HLM
+ DxVa1dmvxpWECDYJU/uizu1XpnO9zKnxwMgHpyNwRTaajqkRB0AOGV1CbZ9mYSFbu1bp5IKwk7e
+ SwqEJxq9caikk5y6VUtj3udpbhhJkLqmgyQ1iRROgJ4Jdb0YGfmaMfcI7gpMADo9riMISSZ7BPb
+ KBLw3THjD8cjbJl9FeEgiiSWvZce1TCAZEfduXqjJNI9lLl1gpIz2Zz7JyN9gcDPYyjetrj3bFP
+ gOOJKTnB7mY4la1dVjl1x5RLq36hdfJhFvabG6qYclCsmQFgU17Oh/nbgiQtV/5S1wQgX5h4KJa
+ TiAbSxXHoiN+eL+PJL+Rx5bz5TEcblTUMPK+ub7afb3I9XHkM65Yaj/dE8ZVfmeviLNuhQktuAf
+ WXcrW3LRRxZH1TZWTSGjJwaUEcgrGaBx3zUoiECwB7n/9GpOfYfGp4P0FwZ4bqQ9EiWbyjmX1dC
+ fksdo8Ciavc0KLw==
+X-Developer-Key: i=treding@nvidia.com; a=openpgp;
+ fpr=88EAC3080149CCF7C08DC89FDD23ACD77F3EB3A1
 
-Thanks,
+This series adds support for the video protection region (VPR) used on
+Tegra SoC devices. It's a special region of memory that is protected
+from accesses by the CPU and used to store DRM protected content (both
+decrypted stream data as well as decoded video frames).
 
-If Mike's going to respin worth examining this.
+Patches 1 through 3 add DT binding documentation for the VPR and add the
+VPR to the list of memory-region items for display, host1x and NVDEC.
 
-Let me paste in the attached patch to make life easier:
+Patch 4 adds bitmap_allocate(), which is like bitmap_allocate_region()
+but works on sizes that are not a power of two.
 
->From time to time, the following BUG can be observed[0]:
->
->> kernel BUG at arch/x86/kernel/alternative.c:2576!
->> Oops: invalid opcode: 0000 [#1] SMP NOPTI
->> CPU: 0 UID: 0 PID: 355 Comm: (udev-worker) Not tainted 7.1.3-1-default #1 PREEMPT(full) openSUSE Tumbleweed  8c1795b03ec64f997e57a8ad38b1161e3b98da64
->> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS unknown 02/02/2022
->> RIP: 0010:__text_poke+0x2aa/0x450
->> Call Trace:
->>  <TASK>
->>  smp_text_poke_batch_finish+0x2a7/0x320
->>  __static_call_transform+0xb7/0x220
->>  arch_static_call_transform+0x5b/0xb0
->>  __static_call_init+0xe9/0x270
->>  static_call_module_notify+0x11f/0x150
->>  notifier_call_chain+0x61/0xe0
->>  blocking_notifier_call_chain_robust+0x63/0xc0
->>  load_module+0x1c92/0x20c0
->>  init_module_from_file+0xd8/0x140
->>  idempotent_init_module+0x100/0x2f0
->>  __x64_sys_finit_module+0x71/0xe0
->>  do_syscall_64+0xe1/0x610
->>  entry_SYSCALL_64_after_hwframe+0x76/0x7e
->
->which matches the following BUG_ON in alternative.c:
->	/*
->	 * If something went wrong, crash and burn since recovery paths are not
->	 * implemented.
->	 */
->	BUG_ON(!pages[0] || (cross_page_boundary && !pages[1]));
+Patch 5 introduces new APIs needed by the Tegra VPR implementation that
+allow CMA areas to be dynamically created at runtime rather than using
+the fixed, system-wide list. This is used in this driver specifically
+because it can use an arbitrary number of these areas (though they are
+currently limited to 4).
 
-Ugh yeah, it seems the CPA code is just teeming with this kind of thing.
+Patch 6 adds some infrastructure for DMA heap implementations to provide
+information through debugfs.
 
->
->This can happen if vmalloc_to_page() fails, for any reason. Such can happen
->if text poking races with CPA, which can possibly result in the collapsing
->of page tables (or breaking of PMD hugepages). It is not a problem for most
->users of vmalloc_to_page() (they solely own the vmalloc'd range) but, when
->CONFIG_ARCH_HAS_EXECMEM_ROX=y, various modules own a single execmem vmalloc
->range, and can call set_memory_*() in parallel on it. This can happen to
->race against __text_poke and cause havoc in vmalloc_to_page().
->
->Fix it by excluding against CPA using the init_mm mmap read lock.
->
->Fixes: 64f6a4e10c05 ("x86: re-enable EXECMEM_ROX support")
+The Tegra VPR implementation is added in patch 7. See its commit message
+for more details about the specifics of this implementation.
 
-You'd need to somehow state the dependency on commit "x86/mm/pat: acquire
-init_mm write lock on collapse to avoid UAF" from this series because this
-depends on that.
+Finally, patches 8-10 add the VPR placeholder node on Tegra234 and
+Tegra264 and hook it up to the host1x node so that it can make use of
+this region.
 
-That only goes back to commit 41d88484c71c ("x86/mm/pat: restore large ROX pages
-after fragmentation") so you'd need to somehow indicate the backport would need
-to port my change even further back...
+Changes in v4:
+- Link to v3: https://patch.msgid.link/20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com
+- fully remove from linear map while chunks are active
+- address checkpatch.pl and Sashiko comments
+- improve error handling
+- remove freezer support
 
->Reported-by: Jiri Slaby <jirislaby@kernel.org>
->Link: https://bugzilla.opensuse.org/show_bug.cgi?id=1271202 [0]
->Reported-by: Steffen Dirkwinkel <lists@steffen.cc>
->Link: https://lore.kernel.org/linux-mm/555ea1d43a12c30a8f1eaf10c899b3790d728f33.camel@dirkwinkel.cc/
->Cc: stable@vger.kernel.org
->Signed-off-by: Pedro Falcato <pfalcato@suse.de>
->---
-> arch/x86/kernel/alternative.c | 8 ++++++++
-> 1 file changed, 8 insertions(+)
->
->diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
->index 62936a3bde19..9071eb870eab 100644
->--- a/arch/x86/kernel/alternative.c
->+++ b/arch/x86/kernel/alternative.c
+Changes in v3:
+- Link to v2: https://patch.msgid.link/20260122161009.3865888-1-thierry.reding@kernel.org
+- introduce set_memory_device() and set_memory_normal()
+- rename VPR nodes to "protected"
+- add Tegra264 placeholder nodes
 
-Should include cleanup.h.
+Changes in v2:
+- Link to v1: https://patch.msgid.link/20250902154630.4032984-1-thierry.reding@gmail.com
+- Tegra VPR implementation is now more optimized to reduce the number of
+  (very slow) resize operations, and allows cross-chunk allocations
+- dynamic CMA areas are now trackd separately from static ones, but the
+  global number of CMA pages accounts for all areas
 
->@@ -2559,6 +2559,14 @@ static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t l
-> 	 */
-> 	BUG_ON(!after_bootmem);
->
->+	/*
->+	 * Exclude against change_page_attr() collapse in execmem ROX regions.
->+	 * These are PMD sized and this module may not own the whole PMD,
->+	 * thus breakdown/collapse may happen at any moment by concurrent module
->+	 * loading, which races with vmalloc_to_page().
->+	 */
+Thierry
 
-Worth saying what this pairs with. Right now the comment doesn't really explain
-why you're taking this lock.
-
->+	guard(mmap_read_lock)(&init_mm);
-
-This is problematic.
-
-text_poke_kgdb() -> __text_poke() can be called from pretty much any
-context it seems. It's another debug_pagealloc type situation :)
-
-Claude tells me there's a in_dbg_master() variable you can check to avoid this
-and all other CPUs are stopped when it does this so it's safe anyway.
-
->+
-> 	if (!core_kernel_text((unsigned long)addr)) {
-> 		pages[0] = vmalloc_to_page(addr);
-> 		if (cross_page_boundary)
->--
->2.55.0
->
-
-I attach a patch (hand-written :) that addresses all this. Feel free to use it
-as you like.
-
-Cheers, Lorenzo
-
-----8<----
-From 2759f0ea4457e572c2972c7e5a0bbb39f2a9a2e5 Mon Sep 17 00:00:00 2001
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
-Date: Fri, 7 Aug 2026 16:23:40 +0100
-Subject: [PATCH] fix
-
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- arch/x86/kernel/alternative.c | 39 ++++++++++++++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 3 deletions(-)
+Thierry Reding (10):
+      dt-bindings: reserved-memory: Document Tegra VPR
+      dt-bindings: display: tegra: Document memory regions
+      dt-bindings: gpu: host1x: Document memory-regions for NVDEC
+      bitmap: Add bitmap_allocate() function
+      mm/cma: Allow dynamically creating CMA areas
+      dma-buf: heaps: Add debugfs support
+      dma-buf: heaps: Add support for Tegra VPR
+      arm64: tegra: Add VPR placeholder node on Tegra234
+      arm64: tegra: Hook up VPR to host1x
+      arm64: tegra: Add VPR placeholder node on Tegra264
 
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 62936a3bde19..cafcac95e90e 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -6,6 +6,9 @@
- #include <linux/vmalloc.h>
- #include <linux/memory.h>
- #include <linux/execmem.h>
-+#include <linux/cleanup.h>
-+#include <linux/kgdb.h>
-+#include <linux/mmap_lock.h>
+ .../display/tegra/nvidia,tegra124-vic.yaml         |    8 +
+ .../bindings/display/tegra/nvidia,tegra186-dc.yaml |   10 +
+ .../bindings/display/tegra/nvidia,tegra20-dc.yaml  |   10 +-
+ .../display/tegra/nvidia,tegra20-host1x.yaml       |    7 +
+ .../bindings/gpu/host1x/nvidia,tegra234-nvdec.yaml |    8 +
+ .../nvidia,tegra-video-protection-region.yaml      |   75 ++
+ arch/arm/mm/dma-mapping.c                          |    2 +-
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi           |   45 +
+ arch/arm64/boot/dts/nvidia/tegra264.dtsi           |   33 +
+ arch/s390/mm/init.c                                |    2 +-
+ drivers/dma-buf/dma-heap.c                         |   56 +
+ drivers/dma-buf/heaps/Kconfig                      |   12 +
+ drivers/dma-buf/heaps/Makefile                     |    1 +
+ drivers/dma-buf/heaps/tegra-vpr.c                  | 1368 ++++++++++++++++++++
+ include/linux/bitmap.h                             |   25 +-
+ include/linux/cma.h                                |    8 +-
+ include/linux/dma-heap.h                           |    2 +
+ include/trace/events/tegra_vpr.h                   |   57 +
+ kernel/dma/contiguous.c                            |    2 +-
+ mm/cma.c                                           |  221 +++-
+ mm/cma.h                                           |    5 +-
+ mm/cma_debug.c                                     |    6 +-
+ mm/cma_sysfs.c                                     |    6 +-
+ mm/mm_init.c                                       |    4 +-
+ 24 files changed, 1912 insertions(+), 61 deletions(-)
+---
+base-commit: a6cebf4799ccfd3ea08e45abe5360414fd3822e1
+change-id: 20260507-tegra-vpr-cd4bc2509c4c
 
- #include <asm/text-patching.h>
- #include <asm/insn.h>
-@@ -2543,6 +2546,30 @@ static void text_poke_memset(void *dst, const void *src, size_t len)
+Best regards,
+--  
+Thierry Reding <treding@nvidia.com>
 
- typedef void text_poke_f(void *dst, const void *src, size_t len);
-
-+static void poke_vmalloc_pages(struct page **pages, void *addr,
-+			       bool cross_page_boundary)
-+{
-+	pages[0] = vmalloc_to_page(addr);
-+	if (cross_page_boundary)
-+		pages[1] = vmalloc_to_page(addr + PAGE_SIZE);
-+}
-+
-+static void poke_vmalloc_pages_safe(struct page **pages, void *addr,
-+				    bool cross_page_boundary)
-+{
-+	/*
-+	 * execmem ROX ranges are shared between modules and can be collapsed to
-+	 * huge PMD entries, and this collapse can happen concurrently with a
-+	 * racing set_memory_rox().
-+	 *
-+	 * Prevent vmalloc_to_page() from racing by acquiring an init_mm read
-+	 * lock which pairs with the init_mm write lock in
-+	 * cpa_collapse_large_pages().
-+	 */
-+	guard(mmap_read_lock)(&init_mm);
-+	poke_vmalloc_pages(pages, addr, cross_page_boundary);
-+}
-+
- static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t len)
- {
- 	bool cross_page_boundary = offset_in_page(addr) + len > PAGE_SIZE;
-@@ -2560,9 +2587,15 @@ static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t l
- 	BUG_ON(!after_bootmem);
-
- 	if (!core_kernel_text((unsigned long)addr)) {
--		pages[0] = vmalloc_to_page(addr);
--		if (cross_page_boundary)
--			pages[1] = vmalloc_to_page(addr + PAGE_SIZE);
-+		/*
-+		 * If called from kgdb cannot sleep, but all other CPUs stopped
-+		 * anyway so safe.
-+		 */
-+		if (in_dbg_master())
-+			poke_vmalloc_pages(pages, addr, cross_page_boundary);
-+		else
-+			poke_vmalloc_pages_safe(pages, addr,
-+						cross_page_boundary);
- 	} else {
- 		pages[0] = virt_to_page(addr);
- 		WARN_ON(!PageReserved(pages[0]));
---
-2.55.0
