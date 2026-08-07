@@ -1,162 +1,173 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F222777F3
-	for <iommu@lists.linux.dev>; Fri,  7 Aug 2026 09:16:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68DF93793DF;
+	Fri,  7 Aug 2026 09:21:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786094216; cv=none; b=loy0Alz4Nts5fPiixU5zLh3pBHCAd2m8kENFFdN0uuO3Ngy6JczzdHARwGXOoibghPSIxgOHBI9OeTGJy3u9LkSGV+BVpulnP8DZR3AvEfuJcJJ36Hx7V56f7DrGXM+RvLLLCScSxze2BpufF6gnLyNvZit0LbxXJJIzSa6G+MQ=
+	t=1786094510; cv=none; b=doHsOxcAU9OfLCPqbXbs04/ms1FfGy8EPy8p6mqeTTt4vCAKSxxwuj4cmHWyviwVQzJ60zenNy7yeWo867+e5E0YK+h8X3JTvSsWYN9EzflMQzzJHI89lp61st5U1C+Nvz9gCiXZTT2JjrKAx4v6Br4kQw5Bqv3haL/U+2SqiEQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786094216; c=relaxed/simple;
-	bh=SlT9f8tdsjssuDzpMXIOwjTSxLfHdf56exCPEZpwW74=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cKPnyinCLiCT+9lW6uMhTnqyaOykE/QiGGBmuZw5ExEF9r1U7ca0AAI/5dnScREqlywtDQ7+ZzRTJJvDRoHQ1hLJvEMi7UzR1z4Fj9eGIB736bMo0opJwbuBxXNulEiPYDOGmEnBm9pM6hnzqZF+Z7bkdhKvEhQpCUydxtpaGrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Lm+9hy6K; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1786094510; c=relaxed/simple;
+	bh=C0dmANKqH39eWG4MQOTvSIOyvTlPYkY0RZOK5DUQdqU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=UBQGnpIOCZJoRF+cz6VX/3tquJG3s6Nzdnw31GMXPPt+3WIapncgyUnUQp1iFo/pxEwdtivpnoI8ZtPDTiXcs/cQGmG8n+1ScLGRf5QzfElyCKO81QFSH+amgefwZxBZABEDKJHZmJqLhKl6TbVFy3loxUO9Y3Ml/KQXUJUK4bA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XMQCJ/Gj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Lm+9hy6K"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786094213; x=1817630213;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SlT9f8tdsjssuDzpMXIOwjTSxLfHdf56exCPEZpwW74=;
-  b=Lm+9hy6KCag0BzB+Zeivmft24xtHAQPk/mtzesO9cpdpUaPGqTzCHSyL
-   AQaY6sGYZGK50IcDh2jeFo+HeH9qTDWFHi+fNIRdPVciJOln7O0nxIeIz
-   OCYCH1oUCG44qftDWLoLZ78bElxa3WXd8iT9FZ9qbFrf11dacxpqJCrgD
-   VNG7qOms2uvpR/cPC+rvBEN/qvqCNMKHDyBMn5rwJPIWdKZ1Mkr4t/Hi0
-   YksVUETfUADqeMBLfGnYpWkRltV4w1uhOrRmGWk/r7tM8QjdbLTNwqmL9
-   h7Yxq3ZF+qSpeXSVsjiAwOgiMjjm9mKVGcLC8J3P1l5C2yV/LtFC6rCf8
-   w==;
-X-CSE-ConnectionGUID: 6I9KkdTBTq+iwlMDUVreLA==
-X-CSE-MsgGUID: 8gmpYBXWRgeRHuuCaDD6Pw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="97853924"
-X-IronPort-AV: E=Sophos;i="6.25,210,1779174000"; 
-   d="scan'208";a="97853924"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2026 02:16:52 -0700
-X-CSE-ConnectionGUID: B3/Sak72SEyCjQb6Nmo8ww==
-X-CSE-MsgGUID: 5lyI2mpoQIWiSW6LiLEpzQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,210,1779174000"; 
-   d="scan'208";a="258494611"
-Received: from gklab-103a-104.igk.intel.com ([10.91.103.104])
-  by fmviesa010.fm.intel.com with ESMTP; 07 Aug 2026 02:16:50 -0700
-From: Michal Camacho Romero <michal.camacho.romero@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>,
-	Ning Sun <ning.sun@intel.com>,
-	Thomas Gleixner <tglx@kernel.org>
-Cc: Michal Camacho Romero <michal.camacho.romero@intel.com>,
-	x86@kernel.org,
-	iommu@lists.linux.dev,
-	tboot-devel@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org,
-	Mateusz Mowka <mateusz.mowka@intel.com>,
-	Adam Pawlicki <adamx.pawlicki@intel.com>,
-	Pawel Randzio <pawel.randzio@intel.com>
-Subject: [PATCH v2 2/2] iommu/vt-d: Disable PMRs and skip force-IOMMU when TXT TPRs are active
-Date: Fri,  7 Aug 2026 11:16:31 +0200
-Message-ID: <20260807091631.53485-1-michal.camacho.romero@intel.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260603114500.2771319-3-michal.camacho.romero@intel.com>
-References: <20260603114500.2771319-3-michal.camacho.romero@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XMQCJ/Gj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BAC51F000E9;
+	Fri,  7 Aug 2026 09:21:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786094506;
+	bh=Pneo29ys3hGXogLk2+e1LzC80FrdOftuA2dSFmi144s=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=XMQCJ/Gj7Iu0ebVkhN13wsJt7AMBs/hyKYZHipvHCieM6Evyh/O2tF++XsVqENx/W
+	 O4WpssKXAy1yB++mPLwn98gKLPnv8EJJ/xWJsxJdcHW3lvVwqg0WL0zQ3gkXU+TSmf
+	 //VtTLKCKI8L/CclOy9PRdlovmOFa+u7XuDa26ivvRmK9rJgKLrvrxtkUPdmv+dDNU
+	 LtPQ7TYk2UHyko3C2QTCSIU/KvPbS03jl7EOyg7RbatVxdODw0IY3BaCmRDRK3wPX2
+	 Y5kMliqWeBs0luT8yI7Y4mRC+oPOczxGCmhB0P9lrQf7CzQN4ZpwcwEEKQH0dUWYGx
+	 z/ew0497IG91Q==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v8 00/23] dma-mapping: Track shared DMA state through
+ direct, pool and swiotlb paths
+In-Reply-To: <85be992d-9567-433e-ae2e-64ae5483964d@samsung.com>
+References: <20260717180442.110954-1-aneesh.kumar@kernel.org>
+ <CGME20260725070930eucas1p16cbafb514de7a2e7531d0e4ae158acfb@eucas1p1.samsung.com>
+ <yq5azezfeeax.fsf@kernel.org>
+ <85be992d-9567-433e-ae2e-64ae5483964d@samsung.com>
+Date: Fri, 07 Aug 2026 14:51:35 +0530
+Message-ID: <yq5afr0q2sm8.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-When Intel TXT Protection Regions (TPRs) are present in the DTPR table,
-hardware-level DMA protection is already enforced by the SINIT ACM.
-In this case:
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
 
-- Skip forcing IOMMU enablement in tboot_force_iommu(), since TPRs
-  already provide DMA protection.
-- Tear down PMRs during intel_iommu_init() when TPRs are active,
-  while PMRs are redundant with TPR-based protection.
-- Call tboot_parse_dtpr_table() from parse_dmar_table() to disable
-  TPR regions early, allowing the kernel to manage DMA protection
-  prior to the OS boot.
+> On 25.07.2026 09:09, Aneesh Kumar K.V wrote:
+>> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+>>> This series tracks confidential-computing shared DMA state through the
+>>> dma-direct, dma-pool, and swiotlb paths so that encrypted and decrypted
+>>> DMA buffers are handled consistently.
+>>>
+>>> Today, the direct DMA path mostly relies on force_dma_unencrypted() for
+>>> shared/decrypted buffer handling. This series consolidates the
+>>> force_dma_unencrypted() checks in the top-level functions and ensures
+>>> that the remaining DMA interfaces use DMA attributes to make the correct
+>>> decisions.
+>>>
+>>> The series separates mapping and allocation state:
+>>> - DMA_ATTR_CC_SHARED describes the DMA address attribute requested for a
+>>>   mapping. It tells the DMA mapping path that the DMA address must target
+>>>   shared/decrypted memory.
+>>> - __DMA_ATTR_ALLOC_CC_SHARED is an internal DMA-mapping attribute used only
+>>>   by allocation paths after the DMA core decides that the backing pages
+>>>   must be allocated as shared/decrypted memory.
+>>>
+>>> The series:
+>>> - moves swiotlb-backed allocations out of __dma_direct_alloc_pages(),
+>>> - uses __DMA_ATTR_ALLOC_CC_SHARED through the dma-direct alloc/free paths
+>>> - teaches the atomic DMA pools to track encrypted versus decrypted
+>>>   state
+>>> - tracks swiotlb pool encryption state and enforces strict pool
+>>>   selection
+>>> - centralizes encrypted/decrypted pgprot handling in dma_pgprot() using
+>>>   DMA attributes
+>>> - passes DMA attributes down to dma_capable() so capability checks can
+>>>   validate whether the selected DMA address encoding matches
+>>>   DMA_ATTR_CC_SHARED
+>>> - makes dma_direct_map_phys() choose the DMA address encoding from
+>>>   DMA_ATTR_CC_SHARED and fall back to swiotlb when a shared DMA request
+>>>   cannot use the direct mapping, which lets arm64 and x86 CCA guests stop
+>>>   relying on SWIOTLB_FORCE for DMA mappings
+>>> - use the selected swiotlb pool state to derive the returned DMA
+>>>   address
+>>> - reports CC_ATTR_GUEST_MEM_ENCRYPT for arm64 Realms, powerpc secure
+>>>   guests, and s390 protected virtualization guests.
+>>>
+>>> Dependency:
+>>> This series depends on the pKVM changes posted at:
+>>> https://lore.kernel.org/all/20260603110522.3331819-1-smostafa@google.com
+>>>
+>>> Please merge this series only after the pKVM changes above are merged.
+>>> Otherwise pKVM will be broken.
+>>>
+>> pKVM topic branch is now available 
+>>
+>> https://lore.kernel.org/all/178467286876.125042.12010461715645610054.b4-ty@kernel.org/
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/coco
+> I've just got back from my holiday's and I see that there is everything ready to give
+> this patchset some tests in linux-next. I hope nothing will break.
+>
+> I've applied this patchset to dma-mapping-for-next, on top of pKVM topic branch with
+> patch "[PATCH v8 17/23] dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED"
+> rebased onto latest changes in arch/arm64/mm/init.c.
+>
 
-Link: https://uefi.org/sites/default/files/resources/633933_Intel_TXT_DMA_Protection_Ranges_rev_0p73.pdf
-Link: https://cdrdv2-public.intel.com/315168/315168_TXT_MLE_DG_rev_017_7.pdf
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Michal Camacho Romero <michal.camacho.romero@intel.com>
+That might need a fix.
+
+From 5a9af89e74e9e2671ed0a572af129ebfa6fd4640 Mon Sep 17 00:00:00 2001
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Date: Fri, 7 Aug 2026 13:14:51 +0530
+Subject: [PATCH] arm64: swiotlb: Keep the default size for protected guests
+
+Realm guests and protected KVM guests may require swiotlb for device DMA
+even when all system RAM is addressable by the DMA zones.
+
+Do not reduce the SWIOTLB buffer to the kmalloc-bouncing size for these
+guests, as the reduced number of slots can be exhausted during CCA guest
+operation.
+
+Fixes: 30c5e45ee2c5 ("dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED")
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/iommu/intel/dmar.c  | 13 +++++++++++++
- drivers/iommu/intel/iommu.c |  9 ++++++++-
- 2 files changed, 21 insertions(+), 1 deletion(-)
+ arch/arm64/mm/init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 767ec092accd..17c26d222253 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -635,6 +635,8 @@ static int __init
- parse_dmar_table(void)
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index e308a7cabd12..24caaf10e755 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -339,7 +339,8 @@ void __init arch_mm_preinit(void)
  {
- 	struct acpi_table_dmar *dmar;
-+	struct acpi_table_dtpr *dtpr;
-+	void *txt_heap;
- 	int drhd_count = 0;
- 	int ret;
- 	struct dmar_res_callback cb = {
-@@ -670,6 +672,17 @@ parse_dmar_table(void)
- 		return -EINVAL;
- 	}
+ 	unsigned int flags = SWIOTLB_VERBOSE;
  
-+	dtpr = tboot_get_dtpr_table(&txt_heap);
-+	if (dtpr) {
-+		/*
-+		 * TPR is enabled. This will also tell not to establish IOMMU
-+		 * PMRs.
-+		 */
-+		tboot_parse_dtpr_table(dtpr);
-+		iounmap(txt_heap);
-+	}
-+
-+	txt_heap = NULL;
- 	pr_info("Host address width %d\n", dmar->width + 1);
- 	ret = dmar_walk_dmar_table(dmar, &cb);
- 	if (ret == 0 && drhd_count == 0)
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 849d06dfe1ae..5bc6f2dd25c4 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2543,6 +2543,13 @@ static __init int tboot_force_iommu(void)
- 	if (!tboot_enabled())
- 		return 0;
- 
-+	/*
-+	 * If TPR is enabled we don't need to force IOMMU, TPR set by SINIT
-+	 * ACM will take care of DMA protection.
-+	 */
-+	if (tboot_is_tpr_enabled())
-+		return 0;
-+
- 	if (no_iommu || dmar_disabled)
- 		pr_warn("Forcing Intel-IOMMU to enabled\n");
- 
-@@ -2600,7 +2607,7 @@ int __init intel_iommu_init(void)
- 		 * calling SENTER, but the kernel is expected to reset/tear
- 		 * down the PMRs.
- 		 */
--		if (intel_iommu_tboot_noforce) {
-+		if (intel_iommu_tboot_noforce || tboot_is_tpr_enabled()) {
- 			for_each_iommu(iommu, drhd)
- 				iommu_disable_protect_mem_regions(iommu);
- 		}
+-	if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
++	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
++	    max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
+ 		/*
+ 		 * If no bouncing needed for ZONE_DMA, reduce the swiotlb
+ 		 * buffer for kmalloc() bouncing to 1MB per 1GB of RAM.
 -- 
-2.55.0
-
----------------------------------------------------------------------
-Intel Technology Poland sp. z o.o.
-ul. Slowackiego 173 | 80-298 Gdansk | Sad Rejonowy Gdansk Polnoc | VII Wydzial Gospodarczy Krajowego Rejestru Sadowego - KRS 101882 | NIP 957-07-52-316 | Kapital zakladowy 200.000 PLN.
-Spolka oswiadcza, ze posiada status duzego przedsiebiorcy w rozumieniu ustawy z dnia 8 marca 2013 r. o przeciwdzialaniu nadmiernym opoznieniom w transakcjach handlowych.
-
-Ta wiadomosc wraz z zalacznikami jest przeznaczona dla okreslonego adresata i moze zawierac informacje poufne. W razie przypadkowego otrzymania tej wiadomosci, prosimy o powiadomienie nadawcy oraz trwale jej usuniecie; jakiekolwiek przegladanie lub rozpowszechnianie jest zabronione.
-This e-mail and any attachments may contain confidential material for the sole use of the intended recipient(s). If you are not the intended recipient, please contact the sender and delete all copies; any review or distribution by others is strictly prohibited.
+2.43.0
 
