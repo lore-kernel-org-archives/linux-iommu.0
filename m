@@ -1,305 +1,303 @@
-Received: from sonic319-27.consmr.mail.bf2.yahoo.com (sonic319-27.consmr.mail.bf2.yahoo.com [74.6.131.82])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011009.outbound.protection.outlook.com [52.101.52.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCA1C4B04B1
-	for <iommu@lists.linux.dev>; Fri,  7 Aug 2026 02:31:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.131.82
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786069876; cv=none; b=Rel8tmq5u9SBRDEvIe0DIZ/7GARy7hTfTLHYXEahSibKg+4KGuWCspiSTQdoRLDf1q6b0vT1sgERKGrWtz22efLUPH5jYJrX/r7L6ru+t17AC0WPlF5lDKtXTtrMIp41tTKvxDbmgiEbBj92FK34mg+cDlwB4PcaDlIAk6Kcoh4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786069876; c=relaxed/simple;
-	bh=GNwYqwTDGJcKEuVTLnRLwWDUJaeRuGWmfqBxKAxsjm4=;
-	h=Date:From:To:Message-ID:References:Subject:MIME-Version:
-	 Content-Type; b=ITLov8nEG6PNeoBXPTfoj1eI/1MWm1M9xScC9If1vR6q8S2UcnZjKphpDxy5eBq1+00JL/o1kpTR9lcJhKzJSqieeMCM9bjquTvSbcnIxw1SNPSEWYfhDCjiNL1WHLqs3aKITOO/Dt50io0MvseEaVE/R6/fcQxQY5LVI0KANfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.co.nz; spf=pass smtp.mailfrom=yahoo.co.nz; dkim=pass (2048-bit key) header.d=yahoo.co.nz header.i=@yahoo.co.nz header.b=o2Y1Be+y; arc=none smtp.client-ip=74.6.131.82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.co.nz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.co.nz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5132D3A6B77
+	for <iommu@lists.linux.dev>; Fri,  7 Aug 2026 05:36:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.9
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786080991; cv=fail; b=LHLTyiiPQSQObBnuN/tDrg+bfFuJMpIQD00jcJ5Wod1nW1NZwoQ4Zyg0Fq29v6NdC3t/BImYpDNHuhICaa28sNWI2SgHMAdGvwGrZ5goJLnpK4w0gdSwQgo+qkWRJ3faPWbJIEPzwZd6ktpp7L9kalDTAgPDNznqwH6kojaiGZc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786080991; c=relaxed/simple;
+	bh=KNhfxWDdQgiT38JEnCeTLVy72dH8hALCs4iE8EP4ijA=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=JqLba9Yip2ERuNWUZGQT1ywNwZolSW2gVwt70MEvi/pcJXJ6QQ/u7pqpVMWr0HlKyuDGw0vHLz4zJT5yKLcjjKDq57gpgwNbMPXDgMzfTIShgLuL8G4Aw8VyZJk73spz32HWzIXLkr0NL+W0ogH/x3SHoYumoOs2NEk2WXDatAA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=TkFH+62Z; arc=fail smtp.client-ip=52.101.52.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.co.nz header.i=@yahoo.co.nz header.b="o2Y1Be+y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.co.nz; s=s2048; t=1786069872; bh=Gzerkg5GdjBvwUIPGDlDwO5/CScQRmXsn2BfhvX+lqI=; h=Date:From:To:References:Subject:From:Subject:Reply-To; b=o2Y1Be+yK+1pIFgWNPR1jajDJGq6Wu23989PTWD2ZfJEdPQl4hoR66Qe7TjZufFoDcmTJTE+H4qAd9v6v1eg/DcTL5Qrhdbe9VVgzERMGptx+k4ZFSkFlG75qw72i9xa57/jgV+mn0mLIC6oExGz+Sy3etjvjxOS15ZxoMCr7nkeY/8NDJcWdYXbMYM/osT/Den27EVU8iu2xDRvRKMRVN5EWnyl+4NpdTEDfA4kZvMb+W/RjxDfmqcnqyCfEeTM+YHFDfychYMaFq0VM/Rpy1u/P4OyPuTSDe5T4IE2txhfdiMvn36jLrnCH/EbXPeVikFVjhJWRU9YBqCxWYPkig==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1786069872; bh=ZdPBDmWjT177kEgU0zx79/ENs2typ5vrdzVC1Y3h5Uf=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=fOy2BoNE8IK6tYwRwUhKaHI1Gm2zjE5IWGIPyogsxpOll7j2/BMTDu26qcukPJQ6YmA4o1Kp9t8co3an9zP5p5ccZs53t+kaRnZ8M0mTMkeJkDX6hWihonPgyBnGHwGrNxwnvjFYnwpYWWtjaheSK6I9xJdiS92EJithJzRK9PXKYyMPrhgCsFTamvpX52sdAT/s35mRjlqQMraEXcdv+eAFwmG6a7p7zAKqyQif34q20X+qT+Pv4j7eJzod2v13vlKKGSRNrSaS+4KYWBGe1SYSTCshJ7QHmZIPJuLpVtf1CLuB1cKl8cI0i5x+eNkqDnrz/aQEGEg3/vdtPyHqYA==
-X-YMail-OSG: 1Qztm68VM1n0ZsXIXrWvGULo2Mz1G4DRoyPgYjv7.h.Hq_qYUeZ20aRmaQxtSZZ
- Faq1SPujsXpKYKNmChmwtRITjQaubD_fgWjjk5cvj3p84cAulhtCUCz6pfmCLieAj0c5us8leidS
- 8fnOq64YkLOSoBAeSOa4mM5y7o7dWhDHcK1hVRSDI9vwHOwC6Mg_9OSDYAdYBGZ3SSWtQJnJA4O2
- FZhzgwgn5wP1bp7P8Pk4.oo3jWVJclL2PhLEWSAmz.aYN2dLoYbT2C34PTcIzDOHG5U3kyvSS7d5
- Px6I9Kq93hQDHi9V6BBxd1wfZXFUHN_966N2D6LGUg3fY0qEF49y9RjNZT9tbpGkpAbLVCqc70Ze
- XZ8XfX7E9D1rTnpEk3txLjoUzys5_dvQAKIXyzwYeAWLpfoNHLHT3RKjGisDJv2AvYnpinFlu1LL
- Ykaqo8s0nEh440AJAZJLAWSjIKYTg.lJc_NOmK_NdUWasW_gIWC9Rbo4oPCjls_YGjpd7irHazdM
- feJGRyNwiWyL0_VZRkLSdXGS3gfq2LFqVEOqQ5R_EDi8AbjJbjZ.MkhOBF0_Ezh1U1KZpfX.5F8k
- sGWW8AmBzfYwQOfflgZYkLLcJUpBTQSdQSTbC2g0dGdtHCzA6TyTrM4EWcQJ0fgZ4YuHOlgnLX48
- hWofgnpv1fkOuuW1ikAogWBCbgL04nxWW_XnIQ.5OprvEnDTAgeiJf88rXnnoGJu0VSPxOT0cvZw
- IeCK.yEXpLkqUWo7zZtJSdLV_RETOVBrkfx2bv8TrdaTW28OqeHFy7K__XerkP.sv_ZnegTvcf0c
- wQ8sxthcZewpqPA8guBE9EOugmvjFdhgJXRIQzZGCEvE9uNbTF_x8nJUBoliGSxkOZI_rzIt0zVf
- reFUYLJhV468tLIc4vrV88ad9M6OHLImHS6DJTw59kUk30.KAV_ktIeGlHJhnOYzEik6iIuMBHT8
- NrKY2beFbvryAyIp7sex4AslM_c8NOAZR3Uc9VBaLep43MZ1.CiFv3S0GEahAUGFS2dciRwOxfeh
- fBkA9H.ph9VakS5V_5R8dPbtrt1a0R83c70aeDb55BmqohrCOQvDcSs6hU_Lr_a_vhHFqsVq_.AG
- 8ycroRLAMmq2TIrqJU4M5J3BTDHN5gYqe58X5zzAk0xTU8N6yLE4eYNWKHfFPUrnepBD2mIhmg9R
- KDir1kwzHM9jRj6xRtJi25XnF6MKHJUGq4s3tGFDe9gHVWxCx8koyj_LCDJbJjWEiZNlrHNF1nA2
- OdudBGGyoQeXM22hRgNzOYRP_hZsYHyM39SF7EUCNZLc.uZ1qJWdB6mcpRe.w58u7Ek_F4dVW0yB
- hnxyEPE6yb1MBBK_tBHpv3KEwnORqMG7FOOZHJwjeQHbkZgHGjiwkdGCtr8FnMgMrdLTZo53HUJX
- 4cAfweEeT1Lna8inzjvnqRhHHPFnt9R8PYw_6eGlFlfpTW2QZlP3G1OqHpCjvZFf12lTaeT5il9Y
- wKdUoTDMkvjwS5S2lKIsJem13JrxDNbV3nqMa6f16mKcPi5qnApSKdh5n8jVPk2eXH877r6oGV78
- 9jqqmBXLCCbm27LL.TACcVT_Tt4.LYsRqwxLHl6o2XPd_6b6uIoUdM2Ll.78L0XR62RDKcPyZbYv
- 0Lu5VhGmXZjzJeRUFZsK9AHQAkh9Jj2e43BQcKmo6xLsBQvE6v1LftxjcJPwbHF1KxPe_d4m8fpz
- 165lm03NY0BTJLgAW_sN8fKKmQm6X6YDUrGUlKOIqWh48K_xZhMW.5Xw4rTlzEQMlq2Z19XQXvz5
- 08WCxylJhtm.CPiS0tydT0arDCksXe5jVuXoPpf7NlWq.1oPOJLwwvmrjuKI136kXyDP5IDic.Yd
- pej8lzmHoeNA9kOO6A6DNfYdt71t6MyWjlDa0qXZdqOrEi8ZJxFQtTF6KKkc.dKXao3ST.O6vSvi
- MCH8MkBWTuU3lJmGuaQ35V9erjaTEfZpXedfY7AGm.olaFzjLVtxwKWIdaN._cwCL2RJ2s0CnMZN
- LMLDcF6II32alBVpZ2IrGLkjh9y5ncUeTf5kGP.O7diuoWwPjyIUCIbnMQ7sad1bqsmawVfeYjJ3
- K1SV0JAuMlco3F63B4lqqivDeZ9IsCNKkN8kJSKn.vWVjtpcC71UO1rvp4MZB.Y__IWc.a__0.05
- v1ufNAbb5uvCpkRumwcMHUHU2bMO.I4QpiDwz9O7VvpJDk9ln4E5UfDhDnQkicGirWF4KsmrpCgV
- 36PzX43Why3qX_ir6OIIS3Ej9fl3dtZ8q2cLwgZDnpDD9xCRTH70wuZxYGIReD1Zz0SbV
-X-Sonic-MF: <gareth46wilson@yahoo.co.nz>
-X-Sonic-ID: 19e241d6-06c3-468d-b738-10727e6842b4
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic319.consmr.mail.bf2.yahoo.com with HTTP; Fri, 7 Aug 2026 02:31:12 +0000
-Date: Fri, 7 Aug 2026 02:10:27 +0000 (UTC)
-From: Gareth Wilson <gareth46wilson@yahoo.co.nz>
-To: "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Message-ID: <1085605364.308439.1786068627265@mail.yahoo.com>
-References: <1085605364.308439.1786068627265.ref@mail.yahoo.com>
-Subject:  [BUG] amd_iommu driver timeout (i >= MMIO_STATUS_TIMEOUT) during
- S3 resume on ASUS B650M (Ryzen 8700G)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="TkFH+62Z"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Yo0+nPEFjoKxRAFGx3pSR3nRnM3AUQZ9STDPacQAiULJtWAbxgOZzrDAkG0Ll0UUk+5mdfh7aEnVp6Fl6STMRiRIRLQN1jubfdeqLAD0DlFaJKgEyUQS37deghuMM2Ki4hBd02/fMLmWK58Imf0vx0inGClOCUqASsM/CYvPVzwvjjwjsDlTpZOwGtDc595X8cPO4O7vrgJF/dDPnCQ8mFOoJAGXinw/0stcu+fb5pbjERJ3CVUNsLpJXM02o7wIEFFgptWcXEoGZ0WhPhBppEf9m2B2iL85ETDa4aZeFGuGPYKVp/PZ1XqZ4LO/1Iqdp1BhMSOsoOWELmoHiBKhrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0gINZ/JRrbyf4YhFSM1cWF7jV7Sk6a1IxdSENxCtoVw=;
+ b=LinzdhokAIUE0+uor38txU6N6rBVEVxTIFHGMZGbg5HOjUpNvGov28h6fCGrpg5sQVeYDodR//tH4ViPuWrTXjyhhsot63to22jPMZENibBrB6xtG4KwOD1FhaJMUr3XctslQrKyY0KF4qoDDLwqKC6NE7nOTTw8zAxQjUw2Ss+3kThA9PYASUuLmpFk5nIzWJq0rJBEaKRgC21/0KbMUj5LxOkIIOsAa8y9aCG8X6QIp2ZPPbXhGGoADPzfHtIzrK7B+rcy60kUQ9fHP5cTEqdSOLrQhlWgmREBiCoDMsS61Ql4IynhI15gRdgijp8f5hdGsqaF+ja8PBt/wZVxEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0gINZ/JRrbyf4YhFSM1cWF7jV7Sk6a1IxdSENxCtoVw=;
+ b=TkFH+62ZrHgaqM3tykqaygD5nnKPZ8VFkXRWMTdoJQvIiXAwstSGmC6fqBi27RGyOmR53BQo5xdXRHxbpELsSdQ3pr2fasa8HDtTKG+EDgOKJW30kTZ8lJzdopjknciD2w5gpUfdW02dPhSesqhsrb76eho3MPjkVMK2YZhPBZo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB9475.namprd12.prod.outlook.com (2603:10b6:8:251::6) by
+ SJ2PR12MB8719.namprd12.prod.outlook.com (2603:10b6:a03:543::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.292.21; Fri, 7 Aug 2026 05:36:24 +0000
+Received: from DS7PR12MB9475.namprd12.prod.outlook.com
+ ([fe80::4371:c924:8800:2587]) by DS7PR12MB9475.namprd12.prod.outlook.com
+ ([fe80::4371:c924:8800:2587%6]) with mapi id 15.21.0292.019; Fri, 7 Aug 2026
+ 05:36:24 +0000
+Message-ID: <054a8997-3578-4d8c-9e8f-2556e9999819@amd.com>
+Date: Fri, 7 Aug 2026 11:06:18 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/iommufd: Fix NULL pointer deref in
+ iommufd_ioas_change_process when racing with iopt_map_file_pages
+To: Peiyang He <peiyang_he@smail.nju.edu.cn>, kevin.tian@intel.com,
+ jgg@ziepe.ca, joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, steven.sistare@oracle.com, stable@vger.kernel.org
+References: <7344B7A7B9957A65+20260806045059.1884737-1-peiyang_he@smail.nju.edu.cn>
+Content-Language: en-US
+From: Tushar Nimkar <tunimkar@amd.com>
+In-Reply-To: <7344B7A7B9957A65+20260806045059.1884737-1-peiyang_he@smail.nju.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA5P287CA0127.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1d0::12) To DS7PR12MB9475.namprd12.prod.outlook.com
+ (2603:10b6:8:251::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_308438_1259786800.1786068627265"
-X-Mailer: WebService/1.1.26254 YMailNovation
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB9475:EE_|SJ2PR12MB8719:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5326bf13-61cf-49b2-7947-08def445d1e4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|7416014|376014|11063799006|56012099006|10067099003|6133799003|3023799007|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	MiUN7L4NGEl28yZH3r38Jrtyr30ZB9UcVRMmFh7zXhWIslrDqvWgNWaiGUdYdg8Fc5QoYjrNeWYfB29rHaa+qRfG+iyaaodzhpKIh9DTPEWbH26e0gmXhBTEwUHTVcS5SwfmXw8bpVEdc80U1mY4r4RHRN+8LcwRSdA2folyAU14g6crkwdanNx6mWIEhX/sQAF7NEWH4F/jJnnqpdWbeTqR8nohgF7nfdrvO1B6tcxvt/9/lqxo2sLIhCd1ffuras8g9OumSf0f6HyHQN9w91FmNIiuig7b3DlOvxazkh5skDA5VieYExllhWY/L10K11CTqABwZFDXewM3eyBQfq6yZqrPZEWIIyZuZmvY+vz3YuQSaMbrhNvBJHvFiL10/UqKR4YxGla4wE4t57pAlzMKUyq4xXVsnq9CpHoj+jkQBQOUV72Ym80w/Eo8CGJmBwrgXOMwLdrmaNtvcIR77eOUi3O1ylNL7zdA6ZfGFpAfIA67wG4tPM6KOyaCiSBP4vG6LTnCiY+N3eZn8VBGoXDZREgHdL4dBSVe+fBnfsDF8x51faMigEYMCG/TeoUXIlr09yG4YsKFhClMoHzakmrRuFeoEdmMApJy2ZeU61xcrXpEZZ+x1Ds7nclvF6rmPo44aBpdBupExvX8ztLe3ZcqHEQoIxbSVI9YYuEHWLA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB9475.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(7416014)(376014)(11063799006)(56012099006)(10067099003)(6133799003)(3023799007)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bWhwSTZlcU1KZkU2NnJLZkl3WUIyM2hzbURHL0ZkV0lCYmtKSU1BN3EyeXRE?=
+ =?utf-8?B?VkhXczYwdG5SMjNHRHRoYWo1K0dpbWRzcUJYRTUrRTZldm12Sm41VUVqaTN6?=
+ =?utf-8?B?NHhUbzhvUytQL2M4NjZDRXNXaFVvWGtobzcwQkhjUlBSdU1HV2x3OW4zM3d4?=
+ =?utf-8?B?REMxd1UwK1pURE1HYmJwMVdjT3hRQmFrWm9OV1hScE00OTIrRlh1Q0hFWVlT?=
+ =?utf-8?B?ekNaVDhBVTFacTNXejhZVEd3amYxS25xSTRHakc3Y0poL2JoY21aYmtSVTBK?=
+ =?utf-8?B?blc4MkhHOWVrZnh0SStUYkM5ZWZuRzFCU0tsZjVqRlhiNWgyMnc2ekd0cGlG?=
+ =?utf-8?B?eXIyRHBWYUo0c3ZtMjV6NjhHbituTWpWbWdzSjVhOHhZUU1idnVOb2pydTZM?=
+ =?utf-8?B?Qm1wa3gxaE41dEVpRHpha3hUR0wxZEFadk5wb2VlVTVIZUcwYW9PNVg1c3dH?=
+ =?utf-8?B?Umc4NUp1NUxMQ1hxQ21mYjB4K0tXa2tFNHYxS0h4NFY0MFcwMjN2ekJEdDVa?=
+ =?utf-8?B?N0pqMnhTSEVPeEJReDl4MC96RHZ0TWE3dkJ5L3lxUlJyekZvVlBYY3hDcStw?=
+ =?utf-8?B?S2ZtS3hKWENSTVVQem9aV016WXlKRkJ3N0Vac2RjM1l3cXRSbG4wQnNjZXpt?=
+ =?utf-8?B?Z2toeElsMkkxRmZoMDl2cHI3ckN5cmlUM0RTYjVua1NNdm9lcy8yVDg5Z2Ux?=
+ =?utf-8?B?N3Yya3JSdDlwTzNtTzhqQjVJcHMvbnp3WC9Jb0puMEdSaHQ1L2FHdWxJa0VE?=
+ =?utf-8?B?WGxDVlh1OHVWQWVBbGFTdDhpTFdZNGhMSXdlcjVhVlQxbEpCaXZDMDNPNXRh?=
+ =?utf-8?B?Sll1NGVjNmM4UiszQTB3bVA0Lzg4SWJGNk1sTnpNWXFVc25QOEF6MUR5aytY?=
+ =?utf-8?B?L1VZQVVlcUZnOVQyM2ErNHFYd1ZPOGhZZlJVMDdCd3NVWXU5V0dhWmxMWnJB?=
+ =?utf-8?B?SytxUG8xRnZaRWljNW54Yml2aUVadUZPV0ZWZFhwZ09ETnM3eVI5dkpWS3pa?=
+ =?utf-8?B?OHJMdlcrR2hyNzVQZnBRWG5OejkvWUJPcC9SOWRhbHlJcTF3aCsvcWZNT0Zq?=
+ =?utf-8?B?bk5PcnZSOVRVZWMrbUt4MG1YVXFhY0hMemI2L05qYjcrSFExeHVXKytnTmNJ?=
+ =?utf-8?B?cFVzT3ZNa1FXQlovUTF6Qmc2cGtzY29nN01MZm91WmV6dW1acStqamt4OFll?=
+ =?utf-8?B?S01XNnRqZzA2RTNaK0lRcWpYYzg2MWJCK3ZqenNwSzdOSDJqbGYyQ0JaUWcw?=
+ =?utf-8?B?MC9oTGZSY0xIZjVKcUdxS0VHK1krSlpuTGhsS0hnTlVWRzVkdDZ6b0N0ejhz?=
+ =?utf-8?B?Ty83OWIxTGpPaWdIbkl0VTRmWGJmM2hlbE0yTHNHNEFnTGNRQlRPWGVORURt?=
+ =?utf-8?B?ZnZUQVl2L3ZxQ1FsRnRjNnZwYkNGelZaZ0owTXVmRmVCS2dUWGxISENRSWwz?=
+ =?utf-8?B?bHA2RjZEV1lsU25WSG9qdm5HTkJ6Ry9aUlJhVUxkWlA5aE44T2Q0eU5qcm5H?=
+ =?utf-8?B?TzZkeXVzSmx1ZjZseXpOUklURjFlK3JzaE45NVBPNHVZaGQ1c284QnlLR25P?=
+ =?utf-8?B?WDdrRk8vb0FGdGFuK2VBY2hpaWtrMmxIVGtkY2kyS3ZjOUpMNVlycHR0K2J1?=
+ =?utf-8?B?cTVNR1JkLzVrcmN5OGZOLzlUOUVnYjVQV1F1QjVFV2xiM0Jva1BXbG1ZM0kv?=
+ =?utf-8?B?TnFXZW0wL0ZRaCtvdnBnQ1R0R09rV2p2ZGRjRG5tSTZVRU9MNm80dk55TjNG?=
+ =?utf-8?B?SWhSaG11Wkx0L1ZxWnVnajFQYWsvRTZrVGFYUTdTdUdFejlJZURtZ2ZpM1RC?=
+ =?utf-8?B?SUNaOC9teGN6OHlNc3lweFc5T1JlNi9SYzhhS1d6Yis1cjQ2dTFKb2tlNm5Z?=
+ =?utf-8?B?dy9vWDYzTUlWYmc5RGNwYU5rcUFtVUZPa2FPOEcwOGNtR0MybUlPWW5IcFFh?=
+ =?utf-8?B?QmwrYnEyK25ZakZuYndET1k5QnZucHNuNlJJUVB1eU9acEZFUXJzT0FrMmFD?=
+ =?utf-8?B?aG9DdXB2VWo5ekxJL1Y2ZnNsU0FhMWRlZ0E1R2oyN09mUFplZSsxZGhCZ3lT?=
+ =?utf-8?B?Q1ZGdzB5eHVzZ0pBRk1vN01zZUhUSndpaXJHMzVRVmRVZDZmRUtxamxLakIr?=
+ =?utf-8?B?OU42aWpiWDJKM2ZjL2ZQK3M2TU9lYWd6ZmFidExnNDVla28waFg4WkxiOS9C?=
+ =?utf-8?B?UHp6OFhUdHk3UlRXNVlXeVNzVjJkL3p4bFNLLzh1eXFlNVJ6R2gydGJaZ0NM?=
+ =?utf-8?B?NUJWQkE0cE4wemVMUXlyVFVsNjhtUStTZXNuUnZtNGJldnBjL1Z1M3l5bzFC?=
+ =?utf-8?B?S3htdnlrL3RTbkc5TE81Rlo0eGlKQ29ORTlUajdhU2NNNU5Ub3kzQT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5326bf13-61cf-49b2-7947-08def445d1e4
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB9475.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2026 05:36:24.6256
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TlyJC8r2lVOMvtAjmws72L2Vo9iUaW+6uaEHkETLpa+YCaHe4G/65khW59MubFhgsvfG5Ij32+8s6gUi9XUTTw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8719
 
-------=_Part_308438_1259786800.1786068627265
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_308437_1486517840.1786068627252"
+Hey curious to know,
 
-------=_Part_308437_1486517840.1786068627252
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+On 8/6/2026 10:20 AM, Peiyang He wrote:
+> [You don't often get email from peiyang_he@smail.nju.edu.cn. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+>
+>
+> iommufd_ioas_change_process() iterates every IOAS area while only
+> holding every IOAS iova_rwsem, so it assumes every area has a non-NULL
+> pages pointer. That assumption can be false when it runs concurrently
+> with iopt_map_file_pages().
+>
+> iopt_map_pages() executes in two phases. It first creates the area and
+> inserts it into the interval tree under iova_rwsem, with area->pages
+> still NULL. It then drops iova_rwsem and later fills area->pages
+> under domains_rwsem. This leaves a window between area creation and
+> area->pages fill where a concurrent iommufd_ioas_change_process()
+> can observe the area and dereference a NULL area->pages pointer,
+> leading to a NULL pointer dereference:
+AFAIU, the flow must be
 
-Hello
-I'm experiencing random long resume from suspend times that are fixed by adding this to the kernel boot command, amd_iommu=off
-I've attached some dmesg logs of the issue
-Kernel: 7.1.5-artix1-2 PREEMPT (Artix Linux)Hardware: ASUS TUF GAMING B650M-E WIFIBIOS Version: 3854 (Release Date: 04/03/2026)CPU: Ryzen 8700G
-Please let me know if there's any more info needed
-Thanks
-Gareth
-------=_Part_308437_1486517840.1786068627252
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+iopt_map_file_pages()
+         ->iopt_map_common()
+             ->iopt_map_pages() <- here it does create and write pages ..
 
-<html><head></head><body><div class=3D"ydp40824d81yahoo-style-wrap" style=
-=3D"font-family:Helvetica Neue, Helvetica, Arial, sans-serif;font-size:13px=
-;"><div dir=3D"ltr" data-setdir=3D"false"><div>Hello</div><div><br></div><d=
-iv>I'm experiencing random long resume from suspend times that are fixed by=
- adding this to the kernel boot command, amd_iommu=3Doff</div><div dir=3D"l=
-tr" data-setdir=3D"false"><br></div><div dir=3D"ltr" data-setdir=3D"false">=
-I've attached some dmesg logs of the issue</div><div dir=3D"ltr" data-setdi=
-r=3D"false"><br></div><div>Kernel: 7.1.5-artix1-2 PREEMPT (Artix Linux)</di=
-v><div>Hardware: ASUS TUF GAMING B650M-E WIFI</div><div>BIOS Version: 3854 =
-(Release Date: 04/03/2026)</div><div>CPU: Ryzen 8700G</div><div><br></div><=
-div dir=3D"ltr" data-setdir=3D"false">Please let me know if there's any mor=
-e info needed</div><div dir=3D"ltr" data-setdir=3D"false"><br></div><div di=
-r=3D"ltr" data-setdir=3D"false">Thanks</div><div dir=3D"ltr" data-setdir=3D=
-"false"><br></div><div dir=3D"ltr" data-setdir=3D"false">Gareth</div></div>=
-</div></body></html>
-------=_Part_308437_1486517840.1786068627252--
 
-------=_Part_308438_1259786800.1786068627265
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="dmesg"
-Content-ID: <eb414e3e-67d3-1b20-992f-6a151ad8038e@yahoo.com>
+iommufd_ioas_change_process() <-the page pointer is being accessed..
 
-WyAgICAwLjAwMzI1Nl0gQUNQSTogSVZSUyAweDAwMDAwMDAwNzE2RUEwMDAgMDAwMEM4ICh2MDIg
-QU1EICAgIEFtZFRhYmxlIDAwMDAwMDAxIEFNRCAgMDAwMDAwMDEpClsgICAgMC4wMDMyNzBdIEFD
-UEk6IFJlc2VydmluZyBJVlJTIHRhYmxlIG1lbW9yeSBhdCBbbWVtIDB4NzE2ZWEwMDAtMHg3MTZl
-YTBjN10KWyAgICAwLjAwNDEwNl0gUE06IGhpYmVybmF0aW9uOiBSZWdpc3RlcmVkIG5vc2F2ZSBt
-ZW1vcnk6IFttZW0gMHgwMDAwMDAwMC0weDAwMDAwZmZmXQpbICAgIDAuMDA0MTA4XSBQTTogaGli
-ZXJuYXRpb246IFJlZ2lzdGVyZWQgbm9zYXZlIG1lbW9yeTogW21lbSAweDAwMGEwMDAwLTB4MDAw
-ZmZmZmZdClsgICAgMC4wMDQxMDhdIFBNOiBoaWJlcm5hdGlvbjogUmVnaXN0ZXJlZCBub3NhdmUg
-bWVtb3J5OiBbbWVtIDB4MDk5ZmYwMDAtMHgwOWZmZmZmZl0KWyAgICAwLjAwNDEwOV0gUE06IGhp
-YmVybmF0aW9uOiBSZWdpc3RlcmVkIG5vc2F2ZSBtZW1vcnk6IFttZW0gMHgwYTIwMDAwMC0weDBh
-MjNiZmZmXQpbICAgIDAuMDA0MTEwXSBQTTogaGliZXJuYXRpb246IFJlZ2lzdGVyZWQgbm9zYXZl
-IG1lbW9yeTogW21lbSAweDBiMDAwMDAwLTB4MGIwMjBmZmZdClsgICAgMC4wMDQxMTFdIFBNOiBo
-aWJlcm5hdGlvbjogUmVnaXN0ZXJlZCBub3NhdmUgbWVtb3J5OiBbbWVtIDB4NjRmNmEwMDAtMHg2
-NTA1ZGZmZl0KWyAgICAwLjAwNDExMl0gUE06IGhpYmVybmF0aW9uOiBSZWdpc3RlcmVkIG5vc2F2
-ZSBtZW1vcnk6IFttZW0gMHg2NzgwYTAwMC0weDY3ODBhZmZmXQpbICAgIDAuMDA0MTEzXSBQTTog
-aGliZXJuYXRpb246IFJlZ2lzdGVyZWQgbm9zYXZlIG1lbW9yeTogW21lbSAweDZhZWVjMDAwLTB4
-NzgxZmVmZmZdClsgICAgMC4wMDQxMTRdIFBNOiBoaWJlcm5hdGlvbjogUmVnaXN0ZXJlZCBub3Nh
-dmUgbWVtb3J5OiBbbWVtIDB4NzlmZmEwMDAtMHg3OWZmY2ZmZl0KWyAgICAwLjAwNDExNV0gUE06
-IGhpYmVybmF0aW9uOiBSZWdpc3RlcmVkIG5vc2F2ZSBtZW1vcnk6IFttZW0gMHg3YTAwMDAwMC0w
-eGZmZmZmZmZmXQpbICAgIDAuMDcxOTUxXSBBTUQtVmk6IFVzaW5nIGdsb2JhbCBJVkhEIEVGUjow
-eDI0NjU3N2VmYTIyNTRhZmEsIEVGUjI6MHgwClsgICAgMC4yMjk3NTldIEFDUEk6IFBNOiBSZWdp
-c3RlcmluZyBBQ1BJIE5WUyByZWdpb24gW21lbSAweDBhMjAwMDAwLTB4MGEyM2JmZmZdICgyNDU3
-NjAgYnl0ZXMpClsgICAgMC4yMjk3NjNdIEFDUEk6IFBNOiBSZWdpc3RlcmluZyBBQ1BJIE5WUyBy
-ZWdpb24gW21lbSAweDcxODFjMDAwLTB4NzM4MWJmZmZdICgzMzU1NDQzMiBieXRlcykKWyAgICAw
-LjIzMDAwN10gUE06IFJUQyB0aW1lOiAwMDoyODoyMywgZGF0ZTogMjAyNi0wOC0wMwpbICAgIDAu
-MjU5NzQ3XSBBQ1BJOiBQTTogKHN1cHBvcnRzIFMwIFMzIFM0IFM1KQpbICAgIDAuMjk2NzkzXSBp
-b21tdTogRGVmYXVsdCBkb21haW4gdHlwZTogVHJhbnNsYXRlZApbICAgIDAuMjk2NzkzXSBpb21t
-dTogRE1BIGRvbWFpbiBUTEIgaW52YWxpZGF0aW9uIHBvbGljeTogbGF6eSBtb2RlClsgICAgMC4z
-MTY4MjddIGNsb2Nrc291cmNlOiBhY3BpX3BtOiBtYXNrOiAweGZmZmZmZiBtYXhfY3ljbGVzOiAw
-eGZmZmZmZiwgbWF4X2lkbGVfbnM6IDIwODU3MDEwMjQgbnMKWyAgICAwLjMyODg1M10gcGNpIDAw
-MDA6MDA6MDAuMjogQU1ELVZpOiBJT01NVSBwZXJmb3JtYW5jZSBjb3VudGVycyBzdXBwb3J0ZWQK
-WyAgICAwLjMyODkxN10gcGNpIDAwMDA6MDA6MDEuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDAK
-WyAgICAwLjMyODk0MV0gcGNpIDAwMDA6MDA6MDEuMjogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDEK
-WyAgICAwLjMyODk2NF0gcGNpIDAwMDA6MDA6MDIuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDIK
-WyAgICAwLjMyODk3OF0gcGNpIDAwMDA6MDA6MDIuMTogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDMK
-WyAgICAwLjMyODk5Nl0gcGNpIDAwMDA6MDA6MDMuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDQK
-WyAgICAwLjMyOTAxMl0gcGNpIDAwMDA6MDA6MDQuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDUK
-WyAgICAwLjMyOTA1Ml0gcGNpIDAwMDA6MDA6MDguMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDYK
-WyAgICAwLjMyOTA2NV0gcGNpIDAwMDA6MDA6MDguMTogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDcK
-WyAgICAwLjMyOTA3OF0gcGNpIDAwMDA6MDA6MDguMjogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDgK
-WyAgICAwLjMyOTA5MF0gcGNpIDAwMDA6MDA6MDguMzogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDkK
-WyAgICAwLjMyOTExNV0gcGNpIDAwMDA6MDA6MTQuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDEw
-ClsgICAgMC4zMjkxMjZdIHBjaSAwMDAwOjAwOjE0LjM6IEFkZGluZyB0byBpb21tdSBncm91cCAx
-MApbICAgIDAuMzI5MTgyXSBwY2kgMDAwMDowMDoxOC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAg
-MTEKWyAgICAwLjMyOTE5NF0gcGNpIDAwMDA6MDA6MTguMTogQWRkaW5nIHRvIGlvbW11IGdyb3Vw
-IDExClsgICAgMC4zMjkyMDVdIHBjaSAwMDAwOjAwOjE4LjI6IEFkZGluZyB0byBpb21tdSBncm91
-cCAxMQpbICAgIDAuMzI5MjE3XSBwY2kgMDAwMDowMDoxOC4zOiBBZGRpbmcgdG8gaW9tbXUgZ3Jv
-dXAgMTEKWyAgICAwLjMyOTIyOF0gcGNpIDAwMDA6MDA6MTguNDogQWRkaW5nIHRvIGlvbW11IGdy
-b3VwIDExClsgICAgMC4zMjkyMzldIHBjaSAwMDAwOjAwOjE4LjU6IEFkZGluZyB0byBpb21tdSBn
-cm91cCAxMQpbICAgIDAuMzI5MjUwXSBwY2kgMDAwMDowMDoxOC42OiBBZGRpbmcgdG8gaW9tbXUg
-Z3JvdXAgMTEKWyAgICAwLjMyOTI2Ml0gcGNpIDAwMDA6MDA6MTguNzogQWRkaW5nIHRvIGlvbW11
-IGdyb3VwIDExClsgICAgMC4zMjkyNzldIHBjaSAwMDAwOjAxOjAwLjA6IEFkZGluZyB0byBpb21t
-dSBncm91cCAxMgpbICAgIDAuMzI5MjkxXSBwY2kgMDAwMDowMjowMC4wOiBBZGRpbmcgdG8gaW9t
-bXUgZ3JvdXAgMTMKWyAgICAwLjMyOTMwM10gcGNpIDAwMDA6MDM6MDAuMDogQWRkaW5nIHRvIGlv
-bW11IGdyb3VwIDE0ClsgICAgMC4zMjkzMTZdIHBjaSAwMDAwOjAzOjA4LjA6IEFkZGluZyB0byBp
-b21tdSBncm91cCAxNQpbICAgIDAuMzI5MzI5XSBwY2kgMDAwMDowMzowOS4wOiBBZGRpbmcgdG8g
-aW9tbXUgZ3JvdXAgMTYKWyAgICAwLjMyOTM0MV0gcGNpIDAwMDA6MDM6MGEuMDogQWRkaW5nIHRv
-IGlvbW11IGdyb3VwIDE3ClsgICAgMC4zMjkzNTNdIHBjaSAwMDAwOjAzOjBjLjA6IEFkZGluZyB0
-byBpb21tdSBncm91cCAxOApbICAgIDAuMzI5MzY1XSBwY2kgMDAwMDowMzowZC4wOiBBZGRpbmcg
-dG8gaW9tbXUgZ3JvdXAgMTkKWyAgICAwLjMyOTM3MF0gcGNpIDAwMDA6MDU6MDAuMDogQWRkaW5n
-IHRvIGlvbW11IGdyb3VwIDE1ClsgICAgMC4zMjkzNzVdIHBjaSAwMDAwOjA3OjAwLjA6IEFkZGlu
-ZyB0byBpb21tdSBncm91cCAxNwpbICAgIDAuMzI5Mzc5XSBwY2kgMDAwMDowODowMC4wOiBBZGRp
-bmcgdG8gaW9tbXUgZ3JvdXAgMTgKWyAgICAwLjMyOTM4M10gcGNpIDAwMDA6MDk6MDAuMDogQWRk
-aW5nIHRvIGlvbW11IGdyb3VwIDE5ClsgICAgMC4zMjk0MjJdIHBjaSAwMDAwOjBhOjAwLjA6IEFk
-ZGluZyB0byBpb21tdSBncm91cCAyMApbICAgIDAuMzI5NDM2XSBwY2kgMDAwMDowYTowMC4xOiBB
-ZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMjEKWyAgICAwLjMyOTQ0OV0gcGNpIDAwMDA6MGE6MDAuMjog
-QWRkaW5nIHRvIGlvbW11IGdyb3VwIDIyClsgICAgMC4zMjk0NjJdIHBjaSAwMDAwOjBhOjAwLjM6
-IEFkZGluZyB0byBpb21tdSBncm91cCAyMwpbICAgIDAuMzI5NDc2XSBwY2kgMDAwMDowYTowMC40
-OiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMjQKWyAgICAwLjMyOTQ4OV0gcGNpIDAwMDA6MGE6MDAu
-NjogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDI1ClsgICAgMC4zMjk1MDNdIHBjaSAwMDAwOjBiOjAw
-LjA6IEFkZGluZyB0byBpb21tdSBncm91cCAyNgpbICAgIDAuMzI5NTE3XSBwY2kgMDAwMDowYjow
-MC4xOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMjcKWyAgICAwLjMyOTUzNV0gcGNpIDAwMDA6MGM6
-MDAuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDI4ClsgICAgMC4zMjk1NDhdIHBjaSAwMDAwOjBj
-OjAwLjM6IEFkZGluZyB0byBpb21tdSBncm91cCAyOQpbICAgIDAuMzI5NTYyXSBwY2kgMDAwMDow
-YzowMC40OiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMzAKWyAgICAwLjMzMTM3M10gQU1ELVZpOiBF
-eHRlbmRlZCBmZWF0dXJlcyAoMHgyNDY1NzdlZmEyMjU0YWZhLCAweDApOiBQUFIgTlggR1QgWzVd
-IElBIEdBIFBDIEdBX3ZBUElDClsgICAgMC4zMzEzODBdIEFNRC1WaTogSW50ZXJydXB0IHJlbWFw
-cGluZyBlbmFibGVkClsgICAgMC4zOTE2MzldIEFNRC1WaTogVmlydHVhbCBBUElDIGVuYWJsZWQK
-WyAgICAwLjM5MTgzOV0gcGVyZi9hbWRfaW9tbXU6IERldGVjdGVkIEFNRCBJT01NVSAjMCAoMiBi
-YW5rcywgNCBjb3VudGVycy9iYW5rKS4KWyAgICAwLjUzODMwMl0gUE06ICAgTWFnaWMgbnVtYmVy
-OiA2OjE2MDo0NTUKWyAgICAwLjUzODYzMF0gUE06IGdlbnBkOiBEaXNhYmxpbmcgdW51c2VkIHBv
-d2VyIGRvbWFpbnMKWyAgICAyLjI5NTc3MF0gbnZtZSAwMDAwOjAxOjAwLjA6IEFNRC1WaTogRXZl
-bnQgbG9nZ2VkIFtJT19QQUdFX0ZBVUxUIGRvbWFpbj0weDAwMGUgYWRkcmVzcz0weGZmZmZjMDAw
-IGZsYWdzPTB4MDAwMF0KWyAgIDM1LjkzNDc3MV0gUE06IHN1c3BlbmQgZW50cnkgKGRlZXApClsg
-ICAzNi4xMTE4MjVdIEFDUEk6IFBNOiBQcmVwYXJpbmcgdG8gZW50ZXIgc3lzdGVtIHNsZWVwIHN0
-YXRlIFMzClsgICAzNi42MjEyNzJdIEFDUEk6IFBNOiBTYXZpbmcgcGxhdGZvcm0gTlZTIG1lbW9y
-eQpbICAgMzYuNjU0MzI0XSBBQ1BJOiBQTTogTG93LWxldmVsIHJlc3VtZSBjb21wbGV0ZQpbICAg
-MzYuNjU0MzUzXSBBQ1BJOiBQTTogUmVzdG9yaW5nIHBsYXRmb3JtIE5WUyBtZW1vcnkKWyAgIDM3
-LjczNzA0N10gQU1ELVZpOiBWaXJ0dWFsIEFQSUMgZW5hYmxlZApbICAgMzcuNzYwMzYyXSBBTUQt
-Vmk6IFZpcnR1YWwgQVBJQyBlbmFibGVkClsgICAzNy44MDI2MzJdIEFDUEk6IFBNOiBXYWtpbmcg
-dXAgZnJvbSBzeXN0ZW0gc2xlZXAgc3RhdGUgUzMKWyAgIDM3LjgwODk4MV0geGhjaV9oY2QgMDAw
-MDowODowMC4wOiB4SEMgZXJyb3IgaW4gcmVzdW1lLCBVU0JTVFMgMHg0MDEsIFJlaW5pdApbICAg
-MzguNTM2NzA3XSBhbWRncHUgMDAwMDowYTowMC4wOiBTTVUgaXMgcmVzdW1lZCBzdWNjZXNzZnVs
-bHkhClsgICAzOC45Mjk4NDVdIFBNOiBzdXNwZW5kIGV4aXQKWyAgIDU1LjA2NzgwNF0gUE06IHN1
-c3BlbmQgZW50cnkgKGRlZXApClsgICA1NS4yNDkwNDZdIEFDUEk6IFBNOiBQcmVwYXJpbmcgdG8g
-ZW50ZXIgc3lzdGVtIHNsZWVwIHN0YXRlIFMzClsgICA1NS43NTg3NzNdIEFDUEk6IFBNOiBTYXZp
-bmcgcGxhdGZvcm0gTlZTIG1lbW9yeQpbICAgNTUuNzg3Nzc1XSBBQ1BJOiBQTTogTG93LWxldmVs
-IHJlc3VtZSBjb21wbGV0ZQpbICAgNTUuNzg3ODA0XSBBQ1BJOiBQTTogUmVzdG9yaW5nIHBsYXRm
-b3JtIE5WUyBtZW1vcnkKWyAgIDYwLjM5Nzg1Ml0gQU1ELVZpOiBWaXJ0dWFsIEFQSUMgZW5hYmxl
-ZApbICAgODMuODgzMzcxXSBXQVJOSU5HOiBkcml2ZXJzL2lvbW11L2FtZC9pbml0LmM6OTY1IGF0
-IGFtZF9pb21tdV9lbmFibGVfaW50ZXJydXB0cysweDUxZi8weDViMCwgQ1BVIzA6IGUtc3VzcGVu
-ZC8zODY2ClsgICA4My44ODM0NzRdIFJJUDogMDAxMDphbWRfaW9tbXVfZW5hYmxlX2ludGVycnVw
-dHMrMHg1MWYvMHg1YjAKWyAgIDgzLjg4MzUwNV0gIHN5c2NvcmVfcmVzdW1lKzB4NjAvMHgxOTAK
-WyAgIDgzLjkyNTc1N10gQUNQSTogUE06IFdha2luZyB1cCBmcm9tIHN5c3RlbSBzbGVlcCBzdGF0
-ZSBTMwpbICAgODMuOTMyMDU3XSB4aGNpX2hjZCAwMDAwOjA4OjAwLjA6IHhIQyBlcnJvciBpbiBy
-ZXN1bWUsIFVTQlNUUyAweDQwMSwgUmVpbml0ClsgICA4NC42NjAzOTZdIGFtZGdwdSAwMDAwOjBh
-OjAwLjA6IFNNVSBpcyByZXN1bWVkIHN1Y2Nlc3NmdWxseSEKWyAgIDg1LjA0NTg0MV0gUE06IHN1
-c3BlbmQgZXhpdAo=
+1. Why IOCTL got triggered before setting the respective functionality ?
 
-------=_Part_308438_1259786800.1786068627265
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="interrupts"
-Content-ID: <db93f299-e62f-d5f1-ed7e-0c09ddf0c47a@yahoo.com>
+2. Since here unlocked_ioctl() used which means driver should have 
+manage locking as user space will not hold global Big Kernel Lock  (BKL).
+      We have pages->mutex - do you think we need it some where instead 
+of "-EBUSY" return ? - if yes can you try and repro ?
 
-W01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gc21wYm9vdDogQ1BVIDUgaXMgbm93IG9mZmxpbmUK
-W01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gc21wYm9vdDogQ1BVIDQgaXMgbm93IG9mZmxpbmUK
-W01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gc21wYm9vdDogQ1BVIDMgaXMgbm93IG9mZmxpbmUK
-W01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gc21wYm9vdDogQ1BVIDIgaXMgbm93IG9mZmxpbmUK
-W01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gc21wYm9vdDogQ1BVIDEgaXMgbm93IG9mZmxpbmUK
-W01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gQUNQSTogUE06IExvdy1sZXZlbCByZXN1bWUgY29t
-cGxldGUKW01vbiBBdWcgIDMgMTI6MzE6MDMgMjAyNl0gQUNQSTogUE06IFJlc3RvcmluZyBwbGF0
-Zm9ybSBOVlMgbWVtb3J5CltNb24gQXVnICAzIDEyOjMxOjA3IDIwMjZdIEFNRC1WaTogVmlydHVh
-bCBBUElDIGVuYWJsZWQKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gLS0tLS0tLS0tLS0tWyBj
-dXQgaGVyZSBdLS0tLS0tLS0tLS0tCltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdIGkgPj0gTU1J
-T19TVEFUVVNfVElNRU9VVApbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSBXQVJOSU5HOiBkcml2
-ZXJzL2lvbW11L2FtZC9pbml0LmM6OTY1IGF0IGFtZF9pb21tdV9lbmFibGVfaW50ZXJydXB0cysw
-eDUxZi8weDViMCwgQ1BVIzA6IGUtc3VzcGVuZC8zODY2CltNb24gQXVnICAzIDEyOjMxOjMxIDIw
-MjZdIE1vZHVsZXMgbGlua2VkIGluOiBjY20gcmZjb21tIHNuZF9zZXFfZHVtbXkgc25kX2hydGlt
-ZXIgc25kX3NlcSBzbmRfc2VxX2RldmljZSBhbGdpZl9oYXNoIGFsZ2lmX3NrY2lwaGVyIGFmX2Fs
-ZyBibmVwIHhmcyB2ZmF0IGZhdCBpd2xtdm0gc25kX2hkYV9jb2RlY19hbGM2NjIgYW1kX2F0bCBz
-bmRfaGRhX2NvZGVjX3JlYWx0ZWtfbGliIGludGVsX3JhcGxfbXNyIG1hYzgwMjExIHNuZF9oZGFf
-Y29kZWNfZ2VuZXJpYyBpbnRlbF9yYXBsX2NvbW1vbiBwdHAgc25kX2hkYV9jb2RlY19hdGloZG1p
-IHBwc19jb3JlIHNuZF9oZGFfY29kZWNfaGRtaSBsaWJhcmM0IHNuZF9oZGFfaW50ZWwgc25kX2hk
-YV9jb2RlYyBhbWR4ZG5hIGJ0dXNiIGFzdXNfYXJtb3VyeSBzbmRfaGRhX2NvcmUgYnRtdGsgYW1k
-X3BtZiBrdm1fYW1kIGJ0cnRsIHI4MTY5IHNuZF9pbnRlbF9kc3BjZmcgYW1kdGVlIGVlZXBjX3dt
-aSBmaXJtd2FyZV9hdHRyaWJ1dGVzX2NsYXNzIGJ0YmNtIHNuZF9pbnRlbF9zZHdfYWNwaSBpd2x3
-aWZpIHNuZF9od2RlcCByZWFsdGVrIGJ0aW50ZWwgc3BkNTExOCBzbmRfcGNtIGFzdXNfd21pIGFt
-ZF9zZmggcGh5X3BhY2thZ2Uga3ZtIGNmZzgwMjExIGJsdWV0b290aCBtb3VzZWRldiBqb3lkZXYg
-dGVlIHNuZF90aW1lciB3bWlfYm1vZiBzcGFyc2Vfa2V5bWFwIG1kaW9fZGV2cmVzIHNuZCBsaWJw
-aHkgc3A1MTAwX3RjbyBpcnFieXBhc3MgbWFjX2hpZCBjY3AgaTJjX2RldiBzb3VuZGNvcmUgcmZr
-aWxsIG1kaW9fYnVzIGFlc25pX2ludGVsIGNyeXB0b191c2VyIGdmMTI4bXVsIG50c3luYyBhZWFk
-IGkyY19waWl4NCBncGlvX2FtZHB0IGkyY19zbWJ1cyBwY3Nwa3IgcmFwbCBrMTB0ZW1wIGdwaW9f
-Z2VuZXJpYyBhbWRncHUgZHJtX2J1ZGR5IGFtZHhjcCBpMmNfYWxnb19iaXQgZHJtX3R0bV9oZWxw
-ZXIgdHRtIGRybV9leGVjIGRybV9wYW5lbF9iYWNrbGlnaHRfcXVpcmtzIG52bWUgZ3B1X3NjaGVk
-IGRybV9zdWJhbGxvY19oZWxwZXIgbnZtZV9jb3JlIGRybV9kaXNwbGF5X2hlbHBlcgpbTW9uIEF1
-ZyAgMyAxMjozMTozMSAyMDI2XSAgbnZtZV9rZXlyaW5nIHZpZGVvIG52bWVfYXV0aCBjZWMgd21p
-CltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdIENQVTogMCBVSUQ6IDAgUElEOiAzODY2IENvbW06
-IGUtc3VzcGVuZCBOb3QgdGFpbnRlZCA3LjEuNS1hcnRpeDEtMiAjMSBQUkVFTVBUKGZ1bGwpICBj
-ZDE2OTZjZTUyOTg1M2ZiMWI1YWY1YTk4MTg4YzFlMDNhMzdhNDAyCltNb24gQXVnICAzIDEyOjMx
-OjMxIDIwMjZdIEhhcmR3YXJlIG5hbWU6IEFTVVMgU3lzdGVtIFByb2R1Y3QgTmFtZS9UVUYgR0FN
-SU5HIEI2NTBNLUUgV0lGSSwgQklPUyAzODU0IDA0LzAzLzIwMjYKW01vbiBBdWcgIDMgMTI6MzE6
-MzEgMjAyNl0gUklQOiAwMDEwOmFtZF9pb21tdV9lbmFibGVfaW50ZXJydXB0cysweDUxZi8weDVi
-MApbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSBDb2RlOiBiZCBkMCAwMCAwMCAwMCBlOCBiMSAz
-NCAwMiAwMCA0OCA4YiAwNSA3YSAxNiA3MCAwMiA0YyA4YiA2NCAyNCAyOCA0YyA4YiA2YyAyNCAz
-MCA0YyA4YiA3NCAyNCAzOCA0YyA4YiA3YyAyNCA0MCBlOSA3YyBmYyBmZiBmZiA8MGY+IDBiIGVi
-IGRjIDQ4IDhiIDdiIDE4IDg5IDQ0IDI0IDA0IGU4IGQwIGRkIGU0IGZmIDhiIDQ0IDI0IDA0IGU5
-CltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdIFJTUDogMDAxODpmZmZmY2ZlMDA3MmUzYTMwIEVG
-TEFHUzogMDAwMTAwNDYKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gUkFYOiAwMDAwMDAxZDU2
-ODE2MjcyIFJCWDogMDAwMDAwMDAwMDFlODQ4MCBSQ1g6IDAwMDAwMDAwMDAwMDAwMDAKW01vbiBB
-dWcgIDMgMTI6MzE6MzEgMjAyNl0gUkRYOiAwMDAwMDAwMDAwMDBhZWU0IFJTSTogMDAwMDAwMDAw
-MDAwYTNjMiBSREk6IDAwMDAwMDFkNTY4MGIzOGUKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0g
-UkJQOiBmZmZmOGYwMWMwMGFiODAwIFIwODogZmZmZjhmMDkxZTJkNGY4MCBSMDk6IDAwMDAwMDAw
-MDAwMDAwMjcKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gUjEwOiBmZmZmZmZmZjg0OGU5MjQw
-IFIxMTogMDAwMDAwMDAwMDAwMDAwNCBSMTI6IDAwMDAwMDAwODAwMDAwMDAKW01vbiBBdWcgIDMg
-MTI6MzE6MzEgMjAyNl0gUjEzOiAwMDBmZmZmZmZmZmZmZmY4IFIxNDogMDgwMDAwMDAwMDAwMDAw
-MCBSMTU6IDIwMDAwMDAwMDAwMDAwMDAKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gRlM6ICAw
-MDAwN2Y0NGZlNjI3YTAwKDAwMDApIEdTOmZmZmY4ZjA5NzlmNTAwMDAoMDAwMCkga25sR1M6MDAw
-MDAwMDAwMDAwMDAwMApbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSBDUzogIDAwMTAgRFM6IDAw
-MDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzCltNb24gQXVnICAzIDEyOjMxOjMxIDIw
-MjZdIENSMjogMDAwMDdmOWI0M2JiNWQyYyBDUjM6IDAwMDAwMDAxNmYwOWYwMDAgQ1I0OiAwMDAw
-MDAwMDAwZjUwZWYwCltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdIFBLUlU6IDAwMDAwMDAwCltN
-b24gQXVnICAzIDEyOjMxOjMxIDIwMjZdIENhbGwgVHJhY2U6CltNb24gQXVnICAzIDEyOjMxOjMx
-IDIwMjZdICA8VEFTSz4KW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gID8gc3Jzb19hbGlhc19y
-ZXR1cm5fdGh1bmsrMHg1LzB4ZmJlZjUKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gIHN5c2Nv
-cmVfcmVzdW1lKzB4NjAvMHgxOTAKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0gIHN1c3BlbmRf
-ZGV2aWNlc19hbmRfZW50ZXIrMHg3YTYvMHg5MjAKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0g
-IHBtX3N1c3BlbmQuY29sZCsweDMyMC8weDM5NwpbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSAg
-c3RhdGVfc3RvcmUrMHg4NC8weDEwMApbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSAga2VybmZz
-X2ZvcF93cml0ZV9pdGVyKzB4MTZiLzB4MjEwCltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdICA/
-IHNyc29fYWxpYXNfcmV0dXJuX3RodW5rKzB4NS8weGZiZWY1CltNb24gQXVnICAzIDEyOjMxOjMx
-IDIwMjZdICB2ZnNfd3JpdGUrMHgyODEvMHg1NzAKW01vbiBBdWcgIDMgMTI6MzE6MzEgMjAyNl0g
-IGtzeXNfd3JpdGUrMHg3Yi8weDExMApbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSAgZG9fc3lz
-Y2FsbF82NCsweGFhLzB4NjYwCltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdICA/IHNyc29fYWxp
-YXNfcmV0dXJuX3RodW5rKzB4NS8weGZiZWY1CltNb24gQXVnICAzIDEyOjMxOjMxIDIwMjZdICA/
-IF9fZG9fc3lzX25ld2ZzdGF0KzB4NmMvMHhhMApbTW9uIEF1ZyAgMyAxMjozMTozMSAyMDI2XSAg
-PyBzcnNvX2FsaWFzX3JldHVybl90aHVuaysweDUvMHhmYmVmNQpbTW9uIEF1ZyAgMyAxMjozMToz
-MSAyMDI2XSAgPyBkb19zeXNjYWxsXzY0KzB4YWEvMHg2NjAKW01vbiBBdWcgIDMgMTI6MzE6MzEg
-MjAyNl0gID8gc3Jzb19hbGlhc19yZXR1cm5fdGh1bmsrMHg1LzB4ZmJlZjUKW01vbiBBdWcgIDMg
-MTI6MzE6MzEgMjAyNl0gID8gZG9fc3lzY2FsbF82NCsweGFhLzB4NjYwCltNb24gQXVnICAzIDEy
-OjMxOjMxIDIwMjZdICA/IF9faGFuZGxlX21tX2ZhdWx0KzB4YTViLzB4ZjgwCg==
+snip:
+  *
+  * The locking order is domains_rwsem -> iova_rwsem -> pages::mutex
+  */
+struct io_pagetable {
 
-------=_Part_308438_1259786800.1786068627265--
+---
+
+         down_read(&iopt->domains_rwsem);
+         rc = iopt_fill_domains_pages(pages_list);
+         if (rc)
+                 goto out_unlock_domains;
+
+         down_write(&iopt->iova_rwsem);
+         list_for_each_entry(elm, pages_list, next) {
+                 /*
+                  * area->pages must be set inside the domains_rwsem to 
+ensure
+                  * any newly added domains will get filled. Moves the 
+reference
+                  * in from the list.
+                  */
+                 elm->area->pages = elm->pages;   <- maybe page mutex to 
+protect this ?
+                 elm->pages = NULL;
+                 elm->area = NULL;
+         }
+         up_write(&iopt->iova_rwsem);
+out_unlock_domains:
+         up_read(&iopt->domains_rwsem);
+         return rc;
+
+
+Thanks,
+
+Tushar Nimkar
+
+>
+> BUG: kernel NULL pointer dereference, address: 00000000000000c0
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 4b655067 P4D 4b655067 PUD 0
+> Oops: Oops: 0000 [#1] SMP NOPTI
+> CPU: 0 UID: 0 PID: 11841 Comm: syz.1.628 Not tainted 7.1.0 #3 PREEMPT(full)
+> Hardware name: QEMU Ubuntu 24.04 PC v2 (i440FX + PIIX, arch_caps fix, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+> RIP: 0010:iommufd_ioas_change_process+0x419/0xd50 drivers/iommu/iommufd/ioas.c:538
+> Code: 48 89 c3 48 85 c0 0f 84 cc 00 00 00 e8 10 f5 cb fd 48 8d 7b 68 e8 a7 b5 eb fd 48 8b 6b 68 48 8d bd c0 00 00 00 e8 17 b2 eb fd <8b> ad c0 00 00 00 bf 01 00 00 00 89 ee e8 85 ef cb fd 83 fd 01 74
+> RSP: 0018:ffffc90015c17d28 EFLAGS: 00010246
+> RAX: ffff8880186d5328 RBX: ffff88801d25e240 RCX: 0000000080000000
+> RDX: 00000000000002d7 RSI: ffffffff83ba9e10 RDI: 00000000000000c0
+> RBP: 0000000000000000 R08: ffffffff8e781eb8 R09: 0000000000000000
+> R10: 00000000000000c0 R11: ffffffff83ba9e29 R12: ffff88802e216008
+> R13: ffff88802e216000 R14: 0000000000000001 R15: 0000000000000000
+> FS:  00007f4aea3f66c0(0000) GS:ffff8880b1fa1000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000000000c0 CR3: 000000004b75c000 CR4: 0000000000350ef0
+> Call Trace:
+>   <TASK>
+>   iommufd_fops_ioctl+0x287/0x400 drivers/iommu/iommufd/main.c:533
+>   vfs_ioctl fs/ioctl.c:51 [inline]
+>   __do_sys_ioctl fs/ioctl.c:597 [inline]
+>   __se_sys_ioctl fs/ioctl.c:583 [inline]
+>   __x64_sys_ioctl+0x120/0x170 fs/ioctl.c:583
+>   x64_sys_call+0x1092/0x1fb0 arch/x86/include/generated/asm/syscalls_64.h:17
+>   do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>   do_syscall_64+0x10a/0x680 arch/x86/entry/syscall_64.c:94
+>   entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f4aec1a82bd
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f4aea3f6018 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+> RAX: ffffffffffffffda RBX: 00007f4aec436090 RCX: 00007f4aec1a82bd
+> RDX: 0000200000000180 RSI: 0000000000003b92 RDI: 0000000000000003
+> RBP: 00007f4aec250295 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f4aec436128 R14: 00007f4aec436090 R15: 00007ffd04ef23e0
+>   </TASK>
+> Modules linked in:
+> CR2: 00000000000000c0
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:iommufd_ioas_change_process+0x419/0xd50 drivers/iommu/iommufd/ioas.c:538
+> Code: 48 89 c3 48 85 c0 0f 84 cc 00 00 00 e8 10 f5 cb fd 48 8d 7b 68 e8 a7 b5 eb fd 48 8b 6b 68 48 8d bd c0 00 00 00 e8 17 b2 eb fd <8b> ad c0 00 00 00 bf 01 00 00 00 89 ee e8 85 ef cb fd 83 fd 01 74
+> RSP: 0018:ffffc90015c17d28 EFLAGS: 00010246
+> RAX: ffff8880186d5328 RBX: ffff88801d25e240 RCX: 0000000080000000
+> RDX: 00000000000002d7 RSI: ffffffff83ba9e10 RDI: 00000000000000c0
+> RBP: 0000000000000000 R08: ffffffff8e781eb8 R09: 0000000000000000
+> R10: 00000000000000c0 R11: ffffffff83ba9e29 R12: ffff88802e216008
+> R13: ffff88802e216000 R14: 0000000000000001 R15: 0000000000000000
+> FS:  00007f4aea3f66c0(0000) GS:ffff8880b1fa1000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000000000c0 CR3: 000000004b75c000 CR4: 0000000000350ef0
+> ----------------
+> Code disassembly (best guess):
+>     0:   48 89 c3                mov    %rax,%rbx
+>     3:   48 85 c0                test   %rax,%rax
+>     6:   0f 84 cc 00 00 00       je     0xd8
+>     c:   e8 10 f5 cb fd          call   0xfdcbf521
+>    11:   48 8d 7b 68             lea    0x68(%rbx),%rdi
+>    15:   e8 a7 b5 eb fd          call   0xfdebb5c1
+>    1a:   48 8b 6b 68             mov    0x68(%rbx),%rbp
+>    1e:   48 8d bd c0 00 00 00    lea    0xc0(%rbp),%rdi
+>    25:   e8 17 b2 eb fd          call   0xfdebb241
+> * 2a:   8b ad c0 00 00 00       mov    0xc0(%rbp),%ebp <-- trapping instruction
+>    30:   bf 01 00 00 00          mov    $0x1,%edi
+>    35:   89 ee                   mov    %ebp,%esi
+>    37:   e8 85 ef cb fd          call   0xfdcbefc1
+>    3c:   83 fd 01                cmp    $0x1,%ebp
+>    3f:   74                      .byte 0x74
+>
+> Fix by mirroring the handling logic in iopt_unmap_iova_range(),
+> i.e. return -EBUSY if area->pages is NULL.
+>
+> Fixes: 829ed626499c ("iommufd: Add IOMMU_IOAS_CHANGE_PROCESS")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+> ---
+>   drivers/iommu/iommufd/ioas.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
+> index fed06c2b728e..71bffece84b5 100644
+> --- a/drivers/iommu/iommufd/ioas.c
+> +++ b/drivers/iommu/iommufd/ioas.c
+> @@ -535,6 +535,10 @@ int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd)
+>                  return rc;
+>
+>          for_each_ioas_area(&ioas_list, index, ioas, area)  {
+> +               if (!area->pages) {
+> +                       rc = -EBUSY;
+> +                       goto out;
+> +               }
+>                  if (area->pages->type != IOPT_ADDRESS_FILE) {
+>                          rc = -EINVAL;
+>                          goto out;
+> --
+> 2.43.0
+>
+>
