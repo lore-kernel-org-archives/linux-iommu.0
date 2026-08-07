@@ -1,93 +1,148 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA27E4746D1
-	for <iommu@lists.linux.dev>; Fri,  7 Aug 2026 12:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 783D2466B5E;
+	Fri,  7 Aug 2026 13:03:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786107368; cv=none; b=gdpGtHfnWBEV0I0Qr2z6T6PQ9o2UWH6fL5pI48DlCmonw2mxxSu9xlgfzaGjnZm7e9qhGAMEMG+tyZtlX2Xt1sj4dD7C1eZbQq/81B2rnituIQZuFBPxA/wUNYUHbyiCbiZxx1o3du2nQiRY219pjddRLmTrs0gucuNEMyOr/74=
+	t=1786107827; cv=none; b=hOoSVEDLz95tIq4fX48f+CuXJVus6mbkH5i6Xrg6gupK3JZRaiVUwa0ypR5Ajd9MkHkdFkVMF4WaYusypSdyisuc9P2suh4ZqEkgcnb/qkawlk9cucbR2ewXEgDFuV7XbTpHyIwvB/QvQdoqeWeTkl3vX3sXzwCxWQthvYpB+8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786107368; c=relaxed/simple;
-	bh=xfEgerLRPb7madfeMA7wFM70ghEiPOqFAV7kOwYDnuI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=S3C2HZAoiohlqk2Rm149yuhxRi9vCXyr97bwj5T69J+WX5kQxUyLGhuaRRxRAp6JmU7eUnYDL7PmiyL96l+5kv9bVhsFn1CRZJ6+nUrR0YcVSdHO7SASGalGcn2WwfrLNVcEtryKG0y5PyZH84D78zw+xJ85r98kbEzSB2kDR+A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=fzFGtKZv; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1786107827; c=relaxed/simple;
+	bh=SFOODg6qJhhqz/d8SgHxakbTZXTQ0q6LGAHn5/aRuTU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=mVZRUsvZSQuxttEhaUBBufSa3dnmhJ2VcP80XXndHAzdKLICXU7p5LArCQbob49oLQMWwUDrxCGYUV/PrEgLRqlMCcFHybEY912X5QtlHWdtklatS5Nb2ufKThB7kjvwGn6/JSbXm/bIs0aeZFzSP3vtg49C3LBGkkZLxroV410=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jZgVfkuo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="fzFGtKZv"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 154911516;
-	Fri,  7 Aug 2026 05:55:54 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5A5A23F9A2;
-	Fri,  7 Aug 2026 05:55:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786107358; bh=xfEgerLRPb7madfeMA7wFM70ghEiPOqFAV7kOwYDnuI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fzFGtKZvoitFZaUTdqu0c54B3XFfBCnXIAu/DR2Mq58FOkjjok0wWgUeiV77bfx2i
-	 5q1rdjt9kOAEo6MqfhqtZKpEHpW1a4PCLERem8+pzB/f5B6iA0LCqEseD/LNCkk0CH
-	 gCGZKTgzam0wS2V+g0p36SPV6wRRpQ51dE0RYrRc=
-Message-ID: <fb94bd28-fdbf-4f99-a6ff-b5ab18c64345@arm.com>
-Date: Fri, 7 Aug 2026 13:55:53 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jZgVfkuo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE9CF1F000E9;
+	Fri,  7 Aug 2026 13:03:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786107807;
+	bh=9QqKKM/ejR76i/TkpRfggSdbNj1yOKb4P01vNyYkRUs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=jZgVfkuoWf2/siK+rKc90sJnAQt9IS3OPxAuRh6EIc5QTd91l788Rnt8tZqkY0eX1
+	 4V1fwC8Xke07dOEvJH4kYYZt+gvugXiKXdGz5s3Jt1/2YTv8XFf+3pPwa5TgRIy87h
+	 tOTUigHIwOO/5rABTOwSnFvBDxhesq9IwfDUw/PwoaE1G3A47ELaIB7XeCacIsSDyy
+	 PyFbqxUIFxAGM/63Xlcz8epDPjAFNlriiXizH5Y2/GDhHud+FPUDHlQJ3ZIrkb6HGm
+	 sOiy7Vzx6vgAVgxctx2iJ5Rbh6hpYJoJ/vzRtPUfqSEI2nVg/CcZrAxJwm0CjWUY4i
+	 tcfKhcQgz+Ztw==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH] arm64: swiotlb: Keep the default size for protected guests
+In-Reply-To: <anXIZSh9lq99VG9X@willie-the-truck>
+References: <20260717180442.110954-18-aneesh.kumar@kernel.org>
+ <20260807092612.2202005-1-aneesh.kumar@kernel.org>
+ <anXIZSh9lq99VG9X@willie-the-truck>
+Date: Fri, 07 Aug 2026 18:33:14 +0530
+Message-ID: <yq5acxvu2ict.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v6 7/9] accel/rocket: add RK3576 NPU (RKNN) support
-To: Diederik de Haas <diederik@cknow-tech.com>,
- Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net, heiko@sntech.de,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org,
- will@kernel.org, ulfh@kernel.org, p.zabel@pengutronix.de,
- ogabbay@kernel.org, zhangqing@rock-chips.com
-Cc: royalnet026@gmail.com, alchark@flipper.net, chaoyi.chen@rock-chips.com,
- dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
- iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260806063413.350184-1-gahing@gahingwoo.com>
- <20260806063413.350184-8-gahing@gahingwoo.com>
- <DKIKXY8XZVPF.3RFR4ISK6Y4QX@cknow-tech.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <DKIKXY8XZVPF.3RFR4ISK6Y4QX@cknow-tech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 07/08/2026 9:48 am, Diederik de Haas wrote:
-> Hi Jiaxing,
-> 
-> On Thu Aug 6, 2026 at 8:34 AM CEST, Jiaxing Hu wrote:
->> The RK3576 has two cores of the same RKNN block and a few platform
->> differences:
->>
->>   - the CBUF (convolution buffer) has its own clock domain, so the core
->>     needs six clocks rather than four;
->>   - the BIU reset moved into the power domain, leaving one reset here;
->>   - the NPU spans two power domains, and a device with more than one is
->>     skipped by the driver-core single-domain auto-attach, so the list has
->>     to be attached explicitly;
->>   - the DPU completion interrupt is armed exactly as on RK3588 but never
->>     reaches the GIC. The completion is visible in INTERRUPT_RAW_STATUS,
-> 
-> I don't know if it's relevant, so just a data point:
-> - RK3588 has Cortex A-76 + A-55, which have an External GICv4
-> - RK3576 has Cortex A-72 + A-53, which have an External GICv3
+Will Deacon <will@kernel.org> writes:
 
-Nope, RK3588 has GIC-600, which is very much v3 still. I guess RK3576 
-probably has GIC-500 like RK3399 given the CPUs, but that shouldn't make 
-any meaningful difference here.
+> On Fri, Aug 07, 2026 at 02:56:12PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> Realm guests and protected KVM guests may require swiotlb for device DMA
+>> even when all system RAM is addressable by the DMA zones.
+>> 
+>> Do not reduce the SWIOTLB buffer to the kmalloc-bouncing size for these
+>> guests, as the reduced number of slots can be exhausted during CCA guest
+>> operation.
+>> 
+>> Fixes: 30c5e45ee2c5 ("dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED")
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>  arch/arm64/mm/init.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>> index e308a7cabd12..24caaf10e755 100644
+>> --- a/arch/arm64/mm/init.c
+>> +++ b/arch/arm64/mm/init.c
+>> @@ -339,7 +339,8 @@ void __init arch_mm_preinit(void)
+>>  {
+>>  	unsigned int flags = SWIOTLB_VERBOSE;
+>>  
+>> -	if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
+>> +	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+>> +	    max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
+>
+> Protected guests under pKVM rely on restricted DMA, so won't this just
+> waste memory for them?
+>
 
-If the interrupt never fires at all then possibly the signal depends on 
-some additional clock or power domain in order to propagate, or it's 
-just described incorrectly; or if other interrupt sources within the 
-NPU/IOMMU do still work then maybe there's some additional masking 
-control that's been overlooked, or perhaps it it just terminally broken.
+commit 30c5e45ee2c5 ("dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED"),
+which this patch fixes, has
 
-(And FWIW I'm also inclined to agree with the other comments that 
-refactoring existing code to make room for new stuff, then actually 
-adding the new stuff, should probably be two separate steps if it's not 
-completely trivial)
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -339,9 +339,7 @@ void __init arch_mm_preinit(void)
+ {
+        unsigned int flags = SWIOTLB_VERBOSE;
+ 
+-       if (is_realm_world() || is_protected_kvm_guest()) {
+-               flags |= SWIOTLB_FORCE;
+-       } else if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
++       if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
+                /*
+                 * If no bouncing needed for ZONE_DMA, reduce the swiotlb
+                 * buffer for kmalloc() bouncing to 1MB per 1GB of RAM.
 
-Thanks,
-Robin.
+The is_protected_kvm_guest() part was added by the 
+commit e62decaf98e7 ("arm64/coco: Add pKVM as a CC platform")
+
+@@ -337,7 +339,7 @@ void __init arch_mm_preinit(void)
+ {
+        unsigned int flags = SWIOTLB_VERBOSE;
+ 
+-       if (is_realm_world()) {
++       if (is_realm_world() || is_protected_kvm_guest()) {
+                flags |= SWIOTLB_FORCE;
+        } else if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
+                /*
+@@ -412,6 +414,17 @@ void dump_mem_limit(void)
+        }
+ }
+
+I was under the impression that there is a possibility of using swiotlb
+instead of restricted-dma-pool with pKVM. If that is not the case, then
+we could change:
+
+!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+
+to
+
+!is_realm_world() &&
+
+-aneesh
