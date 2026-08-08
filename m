@@ -1,136 +1,95 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A714431B83B
-	for <iommu@lists.linux.dev>; Sat,  8 Aug 2026 02:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D16B639A06B;
+	Sat,  8 Aug 2026 17:07:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786156282; cv=none; b=cpk3+9pZMwKGnsD/X4Ge+v5bqQUaW6XtqopX7ZBBcmNUC61lcBMdRWjZ0gbZYYcDX+csIXhbcQ5dc9boCkyl1YQCVbrKiZ+XR44skwpx5PC+AVPmqnRD2vxnPA44fOBSpZ8E912pPRk9m0q26rDGavKAU3tUdvzflmTPhOJg1Sw=
+	t=1786208862; cv=none; b=dY5mm1tSei1R1enPEAZBTniGMJ3CuYHp5pQmjdneXgUdY9jIgm8SRA+jUqVVvUkGa8AJJrnW3sC7TqhCAMjIFBTzRaYqFMiLZ3FlrXgVDRbqNmnZgHDaBohnNK3E2aLrFCexKCUPyn/3F5d0E0halcs4FmGgO21SYXcKX/KpAj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786156282; c=relaxed/simple;
-	bh=yy9KYO3WfAu42aqR4kwhL9S1z10fN8BxMXNkSzlVq0w=;
+	s=arc-20240116; t=1786208862; c=relaxed/simple;
+	bh=Cbe4a50Wo3yQ5YnrOL+KyHPWvwCwhzKq9Ds6GgnjbB4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LoZafdZiIGPQAhBvvHTmvM7XnueTnKDA5LGu+skcDagEwBujwQ7BW7CK45DdBcP5aqoJRt1yC/dsMVnfpTgrVvYhhcKtlrlVMpGEwXs7vix1fBH0vBtooPCGOgkta4KH00jILmWt2m16voaVHSk+P823LmgQHNYR67NT3DfwM6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iH/gLPJk; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ScLe8DzhT/NcwWDEjDJXuyyV06U20PpUIc5eajSRuh9Tp7t1koeEq6PbinQld6IshAyI6QdOm1E4g1zWG5Fdt6B1q6UXyIkAA5ssi8fqlt6x037UlMcL/4zCh73R08/K2tJXpaTd3TSG6KmfNGlPm4WvvYXgjZfu+IZXG5NQr6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kEFiTAk6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iH/gLPJk"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cab97c86bdso28065ad.1
-        for <iommu@lists.linux.dev>; Fri, 07 Aug 2026 19:31:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786156280; x=1786761080; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=c7tczrAN0Z+XQOnKNy/6C+IzTrIYOyRvANTeANoTkDc=;
-        b=iH/gLPJke+bSX/aMVO0UyNekeUt/EyJCgktqBr7ZQ5nonG3XG/LJR6rojdMR4oEZAC
-         JzS7zcEta/XG4NEmI5sY4RQJw7giJCW+KMvNBpdyIi6GbDdCxXlRSaK+K+fKJ0ZuNWTH
-         RO/1kVVzviCDZrpewmi/AmD/rLgZiWe61qNyAivMG6sqpFaS1kXim6yEkF1GkoujPVi4
-         GOsr4mTaNCepgD4XBzSIuMc3zi6m+WnydmMOEpNPuDBgN9IRgnSRPwuCwc221KA/pSfg
-         s3hJDe+kLw4SbFf8UYlhAlMI0zsdawFboN/VXPzeZess0b/ngU7uK3sb3bVAt99byjVM
-         Zotg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786156280; x=1786761080;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=c7tczrAN0Z+XQOnKNy/6C+IzTrIYOyRvANTeANoTkDc=;
-        b=sHRHFAIDR5xV+p22dUJvfZ4tOhIEFGabFiC3Vy+UBybz4IMb+4bzoL5FsSE7GLsh52
-         s5xB1xMxY6qVDQTBM296WDUW2sn0abCFSWXLqq30t8psB/5XxxT471nddJ0tdwGsAhq6
-         oBCO+MvZkCtqDSZdntODZlI95Rn+agglC0F1v4t2XCS/L4HQv7E3mcF7yfZPGwl9s9Wh
-         BrCFdD808ZekTADqCHNnsbzaY+vI2Oq1Mymnf43JLQ1eXbi0TIJE3bmuRAXqM6E1IIKH
-         iXsHXlQ4L1TMUtHEOte9dWeOu5fORsA/2lY32ixnDwq7Ahzg8+DlFdBcy6EOvvRyHMFj
-         p4Ag==
-X-Forwarded-Encrypted: i=1; AHgh+RqQRRiPCtoPD00mP9+sb4AJYt1EUci3Bjqot7M3qbQwsaTxHHz6tq5BxTYchhT09FBZWlI+QQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YztrecwFGHNKyjx0/GVLXRoMj4qy0bPe0upzJuglzMkVkMpLEA8
-	GzJ907fYxJ9TVLNdJegkiZ/usQbvTjKa4Lbhm1ebEEkaC/06MaQdMzISOiT2emJgIA==
-X-Gm-Gg: AR+sD11LlMhvLalKqCWdh/frfKEkoy/FhXKvvo3tcRXR8CMQNRMD9/jJpmcrDr5aEx9
-	hGgcq45houW6KIokwHih11AotOlG1T/vTCNspAKfCKb3zYynJLbtsTH2xJaNAeinMNRHR8UoNKM
-	sTO+8MCQRptYkRjHqSfIT06sbjiygccDew5yTv/uDpzh937GkhgagX7Lh0hFGFtSZQuXNro38ZS
-	4bU2bB4nhSsJXHuqUWpvQ/+QY6is6ViANKlKmv786psv1nADoBjEdKEOgY6ghkw1Aw9i/bAx3DF
-	bCFouUvBFuPmJCNTvYBnHNMxJobA5jUjAi0xLpT0BpeTfXGahMhveG8FQ/MpCvWrehej939F1W8
-	nKCyB2EpLyV3LoK2DkiNbkeIBSEkzISsxwGCto9SROkvAcuE0/dcTEMRstXiiyhaeG3CIkTLZZW
-	xeyENrozL4xv7WoMsltZ+QwNJ/AtIFryl+xJBxFMkf/PzKoegmxlEzECoWY6vUgYRDSBMwVySnG
-	Tyt3EIR/y10vu4CX5g+Czbawb4wj4Jzi4oTss/gn7Z7vfuFv1qIy1jsm5Y=
-X-Received: by 2002:a17:902:c994:b0:2bd:3bfd:74f1 with SMTP id d9443c01a7336-2d2b30c1498mr2941465ad.2.1786156279321;
-        Fri, 07 Aug 2026 19:31:19 -0700 (PDT)
-Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-390b30d465csm2252994a91.2.2026.08.07.19.31.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 19:31:18 -0700 (PDT)
-Date: Sat, 8 Aug 2026 02:31:14 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Ankit Soni <Ankit.Soni@amd.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v3 02/18] iommu: Implement IOMMU Live update FLB callbacks
-Message-ID: <anaUhv1pcnMoTEip@google.com>
-References: <20260614233728.2212104-1-skhawaja@google.com>
- <20260614233728.2212104-3-skhawaja@google.com>
- <fjma5ub62ia4pbcvs4yek52r6jlhut4fidutow3g5uhf6iel3o@iqx3a6bm4q2e>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kEFiTAk6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17AA41F000E9;
+	Sat,  8 Aug 2026 17:07:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786208860;
+	bh=RZkqPDjuFooi7QGj5t/O5g20eJ3XuiiAxeKTnLb8vz8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kEFiTAk6dJwIY8ucP0WzJtmpjuaY0C2iT2p+mcdqjztfYKRa56w+59ixsW4besMiB
+	 I+LCAEHif77oFP0PO5ikGI93N7c9RiayxBy4AKiD/ui5Acq2aLvitujKgo2Vey5Z1X
+	 1zbbFnwgJJamAgXfbqv767RaOdSui+4dLoTiG/sFVkZ1U5G9ERjZqWwHc1dglNP08S
+	 e8rSud3pG8YZyO+oCPNUfNGfGMTQGgu9lAVS4kak6v+q2o+CgyPniHNZHvpuSNYF1l
+	 coWzoRoN/7Kuc4DeESugxBCGrzNB5GAjf8SKquYJXGkGJKuWlXEdimU3XE6THBUlhU
+	 NA69MO+GnjKhw==
+Date: Sat, 8 Aug 2026 10:07:38 -0700
+From: Drew Fustini <fustini@kernel.org>
+To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
+	reinette.chatre@intel.com, tomasz.jeznach@linux.dev,
+	will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
+	aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com,
+	james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net,
+	shuah@kernel.org, jgg@ziepe.ca, kevin.tian@intel.com,
+	cuiyunhui@bytedance.com, yuanzhu@bytedance.com,
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, x86@kernel.org
+Subject: Re: [RFC PATCH 4/7] iommu/riscv: Program QoS IDs for assigned groups
+Message-ID: <andiWrKhz5rLPVuq@x1>
+References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
+ <20260714130657.46963-5-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fjma5ub62ia4pbcvs4yek52r6jlhut4fidutow3g5uhf6iel3o@iqx3a6bm4q2e>
+In-Reply-To: <20260714130657.46963-5-zhangzhanpeng.jasper@bytedance.com>
 
-On Fri, Jul 31, 2026 at 05:58:20AM +0000, Ankit Soni wrote:
->On Sun, Jun 14, 2026 at 11:37:12PM +0000, Samiullah Khawaja wrote:
->> Add liveupdate FLB for IOMMU state preservation. Use KHO preserve memory
->> alloc/free helper functions to allocate memory for the IOMMU Live update
->> FLB object and the serialization structs for device, domain and iommu.
->>
->> During retrieve, walk through the preserved obj array headers and
->> restore each folio. Also recreate the FLB obj.
->>
->> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->> ---
->>  MAINTAINERS                      |   9 ++
->>  drivers/iommu/Kconfig            |  12 ++
->>  drivers/iommu/Makefile           |   1 +
->>  drivers/iommu/liveupdate.c       | 212 +++++++++++++++++++++++++++++++
->>  include/linux/iommu-liveupdate.h |  18 +++
->>  include/linux/kho/abi/iommu.h    | 207 ++++++++++++++++++++++++++++++
->>  6 files changed, 459 insertions(+)
->>  create mode 100644 drivers/iommu/liveupdate.c
->>  create mode 100644 include/linux/iommu-liveupdate.h
->>  create mode 100644 include/linux/kho/abi/iommu.h
->>
->
->../..
->
+On Tue, Jul 14, 2026 at 09:06:54PM +0800, Zhanpeng Zhang wrote:
+> Program RCID and MCID for RISC-V IOMMU groups through the device context
+> TA fields. The resctrl group assignment is per device group, so reject
+> BARE mode where only the per-IOMMU iommu_qosid global default is
+> available.
+> 
+> Validate every group member, firmware ID, device context, field value,
+> and QoS ID capability before changing hardware. Then update all members
+> through the checked IOMMU group helper so a validation failure leaves the
+> group unchanged.
+> 
+> Serialize DC.ta changes with context setup under qosid_lock. Change only
+> the RCID and MCID fields with ordinary accesses so fixed DDT mappings are
+> not subject to atomic LR/SC operations, invalidate active device contexts
+> after an update, and clear the IDs when a device is released.
+> 
+> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+> ---
+>  arch/riscv/include/asm/qos.h     |  16 +++
+>  drivers/iommu/riscv/iommu-bits.h |  15 +++
+>  drivers/iommu/riscv/iommu.c      | 200 ++++++++++++++++++++++++++++++-
+>  drivers/iommu/riscv/iommu.h      |   3 +
+>  4 files changed, 232 insertions(+), 2 deletions(-)
+> 
+[..]
+> +static void riscv_iommu_dc_update_qosid(struct riscv_iommu_device *iommu,
+> +					struct riscv_iommu_dc *dc,
+> +					u32 rcid, u32 mcid)
+> +{
+> +	u64 qos_ta = riscv_iommu_qosid_ta(rcid, mcid);
+> +	u64 ta;
+> +
+> +	lockdep_assert_held(&iommu->qosid_lock);
 
-[snip]
-
->
->Hi,
->
->nit, The v3 changelog has "Replace bitfields with u32 flags", but sign_extend:1
->looks like it was missed. this is 37 bytes, the only arrayed record in this
->header that isn't a multiple of 8 (iommu_device_ser is 56, iommu_hw_ser 112).
->The arrays are strided with pointer arithmetic, so the skew accumulates: from
->objects[1] onwards none of the u64s are naturally aligned.
->
->Looks like a leftover from the bitfield cleanup.
-
-Yes, missed this one in v3. Just sent out v4, it should be cleaned up now.
+It seems that qosid_lock is not defined until the next patch. I think
+you should move the definition to this patch so that the series is
+bisectable.
 
 Thanks,
-Sami
->
->-Ankit
->
-
+Drew
