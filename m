@@ -1,14 +1,14 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 103DF37C0F6
-	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 07:50:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 313A337E5D7
+	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 07:52:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348256; cv=none; b=GNIFU6fWoOA5hIF2ddDvBMepC71OezyhbUxAG1ubEdk++W/c0CQJ7PSu/kYH/r1hI97ysj5pY44/+cQHvd45pgnZAvxx4WjewA7tuCQlt41IBIrIPlGXdOgNGd8Q4z2vPrt61c9h6HmGtrNrad9q8ToSDfcP5VatvXEP86VBSH8=
+	t=1786348334; cv=none; b=ucIyfMT3Eth4jDIWVxMpuh3R1fbYJuRk33PR01zBvaPZGA9CvSTEqBlFijqpdAQSPE7r2iVzaawFJAO6I01jygg3ij9F61M7JzqitiDo3hiYxRHFqJE+fbCTrvIQmk7a6LxABlyRFVrghEXPLL0MRt3xbDdy3hRU7RXODI1OWGU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348256; c=relaxed/simple;
-	bh=Kj2FuAJ/hTODDGs7mC3/AsDcJuQ1lZdlBEs6xQ0j6Y0=;
+	s=arc-20240116; t=1786348334; c=relaxed/simple;
+	bh=EoKHedXFJVgHKb++MuFRnKL0Rd00lGFlwfm/WzkS/2A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bj79yEfrMpr/lu41e9ZipD/Df2YwpkEgPJB/cWo2a8Fnz1HwACzpcRNBodmfBJrpVvzxuwO159Ge9PABOpa6HoMEM3CKLAdhS1lea8iY9scNDpIvLDkJCk+ab3R6DGonwBLbY0xe7Y2Srf3V7Zr1zymzZyzr6xcwUWZScGwInNQ=
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yy76Q8YIsrkv4wAfLoLTv1P4K2x7KGDn+wqoUlRGMPrqntioOuDd/9HIH/5kBelVcDoHaiX+9LLs+D6aBcYE2Pd+V1orhGUy8dR6H3b4/o5ZGIvzBAtwzvVCBAynhZPhRZagbLUmiRA6jogIpgo6WIPdpIhuW88vciPlXDQXc3o=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
@@ -16,17 +16,17 @@ Received: from 8bytes.org (p4ffe1d30.dip0.t-ipconnect.de [79.254.29.48])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 91A0F206A2E;
-	Mon, 10 Aug 2026 09:50:47 +0200 (CEST)
-Date: Mon, 10 Aug 2026 09:50:46 +0200
+	by mail.8bytes.org (Postfix) with ESMTPSA id 1CF4D206A2E;
+	Mon, 10 Aug 2026 09:52:12 +0200 (CEST)
+Date: Mon, 10 Aug 2026 09:52:11 +0200
 From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com, 
-	suravee.suthikulpanit@amd.com, Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
-Subject: Re: [PATCH] iommu/amd: Add SNP page mode 0 support
-Message-ID: <anmCl1aePQO3xZhz@8bytes.org>
-References: <20260723084332.11008-1-vasant.hegde@amd.com>
- <d7ba7ef4-cea1-4a2e-84ba-a0fb85af2824@amd.com>
+To: Shuai Xue <xueshuai@linux.alibaba.com>
+Cc: will@kernel.org, robin.murphy@arm.com, jgg@ziepe.ca, 
+	kevin.tian@intel.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	oliver.yang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+Subject: Re: [PATCH 0/4] iommu: Fix SVA, iommufd, and iommupt error paths
+Message-ID: <anmDHI07-PDaynZD@8bytes.org>
+References: <cover.1785050951.git.xueshuai@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,18 +35,13 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d7ba7ef4-cea1-4a2e-84ba-a0fb85af2824@amd.com>
+In-Reply-To: <cover.1785050951.git.xueshuai@linux.alibaba.com>
 
-Hi Vasant,
+On Sun, Jul 26, 2026 at 03:43:28PM +0800, Shuai Xue wrote:
+> Shuai Xue (4):
+>   iommu/sva: Set handle->dev before the SVA handle is visible
+>   iommufd: Avoid locking internal accesses during unmap
+>   iommufd: Release current IOAS on xa_store() failure
+>   iommupt: Return zero for invalid iova_to_phys() ranges
 
-On Thu, Jul 23, 2026 at 02:16:37PM +0530, Vasant Hegde wrote:
-> Missed to mention. This patch applies on top of
-> 
-> https://lore.kernel.org/linux-iommu/20260723061548.10187-1-vasant.hegde@amd.com/T/#t
-
-Please include this into the repost of the above patch-set and base the series
-on the amd/amd-vi branch.
-
-Thanks,
-
-	Joerg
+Applied, thanks.
