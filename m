@@ -1,132 +1,170 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-op-o15.zoho.com (sender4-op-o15.zoho.com [136.143.188.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7072A43F091
-	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 20:02:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786392139; cv=none; b=M/W9DyYk5dp6yzD6ka+F8HXyDsbWZMcbbpCj8IDFIO+6WhlJta0MA5eGXV0BHOs+zMi/E1eZR250S63CVZTAA4ELWgM9Vb8V5CztU8TZNO4faHKQq+xcDRd4j9/EnHtr7dbHIngQm6LaFcqmh8pemATdTIBrTq2QSgtQ1e9l2Rc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786392139; c=relaxed/simple;
-	bh=+9vkNVNvPzcxlfQfdghfV+XHMT4tY8VrvFMNsqBQXUs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hf2JYrAd4PpkzhgdDstUR+kKHgc7zX5Cjgqan63OTfWbcXyZIqCAgWqkU/8BYgrvysAvy6f50oYCxlSxdkGY7xilsSdvbuwn+MdDd/6BmDKvXw2ThfzYiYCMdTsH7Z1fThkUAb1iIFOoLK7JgtK27AlHxErICjMqVAypLQWBHnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=J8QtaaPe; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E09B30F95C
+	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 20:36:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786394220; cv=pass; b=CfBNUXfHICku1/QtEOfbk9gr+A+eulu4/ndGbEW3x6ZImo+m7D7PTCjfqIDcfyP/IDc5DXinai+k0PWQqb3pU15Hp9PWdlzVusLHF8HqVLG0b9nlCBZ58voQ2DrImTvUzVQWNwTKYsiTUX78kIs8CvFzvzYPgXbsb5x+iSSi/wI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786394220; c=relaxed/simple;
+	bh=mBdORqqK8qiSxAzQcfgB9YUtYCZUye3tKk2aIMcNO6Q=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Lo3WuiibborLYZxMfbFrr47pqGcNqMQw2VrSHFdiZrEftaMOgK5LW4aijuduF3CqAf4KLI53OBQd4cgUIw2QMqAH7RnIoUO2VUScted77fU3vio2+qOCJqFY1G0t2sm+KOjrEhcjGhooXFY8EDlPCJilHXEQxQL6Z9mpF9zd6Ck=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=TkcOxabG; arc=pass smtp.client-ip=136.143.188.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rong.moe
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="J8QtaaPe"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c0cea8883so2864111cf.1
-        for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 13:02:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786392136; x=1786996936; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4+rLRCu6gZDlUjtqIIOCBd9IdZYPdWeKZsJ7JGferjg=;
-        b=J8QtaaPel21mC82lAPkEt7DdTFaVGiavI61Cso2qFagwUwxMzy+fxjn0y0IdxVR4aq
-         dk7zxto/EIu8foaWTyLlVghgb1xYnBtl3rhr4q75YHSqQXiETL3cPVQjiB0b7N4tJFLK
-         8q+5T0ssJMkqi+p97frFwcm24Rq+4rdQfP/u/f8JwTXgpJwDAce0fzVLjU2eeyYVqE9r
-         dcggKveJg9edosj2p8Mes4maivet2Z01sGPg8H1kqbIBcaZwFNnMlfR8K9nDsGbw84XK
-         hrSos9ouCYV43Zrf15z3M+sBfGdObrh+SxnrG4RZg99mbMprXuy4GyjLVSubiKxZ+ow1
-         jSsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786392136; x=1786996936;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4+rLRCu6gZDlUjtqIIOCBd9IdZYPdWeKZsJ7JGferjg=;
-        b=jqlYJAjqslfEBK1ChtLVVE9n11Y4EiBovZx409PhuvOit3nI11mB2SDs0botCljPQT
-         6ufkALkI3O6FP8WyPirTMAlKPHhxhKkHJ8wEn66TE8Kobh/g6zFrwyOUcQIdtWxB6Aif
-         /xVbIqluuBrYTSMVbyPVW1W4PSAfLI6fBAjkPnlx/4L0zY1kTOMi4Z1sHTQ5y+WF0HhK
-         3pOz2W1nHy35HeZ2EEpr9QYG9Qe4V8eGK+rdI28Jn2oq9r5Fq9tIXNNssglEwFmsSM60
-         OJ8RoLrSJQoor3gU1aEy02T/1LtYJ3CxdiqmA7Ztm0AfXd5Hh2HNzlWV9tGHglWoUWuh
-         +L4g==
-X-Forwarded-Encrypted: i=1; AHgh+RoGcQ4n+z1za/yk3lnljTrEZJF6N+iVbiYLcNJIXJE0C4xnytFOIJKf3Wj9I6aENLtKQ3tmnw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyENeGaTI9T3HTW70pLPRNZnO/uBT526HpQ/ZtaJsgkTLvQwf7c
-	rCXKqt7jB/JJWW8sKltbaOW+w/vPZybBV2jY+MD6Jfvo+K48a9/qjjPj9DJtJay7uhM=
-X-Gm-Gg: AR+sD10oH3nTUkmRzLoj7wUId9R+mjkkx9Kl8ZG6bR06+wgGFHlBnscOplXiNar+epy
-	RsWXWm0Tc6tRf/WGwzyQYa3CsOQUXX/R+q24H1YJlWFjGUxOI4kbvwzNsyMijvt5GFbd95U+j6f
-	uNw32eFCcBOL2AlE9TBcu8wA/gsfYAQrn3l03guPAYXcCsthJIrcK2JsdIfuZMxkKRp2fDNgcqM
-	lL3xBHu3NINXgu6fxlCK4BioqkgxkwPAKB0k8i/hF/UdBRwRGdVjJtTyA/p0vbRpW/Olax36YQx
-	lpe2+u0iIFN155uNpT9hRb705f4Zfs56F3QvOqg+UgUWh+VpRVr815JDO1/fjqj3x4FYIZ725MA
-	dtRnNySVor6PU2MLnR75psOklG1OYrDCDJQsU8PsH72x28Q3BbAiUJe7D3Pl1T3X1HaLvx8uBMb
-	HtTV/m2eYfbzZq/t78ZdA/h4PxzostMOTmmwKKBA==
-X-Received: by 2002:a05:622a:e0d5:10b0:527:69ad:fceb with SMTP id d75a77b69052e-52d512575e3mr10177061cf.0.1786392136248;
-        Mon, 10 Aug 2026 13:02:16 -0700 (PDT)
-Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-52d1637dd4dsm78983291cf.8.2026.08.10.13.02.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2026 13:02:15 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wtWCN-00000002D1s-0cYc;
-	Mon, 10 Aug 2026 17:02:15 -0300
-Date: Mon, 10 Aug 2026 17:02:15 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"syzkaller@googlegroups.com" <syzkaller@googlegroups.com>
-Subject: Re: [BUG] iommufd/selftest: KASAN slab-use-after-free in
- iommu_report_device_fault
-Message-ID: <20260810200215.GA518032@ziepe.ca>
-References: <D5E3AA41600B2056+f4e15662-bd2b-43ea-91cb-518de429e72c@smail.nju.edu.cn>
- <CO1PR11MB48353016C02FDA31BEEB274D8CCC2@CO1PR11MB4835.namprd11.prod.outlook.com>
- <ACFE02E91C9C4025+1b43727a-2964-4c96-8a6b-bf732a7c5620@smail.nju.edu.cn>
+	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="TkcOxabG"
+ARC-Seal: i=1; a=rsa-sha256; t=1786394210; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=O4Ct0WmCYgu91pcdMZcEi9q7nua2iIWyOOU86mvxTRCqcyUvh3g1RA7+L7+VIL4yPRcIvOym9tIhEoN18d5nYlR8IjI4OkhEBZnke8oXFVtfxoMn3sPvrcTRi9DeA9IHb4YEC0MHMv9hviPxkBs8a5XiXgJmOnGK9ikOa44Lf8E=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1786394210; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=oUi+iKFDxtJBsUyVPmkZnUsmIG1QL+sKC/koafNE6hY=; 
+	b=BtEVIql47lcG+9vIE7w1p1P1Gl4bxzvFJPFS4PR08W8SyEc/2mHJJwFoxUn78R9PAH1n1qAt8AVjzo+vfP8RpWNfsEfs39m+gTWHonhuop3ULgOfgF1d7dU2uztfQo1TT4RtB+Uc0djV/TognSXQ3oiS1axtyEZDmBZrwes0Br4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=rong.moe;
+	spf=pass  smtp.mailfrom=i@rong.moe;
+	dmarc=pass header.from=<i@rong.moe>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1786394210;
+	s=zmail2048; d=rong.moe; i=i@rong.moe;
+	h=From:From:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:To:To:Cc:Cc:Reply-To;
+	bh=oUi+iKFDxtJBsUyVPmkZnUsmIG1QL+sKC/koafNE6hY=;
+	b=TkcOxabGSK8AnV5yFdlPyjA/UG4WarJIEWpyRA9tGHWUPrlmvBhvNvsxWeZRJWAT
+	wo0fuNFVkK0FduQUHRcqnAzXvw6sZeonDxXc/AEDpL8CwnZX0l5BpP8FLRrgZikNtIW
+	ZConJZuFEE2R4HjhbrWPpAN4ZFzQ0joT4nn+JYrBqC1JfSt8b0tnG8wZ4rKSjimFhfl
+	2ETsFnOkcUulpZI55YpD6foOeuM2G7fPkBOFeA9pO7RlCSgWUqiHvrRV+L57aEl9Xp1
+	3vsYkyDTzWh6aZCMPYVXwRApl5K8xfG68BJFoqhD07x1Pjn9Gpwqd85CGcRJ2aYhnMq
+	i/KVbmWXeQ==
+Received: by mx.zohomail.com with SMTPS id 1786394206639768.218963072738;
+	Mon, 10 Aug 2026 13:36:46 -0700 (PDT)
+From: Rong Zhang <i@rong.moe>
+Subject: [PATCH 0/2] iommu/amd: Do not request ACS when IOMMU is not going
+ to be initialized
+Date: Tue, 11 Aug 2026 04:36:17 +0800
+Message-Id: <20260811-amd-iommu-fix-acs-v1-0-d64e2172408d@rong.moe>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ACFE02E91C9C4025+1b43727a-2964-4c96-8a6b-bf732a7c5620@smail.nju.edu.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXM0QrCMAyF4VcZuV7AUoXiq8gusibVCN2k2cag7
+ N2t7vLjcP4KJkXF4N5VKLKp6Tw1uL6D+KLpKajcDHwLfEneIWVGnXNeMemOFA1D8nylkYILHtr
+ vU6RN/+ZjOG3r+Ja4/EJwHF+8YA04dQAAAA==
+X-Change-ID: d58d0f31-amd-iommu-fix-acs-8f3d4aba8183
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, 
+ Huang Rui <ray.huang@amd.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Rong Zhang <i@rong.moe>, stable@vger.kernel.org
+X-Mailer: b4 0.16-dev-2f6f2
+X-ZohoMailClient: External
 
-On Tue, Jul 28, 2026 at 01:32:09PM +0800, Peiyang He wrote:
-> On 2026/7/27 17:41, Tian, Kevin wrote:
-> >> From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-> >> Sent: Wednesday, July 22, 2026 5:52 PM
-> >>
-> > [...]
-> >  > Since iommu_attach_handle_get() explicitly says that the caller should be
-> >> responsible for "synchronize the call of iommu_attach_handle_get()
-> >> with domain attachment and detachment", maybe we shouldn't add extra
-> >> lifetime
-> >> management mechanism around iommu_attach_handle, instead we should
-> >> fix this at the caller side.
-> >>
-> >> Fault report can run concurrently with PASID detach and replacement, but
-> >> before the old attach handle is removed and freed, mockdev must block new
-> >> reports
-> >> for that PASID and wait for in-flight iommu_report_device_fault() calls to
-> >> finish.
-> >>
-> > 
-> > yes the mock driver should drain in-flight fault requests before the
-> > actual detachment, just like other iommu drivers do.
-> 
-> Hi Kevin,
-> 
-> Thanks for your reply. I looked into the code in more detail. Would this
-> approach make sense?
-> 
-> In iommufd_test_trigger_iopf(), call iommu_report_device_fault() under the protection
-> of idev->igroup->lock. Since detach and replace also require the same lock, they can
-> be serialized with fault reporting. This would ensure that a mock fault report either
-> completes before detach/replace starts, or starts only after the old handle has been removed.
-> Thus it should prevent the UAF.
-> 
-> Would this simple serialization meet the design intention of mock dev? Or would you prefer
-> an explicit quiesce/drain mechanism instead?
+The AMD IOMMU Initialization State Machine has the following state
+transition diagram (only the very first states are showed, and the
+`IOMMU_' prefix is omitted):
 
-The mock driver should follow the expected design of a real driver, so
-I'd put an internal rwsem or something like that to protect this
+   START_STATE
+        |
+        v
+[0] detect_ivrs() --> NOT_FOUND
+        | ok
+        v
+  IVRS_DETECTED
+        |
+        v
+[1] amd_iommu_disabled? (amd_iommu=off) --> IOMMU_CMDLINE_DISABLED
+        | no
+        v
+[2] early_amd_iommu_init()
+        |
+        +-- [3] amd_iommu_detected? (!iommu=off && ...) -+
+        | yes                                            |   
+        +-- ... --> IOMMU_INIT_ERROR <-------------------+
+        | ok
+        v
+IOMMU_ACPI_FINISHED
+        |
+        v
+       ...
 
-Jason
+[0] always calls pci_request_acs() as long as there's a valid IVRS table
+and no Stoney Ridge graphics. This is not optimal as ACS is not required
+in an [amd_]iommu=off boot.
+
+In a normal boot, ACS is requested due to amd_iommu_detect() requesting
+IVRS_DETECTED.
+
+    pci_request_acs+0x9/0x18
+    iommu_go_to_state+0x106/0x1a20
+    amd_iommu_detect+0x1c/0x50
+    pci_iommu_alloc+0x26/0x40
+    mm_core_init+0xa/0x120
+    start_kernel+0x527/0x7a0
+    x86_64_start_reservations+0x24/0x30
+    x86_64_start_kernel+0xd1/0xe0
+    common_startup_64+0x13e/0x158
+
+This is intended to ensure ACS is requested before the PCI core
+initialization, or else a !CONFIG_IRQ_REMAP, nointremap or intremap=off
+boot would be broken.
+
+However, in an amd_iommu=off boot, the state machine still requests ACS
+at the exact same time, as amd_iommu_detect() has nothing to do with
+amd_iommu_disabled.
+
+Even worse, in an iommu=off boot, though amd_iommu_detect() bails out
+early, ACS is still requested due to amd_iommu_prepare() requesting
+IOMMU_ACPI_FINISHED, which is called by irq_remapping_prepare() thanks
+to CONFIG_X86_LOCAL_APIC (always set on X86_64) and CONFIG_IRQ_REMAP
+(enabled by defconfig), unless nointremap or intremap=off is also passed
+to cmdline.
+
+    pci_request_acs+0x9/0x18
+    iommu_go_to_state+0x106/0x1a20
+    amd_iommu_prepare+0x15/0x40
+    irq_remapping_prepare+0x43/0x60
+    enable_IR_x2apic+0x22/0x190
+    x86_64_probe_apic+0xa/0x50
+    apic_intr_mode_init+0x70/0xd0
+    x86_late_time_init+0x28/0x40
+    start_kernel+0x6f9/0x7a0
+    ...
+
+In both cases, [2] is still gated due to the [1] or [3] check, so that
+IOMMU can be disabled per cmdline.
+
+Technically, it makes no sense to detect IVRS at all in an
+[amd_]iommu=off boot or if IOMMU is not supported due to platform
+settings. This is probably why amd_iommu_detect() bails out before
+requesting IVRS_DETECTED. Apparently only bailing out there is not
+sufficient, and the bailing-out paths should really have been parts of
+the state machine.
+
+Fix it by moving the bailing-out paths and [1] to the right place in the
+state machine (i.e., before [0]), and always requesting IVRS_DETECTED in
+amd_iommu_detect() to initialize the state machine early and properly.
+This doesn't change the IOMMU initialization/failure sequence since
+commit 9f81ca8d1fd6 ("iommu/amd: Don't call early_amd_iommu_init() when
+AMD IOMMU is disabled").
+
+Signed-off-by: Rong Zhang <i@rong.moe>
+---
+Rong Zhang (2):
+      iommu/amd: Do not request ACS when IOMMU is not going to be initialized
+      iommu/amd: Remove ad-hoc checks that are never true
+
+ drivers/iommu/amd/init.c | 36 ++++++++++++++----------------------
+ 1 file changed, 14 insertions(+), 22 deletions(-)
+---
+base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+change-id: d58d0f31-amd-iommu-fix-acs-8f3d4aba8183
+
+Thanks,
+Rong
+
