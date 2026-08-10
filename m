@@ -1,290 +1,164 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011033.outbound.protection.outlook.com [52.101.52.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD01D3DE44B
-	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 12:25:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.33
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786364755; cv=fail; b=IQcpv1CRAmk8aM0VOkK2tTz1Cjr7UxflAWLD7t8+7qXom0a/nYfUFnNoXyR4zpyHdh1QHUp6RDKP4JiD/Zm1KkCvtl+kg+nDhSdhmclSEHaw4rUCGmJ8KjN1pOxWivq9wPEAfSrkTr6KIiIlmYna5vvTwKKGJezqiUh42V0sfA0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786364755; c=relaxed/simple;
-	bh=aK29VlhHM+oLCqUtbKTXAuivwl3purBvTZUcg7IJExQ=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Ofhas8dM/7/uugdsLXvHD2Df8qOnV5QQ/AH8hdOOXtxAM8PNr3UAgK0EzluG9N6EV1ycR1q2oVlKm466pBzxN1cCCvEJVF1J8aynbGLfVIk64pVQQZGQew1vfk+cYBKmcOHhMVWeKNEWM05rxM53Bf3p5GYQ/e1Qc13QG4mwNVA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ej0jUfMT; arc=fail smtp.client-ip=52.101.52.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38A73D8131
+	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 13:08:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786367302; cv=none; b=lUo1uh11GkSbfH3zSLQxOPwkm7we5C7FF4i0EYtDPB4sRT5xygj2iQxhXm61yTZ6nhrF+XrtofSci2c4T2m0W2Vc/sk7VLhvywThIPPHA4+zzRK5yWRy05IT4ntQ/t5SRxbTX4+CSIJpQxg+ogXYYIlWwadwl7PGc2CaTBppJ9c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786367302; c=relaxed/simple;
+	bh=fYoOLYp8STPeqtUEMMg1V9r97/aMbQKiFeOjtdj7QMc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HSVsmFoJXFEgeLCpRZ1mgJwga19sQPj5c3QbPtgeFneSJc+EGVTeZeaQZKsoxF7viRNvILNCUUFQwiF89zTgKOYPTuziwCccBqerpVJFFhqYg6HLgTQfkghI7nkfhQhFrboiqaui9/2Bhp42gVqqhHo5wlhVT1Ll6voUZOXujFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PjsVk64H; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ej0jUfMT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hX6LJJZvuzmas9yuEFSzCNKOvrfQxgCI+v46kQmrBcAHdE4raUlfobAVC0Np/1qZKIko1zlS94W+9rmFEVuTgYM7OFNxSMJvomYtjw76w36LAgwQjHgGRHtiZhbEjjzgRA4Mj2sqQo7Q1VbVAIhumpKO0Onl4LYVcw2AJJotTlerk9Q1MPZdVpCGS5gA3u+zSnpndSX4lG7KkZnNugex+WdXr5h1woVkq228hmvaYsgqNWAeH7f9i7SGJ4FLnq4MZTSSvrctpQsbu4HDrTMWS6FACfVPLWSztLIFCRJMTl0P3WkzfiRZ/8RwXICorTRQMm5sPlpDh5gTurkAW9p9Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XgPKZhkjoZuhTLTuO+WqzRIbzYH5KCcDPOZXqaOTOMg=;
- b=krb4NyG3ratYdT+XimY4POFDGt7k9+EZyCpKEW7+sQKQ1Q3d6qD0A6qldE8xEfwlj9kF8s9+kk1A8y5m0qiM0Ipnl58gw5EPBrCgI7RSV2Eo5vSub+83xTi/JW/+MbBu3hkGTIybxL7FDiOOBFMyjV2FhuIRuURJV0IcogrzVGRgZbuTrvZoBxz4QaY92/MVRYkYfte6JTptYZoGHN7zGDy1m5lVZ6JuRdhgcUJY9a+pZ6yDBcfZj6PiAbyqrKugGHzZZX30jwLekt534vfWPI+AjZyVZHWNzfiuRgz7BaWatlGJfBrXBgzdTNFPMwqvhZyJ5MwkRlVmYFTTYdudvg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XgPKZhkjoZuhTLTuO+WqzRIbzYH5KCcDPOZXqaOTOMg=;
- b=ej0jUfMTyqG3IYgqFdxxfPjzQS2ytD5zmzBqji4pWWzhNMXwGRzvEoMZMp+lA5M22JSoxH3IXZfqYSa/DrZqHRZepnMQl8YoYY6kDSrcHvhi+EmKF71zZK3a9ua6g15qLg/MPhOzqfsJMwC3woyAOjyju2MNMKjKgPI3M9xBrL4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by PH7PR12MB6788.namprd12.prod.outlook.com (2603:10b6:510:1ae::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Mon, 10 Aug
- 2026 12:25:45 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%5]) with mapi id 15.21.0292.024; Mon, 10 Aug 2026
- 12:25:45 +0000
-Message-ID: <94a06ddf-a969-4499-93cb-1c8808fc7609@amd.com>
-Date: Mon, 10 Aug 2026 14:25:21 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 06/10] dma-buf: heaps: Add debugfs support
-To: Thierry Reding <thierry.reding@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Sowjanya Komatineni <skomatineni@nvidia.com>,
- Luca Ceresoli <luca.ceresoli@bootlin.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Russell King <linux@armlinux.org.uk>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
- "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>,
- Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>,
- Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
- "T.J. Mercier" <tjmercier@google.com>, Steven Rostedt <rostedt@goodmis.org>,
- Masami Hiramatsu <mhiramat@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Chun Ng <chunn@nvidia.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
- linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-References: <20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com>
- <20260807-tegra-vpr-v4-6-5510d16af89e@nvidia.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260807-tegra-vpr-v4-6-5510d16af89e@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MN2PR06CA0015.namprd06.prod.outlook.com
- (2603:10b6:208:23d::20) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PjsVk64H"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-51c1372f84dso11757561cf.2
+        for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 06:08:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1786367299; x=1786972099; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=pTDI6EKrZhHzu91ABEa/3hYoH7aGPcaJaVd/MJRw0Ok=;
+        b=PjsVk64HrxP8Eb7lIQhNl/HbADqZ4xL/SqQsi29NgHoFCO92FMMPYyTvEF66FHOTbP
+         dkZ7j/jFl4L/bq5sAXr02sIH+0UdGtl1lGN9XZsgQaXMXkZ70IBH8yVrAFgQhEZyDPli
+         ZJWkh3qbOvL8gSV31fUFL4sdFMUkptKE/A55np/R05gejYyk1FPTY9u9OyfjXnTxe7ig
+         rhh9Rjm8qi2O7BvA88O890gn2duOmKrARVODG90bXgO5luj7K92BSX1yQehcx8i1HOEM
+         jG5vx2jr93KaM8Gi2tQ2ddHj6yG5u8aDn/cxKiDUigNjy0wdbkdH11mc8F6tqUzm3+kd
+         xpsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786367299; x=1786972099;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=pTDI6EKrZhHzu91ABEa/3hYoH7aGPcaJaVd/MJRw0Ok=;
+        b=LWlHXTIyGxLM6qmhKkZjdZ+Q/nt/jGCxJy8vynd4WISyASzxbOCn+eFXxP6q6uvdFl
+         uMsW6kzcPk9V+Gjk7xxk9+qhhtYV6/nwV0h9BSjyVCIiSuIo2bqIpyq13cpftmkVHozQ
+         +S8NitHy40zgHoOgzNjD1jikET5+lGB+IF9ahPX6disExfoYE0hYD3DZ7STGZ7PFGgyl
+         KwwlJlEoZhlEstepmXSHNxw7TM03PGCXaQYr0b9ynM2S6ZMsAwD3CibwPgKO7mN+3IBR
+         RaBdMeDQneYdqaULmiZplvrEy34AGe1XJIDYTrPwmGrRbGe6IEMiOan2kH2ZYyybzXqz
+         UylA==
+X-Forwarded-Encrypted: i=1; AHgh+RqFjmNU4doZJnzU9Y+2GHSUcsD3CBO24mRkHPVlSxjIzEn5qSN3X/Z8uNbzFLxnVFqDcKB/FQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzC7XqQV0QH4yMVwyuU/urp4e1XojL9QRSSzM0r3FkqUAWrQqhb
+	6N7zVSfsRSNzxikurx5yIVb7CWgebJvO3OtNb63mKQEan+ISEjwvVNY7b0Z4UlOex6s=
+X-Gm-Gg: AR+sD13ouS6QMNPVNbafxkEdN4CKZO2wyQVduKLdtLzPollyXXqM3vOQ4+M8iy+W6it
+	DNzqzZ43PTV6wHxG5oy50/W/cdtVueiM9iGi+twslGW9grp4VGTpHC25aBlddBWLzzRezE6u2Nh
+	wpefFEmutVjJ+5c11DFehlR7+PEl4ORMHL5WqiKh03m8sUHTSkN3WS/D3lbBYQhSLNdVW52qYY5
+	P2fAE8ou1RBUwzX7W0shdO3lX4gcR1m4v7mD86H7U6dkW/iQHKce9upKNsIx0F5UkvVX6YE0d/T
+	p9Rq+oX7NtRzzJSFc1oty5eHwAEl48cyRLJaxQdBLSF4t1M3ffRUdxhSJmKoAInNJLOH4ghJObz
+	9gHaXqbw9LEhM8D3inOZbNbk2u/c3pb+K16hImDXWP4mcQ3AK34jy/0ufwgDHFl+l5ZBHNWG2kg
+	FUnzwicQ4RxL9dDEaWO/ufYfrRKxVz0UnOyl9qFg==
+X-Received: by 2002:ac8:574f:0:b0:51b:fcb4:7576 with SMTP id d75a77b69052e-52d20961711mr224570371cf.15.1786367299519;
+        Mon, 10 Aug 2026 06:08:19 -0700 (PDT)
+Received: from ziepe.ca ([142.166.156.215])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-52d163c1aefsm70838551cf.12.2026.08.10.06.08.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2026 06:08:18 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wtPjm-000000022LS-0EaO;
+	Mon, 10 Aug 2026 10:08:18 -0300
+Date: Mon, 10 Aug 2026 10:08:18 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Will Deacon <will@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH] arm64: swiotlb: Keep the default size for protected
+ guests
+Message-ID: <20260810130818.GN200537@ziepe.ca>
+References: <anX7F7dnKOtAOIIe@google.com>
+ <20260807164734.GE200537@ziepe.ca>
+ <anYgXSR4VAi3TpOj@google.com>
+ <CGME20260807182023eucas1p1f653436207b2b00338e99ea1d8f847df@eucas1p1.samsung.com>
+ <20260807182017.GH200537@ziepe.ca>
+ <7d22482f-d5fd-4cf4-9d32-6a54e02f2fbb@samsung.com>
+ <yq5av79iiard.fsf@kernel.org>
+ <anml6lLRERm1Iv-_@willie-the-truck>
+ <28442500-1d53-4776-bae5-459c3ffc1cc6@samsung.com>
+ <anm6K2umtx4iKnyZ@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH7PR12MB6788:EE_
-X-MS-Office365-Filtering-Correlation-Id: d05167ea-cd58-4c2e-5268-08def6da803d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|921020|4143699003|11063799006|56012099006|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	uJ0YlBUrLHAd5fjCJPvn9wMDKYHfbYNA1n5wTwS+x26DBHLsgXqHW6dUseMz8Gn8UeKR8TPFuP9ChwSnCgiz0LSp/9mHbbbXIxc0SCA+A1blWVYQPHGCYgr0NIh77FRWFw/e5Jn82+c0eabCbhJ3JUqDabEzm2YS6nYs7QpArMhd+LoWeoNeRUjLIDagxIGDh5dbc6D7Ua1wrqEV0WUx/pSpRHhyPtPR9cXBHGBbQlzF9xNn9Te0Eq5I2cQatLAjKLuvFGXQtUl1935Fz0W7aRDNmwQYAlgoF9vI0eGAON1l9ZFdaHw36nKv+ZWFGSx8OgjwyFeATRoxxVs8fkUx/pWr8GmvyyEGym8+kP/JPtyolp53FvK2RMjDbKJb8Sv7ir61Rz8ugsI2w9C76ynOTKoLoS+bztaaHav8E4Ne4+O2JWBe2Td60Y1HFqtcZT49/2+w596/h4/OtYLJtv8sfoG+Z0SIIpu7jiqhwOEXQIU4bechhj2ob/hLR2m+6aJN2kVhxXUTNi1bXA+HkciVV464ec21RXvmx5xDy7Vw/2xlDoP7wstUi2w0Ax4JFVIzQ3EeW8AMPu11xixZIt7eXAyHRhYND8FCDRAwhjMzStbx1ycuQpmH9iqtEBCoQ0h/mu1vT3iPt1tHmMySeWTxuKkdWb4nDfJyXb8n8ynXLbABQUb9sWkktNgv/1CcrpD4jGSbiGmShpfVp2K69R+pfw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(921020)(4143699003)(11063799006)(56012099006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NzJmRUhLM3l2NElWQS9IVnA0VHFFUTV1MS9jN0ZSSTZNTzgzRTE0QTM4Sm56?=
- =?utf-8?B?TDRBQmFqaGtrWE5ScmdkN2tRbi9PMnNnL042TWM0THdzRXVNa0ZabkMzUUd1?=
- =?utf-8?B?ZzBUNU84UDl4QkJpcUVGVjh4QU5FY0VMVm9QUVV5V3VUR0VjM2RYOHpseE5Y?=
- =?utf-8?B?UWZMYkROTE9LeW1WZ09wZ3laSmVuck1NejZZRXZzbVJVUXV0T0kra2FTbGNI?=
- =?utf-8?B?UlArdjhXanFpM1FubVBQMXBVUkh1THRUYndxT1phYWRMQzZQcVNQaWNmUC8y?=
- =?utf-8?B?TUNXVlFCQ1VnSTQ5WWdyYS8weGZ4VWhIa0svNGZzdTRQS3hUbFlSZ3FpSEUx?=
- =?utf-8?B?MjdRNGc3TXFzNTdzd2YwSnRKcVJRd29FVnljZkJqNWpHOURyU0w1bmpNanFv?=
- =?utf-8?B?ZDJzVDV1elRjWDhuS3ZtZmtrYytDME1aS3RSc0F0RXRGdUdnSitQQXJCdjk3?=
- =?utf-8?B?REV5N1MxL1krTTNiYUNzcW5PbFg0cThvaXZacU9qWXFBV1JweWVhWWRieWlX?=
- =?utf-8?B?UkxjTEI2SEk5RG5rZmxVd1NPZXZrOXplOWVvOE5QendGTmhaeHkvcitLbnRo?=
- =?utf-8?B?UE1ucUpFRTRiZGR0UWRlR1Z6N2ZLQmpEWTVHbUpMSmxTQUViMmN6STdqZWlQ?=
- =?utf-8?B?c1U5endjZVBDREV5WWYwbHAxcmY0d3hXbE9xTXlWV0RHQlpJQ3lQVUJEU1pS?=
- =?utf-8?B?WHhSZzdVWG41b2ljeENyRVNYRzZma0REWFRNRVRoVTRhdFdMRVZmcnpYSWZJ?=
- =?utf-8?B?OTZHMkJ1dFV0N1paWHVqOFU1aDBUN2dhcitKcjU3YlpOZkRsVnVQcnFVTi9l?=
- =?utf-8?B?dXhyUzdsdDlXL2I0MnFQWGtDMVk3RmlsOVVqb3UyZ3JNbTNlcTFMTU95QkZG?=
- =?utf-8?B?aGd6czc4dnJBSkR2K3hVRC9hWnJXOFdJR01mUHh5VmRINWEzdHVoaHYzL1Yz?=
- =?utf-8?B?SHMySHlFYjV5czBIa0pkVmY5WmhyVUFSQkxmQjNLK3NHZjBsNWprdnBtUkVy?=
- =?utf-8?B?R0tyOHZHTVFKV2sxY001K3JOTDF3Nks1RDdQemoraGtlV0FxY2FBUDFQaFVH?=
- =?utf-8?B?eERJelhIRWlpN2IxckYzZXVoMndlSVpYc3k3WG1Rajd1bWwzSjdWZ2tVQTAr?=
- =?utf-8?B?Q09pdVRkU2U2dEFFS2U5ZEszL0pqNjhIZlRzOG11dXkzWjJrc3BuM0hFRTV2?=
- =?utf-8?B?QVVxN2pZNFdxMDZra0hDUWlnTHhJQ0xaNFBIanBDVzYrT2pSQ1crUitQallG?=
- =?utf-8?B?OTZmckdZcThMMGYrcHBFODZtYVAvMWNMV0pnd0lURWlUM0doTmJGMFNEdGIr?=
- =?utf-8?B?UnVFQS9rY3VwODE2WVBSY0NYSXBmemh3QzBQUUVPWE9OMDJERXU5ck1RSVNJ?=
- =?utf-8?B?akx3M1FJUnhCN2wyc3R6bXdkcUlnMjFxSVBmaDJNdXhkVzZJcm5kNGR6V0Vw?=
- =?utf-8?B?NkNnVGNuQktkb1BJRGZPa05KNlhhZFFLZFNaUncwU3JrOUhPblgxb0ZBQlJM?=
- =?utf-8?B?aEJONDBLb2FDT2VSbGNsSlNELysrYzJLQ2JldklBNldsMVNhd2NXV3ZERTk1?=
- =?utf-8?B?cnVFd2d2THdqSlJSMkpCaFdETDIyYVpBZ2Z0NlVKbkRPUmVRRDZYVTNoM0F0?=
- =?utf-8?B?YmVxRDl4bGdzOXU2TlE0WGVLMEk1V3NSQzFvSUFEMGdHd25jTEZVOVlwR29j?=
- =?utf-8?B?aHk1L1Q0bDVWc1F5ZnhlTnJPb051RUZUeko5RUI3TURzcE1BbjJGMzRidXRY?=
- =?utf-8?B?K3FZdXZqMVlJeE1xMlovelJhQ0dmZmM1NXRYNUZudjI1Ly9ubitSNkUrM1RQ?=
- =?utf-8?B?RmJGMDBzckU3ZTMxSkdaYWJBTGZkc1hEdU42ZUxoUkwxeDZHY2d2dkNxa2wx?=
- =?utf-8?B?TEozenhOREJmL0xzWWlheko1VG9VY0lhZmkrTnZIVy9PQnE3MDU3NU54b0JG?=
- =?utf-8?B?ZkhxVm1iM3doUUxRWUNpbEpCT29Mc0lXUTVUZERUcEpJQzM3NzRsNzB2YUdZ?=
- =?utf-8?B?YXVqaWYrdkR2TEtKdXJlcDJGbElxaUpiclY3ekpCVWNnQTBjdm1ENWFBNXJi?=
- =?utf-8?B?NXpLUHMwanFMblE0dTZsNGZxR24wWloyRUdEWHZsdEhhQy8rU2dOTGdxQ1gy?=
- =?utf-8?B?QmlGbFhZVkF1SVlIaTBSV1lTQlBSdmRzTWNyTGh6SW1BQzVzSVVLc1RRNHFa?=
- =?utf-8?B?ZFRSdWlOQUtmdmFkT0dzbUlKRE1Pa09LLzFYV1hSVHk4V3J3UitETFIxallz?=
- =?utf-8?B?SmQ4ajV0VzZhVmVPTGVQbFFDYVBqUVVnM2c1aFo3bklwR0czR05UK25zbFBi?=
- =?utf-8?Q?sV17zeAytFg+QLG5+M?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d05167ea-cd58-4c2e-5268-08def6da803d
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2026 12:25:45.1565
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ov0Erh0lz3QOIBKiWHRzi3ak8zMidztRl9illREB0K0RFBjsVhc6kcOlkCvYoWzf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6788
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <anm6K2umtx4iKnyZ@willie-the-truck>
 
-On 8/7/26 17:54, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
-> 
-> Add a callback to struct dma_heap_ops that heap providers can implement
-> to show information about the state of the heap in debugfs. A top-level
-> directory named "dma_heap" is created in debugfs and individual files
-> will be named after the heaps.
-> 
-> Reviewed-by: Maxime Ripard <mripard@kernel.org>
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
+On Mon, Aug 10, 2026 at 12:46:51PM +0100, Will Deacon wrote:
+> On Mon, Aug 10, 2026 at 01:37:11PM +0200, Marek Szyprowski wrote:
+> > On 10.08.2026 12:20, Will Deacon wrote:
+> > > On Mon, Aug 10, 2026 at 02:59:42PM +0530, Aneesh Kumar K.V wrote:
+> > >> Marek Szyprowski <m.szyprowski@samsung.com> writes:
+> > >>
+> > >>> On 07.08.2026 20:20, Jason Gunthorpe wrote:
+> > >>>> On Fri, Aug 07, 2026 at 06:13:49PM +0000, Mostafa Saleh wrote:
+> > >>>>> But the whole thing is best effort anyway, the kernel picks
+> > >>>>> IO_TLB_DEFAULT_SIZE which does not depend on the system topology or
+> > >>>>> how many devices or how much DMA they do.
+> > >>>>> SWIOTLB memory is wasted if unused so we should be careful around
+> > >>>>> that as it would be the other way around and users would have to
+> > >>>>> decrease it manually.
+> > >>>> Yeah, it is why the arch code shouldn't really be sizing it directly,
+> > >>>> it should be done in common code and, yes, we are probably going to
+> > >>>> have to do something alot smarter to have the common code better
+> > >>>> auto-tune this for the CC case..
+> > >>> What about the $subject patch? I assume that it is still needed to
+> > >>>
+> > >>> restore the behavior that was altered by the "[PATCH v8 00/23]
+> > >>>
+> > >>> dma-mapping: Track shared DMA state through direct, pool and swiotlb
+> > >>>
+> > >>> paths?" patchset?
+> > >>>
+> > >> I would request that we pick this patch to fix the regression described
+> > >> in https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/.
+> > > I really don't think we need it. CCA hardware isn't exactly widespread
+> > > and the KVM host side patches don't appear close to being merged.
+> > 
+> > Does this mean that the branch for-next/coco [1] won't go to v7.3-rc1?
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
+Let's not make progress on guest support contingent on KVM CCA host
+side patches please. I expect the CSPs will have VM instance types
+available based on CCA within quarters, and Linux as a Guest should
+work in those environments regardless of what KVM is doing. I don't
+really expect full KVM support for years, frankly, the patchset is
+massive. Even Intel and AMD don't have full KVM support yet.
 
-> ---
->  drivers/dma-buf/dma-heap.c | 56 ++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/dma-heap.h   |  2 ++
->  2 files changed, 58 insertions(+)
-> 
-> diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
-> index 3937dd41bb0f..389cddd07c8d 100644
-> --- a/drivers/dma-buf/dma-heap.c
-> +++ b/drivers/dma-buf/dma-heap.c
-> @@ -7,6 +7,7 @@
->   */
->  
->  #include <linux/cdev.h>
-> +#include <linux/debugfs.h>
->  #include <linux/device.h>
->  #include <linux/dma-buf.h>
->  #include <linux/dma-heap.h>
-> @@ -225,6 +226,46 @@ const char *dma_heap_get_name(struct dma_heap *heap)
->  }
->  EXPORT_SYMBOL_NS_GPL(dma_heap_get_name, "DMA_BUF_HEAP");
->  
-> +#ifdef CONFIG_DEBUG_FS
-> +static int dma_heap_debug_show(struct seq_file *s, void *unused)
-> +{
-> +	struct dma_heap *heap = s->private;
-> +	int err = 0;
-> +
-> +	if (heap->ops && heap->ops->show)
-> +		err = heap->ops->show(s, heap);
-> +
-> +	return err;
-> +}
-> +DEFINE_SHOW_ATTRIBUTE(dma_heap_debug);
-> +
-> +static struct dentry *dma_heap_debugfs_dir;
-> +
-> +static void dma_heap_init_debugfs(void)
-> +{
-> +	struct dentry *dir;
-> +
-> +	dir = debugfs_create_dir("dma_heap", NULL);
-> +	if (IS_ERR(dir))
-> +		return;
-> +
-> +	dma_heap_debugfs_dir = dir;
-> +}
-> +
-> +static void dma_heap_exit_debugfs(void)
-> +{
-> +	debugfs_remove_recursive(dma_heap_debugfs_dir);
-> +}
-> +#else
-> +static void dma_heap_init_debugfs(void)
-> +{
-> +}
-> +
-> +static void dma_heap_exit_debugfs(void)
-> +{
-> +}
-> +#endif
-> +
->  /**
->   * dma_heap_add - adds a heap to dmabuf heaps
->   * @exp_info: information needed to register this heap
-> @@ -299,6 +340,13 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
->  
->  	/* Add heap to the list */
->  	list_add(&heap->list, &heap_list);
-> +
-> +#ifdef CONFIG_DEBUG_FS
-> +	if (heap->ops && heap->ops->show)
-> +		debugfs_create_file(heap->name, 0444, dma_heap_debugfs_dir,
-> +				    heap, &dma_heap_debug_fops);
-> +#endif
-> +
->  	mutex_unlock(&heap_list_lock);
->  
->  	return heap;
-> @@ -335,6 +383,14 @@ static int dma_heap_init(void)
->  	}
->  	dma_heap_class->devnode = dma_heap_devnode;
->  
-> +	dma_heap_init_debugfs();
-> +
->  	return 0;
->  }
->  subsys_initcall(dma_heap_init);
-> +
-> +static void __exit dma_heap_exit(void)
-> +{
-> +	dma_heap_exit_debugfs();
-> +}
-> +__exitcall(dma_heap_exit);
-> diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
-> index 648328a64b27..1c9bed1f4dde 100644
-> --- a/include/linux/dma-heap.h
-> +++ b/include/linux/dma-heap.h
-> @@ -12,6 +12,7 @@
->  #include <linux/types.h>
->  
->  struct dma_heap;
-> +struct seq_file;
->  
->  /**
->   * struct dma_heap_ops - ops to operate on a given heap
-> @@ -24,6 +25,7 @@ struct dma_heap_ops {
->  				    unsigned long len,
->  				    u32 fd_flags,
->  				    u64 heap_flags);
-> +	int (*show)(struct seq_file *s, struct dma_heap *heap);
->  };
->  
->  /**
-> 
+People already have CCA capable HW, are already testing this stuff and
+the closer upstream can get to being workable as a guest without a
+mountain of OOT patches the better.
 
+I agree the thing is not ideal, but it was merged to ARM like this a
+long time ago, this patch is just fixing a small oopsie (was it a
+merge conflict?) to put it back. I don't the objection.
+
+Jason
