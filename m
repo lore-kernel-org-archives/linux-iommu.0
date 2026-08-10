@@ -1,33 +1,33 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 20B723D9DC7;
-	Mon, 10 Aug 2026 13:15:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDC1A3A383C;
+	Mon, 10 Aug 2026 14:08:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786367726; cv=none; b=aH4WE7pKBOISLu3TzNRZ4/2I0Tik9OEBzgebdxjeUMHQf8oOve03c3i2LtLrVPs1KVzx58Y5k339Zyad2kpULODu1UgSp/JLbf440R8A6JOeu0LBdVKUcoIrEPV1QA/Kd9t/FfWFZP/07NpUZ13OBAN4n3YO5pMtZHwqEvxpbqE=
+	t=1786370908; cv=none; b=VxCl/EhWwspfwoybrz1zcKWrDeTn5qCK1mfApCw/0O950KElrWngx6yTPXvaKgZz5zRePnwHjKTlgEWyDYLuCnqrM4CCYCNgkjgqu2QFG8Pu9smKSbVKTFbiWd+FL6xYSx3mMwUb4rIs+l4z4coFgG8hEVf9PmZETkhkGdtWFrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786367726; c=relaxed/simple;
-	bh=08CNSczzlMqJLfhVP4oR0gP5UnNIku1FbqhnKdMgNJM=;
+	s=arc-20240116; t=1786370908; c=relaxed/simple;
+	bh=WIG5gWxWn/Ev2rkfLIG3WmO0JyDYfhFXREH1iOSeZTw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=th24IPeKWiRs/eSxMeRgk15mxkambw53qm140pmr8QebZgtYk+1WnRRMAPWb2SYibhTWWu7cWXEAT+mJ1XkO/tHLsRgQW/IjXJa3FAa0T73HVRz/BQhMw5ZWKvTndgkT/Gd+9uzzNyRfVI6340A+UIf2Nkg4MvFXRQwLbfhoVMw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=UIG0VKRV; arc=none smtp.client-ip=217.140.110.172
+	 In-Reply-To:Content-Type; b=sPsn5OG1Sc/oAi3Xg/rrmq2TpLesysoFqCcIV2TRXDTZL+Ez1/Od4vUrMjMoKXr6mlm0c1vd4Fnrjps/DgMVx2ak2UBhfZULjn4k5HUe2tK8OcTKuQCqOo1nhIZSmWrD6foF/8rcXOEMNedm41JAwQGyHQKYFAieUQ2J7bXo8pE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ZXStNpjX; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="UIG0VKRV"
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ZXStNpjX"
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D6411477;
-	Mon, 10 Aug 2026 06:15:20 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A7941516;
+	Mon, 10 Aug 2026 07:08:22 -0700 (PDT)
 Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C7D193F632;
-	Mon, 10 Aug 2026 06:15:20 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CA3DB3F86F;
+	Mon, 10 Aug 2026 07:08:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786367724; bh=08CNSczzlMqJLfhVP4oR0gP5UnNIku1FbqhnKdMgNJM=;
+	t=1786370906; bh=WIG5gWxWn/Ev2rkfLIG3WmO0JyDYfhFXREH1iOSeZTw=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=UIG0VKRVpcnQsntb8X+MUw+Rl1RmKSYUuGIobrr6tKs0/KwrfxLsM0TWwGDOfumFm
-	 6LNootm9c7LoakxRkMKnwDln+V6lL05lHro61O8CO3txcH2RBRl/GFDkKz44saVCkc
-	 dgt/4K30gMdQMt+9zq0K3hFK4pldKbqC/7ig2Aqk=
-Message-ID: <850675b8-1858-4314-85cf-b174daf8693e@arm.com>
-Date: Mon, 10 Aug 2026 14:15:18 +0100
+	b=ZXStNpjXVYvpxTBkP3rWmmwVPR479gsTPUbyBMBR8VKOLTsj4ratjHRO92RiDGFax
+	 IG5dbWhAWx0ncg0zwRBfNQKPrft0K+c13K0wFbEYz8ngMLcySRRYMCHpujbZ48aqGf
+	 1iA6qXJ9C3VW4Jm34gws0KQ9bPcSOJKgwmrVFNto=
+Message-ID: <3cccd2d2-b59c-47ec-8a87-f504a5427576@arm.com>
+Date: Mon, 10 Aug 2026 15:08:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,106 +37,107 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] arm64: swiotlb: Keep the default size for protected
  guests
-To: Michael Kelley <mhklinux@outlook.com>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Jason Gunthorpe
- <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
- Mostafa Saleh <smostafa@google.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Marc Zyngier <maz@kernel.org>,
+To: Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-coco@lists.linux.dev, Marc Zyngier <maz@kernel.org>,
  Steven Price <steven.price@arm.com>,
  Suzuki K Poulose <Suzuki.Poulose@arm.com>,
  Catalin Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>,
  Petr Tesarik <ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>,
  Dan Williams <dan.j.williams@intel.com>, Xu Yilun
- <yilun.xu@linux.intel.com>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
+ <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
  Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
  Christophe Leroy <chleroy@kernel.org>,
  Alexander Gordeev <agordeev@linux.ibm.com>,
  Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
  Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
  Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, "x86@kernel.org" <x86@kernel.org>
-References: <20260717180442.110954-18-aneesh.kumar@kernel.org>
- <20260807092612.2202005-1-aneesh.kumar@kernel.org>
- <anXIZSh9lq99VG9X@willie-the-truck> <yq5acxvu2ict.fsf@kernel.org>
- <anXbJ2O4DWgPxCeg@willie-the-truck> <20260807135810.GA200537@ziepe.ca>
- <yq5awlu1yfn0.fsf@kernel.org>
- <SN6PR02MB4157484EFDE3315744021D5BD4DE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+References: <anX7F7dnKOtAOIIe@google.com> <20260807164734.GE200537@ziepe.ca>
+ <anYgXSR4VAi3TpOj@google.com>
+ <CGME20260807182023eucas1p1f653436207b2b00338e99ea1d8f847df@eucas1p1.samsung.com>
+ <20260807182017.GH200537@ziepe.ca>
+ <7d22482f-d5fd-4cf4-9d32-6a54e02f2fbb@samsung.com>
+ <yq5av79iiard.fsf@kernel.org> <anml6lLRERm1Iv-_@willie-the-truck>
+ <28442500-1d53-4776-bae5-459c3ffc1cc6@samsung.com>
+ <anm6K2umtx4iKnyZ@willie-the-truck> <20260810130818.GN200537@ziepe.ca>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <SN6PR02MB4157484EFDE3315744021D5BD4DE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To: <20260810130818.GN200537@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 10/08/2026 6:00 am, Michael Kelley wrote:
-> From: Aneesh Kumar K.V <aneesh.kumar@kernel.org> Sent: Friday, August 7, 2026 11:01 AM
->>
->> Jason Gunthorpe <jgg@ziepe.ca> writes:
->>
->>> On Fri, Aug 07, 2026 at 02:18:31PM +0100, Will Deacon wrote:
->>>
->>>>> I was under the impression that there is a possibility of using swiotlb
->>>>> instead of restricted-dma-pool with pKVM.
->>>>
->>>> Yes, that patch enables swiotlb as a possibility for protected guests
->>>> but with your patch we avoid shrinking the swiotlb buffer even when
->>>> restricted dma pools are being used and that's a waste of memory.
->>>
->>> I also thought we switched pkvm to use CC-like swiotlb as part of the
->>> alignment in this rework? Mostafa ?
->>>
->>>>> If that is not the case, then we could change:
+On 10/08/2026 2:08 pm, Jason Gunthorpe wrote:
+> On Mon, Aug 10, 2026 at 12:46:51PM +0100, Will Deacon wrote:
+>> On Mon, Aug 10, 2026 at 01:37:11PM +0200, Marek Szyprowski wrote:
+>>> On 10.08.2026 12:20, Will Deacon wrote:
+>>>> On Mon, Aug 10, 2026 at 02:59:42PM +0530, Aneesh Kumar K.V wrote:
+>>>>> Marek Szyprowski <m.szyprowski@samsung.com> writes:
 >>>>>
->>>>> !cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
->>>>>
->>>>> to
->>>>>
->>>>> !is_realm_world() &&
->>>>
->>>> Perhaps, or you could just pass the swiotlb= option if the defaults don't
->>>> work for you. Can you give more details about the slots exhaustion you're
->>>> seeing under CCA?
+>>>>>> On 07.08.2026 20:20, Jason Gunthorpe wrote:
+>>>>>>> On Fri, Aug 07, 2026 at 06:13:49PM +0000, Mostafa Saleh wrote:
+>>>>>>>> But the whole thing is best effort anyway, the kernel picks
+>>>>>>>> IO_TLB_DEFAULT_SIZE which does not depend on the system topology or
+>>>>>>>> how many devices or how much DMA they do.
+>>>>>>>> SWIOTLB memory is wasted if unused so we should be careful around
+>>>>>>>> that as it would be the other way around and users would have to
+>>>>>>>> decrease it manually.
+>>>>>>> Yeah, it is why the arch code shouldn't really be sizing it directly,
+>>>>>>> it should be done in common code and, yes, we are probably going to
+>>>>>>> have to do something alot smarter to have the common code better
+>>>>>>> auto-tune this for the CC case..
+>>>>>> What about the $subject patch? I assume that it is still needed to
+>>>>>>
+>>>>>> restore the behavior that was altered by the "[PATCH v8 00/23]
+>>>>>>
+>>>>>> dma-mapping: Track shared DMA state through direct, pool and swiotlb
+>>>>>>
+>>>>>> paths?" patchset?
+>>>>>>
+>>>>> I would request that we pick this patch to fix the regression described
+>>>>> in https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/.
+>>>> I really don't think we need it. CCA hardware isn't exactly widespread
+>>>> and the KVM host side patches don't appear close to being merged.
 >>>
->>> We see badness with swiotlb too, it basically doesn't work out of the
->>> box if you have to use it 100% for real devices. It easily runs out
->>> of memory.
->>>
->>> Auto tuning to higher levels makes sense to me, but I'd rather the
->>> core code handled adjusting its size to the estimated need, not arch
->>> code.
->>
->> Agreed
+>>> Does this mean that the branch for-next/coco [1] won't go to v7.3-rc1?
 > 
-> Nobody has mentioned it on this thread, but arch code under x86 has
-> a heuristic for sizing the swiotlb for SEV-SNP and TDX. The heuristic is 6%
-> of guest memory, with a max of 1 GiB. See mem_encrypt_setup_arch().
-> The heuristic originally went into the 5.11 kernel nearly 6 years ago for
-> the original SEV support and hasn't changed since. See commit
-> e998879d4fb79, which doesn't give much of an explanation. I don't
-> think this is necessarily a good heuristic -- it tends to waste a lot of
-> memory, but there are also a few cases where it isn't enough memory.
-> After a few years of experience with SEV and TDX, nobody seems to
-> have tried to come up with something better, so maybe it's not all that
-> bad.
+> Let's not make progress on guest support contingent on KVM CCA host
+> side patches please. I expect the CSPs will have VM instance types
+> available based on CCA within quarters, and Linux as a Guest should
+> work in those environments regardless of what KVM is doing. I don't
+> really expect full KVM support for years, frankly, the patchset is
+> massive. Even Intel and AMD don't have full KVM support yet.
 > 
-> No doubt the heuristic should move into common code so CCA, SEV,
-> and TDX all use the same one.
+> People already have CCA capable HW, are already testing this stuff and
+> the closer upstream can get to being workable as a guest without a
+> mountain of OOT patches the better.
+> 
+> I agree the thing is not ideal, but it was merged to ARM like this a
+> long time ago, this patch is just fixing a small oopsie (was it a
+> merge conflict?) to put it back. I don't the objection.
 
-Indeed that would probably make sense as a future refactoring, as I 
-would assume the general expectations of CoCo environments should be 
-largely independent from the specific technology of either "Co" :)
+Yup, it seems pretty clearly like a straightforward bug in this series 
+(or maybe even just the merge resolution), where it should have just 
+removed the use of SWIOTLB_FORCE, but changing the if/else structure 
+inadvertently upset the whole flow in a way that it shouldn't have.
 
-However, note that currently the arch checks are effectively serving 
-opposite purposes - x86 is specifically *increasing* the default SWIOTLB 
-size for SEV/TDX, while the arm64 check (and RISC-V copy), is about 
-*reducing* the default size if we think we (mostly) don't need it.
+For a fix patch it might be clearer to restore the "(is_realm_world() || 
+is_protected_kvm_guest())" condition exactly as before, then save any 
+further refactoring for the next round of new development. And if there 
+is a concern that skipping the resizing wastes memory for pKVM, then 
+surely that falls on e62decaf98e7 ("arm64/coco: Add pKVM as a CC 
+platform") which intentionally added that logic.
+
+I do concur that there's not necessarily a mad panic to get this into 
+Marek's 7.3 pull, as folks trying to use linux-next or bleeding-edge 
+mainline for CCA work (or indeed anything) should know the risks, but it 
+should at least be one for the 7.3-rc fixes cycle. Aneesh, FYI generally 
+once things are queued, please just send follow-up fixes as their own 
+thing rather than replies, for maximum clarity.
 
 Thanks,
 Robin.
