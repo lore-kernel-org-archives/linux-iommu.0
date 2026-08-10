@@ -1,95 +1,68 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012042.outbound.protection.outlook.com [40.107.209.42])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011031.outbound.protection.outlook.com [40.107.208.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 927463ED5D9;
-	Mon, 10 Aug 2026 15:08:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97C9741166E
+	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 15:17:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.31
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786374524; cv=fail; b=fHqpzYbIl5tZ5qUJKjmRtIfKQzCFQ4drgYBvaB3lFK+I3R5CeU8MWWqGqeCeZy10iriW5ANKgbLH/bBGKrhyd1VldBusRIF0OOmQNy2H7Cko1p2toSgVeI9GAuvXjXjVbqLP3v6JyERxpYEbH4kBl+H/d+X2yl639sxHWqMK8uU=
+	t=1786375067; cv=fail; b=Y70AZJ4bdF+HywlC1OgIKqs4hxjmaRVfrSe5yWuVlYGQLxyzs2JZ+iiW+KAb8pz6wUvhoZoYM/Q4VbfjzD2tlF+I1a3QCmllZZ/JybnA2mQ2L9J9eOjPkVqWOnDUIIkYO7eg3BDe5ZGIB5kOp2UJV6vmPDHsm+clDU1pYr0k9CQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786374524; c=relaxed/simple;
-	bh=FmFxmbFo0Ym9vHFI9/qwO8/BPa4X9Z4lp0a95tghn6k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ColnPoZi6GdCIH4MBVzNkb2g14oLpgP1+Q84TexJZ6u4j7IeMiD3QYSe760Oo24jEAKhY2xfGKN8PEgjoH9TaSxF+NdwFNS/750i9KPHQXiqdquNnv6NPTGKm01H6/BFQe9Z+WHCpoL9OWtsziGxkrj3SA0Vg0bXkxwpb7S1IDA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UYuO1NSt; arc=fail smtp.client-ip=40.107.209.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1786375067; c=relaxed/simple;
+	bh=RWlcdqEtWisvomsAnoa/lnlWuVJUbXJKFSK+awO2I8A=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=c+yI0yiFYp8wBai0Jgwsi8K8nz5ssuAtGOnfJzbDPeB4d+rErddlWyoo0+Ov5hBDx5NLzYKFv3W27n6Dsd46s90ikfjtKPlZyon4vR5qQPmtTJbCBMXT1w3cKSyHubBmbOrIP5mgLWjYAtbh/Sn8UNLRbW+m5q6EBkgofxbWx84=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ojXTI+jH; arc=fail smtp.client-ip=40.107.208.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UYuO1NSt"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ojXTI+jH"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AfI3wjvlQUinxUOQE9tqyCv3m0YWl5KC008NguLNEYcwl6RL8s+LPsmr25n6PdANHd7m8SvwHAFMLbKpPi7FvUoqcBcr/TU+FsbHkicwTijQFagFv1NsJBP6PYkvLo5YcR3AkcYSM7CeSXZYPDIA3xh/RiJG21fSRKZ4Ab6MJDMG7k69x4rRYQH/Oi7aACyF+u8qYJTRH7p50rl7g/4Mh88oI3vGwC0RR+A0q7lM4S8XbmZzwBR0Fle6KafqCYGvXiPIF3ozVX+S8mWWFyfHErItR5rW4OXSOtra3JxbAua+u9/uP2WMJWk3ed9dGymlEzCIo6oRieRewqQot96PJQ==
+ b=xgCctZDy0Z9mKUZSZuE4aiwWvk4c8eeBQqJAlfO+CMQXEUWQlunZK6HHkajihwbzVL8dcKvEAd9WyjTjObmnzZ8Nv+xlBrPVuDsInDciShxt+R+VKsgNQP00vIVa9V5uHPRFilxgAayzCzaYtKIIX89ohk8cHBHiIIUJ0uFH53uCOpca02cjoYlNkgKU0h8Y0HYM8wSup+sFXCINoK8HVsCPW5SbhoRfXXLC4vHX7Rxkvn31Vj6wiERihetERfxaVzEqI7SCsq1gyFN1Oa0G8noGfIULYQ8lel3enNEQrtDbQtxfEkY/2IeoHMtifef/VDC68Mgi9QgTE5rzEuTVPQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uTMkqBJQt9s46QcMVTug+4LBbYOBeafH6lRM81xpMnI=;
- b=BJwbjvOcVaVjwegHI5ZaQ2q9DnVfBKPRHwRWdzvuDv4I6mIlwctTxHCLDWIfXnWhmE/r32tDsGKIDgn2zqaFh3tNhCGSKB/Uq29tDksTwss9xdjLdefIqH5FH8tkVMNoYpc5OelU51P0itv3MO3p73dW1bqf1ykpEVbV+/LZopzOKRrFOI23oocDnMMbsAXcdVigrchf8mVBA4bQg6tyBqLxpBYtquCRzpfwqvzoIKW1kiSOtNIcuENOMJl0XnS1Yy3e/gfuhoGUb/OEiDf5KUoV0bLxFW986xweTCpX591hGyJ5wtNcKwa4IOMBgSU4lwJGbaLa6zolot5ie7AbMw==
+ bh=kLw5ZWmtqrB34fJmjIE3AKbg+nKFP+E+c08PkqlsaMg=;
+ b=gXYWzPJUMwHNnV/sjIDzjUBe/E+tbsstShpDNOhFKB2OsD58cZZ64eRi/xfa6d1CEFF+6O0q/CaO4DXJr/cB+aLcwAvkOrqRQLVo4uDjfH4VosxDhfObUEmXMrIkKgHq9ITzc8KSJhY5AP39ufN0NCyBcfZMlUhRbvttuPdjtZp7htjSRgKG7VKiZ31Y9tH0VCYHMi8uHS09/cikslyth0dy3tb59xlCAtf/zEr1XoYohI0hNnQj4yBeLGGaWSOYVSeMenxgpYiQcVioV5HpV50dEepqTQYmODi7f0VZY0GUh8kg2Hhn8JbkTceOZG4ZJCNANDxBVOqm4BYgA/Hg2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uTMkqBJQt9s46QcMVTug+4LBbYOBeafH6lRM81xpMnI=;
- b=UYuO1NStcjXud8hOvCqBoJJIt6EhVl5A/eKycas6Cue2i+4ie6u2PB8OzztwCMeAoepzVrlu4eF2PyRC3hD+P7KCnrqDHuRy+oineIzr3DBi8TBFNAapIJYgvn2nFY8MP8LQGUPuy3G6Y2UA9vnEqgKL1fczd/JEib9fAbOc/iWllFvAsRTa6KDRdkY5j383LB1HAlGzJVhghv6i3hFB3rQmF0GKidmcCetZF6PqlZSOd5+rROR5jue3cv4RdrRqYTQNqvBckK6k5207CqvTrJfv5c02qk8LCuc652IeuBJ9jjH1YXHZe2i+IeNHHAvQMBDOs8wScH3QIM+1h5yQ8g==
+ bh=kLw5ZWmtqrB34fJmjIE3AKbg+nKFP+E+c08PkqlsaMg=;
+ b=ojXTI+jHLskukO7/cyAa24BtPoVQAWZ1G+dMYi7GY74cS/n6Z49dUGV7OI36RzzoRrL7TGyve+bqO9Lr+4GiW84nePPIFse5ocPzEPISzgGWBm4t7JkuK4+5QIx7KFMXMg5KWoKojicwsP0tdFwB3+mi680d1c+VRB4pQXeMGSM=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by IA0PR12MB8350.namprd12.prod.outlook.com (2603:10b6:208:40d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Mon, 10 Aug
- 2026 15:08:34 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0292.024; Mon, 10 Aug 2026
- 15:08:34 +0000
-Date: Mon, 10 Aug 2026 12:08:32 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>, Ankit Agrawal <ankita@nvidia.com>,
-	Jiri Pirko <jiri@nvidia.com>, Leon Romanovsky <leon@kernel.org>
-Cc: Mostafa Saleh <smostafa@google.com>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v8 12/23] dma: swiotlb: pass mapping attributes by
- reference
-Message-ID: <20260810150832.GB291736@nvidia.com>
-References: <amnRB98ZZIysHuM3@google.com>
- <yq5acxw6dl1d.fsf@kernel.org>
- <20260804142032.GC27883@nvidia.com>
- <anL9-OrDGqYQAWNV@google.com>
- <20260805123023.GO27883@nvidia.com>
- <0ce2249d-3a64-4889-b455-0e8fddcc7282@arm.com>
- <20260807115500.GA158689@nvidia.com>
- <aefab683-598c-4cca-b5a0-c9081ccf9e1c@arm.com>
- <20260807170104.GB158689@nvidia.com>
- <21813ccf-96e5-4a7e-a3b3-aaaec7e0d23c@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <21813ccf-96e5-4a7e-a3b3-aaaec7e0d23c@arm.com>
-X-ClientProxiedBy: BN9P220CA0022.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:408:13e::27) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com (2603:10b6:8:75::12) by
+ DS4PR12MB9746.namprd12.prod.outlook.com (2603:10b6:8:2a4::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.292.25; Mon, 10 Aug 2026 15:17:35 +0000
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e]) by DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e%3]) with mapi id 15.21.0292.018; Mon, 10 Aug 2026
+ 15:17:35 +0000
+Message-ID: <6aa64964-429e-46b9-83c5-5b029c698fec@amd.com>
+Date: Mon, 10 Aug 2026 20:47:25 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 18/24] iommu/amd: Introduce helper function for updating
+ device ID mapping table
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ jon.grimm@amd.com, santosh.shukla@amd.com, Sairaj.K@amd.com,
+ jay.chen@amd.com, wvw@google.com, wnliu@google.com, dantuluris@google.com,
+ chriscli@google.com, kpsingh@google.com, alejandro.j.jimenez@oracle.com,
+ joao.m.martins@oracle.com
+References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
+ <20260727132913.22475-19-suravee.suthikulpanit@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260727132913.22475-19-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5PR01CA0196.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1b2::16) To DS7PR12MB5766.namprd12.prod.outlook.com
+ (2603:10b6:8:75::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -97,145 +70,230 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA0PR12MB8350:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7b3c3074-2f7d-4508-1307-08def6f13f4c
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5766:EE_|DS4PR12MB9746:EE_
+X-MS-Office365-Filtering-Correlation-Id: 28129bd5-42df-4e2b-dce7-08def6f28176
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|7416014|6133799003|56012099006|11063799006|5023799004|10067099003|4143699003|22082099003|18002099003;
+	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|23010399003|22082099003|18002099003|4143699003|10067099003|56012099006|11063799006|3023799007;
 X-Microsoft-Antispam-Message-Info:
-	5NWOmwa5QDOPJPrYa6vESgXutAFxpZRya7cEKG1lPk0hflaERSlnk7fSMhR+UERDchL1bu/Bd3AtrzJUUcWskJ0h6nwW6AzUD2kwog84NbUeTybj26Tl39azRW6fnAwFIIopPbEEAjGEFmQq1jG8/viWhIHospqVSeDcNCo8kFgbFUAlgkNF2arQs5rQEjVT/Xbrx7HbITjN5qFrlEi/99XyAc05lnL+NFO2SfJINBHpK/jsDkfX6Dl0oCXjM3NYWFCzV1WfP+oTKBdG5oIxPSyXp7J65CWtfuGM5JBTP2MONqY7eIM+DeNIIBgP+orvN/Vwbv+G2CwLsnzdJmtI8GA57hiB0ymwbM1rKNws3yxviklrhbV43rZ2qkinP4gjvc7Nnj0mIn09P+VC5Tn8mkP+OmMbSjfdljZXZT0M1E0UPVRP1fkCNDwDXbgNpYPoppXjDD7F9ELAF7BAFopyRjbViJg7XWZfzkI04zUIsnaEiySkMSq9aX0HjEbQ73Ijz3JPGMPYTaaQ5Ig5LMRNMpcotkkwwHPvkOxNziOAZW+CvklzxwHRPA7xAhYRPRpRAA3S9ouIHNtTWoyrOho1Je4DmmvtYSPgNyPuZAAj0M/xM1YnCFfeCXjMvpR0w9QX24bgiTvvsRpsB1BLCB0/UNwMoiCMF53OhporU/5+E3U=
+	vMZR8iWKzQequiy5nIH9cqVa0pQ9l1Z3su6BBgxljzBz3Q2Twk/M6A7otpGSrdLvn+0sB+YxO84Fzbq+QEcrv0ClE/wKk+/FpjiH29ZJ6Iq3TKHveakympIKKH5CHwAMzJbaEYrUNJYfZmPKgg7jgR/hgJ+sjXfs9TwPMQLNVTmTBFgtrVK+6vUiFC+nXiR8HnsCDeTRcO4AVXGFNcuJ837GzYVFx4aG/u121gclKZrqahXJbTSH7EQ/hEMJ09W9lPykQ+dehIXULF/Auv0ME02ZZJPL7pm6eIasNJcoIoCE6Ou0m1V/5V+RsDJCkZyzkg/1btW8ZWQqJm2gl+lr5MrGosb1Ps+w1ofApd9h7lhjRoOgRyT/kyL6cdM8t98B/c2TqZ/zulLXqGsFWNGCbhk5J9oNKgsYp3OncznR8uqLBN+cuEq441wSpIrRZLK9YWtKd+dzY7chkIS+ISLZwj3zMu3FajugIg8jXmkaXkm12ixSUPPc/9KklALHRFqjrHC954RjRbJUh0go9bGEuqzvNgBejQJTwA4m4HRTOocrY+EA+S65DAhWSiSQfemmTXOzvDrruA1/3Nkx6Fp9WbkF2Chwm3vvC5D2H66+0/1H5cAwq5kNrpD1cIVf6wF3Sb8j7O5R9doCt8OXK5K4j4sEDcvQrq4ZGb2R3ntJ440=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(7416014)(6133799003)(56012099006)(11063799006)(5023799004)(10067099003)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB5766.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(23010399003)(22082099003)(18002099003)(4143699003)(10067099003)(56012099006)(11063799006)(3023799007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?9VFo97/UYiJYpqCbzj9rqTc0NiIxjvY5KdVegHINZg9MEOD2aulwaP9MXvJg?=
- =?us-ascii?Q?URWeBCXGJR+qFlB3zNX6NuHEJQ34nZ+z9ZfAhABWutRjXGpZlT02AcKMmrVo?=
- =?us-ascii?Q?86FDeIzhQxw0JGCJ/fVPjEKeXbmFEaS90J9AzS470df5/8ya+/Qc/5mVXuGO?=
- =?us-ascii?Q?fZXdfzBFzySbhu07nEOgS6nks9PrWSULRqxo9BU3LxZEiS1tM/bg77XgsMyI?=
- =?us-ascii?Q?R1XPxCD0zw8/HsyRaOXtT84GP0JKCm9sMPju54WNGHbElZEfIaJBcyfW6LHP?=
- =?us-ascii?Q?dat2xCyRYBIjPaHRL8RT2fwq0fCJX7elTavZj9fSoxGp5IdpqlFethESHYF7?=
- =?us-ascii?Q?TqKqeAxvKC0MJbPeTIAQ+elFJLXZWyBsCz76/B/9FkuMVRoL3tMUx+TfKuhI?=
- =?us-ascii?Q?5JFNU9LQ/frWNzTuzO6lgSjLYwxxkCZ47s0dk0otDSrsPsZPDzJWvlbwL7L5?=
- =?us-ascii?Q?tKuaG3PR/3D+fSD0KnjzIOWOyt+6hranGdiHNDnpDSpak4ybofD+3DP6b7RR?=
- =?us-ascii?Q?yDgrRSHCAelChC0llLU5xKWzYbAUtXUoELfiHraH2Vwr94rdzsRzS2DRkAmt?=
- =?us-ascii?Q?EuKoT3antS6LWcSN1wV0gBriQWjQ3deKgFTCtdpzk1ciWvp/Y2TmWY1ubsJT?=
- =?us-ascii?Q?bARz+98SRwNAd7Tfpfu3Mgb5+s6I2e15OsEvaPLwkFCrO3vcUc/p+U9OwuYG?=
- =?us-ascii?Q?jWUSsfU5rpzExwDLm04RGN/xtWxLVxNfeHc0nQ+MxgqOdJ0aTeidBM6lxyGC?=
- =?us-ascii?Q?Xz6kqK6j/0inCkqJtjjsKdd6d7mttf98eD6weP91OWc+gZqRXuJNnmsEkx2q?=
- =?us-ascii?Q?zOs+L3FE+Zovi3OfCdEbsjoWrF1qy2EXKJEIuI7JE+rs+Sva9gFmCWV6R9Wa?=
- =?us-ascii?Q?isxmmY059ELL7Y6QEBQnyPGkS4u07p0S44zY5KuTAXayhwJ9V/eYSvVIJg41?=
- =?us-ascii?Q?62y2jUrosXoDrkO0FU/BWofN3c2nr2LgSOT/F3V9Ve6ZHZhHtfIiIChbzafv?=
- =?us-ascii?Q?S8tW6D1Yjd0vGR73TN/JLvK4eLzgzBEi+KpQto4GzbVi8/AGBMWmlE9n/z+c?=
- =?us-ascii?Q?xLEuIeYozZgDb9pdc/LIHrjat8NKx4//kGyy1QJyYou0LfsnvUrfrSxZitlp?=
- =?us-ascii?Q?KHTgpM3g9A0rpmntSsLHkqx0HyzghS7j5A60nOQxKJJdKdkkBzR4VqitVCPK?=
- =?us-ascii?Q?AV7YQJmQtGdiRtsEx0MMzmDPaqChEPx30x2M099zSdIsC5XJJJUZKLvXw7ZC?=
- =?us-ascii?Q?O4r98mYfaVofngrLe7LKXgCmqnFvdsvn2TJVhV0PUEl9wRRpxst3PLk2Dyxu?=
- =?us-ascii?Q?lM+CcdC0uJ9LI7Uvd/Be5QWxgofOvgnoVH8/oIj9stRVDn65KbiDaaGCjiZB?=
- =?us-ascii?Q?cuwFGd2yKDZv3DcDWCRTYEirNSFvZJuZKPQJwv7tEE1cWQw+gqzbwtHx/MDR?=
- =?us-ascii?Q?jV7DZMgrjWmDeY67LiDzeynR8xZve0ZxJpzv6UakyrUoT51ffgV2XYsU99g3?=
- =?us-ascii?Q?OeaVk3+2SmEyWckkLmQKYo06cc9nid2Rj2+xBMhsTL/GXE9VP637fy2KBGBA?=
- =?us-ascii?Q?DR3ekuY0x/wBbwmWphPu/34qukpeP312klC2xEkQbbN49TSxFq3rL04Y7FVW?=
- =?us-ascii?Q?aP42+rdC77cQvd8WWu1jR3moavFShb22rExa+B91N4ep/anb0SLfFwAt+mhm?=
- =?us-ascii?Q?+MM8hcUDzLLveGRxdF82HSg9oHPtoOtueGQKzVZsDEhYS6Ia?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b3c3074-2f7d-4508-1307-08def6f13f4c
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+	=?utf-8?B?VHUyUmJMN28wcjF4c1FLQWt2TnYwQmZOeGplWnFBSVRFa1hDVXZmalgweU0z?=
+ =?utf-8?B?SUZMNzFkUUhvL1dCMGVYYXpLUTdRc0hyaEY4UDBrR1ZUMkZ5UjBDNk1jRDBL?=
+ =?utf-8?B?UllUcjlxdlJjRkVvZ2hqOFNZTkpqTExQQ2VSdlFUaWpMTmQ1aXNiWFJnREVJ?=
+ =?utf-8?B?M1RNK1NaMTl5cGpydjUyMThXSitibXZIdmJKMWVMUWw5dWJ1S21qZS9IWEVO?=
+ =?utf-8?B?Q2NFYW1mRlRGbnkzbmZ3L2EwWUNlQkR3cWU0TUpYODBJYmh4ZjdZV1ZEbCs5?=
+ =?utf-8?B?blRQK2NlQXU2R20xV0pmZUNqbC90MDMxcUhuNjlsTVlQRnJaa0NnWnNEUkRI?=
+ =?utf-8?B?SnNVa1FaVXoxRTgzRUFxVXpnUXVOZnVRZkdDMWlqOXpTSk9pNHhPVU5ibVFB?=
+ =?utf-8?B?SGZQM29uaDd4MDVxOU5HTU10UlUxdm9HMm5aTU5oRHl5SmExaWNJOTQ3NS9N?=
+ =?utf-8?B?dVd1RzBQSTUxRVRaNW9sZmFsd3VnMmpVYU9qRDd4MHc4NHN5N2VGcVRJOCt3?=
+ =?utf-8?B?eEZSdWhnVnFWQ3JLbGorZlkrRk9nVURiOEJqR2pFaTF3d2RHYjdESnFVSFdl?=
+ =?utf-8?B?MUpYV3o0VE9FZXUrYjljVnZCNDZqQnhZbTloNXZDcEpLS0dEMkFUZ1pibEEx?=
+ =?utf-8?B?cjhRQUFIMk9oMUk3MU1tMldEc05INWVReWRYbE03VzJLcXRIdlEwajIrL1dj?=
+ =?utf-8?B?OGswRHdjTlJIYkRHWkNIU2RkMlRwbStGbW43dUR2MVR3OW0xR1BPTEhnQjRp?=
+ =?utf-8?B?SERhSnVib1FZT1FtMFRYcnBCZFpQQUkrQkIvT05RdEIwRUhZbjRnMGF6RzdE?=
+ =?utf-8?B?ZGdEa04ya2gyUVpuUmlackExK052QkdFR2lRdmhIakFBYVlrZU5Gc2ljRVg3?=
+ =?utf-8?B?NWxpamd5UDM3VlZKRlpDeWZmc2ZuWEVGTTJZa1RjVHJDTW1EbFBudEhwNnVw?=
+ =?utf-8?B?U3lxY2JmM3VMUzlSNUd4WlhyNnhsY3hHeWZvM2Yvd1cxRGdYV0dlUEtQMlI3?=
+ =?utf-8?B?N1pRTU95d1lMR3dUeEJJVW5CeHdJN2VoZmZsQjBmMW4yNzRRZ0k0ak0yOWpj?=
+ =?utf-8?B?NVJpNUJ3OG51emFDVXA1ajROaGlVTVY3bWtxZFcyVm1zaHdMOVNpT1daeWxO?=
+ =?utf-8?B?NGtqd0hhQjh3OG9MbmR5bEhzSnhMbnRWSVF3di9sWlhTS0E5Q2IxSkxtR2wz?=
+ =?utf-8?B?b2NLYVJHOHdwWUNBWW80MnkvTkVuYS8zWkg0WE1HdWtFMjZzMVMreDB6Qzlu?=
+ =?utf-8?B?QTBnQklOSDZST2ZkMmVKWTk5bkVMbjluSncxQ2xHSDRZUmkyQmdXMTJWUHZs?=
+ =?utf-8?B?Y3Vna2R1VVpwbEFKNENpMTlmRGxZYnR5akgwNmQrTkd3TDA0R2RxU0hOKzYr?=
+ =?utf-8?B?b0xUODBwN2htTUtxd3g0V3RhL2toQlVBUlg4WnNUOW1FL2lMWm51enoycVll?=
+ =?utf-8?B?TG1neGVpZldxQS80a0xCdjA5dTgxMmlXckY2V2NHUTNmUGg0OWQyR0NLZEFn?=
+ =?utf-8?B?UHhVdllpYW1UdysxRSsraTVDRkRPSjdENVY1OTUyS1NmRFFqY0gzNnhNTHhY?=
+ =?utf-8?B?Y2JXUFovR0hwWmVicFFFdmVnazluRVQrR3pselRwd1QzZU1pWExWU0xnZk5J?=
+ =?utf-8?B?UTBEUWdIUFVaTE1aSU00OVJPMXpkMEdRWXRvOE5lYXFaUXc5K3A0b2YzQnlL?=
+ =?utf-8?B?Z29MNzZVdkhKNUdPUHhwam5LSDNEMkhFWmNoRUREbXZja3lnU1duaG56N2M1?=
+ =?utf-8?B?TU1rTmhNQ0I5Tjg5Q1EvclpxazVJc0ZCRThFWHNtbnBYckZ4ZGE4RlpWRWNH?=
+ =?utf-8?B?NWpRSDBYSHZTMEJ2eGRETnIwa09oVzN3TG5IK2xwcjlkMmd1Qll6SS9GM2Zw?=
+ =?utf-8?B?WDcxK2NZbU43USsvZ3VZYytZMldHM2UrSm0vTG1sYkgvb0ZlVUdtdmdtalJj?=
+ =?utf-8?B?UEpZY3pnS3NlR3BhcmI3UlZjRXVCNUh1TWQyMDlhb2lwQjR4ckRTbG9KcnF5?=
+ =?utf-8?B?R01BZGRpL29vVjNvZzdDZW1kNUkxZ3BFZTRBaDNKZEtPQzhnUThVOC9rRUE4?=
+ =?utf-8?B?aEh5dXc2ZGpnUnJScm5ndGxvSVRmWDFZaXI3WUZQd2l1b0hkQXNUNDAvUG9Z?=
+ =?utf-8?B?T1F3bG9DRldueWtVakh6YWR3c1F1OXYxNW1SL2R0MkI0ZGwreHQrak80Z2lL?=
+ =?utf-8?B?NGxFbnptTkhyMjdhUHlzdHFaTmNxWWZnTUVYWjRyQmN4allxVk9JdFRzbWh1?=
+ =?utf-8?B?WjE5N09Ua2hab2lqVUM4YzhubHk5MHhHZXluekxiTE1Gb0ticC9ocFYweGNS?=
+ =?utf-8?B?dWZEZzhVT3JXbzFFNWFTZVFOUnJ2TEc0QkQ5RlZJZkxuYklZVUVwQT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28129bd5-42df-4e2b-dce7-08def6f28176
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB5766.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2026 15:08:34.5640
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2026 15:17:35.0541
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uplBCrKUARnmSvgLConuNQ66qy7fkGGmqFR5LglvCiJ9j7Jl1r59Ee5MrbX5lqq6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8350
+X-MS-Exchange-CrossTenant-UserPrincipalName: eYjrJzax+96wQHrd6U5+B1h1xvfPqVQgYV/OykTbXcRbosjxIBSpEVCwz4trphx+DZ98h4gvMrENxLvXoR3ykw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PR12MB9746
 
-On Mon, Aug 10, 2026 at 03:18:03PM +0100, Robin Murphy wrote:
 
-> Cool. So in fact that puts us in an interesting position for now where
-> non-CoCo "untrusted" (i.e. external) devices should have IOMMU translation
-> forced on by default, while CoCo "unaccepted" devices (i.e. those which do
-> have a mechanism to transition into a T=1 or equivalent state) should *not*
-> try to use an associated IOMMU, on the assumption that it may only work for
-> T=1 traffic. All the more reason to sort these abstractions out so we can
-> make the right distinctions clearly :)
 
-I think the guest flow works out fairly logically:
+On 7/27/2026 6:59 PM, Suravee Suthikulpanit wrote:
+> AMD vIOMMU hardware uses the Device ID mapping table to map Guest Device ID
+> (GDevID) to Host Device ID when it virtualises guest IOMMU commands.
+> It uses GID and GDevID to indexe into the table to look up host device ID.
+> 
+> Linux IOMMU driver programs the table entry using VFCntlMMIO Guest Device
+> Map Control Register.
+> 
+> Introduce amd_viommu_set/clear_device_mapping(), which are used to set
+> the entry when initialize the IOMMUFD vDevice.  Clearing the entry is
+> done during VM destroy.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  drivers/iommu/amd/amd_viommu.h | 10 +++++++
+>  drivers/iommu/amd/iommufd.c    |  9 ++++++
+>  drivers/iommu/amd/viommu.c     | 53 +++++++++++++++++++++++++++++++++-
+>  3 files changed, 71 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
+> index b6fd5ffc3b82..ca09a9856938 100644
+> --- a/drivers/iommu/amd/amd_viommu.h
+> +++ b/drivers/iommu/amd/amd_viommu.h
+> @@ -6,6 +6,8 @@
+>  #ifndef AMD_VIOMMU_H
+>  #define AMD_VIOMMU_H
+>  
+> +#define VIOMMU_MAX_GDEVID	0xFFFF
+> +
+>  #if IS_ENABLED(CONFIG_AMD_IOMMU_IOMMUFD)
+>  
+>  int amd_viommu_init(struct amd_iommu *iommu);
+> @@ -20,6 +22,9 @@ void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_viommu *vio
+>  
+>  int amd_viommu_domain_id_update(struct amd_iommu *iommu, u16 gid,
+>  				u16 hdom_id, u16 gdom_id);
+> +
+> +void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+> +				   u16 guestId, u16 gDevId);
+>  #else
+>  
+>  static inline int amd_viommu_init(struct amd_iommu *iommu)
+> @@ -45,6 +50,11 @@ static inline void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iom
+>  {
+>  }
+>  
+> +static inline void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+> +						 u16 guestId, u16 gDevId)
+> +{
+> +}
+> +
+>  #endif /* CONFIG_AMD_IOMMU_IOMMUFD */
+>  
+>  #endif /* AMD_VIOMMU_H */
+> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
+> index 1975b2932107..7e070f72f02e 100644
+> --- a/drivers/iommu/amd/iommufd.c
+> +++ b/drivers/iommu/amd/iommufd.c
+> @@ -136,12 +136,18 @@ static int _amd_viommu_vdevice_init(struct iommufd_vdevice *vdev)
+>  	struct pci_dev *pdev = to_pci_dev(vdev->idev->dev);
+>  	struct iommufd_viommu *viommu = vdev->viommu;
+>  	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
+> +	struct amd_iommu *iommu = container_of(viommu->iommu_dev, struct amd_iommu, iommu);
+>  
+>  	if (!pdev) {
+>  		pr_err("%s: not a PCI device\n", __func__);
+>  		return -EINVAL;
+>  	}
+>  
+> +	if (vdev->virt_id > VIOMMU_MAX_GDEVID) {
+> +		pr_err("%s: Invalid virtual ID (virt_id=%#llx)\n", __func__, vdev->virt_id);
+> +		return -EINVAL;
+> +	}
+> +
+>  	dev_data = dev_iommu_priv_get(&pdev->dev);
+>  	if (!dev_data) {
+>  		pr_err("%s: Device not found (devid=%#x)\n",
+> @@ -152,6 +158,9 @@ static int _amd_viommu_vdevice_init(struct iommufd_vdevice *vdev)
+>  	pr_debug("%s: gid=%#x, hdev_id=%#x, gdev_id=%#llx\n", __func__,
+>  		 aviommu->gid, pci_dev_id(pdev), vdev->virt_id);
+>  
+> +	amd_viommu_set_device_mapping(iommu, pci_dev_id(pdev), aviommu->gid,
+> +				       (u16)vdev->virt_id);
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
+> index 708f2c7496a4..eb3f5217d856 100644
+> --- a/drivers/iommu/amd/viommu.c
+> +++ b/drivers/iommu/amd/viommu.c
+> @@ -29,7 +29,6 @@
+>  /*
+>   * Guest Device ID Mapping Table
+>   */
+> -#define VIOMMU_MAX_GDEVID	0xFFFF
+>  #define VIOMMU_DEVID_MAPPING_BASE	0x1000000000ULL
+>  #define VIOMMU_DEVID_MAPPING_ENTRY_SIZE	(1 << 20)
+>  
+> @@ -40,6 +39,7 @@
+>  #define VIOMMU_DOMID_MAPPING_BASE	0x2000000000ULL
+>  #define VIOMMU_DOMID_MAPPING_ENTRY_SIZE	(1 << 19)
+>  
+> +#define VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL0_OFFSET	0x00
+>  #define VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL1_OFFSET	0x08
+>  
+>  LIST_HEAD(viommu_devid_map);
+> @@ -422,6 +422,53 @@ static void __maybe_unused free_private_vm_region(struct amd_iommu *iommu, u64 *
+>  	*entry = NULL;
+>  }
+>  
+> +#define DEVID_ENTRY_GDEVID_MASK		GENMASK_ULL(61, 46)
+> +#define DEVID_ENTRY_HDEVID_MASK		GENMASK_ULL(29, 14)
+> +#define DEVID_ENTRY_WRITE		BIT_ULL(63)
+> +#define DEVID_ENTRY_VALID		BIT_ULL(0)
+> +
+> +/*
+> + * Program the DevID via VFCTRL registers
+> + * This function will be called during VM init via VFIO.
+> + */
+> +void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+> +				   u16 guestId, u16 gDevId)
 
-1) At boot the IOMMU core always setups blocking translation. No more
-   auto-attaching paging or identity domains at probe time [optional,
-   but default on for CC guest]
-   * This means devices that can have their DMA disabled do
-   * Additionally T=1 capable devices have their T=1 DMA blocked by
-     the CC platform itself. eg RMM is to leave the T=1 STE set to
-     blocking at VM boot until commanded otherwise.
+Can we avoid CamelCase?
 
-   Aside from CC this also goes hand in hand with DRTM support in the
-   kernel where we do want to carry over the DMA access block from the
-   secure launch until the system, ideally via userspace policy, has
-   approved the device.
+> +{
+> +	u64 val;
+> +	u8 __iomem *vfctrl;
+> +
+> +	pr_debug("%s: iommu_devid=%#x, gid=%#x, hDevId=%#x, gDevId=%#x\n",
+> +		__func__, pci_dev_id(iommu->dev), guestId, hDevId, gDevId);
+> +
+> +	val = FIELD_PREP(DEVID_ENTRY_GDEVID_MASK, gDevId) |
+> +	      FIELD_PREP(DEVID_ENTRY_HDEVID_MASK, hDevId) |
+> +	      DEVID_ENTRY_WRITE | DEVID_ENTRY_VALID;
+> +
+> +	vfctrl = VIOMMU_VFCTRL_MMIO_BASE(iommu, guestId);
+> +
+> +	writeq(val, vfctrl + VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL0_OFFSET);
+> +}
+> +
+> +/*
+> + * Clear the DevID via VFCTRL registers
+> + * This function will be called during VM destroy via VFIO.
+> + */
+> +static void clear_device_mapping(struct amd_iommu *iommu, u16 guestId, u16 gDevId)
+> +{
+> +	u64 val;
+> +	u8 __iomem *vfctrl;
+> +
+> +	/*
+> +	 * Clear the DevID in VFCTRL registers
+> +	 */
+> +	val = FIELD_PREP(DEVID_ENTRY_GDEVID_MASK, gDevId) |
+> +	      FIELD_PREP(DEVID_ENTRY_HDEVID_MASK, 0) |
+> +	      DEVID_ENTRY_WRITE | DEVID_ENTRY_VALID;
 
-2) Before probing a driver we synchronize the TDISP state, IOMMU
-   and configure the DMA API:
-    a. If no iommu, then DMA API is in physical
-    b. If both device and IOMMU same-T then DMA API follows IOMMU configuration:
-         - DMA API is physical if IOMMU configuration is identity
-         - DMA API is dma-iomu if paging
-         - IOMMU sets the proper domain for the DMA API, removes the
-           blocking
-    c. If device and iommu have different T state then assume no iommu
-       and DMA API is physical
-2b) For T=1 capable devices this is the moment we tell the CC platform
-    to permit DMA
+May be just call amd_viommu_set_device_mapping() with appropriate variables/flags?
 
-3) The DMA API configuration follows per-device flags:
-    - Using IOMMU: Use dma-iommu not physical
-    - Using T=0/1: Replaces 'force dma unencrypted'. Ie T=0 uses
-      swiotlb to get CC shared memory.
-    - adversarial: Replaces pdev->trusted/etc. Causes IOMMU and
-      SWIOTLB to bounce buffer partial pages.
-      Causes iommu to prefer paging not identity.
 
-4) After removing a driver we restore the IOMMU back to blocking. The
-   CC platform is told to block DMA again, if it can.
+-Vasant
 
-If we ever do decide to support dual iommu then #2 would be the point
-we swap the iommu control between the T=0/1 iommu.
-
-> (And while untrusted vIOMMUs for purely-untrusted devices in CoCo
-> environments would be pretty straightforward as well, I guess we might need
-> some sort of acceptance status for trusted vIOMMU devices themselves?
-> Hmm...)
-
-That should fall into the overall plan for device acceptance. We want
-the kernel to have a small policy of devices it would accept prior to
-the initrd. Untrusted versions of iommu (and others) should not auto
-probe.
-
-The initrd can then decide if it wants to probe the untrusted
-iommu. Probably it does not right now since we haven't done any
-security analysis on the SMMUv3 being operated by a hostile
-hypervisor. ARM should be OK here, a modular SMMUv3 will achieve this
-trivially. x86 will have a harder time.
-
-Userspace will run its acceptance flow and figure out what drivers to
-bind. Along the way userspace will record what it is accepting in a
-measurement log.
-
-So, lots of little steps along the path. I imagine various series
-something like:
-
-- Basic version of #1 and #2 to generally defer opening DMA till
-  probe
-- TSM APIs to support setting T=1 and doing the evidence suff
-- T=1 flag for devices supported by IOMMU and DMA API, replacing force
-  dma unencrypted
-- Userspace driven policy control over device binding
-- General trust level concept, including an "adversarial" trust level
-  which will trigger various auto configuration and mitigations
-- tsm_mr improvmements
-- adversarial T=1 devices, eg SWIOTLB still bounce buffers but has to
-  support a private pool
-
-Regards,
-Jason
