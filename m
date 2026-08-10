@@ -1,331 +1,211 @@
-Received: from mail-oi1-f208.google.com (mail-oi1-f208.google.com [209.85.167.208])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazolkn19010005.outbound.protection.outlook.com [52.103.13.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B17D39A06B
-	for <iommu@lists.linux.dev>; Sun,  9 Aug 2026 23:44:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.208
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786319069; cv=none; b=mE41nPBlyTbIIGxzMjGTvWl9KhSnZEBMdBdeUCU6BDs1h6bRchpMMD6LXKO3W5nAbkpdMWBIeOnEcAfo3NHoUheiAGqvj9iP3cDH4xHS2zhH7ZAflTzdF1h0GJGAK2cJUj1q1kvzhpNwEOARirpJrTrkmUsdqRLM60OlkTftehY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786319069; c=relaxed/simple;
-	bh=uQd/Qz8bkcT7WSFuT32E9AsaY6StteWzMLHWPKOi+EE=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=ssW1Y5ssNZcCh2ye4DX7gOXeFTkdFcc6xdAkf9kTsXNXzRjDN/s0p0yWSC4G+fHo/rz2EwNXtsJONGjGGSbsSVjv2k5ne3zDZELVQYffYRjKVrSbwsX2n4dDayHFudXqOx3JB/N53M7rfCr6u623KfrupSMIya+gLM3cUammAjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.208
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f208.google.com with SMTP id 5614622812f47-4ab8b4887d4so949254b6e.1
-        for <iommu@lists.linux.dev>; Sun, 09 Aug 2026 16:44:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786319067; x=1786923867;
-        h=content-type:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=IsAz+s9PBiZETLOc7njAauA7t2vNPxnzL2teOHx2ORw=;
-        b=i45TiaGP1XDclMaAwp8JbJfIxbUgBeHcQgYWwlHefjunREOhstCjtLquW0cC8Q4gxl
-         ElrWUy93OqlV1zrEzJDPo7SclgGSVUExRcAopVjcbliaPjcC8/c27WH46ReAsJa0OlAF
-         dcVMQ/3S+DIasYWotfdrE4zVu++IesKKOMgDReQZgFonb37aoOOwjWXJ/S4uBz3qOIYl
-         In5NkwLec4T6FjCsalP08ZpaGoifcT2aIRXtgSb4x+IusOJQP45Ac5hqBJf80l9tXqXN
-         peqhrNmMpBRWZ57Zh+kUtOAuyOmhGBsx961XCAuOIjm20n3Aif58tHbH9VGMGAs5xor9
-         XbyA==
-X-Forwarded-Encrypted: i=1; AHgh+RoBAWu8V2GkL0WWEhcQWIiig/eikPAu+JDyJyn7EcGtSGmeKOz5ekaZrLzideVpvzVdkprCPQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywc8MjBcZSm0eEJJV4WcQIzifxa1P9TwHAhl6oxQ/FYW+CTq54f
-	vRa0yf+ksW41yWwYcBmnAVmpEPc4O10Bp6hk2TASlLV4NdsrI2i2quv5HjEMpmzMVltrsejvfJY
-	lS/wVhdkI8ugdXshy9zeIuyTOypwolzJ5zBq+zsdUQdPVF9SL6YTvAkSMKRQ=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF8A38C415;
+	Mon, 10 Aug 2026 05:00:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.13.5
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786338018; cv=fail; b=EdRSAW8S30GzZoe01rPoZjfkE0ZhTxTAgy7IkBvN9MLQbk0ZkoURQ27xf5pkd29jwlaIOx/0lPPd8h2Xf7/i6Pz7n69+NY90C/N96QurFAnPKnTjmgPTQ4xxqqGiAklac7sii5wVeCmEXTEhYxu2z+BDEkGjzqwlhxtOpveupvg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786338018; c=relaxed/simple;
+	bh=r+tOW0dlkGvbHUyTJmUHbj5z7PpLWNb/m42k1pJwA18=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=LA0krohaivQa1Y3V5h9ma26S7+l3Tq85Ag910Kmj6vbRg0Qq+7/D4WlSRZ/6D29B9wT6leq4D50mez+/pPnjqAoeS3kgXpOwW7WBBrlFNN6p8yBs1357yrlUYpnVge95ZfFIxPQJ+V3XnKBQSwqBM0SUPEagqFEwhNbDlJPnSfc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=Pr6XfXqn; arc=fail smtp.client-ip=52.103.13.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="Pr6XfXqn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=X55ynUGcTNQGacflLUM9OkWYXl6Z71Gq+wT9ErSB8O8CtnRSW/bFGAI0v4OuSmv4OQBc6rnemWpIybG7ezoRYVace5/Qt98zmmHUH8uGaoL9XdD/eibTo/cEdE15/l3OMOU5zh9beUyuex80NcrFa5ktqg3yLzivtA/oG3S4iboOlFwzNC2gWCZHFIK8LcZLw7vY2mkJts/W/FgeqBje+RwAwtY2B3JPQA2SFH8qHuj/fxU5qpGZMPTF0AYhStck1TKLk7Ve1+Y0hNv7b0fN1h+hbMHYXbhVLFkY6Gv9HgE7UtHAeMSHfiplMzPOZ+NaCWE4Bkyk7UKV/LT3ecGyzA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r+tOW0dlkGvbHUyTJmUHbj5z7PpLWNb/m42k1pJwA18=;
+ b=PPrr2Kupzl/RRX4aEwkNuDSTuqrYtpeyyB9BQxTPMu4UeA921sWovoiTw9E8tZDunn19+yWQk+B8atIVbrfBdmqmRuxDqvfskP8u01dX9vrCBQwoLNkx//7uH6CBXCDv++k9j7N26+PttwBUAyPJpOwx+DwPOISJOr8+7bs5aiIkyludaYwaSMYW3+W0B/EYQ4IDrPMxDN2UAy44l8TWXyVZ3Erhw17k0Pi+KsY9W+UsZ+K8RC3F2Y+5GXd3W/nCngrxxZP7hHuQrXvMNpt2sowoNO1SEyTEX3FeYlCrC4282bEQW8VCabbFEl6sLOi4oSbLacmBTbrDtk2CFgeAnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r+tOW0dlkGvbHUyTJmUHbj5z7PpLWNb/m42k1pJwA18=;
+ b=Pr6XfXqnEe1J5vzkPWqVH/n9lRyHaaf64DMLir+jsidGlha+m+9LQFGIPTtfQ/sjAGgRGCkH5birj497z4rt01Mig8I3I2BNUJUvEZm/Hai1rsEq4KxPZbXaS9HHFbylo004EH+4JQ6bTd4qdFwBtJd2aWuIkjrD9u8etPT/DVXKK2861MetA2ylNTso8dUP3t7rRD1wVZL0kvp9r8mWfNrI9e5ttXPVqUK7jtdwDWSpY8QS5LjJPIuLOVBsUdbEXskFq9ASwpSK0jEjPqf5DBuJ/wNHqriGXiIBkjTxhtdjlga99WeFuXRHw1AqpDK/W7GzXPk5THMYarpU+vkchw==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by SA2PR02MB7564.namprd02.prod.outlook.com (2603:10b6:806:146::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Mon, 10 Aug
+ 2026 05:00:13 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0292.024; Mon, 10 Aug 2026
+ 05:00:13 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Jason Gunthorpe
+	<jgg@ziepe.ca>, Will Deacon <will@kernel.org>, Mostafa Saleh
+	<smostafa@google.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-coco@lists.linux.dev"
+	<linux-coco@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Marc Zyngier <maz@kernel.org>, Steven
+ Price <steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>,
+	Petr Tesarik <ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>, Dan
+ Williams <dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, Madhavan
+ Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer
+	<gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, Vasily
+ Gorbik <gor@linux.ibm.com>, Christian Borntraeger
+	<borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>,
+	"x86@kernel.org" <x86@kernel.org>
+Subject: RE: [PATCH] arm64: swiotlb: Keep the default size for protected
+ guests
+Thread-Topic: [PATCH] arm64: swiotlb: Keep the default size for protected
+ guests
+Thread-Index:
+ AQHQ/bqDg0msWFk5/Dcr61MVx8koPAJINRKoAP0XsJ0Bkx2iTwD7jPhAAZh6ceICvguQ97ZdtOvA
+Date: Mon, 10 Aug 2026 05:00:12 +0000
+Message-ID:
+ <SN6PR02MB4157484EFDE3315744021D5BD4DE2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260717180442.110954-18-aneesh.kumar@kernel.org>
+ <20260807092612.2202005-1-aneesh.kumar@kernel.org>
+ <anXIZSh9lq99VG9X@willie-the-truck> <yq5acxvu2ict.fsf@kernel.org>
+ <anXbJ2O4DWgPxCeg@willie-the-truck> <20260807135810.GA200537@ziepe.ca>
+ <yq5awlu1yfn0.fsf@kernel.org>
+In-Reply-To: <yq5awlu1yfn0.fsf@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA2PR02MB7564:EE_
+x-ms-office365-filtering-correlation-id: edbd6ceb-a1a2-4ea6-4b14-08def69c42c8
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|55001999006|51005399006|24021099003|25010399006|13091999003|31061999003|8062599012|15080799012|8060799015|37011999003|19110799012|440099028|3412199025|102099032|40105399003|2607281247196008;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?8lrtsuMDxbYfbUqwV9lWMF+YaFgYtNEmgGmPcNy1BvNMjtxCb/KbkVIPS09a?=
+ =?us-ascii?Q?PHkNHRrfRm1DMFAzjSFRUEvUZVeNdCeDhfFDgKc3uWKxK/GoWrNrca9QJUfQ?=
+ =?us-ascii?Q?g8xHuXMkD8/QScvX+wt6pgbM9RPsr0VGMHQOvOTnUomK40ah36vvIfKZxwUl?=
+ =?us-ascii?Q?JtJSJT7Z8kyMfPswOjy86CG6oF6gX73T+ViLQhOhogGQl5WQta37krILAZiD?=
+ =?us-ascii?Q?eXySDR9G0A7MFRiDMRleCPWLkEk+2mDnWRlHTUZIRLrjWGL2DGXKrkhlLv71?=
+ =?us-ascii?Q?rD8trqzNaUkHF4ADL2V5qiLLdwYrBVboCOkxUaqtzZJsakLN79aSF49ZtJXt?=
+ =?us-ascii?Q?NQCUbEDaJA6nexz5eQG0FSiE9vnUmlfMBEkdPT5Dw6m4GZhAVDDFUL8q2DZH?=
+ =?us-ascii?Q?gyEucWIrLfOZHQn5UxrIw50CkSkazrHVhYd4VSYOvrqatauJxrblKbcf6pmi?=
+ =?us-ascii?Q?GX9Iz46ByOzjYCLZb+8CZgwXf14HsB4Cep0sPCW8pqVQ6O1dgN5JVkOpdExC?=
+ =?us-ascii?Q?V4xNxydeT3iljbG+jvU/Ygdk8xk/hmx7aTze/dqUq9clTTuuyAjJUsJBojrK?=
+ =?us-ascii?Q?BxqIuEGYbNDoOTMqcXLP4Qrh/IMuJzu4qPrICTqSQVeuUNxTYyz40oC69afL?=
+ =?us-ascii?Q?GHrCV3R9yG9lzG9hfZrmNxPpz0W8C4Qbz11a8KbKXyYR0429Eq0rDquSfpWc?=
+ =?us-ascii?Q?G9l6vkm6+uR/mNw3N5q1pfG8GlrO4VcDqG3Q1iB+z+oHPRu5+EMkN4TD3CqX?=
+ =?us-ascii?Q?nQ1+dIQQ1dMYDgoHIv6ysiVtl6Fa5anq1Gt6xIALavkG6bVrBdPSOMr6NK3L?=
+ =?us-ascii?Q?VIERPKeWXs+WEHyhVjDeu8pN4eLzjk5KEqaEMNFAozWVp9A+P/1/qn1DVlQF?=
+ =?us-ascii?Q?jRYRfpTpnD8Z6tFvj/UJ2+zwWbAD1hDOSOst35S0W9zrvB9YRVr6i9OB9jXu?=
+ =?us-ascii?Q?0TjYne19bmPiDUtc/sOKEN91/zX8/s9Z/d5tes/L7J/b6cfb85wbukbceW9v?=
+ =?us-ascii?Q?UCygG1rR3/TOUdsspT74vBC5MZejF9Xn6OyS1SvvMnrrb9E=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?36W6v0eB2Q9ZVcYPfbK0AzAazUd6NEKd00mEMX6n5oLx+EtP5cSgreV4tJ/Z?=
+ =?us-ascii?Q?oWo30wi5xvIVXyxGRRABiHP6zr7Zo5XSCkaf/dEn+emtVPlFyK+KyiSk4dv4?=
+ =?us-ascii?Q?rvzdOTkYamt4Dsn5X3UiUZCB1CubbwtgwPnxf7paHWB4lWyFzEEM4TG8jX3g?=
+ =?us-ascii?Q?F9lwsoyTHDw20PVmjcZnuyIExFncBEQCLhp1ZUDdRuFavxkfVv2O0AsDvDPm?=
+ =?us-ascii?Q?uerHeFmz3Xt0W9b2RMX/oTMm8g93uT799IjE+cBgPu/Wtcekh5XJluyYYFmT?=
+ =?us-ascii?Q?WNFp4jsE/fykwhS+q04XdjxSib1eyH37yewJ838Ma7qJY7KVXP4xy/gs6voQ?=
+ =?us-ascii?Q?dGMow40oymCmjZG51Q9x+sPItGNXpxOYrpXysuhkwYybLPYY/ISk/mva8YTy?=
+ =?us-ascii?Q?NTxorWpIRO6Ophnu4dE/F/G7OL9jZ3WrL0s1eCtFKTlnQ2YHh/UIhOel35wh?=
+ =?us-ascii?Q?PhrX1RxCxzx0wbOSQo8iqrwm8OpMUrKtgfEpLVK1yK/cBMkfDe0iCq4l1YEk?=
+ =?us-ascii?Q?8nNt4ExnX8CroWQpq9gIz6wq/HWVyIeSV7eVfJOnQr9dTh+p3T/tNr8pt6ss?=
+ =?us-ascii?Q?L/7b/elnYua4OyXURp9OeynJFPnydc+IdnX0uYEZh+6CPaSbGFV85FQz4PXk?=
+ =?us-ascii?Q?3r8zqPrZgDEXTQ0iJvNFVpDzHIu/6RqMKJpxySENH9s782ma2LZuxmqRKbwj?=
+ =?us-ascii?Q?99rv5Bj0ViyRfKulvWz/hlwF7rxMvrCOtlGZaJYP2xxO5RTfYctbEESzjR1Z?=
+ =?us-ascii?Q?1QYtY/gdGg0vTfQUmQwUa3mKw/Gkez4xoBKzwQ32DOMdBWnbdeO4J49ZK7u4?=
+ =?us-ascii?Q?7QRvFyFWXgPKj0KgSBM28bYTHEgEx5YxQAwOzCm0BKZWL3fyhcCy+B9A0QlW?=
+ =?us-ascii?Q?ulvr7mbaSiRHReAW7SmkfQJBKiHzsq3Pgb0hj7KkKvXKqJV+4wSW4xFNX9FL?=
+ =?us-ascii?Q?CWx2fj78TEhdwqRsBDHTQjEbryeb63bSQAhdjvXltCGfC2y462YHAOXwmHQq?=
+ =?us-ascii?Q?y0zUme5ALxu4O3YVCUv4e+gfl3T2AYKLePYIuwILxFXnyodbB3C5EwMQCTbe?=
+ =?us-ascii?Q?SxC8C7CYBq5S6hn1CqyETORZ/ToyD3elgvGhLIMhi6ynxaPVoumYwi4zRbuM?=
+ =?us-ascii?Q?yOkzucSM4wJ1FgUxclJbchk9xeItWHhrJVROfceNB1bJBX4Q87cwRFbw3NM8?=
+ =?us-ascii?Q?QTGj/Q0iBGBnUK9cT3jOEkTPv2hS5PlUX9xHaXRkyv0XmbpWTQKgOmeqhSAO?=
+ =?us-ascii?Q?n5fXfArmS1G3/YDmiQm0PsPdgSMRKAlcglv2SIaJh6ljKyZ3Q4LpD1zJcnXA?=
+ =?us-ascii?Q?mxZmNlx25oKMSJLXRuC2BlrqCNUQeN9GoPVz0MsdZLG5WswByJyisrNCjwK4?=
+ =?us-ascii?Q?DS02GOE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:178b:b0:495:ce61:4e0c with SMTP id
- 5614622812f47-4b1ab72c113mr9027164b6e.3.1786319066859; Sun, 09 Aug 2026
- 16:44:26 -0700 (PDT)
-Date: Sun, 09 Aug 2026 16:44:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a7910da.9c11d2ce.289b96.00da.GAE@google.com>
-Subject: [syzbot] [iommu?] KASAN: slab-use-after-free Read in free_iova
-From: syzbot <syzbot+90c2d711b5218d10ce61@syzkaller.appspotmail.com>
-To: baolu.lu@linux.intel.com, dwmw2@infradead.org, iommu@lists.linux.dev, 
-	joro@8bytes.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: edbd6ceb-a1a2-4ea6-4b14-08def69c42c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Aug 2026 05:00:12.8738
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR02MB7564
 
-Hello,
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org> Sent: Friday, August 7, 20=
+26 11:01 AM
+>=20
+> Jason Gunthorpe <jgg@ziepe.ca> writes:
+>=20
+> > On Fri, Aug 07, 2026 at 02:18:31PM +0100, Will Deacon wrote:
+> >
+> >> > I was under the impression that there is a possibility of using swio=
+tlb
+> >> > instead of restricted-dma-pool with pKVM.
+> >>
+> >> Yes, that patch enables swiotlb as a possibility for protected guests
+> >> but with your patch we avoid shrinking the swiotlb buffer even when
+> >> restricted dma pools are being used and that's a waste of memory.
+> >
+> > I also thought we switched pkvm to use CC-like swiotlb as part of the
+> > alignment in this rework? Mostafa ?
+> >
+> >> > If that is not the case, then we could change:
+> >> >
+> >> > !cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> >> >
+> >> > to
+> >> >
+> >> > !is_realm_world() &&
+> >>
+> >> Perhaps, or you could just pass the swiotlb=3D option if the defaults =
+don't
+> >> work for you. Can you give more details about the slots exhaustion you=
+'re
+> >> seeing under CCA?
+> >
+> > We see badness with swiotlb too, it basically doesn't work out of the
+> > box if you have to use it 100% for real devices. It easily runs out
+> > of memory.
+> >
+> > Auto tuning to higher levels makes sense to me, but I'd rather the
+> > core code handled adjusting its size to the estimated need, not arch
+> > code.
+>=20
+> Agreed
 
-syzbot found the following issue on:
+Nobody has mentioned it on this thread, but arch code under x86 has
+a heuristic for sizing the swiotlb for SEV-SNP and TDX. The heuristic is 6%
+of guest memory, with a max of 1 GiB. See mem_encrypt_setup_arch().
+The heuristic originally went into the 5.11 kernel nearly 6 years ago for
+the original SEV support and hasn't changed since. See commit
+e998879d4fb79, which doesn't give much of an explanation. I don't
+think this is necessarily a good heuristic -- it tends to waste a lot of
+memory, but there are also a few cases where it isn't enough memory.
+After a few years of experience with SEV and TDX, nobody seems to
+have tried to come up with something better, so maybe it's not all that
+bad.
 
-HEAD commit:    562bfb501c54 Merge tag 'integrity-v7.2-rc7' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17ba93b9580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c05be6c9b0d36cb9
-dashboard link: https://syzkaller.appspot.com/bug?extid=90c2d711b5218d10ce61
-compiler:       Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+No doubt the heuristic should move into common code so CCA, SEV,
+and TDX all use the same one.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-562bfb50.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/7580e6506574/vmlinux-562bfb50.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/883f7f234497/bzImage-562bfb50.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+90c2d711b5218d10ce61@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: slab-use-after-free in private_find_iova drivers/iommu/iova.c:285 [inline]
-BUG: KASAN: slab-use-after-free in free_iova+0xab/0x200 drivers/iommu/iova.c:355
-Read of size 8 at addr ffff888000274d60 by task syz.0.0/5327
-
-CPU: 0 UID: 0 PID: 5327 Comm: syz.0.0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description+0x55/0x1e0 mm/kasan/report.c:378
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- private_find_iova drivers/iommu/iova.c:285 [inline]
- free_iova+0xab/0x200 drivers/iommu/iova.c:355
- fq_ring_free_locked+0x1ab/0x310 drivers/iommu/dma-iommu.c:155
- fq_ring_free drivers/iommu/dma-iommu.c:170 [inline]
- fq_flush_timeout+0x234/0x2d0 drivers/iommu/dma-iommu.c:194
- call_timer_fn+0x192/0x5e0 kernel/time/timer.c:1748
- expire_timers kernel/time/timer.c:1799 [inline]
- __run_timers kernel/time/timer.c:2374 [inline]
- __run_timer_base+0x652/0x8b0 kernel/time/timer.c:2386
- run_timer_base kernel/time/timer.c:2395 [inline]
- run_timer_softirq+0xb7/0x170 kernel/time/timer.c:2405
- handle_softirqs+0x225/0x840 kernel/softirq.c:622
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062 [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:674
-RIP: 0010:console_flush_one_record arch/x86/include/asm/irqflags.h:-1 [inline]
-RIP: 0010:console_flush_all+0x7d2/0xaf0 kernel/printk/printk.c:3343
-Code: ff ff e8 81 3b 21 00 90 0f 0b 90 e9 9c fc ff ff e8 73 3b 21 00 e8 ce 5d 2d 0a 48 85 db 74 c0 e8 64 3b 21 00 fb 48 8b 5c 24 18 <48> 8b 44 24 28 42 80 3c 20 00 4d 8d 77 58 74 08 4c 89 f7 e8 e6 6d
-RSP: 0018:ffffc9000f6271e0 EFLAGS: 00000283
-RAX: ffffffff81a5e75c RBX: ffffc9000f627340 RCX: 0000000000100000
-RDX: ffffc9000edfa000 RSI: 000000000002c5aa RDI: 000000000002c5ab
-RBP: ffffc9000f6272f0 R08: ffffffff9057c237 R09: 1ffffffff20af846
-R10: dffffc0000000000 R11: fffffbfff20af847 R12: dffffc0000000000
-R13: 0000000000000001 R14: 0000000000000000 R15: ffffffff8f471ce0
- __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
- console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
- vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
- __warn_printf lib/bug.c:189 [inline]
- __report_bug+0x3c5/0x570 lib/bug.c:249
- report_bug_entry+0x19a/0x290 lib/bug.c:274
- handle_bug+0xce/0x200 arch/x86/kernel/traps.c:431
- exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:490
- asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:593
-RIP: 0010:debug_print_object+0x18a/0x230 lib/debugobjects.c:629
-Code: f8 48 c1 e8 03 80 3c 18 00 74 08 4c 89 ff e8 3d 13 56 fd 4d 8b 0f 4c 89 ef 48 8b 74 24 08 48 89 ea 44 89 e1 4d 89 f0 ff 34 24 <67> 48 0f b9 3a 48 83 c4 08 ff 05 03 b3 77 0b 48 83 c4 10 5b 41 5c
-RSP: 0018:ffffc9000f6276f0 EFLAGS: 00010246
-RAX: 1ffffffff17decd0 RBX: dffffc0000000000 RCX: 0000000000000000
-RDX: ffffffff8c4bf940 RSI: ffffffff8c4bf3c0 RDI: ffffffff90632440
-RBP: ffffffff8c4bf940 R08: ffff8880002684e0 R09: ffffffff8bef79e0
-R10: dffffc0000000000 R11: ffffffff81b33db0 R12: 0000000000000000
-R13: ffffffff90632440 R14: ffff8880002684e0 R15: ffffffff8bef6680
- __debug_check_no_obj_freed lib/debugobjects.c:1171 [inline]
- debug_check_no_obj_freed+0x2e3/0x450 lib/debugobjects.c:1201
- slab_free_hook mm/slub.c:2608 [inline]
- slab_free mm/slub.c:6377 [inline]
- kfree+0x13e/0x640 mm/slub.c:6692
- iommu_domain_free drivers/iommu/iommu.c:2131 [inline]
- iommu_deinit_device+0x401/0x840 drivers/iommu/iommu.c:600
- __iommu_group_remove_device+0x1dd/0x270 drivers/iommu/iommu.c:764
- iommu_release_device drivers/iommu/iommu.c:783 [inline]
- iommu_bus_notifier+0x6d/0x2c0 drivers/iommu/iommu.c:1826
- notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
- blocking_notifier_call_chain+0x6a/0x90 kernel/notifier.c:380
- bus_notify+0x143/0x180 drivers/base/bus.c:1086
- device_del+0x740/0x8f0 drivers/base/core.c:3978
- pci_destroy_dev drivers/pci/remove.c:46 [inline]
- pci_remove_bus_device+0x12a/0x2a0 drivers/pci/remove.c:110
- pci_stop_and_remove_bus_device drivers/pci/remove.c:129 [inline]
- pci_stop_and_remove_bus_device_locked+0x7f/0xb0 drivers/pci/remove.c:136
- remove_store+0xe5/0x150 drivers/pci/pci-sysfs.c:523
- kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f2afa79e019
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f2afb6f9fe8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007f2afaa25fa0 RCX: 00007f2afa79e019
-RDX: 0000000000000001 RSI: 00002000000000c0 RDI: 0000000000000008
-RBP: 00007f2afa83500c R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f2afaa26038 R14: 00007f2afaa25fa0 R15: 00007fff4eb947c8
- </TASK>
-
-Allocated by task 1:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- unpoison_slab_object mm/kasan/common.c:340 [inline]
- __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
- kasan_slab_alloc include/linux/kasan.h:253 [inline]
- slab_post_alloc_hook mm/slub.c:4584 [inline]
- slab_alloc_node mm/slub.c:4917 [inline]
- kmem_cache_alloc_noprof+0x2a0/0x5f0 mm/slub.c:4931
- alloc_iova_mem drivers/iommu/iova.c:231 [inline]
- alloc_and_init_iova drivers/iommu/iova.c:474 [inline]
- __insert_new_range drivers/iommu/iova.c:489 [inline]
- reserve_iova+0x2b0/0x480 drivers/iommu/iova.c:544
- iova_reserve_pci_windows drivers/iommu/dma-iommu.c:521 [inline]
- iova_reserve_iommu_regions drivers/iommu/dma-iommu.c:563 [inline]
- iommu_dma_init_domain drivers/iommu/dma-iommu.c:723 [inline]
- iommu_setup_dma_ops+0xa21/0x1820 drivers/iommu/dma-iommu.c:2159
- bus_iommu_probe+0x296/0x470 drivers/iommu/iommu.c:1983
- iommu_device_register+0x1af/0x210 drivers/iommu/iommu.c:307
- intel_iommu_init+0x6f0/0x8e0 drivers/iommu/intel/iommu.c:2662
- pci_iommu_init+0x38/0x70 arch/x86/kernel/pci-dma.c:174
- do_one_initcall+0x250/0x870 init/main.c:1347
- do_initcall_level+0x10a/0x1a0 init/main.c:1409
- do_initcalls+0x59/0xa0 init/main.c:1425
- kernel_init_freeable+0x29d/0x3e0 init/main.c:1658
- kernel_init+0x1d/0x1d0 init/main.c:1548
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
-Freed by task 5327:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
- poison_slab_object mm/kasan/common.c:253 [inline]
- __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
- kasan_slab_free include/linux/kasan.h:235 [inline]
- slab_free_hook mm/slub.c:2677 [inline]
- slab_free mm/slub.c:6377 [inline]
- kmem_cache_free+0x182/0x650 mm/slub.c:6504
- free_iova_mem drivers/iommu/iova.c:237 [inline]
- put_iova_domain+0xcc/0x100 drivers/iommu/iova.c:454
- iommu_put_dma_cookie+0x45c/0x560 drivers/iommu/dma-iommu.c:431
- iommu_domain_free drivers/iommu/iommu.c:2131 [inline]
- iommu_deinit_device+0x401/0x840 drivers/iommu/iommu.c:600
- __iommu_group_remove_device+0x1dd/0x270 drivers/iommu/iommu.c:764
- iommu_release_device drivers/iommu/iommu.c:783 [inline]
- iommu_bus_notifier+0x6d/0x2c0 drivers/iommu/iommu.c:1826
- notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
- blocking_notifier_call_chain+0x6a/0x90 kernel/notifier.c:380
- bus_notify+0x143/0x180 drivers/base/bus.c:1086
- device_del+0x740/0x8f0 drivers/base/core.c:3978
- pci_destroy_dev drivers/pci/remove.c:46 [inline]
- pci_remove_bus_device+0x12a/0x2a0 drivers/pci/remove.c:110
- pci_stop_and_remove_bus_device drivers/pci/remove.c:129 [inline]
- pci_stop_and_remove_bus_device_locked+0x7f/0xb0 drivers/pci/remove.c:136
- remove_store+0xe5/0x150 drivers/pci/pci-sysfs.c:523
- kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff888000274d40
- which belongs to the cache iommu_iova of size 40
-The buggy address is located 32 bytes inside of
- freed 40-byte region [ffff888000274d40, ffff888000274d68)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x274
-flags: 0x7ff00000000000(node=0|zone=0|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 007ff00000000000 ffff888030463500 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000800400040 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 8498569964, free_ts 0
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
- prep_new_page mm/page_alloc.c:1867 [inline]
- get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
- alloc_slab_page mm/slub.c:3266 [inline]
- allocate_slab+0x79/0x5e0 mm/slub.c:3380
- new_slab mm/slub.c:3426 [inline]
- refill_objects+0x2d5/0x350 mm/slub.c:7310
- refill_sheaf mm/slub.c:2804 [inline]
- __pcs_replace_empty_main+0x2bf/0x6b0 mm/slub.c:4675
- alloc_from_pcs mm/slub.c:4773 [inline]
- slab_alloc_node mm/slub.c:4905 [inline]
- kmem_cache_alloc_noprof+0x382/0x5f0 mm/slub.c:4931
- alloc_iova_mem drivers/iommu/iova.c:231 [inline]
- alloc_and_init_iova drivers/iommu/iova.c:474 [inline]
- __insert_new_range drivers/iommu/iova.c:489 [inline]
- reserve_iova+0x2b0/0x480 drivers/iommu/iova.c:544
- iova_reserve_pci_windows drivers/iommu/dma-iommu.c:521 [inline]
- iova_reserve_iommu_regions drivers/iommu/dma-iommu.c:563 [inline]
- iommu_dma_init_domain drivers/iommu/dma-iommu.c:723 [inline]
- iommu_setup_dma_ops+0xa21/0x1820 drivers/iommu/dma-iommu.c:2159
- bus_iommu_probe+0x296/0x470 drivers/iommu/iommu.c:1983
- iommu_device_register+0x1af/0x210 drivers/iommu/iommu.c:307
- intel_iommu_init+0x6f0/0x8e0 drivers/iommu/intel/iommu.c:2662
- pci_iommu_init+0x38/0x70 arch/x86/kernel/pci-dma.c:174
- do_one_initcall+0x250/0x870 init/main.c:1347
- do_initcall_level+0x10a/0x1a0 init/main.c:1409
- do_initcalls+0x59/0xa0 init/main.c:1425
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff888000274c00: 00 00 00 00 00 fc fc fc 00 00 00 00 00 fc fc fc
- ffff888000274c80: fa fb fb fb fb fc fc fc fa fb fb fb fb fc fc fc
->ffff888000274d00: fa fb fb fb fb fc fc fc fa fb fb fb fb fc fc fc
-                                                       ^
- ffff888000274d80: fa fb fb fb fb fc fc fc 00 00 00 00 00 fc fc fc
- ffff888000274e00: 00 00 00 00 00 fc fc fc 00 00 00 00 00 fc fc fc
-==================================================================
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	ff                   	ljmp   (bad)
-   1:	e8 81 3b 21 00       	call   0x213b87
-   6:	90                   	nop
-   7:	0f 0b                	ud2
-   9:	90                   	nop
-   a:	e9 9c fc ff ff       	jmp    0xfffffcab
-   f:	e8 73 3b 21 00       	call   0x213b87
-  14:	e8 ce 5d 2d 0a       	call   0xa2d5de7
-  19:	48 85 db             	test   %rbx,%rbx
-  1c:	74 c0                	je     0xffffffde
-  1e:	e8 64 3b 21 00       	call   0x213b87
-  23:	fb                   	sti
-  24:	48 8b 5c 24 18       	mov    0x18(%rsp),%rbx
-* 29:	48 8b 44 24 28       	mov    0x28(%rsp),%rax <-- trapping instruction
-  2e:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1)
-  33:	4d 8d 77 58          	lea    0x58(%r15),%r14
-  37:	74 08                	je     0x41
-  39:	4c 89 f7             	mov    %r14,%rdi
-  3c:	e8                   	.byte 0xe8
-  3d:	e6 6d                	out    %al,$0x6d
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+Michael
