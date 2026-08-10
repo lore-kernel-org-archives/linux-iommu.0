@@ -1,194 +1,144 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F6D31B82B
-	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 09:07:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7530E3AB28E
+	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 09:07:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786352861; cv=none; b=eYLrsJOpABf9+2W/wVCkX04+BG/jf/eI0WLCjhOa1XSTJbC8rXF+AaAulEo2+25fOZ1udH7IkBn5RB5lrYPcBC9VJFIdJX+mZ9RwGQV/q0/znrNQXVIYtbGeK2NOxTpMXbaSwyymtbMbvOTgIobDARkUQ/Q5bkvdU0ft949wHCQ=
+	t=1786352863; cv=none; b=tS/O/DKQNVwMF5Qh5syRKfV7o73VaV1LrP2GcbDeXIqQDEY82j6wkw8hpkqRl3tv2yDoD34ul5i02nLd053kTgK/U5SL6iHxwhdkk/QGmLu6E4z6q/bfGTShdyw3XJVZ6zfPh1o70xRwsmgsfjI0cnQgI0bAobzcJANirPW2A2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786352861; c=relaxed/simple;
-	bh=FlbmwqF4ICRM3NnxBPtjmBEJtf4uFOF4jpAZ9Ecv4q8=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:In-Reply-To:
-	 Content-Type:References; b=Rplc7B8ZCN/MDk/NAhZka1sh21Mk1y2rckeE71448nRm/Xuixt8rkBJv+ZlVs2iq+FrkK3+PVcpUsgXE8PzwuzP2LgdVbzsJTJgQHb6lAt3y2khwFzRZCIl6ZU6Gb40SNDh4B++f9CMWVT65aok588MYGAXyhu8rRGicxIZSrG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=HPsvRX7C; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1786352863; c=relaxed/simple;
+	bh=8hRhto7yu1YdfxQ/es9BJ2LPlFdXAoHdDj6NeWX6zQk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=VU+WUnkEN+5FZAL1rPOXxMivPJU1h96VYFKSHuGh46fiug6y65Knw5Ia2XFKL3VLAnk11pxeMegksq1kwjBwkhUe0z34EbzaRZEO/uA/HIxMuc9NgZFVn86WPYOHn6B4jqJY7ktyI/6PaGh7F+p/g6Qwu1/SxplQf2QcTfr0M9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=FmGA0vpI; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="HPsvRX7C"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260810090730euoutp02f7b9709c04b553a5c0d5fadac9823431~KZnQV0R580704107041euoutp02R;
-	Mon, 10 Aug 2026 09:07:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260810090730euoutp02f7b9709c04b553a5c0d5fadac9823431~KZnQV0R580704107041euoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1786352851;
-	bh=ySuGWbXUDGRFaGMKt5Y7z0dskEZPyGt9AbN/dMvXf1U=;
-	h=Date:From:Subject:To:Cc:In-Reply-To:References:From;
-	b=HPsvRX7C15j1heJymtevQXoi/AnN/UmZgnpt+LPxF3VYvuPtRJ3PYpNdLnmaXR0Ag
-	 59kf/XM9EHs3O50nSy+7hCuFxp4Q55Xi5/hdzAIdCWJOo8JxnrbbHOV1ClSd71HV0d
-	 r4jlBz+O8JAs/tO9cz+lHcFefZSDAVIP9ORDDg9o=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260810090730eucas1p23ceee7c50d9b5f62e163a92c91aa20de~KZnPjUrlt0040900409eucas1p2L;
-	Mon, 10 Aug 2026 09:07:30 +0000 (GMT)
-Received: from [106.120.50.46] (unknown [106.120.50.46]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260810090727eusmtip10eb84a9d5031d28278c93306c2caa136~KZnNUvdOP2715827158eusmtip1g;
-	Mon, 10 Aug 2026 09:07:27 +0000 (GMT)
-Message-ID: <8a988f86-e497-4e9b-92db-c9b454467df5@samsung.com>
-Date: Mon, 10 Aug 2026 11:07:26 +0200
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="FmGA0vpI"
+Received: from CPC-namja-026ON.redmond.corp.microsoft.com (unknown [4.213.232.21])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B879020B7168;
+	Mon, 10 Aug 2026 02:07:10 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B879020B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786352836;
+	bh=aP+Szq1FgVdmKtut4AqYblFcxzvyIhDJq4aWTv43pM4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=FmGA0vpIITa1t3cnGHPp6hbpx5ttlLd3lihgXL9JsMZ9vT+09rk4r5XxE0gXo/6bW
+	 Juxs3m4kaRvwSZ8XofRV/ExMfU4hgBfDAz2AndojxBcVhvDG485LEwwRjBbDHm/JaO
+	 gsx3tIzuMlMadVShlG2Bo3IC6hAOeF8Nq8Fu6oJA=
+From: Naman Jain <namjain@linux.microsoft.com>
+To: Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Shradha Gupta <shradhagupta@linux.microsoft.com>,
+	Aditya Garg <gargaditya@linux.microsoft.com>,
+	iommu@lists.linux.dev,
+	linux-hyperv@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/3] x86/irq: Use irq_chip_retrigger_hierarchy() in fixup_irqs()
+Date: Mon, 10 Aug 2026 09:07:14 +0000
+Message-ID: <20260810090716.2325295-3-namjain@linux.microsoft.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260810090716.2325295-1-namjain@linux.microsoft.com>
+References: <20260810090716.2325295-1-namjain@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v3 06/11] mm/cma: Allow dynamically creating CMA areas
-To: Thierry Reding <thierry.reding@kernel.org>
-Cc: "David Hildenbrand (Arm)" <david@kernel.org>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, Mikko
-	Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, Rasmus
-	Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>,
-	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer
-	<gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, Vasily
-	Gorbik <gor@linux.ibm.com>, Christian Borntraeger
-	<borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Andrew
-	Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>, "Liam
- R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, Mike
-	Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, Michal
-	Hocko <mhocko@suse.com>, Robin Murphy <robin.murphy@arm.com>, Sumit Semwal
-	<sumit.semwal@linaro.org>, Benjamin Gaignard
-	<benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>,
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Steven Rostedt
-	<rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, Mathieu
-	Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas
-	<catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
-	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
-	linaro-mm-sig@lists.linaro.org, linux-trace-kernel@vger.kernel.org
-Content-Language: en-US
-In-Reply-To: <anSuYvj1JU5K8xUO@orome>
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260810090730eucas1p23ceee7c50d9b5f62e163a92c91aa20de
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c
-X-EPHeader: CA
-X-CMS-RootMailID: 20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c
-References: <20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com>
-	<CGME20260701160902eucas1p1214af933ba0f54b85630a3a4e5a4689c@eucas1p1.samsung.com>
-	<20260701-tegra-vpr-v3-6-d80f7b871bb4@nvidia.com>
-	<3f47aeab-33b1-4966-a5ce-5d6d5261e0e2@samsung.com>
-	<e212caac-6c30-448a-9e10-32fff8b842f6@kernel.org>
-	<83e5e74d-7106-4e14-9d10-56438372f6a3@samsung.com> <ak_E4UxfnFJywJa7@orome>
-	<1eec88e6-1ea8-4525-bb17-e41444d715dc@samsung.com> <anSuYvj1JU5K8xUO@orome>
 
-On 06.08.2026 18:09, Thierry Reding wrote:
-> On Thu, Jul 16, 2026 at 12:43:56PM +0200, Marek Szyprowski wrote:
->> On 09.07.2026 17:59, Thierry Reding wrote:
->>> On Thu, Jul 09, 2026 at 07:56:45AM +0200, Marek Szyprowski wrote:
->>>> On 08.07.2026 10:35, David Hildenbrand (Arm) wrote:
->>>>> On 7/7/26 12:02, Marek Szyprowski wrote:
->>>>>> On 01.07.2026 18:08, Thierry Reding wrote:
->>>>>>> From: Thierry Reding <treding@nvidia.com>
->>>>>>>
->>>>>>> There is no technical reason why there should be a limited number of CMA
->>>>>>> regions, so extract some code into helpers and use them to create extra
->>>>>>> functions (cma_create() and cma_free()) that allow creating and freeing,
->>>>>>> respectively, CMA regions dynamically at runtime.
->>>>>> Well, the technical reason for not creating cma regions dynamically at
->>>>>> runtime is that on some architectures (like 32bit ARM) the early fixup
->>>>>> for the region is needed to make it functional for DMA.
->>>>> Can you point me at the code that does that? Thanks!
->>>> Check dma_contiguous_early_fixup() and dma_contiguous_remap() in 
->>>> arch/arm/mm/dma-mapping.c. Those functions ensures that the CPU mappings for
->>>> the CMA reserved region in linear map are remapped with 4k pages instead
->>>> of the 1M sections, so later, it will be possible to alter the mappings and
->>>> change them to coherent when needed (altering 1M sections is not possible,
->>>> because each process has it's own level-1 array even for the kernel linear
->>>> mapping).
->>>>
->>>>
->>>>
->>>> However, in the use case in this patchset the reserved region is only shared
->>>> with buddy allocator by using the CMA infrastructure, not registered to the
->>>> regular DMA-mapping API, so it would work fine. I'm not convinced that this
->>>> is the right API to use for this though.
->>> Are you saying you're not convinced that CMA is the right API to use for
->>> this? Or something else?
->> I read this again and indeed CMA seems to be right solution. I only wonder
->> why do You want to create the CMA areas dynamically? Imho it would work if
->> You just create large enough CMA area on boot, what would automatically
->> share the memory with buddy allocator and then allocate dynamic VPR regions
->> with cma_alloc(), potentially unmapping or marking the allocated region as
->> reserved in linear kernel mapping to avoid any potential speculative access
->> to the protected memory.
-> Hi Marek,
->
-> sorry for missing your reply earlier.
->
-> The reason why we want to create the CMA areas dynamically is because we
-> want to split the secure memory into multiple areas. And the size and
-> number of these areas may need to vary, so I didn't want to have to rely
-> on rebuilding kernels with different numbers of maximum CMA areas
-> depending on the chunk size that we choose.
->
-> The reason why we need to split up the protected memory into multiple
-> CMA areas is that allocation patterns can create holes within a CMA
-> area. For the VPR memory, however, we must ensure that there aren't any
-> holes within the protected region because it is specified using a single
-> base address and a size. So there is one contiguous region that can be
-> marked protected.
->
-> If we were to use a single CMA area, we could get holes within an area
-> that is marked protected and once the pages are returned to the buddy
-> allocator with cma_release(), something else could be attempting to
-> access it and cause an error because it is still protected.
->
-> The only way to make sure we get a single, resizable and contiguous
-> region is by using multiple CMA areas and allocating the entire area
-> once our allocations need to expand into that new area. So we're not in
-> fact using much of the CMA infrastructure and actually need to duplicate
-> some of it. We primarily need it for the page migration and reclaim
-> functionality.
+fixup_irqs() re-injects a pending interrupt on its new target CPU by
+looking at the outermost domain chip and invoking its irq_retrigger()
+callback directly. That only works when the outermost chip happens to
+install an irq_retrigger() callback, which is not guaranteed for every
+irqchip and could lead to lost interrupts on CPU hot-unplug.
 
-This still looks over-engineered. I understand that in case of a single CMA
+Use irq_chip_retrigger_hierarchy() instead, which walks up the interrupt
+hierarchy until it finds a chip that implements irq_retrigger().
 
-area using cma_alloc() is not enough for Your use-case, but You already
+While at it, move the loop-local variables into the loop scope and use a
+scoped guard for desc->lock.
 
-pointed that You need to have custom method of managing which part of memory
+VECTOR_RETRIGGERED is now set only when the retrigger succeeds
+(irq_chip_retrigger_hierarchy() returns non-zero) instead of
+unconditionally. This is harmless today since apic_retrigger_irq()
+always returns 1, and arguably more correct. No functional change
+intended for chips which already provide an irq_retrigger() callback
+on the outermost domain.
 
-is assigned to secure world, so wouldn't it be much simpler just to add
+Suggested-by: Thomas Gleixner <tglx@kernel.org>
+Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
+---
+ arch/x86/kernel/irq.c | 23 +++++++----------------
+ 1 file changed, 7 insertions(+), 16 deletions(-)
 
-cma_alloc_exact_range() -like function and keep using a single, boot-time
-
-defined CMA area? Then in instead of creating and deleting CMA areas
-
-dynamically, You just 'allocate' respective ranges from the single CMA area
-
-and manage them on You own (like in current patchset).
-
->> In both cases You will probably won't need the DMA-mapping API on top of
->> it, although it might be even possible to partially use with by
->> registering custom dma_ops for the devices using the protected region
->> (assuming that it would support only DMA_ATTR_NO_KERNEL_MAPPING
->> allocations).
-> Yeah, I don't think we want the DMA API on top at all. The allocator has
-> special needs, like clustered allocations to minimize fragmentation and
-> keeping as few chunks activated as possible. We also want to avoid
-> resize operations because they can be quite heavy depending on system
-> load.
-
-That's okay.
-
-Best regards
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 30122f0b3af96..ef1bdd3c4659a 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -466,11 +466,6 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_posted_msi_notification)
+ /* A cpu has been removed from cpu_online_mask.  Reset irq affinities. */
+ void fixup_irqs(void)
+ {
+-	unsigned int vector;
+-	struct irq_desc *desc;
+-	struct irq_data *data;
+-	struct irq_chip *chip;
+-
+ 	irq_migrate_all_off_this_cpu();
+ 
+ 	/*
+@@ -489,22 +484,18 @@ void fixup_irqs(void)
+ 	 * vector_lock because the cpu is already marked !online, so
+ 	 * nothing else will touch it.
+ 	 */
+-	for (vector = FIRST_EXTERNAL_VECTOR; vector < NR_VECTORS; vector++) {
+-		if (IS_ERR_OR_NULL(__this_cpu_read(vector_irq[vector])))
++	for (unsigned int vector = FIRST_EXTERNAL_VECTOR; vector < NR_VECTORS; vector++) {
++		struct irq_desc *desc = __this_cpu_read(vector_irq[vector]);
++
++		if (IS_ERR_OR_NULL(desc))
+ 			continue;
+ 
+ 		if (is_vector_pending(vector)) {
+-			desc = __this_cpu_read(vector_irq[vector]);
+-
+-			raw_spin_lock(&desc->lock);
+-			data = irq_desc_get_irq_data(desc);
+-			chip = irq_data_get_irq_chip(data);
+-			if (chip->irq_retrigger) {
+-				chip->irq_retrigger(data);
++			guard(raw_spinlock)(&desc->lock);
++			if (irq_chip_retrigger_hierarchy(&desc->irq_data))
+ 				__this_cpu_write(vector_irq[vector], VECTOR_RETRIGGERED);
+-			}
+-			raw_spin_unlock(&desc->lock);
+ 		}
++
+ 		if (__this_cpu_read(vector_irq[vector]) != VECTOR_RETRIGGERED)
+ 			__this_cpu_write(vector_irq[vector], VECTOR_UNUSED);
+ 	}
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.43.0
 
