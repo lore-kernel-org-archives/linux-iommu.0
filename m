@@ -1,148 +1,153 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABFA83988E3
-	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 17:17:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12854298CAF
+	for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 17:32:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786382223; cv=none; b=jxbZa3JZ9NzajVTkk9Cg6g5/0P+NZ37YA2K52DdSPw12LR6ChOcVYM+OPdSFEjwcZBq3N1rePdPuAvl2n/NjUNW0KP/O2uqqs5t6lEEks0ug3FTDqQMNc9HsnmpCO2aaM7SjY8r4QAFHRm03tndbbOFZLZ4j8DH6xGxOQL+HXHQ=
+	t=1786383154; cv=none; b=NkdTRCmRRul1ftMOJJbs8F7BGlon5L8swG28ocrRyq5dn1dvGdpx6h5AL3JxmysHl8+P/k62Xp8OjYIYfB3bJjogTFdIec4YAok+YcesUPO29E/s0V8sWtQlKZK9XFVaHt+/nF9A+fVsTTtJnoDBwiyrumN+TrcuS5C8POvlHzY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786382223; c=relaxed/simple;
-	bh=0bVvXIx8KWhgK4X84+7K0kxtx1IFrC/NFT7STqVMwiw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LAsIZkLr+ZCytgNv55bdlM0ANJ8LS4mjR56w7CZxfCEoo8bB0/xBt2W8qlTivi2J52ffUY0dwzaOQcnCggHG5uu4MNgnW4dt2CGo9lcAhvMucda/kG51pMm8q5S/bNRb1c9BspaVVXt02Lbitenrdkad5kLzYXYAJwrucKp/vpo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=c+BrrfAC; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1786383154; c=relaxed/simple;
+	bh=zjJIWqNtwF0cifNRQPhnYI2EfeYf2B2tY/WqOA+v0m8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bh6PZ73yFYb/npIOTJsN86fnRqVZf8dCNhQeCBcIP5YVUNJG5kH7tZFEjB9k0vtXAeWE2pPUyrqfKpvow5C3XfrFBC6l0NosscbKPIKyfypxu4R5dq+LrG2BAWS4yav4j1JsxftYHZ1ZM9XpOJPnWr48vogKGGzVyOCmQs6lqr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cLiXYgBK; arc=none smtp.client-ip=209.85.219.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="c+BrrfAC"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BDDD814BF;
-	Mon, 10 Aug 2026 10:16:56 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2F4B23F632;
-	Mon, 10 Aug 2026 10:16:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786382220; bh=0bVvXIx8KWhgK4X84+7K0kxtx1IFrC/NFT7STqVMwiw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=c+BrrfAC17BNePDSGhiLYFazAIUh6R4smxAykXhY/36GHerYa79otAGaIdIK0J1px
-	 HuzgIbWscOUsd3c1sHy3XFZ3HBcRFeltPkH5Y3gDJFBZbYtECIBLutHbkK8z1/XH4J
-	 LtpKlGnWrUGXJ4+hfzeENIJoz5bCp4dIRVgVor2A=
-Message-ID: <77edba4a-b6b0-4b50-9328-7c177a0af283@arm.com>
-Date: Mon, 10 Aug 2026 18:16:56 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cLiXYgBK"
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-8efec2c28f8so13148406d6.2
+        for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 10:32:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1786383152; x=1786987952; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=VBWupQnXAvbyYBXOH1+tP3/NFYquot2qJ912f9iatvM=;
+        b=cLiXYgBK9TSiwdbbfdD/d1GkqsUbZKH6l0aSVwuFxhtBvAamP2EB2mrCgx9UfpGN1k
+         3O4MhFM8zj1E8p8nCmrCTFuDFME8DbR1XlMHjeFIpk2F8H6aYsryhum5jOhriiZ35Z1p
+         Q9AKvCpmIbINHTnyHJHzx79nPZ4GjMXJ+BP9VaHspmNs9+OiVFuN9CUlL3VCzf3Je172
+         zT8v3d+rM69levSqK17pzlAU/kE+HVadByNQo4G6pIT1fhE8827RWsukhzkhg8W0w3I4
+         rrBi4qJCFgx7yHHuLqY++DWCl6/KSBwdt6wAwHwpWCTPxxAzZ+Zco33Hvx5wcvDHF166
+         UbhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786383152; x=1786987952;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=VBWupQnXAvbyYBXOH1+tP3/NFYquot2qJ912f9iatvM=;
+        b=Jmic3MdA/HlHchxGRbSPF9p1V5Gqo1FjkgGfAn7uG3X2tQxm46GikBaPT+loLmsh8e
+         0iT6K8Cw365OclQTAfYzwQyLZqQE0hynq3A2qnbvxUWvMFqQRim7ftELEO6NG0Q9AZOM
+         D6bhVPojIWTpojOe5UbX/J8BJZ5iAhYv5Fh2eXMaPFT2IC0iQQ58c47/d+j9oqy8yPRU
+         wN7TAdV3AVu9NaSzUGpIiaAfIgnvZemsnDpOP5T6WeC2eKfeTn8AoTMirVgkJ6pEzi9g
+         qrFgm/j68jusqZuGL7efXnbyExh4yfhsGpE38MGhkcMDCo1uEOjpp90EeNcu+rPinMvd
+         15kg==
+X-Forwarded-Encrypted: i=1; AHgh+RqLWy7FyhihV/yU+kIJOy3D+NK3Vo29hXEl5hcatprwwf3gAqhv1WtMmGD6l+LHrfoAQreEbg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxUjwtQqRW+NhGRXVxbHu14H4qHn7ZXG54GvXVbKsYAsBLP1X11
+	bza8XQp+2W8iH943VJnvHXAF033Xa0TIxWqA7IDEBzWHpXYITPKkvrnkN7HDjbiMvCg=
+X-Gm-Gg: AR+sD12L/zlKNtXUmLdIkFfyGwPaO6hMbwKy3WHuQwVIDxbAhN16/JDLNOoKRkENJMh
+	Psd0tv+HULtKCfY0CByUHCCR9CJzjshq4tLGEZNAPhe4w2kba+EDECY+stInQdEgbCC4yYyD+Ts
+	1vcdyjAfoW8VZGWze8A9llNl8pTlryO9EtCf5z/6M3zMkx4+fe9KcYyWEZBdeyybOZPwovtVuaP
+	8Ltz30N5CqPIZsRJ6VSbe9/q1geBYXHzP7Y7XYgf1Qxddugb95AWwh2VBZ6dpy0h99eXCIjCrOv
+	oIJeFMxamhmtqGua6lmwOjtkERCNnWShyaYpQgYrvrYCRHlc8vaXsBYBVOdsiM+5gLxhRQAcYGv
+	/qRfB888vjjH3wG5ql2Nz/UTkepYLdWbFILfuqXapCuoFzfHqZSLSpody9/56efCFJgvIqVI78J
+	HJ2U+OQ0Wl4mP96mkvME6RXYj55C3aLD8dssGD268sQRtzIr3L5Im2ng8MSGRC
+X-Received: by 2002:a05:6214:540e:b0:907:37d3:1ed1 with SMTP id 6a1803df08f44-908a7100249mr312771366d6.28.1786383151603;
+        Mon, 10 Aug 2026 10:32:31 -0700 (PDT)
+Received: from ziepe.ca ([142.166.156.215])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-908a91d6ad8sm77283546d6.18.2026.08.10.10.32.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2026 10:32:31 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wtTrS-0000000282q-1SzL;
+	Mon, 10 Aug 2026 14:32:30 -0300
+Date: Mon, 10 Aug 2026 14:32:30 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: syzbot <syzbot+90c2d711b5218d10ce61@syzkaller.appspotmail.com>,
+	baolu.lu@linux.intel.com, dwmw2@infradead.org,
+	iommu@lists.linux.dev, joro@8bytes.org,
+	linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+	will@kernel.org
+Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in free_iova
+Message-ID: <20260810173230.GQ200537@ziepe.ca>
+References: <6a7910da.9c11d2ce.289b96.00da.GAE@google.com>
+ <68eebaf3-2427-48c0-93d3-87455ff266fb@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/2] Add arm-smmu-v3 support for instcfg data override
- feature
-To: Will Deacon <will@kernel.org>, Peter Griffin <peter.griffin@linaro.org>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Pranjal Shrivastava <praan@google.com>,
- Daniel Mentz <danielmentz@google.com>, Mostafa Saleh <smostafa@google.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- kernel-team@android.com, tudor.ambarus@linaro.org, andre.draszik@linaro.org,
- willmcvicker@google.com, jyescas@google.com
-References: <20260724-arm-smmu-v3-instcfg-override-v1-0-e7acf4a8a525@linaro.org>
- <amYIuhYenP4-qHyV@willie-the-truck>
- <0b7c0272-5506-4aee-82b3-76a78f2b39dc@arm.com>
- <CADrjBPqZFDvyLFpDy1YP9qrMNUCtZYtJhiaDd0iTnmB4ZYO8GQ@mail.gmail.com>
- <anmvW1LkypAGW6Sc@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <anmvW1LkypAGW6Sc@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <68eebaf3-2427-48c0-93d3-87455ff266fb@arm.com>
 
-On 10/08/2026 12:00 pm, Will Deacon wrote:
-> On Fri, Aug 07, 2026 at 04:25:11PM +0100, Peter Griffin wrote:
->> On Mon, 27 Jul 2026 at 11:53, Robin Murphy <robin.murphy@arm.com> wrote:
->>>
->>> On 26/07/2026 2:16 pm, Will Deacon wrote:
->>>> On Fri, Jul 24, 2026 at 01:39:41PM +0100, Peter Griffin wrote:
->>>>> These two patches add support for a new "arm,instdata-override" DT property
->>>>> that enables the override of the instruction/data attribute of incoming
->>>>> traffic to Data by setting the INSTCFG override bits.
->>>>>
->>>>> It is intended to be specified when the smmu can't guarantee that these
->>>>> attributes are provided correctly from the client device.
->>>>
->>>> This is going to need an in-tree user and a much more detailed
->>>> description of what is being worked around before we consider this for
->>>> inclusion.
->>
->> Regarding an in-tree user, I haven't sent the Device Tree (DT) patch
->> yet for Laguna SoC which adds the smmu nodes and this property because
->> 1) I want to land the initial SoC/board DT first
->> 2) I want agreement on the DT property name. Currently I used
->> "arm,instdata-override" which is what downstream used. However, since
->> this is intended to work around silicon errata something like
->> "google,lga-instcfg-data-override" might be more appropriate?
->>
->> For Laguna SoC the first in-tree user of this is the amb_smmu smmu
->> instance which is used by the Synopsis dwc3 IP. The Laguna dwc3 glue
->> driver is already upstream at drivers/usb/dwc3/dwc3-google.c
->>
->>>>
->>>> In particular, if a particular client is emitting data reads as
->>>> instructions, then a better work around would be to avoid mapping its
->>>> domains using IOMMU_NOEXEC. But I can't tell what's going on from the
->>>> limited description provided here.
->>>
->>> Unless it's also emitting the privileged bit and thus falling foul of
->>> the implicit Unpriv-W -> Priv-XN rule, but then we also have the means
->>> to deal with devices which actually do that themselves (hello pl330...),
->>> so that would seemingly only leave the case of some innocent piece of
->>> AMBA-interfaced IP which doesn't expect to need special attributes, but
->>> the system integrator has gone out of their way to tie the AxPROT bits
->>> to some wacky value, which I would put in "erratum workaround" territory.
->>>
->>
->> You're correct Robin. It is an erratum workaround for the Laguna SoC
->> due to some custom usage of the AxPROT bits which differs from the
->> standard ARM SMMU handling for Privileged/Unprivileged and
->> Instruction/Data transaction attributes. The effect is all
->> transactions appear to the SMMU as "Privileged Instruction" accesses.
+On Mon, Aug 10, 2026 at 11:50:28AM +0100, Robin Murphy wrote:
+> > Freed by task 5327:
+> >   kasan_save_stack mm/kasan/common.c:57 [inline]
+> >   kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+> >   kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+> >   poison_slab_object mm/kasan/common.c:253 [inline]
+> >   __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+> >   kasan_slab_free include/linux/kasan.h:235 [inline]
+> >   slab_free_hook mm/slub.c:2677 [inline]
+> >   slab_free mm/slub.c:6377 [inline]
+> >   kmem_cache_free+0x182/0x650 mm/slub.c:6504
+> >   free_iova_mem drivers/iommu/iova.c:237 [inline]
+> >   put_iova_domain+0xcc/0x100 drivers/iommu/iova.c:454
 > 
-> Ah, so this sounds like what Robin was worried about.
-> 
->> The software workaround in this series enables the SMMU's INSTCFG
->> override feature to ignore the incoming value and treat all SMMU
->> transactions as "Data".
->>
->> One small clarification: in the cover letter I incorrectly said this
->> was set only for some SMMU IP instances, but that is incorrect. It is
->> actually set on *all* arm-smmu-v3 IP instances in the Laguna SoC.
->>
->> Does the above provide the additional detail you need Will?
-> 
-> So it sounds like using the instcfg override on this hardware still breaks
-> IOMMU_PRIV and IOMMU_NOEXEC:
-> 
->    1. If you don't pass IOMMU_PRIV, you still get privileged transactions
+> ...except that right in between here we've called iommu_dma_free_fq() which
+> would have already invoked timer_delete_sync() and freed the queue itself.
+> Wut?
 
-However this is inherently true of VMSA stage 1 anyway - I admit I had 
-to double-check, but we don't have any user-only permissions (other than 
-perhaps execute as implied by explicit or implicit PXN). IOMMU_PRIV can 
-only _remove_ unprivileged access.
+I've been feeding syzkaller riddles to the best AI I can get and it is
+surprisingly good.. So, for this it guesses:
 
->    2. If you don't pass IOMMU_NOEXEC, you do not get execute permission
-> 
-> Is that correct?
-> 
-> Perhaps it would be better to override PRIVCFG to force unprivileged,
-> then reject IOMMU_PRIV and ignore IOMMU_NOEXEC?
+---
+timer_delete_sync() does stop already scheduled work, but it does not
+prevent a future mod_timer() from re-scheduling the now-deleted timer.
 
- From what Daniel said, it sounds like the privileged attribute is still 
-the doing of the device itself rather than the integration issue in this 
-case, so while nobbling PRIVCFG might also achieve the end result of 
-making IOMMU_READ | IOMMU_WRITE pages mostly not fault on reads, it 
-seems less appropriate as a workaround. Particularly since IOMMU_PRIV is 
-exposed via a general DMA API attribute, while IOMMU_NOEXEC is only 
-accessible to dedicated IOMMU API/io-pgtable users.
+The probable sequence is:
 
-Thanks,
-Robin.
+1. A DMA unmap queues an IOVA and sets fq_timer_on = 1 at dma-iommu.c
+   (line 243), but has not yet executed mod_timer().
+
+2. Concurrent PCI removal frees the device's default IOMMU
+   domain.
+
+3. iommu_dma_free_fq() calls timer_delete_sync() at dma-iommu.c (line
+   274). Because the timer is not pending at that instant, it returns.
+
+4. Teardown frees the flush queue and all IOVA-tree nodes through
+   put_iova_domain() (line 446).
+
+5. The unmap path resumes and executes mod_timer(), rearming a timer
+   embedded in the soon-to-be-freed DMA cookie.
+
+6. fq_flush_timeout() later runs and calls free_iova_fast(). It
+   traverses the already-destroyed IOVA rbtree, producing the reported
+   UAF in private_find_iova() (line 275).
+---
+
+Which seems plausible to me.. So it is a bug in a driver allowing a
+dma API operation to be outstanding after it has been removed?
+
+syzkaller console showed it did trigger a remove of a PCI function:
+
+open("./sys/bus/pci/devices/0000:00:01.0/remove", O_WRONLY)
+write(fd, "1", 1)
+
+But I couldn't guess what device that was, if someone from syzkaller
+land can clarify what they have plugged in there it might help.
+
+The AI guessed on a GCE VM it was a display adaptor, but I don't see
+how it could know that.
+
+It would be a nice improvement to the CONFIG DMA DEBUGGING to keep
+track of the driver bound state and blow up directly on all these
+forbidden combinations.
+
+Jason
