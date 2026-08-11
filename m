@@ -1,121 +1,134 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89ED3242B8
-	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 16:21:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8A0A45C6F7
+	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 17:28:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786465290; cv=none; b=J818r4ShYpAV/HcjdJFiGMqx8BysToeX+w69DBRHRESI1MkGaoq5yJyJ2Yc9nbR9P8iPnrWiFH57ybX5KQ02CFHEL8yFCJk4bYKfJU50Mc4qkjeLAy04MbzAjPmAU6m3PDXHRj423N4lWxZFuNXAmuUcLyCSSOIFxTbjsp4jeEU=
+	t=1786469333; cv=none; b=dXJNs1NKvK3+iD53U4E83vOQVmQ8loJG+N+tXCZXjNvRkZRkQpxoKt0toaBAqeKBGhm0mILjXnmYHMB7bhU1nJ3ATQQF3Z6i3CXYX6PTRQvxIjpEyuKhMYPvtzkHGREu1qZwIbni5aRBiAM4x9agPhe4Omnoi0Xo+xSPPKVWwQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786465290; c=relaxed/simple;
-	bh=IzG7wcSnS0LX7TU2RQ1pHjEUVUk31vZgsIvwWciX868=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CwBBU28SusHQ4yHPWr9ZciGJIUMwUlkpcW04cd+AFqwwdzPd1ncJotOODQ4cySlEYLoCN9kKsVFFchhCGtsaj/hcXRWXeD6+0qo+PECIO4qZZGPhBtSv5k+tBxQHFte9zvdbTNk60O63qIRkRuFhx9RPYflzAwalY4wYVvCznYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=onmahif+; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1786469333; c=relaxed/simple;
+	bh=tz4iSbZQOmwhQi85QuHBOwwK5bkgkFtPz0AFXWjDfmY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sHAG0qugPfli197+pkxltf7HtWRmJ3Yct6nV9tMfrmG85+87beT4PjVUoa1+a/P5FELpMyH6uvaqTgOUN4OB7GKmmrlzSGdmiK0sJXO2Kn9tUv7EglGqDihddVFSmUcUHLGxUI0NpL+Kva52ZjWViBp+01pUYDqpvsCwgC/vPyU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l0OkDFQd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="onmahif+"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-51bfe810293so767611cf.1
-        for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 09:21:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786465286; x=1787070086; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=iF1EovNHXjlni8LKG7pfSf4Sk3EXbwMQtSznu/lYQFo=;
-        b=onmahif+gWBX4kKpbIj6tfEeuBD8YT7e+ZLhc6pOpWksD4/selwN0B1C2/ibIGFWxq
-         B6AS3GVromGyoRmEBeSwELdqY6e8QMgnI0Z6mbODEoUEY+5YyZYZ4c6AQ2aNcstfJKKu
-         6z6YALuu4NtQNjtRZrbmXctJ0GqP4f7Hbehv/HvXUN415pqoS31FSiUBHQPiJ1ER1Mfq
-         EFNaWjUFfkebuLZUGHr1LaobuYJ1vlD7QwEeC6zsnN+Kh4ttd9XxAIWUfzd/4GugT73K
-         NGMFPSwm/Jtr9l6++iN3pAHdtUTzHr+82YWMceElo45v7AIA/xjA0v3NQMJLoUoS57Nd
-         7rDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786465286; x=1787070086;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=iF1EovNHXjlni8LKG7pfSf4Sk3EXbwMQtSznu/lYQFo=;
-        b=bTYaKsbWpnwylnmSJRVOmSTWdcd8Bu0PiKauBDJMgmmb7/mwzDSL5WEp/vTRE1Rvwx
-         Ux+CuRJvhZ9qDofWvmu1dDuYdqn9wjJ5a6To3KMyJj4sy8j1q0EujkAOP4gckor7TQXE
-         HKA+oLFTHbir1xXnmKTu5KI9IEyMB3cOPuk84+8/+vOi4jHdlR91zvvkIIvVdoasclKQ
-         QDs7UBeE5OkQXlKtqwr5THf780UEyQNGt+NJPSmkVS2aphPbuG9dsYCm99EIzG/3AvBd
-         F8wOb3p2VgqsOFLRMAVuUV7JYkpUwewiXWs1XbzTDWI4TQfYpM4Gx0vCgplUovWS4HOq
-         MqEw==
-X-Forwarded-Encrypted: i=1; AHgh+RrffhCI3RKT1AQuoL6kk85UebCmuGwsdc5BQ1J1LtUk6ccEDkn06RFAngWgxejtPUQf1iFZKg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxYzPGfmirkDnVpjIcz7HcrXV9+yKPhb47wj8gPsAiRxVFbiBms
-	3xxXhJdCQy/t5QLHdfS+VIcThZ5639DTVH4sUU+TJznlFKMKWe6wqZdO+XNUyP0aSgI=
-X-Gm-Gg: AR+sD12r29+OQSu7lg3Qixo6+spMRFFGjuij7iCSHB5zNFWETv/mVm/TCl7RnMzHmPe
-	ZYMj50hYybdPaJ0Itz0zUoPJrnJg4dzAD2rQLXRo6bpI0UjNUJq+hwKf5XMgehRexWT9uuJkBj4
-	laT7/UCiDwFtWUD+FTK5gQvXnBoeRwdAwkvkpVQyBSHgCN1z8/TlkqTdTZMVvTnpGgsekU8oTLZ
-	7n24/Dv/5F3u8lSdkk6fTUomdL6jc5g6+jjSbgYzEs+K/bbIUpiXb1kcn5CTw9N9udIr6GcQmA9
-	tviygG14P+VpcVx9Sz1sZUj+lKmgzyyvGEKzAyBESRmIh7YUUfA57lTS59iaZtG6n/Rsh0X4BIO
-	N+MQQjhzgV4YrOCALUw+OY/+MX3YhaQF8HCD8RhIMEyewn0M1RNT0AlK9j3UFsdDNV17jdOHSBO
-	mpLS9t50KSxy6WCC3Xdu7JVEZh7EWHxmyeoL/UpA==
-X-Received: by 2002:a05:622a:4d43:b0:519:89b6:78b4 with SMTP id d75a77b69052e-52d5867e85amr44709981cf.40.1786465285899;
-        Tue, 11 Aug 2026 09:21:25 -0700 (PDT)
-Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90a6c39254fsm2441146d6.23.2026.08.11.09.21.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Aug 2026 09:21:25 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wtpEC-00000002Y6b-1J1V;
-	Tue, 11 Aug 2026 13:21:24 -0300
-Date: Tue, 11 Aug 2026 13:21:24 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
-	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org,
-	arnd@arndb.de, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
-	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com,
-	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v3 3/5] iommu/x86: Share the architectural MSI reserved
- range
-Message-ID: <20260811162124.GK544626@ziepe.ca>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
- <20260811155022.108148-4-zhangyu1@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l0OkDFQd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431231F00A3E
+	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 17:28:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786469326;
+	bh=tz4iSbZQOmwhQi85QuHBOwwK5bkgkFtPz0AFXWjDfmY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=l0OkDFQdpboXND6N6MA2YZRG7RfIROUSlsjT1xENiFyKAbZ8w/bv7zeZfO+AFidfl
+	 sMQjor2WRO+RNqqlx2Eynzgq4YZ2EVb3hgoRcmmAKqyM/Sz3qj1WY7l9XCGgjuvDJw
+	 K56peIq6/MTSgk1grN0Lw+B7yc3ASdvHCDdO+7uhRMPhd1ITWmfmAISyZw3fn+gVAI
+	 wVy75Mo4a1Em5kGFjzM0270JjOneXoJKciYa/iD/1dO5e1084jb2GB5EDDoN0fi4zb
+	 sgxGE+tjLbGYAoYIGdCIPSq5I9RkRfvXscKomeoZjBAp9w3b7SAlsGf5lG9I+txbES
+	 psg0iRYMaQO0Q==
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-c15e2dab83eso11316266b.1
+        for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 10:28:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RqSRuNkcDeghssfs0EWSayQiibtycDSxcqT/bog9E5SrOqgj8eaNEvEXFzX8iuGtYYjz7jLPw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzqlayWV+iiBTfIuVBX4mM5IINthlBGghJX2m4f9q5SvhbGCIKk
+	8JlZK0TNB8Mbm8eZvoW72Mk2IN4tikwjenBuhSC2ID79B18nxVBw1dq7KYxEYcI5ef2xuGN6712
+	bcoOQzklFDrsmqCzwIrzFf9gcxJMloA==
+X-Received: by 2002:a17:906:7951:b0:c1c:5ec9:1954 with SMTP id
+ a640c23a62f3a-c20e6266914mr225672866b.32.1786469324696; Tue, 11 Aug 2026
+ 10:28:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260811155022.108148-4-zhangyu1@linux.microsoft.com>
+References: <20260724-arm-smmu-v3-instcfg-override-v1-0-e7acf4a8a525@linaro.org>
+ <amYIuhYenP4-qHyV@willie-the-truck> <0b7c0272-5506-4aee-82b3-76a78f2b39dc@arm.com>
+ <CADrjBPqZFDvyLFpDy1YP9qrMNUCtZYtJhiaDd0iTnmB4ZYO8GQ@mail.gmail.com>
+ <20260807224745.GA2180415-robh@kernel.org> <530dbb40-e7e2-4121-a5eb-5f16152fd11b@arm.com>
+In-Reply-To: <530dbb40-e7e2-4121-a5eb-5f16152fd11b@arm.com>
+From: Rob Herring <robh@kernel.org>
+Date: Tue, 11 Aug 2026 12:28:32 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLXS=33sDo8iDp-FkxVedqVaOUEemFjK8XuBNTu9KxyxQ@mail.gmail.com>
+X-Gm-Features: AUfX_myXX1L5EgRLy36vB46Oy8CB1eR9qmcP-4ps2dCdsR0e5dEIjJ3SLJpQsnw
+Message-ID: <CAL_JsqLXS=33sDo8iDp-FkxVedqVaOUEemFjK8XuBNTu9KxyxQ@mail.gmail.com>
+Subject: Re: [PATCH 0/2] Add arm-smmu-v3 support for instcfg data override feature
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Peter Griffin <peter.griffin@linaro.org>, Will Deacon <will@kernel.org>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Pranjal Shrivastava <praan@google.com>, Daniel Mentz <danielmentz@google.com>, 
+	Mostafa Saleh <smostafa@google.com>, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, kernel-team@android.com, 
+	tudor.ambarus@linaro.org, andre.draszik@linaro.org, willmcvicker@google.com, 
+	jyescas@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 11, 2026 at 11:50:19PM +0800, Yu Zhang wrote:
-> @@ -50,8 +50,6 @@
->  #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
->  
->  /* Reserved IOVA ranges */
-> -#define MSI_RANGE_START		(0xfee00000)
-> -#define MSI_RANGE_END		(0xfeefffff)
->  #define HT_RANGE_START		(0xfd00000000ULL)
->  #define HT_RANGE_END		(0xffffffffffULL)
->  
-> @@ -3097,8 +3095,9 @@ static void amd_iommu_get_resv_regions(struct device *dev,
->  		list_add_tail(&region->list, head);
->  	}
->  
-> -	region = iommu_alloc_resv_region(MSI_RANGE_START,
-> -					 MSI_RANGE_END - MSI_RANGE_START + 1,
-> +	region = iommu_alloc_resv_region(X86_IOMMU_MSI_RANGE_START,
-> +					 X86_IOMMU_MSI_RANGE_END -
-> +					 X86_IOMMU_MSI_RANGE_START + 1,
->  					 0, IOMMU_RESV_MSI, GFP_KERNEL);
+On Mon, Aug 10, 2026 at 1:03=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
+>
+> On 07/08/2026 11:47 pm, Rob Herring wrote:
+> > On Fri, Aug 07, 2026 at 04:25:11PM +0100, Peter Griffin wrote:
+> >> Hi Will & Robin,
+> >>
+> >> Thank you both for your review feedback.
+> >>
+> >> On Mon, 27 Jul 2026 at 11:53, Robin Murphy <robin.murphy@arm.com> wrot=
+e:
+> >>>
+> >>> On 26/07/2026 2:16 pm, Will Deacon wrote:
+> >>>> On Fri, Jul 24, 2026 at 01:39:41PM +0100, Peter Griffin wrote:
+> >>>>> These two patches add support for a new "arm,instdata-override" DT =
+property
+> >>>>> that enables the override of the instruction/data attribute of inco=
+ming
+> >>>>> traffic to Data by setting the INSTCFG override bits.
+> >>>>>
+> >>>>> It is intended to be specified when the smmu can't guarantee that t=
+hese
+> >>>>> attributes are provided correctly from the client device.
+> >>>>
+> >>>> This is going to need an in-tree user and a much more detailed
+> >>>> description of what is being worked around before we consider this f=
+or
+> >>>> inclusion.
+> >>
+> >> Regarding an in-tree user, I haven't sent the Device Tree (DT) patch
+> >> yet for Laguna SoC which adds the smmu nodes and this property because
+> >> 1) I want to land the initial SoC/board DT first
+> >> 2) I want agreement on the DT property name. Currently I used
+> >> "arm,instdata-override" which is what downstream used. However, since
+> >> this is intended to work around silicon errata something like
+> >> "google,lga-instcfg-data-override" might be more appropriate?
+> >
+> > Shrug.
+> >
+> > Really, this is why we want SoC specific compatibles so work-arounds ca=
+n
+> > be added without DT updates. But we've generally avoided doing that for
+> > SMMU for whatever reasons. Just make the property clearly sound like a
+> > mistake, not a feature you might want to use. I'd keep the arm prefix
+> > just so the next vendor thinks they can't use 'google' and creates the
+> > same property with their vendor prefix.
+>
+> I dunno, I'd be inclined to keep it more vendor/SoC-specific and tied to
+> the problem more than one (of potentially several) specific workaround -
+> if we did ever want to support using the INSTCFG/PRIVCFG/MEMCFG
+> overrides per their full architectural intent, they are per-StreamID
+> controls so as such would really want to be encoded in an additional
+> #iommu-cell (or at worst maybe a property on the client device node).
+>
+> Frankly for a workaround condition to just blanket-apply to every SMMU
+> instance in a particular SoC, I'm honestly thinking that just whacking
+> an of_machine_is_compatible() in the driver isn't necessarily the worst
+> idea either - after all we do already have the ACPI equivalent of that
+> for some of the HiSilicon stuff, it's just hidden in the IORT code (and
+> OK it's used for the SMMU PMUs rather than the actual SMMU devices
+> themselves, but still...)
 
-Maybe instead of adding constants you should add a
-iommu_alloc_resv_x86_msi_region()
+Unless we need to avoid a DT update, I'd prefer adding an SoC specific
+SMMU compatible which can use match data and avoid DT updates on
+future quirks rather than using of_machine_is_compatible(). I view a
+driver using of_machine_is_compatible() as a last resort.
 
-That is just an inline doing the above?
-
-Jason
+Rob
