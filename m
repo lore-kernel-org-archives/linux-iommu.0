@@ -1,292 +1,240 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011010.outbound.protection.outlook.com [52.101.52.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18841313277
-	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 05:04:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B37B63126D7
+	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 05:23:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786424675; cv=pass; b=f0vPbjuI1Z48Z9UCLMPiBzm48KBOyToaBRGv+xgAP2uqDx+82FsAm40FRMNq4PIBtJPdn2ETqombM/4lBGT21Lfgy3jrOd/+HE0iIoHGde4w7vSgOAsy+i/udcRDgHW5OC8ypyHK12ITD7gwoarvU6dOhIhy5lv3KArEUSdW+b8=
+	t=1786425806; cv=fail; b=JWA91f6NmI1rr/DSWdEegUNzBDjfuvZKF4I1IotWC4llv956SQ9qY2/eN1jNwju1VsIfLLizggZUa/EtpldVRuf1rpefnCzepns5KjHADuGW9uce1zyEwASbTNi8KV8z4djBGuMYFv4QVQTvlkm6TbVs7kHXWYweePeiA1FnGcY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786424675; c=relaxed/simple;
-	bh=PpQISvKwrciqTF1aWbKrFW+wu2fSy/bok9YASZzXAhE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JAjXJpm6YtH68KVuNglhIm9/AqjlkeUoOIz/DZjrHKh+ZxRXtp5/85yt4i7nLx6Oq5DkkP8lEnRRe5VYavFxnHb/ZSkURGmbQF0X43J6EVuZKz2aOqDFDr5pq4ruN4hrKH90oNWNl4IXMufUGN47+TOZkdG3il0mQCzJFyNr+PE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uNIC13cE; arc=pass smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1786425806; c=relaxed/simple;
+	bh=MfeTQDgRuiY1mbmESjsEftroTx5MxloK+OYHN96Rrfo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WqAXwLFCaJsKbKZM1vCpWrswT4AhomkZd42+n+uCviQH/Vpp7Dd0VtON/gPrufdv2fxxKLw4xcFRfHr/gOtKHJQ7B2khiJla8mp1cK71IiGpI2w3v5S2VfsXakX5Sy1F88HB6Fu9a2sZNonI5UWcdI+9kfP/7/5ubc8NnMSHt1I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0zwv8XyT; arc=fail smtp.client-ip=52.101.52.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uNIC13cE"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-51c10ed63c0so103011cf.1
-        for <iommu@lists.linux.dev>; Mon, 10 Aug 2026 22:04:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786424673; cv=none;
-        d=google.com; s=arc-20260327;
-        b=hKZ7rRS75oFoZNL5+Btwz+ymoNUp+uOe8jNlGT3zcI+qQTnpB5lEdIKi4cFpjll0YO
-         0Mbvp/lEXhYmnsvduimX9sr2TGiVsifvI2Ro28FDVEUojdPv4hgO2hMorxfMDfayjNiD
-         4GwIhF/wPWR/3g90oh1wP8WpdUKRtwl06a4yXIdoSa8dq1lGFvBpGq2BM73pw8TdUKCA
-         axPKELsV6cRxZ6cXEZw6WwT+ZEDHaXwyf+1G17FWxscjtNVuQ0AuvchqrWeBWwVvElX9
-         79pPXc7vFisb1aLAR+I82oimxosrdkKvy9RqT8WdRiBflrwjjY+OfAcxP8Pt0MoKzrBJ
-         Tb9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=l0Kj0yc9XxyPL81uujyygKc80rtEnUflq8odLifFS04=;
-        fh=+wUQp4AxJq/irU8rZi1jDEHbV/HPxNC2Da4a84pvs9s=;
-        b=De/4oAw1yB5+cneltYucj/wUxTVFJLfT3czR5unTjyIwLlnZS0bfPUPBaRKm1hOU3K
-         42ER8FjIZGpHAKJ6iBubesyeY0pz30lzJerl7/lD5JCSHLfFSYgLSQ6GwA4JT/o1uvOK
-         fZo4xXOwL+DCrttKmzrCcY363pcWUF5863iREQYO4Ql7Fx7dXLEc29PZ50qBf4RvIzjQ
-         xc/plKa/KC0TYh2omIz1g/IinLVfddoGKp20JV7o0ffGY4xzKGWkdQq4MD7JfqdHe/5W
-         OE+BCUJsATdyxD/77WCJ2pPGRVPMR1562XPdP3Lj41zR20AZlxCGFMFlkeHUBt5wB2Yd
-         CF7A==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786424673; x=1787029473; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=l0Kj0yc9XxyPL81uujyygKc80rtEnUflq8odLifFS04=;
-        b=uNIC13cEht87Q4yECso7xopmRuuYuctV2IRAvWTdTom6TT6yDWFDZ2Cq32TVQcooCx
-         S/vCufLOyOymzwqptu/ZcnxUubUpRjOHjeMBDVfgZFBqFDOYhePbAc/8QPjF5h691Uk6
-         1twg5C3SjafqFbnFkTMcuwuvWzFo2KqtGC/nMdbAO5cTw23KRCIu5EkgTbIwQrWPgmYS
-         JkmZoOOHNNrWUMAwHO7UrnOROgNPgHNUSQ9L9RW442b5yriPe+AYVhkEgXwQQqFjliD3
-         xMvdmqhtzuTqadsBs5zjP/GFpx04Ww4F16RTZDMsH8RF0k3Nug1Dz3tnfuQ5edEj9kx+
-         oifg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786424673; x=1787029473;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=l0Kj0yc9XxyPL81uujyygKc80rtEnUflq8odLifFS04=;
-        b=sdHJWHHBFGyvBrSO/VxNUv8uJHkA2Qw2fdUUA6v11/Ayh2wMMSCyng5PZ1orES85hI
-         wJfDf/fr8fm1lGtKBdwH5JWt4cnBSRGDGvczVrPy3qBsGJHR8l59lFVi/hdPATyQqgCf
-         ENWsMzyKjHXSnA7AtMBBbsBpQH/pqAyRMcMqR8vNV37Qc2uuVuM1ZM9FCyu3VS8iwL3x
-         N3xl/7vWT5Dlw2oGdQ2Y8+7b257pjR/pqGFCnEXrsuhLYLAEneVv9i+YeapK+vtyf2PE
-         Vnd5RVgGhSQt3Z9oMRr5vZaelBjrLNU6g+qiZRGMMV9Xsqr+N5zVHnjGKt81uIaM5rVy
-         uNrQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoaeRzqnNDsc9rbuUm/wZk2C/sNfZiucB5hIlsyHT+Hfs3vmDWvbvqI9ygxjUVQStgyvGpX7w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxCDFTMpnBsH5+K8GnbakYFp72LJGvR8KhF1ETAscvOIyH+oSb4
-	UPVCvgiiM9X2mQC3d9einazD68Jc71i04yPTFbY8saPklZekmw6uqXlozdNRQdBqWXER3X6DAf2
-	/WgahSc6O+YXywR/Jr8sKmp7mK6o3h3n0ds46seYY
-X-Gm-Gg: AR+sD13nXgglbrkqyTtaxw3JnivxmZAox/k+mMSmywZHl0l58WBKPYjdHNsW+yqJdyp
-	UPXZGAUQfBXYHh4Q/AgONI8d5qdEYcMH2nkjt44BxXPK6tMqhUIBKEL5pQ/AYmrhcYsOSgQFIJh
-	1ZoPWfglqUFrTeP9YK5s1xtiD3Kpohi49dC7Zz9fJvzx70ZQRSuBtaf7UQqN55mGaboqp9qmOiv
-	bBgi6KllG4hhLPFTwD+Myd+jD4LO6VPNXy2CIiwBy0RjjMhxGr2u3qdl+LnRHpip50rh7rqCt5T
-	sG5Dpzf7XKDaKAYUXqFzipWbH8ns8WSpn4WxMfxY2Q==
-X-Received: by 2002:ac8:7fc9:0:b0:51c:ca9:3d15 with SMTP id
- d75a77b69052e-52d58236f99mr2540931cf.12.1786424672376; Mon, 10 Aug 2026
- 22:04:32 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0zwv8XyT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=H2B0I72v0CyaGZBlq9UcuyrK6IsbKOImpP9V0ybbVV3+9XYWYvZNxYDdfvuuIX8voGetZmttoAHjiPNLhpOBUnsATXmc1BWraxFQf0P6A2xQJjD10gKq0+ub4iOqPeyJVXIekP2iwym6EULNdr53LtXwmzS/VaM73m1icxbG2Cn+sAnqRMwxGcGN9jlF3ni0QNYQm+KHaP4e4MTT+B5Sb3xTeqF5EzbEiqyq3rp+XNAYbQscPGQ5SUODjhjAYtSV5lnnIgDj+jo60eD0ZQESr8Nd6uaOXrRcR1mfSRhPDsdoQMTFhOmqyedXoO5H25721itdC8BrocAZaS0lujmpHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FXV9AKN89WR66nEQyWjxxVyAwssfRoUkBKUUvexP3e4=;
+ b=f4IVdIRwegBr4exVW0/3ayesjXySlNHexvyvfmWmWFsjsU4CEe5YSRm6GFxklRWgk6K3cscpRPYq44LB2jSd2FK8XnOMk5MsDrMUiyWRJ0qHZaazOD1K7X5x9VD9EdaeATMcbQ87Dyy/dqmdGAqS3qVr0Rte3b1vEhxQvMwfMANFaaohOvmfhvhQhyJHOoNmiG/rtzYO8aeGNwrgeQwpuQOY6UnkEg7scDZ7CUALEglFKDQ2lAwEULZW1E7Qy6su5h5pStGpHLDSHmSdRMXV0We/L20yFzbW+GPNy3isjL6BQZtXh4w6fakuuYJJrxZy8vrJu5GAPIb6fn+UMAtJNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FXV9AKN89WR66nEQyWjxxVyAwssfRoUkBKUUvexP3e4=;
+ b=0zwv8XyTWz7SMDJrOeGFAuwoBBSxae78nTtOMjLeNBRGx9dgHHrJCWhvEVDHybOE8stI0CP4g11VUsqHW+rUGWEeQ5idkRofNYSJ+3VHpFsqSUvz+x+EO8WtApHZFx4m8JwMk/ut5n0flp0ZcPSoN/HJFn+7/i7eWtetVKwHXPY=
+Received: from CYXPR03CA0045.namprd03.prod.outlook.com (2603:10b6:930:d2::25)
+ by MW6PR12MB8733.namprd12.prod.outlook.com (2603:10b6:303:24c::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Tue, 11 Aug
+ 2026 05:23:20 +0000
+Received: from CY4PEPF0000E9DB.namprd05.prod.outlook.com
+ (2603:10b6:930:d2:cafe::54) by CYXPR03CA0045.outlook.office365.com
+ (2603:10b6:930:d2::25) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.292.25 via Frontend Transport; Tue,
+ 11 Aug 2026 05:23:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CY4PEPF0000E9DB.mail.protection.outlook.com (10.167.241.74) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.315.6 via Frontend Transport; Tue, 11 Aug 2026 05:23:19 +0000
+Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Tue, 11 Aug
+ 2026 00:23:16 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>,
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
+Subject: [PATCH v2] iommu/amd: Add SNP page mode 0 support
+Date: Tue, 11 Aug 2026 05:22:57 +0000
+Message-ID: <20260811052257.9247-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260804-iommu_contig_hint-v4-1-d7a47ed5db98@oss.qualcomm.com>
-In-Reply-To: <20260804-iommu_contig_hint-v4-1-d7a47ed5db98@oss.qualcomm.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Mon, 10 Aug 2026 22:04:20 -0700
-X-Gm-Features: AUfX_mz1Q0EQxjJGjo9fyY36FF5Mbr8Jb4EcjiIK9bRp6c3Ih6EjCsTWhRnEfds
-Message-ID: <CAE2F3rBQQEHsksOyE2ojQPbMd_vvFqaFMC2RzT0B6KkxMB5YgQ@mail.gmail.com>
-Subject: Re: [PATCH v4] iommu/io-pgtable-arm: Add support for contiguous hint bit
-To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>, 
-	Prakash Gupta <prakash.gupta@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, linux-arm-msm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DB:EE_|MW6PR12MB8733:EE_
+X-MS-Office365-Filtering-Correlation-Id: f8ef437b-b03b-4798-4802-08def768a7ac
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|23010399003|82310400026|36860700016|6133799003|11063799006|56012099006|10067099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	7Et2CYYxbWdlaBxxwCIV1OyIDvgj6SwN16LC/jWexncGydsefNLHDf4hhvGo1ZeJlxnatW9XRchl8RkUcpPSHKDG6Jj4K6qBn2f1fsEGMfXvNhuDC0fpMq5fGyn+LGwDOwHp/FTNmoeh+koENB2/Q0yZ1iBjXbHxr0aM9SHo4yo9K6V7+Xi/mDlibM1lq8BcUwwv9ONKdUVLBvBo1BoGVddiR9LE1GnE9ckx6l5q8PidRkl2DbfR3cE1ixhhkV4vBbzhWhi1HthNR34YUv66me5pyLMzyLlCH8jh6RHwwvawT0/G2/hOcIZEQdqrtKUJ1seJXjvHuLSpyZc6S0SPENnr/uJa89l7N0h1wp9uiktlzOxMrTDRDvW/Yli9Vf9B0EoqFwMtMgapkCLUW1zTC/QDKyNFqQkRud6UUtBBFSp2Cmlulqgxmk+EPFbMauEk7elcXtCg4p78yD/uM4+A+0S4zKdoHYwh274/QHxcmaoQ5zXe5y8PEvU4cVTjuXPBxY2+UxmDixFz9czW36O97h+Quf/SpfaviuTs17Dy3G70VRtEe+kg+bgJgOGJZruoH0aWM6MrRrYbS4i9uxM/AEMVpEjmSKlnHst2JmEAfI9WRV7iDHvti6IUgE+ffSLRdSBHId8XAbS79CbULNIqOfG3QZFFlcAmPoBsYwrgqSxU4RVbFNsSUzh3Es0onaK6HM2mqiIzvJh/PlRCK5casQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(82310400026)(36860700016)(6133799003)(11063799006)(56012099006)(10067099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	2LMgCJhxJysdxkeIVI+USaIg1yTxiw9Ipc8h2XVMMfMMZViJnkMXDu7+VBAoBAHceR/iW8PlvjG0fJE/vdHUXSCzJoDISzGZI1vbLZKIm7A8VqUKYTCOfNKEI7INAWJumEumTa5fZF5WveAwbDvxb4nhMwFta356otSuIZgbiWuRzxW24WGTI6+cH4nfvZxSWjpLyJwsb6iIZUlFVfMhlIpa8ktGRhcQwCZyPUtMhQnYclJ+uf37SqguoEQcfy41GxfLRDF2Xj1UthF57xtgb/Ws+IFFp1PU87j2Qm+6/i4qc6HcrFAixke2FD8DhICl9kwo930Ds4RsvEj3WJ23XkmT2Z6H3Dcy0radtC3hbX5bqFEeRcyHyRVTAIdzxszQOWVllYuKMt52TnOwW3qQ/fxAu1HQ3Yoz5Z8xq4IWDZV/xyYGxTGXQ/0t94jPi+K4
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2026 05:23:19.4066
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8ef437b-b03b-4798-4802-08def768a7ac
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9DB.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8733
 
-On Mon, Aug 3, 2026 at 11:19=E2=80=AFPM Vijayanand Jitta
-<vijayanand.jitta@oss.qualcomm.com> wrote:
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-ar=
-m.c
-> index 476c0e25631af..23a238de53ed5 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> [...]
-> +static unsigned long arm_lpae_get_cont_sizes(struct io_pgtable_cfg *cfg)
-> +{
-> +       unsigned long pg_size, blk_size, l1_blk_size, cont_sizes =3D 0;
-> +       unsigned long cont_leaf_size, cont_blk_size, cont_l1_blk_size;
-> +       int pg_shift, bits_per_level;
-> +
-> +       if (!cfg->pgsize_bitmap || (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NO=
-_CONT_HINT))
-> +               return 0;
-> +
-> +       pg_shift =3D __ffs(cfg->pgsize_bitmap);
-> +       bits_per_level =3D pg_shift - ilog2(sizeof(arm_lpae_iopte));
+Newer AMD IOMMUs supports DTE[Mode]=0 for SNP-enabled system. This is
+detected using new feature bit (EFR2[SNP_Page_Mode_0_Sup]). If this
+feature is enabled, then IOMMU supports:
+  - Passthrough mode (i.e. iommu=pt)
+  - amd_iommu=pgtbl_v2: Forcing Linux DMA-API to use IOMMU v2 page table
+  - Setting up device for SVA mode in the host.
 
-bits_per_level is also calculated in arm_lpae_alloc_pgtable(). I'm
-wondering if we can somehow re-use that value, although, I do
-understand that data->bits_per_level is only populated later.
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Tested-by: Amandeep Kaur Longia <AmandeepKaur.Longia@amd.com>
+---
+Joerg,
+  I have rebased this on top of amd/amd-vi branch and it should apply
+  cleanly.
 
-> +       pg_size =3D 1UL << pg_shift;
+  Sorry. I missed to include this one along with PRI series. I think
+  think one is ready. Can you please pick this up for 7.3
 
-In arm_lpae_restrict_pgsizes(), they call the same value "granule".
-Can we align with that and call it granule instead of pg_size?
+-Vasant
 
-> +       blk_size =3D pg_size << bits_per_level;
+ drivers/iommu/amd/amd_iommu_types.h |  4 +++
+ drivers/iommu/amd/init.c            | 42 ++++++++++++++++++++---------
+ drivers/iommu/amd/iommu.c           |  4 +--
+ 3 files changed, 35 insertions(+), 15 deletions(-)
 
-I'm wondering if we can re-use the macro ARM_LPAE_BLOCK_SIZE. I do
-acknowledge, though, that this macro doesn't work in this context,
-because (d)->bits_per_level is still not populated.
-Also, for consistency, you might want to call this l2_blk_size.
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 3c292fdfa95a..d421151e9b7a 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -113,6 +113,7 @@
+ #define FEATURE_SNPAVICSUP_GAM(x) \
+ 	(FIELD_GET(FEATURE_SNPAVICSUP, x) == 0x1)
+ #define FEATURE_HT_RANGE_IGNORE		BIT_ULL(11)
++#define FEATURE_SNP_PAGE_MODE0_SUP	BIT_ULL(13)
+ 
+ #define FEATURE_NUM_INT_REMAP_SUP	GENMASK_ULL(9, 8)
+ #define FEATURE_NUM_INT_REMAP_SUP_2K(x) \
+@@ -416,6 +417,9 @@ extern bool amd_iommu_dump;
+ 			pr_info(format, ## arg);	\
+ 	} while(0);
+ 
++/* SNP page mode 0 support */
++extern bool amd_iommu_snp_mode0_sup;
++
+ /* global flag if IOMMUs cache non-present entries */
+ extern bool amd_iommu_np_cache;
+ /* Only true if all IOMMUs support device IOTLBs */
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index c0748521dff8..a1f85d44f2a4 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -180,6 +180,9 @@ bool amd_iommu_hatdis;
+ bool amd_iommu_snp_en;
+ EXPORT_SYMBOL(amd_iommu_snp_en);
+ 
++/* SNP page mode 0 support */
++bool amd_iommu_snp_mode0_sup;
++
+ LIST_HEAD(amd_iommu_pci_seg_list);	/* list of all PCI segments */
+ LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the system */
+ LIST_HEAD(amd_ivhd_dev_flags_list);	/* list of all IVHD device entry settings */
+@@ -3394,18 +3397,28 @@ static __init void iommu_snp_enable(void)
+ #ifdef CONFIG_KVM_AMD_SEV
+ 	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+ 		return;
+-	/*
+-	 * The SNP support requires that IOMMU must be enabled, and is
+-	 * configured with V1 page table (DTE[Mode] = 0 is not supported).
+-	 */
+-	if (no_iommu || iommu_default_passthrough()) {
+-		pr_warn("SNP: IOMMU disabled or configured in passthrough mode, SNP cannot be supported.\n");
++
++	/* SNP support required IOMMU to be ON */
++	if (no_iommu) {
++		pr_warn("SNP: IOMMU disabled, SNP cannot be supported.\n");
+ 		goto disable_snp;
+ 	}
+ 
+-	if (amd_iommu_pgtable != PD_MODE_V1) {
+-		pr_warn("SNP: IOMMU is configured with V2 page table mode, SNP cannot be supported.\n");
+-		goto disable_snp;
++	amd_iommu_snp_mode0_sup = check_feature2(FEATURE_SNP_PAGE_MODE0_SUP);
++	/*
++	 * If SNP page mode 0 is not enabled, then SNP support requires that IOMMU
++	 * must be configured with V1 page table (DTE[Mode] != 0).
++	 */
++	if (!amd_iommu_snp_mode0_sup) {
++		if (iommu_default_passthrough()) {
++			pr_warn("SNP: IOMMU configured in passthrough mode, SNP cannot be supported.\n");
++			goto disable_snp;
++		}
++
++		if (amd_iommu_pgtable != PD_MODE_V1) {
++			pr_warn("SNP: IOMMU is configured with V2 page table mode, SNP cannot be supported.\n");
++			goto disable_snp;
++		}
+ 	}
+ 
+ 	amd_iommu_snp_en = check_feature(FEATURE_SNP);
+@@ -3940,12 +3953,15 @@ bool amd_iommu_pasid_supported(void)
+ 	    amd_iommu_gpt_level != PAGE_MODE_5_LEVEL)
+ 		return false;
+ 
++	if (!amd_iommu_gt_ppr_supported())
++		return false;
++
+ 	/*
+-	 * Since DTE[Mode]=0 is prohibited on SNP-enabled system
+-	 * (i.e. EFR[SNPSup]=1), IOMMUv2 page table cannot be used without
+-	 * setting up IOMMUv1 page table.
++	 * If SNP page mode 0 is not supported, then DTE[Mode]=0 is prohibited
++	 * on SNP-enabled system (i.e. EFR[SNPSup]=1). IOMMUv2 page table
++	 * cannot be used without setting up IOMMUv1 page table.
+ 	 */
+-	return amd_iommu_gt_ppr_supported() && !amd_iommu_snp_en;
++	return (!amd_iommu_snp_en) || (amd_iommu_snp_en && amd_iommu_snp_mode0_sup);
+ }
+ 
+ struct amd_iommu *get_amd_iommu(unsigned int idx)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 563f9c2672d5..d8f626d7f784 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2910,9 +2910,9 @@ static int amd_iommu_identity_attach(struct iommu_domain *dom, struct device *de
+ {
+ 	/*
+ 	 * Don't allow attaching a device to the identity domain if SNP is
+-	 * enabled.
++	 * enabled and SNP Mode0 support is not present.
+ 	 */
+-	if (amd_iommu_snp_en)
++	if (amd_iommu_snp_en && !amd_iommu_snp_mode0_sup)
+ 		return -EINVAL;
+ 
+ 	return amd_iommu_attach_device(dom, dev, old);
+-- 
+2.31.1
 
-> +       l1_blk_size =3D blk_size << bits_per_level;
-> +
-> +       cont_leaf_size =3D arm_lpae_num_cont(pg_size) * pg_size;
-> +       if ((cfg->pgsize_bitmap & pg_size) &&
-
-Is (cfg->pgsize_bitmap & pg_size) ever false?
-
-[...]
-
-> +/*
-> + * Install num_entries leaf entries starting at ptep (index map_idx_star=
-t
-> + * within the current table), tagging arm_lpae_num_cont()-sized groups w=
-ith
-> + * the contiguous hint where both idx and paddr are aligned to the group
-> + * size. Entries in a misaligned group are installed without the hint.
-> + *
-> + * idx and paddr both advance by block_size per entry, so their alignmen=
-t
-> + * relative to the group size is invariant across a run of entries withi=
-n
-> + * this call: once a group qualifies (or fails to), every later whole gr=
-oup
-> + * does too, up to num_entries. This merges each such run into a single
-> + * arm_lpae_init_pte() call instead of one call per group.
-> + */
-
-Can you provide an example for when this function installs descriptors
-where the contiguous bit is only set on a subset of them. I would
-assume that the contiguous bit is either set for all descriptors or
-none of them.
-
-> +static int arm_lpae_install_leaf(struct arm_lpae_io_pgtable *data,
-> +                                unsigned long iova, phys_addr_t paddr,
-> +                                arm_lpae_iopte prot, int lvl,
-> +                                int map_idx_start, int num_entries, int =
-num_cont,
-> +                                arm_lpae_iopte *ptep, size_t *mapped)
-> +{
-> +       size_t block_size =3D ARM_LPAE_BLOCK_SIZE(lvl, data);
-> +       size_t cont_size =3D num_cont * block_size;
-> +       int done =3D 0;
-> +
-> +       while (done < num_entries) {
-> +               int idx =3D map_idx_start + done;
-> +               int remaining =3D num_entries - done;
-> +               int off =3D idx % num_cont;
-> +               arm_lpae_iopte pte =3D prot;
-> +               int chunk, ret;
-> +
-> +               if (off) {
-> +                       /* Misaligned prefix: advance to the next boundar=
-y */
-> +                       chunk =3D min_t(int, num_cont - off, remaining);
-> +               } else if (remaining >=3D num_cont && IS_ALIGNED(paddr, c=
-ont_size)) {
-> +                       /* Aligned: merge every full group in this run */
-> +                       chunk =3D remaining - remaining % num_cont;
-> +                       pte |=3D ARM_LPAE_PTE_CONT;
-> +               } else {
-> +                       /*
-> +                        * Aligned idx but paddr doesn't line up with con=
-t_size,
-> +                        * or too short for a full group. That holds for =
-the
-> +                        * rest of this call too, so install the remainde=
-r
-> +                        * plain in one go.
-> +                        */
-> +                       chunk =3D remaining;
-> +               }
-> +
-> +               ret =3D arm_lpae_init_pte(data, iova, paddr, pte, lvl, ch=
-unk, ptep);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               *mapped +=3D chunk * block_size;
-> +               ptep +=3D chunk;
-> +               iova +=3D chunk * block_size;
-> +               paddr +=3D chunk * block_size;
-> +               done +=3D chunk;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned lon=
-g iova,
->                           phys_addr_t paddr, size_t size, size_t pgcount,
->                           arm_lpae_iopte prot, int lvl, arm_lpae_iopte *p=
-tep,
-> @@ -462,21 +608,44 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtabl=
-e *data, unsigned long iova,
->         size_t block_size =3D ARM_LPAE_BLOCK_SIZE(lvl, data);
->         size_t tblsz =3D ARM_LPAE_GRANULE(data);
->         struct io_pgtable_cfg *cfg =3D &data->iop.cfg;
-> -       int ret =3D 0, num_entries, max_entries, map_idx_start;
-> +       bool cont_hint_enabled =3D !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_N=
-O_CONT_HINT);
-> +       int num_entries, max_entries, map_idx_start;
-> +       int num_cont =3D cont_hint_enabled ? arm_lpae_num_cont(block_size=
-) : 1;
-> +       bool use_cont =3D cont_hint_enabled && num_cont > 1;
->
->         /* Find our entry at the current level */
->         map_idx_start =3D ARM_LPAE_LVL_IDX(iova, lvl, data);
->         ptep +=3D map_idx_start;
->
-> +       /*
-> +        * Normalize an exact whole-CONT-group request down to the
-> +        * equivalent block_size/pgcount so it funnels through the same
-> +        * leaf path below. arm_lpae_install_leaf() independently decides=
-,
-> +        * per sub-chunk, whether the CONT hint actually applies.
-> +        */
-> +       if (use_cont && size =3D=3D block_size * num_cont) {
-> +               pgcount *=3D num_cont;
-> +               size =3D block_size;
-
-This appears to me as if you're throwing away information about
-whether this mapping request is suitable for the contiguous bit, and
-then in arm_lpae_install_leaf(), you're trying to recover that
-information. Can't you just do "prot |=3DARM_LPAE_PTE_CONT" here and
-then completely avoid the logic in arm_lpae_install_leaf?
-
-> +       }
-> +
->         /* If we can install a leaf entry at this level, then do so */
->         if (size =3D=3D block_size) {
-> +               int ret;
-> +
->                 max_entries =3D arm_lpae_max_entries(map_idx_start, data)=
-;
-> -               num_entries =3D min_t(int, pgcount, max_entries);
-> -               ret =3D arm_lpae_init_pte(data, iova, paddr, prot, lvl, n=
-um_entries, ptep);
-> -               if (!ret)
-> -                       *mapped +=3D num_entries * size;
-> +               num_entries =3D min_t(size_t, pgcount, max_entries);
->
-> -               return ret;
-> +               if (!use_cont) {
-> +                       ret =3D arm_lpae_init_pte(data, iova, paddr, prot=
-, lvl,
-> +                                               num_entries, ptep);
-> +                       if (!ret)
-> +                               *mapped +=3D num_entries * size;
-> +                       return ret;
-> +               }
-> +
-> +               return arm_lpae_install_leaf(data, iova, paddr, prot, lvl=
-,
-> +                                            map_idx_start, num_entries,
-> +                                            num_cont, ptep, mapped);
