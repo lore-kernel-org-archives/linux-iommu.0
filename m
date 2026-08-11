@@ -1,134 +1,128 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8A0A45C6F7
-	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 17:28:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA9FC345EBF;
+	Tue, 11 Aug 2026 18:52:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786469333; cv=none; b=dXJNs1NKvK3+iD53U4E83vOQVmQ8loJG+N+tXCZXjNvRkZRkQpxoKt0toaBAqeKBGhm0mILjXnmYHMB7bhU1nJ3ATQQF3Z6i3CXYX6PTRQvxIjpEyuKhMYPvtzkHGREu1qZwIbni5aRBiAM4x9agPhe4Omnoi0Xo+xSPPKVWwQU=
+	t=1786474330; cv=none; b=Pj6/64Q2VQS3MkjT9kau/RWQJbtptxfMqpHJArWkLIKaiUfmvmud+/i3tzsWUZQFaGqntXXh8oaMAD7Iws/4Pot7rRwe4Dt9IG+jquTkF1M9rsilwO1pU6P9NV9m4mwLf3HlIa6TVPkgSVcvT9CutUy3QxDfS2nKYuj9csqGS1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786469333; c=relaxed/simple;
-	bh=tz4iSbZQOmwhQi85QuHBOwwK5bkgkFtPz0AFXWjDfmY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sHAG0qugPfli197+pkxltf7HtWRmJ3Yct6nV9tMfrmG85+87beT4PjVUoa1+a/P5FELpMyH6uvaqTgOUN4OB7GKmmrlzSGdmiK0sJXO2Kn9tUv7EglGqDihddVFSmUcUHLGxUI0NpL+Kva52ZjWViBp+01pUYDqpvsCwgC/vPyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l0OkDFQd; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786474330; c=relaxed/simple;
+	bh=iG6kolHVo+LhrokzkJn9oo8OafaqsBYZtLW62gK7dbY=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=VhFZrjSH07ikb62SMZR70+VlVvcVEDiOHme77qSfitUFPGpXtqnvdWE9P8rdbbBneIIennFPN/bTW+3u5dxgMoDGpxv+o71fLw1iw88qISexVbrujOl5ycWQwgxarkrU29ZVkazVzy09kXi5siDugI+8ImqF+A1vynkHjhwgrN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f9fcK+NV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l0OkDFQd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431231F00A3E
-	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 17:28:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f9fcK+NV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C9D1F00A3A;
+	Tue, 11 Aug 2026 18:51:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786469326;
-	bh=tz4iSbZQOmwhQi85QuHBOwwK5bkgkFtPz0AFXWjDfmY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=l0OkDFQdpboXND6N6MA2YZRG7RfIROUSlsjT1xENiFyKAbZ8w/bv7zeZfO+AFidfl
-	 sMQjor2WRO+RNqqlx2Eynzgq4YZ2EVb3hgoRcmmAKqyM/Sz3qj1WY7l9XCGgjuvDJw
-	 K56peIq6/MTSgk1grN0Lw+B7yc3ASdvHCDdO+7uhRMPhd1ITWmfmAISyZw3fn+gVAI
-	 wVy75Mo4a1Em5kGFjzM0270JjOneXoJKciYa/iD/1dO5e1084jb2GB5EDDoN0fi4zb
-	 sgxGE+tjLbGYAoYIGdCIPSq5I9RkRfvXscKomeoZjBAp9w3b7SAlsGf5lG9I+txbES
-	 psg0iRYMaQO0Q==
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-c15e2dab83eso11316266b.1
-        for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 10:28:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RqSRuNkcDeghssfs0EWSayQiibtycDSxcqT/bog9E5SrOqgj8eaNEvEXFzX8iuGtYYjz7jLPw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzqlayWV+iiBTfIuVBX4mM5IINthlBGghJX2m4f9q5SvhbGCIKk
-	8JlZK0TNB8Mbm8eZvoW72Mk2IN4tikwjenBuhSC2ID79B18nxVBw1dq7KYxEYcI5ef2xuGN6712
-	bcoOQzklFDrsmqCzwIrzFf9gcxJMloA==
-X-Received: by 2002:a17:906:7951:b0:c1c:5ec9:1954 with SMTP id
- a640c23a62f3a-c20e6266914mr225672866b.32.1786469324696; Tue, 11 Aug 2026
- 10:28:44 -0700 (PDT)
+	s=k20260515; t=1786474329;
+	bh=L0HTQS1LYVWSdc3RimfvMueRkxBKnov+tJfBP1Nzenc=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=f9fcK+NVNWrvcSOcKHy6zfAbJxAzV4H4fy8MVkzolSHyhTXevNA14uYiezSHzn6pQ
+	 ycpaMxR2NK5BhnYOlevG/IFGX9tQA5Zq59bExZRq8ebTHdeuBPIJKdmorpcmlYiJYN
+	 enPNXmLxCznd3cawK4k1uWZ7ls5UQ+kBsVAJbZyI9ASkk1wotZU4MuXOcOSURRiwqg
+	 sT65TPpe9rPAxYbWb9c4r08z7q71qyz1ECpgE74A6BnSnCI7mMzF6uQjafv+S2Jyy3
+	 tECe4u8tzT2Nvo9T8WlyH+ZxIb0wNqskL4SGoz+McXb9NEhgBdQAaCdq0Vli+in/qH
+	 jqXBcNxLA7xiA==
+From: Vinod Koul <vkoul@kernel.org>
+To: Julia.Lawall@inria.fr, Alex Deucher <alexander.deucher@amd.com>, 
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, 
+ Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, 
+ Borislav Petkov <bp@alien8.de>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, 
+ David Airlie <airlied@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+ Eric Dumazet <edumazet@google.com>, Florian Westphal <fw@strlen.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Hans de Goede <hansg@kernel.org>, Hans Verkuil <hverkuil@kernel.org>, 
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+ Herbert Xu <herbert@gondor.apana.org.au>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Jakub Kicinski <kuba@kernel.org>, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ Jani Nikula <jani.nikula@linux.intel.com>, Jaroslav Kysela <perex@perex.cz>, 
+ Jason Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Johan Hovold <johan@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, 
+ Julian Anastasov <ja@ssi.bg>, Leon Romanovsky <leon@kernel.org>, 
+ Liam Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Mark Brown <broonie@kernel.org>, 
+ "Martin K. Petersen" <martin.petersen@oracle.com>, 
+ Matthew Sakai <msakai@redhat.com>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, 
+ Maxime Ripard <mripard@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Mike Rapoport <rppt@kernel.org>, 
+ Miri Korenblit <miriam.rachel.korenblit@intel.com>, 
+ Nicolas Palix <nicolas.palix@imag.fr>, 
+ Pablo Neira Ayuso <pablo@netfilter.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Ping-Ke Shih <pkshih@realtek.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Sebastian Reichel <sre@kernel.org>, 
+ Shuah Khan <shuah@kernel.org>, Simona Vetter <simona@ffwll.ch>, 
+ Simon Horman <horms@verge.net.au>, Stephen Boyd <sboyd@kernel.org>, 
+ Steve French <sfrench@samba.org>, Takashi Iwai <tiwai@suse.com>, 
+ Thomas Renninger <trenn@suse.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Tony Luck <tony.luck@intel.com>, Tvrtko Ursulin <tursulin@ursulin.net>, 
+ Vadim Fedorenko <vadim.fedorenko@linux.dev>, Will Deacon <will@kernel.org>, 
+ Yazen Ghannam <Yazen.Ghannam@amd.com>, 
+ Sang-Heon Jeon <ekffu200098@gmail.com>
+Cc: cocci@inria.fr, amd-gfx@lists.freedesktop.org, 
+ dmaengine@vger.kernel.org, dm-devel@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, 
+ linux-cifs@vger.kernel.org, linux-clk@vger.kernel.org, 
+ linux-crypto@vger.kernel.org, linux-edac@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, 
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pm@vger.kernel.org, 
+ linux-rdma@vger.kernel.org, linux-rtc@vger.kernel.org, 
+ linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, 
+ linux-sound@vger.kernel.org, linux-usb@vger.kernel.org, 
+ linux-wireless@vger.kernel.org, lvs-devel@vger.kernel.org, 
+ netdev@vger.kernel.org, netfilter-devel@vger.kernel.org, 
+ nouveau@lists.freedesktop.org, platform-driver-x86@vger.kernel.org
+In-Reply-To: <20260723184538.3888637-1-ekffu200098@gmail.com>
+References: <20260723184538.3888637-1-ekffu200098@gmail.com>
+Subject: Re: (subset) [PATCH 00/36] treewide: remove conditional returns
+ with no effect
+Message-Id: <178647430099.1113716.2263974283705757692.b4-ty@kernel.org>
+Date: Wed, 12 Aug 2026 00:21:40 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260724-arm-smmu-v3-instcfg-override-v1-0-e7acf4a8a525@linaro.org>
- <amYIuhYenP4-qHyV@willie-the-truck> <0b7c0272-5506-4aee-82b3-76a78f2b39dc@arm.com>
- <CADrjBPqZFDvyLFpDy1YP9qrMNUCtZYtJhiaDd0iTnmB4ZYO8GQ@mail.gmail.com>
- <20260807224745.GA2180415-robh@kernel.org> <530dbb40-e7e2-4121-a5eb-5f16152fd11b@arm.com>
-In-Reply-To: <530dbb40-e7e2-4121-a5eb-5f16152fd11b@arm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Tue, 11 Aug 2026 12:28:32 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLXS=33sDo8iDp-FkxVedqVaOUEemFjK8XuBNTu9KxyxQ@mail.gmail.com>
-X-Gm-Features: AUfX_myXX1L5EgRLy36vB46Oy8CB1eR9qmcP-4ps2dCdsR0e5dEIjJ3SLJpQsnw
-Message-ID: <CAL_JsqLXS=33sDo8iDp-FkxVedqVaOUEemFjK8XuBNTu9KxyxQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Add arm-smmu-v3 support for instcfg data override feature
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Peter Griffin <peter.griffin@linaro.org>, Will Deacon <will@kernel.org>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Pranjal Shrivastava <praan@google.com>, Daniel Mentz <danielmentz@google.com>, 
-	Mostafa Saleh <smostafa@google.com>, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, kernel-team@android.com, 
-	tudor.ambarus@linaro.org, andre.draszik@linaro.org, willmcvicker@google.com, 
-	jyescas@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.13.0
 
-On Mon, Aug 10, 2026 at 1:03=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 07/08/2026 11:47 pm, Rob Herring wrote:
-> > On Fri, Aug 07, 2026 at 04:25:11PM +0100, Peter Griffin wrote:
-> >> Hi Will & Robin,
-> >>
-> >> Thank you both for your review feedback.
-> >>
-> >> On Mon, 27 Jul 2026 at 11:53, Robin Murphy <robin.murphy@arm.com> wrot=
-e:
-> >>>
-> >>> On 26/07/2026 2:16 pm, Will Deacon wrote:
-> >>>> On Fri, Jul 24, 2026 at 01:39:41PM +0100, Peter Griffin wrote:
-> >>>>> These two patches add support for a new "arm,instdata-override" DT =
-property
-> >>>>> that enables the override of the instruction/data attribute of inco=
-ming
-> >>>>> traffic to Data by setting the INSTCFG override bits.
-> >>>>>
-> >>>>> It is intended to be specified when the smmu can't guarantee that t=
-hese
-> >>>>> attributes are provided correctly from the client device.
-> >>>>
-> >>>> This is going to need an in-tree user and a much more detailed
-> >>>> description of what is being worked around before we consider this f=
-or
-> >>>> inclusion.
-> >>
-> >> Regarding an in-tree user, I haven't sent the Device Tree (DT) patch
-> >> yet for Laguna SoC which adds the smmu nodes and this property because
-> >> 1) I want to land the initial SoC/board DT first
-> >> 2) I want agreement on the DT property name. Currently I used
-> >> "arm,instdata-override" which is what downstream used. However, since
-> >> this is intended to work around silicon errata something like
-> >> "google,lga-instcfg-data-override" might be more appropriate?
-> >
-> > Shrug.
-> >
-> > Really, this is why we want SoC specific compatibles so work-arounds ca=
-n
-> > be added without DT updates. But we've generally avoided doing that for
-> > SMMU for whatever reasons. Just make the property clearly sound like a
-> > mistake, not a feature you might want to use. I'd keep the arm prefix
-> > just so the next vendor thinks they can't use 'google' and creates the
-> > same property with their vendor prefix.
->
-> I dunno, I'd be inclined to keep it more vendor/SoC-specific and tied to
-> the problem more than one (of potentially several) specific workaround -
-> if we did ever want to support using the INSTCFG/PRIVCFG/MEMCFG
-> overrides per their full architectural intent, they are per-StreamID
-> controls so as such would really want to be encoded in an additional
-> #iommu-cell (or at worst maybe a property on the client device node).
->
-> Frankly for a workaround condition to just blanket-apply to every SMMU
-> instance in a particular SoC, I'm honestly thinking that just whacking
-> an of_machine_is_compatible() in the driver isn't necessarily the worst
-> idea either - after all we do already have the ACPI equivalent of that
-> for some of the HiSilicon stuff, it's just hidden in the IORT code (and
-> OK it's used for the SMMU PMUs rather than the actual SMMU devices
-> themselves, but still...)
 
-Unless we need to avoid a DT update, I'd prefer adding an SoC specific
-SMMU compatible which can use match data and avoid DT updates on
-future quirks rather than using of_machine_is_compatible(). I view a
-driver using of_machine_is_compatible() as a last resort.
+On Fri, 24 Jul 2026 03:45:02 +0900, Sang-Heon Jeon wrote:
+> While reading mm/memblock, I found a conditional return where both
+> branches return the same value:
+> 
+> 	err = do_something();
+> 	if (err)
+> 		return err;
+> 	return err;
+> 
+> [...]
 
-Rob
+Applied, thanks!
+
+[19/36] dmaengine: qcom_hidma: remove conditional return with no effect
+        commit: 04b8c3de13871653a8ecbd9f1adfea4d0694ecfe
+
+Best regards,
+-- 
+~Vinod
+
+
