@@ -1,78 +1,246 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F80442B72B;
-	Tue, 11 Aug 2026 09:48:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B668412C03
+	for <iommu@lists.linux.dev>; Tue, 11 Aug 2026 09:57:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.254.200.128
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786441692; cv=none; b=CZDDYqBfUh71n+8YMQJVLa39QDnOQoqBUNxgVwXxPOM2LXkkz5QL3jdOP6/67LcQIjdHNQIyrpZcRRltIgR97ajRrD17foK7jFusnsZXopeG9oBSdJJrOWx9Qh3GHlUBIpfisW3IcVrbrQ+hTWDFN8vPusparTpM8qyj39nuXUA=
+	t=1786442251; cv=none; b=fhq6l2uQsxNRTkZ9jW2+1r3sef7KQ789JM0di53LeTij0Q3VNagDQOANm7vN3+P4yeO5hKjjr/uJ5fM9T4FdH0KCl/QAmGL1pu1j+QjZznyKaJ48DXoWzfunOwpyGTdzSaBPQOFxd5vAn/+pvEUj5yhUq/s2PbOGbuZBp0qQbIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786441692; c=relaxed/simple;
-	bh=pzTB6fx6II0dM+4U2KkvT0UmPSQxFwksXrmPn5RscKU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DmNGH39kSsGUXgZqjyzcwWPrMnUIqFdvFwYsBw7oVvBBrCvrglLkJAkzeIjqJNxBZ5uRLgSfgaDzI0zCiZdioyqYALT/pNzXTDxpNm0JlAxyFs2uAEwT8E1kTIjoacZIIjwYyVkNkaH1R7V4v8J70P3Uj4wL75vuTkvcHSrpeew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OkihLUr3; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786442251; c=relaxed/simple;
+	bh=QXkcBLWhR/1op8VGuLPVm4NWn9S9Ua+RAO0cTDQgqgA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EHdITMwE125oNSTYJ3naDnOpmcOvH6t2glIMoRK4gWM0rO1/9U+n2/x4z/yiqfL62JkwD/FxYqoFrLklCT5HVu8YVqDoIX+Atnu9N+juD0xkKrUb9JEICUh/yEN3fDBykC3/gUhx4z+spbEPOR8XAjryZeZJEeLv1RWh9Pzmg4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=EtO1Kjgo; arc=none smtp.client-ip=54.254.200.128
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OkihLUr3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2569E1F000E9;
-	Tue, 11 Aug 2026 09:48:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786441689;
-	bh=r5HhHJTSxF8KEOU8nDBiXAdeJpO4bhZrn1tx/eSEIJc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=OkihLUr3hCXVZYuBq3UdDGZOGuvtQH4LoONxO01+QW12CCPziEhG/CmCx0iOdk/2e
-	 cmZZiHgB2xhg055c8BWfTiq5RlyCHQErKgw6cmuinV0gM9deM5qBvomMQAsHmCyqTt
-	 kZSdwjhzRQIy93kOUjOPsJsGN56+IjogNQme4S87G0ZQDFFtzU+y+U1WuM5pVIRurN
-	 hjD+Sr9BCLIkqRWgOhCkM6J/rCleTbHBlut9TsdsvX6MrW4Hjua7nlvECJiHS1j7eB
-	 TsV6Nbjd/iVjQpZyc3fjOh1Bmd38/sA8y6biCyx/4WD968GqSafhovoCXKHc+bc+rK
-	 p4b6euG/VnvkQ==
-Date: Tue, 11 Aug 2026 10:48:05 +0100
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	syzbot <syzbot+90c2d711b5218d10ce61@syzkaller.appspotmail.com>,
-	baolu.lu@linux.intel.com, dwmw2@infradead.org,
-	iommu@lists.linux.dev, joro@8bytes.org,
-	linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in free_iova
-Message-ID: <anrv1SUHgtx_ELb8@willie-the-truck>
-References: <6a7910da.9c11d2ce.289b96.00da.GAE@google.com>
- <68eebaf3-2427-48c0-93d3-87455ff266fb@arm.com>
- <20260810173230.GQ200537@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="EtO1Kjgo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
+	s=iohv2404; t=1786442195;
+	bh=V8fUJRdFiVI+WV6PymLEo3X+w9kpNPfa+6nMY4HGiRs=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=EtO1KjgoxIH+oSakaITV9wPQe8ITUcjuNZ81y8ylDjAnG1rNtG1gZFHrqszX8ON6i
+	 Kv9mngackx3/nR7fLV6Vfla8UCTI+h5r4uwVAVpd+RXoNzijgN63v7gVLNQN6h1Dde
+	 zlNGiuCsTkezUVdIFzJfGH4L3KxVVO8fboPZWYWk=
+X-QQ-mid: esmtpgz16t1786442187t8a3150b4
+X-QQ-Originating-IP: IIht5FCCP67OxJNZozIsI0VqmXKZB9owBsKM0Uo+WHg=
+Received: from hepeiyang-vm.wu.lxd ( [218.94.142.195])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Tue, 11 Aug 2026 17:56:26 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 11890595383446028419
+EX-QQ-RecipientCnt: 10
+From: Peiyang He <peiyang_he@smail.nju.edu.cn>
+To: jgg@ziepe.ca,
+	kevin.tian@intel.com
+Cc: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	stable@vger.kernel.org,
+	iommu@lists.linux.dev,
+	baolu.lu@linux.intel.com,
+	linux-kernel@vger.kernel.org,
+	Peiyang He <peiyang_he@smail.nju.edu.cn>
+Subject: [PATCH] iommufd: Fix UAF in selftest IOPF reporting
+Date: Tue, 11 Aug 2026 17:55:51 +0800
+Message-ID: <38C8DF0A118B7176+20260811095551.2756745-1-peiyang_he@smail.nju.edu.cn>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260810173230.GQ200537@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
+X-QQ-XMAILINFO: NTC/yvyq4yJ4zmyF80kFm0bnIMqROuVztq0YjQCJTgQcC6alSkfnrJHQ
+	kjkZUM/5B6UlIO0bEvn6bsxAPz3sPDmPvcQMU9ZDPqPmW8OIv6IEUpjvnHt3W9xTN2jeF1y
+	Llg1DFTy5TvMjdCqQOuaYKUjiLNSrs96smLyZl0tHM2SmzG+LL9Cd5vSNyZy6ADE6LL52Eg
+	nuyqrYQDnZ62eKq9XwqIuX+5Ejym4S9WSJ98j1Wi0sK9hBn5IHmLgOm4MT+HrCluL408+3o
+	mQeG7tj5umFGXZJDSorrKj9wWEuy9DEqvNSNdmkRi9yvH13gEMU1ZEz+G1u5xLmo+X+awq6
+	l0x3nm5es5TrufICSdmKvtoSYB+U9BQ7plsfeflawoxWzOD9nSVAmDJnM4GawSO+nSedOfd
+	tM0sQDh9K2/i64ewF9Rg89q7vfLNhEapjK38Lv9b7SMdmlfR6xBdlz92+sCgpuhQgS0Q4bQ
+	2p0tVp1xjZ7D5HJP2UZrTWuDT64pUxpXhHIqWa1XXfNpdGblB/emJ34iYRoD2x+w3uL12Dj
+	Wz9RYhLpQrzlPmmuMsKPdF9r27vDlrAIagDntBJEuYhhXeeFPaQRRi5yoVOKPY0oV4TMWSk
+	cPZlT2RffsX3e/bzs6EIFBXuCwEya/0awJJFS0IXQ7LC+isD6AL6u7SFdvpDT7ZjrZkU5VU
+	7SVG064rKBxbQv8iueadhaJ+eFOwYXAo7P1UykATAU0fgGBO2+PlxQSPwBVoMbd1eMCocfB
+	XD9ebayMzlXRfr4mCO8ta6ugC7Vi/4g8JaeIRh49kJmkHGBbfZJAHbeZXmrePsCM9JHk3k/
+	9ZiixEffCyxFNNcgtYYhHkqn+wg6Ju68TyrqKPq0qip+FiH7t6tG+2PZNqucaTJrMJbBfFz
+	uROXTarJsUgAPnV8/A2OpVuqHN6yShKnHQPZ75zoRjZMQCuxpEijReFfbE2MMSlYV4FCjar
+	EGMNxiLotUyL/WMpoAvuLaiHYjSc6JoZbh1zcONQAPCJtvXAzKeO2OwkTBpD2GA2O49iDWo
+	hdpe4ByKODkPZ76/84pZHz46XOMSaDcvuWMwhOK5e9rFFGlKAYu9qRkEJMo8fsBCNWREIMh
+	g==
+X-QQ-XMRINFO: NS+P29fieYNwqS3WCnRCOn9D1NpZuCnCRA==
+X-QQ-RECHKSPAM: 0
 
-On Mon, Aug 10, 2026 at 02:32:30PM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 10, 2026 at 11:50:28AM +0100, Robin Murphy wrote:
-> > > Freed by task 5327:
-> > >   kasan_save_stack mm/kasan/common.c:57 [inline]
-> > >   kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
-> > >   kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
-> > >   poison_slab_object mm/kasan/common.c:253 [inline]
-> > >   __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
-> > >   kasan_slab_free include/linux/kasan.h:235 [inline]
-> > >   slab_free_hook mm/slub.c:2677 [inline]
-> > >   slab_free mm/slub.c:6377 [inline]
-> > >   kmem_cache_free+0x182/0x650 mm/slub.c:6504
-> > >   free_iova_mem drivers/iommu/iova.c:237 [inline]
-> > >   put_iova_domain+0xcc/0x100 drivers/iommu/iova.c:454
-> > 
-> > ...except that right in between here we've called iommu_dma_free_fq() which
-> > would have already invoked timer_delete_sync() and freed the queue itself.
-> > Wut?
-> 
-> I've been feeding syzkaller riddles to the best AI I can get and it is
-> surprisingly good.. So, for this it guesses:
+IOMMUFD selftest TRIGGER_IOPF borrows an attach handle from
+group->pasid_array without synchronizing against PASID detach,
+then a concurrent iommu_report_device_fault() can dereference
+that borrowed handle's domain pointer after the detach erases
+the handle and frees the backing struct iommufd_attach_handle.
+TRIGGER_IOPF then dereferences the freed handle, causing a UAF.
 
-Huh, that's a pretty good idea. Do you just dunk the report in verbatim,
-or do you have a cleverly crafted prompt that you're having more success
-with?
+Fix by adding a iopf_rwsem in mock_dev to follow the expected design
+of a real driver. Hold its read side across the whole
+iommu_report_device_fault() call, and its write side around every
+path that attaches, detaches, or replaces a device domain.
+This can block new reports and drains in-flight reports before an old
+attach handle or the IOPF fault parameter can be removed.
+Also take the write side while registering a mock device, since
+it can invoke the mock driver's default-domain attach callback.
 
-Will
+Closes: https://lore.kernel.org/all/D5E3AA41600B2056+f4e15662-bd2b-43ea-91cb-518de429e72c@smail.nju.edu.cn/
+Fixes: ddee19971081 ("iommufd/selftest: Add IOPF support for mock device")
+Cc: stable@vger.kernel.org
+Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+Assisted-by: Codex:gpt-5.6-terra
+Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
+---
+ drivers/iommu/iommufd/selftest.c | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index af07c642a526..727b59799d5f 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -177,6 +177,7 @@ struct mock_dev {
+ 	struct device dev;
+ 	struct mock_viommu *viommu;
+ 	struct rw_semaphore viommu_rwsem;
++	struct rw_semaphore iopf_rwsem;
+ 	unsigned long flags;
+ 	unsigned long vdev_id;
+ 	int id;
+@@ -997,6 +998,7 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	init_rwsem(&mdev->viommu_rwsem);
++	init_rwsem(&mdev->iopf_rwsem);
+ 	device_initialize(&mdev->dev);
+ 	mdev->flags = dev_flags;
+ 	mdev->dev.release = mock_dev_release;
+@@ -1022,7 +1024,9 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
+ 		goto err_put;
+ 	}
+ 
++	down_write(&mdev->iopf_rwsem);
+ 	rc = iommu_mock_device_add(&mdev->dev, &mock_iommu.iommu_dev);
++	up_write(&mdev->iopf_rwsem);
+ 	if (rc)
+ 		goto err_put;
+ 	return mdev;
+@@ -1077,7 +1081,9 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
+ 	}
+ 	sobj->idev.idev = idev;
+ 
++	down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	rc = iommufd_device_attach(idev, IOMMU_NO_PASID, &pt_id);
++	up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	if (rc)
+ 		goto out_unbind;
+ 
+@@ -1092,7 +1098,9 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
+ 	return 0;
+ 
+ out_detach:
++	down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	iommufd_device_detach(idev, IOMMU_NO_PASID);
++	up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ out_unbind:
+ 	iommufd_device_unbind(idev);
+ out_mdev:
+@@ -1136,7 +1144,9 @@ static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
+ 	if (IS_ERR(sobj))
+ 		return PTR_ERR(sobj);
+ 
++	down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	rc = iommufd_device_replace(sobj->idev.idev, IOMMU_NO_PASID, &pt_id);
++	up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	if (rc)
+ 		goto out_sobj;
+ 
+@@ -1739,10 +1749,16 @@ static int iommufd_test_trigger_iopf(struct iommufd_ucmd *ucmd,
+ {
+ 	struct iopf_fault event = {};
+ 	struct iommufd_device *idev;
++	struct mock_dev *mdev;
+ 
+ 	idev = iommufd_get_device(ucmd, cmd->trigger_iopf.dev_id);
+ 	if (IS_ERR(idev))
+ 		return PTR_ERR(idev);
++	if (!iommufd_selftest_is_mock_dev(idev->dev)) {
++		iommufd_put_object(ucmd->ictx, &idev->obj);
++		return -EINVAL;
++	}
++	mdev = to_mock_dev(idev->dev);
+ 
+ 	event.fault.prm.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+ 	if (cmd->trigger_iopf.pasid != IOMMU_NO_PASID)
+@@ -1753,7 +1769,9 @@ static int iommufd_test_trigger_iopf(struct iommufd_ucmd *ucmd,
+ 	event.fault.prm.grpid = cmd->trigger_iopf.grpid;
+ 	event.fault.prm.perm = cmd->trigger_iopf.perm;
+ 
++	down_read(&mdev->iopf_rwsem);
+ 	iommu_report_device_fault(idev->dev, &event);
++	up_read(&mdev->iopf_rwsem);
+ 	iommufd_put_object(ucmd->ictx, &idev->obj);
+ 
+ 	return 0;
+@@ -1861,14 +1879,19 @@ static int iommufd_test_pasid_attach(struct iommufd_ucmd *ucmd,
+ 	if (IS_ERR(sobj))
+ 		return PTR_ERR(sobj);
+ 
++	down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	rc = iommufd_device_attach(sobj->idev.idev, cmd->pasid_attach.pasid,
+ 				   &cmd->pasid_attach.pt_id);
++	up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	if (rc)
+ 		goto out_sobj;
+ 
+ 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+-	if (rc)
++	if (rc) {
++		down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 		iommufd_device_detach(sobj->idev.idev, cmd->pasid_attach.pasid);
++		up_write(&sobj->idev.mock_dev->iopf_rwsem);
++	}
+ 
+ out_sobj:
+ 	iommufd_put_object(ucmd->ictx, &sobj->obj);
+@@ -1885,8 +1908,10 @@ static int iommufd_test_pasid_replace(struct iommufd_ucmd *ucmd,
+ 	if (IS_ERR(sobj))
+ 		return PTR_ERR(sobj);
+ 
++	down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	rc = iommufd_device_replace(sobj->idev.idev, cmd->pasid_attach.pasid,
+ 				    &cmd->pasid_attach.pt_id);
++	up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	if (rc)
+ 		goto out_sobj;
+ 
+@@ -1906,7 +1931,9 @@ static int iommufd_test_pasid_detach(struct iommufd_ucmd *ucmd,
+ 	if (IS_ERR(sobj))
+ 		return PTR_ERR(sobj);
+ 
++	down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	iommufd_device_detach(sobj->idev.idev, cmd->pasid_detach.pasid);
++	up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 	iommufd_put_object(ucmd->ictx, &sobj->obj);
+ 	return 0;
+ }
+@@ -1917,7 +1944,9 @@ void iommufd_selftest_destroy(struct iommufd_object *obj)
+ 
+ 	switch (sobj->type) {
+ 	case TYPE_IDEV:
++		down_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 		iommufd_device_detach(sobj->idev.idev, IOMMU_NO_PASID);
++		up_write(&sobj->idev.mock_dev->iopf_rwsem);
+ 		iommufd_device_unbind(sobj->idev.idev);
+ 		mock_dev_destroy(sobj->idev.mock_dev);
+ 		break;
+
+base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+-- 
+2.43.0
