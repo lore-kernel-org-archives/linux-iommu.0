@@ -1,354 +1,102 @@
-Received: from m16.mail.126.com (m16.mail.126.com [117.135.210.6])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D061933F8C4
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 07:05:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.6
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 726E73AD513
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 08:58:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786518333; cv=none; b=juUdDzUDzvVDEK+u2Q5G5Y7GwseLVf4PoBL57LTZQr4K432kH3yGJy8C+sOU7G8JqJkTFIkkp8zLriDKG3oKpINqaEAb4KHsd29K0aco+fifvmXE0nQV+v7SdHbioanxEUpcrMkoZ5E7ZpjS9ayQb9bdjQZb3FyD4Nhvu+nrMqI=
+	t=1786525113; cv=none; b=BFCSJQvbwxkNgvv3unON7oJX3lAoHLFUeIA4dzgC73/qTJhO+37+gAQXr1LCag+wSEruWTlGxShcsmeoAzxeqGNTcs0xMIevDHbtA39Ksbsg6D8JrxP3EYdNQbG7f//Snw+D/zVbamr5iox+YAipHxsVQJxImsfqxX/A9xaqlLU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786518333; c=relaxed/simple;
-	bh=1uxIjFkRmICnZj5EXTBRiqYe0WNXXHEFBzcOBHsjp30=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BdYaRoz4ckzFqmny+ZqOCnN/kHLJ6F8ElmrJ7gdbCrLw/z/fkFQCXXB4wmO/1QKJLhLUT1TIzwzIKLeZazxpL5pcnXuIkOSxhqVPL1OWo8YnvI8g7DKCchar6HCQTbdvr7cc1Nv7ML7XaRwKJaVhErcgUmSpqH2RxU+hMw68M6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=FU3I/tQ0; arc=none smtp.client-ip=117.135.210.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+	s=arc-20240116; t=1786525113; c=relaxed/simple;
+	bh=OVYMLfjmw3Kq858GaqkEYiNHUNBJcqM/UGCNQ/I5G5Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aCH9Vd+vUSvscyMSIZkp5ddfpkV+nXEFXu6KpzBE2vygpaQOV8AFPgSqIBRBitI+kzHkUbivCjfd7wha/umQoplsZhqFt5eRYY5bMRNDRj7mD+WeSvm3BNq9asdg2+VUoMICW1Bpv+u/djXRkpa+yq94GC4YDBXjFTgeYg+3jBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=jNDaS3nz; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="FU3I/tQ0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=hb
-	A1FO4npc2gsMgg8g0Ly6fhRFpwGtK0z+vodPecqwc=; b=FU3I/tQ0Ewkk+b5G1L
-	NzSY8oJmk+YHxWB88szTogj6RKRnoag1chEfQRLWPbOWosqXCqSfQjmkZhF39Qvy
-	NOO6291FUFHW2K3q6S4NR6etiDndS0xjVhKdoLmx0gSePHtcASLigFg825yfDx0U
-	2W6wmyOCl4Q8BzIZNvE77xpVA=
-Received: from frank-Vostro-3671.bbrouter (unknown [])
-	by gzga-smtp-mtada-g0-3 (Coremail) with SMTP id _____wD3t7AeG3xqOIphFg--.17455S2;
-	Wed, 12 Aug 2026 15:05:02 +0800 (CST)
-From: Frank Chen <frankchen158@126.com>
-To: mhklinux@outlook.com,
-	hch@lst.de,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com
-Cc: linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	fan.du@intel.com,
-	jun.miao@intel.com,
-	chenhgs@chinatelecom.cn
-Subject: [PATCH v4] dma/swiotlb: decouple high watermark tracking from CONFIG_DEBUG_FS
-Date: Wed, 12 Aug 2026 15:04:59 +0800
-Message-ID: <20260812070459.637077-1-frankchen158@126.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260622122114.2563254-1-jun.miao@intel.com>
-References: <20260622122114.2563254-1-jun.miao@intel.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="jNDaS3nz"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 63F3B20B7167;
+	Wed, 12 Aug 2026 01:58:06 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 63F3B20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786525086;
+	bh=BtjlLWYfdR0leu278nI7w2GiJtrtZ2QXn9PMqPnl5Nc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jNDaS3nzAn6gK60FhGOusb2QJESEfmYd1VbviyvmHDj0mB3212Y+MMYzAy6D0qo8p
+	 6Z23YEfDxJJbgtD3+W7ejaM/XTkwHC3b2pnH4kEOpii0j30LXDr42DcOLp0V6JGGqB
+	 LEdjKnCw+H0+InOebdJQEUjtp34gsfCdV1hlMS1U=
+Date: Wed, 12 Aug 2026 16:58:28 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
+	x86@kernel.org, wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, 
+	decui@microsoft.com, longli@microsoft.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org, 
+	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de, 
+	mhklinux@outlook.com, jacob.pan@linux.microsoft.com, tgopinath@linux.microsoft.com, 
+	easwar.hariharan@linux.microsoft.com, mrathor@linux.microsoft.com, baolu.lu@linux.intel.com, 
+	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 3/5] iommu/x86: Share the architectural MSI reserved
+ range
+Message-ID: <obiixds667qdhv5upqdpxmgrvrvp3bl5gfbpingvog2vzbexhg@b7n4fpfbkff5>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-4-zhangyu1@linux.microsoft.com>
+ <20260811162124.GK544626@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3t7AeG3xqOIphFg--.17455S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWfGr4fGrWfAryktFyUJFyUGFg_yoWDXFW5pF
-	y8Jw1UtF4DXr1jkFWUC348GFnIyw4fC39xWrW3Kr9ag3ZxtrnavFnakrWYvFW5JrW8ZF43
-	Xa43WrWrCrsrCrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UpuWJUUUUU=
-X-CM-SenderInfo: xiud0yxfkh0iivy6ij2wof0z/xtbBoh+HGmp8Gx9lMAAA3n
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260811162124.GK544626@ziepe.ca>
 
-From: chenhuguanshen <chenhgs@chinatelecom.cn>
+On Tue, Aug 11, 2026 at 01:21:24PM -0300, Jason Gunthorpe wrote:
+> On Tue, Aug 11, 2026 at 11:50:19PM +0800, Yu Zhang wrote:
+> > @@ -50,8 +50,6 @@
+> >  #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+> >  
+> >  /* Reserved IOVA ranges */
+> > -#define MSI_RANGE_START		(0xfee00000)
+> > -#define MSI_RANGE_END		(0xfeefffff)
+> >  #define HT_RANGE_START		(0xfd00000000ULL)
+> >  #define HT_RANGE_END		(0xffffffffffULL)
+> >  
+> > @@ -3097,8 +3095,9 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+> >  		list_add_tail(&region->list, head);
+> >  	}
+> >  
+> > -	region = iommu_alloc_resv_region(MSI_RANGE_START,
+> > -					 MSI_RANGE_END - MSI_RANGE_START + 1,
+> > +	region = iommu_alloc_resv_region(X86_IOMMU_MSI_RANGE_START,
+> > +					 X86_IOMMU_MSI_RANGE_END -
+> > +					 X86_IOMMU_MSI_RANGE_START + 1,
+> >  					 0, IOMMU_RESV_MSI, GFP_KERNEL);
+> 
+> Maybe instead of adding constants you should add a
+> iommu_alloc_resv_x86_msi_region()
+> 
+> That is just an inline doing the above?
+> 
 
-Under heavy concurrent DMA traffic on CoCo VMs, inc_used_and_hiwater()
-performs an atomic_long_add_return() plus a CAS loop on the global
-used_hiwater, and dec_used() performs an atomic_long_sub() on total_used.
-All CPUs contend on the same cacheline, causing measurable throughput
-degradation at scale.
+Thank you, Jason!
+Do you mean something like below?
 
-Historically these counters were only compiled in under CONFIG_DEBUG_FS,
-which means production kernels with debugfs paid the atomic overhead
-unconditionally. Make the tracking boot-time opt-in instead so that it
-is disabled by default with near-zero overhead via static_call, and can
-be enabled via "swiotlb=track_hiwater" parameter on demand for debugging.
-
-Note that when CONFIG_DEBUG_FS is enabled but hiwater tracking is disabled,
-the "io_tlb_used" metric reports an approximate value rather than an
-instantaneously exact one.
-
-Suggested-by: Fan Du <fan.du@intel.com>
-Signed-off-by: Jun Miao <jun.miao@intel.com>
-Co-developed-by: Fan Du <fan.du@intel.com>
-Signed-off-by: Fan Du <fan.du@intel.com>
-Tested-by: chenhuguanshen <chenhgs@chinatelecom.cn>
-Signed-off-by: chenhuguanshen <chenhgs@chinatelecom.cn>
-
----
-v1 -> v2:
- - Change the patch title.
- - Doing the exact hiwater calculation is dynamic and defaults to "off",
-   dynamic config would replace being under #ifdef CONFIG_DEBUG_FS
- - The mechanism used for dynamic config needs to be one that is selectable
-   on the kernel boot line so that the exact hiwater mark during boot is
-   easily available.
-
-v2 -> v3:
- - When track_hiwater is enabled, we keep the original precise hiwater
-   calculation backed by the global total_used atomic counter. If disabled,
-   we switch to the approximate approach that sums per-area counters to
-   derive the total used slot count.
-
-v3 -> v4:
- - Change commit message and documentation.
----
- .../admin-guide/kernel-parameters.txt         |   4 +-
- include/linux/swiotlb.h                       |   8 +-
- kernel/dma/swiotlb.c                          | 153 +++++++++++-------
- 3 files changed, 101 insertions(+), 64 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index b5493a7f8f22..eb3e8db2c178 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -7477,7 +7477,7 @@ Kernel parameters
- 			Execution Facility on pSeries.
- 
- 	swiotlb=	[ARM,PPC,MIPS,X86,S390,EARLY]
--			Format: { <int> [,<int>] | force | noforce }
-+			Format: { <int> [,<int>] | force | noforce | track_hiwater}
- 			<int> -- Number of I/O TLB slabs
- 			<int> -- Second integer after comma. Number of swiotlb
- 				 areas with their own lock. Will be rounded up
-@@ -7485,6 +7485,8 @@ Kernel parameters
- 			force -- force using of bounce buffers even if they
- 			         wouldn't be automatically used by the kernel
- 			noforce -- Never use bounce buffers (for debugging)
-+			track_hiwater -- Track high watermark of swiotlb buffers.
-+			                 Only available when CONFIG_DEBUG_FS is set.
- 
- 	switches=	[HW,M68k,EARLY]
- 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 3dae0f592063..008f169e4006 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -98,10 +98,10 @@ struct io_tlb_pool {
-  * @pools:	List of IO TLB memory pool descriptors (if dynamic).
-  * @dyn_alloc:	Dynamic IO TLB pool allocation work.
-  * @total_used:	The total number of slots in the pool that are currently used
-- *		across all areas. Used only for calculating used_hiwater in
-- *		debugfs.
-- * @used_hiwater: The high water mark for total_used.  Used only for reporting
-- *		in debugfs.
-+ *		across all areas. Used only for calculating used_hiwater via boot
-+ *		parameter swiotlb=track_hiwater and exposed via debugfs.
-+ * @used_hiwater: The high water mark for total_used.  Can be enabled at boot
-+ *		time via swiotlb=track_hiwater and exposed via debugfs.
-  * @transient_nslabs: The total number of slots in all transient pools that
-  *		are currently used across all areas.
-  */
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 1abd3e6146f4..e0bc7ca4a7ad 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -180,6 +180,74 @@ static unsigned int limit_nareas(unsigned int nareas, unsigned long nslots)
- 	return nareas;
- }
- 
-+#ifdef CONFIG_DEBUG_FS
-+/*
-+ * Track the total used slots with a global atomic value in order to have
-+ * correct information to determine the high water mark.
-+ */
-+static void inc_used_and_hiwater_real(struct io_tlb_mem *mem,
-+				      unsigned int nslots)
+-#define X86_IOMMU_MSI_RANGE_START        0xfee00000
+-#define X86_IOMMU_MSI_RANGE_END          0xfeefffff
++static inline struct iommu_resv_region *
++iommu_alloc_resv_x86_msi_region(void)
 +{
-+	unsigned long old_hiwater, new_used;
-+
-+	new_used = atomic_long_add_return(nslots, &mem->total_used);
-+	old_hiwater = atomic_long_read(&mem->used_hiwater);
-+	do {
-+		if (new_used <= old_hiwater)
-+			break;
-+	} while (!atomic_long_try_cmpxchg(&mem->used_hiwater,
-+					  &old_hiwater, new_used));
++       return iommu_alloc_resv_region(0xfee00000, SZ_1M, 0,
++                                      IOMMU_RESV_MSI, GFP_KERNEL);
 +}
-+
-+static void dec_used_real(struct io_tlb_mem *mem, unsigned int nslots)
-+{
-+	atomic_long_sub(nslots, &mem->total_used);
-+}
-+
-+static void inc_used_and_hiwater_nop(struct io_tlb_mem *mem,
-+				     unsigned int nslots)
-+{
-+}
-+static void dec_used_nop(struct io_tlb_mem *mem, unsigned int nslots)
-+{
-+}
-+
-+DEFINE_STATIC_CALL(swiotlb_inc_used, inc_used_and_hiwater_nop);
-+DEFINE_STATIC_CALL(swiotlb_dec_used, dec_used_nop);
-+
-+static __always_inline void inc_used_and_hiwater(struct io_tlb_mem *mem,
-+						  unsigned int nslots)
-+{
-+	static_call(swiotlb_inc_used)(mem, nslots);
-+}
-+
-+static __always_inline void dec_used(struct io_tlb_mem *mem,
-+				     unsigned int nslots)
-+{
-+	static_call(swiotlb_dec_used)(mem, nslots);
-+}
-+
-+static bool track_hiwater_enabled __read_mostly;
-+
-+#else
-+
-+static __always_inline void inc_used_and_hiwater(struct io_tlb_mem *mem,
-+						  unsigned int nslots)
-+{
-+}
-+
-+static __always_inline void dec_used(struct io_tlb_mem *mem,
-+				     unsigned int nslots)
-+{
-+}
-+#endif
-+
-+/*
-+ * The tracking of used slots high watermark can be enabled
-+ * by appending "track_hiwater" to the swiotlb= boot parameter.
-+ * When disabled the tracking functions are no-ops with near-zero
-+ * overhead via static_call.
-+ */
- static int __init
- setup_io_tlb_npages(char *str)
- {
-@@ -194,10 +262,24 @@ setup_io_tlb_npages(char *str)
- 		swiotlb_adjust_nareas(simple_strtoul(str, &str, 0));
- 	if (*str == ',')
- 		++str;
--	if (!strcmp(str, "force"))
-+	if (!strncmp(str, "force", 5)) {
- 		swiotlb_force_bounce = true;
--	else if (!strcmp(str, "noforce"))
-+		str += 5;
-+	} else if (!strncmp(str, "noforce", 7)) {
- 		swiotlb_force_disable = true;
-+		str += 7;
-+	}
-+
-+#ifdef CONFIG_DEBUG_FS
-+	if (*str == ',')
-+		++str;
-+	if (!strncmp(str, "track_hiwater", 13)) {
-+		track_hiwater_enabled = true;
-+		static_call_update(swiotlb_inc_used,
-+					inc_used_and_hiwater_real);
-+		static_call_update(swiotlb_dec_used, dec_used_real);
-+	}
-+#endif
- 
- 	return 0;
- }
-@@ -959,40 +1041,6 @@ static unsigned int wrap_area_index(struct io_tlb_pool *mem, unsigned int index)
- 	return index;
- }
- 
--/*
-- * Track the total used slots with a global atomic value in order to have
-- * correct information to determine the high water mark. The mem_used()
-- * function gives imprecise results because there's no locking across
-- * multiple areas.
-- */
--#ifdef CONFIG_DEBUG_FS
--static void inc_used_and_hiwater(struct io_tlb_mem *mem, unsigned int nslots)
--{
--	unsigned long old_hiwater, new_used;
--
--	new_used = atomic_long_add_return(nslots, &mem->total_used);
--	old_hiwater = atomic_long_read(&mem->used_hiwater);
--	do {
--		if (new_used <= old_hiwater)
--			break;
--	} while (!atomic_long_try_cmpxchg(&mem->used_hiwater,
--					  &old_hiwater, new_used));
--}
--
--static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
--{
--	atomic_long_sub(nslots, &mem->total_used);
--}
--
--#else /* !CONFIG_DEBUG_FS */
--static void inc_used_and_hiwater(struct io_tlb_mem *mem, unsigned int nslots)
--{
--}
--static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
--{
--}
--#endif /* CONFIG_DEBUG_FS */
--
- #ifdef CONFIG_SWIOTLB_DYNAMIC
- #ifdef CONFIG_DEBUG_FS
- static void inc_transient_used(struct io_tlb_mem *mem, unsigned int nslots)
-@@ -1295,24 +1343,6 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 
- #endif /* CONFIG_SWIOTLB_DYNAMIC */
- 
--#ifdef CONFIG_DEBUG_FS
--
--/**
-- * mem_used() - get number of used slots in an allocator
-- * @mem:	Software IO TLB allocator.
-- *
-- * The result is accurate in this version of the function, because an atomic
-- * counter is available if CONFIG_DEBUG_FS is set.
-- *
-- * Return: Number of used slots.
-- */
--static unsigned long mem_used(struct io_tlb_mem *mem)
--{
--	return atomic_long_read(&mem->total_used);
--}
--
--#else /* !CONFIG_DEBUG_FS */
--
- /**
-  * mem_pool_used() - get number of used slots in a memory pool
-  * @pool:	Software IO TLB memory pool.
-@@ -1335,13 +1365,20 @@ static unsigned long mem_pool_used(struct io_tlb_pool *pool)
-  * mem_used() - get number of used slots in an allocator
-  * @mem:	Software IO TLB allocator.
-  *
-- * The result is not accurate, because there is no locking of individual
-- * areas.
-+ * When trace_hiwater and CONFIG_DEBUG_FS is enabled, the result is accurate
-+ * because the total number of used slots is tracked in mem->total_used.
-+ * Otherwise, the result is an approximation, because there is no locking of
-+ * individual areas.
-  *
-- * Return: Approximate number of used slots.
-+ * Return: Number of used slots.
-  */
- static unsigned long mem_used(struct io_tlb_mem *mem)
- {
-+#ifdef CONFIG_DEBUG_FS
-+    if (track_hiwater_enabled)
-+	    return atomic_long_read(&mem->total_used);
-+#endif
-+
- #ifdef CONFIG_SWIOTLB_DYNAMIC
- 	struct io_tlb_pool *pool;
- 	unsigned long used = 0;
-@@ -1357,8 +1394,6 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
- #endif
- }
- 
--#endif /* CONFIG_DEBUG_FS */
--
- /**
-  * swiotlb_tbl_map_single() - bounce buffer map a single contiguous physical area
-  * @dev:		Device which maps the buffer.
--- 
-2.53.0
 
+So all the drivers(Intel vt-d, AMD IOMMU, and Hyper-V pvIOMMU) can just
+call iommu_alloc_resv_x86_msi_region() directly. :)
+
+B.R.
+Yu
+> Jason
+> 
