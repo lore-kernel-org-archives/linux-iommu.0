@@ -1,121 +1,266 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01A4142F6FD
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 17:43:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BD01397E8E
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 18:08:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786556582; cv=none; b=ma4oFNxEGvKuVCn1FPTweJiHSzBOG6U9c1pEieiJC68kM3F0Dv/5RAEVtjnHgywirVd2WGBS/z7t0wRaGXbtQn6NHv88oPrLDw+DCmnLnq9xyvcH2qL8LLYdC5GT32s8ltV6QYcKhTA4zSsuAsPwenQGJZDKA9O0j6WTgJyn1lE=
+	t=1786558099; cv=none; b=olKbpuLAN+MGKUVyQq9UM0xYXTHDuoDP2mR+hZLoddwFWoYc/QMjb70LJoiqKHV3S1f6S0E9JwoAbSuzAbiZmbUw9z+yiV2sz3vSGW79n8yKn6OcQwX2vcSGQZLW+UiYEDuLMJ0+8fsWErQpzauryVrNNxSHuvk9GLhliwDTx/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786556582; c=relaxed/simple;
-	bh=R8K4AhpTTGabp/TpyA1fPLTe5/En+9HZcWa+J+NqaoY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oeSi58c8MQW4WCrOHsSMKM987cJ+1Wwb3qQ+hpkB8VoRpaUTV7Oi6+YnMmDH/38iyamGPW2eILR9Ep9Kq1nuolA7dkkzUB5ij363xKvy131WrZ11fa86pF2qFyjS/7is/w3e7zd/C6eZhM6E0BkgIeFPQn6SDLYSybG02iDKOvY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=h7iBqkTY; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1786558099; c=relaxed/simple;
+	bh=2K4QBfuHa1ExQ3BP/1M+Q8X0mWpGN/4J6aPNicKHXhI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QQsptfp1djvfOUKu+o+VMsUpStLvBDR6ukT9nK1cS6XEWmgen7PSXud1meK2fgqk4/fyflcQ7gfiKPpWDTi5N+U8y6WaMxRHggyX9Yembl9iyPtnWS78o4TDaHDNF9Z2dMD9o9g8sUPtKQ7aGvCEYjDe+RWkkWBj7j9QcNWvlcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=olm2FnUy; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="h7iBqkTY"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c08df8513so9160351cf.3
-        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 10:43:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786556580; x=1787161380; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=RRy7TSLv7XgtK7yVOoP/4PPtFt0r1aZ67kTGnhbzw7Y=;
-        b=h7iBqkTYfGutRLMFliwlxru44k3I/f62FEmk+Xa73AMKWevU4eRvePb79Hr6QKXD9p
-         MACy8KwrA9oSCGTkfo0V4t/Fqg1GnYsOJd6dJKsxPXGm7o40GFDWHsunSltVuJJFf4xa
-         nBPJK1TleAFCb5z8Gg99hLpJaVzmx4+pKN694GHLwwEVL2Wpq4HM/uFRw81+2+U/r8yA
-         TG5vuR78vnclhJaWQ9hbb+uhuMrxTDGvKEhxJsFsMmChaclezK2o9C5egCif8oZ3nhyL
-         +fXUb+ba5Mw/jHtrLA3y+iBiIQCe3dqhcRF3lIsNkFlRFz/TrMR+Hms6XjI/tfCTCcb1
-         /mxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786556580; x=1787161380;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=RRy7TSLv7XgtK7yVOoP/4PPtFt0r1aZ67kTGnhbzw7Y=;
-        b=RfSPzuaM/qUbKpjmByQj/TEt02tWAl8fUD7LBzV3dtGFTpMnqRl80v+yFWVoR4Kd7n
-         I5AgCW6q82MOmhBs/op/XxKvQIWl5PSY24cyzlL35I1F+0N6/NT/mtCLGZmFbIO3BiFq
-         nlFRGR2Zezl0Q24GLrGXol4gLPV5/PiUKdd2piAxq1TUY0eujHjQA1MRruk11luV+oX3
-         hMxjUfU1hSaqJjx3cppzinb6rNCn5kvrXLRxWHP64oLo95pQHhxa6SREVOUWi1EraG/3
-         N5jW1RTb5UsCAzjvTQuaqo/7zY14cjU40zqToTlgDZTPw9jLjFMJpOflCE7H8BOUkRFp
-         qoFQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rqe9nQK/2+RGZqvom0r4ry5VDMX4vEjjp2qRugaPbzmIu8nqT2zxdjhHZZkdg+9zH6Gtq05EA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzqUVszqEgwi8T7UUgzUECjLLk0K7+fsi1LKSPdikdQfZmWK5G3
-	GU4qNJHiCD0/u1uIHvdFBv/EUMhg2AH4xXibHAKXifZsxksGobCaXg/4zn0MujCxf4M=
-X-Gm-Gg: AR+sD11pz6aw/EDJ0M11Satkwfc2I+1aQ9QXuWoRFmNpmzXLCPJKhqhc9MdhRmaYcrU
-	4mKiysWmFUS95tozOfyWKDOs/BC51T3ehhWkJrEylyt84PefxX7arYG2oDnkt0QwcZ+h20MyFo/
-	I7+4r4AxRRdSfq6DIKGoJSeTR6GhsK9Zz4s93hTOs+WxOhhinnLeq7lxn7iuP03KV5jefHfpVC4
-	3JbHqmxs6yiFdZH+b3hUSGOaZ0ab1N3gS17yBwpSiKiSLFM6x8mZvUJ7s8kfSrOzD8bq7dL9WY0
-	0wK7lNgx8AN4Ei/BwvP2g6g+UfuFKmwsWbFmrgffVwmvEvcVYeUGxpeZ5jKGTLIbndr2pegMbvV
-	i773upupHMcIZ6w3mk5FT3yv7ND79aYp6TUK1rJzQxpQd+WEfEsRCyZYFjGbN5yu9Zc917uex9B
-	uV7dzvBCmFGmNvi/8TudXyHMIRbKCkD5mnuq815Q==
-X-Received: by 2002:a05:622a:145:b0:528:38b1:b54c with SMTP id d75a77b69052e-52d646a004amr57067221cf.2.1786556579927;
-        Wed, 12 Aug 2026 10:42:59 -0700 (PDT)
-Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-52d61d91199sm22262711cf.14.2026.08.12.10.42.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2026 10:42:59 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wuCyg-00000003IL0-2V6p;
-	Wed, 12 Aug 2026 14:42:58 -0300
-Date: Wed, 12 Aug 2026 14:42:58 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
- encryption
-Message-ID: <20260812174258.GF662699@ziepe.ca>
-References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
- <anxEc8EHmJQywVI5@arm.com>
- <yq5ajypvioks.fsf@kernel.org>
- <anysnQFVTO_RAYxp@arm.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="olm2FnUy"
+Received: from localhost (unknown [20.29.225.195])
+	by linux.microsoft.com (Postfix) with ESMTPSA id ACD6620B7128;
+	Wed, 12 Aug 2026 11:07:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com ACD6620B7128
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786558072;
+	bh=wFU5mpAjyTwFbqV4yJbosVYJSwP9XcIHjp/tK1XvpO0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=olm2FnUyFTP59N9B70T+VdBMXVS7cdz2hhlUgSfLteqgder+pduAy5SwXx8YOLiao
+	 ljAptd9iNpsALMWxSk2wu+4OIR+D/1zcSk4JUoRycBPWlzQYDvE8rfwG89wT4h8YTU
+	 0vT7BGe9Mh9h7JJQMhbIUz35dvMSYcKFmrGT975U=
+Date: Wed, 12 Aug 2026 11:08:14 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
+ kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+ longli@microsoft.com, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
+ lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de,
+ jgg@ziepe.ca, mhklinux@outlook.com, tgopinath@linux.microsoft.com,
+ easwar.hariharan@linux.microsoft.com, mrathor@linux.microsoft.com,
+ baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
+ vasant.hegde@amd.com, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v3 1/5] hyperv: Introduce new hypercall interfaces used
+ by Hyper-V guest IOMMU
+Message-ID: <20260812110814.00005050@linux.microsoft.com>
+In-Reply-To: <20260811155022.108148-2-zhangyu1@linux.microsoft.com>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+	<20260811155022.108148-2-zhangyu1@linux.microsoft.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <anysnQFVTO_RAYxp@arm.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Aug 12, 2026 at 06:25:49PM +0100, Catalin Marinas wrote:
-> > > BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
-> > > option in realms?
+Hi Yu,
+
+On Tue, 11 Aug 2026 23:50:17 +0800
+Yu Zhang <zhangyu1@linux.microsoft.com> wrote:
+
+> From: Wei Liu <wei.liu@kernel.org>
 > 
-> It's still not clear to me why we went for CC_ATTR_MEM_ENCRYPT instead
-> of CC_ATTR_GUEST_MEM_ENCRYPT.
+> Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
+> Introduce the hypercalls used by the child partition to interact with
+> this facility.
+> 
+> These hypercalls fall into below categories:
+> - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
+>   detect the existence and capabilities of the guest IOMMU.
+> 
+> - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
+>   check whether an endpoint device is managed by the guest IOMMU.
+> 
+> - Domain management: A set of hypercalls is provided to handle the
+>   creation, configuration, and deletion of guest domains, as well as
+>   the attachment/detachment of endpoint devices to/from those domains.
+> 
+> - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
+>   for a domain-selective IOTLB flush (which in its handler may flush
+>   the device TLB as well).
+> 
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> Co-developed-by: Easwar Hariharan
+> <easwar.hariharan@linux.microsoft.com> Signed-off-by: Easwar
+> Hariharan <easwar.hariharan@linux.microsoft.com> Co-developed-by: Yu
+> Zhang <zhangyu1@linux.microsoft.com> Signed-off-by: Yu Zhang
+> <zhangyu1@linux.microsoft.com> ---
+>  include/hyperv/hvgdk_mini.h |   8 +++
+>  include/hyperv/hvhdk_mini.h | 126
+> ++++++++++++++++++++++++++++++++++++ 2 files changed, 134
+> insertions(+)
+> 
+> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+> index 6a4e8b9d570f..5bdbb44da112 100644
+> --- a/include/hyperv/hvgdk_mini.h
+> +++ b/include/hyperv/hvgdk_mini.h
+> @@ -486,10 +486,16 @@ union hv_vp_assist_msr_contents {	 /*
+> HV_REGISTER_VP_ASSIST_PAGE */ #define
+> HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a #define
+> HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af #define
+> HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0 +#define
+> HVCALL_CREATE_DEVICE_DOMAIN			0x00b1 +#define
+> HVCALL_ATTACH_DEVICE_DOMAIN			0x00b2 #define
+> HVCALL_SIGNAL_EVENT_DIRECT			0x00c0 #define
+> HVCALL_POST_MESSAGE_DIRECT			0x00c1 #define
+> HVCALL_DISPATCH_VP				0x00c2 +#define
+> HVCALL_DETACH_DEVICE_DOMAIN			0x00c4 +#define
+> HVCALL_DELETE_DEVICE_DOMAIN			0x00c5 #define
+> HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9 +#define
+> HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce +#define
+> HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0 #define
+> HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7 #define
+> HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8 #define
+> HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db @@ -502,6
+> +508,8 @@ union hv_vp_assist_msr_contents {	 /*
+> HV_REGISTER_VP_ASSIST_PAGE */ #define HVCALL_MMIO_READ
+> 		0x0106 #define HVCALL_MMIO_WRITE
+> 		0x0107 #define HVCALL_DISABLE_HYP_EX
+>          0x010f +#define HVCALL_GET_IOMMU_CAPABILITIES
+> 	0x0125 +#define HVCALL_GET_LOGICAL_DEVICE_PROPERTY
+> 	0x0127 #define HVCALL_MAP_STATS_PAGE2
+> 	0x0131 /* HV_HYPERCALL_INPUT */
+> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+> index 035ba20870f7..1e3eac99886a 100644
+> --- a/include/hyperv/hvhdk_mini.h
+> +++ b/include/hyperv/hvhdk_mini.h
+> @@ -548,4 +548,130 @@ union hv_device_id {		/*
+> HV_DEVICE_ID */ } acpi;
+>  } __packed;
+>  
+> +/* Device domain types */
+> +#define HV_DEVICE_DOMAIN_TYPE_S1	1 /* Stage 1 domain */
+> +
+> +/* ID for default domain and NULL domain */
+> +#define HV_DEVICE_DOMAIN_ID_DEFAULT 0
+> +#define HV_DEVICE_DOMAIN_ID_NULL    0xFFFFFFFFULL
+> +
+> +union hv_device_domain_id {
+> +	u64 as_uint64;
+> +	struct {
+> +		u32 type: 4;
+> +		u32 reserved: 28;
+> +		u32 id;
+> +	} __packed;
+> +};
+> +
+> +struct hv_input_device_domain {
+> +	u64 partition_id;
+> +	union hv_input_vtl owner_vtl;
+> +	u8 padding[7];
+> +	union hv_device_domain_id domain_id;
+> +} __packed;
+> +
+> +union hv_create_device_domain_flags {
+> +	u32 as_uint32;
+> +	struct {
+> +		u32 forward_progress_required: 1;
+> +		u32 inherit_owning_vtl: 1;
+> +		u32 reserved: 30;
+> +	} __packed;
+> +};
+> +
+> +struct hv_input_create_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_create_device_domain_flags
+> create_device_domain_flags;
+> +	u32 padding;
+> +} __packed;
+> +static_assert(sizeof(struct hv_input_create_device_domain) == 32);
+nit, maybe also this to detect ABI drift within. Optional.
+static_assert(offsetof(struct hv_input_create_device_domain, padding)
+== 28);
 
-Yeah, this tune should be only for CC guests that have the
-shared/private issue.
-
-The AMD SME issue with the address width on bare metal is an entirely
-different problem that would need a different kind of tuning.
-
-Jason
+> +struct hv_input_delete_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +} __packed;
+> +
+> +struct hv_input_attach_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_device_id device_id;
+> +} __packed;
+> +
+> +struct hv_input_detach_device_domain {
+> +	u64 partition_id;
+> +	union hv_device_id device_id;
+> +} __packed;
+> +
+> +struct hv_device_domain_settings {
+> +	struct {
+> +		/*
+> +		 * Enable translations. If not enabled, all
+> transaction bypass
+> +		 * S1 translations.
+> +		 */
+> +		u64 translation_enabled: 1;
+> +		u64 blocked: 1;
+> +		/*
+> +		 * First stage address translation paging mode:
+> +		 * 0: 4-level paging (default)
+> +		 * 1: 5-level paging
+> +		 */
+> +		u64 first_stage_paging_mode: 1;
+> +		u64 reserved: 61;
+> +	} flags;
+> +
+> +	/* Address of translation table */
+> +	u64 page_table_root;
+> +} __packed;
+> +
+> +struct hv_input_configure_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	struct hv_device_domain_settings settings;
+> +} __packed;
+> +
+> +struct hv_input_get_iommu_capabilities {
+> +	u64 partition_id;
+> +	u64 reserved;
+> +} __packed;
+> +
+> +struct hv_output_get_iommu_capabilities {
+> +	u32 size;
+> +	u16 reserved;
+> +	u8  max_iova_width;
+> +	u8  max_pasid_width;
+> +
+> +#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
+> +#define HV_IOMMU_CAP_S2         BIT_ULL(1)
+> +#define HV_IOMMU_CAP_S1         BIT_ULL(2)
+> +#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
+> +#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
+> +#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
+> +#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
+> +
+> +	u64 iommu_cap;
+> +	u64 pgsize_bitmap;
+> +} __packed;
+> +
+> +enum hv_logical_device_property_code {
+> +	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
+> +};
+> +
+> +struct hv_input_get_logical_device_property {
+> +	u64 partition_id;
+> +	u64 logical_device_id;
+> +	/* Takes values from enum hv_logical_device_property_code. */
+> +	u32 code;
+> +	u32 reserved;
+> +} __packed;
+> +
+> +struct hv_output_get_logical_device_property {
+> +#define HV_DEVICE_IOMMU_ENABLED	BIT_ULL(0)
+> +	u64 device_iommu;
+> +	u64 reserved;
+> +} __packed;
+> +
+> +struct hv_input_flush_device_domain {
+> +	struct hv_input_device_domain device_domain;
+> +	u32 flags;
+> +	u32 reserved;
+> +} __packed;
+> +
+>  #endif /* _HV_HVHDK_MINI_H */
+Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
