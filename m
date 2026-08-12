@@ -1,142 +1,111 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 579AC3B05B8;
-	Wed, 12 Aug 2026 10:01:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-m49243.qiye.163.com (mail-m49243.qiye.163.com [45.254.49.243])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE1C642AFB2
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 10:35:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.243
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786528897; cv=none; b=sH1kaCIqNP4VS276qSyHN2rjPBseWC47eWZFISzymFMTndCciz0uKWEk1BRDb5xL6tivR+ssStF5aOAiViL/Mi6azlZd3PKu7V9JnVOJtHDPUUgZxe9g3JNJJhLVFyP9acgRDGsij0x1mjcZ4COPN59Lj5raPzl/HiVsq/xGoBM=
+	t=1786530951; cv=none; b=dH3Yh3bP9guQyk3SwT7trfwcQBvLDaJ1FdGAfZLVRySTOQ72kYLG1yRxAonDDpuskk1vWIBSByrXd/xdQD7qyZSfFsWbIa7AM6Tvx0v+noy1LK972GY4PFbA17T/rucIPz9LxiRSTIdXU0wm2VBCVYkrGV1tnVMoiSnZN/pXPdk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786528897; c=relaxed/simple;
-	bh=laAQxkCDgu5rybBDPLSZxhaA8e2vicoqRxfv8eyBppg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B9DkgIBdEjXXxinqHtmBBgBd9ZXNMHo92i+4eGvrVRcf7Q6mqnkxLjeLIi6odcdLwKushnNBUWblkgev3f4dmWroWkvaOGmod9rGIkVx/JAO4Gh57cuD4/+4olLWjUTnKbK6Kg2l5DTvfwDTV1UY3bgDoakrbMmANABNZdhag0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=H9+Q3rwe; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1786530951; c=relaxed/simple;
+	bh=aWEWOC/UiBCm9vMfWBtgOaZDxi/cOMiRDOtBCLercq8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HDX1zfpT7P9VgOR0yNeUhkfbS4ncnh9xhd/jXQvxCNG+HI2igt4DvnpTXTpAQMF1yPkkEbnWatPIEwkSJJSk2GwlAw0pLPsyVsic0ASOFO+N6jCTNoDgZ6XLEJl/Vtm2lVJdZQ9EOWsIfnbmnjMoX+BvD2NCtEDc3BZkU6eJ59w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=NuEzMHNi; arc=none smtp.client-ip=45.254.49.243
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="H9+Q3rwe"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B2BC51596;
-	Wed, 12 Aug 2026 03:01:30 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 58C893F632;
-	Wed, 12 Aug 2026 03:01:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786528894; bh=laAQxkCDgu5rybBDPLSZxhaA8e2vicoqRxfv8eyBppg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H9+Q3rweucDYcVESosYOqah1VsOK5/gZBmUDqRzZn63O1t3HEhDbFomEHapCTWR2C
-	 4HjayAQgmAUs2cjgjubPrIW3CeX2n+B9zHWT7RcBq9sIXEnzQmXnFEsazv1HuywPNi
-	 wqnvNT0Uoa+RgTsn5+EP2jUJQjbBJpJapx1rZX8o=
-Date: Wed, 12 Aug 2026 11:01:23 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
- encryption
-Message-ID: <anxEc8EHmJQywVI5@arm.com>
-References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="NuEzMHNi"
+Received: from [172.16.12.90] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 49b879d54;
+	Wed, 12 Aug 2026 18:20:19 +0800 (GMT+08:00)
+Message-ID: <058c3169-a45b-4f24-a3fa-a29fab630e1f@rock-chips.com>
+Date: Wed, 12 Aug 2026 18:20:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260811134056.756015-1-aneesh.kumar@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 10/10] arm64: dts: rockchip: rk3576-rock-4d: enable NPU
+To: Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net,
+ heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, ulfh@kernel.org,
+ p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com, alchark@flipper.net, diederik@cknow-tech.com,
+ dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20260812094106.1391698-1-gahing@gahingwoo.com>
+ <20260812094106.1391698-11-gahing@gahingwoo.com>
+Content-Language: en-US
+From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+In-Reply-To: <20260812094106.1391698-11-gahing@gahingwoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-HM-Tid: 0a9ff57cb9d403a7kunmc8d69eb45b64d1
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDGUMdVh9ITk0eQ0MfGU1JQ1YVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSU
+	9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=NuEzMHNiGUSSHGoAfQCwzwuU7wI4fsEC3/MclqNCgtvUiCMPjty0e6jWTc0PDW9D1BTgtx/pzuZggNDZAIhAhLepUw0U8VpAWf8A1r5O20/H/s50v5T5H6Vr6ugDytaCR6VW0b9FqC9uf1RxzOtvuiPXuTPyPxsN3VmProvGDb8=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=8AJ1Oqbln5M/WFmyknVkCV5oyd8bW8oHnGVTSKpm9uk=;
+	h=date:mime-version:subject:message-id:from;
 
-On Tue, Aug 11, 2026 at 07:10:56PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> Systems with memory encryption use swiotlb to provide shared or
-> unencrypted buffers for device DMA. Confidential guests may route all
-> DMA through these buffers, while SME hosts use them for devices that
-> cannot address encrypted memory. The default swiotlb pool can therefore
-> be exhausted under I/O-intensive workloads.
+Hi Jiaxing,
+
+On 8/12/2026 5:41 PM, Jiaxing Hu wrote:
+> Enable rknn_core_0 and its IOMMU on the Radxa ROCK 4D and supply the
+> core from vdd_npu_s0.
 > 
-> Let architectures mark the default swiotlb pool as shared before
-> swiotlb_init().
-
-I thought we wanted even this decision to be moved out of the arch code.
-
-> Move the existing x86 sizing policy into generic swiotlb
-> code and add early pool marking for arm64 Realm guests, powerpc secure
-> guests, s390 protected-virtualization guests, and x86 memory-encryption
-> platforms. Use CC_ATTR_MEM_ENCRYPT on x86 to include host SME, whose
-> swiotlb pool must also be decrypted for devices that cannot address
-> encrypted memory.
-
-That's a functional change for x86. For now, I'd keep it to
-CC_ATTR_GUEST_MEM_ENCRYPT.
-
-BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
-option in realms?
-
-> Move the powerpc secure-guest swiotlb enablement before initialization
-> so that the shared pool is allocated with the required flags. pKVM
-> guests continue to use a restricted DMA pool instead of the default
-> swiotlb pool.
+> The supply is marked always-on because the NPU power domains are what
+> gate the block here, and dropping the rail underneath them takes an
+> async SError on the next power-on rather than a clean retry. Only
+> rknn_core_0 is enabled: the driver binds one core per node and the
+> second core is left to whoever can test it.
 > 
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
 > ---
->  arch/arm64/mm/init.c                 |  6 ++-
->  arch/powerpc/mm/mem.c                |  7 +++
->  arch/powerpc/platforms/pseries/svm.c | 10 ----
->  arch/s390/mm/init.c                  |  2 +
->  arch/x86/mm/mem_encrypt.c            | 27 ++--------
->  include/linux/swiotlb.h              |  7 ++-
->  kernel/dma/swiotlb.c                 | 73 ++++++++++++++++++++++------
->  7 files changed, 82 insertions(+), 50 deletions(-)
+>  arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index e308a7cabd12..4c022e8aed43 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -338,8 +338,12 @@ void __init arch_setup_zero_pages(void)
->  void __init arch_mm_preinit(void)
->  {
->  	unsigned int flags = SWIOTLB_VERBOSE;
-> +	/* pKVM uses restricted-dma-pool */
-> +	bool cc_guest = is_realm_world();
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
+> index 272af1012..965e0906b 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
+> +++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
+> @@ -442,6 +442,7 @@ regulator-state-mem {
+>  			};
 >  
-> -	if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
-> +	if (cc_guest) {
-> +		swiotlb_mark_default_cc_shared();
-> +	} else if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
->  		/*
->  		 * If no bouncing needed for ZONE_DMA, reduce the swiotlb
->  		 * buffer for kmalloc() bouncing to 1MB per 1GB of RAM.
+>  			vdd_npu_s0: dcdc-reg2 {
+> +				regulator-always-on;
+>  				regulator-boot-on;
+>  				regulator-enable-ramp-delay = <400>;
+>  				regulator-min-microvolt = <550000>;
+> @@ -869,3 +870,12 @@ vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
+>  		remote-endpoint = <&hdmi_in_vp0>;
+>  	};
+>  };
+> +
+> +&rknn_core_0 {
+> +	npu-supply = <&vdd_npu_s0>;
 
-With your other reworking, doesn't the core code know the swiotlb will
-be shared? Can it not make the decision to resize at that point based
-solely on CC_ATTR_GUEST_MEM_ENCRYPT?
+Out of curiosity, I searched for code about this supply in the rocket
+driver and found nothing.
 
-I also wonder whether we could address Will's pKVM request not to
-allocate a bounce buffer once pKVM guests will start reporting
-CC_ATTR_GUEST_MEM_ENCRYPT. Some simple heuristic: if a
-restricted-dma-pool is advertised in DT (it will end up in
-rmem_swiotlb_setup()), skip resizing the default swiotlb. It's not
-perfect but the bounce buffer can be overridden on the command line.
+Then what is the consumer of this regulator? I have reason to suspect 
+they were automatically disabled.
+
+
+> +	status = "okay";
+> +};
+> +
+> +&rknn_mmu_0 {
+> +	status = "okay";
+> +};
 
 -- 
-Catalin
+Best, 
+Chaoyi
