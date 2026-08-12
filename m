@@ -1,112 +1,166 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441C943802F
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 12:30:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B51349B19
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 12:48:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786537840; cv=none; b=rLsda6N9J1C0s6uiqOVr9ICz3b4h2I69j53ePkp+pXKsCT3G1ekmbR+rZ2km7VLZQ1YDmPq1ACipk8K6+4TLQRKC8cj+pD3Lb1ZZoheBLlOC+KMBF7MiygFTr4wRflI4hgzWNCXEdSCsDPpSKY4lVe518kia3vzwRz5r+mN+MrM=
+	t=1786538901; cv=none; b=qG2lGuEHlX0I5ImgwPgTpnOrVu6393StR8Pk0RBd3le0A0mOiaj2glo8Db28Q5ZzaSuGNbg7vz2tpgoqokpER7r58NMfK2vUmqYoslurbXlFx0LichinyEQVpw4qLmjeDxvGlrmr760+WhCreLIBGeUSnhIfLTlPjd8373NCcxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786537840; c=relaxed/simple;
-	bh=oPx8rA1LxifIFXbFQU3CUDbGAZuvNtfeA5eTxK6h5cE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qX594rVIYX3a7/F//EOydbqq9P37UgczRMCv4O1MNsOtIYKGznFduLrcL899S/PjF/L6o0Cr8Rr7Sn3OcDEBOy7nIJylqQFWXL32xzBzGbHBXbleoI5ClsSAL8D3H4bjxCKtiornZ5jsLs6Z+eH1PYspuQKhbO15Ztwu2TYfG3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ef3YXt8O; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1786538901; c=relaxed/simple;
+	bh=hrHpK9mBn1HScEdTgQmCNJRC9EOtR2zYokI33zINgoc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=AKbHvYKM+GKBQwWJojKmpozDBb7eUfHy5WNIgmdxb4LwtIu9tK4aM7lKYeWoEPXx66GXeXXY8Sdqy1wxc17CoO7fH2LEGUYBZL8st4Y67cIaxtn1zeUntytZ6NxjNY/9rwQgyd2dvqEoGfXV61cGWPbVHhNiOKg6gZe5ghzkADw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AIgIbDfV; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ef3YXt8O"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-9349ad9c857so105820785a.1
-        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 05:30:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AIgIbDfV"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4995df974b3so481265e9.0
+        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 05:48:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786537835; x=1787142635; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1786538897; x=1787143697; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=xTId/AcxtpBf7EUq04FOwN+m2Ext7rtU8m+LVRU8E1E=;
-        b=Ef3YXt8O7gOjRM3T/aevYQeihJSLr2vvwTS5ZHoJaFpRcYRq96HotCE9zd/Y6f3jho
-         yT42UInxmncXPg7UG+gv6HRVBME0w0uuuQf3eBbYejDc+n1TTAUrTBSquHOycyqsVODX
-         qLAVSNIPEe48lrxmgNfWXpFGsxUvWOaJv6gEmdBMJelRxIev7FCczOQPxRmVxiMfYZ9n
-         MWsHJURSgy7mdCnT6bnjBiXN6YBeaoOndemzmx7ueR8OpWbbEHvqF6cBsmoR48IQSB9r
-         vU4AQaK0qqVZzWoEztY08PRwMv74bZwQ0DYHhmWfdf5IgONGmcOe/7ZYVVlhCey+B7uS
-         dnQQ==
+        bh=eTo9zPlaH3flPDssEgbhBqafK8pdC58gZr52aUiEgTc=;
+        b=AIgIbDfVqnL3GoXK4uQZV/cCw84oUsyZ6CDUt1V0oeovDH24plcW2xU+6zk9xLVVEk
+         V+u5l+TnZUx0kjAsLjpf4LEFLMWru7putm7ntUZBznn75J57oMIkB/sCbbvW7xSj1bI2
+         KnDWaxq9+aFGEtlplYzyukrofKv7Bz9y2IeK6Vn/V2lxhPthoLTcIDATPLyGx8Cu9h5I
+         JbzDaCSzhTNpJuHkrhrq4xqfdI6yBP73priduCJU0iCNxh1QbduEDzuttObxXpSI9VFW
+         qUALKZ7lQSFigQAN1d7QyuPI++Z1Jrqh+Kkp0kG/nwLTPRtPgHme9/iF62nsXh8CEJjX
+         U3bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786537835; x=1787142635;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1786538897; x=1787143697;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=xTId/AcxtpBf7EUq04FOwN+m2Ext7rtU8m+LVRU8E1E=;
-        b=ghtHk8ocGE+pJil7jNCkVi/v0WFBLxgouobO9Yf7lMnupJen3r85b1i0bIa6/o4wsr
-         sljP7m4jJ6S4Vi0qROMX28LLevpaDNpY9MEoMtGM+7hhFrptOd6Wqr+eVVHFPl57wqNz
-         tVgzjG/lY668qo1D2a68wZTUGfYEGRAGl+I6DazHKGrBdVt1dEOPc+OtdYyIgu8mJykZ
-         /CABFxj4Yvtc+FKIQ6O+T+lf3o1q0hUDUFrv83dv6QyKzE7W4obZoN9X7UTGz6H+mwlU
-         k/Muygohh972tH8EWEh4hlvJP/1AH1IdHnBo6b1eFvPF0eBwcfSeB4U6YM1J3MmDbSlV
-         B76A==
-X-Forwarded-Encrypted: i=1; AHgh+RoqNcxRqgBKWPa/z/l97dygwJQg65W+fp26UYX00cYj9liD1M64Fk8Q1KJH4rgisydH//qaAQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyFag+uPsv0wG95WI9jFS5XExHNyTyzDfFq2xxU6EqWj+R1/BET
-	osxVn6Xcmm6m2sY76iUM+VUsnl5NcBs4JgY4To0WBhk3ZzPsT+zDhV/bAEt5eQcqLSU=
-X-Gm-Gg: AR+sD13k8NlqWWU+SkjRVqURUdaH3FCRaP3DxOtAP0JHqPvTO7AWHy9FBZlJyMt2boQ
-	DBRMpOW80Ryi4JtBSln1w6r7gGA1ZfJZpKgyFHX5tnlPV7YQrLrXQlspP6c1BRb1h58B3yKHWUd
-	OHsmRec7Ic74b+zsq3AaF+eAlRZyOwU7CpZXXT9yoDtJwEcJH385SL1S+HbDSbADTgrb08ehB0p
-	b4pCnTG6Ymn+TD6HDSwag15nxdzGloEZJ41T7lOKOVz5gBzCM8Th1NtBd0ETGptIa7o2fP1z0N8
-	TvQ8p7EJD6j4Psk350E5F7vDZ013Brh68P/xpx5kxlUarOjkRUzzihf+iVkdoOl6JdA5RpFMaD/
-	14J7GOoa9HFKUq1U7b5e02yjaJfFAhQhj/s7XcEh246ubxlNc0jyT2BBk9mRqJYHhlhMc1jNwG4
-	vOuKpJqT+AWxTOc0YJWcritEWkTSKN53DKzDoWKEtEoq6Mocqs
-X-Received: by 2002:a05:620a:4013:b0:930:e2ea:2881 with SMTP id af79cd13be357-936b3d940c1mr359405785a.36.1786537834756;
-        Wed, 12 Aug 2026 05:30:34 -0700 (PDT)
-Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-936b5f1388fsm117247585a.24.2026.08.12.05.30.33
+        bh=eTo9zPlaH3flPDssEgbhBqafK8pdC58gZr52aUiEgTc=;
+        b=fcIutTkvUytg3vYN0tRsAfLpKZ3QL7M0Kd/rDRZc+GtvJdKyHT4K32ydeO5Dfk8Azv
+         IMn8HPgIz7Nf/xcxq4UNSFvW+NimvudPKRZ2g1NAsLGLdBQ1tORwWp8d8AA2QzsL+XQv
+         d6wZqDO3lXIXiKfcxJH2EOtScZkmtMzX/7G4u77dHVNYXztUkJ7fpd7jx46kIQYoRnlo
+         UV2KeyHyo5gPuYYryEgjXOma7e+2zmjyjdA0DM/3rbbEoUfWlFtyAhbe3C6/BkfKST8m
+         +7lSWJcq/pRbuBB1pC8ljoJENr+5pKE7JpSsbmZcCLHfbeUt9k3zAxtWWTIyAbqkY3ej
+         j7gw==
+X-Forwarded-Encrypted: i=1; AHgh+RpRFO1kgGhHATYAo5+BKvV0OqVZmWKvbJdya3Mc55s54FoQoREuwyTQntRN9RsoIcxtZyK+PA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxuLP762D7h8uAOsy8MIbosGoV/+BzF1kq+JQsV4jFlo9tYUtF3
+	xlXtwZc/uL2VzfdStCYLR5u+8L3sbOio7sP5w5GFP2bYjlzbPHzGPGxH
+X-Gm-Gg: AR+sD102xI6aD1IbzHD0A3kb/Nt3RlHNAlJGEiXTcD28LZpAnQehIJ2lbtDBmXuSejE
+	ESirVYrsbN6r4E5atO+Lxm35hN8/Uqxcu4qxIROQWiNS4fDQk0cyO8Vw9fylGOl6N6Nb+hy4E+i
+	uHObe61xkLDG/xOjXI3YwdqGx88j2vMuEt6oPzMx7ERoAkA5Uy/0wpJMu+reuY/yzBpRWDwl8QS
+	Twaqn0g46+gC+qREAcriogYQoRxeEZVXOe0g0qIfG6Pm9rwmgf3nfcYLlGGqEaoI8FEVtAfas1V
+	sVw2UVFItJ8YleW6tGegbN9MAnRQ3epdPM6GxqBYLLTDK/OJZoYxijSAbRTzqMtej6cbU4pngJ5
+	PuYuJzFNGip4vbU19Bf+EC8EQRVKhkqXmCDNOBgAoHuX2WAEDBFOh9EOH9BgoUVqMjVdabBa6ag
+	ebC2MRRdkr6XFwqMHmZS3gX7bEqUV1LRF9uYlRiyXxYPraYvYoJgQjmiuGvUdz40NKytgYycQE6
+	XuH8rUSb9onnqcr982Qq1bQu6DhVyNBFm5CHxIRyiEQ7Z8lNXAcC1AfaK7dFZ8S0/Yh
+X-Received: by 2002:a05:600c:4688:b0:498:8e6:d463 with SMTP id 5b1f17b1804b1-4997c0ddd6amr30132445e9.1.1786538897096;
+        Wed, 12 Aug 2026 05:48:17 -0700 (PDT)
+Received: from OrangePi5-Plus.BB-HOME (20014C4E1B84A6001A34C2DD5D9E0419.dsl.pool.telekom.hu. [2001:4c4e:1b84:a600:1a34:c2dd:5d9e:419])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4997c98ce0bsm47612095e9.11.2026.08.12.05.48.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2026 05:30:34 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wu86L-000000030Ox-0KWD;
-	Wed, 12 Aug 2026 09:30:33 -0300
-Date: Wed, 12 Aug 2026 09:30:33 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
-	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org,
-	arnd@arndb.de, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
-	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com,
-	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v3 3/5] iommu/x86: Share the architectural MSI reserved
- range
-Message-ID: <20260812123033.GB662699@ziepe.ca>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
- <20260811155022.108148-4-zhangyu1@linux.microsoft.com>
- <20260811162124.GK544626@ziepe.ca>
- <obiixds667qdhv5upqdpxmgrvrvp3bl5gfbpingvog2vzbexhg@b7n4fpfbkff5>
+        Wed, 12 Aug 2026 05:48:16 -0700 (PDT)
+From: Igor Paunovic <royalnet026@gmail.com>
+To: Jiaxing Hu <gahing@gahingwoo.com>,
+	tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	ulfh@kernel.org,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: Igor Paunovic <royalnet026@gmail.com>,
+	alchark@flipper.net,
+	chaoyi.chen@rock-chips.com,
+	diederik@cknow-tech.com,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 01/10] accel/rocket: take the completion register writes under job_lock
+Date: Wed, 12 Aug 2026 14:47:52 +0200
+Message-ID: <20260812124755.6507-1-royalnet026@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260812094106.1391698-2-gahing@gahingwoo.com>
+References: <20260812094106.1391698-1-gahing@gahingwoo.com> <20260812094106.1391698-2-gahing@gahingwoo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <obiixds667qdhv5upqdpxmgrvrvp3bl5gfbpingvog2vzbexhg@b7n4fpfbkff5>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Aug 12, 2026 at 04:58:28PM +0800, Yu Zhang wrote:
-> Thank you, Jason!
-> Do you mean something like below?
-> 
-> -#define X86_IOMMU_MSI_RANGE_START        0xfee00000
-> -#define X86_IOMMU_MSI_RANGE_END          0xfeefffff
-> +static inline struct iommu_resv_region *
-> +iommu_alloc_resv_x86_msi_region(void)
-> +{
-> +       return iommu_alloc_resv_region(0xfee00000, SZ_1M, 0,
-> +                                      IOMMU_RESV_MSI, GFP_KERNEL);
-> +}
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, three cores
 
-Yeah something like that.
+I ran this on an Orange Pi 5 Plus across all three NPU cores, against a
+base without the series. Both modules were built the same way and
+neither carried any local DVFS work.
 
-Jason
+  base:  v7.2 rocket
+         + Guangshuo Li's "clear rdev on device init failure"
+         + my "request the core clocks by name" v2
+         + my lifecycle v2 1/2 and 2/2
+  test:  the same, plus 1/10, 7/10 and 8/10 from this series
+
+Six phases per module: all three cores bound; core 2 unbound and
+rebound; core 0 unbound and rebound; all three unbound and all three
+rebound. One MobileNet V1 run per phase through the Teflon delegate.
+The oracle is the sha256 of the tensors that both change between
+different inputs and stay stable across repeats, so a stale output
+buffer cannot pass as a recomputation.
+
+                          base    this series
+    three cores           89.3       90.0   inf/s
+    core 2 unbound        87.6       88.8
+    core 2 rebound        88.9       88.2
+    core 0 unbound        75.3       75.0
+    core 0 rebound        88.6       88.4
+    all three cycled      88.7       88.3
+
+All twelve runs produce identical oracle hashes and the same
+classification. Interrupts per inference are 42.75 in both, and the
+distribution matches phase for phase: with core 0 bound it takes 41.7
+of them and core 1 takes 1.02; with core 0 unbound the same work moves
+to core 1. Neither round logged anything beyond the probe messages.
+
+That comes to 2596 inferences and 111048 completion interrupts through
+rocket_job_handle_irq() with the two writes moved under job_lock, with
+no difference in result from the same count without them.
+
+On the change itself: I could not construct the race on the normal
+path. The scheduler runs one job at a time and the fence is signalled
+under the same lock after the writes, so a submit cannot overlap the
+completion it follows.
+
+Where I think it is reachable is the reset path. rocket_reset() calls
+drm_sched_stop() and then says "Remaining interrupts have been
+handled", but drm_sched_stop() stops the scheduler, not the threaded
+IRQ handler. A handler already in flight can therefore run alongside
+rocket_reset(), and after drm_sched_start() alongside a fresh job.
+Making the write and the decision one step is the right shape for
+that. It does not stop a late handler from writing the zero into a job
+that is not the one whose interrupt it is handling, though - would a
+synchronize_irq(core->irq) before the guard in rocket_reset() be worth
+having as well?
+
+One note on the base, since it matters to anyone repeating this. The
+core-0 rebind step needs my lifecycle series underneath. Without it,
+that rebind hands the returning core the index of a core that is still
+live: the driver prints "core 2" for fdab0000.npu, inference starts
+returning a different answer, and the teardown that follows dies in
+destroy_workqueue() under drm_sched_fini() with a poisoned list
+pointer, leaving an unkillable D state. None of that is your series
+doing - it reproduces with 1/10, 7/10 and 8/10 absent - but it does
+mean the three-core test cannot run to completion on a tree without it.
+
+Igor
