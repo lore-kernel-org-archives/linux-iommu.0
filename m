@@ -1,266 +1,211 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BD01397E8E
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 18:08:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786558099; cv=none; b=olKbpuLAN+MGKUVyQq9UM0xYXTHDuoDP2mR+hZLoddwFWoYc/QMjb70LJoiqKHV3S1f6S0E9JwoAbSuzAbiZmbUw9z+yiV2sz3vSGW79n8yKn6OcQwX2vcSGQZLW+UiYEDuLMJ0+8fsWErQpzauryVrNNxSHuvk9GLhliwDTx/s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786558099; c=relaxed/simple;
-	bh=2K4QBfuHa1ExQ3BP/1M+Q8X0mWpGN/4J6aPNicKHXhI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QQsptfp1djvfOUKu+o+VMsUpStLvBDR6ukT9nK1cS6XEWmgen7PSXud1meK2fgqk4/fyflcQ7gfiKPpWDTi5N+U8y6WaMxRHggyX9Yembl9iyPtnWS78o4TDaHDNF9Z2dMD9o9g8sUPtKQ7aGvCEYjDe+RWkkWBj7j9QcNWvlcc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=olm2FnUy; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012036.outbound.protection.outlook.com [52.101.43.36])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371E436308A;
+	Wed, 12 Aug 2026 20:09:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.36
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786565376; cv=fail; b=VwmIOD8u0iBS6hnEGus1WW36pF+X75h6fxV/bHaXM9JHAeYZyumXxMrPq/kw9RsiHBHsDG0fWZBPMBWhWSD+RIXf2VXGWssWODCSYa+qHqf6/IbcQIDUmQp/XsActAdHYvlPHh+Ochvc8pQvl1DnFZIuE7EuPdVwlJe9VjfClU8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786565376; c=relaxed/simple;
+	bh=tLiCA3myzlp+r/zBt9gmYiXwUJSQfY/7KemJBwP4lPA=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=MEETHf0lCCt36JZ8tRjT2Iab32n1BkxNS/qzX5BZqpNUR4yRn+S0XuSsKM9hWfThoPYju9QGnCqQZPvBqaGorYGEKxQ/Z7PtpXxcX/gs9KXeVgtXpEgsa/xWPe/nIJfERxmIG4h/fdmq3G++3Lb5n3OM6m3qFl/QTIbBhfO/gYo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sEevlcO6; arc=fail smtp.client-ip=52.101.43.36
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="olm2FnUy"
-Received: from localhost (unknown [20.29.225.195])
-	by linux.microsoft.com (Postfix) with ESMTPSA id ACD6620B7128;
-	Wed, 12 Aug 2026 11:07:51 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com ACD6620B7128
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1786558072;
-	bh=wFU5mpAjyTwFbqV4yJbosVYJSwP9XcIHjp/tK1XvpO0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=olm2FnUyFTP59N9B70T+VdBMXVS7cdz2hhlUgSfLteqgder+pduAy5SwXx8YOLiao
-	 ljAptd9iNpsALMWxSk2wu+4OIR+D/1zcSk4JUoRycBPWlzQYDvE8rfwG89wT4h8YTU
-	 0vT7BGe9Mh9h7JJQMhbIUz35dvMSYcKFmrGT975U=
-Date: Wed, 12 Aug 2026 11:08:14 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
- kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
- longli@microsoft.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
- lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de,
- jgg@ziepe.ca, mhklinux@outlook.com, tgopinath@linux.microsoft.com,
- easwar.hariharan@linux.microsoft.com, mrathor@linux.microsoft.com,
- baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
- vasant.hegde@amd.com, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v3 1/5] hyperv: Introduce new hypercall interfaces used
- by Hyper-V guest IOMMU
-Message-ID: <20260812110814.00005050@linux.microsoft.com>
-In-Reply-To: <20260811155022.108148-2-zhangyu1@linux.microsoft.com>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
-	<20260811155022.108148-2-zhangyu1@linux.microsoft.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sEevlcO6"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=lfl/jI1QTwWPva+Lbj6/KIS6pBe5PMaXZdslB/A8jrVX1hKMhYlXRCfke0Gwp7/HATt80kK8AWFXk91F3y3sb65NkCI2GyFw9GuoJLgmAblwNjAx19AtA+8eY7j2J3uUVQGEyLl0OGrtZXuQ7Ub/TdXRx2NamVuuVNiUXpJC7eGTElcOhmfreX851QlkY75/NZ9kDpeo14UkWtOOpIjNq/VIjUBbwlNhoTIexx7teDy+fCOKuHluSH7wg0/iJNJ84c85RiVPoWONG8peoCGu+7pH6lUGu60o+XS/uBKtpjdbQMigYTDCjKwOgW+ruy3wpSll+2RRi+XGNmdH4QAUIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jN1X7s69RcgNKPSPCkArbB9TFNKXmHPEKUkIuRBWfw8=;
+ b=OI9LZRAOTNZnV1koqrYgIAU/tus2AoPWfumJq/FxZZbkSXDXDrTVUnpK6+tDO1tsSOhq4VJ9hsFSyhYRIsyYG3gmCU9Cpv1xbJgX2fhLwaidjl44CKgT2hdqdPrZcCXXS6WxKT3BKsgSeEsbALFDCYfsSjpTpRxhl6vxjk2o9ziKCFBzCuyc+nEotV1OCqY6s5/kubmm/U0iAqyMfiQJpwt0bEU0uJV7+p/LazpiHasLzdTgrLgSvHSYyOybO74ic9NTJZmDtMmyuDMBTnv0Y5sbLhCGh346OkV4r67pgs9s6R1D2KJR8WgZY+o2o2XSq8JPSJnStvnqN2uDS0eGcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jN1X7s69RcgNKPSPCkArbB9TFNKXmHPEKUkIuRBWfw8=;
+ b=sEevlcO6lEtO4ivQB/dBxJ6Xe9nZz8Ars3YiAu7ltsyD8wal6mvjsSWupLAVXxCFx01mOfV/UTWg8DrKgseCt12jIkTRtjhnN84kkSJWD0jfkt8fBffOPfOSM7hXHbOwW42Q89cYqSxzp2BCO8VVufAmn+OT8GKVsyNi6Mpv+T2q6GXoZotmVI8ULruatdf1MAwsD+lF0y3cZ/1rgIis/5o6s5S9xU2yhaNk1cFXMKUtuYG8zEv5Cu214X0oya2GZnRE7rCaXBtuoQiQqsm79KlXQW8uq88H1WmxKF9Cf3UT7jqXSrJiLLbkZl4Kk/FjKLOiPRf6ZNfvSh7tHi2Leg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by CY3PR12MB9629.namprd12.prod.outlook.com (2603:10b6:930:101::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.13; Wed, 12 Aug
+ 2026 20:09:27 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0315.011; Wed, 12 Aug 2026
+ 20:09:27 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: [PATCH v2 0/9] Use the generic iommu page table for SMMUv3
+Date: Wed, 12 Aug 2026 17:09:16 -0300
+Message-ID: <0-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YT4P288CA0023.CANP288.PROD.OUTLOOK.COM
+ (2603:10b6:b01:d4::24) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CY3PR12MB9629:EE_
+X-MS-Office365-Filtering-Correlation-Id: bd97fea6-71b6-41cd-7cbc-08def8ad9c31
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|1800799024|366016|7416014|376014|6133799003|13003099007|56012099006|10067099003|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	v+Inq6LQx8XLwgQX3bLUeizwVN4+RQWYAmg8rV+Tq4stav2u+VPrOMerexn3bhy0c2WLkA1HQVGt6K96wIV37r77f+2VWROSQ/2xNT+1UOUPv6LlCiaG/xi12qb7aPkB9U+msv6wGZBkIbOIdlffDbRFBz7b+Eh2zg3EeiMcGy/tBuF9TUrxrnQetrGcxVD2hcdO/Z4E9tuR9EvDqpBM6qOWBbdC3ZY7sZt3pFHLoDp617lH586G1r7BCP7HJn4gAB6h6DYIJtWKalgklZmWBGPf6mK+Q58/8cj4PgDcm04cE4GC/t6AFcTEvIolYqEN5ms/g6LVr14f8syS74GTESwWnqApDL/CEQD5IvItIgyGvi8B/JH2MCm9s4fSwfvKXgGjtQvWSHS/ve0NBt7lm9NXm1vVkQ0pgRpRFU32IUVs3CS9Ah7xaxzZGOPEPquBOa7fxBE2rBbXPFk1jcxg2dcC2nuu7lYzM6P1x9Q/dkkUaRSHXdErHPcoIWdG965lZJ1/V+5dyvGFKBijAIPfaRWPKXmnwSnl+KiGWx1caiSHUZFMpmI5vMe2qs5Jyt/1XFsI7pZxCcQExi1a3VbaAB72oBd19DS7TIIZ44qVzbjJvAq0rbTlbM7K4RKVarrNjP2qrAtqUbEb6yWlq6zSbbmTwK6P1lDfYRbWuqWQLuU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(7416014)(376014)(6133799003)(13003099007)(56012099006)(10067099003)(11063799006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?AStHhoKgUMKgMM+Eb821oraIEkcMl5gUdKPdkzt4G0c5SWUPjmReFOWWAUPV?=
+ =?us-ascii?Q?OMjACWxrvXm+Qrj9XmpBT28FFVvKD1lZH2FrQXTHaFE17ni8bcO9TVxwqRsL?=
+ =?us-ascii?Q?U3Yo7pwfQa1zE96Mp3iE3b80Dp+Q6sb0zmWhDr/nvKOcSZ7SU9z/4dVgaydd?=
+ =?us-ascii?Q?JhypsZwadlsYOC95FVO8fhWrxVu1iI0MPN6+tPJeBqeq8neirXUZQDR8ofK2?=
+ =?us-ascii?Q?9DjlTTHz29T4f9UHTZ0D5kf0BzSZo4EVGsTUzQVrHeKXi50MSjIMQUymDOAo?=
+ =?us-ascii?Q?/BhE8EhqevAEwj8G+W+5wqFlqu41beYJytu6oCNC8/E6C1+ZQSV3bu9zSQoJ?=
+ =?us-ascii?Q?qu4ayfqS3qYzK9nm4Dqy4qvHxhek0GdVPwNBpWt+weBJ4tdFLX4fiKM6aIVn?=
+ =?us-ascii?Q?U3rJcFMmlrnsvKzmD6JpPiW/69MQkUjox6sPLbultebpwGnOXZ5pccIDV2m0?=
+ =?us-ascii?Q?6yowLQJUiFVErV+70q9gYpNMtcX4wMxTZPpKyhccOTWpYCXKIifK33b192BQ?=
+ =?us-ascii?Q?Eg69iugk5D8i6hCd5wHJJPXTZ76xc/VrMA+OMO2xxh33QkRh07zENUzREaKU?=
+ =?us-ascii?Q?UFdM6E4QPQaz19iOn3HPxvQ1gO1+qWpfTl89Stv5/OFUEF1eGSQkv2KCM8q/?=
+ =?us-ascii?Q?6yuRkj2oXiXYHFoFomVa0tmD1PMnCbOAkk3sEtglsyoDbnAhvku2+Ky4qz4r?=
+ =?us-ascii?Q?9w9Pbz9GOZR9NUWIWPLfyo33E7u4oCw31EbYFQ9jTx1JPcMznbedAIItRrvU?=
+ =?us-ascii?Q?WtuOEW4vJzI9x0uSZI8vY3+Wx7x1eLiqdq9PGyRGwf4HJtg80HUBiiCeiwWO?=
+ =?us-ascii?Q?Ji4QOiLQQhdcZzm6whWDpQmfqoj4teTvUuiN1jrGd+WLbYAy1JQABn8xsg6j?=
+ =?us-ascii?Q?MXuhz4ZMydjXlmzZOPC/07jcY12KYuyReArmwffJNA8R7kIePU8Nv9OntDwy?=
+ =?us-ascii?Q?jhvqqydAAyJy7crPy8S0C8LWGNpX9epsesJRovxbQy7yrk8WC7tP+bu0zhYb?=
+ =?us-ascii?Q?xa24q5+Xja4ACsAK/B3i3546WZtMcGWL11qfXkzRu5khpHnp5qEiM26US83o?=
+ =?us-ascii?Q?u+iVRlnquZTIIQlglbr3M+PMVN/XlftZ5AQUgQUwQL/syQuvJ2ku3EaqoZgm?=
+ =?us-ascii?Q?iem0zvaj05DTjDWdgEOMJLQ0ueGHN/Zaw/uwZEEKJZetcCeOiWWml3r2dG1E?=
+ =?us-ascii?Q?izZDTutcghJeK4sXFXcqKj0ihBgJQvXRn/92lX7Tq4qrgMNvb7WnUMPST6sc?=
+ =?us-ascii?Q?jaJ2/6FEYNP0cjkffOo8bLaRLqCdQC8as/PGnuR5SJQEtsUvRJmedpjJXptS?=
+ =?us-ascii?Q?kz2Jhdbtiq1oRuYmZSs/8MTV8pUNqpWPkPxxTjN5oC3vglEe4wBI+evSXjRV?=
+ =?us-ascii?Q?DT/I86mk8qjs0jrK3725EWGZVM0ZNVBAab7/EhsF4USDBaKgUNOs8eG3z/oh?=
+ =?us-ascii?Q?1hF18cvzBo5bKKSM5Ayo7p35BT5c/xaWa0FanuLmwRBCjs4q6megDJLE4RUE?=
+ =?us-ascii?Q?EkQBtklzhhUt4g8B4Lp7qzq/ynfRuKC4sewmwy8/syPuJGbtGu45q4AYnK/5?=
+ =?us-ascii?Q?iIx+//awDaUlb68HEbUDixU+apY4pNhKPPwyBdI0IEZBQ7seuH+MFalMmppG?=
+ =?us-ascii?Q?p0gmGXMwpbbYVZpqo0V/NVKWFUNI76hVGne/xV6MwtbH+ZJZcnBfCPO3fkCD?=
+ =?us-ascii?Q?Kpq9IGzIKAZjYWz8Y/bqwsmD9ccm5F9xYb8W0Yk3HkrbmrMNs7oYZdRBjitY?=
+ =?us-ascii?Q?DXIYTxJD+w=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd97fea6-71b6-41cd-7cbc-08def8ad9c31
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2026 20:09:26.8983
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: l89aPv2h3k+7H60Gb1ykGJQ+UvmF5l/26f6RQ8iVBx5CGvagnumxfNSzVUxLHOnT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY3PR12MB9629
 
-Hi Yu,
+[ This is the last patch to move SMMUv3 over to the generic page
+  table:
+1) Organize the SMMUv3 invalidation flow so iommupt can use it
+  ..
+2) Use the generic iommu page table for SMMUv3
 
-On Tue, 11 Aug 2026 23:50:17 +0800
-Yu Zhang <zhangyu1@linux.microsoft.com> wrote:
+It depends on #1
 
-> From: Wei Liu <wei.liu@kernel.org>
-> 
-> Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
-> Introduce the hypercalls used by the child partition to interact with
-> this facility.
-> 
-> These hypercalls fall into below categories:
-> - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
->   detect the existence and capabilities of the guest IOMMU.
-> 
-> - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
->   check whether an endpoint device is managed by the guest IOMMU.
-> 
-> - Domain management: A set of hypercalls is provided to handle the
->   creation, configuration, and deletion of guest domains, as well as
->   the attachment/detachment of endpoint devices to/from those domains.
-> 
-> - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
->   for a domain-selective IOTLB flush (which in its handler may flush
->   the device TLB as well).
-> 
-> Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> Co-developed-by: Easwar Hariharan
-> <easwar.hariharan@linux.microsoft.com> Signed-off-by: Easwar
-> Hariharan <easwar.hariharan@linux.microsoft.com> Co-developed-by: Yu
-> Zhang <zhangyu1@linux.microsoft.com> Signed-off-by: Yu Zhang
-> <zhangyu1@linux.microsoft.com> ---
->  include/hyperv/hvgdk_mini.h |   8 +++
->  include/hyperv/hvhdk_mini.h | 126
-> ++++++++++++++++++++++++++++++++++++ 2 files changed, 134
-> insertions(+)
-> 
-> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-> index 6a4e8b9d570f..5bdbb44da112 100644
-> --- a/include/hyperv/hvgdk_mini.h
-> +++ b/include/hyperv/hvgdk_mini.h
-> @@ -486,10 +486,16 @@ union hv_vp_assist_msr_contents {	 /*
-> HV_REGISTER_VP_ASSIST_PAGE */ #define
-> HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a #define
-> HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af #define
-> HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0 +#define
-> HVCALL_CREATE_DEVICE_DOMAIN			0x00b1 +#define
-> HVCALL_ATTACH_DEVICE_DOMAIN			0x00b2 #define
-> HVCALL_SIGNAL_EVENT_DIRECT			0x00c0 #define
-> HVCALL_POST_MESSAGE_DIRECT			0x00c1 #define
-> HVCALL_DISPATCH_VP				0x00c2 +#define
-> HVCALL_DETACH_DEVICE_DOMAIN			0x00c4 +#define
-> HVCALL_DELETE_DEVICE_DOMAIN			0x00c5 #define
-> HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9 +#define
-> HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce +#define
-> HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0 #define
-> HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7 #define
-> HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8 #define
-> HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db @@ -502,6
-> +508,8 @@ union hv_vp_assist_msr_contents {	 /*
-> HV_REGISTER_VP_ASSIST_PAGE */ #define HVCALL_MMIO_READ
-> 		0x0106 #define HVCALL_MMIO_WRITE
-> 		0x0107 #define HVCALL_DISABLE_HYP_EX
->          0x010f +#define HVCALL_GET_IOMMU_CAPABILITIES
-> 	0x0125 +#define HVCALL_GET_LOGICAL_DEVICE_PROPERTY
-> 	0x0127 #define HVCALL_MAP_STATS_PAGE2
-> 	0x0131 /* HV_HYPERCALL_INPUT */
-> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-> index 035ba20870f7..1e3eac99886a 100644
-> --- a/include/hyperv/hvhdk_mini.h
-> +++ b/include/hyperv/hvhdk_mini.h
-> @@ -548,4 +548,130 @@ union hv_device_id {		/*
-> HV_DEVICE_ID */ } acpi;
->  } __packed;
->  
-> +/* Device domain types */
-> +#define HV_DEVICE_DOMAIN_TYPE_S1	1 /* Stage 1 domain */
-> +
-> +/* ID for default domain and NULL domain */
-> +#define HV_DEVICE_DOMAIN_ID_DEFAULT 0
-> +#define HV_DEVICE_DOMAIN_ID_NULL    0xFFFFFFFFULL
-> +
-> +union hv_device_domain_id {
-> +	u64 as_uint64;
-> +	struct {
-> +		u32 type: 4;
-> +		u32 reserved: 28;
-> +		u32 id;
-> +	} __packed;
-> +};
-> +
-> +struct hv_input_device_domain {
-> +	u64 partition_id;
-> +	union hv_input_vtl owner_vtl;
-> +	u8 padding[7];
-> +	union hv_device_domain_id domain_id;
-> +} __packed;
-> +
-> +union hv_create_device_domain_flags {
-> +	u32 as_uint32;
-> +	struct {
-> +		u32 forward_progress_required: 1;
-> +		u32 inherit_owning_vtl: 1;
-> +		u32 reserved: 30;
-> +	} __packed;
-> +};
-> +
-> +struct hv_input_create_device_domain {
-> +	struct hv_input_device_domain device_domain;
-> +	union hv_create_device_domain_flags
-> create_device_domain_flags;
-> +	u32 padding;
-> +} __packed;
-> +static_assert(sizeof(struct hv_input_create_device_domain) == 32);
-nit, maybe also this to detect ABI drift within. Optional.
-static_assert(offsetof(struct hv_input_create_device_domain, padding)
-== 28);
+The whole branch is here:
+   https://github.com/jgunthorpe/linux/commits/iommu_pt_arm64/
+]
 
-> +struct hv_input_delete_device_domain {
-> +	struct hv_input_device_domain device_domain;
-> +} __packed;
-> +
-> +struct hv_input_attach_device_domain {
-> +	struct hv_input_device_domain device_domain;
-> +	union hv_device_id device_id;
-> +} __packed;
-> +
-> +struct hv_input_detach_device_domain {
-> +	u64 partition_id;
-> +	union hv_device_id device_id;
-> +} __packed;
-> +
-> +struct hv_device_domain_settings {
-> +	struct {
-> +		/*
-> +		 * Enable translations. If not enabled, all
-> transaction bypass
-> +		 * S1 translations.
-> +		 */
-> +		u64 translation_enabled: 1;
-> +		u64 blocked: 1;
-> +		/*
-> +		 * First stage address translation paging mode:
-> +		 * 0: 4-level paging (default)
-> +		 * 1: 5-level paging
-> +		 */
-> +		u64 first_stage_paging_mode: 1;
-> +		u64 reserved: 61;
-> +	} flags;
-> +
-> +	/* Address of translation table */
-> +	u64 page_table_root;
-> +} __packed;
-> +
-> +struct hv_input_configure_device_domain {
-> +	struct hv_input_device_domain device_domain;
-> +	struct hv_device_domain_settings settings;
-> +} __packed;
-> +
-> +struct hv_input_get_iommu_capabilities {
-> +	u64 partition_id;
-> +	u64 reserved;
-> +} __packed;
-> +
-> +struct hv_output_get_iommu_capabilities {
-> +	u32 size;
-> +	u16 reserved;
-> +	u8  max_iova_width;
-> +	u8  max_pasid_width;
-> +
-> +#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
-> +#define HV_IOMMU_CAP_S2         BIT_ULL(1)
-> +#define HV_IOMMU_CAP_S1         BIT_ULL(2)
-> +#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
-> +#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
-> +#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
-> +#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
-> +
-> +	u64 iommu_cap;
-> +	u64 pgsize_bitmap;
-> +} __packed;
-> +
-> +enum hv_logical_device_property_code {
-> +	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
-> +};
-> +
-> +struct hv_input_get_logical_device_property {
-> +	u64 partition_id;
-> +	u64 logical_device_id;
-> +	/* Takes values from enum hv_logical_device_property_code. */
-> +	u32 code;
-> +	u32 reserved;
-> +} __packed;
-> +
-> +struct hv_output_get_logical_device_property {
-> +#define HV_DEVICE_IOMMU_ENABLED	BIT_ULL(0)
-> +	u64 device_iommu;
-> +	u64 reserved;
-> +} __packed;
-> +
-> +struct hv_input_flush_device_domain {
-> +	struct hv_input_device_domain device_domain;
-> +	u32 flags;
-> +	u32 reserved;
-> +} __packed;
-> +
->  #endif /* _HV_HVHDK_MINI_H */
-Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+Introduce the generic page table for what the ARM spec calls VMSAv8-64
+(ie the long 64 bit PTE page table, io-pgtable-arm.c) and use it for
+SMMUv3. ARM is by far the most complex page table of all the ones
+implemented, it has the most runtime behavior variations and a lot of
+features.
+
+Like the othe architectures, the page table itself is supported by a kunit
+compare test that runs operations through both io-pgtable-arm.c and the
+new code then checks for identical PTEs. This is on the github link above
+but I don't intend to merge it.
+
+The existing kunit tests for iommupt will automatically cover the new
+format as well.
+
+This is the final series migrating the SMMUv3 driver over to use the new
+functions and remove io-pgtable-arm.c usage. In principle the other iommu
+drivers that use io-pgtable-arm could be converted someday as well.
+
+Robin once mentioned there were errata about contiguous bits, I only found
+3673557 and it is mitigated in this design by always using RIL. I'm
+assuming that RIL is always available in SMMUs that are effected by
+3673557? I have a patch add a FEAT if for contiguous bits if that is
+required.
+
+v3:
+ - Split the armv8 patch into three parts, generic, db, and iommu
+ - Clarify some comments, mark some more debug things as WARN_ON
+ - Use tgsz instead of granule for consistency
+ - Refactor checks into armv8pt_validate_features() and add more
+ - Drop PT_FEAT_ARMV8_AARCH32
+ - Fix make dirty logic
+ - Use arch/arm64 constants instead of copying for SVA
+v2: https://patch.msgid.link/r/0-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com
+ - Rename granule_lg2sz to tgsz_lg2 to represent the ARM translation granule
+v1: https://patch.msgid.link/r/0-v1-807e2d1a5efb+e1-iommupt_armv8_jgg@nvidia.com
+
+Jason Gunthorpe (9):
+  iommupt: Remove the sanity check for pt_num_items_lg2() at the top
+    level
+  iommupt/kunit: Skip test configs without supported features
+  iommupt/armv8: Add the 64 bit ARMv8 page table format
+  iommupt/armv8: Add DBM support
+  iommupt/armv8: Implement the iommu specific components
+  iommu/arm-smmu-v3: Remove io-pgtable-arm from sva.c
+  iommu/arm-smmu-v3: Move the DMA API comment to flush_iotlb_all
+  iommu/arm-smmu-v3: Use the generic iommu page table
+  iommu: Remove pgsize from iommu_iotlb_gather
+
+ drivers/iommu/arm/Kconfig                     |    4 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   15 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  |   45 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  292 ++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   11 +-
+ drivers/iommu/generic_pt/.kunitconfig         |    1 +
+ drivers/iommu/generic_pt/Kconfig              |   12 +
+ drivers/iommu/generic_pt/fmt/Makefile         |    2 +
+ drivers/iommu/generic_pt/fmt/armv8.h          | 1072 +++++++++++++++++
+ drivers/iommu/generic_pt/fmt/defs_armv8.h     |   23 +
+ drivers/iommu/generic_pt/fmt/iommu_armv8.c    |   13 +
+ drivers/iommu/generic_pt/iommu_pt.h           |   14 -
+ drivers/iommu/generic_pt/kunit_iommu.h        |   10 +
+ include/linux/generic_pt/common.h             |   38 +
+ include/linux/generic_pt/iommu.h              |   72 ++
+ include/linux/iommu.h                         |   62 +-
+ 16 files changed, 1391 insertions(+), 295 deletions(-)
+ create mode 100644 drivers/iommu/generic_pt/fmt/armv8.h
+ create mode 100644 drivers/iommu/generic_pt/fmt/defs_armv8.h
+ create mode 100644 drivers/iommu/generic_pt/fmt/iommu_armv8.c
+
+
+base-commit: d8129132de326dbcbdbb0abf46580072d6fd9224
+-- 
+2.43.0
+
