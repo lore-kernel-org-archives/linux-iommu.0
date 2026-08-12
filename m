@@ -1,162 +1,112 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012021.outbound.protection.outlook.com [40.107.209.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A69DF439340
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 12:12:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786536767; cv=fail; b=jceRuYPc7QVWc9ra8CMqFBNS8k5h7cKFyFdYdfU9viZSgiCdvCaqqp8fJG191oHqYMWbfLkYuJKm8wpdwjypRKvOV/Lzso2JHLkuLCUpu+mRVPyi2kQctNWDdktyuclTStnkZX/Nrc5eq10k0oeq40H/4doMY/jxxz3Z35peL2w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786536767; c=relaxed/simple;
-	bh=5n0ULwUSYtHKl80WYXMylNsrvxTUbGIaqg++YGb4yBg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ge6BujoBEtREmij048UiD1Z4ym+2AM2JFSLIt9D52s3GRwnE3lW+6ZaGPmOMefCG8vB7lsB5besjlsyusquS0wQ/b1lYnJuq9y/M4SoFXbVjkZiWebeMJPZrGR7dFnTy1BCx+PUC7jUa0OmPJWZt88MLdJithYJC2/7RqKp1xO0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=W3zFa3+f; arc=fail smtp.client-ip=40.107.209.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441C943802F
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 12:30:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786537840; cv=none; b=rLsda6N9J1C0s6uiqOVr9ICz3b4h2I69j53ePkp+pXKsCT3G1ekmbR+rZ2km7VLZQ1YDmPq1ACipk8K6+4TLQRKC8cj+pD3Lb1ZZoheBLlOC+KMBF7MiygFTr4wRflI4hgzWNCXEdSCsDPpSKY4lVe518kia3vzwRz5r+mN+MrM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786537840; c=relaxed/simple;
+	bh=oPx8rA1LxifIFXbFQU3CUDbGAZuvNtfeA5eTxK6h5cE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qX594rVIYX3a7/F//EOydbqq9P37UgczRMCv4O1MNsOtIYKGznFduLrcL899S/PjF/L6o0Cr8Rr7Sn3OcDEBOy7nIJylqQFWXL32xzBzGbHBXbleoI5ClsSAL8D3H4bjxCKtiornZ5jsLs6Z+eH1PYspuQKhbO15Ztwu2TYfG3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ef3YXt8O; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="W3zFa3+f"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=v4aDqgCI9w7fkOMZpeSj/KX2sqr37jZspA0j+KK35YOSJxg0kHppOCPM1G7WNu/WtoZdjy1NBjVZmpH+8ooAwAcUSTTpZI6TBBXn5HHMKedzYPJhBFo7MxGXTW1FG11tYBmEHQ/UNufOrfAmeSeyuRYiiD11q4gfihpFUKBV9ldG0BISEVKJH0A5OGZMONbJ9QgxtLi8mik38WGqOyn1XWeoAoEeqHZUqYoi5XztaGjfSWSSslh4AQ3V9PqYeIgr09kBOFIfGfzoEYXCOAc6XYOiwK61T2AMlMJc3I1sgWtYC5CX6ap9N1FLYWwtCpvXBSMKDcu0dPv4ukmQu7Zg5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uwVaOPU9ewiHSWutdWOkHcYrC7B/uD8vDzdspyHCgcY=;
- b=wzSE3EuQubltfC9VcsV2m3P0AHz0SEg0DhIsGT2e0F/iEkTrN2wvrYSVudzVxbkOLAD9B0MTQc4BkN8sHqIApdcUUnAerxLK8fHLGdXVJWVUMr84Iau4bJiieCt+ApP61u3DUO4K8e8syTIRZ++Csx4o2Bvn3yu9IzoczkPPhg4mj/Mj89nmGbJVSMfdWm+qMoG9xoQOfZmPPz48iSI/8TY8/dHC+1vWrfHq1cCLEdlQS55MZtzvttvrgW5NhZ+3NLBua8t2bfxjiRhPfiPoYleu3bE16EL5BKYVy7iNW5ssMrH4Zlr6euWwxKCO2HuVlvtuR3QHGcHkVNqlnIlLRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uwVaOPU9ewiHSWutdWOkHcYrC7B/uD8vDzdspyHCgcY=;
- b=W3zFa3+f+fDNsHAkKx8A03KHXyQ8BZayU1c20dIb8LuhPqLIlC68lFxTCPLDvSeUQIrgafyZpeVFvhlvJVgFBv3OgiW6oRDm4DB8Q2wsDiTPWDsbR450m+hB18Qz0gL0xPA5/C2VU34eaAERn+dj5WLHcCITEoyi/j5G7+WDW5nezOvEsebbQnYkSfGOOMglLAepvrNJj0CSqBf3OcrFfg8b1+g3zIBGuphdnGBHkrGqzzL/3tJddroJSlyCFC8vBFkLGrXgz6Tx0JPQOoobyZUaUNIIf2lCvZQoo3CbtE6k1hrPBYksMBOzWHJaR1gByKUR0c5ml27XfFmDtX/CBQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by IA1PR12MB6187.namprd12.prod.outlook.com (2603:10b6:208:3e5::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Wed, 12 Aug
- 2026 12:12:40 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0315.011; Wed, 12 Aug 2026
- 12:12:40 +0000
-Date: Wed, 12 Aug 2026 09:12:39 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, steven.sistare@oracle.com,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/iommufd: Fix NULL pointer deref in
- iommufd_ioas_change_process when racing with iopt_map_file_pages
-Message-ID: <20260812121239.GB638489@nvidia.com>
-References: <7344B7A7B9957A65+20260806045059.1884737-1-peiyang_he@smail.nju.edu.cn>
- <178639198310.282103.12552740515074532170.b4-review@b4>
- <EB366C0363529CC0+1f720b7e-4256-4523-8e43-f14ace92f200@smail.nju.edu.cn>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <EB366C0363529CC0+1f720b7e-4256-4523-8e43-f14ace92f200@smail.nju.edu.cn>
-X-ClientProxiedBy: YT4PR01CA0150.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:ac::17) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ef3YXt8O"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-9349ad9c857so105820785a.1
+        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 05:30:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1786537835; x=1787142635; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=xTId/AcxtpBf7EUq04FOwN+m2Ext7rtU8m+LVRU8E1E=;
+        b=Ef3YXt8O7gOjRM3T/aevYQeihJSLr2vvwTS5ZHoJaFpRcYRq96HotCE9zd/Y6f3jho
+         yT42UInxmncXPg7UG+gv6HRVBME0w0uuuQf3eBbYejDc+n1TTAUrTBSquHOycyqsVODX
+         qLAVSNIPEe48lrxmgNfWXpFGsxUvWOaJv6gEmdBMJelRxIev7FCczOQPxRmVxiMfYZ9n
+         MWsHJURSgy7mdCnT6bnjBiXN6YBeaoOndemzmx7ueR8OpWbbEHvqF6cBsmoR48IQSB9r
+         vU4AQaK0qqVZzWoEztY08PRwMv74bZwQ0DYHhmWfdf5IgONGmcOe/7ZYVVlhCey+B7uS
+         dnQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786537835; x=1787142635;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=xTId/AcxtpBf7EUq04FOwN+m2Ext7rtU8m+LVRU8E1E=;
+        b=ghtHk8ocGE+pJil7jNCkVi/v0WFBLxgouobO9Yf7lMnupJen3r85b1i0bIa6/o4wsr
+         sljP7m4jJ6S4Vi0qROMX28LLevpaDNpY9MEoMtGM+7hhFrptOd6Wqr+eVVHFPl57wqNz
+         tVgzjG/lY668qo1D2a68wZTUGfYEGRAGl+I6DazHKGrBdVt1dEOPc+OtdYyIgu8mJykZ
+         /CABFxj4Yvtc+FKIQ6O+T+lf3o1q0hUDUFrv83dv6QyKzE7W4obZoN9X7UTGz6H+mwlU
+         k/Muygohh972tH8EWEh4hlvJP/1AH1IdHnBo6b1eFvPF0eBwcfSeB4U6YM1J3MmDbSlV
+         B76A==
+X-Forwarded-Encrypted: i=1; AHgh+RoqNcxRqgBKWPa/z/l97dygwJQg65W+fp26UYX00cYj9liD1M64Fk8Q1KJH4rgisydH//qaAQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyFag+uPsv0wG95WI9jFS5XExHNyTyzDfFq2xxU6EqWj+R1/BET
+	osxVn6Xcmm6m2sY76iUM+VUsnl5NcBs4JgY4To0WBhk3ZzPsT+zDhV/bAEt5eQcqLSU=
+X-Gm-Gg: AR+sD13k8NlqWWU+SkjRVqURUdaH3FCRaP3DxOtAP0JHqPvTO7AWHy9FBZlJyMt2boQ
+	DBRMpOW80Ryi4JtBSln1w6r7gGA1ZfJZpKgyFHX5tnlPV7YQrLrXQlspP6c1BRb1h58B3yKHWUd
+	OHsmRec7Ic74b+zsq3AaF+eAlRZyOwU7CpZXXT9yoDtJwEcJH385SL1S+HbDSbADTgrb08ehB0p
+	b4pCnTG6Ymn+TD6HDSwag15nxdzGloEZJ41T7lOKOVz5gBzCM8Th1NtBd0ETGptIa7o2fP1z0N8
+	TvQ8p7EJD6j4Psk350E5F7vDZ013Brh68P/xpx5kxlUarOjkRUzzihf+iVkdoOl6JdA5RpFMaD/
+	14J7GOoa9HFKUq1U7b5e02yjaJfFAhQhj/s7XcEh246ubxlNc0jyT2BBk9mRqJYHhlhMc1jNwG4
+	vOuKpJqT+AWxTOc0YJWcritEWkTSKN53DKzDoWKEtEoq6Mocqs
+X-Received: by 2002:a05:620a:4013:b0:930:e2ea:2881 with SMTP id af79cd13be357-936b3d940c1mr359405785a.36.1786537834756;
+        Wed, 12 Aug 2026 05:30:34 -0700 (PDT)
+Received: from ziepe.ca ([142.166.156.215])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-936b5f1388fsm117247585a.24.2026.08.12.05.30.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2026 05:30:34 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wu86L-000000030Ox-0KWD;
+	Wed, 12 Aug 2026 09:30:33 -0300
+Date: Wed, 12 Aug 2026 09:30:33 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+	longli@microsoft.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
+	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org,
+	arnd@arndb.de, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
+	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
+	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com,
+	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 3/5] iommu/x86: Share the architectural MSI reserved
+ range
+Message-ID: <20260812123033.GB662699@ziepe.ca>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-4-zhangyu1@linux.microsoft.com>
+ <20260811162124.GK544626@ziepe.ca>
+ <obiixds667qdhv5upqdpxmgrvrvp3bl5gfbpingvog2vzbexhg@b7n4fpfbkff5>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA1PR12MB6187:EE_
-X-MS-Office365-Filtering-Correlation-Id: 124c3a4b-47f8-4133-abdf-08def86b0146
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|18002099003|56012099006|11063799006|22082099003|6133799003|4143699003|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	+BltAkNT+f6tIXpgcHBdbYwfB+844d0enFvmnBg2A/bfkl5kfurE1fwdsgGwCyxURI1I+2bNjTABmgzcvY9zMwDxzDxIufrOhBfJaEJy+db42YF0DogdzBCyXK6/idAhXZt9vw8um97n0i1JsfsZ0AgHQigQl4GonPnZXcGlGDv0gMLfMhFIawZmTXmcGZkLJL2Ri/moqJMAbzHpZ8/jBSuTv6k2OiJLFLFkN6zG3TUpycdiHibV9/yGr1sd39A0P2cBoMBigcBhu/PltNh8vM5++PVyjK1AO/cEx5YlF1i+jxiGHC9dF/z089K0I6nZg9ovyxXdZ7sxPCsVrS4iKhfFJZi+SPT0MLykqL3TYjy+UyXy0hk0tYglfTF4PxZJNl0hfSlPPkw8qBSuBWtrkmFTblCV2ok+0uYHhQXz4pQYWWY9TkChylILVLSC7Ue/fZzdWpW6jfct0EiNHWYiHF0uSanqR4gd6pGYjYxo9KyZKaaMCWvb92JCAGF9tyHogbYKTTbCABvZdbjVupiW9us0TC0M/2iyO9WA4T9JPpCGozWuvFRgvWCanCv6XJwiAvn7QG5biXRu7KOdz5vyZRJMVwLFHFWHbWsZ4DhnLWAiAVYv4eSS/hYPYJ9xtxWhDj2md2ZIk3KzmQTJK2DyXr2zL4Rc7CHYyFzYjOetJAc=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(18002099003)(56012099006)(11063799006)(22082099003)(6133799003)(4143699003)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?wvhV3aZJSeM7B2aDEPDes9V2eXiUE5BVRAVttp2LNZVvjMSC1gTQALnmn8JW?=
- =?us-ascii?Q?jn8gAv+ClJAWOQ1ul1srTFLV2Iu0DUTd7u3BWnBQcQqblTtvW7S8bNF+hT9+?=
- =?us-ascii?Q?oIx3VGZB3xybX+RGo9WwS9IDvuqWWUxnRcuB4RTEWdKZi1rtwq5G6kYK8OnH?=
- =?us-ascii?Q?3rHlSXjKPkoESa9LWGrcBYhDyhKhS9KI5S03xzAS1OcYmRNYNesNeUNCV0je?=
- =?us-ascii?Q?u9vwDpAtpsGxTCo4t5++fRHhf2v1CxFBjEDVDtnD3jqUN1OrYXyTOOfFHtX4?=
- =?us-ascii?Q?1J9+2USRKHV4VnS9+s5lcHyQ/hf3gqvZbQpEes9sD6ZEfpHRc1yKEeavszXO?=
- =?us-ascii?Q?XCEAVQ6rnJ++8b3ZDteENQ8sKB8ZmaZUQkeCe6Zten7IwQhol13TdnR7EjiJ?=
- =?us-ascii?Q?6rNO+z3lhFdKNtHiS1ecNvc+DvYmN3DDpWSlhzU1opiVtWfaxBkv1mxITYVz?=
- =?us-ascii?Q?X8sGELuaUHOWHMNPG9ccYN4VL1DDNBuQ9ccYSwpfmWIa8NSqJL7i2+etXdgs?=
- =?us-ascii?Q?uiD6fbwYl1FtFkGlEi4f0S8uVlg30O5VLuP0t5qmCNXsuf41y6IVFNI4Au5K?=
- =?us-ascii?Q?Tk6fhYTX+EuZDzmVirii/GFZq+hYR97+9sFbpiEnjZT8d07Cr4F0q3XR0imz?=
- =?us-ascii?Q?+iigX96awqel8KoITDD0e4W/ety+1Xpz59N0ADUGRB39BjhK0wr4tV+VE3ul?=
- =?us-ascii?Q?SOlGMbUt/uerxU+LKRjk/NdwX/Wm1Bk6ovqJkD6biL3ENNxOwrHVjDuzNQML?=
- =?us-ascii?Q?vdhSuwVA2KCi86cR9nXr/jRYD4kOqFNbLAQKWaUf+85pTKsEog//JZ4ss9Vq?=
- =?us-ascii?Q?4/UcrtMScxPJBQ2kiFaE4SXPS/GFHYcqnqGzjDUpCMjj/H1BNjoXeggOb0W8?=
- =?us-ascii?Q?4X3v3K4RRYcbcvzGzRbVVy9YNTMQtyJIvwV+B9lL7b8JCwWALhz/qVC/Ubmt?=
- =?us-ascii?Q?sIy2SLPVxrmLUrEjMx//Y8bc5eP48wtfmkyTBz4P/NA5AAlDXZxT+nc+mlko?=
- =?us-ascii?Q?q49rRx7vLFAgz/fUaVnP6cU2rYQQ0ikBdD/7K5w7Q2rFjbMgbL1oxP17ocVQ?=
- =?us-ascii?Q?5HpWu14K16BFmCUtfNcdVl+JYZfOgGhHiqwgZsGO9tVGsr4YsqO4Rl1nSRx6?=
- =?us-ascii?Q?TADyd0Xl+eJ5Zw9t4DleqoXQ+4uILpKAZ5frNa98w4cAExuKwW5hBJNtPnot?=
- =?us-ascii?Q?MZPczblksPX2P2MdeDtrv3QeiuQMKb0VgonxjSWAEcGffdugiKD/ejkaHdJ6?=
- =?us-ascii?Q?tLnZKrA66lhV8cmqp4ikbcr7g1fha3cdURbsEy3ku2ZY/WaJy6PzmTyiOELs?=
- =?us-ascii?Q?0sfrffpPuZ+5VeKRHk1NAEAkYHS+CTdpKYuHf1/xmXXtCo+MXdul3rvCTKZr?=
- =?us-ascii?Q?E3UaH9VP0hUA7iMGX1mx63Ul/YgqUSsFZuysQfSGABznm53b/f0Z075T4VaI?=
- =?us-ascii?Q?iIw0vU8MAeCpwVHqTnvWrRN1KtrQgt7lYP3XPP95p/d7gjerIsJZfVoxiq1g?=
- =?us-ascii?Q?+NaQA1tvz0KG9BW8ZgROQ40lYM6njL0GXPkYi9e4m/NFKkxQHaUkj/xabtJk?=
- =?us-ascii?Q?s7ZUOtUWR5Q+xYwf3/ZmLP6xSUM9KtiH4xaZhOZL5ycWBGKWCfcmcrb2PjrI?=
- =?us-ascii?Q?fRhFMJgCV2/piM4Nw+Ec0VjQBpi+tm4W7UI/uaYjTS+Qo/0KHJFNcO+wUPTG?=
- =?us-ascii?Q?Vt7VrTY0QOG7OmKtkv5Z7wWEhcBGugsHALBccYUqdezFzJfchCFpW6jgjOrg?=
- =?us-ascii?Q?cJYQmlJajA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 124c3a4b-47f8-4133-abdf-08def86b0146
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2026 12:12:40.4635
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pxNx3GQ/66sftFaVj2Xkk3pxHJ8eFSAHhnOqpo+C8asLh+MSa58gwnef/1bPOwTD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6187
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <obiixds667qdhv5upqdpxmgrvrvp3bl5gfbpingvog2vzbexhg@b7n4fpfbkff5>
 
-On Wed, Aug 12, 2026 at 12:35:04PM +0800, Peiyang He wrote:
-> On 2026/8/11 03:59, Jason Gunthorpe wrote:
-> >> @@ -535,6 +535,10 @@ int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd)
-> >>  		return rc;
-> >>  
-> >>  	for_each_ioas_area(&ioas_list, index, ioas, area)  {
-> >> +		if (!area->pages) {
-> >> +			rc = -EBUSY;
-> >> +			goto out;
-> >> +		}
-> >>  		if (area->pages->type != IOPT_ADDRESS_FILE) {
-> >>  			rc = -EINVAL;
-> >>  			goto out;
-> > 
-> > If we do this then a concurrent map will get corrupted accounting. I think we
+On Wed, Aug 12, 2026 at 04:58:28PM +0800, Yu Zhang wrote:
+> Thank you, Jason!
+> Do you mean something like below?
 > 
-> From my understanding, if iommufd_ioas_change_process() returns with EBUSY when
-> detecting a NULL area->pages, later accounting logic in iommufd_ioas_change_process()
-> won't be executed. I may be missing something, feel free to point it
-> out.
+> -#define X86_IOMMU_MSI_RANGE_START        0xfee00000
+> -#define X86_IOMMU_MSI_RANGE_END          0xfeefffff
+> +static inline struct iommu_resv_region *
+> +iommu_alloc_resv_x86_msi_region(void)
+> +{
+> +       return iommu_alloc_resv_region(0xfee00000, SZ_1M, 0,
+> +                                      IOMMU_RESV_MSI, GFP_KERNEL);
+> +}
 
-The map side will be racing and it has already partially setup some of
-its accounting, but I guess you are saying since the change process
-aborts that is OK?
-
-> Taking domains_rwsem in iommufd_take_all_iova_rwsem() alone may not prevent the NULL pointer deref.
-> For example:
->     change_process: take domains_rwsem for write
->     map:            take iova_rwsem for write, insert an area with area->pages == NULL, and release iova_rwsem
->     map:            try to take domains_rwsem for read and block
->     change_process: take iova_rwsem for write and iterate the area
-
-
-Yes, I guess it does unlock as it runs too bad
-
-So this patch is probably the best option
+Yeah something like that.
 
 Jason
