@@ -1,112 +1,158 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AA463A8755
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 20:55:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB30B3C9ED9
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 20:57:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786568134; cv=none; b=Ub+iFSuGrye5BiwIuMq8srQOOaef6bvqx8P7wRXdK61aRrMoh0XGY3Nmk7sq0CxZrGN8cZgj1kwqdwFW5BvFrHHhn+YW2U3tNsPTIxXPVZ7i4TiAbPMmVhn6c3vWPtm9gsBbr+IdxQY+QVaEaNgrbIwYbzq1mvOaf9Y/PpIK43Q=
+	t=1786568262; cv=none; b=SvyRXjgN9+n551lhGMfxfg4/3XmJiJInuDLjAvUZNKwLAbb/1bKAFxfAsUBOggmHnnGV8gljmJph7XdHD03207Z2Sb4HhFPAsu7RnCGSW3dBMUHRZHMXwFrxE4HWDYoB7k+qa9Js6oJ9UFQoWKkKGjTOQL8pTm/HA4DTY6GOLyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786568134; c=relaxed/simple;
-	bh=FrdqQ6kXNnNKfJVjZwswwcKEQOtgoDeMVrYYyQrDqpE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ggym6TeH96ij+TWg35NRdrRUWH8Z/Q0t+38qStd6/JuM77BZZAW8TxvVylXcVxKOD82wWpl7LPtWK/QXC4PTBOGXe+bl2OKVqxUFAz+rUqbtVwno+SFXOzddAJ8FLuGY630J2psdwRzs0B0FLlvniPnh9eqI7a6i+danFX4KxS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.helo=mail.mainlining.org; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.helo=mail.mainlining.org
-Message-ID: <b15b2687-0c2e-43b2-ac9e-78e04e77e065@mainlining.org>
-Date: Wed, 12 Aug 2026 23:54:41 +0300
+	s=arc-20240116; t=1786568262; c=relaxed/simple;
+	bh=+T8rIYQMA0RYua306DzF39UQaD76cYSTxyj942vKdRA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rpeQeZ2NXHGqhQwCrfQmEVsL/YelFa+KO1epIl/2WlvhG67L3+PuUyOi5ZEjskos+L8H6wPZcQ03W48VeJa72dnfwuQn2TAttJ05FvQ9Dwgg7FbVCj+EJwWcGoYu6gy7gELMUhU7Bvm9GnjgoODJIqs8+f9IG5XnPt6QYxGxwMM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=M5EaZYAm; arc=none smtp.client-ip=209.85.222.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="M5EaZYAm"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-936623c6dd3so21566885a.0
+        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 13:57:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1786568260; x=1787173060; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=J/JxJ+OXxlnRn0rZzk42XaW0KL3+pcXSN0DjXbqxyWs=;
+        b=M5EaZYAm8adyMI8Fzh9z1CIMNx7of2ctFBBJnGoN3zlxAOXjMGOpn9/Zj+Zqx8wFyc
+         ijObNOaEEZ0XoiVZHoSxsu7ayV2sQy03rj2juD7azx6y2JstwJ4K0+iGjathloXQKH6p
+         D8cNroXD2xKI7wqtCqof+1CBGoSa63aFWylJrtHwZUCKqpynBWbcxQT/LdI9sQrgiI4w
+         grcLoNxAnJiwuIjOt5GfakmONv/ESkvLLCF+Id2ICGmqBc/9e1oXO0+0cEKMydUvGcgW
+         5fmi1AMqDwWCwST6yiXYCzrQsl+CMEQX4FbEeDK4DH/JUUXqhaQw/+em4XN0cce2hRgP
+         s3IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786568260; x=1787173060;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=J/JxJ+OXxlnRn0rZzk42XaW0KL3+pcXSN0DjXbqxyWs=;
+        b=XK7PhRLtpJPENyGGPE/NYi7DnUs51WAN6eIPjOxNoZfXbkUSoRIam9g6a7v0cPmq+7
+         26ecPuNV3Nc8lVr2oTtyBDTZLSHr3PJAmtS1p2HMkQRFdbOybyGmJWtGivpYEp6elrg/
+         8BVEmLGKQ0AnbKNjzsD918O12tbDGypBlXPkkqlH4ddxyob4p3Evv3ey9w1mOqyB6p6y
+         47rezWmHZGQNU1YkSjDYMfcXL+pZX4dVT8rpAw5+BHbLqe+GFhWvn3JBtsxGLSAljixh
+         j+aneEftOzS4awTFzP3vcaU55E9TWC5+6+eowguAJ8apG3xP9P2FrpzyHUoUZt5tF4bH
+         wgxg==
+X-Forwarded-Encrypted: i=1; AHgh+Rp7mRR/607GHOObcQlD8C3vX9TiMTXguZMObgKtSArqekTQJJ3ZjuiuMnpkBFReu/eirHXReQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNfff3Gl4pF0gBf2M2up+TTzsTgbTHQmZ8VGYvXjuZUFTow30N
+	jOURZXMEaU8JFqGOCXhvfBWhRkDg/eBCfc/2alL4WckL0L4eTZ+hMyuPkuIYgXivnXw=
+X-Gm-Gg: AR+sD13dRFMV3ohpmXYGtVkQSlp925fSbasjnD5eZQvQi9AQjA2270igtWxT6+9mgxr
+	3tDK+pIzMvRmIxiwuSqEL5y+Wz7Ul+vu/2nIsZbFpKLrCvXxpHlRQ7fyMtKfo9zvrdX2xNYu7C/
+	f+MgDI7UwTCzhzMNGvjq9QpC2gAf5O7yjUuPW5f+dNJA9tHNH4vDxnLIL87ijFR6P2qi66GQtEE
+	EH0UiMgX5pG2AoFzoiwY4iFgQQ03GacPXVnPFCjmUMWMFsgQI7R3EdPNnLYN084GAicandMkFyp
+	Zf+oaKe+JXai4/PPyst38Xxe7Nf7XmGFchqU09HMlkq+/o5hzeh8eGBgC2uFf+yjWUGtBnmmRv2
+	u7MyPwMpB5n0/LbYem5CevFpsrrKKJ66GcFAu1sYT/o0hVPVyHgNZHAxNCSFBAvViTdzoUGro9d
+	Ld65qjGcJrHGLIiaZwd7uYA/NPhgWed+LyTNIJEA==
+X-Received: by 2002:a05:620a:278f:b0:936:a8cd:a28a with SMTP id af79cd13be357-936c07f15f7mr50947085a.22.1786568258588;
+        Wed, 12 Aug 2026 13:57:38 -0700 (PDT)
+Received: from ziepe.ca ([142.166.156.215])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-936c199108csm778485a.19.2026.08.12.13.57.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2026 13:57:37 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wuG13-00000003Y59-0iGE;
+	Wed, 12 Aug 2026 17:57:37 -0300
+Date: Wed, 12 Aug 2026 17:57:37 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Cc: "Hegde, Vasant" <Vasant.Hegde@amd.com>,
+	"Limonciello, Mario" <Mario.Limonciello@amd.com>,
+	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"Longia, Amandeep Kaur" <AmandeepKaur.Longia@amd.com>
+Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
+Message-ID: <20260812205737.GG662699@ziepe.ca>
+References: <2f400c7f-eada-45e3-9079-7b5727ecb5c3@amd.com>
+ <bacdf160-8ab2-4bd6-aa9d-ab63b16527fa@amd.com>
+ <08f2e48e-6e98-4fde-af71-cb8cde666bdf@amd.com>
+ <20260805010706.GC28508@ziepe.ca>
+ <39ce2a2f-3bb8-43e7-9446-a67551cce104@amd.com>
+ <BN9PR12MB5146934D584CF0A2A9DD8CFCF7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <20260805175308.GD28508@ziepe.ca>
+ <BN9PR12MB51467229315BC8D731239E80F7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <20260805191116.GE28508@ziepe.ca>
+ <BN9PR12MB51463D56248A4DE952E6DCA2F7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/33] Add support for Qualcomm Snapdragon SM7150 SoC and
- Google Pixel 4a
-To: David Heidelberg <david@ixit.cz>, Jens Reidel <adrian@mainlining.org>,
- Danila Tikhonov <danila@jiaxyga.com>, Miro Mraz <mraz.miro@seznam.cz>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-watchdog@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-mmc@vger.kernel.org,
- netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
- dmaengine@vger.kernel.org, linux-crypto@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-remoteproc@vger.kernel.org, dri-devel@lists.freedesktop.org,
- neil.armstrong@linaro.org, linux-hardening@vger.kernel.org,
- linux@mainlining.org, Connor Mitchell <c.dog29@hotmail.com>
-References: <20250422-sm7150-upstream-v1-0-bf9a9081631d@jiaxyga.com>
- <2ca2b774-fd7f-4612-b38d-f60e32ff6f9a@mainlining.org>
- <283096ad-ae1b-42b8-8312-b192f735fc80@linaro.org>
- <cce3fe36-322e-49ed-8928-3aef813faad7@ixit.cz>
-Content-Language: en-US
-From: Danila Tikhonov <danila@mainlining.org>
-In-Reply-To: <cce3fe36-322e-49ed-8928-3aef813faad7@ixit.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR12MB51463D56248A4DE952E6DCA2F7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
 
-Hi David,
+On Wed, Aug 12, 2026 at 08:29:24PM +0000, Deucher, Alexander wrote:
+> AMD General
+> 
+> > -----Original Message-----
+> > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > Sent: Wednesday, August 5, 2026 3:11 PM
+> > To: Deucher, Alexander <Alexander.Deucher@amd.com>
+> > Cc: Hegde, Vasant <Vasant.Hegde@amd.com>; Limonciello, Mario
+> > <Mario.Limonciello@amd.com>; Kuehling, Felix <Felix.Kuehling@amd.com>;
+> > iommu@lists.linux.dev; joro@8bytes.org; linux-pci@vger.kernel.org;
+> > will@kernel.org; robin.murphy@arm.com; Suthikulpanit, Suravee
+> > <Suravee.Suthikulpanit@amd.com>; bhelgaas@google.com; Longia,
+> > Amandeep Kaur <AmandeepKaur.Longia@amd.com>
+> > Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs
+> > only
+> >
+> > On Wed, Aug 05, 2026 at 06:12:05PM +0000, Deucher, Alexander wrote:
+> >
+> > > > On Wed, Aug 05, 2026 at 05:22:22PM +0000, Deucher, Alexander wrote:
+> > > >
+> > > > > IIRC, they supported SME, but it wasn't usable due to other
+> > > > > limitations (e.g., the requirement for identity mappings due to
+> > > > > the display hw bug and the latency impact of encryption for
+> > > > > displays in system memory).  Do you could effectively pick either SME or
+> > displays.
+> > > >
+> > > > IMHO the GPU driver should fail if it cannot work because it can't
+> > > > reach the IOVA space requried for SME ...
+> > > >
+> > > > I don't think this should be a iommu problem to deal with
+> > >
+> > > That means no display for the user which is a not a good user
+> > > experience. Most users of systems with integrated graphics would
+> > > probably prefer displays over SME.
+> >
+> > You said IOVA translation doesn't work at all on these devices due to a bug, so
+> > what is the iommu even supposed to do? It can't select identity because the
+> > device doesn't work that way and it can't select paging because it doesn't work
+> > that way either.
+> >
+> > Or are you saying paging sort of works enough to do something half-busted?
+> 
+> IOVAs worked fine for everything on the GPU (gfx, video enc/dec,
+> etc.) except for displays.  You could avoid the problem by limiting
+> displays to carve out, but many of these platforms shipped with so
+> little carve out that that it wasn't feasible to use carve out for
+> displays beyond the UEFI splash screen.  That's what we did on Linux
+> initially until lots of OEMs started shipping platforms with minimal
+> carve out and no way to change it.
 
-Thank you for your comment.
+Sure, but the end result is the GPU and SME are inherently
+incompatible, we can't really fix it.
 
-On 12/08/2026 14:40, David Heidelberg wrote:
->
->
-> On 23/04/2025 09:26, Neil Armstrong wrote:
->> Hi,
->>
->> On 23/04/2025 00:07, Jens Reidel wrote:
->>> Hi everyone,
->>>
->>> apologies for the mess this created. Danila's mail provider 
->>> ratelimited him halfway through sending the series and the attempt 
->>> to re-try sending the second half an hour later ended up with a new 
->>> message ID (I think due to not using --in-reply-to).
->>> He asked me to let you know that this will be resolved later and the 
->>> whole series will be re-sent once the problems are resolved.
->>
->> The b4 web submission is a great alternative when the mail provider 
->> is rate limited:
->> https://b4.docs.kernel.org/en/latest/contributor/send.html#web-endpoint
->>
->
-> I see people interested in moving Pixel 4a forward, but it seems this 
-> was never upstreamed? I looked at sm7150 repository [1] where I see 
-> FROMLIST, but these patches never arrived to the list and this series 
-> is from 2025.
->
-> Should we expect v2 (re)based on recent tree?
->
+What's wrong with blowing up at boot with a clear message that Linux
+must have SME disabled on this HW printed to the UEFI console?
 
-I'd definitely like to get back to upstreaming SM7150 and the devices
-based on it, but I don't think there's much value in continuing with
-this particular series as-is. A lot has changed in the kernel over the
-past year, which would require substantial changes throughout the series
-and would effectively force the maintainers to review it from scratch
-anyway.
-
-I'd also like to split the series up to avoid targeting such a large
-number of maintainers in a single submission. Hopefully, I'll be able to
-find some time to work on this in the near future.
-
-
-> Thanks
-> David
->
-> [1] 
-> https://github.com/sm7150-mainline/linux/commit/7ea41523c678e94a7c048936052b5b1b1b109cdd
->
->> Neil
->>
->>>
->>> Best regards,
->>> Jens
->>
->>
----
-Best regards,
-Danila
-
+Jason
