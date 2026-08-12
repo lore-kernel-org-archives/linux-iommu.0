@@ -1,43 +1,79 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A724947DD47;
-	Wed, 12 Aug 2026 17:25:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01A4142F6FD
+	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 17:43:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786555559; cv=none; b=YJgPk2bQrGPO/jGbLveFhRLYr9GMQ1VSQyQnAAfmpqlHlEG6MnzSFNiWOaTvozQdhkpoaB5VMAP734mW38Qbd6J4mw6QM/XKQN52zeau1xinNq9iii50KntdH5Os5wWWUdzu918P6BJZDSqOUSMMEeIHOz0uhRI1WwKi2swi40M=
+	t=1786556582; cv=none; b=ma4oFNxEGvKuVCn1FPTweJiHSzBOG6U9c1pEieiJC68kM3F0Dv/5RAEVtjnHgywirVd2WGBS/z7t0wRaGXbtQn6NHv88oPrLDw+DCmnLnq9xyvcH2qL8LLYdC5GT32s8ltV6QYcKhTA4zSsuAsPwenQGJZDKA9O0j6WTgJyn1lE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786555559; c=relaxed/simple;
-	bh=H8Ctj6oiAsOEpGNBs0wlRNq4MV8mA+m6BBgfdUbyouk=;
+	s=arc-20240116; t=1786556582; c=relaxed/simple;
+	bh=R8K4AhpTTGabp/TpyA1fPLTe5/En+9HZcWa+J+NqaoY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b9NeIEjwBZvBGvcrNg9KYmuv39jOCDvd3EzsXsnTs8La/iVh3OtboGjpSe2WzFQZkHVfJHyzG8JSZV8AC7vNjZWkP/37VBUBKIUmvFT83clF8vADr4W32tuJ6R2QZmFRI6I8fWYxYJ9qjrxQlHH8aG44QGJDLkOurFMH2Wami24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=B7MvlTwC; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=oeSi58c8MQW4WCrOHsSMKM987cJ+1Wwb3qQ+hpkB8VoRpaUTV7Oi6+YnMmDH/38iyamGPW2eILR9Ep9Kq1nuolA7dkkzUB5ij363xKvy131WrZ11fa86pF2qFyjS/7is/w3e7zd/C6eZhM6E0BkgIeFPQn6SDLYSybG02iDKOvY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=h7iBqkTY; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="B7MvlTwC"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 027DA1596;
-	Wed, 12 Aug 2026 10:25:53 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B91943F66F;
-	Wed, 12 Aug 2026 10:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786555556; bh=H8Ctj6oiAsOEpGNBs0wlRNq4MV8mA+m6BBgfdUbyouk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=B7MvlTwCYIwI4GDClgPFTpjUn0sPusFPcML8t810t+/14DjgB7H6MHkilb/6UiE7z
-	 ygNoSqQ5anoFHIng2RTl38bEgQufRq6aCROSFR8PsvTOYN+DONSLOZ4RNcz/oEDVl8
-	 rDzolVsJ4vasql17ywsCsdZsl95wvqEHSbsasHfo=
-Date: Wed, 12 Aug 2026 18:25:49 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="h7iBqkTY"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c08df8513so9160351cf.3
+        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 10:43:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1786556580; x=1787161380; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=RRy7TSLv7XgtK7yVOoP/4PPtFt0r1aZ67kTGnhbzw7Y=;
+        b=h7iBqkTYfGutRLMFliwlxru44k3I/f62FEmk+Xa73AMKWevU4eRvePb79Hr6QKXD9p
+         MACy8KwrA9oSCGTkfo0V4t/Fqg1GnYsOJd6dJKsxPXGm7o40GFDWHsunSltVuJJFf4xa
+         nBPJK1TleAFCb5z8Gg99hLpJaVzmx4+pKN694GHLwwEVL2Wpq4HM/uFRw81+2+U/r8yA
+         TG5vuR78vnclhJaWQ9hbb+uhuMrxTDGvKEhxJsFsMmChaclezK2o9C5egCif8oZ3nhyL
+         +fXUb+ba5Mw/jHtrLA3y+iBiIQCe3dqhcRF3lIsNkFlRFz/TrMR+Hms6XjI/tfCTCcb1
+         /mxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786556580; x=1787161380;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RRy7TSLv7XgtK7yVOoP/4PPtFt0r1aZ67kTGnhbzw7Y=;
+        b=RfSPzuaM/qUbKpjmByQj/TEt02tWAl8fUD7LBzV3dtGFTpMnqRl80v+yFWVoR4Kd7n
+         I5AgCW6q82MOmhBs/op/XxKvQIWl5PSY24cyzlL35I1F+0N6/NT/mtCLGZmFbIO3BiFq
+         nlFRGR2Zezl0Q24GLrGXol4gLPV5/PiUKdd2piAxq1TUY0eujHjQA1MRruk11luV+oX3
+         hMxjUfU1hSaqJjx3cppzinb6rNCn5kvrXLRxWHP64oLo95pQHhxa6SREVOUWi1EraG/3
+         N5jW1RTb5UsCAzjvTQuaqo/7zY14cjU40zqToTlgDZTPw9jLjFMJpOflCE7H8BOUkRFp
+         qoFQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rqe9nQK/2+RGZqvom0r4ry5VDMX4vEjjp2qRugaPbzmIu8nqT2zxdjhHZZkdg+9zH6Gtq05EA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzqUVszqEgwi8T7UUgzUECjLLk0K7+fsi1LKSPdikdQfZmWK5G3
+	GU4qNJHiCD0/u1uIHvdFBv/EUMhg2AH4xXibHAKXifZsxksGobCaXg/4zn0MujCxf4M=
+X-Gm-Gg: AR+sD11pz6aw/EDJ0M11Satkwfc2I+1aQ9QXuWoRFmNpmzXLCPJKhqhc9MdhRmaYcrU
+	4mKiysWmFUS95tozOfyWKDOs/BC51T3ehhWkJrEylyt84PefxX7arYG2oDnkt0QwcZ+h20MyFo/
+	I7+4r4AxRRdSfq6DIKGoJSeTR6GhsK9Zz4s93hTOs+WxOhhinnLeq7lxn7iuP03KV5jefHfpVC4
+	3JbHqmxs6yiFdZH+b3hUSGOaZ0ab1N3gS17yBwpSiKiSLFM6x8mZvUJ7s8kfSrOzD8bq7dL9WY0
+	0wK7lNgx8AN4Ei/BwvP2g6g+UfuFKmwsWbFmrgffVwmvEvcVYeUGxpeZ5jKGTLIbndr2pegMbvV
+	i773upupHMcIZ6w3mk5FT3yv7ND79aYp6TUK1rJzQxpQd+WEfEsRCyZYFjGbN5yu9Zc917uex9B
+	uV7dzvBCmFGmNvi/8TudXyHMIRbKCkD5mnuq815Q==
+X-Received: by 2002:a05:622a:145:b0:528:38b1:b54c with SMTP id d75a77b69052e-52d646a004amr57067221cf.2.1786556579927;
+        Wed, 12 Aug 2026 10:42:59 -0700 (PDT)
+Received: from ziepe.ca ([142.166.156.215])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-52d61d91199sm22262711cf.14.2026.08.12.10.42.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2026 10:42:59 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wuCyg-00000003IL0-2V6p;
+	Wed, 12 Aug 2026 14:42:58 -0300
+Date: Wed, 12 Aug 2026 14:42:58 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
 	Steven Price <steven.price@arm.com>,
 	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
 	Petr Tesarik <ptesarik@suse.com>,
 	Alexey Kardashevskiy <aik@amd.com>,
 	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
@@ -54,10 +90,11 @@ Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
 Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
  encryption
-Message-ID: <anysnQFVTO_RAYxp@arm.com>
+Message-ID: <20260812174258.GF662699@ziepe.ca>
 References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
  <anxEc8EHmJQywVI5@arm.com>
  <yq5ajypvioks.fsf@kernel.org>
+ <anysnQFVTO_RAYxp@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,69 +103,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <yq5ajypvioks.fsf@kernel.org>
+In-Reply-To: <anysnQFVTO_RAYxp@arm.com>
 
-On Wed, Aug 12, 2026 at 04:38:03PM +0530, Aneesh Kumar K.V wrote:
-> Catalin Marinas <catalin.marinas@arm.com> writes:
-> > On Tue, Aug 11, 2026 at 07:10:56PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> >> Systems with memory encryption use swiotlb to provide shared or
-> >> unencrypted buffers for device DMA. Confidential guests may route all
-> >> DMA through these buffers, while SME hosts use them for devices that
-> >> cannot address encrypted memory. The default swiotlb pool can therefore
-> >> be exhausted under I/O-intensive workloads.
-> >> 
-> >> Let architectures mark the default swiotlb pool as shared before
-> >> swiotlb_init().
-> >
-> > I thought we wanted even this decision to be moved out of the arch code.
+On Wed, Aug 12, 2026 at 06:25:49PM +0100, Catalin Marinas wrote:
+> > > BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
+> > > option in realms?
 > 
-> Architectures may want to use an unencrypted swiotlb pool for different
-> reasons, one of them being CC_ATTR_GUEST_MEM_ENCRYPT. x86 hosts also
-> require unencrypted pool to support SME. We can cover both cases using
-> CC_ATTR_MEM_ENCRYPT.
+> It's still not clear to me why we went for CC_ATTR_MEM_ENCRYPT instead
+> of CC_ATTR_GUEST_MEM_ENCRYPT.
 
-Yes but in one case it did not do resizing. With your proposal, it now
-does swiotlb resizing even for SME.
+Yeah, this tune should be only for CC guests that have the
+shared/private issue.
 
-> However, pKVM does not want an unencrypted SWIOTLB
-> pool. So I was thinking it would be much cleaner to let the architecture
-> code drive that decision.
+The AMD SME issue with the address width on bare metal is an entirely
+different problem that would need a different kind of tuning.
 
-Let's not single out pKVM but rather the reason it does not want one -
-it relies heavily on restricted mem. If you started a pKVM guest
-without rmem in DT, I assume it will need swiotlb to function properly.
-It's not a great heuristic (devices may not use rmem) but it preserves
-the current behaviour and can be overridden on the command line.
-
-> > BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
-> > option in realms?
-
-It's still not clear to me why we went for CC_ATTR_MEM_ENCRYPT instead
-of CC_ATTR_GUEST_MEM_ENCRYPT.
-
-> For the same reason I mentioned above, architectures may have different
-> reasons for setting cc_shared = true. IMHO, it is cleaner to let the
-> architecture code make that decision before swiotlb_init().
-
-The arch code already reports cc_platform_has(), can we not rely on
-this in the core code instead of specific is_realm_world() and a new
-SWIOTLB_INIT_CC_SHARED flag or function call?
-
-We have three different decisions that shouldn't be driven by a single
-flag from the arch code:
-
-1. allocate default pool
-2. make default pool shared
-3. resize default pool
-
-(1) is traditionally driven by arch code and that's fine. For (2), the
-core code has the information via CC_ATTR_*. For (3), we can enlarge it
-based on CC_ATTR_GUEST_MEM_ENCRYPT in combination with rmem (but not
-CC_ATTR_MEM_ENCRYPT to keep the current x86 behaviour).
-
-I think we should also move the reduction based on
-CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC into the core code. Riscv copied the
-same heuristic as arm64, so there's precedent for sharing.
-
--- 
-Catalin
+Jason
