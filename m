@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42FB1423A80;
-	Wed, 12 Aug 2026 11:08:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A511E3F0AA9;
+	Wed, 12 Aug 2026 11:31:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786532898; cv=none; b=WtlbFoMWUy7PVKyiQdGVGqf86lrYmlgYD7/GtHw5K2xNWblL3GLZu44hMPapOIN9OYxBMeFmybJxcEopd6XlXO77K6UCVKyWJQsT3wsYKUZo7XmCJUWL7mkyI5U2a3c9I8AxlPIEtyv4NgArqNbBCLt0MkV57c+8lmg9i+pLxp0=
+	t=1786534308; cv=none; b=XqhINwKFE60eDo+BLp4nHnyI69re32pkfzA1o+1r8tIWIKt9TQ8ssXWsTg6P5W1vWcxnlLq07ZnM2Yorz2VHAK2f9cBJuDeiUQRng0Qwcx7ViWrPswVQeiwyDycVzk9rs6d9pGyaVrX8DdTvePrapCt+MbVrvKBXDSPMNUfpfx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786532898; c=relaxed/simple;
-	bh=lzP/JY3aeuocCdWL/0uXP7CnjLsvHNNNeXnnQoQI6GQ=;
+	s=arc-20240116; t=1786534308; c=relaxed/simple;
+	bh=prvfrk9gL+HqgXLDaAtA86obGKz2hkWS/KhX5m4Y2uI=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=OgiiXTPVYMMuFyaQrXFtuZIeL+qZYNHVtAHwcn1ZQEYqJnSdrRn9G78ySH6j24FHS4dXenulrUXm+t0UtjO2IdIryVXv88qD0pwXA6oRA7zWLh3khyJbu2iHR4+EbMQnPUFP1l8N3tbVmIaWDVoNF/UqJKUHXsm6UW7hGfXEHYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EkPSCeLD; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=MuMDbYPoF3pXtSIX2QLv21jAvYjGj4R/1eJMkLnZ3JhkQlmdWuBGMJlvn72cxcCA0bY7mPEKDOIAgfSreNaUoMs6w+yMxwWx9eV9bDVQXpWFDeorvjuBvMQMeDQBvSeM4knMSuBRPLMGm8zcZyKTW1QFNlOrlihIO3yMkuKG9k4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cvoNZLlJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EkPSCeLD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332981F000E9;
-	Wed, 12 Aug 2026 11:08:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cvoNZLlJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EF91F000E9;
+	Wed, 12 Aug 2026 11:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786532896;
-	bh=wrG8DuqyrTgTLnhCEF0YR7wirnsbC3EpRyGJXVbGCIU=;
+	s=k20260515; t=1786534307;
+	bh=8R0bYt528y2mbivyUE1djUnRJwaalT2no2Rhah2uRgU=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=EkPSCeLDP67zu3BNdozJVWmVgN/lwbl/w5cX6yfGYw9yVFjo6oPLCa0KuCgxJq/bJ
-	 KCRPGDosYj4GfgaVr2nyBLrLMQzyq56jcmCurtz+u98h44jUMGlYs5abspQ7HI6rsh
-	 QfoHCmaUDsxiRzdFLpT+tVjAjEYbE4nO23QHgxFCh00LDfMeQi+Ph7C2SSyb7vjFYB
-	 hmnKnnLtrOxIfLT7V/pLXlLtaxUOl4T+7oG8LNW7m3pliZ+JhFVaHDpU+gCrQUFKvh
-	 ITPhU3LDVqetWIWSsynW6Wc8ICVklFrAdPPAB/k0svEdGHBfo3zvurKffjxX4mpEdJ
-	 bjOpTJ9BJHYPw==
+	b=cvoNZLlJHW+4WOwYmevlbzkHPd7+Hbm9aTKER6k84q/k54rUk8JPdaAZtnxpqPlGh
+	 WBUIWjAoHCAfBrKR2k6VIIpyHPdYitk67obZ1E3ZqU0mj2wcu8OQaFMwuWv1Gc8pRn
+	 lGVsxICtRj7Pjsym6tNbO6xBq5x5xHZvdLvgC1NfkP22+Sr8s4yoJGpQaMusWOl6Wo
+	 TTlkiBlem5dh19IDXWOSxSjsWWSi3+UQ7dGyxBjXjtEnOwL8mPkqaYjAH37SBlFd3b
+	 ieLS7PaRTKrwBLLAqi7+ZIAmPBmvS1d+u3/VKi9x/bOU1+ohhYTujIU+5khH/iE0fR
+	 GUsUxWVBsS1lQ==
 X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
 To: Catalin Marinas <catalin.marinas@arm.com>
@@ -59,8 +59,8 @@ Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
 In-Reply-To: <anxEc8EHmJQywVI5@arm.com>
 References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
  <anxEc8EHmJQywVI5@arm.com>
-Date: Wed, 12 Aug 2026 16:38:03 +0530
-Message-ID: <yq5ajypvioks.fsf@kernel.org>
+Date: Wed, 12 Aug 2026 17:01:33 +0530
+Message-ID: <yq5ah5kzinhm.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,78 +71,6 @@ Content-Type: text/plain
 
 Catalin Marinas <catalin.marinas@arm.com> writes:
 
-> On Tue, Aug 11, 2026 at 07:10:56PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> Systems with memory encryption use swiotlb to provide shared or
->> unencrypted buffers for device DMA. Confidential guests may route all
->> DMA through these buffers, while SME hosts use them for devices that
->> cannot address encrypted memory. The default swiotlb pool can therefore
->> be exhausted under I/O-intensive workloads.
->> 
->> Let architectures mark the default swiotlb pool as shared before
->> swiotlb_init().
->
-> I thought we wanted even this decision to be moved out of the arch code.
->
-
-Architectures may want to use an unencrypted swiotlb pool for different
-reasons, one of them being CC_ATTR_GUEST_MEM_ENCRYPT. x86 hosts also
-require unencrypted pool to support SME. We can cover both cases using
-CC_ATTR_MEM_ENCRYPT. However, pKVM does not want an unencrypted SWIOTLB
-pool. So I was thinking it would be much cleaner to let the architecture
-code drive that decision.
-
->
->> Move the existing x86 sizing policy into generic swiotlb
->> code and add early pool marking for arm64 Realm guests, powerpc secure
->> guests, s390 protected-virtualization guests, and x86 memory-encryption
->> platforms. Use CC_ATTR_MEM_ENCRYPT on x86 to include host SME, whose
->> swiotlb pool must also be decrypted for devices that cannot address
->> encrypted memory.
->
-> That's a functional change for x86. For now, I'd keep it to
-> CC_ATTR_GUEST_MEM_ENCRYPT.
->
-> BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
-> option in realms?
->
->> Move the powerpc secure-guest swiotlb enablement before initialization
->> so that the shared pool is allocated with the required flags. pKVM
->> guests continue to use a restricted DMA pool instead of the default
->> swiotlb pool.
->> 
->> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->> ---
->>  arch/arm64/mm/init.c                 |  6 ++-
->>  arch/powerpc/mm/mem.c                |  7 +++
->>  arch/powerpc/platforms/pseries/svm.c | 10 ----
->>  arch/s390/mm/init.c                  |  2 +
->>  arch/x86/mm/mem_encrypt.c            | 27 ++--------
->>  include/linux/swiotlb.h              |  7 ++-
->>  kernel/dma/swiotlb.c                 | 73 ++++++++++++++++++++++------
->>  7 files changed, 82 insertions(+), 50 deletions(-)
->> 
->> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
->> index e308a7cabd12..4c022e8aed43 100644
->> --- a/arch/arm64/mm/init.c
->> +++ b/arch/arm64/mm/init.c
->> @@ -338,8 +338,12 @@ void __init arch_setup_zero_pages(void)
->>  void __init arch_mm_preinit(void)
->>  {
->>  	unsigned int flags = SWIOTLB_VERBOSE;
->> +	/* pKVM uses restricted-dma-pool */
->> +	bool cc_guest = is_realm_world();
->>  
->> -	if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
->> +	if (cc_guest) {
->> +		swiotlb_mark_default_cc_shared();
->> +	} else if (max_pfn <= PFN_DOWN(arm64_dma_phys_limit)) {
->>  		/*
->>  		 * If no bouncing needed for ZONE_DMA, reduce the swiotlb
->>  		 * buffer for kmalloc() bouncing to 1MB per 1GB of RAM.
->
-> With your other reworking, doesn't the core code know the swiotlb will
-> be shared? Can it not make the decision to resize at that point based
-> solely on CC_ATTR_GUEST_MEM_ENCRYPT?
 >
 > I also wonder whether we could address Will's pKVM request not to
 > allocate a bounce buffer once pKVM guests will start reporting
@@ -150,10 +78,133 @@ code drive that decision.
 > restricted-dma-pool is advertised in DT (it will end up in
 > rmem_swiotlb_setup()), skip resizing the default swiotlb. It's not
 > perfect but the bounce buffer can be overridden on the command line.
->
 
-For the same reason I mentioned above, architectures may have different
-reasons for setting cc_shared = true. IMHO, it is cleaner to let the
-architecture code make that decision before swiotlb_init().
+I have a follow-up cleanup patch where I switch the swiotlb
+initialization reason to a flag value. With that, we now have
+SWIOTLB_INIT_CC_SHARED.
 
--aneesh
+The challenge is that it is still not clear when pKVM would want to use
+an unencrypted swiotlb pool for DMA bouncing. I would expect pKVM to
+have some additional condition based on which it chooses either the
+restricted-dma-pool or the default swiotlb pool.
+
+Using the presence of a restricted-dma-pool to decide whether the
+default swiotlb pool should be unencrypted is one option, but I am not
+sure that is the right abstraction.
+
+modified   arch/arm64/mm/init.c
+@@ -342,7 +342,7 @@ void __init arch_mm_preinit(void)
+ 	bool cc_guest = is_realm_world();
+ 
+ 	if (cc_guest)
+-		swiotlb_mark_default_cc_shared();
++		flags |= SWIOTLB_INIT_CC_SHARED;
+ 	else if (max_pfn > PFN_DOWN(arm64_dma_phys_limit))
+ 		flags |= SWIOTLB_INIT_ADDRESSING_LIMIT;
+ 
+modified   arch/powerpc/mm/mem.c
+@@ -289,9 +289,8 @@ void __init arch_mm_preinit(void)
+ #ifdef CONFIG_SWIOTLB
+ 	if (is_secure_guest()) {
+ 		/* The host can access DMA buffers only through the SWIOTLB. */
+-		swiotlb_mark_default_cc_shared();
+ 		ppc_swiotlb_enable = 1;
+-		ppc_swiotlb_flags |= SWIOTLB_ANY;
++		ppc_swiotlb_flags |= SWIOTLB_INIT_CC_SHARED | SWIOTLB_ANY;
+ 	}
+ 
+ 	/*
+modified   arch/s390/mm/init.c
+@@ -163,12 +163,10 @@ static void __init pv_init(void)
+ 	if (!is_prot_virt_guest())
+ 		return;
+ 
+-	swiotlb_mark_default_cc_shared();
+-
+ 	virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
+ 
+ 	/* make sure bounce buffers are shared */
+-	swiotlb_init(SWIOTLB_VERBOSE);
++	swiotlb_init(SWIOTLB_VERBOSE | SWIOTLB_INIT_CC_SHARED);
+ 	swiotlb_update_mem_attributes();
+ }
+ 
+modified   arch/x86/mm/mem_encrypt.c
+@@ -14,6 +14,7 @@
+ #include <linux/mem_encrypt.h>
+ #include <linux/virtio_anchor.h>
+ 
++#include <asm/iommu.h>
+ #include <asm/sev.h>
+ 
+ /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+@@ -109,7 +110,7 @@ void __init mem_encrypt_setup_arch(void)
+ 		snp_fixup_e820_tables();
+ 
+ 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+-		swiotlb_mark_default_cc_shared();
++		x86_swiotlb_flags |= SWIOTLB_INIT_CC_SHARED;
+ 
+ 	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+ 		return;
+modified   include/linux/swiotlb.h
+@@ -18,6 +18,8 @@ struct scatterlist;
+ #define SWIOTLB_ANY	(1 << 1) /* allow any memory for the buffer */
+ /* Initialize a default-sized pool for devices with limited DMA addressing. */
+ #define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 2)
++/* Initialize a shared default pool for confidential-computing systems. */
++#define SWIOTLB_INIT_CC_SHARED		(1 << 3)
+ 
+ /*
+  * Maximum allowable number of contiguous slabs to map,
+@@ -191,7 +193,6 @@ void swiotlb_dev_init(struct device *dev);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_allocated(void);
+ bool is_swiotlb_active(struct device *dev);
+-void __init swiotlb_mark_default_cc_shared(void);
+ void __init swiotlb_adjust_size(unsigned long size);
+ phys_addr_t default_swiotlb_base(void);
+ phys_addr_t default_swiotlb_limit(void);
+@@ -231,10 +232,6 @@ static inline bool is_swiotlb_active(struct device *dev)
+ 	return false;
+ }
+ 
+-static inline void swiotlb_mark_default_cc_shared(void)
+-{
+-}
+-
+ static inline void swiotlb_adjust_size(unsigned long size)
+ {
+ }
+modified   kernel/dma/swiotlb.c
+@@ -373,11 +373,6 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
+ 	return tlb;
+ }
+ 
+-void __init swiotlb_mark_default_cc_shared(void)
+-{
+-	io_tlb_default_mem.cc_shared = true;
+-}
+-
+ static void __init swiotlb_adjust_cc_attributes(void)
+ {
+ 	unsigned long size;
+@@ -429,7 +424,7 @@ static bool __init swiotlb_should_init(unsigned int flags)
+ 	if (swiotlb_force_bounce)
+ 		return true;
+ 
+-	if (io_tlb_default_mem.cc_shared)
++	if (flags & SWIOTLB_INIT_CC_SHARED)
+ 		return true;
+ 
+ 	return false;
+@@ -451,6 +446,9 @@ void __init swiotlb_init_remap(unsigned int flags,
+ 	if (!swiotlb_should_init(flags))
+ 		return;
+ 
++	if (flags & SWIOTLB_INIT_CC_SHARED)
++		io_tlb_default_mem.cc_shared = true;
++
+ 	io_tlb_default_mem.force_bounce = swiotlb_force_bounce;
+ 
+ #ifdef CONFIG_SWIOTLB_DYNAMIC
