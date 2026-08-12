@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7781367B93;
-	Tue, 11 Aug 2026 21:21:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB16279DB6;
+	Wed, 12 Aug 2026 02:19:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786483319; cv=none; b=LiTXG7SlBAqVk1J4Yd/zwvlceqhhTgZTPZU67bGU4Yobd4SDQj9johkGDAG8rsf4OxLNbpW7kAlysHA24vLF5xznuOwmqofio5avuNXGhHO5RREdH0D+VTA7ipdgoOWPwvz2xfaG42wXfEjq7PabFq/B8A2SiMFTJAUlNkP2CE4=
+	t=1786501149; cv=none; b=lsHGUTM9+7sxkilWHbBq5ds+5bSVvo8ZhZhq6ALP4iA+/IcVSjm/lB7UI2Sb7zcBAHHF2kc8qNGRImvOp1nfAxPxkrNXUbet4rqtRitElD7hf7fPL8O7tGNrJYAQBCOOaP1kBFfdhnQmBjSK4ZxDzsSJte0i9PsEgYeegwKdB1U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786483319; c=relaxed/simple;
-	bh=vXkIPbCgY8fqRfBXgJsw2fkEihfRRXh4Uzp3SunNgc0=;
+	s=arc-20240116; t=1786501149; c=relaxed/simple;
+	bh=k1vXOZvYRnfs9hRYQLoxONrEwGhlRHk2wwZ+9XOy0H8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qUmTRfxvjX7HBXErw8UTFrf+h1d8E1UnHpkUCYJ92tZZZgfAY7a/j984nnLLBrEeTJKNkiYUudKe760Tnf2E8X8MFCNbCig2YxftebDTir0a7hLnSt+fnbyWEbxnwgmQJe+78caF3/OLq+9Abt/MsuDON5Q38MIKB8rgs+HEgy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bEJbRNHQ; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=sDWarCD1yXAXk7qDT7ysszMDb3A8R5R5yplQpFjDFgq+0DmQAQsrbFrYdaHUYyLUI6T+i/Yd5m4iucDqDAo0uxC9lTNpw4msQmQACsrJtK2+K0QbYcozCShDeI2P96ELMjCgpRxDEnzGCDw+EZzjwHJ8Csruy6t64cXIa7iZuqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KNdNZeAO; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bEJbRNHQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB7E1F000E9;
-	Tue, 11 Aug 2026 21:21:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KNdNZeAO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9FDC1F000E9;
+	Wed, 12 Aug 2026 02:19:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786483318;
-	bh=zIlAl7RJ8yMOdVKvygcDu2T8idi0tcM0JETLZGdlNSQ=;
+	s=k20260515; t=1786501148;
+	bh=ycLlSOHTauxo4PZFYfru/N1BjjuXsszYlQ61e8B13FU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=bEJbRNHQnCMabxHAnFfiywgX2vqVBKBCg++fbDMzkOVMLpuF47eS3paHExQT8MMef
-	 XBGYbGIglHf2k2pEcKBuXX6Mf/bTcnh9B7SHkDeQHTTOWi4WI5ugx0snplra0PtAgu
-	 D+xwpxfbQjddS69xB+p6N+WoH4gx/l17B1gvyUc41qcT8YFGwFjsLMbFrpo0NytOpK
-	 4wH2urQ+fSpSli7Y4GpCaHrpXYfrqZREHb55eRmV/Fkyi6x9ioJDbikUcqAeDR48Gs
-	 juzWXdOw7xrZ/C65qEtkOCFA8QxoFJVyxj78n7txmR18DHeQ4t7ObhqbVOVed1cHs4
-	 Htf1/tV+S7UQA==
-Date: Tue, 11 Aug 2026 14:21:56 -0700
+	b=KNdNZeAOTmL3g1Q5f+zq4R+xp1YeQQortTkMT0z7ccREjUF0IUtWx04ovwNbjShWg
+	 qPjNk7jrLRV8UOYUX6eUDwqgIg6Ly4YIyx4kS/zij1c/e0KSdPKyU7DLf6INYqIhL+
+	 RKlVAk5n+BLOWEzD65T1VUfCImRT6SaTAb9PW7fara1QBzt8GNkF8E5rgZelRYxzIV
+	 gKtG+XeQwW2NWQ8Vs8PQFwl8AfJ0QuUGuvbH77ZALY2FZSWi9iowSRXoLrp1gTGFR0
+	 eaaZyv6IpvMShZJynGMEn+iSboKMwe8XoW7knKBTFZtmUyzoDz6D+RJ34e+1ed/IuW
+	 8PTxG5rAC1qVg==
+Date: Tue, 11 Aug 2026 19:19:06 -0700
 From: Drew Fustini <fustini@kernel.org>
 To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
@@ -39,10 +39,11 @@ Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
 	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-kselftest@vger.kernel.org, x86@kernel.org
-Subject: Re: [RFC PATCH 5/7] iommu/riscv: Expose global QoS IDs in sysfs
-Message-ID: <anuSdFS4Enajdqff@x1>
+Subject: Re: [RFC PATCH 3/7] resctrl: Add a devices file for external
+ requester assignment
+Message-ID: <anvYGuNF3MC//Q94@x1>
 References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
- <20260714130657.46963-6-zhangzhanpeng.jasper@bytedance.com>
+ <20260714130657.46963-4-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,55 +52,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260714130657.46963-6-zhangzhanpeng.jasper@bytedance.com>
+In-Reply-To: <20260714130657.46963-4-zhangzhanpeng.jasper@bytedance.com>
 
-On Tue, Jul 14, 2026 at 09:06:55PM +0800, Zhanpeng Zhang wrote:
-> The RISC-V IOMMU QoS extension provides iommu_qosid as a per-IOMMU
-> global default tag. It is used for IOMMU-originated DDT, CQ, FQ, PQ, and
-> MSI accesses, and for device-originated requests when DDTP is in BARE
-> mode.
+On Tue, Jul 14, 2026 at 09:06:53PM +0800, Zhanpeng Zhang wrote:
+> Do not overload the resctrl tasks file with architecture-specific
+> non-PID tokens. The tasks ABI remains a list of task IDs, while the new
+> devices file carries external requesters assigned to a resctrl group.
 > 
-> Initialize iommu_qosid to RCID 0 and MCID 0 when the hardware advertises
-> QOSID support. Preserve reserved and WPRI bits with read-modify-write,
-> and use register readback to reject values which the WARL fields do not
-> retain.
+> Add architecture hooks for assigning and showing those external
+> objects, and reject group removal, reparenting, or pseudo-lock setup
+> while devices are still assigned. The teardown path performs a
+> best-effort reset to the default group.
 > 
-> Add a qosid attribute to the RISC-V IOMMU class device. Reading returns
-> the current RCID and MCID values. Writing the documented
-> 'rcid=<rcid> mcid=<mcid>' form updates both fields while preserving the
-> other register bits.
-> 
-> Keep this interface separate from resctrl group QoS. The sysfs attribute
-> controls the IOMMU-wide default, while resctrl device assignment programs
-> per-device DC.ta in translated modes.
+> The devices file is an assignment interface only. It does not describe
+> a new resource schema or domain; resource allocation and monitoring
+> policy remain described by the existing schemata and info files.
 > 
 > Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 > ---
->  .../ABI/testing/sysfs-class-iommu-riscv-iommu |  27 +++
->  MAINTAINERS                                   |  10 ++
->  drivers/iommu/riscv/iommu.c                   | 159 +++++++++++++++++-
->  drivers/iommu/riscv/iommu.h                   |   9 +-
->  4 files changed, 202 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-riscv-iommu
+>  Documentation/filesystems/resctrl.rst |  26 ++++
+>  arch/Kconfig                          |   6 +
+>  fs/resctrl/rdtgroup.c                 | 206 +++++++++++++++++++++++++-
+>  include/linux/resctrl.h               |  45 ++++++
+>  4 files changed, 280 insertions(+), 3 deletions(-)
 [..]
-> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 2c57625637bf..13ea67b7e42d 100644
-> --- a/drivers/iommu/riscv/iommu.h
-> +++ b/drivers/iommu/riscv/iommu.h
-> @@ -12,8 +12,12 @@
->  #define _RISCV_IOMMU_H_
->  
->  #include <linux/iommu.h>
-> -#include <linux/types.h>
->  #include <linux/iopoll.h>
-> +#include <linux/mutex.h>
-> +#include <linux/types.h>
-> +#ifdef CONFIG_RISCV_IOMMU_32BIT
-> +#include <linux/spinlock.h>
-> +#endif
+> diff --git a/fs/resctrl/rdtgroup.c b/fs/resctrl/rdtgroup.c
+> index af2cbab14497..2e424c911049 100644
+> --- a/fs/resctrl/rdtgroup.c
+> +++ b/fs/resctrl/rdtgroup.c
+[..]
+> @@ -2067,6 +2236,16 @@ static struct rftype res_common_files[] = {
+>  		.seq_show	= rdtgroup_tasks_show,
+>  		.fflags		= RFTYPE_BASE,
+>  	},
+> +#ifdef CONFIG_ARCH_HAS_RESCTRL_DEVICES
+> +	{
+> +		.name		= "devices",
+> +		.mode		= 0644,
+> +		.kf_ops		= &rdtgroup_kf_single_ops,
+> +		.write		= rdtgroup_devices_write,
+> +		.seq_show	= rdtgroup_devices_show,
+> +		.fflags		= RFTYPE_BASE,
 
-RISCV_IOMMU_32BIT does not seem to exist upstream and these lines 
-to just be deleted later in patch 6.
+Once CONFIG_ARCH_HAS_RESCTRL_DEVICES is built in, the file shows up in
+every resctrl group directory, even on hardware whose IOMMU does not
+implement QOSID. I think it would be better to make fflags zero so
+rdtgroup_add_files() skips it, and enable it at runtime from
+resctrl_init().
 
-
+Thanks,
 Drew
