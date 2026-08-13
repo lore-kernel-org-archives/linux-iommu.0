@@ -1,51 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A480442FDB;
-	Thu, 13 Aug 2026 08:51:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DFB6442FDB;
+	Thu, 13 Aug 2026 08:57:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786611078; cv=none; b=WzzO7RYo82ek4ZAspK3E2BV4riiS46V/TsoFvkm+7h1hX7UyMM3fLTqI8kJONT1b+5EHRCIX3yIZ6TWckqynp79EPd8NFl8Pmh8Nf+dc3AlV8Rm6PCxsEtiPt9uUlTxAvQiaS4s3J/YFFtciPKKgwZbDaws7S3USxDjM2QabRDI=
+	t=1786611469; cv=none; b=sipgbZI6bHSK0pxqFs8jv12Vj20R/GdtNHs/C+EE4F0Gtb0RqYDDqkKfirJ0FSWIsE5hPI9JpR5hVaTwll6g/yNDnKZ94hRfgMwPylnl52+SdHXy3XS8IWbLoCa6Fb+EG162V5QVtM7CJYyVlUOTjTo2SL+d6szzmJ622l/bC3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786611078; c=relaxed/simple;
-	bh=yP2T/dRfoOq9lZp6dYfuhCi5+xWv9PTfpDgNcUv5UNE=;
+	s=arc-20240116; t=1786611469; c=relaxed/simple;
+	bh=CS/uFeZNXN1O+lOQ2w4NSPq2ALuka/C4I2LZRJhnRdE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aLocmwi4kl0k59g5P+//+PBy4z6NVtcGKmJHjtBoUvC2oWNYLqhnk/Dqeif4v9w4DInnjjgnx9PwNX85BvgiSth8iLe6VCoaCimgKUs+YMSr2HB0baMrLD3HxHzu8Sh+BiPGzSC0+TYlqLwkwAIvyY7OErf3QpUU5dqNZpd3axA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nWPYIb/p; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=FsDV/b3aQcTobPWrAiW/dFXOJsd6fGoOYTMXCwP05EWilRF3kOKkfx2N8JJbaKY5miro5P5uu/EegH5bP7uOaQeDwIHOo11ctGx9dhl+KDi9Vhlr9RChS+A58IgijK9mNTFOULqwmfZeUeNoVT3i2kGU5Ss8eJ1tKYchTNH4VD0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XQU9J7BE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nWPYIb/p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D6A31F000E9;
-	Thu, 13 Aug 2026 08:51:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XQU9J7BE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C862E1F000E9;
+	Thu, 13 Aug 2026 08:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786611074;
-	bh=s15YMfOwxWEvAnRRd4hU5g+v53XbUCKXoccrAXlR3Xc=;
+	s=k20260515; t=1786611467;
+	bh=CS/uFeZNXN1O+lOQ2w4NSPq2ALuka/C4I2LZRJhnRdE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=nWPYIb/pH6H6oqPWsIPtUjNPbp07s6id5XEc1hMPQDMdeKAuZOc9j8PNXJxfz33n6
-	 G5IxTmlmRhScRf8Rtc8d+7pqOLpyuMN6lUMOhfbf5lTZefaXpD7B6E3/5v9m1xTNDp
-	 m+i2jwmBGB+jr7V/SNZYlKjYsTuYkARctVNycKJoDlAUIXVy5KJ41TZo8kC+RuWTco
-	 vSV1Z6V0YTo37RIgaBT+JA47S9pvA5P8NoFDBjXkG5xW+1Ddj3Teg0/cbcV7yJ5tKj
-	 LOuXPzmtuHuqAqKA4GyOzCA7qcxeXCTdSVdbHMX+vPJboJijElcEOPP7vokRjodtrn
-	 NPX5Z2P3YnCig==
-Date: Thu, 13 Aug 2026 11:51:00 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Nikunj A Dadhania <nikunj@amd.com>
-Cc: ljs@kernel.org, akpm@linux-foundation.org, baolu.lu@linux.intel.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, david@kernel.org,
-	den@openvz.org, devnexen@gmail.com, hpa@zytor.com,
-	iommu@lists.linux.dev, jgg@ziepe.ca, jgross@suse.com,
-	jirislaby@kernel.org, kas@kernel.org, kevin.tian@intel.com,
-	liam@infradead.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, lists@steffen.cc, luto@kernel.org,
-	mingo@redhat.com, peterz@infradead.org, pfalcato@suse.de,
-	shakeel.butt@linux.dev, stable@vger.kernel.org, surenb@google.com,
-	syzbot@syzkaller.appspotmail.com, tglx@kernel.org,
-	toshi.kani@hpe.com, vbabka@kernel.org, vishal.moola@gmail.com,
-	will@kernel.org, x86@kernel.org, bharata@amd.com,
-	Ananth.Narayan@amd.com
+	b=XQU9J7BEex3WMosE+FwvoP5nSRkBg19PfE5WoUhr6AMneIaF1tAQSjGKnuT1ChOSW
+	 7ZkptBhLgO7+hStx/PvVSK9zJCNOJCJEbT11Ehsx0nnLwfvL/9luP3t437TJ3eF8iS
+	 5gJ6ZZIiUNppiROaOoKOXRHlSURiV6on64c25KUu/WakdmKzl1C8Y2b/180KBBBFMS
+	 OjK7HtIGSEJ49/38v3NnJiGYEc5+tuWSFaBU9ltlEYAkl4+BVAHpzEmnaRpWOyqtYd
+	 l521NxcYLpcRvgdifVmul6IYu1FGY5mGoEaCkyF2knRgoYIWaVn/g9hlCLLz9kwER1
+	 DqVuRxKVXPiNw==
+Date: Thu, 13 Aug 2026 09:57:24 +0100
+From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+To: Dave Hansen <dave.hansen@intel.com>
+Cc: Mike Rapoport <rppt@kernel.org>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Andrew Morton <akpm@linux-foundation.org>, Andy Lutomirski <luto@kernel.org>, 
+	Borislav Petkov <bp@alien8.de>, David CARLIER <devnexen@gmail.com>, 
+	David Hildenbrand <david@kernel.org>, Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Juergen Gross <jgross@suse.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Kiryl Shutsemau <kas@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, 
+	Shakeel Butt <shakeel.butt@linux.dev>, Suren Baghdasaryan <surenb@google.com>, 
+	Thomas Gleixner <tglx@kernel.org>, Toshi Kani <toshi.kani@hpe.com>, 
+	Vishal Moola <vishal.moola@gmail.com>, Vlastimil Babka <vbabka@kernel.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, stable@vger.kernel.org, x86@kernel.org, 
+	syzbot@syzkaller.appspotmail.com
 Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
-Message-ID: <an2FdPPOWT50lLD4@kernel.org>
-References: <anXvODEvV4f_Taj7@lucifer>
- <20260813055544.25567-1-nikunj@amd.com>
+Message-ID: <an2GkrW35R5reoeC@lucifer>
+References: <20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org>
+ <anCwUb9lV18v6mfN@kernel.org>
+ <anXp--mLLEE2Qo0g@lucifer>
+ <90c2be6e-fe03-4da9-88d2-fe4d4f745cf2@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,48 +57,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260813055544.25567-1-nikunj@amd.com>
+In-Reply-To: <90c2be6e-fe03-4da9-88d2-fe4d4f745cf2@intel.com>
 
-On Thu, Aug 13, 2026 at 05:55:44AM +0000, Nikunj A Dadhania wrote:
-> On Fri, Aug 07, 2026 at 04:36:08PM +0100, Lorenzo Stoakes (ARM) wrote:
-> > +static void poke_vmalloc_pages_safe(struct page **pages, void *addr,
-> > +				    bool cross_page_boundary)
-> > +{
-> > +	guard(mmap_read_lock)(&init_mm);
-> > +	poke_vmalloc_pages(pages, addr, cross_page_boundary);
-> > +}
-> 
-> Tested just the proposed patch from this email (without the rest of the
-> CPA fixes series) on the 512-guest concurrent boot harness (details in
+On Wed, Aug 12, 2026 at 03:20:23PM -0700, Dave Hansen wrote:
+> On 8/7/26 07:34, Lorenzo Stoakes (ARM) wrote:
+> > In any case - Mike - I think you probably need to respin this on tip
+> > x86/mm anyway?
+> >
+> > Maybe worth doing that and seeing if that makes life a little easier for
+> > the x86 folks.
+>
+> Yes, please. If it interacts with things in there, a rebase would be
+> much appreciated.
 
-For this fix to actually fix anything, the patches that add locking of
-mmap_lock to CPA are needed still.
+Thanks, Mike is already working on one I think he should get a rebased respin
+out shortly :)
 
-> [1]) and still see the memcmp BUG, I havent hit the first BUG though:
-> 
->   kernel BUG at arch/x86/kernel/alternative.c:2727!
->   Oops: invalid opcode: 0000 [#1] SMP NOPTI
->   CPU: 1 UID: 0 PID: 485 Comm: (udev-worker) Not tainted 7.2.0-rc5-pokesafe+ #42 PREEMPT(full)
->   RIP: 0010:__text_poke.cold+0xdb/0x2af
-> 
-> The instrumentation captured the following before the memcmp BUG:
-> 
->   SMP alternatives: __text_poke: memcmp failed at addr=ffffffffc06ce1bb len=4
->   SMP alternatives: __text_poke: expected (src): 2e 2e 31 c0
->   SMP alternatives: __text_poke: found    (dst): f9 b8 9b d3
->   SMP alternatives: __text_poke: pfn at poke time (vmalloc_to_page): 8ece
->   SMP alternatives: __text_poke: pfn at readback time (vmalloc_to_page): c6ce
->   SMP alternatives: __text_poke: page table dump for addr:
->     PGD 2f042067  P4D 2f043067  PUD 2f045067  PMD c6001a1
-> 
-> pfn acquired at the start of __text_poke() (0x8ece) differs from pfn
-> at readback time (0xc6ce) in the instrumentaion.
-> 
-> [1] https://lore.kernel.org/all/20260812063316.21371-1-nikunj@amd.com/
-> 
-> Regards,
-> Nikunj
+>
+> Also, please do send things separately if they are fixing active
+> regressions or bugs that folks are hitting in the real world. We'll send
+> those urgently and not through the normal tip/x86/mm process.
 
--- 
-Sincerely yours,
-Mike.
+By separately how do you mean, as individual patches? There are some ordering
+requirements here I think, is it OK as a series on that basis?
+
+--
+Cheers, Lorenzo
