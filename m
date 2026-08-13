@@ -1,159 +1,149 @@
-Received: from flow-b7-smtp.messagingengine.com (flow-b7-smtp.messagingengine.com [202.12.124.142])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FACB3BBFDB
-	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 09:27:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.142
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D9444BCA8;
+	Thu, 13 Aug 2026 09:46:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786613251; cv=none; b=Renp+ji/bV1NpspBuUCQrFgKSaF7MFVDAZCFHrKqE12DE8CC2q0rKY0bRmKB5WK18WKiUTuKQexgK3G/592zqYiZSs4NHiyGeWKNjsvGSSSj6E/qYhvObR7XUPGt5NCpZxQDnrZb7ynhDhHv8qQAOZWsSRQqrSuz7RZDSeaf1kI=
+	t=1786614375; cv=none; b=YxnA1fWXJeZtrTt5Yxl80v/uKtqnf246K3KI+Rx+uUosFUKSPtE05yqBdsMpvNU6/9Dku02JOMEz+hT4K9yX0ZZ+sws5Y931fhoCmFujPGlLpSsWK9bhYzQFzWTK6KxqBy6OjHRnJFdCLLtlvRrJq0qgb+ZKcSEYNMRe6fLTBgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786613251; c=relaxed/simple;
-	bh=PzXt9fO5ods3LYBlDUJ8bo6GhZCYWvmTmzg9jvrmsIY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kYMNnocY5JbsIsR3EnhUWVFtjoYbt5JWNlncrxQSzHWauexoSbnAziEL1rD9J1P3TB1XryIbsOM3CSiVRdla1oQDBwRqhMKyTjKFsomQt2IZL/VyeBCo1FBLRnNUA5FaHCna42U2JFNgJJTAnd1ndoOoDB95kqoDGCZ378FsI44=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=JchNOQX7; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=jEpgy3wT; arc=none smtp.client-ip=202.12.124.142
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	s=arc-20240116; t=1786614375; c=relaxed/simple;
+	bh=AiIRtIowgb+uuTFbjnZI39k2QY6jaawhgvey9PCCIyg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=r9bWJ91h9sXVIvR/HreJ0fLoLPA5/1vg0Jgi5bcM6SzW7gDj+dQ9WvWIO9n8hm/IkPCfAKWkQReFxbZrH6nNazEaV3q6hiCDxMC+sI5si1cqaxGw6zGSMjPZAd8p29TYFvmI4CFv0c8mAgqeGB1gLlZglU3qonEzPejdOSIfytM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DKnQd5xl; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="JchNOQX7";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="jEpgy3wT"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailflow.stl.internal (Postfix) with ESMTP id BCBB013002E3;
-	Thu, 13 Aug 2026 05:27:26 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-05.internal (MEProxy); Thu, 13 Aug 2026 05:27:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1786613246; x=
-	1786616846; bh=c8K+15YOUpp/urrn1ei3bbHIw6RB2VLNWq7MiAQhpqc=; b=J
-	chNOQX7cEmymzrAnkJA7lvWYy1imq69zWuKIU7V8Kk/eTo76f1c03s45OJRKvbui
-	R2VskZjmr2BLe0AcOBEQnvlcDD2ViT8fRBOm1WlBOTL2p6jEfPlmNyWS414C4yHk
-	iyfoxHkqHNqCue0zm1Lw41EPUGG5h9lJChx+YZ9wJqdjINC+cS1lOgJtQ3pibKOP
-	ea5rgROYnBq36uImEwpUb1rbaCwnVB66WSWqSDTe3p3aDKrTjcMNOyGWUAw6ZOFp
-	wyBojU6Jnb979ghWWqtN8Lrg0OBYbvyl5MBpOclsoWFpEXHDRHMiIroZ1BR0fvKX
-	l6LH43UN88W4zASBXj2jQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1786613246; x=1786616846; bh=c
-	8K+15YOUpp/urrn1ei3bbHIw6RB2VLNWq7MiAQhpqc=; b=jEpgy3wTLbg+/gDI5
-	mUdvggjWKy6dyYlYxQGxRMXJRm+2t48ub18tUm0YShpuE6Bx4nen971VB4xEFBEW
-	ksB+EOqcEym9p0Vcj43YqHYmWdfwNIx7BBn5WHY0tbiuHtoCRcWs4q+CKpL5+84P
-	ibQ2CG90ADyWsH0NmyMHIimYlGu1faJxqRLCZwUWYWhNsPnR05jhN+8vc5vXTJ63
-	/NgHYSa151nwHuYKOTbiPuk46j9g2+mQqRyLUOMjB6uI8GKOVkDomXutzohb5SCY
-	eKVRiiM2Mt4HXGXZESlun93gkkcABA+Pp6ZlxjQyWwI+JyLZAeyZKbHxNc11HIeV
-	Nk+YA==
-X-ME-Sender: <xms:_o19atKDrgbiDyHeg4Dq8gSr4IB1dYjlvJ_hJVlhql_XpiTTIUMsTA>
-    <xme:_o19aigYuxWhvVLo6jCySzHSQ187dEvsEROWcPAw30KOmfg3c1ybLiA0Nj9dad4I0
-    oSXi9yLwxMcPpf9wzdnoBjPvb890VgnTaPW56tk2F8cBmaMaUJZunA>
-X-ME-Received: <xmr:_o19auN2PB2eZ01dHarhyxttOujtwYUhFzXwr0CT8lcFi6LQsX_UvwlMsUDhNWAxG5waLz4QpQ>
-X-ME-Proxy-Cause: dmFkZTFuCr/cvrFkRUf8ITKF+H2T3+BzZRnX5rHf6gKXH/26Iw/KHABBcdjKQe2rhLwLS5
-    TaMb0vpJrni78/UwkRMYpJ9Y7lQ366meAvyCdu0npRBw9/+Ng04388nGiPzu/U5RcyuVkR
-    w/TOPVCwMsGrhPKD7nbP8LRzzGM0lbM3SZ8Ad5ojSL3i2CqcoeXL16oisQiBvGK1YuUf6e
-    uoh2BP8y5PIY0wC8ImE4FS2TzpbIDM0wVbhBoSSlu3QbvNxjHls85NMxx2CqVfR97FxXk3
-    CFEuyzwYAZcFXpoBx7S62xcdOaonv+ExSnsiZJRLGbhC1b6pOSRjs7Svo+R2b3hKW9mKY8
-    ff8adf94ky3Th4lwWzeN9rVN55lR5BCN83BH2XboF0N0hZPmGbtSUFymvQ9zOQSbsyWIY/
-    VDSff9/Gv2k8R7aiIKcxzGoPdcyKPUC+M8cBRvv+AW4DoQtwpG+SsVojaMPy7fMH/FIPMl
-    mZxut+vppC3vo4kSlJSoZydKFkphNdd4tT0rDuKywn9VOAC8GEQVPx/Zwn3hOWuKanX1PH
-    xqSJxuTSd2tXlkqtzwj6toj9LsJnGXtnEsfIvn3BKNMmmp5W9VoltkjE598mu+iCaf3XFX
-    g4HHN+v62CHSn+Qs6deFpLqNDHGdTqLBwdYYs1lLVuMqbNth2db31JjdXpzw
-X-ME-Proxy: <xmx:_o19at4OC3XLjAlWPr4JsaetVpAuO-lO-YS8tr-SF4S1slG89839SQ>
-    <xmx:_o19alnOZdx7cPWnK9N8eq_ZFexjF4V8AxzqAxonshU04tsDQWgJ6A>
-    <xmx:_o19atKbSmTfla4cszXQQNGEOxmVYe6F_Ti2K1o_nwP5UdwY0UE4Iw>
-    <xmx:_o19atSmUDcAgqSYh74X3ZEJHbmjqeroQGjGFhedL5RY7fFathqyBQ>
-    <xmx:_o19ak1HWZygJY6_xiu1kRMZibI8SVyxZkx-BTKgTZrxH4wDTjTJxPEe>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 13 Aug 2026 05:27:15 -0400 (EDT)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: diederik@cknow-tech.com
-Cc: heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	tomeu@tomeuvizoso.net,
-	royalnet026@gmail.com,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-rockchip@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: Re: [PATCH v7 04/10] dt-bindings: iommu: rockchip: allow the RK3576 NPU MMU clock set
-Date: Thu, 13 Aug 2026 21:27:11 +1200
-Message-ID: <20260813092711.2568595-1-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <DKMWKH7ECZZM.3GL6MUEUO2Q1N@cknow-tech.com>
-References: <20260812094106.1391698-1-gahing@gahingwoo.com> <20260812094106.1391698-5-gahing@gahingwoo.com> <DKMWKH7ECZZM.3GL6MUEUO2Q1N@cknow-tech.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DKnQd5xl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60D021F00A3A;
+	Thu, 13 Aug 2026 09:46:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786614372;
+	bh=+x2tiBGgnfXYaaYiZV+xganvGkJiR/qvbRK36a01nqA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=DKnQd5xlGQw8aHszKjwfbFCCC8y3Y7nwaZ0WSBdqVQgD7c4L39ViTScf20Tx2H0Tc
+	 qSF5ay3tU4XMK8P3l9UG03o2FhYZZGlQK3EmSVggbqr6RVQV5wTpZQQSMBgqoVpnHY
+	 /auQxWhMNLIDXnBsrBUjwNIgBOb0koxdy77mBXjQWwZRY+scOqG7bbIFoehCaqw8CT
+	 +zLSgJUul/UYABxCySVnf8x2W0XiJA+JayL1r34pqVMZTLIOj6OKxlqkvUTqRv4LrR
+	 /ZHKqBbBbam8hdsA/SdaE0v/ew0RIVcBt2IA+buPMpHBD4Opr6/oxZiQAcquf3MPAT
+	 S178E9QyFkVAg==
+Date: Thu, 13 Aug 2026 10:45:48 +0100
+From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+To: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Andy Lutomirski <luto@kernel.org>, 
+	Borislav Petkov <bp@alien8.de>, David CARLIER <devnexen@gmail.com>, 
+	David Hildenbrand <david@kernel.org>, Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Jiri Slaby <jirislaby@kernel.org>, Juergen Gross <jgross@suse.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Nikunj A Dadhania <nikunj@amd.com>, Pedro Falcato <pfalcato@suse.de>, 
+	"H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Shakeel Butt <shakeel.butt@linux.dev>, Steffen Dirkwinkel <lists@steffen.cc>, 
+	Suren Baghdasaryan <surenb@google.com>, Thomas Gleixner <tglx@kernel.org>, 
+	Toshi Kani <toshi.kani@hpe.com>, Vishal Moola <vishal.moola@gmail.com>, 
+	Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, stable@vger.kernel.org, 
+	syzbot@syzkaller.appspotmail.com, x86@kernel.org
+Subject: Re: [PATCH v2 5/5] x86/mm/pat: fix effective RW computation in
+ lookup_address_in_pgd_attr()
+Message-ID: <an2Q8Blco1diidCy@lucifer>
+References: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
+ <20260813-cpa-fixes-v2-5-39b4ff90f91d@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260813-cpa-fixes-v2-5-39b4ff90f91d@kernel.org>
 
-Hi Diederik,
+On Thu, Aug 13, 2026 at 12:01:28PM +0300, Mike Rapoport (Microsoft) wrote:
+> lookup_address_in_pgd_attr() accumulates the effective NX and RW bits of
+> the walked page table levels so that verify_rwx() can detect mappings that
+> are both writable and executable.
+>
+> The RW bits are folded into a bool with
+>
+> 	rw &= pXd_flags(*pXd) & _PAGE_RW;
+>
+> but _PAGE_RW is 0x2. So consider the accumulation line:
+>
+>         rw &= pXd_flags(*pXd) & _PAGE_RW;
+>
+> where rw=0x1 and the right side evaluates down to 0x2. It'll end up doing:
+>
+>         rw = 0x1 & 0x2
+>
+> and rw always ends up 0.
+>
+> This way rw becomes false at the first level walked, regardless of the
+> actual permissions, and verify_rwx() treats every mapping as non-writable
+> and never reports a W^X violation.
+>
+> Add double negation to the right side to normalize the _PAGE_RW flag to
+> 0 or 1.
+>
+> Fixes: ceb647b4b529 ("x86/pat: Introduce lookup_address_in_pgd_attr()")
+> Cc: stable@vger.kernel.org
+> Assisted-by: Copilot:claude-opus-4.8
+> Reviewed-by: Juergen Gross <jgross@suse.com>
+> Tested-by: syzbot@syzkaller.appspotmail.com
+> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 
-You are right, and worse than that, this is the same thing you asked
-for on v6 and I told you it was fixed.
+Yikes, good find! LGTM so:
 
-My reply then said v7 would carry a compatible of its own and pin each
-side with an allOf. It does not. What v7 actually contains is a
-minItems of 2 and three descriptions ending in "RK3576 NPU MMUs only",
-which is a comment, not a schema, and it leaves both of the cases you
-name allowed: an rk3568-iommu with five clocks, and an RK3576 NPU MMU
-with two. I do not have an explanation for the gap between what I said
-and what I sent, only the fix.
+Reviewed-by: Lorenzo Stoakes (ARM) <ljs@kernel.org>
 
-v8 does what you and the bot asked for the first time. The MMU nodes
-get their own compatible,
+> ---
+>  arch/x86/mm/pat/set_memory.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+> index fbc418dfc597..430d0b448371 100644
+> --- a/arch/x86/mm/pat/set_memory.c
+> +++ b/arch/x86/mm/pat/set_memory.c
+> @@ -754,7 +754,7 @@ pte_t *lookup_address_in_pgd_attr(pgd_t *pgd, unsigned long address,
+>
+>  	*level = PG_LEVEL_512G;
+>  	*nx |= pgd_flags(*pgd) & _PAGE_NX;
+> -	*rw &= pgd_flags(*pgd) & _PAGE_RW;
+> +	*rw &= !!(pgd_flags(*pgd) & _PAGE_RW);
+>
+>  	p4d = p4d_offset(pgd, address);
+>  	if (p4d_none(*p4d))
+> @@ -765,7 +765,7 @@ pte_t *lookup_address_in_pgd_attr(pgd_t *pgd, unsigned long address,
+>
+>  	*level = PG_LEVEL_1G;
+>  	*nx |= p4d_flags(*p4d) & _PAGE_NX;
+> -	*rw &= p4d_flags(*p4d) & _PAGE_RW;
+> +	*rw &= !!(p4d_flags(*p4d) & _PAGE_RW);
+>
+>  	pud = pud_offset(p4d, address);
+>  	if (pud_none(*pud))
+> @@ -776,7 +776,7 @@ pte_t *lookup_address_in_pgd_attr(pgd_t *pgd, unsigned long address,
+>
+>  	*level = PG_LEVEL_2M;
+>  	*nx |= pud_flags(*pud) & _PAGE_NX;
+> -	*rw &= pud_flags(*pud) & _PAGE_RW;
+> +	*rw &= !!(pud_flags(*pud) & _PAGE_RW);
+>
+>  	pmd = pmd_offset(pud, address);
+>  	if (pmd_none(*pmd))
+> @@ -787,7 +787,7 @@ pte_t *lookup_address_in_pgd_attr(pgd_t *pgd, unsigned long address,
+>
+>  	*level = PG_LEVEL_4K;
+>  	*nx |= pmd_flags(*pmd) & _PAGE_NX;
+> -	*rw &= pmd_flags(*pmd) & _PAGE_RW;
+> +	*rw &= !!(pmd_flags(*pmd) & _PAGE_RW);
+>
+>  	return pte_offset_kernel(pmd, address);
+>  }
+>
+> --
+> 2.53.0
+>
 
-    compatible = "rockchip,rk3576-npu-iommu", "rockchip,rk3568-iommu";
-
-the enum gains it, and an allOf pins both sides so neither can borrow
-the other's clock set:
-
-    allOf:
-      - if:
-          properties:
-            compatible:
-              contains:
-                const: rockchip,rk3576-npu-iommu
-        then:
-          properties:
-            clocks:
-              minItems: 5
-              maxItems: 5
-            clock-names:
-              items:
-                - const: aclk
-                - const: iface
-                - const: npu
-                - const: aclk_cbuf
-                - const: hclk_cbuf
-        else:
-          properties:
-            clocks:
-              maxItems: 2
-            clock-names:
-              maxItems: 2
-
-so every existing devicetree keeps exactly two clocks and only the new
-compatible may have five. The ", RK3576 NPU MMUs only" wording goes
-away with it, since the schema then says it.
-
-The DTS patch changes with it, since v7's NPU MMU nodes use the plain
-rockchip,rk3576-iommu string.
-
-I will not claim it is fixed this time until the patch is in front of
-you.
-
-Thanks for catching it twice,
-Jiaxing
+--
+Cheers, Lorenzo
