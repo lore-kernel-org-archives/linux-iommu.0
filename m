@@ -1,164 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011040.outbound.protection.outlook.com [52.101.57.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EECE3EAC80;
-	Thu, 13 Aug 2026 05:32:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786599155; cv=none; b=kCiu/a12jZErOffYRKmcPQACC1nFZ6aMax9rnYcY+6OIdVBEj4M47hO0fZga5p4x7/XypMj/esu6ukopfYY5UAFVD+a5C2rG8KMC09T+z/vs+fVbppKqDHnJPHSIFYhT/wRDkagZp8JO7lngF4HJRkfC7S0Flb6pLmsB6v8XUBU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786599155; c=relaxed/simple;
-	bh=PDLcwSnTv7PhVg76Tv5W2zcVBlxbUbLw7dv4p4yTRYQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=KJnTzMdSBHjRHzWaJZy0U22c3d0pF4uHIwdDXVGAZ25iQcqLdrxbWTPee+SktNnLR5sd7c3LO/W0b41XBI54vVmuT7AGg2ojutY5opwtbYAFUPlXaPtzLyQaUXN4uVGrJvVp0CcNjOenhdw1nvIVOVCowHSv+7Z3/AF2JMcFIUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QzMCM7a7; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B3A7339719
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 05:56:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.40
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786600577; cv=fail; b=DftDruDzBRwfHdo8E9NFStdg/bgUuR/wjJrMCPS1RtqmyvXIUGATXFrxfe7Qg/Df98OWbtfsiM7T/AWPY8OK+BuzPuAFBJutDyWZZTi4i0YAiRBgAlczDoV4kMmrJE+ggPX9mE5yBuRrvbJa/oFWyeV1u4F0ylHHIm6hwlu2yqY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786600577; c=relaxed/simple;
+	bh=wJp5x6bzSl/+VGsPJWJd66rnboLTF4cDmS9rPeJ4X3A=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZNdMPuzm9BShHUHX47fIIFxXeSzD1vaXZlE2yJJv0Ic7RTfMULtG6o/LVi/Hs1KO1IEdyyanlt/GdP1rKdMQF88K8+h5zpEon353jhjSsLJGAoayvm2zQ9KK8rI7crpf66M6PAFzy9D1VWCZKGf1KNUMM9vYO0ig0OfzBqIzzzs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Og/LdkRZ; arc=fail smtp.client-ip=52.101.57.40
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QzMCM7a7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE4C71F000E9;
-	Thu, 13 Aug 2026 05:32:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786599150;
-	bh=Q7+1TgLjh64mc8wlI/+wRCUp/0uoB/o0TuwaP6ybUds=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=QzMCM7a7UPs+Up9SpbK9AGgUKNnJcq7JtJt2BxrN8xxedAYAC26wz140VuaR0ttCj
-	 WX0GXl6z9TOj1EBKf+69He9/9QCoTVnrFPKfCLybSPeVU41AxLSKWLoWH2sQ7Znjcl
-	 ScXog++R46Zku5P3HOzNfxdmnmW1RiX6j3Vhxcj5eDDHF8iHqZUAPIX4zAvuvzNPFv
-	 jc6a4ZURfR+w3exZGHROC5GXfdZs9mTmZ5olvt6Wak1wNuVVexb84hpqHJIDbrsLie
-	 HM5+LxMP45QmHLKFLcJCalkAYC2VyoVEAvEe+uOAp8up12PqmH0i/tC4Ji4cAc3zv6
-	 bO8Gu75D+lRQg==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
- encryption
-In-Reply-To: <anysnQFVTO_RAYxp@arm.com>
-References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
- <anxEc8EHmJQywVI5@arm.com> <yq5ajypvioks.fsf@kernel.org>
- <anysnQFVTO_RAYxp@arm.com>
-Date: Thu, 13 Aug 2026 11:02:17 +0530
-Message-ID: <yq5aecg2io0u.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Og/LdkRZ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pGwveSvaP8nZvvGRRJNIMPqreuDGH9Z3CRZPWj+smyVdwLdvUoPRSFx6HHhpy1qvNGNywP23vyaxgnfmxDP6t0VeEyOG6pCfDUE6dp08p58MTo+h96NkJs12o4aKBADqdV30KPDJeOTLIt4bGI/pVe602+RdNh0puNUHTd8FL7Npa3H0yJ6aBTfS6fcaz/DrtzQUB5qKvKJRBDAKVFkbH0Y85afNXKwu9vo6bs9SlIEiYXagMjyHHFagi6D1tLIB00meAZA4FD2rVrgJtU2XnDJA3uVcXvp3CMCmUzOblRZfQVoB+yBl4+NjEWcRiLktkxKqhyGn8vf/uRf91c1rEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lSvMGikNgE5zus4122FZQaZAGi0LeU+OXuLh5KzOoxQ=;
+ b=F4X6NqVFo7i4wjQXu08g6IEqbYnJTeqCl6JUsl9ChyY4yikGFn7FwRh/6GBEQQN0r3ypJQ4D1Sgg/vv/FtC+PLiWHS94emR/s00vma29SsfNMgD77gLyhWhkTTAyvysYjJgu8dg3+3l0Kh3BFQLGPDPKAgv0PT/O73s5LMYYtC/aEWjzfokFfgr8xFmotqVTsNlY2PUEb4T65K2ptvQtUpeqEOXF1vGXEnJ0fsCM385HeJK4qz2MBiF4yGzq9heOADeE7B2aGUClzayMt2QOb3fIuHMi/q0JbfH2cImd2r9hqBouFegiOsWjE5wC+by7oCGOq1LAr/UqXbEOpfzw7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lSvMGikNgE5zus4122FZQaZAGi0LeU+OXuLh5KzOoxQ=;
+ b=Og/LdkRZK9zJnYxfmu0lsMI+nZhsX+BRVozhG5M62fszv09jkQrLxkW4aidGQQ2PjWwiJLk70GGVWPjRMAFonVM+CV095J46N4qZVdPZh6b6trJOn9xDXUsPzOuvpejA2XjS6V3k4pF59IFirCm6gmF1LU8PYQTY/98luziL+D0=
+Received: from BYAPR21CA0016.namprd21.prod.outlook.com (2603:10b6:a03:114::26)
+ by SJ2PR12MB7962.namprd12.prod.outlook.com (2603:10b6:a03:4c2::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.13; Thu, 13 Aug
+ 2026 05:56:10 +0000
+Received: from SJ5PEPF000001D0.namprd05.prod.outlook.com
+ (2603:10b6:a03:114:cafe::69) by BYAPR21CA0016.outlook.office365.com
+ (2603:10b6:a03:114::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.339.3 via Frontend Transport; Thu, 13
+ Aug 2026 05:56:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ SJ5PEPF000001D0.mail.protection.outlook.com (10.167.242.52) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.339.3 via Frontend Transport; Thu, 13 Aug 2026 05:56:09 +0000
+Received: from gomati.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Thu, 13 Aug
+ 2026 00:56:00 -0500
+From: Nikunj A Dadhania <nikunj@amd.com>
+To: <ljs@kernel.org>
+CC: <akpm@linux-foundation.org>, <baolu.lu@linux.intel.com>, <bp@alien8.de>,
+	<dave.hansen@linux.intel.com>, <david@kernel.org>, <den@openvz.org>,
+	<devnexen@gmail.com>, <hpa@zytor.com>, <iommu@lists.linux.dev>,
+	<jgg@ziepe.ca>, <jgross@suse.com>, <jirislaby@kernel.org>, <kas@kernel.org>,
+	<kevin.tian@intel.com>, <liam@infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-mm@kvack.org>, <lists@steffen.cc>, <luto@kernel.org>,
+	<mingo@redhat.com>, <peterz@infradead.org>, <pfalcato@suse.de>,
+	<rppt@kernel.org>, <shakeel.butt@linux.dev>, <stable@vger.kernel.org>,
+	<surenb@google.com>, <syzbot@syzkaller.appspotmail.com>, <tglx@kernel.org>,
+	<toshi.kani@hpe.com>, <vbabka@kernel.org>, <vishal.moola@gmail.com>,
+	<will@kernel.org>, <x86@kernel.org>, <nikunj@amd.com>, <bharata@amd.com>,
+	<Ananth.Narayan@amd.com>
+Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
+Date: Thu, 13 Aug 2026 05:55:44 +0000
+Message-ID: <20260813055544.25567-1-nikunj@amd.com>
+X-Mailer: git-send-email 2.48.1
+In-Reply-To: <anXvODEvV4f_Taj7@lucifer>
+References: <anXvODEvV4f_Taj7@lucifer>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001D0:EE_|SJ2PR12MB7962:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3dd4b775-78d3-40ae-a381-08def8ff9306
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|1800799024|82310400026|7416014|376014|36860700016|13003099007|56012099006|22082099003|10067099003|11063799006|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	hBed2QdmaJxe/8IGLWe+NryCu3Wq3HmUQamu92apJZ9VLix29EbJuvwTetnjw7Neh7SNJPYzmA9/zUbrNYVAUvsby8wkYczVUczJLymP3Mi6YKSGMpgqSi4Nmnn3WjUIKAt9vjGYROAxS0uxqXNvRAuYU+x5+9HOVZeqPhM74+BRNayZL2ZiJoeHTYP9uylWENyh8RoqiFM7VZPpzcy0P0wPBaiih15bbhbiaZJi5EO7UpWQpZ5GLMhc7IEygCE59Ym7JwHfleBfSTRzvgZxD1QbL5NqyLDYIG/T2/mo48/FukhTzfRjIrXevd9KB8AdG/5nzX16zHeWRyZRkUv9hDgh09oIKr93LAbmQhss2vYxF8E+zz+EN/Rp9tEolyIPykpYmFBKRt9Mg6M/SELJp0MexmxNU0JOfs3dhf9ViSXH8zwhXHjdPKcIhQQo6IO0kQJgdgej1UEbKGfL3/V6+8j+F1Rqp/u9OLAeXuG5ciPbkTjb94w4NBZ73b/o2JnHL9rWhTOrQL6U/WPkiwONoRBCoi+RRwNejiCgDGpAETRVscCb/AhQdX7Tp2MXef6twnl0viI1Ckc6LYi4c/5Rn53TeJdj4SKjv2hMI1a54QbAbEOCQ8P+s8p6Ee0BgGhRO5nZmZ0eRo0E4PiveNyZGrzJJnuxF/n9iJNkKqhjm4fkaItTYq1QCaO2oNcD9SjvC0DGeeEu6w14KjTx5/G5CA==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(82310400026)(7416014)(376014)(36860700016)(13003099007)(56012099006)(22082099003)(10067099003)(11063799006)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	HQLRjanqRWHsJHtdL/8BZxzpbI8QtYMc2mWpBlw3HvlH+mfkHlCKaQ+beRFejTHC/ypSgcHTx+37lAK0DwpfcmuTdVCtF6BCGz6cEQIRxIg75HpI0esZ7PqiRAs+X6lhCtv+lSZytj58oB6+sKhBvbSoOb7sW48p3lpjVlfe5VU2kyRuMQgZpd4mhyD9YmHR+C4BdJxs01zpzeNKUC62Qj1oD5TmD1PQY0Yut/rudH8lTe8t8kYi767bVEQ9y2oNVFcckiwbxX/lsVgLQPm3fJvMNNp7T1wH/T7e95rjlSM4Z90lY2dCwa1k8qhDYR5UBQajRA2VDmXnzpsrVMzaQr02BnaBUZORhdLIHJ1D3w6zkL18hQnV4I3j8BcE4vbNMP7Va40uOY3xxbhRCazBme0NZHXnTnCwvFasOzzpB/8Gii4xTwe1jEV2CpW9A2yE
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2026 05:56:09.8975
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3dd4b775-78d3-40ae-a381-08def8ff9306
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001D0.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7962
 
-Catalin Marinas <catalin.marinas@arm.com> writes:
+On Fri, Aug 07, 2026 at 04:36:08PM +0100, Lorenzo Stoakes (ARM) wrote:
+> +static void poke_vmalloc_pages_safe(struct page **pages, void *addr,
+> +				    bool cross_page_boundary)
+> +{
+> +	guard(mmap_read_lock)(&init_mm);
+> +	poke_vmalloc_pages(pages, addr, cross_page_boundary);
+> +}
 
-> On Wed, Aug 12, 2026 at 04:38:03PM +0530, Aneesh Kumar K.V wrote:
->> Catalin Marinas <catalin.marinas@arm.com> writes:
->> > On Tue, Aug 11, 2026 at 07:10:56PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> >> Systems with memory encryption use swiotlb to provide shared or
->> >> unencrypted buffers for device DMA. Confidential guests may route all
->> >> DMA through these buffers, while SME hosts use them for devices that
->> >> cannot address encrypted memory. The default swiotlb pool can therefore
->> >> be exhausted under I/O-intensive workloads.
->> >> 
->> >> Let architectures mark the default swiotlb pool as shared before
->> >> swiotlb_init().
->> >
->> > I thought we wanted even this decision to be moved out of the arch code.
->> 
->> Architectures may want to use an unencrypted swiotlb pool for different
->> reasons, one of them being CC_ATTR_GUEST_MEM_ENCRYPT. x86 hosts also
->> require unencrypted pool to support SME. We can cover both cases using
->> CC_ATTR_MEM_ENCRYPT.
->
-> Yes but in one case it did not do resizing. With your proposal, it now
-> does swiotlb resizing even for SME.
->
+Tested just the proposed patch from this email (without the rest of the
+CPA fixes series) on the 512-guest concurrent boot harness (details in
+[1]) and still see the memcmp BUG, I havent hit the first BUG though:
 
-Isn't that a bug with x86 SME? I would expect both SME and SEV to
-require that swiotlb resize.
+  kernel BUG at arch/x86/kernel/alternative.c:2727!
+  Oops: invalid opcode: 0000 [#1] SMP NOPTI
+  CPU: 1 UID: 0 PID: 485 Comm: (udev-worker) Not tainted 7.2.0-rc5-pokesafe+ #42 PREEMPT(full)
+  RIP: 0010:__text_poke.cold+0xdb/0x2af
 
+The instrumentation captured the following before the memcmp BUG:
 
->
->> However, pKVM does not want an unencrypted SWIOTLB
->> pool. So I was thinking it would be much cleaner to let the architecture
->> code drive that decision.
->
-> Let's not single out pKVM but rather the reason it does not want one -
-> it relies heavily on restricted mem. If you started a pKVM guest
-> without rmem in DT, I assume it will need swiotlb to function properly.
-> It's not a great heuristic (devices may not use rmem) but it preserves
-> the current behaviour and can be overridden on the command line.
->
->> > BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
->> > option in realms?
+  SMP alternatives: __text_poke: memcmp failed at addr=ffffffffc06ce1bb len=4
+  SMP alternatives: __text_poke: expected (src): 2e 2e 31 c0
+  SMP alternatives: __text_poke: found    (dst): f9 b8 9b d3
+  SMP alternatives: __text_poke: pfn at poke time (vmalloc_to_page): 8ece
+  SMP alternatives: __text_poke: pfn at readback time (vmalloc_to_page): c6ce
+  SMP alternatives: __text_poke: page table dump for addr:
+    PGD 2f042067  P4D 2f043067  PUD 2f045067  PMD c6001a1
 
+pfn acquired at the start of __text_poke() (0x8ece) differs from pfn
+at readback time (0xc6ce) in the instrumentaion.
 
-This is getting fixed in  
-https://lore.kernel.org/all/20260701054926.825925-9-aneesh.kumar@kernel.org/
+[1] https://lore.kernel.org/all/20260812063316.21371-1-nikunj@amd.com/
 
->
-> It's still not clear to me why we went for CC_ATTR_MEM_ENCRYPT instead
-> of CC_ATTR_GUEST_MEM_ENCRYPT.
->
-
-This is done for x86 to handle SME. SME also requires an unencrypted
-swiotlb pool
-
->
->> For the same reason I mentioned above, architectures may have different
->> reasons for setting cc_shared = true. IMHO, it is cleaner to let the
->> architecture code make that decision before swiotlb_init().
->
-> The arch code already reports cc_platform_has(), can we not rely on
-> this in the core code instead of specific is_realm_world() and a new
-> SWIOTLB_INIT_CC_SHARED flag or function call?
->
-> We have three different decisions that shouldn't be driven by a single
-> flag from the arch code:
->
-> 1. allocate default pool
-> 2. make default pool shared
-> 3. resize default pool
->
-> (1) is traditionally driven by arch code and that's fine. For (2), the
-> core code has the information via CC_ATTR_*. For (3), we can enlarge it
-> based on CC_ATTR_GUEST_MEM_ENCRYPT in combination with rmem (but not
-> CC_ATTR_MEM_ENCRYPT to keep the current x86 behaviour).
->
-
-Okay, if the presence of restricted-dma-pool is taken as a hint, we can
-definitely move that to generic code.
-
-I still think not resizing the swiotlb pool on the host for SME is an
-x86 bug. However, I'll keep it compatible with the current behavior and
-use CC_ATTR_GUEST_MEM_ENCRYPT for now. We can handle host SME in a
-separate patch if needed.
-
->
-> I think we should also move the reduction based on
-> CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC into the core code. Riscv copied the
-> same heuristic as arm64, so there's precedent for sharing.
-
-I already have a patch doing that.
-
--aneesh
+Regards,
+Nikunj
