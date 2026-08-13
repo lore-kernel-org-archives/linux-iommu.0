@@ -1,80 +1,194 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF60423ABBF;
-	Thu, 13 Aug 2026 17:13:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 252EE38239F;
+	Thu, 13 Aug 2026 17:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786641206; cv=none; b=gG3+ZR+O1A46Z1SM44Ub7utKfO1TVZE/cDaJwBQcktISYxAeWo0y4xA6IKAcdL0rwp6rZno892iR1zUBgEz/v4nZEdFw3noZdFuS8jQJgeKXvGhjeRmj6ErY5xbmaUPNcrchzfridKh9PrgJ7jSexMERE42+wN9RjfvhL3kYgTY=
+	t=1786641967; cv=none; b=ToJkAYD/MdBy6AcNWEI5UZGs6ZUFlXYBAowMf96jwiDWOp0p+LU5yaEsSr42vVRbby6cEHWMOtDaGAI/lmsOpwFfoaxhmkaVyELnfEoxr91KTzgtDP3y9sQA+YRuWBNLAJg7U0jkqHIR1QEdxJidXzjIqToggHNsxHCiTqM+XJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786641206; c=relaxed/simple;
-	bh=TUfxY3t1b+w7Wn2N7rvrr5qu1bT3LWeRrITU9jo+FBc=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=kiQbpwaOYqSnsK9yTzCmcQUPLKl0yFMN5uP/XLGTCHFfe9n/jsL2SWRStyenI+jYvDd9ayZd8NdiAxboQPGFDXskoepS5D3M0e8Q8b5fxlyOlf6DLftnVL8S3sczD4ZCn1sYgl8GC1Hn3LsZcsRkv5bRd28NrlX67ZHFdGT9F5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=Q88b+0mF; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786641967; c=relaxed/simple;
+	bh=0qNjRcWOrWIUhU03ffUrB4IIh2/akNK5dYV6ljcH4Do=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=s24zJKgsnrE56WwDVsLGRncuCbhzGs3/jpJfK8YUWHB1TgS27dED0Ee7igs6KvuKIh8QyScAwOX2xkYte0z7n4dnVMOSPTf0DcSTh1kNdLSbaGfYf/8H4INJ+QTUah0pp1aF8MUAuMF/CWgaAth3gNyaXdFlKsI2ELjMX6ZpUys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=tppK8Bum; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="Q88b+0mF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3E11F000E9;
-	Thu, 13 Aug 2026 17:13:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux-foundation.org; s=korg; t=1786641205;
-	bh=pUOC/FC4PQF6+s0qEZTpGq4bNKV31D5cgo9gvuc/ncU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Q88b+0mFOy7f5xOve/935GyjlURclUSFAIHLWIDPPl6nplURGd+Kurct98CZVpXWa
-	 hOZIIyGv0LEq7+VRCnmY1+hggNdXUPLg7y1Wu66aH4+hnJ0LhlPqfzP5Krg076WOig
-	 QcvZmdUcFZ8JJVSsInNW5LXdWEq9SEuzE/kuli+A=
-Date: Thu, 13 Aug 2026 10:13:23 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski
- <luto@kernel.org>, Borislav Petkov <bp@alien8.de>, David CARLIER
- <devnexen@gmail.com>, David Hildenbrand <david@kernel.org>, Ingo Molnar
- <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, Jiri Slaby
- <jirislaby@kernel.org>, Juergen Gross <jgross@suse.com>, Kevin Tian
- <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>, "Liam R. Howlett"
- <liam@infradead.org>, Lorenzo Stoakes <ljs@kernel.org>, Lu Baolu
- <baolu.lu@linux.intel.com>, Nikunj A Dadhania <nikunj@amd.com>, Pedro
- Falcato <pfalcato@suse.de>, "H. Peter Anvin" <hpa@zytor.com>, Peter
- Zijlstra <peterz@infradead.org>, Shakeel Butt <shakeel.butt@linux.dev>,
- Steffen Dirkwinkel <lists@steffen.cc>, Suren Baghdasaryan
- <surenb@google.com>, Thomas Gleixner <tglx@kernel.org>, Toshi Kani
- <toshi.kani@hpe.com>, Vishal Moola <vishal.moola@gmail.com>, Vlastimil
- Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- stable@vger.kernel.org, syzbot@syzkaller.appspotmail.com, x86@kernel.org
-Subject: Re: [PATCH v2 0/5] x86/mm/pat: CPA fixes
-Message-Id: <20260813101323.86405fa229aa6a80fdb53d63@linux-foundation.org>
-In-Reply-To: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
-References: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="tppK8Bum"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EEB6B1596;
+	Thu, 13 Aug 2026 10:25:58 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 03D7F3F632;
+	Thu, 13 Aug 2026 10:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1786641962; bh=0qNjRcWOrWIUhU03ffUrB4IIh2/akNK5dYV6ljcH4Do=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=tppK8BumBPAbrAfRQmCD3DCnY1uqqULHCNqKQeWBbH8qhRpmhLdqwzu5s+lWT8N/3
+	 ieLFKhQNJpl4hvpIV4Szo/WxIXLEwgjqh3ev/ObpOBF1O4am5HbfRJx/KURkrzwPK0
+	 wArlBaOws2E/82N8w7tnISG2yYTUQQgd6k3IFVSw=
+Message-ID: <1791d7da-ecd9-4475-8f27-c8857477b442@arm.com>
+Date: Thu, 13 Aug 2026 18:25:59 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation for
+ latency
+To: Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Jean-Philippe Brucker <jpb@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Will Deacon <will@kernel.org>,
+ David Matlack <dmatlack@google.com>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+ Pranjal Shrivastava <praan@google.com>,
+ Samiullah Khawaja <skhawaja@google.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <akzm5BoV0rToJ7ij@google.com> <20260708001058.GA422027@nvidia.com>
+ <an3MSKEj7VhT4WkP@google.com> <20260813141320.GF730363@nvidia.com>
+ <an3ew9xbnLe1dr5g@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <an3ew9xbnLe1dr5g@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 12:01:23 +0300 Mike Rapoport <rppt@kernel.org> wrote:
+On 13/08/2026 4:12 pm, Mostafa Saleh wrote:
+> On Thu, Aug 13, 2026 at 11:13:20AM -0300, Jason Gunthorpe wrote:
+>>
+>>> Sorry I lost track of this thread and I just saw v4.
+>>>
+>>> In the mobile space, I haven't seen an SMMUv3 that does not support
+>>> RIL.
+>>
+>> Oh? That's very surprising, AFAIK none of our embedded chips support it
+>> yet.. Even the server chips are only just getting it. Are you sure?
+> 
+> Yes, SMMUv3 is getting more and more common in moblie HW (opposed to
+> custom SoC IOMMUs). Devices that I have seen in the market in the
+> last couple of years have RIL. For example Pixel-10 which is currently
+> getting upstreamed. Also, I have a mini desktop with QCOM X1 which
+> have RIL.
+> 
+> The only SMMUv3 I have seen without RIL, is an old morello board I
+> have.
 
-> Some of the fixes got merged into x86 tree, some of them got merged into mm
-> tree and some are still hanging in the air.
+Arm MMU-600 is in a few embedded parts - Rockchip RK3588, some of the TI 
+Keystone 3s IIRC - but indeed it's mostly all over the first couple of 
+generations of Neoverse stuff - Ampere Altra, AWS Graviton2 and so on. 
+Similarly the ThunderX2 and early HiSilicon SMMUs also predate RIL, but 
+those whole machines are all probably old enough now to no longer be 
+widely used.
 
-I'm assuming/hoping that this whole series will be handled by the x86
-team.
+Arm implementations from MMU-700 onward all support RIL - MMU-700 itself 
+was again more of a server-focused design (it's quite big), but has 
+found its way into at least some embedded/mobile SoCs; MMU L1 is the 
+first design targeted directly at client systems, so we should be seeing 
+more of that as time goes on.
 
+>> I gather it wasn't even available in ARM IP until recently ish?
 
-I have retained three random pat patches in mm.git since July 23:
+If you'd consider 2019 recent ;)
 
-x86-mm-pat-acquire-init_mm-write-lock-on-collapse-to-avoid-uaf.patch
-x86-mm-pat-acquire-init_mm-read-lock-on-attribute-change-to-avoid-uaf.patch
-x86-mm-pat-allocate-split-page-tables-as-kernel-page-tables.patch
+>>> However, I have seen workloads that are really sensitive to translation
+>>> latency (display, camera...). And I'd be concerned about those
+>>> regressing.
+>>
+>> Yes, those exist, but again, they are already facing these problems if
+>> running without RIL.
+> 
+> Yes, but my point is that those typically support RIL and that change
+> regresses them.
 
-just to get them some testing exposure.  But they're old.  I've heard
-no reports since adding them.
+Not even that - the main concern is over-invalidation of adjacent in-use 
+buffers due to rounding up; non-RIL absolutely does not have that issue 
+and never has.
 
-There's nothing more to be learned by keeping these in mm.git so I'll
-remove them now.
+>> And, for the common case of putting something into a carve out region
+>> it is not so likely even an expanded RIL will intersect with a
+>> reserved IOVA that has a high alignment.
+> 
+> Not necessarily, those devices can run with a small IOVA space to
+> reduce the page table walk length making IOVAs quite close.
+> 
+>>
+>> At least the things we have built are calibrated to handle a TLB
+>> reload occasionally. The isochronous TLB's are not even sized to be
+>> never-miss for all cases because things like 4k media require such a
+>> large amount of IOVA the area cost is too high.
+>>
+>> While others can do something else you are reaching into a pretty
+>> narrow condition to hit a problem:
+>>   - HW that must have a never-miss TLB to work
+> 
+> I am not saying that, but we shouldn't over invalidate TLBs either
+> when it is easy to avoid that.
+> 
+>>   - HW that doesn't have a carve out, or has a badly aligned carve out
+> 
+> I do not think a carveout will help. But it's a very strong constraint
+> to enforce carveout on all devices specially media which are quite
+> complex and composite by nature.
+> 
+>>   - A SMMU that has RIL (non RIL is already worse)
+> 
+> This regression only impacts RIL, otherwise it does not matter.
+> 
+>>   - A non-isochronos workload that regularly exceeds the RIL/single
+>>     expansion thresholds
+>>   - Unlucky IOVA allocation that places isochronous near other
+>>     workloads in the IOVA space.
+>>
+> 
+> It is not just luck, it depends on the IOVA space and access patterns
+> of the device.
+> 
+>>> There is a clear trade-off here as you mentioned with TLBI latency,
+>>> would it be make sense to make that behviour configurable from a
+>>> module param?
+>>
+>> I think it makes sense for a driver to indicate to the core code that
+>> it needs isochronous and we can do more global things like change how
+>> single works as well. Having an isochronous flag on the domain, for
+>> example, would be a good overall direction.
+> 
+> But according to what? It makes sense to optimize server chips,
+> but that should not cause over-invalidation regressions on other
+> hardware.
+> 
+>>
+>> I'm inclined to leave this as is and let someone come with a specific
+>> problematic HW, rather that try to badly guess without much
+>> information if it might popssibly be a problem.
+>>
+> 
+> It's not really a guess, I mentioned some examples above, that I
+> have seen problems of translation latencies on them.
+> 
+> And why not the other way around:
+> - Which uses cases can't handle few RIL commands?
+> - Why those drivers does not unmap memory with a granule/IOVA fitting
+>    to RIL?
+> - Why those systems does not use FQ domains in the first place?
 
+Note that with RIL, even precise invalidation should only actually need 
+at most two commands (excepting absurd off-the-scale sizes) - the trick 
+is to consider that they can overlap.
 
+Conversely though, if we really did have a demonstrable need to minimise 
+the number of commands issued then we should probably also not bother 
+with the TTL hint nor splitting leaf ranges from non-leaf, such that we 
+can gather pretty much any unmap into a single command.
+
+This is probably something we'll end up wanting some kind of tunable 
+behaviour for, given that SMMUv3 hardware is going to be spanning an 
+increasingly wide range of use-cases with increasingly opposing 
+requirements - it's certainly more than just "hypervisor or not". For 
+now, though, I'm also not buying a dubious latency argument based on 
+apparently no real-world data other than "I think"...
+
+Thanks,
+Robin.
