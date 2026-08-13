@@ -1,65 +1,51 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 146F139CCEF;
-	Thu, 13 Aug 2026 08:47:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A480442FDB;
+	Thu, 13 Aug 2026 08:51:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786610865; cv=none; b=h80udX17oH1ssgheCenclA4uE5nVhaYqHYQBkruLuXYLrLrIWzUpSDk/0ubdc380M34JFfKTynjlFEo5B5vc7mcS6Rah5hF7dPdKYeoU57wTAqxtD0yPScoKlFSGWrqvSXsV30Zqo/+8ZFicOH2nV2PMAK3+hNe7BYLVy8j7HFk=
+	t=1786611078; cv=none; b=WzzO7RYo82ek4ZAspK3E2BV4riiS46V/TsoFvkm+7h1hX7UyMM3fLTqI8kJONT1b+5EHRCIX3yIZ6TWckqynp79EPd8NFl8Pmh8Nf+dc3AlV8Rm6PCxsEtiPt9uUlTxAvQiaS4s3J/YFFtciPKKgwZbDaws7S3USxDjM2QabRDI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786610865; c=relaxed/simple;
-	bh=u5KMzGgVOcLWbuPlGu/sTLdzSGT3hVGWZa68nwwdEyQ=;
+	s=arc-20240116; t=1786611078; c=relaxed/simple;
+	bh=yP2T/dRfoOq9lZp6dYfuhCi5+xWv9PTfpDgNcUv5UNE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=arFaaM712n517jb43Aq6F9yMnzS6Hxi7PO2QB+W0BWnd1pbfNJjXhfC38sJZnMjOXeEJSvKSOB1SlajBQfUB189jjJ+Ng5q33ZyLGRbCyebqij1qVpxSSpYvuX06d3U3Zw0ijPLOsbhFDAhWxifhL4r1wXnAaWE3DfwmPhQQoZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=kT2LB7gW; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=aLocmwi4kl0k59g5P+//+PBy4z6NVtcGKmJHjtBoUvC2oWNYLqhnk/Dqeif4v9w4DInnjjgnx9PwNX85BvgiSth8iLe6VCoaCimgKUs+YMSr2HB0baMrLD3HxHzu8Sh+BiPGzSC0+TYlqLwkwAIvyY7OErf3QpUU5dqNZpd3axA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nWPYIb/p; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="kT2LB7gW"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CDACB153B;
-	Thu, 13 Aug 2026 01:47:31 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B7F53F632;
-	Thu, 13 Aug 2026 01:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786610855; bh=u5KMzGgVOcLWbuPlGu/sTLdzSGT3hVGWZa68nwwdEyQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kT2LB7gWPYpgXVp71WWZoEXALMvIuyrYp2tyQrSRM7LMcXDOoynp3ByKSZ/tbnOds
-	 7sOyvXvON5GdcI8v+AGnoMPFjNbyQnUOJYmgJ/wJu21XtiGgJJDFOhsnMhJdtg/Kps
-	 Ku5KeVrNaQDn+9+ZGLenYYr12tmjJiDAlfff6Owc=
-Date: Thu, 13 Aug 2026 09:47:28 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
- encryption
-Message-ID: <an2EoONjyp570tvB@arm.com>
-References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
- <anxEc8EHmJQywVI5@arm.com>
- <yq5ajypvioks.fsf@kernel.org>
- <anysnQFVTO_RAYxp@arm.com>
- <yq5aecg2io0u.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nWPYIb/p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D6A31F000E9;
+	Thu, 13 Aug 2026 08:51:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786611074;
+	bh=s15YMfOwxWEvAnRRd4hU5g+v53XbUCKXoccrAXlR3Xc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=nWPYIb/pH6H6oqPWsIPtUjNPbp07s6id5XEc1hMPQDMdeKAuZOc9j8PNXJxfz33n6
+	 G5IxTmlmRhScRf8Rtc8d+7pqOLpyuMN6lUMOhfbf5lTZefaXpD7B6E3/5v9m1xTNDp
+	 m+i2jwmBGB+jr7V/SNZYlKjYsTuYkARctVNycKJoDlAUIXVy5KJ41TZo8kC+RuWTco
+	 vSV1Z6V0YTo37RIgaBT+JA47S9pvA5P8NoFDBjXkG5xW+1Ddj3Teg0/cbcV7yJ5tKj
+	 LOuXPzmtuHuqAqKA4GyOzCA7qcxeXCTdSVdbHMX+vPJboJijElcEOPP7vokRjodtrn
+	 NPX5Z2P3YnCig==
+Date: Thu, 13 Aug 2026 11:51:00 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Nikunj A Dadhania <nikunj@amd.com>
+Cc: ljs@kernel.org, akpm@linux-foundation.org, baolu.lu@linux.intel.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, david@kernel.org,
+	den@openvz.org, devnexen@gmail.com, hpa@zytor.com,
+	iommu@lists.linux.dev, jgg@ziepe.ca, jgross@suse.com,
+	jirislaby@kernel.org, kas@kernel.org, kevin.tian@intel.com,
+	liam@infradead.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, lists@steffen.cc, luto@kernel.org,
+	mingo@redhat.com, peterz@infradead.org, pfalcato@suse.de,
+	shakeel.butt@linux.dev, stable@vger.kernel.org, surenb@google.com,
+	syzbot@syzkaller.appspotmail.com, tglx@kernel.org,
+	toshi.kani@hpe.com, vbabka@kernel.org, vishal.moola@gmail.com,
+	will@kernel.org, x86@kernel.org, bharata@amd.com,
+	Ananth.Narayan@amd.com
+Subject: Re: [PATCH 0/5] x86/mm/pat: CPA fixes
+Message-ID: <an2FdPPOWT50lLD4@kernel.org>
+References: <anXvODEvV4f_Taj7@lucifer>
+ <20260813055544.25567-1-nikunj@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,84 +54,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <yq5aecg2io0u.fsf@kernel.org>
+In-Reply-To: <20260813055544.25567-1-nikunj@amd.com>
 
-On Thu, Aug 13, 2026 at 11:02:17AM +0530, Aneesh Kumar K.V wrote:
-> Catalin Marinas <catalin.marinas@arm.com> writes:
-> > On Wed, Aug 12, 2026 at 04:38:03PM +0530, Aneesh Kumar K.V wrote:
-> >> Catalin Marinas <catalin.marinas@arm.com> writes:
-> >> > On Tue, Aug 11, 2026 at 07:10:56PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> >> >> Systems with memory encryption use swiotlb to provide shared or
-> >> >> unencrypted buffers for device DMA. Confidential guests may route all
-> >> >> DMA through these buffers, while SME hosts use them for devices that
-> >> >> cannot address encrypted memory. The default swiotlb pool can therefore
-> >> >> be exhausted under I/O-intensive workloads.
-> >> >> 
-> >> >> Let architectures mark the default swiotlb pool as shared before
-> >> >> swiotlb_init().
-> >> >
-> >> > I thought we wanted even this decision to be moved out of the arch code.
-> >> 
-> >> Architectures may want to use an unencrypted swiotlb pool for different
-> >> reasons, one of them being CC_ATTR_GUEST_MEM_ENCRYPT. x86 hosts also
-> >> require unencrypted pool to support SME. We can cover both cases using
-> >> CC_ATTR_MEM_ENCRYPT.
-> >
-> > Yes but in one case it did not do resizing. With your proposal, it now
-> > does swiotlb resizing even for SME.
+On Thu, Aug 13, 2026 at 05:55:44AM +0000, Nikunj A Dadhania wrote:
+> On Fri, Aug 07, 2026 at 04:36:08PM +0100, Lorenzo Stoakes (ARM) wrote:
+> > +static void poke_vmalloc_pages_safe(struct page **pages, void *addr,
+> > +				    bool cross_page_boundary)
+> > +{
+> > +	guard(mmap_read_lock)(&init_mm);
+> > +	poke_vmalloc_pages(pages, addr, cross_page_boundary);
+> > +}
 > 
-> Isn't that a bug with x86 SME? I would expect both SME and SEV to
-> require that swiotlb resize.
+> Tested just the proposed patch from this email (without the rest of the
+> CPA fixes series) on the 512-guest concurrent boot harness (details in
 
-Maybe, but that's for a different discussion (and we may want different
-sizing). Better to keep the semantics unchanged for now.
+For this fix to actually fix anything, the patches that add locking of
+mmap_lock to CPA are needed still.
 
-> >> > BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
-> >> > option in realms?
+> [1]) and still see the memcmp BUG, I havent hit the first BUG though:
 > 
-> This is getting fixed in  
-> https://lore.kernel.org/all/20260701054926.825925-9-aneesh.kumar@kernel.org/
-
-You might want to bring this early together with the swiotlb adjustment
-here.
-
-> >> For the same reason I mentioned above, architectures may have different
-> >> reasons for setting cc_shared = true. IMHO, it is cleaner to let the
-> >> architecture code make that decision before swiotlb_init().
-> >
-> > The arch code already reports cc_platform_has(), can we not rely on
-> > this in the core code instead of specific is_realm_world() and a new
-> > SWIOTLB_INIT_CC_SHARED flag or function call?
-> >
-> > We have three different decisions that shouldn't be driven by a single
-> > flag from the arch code:
-> >
-> > 1. allocate default pool
-> > 2. make default pool shared
-> > 3. resize default pool
-> >
-> > (1) is traditionally driven by arch code and that's fine. For (2), the
-> > core code has the information via CC_ATTR_*. For (3), we can enlarge it
-> > based on CC_ATTR_GUEST_MEM_ENCRYPT in combination with rmem (but not
-> > CC_ATTR_MEM_ENCRYPT to keep the current x86 behaviour).
+>   kernel BUG at arch/x86/kernel/alternative.c:2727!
+>   Oops: invalid opcode: 0000 [#1] SMP NOPTI
+>   CPU: 1 UID: 0 PID: 485 Comm: (udev-worker) Not tainted 7.2.0-rc5-pokesafe+ #42 PREEMPT(full)
+>   RIP: 0010:__text_poke.cold+0xdb/0x2af
 > 
-> Okay, if the presence of restricted-dma-pool is taken as a hint, we can
-> definitely move that to generic code.
+> The instrumentation captured the following before the memcmp BUG:
 > 
-> I still think not resizing the swiotlb pool on the host for SME is an
-> x86 bug. However, I'll keep it compatible with the current behavior and
-> use CC_ATTR_GUEST_MEM_ENCRYPT for now. We can handle host SME in a
-> separate patch if needed.
-
-Sound good.
-
-> > I think we should also move the reduction based on
-> > CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC into the core code. Riscv copied the
-> > same heuristic as arm64, so there's precedent for sharing.
+>   SMP alternatives: __text_poke: memcmp failed at addr=ffffffffc06ce1bb len=4
+>   SMP alternatives: __text_poke: expected (src): 2e 2e 31 c0
+>   SMP alternatives: __text_poke: found    (dst): f9 b8 9b d3
+>   SMP alternatives: __text_poke: pfn at poke time (vmalloc_to_page): 8ece
+>   SMP alternatives: __text_poke: pfn at readback time (vmalloc_to_page): c6ce
+>   SMP alternatives: __text_poke: page table dump for addr:
+>     PGD 2f042067  P4D 2f043067  PUD 2f045067  PMD c6001a1
 > 
-> I already have a patch doing that.
-
-Great. Now you have a 3-patch series for the generic swiotlb sizing ;)
+> pfn acquired at the start of __text_poke() (0x8ece) differs from pfn
+> at readback time (0xc6ce) in the instrumentaion.
+> 
+> [1] https://lore.kernel.org/all/20260812063316.21371-1-nikunj@amd.com/
+> 
+> Regards,
+> Nikunj
 
 -- 
-Catalin
+Sincerely yours,
+Mike.
