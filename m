@@ -1,100 +1,151 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3F1434C9A6;
-	Thu, 13 Aug 2026 07:06:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 146F139CCEF;
+	Thu, 13 Aug 2026 08:47:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786604797; cv=none; b=KNdyesvhAByIZa9lZ1q7Gt9o99E8FoRk6+Co6W9YzhyGk8ma+H1L5l44W4o23BSlGwIc9w3kGY6lW2qughQmK/fwR2SsXTQP0hEFP7Jh+Qz4ljLq2L8QAqNyCTCaT8mtiNl9NwM6Kfw6OHj9flOimDCb5P1FcJQGt+5Wv57np28=
+	t=1786610865; cv=none; b=h80udX17oH1ssgheCenclA4uE5nVhaYqHYQBkruLuXYLrLrIWzUpSDk/0ubdc380M34JFfKTynjlFEo5B5vc7mcS6Rah5hF7dPdKYeoU57wTAqxtD0yPScoKlFSGWrqvSXsV30Zqo/+8ZFicOH2nV2PMAK3+hNe7BYLVy8j7HFk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786604797; c=relaxed/simple;
-	bh=S2a4/EY4ol+MON2eK+E9sy9COVmHiqiV6FniuwrLris=;
+	s=arc-20240116; t=1786610865; c=relaxed/simple;
+	bh=u5KMzGgVOcLWbuPlGu/sTLdzSGT3hVGWZa68nwwdEyQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hRc7bumiv8E1vbFqgpyDFUGmNiJkdKm+bzC7gu2lxpllgPgTEnu+kNuQmU+I9uSPbIESYdcx07n3GUt6xc4HSMkESoQzWa311SqSXf+kKGpp2WHG7vK1atxmjL/Qxhbzcl0vk//Fk6CWLS5AztMHHtH1yjVHbXijmQ/JoqRhxRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LO7XnNmk; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=arFaaM712n517jb43Aq6F9yMnzS6Hxi7PO2QB+W0BWnd1pbfNJjXhfC38sJZnMjOXeEJSvKSOB1SlajBQfUB189jjJ+Ng5q33ZyLGRbCyebqij1qVpxSSpYvuX06d3U3Zw0ijPLOsbhFDAhWxifhL4r1wXnAaWE3DfwmPhQQoZ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=kT2LB7gW; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LO7XnNmk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77E071F000E9;
-	Thu, 13 Aug 2026 07:06:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786604795;
-	bh=5gkzFo2+VnKiba/m6QDHWuLmIQSEjcsqyeD9BtdYCdE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=LO7XnNmksRdPGuuVUvy4uIp1TNqnss+bW1hz0raYz9RVLB9K2Msgsgwbi+S77PMen
-	 EU929j5yne48ccdwHerg5SVsXmfM/l/6Fsc13FOojuYOe4cA+efThVEz/GwEjv+U7g
-	 bEUZuO4PJZ0PxH6thkO1thO+J+W63uADRHQ7BT64/Yjc3vPSNeCe1n4zJaSG47bJHR
-	 /Plvnr6vRz1KaNK4XkEp1In1rN3T/LC5p7IJcb7XUmYuq1E4rA6o95MXLnlu675/Y8
-	 ptXQEUJYFoSiQ8eJSCg0y24KdXivFsYdEEdgPRfs5Mkf3vnB6kIHeAKCl95shEvTqW
-	 XPXivBMAj9aAA==
-Date: Thu, 13 Aug 2026 09:06:24 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Jiaxing Hu <gahing@gahingwoo.com>
-Cc: tomeu@tomeuvizoso.net, heiko@sntech.de, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, ulfh@kernel.org, p.zabel@pengutronix.de, ogabbay@kernel.org, 
-	zhangqing@rock-chips.com, royalnet026@gmail.com, alchark@flipper.net, 
-	chaoyi.chen@rock-chips.com, diederik@cknow-tech.com, dri-devel@lists.freedesktop.org, 
-	linux-rockchip@lists.infradead.org, iommu@lists.linux.dev, linux-pm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 03/10] dt-bindings: power: rockchip: allow resets in a
- power domain node
-Message-ID: <20260813-squid-of-splendid-hail-d968bf@quoll>
-References: <20260812094106.1391698-1-gahing@gahingwoo.com>
- <20260812094106.1391698-4-gahing@gahingwoo.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="kT2LB7gW"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CDACB153B;
+	Thu, 13 Aug 2026 01:47:31 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B7F53F632;
+	Thu, 13 Aug 2026 01:47:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1786610855; bh=u5KMzGgVOcLWbuPlGu/sTLdzSGT3hVGWZa68nwwdEyQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=kT2LB7gWPYpgXVp71WWZoEXALMvIuyrYp2tyQrSRM7LMcXDOoynp3ByKSZ/tbnOds
+	 7sOyvXvON5GdcI8v+AGnoMPFjNbyQnUOJYmgJ/wJu21XtiGgJJDFOhsnMhJdtg/Kps
+	 Ku5KeVrNaQDn+9+ZGLenYYr12tmjJiDAlfff6Owc=
+Date: Thu, 13 Aug 2026 09:47:28 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [RFC PATCH] dma: swiotlb: Size shared default pools for memory
+ encryption
+Message-ID: <an2EoONjyp570tvB@arm.com>
+References: <20260811134056.756015-1-aneesh.kumar@kernel.org>
+ <anxEc8EHmJQywVI5@arm.com>
+ <yq5ajypvioks.fsf@kernel.org>
+ <anysnQFVTO_RAYxp@arm.com>
+ <yq5aecg2io0u.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260812094106.1391698-4-gahing@gahingwoo.com>
+In-Reply-To: <yq5aecg2io0u.fsf@kernel.org>
 
-On Wed, Aug 12, 2026 at 09:40:58PM +1200, Jiaxing Hu wrote:
-> Some domains do not come up in a usable state on their own and need
-> their resets cycled once power is on. The RK3576 NPU domains are one
-> case: without it the first access after power-on takes an async SError.
+On Thu, Aug 13, 2026 at 11:02:17AM +0530, Aneesh Kumar K.V wrote:
+> Catalin Marinas <catalin.marinas@arm.com> writes:
+> > On Wed, Aug 12, 2026 at 04:38:03PM +0530, Aneesh Kumar K.V wrote:
+> >> Catalin Marinas <catalin.marinas@arm.com> writes:
+> >> > On Tue, Aug 11, 2026 at 07:10:56PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> >> >> Systems with memory encryption use swiotlb to provide shared or
+> >> >> unencrypted buffers for device DMA. Confidential guests may route all
+> >> >> DMA through these buffers, while SME hosts use them for devices that
+> >> >> cannot address encrypted memory. The default swiotlb pool can therefore
+> >> >> be exhausted under I/O-intensive workloads.
+> >> >> 
+> >> >> Let architectures mark the default swiotlb pool as shared before
+> >> >> swiotlb_init().
+> >> >
+> >> > I thought we wanted even this decision to be moved out of the arch code.
+> >> 
+> >> Architectures may want to use an unencrypted swiotlb pool for different
+> >> reasons, one of them being CC_ATTR_GUEST_MEM_ENCRYPT. x86 hosts also
+> >> require unencrypted pool to support SME. We can cover both cases using
+> >> CC_ATTR_MEM_ENCRYPT.
+> >
+> > Yes but in one case it did not do resizing. With your proposal, it now
+> > does swiotlb resizing even for SME.
 > 
-> pd-node has no resets property and every nesting level is
-> unevaluatedProperties: false, so describing that in DT is rejected
-> today. Add it alongside clocks.
+> Isn't that a bug with x86 SME? I would expect both SME and SEV to
+> require that swiotlb resize.
 
-This paragraph is redundant. Why are you explaining correct syntax?
+Maybe, but that's for a different discussion (and we may want different
+sizing). Better to keep the semantics unchanged for now.
 
+> >> > BTW, why does arm64 report CC_ATTR_MEM_ENCRYPT instead of the GUEST
+> >> > option in realms?
 > 
-> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
-> ---
->  .../bindings/power/rockchip,power-controller.yaml         | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> This is getting fixed in  
+> https://lore.kernel.org/all/20260701054926.825925-9-aneesh.kumar@kernel.org/
+
+You might want to bring this early together with the swiotlb adjustment
+here.
+
+> >> For the same reason I mentioned above, architectures may have different
+> >> reasons for setting cc_shared = true. IMHO, it is cleaner to let the
+> >> architecture code make that decision before swiotlb_init().
+> >
+> > The arch code already reports cc_platform_has(), can we not rely on
+> > this in the core code instead of specific is_realm_world() and a new
+> > SWIOTLB_INIT_CC_SHARED flag or function call?
+> >
+> > We have three different decisions that shouldn't be driven by a single
+> > flag from the arch code:
+> >
+> > 1. allocate default pool
+> > 2. make default pool shared
+> > 3. resize default pool
+> >
+> > (1) is traditionally driven by arch code and that's fine. For (2), the
+> > core code has the information via CC_ATTR_*. For (3), we can enlarge it
+> > based on CC_ATTR_GUEST_MEM_ENCRYPT in combination with rmem (but not
+> > CC_ATTR_MEM_ENCRYPT to keep the current x86 behaviour).
 > 
-> diff --git a/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml b/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml
-> index b41db576f..f23c1a118 100644
-> --- a/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml
-> +++ b/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml
-> @@ -136,6 +136,14 @@ $defs:
->            A number of phandles to clocks that need to be enabled
->            while power domain switches state.
->  
-> +      resets:
-> +        minItems: 1
-> +        maxItems: 30
-
-30 resets per one power domain? and none got to the example in this
-file?
-
-> +        description: |
-
-Do not need '|' unless you need to preserve formatting.
-
-> +          A number of phandles to resets that need to be cycled once the power
-> +          domain has been switched on, for domains whose logic does not come up
-> +          in a usable state by itself.
-> +
->        domain-supply:
->          description: domain regulator supply.
->  
-> -- 
-> 2.43.0
+> Okay, if the presence of restricted-dma-pool is taken as a hint, we can
+> definitely move that to generic code.
 > 
+> I still think not resizing the swiotlb pool on the host for SME is an
+> x86 bug. However, I'll keep it compatible with the current behavior and
+> use CC_ATTR_GUEST_MEM_ENCRYPT for now. We can handle host SME in a
+> separate patch if needed.
+
+Sound good.
+
+> > I think we should also move the reduction based on
+> > CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC into the core code. Riscv copied the
+> > same heuristic as arm64, so there's precedent for sharing.
+> 
+> I already have a patch doing that.
+
+Great. Now you have a 3-patch series for the generic swiotlb sizing ;)
+
+-- 
+Catalin
