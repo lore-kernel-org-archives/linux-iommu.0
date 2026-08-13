@@ -1,126 +1,141 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+Received: from mta0.migadu.com (out-157.mta0.migadu.com [91.218.175.157])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9058E305693
-	for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 23:26:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A241624D5
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 00:05:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.157
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786577204; cv=none; b=cxTXd36UY2uVa30dG1WBpKpO/pLLL/UbhiVFztJg1k7bp0DGXblnlwx/MuQ4fRXwlnHljwGeYfL63owYN4cT0qx/gqcmVZOslFDR7hJxxo1Wp5xHamMC+wm/5DlepTclaXHwetSQ+WPXcm2iGP5mSQri+41FzrBIAc3TlT6rlZI=
+	t=1786579553; cv=none; b=WKbRlr/aOHPyZ08P5LKIMAvW7XyYKIvYtJbqLIJlrENSF+Ht+1W7r14Djlw3e1v7+scxgDMaHYSDQtspRgogWR77alNM0Md2srj1yZ02st5GePefKpUmwDiE8KgzgUU0MfdYhRHS6K0Payvgo3N6zimbkbOp76C8v1FHMfmC1MQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786577204; c=relaxed/simple;
-	bh=BO645U9ifjKXOpO1PpIkP1j+0bMM0mr+PVso/igYqk4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IG3h0loGjs1UcQKgZ1AQnLCXXP1MBIDRi1B7i0/Bzoj7g5+kffrIRrvu1iHM5AP+AmL+XAtDdK+SAyQSiUycqFkdQbCyTi3C/qpQ/2Ev5KP8f/H1DuaCAeb5SiTm/vCKduPJNvDpqtUXwQlDGLA69ZxkT70w5n6ZjHbS/Km6Mvo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VxG7Odnn; arc=none smtp.client-ip=209.85.222.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1786579553; c=relaxed/simple;
+	bh=jhMAM9mv34g3Y7kZQBCLpUTuCyQVHcxm40WPa1yHLcs=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=iGNwcrXpV0BX/wB/r4mq5jHMYTC/nZDwLChrmOGBleIXA4+cFP+ci2r0F9qhC0oEYjgoQkOof6E8SSDDkh70kh63qrLAJBlHBxkNDG75I02oueGF8lYIIiq0Na6XMQCngfzz7bONjUqkAatcsAEYrX7FFInyVaLRO1OyBIiuYko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=dqjwZLU9; arc=none smtp.client-ip=91.218.175.157
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VxG7Odnn"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-934956bee57so12806285a.2
-        for <iommu@lists.linux.dev>; Wed, 12 Aug 2026 16:26:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786577201; x=1787182001; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2kewlUKaZr/ookoJLS4qbS+ZkvabPmZz+91AhGwFzXU=;
-        b=VxG7Odnn8xp0w1GqwkRAyxxVIQloCHl0uEmnn6qg22F5DWFPMa050izNV9dZzlUFdG
-         k3sRFTEFI3LWxZ1QIXu2hJ198wzPgBjRbAtRWP0mwzojhmYrgTjAfYk38xING6Idrf0U
-         yJ2f85Xlq+v+cVV4UNGfTmuCtBGATJxYlEIx29LZvB6a0jevIjtJT7uM3I247iNX0yTi
-         0DU43phB+3s+nqBwwyaFYzT5P5e/lChXJVEdOawZZqteN4aUZQlF3b8UP0xbATRLJh0y
-         v8Hf2xaO26AMUdewX0/q5IIoy/IedzB6SK+XhiyyCP3nO0UOyhfvDh8i9/xU4OExxqIt
-         g7Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786577201; x=1787182001;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=2kewlUKaZr/ookoJLS4qbS+ZkvabPmZz+91AhGwFzXU=;
-        b=X4xDTf4NGqbMURJbRBBKAmIiG/9MCKnDR1Hrf6ot/l07CbFS+QI0O4fUGlBaZFK6/4
-         0firsBumMFHRDTzb7rjWKOBCWpDuthmkyKr5Ko4rlAeHldreCFeqEgDhy+6MG/4MwXn3
-         vOn2VDPwplQlyRobnkPsbm2hMdghFxpxjWxpEBHoCbKDLv4QodZpPhoTiuiRN0qep17E
-         tvciKs+pJHPSAhKxmQS7D13Ie0nkC5lTePwh1EIfrqbf8MI9ZWrmrfnmQHfzzF8hCu1P
-         KSdtlVFZDZ+nPYn7uQSEx+AHqthvrGgexup/u+8/OEwjPQuZdatJSSFtKh2K6GnVBXxk
-         jYGw==
-X-Forwarded-Encrypted: i=1; AHgh+Ro3yuNuKUe7ushzEJfD1cNsCJdHwChD5MJbGFwhgQL0UMJF1uVgp7ZR43VMt7ZaBw+bdyuW/Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzw6+Ojf8EG99tA8wYxzncda/vkeoaEkrzF/z8gShUBmN1s3EHu
-	jYVYAc5fAGbmdBncEHQCBWEUJm50NWPIHZ+IV4ITkVRfdC9rCkfG3hZ8+3J/r/eXb94=
-X-Gm-Gg: AR+sD137OlY26S5a2/rpHFQmR4R6cLsW40eaJ/o0PygZhWlX0dwBj38W221KnkOh0CD
-	MLuGbp0aVreaNR4dWiIW1vmRLxQ9bhfsAFl4riAPOWV8Ae4X/xGGO9jVZlvFY3wsxy5hCwwoZc6
-	/rv2ZaARAMucunrSrpyn67hmYvdyzKlV+QAqvbh9z4SxcDJebHTo4RVQoCku5ZxF/xIfHTDRQuI
-	s53k71bo5c9n7rcVTwrZkMh3iH0bkYhPh8z0r3+1RknBZ/S5hEhl1HxdO5d84i4Wd+q25lkuxZX
-	cii6H/YSUoJliJB3RXynpVz2e+GTnpydLxKQ46mzuX0iH3HxgmcUPyvRt7MPw6ciY0MQyKGMXbH
-	GevZBZ+u1dPNJyNHd7gatM96w3yteZMFXiKzL/NLgXhnLHomKR9qAu5BuLhoB2d/hwlXhZGadwd
-	xEFdaCXTZLARQTz+duxPMfCba+uSb6dFw9rfueHw==
-X-Received: by 2002:a05:620a:444e:b0:936:bbb5:330f with SMTP id af79cd13be357-936bfade9e8mr155811785a.40.1786577201439;
-        Wed, 12 Aug 2026 16:26:41 -0700 (PDT)
-Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-936c196980dsm21757385a.12.2026.08.12.16.26.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2026 16:26:40 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wuILG-00000003ZvO-3bmz;
-	Wed, 12 Aug 2026 20:26:38 -0300
-Date: Wed, 12 Aug 2026 20:26:38 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Deucher, Alexander" <Alexander.Deucher@amd.com>
-Cc: "Hegde, Vasant" <Vasant.Hegde@amd.com>,
-	"Limonciello, Mario" <Mario.Limonciello@amd.com>,
-	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"Longia, Amandeep Kaur" <AmandeepKaur.Longia@amd.com>
-Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
-Message-ID: <20260812232638.GH662699@ziepe.ca>
-References: <08f2e48e-6e98-4fde-af71-cb8cde666bdf@amd.com>
- <20260805010706.GC28508@ziepe.ca>
- <39ce2a2f-3bb8-43e7-9446-a67551cce104@amd.com>
- <BN9PR12MB5146934D584CF0A2A9DD8CFCF7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
- <20260805175308.GD28508@ziepe.ca>
- <BN9PR12MB51467229315BC8D731239E80F7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
- <20260805191116.GE28508@ziepe.ca>
- <BN9PR12MB51463D56248A4DE952E6DCA2F7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
- <20260812205737.GG662699@ziepe.ca>
- <BN9PR12MB5146253D30587DC820486F4FF7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="dqjwZLU9"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=jhMAM9mv34g3Y7kZQBCLpUTuCyQVHcxm40WPa1yHLcs=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1786579547; v=1; x=1787184347;
+ b=dqjwZLU9hKyBFDYSEog4qb3fidaM4ycZwN35mGWJj0XWNpXyQayk4ln7K9RRxzvaQku9Xrgj
+ mhwI3U6ZvhU3EVywS+UVeGd9jns7jL/XJipOdNCUXDAoHbClHiUMO9KNOpmPaEHiRndBQiC3rhy
+ FH2IOmJ6mXmbcn2H/rFdyYZE=
+X-Envelope-To: iommu@lists.linux.dev
+Received: from coder-jfernandez-main-0.coder-jfernandez-main.remote-dev.svc.cluster.local (52.89.24.131)
+	by smtp.migadu.com with ESMTPS id 10e9d07281b2870d;
+	Thu, 13 Aug 2026 00:05:37 +0000
+X-Migadu-Flow: FLOW_OUT
+From: "Jose Fernandez (Anthropic)" <jose.fernandez@linux.dev>
+Date: Thu, 13 Aug 2026 00:05:26 +0000
+Subject: [PATCH 6.18.y] iommu/vt-d: Gather the unmapped range before
+ freeing its page tables
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR12MB5146253D30587DC820486F4FF7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260813-b4-vtd-unmap-gather-v1-1-4c52f4a7a1ac@linux.dev>
+X-B4-Tracking: v=1; b=H4sIAEUKfWoC/12NSRKCMBBFr0L12gYSLQSvYrnI0JI4BKoDqEVxd
+ wnuXP7p/RkisacIp2wGpslH34VViF0GxqnQEnq7apClrMpaSNQHnAaLY3iqHls1OGJsjlJb2zS
+ lkHtYlz3T1b836hmqXNT5By4/P476RmZIyNTUKhJqVsG4ZD36wnSvju/ExRb9X8GyfAEIN5Cts
+ wAAAA==
+X-Change-ID: 20260812-b4-vtd-unmap-gather-972bdd990123
+To: David Woodhouse <dwmw2@infradead.org>, 
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Tom Murphy <murphyt7@tcd.ie>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ stable@vger.kernel.org, Mohammed Almaroof <moh@anthropic.com>, 
+ Ben Cressey <ben@cressey.dev>, 
+ "Jose Fernandez (Anthropic)" <jose.fernandez@linux.dev>
+X-Mailer: b4 0.15.2
 
-On Wed, Aug 12, 2026 at 09:03:58PM +0000, Deucher, Alexander wrote:
-> > Sure, but the end result is the GPU and SME are inherently incompatible, we
-> > can't really fix it.
-> >
-> > What's wrong with blowing up at boot with a clear message that Linux must
-> > have SME disabled on this HW printed to the UEFI console?
-> 
-> It's not very user friendly, plus it would break working systems.
+In the 6.12 and 6.18 stable trees, when an unmapped range covers a
+whole page table, intel_iommu_unmap() can free that table before the
+range has been invalidated. The freed table goes on gather->freelist
+before the range is added to the gather. If
+iommu_iotlb_gather_add_page() syncs before adding it, that sync
+flushes only the earlier ranges but frees the whole freelist, that
+table included. The range itself is flushed later with an empty
+freelist, which means the flush is sent with the invalidation hint set
+and the IOMMU may keep its paging-structure cache entry for the freed
+table. DMA to the next mapping at that IOVA is then translated through
+whatever the freed page holds by then, which is usually a silent wrong
+translation and sometimes a DMAR fault.
 
-Huh? You've explained that SME doesn't work with these GPUs? How are
-there any working systems with SME turned on already running Linux?
+Under a userspace driver that maps and unmaps DMA buffers through VFIO
+type1 continuously, this shows up as wrong data in device reads and
+writes. An occasional DMAR fault on a mapped IOVA is the only thing in
+the logs. With an Intel DSA engine assigned through vfio-pci, remapping
+a 16 MiB buffer at a fixed IOVA and reading it through the device
+returned data from the wrong pages in 280 of 400 iterations. With a
+fresh IOVA per iteration it never did.
 
->  I'm not sure the average user would know what to do.  
+Add the range to the gather first and splice the freed tables into
+gather->freelist afterwards, so that they are only freed by a sync that
+also invalidates their range.
 
-Turn off SME in the bios? Doesn't it default to off?
+Mainline removed this code in v6.19 with commit d373449d8e97
+("iommu/vt-d: Use the generic iommu page table") and is not affected.
 
->  You aren't likely to want SME in the first place on one of these
->  laptops.  Why not flip the logic and print a clear message that if
->  the user wants SME they have to explicitly enable it via the kernel
->  command line.
+Fixes: 2a2b8eaa5b25 ("iommu: Handle freelists when using deferred flushing in iommu drivers")
+Cc: stable@vger.kernel.org # 6.12.y, 6.18.y
+Reported-by: Mohammed Almaroof <moh@anthropic.com>
+Reviewed-by: Ben Cressey <ben@cressey.dev>
+Assisted-by: Claude:unspecified
+Signed-off-by: Jose Fernandez (Anthropic) <jose.fernandez@linux.dev>
+---
+ drivers/iommu/intel/iommu.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-That seems like it would be API breaking for server users that do want
-SME
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cee1851b69245..8b38c65f403b2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3620,6 +3620,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 				unsigned long iova, size_t size,
+ 				struct iommu_iotlb_gather *gather)
+ {
++	struct iommu_pages_list freelist = IOMMU_PAGES_LIST_INIT(freelist);
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	unsigned long start_pfn, last_pfn;
+ 	int level = 0;
+@@ -3636,7 +3637,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	start_pfn = iova >> VTD_PAGE_SHIFT;
+ 	last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
+ 
+-	domain_unmap(dmar_domain, start_pfn, last_pfn, &gather->freelist);
++	domain_unmap(dmar_domain, start_pfn, last_pfn, &freelist);
+ 
+ 	if (dmar_domain->max_addr == iova + size)
+ 		dmar_domain->max_addr = iova;
+@@ -3648,6 +3649,14 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	if (!iommu_iotlb_gather_queued(gather))
+ 		iommu_iotlb_gather_add_page(domain, gather, iova, size);
+ 
++	/*
++	 * iommu_iotlb_gather_add_page() may have synced, which frees
++	 * gather->freelist. Hand this range's page tables over only after
++	 * that call. A queued gather frees them from the flush queue
++	 * instead.
++	 */
++	iommu_pages_list_splice(&freelist, &gather->freelist);
++
+ 	return size;
+ }
+ 
 
-Jason
+---
+base-commit: 1efe5d048a391de3ead2804b2e7f86376c356cc5
+change-id: 20260812-b4-vtd-unmap-gather-972bdd990123
+
+Best regards,
+--  
+Jose Fernandez (Anthropic) <jose.fernandez@linux.dev>
+
