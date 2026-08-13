@@ -1,87 +1,82 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD9A477E23
-	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 13:49:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF31420463
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 13:53:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786628981; cv=none; b=VYFJjOiVtSWJdnAuorYuzVDp+U362aMd6QseCO/luKLZBkL+GmKq4xR7wNnmIGOa4+tCvoiqh4ibFWBqwSrwTOFaVrkssbpQGH2/fxWy3tLzWxAXv+3c6uBCAlFjiaHHa2yizp85xwUDMJWhpsOn5m7ByXjFUNIMVrO+emQtQIg=
+	t=1786629201; cv=none; b=SJgEaMGw7FyIj6nxlF401FhE26JfMEytWfzBTSrwlU5tpsuA/GZO6mq3JLcDH1YbddsGmHiMx7dX9WK6ox52eF2KKP6ta1MFftEyNXf7Du9tYmBULkpMJNtyBHzfNz7Q/wA2t84RGtd3lQ/xPQTZAu7ypYpEmu2VeFjq3RQsWHc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786628981; c=relaxed/simple;
-	bh=0/BIRfMphfS1OGwGGVzoT/+z7v+H5hzNBd1OvKLo6R0=;
+	s=arc-20240116; t=1786629201; c=relaxed/simple;
+	bh=8Zioy32OXdm4oPXxw5VQR4iPqo7Y0Tou8teJq3YeTJk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DHNnhlUkJO4BKUSCr7TwQ1Z7kinTQKgqxywC55ylkdy2A8J4dwKTYGFm9L3rOaj0PW2GGbfXqeovm4d6oIKlKC8X3jx4YXQKQvZEkZJZnywF5NfhSkgQpG42edkkHvotOrQZZ3sfMJ3MRoCT0xnZYJ65FEyTv4XQ98bsWh2rfDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MKg3w3LE; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=TY1hYEnMsL0Xh3RIJi3qTrtmq9axElJAaG8NucQrtMSvgnW383BK9fCAqyhwM3YCXFPnNwOG78cT1YYyZSODXvrJiBwUFtNN2QOTNUJI8CLbiJqWS6aX4lGKLogO6yUX1qze9DCy/OL5mz8Z5JaKxRmR4eCcbq5pL/XZzmTGJzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oQDOrD17; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MKg3w3LE"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-92f03daaa97so40717785a.2
-        for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 06:49:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oQDOrD17"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-495509b08ebso42675e9.1
+        for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 06:53:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786628978; x=1787233778; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1786629198; x=1787233998; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=7Yi6QACY6Sk+pPvGX2LOJZA5tLUZ+nGsCUcFWjEbL98=;
-        b=MKg3w3LE/xrVKXAifxupau329+Qnk1ZObm/IrHTddZDTFrgC2pd32eGrU4/ivj0JT7
-         VSNzaOMcPgqoszkP0SJyVdDYn7PSgYqh5MZnT2bf5rZ+cH37GAMwK7aKqQTlNA7roZas
-         GQPtdIz3+2CdxSpr0YLAlgYoC4ndRCIbX6f9Og9b/mtLw0NT/LS6HneLZbmATH95JD3W
-         iDn1zQcpOjyHWJ/k1+5MIvaE3gneaqGKVKv9J/gjxsY+1zRRBNwNVrcekUmfZwM288RY
-         ZVobtzXtO+gjuenTNWem+3YBgHAItdK8DjAr4AqQIt3GSL+ObY916mq1i2/E0M3UbYpw
-         a5Eg==
+        bh=ogSpcSG1OWMwO8aqJpRjbVxMlNAfNW4F47lS0hCZOts=;
+        b=oQDOrD17Un86E/Gn8u+obPNHm3fMxBhPXK95jmawEvj59y+4uJCwEE2uU3FRizvHmB
+         YhzKmgJGw4yw/+cawAuvYpLwxUl3wqGxLlM/jAKMU42SNeAs/5gf8eRGu03LiT5ofX/u
+         hpJIyLTbSag/oABMQBDSd+wbq/8wGbU7df7Jn0cJastBESHZiJkFO7YZMnLzsjYS7gzy
+         pfPpg5b9oH1GxfyUXYQmV9gdyRkIYbUWOXRx7U46DFgRlNDNQtaMXXAZw1A/VQbo4Opt
+         WLouULz45jNBeyRh1fpPYHxSW2AZBxp56lih5x9DmC8GitHfofzdTby+sLRgS3pGjDRK
+         /+bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786628978; x=1787233778;
+        d=1e100.net; s=20251104; t=1786629198; x=1787233998;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7Yi6QACY6Sk+pPvGX2LOJZA5tLUZ+nGsCUcFWjEbL98=;
-        b=MOIUhJ1abJmfx7JThBxgtgfBayQFiAhb7e0Jbb/4AkEoJHyIIS5u15/4c72ZsV8HKG
-         CVkIcqUeU/MbbL7AEh3UFhqyTDDzEQr3LJrSUsuBfG+qKtC187p1KKy4DnIngRAHrPBU
-         DuIzX8v2qjnLQ3mnJehaikhIPPk8ehlKEHJJ9zlRHRVAnmuCt1211kCDUBVTRdaJ7HQt
-         SxlKPDiEvcHfLRVIgFiL2eUtDq+X10FqZhguvqYDv0zG8jXkTGf4COB3hklz0FqAsIb/
-         Qp3jeU1NrUIIa5LALwVLavKJsfupLi+zhUGv9TEIcTebEQsRmCEibeX286np9U6gUyAG
-         +3OA==
-X-Forwarded-Encrypted: i=1; AHgh+RpoiGY8Z4U2osmCVsQCoUdi1Hr2u8xnaHmANnRF9KfxAo5uLjPngp6CBzEP1H6vppy4RaBNLg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzDfK4g+YchEle4ojpl+sDOtg0/jdRuClFIK+l5pmS88Lb8BbQf
-	/ep7lX46W+TXId3PLtqeLMvweDGzmLQmTonTiXwKzP8ocGfOI+W7TbQHhQaluFVP9U4=
-X-Gm-Gg: AR+sD13BdaTnbeFQbmqb5VS2CtS0jy2XEPS/7GlMPAn5JMTu/Mjl62nBq5q4XUOgCvK
-	8DUWimmCGY1nuxHkk2MnzhJMZzn/+7C4DzlYLnziF6aUBaC/aCTFkaCa5c47b8RR+/bHDuceNzu
-	pAZuGmz8W9VEL3XwvpxQS3vXQ/cz+0V01rhrmhOQMniYPdd4ze6J1E9zPmUFP6/iifK4djaNIIQ
-	HyN+3fkteYMeP7pPw3JTsVlcgTeNDpC34CBLSVaj5bZ/cjI+Y18Hj59Javw5FHdkepeD18+CrgA
-	LF5aKHkl/ofxGxBm6jVcHMPIBhh6t7Xanmi1jBbJWdAQYfdR2g2iIzn1F/eif+3gMiCg/R0sAM/
-	5wzueJTGK1whB0NYeDCK7anLx9/C08bbDJbPqcvUZns01ozAo9U/kGhcOI+5O3QbYlkreBZtTtH
-	nDbvGXtVMGMn8k12obp7wNPiRIxsmCpioQUMUvSA==
-X-Received: by 2002:a05:620a:1995:b0:936:bc78:791b with SMTP id af79cd13be357-936bf90b78cmr572103285a.15.1786628978075;
-        Thu, 13 Aug 2026 06:49:38 -0700 (PDT)
-Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-936c1b12344sm150528085a.29.2026.08.13.06.49.37
+        bh=ogSpcSG1OWMwO8aqJpRjbVxMlNAfNW4F47lS0hCZOts=;
+        b=DT6ghs+nxsViY47gqpLNcfSXifthtbvh+Jfflvh2wen37vrjjJvR2at8ogQ6bouXwP
+         OoOpCpH4UXr55A4hdHNTfP17Uyc30JtI7Ueypu5upGs6xVjeEYqqSTapL/oueoyiVEoL
+         T/MHkL7EAdEGPO7hBZzOJ0/94B6gMijblhK+QQDglncFTSVMMf5P9iHltw9mYJ8uqMe/
+         UtSpx9U2C9ZNU31mIT22FCTNTI8h4TuQZD9b2Vso5uCtnMPPbJjxLFrlx3ksPgRdSxUt
+         /W/MXI4QIDswYW07iylebecbfR6Nedj0WL28Gzicr+7gLHJur9k315hkxnlELFGBa65z
+         TfxQ==
+X-Gm-Message-State: AOJu0Yyb3j27ffHkRURDzkA3Yz83zrU2QRtmJZMkjXav7s4kKo8UmNNT
+	pYerSmItfbWgF30yaTaaxmkwkASDeYT/inNNUeUu2VANoJSkoIlJDFkIb5QDVvnOIw==
+X-Gm-Gg: AR+sD11yeD8w/H2qbQfVWkyLkftaI46xvM5FbnD8k8NfL589RJEAxJWQ81BXiPuSqW2
+	nqzOP0fumfX/6s9BsfychRcVTB9mFubtBQmwSTWJNP97ylgku7yxvDr+FY9GEcUBQx2C2IDJXqU
+	C4PDW6VVINuBlDXB79PWJotadipGo94PLubQhiZrDqbo1olOUbVv5dqhMPxEAZjM1MiaX4+E6+3
+	WzMfcmwOy+oym/5tJopEAgjinj+GaE6oDhnllSPdyCoIBOjhILnZS3u1sZICJejtS1p4lwtJnHo
+	sVoouC2QwsBVCfVhcGnqOYHxbfyFXqWs2I9AJwJdzskgHkqJOdlhjFKd0Os/xcYHGZXFnx8ivS4
+	QaAiNzs6wYcrfURLgo0hK0UxA1imNYpTLy9wK44dV4gGHuUrc5YSGMekmyczgD9pzVy9I4raIzy
+	FUyPDJqeEQ9ws2fZWoBDgmHIc6iuPFksqeHYA8DcTp+vSuRPX5FONFt542CngNSqW9xfrSJ4qW4
+	KUNi5GSaEAY2SefClT7DAqPcN+6aA==
+X-Received: by 2002:a05:600c:17d6:b0:495:51b1:3b7c with SMTP id 5b1f17b1804b1-4998273aa2cmr847895e9.8.1786629197039;
+        Thu, 13 Aug 2026 06:53:17 -0700 (PDT)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4815a5b6c2dsm5990307f8f.26.2026.08.13.06.53.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 06:49:37 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wuVoO-00000003nYa-1b6m;
-	Thu, 13 Aug 2026 10:49:36 -0300
-Date: Thu, 13 Aug 2026 10:49:36 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
-	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org,
-	arnd@arndb.de, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
-	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com,
-	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v3 4/5] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <20260813134936.GM662699@ziepe.ca>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
- <20260811155022.108148-5-zhangyu1@linux.microsoft.com>
+        Thu, 13 Aug 2026 06:53:16 -0700 (PDT)
+Date: Thu, 13 Aug 2026 13:53:12 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
+ for latency
+Message-ID: <an3MSKEj7VhT4WkP@google.com>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <akzm5BoV0rToJ7ij@google.com>
+ <20260708001058.GA422027@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,22 +85,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260811155022.108148-5-zhangyu1@linux.microsoft.com>
+In-Reply-To: <20260708001058.GA422027@nvidia.com>
 
-On Tue, Aug 11, 2026 at 11:50:20PM +0800, Yu Zhang wrote:
+On Tue, Jul 07, 2026 at 09:10:58PM -0300, Jason Gunthorpe wrote:
+> On Tue, Jul 07, 2026 at 11:45:40AM +0000, Mostafa Saleh wrote:
+> > > Calculate the smallest SCALE such that NUM can cover the range to minimize
+> > > over-invalidation. Always use a RIL command if RIL is possible working
+> > > around the spec limitations to form a valid one. If RIL is not possible
+> > > then do full invalidation.
+> > > 
+> > 
+> > That may be beneficial for servers, but I am not sure about other use
+> > cases, we already know that the invalidated entries are unmapped
+> > and not used. However, over invalidating might impact live DMA which
+> > would be bad for workloads sensitive to translation latency (as
+> > embedded cameras, displays for example). 
+> 
+> The isochronos stuff I've seen has a latency budget for translation
+> lookups and has to be tolerant of an occasional full walk.
+> 
+> Prior to RIL you had a much bigger issue, the cap on the range ment
+> you'd face a full invalidation from time to time if the domain is
+> being used for DMA while something ischronous is ongoing. Compared to
+> that a RIL over invalidation is not significant.
+> 
+> I have been talking to people about some formal isochronos support
+> that could do several things to try to manage the latency of DMA, it
+> would be reasonable to include some alternative RIL algorithm here if
+> that happens someday, and it is an issue.
+> 
+> But otherwise, I think we should leave it. Over invalidation is
+> consistent with how single works, and single has a long history in the
+> field so I don't think RIL is any worse.
 
-> +static void hv_iommu_release_device(struct device *dev)
-> +{
-> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +	if (pdev->ats_enabled)
-> +		pci_disable_ats(pdev);
+Sorry I lost track of this thread and I just saw v4.
 
-Since attaching blocking does this and you set blocking as your
-release domain, this is redundant.
+In the mobile space, I haven't seen an SMMUv3 that does not support
+RIL.
 
-The new flow looks alot better, removing the detach operation entirely
-makes sense if the HV can support attach on attach
+However, I have seen workloads that are really sensitive to translation
+latency (display, camera...). And I'd be concerned about those
+regressing.
 
-Jason
+There is a clear trade-off here as you mentioned with TLBI latency,
+would it be make sense to make that behviour configurable from a
+module param?
+
+Also, looking at SMMUv2, it does not qualify single commands to
+over invalidation (but it exposes and knob that is used by qcom
+driver), so it is always accurate by default.
+
+Thanks,
+Mostafa
+
