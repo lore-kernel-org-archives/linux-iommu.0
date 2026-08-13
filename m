@@ -1,36 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F16738836A;
-	Thu, 13 Aug 2026 17:34:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55FC13B0AC6;
+	Thu, 13 Aug 2026 17:43:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786642466; cv=none; b=FUoaBLicry0gFaso74kDgSGfGOc5/5NjDcQ/44jfMOoG7Td/zdlORLehfCMSngJEGBtBJpOw9fXFZwktxVWyMySyasq8CkLw1z2K/feOXBX09OI/MH7rtWa0WCNV0g++PbY1pI65uTGpl5cJQxoYsnMgVKrBQqZjIEiVtnSfYqc=
+	t=1786643016; cv=none; b=FFHRNzIT4ohgCQ0mBiyxkn90+9UrBUB73GF6kvkTrDJh9mYxsM2NUUCxkeVIwfcc6B3vnZnhTyjEm4EphyDXfVy1P7Pm8dfbOSQC6FRd57rdFlbW9n/aMnUSvbzaPIf92uBeDr2XSCQReSOcGJa/054UgsAm+rB9qclt9+G+dGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786642466; c=relaxed/simple;
-	bh=oxphTxwPEqFTAObRGBQorHiq4mlcmdg+TJtOb1EUUfA=;
+	s=arc-20240116; t=1786643016; c=relaxed/simple;
+	bh=NkN7ngna0Humtq6uQBf0uHYiqsiYczmvr3m1gx6JMF0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=agm49WPtAEKoYHGZu7RjUlKmBx5qZ5G5xhO+YwqSkaQaQ6LwEXKa1cDKfOl4DxIf4jf/1bdlt2kgW6xVEPCPCzXn/fd6DNxOZJDd46dr9k5F0q2mANBYja0XKCWip9yO+hshSNcTTXKGEgb1F7bmVJQNJUTvrX8lsdIHSwrIN5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c9MJOeCd; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=r2dwbE7HD879HWn4szFB66zpQu2vVWEH6KZ+MB61dW3MGc1+yAqWknjCbMqyY9oBCllcIBP3dGezmjU1IB4KbCG8QVWaPJEBczT5k1J3j0HDgziY/BOfM/bFYdfEM7qaz15i2rW7VrnW7i1XADVnITLNIBITX4PmSHoi0l6CkbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k3+gv6vC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c9MJOeCd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01CC31F00A3A;
-	Thu, 13 Aug 2026 17:34:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k3+gv6vC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 608CA1F00A3D;
+	Thu, 13 Aug 2026 17:43:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786642465;
-	bh=d9/MjXSR6H4kUMgKLQ420rzJEEx4EYhO23B15g1ByFM=;
+	s=k20260515; t=1786643014;
+	bh=Vx7YXtRMyITi1C1CRhaAFx1V9a28c3m1pyOxBUtEric=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=c9MJOeCdmP8nd/hQntQKWiS5Rf1oiv+z9t8+HpBf8+k+4p3YAWy9JOpeHj8WxIAUK
-	 hmOtKn7g3SIegv9clnN/P1fCzzHBnSSQW9l0d+QzySPIeVf8S2cLvuXhAy8OUekhmi
-	 3IySaD44+xKIDsYeo2u3ukhtqSy5pEbJvpel17Rf7ynezm609FGwCVhcRu0Gj56w/a
-	 UQSSkWbhdRr2zLBA25qc/5lQdjzQsGnVShMV3bfHEsRbRX46k63It9HPituT5vEdLT
-	 +CDHkDyzQj71QGndWnds5IA0fgxmGpF5kh2wmc876ufEzW70dqC1Xlr2hJOiEGhKHW
-	 j6qwYR7Y/Y4Qw==
-Date: Thu, 13 Aug 2026 10:34:23 -0700
+	b=k3+gv6vCEM7acrABINQc35rhIjGyDCPJ41fVl9NaG7cp8eMtHLI/ty+6SglNFTvXR
+	 DEw9jcdreOnKrTgNNoA+ZUi/r/oYs+vnPO6ZO/6gn/H2eIzJkx7lGzoGh2TAJgxGQH
+	 MVD3wRG6jb2pWoioasY1HoKyxsDuijgY36DCD6bbCOLgJmgGjCoJXfA/hLRt9hJggW
+	 IgRqC+E2I6E/sMpkrmgE5BENK/YUiarqFRFUv3+1yoo0KF1LyEecHLGQTrAf7LBhug
+	 Rvo2dXld/tAgAMGCbNk0ct2+nypHgfp9/7iGcxq07G0vw36OtX4WM+RZp3ULSi5xVt
+	 mV3c3snvnfQIw==
+Date: Thu, 13 Aug 2026 10:43:33 -0700
 From: Drew Fustini <fustini@kernel.org>
 To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
-	reinette.chatre@intel.com, tomasz.jeznach@linux.dev,
+Cc: Reinette Chatre <reinette.chatre@intel.com>,
+	Ben Horgan <ben.horgan@arm.com>, joro@8bytes.org,
+	palmer@dabbelt.com, tony.luck@intel.com, tomasz.jeznach@linux.dev,
 	will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
 	aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com,
 	james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net,
@@ -39,10 +40,11 @@ Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
 	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-kselftest@vger.kernel.org, x86@kernel.org
-Subject: Re: [RFC PATCH 4/7] iommu/riscv: Program QoS IDs for assigned groups
-Message-ID: <an4AH5p2NW+tFlyR@x1>
+Subject: Re: [RFC PATCH 6/7] riscv_cbqri: Assign IOMMU groups to resource
+ groups
+Message-ID: <an4CRRXt44+PhHgy@x1>
 References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
- <20260714130657.46963-5-zhangzhanpeng.jasper@bytedance.com>
+ <20260714130657.46963-7-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,57 +53,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260714130657.46963-5-zhangzhanpeng.jasper@bytedance.com>
+In-Reply-To: <20260714130657.46963-7-zhangzhanpeng.jasper@bytedance.com>
 
-On Tue, Jul 14, 2026 at 09:06:54PM +0800, Zhanpeng Zhang wrote:
-> Program RCID and MCID for RISC-V IOMMU groups through the device context
-> TA fields. The resctrl group assignment is per device group, so reject
-> BARE mode where only the per-IOMMU iommu_qosid global default is
-> available.
+On Tue, Jul 14, 2026 at 09:06:56PM +0800, Zhanpeng Zhang wrote:
+> Allow the resctrl devices file to accept iommu_group:<id> tokens on
+> RISC-V and map the target resource group's closid and rmid values to
+> RCID and MCID.
 > 
-> Validate every group member, firmware ID, device context, field value,
-> and QoS ID capability before changing hardware. Then update all members
-> through the checked IOMMU group helper so a validation failure leaves the
-> group unchanged.
+> Record non-default assignments in an RCU-protected binding list rather
+> than inferring membership from hardware IDs, which may be shared. Keep a
+> parent reference obtained by numeric group lookup so the binding does not
+> keep an empty group's devices kobject active, and prune bindings after
+> their group becomes inactive.
 > 
-> Serialize DC.ta changes with context setup under qosid_lock. Change only
-> the RCID and MCID fields with ordinary accesses so fixed DDT mappings are
-> not subject to atomic LR/SC operations, invalidate active device contexts
-> after an update, and clear the IDs when a device is released.
+> Publish an explicit UPDATING state while hardware changes. Paging-domain
+> attachment rejects that transient state. Static FSC=Bare transitions
+> preserve the current IDs so a mandatory release-domain attachment cannot
+> fail. After the checked group update succeeds, publish the packed IDs. A
+> validation failure restores the previous active state without partially
+> changing hardware.
+> 
+> Moving an IOMMU group to the default resource group resets its hardware
+> state and removes the software binding. Device contexts created later for
+> an assigned group inherit the IDs through the RCU lookup path.
 > 
 > Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-> ---
->  arch/riscv/include/asm/qos.h     |  16 +++
->  drivers/iommu/riscv/iommu-bits.h |  15 +++
->  drivers/iommu/riscv/iommu.c      | 200 ++++++++++++++++++++++++++++++-
->  drivers/iommu/riscv/iommu.h      |   3 +
->  4 files changed, 232 insertions(+), 2 deletions(-)
 [..]
-> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-> index f2ef9bd3cde9..782de5c92727 100644
-> --- a/drivers/iommu/riscv/iommu-bits.h
-> +++ b/drivers/iommu/riscv/iommu-bits.h
-> @@ -63,6 +63,7 @@
->  #define RISCV_IOMMU_CAPABILITIES_PD8		BIT_ULL(38)
->  #define RISCV_IOMMU_CAPABILITIES_PD17		BIT_ULL(39)
->  #define RISCV_IOMMU_CAPABILITIES_PD20		BIT_ULL(40)
-> +#define RISCV_IOMMU_CAPABILITIES_QOSID		BIT_ULL(41)
->  #define RISCV_IOMMU_CAPABILITIES_NL		BIT_ULL(42)
->  #define RISCV_IOMMU_CAPABILITIES_S		BIT_ULL(43)
->  
-> @@ -274,6 +275,14 @@ enum riscv_iommu_hpmevent_id {
->  #define RISCV_IOMMU_TR_RESPONSE_SZ	BIT_ULL(9)
->  #define RISCV_IOMMU_TR_RESPONSE_PPN	RISCV_IOMMU_PPN_FIELD
->  
-> +/* 6.27 IOMMU QoS IDs for IOMMU-initiated requests (32bits) */
-> +#define RISCV_IOMMU_REG_IOMMU_QOSID	0x0270
-> +#define RISCV_IOMMU_IOMMU_QOSID_RCID	GENMASK(11, 0)
-> +#define RISCV_IOMMU_IOMMU_QOSID_MCID	GENMASK(27, 16)
+> diff --git a/drivers/resctrl/cbqri_iommu.c b/drivers/resctrl/cbqri_iommu.c
+> new file mode 100644
+> index 000000000000..4086c32546bd
+> --- /dev/null
+> +++ b/drivers/resctrl/cbqri_iommu.c
+[..]
+> +#include <asm/qos.h>
 > +
-> +#define RISCV_IOMMU_IOMMU_QOSID_RCID_SHIFT	0
-> +#define RISCV_IOMMU_IOMMU_QOSID_MCID_SHIFT	16
+> +#define IOMMU_GROUP_TOKEN	"iommu_group:"
 
-Sorry for not making all my comments in one pass but I think these two
-shifts are left over from before you were using GENMASK?
+I am wondering if maybe this should be parsed at the resctrl layer since
+it could be possible for RISC-V and ARM to both use the iommu_group
+token. I am hoping that Reinette and the MPAM developrs will add their
+prespectives on the the resctrl devices file and at what level the
+tokens should be parsed.
 
+Thanks,
 Drew
