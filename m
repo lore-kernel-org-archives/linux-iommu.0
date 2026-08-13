@@ -1,140 +1,166 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010063.outbound.protection.outlook.com [52.101.193.63])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF31420463
-	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 13:53:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786629201; cv=none; b=SJgEaMGw7FyIj6nxlF401FhE26JfMEytWfzBTSrwlU5tpsuA/GZO6mq3JLcDH1YbddsGmHiMx7dX9WK6ox52eF2KKP6ta1MFftEyNXf7Du9tYmBULkpMJNtyBHzfNz7Q/wA2t84RGtd3lQ/xPQTZAu7ypYpEmu2VeFjq3RQsWHc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786629201; c=relaxed/simple;
-	bh=8Zioy32OXdm4oPXxw5VQR4iPqo7Y0Tou8teJq3YeTJk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TY1hYEnMsL0Xh3RIJi3qTrtmq9axElJAaG8NucQrtMSvgnW383BK9fCAqyhwM3YCXFPnNwOG78cT1YYyZSODXvrJiBwUFtNN2QOTNUJI8CLbiJqWS6aX4lGKLogO6yUX1qze9DCy/OL5mz8Z5JaKxRmR4eCcbq5pL/XZzmTGJzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oQDOrD17; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9924772A9
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 13:59:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786629552; cv=fail; b=t9ryXer1RaeoyveQV0MeDUql8maUUP5sY7l/aTEEO8Gixu6gznTeXiB4LH6p6sucP1joC+chwJF3EZjpCcBES7U0JN3oupC7OACg/W+T0zv8tCbKv6A2n+Nl+pyCv8g3fTZYyjKbGKLoobwmR3ziTAMcoFJKYYXNYasVZAypMcU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786629552; c=relaxed/simple;
+	bh=pOvMqofseItbMNP/QIE5t/CVRi2V9qsYImE8aJlOE4I=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=XPlfVnkDNaGEiIDp7Wx0pzWvW0c7i4H7yHyxjOcsrUXGrwgp+vQkJKQIrsU74JeRWfOyt3qLcJaVEqyktB7Bh2XAx2Ddt+u0jXTxMHX+wBDtl2IigVGG2V7QZWmE5s3SK+WYsICGfAfFLuUGpcBxzMXg0xXPPM2UmAFSUU/rHo8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=MDzhZCvv; arc=fail smtp.client-ip=52.101.193.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oQDOrD17"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-495509b08ebso42675e9.1
-        for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 06:53:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786629198; x=1787233998; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ogSpcSG1OWMwO8aqJpRjbVxMlNAfNW4F47lS0hCZOts=;
-        b=oQDOrD17Un86E/Gn8u+obPNHm3fMxBhPXK95jmawEvj59y+4uJCwEE2uU3FRizvHmB
-         YhzKmgJGw4yw/+cawAuvYpLwxUl3wqGxLlM/jAKMU42SNeAs/5gf8eRGu03LiT5ofX/u
-         hpJIyLTbSag/oABMQBDSd+wbq/8wGbU7df7Jn0cJastBESHZiJkFO7YZMnLzsjYS7gzy
-         pfPpg5b9oH1GxfyUXYQmV9gdyRkIYbUWOXRx7U46DFgRlNDNQtaMXXAZw1A/VQbo4Opt
-         WLouULz45jNBeyRh1fpPYHxSW2AZBxp56lih5x9DmC8GitHfofzdTby+sLRgS3pGjDRK
-         /+bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786629198; x=1787233998;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ogSpcSG1OWMwO8aqJpRjbVxMlNAfNW4F47lS0hCZOts=;
-        b=DT6ghs+nxsViY47gqpLNcfSXifthtbvh+Jfflvh2wen37vrjjJvR2at8ogQ6bouXwP
-         OoOpCpH4UXr55A4hdHNTfP17Uyc30JtI7Ueypu5upGs6xVjeEYqqSTapL/oueoyiVEoL
-         T/MHkL7EAdEGPO7hBZzOJ0/94B6gMijblhK+QQDglncFTSVMMf5P9iHltw9mYJ8uqMe/
-         UtSpx9U2C9ZNU31mIT22FCTNTI8h4TuQZD9b2Vso5uCtnMPPbJjxLFrlx3ksPgRdSxUt
-         /W/MXI4QIDswYW07iylebecbfR6Nedj0WL28Gzicr+7gLHJur9k315hkxnlELFGBa65z
-         TfxQ==
-X-Gm-Message-State: AOJu0Yyb3j27ffHkRURDzkA3Yz83zrU2QRtmJZMkjXav7s4kKo8UmNNT
-	pYerSmItfbWgF30yaTaaxmkwkASDeYT/inNNUeUu2VANoJSkoIlJDFkIb5QDVvnOIw==
-X-Gm-Gg: AR+sD11yeD8w/H2qbQfVWkyLkftaI46xvM5FbnD8k8NfL589RJEAxJWQ81BXiPuSqW2
-	nqzOP0fumfX/6s9BsfychRcVTB9mFubtBQmwSTWJNP97ylgku7yxvDr+FY9GEcUBQx2C2IDJXqU
-	C4PDW6VVINuBlDXB79PWJotadipGo94PLubQhiZrDqbo1olOUbVv5dqhMPxEAZjM1MiaX4+E6+3
-	WzMfcmwOy+oym/5tJopEAgjinj+GaE6oDhnllSPdyCoIBOjhILnZS3u1sZICJejtS1p4lwtJnHo
-	sVoouC2QwsBVCfVhcGnqOYHxbfyFXqWs2I9AJwJdzskgHkqJOdlhjFKd0Os/xcYHGZXFnx8ivS4
-	QaAiNzs6wYcrfURLgo0hK0UxA1imNYpTLy9wK44dV4gGHuUrc5YSGMekmyczgD9pzVy9I4raIzy
-	FUyPDJqeEQ9ws2fZWoBDgmHIc6iuPFksqeHYA8DcTp+vSuRPX5FONFt542CngNSqW9xfrSJ4qW4
-	KUNi5GSaEAY2SefClT7DAqPcN+6aA==
-X-Received: by 2002:a05:600c:17d6:b0:495:51b1:3b7c with SMTP id 5b1f17b1804b1-4998273aa2cmr847895e9.8.1786629197039;
-        Thu, 13 Aug 2026 06:53:17 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4815a5b6c2dsm5990307f8f.26.2026.08.13.06.53.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 06:53:16 -0700 (PDT)
-Date: Thu, 13 Aug 2026 13:53:12 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
- for latency
-Message-ID: <an3MSKEj7VhT4WkP@google.com>
-References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <akzm5BoV0rToJ7ij@google.com>
- <20260708001058.GA422027@nvidia.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="MDzhZCvv"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=E/ot0nCqT++VuOqFAvPIqE0BStCFrjIqmbsCN6atmryxD+AMl0QZQmW1J0cxDEfadKvF2SN5ISxlTyXPO2siaSBO9BDmHWh3sEpIfxV8eJU0oMlIL+ZnuDkU0ll2m4A2zhet2s8g+56HSHVLJzlKhSnlTjA7UrVHwZiaJcRsp3ft7ERY7GdEjJcUJ1oaJK4pwWJgPlHFW3dL6NW5QwIKa9hoClB6N89C1P6B14fzM7L0AWlqdM7OUMLb4K8vpVSPICPn/7Fi8zfNi5nBdA6pNKet9eJxS5U2Kgd/JfXxSmyUS99xygIpigpCCIgyAHV9u3l+OAVVKISV5PQTqJJexg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2bQHBHGCbHCsbZuKzxJJkNw/0pqGIOwgHOEVgSMXl0g=;
+ b=DwfiAPzmDd6p7QrWJyN85Ta5cjwOwIdKgsQ/IOQCuQRI+TFLqyEwpfA93sk/73OvS5F/gX8E2HnKua1Q8MV0J0jCDjuqVBR7vfztC0NUj4bd0iuXJdVqKsahfpf61tytPhORiM4Uy3PFjLbprNgLSX0gELYO/7gdCGDyfSU60gXDBWVsAo3uCo+NnSKVdd8dQWvcAHSpX6pUso8lvO6bkDAG53n4BQwqfY5K+sCgJYccZjC0b48Hv9ByLhD6T1sXgdmYMkWrjBUealid5MrMe5Hu97x0if1ZM8FPxpX4NSs43FscTbC9MplKwcNUo0TNR0K7rT6JA+yN0fgXlrh5/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2bQHBHGCbHCsbZuKzxJJkNw/0pqGIOwgHOEVgSMXl0g=;
+ b=MDzhZCvvX/RHR5ocfPEfKMTjRUP37PLg9GY5fKINqGV5akMlG89kv1zrDN8vEf5/vQagCXqeGRpwa1t6t3wkHkEgT+XD0mIjX0FeOz1ppkkSvGCJDvly9k4Ex74STXDQ+fL6T/vrLEeBQOTxFy7Be7PBxCGRjCG10oqG9Iz+6J8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com (2603:10b6:8:75::12) by
+ BY5PR12MB4179.namprd12.prod.outlook.com (2603:10b6:a03:211::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.315.15; Thu, 13 Aug 2026 13:59:03 +0000
+Received: from DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e]) by DS7PR12MB5766.namprd12.prod.outlook.com
+ ([fe80::222:966a:d65d:d08e%3]) with mapi id 15.21.0292.018; Thu, 13 Aug 2026
+ 13:59:03 +0000
+Message-ID: <697be383-2de0-4c6b-91c1-9887d23ddc9b@amd.com>
+Date: Thu, 13 Aug 2026 19:28:55 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] iommu/amd: Use MAX buffer size when SNP is enabled on
+ Family 0x19
+To: Usama Arif <usama.arif@linux.dev>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, suravee.suthikulpanit@amd.com, bp@alien8.de,
+ Joerg Roedel <joerg.roedel@amd.com>, samuelcrossley@gmail.com,
+ "Srivastava, Dheeraj Kumar" <DheerajKumar.Srivastava@amd.com>
+References: <20260813131833.2808948-1-usama.arif@linux.dev>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260813131833.2808948-1-usama.arif@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5P287CA0248.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1ae::11) To DS7PR12MB5766.namprd12.prod.outlook.com
+ (2603:10b6:8:75::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260708001058.GA422027@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5766:EE_|BY5PR12MB4179:EE_
+X-MS-Office365-Filtering-Correlation-Id: 36cc891d-b697-4eb1-d2e2-08def943082e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|56012099006|10067099003|11063799006|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	sfmZHnu2IMMLqhs1gPMbULneGFo5TnQ02mPA7zU9+RqXtniXYNyuS37HxN5qQYC6xKSYEyUherSm4QPrQJUXjG0oaw1jrixBWbZ4/azP86Rmuv3JeXv03jfPucDykbAf0prLIppJ6Yf4m38CbW/iBhRpacWocR+uwwALIJukCcmBG1hAI/blEQcdrP9LylNBBMrnC5Qr+qzMZeE6ws+4XU+5Gi/Lg70bouol3i/lg6RBmZAx7CqRUDq+MJtd4WvfKshQd69EkBNgb4nc+wZlYx1UCJGbAPkKN/nXfrzprk+oQuTqdVVtJ7W35HDDc4ckgsojKjPK6bT9aqRPkUNHJ3n86UCv2V+hm/lkg9jG3Us07n8LDCksNK9luz2aFwIx25EKPX3gQSULV2K+bdDxbiy/Wgbm6i8sACwM01urFkHw5lM+pA9IYwpWOzlWk6/Wp4uZEfEVvEAlU29nK0qyzX2zU8SQP2kuikFBistAW/ZSYnfQgNpwdBlyyZZ+7FR/4z9R2TBJIxuNvhcTj7MbutO8gkDGxwoHn2zwdtOHZO8p+Q37bGGgV8zOs81HR/pPQfzKOkBJPkh0CEEPCs2o0wrGgT092Fy1ZNRN1FTakc/EMC4rBKe7lZCoBF1Ipl2PmLI4lnrOGGIpCmoSSnkMlcZYGCOll5/4X9Jd8SB7e2A=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB5766.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(56012099006)(10067099003)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?czd2TnRvaExKd0lUYUxpTVE0Tk1DMDJCMjRIdFVTclE0Qjg2S1pDOUtXQkM2?=
+ =?utf-8?B?WFEweUpPdmF6eER3ZmNISGp3QmQwdFBxbXZOZTVZQStsR0poSU40LzBpejdW?=
+ =?utf-8?B?akEwNEl3VVRkZnJ1cm5ZeEQrbW1JejZIOFE2RTcrN0pQSUI0eUluUHlmaUdz?=
+ =?utf-8?B?bUpKSWdxMndMaXZ6ZHNEd1dQb1BaWmtiZkNXbHlJd0lPdTB6TmVqSERMT3Rx?=
+ =?utf-8?B?VWdJdVRQdmd6N1ZIZ2N3dHEwN2I5cHlodjNVbDFZNm5zbXRQWXZGSE5SUE44?=
+ =?utf-8?B?NHNFUlVuTFBQeHpPRXMyc1RuNXk0UHNqNWpxS2dmYm1yUFNYTzhIVSt2S1ZE?=
+ =?utf-8?B?MnViSUc2UXFldmgzTHZkK2tPWEYydFcxb2JSb3FVTm1wTWR6eUcxV0VUb2ZE?=
+ =?utf-8?B?RlFXZTlNdkFKdUVpVXpUZVpKRGVsTlFqWXNHbE1LN1dHS0M4dUtjZzdJUWxt?=
+ =?utf-8?B?dkNBTHp6Uk5lNUxtZHYxWnBIMC85ZmdUMEFlcHFsYVIyUWR3UnR4eGVrb2tS?=
+ =?utf-8?B?UE5SZmd0dTdFNHJwNnJPamNVYjNjTFhnOGFZOUFCc09QajRsbHFBQXpUeEtn?=
+ =?utf-8?B?bzFFUmxzdmlKNFhoRFNwMnI2Qjl4NlpwMzlFek1iOThEL214UnVhWExNUlZx?=
+ =?utf-8?B?YzJ2c0hVdE4zWDExcmFwcFZxSVhSQ2k0bGU0MUo2ekhOeHorYXFjVS9oUk5y?=
+ =?utf-8?B?NmlHZ0xwMWNCa2hHUGs4bER0QzBCYnp6azF5V2JqUHprR0pIYnBPZkFjdzkx?=
+ =?utf-8?B?WWFVdldCQVBwU1padzB6RFgxOWt3bFZZSVZGU0ZMRmMxck1mLzZ0NlQzd2Fk?=
+ =?utf-8?B?K1AyckV6YWR2NmFYWWw5b0dFTVpmaDhIU3VhWml3eVM3T2h3MnI2MmdLZEoy?=
+ =?utf-8?B?VE5HV3JVSU9QL1JsZ1Z2SUJERmZzRXFkeUlOL2JueEZ3WGxyMWJyb1M1T05m?=
+ =?utf-8?B?QWt5NGZYNE0yZTAxTXp2UWFXL0daclNpU2JaWVdHREVTQUdVcld1K0dpYnNE?=
+ =?utf-8?B?VkJPaFFiSDgzYXR3Um5NZktsazBScFl4VmFzZ25YODJHQlJTOGhiQjVlVEJZ?=
+ =?utf-8?B?OTgrOE1LVjVic3hUYlZmSUN5RnA3RnRJbjJMYmVjZEI2SEFkRGxwOXFWeWJp?=
+ =?utf-8?B?RFBDa3IwUUp6RWZNaStCK3JIVTBkcm5qSHladjcycnRhVHZEL1FHRW1qa3dh?=
+ =?utf-8?B?THdRa1pyd3hjbHoxdTJGMzBQNjdtaEx6WW1FWG00QjBKSWs1YWdaT2tKTDAx?=
+ =?utf-8?B?cUh6azcyU1I0SXErcU0wS2JkUmVYSXRxRHg4SFJ5bHhQeENkWUFEK2g0QWNQ?=
+ =?utf-8?B?M0JlcmpwM0JvRG50SEV0cWxzeFYyNjEyUWwweDFLQ2I5QmlhUXk3VzJZN2Mz?=
+ =?utf-8?B?dEd1MzFuV1NPUFpSWHlGcGxlbFNzVnpOVjJac09GYUlKOUFDQ1NvcVlvUjBH?=
+ =?utf-8?B?U2VMdDEwcVpLK1VWeWdUSnU0M3VTblJ6cmJNOE9xUTEvUk43RUZ3TmJNT0Zq?=
+ =?utf-8?B?MlZLblhDQ3gwMDNQaHNKUytEcDQ3c29kcVZzbzlFK0w0eE44ZlcvR01ESWNW?=
+ =?utf-8?B?OEU0dm5JVmtHQUNuMTlKU1J5VmVjZTk4MjNQWVdyZ3p6VkZ0cHRNbVQxeFFi?=
+ =?utf-8?B?TWNESmxTS1A2ODNGbnZRdU1seVVibUpYSnJPdUdIdzFjK1QyRSs3Z3RwRWQ1?=
+ =?utf-8?B?NmNMQWtzSlRRYnppTkR1dTlndk1BTVY3YU1EamZRUWU4VFFLOXBwTkdFWFVo?=
+ =?utf-8?B?NlNLR2JBUEswOStDTTc4RzJzQzYwclZva1dNK094K2FkRGpIMlZOS2xnS1RC?=
+ =?utf-8?B?ZVJGZGs4VzN1UHNyTEZhTlc5N0RNNGg4a3lQQlVUQ3piSHJpMDhFREdhYXRm?=
+ =?utf-8?B?WTFBblpqQk9EVVQ2eWlkUkhZTERHVUdhMEszNW9KUXVqNFJlaktJVmc4MlQ3?=
+ =?utf-8?B?b3RCY3RqK3EyUS9ZaVdTTng4Nk1NN3EwM0VCUkhpeCtSeldmdTlGSVBHUDhC?=
+ =?utf-8?B?TVAzanpmWFZkWXdnaEkrNzdLWjNLMDBIU0NIUWdBYThGRU5oVXV5bGxLUnYz?=
+ =?utf-8?B?QjBmSVlOMVd6bkZ4VU9UbVdWWXJJa2IrK043YXp6M3oxTUV6WWxrMDhsTUxM?=
+ =?utf-8?B?M2p1TzFLLzcxZWNrdlhFSXlxS3E5STM1OWhrMTNXYWtkL1RIeUVWMFpXMWJm?=
+ =?utf-8?B?VUI5QTVIVVlCbHYvRG9JdXkzNml3TDloTSt0Ui8yQ2trS0k3SHNscWxPcVhL?=
+ =?utf-8?B?N3YrSkFIOTRkZ2dDdVFMVjA0S00xRzdmVmRuTk1vTkhMSHR3STdYbm9DVVMx?=
+ =?utf-8?B?RUtVdSsycG9qajg0QytTVEtSWFJQdHpMV3hjNEdOK3R5UjBEamFEUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36cc891d-b697-4eb1-d2e2-08def943082e
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB5766.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2026 13:59:03.0385
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: owHkKlxAOc8BwYqroAvKtOzNA0kklWcok9+QPjhR2wdTg9KsWHlSJ82UC6qwuctgsaajWG0S/pq78FbVVfVBLw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4179
 
-On Tue, Jul 07, 2026 at 09:10:58PM -0300, Jason Gunthorpe wrote:
-> On Tue, Jul 07, 2026 at 11:45:40AM +0000, Mostafa Saleh wrote:
-> > > Calculate the smallest SCALE such that NUM can cover the range to minimize
-> > > over-invalidation. Always use a RIL command if RIL is possible working
-> > > around the spec limitations to form a valid one. If RIL is not possible
-> > > then do full invalidation.
-> > > 
-> > 
-> > That may be beneficial for servers, but I am not sure about other use
-> > cases, we already know that the invalidated entries are unmapped
-> > and not used. However, over invalidating might impact live DMA which
-> > would be bad for workloads sensitive to translation latency (as
-> > embedded cameras, displays for example). 
+Usama,
+
+On 8/13/2026 6:48 PM, Usama Arif wrote:
+> [You don't often get email from usama.arif@linux.dev. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
 > 
-> The isochronos stuff I've seen has a latency budget for translation
-> lookups and has to be tolerant of an occasional full walk.
+> On Mon, 20 Apr 2026 08:42:02 +0000 Vasant Hegde <vasant.hegde@amd.com> wrote:
 > 
-> Prior to RIL you had a much bigger issue, the cap on the range ment
-> you'd face a full invalidation from time to time if the domain is
-> being used for DMA while something ischronous is ongoing. Compared to
-> that a RIL over invalidation is not significant.
+>> This series addresses CVE-2023-20585 [1] by increasing the AMD IOMMU
+>> Event log and PPR log buffer sizes to the maximum supported value (512K)
+>> on affected CPU families when SNP is enabled.
+>>
+>> Use MAX buffer size when SNP is enabled on Milan/Genoa. Impacted buffers:
+>>   - Milan : Event log (PPR/GALog is not supported when SNP is enabled)
+>>   - Genoa : Event and PPR log (GALog is not supported when SNP is enabled)
+>>
 > 
-> I have been talking to people about some formal isochronos support
-> that could do several things to try to manage the latency of DMA, it
-> would be reasonable to include some alternative RIL algorithm here if
-> that happens someday, and it is an issue.
+> Hi,
 > 
-> But otherwise, I think we should leave it. Over invalidation is
-> consistent with how single works, and single has a long history in the
-> field so I don't think RIL is any worse.
+> This series seems to break kexec in our production on Milan hosts with SEV enabled.
+> This is on the 6.18.43 stable kernel backport.
 
-Sorry I lost track of this thread and I just saw v4.
+Do you have dmesg?
 
-In the mobile space, I haven't seen an SMMUv3 that does not support
-RIL.
+> 
+> If on top of 6.18.43 release, we revert the 2 commits, i.e.
+> Revert "iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19"
+> Revert "iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19"
+> 
+> kexec starts working again.
+> > Could you help in fixing this issue?
 
-However, I have seen workloads that are really sensitive to translation
-latency (display, camera...). And I'd be concerned about those
-regressing.
+Sure. We will try to reproduce it internally and get back to you.
 
-There is a clear trade-off here as you mentioned with TLBI latency,
-would it be make sense to make that behviour configurable from a
-module param?
-
-Also, looking at SMMUv2, it does not qualify single commands to
-over invalidation (but it exposes and knob that is used by qcom
-driver), so it is always accurate by default.
-
-Thanks,
-Mostafa
+-Vasant
 
