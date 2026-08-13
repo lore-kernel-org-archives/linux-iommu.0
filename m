@@ -1,80 +1,87 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19ACF47F2CA
-	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 13:35:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD9A477E23
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 13:49:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786628107; cv=none; b=J2/y1abuZoBrtikKM2yRLJ7WrwyNKxMKm3+7vDHfgfL7SoGnD/QEdN4a1mC7uVEaY7GmFnyJAlV51wxDInwdJ72z0c7fKJVwpFLFQ6fzTOzuwshIqWSpLtZEXx+/odIGzpZTY57iji81958VzoQjo/6yBqzOQcUK0Qh4UaB6tJo=
+	t=1786628981; cv=none; b=VYFJjOiVtSWJdnAuorYuzVDp+U362aMd6QseCO/luKLZBkL+GmKq4xR7wNnmIGOa4+tCvoiqh4ibFWBqwSrwTOFaVrkssbpQGH2/fxWy3tLzWxAXv+3c6uBCAlFjiaHHa2yizp85xwUDMJWhpsOn5m7ByXjFUNIMVrO+emQtQIg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786628107; c=relaxed/simple;
-	bh=f0KpIUxNd0ZHE5YRzoe7GILl0MKmNGWXo/YtUrKbhJI=;
+	s=arc-20240116; t=1786628981; c=relaxed/simple;
+	bh=0/BIRfMphfS1OGwGGVzoT/+z7v+H5hzNBd1OvKLo6R0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MbhqgLUEVeqZ3B9dunttXwJQ0tdvcycXwAHjl7MZo1zCc0yXyBBMUDwP0LKueDl2FjLaFqHVmTbgoCfgmIxD4BCvYUL1wwToQtSOkcv/PhIgj/Q1NbC2aW1KXdfl3teFbFUBgl0qO8h5O7WuU6L3yfEIGBOkKcyPzT4JlOdtz+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OB2d0FfM; arc=none smtp.client-ip=209.85.222.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=DHNnhlUkJO4BKUSCr7TwQ1Z7kinTQKgqxywC55ylkdy2A8J4dwKTYGFm9L3rOaj0PW2GGbfXqeovm4d6oIKlKC8X3jx4YXQKQvZEkZJZnywF5NfhSkgQpG42edkkHvotOrQZZ3sfMJ3MRoCT0xnZYJ65FEyTv4XQ98bsWh2rfDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MKg3w3LE; arc=none smtp.client-ip=209.85.222.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OB2d0FfM"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-936c02e58dfso47016885a.3
-        for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 06:35:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MKg3w3LE"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-92f03daaa97so40717785a.2
+        for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 06:49:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1786628105; x=1787232905; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1786628978; x=1787233778; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=U+gF7sHdkedAo8fTzRT3P81NAwwSBCdLMVjZjxxRwcM=;
-        b=OB2d0FfMF4eQAHV8IDl7VTwPx6Z5LczvvbZ4bqMDqwttA484IR4wzj0yU/rJ41XbOk
-         zzJ7fc3qaKj2Y6YSKN2p3AHVG87wXpPhsPVN+aPW9UI7CgZZ0zCBKrCmhj3jdrIRvUMM
-         elLnu/rBCCu0FMNadDQDzEM3tD3/T1olPjQ3wUnOuZIaS3Vt/v6GAz/o6P9zpZQA7Dfl
-         KmVUkc8tZbqUmWbr3wkCQQbnAVL3GUr3l/KO45ChC6McpVJ9KZwc0+h9K+eufTKtYm7u
-         CcxMcvHKHB7q7fMblmvtGzSwf7UUBPecK+JlDeg5RQDDpq//YDHGCOFfQFBiIGFHCP0z
-         YXVA==
+        bh=7Yi6QACY6Sk+pPvGX2LOJZA5tLUZ+nGsCUcFWjEbL98=;
+        b=MKg3w3LE/xrVKXAifxupau329+Qnk1ZObm/IrHTddZDTFrgC2pd32eGrU4/ivj0JT7
+         VSNzaOMcPgqoszkP0SJyVdDYn7PSgYqh5MZnT2bf5rZ+cH37GAMwK7aKqQTlNA7roZas
+         GQPtdIz3+2CdxSpr0YLAlgYoC4ndRCIbX6f9Og9b/mtLw0NT/LS6HneLZbmATH95JD3W
+         iDn1zQcpOjyHWJ/k1+5MIvaE3gneaqGKVKv9J/gjxsY+1zRRBNwNVrcekUmfZwM288RY
+         ZVobtzXtO+gjuenTNWem+3YBgHAItdK8DjAr4AqQIt3GSL+ObY916mq1i2/E0M3UbYpw
+         a5Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786628105; x=1787232905;
+        d=1e100.net; s=20251104; t=1786628978; x=1787233778;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=U+gF7sHdkedAo8fTzRT3P81NAwwSBCdLMVjZjxxRwcM=;
-        b=khVQQw0GwOWFdnoNWiXWIEWJU3K7vVZSKsiLY8ybysNMR4S8LGawErw9JZaETORvf9
-         1wYVnAvG/HEB61QSBDnh0o4sI/+a7nkeysUO54WcqoYy1wXR1HZtsyzaQfku9tpcFvrk
-         E4iNA+f1uHD6Ztt8pB39K5hPqu4D7K4ixhkOAJQx5zhvetmFUusLkPpcr8wfuMG5Jh/U
-         +QONJknSNxq3JSDf5/VofzWXSL8eR8qfIkNQzjNW5VzPTcM5MyT25dP+vrt79RXPVw11
-         FephD7f52YvhjKZw62k9BKv+DefL5nqDW/xR+KNrXjFyvnH3bKLGZYw78IqyndXf93Bc
-         pTag==
-X-Forwarded-Encrypted: i=1; AHgh+RqqzCEU5gmuYxuoaoDvK1oGjBfPusWs2k9gufcYtx9KWe0/dTh+78uzzIFRJThBcIJqt1KABA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwOZVE03cIit6YLrRUJZhJ5vDKBMZfEBnglU/x69c2WaGsqNXmC
-	7DkBMjQtZbOLGItKrXkz20rI618pCWn0PnQrsWk1iTdCpfdbhSrtswt0OtZSxklTl+k=
-X-Gm-Gg: AR+sD129F+93ByD8NG8HSprpXZ4UqdKfLQ/Km6rg0zBWo+pKXhGmThb8+epvxL9Y0jk
-	mMzRhW4xWDvc44dJOujljzQZdz/JGTHRPntujmJeYjeENzJ1Ird8LPTgdmnIAEgfgA8nh5Quat9
-	/7+ZLpgIclWnE4XZz3ftPIayWaa1P26Y0zmm+EYcnIyBL12o8Zzku+qHoJ3OYTHI97zKjwdN97p
-	hUhujxGbRehbvCm+DZ25uWrjG/qxfdvSwvQ5+ukCfPn7XC+ysUJgUZETNdtLPWr8tBvmIcmaqTe
-	rGRNp6IIaAhfdSAHNiS9XEWIp4TMCfDey0HeMzWYBsU7WKblrndMSAU/ta9WaklhU3ae0ArbWwN
-	Cv+TljfKt2T18cuzX+O4YDDuETRq6RT/D+wPpEIYmfKZYcZgaH7En//sYyPKPP+uEgJ2CmZqPpv
-	tU3LEzLFtey4UPtdpDCFKjjH+Fdk4gFPNRmitA2w==
-X-Received: by 2002:a05:620a:170c:b0:936:cae5:8b38 with SMTP id af79cd13be357-936cae58e6dmr101143685a.10.1786628104812;
-        Thu, 13 Aug 2026 06:35:04 -0700 (PDT)
+        bh=7Yi6QACY6Sk+pPvGX2LOJZA5tLUZ+nGsCUcFWjEbL98=;
+        b=MOIUhJ1abJmfx7JThBxgtgfBayQFiAhb7e0Jbb/4AkEoJHyIIS5u15/4c72ZsV8HKG
+         CVkIcqUeU/MbbL7AEh3UFhqyTDDzEQr3LJrSUsuBfG+qKtC187p1KKy4DnIngRAHrPBU
+         DuIzX8v2qjnLQ3mnJehaikhIPPk8ehlKEHJJ9zlRHRVAnmuCt1211kCDUBVTRdaJ7HQt
+         SxlKPDiEvcHfLRVIgFiL2eUtDq+X10FqZhguvqYDv0zG8jXkTGf4COB3hklz0FqAsIb/
+         Qp3jeU1NrUIIa5LALwVLavKJsfupLi+zhUGv9TEIcTebEQsRmCEibeX286np9U6gUyAG
+         +3OA==
+X-Forwarded-Encrypted: i=1; AHgh+RpoiGY8Z4U2osmCVsQCoUdi1Hr2u8xnaHmANnRF9KfxAo5uLjPngp6CBzEP1H6vppy4RaBNLg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzDfK4g+YchEle4ojpl+sDOtg0/jdRuClFIK+l5pmS88Lb8BbQf
+	/ep7lX46W+TXId3PLtqeLMvweDGzmLQmTonTiXwKzP8ocGfOI+W7TbQHhQaluFVP9U4=
+X-Gm-Gg: AR+sD13BdaTnbeFQbmqb5VS2CtS0jy2XEPS/7GlMPAn5JMTu/Mjl62nBq5q4XUOgCvK
+	8DUWimmCGY1nuxHkk2MnzhJMZzn/+7C4DzlYLnziF6aUBaC/aCTFkaCa5c47b8RR+/bHDuceNzu
+	pAZuGmz8W9VEL3XwvpxQS3vXQ/cz+0V01rhrmhOQMniYPdd4ze6J1E9zPmUFP6/iifK4djaNIIQ
+	HyN+3fkteYMeP7pPw3JTsVlcgTeNDpC34CBLSVaj5bZ/cjI+Y18Hj59Javw5FHdkepeD18+CrgA
+	LF5aKHkl/ofxGxBm6jVcHMPIBhh6t7Xanmi1jBbJWdAQYfdR2g2iIzn1F/eif+3gMiCg/R0sAM/
+	5wzueJTGK1whB0NYeDCK7anLx9/C08bbDJbPqcvUZns01ozAo9U/kGhcOI+5O3QbYlkreBZtTtH
+	nDbvGXtVMGMn8k12obp7wNPiRIxsmCpioQUMUvSA==
+X-Received: by 2002:a05:620a:1995:b0:936:bc78:791b with SMTP id af79cd13be357-936bf90b78cmr572103285a.15.1786628978075;
+        Thu, 13 Aug 2026 06:49:38 -0700 (PDT)
 Received: from ziepe.ca ([142.166.156.215])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-936c1b11d20sm148871385a.28.2026.08.13.06.35.04
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-936c1b12344sm150528085a.29.2026.08.13.06.49.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 06:35:04 -0700 (PDT)
+        Thu, 13 Aug 2026 06:49:37 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wuVaJ-00000003nL3-2lPH;
-	Thu, 13 Aug 2026 10:35:03 -0300
-Date: Thu, 13 Aug 2026 10:35:03 -0300
+	id 1wuVoO-00000003nYa-1b6m;
+	Thu, 13 Aug 2026 10:49:36 -0300
+Date: Thu, 13 Aug 2026 10:49:36 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Usama Arif <usama.arif@linux.dev>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com, bp@alien8.de,
-	Joerg Roedel <joerg.roedel@amd.com>, samuelcrossley@gmail.com
-Subject: Re: [PATCH 0/2] iommu/amd: Use MAX buffer size when SNP is enabled
- on Family 0x19
-Message-ID: <20260813133503.GL662699@ziepe.ca>
-References: <20260420084204.12263-1-vasant.hegde@amd.com>
- <20260813131833.2808948-1-usama.arif@linux.dev>
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+	longli@microsoft.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
+	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org,
+	arnd@arndb.de, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
+	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
+	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com,
+	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 4/5] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <20260813134936.GM662699@ziepe.ca>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-5-zhangyu1@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,32 +90,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260813131833.2808948-1-usama.arif@linux.dev>
+In-Reply-To: <20260811155022.108148-5-zhangyu1@linux.microsoft.com>
 
-On Thu, Aug 13, 2026 at 06:18:30AM -0700, Usama Arif wrote:
-> On Mon, 20 Apr 2026 08:42:02 +0000 Vasant Hegde <vasant.hegde@amd.com> wrote:
-> 
-> > This series addresses CVE-2023-20585 [1] by increasing the AMD IOMMU
-> > Event log and PPR log buffer sizes to the maximum supported value (512K)
-> > on affected CPU families when SNP is enabled.
-> > 
-> > Use MAX buffer size when SNP is enabled on Milan/Genoa. Impacted buffers:
-> >   - Milan : Event log (PPR/GALog is not supported when SNP is enabled)
-> >   - Genoa : Event and PPR log (GALog is not supported when SNP is enabled)
-> >
-> 
-> Hi,
-> 
-> This series seems to break kexec in our production on Milan hosts with SEV enabled.
-> This is on the 6.18.43 stable kernel backport.
-> 
-> If on top of 6.18.43 release, we revert the 2 commits, i.e.
-> Revert "iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19"
-> Revert "iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19"
-> 
-> kexec starts working again.
+On Tue, Aug 11, 2026 at 11:50:20PM +0800, Yu Zhang wrote:
 
-This sounds like the same issue Nicolin is facing on SMMUv3, these
-larger allocations OOM the kexec kernel
+> +static void hv_iommu_release_device(struct device *dev)
+> +{
+> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +	if (pdev->ats_enabled)
+> +		pci_disable_ats(pdev);
+
+Since attaching blocking does this and you set blocking as your
+release domain, this is redundant.
+
+The new flow looks alot better, removing the detach operation entirely
+makes sense if the HV can support attach on attach
 
 Jason
