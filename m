@@ -1,84 +1,98 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23987346A07
-	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 15:12:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04C35427FA9
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 15:23:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786633931; cv=none; b=A7mL9gTsH0i8WB3703T3T70ivx80yQFp+BIhiAWnj3pX9Tfdz3jG9uBErTk94H9W2ldRQL7gm4V16dq20dCV3xNkvSZ25ccrnsDkMWFS18xbWWBg8+LxGKmnkXp97iNyetBenk0BimIOYeWxusdvRxkjyXEOZnTohGaJtCjA7EY=
+	t=1786634611; cv=none; b=SWHIuthmIX1WMsSjMJ7HoSewLPJ4hPBlMn1yMxN6zFyzBOveHJhzwZOdzKp0SB+vCR0m/d5gxlxo+8qTWFdt/fN3AZRIVK1PElcYYs3EJfusRuNO3mhN+CxhMu93mL6XmKHzcKV+ptiobaZxWc/HxKqktIBW1nTXxhs7Lavx2Fw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786633931; c=relaxed/simple;
-	bh=kh4zC29toRXjwtuA0yBHRcNgVKlbLvrLAXcDzghJHFc=;
+	s=arc-20240116; t=1786634611; c=relaxed/simple;
+	bh=2B0CPWEWEG8m++OZ6EwFBRoNbGzJ//pmCUiFvHsbWu4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h9P1opfZDS5udU/vGvn4WRlx1081/Zz73eucARJMl5uDIBSwTxetjisgdYeR8mdJnnfrUvkxJZlDIbvBDGOfTAf4ldPozAFzDzCp8Z9Ha+TNMNtzkeEsWIVVsGRrW6k6bKLS+GZ+bW3WsrpFHOKcHM11tNA9ppLXQpsy20WQK4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Qp8FXydi; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=J8z9ksKIxzuspMaAhVTP5xZ1bcveqQzQ1jSVaHHoIhefGi6xm4dMNGwsm99D4jskxIM91XVcgGny+IZAsi1JnyujWWqTHNWbOcQhTI93QJUUKn83g2VdTQ7vECyTQopj7VtPSnm5DkRIBKL5MgFjh+c88ZoBXqrWGd+2sBGSJg0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=omROdkW8; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=xWXTOLPv; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=UpzBWAkT; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=vhUsTNwU; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Qp8FXydi"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-498012a61f6so46165e9.0
-        for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 08:12:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786633928; x=1787238728; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jIiI9SltfPrXcp9GxH8c00S+yO98PCAJKDJI9QVodgA=;
-        b=Qp8FXydi6QhTptiIqN+KuKoZEUxSHOrwFVRyZ6hp5Zh7VutuGuQ4xBm+IZsv0bbkI3
-         oSdz4MdTysXV/jXAZTo3P8WjIKFquRLyBbA33kdPGSCx91BhiKvm0PVA2R9OQsY2jmMj
-         xYFJJKnGga751Eylar9+6ifvBjewHMmnoUSTygsb1pQg6H3/sFgCaqtUqYBgbfR11++O
-         TraKEOUzeL8WzI8DWiIxLBgL1p5xrl8JVJkTA0TXXBnvQQf6pOJ0Z4ApZyuEtokbwpXf
-         9fsN7OOF3dA1VhqPGClfMw8tGgb4c+zAqTnWvJff6Axr8h7IvktH0MZ2u14B0COwwmzb
-         burA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786633928; x=1787238728;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jIiI9SltfPrXcp9GxH8c00S+yO98PCAJKDJI9QVodgA=;
-        b=eYoFybimL1dl/Lo7n/q8kNROv6mRei5HZsqVwh61I3JVqOSM+fRxYYWSHNyAFXIXPB
-         xuVyFTwg7nkBMX+T8GZ/6iU7ODTZgj4rw0voAw3+mHcXYdm9Q3FiNuY3YoqdXgCWAk8P
-         3lhJJcXngV12dVECIOBadQAmNp9OfhOqaa2QyIqTxEBk0JdbJGUhA65og6FAdt+ejweC
-         RF4/lUmN45E4SXM4ROYuY5spUvvAE1/eHBn776J0Q1Gc28IX8pwYuGrdrDpifA5Bd+xE
-         HMWdzbxhmfwh4hNqpezOxYo6mjpm8C2N/AXSHK4QVV9iPOhmjG+ULrHAS8b/NWrLOEOT
-         igvg==
-X-Gm-Message-State: AOJu0YwavNwKhFXn8gGW/zwgA8+oV1Qxo1CheEHP+H3arkwQFdICGBYg
-	mzx6+Q2G0pWJOVug0PgOF6z41Y3Ie1jKJQvJ6NxmRlL69O5LNphZ4Wd4GNPyvB+Gxg==
-X-Gm-Gg: AR+sD12okcrxppA+0AtLDluB5/itC3ej5w4TwK84JbdSWMnULUaZGDcy5GpIoYZQSMq
-	YOCPoBj+Q5yxV33Y7UvpAaKAgb0xuTbuyARqTr+65Neo9dWgCpneS+hX4xYc6iHvGOt9jRV3psq
-	rKjTMcJjEi/V//ziHgjQt00hzytiiWC47VjocW7Ka4Lmmvlyv/wo7x7NQI4agzrSct9Bn0vn4kn
-	mzbBgcrXyuElZlxmZIUZFD8TS+5WGAPm6FzZbcw0P4Vfp9JX/DKdSxdbneEXXqp8wjS7H6phZd3
-	ZWt9Im0GU+9QK9eLF+27bI2uv4153u/+RUdTf84yGcP4IYKT4TE+1v6l2neBQSFMa7kcIJ8Hfy/
-	DTOZuu9RQhqnWtcnppaKzfQvK48NHIqOSvEk0KPO1XMzFdbY78yc1dVgY32N4/6Ybm/3dXEpDqL
-	VoNSerdpwMZsJEm0X52Pou+VMjaqvKhTZMbiEMvVlNz/h/jDqk+5lFk3JYY+dTLDo/1T3CXzvNs
-	Lp5cn6sopPGBImfABFEKaiJkRtzSQ==
-X-Received: by 2002:a05:600c:6094:b0:499:83b9:4e4d with SMTP id 5b1f17b1804b1-49983b95116mr892995e9.0.1786633927802;
-        Thu, 13 Aug 2026 08:12:07 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4815f2cd7ecsm7938f8f.36.2026.08.13.08.12.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 08:12:06 -0700 (PDT)
-Date: Thu, 13 Aug 2026 15:12:03 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
- for latency
-Message-ID: <an3ew9xbnLe1dr5g@google.com>
-References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <akzm5BoV0rToJ7ij@google.com>
- <20260708001058.GA422027@nvidia.com>
- <an3MSKEj7VhT4WkP@google.com>
- <20260813141320.GF730363@nvidia.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="omROdkW8";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="xWXTOLPv";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="UpzBWAkT";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="vhUsTNwU"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 91C01829B6;
+	Thu, 13 Aug 2026 15:23:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1786634601; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=r9c0W7+Qi65NnGMLOX7a+AOvxMLs7RmJF4HQmM9BUTA=;
+	b=omROdkW8VWOd/OPZEdiY6fNZwnrNb7QI47DuWZtZp/dpYvPfv4tWH7HtljbpyUhiT8gECf
+	8hD1RCEhCs8ZqYmL3UWDvjA5xKl6IYcOcgumdoFTkka17Y8neDwEWcI1hzEKzYegv/DqSx
+	Bc9DwoleVqbAk0EIi+P3kpfLE9MeJds=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1786634601;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=r9c0W7+Qi65NnGMLOX7a+AOvxMLs7RmJF4HQmM9BUTA=;
+	b=xWXTOLPvet21H9ghPgTyel1CNUXlll+R7v++s/fG7T/32gSSTfXaXoQW1sUuUuUOC/oXik
+	wBo8SE/t3u0MNnDw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=UpzBWAkT;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=vhUsTNwU
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1786634597; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=r9c0W7+Qi65NnGMLOX7a+AOvxMLs7RmJF4HQmM9BUTA=;
+	b=UpzBWAkTSakchOv1HBSKgOzMO4KuuUnuQ2MWxcIRgI6gWJDI3MViSiGXChMJX9nfgbo5//
+	HWZ5JEK/ZOZQaiMZlPo8BjieQ3HqtUFgSaq918OZNR8nRMFhq7MkMZzOogKw2E0274ndF6
+	PoOmqltFaNvZvWY/eOuNjJK6sY2qUk8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1786634597;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=r9c0W7+Qi65NnGMLOX7a+AOvxMLs7RmJF4HQmM9BUTA=;
+	b=vhUsTNwUNneYjNPb7CuW23z17Eitwo3XIY8V40j7NH8ES7XdjYKGnQ3K4sla8K5tfCe34j
+	qoWZNuRO1J9dlbCg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 9006277EAD;
+	Thu, 13 Aug 2026 15:23:15 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id bbjcH2PhfWoOeAAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 13 Aug 2026 15:23:15 +0000
+Date: Thu, 13 Aug 2026 16:23:13 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+Cc: "Nikunj A. Dadhania" <nikunj@amd.com>, Mike Rapoport <rppt@kernel.org>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>, 
+	David CARLIER <devnexen@gmail.com>, David Hildenbrand <david@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Jiri Slaby <jirislaby@kernel.org>, Juergen Gross <jgross@suse.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	"H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Shakeel Butt <shakeel.butt@linux.dev>, Steffen Dirkwinkel <lists@steffen.cc>, 
+	Suren Baghdasaryan <surenb@google.com>, Thomas Gleixner <tglx@kernel.org>, 
+	Toshi Kani <toshi.kani@hpe.com>, Vishal Moola <vishal.moola@gmail.com>, 
+	Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, stable@vger.kernel.org, 
+	syzbot@syzkaller.appspotmail.com, x86@kernel.org
+Subject: Re: [PATCH v2 0/5] x86/mm/pat: CPA fixes
+Message-ID: <an3hHhEgV2K8bVEE@pedro-suse>
+References: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
+ <9cfaa5d1-83b4-4b88-bf3a-05d2e074cadf@amd.com>
+ <an3dkOKWdajK09KN@lucifer>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,111 +101,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260813141320.GF730363@nvidia.com>
+In-Reply-To: <an3dkOKWdajK09KN@lucifer>
+X-Spam-Score: -2.51
+X-Spam-Level: 
+X-Rspamd-Action: no action
+X-Rspamd-Queue-Id: 91C01829B6
+X-Spamd-Result: default: False [-2.51 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_TWELVE(0.00)[33];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	RCVD_TLS_ALL(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[amd.com,kernel.org,linux.intel.com,linux-foundation.org,alien8.de,gmail.com,redhat.com,ziepe.ca,suse.com,intel.com,infradead.org,zytor.com,linux.dev,steffen.cc,google.com,hpe.com,lists.linux.dev,vger.kernel.org,kvack.org,syzkaller.appspotmail.com];
+	TAGGED_RCPT(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	R_RATELIMIT(0.00)[to_ip_from(RLziudqfrzo6b7hzgpxksh1d9i)];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[amd.com:email,suse.de:dkim,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Flag: NO
 
-On Thu, Aug 13, 2026 at 11:13:20AM -0300, Jason Gunthorpe wrote:
-> 
-> > Sorry I lost track of this thread and I just saw v4.
-> > 
-> > In the mobile space, I haven't seen an SMMUv3 that does not support
-> > RIL.
-> 
-> Oh? That's very surprising, AFAIK none of our embedded chips support it
-> yet.. Even the server chips are only just getting it. Are you sure?
+On Thu, Aug 13, 2026 at 04:07:38PM +0100, Lorenzo Stoakes (ARM) wrote:
+> On Thu, Aug 13, 2026 at 08:35:21PM +0530, Nikunj A. Dadhania wrote:
+> >
+> > Tested v2 on a 512-guest concurrent boot harness across 200 iterations
+> > with no splats. Both crash signatures reported in [1] are no longer seen.
+> >
+> > Tested-by: Nikunj A Dadhania <nikunj@amd.com>
 
-Yes, SMMUv3 is getting more and more common in moblie HW (opposed to
-custom SoC IOMMUs). Devices that I have seen in the market in the
-last couple of years have RIL. For example Pixel-10 which is currently
-getting upstreamed. Also, I have a mini desktop with QCOM X1 which
-have RIL.
-
-The only SMMUv3 I have seen without RIL, is an old morello board I
-have.
-
-> 
-> I gather it wasn't even available in ARM IP until recently ish?
-> 
-> > However, I have seen workloads that are really sensitive to translation
-> > latency (display, camera...). And I'd be concerned about those
-> > regressing.
-> 
-> Yes, those exist, but again, they are already facing these problems if
-> running without RIL.
-
-Yes, but my point is that those typically support RIL and that change
-regresses them.
-
-> 
-> And, for the common case of putting something into a carve out region
-> it is not so likely even an expanded RIL will intersect with a
-> reserved IOVA that has a high alignment.
-
-Not necessarily, those devices can run with a small IOVA space to
-reduce the page table walk length making IOVAs quite close.
-
-> 
-> At least the things we have built are calibrated to handle a TLB
-> reload occasionally. The isochronous TLB's are not even sized to be
-> never-miss for all cases because things like 4k media require such a
-> large amount of IOVA the area cost is too high.
-> 
-> While others can do something else you are reaching into a pretty
-> narrow condition to hit a problem:
->  - HW that must have a never-miss TLB to work
-
-I am not saying that, but we shouldn't over invalidate TLBs either
-when it is easy to avoid that.
-
->  - HW that doesn't have a carve out, or has a badly aligned carve out
-
-I do not think a carveout will help. But it's a very strong constraint
-to enforce carveout on all devices specially media which are quite
-complex and composite by nature.
-
->  - A SMMU that has RIL (non RIL is already worse)
-
-This regression only impacts RIL, otherwise it does not matter.
-
->  - A non-isochronos workload that regularly exceeds the RIL/single
->    expansion thresholds
->  - Unlucky IOVA allocation that places isochronous near other
->    workloads in the IOVA space.
-> 
-
-It is not just luck, it depends on the IOVA space and access patterns
-of the device.
-
-> > There is a clear trade-off here as you mentioned with TLBI latency,
-> > would it be make sense to make that behviour configurable from a
-> > module param?
-> 
-> I think it makes sense for a driver to indicate to the core code that
-> it needs isochronous and we can do more global things like change how
-> single works as well. Having an isochronous flag on the domain, for
-> example, would be a good overall direction.
-
-But according to what? It makes sense to optimize server chips,
-but that should not cause over-invalidation regressions on other
-hardware.
+Nice!
 
 > 
-> I'm inclined to leave this as is and let someone come with a specific
-> problematic HW, rather that try to badly guess without much
-> information if it might popssibly be a problem.
+> Thanks so much for the testing!
 > 
+> And all credit to Pedro for reporting and contributing the key commit that
+> resolves this issue :)
 
-It's not really a guess, I mentioned some examples above, that I
-have seen problems of translation latencies on them.
+And all credit to you for starting this flurry of fixes and patches that
+solve Critical Kernel Issues(tm)! My fix would be nothing without yours!
 
-And why not the other way around:
-- Which uses cases can't handle few RIL commands?
-- Why those drivers does not unmap memory with a granule/IOVA fitting
-  to RIL?
-- Why those systems does not use FQ domains in the first place?
-
-Thanks,
-Mostafa
-
-> Then we will know the HW and can mark the driver as I suggest above.
-> 
-> Jason
+-- 
+Pedro
