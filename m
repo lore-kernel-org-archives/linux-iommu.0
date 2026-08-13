@@ -1,141 +1,196 @@
-Received: from mta0.migadu.com (out-157.mta0.migadu.com [91.218.175.157])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010019.outbound.protection.outlook.com [52.101.56.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A241624D5
-	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 00:05:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.157
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786579553; cv=none; b=WKbRlr/aOHPyZ08P5LKIMAvW7XyYKIvYtJbqLIJlrENSF+Ht+1W7r14Djlw3e1v7+scxgDMaHYSDQtspRgogWR77alNM0Md2srj1yZ02st5GePefKpUmwDiE8KgzgUU0MfdYhRHS6K0Payvgo3N6zimbkbOp76C8v1FHMfmC1MQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786579553; c=relaxed/simple;
-	bh=jhMAM9mv34g3Y7kZQBCLpUTuCyQVHcxm40WPa1yHLcs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=iGNwcrXpV0BX/wB/r4mq5jHMYTC/nZDwLChrmOGBleIXA4+cFP+ci2r0F9qhC0oEYjgoQkOof6E8SSDDkh70kh63qrLAJBlHBxkNDG75I02oueGF8lYIIiq0Na6XMQCngfzz7bONjUqkAatcsAEYrX7FFInyVaLRO1OyBIiuYko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=dqjwZLU9; arc=none smtp.client-ip=91.218.175.157
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81C58196C7C
+	for <iommu@lists.linux.dev>; Thu, 13 Aug 2026 00:11:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.19
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786579915; cv=fail; b=kHWnj3tPB0ijcBqsJaAIG6F+BRiduK5wbvftyACDt/NUPfcrcdBzaoWuVLSff/Duaa1wbkMTGdRZ0YAY01ysfFnYEvWv0CDsTzi0OMzCZBiwx7DTPyYnSDuhJnDcPEii0yHZH/a65KHmztRNYdV0ciutRk6p7c0pAfCMCfQ0WDQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786579915; c=relaxed/simple;
+	bh=z/l7AD0whTGUJ2r1pMo/NLCtKpkbgRwvnIqn60yN/c4=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=BYnUsD6rm8baMvmIN8TBEIpAxkiv111YUPznxWwWdEpvsycJnGy1c5ooqpXvTwwhZplksH7WyE4oEEGgOFLO3efDdrkdzi2BTqgGB5ZO6Bts02rl4FWngLvUCbDSu2HyG+c3mP6QSEOefvuNzMkYG3Y83MfCXzfeTgiMxdyPZoQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=PtcZq1Za; arc=fail smtp.client-ip=52.101.56.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="dqjwZLU9"
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=jhMAM9mv34g3Y7kZQBCLpUTuCyQVHcxm40WPa1yHLcs=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1786579547; v=1; x=1787184347;
- b=dqjwZLU9hKyBFDYSEog4qb3fidaM4ycZwN35mGWJj0XWNpXyQayk4ln7K9RRxzvaQku9Xrgj
- mhwI3U6ZvhU3EVywS+UVeGd9jns7jL/XJipOdNCUXDAoHbClHiUMO9KNOpmPaEHiRndBQiC3rhy
- FH2IOmJ6mXmbcn2H/rFdyYZE=
-X-Envelope-To: iommu@lists.linux.dev
-Received: from coder-jfernandez-main-0.coder-jfernandez-main.remote-dev.svc.cluster.local (52.89.24.131)
-	by smtp.migadu.com with ESMTPS id 10e9d07281b2870d;
-	Thu, 13 Aug 2026 00:05:37 +0000
-X-Migadu-Flow: FLOW_OUT
-From: "Jose Fernandez (Anthropic)" <jose.fernandez@linux.dev>
-Date: Thu, 13 Aug 2026 00:05:26 +0000
-Subject: [PATCH 6.18.y] iommu/vt-d: Gather the unmapped range before
- freeing its page tables
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="PtcZq1Za"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=GJCn32AdHaa5v0RPx/WNOTTiGAYJgZfZ/3TTsUQVuV0cCIZgTnhefO2rMIEno5dsvtwKAgxTk1IGvhfhNyPbNmcoDY89EpVoEE/KEAsJNo/oMMSs4v71v4+i88tSLQREyTAag+KAI8ygJCe/jTbPTJIICbwQoAI0PD50xBqSoSqOjHk5VVhYkKq+xzUqt8gS5tBPIUKM/V/kOimS6ZwuGpdIJlhIPbRYXErEkLT2sqMBGNYLcug45zaST6OD25cTYclFlCRVXjqcbBQ3265qCg70qo5/YyAbCCW9ydiG/wJcI6s4XZgF+AgvVr4MOC5YoLYEiUNAS0AfpBRkgihCHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HhHlFV4bK93EiVm+jtXfiuU73l5Alqa6WnhWvFiI2gc=;
+ b=rUF3v9DaqnRL+UZ8LEPrumnHrILvoZRhBO59ugHk3lyQUtfpqAB9R2VmSi0JFECBisqB9pVfrM5PL0EC+mR7nQnTCp5vNv83dUEqSxCFStABGk3Yq5gZDDv9cSl9pSTgGaa8x3veW/plDb3tgcudUfSzJhKC6IDUmrGezmHK20jpsxqidWye82pT/wHXicv6smfPXQWPqLP0YQgE+BJVCvGuBcyv7r/ULvptYNAVCtu1xc1YPOzY6DePIKWMP9ZF9E7grE15t+k/ZdVCG6GctUTuC8U+ZzOnnAs8i6ymCk6JwJhYrPY2+VmjIuGR/LCN+WF1GBc74d+7DC6T+66okg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HhHlFV4bK93EiVm+jtXfiuU73l5Alqa6WnhWvFiI2gc=;
+ b=PtcZq1ZagRB2BnjsV+wLnMHNHaCD1Hh+BwG8+I704aP1raNtgo+GsLTx2yeOhdMEn/bTjNWpxw4tKnBB7ycGKpbr6MIisF9FwGLyt/ZMUES9Pl4REp/GHnn0O3NzIt0ymEWOlyH1rx/02w2N8uFMzagllGZOfmbZgQ1cMw2Ahdw=
+Received: from BN9PR12MB5146.namprd12.prod.outlook.com (2603:10b6:408:137::16)
+ by IA1PR12MB8336.namprd12.prod.outlook.com (2603:10b6:208:3fc::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.13; Thu, 13 Aug
+ 2026 00:11:48 +0000
+Received: from BN9PR12MB5146.namprd12.prod.outlook.com
+ ([fe80::535a:591e:27f6:c23]) by BN9PR12MB5146.namprd12.prod.outlook.com
+ ([fe80::535a:591e:27f6:c23%3]) with mapi id 15.21.0315.014; Thu, 13 Aug 2026
+ 00:11:48 +0000
+From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: "Hegde, Vasant" <Vasant.Hegde@amd.com>, "Limonciello, Mario"
+	<Mario.Limonciello@amd.com>, "Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "joro@8bytes.org"
+	<joro@8bytes.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "Suthikulpanit, Suravee"
+	<Suravee.Suthikulpanit@amd.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"Longia, Amandeep Kaur" <AmandeepKaur.Longia@amd.com>
+Subject: RE: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs only
+Thread-Topic: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs
+ only
+Thread-Index:
+ AQHdGmrXXVaTvXvBoEGo7Q2TpyKmibZ8ya8AgAP/o4CAAK8DAIAA7JgAgAAKzQCAAOUFgIAADS2AgAKVz4CACMDmAIAA4oQAgAAtKPCAAAlpAIAABJCggAARRACACxOBUIAACoiAgAAAudCAACjpAIAACp3Q
+Date: Thu, 13 Aug 2026 00:11:48 +0000
+Message-ID:
+ <BN9PR12MB51462D89963C912121E9D780F7DB2@BN9PR12MB5146.namprd12.prod.outlook.com>
+References: <08f2e48e-6e98-4fde-af71-cb8cde666bdf@amd.com>
+ <20260805010706.GC28508@ziepe.ca>
+ <39ce2a2f-3bb8-43e7-9446-a67551cce104@amd.com>
+ <BN9PR12MB5146934D584CF0A2A9DD8CFCF7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <20260805175308.GD28508@ziepe.ca>
+ <BN9PR12MB51467229315BC8D731239E80F7D32@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <20260805191116.GE28508@ziepe.ca>
+ <BN9PR12MB51463D56248A4DE952E6DCA2F7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <20260812205737.GG662699@ziepe.ca>
+ <BN9PR12MB5146253D30587DC820486F4FF7DC2@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <20260812232638.GH662699@ziepe.ca>
+In-Reply-To: <20260812232638.GH662699@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_Enabled=True;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_SetDate=2026-08-13T00:04:37.0000000Z;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_Name=AMD
+ General
+ v26;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_ContentBits=3;MSIP_Label_198e8dea-a4f3-4850-b16a-fd6d2b1302b4_Method=Standard
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR12MB5146:EE_|IA1PR12MB8336:EE_
+x-ms-office365-filtering-correlation-id: 036b2b56-45fd-4141-81ca-08def8cf7801
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|38070700021|10067099003|56012099006|4143699003|11063799006|18002099003|22082099003;
+x-microsoft-antispam-message-info:
+ f7wLFrQp4W6QHMcvZXdx8adZTSdhojJPsWYP62ogLjxfqBBIvXwymHDzp5gZiki18bFHOodxpZs8dKgFSWEfTp+JmraaTWrIgm2gNiLFBhFuF7g6b5AaK+QbxC51pjbQKjs3P0Hz/KFs4e12XetNvf3PnLC+FJ9nOHXGxYhWQtHKGqv33ZCZjM2UqSh9kkjOk48Rr/HdsXIh9aLuetge/SotbZ/jUAL8LS7DJxIvVr4z1ZQBdTDF0mZFBw0yWDFuCqSyTGB2VZafxVLnrV5XFwrmD3Y8+sF348+0eKPuvsscQefg16zyqYXXD1/qBdqRsMSMSDifzaQ4QTdSrIPLQy7qtf/2K032q3hzru5ypV0T0rOJknJnCZ7pEj5uZH48gr4b+bca+h74XjTHgXzzwpGaZlSii2oTeJljuWGTangd3gQM5JxF7cdvlx7UPfuaPBPsa4efaMQxnoDJ8yMLge3O83GaS87TRDA6XRG8D7JZRfwFDZxSNgpF6oMLvEZCRK4iUq9te0+8VBI51fwj6iKJNDH+XoZSGDQG+nupdiboDzYFE447TmvA/RwtJEEJvW+StEAW7hKTTVidj8JuOpp4sJic3h+/FzCQBAur4D4hkwvmCaeaCDMOxaYyiMJxEhCi4w1RMmZrucG0rMSSjzmSIznPmbeU4PQJdLRngfHH0aDsP0vljAQ76WnTyExHinwRIjZSOVXxWa2xfqEXk9uZ67cCEwm2Jc9bmHmDRpg=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5146.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(38070700021)(10067099003)(56012099006)(4143699003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?nqpInGTysZQDrkOSo8RexfV5qHc3obCZYG7XektYliw5Nuf+ybLC4YBQ7Dh0?=
+ =?us-ascii?Q?64vRP6Rhg4LFG7sp3HW7sQDo9P8ploeTmgxMsJXgDVNCMUDxzyZuT2+uVubo?=
+ =?us-ascii?Q?sjGRmfNyrgaM4iy03R6WIBM4/qz9CfG/8e6XdlOH4/hNlOvKB94UyY0ievby?=
+ =?us-ascii?Q?1/68GppvoXgLll6TZIHQIXoCydQmLzDlAwohkr6WIn2DRiz8bi363S1vj89b?=
+ =?us-ascii?Q?u3h3/KZOGBBohzv4hLVH6Hs0tVbYLIonefC49KduMdpvspk3fNywTwjyTOkH?=
+ =?us-ascii?Q?7r69Xr8Vf8+Qo2hDv7AcfFtwOWhxQDhd611d/jYPeUGYEPvPyWjagT5NGSJG?=
+ =?us-ascii?Q?S9AQbHrrssDo4bKTJ6xoGsjI1nWIZkC0nwnu7NciECEWpvGL5a/0/7nB1ncZ?=
+ =?us-ascii?Q?ILErhlRK8o56moK5mVPOilEw+gJ8rFrTM0ieFkMZ5CiRqfAG1MUBhKlDHFiY?=
+ =?us-ascii?Q?GOnizaKj8zAFM14tp49Hsbv+Mi5Bdd3ebg6p85vYuhX4zJa+MzxT8OZYxRfw?=
+ =?us-ascii?Q?uPwsfUwW+gvJn1n+QBtHyAvB7axMJjnpPNkCTZ4ldcGsjfNEyCLZiFLJPB92?=
+ =?us-ascii?Q?bkdfNMuJKBTxQDqL2NnbVTJvGhxk33LTZCWQChm8Qn38fgCahQsEumvfRAow?=
+ =?us-ascii?Q?f1kfYfSn6+D39i69aPzJsCb5TRURKhAykEzh7hmwrMeH7akJ7gYRH665dgPd?=
+ =?us-ascii?Q?Z0khpMW5vqkgB3UwiFg71IprsDY4GdAoHcBcyEluuhRe5IuiAQ986rZmnlTF?=
+ =?us-ascii?Q?Kn9MQxW9+xPpYAAezdYcEkwJb2jHg5fISo/+sbXUl0j8fNov/Kl1Bti5fh7p?=
+ =?us-ascii?Q?STz9TblyxNBcc3SIsix5CaIDuI54wqKHqpObKp7LPOR2TQf/X8agJabG8Nuh?=
+ =?us-ascii?Q?a0tDenNgJQYLbz8W1y0gT+oUYJi5ji11AhdECRu8dtTBXKN3zmoiATRUG0mj?=
+ =?us-ascii?Q?vlRKVQo1oBzKOsQjsQTw2TOqA5fPS+Vwpxh/mK8832FtmJMsjkNzVDHkMwog?=
+ =?us-ascii?Q?M0M1TayJBIuzSf3YN1m5cN0Np43cTaPlhpi0/I9jWuHtjAn8/dpa/Q8MbIcL?=
+ =?us-ascii?Q?LB0Pq0SeFpsoDe711svuy7RWTgCqUpnOCR1OvwPyy4fRYxhkkVFQN11yXxNc?=
+ =?us-ascii?Q?KRgj+9Oy/8L7kNIZkhYglQpqAbtDcSSQLZqXKJZ4xXB0bs1hZdHhC+4H5cyU?=
+ =?us-ascii?Q?gDmC3HMgt40LsqoTJfVpPH3JfsXVOxQni+YxB2ILNiDGQ6HXnLE+y3FQKk9K?=
+ =?us-ascii?Q?1jnWWfRB2uEaLWmXJN2aNwt5MNAkXxL+GxYSGuc/fzc93LQlqReex94+7IkB?=
+ =?us-ascii?Q?LFMwdJY0cwqrM3xQWHsoAo02lJEsdj2YI+95DHq3tEOO75q7brgbU3W9ShhC?=
+ =?us-ascii?Q?ZB9ZchZkvpe/L2x+cfRq6gQqZEADN723v5s3bYiBcP8INU1AEQtIzkkrVy7L?=
+ =?us-ascii?Q?9XPdcY0XrCsDPBb2UC9KtkQXgJtIb+yfxtcAl+Fx1StDFeyuigcGOQhqBxqD?=
+ =?us-ascii?Q?9rzDMRAZ+PuQn8NawK7UL5cmdhaDNkUtqJiru3v1CTXU0RLgNOy6KxcCbN6c?=
+ =?us-ascii?Q?1TGFx8oY/2mM46dvYnvuCq+C1RiZPTB/h9SBs4CTiUq1QJpbIax1fMi38p28?=
+ =?us-ascii?Q?CZKAr6A7Ovaa7z3yE6omT3wokv80gGp9b3bac6cyaUdJBRVgdDHRs65z1G7f?=
+ =?us-ascii?Q?0USKuE/p2XAERg50i+iWrB4BgFPb8zol/H7xgtoIpMftj/ZG?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260813-b4-vtd-unmap-gather-v1-1-4c52f4a7a1ac@linux.dev>
-X-B4-Tracking: v=1; b=H4sIAEUKfWoC/12NSRKCMBBFr0L12gYSLQSvYrnI0JI4BKoDqEVxd
- wnuXP7p/RkisacIp2wGpslH34VViF0GxqnQEnq7apClrMpaSNQHnAaLY3iqHls1OGJsjlJb2zS
- lkHtYlz3T1b836hmqXNT5By4/P476RmZIyNTUKhJqVsG4ZD36wnSvju/ExRb9X8GyfAEIN5Cts
- wAAAA==
-X-Change-ID: 20260812-b4-vtd-unmap-gather-972bdd990123
-To: David Woodhouse <dwmw2@infradead.org>, 
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Tom Murphy <murphyt7@tcd.ie>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- stable@vger.kernel.org, Mohammed Almaroof <moh@anthropic.com>, 
- Ben Cressey <ben@cressey.dev>, 
- "Jose Fernandez (Anthropic)" <jose.fernandez@linux.dev>
-X-Mailer: b4 0.15.2
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5146.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 036b2b56-45fd-4141-81ca-08def8cf7801
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2026 00:11:48.7708
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4PWMZpcnywKO4Qgy/GGwWKYBhf5p5s1/PFwzgvtRmNEhaV/q0eLwVrnSmfzLECH5IQbUa/3vJ4zev7nyRZHjCg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8336
 
-In the 6.12 and 6.18 stable trees, when an unmapped range covers a
-whole page table, intel_iommu_unmap() can free that table before the
-range has been invalidated. The freed table goes on gather->freelist
-before the range is added to the gather. If
-iommu_iotlb_gather_add_page() syncs before adding it, that sync
-flushes only the earlier ranges but frees the whole freelist, that
-table included. The range itself is flushed later with an empty
-freelist, which means the flush is sent with the invalidation hint set
-and the IOMMU may keep its paging-structure cache entry for the freed
-table. DMA to the next mapping at that IOVA is then translated through
-whatever the freed page holds by then, which is usually a silent wrong
-translation and sometimes a DMAR fault.
+AMD General
 
-Under a userspace driver that maps and unmaps DMA buffers through VFIO
-type1 continuously, this shows up as wrong data in device reads and
-writes. An occasional DMAR fault on a mapped IOVA is the only thing in
-the logs. With an Intel DSA engine assigned through vfio-pci, remapping
-a 16 MiB buffer at a fixed IOVA and reading it through the device
-returned data from the wrong pages in 280 of 400 iterations. With a
-fresh IOVA per iteration it never did.
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Wednesday, August 12, 2026 7:27 PM
+> To: Deucher, Alexander <Alexander.Deucher@amd.com>
+> Cc: Hegde, Vasant <Vasant.Hegde@amd.com>; Limonciello, Mario
+> <Mario.Limonciello@amd.com>; Kuehling, Felix <Felix.Kuehling@amd.com>;
+> iommu@lists.linux.dev; joro@8bytes.org; linux-pci@vger.kernel.org;
+> will@kernel.org; robin.murphy@arm.com; Suthikulpanit, Suravee
+> <Suravee.Suthikulpanit@amd.com>; bhelgaas@google.com; Longia,
+> Amandeep Kaur <AmandeepKaur.Longia@amd.com>
+> Subject: Re: [PATCH 2/2] iommu/amd: Force identity mode for selected GPUs
+> only
+>
+> On Wed, Aug 12, 2026 at 09:03:58PM +0000, Deucher, Alexander wrote:
+> > > Sure, but the end result is the GPU and SME are inherently
+> > > incompatible, we can't really fix it.
+> > >
+> > > What's wrong with blowing up at boot with a clear message that Linux
+> > > must have SME disabled on this HW printed to the UEFI console?
+> >
+> > It's not very user friendly, plus it would break working systems.
+>
+> Huh? You've explained that SME doesn't work with these GPUs? How are
+> there any working systems with SME turned on already running Linux?
 
-Add the range to the gather first and splice the freed tables into
-gather->freelist afterwards, so that they are only freed by a sync that
-also invalidates their range.
+No one noticed it because the IOMMU driver used to default to 1:1 mapping f=
+or all AMD GPUs that supported ATS and PRI for compatibility with ROCm at t=
+he time back when the amd IOMMU was the only one that supported SVA.  Same =
+reason we didn't notice the IOMMU problems with the display hardware.  Linu=
+x defaulted to 1:1 and windows didn't use the IOMMU.
 
-Mainline removed this code in v6.19 with commit d373449d8e97
-("iommu/vt-d: Use the generic iommu page table") and is not affected.
+>
+> >  I'm not sure the average user would know what to do.
+>
+> Turn off SME in the bios? Doesn't it default to off?
 
-Fixes: 2a2b8eaa5b25 ("iommu: Handle freelists when using deferred flushing in iommu drivers")
-Cc: stable@vger.kernel.org # 6.12.y, 6.18.y
-Reported-by: Mohammed Almaroof <moh@anthropic.com>
-Reviewed-by: Ben Cressey <ben@cressey.dev>
-Assisted-by: Claude:unspecified
-Signed-off-by: Jose Fernandez (Anthropic) <jose.fernandez@linux.dev>
----
- drivers/iommu/intel/iommu.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+I don't remember.  I suspect it defaulted to on.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cee1851b69245..8b38c65f403b2 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3620,6 +3620,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 				unsigned long iova, size_t size,
- 				struct iommu_iotlb_gather *gather)
- {
-+	struct iommu_pages_list freelist = IOMMU_PAGES_LIST_INIT(freelist);
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	unsigned long start_pfn, last_pfn;
- 	int level = 0;
-@@ -3636,7 +3637,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 	start_pfn = iova >> VTD_PAGE_SHIFT;
- 	last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
- 
--	domain_unmap(dmar_domain, start_pfn, last_pfn, &gather->freelist);
-+	domain_unmap(dmar_domain, start_pfn, last_pfn, &freelist);
- 
- 	if (dmar_domain->max_addr == iova + size)
- 		dmar_domain->max_addr = iova;
-@@ -3648,6 +3649,14 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 	if (!iommu_iotlb_gather_queued(gather))
- 		iommu_iotlb_gather_add_page(domain, gather, iova, size);
- 
-+	/*
-+	 * iommu_iotlb_gather_add_page() may have synced, which frees
-+	 * gather->freelist. Hand this range's page tables over only after
-+	 * that call. A queued gather frees them from the flush queue
-+	 * instead.
-+	 */
-+	iommu_pages_list_splice(&freelist, &gather->freelist);
-+
- 	return size;
- }
- 
+>
+> >  You aren't likely to want SME in the first place on one of these
+> > laptops.  Why not flip the logic and print a clear message that if
+> > the user wants SME they have to explicitly enable it via the kernel
+> > command line.
+>
+> That seems like it would be API breaking for server users that do want SM=
+E
 
----
-base-commit: 1efe5d048a391de3ead2804b2e7f86376c356cc5
-change-id: 20260812-b4-vtd-unmap-gather-972bdd990123
+Only disable it by default for these specific platforms with the old iGPUs.
 
-Best regards,
---  
-Jose Fernandez (Anthropic) <jose.fernandez@linux.dev>
+Alex
 
