@@ -1,211 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 340B146AA8F;
-	Fri, 14 Aug 2026 12:56:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504933D093A
+	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 13:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786712169; cv=none; b=uGb1CzDn/WrlLQj5brPJ6VtHaByYLxId6ciAz5JPaCy2TB6V2aUh8UfPoGk1c/HXWiWOLScPn3gUXp7bKeWS8XARUrU3lsiMfmJotA21A+zRf8GTMFjz/DaIPS+BI0E9mE+IloaJGj9np4vS1aPrjzklUTnC1jeQ9dxMwdAK1zQ=
+	t=1786714787; cv=none; b=ahzBsk64an9xEmtbJpXqYYfyomcmty9Apha1ngRX9EwHOdFXeIiTt6zLKv9jcW7ks7n39cizIWfLHiIriB5w9zOwIOTMzOvX0B3cRgq7bnuVFbCXGyiiS1p6kwGe7byDFSRMmxA7An2J+3QhaJkh7+jgD/Ym1Gw7G3Jz4+ENefE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786712169; c=relaxed/simple;
-	bh=cX+72s9o2pIYhrhjJqMobcQWIikVZ9nl0Ljsw77hPx4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GaaLsRtaGSMTqF+1YNDVEv/1AQKA+X6kmPYRcQH5+aZGXh6IT4+HGffeW5G/lBW4DJhkHJ5xJu6hAj40qN+yqr9JZYtPn65WH2J96riTtgrWimENzgWhawnHWJ9mPNzYZLRtO2uc/XpiEAvxOo9j5eHUYaWmH3N+HZwFuzMxH1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e977F/nZ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786714787; c=relaxed/simple;
+	bh=M4T/XKvyLQRe89mGAnILG1wCu5GQjz+m+aaDNSsMXLE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sl+i4LxHpi+fDko3IKdZ7Zwc/UEV8kwEVcZYaJEngdxcwMaPXEbqFOa8VVyqCyB12BD713CASCmPYwkBU8vkaqKfMuQFsSbojVLS1X/jFc8QFp0lugSsqSNDK1cIQKuJNqS8HIsIsvXkRa9oVSmWmWGuih3LKm0vYtHq/2d4Rb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DY+EDmmQ; arc=none smtp.client-ip=209.85.215.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e977F/nZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54BE81F000E9;
-	Fri, 14 Aug 2026 12:56:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786712168;
-	bh=cX+72s9o2pIYhrhjJqMobcQWIikVZ9nl0Ljsw77hPx4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=e977F/nZkZ3+kWqrRqgIfVJd/aBqAfJBoJ0g2Jj+dswl1Yg8oI6tRpw4WyEGE1+X5
-	 ugqpy7w+0PGPzYIzyhQ49UE79ycBGLH814wt5t6VCwpq/fsYz5+oV6IV4OYn2PPgAn
-	 fv3+Ey1E7u2WkT/SQL0uxiu065pQDQk0viXx9tFYyrgo8quEfA5xgasEuIKFLpRfW4
-	 9LtheyIuV7FSxZqP0wPnWpQNgWraqQlCpz1CQlD8dVJ3450cieekXQzAVhaDRThuU6
-	 /K81KqNxEY9a5Z6oTmwsp7EawXpN2CYk+7qgYfB/RCh2d6ibc/4AAJKcUkji02OGAJ
-	 P+ZrWGMhbtoHQ==
-Date: Fri, 14 Aug 2026 14:56:05 +0200
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Vincent Donnefort <vdonnefort@google.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
-	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>, 
-	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
-	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>, 
-	pavan.kondeti@oss.qualcomm.com
-Subject: Re: [PATCH v4 07/10] dma-buf: heaps: Add support for Tegra VPR
-Message-ID: <an8K2gb1pIqbDj6-@orome>
-References: <20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com>
- <20260807-tegra-vpr-v4-7-5510d16af89e@nvidia.com>
- <an4MEI7lkc2p3nKI@google.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DY+EDmmQ"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cbedda4c154so594311a12.1
+        for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 06:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786714785; x=1787319585; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=4kO0JaiBBnnltUiqSOwY9zKyhYcIekp3YnHUYrb9Wic=;
+        b=DY+EDmmQIMPWMZlDtMm37L0WTbtvkVfvAgsTw+apy4aHBtZ4CyY91st6+V/+EMakQZ
+         EaZzNyKP1acYiQ8XraXeKmbPYx6CRbmnZXSnIWSwhQHZo7M4Kchslj0eL1dJ+cxQATxF
+         3rMveN9X2AN8apHM2U6m2LhWRvVX3DUP+P42q7uFVxupgs0y0qNvGzsb6fQk9f62R1pM
+         61AY/TZT+mkGwihQoxa6FvjAws4sC2iLs9yig3Tugrb960OHBgU46nIAeqcW6gP2XzBc
+         v1lOdLVgYhbLv1TE19xh/D/2FMzloaeWu+QrrciHrjYnKmDQFND75xwxqwQ6OolhMzbn
+         oxcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786714785; x=1787319585;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4kO0JaiBBnnltUiqSOwY9zKyhYcIekp3YnHUYrb9Wic=;
+        b=SogOhAsyphPUBOztR5Lr8saANIbMzeJd13LLg104jS0QFc2fYC8ahY+r6O2tNMm+fn
+         RzXnGo10QLyz+gWx6CYXf+BPs1D+dlPnMPwOfeV8keIrH+mVGnb3H38aSMYSMzCOSGNe
+         dM4xsLURXLMnhn5TJut9pqwQ2tmQiV2bUs7UewYko1j/lkzpHsUPtEq47QbisLu4pKh/
+         2S+O5+5nmHUExMVvQcX9nJpumMBDtzWlX4Vz4VUrrswcbScZZNcwWQWswE7SROxw0rCD
+         yTenf641kI7gMSNXK9WtbM8EJM6/t9nkJkVWOd9JotUTib95AfZ+jypEliVAaKnLZy9S
+         NBsA==
+X-Gm-Message-State: AOJu0YzRN9Y3WASSELld8UII/amIjMz0Cw0MusI29CnTvXN+6YHR9K2i
+	G33glVM/TSNqdjO6Z+gYqrewtgZ0ybOEK7Tm2agp6pjw35qEqLPU6I0I
+X-Gm-Gg: AR+sD10GXQCef8aAQZjF/mp1ypZwQoKFsJNT91QC1P/AAlOZbgwdftJnCBg+Ccgv47B
+	A3u9d/GtrtKvWDHA8iS/U8otSbg+zGKaF5+J+rJICGedazCgyWxChvfdPrMTjvmeLetw5iT+6sM
+	qBY9Y0hBPbP9PT6t9av066P67ag6fIemNHALx1VzVUjtRumnAqqXgRj2h2serZYN61jNiwwELAs
+	XR+ag87lFqOSs3Wbbkuck2I/+ZX7ImJPK7XjtLsJUtSwjfdETkoP9TVNWA64fIoPqiS7iDCzhIS
+	D29SUr6T14tBvVwctNnqgmmyGNbbxC8ZVCGwGyHFiQ/dBTOd5P6tsu2LnpfL4nzlN1UpxpvwdwJ
+	Ua5Fa74+T/WeYvITdrNp7D4dGKh69AJevf+WOUMY2XSOLfyaaCusQgOk6u1vQTEvBcBHg+TafP8
+	6h54QfEOz3THIP6xpGRmlKlmjC3u1zuwq0Eykyg/BpGi6KCxknTBW/sEKqTKaDoAVpXPJM0bEI2
+	VgSOEGt
+X-Received: by 2002:a05:6a20:160e:b0:3b4:5ff3:45cb with SMTP id adf61e73a8af0-3cc719ff645mr7300940637.8.1786714785389;
+        Fri, 14 Aug 2026 06:39:45 -0700 (PDT)
+Received: from haichao.tail057a43.ts.net ([2001:da8:e000:1206:e9af:7c0e:be31:2c3f])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cc095a4c7a4sm591739a12.31.2026.08.14.06.39.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Aug 2026 06:39:45 -0700 (PDT)
+From: Ruoyu Wang <ruoyuw560@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Wei Huang <wei.huang2@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Ruoyu Wang <ruoyuw560@gmail.com>
+Subject: [PATCH] iommu/amd: Fix PCI device reference leak in PPR handling
+Date: Fri, 14 Aug 2026 21:39:38 +0800
+Message-ID: <20260814133938.1385879-1-ruoyuw560@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="wsqkte2vdducxgiq"
-Content-Disposition: inline
-In-Reply-To: <an4MEI7lkc2p3nKI@google.com>
+Content-Transfer-Encoding: 8bit
 
+pci_get_domain_bus_and_slot() takes a reference on the returned PCI
+device. iommu_call_iopf_notifier() fails to release it after either
+reporting a valid PPR fault or completing a rejected request. Each
+handled request therefore leaks a reference and can prevent the PCI
+device from being released.
 
---wsqkte2vdducxgiq
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4 07/10] dma-buf: heaps: Add support for Tegra VPR
-MIME-Version: 1.0
+Call pci_dev_put() after the final use of the lookup reference on both
+paths.
 
-On Thu, Aug 13, 2026 at 07:25:20PM +0100, Vincent Donnefort wrote:
-> On Fri, Aug 07, 2026 at 05:54:27PM +0200, Thierry Reding wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> >=20
-> > NVIDIA Tegra SoCs commonly define a Video-Protection-Region, which is a
-> > region of memory dedicated to content-protected video decode and
-> > playback. This memory cannot be accessed by the CPU and only certain
-> > hardware devices have access to it.
-> >=20
-> > Expose the VPR as a DMA heap so that applications and drivers can
-> > allocate buffers from this region for use-cases that require this kind
-> > of protected memory.
-> >=20
-> > VPR has a few very critical peculiarities. First, it must be a single
-> > contiguous region of memory (there is a single pair of registers that
-> > set the base address and size of the region), which is configured by
-> > calling back into the secure monitor. The memory region also needs to
-> > quite large for some use-cases because it needs to fit multiple video
-> > frames (8K video should be supported), so VPR sizes of ~2 GiB are
-> > expected. However, some devices cannot afford to reserve this amount
-> > of memory for a particular use-case, and therefore the VPR must be
-> > resizable.
-> >=20
-> > Unfortunately, resizing the VPR is slightly tricky because the GPU found
-> > on Tegra SoCs must be in reset during the VPR resize operation. This is
-> > currently implemented by freezing all userspace processes and calling
-> > invoking the GPU's freeze() implementation, resizing and the thawing the
-> > GPU and userspace processes. This is quite heavy-handed, so eventually
-> > it might be better to implement thawing/freezing in the GPU driver in
-> > such a way that they block accesses to the GPU so that the VPR resize
-> > operation can happen without suspending all userspace.
-> >=20
-> > In order to balance the memory usage versus the amount of resizing that
-> > needs to happen, the VPR is divided into multiple chunks. Each chunk is
-> > implemented as a CMA area that is completely allocated on first use to
-> > guarantee the contiguity of the VPR. Once all buffers from a chunk have
-> > been freed, the CMA area is deallocated and the memory returned to the
-> > system.
->=20
-> Hi,
->=20
-> I believe we (the Android team) are trying to solve similar issue to your=
-s: Arm
-> CPUs can still speculatively read memory after it has been transitioned t=
-o the
-> Secure state, as long as they retain a cacheable mapping to it.
->=20
-> As modifying the direct mapping is difficult, the workaround ended up in =
-the
-> hypervisor which unmaps the pages from the host stage-2 on intercepted FF=
--A Lend
-> invocations.
->=20
-> If convenient, this is nonetheless the wrong place to do it. Scattering t=
-he host
-> stage-2 is really terrible for performance and we would like to move it w=
-here it
-> should be, directly into the kernel...
->=20
-> This is what I thought was the attempt in v3, but I am now a bit confused
-> because I see you are using set_direct_map_invalid_noflush()
-> set_direct_map_default_noflush(), but I am not sure that works if rodata=
-=3Dfull is
-> not set? So does the memory for the NVIDIA IP still need to be unmapped?
+This issue was found by a static analysis checker and confirmed by
+manual source review.
 
-Yeah, this currently relies on the circumstances being such that
-can_set_direct_map() returns true, and in the case where we want to use
-the resizable VPR functionality, we're going to have page-granular
-mappings anyway.
+Fixes: 978d626b8f1a ("iommu/amd: Add IO page fault notifier handler")
+Signed-off-by: Ruoyu Wang <ruoyuw560@gmail.com>
+---
+ drivers/iommu/amd/ppr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> If so, how about having an option where the CMA allocation is backed by a=
- direct
-> map with the same page granularity, or at least a smaller and aligned gra=
-nule?
->=20
-> With that, we know that for whatever CMA allocation we do, we can safely =
-unmap
-> from the direct map without risking splitting blocks. On CMA free, we can=
- safely
-> remap into the direct map as I do not believe we coalesce yet.
+diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
+index 1f8d2823bea42..1e4392b17bd8f 100644
+--- a/drivers/iommu/amd/ppr.c
++++ b/drivers/iommu/amd/ppr.c
+@@ -151,6 +151,7 @@ static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
+ 
+ 	/* Submit event */
+ 	iommu_report_device_fault(&pdev->dev, &event);
++	pci_dev_put(pdev);
+ 
+ 	return;
+ 
+@@ -159,6 +160,7 @@ static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
+ 	amd_iommu_complete_ppr(&pdev->dev, PPR_PASID(raw[0]),
+ 			       IOMMU_PAGE_RESP_FAILURE,
+ 			       PPR_TAG(raw[0]) & 0x1FF);
++	pci_dev_put(pdev);
+ }
+ 
+ void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
+-- 
+2.51.0
 
-This sounds intriguing. For VPR we could possibly make the size a
-multiple of the memblock size (or whatever might be appropriate). If we
-can create a page-granular linear mapping specifically for that region,
-that'd be ideal. I don't know if the linear mapping can be subdivided in
-this fashion, though.
-
-> (This alignment is not necessary for upcoming systems with BBML3)
->=20
-> However, to implement this, we'd need to split memblocks and I believe th=
-e only
-> way at the moment is temporarily mark it as "nomap" which didn't seem very
-> popular in the comments on v3.
-
-Could this be simplified if this type of allocation is always memblock
-aligned?
-
-Looking at map_mem(), it seems like we could add some sort of special-
-casing in the for_each_mem_range() block to check if the memory is VPR
-(or generic, page-granular carveout, or whatever we want to call it) and
-set NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS in that case.
-
-If that works, set_direct_map_*() could be enhanced to detect such cases
-and always work. Or perhaps a more specific API could be introduced.
-
-Thierry
-
---wsqkte2vdducxgiq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmp/EGIACgkQ3SOs138+
-s6FIfA/7BDMg2roMkVSyRLt06etjxYFBWHpNzxj/SvOzYROjoeOaUOJR15Xodk18
-HI650LP1luxhtmIKPHRjGxZK30ROvHB6QTsl0lYM0cQZ4tVrv5WTMcL9uCui0WzA
-LkF9SVH4YiJdbE4tCnWc9eJSxxedpCsS8d5cHLfDyI2cKvjAxgTxll8INqCMafAU
-wehMyhd65emp5OYmvSuftsNzYf/uM0Oke8Rf64zZjOyZzpBi7AZG2CdROlrN/v1V
-xODXrjdPaZvdq6HkzFVW0GYsouBaWb2rqzw/IsgO5RbT6vg/oOwo+4z50ZDefimA
-x2mLXvg+gzqjY20hfJ82Bar0sCQ8nNlO6rLPpxwXMn9ICDpFV5aaiGvbaZ9ibDxR
-yScvx4k0i/k6NPFoyuKJFSqNn9s4WGqU6p0j+un2K97HMEPtJ3onKs3Pjj63E38i
-EkVAJZkrbt+PNYGiILRWWnU7dTqd5/CreBR7F0zFvVz0+JYjgfmlWcTdLKPAazag
-PpRU7SZKUfHRd+LnsS54706H2dOP1rq5NXx+AGSdRJcwgw30XbIhZ3CmqYBVjbdN
-Nh/5Y19dBDV5UhRx4o3Cqcb1BV/cuu2w0TpGyxoyIUUTFxgDp59uBi2Qi6nY/8kY
-KdeMys4RVWucUUwpbtpKJamulwDRGtlLjyLEIqVeYZY/FOBiaKU=
-=ERUC
------END PGP SIGNATURE-----
-
---wsqkte2vdducxgiq--
