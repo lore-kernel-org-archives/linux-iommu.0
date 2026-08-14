@@ -1,157 +1,248 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010054.outbound.protection.outlook.com [40.93.198.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A05333CB570
-	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 10:41:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786704072; cv=fail; b=tURTwpy9kZbbpnMlQovfZMWPMIewuvroQwtY+mclNfa19LlldqJKpScvwwEMchhQ3W171G5gjhVI+K7+86qFYPnLzw07o23bYm0B2Hx5+gNUqxQlXt22UtGVwoU16CQKrBwm0HPRLZosHDS39JNwLd23mc6RwfVLXcOT+ld3D7w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786704072; c=relaxed/simple;
-	bh=DXCDdDHIKE0YN/xSz6MAa8v3aajTeGfg0aiJ0u+folM=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=E3tn6M0DOpgTgAMW+yNHFhZPxWONpJ727XdwDQBgRdqj1a7/HXOyaVZAfeDjg+WmHvVGYZ7cmAqXMYp9MBdw0ZgY8gCde920rnxhLZe1AwFV5ae8f4yri8bo5H3PpISfZogx2a8PpKlHzGWgv957/0Qlq89pHrZ8AgsijMCf2Sk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=MAEF2Gow; arc=fail smtp.client-ip=40.93.198.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4CC3746AA92
+	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 12:07:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786709257; cv=none; b=XPO8ApdEh3oT5NXavKeR+ii346YL4agEobSPzCtJ9HeDEOuiWA+Aa3wztMHsINFoFmkIyMom4dNUZPo6x30qc09g5aBZeZy7fzWqOa8UamLXqFqP7/foUVX3DoWHv3vIsyVvSzAIdKL8mLdmRbojtvnUPITH29YXFt7ytrQMJ9o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786709257; c=relaxed/simple;
+	bh=B0yG6yh7f0/AQOL6k/GXCi8xwl/S8YVnFP4bkYgGJ90=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sqJ0SE49PNiyeAtx7eV9TjMLUcEILKPUF3j9WiFwInDEhoVMnJPcgUrrA3N/XaVd+rAd1FhpHrUkb7a0W8HJdTR6beKPfyJuSttHC2sagFInFV9Ml0i6LI6OF5nLfLIF59wbc0MaPLiRZpsLdZGqJ30LUWzJfJBH2Q5EIDngURo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TqBc8bEI; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="MAEF2Gow"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dQ2tYJ/qOFK+gesU7vX3CZjDmFYbZmGkOKujVmVgnmsYPwGKhbBQsiRZ8p6BSRmL+sSNunOMj+tmb5s+haF4/6UNuHhiOQY9saagkM30CB/PlzoMtx8NaJzvCOM7OaOyMyr3LOTayHF9Zm3Qk9EWIIsOHl4qwPUz3Ezn3krgrRs+zfFTqQlYSaIwop+gxcZ8NPlkD94q9Ru1tBgHO+bSPxLbR1tCujcV1MEk8JIfnFX05sEetSn1FlgLVn4ufdbb1hsN0zy6462zTq9pQqvMampMr6PCWdc8qaRz5sEcJrwya++uL7R838cqc3OJxIrHUHfsmPeFfXnv96TZjR0iuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hhqteE7gpJ0Qunj8A+jg4BEcbbSxORZZtAodwKOXSl8=;
- b=qxeXGR70YR5+RFw9mKhOyi02LpQvZVOTgcWWL/GFxvkNdvQnmD8AyK98nKWnfTz3OfnHRT0Ke2jWYp/7EPlv/9YZl7CHVN+lzY+jTUOz+6P979jSzQTpEtewxqtuC3GeLNRgnFKD8Nod4/CsjS1qWnJ+h9913ncewugE9dzk7zsbmwFfRodpb3gB3R3oB/HUKmpiU1KYzUMnckJcUP71ZPDGRQ0hSaJKBCeW/XgsMA9Leq85iP/QkilnwaEP8lUhQT6UmK41EwJV0+jFTMt9fs2cSIm5nSfiUxeDt+wRTAtXbIgM9jmp7pKDy/M2uR/g6tDgwX83nwLU4nncgIlC2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hhqteE7gpJ0Qunj8A+jg4BEcbbSxORZZtAodwKOXSl8=;
- b=MAEF2Gow2HJKUHTcFhjP3W3xkKVA7DyjDR8S6rMpCvWcEOZSmMOFJIYp+kdLZ2g9oa1PAcgwkQ2JVaEMSSMMpxcbr48IIQ4VKCDY1lKCs+6fS2t5s6Dtk6hTSM1wyFX26phC+qpZpVxsfpVL0oGGQesOtUfCr1HsI+BzDSrbwUY=
-Received: from DM6PR06CA0089.namprd06.prod.outlook.com (2603:10b6:5:336::22)
- by LV8PR12MB9207.namprd12.prod.outlook.com (2603:10b6:408:187::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.16; Fri, 14 Aug
- 2026 10:41:00 +0000
-Received: from CY4PEPF0000FCC5.namprd03.prod.outlook.com
- (2603:10b6:5:336:cafe::66) by DM6PR06CA0089.outlook.office365.com
- (2603:10b6:5:336::22) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.315.16 via Frontend Transport; Fri,
- 14 Aug 2026 10:41:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CY4PEPF0000FCC5.mail.protection.outlook.com (10.167.242.107) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.339.3 via Frontend Transport; Fri, 14 Aug 2026 10:41:00 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Fri, 14 Aug
- 2026 05:40:57 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Max
- Zhen" <max.zhen@amd.com>, Liang Wendy <Wendy.Liang@amd.com>
-Subject: [PATCH] iommu/amd: Remove iommu_group_mutex_assert() from amd_iommu_clear_gcr3()
-Date: Fri, 14 Aug 2026 10:40:29 +0000
-Message-ID: <20260814104029.71021-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TqBc8bEI"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6AF6A20B7168;
+	Fri, 14 Aug 2026 05:07:08 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6AF6A20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786709228;
+	bh=1tXkiNi9emUJSms0+jEWDbzQtflkc93S/WX9UGPJMf8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TqBc8bEIxgtVCYk3yuvuiT1IQcMPS3BxbvwqYSAPIZPdIJdUzBf27ZxG/SLb6Uy+U
+	 928Psg4bQ3g46lHu7DoM5yh8DKOnfahfoSZvsXeucAjYpL67zFsBNsBHlJ7voDgVzW
+	 7ibFSVXo9A4bXvjnQIR6USd5Baf7eE19TxY7FFEE=
+Date: Fri, 14 Aug 2026 20:07:32 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
+	x86@kernel.org, wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, 
+	decui@microsoft.com, longli@microsoft.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org, 
+	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de, jgg@ziepe.ca, 
+	mhklinux@outlook.com, tgopinath@linux.microsoft.com, 
+	easwar.hariharan@linux.microsoft.com, mrathor@linux.microsoft.com, baolu.lu@linux.intel.com, 
+	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v3 5/5] iommu/hyperv: Add page-selective IOTLB flush
+ support
+Message-ID: <ocsfhdlxqoavboz3hv62377g4sfjxu462lusc6fjyc5nrbzb3c@otc5irbfrzin>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-6-zhangyu1@linux.microsoft.com>
+ <20260813160713.00004f95@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCC5:EE_|LV8PR12MB9207:EE_
-X-MS-Office365-Filtering-Correlation-Id: 070042a7-6bad-4cd9-3f9b-08def9f0880b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|23010399003|82310400026|376014|56012099006|10067099003|6133799003|5023799004|11063799006|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	zpkfaMrCodAIVv7E48m8pyQFaMevFfkN+4kBvqB75qo6EKdsLFKm1xJ+B9raCO64fQQxGNx3BAQmjEbJCguqyt42Qv2p60wUYAAakQP8YVo21j7MG46BaY/g2HR08aAA2Kyi9AeKpa7dob9vBdlb/RK+PiQ02Qh7VCunz4YE99sHkIsMzCTnftbzcs/8pP/ugybzHksM3KIT+8e/HejjBHO9SCRYsKdw/oMKqpIkPIVp0X+2N4voPE6/5Vji7/xzSvuW22NzhYxXRU8O2pxnf/KcJVqtt90hBeI6C6JAV8ZF2CXswl/JcxpzuDs4mxXv8q8snhw3dvDJdcwg0IrKrlpFoHjKhuaKI3kQnI7o5CQDd2R4CJiU9Sjd0hfXbpeezUmLZ7CGSKl3KMC91zX8VuYq2p65W1gi9ozG8Kw9ijV4I5x8HQ8vSbQ5qQIppuMjNnL6E28fjDKwwiYABQsXInFyLGdS94bsY9UU+DaTVbtgcUnZr5I3jv7PXevpJN2hMxBBetL1LRawK6XLHmhpeyHHTGDQvdat551rlko8o4S8QAwWl0AYLe3sVjXeYN0yVhcI90CtwOOuk+4cqeeeEJGVHAf4B0VANQeutFdEyV0sCsQNY8O9Qt7WTVEWAzJac/BenrmkXM5x/8uH3pPu4YXoyBrwjFoU/r6S30PjSdHLRsnENRaQMCLhpQc9mYDGVUKQLM5qhWLbtr6wl3sEkA==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(23010399003)(82310400026)(376014)(56012099006)(10067099003)(6133799003)(5023799004)(11063799006)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	hsVGTouaxiNknFm6l/V37EoJ+glQ+4YCx4f2DYrGYmpyAW/d+Ow6vONbehXVyyxbd2orDQqrjfsL2XTXDdVdnx7KovgwgjDOz9ZCkt8944ebcUaLtxh67AP/OwplIrxgpW9gDXKZx2eFV2CWHuQQwM/DlJolFZOpclvmGmcNJDX360G1zbxeAQx/QmLfodDGrPuEK1MSKvETaXC9jjhE6PELsPRSTubt6q9TULlkx+cnIlaE5cL+kKKtOF3yt8/jUMcnRfcpTwmDbprF9Mi8cMDMnNF0bPnrvQlGIkmt3fw5f+jJ1Q6I6Q0W2jznxqRR5sAg2KIgusVN5QMXC8k8xlMaiMpvg5i+54uCdoqeLwQMrfghMBfxq/TzY35BbIGpB3cyEZYse86C4Kk1Ydea/0YfYVdsZ4wuPAAOzHTM87/s4Q8P2J++G+zG7h2qO65v
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2026 10:41:00.2372
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 070042a7-6bad-4cd9-3f9b-08def9f0880b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCC5.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9207
+In-Reply-To: <20260813160713.00004f95@linux.microsoft.com>
 
-amd_iommu_clear_gcr3() is called from sva_mn_release() during the
-mmu_notifier release path to detach a PASIDs when a process exits.
-This path does not hold the iommu group mutex, since it is invoked
-asynchronously from mm teardown context rather than through the normal
-IOMMU group/attach APIs.
+On Thu, Aug 13, 2026 at 04:07:13PM -0700, Jacob Pan wrote:
+> Hi Yu,
+> 
+> On Tue, 11 Aug 2026 23:50:21 +0800
+> Yu Zhang <zhangyu1@linux.microsoft.com> wrote:
+> 
+> > Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
+> > This hypercall accepts a list of (page_number, page_mask_shift)
+> > entries, enabling finer-grained IOTLB invalidation compared to the
+> > domain-wide HVCALL_FLUSH_DEVICE_DOMAIN used by
+> > hv_iommu_flush_iotlb_all().
+> > 
+> > hv_iommu_calc_flush_range() computes the smallest power-of-two aligned
+> > range that covers the target IOVA region, producing a single flush
+> > descriptor. This may over-flush when the range is not naturally
+> > aligned, matching the approach used by Intel VT-d PSI. If the
+> > page-selective flush fails, the code falls back to a full domain
+> > flush.
+> > 
+> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> > ---
+> >  drivers/iommu/hyperv/hv-iommu-guest.c | 73
+> > ++++++++++++++++++++++++++- include/hyperv/hvgdk_mini.h           |
+> > 1 + include/hyperv/hvhdk_mini.h           | 17 +++++++
+> >  3 files changed, 90 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/hyperv/hv-iommu-guest.c
+> > b/drivers/iommu/hyperv/hv-iommu-guest.c index
+> > 2a00353ce733..060c2efd6bf0 100644 ---
+> > a/drivers/iommu/hyperv/hv-iommu-guest.c +++
+> > b/drivers/iommu/hyperv/hv-iommu-guest.c @@ -9,6 +9,7 @@
+> >  #define pr_fmt(fmt) "Hyper-V pvIOMMU: " fmt
+> >  #define dev_fmt(fmt) pr_fmt(fmt)
+> >  
+> > +#include <linux/hyperv.h>
+> why need this?
+> 
 
-As a result, the iommu_group_mutex_assert() check in
-amd_iommu_clear_gcr3() logs a kernel warning.
+It's not needed. Thanks!
 
-[62863.761300] ------------[ cut here ]------------
-[62863.761320] WARNING: drivers/iommu/iommu.c:1361 at iommu_group_mutex_assert+0x3a/0x50, CPU#14: kworker/14:2/621
-...
-[62863.761706]  <TASK>
-[62863.761712]  amd_iommu_clear_gcr3+0x1e/0x50
-[62863.761724]  sva_mn_release+0x68/0xd0
-[62863.761739]  __mmu_notifier_release+0xb9/0x2d0
-[62863.761763]  exit_mmap+0x427/0x460
-[62863.761836]  __mmput+0x41/0x120
-[62863.761844]  mmput_async_fn+0x15/0x20
-[62863.761852]  process_one_work+0x22e/0x780
-[62863.761876]  worker_thread+0x1b5/0x380
-[62863.761892]  kthread+0x10d/0x150
-[62863.761913]  ret_from_fork+0x346/0x3c0
-[62863.761930]  ret_from_fork_asm+0x1a/0x30
-[62863.761964]  </TASK>
+> >  #include <linux/iommu.h>
+> >  #include <linux/pci.h>
+> >  #include <linux/dma-map-ops.h>
+> > @@ -408,10 +409,79 @@ static void hv_iommu_flush_iotlb_all(struct
+> > iommu_domain *domain)
+> > hv_flush_device_domain(to_hv_iommu_domain(domain)); }
+> >  
+> > +/*
+> > + * Calculate the minimal power-of-two aligned range that covers
+> > [start, end]
+> > + * (end is inclusive). Returns a single (page_number,
+> > page_mask_shift)
+> > + * descriptor that may over-flush when the range is not naturally
+> > aligned.
+> > + */
+> > +static void
+> > +hv_iommu_calc_flush_range(unsigned long start, unsigned long end,
+> > +			  union hv_iommu_flush_va *va)
+> > +{
+> > +	unsigned int sz_lg2;
+> > +
+> > +	sz_lg2 = fls_long(start ^ end);
+> > +	if (sz_lg2 < HV_HYP_PAGE_SHIFT)
+> > +		sz_lg2 = HV_HYP_PAGE_SHIFT;
+> > +
+> > +	/*
+> > +	 * A valid IOVA range shall not span bit 63. Use the maximum
+> > mask
+> > +	 * so the host can safely perform a full flush.
+> > +	 */
+> > +	if (WARN_ON_ONCE(sz_lg2 >= BITS_PER_LONG)) {
+> > +		va->as_uint64 = 0;
+> > +		va->page_mask_shift =
+> > +			BITS_PER_LONG - HV_HYP_PAGE_SHIFT;
+> > +		return;
+> > +	}
+> > +
+> > +	va->page_number =
+> > +		(start & GENMASK(BITS_PER_LONG - 1, sz_lg2)) >>
+> > +		HV_HYP_PAGE_SHIFT;
+> > +	va->page_mask_shift = sz_lg2 - HV_HYP_PAGE_SHIFT;
+> > +}
+> > +
+> > +static void hv_flush_device_domain_list(struct hv_iommu_domain
+> > *hv_domain,
+> > +					struct iommu_iotlb_gather
+> > *iotlb_gather) +{
+> > +	u64 status;
+> > +	unsigned long flags;
+> > +	struct hv_input_flush_device_domain_list *input;
+> > +
+> > +	local_irq_save(flags);
+> > +
+> > +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> > +	/* Clear the fixed header and the single range entry. */
+> > +	memset(input, 0, struct_size(input, iova_list, 1));
+> > +
+> > +	input->device_domain = hv_domain->device_domain;
+> > +	input->flags |= HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
+> > +	hv_iommu_calc_flush_range(iotlb_gather->start,
+> > iotlb_gather->end,
+> > +				  &input->iova_list[0]);
+> > +
+> > +	status = hv_do_rep_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
+> > +				     1, 0, input, NULL);
+> > +
+> > +	if (WARN_ON_ONCE(!hv_result_success(status))) {
+> > +		/* Page-selective flush failed, fall back to full
+> > flush. */
+> > +		struct hv_input_flush_device_domain *flush_all =
+> > (void *)input; +
+> > +		memset(flush_all, 0, sizeof(*flush_all));
+> > +		flush_all->device_domain = hv_domain->device_domain;
+> > +		status = hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
+> > +					 flush_all, NULL);
+> > +		WARN(!hv_result_success(status),
+> > +		     "HVCALL_FLUSH_DEVICE_DOMAIN fallback also
+> > failed: %lld\n",
+> > +		     status);
+> > +	}
+> > +
+> > +	local_irq_restore(flags);
+> > +}
+> > +
+> >  static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
+> >  				struct iommu_iotlb_gather
+> > *iotlb_gather) {
+> > -	hv_flush_device_domain(to_hv_iommu_domain(domain));
+> > +	hv_flush_device_domain_list(to_hv_iommu_domain(domain),
+> > iotlb_gather); 
+> >  	iommu_put_pages_list(&iotlb_gather->freelist);
+> Maybe add a comment explaining that HVCALL_FLUSH_DEVICE_DOMAIN_LIST
+> covers non-leaf/walk caches, therefore it is safe to put freelist.
+> 
 
-Remove the iommu_group_mutex_assert() call from
-amd_iommu_clear_gcr3(), since PASID teardown via the mmu_notifier
-release path is a legitimate caller that does not and need not hold
-the group mutex.
+Yes, the hypercall also invalidates the non-leaf page-walk caches,                                                                               ┃
+Will document that.
 
-Fixes: 1af95763e0a3 ("iommu/amd: Initial SVA support for AMD IOMMU")
-Reported-by: Max Zhen <max.zhen@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Tested-by: Liang Wendy <Wendy.Liang@amd.com>
----
- drivers/iommu/amd/iommu.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 29dc18d3d22e..1fe99fb98793 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2063,8 +2063,6 @@ int amd_iommu_clear_gcr3(struct iommu_dev_data *dev_data, ioasid_t pasid)
- 	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
- 	int ret;
- 
--	iommu_group_mutex_assert(dev_data->dev);
--
- 	ret = update_gcr3(dev_data, pasid, 0, false);
- 	if (ret)
- 		return ret;
--- 
-2.31.1
-
+B.R.
+Yu
+> >  }
+> > @@ -464,6 +534,7 @@ static struct iommu_domain
+> > *hv_iommu_domain_alloc_paging(struct device *dev) 
+> >  	cfg.common.hw_max_vasz_lg2 = hv_iommu_device->max_iova_width;
+> >  	cfg.common.hw_max_oasz_lg2 = 52;
+> > +	cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE);
+> >  	/*
+> >  	 * Hyper-V S1 domains use a 4-level root for IOVA widths up
+> > to
+> >  	 * 48 bits. A 5-level root is used only for wider apertures
+> > when diff --git a/include/hyperv/hvgdk_mini.h
+> > b/include/hyperv/hvgdk_mini.h index 5bdbb44da112..eaaf87171478 100644
+> > --- a/include/hyperv/hvgdk_mini.h
+> > +++ b/include/hyperv/hvgdk_mini.h
+> > @@ -496,6 +496,7 @@ union hv_vp_assist_msr_contents {	 /*
+> > HV_REGISTER_VP_ASSIST_PAGE */ #define
+> > HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9 #define
+> > HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce #define
+> > HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0 +#define
+> > HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1 #define
+> > HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7 #define
+> > HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8 #define
+> > HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db diff
+> > --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+> > index 1e3eac99886a..25671ee7056d 100644 ---
+> > a/include/hyperv/hvhdk_mini.h +++ b/include/hyperv/hvhdk_mini.h
+> > @@ -674,4 +674,21 @@ struct hv_input_flush_device_domain {
+> >  	u32 reserved;
+> >  } __packed;
+> >  
+> > +union hv_iommu_flush_va {
+> > +	u64 as_uint64;
+> > +	struct {
+> > +		u64 page_mask_shift : 6;
+> > +		u64 reserved : 6;
+> > +		u64 page_number : 52;
+> > +	};
+> > +} __packed;
+> > +
+> > +struct hv_input_flush_device_domain_list {
+> > +	struct hv_input_device_domain device_domain;
+> > +#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT BIT(0)
+> > +	u32 flags;
+> > +	u32 reserved;
+> > +	union hv_iommu_flush_va iova_list[];
+> > +} __packed;
+> > +
+> >  #endif /* _HV_HVHDK_MINI_H */
+> 
+> Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> 
