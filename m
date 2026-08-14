@@ -1,165 +1,128 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012023.outbound.protection.outlook.com [52.101.43.23])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F88246C855;
-	Fri, 14 Aug 2026 12:34:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786710865; cv=fail; b=idmzD6xzeKuqAFBQg/7R5zOa37st/V2YTCWJTEFXhL13lpeL/hC5W60QlTyTA9yv1Be0QI+H2sz0/Qkcj5Kk2BEZLRheqPX9Pywf/tIPRgay9QfWMORtT9HAHU3GqHfFscxIs8S2A1yztjL2XYK8FuqPEvoQaPgbu67PaIJRTAg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786710865; c=relaxed/simple;
-	bh=eOzQLRDABbRPGWO2eocrF9OWTRr6R60qndEcllnvbJY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=kZezan+AiqC7Gr4BwYo32KOnyF5Alk6WNBBBctSUMZ4tH7/6UKpFYrfPCMYUc6n+NTnxN5NHiAFtj7WQarrtPD724asiZuz27kzpwSgSJsBM4BdFnf2aJB3yJzQ/ugVQKeuywtgkqXZIL1JrTruNgh3cMMz0hsiKnnF0NHYYH5s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=j8DxAdhF; arc=fail smtp.client-ip=52.101.43.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2568246F4B5
+	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 12:49:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786711759; cv=none; b=Ku6BbKutCLLAmeBsXTjslj7AkK+R1qYROXC3hKVzlQsgTLXG+W2epMsRGcwH7X22dsOD7bZyZQrGDv6PC+r/EQ9QI0kRpIV8D8vcOG0+e+H7xGEfe1DMJlwf3kZJO6m0w/sUe3ULA+x65OxnVDgG7Xts0ey0IbTXmzt3wcsXPOc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786711759; c=relaxed/simple;
+	bh=fPiEbO5kU2O5bPbZIpxLV2Wsexd1odbAaPn3JJ+ob8c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DYmZCrGBugi2ylPMpS3t0XtxKRPWCqDz7ZAIMFI9xQdSJAluUzJnjqfBQtqrZSJABI3Pfj8niK+kWKAkY5MMQdK4C/RHf+6I235qEUtMkt/lkJ2rpmk1deblxl1/6VO3bCztB3RvTB/zuIxKVq/Dtx+zHFQiTXkGTuDUKjVF2Ko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=fcAp3o7+; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="j8DxAdhF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IzKxpD1A2om4l8IqsFFD3X5xBae/BMBi/rdbP1HJA7Bb99BxisNSQhZQDFwGkWC8Sy9VPspmprL6+yJxND9SsX+UmyIC6kvumkYEL1V+BKpHoBe+9ITClAyTqMw/3yGBQ1U6VxOkR9A4kydtiRZiOKJ8omZ4rpJAF4qeMzI0ar2As7irJhDre53NIexrlpJnfMbjl9e0FuAZsUOjV4dSvF84Rohue0bt97QL/dguLq04YUukzywy9RR5oE8XDOKvzMgdH0BoR1vOsVigFnijC0OtQcl2PoPZj7ibpcJzRn5c5vskWUh8uFHD7NoQd1ZsFwDBaXcCAeoB6B/CJ25Wsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xSjKu0tZim2N+2GIaQI772fd6wGj2gCouyn9Jr5PcCU=;
- b=FwbFdNRlAYJ7h9Fg002pyFpKKTFeHY6keARzt0iW0Xf2TFHmYftff2H+EFcZX3tsk3gOzHE/yOMzhrfU3T6nfbYr3sBaQNVTPG9GzAEYJxCMxISpHrqNnCdN9AVdV6EDaIr7xnJMJ0fsbW7sBLgavDYBlX2KnW3SNTJKL/imTFxZwvnJcENbmknotYvLp/f2a76pC3J7dMAH7DUGzSXR7pIfsUvwN4Fa9INOtCCMl8h4KoVQqaC5logzU9bLfMI9rq+NRjFTH283tlXK84ecjFjiyJut7TS4RopUCXQpE/Kr9qJudDWlsCLAUHnj4fSln9NmI7na9EObpK39Sg+AEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xSjKu0tZim2N+2GIaQI772fd6wGj2gCouyn9Jr5PcCU=;
- b=j8DxAdhFr2pgciIkZHmj25T7ZJ3Oh/7yH+n/WwkaMOg8WTzoFPg5lN51f5006rlrFyECHSiKf3E6bNoEjyYl+XPl6Yacx1dyhGgPz8KpFuetaGNQxuqL9XN0pB052rxNh4zLtgQHg7ENjAsZKVZlMFkiePsb0wx1kdDh7J56JRCVN1IfrEMQDHMTcO7RjD9c7NaCIrKxjJ1YhiChoYcp6x/E6eS07bOljkCKtICvY5mp/6KUu44ynMs3iO72iD4JXwmt4EroL1QQHLeqlz2FHxOeUisIK7TQgPU/zu4DGMPwEhDilD83MN8ztvOzxmqD9AVhHEDp11P0mZ0+N64IhQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by PH7PR12MB7115.namprd12.prod.outlook.com (2603:10b6:510:1ee::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.13; Fri, 14 Aug
- 2026 12:34:19 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0315.014; Fri, 14 Aug 2026
- 12:34:18 +0000
-Date: Fri, 14 Aug 2026 09:34:17 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
- for latency
-Message-ID: <20260814123417.GB510472@nvidia.com>
-References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
- <akzm5BoV0rToJ7ij@google.com>
- <20260708001058.GA422027@nvidia.com>
- <an3MSKEj7VhT4WkP@google.com>
- <20260813141320.GF730363@nvidia.com>
- <an3ew9xbnLe1dr5g@google.com>
- <1791d7da-ecd9-4475-8f27-c8857477b442@arm.com>
- <20260813180102.GH730363@nvidia.com>
- <an7UNAA1WlEXG23-@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <an7UNAA1WlEXG23-@willie-the-truck>
-X-ClientProxiedBy: MN0PR03CA0024.namprd03.prod.outlook.com
- (2603:10b6:208:52f::32) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="fcAp3o7+"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0088320B7168;
+	Fri, 14 Aug 2026 05:48:48 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0088320B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786711729;
+	bh=dJRW35gKakc9hml2+rRPkM7itMC10paLwoSLq8jsAKE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fcAp3o7+a7fMcM0WX+oqCIBlsTVP5aaKEoFdZf2kCGKPX6QEoPbB1R82qJAVPbJY4
+	 0mBSalspmJwONMEL6n/MJ0nGK6u+Mk2BIM5bh/S1tGnn48PJcyLGTH/IVV0U/lJI7b
+	 t8PbnYe7mZLEsWrMHgARqImX4RV0E32VVx5n2kOM=
+Date: Fri, 14 Aug 2026 20:49:12 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
+	x86@kernel.org, wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, 
+	decui@microsoft.com, longli@microsoft.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org, 
+	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de, jgg@ziepe.ca, 
+	mhklinux@outlook.com, jacob.pan@linux.microsoft.com, tgopinath@linux.microsoft.com, 
+	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com, 
+	vasant.hegde@amd.com
+Subject: Re: [PATCH v3 4/5] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <x6tm2k4b4fagvnpqwvwwwc5u76md7xrnann5okduauieuimj52@svvj6petg2n2>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-5-zhangyu1@linux.microsoft.com>
+ <8b539b15-7373-474d-9afd-1135f0245a75@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB7115:EE_
-X-MS-Office365-Filtering-Correlation-Id: 113d4640-44f9-49ed-4253-08defa005c11
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|23010399003|56012099006|22082099003|18002099003|4143699003|10067099003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	fuSzhryuyh45v/Ti+6xx+7SP3c5fLxwWySHLIHY7ykp413hm4Gv5hJ5yq/zMPtO5Ol0lVMrhf+Fc8O37avlea33LeOxLO4UAAMfyfPFTKXRojYJEhS2wLQxMAg2dR5/SMaKjB6U28hZO6N6iao4qh+GRss+jFYgDlVCiJr1kTKoI04V73YFhfIHAN3Ccej4MJhTdaFTU1Yte/nSQ6PkN/IgiocMmXXsQSbGdhEfpI6Jz2J2NaQYMfruMqb3kPIMEmGazla8xEygrRjy2ICboV8xt/f8nkr6tUMdqnE0ewGRQBgF5T8xdWQCAre5dJU2qF38ysqz2/lAW9SZdzPFEg3ypk1Nqu4XTsNYaBh2sGCPVieXzI1ZGCgCMMODQeiIF7eVt6NVXrGK14qxEbWA9zzPrRIC6z87P+SkNHb5UvQE/alaKmBy+Pz2ZgqNGqUngiQTiE168aVKwuB4h1KLPc2qhgK3qt68Q3JTpLK98vACUM6qafbvxR1Vmc7eV6YCiQW4GnhvMh0hjZm0JrKPLHF/C90u4vFe7pqo8fLftnYwWngEh0b3/EuvvfroxfaHoJ2Taa97nJfOaz7CSo7A4XUwtYeVI6/B5KktenOHNgXsAXp5+ZXNyUOW8JpUsR41ApoCopFd+dSbaLa8p+KuHlXLIUrPyHzICtNB8esjI1tk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(23010399003)(56012099006)(22082099003)(18002099003)(4143699003)(10067099003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?tysjeNRnEh+37l/CGO7Zff28GaF79zwEj/ddjahWVLFRx0DSMYBfvWwzHGWq?=
- =?us-ascii?Q?4+o8QrXT0nsjuiTEowxQY0J2PvVWOleAHzVH1Dz+/6QNoIOFKbfgHKChoL8K?=
- =?us-ascii?Q?g4HkNefSenX/60vFNt50lbth0OhU3h8H6qS75x7fc1yaQR7T+Hmx1AyS9H1L?=
- =?us-ascii?Q?Pm5k56bToB24+PeyXiJxmSmXOxQIBWrJN/MfFe6WZ2lWPbfdfiYuSpU/JWTS?=
- =?us-ascii?Q?h6Eh2w225Jx+odKWZSi6GDgqH2a2qJMMwZpwbelPtJeTu0qccdVyi01e/eV6?=
- =?us-ascii?Q?qTyHWFfXaOK+/AuhntzJ6NRIDM2zUBHxLeshOUlFtNl+nCrx6jFUe1tZg2BG?=
- =?us-ascii?Q?vGpFnWJ84jOIJboapf0QOvVq2BOfirCxTFaFgn6Cr2X9UJQYJ3cmekVUpyqH?=
- =?us-ascii?Q?6/dZXV/iy2B6NgmUPv9YeptDH0c8HFHa7VcMRJ3qBBfbhYjiS81NeLluR9xU?=
- =?us-ascii?Q?0U6YZ8L5Ao9ZC0K7LSmarivMg7hl/MhU/ssP6HId6nmqlm0mcP028osa8jm3?=
- =?us-ascii?Q?44i+eX+FEjNV1xgVQ5SbMf20T06n1t4KYzw+6xdbtS+ZJTppgSZ6/fjK1PVh?=
- =?us-ascii?Q?rau8lX8L1RjGt3Jpew8wAPQWE9WzDuFSo1+3H6+KlZUrhG7Fazn7fhPyiCIj?=
- =?us-ascii?Q?KfBjNUFTjEGMeFb4WVHjtMyyCuO5F3nYZvDGRVRx4MLlHui+FrNpjzvDkvbA?=
- =?us-ascii?Q?Jg5AiHkRqxCojT2xsl2sDkWr0LTxgh6/kHUgVwPLosqrtGJ4Io3qAwpZobl+?=
- =?us-ascii?Q?KvRRpPRxP7TWkX1iJn644PruZIyIVqlDoyRJ0iVkiMD1rc8FvcS1MtzCzhjs?=
- =?us-ascii?Q?YLiNQrNXTh/YqtK+qbZxnT5OWydTa3EpIAF7ySQaaQfOnmxKZzvfZr19rkeV?=
- =?us-ascii?Q?yw853fpJV23Zqp9VUmYWvshbCk7PnMbv+gkP9J8Stp3lZV/q3cIdJTLiyIuf?=
- =?us-ascii?Q?Z44T8Wk05EFBCrB88/9dig9yFAz4QI3AVT8+gXmrfXcxCLnOtlXa0RIf5js5?=
- =?us-ascii?Q?tMimxpFoVKN0JPlZbdhUAcv2jhp0DL88wlo87esZFjoTei8C9ZwqhoLNIb4E?=
- =?us-ascii?Q?DRGAHbDw4Xmez1fqMovzdFUmr3Dg5XYgb4idl2UW6HrBW+oLK7lTNSPLs1wO?=
- =?us-ascii?Q?qE5i07gtYffPOHBJVWw3pPBx+J4ZyYmvT1E3zA59P4lCQJzUsV4Gl7WzkWcY?=
- =?us-ascii?Q?bVT3r5YVOBQZl8uougzPPr+17JzPDKpo6q543x4RDWGUYF4cJc56yp/Os4ta?=
- =?us-ascii?Q?Dk8l8J2eyPEgEvOxbFlL1Ds0NAp8Il5TffIs4yV6mqefpYFFnxFxUfT3w3S/?=
- =?us-ascii?Q?dzubi8u6+/5zOCRqxIRPt9THDPWec8nIa7UgoGIXBNRqJsMi4F+mas/acafO?=
- =?us-ascii?Q?ibvMht0aO9MefG8jmH+osPnLKJiJJsDwNcBrJOGk5ttrT5IckX/w8kxxe+Lq?=
- =?us-ascii?Q?18e9+/CyROq3QYV5DQMkJjLIvhrvHHXYdMRRYfY1yXEIRS6j0hcSJQpaxbmP?=
- =?us-ascii?Q?LtJ0OaSmSmIkxxaCFVk35/GimQBXdZ2mNyFR6+P6d2yIoG/QqiJLBvw3wv0M?=
- =?us-ascii?Q?B3YT0K1F0V3ihxPP5YJTydtMRp2Ed3hMFqgmTz+5nbuFPGC4yP3GbThFibRf?=
- =?us-ascii?Q?+ShBlNjdjqA2ZhOipfmbjG5VXgN5rjx9vYMmK4gDBdrXpnwcUDC5hJqo+sQd?=
- =?us-ascii?Q?bKBYvQr+dTDErdBsN7hQMkyi1k7k1IUf44CuVSut2KtH7if6oJd7vT9QaiV2?=
- =?us-ascii?Q?8u47BrtOJg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 113d4640-44f9-49ed-4253-08defa005c11
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2026 12:34:18.7833
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b3HZWRfhhbEDytInwYSZ5lYWDh1VLsKAcIJ22g+4WAZrJ4f/00aVddjpMK+Gu6C7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7115
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8b539b15-7373-474d-9afd-1135f0245a75@linux.microsoft.com>
 
-On Fri, Aug 14, 2026 at 09:39:16AM +0100, Will Deacon wrote:
-
-> > Let me try it, it seems like it would make everyone happy.
+On Thu, Aug 13, 2026 at 11:02:07AM -0700, Easwar Hariharan wrote:
+> On 8/11/2026 08:50, Yu Zhang wrote:
+> > Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
+> > This driver implements stage-1 IO translation within the guest OS.
+> > It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
+> > for:
+> >  - Capability discovery
+> >  - Domain allocation, configuration, and deallocation
+> >  - Device attachment and detachment
+> >  - IOTLB invalidation
+> > 
+> > The driver constructs x86-compatible stage-1 IO page tables in the
+> > guest memory using consolidated IO page table helpers. This allows
+> > the guest to manage stage-1 translations independently of vendor-
+> > specific drivers (like Intel VT-d or AMD IOMMU).
+> > 
+> > Hyper-V consumes this stage-1 IO page table when a device domain is
+> > created and configured, and nests it with the host's stage-2 IO page
+> > tables, therefore eliminating the VM exits for guest IOMMU mapping
+> > operations. For unmapping operations, VM exits to perform the IOTLB
+> > flush are still unavoidable.
+> > 
+> > Guest hibernation and resume are not supported by this initial
+> > implementation. The guest-owned stage-1 page tables reside in guest
+> > memory and are preserved in the hibernation image. However, the image
+> > does not by itself preserve the Hyper-V device-domain objects or their
+> > device attachments, and the current pvIOMMU interface does not define
+> > whether or how Hyper-V restores that state.
+> > 
+> > To identify a device in its hypercall interface, the driver looks up the
+> > logical device ID prefix registered for the device's PCI domain (see the
+> > logical device ID registry in hv_common.c) and combines it with the PCI
+> > function number of the endpoint device.
+> > 
+> > Co-developed-by: Wei Liu <wei.liu@kernel.org>
+> > Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> > Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> > ---
+> >  arch/x86/hyperv/hv_init.c             |   4 +
+> >  arch/x86/include/asm/mshyperv.h       |   4 +
+> >  drivers/iommu/Kconfig                 |   1 +
+> >  drivers/iommu/hyperv/Kconfig          |  16 +
+> >  drivers/iommu/hyperv/Makefile         |   1 +
+> >  drivers/iommu/hyperv/hv-iommu-guest.c | 632 ++++++++++++++++++++++++++
+> >  drivers/iommu/hyperv/iommu.h          |  50 ++
+> >  7 files changed, 708 insertions(+)
+> >  create mode 100644 drivers/iommu/hyperv/Kconfig
+> >  create mode 100644 drivers/iommu/hyperv/hv-iommu-guest.c
+> >  create mode 100644 drivers/iommu/hyperv/iommu.h
+> > 
+> Seems like this is missing a change to MAINTAINERS. I'd suggest making a new section
+> and adding both the IOMMU and Hyper-V lists. As it stands, the IOMMU list will get no
+> notification of changes to this driver.
 > 
-> I was planning to reply yesterday saying something like "Robin previously
-> mentioned this one neat trick...", but I didn't get round to it. So yeah,
-> if we can implement that, I think we can have one range invalidation
-> algorithm to rule them all.
 
-I'm working through it and unfortunately it brings back the CONT
-errata issue. This version nicely solves that errata because there is
-one RIL that always spans any CONT group.
+Thanks for your remind, Easwar. 
 
-When we have two RIL it becomes problematic as we can no longer
-guarentee that a single RIL fully spans an entire CONT.
+We do intend to maintain the Linux guest pvIOMMU driver. I am just not
+sure whether it needs a separate section in the MAINTAINERS file, since
+drivers/iommu/hyperv/ is already covered by both the Hyper-V and generic
+IOMMU entries, and get_maintainer.pl returns both mailing lists and sets
+of maintainers. Therefore I don't see a notification gap that requires a
+separate entry.
+                                                                                                                                                        
+Do the Hyper-V and IOMMU maintainers have a preference here?
 
-I'm also wondering if we are even OK with this errata today? The
-current RIL algorithm also does not guarentee the split up RILs will
-cover every CONT. This will happen to be true if the input range has
-certain properties but I have no idea if the SVA path or even the
-proposed CONT iopgtable change guarentees that.
-
-Certainly iommupt will not.
-
-So, if we disable CONT and SVA if this errata is present would anyone
-object?
-
-Jason
-
+B.R.
+Yu
+> Thanks,
+> Easwar (he/him)
+> 
