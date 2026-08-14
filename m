@@ -1,329 +1,194 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C6A7D3043DB
-	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 10:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786701866; cv=none; b=mQpazudJo8VoNxhyP0Lo8+jmsff2vwS4VpOQ+8HNMzLHlcMfmLUwpFSVmx8Cg983qH8dUfjnuDzV13oU73EyFf5nW1RQOaAhPUxlOsCFZHe0LMHJERLHdKL/cYVIrkIn203oASzAnorx2JmwoXCueE7Bz5vDpeSHYrceUtZd1gg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786701866; c=relaxed/simple;
-	bh=ozyI6ATBVym5AUg56wpSkH8GVDBaSXF93ernbB05OXU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gugQ4cPOHD1DSPq8dP7qcp5MvL1O+WFNSe7b43inLYMm/z67ZL9ggw56lO4vR5GvsB8WQkD8QUMGmPDAKZ1yQdrI9KUNApkJfJef1hzTFOunpU9ZCIvtiJSDz4IjPkLrj7c9G/htVO1drmZCSpisYd3T55ZQaBHNoI+yhGXseFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WAjGJrOt; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11021092.outbound.protection.outlook.com [52.101.70.92])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0CE3432E6C;
+	Fri, 14 Aug 2026 10:07:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.92
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786702048; cv=fail; b=QFOHgI/ZgnYOt9eIwAQO7tKHPUi/R1zq9vjFclMBvPlZo8lzYcHiVnmBL97sGEXmagmfApq9N435eV5AW4Oo4qbi0pQti/CQ9+suEU2jV0aYSMLZwIcTMs6xacAsgCgRLqwG4mhuK302JnC35KHI9j7iAS0q0A8K2ZlqKZrNN94=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786702048; c=relaxed/simple;
+	bh=PzLQY0PbZiCpStCJumUjGHsFndE7EIe6G0+XTm/GB68=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=TZw7f2fGPJtIXw1hVkFwsx6eNk/EYnyu6lCF8kaCcpPCF722Hatk+trdwiYfaNni3zcKsvCrGeLb1JYQVizoK7a4u8BKeZ5INoZLqxS0n+97rHnP/+LcJV2CeXcM2mwuklwreYmplca25rEPJOZPzIdGjF3mW+BLzQYYCsJWvJs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nebius.com; spf=pass smtp.mailfrom=nebius.com; dkim=pass (2048-bit key) header.d=nebius.com header.i=@nebius.com header.b=FCPSRrMY; arc=fail smtp.client-ip=52.101.70.92
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nebius.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nebius.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WAjGJrOt"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1807C20B7168;
-	Fri, 14 Aug 2026 03:03:51 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1807C20B7168
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1786701831;
-	bh=uXc+pBOTCtfei91qMJUyjj3DvgN6nVOBDBWaBemrjw4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WAjGJrOtOdzGEpwtDE2u9P+ydNe3DxneDg0YFMIbjRddT4queqLv8U16BYs3jrfa3
-	 8z8Dg20nNGcdZq8wg7HkfiLSvZE8OdTpyCDJhkD8MTfOKWUqzzRvD/YWOYCaNPsrkO
-	 jGzfDLurz1apOYgVd5bfuFlbqsxlnG5nMWaC39eQ=
-Date: Fri, 14 Aug 2026 18:04:14 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
-	x86@kernel.org, wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, 
-	decui@microsoft.com, longli@microsoft.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org, 
-	lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de, jgg@ziepe.ca, 
-	mhklinux@outlook.com, jacob.pan@linux.microsoft.com, tgopinath@linux.microsoft.com, 
-	easwar.hariharan@linux.microsoft.com, baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com, 
-	vasant.hegde@amd.com
-Subject: Re: [PATCH v3 1/5] hyperv: Introduce new hypercall interfaces used
- by Hyper-V guest IOMMU
-Message-ID: <lrzifnzu4dx5oictyr2mdhwdycuevhjb7gjnqg7r2ld45glwht@emz2tdjbiz6d>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
- <20260811155022.108148-2-zhangyu1@linux.microsoft.com>
- <fdc50372-e121-52cd-51ce-1411f143d3ea@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=nebius.com header.i=@nebius.com header.b="FCPSRrMY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iXkEDfCj3lGImv+rL3HR9tZJZTOljy3UkXnLXkh2Dxvdf0vUiLfW6RFH4gcB+5VwgBbAiUfSBkQwr5U2+Nhm20tZ72BlGgdWTM5rThXKFWcAzQhTC6fXlEvdpGc61IhDnOURdBWsLwIL1UTZ3zgLmuJDJa8SRQDNvtOps534ttJzIjC1OAC57l9aU5PYRwwZfs2Lm6BjDrCxfzTb4bQKmykzwuXVLAEcPRpAqogpBHQmkEDV+3fyWn2fNNK6sYr7bLC5rF1uy2jAtqI65xgyTorP6aVWIyUmAUPeqxwSGZAvsvgrPQ/Jnjp6KmSqw4LvPM+dx8QK5O/HdgT3rPGf7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LdlqEavdjfL3UY2cD5+peEL6MpK24oKqFs7qTOpklxg=;
+ b=JeACh6BPI9GNnW7kQ0SIQxdnvptdcmNK/NQoYWOHS0SZtu9PKN69rhC4ihwZiLaOYEn4DmrzDB3fnk4/s/AYy9Yq9xsP67KX6uYrx0FtnG3ASrw+iMNArYyGqVS4YroG7tjATU9i0rWUm5r5WafuoKL7mQTM9rTXlC6BOEta3xIVKxxFDCCyoiAnHbicR0OUgCstvF4PedaJSxtf2MYXziXrP6plWsy0FNmsTY8zvQylATWYBHA1kSised73sFkZWTI3CTMFwc2h5++dvl0+zdrbgM0TI/BYw1vTQJtdHd76BmlZQNacVaxbKnP+1ZiVUv+pq7YQFLyPTUPxgHpMTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nebius.com; dmarc=pass action=none header.from=nebius.com;
+ dkim=pass header.d=nebius.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nebius.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LdlqEavdjfL3UY2cD5+peEL6MpK24oKqFs7qTOpklxg=;
+ b=FCPSRrMYF9GmDUaz2V0zu+8pmzuaG753jvUJseHT4SqPTRB+jVxJbIg8XJiQnsjOoXqyTHnxKo8RrcN9yHwUVNgMIkioUHSkKHeYcMsyZoy33qv2zaHNehhe0MLVpkSLuLLGtQR6VHBiQtV8cBerAxjJypJJ+1QU1mk/gzLLrIme89Z+vRRJz8lOKT0508JyDp37BRCUOsV4lprIlgtPEElElUoc3apWOEIunePO4N0q/Tawdr/UWgTekzdStFIbPEOxIDR9oJx6mGdeR7MPLj2CM1Fx9dxVXSK0p8kdyVd2M48KJ39InT6LuC7OHbjCLMnW3hyUdYkXlAPQAMDyMw==
+Received: from PA1P190MB2557.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:4fb::18)
+ by PAWP190MB2206.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:46c::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.16; Fri, 14 Aug
+ 2026 10:07:09 +0000
+Received: from PA1P190MB2557.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d0eb:eb62:7779:c6f0]) by PA1P190MB2557.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d0eb:eb62:7779:c6f0%5]) with mapi id 15.21.0315.014; Fri, 14 Aug 2026
+ 10:07:09 +0000
+From: Dmitry Malkin <dma@nebius.com>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
+ Roedel <joro@8bytes.org>
+CC: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "regressions@lists.linux.dev"
+	<regressions@lists.linux.dev>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>
+Subject: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI bridges
+ without vDEVICE
+Thread-Topic: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
+ bridges without vDEVICE
+Thread-Index: AQHdK9Pu+fg3Gt/XVU6V74nnaDIiLA==
+Date: Fri, 14 Aug 2026 10:07:09 +0000
+Message-ID:
+ <PA1P190MB25578C482C8A3B06A4DCC6FDDBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nebius.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PA1P190MB2557:EE_|PAWP190MB2206:EE_
+x-ms-office365-filtering-correlation-id: 64beb469-0f6b-42f8-fdb8-08def9ebcdc8
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|376014|7416014|10070799003|1800799024|23010399003|366016|38070700021|6133799003|56012099006|10067099003|11063799006|18002099003;
+x-microsoft-antispam-message-info:
+ P9eyfuzKM4h3zKBw1cEU6ovkVqf6q4XBDla206sYC0sjH8TLS2T7i5AMNptBjAzxopoAmiMXSfKomiVg0z3Aeto34GsSs1FG11vM4OUxvka/T4DqMkF/Ed+HsZFXv/uS43EnwLHpk0OBQjQ+xF3Ksy4d7HoihWQ+j0a8qOV/AUPHkKvvRx6Efb15Shkv9f5v7LVyeHf+5H9wEr5okJQYmxH/Y09MywTTpREGRSG+3PUnxk1g1ncUhUuqiYnGFYTXfKx3bdrWc2HxVrXpYB6FWcvHVmdIR63LgbjLPcnU5DX7/+0ePVO6eOcJz/cIIJ+d2/veWEDpaVQDGl4pgUUmJfDSoEGzPnFs2mnodbbafG//ERiRaOeNprZ8GzSceniURRcJOZGo6dgKQ/N1AwivwJbgM3ojDX5W/bTkEqBnFnuCNCGH/Dn6MSLvkl4WPLPIShuU050dWVyIRN13NSS6TpSPpwXOTzouxUI23dOw0O/x6+0HK2hFni5zy4bMWMkT0oK/kvB/QBxrnr1M1VaOwJIoXWVhXlCxVzF22zt7Mv2qo027qHgFSlk8x2WcZNa2fKZKZfRMgOZcD4VkALJobu0xZdpfEwoOzCeUb1QWq5jRY5miZfLvQ16SxaYV7qfm+vMBhyrW0LNdf3SdyF/Y9m+ZdPC0eabZE7F0FuV/CLB341zFoxAw1cekCUq2d1laB1bBidYOkIa1hJZ3u0N20WEEdT58ZbI7ifLh63zdLL0=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA1P190MB2557.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(10070799003)(1800799024)(23010399003)(366016)(38070700021)(6133799003)(56012099006)(10067099003)(11063799006)(18002099003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?VucccvlxsLuIZehIXaj2vk09SGlrD6PLunsVFIzg/NbSVCRbOIN9EP2TNT?=
+ =?iso-8859-1?Q?EyfA28FlLFu6rfq8GDhvvikjDu6hTljZBNNVTm/8NFip7XtqLgG6Mnj2qJ?=
+ =?iso-8859-1?Q?eRMrrX74A2MTCQDBpc1ybo92j81HFNcMAiIaXx6b+2faQ4w5+bWIBLcda3?=
+ =?iso-8859-1?Q?op+gpNTVP071WDDgltMOT70Ruujmi4t+X/vZnV6MuUXvyHOubBRcvgBRPZ?=
+ =?iso-8859-1?Q?zvKcav8D64AvGr1Km1QQJaX7irM0NeBKsfaDEuaw+2DU2cTTDwyyO3j86l?=
+ =?iso-8859-1?Q?pq6uVzxLEQjW209fvGBQDW2K6GkaC0aR+mMtneJBCpZKNvQ1+WJY799KsN?=
+ =?iso-8859-1?Q?mbTevgQtwtvxnc+78mDQmIxWh1ImMt1RZtQbFHdGkTB7HzFZY4Zeoc/W4p?=
+ =?iso-8859-1?Q?jqhnCyf13rMyRBkcaRFWlWgc5CrvLDra/Eyw0X0Kqfv3NNY+pLZ6Iw5a/J?=
+ =?iso-8859-1?Q?4eK05SUwZQgMSZPHu3THpUcoaf11R/m4Y9F8hNQhC5kDg/xtaue7JqA+PV?=
+ =?iso-8859-1?Q?PXubCtolIKZfTHvf6BZYcHGXb2lmYlgwBBeJvnv9l7ycycj0RYDXIJqtXc?=
+ =?iso-8859-1?Q?OENRovk9rFAuo61bD1YIpHbIRK5jFFuLfpx/c6A+zyyZpR3+l/l2HS2Xlq?=
+ =?iso-8859-1?Q?EybXoXXKFLLMMQIXGOBrSjqsDP9jflpU2KVbxhdH+dXB6hdP7IJl/Of9N0?=
+ =?iso-8859-1?Q?0Kfb5pF4DvJYPflI4etycHTlk4VRkp9D0xbGI5CetjeWTIMcXqYYM/Mt/J?=
+ =?iso-8859-1?Q?rkAECOvNHSLvZi5mzghNeG1GRQirRJzNhLuavWRgOXXDw2I2sXH5tNRlKt?=
+ =?iso-8859-1?Q?8QqefNawJmyttwUFGptFZFE6Ppl09xbAF+dFCyk9DSUa7mNr6lNqstopt4?=
+ =?iso-8859-1?Q?62Qk1p3ds5xKhgyWsOsVXXcLu6pOo/zbTt/2sIqKFVAndlYR/+FXpifxgX?=
+ =?iso-8859-1?Q?6O+8EWUfd5S3ZI/Z5YzWNSJ8qoUpZyhvn2zei0hi6V0J9rNEtrFAOK2gEz?=
+ =?iso-8859-1?Q?q/XPNiVRde7TxMGYqhPyCvqVSnu/eVqMhxFgxVNpZKYpaGS8CbK71pt7KL?=
+ =?iso-8859-1?Q?kbDbGJnERFGtiMXQGeNP0+vlghux1V+twbMUI6nxp2LOvAQ4CyWDXMfHXk?=
+ =?iso-8859-1?Q?xNufCennHyzzEGS+QcKzKQQ7No8PB45jo+pQ/+dTKI+Z11GENBbJcdUsdg?=
+ =?iso-8859-1?Q?kpSz9NyGalf4PVxEd+TsNVfwdBQxr9b/fJgCNwCyw0rttjxR2EsM5WxMS1?=
+ =?iso-8859-1?Q?vFKuUIM0V/Rv4QxIGPGNuo5+WXMO3shK6BLHp0bGN6dv1R7SC/Trj7zFNX?=
+ =?iso-8859-1?Q?bjlRXJd0ZpTfxnkv4UeB5Zi7dOTpayxsFadu/oIsM9RKK82693ofcNR7Tc?=
+ =?iso-8859-1?Q?IwM07xfHfvl5LZhVHenlouxX/MiQAyCzzUD10xJx4e2BQwtyKwk5l4vdWL?=
+ =?iso-8859-1?Q?5byccgHG+QtBEc7YqadB/Y2yCdTJ8Sw5bAfRh9Gsf18kv7bREE8OrIxkBF?=
+ =?iso-8859-1?Q?AIj25NLlZ6r9DaO9qIwLXIoLXnUXfemMJ6vi4tboMPP+CrpLEyaoTfAX4c?=
+ =?iso-8859-1?Q?CdmyY5/4pFyrIQNGYw6/mWdZ4DFLbjOpSFFXPPdLzh+H6J6pLKCoASk9zk?=
+ =?iso-8859-1?Q?W50yMkxQtY6D6vpVw6YLy3GFcFiotkWdJfg/DbNPraA5UqT+ZLQKk5V4L6?=
+ =?iso-8859-1?Q?5KIh31zjjGIdxWKzFUoW+FqMytI7TAWp6mcr7q2gsxVh9w7BdHs9X2D6Lr?=
+ =?iso-8859-1?Q?vg/vgW+mnDks09KJFFHQthO5HTQi1rtiFYlTgczpmCC2NkCSeKaHvHrrzp?=
+ =?iso-8859-1?Q?hgF0i5iZ0zpo4hMTowCfMotsqLE7VfrvnsDwcCfdIXGhCKqDPLuN?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fdc50372-e121-52cd-51ce-1411f143d3ea@linux.microsoft.com>
+X-OriginatorOrg: nebius.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PA1P190MB2557.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64beb469-0f6b-42f8-fdb8-08def9ebcdc8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Aug 2026 10:07:09.7641
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4eb23c52-f3a5-49bc-b555-0b061267a984
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: v00zvtvO6N6FeftXyMey2WViSdTpbMrpAghAn0BOXMBBbp/gmhQR1KyOYNKXTgd1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWP190MB2206
 
-On Thu, Aug 13, 2026 at 06:31:07PM -0700, Mukesh R wrote:
-> On 8/11/26 08:50, Yu Zhang wrote:
-> > From: Wei Liu <wei.liu@kernel.org>
-> > 
-> > Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
-> > Introduce the hypercalls used by the child partition to interact with
-> > this facility.
-> > 
-> > These hypercalls fall into below categories:
-> > - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
-> >    detect the existence and capabilities of the guest IOMMU.
-> > 
-> > - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
-> >    check whether an endpoint device is managed by the guest IOMMU.
-> > 
-> > - Domain management: A set of hypercalls is provided to handle the
-> >    creation, configuration, and deletion of guest domains, as well as
-> >    the attachment/detachment of endpoint devices to/from those domains.
-> > 
-> > - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
-> >    for a domain-selective IOTLB flush (which in its handler may flush
-> >    the device TLB as well).
-> > 
-> > Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> > Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > ---
-> >   include/hyperv/hvgdk_mini.h |   8 +++
-> >   include/hyperv/hvhdk_mini.h | 126 ++++++++++++++++++++++++++++++++++++
-> >   2 files changed, 134 insertions(+)
-> > 
-> > diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-> > index 6a4e8b9d570f..5bdbb44da112 100644
-> > --- a/include/hyperv/hvgdk_mini.h
-> > +++ b/include/hyperv/hvgdk_mini.h
-> > @@ -486,10 +486,16 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
-> >   #define HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a
-> >   #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af
-> >   #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0
-> > +#define HVCALL_CREATE_DEVICE_DOMAIN			0x00b1
-> > +#define HVCALL_ATTACH_DEVICE_DOMAIN			0x00b2
-> >   #define HVCALL_SIGNAL_EVENT_DIRECT			0x00c0
-> >   #define HVCALL_POST_MESSAGE_DIRECT			0x00c1
-> >   #define HVCALL_DISPATCH_VP				0x00c2
-> > +#define HVCALL_DETACH_DEVICE_DOMAIN			0x00c4
-> > +#define HVCALL_DELETE_DEVICE_DOMAIN			0x00c5
-> >   #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
-> > +#define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
-> > +#define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-> >   #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
-> >   #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
-> >   #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-> > @@ -502,6 +508,8 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
-> >   #define HVCALL_MMIO_READ				0x0106
-> >   #define HVCALL_MMIO_WRITE				0x0107
-> >   #define HVCALL_DISABLE_HYP_EX                           0x010f
-> > +#define HVCALL_GET_IOMMU_CAPABILITIES			0x0125
-> > +#define HVCALL_GET_LOGICAL_DEVICE_PROPERTY		0x0127
-> >   #define HVCALL_MAP_STATS_PAGE2				0x0131
-> >   /* HV_HYPERCALL_INPUT */
-> > diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-> > index 035ba20870f7..1e3eac99886a 100644
-> > --- a/include/hyperv/hvhdk_mini.h
-> > +++ b/include/hyperv/hvhdk_mini.h
-> > @@ -548,4 +548,130 @@ union hv_device_id {		/* HV_DEVICE_ID */
-> >   	} acpi;
-> >   } __packed;
-> > +/* Device domain types */
-> > +#define HV_DEVICE_DOMAIN_TYPE_S1	1 /* Stage 1 domain */
-> > +
-> > +/* ID for default domain and NULL domain */
-> > +#define HV_DEVICE_DOMAIN_ID_DEFAULT 0
-> > +#define HV_DEVICE_DOMAIN_ID_NULL    0xFFFFFFFFULL
-> > +
-> > +union hv_device_domain_id {
-> > +	u64 as_uint64;
-> > +	struct {
-> > +		u32 type: 4;
-> > +		u32 reserved: 28;
-> > +		u32 id;
-> > +	} __packed;
-> > +};
-> > +
-> > +struct hv_input_device_domain {
-> > +	u64 partition_id;
-> > +	union hv_input_vtl owner_vtl;
-> > +	u8 padding[7];
-> > +	union hv_device_domain_id domain_id;
-> > +} __packed;
-> > +
-> > +union hv_create_device_domain_flags {
-> > +	u32 as_uint32;
-> > +	struct {
-> > +		u32 forward_progress_required: 1;
-> > +		u32 inherit_owning_vtl: 1;
-> > +		u32 reserved: 30;
-> > +	} __packed;
-> > +};
-> > +
-> > +struct hv_input_create_device_domain {
-> > +	struct hv_input_device_domain device_domain;
-> > +	union hv_create_device_domain_flags create_device_domain_flags;
-> > +	u32 padding;
-> > +} __packed;
-> > +static_assert(sizeof(struct hv_input_create_device_domain) == 32);
-> > +
-> > +struct hv_input_delete_device_domain {
-> > +	struct hv_input_device_domain device_domain;
-> > +} __packed;
-> > +
-> > +struct hv_input_attach_device_domain {
-> > +	struct hv_input_device_domain device_domain;
-> > +	union hv_device_id device_id;
-> > +} __packed;
-> > +
-> > +struct hv_input_detach_device_domain {
-> > +	u64 partition_id;
-> > +	union hv_device_id device_id;
-> > +} __packed;
-> > +
-> > +struct hv_device_domain_settings {
-> > +	struct {
-> > +		/*
-> > +		 * Enable translations. If not enabled, all transaction bypass
-> > +		 * S1 translations.
-> > +		 */
-> > +		u64 translation_enabled: 1;
-> > +		u64 blocked: 1;
-> > +		/*
-> > +		 * First stage address translation paging mode:
-> > +		 * 0: 4-level paging (default)
-> > +		 * 1: 5-level paging
-> > +		 */
-> > +		u64 first_stage_paging_mode: 1;
-> > +		u64 reserved: 61;
-> > +	} flags;
-> > +
-> > +	/* Address of translation table */
-> > +	u64 page_table_root;
-> > +} __packed;
-> > +
-> > +struct hv_input_configure_device_domain {
-> > +	struct hv_input_device_domain device_domain;
-> > +	struct hv_device_domain_settings settings;
-> > +} __packed;
-> > +
-> > +struct hv_input_get_iommu_capabilities {
-> > +	u64 partition_id;
-> > +	u64 reserved;
-> > +} __packed;
-> > +
-> 
-> 
-> Hi Yu,
-> 
-> I had mentioned before, please tag the structs properly. Eg:
-> 
-> struct hv_input_attach_device_domain { /* HV_INPUT_ATTACH_DEVICE_DOMAIN */
-> 
-> If it causes 80 cols line wrap, put the tag above.
-> 
-> You can see my patch series for other ones, and lmk if you can't
-> find equivalents for remaining in hyperv exported headers.
-
-Fair point. Below are the definitions and tags I think need to be
-updated. I would like to align with you on the names. Could you please
-check whether this list is correct?
-
-  HV_DEVICE_DOMAIN_TYPE_S1
-    HV_DEVICE_DOMAIN_ID_TYPE_S1
-
-  union hv_device_domain_id
-    HV_DEVICE_DOMAIN_ID
-
-  struct hv_input_device_domain
-    HV_INPUT_DEVICE_DOMAIN
-
-  union hv_create_device_domain_flags
-    HV_CREATE_DEVICE_DOMAIN_FLAGS
-
-  struct hv_input_create_device_domain
-    HV_INPUT_CREATE_DEVICE_DOMAIN
-
-  struct hv_input_delete_device_domain
-    HV_INPUT_DELETE_DEVICE_DOMAIN
-
-  struct hv_input_attach_device_domain
-    HV_INPUT_ATTACH_DEVICE_DOMAIN
-
-  struct hv_input_detach_device_domain
-    HV_INPUT_DETACH_DEVICE_DOMAIN
-
-  struct hv_device_domain_settings
-    HV_DEVICE_DOMAIN_SETTINGS
-
-  struct hv_input_configure_device_domain
-    HV_INPUT_CONFIGURE_DEVICE_DOMAIN
-
-  struct hv_input_get_iommu_capabilities
-    HV_INPUT_GET_IOMMU_CAPABILITIES
-
-  struct hv_output_get_iommu_capabilities
-    HV_OUTPUT_GET_IOMMU_CAPABILITIES
-
-  struct hv_input_flush_device_domain
-    HV_INPUT_FLUSH_DEVICE_DOMAIN
-
-  union hv_iommu_flush_va
-    HV_IOMMU_GVA_RANGE
-
-  struct hv_input_flush_device_domain_list
-    HV_INPUT_FLUSH_DEVICE_DOMAIN_LIST
-
-  enum hv_logical_device_property_code
-    HV_LOGICAL_DEVICE_PROPERTY_CODE
-
-  struct hv_input_get_logical_device_property
-    HV_INPUT_GET_LOGICAL_DEVICE_PROPERTY
-
-  struct hv_output_get_logical_device_property
-    HV_OUTPUT_GET_LOGICAL_DEVICE_PROPERTY
-
-Yu
-
-> 
-> Thanks,
-> -Mukesh
-> 
-> > +struct hv_output_get_iommu_capabilities {
-> > +	u32 size;
-> > +	u16 reserved;
-> > +	u8  max_iova_width;
-> > +	u8  max_pasid_width;
-> > +
-> > +#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
-> > +#define HV_IOMMU_CAP_S2         BIT_ULL(1)
-> > +#define HV_IOMMU_CAP_S1         BIT_ULL(2)
-> > +#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
-> > +#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
-> > +#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
-> > +#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
-> > +
-> > +	u64 iommu_cap;
-> > +	u64 pgsize_bitmap;
-> > +} __packed;
-> > +
-> > +enum hv_logical_device_property_code {
-> > +	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
-> > +};
-> > +
-> > +struct hv_input_get_logical_device_property {
-> > +	u64 partition_id;
-> > +	u64 logical_device_id;
-> > +	/* Takes values from enum hv_logical_device_property_code. */
-> > +	u32 code;
-> > +	u32 reserved;
-> > +} __packed;
-> > +
-> > +struct hv_output_get_logical_device_property {
-> > +#define HV_DEVICE_IOMMU_ENABLED	BIT_ULL(0)
-> > +	u64 device_iommu;
-> > +	u64 reserved;
-> > +} __packed;
-> > +
-> > +struct hv_input_flush_device_domain {
-> > +	struct hv_input_device_domain device_domain;
-> > +	u32 flags;
-> > +	u32 reserved;
-> > +} __packed;
-> > +
-> >   #endif /* _HV_HVHDK_MINI_H */
-> 
+IOMMU groups can contain passed-through endpoints and host PCI bridges.=0A=
+QEMU creates vDEVICEs for the endpoints, but not for bridges that are=0A=
+not visible to the guest.=0A=
+=0A=
+Since f0ea207ed781 ("iommu/arm-smmu-v3: Introduce struct=0A=
+arm_smmu_vmaster"), group-wide translated-domain attachment therefore=0A=
+fails when the first bridge is visited:=0A=
+=0A=
+  pcieport 0009:00:00.0:=0A=
+    missing vDEVICE association for translated nested domain:=0A=
+    cfg=3D5 ret=3D-2=0A=
+=0A=
+  vfio-pci 0009:03:00.0:=0A=
+    VFIO_DEVICE_ATTACH_IOMMUFD_PT attach failed for pt_id 19: -ENOENT=0A=
+=0A=
+The same configuration worked with Linux 6.14.=0A=
+=0A=
+Allow PCI bridges without a vDEVICE to attach without a vmaster.=0A=
+Endpoint devices still require a vDEVICE, preserving vSID handling for=0A=
+invalidations and virtual events. Log when the bridge exception is used.=0A=
+=0A=
+Fixes: f0ea207ed781 ("iommu/arm-smmu-v3: Introduce struct arm_smmu_vmaster"=
+)=0A=
+Cc: stable@vger.kernel.org=0A=
+Signed-off-by: Dmitry Malkin <dma@nebius.com>=0A=
+---=0A=
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 13 +++++++++++++=0A=
+ 1 file changed, 13 insertions(+)=0A=
+=0A=
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/=
+iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c=0A=
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c=0A=
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c=0A=
+@@ -5,6 +5,8 @@=0A=
+ =0A=
+ #include <uapi/linux/iommufd.h>=0A=
+ =0A=
++#include <linux/pci.h>=0A=
++=0A=
+ #include "arm-smmu-v3.h"=0A=
+ =0A=
+ void *arm_smmu_hw_info(struct device *dev, u32 *length,=0A=
+@@ -118,6 +120,17 @@ int arm_smmu_attach_prepare_vmaster(struct arm_smmu_at=
+tach_state *state,=0A=
+ 		if (cfg =3D=3D STRTAB_STE_0_CFG_ABORT ||=0A=
+ 		    cfg =3D=3D STRTAB_STE_0_CFG_BYPASS)=0A=
+ 			return 0;=0A=
++		/*=0A=
++		 * Group-wide domain attachment also visits host PCI bridges. Such a=0A=
++		 * bridge is not exposed to the VM and therefore has no virtual SID.=0A=
++		 */=0A=
++		if (dev_is_pci(state->master->dev) &&=0A=
++		    pci_is_bridge(to_pci_dev(state->master->dev))) {=0A=
++			dev_info_ratelimited(state->master->dev,=0A=
++					     "skipping vDEVICE requirement for translated nested domain: cfg=
+=3D%u ret=3D%d\n",=0A=
++					     cfg, ret);=0A=
++			return 0;=0A=
++		}=0A=
+ 		return ret;=0A=
+ 	}=0A=
+ =0A=
+-- =0A=
+2.43.0=0A=
