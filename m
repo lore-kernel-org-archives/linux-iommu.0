@@ -1,263 +1,145 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013048.outbound.protection.outlook.com [40.107.201.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D3583D811B
-	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 21:57:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB2F93E3178;
+	Fri, 14 Aug 2026 22:11:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786744668; cv=pass; b=pns1/5lXv8MbXZSqZNu56zPyWhQpou17JeaexDz3la8KZDcvAqA53nxn8ihMvgz1XcNb+RX7lR3pWsv64mYQuc1Buq+jahz64mvypjRhDf9s4HeySrsfs3rvZKmA0pjMpmhglNjf1P32TxWvl9gZwM3ZUL4e1fCsROdCar7uPuM=
+	t=1786745471; cv=fail; b=O92j/RY974blXP0CKk5JMYyzutr5bFNwkksTo1xtipToN8YvVbw3LaY4GDaJOESnv4R7x9uIKmhmDzWHAyEnlvHyIXKdalKWCvGJ7QEO1Bc3qxfrW67lXYYbAtgGEH1UtwyBxwUvGpdf5p25iEeedvYlIFD2PzYrd1uc67JlaRE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786744668; c=relaxed/simple;
-	bh=DQBzlyWe/dY1MnAyhHUw8AfdNURN8gg0HjSS3nmXkuM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WvfarUMY3q0ieyNKmUQCdLA59ExRwCThFNGiP3XrqEbw0HZk1jZS5NEMeggTQwlKobH1ORtbrru07KupEdUgbHIURliQwSH3/+pPEU75E6u5vZ+yjRT0ksxyh/VSAtlae0mN/2qr2KwK63XZN2hJ5K33LdRi1uEMs5j7kZ3fIGo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=k1CRoYQM; arc=pass smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1786745471; c=relaxed/simple;
+	bh=RMwFtw7hgheOCXrcoaIxu3thJQdkmoYR1BrsWbHHdYw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=PDESHp/xf1/fZbB0+CyVgHxiVqNvZIz3ShJTI45x/uByp66MQ2vq/BoXnzo2ENFlypIoRzQn19iwM2T6emDdGS4RCXT+jtED3WvAczn6kiDSDk8A6FxB+QQIWMHLfTP2CuI1WD8KtPFzOYU6thcc0fFQUZy08qFrpEDpXJG+c60=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=olUxSrIR; arc=fail smtp.client-ip=40.107.201.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="k1CRoYQM"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c10ed63c0so364091cf.1
-        for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 14:57:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786744666; cv=none;
-        d=google.com; s=arc-20260327;
-        b=NzlEixNPEK7mxx4bj/YsuqwX1mBwkwhV4oTP8kWaDmos/0/0lEbj8IQeto/xnzdVQS
-         A6wvUPAOLl4jLBFOU7KF3CWWkvR5GKMEOUT3Owh4HgBARCKKu4nr6MeVAVLunS+KKd8D
-         UkCyJvwDyiIM3wQu3dPhIMrd9pNPXbiPAhxkqMqDjRfSDp3RJZWkwFaTBvSzfQ2jBEHY
-         Z3kbB5/J889VWqPwIZdifCD+ZQwUXglkluPi/gPWIR7rKzFRoBACe5kynKWaOvYLnhk3
-         fmjHRySPcsQZgzhJB00bqRjShisJdttNNgC4rlqkSmtCBfKfFns+FK6bad4zuQ6jvG4c
-         XSZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=q/erZy2n38i8Q19od1dHI45fS0KoMtthuq5RrnDN/Dg=;
-        fh=W3aRguYoahijWXCj4vF/7ufrH8jo/M76u3vglKErtzY=;
-        b=anll1CBycAXstXCyxQLldZsaUUYlIu9OLzXOCGJU+mzhfXwlpOR/+GNiNXKRzipGcE
-         jF9l2MGIu+FYxeWzJBWkDRkuegtkuoFiaielvnfz5NrFdpX+qnsHcbxfChmuMs5RZcLv
-         tJEUgXP0iTgE17CUSDSHrEKZXtBJ8OcCbyNy6SzIdkwm+cwyIcCfkcBQoKa5hbHHFsWS
-         83/ijkKL8pP3gaILn99ijLejUzCL8doUYCIRk8ONCLC9oJt200v30X5IeUXL01ctf2nk
-         +AoTOftJtYSb8wW6dUun3k5+B+rPE2l4yh2zm0h8xKp6G6en290sGFBP5d+DqSlBCD94
-         4Ddg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786744666; x=1787349466; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=q/erZy2n38i8Q19od1dHI45fS0KoMtthuq5RrnDN/Dg=;
-        b=k1CRoYQM+TNjl6GAS/4Y88og/kjYqPWmVrjbBhcGrrX76fVUvQIe5c0OxVV0VQZBPK
-         7Ab8+jI58dVBGRrhV0JTWFedBuvFxXxbKfy4BqIKG599cOeGKK6IX3cAFIKavCm/6I3Y
-         E6AO+AkLG2iAWlfLFBNG34UBEiG4mN8J6UR0siYhVL7QZHU9rSYamWliIzhYYFtfk0Eo
-         k5wJl5xFQd54cnokL/QkLk+EtlJpvExCEuH0XZqoXo+cW5ZXAqV+e8zkZkWEYjL6d41t
-         AYTQ6eCRN1tsaQSQBkIPvvI0+/uWRme6ynqMP49/XmKO+F1aNrGOIGoY9wXwVOxVDmoQ
-         O/sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786744666; x=1787349466;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=q/erZy2n38i8Q19od1dHI45fS0KoMtthuq5RrnDN/Dg=;
-        b=l59zKhyWJYEzWGgGH6dWiu2Ja/1mgCjRRyLKWL4u8moC45CcViJBI1jHNp9vxB9Rj1
-         inBHhfLFPHiWznxGAJJL2VLpj6QuFzSZ3AarNkcrsQRoLY2/q2m0GOAd+s8lCfxFfF0f
-         Q1x9+d1nO7vOx3hEW1mDPFpY0PEMeXGFEGyuk5olKw5rpI856AxInxuQ1si3UrKHQQIg
-         DvIiSIk2gP0B6bPqAFs6eICuwOp2UvYeCiQvvittwDrxbHwv7M59wxU+Vi3IreXg8cQn
-         AaFf7OtqML4WbW9mBXRoGNNZ2RMUW+CRNpkRCeVB8N2vWpJRULRZoR3ciVr5LXUwBGJw
-         sWzQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rpy8ckQrpTgfoQLwzjRGiNq/RgDsXmLye6LHXWmWFwb6uSWqAANsncTta1zkDIKFgFPUDO6Yg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzDQWQ5OqZOe8s/vVkXhHbfESrDwrjHC3p9XoyePhFM1dOI4mRJ
-	mLAFxsp0y0DEs3hfhzfs5xMrKui2t0654iFAhGR919ZM0ANnIVYWVZOZnK0/5NFtiyteO/Knoo2
-	hO34Nqnb/c0kb8x5zVyiCbSkmGDSrOQE6RxGUJ1uD
-X-Gm-Gg: AR+sD128ISdbAAsSwlB9lup5Azkk8QvuWRSqHT6fPfJ1eufdefFCCqfbdtopXOijwjT
-	FOF0iXEc/K3i3sAnZszaFNFaeDUIaDybfVceFdz0E4xQ01zPERW9kbFpfRiYtjWsR++p12SAMYs
-	B2vFmHZIldplMwSm7uO744QiVAfdKB4ZzFKhOYKplJLbqAj9UQ7/JcWCAudS+hDmb76pvJoK235
-	RVso83XP43ug8gFbTMtZ2SXgj7rixUqIJ5LgXbZUXs+X+8rEnG2gbkgQNn8yCdrm8jeBNbEcgHW
-	3/1AhOO0XLWx+8uk6tZetFaywZBkYcFjUzMBpwr3TB2TwDbUUqyE
-X-Received: by 2002:ac8:5e4e:0:b0:517:5e32:2d14 with SMTP id
- d75a77b69052e-52d84770c21mr23823461cf.10.1786744665581; Fri, 14 Aug 2026
- 14:57:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="olUxSrIR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=EEscXBKHErOtgRB5wE+mWhgi9oKBUuYPDgTg28JiwUUjRp+ZO6879P8OuRQft4F7FnPmb0T0xh8ZA6UQds+QTZNOtvZbdKRce01gN8ZnhI+GLaYoRtzDpIWcBKWQGTc8pzYFRs1cEelU620uzUqixuzeTwS0/etYkNHGVg9t8nHZp3DweaktVv58K/hYeHr+hCU5xnMY7No9JqObG5A+DQFdpQsmE4LfW4xNW02waZkVcRf769Hf5eoBygZq3COdkgEN3sUcGxtxANAT9f9OsOSOq0KSnC8MqJs4v+hZDaIZ4r6LzLEZF5GWEWPUx5PXWle93SsaIXoPXpAT8DHjYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JwHX4Ts3uLdf6T56DrjZjdj7obPT5nCrX1tAZNkzLiQ=;
+ b=G44BfXzpRqm0rfH3nRDLaoFKQfXbFLSifk59rgfS53iSLsA8jnDZgrDyeolCiIBT4HUtpOVkC2nZujELTnr62pJn6EAyLEu2TDG7cOjxSpJYDn3rRQAtOl/eBU9VBMQ57mzeEx8cucryQU8J8FsqDn1zx++AlNlCi90qcJFSNkWpRohye/V94ya2QGP2JVmTUthXiTfd5lUIHM93rYeFI0cjc+ehU2q0BTPMJnPWSevsiZFOC61LszsSsA2I0TO20SKWjLpphTcFz6IcLrbqE6mr8PnRFsO7tFS4GyPBqDyCAMCqrae4923yqXPe4wpcoWuJO7zBy3xu/MUbkJ3TsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JwHX4Ts3uLdf6T56DrjZjdj7obPT5nCrX1tAZNkzLiQ=;
+ b=olUxSrIR3FKSw/u60ZwflcGP/sx0wwHWdS66XTBUR6YD7eDL7uT5Clm37ugzcdveudLWyKI+7eRUmKnVJ52N0mQlqIXPlwViCAOmjxadI0zXuxLP1uB4XBnQbngLdnqxh4kRLjLkPgX4YnbxLbQnOwgrqIE7wK8hoMgI7w0CFVdMqomTCzfagp4FdBiMlJSLfrWZWyaVrar8DJZgq6TWLxtjkGmNQSQWh+m22OOmrCZeXQZX81t28ytdMjLcBkyyQCh7W9uKuJnLuwObGE/+CUeh2PuHdyvwj4Na64ibKv8tKS6cbZM+uxpGU2V8zdFPviOrT9nXhnHcKLa4AuTrUg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by CH2PR12MB4232.namprd12.prod.outlook.com (2603:10b6:610:a4::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.16; Fri, 14 Aug
+ 2026 22:11:05 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0315.014; Fri, 14 Aug 2026
+ 22:11:04 +0000
+Date: Fri, 14 Aug 2026 19:11:03 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Dmitry Malkin <dma@nebius.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>,
+	NB-Core Team <NB-CoreTeam@nebius.com>
+Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
+ bridges without vDEVICE
+Message-ID: <20260814221103.GE510472@nvidia.com>
+References: <PA1P190MB25578C482C8A3B06A4DCC6FDDBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <20260814174825.GC510472@nvidia.com>
+ <PA1P190MB25573D7CFE42EF7DD2A8CDE8DBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PA1P190MB25573D7CFE42EF7DD2A8CDE8DBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+X-ClientProxiedBy: MN2PR18CA0026.namprd18.prod.outlook.com
+ (2603:10b6:208:23c::31) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260804-iommu_contig_hint-v4-1-d7a47ed5db98@oss.qualcomm.com>
-In-Reply-To: <20260804-iommu_contig_hint-v4-1-d7a47ed5db98@oss.qualcomm.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Fri, 14 Aug 2026 14:57:34 -0700
-X-Gm-Features: AUfX_mw13XLnJC6leTXSRX-bWXhXBbTh-sh7eRo2QsAUaW0Ge3uaaXn1mQEwLlI
-Message-ID: <CAE2F3rB7zpPFfC376mP=god9HWRmKOaQUEgPVzKScxS12pZrvQ@mail.gmail.com>
-Subject: Re: [PATCH v4] iommu/io-pgtable-arm: Add support for contiguous hint bit
-To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, linux-arm-msm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Prakash Gupta <prakash.gupta@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH2PR12MB4232:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7afdd56f-a1f8-44aa-4d33-08defa50eec8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|7416014|22082099003|18002099003|56012099006|10067099003|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	VEVD+7XsUTuPiKkSw+8E3Q/4kxz+t38uWy1+XjeaaYTJiYnfoAFdW/FGwg/o+awwXQo0fndtoi0P1FDH6v+C2XW4WyK1cocnevAQTYtQHC6nnysFMWSax5XQtafyfS0O8XgZ48YE1npQJ9XgDfkjG75HN9BpxlolL5D0uO4pktskUAXyOClfCcWkoFt63RlZmiljAVV8rB7/eNKE3Q1f+grSMLYEXEbKVREmRD/itiqQkD463ayNwpDCKYpaChNPGUH0jHeUp9qXabMbB4Ietl/WdQ2jRDNyI5uLMo5yJ8kmjBHyxG9bHU5lFyHiF2IcFK4jm/rkw5mbwO0m0sipyrNlJCXB5xLwt7TnM423XxBtIHgugfDYlJfZWVr0mLcDlFoEIa7/alLAcpoLh3D1xqq7e6xSsd8ls/jW4j55+po7dFmOuiWWoOeqMR9G9ue8WeSt4zDwSwcRbfgDdugUY10UM0OrEmKvGfLXa4n9A/iFWsX+s/B8uf5uCq2KjJokF0BdLMj7OjjNJZoD/uNwIg4w65OAnIgOXA9CxvgPM94OTuwFkFXZfKdFMbDKZE9rW6q2mzC10izfm9BKsob0EE/vaw1rKwWfx51ot+dLO/KwVQZy6pWNOxnStLuBFsRmTCKVeJBfpbgJBmcTayia5nYO0R22Nk2BdwOXdaXxN3s=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(7416014)(22082099003)(18002099003)(56012099006)(10067099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?M89JRlzUgKQul31cjSqKyNSvna+li1xICjLZ6cg7DetDpZM6HHDmPM3Ku5QU?=
+ =?us-ascii?Q?vMdZtiILW42kx0c2aQwxtbE5wmCcoGoalxRWPvcrE0DWhbmqpSKNvcfPtwx9?=
+ =?us-ascii?Q?WNtHShA+8ymHpFOJ5M9urK3HSeYobSzZrii/k7+LcReUizyeKYzoDPqOr6vQ?=
+ =?us-ascii?Q?6Us9sDGSgko9wire6JwEByxSKJK3Gif19LMohpEfIr7WpAJVKGUWgLga/hez?=
+ =?us-ascii?Q?p99lBldO5lWBv+s50dz7cotY7wIMrlymi2RtvYoWIu5CZFBxmeEIt3NBzVhp?=
+ =?us-ascii?Q?yD3eAVaAuW35M4goq4Lbsbo8zrdVUqRGZVgeOBJjVw8hakUharQ+3dIaGXRP?=
+ =?us-ascii?Q?IQvpSvQo9KXNPTwcnPPiLoMhPtVbc6EryYPur8M8/+EJj3CRYmDAdhnRAH80?=
+ =?us-ascii?Q?L5Wy45whywFyCQ/K6wmpIlyYWK5euZjuvN69lnVJBUa89HeOJi/WmmBq0L/6?=
+ =?us-ascii?Q?X8+R3xtT2/H0Q76XQ8JwmrlblgbEB5h6T8BArk5QNFi3DSDOI010IFhjGq8M?=
+ =?us-ascii?Q?KUhUEoAjpQZyt73hrMt8X6/8CCD4B3HpgYC2MujnMoNhVGmzJkm7YTQQD/t3?=
+ =?us-ascii?Q?KKP8GcU2LYEU6Dm+8Z1+59Vv8aPefAnOXs/bBXS9yb3/HWtXrXJ0FICCplzb?=
+ =?us-ascii?Q?fubhANsNprmt5RPDaZrlItFmlp6MAAtabh/W6Adnf3bXQ9ABFJaL8fgxqc3J?=
+ =?us-ascii?Q?+5sbnUVXF/7VkWRFUxKTvpT1P62pwCVB6NgRebUFtbWhA/EqeBJgVHB3Y+CE?=
+ =?us-ascii?Q?rOnh9wMMz6mNmRj//IYB85h29Qh7qDI/pulsV0agHG6PqxYCIygYJuVnSSpk?=
+ =?us-ascii?Q?b2p72ZW9lbFQd/6u4HgBozo0Ho6efPfyFDTYa49AhNSGfQ1Uhr/oPgV/vJXy?=
+ =?us-ascii?Q?0zVqTNwYJctHtne5ftdlK1ejGsYp16ufm5QS/5nYx4kcEngbuAfTf9nkLhVA?=
+ =?us-ascii?Q?roNrzaGagrHvchiOoZkg1E99zroYKpZ0vQEObj/Uwx0tj6T0i+nvGssCmFmw?=
+ =?us-ascii?Q?Wx65ZZkfZMsgLUeIn0LT+GImiWJk4kQoPFLxCh1gX9idPG5Qlpd+15sJIrfC?=
+ =?us-ascii?Q?H1Ok/m/hky7gjTFEawdkTb7PERXyooeVSkOSMk51nkP8UVlympd2QSsHaTe9?=
+ =?us-ascii?Q?7JSh+NLsPiLz1fa6NEjuyKi9BTw8+lSdZ0u6TrfhZF1/mRrD7CGSWfQTSBVY?=
+ =?us-ascii?Q?ziO7b+igok7Zuk+YTRkvQTaNum9Dfj65c6LXmwKwKHupUU1hH6eSQz5Fp1ag?=
+ =?us-ascii?Q?FN5kLkBnDkcNdmkC0k5cIyo4dt8Uw06IhA6c1bhwIP2yX3mbdcLbBwG14rWb?=
+ =?us-ascii?Q?uESkyk2MOHEmVGB0SD7z90qQmowTqGDnIf1GrKNiqZrA6t57FF48qVmCL2JA?=
+ =?us-ascii?Q?j1rN8sHm5a/OwHZI7axBpLS1RsAQ+9H87hhqQD8+uknd1bFwyID/L4kWaY4B?=
+ =?us-ascii?Q?gZUYVUi1VZL+bEKLZggBi2oAJLXrvXfwpdjpyQ8i9rFTyJTib5Z7oN6nDZlW?=
+ =?us-ascii?Q?gXOa2romdS2MlZTCXs5Z4Z7DOZ5UwrM80oWtwBpNsSnPXX3GSPVJDHZJkGpD?=
+ =?us-ascii?Q?C/KYiXBl3yQ3OY6VO1JXt+PKBt8ruQt/tITqLNtxjfCCL4isfXjZKg0NsGVy?=
+ =?us-ascii?Q?qPwH2PRrwFl5eYvdsCDXU2hvX7KXCrsjhj0SHkqj1/ws2u5YiKmYDH1xQSE0?=
+ =?us-ascii?Q?mr7lmAHUYXm/pBOXwmkW60Ut5g3lKhiqhprCFHlyC7w7wa1lYh8hnQQPK2KT?=
+ =?us-ascii?Q?MG2s7UtVhA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7afdd56f-a1f8-44aa-4d33-08defa50eec8
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2026 22:11:04.5514
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KaBw8o2/goyb1kwIouhbrp14yafF9nUJVB14Q6f2PB6y2l68WL8Sd45bMQs31sll
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4232
 
-On Mon, Aug 3, 2026 at 11:19=E2=80=AFPM Vijayanand Jitta
-<vijayanand.jitta@oss.qualcomm.com> wrote:
-> +static unsigned long arm_lpae_get_cont_sizes(struct io_pgtable_cfg *cfg)
-> +{
-> +       unsigned long pg_size, blk_size, l1_blk_size, cont_sizes =3D 0;
-> +       unsigned long cont_leaf_size, cont_blk_size, cont_l1_blk_size;
-> +       int pg_shift, bits_per_level;
-> +
-> +       if (!cfg->pgsize_bitmap || (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NO=
-_CONT_HINT))
-> +               return 0;
-> +
-> +       pg_shift =3D __ffs(cfg->pgsize_bitmap);
-> +       bits_per_level =3D pg_shift - ilog2(sizeof(arm_lpae_iopte));
-> +       pg_size =3D 1UL << pg_shift;
-> +       blk_size =3D pg_size << bits_per_level;
-> +       l1_blk_size =3D blk_size << bits_per_level;
-> +
-> +       cont_leaf_size =3D arm_lpae_num_cont(pg_size) * pg_size;
-> +       if ((cfg->pgsize_bitmap & pg_size) &&
-> +           arm_lpae_cont_size_fits(cfg, cont_leaf_size))
-> +               cont_sizes |=3D cont_leaf_size;
-> +
-> +       if (cfg->pgsize_bitmap & blk_size) {
-> +               cont_blk_size =3D arm_lpae_num_cont(blk_size) * blk_size;
-> +               if (arm_lpae_cont_size_fits(cfg, cont_blk_size))
-> +                       cont_sizes |=3D cont_blk_size;
-> +       }
-> +
-> +       /*
-> +        * l1_blk_size is only set in pgsize_bitmap if level-1 blocks are
-> +        * supported for this granule (not 16K/64K, per
-> +        * arm_lpae_restrict_pgsizes()), so no extra gating is needed her=
-e.
-> +        */
-> +       if (cfg->pgsize_bitmap & l1_blk_size) {
-> +               cont_l1_blk_size =3D arm_lpae_num_cont(l1_blk_size) * l1_=
-blk_size;
+On Fri, Aug 14, 2026 at 06:56:05PM +0000, Dmitry Malkin wrote:
+> Hi Jason,
+> 
+> > If viommu should support multi-device groups, I'm not sure. I want to
+> > know why you even have multi-device groups in the first place because
+> > that is not normal at all.
+> 
+> That is because of the 'pci=config_acs' kernel command-line
+> parameter. This causes the kernel to create a single IOMMU group
+> containing multiple PCIe devices, including the bridge (PCIe Root
+> Port).
 
-Our AI model is saying that this might overflow cont_l1_blk_size on 32
-bit platforms i.e. 16 * 1G doesn't fit into a 32 bit type. It says
-that cont_l1_blk_size will be truncated to 0, and
-arm_lpae_cont_size_fits() then calls ilog2(0) which is undefined.
+Don't use it that way?
 
-> +               if (arm_lpae_cont_size_fits(cfg, cont_l1_blk_size))
-> +                       cont_sizes |=3D cont_l1_blk_size;
-> +       }
-> +
-> +       return cont_sizes;
-> +}
-[...]
-> @@ -660,6 +829,8 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgt=
-able *data,
->  {
->         arm_lpae_iopte pte;
->         struct io_pgtable *iop =3D &data->iop;
-> +       size_t block_size =3D ARM_LPAE_BLOCK_SIZE(lvl, data);
-> +       int num_cont =3D arm_lpae_num_cont(block_size);
->         int i =3D 0, num_entries, max_entries, unmap_idx_start;
->
->         /* Something went horribly wrong and we ran out of page table */
-> @@ -674,10 +845,22 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_p=
-gtable *data,
->                 return 0;
->         }
->
-> +       /*
-> +        * Normalize an exact whole-CONT-group request down to the
-> +        * equivalent block_size/pgcount, mirroring __arm_lpae_map().
-> +        */
-> +       if (!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NO_CONT_HINT) &=
-&
-> +           num_cont > 1 && size =3D=3D block_size * num_cont) {
-> +               pgcount *=3D num_cont;
-> +               size =3D block_size;
-> +       }
-> +
->         /* If the size matches this level, we're in the right place */
-> -       if (size =3D=3D ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-> +       if (size =3D=3D block_size) {
-> +               size_t cont_size =3D num_cont * block_size;
-> +
->                 max_entries =3D arm_lpae_max_entries(unmap_idx_start, dat=
-a);
-> -               num_entries =3D min_t(int, pgcount, max_entries);
-> +               num_entries =3D min_t(size_t, pgcount, max_entries);
->
->                 /* Find and handle non-leaf entries */
+If this is an nvidia system you should talk to your support team.
 
-This comment is no longer accurate. The handling now extends beyond
-non-leaf entries.
-
->                 for (i =3D 0; i < num_entries; i++) {
-> @@ -687,6 +870,40 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pg=
-table *data,
->                                 break;
->                         }
->
-> +                       /*
-> +                        * A real CONT group must always be invalidated a=
-s a
-> +                        * unit, so reject an unmap that splits one. Chec=
-k the
-> +                        * PTE's own CONT bit rather than the caller's si=
-ze,
-> +                        * since a legitimate unmap can span multiple pri=
-or
-> +                        * iommu_map() calls and its size alone doesn't s=
-ay how
-> +                        * the underlying PTEs were grouped. Only the fir=
-st and
-> +                        * last entries can straddle a group boundary; an
-> +                        * interior CONT-tagged entry's group is necessar=
-ily
-> +                        * fully covered by this unmap, since groups can'=
-t
-> +                        * overlap without also covering everything betwe=
-en
-> +                        * them.
-> +                        */
-> +                       if (pte & ARM_LPAE_PTE_CONT) {
-> +                               bool ok =3D true;
-> +
-> +                               if (i =3D=3D 0)
-> +                                       ok =3D ok && IS_ALIGNED(iova, con=
-t_size);
-> +                               if (i =3D=3D num_entries - 1)
-> +                                       ok =3D ok && IS_ALIGNED(iova + (i=
- + 1) * block_size,
-> +                                                             cont_size);
-> +
-> +                               /*
-> +                                * Stop short of this entry instead of re=
-turning
-> +                                * 0: entries before i may already have h=
-ad
-> +                                * non-leaf sub-tables torn down above, s=
-o the
-> +                                * caller needs the real unmapped count, =
-and the
-> +                                * loop exit below still clears/gathers e=
-ntries
-> +                                * [0, i) correctly.
-> +                                */
-> +                               if (WARN_ON_ONCE(!ok))
-
-Consider aligning with the following WARN_ONCE in the same function:
-
-WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
-
-> +                                       break;
-
-I think this behavior is inconsistent: when a problem is detected at
-the beginning of the unmap range, you return without modifying the
-table, whereas if it's detected at the end, the code proceeds with
-unmapping and leaves the table misconfigured. Could these checks be
-performed before entering the loop?
-
-> +                       }
-> +
->                         if (!iopte_leaf(pte, lvl, iop->fmt)) {
->                                 __arm_lpae_clear_pte(&ptep[i], &iop->cfg,=
- 1);
->
+Jason
