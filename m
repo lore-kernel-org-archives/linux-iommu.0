@@ -1,146 +1,214 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11020137.outbound.protection.outlook.com [52.101.84.137])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58866367F36;
-	Fri, 14 Aug 2026 18:56:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.137
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786733772; cv=fail; b=jUYgxwnTILNC2N8h6NtO5/sAdwWMxKjgv4Qd2OVaWedxKo93GuSH8IkzJ6anQ7jx1tiTv8Bf0DJWIckoTLrWZxjPoHYW7TIRnDnTixeok9GgspkCiC8vMQJ3E0fybEBYwd47BVDhWRSEw6GyzTPwHeYHDehyxsybC3zQth/61xk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786733772; c=relaxed/simple;
-	bh=6RRPcE1PkvyjE6PeNgchYHGtADU6vZWPq59Rej5LX+I=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=JFwvmog3RdcAoVfmpTcsmlAhbys1fGGUpHJSOykQelYcb2OscfesRkaTtpDnSlzdNiY8NkY9kNGCTq2iweV3dN4Ka1sE3o2xc7fnbrTemPmeFSToYN8ZJDbIvMl+jQsLjt4I5n9+Itg283Kq/gEZLNniRVifC2flH13+Ae4m0rY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nebius.com; spf=pass smtp.mailfrom=nebius.com; dkim=pass (2048-bit key) header.d=nebius.com header.i=@nebius.com header.b=oFT6W/6t; arc=fail smtp.client-ip=52.101.84.137
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nebius.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nebius.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BADC3D5643
+	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 19:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786736769; cv=none; b=fKb97ABSeTjH/DZsAXQYbsyyhi4uz6/VKv/QVK3y8Wf+honsir9MqKGTl4pfLXmQ1D2Qv0+jw5iCFhdhb/+LJmvj+4gok4pMxIo18AtaAl/m1cGt3GkmpnonpbMnrqMnDI6ckYlXunxKyCtoMdqBHMfhwePNdf1nwv5vbKHk5HY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786736769; c=relaxed/simple;
+	bh=baOJZPd7nJlBagSvu4EY/e0qB3OgSpSkb6F80UmuE5I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oByBFLLoOjG9JVc8I2uN/9vcCXNvGWi+PKTC23UtfXGx1F3PVcElOwSY+8PM/huafcohtN7DGIHE/in6xMX+TeZU5giWFow9i1VzJxfV8cSKbqJjgKZaRWZAZXRBMp/SJ12MGc9xT82ykUy9aluwR0wZPRQeoT1S/YRYHCSqyjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Xtv9bLiK; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nebius.com header.i=@nebius.com header.b="oFT6W/6t"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nObW0K2sBjwdxQ7yhHaOIZMwUHY59ZE9hpsWFFhuvLrT7eGGcGPcM73mUSpKvkhrYGMsPcovEgHO2/wHiGs1bz9F+Mq9Q91u89zvlmmhx6aPOcEEhXo8dfZqRZwS0PH2MIaiRfO1T9jJjzyJbyJUG5KnHoU0Rw8bqN2P1b25PctfKK9IRDeHt1pH0Rte7rP7BEDZBXyGR2F6OoCv6Sz6gyXIKVnhox6agvBVheVGeFBu5VxGASbD23AySinrY8t4HO0rT4ZCTYSUBHi0Z96VZvkjhH552xq1dTQQV83Y1UZXHFiL0sm/TX/48dqk5yKPYmGAy0hWavf2JmBrfJxJxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6RRPcE1PkvyjE6PeNgchYHGtADU6vZWPq59Rej5LX+I=;
- b=OUkhxSCPDcj0VYq/+uDkTgA44g4LInUFxI7MVR/H8NHdSXYmrp1e2Un2A+0tP96vg0JKHP8PGN0Ka4rK0hOB6sJ2qJXJq1wxJueM55OguVOiQSm7aP8Ho90otyjY2/ty1YvSYnQ0Gh1ZEmYT6+JWQHK5bLzvk0KKfjqPrjPzKKAM/N9zoSKBK/pC0yBHyY5sQMc56FT8MGRKMQ+RtkNcWgtUzTH4Fp5bUIXFdO1lbUDIgtHyeSWQXrX6Zxs8F5AvNeVbZs0qDlObpqnaicnc/3QkqSRYhN3MEsJ3YgU8AHQVxesixdXNj0EQEoHVbReOyKkjU1zVnc4jfp2CRVSC1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nebius.com; dmarc=pass action=none header.from=nebius.com;
- dkim=pass header.d=nebius.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nebius.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6RRPcE1PkvyjE6PeNgchYHGtADU6vZWPq59Rej5LX+I=;
- b=oFT6W/6tFWhgV7kzCw1RcbKMpBh93uimEps/eg50IPWsWGYmurkhXQsc9QDEqQjjlsD4AyXET6cGKAIO+gtXCkuoSUxGiFqHlB8tqHTIolLQLX3QP8k9TB8O0EX2jd6W1QMn68WtQuQXfLSNs4kbNMHvP1p9QeCm89Hiw+sfNCVd6RA2UaSkfrel5BmIgWVlR8wbhnneeK01X/5tXZVrEFuyfstKBMj/IkCL82qKdrrA9quDaWYJhZALtFhWTNm7s7tgBcWDv2jG5WQiFsm3H6uE6B6mu4o5ExwuqjuFxxQB7Cjzeuv2jeQHHhxACFbG+2BJ7WW05IfSw0j3EjSEig==
-Received: from PA1P190MB2557.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:4fb::18)
- by AS8P190MB1912.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:508::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.16; Fri, 14 Aug
- 2026 18:56:05 +0000
-Received: from PA1P190MB2557.EURP190.PROD.OUTLOOK.COM
- ([fe80::d0eb:eb62:7779:c6f0]) by PA1P190MB2557.EURP190.PROD.OUTLOOK.COM
- ([fe80::d0eb:eb62:7779:c6f0%5]) with mapi id 15.21.0315.014; Fri, 14 Aug 2026
- 18:56:05 +0000
-From: Dmitry Malkin <dma@nebius.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
- Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "regressions@lists.linux.dev"
-	<regressions@lists.linux.dev>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>, NB-Core Team <NB-CoreTeam@nebius.com>
-Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
- bridges without vDEVICE
-Thread-Topic: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
- bridges without vDEVICE
-Thread-Index: AQHdK9Pu+fg3Gt/XVU6V74nnaDIiLLad0o6AgAARZHE=
-Date: Fri, 14 Aug 2026 18:56:05 +0000
-Message-ID:
- <PA1P190MB25573D7CFE42EF7DD2A8CDE8DBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
-References:
- <PA1P190MB25578C482C8A3B06A4DCC6FDDBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
- <20260814174825.GC510472@nvidia.com>
-In-Reply-To: <20260814174825.GC510472@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nebius.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PA1P190MB2557:EE_|AS8P190MB1912:EE_
-x-ms-office365-filtering-correlation-id: dd7479a1-1ef9-43ef-57f1-08defa35b1c6
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|23010399003|7416014|376014|10070799003|56012099006|18002099003|22082099003|38070700021|10067099003|11063799006|4143699003;
-x-microsoft-antispam-message-info:
- bIxXL5c+5TVAAYzaZ1gTDPVXzY1gkxnyZrMWYfB242OsjoB06rYZ1rys5s8zAQcU0mhGxmmTHUP507OHo5FnNU6oR3VTBvdb8uqpq4hgPQo/TDvubWYH7pNjekNwwB4Na2AFwCxn96+77ZRdAEQ4F4gTtLdkJ3eYw/Az8VkAE108hwwScDLIerYfsKbbB+zNgO+R9oCv5HqgFmy2s+jQrSsoWm/J8XQV8u/MM8igWk5vpIjAipraZhDXECgr5hBMT3gKz9/sSfkyXkcectTipfSJrxzojua7R/CtSkHsBbYtnijEkdu1nGTlcC6zD2Fwf+gsoA87K8NwCUB99RqkC7sBGBK64Z3qyx9/fyQpV6y1USbtbQPnItwgTFsBqvFMeOIoABNpbkHboXxWxSoXVTDg1A4P8HVJdVDMEk/YPkO7x3pdhGDohgV+/zh3arYPwSDDx3Ugs/p8Q1/52oEuergyM2X5Nc1s1SKZRG+733DQgzDlygX0FRhbRvI5MP7bWhCvyhCBu66/IF/7aXas34ZoORpT4Gr1M4om0YO+vsAjlEpjA/IYVig3Lio952Ic1KcnAGO+3s03Z5eVnmW/knKmaNGLj6Yh5ECGF/25QWY3zhhVzyYY7ZHUfGVqosg+cSEE6pwNZAJydhsq1g1zcqU2itszRfHFtptlOyRRwfEk1Y6FoURz2b42j14ibGTF6CXjPuRlcQkmRqOEqArx5A==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA1P190MB2557.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(7416014)(376014)(10070799003)(56012099006)(18002099003)(22082099003)(38070700021)(10067099003)(11063799006)(4143699003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?NQm/R0t9AdFQ8DWA1TOJT50iEeeJES1RsNPHy7Mc8Ksv76vED3tD6dqgRF?=
- =?iso-8859-1?Q?WcjldspMzp881+/JeoiWyzoD318ne2hnrxgd5EgJMxZvE3KFaPcmptquVe?=
- =?iso-8859-1?Q?RE7+zcEyvRnNOrpBhcbOrQrSdyKovZd2pgT00PTKg3GMLEY0ZteOMKyGgN?=
- =?iso-8859-1?Q?CAug1Mfwq4SLuRwIuTj5PqRqdYj3DXImlTj4nQw/Neq9Y0m56G6H3X83z4?=
- =?iso-8859-1?Q?0KGuNKsrND43tITshCACiIqxnU2EhP19RgBszBcmkJLtwMrSd6Z0ceLGoo?=
- =?iso-8859-1?Q?rH0BXVIEVyrcgZnZfB01ydikpTsEYTuflE/ERpK+FOwEwKrcrIPxKoq6uL?=
- =?iso-8859-1?Q?GalTRYKXxFjlCFw8sAmr1w6AcFZSXpDxB6BlkeCj4t+XZyHUucTRuJiMkw?=
- =?iso-8859-1?Q?OC1qKBuXxNbUgNUU03gQsMC9RvSrFDf8NbMNU4LZnJhI1M6y54Ok09yQ0D?=
- =?iso-8859-1?Q?B3zaBZtPCcTLg5c63M53KIp+nk4jfCerprmgGdU/UeQh2DmI/BwKL7lBKC?=
- =?iso-8859-1?Q?BxEwwS6yfVSgf/M6SbAnMV1SY6ol/qUJzp4iqc/evR3+g27BDFXDxqWss2?=
- =?iso-8859-1?Q?sgLK4/oTsFlEARC6BlNgsuenjQa3lnGRa0BBnqT3iLxB6OTQjAUoxjnQks?=
- =?iso-8859-1?Q?OMZnL5e34cmRvxqT+bGLBgS93uY9FtjHxvJV2N3cgX5NH/FW+h69wgXiix?=
- =?iso-8859-1?Q?9/wP72FhwjWjo/kYc3w3kRaCPD/e2fSi3eMOXmP6GMiFsMcPVyNfexb959?=
- =?iso-8859-1?Q?d3hadTrwIafZj1HG6HBeD2uhhraYVQYGE24MlFl+kCFxFE4jYXjuvjvAoc?=
- =?iso-8859-1?Q?LJ8H5AvqI3beoTt0MedAD0udYPy/0yxK885DKYmAIvp4xlrv6AoUn+Uk1Y?=
- =?iso-8859-1?Q?x1Ra6Axuh26eJYAAdM2VIjgIOicBugktYsHXn5E6GdBzF6nZNzJnb2QUlG?=
- =?iso-8859-1?Q?cfGXSGpZ9WPg0fabJmuTDDQxChmVPD9cYznQEVF1Wf3CiOZSbC3xLIEr1S?=
- =?iso-8859-1?Q?NwuggKq6r7Wr+zxmb+wOM6MbMFC+rf33b6fMmr4E5RfPiJeHFzNqUL23JC?=
- =?iso-8859-1?Q?AVYbR+xAzYn6UnuKhBt+kjX7jVkVhCgTc+qbUs6Duf4SgPdxfKCxdnqTPV?=
- =?iso-8859-1?Q?jUqz8Iw5No5DOj+IJqRYdVeXeX8VI5smLFn6Z/Vl0pTYQxMGBWkvdg5Q6w?=
- =?iso-8859-1?Q?7kMKjMlfhg5htCopFt/laNSyvk+46orZQA/fg4hg6R15ZtExzKX++N6d6G?=
- =?iso-8859-1?Q?MhZVi83/qZE/PNl3YoEXSCc0JwTWWhrBumQ5am1dqByCbnhezpTaGrE/xB?=
- =?iso-8859-1?Q?EqQTIzisHCcJdpWV5fv80Kge0j/8n/v/5ScvLgURvCSynJbjyt/ivhlyng?=
- =?iso-8859-1?Q?wgkZmZdcRzXA3FrdGFTd/wNZbQ7iN8/Sx5N6EPbbt0Y7YZaIi3PBwll8dS?=
- =?iso-8859-1?Q?xa1Sx0N7q6e8/1Wx5Q7x0zwu32xluhyQUC3SC0iTGkVyorAZkZ4V6fHVCY?=
- =?iso-8859-1?Q?2W42QXVNIPEeZQEbCUus6KJIENM6BsM8A3qiOV/TJQK/iMLauQkecQKzx9?=
- =?iso-8859-1?Q?9KOqrnWl7iN7ms9OYosD1id+EHVKf4LJWsftVHXJpjXcob6HSvJ7HTbeN8?=
- =?iso-8859-1?Q?0nJd7YJd/usBPfer0QUbEuBJdIuzHPlDluCaxYJ6KQjNiRSYvyabEejfrI?=
- =?iso-8859-1?Q?xhqMVISlcloKpJB4Ih1o2tnfoDE8Q7ZCnqTM9uWSRr/vSqznczrUU8PhXK?=
- =?iso-8859-1?Q?nX7ySWRmUsb/biwf0ibpDkwsBt1EcLOw0f7N9sBWeo42T8CqdRm75IwHef?=
- =?iso-8859-1?Q?+K+LjkmJO8C3s4o3N1hHgKRN4IDfySwByVbrfgwtOGspOT0THBoU?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Xtv9bLiK"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2d3b445a84fso126925ad.1
+        for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 12:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786736765; x=1787341565; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=S64AgIWO7QxYO2SGcf+4LpPDoMjsF/PwjvLqa2d2Geo=;
+        b=Xtv9bLiK5bhdzbZvwUqvVpULhwzcxFEG0W6SxM5/sn64LtaI0IBhlyr1B0nioxCgkw
+         p2QOElNQfu4vww9pC2UolrxCjOsc6DUMLnu4rWyml5CxuYTHmmduB9GxTviXEyWg2PlJ
+         c5hir2NOdxmobacgcqNh20gSPzii7UtVrwP5/PViTfv8VQj8vJbzZv7WHVhwVqmVkAuj
+         SL9SLYyLPiDFcxMRESukxCBi/4YhqG+UUEzGn436Ft30F7IxZVrirtKCS9slwLQBZcGI
+         YMmMylmGxbHQFlTZOud/EO1WR8fV8GgnAHegC22St7PuCkplYVVvsBzXm/rkJTE5wUDB
+         nvLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786736765; x=1787341565;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=S64AgIWO7QxYO2SGcf+4LpPDoMjsF/PwjvLqa2d2Geo=;
+        b=Pp7ZKb0JiUgJamrLsYbUKx2Kp2dMnqEW+OLQ7KaDzxkIMcPUlDecxFOUI897Bjy9j5
+         WQwIWnZmmf1A9cykjkaVzHQ5qUSUUEdYuTJSZTs8ZI3XgtD+aMqw3iurBCGns9qsRlOP
+         H50uqnZ6OqrS4ucD9BhVZolXEApOsSLUJr2nbwu3ppLzzjMlgtNsB3oGlaPnwKIUZMOX
+         BCtISXM1VR71jA2ITBLGKpMyFdAQt/2k45+DhnawOjcXiwuV7640K63dthPy3M7AXlB/
+         +YOGRwWC7LcB3XgCIrYUcokbamRGDl0FBxrsLGCKLPMD7eSFV4u+4NdpiIMmcs1GGKnV
+         yaVw==
+X-Forwarded-Encrypted: i=1; AHgh+RpKq/uORaddP28f5W+m/4hC+v147LWRtpPvr6BuV7K3uYg70ff6550UXMipW7ffkvMOcqrP1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy28wrIbExrxhmHBtJ9YWQomMndT5dI07EBA7honlVyMI/NKCXO
+	/WVle1ELxRzEhhLf+mn5iDYRH1yvdvar3GKC6t6mTy4nUNqqH6sxkVed0eE1gqnwiQ==
+X-Gm-Gg: AR+sD1234aEAiTqKUL51ci2Yp3wTqsfIaIKJmtXfzIgFh3cGSV71ejaBfaWq70irq0a
+	gFUVHg9RMIumhvUZSxHLOhyjcvG3eLhnASlagUtsj6Eqw/lp6jeXq/lCPZQVfrZr5gyj4jAihvW
+	aOdSb8XxRVWl3ycFQq4BNAo0lQmNMLnyoR4mRDJrpRfmepwLvjTQGYDf6uANRn9KpH4TNoukZRS
+	dR6kBWzZy35tpFRTKe0O4Rlol2TgwzYaFiHJpiV//ZrYdywkeGqrqwgLYP8x1d5Td/mZ+qJmuVy
+	KEXvKQAkR7vIQvimmMKlO0RPCWbmPJfmAusQ1B4KY3533qhNFZi4DSfI68DkdoZeNEzEMMkB8YV
+	FbrSVNrcOOFxVErl1P+HFH3hSUboncP5JLA2Fo1wb5wfRuf9yiAdqY9RlMQnAh/g+MF6/i8s4P/
+	xRbdOmHHa3O8zCzbzL7KXJuVXHs2euVzlm11YBUQ2PypmeuN+t/jYQ4Msqonj4aK7eLfGDS//x8
+	h/tZixsQ4cdVlnIwEdGC/J+KZf0j4NZ3V0A/8f9Ofmj0A9EeFWIj7M10mMqU989
+X-Received: by 2002:a17:903:1b0f:b0:2cf:41ba:96b8 with SMTP id d9443c01a7336-2d3af229eb1mr12458355ad.6.1786736764793;
+        Fri, 14 Aug 2026 12:46:04 -0700 (PDT)
+Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-394ea99ab1dsm3742041a91.7.2026.08.14.12.46.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Aug 2026 12:46:04 -0700 (PDT)
+Date: Fri, 14 Aug 2026 19:46:01 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [PATCH v4 11/18] iommu: Restore and reattach preserved domains
+ to devices
+Message-ID: <an9mwcflLcLtwDrn@google.com>
+References: <20260808022723.3893618-1-skhawaja@google.com>
+ <20260808022723.3893618-12-skhawaja@google.com>
+ <xssagtjtc27kxprwyz7exeiotigcr3ksnvr53ap56ialuqlfe4@xql3pr5va6m5>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: nebius.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PA1P190MB2557.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd7479a1-1ef9-43ef-57f1-08defa35b1c6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Aug 2026 18:56:05.5542
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4eb23c52-f3a5-49bc-b555-0b061267a984
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: y/lUVrdHCu4RWwNITzmO1QSd7+MZaap2ZoMMIOReJNmKq9R4EL/wuxWymUC+AlDb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8P190MB1912
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <xssagtjtc27kxprwyz7exeiotigcr3ksnvr53ap56ialuqlfe4@xql3pr5va6m5>
 
-Hi Jason,=0A=
-=0A=
-> If viommu should support multi-device groups, I'm not sure. I want to=0A=
-> know why you even have multi-device groups in the first place because=0A=
-> that is not normal at all.=0A=
-=0A=
-That is because of the 'pci=3Dconfig_acs' kernel command-line parameter. Th=
-is causes the kernel to create a single IOMMU group containing multiple PCI=
-e devices, including the bridge (PCIe Root Port).=0A=
-=0A=
-Dmitry=0A=
+On Fri, Aug 14, 2026 at 04:59:50PM +0000, Ankit Soni wrote:
+>On Sat, Aug 08, 2026 at 02:27:16AM +0000, Samiullah Khawaja wrote:
+>> During default domain setup, restore the preserved domains by restoring
+>> the page tables using restore() iommupt op. Associated the restored
+>> domain with the iommu group of the preserved device, and reattach the
+>> domain to the device.
+>>
+>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>> ---
+>>  drivers/iommu/iommu.c            |  76 ++++++++++++++++++
+>>  drivers/iommu/liveupdate.c       | 130 +++++++++++++++++++++++++++++++
+>>  include/linux/iommu-liveupdate.h |  69 ++++++++++++++++
+>>  3 files changed, 275 insertions(+)
+>>
+>
+>../..
+>
+>> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
+>> index 20acf123b47a..04c0212cd81b 100644
+>> --- a/drivers/iommu/liveupdate.c
+>> +++ b/drivers/iommu/liveupdate.c
+>> @@ -708,3 +708,133 @@ void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev)
+>>  	liveupdate_flb_put_outgoing(&iommu_flb);
+>>  }
+>>  EXPORT_SYMBOL_GPL(iommu_unpreserve_device);
+>> +
+>> +static inline bool match_device_ser(struct iommu_device_ser *match,
+>> +				    struct pci_dev *pdev)
+>> +{
+>> +	return match->devid == pci_dev_id(pdev) && match->pci_domain_nr == pci_domain_nr(pdev->bus);
+>> +}
+>> +
+>> +/**
+>> + * iommu_init_device_preserved_data() - Initialize preserved state for device
+>> + * @dev: Target device
+>> + *
+>> + * Looks up incoming Live Update state for @dev and attaches it to the device if
+>> + * found.
+>> + */
+>> +void iommu_init_device_preserved_data(struct device *dev)
+>> +{
+>> +	struct iommu_device_ser *device_ser = NULL;
+>> +	struct iommu_device_array_ser *array;
+>> +	struct iommu_flb_obj *flb_obj;
+>> +	int ret, idx;
+>> +
+>> +	if (!dev_is_pci(dev))
+>> +		return;
+>> +
+>> +	ret = iommu_liveupdate_flb_get_incoming(&flb_obj);
+>> +	if (ret)
+>> +		return;
+>> +
+>> +	mutex_lock(&flb_obj->lock);
+>> +	array = phys_to_virt(flb_obj->ser->device_array_phys);
+>> +	iommu_liveupdate_for_each_arr(array) {
+>> +		iommu_liveupdate_for_each_obj(array, device_ser, idx) {
+>> +			if (match_device_ser(device_ser, to_pci_dev(dev))) {
+>> +				device_ser->hdr.flags |= IOMMU_SER_FLAG_INCOMING;
+>> +				goto out;
+>> +			}
+>> +		}
+>> +	}
+>> +
+>> +	device_ser = NULL;
+>> +out:
+>> +	WRITE_ONCE(dev->iommu->device_ser, device_ser);
+>> +	mutex_unlock(&flb_obj->lock);
+>> +	liveupdate_flb_put_incoming(&iommu_flb);
+>> +}
+>> +EXPORT_SYMBOL(iommu_init_device_preserved_data);
+>> +
+>> +/**
+>> + * iommu_release_restored_device() - Release a restored device
+>> + * @dev: Target device
+>> + */
+>> +void iommu_release_restored_device(struct device *dev)
+>> +{
+>> +	/*
+>> +	 * We do not support releasing the restored devices that are not
+>> +	 * reclaimed by the device drivers as they can fallback to the default
+>> +	 * domain.
+>> +	 */
+>> +	BUG_ON(dev_iommu_restored_state(dev));
+>
+>Hi,
+
+Hi,
+
+Thanks for looking at this.
+
+>After a successful live update this is one sysfs write away, and nothing in
+>the series disarms it.
+>
+>At PCI probe, iommu_init_device_preserved_data() matches the incoming FLB on
+>devid + pci_domain_nr and sets IOMMU_SER_FLAG_INCOMING.
+>Nothing clears the flag or device_ser afterwards. The group is meanwhile owned
+>on behalf of iommufd (iommu.c:3229-3231, "will be reclaimed later by the
+>entity (iommufd) that preserved them"), and iommufd_liveupdate_retrieve() is
+>-EOPNOTSUPP, so the reclaim that would end the restored state cannot happen
+>yet. The device is left with the state permanently set.
+
+Yes, these points are valid and this is intentional. The IOMMU
+persistence support is split into two phases as mentioned in the cover
+letter. The reclaim logic in iommufd will come later as a phase 2. The
+preserved devices go to normal state when these are reclaimed through
+iommufd.
+
+https://lore.kernel.org/all/20260128195943.GY1641016@ziepe.ca/
+
+Regarding the handling of sysfs, my concern is about it coming back and
+going to default domain as mentioned in the comment. But I will evaluate
+if we can allow device tear down here and reattach it to the preserved
+domain.
+
+Also please see the patchset breakdown here:
+https://docs.google.com/document/d/1enDn-uPE9U77U-xHEnzn6HHGKiePSAtMIP8EDU3NO0M
+
+Btw since this phase 1 is relatively stable and I don't expect many
+changes in it. I have started reviving the Phase 2 patches and will be
+sending them out as RFC soon if you want to experiment with it.
+
+Sami
+
