@@ -1,108 +1,97 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDEFC3E3164
-	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 07:11:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7F6F42AFB0;
+	Fri, 14 Aug 2026 08:39:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786691486; cv=none; b=FrZVpgig0RDf128dKX684i3tokjKstQSPv+3PB2/Td6UbKdcMevd70ERRCAJ3mEOMncTJ/sO27jLhyOsINstJFbCK6UzEHULY/o6ZUxD1hX2uDpa4m8k3Bre9WssAO6aULqc2a+cCw4XJ7dr72W5rDzZq2B1y/UJZXSgLpyPexM=
+	t=1786696769; cv=none; b=etb17oSms+AXCcJeG9E9ruJl7C9yCqQcLv5+/EU91Ud3Gm+Edl1sOgLFP02XfxyS8xyowK2jP5EvXDDPpxuuqqJfzLUqcq9OyoCEyMjZuUnpRo/bLW/FLg6Awg7E7THY/zRIoaPrlAD9xlD8cOTPXYMfWaOXDocNkmFylX31bNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786691486; c=relaxed/simple;
-	bh=mRUEgaLLRZs3XA6JhpKmVeHN70ytznFWnbmy5/ri8Pk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=aeef02RVA+NelKj4yZ4AxYWMEYp7M5haAb50g5tFUbkPtIWkEZT1yfRJd/m/aV3WOYYfSWhIc/GiNgA78XbyKoqrfvQers2zPNqjX9iUaTx3hUPedgrIqgntKhDJVSmnELCQ8JCmt0DCvxitY2VdVDitHNDszlOq/W4hCoqWG1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=XDhsE7mR; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1786696769; c=relaxed/simple;
+	bh=H1lN3SEt95SuO+eCYyw/ozQN/NC+W1q1UK/uRXeotis=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XXKMExyPFaNgwpj1MkBcXDkTbT1mGHo3gAIONlarg9tC1CcItK3DF206fmy2Y/Ea35NEYvkAfPHnPU4l9OqqIr0zupQpW648bdHLQ7Bsks4XBQ5EsHpks/1ASJC0EherN6YXnfxs/CjpwEmZ1Fm+wCjXtbUt/MObIfwyh+/aqkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SMBdxflz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="XDhsE7mR"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260814071116euoutp013bccbc24e72e4332d7d4133d01100e91~Lmm5jkncH0445204452euoutp01y
-	for <iommu@lists.linux.dev>; Fri, 14 Aug 2026 07:11:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260814071116euoutp013bccbc24e72e4332d7d4133d01100e91~Lmm5jkncH0445204452euoutp01y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1786691476;
-	bh=Bp3R4P4Rp9frlKNA97goT2EzSLN1Lba9YEqq1yzXTJg=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=XDhsE7mRdfj0K0zRAAwoNu04t/ESc1R18IJwxZofSMSSEWRz9eoSBJMOZx43aYhqd
-	 NJlZkM7JQDPetJIrygAtOfUaKeGrybhGGd5vciTRXTYFaSsEZRjxh0VonawLVQJ5IH
-	 rsV43EunDd0YEawVg6VT5NABCQ/GlYdnDVMZeHsM=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260814071115eucas1p12172796c7a61c7d31843b25fc7bff469~Lmm5MSMRb2328123281eucas1p1Z;
-	Fri, 14 Aug 2026 07:11:15 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260814071115eusmtip2f5da583e8a94dacb5c9912ded282f82d~Lmm4kD1vm1291712917eusmtip2h;
-	Fri, 14 Aug 2026 07:11:14 +0000 (GMT)
-Message-ID: <22a4aa19-39c8-4f3d-9542-b2dce50125d1@samsung.com>
-Date: Fri, 14 Aug 2026 09:11:14 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SMBdxflz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC8D51F00A3A;
+	Fri, 14 Aug 2026 08:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786696762;
+	bh=wWjwvjvKbePNx0gNHqW9UR/9cgD08zGtWqMf6sP/Lac=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=SMBdxflzfEbnjJvs+dI9E7KCIpssTpXBiuGSwNu6Mh9A308UAjxnlztClwBaTBsWO
+	 P6+xEvHg0JesRpxVO7qZhCkZ5M+lDWfrjTtff+DDwUHJJKB9S5uBYVrLxlEHVL2Nph
+	 BLkFHVHyYd8gqLsWVhWZAqjIJD/lBgAuE6GPYgJQe5EfciJ8P7k4wBb6fW2/mFxaPF
+	 MGG0Me/NJRaHZ5PoF+ypQXw9CsbA5EazChQJWkoH7++EsgXY/rQbPSCmENkqXkN/qu
+	 ZRzF0l09pi9WIylEwKEMXFiEwnH+2ffUwFg7IxEzCW6Bfl+d+7TOk7Hj21efUGY1QJ
+	 HXsdKcAueiccQ==
+Date: Fri, 14 Aug 2026 09:39:16 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
+ for latency
+Message-ID: <an7UNAA1WlEXG23-@willie-the-truck>
+References: <0-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <akzm5BoV0rToJ7ij@google.com>
+ <20260708001058.GA422027@nvidia.com>
+ <an3MSKEj7VhT4WkP@google.com>
+ <20260813141320.GF730363@nvidia.com>
+ <an3ew9xbnLe1dr5g@google.com>
+ <1791d7da-ecd9-4475-8f27-c8857477b442@arm.com>
+ <20260813180102.GH730363@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-direct: fix type mismatch in dma_direct_alloc_pages
-To: yangge1116@126.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org, robin.murphy@arm.com, hch@lst.de, liuzixing@hygon.cn
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <1786689000-14677-1-git-send-email-yangge1116@126.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260814071115eucas1p12172796c7a61c7d31843b25fc7bff469
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260814063037eucas1p13a146c907bec7280bb28d9e8ef009eae
-X-EPHeader: CA
-X-CMS-RootMailID: 20260814063037eucas1p13a146c907bec7280bb28d9e8ef009eae
-References: <CGME20260814063037eucas1p13a146c907bec7280bb28d9e8ef009eae@eucas1p1.samsung.com>
-	<1786689000-14677-1-git-send-email-yangge1116@126.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260813180102.GH730363@nvidia.com>
 
-On 14.08.2026 08:30, yangge1116@126.com wrote:
-> From: Ge Yang <yangge1116@126.com>
->
-> The pool allocation path directly returned the void* cpu virtual
-> address from dma_direct_alloc_from_pool(), which is type‑mismatched
-> against struct page *. Convert the dma_handle to page via
-> dma_direct_to_page() instead.
->
-> Fixes: 5b138c534fda ("dma-direct: factor out a dma_direct_alloc_from_pool helper")
-> Signed-off-by: Ge Yang <yangge1116@126.com>
-> Cc: stable@vger.kernel.org
+On Thu, Aug 13, 2026 at 03:01:02PM -0300, Jason Gunthorpe wrote:
+> On Thu, Aug 13, 2026 at 06:25:59PM +0100, Robin Murphy wrote:
+> > > > Yes, those exist, but again, they are already facing these problems if
+> > > > running without RIL.
+> > > 
+> > > Yes, but my point is that those typically support RIL and that change
+> > > regresses them.
+> > 
+> > Not even that - the main concern is over-invalidation of adjacent in-use
+> > buffers due to rounding up; non-RIL absolutely does not have that issue and
+> > never has.
+> 
+> It certainly does! SMMUv3 got an invalidate all path a while back
+> because doing single for >> MB's of IOVA effectively soft lockups the
+> system - especially with SVA.
+> 
+> We set the cut off at ~2M which matches when the CPU goes to
+> invalidate all. That's 512 commands max of single TBLIs before we just
+> dump the entire TLB. That's a huge over invalidation.
+> 
+> > Note that with RIL, even precise invalidation should only actually need at
+> > most two commands (excepting absurd off-the-scale sizes) - the trick is to
+> > consider that they can overlap.
+> 
+> Oh that's really interesting, I never thought about doing it like
+> that. It is way better than the algorithm that is there right now.
+> 
+> Let me try it, it seems like it would make everyone happy.
 
-This is a duplicate of the patch already applied to dma-mapping-for-next, see
+I was planning to reply yesterday saying something like "Robin previously
+mentioned this one neat trick...", but I didn't get round to it. So yeah,
+if we can implement that, I think we can have one range invalidation
+algorithm to rule them all.
 
-https://lore.kernel.org/r/20260717180442.110954-2-aneesh.kumar@kernel.org
-
-> ---
->  kernel/dma/direct.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 4391b79..f496568 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -356,8 +356,12 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
->  	struct page *page;
->  	void *ret;
->  
-> -	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
-> -		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
-> +	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp)) {
-> +		ret = dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
-> +		if (!ret)
-> +			return NULL;
-> +		return dma_direct_to_page(dev, *dma_handle);
-> +	}
->  
->  	page = __dma_direct_alloc_pages(dev, size, gfp, false);
->  	if (!page)
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Will
