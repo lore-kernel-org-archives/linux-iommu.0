@@ -1,167 +1,140 @@
-Received: from mail-oi2-f11.google.com (mail-oi2-f11.google.com [74.125.231.203])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6494A44E64A
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 16:34:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.203
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C14B44C67E
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 17:04:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786984476; cv=none; b=KcsrBJ1pOFRokvodWi1I1kpWITj1uc0DMDsBYa39gvpgMslnLNNnSS4HMmOVpBFr7/RV2FIzCh/qbqE1rDinaFg2r2xP6A2QYuMpM45Nk3ZU1jluyYCQIz9An2ad89vL2GXiWEdvozVW0Jjf7qNUqsDu6QHmYFTxAJkAk2REI6U=
+	t=1786986271; cv=none; b=Wi9fquvXV1dt6QT7IB64PoUJApuFm428+NCeoEG8rVmuI11NOAg8aPv72KA1JjFXHOO2D1r3sOJ0OAPoRyzjMu9dJDUmhC7O27KXu842ehIagrGupbuaXlvVGDwsvIsfg4IULfys33la2S+++/qTBxdL8fF5pZ8PSoMWc7+Bmsg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786984476; c=relaxed/simple;
-	bh=j+6dLP4KOZXfLiW35D3amX88j9BD+eDPnLlo3S4BffA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=V5Sn/E8WpftHIXyXtqO163qjuX9CYcaMbtEHJvWA8hnYkDwzQKWhcZH4NpiruzPD6WI9tNrmO+KMiUNNNzyj9kFMETI38BST274cv7F9v6euSfuv7ia8EozMnexAbGvPQyChyWy+JWhD4RONDWIQW54SbRBy6GkuVtOWAFm6c84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=74.125.231.203
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi2-f11.google.com with SMTP id 5614622812f47-4af7193adb7so1150147b6e.0
-        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 09:34:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786984473; x=1787589273;
-        h=content-type:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wZCmRIn0qSWyL5jBP9JKHJFrfolODivBzvEU9FKadEE=;
-        b=ZEFr3GmrSofJ6LozCpMZqZC1j+sCIHFQXsent8uNSvTLah0lhv4a8YyZKArrkX0X/3
-         1iDO1RkXV1oZVZuJYvxf1XdkHm2Pa/LYyq6ERwO7/lvjDf+vYEibm9htPoq7772yn5Fv
-         D8nZhZ8GmmN79qf4AUyEYZIRVFCMyEGkXhKRb2GrGOvRtVSd0LJAD/JLVo9uALTD2nDf
-         +LBr3NLykcno0FzH3L4w+1N1jL3cU1zYLe2VgmghvWYPFgnBhHEicHVDESkYA5Prz5ur
-         AaWNQW47tBho2UGzBgMsv7mfpghjujru1qa6k8zen+AiT4lBF/emWngrExKTa8LmRaOq
-         zOaw==
-X-Gm-Message-State: AOJu0Yz4m/7peIc/nfzVLxFtSS8MjLE/iFNlLFsoveBaZOaZEXBUcoHF
-	WIpOEmN+GsvEHFYLkDiwNCtES4riENSQxa6FWkO+1FtdW8weqzqrVE/5DVuFb3gjHwZ6gL4IiDk
-	iJRPFSD+qqIh7eRcXN41394sI4vd80D1cLli0rndUBURH8bqS0X8L/4TupqlLJg==
+	s=arc-20240116; t=1786986271; c=relaxed/simple;
+	bh=WwW3V4TMuE/pvFjy27YhAVXW50q82C9U1UO8+sDJCII=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UlSve29toJGHUMzHoexctNkFXILa3/kZHvLtpd4aC8J33uLVqFlMq9TdejXv1dQh7WBbZUh/r/2q8ZwNbRrhgPcUMAdK2rvlEOYj7nPak4tfdXUIA+ylGyEIbbIousAkc5HmOgWizNVQzuKnq4pwQbBXDrA8LhhICRKsqK6BbGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=QeIkDyHW; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="QeIkDyHW"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 20CD61655;
+	Mon, 17 Aug 2026 10:04:23 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F27A83F673;
+	Mon, 17 Aug 2026 10:04:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1786986267; bh=WwW3V4TMuE/pvFjy27YhAVXW50q82C9U1UO8+sDJCII=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=QeIkDyHWPZXIR5a5D54DOt0cXsS9HlN67HT5K8IyHeiL8l0UvaTFRQI2XmMvmJz2h
+	 6Z/ILoecouit7do9PzKQEAY+ruFx6BKZnsqTJFzHAw5FDmEAKixfAMMa/8jv8YUJPu
+	 hdFYOiIzxw6y9w4otrm/sEkl6Rh4yFuSPIayxcFE=
+Message-ID: <3ac5346a-485f-4c1a-8c3a-ad649f2c76f0@arm.com>
+Date: Mon, 17 Aug 2026 18:04:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:14cc:b0:486:8a11:6e8b with SMTP id
- 5614622812f47-4b2974c9ae2mr1812016b6e.2.1786984473022; Mon, 17 Aug 2026
- 09:34:33 -0700 (PDT)
-Date: Mon, 17 Aug 2026 09:34:33 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a833819.4d75e56a.c9a88.0001.GAE@google.com>
-Subject: [syzbot] [iommu?] general protection fault in iommufd_ioas_change_process
-From: syzbot <syzbot+48637757323884de77a2@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: dma_opt_mapping_size returns way too low sizes when using IOMMU
+To: John Garry <john.g.garry@oracle.com>, Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-nvme@lists.infradead.org
+References: <20260817083654.GA23414@lst.de>
+ <86f7fbdc-3c7f-4d84-871e-52ed3cfe8d58@oracle.com>
+ <20260817091840.GA26843@lst.de>
+ <8b7e86a7-6cb1-4007-bd99-1c4be8e6828e@oracle.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <8b7e86a7-6cb1-4007-bd99-1c4be8e6828e@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hello,
+On 17/08/2026 11:11 am, John Garry wrote:
+> On 17/08/2026 10:18, Christoph Hellwig wrote:
+>> On Mon, Aug 17, 2026 at 10:12:25AM +0100, John Garry wrote:
+>>> On 17/08/2026 09:36, Christoph Hellwig wrote:
+>>>> Hi all,
+>>>>
+>>>> I got reports that NVMe devices were arbitrarily limited to 128kiB
+>>>> transfers in recent kernel. 
+>>>
+>>> How recent a kernel? This NVMe and DMA mapping code has not changed 
+>>> in years as far as I know.
+>>
+>> This was hardware QA moving from an old distro kernel to a "recent" (aka
+>> still old) one.   But I've actually reproduced it locally on an
+>> upstream kernel.  I guess most kernel developers or power users simply
+>> do not run with IOMMU enabled.
+> 
+> Yeah, they don't like any performance hit.
+> 
+>>
+>>>> Both the NVMe performance numbers and common sense suggest that this
+>>>> is NOT the optimal DMA mapping granularity.  Can we pick a saner value
+>>>> for iommu_dma_opt_mapping_size that does not restrict common I/O sizes?
+>>>
+>>> Note that SCSI does not use iommu_dma_opt_mapping_size() for clamping 
+>>> max HW sectors, but instead sets opt size / max sectors from this 
+>>> value (so it is not a hard limit there). Could we consider similar 
+>>> for NVMe?
+>>
+>> We could consider that, but it would still reduce performane..
+>  > >> The reason for which we have iommu_dma_opt_mapping_size() is that
+>>> performance can go through the floor we can't use the rcache for 
+>>> getting the IOVA, i.e. we need to always alloc and dealloc an IOVA 
+>>> from the RB tree for each mapping, and this can greatly reduce 
+>>> performance when the IOVA space fills.
+>>>
+>>> If we increase IOVA_RANGE_CACHE_MAX_SIZE, then we just get caching of 
+>>> larger IOVAs and I am not sure that is a great idea.
+>>
+>> At least on the four different nvme devices I tested, the larger I/O
+>> sizes made up for this.  But maybe the details depend on other
+>> factors as well.
+> Are you saying that you tried increasing IOVA_RANGE_CACHE_MAX_SIZE and 
+> got better performance?
+> 
+> As I remember, I was told that the value of 6 for 
+> IOVA_RANGE_CACHE_MAX_SIZE was originally chosen from the value then in 
+> max page order, i.e. the idea was that we should not be getting 
+> streaming IOs larger than that value. But in looking at lore, 8 was very 
+> originally proposed, but I can't see any discussion on why that changed 
+> or any relation to page max order.
 
-syzbot found the following issue on:
+ From a quick skim I can't spot any specific mention in the original 
+threads or accompanying paper, but I have a feeling it was as much about 
+just balancing memory consumption with observable performance 
+improvement, and larger sizes weren't significantly impactful to the 
+original testing, which did seem to be focused on networking rather than 
+storage.
 
-HEAD commit:    3d6d817622b0 Merge tag 'scsi-fixes' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10b01a9e580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c44651ea7dd2f307
-dashboard link: https://syzkaller.appspot.com/bug?extid=48637757323884de77a2
-compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13dbb225580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b01a9e580000
+Since these days we have the flexibly-sized depot, and now even 
+lazy-allocation of the CPU magazines, we might be in a better position 
+to consider scaling IOVA_RANGE_CACHE_MAX_SIZE up without too much 
+inherent overhead (I guess the base cost per level will just be 
+2*NR_CPUS + 1 pointers now). The larger sizes we cache, though, the more 
+it's also going to blow up IOVA consumption if freeing/reallocation 
+isn't well balanced across CPUs, so for devices/systems with limited 
+IOVA space, at some point the flush_rcache case is liable to start 
+adding more overhead than the caching itself saves...
 
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-3d6d8176.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/f486efba4dfc/vmlinux-3d6d8176.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/9b9dcf9ee9f3/bzImage-3d6d8176.xz
+FWIW, my understanding of the idea we settled on for opt_mapping_size 
+was that it was never meant to be an absolute target, just a boundary 
+between where callers can expect "ideal" mapping performance, and where 
+it may start scaling with size/contention/etc., and thus it's for the 
+callers to judge whether larger sizes are still worth it for their 
+particular use-case.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+48637757323884de77a2@syzkaller.appspotmail.com
+Thanks,
+Robin.
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000018: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x00000000000000c0-0x00000000000000c7]
-CPU: 2 UID: 0 PID: 6443 Comm: syz.0.201 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-RIP: 0010:iommufd_ioas_change_process+0x513/0x11c0 drivers/iommu/iommufd/ioas.c:538
-Code: 5b fc 48 8d 7b 68 48 89 f8 48 c1 e8 03 42 80 3c 30 00 0f 85 e1 0a 00 00 48 8b 6b 68 48 8d bd c0 00 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e d5 0a 00 00 8b ad c0 00 00
-RSP: 0018:ffffc9000503fba0 EFLAGS: 00010206
-RAX: 0000000000000018 RBX: ffff8880550e9400 RCX: ffffffff8526f53b
-RDX: ffff88802c6b8000 RSI: ffffffff85af13fb RDI: 00000000000000c0
-RBP: 0000000000000000 R08: 0000000000000006 R09: 0000000000000000
-R10: 0000000000001fff R11: 0000000000000000 R12: 0000000000000007
-R13: fffffbfff22438f4 R14: dffffc0000000000 R15: ffffc9000503fc38
-FS:  00007f1248ff36c0(0000) GS:ffff8880d5fec000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1248ff2ff8 CR3: 000000005355a000 CR4: 0000000000352ef0
-Call Trace:
- <TASK>
- iommufd_fops_ioctl+0x358/0x520 drivers/iommu/iommufd/main.c:533
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl fs/ioctl.c:583 [inline]
- __x64_sys_ioctl+0x18e/0x210 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x115/0x870 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f124819e0d9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f1248ff3028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f1248426090 RCX: 00007f124819e0d9
-RDX: 0000200000000000 RSI: 0000000000003b92 RDI: 0000000000000003
-RBP: 00007f1248235024 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f1248426128 R14: 00007f1248426090 R15: 00007ffea12de908
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:iommufd_ioas_change_process+0x513/0x11c0 drivers/iommu/iommufd/ioas.c:538
-Code: 5b fc 48 8d 7b 68 48 89 f8 48 c1 e8 03 42 80 3c 30 00 0f 85 e1 0a 00 00 48 8b 6b 68 48 8d bd c0 00 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e d5 0a 00 00 8b ad c0 00 00
-RSP: 0018:ffffc9000503fba0 EFLAGS: 00010206
-RAX: 0000000000000018 RBX: ffff8880550e9400 RCX: ffffffff8526f53b
-RDX: ffff88802c6b8000 RSI: ffffffff85af13fb RDI: 00000000000000c0
-RBP: 0000000000000000 R08: 0000000000000006 R09: 0000000000000000
-R10: 0000000000001fff R11: 0000000000000000 R12: 0000000000000007
-R13: fffffbfff22438f4 R14: dffffc0000000000 R15: ffffc9000503fc38
-FS:  00007f1248ff36c0(0000) GS:ffff8880d5fec000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1248ff2ff8 CR3: 000000005355a000 CR4: 0000000000352ef0
-----------------
-Code disassembly (best guess):
-   0:	5b                   	pop    %rbx
-   1:	fc                   	cld
-   2:	48 8d 7b 68          	lea    0x68(%rbx),%rdi
-   6:	48 89 f8             	mov    %rdi,%rax
-   9:	48 c1 e8 03          	shr    $0x3,%rax
-   d:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1)
-  12:	0f 85 e1 0a 00 00    	jne    0xaf9
-  18:	48 8b 6b 68          	mov    0x68(%rbx),%rbp
-  1c:	48 8d bd c0 00 00 00 	lea    0xc0(%rbp),%rdi
-  23:	48 89 f8             	mov    %rdi,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 0f b6 04 30       	movzbl (%rax,%r14,1),%eax <-- trapping instruction
-  2f:	84 c0                	test   %al,%al
-  31:	74 08                	je     0x3b
-  33:	3c 03                	cmp    $0x3,%al
-  35:	0f 8e d5 0a 00 00    	jle    0xb10
-  3b:	8b                   	.byte 0x8b
-  3c:	ad                   	lods   %ds:(%rsi),%eax
-  3d:	c0 00 00             	rolb   $0x0,(%rax)
+> Some time ago I did try some work to allow IOVA_RANGE_CACHE_MAX_SIZE be 
+> set per IOMMU domain, but it was not merged. We went with 
+> dma_opt_mapping_size() solution instead.
+> 
+> https://lore.kernel.org/linux-scsi/1620656249-68890-1-git-send-email- 
+> john.garry@huawei.com/
+> 
+> 
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
