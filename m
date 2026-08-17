@@ -1,115 +1,322 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 811F83E9F9D
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 12:53:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786971225; cv=none; b=PAjpBjkd8IjaVUvaMIwu4Zb4vCYPry7h43cj7Hvke2QPqPXibwB4zetmW7pcjCNZUQOxPPv+yb6r1/1TQbr+r/kQyId5U+sSDb9+ebI1BNegHO45+goHDJJAfvQKCrgkmN5ci+/AADQ8UaQb8sAUFl/V42+jviMa7EGVADiU69U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786971225; c=relaxed/simple;
-	bh=92/LJ9ytiCnTo9nxdyNCfvLsbqsb1dRXtZFbNV2qfgk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qN6cCLqDrm7gS81k8R7xWrXckrGDEJXQHF3mm1t1gWMe3fV7JiRYpToa/R6hBPxeCDJCPcU+ijCkVMJr+y4mn/TxitJ/Xk22SW0ncN6/rMoYIpBjR3fb5VPM23Y6NyVjOjvp2bWYycNB+YN+Bm0WbbE7iJE77xoMoOzB4SQRbuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wZbcqjKU; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1C1741DED5
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 12:56:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.175
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786971415; cv=pass; b=L4EkNmmfz8t7yhLuc5S/SfsdCfBX01MmDn4vUbCrr77+H+J6Rp2PHsc9GtM0hMvCww9VmKNyy7lAAMwJ+nLsH7ROceSsPO/p9sDa2txxGaaWENRV+DTguRxIYQrFG0bNi5sS38SVBhwLnJUmnJsxIzK7dlLISwbGmtIamDVp0Lw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786971415; c=relaxed/simple;
+	bh=rdWjFo8SxHgUJL7l2Ksyu9UqQR1+bU8OTWc0M3vDGyY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JgoGWMTbIHJQj/6OpwJ1xNAWnfowHaKFO8b3yJLFNoayn74GT6vIErMf6D5fhBg/ylj4vA2hekjQnSnK+MWFu92/CPF1UbsZd7MJoCdQi1iOn9IEAEW5v7zpESoP8bYMnVY0uE5e+KNDfSClo0Bu3ttxQdAlzO3hfBcrNDZyhmg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SDayuwRi; arc=pass smtp.client-ip=209.85.128.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wZbcqjKU"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2cede6375caso261885ad.0
-        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 05:53:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SDayuwRi"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-81ce92c1b05so2036387b3.3
+        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 05:56:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786971413; cv=none;
+        d=google.com; s=arc-20260327;
+        b=L6sBDnfnAXm6zTLUPli5jo1AOqs69qK/R2mNOd07Y23D3H3TnLxwb3o3RpPM0/IpA9
+         wt7aUS+WBlI0sc5ok+fo8RxQS2cHoM45zIK2KXoOqyutJ/tgEZxyZ8fFbjag8mu/ZZCX
+         dDcjuP/RXayPfAFbyRPqm0//IACOSrb7rxXsb+jHHDNdMu63UITpiZ4ZhU12nB/gInTW
+         YW3WQv9b4wf9IUdSisK2AF7EHsOfpg+UKuVuYjGqUXBE66pDXqCU4GRwgAu2CQEPE4dv
+         JCNbzHjMH1PJLv/t+Kp/GidPHyLP/FkeGzrgclIadvgBvb1n77cg7xfb0exrf0A4eQSh
+         RvEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=+sWYGz5XT9OAhWSz7+RnTv94A8j0P9pbFdVtTXC675o=;
+        fh=/j5Z3kc+ODdEeoXFKlLFyDeiUsRYdtRlhbUsWfp8XUw=;
+        b=iZ01+knniQo2oBDAOwqq08hxGW/PgJDN2TebIqeu/LO+sHuSRyTGh0HXSqmaDqSNx4
+         ZEXSCb/9hv1IO1lhYsgavAIlBV2JqCnSHOQqppRm7VuTwojYUw+y2fCvPsnM1cA+Tspa
+         i8Pi+/haJ9EhEb2GRD87B9ZO3NmnTW1euUBM0VecECqqt+KhpCXhGYj/LGnFl79x0Fkm
+         mI/MzhOmCYYQTDKpiptA9P2CgbGFlsZRCo7wQ/+g+fWPt2oPX4bvv9USvMSmqU/nqx75
+         R5Mx2Z1SwRpKtfQhx43ea/O9L5LA2CTzsAfElMjsTlt6n76zB97G90YHuTALbyHr4fA+
+         u7Yg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786971224; x=1787576024; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1786971413; x=1787576213; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=U/HO5352xrmxomcN/usyEVXCVrY50VpsMFDwsFMZfKc=;
-        b=wZbcqjKUE+rAS5SW1yW1xTPoLHicSRTAkptMqvdGRmwaLRlNf+vhFNMi0oTDYAEkTJ
-         ggEq9heUJuuFDiVaM8QffDgXvJK8U79eXjpnl9eHOiM4k7RAlFGWhNzd3krm+7bEOUT5
-         9fV4KoY3fP+wkhiYAfa2MJnUJ93ywcfpFZWSXGyJY6QdbRcAdsK0oTkxijQBGFXgYDeo
-         MV+mo7iXurADe4FwurGvXSVrqwOvCIJ9AB/cJzKAbh5U5+JqyY3EMRjeR+KcfWocK5lY
-         Vvkz4XuT1/Z/ccLPwBpoQnr4Gm6Me25HF4rkDm4MAVkDJbEwtm6hlKpHWT4AhJCMMDWA
-         8Tdw==
+        bh=+sWYGz5XT9OAhWSz7+RnTv94A8j0P9pbFdVtTXC675o=;
+        b=SDayuwRiKAMnpYX6tDdIBtnqvIogHWiBcu5sfyaVW9Vh9WT27VhllsMrCRzCzy3BTp
+         CogO2In+Er9rP3/GHx3De3+75eQUUNG3ZBIcEKehA7Ps7k7+9gjyaKqOvxbts9xkg2gk
+         Fc3dbaAGE6oahBAPpJQOsQbCA6RlAqd76QkmKf6r+8ru6RSQtSI2T8bzWsZH1m0chhaC
+         iSTNI/dH8ZiyxrtLVPHvb7BAGYq25AthQ2motFzRANR63ELP3oqW6yKUdJ8E3tLPRatj
+         2Hv+UsVKLPqll1p8tyyY1CxX2ifzCI5hWugx78SqKB0My5fn4gBK5pM67MCbJY9JSt/G
+         o27w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786971224; x=1787576024;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1786971413; x=1787576213;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=U/HO5352xrmxomcN/usyEVXCVrY50VpsMFDwsFMZfKc=;
-        b=NwoJanG3VlEnnnlgysxdiIqSaAHpLNaoXpV6x3DO8ATMfw99OSCbQFpo1u6DZUtIQI
-         W7PQobO+3lKxVve17pZkPhKFSYS6PfI0HW5WH60VtLQWni2lS03dCZeNyZHHy9OBkLwK
-         ZLUl6yHCoQayyqSVWAUU+wuCSQ81KXa2AMe4t3hp8pt47vcVARQOj1S8wqXbsxL424uq
-         E7P+oihQ4XAOw7EJkFPqNYhtmydnmehoz/azWFK/lymn7bC1dBgN6OWhBMftPRCIx089
-         UcJGUFvXNL1NDeEf94ISqtchWRyrKlGJhRtdb8iTc/SY0XmM7KLyjBoGGD0VZOiID+8s
-         yH1g==
-X-Forwarded-Encrypted: i=1; AHgh+Rodu7JrZklMNHg1C8D0OtS0c6ne3VVOUQVop9aPe84t8raedJCRx0jFzMFWqGnmmRXPuAY6cg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw1vFmwYwI9IZCOO+Gdrki/d9yWZNgASm0GvkrMwC5SiVPC04G+
-	Ze8vKVpVsDB8z5jHQfhndN/I2m3meD7CRuw6wg4vaMnYQWx1Rx+I71qom/P+i2NOMQ==
-X-Gm-Gg: AR+sD13TA+AvGDsMyZVpuhkBB1Q+gtcNEASkRYD4CYFya0fSf66sQ24bIsS2cUutCz5
-	E0a8rd1YK76b2EYkUYuMq/5pSPNkY+9LcmCFop/mCN9D1J781vTncTy3PTEpUJ20qDDiGVVFclb
-	wHmzQNJx5I/grpt1tc3TdusC3b4siW/oHL7MVRO304+c3mW7T14nzTPVS9bVKbc0pKjqjLBl0Xf
-	m9yMl221GJW6ViSiGDRtgVtGmVXKpWFxDk6EpZUs+3G+VJhZyvHYgwRrleK+uqi5vl5WwnWTnWv
-	Qo7os9VC19ipEn8GTOVh+BctQPZRVoDOq+6LtwxJfqTVRDUiPX+6GJTzrlCyNTW9yl27PGTCWfx
-	QAbUnaPYJ2oLuq1sLLVW1dPP/404191PdBSTKj9DbNKmtvPMVMea29s4Qupe7qQuIsmAKjzLT8T
-	EEw6UvLU8qe7SVkuXErAuYOU3k8XgnpFZ6DEtwDxrSLUpf7mIvHLc95mALeritEuvAWvOiTlAhq
-	5CXgz1p8QsMa/gim8MXYfE=
-X-Received: by 2002:a17:902:d983:b0:2cf:41ba:96b8 with SMTP id d9443c01a7336-2d590bad516mr5207305ad.6.1786971223287;
-        Mon, 17 Aug 2026 05:53:43 -0700 (PDT)
-Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d5bb499d4bsm5258655ad.4.2026.08.17.05.53.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 05:53:42 -0700 (PDT)
-Date: Mon, 17 Aug 2026 12:53:36 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Dmitry Malkin <dma@nebius.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>,
-	NB-Core Team <NB-CoreTeam@nebius.com>
-Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
- bridges without vDEVICE
-Message-ID: <aoMEUDQKlaWzvE8n@google.com>
-References: <PA1P190MB25578C482C8A3B06A4DCC6FDDBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
- <20260814174825.GC510472@nvidia.com>
- <PA1P190MB25573D7CFE42EF7DD2A8CDE8DBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
- <20260814221103.GE510472@nvidia.com>
- <PA1P190MB2557D53CB7FCB70EB8F79D09DBA72@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
- <aoLtgeYLpYobpyKN@google.com>
- <20260817114407.GB1175472@nvidia.com>
+        bh=+sWYGz5XT9OAhWSz7+RnTv94A8j0P9pbFdVtTXC675o=;
+        b=n4v3U5jLVXn47YgBgggX3+rPbhVIEN0c6oGh8pZTw0lsSYxJbDMHSX/oIYf+VPXQxK
+         Aijr54r+vUybucL/u+COPHpflNrs2Q9NDTnH+ln9gSQxbDm/Cdf3z0Ofig8YvDH5qQCE
+         1BBvPJWiHF+C3OlmKGYnguraBtGONsXPha19vAJgF2olWsqdDvMZZ3aAj2RVWxozidWQ
+         ev4vX3mKXvGehwS8vMqztfsZzbCYwpI0Y0Bg2wM7h7CemaaiOud9XN9vDGQbutU+P0Ke
+         XoE/hUnzOCk5VD/JgSXc/H0C1PYjtN9FjvcWmza+Dqh0TKCFvgCLadmz/s6n/k60k7NV
+         5Tyg==
+X-Forwarded-Encrypted: i=1; AHgh+RrgWrVtDDDW/v6Tv3H09GFVgCc3vG1ZpnNJbXpY/aQCaABEqoABX7zawrozGlaNsEVvS9x3YQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw14CyT7ehr+2e+aw7AuRCvQa6KftdmLpi1EsL+1clLAYyY4+5l
+	0LI5RF++zhGDUt34eehmMTjTZtY+XgsINc9d9EXIHbMEYWw3wDdVrpsWvYwBb0JWsQn15iTG8aA
+	0lV7dlfWjSNedwigujt8zdWyP2puyreI=
+X-Gm-Gg: AR+sD12juRxz55i08yP9LyjoEvoac5GWPD4q1z6jBpxWaEtn6dbyFwZluOGkiQMSqah
+	eGZct6YpLn+b8Zi5uJ7IarM1d8qYmNEjEPKpPQI+GJNQqRj5iuSdEO/1BZq9loWClxBmV2RtcwJ
+	XcyNO7AEc8hEnV1fHE/JJ6tDG/MAgFZpdEGcez0W7TkQbOkC/KRJGEf0pbtjnwplT5XyiLO8wvH
+	G/HF20JsX9QFNYQGkA4hCd5CtU+FTWql5JxOiE6bLuC+DYeKrtPV9uaachAlO59B7qRWRCuamhV
+	9lfEWNcLqsNb4j+8+R7RNxNeXt8cvOwtPT4p0dnebS0zX2lX8X0RT3BD7n0PBOoHnL64Jrva1Bk
+	m+L8=
+X-Received: by 2002:a05:690c:4c07:b0:7f0:9099:daed with SMTP id
+ 00721157ae682-837081dbb86mr86189087b3.0.1786971412607; Mon, 17 Aug 2026
+ 05:56:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260817114407.GB1175472@nvidia.com>
+References: <20260817113603.1436067-1-gahing@gahingwoo.com> <20260817113603.1436067-3-gahing@gahingwoo.com>
+In-Reply-To: <20260817113603.1436067-3-gahing@gahingwoo.com>
+From: Igor Paunovic <royalnet026@gmail.com>
+Date: Mon, 17 Aug 2026 14:56:40 +0200
+X-Gm-Features: AcwNN1V-5NLT5_FLJWlZREIascUsv5ajt7d1tsDmiA1E2hxh05iV2LoVrZcqDUw
+Message-ID: <CAEWPSH7tM9WQUJ0H13ghkiHGzDcdycC1syTuO5B8DpC6cUSnfg@mail.gmail.com>
+Subject: Re: [PATCH v8 02/12] accel/rocket: wait for a running IRQ handler
+ before resetting a core
+To: Jiaxing Hu <gahing@gahingwoo.com>
+Cc: tomeu@tomeuvizoso.net, heiko@sntech.de, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, ulfh@kernel.org, p.zabel@pengutronix.de, 
+	ogabbay@kernel.org, zhangqing@rock-chips.com, chaoyi.chen@rock-chips.com, 
+	diederik@cknow-tech.com, alchark@flipper.net, dri-devel@lists.freedesktop.org, 
+	linux-rockchip@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 17, 2026 at 08:44:07AM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 17, 2026 at 11:16:17AM +0000, Pranjal Shrivastava wrote:
-> > But, regarding PCI P2PDMA, you can still enable it with ACS enabled in
-> > the upstream kernel *IF* your hardware supports TLP forwarding between
-> > root ports.
-> > 
-> > When ACS is enabled, all TLPs get forwarded to the host's Root Ports
-> > instead of getting routed directly through the switch.
-> 
-> Generally nobody wants to run like that, the performance is
-> terrible. The reason these systems have a PCI switch is because of
-> performance of the P2P path.
+Hi Jiaxing,
 
-Ack. I was assuming the enablement was the major challenge. For perf we
-definitly need to hairpin at the switch. 
+I have not run v8 on hardware yet. Everything below is source review.
+My Tested-by on 1/12 is from the v7 run and I am not extending it to
+this patch yet; the last section says why, and what I will run instead.
+Line numbers are next-20260814.
 
-> 
-> Jason
+The patch is right and the reasoning in the message is right.
+synchronize_irq() is the correct one of the pair: __synchronize_irq()
+does the hardirq spin and then waits on desc->wait_for_threads
+(kernel/irq/manage.c), so it fences the threaded handler, which is the
+one that takes job_lock. synchronize_hardirq() would not have. Worth
+adding to your placement argument: the deadlock you avoided would have
+been a silent hang rather than a lockdep splat, because that wait is on
+a waitqueue and not on a lock, so lockdep does not model it at all.
+Nothing would have told you.
 
-Thanks,
-Praan
+Two questions, both about what the reset path does not do.
+
+1. Would you also mask the block before the sync?
+
+rocket_reset() is descended from panfrost_reset(), and the comment this
+patch replaces is inherited from it word for word. In panfrost that
+comment is earned, because three things happen before it:
+
+    job_write(pfdev, JOB_INT_MASK, 0);
+    synchronize_irq(pfdev->js->irq);
+    ... soft-stop ...
+    panfrost_jm_handle_irqs(pfdev);
+
+(panfrost_job.c:692-693 and :710, with the same sentence rocket carries
+at :712-715). Rocket inherited the sentence and none of the three steps,
+which is your point, and 2/12 restores one of them.
+
+Without the device level mask a fresh completion interrupt can still
+arrive after synchronize_irq() returns. INTERRUPT_MASK is armed on every
+submit (rocket_job.c:142) and the only place it is cleared is the
+hardirq (:446); rocket_reset() never touches it. In the ordinary
+timeout, where no interrupt fired before the job hung, the mask is still
+live. So: would you write
+
+    rocket_pc_writel(core, INTERRUPT_MASK, 0x0);
+
+immediately before the synchronize_irq()? It is safe to do, since
+hw_submit() re-arms the mask on every submit, so nothing is lost.
+
+I do not think this is a hole. The reset.pending check in hw_submit()
+(:116, returning before next_task_idx++ at :123) already stops the
+resubmit branch from firing here. It is about making the new comment
+literally true. I have no TRM, so I am not claiming that a write landing
+on a block under reset is harmful.
+
+2. Should rocket_reset() hold a runtime PM reference?
+
+This one surprised me. drm_sched_stop() zeroes the credit counter and it
+is only restored in drm_sched_start(), the last line of rocket_reset().
+That counter is the only thing gating suspend: rocket_job_is_idle() is
+exactly atomic_read(&core->sched.credit_count) (rocket_job.c:540-543),
+and rocket_device_runtime_suspend() returns -EBUSY iff that says busy,
+then disables the clocks (rocket_drv.c). So for the whole body of
+rocket_reset() the driver is telling runtime PM the core is idle while
+holding no reference, and rocket_core_reset() is an assert, udelay(10),
+deassert on top of that.
+
+The part that touches this patch: the two puts are not equivalent.
+pm_runtime_put_noidle() is a bare decrement with no idle request, so
+nothing is armed. put_autosuspend() arms the 50 ms timer. Before 2/12 it
+depended on who won the lock. After 2/12, if a completion interrupt was
+in flight, the handler is guaranteed to finish its retire first, so
+put_autosuspend() runs, the reset finds in_flight_job NULL and skips its
+put_noidle, and rocket_core_reset() runs with a live timer. In the plain
+hung-job case there is no handler and put_noidle still runs, so this is
+only the racing case.
+
+I have not seen it fire, and panfrost has the same
+is_idle-on-credit_count shape, so this may be inherited and intended.
+But would you bracket the reset with pm_runtime_get_sync() and
+pm_runtime_put_autosuspend()? For contrast, panfrost_device_reset()
+re-powers the block and re-initialises the MMU; rocket_core_reset()
+toggles the reset lines and returns.
+
+On the RK3576 non-recovery in your cover
+
+You wrote that you have not worked out what sits between
+rocket_core_reset() and rk_iommu re-enabling the MMU. Three things from
+the source that may narrow it. I have no RK3576, so this is a direction,
+not a diagnosis.
+
+- That message is rk_iommu_force_reset(), reached only from
+  rk_iommu_enable(), via attach or runtime_resume. Never from
+  rocket_core_reset(). Since rocket attaches per job, the report is at
+  the next job, so the damage precedes it. That matches your "a few
+  seconds later".
+
+- The check is a write-then-readback of RK_MMU_DTE_ADDR, and
+  rk_iommu_enable_stall() returns 0 silently when paging is not enabled,
+  which it decides by reading RK_MMU_STATUS. So a block whose registers
+  read back zero produces exactly that message with nothing printed
+  before it. It means the MMU is not responding at all, rather than
+  being in a wrong state. Worth grepping the same run for "stall request
+  timed out" and "paging request timed out"; if they are absent, that
+  reading holds.
+
+- Between the reset and the next job the core does not power cycle.
+  put_noidle leaves usage_count at 0 with the device still active and no
+  idle request pending. So the domain stays up, and on RK3576 the BIU
+  reset your 9/12 cycles on power-on never gets cycled. If the MMU needs
+  that to come back, it never gets it.
+
+One build would settle it: put_autosuspend() instead of put_noidle() at
+the end of rocket_reset(), or force a suspend and resume before the next
+job, and see whether the block returns.
+
+One question only you can answer: did MMU_DTE_ADDR appear on v7 too,
+before the rail moved to domain-supply? If it did not, "existing
+behaviour rather than something the series introduces" may want another
+look.
+
+What I will run, and why no tag yet
+
+I am not putting Tested-by on this patch from an ordinary run, because
+an ordinary run cannot reach the code it changes. rocket_reset()
+early-returns unless reset.pending (:368), and
+atomic_set(&core->reset.pending, 1) appears at exactly one site in the
+driver, inside rocket_job_timedout() (:405). No debugfs knob, no sysfs
+trigger, no error path. (Separately, rocket_reset_work() is never queued
+anywhere, which does not affect your message but is a cleanup
+candidate.) At 182 inf/s an RK3588 job is about 5.5 ms against a 500 ms
+timeout, so I have never been near it.
+
+So: a test build with JOB_TIMEOUT_MS lowered to 2, which makes healthy
+jobs time out with a completion interrupt genuinely in flight, which is
+the window 1/12 and 2/12 exist for. Twenty induced resets per core
+across all three, with and without 1/12+2/12 for a differential, at
+least one inference after each reset and one after an autosuspend and
+resume, and PROVE_LOCKING plus DEBUG_ATOMIC_SLEEP on. On RK3588 core 0
+sits in PD_NPUTOP, which is the parent of PD_NPU1 and PD_NPU2, so I will
+do core 0 with the other two busy and core 1 on its own. Capturing
+dmesg, the per-core lines in /proc/interrupts either side of each
+timeout, runtime status, the genpd summary, and the output tensor
+against my existing bit-exact baseline.
+
+If all three cores come back clean, that says your non-recovery is
+RK3576-specific, which is the useful answer. If RK3588 logs the same
+MMU_DTE_ADDR, it is rocket-wide and pre-existing, wants its own patch,
+and should not hold up v8. Either way I will report it with the lowered
+timeout stated in the trailer.
+
+Reviewed-by on 3/12 sent separately.
+
+Regards,
+Igor
+
+
+On Mon, Aug 17, 2026 at 1:36=E2=80=AFPM Jiaxing Hu <gahing@gahingwoo.com> w=
+rote:
+>
+> rocket_reset() calls drm_sched_stop(), which stops the scheduler and
+> returns. It does not wait for a threaded handler that is already
+> running, so the comment that follows, "Remaining interrupts have been
+> handled", states an assumption rather than something the code arranges.
+>
+> Call synchronize_irq(core->irq) after drm_sched_stop() and reword the
+> comment to say what holds afterwards.
+>
+> It has to go before the scoped_guard(mutex, &core->job_lock) rather than
+> inside it. rocket_job_handle_irq() takes job_lock, so waiting for the
+> handler while holding that lock would be waiting for a handler that is
+> waiting for us. Nothing is held at that point, and both callers,
+> rocket_job_timedout() and rocket_reset_work(), run in process context,
+> so sleeping there is allowed.
+>
+> This does not stop a handler that has already read in_flight_job from
+> finishing its work on the job the reset is about to drop. That window
+> needs the check and the register writes to be one step under the lock,
+> which is what the previous patch does; the two are complementary.
+>
+> Suggested-by: Igor Paunovic <royalnet026@gmail.com>
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+> ---
+>  drivers/accel/rocket/rocket_job.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/roc=
+ket_job.c
+> index 5f0f9682e..d484a3a6f 100644
+> --- a/drivers/accel/rocket/rocket_job.c
+> +++ b/drivers/accel/rocket/rocket_job.c
+> @@ -377,9 +377,17 @@ rocket_reset(struct rocket_core *core, struct drm_sc=
+hed_job *bad)
+>         drm_sched_stop(&core->sched, bad);
+>
+>         /*
+> -        * Remaining interrupts have been handled, but we might still hav=
+e
+> -        * stuck jobs. Let's make sure the PM counters stay balanced by
+> -        * manually calling pm_runtime_put_noidle().
+> +        * drm_sched_stop() returns without waiting for a threaded handle=
+r that
+> +        * is already running, so wait for one here. This has to stay out=
+side
+> +        * job_lock: the handler takes that lock, so waiting for it while
+> +        * holding it would deadlock instead of fencing anything.
+> +        */
+> +       synchronize_irq(core->irq);
+> +
+> +       /*
+> +        * No handler is running now, but we might still have stuck jobs.=
+ Let's
+> +        * make sure the PM counters stay balanced by manually calling
+> +        * pm_runtime_put_noidle().
+>          */
+>         scoped_guard(mutex, &core->job_lock) {
+>                 if (core->in_flight_job)
+> --
+> 2.43.0
+>
