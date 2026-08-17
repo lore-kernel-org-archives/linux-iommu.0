@@ -1,135 +1,222 @@
-Received: from shrimp.cherry.relay.mailchannels.net (shrimp.cherry.relay.mailchannels.net [23.83.223.164])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22DD8EEA8
-	for <iommu@lists.linux.dev>; Sun, 16 Aug 2026 18:43:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=23.83.223.164
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 054402773EC
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 02:33:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786905835; cv=none; b=Hg4uvGAbx2HhoOKloyGmeG+ugRYjJCQqElggAzCMfpmHA5opn39k0QUWY7pn87xeO2gAW4z7w1I4OeEAjgD4XD9qqU2PriCLggjRpJ6z8mdj/EXEwm3enw4+3nOEqdJ8qGcdGExj3xG7SPlIzEqBewwhK3EA0hUw/pG7aThsKwY=
+	t=1786934028; cv=none; b=qg2tAXj55WH8Js+b+fyw6Ew/rjYejtZATdIbUxMgMbFZCO9kJOMoldSmV9h/vSh4pIA41pAcUVva+MscpyeH2qebFG1Br27hG8dl60/U8AZPelru6fCo7JvzUFZ01elBs5q2A4LzgwEuzSmkN5hihYX4miT+9WLZMm2EHBSYBTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786905835; c=relaxed/simple;
-	bh=/5yCpVEIlajHNvqknqHhjtLAFagZxXHdBltcoCEGeGY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=hEYrq9g/gpVINgnP8o3AW1YpiqtDuft2SeSnFnK9Pkcmmiz8vMUbWTWhx8EWkEI//csmgwDdGi28i2K3zeioa9QirJMZjEUMx0CSjVF/VTCattoZKrC9I3qxC1JXC3p4j2dPwSjfqeq3AZcjTzx3sUSWRl5jSLrawZoF6ihZh58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=stgolabs.net; spf=fail smtp.mailfrom=stgolabs.net; dkim=pass (2048-bit key) header.d=stgolabs.net header.i=@stgolabs.net header.b=XwpfICwH; arc=none smtp.client-ip=23.83.223.164
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=stgolabs.net
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=stgolabs.net
+	s=arc-20240116; t=1786934028; c=relaxed/simple;
+	bh=7U2BRfTH5wB1Jg2r2jNUdOL8s4lgTdlLMqQYINFEskQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KhV4a+a8uh1jRSaMXRALn7hbq5//sMO+t1SN7nN+dh3awzgeJQN+luIQt4h24ddQz3GXddzY0moJ4h99Lj3G7OVeTci/vW5YgnjVuScfF5njZe0vTSXq6Khhej6eGxs6QETxQzpkNRQpNl+yTt+BdE0C6o/GXHSM2aROI3wJXRw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=VB/fDjHp; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=stgolabs.net header.i=@stgolabs.net header.b="XwpfICwH"
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id CA4C23813F2;
-	Sun, 16 Aug 2026 18:43:46 +0000 (UTC)
-Received: from pdx1-sub0-mail-a243.dreamhost.com (trex-green-6.trex.outbound.svc.cluster.local [100.117.164.83])
-	(Authenticated sender: dreamhost)
-	by relay.mailchannels.net (Postfix) with ESMTPA id 6E534381C9D;
-	Sun, 16 Aug 2026 18:43:46 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Illustrious-Desert: 1a451da904de3a89_1786905826709_1622132530
-X-MC-Loop-Signature: 1786905826709:3721856623
-X-MC-Ingress-Time: 1786905826709
-Received: from pdx1-sub0-mail-a243.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.117.164.83 (trex/8.0.2);
-	Sun, 16 Aug 2026 18:43:46 +0000
-Received: from offworld.lan (unknown [76.167.199.67])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dave@stgolabs.net)
-	by pdx1-sub0-mail-a243.dreamhost.com (Postfix) with ESMTPSA id 4hNPxY6FpGz105D;
-	Sun, 16 Aug 2026 11:43:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-	s=dreamhost; t=1786905826;
-	bh=9N1Kee7xXdbVwk21W5EBt00QsMqDcgkTTBoFWW9yguA=;
-	h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-	b=XwpfICwH4qB62kb2qkg0sVfza2SaWAP7TyQyOOXHhyjdXgqkijpWe7voaLXsKR5RU
-	 WNmakgKP3yrD+RC4lAjGJexB/N7ncs1BkfeQQMgRi52xPiwQu/4f8dCiUKFII9c+ir
-	 qmeiabtvRzC4nyrMR5vKaC8zGq1rWjRlKSf1/joBVfvl3XnN6oUB6WfvyWLjUtKhqg
-	 6GuuSNAqk9EzJWNQ7WI+GoaJ1QMYhwyrQZabNMbvm6gWt2sYGNnkhOC9Qe3Xzb+Qvo
-	 AOo30CYhisKnb3k3QR6vykYgCQFlCsrEUfBszt7xguj1WbxFOtRxHAU+lP+9Go4w+W
-	 Q9nd2U67HBBKg==
-From: Davidlohr Bueso <dave@stgolabs.net>
-To: robin.murphy@arm.com,
-	joro@8bytes.org,
-	will@kernel.org
-Cc: mcgrof@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Davidlohr Bueso <dave@stgolabs.net>
-Subject: [PATCH] iommu/iova: Clear the slab cache pointers when destroying them
-Date: Sun, 16 Aug 2026 11:43:39 -0700
-Message-Id: <20260816184339.420285-1-dave@stgolabs.net>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="VB/fDjHp"
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4B2FE20B7168;
+	Sun, 16 Aug 2026 19:33:11 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4B2FE20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786933991;
+	bh=Rft+yHVAVUN7/39qSq86ni8RStTmlR07evvRWnD8Zm0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VB/fDjHpwDVgc5pusPL+30b0/mp6tGHWmG2JRq57kNawS/S6vtvoWR0MxxuE6TJ/t
+	 nmcu8mmlfwdv25jDavM35Zgpfeo1JmPENRr/sk8W0NyZb+3rWky7HTRwmCUMbNT5WI
+	 ce6XY+JhQzO87ucfoFJPYXdq//jDZWLBlWODH8m0=
+Date: Mon, 17 Aug 2026 10:33:36 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
+	"x86@kernel.org" <x86@kernel.org>, "wei.liu@kernel.org" <wei.liu@kernel.org>, 
+	"kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>, 
+	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com" <longli@microsoft.com>, 
+	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, 
+	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
+	"mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>, 
+	"arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
+	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>, 
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, 
+	"vasant.hegde@amd.com" <vasant.hegde@amd.com>
+Subject: Re: [PATCH v3 1/5] hyperv: Introduce new hypercall interfaces used
+ by Hyper-V guest IOMMU
+Message-ID: <rpzpjbalau22m7f2s2ljxm6byzspuewqcu4awfih6qavkkazq6@mpraxcbidlar>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-2-zhangyu1@linux.microsoft.com>
+ <BN7PR02MB414806B8395DA93F5F7D7867D4DA2@BN7PR02MB4148.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN7PR02MB414806B8395DA93F5F7D7867D4DA2@BN7PR02MB4148.namprd02.prod.outlook.com>
 
-Both iova_cache_get() failure path and iova_cache_put() destroy the two
-slab caches without clearing the pointers, leaving them dangling with
-iova_cache_users at zero. The next iova_cache_get() then re-enters the
-respective block, and if it fails early enough to reach 'out_err' before
-re-creating both caches, it calls kmem_cache_destroy() a second time on
-whichever cache is still stale:
+On Fri, Aug 14, 2026 at 03:31:08PM +0000, Michael Kelley wrote:
+> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Tuesday, August 11, 2026 8:50 AM
+> > 
+> > From: Wei Liu <wei.liu@kernel.org>
+> > 
+> > Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
+> > Introduce the hypercalls used by the child partition to interact with
+> > this facility.
+> > 
+> > These hypercalls fall into below categories:
+> > - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
+> >   detect the existence and capabilities of the guest IOMMU.
+> > 
+> > - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
+> >   check whether an endpoint device is managed by the guest IOMMU.
+> > 
+> > - Domain management: A set of hypercalls is provided to handle the
+> >   creation, configuration, and deletion of guest domains, as well as
+> >   the attachment/detachment of endpoint devices to/from those domains.
+> > 
+> > - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
+> >   for a domain-selective IOTLB flush (which in its handler may flush
+> >   the device TLB as well).
+> > 
+> 
+> [snip]
+> 
+> > +
+> > +struct hv_input_device_domain {
+> > +	u64 partition_id;
+> > +	union hv_input_vtl owner_vtl;
+> > +	u8 padding[7];
+> > +	union hv_device_domain_id domain_id;
+> > +} __packed;
+> > +
+> > +union hv_create_device_domain_flags {
+> > +	u32 as_uint32;
+> > +	struct {
+> > +		u32 forward_progress_required: 1;
+> > +		u32 inherit_owning_vtl: 1;
+> > +		u32 reserved: 30;
+> > +	} __packed;
+> > +};
+> > +
+> > +struct hv_input_create_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	union hv_create_device_domain_flags create_device_domain_flags;
+> > +	u32 padding;
+> > +} __packed;
+> > +static_assert(sizeof(struct hv_input_create_device_domain) == 32);
+> 
+> The static_assert() here is unusual. For all the other hypercall
+> inputs/outputs where we rely on the structure definition to
+> be correct and the __packed to prevent the compiler from
+> adding/changing anything. If there's a reason for this one to be
+> different, a comment would help. If there's not really a reason,
+> I'd suggest dropping the static_assert() as superfluous.
+> 
 
-  BUG: KASAN: slab-use-after-free in iova_cache_get+0x216/0x280
-  Read of size 1 at addr ffff888001b9fdc0 by task swapper/0/1
-  CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.2.0-rc1 #2
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x53/0x70
-   print_report+0xce/0x620
-   kasan_report+0xce/0x100
-   __kasan_check_byte+0x36/0x50
-   kmem_cache_destroy+0x1b/0x1c0
-   iova_cache_get+0x216/0x280
-   ...
-  Freed by task 1:
-   kasan_save_stack+0x33/0x60
-   kasan_save_track+0x14/0x30
-   kasan_save_free_info+0x3b/0x60
-   __kasan_slab_free+0x43/0x70
-   kmem_cache_free+0xbe/0x3c0
-   kobject_put+0x14d/0x280
-   iova_cache_put+0x8e/0xd0
+Thank you, Michael.
+Indeed, there's no reason to treat this data structure differently.
+Will drop the static_assert() and keep the explicit padding.
 
-Clear both pointers after destroying them, in both places.
+B.R.
+Yu
 
-Fixes: 84e6f56be9c6 ("iommu/iova: use named kmem_cache for iova magazines")
-Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
----
- drivers/iommu/iova.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index b710e5ad37e2..0e8ea04b824f 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -984,6 +984,8 @@ int iova_cache_get(void)
- out_err:
- 	kmem_cache_destroy(iova_cache);
- 	kmem_cache_destroy(iova_magazine_cache);
-+	iova_cache = NULL;
-+	iova_magazine_cache = NULL;
- 	mutex_unlock(&iova_cache_mutex);
- 	return err;
- }
-@@ -1001,6 +1003,8 @@ void iova_cache_put(void)
- 		cpuhp_remove_multi_state(CPUHP_IOMMU_IOVA_DEAD);
- 		kmem_cache_destroy(iova_cache);
- 		kmem_cache_destroy(iova_magazine_cache);
-+		iova_cache = NULL;
-+		iova_magazine_cache = NULL;
- 	}
- 	mutex_unlock(&iova_cache_mutex);
- }
--- 
-2.39.5
-
+> Michael
+> 
+> > +
+> > +struct hv_input_delete_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +} __packed;
+> > +
+> > +struct hv_input_attach_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	union hv_device_id device_id;
+> > +} __packed;
+> > +
+> > +struct hv_input_detach_device_domain {
+> > +	u64 partition_id;
+> > +	union hv_device_id device_id;
+> > +} __packed;
+> > +
+> > +struct hv_device_domain_settings {
+> > +	struct {
+> > +		/*
+> > +		 * Enable translations. If not enabled, all transaction bypass
+> > +		 * S1 translations.
+> > +		 */
+> > +		u64 translation_enabled: 1;
+> > +		u64 blocked: 1;
+> > +		/*
+> > +		 * First stage address translation paging mode:
+> > +		 * 0: 4-level paging (default)
+> > +		 * 1: 5-level paging
+> > +		 */
+> > +		u64 first_stage_paging_mode: 1;
+> > +		u64 reserved: 61;
+> > +	} flags;
+> > +
+> > +	/* Address of translation table */
+> > +	u64 page_table_root;
+> > +} __packed;
+> > +
+> > +struct hv_input_configure_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	struct hv_device_domain_settings settings;
+> > +} __packed;
+> > +
+> > +struct hv_input_get_iommu_capabilities {
+> > +	u64 partition_id;
+> > +	u64 reserved;
+> > +} __packed;
+> > +
+> > +struct hv_output_get_iommu_capabilities {
+> > +	u32 size;
+> > +	u16 reserved;
+> > +	u8  max_iova_width;
+> > +	u8  max_pasid_width;
+> > +
+> > +#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
+> > +#define HV_IOMMU_CAP_S2         BIT_ULL(1)
+> > +#define HV_IOMMU_CAP_S1         BIT_ULL(2)
+> > +#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
+> > +#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
+> > +#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
+> > +#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
+> > +
+> > +	u64 iommu_cap;
+> > +	u64 pgsize_bitmap;
+> > +} __packed;
+> > +
+> > +enum hv_logical_device_property_code {
+> > +	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
+> > +};
+> > +
+> > +struct hv_input_get_logical_device_property {
+> > +	u64 partition_id;
+> > +	u64 logical_device_id;
+> > +	/* Takes values from enum hv_logical_device_property_code. */
+> > +	u32 code;
+> > +	u32 reserved;
+> > +} __packed;
+> > +
+> > +struct hv_output_get_logical_device_property {
+> > +#define HV_DEVICE_IOMMU_ENABLED	BIT_ULL(0)
+> > +	u64 device_iommu;
+> > +	u64 reserved;
+> > +} __packed;
+> > +
+> > +struct hv_input_flush_device_domain {
+> > +	struct hv_input_device_domain device_domain;
+> > +	u32 flags;
+> > +	u32 reserved;
+> > +} __packed;
+> > +
+> >  #endif /* _HV_HVHDK_MINI_H */
+> > --
+> > 2.52.0
+> > 
+> 
