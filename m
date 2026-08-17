@@ -1,227 +1,115 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D28F83D952C
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 12:51:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.178
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786971086; cv=pass; b=T++cxbUwkSGqVFUUgptbHnHU9bnPY5ZAH+ludCEYnT/YZ1yjp2ej1rMmYc5zp0hX63fGIQdjHobCZ6BJK8yfKTC5VJgEMUQawkLRXwwt5tm3O+NsKNs9c6IQeyFvQaSMvhMOQGtoQgykRJNt+oUbG1hXKGRjsa2erD+9b+Qmuoo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786971086; c=relaxed/simple;
-	bh=tyz9EcqboelxA3psXnq/gGKah+H4IaeTuowTMl/uuqM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KmAVg5cM2i//OX6a33BOsDCEzHitnxG4QhtenyGR4FJ6T2UnXzHrndFtfbt2QiGJ6xHy9cPwc1Rf+Bpae6s67ymEgBoB8qK3Kskf6CoPU/70w0RZMpcV37g5JnIcaI3yAEyqO6dDbsKwY6XM6q6cLv560281iCQb7anEiYNWMuM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XMGdDxmE; arc=pass smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 811F83E9F9D
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 12:53:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786971225; cv=none; b=PAjpBjkd8IjaVUvaMIwu4Zb4vCYPry7h43cj7Hvke2QPqPXibwB4zetmW7pcjCNZUQOxPPv+yb6r1/1TQbr+r/kQyId5U+sSDb9+ebI1BNegHO45+goHDJJAfvQKCrgkmN5ci+/AADQ8UaQb8sAUFl/V42+jviMa7EGVADiU69U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786971225; c=relaxed/simple;
+	bh=92/LJ9ytiCnTo9nxdyNCfvLsbqsb1dRXtZFbNV2qfgk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qN6cCLqDrm7gS81k8R7xWrXckrGDEJXQHF3mm1t1gWMe3fV7JiRYpToa/R6hBPxeCDJCPcU+ijCkVMJr+y4mn/TxitJ/Xk22SW0ncN6/rMoYIpBjR3fb5VPM23Y6NyVjOjvp2bWYycNB+YN+Bm0WbbE7iJE77xoMoOzB4SQRbuI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wZbcqjKU; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XMGdDxmE"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-81e8c68c0cdso2061027b3.2
-        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 05:51:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786971084; cv=none;
-        d=google.com; s=arc-20260327;
-        b=bBZnYGeNSuwurY/dt3Yo0iHIBEbTTFq09IYPbsGCtbqQD4ZNVHgM3d/f5rSguBRiv8
-         Wo1dsAMPTbXeHoMF8iqExBiyWLDSjw3FXDSKwXJ90ZR3vny8dhFdtBgd7kTslBqOTN57
-         IU6H1bbcaNsggUr5QuIN5LE8kCozGBkTtNYTnkTY87SBZKSKa49ydRHeEqFBjP6N4kwR
-         PjK+2oNj7HuSkVLyxlrTgCogcv+6K4aLwYehiFFagtgoh/0Uf8e/ib5QhYSQZSh6r5rO
-         R+h5LEnqrCrNJ7pA1+u45WHzZPa/hnU8ui4+u2evAcWLm6+Z/5JRNtEdz2wdcarYFevm
-         80Tg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=IsoFeL55aXnoSLzM6IlQSU+HvX9Cmm12pl1T+E59Rcg=;
-        fh=StQGl1FPUz0sVsNbWA+GwL/TA81rLoBrQxQjzjelPzk=;
-        b=ccFOh0ue2qTAbdKglrYk9oroUmwrV+22UQFkJG+rCgwQAkcETG9v0mrSsIrZ3il58e
-         FLCE51avAQ5/9yXWg3Vy4Ka0EwGJWkUVBZHyoHSLel+PKw4GxoD4USBsYCYkcWBSpOIv
-         fB5bt710Bm9sLQKo4ZVPFb5GLGwljNaFtZpJG19bqN6U8T/XkMfMcYQJvoiGJVOjv9Bp
-         RH9EL/LrZAox+SsSgVlq+qypaDQvFugZoZ1u5kwrQM4Jsf5tNDlmoGd6BhYAXGSLD4Qu
-         YXV+kd+kBMNBQa+XKpVGp+GuFUm1y2DZOBRFlKm9n8MYDdNUJwIotudkJvoAV9fyzgeC
-         99Qg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wZbcqjKU"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2cede6375caso261885ad.0
+        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 05:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786971084; x=1787575884; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=google.com; s=20251104; t=1786971224; x=1787576024; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=IsoFeL55aXnoSLzM6IlQSU+HvX9Cmm12pl1T+E59Rcg=;
-        b=XMGdDxmE5pRTrAqEbWmeT/YKTdDEm98VALBLYDoAxdPCQ9ToTSgG9lt1WLGcl0dbHW
-         JjA7iEN/ACW7ujAuEhaUnR2qxK1pREQGVWKXFlZgZaeAFjwNqdrz0KPl/gNUK3TrxTbo
-         xydfc+OIIjaH0dghGDxKHSpeSCMKRC3MEGGd2U53WQB9HCp94hDjLAVrHbvWnWz34Wd+
-         yK1S8npoMQzNqNPyl1X+ifev8DCAU39XZAPE9xwO6tugIiBKEIRoyEj3l6GUZ0UG7VBH
-         2hm/RTVdecOUjGUJKOKZ+yppBmds0Knic3a5TrHmnOqWtn7lE1x0G0SVZ6Ode4TZSMA/
-         jSWw==
+        bh=U/HO5352xrmxomcN/usyEVXCVrY50VpsMFDwsFMZfKc=;
+        b=wZbcqjKUE+rAS5SW1yW1xTPoLHicSRTAkptMqvdGRmwaLRlNf+vhFNMi0oTDYAEkTJ
+         ggEq9heUJuuFDiVaM8QffDgXvJK8U79eXjpnl9eHOiM4k7RAlFGWhNzd3krm+7bEOUT5
+         9fV4KoY3fP+wkhiYAfa2MJnUJ93ywcfpFZWSXGyJY6QdbRcAdsK0oTkxijQBGFXgYDeo
+         MV+mo7iXurADe4FwurGvXSVrqwOvCIJ9AB/cJzKAbh5U5+JqyY3EMRjeR+KcfWocK5lY
+         Vvkz4XuT1/Z/ccLPwBpoQnr4Gm6Me25HF4rkDm4MAVkDJbEwtm6hlKpHWT4AhJCMMDWA
+         8Tdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786971084; x=1787575884;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1786971224; x=1787576024;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=IsoFeL55aXnoSLzM6IlQSU+HvX9Cmm12pl1T+E59Rcg=;
-        b=r1p/GzEDw4Ief2uPbToXC5PSjwRsWrLG1IOg9PoE+MiJsM5w3N+0sfT+vnefUhqrNs
-         SohDp+1EfwD/PXNexssNSNduHfArk+zWABkRFKCqM2oNfObvGYG1yfQ84V5R1bm51ikM
-         qKvLQLb0aGsHSqZ9zAH4N6fKJyYDTFnmX8mKfNW0kVo0yBXeQuURo+opiVK9sNaXVagL
-         Bthmuzbu8PKmW97JktFe/FJET/7HUg0Q/UA5l6I6l0/pK7h/V0qLufJcdbze7oSlooeR
-         ZLXxS6Utq71TLhAV+VMhhbbY5xhXYw66/JIYAZrlYqEccWtgK/1s/CvVh+J7LKqSDXhj
-         Xc7g==
-X-Forwarded-Encrypted: i=1; AHgh+RrXO0LZ09oV3m69lljz2U6mfMxGXMrcj6IsrO9Mgp8S1xMRTXRAjeSg+KH3+vXhxZfldjXtLA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxRt4ApWKKpLP7YqBTD13eGFSP/JzRndDaave1EBHWxyPt44huf
-	KSZExqaQ+/dv5xmo7JzVL6//vqi7PCRvmWGkA4fItPSI7DKINo1Te1qnZap/kc8Y4TYZW1NHQWc
-	3CjvmzDAEbejXnpAwLVV/DI8pWyksStg=
-X-Gm-Gg: AR+sD11MSxUO5UpxfyQICOMEf0IWW9mqFvliwywqFJvYNwKXmJ4RjiumQyTicSYUC2e
-	IfroCLZjOz42f1jAHE0/zPerhtz/RlPjhKu9y7KeJ+hueCfGmBZev/hMn6N7o8lt928eXoUt9HN
-	Sdl9VCUFcfmLwLr+vLwvHAdGttwgx1MUwGuiZTarj+WL+ZvYdjbxY9GZzyH4KkwMUMZpHHiZhku
-	6OqQYNh799J8QaE0QaEdt8X9oRKDqqqhCECQv0uZLHf86g3tTzgLGEt2DfZhETcEWTBj+Zy2x2Q
-	16O//nmRWGh/aLQi0YQMU4ZbGQzPb+wFVs/Xbf/e3C8npe75JhUzRkJyp48glKk751nVBoiZ4rn
-	QbK4=
-X-Received: by 2002:a05:690c:b0f:b0:80d:5c71:d08c with SMTP id
- 00721157ae682-8371308c88amr90606897b3.3.1786971083604; Mon, 17 Aug 2026
- 05:51:23 -0700 (PDT)
+        bh=U/HO5352xrmxomcN/usyEVXCVrY50VpsMFDwsFMZfKc=;
+        b=NwoJanG3VlEnnnlgysxdiIqSaAHpLNaoXpV6x3DO8ATMfw99OSCbQFpo1u6DZUtIQI
+         W7PQobO+3lKxVve17pZkPhKFSYS6PfI0HW5WH60VtLQWni2lS03dCZeNyZHHy9OBkLwK
+         ZLUl6yHCoQayyqSVWAUU+wuCSQ81KXa2AMe4t3hp8pt47vcVARQOj1S8wqXbsxL424uq
+         E7P+oihQ4XAOw7EJkFPqNYhtmydnmehoz/azWFK/lymn7bC1dBgN6OWhBMftPRCIx089
+         UcJGUFvXNL1NDeEf94ISqtchWRyrKlGJhRtdb8iTc/SY0XmM7KLyjBoGGD0VZOiID+8s
+         yH1g==
+X-Forwarded-Encrypted: i=1; AHgh+Rodu7JrZklMNHg1C8D0OtS0c6ne3VVOUQVop9aPe84t8raedJCRx0jFzMFWqGnmmRXPuAY6cg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw1vFmwYwI9IZCOO+Gdrki/d9yWZNgASm0GvkrMwC5SiVPC04G+
+	Ze8vKVpVsDB8z5jHQfhndN/I2m3meD7CRuw6wg4vaMnYQWx1Rx+I71qom/P+i2NOMQ==
+X-Gm-Gg: AR+sD13TA+AvGDsMyZVpuhkBB1Q+gtcNEASkRYD4CYFya0fSf66sQ24bIsS2cUutCz5
+	E0a8rd1YK76b2EYkUYuMq/5pSPNkY+9LcmCFop/mCN9D1J781vTncTy3PTEpUJ20qDDiGVVFclb
+	wHmzQNJx5I/grpt1tc3TdusC3b4siW/oHL7MVRO304+c3mW7T14nzTPVS9bVKbc0pKjqjLBl0Xf
+	m9yMl221GJW6ViSiGDRtgVtGmVXKpWFxDk6EpZUs+3G+VJhZyvHYgwRrleK+uqi5vl5WwnWTnWv
+	Qo7os9VC19ipEn8GTOVh+BctQPZRVoDOq+6LtwxJfqTVRDUiPX+6GJTzrlCyNTW9yl27PGTCWfx
+	QAbUnaPYJ2oLuq1sLLVW1dPP/404191PdBSTKj9DbNKmtvPMVMea29s4Qupe7qQuIsmAKjzLT8T
+	EEw6UvLU8qe7SVkuXErAuYOU3k8XgnpFZ6DEtwDxrSLUpf7mIvHLc95mALeritEuvAWvOiTlAhq
+	5CXgz1p8QsMa/gim8MXYfE=
+X-Received: by 2002:a17:902:d983:b0:2cf:41ba:96b8 with SMTP id d9443c01a7336-2d590bad516mr5207305ad.6.1786971223287;
+        Mon, 17 Aug 2026 05:53:43 -0700 (PDT)
+Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d5bb499d4bsm5258655ad.4.2026.08.17.05.53.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Aug 2026 05:53:42 -0700 (PDT)
+Date: Mon, 17 Aug 2026 12:53:36 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Dmitry Malkin <dma@nebius.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>,
+	NB-Core Team <NB-CoreTeam@nebius.com>
+Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
+ bridges without vDEVICE
+Message-ID: <aoMEUDQKlaWzvE8n@google.com>
+References: <PA1P190MB25578C482C8A3B06A4DCC6FDDBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <20260814174825.GC510472@nvidia.com>
+ <PA1P190MB25573D7CFE42EF7DD2A8CDE8DBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <20260814221103.GE510472@nvidia.com>
+ <PA1P190MB2557D53CB7FCB70EB8F79D09DBA72@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <aoLtgeYLpYobpyKN@google.com>
+ <20260817114407.GB1175472@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260817113603.1436067-1-gahing@gahingwoo.com> <20260817113603.1436067-4-gahing@gahingwoo.com>
-In-Reply-To: <20260817113603.1436067-4-gahing@gahingwoo.com>
-From: Igor Paunovic <royalnet026@gmail.com>
-Date: Mon, 17 Aug 2026 14:51:12 +0200
-X-Gm-Features: AcwNN1W5X2wGC2Q1I1TaTBqzvN2kUY3psEQZvOBiX0NX6cHaLHwnhi2fG-mcjGs
-Message-ID: <CAEWPSH4VAR5VTJUW4PdJczrtueQzPzzo6og8PzWaupwd-t=BFQ@mail.gmail.com>
-Subject: Re: [PATCH v8 03/12] accel/rocket: factor the completion tail out of
- the IRQ handler
-To: Jiaxing Hu <gahing@gahingwoo.com>
-Cc: tomeu@tomeuvizoso.net, heiko@sntech.de, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, ulfh@kernel.org, p.zabel@pengutronix.de, 
-	ogabbay@kernel.org, zhangqing@rock-chips.com, chaoyi.chen@rock-chips.com, 
-	diederik@cknow-tech.com, alchark@flipper.net, dri-devel@lists.freedesktop.org, 
-	linux-rockchip@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260817114407.GB1175472@nvidia.com>
 
-Hi Jiaxing,
+On Mon, Aug 17, 2026 at 08:44:07AM -0300, Jason Gunthorpe wrote:
+> On Mon, Aug 17, 2026 at 11:16:17AM +0000, Pranjal Shrivastava wrote:
+> > But, regarding PCI P2PDMA, you can still enable it with ACS enabled in
+> > the upstream kernel *IF* your hardware supports TLP forwarding between
+> > root ports.
+> > 
+> > When ACS is enabled, all TLPs get forwarded to the host's Root Ports
+> > instead of getting routed directly through the switch.
+> 
+> Generally nobody wants to run like that, the performance is
+> terrible. The reason these systems have a PCI switch is because of
+> performance of the P2P path.
 
-You asked for a look at this one, so I checked it as a no functional
-change refactor rather than only reading it. It holds.
+Ack. I was assuming the enablement was the major challenge. For perf we
+definitly need to hairpin at the switch. 
 
-I reconstructed the three source states from the posted diffs and built
-the before and after with the driver's own kernel flags for arm64.
-rocket_job_handle_irq() is static and inlines into
-rocket_job_irq_handler_thread(); at -O2 both states emit the same calls
-and the same stack frame, and differ only in which side of the branch
-the rocket_job_hw_submit() call is laid out on.
+> 
+> Jason
 
-The load bearing sentence in your message is the early return, and that
-checks out too. At -O1 the pre-3/12 code emits mutex_unlock twice, once
-on the path straight after rocket_job_hw_submit() and once at the guard
-exit. That is the scoped_guard cleanup firing on the early return. After
-3/12 there is one, because the return leaves the helper and all three
-paths converge on the guard exit. Both versions unlock exactly once on
-every path.
-
-"Nothing follows it" also holds through the rest of the series, not only
-here. 10/12 is the only later patch that touches rocket_job.c, and its
-two hunks are the defines at the top and the PC_TASK_CON write inside
-rocket_job_hw_submit(). Nothing is added after the scoped_guard in the
-handler anywhere in v8.
-
-While reconstructing the base I checked where the series sits.
-drivers/accel/rocket/rocket_job.c in next-20260814 hashes to 3141f210f,
-which is exactly 1/12's pre-image, and applying 1, 2 and 3 in order
-reproduces 5f0f9682e, d484a3a6f and 0bb11c718 byte for byte. So these
-three apply to an unmodified linux-next rocket_job.c and need neither
-the RK3576 patches nor my clocks-by-name patch. Tomeu, that is meant as
-information in case you want to pick them up independently, not as a
-request for a re-cut.
-
-Reviewed-by: Igor Paunovic <royalnet026@gmail.com>
-
-Regards,
-Igor
-
-
-On Mon, Aug 17, 2026 at 1:36=E2=80=AFPM Jiaxing Hu <gahing@gahingwoo.com> w=
-rote:
->
-> rocket_job_handle_irq() stops the block and then either starts the job's
-> next task or retires the job. The second half is a step of its own and
-> reads better with a name, now that taking the register writes under
-> job_lock has moved it a level deeper inside the scoped guard.
->
-> Move it to rocket_job_next_locked(). The early return that used to leave
-> the handler now leaves the helper, which is the same thing here: the
-> scoped guard drops job_lock either way and nothing follows it.
->
-> Doing it as its own patch keeps the locking fix at the head of the
-> series minimal, so a bisect that stops before this one gets that fix and
-> nothing else. There is one caller, and no functional change.
->
-> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
-> ---
->  drivers/accel/rocket/rocket_job.c | 31 ++++++++++++++++++++-----------
->  1 file changed, 20 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/roc=
-ket_job.c
-> index d484a3a6f..0bb11c718 100644
-> --- a/drivers/accel/rocket/rocket_job.c
-> +++ b/drivers/accel/rocket/rocket_job.c
-> @@ -341,6 +341,25 @@ static struct dma_fence *rocket_job_run(struct drm_s=
-ched_job *sched_job)
->         return ERR_PTR(ret);
->  }
->
-> +/* Start the job's next task, or retire it. Caller holds job_lock. */
-> +static void rocket_job_next_locked(struct rocket_core *core)
-> +{
-> +       lockdep_assert_held(&core->job_lock);
-> +
-> +       if (!core->in_flight_job)
-> +               return;
-> +
-> +       if (core->in_flight_job->next_task_idx < core->in_flight_job->tas=
-k_count) {
-> +               rocket_job_hw_submit(core, core->in_flight_job);
-> +               return;
-> +       }
-> +
-> +       iommu_detach_group(NULL, iommu_group_get(core->dev));
-> +       dma_fence_signal(core->in_flight_job->done_fence);
-> +       pm_runtime_put_autosuspend(core->dev);
-> +       core->in_flight_job =3D NULL;
-> +}
-> +
->  static void rocket_job_handle_irq(struct rocket_core *core)
->  {
->         pm_runtime_mark_last_busy(core->dev);
-> @@ -354,17 +373,7 @@ static void rocket_job_handle_irq(struct rocket_core=
- *core)
->                 rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
->                 rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
->
-> -               if (core->in_flight_job) {
-> -                       if (core->in_flight_job->next_task_idx < core->in=
-_flight_job->task_count) {
-> -                               rocket_job_hw_submit(core, core->in_fligh=
-t_job);
-> -                               return;
-> -                       }
-> -
-> -                       iommu_detach_group(NULL, iommu_group_get(core->de=
-v));
-> -                       dma_fence_signal(core->in_flight_job->done_fence)=
-;
-> -                       pm_runtime_put_autosuspend(core->dev);
-> -                       core->in_flight_job =3D NULL;
-> -               }
-> +               rocket_job_next_locked(core);
->         }
->  }
->
-> --
-> 2.43.0
->
+Thanks,
+Praan
