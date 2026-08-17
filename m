@@ -1,132 +1,156 @@
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012060.outbound.protection.outlook.com [40.107.200.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E6A40DB22
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 14:28:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.111
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786976920; cv=none; b=ObJuIorzTnUZ0/hwaKpo2X9p1wy2CjZdS63jg6B8l2STiVtBjG+QRQE1iJ4TXwrqV6f+k1iwSv+6AcTExPsrSgtK36Bi98u/z33F/VzUFe7mgKK5cn8rEhl4Q0+vaeQkGSuZpTIv7tntALUEhsvCGjziwYf+MXWkUOsMyzzs3Tw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786976920; c=relaxed/simple;
-	bh=drFqM0UHHD3hILUHh08HSPHe3MqcsQM5z31wtT/ohlE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=gDXY1MXEcTEqNru+DXATvF/G8Kx6kYHh0/gRz2IIc7e9ZuiRBQOYdzzYRSPUskAw9SvbXD0aS/5jTUvXXR9fBRLeyKT7l/JCI/3PNlUBIKZC+FFCc8lWxLYLTbBYhPfzzDIe7eUWkxs47FlvOmU9DpJiqzHpqGVBBSyOy7G9ZUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=esvbCK+5; arc=none smtp.client-ip=115.124.30.111
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61687427FB2;
+	Mon, 17 Aug 2026 15:20:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786980058; cv=fail; b=NoAcCweuIV+6CHA7Kl2QPLm/fKKKqlz3stbu5kaToBldCARD+L4VkUsrgjPuz8iJBW6Qtz8h1u/R6NA9TqdMtU/pk9VK8kLZ3WrQfdMzGGTM59FgJry03LnzVTjgyZTODrfr/L484XczCXIr8nXkNBjg9r+TvhVwOu/hqoJvuXw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786980058; c=relaxed/simple;
+	bh=owZEUicXdhwE+cwZYmVMReVlVBveBlseqg3+OlAFVVQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=n3xO4BLM79NsUcXTB6yxL1WoNnFKCzmtHLooHNpf72RlZEphIopTTt/oxxwHeCPp72yx2JvPhD9DPuYusWJSPCd8VKrBE+eRByWytht/x1uuW6Z8fGCgfWy9vRiF1F0duFkqMsJvpgCWMoKgF0hm1CxGmeeVxv6xZ+UEaiC570I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ahzKTBEh; arc=fail smtp.client-ip=40.107.200.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="esvbCK+5"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1786976907; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=elSQcfZeblurM3/OL+mlSXqqGCSbGGx49NKsTqTo6v4=;
-	b=esvbCK+5p3mzHXgt3lsXQMcXtO7fjCX1fZjAVWqub6FiIoqyVqsi6bGIAEBknXg5zdX/w32Sz78WJ/CEZ1QU9N0O3EA1eV2bswJPdbsaSGbOOKRYlzg4MWOZvjS3W0f3/xxmZUR7nprv1NVyF4hYu3h7qGDbO2yb2xr4XpOy1n0=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0X9A9H.G_1786976904;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X9A9H.G_1786976904 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 17 Aug 2026 22:28:25 +0800
-From: fangyu.yu@linux.alibaba.com
-To: tomasz.jeznach@linux.dev,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	baolu.lu@linux.intel.com,
-	jroedel@suse.de,
-	zong.li@sifive.com
-Cc: fangyu.yu@linux.alibaba.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org
-Subject: [PATCH 3/3] iommu/riscv: Avoid waiting on failed command enqueue
-Date: Mon, 17 Aug 2026 22:27:28 +0800
-Message-Id: <20260817142728.61783-4-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20260817142728.61783-1-fangyu.yu@linux.alibaba.com>
-References: <20260817142728.61783-1-fangyu.yu@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ahzKTBEh"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XifDWf2NwWufKP/07ABIfOCytn6j71fkG5ecZLQKgUgZUBKKKRbDiTgSrsQN9epi9DcmRGTpNvPOxxRdHEombFDONuPom73yIEOqve0BRr/S3pmdFAqC08M9nfn210GuWHd8/WqGAa3KPxBqlZmqWYj+yW2Hxagf/J8INPmEP3YXU1WOhcoPwiEHfalFHjzO9xJfMNlpK6blPtL36HUF9UBwSGrnMcvjEsBuAAK0SBbLOQPVyVxqUMBgtd2NrjYQUVvmFd5da4n3UMKUhmLqUkUt/5e5/dC3IMEZGzxL67UZvHugEXdeDsRFnYD3Thxx1fPWlON8i6TW4xf0nvgkwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RgA5k1xtZruABIfEx05fCcW+U8gJSqzdyVEppp8uinc=;
+ b=on3+hnvzDen4f0MsNnXnhZ3u+IpK6VgKkzb0eJDK125YYTmP8KbI7LqB6v/YsxathgWgDaTR6lMPTBr1Q7jAOSEdjxgIsHbaYNb7L4lCg3I7gdMuyT7VvPuo1STLrta6sZl22G32ZIsLaNpELSH1ZsP4cgrw6e8Pteg+be7nbXBPusc3HX8HWTB28z6l2i14YaJL6rPtESQdP/G3dsM3j+42janvP5+85oHxHxfaiWthTXyMmyz+klxOGmDLYj4gYSknhYPggAh+R7Utk2jU9BKM7NYBG9hlpMYLQeukCJwRy31u4JXlPwAG9fASCu35OmIAeKvfq6C0kw6ZQz0MyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RgA5k1xtZruABIfEx05fCcW+U8gJSqzdyVEppp8uinc=;
+ b=ahzKTBEhRrunXMFcIkrbAot11NsvswyRfltsrf2tdoEIkchzGLc8yRok/xXTvoikqfCbx+8nSqopAC6GaZ1IXkqrc6DORKyLvN1dIrWClWQEOENWigHZW6nDyE+d/mV1xUUASRB6cAqfsAdNsl8PdndIpBbmYZ4bAdi41mwr7OZ+QzuRMBRm3fmq/mfS/d3iJSWaOPxCZZk9GxVqiBXhg0svDO8OuA57YvnRKRAfpLSyE2uRl/UORK5JUMZVlD7ZYy+z9SwyhxTxT+VinPjpa5VNmZkO+80VVpXt2P/TmzoDOmXSAR0f4yLRRqTwx3jAsbI4YFj2UekiJytYwFuZKA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by MW6PR12MB8960.namprd12.prod.outlook.com (2603:10b6:303:23e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.17; Mon, 17 Aug
+ 2026 15:20:53 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0315.016; Mon, 17 Aug 2026
+ 15:20:53 +0000
+Date: Mon, 17 Aug 2026 12:20:51 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Dmitry Malkin <dma@nebius.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>,
+	NB-Core Team <NB-CoreTeam@nebius.com>
+Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Allow nested attach for PCI
+ bridges without vDEVICE
+Message-ID: <20260817152051.GB1410416@nvidia.com>
+References: <PA1P190MB25578C482C8A3B06A4DCC6FDDBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <20260814174825.GC510472@nvidia.com>
+ <PA1P190MB25573D7CFE42EF7DD2A8CDE8DBDA2@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <20260814221103.GE510472@nvidia.com>
+ <PA1P190MB2557D53CB7FCB70EB8F79D09DBA72@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+ <20260817114158.GA1175472@nvidia.com>
+ <PA1P190MB255719949EC777E6D2DB2606DBA72@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PA1P190MB255719949EC777E6D2DB2606DBA72@PA1P190MB2557.EURP190.PROD.OUTLOOK.COM>
+X-ClientProxiedBy: BN0PR03CA0012.namprd03.prod.outlook.com
+ (2603:10b6:408:e6::17) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|MW6PR12MB8960:EE_
+X-MS-Office365-Filtering-Correlation-Id: 547a1308-1c89-449b-0e20-08defc732064
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|23010399003|7416014|1800799024|366016|18002099003|22082099003|56012099006|6133799003|11063799006|4143699003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	DiEpuvCnfcz0ITheCeE2KVQVsQcAm5aEzJcjv7hGafz3joNy+1/FqDkZtQyUSp10vEnO7uNn5ypghrLjYfETtSj+mXnEVMMOPNtHUx7cF1VFPVmSB80YXXfTSt+pDHhx8i2zywcdBdPaiwUJy67EEo2pj3mKQ+V1iyTrwUZNvCHC63OsSJuVqp3dgf6Sz6RXcwFvJJzH75d5dtJH+nIlNvbV+Hfa9y2c7E+vEEvaPbTluxhW+Mhu1XP1dMUlpNHdv/+d7sBFgQPQ5+LpvtSbbCo7JM7cXj5e2jNBBBX/e60fv05LyKpBh6LFiTYFUbAJOuUgFdfTo6+Bk+U7m8izH+3dm0zFhLT2I6UjfUgzhYJkhcOZIHRrFi3ugiCffj+1N0oj+hRrhZd8aitPpjgpeKrq3deNI+BsZID5Y7fdJbk01Tr/RdBOc0DRrLi6zzYidnHjC1seHz87ah9Ppcl6h7wzjfv6zkHEhbQusQhId36zh9qa2lgyxKpC7zhUy0p9zB0ReU6ocrwIl/WXCXCjCngGv9n/GvkRvO1ivGdeTqzIOtXsEmVmsqCE7YD14eMF1DbWjRAmIeSoiRKElw+FJLNHH9JDq0/3heYnOeX3JAo5Aonf8aqCt+NEcdwen3hEnpEyb8eV7hsmaBClAfa4j7YUJTdqpOlhwvVVr5A2cKk=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(7416014)(1800799024)(366016)(18002099003)(22082099003)(56012099006)(6133799003)(11063799006)(4143699003)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Pbxj86eTt0q3uY2B24kGrvcsl0dwWngDhTEx96zPug3J9rIXjEEtc/qaeAcr?=
+ =?us-ascii?Q?4K0PZ2KeyA4KimoOp/l7q2PlveiUW6k6WadvVEAQceburDUUoBlNHy1HEWR0?=
+ =?us-ascii?Q?tm6QvBP8qIikaFU3YE+Jf61D9NJ35KkJrTrRoAmBTmiTKDKtI4mGE43gzJc5?=
+ =?us-ascii?Q?6dTrYYzlyIGu7Wkmrvfobq0PN1ELEg1EXSS+nPMTs49R6a/r1K8bRYZH9WRF?=
+ =?us-ascii?Q?RaDuLPN12k48SYp/wO4dEe1zsiAl7QTFY7MMgjzvjGcjlFlSTpmtv5gdS3t0?=
+ =?us-ascii?Q?BJVlUzDWjoJtAIP8U9jrb77gUdIr+Dnb7BybGvy0OWZxUpTCdGlNuJpFefCc?=
+ =?us-ascii?Q?ut1jzvzZNtp97GSTwW6MDFI6k4iUaPxM9Kf7pMxGIvIB0jeKKJKXwCrR4aHu?=
+ =?us-ascii?Q?ovFqAp34/8EG8GWunwOTPSXWgGBI8goeN66l5MHZzoQ7R453t/q9ERDwV2Fu?=
+ =?us-ascii?Q?o9+Oc95MaT8swJ2WalL9CAELoqB5pcOzQtgwPtuLU2ZFpRGuQeMnso3+sW15?=
+ =?us-ascii?Q?bAySxVGq7WJsGT7EaQBgsck2JFTVc8DeiSodl/vI8yBYSKJjYKfeptomSAo2?=
+ =?us-ascii?Q?2+FjNAs5dc9m1hQqWDvAN5pmNBdIFvXbmiI1gygAzm8RxPAe11649uq4EM+1?=
+ =?us-ascii?Q?LIPi/HPMMU+71CCbucARPfoSGcbzKR9AlpLR8Zv5/MLFErYWZq5EpHE1b+oq?=
+ =?us-ascii?Q?wym217FxxAGHr/cFHJYyCZTlMBrtNDW2KQ9BaeavvYclWIX8r4MK0DK4ei6M?=
+ =?us-ascii?Q?yJvrow9aaeFrEt2gbfo7TdBUALzI6jAKMdPm885knVDj+MTPb1cDFg4bbdPR?=
+ =?us-ascii?Q?LCGH7LIVIcy5Chrd6kJkjHAp98g5HR/CFdFDidbR0O1/V5wYIbPGbWWOmSkC?=
+ =?us-ascii?Q?ho2K9xjrL6yRAUWmvYcR4OMXcmZ3pUykBklTB0JuWcG+qOGphaeTbtuX0tOF?=
+ =?us-ascii?Q?anzHUHgYidlbdCkyNvMKC6I93bQ3GzsiCUeDJeQx8xU1AnRSWE6WF53iIeNK?=
+ =?us-ascii?Q?eUdxTWP1w3qwt/09yfzNJphBWUxMbGHZEuT11p/iUk/jSIVqeXUCqrm9xFz9?=
+ =?us-ascii?Q?tmXXDrsXF82ZSgj3Gan1PFA9derzec2UWRmvMVyIZBrYTWyY1xw7fbAM4ox3?=
+ =?us-ascii?Q?K/3LyZgwFWxOBJH6wLXKLzTwXrfY0hb3HZkNKUJWravaGP/DeTeRyHAMyFP4?=
+ =?us-ascii?Q?6z7yRPw8d/eHMzWh89prtJD0Lvc5jeAu+VoGkKgnFSmiuuQL9j4pO7i+kook?=
+ =?us-ascii?Q?pvdvF6DWqj/MhecHWPaMJwrhwA82na5YzLhKyr7x2NeiJVPk6rsYQGHnvVYk?=
+ =?us-ascii?Q?9Mm9rCCkSTOhUczQEqdWQ9UXySMLjIl5wPbz9hWJMUK22pEkxgsF29Eod7E3?=
+ =?us-ascii?Q?05BxdVlWH6PKWJU9Ki5vRA1AchCMf0vdlU3zpjtoXB2YP81/yt140uCYV5ie?=
+ =?us-ascii?Q?hjasW46QAh8tSu1nbqPPjoJiA7XiMNEOLlwd6P+8rBL8oWn8r7rMEctw9x2E?=
+ =?us-ascii?Q?gmrUiooMkD7bM++2a1h5WJctd2xTk/KBNEwOMzbprA19bW64ckoCISIt8+dQ?=
+ =?us-ascii?Q?bfrtR9ok1bA5id/aMVb9fdl+U1dEmqQLRCaMwhSIqG3L6a7V8iC4/u3EMJAt?=
+ =?us-ascii?Q?n+rIUPusBb5uHABRPWRumBTj3wEDD1+H4YUzIiK/1NbioH2j5QtCMpGnCLaH?=
+ =?us-ascii?Q?Lff5H99/rskokcGIHlxw/vTIF3HaoTChoS/YKTs2IwJyfrqvgGm3v4Fk6UcY?=
+ =?us-ascii?Q?HUQWb/e1PA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 547a1308-1c89-449b-0e20-08defc732064
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2026 15:20:53.0030
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qZ5kjmnfnOB08k12Eir2a7QkS5V1soBYXGqk9pLlYctR4sOimE6yEJiSKMCq4cpb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8960
 
-From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Mon, Aug 17, 2026 at 02:26:46PM +0000, Dmitry Malkin wrote:
+> 
+> > This kind of situation is very challenging to setup in the VM, and at
+> > this point you may as well include the switch to the VM too.
+> 
+> Passing through the PCI switch would not help because the device without
+> a vDEVICE is the host Root Port. Neither the Root Port nor the switch
+> should be exposed to the VM.
 
-Do not wait for IOFENCE.C completion when the command failed to enter the
-queue. The command was not published to hardware, so waiting for its
-producer index can only report a misleading execution timeout.
+Oh that's probably because of the unfixed grouping bugs in the
+kernel. The root port should not be part of the group with correctly
+set ACS flags for switch P2P.
 
-Fixes: 856c0cfe5c5f ("iommu/riscv: Command and fault queue support")
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- drivers/iommu/riscv/iommu.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+> A multi-device IOMMU group is an intentional effect of using
+> 'pci=config_acs', and I would prefer to restore support for this
+> configuration upstream.
 
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 86cec408be5b..2b3dc63536d5 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -419,8 +419,9 @@ static int riscv_iommu_queue_wait_for_space(struct riscv_iommu_queue *queue,
- }
- 
- /* Enqueue an entry and publish it to the hardware queue. */
--static unsigned int riscv_iommu_queue_send(struct riscv_iommu_queue *queue,
--					   void *entry, size_t entry_size)
-+static int riscv_iommu_queue_send(struct riscv_iommu_queue *queue,
-+					  void *entry, size_t entry_size,
-+					  unsigned int *out_prod)
- {
- 	unsigned int prod;
- 	unsigned int head;
-@@ -465,15 +466,17 @@ static unsigned int riscv_iommu_queue_send(struct riscv_iommu_queue *queue,
- 	atomic_set(&queue->tail, prod + 1);
- 	atomic_set(&queue->prod, prod + 1);
- 
--	raw_spin_unlock_irqrestore(&queue->lock, flags);
-+	if (out_prod)
-+		*out_prod = prod;
- 
--	return prod;
-+	raw_spin_unlock_irqrestore(&queue->lock, flags);
-+	return 0;
- 
- err_busy:
- 	raw_spin_unlock_irqrestore(&queue->lock, flags);
- 	/* Report the failure and continue; full RAS recovery is not implemented. */
- 	dev_err_once(queue->iommu->dev, "Hardware error: command enqueue failed\n");
--	return prod;
-+	return ret;
- }
- 
- /*
-@@ -512,7 +515,7 @@ static irqreturn_t riscv_iommu_cmdq_process(int irq, void *data)
- static void riscv_iommu_cmd_send(struct riscv_iommu_device *iommu,
- 				 struct riscv_iommu_command *cmd)
- {
--	riscv_iommu_queue_send(&iommu->cmdq, cmd, sizeof(*cmd));
-+	riscv_iommu_queue_send(&iommu->cmdq, cmd, sizeof(*cmd), NULL);
- }
- 
- /* Send IOFENCE.C command and wait for all scheduled commands to complete. */
-@@ -521,9 +524,12 @@ static void riscv_iommu_cmd_sync(struct riscv_iommu_device *iommu,
- {
- 	struct riscv_iommu_command cmd;
- 	unsigned int prod;
-+	int ret;
- 
- 	riscv_iommu_cmd_iofence(&cmd);
--	prod = riscv_iommu_queue_send(&iommu->cmdq, &cmd, sizeof(cmd));
-+	ret = riscv_iommu_queue_send(&iommu->cmdq, &cmd, sizeof(cmd), &prod);
-+	if (ret)
-+		return;
- 
- 	if (!timeout_us)
- 		return;
--- 
-2.50.1
+It doesn't work. We tried to make it work, there are many problems
+unfortunately. Don't use multi-device groups in the hypervisor.
 
+This patch is pure hacky, there is no good justification for the
+kernel to ignore certain devices in the group inside an iommu driver.
+
+Jason
