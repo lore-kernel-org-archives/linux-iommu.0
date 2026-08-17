@@ -1,84 +1,113 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 751A83F54AA
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 16:01:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mta1.migadu.com (out-104.mta1.migadu.com [95.215.58.104])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5599444239E
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 16:06:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.104
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786982477; cv=none; b=keaJx66u/duXgZ2VRAaSgkgBZk3GRAuGd2EREUSiZVG21BfWKJKDQH6c7/F1YZfFWFzXEZmjOx3+UNdbrynd5JYRXFwUSoJKxZ2GzhpVG8MsVNHxECZnWxquUVehVISCjEvPMNbscq/kMwSnYVmMyJ8RPZc/FBTil5q9mASYH+M=
+	t=1786982808; cv=none; b=ru0brxaZZtWl6uH962vv2sWDwV2tjzWyxf3B6QNzDiQHmMD73VwoEJDxwrgCSbF4iPX7+jMLmu7akEEE2mY4otthhjaRcYUi/mZhoeQmCWu0EhbC2xya2LD31wpLyVIg2yVJgnG05+jxl1uWKmUC73tPVvNA8tVN6sv4tzLVn00=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786982477; c=relaxed/simple;
-	bh=GiLIMTpBtBKYBCft6avqROJsEJhCo357+zSQa6yP/LU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cCaNtsQuKta9pf1UqtxxdiPgNPpWxIjd8Kci9Tg1V7bvEPGegIoHgv1p+57aVTnJvRNtBXrnULBGbGhSeCioXW7agwSEHx0qQorQoew9Upav3I/hNPKsmlYt73NysVJsWtVe0SDs8oLCIE1XuhIbV/GUQsGF80wDwRrMbOr0CMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=reIH3eNu; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1786982808; c=relaxed/simple;
+	bh=CgqZe8Bz0XwM99muFJKusVR1o4fnvZ8HiDN7HUnr2rw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=BgvJ3uubFizCniWKjzt52/7gxxoAmgAWJH/ERsXj2qDO6BGloeNCWB4EklHlDAyHsxNorg2cHxHy07x3aTFktiP+t44+FbQDA5zXxzFxOgKDYESFuPeiA2qpoH2dUG0hvgayZUSmMT2zCh2DIXGRDQF8JzytPU7eYqSfecDjCzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=WVasJwAc; arc=none smtp.client-ip=95.215.58.104
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="reIH3eNu"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id C63FC20B7167;
-	Mon, 17 Aug 2026 09:00:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C63FC20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1786982448;
-	bh=uA1WRPV/GEjXMADTzG5bqvvpEE4dgFC0L0ozuNODXMg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=reIH3eNuC+YOWJg2xpIB/HCzgeflB3AaMCZmPYcWiOOHFPxzqyzG85J/DCNUqW8d/
-	 JKQR2jg+BfPQW1Ad0mkiJ8K/D9MxOcbRwCXPaOR34eOGjOlbT+u8SsQBW5bZsBdZET
-	 B1ad+97KlA3xRfiuzua0Ns0uvXZulcKoZbZPYQnQ=
-Date: Tue, 18 Aug 2026 00:01:13 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, 
-	linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org, 
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com, 
-	longli@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org, mani@kernel.org, 
-	robh@kernel.org, arnd@arndb.de, mhklinux@outlook.com, 
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com, 
-	mrathor@linux.microsoft.com, baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com, 
-	vasant.hegde@amd.com
-Subject: Re: [PATCH v3 4/5] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <gk7lcfk73uzntmnmf7eb5clp2h7q7oqb7lykj2qlrrkilotfvx@mf6wima2kibk>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
- <20260811155022.108148-5-zhangyu1@linux.microsoft.com>
- <20260813152913.00003d8a@linux.microsoft.com>
- <20260813224627.GA933791@ziepe.ca>
- <p7ts4y6lxt7k6ldzaa26v7rckmmp7o5js2gn2r3eantgzut2cc@xxsvso76nefj>
- <20260817122216.GD933791@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="WVasJwAc"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=CgqZe8Bz0XwM99muFJKusVR1o4fnvZ8HiDN7HUnr2rw=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1786982805; v=1; x=1787587605;
+ b=WVasJwAcCohL5sID0YzwEc3F5D+dXtNXHXGueVcpIteC3z8w/9bcGI6gnqG/UibAPRZUcSDB
+ m9UOO130pO+qx/vjCJ2CZ468EqnZ+7qeOOvSn01I9T78BsPLrXMaZUVMKNQEvNIztG9yicaY7fD
+ P3r/HdqOatjFTowsLSAniTlc=
+X-Envelope-To: iommu@lists.linux.dev
+Received: from localhost (2a03:2880:10ff:5c::)
+	by mta12.migadu.com with ESMTPS id 181de17a528cb54c;
+	Mon, 17 Aug 2026 16:06:45 +0000
+X-Migadu-Flow: FLOW_OUT
+From: Usama Arif <usama.arif@linux.dev>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Usama Arif <usama.arif@linux.dev>,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com,
+	bp@alien8.de,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	samuelcrossley@gmail.com,
+	"Srivastava, Dheeraj Kumar" <DheerajKumar.Srivastava@amd.com>
+Subject: Re: [PATCH 0/2] iommu/amd: Use MAX buffer size when SNP is enabled on Family 0x19
+Date: Mon, 17 Aug 2026 09:06:41 -0700
+Message-ID: <20260817160642.418302-1-usama.arif@linux.dev>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <697be383-2de0-4c6b-91c1-9887d23ddc9b@amd.com>
+References: 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260817122216.GD933791@ziepe.ca>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 17, 2026 at 09:22:16AM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 14, 2026 at 05:37:48PM +0800, Yu Zhang wrote:
-> > > Why check it at all? Is there an issue with attaching the same thing
-> > > twice? Will it blip the DMA or something?
-> > 
-> > Actually, I do not think there should be any issue with attaching twice.
-> > Hyper-V *should* be able to accept such attachment. But I do not want to
-> > make such assumption just for a redundant hypercall.
-> > 
-> > Does this reasoning make sense, or would you prefer that I remove the
-> > check?
+On Thu, 13 Aug 2026 19:28:55 +0530 Vasant Hegde <vasant.hegde@amd.com> wrote:
+
+> Usama,
 > 
-> I would probably drop it. Having blocking always set blocking to the
-> HW regardless of what the SW tracking state says feels more robust to
-> me.
+> On 8/13/2026 6:48 PM, Usama Arif wrote:
+> > [You don't often get email from usama.arif@linux.dev. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> > 
+> > On Mon, 20 Apr 2026 08:42:02 +0000 Vasant Hegde <vasant.hegde@amd.com> wrote:
+> > 
+> >> This series addresses CVE-2023-20585 [1] by increasing the AMD IOMMU
+> >> Event log and PPR log buffer sizes to the maximum supported value (512K)
+> >> on affected CPU families when SNP is enabled.
+> >>
+> >> Use MAX buffer size when SNP is enabled on Milan/Genoa. Impacted buffers:
+> >>   - Milan : Event log (PPR/GALog is not supported when SNP is enabled)
+> >>   - Genoa : Event and PPR log (GALog is not supported when SNP is enabled)
+> >>
+> > 
+> > Hi,
+> > 
+> > This series seems to break kexec in our production on Milan hosts with SEV enabled.
+> > This is on the 6.18.43 stable kernel backport.
 > 
+> Do you have dmesg?
+> 
+> > 
+> > If on top of 6.18.43 release, we revert the 2 commits, i.e.
+> > Revert "iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19"
+> > Revert "iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19"
+> > 
+> > kexec starts working again.
+> > > Could you help in fixing this issue?
+> 
+> Sure. We will try to reproduce it internally and get back to you.
 
-Got it. Will drop the check and make sure each blocking request
-reasserts the blocking state in Hyper-V at HW level.
+Hi,
 
-B.R.
-Yu
+Just following up, were you able to reproduce this?
 
-> Jason
+I was able to trace down the hang to this do while loop [1].
+
+Could this be a firmware bug? We are currently running 1.53 (below
+shows up in the dmesg).
+
+[   22.245942] ccp 0000:41:00.1: SEV-SNP API:1.53 build:5
+[   22.308933] ccp 0000:41:00.1: SEV API:1.53 build:5
+
+[1] https://elixir.bootlin.com/linux/v7.2/source/arch/x86/virt/svm/sev.c#L1017
+
+Thanks,
+Usama
+
+> 
+> -Vasant
+> 
 > 
