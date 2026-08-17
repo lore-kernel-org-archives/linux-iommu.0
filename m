@@ -1,341 +1,290 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azolkn19012059.outbound.protection.outlook.com [52.103.10.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF92E46983F
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 17:22:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786987342; cv=none; b=G37uVSz4GHCS7xFs1S3T6NbsxiHQD9g1CxeemJsK2+lb61MRe5maKHEBr2vdM7/73XZpJILO0Ud4aagSX3Z7yMZ625iJ2obhco404FWloBUFCy4xgarp0w5eOBlnTpNi4FL7D4D7RSVNWZxrwpU9biPRuHjv2bX6Dq5X8kr5H5Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786987342; c=relaxed/simple;
-	bh=TsDzbeMIAoB15auULJGz0zaAQwkoG+YfRfs7YSfJtPw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=c8B3vjKbxbvaKvbyN6hwEqv5V4Fkur3r+uOqLdDeEdle7Sj+5Pis8QjnFdqbv/c/22MEVmK4wDLIgiErSpvE/OD/7Iqv+yNd9rCfwjenfy3qsVe7KAj3GpdCfTheWsI/tver3KfDjH/NIoyXNcpnI19wcThcsCDByjce2dfcRvE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qfAGI+Vv; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E61F44C653
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 17:27:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.10.59
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786987659; cv=fail; b=czvWSdjcPTehRWSOYmaV2JoBKZV8uRilBoT8MbFpJlwlPn8YOywB+OM6T8N47TyLDN1K4U0vSPa/2OlM3XVznUOHLBk3G0Fh61j6/BZwD6h5NixRFS8q8FYZXAHY4QtQ8hAOIuJvHqc2lkem1VBgGW1eGD2kOyyotfgLcAmdQ/k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786987659; c=relaxed/simple;
+	bh=Sg57RovxhIgBrHny/nRczKp09mkr94AmhTjSji4SYOY=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=SA6apjG0VybTsbTiLLh12IVK+j9N0zHjvUlqX8t1Gqe20kqGGpfMUvpzxxCbWms3ZxPL3pnBd7FeHuvgNkb/tJpSieKuxWGZuaQsEi3NPIc/EudxgrRwEmEgFSfWIElX+65/xDMH2I9oKs1nKhqjiAOJhlXCyF+wSQebfkO1hJQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=amZnZW4W; arc=fail smtp.client-ip=52.103.10.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qfAGI+Vv"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-495590dde14so46008155e9.0
-        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 10:22:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786987338; x=1787592138; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=c63lTPw0sJ/0kiyWxvGmU6Nz+vfC7FNZqHlcFwaoBHw=;
-        b=qfAGI+Vv63mGAKeDW24246Vb1NqK7FY2+9DMwfqV8FL5ToZcGsWexd9SCr2IEQ4e+e
-         fn/obO+2f4tiV0FwIBIr7pc+5TCo1lSFDWm/e8wYgC5GV6sOjTdnG0HHNcnr097CPzG0
-         AcaohpxAMaEA+syz56A+t1l5AVf5Dy1tgwzLokEakMKjAwPS+DSx52YzDrTPEfnHSGe6
-         zkqqFCL53KOUsujS1p/wHm8BPvc4QnFR0gfb9Zeeg4sEYdIRGlkzfmHpA1MSyQHXQMqW
-         +8vzuKW+Fvs16zexEXb7kJfVFfqo98LClKzucFyPYfJ3zpSjtudVWsjIEHdN7fJPzz4j
-         Vfwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786987338; x=1787592138;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=c63lTPw0sJ/0kiyWxvGmU6Nz+vfC7FNZqHlcFwaoBHw=;
-        b=mUEf7Yi/4JRsMDYXD/Up5lhp3A9DRQPIDEhElrFn2dsO3Ls+GJ1/c24m2kIaWHT+DD
-         MK3cCUTnu00aIvqtJj2N8QxD6Ru5qGNiUu4xe8cAa8bf+iwQ8Ysibx3m5UEPm+cX2h9V
-         JV3haxbjPPYXMQpcbE4zDhtEWJwlcCYRb1dGKyZF7VQXFV4teB4fcsaepSTJRz8Gy0th
-         +3zBOyW8u2svyKu1NZyfo8HvCbxgPRnKQU8jDBjs6zFy4JK21iaPcEglbvONTuQjQ0Sz
-         AeUtWOSgRoXkXvZhSHPvqirJqeMnTyB+1jdpNl59NBsvSAjEI8U92C0yfK+zuUa/lx0U
-         3o4A==
-X-Forwarded-Encrypted: i=1; AHgh+RookXwzGyK1Pq2IsaI6ojPpE0apBg4LCwqLqi2jRlFNhzbBJRlalLNnGHK6uMcNIwPURiPIzA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwRIPFi/C2dSPzcnIb6vFHSNigBwvWRerDF7QTImS90eLVyAwwE
-	Ix504rb4xOe8KJw4KolZHI20Fhs5WFXYD3BGQIgQ48S9vDUBKGR5HVsMNykyCd9cxA==
-X-Gm-Gg: AR+sD129lW6PS4PsaGybOaBOIEHHQO6WhndZG/MyGKIdHg7yXgIhA8a5Y3iXD3D7uQR
-	008P28/cVHGbUB0nDUqg9dI9k3jMG2VJPIVmrPqVZMZmzmUGj+JajuHcAQNLZiTCM/GMqkB6VCh
-	rJMii+/8801BLndCmjUb/Z2nOw53uqg45vyjvGENURHop/pxT/pGPjLTqE32FG+JeYeqAU700CM
-	x0OaIiO8epkBGaV4/pQx0NHiV5+jcRa/utNrp33RRCgSRN6HULQOP6I08w402Da+ZQgpaWccsKo
-	s3WCynzxHaerpxawKsTZ9MkrpN+hosp3AY0ei3ZDaFip0KhW2fPzY9lCY2hAFvy4VwoW7T4a0kw
-	yiBnbcrgEQKt8kD6lv48zW6s0IHLFRJfNKU55BtRTK37/RG/W4z1wMMRSmfGq3Iq/QDSal2HoZV
-	mfgPAwZvPL6LRNEhwG5Ghm9/4Wtv14IsGE/WFDnORPr5OMy+LETjo+xzdMvXi2+NrH3DXZQqv6h
-	zj+FO8675GYSX075A+Pz+6dtAx6ue+c
-X-Received: by 2002:a05:600c:c171:b0:499:7f38:d77 with SMTP id 5b1f17b1804b1-4999fb2e1dbmr33554105e9.6.1786987337398;
-        Mon, 17 Aug 2026 10:22:17 -0700 (PDT)
-Received: from google.com (135.91.155.104.bc.googleusercontent.com. [104.155.91.135])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482a5a3b51asm5583583f8f.11.2026.08.17.10.22.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 10:22:16 -0700 (PDT)
-Date: Mon, 17 Aug 2026 18:22:13 +0100
-From: Vincent Donnefort <vdonnefort@google.com>
-To: Thierry Reding <thierry.reding@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Sowjanya Komatineni <skomatineni@nvidia.com>,
-	Luca Ceresoli <luca.ceresoli@bootlin.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Russell King <linux@armlinux.org.uk>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>,
-	"T.J. Mercier" <tjmercier@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
-	linux-trace-kernel@vger.kernel.org,
-	Thierry Reding <treding@nvidia.com>, pavan.kondeti@oss.qualcomm.com
-Subject: Re: [PATCH v4 07/10] dma-buf: heaps: Add support for Tegra VPR
-Message-ID: <aoNDRTKCUkzd2n5G@google.com>
-References: <20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com>
- <20260807-tegra-vpr-v4-7-5510d16af89e@nvidia.com>
- <an4MEI7lkc2p3nKI@google.com>
- <an8K2gb1pIqbDj6-@orome>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="amZnZW4W"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tNAkqezekSRSli6oO0oavCz9jXEqdBx38CiDhun19Y4JvLr2FoTAnOaUteSpsgaVT7BEVaih2fVM1B4tCOV4Rf+4fSw1zYsgVx+kRvZXvPznoT7M/PYtv621L8fqBpx+nHoKDJDtEkgZLSzdQA+TXe2hs4B3FmRbw3pbWxrH+lULCYSRVhAOUi4ZSdKidf2kgfYCWiHec/nUn9+gI9r80WpcqLrFeox+OnlNmA3TtuuY4BpW1zjYGI0zXvQwbGWnMCgV+V88PDQJLfTIGqQSIiWyFS7ey0xX8ezkzmDNrPvB7dNnxdVioLbsyYml75EqtDltn9kbuDgQOWxVQ8NHHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hODX/1g+2M5L8Qy5dsOIFhLlcOF7kuBiS4eX8kz+11A=;
+ b=jgmQU/fADKDuE0enFJ7ziNMaqkWPVWcf9rR8seCsqhD36iVkl69Ek56DibDtaV9zOR6BGkWtrFeF6HFXdZe+3fjIqnFQZmGC3PFrBMLN9nUTw7IDMvtp+IAmWn7kdvkGroHopyLM+OIx4SP58+BlYJRz8trjcT3MwRvX9pQT+JG32cl8sXQP7DXaOrC7SQcEwJzUkcrSNouUhw0p4QYiQmWpcui8QKronkkA9F6Yemx6FgtwvfU039aCzIo9QPdJSiR/h0VCO834d0CVQD1LzhrsHQLwzuN8noNNsGt4cH/p0S0D90/SQQ34l0td5s9AjS7/9FUlm4fDFXIVbHY5/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hODX/1g+2M5L8Qy5dsOIFhLlcOF7kuBiS4eX8kz+11A=;
+ b=amZnZW4WdYunQyG6pp6aDgZeMYLNSoC6g6dclE+InQyff/GJKmh3bs/VIp9nNgfRxANEC0QF2xGoHMaDf6ISXY3rieTpBaDngn5O03cq6Bj8V6Hc0qeI1FKqnqWy+DKqIaGVXMJ3ZW1eBQEvKTbi7jlmKU4BCoqU+iKbrf/5ZRfe1sz/bQKuhQ+cWB+IKgqzSEtHVc/HwrdhEx1luyNJ6rEjJGaxJohyxlzGyJLSE1msFbGaW4koVpn0itG4Z9XjPOhumNrtWYkeB2dCThHYzN8IkiPD9Al9hiwfvYEIUEdAfALUS+SjLUATu/MOgGg62Q0xoJUmOnKcyqKiHrdmtg==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by DM6PR02MB6777.namprd02.prod.outlook.com (2603:10b6:5:210::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.17; Mon, 17 Aug
+ 2026 17:27:34 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0315.016; Mon, 17 Aug 2026
+ 17:27:34 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Yu Zhang <zhangyu1@linux.microsoft.com>, Michael Kelley
+	<mhklinux@outlook.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com"
+	<kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com"
+	<longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>,
+	"jgg@ziepe.ca" <jgg@ziepe.ca>, "jacob.pan@linux.microsoft.com"
+	<jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com"
+	<tgopinath@linux.microsoft.com>, "easwar.hariharan@linux.microsoft.com"
+	<easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com"
+	<mrathor@linux.microsoft.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "suravee.suthikulpanit@amd.com"
+	<suravee.suthikulpanit@amd.com>, "vasant.hegde@amd.com"
+	<vasant.hegde@amd.com>
+Subject: RE: [PATCH v3 2/5] Drivers: hv: Add logical device ID registry for
+ vPCI devices
+Thread-Topic: [PATCH v3 2/5] Drivers: hv: Add logical device ID registry for
+ vPCI devices
+Thread-Index: AQHdKaksqYpZxqDILkSMgywEvhwx/radsJ0QgARk7ICAAHKEAA==
+Date: Mon, 17 Aug 2026 17:27:34 +0000
+Message-ID:
+ <SN6PR02MB4157D48F243A3EA8C94C412ED4A72@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
+ <20260811155022.108148-3-zhangyu1@linux.microsoft.com>
+ <BN7PR02MB4148C2319B12C57B1FA3885ED4DA2@BN7PR02MB4148.namprd02.prod.outlook.com>
+ <uvvdhtxzqkwbb7ur4pybseocn3c4erk4gbis7yll4cvgusjzke@n2lbeyn532w2>
+In-Reply-To: <uvvdhtxzqkwbb7ur4pybseocn3c4erk4gbis7yll4cvgusjzke@n2lbeyn532w2>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|DM6PR02MB6777:EE_
+x-ms-office365-filtering-correlation-id: a31a3b31-3176-447a-c4e5-08defc84d342
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|15080799012|51005399006|31061999003|55001999006|24021099003|13091999003|8060799015|8062599012|19110799012|37011999003|41001999006|25010399006|40105399003|2607281247196008|102099032|440099028|3412199025|1710799026;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?0ecCefjhPp0uJfXoUoYqioQgztg+OGpcvZodrrAhfQ2oV5kBNHjGIwMMysLn?=
+ =?us-ascii?Q?HnnsJKW850o8gTrjMlzgYfEIzTQDVlgQTcOmT6lRilaW0wB7hgl32vVjNfoc?=
+ =?us-ascii?Q?GGmf0ldwCLSv8v6W41+X0Ta1XrtO3tDihmACeeA+MR4alcFft881OPOkKqmV?=
+ =?us-ascii?Q?2VF/NQV3EhiJUWxAwI/U4VbuHZBTaQ9ykRA3ZO0z+UHMLTCSktQDkxzSXeC2?=
+ =?us-ascii?Q?IqZCi3XjsKVgxmtdTvNNdTMTK0W2VC5aeVAn4/7CZUMyT679XWFutntfuLD3?=
+ =?us-ascii?Q?q9//zsXGGjLlynihBlGzCwXOyCQUbT12wODbDWiT6jPT0TCp2Ir5ivc5iMzc?=
+ =?us-ascii?Q?raHmJP62ryQTxo0VfglfFqM4LgpzOg/oeZVuN3J8Kj8AnBS+AWoZKPqk3tF0?=
+ =?us-ascii?Q?cV+Wn8/IsXV/b3RHOIFn+B7ztkvThNU3Mh6irCPLBZDNPoPc+flyyy9scjKc?=
+ =?us-ascii?Q?WjVVPUG78P3juYT5zw54cEdGd1Q2U+WCuIFZUECl24E607Zl8VUUDnUHTgz/?=
+ =?us-ascii?Q?JtW64YhsZFHUItDCeIkvKi0dpaWUKBwoITxpCfeUU5qKRMnu+gJ5MAjHFOzn?=
+ =?us-ascii?Q?Ej9pvOYlXbZyl2rmd0Ph0LTIt1lo25O/MmaxBnzU0oWLMqRyVvDLMplq728T?=
+ =?us-ascii?Q?Qc0kVr3zKxUqoOtu/aVZMzGKJc5eqvAQ3i9R8dJNNbWgPTBgYCLuJkPyUbLF?=
+ =?us-ascii?Q?svGu+vJhznTVYdp6VqrOdFZ+//8mmLK1dQnE1td+5aJrt4j+15mfFuRNWB3R?=
+ =?us-ascii?Q?mOkeVXDy2tEw8dAk/Id6QkJYJzkw4/IO8ugwim7IqCOlClEo6vyZr6kX0O9X?=
+ =?us-ascii?Q?eF2I6l6KCyQkuvpPnc1ljIkXuMjLVO4jIeMayXSu5QJk4m5zRAxuJqN9J7kN?=
+ =?us-ascii?Q?luaYLBvhybE2SW+E0kQdLIPVM2YB24NDnFYylt5VW/qBtIw3YQWBcmofKSDU?=
+ =?us-ascii?Q?0CWnOGvM1xnlN6TFubbwrH0jqOpQQUH0Ad7fo2O8wO+MEHAxJv/ls3H36pqY?=
+ =?us-ascii?Q?chs1zbjwIKgRyPx2F5A5QdwMMSBvcAYzbNKY51Xfd5N2EaLPrB/JENluLSmk?=
+ =?us-ascii?Q?aC3ZiGZ3Djk1QKsUBR62+bKW2mz2dEyct8cTlgQHDhuhYVzKzSQ=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?PgP4qoyeaU0XFoE3SnBN7U0JhCFz4WXSRQOSTtbBUf+0b25YxozyH0MB9qxX?=
+ =?us-ascii?Q?3rfBlrhnrh53UliXQISvpalJFUmWdQu2uDKy+atBlXUkaLMh8cEY2ccnRzXP?=
+ =?us-ascii?Q?4R7BbGtc7TzyqGmw5mpdYth4+9QiUvsY1G61gN7RMOPvpX9aMTPKIgVtgEbj?=
+ =?us-ascii?Q?XbCXV4S3VoVYCI2/D6HMmt0cnSo/6XkTEO7KvzZaEWAZmO6pEesNwLlpTmh+?=
+ =?us-ascii?Q?ow3IOpQjVENdPrYmBOTy2i5pNVGmE54BvXYenqgVK063UZ9QYOXPPQfEhSDm?=
+ =?us-ascii?Q?lmjeyBmKSzH6MAIIdN6SJeTSxmHp9XH/jpFtqt+NhLzvlU3nf3yKexXL/L09?=
+ =?us-ascii?Q?R2xeYA+PPOEWv071UIg3A6nRVitEfBou8rq3eLM7gWNh/YedMMX86J3FyGlq?=
+ =?us-ascii?Q?HUekcAwxuuC5llQ+cVsrx5hr8CE0UtS9ubEcLTLpBv4eaWtNiXBpGijHquaP?=
+ =?us-ascii?Q?uRiyIEpI61J0fP9tDv5rAD3PZsSZuVty/vL0IuyPy1nTPeYF8Pzp+HjxJj04?=
+ =?us-ascii?Q?Izofkj7ZnGMh4iqNaSTwjFOTn8787BgcjElnHr93QHaszuVw4PHMlA9CPTR0?=
+ =?us-ascii?Q?vMsCsjMgQoTmDgdjmIGtrd4C6mQVlGQd6Y6xYtIanjdWBjH9TiS5SqJ8pKNz?=
+ =?us-ascii?Q?B6GaEysGlu+vZjGQgIuYu8a6NjBHzt4JxtdmWDz+VAJfKZ/E8vEuCMiGq4IR?=
+ =?us-ascii?Q?wXM2JdeYiwTucQgiNG7bVHPQ7JKG0q5y2asPAVqiAYnYfOrb9Rqkdf68Zguq?=
+ =?us-ascii?Q?lV1ZvuWsMG2YN5qcF+HT8ok4qpvDchTIKVwtR2AVQtlgoIJbS37sdfa4VVcE?=
+ =?us-ascii?Q?8UUaAdsmfLLLs3Rs7PSzS+ddAKbOG1FfHx6gzBVIdJChehIqeV2S0Z3cQ37o?=
+ =?us-ascii?Q?gqJoK1ttTlNGoe5etwPXlKm2/W7Zm2QbpR2aU9VTF8tGRJ5ydjHCRRThssdQ?=
+ =?us-ascii?Q?TGwq5siv4RWbZ0coD6bH7aO5cCUN9t6bDb/zv5QEwmvoubHa+avaT3/uCCXV?=
+ =?us-ascii?Q?4zalhuLqrdeAd2rX7TMMpP3rABVzS8IZoO3geOexBiCZISoE4appFhEyMzX6?=
+ =?us-ascii?Q?PNAf0lxjOppOeeSq+7/pdiJGYAfkx4DuBRKDOsIHbnPYoyYttIlpPRX4Suv9?=
+ =?us-ascii?Q?7MjAUg4Wj1D8SNm2pPDW9csfs1oDQXO8eFkFvReo7tHTcd1vmGk0DZQiUVAK?=
+ =?us-ascii?Q?0e0mrBP9vRZyAY0tAwQP7Pb8Doqnlnpr38klm2+ybDJwB8ECV3s2fVlCtVgx?=
+ =?us-ascii?Q?aJQwPBt3BF/BC8mJN3bvx1zC+yw+ZHwgbCSoELM6PTLOTdIRLNh2EIGVptrB?=
+ =?us-ascii?Q?rOeBYdnFr/3crW7Ap4lq1PWmkCAElFFpWT/oR2ZPCSnZsGCZHdAGlQ+Tzv1a?=
+ =?us-ascii?Q?Qq9A2RE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <an8K2gb1pIqbDj6-@orome>
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: a31a3b31-3176-447a-c4e5-08defc84d342
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2026 17:27:34.3050
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6777
 
-On Fri, Aug 14, 2026 at 02:56:05PM +0200, Thierry Reding wrote:
-> On Thu, Aug 13, 2026 at 07:25:20PM +0100, Vincent Donnefort wrote:
-> > On Fri, Aug 07, 2026 at 05:54:27PM +0200, Thierry Reding wrote:
-> > > From: Thierry Reding <treding@nvidia.com>
-> > > 
-> > > NVIDIA Tegra SoCs commonly define a Video-Protection-Region, which is a
-> > > region of memory dedicated to content-protected video decode and
-> > > playback. This memory cannot be accessed by the CPU and only certain
-> > > hardware devices have access to it.
-> > > 
-> > > Expose the VPR as a DMA heap so that applications and drivers can
-> > > allocate buffers from this region for use-cases that require this kind
-> > > of protected memory.
-> > > 
-> > > VPR has a few very critical peculiarities. First, it must be a single
-> > > contiguous region of memory (there is a single pair of registers that
-> > > set the base address and size of the region), which is configured by
-> > > calling back into the secure monitor. The memory region also needs to
-> > > quite large for some use-cases because it needs to fit multiple video
-> > > frames (8K video should be supported), so VPR sizes of ~2 GiB are
-> > > expected. However, some devices cannot afford to reserve this amount
-> > > of memory for a particular use-case, and therefore the VPR must be
-> > > resizable.
-> > > 
-> > > Unfortunately, resizing the VPR is slightly tricky because the GPU found
-> > > on Tegra SoCs must be in reset during the VPR resize operation. This is
-> > > currently implemented by freezing all userspace processes and calling
-> > > invoking the GPU's freeze() implementation, resizing and the thawing the
-> > > GPU and userspace processes. This is quite heavy-handed, so eventually
-> > > it might be better to implement thawing/freezing in the GPU driver in
-> > > such a way that they block accesses to the GPU so that the VPR resize
-> > > operation can happen without suspending all userspace.
-> > > 
-> > > In order to balance the memory usage versus the amount of resizing that
-> > > needs to happen, the VPR is divided into multiple chunks. Each chunk is
-> > > implemented as a CMA area that is completely allocated on first use to
-> > > guarantee the contiguity of the VPR. Once all buffers from a chunk have
-> > > been freed, the CMA area is deallocated and the memory returned to the
-> > > system.
-> > 
-> > Hi,
-> > 
-> > I believe we (the Android team) are trying to solve similar issue to yours: Arm
-> > CPUs can still speculatively read memory after it has been transitioned to the
-> > Secure state, as long as they retain a cacheable mapping to it.
-> > 
-> > As modifying the direct mapping is difficult, the workaround ended up in the
-> > hypervisor which unmaps the pages from the host stage-2 on intercepted FF-A Lend
-> > invocations.
-> > 
-> > If convenient, this is nonetheless the wrong place to do it. Scattering the host
-> > stage-2 is really terrible for performance and we would like to move it where it
-> > should be, directly into the kernel...
-> > 
-> > This is what I thought was the attempt in v3, but I am now a bit confused
-> > because I see you are using set_direct_map_invalid_noflush()
-> > set_direct_map_default_noflush(), but I am not sure that works if rodata=full is
-> > not set? So does the memory for the NVIDIA IP still need to be unmapped?
-> 
-> Yeah, this currently relies on the circumstances being such that
-> can_set_direct_map() returns true, and in the case where we want to use
-> the resizable VPR functionality, we're going to have page-granular
-> mappings anyway.
-> 
-> > If so, how about having an option where the CMA allocation is backed by a direct
-> > map with the same page granularity, or at least a smaller and aligned granule?
-> > 
-> > With that, we know that for whatever CMA allocation we do, we can safely unmap
-> > from the direct map without risking splitting blocks. On CMA free, we can safely
-> > remap into the direct map as I do not believe we coalesce yet.
-> 
-> This sounds intriguing. For VPR we could possibly make the size a
-> multiple of the memblock size (or whatever might be appropriate). If we
-> can create a page-granular linear mapping specifically for that region,
-> that'd be ideal. I don't know if the linear mapping can be subdivided in
-> this fashion, though.
+From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, August 17, 2026=
+ 3:38 AM
+>=20
+> On Fri, Aug 14, 2026 at 03:31:27PM +0000, Michael Kelley wrote:
+> > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Tuesday, August 11,=
+ 2026 8:50 AM
+> > >
 
-Actually I don't think modifying the memblock is necessary at all!
+[snip]
 
-Here's what I have so far:
+> > > +#ifdef CONFIG_HYPERV_PVIOMMU
+> >
+> > Making this code in hv_common.c conditional on HYPERV_PVIOMMU
+> > assumes that the only consumer is the pvIOMMU driver. But my
+> > understanding is that root partition code is also expected to be a
+> > consumer, and I would guess that code is independent of a guest
+> > pvIOMMU. So the #ifdef might need to become more complicated
+> > to also allow the root partition case. I'm thinking it makes sense to
+> > always build this code as part of hv_common.c. Even when building
+> > for a guest only with no root partition code, HYPERV_PVIOMMU
+> > defaults to HYPERV so the pvIOMMU driver will be built anytime
+> > Hyper-V code is included, unless someone goes out of their way to
+> > disable it. Getting rid of all the #ifdef'ery would make the code a bit
+> > cleaner, and I'm looking for an excuse to do so!
+> >
+> > I'd also note that CONFIG_HYPERV_PVIOMMU isn't defined
+> > until Patch 4 of this series. This patch will still build without the
+> > remaining patches, so bisect isn't broken, but it would be with
+> > the equivalent of CONFIG_HYPERV_PVIOMMU=3Dn. It's a little bit
+> > weird to be using a CONFIG_* value before it is created, but maybe
+> > the ordering among the patches is complex and not easily sorted.
+> >
+>=20
+> Thank you, Michael!
+>=20
+> That makes sense. The trade-off is that a Hyper-V guest without
+> pvIOMMU support will still allocate and populate the registry for
+> its PCI buses. If that small overhead is acceptable, building it
+> unconditionally does make the design simpler. And we do not need
+> to worry about the chicken-and-egg problem when ordering this patch
+> and patch 4. :)
 
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index d4de88770ecf..a9f81413b70d 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -22,6 +22,7 @@
- #include <linux/fs.h>
- #include <linux/io.h>
- #include <linux/mm.h>
-+#include <linux/of_fdt.h>
- #include <linux/vmalloc.h>
- #include <linux/set_memory.h>
- #include <linux/kfence.h>
-@@ -1138,6 +1139,27 @@ static inline void arm64_kfence_map_pool(void) { }
- 
- #endif /* CONFIG_KFENCE */
- 
-+#define MAX_FORCE_PTE_REGIONS 64 /* Greater or equal to MAX_RESERVED_REGIONS */
-+
-+static struct {
-+       phys_addr_t start;
-+       phys_addr_t end;
-+} force_pte_regions[MAX_FORCE_PTE_REGIONS] __initdata;
-+
-+void __init early_init_dt_force_pte_arch(phys_addr_t start, phys_addr_t end)
-+{
-+       static int count;
-+
-+       if (force_pte_mapping())
-+               return;
-+
-+       if (count >= MAX_FORCE_PTE_REGIONS)
-+               return;
-+
-+       force_pte_regions[count].start = start;
-+       force_pte_regions[count++].end = end;
-+}
-+
- static void __init map_mem(void)
- {
-        static const u64 direct_map_end = _PAGE_END(VA_BITS_MIN);
-@@ -1186,6 +1208,15 @@ static void __init map_mem(void)
-        __map_memblock(init_end, kernel_end, pgprot_tagged(PAGE_KERNEL),
-                       flags);
- 
-+       for (i = 0; i < ARRAY_SIZE(force_pte_regions); i++) {
-+               if (!force_pte_regions[i].end)
-+                       break;
-+
-+               __map_memblock(force_pte_regions[i].start, force_pte_regions[i].end,
-+                              pgprot_tagged(PAGE_KERNEL),
-+                              flags | NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
-+       }
-+
-        /* map all the memory banks */
-        for_each_mem_range(i, &start, &end) {
-                /*
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 42e3e2d8a2b8..445f204f01e4 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -136,6 +136,8 @@ static int __init early_init_dt_reserve_memory(phys_addr_t base,
-        return memblock_reserve(base, size);
- }
- 
-+void __weak early_init_dt_force_pte_arch(phys_addr_t start, phys_addr_t end) { }
-+
- /*
-  * __reserved_mem_reserve_reg() - reserve memory described in the
-  * first entry in 'reg' property
-@@ -168,6 +170,9 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
-        size = s;
- 
-        if (size && early_init_dt_reserve_memory(base, size, nomap) == 0) {
-+               if (of_get_flat_dt_prop(node, "force-pte", NULL))
-+                       early_init_dt_force_pte_arch(base, base + size);
-+
-                fdt_fixup_reserved_mem_node(node, base, size);
-                pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %lu MiB\n",
-                         uname, &base, (unsigned long)(size / SZ_1M));
-@@ -517,6 +522,9 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
-                return -ENOMEM;
-        }
- 
-+       if (of_get_flat_dt_prop(node, "force-pte", NULL))
-+               early_init_dt_force_pte_arch(base, base + size);
-+
-        fdt_fixup_reserved_mem_node(node, base, size);
-        fdt_init_reserved_mem_node(node, uname, base, size);
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index 51dadbaa3d63..6c73c76dee1b 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -74,6 +74,7 @@ extern void early_init_dt_check_for_usable_mem_range(void);
- extern int early_init_dt_scan_chosen_stdout(void);
- extern void early_init_fdt_scan_reserved_mem(void);
- extern void early_init_fdt_reserve_self(void);
-+extern void early_init_dt_force_pte_arch(phys_addr_t start, phys_addr_t end);
- extern void early_init_dt_add_memory_arch(u64 base, u64 size);
- extern u64 dt_mem_next_cell(int s, const __be32 **cellp);
- 
-> 
-> > (This alignment is not necessary for upcoming systems with BBML3)
-> > 
-> > However, to implement this, we'd need to split memblocks and I believe the only
-> > way at the moment is temporarily mark it as "nomap" which didn't seem very
-> > popular in the comments on v3.
-> 
-> Could this be simplified if this type of allocation is always memblock
-> aligned?
-> 
-> Looking at map_mem(), it seems like we could add some sort of special-
-> casing in the for_each_mem_range() block to check if the memory is VPR
-> (or generic, page-granular carveout, or whatever we want to call it) and
-> set NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS in that case.
-> 
-> If that works, set_direct_map_*() could be enhanced to detect such cases
-> and always work. Or perhaps a more specific API could be introduced.
-> 
-> Thierry
+To me, the small overhead is acceptable. vPCI add/remove
+operations are relatively infrequent, and are not a "fast" path. So
+the overhead is of no real consequence.
 
-for set_direct_map() I think we could extend it to check if it is mapped at the
-PTE-level and if it is we can proceed?
+[snip]
 
-I am currently looking at extending CMA with an option "unmap-on-alloc;" that
-would only be available if CONFIG_ARCH_HAS_SET_DIRECT_MAP, or
-cma_set_unmap_on_alloc, or if "force-pte;" is set. 
+> >
+> > The comment above is written as if the pvIOMMU driver is the only
+> > consumer, which isn't accurate assuming the root partition use case
+> > materializes as expected.  And that also means having "iommu" in the
+> > function name is overly specific. Same with the other function names
+> > with "iommu".  There's really nothing here that is specific to pvIOMMUs=
+.
+> >
+>=20
+> Agreed. Will update the comment.
+>=20
+> For the function names, I would like to avoid using sth. like
+> hv_register_pci_bus() since that sounds like to register the
+> PCI bus itself. Two options I'm having in mind are:
+>=20
+> 	hv_pci_busdata_register()
+> 	hv_pci_busdata_unregister()
+> 	hv_pci_busdata_lookup()
+>=20
+> or some more descriptive yet legthy ones, e.g.,
+>=20
+> 	hv_pci_bus_register_logical_dev_id_prefix()
+> 	hv_pci_bus_unregister_logical_dev_id_prefix()
+> 	hv_pci_bus_lookup_logical_dev_id_prefix()
+>=20
+> Do you have a preference, or any suggestion?
 
-Hopefully I can share something this week.
+Or maybe just hv_pci_register_dev_id()? To me, it's
+better to put the verb ("register") first followed by the
+object. "logical_dev_id_prefix" as the object is a bit
+too wordy for my preference.  Just "dev_id" or "busdata"
+is better, even if neither is fully precise.
 
--- 
-Vincent
+[snip]
+
+>=20
+> > Separately, it seems like the existing calls from the Hyper-V vPCI driv=
+er should
+> > never duplicate an existing mapping. Your code disallows mapping a doma=
+in_nr
+> > to a different logical_dev_id_prefix, but silently allows entering a ma=
+pping
+> > that already exists as an exact match. I wonder if that really should b=
+e
+> > allowed, as it seems likely such would be followed later by twice remov=
+ing
+> > the duplicate entry, with the second removal failing. Removing a non-ex=
+istent
+> > entry is also silently allowed in the unregister function below, with t=
+he same
+> > question as to whether that should be allowed.
+> >
+>=20
+> Actually, I don't think an exact duplicate registration is a valid case
+> either. So how about we use WARN_ONCE() and return -EEXIST when an entry
+> for the PCI domain is already registered(regardless it is a exact match
+> or not)?
+>=20
+> And for unregister, how about we initialize the result to -ENOENT, do the
+> removal if lookup finds the entry, and WARN_ONCE if no entry is really
+> removed?
+
+Works for me.
+
+>=20
+> > > +}
+> > > +EXPORT_SYMBOL_FOR_MODULES(hv_iommu_register_pci_bus, "pci-hyperv");
+> >
+> > This may be overly restrictive if the root partition use case code is i=
+n the
+> > mshv_root module.
+> >
+>=20
+> Well, I'm not sure. IMHO, the register/unregister side is owned by
+> pci-hyperv, which creates and removes the Hyper-V PCI bus. The guest
+> pvIOMMU or the root driver are only cumsumers of the  lookup.
+>=20
+> So maybe the register/unregister exports should remain restricted to
+> pci-hyperv, and if a future module needs the lookup helper, an export
+> can be added for the lookup helper by then (we do not need to export
+> lookup right now for pvIOMMU, which is built-in)?
+>=20
+> Am I missing anything?
+
+You are correct and didn't miss anything. I didn't fully think it through,
+so my comment is bogus. What you propose is fine.
+
+Michael
