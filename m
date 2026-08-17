@@ -1,343 +1,165 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F4F242901B
-	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 15:22:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2D23421220
+	for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 15:31:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786980128; cv=none; b=qCnlXtbaryIeVXMSp1Qt9iW/74jGrE41iRVbVQ9TAlnLaVkt9TX29ATus6c80kCnTKheEtNK+rYAJLT1FriedVQN57lUOt7ArcFxpmjn6gNibohifosdXHLckpKnHp87w1mUozC69/t8KfNxC0SENPfJmB4i8M84CjzP8oqsq/w=
+	t=1786980665; cv=none; b=HjwTfo+8pXS5gaaqm1wY7u1CL2S82TRh7D0p3775DPeWg4+XQwjCSK/kWrOQNpKD0r113ZDTeHhiGz6XUR6NCiZTvnxrdA2LptbKWEKDKLwdc1jjOnksQLKhMnVNWzr6tNdPIuUa0MQSIejJfM3VMj760aBnqtBjFNBrDL8Q0Nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786980128; c=relaxed/simple;
-	bh=W6voWMSIXcTOLlQL1vvfDmAX05fiYTOatnOT2wU7duA=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=UbSMS4w/Z+uLNcFIFtQwxrxfuwibb+deIuwaZ22BWocUi9pOShjVBu/nWg8wTbblL1J1fmoY9U1sKB/22LJLhUIApnncQTOO10Ez9NfjPeOcQrTl1+E2Y02uOS8KLTuGSO2N8+qr7FBq0c5e6H6wOiOi2CE5FynYoh9VHE9xKgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Received: from 8bytes.org (p200300f6af4fc5001013bc7be0d60b86.dip0.t-ipconnect.de [IPv6:2003:f6:af4f:c500:1013:bc7b:e0d6:b86])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 3159E206667;
-	Mon, 17 Aug 2026 17:22:04 +0200 (CEST)
-Date: Mon, 17 Aug 2026 17:22:02 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Updates for Linux v7.3
-Message-ID: <aoMm4FPj8xVb-oK2@8bytes.org>
+	s=arc-20240116; t=1786980665; c=relaxed/simple;
+	bh=j9Nnvyyq0998hIgxyoGSFK22woaTS56Z2zWd/S1ZO+4=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=mR+RQjJnb3Ch4prcdpyyFWasFP4Cz33JURWDqRCALUePedMFUGA7ognQX08pt2iSSdhy+zHTKIQaeO1ivns/BtcqwYURA5w2odk54KQctTKfBkQ48iisvgBArOXnB+p0EGmNnQ9QizBnGyQTN44nw2szAPvbpIMOG9tkjeN5RH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=fUpgmI9I; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="fUpgmI9I"
+Received: from [192.168.0.100] (unknown [4.194.122.162])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 5219320B7167;
+	Mon, 17 Aug 2026 08:30:27 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5219320B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1786980635;
+	bh=qeHY3+RlQzQhCDqlnfGp3+CgFMQL/RXYE8B9od6UsDU=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=fUpgmI9I2VdpeWZVJakWQYCHpaYx5FtGmYvniyvVgAds3Pja6uUeppMKosOlMzvBM
+	 ilalV2V9tDV4Ehczewzo/E9EEtm/j1r0ZL3hYyLL8dmlHiQRl2nDXqnJJuPdDO0qwe
+	 968dTE/sxNvCYpfYZVY1eJgBTx00611gMv1ij5nU=
+Message-ID: <bed153ef-1cc4-4c27-9cfb-88afc2f73a3a@linux.microsoft.com>
+Date: Mon, 17 Aug 2026 21:00:50 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] PCI: hv: Set irq_retrigger callback for the
+ Hyper-V PCI MSI irqchip
+From: Naman Jain <namjain@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "x86@kernel.org"
+ <x86@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh@kernel.org>,
+ Shradha Gupta <shradhagupta@linux.microsoft.com>,
+ Aditya Garg <gargaditya@linux.microsoft.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20260810090716.2325295-1-namjain@linux.microsoft.com>
+ <20260810090716.2325295-2-namjain@linux.microsoft.com>
+ <SN6PR02MB4157CE7F6C5A11D172444D60D4A72@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <68315782-3695-4e16-a990-3a1c41cb7476@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <68315782-3695-4e16-a990-3a1c41cb7476@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Linus,
 
-The following changes since commit db2ddb87143519e20a95aa36c60b36107b736a58:
 
-  Linux 7.2-rc7 (2026-08-09 14:54:50 -0700)
+On 8/17/2026 5:45 PM, Naman Jain wrote:
+> 
+> 
+> On 8/17/2026 9:08 AM, Michael Kelley wrote:
+>> From: Naman Jain <namjain@linux.microsoft.com> Sent: Monday, August 
+>> 10, 2026 2:07 AM
+>>>
+>>> The Hyper-V vPCI MSI irqchip never installs an irq_retrigger() callback.
+>>>
+>>> On CPU hot-unplug fixup_irqs() migrates the interrupts which are 
+>>> affine to
+>>> the outgoing CPU to a new target. If an interrupt still has its 
+>>> pending bit
+>>> set in the outgoing CPU's IRR at that point, fixup_irqs() resends it 
+>>> on the
+>>> new target through the irqchip's irq_retrigger() callback. As the 
+>>> Hyper-V
+>>> PCI/MSI chip does not provide that callback, the pending interrupt is
+>>> silently dropped, which can result in lost interrupts, stalls and "No 
+>>> irq
+>>> handler for vector" messages during CPU hotplug.
+>>>
+>>> Install irq_chip_retrigger_hierarchy() as the irq_retrigger() 
+>>> callback for
+>>> the Hyper-V PCI/MSI irqchip, so that a pending interrupt is resent on 
+>>> its
+>>> new target CPU via the parent x86 vector domain.
+>>
+>> The RFC version of this patch set listed the asynchronous nature
+>> of the HVCALL_RETARGET_INTERRUPT hypercall as a cause of the
+>> problem. Is that hypercall still believed to be asynchronous?
+>> My understanding of "asynchronous" would be that Hyper-V
+>> does not guarantee that the retargeting of the interrupt to a new
+>> vCPU has occurred when the hypercall returns. There is an
+>> unspecified time period during which the interrupt could still be
+>> directed to the vCPU that is going offline. Furthermore, Hyper-V
+>> provides no rendezvous mechanism for the guest to know when
+>> the interrupt is guaranteed to go to the new vCPU.
+>>
+>> If the async behavior is indeed present, isn't it a problem, even
+>> after this patch? irq_migrate_all_off_this_cpu() causes the
+>> RETARGET_INTERRUPT hypercall to be made, but a new interrupt
+>> could still be generated to the going-offline vCPU after fixup_irqs()
+>> runs its loop searching for any pending interrupts. A new such
+>> interrupt would be lost. The 1 millisecond delay in fixup_irqs()
+>> probably mitigates this problem by giving Hyper-V time to complete
+>> the retargeting. But it's not a 100% solution.
+>  > > Assuming my thinking is correct, there isn't a 100% solution. But
+>> the problem's existence, and the likely benefit of the 1 ms delay,
+>> should be called out in the commit message and/or code
+>> comments for future readers.
+> 
+> Please allow me to confirm with the Hyper-V team internally once. I may 
+> have assumed asynchronous behavior because of the pending interrupt 
+> after retarget. It could simply have been committed to the old route 
+> before the retarget operation.
 
-are available in the Git repository at:
+This is actually synchronous. So the fix in this series should suffice.
+Sorry for the confusion.
+I don't see any mentions of asynchronous behavior of that hypercall 
+anywhere in these 3 patches, so I think we should be good.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v7.3
+Regards,
+Naman
 
-for you to fetch changes up to 3c6a2bac15247bc4f28125247ff89165324612fe:
+> 
+>>
+>> I also wondered about arm64 where Hyper-V provides an
+>> emulated GICv3. The RETARGET_INTERRUPT hypercall is not
+>> used since the retargeting is done by writing to a GICD register.
+>> Presumably on real GICv3 hardware, after the write the new
+>> CPU is guaranteed to receive any subsequent interrupts. And if
+>> an interrupt was pending at the time of the write, the appropriate
+>> trigger happens in the new CPU, so everything works. As long
+>> as Hyper-V is doing the emulation the same way (i.e., fully
+>> synchronously), the problem would not occur on arm64
+>> guests.
+>>
+>> I'm reminded that a similar problem occurred with changing
+>> the target CPU for a VMBus channel interrupt. The initial
+>> Hyper-V implementation of the VMBus MODIFYCHANNEL
+>> message was asynchronous, which caused the same problem
+>> as seen here if a vCPU were to be taken offline. A later version
+>> of the VMBus protocol added a notification that the change to
+>> the target vCPU is complete, which solves the problem. See
+>> vmbus_channel_set_cpu() and vmbus_send_modifychannel()
+>> and the associated code comments.
+>>
+> 
+> Thanks for sharing this info. I'll check and get back.
+> 
+> Regards,
+> Naman
+> 
 
-  Merge branches 'arm/smmu/updates', 'arm/smmu/bindings', 'mediatek', 'qualcomm/msm', 'rockchip', 'ti/omap', 'riscv', 'intel/vt-d', 'amd/amd-vi', 'core' and 'typos' into next (2026-08-11 09:12:19 +0200)
-
-----------------------------------------------------------------
-IOMMU updates for Linux v7.3:
-
-- ARM SMMUv2:
-  - Device-tree binding updates for Qualcomm Eliza, Maili, Shikra and
-    IPQ9650 SoCs.
-  - Add support for Qualcomm SM8450.
-  - Numerous fixes for lifetime and ordering issues found by Sashiko in
-    the Qualcomm driver.
-
-- ARM SMMUv3:
-  - Fix interrupt type in device-tree binding example for NVIDIA CMDQV.
-  - Numerous fixes for issues identified by Sashiko in the NVIDIA CMDQV
-    driver.
-  - Work around TLB erratum T264-SMMU-3 on Tegra264 by repeating the
-    invalidation sequence.
-  - Add support for HAFT (hardware access flag in table entries) when
-    using SVA.
-  - Probe for 52-bit addressing with a page size smaller than 64k ('DS')
-    but don't do anything with it for now.
-  - Minor driver improvements (remove sort_nonatomic(), use
-    readl_relaxed_poll_timeout_atomic(), fix IOPF teardown ordering).
-
-- Intel VT-d:
-  - Consolidation of complex enablement logic into a clean, priority-based
-    state machine.
-  - Support for the DMA_REMAP_OPT_OUT flag from the VT-d v5.2
-    specification.
-  - An update to cache_tag_flush_devtlb_psi() to use full-range constants
-    instead of modifying shared variables for CACHE_TAG_NESTING_DEVTLB.
-  - A fix for the UCTP context-table slot when copying root entries.
-  - Fixes for several pre-existing issues reported by Sashiko.
-  - General code cleanup and refinement.
-
-- AMD IOMMU:
-  - Add SNP page-mode-0 support, enabling passthrough, v2 DMA page
-    tables and host SVA on supporting systems.
-  - Fix invalid PPR handling, COMPLETE_PPR responses and guest-mode
-    reporting.
-  - Improve Southbridge IOAPIC validation and remove the dependency on
-    hard-coded device IDs.
-  - Fix PCI-device lifetime, debugfs and diagnostic issues.
-
-- IOMMU core and IOMMUFD:
-  - Restore serialization of the shared MSI-page list.
-  - Fix SVA-handle publication and several IOMMUFD reference and error
-    path leaks.
-  - Return the expected zero result for invalid generic page-table
-    translations.
-  - Allocate per-CPU IOVA magazines lazily to reduce memory use on
-    large systems.
-
-- PCI ATS:
-  - Make VF support checks account for the associated PF and validate
-    that VF and PF Smallest Translation Unit settings agree.
-
-- Platform drivers:
-  - Fix Qualcomm runtime-PM, probe unwind, fault reporting and page
-    table initialization races.
-  - Rework Rockchip state handling and fix clock, probe and stale-fault
-    handling.
-  - Fix smaller issues in the MSM and MediaTek drivers.
-
-- Device-tree bindings:
-  - Add new Qualcomm SMMU compatibles, convert the OMAP IOMMU binding
-    to YAML, and fix the Tegra264 CMDQV interrupt example.
-
-- Various smaller cleanups, documentation fixes and a Rust IOMMU
-  safety/readability improvement.
-
-----------------------------------------------------------------
-Akari Tsuyukusa (1):
-      iommu/mediatek-v1: Fix off-by-one in MT2701_LARB_NR_MAX
-
-Akhil P Oommen (1):
-      dt-bindings: arm-smmu: Document GPU SMMU for Eliza SoC
-
-Andrew Jones (1):
-      iommu/dma: Restore locking around msi_page_list
-
-Ashish Mhetre (4):
-      dt-bindings: iommu: Fix interrupt type in example
-      iommu/arm-smmu-v3: Add CFGI/TLBI-repeat workaround
-      iommu/arm-smmu-v3-iommufd: Report CFGI/TLBI-repeat erratum
-      iommu/arm-smmu-v3: Enable CFGI/TLBI-repeat workaround on Tegra264
-
-Bhargav Joshi (1):
-      dt-bindings: iommu: ti,omap-iommu: Convert to DT schema
-
-Bibek Kumar Patro (1):
-      dt-bindings: arm-smmu: Document GPU SMMU for Shikra SoC
-
-Desnes Nunes (1):
-      iommu/vt-d: Fix UCTP context table slot when copying root entries
-
-Dmitry Antipov (1):
-      iommu/vt-d: Use kstrtoint_from_user() in dmar_perf_latency_write()
-
-Esteban Urrutia (1):
-      iommu/arm-smmu-qcom: Add SM8450 MDSS compatible
-
-Guanghui Feng (1):
-      iommu/vt-d: Fix CACHE_TAG_NESTING_DEVTLB polluting shared variables in flush loop
-
-Haoxiang Li (1):
-      iommu/qcom: Remove sysfs device on probe failure path
-
-Jiaxing Hu (2):
-      iommu/rockchip: Take all DT clocks
-      iommu/rockchip: Clear stale page faults before enabling stall
-
-Jingyi Wang (1):
-      dt-bindings: arm-smmu: qcom: Add compatible for Maili SoC
-
-Joerg Roedel (1):
-      Merge branches 'arm/smmu/updates', 'arm/smmu/bindings', 'mediatek', 'qualcomm/msm', 'rockchip', 'ti/omap', 'riscv', 'intel/vt-d', 'amd/amd-vi', 'core' and 'typos' into next
-
-Kathiravan Thirumoorthy (1):
-      dt-bindings: arm-smmu: qcom: add compatible for IPQ9650 SoC
-
-Kevin Tian (9):
-      iommu/vt-d: Fix no_iommu to disable platform opt-in
-      iommu/vt-d: Force requesting ACS when tboot is enabled
-      iommu/vt-d: Remove dead code when CONFIG_INTEL_IOMMU is not set
-      iommu/vt-d: Consolidate dmar policy management and force_on logic
-      iommu/vt-d: Use dmar_can_force_on() for platform opt-in
-      iommu/vt-d: Call dmar_can_force_on() for tboot opt-in
-      iommu/vt-d: Remove the 'force_on' variable
-      iommu/vt-d: Remove dmar_disabled
-      iommu/vt-d: Support the new DMA_REMAP_OPT_OUT flag bit
-
-Kuan-Wei Chiu (1):
-      iommu/arm-smmu-v3: Replace sort_nonatomic() with sort()
-
-Li RongQing (2):
-      iommu/amd: Fix undefined behavior in devid_write debugfs function
-      iommu/vt-d: Use logical OR operator for privilege mode check
-
-Logan Odell (1):
-      iommu/iova: Move CPU magazine init to first insert
-
-Lu Baolu (5):
-      iommu/vt-d: Cache max domain ID to avoid redundant calculation
-      iommu/vt-d: Clear Present bit before tearing down copied context entry
-      iommu/vt-d: Fix iopf_refcount leak on RID domain replacement
-      iommu/vt-d: Tear down scalable-mode context on probe failure
-      iommu/vt-d: Flush context cache with correct SID when tearing down aliases
-
-Mukesh Ojha (6):
-      iommu/qcom: Fix inverted fault report check in qcom_iommu_fault()
-      iommu/qcom: Use devm_pm_runtime_enable() in qcom_iommu_device_probe()
-      iommu/qcom: Check pm_runtime_resume_and_get() return in probe
-      iommu/qcom: Fix pgtbl_ops leak in qcom_iommu_init_domain() error path
-      iommu/qcom: Publish pgtbl_ops before releasing init_mutex
-      iommu/qcom: Enable clocks before hardware access in qcom_iommu_ctx_probe()
-
-Nicolin Chen (13):
-      iommu/arm-smmu-v3: Declare eats_s1chk and eats_trans as host-endian u64
-      iommu/arm-smmu-v3: Factor out CMDQ batch force-sync conditions
-      iommu/tegra241-cmdqv: Publish an LVCMDQ only after it is fully initialized
-      iommu/tegra241-cmdqv: Synchronize the error ISR against VINTF (de)init
-      iommu/tegra241-cmdqv: Harden error-map index handling in the error ISR
-      iommu/tegra241-cmdqv: Don't run the error ISR before probe sets up vintfs
-      iommu/tegra241-cmdqv: Don't fall back to a freed smmu after devm_krealloc()
-      iommu/tegra241-cmdqv: Free the error IRQ before tearing down VINTFs
-      iommu/tegra241-cmdqv: Reject a vSID wider than the SID_MATCH field
-      iommu/tegra241-cmdqv: Require exactly one Stream ID for a vSID
-      iommu/tegra241-cmdqv: Fix VINTF0 leak on the init-failure path
-      iommu/tegra241-cmdqv: Rate-limit the error ISR's log message
-      iommu/arm-smmu-v3: Support IDR5.DS and widen the TLBI SCALE field
-
-Nicolás Antinori (1):
-      rust: iommu: replace core::mem::zeroed with Zeroable::zeroed
-
-Pan Chuang (1):
-      iommu: arm: Remove redundant dev_err()/dev_err_probe()
-
-Pengpeng Hou (1):
-      iommu/msm: Limit the per-master Machine ID list
-
-Pranjal Shrivastava (5):
-      PCI/ATS: Ensure pci_ats_supported() is PF-aware for VFs
-      PCI/ATS: Validate STU for VFs in pci_prepare_ats()
-      iommu/arm-smmu-v3: Standardize ATS enablement failure reporting
-      iommu/vt-d: Fail probe on ATS configuration failure
-      iommu/arm-smmu-v3: Convert to use atomic poll timeout
-
-Robin Murphy (2):
-      arm64: Add override for MMFR1.HAFDBS
-      iommu/arm-smmu-v3: Add HAFT support for SVA
-
-Shameer Kolothum (2):
-      iommu/arm-smmu-v3: Manage teardown with devm
-      iommu/tegra241-cmdqv: Fix CMD_SYNC use-after-free on teardown
-
-Shuai Xue (5):
-      iommu/amd: Put PCI device after handling PPR faults
-      iommu/sva: Set handle->dev before the SVA handle is visible
-      iommufd: Avoid locking internal accesses during unmap
-      iommufd: Release current IOAS on xa_store() failure
-      iommupt: Return zero for invalid iova_to_phys() ranges
-
-Simon Xue (1):
-      iommu/rockchip: Drop global rk_ops in favor of per-device ops
-
-Uwe Kleine-König (The Capable Hub) (1):
-      iommu/riscv: Drop superfluous zeros in pci_device_id array
-
-Vasant Hegde (6):
-      iommu/amd: Fix incorrect device ID in invalid PASID error message
-      iommu/amd: Introduce PPR_TAG_LAST_PAGE() macro
-      iommu/amd: Fix missing CMD_COMPLETE_PPR response for invalid PPR requests
-      iommu/amd: Rate limit INVALID_PPR_REQUEST error logging
-      iommu/amd: Fix GN bit setting in COMPLETE_PPR_REQUEST command
-      iommu/amd: Add SNP page mode 0 support
-
-Vladimir Zapolskiy (1):
-      iommu/msm: Return -ENOMEM on memory allocation failure in probe
-
-Wei Wang (3):
-      iommu/amd: Prevent SB IOAPIC from overriding IVRS validation errors
-      iommu/amd: Fix false positive in SB IOAPIC IVRS validation
-      iommu/amd: Dynamically verify Southbridge IOAPIC via PCI config space
-
-Weimin Xiong (1):
-      iommu/msm: Unwind probe state on registration failure
-
-ZhaoJinming (2):
-      iommu/rockchip: Fix silent probe success when all MMU resources fail
-      iommu/vt-d: Fix copied_tables bitmap leak on error in copy_translation_tables
-
-xiongweimin (6):
-      iommu/vt-d: Fix spelling of "guarantees" in comment
-      iommu: Fix possessive "its" in group remove kdoc
-      iova: Fix spelling of "reserved" in comment
-      iommu/arm-smmu-v3: Fix grammar in comment
-      iommu/mtk: Fix spelling of correspondence in comment
-      iommu/amd: Fix grammar and typos in comments
-
- Documentation/admin-guide/kernel-parameters.txt    |   3 +
- Documentation/arch/arm64/silicon-errata.rst        |   2 +
- .../devicetree/bindings/iommu/arm,smmu.yaml        |   8 +
- .../bindings/iommu/nvidia,tegra264-cmdqv.yaml      |   2 +-
- .../devicetree/bindings/iommu/ti,omap-iommu.txt    |  59 ------
- .../devicetree/bindings/iommu/ti,omap-iommu.yaml   | 114 +++++++++++
- arch/arm64/kernel/pi/idreg-override.c              |   2 +
- drivers/iommu/amd/amd_iommu_types.h                |   9 +-
- drivers/iommu/amd/debugfs.c                        |  12 +-
- drivers/iommu/amd/init.c                           |  99 ++++++---
- drivers/iommu/amd/iommu.c                          |  75 +++++--
- drivers/iommu/amd/ppr.c                            |  12 +-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |   7 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  24 ++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 188 +++++++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  13 +-
- drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     | 226 ++++++++++++++-------
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |   9 +-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c            |  39 ++--
- drivers/iommu/dma-iommu.c                          |  13 ++
- drivers/iommu/generic_pt/iommu_pt.h                |   2 +-
- drivers/iommu/intel/cache.c                        |   5 +-
- drivers/iommu/intel/debugfs.c                      |  16 +-
- drivers/iommu/intel/dmar.c                         |  98 ++++++++-
- drivers/iommu/intel/iommu.c                        | 154 ++++++++------
- drivers/iommu/intel/iommu.h                        |  67 ++++--
- drivers/iommu/intel/pasid.c                        |   9 +-
- drivers/iommu/intel/prq.c                          |   2 +-
- drivers/iommu/intel/svm.c                          |   2 +-
- drivers/iommu/iommu-sva.c                          |   2 +-
- drivers/iommu/iommu.c                              |   4 +-
- drivers/iommu/iommufd/device.c                     |   4 +-
- drivers/iommu/iommufd/ioas.c                       |   2 +
- drivers/iommu/iova.c                               |  31 +--
- drivers/iommu/msm_iommu.c                          |  15 +-
- drivers/iommu/mtk_iommu.c                          |   2 +-
- drivers/iommu/mtk_iommu_v1.c                       |   2 +-
- drivers/iommu/riscv/iommu-pci.c                    |   6 +-
- drivers/iommu/rockchip-iommu.c                     | 117 +++++------
- drivers/pci/ats.c                                  |  13 +-
- include/linux/dmar.h                               |   1 +
- include/uapi/linux/iommufd.h                       |  17 +-
- rust/kernel/iommu/pgtable.rs                       |   3 +-
- 44 files changed, 1027 insertions(+), 464 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
- create mode 100644 Documentation/devicetree/bindings/iommu/ti,omap-iommu.yaml
-
-Please pull.
-
-Thanks,
-
-	Joerg
