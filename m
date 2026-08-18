@@ -1,162 +1,191 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011001.outbound.protection.outlook.com [52.101.62.1])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E542F359A89
-	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 19:03:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787079836; cv=fail; b=naJeCyjwrY+r+hLIpEXkVklVaT7fU8JQRGk8qSs61ocmq9U01vMPObDRi2BecT5lAwOUHFXn45oeGttViMR8PGseU/XuGAqiMrtQqHYQwjERrGwZ8A97Z/YupCPV+9XVBZxgdESFSDxioO/FRpg3jIPQ4BKKUN7fM4TYy0SjJF4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787079836; c=relaxed/simple;
-	bh=hWgKRfGV6U9vfCzzPjPk0ABiodKdBU8BboZFnRMqHao=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=CzhHtlRDEXQ+BKPV+tdK9iqxQVM87/NWbL4RYkDwxOxIsH/FekAYkfyf7HQ6ipjng/vHdFd8fCRA/Vw14A6K7T4hrl4TO/qc8XXJakZcqzkJNTMjEbUKyorWhXw2u9rGrgh05UR6bGcJt5Beywa/+snj44WqV09t3FDhnKP00LQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=j9q5geaR; arc=fail smtp.client-ip=52.101.62.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA773A7F41;
+	Tue, 18 Aug 2026 19:10:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787080224; cv=none; b=fFmRgFCfEcyra6wNv6d1TYJWWEM5hggeg196GFAcXLi3iVyDqWRc5VCJRTnvdMqSaK9HwxH80k+pYRnW/IJDu+/uVGLpZ7D10+cXt3/XKzKZyWmld9ViAoZuTJSqUaqcMbONGreCnp6+s3l21Dh+0VwsgrX65Am7FuasJNlSIjg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787080224; c=relaxed/simple;
+	bh=KkGpZv19l7/mQL1nA7bQelciZaQ0JZlWXwDFMEl3ELQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NBJG3XmcGLWk2zIzjwhxLRe/Ezb6A+lM8flD0lGB/ZYL703ZF3gyTISWuQPecA6yvLcW9rUGranSUbAm4rUHECv/9qTQzBgMFneF7h6TMm0/4xbFbp3nZEapgzeN/tobYNVpY6CemnRApMGkl1ua3timi1HP4I/BaryvuFDTPnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iW5D/etU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="j9q5geaR"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DXHtcVh6EFa15C7JnXnbEt2g9ORHYyBRqP91ci8etSaNPuoZ68BW4m5l9FIZFEOvgdM4Tcgu0MR06yyYeXJzap3HMf9y8MTJKgHjz3vmQeibTZ5aWWEOUVu07lgqEFU3GbIGU1e+Mosd+S8P2ARHwksa8m+BRslcPL6sseQk5bAF2n8owQ3VejuEHyr1VD1byhfrhvsAqKBMjXsN3Orw7ZWlhr4T33sZf0dE7RwPkw3NbR1ELC45k7S1xvPRfM/7Ex0DDizFDxqU8640VxM9c/oDBkur5ttY+A6/zkQmBOHOKZY46us24XHpuVEuJWRvjWeWNFiSNWeeXtR129szSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XJIBYniXpUCzyrUFd3bAOne8na5ALMbNtzQsfokP5bM=;
- b=QjVYv74C9kmL8bq1vvKBQMA/c+6hKDCAFp2jhgpHY44guDhaHVqqbI0g8/aNhr16H3Z/MiXZoSqyfU/L2qaz49mUagSJYD9e/VZOggwDzyW0I6N8DVKStH8/5Iv6Fss0u1fIsdOwVtHWI70xcMyaAArJvVWJy1sKm5MswZBKjfYlsQhxwd7SWO/LasrAkOD99ErwAHbHRi3c/U08YIoHx9cKo/xmzIN0Z8C5S1bBQX2LAp9gauYJfUZpBoZgW6LZk9Fb4rq0zQ1xCY9nZRtuR3Xigtp7W2XKctyHjkaZr+0AIRmppBHIwh/QwI11T+JPpNwJ8dKNGhvLTBH2cACKvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XJIBYniXpUCzyrUFd3bAOne8na5ALMbNtzQsfokP5bM=;
- b=j9q5geaRRB6teGWzurlZP4IX1cGmOOR5b06b+oDWvnbA0+vSPz/0R0uHJyyS1wRhJKqrs4B7kFxufz4MRDKbxSgUKthCAxyj1mWWJuCcUPNgrBTjc/TUYFHIz/epKNHlH79IojSt35uHof1KRRrf0IEfK3B8masU9PjuF5yH07pTDv6KaalhkJshAr6iFcv2PZ+1CtumSXUY9lqjK1e5Asvu7is74DCqme/zj3q4NfgBLYdy/rM8DqNCt+FJWR7YJQHMAJ/GTDVRwOsPZl9NXw1M43lULv3EV9N/o0qBhAUGCtruDLcNWDVSK8zuZGPJ2BQOAzFXKyaUdPw3xmwgrA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CY1PR12MB9649.namprd12.prod.outlook.com (2603:10b6:930:106::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.8; Tue, 18 Aug
- 2026 19:03:43 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.007; Tue, 18 Aug 2026
- 19:03:43 +0000
-Date: Tue, 18 Aug 2026 16:03:42 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
-Cc: bhelgaas@google.com, iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	leonro@nvidia.com, hch@lst.de
-Subject: Re: PCI_P2PDMA_MAP_BUS_ADDR and PCIe ATS?
-Message-ID: <20260818190342.GA61595@nvidia.com>
-References: <bc44b89c7996c8417a2126ada2cbe7c7bfe7568f.camel@linux.intel.com>
- <20260818124309.GA5432@nvidia.com>
- <00455fb0f42ffe5335c4256618b66cded7c36a37.camel@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <00455fb0f42ffe5335c4256618b66cded7c36a37.camel@linux.intel.com>
-X-ClientProxiedBy: YT3PR01CA0133.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:83::10) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iW5D/etU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 800931F000E9;
+	Tue, 18 Aug 2026 19:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787080223;
+	bh=ccFMWOxNKjDpDqqKY61JHW3XQyzuiNVYIrLOTJN7zxI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=iW5D/etUOoeVF5co6vfjmeIuhqx0O1t53qDNyrHrV/3PZ5ZidYUpcfUBM366CIGxY
+	 WYIY+0xzkOxRu0TN5hz+qn9kdorqXWeaRGZcsv6cKGXZc7d6eaAPzx2O/RrvBV5zB8
+	 wQ+4j1gBBLKS8XrbV7agOAOCIuyHz0UAJpzs8DSVbZ1KdP8VHm02H2xUEvFtkdPMYa
+	 Nq1sfrN4A3Xfa78wKk8Vs8KeBs+0fz+LT3aDJeYwcAA/Q38WB2SmMrwVSB138zC4Ho
+	 j1UrBUqSdyJX/Lq43IOIRKtSH7Ztek63Ot7aA1oxpEn45b+ieMxgfgJN1YtfSWgrMy
+	 7AjTe0uWDHo2Q==
+Message-ID: <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
+Date: Tue, 18 Aug 2026 21:10:10 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CY1PR12MB9649:EE_
-X-MS-Office365-Filtering-Correlation-Id: 843c2eea-e0c5-43d9-9366-08defd5b6c79
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|18002099003|22082099003|56012099006|4143699003|11063799006|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	CUlKYjeNj1jElNL0Y+orICxGYjpMypYb9Hl3dX8v7pDf9st2pWkTAuIAAjfluIqj7rlR1MRM1WQrtoZWMrxfYOM1DXNV9+X4D1/jLsiUFcHaLkp6iolOUwl5c3GqZS/GpodgpkMhkCI0iq7cap1UWdtm+lgbnm2+pym6YhWtPlV3mA/DVQcGgNgxqVX6vNXyi0XuLYwHyqZJO/BoY35WMdTNC38Zka2TkgUKCIGhuBW2iTRkT0n9qf32rG89xGg/jw/07yOIrfeA6+gpDaAhhNzK7n1U084OtDxMtoKlPSYm/x+9FKBq59EH3T9odhXiy4MHgk4mvI5S3xatxNINCdowY1Onxm+0UWizhOWvnWtbtwmSMd4VQoXo40Emg8BqBeKirLMnyEVcKZui+T+ljQ8cpc0kfmLNxiUWva2LqXwOU8YZqEUmw2xCTc9Wniv0feqjWrkIg5Rwf4tv84b0GTG7xJ/DocA1qD/zc23TTUe8cbpzAKd8moGu4/61pkX80DyjqaLgz7DQXvouEjCN0VzG2VAYlvj5aBIWkYkmBoII0Wn4Dkol64otUf3nBXVw6AZhXsX3gFu1bleGW4AFUuzZ+/JB8jzdrGw29hLSKA3jHpNsjAEh/zgLl8zWlaUNR8ArgmGIhTY5H16/RrRBnxhQb8pNfrZIjOohGu7CGNQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(18002099003)(22082099003)(56012099006)(4143699003)(11063799006)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?d3VZcVkyeWxUY2l3REREK0VIUFNaK0pDMWtyOTVOZFliajZUUm1OTXc1VjYx?=
- =?utf-8?B?OFBqQ29PWFRDVk5oZlFPTXFVczlsMHVzUFkwdGpUeXpuV083ekRkSE9vcU51?=
- =?utf-8?B?K2t0M2c0M2grb2RCeWt3bGhnVEM4Y21RVVFvWTNtTUFOY0g3WHdBaHJJTzNK?=
- =?utf-8?B?MGo1ekxJZWtreVo5NW90NlpDV3Y4a3c3Tkt6Y0pVclo1akVSei9tQ1RqY2F0?=
- =?utf-8?B?Sit6Ny8xK2oyMENWbjF6bTV1c215VnVkbzNOUlJETzVCejBTNWI0bU0ya0p4?=
- =?utf-8?B?TjQ3Ym5PSTdudEE4VjNBN2hDOEUwRTkremF6T3ZtWUFWaGhHRys1MWRQMTRk?=
- =?utf-8?B?MHZKdkV5c2Y3OUM0em9lQ0lRMjJBMitveWtWQ1RLU3c0WkZiYzBVNlBjdUJB?=
- =?utf-8?B?eExyVzF0aEpLQWExNm9RY0NLSk5nbmNIbjZ5RzROcnpGekZHRnBNZ3IyZVVq?=
- =?utf-8?B?b1NZUHJ0WEdMUFpDNGwxV0VBSDJzUzVvRU1zQUIzbDFHMmswZWk2b0xiZ0Mx?=
- =?utf-8?B?aFdLaTRyVkZiaFFkNy9QUCt1RW1rUEdhbjNzZ0pqRm94aHF4YzcvQVBQT0tr?=
- =?utf-8?B?TTB1Sm5JTWlHTjBMYjhJVmUwVVBFai9rMDdNbzJwU1VnYlB5NU5CUGdvVzQ1?=
- =?utf-8?B?cmwvck9zdzgvekNuVWhMUWZxaUo4QVF6L0o4V1hsbG4vQjVDbWVjMXBjQzBj?=
- =?utf-8?B?eXJNclI2RXFvelNpdDdoTjRpNnZMVkZvSTRrSENMZlljaUhpb2toc1Iza3Yy?=
- =?utf-8?B?Q3BWcU1ncnVscFUzWGllelJ6NzV6bVFiVDJzWmZ1eEcrNmNXS0Q5a0laZnJm?=
- =?utf-8?B?S1hWVDhPRHNFaFZGbVlVUzZnWE14ZXJzTWh5WHdiK2M4N3lRem1OVnlBRS9q?=
- =?utf-8?B?WDRYejdKRVgrK1p6bTlGYlREWmx6YzMrNlhUSzZ0ekVuaU5TTVZ5bEhoT3FV?=
- =?utf-8?B?UjI1c2JaN2wvT3FhV01SbnFUclViY0ViVmpYb09PZ3BxWllBdkNFZy83M3ZY?=
- =?utf-8?B?dE5UMGdJY0hEdXFKMldPMXhaUkhxSzBkSUtJZVlUMWJnTGNpZmRzTTVJMjM3?=
- =?utf-8?B?Vm8xZWVCQnRPQVV4M1J6RXFGdHZGcGttMk5hT0tFR1prMHpsQnhucytCb1h2?=
- =?utf-8?B?NFp5THhva0lXVWdQNVRoSmJMN0c2ZDltWXEza0tzSGQraWtFTXQ5V1I0by9X?=
- =?utf-8?B?d2lHSU4wTEliU2lJMHZlb203L2cyNW5oK1Vnd0xHVVhpOTZJN2xQaXBFRmhF?=
- =?utf-8?B?WEd4WDNHcmViZFhLN25yM29HZlJobkxXWTR5Y1YzaVlaMlgvSW52WHRSV3Zp?=
- =?utf-8?B?clJXeDNKSmo4M2lUN2hBOGxZSDdlMDRKM2JZVFVYeFFRQ2g1c1drbkUrUmQ1?=
- =?utf-8?B?cXpYc1l0cGFvRjlmNW5US0NNczVyWHlpTE5JRUEzVDhLdmVwT3FQRFhYQlgw?=
- =?utf-8?B?MG9Vc3QvbkJNTWJwamc3OU9uNnNiNEVQdzdYbFpHaWhwQWFpMTZTMEQ0TllQ?=
- =?utf-8?B?aXNTVVJDa0NYdkxvcFo0VUs0TDR3K24rSUgxdHJvOEtXTjlUQ2JzWkJtYkt1?=
- =?utf-8?B?am5DQ2VBL3A5aGFSMVgreEp5bjcvUnIyRDZuOFRUVEVXZnZiajhneGJFTGU2?=
- =?utf-8?B?ZDFwRGhZa2FkME9hSkxWdUFkSm9xa0xQaFIzaUVYdHQrWmt4LzBRWVBMMCs0?=
- =?utf-8?B?aTREN1BFeHFHZGhrcGFQNC9EZVkveEYrbHVkN3c0U2xCTy9LMFMwVEkvWVhU?=
- =?utf-8?B?ZDVlU1BCVW5XbWVVZVZieFIwWXdxV0JsRmY0bFk2aVdLTkZvTVFFZWx1NVpM?=
- =?utf-8?B?TWVhb0VtVHc0cGNLcEVpQkN3ZmJWQVNzREhCTUt5RnhWbW5Ya3EvalZiNjVs?=
- =?utf-8?B?REtHc3dxbG9mSWhTcUhBWFgrcy84WGw5TVV5U0YwS3hFcmtSNFNUblg3Z0J3?=
- =?utf-8?B?NXIxTkhRZjBjV0dtQjhFeXp5TnFjMFg0bU5aWVhPcVl6eWFuNFNBT1JTMVFm?=
- =?utf-8?B?NXJUWFZaTTBrUk9oTXh1WjFJZS9RY0hLVXEycFFWSVdSZlB5bi85V29NNTRC?=
- =?utf-8?B?SjNwWk9DM2wxTXBQZ0owREJxL2taUm43Y29XeVZYZmdmWWY1MlVjNFJKOGJa?=
- =?utf-8?B?UTdvNVBoY2RSdUJ3WGFhMU9GNnp0NDdLeENnamFpZmFQNFVUWm5rWVNIOXdI?=
- =?utf-8?B?ZFMrOUZrVmtyVXl4VnllaU8xR05zemo5UGh6VFY2OEc0QVZlQkZzKzEyeE5S?=
- =?utf-8?B?Z1hYRkE3Nmt3clJlZDIxM3oxS0FXR1c1bCtwa0kxRDRhNlRMWnhoS0FMelJG?=
- =?utf-8?Q?FuOLaams4qxKCe2MJE?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 843c2eea-e0c5-43d9-9366-08defd5b6c79
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2026 19:03:43.8048
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yui4jCuxm7ZWpmO4ZtRpp5WF+WtHQraRQoemkao73hcFhhUor8fL5Xyw5Ky+BZq2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY1PR12MB9649
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 03/15] accel/qda: Add initial QDA DRM accelerator
+ driver
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+ Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling
+ <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
+ Chenna Kesava Raju <quic_chennak@quicinc.com>,
+ srinivas.kandagatla@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ llvm@lists.linux.dev, iommu@lists.linux.dev, linux-media@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org
+References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
+ <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 18, 2026 at 05:20:51PM +0200, Thomas Hellström wrote:
+On 17/08/2026 06:47, Ekansh Gupta wrote:
+> Add the skeleton of the Qualcomm DSP Accelerator (QDA) driver, a DRM
+> accel driver for the Hexagon DSPs found on Qualcomm SoCs.
+> 
+> This patch registers a DRM accel device, exposing a /dev/accel/accelN
+> character device node, and binds it to the RPMsg channel used to reach
+> the DSP. Buffer management, IOMMU context banks and the FastRPC
+> protocol are added by later patches in this series.
+> 
+> qda_drv.c / qda_drv.h define the drm_driver ops table, the per-file
+> private state (qda_file_priv) and the main device structure (qda_dev),
+> which embeds drm_device so that it can be recovered with container_of().
+> 
+> qda_rpmsg.c binds to the "qcom,fastrpc" compatible via
+> module_rpmsg_driver(), reads the DSP domain name from the "label"
+> device-tree property, and registers the DRM device.
+> 
+> Assisted-by: Claude:claude-sonnet-5
+> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> ---
+> Changes in v2:
+> - Use module_rpmsg_driver() and drop the qda_rpmsg_register()/
+>   _unregister() wrappers, module_init()/module_exit() and
+>   qda_rpmsg.h entirely (Dmitry Baryshkov)
+> - Read the "label" property directly into qdev->dsp_name (Dmitry Baryshkov)
+> - Drop the probe/remove/init log messages (Dmitry Baryshkov)
+> - Return the result of qda_register_device() directly (Dmitry Baryshkov)
+> - Clarify the Kconfig help text (Dmitry Baryshkov)
+> ---
+>  drivers/accel/Kconfig         |  1 +
+>  drivers/accel/Makefile        |  1 +
+>  drivers/accel/qda/Kconfig     | 30 ++++++++++++++++
+>  drivers/accel/qda/Makefile    | 10 ++++++
+>  drivers/accel/qda/qda_drv.c   | 71 ++++++++++++++++++++++++++++++++++++++
+>  drivers/accel/qda/qda_drv.h   | 61 +++++++++++++++++++++++++++++++++
+>  drivers/accel/qda/qda_rpmsg.c | 79 +++++++++++++++++++++++++++++++++++++++++++
+>  7 files changed, 253 insertions(+)
+> 
+> diff --git a/drivers/accel/Kconfig b/drivers/accel/Kconfig
+> index bdf48ccafcf2..74ac0f71bc9d 100644
+> --- a/drivers/accel/Kconfig
+> +++ b/drivers/accel/Kconfig
+> @@ -29,6 +29,7 @@ source "drivers/accel/ethosu/Kconfig"
+>  source "drivers/accel/habanalabs/Kconfig"
+>  source "drivers/accel/ivpu/Kconfig"
+>  source "drivers/accel/qaic/Kconfig"
+> +source "drivers/accel/qda/Kconfig"
+>  source "drivers/accel/rocket/Kconfig"
+>  
+>  endif
+> diff --git a/drivers/accel/Makefile b/drivers/accel/Makefile
+> index 1d3a7251b950..58c08dd5f389 100644
+> --- a/drivers/accel/Makefile
+> +++ b/drivers/accel/Makefile
+> @@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ARM_ETHOSU)	+= ethosu/
+>  obj-$(CONFIG_DRM_ACCEL_HABANALABS)	+= habanalabs/
+>  obj-$(CONFIG_DRM_ACCEL_IVPU)		+= ivpu/
+>  obj-$(CONFIG_DRM_ACCEL_QAIC)		+= qaic/
+> +obj-$(CONFIG_DRM_ACCEL_QDA)		+= qda/
+>  obj-$(CONFIG_DRM_ACCEL_ROCKET)		+= rocket/
+> \ No newline at end of file
 
-> From my understanding, ATS translated requests would use the fast-path
-> as soon as a translation is established in the device, without the BUS
-> address being explicitly programmed. ACS redirect would block that. 
+You have trivial patch errors.
 
-Oh it's super complex. There are seperate ACS bits for translated and
-untranslated requests. You need a PCI expert to design your fabric and
-devices to get a working system unfortunately.
+...
 
-If you use ATS and don't set the ACS to route all translations to host
-then your IOVA space is no longer uniform, you have different results
-depending on which fabric route you take. That's a pretty unreasonable
-fabric design, and can't work securely with virtualization.
+> +}
+> +
+> +static const struct of_device_id qda_rpmsg_id_table[] = {
+> +	{ .compatible = "qcom,fastrpc" },
+> +	{},
 
-> So wouldn't it be better to be safe than sorry and return a host bridge
-> map and make something usable and potentially fast out of something
-> currently unusable?
+Device node with this compatible is already populated, so this looks
+simply wrong or you are adding a duplicated driver.
 
-What we have today works for lots of devices and if you change it like
-this then you'll break existing users.
+That's a no-go, you are supposed to work with existing drivers and grow
+them.
 
-Probably what you want to do is add a flag that the device is going to
-use ATS for the P2P DMA. Then we can force setup an IOVA and check the
-fabric path for translated request routing to make sure it will work.
 
-And yes, there is an existing issue with DMABUF not being able to
-negotiate these little pathing details with the importer when the
-exporter forms the scatterlist..
-
-Jason
+Best regards,
+Krzysztof
