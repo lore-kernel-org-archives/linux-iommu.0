@@ -1,202 +1,184 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AF7F3A7F57
-	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 17:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787072712; cv=none; b=LO5YgJfc7G3R6gxHgd1ORfSpOk5LRvLwr5+9LpvKzczyEub/rWhA5oaYk+aHtBanZBD9UsylOGcbjOAtdz7gUyHxD8oQPREy/iuizIgJS18pX+H3nBLmnal7CB1fhQ8umIX+ejSFu6ID8K8zHXYCACRWorSmLlUPfkP/ydZTIYA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787072712; c=relaxed/simple;
-	bh=o8uqmtu2MsGYxO7vBcFjs/s2qplCdUuOZKJZo563EbY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qP7N1VzwUTUL4k2Ww1NrP2TPPj/F9Uw4qqWWTXoHfyT+7rSAplZZyjD+EZWDrAJHWRpf1fh8rGT8NVY4rY8nErBOFRe4Rcld6Gchtm7Dee2OVHSd0JS75oBWcPWANGEjHwYkrIr+mJYXfsX0i/vbTqt4ls0APndMabLc/sLB0GM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ITSpq1/9; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012057.outbound.protection.outlook.com [40.107.209.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 744C73EC2FF;
+	Tue, 18 Aug 2026 18:43:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787078624; cv=fail; b=GK1Ko4dpGJ3Q6tM6ESvzIkaoGQb+NUmv3hBP3LMs1rod1WarYwuItaIoJ13atLsUr7qR0RMnzd8jNVpsbhbpgOj9+A+4AR5z+9ZHRPH/Z7dp6tUuApMSOq764evQtRaOkjtOS39z4AY9D88Wx6MjI5qYMVS3abyLK47kaVMAjhs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787078624; c=relaxed/simple;
+	bh=UkEP1E4CQYT3TJugyXEyglXjkMYk+skXktarCY7rVJo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=D6w2Ji6IZkUqo+bVnwn63fodyBUIgOyKsjCz0oOpbRpW5tBzzqTaI0ipdRDmG9fFP/J6gAVAH70n0TpOtWPiQFLF7RGDxgZA9vsKVxfg7zrbIKTwn47ScZRmrzUuu+2N7sX6qhnoUz5GG+wsUhVrFTjnSXqlCKwH+jWZoVJi+oM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EzRq4B2b; arc=fail smtp.client-ip=40.107.209.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ITSpq1/9"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id F23D620B7168;
-	Tue, 18 Aug 2026 10:04:41 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com F23D620B7168
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1787072682;
-	bh=NlBtSV70ulfjhBGAwgGGF0cxo2q372Ho76u9GQgfigo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ITSpq1/9eGOUWdNd/mX+x45m42gThC9Q7AtlIbxSgXObZ8NwdctklwBic5gMdyLUR
-	 SjY8zZfRxVOcEy1/loR6a74ir/A+oyqRMwmz5bkQ9UL8q85mUtam/J0k+wNFcamEYu
-	 t7T++JNskhPLUNvwzPXzAoEaKqRkTDtGFUZ+eI8c=
-Date: Wed, 19 Aug 2026 01:05:08 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"x86@kernel.org" <x86@kernel.org>, "wei.liu@kernel.org" <wei.liu@kernel.org>, 
-	"kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>, 
-	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com" <longli@microsoft.com>, 
-	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, 
-	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
-	"mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>, 
-	"arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>, 
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, 
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>
-Subject: Re: [PATCH v3 2/5] Drivers: hv: Add logical device ID registry for
- vPCI devices
-Message-ID: <hl7buaatkeq526nyx3utwepujs7ai36biln6frzl4z7zlzk2y6@yukgkwjms7vt>
-References: <20260811155022.108148-1-zhangyu1@linux.microsoft.com>
- <20260811155022.108148-3-zhangyu1@linux.microsoft.com>
- <BN7PR02MB4148C2319B12C57B1FA3885ED4DA2@BN7PR02MB4148.namprd02.prod.outlook.com>
- <uvvdhtxzqkwbb7ur4pybseocn3c4erk4gbis7yll4cvgusjzke@n2lbeyn532w2>
- <SN6PR02MB4157D48F243A3EA8C94C412ED4A72@SN6PR02MB4157.namprd02.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EzRq4B2b"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=bPErkDZ3ut4wIMcl7Z8+VIRQ7jIGL+4+vLzKQlXS5f7gooZ1OlaI4kyBkI8E3g/p6L9CyWhFjmf6MWieepma1wGohArZmerckxwvVvEcZRvhJW9fyZKEFRaqL6EtYzckg8lBPj9hE11EeTI76CIzjja1njH9YlzJhOZGUjj4qSFr+rLiHeuDFOZGQ7tYB4dnBkUD4vubiY7R/4t2EgCiae0No0cNMsZnfA3yVj4tR6YIK0Bx6vFY+cFvj9L2jShx5fcrhglsd1Km9XRxwr+h0K0M4W6MrB8pJKYD4+pA1dO0GDTAujHX9KQHVvjYNEey9eRMtaJXL7aVY9SQUCntxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UkEP1E4CQYT3TJugyXEyglXjkMYk+skXktarCY7rVJo=;
+ b=Z6WXm0i9Ls6vQ0RuFWUU9C2GvZenmSfwvSo+Aysl8jLJbmetCxesleYJuBdTqNcaOAkbJz+V6KPPiNBt+RYZp7iLAEdgmr3dT+4xkqB9r363fQ0UfxwEGzO/yrARJtglPVYh4cI9btD0gmMITeeiB6JWS70aoiR6eC0xUwz7NVQ8zDYNyVPi+Z8BMSQ5dmODRS5fTuOBm6Fbzne9wAs7wLG5fWYlD1+Kn212ttm/lIkFBaqVap+ziqDRqDE6PdH2zdozpUSQWAMDDjtrhjaj2tzqo6WJh0UdH2UuMl/yyl7GCLfsjtReXVYHSUtZqkOSIGySNBF0UeoVqXeBOrzGew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UkEP1E4CQYT3TJugyXEyglXjkMYk+skXktarCY7rVJo=;
+ b=EzRq4B2boz1/ibU6w/mUMFPF8Tkl5aUn3QB7ey58MdB47Pz0/XyNP6AFhj7KdwtxmrmjRD5wfq8tAuhUGhSsWFQI0GZMZN81ZshUr65GWhNe+G1purwcyw2+6CPZsT5aB4xKkAA3+vVnKJr/WN8GfYj0WN1WActwlKLEd6Vy5XwdrcBOg7Kj7OlPbelYtqWXKy9ihFuZ8umONGPR9j1ZdifxssStSEUG+0wRGclnpqsZ+sVn/ADqJC2D/dOAtUdPvglG57XE3h5aBuQrnHyjviIzUFpeFQ4aQBAupWhpioVVMQzft5gPbxLDBBKhrriiyNDQd2v9O3ML9OTeQcm32A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH7PR12MB7284.namprd12.prod.outlook.com (2603:10b6:510:20b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.17; Tue, 18 Aug
+ 2026 18:43:39 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.007; Tue, 18 Aug 2026
+ 18:43:39 +0000
+Date: Tue, 18 Aug 2026 15:43:38 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
+ for latency
+Message-ID: <20260818184338.GF5432@nvidia.com>
+References: <3-v2-43074a57a53a+fb95-smmu_tlbi_jgg@nvidia.com>
+ <akzm5BoV0rToJ7ij@google.com>
+ <20260708001058.GA422027@nvidia.com>
+ <an3MSKEj7VhT4WkP@google.com>
+ <20260813141320.GF730363@nvidia.com>
+ <an3ew9xbnLe1dr5g@google.com>
+ <1791d7da-ecd9-4475-8f27-c8857477b442@arm.com>
+ <20260813180102.GH730363@nvidia.com>
+ <an7UNAA1WlEXG23-@willie-the-truck>
+ <20260814123417.GB510472@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260814123417.GB510472@nvidia.com>
+X-ClientProxiedBy: YT4PR01CA0302.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:10e::7) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN6PR02MB4157D48F243A3EA8C94C412ED4A72@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB7284:EE_
+X-MS-Office365-Filtering-Correlation-Id: a93ea652-87ae-4ec3-cc7a-08defd589e78
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|7416014|376014|366016|1800799024|18002099003|56012099006|22082099003|6133799003|11063799006|10067099003|4143699003|5023799004;
+X-Microsoft-Antispam-Message-Info:
+	NpDN8rIDIZHPLKVA6ZLjLCoYEjnDrRFIc4uOXeG5Hecnc13/sSleoP8TOM7RRQrjckEhB8YeaqcSqT58Jhw9ymZLJLWa2WgUStE8IG76yHSV1WMauPn56WIHi0AXnQu2jacggF0Ot+kXajumHkX8BMDPlhEfYkau3cxDpgV/FWup6JMwaouTDZMiXIY0UQL/EFJxcn5sNUuccjDiiUVc8kd2Rsl9r47gtfbzwAjW+SjHfVwOAGHp2aF2tXxjltShHsMda3Vw84cyeW9KGCOhzuU08YFceWYVNy8nSsqO/hjlOwW3C3KraFUxKUMSjbMdZif2cBmRIcFQGKzUFE7LXQIS17Gc/HJxjOInusDyYOWK5UGajn0rGigtUrjKht2VUSnjkoQ6o2LUMG5F9pXvpz/M+qoXxlXVF/2oEoGKZKKgXCpFU51Uumd7Mt79w2G7ZOcKMTW4/V1uNLY5wnv98qUMZWo/KLcEtay5aFDLrGfzZ2HTPFGc65uI6eOJa6efUs309mF5/9BeMMrx3qlG7a2gLxrgev7MRZCmWtmJL2418fiw71LZ6sSQl0SMd/vQdJPDWW77UtykLPLct1rnEVo+KayXRMiZisJQiHkYuSLzJBcnUNl5WOv5XjXYNtBCxG2UtPSo+GKJIDex8Do18mpmzCNOPfOi/xf6DwYxs8w=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(366016)(1800799024)(18002099003)(56012099006)(22082099003)(6133799003)(11063799006)(10067099003)(4143699003)(5023799004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ODOfwziATv6+XDTFt+Dj9oJ/5Es/wdMT3jBYjyINDRuOeJs1OMceJmDimwso?=
+ =?us-ascii?Q?FyvXBIMa+vbzxmHBHQln5P9Bp1vftX35RdurGPyuIHB+OvxPCSKhTfWWZgD3?=
+ =?us-ascii?Q?YSYdhkWpAp0CfV1q/mN6/S/iW03TvTR4uWq3QNVbZ7rxIyxlV9amPz0ad8eH?=
+ =?us-ascii?Q?/Nryc0774ZLICvp8J+bK3oCPIpBE4z6AiimymPlKIrna8JEZV6t74vkvsSsH?=
+ =?us-ascii?Q?EmEuF3n8LkLu99CwvEx2Guyq6L/Ne4fI8BbGp/0EfnsHa1d+cPYSiK+Fg6P3?=
+ =?us-ascii?Q?eP+i+J5eGNGt8c3+afSfwh3dD/fvSbf8Dpps5kpZrgTkiOBsw6XE2KkQ6WdZ?=
+ =?us-ascii?Q?qXRfnxXwuUiHAYaLA96/Vx40NcfiOWrJvvyLqIbTj0j19CktPGm0YPrMLWOn?=
+ =?us-ascii?Q?yfR8iutbSUViXzAuTSqIjh4jOSn63RPks/3XlWJ5GMowx/DIFaBZ/CWRbvGZ?=
+ =?us-ascii?Q?Cs03M8QKNf/v7VSmgdz77BWhEEl0WfUy52U59Sjmzjtu/M39w+YLq51Yysg5?=
+ =?us-ascii?Q?KVTnDr1gSmhtGriefax9iT07Yui9z8bFIAilWIEj9Y/Fp4LAknbJiGDquw0j?=
+ =?us-ascii?Q?pL2nwoz4xwSPewNblU9v+fpjeSRHjhYgM6vxCQLPv/4OWEsMyQ5xdiRg7OsL?=
+ =?us-ascii?Q?nPNx87YgfK4IfmO8AjolZPQ8k+XeQmQBsquTgm9vLmzpIt2pNlBNkgMjCROV?=
+ =?us-ascii?Q?d0dd+nNr4BTdmuFkyLt/84v3NVyQ9OgeEFAWaRlatZJiBNCfQvsCmfKnirDj?=
+ =?us-ascii?Q?L0un0/i7zjiRk38dcrAXmTdxMaFl+VQskvhQS912AAlMIIhIlwXh29zACcJQ?=
+ =?us-ascii?Q?0Reoy7/mvktTrjh7/BgrBgilXvF8PQ2FtsPEpXnwJSEhxMIHonKd4fjFtGeM?=
+ =?us-ascii?Q?nQAqJtlnsqqn9VcC+rphQMIJHpWx1O0b3ftWyuDPZKYJOTERM/TwflHZFCd8?=
+ =?us-ascii?Q?GAQJxjh049ZAzoDY4wsGQxIPY9CUVXO8My07cRs761sX1I0JsDrX6cgDr6sy?=
+ =?us-ascii?Q?3hH0hbpAnluXI+IOtpx9RqJeyCAFmVb3XYS+YdiFbSXJKldqePkMvNJzLZoY?=
+ =?us-ascii?Q?jDZZr0I0DqeuAos0D5DCYczwoF4dGEDBpbS1GmJXk4n9duFcaV/2AY7GRoUF?=
+ =?us-ascii?Q?3VM7SFIWOMB7buT6BYhaw88xiV8LkIlFVzOwQ/ahk05UWqzQjG9VdHk4Yryt?=
+ =?us-ascii?Q?4kxeIBv8mRiwmem+Lz+lm7MRcfelXxwZ32VEx9sw+HUfNDJDtCny01FPQmPh?=
+ =?us-ascii?Q?kgykX182v+oU/maSjmmGxW6q7Q+unCIQCuqDFhATjpju0OPa+G7K0sl3UvPN?=
+ =?us-ascii?Q?D6jZVAbyVKOLqDjkk0eHCfSdmdPADg4mdK3kbJ/rba7o7dE0RX21RZQqMcVL?=
+ =?us-ascii?Q?c2BT5pQtzoSHjtHl6KodgW4Ej7tlyNsDsG9D6kY3176uBYZ2Abk1ds7L3gR8?=
+ =?us-ascii?Q?XYpBFSUQsYyo8EDsieKc6cuH8j0DmR5c1Tn343VQ2Cszr+JVGL7XlOIx6SWm?=
+ =?us-ascii?Q?CVjyzIYrQJJ2oJr8TX0xKH5Iz8RMpbHlcNXvI+JHXvjpSBfgu8gG6P2wpLO1?=
+ =?us-ascii?Q?uHj1w7FI6OkFRdTBGrmGZ4ctYx7Y3226C8WSWZ2ADAtN24eJGyO/zRt4mb4n?=
+ =?us-ascii?Q?IxSgZRVpVyKAA6MP9bTG+DFyi6LEeoblL2fhLwKnxi0x5Sd3EZvSRAOebAH6?=
+ =?us-ascii?Q?ZOAJM+Qw8g7gq9WV9zd8m7VZbMKuTxCaJRuZOQnZSSKLpVtI?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a93ea652-87ae-4ec3-cc7a-08defd589e78
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2026 18:43:39.3741
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0rEhDgaYZkS3/TeFl2EtT4CMldgWXVGMaJzrDp+IDNUouFPiCYoTlqaOnrA60faQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7284
 
-On Mon, Aug 17, 2026 at 05:27:34PM +0000, Michael Kelley wrote:
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, August 17, 2026 3:38 AM
-> > 
-> > On Fri, Aug 14, 2026 at 03:31:27PM +0000, Michael Kelley wrote:
-> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Tuesday, August 11, 2026 8:50 AM
-> > > >
-> 
-> [snip]
-> 
-> > > > +#ifdef CONFIG_HYPERV_PVIOMMU
-> > >
-> > > Making this code in hv_common.c conditional on HYPERV_PVIOMMU
-> > > assumes that the only consumer is the pvIOMMU driver. But my
-> > > understanding is that root partition code is also expected to be a
-> > > consumer, and I would guess that code is independent of a guest
-> > > pvIOMMU. So the #ifdef might need to become more complicated
-> > > to also allow the root partition case. I'm thinking it makes sense to
-> > > always build this code as part of hv_common.c. Even when building
-> > > for a guest only with no root partition code, HYPERV_PVIOMMU
-> > > defaults to HYPERV so the pvIOMMU driver will be built anytime
-> > > Hyper-V code is included, unless someone goes out of their way to
-> > > disable it. Getting rid of all the #ifdef'ery would make the code a bit
-> > > cleaner, and I'm looking for an excuse to do so!
-> > >
-> > > I'd also note that CONFIG_HYPERV_PVIOMMU isn't defined
-> > > until Patch 4 of this series. This patch will still build without the
-> > > remaining patches, so bisect isn't broken, but it would be with
-> > > the equivalent of CONFIG_HYPERV_PVIOMMU=n. It's a little bit
-> > > weird to be using a CONFIG_* value before it is created, but maybe
-> > > the ordering among the patches is complex and not easily sorted.
-> > >
-> > 
-> > Thank you, Michael!
-> > 
-> > That makes sense. The trade-off is that a Hyper-V guest without
-> > pvIOMMU support will still allocate and populate the registry for
-> > its PCI buses. If that small overhead is acceptable, building it
-> > unconditionally does make the design simpler. And we do not need
-> > to worry about the chicken-and-egg problem when ordering this patch
-> > and patch 4. :)
-> 
-> To me, the small overhead is acceptable. vPCI add/remove
-> operations are relatively infrequent, and are not a "fast" path. So
-> the overhead is of no real consequence.
+On Fri, Aug 14, 2026 at 09:34:17AM -0300, Jason Gunthorpe wrote:
 
-Yes. Let's use rhashtable!
+> I'm also wondering if we are even OK with this errata today? The
+> current RIL algorithm also does not guarentee the split up RILs will
+> cover every CONT. This will happen to be true if the input range has
+> certain properties but I have no idea if the SVA path or even the
+> proposed CONT iopgtable change guarentees that.
 
-> 
-> [snip]
-> 
-> > >
-> > > The comment above is written as if the pvIOMMU driver is the only
-> > > consumer, which isn't accurate assuming the root partition use case
-> > > materializes as expected.  And that also means having "iommu" in the
-> > > function name is overly specific. Same with the other function names
-> > > with "iommu".  There's really nothing here that is specific to pvIOMMUs.
-> > >
-> > 
-> > Agreed. Will update the comment.
-> > 
-> > For the function names, I would like to avoid using sth. like
-> > hv_register_pci_bus() since that sounds like to register the
-> > PCI bus itself. Two options I'm having in mind are:
-> > 
-> > 	hv_pci_busdata_register()
-> > 	hv_pci_busdata_unregister()
-> > 	hv_pci_busdata_lookup()
-> > 
-> > or some more descriptive yet legthy ones, e.g.,
-> > 
-> > 	hv_pci_bus_register_logical_dev_id_prefix()
-> > 	hv_pci_bus_unregister_logical_dev_id_prefix()
-> > 	hv_pci_bus_lookup_logical_dev_id_prefix()
-> > 
-> > Do you have a preference, or any suggestion?
-> 
-> Or maybe just hv_pci_register_dev_id()? To me, it's
-> better to put the verb ("register") first followed by the
-> object. "logical_dev_id_prefix" as the object is a bit
-> too wordy for my preference.  Just "dev_id" or "busdata"
-> is better, even if neither is fully precise.
-> 
+I've looked into this and it looks like the current RIL implementation
+does not meet the requirement to solve the errata, and these days SVA
+provides CONT entries from the mm.
 
-I would prefer hv_pci_register_dev_id(). "busdata" is kinda
-vague and "logical_dev_id_prefix" is too wordy. :)
+The errata says the RIL command must cover the *entire* CONT group. I
+read this text as meaning two contiguous RILs with a split that is
+inside a CONT group is still vulnerable to this errata. Each CONT
+group must be fully covered by at least one RIL.
 
-> [snip]
-> 
-> > 
-> > > Separately, it seems like the existing calls from the Hyper-V vPCI driver should
-> > > never duplicate an existing mapping. Your code disallows mapping a domain_nr
-> > > to a different logical_dev_id_prefix, but silently allows entering a mapping
-> > > that already exists as an exact match. I wonder if that really should be
-> > > allowed, as it seems likely such would be followed later by twice removing
-> > > the duplicate entry, with the second removal failing. Removing a non-existent
-> > > entry is also silently allowed in the unregister function below, with the same
-> > > question as to whether that should be allowed.
-> > >
-> > 
-> > Actually, I don't think an exact duplicate registration is a valid case
-> > either. So how about we use WARN_ONCE() and return -EEXIST when an entry
-> > for the PCI domain is already registered(regardless it is a exact match
-> > or not)?
-> > 
-> > And for unregister, how about we initialize the result to -ENOENT, do the
-> > removal if lookup finds the entry, and WARN_ONCE if no entry is really
-> > removed?
-> 
-> Works for me.
-> 
-> > 
-> > > > +}
-> > > > +EXPORT_SYMBOL_FOR_MODULES(hv_iommu_register_pci_bus, "pci-hyperv");
-> > >
-> > > This may be overly restrictive if the root partition use case code is in the
-> > > mshv_root module.
-> > >
-> > 
-> > Well, I'm not sure. IMHO, the register/unregister side is owned by
-> > pci-hyperv, which creates and removes the Hyper-V PCI bus. The guest
-> > pvIOMMU or the root driver are only cumsumers of the  lookup.
-> > 
-> > So maybe the register/unregister exports should remain restricted to
-> > pci-hyperv, and if a future module needs the lookup helper, an export
-> > can be added for the lookup helper by then (we do not need to export
-> > lookup right now for pvIOMMU, which is built-in)?
-> > 
-> > Am I missing anything?
-> 
-> You are correct and didn't miss anything. I didn't fully think it through,
-> so my comment is bogus. What you propose is fine.
-> 
+So the algorithm we have today where we take the range and split it
+into many RILs has nothing that prevents the RIL split from landing
+inside a CONT. SVA is not guarenteed to produce ranges with an
+alignment or size that make this algorithm happen to choose aligned
+splits.
 
-Glad to know that. Thanks!
+I've prepared an errata fix patch that detects the errata and triggers
+a very simplified version of this single-RIL algorithm only for SVA
+invalidations. That will fix today's kerenel, it is reasonably small
+and can go to -stable.
 
-B.R.
-Yu
-> Michael
-> 
+I've adjusted this series on top of that to use the double-RIL version
+with no over invalidation that Robin suggested for paging domains and
+single-RIL with over invalidation for SVA domains. This also turned
+out pretty good.
+
+For the iommupt integration, and enabling CONT for the paging
+domains.. Ugh.
+
+It seems at least our Spark CPU has this errata and requires CONT
+support to work in paging domains, or it runs into its own isochronous
+HW problems. So the easy answer of disable CONT isn't desirable.
+
+So.. what I've come up with is a little tweak that still allows the 4k
+granule's 64K CONT to work without any over invalidation, so we can
+turn it on by default. That is enough for spark to work. Everything
+else stays with status quo of no CONT.
+
+If someone has another smart idea now is the time..
+
+Jason
