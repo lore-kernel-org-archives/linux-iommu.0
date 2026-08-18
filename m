@@ -1,159 +1,101 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E3AB17C211
-	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 20:16:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5D5377ED7
+	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 20:19:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787084188; cv=none; b=n5AgCV6n6TVKCPCYhYCfmG28y1JLMaEh24LCQ+G5pDKyYfXlYfI/5nwxI+moB5C5WxZxh9ermegPWxIAoLvLC3jhbrHsEZ1L/wwgvDSbJzL5X1nKUecgyDhbDZtOezBwDhiGGNXnv7FmXxaxvAqEG+c8c/FD+mYFUJmF6+hsq0s=
+	t=1787084360; cv=none; b=C3iIk9pRhw9eKc88CMP5Vz3rhOEaDiAhbB1DtAi6r2B7XdXAS86IY1YdUoBjbK5glNXnVfm8Fi9DooXTFmTeh5g5CIZsRKD/pdUnKBLN0Qb9z+wyR3jFDfUTxb2GUloRoPVdXauh9FRA5jN6zufu6ddt5x0UURl+DE/rM4WyeDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787084188; c=relaxed/simple;
-	bh=4Kzh2BqFz3QNvHWgeEiAKhA9ukomOLDvb++xnsuKgAE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=muq7xKHV82ypEw5CwFPYNCKBnRhO+Rk8a7k9iCNSFGpV2uFM1U60feiRLFNqkLQLmtmYoJ37AIDMMealSypiCtLj2Qw3Qyh/NxGyB5anoVj8nQysW7VZqV+wybdXvG9VvQ/yJRDxU1k5NlN54bYxCZzszF6RqVsUqY+cyVeLDBY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=p2S/DKfV; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1787084360; c=relaxed/simple;
+	bh=23HK3oXGJCkgVXNMMVpJRvDzUtuvfqGaZIzmssHRKms=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zr0f+QtkDUZPN9A3VNYVGk/wDu/+9M7xJJftDwHM1HFsm5UCNBnuFewOYiO7utW6qZl4Qb89w6T5rQgyt0ZZ4cWozL2XngXDfylepkgQ198LtFoIcH7LGHNP2NBZKkGV6NmnwTNebWiAvadpXl0R7yqTXUTZuITbQ/Rox+fX+Yk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fCmDMLbn; arc=none smtp.client-ip=209.85.210.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="p2S/DKfV"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67IJWDLW1260956;
-	Tue, 18 Aug 2026 20:16:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=6lVzk4
-	esEkUfnSiu7Le8xGcLup67KWzd3QJ9AT+Jyus=; b=p2S/DKfV4xTH9YqTl8goEn
-	eZNeeR5CMZ415H977wX6gb/9EgrHX9v2lQleNFhgaampCOhLnEdpS+x6WoeKoG2V
-	Wn0/OurB4q/kNPegcu7pBTQyRcPet9iwj4vjaJqYCwehLyqaRGpp9y8VBprDGUyi
-	3o1j/OfKPmOzcLiO9njH8997QDJUfgxrlN97Q5Fxcu+kXMdMtUgzTVbIsFi0lkPJ
-	zmSd4FTVE7Vf4GaaUIDxPyr+74Q5auGkisgETwXpHh9xDGso2UHATH1g3FmfnJ/s
-	RwC1i7lwZsO2WHityqy+eKs5x6Cwx7UXRJMyTvtCjLB6zkqBBz1XWM6dlhKkG03Q
-	==
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4g2fu4tqr2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Aug 2026 20:16:19 +0000 (GMT)
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 67IKBNEr009047;
-	Tue, 18 Aug 2026 20:16:18 GMT
-Received: from smtprelay04.wdc07v.mail.ibm.com ([172.16.1.71])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4g32tw5d7j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Aug 2026 20:16:18 +0000 (GMT)
-Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
-	by smtprelay04.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 67IKGHvI16908928
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 18 Aug 2026 20:16:17 GMT
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1B05B5805E;
-	Tue, 18 Aug 2026 20:16:17 +0000 (GMT)
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A08E158051;
-	Tue, 18 Aug 2026 20:16:15 +0000 (GMT)
-Received: from [9.61.131.241] (unknown [9.61.131.241])
-	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 18 Aug 2026 20:16:15 +0000 (GMT)
-Message-ID: <98713094-10c0-47fa-b54c-c67ab82f7a51@linux.ibm.com>
-Date: Tue, 18 Aug 2026 16:16:15 -0400
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fCmDMLbn"
+Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-7ee4399c3abso194639a34.2
+        for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 13:19:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1787084356; x=1787689156; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=jZlmslRhHAtCSzaMTa4W5Bc0ab0HyjyPNsfXiZbsD5o=;
+        b=fCmDMLbnLA1iVfMqdQHkIuUHpCYe/AqcDVFalNQ4H9+5TK42NWxzv9qQb8jXb09Bm4
+         /+ukShXn64hihouyIQz3zimiBF8G/nFGuOOllIHRapnQNGNuznuf7dYEwfLNTsp3o7tk
+         e14iWOCEZNv7DtPWytGgrwGE8WSgW7ELhFkom1tmu/n+SPuCFqet9JpVCLwtKpZvZMwB
+         PCG75ZVfHbQbycrndrbsqNdJLLH+qx3eghLQfoAaMO38e5w9syGh+Dm1YthE95H9/Zae
+         fARTGhB1YI6Dyt8N7LWdACVW4VQpZWo8mVngH30R2SZ+d5oBZzOiS2XpemSE6bavi7Vt
+         2BSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787084356; x=1787689156;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=jZlmslRhHAtCSzaMTa4W5Bc0ab0HyjyPNsfXiZbsD5o=;
+        b=bMdO4ePl1BHyUyw9dgcFVG0kFaGgRwUQUJ4nUqa8qfOpcB9/6Dhxl4rgTurUp7V4O3
+         VpHPpSem3St1QeujMK5t6W1STkB5WTciYB3MGGVNhVl0Aia1heezLs8burDd/vDE1gJ2
+         2gwxQqHbmWeaK26DJU6uc0/AJ6pmq8q8jSwuz69pCcOtaJX319uPDIKDxZBb0XBmF0or
+         F+aju8efqrCyvkNmDRvVhRY7AmZL/PXpr6LnZmCPlJS/d+KWVT1Jr+IpCzGaSMt2g1KR
+         s1MMFW2IzqmwPLi39sTKdQkO3aZvym7zbKZpoG1nl8WacEaaMqZjZB5IEr84D5blPUP6
+         8cUQ==
+X-Gm-Message-State: AOJu0YyBKIrrXGRa0hkko4ZBPM21uflaRIpr5ZDaC5guCQ3yw3G2CFrh
+	Xw5fFA6yCYe3LSHhTlgJU8rNfvhfeSMQrFtnydEiKZ003t9fDnOsc46sSzUutN/VfZw=
+X-Gm-Gg: AR+sD12BhQGc5EwB9dO22QgwhHGcxqH1x0ZJhAUKBexsjPgzwEgj43TYJo0S5V86qSc
+	RBndJmCus599YdZBaDQxmGRtnJ2mBrI6kaQ1im2CIhOqC7IltSdHBP9OOlhLl9XZWGShJV0YYFm
+	rPUgx67U8INTgw6ZfvcAxUJ5L05rTgJyIxsubyczizl4SOfGtIDLSbPsaZbtbl1GGdLVHjbvFF8
+	9nRGZdcWnY4mOyU/N/UGYZm+J2hI/iqAEqfbbTrpIA4X2qFPu5aaXo1QJXurgUM30h9WSR/sFjO
+	VX930mUJweO7iwfpEffEaHBIToNgxJFsklHUwLrPku3CcTwNNpBL/06ZXvDm1Y+9DtjvdSVAstz
+	26m6vISwL69c53dgOz+Ur3bSKmtG6lfjmOj5UsK4sIinqVZOn1+xvFlW2MpSBMBKj+As/mXmqcJ
+	dUwSEv+x2ld6cyCZv79UUm3AvhqJ1RVqtQPjsmRFYbdgo0HQzdVs7s342mGw82nDa2RftmISCkX
+	+RwdzDIFkN815bbZfiR7cTeIY1dc+bJOs7vCLQtXtIN/A==
+X-Received: by 2002:a05:6820:2215:b0:6ae:941b:521c with SMTP id 006d021491bc7-6b13ad7cd19mr126171eaf.18.1787084356276;
+        Tue, 18 Aug 2026 13:19:16 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6b1166fd581sm5592640eaf.15.2026.08.18.13.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Aug 2026 13:19:15 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wwQHC-00000000I3U-2Jmi;
+	Tue, 18 Aug 2026 17:19:14 -0300
+Date: Tue, 18 Aug 2026 17:19:14 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: syzbot <syzbot+48637757323884de77a2@syzkaller.appspotmail.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, kevin.tian@intel.com,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Subject: Re: [syzbot] [iommu?] general protection fault in
+ iommufd_ioas_change_process
+Message-ID: <20260818201914.GA18100@ziepe.ca>
+References: <6a833819.4d75e56a.c9a88.0001.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/s390: Fix NULL dereference in iova_to_phys() with
- ZPCI_TABLE_TYPE_RFX
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
-        Farhan Ali
- <alifm@linux.ibm.com>,
-        Omar Elghoul <oelghoul@linux.ibm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>,
-        Benjamin Block <bblock@linux.ibm.com>,
-        Julian Ruess <julianr@linux.ibm.com>,
-        "Joerg Roedel (AMD)"
- <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>
-Cc: Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Ramesh Errabolu <ramesh@linux.ibm.com>,
-        Tobias Schumacher <ts@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        linux-s390@vger.kernel.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
-Content-Language: en-US
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: RiMDqjaebPd6v69bqhv844lhZhQfWhgC
-X-Authority-Analysis: v=2.4 cv=NLLlPU6g c=1 sm=1 tr=0 ts=6a84bd93 cx=c_pps
- a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
- a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=U7nrCbtTmkRpXpFmAIza:22 a=VwQbUJbxAAAA:8
- a=VnNF1IyMAAAA:8 a=th3aBrcy0Tt1vy9RbOYA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE4MDE0NyBTYWx0ZWRfX46rrz4NFBge2
- 1Gi25W6pprn6qgypQ3CyZk/C07s/juEqBaJU0uAs4TWZndURfYbs1VW6/O6/V+iJIXqWHczWjdf
- t0XDNpUWYo7oqh/+GytdKPiiQrbB4iU=
-X-Proofpoint-ORIG-GUID: RiMDqjaebPd6v69bqhv844lhZhQfWhgC
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE4MDE0NyBTYWx0ZWRfX/hAb4AoPEJJ8
- 2hJpeKbfgMIO+3Ay4Wdwl/fZa+VYtnHAOOG9xv0AtoB0EYyeyYsXleSDaapj1yOgZYVumi2EKfH
- xftmsOXOo8uBQcVjb84T4XQRG74WdXjg8k8L0yC0YvDEQ/64w+jJ2vXfjjy96Cbg2VncmTYlWaQ
- MPNt9o4lVwJCSH9amr0wa19yH04Czu8FUYcJyeB8c5+JZH5hME4NAb9HmTkldUL6cE5BF+9Wykq
- yRkHF2j/yI1Bx1YdaVm7M1w+GvDJYa7Wb/RqGT1uLa2KcwHwOWKHQyjDuuKxBjbKXhijJYdb+nr
- HxV6wqA7MYDOe+5ZcYo+03P1rXji7KR2J7v1EzvhXIe9SyTZKM23I0VBwBo9H5/oSL2SCJ1pamp
- HS+SLaqruArRebk9V1DqiuHLWT3EpTc37RhyxpwuG7UywfNQITy2fMDjDm/eLRZdmKdZliwA/t6
- lIrSCnePET8vqvREtBg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-18_04,2026-08-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 spamscore=0 lowpriorityscore=0 phishscore=0 impostorscore=0
- malwarescore=0 suspectscore=0 clxscore=1011 adultscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608180147
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6a833819.4d75e56a.c9a88.0001.GAE@google.com>
 
-On 8/18/26 3:13 PM, Niklas Schnelle wrote:
-> When using a 5-level translation table via ZPCI_TABLE_TYPE_RFX
-> get_rso_from_iova() returns NULL when the region-first entry is invalid.
-> Yet in get_rto_from_iova() the region-second origin rso is not checked
-> to be non-NULL before accessing rso[rsx] leading to a NULL pointer
-> dereference instead of a NULL return when iova_to_phys() is called on
-> a unmapped IOVA. Fix this by adding the missing NULL check.
+On Mon, Aug 17, 2026 at 09:34:33AM -0700, syzbot wrote:
+> Hello,
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: 81244074b518 ("iommu/s390: allow larger region tables")
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> syzbot found the following issue on:
+> 
+> HEAD commit:    3d6d817622b0 Merge tag 'scsi-fixes' of git://git.kernel.or..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10b01a9e580000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=c44651ea7dd2f307
+> dashboard link: https://syzkaller.appspot.com/bug?extid=48637757323884de77a2
+> compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13dbb225580000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b01a9e580000
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-
-> ---
->  drivers/iommu/s390-iommu.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index f148f559ac56..58ca7727b7f2 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -974,6 +974,8 @@ static unsigned long *get_rto_from_iova(struct s390_domain *domain,
->  	case ZPCI_TABLE_TYPE_RFX:
->  	case ZPCI_TABLE_TYPE_RSX:
->  		rso = get_rso_from_iova(domain, iova);
-> +		if (!rso)
-> +			return NULL;
->  		rsx = calc_rsx(iova);
->  		rse = READ_ONCE(rso[rsx]);
->  		if (!reg_entry_isvalid(rse))
-> 
-> ---
-> base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
-> change-id: 20260818-iommu_fix_iova_to_phys-5879275b95ec
-> 
-> Best regards,
+#syz fix: iommu/iommufd: Fix NULL pointer deref in iommufd_ioas_change_process when racing with iopt_map_file_pages
 
