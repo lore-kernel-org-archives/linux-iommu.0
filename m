@@ -1,33 +1,60 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6833438BC;
-	Tue, 18 Aug 2026 19:22:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDDC636894B
+	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 20:00:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787080975; cv=none; b=kVvDmoWWuI1x3xAV+FMWnef4bm0Gk848pXZFHJzCHUna15uMBpubhgnzdiHyTpytRofugVUFfEtsC2uxD31Gz5/ymB86umEryZQntM2blDSafm0KhrcEtISvBezXvyL86JiKfFVsyCENeGnIC2cyWZbyXCm+hht1HEBSLLKeKYw=
+	t=1787083244; cv=none; b=nd1GTceVGlzBjYB8mJ/xPdf3FgTtCG4e8BO3CMtG9ub/18DibMyYsRXOh36R27eWoXLVIj/yasUZ0vaX70BIqyv2CHzzhh9OKx9o453xcboHm9vk92PiWBFDvLUljbcXXJ/VecOSJ6ab/DkTrZ1xWZplgcwNWXnVH6e1jiY+bSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787080975; c=relaxed/simple;
-	bh=wdRa0jr39GgkiE2cpSZ2IjIlYn0EPPa1DFxSiy4IhaE=;
+	s=arc-20240116; t=1787083244; c=relaxed/simple;
+	bh=tpEYp48UxfqbRCgTng2kOXYen8Nn0pJlZWedCCZAlQU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=K3aIg7DXI6L6edpdyEy6tycmHggdDeDAwZ6UJ74ExcdB9Gr4zO93yAYFhiQ0J6HQ6P3+UxM2pviAK42Hn5wFNZk7FLsi9mfnLFKusg55USCDrH53e5ZsMj8sH/LAjjaKCjsh3TkVQyh39IuPkwTGR9EguNRL3QiBGSsNepdwydc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cozlw0Qf; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=jr5dtvLso5fZ/Jjv2cK+4ajz0HxI+TYrJX/xsmeJKa/v3iLb0RE2IRlOGEnYmJ1GxEnwAk9aP2yJMZhdstxr1AAlJewyj7U/P8TP7LzFyVHD4gwHDdzQshvYNYR9Si7VLTqjLQ3BsMo0HeBeWZ4zPGnrLI+oiM4N6kM3AuFri8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=RUmeVMu1; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cozlw0Qf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05E761F00A3A;
-	Tue, 18 Aug 2026 19:22:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787080974;
-	bh=Rzk1GGwEpF9d61XcbipzC6FveqTGcP36U1flWmeEvl0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Cozlw0QfOS4w4VIjC0kGzKw7aT5aQnToUMMdhbm/Dwllvc8RWmeAkpkLOIFQ7LJiI
-	 Dr+WfADNY8sa9c6Udq2hK9opX38A3rj0dd1S0iAbHOuYuyOISwn+pUbm/fUUzArdgL
-	 tqrC0KgRl9O7O/FCNayx9JL1bdO80ZD99XLmoh4867/W5R8O8BDgPjZ3LekU63gwje
-	 SDpfFgfKMYRL3TZPLf+x4f3PH9Zs38I0fTI9EXln/5c9ITcltgFIyyuR5eEcFOdNok
-	 U4+Dv3zeb1vXTcANuTm5PEr9Udx1M/rxfWMj4v6WTTNzjdHgUdFI6XO9MrXiylP7St
-	 Lxntvp2Ae1IFQ==
-Message-ID: <cc43a545-20a1-4f15-a7b9-ca48842bffca@kernel.org>
-Date: Tue, 18 Aug 2026 21:22:40 +0200
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="RUmeVMu1"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67IJW26c1210895;
+	Tue, 18 Aug 2026 20:00:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=Q+qnh8
+	0w7oS6RYx/Rs4v80gbyePqozQH1iG8XJR8vv0=; b=RUmeVMu19pOke9IFg9g2JJ
+	d+f/s/eUcu48RVFqwcEUzlZIhdDHW8D1iPE4MFNpyR4IBeAwMhQ08tBiZjNVGXYc
+	XftbPZliHR5qLvX/SAqFrwF6FGkZn221FPQ5tF1RXheW57CV87kMqqWqdjc4gJJW
+	3c5rDdiXoc53Vj4Xzi0zebbNsYCcB/YqVgtTslF52RsKjuP6HQ1wEFTGfH5tYpMs
+	PFM7k+GJvHbseq8adof5EczYXEJL9DMeij3ulJknUuQo3F0VpxLlIFxtOYQSsbLH
+	UabmNQvOfwlbBS1BqrbluzSyZx9+R3lARmWfnBKVLTrPcyMosEYtTEgAhj/AoirQ
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4g2fm3tkw5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Aug 2026 20:00:34 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 67IJuMx8030601;
+	Tue, 18 Aug 2026 20:00:34 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4g32eq5c7s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Aug 2026 20:00:34 +0000 (GMT)
+Received: from smtpav02.wdc07v.mail.ibm.com (smtpav02.wdc07v.mail.ibm.com [10.39.53.229])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 67IK0WlS19137176
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 18 Aug 2026 20:00:32 GMT
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 79FD55805B;
+	Tue, 18 Aug 2026 20:00:32 +0000 (GMT)
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4C16E58059;
+	Tue, 18 Aug 2026 20:00:30 +0000 (GMT)
+Received: from [9.61.242.213] (unknown [9.61.242.213])
+	by smtpav02.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 18 Aug 2026 20:00:30 +0000 (GMT)
+Message-ID: <1649e578-1395-4986-a82a-10231c820d8a@linux.ibm.com>
+Date: Tue, 18 Aug 2026 13:00:29 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,108 +62,78 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/15] MAINTAINERS: Add entry for Qualcomm DSP
- Accelerator (QDA) driver
-To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
- Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling
- <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
- Chenna Kesava Raju <quic_chennak@quicinc.com>,
- srinivas.kandagatla@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- llvm@lists.linux.dev, iommu@lists.linux.dev, linux-media@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org
-References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <20260817-qda-v2-v2-1-69a02e9090d4@oss.qualcomm.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH] iommu/s390: Fix NULL dereference in iova_to_phys() with
+ ZPCI_TABLE_TYPE_RFX
+To: Niklas Schnelle <schnelle@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Omar Elghoul <oelghoul@linux.ibm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>
+Cc: Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Ramesh Errabolu <ramesh@linux.ibm.com>,
+        Tobias Schumacher <ts@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20260817-qda-v2-v2-1-69a02e9090d4@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
+From: Farhan Ali <alifm@linux.ibm.com>
+In-Reply-To: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nzIkLRkuKYur7Rjj-RhHB90f5GEhlsUx
+X-Proofpoint-ORIG-GUID: nzIkLRkuKYur7Rjj-RhHB90f5GEhlsUx
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE4MDE0MyBTYWx0ZWRfX7C/MJOAHQxc6
+ c5j0GQBJ59FJslLs2uAlOtbj+ZbeQoyJSUVhrtq0kb45mMfTsuHRlea+Mhm+ag77Q7XSLpZm2sf
+ WYmDf5ph9qVsgGXGL7Q1rToezmMQwVA=
+X-Authority-Analysis: v=2.4 cv=WtQb99fv c=1 sm=1 tr=0 ts=6a84b9e2 cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=iQ6ETzBq9ecOQQE5vZCe:22 a=VwQbUJbxAAAA:8
+ a=VnNF1IyMAAAA:8 a=jGXHogcpe6aWH39FzsgA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE4MDE0MyBTYWx0ZWRfX6D6kHqm45UEK
+ z8Dl7zX1Nh+ByjFj9SOEF+nwVwyeHLGhM+b9bau3CE3bFjU35bzON1uByhdca6GfxolRSTB7nWg
+ ARnkpZsvVPsjWjpYJF4jdS5b62ws5O4gQ1Up/8zcEhNHlYtoMFC1TkzvJD1M+uiy9OOjHQHCAPW
+ qVZQ8g0qfWsi6uU7kNENWjwbxZU97KQWasy0Ms+cEExiNwxoBiuxjwG+zm3PT6S3UXBeD36B5a+
+ lpURqu/TSxDHLSUnzUQniPPJxNi3mpB84VAJONKOCCQxFKARZpCwAlzVnoSFHLvHS7Ui80SjQPM
+ TG5RdXa5K3mqeVSyuJYjO7dd58sp6pbjcBHs8po8u2/sONvfIYfc9GD6Rabp9T33JNQXYSy4HZ9
+ k3fnvU1+el9JY/l5JBfdM8NdUB1mlsU1P5a3Cix54FerEWWyLOx8Me4ZNgQ4EVpqo2UpKR+bNlV
+ 5o5n3GvMUGW4o8/n+eg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-18_04,2026-08-18_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 spamscore=0 malwarescore=0 suspectscore=0 phishscore=0
+ lowpriorityscore=0 clxscore=1011 adultscore=0 priorityscore=1501
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608180143
 
-On 17/08/2026 06:47, Ekansh Gupta wrote:
-> Add a MAINTAINERS entry for the Qualcomm DSP Accelerator (QDA) driver,
-> covering the driver source under drivers/accel/qda, documentation under
-> Documentation/accel/qda, and the UAPI header
-> include/uapi/drm/qda_accel.h. The linux-arm-msm and dri-devel mailing
-> lists are listed as the relevant review lists.
-> 
-> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+
+On 8/18/2026 12:13 PM, Niklas Schnelle wrote:
+> When using a 5-level translation table via ZPCI_TABLE_TYPE_RFX
+> get_rso_from_iova() returns NULL when the region-first entry is invalid.
+> Yet in get_rto_from_iova() the region-second origin rso is not checked
+> to be non-NULL before accessing rso[rsx] leading to a NULL pointer
+> dereference instead of a NULL return when iova_to_phys() is called on
+> a unmapped IOVA. Fix this by adding the missing NULL check.
+>
+> Cc:stable@vger.kernel.org
+> Fixes: 81244074b518 ("iommu/s390: allow larger region tables")
+> Signed-off-by: Niklas Schnelle<schnelle@linux.ibm.com>
 > ---
->  MAINTAINERS | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 912837dd4640..75fa90c137c7 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -22388,6 +22388,17 @@ S:	Supported
->  F:	Documentation/devicetree/bindings/crypto/qcom-qce.yaml
->  F:	drivers/crypto/qce/
->  
-> +QUALCOMM DSP ACCELERATOR (QDA) DRIVER
-> +M:	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-> +L:	linux-arm-msm@vger.kernel.org
-> +L:	dri-devel@lists.freedesktop.org
-> +S:	Supported
-> +T:	git https://gitlab.freedesktop.org/drm/misc/kernel.git
-> +F:	Documentation/accel/qda/
+>   drivers/iommu/s390-iommu.c | 2 ++
+>   1 file changed, 2 insertions(+)
 
-There is no such directory.
+Reviewed-by: Farhan Ali<alifm@linux.ibm.com>
 
-Best regards,
-Krzysztof
+
