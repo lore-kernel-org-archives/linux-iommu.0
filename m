@@ -1,198 +1,197 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19010016.outbound.protection.outlook.com [52.103.7.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 273993093C1
-	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 04:45:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787028331; cv=none; b=inEEQ+uyzBD4wgwzdSaV2d+OoKbrXcd3SvP91kWTdHYyeGTZueFcbwG1E1zDUHp3BZImOLLyyuobdU/DOdCXxA/WZAfDGAkYahQCJJzeavv2ba2ZYdIbFM7QRACjE/equvFR8wD5yvQla4U2wj5AA+fyUGv6Eq+xxvmFDUXMwME=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787028331; c=relaxed/simple;
-	bh=4aUJK7VUOQ/uCRWZ29j9yj0ZivF1P99o5NOl3kBlKyA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HHqfgrZz9KMmZtnNS4munvo5NTKGZGuXZ9sCmoTZijCfoTvv+RgBQWPtBDlORtb2Qexq4Xc2bz/8cJymSVwfk9WRLmmIHBEUN+dHPuAHrQ5+E+JbTD/JmgCPa1uomtLA9wLyuy7FebpqBn703Bn/Ou2Po1VDyNLVJEfIB0/gpmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=AZLXrhLK; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=heCDIcaX; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA89D36A03A
+	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 05:10:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.7.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787029824; cv=fail; b=JhtXfiL+JskV/2DdBE5LBeCwTZHw44r3Qph2/cUbEzo4DwKeavFSVEkTsinruHzSTpWfbSRGwyMHC5A1978UhTE6wGINOIwEx2omCkv2601v/YybxLlswNEQp1WgVh5D5R12UQiQiFH2/6s2sAYx59bfQLlYRIjm/9/zLvQ0+KU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787029824; c=relaxed/simple;
+	bh=pyCRCM9ZHYE3aDQIvXpKpMt+ZoGUF6fyMRroG8rs5Cw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=qQdkKg1mpKtUM1EiXUPJy25S28vz5p5aINeuv/bgVRNepYnLJzZYoKXxvofrznedqF0oQBOlp3cDA+/AmzmLn2HNJe2yIVqyT8k+/W+2KhAqB3B7jpnH/KykkzMtfE08hDnRc3mEF/LjtPmCItVZ8j2jR/WBGIbgOR5u7m+n3t4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=TOQhxveT; arc=fail smtp.client-ip=52.103.7.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="AZLXrhLK";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="heCDIcaX"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67I45m0C4187023
-	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 04:45:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=+GMonc/RpYRTRb39qbdjpzhy
-	wf/yWb6wWhYjSvEgMFI=; b=AZLXrhLKeOIaJbOQhN1f/mV6AmzKXDGGHr8sd/FP
-	7A+yZhwyDyc8rsYV7paaj8MfyyGlu2+8FEHFBxB3FDNNe575kDViwsLOaRFA/Hkn
-	aTx+Dd/oz1uZtz9s7Bs0vPRDMM0ykNJ8OrjZnOB7SVbgL8vi67NCBkpxcrXdsMCw
-	lI6kJW9ReRAeujuzScXbbRs6M7hMEhzHGVpVVHLiqIjLfQ1dJAW3Dt0v7ZRziutA
-	AP3P4MxLAFodKbVBWk+25KmxZ62v9kYY+6gFRk5Y8nZAtNJZCVALufyWOBMsKMY4
-	vafCsyO1RxVJJrxpQ/VrLht+HPB9lc+PSnApQn6WOBAMAw==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4g2p0584-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 04:45:29 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-936d067836eso439864085a.0
-        for <iommu@lists.linux.dev>; Mon, 17 Aug 2026 21:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787028328; x=1787633128; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+GMonc/RpYRTRb39qbdjpzhywf/yWb6wWhYjSvEgMFI=;
-        b=heCDIcaXyYrm48Bqs73oI5iMK6DG2Y3+XZxUiIqPg9gO2IreBTOKgWR1/MLFiJ0Dxc
-         sX8MwwGroF9iaWsMh6OkyhGZ1WZVm1v+Z3Hd6zYuLlu7htjnM/L15vyXavctkai5wNFL
-         UqyvVnTKb40BpE6I2tXn+erbshGDpI/4JBF3SrMQHotv6tGDeuH5j0lcR5zp0z8eDXjy
-         SbZBKQu2NgG2xlsB5AKZNFL51Zjkdxvnvwh23a8yqBC/5TQWWyKsk7UgGDNFXotVIOVh
-         82e/I9f7UooG3C+or3U1B1cjZ8Q571/2gzGdkUC+9XBVV2x58ABvVpf66rrXf4SkBlfc
-         q+VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787028328; x=1787633128;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+GMonc/RpYRTRb39qbdjpzhywf/yWb6wWhYjSvEgMFI=;
-        b=h+rYxs5NfnKQ616y3AS3ujDh13sU3dUk5OJCe1aQonjfr54scRKc2SwnCHJq/waNkD
-         0vD9LC/xzV1j3s1XrOSf2bJRVQCJfQccBr/tmTP6UCfXek0IsdVz1FElWpo/Eqx8lapk
-         PTugW8J5ppjS+YvmsGU1Z9VVEjCHXU6/54wJv8/m+vs8h3WmS4aGUj4rHHjiD/WC9eLh
-         1ddzl3Z7eXIleB3Chjj6nWBeAjBTACutZc1fnwud2S3z6ZdRYGxSFsJiq/Fk8FkovCcm
-         qnbCqMdMijdoDkrg/22wzn2RZUFxXBNycSrKzlLVUl8t7YuGH9onVZ2xOL/y3idA5q03
-         1ktA==
-X-Forwarded-Encrypted: i=1; AHgh+Ro9ED8z9fNJkjz6lfCH/1rKpo69YU0uPp8M8Jn1aZ49hjCxbt3rCap7wneKxWLrgGLgEh+sZQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxYAdBiDH/wVYfE1XGc+X+9VWoZ9B32Wwllg6gOA2cdOprAfWrs
-	BnroVlc+ELehojZFRKS+6XUKSq1i0SOwLdMilFAsE45At71CxduIQSY23wk7HNVoNR7Jgp3RvJN
-	knuAoO/8VszdZijyLV3lnQcD4h7y3qMQlx7Q3zcy4Ac+jmC76uF1RUrAf9w==
-X-Gm-Gg: AR+sD13CGiSFC+jlUw1obNnmq3bTJ7sJSLtGX40361yLLEjgr6Gs5DMPebGiOTV2i7r
-	vqLeR2Dfn3mkSWL9axhLcZbPDYyCQF90VhgX2KqB8nfyZUHpygqBXGeE9OHnYZCeI5FeXD5o8FN
-	LOuI8Iz4p3HERrqrimmqKWl2a+dvQGI95HkDO9FjgQ1yCwMXbv8FXqpq0TYZ+x+k+q1H4p11a+4
-	TPXcYUeWvdiktn0RTjDYeGVUsRDYZ5PMXpUdsD3GOccV9SE4wa/NSIpKqMFXxmIVGWvKojYjkNg
-	HZm3eWzKPFrK+Cr+GBGl1kbA7mwU+f9sQtqp0oQpWbPBQpaH1SE0xp9u+DGOMSsjbPLvuMTp4Hr
-	66uapBcL5qylCvVSmyS3vIJZJ6s4LOsZZRuqTwL/RF62KTPHfanK6uvYo7O6LBA7lZwiCeu/G16
-	8OaLiDn5PScaZO
-X-Received: by 2002:a05:620a:a217:b0:936:cf64:97cf with SMTP id af79cd13be357-936d239212dmr3033325085a.41.1787028328461;
-        Mon, 17 Aug 2026 21:45:28 -0700 (PDT)
-X-Received: by 2002:a05:620a:a217:b0:936:cf64:97cf with SMTP id af79cd13be357-936d239212dmr3033322485a.41.1787028328017;
-        Mon, 17 Aug 2026 21:45:28 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b46cf960b6sm911796e87.13.2026.08.17.21.45.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 21:45:26 -0700 (PDT)
-Date: Tue, 18 Aug 2026 07:45:24 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Justin Stitt <justinstitt@google.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>,
-        srinivas.kandagatla@oss.qualcomm.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH v2 08/15] accel/qda: Add QUERY IOCTL and QDA UAPI header
-Message-ID: <bi3zx3rvebd4ywnyzhsu2ft2sqz3rnoblcgt3jpmyik3n4dxar@nnddlv2susx4>
-References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <20260817-qda-v2-v2-8-69a02e9090d4@oss.qualcomm.com>
- <r7bx25akbxomzhxxyqd644efy2vc65etwcnhlyha7wm7xrt7ea@p4v5sesn5rzw>
- <c54f5212-809e-4517-beda-f86b375c086f@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="TOQhxveT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=mmsbwepCNdLchWpnHsiLkHtRsaSmkxBcsgwZfQEWlzQMJyLpcSXtx100OSb9REGdxFwM6kabu+IAaKKxzugR5Au94bg9ChfH9Q9YmHHh2CWyCkvNv1K2yA7r7GhURprdUXdgBB4Q4Vt1mGHaQCihX4M6KbKbX+Yb8gYScdSQWUiJkuyA6oyNeJ6uBB/tG+Ie22A0NU/0BzM3CSsOge8zaBVcJ7h6Ix25ggn9wu8wKTRgFtXQw3e8H+ys/HQstKMWdM1FYTqtwGHSPjzLZCzlVHxZepDKbzc1bL6XnHScWQ7dxOSJiCqy4uvyNMnnHpLxBzxk5SoE5yZygQ+0QxRpwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pyCRCM9ZHYE3aDQIvXpKpMt+ZoGUF6fyMRroG8rs5Cw=;
+ b=V3g3tiC25q/YQ0POP0NgtcPFj6RLQmVREvKpVChyhpgUu05MEZ3c3BmVej3Vj0cikFbpV19d94MKOHo61D1UbYrJAYy0xc9IeEQumFKCL+OnVVLo/txoxxF+hp7WiQ8tRUtxQY6pWVa1+B39QiTp19zilCf/g9LFIa4Bgm2lXqNXq7V0wICwTgP0VC0PSaxsTx26ldXy7jks3UnX1Vz5fJWyZjUw29JTaLvYUp3JbVJCIy0lxS2N+5KqdSFWbqaRy6aeHg6NLFiwmyAORq56XYbOOOb/JR/+JLPtLsSNDHh+QLHijxQ8Qd5hHr46F8tArhVtNYKJ2WuHGTlOwSrwhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pyCRCM9ZHYE3aDQIvXpKpMt+ZoGUF6fyMRroG8rs5Cw=;
+ b=TOQhxveTdep2Dv9qb5hKQwrQOj17D3+xJ79dxtK2XMIvwI0Nvq15peG3r3RK5LQhLtBS/RvPjGJ16Q5qkBx+o+A/3lJygCL/5nKMKch9sIBy1uNFErS5KUJAYYYXy7YmSAFc+jthW3wuz11U6i5z9t4adShrDRKc/xHxQ45nkOFGW5+YqrMcO598FNR20/xvaKhsUOfzydJAPbGCdwAwXuZS05/NDSpqQps0LZDC3IRHO9NHZZWTD0g08IJLdz5F4fTemLOlt4YdcCd2wYysAFS3htyjeDx/WNd8OWk+njsIEDNGTdZv+URqMQmSXhiMxSsA1rKn78U5+XRFva6zLQ==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by DS2PR02MB11185.namprd02.prod.outlook.com (2603:10b6:8:333::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.8; Tue, 18 Aug
+ 2026 05:10:20 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0315.016; Tue, 18 Aug 2026
+ 05:10:20 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Naman Jain <namjain@linux.microsoft.com>, Thomas Gleixner
+	<tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+	<bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, "K. Y. Srinivasan" <kys@microsoft.com>, Haiyang Zhang
+	<haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Dexuan Cui
+	<decui@microsoft.com>, Long Li <longli@microsoft.com>, Lorenzo Pieralisi
+	<lpieralisi@kernel.org>, =?utf-8?B?S3J6eXN6dG9mIFdpbGN6ecWEc2tp?=
+	<kwilczynski@kernel.org>, Manivannan Sadhasivam <mani@kernel.org>, Bjorn
+ Helgaas <bhelgaas@google.com>
+CC: "H. Peter Anvin" <hpa@zytor.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Robin
+ Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, Shradha Gupta
+	<shradhagupta@linux.microsoft.com>, Aditya Garg
+	<gargaditya@linux.microsoft.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 1/3] PCI: hv: Set irq_retrigger callback for the
+ Hyper-V PCI MSI irqchip
+Thread-Topic: [PATCH v2 1/3] PCI: hv: Set irq_retrigger callback for the
+ Hyper-V PCI MSI irqchip
+Thread-Index: AQG4lIWg1CA0E9n3RBnld28Zsf/qhgLIUKZLttYakVA=
+Date: Tue, 18 Aug 2026 05:10:19 +0000
+Message-ID:
+ <SN6PR02MB4157A559BFB69BAC5D97B858D4A62@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260810090716.2325295-1-namjain@linux.microsoft.com>
+ <20260810090716.2325295-2-namjain@linux.microsoft.com>
+In-Reply-To: <20260810090716.2325295-2-namjain@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|DS2PR02MB11185:EE_
+x-ms-office365-filtering-correlation-id: 9eb15bcc-b2f2-4a4b-3f47-08defce7000a
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|24021099003|55001999006|37011999003|51005399006|13091999003|31061999003|19110799012|8060799015|8062599012|15080799012|25010399006|40105399003|2607281247196008|18061999006|102099032|3412199025|440099028;
+x-microsoft-antispam-message-info:
+ =?utf-8?B?NnpIbjBLVEpYTzU2ZG5hdVlCMG9tYlFYM0Uzb2dIVFNoVWFLOGphanBURndZ?=
+ =?utf-8?B?NnJVTCtGZnBVSnBmRjEyV0diT0dLYXlHYVlhbFp1cjJWdDkvOGY2WUFNdG9l?=
+ =?utf-8?B?UTcrOWRnV0pCbGd0UGdGaFhHNEFleWJUY1dROGN1Y3ZXb3o4TUpReDdqVVdr?=
+ =?utf-8?B?NXR0L2RRaURaTk5wTjl4dUViRUliZ2Q5TGd3bmZYeWRpSFBYdEpWWkFWeUNx?=
+ =?utf-8?B?a1lNRkl0VktYY1M0Q0VEVWMwUjFpUkJ3VGVrVDh5WkduK1NwaVlQNmtrVjNn?=
+ =?utf-8?B?VnpUNFprcjQ0VmRkZWtveXZ5QkxhallubXlyNVBudjVEQmhiQW5OcjBYY2FV?=
+ =?utf-8?B?c01raTJhc2dTOGZ1YkZBcFVvUTMyTTZOcUlWLzh3c0QzbGVNdDFDSElJbkEy?=
+ =?utf-8?B?OVVJYXV2aFgxVHhRVlVMcE05aVpDNm95L2I4VDc0aHo4Z2ZnbzZ5UEJZMmlQ?=
+ =?utf-8?B?azZjK1F4VkNuMGJNSUh5VzJrUlV5VzRadDBSTy94azhkcUIzN0hoMkpGR29X?=
+ =?utf-8?B?Y2puTTRSR1BDTlBHd2hBL29EWHVLTzI3UnJpR2hpSzNUMVMzckxlN0JrWW1X?=
+ =?utf-8?B?Y0hpOUMwMWhaNlJIT1YvdFJ5K0UyanBBSThieXU5OHBTUHZwZHliZGZ4bUdH?=
+ =?utf-8?B?cmQ3blVsR3UwMW1BTFRKN2o1MUNoUDFYcHQyVjlsOXBwYmVOUFY4dDZqeUdM?=
+ =?utf-8?B?U0dpcDZ6MmtwbGhHRDA0Y3g3Nk5qVUdOVkdZZDl1bzlBdkFraU04dkJqWHVl?=
+ =?utf-8?B?Mi9ZVkRnMC8zWmZ2REpRSVJNUVU3QjRvTWJud2d0cDJOQWVYRUZ5WTNQRGJJ?=
+ =?utf-8?B?YkxudFdyZ3A1ZURDSFl6KzY2NXUwMEp0RWppbVIweWU0SzlYbGJYSFEzWm9J?=
+ =?utf-8?B?aGQ5ajZ0QVo0OTUzZ1dSOG1JbisxeklqQ1FzZi9LZ3R0dzlONFl4OWFmSis1?=
+ =?utf-8?B?a01aNDhMdm1hUWdQNDl1MkE4L3k3TzR6MVRGY2F0bnpESkdkQ2s2eHRibVQx?=
+ =?utf-8?B?MmhRb3piTHVwb0Z0R1l4SlNRTnM0dDhGbktaRXkrQkUvSkl0VUtmZVRGUzNs?=
+ =?utf-8?B?N0ZnaVQ0ajBHc3NCeEtxdGxsWEVOMlFNYzJNUmFzSHhkQlZ5bTkvVU5LYjdU?=
+ =?utf-8?B?VjAzTUpzaHBCM1R1UzViY1Ntb1VyaDRQZ1V1OTJIWitxeEQvRDZ3TEJSTzdO?=
+ =?utf-8?B?RVJoRFNvSHRVMDBkSndEdXNJYTR4MCtsSkRpUldrU28wVFJJdkt2SjR3QTBQ?=
+ =?utf-8?B?Zk9yZG1sSTA2OXY4NExJa0pjVkRyN3VUcGY2c1luL1hoQklqZnh0SmJtY2pY?=
+ =?utf-8?B?THRPaENGV3BSM0RFZW1VM045aUdpWUdiVW5Gd0ZGWEsrdVE4R3pxbWlLOUV2?=
+ =?utf-8?B?eDJWOCtoeVd3RGtHczdwRXJ6Y3Y1bDNqTkN3bzBQQ1EyQzllSHgxeWRNV3Rz?=
+ =?utf-8?Q?AX0yvWae?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?SWxDRCs5a3J0RFVTQU95R3J6aGxCZ1EvUG40dzNhZFIzQTBTRGlGZUlLOXZ3?=
+ =?utf-8?B?bnhsZU8wZUNvVTV1REszenZhSjhKUHNuUkRqbGdsakdMMTFwK2RsSGhhWENM?=
+ =?utf-8?B?T1ZydWVNQ3lWV2dwNnNFSWpDMUY2VDBUWm1jdEZKdEYvb1hLTmpLMVdPU0pm?=
+ =?utf-8?B?YTZ3amFWQnBRNVI0eFRqUVowenovckhmeEdQZDAxUEx6dktPLzVBcWNmUXox?=
+ =?utf-8?B?WXp6OCtXOHVWbDVoSSs4UFV5VEF3QWlzVXMvSzJIZUQ1TW9pM0hFZzdNK0tO?=
+ =?utf-8?B?ZWRzNUVMWWU4U25QT1NNNWw2QTR3aTVEczkzcEcwM2ZheTJDdGpDRWZ6UlAw?=
+ =?utf-8?B?M25TWEtUMDMvZGp4K3ZpdkM2aTVhSlZmQk5yRlBGMlUzcEpqUjdUMnhCNUhT?=
+ =?utf-8?B?ai9ZbHJiNTVHcm55Tjl4eEZ1VUZqdVBnaTdYQUc4NkRHZGlUd0J3SUFJUWhP?=
+ =?utf-8?B?NXNsNVdib0RnbXppaVl0aXdxajdrQVFWMjBYRTR4eHZtTW1zbzE3RFM2UG9T?=
+ =?utf-8?B?RlgyRHNNdHVBakNPT0RROGNOaHR6Y04wN2t5L2hmd2xROEt3ZVUrTmZBcXJV?=
+ =?utf-8?B?QnUyRjhNbGcySTN2Rm1Gd29uM1drcnBibG5jbzNFVXZJK29XZTA0RFlnTDRi?=
+ =?utf-8?B?QWlIWmQyOXFaUmVQNzZyeDNYdnJ2cVJPUGNpV2oyZkNYYmQvZVBoRjlEZ2cy?=
+ =?utf-8?B?c2tPdkU0YjRHQldGN3hYT0VPT21KNXpUUFZyU2x2bkVLWnVrUGZEVHdCYUFr?=
+ =?utf-8?B?SE8wMkorUTlteGtlNGEwYkVrUnEzUHBIOWl0aUpENXFvK2xLQ3J3QXdKUVRy?=
+ =?utf-8?B?bG40OGNvQ1gyaXEwNkdyc3oxTGVZd2Z3d292ckVvMGRkdXhSM2VRdW1kOFdt?=
+ =?utf-8?B?c0FTa0hGeDJlMjcvTWhuKysvby9ncE9vSnlNRmcwZVFVVkl3S0dDRVY5OElW?=
+ =?utf-8?B?T21UNWI0YjlQdUp4SWpYMFJwQ1NEbitiZ29ueUYzWEphTi9YWUZOVUR2Q3FP?=
+ =?utf-8?B?ZE5VTyt1TXVsc3ZzSU9WdWpCSGVTOHdtME1zRTJuUzVXWFluMExuam9YSHhP?=
+ =?utf-8?B?YU1vUGVGUWo3bnF5UzhaVEFuc2lib0V4QzhFdDZWM3FiZi96WWlmR0hvOUNo?=
+ =?utf-8?B?TllyK0dKekE4ZUswTjZRdmJwR2d3TW1WOHNGamVPQW5ZY20vaC9XTGcyZWVQ?=
+ =?utf-8?B?aTVjdS8xUlg0WFBDbHJXWkVPWE9OTzhnWXBsYzNqYmZEZUw2UzkyWS8yOFhT?=
+ =?utf-8?B?R2N6dXJiWURaZ0tCd3Nsc0wxRlhPZ1IrbE5nRWVudlVZOCswQmk4YVptR0Ew?=
+ =?utf-8?B?M3BmUHB1NU03bGdsMWtXSDkzSFk0TW9qLzBsSlJGRHhFYkV3VmE4VGMvRklT?=
+ =?utf-8?B?d2hOcFZRN01OdmhTSEliTHUvREx3VlI3RWUwQ2djZUkrWFUycnA3SkNkZTFw?=
+ =?utf-8?B?dGNoR0I0Nmx0Mk91R3F5OWtrbXB2ODdGWUtEaWtQa0RtU29vajhRbTQrazlO?=
+ =?utf-8?B?RWl4RUFKelJQSklsNWJkb3BoOVV2M2lVOVJlUXZncFJSZUtxakQyV2k2QnNE?=
+ =?utf-8?B?bEhrUEIwYktidzRxeXpwQkRSeFJQRTZhTEg3RlZ0SHExc0ZuY2lseXg3NVh3?=
+ =?utf-8?B?VktQL3ZxaW00R3Z0SFB0emF5THZ5cVp3SFk5bS9QbHhmUUMyZEhEeE4zZ1o2?=
+ =?utf-8?B?Q2tvV1dkSGZwQ0pGZnZrMVA3SFNNUDFnMEN4TTNHTTBXTzRoVmpCVDJqWXpi?=
+ =?utf-8?B?UndFeWNDRTZmOXA4TUhWQjQ4T29yMGxXN21mT0RhYmtDbUdMcUlKR1JmSGtl?=
+ =?utf-8?Q?ceeitLjjF+Fw9lQ4LQuhW3Ltph1YVfXSzjRag=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c54f5212-809e-4517-beda-f86b375c086f@oss.qualcomm.com>
-X-Proofpoint-GUID: GieXnw5JtizoOLrxPsiqnPK_xgBH0mfj
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE4MDAzMiBTYWx0ZWRfX5kjQlL2sVxVT
- iol9S/Lgod0PYGobdh8aPGaIpgF7nq8bsCEYq2pDP4LoLRbV1Jp7Z3/3iXiWuF1he6s01uYtcOs
- 34tuStCIg1Dujxqw7Z0nSN2YRPF/TD4=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE4MDAzMiBTYWx0ZWRfX8PNNZVWnrLCf
- n8TMkI4UZpQEkZ/WSKvOD0w2kcxS1W7CdjSDzoStA23QrWFPlxakqVf05te9eXh3lcPerjgVDaP
- j6JjcmhIAM2Jw/KGvQCNRLoWfxH8FYe3dCYed6xmubxCilckIY0RnP0pkbPqUIKYk8FvXiRbTrP
- Im+TgdCDA9WDcTIEx7fkawcQHeT931gt5Wp1tV5PEJrpv9C8ROr9ZFp+2Mc1bScOT9fCF0cEWij
- OWEexcLojR/gdxhhjndjhp3JO2KEt05fz1uteZc2IqwRellHPsFO/G0xMTeoO534yBi8nYt4BW0
- Yo8BqTEnEikZQ+lxBPbjo6ASoIC7inVjZZSXLYYOjcyTmmcOTwsMNRCfyWgsjyALoqa1LEuDbq0
- 9opwmea6k1MCxkBcUXACooJEiMEHWGBCnpnWFnVeod+KLtPsNFBOPSTU7MAw0YrzQcTD+mUpuVR
- fpDbH2cXiQO55ibwT4w==
-X-Proofpoint-ORIG-GUID: GieXnw5JtizoOLrxPsiqnPK_xgBH0mfj
-X-Authority-Analysis: v=2.4 cv=bfRbluPB c=1 sm=1 tr=0 ts=6a83e369 cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=SJmWK-JnP90tPv7FAzsA:9
- a=CjuIK1q_8ugA:10 a=bTQJ7kPSJx9SKPbeHEYW:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-17_04,2026-08-12_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 priorityscore=1501 malwarescore=0 lowpriorityscore=0
- phishscore=0 impostorscore=0 bulkscore=0 spamscore=0 adultscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2608180032
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9eb15bcc-b2f2-4a4b-3f47-08defce7000a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Aug 2026 05:10:20.1283
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS2PR02MB11185
 
-On Tue, Aug 18, 2026 at 10:10:16AM +0530, Ekansh Gupta wrote:
-> On 17-08-2026 12:28, Dmitry Baryshkov wrote:
-> > On Mon, Aug 17, 2026 at 10:17:43AM +0530, Ekansh Gupta wrote:
-> >> Introduce DRM_IOCTL_QDA_QUERY, a query IOCTL that lets user-space
-> >> retrieve information about the DSP a given /dev/accel/accel* node
-> >> represents.
-> >>
-> >> The IOCTL takes a query_type selector as input, so it can be extended
-> >> to return additional parameters (capabilities, attributes) in the
-> >> future without adding new IOCTLs: drm_ioctl() zero-extends the argument
-> >> structure, so new fields can be appended to struct drm_qda_query as
-> >> long as they go at the end. The first supported query,
-> >> QDA_QUERY_DSP_NAME, returns the DSP domain name (e.g. "cdsp", "adsp").
-> >>
-> >> The UAPI header include/uapi/drm/qda_accel.h defines the command number,
-> >> the DRM_IOWR IOCTL definition, the query_type values, and struct
-> >> drm_qda_query. It follows the standard DRM UAPI conventions: fixed-width
-> >> types, a C++ extern "C" guard, and GPL-2.0-only WITH Linux-syscall-note
-> >> licensing.
-> >>
-> >> qda_ioctl_query() validates the reserved pad field, dispatches on
-> >> query_type, and copies the DSP name from qda_dev.dsp_name into the
-> >> user-supplied buffer with strscpy(). Unknown query types are rejected
-> >> with -EINVAL.
-> >>
-> >> qda_drv.c registers the qda_ioctls[] table with the drm_driver so the
-> >> DRM core dispatches DRM_IOCTL_QDA_QUERY to qda_ioctl_query().
-> > 
-
-
-> >> + */
-> >> +#define DRM_IOCTL_QDA_QUERY		DRM_IOWR(DRM_COMMAND_BASE + DRM_QDA_QUERY, \
-> >> +					 struct drm_qda_query)
-> >> +
-> >> +/* Query type definitions for drm_qda_query */
-> >> +#define QDA_QUERY_DSP_NAME	1
-> > 
-> > Why is it necessary for the userspace?
-> Currently the requirement is that on systems with multiple DSP domains,
-> each is exposed as a separate /dev/accel/accelN node, the library must
-> query the domain name to select the correct DSP to offload to and use
-> other dependencies like shell etc.
-
-Commit message.
-
-
--- 
-With best wishes
-Dmitry
+RnJvbTogTmFtYW4gSmFpbiA8bmFtamFpbkBsaW51eC5taWNyb3NvZnQuY29tPiBTZW50OiBNb25k
+YXksIEF1Z3VzdCAxMCwgMjAyNiAyOjA3IEFNDQo+IA0KPiBUaGUgSHlwZXItViB2UENJIE1TSSBp
+cnFjaGlwIG5ldmVyIGluc3RhbGxzIGFuIGlycV9yZXRyaWdnZXIoKSBjYWxsYmFjay4NCj4gDQo+
+IE9uIENQVSBob3QtdW5wbHVnIGZpeHVwX2lycXMoKSBtaWdyYXRlcyB0aGUgaW50ZXJydXB0cyB3
+aGljaCBhcmUgYWZmaW5lIHRvDQo+IHRoZSBvdXRnb2luZyBDUFUgdG8gYSBuZXcgdGFyZ2V0LiBJ
+ZiBhbiBpbnRlcnJ1cHQgc3RpbGwgaGFzIGl0cyBwZW5kaW5nIGJpdA0KPiBzZXQgaW4gdGhlIG91
+dGdvaW5nIENQVSdzIElSUiBhdCB0aGF0IHBvaW50LCBmaXh1cF9pcnFzKCkgcmVzZW5kcyBpdCBv
+biB0aGUNCj4gbmV3IHRhcmdldCB0aHJvdWdoIHRoZSBpcnFjaGlwJ3MgaXJxX3JldHJpZ2dlcigp
+IGNhbGxiYWNrLiBBcyB0aGUgSHlwZXItVg0KPiBQQ0kvTVNJIGNoaXAgZG9lcyBub3QgcHJvdmlk
+ZSB0aGF0IGNhbGxiYWNrLCB0aGUgcGVuZGluZyBpbnRlcnJ1cHQgaXMNCj4gc2lsZW50bHkgZHJv
+cHBlZCwgd2hpY2ggY2FuIHJlc3VsdCBpbiBsb3N0IGludGVycnVwdHMsIHN0YWxscyBhbmQgIk5v
+IGlycQ0KPiBoYW5kbGVyIGZvciB2ZWN0b3IiIG1lc3NhZ2VzIGR1cmluZyBDUFUgaG90cGx1Zy4N
+Cj4gDQo+IEluc3RhbGwgaXJxX2NoaXBfcmV0cmlnZ2VyX2hpZXJhcmNoeSgpIGFzIHRoZSBpcnFf
+cmV0cmlnZ2VyKCkgY2FsbGJhY2sgZm9yDQo+IHRoZSBIeXBlci1WIFBDSS9NU0kgaXJxY2hpcCwg
+c28gdGhhdCBhIHBlbmRpbmcgaW50ZXJydXB0IGlzIHJlc2VudCBvbiBpdHMNCj4gbmV3IHRhcmdl
+dCBDUFUgdmlhIHRoZSBwYXJlbnQgeDg2IHZlY3RvciBkb21haW4uDQo+IA0KPiBGaXhlczogNGRh
+YWNlMGQ4Y2U4NSAoIlBDSTogaHY6IEFkZCBwYXJhdmlydHVhbCBQQ0kgZnJvbnQtZW5kIGZvciBN
+aWNyb3NvZnQgSHlwZXItViBWTXMiKQ0KPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KPiBT
+dWdnZXN0ZWQtYnk6IExvbmcgTGkgPGxvbmdsaUBtaWNyb3NvZnQuY29tPg0KPiBTdWdnZXN0ZWQt
+Ynk6IFRob21hcyBHbGVpeG5lciA8dGdseEBrZXJuZWwub3JnPg0KPiBSZXZpZXdlZC1ieTogQWRp
+dHlhIEdhcmcgPGdhcmdhZGl0eWFAbGludXgubWljcm9zb2Z0LmNvbT4NCj4gUmV2aWV3ZWQtYnk6
+IFNocmFkaGEgR3VwdGEgPHNocmFkaGFndXB0YUBsaW51eC5taWNyb3NvZnQuY29tPg0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBOYW1hbiBKYWluIDxuYW1qYWluQGxpbnV4Lm1pY3Jvc29mdC5jb20+DQo+IC0t
+LQ0KPiAgZHJpdmVycy9wY2kvY29udHJvbGxlci9wY2ktaHlwZXJ2LmMgfCAxICsNCj4gIDEgZmls
+ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGNp
+L2NvbnRyb2xsZXIvcGNpLWh5cGVydi5jIGIvZHJpdmVycy9wY2kvY29udHJvbGxlci9wY2ktaHlw
+ZXJ2LmMNCj4gaW5kZXggY2ZjOGZhNDAzZGFkNi4uODk4MTZhMmJkN2NkMyAxMDA2NDQNCj4gLS0t
+IGEvZHJpdmVycy9wY2kvY29udHJvbGxlci9wY2ktaHlwZXJ2LmMNCj4gKysrIGIvZHJpdmVycy9w
+Y2kvY29udHJvbGxlci9wY2ktaHlwZXJ2LmMNCj4gQEAgLTIxMTksNiArMjExOSw3IEBAIHN0YXRp
+YyBib29sIGh2X3BjaWVfaW5pdF9kZXZfbXNpX2luZm8oc3RydWN0IGRldmljZSAqZGV2LA0KPiBz
+dHJ1Y3QgaXJxX2RvbWFpbiAqZG9tDQo+ICAJaW5mby0+b3BzLT5tc2lfcHJlcGFyZSA9IGh2X21z
+aV9wcmVwYXJlOw0KPiANCj4gIAljaGlwLT5pcnFfc2V0X2FmZmluaXR5ID0gaXJxX2NoaXBfc2V0
+X2FmZmluaXR5X3BhcmVudDsNCj4gKwljaGlwLT5pcnFfcmV0cmlnZ2VyID0gaXJxX2NoaXBfcmV0
+cmlnZ2VyX2hpZXJhcmNoeTsNCj4gDQo+ICAJaWYgKElTX0VOQUJMRUQoQ09ORklHX1g4NikpDQo+
+ICAJCWNoaXAtPmZsYWdzIHw9IElSUUNISVBfTU9WRV9ERUZFUlJFRDsNCj4gLS0NCj4gMi40My4w
+DQo+IA0KDQpSZXZpZXdlZC1ieTogTWljaGFlbCBLZWxsZXkgPG1oa2xpbnV4QG91dGxvb2suY29t
+Pg0KDQo=
