@@ -1,90 +1,156 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3CB8477285;
-	Tue, 18 Aug 2026 13:33:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE71478865
+	for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 13:34:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787059992; cv=none; b=msObqoimVfXRl3OsA65r9UH0naS0x2jUDYCktEWU6wfA6wDQy44qKuleSV11ddHokQkYDP4NTg5rUEufOWMpX7WRK6Jumypmx4O8RbYNCTR8IqnjV/ZvUeQXAYCxII8zBeuykv0+n2iMHQGAQ2TRgKzWP96l9TGF0k9YgaDanuc=
+	t=1787060102; cv=none; b=cLAFeoX/v7oAZNYbPae3LoVvNfor6SE9YEP9MATA24DgP78HNyc7qXXmu9s0w0InYKP++5Z8cuM12oWn6DgZpdQECu9VchjZ6HyxW69mx1wC9Xf7XrbqjyLo5LUJGwq++Dzdv+qBTglJ7TjCw7wvRdfYVZrd1V3HObLniFILvdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787059992; c=relaxed/simple;
-	bh=zQAWgqdGYKgXHibSUELUPJWa6ELvFlQknaivtwA+BIE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=meYUKeyTeIbMFsvq79xNjoqQe9fwcKbTYeI1zrGDf2OKZNdBCetWK/H+agQCsfHaEmxHSbicPMyEMtsFzVTQiyAZvE6Z8a6JO4ZNRziHNvljJCRx4VVeL7c8XVHT6Vt3LKXND6YBrnagN4ahpOQd8E9Qcd5MrN0ZGkjeaPyUAoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XAfPfo+1; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787060102; c=relaxed/simple;
+	bh=ygflGRP/Pxy4texFJBQa8yWUSlPHDuiz8a1gu31y++k=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=aZbyPDcm7WHXWFHYGQOSFQzPlHZvzvD8X14AWqi5mjY5VenJDwKJWtGgucOn7DSzGXotD1aIpFOkU+pMNn9hayCL1YL5lk8RFOUDN2EzyoIAlHSsgrPTjdRYkImBfVOJeHOuQWdyjQvG3MWYOOOjFueMSoxjsw31RRqMUTxrEzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=lsZStvsa; arc=none smtp.client-ip=115.124.30.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XAfPfo+1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DCDD1F00ACA;
-	Tue, 18 Aug 2026 13:33:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787059991;
-	bh=GsAWXxN10cRN+8CUfIm7pyw2iUPg5jnmD3dMiCwHuUo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XAfPfo+1qLQNkLY8fd/vzrGFGrlJXMOawyXyxL/id8KW434JMv/x6jguV81bbdhmt
-	 2dxHSVVhiNJE8gozMR26gQYvn3aL/phTiE2zCaRCfBjs2NM2er1CD6cZVx200UUNpd
-	 eXA3ta9rSKb1l1qluBK2A7HMhXLSbDbOXiMvNASZcO9925xTkHmjA4zm8a2iSD6BTI
-	 R3jPv13c7RLRDSS2y/9KACY878n5wHPL1d22T+Jsj3wrTghg2K5ioxa+lpmE66b1HS
-	 jyE5N29PbE9cdjPPAmtw8ItymizcOqPcOEL5IokqoBHwqmVUDrEjio65A2BPxMK7n5
-	 X8NEExq1b15dg==
-Date: Tue, 18 Aug 2026 14:33:39 +0100
-From: Jean-Philippe Brucker <jpb@kernel.org>
-To: LiMing Wu <liming.wu@jaguarmicro.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev,
-	iommu@lists.linux.dev, Angus Chen <angus.chen@jaguarmicro.com>
-Subject: Re: [PATCH v2] iommu/virtio: Add debugfs state dump
-Message-ID: <20260818133339.GA319267@myrica>
-References: <20260818123618.637-1-liming.wu@jaguarmicro.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="lsZStvsa"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1787060091; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=AMqQhPIVZVTnz+mlp2yD/CiRqzqmyuR3oAehC/dra64=;
+	b=lsZStvsaoLHQN8Aa1nu82caTa3AzGcaunhJ6Tvn1qdV93pF2qOoi4AH5oskl2rdZrOIDpE2wHQtHDdibAr+vcYjvjKXC2SX++bivIVPRMpOee8YgL+c1xKsCQ6H8Fq+5lTzmJ3WGTGEygV6wGhJPLRfKTfPqvET1xuQ3ajcXbbo=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=25;SR=0;TI=SMTPD_---0X9DUoVH_1787060087;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X9DUoVH_1787060087 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 18 Aug 2026 21:34:49 +0800
+From: fangyu.yu@linux.alibaba.com
+To: andrew.jones@oss.qualcomm.com
+Cc: alex@ghiti.fr,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	kvm-riscv@lists.infradead.org,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tjeznach@rivosinc.com,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [RFC PATCH v2 05/10] iommu/riscv: support GSCID and GVMA invalidation command
+Date: Tue, 18 Aug 2026 21:34:47 +0800
+Message-Id: <20260818133447.44426-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <4mcwrlk7yc4kozsqbrumf5gbknydquzwdb4g7lv6bgjk7m6ob2@alld2yusipnq>
+References: <4mcwrlk7yc4kozsqbrumf5gbknydquzwdb4g7lv6bgjk7m6ob2@alld2yusipnq>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260818123618.637-1-liming.wu@jaguarmicro.com>
+Content-Transfer-Encoding: 8bit
 
-Hi,
+>> @@ -1212,8 +1225,15 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+>>  	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
+>>  		return -ENODEV;
+>
+>This needs something like the below diff squashed in.
+>
+>Thanks,
+>drew
+>
 
-On Tue, Aug 18, 2026 at 08:36:18PM +0800, LiMing Wu wrote:
-> From: Liming Wu <liming.wu@jaguarmicro.com>
-> 
-> Expose basic virtio-iommu runtime state through debugfs so that the
-> relationship between endpoints, IOMMU groups, domains and active mappings
-> can be inspected from a running guest.
+Thanks, agreed.
+I'll split the helper into fsc/iohgatp variants and squash this into
+patch 5 for next version.
 
-Thank you for the patch. Do you have a use for this feature, a platform
-with virtio-iommu?  I'd rather not add new features to the driver unless
-someone needs them.
-
-> Create per-device files under /sys/kernel/debug/iommu/virtio/:
-> 
->   status    - negotiated virtio-iommu features and geometry
->   endpoints - endpoint, group and attached domain information
->   domains   - domain type, endpoint count and mapping count
->   mappings  - active IOVA mappings tracked by the driver
-
-endpoints, groups and domains are described in /sys/kernel/iommu_groups.
-Mappings are not, but a VMM like QEMU can provide a trace of ATTACH,
-MAP, UNMAP requests which is quite useful when debugging.
-
-> +	seq_puts(s, "features:\n");
-> +	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_MAP_UNMAP,
-> +			       "map_unmap");
-> +	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_INPUT_RANGE,
-> +			       "input_range");
-> +	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_DOMAIN_RANGE,
-> +			       "domain_range");
-> +	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_PROBE, "probe");
-> +	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_MMIO, "mmio");
-> +	viommu_debugfs_feature(s, viommu, VIRTIO_IOMMU_F_BYPASS_CONFIG,
-> +			       "bypass_config");
-
-Virtio provides the feature bits in /sys/bus/virtio/devices/. Not as
-convenient as text description but a simple script could help decode it,
-for example https://jpbrucker.net/git/iommutools/tree/lsiommu.c#n743
-
-Thanks,
-Jean
-
+>>
+>> -	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+>> -	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
+>> +	if (domain->gscid) {
+>> +		dc.iohgatp = FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
+>> +			     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
+>> +			     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
+>> +	} else {
+>> +		dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+>> +		      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
+>> +	}
+>> +
+>>  	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+>>  	     RISCV_IOMMU_PC_TA_V;
+>>
+>
+>diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>index 307baf33c646..434d2d4f26f5 100644
+>--- a/drivers/iommu/riscv/iommu.c
+>+++ b/drivers/iommu/riscv/iommu.c
+>@@ -1262,9 +1262,9 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
+> 	kfree(domain);
+> }
+>
+>-static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_mode)
+>+static bool riscv_iommu_fsc_supported(struct riscv_iommu_device *iommu, int mode)
+> {
+>-	switch (pgd_mode) {
+>+	switch (mode) {
+> 	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39:
+> 		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39;
+>
+>@@ -1277,6 +1277,21 @@ static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_m
+> 	return false;
+> }
+>
+>+static bool riscv_iommu_iohgatp_supported(struct riscv_iommu_device *iommu, int mode)
+>+{
+>+	switch (mode) {
+>+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4:
+>+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39X4;
+>+
+>+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4:
+>+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48X4;
+>+
+>+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4:
+>+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57X4;
+>+	}
+>+	return false;
+>+}
+>+
+> static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+> 					    struct device *dev,
+> 					    struct iommu_domain *old)
+>@@ -1294,14 +1309,17 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+>
+> 	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
+>
+>-	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
+>-		return -ENODEV;
+>-
+> 	if (domain->gscid) {
+>+		if (!riscv_iommu_iohgatp_supported(iommu, pt_info.iohgatp_mode))
+>+			return -ENODEV;
+>+
+> 		dc.iohgatp = FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
+> 			     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
+> 			     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
+> 	} else {
+>+		if (!riscv_iommu_fsc_supported(iommu, pt_info.fsc_iosatp_mode))
+>+			return -ENODEV;
+>+
+> 		dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+> 			 FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
+> 	}
