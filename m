@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 051D73ACF18;
-	Wed, 19 Aug 2026 14:53:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E69A3806B0;
+	Wed, 19 Aug 2026 15:27:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787151208; cv=none; b=o/WaRn7u8OZwr4cPcm3vnis6MF0N79TDPka1I94AiorRAzo8HEkc75EfrlCjiKtAEfQq3hiVntQbcBzWZRZ44f9E1qbaP1t2FHGsq+eSdZ8trVZSoMDj/xGV2mmUF4STZCb1EREX2MlEfiriQR300vCjzrkzkQPUIza6fN4JAnI=
+	t=1787153246; cv=none; b=FU54uiPFUlGFUWWI4K+RjykNHDa1xzvrfpXaXIXPVC3YRjbtLkojEf0AMa2mxBf5B0ROBRpHGmqqe5/0pWdncVpPZyPYSS+1GAKzxusIkQZ7IWKS/Pq9PivJONYztQELmVtrJ9X1D+dFphjw2bnEjASbgg1Tj5SJSd6h5LLgavw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787151208; c=relaxed/simple;
-	bh=QVcVWBaHPP43ECVAhtIVq7+L2mpEbVXEeS+wYVsb4A4=;
+	s=arc-20240116; t=1787153246; c=relaxed/simple;
+	bh=BBU4ww3GBoRIjHBCLIfmcjj7fdNplX+AhVW7f2j3WoA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uITbxNY+mMaEBcvg9toq8bhs0cPtZp/tfJUgD7Mo0FRzrXm1KUr1YlOsly2pZQK1KFrkv6rVuR5r4FUFYGeCXH6fU6q8bgGw0C7xJk8a5kCQpi0EVUP8qMMKa/gnmDa9sc2AKZc07S4l4hGY2zdNGE88AaFzc08OWYffRaNrMWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U1UBIQu0; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=B3wc/edZWm/qTmlM3W+Btfb1jToKD+b4SQ/lzvUWoLMWq1IBvWMfC8W2rAa1JJzErw9VpfNRq344p/ZyorX5ySip3hWWRTh9GsAHeFteiYK4HynGO45Mf8RZTRM8eBDJ7MC5oaB167KALgcoM2QxudmUSl5gJlHWJsPUoFTl9RI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gmyP5u5v; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U1UBIQu0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D581F000E9;
-	Wed, 19 Aug 2026 14:53:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gmyP5u5v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2869B1F000E9;
+	Wed, 19 Aug 2026 15:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787151199;
-	bh=W2EIvkv9Nq32WWVSfwklxxGLToFHgsoCABwz/s4TkD8=;
+	s=k20260515; t=1787153245;
+	bh=MsJdRaS+WVPtAUMCkn9lJWDQpvDTryfwaC+o4Hyk0KM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=U1UBIQu0ssOyvURDZkHuUnjZuEGlsrJqH+xUIcNmnFhrxDmytdrcG/vlRO8tYBLj6
-	 aqTHL0o5ITTMnnX594JQNTXv+MufvSl1yUMQrjWHne9GuXU9iVu9mxGGsArKKzb176
-	 nAV9kSrU/uady8iPq9hruXqEGPaRFHL7Ta14QTBRSZqPni/Sg3luPYTUbmCXZB+rlw
-	 /dh+tWIKxtq9QR6Luk3IP16uffZVs1aNM0vuSO5LRXlDTRZd6Pjsq8cnoPDJV8KUx7
-	 qfPIRTYx2/XJaAmyplVAgid4AuAcJTuixmTA+GbD3MsD1+TVXrNnxCqOZc7IybUIEf
-	 eXzQ6wjkVY1Ig==
-Message-ID: <e7b4eceb-cb3a-49ea-bed9-728c958594b0@kernel.org>
-Date: Wed, 19 Aug 2026 16:53:05 +0200
+	b=gmyP5u5vmT5YiY5yF0z9wfJYdXT3eE/7czKjfJSlVQ6GjZFj4oXQIYgjSCFxFnJV6
+	 hAlElbANu6r5JUYBQo1OXFyIBYM+6vRD0+7Y2+w1gt+AlPDPbKMzg+8REOi2oSrV+b
+	 93ko0FfcVyDOw9778Ixj7lwl4fktV4rMYHOzz75DtkTjioxiIVHd8Q0BZld4YjDW3N
+	 5AOZKKWNcaXYhW0i2NHPlX3Cqw6qbzXusuA2X6pEN1ZJQfPbOoM+ETmSOS6AkuAhR6
+	 iTOFgDg1DGSaBNDVxXSbysVhkojonxzeXASBUtULmHKifbIVwCfDy2pkvZnO1k0iDp
+	 5+GWhPFjuRlIw==
+Message-ID: <fb834ae5-7113-4a86-bb84-ca5115c8d7ff@kernel.org>
+Date: Wed, 19 Aug 2026 17:27:09 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,6 +64,8 @@ References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
  <CACSVV01eYr6FyA6XBG0xw0yv2dydvTEhcY-WUy07mxM8WwkZcg@mail.gmail.com>
  <318f14c2-0e87-4e07-8173-1511dca67d78@kernel.org>
  <CACSVV01T=ytVJKM7NRoBTAJm7vH+JPJNT9Tftu5X9YskGXerwg@mail.gmail.com>
+ <e7b4eceb-cb3a-49ea-bed9-728c958594b0@kernel.org>
+ <CACSVV03ypjBYkhRpt=TyDwOKhejKKke3x=Fi_TvxXN-5U_rCsw@mail.gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -109,85 +111,52 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <CACSVV01T=ytVJKM7NRoBTAJm7vH+JPJNT9Tftu5X9YskGXerwg@mail.gmail.com>
+In-Reply-To: <CACSVV03ypjBYkhRpt=TyDwOKhejKKke3x=Fi_TvxXN-5U_rCsw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 19/08/2026 16:49, Rob Clark wrote:
-> On Wed, Aug 19, 2026 at 7:43 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->> On 19/08/2026 16:38, Rob Clark wrote:
->>> On Wed, Aug 19, 2026 at 7:21 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On 19/08/2026 17:23, Rob Clark wrote:
 >>>>
->>>> On 19/08/2026 15:26, Ekansh Gupta wrote:
->>>>> On 19-08-2026 00:43, Krzysztof Kozlowski wrote:
->>>>>> On 17/08/2026 06:47, Ekansh Gupta wrote:
->>>>>>> This patch series introduces the Qualcomm DSP Accelerator (QDA) driver,
->>>>>>> a DRM-based accelerator driver for Qualcomm DSPs. The driver provides a
->>>>>>> standardized interface for offloading computational tasks to DSPs found
->>>>>>> on Qualcomm SoCs, supporting all DSP domains.
->>>>>>>
->>>>>>> The QDA driver implements the FastRPC protocol over the DRM accel
->>>>>>> subsystem. It uses the same device-tree node structure as the existing
->>>>>>> fastrpc driver in drivers/misc/. The approach for binding the QDA driver
->>>>>>> to device-tree nodes while coexisting with the fastrpc driver is an open
->>>>>>> item described below.
->>>>>>
->>>>>> No. Grow/replace/improve existing driver instead of coming with a duplicate.
->>>>>>
->>>>>> That's a standard upstream requirement, basically given on every
->>>>>> upstreaming guide.
->>>>>>
->>>>>> Please watch old talk from Greg - "I Don’t Want Your Code!".
->>>>> Posted discussion threads here[1]. Would seek comments from Dmitry,
->>>>> Srini as well.
->>>>>
->>>>> [1]
->>>>> https://lore.kernel.org/all/3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com/
+>>>> Growing old driver does not look complicated itself. The only a bit
+>>>> tricky thing is to present somehow exclusive interface to user-space,
+>>>> like usage of one disables the second etc. Depending on actual
+>>>> differences in that interface.
 >>>>
->>>> The rest of the comments is still valid even if you did not acknowledge
->>>> them.
->>>>
->>>> Anyway, regarding above - again, watch the talk from Greg.
->>>>
->>>> You have ONE driver. Not two.
+>>>> But having a duplicated driver is a clear no go and it is well known
+>>>> upstream requirement. Nothing new here.
 >>>
->>> Long term, moving to the common driver framework (which did not exist
->>> when fastrpc was first created) seems like a good thing.  But does
->>> that not allow for some transition period?  How can we get from here
->>> to there without otherwise breaking userspace?  Is there some other
->>> precedent elsewhere in other driver subsystems?
+>>> Would it be acceptable as a first step to, by default (ie. when no
+>>> cmdline override/etc) for the new driver to bind to new compatibles
 >>
->> Yes, Iris and Venus where we agreed for an exception (two drivers) as
->> long as new driver supports old hardware / features.
+>> You have one compatible.
 >>
->> This is not the case here, right?
+>>> and the existing driver to old?  Ie. have both drivers but only one
+>>> binds on a given platform?
 >>
->>>
->>> I suppose drm exposing legacy fbdev on top of drm drivers is _sort of_
->>> a precedent if you squint a bit?  I'm not really familiar enough to
->>> say if that would be reasonable/possible in this case.
->>
->> Growing old driver does not look complicated itself. The only a bit
->> tricky thing is to present somehow exclusive interface to user-space,
->> like usage of one disables the second etc. Depending on actual
->> differences in that interface.
->>
->> But having a duplicated driver is a clear no go and it is well known
->> upstream requirement. Nothing new here.
+>> I don't see how is it possible to write such DTS, because - repeating my
+>> question - how many hardware blocks is there? I believe only one per
+>> given DSP, so how could you have two device nodes?
 > 
-> Would it be acceptable as a first step to, by default (ie. when no
-> cmdline override/etc) for the new driver to bind to new compatibles
+> Maybe I'm misunderstanding something here.. I don't see any new
+> bindings with this series so my assumption is that the bindings are
+> the same.  What I meant was something more like "qcom,glymur-fastrpc"
+> would bind to new driver but "qcom,fastrpc" (which seems to be what is
+> used on older platforms) would bind to the old driver.
+> 
+> So single dts node, but different compatible strings picking which
+> driver is used.
 
-You have one compatible.
+Glymur is already done, so imagining we talk about next/future SoC then
+we would be at point of duplicating drivers for the same hardware. So
+back to square one of my comments.
 
-> and the existing driver to old?  Ie. have both drivers but only one
-> binds on a given platform?
+The rule of usptream development is that we do not accept duplicated
+code, just because a vendor wants to write something new. This is
+basically the concept applied all over the drivers tree, where we pushed
+back against all sorts of duplications all over the vendors.
 
-I don't see how is it possible to write such DTS, because - repeating my
-question - how many hardware blocks is there? I believe only one per
-given DSP, so how could you have two device nodes?
-
+What I miss in this thread is why would there be any exception here. We
+do not grant exceptions from standard practices on "I want" reasons.
 
 Best regards,
 Krzysztof
