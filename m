@@ -1,32 +1,32 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98908442390
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 10:18:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47CF13F1ABF
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 10:27:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787134733; cv=none; b=ecHDfP6ax1+tiliyKAkZSz7zr9ZDSpTtNZZjWkaXhmZhPs55dPxLGXAdx20MwBrtxAd9Y4IhUE96fIGCMzDGuKyQ9PAWBHiQB8SixZd12QcWHRzR7wScoWKWsBa0Ch2tdv47SdhAbwi0STdbsUkeXnIMYG6pD+lsT29u9kknSYU=
+	t=1787135226; cv=none; b=tm0cAxSMIExJjMunHAHb90LURweexKsvCR4qsDklzod8yoWaFyHacs1FUjd4bRJnT9GgV9qtUdZKZwy6hL0faJckc4NTPzteKEzypDX1RgXv1lenJDZPo0ZW95zG+vBfdcybCvwMpvyiEzNyhXQREYFzFiLrP3lDiYJP3BYQAhc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787134733; c=relaxed/simple;
-	bh=onWjRpZablLVS+yv5pHlETJf/pR+xQVMR6JNIffkkvM=;
+	s=arc-20240116; t=1787135226; c=relaxed/simple;
+	bh=2K12G+UsxWvuT6PI+vBdCRiSAFfj9IaB21wxk9MChhk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g/675Fbp8G2fhQrv2rbuVJ7kJUU419bzWE4jq0doqooe9R8hmHF2l5x9WiFvXK9jSD4lum+Ej9S0Bd2DA3TeviW4U6EUIdZ+HAEGvs/MVYj5l+h7mtaroYjegQCmhdU2lzLa2e4GMdlwHA36mIWQSbM+DwmZ8XYkAZMyIPx92oc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=d1q6/2kF; arc=none smtp.client-ip=115.124.30.110
+	 In-Reply-To:Content-Type; b=Dm/sRQ6Z4gbUl/By7CmrsOHBGv+/mP+EkLp1YN+0b6TPMMiaERShgg9FsG5gmFodiHT3jmEgl+7L3m/3xhyqHj/NGn//HeHrITMineeQGuZqyvbQa4sxiyuhGvqUh5N8k8RQhgfdgb4DT6to0O9KBlfiJ51s1AAHYB1Tsdc5aVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=f6wJ+xl+; arc=none smtp.client-ip=115.124.30.98
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="d1q6/2kF"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="f6wJ+xl+"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1787134719; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=BwIPHXhR5K346v+/H8G6qGs8DRyMrp5gOIxwHTiEyZA=;
-	b=d1q6/2kFHNAO9mhgsp0H8/LYfA/wEXP21vwUAozanQmcB03yqL6a9UKsSRm1Rgcm9bBFtbQ1mNOyYCjbCUTrIo/LnOTLlKVacnfzVoxdsuCNloUJylnGZxvDYWFkcftwcpGhx/br9qDSEduUtguwDJxkhqnHZRd3mlWMNQrUKD8=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9GKf0X_1787134717;
-Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9GKf0X_1787134717 cluster:ay36)
+	t=1787135220; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=KTI//5fzqAJt4l+xabp82wR7XBF9tGw/atv4GgSp4tU=;
+	b=f6wJ+xl+glrg8yi4TD25juLnGevr+KqvzqIPbC1ECXalBCVzAg0KjBZSVZplFDbMpuJ8ra6Q2czroCZfXvu8zoEkpKdqmck2Povu9LWzvjvTHu4KwaFuxSGFLXaysZvUXsnhLEQ55ORhM2G8YoMTpiDSyOqNgvfTMfwxmjhcGfA=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9GKhBe_1787135219;
+Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9GKhBe_1787135219 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Wed, 19 Aug 2026 18:18:38 +0800
-Message-ID: <23d80e6f-b4dc-45f9-856f-fb21b1905304@linux.alibaba.com>
-Date: Wed, 19 Aug 2026 18:18:36 +0800
+          Wed, 19 Aug 2026 18:26:59 +0800
+Message-ID: <fbfc7a4a-3108-4cc0-b6d4-d89f56393aba@linux.alibaba.com>
+Date: Wed, 19 Aug 2026 18:26:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,7 +34,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 23/24] iommu/amd: Assign per-vIOMMU translate device ID
+Subject: Re: [PATCH 18/24] iommu/amd: Introduce helper function for updating
+ device ID mapping table
 To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
  jgg@nvidia.com
@@ -44,163 +45,198 @@ Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
  dantuluris@google.com, chriscli@google.com, kpsingh@google.com,
  alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com
 References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
- <20260727132913.22475-24-suravee.suthikulpanit@amd.com>
+ <20260727132913.22475-19-suravee.suthikulpanit@amd.com>
 From: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <20260727132913.22475-24-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20260727132913.22475-19-suravee.suthikulpanit@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 
 在 2026/7/27 21:29, Suravee Suthikulpanit 写道:
-> Allocate one translate-device-id per IOMMUFD vIOMMU instance from the
-> per-segment pool on init.  Program translation DTE and VFctrl TransDevID
-> after MMIO reset; clear both on init error and destroy.
+> AMD vIOMMU hardware uses the Device ID mapping table to map Guest Device ID
+> (GDevID) to Host Device ID when it virtualises guest IOMMU commands.
+> It uses GID and GDevID to indexe into the table to look up host device ID.
 >
-> Add per-vIOMMU trans_devid_lock to serialize DTE and VFctrl updates
-> during teardown.
+> Linux IOMMU driver programs the table entry using VFCntlMMIO Guest Device
+> Map Control Register.
+>
+> Introduce amd_viommu_set/clear_device_mapping(), which are used to set
+> the entry when initialize the IOMMUFD vDevice.  Clearing the entry is
+> done during VM destroy.
 >
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->   drivers/iommu/amd/amd_iommu_types.h |  7 ++++++
->   drivers/iommu/amd/iommufd.c         | 35 +++++++++++++++++++++++++++++
->   drivers/iommu/amd/viommu.c          |  2 ++
->   3 files changed, 44 insertions(+)
+>   drivers/iommu/amd/amd_viommu.h | 10 +++++++
+>   drivers/iommu/amd/iommufd.c    |  9 ++++++
+>   drivers/iommu/amd/viommu.c     | 53 +++++++++++++++++++++++++++++++++-
+>   3 files changed, 71 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index f288a7b384d0..39cf2c588106 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -559,6 +559,13 @@ struct amd_iommu_viommu {
->   	u64 *domid_table;
->   	u16 trans_devid;
+> diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
+> index b6fd5ffc3b82..ca09a9856938 100644
+> --- a/drivers/iommu/amd/amd_viommu.h
+> +++ b/drivers/iommu/amd/amd_viommu.h
+> @@ -6,6 +6,8 @@
+>   #ifndef AMD_VIOMMU_H
+>   #define AMD_VIOMMU_H
 >   
-> +	/*
-> +	 * Serializes translate-device-id hardware changes (DTE, VFctrl) and
-> +	 * coordinates with pool relocation during PCI attach.  Lock ordering:
-> +	 * pci_seg->trans_devid_mutex, then trans_devid_lock.
-> +	 */
-> +	struct mutex trans_devid_lock;
+> +#define VIOMMU_MAX_GDEVID	0xFFFF
 > +
->   	/* Offset for mmap() of guest VF MMIO; set after iommufd_viommu_alloc_mmap(). */
->   	unsigned long vfmmio_mmap_offset;
->   };
+>   #if IS_ENABLED(CONFIG_AMD_IOMMU_IOMMUFD)
+>   
+>   int amd_viommu_init(struct amd_iommu *iommu);
+> @@ -20,6 +22,9 @@ void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_viommu *vio
+>   
+>   int amd_viommu_domain_id_update(struct amd_iommu *iommu, u16 gid,
+>   				u16 hdom_id, u16 gdom_id);
+> +
+> +void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+> +				   u16 guestId, u16 gDevId);
+>   #else
+>   
+>   static inline int amd_viommu_init(struct amd_iommu *iommu)
+> @@ -45,6 +50,11 @@ static inline void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iom
+>   {
+>   }
+>   
+> +static inline void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+> +						 u16 guestId, u16 gDevId)
+> +{
+> +}
+> +
+>   #endif /* CONFIG_AMD_IOMMU_IOMMUFD */
+>   
+>   #endif /* AMD_VIOMMU_H */
 > diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-> index 7e070f72f02e..43575af59bba 100644
+> index 1975b2932107..7e070f72f02e 100644
 > --- a/drivers/iommu/amd/iommufd.c
 > +++ b/drivers/iommu/amd/iommufd.c
-> @@ -48,11 +48,15 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
->   	int ret;
->   	phys_addr_t page_base;
->   	unsigned long flags;
-> +	u16 trans_devid;
-> +	bool trans_devid_allocated = false;
-> +	bool trans_dte_set = false;
->   	struct iommu_viommu_amd data = {};
->   	struct protection_domain *pdom = to_pdomain(parent);
->   	struct amd_iommu *iommu = container_of(viommu->iommu_dev, struct amd_iommu, iommu);
+> @@ -136,12 +136,18 @@ static int _amd_viommu_vdevice_init(struct iommufd_vdevice *vdev)
+>   	struct pci_dev *pdev = to_pci_dev(vdev->idev->dev);
+>   	struct iommufd_viommu *viommu = vdev->viommu;
 >   	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
+> +	struct amd_iommu *iommu = container_of(viommu->iommu_dev, struct amd_iommu, iommu);
 >   
-> +	mutex_init(&aviommu->trans_devid_lock);
->   	xa_init_flags(&aviommu->gdomid_array, XA_FLAGS_ALLOC1);
->   	aviommu->parent = pdom;
+>   	if (!pdev) {
+>   		pr_err("%s: not a PCI device\n", __func__);
+>   		return -EINVAL;
+>   	}
 >   
-> @@ -81,9 +85,22 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
->   
->   	data.out_vfmmio_mmap_offset = aviommu->vfmmio_mmap_offset;
->   
-> +	ret = amd_iommu_trans_devid_alloc(iommu->pci_seg, aviommu);
-> +	if (ret < 0)
-> +		goto err_trans_devid;
-> +	trans_devid = ret;
-> +	trans_devid_allocated = true;
-> +	aviommu->trans_devid = trans_devid;
+> +	if (vdev->virt_id > VIOMMU_MAX_GDEVID) {
+> +		pr_err("%s: Invalid virtual ID (virt_id=%#llx)\n", __func__, vdev->virt_id);
+> +		return -EINVAL;
+> +	}
 > +
->   	/* Reset vIOMMU MMIOs to initialize the vIOMMU */
->   	iommu_reset_vmmio(iommu, aviommu->gid);
+>   	dev_data = dev_iommu_priv_get(&pdev->dev);
+>   	if (!dev_data) {
+>   		pr_err("%s: Device not found (devid=%#x)\n",
+> @@ -152,6 +158,9 @@ static int _amd_viommu_vdevice_init(struct iommufd_vdevice *vdev)
+>   	pr_debug("%s: gid=%#x, hdev_id=%#x, gdev_id=%#llx\n", __func__,
+>   		 aviommu->gid, pci_dev_id(pdev), vdev->virt_id);
 >   
-> +	ret = amd_iommu_set_translate_dte(viommu);
-> +	if (ret)
-> +		goto err_init;
-> +	trans_dte_set = true;
-> +	amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, trans_devid);
+> +	amd_viommu_set_device_mapping(iommu, pci_dev_id(pdev), aviommu->gid,
+> +				       (u16)vdev->virt_id);
 > +
->   	ret = amd_viommu_init_one(iommu, aviommu);
->   	if (ret)
->   		goto err_init;
-> @@ -102,6 +119,18 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
->   
 >   	return 0;
->   err_init:
-> +	if (trans_dte_set) {
-> +		mutex_lock(&aviommu->trans_devid_lock);
-> +		amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, 0);
-> +		amd_iommu_clear_translate_dte(iommu, trans_devid);
-> +		mutex_unlock(&aviommu->trans_devid_lock);
-> +	}
-> +	if (trans_devid_allocated) {
-> +		mutex_lock(&aviommu->trans_devid_lock);
-> +		amd_iommu_trans_devid_free(iommu->pci_seg, trans_devid, aviommu);
-> +		mutex_unlock(&aviommu->trans_devid_lock);
-> +	}
-> +err_trans_devid:
->   	iommufd_viommu_destroy_mmap(&aviommu->core, aviommu->vfmmio_mmap_offset);
->   err_mmap:
->   	amd_iommu_gid_free(iommu, aviommu->gid);
-> @@ -124,6 +153,12 @@ static void amd_iommufd_viommu_destroy(struct iommufd_viommu *viommu)
->   	xa_destroy(&aviommu->gdomid_array);
->   	iommufd_viommu_destroy_mmap(&aviommu->core, aviommu->vfmmio_mmap_offset);
->   	amd_viommu_uninit_one(iommu, aviommu);
-> +
-> +	mutex_lock(&aviommu->trans_devid_lock);
-> +	amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, 0);
-> +	amd_iommu_clear_translate_dte(iommu, aviommu->trans_devid);
-> +	amd_iommu_trans_devid_free(iommu->pci_seg, aviommu->trans_devid, aviommu);
-> +	mutex_unlock(&aviommu->trans_devid_lock);
->   	amd_iommu_gid_free(iommu, aviommu->gid);
 >   }
-
-The comment states "pci_seg->trans_devid_mutex, then trans_devid_lock"
-as the lock ordering. However, examining the actual code paths:
-
-In amd_iommufd_viommu_destroy():
-   mutex_lock(&aviommu->trans_devid_lock);          /* viommu lock first */
-   ...
-   amd_iommu_trans_devid_free(...);                  /* takes seg_mutex 
-inside */
-   mutex_unlock(&aviommu->trans_devid_lock);
-
-In amd_iommu_trans_devid_free():
-   mutex_lock(&pci_seg->trans_devid_mutex);          /* seg_mutex nested */
-
-In trans_devid_relocate() (Patch 24):
-   mutex_lock(&aviommu->trans_devid_lock);          /* viommu lock first */
-   mutex_lock(&pci_seg->trans_devid_mutex);          /* seg_mutex second */
-
-All paths consistently take trans_devid_lock first, then
-trans_devid_mutex (nested). The actual ordering is the opposite of
-what the comment describes:
-
-   Actual:   trans_devid_lock -> trans_devid_mutex
-   Comment:  trans_devid_mutex -> trans_devid_lock
-
-The code is consistent and there is no deadlock risk, but the
-comment should be corrected to avoid confusing future readers:
-
-   * Lock ordering: trans_devid_lock, then pci_seg->trans_devid_mutex.
-
-
-
 >   
 > diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-> index eb3f5217d856..ae4a6a2cae39 100644
+> index 708f2c7496a4..eb3f5217d856 100644
 > --- a/drivers/iommu/amd/viommu.c
 > +++ b/drivers/iommu/amd/viommu.c
-> @@ -501,6 +501,8 @@ void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_viommu *avi
->   			       VIOMMU_DOMID_MAPPING_BASE,
->   			       VIOMMU_DOMID_MAPPING_ENTRY_SIZE,
->   			       aviommu->gid);
-> +
-> +	amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, 0);
->   	viommu_clear_mapping(iommu, aviommu);
+> @@ -29,7 +29,6 @@
+>   /*
+>    * Guest Device ID Mapping Table
+>    */
+> -#define VIOMMU_MAX_GDEVID	0xFFFF
+>   #define VIOMMU_DEVID_MAPPING_BASE	0x1000000000ULL
+>   #define VIOMMU_DEVID_MAPPING_ENTRY_SIZE	(1 << 20)
+>   
+> @@ -40,6 +39,7 @@
+>   #define VIOMMU_DOMID_MAPPING_BASE	0x2000000000ULL
+>   #define VIOMMU_DOMID_MAPPING_ENTRY_SIZE	(1 << 19)
+>   
+> +#define VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL0_OFFSET	0x00
+>   #define VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL1_OFFSET	0x08
+>   
+>   LIST_HEAD(viommu_devid_map);
+> @@ -422,6 +422,53 @@ static void __maybe_unused free_private_vm_region(struct amd_iommu *iommu, u64 *
+>   	*entry = NULL;
 >   }
 >   
+> +#define DEVID_ENTRY_GDEVID_MASK		GENMASK_ULL(61, 46)
+> +#define DEVID_ENTRY_HDEVID_MASK		GENMASK_ULL(29, 14)
+> +#define DEVID_ENTRY_WRITE		BIT_ULL(63)
+> +#define DEVID_ENTRY_VALID		BIT_ULL(0)
+> +
+> +/*
+> + * Program the DevID via VFCTRL registers
+> + * This function will be called during VM init via VFIO.
+> + */
+> +void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+> +				   u16 guestId, u16 gDevId)
+> +{
+> +	u64 val;
+> +	u8 __iomem *vfctrl;
+> +
+> +	pr_debug("%s: iommu_devid=%#x, gid=%#x, hDevId=%#x, gDevId=%#x\n",
+> +		__func__, pci_dev_id(iommu->dev), guestId, hDevId, gDevId);
+> +
+> +	val = FIELD_PREP(DEVID_ENTRY_GDEVID_MASK, gDevId) |
+> +	      FIELD_PREP(DEVID_ENTRY_HDEVID_MASK, hDevId) |
+> +	      DEVID_ENTRY_WRITE | DEVID_ENTRY_VALID;
+> +
+> +	vfctrl = VIOMMU_VFCTRL_MMIO_BASE(iommu, guestId);
+> +
+> +	writeq(val, vfctrl + VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL0_OFFSET);
+> +}
+> +
+> +/*
+> + * Clear the DevID via VFCTRL registers
+> + * This function will be called during VM destroy via VFIO.
+> + */
+> +static void clear_device_mapping(struct amd_iommu *iommu, u16 guestId, u16 gDevId)
+> +{
+> +	u64 val;
+> +	u8 __iomem *vfctrl;
+> +
+> +	/*
+> +	 * Clear the DevID in VFCTRL registers
+> +	 */
+> +	val = FIELD_PREP(DEVID_ENTRY_GDEVID_MASK, gDevId) |
+> +	      FIELD_PREP(DEVID_ENTRY_HDEVID_MASK, 0) |
+> +	      DEVID_ENTRY_WRITE | DEVID_ENTRY_VALID;
+> +
+> +	vfctrl = VIOMMU_VFCTRL_MMIO_BASE(iommu, guestId);
+> +	writeq(val, vfctrl + VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL0_OFFSET);
+> +}
+
+
+The clear path sets Vld=1 with hDevID=0. This semantics is ambiguous:
+Vld=1 marks the entry as a *valid* mapping, and hDevID=0 is a legal PCI
+BDF (Bus 0, Dev 0, Func 0), instead of treating the entry as invalid. To 
+actually invalidate the mapping,
+please use Vld=0
+
+	val = FIELD_PREP(DEVID_ENTRY_GDEVID_MASK, gDevId) |
+	      FIELD_PREP(DEVID_ENTRY_HDEVID_MASK, 0) |
+	      DEVID_ENTRY_WRITE;
+
+Alternatively, during the clear dev mapping process, you might directly 
+specify the original hdevid being used.
+
+
+> +
+>   static void viommu_clear_mapping(struct amd_iommu *iommu,
+>   				 struct amd_iommu_viommu *aviommu)
+>   {
+> @@ -436,6 +483,10 @@ static void viommu_clear_mapping(struct amd_iommu *iommu,
+>   	 */
+>   	for (i = 0; i <= VIOMMU_MAX_GDOMID; i++)
+>   		amd_viommu_domain_id_update(iommu, gid, aviommu->parent->id, i);
+> +
+> +	for (i = 0; i <= VIOMMU_MAX_GDEVID; i++)
+> +		clear_device_mapping(iommu, gid, i);
+> +
+>   }
+>   
+>   void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_viommu *aviommu)
