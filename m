@@ -1,193 +1,213 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8793345ED6
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:05:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03CCB21CC5A;
+	Wed, 19 Aug 2026 13:05:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787144736; cv=none; b=r1PiWaknD4YQPDzpdTcg/jky82hBoH7Dp9U0mCcTGZ/xFtcQ9YH1GUm8hYLbvc7N4JqUlzJNH13UAW9hAC5e/iK/k3zDwieYwtHU7JKe5HPLWWVBsqBxFv2N5jCnp3H64YkpTvUR0erBQUBoeeqGm7kAesfx0Tvu/ffDougkQ18=
+	t=1787144745; cv=none; b=kdjNxo7L0aOFn/g4hpufTl8yluDpRK49GnWE2mjLxsHLsR4bbDCYEEEz8TZ67dVAF2Sya8tkJJh/B3taBE3sZJl4c2rwZXgGOFJFKx26VqkRayAyqh637E9aV0zJYW9qGXvViVJ8nUsJlUFb3X2mNe8I2xcczbA9HV0H0qR27Xc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787144736; c=relaxed/simple;
-	bh=yeAn53QhD+ejLswrNzkwv8ur2hDkhwUdtZ0G7WwZFdk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cJPb+GR786hyGA02djVRMSqXWNF/i+UOV2VQOt+OfNOIU2466MRy7/vJFangcuk2xJGCdCANb8evFwy5wz3c/7WQtmnWYVd1QfZ7YpVtUY9G622LjKc6Lz9r+ZCRQV1sFfEVGrC+b6/8JRuTw1rTNrINsfmm2y53RmveyVNYh7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=K2LMLWRM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=TsSz1nNu; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1787144745; c=relaxed/simple;
+	bh=8tZeoA1qM6yseHc5wH6x5IAXCz7o0dIu8IBtXCtDR5I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=etAHTbBH5EO7kNlx2W/4a5ewRuKwsx76OJm0olw98iJG/pDWa4NKib9YOV6o50gCYUfmAuGfbU+dSvLc+pxTXLF8zJfnqIo3y3EdcpTP3ZemQmm8JePAgO6JOdKGXQs4mCe4Q9BOFReWy5cPlRyUZBFDaN4nm6+XQaILJvfmO1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=t3yWksBP; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="K2LMLWRM";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="TsSz1nNu"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67JD0QOh901768
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:05:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	LZ5DADcP5lyK3Hc2KgnGBzVe5cJ/nTw1zxLeW7QKY5o=; b=K2LMLWRMhSf9IfQR
-	DpB6P5ILQueozCgCu5JXWzSpQPKmbFV9bRj4KnArcWAgE1E5S/gbqv0Vgd98elSy
-	2Z7Qd9YrW2KiLmg3GAEsloT8Tny6ZBWrgy6GQZLMYy1EMqRXDc2c4syj+gfFTzQ1
-	gjIbgeLR8+sYoUBMBOO/vUs+IBWDVDvT8m77dmmY6dwtHAdVK/5/N6mfB3Wd8rKS
-	hkFKjswlekvfHUg/caahLolHW+47x2nNWMU9d3JilgNrSzCYD6KFkCTh69Hyi2bn
-	7hlk3jq+7XnFCejQyDo8khR9H/FVbuJIXfSbKO2tEO8qqugq4AIrZYvPWbYY+VLJ
-	jC5YWg==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4yfpu92f-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:05:33 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2ccb6823efcso8955095ad.0
-        for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 06:05:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787144733; x=1787749533; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LZ5DADcP5lyK3Hc2KgnGBzVe5cJ/nTw1zxLeW7QKY5o=;
-        b=TsSz1nNubAEjc0/gjeYzz3LRSvsRlpIoOG2dbSSJrGx1ugi1QabMgvzLOK51U+TfkV
-         yJ/6FOU0JIw8hh1bPEWXd/wIGCJ4rbZAQMJqbbobn6u2TVkscqe0vORj5pHY3vwY+30m
-         26YNvInFkSQQMw3r+z4bvlTNpk92sOkNWaqfK5MAV/qb74itdfORHZjYsomiynZnyFAG
-         8lTvcw74hC25Y7YVSzG6gMGfMJ10F8qVKwA+AfuGhDtNnqdeuaOtH+o94LIdyMdYUvyH
-         +edIuUkGuSbzsTy+Ti1xfCVvC4OjPqEeZcKVZyNNPR/EL3y7/mQBIzaXDwnjYM+/2m9e
-         iwTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787144733; x=1787749533;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=LZ5DADcP5lyK3Hc2KgnGBzVe5cJ/nTw1zxLeW7QKY5o=;
-        b=j5b7ByqKSPT2OJRJsya9oTY7nI3Oazbbi+Bek6t4MmPkG/UOVol7qu6bDFVQ3W3Vlu
-         mLknsGhZmaCJtwumtP/ibZWkT+YeSqR2Cn2VQXfPnOFhz3ZivhwyzOdm+gBOK25/2iwl
-         3ngs7T0Q1hOODEpzfVPo6cjtOW7ZtV7kL3Pu11pvgJr6sk72YLd1dC7R0A/vPF8F/KCe
-         bvDBOZFBW3TGK9jypMe5am38ZbcPoLJSGfzZxkrXt2I3ghgoH+IkzoZSulfagTuUSmN1
-         xJVnkwdREgbbT4h1gUVtcmCnV/jVSU6xPFYMpgyHX+dF9dZaScgQRwCjs0mEH734pEwo
-         sNRg==
-X-Forwarded-Encrypted: i=1; AHgh+RrPuiKpeAaxQXhLtwykuxKuw+rZNX/o1EOTbq73kwDFECGX7eAgzm3Ge+dwaYHd5UvnufM6ng==@lists.linux.dev
-X-Gm-Message-State: AFuF++nURqMEnPdKEWy7v393d9tYlAPGm/BsBs+tQCL143wNVQqwCohn
-	2jYfq6f7CZs6jXI07Es9q2z5Ir4Qsn9nolks6YJVUmx2HV9jcccjPsLfn1nbtUz0LolcPUxq9By
-	8N6hdktlre/lTa7t3acblq31Gh813MBs1NZ/DB1XYnPdzjSU7VHbP1Oa5Q5PCtWHfWQ==
-X-Gm-Gg: AR+sD125Dpw+vEhzfFrQFexmedscXmJiI7IeJ6OiCCXHHk1t22pID5GTQb8KFVsNcrd
-	WioA1NKoAFbEna9OjetnOUWaYyNtdxoBh907bJqMknlJU4Jo+ZNSd3KfS5w+t0mc0p0VWi+q9CS
-	i3xEGCDv7zmlzj862wbG8SmfwNX1aumTohd67n0IOUbBdhWdSWfKth0kPxC8E3kN9THk7BIEP46
-	PM9tVG8M6jMuDRsRo8Opag/AONUQkP245T3VviL8KxlLFRvQmndLXRIpcmB45K5p/p5IaZNxaVj
-	jgc2CEpUiDkyk7w7t4bBDsIywkRchQxwWY+k6BNAbkjH1oKJwboOJvk5Wnk7EKmxJhzIyC13L9/
-	bp+tkDtLR4C6aXPfIadaJPiXuebodBg==
-X-Received: by 2002:a17:902:fda6:b0:2cf:a108:7605 with SMTP id d9443c01a7336-2d60186263bmr89344965ad.11.1787144733045;
-        Wed, 19 Aug 2026 06:05:33 -0700 (PDT)
-X-Received: by 2002:a17:902:fda6:b0:2cf:a108:7605 with SMTP id d9443c01a7336-2d60186263bmr89343405ad.11.1787144732529;
-        Wed, 19 Aug 2026 06:05:32 -0700 (PDT)
-Received: from [10.219.56.166] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d5c1e54330sm24796285ad.44.2026.08.19.06.05.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2026 06:05:31 -0700 (PDT)
-Message-ID: <e0a25f11-5c7c-406f-a223-da29bf6e1401@oss.qualcomm.com>
-Date: Wed, 19 Aug 2026 18:35:22 +0530
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="t3yWksBP"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DAF8214BF;
+	Wed, 19 Aug 2026 06:05:31 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4142F3F763;
+	Wed, 19 Aug 2026 06:05:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1787144735; bh=8tZeoA1qM6yseHc5wH6x5IAXCz7o0dIu8IBtXCtDR5I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=t3yWksBPwJHtK3Fh45zd2qMesmCsZj0EcT0Z3hkyOVtVEG9Mxa6bfiidSqLWTXzo4
+	 whdeeirC8wqKVHU+1MTFT5sLwfrgQ2XXTsu9lig87KYPcNaBdKnnKT+HDpBjIv1tHd
+	 6Sq3qDJKVnxymVmnOpi18PnEp+N8VXvbXJBYRKRY=
+Date: Wed, 19 Aug 2026 14:05:29 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [RFC PATCH v2 2/2] dma: swiotlb: Initialize and size shared
+ default pools for memory encryption
+Message-ID: <aoWqGW5PhY9K_xTs@arm.com>
+References: <20260813102521.1367737-1-aneesh.kumar@kernel.org>
+ <20260813102521.1367737-3-aneesh.kumar@kernel.org>
+ <an9RrwoaAsqJQ2vN@arm.com>
+ <yq5aecfuiapg.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/15] MAINTAINERS: Add entry for Qualcomm DSP
- Accelerator (QDA) driver
-To: Krzysztof Kozlowski <krzk@kernel.org>, Oded Gabbay <ogabbay@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Bill Wendling
- <morbo@google.com>,
-        Justin Stitt <justinstitt@google.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>,
-        srinivas.kandagatla@oss.qualcomm.com,
-        dmitry.baryshkov@oss.qualcomm.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <20260817-qda-v2-v2-1-69a02e9090d4@oss.qualcomm.com>
- <cc43a545-20a1-4f15-a7b9-ca48842bffca@kernel.org>
-Content-Language: en-US
-From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-In-Reply-To: <cc43a545-20a1-4f15-a7b9-ca48842bffca@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: FkxfymiVgJMqGYM3qWgQ1WAA0sIlYa99
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE5MDEwMCBTYWx0ZWRfX9UNHlqlG2+Dy
- o8QV1TLR9W6eslQT1SvJ5dW+rAlZJYmRfI93u5JBpBM9vVB4W7KfJhE6UziMF6KLqIfMnqE40Lk
- xsT2olg7UyrVPbm6X7DU0SXcPC0WFYuV56Jq1GGGPXOiW5BkTCz5Hfpa2HyoaZz8MzokioKjA6D
- HatiX4ZLRpwKDHV1VUKTZsxqX0y/kEbecFPrKSVKBYWK4z6e6X37IFWCqwSmIh0URNiX/oCGrUf
- 4iHXPmG3hRUMlBanFOfbqHaCof+QYXTTK4/vr7TiJ2XVLsOjX4CipVFwUsPT3VVxAsOav2ugNin
- UJCAmrdCbzM4pImkLHt+QzNO+EnFgoAbCyI+plxeLiRjvgN0aOMNZNGjINXtwUyB0yHeYTKNN55
- 6gZ2WlzJgYdbfrK4x1vvtPIlH1kms+PUh4cmp+34gb8DWgIDf4mPcoEPh4g+6Rp+wVIXfMB24rr
- 7ezDJIVblwmXruf8qnw==
-X-Authority-Analysis: v=2.4 cv=aMrAb79m c=1 sm=1 tr=0 ts=6a85aa1d cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=e5mUnYsNAAAA:8 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=XbA7GbUpZyLIT2ThUnsA:9
- a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22 a=Vxmtnl_E_bksehYqCbjh:22
-X-Proofpoint-ORIG-GUID: FkxfymiVgJMqGYM3qWgQ1WAA0sIlYa99
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE5MDEwMCBTYWx0ZWRfX8ShXklJQYUqj
- FlNXOrcFPx482C6a/fX4rYQUtSgpmsDdFjmubNf/nmPx17/WWY0OAOWdwqoH/3zUxJjqKcHSx7l
- awqH8+vIZDV4yKfFROj3MFXiUKlEdzM=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-19_03,2026-08-19_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 adultscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1015
- priorityscore=1501 impostorscore=0 spamscore=0 phishscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608190100
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5aecfuiapg.fsf@kernel.org>
 
-On 19-08-2026 00:52, Krzysztof Kozlowski wrote:
-> On 17/08/2026 06:47, Ekansh Gupta wrote:
->> Add a MAINTAINERS entry for the Qualcomm DSP Accelerator (QDA) driver,
->> covering the driver source under drivers/accel/qda, documentation under
->> Documentation/accel/qda, and the UAPI header
->> include/uapi/drm/qda_accel.h. The linux-arm-msm and dri-devel mailing
->> lists are listed as the relevant review lists.
->>
->> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
->> ---
->>  MAINTAINERS | 11 +++++++++++
->>  1 file changed, 11 insertions(+)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 912837dd4640..75fa90c137c7 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -22388,6 +22388,17 @@ S:	Supported
->>  F:	Documentation/devicetree/bindings/crypto/qcom-qce.yaml
->>  F:	drivers/crypto/qce/
->>  
->> +QUALCOMM DSP ACCELERATOR (QDA) DRIVER
->> +M:	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
->> +L:	linux-arm-msm@vger.kernel.org
->> +L:	dri-devel@lists.freedesktop.org
->> +S:	Supported
->> +T:	git https://gitlab.freedesktop.org/drm/misc/kernel.git
->> +F:	Documentation/accel/qda/
+On Wed, Aug 19, 2026 at 05:28:03PM +0530, Aneesh Kumar K.V wrote:
+> Catalin Marinas <catalin.marinas@arm.com> writes:
+> > On Thu, Aug 13, 2026 at 03:55:21PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> >> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> >> index 9f5b366d2086..c3188ca878f3 100644
+> >> --- a/arch/arm64/mm/init.c
+> >> +++ b/arch/arm64/mm/init.c
+> >> @@ -338,12 +338,8 @@ void __init arch_setup_zero_pages(void)
+> >>  void __init arch_mm_preinit(void)
+> >>  {
+> >>  	unsigned int flags = SWIOTLB_VERBOSE;
+> >> -	/* pKVM uses restricted-dma-pool */
+> >> -	bool cc_guest = is_realm_world();
+> >>  
+> >> -	if (cc_guest)
+> >> -		flags |= SWIOTLB_INIT_CC_SHARED;
+> >> -	else if (max_pfn > PFN_DOWN(arm64_dma_phys_limit))
+> >> +	if (max_pfn > PFN_DOWN(arm64_dma_phys_limit))
+> >>  		flags |= SWIOTLB_INIT_ADDRESSING_LIMIT;
+> >>  
+> >>  	swiotlb_init(flags);
+> >
+> > This looks fine. As I mentioned on patch 1, we might as well move this
+> > hunk over there and avoid the flag definition.
+> >
+> >> @@ -102,9 +101,6 @@ void __init mem_encrypt_init(void)
+> >>  
+> >>  void __init mem_encrypt_setup_arch(void)
+> >>  {
+> >> -	phys_addr_t total_mem = memblock_phys_mem_size();
+> >> -	unsigned long size;
+> >> -
+> >>  	/*
+> >>  	 * Do RMP table fixups after the e820 tables have been setup by
+> >>  	 * e820__memory_setup().
+> >> @@ -112,33 +108,9 @@ void __init mem_encrypt_setup_arch(void)
+> >>  	if (cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+> >>  		snp_fixup_e820_tables();
+> >>  
+> >> -	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+> >> -		x86_swiotlb_flags |= SWIOTLB_INIT_CC_SHARED;
+> >> -
+> >>  	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+> >>  		return;
+> >>  
+> >> -	/*
+> >> -	 * For SEV and TDX, all DMA has to occur via shared/unencrypted pages.
+> >> -	 * Kernel uses SWIOTLB to make this happen without changing device
+> >> -	 * drivers. However, depending on the workload being run, the
+> >> -	 * default 64MB of SWIOTLB may not be enough and SWIOTLB may
+> >> -	 * run out of buffers for DMA, resulting in I/O errors and/or
+> >> -	 * performance degradation especially with high I/O workloads.
+> >> -	 *
+> >> -	 * Adjust the default size of SWIOTLB using a percentage of guest
+> >> -	 * memory for SWIOTLB buffers. Also, as the SWIOTLB bounce buffer
+> >> -	 * memory is allocated from low memory, ensure that the adjusted size
+> >> -	 * is within the limits of low available memory.
+> >> -	 *
+> >> -	 * The percentage of guest memory used here for SWIOTLB buffers
+> >> -	 * is more of an approximation of the static adjustment which
+> >> -	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
+> >> -	 */
+> >> -	size = total_mem * 6 / 100;
+> >> -	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
+> >> -	swiotlb_adjust_size(size);
+> >> -
+> >>  	/* Set restricted memory access for virtio. */
+> >>  	virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
+> >>  }
+> >
+> > Credit to claude, it noticed a slight change in behaviour for x86 w.r.t.
+> > the crash kernel reservation. crash_low_size_default() reads the swiotlb
+> > size but the resizing now happens after arch_reserve_crashkernel().
+> > Maybe not an issue.
+> >
+> > Alternatively, we could build the sizing logic into
+> > swiotlb_size_or_default() but I haven't checked whether we have the
+> > right information when this function is called.
 > 
-> There is no such directory.
-the directory got added in a later patch, added this patch at the start
-following the comment here[1].
+> IIUC, the current code can still get a different value from
+> crash_low_size_default() than the final swiotlb size we end up using.
+> This is because crash_low_size_default() is computed early, before
+> default_nareas, which is derived from num_possible_cpus(), has been set.
+> 
+> If we are okay with keeping this consistent with the existing behavior,
+> moving sizing logic to swiotlb_adjusted_size() looks like a clean option.
 
-[1]
-https://lore.kernel.org/all/zideovhb7djvsbydqmdyxbgh6cte7xc5ouhm6gsreww6klqqae@o6w6wd4tic4r/>
+See how it looks, it may turn out cleaner.
 
-> Best regards,
-> Krzysztof
+> > I think at a high level, we need (i.e. separate attributed from sizing):
+> >
+> > 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+> > 		io_tlb_default_mem.cc_shared = true;
+> >
+> > 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
+> > 		if (!restricted_dma_pool_present)
+> > 			swiotlb_adjust_cc_size();	/* 6%, clamped */
+> > 	} else if (!(flags & SWIOTLB_INIT_ADDRESSING_LIMIT) &&
+> > 		   swiotlb_kmalloc_needs_bounce()) {
+> > 		swiotlb_shrink_for_kmalloc();		/* 1MB per 1GB */
+> > 	}
+> >
+> 
+> But pKVM wants to reduce the swiotlb size based on
+> kmalloc_needs_bounce() when it is using a restricted-dma-pool.
+> 
+> ie,
+> 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+> 		io_tlb_default_mem.cc_shared = true;
+> ..
+> 
+> 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> 	    !restricted_dma_pool_present) {
+> 		swiotlb_adjust_cc_attributes();
+> 	} else if (!(flags & SWIOTLB_INIT_ADDRESSING_LIMIT) &&
+> 		   swiotlb_kmalloc_needs_bounce()) {
 
+Ah, right, I got my conditions wrong. Basically a restricted pool
+prevents an swiotlb growth in a protected guest. If no addressing limit
+but kmalloc bouncing, we allocate a small one. Otherwise we should not
+have any swiotlb at all.
+
+I need to write it in a table, too many combinations
+
+CC guest:
+  no restricted pool			=> 6% of RAM
+  restricted pool (pKVM heuristics):
+    addressing limit			=> default size
+    no addressing limit:
+      kmalloc needs bounce		=> minimal
+      no kmalloc bouncing		=> no default swiotlb
+
+Host CC_ATTR_MEM_ENCRYPT		=> default size
+
+No CC:
+  addressing limit			=> default size
+  no addressing limit:
+    kmalloc needs bounce		=> minimal
+    no kmalloc bouncing			=> no default swiotlb
+
+-- 
+Catalin
