@@ -1,213 +1,249 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03CCB21CC5A;
-	Wed, 19 Aug 2026 13:05:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627A037E5C5
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:17:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787144745; cv=none; b=kdjNxo7L0aOFn/g4hpufTl8yluDpRK49GnWE2mjLxsHLsR4bbDCYEEEz8TZ67dVAF2Sya8tkJJh/B3taBE3sZJl4c2rwZXgGOFJFKx26VqkRayAyqh637E9aV0zJYW9qGXvViVJ8nUsJlUFb3X2mNe8I2xcczbA9HV0H0qR27Xc=
+	t=1787145483; cv=none; b=F79yAK7dIb0Tfc+HxwPbHpaKqPCTk6zAlR52iMMcJPFX2rTpM01nJFChCDPwIOEioG4Q+QjX/mNexjEvImOqkDMG4sYWiEcyV31VJkh5EkjtzzGNcW6EvbkyGaIG0g3khcQecmwtGldZLIN2d98WU8/mNyjXujOVoi92pCL/9Pk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787144745; c=relaxed/simple;
-	bh=8tZeoA1qM6yseHc5wH6x5IAXCz7o0dIu8IBtXCtDR5I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=etAHTbBH5EO7kNlx2W/4a5ewRuKwsx76OJm0olw98iJG/pDWa4NKib9YOV6o50gCYUfmAuGfbU+dSvLc+pxTXLF8zJfnqIo3y3EdcpTP3ZemQmm8JePAgO6JOdKGXQs4mCe4Q9BOFReWy5cPlRyUZBFDaN4nm6+XQaILJvfmO1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=t3yWksBP; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1787145483; c=relaxed/simple;
+	bh=+dq/mMnDe9QFfq17yLaBK6nHu+80T6tyc8mfK+ZvPkA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hL00+kABgT+SXPVZ8flA43l5GcQrPRsGvVvKH+waCWAyVCy5Y7m0FTcDU7EygFTUuuUdu1o82LzXFcfGBIRhwETY6KMdGyLvv0nGfKCLIf7owTve/NeFAenlZVhP8msKUC5RIrjAc55wVcXTnEMyHIoZmcXsI81Mmud1VjviQPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=dTR/FC8r; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=C501jhYs; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="t3yWksBP"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DAF8214BF;
-	Wed, 19 Aug 2026 06:05:31 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4142F3F763;
-	Wed, 19 Aug 2026 06:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1787144735; bh=8tZeoA1qM6yseHc5wH6x5IAXCz7o0dIu8IBtXCtDR5I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=t3yWksBPwJHtK3Fh45zd2qMesmCsZj0EcT0Z3hkyOVtVEG9Mxa6bfiidSqLWTXzo4
-	 whdeeirC8wqKVHU+1MTFT5sLwfrgQ2XXTsu9lig87KYPcNaBdKnnKT+HDpBjIv1tHd
-	 6Sq3qDJKVnxymVmnOpi18PnEp+N8VXvbXJBYRKRY=
-Date: Wed, 19 Aug 2026 14:05:29 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [RFC PATCH v2 2/2] dma: swiotlb: Initialize and size shared
- default pools for memory encryption
-Message-ID: <aoWqGW5PhY9K_xTs@arm.com>
-References: <20260813102521.1367737-1-aneesh.kumar@kernel.org>
- <20260813102521.1367737-3-aneesh.kumar@kernel.org>
- <an9RrwoaAsqJQ2vN@arm.com>
- <yq5aecfuiapg.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="dTR/FC8r";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="C501jhYs"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67JD0PHa4114530
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:17:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	DHcojprWwMclTR96W1Kcp7mAYQX7rnuvUTwbQrssUdg=; b=dTR/FC8rtsTF0qmw
+	JN8frrhbf2bjGgTihPM4XakQB12zomE1VpKen0fOtSgG46aHEXyCWFOTuRZKS7Rs
+	ErV6+SGTMSgG3cxaldLhHs3QGPdbiyn9rNpTe7JjLbSzMfqopRCRG987PZcfAFP3
+	4RMg7P2JPaJrnnQ7ssoi1uBBUtLtsd+EBKmGH2JOp3iaFEp2xOORM+hyYlcjI+LN
+	uVpR0jSaAvc19aIOHICGZ4lUAbji2Hanp3LjYjHTNKhVcpF/n17pggSk2jnYp/4E
+	l5I7Lf5/9XTlCfsMkCZYDby3WDNf8pXxOLhPUtjSUGqljtRZ+UaznP0NSLi1KdVB
+	2EiJDg==
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4yfmbbr2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:17:56 +0000 (GMT)
+Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-ca6bd8a190cso1172794a12.0
+        for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 06:17:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787145475; x=1787750275; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=DHcojprWwMclTR96W1Kcp7mAYQX7rnuvUTwbQrssUdg=;
+        b=C501jhYsdW3Rs7N93PuW5MtL6uPt4DW4v+O1L+JVxSVh4KO2ZMbSbBcqaPKjjYo0sx
+         pSBtK7omDf8+PGpQvrGeSc083rTfThP4AGknnl2TjC81DmTcZBwb7e+pJi6GlxBDxIuo
+         yP4UdnahgG65NwbOvFAqXNvsWpX4KSgponWNanmnSv1sZwSKKtc1XUldi1DyyAz72Yyy
+         0Wg+ZDWd7o8bN/EeYLUrHMWdatIOfnYUxZoQfut8M1Hn3i9F0QqbDCUu23kKl9lTl1Pu
+         Pz67YRT4MM6cbACL3EgkfMCVvX4PmbELqwDK1jmhf4T46PjB4EeXUsIaGDajp2mKKoIZ
+         3t0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787145475; x=1787750275;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=DHcojprWwMclTR96W1Kcp7mAYQX7rnuvUTwbQrssUdg=;
+        b=ep6niFLB2VMPsDWHwvUmU+z/T7+tBqRLAnbbUjGZyurOPX/0vMo4DUBz11AtZiCJbN
+         8TT6p5jqw8FLI+stQm9PUYaOUWTI7y8NbAA2BITnY2yEmHewBWcmv//crcoFO/KU9bGx
+         fRlY6HBKIp9F6cqDi2RmVlZCdywyN998XHQ4dwFjGjHxjXMBVd3jVMwMBaXaRz06aiIS
+         6svAkjxI2WVNczGgdm8FqLmUqDPzwRl4Tuq+eLSdwG9nJmOUrAwEUTBXiWoM/If5/5z3
+         nFAcotUxEetRO5R11/VpukIk6YY1h5A1jzUDK/kh7k6yGDaZfX+plolwk2b6v30vdxip
+         hB8A==
+X-Forwarded-Encrypted: i=1; AHgh+Rp+WEG/l4WqNevQhZQLMvef1Vtst4znkPkKLvH8JMXSpEqAK6avq9WyzQ1RPHKRJP927dTH4Q==@lists.linux.dev
+X-Gm-Message-State: AFuF++kfalJYRm2fpX475dgh+j379IpEgee0oxB35jRa2qYzjB3pr8Qq
+	Em+yhuOuzRZKFYZUk9LH74XdW6DpWi/JEHRCktY128GRSV1fAfJwbD9wsKUG9BHP4RLYbveXObZ
+	gGvm+7/h07tJ+kAB7oKmwT/nBfOWTlJ6r6x1OgkkfymxdIk2OSPgMjiHQvQ==
+X-Gm-Gg: AR+sD13LIutTPHlbX9Hxm3VpqhpNxkMEzEbzKtp3IyXgjTrKVJ/WkMvtc6xirY86vcm
+	eSOK+kLEmC98LuDJfTNm7Gh9CDpa8JxrjvpPwp5GfHK7qV8DUit9xroFxpplbbwPxbO03bw0AzN
+	5I6TVvvF4M7K8jyUFyd0N+7aHtppWHtvaA8dOnYcTXE0jjHkl8KXfd9QBYa+XEaFkBoE1aZXA9Z
+	qGj/0UgssaWaVlMket/2/HjHCjt7Czm5cLIBKkJ1H/e5pIeL68L5P13tz3RQX9/SQrYp3JtrCRf
+	UhoTZP3yBiWeNeNzWJnf5zijfwMOHhTqyXVMnlh8Wbv0MJEqNz98QemFPbZjYpZaeGD+N3hz+O+
+	btWoun7wRbX3QJysq7GK1ZzgDoJVuPg==
+X-Received: by 2002:a17:90b:57cc:b0:381:a766:efcc with SMTP id 98e67ed59e1d1-395810e93a0mr8967639a91.14.1787145475193;
+        Wed, 19 Aug 2026 06:17:55 -0700 (PDT)
+X-Received: by 2002:a17:90b:57cc:b0:381:a766:efcc with SMTP id 98e67ed59e1d1-395810e93a0mr8967481a91.14.1787145474636;
+        Wed, 19 Aug 2026 06:17:54 -0700 (PDT)
+Received: from [10.219.56.166] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3957f7c962csm2756751a91.0.2026.08.19.06.17.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Aug 2026 06:17:54 -0700 (PDT)
+Message-ID: <3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com>
+Date: Wed, 19 Aug 2026 18:47:44 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5aecfuiapg.fsf@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 03/15] accel/qda: Add initial QDA DRM accelerator
+ driver
+To: Krzysztof Kozlowski <krzk@kernel.org>, Oded Gabbay <ogabbay@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Bill Wendling
+ <morbo@google.com>,
+        Justin Stitt <justinstitt@google.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>,
+        srinivas.kandagatla@oss.qualcomm.com,
+        dmitry.baryshkov@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org
+References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
+ <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
+ <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
+Content-Language: en-US
+From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+In-Reply-To: <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE5MDEwMyBTYWx0ZWRfX/vwBcWn8AAd+
+ TTRXnQcmDBQuLfTHS8JORwsak4LdFl9w+3/IkrA563fmhirYNjKGH9HXSBUDm9a1QqWE7pi7xQj
+ /NvO0J5fJ0kopIfLrFfPxOfnYDTUx09Xt6+ShsXVDIGKm+zns8WwzFbvGNdjbkyKMs6AvSoft9E
+ CsBX6DwHt6LU5pFlv9CihheVOdULgFAgxCHZ4u3jNYWmfULegp6+diLfBqq6rXROTip7ubO41E2
+ gqUkczgRy7zRfrOLG27BEyVayvLw12K89KvSb7iacBrPrmfrf4AX2N+z/swwQQWCn+LHPMSQht4
+ sxVcOgdGA0RkQXW3uIgIK1LwOcHxBw0J/AATXK4vnQwvunUiGh4oRBqgkTFVZOOqMaVk4GG4/r/
+ xqHmKsJX4DgX72riQoT9YNaVG23ZfdXnTNkqzc34Fpzc33Wg3mYD4qd7amn7DMOd07B9qUFfeWL
+ EzPQcgPIEytkPYjMvTw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE5MDEwMyBTYWx0ZWRfXwkTK6nG79czI
+ dhjeEwuhe6iX4fAnAk5LYf/1DwmgPw13oEmmBH5TtcSYISqYSrzFyYoAzQSoOw0T4lEJHr15bdc
+ JxnfaVDB1N8wzieMwAjB1iVaqKAHXiE=
+X-Proofpoint-GUID: SdUDZ0EnT-8TJyehSCS0S7VXbIY5sP05
+X-Proofpoint-ORIG-GUID: SdUDZ0EnT-8TJyehSCS0S7VXbIY5sP05
+X-Authority-Analysis: v=2.4 cv=J+SaKgnS c=1 sm=1 tr=0 ts=6a85ad04 cx=c_pps
+ a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=D19gQVrFAAAA:8 a=EUspDBNiAAAA:8 a=fiCeWNywFvmbcpy1l9YA:9 a=QEXdDO2ut3YA:10
+ a=3WC7DwWrALyhR5TkjVHa:22 a=W4TVW4IDbPiebHqcZpNg:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-19_03,2026-08-19_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 impostorscore=0 adultscore=0 clxscore=1015 priorityscore=1501
+ spamscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608190103
 
-On Wed, Aug 19, 2026 at 05:28:03PM +0530, Aneesh Kumar K.V wrote:
-> Catalin Marinas <catalin.marinas@arm.com> writes:
-> > On Thu, Aug 13, 2026 at 03:55:21PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> >> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> >> index 9f5b366d2086..c3188ca878f3 100644
-> >> --- a/arch/arm64/mm/init.c
-> >> +++ b/arch/arm64/mm/init.c
-> >> @@ -338,12 +338,8 @@ void __init arch_setup_zero_pages(void)
-> >>  void __init arch_mm_preinit(void)
-> >>  {
-> >>  	unsigned int flags = SWIOTLB_VERBOSE;
-> >> -	/* pKVM uses restricted-dma-pool */
-> >> -	bool cc_guest = is_realm_world();
-> >>  
-> >> -	if (cc_guest)
-> >> -		flags |= SWIOTLB_INIT_CC_SHARED;
-> >> -	else if (max_pfn > PFN_DOWN(arm64_dma_phys_limit))
-> >> +	if (max_pfn > PFN_DOWN(arm64_dma_phys_limit))
-> >>  		flags |= SWIOTLB_INIT_ADDRESSING_LIMIT;
-> >>  
-> >>  	swiotlb_init(flags);
-> >
-> > This looks fine. As I mentioned on patch 1, we might as well move this
-> > hunk over there and avoid the flag definition.
-> >
-> >> @@ -102,9 +101,6 @@ void __init mem_encrypt_init(void)
-> >>  
-> >>  void __init mem_encrypt_setup_arch(void)
-> >>  {
-> >> -	phys_addr_t total_mem = memblock_phys_mem_size();
-> >> -	unsigned long size;
-> >> -
-> >>  	/*
-> >>  	 * Do RMP table fixups after the e820 tables have been setup by
-> >>  	 * e820__memory_setup().
-> >> @@ -112,33 +108,9 @@ void __init mem_encrypt_setup_arch(void)
-> >>  	if (cc_platform_has(CC_ATTR_HOST_SEV_SNP))
-> >>  		snp_fixup_e820_tables();
-> >>  
-> >> -	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-> >> -		x86_swiotlb_flags |= SWIOTLB_INIT_CC_SHARED;
-> >> -
-> >>  	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-> >>  		return;
-> >>  
-> >> -	/*
-> >> -	 * For SEV and TDX, all DMA has to occur via shared/unencrypted pages.
-> >> -	 * Kernel uses SWIOTLB to make this happen without changing device
-> >> -	 * drivers. However, depending on the workload being run, the
-> >> -	 * default 64MB of SWIOTLB may not be enough and SWIOTLB may
-> >> -	 * run out of buffers for DMA, resulting in I/O errors and/or
-> >> -	 * performance degradation especially with high I/O workloads.
-> >> -	 *
-> >> -	 * Adjust the default size of SWIOTLB using a percentage of guest
-> >> -	 * memory for SWIOTLB buffers. Also, as the SWIOTLB bounce buffer
-> >> -	 * memory is allocated from low memory, ensure that the adjusted size
-> >> -	 * is within the limits of low available memory.
-> >> -	 *
-> >> -	 * The percentage of guest memory used here for SWIOTLB buffers
-> >> -	 * is more of an approximation of the static adjustment which
-> >> -	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
-> >> -	 */
-> >> -	size = total_mem * 6 / 100;
-> >> -	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
-> >> -	swiotlb_adjust_size(size);
-> >> -
-> >>  	/* Set restricted memory access for virtio. */
-> >>  	virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
-> >>  }
-> >
-> > Credit to claude, it noticed a slight change in behaviour for x86 w.r.t.
-> > the crash kernel reservation. crash_low_size_default() reads the swiotlb
-> > size but the resizing now happens after arch_reserve_crashkernel().
-> > Maybe not an issue.
-> >
-> > Alternatively, we could build the sizing logic into
-> > swiotlb_size_or_default() but I haven't checked whether we have the
-> > right information when this function is called.
+On 19-08-2026 00:40, Krzysztof Kozlowski wrote:
+> On 17/08/2026 06:47, Ekansh Gupta wrote:
+>> Add the skeleton of the Qualcomm DSP Accelerator (QDA) driver, a DRM
+>> accel driver for the Hexagon DSPs found on Qualcomm SoCs.
+>>
+>> This patch registers a DRM accel device, exposing a /dev/accel/accelN
+>> character device node, and binds it to the RPMsg channel used to reach
+>> the DSP. Buffer management, IOMMU context banks and the FastRPC
+>> protocol are added by later patches in this series.
+>>
+>> qda_drv.c / qda_drv.h define the drm_driver ops table, the per-file
+>> private state (qda_file_priv) and the main device structure (qda_dev),
+>> which embeds drm_device so that it can be recovered with container_of().
+>>
+>> qda_rpmsg.c binds to the "qcom,fastrpc" compatible via
+>> module_rpmsg_driver(), reads the DSP domain name from the "label"
+>> device-tree property, and registers the DRM device.
+>>
+>> Assisted-by: Claude:claude-sonnet-5
+>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>> ---
+>> Changes in v2:
+>> - Use module_rpmsg_driver() and drop the qda_rpmsg_register()/
+>>   _unregister() wrappers, module_init()/module_exit() and
+>>   qda_rpmsg.h entirely (Dmitry Baryshkov)
+>> - Read the "label" property directly into qdev->dsp_name (Dmitry Baryshkov)
+>> - Drop the probe/remove/init log messages (Dmitry Baryshkov)
+>> - Return the result of qda_register_device() directly (Dmitry Baryshkov)
+>> - Clarify the Kconfig help text (Dmitry Baryshkov)
+>> ---
+>>  drivers/accel/Kconfig         |  1 +
+>>  drivers/accel/Makefile        |  1 +
+>>  drivers/accel/qda/Kconfig     | 30 ++++++++++++++++
+>>  drivers/accel/qda/Makefile    | 10 ++++++
+>>  drivers/accel/qda/qda_drv.c   | 71 ++++++++++++++++++++++++++++++++++++++
+>>  drivers/accel/qda/qda_drv.h   | 61 +++++++++++++++++++++++++++++++++
+>>  drivers/accel/qda/qda_rpmsg.c | 79 +++++++++++++++++++++++++++++++++++++++++++
+>>  7 files changed, 253 insertions(+)
+>>
+>> diff --git a/drivers/accel/Kconfig b/drivers/accel/Kconfig
+>> index bdf48ccafcf2..74ac0f71bc9d 100644
+>> --- a/drivers/accel/Kconfig
+>> +++ b/drivers/accel/Kconfig
+>> @@ -29,6 +29,7 @@ source "drivers/accel/ethosu/Kconfig"
+>>  source "drivers/accel/habanalabs/Kconfig"
+>>  source "drivers/accel/ivpu/Kconfig"
+>>  source "drivers/accel/qaic/Kconfig"
+>> +source "drivers/accel/qda/Kconfig"
+>>  source "drivers/accel/rocket/Kconfig"
+>>  
+>>  endif
+>> diff --git a/drivers/accel/Makefile b/drivers/accel/Makefile
+>> index 1d3a7251b950..58c08dd5f389 100644
+>> --- a/drivers/accel/Makefile
+>> +++ b/drivers/accel/Makefile
+>> @@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ARM_ETHOSU)	+= ethosu/
+>>  obj-$(CONFIG_DRM_ACCEL_HABANALABS)	+= habanalabs/
+>>  obj-$(CONFIG_DRM_ACCEL_IVPU)		+= ivpu/
+>>  obj-$(CONFIG_DRM_ACCEL_QAIC)		+= qaic/
+>> +obj-$(CONFIG_DRM_ACCEL_QDA)		+= qda/
+>>  obj-$(CONFIG_DRM_ACCEL_ROCKET)		+= rocket/
+>> \ No newline at end of file
 > 
-> IIUC, the current code can still get a different value from
-> crash_low_size_default() than the final swiotlb size we end up using.
-> This is because crash_low_size_default() is computed early, before
-> default_nareas, which is derived from num_possible_cpus(), has been set.
+> You have trivial patch errors.
+newline problem was already there, wasn't introduced as part of this
+patch series, so I wasn't sure to fix it here. I can fix this in v3.>
+> ...
 > 
-> If we are okay with keeping this consistent with the existing behavior,
-> moving sizing logic to swiotlb_adjusted_size() looks like a clean option.
-
-See how it looks, it may turn out cleaner.
-
-> > I think at a high level, we need (i.e. separate attributed from sizing):
-> >
-> > 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-> > 		io_tlb_default_mem.cc_shared = true;
-> >
-> > 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-> > 		if (!restricted_dma_pool_present)
-> > 			swiotlb_adjust_cc_size();	/* 6%, clamped */
-> > 	} else if (!(flags & SWIOTLB_INIT_ADDRESSING_LIMIT) &&
-> > 		   swiotlb_kmalloc_needs_bounce()) {
-> > 		swiotlb_shrink_for_kmalloc();		/* 1MB per 1GB */
-> > 	}
-> >
+>> +}
+>> +
+>> +static const struct of_device_id qda_rpmsg_id_table[] = {
+>> +	{ .compatible = "qcom,fastrpc" },
+>> +	{},
 > 
-> But pKVM wants to reduce the swiotlb size based on
-> kmalloc_needs_bounce() when it is using a restricted-dma-pool.
+> Device node with this compatible is already populated, so this looks
+> simply wrong or you are adding a duplicated driver.
 > 
-> ie,
-> 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-> 		io_tlb_default_mem.cc_shared = true;
-> ..
+> That's a no-go, you are supposed to work with existing drivers and grow
+> them.
+I'll bring the discussion again here, there was a discussion to move the
+driver to accel subsystem if we want to support new features/uAPI
+changes. Please read [1],[2] threads. The intention is to replace
+fastrpc driver with QDA eventually.
+
+Do you suggest adding a different compatible, say "qcom,qda" for this
+driver?
+
+Let me know if you have a better suggestion to proceed here.
+
+[1] https://lkml.org/lkml/2024/6/24/479
+[2] https://lkml.org/lkml/2024/6/21/1252>
 > 
-> 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
-> 	    !restricted_dma_pool_present) {
-> 		swiotlb_adjust_cc_attributes();
-> 	} else if (!(flags & SWIOTLB_INIT_ADDRESSING_LIMIT) &&
-> 		   swiotlb_kmalloc_needs_bounce()) {
+> Best regards,
+> Krzysztof
 
-Ah, right, I got my conditions wrong. Basically a restricted pool
-prevents an swiotlb growth in a protected guest. If no addressing limit
-but kmalloc bouncing, we allocate a small one. Otherwise we should not
-have any swiotlb at all.
-
-I need to write it in a table, too many combinations
-
-CC guest:
-  no restricted pool			=> 6% of RAM
-  restricted pool (pKVM heuristics):
-    addressing limit			=> default size
-    no addressing limit:
-      kmalloc needs bounce		=> minimal
-      no kmalloc bouncing		=> no default swiotlb
-
-Host CC_ATTR_MEM_ENCRYPT		=> default size
-
-No CC:
-  addressing limit			=> default size
-  no addressing limit:
-    kmalloc needs bounce		=> minimal
-    no kmalloc bouncing			=> no default swiotlb
-
--- 
-Catalin
