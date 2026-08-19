@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7019A1F91F6;
-	Wed, 19 Aug 2026 14:16:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A756385D97;
+	Wed, 19 Aug 2026 14:19:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787149007; cv=none; b=Q5aVisyyQf2aTNlLee53kGcC/sDF7aoC9CBlMWQYmayiK3Amj7yh5LGL2yJpy5GqLeqwHoXwjU+24Zy2aWCpsU5+T7xdRUPvmkDHCpP7/RhjGKy0z+o3qLlkVrgCm8eNA099LybbLerXRJfAB40CMbaEPYJM0SpCJw0h7AOBuVo=
+	t=1787149144; cv=none; b=fPsc37ad1PUGYs6AB5lN2RTSqyPIfqQ8m06ZK/XWRALmK+GOncvlEeBgFC8g+zIMJO3OmYU0y794pYU/krQMNubJkuxOsCVe7jW52sH0Ojohve8XnzvCjue++TfA/AtG2s8eY0ZkdhV4OMg4KlqjBxPiSgLOyC5sB7nZrIJyDdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787149007; c=relaxed/simple;
-	bh=PteIHbiH275kWZIIBEYXQkHgPHnGqNFTyF6O3hS2y3Q=;
+	s=arc-20240116; t=1787149144; c=relaxed/simple;
+	bh=HaePa1lWBz0+Xc0heu/ZSWxaU91BFe9gPYqO8O2uexI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=INi0qIoUioK0flCoa1eT9xzU9IRFqWp+/UWvZVYr/LwHWll+ntaj3ttVdS6S0jLmNiTYcSinSTUWrVz+DsXjNPM/7LOAAEZz95KGJ0eTz+53eby+8NSHLNsEqJ02SgJAwfsvrQttofewqOSy2Xj/0uquBdqy/r4rC5mk4aDpYzA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fte8kch2; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=LaUWZI2Ft2HE/Nn+zUCDenCyVholrun7IGdeG/tjAIDFLT6BdtyjxUUOyWVzV7C/pbrBblXxZIr5C0b75SXIL2e33JnutlAxA8Nm5rtYsL8E4DkTtatFtYKJLyDcmqR6smWXg8h7YIgrVxDmjNfdJZ0hAId0H2RLuCeifPQP3eo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fRdCBY61; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fte8kch2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F30021F000E9;
-	Wed, 19 Aug 2026 14:16:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fRdCBY61"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF7F1F00A3A;
+	Wed, 19 Aug 2026 14:18:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787149006;
-	bh=ApQOqCZQLr0MTo6mhElvZDVb/nXI7NAnILp4nsBA4I4=;
+	s=k20260515; t=1787149143;
+	bh=6rYV8u9cAq3VwmJG5tjX5EWOV1rf+rdFMkUNdfBKsdo=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Fte8kch2HiC9PJciq1otNh8p9WvrdmUsaTL77/1zZMT/uWpRqSAUGBmOcL5tbxdfu
-	 IhciPVYiA74tZwV6zYy+wUBkygUNDgVy/YGdmYjSdw1B3kh8zbfoBwdCbLC1KLGi1v
-	 Zi7yie4ABlx+P1ePz9p1F0Etzh2NWvHtxKOgwVU8RqUFgizMk7+1Jn+eZBQjcBI/MJ
-	 PGcWMNg75MUGucRd+EVW09G2IJIBE+3nZqBo5DtPKckeTFUNEczOSGcvtTtBY6XoPN
-	 /A1ToBUfZJGtw8moKNEVMI0zsE1emOMIr+EIDQ/UHLseqIMJrKzryj7Da0ZVrt2LeD
-	 KB29IM6qNlV8w==
-Message-ID: <f725955b-27aa-4b20-8a4b-84906782b921@kernel.org>
-Date: Wed, 19 Aug 2026 16:16:32 +0200
+	b=fRdCBY61U4D9pN2v9BBB/zDOxolyTjVP2DWVfWvsCBU2ecjdkwR7nQm23RrLF/Ebu
+	 a8eDBuZ1agZS+DgjY8CkQIJDwfipGAF99BCE9d1fyuOCR6lbUdlg2UkePSc+9Orj8L
+	 UtUCGrGioJis7FguH7lyG8EpTuD79MllTGRROuUkNGsjmO/hj4/XxI1Tk6J4pXSVMe
+	 Un4nX9MHkZdtqUrb554dmg0xE3kAE+C6r+WJQkq5b1hF9LOPPoYGjWtjsA0pZN7802
+	 8C1tuO7MAwWlV2wd4dX21ssgt6zFG+bOmX62sDYr28wlnbczH8FoWw9XSZk/Ww+BKX
+	 VoRJptsRwU50g==
+Message-ID: <4ef74e14-8433-4619-ac97-62868c8799d1@kernel.org>
+Date: Wed, 19 Aug 2026 16:18:51 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,8 +35,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/15] MAINTAINERS: Add entry for Qualcomm DSP
- Accelerator (QDA) driver
+Subject: Re: [PATCH v2 03/15] accel/qda: Add initial QDA DRM accelerator
+ driver
 To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
  Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
  Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
@@ -58,9 +58,9 @@ Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
  llvm@lists.linux.dev, iommu@lists.linux.dev, linux-media@vger.kernel.org,
  linaro-mm-sig@lists.linaro.org
 References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <20260817-qda-v2-v2-1-69a02e9090d4@oss.qualcomm.com>
- <cc43a545-20a1-4f15-a7b9-ca48842bffca@kernel.org>
- <e0a25f11-5c7c-406f-a223-da29bf6e1401@oss.qualcomm.com>
+ <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
+ <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
+ <3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -106,48 +106,117 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <e0a25f11-5c7c-406f-a223-da29bf6e1401@oss.qualcomm.com>
+In-Reply-To: <3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 19/08/2026 15:05, Ekansh Gupta wrote:
-> On 19-08-2026 00:52, Krzysztof Kozlowski wrote:
+On 19/08/2026 15:17, Ekansh Gupta wrote:
+> On 19-08-2026 00:40, Krzysztof Kozlowski wrote:
 >> On 17/08/2026 06:47, Ekansh Gupta wrote:
->>> Add a MAINTAINERS entry for the Qualcomm DSP Accelerator (QDA) driver,
->>> covering the driver source under drivers/accel/qda, documentation under
->>> Documentation/accel/qda, and the UAPI header
->>> include/uapi/drm/qda_accel.h. The linux-arm-msm and dri-devel mailing
->>> lists are listed as the relevant review lists.
+>>> Add the skeleton of the Qualcomm DSP Accelerator (QDA) driver, a DRM
+>>> accel driver for the Hexagon DSPs found on Qualcomm SoCs.
 >>>
+>>> This patch registers a DRM accel device, exposing a /dev/accel/accelN
+>>> character device node, and binds it to the RPMsg channel used to reach
+>>> the DSP. Buffer management, IOMMU context banks and the FastRPC
+>>> protocol are added by later patches in this series.
+>>>
+>>> qda_drv.c / qda_drv.h define the drm_driver ops table, the per-file
+>>> private state (qda_file_priv) and the main device structure (qda_dev),
+>>> which embeds drm_device so that it can be recovered with container_of().
+>>>
+>>> qda_rpmsg.c binds to the "qcom,fastrpc" compatible via
+>>> module_rpmsg_driver(), reads the DSP domain name from the "label"
+>>> device-tree property, and registers the DRM device.
+>>>
+>>> Assisted-by: Claude:claude-sonnet-5
 >>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
 >>> ---
->>>  MAINTAINERS | 11 +++++++++++
->>>  1 file changed, 11 insertions(+)
+>>> Changes in v2:
+>>> - Use module_rpmsg_driver() and drop the qda_rpmsg_register()/
+>>>   _unregister() wrappers, module_init()/module_exit() and
+>>>   qda_rpmsg.h entirely (Dmitry Baryshkov)
+>>> - Read the "label" property directly into qdev->dsp_name (Dmitry Baryshkov)
+>>> - Drop the probe/remove/init log messages (Dmitry Baryshkov)
+>>> - Return the result of qda_register_device() directly (Dmitry Baryshkov)
+>>> - Clarify the Kconfig help text (Dmitry Baryshkov)
+>>> ---
+>>>  drivers/accel/Kconfig         |  1 +
+>>>  drivers/accel/Makefile        |  1 +
+>>>  drivers/accel/qda/Kconfig     | 30 ++++++++++++++++
+>>>  drivers/accel/qda/Makefile    | 10 ++++++
+>>>  drivers/accel/qda/qda_drv.c   | 71 ++++++++++++++++++++++++++++++++++++++
+>>>  drivers/accel/qda/qda_drv.h   | 61 +++++++++++++++++++++++++++++++++
+>>>  drivers/accel/qda/qda_rpmsg.c | 79 +++++++++++++++++++++++++++++++++++++++++++
+>>>  7 files changed, 253 insertions(+)
 >>>
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index 912837dd4640..75fa90c137c7 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -22388,6 +22388,17 @@ S:	Supported
->>>  F:	Documentation/devicetree/bindings/crypto/qcom-qce.yaml
->>>  F:	drivers/crypto/qce/
+>>> diff --git a/drivers/accel/Kconfig b/drivers/accel/Kconfig
+>>> index bdf48ccafcf2..74ac0f71bc9d 100644
+>>> --- a/drivers/accel/Kconfig
+>>> +++ b/drivers/accel/Kconfig
+>>> @@ -29,6 +29,7 @@ source "drivers/accel/ethosu/Kconfig"
+>>>  source "drivers/accel/habanalabs/Kconfig"
+>>>  source "drivers/accel/ivpu/Kconfig"
+>>>  source "drivers/accel/qaic/Kconfig"
+>>> +source "drivers/accel/qda/Kconfig"
+>>>  source "drivers/accel/rocket/Kconfig"
 >>>  
->>> +QUALCOMM DSP ACCELERATOR (QDA) DRIVER
->>> +M:	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
->>> +L:	linux-arm-msm@vger.kernel.org
->>> +L:	dri-devel@lists.freedesktop.org
->>> +S:	Supported
->>> +T:	git https://gitlab.freedesktop.org/drm/misc/kernel.git
->>> +F:	Documentation/accel/qda/
+>>>  endif
+>>> diff --git a/drivers/accel/Makefile b/drivers/accel/Makefile
+>>> index 1d3a7251b950..58c08dd5f389 100644
+>>> --- a/drivers/accel/Makefile
+>>> +++ b/drivers/accel/Makefile
+>>> @@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ARM_ETHOSU)	+= ethosu/
+>>>  obj-$(CONFIG_DRM_ACCEL_HABANALABS)	+= habanalabs/
+>>>  obj-$(CONFIG_DRM_ACCEL_IVPU)		+= ivpu/
+>>>  obj-$(CONFIG_DRM_ACCEL_QAIC)		+= qaic/
+>>> +obj-$(CONFIG_DRM_ACCEL_QDA)		+= qda/
+>>>  obj-$(CONFIG_DRM_ACCEL_ROCKET)		+= rocket/
+>>> \ No newline at end of file
 >>
->> There is no such directory.
-> the directory got added in a later patch, added this patch at the start
-> following the comment here[1].
-> 
+>> You have trivial patch errors.
+> newline problem was already there, wasn't introduced as part of this
+> patch series, so I wasn't sure to fix it here. I can fix this in v3.>
+>> ...
+>>
+>>> +}
+>>> +
+>>> +static const struct of_device_id qda_rpmsg_id_table[] = {
+>>> +	{ .compatible = "qcom,fastrpc" },
+>>> +	{},
+>>
+>> Device node with this compatible is already populated, so this looks
+>> simply wrong or you are adding a duplicated driver.
+>>
+>> That's a no-go, you are supposed to work with existing drivers and grow
+>> them.
+> I'll bring the discussion again here, there was a discussion to move the
+> driver to accel subsystem if we want to support new features/uAPI
+> changes. Please read [1],[2] threads. The intention is to replace
+> fastrpc driver with QDA eventually.
 
-This comment did not tell you to make it non-bisectable. This comment
-asked you to add that parts in your first patch. Why did you move
-patches instead of adding this into the first one?
+None of them address the problem. You want to grow fastrpc into user of
+dmabuf? So you move it from misc to here.
+
+Again: you have one driver.
+
+> 
+> Do you suggest adding a different compatible, say "qcom,qda" for this
+> driver?
+
+How would that even work? How much (or many?) hardware do you have in
+your SoC?
+
+> 
+> Let me know if you have a better suggestion to proceed here.
+> 
+> [1] https://lkml.org/lkml/2024/6/24/479
+> [2] https://lkml.org/lkml/2024/6/21/1252>
+
+
+Please do not ever reference lkml.org, it's long time deprecated and
+barely working. Use lore.
+
 
 Best regards,
 Krzysztof
