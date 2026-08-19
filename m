@@ -1,239 +1,206 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19012046.outbound.protection.outlook.com [52.103.23.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B223F54CA
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 15:48:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB3C47F2F9
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 15:59:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.23.46
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787154530; cv=pass; b=CGvARHaAUISK1nhAjryOctAVNmAsOLfXbhq+Ml4AE3YV9Bd97McncFEVhavvpQAFXQiQkphJrhdY6YT1U0BT3wPW4Dh2oO9u0GrrqGX672zYWF3TipzdnKYX990ex/Mj3efYOy/PFkly2NOl79zsFk5BeZS3RzMewICdoPJfVrc=
+	t=1787155191; cv=fail; b=YRqzKPu0BgcoXSDL7+ml/RDP1Ov0uifVCUm/ykHf+hZtKGiKDAHDvqF5wbvAIVcjXnTaGss7R3Gg8Xze0Y114vRBXoNQ6nx1VgjjK2gTQeNLy6egkqi27CVXC0W+JoFC93LcafH72hQDAogIo1wdsp/C9iwFq7v9eJdi7DjHAvU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787154530; c=relaxed/simple;
-	bh=1xcLzj0C3qzK2ZAmV+j0EOQhBmW7Epm9ml6TC3TBUl8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hx6dYcqs2R59mard+auYdXHT1B8/shfzSma1J82QUhJkQ1JSJeMBhwPdaDfFVdVnjTSHufm2MTtyOTOgLvXPcatqo3j7tLoHJEZN8q3rxR63dRQvo4z8vqEnsxZvPgVGyPKsIvzM8TictTc7mw5/7M+aMInDjAKpl7ArTZQYxyM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=RJF/eCs1; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NRnYaKML; arc=pass smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1787155191; c=relaxed/simple;
+	bh=XepYNnxqfJUzSYJEuqBsRfIlNGbG18mz/DCuaQhWWXk=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=uE5P5LvO3UO7nibEoaUo66704dYC4+Y5DPHf/YjYg3QuL1SOVw5jByGEeqYOUhxrWbtL3UhsngT82nF5ibas26QXXMNiCrSczAUG3ZNuTwXvWYNoRni+/cHGskU4Y872bVId7AiUGMXuyT9eOmwXizs7Fnu8ZBTM+eSU/qI0dAg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=QxLiYPyx; arc=fail smtp.client-ip=52.103.23.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="RJF/eCs1";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NRnYaKML"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67JF26CR3606046
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 15:48:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:to; s=
-	qcppdkim1; bh=9LwX2wymuNWHp2N3uz9gd+qk90vslZI2iYUW0/6tKgc=; b=RJ
-	F/eCs1iKDPKXfdB5ApsmYoJxm/g60Lf9+5/Gjz+wuCzKhgMfVMVe+Cxjk44biNnM
-	KdOz4rmYUDmfbVAHeZJskobZsbGPgl6nNtQMPyhL//HGHIxSJEakCRGmZzVWADrY
-	ocNcZa3xFT9BaD4aDGfQYcmQHGnOmjxBOFtDaqwG8hJpO3himuIfvbZNfwwoJZsN
-	lguO3NPX151/ns4boGy4hZ6cvPJ/63CcCujJAxiLVaz96j256GYBgIrVBfP+kOcQ
-	tM1exHWwVoEgkcTjXMDOuuKnmmNnVFPnLYiSUxIXM4lKgusXPi6cmY87/YcaRbmJ
-	jgu1IevwRlk9XbJDTqMA==
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g5esar7rx-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 15:48:47 +0000 (GMT)
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7ead32f5c6aso876524a34.1
-        for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 08:48:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787154527; cv=none;
-        d=google.com; s=arc-20260327;
-        b=sL86DHXUYDBngaSGYhN3bG3tOqiJJ/BmZtRGuGsIlHwjheUo4Lu87pujKaAghod7zI
-         YQ1DWaYObLsWfUiDxofVorCbMwhEIu//HumYQHYa0MdwoT9G2lAgjz5ZqFibUYlIpGdg
-         MKHAuts9GT0SEz1rzzo77XJbiAyNBaUCVNz+pSq28aGT2RLMRNt5yoo5ty258U9EFGg6
-         L6iHLh3P+DtvTagbib1NYoxN30w/dWHjEqW0TzBFpZA5pqj1OMlHAa36fdYgx9iw5rqH
-         WX7FuI+LdsQm9cCQLETPBQjtudxmC8SL1W+JJjWb15ZM+P3vCKmUSVg9t1F8+LWDsNMm
-         j0Cg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:dkim-signature;
-        bh=9LwX2wymuNWHp2N3uz9gd+qk90vslZI2iYUW0/6tKgc=;
-        fh=xZswoC0M0kEe+5avcbTfmXsYQaAVaJQxaj3pcmHVA4Y=;
-        b=Pg+nmLcyg8kylcGL4dFqL6bSNI9v0zXjBPOoIPXnEutpEzU1ewVFC6c9jiK1kDEEnH
-         SxV73P+LlEOyIS/x3CzDErLJoYo1nTW8Y+VubCvVBgpP00oEKP6lJ2AO0kKzabtv0j9Y
-         5pTw4K2R1rFaO4bTkJi392DPXgkEYKfaW04HhkVjihL62NHmiMtH9RHnacLPUVIWc353
-         bTG/aK5W558rP3+H3WENnFZNRj/U99fPNzn68DEUlIr5Pn870Ib9bqed7s452CPa6NOR
-         pF1ThqUo82atYW4OqFGxZF9K1hsD9Zb/kF7NfYIFZgBbMlE/4greTXwuxbh6/pUtR9Pg
-         A7BQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787154527; x=1787759327; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:reply-to:in-reply-to:references:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=9LwX2wymuNWHp2N3uz9gd+qk90vslZI2iYUW0/6tKgc=;
-        b=NRnYaKML05WoGKpyfhIXXp/cz0g/OzYnrHi0i6dPEZx6gx9SFcGrwFBZBT8uCV6119
-         Kn0aSxYg6/DMkaZiQg+vPvcntPPkqpfEjh8s7TGxogOq3L1NRRgJSSkZDun3cRVwxaPN
-         89NxBMyErOncEsqZFv7ViEtkNNqr1mJ9cUmwsIRTTU9xiDJtocjtTucu4jyG82qK+tHB
-         w2O7Flsqa4J2CgDG4xkBrLyv/nFpV1fOvff0vznqt+HRBxODBnDdqc9hXsb7TdyJqrFG
-         7m801inZIsfUNdeJelf84NO3yVVMWJBeQTpitpqCgj4km2dD8dHGRMXvgtIYcxldJZyP
-         IzlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787154527; x=1787759327;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:reply-to:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=9LwX2wymuNWHp2N3uz9gd+qk90vslZI2iYUW0/6tKgc=;
-        b=McBfls/Y2ssZyq5qU/46mocgxFsnh6NmA0Ta7F0FM8QDO6RgzQChLrKaCAblH9yP2y
-         Hku+CVhnQ8T69I2G5ysbHh41gFrM3FYYbkEgt/NKPcLMewZ0VXSenfKaKTdBhzI+Y2PY
-         j3xxtsMpvn7Jz6N7EKEVeJ1v+udcmeWlnYDBGO428ZTQolJe/ywyZqit+UMi4jrQXTBJ
-         xhyo/zbcICNr87kCgR8JmDwgoC0bxBUlCq/jVrTxR+GGbiTPzBxme5MSrdc4ASXGcBWg
-         7SC5mB5wimPD9X11L7wKp+Rph48oVJDXvgMtxS7+AlwLPZFEawji6Fa6Gd3+SmxEjxlW
-         j12w==
-X-Forwarded-Encrypted: i=1; AHgh+RostCpHjVIfKMaI5Ukk1zORcgd5n6yrypDq3z1+vl418hyIjdnt5KEAGyPYlbTzkoCfOUBIJQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyAMtjGAr1g/rF8r63vtOPWIrUKyqUkb+HjQqUaFR/fHKPTm3JQ
-	/Lr2whYXqjdYoym6GrU2T0aq+r0AqwEaSlUmDQaIpi7n0uy7VKBPqglkDAQu3ZDTOY28LOpTzi0
-	Qh6yjFuy6jfF+4MvEfGmGpWgtP6j8vtCmxqxYuQfgoG26SroHSC1Z8KgJiTCGZvZCWxx7qWB42Y
-	0+xrgOxujcOjWtlt3/YOypEWIjkFdapMS0
-X-Gm-Gg: AR+sD11IQakvfSoOMoznVSVmmrwwfc7ITk/RhbIN7HPR/YCJQ13OD6HVlHuvure2SLf
-	wmI/t5JsJKpl3OYRln1LrsQA64jm1ApqFHPvuiXe21sNCSLFHNKZMpMFcWU0CHoy1RnIbG+g8we
-	i/W8iA3WHONuigmPQtIH7sq9q87eRJwyDxMYubQIc4kNzJhSTTthNu0TrG
-X-Received: by 2002:a05:6820:1792:b0:6ae:8ee4:e01f with SMTP id 006d021491bc7-6b13c2d221bmr5523530eaf.4.1787154527090;
-        Wed, 19 Aug 2026 08:48:47 -0700 (PDT)
-X-Received: by 2002:a05:6820:1792:b0:6ae:8ee4:e01f with SMTP id
- 006d021491bc7-6b13c2d221bmr5523471eaf.4.1787154526670; Wed, 19 Aug 2026
- 08:48:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="QxLiYPyx"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=PCqydew2LfyAvFSGRF0MJLqPQ4pDs0km4JUQl0d1J5W/AqaVYGwcFVcLenOBinxEE5/BWmW0yR9UHEN23fid/EGD9eglqVlL/70QqeASw2M2RXzvXFH4vcIR7cTWrwDllIYbGMDf8kQbHXH/MxYSSKKXTmthyBJvnmWbVs3fil7GITi6XlE9v3vDdrUbPlvT1nFI0J7spEqme/PDgkhCtXoX8XjUQAJUxaBJlj94ZdLGYdm6gcCdO2TcFkfOokY1MFN8YHF3mahFao8YJr8B91AuRdCWgcbHdr7XGD+pjB3m1jNifq7zpcNR0yCKoV4LL+s04+sRB0VjOoL0XBC5ZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gG1Vg6xX7xeco+y8LIs8UEgp9zhQ5ByGaiSUh2dvBFM=;
+ b=LaL29E7HD61cAecou0V1d0kEgkZpa+NIEG8KmrLmULmHeO+mdHOLm9lHJKL6OUaJfT+viPeY6a5K2HyTEnPAdvsEUvhLD38EyWVQjP8BxjbrQ6gKRNoTmyNQdrkkn8vjcGKHn8mJeIW826A4I+LDETXquMRnICQruGJ4z3ELe3BAsl2WgPdIuQDqCrJIPB+ERv2Ns4SxWssPcARIJpbVuaTrk8qiw/Cj9N99QWt5KzQ5hbr6yL5nYounANWlpdBUmv2rcH0U/OZ1gjG+n/6yQEtxE20ZQx5UMC09tO3e5rZTmPtsvZZYRxlotYhwgVVUS2OQLSCbcgWisB9EvnObDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gG1Vg6xX7xeco+y8LIs8UEgp9zhQ5ByGaiSUh2dvBFM=;
+ b=QxLiYPyxPLxfMp9iDf+tCzC7GZ+bNzxwmMZLzGxKchT7jzz/0+Y+U8KvtvFcImyFuSbtfAUyfZEdEaiZT8rOu4oAr46RH2o/HyfDhxw1Yl03/2PwkNqo+EEQX6RLBaI9SShXlONqE7BXriM4IV+1ctZ1dgRNLfjIooUvMsvL97vCYDsxlbtygz3pTu5uyVX/WnMLGO2gfWqOPCXY7mnnJ0m9RfzWwx7f0Tbn9V1UQZK/QgDXJh3RGhelSu1Z7mwlpqB1QY3QvSfC5lI77euzjDrXVtmwetCWVlsoSTcIyNmqGbr96mA3+OYvt9PE3pmN0hBrXxiEUfXV7Ue9Tew1cg==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by BN0PR02MB8095.namprd02.prod.outlook.com (2603:10b6:408:164::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.8; Wed, 19 Aug
+ 2026 15:59:45 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0339.007; Wed, 19 Aug 2026
+ 15:59:45 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Naman Jain <namjain@linux.microsoft.com>, Michael Kelley
+	<mhklinux@outlook.com>, Thomas Gleixner <tglx@kernel.org>, Ingo Molnar
+	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+	<dave.hansen@linux.intel.com>, "x86@kernel.org" <x86@kernel.org>, "Joerg
+ Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, "K. Y.
+ Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Wei
+ Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, Long Li
+	<longli@microsoft.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	=?iso-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kwilczynski@kernel.org>, Manivannan
+ Sadhasivam <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
+CC: "H. Peter Anvin" <hpa@zytor.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Robin
+ Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, Shradha Gupta
+	<shradhagupta@linux.microsoft.com>, Aditya Garg
+	<gargaditya@linux.microsoft.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 2/3] x86/irq: Use irq_chip_retrigger_hierarchy() in
+ fixup_irqs()
+Thread-Topic: [PATCH v2 2/3] x86/irq: Use irq_chip_retrigger_hierarchy() in
+ fixup_irqs()
+Thread-Index: AQG4lIWg1CA0E9n3RBnld28Zsf/qhgHTB9rPtt3FEWCAAEDFAIACIFsQ
+Date: Wed, 19 Aug 2026 15:59:44 +0000
+Message-ID:
+ <SN6PR02MB41574989AE7DB1332F06C66DD4A52@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260810090716.2325295-1-namjain@linux.microsoft.com>
+ <20260810090716.2325295-3-namjain@linux.microsoft.com>
+ <SN6PR02MB41570E8FC664CAC4A05CAFA9D4A62@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <72ccf7d4-0fda-4f55-a47c-27486ef3e159@linux.microsoft.com>
+In-Reply-To: <72ccf7d4-0fda-4f55-a47c-27486ef3e159@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|BN0PR02MB8095:EE_
+x-ms-office365-filtering-correlation-id: e9c48a58-ac75-4a13-666d-08defe0ae34a
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|24021099003|55001999006|13091999003|19110799012|8060799015|51005399006|15080799012|8062599012|31061999003|37011999003|25010399006|12121999013|40105399003|2607281247196008|102099032|3412199025|440099028|1710799026;
+x-microsoft-antispam-message-info:
+ =?iso-8859-2?Q?HcnyrZkWI0vgyNPbyzyTKFSFyGb2i5okA/vIwNA2jKnd3bP85GObrLh/Ih?=
+ =?iso-8859-2?Q?gul1+arQ3wOWO9M00mn2UvBaI9UCp12yGi5Z9NsQbFi4hj03Bn1GvOj7k4?=
+ =?iso-8859-2?Q?uYmmgh82eU91zDi06nvqDEavOkAfzqDFzsrO88RS8YZu0rVkUOCTZeO+xZ?=
+ =?iso-8859-2?Q?QDhj7csaIDe1aiJP7aus/ADXYxcZx5kwSxZOSzTM2QCgtnBLeHDnd3YXYb?=
+ =?iso-8859-2?Q?YCi8y468htkNTBbtQ7YpTWMcVYn7l7HYVOVClEVO+/IdaT7qWOzNpqjyiS?=
+ =?iso-8859-2?Q?MJxw4QPKvlQx8Zo9AcZ0tD2fyskKwUB2I9t98w0EOJFrN6/UWA5aCnsaAx?=
+ =?iso-8859-2?Q?3+aoN+qN0N373eTk+DhzT2KdLHfxCp9Z3lBlXxUzzMCVksyBkEVAnbnVKq?=
+ =?iso-8859-2?Q?3sINVavx38FiHxmN+0RpIPOWIdol6PBba/mc2vjnfMxYb5BZKTssoyotUH?=
+ =?iso-8859-2?Q?gJNpv4FXnNKIV7yGQf8bdc/CmzrcJFVYU2JxrB+GlzswnMK524YkbugfNU?=
+ =?iso-8859-2?Q?9iHBdD2gee/1KzLc94jF06h4x2EncqHUmG5WE8LBEd88Rnlt84PDKo39Vx?=
+ =?iso-8859-2?Q?EI1Y6iEXxEzOR7tQBg4W1zuBasp/pNIi9hw2UtDTAhQkcJAJJ2mOAFD8PU?=
+ =?iso-8859-2?Q?6V1F0GjpOjJJcnetUN3520dnx/NjwOafkzAe/5vxHPpG6oBhbK7JMEnpSa?=
+ =?iso-8859-2?Q?azedasK5/V/AZ51L043apQmtruOyV0D26bJHlzerfecxN/PfNjc1km31Td?=
+ =?iso-8859-2?Q?9hvO6DDe1YiCPqL9ymxRoEuLO/UkpZr6n92CIKrKXJn5WE+7MG5Pd/0CkG?=
+ =?iso-8859-2?Q?t+ap3wI4/vlNCwKbtj3rAcIGkyYVkB6KJr1W8bSdD4gauIweJ4AYuI6sgL?=
+ =?iso-8859-2?Q?YiSGwiU7mTGrbTsADPS7ti3qNM9M04M+Ui/gChDjTR63p+bM2JnZFI8iby?=
+ =?iso-8859-2?Q?8OCB7yAZ2qJk4ICyOvLZRap9HCG+FvmyWIJlXpqNT3CJcet87+ht9RcUQ2?=
+ =?iso-8859-2?Q?4/x1sWXwIPGjeabEyVxMW0MWJwH3Q5d1r9iSc8LjICa5kZw0G1d/HHS3An?=
+ =?iso-8859-2?Q?5i5Ttq14mAsFVuqZKr2mo4mAuJ9MG1p9tSBqfaRqbTv+aunhL7LxTK2duS?=
+ =?iso-8859-2?Q?YD1LXI9w=3D=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-2?Q?s8tOggEDuziTeAdVNjzMjDIvqtD7Ul3BxttiVGZ3iLV21JPJhCusKtWx2O?=
+ =?iso-8859-2?Q?yoe2R9iQzj9hekxNNqonQtnRlEojoYIsckltwnc/807+eWVARkmCHK98wj?=
+ =?iso-8859-2?Q?RzuUruJGJcdxQnJD3bxjkh4ljXbXt1o8O0lFXN4A6qPtQKXjKP04KRte2z?=
+ =?iso-8859-2?Q?VpXl9pELf29LcsdsVOO/0Oyl2bO5xQQhVSZcuX3qT0MldgoctOXXaDaiMB?=
+ =?iso-8859-2?Q?i9BoBTkHXYk94Cd3wiZR0x8eCkOKgrAV6M/BSrSC/nHKTKn0W+zeZyyAUh?=
+ =?iso-8859-2?Q?ChB7mBqs1FYQv6N/j95ES99YG+j7GuHYxsF7nO1qrdGOJHE1GzIfpFQpuN?=
+ =?iso-8859-2?Q?e7j/LxWy9FRHrtOT6DDJTelz7XIJ+R3TM0CfJh0phOw8oxc7JZD7rn94cB?=
+ =?iso-8859-2?Q?Ub72oOh/IAgcJICvNTjMrCIGSTvQlh+fXmuKO2o35i2MdL/rY9tglXunp6?=
+ =?iso-8859-2?Q?+NXb6t/V4qL+F9JHHu/hPyP66TAKIPwvsrPlGzDya4mohlcpok2yz6JGed?=
+ =?iso-8859-2?Q?k8HlLjDtDwuXn17g9qpotoak21Ln/iYgco/IMsY5BuGpTqJEF+6LXfPiYq?=
+ =?iso-8859-2?Q?HZqrH+Q+0ktCK574raes7gBQJJupDFLWdLuLXB2XjfsH3AiL5WBr4ZsahO?=
+ =?iso-8859-2?Q?ielu4bQ4B7dHJWZpC1tJtZebCDMZ7hCY6xJgW80hIBso+6DYehQPoR0fL4?=
+ =?iso-8859-2?Q?mLEJi8XLHcJWSnWNdDWNQDvZUD/kwJPk9RS3g8O7fWXbig64mp7YR3GaSe?=
+ =?iso-8859-2?Q?PGh5Zy+7Hoii/HkuQRa7ZKEY4Nk6698B+7Lqo+BN9AZhBhWgcDBzpEyo3q?=
+ =?iso-8859-2?Q?gfcPSeQYYkfuuS2HTNGKAY4wOckfsmfYQyjPm7cBfLXSiw0rcYFXgmWY5P?=
+ =?iso-8859-2?Q?N9JDcMdSZChb2vY4PN0NUNJNCcot0nHigACyES9Df7w77l+aPZSWIE+JKT?=
+ =?iso-8859-2?Q?zIzq+KrTC6doAI99zNXLD4eh3Lh6b+rTzSjTzYyskgxAHhkpHN6bjR/hbB?=
+ =?iso-8859-2?Q?FNutoqSwYrMgfc9EX0xc8TxaqGJiuVG4GPyXK/4GoLsxBJ2pwi7Pv6h5Q1?=
+ =?iso-8859-2?Q?hwRq52XIUZhJvfJZOEZ1/7brWXlpnt+c0hIydFlkFgjEJQzEjMHqeKktc5?=
+ =?iso-8859-2?Q?F/UAkEejQBBHWt5+kbUuoRIeOoTL9I1HF4PlwxF6jMdTF94sJ6/idJETlD?=
+ =?iso-8859-2?Q?uYyeyz8WrH2Tv4zlwuFgJNaPGTp0GIb6ZzIERowetCMkj+9ZNbPyEPY5Ov?=
+ =?iso-8859-2?Q?apmHQDLxE27LZIKoKgUjA1pobn3IeQyFAD4bO4canuyd0VY47teVXl8Wh0?=
+ =?iso-8859-2?Q?VPucn5M2JF68Bg7+FqxTwaGt2U0NxD294b1azJf9V5YetsoaGLpV4zUIe0?=
+ =?iso-8859-2?Q?TrfzHDVEauI8sWSKaJh/48BxUNVlJAuZfo+DGoyWB0C8C79L3vIqg=3D?=
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <3322b42b-3755-45ec-ad55-345125f0d488@kernel.org> <10349e29-b583-403f-a89a-9a00c73666bc@oss.qualcomm.com>
- <87dca76c-851e-4cc3-ab91-68949d283b79@kernel.org> <CACSVV01eYr6FyA6XBG0xw0yv2dydvTEhcY-WUy07mxM8WwkZcg@mail.gmail.com>
- <318f14c2-0e87-4e07-8173-1511dca67d78@kernel.org> <CACSVV01T=ytVJKM7NRoBTAJm7vH+JPJNT9Tftu5X9YskGXerwg@mail.gmail.com>
- <e7b4eceb-cb3a-49ea-bed9-728c958594b0@kernel.org> <CACSVV03ypjBYkhRpt=TyDwOKhejKKke3x=Fi_TvxXN-5U_rCsw@mail.gmail.com>
- <fb834ae5-7113-4a86-bb84-ca5115c8d7ff@kernel.org>
-In-Reply-To: <fb834ae5-7113-4a86-bb84-ca5115c8d7ff@kernel.org>
-Reply-To: rob.clark@oss.qualcomm.com
-From: Rob Clark <rob.clark@oss.qualcomm.com>
-Date: Wed, 19 Aug 2026 08:48:35 -0700
-X-Gm-Features: AcwNN1Uf01RBOSSs1eSJ6ShN0aw0OhP8jKQH--o7bN6dJI2taQ6GEVNP3fqxrcY
-Message-ID: <CACSVV018jB4WRRJ_CUHQmkHXZcqauWJXWGgrzY_HA6cFQ+Q3Xw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/15] accel/qda: Qualcomm DSP Accelerator driver
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
-        Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Justin Stitt <justinstitt@google.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>,
-        srinivas.kandagatla@oss.qualcomm.com,
-        dmitry.baryshkov@oss.qualcomm.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE5MDEyMyBTYWx0ZWRfX5SUi3HRtLWJN
- jN4o1dpoie5WvkMWGCDIqqeibIhj3U3iCiSeV2lO1yH1+ivNA/Sc2VKEVB6ggsF/624cfjndm/p
- 7R9jIrpgqiE4u/dbaqMjSc4JDa1N9Ps=
-X-Authority-Analysis: v=2.4 cv=fKcJG5ae c=1 sm=1 tr=0 ts=6a85d05f cx=c_pps
- a=+3WqYijBVYhDct2f5Fivkw==:117 a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=_glEPmIy2e8OvE2BGh3C:22 a=VwQbUJbxAAAA:8 a=mAvluEFbtwFrZWikVwkA:9
- a=QEXdDO2ut3YA:10 a=eYe2g0i6gJ5uXG_o6N4q:22
-X-Proofpoint-ORIG-GUID: Vm19fxHuozgmP8wjTdMnQ_Y4waa1v2Hy
-X-Proofpoint-GUID: Vm19fxHuozgmP8wjTdMnQ_Y4waa1v2Hy
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE5MDEyMyBTYWx0ZWRfXwAXH5TZ+GpX3
- T5qRt+nsXIfMts0V1iA6OrADslso5fyBay4RECVl6TjmGnaFpZUi7A9bDCgUP/I5vMCvekHdCWN
- b6UA1bCE6dcqIBLU3+1O+baGagqo8pmL2bRGRSsMcEOsijwV7YGoTUSjV+6PLDziE3SQKzJEgj8
- EHy2fjMfw5IdhTydAQZ0omlebBZvlQzycwHzciEmOaM1zAR18kV8Xa8fSU/d+0Vx47+NRrz+id1
- +pWc8xha7KlBXOue3EE2OTbBDSqYnfwQmPnyv/Hokkg4rL0nhtt+HpOcQ5OrUaG2pfWp8MK2sVG
- 2URO6IaR1PBi0F2QlYc8RZMW40T5YXJ7y33RuAc+asgec/wAzOQ5VxidONDQ2UJcOAb376iZ9SD
- i7rDkSJJP1SjpqmxlDmJfGAInB+azJiwSF7Rz4aBnpIp7FWLGbJHPxMen/bX6Lct/0b2A+4nZDW
- unK5TPyrc/2zadXdwfQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-19_04,2026-08-19_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 lowpriorityscore=0 clxscore=1015 spamscore=0 impostorscore=0
- bulkscore=0 adultscore=0 priorityscore=1501 malwarescore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608190123
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: e9c48a58-ac75-4a13-666d-08defe0ae34a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2026 15:59:44.9547
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR02MB8095
 
-On Wed, Aug 19, 2026 at 8:27=E2=80=AFAM Krzysztof Kozlowski <krzk@kernel.or=
-g> wrote:
->
-> On 19/08/2026 17:23, Rob Clark wrote:
-> >>>>
-> >>>> Growing old driver does not look complicated itself. The only a bit
-> >>>> tricky thing is to present somehow exclusive interface to user-space=
-,
-> >>>> like usage of one disables the second etc. Depending on actual
-> >>>> differences in that interface.
-> >>>>
-> >>>> But having a duplicated driver is a clear no go and it is well known
-> >>>> upstream requirement. Nothing new here.
-> >>>
-> >>> Would it be acceptable as a first step to, by default (ie. when no
-> >>> cmdline override/etc) for the new driver to bind to new compatibles
-> >>
-> >> You have one compatible.
-> >>
-> >>> and the existing driver to old?  Ie. have both drivers but only one
-> >>> binds on a given platform?
-> >>
-> >> I don't see how is it possible to write such DTS, because - repeating =
-my
-> >> question - how many hardware blocks is there? I believe only one per
-> >> given DSP, so how could you have two device nodes?
+From: Naman Jain <namjain@linux.microsoft.com> Sent: Tuesday, August 18, 20=
+26 12:31 AM
+>=20
+> On 8/18/2026 10:40 AM, Michael Kelley wrote:
+> > From: Naman Jain <namjain@linux.microsoft.com> Sent: Monday, August 10,=
+ 2026 2:07 AM
+
+[snip]
+
 > >
-> > Maybe I'm misunderstanding something here.. I don't see any new
-> > bindings with this series so my assumption is that the bindings are
-> > the same.  What I meant was something more like "qcom,glymur-fastrpc"
-> > would bind to new driver but "qcom,fastrpc" (which seems to be what is
-> > used on older platforms) would bind to the old driver.
+> > Sashiko pointed out that irq_chip_retrigger_hierarchy() doesn't check
+> > the outermost domain -- it immediately goes the parent. In v1 of this p=
+atch
+> > series, you categorized this as a false positive. But I don't understan=
+d
+> > your explanation. Even if there aren't currently any outermost domains
+> > with a custom retrigger function, there could be at some point in the
+> > future. So it seems wrong to skip it. But maybe I'm missing something.
+> > Could you elaborate on your reasoning?
 > >
-> > So single dts node, but different compatible strings picking which
-> > driver is used.
->
-> Glymur is already done, so imagining we talk about next/future SoC then
-> we would be at point of duplicating drivers for the same hardware. So
-> back to square one of my comments.
+> > Michael
+> >
+>=20
+> irq_chip_retrigger_hierarchy() deliberately skips the chip passed to it
+> and begins with its parent, i.e. apic_retrigger_irq(). The new code was
+> doing the same. However, if someone adds a custom .irq_retrigger, hoping
+> that it would get executed, it would not.
+>=20
+> Sashiko's example was valid in principle, but it is not relevant to
+> these device interrupts because desc->irq_data is the outer
+> MSI/IOAPIC/Hyper-V chip. The LAPIC data is its parent, not the starting
+> data. I found no device IRQ in this path whose descriptor starts
+> directly at lapic_controller.
+>=20
+> I am all in for adding this as a fallback -
+> +    if (chip->irq_retrigger)
+> +        ret =3D chip->irq_retrigger(data);
+> +    else
+> +        ret =3D irq_chip_retrigger_hierarchy(data);
+>=20
+> This should solve this problem while still covering the chips which can
+> forget to add a retrigger function.
+>=20
+> Please let me know if this looks good to you.
 
-I just picked glymur as an example, because I needed to pick
-_something_, and toplevel dts for devices available outside of qcom is
-only just starting to land.  Maybe it wasn't the right example. Let's
-just say "qcom,supercoolfuturething-fastrpc" instead.
+In principle, I think what you have is correct.  But there's a
+problem in that irq_chip_retrigger_hierarchy() isn't defined
+unless CONFIG_IRQ_DOMAIN_HIERARCHY=3Dy.  try_retrigger()
+is what you want, but it's static. You could add the #ifdef's here
+like in try_retrigger(), but the same problem will occur in Patch 3
+with msi_set_affinity(). Really need a non-static version of
+try_retrigger(). Or maybe just doing the #ifdef's here and in
+msi_set_affinity() is the simplest approach. I don't have a
+strong opinion either way.  Sorry this is getting so messy ....
 
-I think my example otherwise still stands.
-
-(In either case, kernel cmdline or similar override to get the new
-driver instead of old would be a good idea.)
-
-> The rule of usptream development is that we do not accept duplicated
-> code, just because a vendor wants to write something new. This is
-> basically the concept applied all over the drivers tree, where we pushed
-> back against all sorts of duplications all over the vendors.
->
-> What I miss in this thread is why would there be any exception here. We
-> do not grant exceptions from standard practices on "I want" reasons.
-
-I agree that we should not have duplicated drivers just for vendor
-lolz.  But when it comes to adopting common frameworks and integrating
-better into the ecosystem, this doesn't seem like something we should
-actively discourage.  I don't think this is a case of vendor lolz, but
-rather reacting to drm/accel emerging as the standard framework for
-this sort of driver.
-
-So how do we get from here to there?
-
-BR,
--R
+Michael
