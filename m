@@ -1,32 +1,33 @@
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F5CF200110
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:34:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7019A1F91F6;
+	Wed, 19 Aug 2026 14:16:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787146457; cv=none; b=TckenQpl9LzLyZ2i3H6qOW9oSGoueeG5kB8iath+uyTRqoOMY7E6R2BN+4lJoPBHWIXeaynrR43QsNgoyFCjf9jpfgfBbhkcif4WF9v6LBbUtC9tmVCZ49347RRGL7iYZJ4JaqhieMc/h2i/lGOm92hj3G464zjcFeYPAE/lCeY=
+	t=1787149007; cv=none; b=Q5aVisyyQf2aTNlLee53kGcC/sDF7aoC9CBlMWQYmayiK3Amj7yh5LGL2yJpy5GqLeqwHoXwjU+24Zy2aWCpsU5+T7xdRUPvmkDHCpP7/RhjGKy0z+o3qLlkVrgCm8eNA099LybbLerXRJfAB40CMbaEPYJM0SpCJw0h7AOBuVo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787146457; c=relaxed/simple;
-	bh=rlrmMp92pOovORco3AnS69Jj1lkAhO2MW/3t3araPkk=;
+	s=arc-20240116; t=1787149007; c=relaxed/simple;
+	bh=PteIHbiH275kWZIIBEYXQkHgPHnGqNFTyF6O3hS2y3Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aQd3KUPdzcj7luS7C1Jh/wzDRh9/lrAha6Dlo3p3uNyuVWbg0NvR7UcObr83o4jwJ62G++Ibm1BVOS1xLRbCl9y0xyexPdi7GwGGWIW0DhLE7Bl9ZneScjWbQsqgeJfSprDimSvYcs9JcDSm/qR2KifL+/jfdRgLjJfF+r4WcHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=MbSiu8rB; arc=none smtp.client-ip=115.124.30.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	 In-Reply-To:Content-Type; b=INi0qIoUioK0flCoa1eT9xzU9IRFqWp+/UWvZVYr/LwHWll+ntaj3ttVdS6S0jLmNiTYcSinSTUWrVz+DsXjNPM/7LOAAEZz95KGJ0eTz+53eby+8NSHLNsEqJ02SgJAwfsvrQttofewqOSy2Xj/0uquBdqy/r4rC5mk4aDpYzA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fte8kch2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="MbSiu8rB"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1787146451; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=LSzR+ioQCez5XNEnsRJG+6PbQ2wRWK2ykPJNBMniWUU=;
-	b=MbSiu8rB/LjiEvY8442fIG9gK8Rm5oQOiERZRH4zs2Rf00FkPWWO4OsbBBEGrpr8Iar605KB+IVkXcsNi5LrYzu4jGl8G0oLk2IQrU/Zdsd9LFgkRk/7SE8tVWv5EcZa8uFelwQ4Lu5/r8+EJ/Kicvd6AKxh/KiDMWyRyOE4Xw0=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R971e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9GlYZM_1787146449;
-Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9GlYZM_1787146449 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 19 Aug 2026 21:34:10 +0800
-Message-ID: <916adcd5-63fd-49b2-b175-c7b509991e37@linux.alibaba.com>
-Date: Wed, 19 Aug 2026 21:34:09 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fte8kch2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F30021F000E9;
+	Wed, 19 Aug 2026 14:16:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787149006;
+	bh=ApQOqCZQLr0MTo6mhElvZDVb/nXI7NAnILp4nsBA4I4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=Fte8kch2HiC9PJciq1otNh8p9WvrdmUsaTL77/1zZMT/uWpRqSAUGBmOcL5tbxdfu
+	 IhciPVYiA74tZwV6zYy+wUBkygUNDgVy/YGdmYjSdw1B3kh8zbfoBwdCbLC1KLGi1v
+	 Zi7yie4ABlx+P1ePz9p1F0Etzh2NWvHtxKOgwVU8RqUFgizMk7+1Jn+eZBQjcBI/MJ
+	 PGcWMNg75MUGucRd+EVW09G2IJIBE+3nZqBo5DtPKckeTFUNEczOSGcvtTtBY6XoPN
+	 /A1ToBUfZJGtw8moKNEVMI0zsE1emOMIr+EIDQ/UHLseqIMJrKzryj7Da0ZVrt2LeD
+	 KB29IM6qNlV8w==
+Message-ID: <f725955b-27aa-4b20-8a4b-84906782b921@kernel.org>
+Date: Wed, 19 Aug 2026 16:16:32 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,192 +35,119 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 16/24] iommu/amd: Introduce IOMMUFD vDevice support for
- AMD
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- jgg@nvidia.com
-Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
- vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
- Sairaj.K@amd.com, jay.chen@amd.com, wvw@google.com, wnliu@google.com,
- dantuluris@google.com, chriscli@google.com, kpsingh@google.com,
- alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com
-References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
- <20260727132913.22475-17-suravee.suthikulpanit@amd.com>
-From: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <20260727132913.22475-17-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 01/15] MAINTAINERS: Add entry for Qualcomm DSP
+ Accelerator (QDA) driver
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+ Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling
+ <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
+ Chenna Kesava Raju <quic_chennak@quicinc.com>,
+ srinivas.kandagatla@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ llvm@lists.linux.dev, iommu@lists.linux.dev, linux-media@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org
+References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
+ <20260817-qda-v2-v2-1-69a02e9090d4@oss.qualcomm.com>
+ <cc43a545-20a1-4f15-a7b9-ca48842bffca@kernel.org>
+ <e0a25f11-5c7c-406f-a223-da29bf6e1401@oss.qualcomm.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <e0a25f11-5c7c-406f-a223-da29bf6e1401@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 19/08/2026 15:05, Ekansh Gupta wrote:
+> On 19-08-2026 00:52, Krzysztof Kozlowski wrote:
+>> On 17/08/2026 06:47, Ekansh Gupta wrote:
+>>> Add a MAINTAINERS entry for the Qualcomm DSP Accelerator (QDA) driver,
+>>> covering the driver source under drivers/accel/qda, documentation under
+>>> Documentation/accel/qda, and the UAPI header
+>>> include/uapi/drm/qda_accel.h. The linux-arm-msm and dri-devel mailing
+>>> lists are listed as the relevant review lists.
+>>>
+>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>>> ---
+>>>  MAINTAINERS | 11 +++++++++++
+>>>  1 file changed, 11 insertions(+)
+>>>
+>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>> index 912837dd4640..75fa90c137c7 100644
+>>> --- a/MAINTAINERS
+>>> +++ b/MAINTAINERS
+>>> @@ -22388,6 +22388,17 @@ S:	Supported
+>>>  F:	Documentation/devicetree/bindings/crypto/qcom-qce.yaml
+>>>  F:	drivers/crypto/qce/
+>>>  
+>>> +QUALCOMM DSP ACCELERATOR (QDA) DRIVER
+>>> +M:	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>>> +L:	linux-arm-msm@vger.kernel.org
+>>> +L:	dri-devel@lists.freedesktop.org
+>>> +S:	Supported
+>>> +T:	git https://gitlab.freedesktop.org/drm/misc/kernel.git
+>>> +F:	Documentation/accel/qda/
+>>
+>> There is no such directory.
+> the directory got added in a later patch, added this patch at the start
+> following the comment here[1].
+> 
 
-在 2026/7/27 21:29, Suravee Suthikulpanit 写道:
-> Initialize vDevice for AMD vIOMMU by setting up the Device ID Mapping
-> table using the guest device ID.
->
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->   drivers/iommu/amd/amd_iommu_types.h | 10 ++++++++++
->   drivers/iommu/amd/iommufd.c         | 31 +++++++++++++++++++++++++++++
->   drivers/iommu/amd/nested.c          | 27 ++++++++++++++++++++++---
->   3 files changed, 65 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 03346258e2dc..39aa872c2741 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -388,6 +388,11 @@
->   #define DTE_GPT_LEVEL_SHIFT	54
->   #define DTE_GPT_LEVEL_MASK	GENMASK_ULL(55, 54)
->   
-> +/* vIOMMU bit fields */
-> +#define DTE_VIOMMU_EN_SHIFT		15
-> +#define DTE_VIOMMU_GDEVICEID_MASK	GENMASK_ULL(31, 16)
-> +#define DTE_VIOMMU_GUESTID_MASK		GENMASK_ULL(47, 32)
-> +
->   #define GCR3_VALID		0x01ULL
->   
->   /* DTE[128:179] | DTE[184:191] */
-> @@ -895,6 +900,7 @@ struct iommu_dev_data {
->   	bool defer_attach;
->   
->   	struct ratelimit_state rs;        /* Ratelimit IOPF messages */
-> +
->   };
->   
->   /* Map HPET and IOAPIC ids to the devid used by the IOMMU */
-> @@ -1122,6 +1128,10 @@ struct amd_irte_ops {
->   	void (*clear_allocated)(struct irq_remap_table *, int);
->   };
->   
-> +struct amd_iommu_vdevice {
-> +	struct iommufd_vdevice core;
-> +};
-> +
->   #ifdef CONFIG_IRQ_REMAP
->   extern struct amd_irte_ops irte_32_ops;
->   extern struct amd_irte_ops irte_128_ops;
-> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-> index bfc4b0ec22a9..1975b2932107 100644
-> --- a/drivers/iommu/amd/iommufd.c
-> +++ b/drivers/iommu/amd/iommufd.c
-> @@ -9,6 +9,7 @@
->   #include "amd_iommu.h"
->   #include "amd_viommu.h"
->   #include "amd_iommu_types.h"
-> +#include "../iommufd/iommufd_private.h"
->   
->   static const struct iommufd_viommu_ops amd_viommu_ops;
->   
-> @@ -126,6 +127,34 @@ static void amd_iommufd_viommu_destroy(struct iommufd_viommu *viommu)
->   	amd_iommu_gid_free(iommu, aviommu->gid);
->   }
->   
-> +/*
-> + * Called from drivers/iommu/iommufd/viommu.c: iommufd_vdevice_alloc_ioctl()
-> + */
-> +static int _amd_viommu_vdevice_init(struct iommufd_vdevice *vdev)
-> +{
-> +	struct iommu_dev_data *dev_data;
-> +	struct pci_dev *pdev = to_pci_dev(vdev->idev->dev);
-> +	struct iommufd_viommu *viommu = vdev->viommu;
-> +	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
-> +
-> +	if (!pdev) {
-> +		pr_err("%s: not a PCI device\n", __func__);
-> +		return -EINVAL;
-> +	}
-> +
+This comment did not tell you to make it non-bisectable. This comment
+asked you to add that parts in your first patch. Why did you move
+patches instead of adding this into the first one?
 
-to_pci_dev() is a container_of(), so it can never return NULL and the
-!pdev check is dead code. Worse, for a non-PCI device it yields a bogus
-pointer which is then dereferenced through dev_iommu_priv_get() below.
-
-> +	dev_data = dev_iommu_priv_get(&pdev->dev);
-> +	if (!dev_data) {
-> +		pr_err("%s: Device not found (devid=%#x)\n",
-> +		       __func__, pci_dev_id(pdev));
-> +		return -EINVAL;
-> +	}
-> +
-> +	pr_debug("%s: gid=%#x, hdev_id=%#x, gdev_id=%#llx\n", __func__,
-> +		 aviommu->gid, pci_dev_id(pdev), vdev->virt_id);
-> +
-> +	return 0;
-> +}
-> +
->   /*
->    * See include/linux/iommufd.h
->    * struct iommufd_viommu_ops - vIOMMU specific operations
-> @@ -133,4 +162,6 @@ static void amd_iommufd_viommu_destroy(struct iommufd_viommu *viommu)
->   static const struct iommufd_viommu_ops amd_viommu_ops = {
->   	.alloc_domain_nested = amd_iommu_alloc_domain_nested,
->   	.destroy = amd_iommufd_viommu_destroy,
-> +	.vdevice_size = VDEVICE_STRUCT_SIZE(struct amd_iommu_vdevice, core),
-> +	.vdevice_init = _amd_viommu_vdevice_init,
->   };
-> diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-> index 81a5ae00225e..6f3ae2496160 100644
-> --- a/drivers/iommu/amd/nested.c
-> +++ b/drivers/iommu/amd/nested.c
-> @@ -10,6 +10,7 @@
->   #include <uapi/linux/iommufd.h>
->   
->   #include "amd_iommu.h"
-> +#include "amd_viommu.h"
->   
->   static const struct iommu_domain_ops nested_domain_ops;
->   
-> @@ -183,13 +184,16 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
->   	return ERR_PTR(ret);
->   }
->   
-> -static void set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
-> -			   struct iommu_dev_data *dev_data, struct dev_table_entry *new)
-> +static int set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
-> +			  struct iommu_dev_data *dev_data, struct dev_table_entry *new)
->   {
-> +	int ret;
-> +	u16 gid;
->   	struct protection_domain *parent;
->   	struct nested_domain *ndom = to_ndomain(dom);
->   	struct iommu_hwpt_amd_guest *gdte = &ndom->gdte;
->   	struct pt_iommu_amdv1_hw_info pt_info;
-> +	unsigned long gDevId;
->   
->   	/*
->   	 * The nest parent domain is attached during the call to the
-> @@ -197,9 +201,15 @@ static void set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
->   	 * of the struct amd_iommu_viommu.parent.
->   	 */
->   	if (WARN_ON(!ndom->viommu || !ndom->viommu->parent))
-> -		return;
-> +		return -EINVAL;
->   
-> +	gid = ndom->viommu->gid;
->   	parent = ndom->viommu->parent;
-> +
-> +	ret = iommufd_viommu_get_vdev_id(&ndom->viommu->core, dev_data->dev, &gDevId);
-> +	if (ret)
-> +		return ret;
-> +
->   	amd_iommu_make_clear_dte(iommu, dev_data->devid, new);
->   
->   	/* Retrieve the current pagetable info via the IOMMU PT API. */
-> @@ -227,6 +237,17 @@ static void set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
->   
->   	/* Guest paging mode */
->   	new->data[2] |= gdte->dte[2] & DTE_GPT_LEVEL_MASK;
-> +
-> +	/* vImuEn */
-> +	new->data[3] |= 1ULL << DTE_VIOMMU_EN_SHIFT;
-> +
-> +	/* GDeviceID */
-> +	new->data[3] |= FIELD_PREP(DTE_VIOMMU_GDEVICEID_MASK, (u16)gDevId);
-> +
-> +	/* GuestID */
-> +	new->data[3] |= FIELD_PREP(DTE_VIOMMU_GUESTID_MASK, gid);
-> +
-> +	return 0;
->   }
->   
->   static int nested_attach_device(struct iommu_domain *dom, struct device *dev,
+Best regards,
+Krzysztof
