@@ -1,32 +1,87 @@
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F55C385D70
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:18:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E273A5989
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:23:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787145520; cv=none; b=MF0J+mEDWGFmVzyrPZM3eIpx6QOJSPdeZUrc2QMg2vvTzLMOA0KyBQgIJE5OjPiZI/Yqe5aiKKXZ/+4BDjJxCh3Gfm9avVVcPZs8JqD77Wn5NrkqzPHaMMEeJl3xg2PGlWGvRMGibJ6WHGdRQUq3wzmgyAo5gGLu43bvmzaiXzg=
+	t=1787145827; cv=none; b=EcTr6f4CjiOHxAXLASw1qvRnosgahyrfUFsGs1aZMoc3ruHV4Q1AbikumT0yAnCzDdGetqe00Hu13O4zAHJv92dIu/2nreYnYv20IJnV56K/oV+Ys98mZOsSkgB2AjWXQPLcdhuKlExZ0qJqJo81oMefy6exGj2AEMfL0XbXSD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787145520; c=relaxed/simple;
-	bh=vn/SkGjfNrKD8wvWcu+XDj6+BCww9V0YVlnZajvUnvo=;
+	s=arc-20240116; t=1787145827; c=relaxed/simple;
+	bh=8zEwHcSWYL+PfZ4t4xdDkAMyQ+XUHLz3oKHb9rAeYm0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KiNPzW6pts7UmBOhLPP9lKB5oWAIp+X6zWEdvg9UJ/YqPhkBkSJa2DR/V0V4nKJcR1d54cpKW/lx0yF9+zviMmPhrfRZc46L+gCr7PiYIgKcwM03Hwk6VT8n4VoEcrtV+tryPwz8fCTeAozw+Sz+NUmdTjNnDL2nlcG9EZMHbi4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=EUwWkm28; arc=none smtp.client-ip=115.124.30.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	 In-Reply-To:Content-Type; b=TjIUfmlqMR7VubiR24X0luC9ai0bXODN0imr4HLECqvcUTnePo0yz6J6AtgJybNsrbqJvUepKS1cwPfChfXkrgpufi/SWC1qdegR7dV9Pp/v6dAfoazyP4pQdnx1+nHmYOS/mhSlZ1o9393HICrJ+P2Zp3fAU2R3IhhsS0FF2zc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=phx23G3q; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ers/Q3j3; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="EUwWkm28"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1787145510; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=ehot8+ud1Cx8OFo0VWldk2182LeLIkSkmbUUWPzs2Xc=;
-	b=EUwWkm28AC0TodbByZdcxrRAD3GKx+Pg214t3mebU4YLS/IsGN5zH4qsk/MskJVNQ1KSusCzz41GRR+2KKbvTzjXxdm2JQMeZIiSZL6TdcYx+bGJzJa/rV0RjaeRBrJUmM8HwZ+HO85abLBZig9BuNQtxFeYidSnDrTAaEAr27w=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9Geup4_1787145509;
-Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9Geup4_1787145509 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 19 Aug 2026 21:18:29 +0800
-Message-ID: <59ce731f-8514-43fb-b9f1-96b4599478c2@linux.alibaba.com>
-Date: Wed, 19 Aug 2026 21:18:28 +0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="phx23G3q";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ers/Q3j3"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67JD0MGk3334134
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:23:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	esjYOP0cHWLWtJ/S0JzZjMyOobiP2YG5+HUVououevY=; b=phx23G3q36vzMkjD
+	VzSOvzfRbKIAW+NIz7GVj/qufa67rrbVOaMgGYh5Vrz/zqSJprH2dHldiPQRoFSW
+	sL/UvxndBrdBv4jcC+3gdRO+ib0m+i66VpURNp2yiEQa1txsI425LCh3WG5tyiXx
+	PKYaXmLaDUEUreD2ZIxm/RmYvnARoQYjAup3yKJ+rEan1pc6LEdDWR1e0VBgh94I
+	ecdJaJYTpYdiw0msc8AQo+ddKlmh16ekSYkFtzXqh7NANfW3C3VJxQbf4v5ClHej
+	epJIqB6zEwGILuMhCWFzoywy2kbxqPQ9xIX8ePXSmygwIguQuVx+ud+uZzDwD6DW
+	Qm6OzA==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4yfkbec7-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 13:23:38 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-38fa7b09921so1869408a91.1
+        for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 06:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787145817; x=1787750617; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=esjYOP0cHWLWtJ/S0JzZjMyOobiP2YG5+HUVououevY=;
+        b=ers/Q3j3pmbuZgjtIL/HN9rFVyzRVfbTmSxBZRYhoSV7HsJj78b+F0heObPJ4z4wuG
+         AkFo0ltfO2JmscdHhBIK4GkGMtyUvpP/l6rA7gFGK3n8dKddl5DO4r7QhYZYYvn4ER1B
+         PHIOx5k6Y+1qS1QlCA3hGPz5CY2aLFIgFkfECay4HKzfinML5aOMC4hxFxXp4AurkKef
+         AE/1Q3d0SW2Vko4HDe/UClJCDcCrgpSq2Dg5vlh1to2V+rgzggWmt//2sAhj7GKZz1CE
+         2SDQIibiWcHRkvsvO5SUBax3ty97oS8uqQBfGL2lxLr+Z+Z4/Kz1q3n16C2/9QEAMgr5
+         TgQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787145817; x=1787750617;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=esjYOP0cHWLWtJ/S0JzZjMyOobiP2YG5+HUVououevY=;
+        b=mbFAUXx1MWVEgLOqmq/ZF0q61ksVm3CFpGLHvqkmqYlCC8uBJrYFfP6UslEOCOfUji
+         fAaCGyaAW1eRetfbuTvey2iUswBccfrODanA7xODOwTuQAA/v4d+dOg8bWMIgI2d/Esp
+         ffVdExFl5iQorqaAH+0VFp956uB2hMdpurjG2JCfWdwrDJ2BTyATGgtyX4uA1gKFGJu4
+         alTOSVbWZNC+nqpymAjmSTniJ/sRiNL6Ygh8mb7DmN4cmLSErBsgmhluEpRS3/cftWfL
+         Mw3kf8fkEIEUFIeOMnXA/lDi3/0yqRQhlwqAutu2DfiJjH5w9aTBRPgufbMcDM0N/Q2Z
+         R0mQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rof13SvAHmvCfSzRMYCS2hEPFGN0dQUccuhJYxZGeNBtEvEPYkc/33Vc/6wipWjjzom/8MC0Q==@lists.linux.dev
+X-Gm-Message-State: AFuF++kLWXGQvwPEE1+XhTobD+lrs7EjuGgtABX9BgX42K/uupql16ul
+	LlvKCTUl+XAWOAAgZSj2ZCfQZpy/KGwQ9vUE5tWrvVF6AMXa5ge+Ce/qsm7QCT75roA9EzTWICZ
+	lmC5jFPLmbJ2lCjS529eawLD866zsUry0ZrE3DBCau0t7MVjSud5IYWOI9w==
+X-Gm-Gg: AR+sD11xtW2BV74Obt3OcGef5WvTMdnX+5Hsi1dTs+J0amB0UkHwt+HxaP0VUsOUUF1
+	EYI7DQwitweCh+6Febfpfosle6iP3b7K4CaPFIRscsOJU9fguzE4ThiDQiVz/RwOCzzEaUKEcCx
+	MvyPDbK6LpGBRSzlC9+kE7zwktKCuDD4qHpMuSJHcG/iQerS7Z2HAWK8QdeQnZgTfUctTH1n0dp
+	gZpejXyJhXXJFQobWp/TevMfyHSdHcUorkYx5M5Ws08JWAAARdTprY2sdSJBvytRrMP7uKz9Ifu
+	unakjMORt5jaZU07DCgX/w/FW3oV6Te3HBkCGXLyqF/HOXxcveR/p30osXzcHla5BYm7fjUp1kb
+	Sl4epnF63Df4S2V2wPHlxIi8h5BgIDA==
+X-Received: by 2002:a17:90b:4d83:b0:38d:dfd1:7c1 with SMTP id 98e67ed59e1d1-39580a91ad5mr8388468a91.2.1787145817282;
+        Wed, 19 Aug 2026 06:23:37 -0700 (PDT)
+X-Received: by 2002:a17:90b:4d83:b0:38d:dfd1:7c1 with SMTP id 98e67ed59e1d1-39580a91ad5mr8388382a91.2.1787145816848;
+        Wed, 19 Aug 2026 06:23:36 -0700 (PDT)
+Received: from [10.219.56.166] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3957f9aaa12sm2843059a91.5.2026.08.19.06.23.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Aug 2026 06:23:36 -0700 (PDT)
+Message-ID: <cf502956-8c99-485b-bf25-9f89d81975ab@oss.qualcomm.com>
+Date: Wed, 19 Aug 2026 18:53:26 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,327 +89,87 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 06/24] iommu/amd: Map vIOMMU VF and VF Control MMIO BARs
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- jgg@nvidia.com
-Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
- vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
- Sairaj.K@amd.com, jay.chen@amd.com, wvw@google.com, wnliu@google.com,
- dantuluris@google.com, chriscli@google.com, kpsingh@google.com,
- alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com
-References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
- <20260727132913.22475-7-suravee.suthikulpanit@amd.com>
-From: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <20260727132913.22475-7-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 00/15] accel/qda: Qualcomm DSP Accelerator driver
+To: Krzysztof Kozlowski <krzk@kernel.org>, Oded Gabbay <ogabbay@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Bill Wendling
+ <morbo@google.com>,
+        Justin Stitt <justinstitt@google.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>,
+        srinivas.kandagatla@oss.qualcomm.com,
+        dmitry.baryshkov@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org
+References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
+ <f009a2fe-5c30-405e-a942-696ea65fb2f3@kernel.org>
+Content-Language: en-US
+From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+In-Reply-To: <f009a2fe-5c30-405e-a942-696ea65fb2f3@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=PoGjqQM3 c=1 sm=1 tr=0 ts=6a85ae5a cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=z9ogCWloIzyHX_id1hcA:9 a=QEXdDO2ut3YA:10
+ a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE5MDEwNCBTYWx0ZWRfXxSFDO2au/l9d
+ qqEgrt2TS39PXHBDpqdGT5rYyjGrmQXlCX4oSVawUYlsyfAyBzL7rHDQzleE5klUIRpweMv/w8a
+ C7f23nDQUHl64AJGEgT50g1og99acSWkGaKepRGV7sPYUkDVyGaP8UHJDKUIfsyNLtkKJlggoAh
+ p2JsU3jxxUDUhW9rokepF6eagdZdzbGpEFkkx9Lk+QT52d5bTBlhT53e0+1+v//1KblRX3CbaTd
+ izeZEdo8f/3mwEX/fwCM66IC3o/WcBlEAEBuAxcyKzYCO/WsTqQv11l3rxV0HaGKA6etp/0OEM7
+ y7x7NMvgz3Ej9TsiLvrEQEftQAVboDBMO0y6z3+nDCZckVqtOgFa4Cs+nlE+UeSbFyMB69jZahN
+ XffXYUj7eZ6S2Ng2Dk8hTNyckBtax3/PsCu5n08aqf3x9j9P5XnecCGTMBVRNoMcm0iA8EPWQ4X
+ 67HsG+a77Wm10XC6odQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE5MDEwNCBTYWx0ZWRfXxLcTyZjAPbRF
+ 6LT571ZX6Izaxx36ouyS/N5Y/ww6+faPGMyvednDn882rvQZqm95+h6JkwfZfvGiSQoteMkzvZs
+ D1lgQnL7M+6BzXZKuPlF9cL0X6VIy3Y=
+X-Proofpoint-GUID: 8lBM_QOKZh8ptDDT2B5evp4Ze-IGObdH
+X-Proofpoint-ORIG-GUID: 8lBM_QOKZh8ptDDT2B5evp4Ze-IGObdH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-19_03,2026-08-19_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 priorityscore=1501 bulkscore=0 spamscore=0 suspectscore=0
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 phishscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608190104
 
+On 19-08-2026 00:48, Krzysztof Kozlowski wrote:
+> On 17/08/2026 06:47, Ekansh Gupta wrote:
+>> This patch series introduces the Qualcomm DSP Accelerator (QDA) driver,
+>> a DRM-based accelerator driver for Qualcomm DSPs. The driver provides a
+>> standardized interface for offloading computational tasks to DSPs found
+>> on Qualcomm SoCs, supporting all DSP domains.
+>>
+>> The QDA driver implements the FastRPC protocol over the DRM accel
+>> subsystem. It uses the same device-tree node structure as the existing
+>> fastrpc driver in drivers/misc/. The approach for binding the QDA driver
+>> to device-tree nodes while coexisting with the fastrpc driver is an open
+>> item described below.
+>>
+>> v1: https://lore.kernel.org/all/20260519-qda-series-v1-0-b2d984c297f8@oss.qualcomm.com/
+>> RFC: https://lore.kernel.org/dri-devel/20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com/T/
+> 
+> So this is a v3, not v2. Please start using b4 correctly, so versioning
+> will be kept instead of faking the numbers.
+I'll correct the versioning in the next post. Thank you for pointing this.
+> 
+> Best regards,
+> Krzysztof
 
-在 2026/7/27 21:28, Suravee Suthikulpanit 写道:
-> Enable hardware vIOMMU on an IOMMU by locating its PCI vendor-specific
-> capability (VSC), reading the VF and VF Control BAR addresses, and
-> mapping them for host access (256MB VF, 4MB VF Control).
->
-> VF Control covers the first 4K of guest IOMMU MMIO (control registers,
-> trapped by QEMU). VF MMIO covers the third 4K (virtualized by the
-> IOMMU). Per-guest bases use the Guest ID from the previous patch.
->
-> Initialize the per-amd_iommu gid_ida here so amd_iommu_gid_alloc() can
-> run when IOMMUFD creates a vIOMMU instance. Export MMIO map helpers and
-> call amd_viommu_uninit() from IOMMU teardown.
->
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->   drivers/iommu/amd/amd_iommu.h       |   2 +
->   drivers/iommu/amd/amd_iommu_types.h |  34 ++++++++
->   drivers/iommu/amd/amd_viommu.h      |   6 ++
->   drivers/iommu/amd/init.c            |   5 +-
->   drivers/iommu/amd/viommu.c          | 124 ++++++++++++++++++++++++++++
->   5 files changed, 169 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index 9f2a1a8a6d3c..044bc9a634a1 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -28,6 +28,8 @@ void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
->   void iommu_feature_enable(struct amd_iommu *iommu, u8 bit);
->   void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
->   				  gfp_t gfp, size_t size);
-> +u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end);
-> +void __init iommu_unmap_mmio_space(struct amd_iommu *iommu);
->   
->   #ifdef CONFIG_AMD_IOMMU_DEBUGFS
->   void amd_iommu_debugfs_setup(void);
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 00f964d5b149..e88e0bacd1a9 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -40,6 +40,12 @@
->   #define MMIO_RANGE_OFFSET	0x0c
->   #define MMIO_MISC_OFFSET	0x10
->   
-> +/* vIOMMU Capability offsets (from IOMMU Capability Header) */
-> +#define MMIO_VSC_VF_BAR_LO_OFFSET	0x08
-> +#define MMIO_VSC_VF_BAR_HI_OFFSET	0x0c
-> +#define MMIO_VSC_VF_CNTL_BAR_LO_OFFSET	0x10
-> +#define MMIO_VSC_VF_CNTL_BAR_HI_OFFSET	0x14
-> +
->   /* Masks, shifts and macros to parse the device range capability */
->   #define MMIO_RANGE_LD_MASK	0xff000000
->   #define MMIO_RANGE_FD_MASK	0x00ff0000
-> @@ -473,6 +479,20 @@ extern bool amdr_ivrs_remap_support;
->   #define for_each_ivhd_dte_flags(entry) \
->   	list_for_each_entry((entry), &amd_ivhd_dev_flags_list, list)
->   
-> +/* VIOMMU stuff */
-> +#define VIOMMU_VF_MMIO_ENTRY_SIZE		4096
-> +#define VIOMMU_VFCTRL_MMIO_ENTRY_SIZE		64
-> +
-> +/* Host ioremap/request_mem_region sizes for VF / VF_CNTL BARs */
-> +#define VIOMMU_VF_MMIO_MAP_SIZE		0x10000000UL
-> +#define VIOMMU_VF_CNTL_MMIO_MAP_SIZE	0x400000UL
-> +
-> +#define VIOMMU_VF_MMIO_BASE(iommu, guestId) \
-> +	(iommu->vf_base + (guestId * VIOMMU_VF_MMIO_ENTRY_SIZE))
-> +
-> +#define VIOMMU_VFCTRL_MMIO_BASE(iommu, guestId) \
-> +	(iommu->vfctrl_base + (guestId * VIOMMU_VFCTRL_MMIO_ENTRY_SIZE))
-> +
->   struct amd_iommu;
->   struct iommu_domain;
->   struct irq_domain;
-> @@ -686,6 +706,20 @@ struct amd_iommu {
->   	 */
->   	u16 cap_ptr;
->   
-> +	/* Vendor-Specific Capability (VSC) pointer. */
-> +	u16 vsc_offset;
-> +
-> +	/*
-> +	 * VF MMIO base physical address. This is needed to calculate/pass
-> +	 * per guest VF MMIO address (3rd 4K of IOMMU MMIO space)
-> +	 */
-> +	u64 vf_base_phys;
-> +	u64 vf_cntl_phys;
-> +
-> +	/* virtual addresses of vIOMMU VF/VF_CNTL BAR */
-> +	u8 __iomem *vf_base;
-> +	u8 __iomem *vfctrl_base;
-> +
->   	/* pci domain of this IOMMU */
->   	struct amd_iommu_pci_seg *pci_seg;
->   
-> diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
-> index f08ab9ef23a9..d0c4fdd00809 100644
-> --- a/drivers/iommu/amd/amd_viommu.h
-> +++ b/drivers/iommu/amd/amd_viommu.h
-> @@ -10,6 +10,8 @@
->   
->   int amd_viommu_init(struct amd_iommu *iommu);
->   
-> +void __init amd_viommu_uninit(struct amd_iommu *iommu);
-> +
->   #else
->   
->   static inline int amd_viommu_init(struct amd_iommu *iommu)
-> @@ -17,6 +19,10 @@ static inline int amd_viommu_init(struct amd_iommu *iommu)
->   	return -EOPNOTSUPP;
->   }
->   
-> +static inline void amd_viommu_uninit(struct amd_iommu *iommu)
-> +{
-> +}
-> +
->   #endif /* CONFIG_AMD_IOMMU_IOMMUFD */
->   
->   #endif /* AMD_VIOMMU_H */
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 5ac883429ced..6e69b3dd8b1e 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -459,7 +459,7 @@ static void iommu_disable(struct amd_iommu *iommu)
->    * mapping and unmapping functions for the IOMMU MMIO space. Each AMD IOMMU in
->    * the system has one.
->    */
-> -static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
-> +u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
->   {
->   	if (!request_mem_region(address, end, "amd_iommu")) {
->   		pr_err("Can not reserve memory region %llx-%llx for mmio\n",
-> @@ -471,7 +471,7 @@ static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
->   	return (u8 __iomem *)ioremap(address, end);
->   }
->   
-
-iommu_map_mmio_space() calls request_mem_region() before ioremap(),
-but if ioremap() fails it returns NULL without releasing the region
-it just reserved. Please make iommu_map_mmio_space() release the
-region on ioremap() failure
-
-
-> -static void __init iommu_unmap_mmio_space(struct amd_iommu *iommu)
-> +void __init iommu_unmap_mmio_space(struct amd_iommu *iommu)
->   {
->   	if (iommu->mmio_base)
->   		iounmap(iommu->mmio_base);
-> @@ -1790,6 +1790,7 @@ static void __init free_iommu_one(struct amd_iommu *iommu)
->   	free_iommu_buffers(iommu);
->   	amd_iommu_free_ppr_log(iommu);
->   	free_ga_log(iommu);
-> +	amd_viommu_uninit(iommu);
->   	iommu_unmap_mmio_space(iommu);
->   	amd_iommu_iopf_uninit(iommu);
->   }
-> diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-> index f4b5f96d4785..014ae16bf58b 100644
-> --- a/drivers/iommu/amd/viommu.c
-> +++ b/drivers/iommu/amd/viommu.c
-> @@ -7,9 +7,15 @@
->   #define dev_fmt(fmt)    pr_fmt(fmt)
->   
->   #include <linux/iommu.h>
-> +#include <linux/amd-iommu.h>
-> +
-> +#include <linux/fs.h>
-> +#include <linux/cdev.h>
-> +#include <linux/ioctl.h>
->   #include <linux/iommufd.h>
->   #include <linux/amd-iommu.h>
->   #include <uapi/linux/iommufd.h>
-> +#include <linux/mem_encrypt.h>
->   
->   #include <asm/iommu.h>
->   #include <asm/set_memory.h>
-> @@ -18,12 +24,130 @@
->   #include "amd_iommu.h"
->   #include "amd_iommu_types.h"
->   #include "amd_viommu.h"
-> +#include "../iommu-pages.h"
-> +
-> +LIST_HEAD(viommu_devid_map);
-> +
-> +static int viommu_init_pci_vsc(struct amd_iommu *iommu)
-> +{
-> +	iommu->vsc_offset = pci_find_capability(iommu->dev, PCI_CAP_ID_VNDR);
-> +	if (!iommu->vsc_offset)
-> +		return -ENODEV;
-> +
-> +	DUMP_printk("device:%s, vsc offset:%04x\n",
-> +		    pci_name(iommu->dev), iommu->vsc_offset);
-> +	return 0;
-> +}
-> +
-> +static void amd_viommu_gid_ida_init(struct amd_iommu *iommu)
-> +{
-> +	ida_init(&iommu->gid_ida);
-> +	iommu->gid_ida_inited = true;
-> +}
-> +
-> +static void amd_viommu_gid_ida_fini(struct amd_iommu *iommu)
-> +{
-> +	if (!iommu->gid_ida_inited)
-> +		return;
-> +
-> +	ida_destroy(&iommu->gid_ida);
-> +	iommu->gid_ida_inited = false;
-> +}
-> +
-> +static void __init amd_viommu_vf_vfcntl_unmap(struct amd_iommu *iommu)
-> +{
-> +	if (iommu->vfctrl_base) {
-> +		iounmap(iommu->vfctrl_base);
-> +		iommu->vfctrl_base = NULL;
-> +	}
-> +	if (iommu->vf_cntl_phys)
-> +		release_mem_region(iommu->vf_cntl_phys, VIOMMU_VF_CNTL_MMIO_MAP_SIZE);
-> +
-> +	if (iommu->vf_base) {
-> +		iounmap(iommu->vf_base);
-> +		iommu->vf_base = NULL;
-> +	}
-> +	if (iommu->vf_base_phys)
-> +		release_mem_region(iommu->vf_base_phys, VIOMMU_VF_MMIO_MAP_SIZE);
-> +}
-> +
-> +void __init amd_viommu_uninit(struct amd_iommu *iommu)
-> +{
-> +	amd_viommu_gid_ida_fini(iommu);
-> +	amd_viommu_vf_vfcntl_unmap(iommu);
-> +}
-> +
-> +static int __init viommu_vf_vfcntl_init(struct amd_iommu *iommu)
-> +{
-> +	u32 lo, hi;
-> +	u64 vf_phys, vf_cntl_phys;
-> +
-> +	/* Setting up VF and VF_CNTL MMIOs */
-> +	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_BAR_LO_OFFSET, &lo);
-> +	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_BAR_HI_OFFSET, &hi);
-> +	vf_phys = hi;
-> +	vf_phys = (vf_phys << 32) | lo;
-> +	if (!(vf_phys & 1)) {
-> +		pr_err(FW_BUG "vf_phys disabled\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_CNTL_BAR_LO_OFFSET, &lo);
-> +	pci_read_config_dword(iommu->dev, iommu->vsc_offset + MMIO_VSC_VF_CNTL_BAR_HI_OFFSET, &hi);
-> +	vf_cntl_phys = hi;
-> +	vf_cntl_phys = (vf_cntl_phys << 32) | lo;
-> +	if (!(vf_cntl_phys & 1)) {
-> +		pr_err(FW_BUG "vf_cntl_phys disabled\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!vf_phys || !vf_cntl_phys) {
-> +		pr_err(FW_BUG "AMD-Vi: Unassigned VF resources.\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	/* Mapping 256MB of VF and 4MB of VF_CNTL BARs */
-> +	vf_phys &= ~1ULL;
-> +	iommu->vf_base = iommu_map_mmio_space(vf_phys, VIOMMU_VF_MMIO_MAP_SIZE);
-> +	if (!iommu->vf_base) {
-> +		pr_err("Can't reserve vf_base\n");
-> +		return -ENOMEM;
-> +	}
-> +	iommu->vf_base_phys = vf_phys;
-> +
-> +	vf_cntl_phys &= ~1ULL;
-> +	iommu->vfctrl_base = iommu_map_mmio_space(vf_cntl_phys, VIOMMU_VF_CNTL_MMIO_MAP_SIZE);
-> +	if (!iommu->vfctrl_base) {
-> +		pr_err("Can't reserve vfctrl_base\n");
-> +		goto err_out;
-> +	}
-> +	iommu->vf_cntl_phys = vf_cntl_phys;
-> +
-> +	pr_debug("%s: IOMMU device:%s, vf_base:%#llx, vfctrl_base:%#llx\n",
-> +		 __func__, pci_name(iommu->dev), vf_phys, vf_cntl_phys);
-> +	return 0;
-> +err_out:
-> +	amd_viommu_uninit(iommu);
-> +	return -ENOMEM;
-> +}
->   
->   int __init amd_viommu_init(struct amd_iommu *iommu)
->   {
-> +	int ret;
-> +
->   	if (!amd_iommu_viommu ||
->   	    !check_feature(FEATURE_VIOMMU))
->   		return 0;
->   
-> +	ret = viommu_init_pci_vsc(iommu);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = viommu_vf_vfcntl_init(iommu);
-> +	if (ret)
-> +		return ret;
-> +
-> +	amd_viommu_gid_ida_init(iommu);
-> +
->   	return 0;
->   }
