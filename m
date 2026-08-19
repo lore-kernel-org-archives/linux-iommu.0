@@ -1,148 +1,223 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6562A3911C3
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 07:35:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF043DCD9C
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 08:18:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787124953; cv=none; b=XRL+7AHXNjkdOaPBUwqxlokLsCzeIvP1nkj+K1n/0V1TxTDzNSbU9ppgxqMtrpO+jrwZON/PeOdhNJ2Bg5F6d922AqKY9jhxeULOGZA87mQtkfZmes4RSAz3mQn0aAZ56ZO0UFKvlDV3JQZDWiN39YDAyOjqm95fANR3Ys7YR18=
+	t=1787127501; cv=none; b=Ck+a9gOfF3aNDysn+WjBEveZqu7J2FGEqYP78ZznOSzjMGeHevuPVO1Ez4YVEvfnvZUzld3vnjuzsf11vI1wN731dQvaPGzVIQf7rZ+5BoC9iLU5Wx5Y+OhT4dTdG+lmqlrl8OnbwkaFUYUy8+ZMsKq+X7K1eH4P8e1CrtYxM/E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787124953; c=relaxed/simple;
-	bh=UMGuM+WEzYHZD+w+RUpLFgQprr/FW0djT8CGLZ4rbhg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Zu8ap2woacvnFOuwmoUfhWMMpJqlyR/ctrCxsfDVSrsQ6Za6Jq9RVN09zF5agL3jZdJJzQCFUvAisnZh+Ya6Psu2CAULfhhl6XJc1Zvlck/dzLGjmKeDpvSvCiCmIcztOQpBrflz5cEgpIJQ/ustQrhll+p/4c/VQpg+7c7XqtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pMTZPyML; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787127501; c=relaxed/simple;
+	bh=EXylCZgrL9h8nQeApwtJhBUtSUDE7y517bWPFtRYkSQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BJwQH5XrRt9cR4OVY95vrUl1sG1jnCQpdpTyEEcv7q/BnoInyMnW+FKxu+uYh2KiCACWdhFGeNuiJZxAqzQkJ7YI93aoYpNIZFst5jB9L/jNngWeiiI3yqfF4lesATQNkfsn26aMxsIvY20M5KZZDX4U1vm+8S00g0zxKstLGF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=EeiBFDkq; arc=none smtp.client-ip=115.124.30.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pMTZPyML"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4957799b92fso461295e9.1
-        for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 00:35:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787124951; x=1787729751; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=EEZZ7jCpPzgYTO9oedvXx8uW0QuKMwnxpLd54iUvN+g=;
-        b=pMTZPyMLghljTMKB+M4vrXp7LyvC19s0rrrWrZFl2QqVwxtbQK6CMOymRd+OlFKVgf
-         HgTAOcduxw6wgS0PdAKtePPOgTGap/2w1Vn4bb88l2K7Ols0bfHHXWK076g4sEGgHwPr
-         CGmz/p4JpMtiNkSPs9Q6PV+6I3d9Ie+MBbe/LKNx5qiu4WhZNb482F1nmMvKrYsmumds
-         IaDsMLjPY3a3EqvGlg/I2IBHeZbD/1ssuB2Wdcr120VzkpRAv6YLxFlM8uA+JB75VYsP
-         wZ0MoTKm8bSFyjnV2BDRCR3ZM0r42/5TKO6uXTdfxwFEfvfzlnob4V6mOmGBub6l3m/q
-         8uPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787124951; x=1787729751;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=EEZZ7jCpPzgYTO9oedvXx8uW0QuKMwnxpLd54iUvN+g=;
-        b=bw6bpW1Gg5Hqqxyz4s848qcVEvmWjKwVjy3JkYMZFiwqzftPdn5z9ZhU2bsDvUdcaV
-         BIwkA6XMLquU7SiNPb1TgZuP63XHa6Scqp8R7pDcspwN3llAzej8va/pu4teKkQ+Z2Jh
-         nWfHOJZ26wLe0+rT9Hj1saU3WCc+yiQyN8I9uuq7wWH0/b2xnwteD0E8bHFJk48xbCg2
-         zLKh6WtvMbC7maVnpXXfoG5GCX4YtK54G4w9rNFhd+Ble0YymMolgNjuiq10CncS8Qfa
-         h0CjPnAmwNH20+RtNcX83wNaRHoRFQYRZOumrJb7iGIhu3/mf21X3IphL0hp4m7tXmbC
-         /IBA==
-X-Forwarded-Encrypted: i=1; AHgh+RpbbW9OGbuJ1TMBHFD7Vv4SJuL1IjU4lRgqnreJ7GAonApJLKMkIHGPR0s8+v48xkO3NKPi6Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwMaAmM8jfaBydF36JNVV3xumxWkM+xlZ/XwSZ48VPrylv5u/HI
-	ITDoVHiI2zJM3poBGNIiL4madM0JRdDRz1R28mtTvfWzkyIe9PaJTe5B
-X-Gm-Gg: AR+sD11AkmueaneG3ZTGGyJJ9DANibJgw2iKYZKMh/WHIPqmVAlk6NIsiwBGms1PQH7
-	8j2nnXUkyOt/l4uB6vivLT4DOB1WCNQpo76iDwETGQAn/eM30DWJcyVos70P4KNLrXvAntbU+f4
-	AsZxtzyvDovP5vYgoy3OET8FuPdiYtNA4z69DNnljkj7ga0p1WVOArWnbY9yp0vL5EldG2f9ffn
-	DKooz0IP+L0fpYFZ6XNg8IhWONI6cHn71SAvqP+JB+pP208vUQr6SMMV4XMwBrDXxBO35ZWO/JP
-	Edk5fVZL0GbINuuAlSZ+GjxgDr3DZWFqJXCIfjf/JhwZ+muxup91ORPPXXwlFJaRuG890Wvsiz7
-	LzIIUZVj3ltrxRRH87Gs1iVsNSBCebmL4ZwIjgAaUxutaRSm0iEOrJHNZeT+DmGCDXFA4oUn9C4
-	8yrZsZxYnN/JYtmaLvyfwABLMl9LUsMW7dpxdep6rA3z8kTgfY/h+4eIs96Mc3U8AYXEynzAG3e
-	RFV8nEBtllc7vy0UwjHlt9eE0+d9UZJTnodRjfOABFlUi32+QHZjaKioUnl5vquzTLUWA==
-X-Received: by 2002:a05:600c:6206:b0:495:71ff:598d with SMTP id 5b1f17b1804b1-499aa1997d8mr24560625e9.1.1787124950666;
-        Wed, 19 Aug 2026 00:35:50 -0700 (PDT)
-Received: from OrangePi5-Plus.BB-HOME (20014C4E1B92960062A31D8DDD4EA0DC.dsl.pool.telekom.hu. [2001:4c4e:1b92:9600:62a3:1d8d:dd4e:a0dc])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499aa0dd3c9sm40653805e9.12.2026.08.19.00.35.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2026 00:35:50 -0700 (PDT)
-From: Igor Paunovic <royalnet026@gmail.com>
-To: Jiaxing Hu <gahing@gahingwoo.com>,
-	Tomeu Vizoso <tomeu@tomeuvizoso.net>,
-	Oded Gabbay <ogabbay@kernel.org>
-Cc: Igor Paunovic <royalnet026@gmail.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Chaoyi Chen <chaoyi.chen@rock-chips.com>,
-	Alexey Charkov <alchark@flipper.net>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 02/12] accel/rocket: wait for a running IRQ handler before resetting a core
-Date: Wed, 19 Aug 2026 09:35:27 +0200
-Message-ID: <20260819073530.6087-1-royalnet026@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260819072420.1780708-1-gahing@gahingwoo.com>
-References: <20260817113603.1436067-1-gahing@gahingwoo.com> <20260817113603.1436067-3-gahing@gahingwoo.com> <20260819013609.1613919-1-gahing@gahingwoo.com> <20260819065146.5904-1-royalnet026@gmail.com> <20260819072420.1780708-1-gahing@gahingwoo.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="EeiBFDkq"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1787127484; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=LaoALB+EnDmHNgZ/YlM0ls9eU9C1PElBX2geRRczHss=;
+	b=EeiBFDkqDgDxTcGuO5YLOa4ZPCym5gdgFa5z/PoyDCUptGBEJOiNdhOGe7lFsu1Vq75TGwauHiZA56bGL4dXtd9nqhRqISCD0F4HP2R4vDDhTqwL7f4r4b6AYqufnvEzk6r9xbfiXBT2mgq7QFWnRhoa8kpbJzKJwb0NGSpGIwI=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9FxBER_1787127460;
+Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9FxBER_1787127460 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Wed, 19 Aug 2026 16:18:03 +0800
+Message-ID: <edbd2471-58c4-4166-8692-d4d03a7486e5@linux.alibaba.com>
+Date: Wed, 19 Aug 2026 16:17:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 02/24] iommu/amd: Introduce vIOMMU-specific events and
+ event
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
+ Sairaj.K@amd.com, jay.chen@amd.com, wvw@google.com, wnliu@google.com,
+ dantuluris@google.com, chriscli@google.com, kpsingh@google.com,
+ alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com
+References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
+ <20260727132913.22475-3-suravee.suthikulpanit@amd.com>
+From: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
+In-Reply-To: <20260727132913.22475-3-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Hi Jiaxing,
 
-The three-run design with the deterministic third arm is exactly the
-de-confounding you promised, and declaring the fourth run void instead
-of letting it pad the table is the kind of honesty that makes the rest
-easy to trust. Glad the third bullet closed on silicon - one line, as
-you say - and thank you for the Reported-by.
+在 2026/7/27 21:28, Suravee Suthikulpanit 写道:
+> Adding support for new vIOMMU events:
+>    * Guest Event Fault event
+>    * vIOMMU Hardware Error event
+>
+> Also, adding support for the additional vIOMMU related flags
+> in existing events.
+>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>   drivers/iommu/amd/amd_iommu_types.h |  7 ++++
+>   drivers/iommu/amd/iommu.c           | 58 ++++++++++++++++++++++-------
+>   2 files changed, 52 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index d2c64e2e9f05..4df6a50128de 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -149,6 +149,9 @@
+>   #define EVENT_TYPE_IOTLB_INV_TO	0x7
+>   #define EVENT_TYPE_INV_DEV_REQ	0x8
+>   #define EVENT_TYPE_INV_PPR_REQ	0x9
+> +#define EVENT_TYPE_GUEST_EVENT_FAULT	0xb
+> +#define EVENT_TYPE_VIOMMU_HW_ERR	0xc
+> +
+>   #define EVENT_TYPE_RMP_FAULT	0xd
+>   #define EVENT_TYPE_RMP_HW_ERR	0xe
+>   #define EVENT_DEVID_MASK	0xffff
+> @@ -261,6 +264,10 @@
+>   #define EVTLOG_SIZE_MAX		SZ_512K /* 32K entries */
+>   #define EVTLOG_LEN_MASK_MAX	(0xFULL << EVTLOG_SIZE_SHIFT)
+>   
+> +/* Constants for IO_PAGE_FAULT event */
+> +#define IO_PAGE_FAULT_VFLAGS_SHIFT	27
+> +#define IO_PAGE_FAULT_VFLAGS_MASK	GENMASK_ULL(27, 23)
+> +
+>   /* Constants for PPR Log handling */
+>   #define PPRLOG_ENTRY_SIZE	0x10
+>   #define PPRLOG_SIZE_SHIFT	56
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 4b4dd20ebec6..50f26c8123f3 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -854,7 +854,7 @@ static void amd_iommu_report_rmp_fault(struct amd_iommu *iommu, volatile u32 *ev
+>   
+>   static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
+>   					u16 devid, u16 domain_id,
+> -					u64 address, int flags)
+> +					u64 address, int flags, u8 vflags)
+>   {
+>   	struct iommu_dev_data *dev_data = NULL;
+>   	struct pci_dev *pdev;
+> @@ -889,13 +889,13 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
+>   		}
+>   
+>   		if (__ratelimit(&dev_data->rs)) {
+> -			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
+> -				domain_id, address, flags);
+> +			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
+> +				domain_id, address, flags, vflags);
+>   		}
+>   	} else {
+> -		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
+> +		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
+>   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> -			domain_id, address, flags);
+> +			domain_id, address, flags, vflags);
+>   	}
+>   
+>   out:
+> @@ -932,29 +932,42 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>   	}
+>   
+>   	if (type == EVENT_TYPE_IO_FAULT) {
+> -		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags);
+> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
+> +
+> +		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags, vflags);
+>   		return;
+>   	}
+>   
+>   	switch (type) {
+>   	case EVENT_TYPE_ILL_DEV:
+> -		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
+> +	{
+> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
+> +
+> +		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY deice=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x vflags=%#x]\n",
+>   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> -			pasid, address, flags);
 
-Meanwhile the differential finished here. The base build existed as a
-pair with the patched one from the start, so this is the same machine,
-same morning, same session.
+A minor typos in the log strings: "deice" -> "device"
 
-Base kernel: identical tree and config, same JOB_TIMEOUT_MS=2 local
-patch, with 1/12 and 2/12 not applied. Same protocol, two passes per
-kernel at console_loglevel 8 and 4:
+> +			pasid, address, flags, vflags);
+>   		dev_err(dev, "Control Reg : 0x%llx\n", ctrl);
+>   		dump_dte_entry(iommu, devid);
+>   		break;
+> +	}
+>   	case EVENT_TYPE_DEV_TAB_ERR:
+> -		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x "
+> -			"address=0x%llx flags=0x%04x]\n",
+> +	{
+> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
+> +
+> +		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x address=%#llx flags=%#04x vlfags=%#x]\n",
+>   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+typos : "vlfags" -> "vflags".
+> -			address, flags);
+> +			address, flags, vflags);
+>   		break;
+> +	}
+>   	case EVENT_TYPE_PAGE_TAB_ERR:
+> -		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x]\n",
+> +	{
+> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
+> +
+> +		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
+>   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> -			pasid, address, flags);
+> +			pasid, address, flags, vflags);
+>   		break;
+> +	}
+>   	case EVENT_TYPE_ILL_CMD:
+>   		dev_err(dev, "Event logged [ILLEGAL_COMMAND_ERROR address=0x%llx]\n", address);
+>   		dump_command(address);
+> @@ -986,6 +999,25 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>   			pasid, address, flags, tag);
+>   		break;
+> +	case EVENT_TYPE_GUEST_EVENT_FAULT:
+> +	{
+> +		u8 gid = event[1] & 0xFFFF;
+> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
 
-              loglevel 8   loglevel 4   recovery   oracle
-  with 1+2/12     12            8        all clean  48/48 both passes
-  without         12           13        all clean  48/48 both passes
+The GuestID is declared as u8 but assigned a 16-bit value masked with
+0xFFFF. This truncates the upper 8 bits. Per the AMD IOMMU Specification
+(Rev 3.10, Section 2.5.12, Table 68), the GuestID field is 16 bits wide
+[15:0]. This should be:
 
-Zero MMU_DTE_ADDR, zero "Error during raw reset", zero lockdep or
-atomic-sleep hits on either kernel; the domain dropped and all three
-cores returned to runtime-suspended between rounds on both.
+     u16 gid = event[1] & 0xFFFF;
 
-Your distinction between the two tests deserves my numbers next to it:
-all 45 of my resets hit a healthy block crossing a 2 ms timeout, and
-the domain dropped every single time, on both kernels. Whether a
-genuinely hung block would keep an RK3588 domain up the way your
-failing runs stay up on RK3576, this protocol cannot say - I do not
-yet know how to manufacture a real hang deliberately. So the honest
-summary of that difference: the step your failing runs are missing
-simply never goes missing here under my conditions, and I cannot
-reproduce yours.
+Note that the VIOMMU_HARDWARE_ERROR handler below correctly uses u16 for
+the same field, so this looks like an oversight.
 
-The race itself did not manifest in the 45 resets on either kernel.
-Timeouts are easy to induce; a completion racing the reset inside a
-microseconds-wide window is not, so the justification for the pair
-remains the source analysis. The tag attests what was actually tested:
-recovery and absence of regressions on the patched kernel, against a
-differential base.
 
-For 1/12 my v7 Tested-by carries to the v8 shape as re-run here. For
-2/12:
+Additionally, per Section 2.5.12, a GUEST_EVENT_FAULT occupies two log
+entries (paired event entry). The current iommu_poll_events() advances
+by a single entry per iteration, so the second (paired) entry will be
+misinterpreted as an unknown event type on the next iteration. The
+handler should consume/skip the second entry.
 
-Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, three cores,
-                                                 # induced reset, differential
-                                                 # base, JOB_TIMEOUT_MS=2
-
-I understand the v9 sync patch will carry the interrupt mask and so
-change shape; the harness here is standing, so say the word when v9 is
-posted and I will re-run the protocol on it as-is.
-
-Regards,
-Igor
+> +
+> +		dev_err(dev, "Event logged [GUEST_EVENT_FAULT gid=#%x flags=0x%04x vflags=%#x]\n",
+> +			gid, flags, vflags);
+> +		break;
+> +	}
+> +	case EVENT_TYPE_VIOMMU_HW_ERR:
+> +	{
+> +		u16 gid = event[0] & 0xFFFF;
+> +		u8 src = (event[0] >> 16) & 0x3;
+> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
+> +
+> +		dev_err(dev, "Event logged [VIOMMU_HW_ERR gid=%#x address=%#llx src=%#x flags=%#x vflags=%#x]\n",
+> +			gid, address, src, flags, vflags);
+> +		break;
+> +	}
+>   	default:
+>   		dev_err(dev, "Event logged [UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+>   			event[0], event[1], event[2], event[3]);
