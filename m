@@ -1,60 +1,60 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6715344064E;
-	Wed, 19 Aug 2026 19:55:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 554FC3CF043;
+	Wed, 19 Aug 2026 19:55:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787169304; cv=none; b=XOR9qrxDa9pUYskG7fX3FbW9yU5DgLv2G6aZnS/8v7/9eDanslY2zzHh9sarIwzDQ8Da+1CCw7k2yS91MmXpicif3kyjfGI5Se5rpkokqsDhcjsl+zsdRb8msvuK0NyKIznJwz6VtwTM9d4NFsZXB4gyRyd9zRruS27OG8OXJGM=
+	t=1787169319; cv=none; b=iUM10MjtxUzt9rZwAxrHiMks5dZSKdam3Vxk4K9TSaNGCkQWJOMOgjJ4BNWyMS7WqF8vzWAsS99H9EzhVL9TVnuAv156bPUS/2hYF2KqermkicKofiTq5M+0WeZs9OJVjVrif5Cl+7wzCJ+AzzmjiXyqGGEw2YN8zOgRSvQHwEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787169304; c=relaxed/simple;
-	bh=dNcaI2PeyD4aDnJtk9eMrXn8Eajfyw8w40YCP3KBgI4=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=PVZsKVM/ovOWIIm4/XCE6n9gdBgJ0+xcYUG3XV63s9JYB8x/5ZEkHRC8um0faZwZVsBmCwv3kvQg7nrjq9EGbh4YMY9ZWk5G8w59ZuUTNc31Ha7IKxTb21J8sapH7wWqZQb0bPnqnOPn9FeeVaaLo9kjKjcajGjW2DQxJMaqdts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RbuodYR3; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787169319; c=relaxed/simple;
+	bh=EL6JWSPRlTXzB4m4YKXCDyojr/pc3q7tdTIq1On0TZA=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=GqdeohyCgf61xjYCMctxWMUjPA07ZyVh3wGeOIiCyUycZcCs9JIzK6Q8rXGZYYU8fzAjko2AeOsKiTttmceTtZ3y3/yS5N6xLcPExTMV2CPgCHux7umR8HJqNryL7OpLVeNe0vskrO1Y88s36Q4QPP1N1HfDFNXbm6vn6kVFxHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h+oqbcmE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RbuodYR3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 038471F000E9;
-	Wed, 19 Aug 2026 19:55:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h+oqbcmE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D4141F000E9;
+	Wed, 19 Aug 2026 19:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787169303;
-	bh=CdduKpfLEieMjwAz7v8gkaW7mkfilKTd4J43EVChf28=;
+	s=k20260515; t=1787169318;
+	bh=dmd7EZWiY4ZOJJ/WH0dLza19HeUemkfu3jU5pP63n7s=;
 	h=Subject:From:In-Reply-To:References:Date:To:Cc;
-	b=RbuodYR3asIs5Qb8WoRXy5cshtEKDmiM8lMjyqRACJNItFxGhweT9uK1vFg0lpVFu
-	 k8wITbK5lvluI5dgqekszqAYmptoTyJpWyNlKD2teDwnLZLC1t2crUVs3TwyCMAWn9
-	 UnpHTXVt5OnqeHNdRw8tbovJvQGo7sHmbscQy1aqEamMLhxpCubg2H9bwldbpRdlnA
-	 5afo5V395CAR4IgcaRjuf6RIyxSXHx54K0sFntF0SzKMUoaaCaXvngdYYexv7+ofsW
-	 2ClyD+9XnDzHQKWcBkT++MkoZwfSK1Fq9NvbOwK0temsHHuU5nfkEloxIr68+Rx7G9
-	 5Lj8gDYU6pYvA==
+	b=h+oqbcmEtHAKrN2tUQ9n9mqGxqU3sz8HgekXnPL0YqePKzh3URBWKI5vHr4bjjuj9
+	 4+d0yYrBI/uz5cOuo6GQpa+Xjc0agO7ob43p9yDPDDkU3zJe3LlTAZde7/hwHq65jv
+	 Ht9ieYSgfbF2nTOhiiG+G7Z/MCidleqWim/v249ycZUG/ANBKUBfT252azJMoEOX/6
+	 tdZkJYlYYfC6ULbVBS06rfZVkmpNtr10wq+xNiav9bI+l/wlYC93ZPepNU0ogwcW11
+	 AOE/PyE5q4YyGb4wLYFmjm2IgnopGgyqSBSDuUY3/FD9rKcP5fCqOmqT+J0onfbSfJ
+	 AG54N6yXnP1Zw==
 Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 198243811A47;
-	Wed, 19 Aug 2026 19:54:15 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 568C73811A47;
+	Wed, 19 Aug 2026 19:54:30 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Updates for Linux v7.3
 From: pr-tracker-bot@kernel.org
-In-Reply-To: <20260818203603.GA96412@nvidia.com>
-References: <20260818203603.GA96412@nvidia.com>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20260818203603.GA96412@nvidia.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-X-PR-Tracked-Commit-Id: 8c07df7cdfcf52f1ff276c588612aabc6c6b8399
+In-Reply-To: <aoMm4FPj8xVb-oK2@8bytes.org>
+References: <aoMm4FPj8xVb-oK2@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <aoMm4FPj8xVb-oK2@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v7.3
+X-PR-Tracked-Commit-Id: 3c6a2bac15247bc4f28125247ff89165324612fe
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 85e0d1de369cdf827dae8c759f40696de81b7ca7
-Message-Id: <178716925367.3672948.7462034479550378677.pr-tracker-bot@kernel.org>
-Date: Wed, 19 Aug 2026 19:54:13 +0000
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+X-PR-Merge-Commit-Id: 4994ef0fe01e0c58a9af187f98a030c35dfb1a93
+Message-Id: <178716926903.3672948.15275499168552405031.pr-tracker-bot@kernel.org>
+Date: Wed, 19 Aug 2026 19:54:29 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-The pull request you sent on Tue, 18 Aug 2026 17:36:03 -0300:
+The pull request you sent on Mon, 17 Aug 2026 17:22:02 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v7.3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/85e0d1de369cdf827dae8c759f40696de81b7ca7
+https://git.kernel.org/torvalds/c/4994ef0fe01e0c58a9af187f98a030c35dfb1a93
 
 Thank you!
 
