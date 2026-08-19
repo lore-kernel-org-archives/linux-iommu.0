@@ -1,66 +1,65 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B893D3CF5
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 06:52:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6562A3911C3
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 07:35:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787122332; cv=none; b=qEosABxP25OJ3Sbx+Z/S7uAwUfwRMZzOR0zWhVEotxkD2GA7EKsh68bsrtTM7ElszmejIGHFRreExmUIlaRauKKAZCxjxsqcTSOFGRzuVl6EMqQEO59EE7/mH8c/Vlx1A8Th/vQSPWobXOHv7rX6bRRNdIrH0+lu1O1/btddfgU=
+	t=1787124953; cv=none; b=XRL+7AHXNjkdOaPBUwqxlokLsCzeIvP1nkj+K1n/0V1TxTDzNSbU9ppgxqMtrpO+jrwZON/PeOdhNJ2Bg5F6d922AqKY9jhxeULOGZA87mQtkfZmes4RSAz3mQn0aAZ56ZO0UFKvlDV3JQZDWiN39YDAyOjqm95fANR3Ys7YR18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787122332; c=relaxed/simple;
-	bh=7L8FhPidYshQa7hPUb4sqzzNddh3rrpG6iUMzSGFgE8=;
+	s=arc-20240116; t=1787124953; c=relaxed/simple;
+	bh=UMGuM+WEzYHZD+w+RUpLFgQprr/FW0djT8CGLZ4rbhg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oGpL6qKAsj47eBxst/Cjpl3eIMcapHBR9wm9YxCi3SgMl8jg9tSL98ciYEQrhA02h7mD9ZGY6lj14WgaWbc6QYsQUP0JLlw36ya7wdwwDJe0JCE/P7c05ktt3NkxoSaLD8LEFPwA1i4aGHaWLtK4ObaDJ+sbTSeOHsqHMr2KsRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fMEoRQdP; arc=none smtp.client-ip=209.85.128.48
+	 MIME-Version:Content-Type; b=Zu8ap2woacvnFOuwmoUfhWMMpJqlyR/ctrCxsfDVSrsQ6Za6Jq9RVN09zF5agL3jZdJJzQCFUvAisnZh+Ya6Psu2CAULfhhl6XJc1Zvlck/dzLGjmKeDpvSvCiCmIcztOQpBrflz5cEgpIJQ/ustQrhll+p/4c/VQpg+7c7XqtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pMTZPyML; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fMEoRQdP"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-495773ee3edso501985e9.3
-        for <iommu@lists.linux.dev>; Tue, 18 Aug 2026 23:52:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pMTZPyML"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4957799b92fso461295e9.1
+        for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 00:35:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787122329; x=1787727129; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1787124951; x=1787729751; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=eNYpcIGxrPu5UcGxlHe8CSKb/lcjMt/RLjlOnDxhBfE=;
-        b=fMEoRQdP9/J5vId+IgJG8LDunVAZELCGFeWNaIkY537sMHrFECn4dBuao80n+i9wnq
-         pH3Cedj9ZIDZ0DkR4b3Mwzd7UMFtIGRYO6jwA3aailO5ZWmONirXzzx+K1SBtEBkgR/t
-         eoFp441OChfMeleGwx7tC8DpBkGehrJQOIP0QBLx4B6ssf4ggrAuzdsXXD6K/PFAoIUI
-         aVAtn2RbJ/rolbMVQLdXG0kbHhBqocEo2nexR58RABXStw1uJLTdvHNY9v28Hf29qgvf
-         pZmrpseitobQYDwbWmXAO3M+exL/90djf+15VcCfZ9Cdg8P/YxcmukzKk4w06BupL33k
-         n4xQ==
+        bh=EEZZ7jCpPzgYTO9oedvXx8uW0QuKMwnxpLd54iUvN+g=;
+        b=pMTZPyMLghljTMKB+M4vrXp7LyvC19s0rrrWrZFl2QqVwxtbQK6CMOymRd+OlFKVgf
+         HgTAOcduxw6wgS0PdAKtePPOgTGap/2w1Vn4bb88l2K7Ols0bfHHXWK076g4sEGgHwPr
+         CGmz/p4JpMtiNkSPs9Q6PV+6I3d9Ie+MBbe/LKNx5qiu4WhZNb482F1nmMvKrYsmumds
+         IaDsMLjPY3a3EqvGlg/I2IBHeZbD/1ssuB2Wdcr120VzkpRAv6YLxFlM8uA+JB75VYsP
+         wZ0MoTKm8bSFyjnV2BDRCR3ZM0r42/5TKO6uXTdfxwFEfvfzlnob4V6mOmGBub6l3m/q
+         8uPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787122329; x=1787727129;
+        d=1e100.net; s=20251104; t=1787124951; x=1787729751;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=eNYpcIGxrPu5UcGxlHe8CSKb/lcjMt/RLjlOnDxhBfE=;
-        b=F6PaBhzCh9ssKXzi5P3z3LGpLo14aPOvLz75kgYm+eYa2SBFBS0xSqIFYUOL9WUk98
-         VeMzqZYOJgV2lNHwP1i3MVvy5ghjzU2Tb/XQRuPc2O4hgeK7Kvce8tFVjKcH5VTOSPSf
-         7SUqkF1cDmGERP9V57k2yJFVpNuJvH5JDkglz/QQmZ4VtVcv7vWFISlAaxCMUsDcF/8z
-         bHzkK6/VVzBMtb97hvYEAQkwD9FxVPJYaR/G8PBgAJN9tSmZ1y0CYYKzVZUDuoevB1Gk
-         +W3htugjMo0uFceItNBRQRdJL9VKpdY/6Cp2nd2McmUjBVNvP2i8VFCNP1ouanGL2D41
-         2WkQ==
-X-Forwarded-Encrypted: i=1; AHgh+RobHkNU6/leOXukUPxInS9KnPkuMyzXl/3nKMpADS0serzMQkFNKduowTnjykx5sgiv2ez9Dw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yze/6INxh/ozQVuFpkjx9t6oBItd3oYPYujf3ufsAYhxo2p9wS3
-	DZZYcuSicYsx13mIhkmCr54uaPqwknq2QM4vZ796SOb/06bnR5qMzpKQ
-X-Gm-Gg: AR+sD10GzNkAY9eqlTvqyrSu2tq3ZgEf8vqgWQ7C0IVpQ1zzd+/Seoibf9tBa/lwviY
-	Uu7BiBiwLDucqkaNXPJ1YrndJKgx6EMED4a+CappVGTJln626u1c9bYmLc3F+R1aZDa8v+cLbXQ
-	HMp3ujpAcX4vqlSAMqkjLF/SXBkHNe+qdFDrva5UyIx39lZMb41e8YMjCP1L4usfE8TLwoPOvOi
-	ZxNTullYbKE+XZJeqwP7M8ZX1E0kObbSrEqMQc/WJYi2pqACoU9FRjY4I6Izys2Bj6rA8zo0/NU
-	08t/6UNSfcrRbYIUK2ZQsyZmDhkXwmo7NRwAeiozj4lV8AC+wxBQ+XgmnE55syEqUufuxfTvrlV
-	ZOOkxFPkeGDzo2B6QPe3te4FuNEUP/2rlR41S9zjOSzcU+EBMioVvpuv8Bv4mkLxwhX4KWlPC1u
-	G2Are4NAFzc+VKhvvtHvKxeMh+cXa7lcaDCrD8migrePqkZ6EwuDx66p4WUm3zigNhC6qI2CAnc
-	5lE6JyBsDPUV8XZPGJ1sazsZHul5Isy00VO4EZ5XdliutER2p5e4wtUiLLtq5eV3u404BdSZ6PX
-	xlIt
-X-Received: by 2002:a05:600c:1c29:b0:495:4126:1e55 with SMTP id 5b1f17b1804b1-499aa1c16d7mr24093695e9.2.1787122329217;
-        Tue, 18 Aug 2026 23:52:09 -0700 (PDT)
-Received: from OrangePi5-Plus.BB-HOME (20014C4E1B929600C08047F1073FEAD0.dsl.pool.telekom.hu. [2001:4c4e:1b92:9600:c080:47f1:73f:ead0])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499a9aa7e8dsm24166515e9.0.2026.08.18.23.52.07
+        bh=EEZZ7jCpPzgYTO9oedvXx8uW0QuKMwnxpLd54iUvN+g=;
+        b=bw6bpW1Gg5Hqqxyz4s848qcVEvmWjKwVjy3JkYMZFiwqzftPdn5z9ZhU2bsDvUdcaV
+         BIwkA6XMLquU7SiNPb1TgZuP63XHa6Scqp8R7pDcspwN3llAzej8va/pu4teKkQ+Z2Jh
+         nWfHOJZ26wLe0+rT9Hj1saU3WCc+yiQyN8I9uuq7wWH0/b2xnwteD0E8bHFJk48xbCg2
+         zLKh6WtvMbC7maVnpXXfoG5GCX4YtK54G4w9rNFhd+Ble0YymMolgNjuiq10CncS8Qfa
+         h0CjPnAmwNH20+RtNcX83wNaRHoRFQYRZOumrJb7iGIhu3/mf21X3IphL0hp4m7tXmbC
+         /IBA==
+X-Forwarded-Encrypted: i=1; AHgh+RpbbW9OGbuJ1TMBHFD7Vv4SJuL1IjU4lRgqnreJ7GAonApJLKMkIHGPR0s8+v48xkO3NKPi6Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwMaAmM8jfaBydF36JNVV3xumxWkM+xlZ/XwSZ48VPrylv5u/HI
+	ITDoVHiI2zJM3poBGNIiL4madM0JRdDRz1R28mtTvfWzkyIe9PaJTe5B
+X-Gm-Gg: AR+sD11AkmueaneG3ZTGGyJJ9DANibJgw2iKYZKMh/WHIPqmVAlk6NIsiwBGms1PQH7
+	8j2nnXUkyOt/l4uB6vivLT4DOB1WCNQpo76iDwETGQAn/eM30DWJcyVos70P4KNLrXvAntbU+f4
+	AsZxtzyvDovP5vYgoy3OET8FuPdiYtNA4z69DNnljkj7ga0p1WVOArWnbY9yp0vL5EldG2f9ffn
+	DKooz0IP+L0fpYFZ6XNg8IhWONI6cHn71SAvqP+JB+pP208vUQr6SMMV4XMwBrDXxBO35ZWO/JP
+	Edk5fVZL0GbINuuAlSZ+GjxgDr3DZWFqJXCIfjf/JhwZ+muxup91ORPPXXwlFJaRuG890Wvsiz7
+	LzIIUZVj3ltrxRRH87Gs1iVsNSBCebmL4ZwIjgAaUxutaRSm0iEOrJHNZeT+DmGCDXFA4oUn9C4
+	8yrZsZxYnN/JYtmaLvyfwABLMl9LUsMW7dpxdep6rA3z8kTgfY/h+4eIs96Mc3U8AYXEynzAG3e
+	RFV8nEBtllc7vy0UwjHlt9eE0+d9UZJTnodRjfOABFlUi32+QHZjaKioUnl5vquzTLUWA==
+X-Received: by 2002:a05:600c:6206:b0:495:71ff:598d with SMTP id 5b1f17b1804b1-499aa1997d8mr24560625e9.1.1787124950666;
+        Wed, 19 Aug 2026 00:35:50 -0700 (PDT)
+Received: from OrangePi5-Plus.BB-HOME (20014C4E1B92960062A31D8DDD4EA0DC.dsl.pool.telekom.hu. [2001:4c4e:1b92:9600:62a3:1d8d:dd4e:a0dc])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499aa0dd3c9sm40653805e9.12.2026.08.19.00.35.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2026 23:52:08 -0700 (PDT)
+        Wed, 19 Aug 2026 00:35:50 -0700 (PDT)
 From: Igor Paunovic <royalnet026@gmail.com>
 To: Jiaxing Hu <gahing@gahingwoo.com>,
 	Tomeu Vizoso <tomeu@tomeuvizoso.net>,
@@ -79,11 +78,11 @@ Cc: Igor Paunovic <royalnet026@gmail.com>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v8 02/12] accel/rocket: wait for a running IRQ handler before resetting a core
-Date: Wed, 19 Aug 2026 08:51:45 +0200
-Message-ID: <20260819065146.5904-1-royalnet026@gmail.com>
+Date: Wed, 19 Aug 2026 09:35:27 +0200
+Message-ID: <20260819073530.6087-1-royalnet026@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260819013609.1613919-1-gahing@gahingwoo.com>
-References: <20260817113603.1436067-1-gahing@gahingwoo.com> <20260817113603.1436067-3-gahing@gahingwoo.com> <20260819013609.1613919-1-gahing@gahingwoo.com>
+In-Reply-To: <20260819072420.1780708-1-gahing@gahingwoo.com>
+References: <20260817113603.1436067-1-gahing@gahingwoo.com> <20260817113603.1436067-3-gahing@gahingwoo.com> <20260819013609.1613919-1-gahing@gahingwoo.com> <20260819065146.5904-1-royalnet026@gmail.com> <20260819072420.1780708-1-gahing@gahingwoo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -95,61 +94,55 @@ Content-Transfer-Encoding: 8bit
 
 Hi Jiaxing,
 
-Thank you for the round history and for running my archive check - the
-zero stall/paging count telling us the MMU is not responding at all is
-a better characterization than anything I had. put_noidle vs
-put_autosuspend with a separately forced suspend/resume sounds like the
-right de-confounding split; I will watch for the result.
+The three-run design with the deterministic third arm is exactly the
+de-confounding you promised, and declaring the fourth run void instead
+of letting it pad the table is the kind of honesty that makes the rest
+easy to trust. Glad the third bullet closed on silicon - one line, as
+you say - and thank you for the Reported-by.
 
-Here is the induced reset test I promised, run this morning.
+Meanwhile the differential finished here. The base build existed as a
+pair with the patched one from the start, so this is the same machine,
+same morning, same session.
 
-Setup: RK3588 (Orange Pi 5 Plus), all three cores bound. My 7.2-rc6
-tree with exactly two rocket changes from your series - 1/12 and 2/12 -
-plus one local test-only patch lowering JOB_TIMEOUT_MS to 2 ms so that
-healthy jobs (~5 ms at this clock) cross the timeout deterministically.
-No other rocket changes; in particular my lifecycle series is not
-applied. PROVE_LOCKING=y and DEBUG_ATOMIC_SLEEP=y. Serial console
-captured on a second machine for the whole session.
+Base kernel: identical tree and config, same JOB_TIMEOUT_MS=2 local
+patch, with 1/12 and 2/12 not applied. Same protocol, two passes per
+kernel at console_loglevel 8 and 4:
 
-Protocol, built around the trap you described - the RK3576 symptom
-emits from rk_iommu_enable() on the next attach, not from the reset
-itself: 20 scheduler-driven runs over the model set with all three
-cores active, a follow-up inference after every induced reset, then a
-forced autosuspend cycle and one more inference. Two full passes, at
-console_loglevel 8 and 4, because synchronous serial printing on this
-path can perturb the timing.
+              loglevel 8   loglevel 4   recovery   oracle
+  with 1+2/12     12            8        all clean  48/48 both passes
+  without         12           13        all clean  48/48 both passes
 
-Results:
+Zero MMU_DTE_ADDR, zero "Error during raw reset", zero lockdep or
+atomic-sleep hits on either kernel; the domain dropped and all three
+cores returned to runtime-suspended between rounds on both.
 
-- Pass 1 (loglevel 8): 12 induced resets. Pass 2 (loglevel 4): 8.
-- Every reset recovered. Zero MMU_DTE_ADDR, zero "Error during raw
-  reset", zero lockdep or atomic-sleep hits across both passes.
-- Outputs matched the oracle in 48/48 checks per pass, including the
-  inference after the forced suspend/resume.
-- All three cores returned to runtime-suspended between rounds; the
-  domain did drop and come back cleanly after every reset.
+Your distinction between the two tests deserves my numbers next to it:
+all 45 of my resets hit a healthy block crossing a 2 ms timeout, and
+the domain dropped every single time, on both kernels. Whether a
+genuinely hung block would keep an RK3588 domain up the way your
+failing runs stay up on RK3576, this protocol cannot say - I do not
+yet know how to manufacture a real hang deliberately. So the honest
+summary of that difference: the step your failing runs are missing
+simply never goes missing here under my conditions, and I cannot
+reproduce yours.
 
-So on RK3588 with 1/12+2/12 the block comes back every time, and your
-non-recovery does not reproduce. Combined with your archive result
-this is consistent with the failure being RK3576-specific on the
-platform/IOMMU side rather than rocket-wide.
+The race itself did not manifest in the 45 resets on either kernel.
+Timeouts are easy to induce; a completion racing the reset inside a
+microseconds-wide window is not, so the justification for the pair
+remains the source analysis. The tag attests what was actually tested:
+recovery and absence of regressions on the patched kernel, against a
+differential base.
 
-Two honest limits on what this run shows:
+For 1/12 my v7 Tested-by carries to the v8 shape as re-run here. For
+2/12:
 
-1. All resets ran with three cores bound. Isolating a single core
-   requires unbinding the other two, and without my pending lifecycle
-   fixes that path is not safe on this tree (the list corruption I
-   reported on Aug 12), so I skipped it deliberately rather than test
-   through a known-broken path.
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, three cores,
+                                                 # induced reset, differential
+                                                 # base, JOB_TIMEOUT_MS=2
 
-2. This run alone says nothing about the race 1/12+2/12 close. The
-   same protocol on the base without those two patches is queued as a
-   separate build; only that differential earns a Tested-by, and when
-   it lands the tag will carry its conditions:
-   # RK3588, three cores, induced reset, JOB_TIMEOUT_MS=2
-
-Raw logs (dmesg, per-run outputs, serial capture) are kept; happy to
-share any of it on request.
+I understand the v9 sync patch will carry the interrupt mask and so
+change shape; the harness here is standing, so say the word when v9 is
+posted and I will re-run the protocol on it as-is.
 
 Regards,
 Igor
