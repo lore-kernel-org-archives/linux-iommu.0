@@ -1,32 +1,32 @@
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF043DCD9C
-	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 08:18:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A651E3F3280
+	for <iommu@lists.linux.dev>; Wed, 19 Aug 2026 08:34:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787127501; cv=none; b=Ck+a9gOfF3aNDysn+WjBEveZqu7J2FGEqYP78ZznOSzjMGeHevuPVO1Ez4YVEvfnvZUzld3vnjuzsf11vI1wN731dQvaPGzVIQf7rZ+5BoC9iLU5Wx5Y+OhT4dTdG+lmqlrl8OnbwkaFUYUy8+ZMsKq+X7K1eH4P8e1CrtYxM/E=
+	t=1787128463; cv=none; b=MOIOKA3ZwD2Crclw0ZwezpR+2lwifgCCPdbS3zX+t3Q5BqCKHXY1ZFiTURxsksow5gZeLPp15b+ged7w5ndDC8sRbzarJgxIh++UBAr1eV3+s9WQaYyhprpetGljkE+ZlfAs3UUO2qCMz9ksFpA8CbVw5r+TRNmmmUKldZXgjZ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787127501; c=relaxed/simple;
-	bh=EXylCZgrL9h8nQeApwtJhBUtSUDE7y517bWPFtRYkSQ=;
+	s=arc-20240116; t=1787128463; c=relaxed/simple;
+	bh=EaGw682j6MlUv++8RDnZioYv1J5TcRZAv15rsB71zKg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BJwQH5XrRt9cR4OVY95vrUl1sG1jnCQpdpTyEEcv7q/BnoInyMnW+FKxu+uYh2KiCACWdhFGeNuiJZxAqzQkJ7YI93aoYpNIZFst5jB9L/jNngWeiiI3yqfF4lesATQNkfsn26aMxsIvY20M5KZZDX4U1vm+8S00g0zxKstLGF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=EeiBFDkq; arc=none smtp.client-ip=115.124.30.97
+	 In-Reply-To:Content-Type; b=cqsMSxE84LykyZED9eZ+KT1aXiK9Nbp0NfW9luT4wbjXgWG2hGiC8KXKzrRlrWDSyOyv1OjgEALRyg9sMJ6zqMOqBvgysHI5aWCCSQJGWvmWQ31LnwE8taDaQyXgZo5LEu5RiW82LqCShUDtfYpzWNA3LdMN0nomzqQSPmGTvzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=xRpOEscy; arc=none smtp.client-ip=115.124.30.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="EeiBFDkq"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="xRpOEscy"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1787127484; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=LaoALB+EnDmHNgZ/YlM0ls9eU9C1PElBX2geRRczHss=;
-	b=EeiBFDkqDgDxTcGuO5YLOa4ZPCym5gdgFa5z/PoyDCUptGBEJOiNdhOGe7lFsu1Vq75TGwauHiZA56bGL4dXtd9nqhRqISCD0F4HP2R4vDDhTqwL7f4r4b6AYqufnvEzk6r9xbfiXBT2mgq7QFWnRhoa8kpbJzKJwb0NGSpGIwI=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9FxBER_1787127460;
-Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9FxBER_1787127460 cluster:ay36)
+	t=1787128451; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=u/0xqxfijubrFyICLEnBEqMNciRFom3VvwPTe9jq26o=;
+	b=xRpOEscymu7A/AygBy82QH/Gwe2nppjl6XghJtUY5NhSUK0YbfRybU5+Fa4yfbsLReG35QpcSkxjNcoIcA5Oqb+AVbGj/mRVOBWK8UplEnorn48++svrqOb4Dvf0s4jJ4G6hOX7Mh7KjMUWfnrr+zdNEahKytDRK13LJIFvh06Y=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0X9G499f_1787128449;
+Received: from 30.221.133.143(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X9G499f_1787128449 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Wed, 19 Aug 2026 16:18:03 +0800
-Message-ID: <edbd2471-58c4-4166-8692-d4d03a7486e5@linux.alibaba.com>
-Date: Wed, 19 Aug 2026 16:17:39 +0800
+          Wed, 19 Aug 2026 16:34:10 +0800
+Message-ID: <0bc1f0c9-b52b-4369-83f1-822c67bf1151@linux.alibaba.com>
+Date: Wed, 19 Aug 2026 16:34:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,8 +34,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/24] iommu/amd: Introduce vIOMMU-specific events and
- event
+Subject: Re: [PATCH 08/24] iommu/amd: Introduce Reset vMMIO Command
 To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
  jgg@nvidia.com
@@ -45,179 +44,119 @@ Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
  dantuluris@google.com, chriscli@google.com, kpsingh@google.com,
  alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com
 References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
- <20260727132913.22475-3-suravee.suthikulpanit@amd.com>
+ <20260727132913.22475-9-suravee.suthikulpanit@amd.com>
 From: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <20260727132913.22475-3-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20260727132913.22475-9-suravee.suthikulpanit@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 
 在 2026/7/27 21:28, Suravee Suthikulpanit 写道:
-> Adding support for new vIOMMU events:
->    * Guest Event Fault event
->    * vIOMMU Hardware Error event
+> Introduce new IOMMU commands for vIOMMU to reset
+> virtualized MMIO registers of a particular guest.
 >
-> Also, adding support for the additional vIOMMU related flags
-> in existing events.
->
+> Reviewed-by: Weinan Liu <wnliu@google.com>
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->   drivers/iommu/amd/amd_iommu_types.h |  7 ++++
->   drivers/iommu/amd/iommu.c           | 58 ++++++++++++++++++++++-------
->   2 files changed, 52 insertions(+), 13 deletions(-)
+>   drivers/iommu/amd/amd_iommu.h       |  1 +
+>   drivers/iommu/amd/amd_iommu_types.h |  1 +
+>   drivers/iommu/amd/iommu.c           | 22 ++++++++++++++++++++++
+>   drivers/iommu/amd/iommufd.c         |  3 +++
+>   4 files changed, 27 insertions(+)
 >
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 044bc9a634a1..2ce207529ea0 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -11,6 +11,7 @@
+>   
+>   #include "amd_iommu_types.h"
+>   
+> +void iommu_reset_vmmio(struct amd_iommu *iommu, u16 gid);
+>   extern int amd_iommu_evtlog_size;
+>   extern int amd_iommu_pprlog_size;
+>   
 > diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index d2c64e2e9f05..4df6a50128de 100644
+> index cc7049bbfa14..44fa1d6c64d6 100644
 > --- a/drivers/iommu/amd/amd_iommu_types.h
 > +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -149,6 +149,9 @@
->   #define EVENT_TYPE_IOTLB_INV_TO	0x7
->   #define EVENT_TYPE_INV_DEV_REQ	0x8
->   #define EVENT_TYPE_INV_PPR_REQ	0x9
-> +#define EVENT_TYPE_GUEST_EVENT_FAULT	0xb
-> +#define EVENT_TYPE_VIOMMU_HW_ERR	0xc
-> +
->   #define EVENT_TYPE_RMP_FAULT	0xd
->   #define EVENT_TYPE_RMP_HW_ERR	0xe
->   #define EVENT_DEVID_MASK	0xffff
-> @@ -261,6 +264,10 @@
->   #define EVTLOG_SIZE_MAX		SZ_512K /* 32K entries */
->   #define EVTLOG_LEN_MASK_MAX	(0xFULL << EVTLOG_SIZE_SHIFT)
+> @@ -218,6 +218,7 @@
+>   #define CMD_INV_IRT		0x05
+>   #define CMD_COMPLETE_PPR	0x07
+>   #define CMD_INV_ALL		0x08
+> +#define CMD_RESET_VMMIO		0x0A
 >   
-> +/* Constants for IO_PAGE_FAULT event */
-> +#define IO_PAGE_FAULT_VFLAGS_SHIFT	27
-> +#define IO_PAGE_FAULT_VFLAGS_MASK	GENMASK_ULL(27, 23)
-> +
->   /* Constants for PPR Log handling */
->   #define PPRLOG_ENTRY_SIZE	0x10
->   #define PPRLOG_SIZE_SHIFT	56
+>   #define CMD_COMPL_WAIT_STORE_MASK	0x01
+>   #define CMD_COMPL_WAIT_INT_MASK		0x02
 > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 4b4dd20ebec6..50f26c8123f3 100644
+> index 73fba8be40d1..6f5ecc48f4ad 100644
 > --- a/drivers/iommu/amd/iommu.c
 > +++ b/drivers/iommu/amd/iommu.c
-> @@ -854,7 +854,7 @@ static void amd_iommu_report_rmp_fault(struct amd_iommu *iommu, volatile u32 *ev
+> @@ -1428,6 +1428,18 @@ static void build_inv_irt(struct iommu_cmd *cmd, u16 devid)
+>   	CMD_SET_TYPE(cmd, CMD_INV_IRT);
+>   }
 >   
->   static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
->   					u16 devid, u16 domain_id,
-> -					u64 address, int flags)
-> +					u64 address, int flags, u8 vflags)
->   {
->   	struct iommu_dev_data *dev_data = NULL;
->   	struct pci_dev *pdev;
-> @@ -889,13 +889,13 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
->   		}
->   
->   		if (__ratelimit(&dev_data->rs)) {
-> -			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
-> -				domain_id, address, flags);
-> +			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
-> +				domain_id, address, flags, vflags);
->   		}
->   	} else {
-> -		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
-> +		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
->   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-> -			domain_id, address, flags);
-> +			domain_id, address, flags, vflags);
+> +static void build_reset_vmmio(struct iommu_cmd *cmd, u16 gid,
+> +			      bool vcmd, bool all)
+> +{
+> +	memset(cmd, 0, sizeof(*cmd));
+> +	cmd->data[0] = gid;
+> +	if (all)
+> +		cmd->data[0] |= (1 << 28);
+> +	if (vcmd)
+> +		cmd->data[0] |= (1 << 31);
+> +	CMD_SET_TYPE(cmd, CMD_RESET_VMMIO);
+> +}
+
+This looks like a bug. Per the AMD IOMMU Specification (Rev 3.10,
+Section 2.4.10), the 'All' bit of the RESET_VMMIO command is at bit
+position 27, not bit 28. Writing bit 28 targets a reserved field and
+may either trigger an ILLEGAL_COMMAND_ERROR or silently fail to reset
+the full vIOMMU context. This should be:
+
+     if (all)
+         cmd->data[0] |= (1 << 27);
+
+
+> +
+>   /*
+>    * Writes the command to the IOMMUs command buffer and informs the
+>    * hardware about the new command.
+> @@ -1668,6 +1680,16 @@ void amd_iommu_flush_all_caches(struct amd_iommu *iommu)
 >   	}
+>   }
 >   
->   out:
-> @@ -932,29 +932,42 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
->   	}
+> +void iommu_reset_vmmio(struct amd_iommu *iommu, u16 gid)
+> +{
+> +	struct iommu_cmd cmd;
+> +
+> +	build_reset_vmmio(&cmd, gid, 1, 1);
+> +
+> +	iommu_queue_command(iommu, &cmd);
+> +	amd_iommu_completion_wait(iommu);
+> +}
+> +
+
+Both iommu_queue_command() and amd_iommu_completion_wait() return
+status, but iommu_reset_vmmio() returns void and ignores them. A
+failed reset during vIOMMU init would go unnoticed. Consider
+propagating the error to the caller.
+
+
+>   /*
+>    * Command send function for flushing on-device TLB
+>    */
+> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
+> index 9f76bfa1d6ea..81e0244348a2 100644
+> --- a/drivers/iommu/amd/iommufd.c
+> +++ b/drivers/iommu/amd/iommufd.c
+> @@ -80,6 +80,9 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
 >   
->   	if (type == EVENT_TYPE_IO_FAULT) {
-> -		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags);
-> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
-> +
-> +		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags, vflags);
->   		return;
->   	}
+>   	data.out_vfmmio_mmap_offset = aviommu->vfmmio_mmap_offset;
 >   
->   	switch (type) {
->   	case EVENT_TYPE_ILL_DEV:
-> -		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
-> +	{
-> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
+> +	/* Reset vIOMMU MMIOs to initialize the vIOMMU */
+> +	iommu_reset_vmmio(iommu, aviommu->gid);
 > +
-> +		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY deice=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x vflags=%#x]\n",
->   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-> -			pasid, address, flags);
-
-A minor typos in the log strings: "deice" -> "device"
-
-> +			pasid, address, flags, vflags);
->   		dev_err(dev, "Control Reg : 0x%llx\n", ctrl);
->   		dump_dte_entry(iommu, devid);
->   		break;
-> +	}
->   	case EVENT_TYPE_DEV_TAB_ERR:
-> -		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x "
-> -			"address=0x%llx flags=0x%04x]\n",
-> +	{
-> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
-> +
-> +		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x address=%#llx flags=%#04x vlfags=%#x]\n",
->   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-typos : "vlfags" -> "vflags".
-> -			address, flags);
-> +			address, flags, vflags);
->   		break;
-> +	}
->   	case EVENT_TYPE_PAGE_TAB_ERR:
-> -		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x]\n",
-> +	{
-> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
-> +
-> +		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
->   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-> -			pasid, address, flags);
-> +			pasid, address, flags, vflags);
->   		break;
-> +	}
->   	case EVENT_TYPE_ILL_CMD:
->   		dev_err(dev, "Event logged [ILLEGAL_COMMAND_ERROR address=0x%llx]\n", address);
->   		dump_command(address);
-> @@ -986,6 +999,25 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
->   			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
->   			pasid, address, flags, tag);
->   		break;
-> +	case EVENT_TYPE_GUEST_EVENT_FAULT:
-> +	{
-> +		u8 gid = event[1] & 0xFFFF;
-> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
-
-The GuestID is declared as u8 but assigned a 16-bit value masked with
-0xFFFF. This truncates the upper 8 bits. Per the AMD IOMMU Specification
-(Rev 3.10, Section 2.5.12, Table 68), the GuestID field is 16 bits wide
-[15:0]. This should be:
-
-     u16 gid = event[1] & 0xFFFF;
-
-Note that the VIOMMU_HARDWARE_ERROR handler below correctly uses u16 for
-the same field, so this looks like an oversight.
-
-
-Additionally, per Section 2.5.12, a GUEST_EVENT_FAULT occupies two log
-entries (paired event entry). The current iommu_poll_events() advances
-by a single entry per iteration, so the second (paired) entry will be
-misinterpreted as an unknown event type on the next iteration. The
-handler should consume/skip the second entry.
-
-> +
-> +		dev_err(dev, "Event logged [GUEST_EVENT_FAULT gid=#%x flags=0x%04x vflags=%#x]\n",
-> +			gid, flags, vflags);
-> +		break;
-> +	}
-> +	case EVENT_TYPE_VIOMMU_HW_ERR:
-> +	{
-> +		u16 gid = event[0] & 0xFFFF;
-> +		u8 src = (event[0] >> 16) & 0x3;
-> +		u8 vflags = FIELD_GET(IO_PAGE_FAULT_VFLAGS_MASK, event[0]);
-> +
-> +		dev_err(dev, "Event logged [VIOMMU_HW_ERR gid=%#x address=%#llx src=%#x flags=%#x vflags=%#x]\n",
-> +			gid, address, src, flags, vflags);
-> +		break;
-> +	}
->   	default:
->   		dev_err(dev, "Event logged [UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
->   			event[0], event[1], event[2], event[3]);
+>   	ret = iommu_copy_struct_to_user(user_data, &data,
+>   					IOMMU_VIOMMU_TYPE_AMD,
+>   					out_vfmmio_mmap_offset);
