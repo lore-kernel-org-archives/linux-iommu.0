@@ -1,228 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012023.outbound.protection.outlook.com [40.107.200.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA5763815E1;
-	Thu, 20 Aug 2026 09:08:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787216883; cv=none; b=ZxRKT9mLyYl/9GjtjiKSGMFvoaIH8qweYv4Bsw0HC2p/ZRo7Xtsr0I8DEwqk4GWXqfrGznplggHEQlbmtIoLicswGqsgbdoWFv1P+piECWkhnEM1p6Pc4RoXD/nu5F1piIQAap7AOqr5kRsB0bpvt+a11lz0AHpNVmPaQ5JIgeg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787216883; c=relaxed/simple;
-	bh=CjiDKzlsB4CYB3VlBFqqIUTkbqsfzicmrXYq15K6CAc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iGwgqa6W1T4N3QUfbc8iclxWCxlVdIRLBxLJv6nlExg94ADrQ8R1jsY1C5sVYtjj5k0PpsYvn3qMINfQakU1hansJQ9pit4wvdijzx6IhVPC9ngCtoHfCk4E6ChN+CBURR17OPHSHL4XjBS6/EiQhTPSVQUMl30cf7fv3B485I8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mlmSPT3J; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E4A3E5A0A
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 09:08:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.23
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787216888; cv=fail; b=VhhImm0WRx63ARfHuxVKN/6T9ZXwHQL2ZZB9cTPKlbHw0yZVPNiWaovYdky2bE5/t1VvQgelivS0VluDeygkSvfJfkhQy3VBYhQQXT+i88S11Pn3YG06vLQw6RV6BXbZCHGGXIb4SWRUkZVybIIUzcV7u8YzeKsI/619DroANNY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787216888; c=relaxed/simple;
+	bh=dn5KdqUEu//ZSVtg9sydjHjQiXaNVV6Kvg0KN8Qodvs=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k19Go9AMYWCBMUB8jNIPUV4La+k5IL8LEDz71QEpWJc+BdYMgruSqpsy1604C9DyiOw1sjeL+UBFpxkjZ16ZXs8iLUnK/Oin5wFRueMhCmfscE/7FQWqZQTMYGtMYkRTGNyfcVbeDh1JKp0EOpDwfLn3tM+hDEQp027dHF+2s24=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=L5USe+Fw; arc=fail smtp.client-ip=40.107.200.23
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mlmSPT3J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4C01F000E9;
-	Thu, 20 Aug 2026 09:07:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787216881;
-	bh=HbWHyhAGccmmUKHPlabuPDznJTtRzS7rm2Ks8U4Pdfc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=mlmSPT3J/cxMvk1ov/w4xrvfdrL6tX66o8ftXD5mN3k7JQ8j3foKO9uBxmBQydxt1
-	 TtMSCXwwGkasHU0t3ucF2w3dJWF7QFP/DVBqasId6l5nO45toANB+2trMq8b8Lturb
-	 1tzJWNqxDt/Uwp0HuNtForVsvHnj06UOoe4pkyxDdPKrScwLpD/QxB3fzbKoe6ZBqf
-	 YS3e+wDJI8t3uWw8HpZjGmY868z0ohcXf+doJY12cRN3l+HFNq+ZB2JQVseDqVIMe5
-	 Lc2M/o42Xq42es7Zh5DrfISEpE4qv23FIKNLg38AAtA4TbonNtvyniinosKwNGP/09
-	 qzqp3pidoqThg==
-Message-ID: <a642833b-f22a-4bea-8a20-0debc47e1895@kernel.org>
-Date: Thu, 20 Aug 2026 11:07:45 +0200
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="L5USe+Fw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pLPy6ldOpUFK5wJ4OXyspxt+gledlxbVunX2p7rgB81ytM/D/nsIG/uLdv9GMvQ01R+zx4fPFbXYxlCnyM4QMcRpEP+UR/dqnzzsx7npclLpJi6hf1UlOz/NzMCmY1BEjK0HojvwgFchrFa3S8DKC2PIRqefsidp6Xr/0b6LZfv8l3fR2deYD7SCVJyZulsRdv5fCe4Vbe3HqN7pMSGKk4GukZzLDkvIwbyCQPQnsBJeP2UnqHJknI5uTfUeOHjdvlValnDmghXRE4ghcbHJbLoigWr+de6Hsw3ZO+GHAisqFQ8jxBAJNCv8w1Pihkq/BqOMKIVkQk/wowlqfLpTGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Sueu9n+Icwo70R2KLTRoPI74+dBZ8NrynIVeVfs8U7I=;
+ b=NmYQdpdkOdcjV7T0vtnkx03YHOIaQdj/ZZfISFwiasBbG7ducZ9Y7j1daVUQwuVEiFkVzUNLELyDsmZOECGTf6Z01ZayFHzo2twASY3RY3MCEPlXOW/NzR2E9+qhqJvzgwm55JvrZdWvHdAxNq+XHHsNWITC/kY0bmSrYjMjBLY9ZkK7iKJoYOjCjxaiu2s5ECOxlQ2+o0qKKRN6mwPFEv8znAcy6oLmSNvQ7kN1psTmESPdCC6kWsMlILXn33zLe227Jf5LvCxfVA3XbIt065u8cCXd0ZkLtD4V628gBzWUaE8H7hw1VPKDNqFncZ3z80F/4Omhf+mpPoDA8rR2eQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=gmail.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Sueu9n+Icwo70R2KLTRoPI74+dBZ8NrynIVeVfs8U7I=;
+ b=L5USe+FwfWBiGyVsYnUBjlO5Lya4KippoiyP//joRGk8pRYkP0RgCXQiKQSaVeBtNmQ6bIPu9wagvkpRD34i3t8OJYbHadjMouewI49iL52y6VuV7ySRmN+YMRyXqU9Rbyqv0GaYv0A268jtyDyapJqYzKvLtda4JqttIUKCMJ0=
+Received: from PH8P220CA0030.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:348::15)
+ by PH8PR12MB7230.namprd12.prod.outlook.com (2603:10b6:510:226::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.8; Thu, 20 Aug
+ 2026 09:07:59 +0000
+Received: from MW1PEPF0001615D.namprd21.prod.outlook.com
+ (2603:10b6:510:348:cafe::22) by PH8P220CA0030.outlook.office365.com
+ (2603:10b6:510:348::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.339.9 via Frontend Transport; Thu, 20
+ Aug 2026 09:07:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ MW1PEPF0001615D.mail.protection.outlook.com (10.167.249.88) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.360.0 via Frontend Transport; Thu, 20 Aug 2026 09:07:58 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Thu, 20 Aug
+ 2026 04:07:58 -0500
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Thu, 20 Aug
+ 2026 04:07:58 -0500
+Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45 via Frontend
+ Transport; Thu, 20 Aug 2026 04:07:55 -0500
+Date: Thu, 20 Aug 2026 09:07:53 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Karl Mehltretter <kmehltretter@gmail.com>
+CC: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde
+	<vasant.hegde@amd.com>, Robin Murphy <robin.murphy@arm.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/amd: Do not reallocate GA log buffers on resume
+Message-ID: <k5brbvuoqzz6k2lhyw54lusicjws5q3q7lxqs3bbalax5qz7fw@z6vxf6ftl5zi>
+References: <20260819032349.20354-1-kmehltretter@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 03/15] accel/qda: Add initial QDA DRM accelerator
- driver
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
- Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling
- <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Bharath Kumar <quic_bkumar@quicinc.com>,
- Chenna Kesava Raju <quic_chennak@quicinc.com>,
- srinivas.kandagatla@oss.qualcomm.com, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev, iommu@lists.linux.dev,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
- <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
- <3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com>
- <4ef74e14-8433-4619-ac97-62868c8799d1@kernel.org>
- <g5orcvzjbwww27vwcsxl3ehrek6lvznxptd7jutifoiuicjnm6@iqq2pus6omsl>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <g5orcvzjbwww27vwcsxl3ehrek6lvznxptd7jutifoiuicjnm6@iqq2pus6omsl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260819032349.20354-1-kmehltretter@gmail.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW1PEPF0001615D:EE_|PH8PR12MB7230:EE_
+X-MS-Office365-Filtering-Correlation-Id: 36fa802d-49ec-4533-6d25-08defe9a87aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|23010399003|376014|82310400026|11063799006|5023799004|10067099003|56012099006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	JSgobjOSK7jlkjB63jYneH1Hr+zpafAc1dMLXB5DP1oRkemNW00gfnv6mk+wExzDaZh8zd66zq7nHTIAbWOYsWW1sZjoF4DP+rrUB/TmUJ5X6uxrFZot2D6GjPR5/4ER6SN1w6FTLdt0jKpfUb/KceX/Cu1KBBxpquxWd5LOL0lgzLbMV/BEFE29NgW4c6T9qcG5TqQ/VZ3/BH/yLWtv9K2fuw38gxQxa2lBdJs9YZ46JCZR1FVvJVcPRwYjKxtPUb6NbULHQkxOLpupWyA2n5WjTRXOsKrUokYSb3MQVyB48lBLSwF7tQbCgD6RjyjqYPnbx6LbS4XoT+AQaEDSy4VYgj/FKazCRFtrWiQPT0oITOxT4hEk+m3PM1g63KwSGKd1/3nqASaDew42w2t3SzDNijgxy4dKC1llP+lruQ1JiLbpGB9mHcXEhPA3IWYm9rVtCEjdbVKYTPTmPJFTHrplmhW+kc6DrYIOSufOVGkPcKc/e1Hh8ydsQBhxJwmN/ukgmPuvaybYfPIAu6XmMyl6BK9n+JO4ZQV5wG83Q/p1OSBWGQOw6uBWKYe4jNB2chIMRubMUDKvSD+dw68GjfCxgBNDMaEA0iKSHUClFNYVDAggCEld2tnYAiqbUmgn+7xlLnmU+2XQHdTrNAOrIqKR4jgw3VHJvj6xRBDrn9hlPUoyaL/AId/HyrjhY4CgXnLnOIWDH0EqMui4nP48oQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(23010399003)(376014)(82310400026)(11063799006)(5023799004)(10067099003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Nm+ztY/zGpW/IcWbeJhINAjEai4X7IKHZpJ1C7wO2do8c5YcE/xxFa+V5mT0SJlgMxFCOQUBbCYLuLOJLgCrFQNKatvIOosbFIcI64ewk1rVIN0MyiV8Jd6lC40pzPN3UN6uWzzoy9e5n1RzkLxyWjH4aLE+4+GGTAtG8oTqXZe5XykX6FNKOUSpOPhBiNNov/pE6LK3lyykuuyKcHq2N+WSXBDwNAHTza2bpBIqi83/cbHCuCTfQGdnWFNeLtkOKYImRyo2SDvFTeWhBieRlyWHPBaUjs3/XOZcp9p7hQp1IcCm5VGWeVKpLfX0CKpwk610VWF2kMtvMfMHCFIBsxWU+FSdb0qrUcmNQu0CfkiiuB7Ni5CC51e1XbVcGU+S4yuZkhzabqbXi4zuZIRzuflmU38ymOZB3sju6q7xP7ba4M5BO294lhCDZKhe+GQ/
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2026 09:07:58.6999
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36fa802d-49ec-4533-6d25-08defe9a87aa
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MW1PEPF0001615D.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7230
 
-On 20/08/2026 10:52, Dmitry Baryshkov wrote:
-> On Wed, Aug 19, 2026 at 04:18:51PM +0200, Krzysztof Kozlowski wrote:
->> On 19/08/2026 15:17, Ekansh Gupta wrote:
->>> On 19-08-2026 00:40, Krzysztof Kozlowski wrote:
->>>> On 17/08/2026 06:47, Ekansh Gupta wrote:
->>>>> Add the skeleton of the Qualcomm DSP Accelerator (QDA) driver, a DRM
->>>>> accel driver for the Hexagon DSPs found on Qualcomm SoCs.
->>>>>
->>>>> This patch registers a DRM accel device, exposing a /dev/accel/accelN
->>>>> character device node, and binds it to the RPMsg channel used to reach
->>>>> the DSP. Buffer management, IOMMU context banks and the FastRPC
->>>>> protocol are added by later patches in this series.
->>>>>
->>>>> qda_drv.c / qda_drv.h define the drm_driver ops table, the per-file
->>>>> private state (qda_file_priv) and the main device structure (qda_dev),
->>>>> which embeds drm_device so that it can be recovered with container_of().
->>>>>
->>>>> qda_rpmsg.c binds to the "qcom,fastrpc" compatible via
->>>>> module_rpmsg_driver(), reads the DSP domain name from the "label"
->>>>> device-tree property, and registers the DRM device.
->>>>>
->>>>> Assisted-by: Claude:claude-sonnet-5
->>>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
->>>>> ---
->>>>> Changes in v2:
->>>>> - Use module_rpmsg_driver() and drop the qda_rpmsg_register()/
->>>>>   _unregister() wrappers, module_init()/module_exit() and
->>>>>   qda_rpmsg.h entirely (Dmitry Baryshkov)
->>>>> - Read the "label" property directly into qdev->dsp_name (Dmitry Baryshkov)
->>>>> - Drop the probe/remove/init log messages (Dmitry Baryshkov)
->>>>> - Return the result of qda_register_device() directly (Dmitry Baryshkov)
->>>>> - Clarify the Kconfig help text (Dmitry Baryshkov)
->>>>> ---
->>>>>  drivers/accel/Kconfig         |  1 +
->>>>>  drivers/accel/Makefile        |  1 +
->>>>>  drivers/accel/qda/Kconfig     | 30 ++++++++++++++++
->>>>>  drivers/accel/qda/Makefile    | 10 ++++++
->>>>>  drivers/accel/qda/qda_drv.c   | 71 ++++++++++++++++++++++++++++++++++++++
->>>>>  drivers/accel/qda/qda_drv.h   | 61 +++++++++++++++++++++++++++++++++
->>>>>  drivers/accel/qda/qda_rpmsg.c | 79 +++++++++++++++++++++++++++++++++++++++++++
->>>>>  7 files changed, 253 insertions(+)
->>>>>
->>>>> diff --git a/drivers/accel/Kconfig b/drivers/accel/Kconfig
->>>>> index bdf48ccafcf2..74ac0f71bc9d 100644
->>>>> --- a/drivers/accel/Kconfig
->>>>> +++ b/drivers/accel/Kconfig
->>>>> @@ -29,6 +29,7 @@ source "drivers/accel/ethosu/Kconfig"
->>>>>  source "drivers/accel/habanalabs/Kconfig"
->>>>>  source "drivers/accel/ivpu/Kconfig"
->>>>>  source "drivers/accel/qaic/Kconfig"
->>>>> +source "drivers/accel/qda/Kconfig"
->>>>>  source "drivers/accel/rocket/Kconfig"
->>>>>  
->>>>>  endif
->>>>> diff --git a/drivers/accel/Makefile b/drivers/accel/Makefile
->>>>> index 1d3a7251b950..58c08dd5f389 100644
->>>>> --- a/drivers/accel/Makefile
->>>>> +++ b/drivers/accel/Makefile
->>>>> @@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ARM_ETHOSU)	+= ethosu/
->>>>>  obj-$(CONFIG_DRM_ACCEL_HABANALABS)	+= habanalabs/
->>>>>  obj-$(CONFIG_DRM_ACCEL_IVPU)		+= ivpu/
->>>>>  obj-$(CONFIG_DRM_ACCEL_QAIC)		+= qaic/
->>>>> +obj-$(CONFIG_DRM_ACCEL_QDA)		+= qda/
->>>>>  obj-$(CONFIG_DRM_ACCEL_ROCKET)		+= rocket/
->>>>> \ No newline at end of file
->>>>
->>>> You have trivial patch errors.
->>> newline problem was already there, wasn't introduced as part of this
->>> patch series, so I wasn't sure to fix it here. I can fix this in v3.>
->>>> ...
->>>>
->>>>> +}
->>>>> +
->>>>> +static const struct of_device_id qda_rpmsg_id_table[] = {
->>>>> +	{ .compatible = "qcom,fastrpc" },
->>>>> +	{},
->>>>
->>>> Device node with this compatible is already populated, so this looks
->>>> simply wrong or you are adding a duplicated driver.
->>>>
->>>> That's a no-go, you are supposed to work with existing drivers and grow
->>>> them.
->>> I'll bring the discussion again here, there was a discussion to move the
->>> driver to accel subsystem if we want to support new features/uAPI
->>> changes. Please read [1],[2] threads. The intention is to replace
->>> fastrpc driver with QDA eventually.
->>
->> None of them address the problem. You want to grow fastrpc into user of
->> dmabuf? So you move it from misc to here.
+On Wed, Aug 19, 2026 at 05:23:49AM +0200, Karl Mehltretter wrote:
+> Commit c5e1a1eb9279 ("iommu/amd: Simplify and Consolidate Virtual APIC
+> (AVIC) Enablement") moved the GA log allocation from iommu_init_pci()
+> to enable_iommus_vapic(), which is called on every resume.
 > 
-> It's not as easy and nice, so I think in this case it's better to repeat
+> iommu_init_ga_log() assigns iommu->ga_log and iommu->ga_log_tail
+> unconditionally. Each resume therefore replaces the boot-time pointers
+> and leaks both old allocations. The function also uses GFP_KERNEL from a
+> syscore resume callback, where interrupts are disabled and the non-boot
+> CPUs are offline.
+> 
+> Return early if both buffers are already allocated. Clear the pointers
+> in free_ga_log() so a partial allocation failure cannot leave ga_log
+> dangling.
+> 
+> Fixes: c5e1a1eb9279 ("iommu/amd: Simplify and Consolidate Virtual APIC (AVIC) Enablement")
+> Assisted-by: Claude:claude-opus-5
+> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
 
-I disagree. The existing fastrpc driver is not that complicated. It's
-actually moderate amount of code, much less than Venus was (~7 times less).
+Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
 
-It easily can grow to support two interfaces and the only difficulty is
-how to manage these two interfaces simultaneously or exclusively, e.g.
-opening first one disables the second.
+Thanks,
+Ankit
 
-> what we did for the venus/iris migration or what happened already
-> several times in the kernel history (for example the AIC7xxx SCSI host
-> drivers were migrated by introducing the second driver and then removing
-> the first one after the grace period). The backwards compatibility is a
-> separate topic, but it will be addressed before the driver can be
-
-Backwards compatibility should be one of the first things explained in
-cover letter in one of the first paragraphs.
-
-And if you make it backwards compatible, then just remove old driver,
-because there is no point to keep it there. Again, this should be one of
-the first things explained in cover letter.
-
-Best regards,
-Krzysztof
+> ---
+> Tested with custom QEMU with GA log emulation. Stock QEMU does not
+> advertise GAMSup and cannot reach this path. After five pm_test=core
+> cycles, nr_iommu_pages increased from 17 to 25 without the patch.
+> 
+> Testing on AVIC-capable hardware would be welcome.
+> 
+>  drivers/iommu/amd/init.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 40726dfef2733..c6b106d5921e 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -909,7 +909,9 @@ static void free_ga_log(struct amd_iommu *iommu)
+>  {
+>  #ifdef CONFIG_IRQ_REMAP
+>  	iommu_free_pages(iommu->ga_log);
+> +	iommu->ga_log = NULL;
+>  	iommu_free_pages(iommu->ga_log_tail);
+> +	iommu->ga_log_tail = NULL;
+>  #endif
+>  }
+>  
+> @@ -956,6 +958,9 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
+>  	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
+>  		return -EINVAL;
+>  
+> +	if (iommu->ga_log && iommu->ga_log_tail)
+> +		return 0;
+> +
+>  	iommu->ga_log = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, GA_LOG_SIZE);
+>  	if (!iommu->ga_log)
+>  		goto err_out;
+> 
+> base-commit: 4477a78374a57c3809b172ad30cceabda48c47c6
+> -- 
+> 2.53.0
+> 
