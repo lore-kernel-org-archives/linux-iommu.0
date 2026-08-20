@@ -1,174 +1,280 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012023.outbound.protection.outlook.com [40.107.200.23])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E4A3E5A0A
-	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 09:08:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787216888; cv=fail; b=VhhImm0WRx63ARfHuxVKN/6T9ZXwHQL2ZZB9cTPKlbHw0yZVPNiWaovYdky2bE5/t1VvQgelivS0VluDeygkSvfJfkhQy3VBYhQQXT+i88S11Pn3YG06vLQw6RV6BXbZCHGGXIb4SWRUkZVybIIUzcV7u8YzeKsI/619DroANNY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787216888; c=relaxed/simple;
-	bh=dn5KdqUEu//ZSVtg9sydjHjQiXaNVV6Kvg0KN8Qodvs=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k19Go9AMYWCBMUB8jNIPUV4La+k5IL8LEDz71QEpWJc+BdYMgruSqpsy1604C9DyiOw1sjeL+UBFpxkjZ16ZXs8iLUnK/Oin5wFRueMhCmfscE/7FQWqZQTMYGtMYkRTGNyfcVbeDh1JKp0EOpDwfLn3tM+hDEQp027dHF+2s24=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=L5USe+Fw; arc=fail smtp.client-ip=40.107.200.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F183BADA5
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 10:07:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787220441; cv=none; b=JSH7g+5TYiEKh+Q93SlGapCw+YcPuJ0lDLoxbP/iNZrFP5ZfpnEiH7rPgfnhMLk221NB/IA1iFqjt6jSxhlBnTN2tcccmsj8x4xHcl36s7CrmG0NuN02JSYNSNDajvbKDumI8AQUrkITIKqyW5nrRY+irdxwZCWftvXSiX89zhQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787220441; c=relaxed/simple;
+	bh=MVJm9aVbCpzmQBNjnuzpFUj3AwV5++J7vwOgdi2VWIg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ambmvNaj5fiW3gPFFrVjsoExyF57xZTyeubk9ITMmCQ438iX9CSO3DT+qu4l+rexlD+NbbDqpOH+qlrId32C84EcSMmanF4SjEWO4naV7NI24X2BL5gu2G74JYVWG0aC5hiPM38sReisdfxiAGbXagV6eP6+Aav2LcV32je9hrw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iHJwVu+Z; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=jLdVx5cC; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="L5USe+Fw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pLPy6ldOpUFK5wJ4OXyspxt+gledlxbVunX2p7rgB81ytM/D/nsIG/uLdv9GMvQ01R+zx4fPFbXYxlCnyM4QMcRpEP+UR/dqnzzsx7npclLpJi6hf1UlOz/NzMCmY1BEjK0HojvwgFchrFa3S8DKC2PIRqefsidp6Xr/0b6LZfv8l3fR2deYD7SCVJyZulsRdv5fCe4Vbe3HqN7pMSGKk4GukZzLDkvIwbyCQPQnsBJeP2UnqHJknI5uTfUeOHjdvlValnDmghXRE4ghcbHJbLoigWr+de6Hsw3ZO+GHAisqFQ8jxBAJNCv8w1Pihkq/BqOMKIVkQk/wowlqfLpTGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Sueu9n+Icwo70R2KLTRoPI74+dBZ8NrynIVeVfs8U7I=;
- b=NmYQdpdkOdcjV7T0vtnkx03YHOIaQdj/ZZfISFwiasBbG7ducZ9Y7j1daVUQwuVEiFkVzUNLELyDsmZOECGTf6Z01ZayFHzo2twASY3RY3MCEPlXOW/NzR2E9+qhqJvzgwm55JvrZdWvHdAxNq+XHHsNWITC/kY0bmSrYjMjBLY9ZkK7iKJoYOjCjxaiu2s5ECOxlQ2+o0qKKRN6mwPFEv8znAcy6oLmSNvQ7kN1psTmESPdCC6kWsMlILXn33zLe227Jf5LvCxfVA3XbIt065u8cCXd0ZkLtD4V628gBzWUaE8H7hw1VPKDNqFncZ3z80F/4Omhf+mpPoDA8rR2eQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=gmail.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Sueu9n+Icwo70R2KLTRoPI74+dBZ8NrynIVeVfs8U7I=;
- b=L5USe+FwfWBiGyVsYnUBjlO5Lya4KippoiyP//joRGk8pRYkP0RgCXQiKQSaVeBtNmQ6bIPu9wagvkpRD34i3t8OJYbHadjMouewI49iL52y6VuV7ySRmN+YMRyXqU9Rbyqv0GaYv0A268jtyDyapJqYzKvLtda4JqttIUKCMJ0=
-Received: from PH8P220CA0030.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:348::15)
- by PH8PR12MB7230.namprd12.prod.outlook.com (2603:10b6:510:226::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.8; Thu, 20 Aug
- 2026 09:07:59 +0000
-Received: from MW1PEPF0001615D.namprd21.prod.outlook.com
- (2603:10b6:510:348:cafe::22) by PH8P220CA0030.outlook.office365.com
- (2603:10b6:510:348::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.339.9 via Frontend Transport; Thu, 20
- Aug 2026 09:07:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- MW1PEPF0001615D.mail.protection.outlook.com (10.167.249.88) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.360.0 via Frontend Transport; Thu, 20 Aug 2026 09:07:58 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Thu, 20 Aug
- 2026 04:07:58 -0500
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
- (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Thu, 20 Aug
- 2026 04:07:58 -0500
-Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45 via Frontend
- Transport; Thu, 20 Aug 2026 04:07:55 -0500
-Date: Thu, 20 Aug 2026 09:07:53 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Karl Mehltretter <kmehltretter@gmail.com>
-CC: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Robin Murphy <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/amd: Do not reallocate GA log buffers on resume
-Message-ID: <k5brbvuoqzz6k2lhyw54lusicjws5q3q7lxqs3bbalax5qz7fw@z6vxf6ftl5zi>
-References: <20260819032349.20354-1-kmehltretter@gmail.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iHJwVu+Z";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="jLdVx5cC"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67K8tGQT3515445
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 10:07:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=z8C6/88Cs+/FbVbD4LERoO0X
+	qQDdvLPythJnwKlVaPE=; b=iHJwVu+Z5314Eps6OYQhkbLMkm5m2OY1FH/myogq
+	cy72fgfxVMqCPgcJ0rsRchLfUktZPj4CEnPcU+m02xHAjw7gx6HcQNkZD1GWD2ZW
+	RbtUc9F1u1JGkWt2wsI2HE2n0aQB+A23yh9wrE2ofTd3bG0s95nbIzF8WfkNHHyC
+	/gW2G/aGTqN7A4mpq0QBScRllqvv4M2l7smF5WPXZbo0HS6qWP281mvyCdJzdADM
+	Dq2dGN4UHWs8mVtrAQwCePpBLr8qjZAUBonXQL4BJdPD45roEtd//eEaNPtlCdWd
+	BnbKoO/IamJ8BT1O2WHo5hhaadEeM8QVyY1jj9BlvHx4nA==
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g5xgc89qj-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 10:07:17 +0000 (GMT)
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-92e538afe65so288073685a.3
+        for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 03:07:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787220437; x=1787825237; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=z8C6/88Cs+/FbVbD4LERoO0XqQDdvLPythJnwKlVaPE=;
+        b=jLdVx5cCw3QKBFaX+xiR5QpagRreHzja7pYflt8AzgzEsmEJEAw4q3GEK8+BE5by4l
+         J3/25GTc+33oH4j2J9tiGe/sE8DtQjndKTj6RWqD28Lsi2M0AWr3mRtrRCmguN4J0+yU
+         AqrlWVWzqK+kq3iW6bsU8tIZqFgQu8tdFXPxZPALPbWHK7cmSrhaRU/X5EKBQLd4rwcD
+         ymE9XNNFeZYBlX0KoHVHtIdQsrNZ2EDmYFJEG91orPcR7znnfvhgVBIeuMbtPEkHtHAZ
+         ApjHJzFmXl4i8QvMea63oAh5kWGvMhKzYWDDNfC/bdrAkcU+bTB9eE8ME4lU1YS34fv/
+         sNKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787220437; x=1787825237;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=z8C6/88Cs+/FbVbD4LERoO0XqQDdvLPythJnwKlVaPE=;
+        b=PzZgcWeOvXIc3zNVahAp7/bBhRTB62k11auq00uYwAAsdcBAToCkD9GFqJFPSozL71
+         A948+JvVbyYkqJIV5QV3Lv5tBlNmdLg81NNVqIam2koOYdJQ20gsNCh4HNu1roJyTV2N
+         uqWd3RSXcYH5Z6szog2L7hfXM8ov6lHMLVQBP+F+hkyxaz8/SJoSja3SdxFN8OO6fKGu
+         tciDGd1wm0G20nT86dBjzp0QZ4sLpFUJMDH4BIlLsnsOC15ph28IAvj4XU6wTJOfU+bV
+         E/1Txb9OB8xVkhttKkrmHcX5INDl6ELjwez2DZ/Vs3AN5Bbw+KZ93oyCFZbbVW2CIeMh
+         CLLA==
+X-Forwarded-Encrypted: i=1; AHgh+Row32ftgESmIcmeSZHPLeTL4OUBB/pvcwxQynu8eW21jhSUqbPGoDMZx66zgPOx5EsLkdl7lA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyoZfaPccNqVXTSAAPAY4YDxSK6+NlUIzFk0/cEc4hm+u2lRjYJ
+	jDSPTAcOMOfS3XuMKymHRJlvPo/cobzJN+5NeNN8dOmA0wnSNH7lpBak7Rnz6vv7Y9y1FLWCBfa
+	7ruBcUOQLAn2UVDsdAWu5LRh8Iy2P49YLFZAyHtQm/+ikECGRK2eYkqm7rg==
+X-Gm-Gg: AR+sD10QAaVV3YoH3T8Czl20jYaopyrScsEcpazIrADSlRF3O9Ug+ame3vosMBoExcQ
+	cmUEJ470YNGabZ99opXlnbLK/1u2hRxBa4mqPy4qNNBCa2xsup5plnlXNN1N6pqKUYTCsOOPmka
+	7AWRTwZJIifyWf5TbYowJBrtXN9k6Z4C3exYYq+atrsooPWNKg6c1qMg7EVei21odEM4il4mq6F
+	M0OuyId7uR7KjpX8bBh5LP2IvIYilDkQpNLPMa59Ti7aQh2SWveCkuDreyY/rVYdg2Dtwl8yDSn
+	JgL/7JmVgNDknfG1f2d4eSFZtj+QUu4lk//3W7TKab/Qwp0ApH5//l3DqxAiwtWl2MWTokdNMTo
+	xged3Qqb/XV6WI1kL/osZ35pJoqOFwk2zhZqc4VpbnKd3UfdW0+WoCZTFAZIUrZdUKN6LOUMR7g
+	G0NhOjN4cS5JjC
+X-Received: by 2002:a05:620a:2602:b0:930:a12d:b158 with SMTP id af79cd13be357-9371e29fab7mr1125137285a.21.1787220436720;
+        Thu, 20 Aug 2026 03:07:16 -0700 (PDT)
+X-Received: by 2002:a05:620a:2602:b0:930:a12d:b158 with SMTP id af79cd13be357-9371e29fab7mr1125130885a.21.1787220436171;
+        Thu, 20 Aug 2026 03:07:16 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b4788f59acsm1173118e87.75.2026.08.20.03.07.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Aug 2026 03:07:14 -0700 (PDT)
+Date: Thu, 20 Aug 2026 13:07:12 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+        Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Bill Wendling <morbo@google.com>,
+        Justin Stitt <justinstitt@google.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>,
+        srinivas.kandagatla@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH v2 03/15] accel/qda: Add initial QDA DRM accelerator
+ driver
+Message-ID: <4xcyqqrqbvgxojfcmnpwbi2uqk5tvhts52l6sxetltcgb7mo75@lfsgfoq4npz3>
+References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
+ <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
+ <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
+ <3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com>
+ <4ef74e14-8433-4619-ac97-62868c8799d1@kernel.org>
+ <g5orcvzjbwww27vwcsxl3ehrek6lvznxptd7jutifoiuicjnm6@iqq2pus6omsl>
+ <a642833b-f22a-4bea-8a20-0debc47e1895@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260819032349.20354-1-kmehltretter@gmail.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW1PEPF0001615D:EE_|PH8PR12MB7230:EE_
-X-MS-Office365-Filtering-Correlation-Id: 36fa802d-49ec-4533-6d25-08defe9a87aa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|23010399003|376014|82310400026|11063799006|5023799004|10067099003|56012099006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	JSgobjOSK7jlkjB63jYneH1Hr+zpafAc1dMLXB5DP1oRkemNW00gfnv6mk+wExzDaZh8zd66zq7nHTIAbWOYsWW1sZjoF4DP+rrUB/TmUJ5X6uxrFZot2D6GjPR5/4ER6SN1w6FTLdt0jKpfUb/KceX/Cu1KBBxpquxWd5LOL0lgzLbMV/BEFE29NgW4c6T9qcG5TqQ/VZ3/BH/yLWtv9K2fuw38gxQxa2lBdJs9YZ46JCZR1FVvJVcPRwYjKxtPUb6NbULHQkxOLpupWyA2n5WjTRXOsKrUokYSb3MQVyB48lBLSwF7tQbCgD6RjyjqYPnbx6LbS4XoT+AQaEDSy4VYgj/FKazCRFtrWiQPT0oITOxT4hEk+m3PM1g63KwSGKd1/3nqASaDew42w2t3SzDNijgxy4dKC1llP+lruQ1JiLbpGB9mHcXEhPA3IWYm9rVtCEjdbVKYTPTmPJFTHrplmhW+kc6DrYIOSufOVGkPcKc/e1Hh8ydsQBhxJwmN/ukgmPuvaybYfPIAu6XmMyl6BK9n+JO4ZQV5wG83Q/p1OSBWGQOw6uBWKYe4jNB2chIMRubMUDKvSD+dw68GjfCxgBNDMaEA0iKSHUClFNYVDAggCEld2tnYAiqbUmgn+7xlLnmU+2XQHdTrNAOrIqKR4jgw3VHJvj6xRBDrn9hlPUoyaL/AId/HyrjhY4CgXnLnOIWDH0EqMui4nP48oQ==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(23010399003)(376014)(82310400026)(11063799006)(5023799004)(10067099003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Nm+ztY/zGpW/IcWbeJhINAjEai4X7IKHZpJ1C7wO2do8c5YcE/xxFa+V5mT0SJlgMxFCOQUBbCYLuLOJLgCrFQNKatvIOosbFIcI64ewk1rVIN0MyiV8Jd6lC40pzPN3UN6uWzzoy9e5n1RzkLxyWjH4aLE+4+GGTAtG8oTqXZe5XykX6FNKOUSpOPhBiNNov/pE6LK3lyykuuyKcHq2N+WSXBDwNAHTza2bpBIqi83/cbHCuCTfQGdnWFNeLtkOKYImRyo2SDvFTeWhBieRlyWHPBaUjs3/XOZcp9p7hQp1IcCm5VGWeVKpLfX0CKpwk610VWF2kMtvMfMHCFIBsxWU+FSdb0qrUcmNQu0CfkiiuB7Ni5CC51e1XbVcGU+S4yuZkhzabqbXi4zuZIRzuflmU38ymOZB3sju6q7xP7ba4M5BO294lhCDZKhe+GQ/
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2026 09:07:58.6999
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36fa802d-49ec-4533-6d25-08defe9a87aa
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MW1PEPF0001615D.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7230
+In-Reply-To: <a642833b-f22a-4bea-8a20-0debc47e1895@kernel.org>
+X-Authority-Analysis: v=2.4 cv=GPM41ONK c=1 sm=1 tr=0 ts=6a86d1d5 cx=c_pps
+ a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22 a=EUspDBNiAAAA:8
+ a=xc-yKiw0VIFfRBD-69AA:9 a=CjuIK1q_8ugA:10 a=PEH46H7Ffwr30OY-TuGO:22
+X-Proofpoint-ORIG-GUID: j2JVdXbUc5HUvL0HgY_cSbEqWIz-AMkN
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIwMDA3NCBTYWx0ZWRfX6OuVfZ+L1KbI
+ cxC1mBwSeD1k+10SIPpx/ScoxMHLcYgIPz/3ntKD25N4JsaDVU8Fy/78mhdmQvXf6S24i03gfTt
+ kwp58/gbqiL/zt/im+NNudL2o2gCLCS8pLRYFa+73UMxf90eOVRBGCK71siLrQKlt+zwDbw8iPt
+ VZyifeKW7CMCWjoRGApw202Ft3RPtzYKrVeGFbpntPN6mLnTgAAdfnOyRGtWHLxI6deRuiXCaJP
+ HRSLg4dABK8gt6wvq+cxpDX/mW8W80czkBnStFOj15TpEhAbWDEOWKkHgzIroxceP0c3/ucpNDd
+ uL8dpoRzKRFu2p7NsbBPDsiqlE6Ere+fNZj4hZE7m0/H+Jn5DyZw3eOdLmxVN0naaXEk/mk0z3S
+ DJrU6iehraUsW6Yn7a1dWxCrrjh16U0YQO96xguSvvjibo56GKl2AVQVam2K0xw8CbAlEelMe3z
+ djXZAzT+djrcJ/4mmSg==
+X-Proofpoint-GUID: j2JVdXbUc5HUvL0HgY_cSbEqWIz-AMkN
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIwMDA3NCBTYWx0ZWRfX123rxzlFBCGx
+ PxJo5UCTwhhtjKxqBFWUfbQlDAhR3OPfztsihvjlNdXoxYiQ5KGgZzjukGeHP9KsgO0e6aBalk+
+ qtcU1UyQaDjVkFgNdjgAl7sA5lSMkCc=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-19_06,2026-08-19_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 priorityscore=1501 spamscore=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 phishscore=0 malwarescore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608200074
 
-On Wed, Aug 19, 2026 at 05:23:49AM +0200, Karl Mehltretter wrote:
-> Commit c5e1a1eb9279 ("iommu/amd: Simplify and Consolidate Virtual APIC
-> (AVIC) Enablement") moved the GA log allocation from iommu_init_pci()
-> to enable_iommus_vapic(), which is called on every resume.
+On Thu, Aug 20, 2026 at 11:07:45AM +0200, Krzysztof Kozlowski wrote:
+> On 20/08/2026 10:52, Dmitry Baryshkov wrote:
+> > On Wed, Aug 19, 2026 at 04:18:51PM +0200, Krzysztof Kozlowski wrote:
+> >> On 19/08/2026 15:17, Ekansh Gupta wrote:
+> >>> On 19-08-2026 00:40, Krzysztof Kozlowski wrote:
+> >>>> On 17/08/2026 06:47, Ekansh Gupta wrote:
+> >>>>> Add the skeleton of the Qualcomm DSP Accelerator (QDA) driver, a DRM
+> >>>>> accel driver for the Hexagon DSPs found on Qualcomm SoCs.
+> >>>>>
+> >>>>> This patch registers a DRM accel device, exposing a /dev/accel/accelN
+> >>>>> character device node, and binds it to the RPMsg channel used to reach
+> >>>>> the DSP. Buffer management, IOMMU context banks and the FastRPC
+> >>>>> protocol are added by later patches in this series.
+> >>>>>
+> >>>>> qda_drv.c / qda_drv.h define the drm_driver ops table, the per-file
+> >>>>> private state (qda_file_priv) and the main device structure (qda_dev),
+> >>>>> which embeds drm_device so that it can be recovered with container_of().
+> >>>>>
+> >>>>> qda_rpmsg.c binds to the "qcom,fastrpc" compatible via
+> >>>>> module_rpmsg_driver(), reads the DSP domain name from the "label"
+> >>>>> device-tree property, and registers the DRM device.
+> >>>>>
+> >>>>> Assisted-by: Claude:claude-sonnet-5
+> >>>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> >>>>> ---
+> >>>>> Changes in v2:
+> >>>>> - Use module_rpmsg_driver() and drop the qda_rpmsg_register()/
+> >>>>>   _unregister() wrappers, module_init()/module_exit() and
+> >>>>>   qda_rpmsg.h entirely (Dmitry Baryshkov)
+> >>>>> - Read the "label" property directly into qdev->dsp_name (Dmitry Baryshkov)
+> >>>>> - Drop the probe/remove/init log messages (Dmitry Baryshkov)
+> >>>>> - Return the result of qda_register_device() directly (Dmitry Baryshkov)
+> >>>>> - Clarify the Kconfig help text (Dmitry Baryshkov)
+> >>>>> ---
+> >>>>>  drivers/accel/Kconfig         |  1 +
+> >>>>>  drivers/accel/Makefile        |  1 +
+> >>>>>  drivers/accel/qda/Kconfig     | 30 ++++++++++++++++
+> >>>>>  drivers/accel/qda/Makefile    | 10 ++++++
+> >>>>>  drivers/accel/qda/qda_drv.c   | 71 ++++++++++++++++++++++++++++++++++++++
+> >>>>>  drivers/accel/qda/qda_drv.h   | 61 +++++++++++++++++++++++++++++++++
+> >>>>>  drivers/accel/qda/qda_rpmsg.c | 79 +++++++++++++++++++++++++++++++++++++++++++
+> >>>>>  7 files changed, 253 insertions(+)
+> >>>>>
+> >>>>> diff --git a/drivers/accel/Kconfig b/drivers/accel/Kconfig
+> >>>>> index bdf48ccafcf2..74ac0f71bc9d 100644
+> >>>>> --- a/drivers/accel/Kconfig
+> >>>>> +++ b/drivers/accel/Kconfig
+> >>>>> @@ -29,6 +29,7 @@ source "drivers/accel/ethosu/Kconfig"
+> >>>>>  source "drivers/accel/habanalabs/Kconfig"
+> >>>>>  source "drivers/accel/ivpu/Kconfig"
+> >>>>>  source "drivers/accel/qaic/Kconfig"
+> >>>>> +source "drivers/accel/qda/Kconfig"
+> >>>>>  source "drivers/accel/rocket/Kconfig"
+> >>>>>  
+> >>>>>  endif
+> >>>>> diff --git a/drivers/accel/Makefile b/drivers/accel/Makefile
+> >>>>> index 1d3a7251b950..58c08dd5f389 100644
+> >>>>> --- a/drivers/accel/Makefile
+> >>>>> +++ b/drivers/accel/Makefile
+> >>>>> @@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ARM_ETHOSU)	+= ethosu/
+> >>>>>  obj-$(CONFIG_DRM_ACCEL_HABANALABS)	+= habanalabs/
+> >>>>>  obj-$(CONFIG_DRM_ACCEL_IVPU)		+= ivpu/
+> >>>>>  obj-$(CONFIG_DRM_ACCEL_QAIC)		+= qaic/
+> >>>>> +obj-$(CONFIG_DRM_ACCEL_QDA)		+= qda/
+> >>>>>  obj-$(CONFIG_DRM_ACCEL_ROCKET)		+= rocket/
+> >>>>> \ No newline at end of file
+> >>>>
+> >>>> You have trivial patch errors.
+> >>> newline problem was already there, wasn't introduced as part of this
+> >>> patch series, so I wasn't sure to fix it here. I can fix this in v3.>
+> >>>> ...
+> >>>>
+> >>>>> +}
+> >>>>> +
+> >>>>> +static const struct of_device_id qda_rpmsg_id_table[] = {
+> >>>>> +	{ .compatible = "qcom,fastrpc" },
+> >>>>> +	{},
+> >>>>
+> >>>> Device node with this compatible is already populated, so this looks
+> >>>> simply wrong or you are adding a duplicated driver.
+> >>>>
+> >>>> That's a no-go, you are supposed to work with existing drivers and grow
+> >>>> them.
+> >>> I'll bring the discussion again here, there was a discussion to move the
+> >>> driver to accel subsystem if we want to support new features/uAPI
+> >>> changes. Please read [1],[2] threads. The intention is to replace
+> >>> fastrpc driver with QDA eventually.
+> >>
+> >> None of them address the problem. You want to grow fastrpc into user of
+> >> dmabuf? So you move it from misc to here.
+> > 
+> > It's not as easy and nice, so I think in this case it's better to repeat
 > 
-> iommu_init_ga_log() assigns iommu->ga_log and iommu->ga_log_tail
-> unconditionally. Each resume therefore replaces the boot-time pointers
-> and leaks both old allocations. The function also uses GFP_KERNEL from a
-> syscore resume callback, where interrupts are disabled and the non-boot
-> CPUs are offline.
+> I disagree. The existing fastrpc driver is not that complicated. It's
+> actually moderate amount of code, much less than Venus was (~7 times less).
 > 
-> Return early if both buffers are already allocated. Clear the pointers
-> in free_ga_log() so a partial allocation failure cannot leave ga_log
-> dangling.
-> 
-> Fixes: c5e1a1eb9279 ("iommu/amd: Simplify and Consolidate Virtual APIC (AVIC) Enablement")
-> Assisted-by: Claude:claude-opus-5
-> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+> It easily can grow to support two interfaces and the only difficulty is
+> how to manage these two interfaces simultaneously or exclusively, e.g.
+> opening first one disables the second.
 
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+I see the point here.
 
-Thanks,
-Ankit
+Would it be acceptable if we add QDA support only on the new platforms
+(e.g. via the SoC-specific compat), provide QDA for those platforms,
+and, once it reaches complete API and feature parity, we remove the old
+fastrpc driver, migrati old platforms.
 
-> ---
-> Tested with custom QEMU with GA log emulation. Stock QEMU does not
-> advertise GAMSup and cannot reach this path. After five pm_test=core
-> cycles, nr_iommu_pages increased from 17 to 25 without the patch.
 > 
-> Testing on AVIC-capable hardware would be welcome.
+> > what we did for the venus/iris migration or what happened already
+> > several times in the kernel history (for example the AIC7xxx SCSI host
+> > drivers were migrated by introducing the second driver and then removing
+> > the first one after the grace period). The backwards compatibility is a
+> > separate topic, but it will be addressed before the driver can be
 > 
->  drivers/iommu/amd/init.c | 5 +++++
->  1 file changed, 5 insertions(+)
+> Backwards compatibility should be one of the first things explained in
+> cover letter in one of the first paragraphs.
 > 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 40726dfef2733..c6b106d5921e 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -909,7 +909,9 @@ static void free_ga_log(struct amd_iommu *iommu)
->  {
->  #ifdef CONFIG_IRQ_REMAP
->  	iommu_free_pages(iommu->ga_log);
-> +	iommu->ga_log = NULL;
->  	iommu_free_pages(iommu->ga_log_tail);
-> +	iommu->ga_log_tail = NULL;
->  #endif
->  }
->  
-> @@ -956,6 +958,9 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
->  	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
->  		return -EINVAL;
->  
-> +	if (iommu->ga_log && iommu->ga_log_tail)
-> +		return 0;
-> +
->  	iommu->ga_log = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, GA_LOG_SIZE);
->  	if (!iommu->ga_log)
->  		goto err_out;
-> 
-> base-commit: 4477a78374a57c3809b172ad30cceabda48c47c6
-> -- 
-> 2.53.0
-> 
+> And if you make it backwards compatible, then just remove old driver,
+> because there is no point to keep it there.
+
+That's the plan.
+
+> Again, this should be one of
+> the first things explained in cover letter.
+-- 
+With best wishes
+Dmitry
