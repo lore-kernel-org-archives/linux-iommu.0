@@ -1,296 +1,214 @@
-Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACE851D5146
-	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 13:01:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787230877; cv=pass; b=ctAhd8L3gyl90nEVyoMIYI5y3R/vAy7kMJ/KyMAKuzPi37PAFWrlkw+f3FeaQIAY5rOh8U+xMFH8w6esOTEVinbnnHeOtwYHchaFOumy+9bo0Y9ucYNmligF4Cc1mZfEVjWpMEBv/9gHwsaoM7Ke+4Ic092cSMvEOk2okurDlSM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787230877; c=relaxed/simple;
-	bh=IqrLDo+o8ggCy+1lV0BEKJrIpQOKrldsEdmIDhLNoRo=;
-	h=Message-ID:Subject:From:To:Cc:In-Reply-To:References:Content-Type:
-	 Date:MIME-Version; b=FZOiVuFFCWOZnyWgboQGbhfQ4+5pT5VmyQPf0IEoRBKR6VYHZglleyb9CTjmEpy1O6x9iaeaJJZD51zhai592Wpc/ujowZyvYYzGwj22JLEAepPXAVjcChngfg5y2BGQPdDPlkrAI9K3N3r4Bv060FMrtDnT0hHPNP+AJbsKcO8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=PSskaIrW; arc=pass smtp.client-ip=136.143.188.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rong.moe
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2D0F440631
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 13:06:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787231163; cv=none; b=NL968QiIbhTztFf/rNuqfqjEj/0uiMKoqKIXSy8ekoxXZkkmSFAwcXwNrZlwQeV9N+gQHTLDWZYvpIVNfAd7BvP19rFBGTyrhDia+AQ8ijHOldre5bbsr3WvLX07I92MIDo+9WMvrEYaWm3roICTistgoVPa/qVM/lANjeamsU4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787231163; c=relaxed/simple;
+	bh=/MvLGjCq9P+3TJQdi9yv+SMKwpIqRwp5tDl+T95B12k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hK3Jo1TnwRDv7ZPyLVuobLsxJPFttUuDlAQ2RbpOHUqeG+if9xV8Uu1MmbGf58XaNRj9Epxmulc0zgb8Dy7wWXGFyrDzy+GfjKkUJeatO0AgeCOfYCRBZHiwwYc62qIyA/WBF4zG6bWtR8lbCm/qg2Z9UwHYU+rwf7blgLUc1PU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jwaV4z2T; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KFsXNihh; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="PSskaIrW"
-ARC-Seal: i=1; a=rsa-sha256; t=1787230870; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=myAzGI5t0yJ0JZTzkxc6zRevGax1kMNRbn2L8QvrmxqV32JlOLjv5vFtHJffqLU8IvOB5g6dAsfXrT1RU3Y3xhJEGw3/5IeDSUTj5DqOFj5dEHW8nTYyaWanpBNmHt3+zMUCBR8UbiX7Ikev+UzLAq3QyfL/B4G0ySYepZuf+lo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1787230870; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=wla6raPHtteBLHHV3A2D4+XYL2OG81Vd8BvqSX4EaZI=; 
-	b=In9a6dQnbR4gv/AkSPKq2ZzpIiYs7UgY8bAU7SsCm0n9P5nkipB42+AAD782lIWzXUTK7AH+OdPlKP/DSN5mhxa19xQuQ74guCOxyzxaXE8oncRrvzaewnbtaju67kyZw6lhr75xjA7rBy6i+I5Vc+Qk8eVgVn+XKsz7V3gCxQ8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=rong.moe;
-	spf=pass  smtp.mailfrom=i@rong.moe;
-	dmarc=pass header.from=<i@rong.moe>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1787230870;
-	s=zmail2048; d=rong.moe; i=i@rong.moe;
-	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:In-Reply-To:Content-Type:Content-Transfer-Encoding:Date:Date:MIME-Version:Message-Id:Reply-To;
-	bh=wla6raPHtteBLHHV3A2D4+XYL2OG81Vd8BvqSX4EaZI=;
-	b=PSskaIrWnbbHnbGOjvCw0HI0LA/kOHCIqsaznHBx6EhsST3akNZBE458gyhWK0OT
-	Jqajk670SMTPqOm+NTRHpjqRxA03X4aWcZH4JaZB57SxQm2pqrsiZc4ecnq/sXr1sj/
-	A2iQ+AqZxJP3a863PAg4AwPYfxK154L/OR2kzHmvyiOOugbY5PEL+2u3Zb6S4rryOK7
-	91mIRsY/KbclMusp9bj/5kJeqjFqEJk1UhcQM16Kx6IkxXCZBo6H6xXFbsv6f+6hg3I
-	0o0Wg5Qc0d/wLmXUe7OJ+me35OLS8YB5Yook6AZGMTkh66vb/auhL0rtZ7HJaGf3s25
-	/MpJrUvrqQ==
-Received: by mx.zohomail.com with SMTPS id 1787230866468499.0069985737126;
-	Thu, 20 Aug 2026 06:01:06 -0700 (PDT)
-Message-ID: <96f97cf4e509efae5891795a6eb1543db737516c.camel@rong.moe>
-Subject: Re: [PATCH 0/2] iommu/amd: Do not request ACS when IOMMU is not
- going to be initialized
-From: Rong Zhang <i@rong.moe>
-To: Ankit Soni <Ankit.Soni@amd.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Suravee Suthikulpanit	
- <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Huang Rui
- <ray.huang@amd.com>, 	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-In-Reply-To: <sv2id4b3qz34q2tueg4mswgagoh2xr7tsk2eafxcxsqz2z4lkd@qs2hxx5cjcyl>
-References: <20260811-amd-iommu-fix-acs-v1-0-d64e2172408d@rong.moe>
-		 <zm24u35jq6ruz5teu6sevoe447esrqim3gn24s4bdb7kvncz6z@rmhomnfqzwht>
-		 <c5dc4cae4f4f33c98ee96d4d15da446b9fbf1f59.camel@rong.moe>
-		 <sv2id4b3qz34q2tueg4mswgagoh2xr7tsk2eafxcxsqz2z4lkd@qs2hxx5cjcyl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 20 Aug 2026 20:54:51 +0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jwaV4z2T";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KFsXNihh"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67K8PERN2465472
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 13:05:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	AieFSNSsSUo34uQSMJ/dNEJ/DOfK3/fGsi4sE8iI73Y=; b=jwaV4z2TzGHiIR6o
+	jRjasUFvEdE3hZE4YOADkjaSjyq+fcG4SjuMiuZVqbaXpQo4fXaIGY24SYwIat5Y
+	xEHhlCuMnmrr/SJYHxUbGJ+FCUVgQRxIlibWMy7b/sBOaiRz0+BwV58KjdvUWos0
+	MymhkSBlK9tfmtpyUhUVKJsUFs7C/x9lF8qpNUMfawb2xETI4YbvdSb/Fm3cQMvp
+	wpXyQIuiglhtbRGv11uPR8LPyT8bF0b6C169b+Ox9GnAJLwwDeqD8AZtXLm3YYqq
+	gt/e/bKxwCGZ8iFBBe16qImQzjIyszZalA0J2/MKSZVYh0FOA7HSdLy82KtShU+Q
+	AQ3oYw==
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g5x29h1dp-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 13:05:58 +0000 (GMT)
+Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-39533bb224cso2623356a91.3
+        for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 06:05:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787231158; x=1787835958; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=AieFSNSsSUo34uQSMJ/dNEJ/DOfK3/fGsi4sE8iI73Y=;
+        b=KFsXNihhNPUWp9iVJygiIw2vHWUALSztv8TlWIkjmpFheJHQL4jrRRmdJf7zuyCzbS
+         Fd9GnrFQNv7J/CGvJGkeBuWbIlVU66FfQX/XpS/WjmDuOyNDW6XSq8yNsmEh+HB02R8w
+         I7z+tg3vlhi70TAo4nau/yeCAduxOh9NpTjzV3u2DgzvVAJfHT0kSTXjFUl/H46aB69P
+         7deg5TRto7YOe615M8BHU2HvjZv24TmkZ0gz8+HMMHDQWwWsmCCwiPOPIq70xxPYx6r5
+         6UH85viMjbuZstqMMgVG/Y4kJp9wwt7L5OjRzScYU4O5vHncsmSNaFhW4lxZm4kTdsJm
+         jJgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787231158; x=1787835958;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=AieFSNSsSUo34uQSMJ/dNEJ/DOfK3/fGsi4sE8iI73Y=;
+        b=d8bZH9ufQzodS2uMWJPNczGWGuV/83wlnKzJAXt4sUFcAzqLqbxWlsobD84kCTpLIs
+         acmFukupT34Lab4BJGch736Aa/g3EMy6TNa9OD02/LEXxGL/XgYEA3t6ar45bOzk9EN1
+         wpDBdFe3ALIBwux0gFRUbd7ym+ZyzUcubQ4Ub+ysxuaFB3hLRpK6kYYPttrZKQmphP7s
+         PySOC+frEFpqzDjnVHhxmcoDHOSB0MMKVo470LYC49ouv7ORRedfqgaE6wwcsJix3lJV
+         Tb12HKjv4j6ThgRP6HpCrTnqZGD71a+7NtJa0E07/hPChYe+azyja0s3m1gqesb0XIVQ
+         y9+g==
+X-Forwarded-Encrypted: i=1; AHgh+RoS8TKN/ZIaP6SUT8NSTz+7SH/uk0ZuiY/2u3zdTRUrwJm2sxY9razmXaM5Z2Y/watBCVAoHQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++mSGRRhTzZ/RRszx5V5F++rAcUn1z4CW1ZUghOn9eO5Jgse+nN1
+	/BUEw52hu055yIWuWx3Qt6g3fn8TykOtKvoyxgOjtCHC21hWEodhpbM1fjnYY4GJgLrsIBicQpv
+	J/1I1NuIPrNs5CYu8NZVE+I5vOOY4B9DIXpKIC/a2ByDxStq+4T0PF9pvvg==
+X-Gm-Gg: AR+sD13wghk9TPNQG7G/tWMgFm6s177ZeZART3seyr5Li5a1kvR0rwRjInwgAdCSxCW
+	E3IKJZCQUWXv4xvj4FDpMJdQnRrWnOvoFiLTJR3QtKTSZBx6nl3ELFju3J2Av2DSuVjWddu2YaU
+	G9c2Vwq2LLA+Cic7hbYxBlp2Q2esFurHuZprHfeWexRRgvBCtFiyr5O3jWAc2moGJllrIbAakpS
+	gquwil4h39UDFYHHWONPdUu5LYD8c+FmzMuOmaB8yc9FYATgXuUQwSMZdAKZ+vqs6SWdi3Eiwn1
+	1EF2Eo1/VSe9hatv2BOBVrSAYq606oeKL6duwBnuxVGYIF0CLuqTH7jhdfg9NQxdwDkMkhKJvur
+	mLNBULiTNq9zNDiGR7aC5JlA9fKJtGg==
+X-Received: by 2002:a17:90b:4d82:b0:395:4de4:92c7 with SMTP id 98e67ed59e1d1-39580ed143bmr23044560a91.3.1787231157830;
+        Thu, 20 Aug 2026 06:05:57 -0700 (PDT)
+X-Received: by 2002:a17:90b:4d82:b0:395:4de4:92c7 with SMTP id 98e67ed59e1d1-39580ed143bmr23044231a91.3.1787231156489;
+        Thu, 20 Aug 2026 06:05:56 -0700 (PDT)
+Received: from [10.219.56.166] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3957fb12145sm6574171a91.4.2026.08.20.06.05.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Aug 2026 06:05:49 -0700 (PDT)
+Message-ID: <eb05740b-8683-41ea-83ec-8a4a484881e9@oss.qualcomm.com>
+Date: Thu, 20 Aug 2026 18:35:40 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Evolution 3.56.2-10+b1 
-X-ZohoMailClient: External
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 15/15] accel/qda: Add remote memory unmap from DSP
+ address space
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap
+ <rdunlap@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Bill Wendling
+ <morbo@google.com>,
+        Justin Stitt <justinstitt@google.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>,
+        srinivas.kandagatla@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org
+References: <20260817-qda-v2-v2-0-757ab8ed2f64@oss.qualcomm.com>
+ <20260817-qda-v2-v2-15-757ab8ed2f64@oss.qualcomm.com>
+ <6k6ogbosxx4z5bh7uriu4fnj24ycuakylq6g2gnuwsbckl2zww@e66jgj5xo52o>
+Content-Language: en-US
+From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+In-Reply-To: <6k6ogbosxx4z5bh7uriu4fnj24ycuakylq6g2gnuwsbckl2zww@e66jgj5xo52o>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: mzxvdwuzEvFTF3PWlRdtvWfQkLgBVrCK
+X-Authority-Analysis: v=2.4 cv=V8BNF+ni c=1 sm=1 tr=0 ts=6a86fbb6 cx=c_pps
+ a=0uOsjrqzRL749jD1oC5vDA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=EUspDBNiAAAA:8 a=rYwYc2LNA-xZppdo0x8A:9 a=QEXdDO2ut3YA:10
+ a=mQ_c8vxmzFEMiUWkPHU9:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIwMDA5NyBTYWx0ZWRfX/HxJP+YHwEa5
+ HL1uhSsMxZTG0B36PwB0XgVOv+gBO3U87x9d7pP/F6nxl4u/TUWXi61HpbdCOUFTw2UEmj+b92n
+ XoK/DDobUv0jUw6QrYF33cx9+PHNU2qwEdNk3F4GVi0li49V0kJTo/dJmRXk1vZs9pVhTOFSn76
+ kHwMuqfaS9ASB0kVxaJ+dRyWleoftQ6TmpA+nGSMfBSfqJN+iq2LTjUGHAJfDeY0K/yEAVEQhDz
+ vjvmQv7euUxS1EbNhTsLQ+Bbz0kRQvNDbS/i4mc+2Izg7FfCKAsTm+gRG9t0doB/P1C7CnPuz6S
+ iPu43gqawCTRMn2qxC7KvIeOGwodt3qR6wTGXO7rBg48lcjkCJo6MtwS+UGlL4YTw5m/feTjBw8
+ p94TDlSlLF2EOOLjT9IAFRnV0IKIwHSn0+9YDczvjlPh0lsKYX1zWP9XpQ26qTR7E6KRb6mkXSP
+ kO72EynFaqD0NqO64WQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIwMDA5NyBTYWx0ZWRfX4tyeq7lOKkY0
+ dVp30Jp5wZIoQXkBTtjawmgtqMNWRLyWQ780PiYBvGTS1GgXXkscC0GLDmnFu/6vtFp7Dvib2Ws
+ 7Y3ch47XJS8gwzmQDCvOvPQDDZfeEJc=
+X-Proofpoint-GUID: mzxvdwuzEvFTF3PWlRdtvWfQkLgBVrCK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-19_06,2026-08-19_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 clxscore=1015 bulkscore=0 adultscore=0
+ lowpriorityscore=0 phishscore=0 spamscore=0 suspectscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608200097
 
-Hi Ankit,
+On 17-08-2026 11:14, Dmitry Baryshkov wrote:
+> On Mon, Aug 17, 2026 at 10:38:45AM +0530, Ekansh Gupta wrote:
+>> Add DRM_IOCTL_QDA_REMOTE_MUNMAP, which removes a mapping previously
+>> established with DRM_IOCTL_QDA_REMOTE_MAP from the DSP address space of
+>> the calling process.
+>>
+>> Mirroring the map path, the DSP exposes two unmap operations, both
+>> reachable through this IOCTL and selected by the request field of
+>> struct drm_qda_mem_unmap:
+>>
+>>   QDA_REQUEST_MUNMAP unmaps a region by the DSP address that the
+>>   corresponding map call returned. It uses the vaddrout and size fields.
+>>
+>>   QDA_REQUEST_MEM_UNMAP unmaps a region by buffer identity, using the
+>>   GEM handle, the DSP virtual address and the size.
+> 
+> Why do we need two different operations? Can you just pass the GEM
+> handle to the IOCTL?
+QDA_REQUEST_MUNMAP (RMID 5): The DSP locates the mapping by the DSP
+virtual address that was returned by the corresponding MMAP call. This
+is the older protocol message that only needs {address, size} to
+identify the region in the DSP's page table.
 
-On Thu, 2026-08-20 at 05:48 +0000, Ankit Soni wrote:
-> On Thu, Aug 20, 2026 at 01:38:35AM +0800, Rong Zhang wrote:
-> > Hi Ankit,
-> >=20
-> > Thanks for your review.
-> >=20
-> > On Wed, 2026-08-19 at 10:32 +0000, Ankit Soni wrote:
-> > > On Tue, Aug 11, 2026 at 04:36:17AM +0800, Rong Zhang wrote:
-> > > > The AMD IOMMU Initialization State Machine has the following state
-> > > > transition diagram (only the very first states are showed, and the
-> > > > `IOMMU_' prefix is omitted):
-> > > >=20
-> > > >    START_STATE
-> > > >         |
-> > > >         v
-> > > > [0] detect_ivrs() --> NOT_FOUND
-> > > >         | ok
-> > > >         v
-> > > >   IVRS_DETECTED
-> > > >         |
-> > > >         v
-> > > > [1] amd_iommu_disabled? (amd_iommu=3Doff) --> IOMMU_CMDLINE_DISABLE=
-D
-> > > >         | no
-> > > >         v
-> > > > [2] early_amd_iommu_init()
-> > > >         |
-> > > >         +-- [3] amd_iommu_detected? (!iommu=3Doff && ...) -+
-> > > >         | yes                                            |  =20
-> > > >         +-- ... --> IOMMU_INIT_ERROR <-------------------+
-> > > >         | ok
-> > > >         v
-> > > > IOMMU_ACPI_FINISHED
-> > > >         |
-> > > >         v
-> > > >        ...
-> > > >=20
->=20
-> ../..
->=20
-> > > > ---
-> > > > Rong Zhang (2):
-> > > >       iommu/amd: Do not request ACS when IOMMU is not going to be i=
-nitialized
-> > > >       iommu/amd: Remove ad-hoc checks that are never true
-> > >=20
-> > > Hi,
-> > >=20
-> > > Thanks for the cleanup, and the analysis of the ACS call paths matche=
-s what I see.
-> > > Two things worth a look before this goes in.
-> > >=20
-> > > 1. Patch 2: I don't think the !amd_iommu_detected check in
-> > >    early_amd_iommu_init() is unreachable. pci_iommu_alloc() returns e=
-arly for
-> > >    xen_pv_domain() before calling amd_iommu_detect(), but Xen PV stil=
-l sets
-> > >=20
-> > > 	x86_init.irqs.intr_mode_init =3D x86_64_probe_apic;
-> > >=20
-> > >    so x86_64_probe_apic() -> enable_IR_x2apic() -> irq_remapping_prep=
-are() ->
-> > >    amd_iommu_prepare() enters the state machine anyway, and none of t=
-he new
-> > >    IOMMU_START_STATE conditions are true. That check looks like
-> > >    the only thing currently stopping early_amd_iommu_init() from runn=
-ing
-> > >    there. Could you double-check that case before dropping it?
-> >=20
-> > This has been resolved by PATCH 1, where the checks have been embedded
-> > into the state machine.
->=20
-> Agreed on patch 1 - the state machine is the right place for those checks=
- and
-> I have no objection to it. My concern is only patch 2 dropping the
-> "amd_iommu_detected" check.
->=20
-> >=20
-> > I did some quick tests by commenting out the call to amd_iommu_detect()
-> > in pci_iommu_alloc(), and adding a debug WARN() to iommu_go_to_state().
-> > When I booted a VM with emulated IOMMU (-device amd-iommu) and with
-> > either `amd_iommu=3Doff' or `iommu=3Doff':
-> >=20
-> > [    0.081948] APIC: Switch to symmetric I/O mode setup
-> > [    0.082553] ------------[ cut here ]------------
-> > [    0.083144] init_state: 0 =3D> 9, ret: -22
-> > [    0.083617] WARNING: drivers/iommu/amd/init.c:3506 at iommu_go_to_st=
-ate+0xf18/0x1c00, CPU#0: swapper/0/0
-> > [    0.084809] Modules linked in:
-> > [    0.085122] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-0=
-2579-ge0f12714fa53-dirty #38 PREEMPT(lazy)
-> > [    0.086124] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS=
- 1.17.0-debian-1.17.0-1 04/01/2014
-> > [    0.087076] RIP: 0010:iommu_go_to_state+0xf23/0x1c00
-> > [    0.087629] Code: 1b e7 2c 00 eb 12 c7 05 0f e7 2c 00 06 00 00 00 eb=
- 03 90 0f 0b 45 31 f6 48 8d 3d e8 90 b6 ff 8b 15 fa e6 2c 00 44 89 f1 89 de=
- <67> 48 0f b9 3a 45 85 f6 0f 84 f4 f0 ff ff e8 8a c0 73 fe 48 8b 05
-> > [    0.089556] RSP: 0000:ffffffff93a03e40 EFLAGS: 00010202
-> > [    0.090039] RAX: 00000000fffffff9 RBX: 0000000000000000 RCX: 0000000=
-0ffffffea
-> > [    0.090677] RDX: 0000000000000009 RSI: 0000000000000000 RDI: fffffff=
-f93d17440
-> > [    0.091338] RBP: ffff8fbd47fd5c80 R08: 3fffffffffffdfff R09: fffffff=
-f93b20aa8
-> > [    0.092025] R10: 0000000000000002 R11: 0000000000000002 R12: 0000000=
-00000001b
-> > [    0.092662] R13: 0000000000000000 R14: 00000000ffffffea R15: 0000000=
-000014770
-> > [    0.093319] FS:  0000000000000000(0000) GS:ffff8fbdb3634000(0000) kn=
-lGS:0000000000000000
-> > [    0.094055] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [    0.094572] CR2: ffff8fbd4728f000 CR3: 0000000006844000 CR4: 0000000=
-0000100b0
-> > [    0.095214] Call Trace:
-> > [    0.095437]  <TASK>
-> > [    0.095628]  amd_iommu_prepare+0x15/0x40
-> > [    0.096025]  irq_remapping_prepare+0x43/0x60
-> > [    0.096406]  enable_IR_x2apic+0x22/0x190
-> > [    0.096759]  x86_64_probe_apic+0xa/0x50
-> > [    0.097130]  apic_intr_mode_init+0x70/0xd0
-> > [    0.097495]  x86_late_time_init+0x28/0x40
-> > [    0.097858]  start_kernel+0x6f9/0x7a0
-> > [    0.098209]  x86_64_start_reservations+0x24/0x30
-> > [    0.098629]  x86_64_start_kernel+0xd1/0xe0
-> > [    0.099016]  common_startup_64+0x13e/0x158
-> > [    0.099393]  </TASK>
-> > [    0.099595] ---[ end trace 0000000000000000 ]---
-> > [    0.100266] x2apic enabled
-> > [    0.100758] APIC: Switched APIC routing to: physical x2apic
-> >=20
-> > ...where 0 is IOMMU_START_STATE and 9 is IOMMU_CMDLINE_DISABLED.
->=20
-> Commenting out amd_iommu_detect() is right way to emulate this, and the t=
-race=20
-> confirms the entry path. But the boot options are what make it
-> come out clean: amd_iommu=3Doff / iommu=3Doff set amd_iommu_disabled / no=
-_iommu,
-> so IOMMU_START_STATE bails on its first if - that's the 0 =3D> 9., which
-> is clearly visible above.
->=20
-> But,
-> Xen's own iommu=3D sits on the hypervisor command line and goes to Xen's =
-parser,
-> not to Linux's iommu_setup(), and there no one sets no_iommu or amd_iommu=
-_disabled.
->=20
-> The wider point is that amd_iommu_detect() never running is the platform =
-mean
-> Linux does not own this IOMMU - Xen opts out of pci_iommu_alloc() and ins=
-talls
-> xen_swiotlb_dma_ops instead. 'amd_iommu_detected' was the only thing maki=
-ng the
-> irq-remapping entry path honour that, so without it (i.e. patch 2 removes=
- it)=20
-> early_amd_iommu_init() proceeds on hardware the hypervisor owns.
+QDA_REQUEST_MEM_UNMAP (RMID 11): The DSP locates the mapping by its
+internal handle association. This is the newer protocol message that is
+not supported on older platforms.
 
-Ah, indeed! Skipping calling amd_iommu_detect() acts as a kill switch to
-gate IOMMU initialization anyway, and `amd_iommu_detected' is used by in
-this case.
+> 
+> Also, what happens if the buffer is still in use on the DSP side? Will
+> the DSP crash? Will the whole board crash?
+The access from DSP after unmap will trigger an SMMU context fault on
+the context bank device. The fault does not bring down the board but
+might trigger remoteproc to restart(I'm not exactly sure about the iommu
+side handling of such faults).
 
-That said, I believe relying on the flag to gate IOMMU initialization in
-Xen PV is too late that detect_ivrs() has been called.
+Thanks for reviewing the patches.
 
-The whole purpose of the series is to prevent calling detect_ivrs() at
-all when unnecessary. Although detect_ivrs() is effectively a no-op due
-to=C2=A0Xen PV always requesting ACS, I still prefer completely skipping it=
- in
-Xen PV to prevent unnecessarily getting the IVRS table and accessing the
-PCI config space.
+//Ekansh
 
-After rethinking, I propose disallowing implicit START_STATE =3D>
-IVRS_DETECTED transition. IOW, the IVRS_DETECTED state can only be
-requested explicitly by amd_iommu_detect(). This should also help prevent
-potential bugs if more housekeeping work is added to amd_iommu_detect()
-in the future. In this manner, we should be able to safely remove
-`amd_iommu_detected'.
+> 
+> 
+>>
+>> Each request type has its own argument builder in qda_fastrpc.c,
+>> documented with the packed argument layout the DSP expects. Unknown
+>> request types are rejected with -EINVAL.
+>>
+>> Assisted-by: Claude:claude-sonnet-5
+>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>> ---
+>>  drivers/accel/qda/qda_drv.c     |   1 +
+>>  drivers/accel/qda/qda_fastrpc.c | 119 ++++++++++++++++++++++++++++++++++++++++
+>>  drivers/accel/qda/qda_fastrpc.h |  34 ++++++++++++
+>>  drivers/accel/qda/qda_ioctl.c   |  22 ++++++++
+>>  drivers/accel/qda/qda_ioctl.h   |   1 +
+>>  include/uapi/drm/qda_accel.h    |  39 ++++++++++++-
+>>  6 files changed, 215 insertions(+), 1 deletion(-)
+>>
+>>
+> 
 
-This will make parts of PATCH 1 unnecessary, but I prefer leaving PATCH 1
-as is it makes the intention clearer.
-
-I will include the proposed change in v2.
-
-Thanks,
-Rong
-
->=20
-> -Ankit
->=20
-> >=20
-> > Therefore, embedding the checks into the state machine ensures the chec=
-ks
-> > are done in all initialization paths and makes replicating the same
-> > checks in state transition methods unnecessary.
-> >=20
-> > >=20
-> > > 2. Patch 1 Fixes: 9f81ca8d1fd6 doesn't look right - it only moved the
-> > >    amd_iommu_disabled check ahead of early_amd_iommu_init() and left
-> > >    IOMMU_START_STATE and detect_ivrs() alone, so ACS was requested wi=
-th
-> > >    amd_iommu=3Doff both before and after it. The commit that actually=
- put
-> > >    pci_request_acs() on the detect path is 1adb7d31b051 ("iommu/amd: =
-Fix
-> > >    pci_request_acs() call-place"). I'd drop Fixes: and Cc: stable and=
- post
-> > >    this as a cleanup.
-> >=20
-> > Makes sense. Will drop them when resubmitting. I will defer to your
-> > opinion on my explanation to the first question before resubmitting :)
-> >=20
-> > Thanks,
-> > Rong
-> >=20
-> > >=20
-> > > -Ankit
-> > >=20
-> > > >=20
-> > > >  drivers/iommu/amd/init.c | 36 ++++++++++++++----------------------
-> > > >  1 file changed, 14 insertions(+), 22 deletions(-)
-> > > > ---
-> > > > base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
-> > > > change-id: d58d0f31-amd-iommu-fix-acs-8f3d4aba8183
-> > > >=20
-> > > > Thanks,
-> > > > Rong
-> > > >=20
