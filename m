@@ -1,280 +1,371 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F183BADA5
-	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 10:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA9A411661;
+	Thu, 20 Aug 2026 10:16:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787220441; cv=none; b=JSH7g+5TYiEKh+Q93SlGapCw+YcPuJ0lDLoxbP/iNZrFP5ZfpnEiH7rPgfnhMLk221NB/IA1iFqjt6jSxhlBnTN2tcccmsj8x4xHcl36s7CrmG0NuN02JSYNSNDajvbKDumI8AQUrkITIKqyW5nrRY+irdxwZCWftvXSiX89zhQ=
+	t=1787221031; cv=none; b=Y3WSBTt/zoY9aYKR5V/6B8AD1YUNekFQGWKmBuKiZk3lYvdFfq/ClPiATrx4WPUQmSODtWlyjs1Eu+ub1P80jQ6xH5SJBfXHm6MCiBEBIsCqGQhCe0rXa/tIXjrPFwBfCRbFiZIVycbAElvqBqdFAfWw1/Olw5adeNzPx0j7edk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787220441; c=relaxed/simple;
-	bh=MVJm9aVbCpzmQBNjnuzpFUj3AwV5++J7vwOgdi2VWIg=;
+	s=arc-20240116; t=1787221031; c=relaxed/simple;
+	bh=Uf58w+WH+w/vZUCTiO15CQNGrTWYljZBS+KnqGgd3a4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ambmvNaj5fiW3gPFFrVjsoExyF57xZTyeubk9ITMmCQ438iX9CSO3DT+qu4l+rexlD+NbbDqpOH+qlrId32C84EcSMmanF4SjEWO4naV7NI24X2BL5gu2G74JYVWG0aC5hiPM38sReisdfxiAGbXagV6eP6+Aav2LcV32je9hrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iHJwVu+Z; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=jLdVx5cC; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ngImEvsI4mHoUD4MBshzT+kalsCUZE14zfmPTtrGtMevOFM+2tXOt3YrE6jBp+7YAuITksMruQhEi9Pl+7EFRc1Kvzqi/h0pehMLCdYyQrx6fSzIDLJY6onHZwP4qHWSCQm1XcACxcYovkW5+bTc0vagHADEqUTzfIuycab+9go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eMhGYcxN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iHJwVu+Z";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="jLdVx5cC"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67K8tGQT3515445
-	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 10:07:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=z8C6/88Cs+/FbVbD4LERoO0X
-	qQDdvLPythJnwKlVaPE=; b=iHJwVu+Z5314Eps6OYQhkbLMkm5m2OY1FH/myogq
-	cy72fgfxVMqCPgcJ0rsRchLfUktZPj4CEnPcU+m02xHAjw7gx6HcQNkZD1GWD2ZW
-	RbtUc9F1u1JGkWt2wsI2HE2n0aQB+A23yh9wrE2ofTd3bG0s95nbIzF8WfkNHHyC
-	/gW2G/aGTqN7A4mpq0QBScRllqvv4M2l7smF5WPXZbo0HS6qWP281mvyCdJzdADM
-	Dq2dGN4UHWs8mVtrAQwCePpBLr8qjZAUBonXQL4BJdPD45roEtd//eEaNPtlCdWd
-	BnbKoO/IamJ8BT1O2WHo5hhaadEeM8QVyY1jj9BlvHx4nA==
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g5xgc89qj-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 10:07:17 +0000 (GMT)
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-92e538afe65so288073685a.3
-        for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 03:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787220437; x=1787825237; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=z8C6/88Cs+/FbVbD4LERoO0XqQDdvLPythJnwKlVaPE=;
-        b=jLdVx5cCw3QKBFaX+xiR5QpagRreHzja7pYflt8AzgzEsmEJEAw4q3GEK8+BE5by4l
-         J3/25GTc+33oH4j2J9tiGe/sE8DtQjndKTj6RWqD28Lsi2M0AWr3mRtrRCmguN4J0+yU
-         AqrlWVWzqK+kq3iW6bsU8tIZqFgQu8tdFXPxZPALPbWHK7cmSrhaRU/X5EKBQLd4rwcD
-         ymE9XNNFeZYBlX0KoHVHtIdQsrNZ2EDmYFJEG91orPcR7znnfvhgVBIeuMbtPEkHtHAZ
-         ApjHJzFmXl4i8QvMea63oAh5kWGvMhKzYWDDNfC/bdrAkcU+bTB9eE8ME4lU1YS34fv/
-         sNKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787220437; x=1787825237;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=z8C6/88Cs+/FbVbD4LERoO0XqQDdvLPythJnwKlVaPE=;
-        b=PzZgcWeOvXIc3zNVahAp7/bBhRTB62k11auq00uYwAAsdcBAToCkD9GFqJFPSozL71
-         A948+JvVbyYkqJIV5QV3Lv5tBlNmdLg81NNVqIam2koOYdJQ20gsNCh4HNu1roJyTV2N
-         uqWd3RSXcYH5Z6szog2L7hfXM8ov6lHMLVQBP+F+hkyxaz8/SJoSja3SdxFN8OO6fKGu
-         tciDGd1wm0G20nT86dBjzp0QZ4sLpFUJMDH4BIlLsnsOC15ph28IAvj4XU6wTJOfU+bV
-         E/1Txb9OB8xVkhttKkrmHcX5INDl6ELjwez2DZ/Vs3AN5Bbw+KZ93oyCFZbbVW2CIeMh
-         CLLA==
-X-Forwarded-Encrypted: i=1; AHgh+Row32ftgESmIcmeSZHPLeTL4OUBB/pvcwxQynu8eW21jhSUqbPGoDMZx66zgPOx5EsLkdl7lA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyoZfaPccNqVXTSAAPAY4YDxSK6+NlUIzFk0/cEc4hm+u2lRjYJ
-	jDSPTAcOMOfS3XuMKymHRJlvPo/cobzJN+5NeNN8dOmA0wnSNH7lpBak7Rnz6vv7Y9y1FLWCBfa
-	7ruBcUOQLAn2UVDsdAWu5LRh8Iy2P49YLFZAyHtQm/+ikECGRK2eYkqm7rg==
-X-Gm-Gg: AR+sD10QAaVV3YoH3T8Czl20jYaopyrScsEcpazIrADSlRF3O9Ug+ame3vosMBoExcQ
-	cmUEJ470YNGabZ99opXlnbLK/1u2hRxBa4mqPy4qNNBCa2xsup5plnlXNN1N6pqKUYTCsOOPmka
-	7AWRTwZJIifyWf5TbYowJBrtXN9k6Z4C3exYYq+atrsooPWNKg6c1qMg7EVei21odEM4il4mq6F
-	M0OuyId7uR7KjpX8bBh5LP2IvIYilDkQpNLPMa59Ti7aQh2SWveCkuDreyY/rVYdg2Dtwl8yDSn
-	JgL/7JmVgNDknfG1f2d4eSFZtj+QUu4lk//3W7TKab/Qwp0ApH5//l3DqxAiwtWl2MWTokdNMTo
-	xged3Qqb/XV6WI1kL/osZ35pJoqOFwk2zhZqc4VpbnKd3UfdW0+WoCZTFAZIUrZdUKN6LOUMR7g
-	G0NhOjN4cS5JjC
-X-Received: by 2002:a05:620a:2602:b0:930:a12d:b158 with SMTP id af79cd13be357-9371e29fab7mr1125137285a.21.1787220436720;
-        Thu, 20 Aug 2026 03:07:16 -0700 (PDT)
-X-Received: by 2002:a05:620a:2602:b0:930:a12d:b158 with SMTP id af79cd13be357-9371e29fab7mr1125130885a.21.1787220436171;
-        Thu, 20 Aug 2026 03:07:16 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b4788f59acsm1173118e87.75.2026.08.20.03.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Aug 2026 03:07:14 -0700 (PDT)
-Date: Thu, 20 Aug 2026 13:07:12 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
-        Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Justin Stitt <justinstitt@google.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>,
-        srinivas.kandagatla@oss.qualcomm.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH v2 03/15] accel/qda: Add initial QDA DRM accelerator
- driver
-Message-ID: <4xcyqqrqbvgxojfcmnpwbi2uqk5tvhts52l6sxetltcgb7mo75@lfsgfoq4npz3>
-References: <20260817-qda-v2-v2-0-69a02e9090d4@oss.qualcomm.com>
- <20260817-qda-v2-v2-3-69a02e9090d4@oss.qualcomm.com>
- <81708487-89ce-4cd5-b39a-2989bdce6088@kernel.org>
- <3476b5c3-7983-4994-a901-3d7d8bd75255@oss.qualcomm.com>
- <4ef74e14-8433-4619-ac97-62868c8799d1@kernel.org>
- <g5orcvzjbwww27vwcsxl3ehrek6lvznxptd7jutifoiuicjnm6@iqq2pus6omsl>
- <a642833b-f22a-4bea-8a20-0debc47e1895@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eMhGYcxN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF5A91F00A3D;
+	Thu, 20 Aug 2026 10:16:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787221014;
+	bh=Prgge7OpuMZ/HlcX8eJ0GJRbHnBVkzQIseKBREaIjlE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=eMhGYcxNKDh4NXZyBubRgnxdtCcRUowO/4SMoTPHcajD0tk+vx1zx6kNjoNl7/b8u
+	 VbBmk5l0fpiy5ICmvJea6TNkuh71IIW6g4sxImhfzhNHSfOF1Pnm7qNJK8iUwqhxgH
+	 CPiDRqe0w6efLy4yZBdv4ES/dp0n601Rxz4fye4gd5ggTA2TLZcJcqAkS7jkSIrrGw
+	 KwwAacAdrYwOa6EuWzgfIQ5XSIavHrqs5msiFf1mrjgvBsX4gEBSwt+mn58su9t3xA
+	 JczaSgDsCUsUtMas4k+rIohgdfMmYCgNhhIjTpgq3MYQQZsZYiph1X6iRlWfpNOzbs
+	 kmFXzd6snLZ7g==
+Date: Thu, 20 Aug 2026 12:16:51 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>, 
+	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>, 
+	pavan.kondeti@oss.qualcomm.com
+Subject: Re: [PATCH v4 07/10] dma-buf: heaps: Add support for Tegra VPR
+Message-ID: <aobOs0ZidWzgoHut@orome>
+References: <20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com>
+ <20260807-tegra-vpr-v4-7-5510d16af89e@nvidia.com>
+ <an4MEI7lkc2p3nKI@google.com>
+ <an8K2gb1pIqbDj6-@orome>
+ <aoNDRTKCUkzd2n5G@google.com>
+ <aoQ1lhZojzsSkWHQ@orome>
+ <aoVy8dj8f3ll5-M4@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="lgqipk6jwvqdiaex"
 Content-Disposition: inline
-In-Reply-To: <a642833b-f22a-4bea-8a20-0debc47e1895@kernel.org>
-X-Authority-Analysis: v=2.4 cv=GPM41ONK c=1 sm=1 tr=0 ts=6a86d1d5 cx=c_pps
- a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22 a=EUspDBNiAAAA:8
- a=xc-yKiw0VIFfRBD-69AA:9 a=CjuIK1q_8ugA:10 a=PEH46H7Ffwr30OY-TuGO:22
-X-Proofpoint-ORIG-GUID: j2JVdXbUc5HUvL0HgY_cSbEqWIz-AMkN
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIwMDA3NCBTYWx0ZWRfX6OuVfZ+L1KbI
- cxC1mBwSeD1k+10SIPpx/ScoxMHLcYgIPz/3ntKD25N4JsaDVU8Fy/78mhdmQvXf6S24i03gfTt
- kwp58/gbqiL/zt/im+NNudL2o2gCLCS8pLRYFa+73UMxf90eOVRBGCK71siLrQKlt+zwDbw8iPt
- VZyifeKW7CMCWjoRGApw202Ft3RPtzYKrVeGFbpntPN6mLnTgAAdfnOyRGtWHLxI6deRuiXCaJP
- HRSLg4dABK8gt6wvq+cxpDX/mW8W80czkBnStFOj15TpEhAbWDEOWKkHgzIroxceP0c3/ucpNDd
- uL8dpoRzKRFu2p7NsbBPDsiqlE6Ere+fNZj4hZE7m0/H+Jn5DyZw3eOdLmxVN0naaXEk/mk0z3S
- DJrU6iehraUsW6Yn7a1dWxCrrjh16U0YQO96xguSvvjibo56GKl2AVQVam2K0xw8CbAlEelMe3z
- djXZAzT+djrcJ/4mmSg==
-X-Proofpoint-GUID: j2JVdXbUc5HUvL0HgY_cSbEqWIz-AMkN
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODIwMDA3NCBTYWx0ZWRfX123rxzlFBCGx
- PxJo5UCTwhhtjKxqBFWUfbQlDAhR3OPfztsihvjlNdXoxYiQ5KGgZzjukGeHP9KsgO0e6aBalk+
- qtcU1UyQaDjVkFgNdjgAl7sA5lSMkCc=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-19_06,2026-08-19_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 priorityscore=1501 spamscore=0 clxscore=1015 impostorscore=0
- lowpriorityscore=0 suspectscore=0 phishscore=0 malwarescore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608200074
+In-Reply-To: <aoVy8dj8f3ll5-M4@google.com>
 
-On Thu, Aug 20, 2026 at 11:07:45AM +0200, Krzysztof Kozlowski wrote:
-> On 20/08/2026 10:52, Dmitry Baryshkov wrote:
-> > On Wed, Aug 19, 2026 at 04:18:51PM +0200, Krzysztof Kozlowski wrote:
-> >> On 19/08/2026 15:17, Ekansh Gupta wrote:
-> >>> On 19-08-2026 00:40, Krzysztof Kozlowski wrote:
-> >>>> On 17/08/2026 06:47, Ekansh Gupta wrote:
-> >>>>> Add the skeleton of the Qualcomm DSP Accelerator (QDA) driver, a DRM
-> >>>>> accel driver for the Hexagon DSPs found on Qualcomm SoCs.
-> >>>>>
-> >>>>> This patch registers a DRM accel device, exposing a /dev/accel/accelN
-> >>>>> character device node, and binds it to the RPMsg channel used to reach
-> >>>>> the DSP. Buffer management, IOMMU context banks and the FastRPC
-> >>>>> protocol are added by later patches in this series.
-> >>>>>
-> >>>>> qda_drv.c / qda_drv.h define the drm_driver ops table, the per-file
-> >>>>> private state (qda_file_priv) and the main device structure (qda_dev),
-> >>>>> which embeds drm_device so that it can be recovered with container_of().
-> >>>>>
-> >>>>> qda_rpmsg.c binds to the "qcom,fastrpc" compatible via
-> >>>>> module_rpmsg_driver(), reads the DSP domain name from the "label"
-> >>>>> device-tree property, and registers the DRM device.
-> >>>>>
-> >>>>> Assisted-by: Claude:claude-sonnet-5
-> >>>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-> >>>>> ---
-> >>>>> Changes in v2:
-> >>>>> - Use module_rpmsg_driver() and drop the qda_rpmsg_register()/
-> >>>>>   _unregister() wrappers, module_init()/module_exit() and
-> >>>>>   qda_rpmsg.h entirely (Dmitry Baryshkov)
-> >>>>> - Read the "label" property directly into qdev->dsp_name (Dmitry Baryshkov)
-> >>>>> - Drop the probe/remove/init log messages (Dmitry Baryshkov)
-> >>>>> - Return the result of qda_register_device() directly (Dmitry Baryshkov)
-> >>>>> - Clarify the Kconfig help text (Dmitry Baryshkov)
-> >>>>> ---
-> >>>>>  drivers/accel/Kconfig         |  1 +
-> >>>>>  drivers/accel/Makefile        |  1 +
-> >>>>>  drivers/accel/qda/Kconfig     | 30 ++++++++++++++++
-> >>>>>  drivers/accel/qda/Makefile    | 10 ++++++
-> >>>>>  drivers/accel/qda/qda_drv.c   | 71 ++++++++++++++++++++++++++++++++++++++
-> >>>>>  drivers/accel/qda/qda_drv.h   | 61 +++++++++++++++++++++++++++++++++
-> >>>>>  drivers/accel/qda/qda_rpmsg.c | 79 +++++++++++++++++++++++++++++++++++++++++++
-> >>>>>  7 files changed, 253 insertions(+)
-> >>>>>
-> >>>>> diff --git a/drivers/accel/Kconfig b/drivers/accel/Kconfig
-> >>>>> index bdf48ccafcf2..74ac0f71bc9d 100644
-> >>>>> --- a/drivers/accel/Kconfig
-> >>>>> +++ b/drivers/accel/Kconfig
-> >>>>> @@ -29,6 +29,7 @@ source "drivers/accel/ethosu/Kconfig"
-> >>>>>  source "drivers/accel/habanalabs/Kconfig"
-> >>>>>  source "drivers/accel/ivpu/Kconfig"
-> >>>>>  source "drivers/accel/qaic/Kconfig"
-> >>>>> +source "drivers/accel/qda/Kconfig"
-> >>>>>  source "drivers/accel/rocket/Kconfig"
-> >>>>>  
-> >>>>>  endif
-> >>>>> diff --git a/drivers/accel/Makefile b/drivers/accel/Makefile
-> >>>>> index 1d3a7251b950..58c08dd5f389 100644
-> >>>>> --- a/drivers/accel/Makefile
-> >>>>> +++ b/drivers/accel/Makefile
-> >>>>> @@ -5,4 +5,5 @@ obj-$(CONFIG_DRM_ACCEL_ARM_ETHOSU)	+= ethosu/
-> >>>>>  obj-$(CONFIG_DRM_ACCEL_HABANALABS)	+= habanalabs/
-> >>>>>  obj-$(CONFIG_DRM_ACCEL_IVPU)		+= ivpu/
-> >>>>>  obj-$(CONFIG_DRM_ACCEL_QAIC)		+= qaic/
-> >>>>> +obj-$(CONFIG_DRM_ACCEL_QDA)		+= qda/
-> >>>>>  obj-$(CONFIG_DRM_ACCEL_ROCKET)		+= rocket/
-> >>>>> \ No newline at end of file
-> >>>>
-> >>>> You have trivial patch errors.
-> >>> newline problem was already there, wasn't introduced as part of this
-> >>> patch series, so I wasn't sure to fix it here. I can fix this in v3.>
-> >>>> ...
-> >>>>
-> >>>>> +}
-> >>>>> +
-> >>>>> +static const struct of_device_id qda_rpmsg_id_table[] = {
-> >>>>> +	{ .compatible = "qcom,fastrpc" },
-> >>>>> +	{},
-> >>>>
-> >>>> Device node with this compatible is already populated, so this looks
-> >>>> simply wrong or you are adding a duplicated driver.
-> >>>>
-> >>>> That's a no-go, you are supposed to work with existing drivers and grow
-> >>>> them.
-> >>> I'll bring the discussion again here, there was a discussion to move the
-> >>> driver to accel subsystem if we want to support new features/uAPI
-> >>> changes. Please read [1],[2] threads. The intention is to replace
-> >>> fastrpc driver with QDA eventually.
-> >>
-> >> None of them address the problem. You want to grow fastrpc into user of
-> >> dmabuf? So you move it from misc to here.
-> > 
-> > It's not as easy and nice, so I think in this case it's better to repeat
-> 
-> I disagree. The existing fastrpc driver is not that complicated. It's
-> actually moderate amount of code, much less than Venus was (~7 times less).
-> 
-> It easily can grow to support two interfaces and the only difficulty is
-> how to manage these two interfaces simultaneously or exclusively, e.g.
-> opening first one disables the second.
 
-I see the point here.
+--lgqipk6jwvqdiaex
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 07/10] dma-buf: heaps: Add support for Tegra VPR
+MIME-Version: 1.0
 
-Would it be acceptable if we add QDA support only on the new platforms
-(e.g. via the SoC-specific compat), provide QDA for those platforms,
-and, once it reaches complete API and feature parity, we remove the old
-fastrpc driver, migrati old platforms.
+On Wed, Aug 19, 2026 at 10:10:09AM +0100, Vincent Donnefort wrote:
+> On Tue, Aug 18, 2026 at 12:48:09PM +0200, Thierry Reding wrote:
+> > On Mon, Aug 17, 2026 at 06:22:13PM +0100, Vincent Donnefort wrote:
+> > > On Fri, Aug 14, 2026 at 02:56:05PM +0200, Thierry Reding wrote:
+> > > > On Thu, Aug 13, 2026 at 07:25:20PM +0100, Vincent Donnefort wrote:
+> > > > > On Fri, Aug 07, 2026 at 05:54:27PM +0200, Thierry Reding wrote:
+> > > > > > From: Thierry Reding <treding@nvidia.com>
+> > > > > >=20
+> > > > > > NVIDIA Tegra SoCs commonly define a Video-Protection-Region, wh=
+ich is a
+> > > > > > region of memory dedicated to content-protected video decode and
+> > > > > > playback. This memory cannot be accessed by the CPU and only ce=
+rtain
+> > > > > > hardware devices have access to it.
+> > > > > >=20
+> > > > > > Expose the VPR as a DMA heap so that applications and drivers c=
+an
+> > > > > > allocate buffers from this region for use-cases that require th=
+is kind
+> > > > > > of protected memory.
+> > > > > >=20
+> > > > > > VPR has a few very critical peculiarities. First, it must be a =
+single
+> > > > > > contiguous region of memory (there is a single pair of register=
+s that
+> > > > > > set the base address and size of the region), which is configur=
+ed by
+> > > > > > calling back into the secure monitor. The memory region also ne=
+eds to
+> > > > > > quite large for some use-cases because it needs to fit multiple=
+ video
+> > > > > > frames (8K video should be supported), so VPR sizes of ~2 GiB a=
+re
+> > > > > > expected. However, some devices cannot afford to reserve this a=
+mount
+> > > > > > of memory for a particular use-case, and therefore the VPR must=
+ be
+> > > > > > resizable.
+> > > > > >=20
+> > > > > > Unfortunately, resizing the VPR is slightly tricky because the =
+GPU found
+> > > > > > on Tegra SoCs must be in reset during the VPR resize operation.=
+ This is
+> > > > > > currently implemented by freezing all userspace processes and c=
+alling
+> > > > > > invoking the GPU's freeze() implementation, resizing and the th=
+awing the
+> > > > > > GPU and userspace processes. This is quite heavy-handed, so eve=
+ntually
+> > > > > > it might be better to implement thawing/freezing in the GPU dri=
+ver in
+> > > > > > such a way that they block accesses to the GPU so that the VPR =
+resize
+> > > > > > operation can happen without suspending all userspace.
+> > > > > >=20
+> > > > > > In order to balance the memory usage versus the amount of resiz=
+ing that
+> > > > > > needs to happen, the VPR is divided into multiple chunks. Each =
+chunk is
+> > > > > > implemented as a CMA area that is completely allocated on first=
+ use to
+> > > > > > guarantee the contiguity of the VPR. Once all buffers from a ch=
+unk have
+> > > > > > been freed, the CMA area is deallocated and the memory returned=
+ to the
+> > > > > > system.
+> > > > >=20
+> > > > > Hi,
+> > > > >=20
+> > > > > I believe we (the Android team) are trying to solve similar issue=
+ to yours: Arm
+> > > > > CPUs can still speculatively read memory after it has been transi=
+tioned to the
+> > > > > Secure state, as long as they retain a cacheable mapping to it.
+> > > > >=20
+> > > > > As modifying the direct mapping is difficult, the workaround ende=
+d up in the
+> > > > > hypervisor which unmaps the pages from the host stage-2 on interc=
+epted FF-A Lend
+> > > > > invocations.
+> > > > >=20
+> > > > > If convenient, this is nonetheless the wrong place to do it. Scat=
+tering the host
+> > > > > stage-2 is really terrible for performance and we would like to m=
+ove it where it
+> > > > > should be, directly into the kernel...
+> > > > >=20
+> > > > > This is what I thought was the attempt in v3, but I am now a bit =
+confused
+> > > > > because I see you are using set_direct_map_invalid_noflush()
+> > > > > set_direct_map_default_noflush(), but I am not sure that works if=
+ rodata=3Dfull is
+> > > > > not set? So does the memory for the NVIDIA IP still need to be un=
+mapped?
+> > > >=20
+> > > > Yeah, this currently relies on the circumstances being such that
+> > > > can_set_direct_map() returns true, and in the case where we want to=
+ use
+> > > > the resizable VPR functionality, we're going to have page-granular
+> > > > mappings anyway.
+> > > >=20
+> > > > > If so, how about having an option where the CMA allocation is bac=
+ked by a direct
+> > > > > map with the same page granularity, or at least a smaller and ali=
+gned granule?
+> > > > >=20
+> > > > > With that, we know that for whatever CMA allocation we do, we can=
+ safely unmap
+> > > > > from the direct map without risking splitting blocks. On CMA free=
+, we can safely
+> > > > > remap into the direct map as I do not believe we coalesce yet.
+> > > >=20
+> > > > This sounds intriguing. For VPR we could possibly make the size a
+> > > > multiple of the memblock size (or whatever might be appropriate). I=
+f we
+> > > > can create a page-granular linear mapping specifically for that reg=
+ion,
+> > > > that'd be ideal. I don't know if the linear mapping can be subdivid=
+ed in
+> > > > this fashion, though.
+> > >=20
+> > > Actually I don't think modifying the memblock is necessary at all!
+> > >=20
+> > > Here's what I have so far:
+> > >=20
+> > > diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+> > > index d4de88770ecf..a9f81413b70d 100644
+> > > --- a/arch/arm64/mm/mmu.c
+> > > +++ b/arch/arm64/mm/mmu.c
+> > > @@ -22,6 +22,7 @@
+> > >  #include <linux/fs.h>
+> > >  #include <linux/io.h>
+> > >  #include <linux/mm.h>
+> > > +#include <linux/of_fdt.h>
+> > >  #include <linux/vmalloc.h>
+> > >  #include <linux/set_memory.h>
+> > >  #include <linux/kfence.h>
+> > > @@ -1138,6 +1139,27 @@ static inline void arm64_kfence_map_pool(void)=
+ { }
+> > > =20
+> > >  #endif /* CONFIG_KFENCE */
+> > > =20
+> > > +#define MAX_FORCE_PTE_REGIONS 64 /* Greater or equal to MAX_RESERVED=
+_REGIONS */
+> > > +
+> > > +static struct {
+> > > +       phys_addr_t start;
+> > > +       phys_addr_t end;
+> > > +} force_pte_regions[MAX_FORCE_PTE_REGIONS] __initdata;
+> > > +
+> > > +void __init early_init_dt_force_pte_arch(phys_addr_t start, phys_add=
+r_t end)
+> > > +{
+> > > +       static int count;
+> > > +
+> > > +       if (force_pte_mapping())
+> > > +               return;
+> > > +
+> > > +       if (count >=3D MAX_FORCE_PTE_REGIONS)
+> > > +               return;
+> > > +
+> > > +       force_pte_regions[count].start =3D start;
+> > > +       force_pte_regions[count++].end =3D end;
+> > > +}
+> > > +
+> > >  static void __init map_mem(void)
+> > >  {
+> > >         static const u64 direct_map_end =3D _PAGE_END(VA_BITS_MIN);
+> > > @@ -1186,6 +1208,15 @@ static void __init map_mem(void)
+> > >         __map_memblock(init_end, kernel_end, pgprot_tagged(PAGE_KERNE=
+L),
+> > >                        flags);
+> > > =20
+> > > +       for (i =3D 0; i < ARRAY_SIZE(force_pte_regions); i++) {
+> > > +               if (!force_pte_regions[i].end)
+> > > +                       break;
+> > > +
+> > > +               __map_memblock(force_pte_regions[i].start, force_pte_=
+regions[i].end,
+> > > +                              pgprot_tagged(PAGE_KERNEL),
+> > > +                              flags | NO_BLOCK_MAPPINGS | NO_CONT_MA=
+PPINGS);
+> > > +       }
+> >=20
+> > Interesting. I had been thinking more along the lines of adding this
+> > directly into memblock using a new entry in enum memblock_flags. None of
+> > the existing ones seem to do what we need here, though some are closely
+> > related. MEMBLOCK_SECURE or MEMBLOCK_PROTECTED are quite specific and
+> > don't necessarily mean that we need the mapping to be page-granular, so
+> > MEMBLOCK_PAGE_GRANULAR is perhaps clearer.
+>=20
+> I thought it would be interesting to not have to modify memblock since it=
+ is
+> used for all architectures, while the DT is at least slightly less widesp=
+read.
 
-> 
-> > what we did for the venus/iris migration or what happened already
-> > several times in the kernel history (for example the AIC7xxx SCSI host
-> > drivers were migrated by introducing the second driver and then removing
-> > the first one after the grace period). The backwards compatibility is a
-> > separate topic, but it will be addressed before the driver can be
-> 
-> Backwards compatibility should be one of the first things explained in
-> cover letter in one of the first paragraphs.
-> 
-> And if you make it backwards compatible, then just remove old driver,
-> because there is no point to keep it there.
+This isn't something that is DT specific. On the Tegra side, I suspect
+we might need this on ACPI platforms eventually, too. And it's not an
+ARM specific feature either. Other platforms could use shared carveouts,
+too.
 
-That's the plan.
+> Also, cma_init_reserved_mem() could use an order 9. In that case PTE-leve=
+l isn't
+> necessary and we could just use PMD-level. Extending that support would b=
+e more
+> cumbersome with a memblock flag than with a callback.
+>=20
+> rmem_cma_setup() hardcoding an order 0, perhaps this isn't really a probl=
+em at
+> the moment?
 
-> Again, this should be one of
-> the first things explained in cover letter.
--- 
-With best wishes
-Dmitry
+How so? memblock is really just used as a way of backing the CMA. How
+CMA subdivides it doesn't really matter, right?
+
+Or are you suggesting that if we use an entire PMD as granularity, we
+could equally well remove the entire PMD from the linear mapping instead
+of doing it page-by-page? I think that'd work really well for at least
+VPR, since it is 1 MiB aligned anyway. Using a granularity of 2 MiB is
+easily doable.
+
+For anything that doesn't require a single contiguous area to be
+protected this might be a bit more challenging since it potentially
+wastes a lot of memory. On the other hand, a lot of this is heavily
+custom code anyway, so the entire stack could be modified to make
+efficient use of this (i.e. userspace could allocate a larger chunk
+for a pool of buffers, etc.).
+
+> But yeah, the alternative is to create a "memblock_mark_forcepte" (it see=
+ms
+> memblock_setclr_flag does split memblocks) and let of_reserved_mem call t=
+hat
+> function. Finally the arm64 mmu code can simply check for the flag before
+> calling __map_memblock. Perhaps it isn't that bad in the end?
+
+It sounds like the right level of abstraction to me. But I'm not too
+familiar with this code, so it'd be good to hear from the MM and/or ARM
+maintainers what they think about this.
+
+[...]
+> I had in mind to extend "shared-dma-pool" to handle
+> set_direct_map_invalid_noflush()/set_direct_map_default_noflush() based o=
+n an
+> option. But perhaps it is better to create another separate driver. And V=
+PR
+> needing a specific dma-heap driver anyway, it could call the direct-map
+> functions there too without relying on CMA to do anything?
+
+I think it'd be nice to have separate APIs for this case where we know
+the memory region is already page-granular (or, I suppose, PMD granular)
+and removing from (or adding back to) the linear mapping is safe. That
+way we could avoid the checks for can_set_direct_map() for each page.
+
+It'd also be nice to have a version that can update the protection bits
+for a range of pages (would map directly to update_range_prot()) instead
+of having to manually iterate over each page in a range.
+
+A good middle-ground might be to have helpers that do the grunt work and
+they can then be called from VPR and the shared-dma-pool drivers to have
+pages removed from the linear mapping. VPR and similar can then perform
+the hardware protection bits on top of that.
+
+Thierry
+
+--lgqipk6jwvqdiaex
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmqG1BEACgkQ3SOs138+
+s6F7lRAArYkFeTZCiaSW0m7zGIomMdDlHXmGBzYfHl2VZ3wH70nxODs/qRyHRCHr
+su7floNIfcai3gyX/2hLu4adl8wuzA2Ox+wW/NBcLKD8OVJMALcEiZ92SaT5Ikpp
+O4syeCwLYOi9xTZSehRv/IoUWU/XNULjb2PjZ81mwbrSxhXiCueG2zy+kiGIp0bU
+1why7rYrqly8Ox8d7IK89VJSSKWIwo7bdRNlVmk/L+jubLG+rNkSQtXRoXU7qSeq
+s/vBkD1mhT7aDp0/5KTcNYMeMCExTOX2BkeJ4WrbjafpecrIkUnQdCv9XKnX4QG5
+pULUocNnFhC5IHpEm0xVO/g8ZdY3nf9S1VMWLpPzh3bQzZ5gRGwRd7JYGM76oSsu
+UsFmhETy2x7d8/jJKwI0iFfJDxQC9/aC1iKMw9ZZvA4W9RghorKcbl+Q/ondTY9V
+zHBUifqZUrzxOAg7Zcpi9OLOm13jP9Ug1lRW9DmSXhg/wuO6uKjui2CuQH3jYfB8
+aivJZLZZAUsrw5R6OlHutKG5iPJqfteqPa89Ru0E8ZGEjkfr9Ewm9UeIwZaB7FUx
+1w3QikuV5XNxbsXvEBfouNq8u/ruFlQ0gehgx2xHOyU8npifFHGD3xIJ9+S6A8vi
+RDQYAtF3eexkxSEhmaqou1/Y/HPJi5zwvITM9iU0n79Af7/eXJE=
+=1zoM
+-----END PGP SIGNATURE-----
+
+--lgqipk6jwvqdiaex--
