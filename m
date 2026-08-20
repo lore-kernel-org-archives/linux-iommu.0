@@ -1,48 +1,48 @@
 Received: from sender4-op-o15.zoho.com (sender4-op-o15.zoho.com [136.143.188.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FC16392C3D
-	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 18:26:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2060E392C50
+	for <iommu@lists.linux.dev>; Thu, 20 Aug 2026 18:26:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.15
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787250365; cv=pass; b=M2j4lnAXDVbTOOp5FRWIjMXRR2tts3MUQe+hMGZvR3ZJ8fR9aIl1CmrK7U6MO9jVHPbT2X/nMTFCtUykymPk9hkcdabwI41ufCw8Ho3FGEeCGr7sfELN6xyXa3s0QLB369pZ5z1ee1C3tnv1nPuJuwApmg4UcS9oHuf82i24O7U=
+	t=1787250381; cv=pass; b=Y6U5yureIgxb3ByBVSFN1y08g769SITyVQgZAKdSoj62pQqUUQs0nQGX5gT1Fs7wnsN2V1X07nNu4+SfUE/a6UDBdsWHAEZbsE9g0D1moiGGwL3Eui+Z7cZaq9vBiXlKpJfipriiN8sk8mUMdwKi1YGGQn44kNnOVF3yPTSEVNg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787250365; c=relaxed/simple;
-	bh=XgDBwWGUAwxq3dWaU9WvTRg38He/QD/kOOSH2o2ZhaE=;
+	s=arc-20240116; t=1787250381; c=relaxed/simple;
+	bh=2h+sGBdTXdrt98jWCFRyslaO/ml0lW75Ecel2aXyRX4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=paWpPN1SdabpRKH91tTIYXAEKIKh4rSCKvIMwUOMI97kwCT9cnnV2L7S9Ih/k/M+Yyagzp/QkTBfR3XB9p69i8GFZ3p7XhNayEcG9rm3uFtmyhhY+vMvCRMDoF0I3qfq4UEdiZiid80atzh5REpyh1fLT17S1q6GvPrBEjOINa8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=P2qnsIvW; arc=pass smtp.client-ip=136.143.188.15
+	 In-Reply-To:To:Cc; b=BQ7kUPmoEfK9yd7+4jDyGjshiyUwI2t6yRvcATqbdPkdkFj3z9v07o9eYyLfWK8049TUmmGs1wkQjJ4HAf9d+C2HnkrcYEMdOU4NGe/qK3Uhw4nOiRGF6/m9ARIRY2Q/8FKElJpaUZPnLgjpmvWoGjtmnqoj7YHPqzq9UgmzhLA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=iBqat2dm; arc=pass smtp.client-ip=136.143.188.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rong.moe
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="P2qnsIvW"
-ARC-Seal: i=1; a=rsa-sha256; t=1787250334; cv=none; 
+	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="iBqat2dm"
+ARC-Seal: i=1; a=rsa-sha256; t=1787250338; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=INIpmSBgXU6oLflC8g4zmLKRsefcsQI1hkJ7S18wmID1hdxCkSV9VWJiyRiRMC0M74CzhsLnAMBBDmlwtunHIM4et5Ku/nFS8VHb/+/aXD3syNJqFQm5nUeYvbqqbhbRcDIkYPp0T+0Ib12dUfJs51XsgNJsCdYMW4/y19Zxyrk=
+	b=CnkMsHZoilBaFDgO6BVtfQdnHv8PcpNy2SROprzz5kNbcdenZk2w7YzL14ICDkrRCNK0hpmgK4o/GQ6KMzR1Eg2prqDukTNdOQD8VmFFy+7hGUlU6ofizx5tGwLJpgHq2KIxrHyasRL22qlN1Z0L/tP7DAhC45KHYsIdq+q6Iak=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1787250334; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=7p2APwaZh7GhXlMhTsEtIq0cQMt4mvH7biiPSclgrjQ=; 
-	b=CmrH9xj+AXLY9dsAJ7HKxbn8Z3DAkFkPPi53jDY8aQR3ZGi63XSbYUpIq7suiL3t9OBz2L2tP7YocjD8T/ylXRQWMEYa7TqNHNW30hIhiRmfasTX0uMQSGyNWFTCvHjWxASmc/1mD76Sd/daA/j2TYuJ5DRFCTMvhXUG7862PxI=
+	t=1787250338; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=HVhad97Z0mDE/xMaSmWIH609y3dtGJh1KG2Bs3OcPc0=; 
+	b=MmajNFY0WKe0vnoaFiVKaAwzygIlhHQdWzcDwiBdky+gWpTYMbxGG+JwWCty+q3yupiI6STGmLS7C25Tbl1+3n6KuNoBMgEvZ1j5cgBTax1mFwBS5QftzrO/J3XaRgndeeYE75pLpGsXw6KpMHOmpzSJzmrcRGS1KS412kJXTp8=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=rong.moe;
 	spf=pass  smtp.mailfrom=i@rong.moe;
 	dmarc=pass header.from=<i@rong.moe>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1787250334;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1787250338;
 	s=zmail2048; d=rong.moe; i=i@rong.moe;
 	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:In-Reply-To:To:To:Cc:Cc:Reply-To;
-	bh=7p2APwaZh7GhXlMhTsEtIq0cQMt4mvH7biiPSclgrjQ=;
-	b=P2qnsIvWcABeJ3hSN9gDhC+wybNft2wHcyQhGtn/VMAeHSnMdEU2kK3V6QKoLJjl
-	F+Jiofso5uEaLF1WQtvUFU8d0T30R+hThj3TNACqW/2cQY6p/zRrBBW+1Spp27rIBh8
-	xIGsLTolGmRvU01l9mK+/deASaomO3CCgYby8a6lVSiSzgNusCNpUKBo8NqAdGpjbvF
-	PyrLYKbV4YpjNqdMoGNBV9le/uX9aV298m1KvYl5EzP1ozY8XugLyH08L1uVEaQEFn1
-	yiupc8HQkSUACgGltyZ/5m5sbhc+CYLiY/v25Ym91vyDqXyTAKmq+13m5e9OjUxDjGM
-	6wp9qzM2nQ==
-Received: by mx.zohomail.com with SMTPS id 1787250332228810.7858274671178;
-	Thu, 20 Aug 2026 11:25:32 -0700 (PDT)
+	bh=HVhad97Z0mDE/xMaSmWIH609y3dtGJh1KG2Bs3OcPc0=;
+	b=iBqat2dmQkwSwxX4Vpp29bltlsNt4p16luHbNxhWADhtpXmj5HPhgcqvU3S25PFc
+	ZUaplsYBe/7kQMuhyk1GHlCfseb/TlUrI0Jw1eThpLVG/3e5h7yNPy+luoVbEXgdyKI
+	mpf71xEds82o3PK5ZyCoRDp/hqdapHdeQNyYW6JukX0YNwzj1OSpbBwye2+1d7AaSCb
+	TuDfzSPbaM3iCsOJKgOmMYmUuPWICHa1iC7yXfadoytbtbs2m0Ox/DHjl8TbwHJ++jF
+	kkiKTxFTDc312dHcE8wdRWLaxVHxQC3QCBHB3s5Iq+wrUqiA/02Fl76u34NaN5xXgde
+	f/0AhdkSZw==
+Received: by mx.zohomail.com with SMTPS id 1787250336202502.16508339597954;
+	Thu, 20 Aug 2026 11:25:36 -0700 (PDT)
 From: Rong Zhang <i@rong.moe>
-Date: Fri, 21 Aug 2026 02:25:07 +0800
-Subject: [PATCH v2 1/3] iommu/amd: Do not request ACS when IOMMU is not
- going to be initialized
+Date: Fri, 21 Aug 2026 02:25:08 +0800
+Subject: [PATCH v2 2/3] iommu/amd: Disallow implicit START_STATE =>
+ IVRS_DETECTED transition
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,7 +51,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260821-amd-iommu-fix-acs-v2-1-982472452638@rong.moe>
+Message-Id: <20260821-amd-iommu-fix-acs-v2-2-982472452638@rong.moe>
 References: <20260821-amd-iommu-fix-acs-v2-0-982472452638@rong.moe>
 In-Reply-To: <20260821-amd-iommu-fix-acs-v2-0-982472452638@rong.moe>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>, 
@@ -64,154 +64,57 @@ Cc: Ankit Soni <Ankit.Soni@amd.com>, iommu@lists.linux.dev,
 X-Mailer: b4 0.17-dev-1f2f7
 X-ZohoMailClient: External
 
-The AMD IOMMU Initialization State Machine has the following state
-transition diagram (only the very first states are showed, and the
-`IOMMU_' prefix is omitted):
+Xen PV intentionally skips calling amd_iommu_detect() in order to gate
+IOMMU initialization, as the Xen hypervisor has taken over the hardware.
+However, due to amd_iommu_prepare() requesting ACPI_FINISHED while
+setting up APIC, the state machine is still progressed, only to be
+stopped midway due to the `!amd_iommu_detected' check in
+early_amd_iommu_init(). This is worthless and fragile. It unnecessarily
+calls detect_ivrs(), which leads to extra overhead, i.e., getting the
+IVRS table and accessing the PCI config space.
 
-   START_STATE
-        |
-        v
-[0] detect_ivrs() --> NOT_FOUND
-        | ok
-        v
-  IVRS_DETECTED
-        |
-        v
-[1] amd_iommu_disabled? (amd_iommu=off) --> IOMMU_CMDLINE_DISABLED
-        | no
-        v
-[2] early_amd_iommu_init()
-        |
-        +-- [3] amd_iommu_detected? (!iommu=off && ...) -+
-        | yes                                            |
-        +-- ... --> IOMMU_INIT_ERROR <-------------------+
-        | ok
-        v
-IOMMU_ACPI_FINISHED
-        |
-        v
-       ...
-
-[0] always calls pci_request_acs() as long as there's a valid IVRS table
-and no Stoney Ridge graphics. This is not optimal as ACS is not required
-in an [amd_]iommu=off boot.
-
-In a normal boot, ACS is requested due to amd_iommu_detect() requesting
-IVRS_DETECTED.
-
-    pci_request_acs+0x9/0x18
-    iommu_go_to_state+0x106/0x1a20
-    amd_iommu_detect+0x1c/0x50
-    pci_iommu_alloc+0x26/0x40
-    mm_core_init+0xa/0x120
-    start_kernel+0x527/0x7a0
-    x86_64_start_reservations+0x24/0x30
-    x86_64_start_kernel+0xd1/0xe0
-    common_startup_64+0x13e/0x158
-
-This is intended to ensure ACS is requested before the PCI core
-initialization, or else a !CONFIG_IRQ_REMAP, nointremap or intremap=off
-boot would be broken.
-
-However, in an amd_iommu=off boot, the state machine still requests ACS
-at the exact same time, as amd_iommu_detect() has nothing to do with
-amd_iommu_disabled.
-
-Even worse, in an iommu=off boot, though amd_iommu_detect() bails out
-early, ACS is still requested due to amd_iommu_prepare() requesting
-IOMMU_ACPI_FINISHED, which is called by irq_remapping_prepare() thanks
-to CONFIG_X86_LOCAL_APIC (always set on X86_64) and CONFIG_IRQ_REMAP
-(enabled by defconfig), unless nointremap or intremap=off is also passed
-to cmdline.
-
-    pci_request_acs+0x9/0x18
-    iommu_go_to_state+0x106/0x1a20
-    amd_iommu_prepare+0x15/0x40
-    irq_remapping_prepare+0x43/0x60
-    enable_IR_x2apic+0x22/0x190
-    x86_64_probe_apic+0xa/0x50
-    apic_intr_mode_init+0x70/0xd0
-    x86_late_time_init+0x28/0x40
-    start_kernel+0x6f9/0x7a0
-    ...
-
-In both cases, [2] is still gated due to the [1] or [3] check, so that
-IOMMU can be disabled per cmdline.
-
-Technically, it makes no sense to detect IVRS at all in an
-[amd_]iommu=off boot or if IOMMU is not supported due to platform
-settings. This is probably why amd_iommu_detect() bails out before
-requesting IVRS_DETECTED. Apparently only bailing out there is not
-sufficient, and the bailing-out paths should really have been parts of
-the state machine.
-
-Clean up the initialization routines by moving the bailing-out paths and
-[1] to the right place in the state machine (i.e., before [0]), and
-always requesting IVRS_DETECTED in amd_iommu_detect() to initialize the
-state machine early and properly.
+Disallow implicit START_STATE => IVRS_DETECTED transition, so that
+amd_iommu_prepare() and other paths no longer progress the state machine
+accidentally. This should also help prevent potential bugs if more
+housekeeping work is added to amd_iommu_detect() in the future.
 
 Signed-off-by: Rong Zhang <i@rong.moe>
 ---
- drivers/iommu/amd/init.c | 25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
+ drivers/iommu/amd/init.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 40726dfef273..a720796cca3b 100644
+index a720796cca3b..0e63ad653284 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -3470,6 +3470,8 @@ static void amd_iommu_apply_erratum_snp(void)
- #endif
- }
- 
-+static bool amd_iommu_sme_check(void);
-+
- /****************************************************************************
-  *
-  * AMD IOMMU Initialization State Machine
-@@ -3482,7 +3484,13 @@ static int __init state_next(void)
- 
- 	switch (init_state) {
- 	case IOMMU_START_STATE:
--		if (!detect_ivrs()) {
-+		if (no_iommu || amd_iommu_disabled) {
-+			init_state	= IOMMU_CMDLINE_DISABLED;
-+			ret		= -EINVAL;
-+		} else if ((iommu_detected && !gart_iommu_aperture) || !amd_iommu_sme_check()) {
-+			init_state	= IOMMU_INIT_ERROR;
-+			ret		= -EINVAL;
-+		} else if (!detect_ivrs()) {
- 			init_state	= IOMMU_NOT_FOUND;
- 			ret		= -ENODEV;
- 		} else {
-@@ -3490,13 +3498,8 @@ static int __init state_next(void)
- 		}
- 		break;
- 	case IOMMU_IVRS_DETECTED:
--		if (amd_iommu_disabled) {
--			init_state = IOMMU_CMDLINE_DISABLED;
--			ret = -EINVAL;
--		} else {
--			ret = early_amd_iommu_init();
--			init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
--		}
-+		ret = early_amd_iommu_init();
-+		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
- 		break;
- 	case IOMMU_ACPI_FINISHED:
- 		early_enable_iommus();
-@@ -3695,12 +3698,6 @@ void __init amd_iommu_detect(void)
+@@ -3571,6 +3571,19 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
  {
- 	int ret;
+ 	int ret = -EINVAL;
  
--	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
--		goto disable_snp;
--
--	if (!amd_iommu_sme_check())
--		goto disable_snp;
--
- 	ret = iommu_go_to_state(IOMMU_IVRS_DETECTED);
- 	if (ret)
- 		goto disable_snp;
++	/*
++	 * Some essential housekeeping work is done by amd_iommu_detect().
++	 * Skipping calling it implies that the platform (e.g., Xen hypervisor)
++	 * has taken over the hardware. Progressing the state machine in this
++	 * case is worthless and fragile.
++	 *
++	 * There are several paths requesting later states, so disallow implicit
++	 * START_STATE => IVRS_DETECTED transition to prevent these paths from
++	 * accidentally progressing the state machine.
++	 */
++	if (init_state == IOMMU_START_STATE && state != IOMMU_IVRS_DETECTED)
++		goto out;
++
+ 	while (init_state != state) {
+ 		if (init_state == IOMMU_NOT_FOUND         ||
+ 		    init_state == IOMMU_INIT_ERROR        ||
+@@ -3579,6 +3592,7 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
+ 		ret = state_next();
+ 	}
+ 
++out:
+ 	/*
+ 	 * SNP platform initilazation requires IOMMUs to be fully configured.
+ 	 * If the SNP support on IOMMUs has NOT been checked, simply mark SNP
 
 -- 
 2.55.0
