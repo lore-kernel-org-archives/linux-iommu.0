@@ -1,160 +1,161 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010060.outbound.protection.outlook.com [52.101.201.60])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B227A2F5A2D
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 12:02:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787313731; cv=fail; b=Km5H3EYG281HNqRcGZL0zPRy58I/bos0T4UfkVlHGpBMnwAMplGagqXKJ8nfOoHFLHGHAZVpoH1HnnLNk7x2J8kwCD1jwrXInVj56bmzy+gwVLv0N6NVibXbV6D/yzkl8FdTfR70CQlcElXKYYqgAKp3RkVeb+ImqRzyotE1Eqw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787313731; c=relaxed/simple;
-	bh=mdh1pK0B461hZt4XcttH7o763vRdY8KRCJQaJoUX3nE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=LX/rNhOrNPzoV7ZMn/kw50B/Q6aqmA5Isb/sPzoqBFIa0m5cyb2iTthV1s7b2kCkTnSQqnhYgLcCl0tFiuJRzX8YSc6RmyWCCLWQqnP6gdupTCBQ5THeM3dTY1p5dw0PpL/PEIWI0rE4dWJ0fA3kORsyCTKR4DNPmCIiAR1cASQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hJTYLM8Y; arc=fail smtp.client-ip=52.101.201.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFE152BE656
+	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 12:39:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787315957; cv=none; b=W563xlsTexpWLjYvWQ6C3SwrO/ZvWdc1S28k5MiItHXDIFUzlmFjq6nd4hmKE1nqJVCWaM6Svd7jdYYx6hUzfxU6U8JFONNp+m7lM8mslSnQZ9Ab8GDogmd/s2c84/0bIDq1arjLgEWFb791gGwWeV4TrZWEF7KAPnbKxVQe+vM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787315957; c=relaxed/simple;
+	bh=4mYURL+s1ldrK62t4s0H9FxHaNWHmqXcmyhPCoJZkbM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d5K5z1hW2vZOs2JB5OlXNa8NmQrCJ4uZ607nmgf+aPgOUjNsEwfXmUZg0Lcl12vkz8KCq/2WKplVibfkDuuChwoVEqE30lRlOv0kBH0dSimxLVqlycOoZrwc+67zEaZo2A0o5nl1RCfySY4hxkcV4bdzPozUjmZzZmO4JKAB83s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=LDYlOnm5; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hJTYLM8Y"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xv6v8vJ2EO4Ma3z09yZrdvqzvLiWeDCpkK0SzZKjzO+eRwD5PhvK0ViWEYKrpbcX2/9GCM4KmXQq3N4cD/PYXAV+2x19d1RExb+l02occOF+H4JfJzM0MXz3IX2xqrX8iXD+M+8YekV44QnU0KL48YDW+G/VjnqP0SCnzFfcJNQWiJAFkJDruRjisjmQPOCJElDtny8R+kg4ebgq+lZNJR/ktgG8f/cSvtmSkaZxRl50FxtHefW4RV71hJT1lRyfRlM/56sUZLlFNEoygHGl/plaRMcx+S9xFIYQvYfEE0pa1Z4Xna6foUDvWQHJBvJ0EzTl3A8Uzn4D/Y4UPHYsGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DJTK6vcd0z8UYg6glV8mmKpybwYoS64IXjelVBD1rnQ=;
- b=u3ypeuvs5Oyk1NMDXEW2pqJ4eLXfyjplK/HoVwf1iEmFRv0Dfp0WfVtw4K6LQm1fEEHn1++/DGBWXRMj8OkQDyXQ1s9vYv14WEBMa3J6mOj7TJYLLl1JH3vefJt2jWn8e8V0neS3SHGOCN2WbxAqqKgSqcPhLR0F27q67qtnf3/ObaRpxx9RJmq7+hziguPMDjznN1edSbqmWnBBjiyU7XxorMJ4dXNiT7MHZN3ru3bjFuC/xl05aJUb6vWgUt55xxVn7KIUht8PnSMXblK1Ja/HSc5uLQjEHjBuFI0Zm89P5tpnctkwlSUMJ7+b+E8zYaepnms0i7un0mrazOWM3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DJTK6vcd0z8UYg6glV8mmKpybwYoS64IXjelVBD1rnQ=;
- b=hJTYLM8Y3/ZgKd538sVK7CN96Euz73fA+U8g3b5uFKuE5DSV7tWqIi7b5Z82f2/mcM6jGpZaHbxd5tbP+EHN71bLWdImFddLtz3vzZomrDQUz/LCM0mpuwhL4nRB7mOHjQ4iUEje74sMnY1sQamla4iDo20jC3iPxc7oDS/7tG9oZFe9xM1kR9pBeMLSnDveR9xal3W2n/NscdFBtyeatqLfYpM1mxlY9D7h05xY744Fz5OQb+WQMCoxgHznka+dFfyjklD7o9Cf46ZDd4OckBnl4QiISG7qEoo0yesLgP0Rnab8fR4GeXg14dVBO1y6h2OEISzDeTp3WddSzIL4Sg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by LV8PR12MB9184.namprd12.prod.outlook.com (2603:10b6:408:18f::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.10; Fri, 21 Aug
- 2026 12:02:05 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.010; Fri, 21 Aug 2026
- 12:02:05 +0000
-Date: Fri, 21 Aug 2026 09:02:04 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
-	tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
-	anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
-	fangyu.yu@linux.alibaba.com
-Subject: Re: [PATCH v4 02/21] iommufd: Add iommufd_sw_map_msi()
-Message-ID: <20260821120204.GF244917@nvidia.com>
-References: <20260820214150.545737-1-andrew.jones@oss.qualcomm.com>
- <20260820214150.545737-3-andrew.jones@oss.qualcomm.com>
- <20260820220908.GE244917@nvidia.com>
- <gr2h3ktgacozyo7rdggkxsg5mbdtzcnimaawd24c37hnf2tun3@hqivsenaq5wd>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <gr2h3ktgacozyo7rdggkxsg5mbdtzcnimaawd24c37hnf2tun3@hqivsenaq5wd>
-X-ClientProxiedBy: IA4P220CA0006.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:558::7) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="LDYlOnm5"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67LC1ZrF3766793;
+	Fri, 21 Aug 2026 12:39:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:sender:subject:to; s=pp1;
+	 bh=tRqdJQLnIVA94Uwpfm8oSywK7asl1ud4Ag3HNO0LVo0=; b=LDYlOnm5gcS8
+	NzK+l9Pyw7gEnuen844X9I2iea2Rxx3gXjBfjy4shJES9btEiNBN+mA/tHKYhvNu
+	slaHycZQFgsfIWNuTBUwDecKc5QVxMJIK5ZSkn1IHg7LGWF6G6GhavxojwWCmGSs
+	BMjIPkIYHPPu5AQpB17xAHsrBbELvfaQueFkpkGJAzKWfs3nnkv2D3B5tYAvxQnj
+	Uh40kQOLbQ4sdH63wqIabHJ7xXFdfC32w+6oxhEqtP6kVov7JIdHDNXW1V88PvkH
+	lLg+omIiCxT2/Smme3i2w7MKtYcJ3H7BFR020ytIuvEevWr/+Py4vDtWZXQSv5Hj
+	q04YZY3Lqg==
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4g4yu0heas-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Aug 2026 12:39:08 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 67LCQGXu003512;
+	Fri, 21 Aug 2026 12:39:07 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4g33ekmmf9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Aug 2026 12:39:07 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 67LCd1O940042986
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 21 Aug 2026 12:39:01 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2558E20043;
+	Fri, 21 Aug 2026 12:39:01 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0F88320040;
+	Fri, 21 Aug 2026 12:39:01 +0000 (GMT)
+Received: from p14sgen6-pf6akexs (unknown [9.224.70.27])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Fri, 21 Aug 2026 12:39:01 +0000 (GMT)
+Received: from bblock by p14sgen6-pf6akexs with local (Exim 4.99.5)
+	(envelope-from <bblock@linux.ibm.com>)
+	id 1wxOWS-00000000iZl-3PBa;
+	Fri, 21 Aug 2026 14:39:00 +0200
+Date: Fri, 21 Aug 2026 14:39:00 +0200
+From: Benjamin Block <bblock@linux.ibm.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>,
+        Omar Elghoul <oelghoul@linux.ibm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Ramesh Errabolu <ramesh@linux.ibm.com>,
+        Tobias Schumacher <ts@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/s390: Fix NULL dereference in iova_to_phys() with
+ ZPCI_TABLE_TYPE_RFX
+Message-ID: <20260821123900.GB18339@p14sgen6-pf6akexs.ehn-de.ibm.com>
+References: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|LV8PR12MB9184:EE_
-X-MS-Office365-Filtering-Correlation-Id: f2164a1a-626d-4e02-32b6-08deff7c048b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|23010399003|1800799024|366016|56012099006|10067099003|4143699003|11063799006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	qRBV3uqtPu3yaB6PqIyypK/AhV+dKqgDxUwycUVkyVgU8Hnc4ojLgYsAgcW90v/fxEkiNwjZ3inKzuwPFi6JAHpD24Hg6HKNBNll2LC2ltUIgwxIXVoQ6a4wa0He83/SXh2EuLC8eOoXGtQudcTdOdcPQQudRkYXQllWqEof+5F4TfOPT8XV4kFyrKVbRJRkyvog64eDGmSNbj/Hqulw9EVlMgeMeUl7RwFRqUNUbgS8ExgO1ung6HvgQbfBxg4+w7fzuHJan4ywKA6eun93R5IRmtEccWnG9K+xoh9tML8H3FEIeynhKx4pHEm/CzykpvoUn3tcSCYxYa37x/kA4IKN35LQuS5hmv2OT9qDJRaiyhUVTrr8lj9VXY/Im3pmls1EG9RhNth4t+9FhQkx7dvRX0zfOFYGmvMDOGe0Ez5wD4s8Z+wTywwgeA+6rK7KXIHeceFK42EwoxfhdleIqekBqIeFChqJ5Mxvg3ctYHO8cc8IPLAoNTW/pdkn8lvcDZnEBoL4moOASOmkiePIpD4S0TsUt36LW70Pk5K+kNwUjQHwkTrbHLaXdXnIB5r69PAP1YDw8ARR1fbRe/Fu50YScuPXhodUPOmJXZlB9yO0q5aIU1q5M1pReNmaTFmCm39WSgp4zDbeKGCprtghF9mplznlJVzrz0jMQwiGTbU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(1800799024)(366016)(56012099006)(10067099003)(4143699003)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?AbkBJeYkhigpMV6xkUeLAhj/spXC5gCEU34JQbEcJrL4wCyHBJ2oyfd+Zh4z?=
- =?us-ascii?Q?BHY47mbWC3Iw2DDFwR+qhpbI0Scvm/Z++ZEnErETnQyjjspsZsbOdU/iXB7T?=
- =?us-ascii?Q?LW5k1rMym2QRoiWo/NVGMU8aXc7G0LHpo45Y67f5fesTItpYflqs1lrh1Pl9?=
- =?us-ascii?Q?Vyp+TDYyCpi/YGdhZOvHXHmGx3U0yesacqntajhwdiILWnzFextzvrm77fWI?=
- =?us-ascii?Q?ayBYqHllUvlFiNQjOf1HqU4BAqg6J/xJ2CHkYMzySPcu7QqhfALGiN3PtE12?=
- =?us-ascii?Q?uKfeF8pPr8qTws/QWzFhP6CeDbdER71vgygQnzfEy9PH6OwchPWsII6xEMKg?=
- =?us-ascii?Q?jvIbMRoAjw6gMiRflsxuv+iRtLWzMAho3zTgMAcRysPPMhkL9ZTPC7vMOw9Q?=
- =?us-ascii?Q?zsKdC2DqTRpfiCedyAwazlSGsMMT8DM6QYwkqYAV20mxZ7ZSjPD3Ozb+wYlw?=
- =?us-ascii?Q?yQLHBEIYj1Cren620gGETHhXe6bjF11qezgC6OXE3jzSREQ8Q+pE4QB+dQKV?=
- =?us-ascii?Q?n4aBnRkxdc15yqFsaVWpHhw70L4P8hWrrA3UXD045pGz9hEc+dWFWE2EQtFQ?=
- =?us-ascii?Q?QFlmx3kq1F6O51TVF4jRAbSKRFUuirsm0i46KtTEl8z7TPzAeT3pnPS563Zp?=
- =?us-ascii?Q?GAqnSGA8R7Oa36HAHp+lFO+HMOm/QTlRYAETBdwF60LEG4EvkpoFxBDFtz0w?=
- =?us-ascii?Q?G06r7LTo23pYYbYcjplTkmaSgr5laiozHxv4cuCMNcW7Fwb/CQiYV1UIxlTU?=
- =?us-ascii?Q?R+jBN6CmQXNvZeJOQgvB5hlyU4954f79zGQ/E9CbIkFceLFBhuN0m5uvvj2D?=
- =?us-ascii?Q?PqGP/wkJdeh/g6v7Hh8edxxxkoTjEpcCi2KaHKCTcxT8H3VXqB66sBQcVddj?=
- =?us-ascii?Q?WfN2q28bSpJuBx0l2x4P4zfeuWAc2n0ITdN65xBo240Dr7RW9ymmfb4zY/6b?=
- =?us-ascii?Q?x5MAXQvDiyiTagZQ3bNRB+QuA34JliM5h0LCb+NicKjsrd23iUkPiX+bicFs?=
- =?us-ascii?Q?N+f42NDobZdNORv/ayKJvtqd4vlXVNbqiVZdzQX/02ke0/l+P/ZwqH2zSUdt?=
- =?us-ascii?Q?3OdJtMqKSEqb82v0OM3kgQa+moh2Rb9503dsA6A8fC5UpKWhXF8pjtsQZKfr?=
- =?us-ascii?Q?sDcKRqvT9cpeOlOY6uyGRZiR3dpXBypdJ0OQdRcSrly/cRPmMcphp+DYWEjh?=
- =?us-ascii?Q?mKIMMSsLarfaFEtfC39gRHReoqOV9ncpaVBCB+OugLOE/X78+EtRtsLmiPX0?=
- =?us-ascii?Q?SjOjFtCrYq/uplJdp32Jcq9JwLJh97UkWj+QzuBEJZwhtMnBkmX58PPRxw0K?=
- =?us-ascii?Q?2fno3kEFgb2FQcwuLWolYsw77gOxyre/amVEWKcKNz45WBFEDI0iOmJCyx+d?=
- =?us-ascii?Q?OxqNnThq5H8LGCw0vTdKV7rYekIfF8tbQg5VKctASLZ70sSefLpxN3C6MW0/?=
- =?us-ascii?Q?PAvo0J2OZKNDfucUpWUI54NeX9o9xvBq0oNqrNYgs59z3f7uVrjFMpno+nq/?=
- =?us-ascii?Q?PHyoPE+DpHlPG96BeJn/wKLNAXxIuk6yUhyHphOJ2B3iO3N3+hctY5PXI3MY?=
- =?us-ascii?Q?hNjDMnaWKykn1xslW8c7etWv5ecVYaLHIhy9dne/hFMGVebRSTXz8bH6xtPg?=
- =?us-ascii?Q?vCR2P7Wcyjst28/xvyb1pRbCyzVVauN8NMOkwrUlKcL7lmxGYouUYBOMnKlx?=
- =?us-ascii?Q?U5eA1iHLgqDVKr3MTzQaSqARB1ogIdy9W4iQa7GPmeFk0/sT?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2164a1a-626d-4e02-32b6-08deff7c048b
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2026 12:02:05.2218
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yDNak8COQXAPbfe28SqMp6yNjDyI5lm9aApmzn32uTI8nHaC33ORo66vLBAVnQL1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9184
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
+Sender: Benjamin Block <bblock@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3KuUyA4baePonVYfh0ABHys77SWYAhsX
+X-Proofpoint-GUID: 3KuUyA4baePonVYfh0ABHys77SWYAhsX
+X-Authority-Analysis: v=2.4 cv=RoX16imK c=1 sm=1 tr=0 ts=6a8846ec cx=c_pps
+ a=GFwsV6G8L6GxiO2Y/PsHdQ==:117 a=GFwsV6G8L6GxiO2Y/PsHdQ==:17
+ a=8nJEP1OIZ-IA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=VnNF1IyMAAAA:8
+ a=VwQbUJbxAAAA:8 a=th3aBrcy0Tt1vy9RbOYA:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDA5NiBTYWx0ZWRfX9wgRxKjYDXXm
+ LOh7uSIEkXd7qDJwQDb0bv+Y5UoS6lwb5YErk1kX7J5goz0R4VwF2AEojHety0f/UR2rwv1+n38
+ 3zUynyzeNBkr6Pyp+wsRlIqriE6Da60=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDA5NiBTYWx0ZWRfX6ClxFJZNur0w
+ w2K3XL3umzcXEC8nVnEIdEU+aB8fw9BacMSjdIluZG1QVSLkeH8t3G/LSWA3JBXku2uCQCsyh3+
+ O8frZiwZZ5D54Vf+AjP419WQ5H+WpnO+MI0Q6hExujmlYPuWk/VJgR59Z3wO3XwB/sl5OaHG4ss
+ 92s7rT6/MEN/KGWGAeGY9eYtioUQwoIenL5759ihKKV+11FZGHofUb2/Nq56wlgqpayw0XmZZIM
+ VIaOHWH3BSrUfXTX9AYwFqokTDUk35A6Y9oTcdr9ApyRHsmD1rw6tlx6pRW0r1wC1dRgnvOL85D
+ PkF9L/xKszlooMoXtIxSYpBkesBkuMobf6qxlvE5JpurQSSGXHiX5JcNKzqU7hdcd4SF94B7XLT
+ 8SlqrQ0UCFXDAagGGx569vZL3UJ8XEW2z20aTTGFmQNevs/0q9N5ANjhczqPQd590RmECYi1VeB
+ MdlpINVfGaMnTwh30YA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-21_04,2026-08-21_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 malwarescore=0 adultscore=0
+ clxscore=1011 phishscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608210096
 
-On Fri, Aug 21, 2026 at 01:07:03PM +0200, Andrew Jones wrote:
-
-> > What I rather expected was for riscv to have a PA window that is very
-> > big and not just one page, eg adjust iommu_dma_prepare_msi() so you
-> > can pass in the entire PA space that you need for the affinity
-> > changes. Maybe this is a list of phys_addr_t ?
+On Tue, Aug 18, 2026 at 09:13:17PM +0200, Niklas Schnelle wrote:
+> When using a 5-level translation table via ZPCI_TABLE_TYPE_RFX
+> get_rso_from_iova() returns NULL when the region-first entry is invalid.
+> Yet in get_rto_from_iova() the region-second origin rso is not checked
+> to be non-NULL before accessing rso[rsx] leading to a NULL pointer
+> dereference instead of a NULL return when iova_to_phys() is called on
+> a unmapped IOVA. Fix this by adding the missing NULL check.
 > 
-> That's more or less what this series does. 
+> Cc: stable@vger.kernel.org
+> Fixes: 81244074b518 ("iommu/s390: allow larger region tables")
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index f148f559ac56..58ca7727b7f2 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -974,6 +974,8 @@ static unsigned long *get_rto_from_iova(struct s390_domain *domain,
+>  	case ZPCI_TABLE_TYPE_RFX:
+>  	case ZPCI_TABLE_TYPE_RSX:
+>  		rso = get_rso_from_iova(domain, iova);
+> +		if (!rso)
+> +			return NULL;
+>  		rsx = calc_rsx(iova);
+>  		rse = READ_ONCE(rso[rsx]);
+>  		if (!reg_entry_isvalid(rse))
 
-But it does it in a completely different way, and I'm struggling to
-see any justification for this.
+Looks good to me!
 
-Again, just pass your list of PAs to iommu_dma_prepare_msi() from the
-irq domain seems like the easiest and most ARM aligned thing.
 
-When you need a new IOVA for an affinity change the PA's are already
-mapped a simple offset calculation is that is needed.
+Reviewed-by: Benjamin Block <bblock@linux.ibm.com>
 
-No weridness in domain allocation, no messing with irq stuff in a
-finalize function, no hackery to iommufd.
-
-> There's no big PA window
-> because the IMSIC PAs aren't generally contiguous. iommu_dma_map_msi()
-> factors the mapping operation out of iommu_dma_prepare_msi() and returns
-> each IOVA directly. A batched list API would be possible, but it would
-> only move the loop.
-
-But it keeps the entire flow consistent. Trying to pre-map MSIs and
-mangle all sorts of things in the riscv driver is undoing the
-generalization and what is expected to be be common code.
-
-I don't want to see any mapping of msi in the rsicv iommu driver at
-all, that should be the most important design point.
-
-Jason
+-- 
+Best Regards, Benjamin Block        /        Linux on IBM Z Kernel Development
+IBM Deutschland Research & Development GmbH    /   https://www.ibm.com/privacy
+Vors. Aufs.-R.: Wolfgang Wendt         /        Geschäftsführung: David Faller
+Sitz der Ges.: Ehningen     /     Registergericht: AmtsG Stuttgart, HRB 243294
