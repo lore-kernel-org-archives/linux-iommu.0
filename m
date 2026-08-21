@@ -1,63 +1,67 @@
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0642A409295
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 19:35:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0208B40B6E0
+	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 19:35:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787340910; cv=none; b=HmsBGrVW1dMsYPhn6dg9H/yqizAskA9mIXpyGFRER5PpG5YTNR3oUfmsbLzOfnicEM3dD9dittn6SQ8Z41dMZscCfM1IJMetSHPhNFwNtOmClF2pNZtq3ZKi8geZyL57ldMdVEDCRdAwhW3Zy79JPJL3uC38u0L3ESWbTP5kx0M=
+	t=1787340911; cv=none; b=HJWT1SJJPKmHEGjrcNTy1uZZXTqlMlU7s4bXNB5KYRTKhUcSpM8IiKV8nTdy9OW1+WTb1Y6pw/zalYcYc+tGof7MHj6MRY23SP9/5AdjkHvuAForehEjaOQWVLMSrsRdc3DvxLTFt7Q/j/2LuQbrxLNpTS8oelLMotJ81oMwbEg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787340910; c=relaxed/simple;
-	bh=i8ESiV6L2plHzn7KxH4mnOYo7aS5K7GloZklEsEE3Ts=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=TYjfcsFun55zupHouJ3MRFmcLaOcm+Zo4JJeWUWsrTy8HB/2tbVBs8Jro2nzz4JRba7TPfAwRMoLiT1BPY/7eds7pO1RXgNOWcVGSJ6gRsPOcthNmSYsO9fGFPUO4+Hwl+729dzJie2tDawKEKvab29L7O5R6/btBzLAxZgkczM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--vipinsh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IKsbiO1B; arc=none smtp.client-ip=209.85.214.200
+	s=arc-20240116; t=1787340911; c=relaxed/simple;
+	bh=bRSJ89K8K73/lfPTmQjl/e3hiGKByMp4oSrMZ6XtBYE=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=KM8sXuQw+QUuDmaqw84fikbb8TrgQ5fKSibHeCJpThtGzNv8etruJagl9EGXQU4YMrwXm8svl6nIOkr2uL8hhvrzzjXJRr4FazsPL9vG+V6OhHVC3wtfeisQ5imLGvpe9/pDl7m8BUHn6Mht8EbQ6hiZBZ14LBgtv5eFbcxYqEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--vipinsh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OQ3tWH/x; arc=none smtp.client-ip=209.85.214.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vipinsh.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IKsbiO1B"
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2d63bad3d09so17801315ad.3
-        for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 12:35:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OQ3tWH/x"
+Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2d5d00fd19bso25868805ad.1
+        for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 12:35:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787340908; x=1787945708; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=APoIfiutmOI24Q7s+K9Mw4NYpvb2CDqGTTKGQXs7DgU=;
-        b=IKsbiO1Bdg44iRheX7YKbcrrH3nNWIvvVioYTayYCKEeEQQ/LTn6nAWmC7MD2JIDWv
-         qdZkRTbGF5hnbBe4ig70JSYZDE7/dhg7YiHTySTYXGdnQbrh14zVSHM8ZL7KgeOPfSA/
-         DTUPeD0KH6428J0v6Ky5JA28pR60C81pxSerxyj5Y47h6Qi8WveybGnyQuEz5iJ/64NE
-         S1BDR79daoJuJBBKOGuYo1F/du+fKSFE2Dd4EODV8TRerVngF4UUXICzz323J9ac7+eL
-         wLH8myYdTUD5k9zT5Zmx96e9L35Zq/ucAdf7xb1L1RqnmvCCVJnXYVE8CBfuCZIayN8m
-         M21g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787340908; x=1787945708;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=google.com; s=20251104; t=1787340909; x=1787945709; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=APoIfiutmOI24Q7s+K9Mw4NYpvb2CDqGTTKGQXs7DgU=;
-        b=oceFu+rzl4hydRzM8k951WC0pMLvz7tweZDt16Lt8cQp4I8eD1hbeQ1NN2YBITTy8Q
-         sSS+0f7Cq4i++hUZhFnXY8X8WBoVFixyrw5oS3pDeuTKBt4i4huz81lCydYWEHlfhCMd
-         gvMGjaOp0FrKTgWaPvGUd6PCpZeWAyASs7a+VJQhr20//vKTzSWPEn8hxIHdtTM+ebYM
-         7sgkNZ2PMtd75zmJVG15lra6u5yxsk4iaTxUQeg/rNJoFGh7pqzJ3BOJoHwj5PhJcX8g
-         pCP1DeuuG8ox/IESA3ARZhYruckpt6OHFOpaRAyZ0Pm51mjpZsPVlBsHtmMiQguCu7k8
-         BOMg==
-X-Forwarded-Encrypted: i=1; AHgh+RpRRC0A/HpeWebPeTL4NrjzkPXYEzdG6TTWbnnsgY4Ei9iHSxRAckRVkU8VefsLkeN6z54AhA==@lists.linux.dev
-X-Gm-Message-State: AFuF++lSn8NCGEikhNIjbRk26DzLsSTTSJ5lC3BQwyKsxxc8iRVkPgBz
-	oDkFYopGk1K5uwTffQJC/rp3uiQwAj864t7DIftpFWy27ECcaR8kkODR+F8+KMPrFh30OgLjAwk
-	Q1qNtLN7TbQ==
-X-Received: from plbjf12.prod.google.com ([2002:a17:903:268c:b0:2ce:9b92:ec60])
- (user=vipinsh job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:e952:b0:2ca:ec6f:aeca
- with SMTP id d9443c01a7336-2d670bf937fmr10710815ad.8.1787340908066; Fri, 21
- Aug 2026 12:35:08 -0700 (PDT)
-Date: Fri, 21 Aug 2026 12:35:00 -0700
+        bh=4GMXnvq7D8YucUDG8E30c7kSwAfsqFKmqAniOaqKEfc=;
+        b=OQ3tWH/xVUMoIqow1IKu6am4ryYq/a2c/D+IIrLvXER5OXlqgzgd9Li+4G1laQ6bKj
+         PSvkIuyblFyDUdk0z3UrPcOfzIBMs/oGeHaGTV7Lww5O4NgX0zH9nmwP3wOkEHGpZkKs
+         0nXFash2vg5+QHbRPxAaWpDaFsSG9GuQH8F0Hxdw1nxL0xqZUgE3pYKgUnenfoDNRdA8
+         c3zv3nRld5L1Dqxyp01ewXGlqRJzvHBnW36JLu9L1FDtFFmZIyHfz6KcinHR9t7NnVTO
+         dgUNoKiNJ9moupJw/b73kXNpBDgiZK/Z21jFBf8564pJk/fnc9BngbHuOQ3XgFOhjv+w
+         cbNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787340909; x=1787945709;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4GMXnvq7D8YucUDG8E30c7kSwAfsqFKmqAniOaqKEfc=;
+        b=bulIM4bIUu58NZhAYNK3IPKoG84LdJ5oHwTJRmUogdoS60Rz5vKPjGwaH+mYzNcqFI
+         22UppcS0Eb+MTNpOBp7SOl6gFyPLHnL+TkI3cMhsumyEq4e3Tsa19PrCQE5hj2g3sf7x
+         VO4zeH8aUrtUEl8lWBPg7/hHH1gWc1rTbOw76bxTVRqpT6N2zTHx3EHyoOsAd2Sg/Nah
+         QKCYDn5KRdBsjGzYn1Vi2oaezRKtr1e6gkdiAWBQXFJp9VhGIpTEP0MVQV33wyL0drZr
+         YXcAjirgEIaGCAn5uHbhDiEYwe9S0Bgz+WJa9+VQVGuQ8zxjhtUj4l3naU9o0NCb6NoM
+         LIQg==
+X-Forwarded-Encrypted: i=1; AHgh+RrJc67/sDPEwXSRJkz1H2DPtqHsTOuZiISKri4JEZz7PScQ479xthSgiuC9drvOMZ+J/LaIQw==@lists.linux.dev
+X-Gm-Message-State: AFuF++k7/2G2BQU/Jbp91QDyFcbXL+cFHoC6ptmqykiRYwKKaslHdjdr
+	F75nf8kyTENkQk2HkYTpibR32yyRbQT9eVRFRv83z3+w5aozcYuJshZRXlTEyxfcnX3yyyZ2wB1
+	6CyjDVfPJkg==
+X-Received: from plks10.prod.google.com ([2002:a17:903:2ca:b0:2cb:d8fb:3da3])
+ (user=vipinsh job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:ec86:b0:2c6:9f66:d573
+ with SMTP id d9443c01a7336-2d64ae3ac9emr164652355ad.2.1787340909050; Fri, 21
+ Aug 2026 12:35:09 -0700 (PDT)
+Date: Fri, 21 Aug 2026 12:35:01 -0700
+In-Reply-To: <20260821193502.92431-1-vipinsh@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20260821193502.92431-1-vipinsh@google.com>
 X-Mailer: git-send-email 2.55.0.766.g2966f0265a-goog
-Message-ID: <20260821193502.92431-1-vipinsh@google.com>
-Subject: [RFC PATCH 0/1] vfio: circular locking dependency in pci_dev_reset_iommu_prepare()
+Message-ID: <20260821193502.92431-2-vipinsh@google.com>
+Subject: [RFC PATCH 1/1] selftests: vfio: Add mmap fault and device reset test
 From: Vipin Sharma <vipinsh@google.com>
 To: Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, 
 	Bjorn Helgaas <bhelgaas@google.com>, Nicolin Chen <nicolinc@nvidia.com>, 
@@ -68,172 +72,101 @@ Cc: jrhilke@google.com, skhawaja@google.com, tatashin@google.com,
 	linux-kernel@vger.kernel.org, Vipin Sharma <vipinsh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Hello,
+Add a selftest to verify VFIO PCI device reset on an mmapped and faulted
+device. The test maps all available BARs on the device, faults them,
+and triggers a device reset via the VFIO_DEVICE_RESET ioctl.
 
-I have encountered a reproducible circular locking dependency (lockdep)
-warning when performing a device reset via VFIO (e.g. VFIO_DEVICE_RESET ioctl
-or kexec live update) on a device whose BARs have been mmapped and faulted.
+This exercise uncovers a circular locking dependency introduced in
+commit f5b16b802174 ("PCI: Suspend iommu function prior to resetting a
+device"), where pci_dev_reset_iommu_prepare() acquires group->mutex
+under vfio's vdev->memory_lock.
 
-This issue was introduced in commit f5b16b802174 ("PCI: Suspend iommu function
-prior to resetting a device"), which added calls to
-pci_dev_reset_iommu_prepare() / pci_dev_reset_iommu_done() inside core PCI
-reset routines (pcie_flr(), pci_pm_reset(), etc.).
-
-Patch 1 adds a new selftest in tools/testing/selftests/vfio/ that triggers
-this warning reliably on systems with ATS and reset support.
-
-I used Intel DSA device 8086:0b25 with the test in Patch 1.
-
-This issue was identified in the VFIO Live Update series
-  https://lore.kernel.org/kvm/20260723181436.GB260824.vipinsh@google.com/
-
-Since issue is independent of Live Update, I am sending this out
-separately to not mix two things.
-
-I have uploaded the patch to github also:
-  https://github.com/shvipin/linux vfio/lockdep-mmap-fault-device-reset
-
-================================================================================
-Lock Hierarchy Analysis (Helped by AI)
-================================================================================
-
-1. In VFIO, handling VFIO_DEVICE_RESET (vfio_pci_ioctl_reset()) or bus/hot reset
-   acquires down_write(&vdev->memory_lock) to zap active MMIO BAR mappings
-   and prevent concurrent MMIO faults during reset.
-   Inside memory_lock, it calls pci_try_reset_function() / pcie_flr().
-
-2. Commit f5b16b802174 added pci_dev_reset_iommu_prepare() into pcie_flr().
-   pci_dev_reset_iommu_prepare() acquires guard(mutex)(&group->mutex).
-   This establishes:
-       &vdev->memory_lock --> &group->mutex
-
-3. Meanwhile, during kernel boot or device discovery (iommu_probe_device() /
-   bus_iommu_probe()), iommu.c holds &group->mutex while calling
-   iommu_setup_dma_ops(), which calls iova_domain_init_rcaches().
-   iova_domain_init_rcaches() registers a multi-instance cpuhp handler via
-   cpuhp_state_add_instance_nocalls(), acquiring cpus_read_lock().
-   This establishes:
-       &group->mutex --> cpu_hotplug_lock
-
-4. cpu_hotplug_lock is an outer lock for various kernel subsystems that
-   execute callbacks or sysfs/firmware/perf interactions, which eventually
-   perform copy_to_user(), copy_from_user(), or filldir() (which can trigger
-   a page fault in user memory under mmap_lock).
-   This establishes:
-       cpu_hotplug_lock --> (kernfs_rwsem / inode->i_rwsem / cpuctx_mutex)
-                        --> &mm->mmap_lock
-
-5. When userspace touches an mmapped VFIO BAR, the page fault handler
-   (vfio_pci_mmap_huge_fault() / vfio_pci_mmap_page_fault()) executes under
-   &mm->mmap_lock and acquires down_read(&vdev->memory_lock).
-   This establishes:
-       &mm->mmap_lock --> &vdev->memory_lock
-
-Combining (1) through (5) yields the circular dependency cycle:
-
-    &group->mutex
-      --> cpu_hotplug_lock
-        --> [kernfs_rwsem | i_mutex_dir_key | cpuctx_mutex]
-          --> &mm->mmap_lock
-            --> &vdev->memory_lock
-              --> &group->mutex  <== DEADLOCK DETECTED
-
-
-================================================================================
-Reproductions / Lockdep Traces
-================================================================================
-
-I observed this lockdep warning closing via multiple distinct paths:
-
---- Trace 1: via sysfs / kernfs readdir ---
-
-[  438.457974] WARNING: possible circular locking dependency detected
-[  438.477952] vfio_cdev_lockd/17678 is trying to acquire lock:
-[  438.484320] (&group->mutex){+.+.}-{4:4}, at: pci_dev_reset_iommu_prepare+0x6e/0x200
-[  438.494169] but task is already holding lock:
-[  438.501401] (&vdev->memory_lock){++++}-{4:4}, at: vfio_pci_core_ioctl+0x460/0xb20
-[  438.511064] which lock already depends on the new lock.
-...
-[  438.919866] Chain exists of:
-[  438.919866]   &group->mutex --> &mm->mmap_lock --> &vdev->memory_lock
-...
-[  438.999115]  __mutex_lock+0x8c/0xd80
-[  438.999122]  pci_dev_reset_iommu_prepare+0x6e/0x200
-[  438.999123]  pcie_flr+0x32/0xc0
-[  438.999125]  __pci_reset_function_locked+0x84/0x120
-[  438.999126]  pci_try_reset_function+0x51/0xe0
-[  438.999128]  vfio_pci_core_ioctl+0x72b/0xb20
-
---- Trace 2: via VFS lookup / microcode loading during kexec ---
-
-[  584.552264] WARNING: possible circular locking dependency detected
-[  584.572247] kexec/14239 is trying to acquire lock:
-[  584.577754] (&group->mutex){+.+.}-{4:4}, at: pci_dev_reset_iommu_prepare+0x6e/0x1a0
-[  584.587602] but task is already holding lock:
-[  584.594838] (&vdev->memory_lock){++++}-{4:4}, at: vfio_pci_liveupdate_freeze+0x51/0x100
-...
-[  584.751130] -> #2 (&type->i_mutex_dir_key#4):
-[  584.760319]        lookup_slow+0x26/0x50
-[  584.786970]        _request_firmware+0x4ab/0x8c0
-[  584.797979]        request_microcode_fw+0xf2/0x510
-[  584.834601] -> #1 (cpu_hotplug_lock):
-[  584.842183]        cpus_read_lock+0x3b/0xd0
-[  584.858957]        iommu_setup_dma_ops+0x175/0x540
-
---- Trace 3: via perf read / watchdog cpuhp callback ---
-
-[  233.859740] WARNING: possible circular locking dependency detected
-[  233.879725] vfio_cdev_lockd/14999 is trying to acquire lock:
-[  233.886094] (&group->mutex){+.+.}-{4:4}, at: pci_dev_reset_iommu_prepare+0x6e/0x200
-[  233.895948] but task is already holding lock:
-[  233.903183] (&vdev->memory_lock){++++}-{4:4}, at: vfio_pci_core_ioctl+0x460/0xb20
-...
-[  234.030037] -> #3 (&cpuctx_mutex):
-[  234.040960]        perf_event_enable+0x18/0xa0
-[  234.046126]        lockup_detector_online_cpu+0x22/0x30
-[  234.057658]        cpuhp_thread_fun+0x164/0x1e0
-[  234.115402] -> #1 (cpu_hotplug_lock):
-[  234.122985]        cpus_read_lock+0x3b/0xd0
-[  234.139757]        iommu_setup_dma_ops+0x18a/0x560
-
-
-================================================================================
-Potential Solutions Suggested by AI
-================================================================================
-
-1. Decouple iommu_setup_dma_ops() from group->mutex in drivers/iommu/iommu.c:
-   iommu_setup_dma_ops() only requires struct device * and the domain pointer
-   (group->default_domain); it does not mutate any fields in struct iommu_group.
-   Moving the iommu_setup_dma_ops() calls after mutex_unlock(&group->mutex) in
-   iommu_probe_device(), bus_iommu_probe(), and iommu_group_store_type() breaks
-   the initial &group->mutex -> cpu_hotplug_lock dependency.
-
-2. Avoid holding down_write(&vdev->memory_lock) across pci_try_reset_function()
-   in VFIO:
-   vfio-pci could zap active BAR mappings under memory_lock and set a state
-   flag / disable memory decoding, drop memory_lock before calling
-   pci_try_reset_function(), and then re-acquire memory_lock to re-enable
-   memory. While resetting, any concurrent user fault will see the memory
-   disabled condition and return VM_FAULT_SIGBUS safely.
-
-3. Refine synchronization in pci_dev_reset_iommu_prepare():
-   Evaluate if attaching to the blocking domain and pausing ATS during device
-   reset can be protected using more fine-grained locking or atomic state
-   flags without holding the coarse &group->mutex.
-
-Feedback and suggestions on the preferred direction to resolve this would be
-greatly appreciated.
-
-Thanks,
-Vipin Sharma
-
-Vipin Sharma (1):
-  selftests: vfio: Add mmap fault and device reset test
-
+Assisted-by: Jetski:gemini-3.1-pro
+Signed-off-by: Vipin Sharma <vipinsh@google.com>
+---
  tools/testing/selftests/vfio/Makefile         |  1 +
  .../selftests/vfio/vfio_pci_mmap_reset_test.c | 60 +++++++++++++++++++
  2 files changed, 61 insertions(+)
  create mode 100644 tools/testing/selftests/vfio/vfio_pci_mmap_reset_test.c
 
+diff --git a/tools/testing/selftests/vfio/Makefile b/tools/testing/selftests/vfio/Makefile
+index 2c32c48db509..17b3a2fe215c 100644
+--- a/tools/testing/selftests/vfio/Makefile
++++ b/tools/testing/selftests/vfio/Makefile
+@@ -13,6 +13,7 @@ TEST_GEN_PROGS += vfio_pci_device_test
+ TEST_GEN_PROGS += vfio_pci_device_init_perf_test
+ TEST_GEN_PROGS += vfio_pci_driver_test
+ TEST_GEN_PROGS += vfio_pci_sriov_uapi_test
++TEST_GEN_PROGS += vfio_pci_mmap_reset_test
+ 
+ TEST_FILES += scripts/cleanup.sh
+ TEST_FILES += scripts/lib.sh
+diff --git a/tools/testing/selftests/vfio/vfio_pci_mmap_reset_test.c b/tools/testing/selftests/vfio/vfio_pci_mmap_reset_test.c
+new file mode 100644
+index 000000000000..b004867905de
+--- /dev/null
++++ b/tools/testing/selftests/vfio/vfio_pci_mmap_reset_test.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <linux/pci_regs.h>
++#include <linux/vfio.h>
++
++#include <libvfio.h>
++
++#include "kselftest_harness.h"
++
++static const char *device_bdf;
++
++FIXTURE(vfio_pci_mmap_reset_test) {
++	struct iommu *iommu;
++	struct vfio_pci_device *device;
++};
++
++FIXTURE_SETUP(vfio_pci_mmap_reset_test)
++{
++	self->iommu = iommu_init(MODE_IOMMUFD);
++	self->device = vfio_pci_device_init(device_bdf, self->iommu);
++}
++
++FIXTURE_TEARDOWN(vfio_pci_mmap_reset_test)
++{
++	vfio_pci_device_cleanup(self->device);
++	iommu_cleanup(self->iommu);
++}
++
++TEST_F(vfio_pci_mmap_reset_test, mmap_fault_and_reset)
++{
++	volatile char dummy;
++	bool has_mmap = false;
++	int i;
++
++	if (!(self->device->info.flags & VFIO_DEVICE_FLAGS_RESET))
++		SKIP(return, "Device does not support reset\n");
++
++	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
++		struct vfio_pci_bar *bar = &self->device->bars[i];
++
++		if (!bar->vaddr)
++			continue;
++
++		/* Touch BAR to trigger page fault under mmap_lock */
++		dummy = *(volatile char *)bar->vaddr;
++		(void)dummy;
++		has_mmap = true;
++	}
++
++	if (!has_mmap)
++		SKIP(return, "No mmapable BAR found on device\n");
++
++	/* Trigger device reset under memory_lock */
++	vfio_pci_device_reset(self->device);
++}
++
++int main(int argc, char *argv[])
++{
++	device_bdf = vfio_selftests_get_bdf(&argc, argv);
++	return test_harness_run(argc, argv);
++}
 -- 
 2.55.0.766.g2966f0265a-goog
+
