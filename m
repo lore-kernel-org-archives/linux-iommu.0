@@ -1,99 +1,85 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2EA731B80D
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 13:47:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E7162931D9
+	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 13:55:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787320048; cv=none; b=o5MTKOR7vkrDtET9N8m11pTYaMczygtzL4+7KahMDnlcQ5Z3x+3p0UBBlFYbInG/vu5EuQqiKOVsR5wg3JhHQNlp4NWY1PmkajywTazfaq+Cy6giS6C3ELeJp7Oy5XahkvDm4lpaSkbQBn6WzeMEvFiY9ZyqsRAb6wvNHF1Vuvk=
+	t=1787320505; cv=none; b=kODQWIrGA+dBlQf/bg+KigrjLLBPX1SQbOhQbNV8GVZ04euuYcwV2FE3o5LAZSh86Wll2mWQHcmR2ZOxtyRL9jyztQD6Pu7Tm5nVb/BTxJqBfUbKQUl/NBR4ceKFUI8x5zhc5LxS3uZvz+rVd+BgMezoyF85BzTDDSa2NGJKL7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787320048; c=relaxed/simple;
-	bh=ndbuLor0wEu/PTyMA31f2o2uVfMc7dfh21NE2qeM4lI=;
+	s=arc-20240116; t=1787320505; c=relaxed/simple;
+	bh=8Iy2xiuEp1b275qY1/HG8p9r7C8PRhTK2aEoGLQUWqM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WAdsWu4umKumhBn89J64sQ/DSD61DCdylz4eNpaBuHAtWaipePM1v0rzmSdLgab9VcV0N9TyPWyQtz/raMy1mr9oRbRNm3vFTVNochkPSxtbQcbkCXfZQQKT1KxFz+y2E6v1AmQGTx/PVGRZbSS8d5laZzyLwtGHGPUpdLWd478=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=IsW6WxIB; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=JiioFiAo; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=jj8t5cIQE40lD//3pbVcyAVTB0vM77+puhVtanEdghAwG+0q5QeXAb7WTE877cGaxXi6HI9D2uZ7tHddobx8WgQMc7shtEdnZGdYgnO7V0TjCa9qaW1zp8e1RzFnpwZl9heDVWVU8+2On5m0ekfIa+jFEitkKBiqbRiOEXMMGPg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=A+XMzXqU; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="IsW6WxIB";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="JiioFiAo"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67LCooUv2029791
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 13:47:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=a5VCLxEl7X8qI/cglZ1ZCGty
-	oFxlx7SBGtiXQblkcbo=; b=IsW6WxIBflBqDT/f4XGRYWwPnrAzhmAR417dydO6
-	tFXBIVbYz8lw9pPT5X3Apjce/ic1oxLZcA+dpbrq3ogznNPgXnAGJ61/N7elwDTW
-	BcRzvpzuVCygQfC8f+B1+uYNz62KG2tsGr5uxU+GB1Ht5Qw2tHLJvCqEy6HmZIaf
-	9/nxzd+qdOWf7VnMcEwz1xmOvOd1qaOf/3e6F5GvJAKxsQvo4ss0lvheaJ7pLaRj
-	ZQGEdcCW7PrrMk1YjpuBlKqKt5sO4767nNouICWOKh8vMwuvpPASS2X4GkGTTgfE
-	O5HBaP5lBMgXl7Yub2p+ZqT4IQYRrz8/f8s6Xlw82z1Hbg==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g6fue1xmb-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 13:47:25 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-93494527488so163322885a.3
-        for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 06:47:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="A+XMzXqU"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c0c45c580so6350831cf.0
+        for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 06:55:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787320040; x=1787924840; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1787320502; x=1787925302; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=a5VCLxEl7X8qI/cglZ1ZCGtyoFxlx7SBGtiXQblkcbo=;
-        b=JiioFiAoJoZvP0Mu5MzyW8Vn3NAi/vhQnV+yf3UfSCeEK4V2yooHNyfEKpwe297c90
-         srvyQrO5SCE/eAQlYJhhCsrXHxqP+qI7hNfpEO9KKBics98bxroZtZq/TAwrwASNfP8i
-         2c3cT4OSnAVPSYKad2IdOcLBcOox3UkEH6a6lE2fg3JQICqBzYr/QodgclQbcVWyGTUf
-         gj261dcRmawc7K5nPei/ox2cVnOLYLHYjHo3zyJE0cKzvzc5f9X4tGcpbe79Wk7urZMV
-         xAheaFMmMdSd3KaQ9m8tTeeAUu+vuTQAa3SZ4CeRPF87yJBAdL3C9hVcdgd5zfItdvnS
-         o35A==
+        bh=Tync1NYSQPmjCb7Vyd44OAFc8hrD8m+JRdUFP+XyLOU=;
+        b=A+XMzXqUPBKLbwIjevGuuBK+pEiXxFfrZlHIRdzND4LkHluYeP0UR8DAO+4ff/XdKF
+         t+tBjQm6XtNkdM4XDRwdy4hsM7kszO2Xi1KOM8t0oCEOhhlqki0+ljLplbWUX5T4/DAC
+         UK9GhB0X7Q/RJhxPSz8YIYNn5oj812YboJUndcWlliYQ3jjLkyGtMG+SSMLip15JUxih
+         Fxs60KkWWC35vfpzHC+DkU1gOHy442mSsDA/MAeKuaSGzMAqd+iRR1PBA3uwHbA3ggvo
+         E2ZQJFGuzkBsUw62ZuXxD/6DhCx8GDUPI4ZdJG77OVr8/Js//gpV3sag7P0hkYSAsqRi
+         W6jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787320040; x=1787924840;
+        d=1e100.net; s=20251104; t=1787320502; x=1787925302;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=a5VCLxEl7X8qI/cglZ1ZCGtyoFxlx7SBGtiXQblkcbo=;
-        b=TZ+9upXbKGi0thpaTYNhcHLHZ8g0JH6RC3tEG+uLA6pxnDuuyEUlwqgVyAMsWGltSo
-         809/VbNge2+24OLNtctCj/RkQ3pPr0Dq1j2xzIqtirA15k0J2FGTVlbe2xfsQlUyVMVs
-         DilQ8vhXAIlE09bvNZBIaU7IeQbT4USDo8auMRZBrxD/aOfuCxK4XpLT0LGSLaw/laZx
-         5ea4mMqs2s7k0bQmPfcaohCXlITbvMg7StHtO02IrNPVPh7b0J+nYMjUXuYE2z6AifNN
-         7Hqljcbkip9uGMicFfxzV4R/crv71VoBlhtGjRMhmc7IWqmt5/6E/s1PitQsNIwHzb6s
-         p73g==
-X-Forwarded-Encrypted: i=1; AHgh+RoKmzbRwhovnOlEiQH5jqAs0It6btqxT06UiQzEeq9j0GnR/+6R95Opza/xfXeZnkHXUtO5UQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzJliA7eGhEBoHpRkCTj/Ml8DJ53mlYrt77QJHextPnPWR9wnf8
-	d4qVneYUhkY29GS1uwMl9vH+QiIADbIUNyf5k2O64FCkpMQEjBs5AUYKIVBgzpv1pjsqpj8YFsE
-	EEG0KqUvSkJGO+fQBj7AB9SJmoibIgMlLXWIgGXd0r2K1XpTv+oloe9wSRA==
-X-Gm-Gg: AR+sD11bwvjuZkOG3JLVb+/031MyVfx1w0Fhk8ASsImUWPgFf4cHZRyobMEYALmIamK
-	qrQMKd4KREKiispCw24VSfxppN6qtKLkoXNYwXM9KU5+ByFUGHZX5LmmC4T+bQB5n25vV7bw47w
-	+C8LL6B6T2wo1q/EZQzfryaHZC5yZw5tlJVKyGYefZiDWhRrK55KhvfJjjlrGXqUa8dSWtl2MvH
-	8UrpQYJrBsK+h3y0LToWO2KFxdGdNpcOpZnf0h+M6lmY1YtzzEC+nMQK2SNS7t9Hpy+EvGKJ/b8
-	1/EB956OdI+amoXUc35CUwRUogFd8r1z/XJOukwPQzXnetIXupwKgcaF/peZW0v2zWtVdS6Z+nh
-	jGCHOcD2EZHYgAexUsa1MBfJy3LVJqomNDfk=
-X-Received: by 2002:a05:620a:1196:b0:936:9f46:cec8 with SMTP id af79cd13be357-937394a8786mr405267285a.20.1787320040130;
-        Fri, 21 Aug 2026 06:47:20 -0700 (PDT)
-X-Received: by 2002:a05:620a:1196:b0:936:9f46:cec8 with SMTP id af79cd13be357-937394a8786mr405263185a.20.1787320039671;
-        Fri, 21 Aug 2026 06:47:19 -0700 (PDT)
-Received: from localhost (ip-86-49-251-7.bb.vodafone.cz. [86.49.251.7])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482b145153fsm17252542f8f.12.2026.08.21.06.47.18
+        bh=Tync1NYSQPmjCb7Vyd44OAFc8hrD8m+JRdUFP+XyLOU=;
+        b=dE35+abnM/QdfSz1jVxQo2q2MI/ZO4UHjavwBDrjA8Ex4Ld/bZJhrpG+JeQwCEWRes
+         dfVHfySFAR3pHTgiBDucbBBtVwhzOMS/0sEhOgI3KC/HqZ8PoREuDZYj1TenC3B8/+1W
+         S6Z00LxS2FygBoSnRIuwj8fOns64i9panSWLDwLzGqerMOiOiSJV8ihFy8wpKPO9AADN
+         0CZ0IT6sQZJttKHa8xM3ZYWc0RJ3mW6YIvmI9e1uSk/pKyxwrFkuhWiss5+mGDAkIsb3
+         u1Hl+IMJ0yHPy/MV/awmbaRiSqpmpNwz7ZaQ5MAhUB0ncMRMEUStiXdYDKrQBacRGdj+
+         SRaQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqkVK6BHm8LG5bRc69p/OwVjQ2mBM4fZUDwz0ZmcZ2KH2YE5rWPAI2c/pgKfnYyVTbcxS7rPg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNCJI7NFeuWw5LqTJJKAYUrRwKBglwtj+OImI1BNRJf6m7Cyhc
+	6hb81oBpaD4RU+ynzM6bwXZojuEe+V/dlIpLkkzO9rqnQ4Lh3WayGAiV6h6KbceKpKE=
+X-Gm-Gg: AR+sD12ldN0xJfAdTq1APd7BONz/s7fhofzmve+B1FmOUKOJm7bNP8RA3mnIPJF7OiQ
+	U3cQ5+Z4xHRrtfwsS58qVLqj1/fSpbr3MelcZWfhxdY5cIcK2+jIKosf8MMn9yMmHp/58hPbTv7
+	HEsG4OR0gtm+XTRLSYjO+2QS2DUM9Puw8plr30YBKlWk4h37ayoINhtJABfhzv1dVDcsJlkho6P
+	vh8VKdiaDzDeui6739Uk1eiRlgrVA9NeJ7vzeIigOhkZztYODbsAqNm6rtVwkINB+a8UoPAl9LL
+	uTp/cQ1Bdrw7zxmPesqbv5yUHXGIc4nurSQAQZmsvXYMdE1JYYM7Eq02V/DusRrzg/P+wfGehbz
+	3/42YMi5LfcdU+SKErgjzH6hf0ksUgYhh0i9TOhz41HcZI+CYzRXIKF7VaeUZJtijqvaCLAwbxi
+	I8nEi7LXreHrs8La1yMWP9iMv56jZ5Obi9GlwNymgeOxJ1R6LNKJdXdqFqqdQW0wq+bpuqTPeJ2
+	vXJH5yxWOXpnWeHAPgrgpgYlR7Rkx8uvyqMra/RQce4Pw==
+X-Received: by 2002:ac8:5fd5:0:b0:519:8b76:2ce0 with SMTP id d75a77b69052e-52df5a6e0d5mr53572721cf.37.1787320502318;
+        Fri, 21 Aug 2026 06:55:02 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90c5eec2f0csm63818716d6.14.2026.08.21.06.55.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2026 06:47:18 -0700 (PDT)
-Date: Fri, 21 Aug 2026 15:47:17 +0200
-From: Andrew Jones <andrew.jones@oss.qualcomm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
-        tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
-        anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
-        fangyu.yu@linux.alibaba.com
-Subject: Re: [PATCH v4 02/21] iommufd: Add iommufd_sw_map_msi()
-Message-ID: <zygm4qm3fjv57nsgcectwikfa3cdnidxnhv55nxv4b6l2kllrs@dt36j4p3zhoa>
-References: <20260820214150.545737-1-andrew.jones@oss.qualcomm.com>
- <20260820214150.545737-3-andrew.jones@oss.qualcomm.com>
- <20260820220908.GE244917@nvidia.com>
- <gr2h3ktgacozyo7rdggkxsg5mbdtzcnimaawd24c37hnf2tun3@hqivsenaq5wd>
- <20260821120204.GF244917@nvidia.com>
+        Fri, 21 Aug 2026 06:55:01 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wxPi1-000000062EN-0WEt;
+	Fri, 21 Aug 2026 10:55:01 -0300
+Date: Fri, 21 Aug 2026 10:55:01 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: fangyu.yu@linux.alibaba.com
+Cc: tomasz.jeznach@linux.dev, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+	aou@eecs.berkeley.edu, alex@ghiti.fr, baolu.lu@linux.intel.com,
+	jroedel@suse.de, zong.li@sifive.com, andrew.jones@oss.qualcomm.com,
+	anup@brainfault.org, kevin.tian@intel.com, atish.patra@linux.dev,
+	skhawaja@google.com, vasant.hegde@amd.com, guoren@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org
+Subject: Re: [RFC PATCH v3 01/10] iommupt: Add RISC-V Second-stage (iohgatp)
+ page table support
+Message-ID: <20260821135501.GB1114497@ziepe.ca>
+References: <20260821132749.82070-1-fangyu.yu@linux.alibaba.com>
+ <20260821132749.82070-2-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -102,80 +88,78 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260821120204.GF244917@nvidia.com>
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDEwNiBTYWx0ZWRfXzPIzZlttSayv
- v0W2Ebl08SzMQwLV+FBcSTYe+ZimOAyaMi5cORDgKoN+R+Q8ZVywXRDpk9JuNnGMzCNho0Jmq8F
- Dt90sm4UTi6s08xI/wxPsColBvzhSu0=
-X-Authority-Analysis: v=2.4 cv=U9+iy+ru c=1 sm=1 tr=0 ts=6a8856ed cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=on9AXyaqQ0RhfYpiXjjEXA==:17
- a=kj9zAlcOel0A:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=Ev1Hn8_tcGTgjV4NdAUA:9 a=CjuIK1q_8ugA:10 a=bTQJ7kPSJx9SKPbeHEYW:22
-X-Proofpoint-GUID: xTgNx7OJt2Le_Q7AsKb67yd6AfpTjIaS
-X-Proofpoint-ORIG-GUID: xTgNx7OJt2Le_Q7AsKb67yd6AfpTjIaS
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDEwNiBTYWx0ZWRfX6MlNyPO/BP6w
- KScAvydF9dKmukkc3E0Jaad6Y3tc/iLuBcFRTi2c3W59BjmmMcfQ3azlMdGaW/MT2LR3uDV6K4X
- lZmuL0IBFHUz707o9ffuBwXy5mF5rtXyMhHWt0i9NRLQbPZp/MCOnScXwl+Og32Ku6Rjxd9ZWxq
- lf6O8i7zUbLEhsVL1uB6IVlXlnjEkGX5+RdGjOUHyqAYfAH0UklVLPJpKG9QCo0By4K0xIAME2W
- kGX05STS9WJGOOkrd6oI4sqxlS7YASi4Qp4IpzCpQEA6AslBAR+7KY9LNbuZVj8qC5RurmP8Kr1
- a+q9kLMrPvN5cn8E9RcnpTA7algPpgq5SMAYYv69AXHSf4jRkyFhlVujt6W+u9LUsP1yPoOyu56
- I/MgoFh61wO/6b+Zr/M65PRz7vskw5frBAj9u9DrjKjpFcfyPArtdtZkzpBNoT4qM7PU1ukKe5j
- EKlmX3cRwiGSjWWV+tA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-21_04,2026-08-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 adultscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1015
- malwarescore=0 phishscore=0 suspectscore=0 spamscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608210106
+In-Reply-To: <20260821132749.82070-2-fangyu.yu@linux.alibaba.com>
 
-On Fri, Aug 21, 2026 at 09:02:04AM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 21, 2026 at 01:07:03PM +0200, Andrew Jones wrote:
-> 
-> > > What I rather expected was for riscv to have a PA window that is very
-> > > big and not just one page, eg adjust iommu_dma_prepare_msi() so you
-> > > can pass in the entire PA space that you need for the affinity
-> > > changes. Maybe this is a list of phys_addr_t ?
-> > 
-> > That's more or less what this series does. 
-> 
-> But it does it in a completely different way, and I'm struggling to
-> see any justification for this.
-> 
-> Again, just pass your list of PAs to iommu_dma_prepare_msi() from the
-> irq domain seems like the easiest and most ARM aligned thing.
-> 
-> When you need a new IOVA for an affinity change the PA's are already
-> mapped a simple offset calculation is that is needed.
+On Fri, Aug 21, 2026 at 09:27:41PM +0800, fangyu.yu@linux.alibaba.com wrote:
+> @@ -126,6 +135,15 @@ riscvpt_entry_num_contig_lg2(const struct pt_state *pts)
+>  
+>  static inline unsigned int riscvpt_num_items_lg2(const struct pt_state *pts)
+>  {
+> +	/*
+> +	 * Second-stage (iohgatp) root page tables have 4x the usual number of
+> +	 * entries (2048 = 2^11 instead of 512 = 2^9) to cover the 2 extra GPA
+> +	 * bits in Sv39x4/Sv48x4/Sv57x4.  Only the root (top) level is
+> +	 * enlarged; all other levels remain at the standard 9-bit index width.
+> +	 */
+> +	if (pts_feature(pts, PT_FEAT_RISCV_S2) &&
+> +	    pts->level == pts->range->top_level)
+> +		return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64)) + 2;
 
-Ah, I see what I missed. The proposed batched API would guarantee a
-contiguous IOVA range, so the descriptor could cache the IOVA base and
-then the riscv IR compose-msi-msg could simply compute its target off
-that base. That would indeed eliminate msi_iova[] and all its complexity.
+You shouldn't need this, see how ARMv8 is constructed which does the
+same thing. Instead 
 
-> 
-> No weridness in domain allocation, no messing with irq stuff in a
-> finalize function, no hackery to iommufd.
-> 
-> > There's no big PA window
-> > because the IMSIC PAs aren't generally contiguous. iommu_dma_map_msi()
-> > factors the mapping operation out of iommu_dma_prepare_msi() and returns
-> > each IOVA directly. A batched list API would be possible, but it would
-> > only move the loop.
-> 
-> But it keeps the entire flow consistent. Trying to pre-map MSIs and
-> mangle all sorts of things in the riscv driver is undoing the
-> generalization and what is expected to be be common code.
-> 
-> I don't want to see any mapping of msi in the rsicv iommu driver at
-> all, that should be the most important design point.
+static inline unsigned int armv8pt_num_items_lg2(const struct pt_state *pts)
+{
+	/*
+	 * It is not allowed to call pt_num_items_lg2() at the top level, this
+	 * API restriction is specifically an optimization avoid overheads
+	 * dealing with concatenated tables here.
+	 */
+	PT_WARN_ON(pts->level == pts->range->top_level);
 
-ARM calls iommu_dma_prepare_msi() from ITS since there is no SMMU
-irqdomain and ITS owns the MSI target. This series adds a RISC-V IOMMU IR
-irqdomain to replace the IMSIC PA with the corresponding IOVA, so the IR
-domain's alloc callback is the right place to create the mappings through
-common DMA-IOMMU/iommufd code.
+> @@ -272,6 +291,19 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+>  	case 57:
+>  		pt_top_set_level(&table->common, 4);
+>  		break;
+> +	/*
+> +	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
+> +	 * The top level is the same as for the first-stage counterpart.
+> +	 */
+> +	case 41:
+> +		pt_top_set_level(&table->common, 2);
+> +		break;
+> +	case 50:
+> +		pt_top_set_level(&table->common, 3);
+> +		break;
+> +	case 59:
+> +		pt_top_set_level(&table->common, 4);
+> +		break;
 
-Thanks,
-drew
+Are all these widths valid for both S1 and S2? It should reject
+illegal vasz..
+
+>  struct pt_iommu_riscv_64_hw_info {
+>  	u64 ppn;
+> -	u8 fsc_iosatp_mode;
+> +	union {
+> +		/*
+> +		 * First-stage (fsc/iosatp) MODE encoding:
+> +		 *   8 = Sv39, 9 = Sv48, 10 = Sv57
+> +		 * Used to program DC.fsc.iosatp.MODE.
+> +		 */
+> +		u8 fsc_iosatp_mode;
+> +		/*
+> +		 * Second-stage (iohgatp) MODE encoding:
+> +		 *   8 = Sv39x4, 9 = Sv48x4, 10 = Sv57x4
+> +		 * Used to program DC.iohgatp.MODE.
+> +		 * The numeric values are identical to fsc_iosatp_mode;
+> +		 * the caller selects the interpretation based on domain type.
+> +		 */
+> +		u8 iohgatp_mode;
+> +	};
+
+suggest not using a union and instead have the get_info populate only
+the one correct for the fmt. It makes it slightly more robust that
+s1/s2 don't get intermixed improperly?
+
+Jason
