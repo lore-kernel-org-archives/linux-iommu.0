@@ -1,159 +1,239 @@
-Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C91B387361;
-	Fri, 21 Aug 2026 17:35:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0642A409295
+	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 19:35:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787333709; cv=none; b=c/dg0dY5egvBFdcpESaZDMhlakaLz+ZKFqybFGtwSnQ9O+7yrcKsdCY2uuDmPQqwWlmIMKLjjboPZTK8Du7iU0ipVuuJ0kyuxGUMdxvfB63XXfu7raawHN8qseVe/qEZgQS4rSlphXvRlakUTZY6cSKU2AqJr6lRdNqrPZrg2mU=
+	t=1787340910; cv=none; b=HmsBGrVW1dMsYPhn6dg9H/yqizAskA9mIXpyGFRER5PpG5YTNR3oUfmsbLzOfnicEM3dD9dittn6SQ8Z41dMZscCfM1IJMetSHPhNFwNtOmClF2pNZtq3ZKi8geZyL57ldMdVEDCRdAwhW3Zy79JPJL3uC38u0L3ESWbTP5kx0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787333709; c=relaxed/simple;
-	bh=tm57Ad6PECZlLu7lczCl2+y1DS+vkQi7R0ed20Yj/ag=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=H+Q9dgX0V94ix+blokeoTGCdKRXJzELNoFEcpT2WBIpssxmoSTB3L99/mNOzrnSNd4sw7DJXbmO+3yJAJN6ERjNu+2qonIuEcaE7sLCSfMNQm2mRrU7sttUA+wogYALOwOzWQ1hpyUJZCwF4Ex4BQIvPABiyDS61viYdDl/xH1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=HQtt7lVZ; arc=none smtp.client-ip=195.39.247.168
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
+	s=arc-20240116; t=1787340910; c=relaxed/simple;
+	bh=i8ESiV6L2plHzn7KxH4mnOYo7aS5K7GloZklEsEE3Ts=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=TYjfcsFun55zupHouJ3MRFmcLaOcm+Zo4JJeWUWsrTy8HB/2tbVBs8Jro2nzz4JRba7TPfAwRMoLiT1BPY/7eds7pO1RXgNOWcVGSJ6gRsPOcthNmSYsO9fGFPUO4+Hwl+729dzJie2tDawKEKvab29L7O5R6/btBzLAxZgkczM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--vipinsh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IKsbiO1B; arc=none smtp.client-ip=209.85.214.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vipinsh.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="HQtt7lVZ"
-Message-ID: <bbaca769-312c-4a24-9524-16cb2b4f277f@cyberchaos.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1787333180;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4zprVL5/9BVqDOihmvOs/Q42nl1VQUNgjTILqKSw0w0=;
-	b=HQtt7lVZcfVo8TYCvTeQ0igRuXaLHurfb35TIR+j+82dPXJmzUG154fUu75jZxBEkcGoWz
-	jQF6wuQccZftNV5xbWF9/BZb4GXb3VPF9QyKki+En6V7FOPkbtwAbl5I3vuDSh0u10PNot
-	uaRP2PHGDi0hh8BcUCzRWJymQ8yzwY4=
-Date: Fri, 21 Aug 2026 19:26:12 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IKsbiO1B"
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2d63bad3d09so17801315ad.3
+        for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 12:35:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787340908; x=1787945708; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=APoIfiutmOI24Q7s+K9Mw4NYpvb2CDqGTTKGQXs7DgU=;
+        b=IKsbiO1Bdg44iRheX7YKbcrrH3nNWIvvVioYTayYCKEeEQQ/LTn6nAWmC7MD2JIDWv
+         qdZkRTbGF5hnbBe4ig70JSYZDE7/dhg7YiHTySTYXGdnQbrh14zVSHM8ZL7KgeOPfSA/
+         DTUPeD0KH6428J0v6Ky5JA28pR60C81pxSerxyj5Y47h6Qi8WveybGnyQuEz5iJ/64NE
+         S1BDR79daoJuJBBKOGuYo1F/du+fKSFE2Dd4EODV8TRerVngF4UUXICzz323J9ac7+eL
+         wLH8myYdTUD5k9zT5Zmx96e9L35Zq/ucAdf7xb1L1RqnmvCCVJnXYVE8CBfuCZIayN8m
+         M21g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787340908; x=1787945708;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=APoIfiutmOI24Q7s+K9Mw4NYpvb2CDqGTTKGQXs7DgU=;
+        b=oceFu+rzl4hydRzM8k951WC0pMLvz7tweZDt16Lt8cQp4I8eD1hbeQ1NN2YBITTy8Q
+         sSS+0f7Cq4i++hUZhFnXY8X8WBoVFixyrw5oS3pDeuTKBt4i4huz81lCydYWEHlfhCMd
+         gvMGjaOp0FrKTgWaPvGUd6PCpZeWAyASs7a+VJQhr20//vKTzSWPEn8hxIHdtTM+ebYM
+         7sgkNZ2PMtd75zmJVG15lra6u5yxsk4iaTxUQeg/rNJoFGh7pqzJ3BOJoHwj5PhJcX8g
+         pCP1DeuuG8ox/IESA3ARZhYruckpt6OHFOpaRAyZ0Pm51mjpZsPVlBsHtmMiQguCu7k8
+         BOMg==
+X-Forwarded-Encrypted: i=1; AHgh+RpRRC0A/HpeWebPeTL4NrjzkPXYEzdG6TTWbnnsgY4Ei9iHSxRAckRVkU8VefsLkeN6z54AhA==@lists.linux.dev
+X-Gm-Message-State: AFuF++lSn8NCGEikhNIjbRk26DzLsSTTSJ5lC3BQwyKsxxc8iRVkPgBz
+	oDkFYopGk1K5uwTffQJC/rp3uiQwAj864t7DIftpFWy27ECcaR8kkODR+F8+KMPrFh30OgLjAwk
+	Q1qNtLN7TbQ==
+X-Received: from plbjf12.prod.google.com ([2002:a17:903:268c:b0:2ce:9b92:ec60])
+ (user=vipinsh job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:e952:b0:2ca:ec6f:aeca
+ with SMTP id d9443c01a7336-2d670bf937fmr10710815ad.8.1787340908066; Fri, 21
+ Aug 2026 12:35:08 -0700 (PDT)
+Date: Fri, 21 Aug 2026 12:35:00 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Subject: Re: [PATCH 08/10] HID: apple: Add DockChannel HID transport driver
-To: Yureka Lilian <yureka@cyberchaos.dev>,
- Michael Reeves <michael.reeves077@gmail.com>
-Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
- Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Kosina <jikos@kernel.org>,
- Benjamin Tissoires <bentiss@kernel.org>, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-input@vger.kernel.org
-References: <20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com>
- <20260630-apple-mtp-keyboard-final-v1-8-506d936a1707@gmail.com>
- <05d39c4d-8405-4fe7-a798-c8a9c92699ed@cyberchaos.dev>
- <CANpmGNs3s2yLw05jkpZ9mscQNZ9JvfbqEgyW8V=cMD29aU8c2A@mail.gmail.com>
- <03eb4c22-045e-470e-8259-ebf9b1cfe2ed@cyberchaos.dev>
-Content-Language: en-US
-From: Yureka Lilian <yureka@cyberchaos.dev>
-In-Reply-To: <03eb4c22-045e-470e-8259-ebf9b1cfe2ed@cyberchaos.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.55.0.766.g2966f0265a-goog
+Message-ID: <20260821193502.92431-1-vipinsh@google.com>
+Subject: [RFC PATCH 0/1] vfio: circular locking dependency in pci_dev_reset_iommu_prepare()
+From: Vipin Sharma <vipinsh@google.com>
+To: Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: jrhilke@google.com, skhawaja@google.com, tatashin@google.com, 
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>, kvm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Vipin Sharma <vipinsh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 8/1/26 23:56, Yureka Lilian wrote:
-> On 7/1/26 16:32, Michael Reeves wrote:
->> Hi Yureka,
->>
->> Thank you for the review and the feedback.
->>
->> On Tue, Jun 30, 2026 at 11:21 PM Yureka Lilian 
->> <yureka@cyberchaos.dev> wrote:
->> [...]
->>>> +     strscpy(hid->uniq, dchid->serial, sizeof(hid->uniq));
->>> If the keyboard appeared before stm, dchip->serial might be 
->>> uninitialized.
->> Yes, true, thank you for picking this up!
->> [...]
->>>> +     /*
->>>> +      * Prefer to enable STM first, since it provides device IDs. 
->>>> Some
->>>> +      * firmware versions do not expose STM, so let the keyboard 
->>>> start
->>>> +      * without it.
->>>> +      */
->>>> +     if (iface->dchid->id_ready || !strcmp(iface->name, "stm") ||
->>>> +         !strcmp(iface->name, "keyboard"))
->>> I specifically asked for a mechanism to let the keyboard probe even on
->>> devices which do not expose/have stm. Thanks for adding that!
->>> However, I think this might need some more sophisticated mechanism to
->>> decide whether the stm is still going to appear after the keyboard, or
->>> not at all. I'm not sure if there is a way to tell this at this point,
->>> or we need to add a timeout for the stm to appearing, which needs to
->>> expire before we create the other interfaces with fake serials.
->>>
->> I do not think there is a way to tell at this point, unfortunately.
->>
->> I think the best way to resolve this would be to implement a delayed 
->> work
->> item that is scheduled during probe. If STM appears and initalises 
->> before
->> the timer (I'm not sure how long it should be right now, I will 
->> prototype and
->> experiment) we cancel the delayed work, get the real serial, and spin up
->> the keyboard. If the timeout expires without seeing the STM 
->> interface, we
->> assume the platform does not have one, mark id_ready as true, and
->> proceed to init the keyboard.
->
-> I see three ways forward (no specific order):
->
-> 1) Implement the timeout as you described.
->
-> 2) Use the approach that always waits for the stm to appear, and is 
-> proven to work well on the M2 devices targeted by this series. A 
-> different behavior that does not wait for the stm / determines the 
-> serials using other means can be added at a later point in the same 
-> driver but with a different compatible string.
->
-> 3) Add an stm subnode (like the downstream Asahi device trees have for 
-> their dockchannel-mtp nodes [1]) which indicates whether the stm is 
-> present. Check for the existence of this subnode to decide whether to 
-> wait for the stm or add the HID devices with fake serials. Support for 
-> other methods of retrieving the serials can be added later and 
-> indicated by other subnodes.
->
-> I would appreciate feedback from all of you on which of these options 
-> we should move forward with.
+Hello,
 
-After checking ioreg -l under macOS on the MacBook Neo (which is the one 
-Apple Silicon MacBook having the non-force-touch trackpad variant, and 
-sending no stm report), I'm convinced it legit has no Serial to report 
-for the keyboard/trackpad HID devices, so we'll always have to use the 
-fake one there.
+I have encountered a reproducible circular locking dependency (lockdep)
+warning when performing a device reset via VFIO (e.g. VFIO_DEVICE_RESET ioctl
+or kexec live update) on a device whose BARs have been mmapped and faulted.
 
-Knowing this, I'd rule out Option 2). Between option 1 (timeout) and 
-option 3 (device tree node), I prefer the device tree node. We already 
-have the keyboard subnode and we know for each MacBook model whether it 
-has an stm or not, so having the stm subnode seems logical. As a bonus, 
-the code for this is quite simple, and I will prepare the v2 of this 
-series shortly.
+This issue was introduced in commit f5b16b802174 ("PCI: Suspend iommu function
+prior to resetting a device"), which added calls to
+pci_dev_reset_iommu_prepare() / pci_dev_reset_iommu_done() inside core PCI
+reset routines (pcie_flr(), pci_pm_reset(), etc.).
 
->
->>
->> I will work on this and experiment to see if it's the best solution or
->> if there's
->> any others as well as to find the ideal timeout, and submit as part 
->> of v2.
->> [...]
->>
->> Thanks again,
->> Michael
->
->
-> Thanks,
->
-> - Yureka
->
-> Link: 
-> https://github.com/AsahiLinux/linux/blob/asahi-7.1.5-2/arch/arm64/boot/dts/apple/t8112-j413.dts#L260 
-> [1]
->
+Patch 1 adds a new selftest in tools/testing/selftests/vfio/ that triggers
+this warning reliably on systems with ATS and reset support.
+
+I used Intel DSA device 8086:0b25 with the test in Patch 1.
+
+This issue was identified in the VFIO Live Update series
+  https://lore.kernel.org/kvm/20260723181436.GB260824.vipinsh@google.com/
+
+Since issue is independent of Live Update, I am sending this out
+separately to not mix two things.
+
+I have uploaded the patch to github also:
+  https://github.com/shvipin/linux vfio/lockdep-mmap-fault-device-reset
+
+================================================================================
+Lock Hierarchy Analysis (Helped by AI)
+================================================================================
+
+1. In VFIO, handling VFIO_DEVICE_RESET (vfio_pci_ioctl_reset()) or bus/hot reset
+   acquires down_write(&vdev->memory_lock) to zap active MMIO BAR mappings
+   and prevent concurrent MMIO faults during reset.
+   Inside memory_lock, it calls pci_try_reset_function() / pcie_flr().
+
+2. Commit f5b16b802174 added pci_dev_reset_iommu_prepare() into pcie_flr().
+   pci_dev_reset_iommu_prepare() acquires guard(mutex)(&group->mutex).
+   This establishes:
+       &vdev->memory_lock --> &group->mutex
+
+3. Meanwhile, during kernel boot or device discovery (iommu_probe_device() /
+   bus_iommu_probe()), iommu.c holds &group->mutex while calling
+   iommu_setup_dma_ops(), which calls iova_domain_init_rcaches().
+   iova_domain_init_rcaches() registers a multi-instance cpuhp handler via
+   cpuhp_state_add_instance_nocalls(), acquiring cpus_read_lock().
+   This establishes:
+       &group->mutex --> cpu_hotplug_lock
+
+4. cpu_hotplug_lock is an outer lock for various kernel subsystems that
+   execute callbacks or sysfs/firmware/perf interactions, which eventually
+   perform copy_to_user(), copy_from_user(), or filldir() (which can trigger
+   a page fault in user memory under mmap_lock).
+   This establishes:
+       cpu_hotplug_lock --> (kernfs_rwsem / inode->i_rwsem / cpuctx_mutex)
+                        --> &mm->mmap_lock
+
+5. When userspace touches an mmapped VFIO BAR, the page fault handler
+   (vfio_pci_mmap_huge_fault() / vfio_pci_mmap_page_fault()) executes under
+   &mm->mmap_lock and acquires down_read(&vdev->memory_lock).
+   This establishes:
+       &mm->mmap_lock --> &vdev->memory_lock
+
+Combining (1) through (5) yields the circular dependency cycle:
+
+    &group->mutex
+      --> cpu_hotplug_lock
+        --> [kernfs_rwsem | i_mutex_dir_key | cpuctx_mutex]
+          --> &mm->mmap_lock
+            --> &vdev->memory_lock
+              --> &group->mutex  <== DEADLOCK DETECTED
+
+
+================================================================================
+Reproductions / Lockdep Traces
+================================================================================
+
+I observed this lockdep warning closing via multiple distinct paths:
+
+--- Trace 1: via sysfs / kernfs readdir ---
+
+[  438.457974] WARNING: possible circular locking dependency detected
+[  438.477952] vfio_cdev_lockd/17678 is trying to acquire lock:
+[  438.484320] (&group->mutex){+.+.}-{4:4}, at: pci_dev_reset_iommu_prepare+0x6e/0x200
+[  438.494169] but task is already holding lock:
+[  438.501401] (&vdev->memory_lock){++++}-{4:4}, at: vfio_pci_core_ioctl+0x460/0xb20
+[  438.511064] which lock already depends on the new lock.
+...
+[  438.919866] Chain exists of:
+[  438.919866]   &group->mutex --> &mm->mmap_lock --> &vdev->memory_lock
+...
+[  438.999115]  __mutex_lock+0x8c/0xd80
+[  438.999122]  pci_dev_reset_iommu_prepare+0x6e/0x200
+[  438.999123]  pcie_flr+0x32/0xc0
+[  438.999125]  __pci_reset_function_locked+0x84/0x120
+[  438.999126]  pci_try_reset_function+0x51/0xe0
+[  438.999128]  vfio_pci_core_ioctl+0x72b/0xb20
+
+--- Trace 2: via VFS lookup / microcode loading during kexec ---
+
+[  584.552264] WARNING: possible circular locking dependency detected
+[  584.572247] kexec/14239 is trying to acquire lock:
+[  584.577754] (&group->mutex){+.+.}-{4:4}, at: pci_dev_reset_iommu_prepare+0x6e/0x1a0
+[  584.587602] but task is already holding lock:
+[  584.594838] (&vdev->memory_lock){++++}-{4:4}, at: vfio_pci_liveupdate_freeze+0x51/0x100
+...
+[  584.751130] -> #2 (&type->i_mutex_dir_key#4):
+[  584.760319]        lookup_slow+0x26/0x50
+[  584.786970]        _request_firmware+0x4ab/0x8c0
+[  584.797979]        request_microcode_fw+0xf2/0x510
+[  584.834601] -> #1 (cpu_hotplug_lock):
+[  584.842183]        cpus_read_lock+0x3b/0xd0
+[  584.858957]        iommu_setup_dma_ops+0x175/0x540
+
+--- Trace 3: via perf read / watchdog cpuhp callback ---
+
+[  233.859740] WARNING: possible circular locking dependency detected
+[  233.879725] vfio_cdev_lockd/14999 is trying to acquire lock:
+[  233.886094] (&group->mutex){+.+.}-{4:4}, at: pci_dev_reset_iommu_prepare+0x6e/0x200
+[  233.895948] but task is already holding lock:
+[  233.903183] (&vdev->memory_lock){++++}-{4:4}, at: vfio_pci_core_ioctl+0x460/0xb20
+...
+[  234.030037] -> #3 (&cpuctx_mutex):
+[  234.040960]        perf_event_enable+0x18/0xa0
+[  234.046126]        lockup_detector_online_cpu+0x22/0x30
+[  234.057658]        cpuhp_thread_fun+0x164/0x1e0
+[  234.115402] -> #1 (cpu_hotplug_lock):
+[  234.122985]        cpus_read_lock+0x3b/0xd0
+[  234.139757]        iommu_setup_dma_ops+0x18a/0x560
+
+
+================================================================================
+Potential Solutions Suggested by AI
+================================================================================
+
+1. Decouple iommu_setup_dma_ops() from group->mutex in drivers/iommu/iommu.c:
+   iommu_setup_dma_ops() only requires struct device * and the domain pointer
+   (group->default_domain); it does not mutate any fields in struct iommu_group.
+   Moving the iommu_setup_dma_ops() calls after mutex_unlock(&group->mutex) in
+   iommu_probe_device(), bus_iommu_probe(), and iommu_group_store_type() breaks
+   the initial &group->mutex -> cpu_hotplug_lock dependency.
+
+2. Avoid holding down_write(&vdev->memory_lock) across pci_try_reset_function()
+   in VFIO:
+   vfio-pci could zap active BAR mappings under memory_lock and set a state
+   flag / disable memory decoding, drop memory_lock before calling
+   pci_try_reset_function(), and then re-acquire memory_lock to re-enable
+   memory. While resetting, any concurrent user fault will see the memory
+   disabled condition and return VM_FAULT_SIGBUS safely.
+
+3. Refine synchronization in pci_dev_reset_iommu_prepare():
+   Evaluate if attaching to the blocking domain and pausing ATS during device
+   reset can be protected using more fine-grained locking or atomic state
+   flags without holding the coarse &group->mutex.
+
+Feedback and suggestions on the preferred direction to resolve this would be
+greatly appreciated.
+
+Thanks,
+Vipin Sharma
+
+Vipin Sharma (1):
+  selftests: vfio: Add mmap fault and device reset test
+
+ tools/testing/selftests/vfio/Makefile         |  1 +
+ .../selftests/vfio/vfio_pci_mmap_reset_test.c | 60 +++++++++++++++++++
+ 2 files changed, 61 insertions(+)
+ create mode 100644 tools/testing/selftests/vfio/vfio_pci_mmap_reset_test.c
+
+-- 
+2.55.0.766.g2966f0265a-goog
