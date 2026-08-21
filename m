@@ -1,66 +1,61 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A64333B7759
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 13:27:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8448D47CA64
+	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 13:28:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787318856; cv=none; b=XQrPJCYE4zu3c4yaRBONep71Mm7t6MHH0Rku5vr0t6k71wN6URikcFgMjr6lazGrzKBGgtwbeEcwrqC9jKenz/il2H+tOQtNVBk9PuX3XXOdkdy6elidsb1i0CpB3p3STuRoRIiGldcAGoO/RS69D6nSpa1IZnuez7i0p7pAASo=
+	t=1787318886; cv=none; b=D31wc4dDj1CeHLzK/aebC8niSiqNP5AK8ZLtNmraSLUBMC+aMhr2YZwEgdm4gebL6pBH5EB/w3wX5yspENvpmC3lgwVnmPPbA67H1oVNU9gK39YCYh3W33sY2kbPaLaGHTZI2w2wpSpf29ZGHQvWheVUXy9awmOBCpQCAiFLWyE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787318856; c=relaxed/simple;
-	bh=Bif4QzhFlDZ/RP09V8YX9tC4mUW8pvrBu/YtR07JXoI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hrq8+zor3F9wXd2oYnGSlxRSE8C5XgPrI+GCfCudpI7Nl1QvakzFPO91AQkwlyM09AqZhUsCC1uxnhLpdwU6qxa8leqwMKnxQQsYoYTDMHWlbFr1kzVeHuLjcMq3ui0ybbGrXdM6T+yS8a0LwS4NohbejlTvinp41iAS/d1+2xA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=apTjQekm; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1787318886; c=relaxed/simple;
+	bh=3o+wIccd3os5vqFoFZd2XYfzP1k2Xdx4fn4FnRv5JjM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=UrKMNaZwg/DtHIJMgvkgDY2lr8DvlU9Uzj5YFcXObODkb0TdIInTqqs9dKsmSBS4IelA+0cxgKrj6iWIhgo95LFTakIIa9oaN5CxeE2Ijtju7fq9SPSoC9YLvHSWJuCVWNyWSfnEQ3jtqqzZtkwfyl5Hyt0PchF9laE+awSI67g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=VW0RSu1P; arc=none smtp.client-ip=115.124.30.110
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="apTjQekm"
-Received: from zhangyu-hyperv.mshome.net (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5288720B712B;
-	Fri, 21 Aug 2026 06:26:56 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5288720B712B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1787318821;
-	bh=7t8Fejhw0Izx61YYS59DcaGQP+cwHvZ4dI8L5sWlb1w=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=apTjQekmz6AcHOHatROnWmvsaUvBb9TXKKElp4SEhP4bM25M1B5Vlq2VHIHaM2RbN
-	 uJKbzH/TzgW/Ofi9h2acd0XVmUqW1RzmgW9FQfO2rdyiCzWUmafgB55WVELAoNC7RP
-	 IoPGhXh5mAn5Q1SzGzC+3DWORJfzw55xaHfUz9kc=
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org,
-	x86@kernel.org
-Cc: wei.liu@kernel.org,
-	kys@microsoft.com,
-	haiyangz@microsoft.com,
-	decui@microsoft.com,
-	longli@microsoft.com,
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="VW0RSu1P"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1787318878; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=t/Isbm0dxTe2xO/qbNDLssm8i0nZnyxuZBSaKRQR90M=;
+	b=VW0RSu1PQIHFJ3NIIlxep7MWJRra2CRwHaQGhLE6wGXSviUedhYo6Uek+5q2qtJRrIUJRgNDOd1zK2yVJRetiTbB+Tv/2IJQrMmWmu6z45ahMpsbzjCGehJ2WcG96V4mWZ9aFOXADh7pJiLvNshXWVkJquU09Ky4W5SbcYUA+CI=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0X9MSFFf_1787318875;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X9MSFFf_1787318875 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Fri, 21 Aug 2026 21:27:56 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
 	will@kernel.org,
 	robin.murphy@arm.com,
-	bhelgaas@google.com,
-	kwilczynski@kernel.org,
-	lpieralisi@kernel.org,
-	mani@kernel.org,
-	robh@kernel.org,
-	arnd@arndb.de,
-	jgg@ziepe.ca,
-	mhklinux@outlook.com,
-	jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com,
-	easwar.hariharan@linux.microsoft.com,
-	mrathor@linux.microsoft.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
 	baolu.lu@linux.intel.com,
-	suravee.suthikulpanit@amd.com,
+	jroedel@suse.de,
+	zong.li@sifive.com,
+	andrew.jones@oss.qualcomm.com,
+	anup@brainfault.org,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	atish.patra@linux.dev,
+	skhawaja@google.com,
 	vasant.hegde@amd.com
-Subject: [PATCH v4 5/5] iommu/hyperv: Add page-selective IOTLB flush support
-Date: Fri, 21 Aug 2026 21:26:54 +0800
-Message-ID: <20260821132654.211730-6-zhangyu1@linux.microsoft.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260821132654.211730-1-zhangyu1@linux.microsoft.com>
-References: <20260821132654.211730-1-zhangyu1@linux.microsoft.com>
+Cc: fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org
+Subject: [RFC PATCH v3 01/10] iommupt: Add RISC-V Second-stage (iohgatp) page table support
+Date: Fri, 21 Aug 2026 21:27:41 +0800
+Message-Id: <20260821132749.82070-2-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20260821132749.82070-1-fangyu.yu@linux.alibaba.com>
+References: <20260821132749.82070-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,163 +64,209 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
-This hypercall accepts a list of (page_number, page_mask_shift) entries,
-enabling finer-grained IOTLB invalidation compared to the domain-wide
-HVCALL_FLUSH_DEVICE_DOMAIN used by hv_iommu_flush_iotlb_all().
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-hv_iommu_calc_flush_range() computes the smallest power-of-two aligned
-range that covers the target IOVA region, producing a single flush
-descriptor. This may over-flush when the range is not naturally aligned,
-matching the approach used by Intel VT-d PSI. If the page-selective
-flush fails, the code falls back to a full domain flush.
+Add support for Sv39x4/Sv48x4/Sv57x4 Second-stage page tables used by
+the RISC-V IOMMU iohgatp register. The x4 root page table is 16 KiB
+instead of the usual 4 KiB, covering 2 extra GPA bits (hw_max_vasz_lg2
+= 41/50/59).
 
-Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 ---
- drivers/iommu/hyperv/hv-iommu-guest.c | 76 ++++++++++++++++++++++++++-
- include/hyperv/hvgdk_mini.h           |  1 +
- include/hyperv/hvhdk_mini.h           | 18 +++++++
- 3 files changed, 94 insertions(+), 1 deletion(-)
+ drivers/iommu/generic_pt/fmt/iommu_riscv64.c |  2 +-
+ drivers/iommu/generic_pt/fmt/riscv.h         | 77 +++++++++++++++++---
+ include/linux/generic_pt/common.h            |  4 +
+ include/linux/generic_pt/iommu.h             | 17 ++++-
+ 4 files changed, 89 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/hyperv/hv-iommu-guest.c b/drivers/iommu/hyperv/hv-iommu-guest.c
-index 2169333020f4..3e38046bd998 100644
---- a/drivers/iommu/hyperv/hv-iommu-guest.c
-+++ b/drivers/iommu/hyperv/hv-iommu-guest.c
-@@ -396,11 +396,84 @@ static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 	hv_flush_device_domain(to_hv_iommu_domain(domain));
- }
+diff --git a/drivers/iommu/generic_pt/fmt/iommu_riscv64.c b/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
+index 1bb74114fb02..fa61839e5599 100644
+--- a/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
++++ b/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
+@@ -8,7 +8,7 @@
+ 	(BIT(PT_FEAT_SIGN_EXTEND) | BIT(PT_FEAT_FLUSH_RANGE) | \
+ 	 BIT(PT_FEAT_RISCV_SVNAPOT_64K) |                      \
+ 	 BIT(PT_FEAT_DETAILED_GATHER) |                        \
+-	 BIT(PT_FEAT_RISCV_SVPBMT))
++	 BIT(PT_FEAT_RISCV_SVPBMT) | BIT(PT_FEAT_RISCV_S2))
+ #define PT_FORCE_ENABLED_FEATURES BIT(PT_FEAT_DETAILED_GATHER)
  
-+/*
-+ * Calculate the minimal power-of-two aligned range that covers [start, end]
-+ * (end is inclusive). Returns a single (page_number, page_mask_shift)
-+ * descriptor that may over-flush when the range is not naturally aligned.
-+ */
-+static void
-+hv_iommu_calc_flush_range(unsigned long start, unsigned long end,
-+			  union hv_iommu_flush_va *va)
-+{
-+	unsigned int sz_lg2;
-+
-+	sz_lg2 = fls_long(start ^ end);
-+	if (sz_lg2 < HV_HYP_PAGE_SHIFT)
-+		sz_lg2 = HV_HYP_PAGE_SHIFT;
-+
+ #include "iommu_template.h"
+diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
+index ae9a76514416..5692c033dbde 100644
+--- a/drivers/iommu/generic_pt/fmt/riscv.h
++++ b/drivers/iommu/generic_pt/fmt/riscv.h
+@@ -37,7 +37,16 @@ enum {
+ 	PT_MAX_OUTPUT_ADDRESS_LG2 = 34,
+ 	PT_MAX_TOP_LEVEL = 1,
+ #else
+-	PT_MAX_VA_ADDRESS_LG2 = 57,
 +	/*
-+	 * A valid IOVA range shall not span bit 63. Use the maximum mask
-+	 * so the host can safely perform a full flush.
++	 * PT_MAX_VA_ADDRESS_LG2 is the upper bound accepted by the generic
++	 * pt_iommu_init() range check.  It must cover both first-stage and
++	 * second-stage (G-stage) modes:
++	 *
++	 *   First-stage  (fsc/iosatp): Sv39=39, Sv48=48, Sv57=57
++	 *   Second-stage (iohgatp):    Sv39x4=41, Sv48x4=50, Sv57x4=59
++	 *
 +	 */
-+	if (WARN_ON_ONCE(sz_lg2 >= BITS_PER_LONG)) {
-+		va->as_uint64 = 0;
-+		va->page_mask_shift =
-+			BITS_PER_LONG - HV_HYP_PAGE_SHIFT;
-+		return;
-+	}
-+
-+	va->page_number =
-+		(start & GENMASK(BITS_PER_LONG - 1, sz_lg2)) >>
-+		HV_HYP_PAGE_SHIFT;
-+	va->page_mask_shift = sz_lg2 - HV_HYP_PAGE_SHIFT;
-+}
-+
-+static void hv_flush_device_domain_list(struct hv_iommu_domain *hv_domain,
-+					struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	u64 status;
-+	unsigned long flags;
-+	struct hv_input_flush_device_domain_list *input;
-+
-+	local_irq_save(flags);
-+
-+	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	/* Clear the fixed header and the single range entry. */
-+	memset(input, 0, struct_size(input, iova_list, 1));
-+
-+	input->device_domain = hv_domain->device_domain;
-+	input->flags |= HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
-+	hv_iommu_calc_flush_range(iotlb_gather->start, iotlb_gather->end,
-+				  &input->iova_list[0]);
-+
-+	status = hv_do_rep_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
-+				     1, 0, input, NULL);
-+
-+	if (WARN_ON_ONCE(!hv_result_success(status))) {
-+		/* Page-selective flush failed, fall back to full flush. */
-+		struct hv_input_flush_device_domain *flush_all = (void *)input;
-+
-+		memset(flush_all, 0, sizeof(*flush_all));
-+		flush_all->device_domain = hv_domain->device_domain;
-+		status = hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
-+					 flush_all, NULL);
-+		WARN(!hv_result_success(status),
-+		     "HVCALL_FLUSH_DEVICE_DOMAIN fallback also failed: %lld\n",
-+		     status);
-+	}
-+
-+	local_irq_restore(flags);
-+}
-+
- static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
- 				struct iommu_iotlb_gather *iotlb_gather)
++	PT_MAX_VA_ADDRESS_LG2 = 59,
+ 	PT_MAX_OUTPUT_ADDRESS_LG2 = 56,
+ 	PT_MAX_TOP_LEVEL = 4,
+ #endif
+@@ -126,6 +135,15 @@ riscvpt_entry_num_contig_lg2(const struct pt_state *pts)
+ 
+ static inline unsigned int riscvpt_num_items_lg2(const struct pt_state *pts)
  {
--	hv_flush_device_domain(to_hv_iommu_domain(domain));
-+	hv_flush_device_domain_list(to_hv_iommu_domain(domain), iotlb_gather);
- 
 +	/*
-+	 * The hypercall also invalidates non-leaf page-walk caches, so
-+	 * detached page-table pages can now be freed.
++	 * Second-stage (iohgatp) root page tables have 4x the usual number of
++	 * entries (2048 = 2^11 instead of 512 = 2^9) to cover the 2 extra GPA
++	 * bits in Sv39x4/Sv48x4/Sv57x4.  Only the root (top) level is
++	 * enlarged; all other levels remain at the standard 9-bit index width.
 +	 */
- 	iommu_put_pages_list(&iotlb_gather->freelist);
++	if (pts_feature(pts, PT_FEAT_RISCV_S2) &&
++	    pts->level == pts->range->top_level)
++		return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64)) + 2;
+ 	return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64));
  }
+ #define pt_num_items_lg2 riscvpt_num_items_lg2
+@@ -263,6 +281,7 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+ 	struct pt_riscv *table = &iommu_table->riscv_64pt;
  
-@@ -452,6 +525,7 @@ static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
+ 	switch (cfg->common.hw_max_vasz_lg2) {
++	/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57 */
+ 	case 39:
+ 		pt_top_set_level(&table->common, 2);
+ 		break;
+@@ -272,6 +291,19 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+ 	case 57:
+ 		pt_top_set_level(&table->common, 4);
+ 		break;
++	/*
++	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
++	 * The top level is the same as for the first-stage counterpart.
++	 */
++	case 41:
++		pt_top_set_level(&table->common, 2);
++		break;
++	case 50:
++		pt_top_set_level(&table->common, 3);
++		break;
++	case 59:
++		pt_top_set_level(&table->common, 4);
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -292,10 +324,17 @@ riscvpt_iommu_fmt_hw_info(struct pt_iommu_riscv_64 *table,
+ 	PT_WARN_ON(top_phys & ~PT_TOP_PHYS_MASK);
  
- 	cfg.common.hw_max_vasz_lg2 = hv_iommu_device->max_iova_width;
- 	cfg.common.hw_max_oasz_lg2 = 52;
-+	cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE);
  	/*
- 	 * Hyper-V S1 domains use a 4-level root for IOVA widths up to
- 	 * 48 bits. A 5-level root is used only for wider apertures when
-diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-index 5d1338197eee..966945f0504f 100644
---- a/include/hyperv/hvgdk_mini.h
-+++ b/include/hyperv/hvgdk_mini.h
-@@ -497,6 +497,7 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
- #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
- #define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
- #define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-+#define HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1
- #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
- #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
- #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-index 7b9f43b320cd..57b70efe60d4 100644
---- a/include/hyperv/hvhdk_mini.h
-+++ b/include/hyperv/hvhdk_mini.h
-@@ -685,4 +685,22 @@ struct hv_input_flush_device_domain {
- 	u32 reserved;
- } __packed;
+-	 * See Table 3. Encodings of iosatp.MODE field" for DC.tx.SXL = 0:
+-	 *  8 = Sv39 = top level 2
+-	 *  9 = Sv38 = top level 3
+-	 *  10 = Sv57 = top level 4
++	 * Both first-stage (fsc/iosatp) and second-stage (iohgatp) share the
++	 * same MODE numeric values for a given top level:
++	 *   top_level 2 -> MODE 8  (Sv39 / Sv39x4)
++	 *   top_level 3 -> MODE 9  (Sv48 / Sv48x4)
++	 *   top_level 4 -> MODE 10 (Sv57 / Sv57x4)
++	 *
++	 * The union members fsc_iosatp_mode and iohgatp_mode occupy the same
++	 * byte; the caller selects the appropriate name based on domain type.
++	 *
++	 * See "Table 3. Encodings of iosatp.MODE field" (DC.tc.SXL = 0) and
++	 * "Table 2. Encoding of iohgatp.MODE field" in the RISC-V IOMMU spec.
+ 	 */
+ 	info->fsc_iosatp_mode = top_range->top_level + 6;
+ }
+@@ -303,19 +342,39 @@ riscvpt_iommu_fmt_hw_info(struct pt_iommu_riscv_64 *table,
  
-+union hv_iommu_flush_va {	/* HV_IOMMU_GVA_RANGE */
-+	u64 as_uint64;
-+	struct {
-+		u64 page_mask_shift : 6;
-+		u64 reserved : 6;
-+		u64 page_number : 52;
+ #if defined(GENERIC_PT_KUNIT)
+ static const struct pt_iommu_riscv_64_cfg riscv_64_kunit_fmt_cfgs[] = {
+-	[0] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++	/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57 */
++	[0] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 39 },
+-	[1] = { .common.features = 0,
++	[1] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 48 },
+-	[2] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++	[2] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 57 },
++	/*
++	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
++	 */
++	[3] = { .common.features = BIT(PT_FEAT_RISCV_S2) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 41 },
++	[4] = { .common.features = BIT(PT_FEAT_RISCV_S2),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 50 },
++	[5] = { .common.features = BIT(PT_FEAT_RISCV_S2) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 59 },
+ };
+ #define kunit_fmt_cfgs riscv_64_kunit_fmt_cfgs
++/* Sign extension is only valid for first-stage configs, not S2. */
+ enum {
+-	KUNIT_FMT_FEATURES = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++	KUNIT_FMT_FEATURES = BIT(PT_FEAT_SIGN_EXTEND) |
++			     BIT(PT_FEAT_RISCV_SVNAPOT_64K) |
++			     BIT(PT_FEAT_RISCV_S2),
+ };
+ #endif
+ 
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index 07ef1c8341a4..f2e130c2b804 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -197,6 +197,10 @@ enum {
+ 	 * Support Svpbmt extension: encode page-based memory type (PBMT) in PTEs.
+ 	 */
+ 	PT_FEAT_RISCV_SVPBMT,
++	/*
++	 * Using second-stage / iohgatp address translation.
++	 */
++	PT_FEAT_RISCV_S2,
+ 
+ };
+ 
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index dd0edd02a48a..f27d229ff318 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -328,7 +328,22 @@ struct pt_iommu_riscv_64_cfg {
+ 
+ struct pt_iommu_riscv_64_hw_info {
+ 	u64 ppn;
+-	u8 fsc_iosatp_mode;
++	union {
++		/*
++		 * First-stage (fsc/iosatp) MODE encoding:
++		 *   8 = Sv39, 9 = Sv48, 10 = Sv57
++		 * Used to program DC.fsc.iosatp.MODE.
++		 */
++		u8 fsc_iosatp_mode;
++		/*
++		 * Second-stage (iohgatp) MODE encoding:
++		 *   8 = Sv39x4, 9 = Sv48x4, 10 = Sv57x4
++		 * Used to program DC.iohgatp.MODE.
++		 * The numeric values are identical to fsc_iosatp_mode;
++		 * the caller selects the interpretation based on domain type.
++		 */
++		u8 iohgatp_mode;
 +	};
-+} __packed;
-+
-+/* HV_INPUT_FLUSH_DEVICE_DOMAIN_LIST */
-+struct hv_input_flush_device_domain_list {
-+	struct hv_input_device_domain device_domain;
-+#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT BIT(0)
-+	u32 flags;
-+	u32 reserved;
-+	union hv_iommu_flush_va iova_list[];
-+} __packed;
-+
- #endif /* _HV_HVHDK_MINI_H */
+ };
+ 
+ IOMMU_FORMAT(riscv_64, riscv_64pt);
 -- 
-2.52.0
+2.50.1
 
