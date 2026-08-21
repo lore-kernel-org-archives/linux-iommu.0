@@ -1,146 +1,113 @@
-Received: from pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.34.181.151])
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 963E63955C3
-	for <iommu@lists.linux.dev>; Fri, 21 Aug 2026 22:42:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.34.181.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E78DA39A4AA;
+	Fri, 21 Aug 2026 23:08:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787352180; cv=none; b=RIECXKbyjN8GtKTDLvygQ+va1MOYxkyuJ7/xv5xY5glDAnX69ToPe3mvnwkmq0mbVhbYFfakaIyQQCL0uS4xdBAqYAJKUsM5XM8PzrR49MFmI6VpjWM6xFfPNJOWEyjqaPkg1fCmgXzElX+awrNm4RHlKxzI3XNwbgnTjQGp9fg=
+	t=1787353724; cv=none; b=ZA38b+akFqSynmEyzQsvC6cOLpnzzKSzjM+JcvMNuQG0ifZI1HxeFcFnWHEeepzBjkOvEgQ82WmNm5RW8s7XaL6G2axt5KA98I7Tpki2hvu1NoCOzScfCeSZ4NHzDFqKKMCOGCQScVvYn4fqWJdv2K3N9vyNYLqHbsRTp/g6E90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787352180; c=relaxed/simple;
-	bh=rz5tuiwpBSVybDXFbMXoSSLqKucfR95bC0ZNq4sWIio=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=B8bR+wrJtCDIyl+eTB8TCFPho9KDPBtgi+wvrKpTQJzQmuTHxkVjg19wS6Jnq7vT45hVjL/lN7e6yGWJurNNmGtj0/ydDyf2PYSuQW0UakmfVsa/KdRDAnd2esxpQpsW0P9oItUVsgNy6cITQzLTiIdJbTTxsc9amjgtBXNWfhM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.de; dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b=Q7lAmcAT; arc=none smtp.client-ip=52.34.181.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
+	s=arc-20240116; t=1787353724; c=relaxed/simple;
+	bh=W1EihAFKCMrMO8clCMq/OCfA6XR2zjlEvpw5pDjweVw=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
+	 Content-Type:Subject; b=aYKU2uzBqlMZ/lZ2pcbHOU+v6W02FK3n31sFd2iIlYozzJ+j5yi8a/10BWYZ+vg/6eZ6TgylTGHHiGZmlktaYM37+TU9sR+7sG9X4CAi9KYN9jX7Vr+pb0G303W0NUrfCU1426fIE7bcN2Dsmh6kM6bqCaoR6r8HyG28IXYQQec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=HNLahndZ; arc=none smtp.client-ip=204.191.154.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b="Q7lAmcAT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1787352178; x=1818888178;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eZIELaPND3+NIQ5JpGZbhV7Zuc+v2N+xW2Wi9488Iy4=;
-  b=Q7lAmcAT+pOtT1BRIDBAaDGy1cFLYgfCqhuzbZ5gOCZkwCB/8u40OFdZ
-   buaLSxMXKomj+Uu1iEYUjq6sFLGwMnM6RdXT0Ten1aouKpAXY5QKK739u
-   moPnxX9KoFrbslQOUf4ANy0p5auNtu5MTrYHjeFBS+epolgFc/I4HUeU7
-   SJSi8dapcqBKKyb/KdF5mFy894Yh56UinE7MzjwgULfWHYJQQ11NmqHXZ
-   wyoFzv4MW6Xa/84EPwhG9kKTNeArfOcCzfosf2eB73JW2WNzprsmHJFKy
-   bjFkvFjSEK9fh/69vN474ngcFyVMYhqPv3FAcB/lXCJ0hCIYOcZPENPz6
-   g==;
-X-CSE-ConnectionGUID: 31z3Y1RkQdqqe2WP0wNHdg==
-X-CSE-MsgGUID: +kNGP3hdTlCvBEm8CeEQMw==
-X-IronPort-AV: E=Sophos;i="6.25,236,1779148800"; 
-   d="scan'208";a="26617080"
-Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
-  by internal-pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 22:42:56 +0000
-Received: from EX19MTAUWA002.ant.amazon.com [205.251.233.178:5771]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.24.152:2525] with esmtp (Farcaster)
- id e9b2baaa-2df1-4b8d-b3e6-4485a46533b3; Fri, 21 Aug 2026 22:42:55 +0000 (UTC)
-X-Farcaster-Flow-ID: e9b2baaa-2df1-4b8d-b3e6-4485a46533b3
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.45;
- Fri, 21 Aug 2026 22:42:55 +0000
-Received: from ip-10-253-83-51.amazon.com (172.19.99.218) by
- EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.46;
- Fri, 21 Aug 2026 22:42:54 +0000
-From: Alexander Graf <graf@amazon.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Feng Tang <feng.tang@linux.alibaba.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<stable@vger.kernel.org>
-Subject: [PATCH] dma-contiguous: fix truncation of numa_cma / cma_pernuma sizes >= 2G
-Date: Fri, 21 Aug 2026 22:42:52 +0000
-Message-ID: <20260821224252.70640-1-graf@amazon.com>
-X-Mailer: git-send-email 2.47.1
+	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="HNLahndZ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+	MIME-Version:Date:Message-ID:content-disposition;
+	bh=fkfMaoeV36jnbnNkOff/Nn2sVnubQwHY5bjslIAzUlM=; b=HNLahndZDsC6m/ontpRX49oXxx
+	E45i6V1tIhktwdOacGtGyfvlh59IY74piVaieBCf+UO1UsB3w3LSgIstj8YUhlPvkxgv95HvBKetr
+	Tl/lowRkSWqr+cekthZgT8CYmVyiBSKFQ5GsBSd6VvyAAuKJ2axyAhUAh8jtLQQTcfbt3TYkqCRu2
+	cyU9C6IklpJbk0TQn5WEVh3N4x2EmZt8NCo2USL4p39pgfX0h5CmzVEMOsvlcdKwz64Qez2jtnuW5
+	p9U4WydoXj2j849TP7I9NexLgEl0FgoC0vYncdyRXauwcoTMmHpjCg+LD+VOZr1dGRn/y+5J2B5+/
+	I0m1fk2w==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.98.2)
+	(envelope-from <logang@deltatee.com>)
+	id 1wxYLf-00000003EQt-3smV;
+	Fri, 21 Aug 2026 17:08:32 -0600
+Message-ID: <f1237857-1318-48e4-adcc-b2ff1924433b@deltatee.com>
+Date: Fri, 21 Aug 2026 17:08:19 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EX19D036UWB003.ant.amazon.com (10.13.139.172) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
+User-Agent: Mozilla Thunderbird
+To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
+ <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+ Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+ Tushar Dave <tdave@nvidia.com>
+References: <20260821-fix-p2p-acs-v4-0-v4-0-94426b96de73@nvidia.com>
+ <20260821-fix-p2p-acs-v4-0-v4-1-94426b96de73@nvidia.com>
+Content-Language: en-CA
+From: Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <20260821-fix-p2p-acs-v4-0-v4-1-94426b96de73@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: leon@kernel.org, bhelgaas@google.com, kch@nvidia.com, gregkh@linuxfoundation.org, axboe@kernel.dk, alex@shazbot.org, ankita@nvidia.com, jgg@ziepe.ca, corbet@lwn.net, skhan@linuxfoundation.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux.dev, tdave@nvidia.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Level: 
+Subject: Re: [PATCH v4 01/18] PCI/P2PDMA: Do not tear down the allocate
+ attribute on registration failure
+X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
-numa_cma=0:4G reserves nothing at all. dma_numa_cma_reserve() copies the
-requested size into a local int before handing it to
-cma_declare_contiguous_nid(), so 0x100000000 truncates to zero and the
-loop skips the node silently. Both parameters are documented in
-kernel-parameters.txt as nn[MG], so that is the syntax the documentation
-invites.
 
-Which bits survive decides what a request turns into: 4G, 8G and 16G
-reserve nothing, 2G, 3G and 6G sign-extend into a size the allocator
-rejects with a warning, and 5G quietly reserves 1G.
 
-It reaches further than those parameters. On a CMA_SIZE_PERNUMA kernel
-with no per-node parameter, dma_numa_cma_reserve() takes the per-node
-size from the default area, so a plain cma=4G on a multi-node machine
-feeds that size through the same local and loses every per-node area.
+On 2026-08-21 13:38, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> pci_p2pdma_add_resource() installs pci_p2pdma_unmap_mappings() as a devres
+> action with the devres allocated p2p_pgmap as its data, and only then adds
+> the range to the pool:
+> 
+> 	error = devm_add_action_or_reset(&pdev->dev, pci_p2pdma_unmap_mappings,
+> 					 p2p_pgmap);
+> 	if (error)
+> 		goto pages_free;
+> 
+> 	p2pdma = rcu_dereference_protected(pdev->p2pdma, 1);
+> 	error = gen_pool_add_owner(p2pdma->pool, ...);
+> 	if (error)
+> 		goto pages_free;
+> 
+> The action removes the allocate attribute for the whole device, which
+> tears down existing userspace mappings of every BAR already registered on
+> it. Both failures here get that wrong, in opposite ways.
+> 
+> devm_add_action_or_reset() runs the action when it cannot allocate its
+> devres node, so an -ENOMEM while registering a second BAR unmaps the
+> first one. Use devm_add_action() and let the error path unwind only what
+> this call created.
+> 
+> gen_pool_add_owner() allocates a chunk and can also fail with -ENOMEM.
+> There the action is registered, and the error path frees p2p_pgmap with
+> devm_kfree() while leaving the action pointing at it. On unbind devres
+> runs the action and pci_p2pdma_unmap_mappings() dereferences
+> p2p_pgmap->mem->owner->kobj, which is freed memory. Give that failure its
+> own label and drop the action with devm_remove_action(), which removes it
+> without running it.
+> 
+> Tested-by: Tushar Dave <tdave@nvidia.com>
+> Fixes: 7e9c7ef83d78 ("PCI/P2PDMA: Allow userspace VMA allocations through sysfs")
+> Fixes: f58ef9d1d135 ("PCI/P2PDMA: Separate the mmap() support from the core logic")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-numa_cma_size[] and pernuma_size_bytes are both phys_addr_t, so use it
-for the local too, and give early_numa_cma() separate variables for the
-node id and the size while in there.
+Makes sense to me:
 
-Fixes: d5cae2261b86 ("dma-contiguous: simplify numa cma area handling")
-Cc: stable@vger.kernel.org
-Assisted-by: Kiro:claude-opus-5
-Signed-off-by: Alexander Graf <graf@amazon.com>
----
- kernel/dma/contiguous.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index f754079a287d..66093460584e 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -140,21 +140,22 @@ static bool numa_cma_configured __initdata;
- static int __init early_numa_cma(char *p)
- {
- 	int nid, count = 0;
--	unsigned long tmp;
-+	unsigned long node;
-+	phys_addr_t size;
- 	char *s = p;
- 
- 	while (*s) {
--		if (sscanf(s, "%lu%n", &tmp, &count) != 1)
-+		if (sscanf(s, "%lu%n", &node, &count) != 1)
- 			break;
- 
- 		if (s[count] == ':') {
--			if (tmp >= MAX_NUMNODES)
-+			if (node >= MAX_NUMNODES)
- 				break;
--			nid = array_index_nospec(tmp, MAX_NUMNODES);
-+			nid = array_index_nospec(node, MAX_NUMNODES);
- 
- 			s += count + 1;
--			tmp = memparse(s, &s);
--			numa_cma_size[nid] = tmp;
-+			size = memparse(s, &s);
-+			numa_cma_size[nid] = size;
- 
- 			if (*s == ',')
- 				s++;
-@@ -207,9 +208,10 @@ static void __init dma_numa_cma_reserve(void)
- 		pernuma_size_bytes = cma_get_size(dma_contiguous_default_area);
- 
- 	for_each_node(nid) {
--		int size, ret;
-+		phys_addr_t size;
- 		char name[CMA_MAX_NAME];
- 		struct cma **cma;
-+		int ret;
- 
- 		if (!node_online(nid)) {
- 			if (pernuma_size_bytes || numa_cma_size[nid])
-
-base-commit: 26260251022fbc2f248a3d747a9b2b961b18d2d8
--- 
-2.47.1
-
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
