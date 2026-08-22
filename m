@@ -1,149 +1,159 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011031.outbound.protection.outlook.com [40.93.194.31])
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FCBA2ECD1D
-	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 14:10:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.31
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787407807; cv=fail; b=m9vv0ZMkwU4GoYvq00cpinrV2oIpf+IqoUe5Mbd3fPnYJFCeQcb1ZHyX0OP8+NfWSl/Kgx0Kk1vXwLJeXv8NcCxlMC98iTIcUnTjb8/t1gsercjEPvgsEfedSQoX1tmjaqzrFx3jxb15hEWio/rI0JV0gXGKR7NZxokCk/y0VTY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787407807; c=relaxed/simple;
-	bh=ih6Ve+hkhTIO6JWo29v42vT/blH7V6Tv+EEU7uS7WdY=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=V1spc09b55Tv4ZSvmMPLHzA6hoIec5L2vIWi16FiWCD5ywwTDxW0hRgsmkcIyxhJ6V5fWh+7Hbg586+KGxf+2TOcDfc8xYaFhlGZVqyoWpGDN0CR4ati/v6n7sO/hKMMJHNyxK0O2Jeb0RcNQ3Dh3ODNK8hdNAqSTZbmkDXqXi4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=v3peb0bJ; arc=fail smtp.client-ip=40.93.194.31
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 476913B05BD
+	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 14:55:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.100
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787410555; cv=none; b=S3FNfK3L1WZPNY/V2abGjEc6pj9IrJq0l+GmvMZRVoFGGOezmjgmFIYGQO03zzViEoqoPOT7KBQmlVH7+u2AEkwhDMHcktIWPumvJ/aF0XrqXTq8tP0rGKP1lvuoUcnwJWjztwCKncSuowNOEtxoKsb3IUCBayXo2xY02qYQvXs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787410555; c=relaxed/simple;
+	bh=tzKk5SUiQOx6i5R7r8wpUZrKLMF9ZzMNafKAx6YAcqU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=mvKhXvpYKvKK3pXigNEKYG01NiYjgxC0m9GKNDmv4iQfd66+5WxasujQ1suyvvLNzo/8YUGvmarPdzYJpGkXgBSoElUuswE38U5XQ9rvpttYd7vkI16FXWJPO9zWl66hB1mJJcWlp3Ncl7ChqLPFru8TuKGgs6mW4mStrnzNZ18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=jVW4qyke; arc=none smtp.client-ip=115.124.30.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="v3peb0bJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NgWCZL1fMDE+MCk8XkH+6Amp3yQvXdktPa2QtmRNMRWD0zM3EsmT5QGTMxOHcsDH9BYnbTq4JGZ0DZ+W4QDcIY9FiQiG5PP1N1iEnem8MiKNiODOSCobQH/+jNjHibD4TnUmpWEKZL3lN9Xag0kV+dhgcL2blHjc+iyOgN0D2rXxSQv/YfLx8m/zV6b6VvNRYE67gXrx0iend+I2VcY4bnvDNVrIWc5h4ev4gKgRoTSjX+IuF1nEaHgWyyjHixGx18UUKTiWzLTgK585SBY9nExy+ySv5a+NPbEUjNDh0/es2x+XrURq57T7DRUxkk3f4vNFS9Y/x+ckQJsJRvCvGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ftbOm3jK3R9ZJzITRi7GVJRi6YO+EzfFo92mLYIhMe0=;
- b=onlgW7O7LN+MvHVnM4nq6QD2Szip4FURvhJ27WfATeDVhFO3zGE0WBldsh3d41k0JgGQBuX8hBcpVVrWOJB9+blb00uROzxkmXHAmiA6z7nRp91bPgEhn/vymHzf58AAa50N77cL3Da/yrZo1Ynv5AbAIeZWWzzskvJgV/lX0KIxlxDk78cc4UBrWtENqBb3g+L9tXyJcjxspybD7ySq8soEb5qdvOw59UyDz0PSI8m5RvZ8kaBjIhVqBiaW/Y8IDotfXxfNKXtMiQjUEk6bpgFo3PHHYQFVBQ1V8BERGqnqPaPOgxA8EfCtuoLniPEo1xNj1vJBbUDG6Z5CYr6vrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ftbOm3jK3R9ZJzITRi7GVJRi6YO+EzfFo92mLYIhMe0=;
- b=v3peb0bJSxYuh1CY9agL1v3kor0S+IjAgxwiFVU+maEWP+Z+JZqPajLxvAvIJT8AgaXXw1l2ZFVlAZbPH79MG4ZMX69o2hr3jvcRt6rw4bAJoTe3AU4DZy8Vb5RiGLA2S8mAjuXm73yblnbNBig7lOXwXRANAySnIHc1G2HvQkE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by LV8PR12MB9262.namprd12.prod.outlook.com (2603:10b6:408:1e7::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.11; Sat, 22 Aug
- 2026 14:10:01 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0339.010; Sat, 22 Aug 2026
- 14:10:01 +0000
-Message-ID: <dd1d8d3b-030f-45bd-aaa7-e8760268b2dd@amd.com>
-Date: Sat, 22 Aug 2026 19:39:54 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/amd: Fix PCI device reference leak in PPR handling
-To: Ruoyu Wang <ruoyuw560@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Wei Huang <wei.huang2@amd.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260814133938.1385879-1-ruoyuw560@gmail.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260814133938.1385879-1-ruoyuw560@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN4PR01CA0027.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:273::17) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="jVW4qyke"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1787410542; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=2ZCxDvxQ0l5oes9P6kZCTA+Nmj1at6x6MNlnmoiY7JA=;
+	b=jVW4qykeQ4sjF2QgWnGCTLmf2ssb6GN6PIhlZ1kX5GLdWORq+YfTuNkFSf9UZZU0mnWM5nZYOIJZ9eNrbYP6ueJoduDvMZp7J7knqi8Wud1n44iTB5MeJrANkXqh55EqsY/y646LvkuSBTTNe0Zgi+yGokoE5u7qZJNa7BxFKC0=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R321e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0X9OkhzD_1787410538;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X9OkhzD_1787410538 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sat, 22 Aug 2026 22:55:40 +0800
+From: fangyu.yu@linux.alibaba.com
+To: jgg@ziepe.ca
+Cc: alex@ghiti.fr,
+	andrew.jones@oss.qualcomm.com,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kevin.tian@intel.com,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tomasz.jeznach@linux.dev,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [RFC PATCH v3 01/10] iommupt: Add RISC-V Second-stage (iohgatp) page table support 
+Date: Sat, 22 Aug 2026 22:55:33 +0800
+Message-Id: <20260822145533.26659-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20260821135501.GB1114497@ziepe.ca>
+References: <20260821135501.GB1114497@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|LV8PR12MB9262:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe7c9896-023d-47f2-7cc7-08df00570e54
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|23010399003|366016|10067099003|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	GtW+IcIH3t/pOKF2fv+SwOIOO9YBAry9D1tf+GkBr1VBWphzk64J3xVd9OOfWTgJ0bHEQrYJqxVm8J4dNpKB2a8AMqYHubuvdmYXbpqFnbO36gu4iT2RfX1jGBK0MdADFZ/5mBtjmgoI8nFa9Un1KV27qjjuNlPPSATI8baSlJtBmO9dD99/gtFePHlWFYUkmBO8JLox3YkRiAMwKgP8nMo8Dji0xFZMXhQm1btYvIUwxOub4rhAAhfXAqk/i53bgNnXCOWnTOcx8U1APKo5WvwaIPwH7o6AUhF61xfDEtQ8YF2AeLKiL/JOCqlTf8WD+yfCnNZtt7ym7ftcYdY3a59AI8f15ui5ZLZbFJijPOphDVvRD+l8BkhWFjVcRGlk1NPvb0O3EYk31EJdrSf1Tca273f91+aVrBu9SiR9FM+HbLQKZUf69KnadvOqqNv83V6vUhdUhtrSaIGn1LmDIYwCv6gM0Enm/CXOtnQaypFv4uLkUaWr6hNRDUfAItLF9vGgyWrSm0OxKt5choKA4HZYOi/8ru8x1um+Po+XHZ3TSiDAgNZit8VrdkY59T6FLqjTi7T6uf0n4FpDZ+3ZZVVciHJ9k9R+9LL+u6k9cWsKG9RgRC8xIuZBKoYpdOw40ceVrSrX0K2YSyDXlFUvzQLLHtoX2L1+Zb42tqaqNy4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(366016)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dDFCcmFOUWZodzlQQVI0RDZpWHJUTDlRb2RTK0NpVU5PSmNtc21ybVhoY2dz?=
- =?utf-8?B?L25MWkFKSVd2Nkp3UDVESVJLdWNmazlhVkI1WVp4YVF4L3gzaTFvNXo1dHVW?=
- =?utf-8?B?dk1hUVdjOVE4OWg0bC84WXJQMkd3TUZVMkx0V1llUWltVEd4S2xjNm94NzZR?=
- =?utf-8?B?Y3BCMEdlZ3dOYjRCTE5MMCthcU5yQnNpRGRnTTRyRUlDY1gzSWdCeXlNVm9T?=
- =?utf-8?B?OXNWWEc3NmdJTmZ2RUR6NDh0WXAvOUdIbGJMekpWOVdIS2hFbnRwZlFCcUNQ?=
- =?utf-8?B?MXEvanU4d3NRQlh3bzM2azBsQThySFJacUlkeXJJUSt3cmQyTmZubVh3bjhD?=
- =?utf-8?B?anFMQmZTUEtuR3N3and5dDR4WVYwUGRWc21HazBWT3IyZGFjT09Ma2Nnemp4?=
- =?utf-8?B?OEJPSk5HOTBkOFN3NDI1dm9NWDQ1QjBJbFRtQlBFdXk3K0NubjR1TGk0STRj?=
- =?utf-8?B?Wkl4TllabHdZYnIrSGtuU2UrSGt3anlyRXRYWEZCQlhiWEs4a1o4Qk1zbW5O?=
- =?utf-8?B?Rmd6UVdsd3QzNDBwY2xIaUFhSEYyU2dxL04wWTFZUUlIVThEVHBoL2dPcG5s?=
- =?utf-8?B?cm5oaDA0MTE2N0tXSE9BMkQrUWIxcUt4VXFDWWxrNTVkTi9lN0ZLTkdDZk9m?=
- =?utf-8?B?L3FOeTdWdC9kYlgxbklJdUlDWHZwU000N0x0Rk1ZZll1S3pKeVhZSHRBbElm?=
- =?utf-8?B?UDVkL2hqdm9YMTd2TzhhdWQvTVRjZWVRalJkcUdsUSsxZzJFUTZKY1pwNGQv?=
- =?utf-8?B?YzJYbjhFdzFTVU9ZaWoyZlFOR01NWDczSStGVGc2VnpEb1AvSUpVZFZpbWN1?=
- =?utf-8?B?RWlMREJjZXo3c0c5a2RCWTJZSG4wWmlLN3JzMTJRaVQ4d2ZncnBLUWRyZUFN?=
- =?utf-8?B?eWVEaFlFVEl5aElZNVVqRHJaZEVsOVdkak9qN3NROXYwS0JaSkkyRStRL2hj?=
- =?utf-8?B?RHN5UGZ1TnIxMU1kT2JrQ3dhRklLbWJjY2E4d3l1cTZtNks4dWhKOVQza0p1?=
- =?utf-8?B?ZUovakl2MHh6THJnQU4vdzJYckRwNVk4YkxWb2s2RjFET1JKSTNremNEbkkz?=
- =?utf-8?B?b1FxelJoOVpRYVQxMGoxR0xmL3JUeVo4Vk5ObHNmSHE1akZlMFFZSW0xR2x2?=
- =?utf-8?B?MmV3U1dWSnRaRG5RU05rSlQ0NlgrNGMzNXNVZVNzbUoxWXEzeDhMV1FnL0xV?=
- =?utf-8?B?OC9oTEdobjdLTGZSV2Rlc2xOZ3djNFRiZ2JyZDQ4VHVzRTdqVGppM1piTFpU?=
- =?utf-8?B?N0REb0k0VjJEcjJnaUk4OXJncncvT0dRQzlMSWJ3cm5ZUVNNZVFCRjN6Nmlk?=
- =?utf-8?B?cks1YVc4dkNCZzJHZFRNUi9pUm5lZDE2eDh3dWRQdm5ndjIvN2hZVUVDRk1k?=
- =?utf-8?B?OWN1ek5KU1phWVRNcHRoR2JpZ3RnaDVYcytQWUs4dnBiZUNWblE3MFFmQ2k4?=
- =?utf-8?B?VnRkUklxNDArdmFBbDlwWXNkb0lMWnMvWncvQ1RiWHcwZ1RYeEhScUVyZkZ6?=
- =?utf-8?B?VHc4U0VkbXJ6b3czaUV6SEgvaUZYeXZxR3hBcHoxL1VpQUJQR2pPUGJrUkxM?=
- =?utf-8?B?WUZPdkJzSWhMQm1WRjFXNFFTZ3lPYkNOcHY3S2IrbjViZ0hhTmxvcVcrZERN?=
- =?utf-8?B?TDlLd0kveTRJbTlYUkpRNFBtVUVNYUc4Y2N3MVBrNDhabWpIakkwMnNlRXl3?=
- =?utf-8?B?bU1UYml4L09sZEdKdE9JeS9aaXhMS2VXR2pCRWdwTVVRUmJzWG54MUxMeWlV?=
- =?utf-8?B?Sk02Rkl1WTRBK001MFZFRDhNeUthQVE2aUl3ZGp0bEI4VGNqcUNyOWc1aGlp?=
- =?utf-8?B?VWludGMrZGg2eWZDZFNOdHBDVWNYZVNoSlN2QWQ4dDUzS2tDSmFaMFY1Sk42?=
- =?utf-8?B?UitSRVY3ZDNSVDdBMTdlQys5Nng2T3VsWHhCZGUyYUZoSEZHTm96cW5jc0tU?=
- =?utf-8?B?a0hrSFEvNy9jTzFZUCtZQXdsSVpjWFE3bUdGZVQvOU8wZVNKTFNsQUlIR1Fz?=
- =?utf-8?B?b28vV2xJM1FPS1BRdkZHOXF2T1BYOTFhcmNCTUVqdHRraklLN3NkYUttVDRX?=
- =?utf-8?B?K1owTjBxaVJQOUt0aUUvUXBhL2FSZ21PaXY3NFV6UFljbXN2VUE4VHplRy9m?=
- =?utf-8?B?WXJXeVVXcjIzOC9jZ0s0RTlKV0xIVll6OVNUdUhNazF3a29xWU9oanQrbHJu?=
- =?utf-8?B?c2ZvTzVoVnVaclVIektXRkNQT2cyQ2ZnWGZwVG5aQndtY1JTUnZpelJRSzhG?=
- =?utf-8?B?dzh6Ry9VQWRLYkFEYUhURzNlT1pjZ1RobzZ1Qmw4S0xlM1M1Y1FQS3A2RSty?=
- =?utf-8?B?UjkyZGhHYlVJOG50QTl0aTVNWkNzUmZ0aGV1d3pzWXlXZXJMWDZZQT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe7c9896-023d-47f2-7cc7-08df00570e54
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2026 14:10:01.5316
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gz+PsnyM7H5Wx4egOtOLY9ca5DYOIfsZSWrUHLAW/7Jk8kM7M9tugkaDGsVBAVrsBZUqysYdnEbo2/SdaVVmZg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9262
+Content-Transfer-Encoding: 8bit
+
+>> @@ -126,6 +135,15 @@ riscvpt_entry_num_contig_lg2(const struct pt_state *pts)
+>>
+>>  static inline unsigned int riscvpt_num_items_lg2(const struct pt_state *pts)
+>>  {
+>> +	/*
+>> +	 * Second-stage (iohgatp) root page tables have 4x the usual number of
+>> +	 * entries (2048 = 2^11 instead of 512 = 2^9) to cover the 2 extra GPA
+>> +	 * bits in Sv39x4/Sv48x4/Sv57x4.  Only the root (top) level is
+>> +	 * enlarged; all other levels remain at the standard 9-bit index width.
+>> +	 */
+>> +	if (pts_feature(pts, PT_FEAT_RISCV_S2) &&
+>> +	    pts->level == pts->range->top_level)
+>> +		return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64)) + 2;
+>
+>You shouldn't need this, see how ARMv8 is constructed which does the
+>same thing. Instead
+>
+>static inline unsigned int armv8pt_num_items_lg2(const struct pt_state *pts)
+>{
+>	/*
+>	 * It is not allowed to call pt_num_items_lg2() at the top level, this
+>	 * API restriction is specifically an optimization avoid overheads
+>	 * dealing with concatenated tables here.
+>	 */
+>	PT_WARN_ON(pts->level == pts->range->top_level);
+>
+
+Thanks for pointing at ARMv8 for comparison. I hadn't noticed your
+newly posted patch [1], Now that I've looked at it, I agree
+armv8pt_num_items_lg2() is the right way to implement this and
+will follow that pattern for RISC-V in the next version.
+
+>> @@ -272,6 +291,19 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+>>  	case 57:
+>>  		pt_top_set_level(&table->common, 4);
+>>  		break;
+>> +	/*
+>> +	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
+>> +	 * The top level is the same as for the first-stage counterpart.
+>> +	 */
+>> +	case 41:
+>> +		pt_top_set_level(&table->common, 2);
+>> +		break;
+>> +	case 50:
+>> +		pt_top_set_level(&table->common, 3);
+>> +		break;
+>> +	case 59:
+>> +		pt_top_set_level(&table->common, 4);
+>> +		break;
+>
+>Are all these widths valid for both S1 and S2? It should reject
+>illegal vasz..
+>
+
+Agreed, will fix. 39/48/57 are only valid for S1 and 41/50/59 are only
+valid for S2 -- I'll gate each group on PT_FEAT_RISCV_S2 and reject the
+other combination.
+
+>>  struct pt_iommu_riscv_64_hw_info {
+>>  	u64 ppn;
+>> -	u8 fsc_iosatp_mode;
+>> +	union {
+>> +		/*
+>> +		 * First-stage (fsc/iosatp) MODE encoding:
+>> +		 *   8 = Sv39, 9 = Sv48, 10 = Sv57
+>> +		 * Used to program DC.fsc.iosatp.MODE.
+>> +		 */
+>> +		u8 fsc_iosatp_mode;
+>> +		/*
+>> +		 * Second-stage (iohgatp) MODE encoding:
+>> +		 *   8 = Sv39x4, 9 = Sv48x4, 10 = Sv57x4
+>> +		 * Used to program DC.iohgatp.MODE.
+>> +		 * The numeric values are identical to fsc_iosatp_mode;
+>> +		 * the caller selects the interpretation based on domain type.
+>> +		 */
+>> +		u8 iohgatp_mode;
+>> +	};
+>
+>suggest not using a union and instead have the get_info populate only
+>the one correct for the fmt. It makes it slightly more robust that
+>s1/s2 don't get intermixed improperly?
+>
+
+Makes sense, will drop the union in favor of two separate fields and
+have riscvpt_iommu_fmt_hw_info() only fill in the one that matches the
+format's stage.
+
+Thanks,
+Fangyu
 
 
+>Jason
 
-On 8/14/2026 7:09 PM, Ruoyu Wang wrote:
-> [You don't often get email from ruoyuw560@gmail.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
-> 
-> pci_get_domain_bus_and_slot() takes a reference on the returned PCI
-> device. iommu_call_iopf_notifier() fails to release it after either
-> reporting a valid PPR fault or completing a rejected request. Each
-> handled request therefore leaks a reference and can prevent the PCI
-> device from being released.
-> 
-> Call pci_dev_put() after the final use of the lookup reference on both
-> paths.
-
-This was recently fixed by commit af3b69b16383.
-
--Vasant
-
+[1] https://lore.kernel.org/linux-iommu/0-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com/
