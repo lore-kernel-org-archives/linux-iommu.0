@@ -1,263 +1,203 @@
-Received: from rs1.nue.1e30.net (rs1.nue.1e30.net [152.53.122.0])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1896C28CF4A;
-	Sat, 22 Aug 2026 13:33:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=152.53.122.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AC4B2F3C18
+	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 13:50:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787405585; cv=none; b=PyThxjbAk5D4kagl0ngno7ig0/aa4qmrdOUXvCAm0bW6rBGiDM9WKaAAXRNGPH8rknT+UR/n9l+LEgml6G6eQ++SJFCkfT9ubFzIagtXl6EI+21h9rr0yL2S55mQ2ySxjhQQ77s2rjdsfeR5niwSdwbVQD9jEiSeWbcxyNzjkmE=
+	t=1787406617; cv=none; b=LVPqNX/yiw127CxRPBnCz+CO+xsqObKH/pujaxXZ6EyYNuOwbRWR/4OjD0sERSvXWHZytxzPUIZyWTRXRNoXA66QCEfeSA6WjPPUHBZa9XRw++umXHJXJfK3QQfyjS+DjTLR4atP+8iVJqNSsJGJ+DmoEGD/fmQeeAzXZCKEdao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787405585; c=relaxed/simple;
-	bh=2I4QipsJDSqYy6hSzoCvO93u6qMaFmKe/hCEROZoZPU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dxfZwR0sd8Bd5W5xaBh+D+S+HCs0VcVFP43IZwhTJBKjy+nG7lnTkiUaVO1NEtq9y4yU83ifaKnrrpsQE9E/vjYTBVdOhiCNKN7yglqcZp14bl61+EYEq07K4X3WLEXWQY5+ZNQeMOhhV5YGpg/F/ZeC8kOaMwMMmxLnLo59kRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=juch.cc; spf=pass smtp.mailfrom=juch.cc; dkim=pass (2048-bit key) header.d=juch.cc header.i=@juch.cc header.b=YtkpveJ/; arc=none smtp.client-ip=152.53.122.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=juch.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=juch.cc
+	s=arc-20240116; t=1787406617; c=relaxed/simple;
+	bh=BLIXsYpYA/p3zykEgVqz+rKbGbL/73EILlMQO98+h3c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hw4RFNtaTXh4b4hy/oRc2kBXkvHh0PgeOFBBkMVcrZpj+s6nauKNpBIyFEwfe/mw4xFNwja8famx4hg3WM004RYDjHItcnTt/RhRW3M+kgMn1W7niJpecddY1Ac6zLKU3F3la3nK3G2I/eFqBwlBlAF5S2sQE0XAWERtvSWv5UA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZsIaUaB+; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=K4oCMZ1X; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=juch.cc header.i=@juch.cc header.b="YtkpveJ/"
-Message-ID: <912b9d43-1205-4753-afe1-60cd149679b4@juch.cc>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juch.cc; s=rsa-2026-06;
-	t=1787405579;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fRqQ4b2Is81teqWqhX3PpmIpgjHjTzenSGISUDUhMu4=;
-	b=YtkpveJ/WMB4rNvXBAK+gKYbW8E4X0cFhH/jajMMRvmWdmDn6KSJHm3BcJIXJK35rK+Ujo
-	4lO8rGFnhyDJtxgY5UI1LVRECgOxwTHSsAfpqmw6hTt48Zpl4ZG7F7UU/VwX60buF8TP26
-	N82I+VIvj1sMWydTdM14aSpAudtBkBC3aODZjdBvy1VplPVL/HkRzQnKrLijxd9QJBpPkn
-	xn7KF5Ep/QMe4CwnwvbfVKED7HsdiqdM70uBohVrbNXFoeWcKEtFMq4+NWJYsC40+nGVX0
-	k8ekIhu7gsUWeA7D6lk0Ll7AaMg9FZR5HpqBNsBoB/ktE0fb3r/YWdD3L8NQXA==
-Date: Sat, 22 Aug 2026 15:32:58 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZsIaUaB+";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="K4oCMZ1X"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67MB6i1k1063488
+	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 13:50:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=MQZd3mlyLKLZ4bkYPOlYGln5
+	yVbgJtgSpLBt9iGtXzY=; b=ZsIaUaB+fXg9v4plSBsAehTTAjOLzxDReSqFQ/wJ
+	1u8QUda5o0Muo3+xu67YwXzexif52zZdJhDbN/EjQEjKrcCIc4sXe4ODo1xM+Hxw
+	v1Q+0hXfZ1oeMlnRJqgPtxF0SFu6VSDMjkaAm6r4+zapbX1nH4JYIlbAJiWIak9P
+	0Ze7ArWCT50dkAQt7aw208yaH7U0+rLXkiv4on60fRR6Tr+wVId+2UEDjbLvCQDm
+	EO9M+dmfz0RldBS4Oxcd370Lr+JTBKmSsdoGvG6PlpVNNCyJDNfRq8zXPub97rqL
+	fhzcpbM2GQjW26/qU7GC9Y5ok+IUmdH+bEOPb5VLeWSVpg==
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g74399a4u-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 13:50:08 +0000 (GMT)
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-52d9cef8d15so34648611cf.0
+        for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 06:50:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787406608; x=1788011408; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=MQZd3mlyLKLZ4bkYPOlYGln5yVbgJtgSpLBt9iGtXzY=;
+        b=K4oCMZ1XSAt+5ppAN02Xw64KxzzhSBr9mSpJeFLXEDndDHvNxjZOsf2cwDMM59huvF
+         EIh8PnYIyAwwFO6Hf72J0hKn4EVlldwnS11kzZPzSE09nZzOVgQak8zi91vZ6QFzcyhC
+         3KAd2A40LnP1s5NQM+flRjlwz3sWfNznHF+jKwjIJMvX0F4NArzsa3FoebCMWsZqQCXB
+         j7H4enoNlOJS/Z/BMda08VncxKD12nII8XL92PXNvs1afBnb4qXcylnY/zXunU5KRSGL
+         6xZml+1/CK3ze4U1pMbVfppGt72umyIy8ttHrQrZd/84eBfE4J2ocHT+8kfSJ4Ey+nes
+         0Jyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787406608; x=1788011408;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=MQZd3mlyLKLZ4bkYPOlYGln5yVbgJtgSpLBt9iGtXzY=;
+        b=BOLydqf2KQ5MM9EflvpX0DlpMFGCfWEjS1KnzeLhk9+Ri72qjMBnkR1EGX227qOCIP
+         tBKhP6IkQYz+i2oqK951WMWRYnV0cD5EWjx6eaSjbWBLE1eQhdBapuY36wuyH0DAOIdM
+         Ht6xWprBUEEE9YoPyGrPi7TbDj3WHkZ5/4cGnlwK9gHgcyp11k+m3nphMgstiI+mVnFt
+         pwyNiZnAxmwIsIlvxrZmEhm9XW1ywcC/orXCSBnIVTadqA7r5tE4UlPIXETDaK31kIca
+         OlyPJxbUsadVoPauTRf7B1zYOojgP7KcbEXmATgBQ90yQZ/CllW8TBXkfkifUCTw9vys
+         zTnw==
+X-Forwarded-Encrypted: i=1; AHgh+RrVq9QCWBFK9T8DUAd/H2yg9wktn5Meb82FL9kO2lm5Img5p1sFTMo5PXQQ9YOiQbIITZ0EvA==@lists.linux.dev
+X-Gm-Message-State: AFuF++mJQusNQhGDrizg5ukK1Lgn8TyOECwZHSr25RsdPFQ/xUnLhT9h
+	bSk0AV8e0EMwPg6Q1O24KoNKpdgRTAEybPZN0Db6U9AXDhBA25SvTQHHfQhWjbfX8Nu9uZHA1pR
+	BBsteTm+uwOLs2vVoX2WLFu3i30sKo6rrlo0NNkmbPEwiebD/ljS2dXcE5A==
+X-Gm-Gg: AR+sD11aa/u0j4yYwm6FhX1XXIhcA4luaCKwrgo78KDXx70EoTxertxNP3QimL8bHQd
+	0yUheDyqvLElQIjoEAEkIFvWUc4lFBmzw46drWN8wH1dcqZXhSkYXrpqco7zTHddIw0FKkTqf+q
+	kf4uaBPzmHgqur9BEV8FS8jJQqK7/YNkfgCiuIoV7I3+HKzEwEY3CJgKB91OZdhrJvAqrV/SC5X
+	hY+YYD+oGOWWNJO0wBBXkQK92sA1ZtQijswu8DR9K/tuPsFf8TDXguUHEaSJRJAX88YcOoA6aWl
+	v1GwxyF/jiL++0JNwmNv29fqQuVHAWxiArlzshSHaa6ysw06GjhV579KKAa92nBwW9uOEWCkqtc
+	x63cLESjSdN7rSW+nMJq7lzyD6cHJ6dupdTk=
+X-Received: by 2002:a05:622a:481a:b0:52d:f484:eefe with SMTP id d75a77b69052e-52e09cf363amr54379831cf.35.1787406607973;
+        Sat, 22 Aug 2026 06:50:07 -0700 (PDT)
+X-Received: by 2002:a05:622a:481a:b0:52d:f484:eefe with SMTP id d75a77b69052e-52e09cf363amr54379411cf.35.1787406607607;
+        Sat, 22 Aug 2026 06:50:07 -0700 (PDT)
+Received: from localhost (ip-86-49-251-7.bb.vodafone.cz. [86.49.251.7])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499b9a95fe9sm39482445e9.0.2026.08.22.06.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Aug 2026 06:50:06 -0700 (PDT)
+Date: Sat, 22 Aug 2026 15:50:05 +0200
+From: Andrew Jones <andrew.jones@oss.qualcomm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
+        tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+        anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
+        fangyu.yu@linux.alibaba.com
+Subject: Re: [PATCH v4 02/21] iommufd: Add iommufd_sw_map_msi()
+Message-ID: <t2l77h22pz2jg5vsgoth6324u36szra3orgr2g2xo7olyuhzlb@53wnsyhz7aqr>
+References: <gr2h3ktgacozyo7rdggkxsg5mbdtzcnimaawd24c37hnf2tun3@hqivsenaq5wd>
+ <20260821120204.GF244917@nvidia.com>
+ <zygm4qm3fjv57nsgcectwikfa3cdnidxnhv55nxv4b6l2kllrs@dt36j4p3zhoa>
+ <20260821140033.GH244917@nvidia.com>
+ <yikhefui2flgfffmtbpdxemjtto2ryfmkgtlgdtmr2ndgxrw3r@rcjz523m3sw5>
+ <20260821143155.GI244917@nvidia.com>
+ <pzlzv2lzik4miqc5oejichltnyqabolyaezbkrufcl7nbttygm@7rdmkig3t56u>
+ <20260821161256.GK244917@nvidia.com>
+ <dug43layphru76sqleerwtryyerwa4a6n5s4xwrk4iyfru4o7m@al37eknignld>
+ <20260821172015.GL244917@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [REGRESSION] iommu/amd: "Fix premature break in init_iommu_one()"
- causes early boot hang
-To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Robert Richter <rrichter@amd.com>, linux-kernel@vger.kernel.org,
- regressions@lists.linux.dev
-References: <07b2d390-f7a0-47e2-bc2c-eb0853acf52e@juch.cc>
- <aok4Ko0mpC4fdGPg@8bytes.org> <6a61edf7-157c-4069-a1c3-78d1138b061c@amd.com>
-Content-Language: en-US
-From: Andreas Juch <andreas@juch.cc>
-In-Reply-To: <6a61edf7-157c-4069-a1c3-78d1138b061c@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260821172015.GL244917@nvidia.com>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIyMDExNCBTYWx0ZWRfXwwBOJSl8WBQz
+ duwbgTqreQ/IT9UHadDnLPs+7Z/sm0eaLhTFHjEC7tz9oyE/esDsLkrV8n3vXbXc6uo602Oz/fa
+ LDDNz087VYqwZsgcX1QmZWTC5pvrYRVLHrFxVZLSn3f69OPRIsPG4VPapRzvG/M/N9ElymuhL35
+ 5+VL9uHB/EKp167AYIIopEc3ux5PMRFo49QwaZPby0mtK+jWasAkXSThKleT5tLVKUtdFq0o+Q3
+ uYadM8+Ez1smnxkEBR+BK/g7pmq4Bh2G1VbkEGC3il7x21odLYfK5xUGvH6kd5eEu5HgIBCohX8
+ cZ5qx+TF9gDBcuDedUBNkEFVmExDi5riqeuYQhYWmRmWPdP72ethbuB15eOQc49qsWub9ohCG05
+ 3g7ADdFERVVkOa4W0FrRl/aR/Pd++/eXj/OXs5SVe4kixpVRHfGFbuLw/r+G0WR893kvFQDm9Bf
+ 3lIKK+Q71ObWZRbSLQQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIyMDExNCBTYWx0ZWRfX3RhBVZOp8AX8
+ i0egt/Aml0yqVRwzl4LFcbv6kaGKiwKV89Dexo8L6oHZUdMZIEk2AuwEr4I+xXmuD0GIB4dlZ2X
+ JjEPN8ZzGqt4Clyq6lbVWwORQAxDHdw=
+X-Proofpoint-GUID: HBFlZBNsEp_x8sI7H4_FFeggUHAfoBz9
+X-Proofpoint-ORIG-GUID: HBFlZBNsEp_x8sI7H4_FFeggUHAfoBz9
+X-Authority-Analysis: v=2.4 cv=e402j6p/ c=1 sm=1 tr=0 ts=6a89a911 cx=c_pps
+ a=JbAStetqSzwMeJznSMzCyw==:117 a=on9AXyaqQ0RhfYpiXjjEXA==:17
+ a=kj9zAlcOel0A:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=Q-Dk72any4QruATLw1wA:9 a=CjuIK1q_8ugA:10 a=uxP6HrT_eTzRwkO_Te1X:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-22_04,2026-08-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 spamscore=0 lowpriorityscore=0 clxscore=1015
+ priorityscore=1501 phishscore=0 adultscore=0 suspectscore=0 malwarescore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608220114
 
-Hello Vasant,
+On Fri, Aug 21, 2026 at 02:20:15PM -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 21, 2026 at 07:12:15PM +0200, Andrew Jones wrote:
+> > > Does riscv absolutely require this? I suppose you have a new problem
+> > > where you don't know what affinity the guest is selecting when it
+> > > provides a MSI-X addr as you don't know what physical IMSIC page is
+> > > under its S1 IOVA?
+> > 
+> > The IOMMU MSI table operates after S1, so it matches the resulting IMSIC
+> > GPA. With a vIOMMU, the guest may use any MSI IOVA that its S1 maps to
+> > that GPA. With S1 Bare, the device uses the GPA directly. In either case
+> > the hypervisor provides the guest IMSIC topology and the guest interrupt
+> > file or MRIF target needed to program the MSI table (through the IRQ
+> > domain).
+> 
+> I suspect you should have an IRQ domain for the msiptp functionality,
+> but IDK what it should do... Is this basically to remap vCPUs to
+> pCPUs?
 
-On 8/22/26 12:17, Vasant Hegde wrote:
-> Andreas,
->
-> On 8/22/2026 11:19 AM, Joerg Roedel wrote:
->> Adding Vasant.
->>
->> On Fri, Aug 21, 2026 at 11:11:07PM +0200, Andreas Juch wrote:
->>> Hello,
->>>
->>> I noticed that one of my NixOS sytems failed to boot with kernel 6.18.40.
->>> The
->>> older 6.18.39 booted fine. A full git bisect of v6.18.39..v6.18.40
->>> identified
->>> the following commit as the first bad commit:
->>>
->>>    dc266f6c4e2628576ab33042b6b2a12480220026
->>>    iommu/amd: Fix premature break in init_iommu_one()
->>>
->>> The visible symptom is a black screen immediately after systemd-boot. The
->>> machine also remains unreachable over SSH and leaves no persistent journal
->>> entry
->>> for the failed boot. A reset or power cycle is required.
-> Interesting. I never imagined above fix will break some system!
->
-> I assumed below dmesg is from good boot (without above patch) and did the
-> analysis (code walk with below IVRS data):
+Yes, basically, it controls the mappings of the vIMSIC GPAs (which are
+per-vCPU) to the guest interrupt files and MRIFs. Guest interrupt files
+are pCPU resources that the hypervisor manages and MRIFs (memory resident
+interrupt files) are just RAM that the hypervisor manages.
 
-Yes, that's correct, it's from the .40 kernel without commit dc266f6c.
+> 
+> The viommu can set the msi_addr_pattern
 
->    - EFR advertised by IVRS is different from actual EFR (read by IOMMU MMIO
-> register). Its worse because IVRS advertised few features like GT/PPR which is
-> not supported by IOMMU.
->    - Without this patch we would have skipped early_iommu_features_init() so
-> global EFR is zero and then init_iommu_one_late() set the EFR properly based on
-> actual IOMMU capability.
->
-> Only with this log, its hard to tell where exactly system failed. My guess is
-> driver enabled features which are not supported (like GT/PPR) or we setup 32bit
-> interrupt remapping table.
->
-> I believe above patch exposed an existing bug with some other commit.
->
->
-> Ideally we should properly fix late_iommu_features_init() and use actual EFRs.
-> But for now lets fix the regression. Can you please try below fix?
->
-> -Vasant
+msi_addr_pattern should be under the control of the hypervisor since
+it, and its companion msi_addr_mask, represent a block of GPAs. It
+will necessarily have to match the vIMSIC topology described by the
+VMM to work anyway.
 
-Thank you for investigating! I created a new branch from the v6.18.40 
-tag and
-applied your patch. The resulting kernel booted without any issues!
+> 
+> The existing msi stuff can place the physical ICMC at the right spot
+> in the S1 to give to the viommu (Nicolin's series may be needed for
+> this too, I forget)
+> 
+> Not sure how you provide the guest MSI descriptor and have the irq
+> layer program it directly..
+> 
+> It is unfortunate you can't learn the vCPU the MSI is targetting from
+> the MSI descriptor, in terms of linux that's a pretty difficult choice
+> to implement.
+>
 
-If you need any further information or testing (for a proper fix later 
-on), I'd
-be happy to test patches again!
+With the RISC-V IOMMU MSI table and irqbypass support in KVM, we can
+write the guest's MSI messages directly to the device without
+interpreting the IOVAs. If all vIMSIC GPAs are pre-mapped in the MSI
+table, S1 can map any guest-selected IOVA to any vIMSIC GPA:
 
-Thanks again!
+  Guest IOVA -> S1 -> vIMSIC GPA -> MSI table -> VS-file or MRIF
 
-Andreas
+Guest changes to S1 or IRQ affinity therefore do not require MSI table
+updates. And, when a vCPU moves to another pCPU, or switches between a
+VS-file and an MRIF, the hypervisor only updates the MSI table entry for
+that vIMSIC GPA. The device message and S1 mapping are unaffected.
 
->
-> ---<---
->
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 69170146d442..7a5b78beb352 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -1930,19 +1930,20 @@ static int __init init_iommu_one(struct amd_iommu
-> *iommu, struct ivhd_header *h,
->   		else
->   			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
->
-> +		if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
-> +			pr_warn_once("Host Address Translation is not supported.\n");
-> +			amd_iommu_hatdis = true;
-> +		}
-> +
->   		/* XT and GAM require GA mode. */
->   		if ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0) {
->   			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
-> +			break;
->   		} else {
->   			if (h->efr_reg & BIT(IOMMU_EFR_XTSUP_SHIFT))
->   				amd_iommu_xt_mode = IRQ_REMAP_X2APIC_MODE;
->   		}
->
-> -		if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
-> -			pr_warn_once("Host Address Translation is not supported.\n");
-> -			amd_iommu_hatdis = true;
-> -		}
-> -
->   		early_iommu_features_init(iommu, h);
->
->   		break;
->
->
->
->>> I reverted that single commit, built the kernel again and the machine
->>> booted, so
->>> I'm quite sure that I found the right commit.
->>>
->>> System information:
->>>
->>> ASRockRack B550D4-4L
->>> BIOS P1.10 (06/28/2021)
->>>
->>> I'm no expert at all, but my research found that the following information
->>> might
->>> be relevant:
->>>
->>>    journalctl -W -b -k --no-pager | rg -i 'AMD-Vi|AMD IOMMU|IOMMU|IVRS|IVHD'
->>>    Aug 21 22:24:17 kernel: ACPI: IVRS 0x00000000BB062000 0000D0 (v02 AMD
->>> AmdTable 00000001 AMD  00000001)
->>>    Aug 21 22:24:17 kernel: ACPI: Reserving IVRS table memory at [mem
->>> 0xbb062000-0xbb0620cf]
->>>    Aug 21 22:24:17 kernel: AMD-Vi: Using global IVHD EFR:0x0, EFR2:0x0
->>>    Aug 21 22:24:17 kernel: iommu: Default domain type: Translated
->>>    Aug 21 22:24:17 kernel: iommu: DMA domain TLB invalidation policy: lazy
->>> mode
->>>    Aug 21 22:24:17 kernel: pci 0000:00:01.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:00:01.2: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:00:02.0: Adding to iommu group 1
->>>    Aug 21 22:24:17 kernel: pci 0000:00:03.0: Adding to iommu group 2
->>>    Aug 21 22:24:17 kernel: pci 0000:00:04.0: Adding to iommu group 3
->>>    Aug 21 22:24:17 kernel: pci 0000:00:05.0: Adding to iommu group 4
->>>    Aug 21 22:24:17 kernel: pci 0000:00:07.0: Adding to iommu group 5
->>>    Aug 21 22:24:17 kernel: pci 0000:00:07.1: Adding to iommu group 6
->>>    Aug 21 22:24:17 kernel: pci 0000:00:08.0: Adding to iommu group 7
->>>    Aug 21 22:24:17 kernel: pci 0000:00:08.1: Adding to iommu group 8
->>>    Aug 21 22:24:17 kernel: pci 0000:00:14.0: Adding to iommu group 9
->>>    Aug 21 22:24:17 kernel: pci 0000:00:14.3: Adding to iommu group 9
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.0: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.1: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.2: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.3: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.4: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.5: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.6: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:00:18.7: Adding to iommu group 10
->>>    Aug 21 22:24:17 kernel: pci 0000:02:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:02:00.1: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:02:00.2: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:01.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:02.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:03.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:04.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:08.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:20:09.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:21:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:22:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:23:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:24:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:25:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:29:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:2a:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:2b:00.0: Adding to iommu group 0
->>>    Aug 21 22:24:17 kernel: pci 0000:2c:00.0: Adding to iommu group 11
->>>    Aug 21 22:24:17 kernel: pci 0000:2d:00.0: Adding to iommu group 12
->>>    Aug 21 22:24:17 kernel: pci 0000:2d:00.1: Adding to iommu group 13
->>>    Aug 21 22:24:17 kernel: pci 0000:2d:00.3: Adding to iommu group 14
->>>    Aug 21 22:24:17 kernel: pci 0000:2d:00.4: Adding to iommu group 15
->>>    Aug 21 22:24:17 kernel: AMD-Vi: Extended features (0x58f77e022294881,
->>> 0x0): PreF GA GA_vAPIC
->>>    Aug 21 22:24:17 kernel: AMD-Vi: Interrupt remapping enabled
->>>
->>> And the output of the decoded IVRS table, captured by `acpidump -n IVRS -b`:
->>>
->>>    00000000  49 56 52 53 d0 00 00 00  02 e2 41 4d 44 20 20 00 |IVRS......AMD
->>> .|
->>>    00000010  41 6d 64 54 61 62 6c 65  01 00 00 00 41 4d 44 20
->>> |AmdTable....AMD |
->>>    00000020  01 00 00 00 41 30 20 00  00 00 00 00 00 00 00 00 |....A0
->>> .........|
->>>    00000030  10 b0 48 00 02 00 40 00  00 00 50 fd 00 00 00 00
->>> |..H...@...P.....|
->>>    00000040  00 00 00 00 2e 8f 04 80  03 08 00 00 04 fe ff 00
->>> |................|
->>>    00000050  43 00 ff 00 00 a5 00 00  04 ff ff 00 00 00 00 00
->>> |C...............|
->>>    00000060  48 00 00 00 00 a0 00 02  48 00 00 d7 0d a0 00 01
->>> |H.......H.......|
->>>    00000070  48 00 00 00 0e 01 00 01  11 b0 58 00 02 00 40 00
->>> |H.........X...@.|
->>>    00000080  00 00 50 fd 00 00 00 00  00 00 00 00 00 02 04 00
->>> |..P.............|
->>>    00000090  5a 4a 29 22 ef 77 8f 05  00 00 00 00 00 00 00 00
->>> |ZJ)".w..........|
->>>    000000a0  03 08 00 00 04 fe ff 00  43 00 ff 00 00 a5 00 00
->>> |........C.......|
->>>    000000b0  04 ff ff 00 00 00 00 00  48 00 00 00 00 a0 00 02
->>> |........H.......|
->>>    000000c0  48 00 00 d7 0d a0 00 01  48 00 00 00 0e 01 00 01
->>> |H.......H.......|
->>>    000000d0
->>>
->>> The relevant part (after decoding with `iasl -d ivrs.dat`):
->>>
->>>    [090h 0144 008h]                   EFR Image : 058F77EF22294A5A
->>>
->>> I'll provide any required details and test patches!
->>>
->>> Thanks for your work, it's very appreciated!
->>>
->>> Andreas
->>>
+As I understand it, Nicolin's series addresses the ARM split between
+SMMU translation and ITS interrupt remapping. The guest-selected IOVA
+must be preserved for S1 while ITS routing is managed separately.
+RISC-V performs MSI remapping in the IOMMU after S1, so guest MSI target
+changes do not require corresponding per-vector coordination with a
+separate interrupt controller.
 
+Thanks,
+drew
