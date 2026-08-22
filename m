@@ -1,155 +1,258 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011061.outbound.protection.outlook.com [52.101.62.61])
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1623D37754C
-	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 20:27:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08FA12C0296
+	for <iommu@lists.linux.dev>; Sat, 22 Aug 2026 22:05:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787430433; cv=fail; b=sX9PLXtqkdwc693c1gnJ0An71u7FkeXHmHhjZ+fAoInOD2A8zxp9LwXcTBz77lfGnuvNqNNKFv8SjADt6RT96NDVXqk/tnDQR1hIBP9TRt+jQcdYNGe+rT/O7CLSQrziQxQpt8EXwG9s2t3WK6DkyLInbJ1IZWkxKC1m6yCsXFs=
+	t=1787436307; cv=pass; b=iapPbhs5CIjIcneWfil9s0nGK9jzuuNR3U4DlARtUnI5Ft9SfohQgO4o1tp/LWzg1EYtTgaU93TiPdSwrmz63ZGuvNJ34WYf5MJXXh70ZZj5Kuv1OdkkBfhuofqo4LFDNaU5EztKThdc8R9NEKr7duwguokiu7JplnKvavIi6d4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787430433; c=relaxed/simple;
-	bh=UroosclFXJaip7b2xIiH1V6vsEb1cJ0ds4sZ2/Q17JY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VjgqmEhZSZVUKfwVa/8dY+R2yqi3XITR5u0t+QQ0/rihfX4ZBcX0fyep25iBRTLgc+2eHY1UHYRYnVGh5vRcWECDUua1ij6pqY30+kZt0nSu3ddtwDzzPu+Oas0tYtu5/fTGfiILq9iX6q5FSUlaI7yXkA6XPgP6g/r+wbMDOes=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Q9BraXVg; arc=fail smtp.client-ip=52.101.62.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1787436307; c=relaxed/simple;
+	bh=7DS4xYhV9TFAS14KHexMY5IjO91v1KWvNsFV0D+cfX0=;
+	h=Message-ID:Subject:From:To:Cc:In-Reply-To:References:Content-Type:
+	 Date:MIME-Version; b=Lxekn/PA+5q85Gd2pQ7TQ6STe35xnwUST1uCBANx6akGAPQdyDUtWL81b+FibmS6K5rx9C6cecHbcxRbjQEKd4snZvbhvu+QhsLBwmp0MydmscULT+tUZSqXYUAjFWzaqv08FSNvLyM6qg/CezTj6F5FXgNRRYV5WLN5nRiu7Hw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=M4e0HFvZ; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rong.moe
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Q9BraXVg"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=t7nlH4etPUHk0PlMKk0mKYlJuFalfH+AeSxHxkmdmD35jaDnTONbHI4bqaTM9u42jmNItXrRnT+PtW5ZnUvw+7GooNLc8IA9kXreuNm0BrkyFAS4SJmuHN7IXB/PzRn1ZzccC4GGvSCrtAoCP+kzl6jHWBZFOL+vqcuZmm1eepPQr9DwP4yUNxzVmPlhyKg496Tzw0UxNsajsBU6XyckMJGh3ZWSdPUtU9sWhwRYfpiIVn5laVNvayEuvGbclVJnbGp0u5tmVX27fXhXzbp2dzKy8lu9kSQTqHpaTj5jBtlF8cYpnZARn6e0J/SNU/8eZt2/q1jOhm64uNcmXy1b1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tWRENgTOsPYvmo7Z5UzYHRSiUSBfxxS3AoboGFqA/hA=;
- b=ljsQXGjjWQr767nDFYRHAFkyeOGHpyQrqCkt+F7qrFtimtI6592diS1A6yv30pe/gb8M11SKQDrijgvIhkspke0t7XtzGquW1j2uiI0nFF/k28ttbFTeCF3ocxvFRKMat8mHWwK1TgopryF9XCeoRVci9Ptkwk6rUe4y8XIvKmMySU0GgvtUuPTubMh6jApu1YDtG/H/8yBMyz7hvkPeNRdyX8nM5+YbL9nStsL/WpY1zJFAocbcr8TMWRdgbh6o/IkRxp86UAytCHPQQ00wL2Eh0rCYW9SYwSHNXBwXyyeftm3LlI8IGwEnFYyp9XTq4/fJAGwGUsxkS3Xkmc80Gg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tWRENgTOsPYvmo7Z5UzYHRSiUSBfxxS3AoboGFqA/hA=;
- b=Q9BraXVgksh2FFvhMp9x/aoN2OzfIADL7vKvT2CEst0Wi5HdtTxiT7o4Z2YRpKItRY/mCB6gFcGYc1WS/1BWJenVF0xI5c70eaiiXG8guy5S/Orhyg26aZWNRzyDvKgbpiPLnxC4iCgPtVtuAMKpD8YiCoO2xqu7Rlbo2A9BR1462fU0rQkY4U86EKvChU0dkiIZcj2t4bhQ1IBvgAOnubqe9JsYdMWRe3YUwMHf5vcSv//whQgQNmItG8wvuWxMOeCWZ2pvUFyJvzbZ/s/bTky0C5HU5B5uJkYRRVOdCg5Ghnk2Lz1BxgkfqmRsIWdzEEDRQf3v/lHha0fUCd+njg==
-Received: from CH0PR03CA0400.namprd03.prod.outlook.com (2603:10b6:610:11b::20)
- by DS7PR12MB6310.namprd12.prod.outlook.com (2603:10b6:8:95::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.11; Sat, 22 Aug
- 2026 20:27:05 +0000
-Received: from CH2PEPF00000149.namprd02.prod.outlook.com
- (2603:10b6:610:11b:cafe::24) by CH0PR03CA0400.outlook.office365.com
- (2603:10b6:610:11b::20) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.339.11 via Frontend Transport; Sat,
- 22 Aug 2026 20:27:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CH2PEPF00000149.mail.protection.outlook.com (10.167.244.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.360.3 via Frontend Transport; Sat, 22 Aug 2026 20:27:04 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Sat, 22 Aug
- 2026 13:26:54 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Sat, 22 Aug
- 2026 13:26:53 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46 via Frontend
- Transport; Sat, 22 Aug 2026 13:26:51 -0700
-Date: Sat, 22 Aug 2026 13:26:51 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<praan@google.com>, <kevin.tian@intel.com>, <smostafa@google.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <jamien@nvidia.com>
-Subject: Re: [PATCH v9 09/12] iommu/arm-smmu-v3-kdump: Implement
- is_attach_deferred()
-Message-ID: <aooGC51RH+ln4YFz@nvidia.com>
-References: <cover.1784663183.git.nicolinc@nvidia.com>
- <eb795edf2598c6df57122cd5951393ac1a860bcd.1784663184.git.nicolinc@nvidia.com>
- <178735412602.18212.5709943748630447883.b4-review@b4>
- <aonng6MDJ/s/MRuE@nvidia.com>
- <20260822200226.GO244917@nvidia.com>
+	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="M4e0HFvZ"
+ARC-Seal: i=1; a=rsa-sha256; t=1787436298; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=eGp3sF7Yi+s9DQe5W68gpryKDKxDq9TwCI4SmOl/t/Q3YtVOY8PQoim79LlLL5Ya353ww5cUX76kjMsXCxJ5mk0FPYIeQ/inndnDyrpdkqLD+guiQN4Xp8CpD+4ot9GDq5MUs0ow6u8dt4fmsp5SAuDOf1sFRLqWQvboF5C5ybo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1787436298; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=RYSPpSKIhBUR7HkjbGPU9wehz486CBYz/zalKMgsTws=; 
+	b=j0leIdL25HFTN/L8slgD9aUkrciU6pmwosmXzS8+VkomBzI4bJk/dNcm+8mmwhRO4mncvfdhDkz2Vnc+vRy75/RI+dm03vc8BZmCWii6aH95bduRilrNe9KRU7BE5nxiUevbb1Dfs+VXzmwACe+NKfLuPZsB5YWrAQTE4wWydHk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=rong.moe;
+	spf=pass  smtp.mailfrom=i@rong.moe;
+	dmarc=pass header.from=<i@rong.moe>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1787436298;
+	s=zmail2048; d=rong.moe; i=i@rong.moe;
+	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:In-Reply-To:Content-Type:Content-Transfer-Encoding:Date:Date:MIME-Version:Message-Id:Reply-To;
+	bh=RYSPpSKIhBUR7HkjbGPU9wehz486CBYz/zalKMgsTws=;
+	b=M4e0HFvZAeVCbCNCJMRW/+WGsp8Isc3dVbsVREmTC72RuyYuMSUB3ryNJhMn/P08
+	7mjNtcQ6VkEwqTvoP2Uq7a/pI5RpOvzyW/3FRke2nrwH4jj+p5Mf4DMaxSLXc5A1K07
+	6Ro8GFTBlOO/D2aYlAIQQBSavu5eDpW5ERi/WsiWcolYWfPL2zsfXCq2AM1z4jlzhCG
+	dtfLM64bi6SRHHwZIsSrlzF4yVllLoibuNQIww3/llciJfDQuNxHvF3gZ2JFqaqqNJL
+	0DVHMByov9gcS3kas7a4XiNh6DwbSwOT57VR4zXebXiFcdGbCanD6DhQHahYoYCcsYx
+	oQtrlVk95A==
+Received: by mx.zohomail.com with SMTPS id 1787436296932463.16420762008613;
+	Sat, 22 Aug 2026 15:04:56 -0700 (PDT)
+Message-ID: <4be87b1be033943bb4a3b8099b4d67c0846af670.camel@rong.moe>
+Subject: Re: [PATCH v2 1/3] iommu/amd: Do not request ACS when IOMMU is not
+ going to be initialized
+From: Rong Zhang <i@rong.moe>
+To: Sairaj Kodilkar <sarunkod@amd.com>, "Joerg Roedel (AMD)"
+ <joro@8bytes.org>,  Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,  Robin
+ Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, Huang Rui
+ <ray.huang@amd.com>
+Cc: Ankit Soni <Ankit.Soni@amd.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+In-Reply-To: <191cb112-6c11-40b2-ad0f-08a7f41b86da@amd.com>
+References: <20260821-amd-iommu-fix-acs-v2-0-982472452638@rong.moe>
+	 <20260821-amd-iommu-fix-acs-v2-1-982472452638@rong.moe>
+	 <191cb112-6c11-40b2-ad0f-08a7f41b86da@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 23 Aug 2026 06:04:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260822200226.GO244917@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF00000149:EE_|DS7PR12MB6310:EE_
-X-MS-Office365-Filtering-Correlation-Id: 535ff67e-f138-417c-35ce-08df008bbb2f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|82310400026|36860700016|376014|10067099003|56012099006|6133799003|22082099003|18002099003|11063799006|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	qeHDKyclv+bJYLm9cFawakjBUiMm2TiAh1TxZvW+FCwXZ5r2U6m7hG95MPT3kLodj1vNIuAa6QDC76z1Gdq5MdSQziY0MGlPnxcY/PoW54Wd0S6kASj0B+iIhTtKlSNn5EXw4mQjRZDfpchARF6VPplOz/DJU7sTd7LzOcJ6smsbucE3KRUMkbxD8C2lvSR0qL9CsppqQIwfjTUCoop0snAp0qi488nvYaeQiJqZ9VYpS5hR1Dziu10U83OiizZmSy7Ya7I90qoCGXnDGg/qGdBHg14gdD2IYLhx7gLjUywvtccVP5bpajbuUhcuqBZOyYeqhP11+bX4nWsyamyRuiIaNGUnUcd22pb0VWciThA2VaPFKmw93JVMkzCsS2UoFiKezmU7RBdiidoLxOXilxxKcJ4Ozd2ppo/FIQhmTw40iD9EEcIf+FvnAia8IKLeIprNga7G7QNNnC/Xrfyo3YvWi3bFKnOrmtl7BzUzc4me0sG5kBDpGsDrWEq1rGUUvCw6kqFs7FmsqG5OGn6DMOtYj98VXHOvCJTuK0XBeINP+t4uekSjlAaef6I63bAZ41hxLMxa1R0TGcYIO90ZureFdXw/aCGDZgoLBfd8fy7Yq52Ra/U6kzIt4fPZC0oqZn2yujATyvW6Ct8izvZzIiuuN+nuktVNMQH36lTp5JONdm2WkEuaHrfA/Q7WgMUaFSv3sPqnZ13vMu9adB1utg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(82310400026)(36860700016)(376014)(10067099003)(56012099006)(6133799003)(22082099003)(18002099003)(11063799006)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	2GDSPbZinjBsO4vxzpsFuPd1eLQqKPnYkqOP+Zhp6q+0Qz5StwGtoA1jJN+UL5BVwcngfkDrsZ/uzsQYBCbhlWSqwASjxaNMJISnSA9JKk148nNICpXZzII8K7Ot0IjTOS1uQ2BxoXemFsXqKODlDihp0O1oBSE3nRUDJqLt7CWjZzbkz7HrhKwsXsqJc7z3VegeMdF+CLP6fVcuPnrx9CDb9YRuWkQkXypnqI9//XMMX/+X4IF1wVjj0zCZBT58qCca8NJc+MU+Xd8DKPwfL0cfvaJBbm5Oe9XkFWvCViqf+VbWHVeLPOZR65WVUWwhZndWZPPT0tsGnJ+f0c+KQ+Bj2NZ44q4QRxGyuNK5KOvceNoOHi2tv9pfutAuKujFbofDQglmM4sQMy0oNQw4Ey5McDmlmLjnGOjNE8aJhk2vln1Ee0z+R8kgV5N+PCps
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2026 20:27:04.9231
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 535ff67e-f138-417c-35ce-08df008bbb2f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF00000149.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6310
+User-Agent: Evolution 3.56.2-10+b1 
+X-ZohoMailClient: External
 
-On Sat, Aug 22, 2026 at 05:02:26PM -0300, Jason Gunthorpe wrote:
-> On Sat, Aug 22, 2026 at 11:16:35AM -0700, Nicolin Chen wrote:
-> > On Fri, Aug 21, 2026 at 08:15:26PM -0300, Jason Gunthorpe wrote:
-> > > > @@ -1276,6 +1292,12 @@ arm_smmu_kdump_adopt_deferred_l2_strtab(struct arm_smmu_device *smmu, u32 sid,
-> > > >  {
-> > > >  	return -EOPNOTSUPP;
-> > > >  }
-> > > > +
-> > > > +static inline bool
-> > > > +arm_smmu_kdump_is_attach_deferred(struct arm_smmu_master *master)
-> > > > +{
-> > > > +	return false;
-> > > > +}
-> > > 
-> > > 
-> > > ?
-> > 
-> > This is for !CONFIG_CRASH_DUMP case. I think we need it.
-> 
-> Hmm, I am testing b4 review.. I had written
-> 
-> #define arm_smmu_kdump_is_attach_deferred NULL
+Hi Sairaj,
 
-Hmm, I'm adding two-level is_attach_deferred functions:
+On Fri, 2026-08-21 at 16:12 +0530, Sairaj Kodilkar wrote:
+> On 8/20/2026 11:55 PM, Rong Zhang wrote:
+> > The AMD IOMMU Initialization State Machine has the following state
+> > transition diagram (only the very first states are showed, and the
+> > `IOMMU_' prefix is omitted):
+> >=20
+> >    START_STATE
+> >         |
+> >         v
+> > [0] detect_ivrs() --> NOT_FOUND
+> >         | ok
+> >         v
+> >   IVRS_DETECTED
+> >         |
+> >         v
+> > [1] amd_iommu_disabled? (amd_iommu=3Doff) --> IOMMU_CMDLINE_DISABLED
+> >         | no
+> >         v
+> > [2] early_amd_iommu_init()
+> >         |
+> >         +-- [3] amd_iommu_detected? (!iommu=3Doff && ...) -+
+> >         | yes                                            |
+> >         +-- ... --> IOMMU_INIT_ERROR <-------------------+
+> >         | ok
+> >         v
+> > IOMMU_ACPI_FINISHED
+> >         |
+> >         v
+> >        ...
+> >=20
+> > [0] always calls pci_request_acs() as long as there's a valid IVRS tabl=
+e
+> > and no Stoney Ridge graphics. This is not optimal as ACS is not require=
+d
+> > in an [amd_]iommu=3Doff boot.
+> >=20
+> > In a normal boot, ACS is requested due to amd_iommu_detect() requesting
+> > IVRS_DETECTED.
+> >=20
+> >     pci_request_acs+0x9/0x18
+> >     iommu_go_to_state+0x106/0x1a20
+> >     amd_iommu_detect+0x1c/0x50
+> >     pci_iommu_alloc+0x26/0x40
+> >     mm_core_init+0xa/0x120
+> >     start_kernel+0x527/0x7a0
+> >     x86_64_start_reservations+0x24/0x30
+> >     x86_64_start_kernel+0xd1/0xe0
+> >     common_startup_64+0x13e/0x158
+> >=20
+> > This is intended to ensure ACS is requested before the PCI core
+> > initialization, or else a !CONFIG_IRQ_REMAP, nointremap or intremap=3Do=
+ff
+> > boot would be broken.
+> >=20
+> > However, in an amd_iommu=3Doff boot, the state machine still requests A=
+CS
+> > at the exact same time, as amd_iommu_detect() has nothing to do with
+> > amd_iommu_disabled.
+> >=20
+> > Even worse, in an iommu=3Doff boot, though amd_iommu_detect() bails out
+> > early, ACS is still requested due to amd_iommu_prepare() requesting
+> > IOMMU_ACPI_FINISHED, which is called by irq_remapping_prepare() thanks
+> > to CONFIG_X86_LOCAL_APIC (always set on X86_64) and CONFIG_IRQ_REMAP
+> > (enabled by defconfig), unless nointremap or intremap=3Doff is also pas=
+sed
+> > to cmdline.
+> >=20
+> >     pci_request_acs+0x9/0x18
+> >     iommu_go_to_state+0x106/0x1a20
+> >     amd_iommu_prepare+0x15/0x40
+> >     irq_remapping_prepare+0x43/0x60
+> >     enable_IR_x2apic+0x22/0x190
+> >     x86_64_probe_apic+0xa/0x50
+> >     apic_intr_mode_init+0x70/0xd0
+> >     x86_late_time_init+0x28/0x40
+> >     start_kernel+0x6f9/0x7a0
+> >     ...
+> >=20
+> > In both cases, [2] is still gated due to the [1] or [3] check, so that
+> > IOMMU can be disabled per cmdline.
+> >=20
+> > Technically, it makes no sense to detect IVRS at all in an
+> > [amd_]iommu=3Doff boot or if IOMMU is not supported due to platform
+> > settings. This is probably why amd_iommu_detect() bails out before
+> > requesting IVRS_DETECTED. Apparently only bailing out there is not
+> > sufficient, and the bailing-out paths should really have been parts of
+> > the state machine.
+> >=20
+> > Clean up the initialization routines by moving the bailing-out paths an=
+d
+> > [1] to the right place in the state machine (i.e., before [0]), and
+> > always requesting IVRS_DETECTED in amd_iommu_detect() to initialize the
+> > state machine early and properly.
+> >=20
+> > Signed-off-by: Rong Zhang <i@rong.moe>
+> > ---
+> >  drivers/iommu/amd/init.c | 25 +++++++++++--------------
+> >  1 file changed, 11 insertions(+), 14 deletions(-)
+> >=20
+> > diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> > index 40726dfef273..a720796cca3b 100644
+> > --- a/drivers/iommu/amd/init.c
+> > +++ b/drivers/iommu/amd/init.c
+> > @@ -3470,6 +3470,8 @@ static void amd_iommu_apply_erratum_snp(void)
+> >  #endif
+> >  }
+> > =20
+> > +static bool amd_iommu_sme_check(void);
+> > +
+> >  /*********************************************************************=
+*******
+> >   *
+> >   * AMD IOMMU Initialization State Machine
+> > @@ -3482,7 +3484,13 @@ static int __init state_next(void)
+> > =20
+> >  	switch (init_state) {
+> >  	case IOMMU_START_STATE:
+> > -		if (!detect_ivrs()) {
+> > +		if (no_iommu || amd_iommu_disabled) {
+> > +			init_state	=3D IOMMU_CMDLINE_DISABLED;
+> > +			ret		=3D -EINVAL;
+> > +		} else if ((iommu_detected && !gart_iommu_aperture) || !amd_iommu_sm=
+e_check()) {
+>=20
+> Looks like you can drop the condition
+> (iommu_detected && !gart_iommu_aperture)
+>=20
+> It was added by the commit 6631ee9d00, which set iommu_detected =3D 1 and
+> gart_iommu_aperture =3D 0 in iommu driver. But it is later removed and no
+> longer present in the lastest iommu code.
+>=20
+> Latest code can have following two conditions
+>=20
+> 1. When CONFIG_GART_IOMMU=3Dy
+> x86/kernel/aperture_64.c sets both iommu_detected and
+> gart_iommu_aperture to 1
+>=20
+> 2. When CONFIG_GART_IOMMU=3Dn
+> amd_iommu_detect is called only when both iommu_detected and
+> gart_iommu_aperture are zero.
 
-arm_smmu_is_attached_deferred()
-{
-	if (OPT_KDUMP_ADOPT)
-		arm_smmu_kdump_is_attach_deferred();
-		// internally doesn't check OPT_KDUMP_ADOPT  	
-}
-[...]
-	.is_attach_deferred = arm_smmu_is_attached_deferred,
+Makes sense. Will clean it up in v3.
 
-So, arm_smmu_kdump_is_attach_deferred cannot be NULL.
+Thanks,
+Rong
 
-Nicolin
+>=20
+> Thanks
+> Sairaj.
+>=20
+>=20
+>=20
+> > +			init_state	=3D IOMMU_INIT_ERROR;
+> > +			ret		=3D -EINVAL;
+> > +		} else if (!detect_ivrs()) {
+> >  			init_state	=3D IOMMU_NOT_FOUND;
+> >  			ret		=3D -ENODEV;
+> >  		} else {
+> > @@ -3490,13 +3498,8 @@ static int __init state_next(void)
+> >  		}
+> >  		break;
+> >  	case IOMMU_IVRS_DETECTED:
+> > -		if (amd_iommu_disabled) {
+> > -			init_state =3D IOMMU_CMDLINE_DISABLED;
+> > -			ret =3D -EINVAL;
+> > -		} else {
+> > -			ret =3D early_amd_iommu_init();
+> > -			init_state =3D ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
+> > -		}
+> > +		ret =3D early_amd_iommu_init();
+> > +		init_state =3D ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
+> >  		break;
+> >  	case IOMMU_ACPI_FINISHED:
+> >  		early_enable_iommus();
+> > @@ -3695,12 +3698,6 @@ void __init amd_iommu_detect(void)
+> >  {
+> >  	int ret;
+> > =20
+> > -	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
+> > -		goto disable_snp;
+> > -
+> > -	if (!amd_iommu_sme_check())
+> > -		goto disable_snp;
+> > -
+> >  	ret =3D iommu_go_to_state(IOMMU_IVRS_DETECTED);
+> >  	if (ret)
+> >  		goto disable_snp;
+> >=20
