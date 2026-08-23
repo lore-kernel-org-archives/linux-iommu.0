@@ -1,107 +1,166 @@
-Received: from sg-3-28.ptr.tlmpb.com (sg-3-28.ptr.tlmpb.com [101.45.255.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7216A30E82E
-	for <iommu@lists.linux.dev>; Sun, 23 Aug 2026 09:25:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.45.255.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 493D53ABD8E;
+	Sun, 23 Aug 2026 19:02:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787477136; cv=none; b=Ouq3CfgXKqD+GfKV/egFQMipPWlloqC04THDiJroTv9wLtN5+hY4X5P1oD1s0SFZQevk+AYLYEBBXZyAPeMK65bQLXda1Jp5xR2Ct5VAw4pNX1pznQK+Vjdx4jObM5Q124zP5M0380aaU6tFeV1xVGlJHhsHyWfw/pICgFO0Q28=
+	t=1787511779; cv=none; b=GhMbP3+jeFri7XrexvOk1pJWoSbvIbvJRM0T5D86wC7tbgyGfOI9h6H7gUhIxsks3j9EIOwXt5t5guZckN4dj3L46r98GU4blo73LqBPjS1u0i9xPwqCoGxWcilvlQV8G11ReBBOhpGBx+nadV1Rth8wKepSVA8AYzK2C+CvHIk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787477136; c=relaxed/simple;
-	bh=mFmuc8txXQV1mSCtBgY5fi2jVBmaQsTnfcp0PU4WNA4=;
-	h=Subject:Message-Id:Mime-Version:Content-Disposition:Cc:
-	 Content-Type:To:From:Date; b=YGy+KuK4jydg4JOAB8pfJ10eoZlQHelWVzBApo5q21rq4fXqXgx0fmOgwqm4hB9YdnZxUc2D21NM2SLXD8WJ9nRqHosC3B1gc6OyV5/8msXxFC1e4IEnoWogvONJHe5GmkXo5FulpvcJqdWX78sGQki7rWUxiFJ70nwbYdxQSuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=pErTlrf0; arc=none smtp.client-ip=101.45.255.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
+	s=arc-20240116; t=1787511779; c=relaxed/simple;
+	bh=5woxXNwZ3ie+kZe+jXbFqvqw12Znp/rzia6jkJsh+pw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tp8aLWhjkS+ZqKgVPgck2pT9WiA7BPvc6RVGkF5tKRjtbZpUP/Zr4CotyLrpuuglDKiqIV8QEHPXHyi4VSMD6phZ279eYKuq3qTLLsN4hTrddLCPGJpZXj7yvNTcSAl73JOyK3Bc2q/2NVemQt5WoSQ79pEMWYDATNcAlj7wIvA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CbxzWPHf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="pErTlrf0"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604151535; d=picoheart.com; t=1787477081; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=T2ArGZLXfhkmEHUMH8ojDXGpECLiQ7Phad9SUPlEop8=;
- b=pErTlrf0uAdA8bRJT1sqjLNDqiKZV+DLKbohni3lqSb/OTBrKVhiTuGWZvZJvcoYha0WmZ
- yXRsdwtmD68lJhuG5hlHnYYp2wW1lvsCNP4wSHp5jSmwkNQQgnbIYJFzeMpFWLaxq25bcc
- YdZ2OiGGbb3PM64ZxfNZx7+uB0WGVQZZiFLqDxhpaUnrW5AHnr1IamugY0/Qp0iQvDi222
- JMKzCaw73lo5wBtwouQl0h497kVJnRfUnzYC+KAVP9gv3yocwCRM4i9arthvPThyNKKnUl
- fsNsiLTMSnX5EAPiatM/qdShauK6WMJszPYsxFRYML3NnD+FINpnQ5+a90WQbw==
-Subject: [PATCH] iommu/sva: remove iommu_sva_present flag
-Content-Transfer-Encoding: 7bit
-Message-Id: <aoq8VGFL/Mdjd/M5@hostpc>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CbxzWPHf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926021F000E9;
+	Sun, 23 Aug 2026 19:02:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787511777;
+	bh=+MWPs2kA1onXfLcmEnNyBINtH0GKMep20TQq7xPn2Pk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=CbxzWPHfiwOS3E+vU56nE0z4h5ZrHq6R5rNtsZmhtlOhNz8iBji5vzQlfQ7ZR6jsL
+	 zzfuoJTth0oxILV6kY3Yh6Jp6eokHLymF7RFtdxUrbW34GX7/llO7FMMYd61JHaWmB
+	 l8JGN34ifeHk058vvknKxhnSqVdXrMaER1SgqkEPZNcex/1GW0ciSZmnDprzwDgdgU
+	 snxGk7HHdP/caCUudYmeb2Dg4pynf7iko2nouBDBYIFAWfmzbmsf+vXOIHSP4FrcsD
+	 VRuUdb2jX9qdXGWRiO98uV63xsjLSX0wul0vjwEhXio5BhPseHMbCARl22k9KFJysW
+	 uQVcu+pH4gn9A==
+Date: Sun, 23 Aug 2026 12:02:56 -0700
+From: Drew Fustini <fustini@kernel.org>
+To: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+Cc: joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
+	reinette.chatre@intel.com, tomasz.jeznach@linux.dev,
+	will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
+	aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com,
+	james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net,
+	shuah@kernel.org, jgg@ziepe.ca, kevin.tian@intel.com,
+	cuiyunhui@bytedance.com, yuanzhu@bytedance.com,
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, x86@kernel.org
+Subject: Re: [RFC PATCH 0/7] riscv: iommu: Add QoS ID support for resctrl
+ device assignment
+Message-ID: <aotD4FrUcw+7zK/e@x1>
+References: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Lms-Return-Path: <lba+26a8abc58+6c80e2+lists.linux.dev+liuzhaoyu.zackary@picoheart.com>
-Cc: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-X-Original-From: Zhaoyu Liu <liuzhaoyu.zackary@picoheart.com>
-Content-Type: text/plain; charset=UTF-8
-Received: from hostpc ([124.160.26.250]) by smtp.feishu.cn with ESMTPS; Sun, 23 Aug 2026 17:24:39 +0800
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>, 
-	<baolu.lu@linux.intel.com>
-From: "Zhaoyu Liu" <liuzhaoyu.zackary@picoheart.com>
-Date: Sun, 23 Aug 2026 17:24:36 +0800
+In-Reply-To: <20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com>
 
-The global iommu_sva_present bool merely mirrors
-!list_empty(&iommu_sva_mms) under the same mutex. Remove it and rely
-on list_for_each_entry to handle the empty list case, which is a no-op.
+On Tue, Jul 14, 2026 at 09:06:50PM +0800, Zhanpeng Zhang wrote:
+> This RFC extends RISC-V CBQRI/resctrl support to external requesters
+> behind a RISC-V IOMMU.
+> 
+> The RISC-V IOMMU QoS ID extension associates a resource-control ID
+> (RCID) and monitoring ID (MCID) with IOMMU-related memory requests [2].
+> For a translated device request, the IOMMU obtains the IDs from the
+> device context translation attributes (DC.ta) and supplies them to the
+> I/O bridge after a successful translation. The bridge and downstream
+> CBQRI-controlled resources can then apply their existing allocation and
+> monitoring policy to the request.
+> 
+> The series is based directly on Drew Fustini's v4 RISC-V Ssqosid and
+> CBQRI resctrl series [1]. That dependency provides CPU-side QoS ID
+> plumbing and CBQRI-backed resctrl support. This series extends the same
+> resctrl identity to device requests translated by a RISC-V IOMMU.
+> 
+> The RISC-V names map to the existing resctrl identifiers as follows:
+> 
+>     resctrl CLOSID  ->  RISC-V RCID
+>     resctrl RMID    ->  RISC-V MCID
+> 
+> Userspace first creates a resctrl resource group. The new "devices"
+> file then assigns an external requester to that group:
+> 
+>     userspace
+>        |
+>        | mkdir /sys/fs/resctrl/<group>
+>        |
+>        | echo "iommu_group:<id>" > /sys/fs/resctrl/<group>/devices
+>        v
+>     generic resctrl devices file
+>        |
+>        | (closid, rmid)
+>        v
+>     RISC-V CBQRI IOMMU binding backend
+>        |
+>        | (rcid, mcid)
+>        v
+>     RISC-V IOMMU DC.ta.{RCID,MCID}
+> 
+> The "devices" file is an assignment and membership interface only. It
+> does not describe a new resctrl resource, schema, or monitoring domain;
+> resource policy remains in the existing schemata and info files.
+> 
+> Common IOMMU helpers:
+> 
+> The userspace ABI names an IOMMU group by the numeric ID already used by
+> /sys/kernel/iommu_groups. Patch 1 adds iommu_group_get_by_id() as a
+> narrow, reference-counted lookup for that existing identifier.
+> 
+> Updating a group also needs stronger iteration semantics than separate
+> iommu_group_for_each_dev() calls can provide. All devices must be
+> validated before any device context is changed, and group membership
+> must not change between validation and update. Patch 2 therefore adds
+> iommu_group_update_devices():
+> 
+>     lock group->mutex
+>       for each device: check()          /* may fail, no state changed */
+>       for each device: update()         /* non-failing callback */
+>     unlock group->mutex
+> 
+> The helper contains no resctrl or QoS policy. It only provides an
+> all-or-none validation boundary for a group-wide update while keeping
+> IOMMU group internals private. The RISC-V IOMMU QoS code is its first
+> caller.
+> 
+> RISC-V IOMMU programming:
+> 
+> For translated device requests, the per-device-context QoS IDs are
+> programmed in DC.ta. Active contexts are invalidated after an update so
+> cached translations do not retain stale IDs. BARE mode cannot safely
+> represent per-IOMMU-group assignment because only the per-IOMMU
+> iommu_qosid global default is available, so group assignment rejects
+> BARE mode.
+> 
+> The RISC-V IOMMU also has a per-IOMMU iommu_qosid register. The series
+> exposes it as:
+> 
+>     /sys/class/iommu/<iommu>/qosid
+> 
+> This sysfs attribute programs the global RCID and MCID used for
+> IOMMU-originated DDT, CQ, FQ, PQ, and MSI accesses. In BARE mode,
+> device-originated requests also use these IDs. It is not a resctrl group
+> assignment interface.
+> 
+> Open questions for this RFC:
+> 
+>   * whether a common resctrl "devices" file is the right ABI for
+>     associating external requesters with a resource group;
+>   * whether iommu_group_get_by_id() is an acceptable narrow common
+>     helper for resolving the numeric IOMMU group ID passed through that
+>     ABI; and
+>   * whether iommu_group_update_devices() provides the right common
+>     contract for checked group-wide updates.
+> 
+> [1] Drew Fustini's CBQRI v4 series:
+> https://lore.kernel.org/linux-riscv/20260706-dfustini-atl-sc-cbqri-dt-v4-0-e75c20201d64@kernel.org/
 
-Signed-off-by: Zhaoyu Liu <liuzhaoyu.zackary@picoheart.com>
----
- drivers/iommu/iommu-sva.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+FYI - the 3 Ssqosid patches from my v6 series have been merged into
+mainline:
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 9742cb593577..9827cb804363 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -11,7 +11,6 @@
- #include "iommu-priv.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
--static bool iommu_sva_present;
- static LIST_HEAD(iommu_sva_mms);
- static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 						   struct mm_struct *mm);
-@@ -137,11 +136,9 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 		goto out_free_domain;
- 	domain->users = 1;
- 
--	if (list_empty(&iommu_mm->sva_domains)) {
--		if (list_empty(&iommu_sva_mms))
--			iommu_sva_present = true;
-+	if (list_empty(&iommu_mm->sva_domains))
- 		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
--	}
-+
- 	list_add(&domain->next, &iommu_mm->sva_domains);
- out:
- 	refcount_set(&handle->users, 1);
-@@ -182,11 +179,8 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
- 	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
- 	if (--domain->users == 0) {
- 		list_del(&domain->next);
--		if (list_empty(&iommu_mm->sva_domains)) {
-+		if (list_empty(&iommu_mm->sva_domains))
- 			list_del(&iommu_mm->mm_list_elm);
--			if (list_empty(&iommu_sva_mms))
--				iommu_sva_present = false;
--		}
- 
- 		iommu_domain_free(domain);
- 	}
-@@ -334,8 +328,6 @@ void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
- 	struct iommu_mm_data *iommu_mm;
- 
- 	guard(mutex)(&iommu_sva_lock);
--	if (!iommu_sva_present)
--		return;
- 
- 	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
- 		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
--- 
-2.34.1
+3ec6f50a91bd ("dt-bindings: riscv: Add Ssqosid extension description")
+5a17eb5f1c4c ("riscv: Detect the Ssqosid extension")
+326ba66db949 ("riscv: Add support for srmcfg CSR from Ssqosid extension")
+
+I'll send a rebased series once v7.3-rc1 is tagged.
+
+Thanks,
+Drew
+
