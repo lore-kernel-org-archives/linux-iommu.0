@@ -1,59 +1,59 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010037.outbound.protection.outlook.com [52.101.201.37])
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012023.outbound.protection.outlook.com [40.107.200.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95CCB359A68;
-	Mon, 24 Aug 2026 17:37:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB4E737F8D6;
+	Mon, 24 Aug 2026 17:38:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.23
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787593057; cv=fail; b=C0YzC06AjtgUg0+dyIq8p7YeQkZDad/OLUK3iVD7lfqrra8/IZyMX2n4rimooUZebSEqaGIdUewTCSHOPDWTq0Evk5741L8iuMiFZgFRNeF3JiYEEl+8X8BuhhfDouykj68cSOOCzC4574Hl3mTCisXONpqKus5oIi62OhCxxOg=
+	t=1787593114; cv=fail; b=KENof371p4kmBuKSWFA1PPCVlalQWTP32HNEV1kpiRXa9zCPSoXoecC7hb/anJuHE3iU0LZoLAKVxufAm9J0TXd4vZIZ0If+BJZf/wPvWEm2h74qaXW3bTCaeBp6vIb8oOfejtDo4T64sDhNH+Q4bmJrEtqC1p355z20ZC44v6U=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787593057; c=relaxed/simple;
-	bh=Se8cRfs5y8ZMzxYdVjqpNqYVQ8hqKePNv4OVk55CS5E=;
+	s=arc-20240116; t=1787593114; c=relaxed/simple;
+	bh=Da02aj3Y4SCKgu/h2DDL02fR2kiwrhB/fIB9LhNW+Fg=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=me1Jqb9qNTmsudl9aSQL4U3f5UYhzfoWtbXJ/LeahyW3l27GvwxwnfFHoFdqxAX8cqr1y31JQy6Z2EnKs20W0Bf16gmSY4xZLt5QKTD6pzLPfxP3q62EFwtLJl5QOdx1B3y8Smi2tFpkJWfKFpjzkNv1+yCUks7AsQeEGXiAN2E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ktyKXM85; arc=fail smtp.client-ip=52.101.201.37
+	 Content-Type:MIME-Version; b=BiDH3qVmPMRfirwfvai4xdXrSxK8M0EVUnTJZtH+izi9nIojsUnXvMJ41emtYOn9DIjJPeN5HOF66SNyptpVQT3QQ91+euSLYrzxQ52p9/psw2m+XvhDv8/N++fR960W1V/AueILlYRPmYCA7IiX0dkPyIKl6dvWcZrS/uyrGUQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=nqJLptia; arc=fail smtp.client-ip=40.107.200.23
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ktyKXM85"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="nqJLptia"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BT+w3hpfiMHYh8DDA+KUsfL0LsnSO8M1dSXebU/Q3ZbUjaqAAQ51FltXYvLA76DnPzbEXeGaqev4DStV5lcTzmqcJdMUQLBxoxSA9Tmz/3IC1lkkOdQhiz/h8QQ0l7QclUdblfVnGncqnxEX0hFS1I8JnyW6h3ox1QGSkoFSoVS4WalVIoyRcRB2mRW1Ofo5a0GbvbO4P9jA3ittzLr4hZwXtMRWx9M8/dX1Z+zMTeDwx/oERIPRkCJuqUKhSCswuzG4Jf9F64Q94GyByVM+vty6ozXCLpIUHFR8wCAlLY1aval4ELjNinHuKJPRgE1A1v6uRI9wFAf5IP9/jXsR2g==
+ b=Jhze1EDMWaOkzRnmdorug4obgWyjW3NwhNyW/qSL/806hMvF4XwRzhW3C47KRCX/3lFmVctNo9Le/20iohGW81v5e7+D9t44X/ctjk/VphKpdEFflwBAIgyQob5s09NgbIIULVYhOaCdSAve4hqzmaHDLIOJsNyP66zRWxh7w3vPtvREKjk2wo9VpLTE4MgKoIdyWY6+gwx/kdHMhwEnC8h6r8iwyUG4tUPe5ZAQjXe2Q6qQ2/ZpS1f7aurR6fw3VOSGsWz5XiVlS3ENwRyxNSSwbkiEQ19FHD/QJncLYoeG7wYF2NCLN8pcMcwOHahda1aJdK42/t4X/9NW8hIJYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H/v4/Ju3TA+grNjG8VSenMc1hAaIAdhudawg5hoWdio=;
- b=huDHUYvATCFSMp/qF0/urKLNm6ZXnXX/LV7vDxSegz/qRWmYQielZW1kf3/audmHeLvm0s6eJxsOlv2HOgeyJZE/mm1ojZcotQkBsb5YILXRrimsPliWSt9uWCalCo+KNKrrP5f8OCtUei3i85gHqhDS7u2Ti3PBQFvWMi1L7YFnATqnvy3C7lIPk6G7Makm3XezbR/4B/p7feC7z4X8+B3DmToAxgMgUhcAkXmmlvYodKvMDBYSfSwm0IMBT8xRVB/0xnUvcOxQIabbB18wdewILsGSzbZkvYMCevdDQxLmtu1ZMwmHl5G80wA4l5MdvquowUe7vufI4vqeijfXGQ==
+ bh=hm3h8e+sMh+d/mdJtHeW5XUau1BL5R/3hDeAxrWkbdw=;
+ b=SfCTihQJ82uCpg9plc9LRdy0Yxdh1XsoW3JiSx+0ieV2KxL/ct+hRjF9axzPLdL44yMItWNxIuoeXedgbM+JG446uJ79GFXW0iRNhewJTS77OVu8DfayCqIM+J7uYb097Ry84i5JC9xUxicBpKr58u7Tqvzkjw7e+nI9HjwlDCk8fdQ9l6LzIqqnUW/WzSbQAWe3yhYN3/HYuJfhx+7cRjTTo6ltVhOCjMf+jNYolqhwfQhr8kw1+1j4gAg8quWw2HnuFeGZJIKw94ICDowas8jD8QhMKFK9lwfaRABvizVVsMh1geu687NvVJCXYY8eHfNInAhln6N57/yAYqmv+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H/v4/Ju3TA+grNjG8VSenMc1hAaIAdhudawg5hoWdio=;
- b=ktyKXM85sEOpccectpir4qL5hUZzA4g5mvYP1sGzo6uiO2UcJZ4A+Dx6umFzSuiM6J7TFSyoPkHasBgL/5SzEOby81wJJliFX/op+GJpSy1XMgdQ37t433RxW+NSo+BNeAXrOPHmdKFxYq2SCd3MQeD8rnmO359B7SSWQGHFl8MZ1LO2Gzyehs+gvffotF9H5EQ+/H1+GG2U9Mx6j9jfwS2SZr4XZfiC6H1f0XYLs1jtEMXwYqHCN1M5c68/Wbho5Dup2CQ5l4Gu2CiK11OMK5g5jg0cV1eA8O1goyG4CRz1/TxKJeYPJd9LMEgTKMzmQkWShpXJQGv7OF9GanFJww==
+ bh=hm3h8e+sMh+d/mdJtHeW5XUau1BL5R/3hDeAxrWkbdw=;
+ b=nqJLptiaYj7W7mMAg13+HndIzTn//6xtY4uJiCwZk5hs1iuAokvvUhCQYN2gyzYh+mGs+8B9AAIigHE3+kyEdi8vn7W8GMVMbmV7cS+iAihLLDsI9F/XDCRtyAz4p84Ouw1CK9SXee5JQX0mvuNln+nRz8Jbok/nlKuvT/7kiZL/dQNkjVeQNAm3bQFcokfP5V2yCu0McgojLln/3UCA1xgycVD7XT3xKKMk8CIEy4weXM+YQRS/7fCJMUdbfVX2fODjBgS5nisdu1AnuOSrsuwL+ek+x5gauAcDVKkn3mlt/NBpTZ/UfwC5YUmDE4srBznx8ZirtZ+ujcMzH9cPiQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CH3PR12MB8728.namprd12.prod.outlook.com (2603:10b6:610:171::12)
- by SA1PR12MB9514.namprd12.prod.outlook.com (2603:10b6:806:458::7) with
+ by SN7PR12MB8820.namprd12.prod.outlook.com (2603:10b6:806:341::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Mon, 24 Aug
- 2026 17:37:24 +0000
+ 2026 17:38:11 +0000
 Received: from CH3PR12MB8728.namprd12.prod.outlook.com
  ([fe80::2641:1046:bdf3:93d7]) by CH3PR12MB8728.namprd12.prod.outlook.com
  ([fe80::2641:1046:bdf3:93d7%6]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
- 17:37:24 +0000
-Message-ID: <c682982e-a807-43e1-a7d6-5a0bc96d1d24@nvidia.com>
-Date: Mon, 24 Aug 2026 19:37:19 +0200
+ 17:38:11 +0000
+Message-ID: <472d9fe1-0044-4e47-af5f-cb03618d77b0@nvidia.com>
+Date: Mon, 24 Aug 2026 19:38:05 +0200
 User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH v2 0/5] swiotlb: avoid swiotlb copy on network sockets
-To: Luigi Rizzo <lrizzo@google.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Willem de Bruijn <willemb@google.com>,
- Kuniyuki Iwashima <kuniyu@google.com>, "David S . Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Luigi Rizzo <rizzo.unipi@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Subject: Re: [PATCH v2 2/5] swiotlb/mm: Implement SWIOTLB nocopy page
+ allocator
+To: Luigi Rizzo <lrizzo@google.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima
+ <kuniyu@google.com>, "David S . Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Luigi Rizzo <rizzo.unipi@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  "Rafael J . Wysocki" <rafael@kernel.org>,
  Andrew Morton <akpm@linux-foundation.org>,
  David Hildenbrand <david@kernel.org>, netdev@vger.kernel.org,
@@ -61,13 +61,16 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linux-kernel@vger.kernel.org
 References: <20260615234220.3946885-1-lrizzo@google.com>
  <20260824152932.1583506-1-lrizzo@google.com>
+ <20260824152932.1583506-3-lrizzo@google.com>
+ <a826c7cb-5e77-4c21-a649-d40a9f0ef564@arm.com>
+ <CAMOZA0JstwiwoWFuFjpoC1W12ir2b=SrWPO9i9tto1rOksKGgQ@mail.gmail.com>
 Content-Language: en-US
 From: Dragos Tatulea <dtatulea@nvidia.com>
-In-Reply-To: <20260824152932.1583506-1-lrizzo@google.com>
+In-Reply-To: <CAMOZA0JstwiwoWFuFjpoC1W12ir2b=SrWPO9i9tto1rOksKGgQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0206.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ad::15) To CH3PR12MB8728.namprd12.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR0P281CA0204.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ad::13) To CH3PR12MB8728.namprd12.prod.outlook.com
  (2603:10b6:610:171::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -76,162 +79,104 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8728:EE_|SA1PR12MB9514:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4d9564bc-e719-4810-75a8-08df02065bb9
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8728:EE_|SN7PR12MB8820:EE_
+X-MS-Office365-Filtering-Correlation-Id: 959c2f8f-e659-4e41-15d5-08df020677e3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|7416014|921020|6133799003|56012099006|11063799006|10067099003|4143699003|3023799007|18002099003|22082099003;
+	BCL:0;ARA:13230040|366016|1800799024|7416014|23010399003|376014|4143699003|10067099003|11063799006|56012099006|22082099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	q70u1rohmYr/d/YCgJTr4ZankEgnBEOq0GC6nLf00/Mw/eECM3oSGgMps9ylUDM+4LjXQ0NDOg4BK88bHmdgA+dPl67L2SfjUqlhaKs3031uwE/JWun9ATnAa4/ZeswqZ1Oq4Q/qi0+l1tL8pVLAdvwf8KIB/dL/8OhB1fITxDhBy9MOk28PyS+2TkMmtg/zCi5lGk35EmW7F59HebBI+5nn5pVOi4KdVTIekjtri+8hWrRE/0252+IqSCZ5WHFeSykO4IzjGFUtq2jXgmZAC4xBIi6Vp3ua9EGyLNENZjkSaUBBx7BSQ1oGocWHp3bltakle2DzR1Vr87chWbTt1XInCQdbHP7TCgWehpBQkyxViu/bT1lfVY1Ju2eSY0VQG9GWNewQHIg8fZNEaTgRb+UXfjYoKsw8Tt9MRoqHKCrZuWR5Yu+q+gNfuZMkI58QJJ99+BHs6AMY2kJDMPnmE2HzMDY3/LvZSljsOaXdoiAcIAUcHzn18SPvbG9FQdzcj2W8VIXnol4YMgko4NR9tbTI65twCaVclLwInEGYaX7bwddUA/BaBivNDTvx1mVDRXDHigxSGc4rm6IioJ4JrMuJ/b+f20n9Osrs9oQqNfX7pXwBUQt/1trXxPjTbde0kXCDwNegpgI7iKgL3FbxkhSvad9Xx0T67aSmNpGmaC5d07IETYcDliRF0H/0dLHJDOB7HS9WOj09YYJMZG2gAw==
+	cshxjT6SKBA5VDevf7UY09Eg8mBJfiegjEmH4LD3yEvX9LSRcUVhGm+WA/vZtZNRG0a/6544DpySqlb/AeboEX1li9HcdZUdSXGyyze9xBjuF655YH62slrsg02zAFHptFMtZG+7TQap/7ekw4k1okYXgw5kXbcUqnFCJrdx4RBboKXbgk1CSRjxHwBeFmgFmZBBIGTK5V3vhcUEPlCFHiD/HVii/6JpQK/ow9sb61xgMR2IoZnBzA76YzHcrzczHQ6ZlwxEYtvuJdaq1j4vt4r3n3DAJqZKe/E5v5/clcUnhZ7dJDnewNPa6kkM514GfDafIbh/u4ZwDx4oDq34qAXSKz9s0DgcTzGFF35pyCorjoh6AXMdIXX9HN1zjnZDp2fvKvAhHrNrw96IInXSfCIVwcoWc7vDNNsp5jEL7ZVRd/lEIwliVoKBcfsoIVZcY11pvnuFA81W+taQ7j8smWWlCi1zvvLgg2F0NnlZiTBa7RwRbEOwBsOCx7Wg+GmoAR8VJP01/ULcwwdklRCuvEcV5fsJaKGlxaBvaNCKlbDSFz5oNseuMWBE2Jr2Xyq12DQ1XJ3ayJ6w3Er5Az73d1SiOB2bsInTJWgxWIy8w1OJvuFz12J6FQiTHD3ehK1QJfcykIDSa1gsRO0Usq1sTb5GnKIq5GDK+g7tVY529lc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8728.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(7416014)(921020)(6133799003)(56012099006)(11063799006)(10067099003)(4143699003)(3023799007)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8728.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(23010399003)(376014)(4143699003)(10067099003)(11063799006)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NjJOSERCUmdVOEpOQjg5NUZqL2J5SitNYmUxeWhZamlhNVA4S3pJVHErMysw?=
- =?utf-8?B?YUdDVVFBWW1kRjJ1YUhrTExnb28wWWJML1dPMVJxWEF2RlFVN3g2TkpFRHIx?=
- =?utf-8?B?QUszRktIWFdJZ2ZpaVhYVG1CNVVLSFdZR215bndGbXovS29UUERRNkVVbTZQ?=
- =?utf-8?B?QlJGNlVBZysvSW5yQXc5Rmt3YU5rbDQzMlZLWmVkaXdwTldoU0VhN1RnQXdy?=
- =?utf-8?B?OFNaTU55ZkpiRm5JWENPakFqV3UyblNlTG83TW9icE5xYnVZTXN0LzE3ellU?=
- =?utf-8?B?RG4wa29yNnRHVGVUYldSaThyUEcxdEk2ZnlCSGF5bHBIdmFMdzc4TEdFWGZP?=
- =?utf-8?B?TDA1NEVab25pcnQrcS9RWjZIaTUzMnNOUi9KR2FpL1YwN2h1M1VqL1grOCs2?=
- =?utf-8?B?NHhXU2lZUzBCOWYzeUtmM2RjSzhBTGo0bFV6WGlySVIyeFpXcVVUS29MUWdp?=
- =?utf-8?B?WisrK3NPUm9xN2xYMVdobHcyK2d0OVJPdWxnVlM0T1hyZWg3KzlTalF2bkYw?=
- =?utf-8?B?OWpaVlFWTkl2VzFxYXNLcTlQRVZYaldFcDl2M0xCaHRyQ05LdlQ4K1NQbFNq?=
- =?utf-8?B?bXNxcjExVUdCSWJQRlpNcTEvR29yMkZzU0FwSkJhVkphUElNODRIbHRKTElq?=
- =?utf-8?B?eXBFVTVucDVNMG45REEvcVJjekhBaXVLaW55UHR3MEdFeW4vc1Vwb3U2ejBC?=
- =?utf-8?B?emh4SW1OZ2ROSUNUK1NldjYxZVBsK1VINjRETlhMZWN5NjNPUVVvanFYek5n?=
- =?utf-8?B?QnVQek1OQ1J1a1lwVUE1NEE2Wm5hQ2VsWmFSaWR1OGZFNnRrUU5rVkNpSFd2?=
- =?utf-8?B?QloyRDdRT1E0TktHeVN3OXBMZk5YS0xlcHRvem43N1ozOVQyV3c0eTM2bmc2?=
- =?utf-8?B?cUxwTnNvb3I5d2Jyb3lJdzZ5U01CN1V5c3dxaFp2bHRyVkhGdkNobUtsT2Jl?=
- =?utf-8?B?UzVZQ2Z4M0pRaEEwN3BRbVdadkxmejRVUFE5Q3p3TGhtRUVYSGZPdlRSUE1a?=
- =?utf-8?B?RUdXY24rMElzQlk4NTJtNjlCYVBQLzBnWCtJakY4dmxlK0R6Q1llNGc5eWZk?=
- =?utf-8?B?bHJNMWtQSnRVbWJVdVpHa0ltdDNhenROdnFHQUhjdyttcEduOUo1ODg1c1pi?=
- =?utf-8?B?UVhlV1ZldmZScklsTmJWSCtrTDl1bmRCK0lmQ1pvVi9LZXVLbTJHQzF2QXVY?=
- =?utf-8?B?MU5wU01ZdGJzTDIya092ZC9HRTR3Q1Ezdnp4ZEFKYThiSnR5K1crU29kUVF6?=
- =?utf-8?B?eWdOZWFVTmJ0MUNRUW9RVGlDY1lHWHY5YS9KM2F2OVNwQW5IeWFJaGl4Sk02?=
- =?utf-8?B?LzNTOWhEdnhBVUpVckFiUmtqZlRQT3dnKzZncEJ3TFVNSjh3RTB1VUNBbXdS?=
- =?utf-8?B?RVdXN0F4RWxqTEtuMDFrRHdaWENqd2hwMU43TnVhSnI5aitqcWFsdUg2Y2g4?=
- =?utf-8?B?S0dOL1cvZ1VFbUZrTkxSbm16TVhmQTA4Vkk0RjUvSU1iY1VxUnBxQUkwZnB3?=
- =?utf-8?B?RVZvTVZsVksyYzdoKzBvZ3l2Mk82Mk1vUitBa2EzeEprVDhFdzdUYTkwLzdZ?=
- =?utf-8?B?SjRsYlo4UU41LytobWtBbng3cUh2Z2RkS01YNEg0RjdNc2NDd1Vtbm15cXhM?=
- =?utf-8?B?K2pubnNVdjFYSXVpTU5IdW4yNXRtZGVaUStjdGRPdUVpMEIvNVhNaXh4NEgw?=
- =?utf-8?B?cTIrOVMvcDhnRXl4VHZub2RpZEExU1BsOXhmV2ZxQnJ4RzE5MlBWellpaTFV?=
- =?utf-8?B?QndkSkg5MHNwYXFQYU9DVFhIdUlwWUNXeGpiSS9PSWlaS3Vpelo3bzlLR1BN?=
- =?utf-8?B?bllsYlBhWlBmNnR0ckRpVG5WZHBiWHU3SmxGN2ZGakJuQ0dQUlEwV0FxZUZ0?=
- =?utf-8?B?UUR4emhoaUR1OW5rS25WSVdnKzE5T1U4SHZha0ZDbmhhWlYwaExTa2dSOTc3?=
- =?utf-8?B?SEZGZDExSDg3ZFlSU2ExK0RMek0wbkl2Snh0N2tka0t6UkhFQnJmcEU3dFhV?=
- =?utf-8?B?elVkZktnZzVxSkt1VThFbjdBZ0Rlcm9aQllOOU5TbGpGQW13NE83OVYxNWlm?=
- =?utf-8?B?U1ZtUzQzUGs1dHVwYWRhNHN0WWtiSllnazkrdnFhemtYRFFJelhoKzI5U2Za?=
- =?utf-8?B?cXdmOElRcDdTYnk3b3VqMHBsdTBYblFwazcxQXBSYUNLeTdHWjhmcEFIRlU3?=
- =?utf-8?B?cnk5OTZUMkd6bklVa3dITmxMbGpqWnA5a2tyYXBadEMveWtqbGZVZGtZTW02?=
- =?utf-8?B?WEt6UnlGb3dYYkdQOHp2eWMyaXVyUDAzQTUrWHNYdWp5YmhtSGZHQTNUcVRt?=
- =?utf-8?B?M1lTSG5LWkt5ejRtR0w5cE5rL1V1dDBtZE5ONUxZN0p0OXdOaUEzdz09?=
+	=?utf-8?B?dTd2b3FMdlVWS2tZMzlXTXJnczhueVNkem5Xa0hiMUpiTHNsb3h1U240THBZ?=
+ =?utf-8?B?WXNLYnJMUGx5Zm80N2FiVlJ1SWwrZDBYNEtBbXJZeHJUYmJoV2J5Y1hVUXE5?=
+ =?utf-8?B?cG1ML1Q1QUc1NXhBclFFaFBJN3B2N3BpRFBYV2ZmU0hRWloxTUVVa0FtWUla?=
+ =?utf-8?B?SXFmcVI5YS9ubjhUMDNRdmFHSHJuZGhmd2EyTDRZWTBYanBtN1VSdTdyMk5I?=
+ =?utf-8?B?ZWY4RVVwUFZscUZCQUxObVFCMmtnNkQ5NEVRZEpIWUlPK3J3ZVpic0RVSEJS?=
+ =?utf-8?B?THNpQ0R6T1ZNTWZjdkFQZER1MmMvdkZqZUJNRXZveFRoQ3o5Y3pXY0ZJMG1D?=
+ =?utf-8?B?VFl4TlFlR2tRZ3VRVElpbFJ3RGppMXYrakRZQmFuS011S2J6UU1QdXZoek9r?=
+ =?utf-8?B?azlEakRvUVZyUWtNdUFLMXU5YjJETDFZbVFRajdyTHQ0dWd1VFk0MGNtdXpy?=
+ =?utf-8?B?NUhrL2pST0VXZzNXaWRLRjlRQkhTTVlHWWw0T2V4Z3ltQm9TRWRvRlF6YUVB?=
+ =?utf-8?B?bGMyMXZhS0NUMXVBTFFlTmFLU1V2Q0tUcDV4T1gvMncwRWw1WThwdW1jYlZE?=
+ =?utf-8?B?a3dtR09tbHRCUGdjbHVKRWFjT0JEYUlYUVhzc2swdjdtMVhFdDBsWml4VFo1?=
+ =?utf-8?B?cmhDdnpIRnRKK0hhbXZTRmxEcHFzb2tkSUVSUklpeVljWThvY0RVQkxmemZK?=
+ =?utf-8?B?aTg0ZVE2ckVjeFA3bzQ1bFQzK3BBNlBNajZyaVhNYU9rYXNkZ2RyZ0c5ck9N?=
+ =?utf-8?B?cG1TNXdyU3JBQ0ZwVXdyb2Q0UGNaMkZ0aFJVMHBybk9pMU1yYmZnd3lEeUZ2?=
+ =?utf-8?B?MkFPa1lJaXN6WE0vUzVCNDA4SU9EY0FUSHVZem9laTU2ejF4aGFtUy80MHdP?=
+ =?utf-8?B?K3kxem5MV0NvRzlUMWRjbHBXQUs0N1ZEQWpPNVl1Y1ozRkZDNVlOSkJYNjBY?=
+ =?utf-8?B?Z2YzL3R0NFhxQVgxeGJQYmdFUUMxNzcvR3pnRnY1MStrMnM0SWx4OWJPVUhm?=
+ =?utf-8?B?RDhMSjZDaXA4eTVjQmxjMEFKdEgrZDZRZzFheC9tUUNSdjU0UUxCaC9jNE9k?=
+ =?utf-8?B?U0R5VE82WGJVeGVQc1VLSWdrcldRb3ppSk8rTHhzdjkrc0xxRG9pRW1udXhV?=
+ =?utf-8?B?NDZoVTlzRGR3VVV1SlFsYjdnZjJEVjc1dkdVUDhBbForNWhCdEJvdFUrZ3Ru?=
+ =?utf-8?B?SU8rRmUzRE1hdU1GYzJJV1ZLaGFNdndibDUwN0kxSEFNRXpadVR4eXpEVEV3?=
+ =?utf-8?B?cFNLYVNSN1M0RjMwam9BdlRXaXpMMVBDQnZQNWo5Zk80M1RYZlRQZGhKYThi?=
+ =?utf-8?B?RUczbjlnM3RMczFjUjFTM2gvS2NycWVJd2owUzAzWVdWMkxxV3BRV2llSzBx?=
+ =?utf-8?B?eVdreExLazk5MUJ2cWdPdXRucG5uK0tEaE04V1ZmK1Q3b2ZxTWVVd3RJREtT?=
+ =?utf-8?B?Rm1VUzBzcFFDK0xoZk9Ta0NGVjhjeTV5aXFsRWZFbk1HMzVkdDdPOVZ4eVFU?=
+ =?utf-8?B?SnZQazU0NEZxOTNVem1IQVBhc1NvNnhyVm44eWdyTHFUZm95U205UWp0RERt?=
+ =?utf-8?B?blJCNEtJUVFLdHZxcUR0bE9JcHJUVFgvdUxwamtLbmNZbDlrS3RuUDBlMXJT?=
+ =?utf-8?B?aUEzNmQ2U3hVZGV4MzgyeWxJWmZCVEdnQkgzWEk0SFgwQlIzdUhpWXplTkEx?=
+ =?utf-8?B?WS9vRklwdVpza25uWHp2Y2p5NDZFWlQvV1p1eHBpQVc3bVlORVZnYjl6K28v?=
+ =?utf-8?B?YXlKUU1nNjlpb1hQRWljcE5JNXZ3RW1IUzVlaXhnb0JjeXhVbkMrMDBHV2xn?=
+ =?utf-8?B?TkJtRkJFc2JIRGtacUE2Wko0Tk5Bc3pYRUdxUHYwT2VLZnlxL3JUZ0FxbW5R?=
+ =?utf-8?B?RWJQSC9RdEpXYjg3QTByeXBuTGtuYkpJSDlVRzRjQzUwZGY5TG5lTEVrb3d0?=
+ =?utf-8?B?QXJxMEdUZnltMmFqWEhERC9PWnl0WnI1eU9nc3RJUU9oMFN4V3BaOUxOYlBU?=
+ =?utf-8?B?dmVnMStzTUVCZ2x4akZkdytFaXRkYlVWWm9RWndFMU5peXNFTmtHd3c0TmI2?=
+ =?utf-8?B?SStsZ1ZNWXM5TWJNMksrV2hlWWlpRkp4b0RMalh1aVpURW1FeWdmR1pXS1ky?=
+ =?utf-8?B?cUNzWnVGcDdoZzJIRlI1SG91dVNmV2NRY0hKRjZsMlhpSHQvaWdTNnVhN3FM?=
+ =?utf-8?B?MzhCdXBsUktTYis0ejU1TXhKcmxQZENtbmdNRi9tMzY1dTR6UjN4UkxqbHlm?=
+ =?utf-8?B?c2tMLzd1SkdRNjdCOVhtZ3l5RjIxaGdXelpIOXBkR29aVHVYWUt3RzFuekpI?=
+ =?utf-8?B?S2s2bHRSOS9RS1FBSXF1bE1relk3VmVtS3BIQnd2TlFuNEV5WjlkZz09?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d9564bc-e719-4810-75a8-08df02065bb9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 959c2f8f-e659-4e41-15d5-08df020677e3
 X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8728.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 17:37:24.4168
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 17:38:11.6550
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2NgcRRQzKtg9F1qyE/2goT2Ud19t67hUDknG9EJs9WBlIAojy/egUsA3okaQNytibx5R3+tyH1IgwU0WhVIpYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB9514
+X-MS-Exchange-CrossTenant-UserPrincipalName: md0Zn1yei7aJBqgTuVk+9LNllLK+xUdiBfjIaeVNvunz33vlXGdezRCnrdVRqXb+nx/iwaN3YX9cgmfwDwLh5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8820
 
 
 
-On 24.08.26 17:29, Luigi Rizzo wrote:
-> The use of swiotlb, common in Confidential Computing, causes an extra
-> data copy on each I/O. Focusing on network sockets:
-> - on tx, the copy has a high chance of happening in the tx softirq handler
->   (especially with greedy senders where the device queue is often full)
-> - on rx, it is guaranteed to happen in the rx softirq handler.
-> Thus, on top of the copy cost, swiotlb concentrates the overhead on an
-> already constrained resource (CPUs processing network interrupts).
+On 24.08.26 18:30, Luigi Rizzo wrote:
+> On Mon, Aug 24, 2026 at 6:06 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2026-08-24 4:29 pm, Luigi Rizzo wrote:
+>>> Introduce swiotlb_alloc_pages() and swiotlb_free_pages() to allocate
+>>> and release compound pages directly from the default SWIOTLB pool.
+>>
+>> Huh? The sole intended purpose of SWIOTLB is for bounce-buffering data
+>> which already exists in some other memory that is unsuitable for DMA for
+>> whatever reason. If you want to allocate directly from some kind of
+>> pre-shared DMA page pool to avoid bounce-buffering, set up some kind of
+>> pre-shared DMA page pool and allocate from that in a manner which can
+>> avoid bouncing entirely (see DMA_ATTR_CC_SHARED). The idea of getting as
+>> far as calling swiotlb_bounce() to then have a special case saying "haha
+>> not really" seems entirely absurd. Don't hack stuff into the SWIOTLB
+>> code which has no business being there.
 > 
-> Reduce or remove the extra copy by conditionally allocating socket buffers
-> directly from the swiotlb buffer pool.
+> Ah I see DMA_ATTR_CC_SHARED did not exist when I implemented the
+> swiotlb allocator. Cool, one less piece, it should be possible to replace
+> this chunk witth the DMA_ATTR_CC_SHARED.
 > 
-Isn't it dangerous for RX to expose kernel structures to the HV? If SKB the
-linear area is exposed to the HW, the headroom and tailroom are up for grabs
-for the HV: the HV could modify them in a TOCTOU fashioon.
+I agree with Robin's point (if I understood it correctly):
+Why should it at all pass through the SWIOTLB? Why can't it be a standalone
+DMA pool?
 
-> The feature is controlled by runtime parameters to set the percentage of 
-> swiotlb buffers that can be used for this purpose. This avoids stranding
-> the entire swiotlb pool in socket buffers.
+> The other pieces are still relevant though ?
 > 
-> The implementation is made of four main parts:
-> - introduce a swiotlb page allocator that can be used instead of
->   regular pages, and teach __free_frozen_pages(), free_unref_folio()
->   how to handle them
-> - dynamically track the leaf device for each tx network socket,
->   so we can tell at copy_from_user() time whether we need to use
->   swiotlb for this socket
-> - modify skb_page_frag_refill() to allocate from swiotlb if needed.
->   This implements the copy elision for the transmit path
-> - modify __page_pool_alloc_page_order() to allocate from swiotlb if needed.
->   This implements the copy elision for the receive path.
-> 
-> The savings are especially visible with fewer queues. In synthetic
-> benchmarks, senders with 1-2 queues would cap around 50Gbps with
-> conventional swiotlb, and reach over 170Gbps with the feature enabled.
-> 
-> OPEN ISSUES
-> 
-> Currently the swiotlb allocator looks for free slots using an
-> approximately linear scan of each pool (with some hints to likely
-> candidates) and then does a linear scan of subsequent pools.
-> This works extremely well when the number of pools matches the number of
-> CPUs, and there is plenty of memory available. In fact, it is almost
-> unbeatable by any more complex strategy.
-> 
-> Under high load or buffer fragmentation, a CPU might repeatedly do a
-> full scan of its starting pool before finding a suitable candidate.
-> Even worse, with multiple tx/rx queues, what happens is that multiple CPUs
-> will trail each other on the same sequence of pools. The effect is that
-> some allocations will end up costing O(100us) and more.
-I encountered this as well: even with maxed out swiotlb memory the
-page_pool will suck a lot of pages from there. And TX allocations are left
-scrambling for scraps.
-
-Why can't we create per device pools instead on relying on the swiotb?
- > 
-> I have tried to implement two improvements:
-> - a buddy allocator on top of each pool, so to make it quicker to find a
->   candidate of the requested size
-> - make each CPU use a different sequence to explore other pools in case
->   one is full, so they will not end up queueing one after the other
-> While they are very effective on the tails, for low load scenarios the
-> current linear allocators is better. Thus this will take more
-> investigation.
-> 
-> ---
-> v1 -> v2:
-> 
-> - split components into separate commits
-> - simplified allocator, no need for a new page type
-> - many code cleanups
-> - also implement the rx side
-> 
-> Luigi Rizzo (5):
->   swiotlb: enforce pool nareas and nslabs invariants
->   swiotlb/mm: Implement SWIOTLB nocopy page allocator
->   net/swiotlb: Track bounce device per socket
->   net: Divert socket allocations to SWIOTLB for nocopy TX
->   swiotlb: Implement RX nocopy with fast recycling eviction
-> 
->  drivers/base/core.c       |   1 +
->  drivers/iommu/dma-iommu.c |   9 +-
->  include/linux/netdevice.h |  21 +++
->  include/linux/skbuff.h    |   7 +-
->  include/linux/swiotlb.h   |  63 ++++++++
->  include/net/sock.h        |  46 ++++++
->  kernel/dma/direct.h       |  11 ++
->  kernel/dma/swiotlb.c      | 296 ++++++++++++++++++++++++++++++++++++--
->  mm/page_alloc.c           |  61 +++++++-
->  net/core/page_pool.c      |  25 +++-
->  net/core/sock.c           | 101 +++++++++++--
->  11 files changed, 617 insertions(+), 24 deletions(-)
+> - use these dma-able pages for page pool allocations (small)
+> - [PATCH v2 3/5] net/swiotlb: Track bounce device per socket
+>   or one would have to unconditionally allocate from that pool,
+>   even for e.g. local sockets
+> - divert socket allocations for eligible sockets to a DMA-able pool
 > 
 
+Thanks,
+Dragos
