@@ -1,170 +1,144 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827833AEF5A
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 10:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB023F2118
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 10:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787565904; cv=none; b=efbMnbTuyh8+kQhCWS+DcVbGm8Z0elQzGSD/JGPvWgryj8Xz/D3W02eKQEf6pnrUswoQB/ruDCK9oD9+L7YBG/ALgQcyKhHt1X/S1TgOTSQZIT7FWqzFmjNs5F4/ZCPdcPhnYUA5LOK0wR+3nn7U2FQC0W0fUqyMgNY9KqLa+Hg=
+	t=1787566056; cv=none; b=BZtHQJXhxggVoyGRJY9uM9N6LoZrJAw0TMDKsZkGeAMZ8tPsfV4zwijp3ghf9cxVGAC6V1c5HmQUn/7zvjYOdKuout6v0hmJ+38S5wDBTnkXlJsjvbrH4aQUFTLgRjdb5WxZ5BIPtgDH9kaFvsC52rG7oOVABOod1XzE4SW/gC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787565904; c=relaxed/simple;
-	bh=tCXPfjbfeyr9jATJREVrmtfpm482cc9JqBuaA4EqFHI=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=EzaoZriM0bqIWbVLBSU8Fk9AsvFHpXcsWKu7MEo8+C9F58dXgv9lGXSZWrcTm8XqhhaibiAR1FFZ4l3lMYZMETu2TKRGOIfYtz9VLr0wk+gDDoV2jQiiDsf4bYkfWY/A9UE+z5kKAG2qBlTTq7me6fWv0gOPUxKdxqOAZcZfTfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=HW0GOYVL; arc=none smtp.client-ip=209.85.208.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
+	s=arc-20240116; t=1787566056; c=relaxed/simple;
+	bh=tiMiPtTKlfHRwgEibcz8vFhTykbZbs0vaWu8IsiI8W0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ui8/TKlOqpt40CseDxc/8dlMAIVUwMaiaS7gkJ8LcnzjP5OcS/yQJgWW8PudZ/RInU1CFfbcwnIEHecYTemra0DC2W+gfMPTHGUle1g7El0mIZ7PI40AB20JccCC0Kex58u6+Wqsx5nC16lx5Ji3imtCpUu8TaYE9ZzYK/cIaso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QnTg6ii0; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="HW0GOYVL"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6a20319d030so4876706a12.2
-        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 03:05:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QnTg6ii0"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2ccdf36f63dso137905ad.0
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 03:07:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1787565901; x=1788170701; darn=lists.linux.dev;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=z+EXhzdCNyL7BX1v534o+kUhKJJy7+6exCGtwlOH/1M=;
-        b=HW0GOYVLunDRagcvzBWo6W4S447GSUWvB/Yv50osFPoLqGU4zw3Ij7mhw9bOkqj/6W
-         NDatN2RM6B3h+deNzoInU9DeamegnbMzM9vB0lZnAxHqYqfE+Rg7uZry6sy/14PLnJ47
-         SOvO2MsUt4CH8TS6B5xAsm7RzwxM3+o3PEcRcMlZy06XhD3O7BsSVHs05yZJf6y5XwAy
-         7/UFfmQA0YTd1/0PIxtkRYIAZEEhjzH2TLZbCjmxY7W47tRjPsv5fAdllRlG1ZCacZeV
-         R7bLGGblheWXvGUanmib6B3d7AJ4sEN/O1ufuKgOeoCwkOsr8+NIxn4/p0sSdwDRG23D
-         N2oQ==
+        d=google.com; s=20251104; t=1787566054; x=1788170854; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=1zbz0UezBRokFCxPAADPzNNnQ2q3uFS8kgDI9OKirCA=;
+        b=QnTg6ii06PP17ZftT++0PdcOcMcA78t1Il4g8VM9cuuAX2CM5eavJJlJEIQYXpHvRf
+         b5oDUL/j11qRhY+62xK0y9tujliqmlbQjAtUf+tPV3xELfkXm2p5ezlgcajmrg2m8qoV
+         zKZt9ZDEMXLFAgtGNHmjMihH+HzOoeCLXPPn6CHS7arW+HLBYeG/fWpxQvQTkyAsfPn1
+         8hnhNsynBvvs6U3lqsJH5rTT2LnqQnr7AjVnQ+gxambhGYmHil3bgE+bvlRbReudxp+/
+         05ZM3H3FFsYo9/QwGJbY5pqahzn0hpCMtwe+EYqJFByl5AhfnzgY82yl5MurRJoTg1LY
+         jTSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787565901; x=1788170701;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1787566054; x=1788170854;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=z+EXhzdCNyL7BX1v534o+kUhKJJy7+6exCGtwlOH/1M=;
-        b=RS6ZBuSDQjqift9Ncq4rfQ1AitdHEJcKk4tmaThl0k4e1ynnXKteP0IKbG7RmbCwQa
-         O8LRFsBUyXLTRMj5KqBhRA0/KOgJRBZ6mEP2mShHFdQPN6w1VNdnkmeAQa7ISZp+q8CR
-         6ibhog5N2a2sw9PHBXgytZQ79tmf6jSRzyoW7qQTwVW+1NmuOmEjnpzExZHxDJ6AlF8S
-         zaIgd5jm7dLQM8PL4FjjVHFO1hIyZm6zptXzIwXcFWcHSe6p9k3yyHWWdkzMit8Msj2b
-         ZLHdNFCVACnQFxPD4ZOASD6Q7LNih9phkOKIQwmgGrqwDO/HcNTFOY3r3JCzVgJ8APMi
-         Dqaw==
-X-Forwarded-Encrypted: i=1; AHgh+Ro2qD/BpTHvOxRZvadTPe0Xs3xKUt9yjPLGbseN+h2RVZZPAI67vFKCCq1hWCDRuSvsJqf5lA==@lists.linux.dev
-X-Gm-Message-State: AFuF++nsvyBZHws14TzFbKUqo9kDKxcR42m+R9IKTtCLPIJv9CF+a5LM
-	w4VhvLDVq2f2fecQQuKI5LUW5NSVSJMqb9bHaUpTXtGxAMwK6e+X9qOMtEiV1VPtloc=
-X-Gm-Gg: AR+sD11uoNFlAjxQzMYjgqxN/ymx6odntjauDy8lbbb9GyKuBB1lkGDdF9DuopZOwnA
-	zEPnKdZ3WOsvQH6PfgNCNLSZMr4oZUCEKD7R5xAvsM2a/1rG0fgxrQsGDlYRNTU3h7C3zguf+0n
-	T3uXxX2bjZBWzAc+TQKWsOuCM2Yj+D+453BGSIkgLozkggvlmFK9YxOGCXzR4kirWn2IUF9NPO9
-	FfyGv92vnIYDVsINsInbjVu8VmpBMLVgKw9MWeArrMYD8Ddv0FWj7wBVhCG/Oxou1ozGXOqTsvl
-	S/PpKSDLWPia7f5woWL+XsUzVC5LAwQOg+MuxvNnBQy8wpK07CPxdpVbJ8QoctaPC9J7smZGPg/
-	DGTmUIURTCqzYFsjVcP4XoKuO9Yrz5cDA4i+TB9LaPp1smye8UW03iaXe2jJ2bka7iP3Tj+MYjs
-	zjM20K35fpHC5kU8qVmGx1vG10JHddrEt69nWuuo2ASniF7uHXg5BZYLQixDLKkBCqy/xSBj1yL
-	HtjLkHz3lnmr7VwkMSA1XDIp/aQs0i3pg==
-X-Received: by 2002:a05:6402:21dc:b0:6a3:fee5:adcf with SMTP id 4fb4d7f45d1cf-6a42f14d952mr27894029a12.1.1787565898379;
-        Mon, 24 Aug 2026 03:04:58 -0700 (PDT)
-Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59e2da49bsm8922721a12.29.2026.08.24.03.04.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2026 03:04:58 -0700 (PDT)
+        bh=1zbz0UezBRokFCxPAADPzNNnQ2q3uFS8kgDI9OKirCA=;
+        b=VEr93KDMg2SMKAQ//h96Tva+Amoh5JEujHkD0ni3evUrZQRwtoPccsGu0ApcaNUeZK
+         c4uPwXo/XILSVxRAedpw9VYHFr8U/wldawJMJZjhg5WlWNS5KCb28Gu5b2H5OOXyPWFI
+         nJHYMErG8tGwxOz6b68GaEt+2CRwWVhnZVdQC+bVOIPSD1ZUsuzbJXZTTTM/vwSJLgZR
+         Gscg1xJBkKBU0LYC5Bw5/1CJHvMT4oAWzD1SvdK20XY31C5KNWJ0v5vyiTSzaf5IkUwq
+         OhGf87PG7fYyNqggo2j66+hIWVYWwoWybmgYhKjsJFm1ylPCmqYtQQowVPp0lYZqyyEb
+         9CNw==
+X-Gm-Message-State: AFuF++mylCSOUAkvtswiBcNhOz4ouIi3GR5HfrFUDY2QxBd+wdsPyaHJ
+	8u7Es/oQ3M/cL95P1kgcVm9hC9OgV49PST/Z+/Vd+WrvFDCMdNWo4q6fuDexgH5etA==
+X-Gm-Gg: AR+sD11q6K0JUL8T8hPmTeVVK/1Y1nOcDmgBqb2xenui+tS6J7ADDRr9jAe+4xIZ8HA
+	HWU2GK/efA05rcsuewghZEhVc+90awJQefL5DIgoFfD8L2rXVsFEt2BdvHFDuigws4xSOlxqs4z
+	tYEYYcUOiLzlolXNsU7D8bgeSlSLsChlIE8q6IuNpiMB6Yux1b3zLt8RjFR9wgJCQ0sw0V6SWWj
+	CoOjOkPSmx2bBbgQmwaIvgLTHdEhJXVQFz+g2pvpdVOx07i/g5oMZQEgOIrE/NJFESbZfGslhsj
+	gTyJZEBh+RkeR18whwa9io+gouqMhHuqVhvzzW3P3/SgPjJiTqcVV6/Sngvq97ldprnZqPupSj9
+	bzVp2tU9QAoVST/i8MDOb6leMzB18iIQBIInCxl0zBsEJ5rX5d+s2wKK+j301NtwFrZ8qYh/ttP
+	XcROt0FxLDmPfSWMmz+hrPw91Or6+jsihqaig4gu80S6bOnEYf+Yxq7Mst7OtTKbxeGT2+G0EWA
+	Eag1cq6BOpDkse4LmJmsQI/3g==
+X-Received: by 2002:a17:902:ced1:b0:2bf:1000:d3ac with SMTP id d9443c01a7336-2d673bdc43fmr8073435ad.11.1787566053791;
+        Mon, 24 Aug 2026 03:07:33 -0700 (PDT)
+Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8520f03b065sm1758681b3a.32.2026.08.24.03.07.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Aug 2026 03:07:33 -0700 (PDT)
+Date: Mon, 24 Aug 2026 10:07:27 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Ankit Soni <ankit.soni@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 1/5] iommu/amd: Refactor device probe and capability
+ initialization
+Message-ID: <aowX3yLlstXoCfKa@google.com>
+References: <20260814015647.3370124-1-praan@google.com>
+ <20260814015647.3370124-2-praan@google.com>
+ <ecb70415-05c9-40bd-8ddb-173267a7a30d@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 24 Aug 2026 12:04:57 +0200
-Message-Id: <DKX384NK76OS.3NNOMAH72PV2P@fairphone.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
- "Robin Murphy" <robin.murphy@arm.com>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
- <conor+dt@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Rob
- Clark" <robin.clark@oss.qualcomm.com>, "Bjorn Andersson"
- <andersson@kernel.org>, <linux-arm-msm@vger.kernel.org>,
- <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 00/12] iommu: qcom_iommu: implement support for
- instances on MSM8974
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Dmitry Baryshkov" <dmitry.baryshkov@oss.qualcomm.com>, "Luca Weiss"
- <luca.weiss@fairphone.com>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com> <DKL6P7G0WTM7.UJ6KZERQZDFK@fairphone.com> <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz>
-In-Reply-To: <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ecb70415-05c9-40bd-8ddb-173267a7a30d@amd.com>
 
-Hi Dmitry,
+On Sat, Aug 22, 2026 at 06:34:42PM +0530, Vasant Hegde wrote:
+> Pranjal,
+> 
+> 
+> On 8/14/2026 7:26 AM, Pranjal Shrivastava wrote:
+> > Restructure the device probe path to improve readability and prepare for
+> > cleaner error handling. Refactor check_device() into iommu_lookup_device
+> > to explicitly validate and return the amd_iommu ptr & devid. Refactor
+> > iommu_init_device() to return the allocated dev_data. Consolidate all
+> > PCI cap inits (MSI domains, PASID, ATS) into a new helper:
+> > iommu_init_device_caps().
+> > 
+> > Suggested-by: Vasant Hegde <vasant.hegde@amd.com>
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> > ---
+> >  drivers/iommu/amd/iommu.c | 114 +++++++++++++++++++-------------------
+> >  1 file changed, 56 insertions(+), 58 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> > index 4c31294fabc5..9b8ad131ba79 100644
+> > --- a/drivers/iommu/amd/iommu.c
+> > +++ b/drivers/iommu/amd/iommu.c
+> > @@ -675,7 +675,8 @@ static void pdev_disable_caps(struct pci_dev *pdev)
+> 
+> 
+> .../...
+> 
+> > -	amd_iommu_set_pci_msi_domain(dev, iommu);
+> > +	iommu_init_device_caps(dev_data, dev, iommu);
+> >  	iommu_dev = &iommu->iommu;
+> >  
+> > -	/*
+> > -	 * If IOMMU and device supports PASID then it will contain max
+> > -	 * supported PASIDs, else it will be zero.
+> > -	 */
+> > -	dev_data = dev_iommu_priv_get(dev);
+> > -	if (amd_iommu_pasid_supported() && dev_is_pci(dev) &&
+> > -	    pdev_pasid_supported(dev_data)) {
+> > -		dev_data->max_pasids = min_t(u32, iommu->iommu.max_pasids,
+> > -					     pci_max_pasids(to_pci_dev(dev)));
+> > -	}
+> > -
+> 
+> Can you add something like below comment so that we know why we are not calling
+> iommu_ignore_device in error path.
 
-On Tue Aug 11, 2026 at 2:43 PM CEST, Dmitry Baryshkov wrote:
-> On Mon, Aug 10, 2026 at 12:16:19PM +0200, Luca Weiss wrote:
->> Hi Dmitry,
->>=20
->> Many thanks for working on this and sending this patch series!
->>=20
->> On Sun Aug 9, 2026 at 10:15 PM CEST, Dmitry Baryshkov wrote:
->> > Qualcomm MSM8974 platform has five SMMU instances, used by display, GP=
-U,
->> > Venus, VFE (camera) and JPEG encoder. Each of them follows ARM SMMU v1
->> > spec, however they differ from other Qualcomm platforms in the
->> > implementation-specific registers and also in interaction with TZ.
->> > Venus, MDP and VFE SMMUs are secured and require programming only of
->> > CBs, while GPU and JPEG require full programming.
->> >
->> > This series skips IOMMUs which can't be tested right now (VFE and JPEG=
-),
->> > and adds only MDP, GPU and Venus (although untested, it is required fo=
-r
->> > display to work) SMMU instances.
->>=20
->> I do have a patch series (sent years ago to the mailing lists as well)
->> for CAMSS so I can definitely test this in the future.
->
-> Ok, let's land these first, unless VFE IOMMU blocks display on your
-> platform (Venus was blocking display on APQ8074 DragonBoard).
->
->> > Note, to get display to work properly one fix is necessary, [1]
->> >
->> > [1] https://patch.msgid.link/20260809-msm8974-mmcc-fix-v1-1-50f2dcf18d=
-2e@oss.qualcomm.com
->>=20
->> I've applied this series on v7.2-rc7, with the extra commits between
->> that and linux-next for qcom_iommu.c backported so that your series
->> applies without conflicts.
->>=20
->> So far I'm stuck with the GPU not being able to probe, adding some
->> printk's shows that in msm_iommu_new() the call for
->> iommu_attach_device() is failing.
->>=20
->> [    5.971154] msm_mdp fd900100.display-controller: failed to load adren=
-o gpu
->> [    5.972991] msm_mdp fd900100.display-controller: failed to bind fdb00=
-000.gpu (ops a3xx_ops [msm]): -16
->> [    5.974073] msm_mdp fd900100.display-controller: adev bind failed: -1=
-6
->> [    5.974152] panel-s6d6fa1 fd922800.dsi.0: error -EBUSY: Failed to att=
-ach to DSI host
->> [    5.974230] panel-s6d6fa1 fd922800.dsi.0: probe with driver panel-s6d=
-6fa1 failed with error -16
->
-> See the patch [1], it's picked up for 7.3
+Ack, I'll add a comment about this.
 
-I missed replying to you, with this patch the display lights up again!
+> 
+> +        * When DMA translation is unavailable return error so the iommu core
+> +        * won't attempt domain attach for this device. But interrupt-remap
+> +        * is still supported. Hence do not ignore the device.
+> 
+> -Vasant
+> 
 
-Unfortunately the GPU still seems to have issues, I don't have a log
-right now (I think even SSH was dropping then with a bunch of log lines
-appearing in kernel log on screen). I assume kmscube + more complex
-workloads worked fine for you?
-
-Regards
-Luca
-
->
->
-> [1] https://lore.kernel.org/r/20260730-fix-qcom-smmu-v2-3-18e0daf2d836@os=
-s.qualcomm.com
->
->>=20
->> ~ # dmesg | grep iommu
->> [    0.127014] iommu: Default domain type: Translated
->> [    0.127052] iommu: DMA domain TLB invalidation policy: strict mode
->> [    0.739899] platform fdb00000.gpu: Adding to iommu group 0
->> [    0.741358] qcom-iommu fdc84000.iommu: iommu sec: pgtable size: 90112
->> [    6.006877] platform fd900100.display-controller: Adding to iommu gro=
-up 1
->>=20
->> Have you seen any issues like this?
-
+Thanks,
+Praan
