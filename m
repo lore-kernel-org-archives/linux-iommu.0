@@ -1,196 +1,170 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010061.outbound.protection.outlook.com [52.101.85.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B554B3EDE7A;
-	Mon, 24 Aug 2026 08:59:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.61
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787561978; cv=fail; b=dGOp06yV92d1Xd5xEhurCOS/ZY5D7zYtddqxw/yQDilnI0QM6nxcEUe7sP52na/SzIc/r+yt856Rybqm3ocJd8DNC8pIz5eGdoXRpbB9qNppq8aAaXX7P0eueiU5Mu/y9tb4bo6M5t6YRTVl0/7P6t1TS+BdgNX0mVAxHSxNt98=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787561978; c=relaxed/simple;
-	bh=biY3Jd89u5JzytoYlJyaD2Md0E7k3M6G2rGbHx8OXPE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=eys1uHyvAjM3EPVW/v6cmwlXdLBHYvPCEPM4zCSkbJ1USOoVuzZKjc1eO9RfUJ9nns9XdzV0WSVhjTSBZ4IPBqN7IOQ8kJLpJgFKNO7t6ETSKqYSxgtjEn7odMUoaSgV1xiBFXOCaaxzGdxJdBnURK37acj4wW9vZSO7tcb9TLU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GFHreHO8; arc=fail smtp.client-ip=52.101.85.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827833AEF5A
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 10:05:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787565904; cv=none; b=efbMnbTuyh8+kQhCWS+DcVbGm8Z0elQzGSD/JGPvWgryj8Xz/D3W02eKQEf6pnrUswoQB/ruDCK9oD9+L7YBG/ALgQcyKhHt1X/S1TgOTSQZIT7FWqzFmjNs5F4/ZCPdcPhnYUA5LOK0wR+3nn7U2FQC0W0fUqyMgNY9KqLa+Hg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787565904; c=relaxed/simple;
+	bh=tCXPfjbfeyr9jATJREVrmtfpm482cc9JqBuaA4EqFHI=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=EzaoZriM0bqIWbVLBSU8Fk9AsvFHpXcsWKu7MEo8+C9F58dXgv9lGXSZWrcTm8XqhhaibiAR1FFZ4l3lMYZMETu2TKRGOIfYtz9VLr0wk+gDDoV2jQiiDsf4bYkfWY/A9UE+z5kKAG2qBlTTq7me6fWv0gOPUxKdxqOAZcZfTfM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=HW0GOYVL; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GFHreHO8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bzeAnegkqzSJaSFZBAzpGRv6fbruO/JMHUOnt3zGQlxnKkeqtcTLHzyhKzGs868G6yHQcdfEA+zhyuEmqWtAxjAJQHJoga6RZ7HiNawqcM4Dhc9TEOpGJbhtDqZQj7ztU4yH6fPZleGp/dxdVBxAFgp00QjLqGs2wYTIx7KUZX4TRYJ/Qh2KnfqCj8a7v0wS8yEP3pRBxRxUFbbgXWOUHd/yTJTENIIllvBxlOj1cL6bA4ZsPD/76VLWyvHfHXtfQ66puDUBrPRwkpUUN+/TrUzYWAIi/xVKd1n2FomRvYVlYYwINdpszxP7eqV2hLq1jZEhgx7EbUislYrmEqFiIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xPEpNYwQnxN8HF6+IFuiUxFUZ0y5F6aFP/mGUW1MQ7c=;
- b=aikvevWEBaj3LVjhHo7o2Rew/+rGPtsweCLX3KPqtpP/j68slX9HcjrtSZz1+7+kYnqaKzRnjFGVESUIIMCp4/Cd2Xe4rBiGbe0pbmT4/opS3ZLAY5mnz7Nvcx7PTtkVhCMhzP0zsGRS6YQzyFAtck0X4OM74jnv5rMza0gg5Z3HCmyNGDkdn1m8Nwodc9yfLSzi6tjbwOxqoHIWqUGKSWPmsAOi1ZGf6DSRkog9nvDXIEpaIUU3bPSGYf/aNj+iAU6GxGx3HYaVlv7elJxwedVEJeKsEjseP4Pu93zoiu5VHdc2SHzbaXsVF8/7Gw/SOACsoyc/bj0PoCPsOgJScw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xPEpNYwQnxN8HF6+IFuiUxFUZ0y5F6aFP/mGUW1MQ7c=;
- b=GFHreHO8RNHeHvGUwCWGuoDQk1xGX5Ye04x7zy+VA3/sVqnpmFOYmvT8oTccES35Cfd0ghg7pJuUDHmn0PZjN68HItqiJQKZuiewtYP62IX+R0pFRghTL/6R9qvny6/rUIgSc6zLgFKZLWdg34RZSH2L1liCYLLpWB/kSm4PgSVzS2IC5/K0ZVqCwzh29iP8B7UQmlfUh+/YTyU+Xqvzzt7qjbBffVVsNJbFKu8flGQpqFdGoBVShR86WCHpmOHG41lKOZ7semaDojhC//xjU5HLbh1ZNSZ5Nm7ZqmhQ4rsmPYXosG/q4o97TEDy7Wk3lOXsPhZSbwDolBtfJR5QUw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8728.namprd12.prod.outlook.com (2603:10b6:610:171::12)
- by DM4PR12MB5963.namprd12.prod.outlook.com (2603:10b6:8:6a::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.339.12; Mon, 24 Aug 2026 08:59:28 +0000
-Received: from CH3PR12MB8728.namprd12.prod.outlook.com
- ([fe80::2641:1046:bdf3:93d7]) by CH3PR12MB8728.namprd12.prod.outlook.com
- ([fe80::2641:1046:bdf3:93d7%6]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
- 08:59:28 +0000
-Message-ID: <ac473a83-c77f-4a41-bc86-8a857d2d6e36@nvidia.com>
-Date: Mon, 24 Aug 2026 10:59:21 +0200
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
-To: Mostafa Saleh <smostafa@google.com>, Luigi Rizzo <lrizzo@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>, rizzo.unipi@gmail.com,
- m.szyprowski@samsung.com, robin.murphy@arm.com, willemb@google.com,
- kuniyu@google.com, davem@davemloft.net, edumazet@google.com,
- pabeni@redhat.com, gregkh@linuxfoundation.org, rafael@kernel.org,
- akpm@linux-foundation.org, david@kernel.org, netdev@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux.dev, driver-core@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20260615234220.3946885-1-lrizzo@google.com>
- <20260615172535.080cf94f@kernel.org>
- <CAMOZA0KAHKsvA9yRcdrjG13S+=rJhw-Cvnw2WdLjGGY0azG0kw@mail.gmail.com>
- <ajEuUZMgS_NRmDcp@google.com>
-Content-Language: en-US
-From: Dragos Tatulea <dtatulea@nvidia.com>
-In-Reply-To: <ajEuUZMgS_NRmDcp@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR5P281CA0023.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f1::15) To CH3PR12MB8728.namprd12.prod.outlook.com
- (2603:10b6:610:171::12)
+	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="HW0GOYVL"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6a20319d030so4876706a12.2
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 03:05:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair; t=1787565901; x=1788170701; darn=lists.linux.dev;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=z+EXhzdCNyL7BX1v534o+kUhKJJy7+6exCGtwlOH/1M=;
+        b=HW0GOYVLunDRagcvzBWo6W4S447GSUWvB/Yv50osFPoLqGU4zw3Ij7mhw9bOkqj/6W
+         NDatN2RM6B3h+deNzoInU9DeamegnbMzM9vB0lZnAxHqYqfE+Rg7uZry6sy/14PLnJ47
+         SOvO2MsUt4CH8TS6B5xAsm7RzwxM3+o3PEcRcMlZy06XhD3O7BsSVHs05yZJf6y5XwAy
+         7/UFfmQA0YTd1/0PIxtkRYIAZEEhjzH2TLZbCjmxY7W47tRjPsv5fAdllRlG1ZCacZeV
+         R7bLGGblheWXvGUanmib6B3d7AJ4sEN/O1ufuKgOeoCwkOsr8+NIxn4/p0sSdwDRG23D
+         N2oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787565901; x=1788170701;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=z+EXhzdCNyL7BX1v534o+kUhKJJy7+6exCGtwlOH/1M=;
+        b=RS6ZBuSDQjqift9Ncq4rfQ1AitdHEJcKk4tmaThl0k4e1ynnXKteP0IKbG7RmbCwQa
+         O8LRFsBUyXLTRMj5KqBhRA0/KOgJRBZ6mEP2mShHFdQPN6w1VNdnkmeAQa7ISZp+q8CR
+         6ibhog5N2a2sw9PHBXgytZQ79tmf6jSRzyoW7qQTwVW+1NmuOmEjnpzExZHxDJ6AlF8S
+         zaIgd5jm7dLQM8PL4FjjVHFO1hIyZm6zptXzIwXcFWcHSe6p9k3yyHWWdkzMit8Msj2b
+         ZLHdNFCVACnQFxPD4ZOASD6Q7LNih9phkOKIQwmgGrqwDO/HcNTFOY3r3JCzVgJ8APMi
+         Dqaw==
+X-Forwarded-Encrypted: i=1; AHgh+Ro2qD/BpTHvOxRZvadTPe0Xs3xKUt9yjPLGbseN+h2RVZZPAI67vFKCCq1hWCDRuSvsJqf5lA==@lists.linux.dev
+X-Gm-Message-State: AFuF++nsvyBZHws14TzFbKUqo9kDKxcR42m+R9IKTtCLPIJv9CF+a5LM
+	w4VhvLDVq2f2fecQQuKI5LUW5NSVSJMqb9bHaUpTXtGxAMwK6e+X9qOMtEiV1VPtloc=
+X-Gm-Gg: AR+sD11uoNFlAjxQzMYjgqxN/ymx6odntjauDy8lbbb9GyKuBB1lkGDdF9DuopZOwnA
+	zEPnKdZ3WOsvQH6PfgNCNLSZMr4oZUCEKD7R5xAvsM2a/1rG0fgxrQsGDlYRNTU3h7C3zguf+0n
+	T3uXxX2bjZBWzAc+TQKWsOuCM2Yj+D+453BGSIkgLozkggvlmFK9YxOGCXzR4kirWn2IUF9NPO9
+	FfyGv92vnIYDVsINsInbjVu8VmpBMLVgKw9MWeArrMYD8Ddv0FWj7wBVhCG/Oxou1ozGXOqTsvl
+	S/PpKSDLWPia7f5woWL+XsUzVC5LAwQOg+MuxvNnBQy8wpK07CPxdpVbJ8QoctaPC9J7smZGPg/
+	DGTmUIURTCqzYFsjVcP4XoKuO9Yrz5cDA4i+TB9LaPp1smye8UW03iaXe2jJ2bka7iP3Tj+MYjs
+	zjM20K35fpHC5kU8qVmGx1vG10JHddrEt69nWuuo2ASniF7uHXg5BZYLQixDLKkBCqy/xSBj1yL
+	HtjLkHz3lnmr7VwkMSA1XDIp/aQs0i3pg==
+X-Received: by 2002:a05:6402:21dc:b0:6a3:fee5:adcf with SMTP id 4fb4d7f45d1cf-6a42f14d952mr27894029a12.1.1787565898379;
+        Mon, 24 Aug 2026 03:04:58 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59e2da49bsm8922721a12.29.2026.08.24.03.04.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Aug 2026 03:04:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8728:EE_|DM4PR12MB5963:EE_
-X-MS-Office365-Filtering-Correlation-Id: 82d2c0e8-e66b-40c1-01e3-08df01be00ae
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|376014|7416014|1800799024|10067099003|22082099003|18002099003|4143699003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	m+6mXDsx1UNSgbgdtXYOc3ilXKI4SHa/1M4cxDCnAtK/YoYSnmhsO1TUH7COi7U183MerbU+SlJrE7sRJ4oAYwQwIPNC9nKF1oQmd87vGNLBaLuDvVx+iBSF7dPbquT+w0d7QaBPQ2MCRrWipIQNMhqA5WhqSu49IXo/JKnlIxOZb16RXOXG2IPzT3UnrpBPqIn3PDnzobokP6rVAKm3AEQ3Wg13jpoPEddnj9TB7xUEBY0NU9IMjiM2QDb4TO/y5KfKOL2Evnp2PqGl+r4A3j3qE889kCkv8Hhf2X5/UFbgmk56gJN/qNxsBf18XjmTpiIjd+6Do3D5V0YpPEr+n8gI5urTkebmNlPITZhumvPbZoCL/HMz5HRecU3hPaKHSLI/a8FqNMOv/LX7aeSMofIF8MRjbRw1zUbtCUoBS5RKbuHgPli26U+ipoMijohkaopooso8PCKGlwwzHd8+cHiuabxWQHZ0nuQ4bONY6Gn1BXj94eqNO2rQDtNgfpyypDXYR+Nylwaj3VfOrkg3wbOkaCH5EBkFQCrqMzyorT8d++BhbRmHTNXS/90fFGR9QZWCiK4tK/bKwPeAYNTL+9Ssof90X9igwr0ASKlMbCH5nRO9gBecaHvUS1LdzdMa5pRgp526qvs6uJgCtKoMrRirruM7k5B/oHTHThDvNd0=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8728.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(7416014)(1800799024)(10067099003)(22082099003)(18002099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NDNML0x2Z0pZbzNSSStqbnhJMnk5bC9tU29NSzYyRWxSMWVYaHhEUElyTWRz?=
- =?utf-8?B?ZW9xcHZkNXJ3ZjYrdWozMVRGQ1pnLzNmWU9EMTFrZVhQcGxjU1Y0RWRrTk5C?=
- =?utf-8?B?V005aGRkaXNoMzdFRmhzU2QreTNjM0R1RzlITy9tUDVCQUROSlJxaUdWRmo3?=
- =?utf-8?B?d1lIM0ZJWmQzOGtCd3lycFlpTktHVTJ0THZPTmpQU2Y1dHFKbUdYQkk4allr?=
- =?utf-8?B?bmVpckJDQzBjZDZkb0lhdFV5R1JQaUkyc1pRWXJ1RW93VDFBVVhHK01XdVpy?=
- =?utf-8?B?YjVHUHd2V1lOM0R1c0tGS3JTaW04Z3hBZWxRZlM2bm1lTXBHM3dETVlUa3Vu?=
- =?utf-8?B?NXNaUmtRRy8xdXZEZCtIQmQ1aFVhK2x1N2ZlZTJDZFhYY1JWTWVBdXBMZ0xH?=
- =?utf-8?B?Vnh5QTkwWHk1UjFpY05HVEtjaDJkd2tMdmtEdElENWRkZjhlUVhCeGRyR1li?=
- =?utf-8?B?NXYyOHFIUGo1ZEFKalY5dVZGSitpN0NQeXBvUU00L0gwWHp1WlZZMlpjaXdM?=
- =?utf-8?B?Yk10dldmTi9MNzBadjhRVkxPVUMyT3F4MkExbUF3QzY3OEFPU0hQdTU0bzhZ?=
- =?utf-8?B?U1FnNWJZTVhLNmFnQ0hKODArV2c2MUNRSURwb2tXZGJjOExoUTFYNFNZVmRB?=
- =?utf-8?B?UlJpVnV6WTNsdFlXeTFISnQ2WFdZOGVJWmRPcEJ6dUdpaGFCckVPcG03eEFw?=
- =?utf-8?B?N0hUVjVnNXdCc25VUXVlVWF1ZTBBNWR2cnRwN2JQYXFGS2k1Qkw1TzdHM1B0?=
- =?utf-8?B?QUZqN29QOXRlam9nSzVvRWlFc2EvK0gxS0FRU1VVME9HdG9GKzh0eVpTMUY5?=
- =?utf-8?B?a01yNmllOEIrb0liRlVMN0w2K1BJejlPL1RmcmRqSk5kNVEyZXBiTHQ5Mk9L?=
- =?utf-8?B?SG90U1lNdmw5ZTJsZW50ek9MRHdITFVTQTNjQkMwUys5SEtBQkVpMForNDha?=
- =?utf-8?B?TW04ZGFCbGt2TFYrWkozUm5CWFl5bFJzcXZ3Q2IyWlF6UzFhbzBDcFhlVHVo?=
- =?utf-8?B?WCtRVVdweEFxa1o4eEErN2pKc1duMUcvTGVLWlB1ZjdKN3ltenN5MVFZTEUz?=
- =?utf-8?B?Y1lQdVI3dW5TNFlXNEpjUVJxLzhGT3QwK0VVcWJKTU9VNHVWRy9LQ3BQRDgz?=
- =?utf-8?B?Ykw3R2s0V2NiTHUzdDMzdEpsdXBaTjd0NDdlREYrZ3BwZm5INFBrWUtNMDdB?=
- =?utf-8?B?WktzdXlrREZHQzNzeCtoeitkK2FsVFZMcUJldG9CU0xEK2JOV0VCTUR5UVlo?=
- =?utf-8?B?MTZWM3VPbXgzMFQwUGhDVUFyOGdvYmlNMDQyUm5tUUh5U053VFdzUjRyakJJ?=
- =?utf-8?B?UW9ZOXBvdEZvaTU3YWVIRUZnVy8zVEZXdUFyWk1SV0VBMVRNRXljNVhtaG5W?=
- =?utf-8?B?R3ZaV3ZTNFpkM01DY0doaE5sc0ZVTkVWcGRZOWVOZUJGTnpnd01sSUpmN1F4?=
- =?utf-8?B?RVd3ZkgwZk1obnljZTVWdGZ2Y2hNYUlRNUFhai82aWxVd3ZqZzR5MnhtbGRu?=
- =?utf-8?B?ZFJZVzNPOW5PUUdBUTZOelNOS0UyWUdwSHUvUFByRm5BSEp3ZGU4M0cvK2Rs?=
- =?utf-8?B?VW93VTEvbk1nZG84enFUa3VNQ3lLQytFQjRhd2hXcC9GMFB6aW9xV3l5YzNM?=
- =?utf-8?B?Z0I1bFVnbGoxT0kvdW16Y1NmR2EzaEVRNjZyT2JvQWd6ZEordEdaaGtyV0U2?=
- =?utf-8?B?dTF5eUxlemJObHJ2UU1ldFhWdFRwNXFNazk0aVNqSlJlSzRqbSt6SzI3bm9v?=
- =?utf-8?B?cUlMTGh4MDcwb3pKVW9ZQnNPRU5aZnVvL0hOdEVVUWc4RUVkYldnVmQwTVlw?=
- =?utf-8?B?Vm9oSG5JUSsxWDhidjVMOVVtL0dZSy94Ky9JMzZodG1Ya2htVXBQN25RaXpD?=
- =?utf-8?B?RW1wWW9SK2o4Y3JsWm1Fa3Zxb1M2b0JWSlFUSzlTaXRDVVVNNWphd2wydy9Q?=
- =?utf-8?B?TXZ2emlDUU9uNm1iWk9PVGZWYmN3T2VSK1NNWjNoOGxUR2NwN09sc0hzdmRv?=
- =?utf-8?B?K2M1VWlUTFdmcDJQM1pkQlZCUlowaUNEb2tTNlhBdENZQVQxRW5FZndWZHRw?=
- =?utf-8?B?ZXhicXNwci9vV3hYc1ZXZWR5Yy9jbDdJRjdyRlpBaTBGR05nY3pyS1ZlWmpE?=
- =?utf-8?B?Mmg2a1lIa09uR09Hd3hna2h1cHhkQkdzdFhublpVNG9veG1vcFdQYkVwZ1Vp?=
- =?utf-8?B?TlBKV29iRW5QZ1Z5a2NPL3hEN1NFWHVnMkh2aGhZVWJvQStwR0FtN2ZRRExt?=
- =?utf-8?B?clBlbUNjTGpiS3FtYWxzZ2pFU3pRb1QrOVlwV2hmQ3llSUlNblA3aXdmMmRu?=
- =?utf-8?B?R1pCM3BWYk11TTFpL1gzWUtWWDdhd0FyaDFFV2ZyTFl3dGRtUWM4dz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 82d2c0e8-e66b-40c1-01e3-08df01be00ae
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8728.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 08:59:27.8848
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zlzcQabuMvaj8wr/heSkooWEGHoFCt3kOvsHsd177Z+zE3zIEbgFzAj0youpMDpTiTn/KrYGEMZ3KW+t797v9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5963
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 24 Aug 2026 12:04:57 +0200
+Message-Id: <DKX384NK76OS.3NNOMAH72PV2P@fairphone.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
+ "Robin Murphy" <robin.murphy@arm.com>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Rob
+ Clark" <robin.clark@oss.qualcomm.com>, "Bjorn Andersson"
+ <andersson@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+ <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 00/12] iommu: qcom_iommu: implement support for
+ instances on MSM8974
+From: "Luca Weiss" <luca.weiss@fairphone.com>
+To: "Dmitry Baryshkov" <dmitry.baryshkov@oss.qualcomm.com>, "Luca Weiss"
+ <luca.weiss@fairphone.com>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com> <DKL6P7G0WTM7.UJ6KZERQZDFK@fairphone.com> <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz>
+In-Reply-To: <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz>
 
+Hi Dmitry,
 
+On Tue Aug 11, 2026 at 2:43 PM CEST, Dmitry Baryshkov wrote:
+> On Mon, Aug 10, 2026 at 12:16:19PM +0200, Luca Weiss wrote:
+>> Hi Dmitry,
+>>=20
+>> Many thanks for working on this and sending this patch series!
+>>=20
+>> On Sun Aug 9, 2026 at 10:15 PM CEST, Dmitry Baryshkov wrote:
+>> > Qualcomm MSM8974 platform has five SMMU instances, used by display, GP=
+U,
+>> > Venus, VFE (camera) and JPEG encoder. Each of them follows ARM SMMU v1
+>> > spec, however they differ from other Qualcomm platforms in the
+>> > implementation-specific registers and also in interaction with TZ.
+>> > Venus, MDP and VFE SMMUs are secured and require programming only of
+>> > CBs, while GPU and JPEG require full programming.
+>> >
+>> > This series skips IOMMUs which can't be tested right now (VFE and JPEG=
+),
+>> > and adds only MDP, GPU and Venus (although untested, it is required fo=
+r
+>> > display to work) SMMU instances.
+>>=20
+>> I do have a patch series (sent years ago to the mailing lists as well)
+>> for CAMSS so I can definitely test this in the future.
+>
+> Ok, let's land these first, unless VFE IOMMU blocks display on your
+> platform (Venus was blocking display on APQ8074 DragonBoard).
+>
+>> > Note, to get display to work properly one fix is necessary, [1]
+>> >
+>> > [1] https://patch.msgid.link/20260809-msm8974-mmcc-fix-v1-1-50f2dcf18d=
+2e@oss.qualcomm.com
+>>=20
+>> I've applied this series on v7.2-rc7, with the extra commits between
+>> that and linux-next for qcom_iommu.c backported so that your series
+>> applies without conflicts.
+>>=20
+>> So far I'm stuck with the GPU not being able to probe, adding some
+>> printk's shows that in msm_iommu_new() the call for
+>> iommu_attach_device() is failing.
+>>=20
+>> [    5.971154] msm_mdp fd900100.display-controller: failed to load adren=
+o gpu
+>> [    5.972991] msm_mdp fd900100.display-controller: failed to bind fdb00=
+000.gpu (ops a3xx_ops [msm]): -16
+>> [    5.974073] msm_mdp fd900100.display-controller: adev bind failed: -1=
+6
+>> [    5.974152] panel-s6d6fa1 fd922800.dsi.0: error -EBUSY: Failed to att=
+ach to DSI host
+>> [    5.974230] panel-s6d6fa1 fd922800.dsi.0: probe with driver panel-s6d=
+6fa1 failed with error -16
+>
+> See the patch [1], it's picked up for 7.3
 
-On 16.06.26 13:06, Mostafa Saleh wrote:
-> On Tue, Jun 16, 2026 at 02:33:52AM +0200, Luigi Rizzo wrote:
->> On Tue, Jun 16, 2026 at 2:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>> On Mon, 15 Jun 2026 23:42:20 +0000 Luigi Rizzo wrote:
->>>> The use of swiotlb causes an extra data copy on I/O.  For tx sockets,
->>>> especially with greedy senders, this has a high chance of happening in
->>>> the softirq handler for tx network interrupts, creating a significant
->>>> performance bottleneck.
->>>
->>> What's the use case? I associate swiotlb with debug / testing mostly,
->>> so it'd be useful for people like me to explain why you care.
->>
->> Ah sorry, I forgot to mention.
->> swiotlb is used in guest kernels for confidential computing VMs.
->> Ordinary memory pages are encrypted and the host or devices
->> have no way to decrypt them, so the kernel must use
->> unencrypted bounce buffers to exchange data with I/O devices.
-> 
-> I started looking into the same problem recently, to reduce the
-> bouncing in protected KVM (pKVM) confidential guests.
-> My first attempt was to update dma_direct_map_phys() to skip
-> bouncing and do inline memory decryption (for pKVM that is a hypercall
-> which updates the stage-2 page tables), however, that was really slow
-> compared to the memcpy in bouncing even for massive pages.
-> My conclusion was similar that we need to solve this at construction
-> by making this memory allocated from a pre-decrypted pool (which
-> does not have to be part of the SWIOTLB)
-> My initial idea was to teach some of the kernel subsystems (SKB,
-> BLK, SLAB) about "CoCo allocators" that allocate decrypted memory,
-> as this is not a net specific problem.
-> 
-An example of this is Jiri's system_cc_shared heap which is a dma-buf
-heap with decrypted memory for userspace.
+I missed replying to you, with this patch the display lights up again!
 
-> I am still looking into this, I was planning to bring this up in the
-> upcoming LPC.
-> I will give this patch a try. However, I believe that we need a more
-> generalised concept for CoCo pre-decrypted allocators in the kernel.
-> 
-There is a talk at LPC in the networking track about this [2]. This is
-exactly the type of discussion that I was hoping to have there.
+Unfortunately the GPU still seems to have issues, I don't have a log
+right now (I think even SSH was dropping then with a bunch of log lines
+appearing in kernel log on screen). I assume kmscube + more complex
+workloads worked fine for you?
 
-Besides the issues mentioned in this thread we've also found that a lot
-of overhead can come only from swiotlb allocations when running many queues.
+Regards
+Luca
 
-I will add information about this series in my talk. Hopefully I will also
-have time to add some numbers for comparison.
+>
+>
+> [1] https://lore.kernel.org/r/20260730-fix-qcom-smmu-v2-3-18e0daf2d836@os=
+s.qualcomm.com
+>
+>>=20
+>> ~ # dmesg | grep iommu
+>> [    0.127014] iommu: Default domain type: Translated
+>> [    0.127052] iommu: DMA domain TLB invalidation policy: strict mode
+>> [    0.739899] platform fdb00000.gpu: Adding to iommu group 0
+>> [    0.741358] qcom-iommu fdc84000.iommu: iommu sec: pgtable size: 90112
+>> [    6.006877] platform fd900100.display-controller: Adding to iommu gro=
+up 1
+>>=20
+>> Have you seen any issues like this?
 
-Sorry for the late reply but I spotted this thread only now by
-accident.
-
-[1] https://lore.kernel.org/all/20260325192352.437608-3-jiri@resnulli.us/
-[2] https://lpc.events/event/20/contributions/2464
-
-Thanks,
-Dragos
