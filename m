@@ -1,179 +1,228 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013024.outbound.protection.outlook.com [40.107.201.24])
+Received: from flow-b1-smtp.messagingengine.com (flow-b1-smtp.messagingengine.com [202.12.124.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A7BB3F927B
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 10:37:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.24
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787567837; cv=fail; b=dhOU3IvXuPTnyCQk49KmOeO8Ja0c36VOvtjupMsElWzbS3Aw7v6cqlDYgRbvge4hLt59X8Hbg49otZVfqOALLZUhia3k1Lghg7vQLfl5Rlkkq/rDxRAQQBilC8Lq8is0S5X6OO5skZ/tv4Yng44xgzH88y2aSnPZRzIi3L2Be8o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787567837; c=relaxed/simple;
-	bh=JUVT8QwGoOLqh4zHDMEHFSUoqtwRVcBgNgTC6LwBtes=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=MPKskecGYRdYPA2Ti5FRgQd5Rz93oyt1eqX9c38Cs2TJnWeJIqzYeE/LH6J3elSeOYsbejwx8INYrrrl2Rg02yagjbvy+nqM7x94u1atKA5e13fYhtXR9BMTNm2uxYFpAi0vn/WwGkvD5bDAwTT5Lvyo3DQ42EC1HQ+6UK3Imh8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=lFdRCzc1; arc=fail smtp.client-ip=40.107.201.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 977DA3F8238
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 11:09:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.136
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787569757; cv=none; b=TSs3f2Sd6rRRwf6IKSE1xDWcrS4aXevH8fDbgc4bYtAU5HaBWiHYyA4DTy3XzPYHkVyIc3fm+MU4FEBa0ZTvzafC2ZdHMVpxdPRIJSbfLGyicrCatyLeShv2I5JXA6BVm99m0y2per6fzlKT0qJsQ29Qseeyo0N9BxPKei3qGDg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787569757; c=relaxed/simple;
+	bh=LiNQyF1EmMFfRrgRgV4qxL5qB76MSrpv6mludB4ICHI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YJJmynFo7lf0fkfJr1TmQyn8dLrWNIrv8lazH8UWYgpXs2Oq4fkzTn+VvJ7ztnllIjb7+58qRVBiWoR03mTX9Q+H/CCyBMGYrW/eeHgNiwPVkulPsd4WncnfIRFIz2jDVEDqbSRsMnblbCjYuVg97HUFAFV/yghjwfs/dt8+JH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=klN+LqOf; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=chjWAmYO; arc=none smtp.client-ip=202.12.124.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="lFdRCzc1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lpSCuLef4KKCB6NgVnImhF1r46TVHkll2IOrzQODyVOZmp4MpOLTp1A2qFY+CZUrpJfd1oB4MTGysPu1mvwpDrBfHcnWVBcLOSbA6PGvRxT5X6NWBznQ5YBeU3v2aY5bnexddCZlMi/cDvBQMl8AeZpUyPQbLgp7Uiy1JDOsHUz8THAmeZkHDFy8jIMk7QhSTfb/G8lUTeGCYMoKVncSUWgfRR0WoHzynMWNYpbZmBRuCFHFUUk6yfj+LCnYz53eufygY/AsimzuK+iJ9PCRGemKjiGjIwMW9xErvibL8vK1wwEIhwcxSKKdenRAllFC5lzsJ5WjkqaqeFzVDwvCeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NZjGgY7dK/P+WaKpqeV9PvIgldJqhpRJrt1qlMNOywQ=;
- b=T1q5kqt/7Lfc+7z7SaAakvf920GHKV4wlqelD5/JhTWu9BUeHy6HMidgdV1jbDLy6z353aFyxq7yWt+M+kmHN1+epFmtz/aObjCXjusmRhxgG+jHfGRw4qd+Q2JDKwDeZ9PuWRKQwtAdN+gJLrpBuEDmc/ImIxnJEHrxaTDRWS21TXMOv++W01xse+La+bPYEOhzkv4+rjj0w149DAPe9AANCK58thcjy898y0Fie/LkgRmhbeEL17daqZ8G7nGNQzDo0K2QguKqe+Z4bgZ8iB1r4teMd8bD1m7buvE6VZ3iuRywtTiiqa2xofHJnLvLaHloOzW5d4DmZW9DKEx7dQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NZjGgY7dK/P+WaKpqeV9PvIgldJqhpRJrt1qlMNOywQ=;
- b=lFdRCzc1bUnX05obdSaGfWO0wKRuwF8w68cLfrW15xSNDI79rXSLfI3MW8M0pxB/+yPLYypfQq6TBMC4p9/s0CYP90t27ZJuQHwZbNCEsPZZvhKp0dpzLUiQgjt+RzG26PqS4qsXi0wB2SOBLFIsX6cNc7vVCDjzqIdTvr/usV0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by CH1PPF946CC24FA.namprd12.prod.outlook.com (2603:10b6:61f:fc00::61c) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Mon, 24 Aug
- 2026 10:37:10 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
- 10:37:10 +0000
-Message-ID: <a13e585a-e9d0-438e-9212-10ff8b5148e0@amd.com>
-Date: Mon, 24 Aug 2026 16:07:03 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/5] iommu/amd: Fix DTE clearing and rename
- iommu_ignore_device()
-To: Pranjal Shrivastava <praan@google.com>
-Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Ankit Soni <ankit.soni@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Samiullah Khawaja
- <skhawaja@google.com>, sashiko-bot@kernel.org
-References: <20260814015647.3370124-1-praan@google.com>
- <20260814015647.3370124-3-praan@google.com>
- <3032d568-f23c-4e52-9303-5816bb2e2372@amd.com> <aowYPxhzGKMLIU10@google.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <aowYPxhzGKMLIU10@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA0P287CA0004.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:d9::14) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="klN+LqOf";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="chjWAmYO"
+Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
+	by mailflow.stl.internal (Postfix) with ESMTP id 2525C1300124;
+	Mon, 24 Aug 2026 07:09:14 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-06.internal (MEProxy); Mon, 24 Aug 2026 07:09:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm2; t=1787569753; x=1787573353; bh=oKDwkKFdwr
+	cmFN7x0IH5wcFZWSaTZtPwLThwa5S+U3E=; b=klN+LqOf/qYi0/5sz3c48ozaRL
+	sbRav5EW6VfC3hCckf6j0Ycbc0b5AmFqR/d16ewvoh1+k5MmvlpuyqsoHCResYzV
+	v+Z0X2ZTjGpw2+e0LYnYsIX4L1mnTQ3yy7o0MXYGVxvAZo780X7XVIK04k8USwS3
+	sB0veH9CpTbRG0w7mpFUIPfEh9c4j0JCPu3ogfuPIViIYZ+SdPe4nHhZuRtUxbNT
+	xz70OseChRqrytJBd3qGF1MpFsSsFkkMb0kXylzotDi6XqUruWNycraERVXiLsE0
+	5PYymyOKm+YZh45iiXZdBteGgHNJlxi4d6x7IkRzNSI98/HrsZo4JxpDAqLw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1787569753; x=1787573353; bh=oKDwkKFdwrcmFN7x0IH5wcFZWSaTZtPwLTh
+	wa5S+U3E=; b=chjWAmYOTiDOzYds7G+pP43Kt79gfwddn/0MNNpBioNWzS36PAe
+	vvYtTYJrqA9cEmAT4nBTUY2A4yn6FnoIYOkyQYDg8utooBnXCVFP4MS1pjlR9QYj
+	NCCogsWaxBilZkLqAKmukcJ4xTVEzWIKiPS5SlfFWk17FMymfeJSi5g0xpgqf0gJ
+	mg6C0WjB8a5gNUjOb8iuqTEatsTb75IDjQgrpiXl64XaN72OnG61JwuTeh6Znaws
+	UbywihBsReSB2Cv6KHvc0Ilvzj190iA7Z4LKvaGVvHK4TcwTI1ubq7PoUblygmsx
+	FePInCAWY3PDNFqFXmoPRblTBY3vSobalZQ==
+X-ME-Sender: <xms:VyaMal0Sf4gum3Zrhe7v1_BrGLz_NA-lOvJf9_N2gcxNZVYweiJFTw>
+    <xme:VyaMar_eOP0hCl0j99HxffZKuk4nS3xyWBSad5zkoD16RHbZ9YLHVVMQJwoxDB1bp
+    8HAEeaPhpIXXpaB-hp8jGMWpnu1D4CWEOok3PF1tW-Rl5UVmuHsPYt2>
+X-ME-Received: <xmr:VyaMajN4QjrgCU6GEoEa2w3uIShxhGcUXqLX_ypGCvIccfr-W5rZxQOph2SEhKASy1bLsdBxNQ>
+X-ME-Proxy-Cause: dmFkZTEmiCd0WkfWdWqfQiCmPz7vfgcmfReIbpni7lOV+CDWG0kkA23NO/IVtO+gBTF1hE
+    sRR82hYA857JlUBXdSxvNZxNiHA7XKFBVmcM7J4iD0HWSGI2S7jdSuwkfw6MrzYiPjHrEH
+    pMdj5rmGeTwSmpfbatYhAR81nxpJ+JyZS00wEMkE9Y1pzdQgBhPU9RYhrIr82Wz9o4xzjM
+    E0EYKk8e7qzT3f6yrgtQL2hx1o7o+VLbTxjs5pwQxd2B6p1a9ApbDsaYkHnBgmaiQZjJ8G
+    p+76A7WdT4gh0IYQTmP706Q1s3Hm4vQQFgnKTsej9PiVx0Ka1yLX+NmljEW9kcNe42YVZ9
+    cF4JgRGEzVaG8b/VW3caDnB/MiNHVHcPAXS0J818xRTZV9NJCfZ16cdzNe/VvB9wt2HEPt
+    FFIatQiN0LOXMmmhJE1bpEBF6eSYxW2pRl4ICoNRrq9oRTTQy69QHfftvvFvhTgZcdZPya
+    0JE4tcIYNWZOUNoHDioIpOK9TOYMSS+t1ZEeu3JNZ1PzMoFqxSHmpjw+skmuw+dvsg6Ovd
+    un5umSAqdpYL/5EzjgzZZwNKm6/WeRipo2gmFooWbOfzT8kzMtGu9z/ycgG21n+NMC944o
+    a4BmdNvCpg5PYjSPa/h7WEPC3PKCnkpeMJ7Fe41fb0IyTMgZGfKQKei8beKQ
+X-ME-Proxy: <xmx:VyaMavC2_3ZOCTtj2GgaPw-Nv9blcBx76zZqcLO-A-sBUuU_YNLXJA>
+    <xmx:VyaMalNZBGUs3GRSH-eENCE1eccR4F4AuPtGgte9YsinDw1trL6Pww>
+    <xmx:VyaMalbgeJANa4v8WjT1Khj9RblHmN-MFSQBkmnebY3IQmCF5JEU_w>
+    <xmx:VyaMakOEnZ5eQv4wS854ZIqZk7sD3i1kYDHb5UFrKa3TR3O0bKnkHA>
+    <xmx:WSaMageWIVIYxp37zZKQ5DbfsRt4i9PLT_jgDpHX9aHdhgR8rowxPJH6>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 24 Aug 2026 07:09:04 -0400 (EDT)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	ulfh@kernel.org,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com,
+	u.kleine-koenig@baylibre.com,
+	chaoyi.chen@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Jiaxing Hu <gahing@gahingwoo.com>
+Subject: [PATCH v9 00/13] accel/rocket: RK3576 NPU (RKNN) enablement
+Date: Mon, 24 Aug 2026 23:08:49 +1200
+Message-ID: <cover.1787568658.git.gahing@gahingwoo.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|CH1PPF946CC24FA:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe7c76d0-0164-4f90-8275-08df01cba6de
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|22082099003|18002099003|10067099003|56012099006|11063799006|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	CG+xrWto5zn82VUT1H/XDpOOTewZBr0zMH3qu+yHJdyVRytbCNlpAiUrvdzoxl6B/H4n9llrt77JvgKVap6Cb8KcwNP0rQquQbEuADUJZYj+su94kKltCRlHDQ2WRv7eaNNkfh10TmB+YMG3AJ44q9u0tLMnacBhIdN82U4jye+3Pdubusxi/+rrRkVX9LSAlzKP9sG1IaasKGTH18iMiD4FOGaaHYvN4iO0zJQv2LG6ZHeiS8yjS/BfPuPq8BVpE1SkizXw2aq4fnDJ8TOQFwSYjTYb3Tx45/WNW+3VASAPtN0bLMqmHTTr2w/ougpe+MH1kN7agDjvMc/CIV0OpAZelABVjFqv1nBrX7S/TJ1sZulkwvhym3p3IRsky421QMOv1cG0FzO1mPFuNYkMvG/qZDzM3Bm5ePr2MLKmZT+yJdLeauTFtO8wq2Hye+hPMImW7Sh8Qu6uVmieUb10n5cGxsFIGsiCURHgefl9MOk55/1GvLI6fErZ3Po3TWs5SG3BnWvhhtO5NsVBHa0QNWe3oipEUWeUPwFKNjgRI0fH8oYqqsWcUIweDrGtu2SXK69N2MmnsRCA+vJtXCgEaHOxVFTg8j5o11Tyu4jyASkTqI89xJqPIenkoTbkDjSSiYBNHP32seT5j9mh8aGJP4ZmA2//Cq42DKrYXeoelKA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(22082099003)(18002099003)(10067099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eXlJMEhBeWM3dFZNU2FReklPWXBBMS9BcVZkTmNqQnNDeWhaM3lJV0F0R2NR?=
- =?utf-8?B?LzcwaFFINW5OaFhxYU9OVVIxbTVJSG1lSGdRcU5oNm1WcG93L1l4djJNcHJw?=
- =?utf-8?B?MHg1NG9JTnJzSWNoRURqeEV0UjhTaVl6U2VROG1DZ3lranJGN3pPZHNWYmpU?=
- =?utf-8?B?U09DckF1QmZwS0FxTWp1ajlzVjgrNjc1R2dZL2l1RHVGMXcxU2hldHVwait5?=
- =?utf-8?B?TVVBOEhmaHZveWRxTGlPUkI4YkNGWWVNVHl1QWxJR1NJemVvQUxwRmtQRS9u?=
- =?utf-8?B?UTNNWXdBRnRwdTUzSUZrWEhRWWs1QXhvVzNsaVBQajdMcWJzazFyWlJHTFZD?=
- =?utf-8?B?TjhyeWsyRy9vUkMrQytmVkJYQU9zUVhXM09kdWpXdkx3ektnVlYxTWZjeFlt?=
- =?utf-8?B?d24rVFk2ckl6cEViMGRIYzQvQ3hkTFRCM1BUc3dNd2pCV2t6b2hsMmVQcUQx?=
- =?utf-8?B?bTRWRElEMldrc21sd2k5dWRYdlZPdDNKczZVODZwaHZRTU1OUUhNT3k1WVlR?=
- =?utf-8?B?MUtPcVkzQ2Y0cGhRMDJKK3RBMkhRK1paaTExYjRYRThEcGUwMmJROHJtUS8v?=
- =?utf-8?B?ZVJaQUpZWFp4bmZjYUdwRFN1K1dBcXVhTkVVbmpuUWtRQk8zRnNOamJJYmx1?=
- =?utf-8?B?by9TVzkxdjJmQUlsUTFnT3I5elJqV1BJdTQzNkphZzhNbUNHSE9ZRWdMb1Mr?=
- =?utf-8?B?WVpXRXNxWDExdTk1UmQ0V2krZWNFYjBETGhHNzlwVVpHS3VGT2VwZVJFTmM5?=
- =?utf-8?B?MjRscHFMOGhvWTBtMVRqa3FnMWl4K0NRMklqa0t1NFFXVVpaZUFTWWhaUEpL?=
- =?utf-8?B?c3ZpaW43ZGoxcTF1SjNreEhGNm9vTm10NExRb3pMam9maW04VHI3TVUrRkpW?=
- =?utf-8?B?N3dMZ2QyNW9yMjJJRHpuVTlNMEVSYmtJMmQvVUZCR0doQ25oMkQ0TnZIWC9i?=
- =?utf-8?B?WDFFd2lRRThYVHpIeG9Uby9mZTE2MG5EZWluZW1JSHVOL3FhUlh0Y3FoMFVN?=
- =?utf-8?B?OWZ0TVJpYWlyWEl3RUd2d0MwWkY2enRtL2U5YUUzekEyRkgySU5DN3l4Wncr?=
- =?utf-8?B?VVowSDVOVkpNRlNMY2NNdTRJZ2w3NnZ2OFNsdDRHVlIrcjM5b3RudTIySWsv?=
- =?utf-8?B?SzEvS1B6NE8wZ1JOaW83VUFkUkg1d1g1TlNiTFc4amw0NFk1R1pvd2ZKMUdI?=
- =?utf-8?B?SFJlYmE1K3MwZTF4VGFhSlo0bEdzSzVzRWUzYWJLLzVnRTN4VzlNdGU0SGgx?=
- =?utf-8?B?YnArdnV4TzUwdE00ZnZGaFVORWZzUGVMUmJOaHErV1h0Z1hxR1RzRllFbVJT?=
- =?utf-8?B?Yi9DV2MrZFVuYmhOSFR0ZGx0a0Y2MnlDTWxMQ2hKcisvZkZUVm9uUTJ4VXd5?=
- =?utf-8?B?czhXOURvS01QNDhWaHV5R20yTEUxNi91bS9xSUFZRTNRSTRlNFpMWUpsNDE4?=
- =?utf-8?B?c2pTTkNsck5PVjhMR1V4elBXT2FDY2Fzd2EvWWZXd1kzN2hlOVcrbVliZ0wr?=
- =?utf-8?B?SmhpbnN6OVZsVkpWVTRjQTJYK2dNQ2kxUmYydHVIZm1IS1o4T1lzVFpjQVll?=
- =?utf-8?B?ZmVIcnNnOWZWL3M5SFBQaWlJUEVzTFdhTVptNTZhTUxoYVdDZkVCQi9VRnFv?=
- =?utf-8?B?eXFLeTNGdW9yY2g3RGVXeTdQYkU3VkJSWnBwRkFDSW5zc2dEeC84aDFveFFI?=
- =?utf-8?B?WjgxVU13LzV5NDRiQldzbnNnWTBtbGV6SUs0MUhDWSsvTWs3dzdaNlFlRWQ1?=
- =?utf-8?B?anQzd1IwT2JjOHFOSjIzeWVWSjJBbHFZeXd1WHovYTZoSGgwMEgycWpzcnRC?=
- =?utf-8?B?OGFXYUU5a3pKMVFWZWdCalVOUUQyNVh5dkI0TFJCWVVsVEVNdkFJU3hMcVg1?=
- =?utf-8?B?UXVsd293eWxUSUhOQ0pxWXhQaFRpRExpR2h3MFJEdng4S1FyZWI1eFlxNkps?=
- =?utf-8?B?NHdoUkNxRTE3K2pheGg3QkRpN0Zmd1YxTzNPR0gvUEpEYy9lZlVleTd4VnUy?=
- =?utf-8?B?OEE0SlhWU2lIV2pyQ05ZSmhhODdFSEQwRWo5TU1LbjRhTTZ4SnlkYkVadXBD?=
- =?utf-8?B?WFFyNWFYVTZFM0lYOTdEdjJtWmxaQXlOM2V2dVhLelJDM3JteGEyMTRUZVU1?=
- =?utf-8?B?cWxOL2R1a0NKNHNpZWV1ejFQOWdodlpod0FIOTFaZ2F1R1lLVGNQcVF6UXVk?=
- =?utf-8?B?WjJINndqN3NmeHJqazdxWjNoVnFJZW5wcXAyeVhINUY1V3lOZjhLWWZWeUVJ?=
- =?utf-8?B?a3pmd2hISC91OHNIeUpOeG5kVFUraHllVHlSTERBQ2F4L3Bzd1F5TndWdEsx?=
- =?utf-8?B?Ymw5TVVWU0lENWtZNDlMSldXVWtQbDZ2VDI5TzU0YS8vdGRlbUgrUT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe7c76d0-0164-4f90-8275-08df01cba6de
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 10:37:10.2424
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g6dh3k9Yqh975cEAzpGq5CfmrjmMybUrUkTOylWNfPpNvlsX0QjkqhgtEapuBiirOdgUCgkWfiOM+n6Dx3WzYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PPF946CC24FA
+Content-Transfer-Encoding: 8bit
+
+Based on Igor Paunovic's "[PATCH v2] accel/rocket: request the core
+clocks by name", as v6 through v8 were.
+
+  https://lore.kernel.org/linux-rockchip/20260729130743.128876-1-royalnet026@gmail.com/
+
+Tested on a Radxa ROCK 4D, on next-20260814.
+
+This adds the RK3576 NPU to accel/rocket, which today supports RK3588
+only. The RK3576 carries two cores of the same RKNN block, wired up
+differently. Two extra convolution buffer clocks, two power domains per
+core, one reset rather than two, no NPU SRAM rail, and a PC_TASK_CON
+that packs the task number into sixteen bits rather than twelve.
+
+What changed since v8
+
+A new 3/13, and the rest is answers to the v8 thread.
+
+RK3576 did not recover from a job timeout. The block came back with
+MMU_DTE_ADDR complaining and every following inference returned the
+output zero point. rocket_reset() called pm_runtime_put_noidle(), which
+drops the usage count without starting the idle path, so the core stayed
+runtime-active, the power domain never dropped, the BIU reset the domain
+cycles on power-on never fired, and the MMU never answered again.
+
+pm_runtime_put_autosuspend() is the whole fix. Measured three runs in one
+boot on a ROCK 4D with one variable between them, each forcing a timeout
+and then running the same convolution:
+
+  put                after the timeout          the next inference
+  put_noidle         runtime-active, rail up    0 of 128, MMU_DTE_ADDR
+  put_autosuspend    suspended, rail down       128 of 128, no message
+  put_noidle again   runtime-active, rail up    0 of 128, MMU_DTE_ADDR
+
+The third run is there so the failure reads as deterministic rather than
+intermittent.
+
+Igor Paunovic ran the differential on RK3588: 45 induced resets across
+three cores, with and without 1/13 and 2/13, and the domain dropped every
+time with no MMU message on either kernel. That is what scopes this to
+RK3576. An earlier draft of 3/13 carried Reported-by on his name and that
+was wrong. He called it "your non-recovery" and said he could not
+reproduce it, and the put_noidle against put_autosuspend split was mine.
+He is on 3/13 for the RK3588 result, which is what he contributed.
+
+2/13 now masks the block before synchronize_irq(). hw_submit() arms
+INTERRUPT_MASK on every submit and only the hardirq clears it, so on an
+ordinary timeout it is still live and a completion can arrive after the
+sync returns. The next submit re-arms it. Igor Paunovic raised this and
+wrote the line.
+
+That write is guarded by pm_runtime_get_if_active(), and it needs to be.
+It is the first register access rocket_reset() has ever made, and the
+function holds no runtime PM reference of its own. The only one in the
+window belongs to in_flight_job, and the completion path can have put it
+before the timeout worker arrives. drm_sched_stop() sits in between, can
+block, and subtracts every pending job's credits, so nothing keeps the
+core resumed. A register access with the domain down takes an async
+SError on this hardware, which is the failure 6/13 and 8/13 describe from
+the power-on side. Igor asked the general form of this on v8, whether
+rocket_reset() should hold a reference, and it was deferred because
+nothing in the path touched a register. 2/13 is what makes it matter.
+
+His Tested-by on the v8 shape of that patch is deliberately not carried
+here, because this is not the patch he tested. 1/13 is unchanged and
+keeps his.
+
+11/13 includes <linux/device-id/of.h> rather than
+<linux/mod_devicetable.h>, which Uwe Kleine-Koenig asked for. The driver
+needed nothing else out of the wider header.
+
+5/13 carries a git note naming the base and the one prerequisite, so the
+dependency is in the patch rather than only in this letter, which Rob
+Herring's bot asked for. dt_binding_check is clean on all three bindings
+the series touches with dtschema 2026.6 and yamllint 1.38.0, and
+CHECK_DTBS is clean on all 13 rk3576 and all 48 rk3588 dtbs.
+
+Two things I have left alone and would rather hear about than guess at.
+8/13 does three things: it adds the settle delay, renames a macro, and
+gives RK3576_PD_NPU a regulator, which also makes every RK3576 board
+force that domain off at probe. It may want splitting. And 12/13 gives
+each core both NPU domains, which is the description that has been
+tested here rather than the topology; if it should be one domain per
+core, 5/13's minItems has to change with it.
+
+Nothing else moved. The completion path, the register field layout v7
+corrected, and the rail and reset arrangement v8 settled are all
+unchanged.
+
+Jiaxing Hu (13):
+  accel/rocket: take the completion register writes under job_lock
+  accel/rocket: wait for a running IRQ handler before resetting a core
+  accel/rocket: let the core suspend after a reset
+  accel/rocket: factor the completion tail out of the IRQ handler
+  dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
+  dt-bindings: power: rockchip: allow resets in a power domain node
+  dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
+  pmdomain/rockchip: add optional per-domain power-on settle delay
+  pmdomain/rockchip: cycle optional power-domain resets on power-on
+  accel/rocket: select the per-core clock and reset counts from match
+    data
+  accel/rocket: add RK3576 NPU (RKNN) support
+  arm64: dts: rockchip: rk3576: add NPU (RKNN) nodes
+  arm64: dts: rockchip: rk3576-rock-4d: enable NPU
+
+ .../bindings/iommu/rockchip,iommu.yaml        |  28 +++++
+ .../npu/rockchip,rk3588-rknn-core.yaml        |  47 ++++++-
+ .../power/rockchip,power-controller.yaml      |   8 ++
+ .../boot/dts/rockchip/rk3576-rock-4d.dts      |  13 ++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      |  82 +++++++++++-
+ drivers/accel/rocket/rocket_core.c            |  28 ++++-
+ drivers/accel/rocket/rocket_core.h            |  11 +-
+ drivers/accel/rocket/rocket_device.c          |   7 +-
+ drivers/accel/rocket/rocket_drv.c             |  28 ++++-
+ drivers/accel/rocket/rocket_drv.h             |   2 +
+ drivers/accel/rocket/rocket_job.c             | 119 ++++++++++++++----
+ drivers/pmdomain/rockchip/pm-domains.c        |  75 +++++++----
+ 12 files changed, 385 insertions(+), 63 deletions(-)
 
 
-
-On 8/24/2026 3:39 PM, Pranjal Shrivastava wrote:
-> On Sat, Aug 22, 2026 at 07:28:20PM +0530, Vasant Hegde wrote:
->>
->>
-> 
-> [...]
-> 
-
-.../...
-
->>>  
->>>  /****************************************************************************
->>> @@ -2233,6 +2217,41 @@ static void dev_update_dte(struct iommu_dev_data *dev_data, bool set)
->>>  		clear_dte_entry(iommu, dev_data);
->>>  }
->>>  
->>> +/*
->>> + * Invalidate a DTE by clearing the Valid bit first.
->>> + * Note: Not to be used on a fully probed device with
->>> + * live dev_data.
->>> + */
->>> +static void amd_iommu_disable_dte(struct dev_table_entry *ptr)
->>> +{
->>> +	struct dev_table_entry new = {};
->>> +
->>> +	write_dte_lower128(ptr, &new);
->>> +	write_dte_upper128(ptr, &new);
->>> +}
->>> +
->>> +static void iommu_disable_device_dma(struct amd_iommu *iommu, struct device *dev)
->>
->> This will disable interrupt remapping support as well. May be we should rename
->> this function.
->>
-> 
-> Ack, Sure. How about iommu_disable_device() ? 
-
-Sure. Makes sense.
-
--Vasant
+base-commit: d589af98928d20eb39b04ecce3eecbe7ec802222
+-- 
+2.43.0
 
