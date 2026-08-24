@@ -1,56 +1,56 @@
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1892E40F759
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 12:24:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E124417D87
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 12:24:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787574243; cv=none; b=A6OZ+0+QGNYmgUMoOdcba9wRbmh5qekn5An9BTf35qRbxzYo14LU2eMaY9nSduvR/dY7lpe1LNM0Tv5ipN7bVcFsEZwYFRes62CXQ1C26WkvGBFDzhhMTl11ts6dcHigs6zaNrhYX91AFax3ytCDkOVRh/nKgIjIbWBmYXZSMfw=
+	t=1787574244; cv=none; b=Jcf0tbWvpWwONSQGgFmYCdRjK0HkNsFvkyDnQ3qrgp3zzE1L8l/zELIJhgJrSO2uRq+7rCY7uIl0jUpJ/qDpT0EBTv8eVM8B9fWrZbIgboNQ+TRE4urVvygj1lG3ER38ZKnS7RWPNpfV14/pR3nPXry1mCRozgvqU8TTaHAtxZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787574243; c=relaxed/simple;
-	bh=0FrHW9VyarVTWexh+cRfUDfEcUegknMlo0+I6quTFkM=;
+	s=arc-20240116; t=1787574244; c=relaxed/simple;
+	bh=I60yTaMjb5bVKB+wvVecyXVEeYAbub5ZMoYnTj+sZEY=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=qF3bByjiOR9DQuFxBrxv9LTBNuvDl4ZV3SbbCKJ/IUSfJvuVZ8Bg4k222f0LFQC6PssfrNkzoGLAwxDKlnvANdhKRa6cdPmlOOlPxOW+NAOATYCLE4pdjFTwMS4PB4FVE6fml+bvfZ1WBvbEuyWpuzmgsetX834umer6JiK2Big=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LZYSrPDC; arc=none smtp.client-ip=209.85.215.200
+	 To:Cc:Content-Type; b=XC8BLuld8PIFfuOs4nyTh8knKsp1kOs2KUKfjyBHaATS/EQte7uQWuhUTF53jTzSc6uuDF7Lvaij7Tw7tpjFD/j6Ccw1pazbnCzD7ag8ZLn0OcYN4m76fYggXjk4ps1mRL0UfbtC99Lbvg7lAwo/7brL+OMtl2oA1Az2qL/Hh3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eIiiTr2Z; arc=none smtp.client-ip=209.85.214.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LZYSrPDC"
-Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-cbee6bb8408so4409796a12.3
-        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 05:24:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eIiiTr2Z"
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2cacf17c7e0so55178305ad.0
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 05:24:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787574241; x=1788179041; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1787574242; x=1788179042; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=yfYNwAoiWTPLSXTU/nHcpeXRO8BpM/FKM+cbWnkCGPk=;
-        b=LZYSrPDC9/cWe8BDvnwpAUD9iwzEn4WVxXat21oZLLqzKkr2DKeGLQ9bArSk6xYuUz
-         /DDHxHRiBgHwGbYi00Y3+7AtWZHWcBAxpF/UAgQV8cocjKW2pPhbjjtTpNDLH0bO4zGo
-         4hzBORtFTpEu68lE2+qFlNt9FgElI6oTCIjhmp3uzaw462fI2EfWuLE5h+TTjrYGNM10
-         8dGTaOPNhOOn9OKalUWHKQC2jpECE8FljvdYO1Wm0nSKK1jyo4XnTRmDj8om82806Y/W
-         0HzHCfzz6jXN68A+8avZQurJj2oXHkSMIuKB1dBwx70H60w3lF0izV74vSH47PQ2k0QN
-         Ky9A==
+        bh=SfAbKSbfKhboyVQcKl7Sv1k2EzxFQ1LM/Y8jps789BU=;
+        b=eIiiTr2ZekWwBFvY7TsUIwPW+YLO0pGkI2dFUl1pOhrUrlxKGocmzFqcpIvNn5YSRe
+         3g5/eur0zsYGsHiSQ5o2ZClNHvsDcENXsN9CSgJhyVlrLL0W8/Dk/v0NMly8El47ANEr
+         XSrB3UXZMx/GHPSKpUUU/vA8/j0aBODXRMU9/yPV3Ww1B/M03IozNErwoKPlJj011Aq/
+         naB9gnsL03bwE/797xtLU5bOa852WaZx8a7A5BVv2qd1KM/bTCWvAkNY0OW9aD5Sky7+
+         MjrTYndjpeWYxt+atxQw/JOEaKDDhNyis9DSNOcGORhp4rVQkSuhfWqL15cGQSbUqgXP
+         1r3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787574241; x=1788179041;
+        d=1e100.net; s=20251104; t=1787574242; x=1788179042;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=yfYNwAoiWTPLSXTU/nHcpeXRO8BpM/FKM+cbWnkCGPk=;
-        b=a44kq6IsqWR1lGvk6pCHPD+ivpwbZlDCS07VpSAwY4T0DBCv/C+WuSdxFznNvqcQe5
-         WThkYMKyxmW/Dka/9+nZjoLxiX0oLF5wW/TWxoGgneeIDusXu6bGpJ9QUJeW+DNoLzYK
-         ddp3aODQpGnaeawMuzKMGNnwxKw8V6UjqeTJxZi7kD418jsPsJBCMfwoDL5NQciSlNBq
-         sF7mBUa9xKhED8QJ22V6eDr6nDVBY35sqT/J3RknXvu35OKCWR8RhTzjAIEMLFitG4EV
-         8dhJRWPzcjgaND4+/cQJO/FNRi731jlZZzSzdP9+ljVx+2FFb/ggRgAOOTRnjH3iOiq4
-         l6gw==
-X-Gm-Message-State: AFuF++l584/8sFu6atSJQDI5d7FTf/r0oC9/NzsPMZP1DGz8RtnVii+H
-	12ucFne2YBOv4bT3DelGqdFzSYZvwzBLB3Nt+Ygg4W/qpGRAUh/AV7TmjQ/L+vPGWr3ZqiWLC5n
-	i3hOCLMzPht4a8SSFpsUYndHq9/HLiwYOLqRLrDDqWN8Q457D32m5I5lv3ovy+aZTUStY6K3Iei
-	W5OLeluLLMGkxzjYkmwqzfMRDQNK9/8Q==
-X-Received: from pfdc3.prod.google.com ([2002:aa7:8c03:0:b0:84c:2e88:693d])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:300c:b0:848:4859:a45
- with SMTP id d2e1a72fcca58-8520b96630dmr33366040b3a.2.1787574237585; Mon, 24
- Aug 2026 05:23:57 -0700 (PDT)
-Date: Mon, 24 Aug 2026 12:23:43 +0000
+        bh=SfAbKSbfKhboyVQcKl7Sv1k2EzxFQ1LM/Y8jps789BU=;
+        b=ghqKvgpxrkI/omYkz7yA47H/YGVXeUV+fD95BfajYyCg0+rAgxCdqJFSC1UadZn/KJ
+         /B8BL8QM2a3c4goH3+OpC66kQX1+OAcI1uKmeRmcZhvd6S5RvkFL+M3yzWM8vn2Sn8t5
+         Mpy+jFC/B+R4sjKc0gTdgORCoxmnvRiH9TZGfxsH8Y+57ei3sbIARTqNn104Q+WPAt4E
+         Rktvibf7wgToq7f2B7LZbxaRrIhotF5tuls+2Jk4fOD3HwbGwQOrNh8VysE+ksOvQXi+
+         7UDMOIloaXw6BQ/0FJSNNtWfweE0p4NVhscEvsn6g86eJJByyTVU2BCIbxkCPSCJnO0w
+         37mQ==
+X-Gm-Message-State: AFuF++nDh5pvFygnQSat0Pvk6LBGUEkkiImehmq+rBfFoPRmE61z9kEE
+	gA2nBTuEZ28xfMgemFu1EonlXk1Z6TzEm8U2rUOmjpf7qbDX0cwtk+PYvkSXmyb/oE5Gcc6BoOW
+	7FnHH8iAQG6ukX94FeuMCCbN0k5m1b6dGFDBHpYqaNehap5xMUyTetZggybmLzlqUkYzcFXgs/B
+	WyC1SPo8NSxW4VB0nYyEqrmC42jvYIgQ==
+X-Received: from plbkq5.prod.google.com ([2002:a17:903:2845:b0:2d0:1ce9:b121])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:e546:b0:2c8:2808:3ec9
+ with SMTP id d9443c01a7336-2d64b0c4e5cmr412549775ad.12.1787574242094; Mon, 24
+ Aug 2026 05:24:02 -0700 (PDT)
+Date: Mon, 24 Aug 2026 12:23:45 +0000
 In-Reply-To: <20260824122347.1588592-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,222 +60,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260824122347.1588592-1-praan@google.com>
 X-Mailer: git-send-email 2.55.0.766.g2966f0265a-goog
-Message-ID: <20260824122347.1588592-2-praan@google.com>
-Subject: [PATCH v3 1/5] iommu/amd: Refactor device probe and capability initialization
+Message-ID: <20260824122347.1588592-4-praan@google.com>
+Subject: [PATCH v3 3/5] iommu/amd: Split probe error paths to preserve IRQ remapping
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
 Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
 	Vasant Hegde <vasant.hegde@amd.com>, Ankit Soni <ankit.soni@amd.com>, 
 	Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>
+	Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>, sashiko-bot@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Restructure the device probe path to improve readability and prepare for
-cleaner error handling. Refactor check_device() into iommu_lookup_device
-to explicitly validate and return the amd_iommu ptr & devid. Refactor
-iommu_init_device() to return the allocated dev_data. Consolidate all
-PCI cap inits (MSI domains, PASID, ATS) into a new helper:
-iommu_init_device_caps().
+Split the amd_iommu_probe_device() error paths into err_deinit and
+out_err. Proper init failures continue to call iommu_disable_device_dma()
+while configuration failures (like PD_MODE_NONE or ATS mismatches) skip
+it to preserve the rlookup_table entry required for IRQ remapping.
 
-Suggested-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Reported-by: sashiko-bot@kernel.org
+Closes: https://lore.kernel.org/all/20260529153216.2AD1E1F00899@smtp.kernel.org/
+Suggested-by: Ankit Soni <ankit.soni@amd.com>
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/iommu/amd/iommu.c | 117 +++++++++++++++++++-------------------
- 1 file changed, 60 insertions(+), 57 deletions(-)
+ drivers/iommu/amd/iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 4c31294fabc5..e1f9fbb63837 100644
+index 8e382317709d..ed336bca1a2e 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -675,7 +675,8 @@ static void pdev_disable_caps(struct pci_dev *pdev)
-  * This function checks if the driver got a valid device from the caller to
-  * avoid dereferencing invalid pointers.
-  */
--static bool check_device(struct device *dev)
-+static bool iommu_lookup_device(struct device *dev,
-+				struct amd_iommu **iommu_out, u16 *devid_out)
- {
- 	struct amd_iommu_pci_seg *pci_seg;
- 	struct amd_iommu *iommu;
-@@ -690,7 +691,7 @@ static bool check_device(struct device *dev)
- 	devid = PCI_SBDF_TO_DEVID(sbdf);
- 
- 	iommu = rlookup_amd_iommu(dev);
--	if (!iommu)
-+	if (!iommu || !iommu->iommu.ops)
- 		return false;
- 
- 	/* Out of our scope? */
-@@ -698,47 +699,33 @@ static bool check_device(struct device *dev)
- 	if (devid > pci_seg->last_bdf)
- 		return false;
- 
-+	*iommu_out = iommu;
-+	*devid_out = devid;
- 	return true;
- }
- 
--static int iommu_init_device(struct amd_iommu *iommu, struct device *dev)
-+static struct iommu_dev_data *iommu_init_device(struct amd_iommu *iommu,
-+						struct device *dev, u16 devid)
- {
- 	struct iommu_dev_data *dev_data;
--	int devid, sbdf;
--
--	if (dev_iommu_priv_get(dev))
--		return 0;
- 
--	sbdf = get_device_sbdf_id(dev);
--	if (sbdf < 0)
--		return sbdf;
--
--	devid = PCI_SBDF_TO_DEVID(sbdf);
- 	dev_data = find_dev_data(iommu, devid);
- 	if (!dev_data)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	dev_data->dev = dev;
- 
- 	/*
--	 * The dev_iommu_priv_set() needes to be called before setup_aliases.
-+	 * The dev_iommu_priv_set() needs to be called before setup_aliases.
- 	 * Otherwise, subsequent call to dev_iommu_priv_get() will fail.
- 	 */
- 	dev_iommu_priv_set(dev, dev_data);
- 	setup_aliases(iommu, dev);
- 
--	/*
--	 * By default we use passthrough mode for IOMMUv2 capable device.
--	 * But if amd_iommu=force_isolation is set (e.g. to debug DMA to
--	 * invalid address), we ignore the capability for the device so
--	 * it'll be forced to go into translation mode.
--	 */
--	if ((iommu_default_passthrough() || !amd_iommu_force_isolation) &&
--	    dev_is_pci(dev) && amd_iommu_gt_ppr_supported()) {
--		dev_data->flags = pdev_get_caps(to_pci_dev(dev));
--	}
-+	/* Wait for DTE updates to go through */
-+	iommu_completion_wait(iommu);
- 
--	return 0;
-+	return dev_data;
- }
- 
- static void iommu_ignore_device(struct amd_iommu *iommu, struct device *dev)
-@@ -2477,49 +2464,75 @@ static void detach_device(struct device *dev)
- 	mutex_unlock(&dev_data->mutex);
- }
- 
-+static void iommu_init_device_caps(struct iommu_dev_data *dev_data,
-+				   struct device *dev,
-+				   struct amd_iommu *iommu)
-+{
-+	if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
-+		dev_data->max_irqs = MAX_IRQS_PER_TABLE_2K;
-+	else
-+		dev_data->max_irqs = MAX_IRQS_PER_TABLE_512;
-+
-+	amd_iommu_set_pci_msi_domain(dev, iommu);
-+
-+	if (!dev_is_pci(dev))
-+		return;
-+
-+	/*
-+	 * By default we use passthrough mode for IOMMUv2 capable device.
-+	 * But if amd_iommu=force_isolation is set (e.g. to debug DMA to
-+	 * invalid address), we ignore the capability for the device so
-+	 * it'll be forced to go into translation mode.
-+	 */
-+	if ((iommu_default_passthrough() || !amd_iommu_force_isolation) &&
-+	    amd_iommu_gt_ppr_supported()) {
-+		dev_data->flags = pdev_get_caps(to_pci_dev(dev));
-+	}
-+
-+	/*
-+	 * If IOMMU and device supports PASID then it will contain max
-+	 * supported PASIDs, else it will be zero.
-+	 */
-+	if (amd_iommu_pasid_supported() &&
-+	    pdev_pasid_supported(dev_data)) {
-+		dev_data->max_pasids = min_t(u32, iommu->iommu.max_pasids,
-+					     pci_max_pasids(to_pci_dev(dev)));
-+	}
-+
-+	pci_prepare_ats(to_pci_dev(dev), PAGE_SHIFT);
-+}
-+
- static struct iommu_device *amd_iommu_probe_device(struct device *dev)
- {
- 	struct iommu_device *iommu_dev;
- 	struct amd_iommu *iommu;
- 	struct iommu_dev_data *dev_data;
- 	int ret;
-+	u16 devid;
- 
--	if (!check_device(dev))
--		return ERR_PTR(-ENODEV);
--
--	iommu = rlookup_amd_iommu(dev);
--	if (!iommu)
--		return ERR_PTR(-ENODEV);
--
--	/* Not registered yet? */
--	if (!iommu->iommu.ops)
-+	if (!iommu_lookup_device(dev, &iommu, &devid))
- 		return ERR_PTR(-ENODEV);
- 
- 	if (dev_iommu_priv_get(dev))
- 		return &iommu->iommu;
- 
--	ret = iommu_init_device(iommu, dev);
--	if (ret) {
-+	dev_data = iommu_init_device(iommu, dev, devid);
-+	if (IS_ERR(dev_data)) {
-+		ret = PTR_ERR(dev_data);
+@@ -2540,8 +2540,7 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
+ 		ret = PTR_ERR(dev_data);
  		dev_err(dev, "Failed to initialize - trying to proceed anyway\n");
  		iommu_dev = ERR_PTR(ret);
- 		iommu_ignore_device(iommu, dev);
+-		iommu_disable_device(iommu, dev);
+-		goto out_err;
++		goto err_deinit;
+ 	}
+ 
+ 	iommu_init_device_caps(dev_data, dev, iommu);
+@@ -2559,6 +2558,10 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
  		goto out_err;
  	}
  
--	amd_iommu_set_pci_msi_domain(dev, iommu);
-+	iommu_init_device_caps(dev_data, dev, iommu);
- 	iommu_dev = &iommu->iommu;
--
++	return iommu_dev;
 +
- 	/*
--	 * If IOMMU and device supports PASID then it will contain max
--	 * supported PASIDs, else it will be zero.
-+	 * When DMA translation is unavailable return error so the iommu core
-+	 * won't attempt domain attach for this device. But interrupt-remap
-+	 * is still supported. Hence do not ignore the device.
- 	 */
--	dev_data = dev_iommu_priv_get(dev);
--	if (amd_iommu_pasid_supported() && dev_is_pci(dev) &&
--	    pdev_pasid_supported(dev_data)) {
--		dev_data->max_pasids = min_t(u32, iommu->iommu.max_pasids,
--					     pci_max_pasids(to_pci_dev(dev)));
--	}
--
- 	if (amd_iommu_pgtable == PD_MODE_NONE) {
- 		pr_warn_once("%s: DMA translation not supported by iommu.\n",
- 			     __func__);
-@@ -2527,16 +2540,6 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
- 		goto out_err;
- 	}
- 
--	iommu_completion_wait(iommu);
--
--	if (FEATURE_NUM_INT_REMAP_SUP_2K(amd_iommu_efr2))
--		dev_data->max_irqs = MAX_IRQS_PER_TABLE_2K;
--	else
--		dev_data->max_irqs = MAX_IRQS_PER_TABLE_512;
--
--	if (dev_is_pci(dev))
--		pci_prepare_ats(to_pci_dev(dev), PAGE_SHIFT);
--
++err_deinit:
++	iommu_disable_device(iommu, dev);
  out_err:
  	return iommu_dev;
  }
