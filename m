@@ -1,256 +1,506 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9204044CADF
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 15:43:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEB6645C6E8;
+	Mon, 24 Aug 2026 16:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787586212; cv=none; b=IxzT8bn4ZSV3DQEXmEkuhiNGf1Iqys5H67xxUvjwhC2KJornWAb4EUrYFddLvZyFNGFAJ0y1Pmnoa+Dmef3/71nWiorbqOsfD0cBZ/iVX5ImSZglQtE2Mzngq1bK0YKiKRbCQZ9KPIYOx4LEnag3fnRtpRAYVns/L5NmCxQTG+4=
+	t=1787587564; cv=none; b=O72jfopqxn3rll2xAEK4bK+vXAiX/emoX2EktTEKKBhxFHULQHJe5UpOsBXXSGJFu1Pg4Wxh0ffIb5iDMrS0QPc/hLCY4T8h9UwaghFAD97MZ9ZPazwcOXCPyFZ28V8JtsOjpvzVJA2b84Bz/5Ke7tg1BApZ+HCixIas/f2O6LI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787586212; c=relaxed/simple;
-	bh=BVuKVb3GjJxqNm9TcHoOWqlzIkLcGpeVo7X50mQO9+I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ghVddZXXHAhpoFqkR9i4NAAXFcnWZzGhAl71ROcYcWFmPMehkO0rwxpE6Oi2y3zMpD2UlBBblGMlKHgAI4AngFQ1e1VDjSHk0NnHeycmHQtalDKDeYbqFalcZ8LR0PBncQkIysQYdCKzHeH2QQzQpJYHha4Ddii9XfZq84T660M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KDRhggI6; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=huCC9xFu; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1787587564; c=relaxed/simple;
+	bh=zSGfmVXfWXcbyipNcWelU0w6iRaVKu9ffZG2h02dhSg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QSWCV2f8IqVSqieQnQ4DoWHTF+zxYpTtdhZHbftZs2Xzd2nRwvJlm9k/LrvM6ombZdA1TIrsHpF1lIVzi5KGko2IHK3trKTlIesDtfcyFrCIxmquToRn72qMKdpyps1C7KCEtCKqC4uFFN89oR8mpZaPA+ahI7CiCLY21D3l2tA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=I6KKEsSw; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KDRhggI6";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="huCC9xFu"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67OCv0nE3402540
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 15:43:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=JPxriDT4TyeXl7GuZnjO5GqL
-	1w1hXm6wKfggUrOH0U0=; b=KDRhggI6LKxKcKQgK9ndPr6U6+/NJqGXK7N+RyfL
-	9qUzhJL27TgxEDX67o8I41GWz1ZTwjt+v+bMcFuR2sc0rXhvdZMg7MQ7J65jtL+H
-	9To7j/sqTuTAe/fnXcT91Y7xSyuLxqYMqStsaA14k2lbW/xfRYfF3TSQt+q6e12P
-	ICgImxgvQ+DkxkhYDz66QH4aBmIysxp+e4V8xZZI8U+DytaUXYmTSuy8XIr9FZ3k
-	LI/hgPYv9XpRvlkd7OJIgK5n8/nWc6VR2zEaoH0mnE2pZWJzn0liFaaNaimy9LCS
-	Quz+R6z9t4D6ifoLlZ9bn6EPh9YOrCLFO+9dzHuASm+uiQ==
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g8hjgt30e-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 15:43:22 +0000 (GMT)
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-51c0408254aso378721cf.0
-        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 08:43:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787586202; x=1788191002; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=JPxriDT4TyeXl7GuZnjO5GqL1w1hXm6wKfggUrOH0U0=;
-        b=huCC9xFuR3KETL0+Jdz59yP+MjWGLVysuHxSNoN/4B6pn/pT1y0d95x2kBwezp//Rf
-         pI4X8OaYG3n5l7d1NaFzTMq7MT4u8uHsJAQS0EXipIrG7G68Tk2TZvaZmCnEdtgg6RcB
-         EhbcYDNuB9fQ112I0yBiKj4vbp1QKOObXvCZxDgvz3vs+3dO6q8qWx0TvGe52tCeWEdE
-         FfIgqphcT8ub3j3blA9NhqIApyeupM+p7856oNTn2xFLxwextsoVgLSmt/Zps6oKnPdT
-         UXvj/2LFxQXFvJU7UdFt7csUyi+07kua6ZxPPi71cxmcOZcpagFMNhhfg+JF2ejdyPpR
-         6IVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787586202; x=1788191002;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=JPxriDT4TyeXl7GuZnjO5GqL1w1hXm6wKfggUrOH0U0=;
-        b=SxRU5RvXgNdk+x5vrXk99OWIz3raxX5eTKNDm0jUNmGUnN38/vgJqskmI7Jn7zBemq
-         7D60gVh9eWBKm1kPHsjf1DeOxBVC6BTdJQQvSc4KrR81+WCdlMDkhILFzVCMS/5ejC7F
-         SdmAhnajpcpoMe6xYISHpnEOjijqUQ30k+gx+nbfCKTGVRhGr+O6nZJlqQmFlL3WBkiq
-         ZWDPHTJgchWSK1JiJ7ZFVyLPDB3BQxDppjSa+FuZ1fNxdb/IzxYZiIW0SPbYmM8Nzlo/
-         1i4xAYpi4bb1X3rQUeytTA+tgAyy34QYvDw6dxb9bRBnwT9J6Wujk8u8M1NZC6Pkd87r
-         1nyQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rri2YQfME8ZTpe3hC/kYKiRniMhhYuSoFpenJZeOOy3cI8bHclcUxxWqQbdLSgB0yCDMpcL1Q==@lists.linux.dev
-X-Gm-Message-State: AFuF++lWVEVAqBql9LaRtOklBejq8Et2voFs6Y1liv5IrJe5K4CNhk+c
-	bIdOXVtp7UPY5WgGHw4dbhGBjxRg2g71Di3KRtLzXe8ly7PEHXSxjzWRmb00mxvKAZg3SQarrYn
-	h3AK3SEuG75IhVejnk36/i+IRSfmDpU5FJ38cVNIypYj2clvriFs69wg4SQ==
-X-Gm-Gg: AR+sD137JE0Pyyg0ryz9KaowiMJyazfLGfAAuJM48rPI47PObj0tEiOc/hpVJBOwxIJ
-	NsgFHIizre9GGgOTlhT+2tY5oSmK6c60VlHx0I43uut9JdU8WAowfUcVSbfSIXhDu1OFAO2p3Or
-	yeenMzGhFanNSLH8qRBRn7gxavBZmGcFIxrVlG1O0J/C0tFk7uBFl9Ihv6dt6MVVYTV6EKPFkqr
-	sn0oZIyOMjx/ZcDOquIAAVYCbiGKknWx+zKyicnsd4lIRe6FQkp2oGa+86wCJ3nK87FdkPf0l/Z
-	QUfxc2xdiRI3SYUfj+4mqspImB+aYqBpNGjU2+U23mib2aea8K/VBXW9NBAMhywt5eCt3milGzE
-	dT282zYSZ3atMJamsFXv7HOm6cW0ULQkFQJE=
-X-Received: by 2002:ac8:5e0d:0:b0:52d:3483:ed0a with SMTP id d75a77b69052e-52e2ed154bbmr422591cf.18.1787586201968;
-        Mon, 24 Aug 2026 08:43:21 -0700 (PDT)
-X-Received: by 2002:ac8:5e0d:0:b0:52d:3483:ed0a with SMTP id d75a77b69052e-52e2ed154bbmr421881cf.18.1787586201366;
-        Mon, 24 Aug 2026 08:43:21 -0700 (PDT)
-Received: from localhost (ip-86-49-251-7.bb.vodafone.cz. [86.49.251.7])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482c9bfcc31sm8488912f8f.17.2026.08.24.08.43.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2026 08:43:20 -0700 (PDT)
-Date: Mon, 24 Aug 2026 17:43:19 +0200
-From: Andrew Jones <andrew.jones@oss.qualcomm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
-        tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
-        anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
-        fangyu.yu@linux.alibaba.com
-Subject: Re: [PATCH v4 02/21] iommufd: Add iommufd_sw_map_msi()
-Message-ID: <fp5myre5qaersxxshitgoupbzkx2zwo3rsz3q5jfdiarmtwknh@gmfhz3cxuc33>
-References: <yikhefui2flgfffmtbpdxemjtto2ryfmkgtlgdtmr2ndgxrw3r@rcjz523m3sw5>
- <20260821143155.GI244917@nvidia.com>
- <pzlzv2lzik4miqc5oejichltnyqabolyaezbkrufcl7nbttygm@7rdmkig3t56u>
- <20260821161256.GK244917@nvidia.com>
- <dug43layphru76sqleerwtryyerwa4a6n5s4xwrk4iyfru4o7m@al37eknignld>
- <20260821172015.GL244917@nvidia.com>
- <t2l77h22pz2jg5vsgoth6324u36szra3orgr2g2xo7olyuhzlb@53wnsyhz7aqr>
- <20260822140625.GM244917@nvidia.com>
- <r47pwpyoc4ynv57vtwer73dwikqkev5nfy7kqyba7sqzh5pryi@teiqr5a4cw4p>
- <20260824125204.GP244917@nvidia.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="I6KKEsSw"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 097401AED;
+	Mon, 24 Aug 2026 09:05:55 -0700 (PDT)
+Received: from [10.57.70.220] (unknown [10.57.70.220])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CAD073F8C6;
+	Mon, 24 Aug 2026 09:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1787587558; bh=zSGfmVXfWXcbyipNcWelU0w6iRaVKu9ffZG2h02dhSg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=I6KKEsSwVbN4Ii8YXRG5InIKzCarnJJGM0H0PL7NrTWCxJW+48du73qDpJSfcOThQ
+	 WuZTc79DPeAwnLyUH1VmSac2yUTfciOdpxIrgepThi3S3ZKWt7N1ebMcczaY3UpcEZ
+	 a9BktBmX+AccxR8dlzHHFVU5l7gws5lcKG5Dj/Xo=
+Message-ID: <a826c7cb-5e77-4c21-a649-d40a9f0ef564@arm.com>
+Date: Mon, 24 Aug 2026 17:05:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260824125204.GP244917@nvidia.com>
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODI0MDEzMiBTYWx0ZWRfX4X/Ge/cqPjuo
- YddvIdnbGf2LXRCOXh9vsRm2mgGi1y4Uqjp4f6X5MDSAzFZm2n5FO5j4TLXf503TQfWzET/y1DQ
- fHGxSoZVicT7SB6H4qLJktor+1NCc+k=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI0MDEzMiBTYWx0ZWRfX/ZSKQDV4vEkh
- LZQHe1LwEa5+L9DTCRacVKk0SPMElWYux2W+wf92pRrl7tjaslIEs6Xto0YlRG7kHYB728N+OEl
- NKeF6S54obWdz2wjff3JiixKQh4WdwTO0Z1+4UBKZnhKDpfKmRRVEyROwCBnSnC/VpU8PuPhQxm
- T6e1t9YaUerA+v5QxNhRHJiBc7kZZqsvpC+Lf6prwqYR6l4EiksDhZ9wpvxqFK3s+OLoojanC0u
- anqp2rkvhmGp5gYGnLYq5Lmce6w75As3txzP8VGBHkv5SdglODk9lG71BQcZlA97cx+WIjh+M3Y
- zIeLKm+B7hKIT9uc5QPHKXg4p6KvTF2UH/Gwz7TqKwXwU/Or798R30K15VpbLwNc+cqJiwWHWyH
- o1liznbpqvUDKAi3rv3bjx0VCvj3eHhG3NdIz1j/ZrzV/BztogTuFJrOvpNhBxnesot8QrEePD6
- D6uqXlfRlXVYiq9G5UA==
-X-Proofpoint-ORIG-GUID: 8QfkgVr5UTuy-abC6yKqDP19K3on7amy
-X-Authority-Analysis: v=2.4 cv=CoCPtH4D c=1 sm=1 tr=0 ts=6a8c669a cx=c_pps
- a=mPf7EqFMSY9/WdsSgAYMbA==:117 a=on9AXyaqQ0RhfYpiXjjEXA==:17
- a=kj9zAlcOel0A:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=79VhuxMTkY9i6mNDBz4A:9 a=CjuIK1q_8ugA:10 a=dawVfQjAaf238kedN5IG:22
-X-Proofpoint-GUID: 8QfkgVr5UTuy-abC6yKqDP19K3on7amy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-24_04,2026-08-24_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 malwarescore=0 phishscore=0 bulkscore=0
- adultscore=0 spamscore=0 clxscore=1015 lowpriorityscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608240132
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/5] swiotlb/mm: Implement SWIOTLB nocopy page
+ allocator
+To: Luigi Rizzo <lrizzo@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima
+ <kuniyu@google.com>, "David S . Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Luigi Rizzo <rizzo.unipi@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Dragos Tatulea <dtatulea@nvidia.com>, "Rafael J . Wysocki"
+ <rafael@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, netdev@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev, driver-core@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260615234220.3946885-1-lrizzo@google.com>
+ <20260824152932.1583506-1-lrizzo@google.com>
+ <20260824152932.1583506-3-lrizzo@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260824152932.1583506-3-lrizzo@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 24, 2026 at 09:52:04AM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 24, 2026 at 10:50:07AM +0200, Andrew Jones wrote:
-> > On Sat, Aug 22, 2026 at 11:06:25AM -0300, Jason Gunthorpe wrote:
-> > > On Sat, Aug 22, 2026 at 03:50:05PM +0200, Andrew Jones wrote:
-> > > > With the RISC-V IOMMU MSI table and irqbypass support in KVM, we can
-> > > > write the guest's MSI messages directly to the device without
-> > > > interpreting the IOVAs. 
-> > > 
-> > > Every architecture can work this way. Nobody has impleented Linux
-> > > support for it, and if we do, it must be arch generic.
-> > > 
-> > > Not being able to discover the vCPU from the MSI descriptor means you
-> > > can't use any of the existing less-optimal Linux flows and are forced
-> > > to implement this hard thing..
-> > 
-> > The RISC-V irqbypass work does not require a new framework, or even
-> > callback. It uses the existing irqbypass framework and implements
-> > irq_set_vcpu_affinity(). Since that callback programs the IOMMU MSI table,
-> > it belongs in the IOMMU irqdomain.
-> 
-> My point is you can't use the normal flow which relies on Linux fully
-> programming the MSI-X on the host side and only uses the guest
-> descriptor as input to that flow.
-> 
-> The iommu msi table doesn't actually help unless you can also directly
-> use the guest's descriptor. Right?
+On 2026-08-24 4:29 pm, Luigi Rizzo wrote:
+> Introduce swiotlb_alloc_pages() and swiotlb_free_pages() to allocate
+> and release compound pages directly from the default SWIOTLB pool.
 
-I see a gap in VFIO's vector management for two-stage device assignment,
-but I don't think it's as broad for RISC-V as it is for ARM. More below.
-
-> 
-> > > ARM is basically the same, the ITS page goes through the S1 and S2, so
-> > > the goal is to get a valid ITS page into the S2, tell the guest to use
-> > > it and create a S1 pointing at it then feed the MSI descriptor from
-> > > the guest unmodified to the HW.
-> > 
-> > On ARM, the SMMU translates the MSI address, but the ITS performs the
-> > interrupt remapping. KVM must therefore know which vITS the guest IOVA
-> > selects so it can resolve that vITS's DeviceID/EventID mapping and program
-> > the physical ITS with the corresponding vCPU-specific state.
-> 
-> Not quite..
-> 
-> IIRC the MSI entry itself tells which pITS page has to be used since
-> they are 1:1. That tells KVM which vGIC has the vITS table so it can
-> read that and get the vCPU. Now the IRQ layer has the pGIC, IRQ #, MSI
-> # and vCPU. It then creates an entirely new MSI descriptor and
-> programs the pITS and pMSI entry. The guest MSI descriptor is thrown
-> away.
-> 
-> It is like this because this is how x86 does things so it is easy to
-> implement.
-> 
-> However in idyllic ARM land it could work like RISC-V. The GIC could
-> mirror the vITS table into th pITS table and apply the vCPU to pCPU
-> mapping through an irq domain. Then the guest MSI descriptor would be
-> used unmodified. These days x86 can be similar, if the guest has the
-> iommu remapping HW it could be similarly mirrored into the physical
-> remapping HW instead of reconstructing the MSI descriptors.
-> 
-> This has never been implemented because there are alot of missing
-> generic pieces to use an unmodified guest MSI descriptor.
-> 
-> Now, risc-v doesn't need to mirrow TIS/remapping tables from guest to
-> host, because it doesn't have such tables, but it still will need the
-> rest of the generic machinery to use unmodified guest MSI descriptors.
-
-With S1 Bare, irqbypass can fall back by restoring the host MSI message.
-With guest-controlled S1, VFIO cannot silently switch back to host
-delivery. We need plumbing to establish a guest-owned MSI mode, preserve
-and mask the guest descriptor across the VFIO vector lifecycle, and stop
-or reject the configuration if that mode cannot be maintained.
-
-The guest descriptor itself is already available in
-kvm_arch_update_irqfd_routing(), so RISC-V still does not need to
-interpret or track the guest IOVA. The IOVA can be written directly to the
-device (since the IOMMU MSI table is pre-populated with all vIMSIC GPAs).
-
-> 
-> > This ownership of remapping (for ARM in the ITS and for RISC-V in the
-> > IOMMU) also justifies why ARM does not need an irqdomain in the IOMMU and
-> > RISC-V does.
-> 
-> Yes, that's right, as I said earlier the irqdomain for the msi
-> remapping table seems appropriate.
-> 
-> > The irqbypass support is already separate from this series. This series
-> > only introduces the IOMMU irqdomain, which owns the IOMMU-specific MSI
-> > composition now and will provide the irq_set_vcpu_affinity() hook needed
-> > later. Putting the compose code in the IMSIC irqdomain now, only to move
-> > it into the IOMMU irqdomain with irqbypass later, would add unnecessary
-> > churn.
-> 
-> I'm sure you need more than irq_set_vcpu_affinity() - it still has to
-> use the guest descriptor unchanged, and it still has to get the
-> correct pages into the S2 at match them to the ACPI/DT description. We
-> don't have any common APIs to do that, and every arch can use this
-> stuff.
-
-Indeed, irq_set_vcpu_affinity() alone will be insufficient for two-stage
-guests due to the VFIO vector lifecycle concerns with guest-owned MSI
-descriptors.
-
-RISC-V does not need S2 page-table mappings for MSIs, though. The VM's
-IMSIC topology identifies the vIMSIC GPAs used to populate the MSI table,
-and an MSI-table match bypasses the normal S2 page table.
-
-> 
-> Without seeing the whole thing it is hard to be sure exactly what
-> arrangement people are going to want to see. I'm also not sure how to
-> combine the iommu MSI handling, unmodified guest MSI descriptor and
-> this msiremapping all together. A guest centric flow and an normal
-> host flow are very differnt in this model. This is all new.
-
-I agree there is some new terrain to travel here. It'd be great to discuss
-this at Plumber's.
+Huh? The sole intended purpose of SWIOTLB is for bounce-buffering data 
+which already exists in some other memory that is unsuitable for DMA for 
+whatever reason. If you want to allocate directly from some kind of 
+pre-shared DMA page pool to avoid bounce-buffering, set up some kind of 
+pre-shared DMA page pool and allocate from that in a manner which can 
+avoid bouncing entirely (see DMA_ATTR_CC_SHARED). The idea of getting as 
+far as calling swiotlb_bounce() to then have a special case saying "haha 
+not really" seems entirely absurd. Don't hack stuff into the SWIOTLB 
+code which has no business being there.
 
 Thanks,
-drew
+Robin.
+
+> The allocator is restricted to slots in the static default pool,
+> with caller-specified percentage limits on pool occupancy.
+> 
+> This will be used for kernel data (e.g. socket buffers) in
+> nocopy confidential computing.
+> 
+> Signed-off-by: Luigi Rizzo <lrizzo@google.com>
+> ---
+>   include/linux/swiotlb.h |  24 ++++++
+>   kernel/dma/swiotlb.c    | 187 ++++++++++++++++++++++++++++++++++++++--
+>   mm/page_alloc.c         |  51 +++++++++++
+>   3 files changed, 255 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 3dae0f592063e..4661e361c60e4 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -169,6 +169,23 @@ static inline struct io_tlb_pool *swiotlb_find_pool(struct device *dev,
+>   	return NULL;
+>   }
+>   
+> +bool swiotlb_pool_is_nocopy(struct io_tlb_pool *pool, phys_addr_t paddr);
+> +
+> +static inline bool swiotlb_addr_in_default_pool(struct device *dev,
+> +						phys_addr_t paddr)
+> +{
+> +	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+> +
+> +	return mem && paddr >= mem->defpool.start && paddr < mem->defpool.end;
+> +}
+> +
+> +static inline bool swiotlb_is_nocopy_addr(struct device *dev, phys_addr_t paddr)
+> +{
+> +	if (!swiotlb_addr_in_default_pool(dev, paddr))
+> +		return false;
+> +	return swiotlb_pool_is_nocopy(&dev->dma_io_tlb_mem->defpool, paddr);
+> +}
+> +
+>   static inline bool is_swiotlb_force_bounce(struct device *dev)
+>   {
+>   	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+> @@ -178,6 +195,13 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+>   
+>   void swiotlb_init(bool addressing_limited, unsigned int flags);
+>   void __init swiotlb_exit(void);
+> +struct page *swiotlb_alloc_pages(struct device *dev, unsigned int order, gfp_t gfp,
+> +				 unsigned int percent);
+> +bool swiotlb_free_pages(struct page *page, unsigned int order);
+> +void swiotlb_nocopy_inc_ref(struct io_tlb_pool *pool, phys_addr_t phys);
+> +void swiotlb_nocopy_dec_ref(struct io_tlb_pool *pool, phys_addr_t phys);
+> +void swiotlb_prep_compound_page(struct page *page, unsigned int order);
+> +void swiotlb_destroy_compound_page(struct page *page, unsigned int order);
+>   void swiotlb_dev_init(struct device *dev);
+>   size_t swiotlb_max_mapping_size(struct device *dev);
+>   bool is_swiotlb_allocated(void);
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 8e4bd9d47735a..6b86a1e955fb4 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -66,17 +66,59 @@
+>   /**
+>    * struct io_tlb_slot - IO TLB slot descriptor
+>    * @orig_addr:	The original address corresponding to a mapped entry.
+> + * @nocopy_refcnt:	Lockless atomic refcount for Nocopy buffers.
+>    * @alloc_size:	Size of the allocated buffer.
+>    * @list:	The free list describing the number of free entries available
+>    *		from each index.
+>    * @pad_slots:	Number of preceding padding slots. Valid only in the first
+>    *		allocated non-padding slot.
+> + * @flags:	Slot attributes (e.g. SWIOTLB_SLOT_NOCOPY for Nocopy buffers).
+> + *
+> + * The slot descriptor has states identified by @list and @flags (SWIOTLB_SLOT_NOCOPY):
+> + *
+> + * 1. FREE (list > 0):
+> + *    Linear sweep free slot.
+> + *
+> + * 2. USED (list == 0, SWIOTLB_SLOT_NOCOPY flag is NOT set in @flags):
+> + *    Allocated SWIOTLB bounce buffer.
+> + *    Fields used: @list, @pad_slots, @orig_addr, @alloc_size.
+> + *
+> + * 3. USED_NOCOPY (list == 0, SWIOTLB_SLOT_NOCOPY flag is set in @flags):
+> + *    Allocated Nocopy SWIOTLB buffer.
+> + *    Fields used: @list, @nocopy_refcnt, @alloc_size.
+> + */
+> +#define SWIOTLB_SLOT_NOCOPY	BIT(0)
+> +
+> +/*
+> + * SWIOTLB nocopy allocations (swiotlb_alloc_pages()) do not have an original
+> + * physical address to bounce, but need to pass a caller-specified pool usage
+> + * limit (percentage) down to the area search logic.
+> + *
+> + * To avoid adding a parameter to swiotlb_find_slots(), swiotlb_search_area(),
+> + * and swiotlb_search_pool_area(), the desired percentage (0..90) is encoded
+> + * into the orig_addr parameter in the reserved high address range starting at
+> + * INVALID_PHYS_ADDR (~0ULL).
+> + *
+> + * - NOCOPY_PCT_TO_ADDR(pct): Encodes a percentage into an orig_addr.
+> + * - IS_SWIOTLB_NOCOPY(addr): Identifies a nocopy allocation request and
+> + *   restricts slot search to the static default pool.
+> + * - NOCOPY_ADDR_TO_PCT(addr): Extracts the percentage to cap max_usable
+> + *   slots in swiotlb_search_pool_area().
+>    */
+> +#define NOCOPY_PCT_MAX	(90u)
+> +#define NOCOPY_PCT_TO_ADDR(pct)		(INVALID_PHYS_ADDR - min(pct, NOCOPY_PCT_MAX))
+> +#define IS_SWIOTLB_NOCOPY(addr)		((addr) >= INVALID_PHYS_ADDR - NOCOPY_PCT_MAX)
+> +#define NOCOPY_ADDR_TO_PCT(addr)	((unsigned int)(INVALID_PHYS_ADDR - (addr)))
+> +
+>   struct io_tlb_slot {
+> -	phys_addr_t orig_addr;
+> +	union {
+> +		phys_addr_t orig_addr;
+> +		atomic_t nocopy_refcnt;
+> +	};
+>   	size_t alloc_size;
+>   	unsigned short list;
+>   	unsigned short pad_slots;
+> +	unsigned int flags;
+>   };
+>   
+>   static bool swiotlb_force_bounce;
+> @@ -300,6 +342,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
+>   		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+>   		mem->slots[i].alloc_size = 0;
+>   		mem->slots[i].pad_slots = 0;
+> +		mem->slots[i].flags = 0;
+>   	}
+>   
+>   	memset(vaddr, 0, bytes);
+> @@ -869,12 +912,17 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+>   			   enum dma_data_direction dir, struct io_tlb_pool *mem)
+>   {
+>   	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
+> -	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+>   	size_t alloc_size = mem->slots[index].alloc_size;
+> -	unsigned long pfn = PFN_DOWN(orig_addr);
+>   	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
+> +	phys_addr_t orig_addr;
+> +	unsigned long pfn;
+>   	int tlb_offset;
+>   
+> +	/* Nocopy swiotlb buffers do not need bouncing. */
+> +	if (mem->slots[index].flags & SWIOTLB_SLOT_NOCOPY)
+> +		return;
+> +
+> +	orig_addr = mem->slots[index].orig_addr;
+>   	if (orig_addr == INVALID_PHYS_ADDR)
+>   		return;
+>   
+> @@ -904,6 +952,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+>   		size = alloc_size;
+>   	}
+>   
+> +	pfn = PFN_DOWN(orig_addr);
+>   	if (PageHighMem(pfn_to_page(pfn))) {
+>   		unsigned int offset = orig_addr & ~PAGE_MASK;
+>   		struct page *page;
+> @@ -1052,7 +1101,8 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>   	unsigned long max_slots = get_max_slots(boundary_mask);
+>   	unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
+>   	unsigned int nslots = nr_slots(alloc_size), stride;
+> -	unsigned int offset = swiotlb_align_offset(dev, 0, orig_addr);
+> +	unsigned long max_usable = pool->area_nslabs;
+> +	unsigned int offset;
+>   	unsigned int index, slots_checked, count = 0, i;
+>   	unsigned long flags;
+>   	unsigned int slot_base;
+> @@ -1061,6 +1111,13 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>   	BUG_ON(!nslots);
+>   	BUG_ON(area_index >= pool->nareas);
+>   
+> +	if (IS_SWIOTLB_NOCOPY(orig_addr)) {
+> +		max_usable = (pool->area_nslabs * NOCOPY_ADDR_TO_PCT(orig_addr)) / 100;
+> +		orig_addr = 0;
+> +	}
+> +
+> +	offset = swiotlb_align_offset(dev, 0, orig_addr);
+> +
+>   	/*
+>   	 * Historically, swiotlb allocations >= PAGE_SIZE were guaranteed to be
+>   	 * page-aligned in the absence of any other alignment requirements.
+> @@ -1087,7 +1144,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>   	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
+>   
+>   	spin_lock_irqsave(&area->lock, flags);
+> -	if (unlikely(nslots > pool->area_nslabs - area->used))
+> +	if (unlikely(area->used + nslots > max_usable))
+>   		goto not_found;
+>   
+>   	slot_base = area_index * pool->area_nslabs;
+> @@ -1164,6 +1221,9 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>    * Search one memory area in all pools for a sequence of slots that match the
+>    * allocation constraints.
+>    *
+> + * If IS_SWIOTLB_NOCOPY(orig_addr) is true, the search is restricted to only the
+> + * default pool, which is what swiotlb_alloc_pages() is allowed to use.
+> + *
+>    * Return: Index of the first allocated slot, or -1 on error.
+>    */
+>   static int swiotlb_search_area(struct device *dev, int start_cpu,
+> @@ -1177,6 +1237,9 @@ static int swiotlb_search_area(struct device *dev, int start_cpu,
+>   
+>   	rcu_read_lock();
+>   	list_for_each_entry_rcu(pool, &mem->pools, node) {
+> +		/* Only search the default pool (first in mem->pools) for nocopy allocations. */
+> +		if (IS_SWIOTLB_NOCOPY(orig_addr) && pool != &mem->defpool)
+> +			break;
+>   		if (cpu_offset >= pool->nareas)
+>   			continue;
+>   		area_index = (start_cpu + cpu_offset) & (pool->nareas - 1);
+> @@ -1229,6 +1292,13 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+>   			goto found;
+>   	}
+>   
+> +	/*
+> +	 * Passing a nocopy orig_addr restricts the search to only the
+> +	 * default pool, so do not attempt dynamic pool expansion.
+> +	 */
+> +	if (IS_SWIOTLB_NOCOPY(orig_addr))
+> +		return -1;
+> +
+>   	if (!mem->can_grow)
+>   		return -1;
+>   
+> @@ -1468,11 +1538,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+>   	return tlb_addr;
+>   }
+>   
+> +/*
+> + * called with dev == NULL from swiotlb_dealloc_pages(), in this case force offset
+> + * and align_mask to 0, pad_slots is also 0, and assume the pages come from the
+> + * default system pool.
+> + */
+>   static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
+>   				  struct io_tlb_pool *mem)
+>   {
+>   	unsigned long flags;
+> -	unsigned int offset = swiotlb_align_offset(dev, 0, tlb_addr);
+> +	unsigned int offset = dev ? swiotlb_align_offset(dev, 0, tlb_addr) : 0;
+>   	int index, nslots, aindex;
+>   	struct io_tlb_area *area;
+>   	int count, i;
+> @@ -1506,6 +1581,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
+>   		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+>   		mem->slots[i].alloc_size = 0;
+>   		mem->slots[i].pad_slots = 0;
+> +		mem->slots[i].flags = 0;
+>   	}
+>   
+>   	/*
+> @@ -1519,7 +1595,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
+>   	area->used -= nslots;
+>   	spin_unlock_irqrestore(&area->lock, flags);
+>   
+> -	dec_used(dev->dma_io_tlb_mem, nslots);
+> +	dec_used(dev ? dev->dma_io_tlb_mem : &io_tlb_default_mem, nslots);
+>   }
+>   
+>   #ifdef CONFIG_SWIOTLB_DYNAMIC
+> @@ -1912,3 +1988,100 @@ static const struct reserved_mem_ops rmem_swiotlb_ops = {
+>   
+>   RESERVEDMEM_OF_DECLARE(dma, "restricted-dma-pool", &rmem_swiotlb_ops);
+>   #endif /* CONFIG_DMA_RESTRICTED_POOL */
+> +
+> +static inline int swiotlb_nocopy_head_index(struct io_tlb_pool *pool, phys_addr_t phys)
+> +{
+> +	return (page_to_phys(compound_head(phys_to_page(phys))) - pool->start) >> IO_TLB_SHIFT;
+> +}
+> +
+> +/**
+> + * swiotlb_dealloc_pages() - Actually release Nocopy slots and page metadata
+> + * @pool:	SWIOTLB pool containing the buffer.
+> + * @parent:	Slot index of the buffer head.
+> + */
+> +static void swiotlb_dealloc_pages(struct io_tlb_pool *pool, unsigned int parent)
+> +{
+> +	unsigned int order = get_order(pool->slots[parent].alloc_size);
+> +	phys_addr_t paddr = pool->start + (parent << IO_TLB_SHIFT);
+> +	struct page *head = phys_to_page(paddr);
+> +
+> +	swiotlb_destroy_compound_page(head, order);
+> +	swiotlb_release_slots(NULL, paddr, pool);
+> +}
+> +
+> +struct page *swiotlb_alloc_pages(struct device *dev, unsigned int order,
+> +				 gfp_t gfp, unsigned int percent)
+> +{
+> +	struct io_tlb_pool *pool;
+> +	struct page *page;
+> +	int index, nslots, i;
+> +
+> +	if (WARN_ON_ONCE(!dev || !dev->dma_io_tlb_mem))
+> +		return NULL;
+> +
+> +	if (dev->dma_io_tlb_mem != &io_tlb_default_mem)
+> +		return NULL;
+> +
+> +	index = swiotlb_find_slots(dev, NOCOPY_PCT_TO_ADDR(percent),
+> +				   PAGE_SIZE << order, (PAGE_SIZE << order) - 1,
+> +				   &pool);
+> +	if (index < 0)
+> +		return NULL;
+> +
+> +	nslots = (PAGE_SIZE << order) >> IO_TLB_SHIFT;
+> +	page = phys_to_page(pool->start + (index << IO_TLB_SHIFT));
+> +	swiotlb_prep_compound_page(page, order);
+> +	for (i = 0; i < nslots; i++)
+> +		pool->slots[index + i].flags |= SWIOTLB_SLOT_NOCOPY;
+> +	atomic_set(&pool->slots[index].nocopy_refcnt, 1);
+> +	return page;
+> +}
+> +EXPORT_SYMBOL(swiotlb_alloc_pages);
+> +
+> +bool swiotlb_free_pages(struct page *page, unsigned int order)
+> +{
+> +	struct io_tlb_mem *mem = &io_tlb_default_mem;
+> +	struct io_tlb_pool *pool = &mem->defpool;
+> +	struct page *head = compound_head(page);
+> +	unsigned int parent;
+> +	phys_addr_t paddr;
+> +
+> +	paddr = page_to_phys(head);
+> +	if (paddr < pool->start || paddr >= pool->end)
+> +		return false;
+> +
+> +	parent = swiotlb_nocopy_head_index(pool, paddr);
+> +	if (!(pool->slots[parent].flags & SWIOTLB_SLOT_NOCOPY))
+> +		return false;
+> +
+> +	if (atomic_dec_and_test(&pool->slots[parent].nocopy_refcnt))
+> +		swiotlb_dealloc_pages(pool, parent);
+> +
+> +	return true;
+> +}
+> +EXPORT_SYMBOL(swiotlb_free_pages);
+> +
+> +void swiotlb_nocopy_inc_ref(struct io_tlb_pool *pool, phys_addr_t phys)
+> +{
+> +	int head_idx = swiotlb_nocopy_head_index(pool, phys);
+> +
+> +	atomic_inc(&pool->slots[head_idx].nocopy_refcnt);
+> +}
+> +EXPORT_SYMBOL(swiotlb_nocopy_inc_ref);
+> +
+> +void swiotlb_nocopy_dec_ref(struct io_tlb_pool *pool, phys_addr_t phys)
+> +{
+> +	int head_idx = swiotlb_nocopy_head_index(pool, phys);
+> +
+> +	if (atomic_dec_and_test(&pool->slots[head_idx].nocopy_refcnt))
+> +		swiotlb_dealloc_pages(pool, head_idx);
+> +}
+> +EXPORT_SYMBOL(swiotlb_nocopy_dec_ref);
+> +
+> +bool swiotlb_pool_is_nocopy(struct io_tlb_pool *pool, phys_addr_t paddr)
+> +{
+> +	int index = (paddr - pool->start) >> IO_TLB_SHIFT;
+> +
+> +	return pool->slots[index].flags & SWIOTLB_SLOT_NOCOPY;
+> +}
+> +EXPORT_SYMBOL_GPL(swiotlb_pool_is_nocopy);
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 083cbcb5bddec..ea148562a76d0 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -16,6 +16,7 @@
+>   
+>   #include <linux/stddef.h>
+>   #include <linux/mm.h>
+> +#include <linux/swiotlb.h>
+>   #include <linux/highmem.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/jiffies.h>
+> @@ -711,6 +712,56 @@ void prep_compound_page(struct page *page, unsigned int order)
+>   	prep_compound_head(page, order);
+>   }
+>   
+> +#ifdef CONFIG_SWIOTLB
+> +/*
+> + * Prepare a SWIOTLB page (potentially compound).
+> + *
+> + * We explicitly initialize the head page refcount to 1 because recycled
+> + * SWIOTLB pages might have a refcount of 0.
+> + *
+> + * If order > 0 (compound page), we must explicitly set all tail page
+> + * refcounts to 0. This is because SWIOTLB pages might have a boot-default
+> + * refcount of 1, but the core memory management subsystem expects tail pages
+> + * of a compound page to have a refcount of 0.
+> + */
+> +void swiotlb_prep_compound_page(struct page *page, unsigned int order)
+> +{
+> +	init_page_count(page);
+> +	if (order > 0) {
+> +		for (int i = 1; i < (1 << order); i++)
+> +			set_page_count(page + i, 0);
+> +		prep_compound_page(page, order);
+> +	}
+> +}
+> +
+> +/*
+> + * Destroy a SWIOTLB compound page and restore page refcounts.
+> + *
+> + * When pages are returned to the SWIOTLB pool, we restore the refcount of
+> + * all constituent pages (head and tails) to 1. This resets them to their
+> + * clean boot-default state, ensuring they are ready for reuse either as
+> + * individual order-0 pages or as part of a new compound allocation.
+> + */
+> +void swiotlb_destroy_compound_page(struct page *page, unsigned int order)
+> +{
+> +	if (order > 0) {
+> +		struct folio *folio = (struct folio *)page;
+> +
+> +		__ClearPageHead(page);
+> +		page[1].flags.f &= ~PAGE_FLAGS_SECOND;
+> +#ifdef NR_PAGES_IN_LARGE_FOLIO
+> +		folio->_nr_pages = 0;
+> +#endif
+> +		for (int i = 1; i < (1 << order); i++) {
+> +			page[i].mapping = NULL;
+> +			clear_compound_head(&page[i]);
+> +			set_page_count(page + i, 1);
+> +		}
+> +	}
+> +	set_page_count(page, 1);
+> +}
+> +#endif /* CONFIG_SWIOTLB */
+> +
+>   static inline void set_buddy_order(struct page *page, unsigned int order)
+>   {
+>   	set_page_private(page, order);
+
