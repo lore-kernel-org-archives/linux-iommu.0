@@ -1,219 +1,196 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013046.outbound.protection.outlook.com [40.93.201.46])
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010061.outbound.protection.outlook.com [52.101.85.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF74394785
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 08:59:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B554B3EDE7A;
+	Mon, 24 Aug 2026 08:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787561962; cv=fail; b=ooE8b7sHsQ09zjFEZNVFY1N7wi017TaMLkgTp4x4+mJLJA6xepxXqFjPntnCiHq5cSttgrYx75S5Dj0M9YIf1arDaNoy4HJrCA0tXo3eynxRiZon13UOt96pZCIIQq9sTYdJBF5vmP9dSxzPYkW1nV1+jrOt97RHcqvvdwQ0q6E=
+	t=1787561978; cv=fail; b=dGOp06yV92d1Xd5xEhurCOS/ZY5D7zYtddqxw/yQDilnI0QM6nxcEUe7sP52na/SzIc/r+yt856Rybqm3ocJd8DNC8pIz5eGdoXRpbB9qNppq8aAaXX7P0eueiU5Mu/y9tb4bo6M5t6YRTVl0/7P6t1TS+BdgNX0mVAxHSxNt98=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787561962; c=relaxed/simple;
-	bh=3t9r9ZDhFdCjhInTzLicCF0Ejir0xg1qySDqM+xjLmY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=g/A4SjwxLesDlWYyQSvpMgA+HMMIZS7uSgYOoqi90kpHtNsN2cUrQC5H8sk1Wogf+/LZ40dPmBQdTg4+xq3Xqr80Rxlo3L0RQ43T+b8GWOupwXcB2tBIrGr4LtjlLVVHAJq16uhV2+VPVkTOapHeDZmpGS9Kix4fAAocNyIjpso=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=pTvGa56z; arc=fail smtp.client-ip=40.93.201.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1787561978; c=relaxed/simple;
+	bh=biY3Jd89u5JzytoYlJyaD2Md0E7k3M6G2rGbHx8OXPE=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=eys1uHyvAjM3EPVW/v6cmwlXdLBHYvPCEPM4zCSkbJ1USOoVuzZKjc1eO9RfUJ9nns9XdzV0WSVhjTSBZ4IPBqN7IOQ8kJLpJgFKNO7t6ETSKqYSxgtjEn7odMUoaSgV1xiBFXOCaaxzGdxJdBnURK37acj4wW9vZSO7tcb9TLU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GFHreHO8; arc=fail smtp.client-ip=52.101.85.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="pTvGa56z"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GFHreHO8"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rabuvmwYX5fiVjwafpNazydZg2GH2Z7hwJIUVtFmDoWgpHFnmTKnIF8TpXZ9J3EBRwnPkUcTjlT93Uyt6m7789/zg/C3+p/bvVFQOLR59kM0ewq73HXAIUdrpSm2SjcAHDYVbZX+Cewv/oT62ZjkHwThPxmfypv5tO2Vo8LdFWqB4kG1aZIFyv1/PRU+lGKGyfxG3BuvIMSg2ZGHkdPf+I8QrZwjZutxozqV0+YfCERS1PXBLrMA1GCbqwlxlmzcomG22jwP0g2Ad1ZceXhT0rDupWne2VzH2Uthvzdq21bgqZ5IDbsBXvFVrPgfHjXHEkQXrHeP/bKNktCn5Zb7Gg==
+ b=bzeAnegkqzSJaSFZBAzpGRv6fbruO/JMHUOnt3zGQlxnKkeqtcTLHzyhKzGs868G6yHQcdfEA+zhyuEmqWtAxjAJQHJoga6RZ7HiNawqcM4Dhc9TEOpGJbhtDqZQj7ztU4yH6fPZleGp/dxdVBxAFgp00QjLqGs2wYTIx7KUZX4TRYJ/Qh2KnfqCj8a7v0wS8yEP3pRBxRxUFbbgXWOUHd/yTJTENIIllvBxlOj1cL6bA4ZsPD/76VLWyvHfHXtfQ66puDUBrPRwkpUUN+/TrUzYWAIi/xVKd1n2FomRvYVlYYwINdpszxP7eqV2hLq1jZEhgx7EbUislYrmEqFiIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8RJLJyeljRslrw6yZpU2FjygREnWXq+Gfv82r/0wMKY=;
- b=EicR1ug6cbQbJcmAkGbzvF4qx6yxhV4yDPH6uttRDqI9qifGfC9yk4XXcc89pANQwggK+Q9u0t3CP5AKPVvB8tuzZnPD6x+2Mx/ADh9gtbIgiKwSNbHapxqi8sFdr0VT1+B34zwhWIDI9JNElcu2aPaSh/zbyTwz4A2jrzA7+5i8HwNPPW3WUErDckRNGC3hClZtQbJ9l6chI+PE2FhzTIF65w71+zvcXg/PY/BmnhK7hFIK/r1mCEtfPBQ9x7K+olivumEaYW5QKaHiQ1UQaxEKcHK+MdPSs6tV66cXPNQOTgYV4UvG3RhQ6H7afA7T2dGXa6N5cPN+XQznpV2jgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=xPEpNYwQnxN8HF6+IFuiUxFUZ0y5F6aFP/mGUW1MQ7c=;
+ b=aikvevWEBaj3LVjhHo7o2Rew/+rGPtsweCLX3KPqtpP/j68slX9HcjrtSZz1+7+kYnqaKzRnjFGVESUIIMCp4/Cd2Xe4rBiGbe0pbmT4/opS3ZLAY5mnz7Nvcx7PTtkVhCMhzP0zsGRS6YQzyFAtck0X4OM74jnv5rMza0gg5Z3HCmyNGDkdn1m8Nwodc9yfLSzi6tjbwOxqoHIWqUGKSWPmsAOi1ZGf6DSRkog9nvDXIEpaIUU3bPSGYf/aNj+iAU6GxGx3HYaVlv7elJxwedVEJeKsEjseP4Pu93zoiu5VHdc2SHzbaXsVF8/7Gw/SOACsoyc/bj0PoCPsOgJScw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8RJLJyeljRslrw6yZpU2FjygREnWXq+Gfv82r/0wMKY=;
- b=pTvGa56z+dhm0KsBL1Tz9OoDb3cJWt2H0MhQMCNhHLyXsaDVryiWlopvDchEUav8Z8lB7FsSljwWxcAOwifoAwdX8rN490JHmhK1fSLjNc8RKPPrRxhKx2clfv/QFDu9OoxFobuTGdALhrt6RfQSS/uqChBgRdkGL4AmIEYX82s=
-Received: from BN9PR03CA0728.namprd03.prod.outlook.com (2603:10b6:408:110::13)
- by DM4PR12MB6423.namprd12.prod.outlook.com (2603:10b6:8:bd::8) with Microsoft
+ bh=xPEpNYwQnxN8HF6+IFuiUxFUZ0y5F6aFP/mGUW1MQ7c=;
+ b=GFHreHO8RNHeHvGUwCWGuoDQk1xGX5Ye04x7zy+VA3/sVqnpmFOYmvT8oTccES35Cfd0ghg7pJuUDHmn0PZjN68HItqiJQKZuiewtYP62IX+R0pFRghTL/6R9qvny6/rUIgSc6zLgFKZLWdg34RZSH2L1liCYLLpWB/kSm4PgSVzS2IC5/K0ZVqCwzh29iP8B7UQmlfUh+/YTyU+Xqvzzt7qjbBffVVsNJbFKu8flGQpqFdGoBVShR86WCHpmOHG41lKOZ7semaDojhC//xjU5HLbh1ZNSZ5Nm7ZqmhQ4rsmPYXosG/q4o97TEDy7Wk3lOXsPhZSbwDolBtfJR5QUw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8728.namprd12.prod.outlook.com (2603:10b6:610:171::12)
+ by DM4PR12MB5963.namprd12.prod.outlook.com (2603:10b6:8:6a::8) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.339.12; Mon, 24 Aug 2026 08:59:14 +0000
-Received: from LV8PEPF0000005D.namprd02.prod.outlook.com
- (2603:10b6:408:110:cafe::74) by BN9PR03CA0728.outlook.office365.com
- (2603:10b6:408:110::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.339.12 via Frontend Transport; Mon,
- 24 Aug 2026 08:59:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- LV8PEPF0000005D.mail.protection.outlook.com (10.167.245.134) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.360.3 via Frontend Transport; Mon, 24 Aug 2026 08:59:14 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Mon, 24 Aug
- 2026 03:59:10 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <linux-pci@vger.kernel.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, <bhelgaas@google.com>,
-	<alexander.deucher@amd.com>, <mario.limonciello@amd.com>,
-	<felix.kuehling@amd.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v2] iommu/amd: Force identity mode for selected GPUs only
-Date: Mon, 24 Aug 2026 08:58:21 +0000
-Message-ID: <20260824085821.5422-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+ 15.21.339.12; Mon, 24 Aug 2026 08:59:28 +0000
+Received: from CH3PR12MB8728.namprd12.prod.outlook.com
+ ([fe80::2641:1046:bdf3:93d7]) by CH3PR12MB8728.namprd12.prod.outlook.com
+ ([fe80::2641:1046:bdf3:93d7%6]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
+ 08:59:28 +0000
+Message-ID: <ac473a83-c77f-4a41-bc86-8a857d2d6e36@nvidia.com>
+Date: Mon, 24 Aug 2026 10:59:21 +0200
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
+To: Mostafa Saleh <smostafa@google.com>, Luigi Rizzo <lrizzo@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, rizzo.unipi@gmail.com,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, willemb@google.com,
+ kuniyu@google.com, davem@davemloft.net, edumazet@google.com,
+ pabeni@redhat.com, gregkh@linuxfoundation.org, rafael@kernel.org,
+ akpm@linux-foundation.org, david@kernel.org, netdev@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev, driver-core@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260615234220.3946885-1-lrizzo@google.com>
+ <20260615172535.080cf94f@kernel.org>
+ <CAMOZA0KAHKsvA9yRcdrjG13S+=rJhw-Cvnw2WdLjGGY0azG0kw@mail.gmail.com>
+ <ajEuUZMgS_NRmDcp@google.com>
+Content-Language: en-US
+From: Dragos Tatulea <dtatulea@nvidia.com>
+In-Reply-To: <ajEuUZMgS_NRmDcp@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR5P281CA0023.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f1::15) To CH3PR12MB8728.namprd12.prod.outlook.com
+ (2603:10b6:610:171::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PEPF0000005D:EE_|DM4PR12MB6423:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1cc9d1aa-766e-442f-2008-08df01bdf8b1
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8728:EE_|DM4PR12MB5963:EE_
+X-MS-Office365-Filtering-Correlation-Id: 82d2c0e8-e66b-40c1-01e3-08df01be00ae
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|23010399003|376014|1800799024|10067099003|6133799003|18002099003|5023799004|11063799006|56012099006|13003099007;
+	BCL:0;ARA:13230040|366016|23010399003|376014|7416014|1800799024|10067099003|22082099003|18002099003|4143699003|11063799006|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	IyVY/V7xFgdAe9uJrA+u9nVXPPtXlyEaa3uGHMQ8bQsD4zjcSvpS88OmQwDZzkSSU1af6IZew4ItjGlhSYDBbBJBfcChHJcAqeRnwNRHr4AIMMWf8gwEbt/keqy1aIZ2oDzO+mPPghugJiWlDB6eXyhkxWdk+R0QIje9npcodrVazSoAdWsY6lR8mQ1e34tQqR2DKAy/gCGQYFuwVzQPBkezPI0iHv3VGZgJwQAGu+nv6ZGE25AQNT59MeakzkziP7ltI8/1Cr14lPAImQ4NgDuS8EcOOxrgahbXNA+3cWb9AnX9trVyoHHFmu7tRs2j/7cEYF/xMv+zX+gO4A2GxvUjyqD2EcdVd/6bOcUrKAgRZUVrDGZJ4YlnDaowheGbAoyXgj5MF0jvKizmwQ0zIwYIFP1/mE/5vB9h5Xz6OK0idHQavJRvZqmMXj1U19QOqTkVRneEhQ2Uv+PuR7aq1Gbh4v4E64fqQbP9z3/I1l3KTYsP7yeqtb+C+MJoxjYpJLbHMiuTyEqobldZqYqNcQeUBvR/qA6EAqv/25ef3+E96TPqFWo/cCwwUs5oy15fkg9rAMxWFjVTugdn4WPzUWFDB3Hy94cN7OWyRvbJU6JXNboJ9hp7r+1xeswzH3bOmHsSSP9V06C2Rr1vURbNWCcZnW2vWt39lRvX1FtqILMenzEVsOVlNn/jSxjwaxqMgcM5s43fsd6NfVDNOXAmjg==
+	m+6mXDsx1UNSgbgdtXYOc3ilXKI4SHa/1M4cxDCnAtK/YoYSnmhsO1TUH7COi7U183MerbU+SlJrE7sRJ4oAYwQwIPNC9nKF1oQmd87vGNLBaLuDvVx+iBSF7dPbquT+w0d7QaBPQ2MCRrWipIQNMhqA5WhqSu49IXo/JKnlIxOZb16RXOXG2IPzT3UnrpBPqIn3PDnzobokP6rVAKm3AEQ3Wg13jpoPEddnj9TB7xUEBY0NU9IMjiM2QDb4TO/y5KfKOL2Evnp2PqGl+r4A3j3qE889kCkv8Hhf2X5/UFbgmk56gJN/qNxsBf18XjmTpiIjd+6Do3D5V0YpPEr+n8gI5urTkebmNlPITZhumvPbZoCL/HMz5HRecU3hPaKHSLI/a8FqNMOv/LX7aeSMofIF8MRjbRw1zUbtCUoBS5RKbuHgPli26U+ipoMijohkaopooso8PCKGlwwzHd8+cHiuabxWQHZ0nuQ4bONY6Gn1BXj94eqNO2rQDtNgfpyypDXYR+Nylwaj3VfOrkg3wbOkaCH5EBkFQCrqMzyorT8d++BhbRmHTNXS/90fFGR9QZWCiK4tK/bKwPeAYNTL+9Ssof90X9igwr0ASKlMbCH5nRO9gBecaHvUS1LdzdMa5pRgp526qvs6uJgCtKoMrRirruM7k5B/oHTHThDvNd0=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(23010399003)(376014)(1800799024)(10067099003)(6133799003)(18002099003)(5023799004)(11063799006)(56012099006)(13003099007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8728.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(7416014)(1800799024)(10067099003)(22082099003)(18002099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	jD+gAZ8UNWpDp/95SvaYMhHxdQjByJ3weERL1ZiTrtMhkv6SMkyUMB0tqAc/xL87T1U+87AAllykRrfz2fwJEXnKxq00xIQHoFwNJKS4yS7zb7sz27yvI4ewT7/vlFJJJLQaGNVhiDa7nNRrLl1EGoP2qxGFgPRvwnfRbU5/y2de0H3yKG8TIoqh8jkK2Lq+3lg/5qCI6pkI8Fv+X50bEpqzFITPjeLEH6JFz9/seW+DkQ7wruqScaEyxqoA6YDr7WaROiE+hjyGzAUikw/lofveaSKKbWmE2p2tNEVdRJ8EgXz5cA3hFywY90VJTR+OZnpzUF5NYUC+Q5LYcFEIHAvwvK6inzBMlt1SkaE37Cs3Qy6W8wMrDggrIHmbZuz/nlZLG2lRf2VXzz64sFe/I0DsImBh2s6NxAxyoxRvYaiBuR58nJV9WjV6f9vRe7pd
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 08:59:14.2276
+	=?utf-8?B?NDNML0x2Z0pZbzNSSStqbnhJMnk5bC9tU29NSzYyRWxSMWVYaHhEUElyTWRz?=
+ =?utf-8?B?ZW9xcHZkNXJ3ZjYrdWozMVRGQ1pnLzNmWU9EMTFrZVhQcGxjU1Y0RWRrTk5C?=
+ =?utf-8?B?V005aGRkaXNoMzdFRmhzU2QreTNjM0R1RzlITy9tUDVCQUROSlJxaUdWRmo3?=
+ =?utf-8?B?d1lIM0ZJWmQzOGtCd3lycFlpTktHVTJ0THZPTmpQU2Y1dHFKbUdYQkk4allr?=
+ =?utf-8?B?bmVpckJDQzBjZDZkb0lhdFV5R1JQaUkyc1pRWXJ1RW93VDFBVVhHK01XdVpy?=
+ =?utf-8?B?YjVHUHd2V1lOM0R1c0tGS3JTaW04Z3hBZWxRZlM2bm1lTXBHM3dETVlUa3Vu?=
+ =?utf-8?B?NXNaUmtRRy8xdXZEZCtIQmQ1aFVhK2x1N2ZlZTJDZFhYY1JWTWVBdXBMZ0xH?=
+ =?utf-8?B?Vnh5QTkwWHk1UjFpY05HVEtjaDJkd2tMdmtEdElENWRkZjhlUVhCeGRyR1li?=
+ =?utf-8?B?NXYyOHFIUGo1ZEFKalY5dVZGSitpN0NQeXBvUU00L0gwWHp1WlZZMlpjaXdM?=
+ =?utf-8?B?Yk10dldmTi9MNzBadjhRVkxPVUMyT3F4MkExbUF3QzY3OEFPU0hQdTU0bzhZ?=
+ =?utf-8?B?U1FnNWJZTVhLNmFnQ0hKODArV2c2MUNRSURwb2tXZGJjOExoUTFYNFNZVmRB?=
+ =?utf-8?B?UlJpVnV6WTNsdFlXeTFISnQ2WFdZOGVJWmRPcEJ6dUdpaGFCckVPcG03eEFw?=
+ =?utf-8?B?N0hUVjVnNXdCc25VUXVlVWF1ZTBBNWR2cnRwN2JQYXFGS2k1Qkw1TzdHM1B0?=
+ =?utf-8?B?QUZqN29QOXRlam9nSzVvRWlFc2EvK0gxS0FRU1VVME9HdG9GKzh0eVpTMUY5?=
+ =?utf-8?B?a01yNmllOEIrb0liRlVMN0w2K1BJejlPL1RmcmRqSk5kNVEyZXBiTHQ5Mk9L?=
+ =?utf-8?B?SG90U1lNdmw5ZTJsZW50ek9MRHdITFVTQTNjQkMwUys5SEtBQkVpMForNDha?=
+ =?utf-8?B?TW04ZGFCbGt2TFYrWkozUm5CWFl5bFJzcXZ3Q2IyWlF6UzFhbzBDcFhlVHVo?=
+ =?utf-8?B?WCtRVVdweEFxa1o4eEErN2pKc1duMUcvTGVLWlB1ZjdKN3ltenN5MVFZTEUz?=
+ =?utf-8?B?Y1lQdVI3dW5TNFlXNEpjUVJxLzhGT3QwK0VVcWJKTU9VNHVWRy9LQ3BQRDgz?=
+ =?utf-8?B?Ykw3R2s0V2NiTHUzdDMzdEpsdXBaTjd0NDdlREYrZ3BwZm5INFBrWUtNMDdB?=
+ =?utf-8?B?WktzdXlrREZHQzNzeCtoeitkK2FsVFZMcUJldG9CU0xEK2JOV0VCTUR5UVlo?=
+ =?utf-8?B?MTZWM3VPbXgzMFQwUGhDVUFyOGdvYmlNMDQyUm5tUUh5U053VFdzUjRyakJJ?=
+ =?utf-8?B?UW9ZOXBvdEZvaTU3YWVIRUZnVy8zVEZXdUFyWk1SV0VBMVRNRXljNVhtaG5W?=
+ =?utf-8?B?R3ZaV3ZTNFpkM01DY0doaE5sc0ZVTkVWcGRZOWVOZUJGTnpnd01sSUpmN1F4?=
+ =?utf-8?B?RVd3ZkgwZk1obnljZTVWdGZ2Y2hNYUlRNUFhai82aWxVd3ZqZzR5MnhtbGRu?=
+ =?utf-8?B?ZFJZVzNPOW5PUUdBUTZOelNOS0UyWUdwSHUvUFByRm5BSEp3ZGU4M0cvK2Rs?=
+ =?utf-8?B?VW93VTEvbk1nZG84enFUa3VNQ3lLQytFQjRhd2hXcC9GMFB6aW9xV3l5YzNM?=
+ =?utf-8?B?Z0I1bFVnbGoxT0kvdW16Y1NmR2EzaEVRNjZyT2JvQWd6ZEordEdaaGtyV0U2?=
+ =?utf-8?B?dTF5eUxlemJObHJ2UU1ldFhWdFRwNXFNazk0aVNqSlJlSzRqbSt6SzI3bm9v?=
+ =?utf-8?B?cUlMTGh4MDcwb3pKVW9ZQnNPRU5aZnVvL0hOdEVVUWc4RUVkYldnVmQwTVlw?=
+ =?utf-8?B?Vm9oSG5JUSsxWDhidjVMOVVtL0dZSy94Ky9JMzZodG1Ya2htVXBQN25RaXpD?=
+ =?utf-8?B?RW1wWW9SK2o4Y3JsWm1Fa3Zxb1M2b0JWSlFUSzlTaXRDVVVNNWphd2wydy9Q?=
+ =?utf-8?B?TXZ2emlDUU9uNm1iWk9PVGZWYmN3T2VSK1NNWjNoOGxUR2NwN09sc0hzdmRv?=
+ =?utf-8?B?K2M1VWlUTFdmcDJQM1pkQlZCUlowaUNEb2tTNlhBdENZQVQxRW5FZndWZHRw?=
+ =?utf-8?B?ZXhicXNwci9vV3hYc1ZXZWR5Yy9jbDdJRjdyRlpBaTBGR05nY3pyS1ZlWmpE?=
+ =?utf-8?B?Mmg2a1lIa09uR09Hd3hna2h1cHhkQkdzdFhublpVNG9veG1vcFdQYkVwZ1Vp?=
+ =?utf-8?B?TlBKV29iRW5QZ1Z5a2NPL3hEN1NFWHVnMkh2aGhZVWJvQStwR0FtN2ZRRExt?=
+ =?utf-8?B?clBlbUNjTGpiS3FtYWxzZ2pFU3pRb1QrOVlwV2hmQ3llSUlNblA3aXdmMmRu?=
+ =?utf-8?B?R1pCM3BWYk11TTFpL1gzWUtWWDdhd0FyaDFFV2ZyTFl3dGRtUWM4dz09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82d2c0e8-e66b-40c1-01e3-08df01be00ae
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8728.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 08:59:27.8848
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cc9d1aa-766e-442f-2008-08df01bdf8b1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	LV8PEPF0000005D.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6423
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zlzcQabuMvaj8wr/heSkooWEGHoFCt3kOvsHsd177Z+zE3zIEbgFzAj0youpMDpTiTn/KrYGEMZ3KW+t797v9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5963
 
-Certain AMD GPUs must always operate in IOMMU identity mode. This was
-previously enforced using a PASID check, which happened to work because
-these specific GPUs are PASID-capable. However, this approach incorrectly
-applies identity mode enforcement to all PASID-capable devices, not just
-the GPUs that require it.
 
-This made sense in the past because the domain allocation API
-(iommu_ops->domain_alloc()) only received the domain type, so the
-driver had no way to inspect device capabilities and pick the most
-suitable page table format (v1 or v2). With the recent driver
-enhancement to use domain_alloc_paging_flags() for all paging
-domain allocations, the driver can now inspect the device and flags
-directly and choose the appropriate page table type per device.
 
-Update amd_iommu_def_domain_type() to force identity mapping only for
-the specific GPUs that require it, via a new quirks_force_identity_mapping().
+On 16.06.26 13:06, Mostafa Saleh wrote:
+> On Tue, Jun 16, 2026 at 02:33:52AM +0200, Luigi Rizzo wrote:
+>> On Tue, Jun 16, 2026 at 2:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>>
+>>> On Mon, 15 Jun 2026 23:42:20 +0000 Luigi Rizzo wrote:
+>>>> The use of swiotlb causes an extra data copy on I/O.  For tx sockets,
+>>>> especially with greedy senders, this has a high chance of happening in
+>>>> the softirq handler for tx network interrupts, creating a significant
+>>>> performance bottleneck.
+>>>
+>>> What's the use case? I associate swiotlb with debug / testing mostly,
+>>> so it'd be useful for people like me to explain why you care.
+>>
+>> Ah sorry, I forgot to mention.
+>> swiotlb is used in guest kernels for confidential computing VMs.
+>> Ordinary memory pages are encrypted and the host or devices
+>> have no way to decrypt them, so the kernel must use
+>> unencrypted bounce buffers to exchange data with I/O devices.
+> 
+> I started looking into the same problem recently, to reduce the
+> bouncing in protected KVM (pKVM) confidential guests.
+> My first attempt was to update dma_direct_map_phys() to skip
+> bouncing and do inline memory decryption (for pKVM that is a hypercall
+> which updates the stage-2 page tables), however, that was really slow
+> compared to the memcpy in bouncing even for massive pages.
+> My conclusion was similar that we need to solve this at construction
+> by making this memory allocated from a pre-decrypted pool (which
+> does not have to be part of the SWIOTLB)
+> My initial idea was to teach some of the kernel subsystems (SKB,
+> BLK, SLAB) about "CoCo allocators" that allocate decrypted memory,
+> as this is not a net specific problem.
+> 
+An example of this is Jiri's system_cc_shared heap which is a dma-buf
+heap with decrypted memory for userspace.
 
-With this change, a system booting in DMA translation mode will now
-select:
- * Guest (v2) page table for PASID-capable devices
- * Host (v1) page table for non-PASID-capable devices
+> I am still looking into this, I was planning to bring this up in the
+> upcoming LPC.
+> I will give this patch a try. However, I believe that we need a more
+> generalised concept for CoCo pre-decrypted allocators in the kernel.
+> 
+There is a talk at LPC in the networking track about this [2]. This is
+exactly the type of discussion that I was hoping to have there.
 
-Also drop the amd_iommu_snp_en check, as SNP enforces paging domain,
-which doesn't work with the identity requirement of these GPUs.
+Besides the issues mentioned in this thread we've also found that a lot
+of overhead can come only from swiotlb allocations when running many queues.
 
-Link: https://lore.kernel.org/all/20200824105415.21000-1-joro@8bytes.org/
-Link: https://lore.kernel.org/linux-iommu/20260723061548.10187-1-vasant.hegde@amd.com/
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
-Changes in v2:
-  - Dropped disabling ATS for "Radeon Pro WX 4100"
-  - Addressed review comments
+I will add information about this series in my talk. Hopefully I will also
+have time to add some numbers for comparison.
 
-@Jason,
-  Once this patch settles, I will send separate patch to drop
-  'untrusted' check inside amd_iommu_def_domain_type().
+Sorry for the late reply but I spotted this thread only now by
+accident.
 
-  Regarding SME check, I have retained SME chek inside
-  quirks_force_identity_mapping(). If everyone is fine to drop then I
-  will do follow up patch later.
+[1] https://lore.kernel.org/all/20260325192352.437608-3-jiri@resnulli.us/
+[2] https://lpc.events/event/20/contributions/2464
 
--Vasant
-
- drivers/iommu/amd/iommu.c | 45 +++++++++++++++++++++++++++++----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 29dc18d3d22e..fc7819f57521 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3122,6 +3122,26 @@ static bool amd_iommu_is_attach_deferred(struct device *dev)
- 	return dev_data->defer_attach;
- }
- 
-+static bool quirks_force_identity_mapping(struct pci_dev *pdev)
-+{
-+	int class = pdev->class >> 8;
-+
-+	/* AMD GPU vendor ID */
-+	if (pdev->vendor != PCI_VENDOR_ID_ATI)
-+		return false;
-+
-+	/* GPU class */
-+	if (class != PCI_CLASS_DISPLAY_VGA &&
-+	    class != PCI_CLASS_DISPLAY_OTHER)
-+		return false;
-+
-+	if (pci_upstream_bridge(pdev)->vendor == PCI_VENDOR_ID_ATI)
-+		return false;
-+
-+	/* It is the GPU in an APU, force identity domain */
-+	return true;
-+}
-+
- static int amd_iommu_def_domain_type(struct device *dev)
- {
- 	struct iommu_dev_data *dev_data;
-@@ -3130,20 +3150,23 @@ static int amd_iommu_def_domain_type(struct device *dev)
- 	if (!dev_data)
- 		return 0;
- 
-+	if (!dev_is_pci(dev))
-+		return 0;
-+
- 	/* Always use DMA domain for untrusted device */
--	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
-+	if (to_pci_dev(dev)->untrusted)
- 		return IOMMU_DOMAIN_DMA;
- 
--	/*
--	 * Do not identity map IOMMUv2 capable devices when:
--	 *  - memory encryption is active, because some of those devices
--	 *    (AMD GPUs) don't have the encryption bit in their DMA-mask
--	 *    and require remapping.
--	 *  - SNP is enabled, because it prohibits DTE[Mode]=0.
--	 */
--	if (pdev_pasid_supported(dev_data) &&
--	    !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
--	    !amd_iommu_snp_en) {
-+	/* Apply device specific quirks */
-+	if (quirks_force_identity_mapping(to_pci_dev(dev))) {
-+		/*
-+		 * When memory encryption is active, some of these devices
-+		 * don't have the encryption bit in their DMA-mask and
-+		 * require remapping.
-+		 */
-+		if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-+			return 0;
-+
- 		return IOMMU_DOMAIN_IDENTITY;
- 	}
- 
--- 
-2.31.1
-
+Thanks,
+Dragos
