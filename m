@@ -1,207 +1,326 @@
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+Received: from rs1.nue.1e30.net (rs1.nue.1e30.net [152.53.122.0])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE7D361DA8;
-	Mon, 24 Aug 2026 20:30:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16B6382299;
+	Mon, 24 Aug 2026 21:00:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=152.53.122.0
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787603403; cv=none; b=uL+3QutDTgZ2EQEEraGxDhD5fmpMXIN+K01HEir4XVKek16tZhb4XkaN6Ltrvs18lLQZUOCO0qNPhb4UxwD1juONnqLjr+Se/3vHqgAQGfSzkJBwvCEB2JSC5Y9zvFUsAUZ5WpC+pvd9XrgpOBhh76NlURLIg0xrr2a/o/HRYoc=
+	t=1787605263; cv=none; b=QQm5MUx3Vy+mfB+cO4kGwwd1Rzo7BXcaBeTIUspQetNC42ry9ay5CdPcvQqOj7cDTmkz62ZDtBDlsptmBkJZjLjnCAvq3mmNCWPGZuzWenzJnfs2vJZ4zWAgodsCrs5NnRU28+TByAvXexavr7xV/gZNVHdaGtKqYFtplO/ol6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787603403; c=relaxed/simple;
-	bh=nfy1kAgZM25iOXAp95QNMPx7GbJYyCFTsLS93VWg9B4=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
-	 Content-Type:Subject; b=V9AQXqE5y9OM6IyfmukPoiBgY2UWqAs9Wp2AVR5+39bU81NjihF6URmO2g+8YbNHEPSon4VW3fP6wNjOznd7j/YrNlKnZ9XE7cHeH/USzDs4NsTeuvzni7ZicqT5nOJsnCsUVqK0H+HcYHqiVPpBwvt1n4MFCc0IIPXTiICDoZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=n9WT5Hfe; arc=none smtp.client-ip=204.191.154.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
+	s=arc-20240116; t=1787605263; c=relaxed/simple;
+	bh=uFpBlKSm0qbtsSTFmNw486Km5v/ZAesu7I1l0CEBENQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=r6uFJ0Upis7aHrLUnVvnhxpAxEcMSWOHKS1p0IwZubZFjUp0xH/6nwEtbMB0+0auPhMQbA9pEZDdLE0/3E3WSEGsectWIvwRvJ8RE17wclG1a0fClkpiYM+fJIfZAwDxi1I9+MYVoWECp5EOuVcNpCkcZpGcPTa2fol5KFzj3wg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=juch.cc; spf=pass smtp.mailfrom=juch.cc; dkim=pass (2048-bit key) header.d=juch.cc header.i=@juch.cc header.b=dwfUg4vW; arc=none smtp.client-ip=152.53.122.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=juch.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=juch.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="n9WT5Hfe"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-	MIME-Version:Date:Message-ID:content-disposition;
-	bh=ttrN7yudHYdE+P6Y7Hk+L4cL67VsRPH1HuuP89qulVk=; b=n9WT5HfeDEh5VKNVwJ+kveNnkY
-	3aZPomnCEOJ/kPb6Ox8sFtVvHmZTs7RLBxihuIB7SoVvEmsLnj+8TCVMiUllBkSRNa7zzwimaazMQ
-	QEViQHHDoq22NajHMNV8FuJcAY5p7oe+axyQ0v2AWjD3aSLZBdwZb95NhPa6PkwlUxQmCiaYwhxqx
-	M3grSKey4/ZHqmqwd0d981oZmYybDkB6bc+O+F9P9R3lckZSwo7rkFQTnldQJwfUrdDfaEdV3iJ2Z
-	mXpRQyKIXb7bIu/7thaiSoQAtDMw5+t8CPQRUfDoVScKunXqieE8VPq5f43/X3NUiSbDgAp8y37VD
-	QOeH3JPg==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.98.2)
-	(envelope-from <logang@deltatee.com>)
-	id 1wybIl-00000005ZN8-0MU4;
-	Mon, 24 Aug 2026 14:29:51 -0600
-Message-ID: <d559d41c-5cba-4a95-bc8b-b1f78a49a18c@deltatee.com>
-Date: Mon, 24 Aug 2026 14:29:34 -0600
+	dkim=pass (2048-bit key) header.d=juch.cc header.i=@juch.cc header.b="dwfUg4vW"
+Message-ID: <f805ff79-f108-4b5d-a9a1-3c447ee564b4@juch.cc>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juch.cc; s=rsa-2026-06;
+	t=1787605250;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=myJpwBCzhnFsY3H4itePgNGjUGKg7mmppy7sopdAVdg=;
+	b=dwfUg4vW7rVzKHhN4DyoZN5ibaC84EbguBXsP7L1YqGgB70o7fm9jeM31/7MxkxT/0dXCy
+	Bs20svBTmZY34fU282NXe0wp7EZqeP+addYvZyk5TEm/AgAm84RneAe+OfhkV5WpW1eCs1
+	70dErMOubGoIIBHGb0HRtukBOXKEhTfZuGEbloMqQAAqMc4XcRygAsanM0IGdc9qRLRKda
+	z5CleKG9QZrTcWderzWbLqkI3TrieATn+OnY1SS2lRm/zK4dtWczR5gKrn+75DNN49Qiy7
+	MBXECUUIZ5H+GgRRZxyNDf9O2CQWecL/jsR7BUjAeoXvPJ/I+oQ8Hc8v81Gl6w==
+Date: Mon, 24 Aug 2026 23:00:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
- <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, iommu@lists.linux.dev,
- Tushar Dave <tdave@nvidia.com>, Matt Evans <matt@ozlabs.org>
-References: <20260821-fix-p2p-acs-v4-0-v4-0-94426b96de73@nvidia.com>
- <20260821-fix-p2p-acs-v4-0-v4-5-94426b96de73@nvidia.com>
-Content-Language: en-CA
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20260821-fix-p2p-acs-v4-0-v4-5-94426b96de73@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: leon@kernel.org, bhelgaas@google.com, kch@nvidia.com, gregkh@linuxfoundation.org, axboe@kernel.dk, alex@shazbot.org, ankita@nvidia.com, jgg@ziepe.ca, corbet@lwn.net, skhan@linuxfoundation.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux.dev, tdave@nvidia.com, matt@ozlabs.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Level: 
-Subject: I
-X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Subject: Re: [REGRESSION] iommu/amd: "Fix premature break in init_iommu_one()"
+ causes early boot hang
+To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Robert Richter <rrichter@amd.com>, linux-kernel@vger.kernel.org,
+ regressions@lists.linux.dev
+References: <07b2d390-f7a0-47e2-bc2c-eb0853acf52e@juch.cc>
+ <aok4Ko0mpC4fdGPg@8bytes.org> <6a61edf7-157c-4069-a1c3-78d1138b061c@amd.com>
+ <912b9d43-1205-4753-afe1-60cd149679b4@juch.cc>
+ <905c7511-d7bb-4ca6-918f-71846e436062@amd.com>
+Content-Language: en-US
+From: Andreas Juch <andreas@juch.cc>
+In-Reply-To: <905c7511-d7bb-4ca6-918f-71846e436062@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Hi Vasant,
 
 
+On 8/24/26 07:52, Vasant Hegde wrote:
+> Hl Andreas,
+>
+>
+> On 8/22/2026 7:02 PM, Andreas Juch wrote:
+>> [Some people who received this message don't often get email from
+>> andreas@juch.cc. Learn why this is important at https://aka.ms/
+>> LearnAboutSenderIdentification ]
+>>
+>> Hello Vasant,
+>>
+>> On 8/22/26 12:17, Vasant Hegde wrote:
+>>> Andreas,
+>>>
+>>> On 8/22/2026 11:19 AM, Joerg Roedel wrote:
+>>>> Adding Vasant.
+>>>>
+>>>> On Fri, Aug 21, 2026 at 11:11:07PM +0200, Andreas Juch wrote:
+>>>>> Hello,
+>>>>>
+>>>>> I noticed that one of my NixOS sytems failed to boot with kernel 6.18.40.
+>>>>> The
+>>>>> older 6.18.39 booted fine. A full git bisect of v6.18.39..v6.18.40
+>>>>> identified
+>>>>> the following commit as the first bad commit:
+>>>>>
+>>>>>     dc266f6c4e2628576ab33042b6b2a12480220026
+>>>>>     iommu/amd: Fix premature break in init_iommu_one()
+>>>>>
+>>>>> The visible symptom is a black screen immediately after systemd-boot. The
+>>>>> machine also remains unreachable over SSH and leaves no persistent journal
+>>>>> entry
+>>>>> for the failed boot. A reset or power cycle is required.
+>>> Interesting. I never imagined above fix will break some system!
+>>>
+>>> I assumed below dmesg is from good boot (without above patch) and did the
+>>> analysis (code walk with below IVRS data):
+>> Yes, that's correct, it's from the .40 kernel without commit dc266f6c.
+>>
+>>>     - EFR advertised by IVRS is different from actual EFR (read by IOMMU MMIO
+>>> register). Its worse because IVRS advertised few features like GT/PPR which is
+>>> not supported by IOMMU.
+>>>     - Without this patch we would have skipped early_iommu_features_init() so
+>>> global EFR is zero and then init_iommu_one_late() set the EFR properly based on
+>>> actual IOMMU capability.
+>>>
+>>> Only with this log, its hard to tell where exactly system failed. My guess is
+>>> driver enabled features which are not supported (like GT/PPR) or we setup 32bit
+>>> interrupt remapping table.
+>>>
+>>> I believe above patch exposed an existing bug with some other commit.
+>>>
+>>>
+>>> Ideally we should properly fix late_iommu_features_init() and use actual EFRs.
+>>> But for now lets fix the regression. Can you please try below fix?
+>>>
+>>> -Vasant
+>> Thank you for investigating! I created a new branch from the v6.18.40
+>> tag and
+>> applied your patch. The resulting kernel booted without any issues!
+>
+> Thanks a lot. This is like another band-aid fix, but I think it's good enough
+> for a stable backport. In my view, we should prioritize the IOMMU
+> MMIO-advertised EFR over the one reported via IVRS. However, that would require
+> much more extensive changes and isn't a good candidate for stable.
+>
+>
+>> If you need any further information or testing (for a proper fix later
+>> on), I'd
+>> be happy to test patches again!
+> Can you help me to test below patch (just apply this patch and remove previously
+> provided fix patch). I want to make sure that prioritizing MMIO EFR doesn't
+> break things.
+I compiled the kernel with just your patch on top of the 6.18.40 tag and it
+didn't boot. Please let me know how I can provide better diagnostics. I 
+tried to
+get serial output over IPMI SoL, but never got anything useful back.
 
-On 2026-08-21 13:38, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> pdev->p2pdma has two lifetime models. Provider-based entry points are
-> quiesced by their driver before remove completes. pci_p2pmem_find_many()
-> and the p2pmem sysfs attributes can race with unbind and therefore rely
-> on the teardown grace period.
-> 
-> Document publication, teardown, and how the grace period protects both
-> the struct pci_p2pdma object and its optional gen_pool.
-> 
-> Tested-by: Tushar Dave <tdave@nvidia.com>
-> Cc: Alex Williamson <alex@shazbot.org>
-> Cc: Matt Evans <matt@ozlabs.org>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/pci/p2pdma.c | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 53 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-> index a77ef9deb3c6..49bc8cf06240 100644
-> --- a/drivers/pci/p2pdma.c
-> +++ b/drivers/pci/p2pdma.c
-> @@ -21,6 +21,39 @@
->  #include <linux/seq_buf.h>
->  #include <linux/xarray.h>
->  
-> +/*
-> + * Lifetime and RCU usage
-> + *
-> + * Within one driver bind, pdev->p2pdma is published exactly once, by
 
-Is published the right verb here? Seems like we use published for
-different purposes in p2pdma and calling pcim_p2pdma_init() publishing
-reads strangely.
+Andreas
 
-> + * pcim_p2pdma_init(), and cleared exactly once, by the pci_p2pdma_release()
-> + * devres action that the same function installs. It is never re-pointed at a
+> -Vasant
+>
+> ---<---
+> commit aa5f50f1ee66ebf7a219906a4df6aa2b7cae9717
+> Author: Vasant Hegde <vasant.hegde@amd.com>
+> Date:   Mon Aug 24 11:12:27 2026 +0530
+>
+>      iommu/amd: Prioritize IOMMU MMIO advertised EFR over IVRS
+>
+>      Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 69170146d442..0172db87b1df 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -2153,9 +2153,11 @@ static void __init late_iommu_features_init(struct
+> amd_iommu *iommu)
+>   	if (features != amd_iommu_efr ||
+>   	    features2 != amd_iommu_efr2) {
+>   		pr_warn(FW_WARN
+> -			"EFR mismatch. Use IVHD EFR (%#llx : %#llx), EFR2 (%#llx : %#llx).\n",
+> +			"EFR mismatch. Use MMIO EFR (%#llx : %#llx), EFR2 (%#llx : %#llx).\n",
+>   			features, amd_iommu_efr,
+>   			features2, amd_iommu_efr2);
+> +		amd_iommu_efr = features;
+> +		amd_iommu_efr2 = features2;
+>   	}
+>   }
+>
+>
+>
+>
+>
+>
+>> Thanks again!
+>>
+>> Andreas
+>>
+>>> ---<---
+>>>
+>>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+>>> index 69170146d442..7a5b78beb352 100644
+>>> --- a/drivers/iommu/amd/init.c
+>>> +++ b/drivers/iommu/amd/init.c
+>>> @@ -1930,19 +1930,20 @@ static int __init init_iommu_one(struct amd_iommu
+>>> *iommu, struct ivhd_header *h,
+>>>                else
+>>>                        iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
+>>>
+>>> +             if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
+>>> +                     pr_warn_once("Host Address Translation is not supported.
+>>> \n");
+>>> +                     amd_iommu_hatdis = true;
+>>> +             }
+>>> +
+>>>                /* XT and GAM require GA mode. */
+>>>                if ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0) {
+>>>                        amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
+>>> +                     break;
+>>>                } else {
+>>>                        if (h->efr_reg & BIT(IOMMU_EFR_XTSUP_SHIFT))
+>>>                                amd_iommu_xt_mode = IRQ_REMAP_X2APIC_MODE;
+>>>                }
+>>>
+>>> -             if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
+>>> -                     pr_warn_once("Host Address Translation is not supported.
+>>> \n");
+>>> -                     amd_iommu_hatdis = true;
+>>> -             }
+>>> -
+>>>                early_iommu_features_init(iommu, h);
+>>>
+>>>                break;
+>>>
+>>>
+>>>
+>>>>> I reverted that single commit, built the kernel again and the machine
+>>>>> booted, so
+>>>>> I'm quite sure that I found the right commit.
+>>>>>
+>>>>> System information:
+>>>>>
+>>>>> ASRockRack B550D4-4L
+>>>>> BIOS P1.10 (06/28/2021)
+>>>>>
+>>>>> I'm no expert at all, but my research found that the following information
+>>>>> might
+>>>>> be relevant:
+>>>>>
+>>>>>     journalctl -W -b -k --no-pager | rg -i 'AMD-Vi|AMD IOMMU|IOMMU|IVRS|IVHD'
+>>>>>     Aug 21 22:24:17 kernel: ACPI: IVRS 0x00000000BB062000 0000D0 (v02 AMD
+>>>>> AmdTable 00000001 AMD  00000001)
+>>>>>     Aug 21 22:24:17 kernel: ACPI: Reserving IVRS table memory at [mem
+>>>>> 0xbb062000-0xbb0620cf]
+>>>>>     Aug 21 22:24:17 kernel: AMD-Vi: Using global IVHD EFR:0x0, EFR2:0x0
+>>>>>     Aug 21 22:24:17 kernel: iommu: Default domain type: Translated
+>>>>>     Aug 21 22:24:17 kernel: iommu: DMA domain TLB invalidation policy: lazy
+>>>>> mode
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:01.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:01.2: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:02.0: Adding to iommu group 1
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:03.0: Adding to iommu group 2
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:04.0: Adding to iommu group 3
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:05.0: Adding to iommu group 4
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:07.0: Adding to iommu group 5
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:07.1: Adding to iommu group 6
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:08.0: Adding to iommu group 7
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:08.1: Adding to iommu group 8
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:14.0: Adding to iommu group 9
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:14.3: Adding to iommu group 9
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.0: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.1: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.2: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.3: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.4: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.5: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.6: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.7: Adding to iommu group 10
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:02:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:02:00.1: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:02:00.2: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:01.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:02.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:03.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:04.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:08.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:20:09.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:21:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:22:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:23:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:24:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:25:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:29:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2a:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2b:00.0: Adding to iommu group 0
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2c:00.0: Adding to iommu group 11
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.0: Adding to iommu group 12
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.1: Adding to iommu group 13
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.3: Adding to iommu group 14
+>>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.4: Adding to iommu group 15
+>>>>>     Aug 21 22:24:17 kernel: AMD-Vi: Extended features (0x58f77e022294881,
+>>>>> 0x0): PreF GA GA_vAPIC
+>>>>>     Aug 21 22:24:17 kernel: AMD-Vi: Interrupt remapping enabled
+>>>>>
+>>>>> And the output of the decoded IVRS table, captured by `acpidump -n IVRS -b`:
+>>>>>
+>>>>>     00000000  49 56 52 53 d0 00 00 00  02 e2 41 4d 44 20 20 00 |IVRS......AMD
+>>>>> .|
+>>>>>     00000010  41 6d 64 54 61 62 6c 65  01 00 00 00 41 4d 44 20
+>>>>> |AmdTable....AMD |
+>>>>>     00000020  01 00 00 00 41 30 20 00  00 00 00 00 00 00 00 00 |....A0
+>>>>> .........|
+>>>>>     00000030  10 b0 48 00 02 00 40 00  00 00 50 fd 00 00 00 00
+>>>>> |..H...@...P.....|
+>>>>>     00000040  00 00 00 00 2e 8f 04 80  03 08 00 00 04 fe ff 00
+>>>>> |................|
+>>>>>     00000050  43 00 ff 00 00 a5 00 00  04 ff ff 00 00 00 00 00
+>>>>> |C...............|
+>>>>>     00000060  48 00 00 00 00 a0 00 02  48 00 00 d7 0d a0 00 01
+>>>>> |H.......H.......|
+>>>>>     00000070  48 00 00 00 0e 01 00 01  11 b0 58 00 02 00 40 00
+>>>>> |H.........X...@.|
+>>>>>     00000080  00 00 50 fd 00 00 00 00  00 00 00 00 00 02 04 00
+>>>>> |..P.............|
+>>>>>     00000090  5a 4a 29 22 ef 77 8f 05  00 00 00 00 00 00 00 00
+>>>>> |ZJ)".w..........|
+>>>>>     000000a0  03 08 00 00 04 fe ff 00  43 00 ff 00 00 a5 00 00
+>>>>> |........C.......|
+>>>>>     000000b0  04 ff ff 00 00 00 00 00  48 00 00 00 00 a0 00 02
+>>>>> |........H.......|
+>>>>>     000000c0  48 00 00 d7 0d a0 00 01  48 00 00 00 0e 01 00 01
+>>>>> |H.......H.......|
+>>>>>     000000d0
+>>>>>
+>>>>> The relevant part (after decoding with `iasl -d ivrs.dat`):
+>>>>>
+>>>>>     [090h 0144 008h]                   EFR Image : 058F77EF22294A5A
+>>>>>
+>>>>> I'll provide any required details and test patches!
+>>>>>
+>>>>> Thanks for your work, it's very appreciated!
+>>>>>
+>>>>> Andreas
+>>>>>
 
-"It is never re-pointed at" is some strange wording. I had to read it a
-few times to understand what it is saying.
-
-> + * second struct pci_p2pdma, so a reader that observes a non-NULL pointer
-> + * always observes the same, fully initialised object. That object is devres
-> + * memory allocated before the action is installed, so devres frees it only
-> + * after pci_p2pdma_release() has returned.
-
-I don't quite follow the point of this paragraph. It's like it's
-building to some kind of gotcha, but all it seems to be saying is is the
-life cycle of pdev->p2pdma is the same as the lifecycle of pdev.
-
-> + * Most exported entry points reach pdev->p2pdma through a struct pci_dev or a
-> + * struct p2pdma_provider owned by the provider driver, and
-> + * pcim_p2pdma_provider() requires callers to drop those references before the
-> + * driver's remove() completes. Those cannot run concurrently with
-> + * pci_p2pdma_release(), and their rcu_dereference() calls are simply how an
-> + * __rcu pointer is read.
-> + *
-> + * pci_p2pmem_find_many() and the p2pmem sysfs attributes are the exceptions.
-> + * The first walks every PCI device, so it can reach a provider whose driver is
-> + * unbinding: pci_get_device() pins the struct pci_dev, not the driver. The
-> + * second is reachable from userspace until sysfs_remove_group() runs at the end
-> + * of the release. pci_has_p2pmem() must dereference the object to determine
-> + * whether it owns a gen_pool, so even a poolless object must remain alive until
-
-Maybe a hyphen with pool-less or maybe better to use plain language: "so
-even a device without a pool must remain alive..."
-
-> + * that RCU reader exits. The sysfs group is created with the pool.
-> + *
-> + * The grace period in pci_p2pdma_release() first protects the struct
-> + * pci_p2pdma itself from being freed while pci_has_p2pmem() is using it. For a
-> + * pool-backed provider it also fences the gen_pool: gen_pool_alloc_owner()
-> + * walks pool->chunks under RCU and gen_pool_destroy() frees those chunks
-> + * without waiting for a grace period of its own, so pci_alloc_p2pmem() and
-> + * p2pmem_alloc_mmap() hold rcu_read_lock() across the allocation.
-> + */
->  struct pci_p2pdma {
->  	struct gen_pool *pool;
->  	bool p2pmem_published;
-> @@ -235,9 +268,19 @@ static void pci_p2pdma_release(void *data)
->  	if (!p2pdma)
->  		return;
->  
-> -	/* Flush and disable pci_alloc_p2p_mem() */
-> +	/*
-> +	 * Stop new RCU readers and wait for readers that observed p2pdma before
-> +	 * allowing devres to free it. This is required even without a pool,
-> +	 * because pci_has_p2pmem() dereferences every non-NULL p2pdma it finds.
-> +	 * For a pool-backed provider this also fences gen_pool_destroy().
-> +	 */
->  	RCU_INIT_POINTER(pdev->p2pdma, NULL);
->  	synchronize_rcu();
-> +
-> +	/*
-> +	 * The grace period also ensures no RCU reader can still be accessing
-> +	 * map_types here.
-> +	 */
->  	xa_destroy(&p2pdma->map_types);
->  
->  	if (!p2pdma->pool)
-> @@ -255,6 +298,9 @@ static void pci_p2pdma_release(void *data)
->   * for a PCI device. It allocates and sets up the necessary data
->   * structures to support P2PDMA operations, including mapping type
->   * tracking.
-> + *
-> + * The state is published once per driver bind and torn down by a devres
-
-I still find the use of "published" here a bit odd and I'm not sure what
-"state" it is referring to.
-
-> + * action on unbind. Repeated calls for the same device are a no-op.
->   */
->  int pcim_p2pdma_init(struct pci_dev *pdev)
->  {
-> @@ -786,6 +832,12 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
->  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->  	}
->  done:
-> +	/*
-> +	 * pci_p2pmem_find_many() reaches this with a provider whose driver may
-> +	 * be unbinding, so the store runs under RCU: pci_p2pdma_release()
-> +	 * clears the pointer and waits for readers before destroying
-> +	 * map_types. See "Lifetime and RCU usage" above.
-> +	 */
-
-I don't know, but this seems like we're just describing basic RCU usage
-here. I'm not sure I personally find much value in the comment.
-
->  	rcu_read_lock();
->  	p2pdma = rcu_dereference(provider->p2pdma);
->  	if (p2pdma)
-> 
-
-Thanks,
-
-Logan
