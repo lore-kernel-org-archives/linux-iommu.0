@@ -1,56 +1,56 @@
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9134D43F0AC
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 15:29:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C2CB43F4D4
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 15:29:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787585382; cv=none; b=ZtP3yUJWnCgQADDtVcd/ex9tCRyQ/eFkENSIAlbOwOrCQFgJ8vZt7qPeff8b2OXg2hmkKBSxdEDYYCaDZNwXaFAxutXcbtXSsr04Rk6McBzZBHNdYE89lRJsaaalpcqGv6P7jNA1VuM1WCRfcR8dzn7/WsGgDwUGH3T2TjXtv2E=
+	t=1787585383; cv=none; b=H7/BdOvcjJEjMFXO0BcqlNDdh4dy7umhZs4hJnxIRin9vtBA9t6RX6ZagOqsyxSUsn5AiwPS1HllifcJE9goW/nmLvRL2NhW4SdJQxl9BGeWlwJYstkxlZG4ciCBJdc9Q+JmE3qi08EdPy1cBos+ZCtH0S4BLjAvjDbf6HD3tgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787585382; c=relaxed/simple;
-	bh=5NerewdcDfiL8OQ+QV5MZNyPF8loWtco0UZ0C++GWaM=;
+	s=arc-20240116; t=1787585383; c=relaxed/simple;
+	bh=7RZvhwMCHTgYFqTlYPD6pPoVluRWmRUCimtR35dflb0=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=pp/W3LQ0NTHXJXi06TF40Zb5Gwd5Bcv6y9FmXnm50FsrWPuht6VHD01C9NhKtIh/xQrctsfhqqF2gI1ikbj610lmNIwfLF6ksTb7Kf+8M831NpN/vpMNYBbPEUjWofDG9WStMp+08ERTxmMR1GVZpIT7wX5kYigcJpwwz28vCqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fxL/MGfQ; arc=none smtp.client-ip=209.85.208.70
+	 To:Cc:Content-Type; b=Cr3j5rjPWhLewAZWKtYDMPOmFU8A/H2wdVGLv+rFcmHPgMAVr8NUZG9s5FaOumBbcU20o2rw4DYB8KCV9Jcf7XYabw8BDC2vZjFZ0jsAAMKUbhc93nptNBDeC5dqZ/F69Xbpwtda3KAwRaJ7AqUHiRHa4t3jt/X2IHkXKgdRI6s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wF0MgmhP; arc=none smtp.client-ip=209.85.218.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fxL/MGfQ"
-Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-6a19d668ba3so5019679a12.1
-        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 08:29:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wF0MgmhP"
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c15ddb61f13so336762666b.0
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 08:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787585378; x=1788190178; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1787585379; x=1788190179; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=a387GiIlsJuzM9aT5OA2RPOtHkxgW7YP7HmPN81inmc=;
-        b=fxL/MGfQ6tKL0MkU8cAJy8kzQ7guXw2kU2bvAs8YLHksjN0rkOizpsnpT0q9wIGwSi
-         TsLorqeZNr3QMmdi6AeHRRyJf6rPWnWtZEuJfMu+PXpqTL5Bom5tVCLomzQKfs9U+c5N
-         xRRyA1tG5EnbTBCjw1YQ4QWInh5XHO+tRvsdTblcqN7JqZE650+Yd1hEM/Pqu1WhEH8r
-         bOkGkTa9VKoKQ2MgjGw2cSsNykYNxxgU2vdOCjqgqvR8oGxdFD9eWkQVenklMNKXw6G6
-         lmjTDhZSGQteQA3GC9Ya1kC3R55MmjNg82esDzOugkVm80wg8leQKo1OOCQezEHKPo+7
-         PFPg==
+        bh=rIIxKJ/h4TdOX2PzM8xN9SJKh2HJ62O9uv+0COVNyBw=;
+        b=wF0MgmhPOT+iINolwhmatvgqA8w7vN0uQtXWKyRmcGTIdsz8K3N/0iE1bQOl44q0Ph
+         b/Avrgoa0OsEVYBhyFENgs1UXhPiPrIwJuzm1ZJrakLz7PPITMW4JMRvS/8TiPfGIglO
+         oFCe0TJOdOA9/+VJ0QDSl4xr6ihiYnfDis8vwaAwsBf/nibbjdYMcaKcfIZn/heIjJ1G
+         6h3znaXATzzjEFJuOjDKi8var5RzuOqsl1ufOtqjiypnYCA/nGff0KKBkaeFbEggKTT6
+         BZQGD533fQUaBCgXm7C7qcWgFP4FdfydZNgMSTQKCDmtedTA9UAmYYFCRiioFv0/4fQ8
+         ZPCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787585378; x=1788190178;
+        d=1e100.net; s=20251104; t=1787585379; x=1788190179;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=a387GiIlsJuzM9aT5OA2RPOtHkxgW7YP7HmPN81inmc=;
-        b=T3hWECKLVtLBULznshNC0EHaykviIhj8aaNJALLV18GCQjQ+hDheU6lhUzB4b6Nk8T
-         V+hzPLerXsbjTLw2A6ygMTCo/mNGcYC/8gvLiCQ291ohsSdIlpT3KXh+TXV4o6Igtavi
-         4IphYRxmeRfJGA0wGe+sTHmzyjalPdM76xr03zdzaCSIHZwIFdSrrSu9+z0LEKEPGXcW
-         hyX7e+XcVbVPmiBf7FkCxfQ8S8SKennt1wW8RwIiIgba0rx/Zdi+grMlgSvy1ZfPyUk2
-         Pt/0Cxebg64c5E+HiMnlFCwz1A96u3ifO1XqM1zKBc/WAWqZGsb7qVlbQZcOEAiPGj74
-         o7Kw==
-X-Forwarded-Encrypted: i=1; AHgh+RqiBJZXaHRI/VO5+8kOfzVPBotbc3LxI1jwhfGqAl4WZMXWCf+NTq0Ez/AzFrw0XdyzfMRNYQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++ncARfCyBHN6IHmzv7RDrdNwAteD4AbSgGNNH7BP19J17zvfXeh
-	WNUep/uEY9ZiHVDNpZo2DdjA8QjVSGmxI9GdX/Hw96RDXt2VjtgjorK4T+uQslFqRMV4xh0uTFq
-	hGocjcQ==
-X-Received: from edxn5.prod.google.com ([2002:a05:6402:5c5:b0:6a1:4f77:f704])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6402:4613:b0:698:9e5e:5df8
- with SMTP id 4fb4d7f45d1cf-6a42f1aca88mr27508443a12.7.1787585377536; Mon, 24
- Aug 2026 08:29:37 -0700 (PDT)
-Date: Mon, 24 Aug 2026 15:29:29 +0000
+        bh=rIIxKJ/h4TdOX2PzM8xN9SJKh2HJ62O9uv+0COVNyBw=;
+        b=YkXLJCZgrvjywhhrdyRpgkkf83pPROe7AgPxeYjGGZgDYYjB9GcW4xvKKOpI1Vklrj
+         qJvYykR+LD5Ue8PU28XwIMnujwSoogSAVugWOUmMguQwFPkx6xG6pr8TMLDWPbevqSaR
+         Y8G3rEwTItKbJzKdI8mbt8gWdFDIzlY94hxVAqDXqVQuRq8F4Fk2/DZVzTFsrEUajkrC
+         W5cW6qSq6LGLK5oEU+NQxV0ilar1Pik9i5Nh+h4RZVKEU/JxzvgMWDGs0xI4AbKbeERA
+         eRJdVAxhDSknNBfaD6aWqwNzz7Idzf19oe8qcvc9wokFJZ4nXVRaLMOv6PDNAZ0HvE6T
+         mq7A==
+X-Forwarded-Encrypted: i=1; AHgh+RrrYcwThpoH4yvFfmmbBVUsgVv2/+ihGn/ABl8z865DYfN1VPR3dWl/lnTj89h0/t64VLGsgQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++lfEaKxYZJqhaYzIN4FKR2JFWnmR/ZLtt/P6Q229M1jxBa6fxsF
+	v9F8TgSI9WMs7KaQg4Xg5mSj1KXICYS8jJbAMlEfCpcbs3SMutTIEaKE8id60vs5GTvD/EPIVxz
+	jlIK3Wg==
+X-Received: from ejzq1.prod.google.com ([2002:a17:906:b281:b0:c12:5229:7355])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:f509:b0:c19:49ee:19b9
+ with SMTP id a640c23a62f3a-c246a654f4emr3342635466b.15.1787585378467; Mon, 24
+ Aug 2026 08:29:38 -0700 (PDT)
+Date: Mon, 24 Aug 2026 15:29:30 +0000
 In-Reply-To: <20260824152932.1583506-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260615234220.3946885-1-lrizzo@google.com> <20260824152932.1583506-1-lrizzo@google.com>
 X-Mailer: git-send-email 2.55.0.766.g2966f0265a-goog
-Message-ID: <20260824152932.1583506-3-lrizzo@google.com>
-Subject: [PATCH v2 2/5] swiotlb/mm: Implement SWIOTLB nocopy page allocator
+Message-ID: <20260824152932.1583506-4-lrizzo@google.com>
+Subject: [PATCH v2 3/5] net/swiotlb: Track bounce device per socket
 From: Luigi Rizzo <lrizzo@google.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
 	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
@@ -75,437 +75,358 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dragos Tatulea <dtatulea@nv
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Introduce swiotlb_alloc_pages() and swiotlb_free_pages() to allocate
-and release compound pages directly from the default SWIOTLB pool.
-
-The allocator is restricted to slots in the static default pool,
-with caller-specified percentage limits on pool occupancy.
-
-This will be used for kernel data (e.g. socket buffers) in
-nocopy confidential computing.
+Record, on each network socket, the underlying hardware device that
+requests DMA mapping of tx packets. This is used for nocopy confidential
+computing, so that sockets can eventually allocate socket buffers directly
+from the swiotlb pools.
 
 Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
- include/linux/swiotlb.h |  24 ++++++
- kernel/dma/swiotlb.c    | 187 ++++++++++++++++++++++++++++++++++++++--
- mm/page_alloc.c         |  51 +++++++++++
- 3 files changed, 255 insertions(+), 7 deletions(-)
+ drivers/base/core.c       |  1 +
+ include/linux/netdevice.h | 21 +++++++++++
+ include/linux/swiotlb.h   | 36 +++++++++++++++++++
+ include/net/sock.h        | 46 ++++++++++++++++++++++++
+ kernel/dma/swiotlb.c      | 73 +++++++++++++++++++++++++++++++++++++++
+ net/core/sock.c           | 39 +++++++++++++++++++++
+ 6 files changed, 216 insertions(+)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 3dae0f592063e..4661e361c60e4 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -169,6 +169,23 @@ static inline struct io_tlb_pool *swiotlb_find_pool(struct device *dev,
- 	return NULL;
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 4c0c373998a19..091062228740d 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -3925,6 +3925,7 @@ void device_del(struct device *dev)
+ 	unsigned int noio_flag;
+ 
+ 	device_lock(dev);
++	swiotlb_change_epoch();
+ 	kill_device(dev);
+ 	device_unlock(dev);
+ 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 87cafc932e9e6..2457f4e464acf 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -5429,13 +5429,34 @@ static inline netdev_tx_t __netdev_start_xmit(const struct net_device_ops *ops,
+ 	return ops->ndo_start_xmit(skb, dev);
  }
  
-+bool swiotlb_pool_is_nocopy(struct io_tlb_pool *pool, phys_addr_t paddr);
++struct sock;
 +
-+static inline bool swiotlb_addr_in_default_pool(struct device *dev,
-+						phys_addr_t paddr)
++#if defined(CONFIG_SWIOTLB) && !defined(CONFIG_PREEMPT_RT)
++/* Per-CPU pointer to the socket currently performing transmission. Used
++ * to bridge the networking and DMA layers, allowing dma_map_page() to
++ * identify the socket originating the packet and apply SWIOTLB optimizations.
++ */
++DECLARE_PER_CPU(struct sock *, current_tx_socket);
++static inline struct sock *__save_current_tx_socket(struct sock *sk)
 +{
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	struct sock *old_sk = this_cpu_read(current_tx_socket);
 +
-+	return mem && paddr >= mem->defpool.start && paddr < mem->defpool.end;
++	this_cpu_write(current_tx_socket, sk);
++	return old_sk;
 +}
++#else
++static inline struct sock *__save_current_tx_socket(struct sock *sk) { return NULL; }
++#endif
 +
-+static inline bool swiotlb_is_nocopy_addr(struct device *dev, phys_addr_t paddr)
-+{
-+	if (!swiotlb_addr_in_default_pool(dev, paddr))
-+		return false;
-+	return swiotlb_pool_is_nocopy(&dev->dma_io_tlb_mem->defpool, paddr);
-+}
-+
- static inline bool is_swiotlb_force_bounce(struct device *dev)
+ static inline netdev_tx_t netdev_start_xmit(struct sk_buff *skb, struct net_device *dev,
+ 					    struct netdev_queue *txq, bool more)
  {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-@@ -178,6 +195,13 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
++	struct sock *old_sk = __save_current_tx_socket(skb->sk);
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+ 	netdev_tx_t rc;
  
- void swiotlb_init(bool addressing_limited, unsigned int flags);
- void __init swiotlb_exit(void);
-+struct page *swiotlb_alloc_pages(struct device *dev, unsigned int order, gfp_t gfp,
-+				 unsigned int percent);
-+bool swiotlb_free_pages(struct page *page, unsigned int order);
-+void swiotlb_nocopy_inc_ref(struct io_tlb_pool *pool, phys_addr_t phys);
-+void swiotlb_nocopy_dec_ref(struct io_tlb_pool *pool, phys_addr_t phys);
-+void swiotlb_prep_compound_page(struct page *page, unsigned int order);
-+void swiotlb_destroy_compound_page(struct page *page, unsigned int order);
+ 	rc = __netdev_start_xmit(ops, skb, dev, more);
++	__save_current_tx_socket(old_sk);
+ 	if (rc == NETDEV_TX_OK)
+ 		txq_trans_update(dev, txq);
+ 
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 4661e361c60e4..b1140db3cc397 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -202,6 +202,39 @@ void swiotlb_nocopy_inc_ref(struct io_tlb_pool *pool, phys_addr_t phys);
+ void swiotlb_nocopy_dec_ref(struct io_tlb_pool *pool, phys_addr_t phys);
+ void swiotlb_prep_compound_page(struct page *page, unsigned int order);
+ void swiotlb_destroy_compound_page(struct page *page, unsigned int order);
++void swiotlb_safe_put_device(struct device *dev);
++
++/* Track epoch (number of delete operations) for leaf device info. */
++extern atomic_t global_device_epoch;
++
++static inline u32 swiotlb_dev_epoch(void)
++{
++	return atomic_read(&global_device_epoch);
++}
++
++static inline void swiotlb_change_epoch(void)
++{
++	atomic_inc(&global_device_epoch);
++}
++
++#if defined(CONFIG_NET) && !defined(CONFIG_PREEMPT_RT)
++/*
++ * Track the socket for the currently transmitted packet, so the dma mapping
++ * function can record there the leaf device if it needs bounce buffers.
++ */
++struct sock;
++DECLARE_PER_CPU(struct sock *, current_tx_socket);
++void sk_record_bounce_device(struct sock *sk, struct device *dev);
++static inline void dma_learn_bounce_device(struct device *dev)
++{
++	struct sock *sk = this_cpu_read(current_tx_socket);
++
++	if (sk)
++		sk_record_bounce_device(sk, dev);
++}
++#else
++static inline void dma_learn_bounce_device(struct device *dev) {}
++#endif
  void swiotlb_dev_init(struct device *dev);
  size_t swiotlb_max_mapping_size(struct device *dev);
  bool is_swiotlb_allocated(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8e4bd9d47735a..6b86a1e955fb4 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -66,17 +66,59 @@
- /**
-  * struct io_tlb_slot - IO TLB slot descriptor
-  * @orig_addr:	The original address corresponding to a mapped entry.
-+ * @nocopy_refcnt:	Lockless atomic refcount for Nocopy buffers.
-  * @alloc_size:	Size of the allocated buffer.
-  * @list:	The free list describing the number of free entries available
-  *		from each index.
-  * @pad_slots:	Number of preceding padding slots. Valid only in the first
-  *		allocated non-padding slot.
-+ * @flags:	Slot attributes (e.g. SWIOTLB_SLOT_NOCOPY for Nocopy buffers).
-+ *
-+ * The slot descriptor has states identified by @list and @flags (SWIOTLB_SLOT_NOCOPY):
-+ *
-+ * 1. FREE (list > 0):
-+ *    Linear sweep free slot.
-+ *
-+ * 2. USED (list == 0, SWIOTLB_SLOT_NOCOPY flag is NOT set in @flags):
-+ *    Allocated SWIOTLB bounce buffer.
-+ *    Fields used: @list, @pad_slots, @orig_addr, @alloc_size.
-+ *
-+ * 3. USED_NOCOPY (list == 0, SWIOTLB_SLOT_NOCOPY flag is set in @flags):
-+ *    Allocated Nocopy SWIOTLB buffer.
-+ *    Fields used: @list, @nocopy_refcnt, @alloc_size.
-+ */
-+#define SWIOTLB_SLOT_NOCOPY	BIT(0)
+@@ -258,6 +291,9 @@ static inline phys_addr_t default_swiotlb_limit(void)
+ {
+ 	return 0;
+ }
++static inline void swiotlb_safe_put_device(struct device *dev)
++{
++}
+ #endif /* CONFIG_SWIOTLB */
+ 
+ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 51185222aac29..39b5e81c7cc55 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -47,6 +47,7 @@
+ #include <linux/skbuff.h>	/* struct sk_buff */
+ #include <linux/mm.h>
+ #include <linux/security.h>
++#include <linux/swiotlb.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+ #include <linux/page_counter.h>
+@@ -70,6 +71,14 @@
+ #include <net/l3mdev.h>
+ #include <uapi/linux/socket.h>
+ 
++#if defined(CONFIG_SWIOTLB) && !defined(CONFIG_PREEMPT_RT)
++struct sk_swiotlb_info {
++	struct device __rcu	*dev;
++	u32			epoch;
++	unsigned long		jiffies;
++};
++#endif
 +
-+/*
-+ * SWIOTLB nocopy allocations (swiotlb_alloc_pages()) do not have an original
-+ * physical address to bounce, but need to pass a caller-specified pool usage
-+ * limit (percentage) down to the area search logic.
-+ *
-+ * To avoid adding a parameter to swiotlb_find_slots(), swiotlb_search_area(),
-+ * and swiotlb_search_pool_area(), the desired percentage (0..90) is encoded
-+ * into the orig_addr parameter in the reserved high address range starting at
-+ * INVALID_PHYS_ADDR (~0ULL).
-+ *
-+ * - NOCOPY_PCT_TO_ADDR(pct): Encodes a percentage into an orig_addr.
-+ * - IS_SWIOTLB_NOCOPY(addr): Identifies a nocopy allocation request and
-+ *   restricts slot search to the static default pool.
-+ * - NOCOPY_ADDR_TO_PCT(addr): Extracts the percentage to cap max_usable
-+ *   slots in swiotlb_search_pool_area().
-  */
-+#define NOCOPY_PCT_MAX	(90u)
-+#define NOCOPY_PCT_TO_ADDR(pct)		(INVALID_PHYS_ADDR - min(pct, NOCOPY_PCT_MAX))
-+#define IS_SWIOTLB_NOCOPY(addr)		((addr) >= INVALID_PHYS_ADDR - NOCOPY_PCT_MAX)
-+#define NOCOPY_ADDR_TO_PCT(addr)	((unsigned int)(INVALID_PHYS_ADDR - (addr)))
-+
- struct io_tlb_slot {
--	phys_addr_t orig_addr;
-+	union {
-+		phys_addr_t orig_addr;
-+		atomic_t nocopy_refcnt;
-+	};
- 	size_t alloc_size;
- 	unsigned short list;
- 	unsigned short pad_slots;
-+	unsigned int flags;
+ /*
+  * This structure really needs to be cleaned up.
+  * Most of it is for TCP, and not used by any of
+@@ -602,8 +611,45 @@ struct sock {
+ #if IS_ENABLED(CONFIG_PROVE_LOCKING) && IS_ENABLED(CONFIG_MODULES)
+ 	struct module		*sk_owner;
+ #endif
++#if defined(CONFIG_SWIOTLB) && !defined(CONFIG_PREEMPT_RT)
++	struct sk_swiotlb_info	sk_swiotlb;
++#endif
  };
  
- static bool swiotlb_force_bounce;
-@@ -300,6 +342,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
- 		mem->slots[i].pad_slots = 0;
-+		mem->slots[i].flags = 0;
- 	}
- 
- 	memset(vaddr, 0, bytes);
-@@ -869,12 +912,17 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 			   enum dma_data_direction dir, struct io_tlb_pool *mem)
- {
- 	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
--	phys_addr_t orig_addr = mem->slots[index].orig_addr;
- 	size_t alloc_size = mem->slots[index].alloc_size;
--	unsigned long pfn = PFN_DOWN(orig_addr);
- 	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
-+	phys_addr_t orig_addr;
-+	unsigned long pfn;
- 	int tlb_offset;
- 
-+	/* Nocopy swiotlb buffers do not need bouncing. */
-+	if (mem->slots[index].flags & SWIOTLB_SLOT_NOCOPY)
-+		return;
-+
-+	orig_addr = mem->slots[index].orig_addr;
- 	if (orig_addr == INVALID_PHYS_ADDR)
- 		return;
- 
-@@ -904,6 +952,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 		size = alloc_size;
- 	}
- 
-+	pfn = PFN_DOWN(orig_addr);
- 	if (PageHighMem(pfn_to_page(pfn))) {
- 		unsigned int offset = orig_addr & ~PAGE_MASK;
- 		struct page *page;
-@@ -1052,7 +1101,8 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
- 	unsigned long max_slots = get_max_slots(boundary_mask);
- 	unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
- 	unsigned int nslots = nr_slots(alloc_size), stride;
--	unsigned int offset = swiotlb_align_offset(dev, 0, orig_addr);
-+	unsigned long max_usable = pool->area_nslabs;
-+	unsigned int offset;
- 	unsigned int index, slots_checked, count = 0, i;
- 	unsigned long flags;
- 	unsigned int slot_base;
-@@ -1061,6 +1111,13 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
- 	BUG_ON(!nslots);
- 	BUG_ON(area_index >= pool->nareas);
- 
-+	if (IS_SWIOTLB_NOCOPY(orig_addr)) {
-+		max_usable = (pool->area_nslabs * NOCOPY_ADDR_TO_PCT(orig_addr)) / 100;
-+		orig_addr = 0;
-+	}
-+
-+	offset = swiotlb_align_offset(dev, 0, orig_addr);
-+
- 	/*
- 	 * Historically, swiotlb allocations >= PAGE_SIZE were guaranteed to be
- 	 * page-aligned in the absence of any other alignment requirements.
-@@ -1087,7 +1144,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
- 	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
- 
- 	spin_lock_irqsave(&area->lock, flags);
--	if (unlikely(nslots > pool->area_nslabs - area->used))
-+	if (unlikely(area->used + nslots > max_usable))
- 		goto not_found;
- 
- 	slot_base = area_index * pool->area_nslabs;
-@@ -1164,6 +1221,9 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-  * Search one memory area in all pools for a sequence of slots that match the
-  * allocation constraints.
-  *
-+ * If IS_SWIOTLB_NOCOPY(orig_addr) is true, the search is restricted to only the
-+ * default pool, which is what swiotlb_alloc_pages() is allowed to use.
-+ *
-  * Return: Index of the first allocated slot, or -1 on error.
-  */
- static int swiotlb_search_area(struct device *dev, int start_cpu,
-@@ -1177,6 +1237,9 @@ static int swiotlb_search_area(struct device *dev, int start_cpu,
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(pool, &mem->pools, node) {
-+		/* Only search the default pool (first in mem->pools) for nocopy allocations. */
-+		if (IS_SWIOTLB_NOCOPY(orig_addr) && pool != &mem->defpool)
-+			break;
- 		if (cpu_offset >= pool->nareas)
- 			continue;
- 		area_index = (start_cpu + cpu_offset) & (pool->nareas - 1);
-@@ -1229,6 +1292,13 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 			goto found;
- 	}
- 
-+	/*
-+	 * Passing a nocopy orig_addr restricts the search to only the
-+	 * default pool, so do not attempt dynamic pool expansion.
-+	 */
-+	if (IS_SWIOTLB_NOCOPY(orig_addr))
-+		return -1;
-+
- 	if (!mem->can_grow)
- 		return -1;
- 
-@@ -1468,11 +1538,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	return tlb_addr;
- }
- 
++#if defined(CONFIG_SWIOTLB) && !defined(CONFIG_PREEMPT_RT)
 +/*
-+ * called with dev == NULL from swiotlb_dealloc_pages(), in this case force offset
-+ * and align_mask to 0, pad_slots is also 0, and assume the pages come from the
-+ * default system pool.
++ * Clear bounce device on newly initialized or cloned sockets.
++ * Note: During socket cloning, sock_copy() performs a raw bitwise copy of
++ * the parent socket without incrementing the device refcount via get_device().
++ * Therefore, we must zero sk_swiotlb.dev directly here without putting a
++ * reference. References are acquired solely by sk_record_bounce_device() and
++ * released in sk_release_bounce_device().
 + */
- static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
- 				  struct io_tlb_pool *mem)
- {
- 	unsigned long flags;
--	unsigned int offset = swiotlb_align_offset(dev, 0, tlb_addr);
-+	unsigned int offset = dev ? swiotlb_align_offset(dev, 0, tlb_addr) : 0;
- 	int index, nslots, aindex;
- 	struct io_tlb_area *area;
- 	int count, i;
-@@ -1506,6 +1581,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
- 		mem->slots[i].pad_slots = 0;
-+		mem->slots[i].flags = 0;
- 	}
- 
- 	/*
-@@ -1519,7 +1595,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
- 	area->used -= nslots;
- 	spin_unlock_irqrestore(&area->lock, flags);
- 
--	dec_used(dev->dma_io_tlb_mem, nslots);
-+	dec_used(dev ? dev->dma_io_tlb_mem : &io_tlb_default_mem, nslots);
- }
- 
- #ifdef CONFIG_SWIOTLB_DYNAMIC
-@@ -1912,3 +1988,100 @@ static const struct reserved_mem_ops rmem_swiotlb_ops = {
- 
- RESERVEDMEM_OF_DECLARE(dma, "restricted-dma-pool", &rmem_swiotlb_ops);
- #endif /* CONFIG_DMA_RESTRICTED_POOL */
-+
-+static inline int swiotlb_nocopy_head_index(struct io_tlb_pool *pool, phys_addr_t phys)
++static inline void sk_clear_bounce_device(struct sock *sk)
 +{
-+	return (page_to_phys(compound_head(phys_to_page(phys))) - pool->start) >> IO_TLB_SHIFT;
++	rcu_assign_pointer(sk->sk_swiotlb.dev, NULL);
++}
++
++/*
++ * Release any device reference acquired via sk_record_bounce_device() during
++ * socket transmission and clear the device pointer. Called during socket
++ * destruction (__sk_destruct).
++ */
++static inline void sk_release_bounce_device(struct sock *sk)
++{
++	struct device *dev;
++
++	dev = rcu_dereference_raw(sk->sk_swiotlb.dev);
++	if (dev) {
++		swiotlb_safe_put_device(dev);
++		rcu_assign_pointer(sk->sk_swiotlb.dev, NULL);
++	}
++}
++#else
++static inline void sk_clear_bounce_device(struct sock *sk) {}
++static inline void sk_release_bounce_device(struct sock *sk) {}
++#endif
++
+ struct sock_bh_locked {
+ 	struct sock *sock;
+ 	local_lock_t bh_lock;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 6b86a1e955fb4..d4a07a7c570e1 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1683,6 +1683,8 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
+ 	phys_addr_t swiotlb_addr;
+ 	dma_addr_t dma_addr;
+ 
++	dma_learn_bounce_device(dev);
++
+ 	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size);
+ 
+ 	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, 0, dir, attrs);
+@@ -2085,3 +2087,74 @@ bool swiotlb_pool_is_nocopy(struct io_tlb_pool *pool, phys_addr_t paddr)
+ 	return pool->slots[index].flags & SWIOTLB_SLOT_NOCOPY;
+ }
+ EXPORT_SYMBOL_GPL(swiotlb_pool_is_nocopy);
++
++/*
++ * Dropping the reference to sk_swiotlb.dev must be done in two steps:
++ *
++ * 1. Readers inspect the pointer inside RCU critical sections without
++ *    acquiring a reference. Use call_rcu() to wait for an RCU grace period
++ *    to elapse so lockless in-flight readers finish accessing the device.
++ *
++ * 2. The RCU callback executes in atomic softirq context, but put_device()
++ *    can block when releasing a device. Use schedule_work() to transition
++ *    to sleepable process context where calling put_device() is safe.
++ */
++struct swiotlb_deferred_put {
++	struct rcu_head rcu;
++	struct work_struct work;
++	struct device *dev;
++};
++
++static void swiotlb_deferred_put_work(struct work_struct *work)
++{
++	struct swiotlb_deferred_put *dp = container_of(work, struct swiotlb_deferred_put, work);
++
++	/* Stage 2: Safely call put_device (can sleep) in process context */
++	put_device(dp->dev);
++	kfree(dp);
++}
++
++static void swiotlb_deferred_put_rcu(struct rcu_head *rcu)
++{
++	struct swiotlb_deferred_put *dp = container_of(rcu, struct swiotlb_deferred_put, rcu);
++
++	/* RCU grace period has passed. Queue the work to do the actual put */
++	schedule_work(&dp->work);
 +}
 +
 +/**
-+ * swiotlb_dealloc_pages() - Actually release Nocopy slots and page metadata
-+ * @pool:	SWIOTLB pool containing the buffer.
-+ * @parent:	Slot index of the buffer head.
++ * swiotlb_safe_put_device() - Safely release device reference from atomic/interrupt context
++ * @dev: The device structure to release.
++ *
++ * Enqueues a deferred put_device() call on a workqueue using GFP_ATOMIC.
++ * If memory allocation fails, the reference is leaked to avoid an immediate crash.
 + */
-+static void swiotlb_dealloc_pages(struct io_tlb_pool *pool, unsigned int parent)
++void swiotlb_safe_put_device(struct device *dev)
 +{
-+	unsigned int order = get_order(pool->slots[parent].alloc_size);
-+	phys_addr_t paddr = pool->start + (parent << IO_TLB_SHIFT);
-+	struct page *head = phys_to_page(paddr);
++	struct swiotlb_deferred_put *dp;
 +
-+	swiotlb_destroy_compound_page(head, order);
-+	swiotlb_release_slots(NULL, paddr, pool);
++	if (!dev)
++		return;
++
++	/* Lockless fast-path: if we are not the last reference, decrement is safe */
++	if (refcount_dec_not_one(&dev->kobj.kref.refcount))
++		return;
++
++	/*
++	 * On the last reference we must defer the final put_device() to task
++	 * context because it will trigger device_release() which can sleep.
++	 */
++	dp = kmalloc_obj(*dp, GFP_ATOMIC);
++	if (dp) {
++		INIT_WORK(&dp->work, swiotlb_deferred_put_work);
++		dp->dev = dev;
++		/* Stage 1: Wait for RCU readers to finish */
++		call_rcu(&dp->rcu, swiotlb_deferred_put_rcu);
++	} else {
++		pr_warn_ratelimited("swiotlb: failed to allocate deferred put, leaking device ref\n");
++	}
 +}
++EXPORT_SYMBOL_GPL(swiotlb_safe_put_device);
 +
-+struct page *swiotlb_alloc_pages(struct device *dev, unsigned int order,
-+				 gfp_t gfp, unsigned int percent)
-+{
-+	struct io_tlb_pool *pool;
-+	struct page *page;
-+	int index, nslots, i;
-+
-+	if (WARN_ON_ONCE(!dev || !dev->dma_io_tlb_mem))
-+		return NULL;
-+
-+	if (dev->dma_io_tlb_mem != &io_tlb_default_mem)
-+		return NULL;
-+
-+	index = swiotlb_find_slots(dev, NOCOPY_PCT_TO_ADDR(percent),
-+				   PAGE_SIZE << order, (PAGE_SIZE << order) - 1,
-+				   &pool);
-+	if (index < 0)
-+		return NULL;
-+
-+	nslots = (PAGE_SIZE << order) >> IO_TLB_SHIFT;
-+	page = phys_to_page(pool->start + (index << IO_TLB_SHIFT));
-+	swiotlb_prep_compound_page(page, order);
-+	for (i = 0; i < nslots; i++)
-+		pool->slots[index + i].flags |= SWIOTLB_SLOT_NOCOPY;
-+	atomic_set(&pool->slots[index].nocopy_refcnt, 1);
-+	return page;
-+}
-+EXPORT_SYMBOL(swiotlb_alloc_pages);
-+
-+bool swiotlb_free_pages(struct page *page, unsigned int order)
-+{
-+	struct io_tlb_mem *mem = &io_tlb_default_mem;
-+	struct io_tlb_pool *pool = &mem->defpool;
-+	struct page *head = compound_head(page);
-+	unsigned int parent;
-+	phys_addr_t paddr;
-+
-+	paddr = page_to_phys(head);
-+	if (paddr < pool->start || paddr >= pool->end)
-+		return false;
-+
-+	parent = swiotlb_nocopy_head_index(pool, paddr);
-+	if (!(pool->slots[parent].flags & SWIOTLB_SLOT_NOCOPY))
-+		return false;
-+
-+	if (atomic_dec_and_test(&pool->slots[parent].nocopy_refcnt))
-+		swiotlb_dealloc_pages(pool, parent);
-+
-+	return true;
-+}
-+EXPORT_SYMBOL(swiotlb_free_pages);
-+
-+void swiotlb_nocopy_inc_ref(struct io_tlb_pool *pool, phys_addr_t phys)
-+{
-+	int head_idx = swiotlb_nocopy_head_index(pool, phys);
-+
-+	atomic_inc(&pool->slots[head_idx].nocopy_refcnt);
-+}
-+EXPORT_SYMBOL(swiotlb_nocopy_inc_ref);
-+
-+void swiotlb_nocopy_dec_ref(struct io_tlb_pool *pool, phys_addr_t phys)
-+{
-+	int head_idx = swiotlb_nocopy_head_index(pool, phys);
-+
-+	if (atomic_dec_and_test(&pool->slots[head_idx].nocopy_refcnt))
-+		swiotlb_dealloc_pages(pool, head_idx);
-+}
-+EXPORT_SYMBOL(swiotlb_nocopy_dec_ref);
-+
-+bool swiotlb_pool_is_nocopy(struct io_tlb_pool *pool, phys_addr_t paddr)
-+{
-+	int index = (paddr - pool->start) >> IO_TLB_SHIFT;
-+
-+	return pool->slots[index].flags & SWIOTLB_SLOT_NOCOPY;
-+}
-+EXPORT_SYMBOL_GPL(swiotlb_pool_is_nocopy);
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 083cbcb5bddec..ea148562a76d0 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -16,6 +16,7 @@
- 
- #include <linux/stddef.h>
++atomic_t global_device_epoch = ATOMIC_INIT(1);
++EXPORT_SYMBOL(global_device_epoch);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 1ad41904db25b..ca3e08d3de141 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -103,6 +103,8 @@
+ #include <linux/sockios.h>
+ #include <linux/net.h>
  #include <linux/mm.h>
 +#include <linux/swiotlb.h>
- #include <linux/highmem.h>
++#include <linux/device.h>
+ #include <linux/slab.h>
  #include <linux/interrupt.h>
- #include <linux/jiffies.h>
-@@ -711,6 +712,56 @@ void prep_compound_page(struct page *page, unsigned int order)
- 	prep_compound_head(page, order);
+ #include <linux/poll.h>
+@@ -152,6 +154,41 @@
+ 
+ #include "dev.h"
+ 
++#if defined(CONFIG_SWIOTLB) && !defined(CONFIG_PREEMPT_RT)
++
++DEFINE_PER_CPU(struct sock *, current_tx_socket);
++EXPORT_PER_CPU_SYMBOL(current_tx_socket);
++
++void sk_record_bounce_device(struct sock *sk, struct device *dev)
++{
++	struct device *old_dev;
++
++	if (in_hardirq() || !sk_fullsock(sk) || sock_flag(sk, SOCK_ZEROCOPY))
++		return;
++
++	old_dev = rcu_dereference_protected(sk->sk_swiotlb.dev, 1);
++
++	if (dev != old_dev) {
++		/* Rate-limit updates to once per second to prevent bonding thrashing */
++		if (old_dev && time_before(jiffies, sk->sk_swiotlb.jiffies + HZ))
++			return;
++
++		get_device(dev);
++
++		/* Atomically swap in the new device and get the actual old one */
++		old_dev = (struct device *)xchg((struct device __force **)&sk->sk_swiotlb.dev,
++						(struct device __force *)dev);
++
++		WRITE_ONCE(sk->sk_swiotlb.epoch, swiotlb_dev_epoch());
++		sk->sk_swiotlb.jiffies = jiffies;
++
++		/* Only drop the reference to the device we actually replaced */
++		if (old_dev)
++			swiotlb_safe_put_device(old_dev);
++	}
++}
++EXPORT_SYMBOL(sk_record_bounce_device);
++#endif
+ static DEFINE_MUTEX(proto_list_mutex);
+ static LIST_HEAD(proto_list);
+ 
+@@ -2387,6 +2424,7 @@ static void __sk_destruct(struct rcu_head *head)
+ 		__netns_tracker_free(net, &sk->ns_tracker, false);
+ 		net_passive_dec(net);
+ 	}
++	sk_release_bounce_device(sk);
+ 	sk_prot_free(sk->sk_prot_creator, sk);
  }
  
-+#ifdef CONFIG_SWIOTLB
-+/*
-+ * Prepare a SWIOTLB page (potentially compound).
-+ *
-+ * We explicitly initialize the head page refcount to 1 because recycled
-+ * SWIOTLB pages might have a refcount of 0.
-+ *
-+ * If order > 0 (compound page), we must explicitly set all tail page
-+ * refcounts to 0. This is because SWIOTLB pages might have a boot-default
-+ * refcount of 1, but the core memory management subsystem expects tail pages
-+ * of a compound page to have a refcount of 0.
-+ */
-+void swiotlb_prep_compound_page(struct page *page, unsigned int order)
-+{
-+	init_page_count(page);
-+	if (order > 0) {
-+		for (int i = 1; i < (1 << order); i++)
-+			set_page_count(page + i, 0);
-+		prep_compound_page(page, order);
-+	}
-+}
-+
-+/*
-+ * Destroy a SWIOTLB compound page and restore page refcounts.
-+ *
-+ * When pages are returned to the SWIOTLB pool, we restore the refcount of
-+ * all constituent pages (head and tails) to 1. This resets them to their
-+ * clean boot-default state, ensuring they are ready for reuse either as
-+ * individual order-0 pages or as part of a new compound allocation.
-+ */
-+void swiotlb_destroy_compound_page(struct page *page, unsigned int order)
-+{
-+	if (order > 0) {
-+		struct folio *folio = (struct folio *)page;
-+
-+		__ClearPageHead(page);
-+		page[1].flags.f &= ~PAGE_FLAGS_SECOND;
-+#ifdef NR_PAGES_IN_LARGE_FOLIO
-+		folio->_nr_pages = 0;
-+#endif
-+		for (int i = 1; i < (1 << order); i++) {
-+			page[i].mapping = NULL;
-+			clear_compound_head(&page[i]);
-+			set_page_count(page + i, 1);
-+		}
-+	}
-+	set_page_count(page, 1);
-+}
-+#endif /* CONFIG_SWIOTLB */
-+
- static inline void set_buddy_order(struct page *page, unsigned int order)
- {
- 	set_page_private(page, order);
+@@ -2489,6 +2527,7 @@ struct sock *sk_clone(const struct sock *sk, const gfp_t priority,
+ 		goto out;
+ 
+ 	sock_copy(newsk, sk);
++	sk_clear_bounce_device(newsk);
+ 
+ 	newsk->sk_prot_creator = prot;
+ #ifdef CONFIG_BPF_SYSCALL
 -- 
 2.55.0.766.g2966f0265a-goog
 
