@@ -1,124 +1,178 @@
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56E901A01BE
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 12:23:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1976417D87
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 12:24:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787574237; cv=none; b=e5m+u0aDTQ4tVlJEouP0tixnd00StxkWOfnHv7Dt2n6HLkn19oJCVVH2YTbVAyq6EAsn4OIXYJDvpoIBSkABJE8psehC1J/qVchw9rQjWSm33EzHiKWL7yGyV4T2AxCQiOaz216SkkJVUT0fOKjOAiEMDxlhoo8PAvCZMfMB2M0=
+	t=1787574242; cv=none; b=CxdvWURqRfQ4czUiIXeHa1X636hZzsWfRDNVHXFZ2k1Q45LObcrbYHOhAjdKl573GwfKMljI4CBZ15TWEUoZh92fae1dprFjrYd4Xq2LC68uqc3jySwnsYnSthtwDpK35STCmcCOCFFLq1Xi07uDMXHnh/omd7fxfJT2L02o5qQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787574237; c=relaxed/simple;
-	bh=QQ+BuMhlGjap9G/8niHShlE1MGJ4y7C/XEXcy/s8Xx0=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=l3pR61Lmm0/IgaUfjL1lMV+QgpEuglgLsh5DMWUMhml7XvsbYFTJckVoCJvC3P+M+1/1MxbGwYulwZJw2LsCz/4zgrOdGluJJ131/4BZLrfaSWZ45uVFqGE+XCRJg2/1my5YPrWzlL8sScpyI+0xlyUZO6jc+XxWzg3HklaQ5Q4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GgsgYe/4; arc=none smtp.client-ip=209.85.215.200
+	s=arc-20240116; t=1787574242; c=relaxed/simple;
+	bh=utWFHovcSEde6W/vWMYRzwYuhpxsLViMJhURbUW/E2A=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=KmJKzTu1LEov7v9fo9fpIiLb7NyfRjYhAkcUF+9tKKR0cZAa+sXnSwIhV2tEGDWbSUSIhPcK1XHchnjkLbVSF0MquSzRQnSceJ3hFWxVimbyPvWZhJsKmoxNYCTTv6Euc4/jQFFsF+PASsigRax/1tdk6YPh7IPAwPSW7QQPHZc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Z7REUUWV; arc=none smtp.client-ip=209.85.210.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GgsgYe/4"
-Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-c89704da8c7so5064304a12.0
-        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 05:23:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Z7REUUWV"
+Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-84f0d3ab2f4so2511313b3a.1
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 05:24:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787574236; x=1788179036; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=tUcMgUMCUzyieEAsi81dwAASFx0SSottK9MrWICMjZA=;
-        b=GgsgYe/4jNMsXJhjP7Uiz9/CEEHubqwXUG7KOsOEbnq2ssRI4cgFTAjv/JaNNjgOK7
-         XoJvNVuIbtprQ4zJHpUe8onOi1WHv9AI+xfEpWjkb3i1nnCvDMVgNk04auk8VjJG3h65
-         z4nPRTdzJmhiAsQWUOzWdUlPnzv13QYT2FPjWvTpzxseKKiJ6H+JgrlbdL70TRjGab/7
-         PXm8ROEF7Y9oNAVwcsDtN2aSlijisqw1IujlaQ4+Lh2P/HzXlhYrFjMiOQeHt3rdMu42
-         pUiqNw+W3Ie7V7LONfLRxy2N+Vt15Ss/a0g9BjVBwjRCGRNxaHhttru4PRdKPHBQhUed
-         l8Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787574236; x=1788179036;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=google.com; s=20251104; t=1787574240; x=1788179040; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=tUcMgUMCUzyieEAsi81dwAASFx0SSottK9MrWICMjZA=;
-        b=HMz913wTg9qT34fiaRAi0Yfv3vxBtLyja+t4WVH1OD6qV+EmtUKX5dFNIn3hTiuqrg
-         0LIy1tl3bXQJXVrV5vQDE1jT6mz+2n5N3SJaHK9PK98yHwp6V68vZkSDlHzd1HvqA24D
-         HXkhcY5TJsJidIH8rF7jqlgvAWCF7qNOw17hVHQ6FfC2lT9fWfoPROsDXX9GXlwCUYez
-         9qUzkD1q04p9atdK+0BtVX3CSQEqJmnluLvB5/azEPEOfeoA/VKV7GZWa+b5DqsVC0Cg
-         /xZLsSh6D7K4Wri56YyKMC2E25PdS0BCKmuajid132USj0gVP6ABHO3BhGvGXDkYMIrv
-         HLVg==
-X-Gm-Message-State: AFuF++l5CuQAtQeilscQUtDmR3Vn2ePZ5vrzIztqjwjunKh4kxxrzgk6
-	suL6cw8s7KS7Y9v8GFpLzx2ooQS9hO279cvk/+u24Wv1tMYhK1GclytZzNHPEV4bYcx5PEk/cw+
-	F6ur1yNHXu6H+RljkZrHB80XJEqnuGhc84SwzEc4wYfxbZ6yGkJre0+J8gDTcHs6n+CgMnzYqbB
-	cE1UpeTCHysWNVYEXogilnJ5l2EQDWvQ==
-X-Received: from pfbfr20.prod.google.com ([2002:a05:6a00:8114:b0:845:b9e9:fcd1])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:a110:b0:3c3:bbe6:95c9
- with SMTP id adf61e73a8af0-3cd301795c8mr46911339637.16.1787574235313; Mon, 24
- Aug 2026 05:23:55 -0700 (PDT)
-Date: Mon, 24 Aug 2026 12:23:42 +0000
+        bh=2J3oy2a4JSIFvlr7/nvXqs5ymVUNBWbqafx9KZERE8s=;
+        b=Z7REUUWVpxpRJeY45kcFJVlfc8aTvvWsrQj85gdA88/XRs2oUAddetUCwKynEU/XQW
+         e6mlCjNRAKejx8dPcP2H7PwNoeWITqjh/u0bynSSPHKpL9X52iOn9NbIm4ttuutJ3pS6
+         0nIDzq/CupwaMqA679c6h8Nfy0Oi/9LPGFxYPVHwko5ZDE3omSI9BQOs9JJKRwwwsGVr
+         o2IY09F5uOcTd2QKb6d4mAhyybSLVAko9pJsSS94877irdQsF0dWi7LKXOKEECPVLrEY
+         oKbqfOOnEs8hn6vgfi3aYfrTH6o9z2t4XoygHiHpOyNw2mgwUVEwOWiH7yq/x/KDpvyO
+         W49w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787574240; x=1788179040;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=2J3oy2a4JSIFvlr7/nvXqs5ymVUNBWbqafx9KZERE8s=;
+        b=qbWAmmo1mM9CBg1z5lAOQ23gWZMLswa6lw/u8Z2MRutP5BNyn9raLCBkXZnK9CD3Ir
+         Bm61oXvkC7U9jPZnyGDI7Wn6tUmWpXT1jt3+8uMevmBOWkZqgj8Zq5ZM26Di4vzv+wN0
+         j8uDipARt4ET3rkYL3UT3RkVQer05f48k1RoBpqokhmIe59DRKQDZVW7+k0zTrxeXA5y
+         Zh16S4YRY8I2U0h11tS+pQfupJpo2hB+EZLnHeMkC06VgYFJDeY9XCTCsj+y917hJm3B
+         Yfy8yFLBMYM+0xb5jtV+GEou+GOlf0CCg/V5vF3+SwOYKqnlNQIBvRpH90Ied0F8q1Ht
+         0BIQ==
+X-Gm-Message-State: AFuF++lDVRexavSzYx7BCu+ELxfFhAOugHaHQLlF+xP7u3yaV4phEaL6
+	PeksD352d4kj640Hg1Qu72YwfOcKyd2bRAo37lt9wjy7atV3k4t5wT+ocK3mh2JWR3Rr0xViW3b
+	yfbOKQAEBMHkTS8K25QiA1b7b8sa2AgGlzJUlbWxPPIWHgoWVuMGWCKCPa3lJxtk8zFvDprR6ly
+	MvxEksmUshIlKiUWh5mABW65/zU8IaOA==
+X-Received: from pfbea20.prod.google.com ([2002:a05:6a00:4c14:b0:848:5453:d5d1])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:2383:b0:835:6388:655d
+ with SMTP id d2e1a72fcca58-8520ba30a62mr27879947b3a.14.1787574239879; Mon, 24
+ Aug 2026 05:23:59 -0700 (PDT)
+Date: Mon, 24 Aug 2026 12:23:44 +0000
+In-Reply-To: <20260824122347.1588592-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20260824122347.1588592-1-praan@google.com>
 X-Mailer: git-send-email 2.55.0.766.g2966f0265a-goog
-Message-ID: <20260824122347.1588592-1-praan@google.com>
-Subject: [PATCH v3 0/5] iommu/amd: Refactors for ATS robustness
+Message-ID: <20260824122347.1588592-3-praan@google.com>
+Subject: [PATCH v3 2/5] iommu/amd: Fix DTE clearing and rename iommu_ignore_device()
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
 Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
 	Vasant Hegde <vasant.hegde@amd.com>, Ankit Soni <ankit.soni@amd.com>, 
 	Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>
+	Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>, sashiko-bot@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-This series forms the second half of the subsystem-wide ATS robustness
-updates. The first part (focusing on the core subsystem, Intel, and ARM
-SMMUv3) has already been merged upstream [1]. This half addresses the
-AMD IOMMU driver and standardizes the PCI ATS API.
+The iommu_ignore_device() function currently uses memset() to manually
+clear the primary Device Table Entry (DTE), which risks torn writes as
+the hardware reads DTEs as atomic 256-bit qwords. Furthermore, clearing
+the primary devid in the lookup table before calling setup_aliases()
+causes rlookup_amd_iommu() to fail for aliases. This prevents clearing
+the DTEs for DMA aliases.
 
-In v2, the series has been significantly restructured based on feedback
-on v1. 
+Fix this by replacing the manual memset with a dedicated helper that
+invalidates the DTE by clearing the lower 128 bits (having the Valid bit)
+first, followed by the upper 128 bits. The cleared state is then
+explicitly cloned to all aliases before the lookup tables are nullified.
 
-[v3]
- - Collected Reviewed-by tags from Vasant.
- - Added a comment explaining why devices without DMA translation support
-   are not ignored (to preserve interrupt remapping) per Vasant's feedback.
- - Renamed iommu_disable_device_dma() to iommu_disable_device() to accurately
-   reflect that it disables both DMA and interrupt remapping.
+Rename the function to iommu_disable_device() more accurately
+reflects its intent, as we still support IRQ remapping for these devices)
 
-[v2]
- - https://lore.kernel.org/all/20260814015647.3370124-1-praan@google.com/
- - Patch 1 Refctors the probe path, isolating capabilities into 
-   iommu_init_device_caps().
- - Patch 2 renames iommu_ignore_device() to iommu_disable_device_dma().
-   Following Jason's suggestion, it invalidates the hardware DTE by
-   clearing the Valid bit (lower 128 bits) followed by the upper
-   128 bits.  
- - Patch 3 splits the probe error paths to ensure that devices with
-   config failures (like PD_MODE_NONE or ATS mismatches) can preserve
-   their rlookup_table entries, successfully keeping IRQ remapping 
-   functional for bypassed devices.
- - Patch 4 implements the "Fail Hard" pattern for ATS in the AMD driver,
-   failing the probe and throwing a WARN_ON() upon ATS configuration or
-   enablement failures.
- - Patch 5 enforces the checking of pci_ats_supported() prior to calling
-   pci_prepare_ats() across the entire kernel PCI subsystem.
+Fixes: 99fc4ac3d297 ("iommu/amd: Introduce per PCI segment alias_table")
+Reported-by: sashiko-bot@kernel.org
+Closes: https://lore.kernel.org/all/20260529153216.2AD1E1F00899@smtp.kernel.org/
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
+---
+ drivers/iommu/amd/iommu.c | 53 ++++++++++++++++++++++++++-------------
+ 1 file changed, 36 insertions(+), 17 deletions(-)
 
-[v1]
- - https://lore.kernel.org/all/20260601134204.2150602-1-praan@google.com/
-
-Thanks,
-Praan
-
-[1] https://lore.kernel.org/all/20260615235037.259909-1-praan@google.com/
-
-Pranjal Shrivastava (5):
-  iommu/amd: Refactor device probe and capability initialization
-  iommu/amd: Fix DTE clearing and rename iommu_ignore_device()
-  iommu/amd: Split probe error paths to preserve IRQ remapping
-  iommu/amd: Fail probe on ATS configuration failure
-  PCI/ATS: Mandate checking pci_ats_supported() before pci_prepare_ats()
-
- drivers/iommu/amd/iommu.c | 199 +++++++++++++++++++++++---------------
- drivers/pci/ats.c         |   6 +-
- 2 files changed, 126 insertions(+), 79 deletions(-)
-
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index e1f9fbb63837..8e382317709d 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -728,22 +728,6 @@ static struct iommu_dev_data *iommu_init_device(struct amd_iommu *iommu,
+ 	return dev_data;
+ }
+ 
+-static void iommu_ignore_device(struct amd_iommu *iommu, struct device *dev)
+-{
+-	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
+-	struct dev_table_entry *dev_table = get_dev_table(iommu);
+-	int devid, sbdf;
+-
+-	sbdf = get_device_sbdf_id(dev);
+-	if (sbdf < 0)
+-		return;
+-
+-	devid = PCI_SBDF_TO_DEVID(sbdf);
+-	pci_seg->rlookup_table[devid] = NULL;
+-	memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
+-
+-	setup_aliases(iommu, dev);
+-}
+ 
+ 
+ /****************************************************************************
+@@ -2233,6 +2217,41 @@ static void dev_update_dte(struct iommu_dev_data *dev_data, bool set)
+ 		clear_dte_entry(iommu, dev_data);
+ }
+ 
++/*
++ * Invalidate a DTE by clearing the Valid bit first.
++ * Note: Lockless; Not to be used on a fully probed
++ * device with live dev_data.
++ */
++static void amd_iommu_disable_dte(struct dev_table_entry *ptr)
++{
++	struct dev_table_entry new = {};
++
++	write_dte_lower128(ptr, &new);
++	write_dte_upper128(ptr, &new);
++}
++
++static void iommu_disable_device(struct amd_iommu *iommu, struct device *dev)
++{
++	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
++	struct dev_table_entry *dev_table = get_dev_table(iommu);
++	int devid, sbdf;
++
++	sbdf = get_device_sbdf_id(dev);
++	if (sbdf < 0)
++		return;
++
++	devid = PCI_SBDF_TO_DEVID(sbdf);
++
++	/* Clear the primary DTE */
++	amd_iommu_disable_dte(&dev_table[devid]);
++
++	/* Clone the cleared DTE to all aliases before wiping the rlookup */
++	if (dev_iommu_priv_get(dev))
++		clone_aliases(iommu, dev);
++
++	pci_seg->rlookup_table[devid] = NULL;
++}
++
+ /*
+  * If domain is SVA capable then initialize GCR3 table. Also if domain is
+  * in v2 page table mode then update GCR3[0].
+@@ -2521,7 +2540,7 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
+ 		ret = PTR_ERR(dev_data);
+ 		dev_err(dev, "Failed to initialize - trying to proceed anyway\n");
+ 		iommu_dev = ERR_PTR(ret);
+-		iommu_ignore_device(iommu, dev);
++		iommu_disable_device(iommu, dev);
+ 		goto out_err;
+ 	}
+ 
 -- 
 2.55.0.766.g2966f0265a-goog
 
