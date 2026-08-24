@@ -1,114 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E53961A9F83;
-	Mon, 24 Aug 2026 00:22:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B59032B99F
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 02:20:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787530951; cv=none; b=JtnqPTE1gHBy0nOOopxlExb3mKOGoMrC2cXuL+GpVGy3opVqPGT9kpmxQzfTFY/Wyb81+eqRi1/qnZF0RmkeFjO5+lgrQPLG81l74kwZ7zceYXsqaNod4U00sq5Xa8BcgbsHJrZWHcB9PIGxiXMUCAU+hBKik5Qw6AoxJNXSUgE=
+	t=1787538040; cv=none; b=ZPEuUHyRACHhULbUl7quIvUU/Ppn9N8S/aYV0AT+9zUGyHe8M65oO4IwHbA2uaGE1ORZYDWOadjL0MTz0ixxz19SzWa+FwU2oiQJQZ7fOe+5z63uoZx3QymGkbtGbJ0qo2oQDJezAvaEzqpvbmlZpXpkOGqI8M6URYe/31XE3As=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787530951; c=relaxed/simple;
-	bh=dV3R+Pz5kQ5h6ZlLsF1aWhISVPB4UEergia3lJpO3dI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nnWziQm3tUo8jPWfbzPC7eEI8N/Hk8a2XFzagI6pJnBx9UFuMTFQAAiCoYuSIeMLBg6bYPstTjzasidJwL+duN7tTq59GlxOgLWGtwfE/p7TLa0+zHWxy+EBT4zYBDj5D8LBd6+N8Cj69lXR2dEiRRxne+Jf/fMXR/5VQFF29Lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cjXgM4Jg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787538040; c=relaxed/simple;
+	bh=USG8kUY4fnqDkyeEZeBeSM+PImoZzodWQxrfboaUfXM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D6E9H1gdL4Z5u1SZ6w7dsRk7AUDnYGVf73xMtca+mL89QNXcZINH+BMnqHHO3IwOvR/JqCz4pX8MtWj6OknNNVtddWHyDgFq5Um9xt4ZfXr7zMOHqguBCAtqDrkUcW8LCIr6sZzWD33qUxe8mrOg8A0U6egfLqwX6IVaX1SiQeg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=WGzyRRe2; arc=none smtp.client-ip=209.85.215.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cjXgM4Jg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 329A31F000E9;
-	Mon, 24 Aug 2026 00:22:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787530949;
-	bh=6i8J1ynUdc4pHe6Njdru111x+LUNyRVLA355H1iwvLs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=cjXgM4JgpYFLPIXhx97eXNxmxm5azf3IMVW47mC18tA/3TmtKyO5alSfBE+tX03pH
-	 M0Dt8Y/P2n8xYMmch9fOeJbtBLw0fjf9YEI5w5/U0vcFDhRoJlu9FJuwKfb4t9Z/Qn
-	 AKf5ITcD7G9plTrE3fkCFEPK39ZgxN62WxQl6N58AtlbGg/icf0j+I6mR6g/T8zEPX
-	 NTt3Yw0fcTp9esSIi+PscCaAR/7qk7W5gfB0M+pEuM2r9rSIX4aTpX2SETJ2Yf+ROV
-	 fD41yjdxEMfWCcgxq/ndRR1WJckPQQMGFhS9w+sb0o1kfRtNfQ8+ctdPnqJ4K9zdEK
-	 kTjerB1zXxY5w==
-Date: Sun, 23 Aug 2026 17:22:28 -0700
-From: Wei Liu <wei.liu@kernel.org>
-To: Naman Jain <namjain@linux.microsoft.com>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-	Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Aditya Garg <gargaditya@linux.microsoft.com>, iommu@lists.linux.dev,
-	linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] PCI: hv: Set irq_retrigger callback for the
- Hyper-V PCI MSI irqchip
-Message-ID: <20260824002228.GF3566091@liuwe-devbox-debian-v2.local>
-References: <20260810090716.2325295-1-namjain@linux.microsoft.com>
- <20260810090716.2325295-2-namjain@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="WGzyRRe2"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-cc149372c14so2029893a12.1
+        for <iommu@lists.linux.dev>; Sun, 23 Aug 2026 19:20:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1787538037; x=1788142837; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EM7lljqiPKnFmEvR8seE5KmzQ2mD6+J09RR+VPh3RxA=;
+        b=WGzyRRe2yLRuGbySPUWSw7ycS4QTG20sddp0ka55CuxaUgoXcKRwbTXyAl9wdUC48m
+         6p2KyvMqMWPBLvh90u2FW9rzC17+/HSVRxy2fzJH3trcbvN+1WuzXEf4qJQxy5XdQjrZ
+         QOYHVBfRMfsdj8DazPAzoTy2ixvVxDARurIIIeVqVqwJT/nJR0fTOwUH1OGYpuKsjcBD
+         w3AAHFtq9WAblDetxj5GtjCHi0KMBHb4kZu/xcKfY43C5zaNCCBxg7V/T3WXVBBYb39b
+         s/s55gasDiVzUzzpEIZmS6lPrawKgunit1neriEpH2YU9rtCIsh/GPjpeCImmGP1NBUT
+         fnNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787538037; x=1788142837;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EM7lljqiPKnFmEvR8seE5KmzQ2mD6+J09RR+VPh3RxA=;
+        b=p3USDXQP5ziXNmTnt4Utk5KpOj4JQG3flusqIA+SwHFb7pZgAd3rGMDK2ce321g8XG
+         FAEsJ6kSDfHbONG4D+g8+5qSBC/ZN+1LEEADiUIIuSXgi6sBfSmxKh2io94C8jLUVM6y
+         LgcVAyWmXxo+g4A0NeJW2ZJmGFaQu009eRSPU7L412yLcMqsq55lZ1sz5EncHN9+jrbd
+         gPOphA7V79T6woXIU1L7fIXian0m/5xv95rQ11rb1c5oV/IzFKdqsgGILyp9E+Mcc6Ct
+         nmv4JyazrcxPsZrF/Q+EXPWLimnFK8kOygLuRFh9Xyj6gAgrWhgxTqUYagi0oi90ahkl
+         Cy+g==
+X-Forwarded-Encrypted: i=1; AHgh+RotPzrnyfwazxbvqr/wTHSvGvrcXoDTe2w/9zPp97snBhdXw+JJj/5W71X08tA8ARsC95coqA==@lists.linux.dev
+X-Gm-Message-State: AFuF++n4h0ZHacKZRAel0+VPFBe2AyHt52+DrHrgmOoywvt1FhuEcM4D
+	bRyaLCoZ9ClzK3gcj+vVNwQl3sfw8gmGiaGyRpOpn5MeuDQb61Ln+P6jdWAGuNqS4pU=
+X-Gm-Gg: AR+sD13HOKJjmrghirkGCLWSMqLinRdvPcT2uISRu1ofCnWnwgTSjcELOACDDxS2zw1
+	iBwB6I92775Kx5gltNUG0A61E44d4CI3EptF22fHRUuFMvCTF0znj/i5qr79DCL8WJh3SSpb+6X
+	gOBYeNXZBKTug6IHFCyoex7aMjlPFnDaqSvVx+sLh8fbmNGDhv3UJhDGvjLCAPgIq69o3cP4eb5
+	57rx/C4kfzRwgGZRefpMvr53oQIuFG/jdCEdG7KA1Pjiqw5v3np5HouvZC6COjUB67CJSXJriQx
+	Cdk+J7UVt6BFH4X1k6XI1CZkzo0XXlxlGDwvB0KsC+b0oe0gwqzWCBqau1kpjrdQf8NKbTN3wsz
+	GLRgNSGRYnZTcFO3rG5EacNgDWxIZDTJ7UnBGfyGw6KeyLDeH3cXLC+2sysKyLq94r/6k0cvyf/
+	64c33E3JlCVcMlboHtUDj1i7j7/0RW/nD9MKsKssVA26eA1kvqdD6Cqdl5+G2tR4m9j5bq84d7
+X-Received: by 2002:a17:90b:53c3:b0:38e:5c6:4db9 with SMTP id 98e67ed59e1d1-395c39cbc42mr41491359a91.11.1787538037613;
+        Sun, 23 Aug 2026 19:20:37 -0700 (PDT)
+Received: from sw04.internal.sifive.com ([4.53.31.132])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14186183c0esm31175869c88.12.2026.08.23.19.20.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Aug 2026 19:20:37 -0700 (PDT)
+From: Zong Li <zong.li@sifive.com>
+To: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	mark.rutland@arm.com,
+	andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org,
+	david.laight.linux@gmail.com,
+	zhangzhanpeng.jasper@bytedance.com,
+	yang.yicong@picoheart.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-perf-users@vger.kernel.org
+Cc: Zong Li <zong.li@sifive.com>
+Subject: [PATCH v6 0/2] RISC-V IOMMU HPM support
+Date: Sun, 23 Aug 2026 19:20:27 -0700
+Message-ID: <20260824022034.3916570-1-zong.li@sifive.com>
+X-Mailer: git-send-email @GIT_VERSION@
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260810090716.2325295-2-namjain@linux.microsoft.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 10, 2026 at 09:07:13AM +0000, Naman Jain wrote:
-> The Hyper-V vPCI MSI irqchip never installs an irq_retrigger() callback.
-> 
-> On CPU hot-unplug fixup_irqs() migrates the interrupts which are affine to
-> the outgoing CPU to a new target. If an interrupt still has its pending bit
-> set in the outgoing CPU's IRR at that point, fixup_irqs() resends it on the
-> new target through the irqchip's irq_retrigger() callback. As the Hyper-V
-> PCI/MSI chip does not provide that callback, the pending interrupt is
-> silently dropped, which can result in lost interrupts, stalls and "No irq
-> handler for vector" messages during CPU hotplug.
-> 
-> Install irq_chip_retrigger_hierarchy() as the irq_retrigger() callback for
-> the Hyper-V PCI/MSI irqchip, so that a pending interrupt is resent on its
-> new target CPU via the parent x86 vector domain.
-> 
-> Fixes: 4daace0d8ce85 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-> Cc: stable@vger.kernel.org
-> Suggested-by: Long Li <longli@microsoft.com>
-> Suggested-by: Thomas Gleixner <tglx@kernel.org>
-> Reviewed-by: Aditya Garg <gargaditya@linux.microsoft.com>
-> Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
-> Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
+This series implements support for the RISC-V IOMMU hardware performance
+monitor.
 
-I applied this patch alone. It is a good bug fix. The rest still have
-opens.
+The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver
+created by the parent RISC-V IOMMU driver. Therefore, the child driver
+can obtain resources and information from the parent device, such as
+the MMIO base address and IRQ number.
 
-Wei
+Changed in v5:
+- Pick up suggestions from sashiko-bot as follows
+- Fix event group validation for sw event
+- Bind IRQ to aux PMU dev instead of parent IOMMU dev
+- Clear OF bit when event is NULL
+- Improve hi-lo-hi patten
+- Add back IRQF_SHARED flag due to mismatch
+- Manage cpuhp and pmu register by devre
 
-> ---
->  drivers/pci/controller/pci-hyperv.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-> index cfc8fa403dad6..89816a2bd7cd3 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -2119,6 +2119,7 @@ static bool hv_pcie_init_dev_msi_info(struct device *dev, struct irq_domain *dom
->  	info->ops->msi_prepare = hv_msi_prepare;
->  
->  	chip->irq_set_affinity = irq_chip_set_affinity_parent;
-> +	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
->  
->  	if (IS_ENABLED(CONFIG_X86))
->  		chip->flags |= IRQCHIP_MOVE_DEFERRED;
-> -- 
-> 2.43.0
-> 
+Changed in v4:
+- Rebased onto v7.3-rc
+- Use is_sampling_event() instead of accessing vairable directly
+- Rename the matching name from "iommu.pmu" to "riscv-iommu.pmu"
+- Change the naming of PMU device for avoid ":" in PCIe case
+- Add suppress_bind_attrs attribute
+- Remove IRQF_SHARED flag
+- Set irq affinity to local CPU of IOMMU
+- Allocate ID by IDA for auxiliary device
+- Pick up suggestions from sashiko-bot
+
+Changed in v3:
+- Rebased onto v7.2-rc3
+- Use hi_lo_writeq/readq to access register
+- Pick comments from sashiko-bot as follows
+- Set IRQ CPU affinity
+- Remove IRQF_ONESHOT flag when request irq
+- Adjust cycle event check by checking event_id field only
+- Fix bug for group events verificaiton
+- Fix KASAN issue about casting 32-bit variable to unsigned long pointer
+- Clear IPSR pending bit before starting counter
+- Clear OF bit in event selector register in irq handler
+- Release irq by devm instead of explicit free_irq
+
+Changed in v2:
+- Rebased onto v7.2-rc1
+- Use hi-lo-hi mechanism to read counter.
+  Suggested by Guo Ren and David Laight
+
+Changed in v1:
+- Rebased onto v6.19-rc8
+- Pick all suggestions and feedbacks from v1 series
+- Add cpu hotplug implementation to avoid race enablement
+- Move PMU-related definition from header to c file
+- Change PMU driver to auxiliary device driver
+
+Changed in RFC:
+- Rebase onto v6.13-rc7
+- Clear interrupt pending before handling interrupt
+- Fix the counter value issue caused by OF bit in the cycle counter.
+- Invoke riscv_iommu_hpm_disable() instead of riscv_iommu_pmu_uninit()
+  in riscv_iommu_remove()
+
+Zong Li (2):
+  drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+  iommu/riscv: create a auxiliary device for HPM
+
+ drivers/iommu/riscv/Kconfig      |   1 +
+ drivers/iommu/riscv/iommu-bits.h |  61 ---
+ drivers/iommu/riscv/iommu.c      |  37 ++
+ drivers/perf/Kconfig             |  12 +
+ drivers/perf/Makefile            |   1 +
+ drivers/perf/riscv_iommu_pmu.c   | 813 +++++++++++++++++++++++++++++++
+ 6 files changed, 864 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/perf/riscv_iommu_pmu.c
+
+-- 
+2.43.7
+
