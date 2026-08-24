@@ -1,145 +1,63 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012019.outbound.protection.outlook.com [52.101.48.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D173D382F0C
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 18:13:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787595221; cv=fail; b=o6tHqOWJGtsR7vGFXsFUO6++J1bYP0g6JSx0vphJ4k1HUIalwhADwNSeqX5OPpvcx28x1LHtyT2HPYjH75C+3LZgDIyPb6TOz6B5ant/APvuD/y+UUEcd3JWdf5ddIaAbBlNCp+3VBZIgdqrTrkBrkxbgbja983EXm6PPCLTXZw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787595221; c=relaxed/simple;
-	bh=FyWJLBDJSDCgPzlgYhLqJgpnFeCN6u/zEeKQCyAwvik=;
-	h=Content-Type:Subject:From:To:Cc:In-Reply-To:References:Date:
-	 Message-Id:MIME-Version; b=f6JO3pB+/Bw+ZmexDIKMYbMO6RoJY5pyyDR4fH8XJfndNdVDoqhJmjcBBYuNbItIVP8erlSTX6aq+mLunqX7X0QgyJoYVVXHamu+mMa+eJhECijqtP7+m4kDn5PGj7M1oH7VJ4g/n7xresQ5U/6YJMXsaG6av7gDH0qxc9HZ/cE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WRpE8GS6; arc=fail smtp.client-ip=52.101.48.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38053369D45;
+	Mon, 24 Aug 2026 19:18:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787599136; cv=none; b=rhAIUfipo3XKw7IbFvKTaEc2+QPwy5jVia/bIQN9CUf+iYWJ1MSsaGbtFtxixeHnKrpYlzHzrlOx/e9TAwKxC9pw3FNoWXrwjRY7dh/Xa90RQfL9VmfXvVMpQTeG648vz2RgdNYt6XBloIkIbkunyGwBN5RmlBJdK0kdS36qDVY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787599136; c=relaxed/simple;
+	bh=8qCA371VXMAoiSymWKnpTmcxwakLSAhybf8NklyzHKw=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=vGG8aVSKoob1164beIOW1s6AQWJASigOR6fQNcgFdwitVo3INs3N/nQ07kAygSFV53p107zbNaB5UAyLJ3VQsrHDuaF498S+HMwgceic340COOOoH2EfgF3AFd6rlwox4k+ODpRxyZA26KlSuu1d8LS3ihellWan6XKbEydLXtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EnkS8FVX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WRpE8GS6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VvObnw6jkuAfcZ7SGcIeYf9mZScWGFUbUxWypqCIFGnzjpakk2Me2kYJFGxIgQV/QDzogidt+tdDJtAwKCDCz+x8SvLNcoPyjZZG/I0PDhpryNOhAGFvxbXjQ/0D5Hbxbh4haNSvAjU+qxSDLF24j89y/ChdrwEUa3cSxgk+HbFWGGPPq36cOc6MtIsgpB6FlmoDV0/mVD41VD/UMkcgC7z+RUD6BEKYPsT98zYq1C7p0jKrLe8NkaKz2BHCWpzipGU+/Jh83S82u5cFiDFAZIFikzPATu5WoWn7BjN/rCJrwfNBXiXc+lbqh3NsCc3Oafg8Xropilf2k/zWfSxgCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v+abnrvflMmCFMiOIUEBbLFbDW8AfHmPnDSDqDKeWPM=;
- b=UiMNwlBkSLVhBovP2o+nq5tR1M7Qa8bpDnhNCImQPWQFlXP4prkpfuJ0eA+K77a7RCXkzkMybdx0zN/tfz+4SMHaLiNhs/iEahW6t4CxD+3l4t92yLaEJjGSwBdMkop9Oujv7IKo33PgeSM4IKzEbVppJ2m4nNX/Rmx1cmma348wbFCLClXEzrGnMSWGrM3AGNtBurYOetnNLDqrBncroLEu3fIbeIYZdcuH1cqehcStJvcN7+1p6vDE2r8/7zk/cRA/4AVhI7dN/M6pFsj97A5nzBdqW7hWhZFOMBeb3Dj+qEcJVdsR15wHfQxv21nvmR+pW5lF7DvyFpeAaN/RGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v+abnrvflMmCFMiOIUEBbLFbDW8AfHmPnDSDqDKeWPM=;
- b=WRpE8GS6q5S5/j3o4k4XsX4W7lF3MY/bqqPAGg+v1Fn7TnkW9hPjtkIob3L9Hmh1YQ4VDyCUwyu0iXaHwZKmENmZ625A3XtNKqB8WG/+cFgJHL+nDu4DIfG3WvXKrOuWmXVOBPsbJL+J+zdAzzgCwkFQvqGEa0j+/fLVmCOp5lFF/6nFzDTy3lZAg6KDNkF7WfYU33ysjy9/WRUZthjhz8zbKkUNy0Tqqu+tdUWeTZ3F2NwoUDcOzN6iU56MrEGWEpg+E/I3qZW/ddwsSZYKGe4rqvVbDKjxoGVM6W7OQ7NkZC7SfLO67MeKksDTFEKH743oGfnYbcdoRpIaY5F0VA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by IA1PR12MB6258.namprd12.prod.outlook.com (2603:10b6:208:3e6::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Mon, 24 Aug
- 2026 18:13:30 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
- 18:13:30 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3 4/5] iommu/amd: Fail probe on ATS configuration
- failure
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, 
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
- Vasant Hegde <vasant.hegde@amd.com>, Ankit Soni <ankit.soni@amd.com>, 
- Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>, 
- Samiullah Khawaja <skhawaja@google.com>
-In-Reply-To: <20260824122347.1588592-5-praan@google.com>
-References: <20260824122347.1588592-1-praan@google.com>
- <20260824122347.1588592-5-praan@google.com>
-Date: Mon, 24 Aug 2026 15:13:21 -0300
-Message-Id: <178759520118.3131778.16702711454963639659.b4-review@b4>
-X-Mailer: b4 0.17-dev
-X-ClientProxiedBy: YT1PR01CA0156.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2f::35) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EnkS8FVX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA751F000E9;
+	Mon, 24 Aug 2026 19:18:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787599135;
+	bh=9cFOKKT8rzs8LOolHgRHEztnKHt15HBZbs6IjncMz/c=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc;
+	b=EnkS8FVXDn95x2jjuP+ZUY0W5O1RIGuRvJ4uxo27m2AFKfw5vSbjl+++9FRiYDrL5
+	 xH2wcWZWt5QcETaPRnphDTSqgu+F4At5lJR862j7kihE7XZnAZ/toJZ6YiAvqjUUCc
+	 P1kiBUPLlSw1oX0JfOTRzwpKvHYGMya8mXSiZjH9U6vuXEjAxdW6+mF+Jt12Rv7kqf
+	 /ySRsxBcGSR/x3P3j3kbGD1+9ejy60cfBLOpqqXh32niAPYy9BWDi1aq4gSkGIQBPa
+	 lMDIpCGdHfq3kXof1ToiS5R4r3KtSZn1HpZMM064g97cTfgZZu4bgqr9EfvOMcMWkc
+	 N2MhKCjNJR2KA==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id D0AE03924A4C;
+	Mon, 24 Aug 2026 19:18:03 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 7.3
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20260824141901.1739207-1-m.szyprowski@samsung.com>
+References: <CGME20260824141906eucas1p205a270ef4435dbc65fca7b45937dad41@eucas1p2.samsung.com> <20260824141901.1739207-1-m.szyprowski@samsung.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20260824141901.1739207-1-m.szyprowski@samsung.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.3-2026-08-24
+X-PR-Tracked-Commit-Id: 121f9fd1c3083312055126205f3e40b8ee999fe6
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 2f43193b88188b184a967c9427602e019f1b8708
+Message-Id: <178759908241.3075085.16093524606920477200.pr-tracker-bot@kernel.org>
+Date: Mon, 24 Aug 2026 19:18:02 +0000
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, chenhuguanshen <chenhgs@chinatelecom.cn>, Jagadeesh Pagadala <jpagadal@qti.qualcomm.com>, Honglei Huang <honghuan@amd.com>, Vova Sharaienko <sharaienko@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA1PR12MB6258:EE_
-X-MS-Office365-Filtering-Correlation-Id: 49fbdf7a-c3a8-45d2-efb0-08df020b63b9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|23010399003|366016|1800799024|11063799006|4143699003|10067099003|56012099006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	R31pkPezfDrz4pWfFgBXoI4Fsot1cVt2TNorI/BPKjg3RtlB6NGzZaQ4su3vKh9K2Hs3KIV6Ez2pdPaoXg9cLtQw13rzEOJGAvKH84ZotChYAqtMHMge7imCMAs9+sZOXyKx3xjdYgNf/BFHXakjKBxPyrISwq8O8DFp4u2bHpEnvkR6g7w8ZoxlremIRiDcZ2Du88nJcvQiX7PDOvrdplYQnRWt86QXetDN6k/1/rcc73PJ4eTfhMQDPURsNW11r00bkECWS+mH7WuUtO7A5sdLG8ZMlCT1kZqWVOKOxWkCx9xNDifbrwgHRapOw5ZFPQL+XWw7qspuqj50J/m/PKp2ezWRHnDHdr+8cBGzS3j3vW8H+hYxUoooowDCs0l/D/EvqCXLJEUwKHHsyvGSfdqi04SkoDlgdbwCCvMONyoEYTgJjNJaN3k4j8vJFMzZI5e+0sdBR5ZF0wZlqDtLkAIMgilJ0Zdr3fgMXgvwP7I7wm7fvOS1XK1x2fRAocD2YM26vUo2+77afq+FHjmHcILWZFhjl67u0mhmkEEsGVrmAzE4/9lr78bSlCCbMOGce34eI0NuHLusymTlyKn1EtjqCpMdlh30Gd9QQM9KwjdjZ2b5dTKAZ7pWEkpeSYYOFxIVq/ChNfX/Xpk1YJrmZYmRIWmzvPXLkhepGsrWF8s=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(23010399003)(366016)(1800799024)(11063799006)(4143699003)(10067099003)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SXJuZGxFTWdJaEFUdkRTSGhrUDNYTVBMSlVmV3JKRmZzQjBDK2Jwak9IWmJu?=
- =?utf-8?B?cnUvWU4vS1JpM3BYSm50Z2VCQVRYUDV6KzRVYjF5RFFGSTI1eGhaOXFLbUlB?=
- =?utf-8?B?RW5Na2xDTVdjd3lkbEY3eUZacERnckppdXVGV3ZVb0IxSTJvQlY2TURqNmtT?=
- =?utf-8?B?Y0FoWnR6QkNnbEN6eXFsV2NwQmpvREtGbFBSMFRpM24xTC9hMWRoMTBONHpT?=
- =?utf-8?B?dzlsUUp4dmVPUHNRMTFwU2J1UDF2a05Rdkc4WkFFcVU4U2xkbHpGb292VVVN?=
- =?utf-8?B?RWJrYXhjRmwyNjlpcTY1YUJoRWVCUHVWcEM5TitPV3FRRjM5R2VWODY4QUky?=
- =?utf-8?B?aWhmWlhJUGdlcnpEaXh0d0pvaktoSTFBNndrZTg5eERHSHJzakdFM3J6cWkx?=
- =?utf-8?B?bGhXQVZxdm5XS0wwbVdNVFlGVm1UK0tKRlVlNEtoRVRMdm1RWTNhdmFpZE91?=
- =?utf-8?B?Sk1JN0ZYMGgySjEwTzJlanQrTS9idVBQZWtHSS9Lb0Y0ZkpjSkR0S2tQV1kv?=
- =?utf-8?B?SWErVUVQTVRFMzd6SXNtL0dMRFo4K2gyTDY4K3JpNHphUUNzUlQvaEQvVGp3?=
- =?utf-8?B?S2lReVhKOVJnUE9jTERZclUvcWhDUTYvM3RvUUp3UTk2UUViTlExNVA5YjFx?=
- =?utf-8?B?anZWSklkaVZCUHc1TWFIcWVpSzA0dTZ5dU41ZkNSb1F5cXJnN3grYmdsMEVO?=
- =?utf-8?B?L3NORVgvWmlKSis3OUlXbnp5QzFpdGZQVDl5ZnRlRUJIOVNKWk5jQlA2aTBq?=
- =?utf-8?B?NmV4TllleHQzUUxScm5JeTAyb3JtazNWZG9QUjM1TXNmSjcyVmYzbW5KcEdm?=
- =?utf-8?B?VmZkakNGR3h0K1N2TDZIekVaVGxQd1ltQUozcm5iOGQ3Q25LeVhOUXY3UVo2?=
- =?utf-8?B?bDFLclJGSCs4WmNEcGEwcVM5UW4zajZsSkRsRDJ3RkROUEREL1NXQmNOaVh3?=
- =?utf-8?B?WHF3Z2x0MHkxQkc1bk5XMmh5dHFnaXpJUHlqVFJKbGhCVE1ZRlVtZ0lpaVB0?=
- =?utf-8?B?bWZlczBacE5mcmdtNTVROWdCZWcvMWxzb2tlbE5rSjVhcERxYW5ueDBadlY2?=
- =?utf-8?B?MWNHVWRHaGxUVS9ISEZSKzY5K3dzWVRkU1lHMk8rYnRneTJhMTliSVFqVks0?=
- =?utf-8?B?Vk9CRWszZlpDbE1kcFk2RFAvQ3p2VytBaDFqYlB0aEphRU5vV2hrYkNSRW5H?=
- =?utf-8?B?WmVKR1RCY3orWi9QZnkyZStybDNScHJPcFdRNzdMWHhzNVlnU2hCTUdKRkFq?=
- =?utf-8?B?MFNOMWFsUjZnQjdUUzhWb0M1VitJYllyeWVvcnM0NUJDNHR5bGp0S2R4TXZ2?=
- =?utf-8?B?b3VZV2FKVzQ3NFNxOWp4d0RjWXhZSjJOZnFIVk42dXBuZlkzQVRrRktUVE5K?=
- =?utf-8?B?YStTMFZMRHh6MXRMT1lNLzFZU2lWN0xJODMyYmNNSHh6Z2hYMytvR0ovMU0x?=
- =?utf-8?B?VlFhS0ZWVGxmKzRlOTdiK1RteDZqTEQ5SFkxdnd4VW9haS9QMHJ0N3ZDMTlq?=
- =?utf-8?B?cFBpN3pWM3lKNUtvTzZIVFFjbjRiOTl6VWF0bTM0UzNPVVNKbnFlYzFmUFZV?=
- =?utf-8?B?MVhJZmVNSWQvVVBXV1BpVlhzV0xKQi9VTHFwbHdXVDdsbnV5L2trV1BCS2tR?=
- =?utf-8?B?T0NSL0t0NndVQ251U3dwL1BUa1ppak1kS3hsVk02NER0SnZPTFQvVXJaZEtI?=
- =?utf-8?B?R0FDdGFCSUdNTFA0YUwzQjB5b1FRQnR4akxQSDQwVVJIUENFaFhaOHNZc2dj?=
- =?utf-8?B?YlF0UDFEVnlvd2h4NXZEb280M2NEU0ZXTU8wZXFiU3NrbW9sczk3MEI1WENX?=
- =?utf-8?B?OHJyK2lVbUpHSERLYzZub0pHTnBJaFZmRUJ4RGtxamFJODljYkFTeHFKN1F0?=
- =?utf-8?B?dzFZWmg4UXFqdXJILzNCc052R04zSi85b09UR2k1eklWTEQrUnExTjBBWG9I?=
- =?utf-8?B?cmdERDIwbXNVMU0yWGJlTlFxV3FzeHhsQ2c0M1UzU29PSXk0T0hQV0VPeWhC?=
- =?utf-8?B?dlM3c3paUGd2RGpYL2U4WGFuUnBzTFBhbExzZ29wZEhEQng4SGVGQzJGbnhm?=
- =?utf-8?B?U2YwQzR2Zm5qeTdTZ1hjclE2OFY3VWlpU0lrNng4a0lzcXNOMm91YjNrOXBC?=
- =?utf-8?B?cnFDdTY1eXlraThDQVVSSTVpWlZtb1JzcmFiTUJLQ3V3L3RnV1hWTXlyYjBu?=
- =?utf-8?B?QUpaaVRibmVKSVczeEJmWkJLb0dkNEliMVdtd0FweGxoeUlwNEJObmdxV1pN?=
- =?utf-8?B?cnVkM1IxKzFYeE9YWG9xVGl4N1Q3VGxhSC93OXB6ek1pSjdWbWRXT0IxdGZO?=
- =?utf-8?Q?e7qDALKKCYmbfQaCt0?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49fbdf7a-c3a8-45d2-efb0-08df020b63b9
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 18:13:25.5113
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ygaN2IQC4NYWD1wf4xbTtroodN4SZhhfFv73HNi2Faf5KpmRqylOfQ+hOBSkut38
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6258
 
-On Mon, 24 Aug 2026 12:23:46 +0000, Pranjal Shrivastava <praan@google.com> wrote:
-> Update the driver to call pci_prepare_ats() after checking if
-> pci_ats_supported() and fail the probe_device if pci_prepare_ats()
-> returns an error. Additionally, update pdev_enable_cap_ats() to WARN_ON()
-> a failure in pci_enable_ats().
+The pull request you sent on Mon, 24 Aug 2026 16:18:59 +0200:
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.3-2026-08-24
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/2f43193b88188b184a967c9427602e019f1b8708
+
+Thank you!
 
 -- 
-Jason
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
