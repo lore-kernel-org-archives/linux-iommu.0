@@ -1,226 +1,240 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012037.outbound.protection.outlook.com [52.101.48.37])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E431C41930D
-	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 12:52:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.37
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787575933; cv=fail; b=cYnCxzDrtmi2LZ6oBzC/YjbvPsJxvq13BcDL1/vwuWmIuvYm0IsMa/AvzvrEe/80XstDBgwWNHo7sNnv3yE626Fnc7VTwLQo6DckLMIAmlB2/vIimRfSxJN/2/0t+QN10Vlh+phyCizosQmOOIKxEbXX2T/PxDYEQsk43V3BLx4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787575933; c=relaxed/simple;
-	bh=3qBDjiwNx644Lt2C5pjTaHovDnIytnpyQpRUAmQXrXo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=lSwYS3VBFcCXv+bpmkQZiA7KtugNmQLFXG+WbUeotovw9j6XDEUbZG6Jhg/tf5g0zlHs6S20/tcLGK0paKFfyDzfSc2q86aknGyIZRW2EqcEIXtRVluYLN0BsROyRnqMjMHNSaB6Z4GzJw4+441HhnEwBNU8EX24SJMhxwUK24I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tUDN9BoD; arc=fail smtp.client-ip=52.101.48.37
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031E541D620
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 13:07:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787576853; cv=none; b=dUqUb832uOZiECKASe2eSz7N6ODnFuDiqWzZHxnj9sNzKGd3wmoD9h5PBgmlkPa1rqbHPUJ/6eKNRbWNKuHTARVFVd3L5ZXDqNV+UoCgjWVP1xypEcz46wQbd4t0fpL0csKrnpZvDuA3qxIHmBlXTSgVdtxSwcHgAAUFU1pZV2k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787576853; c=relaxed/simple;
+	bh=u5ihNkizXxWzyF5GSE/VjUlcZrXmF+6zr4JEzwJ38CA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tr09R+3Yp4+U2TcCtAKSaH/MWkskNN2pthPwDtZwHFitrUUggAtYxdg7aXPT/ukrxOckyJ4ZwuH4NO8xe2jshWE0Bjm3Q/PHl0LDEph3RoQK1BokpGJM/Gc/ueSWEFnPwJRkFTKqZuSDGv771IoVzwdTfhvd5NlpyKa5/woFtP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NMJ7ghik; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tUDN9BoD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oBKicUYYfH3QrM3cx1DIWl0xw33P/mAvnB10JBDWWZBZshTG0ePRDVWQKZ4ecr53Y6iXOYvoT7+ALE02UhBaAN0eDp/O/kQQcY3EXQbQUccvZJVJsFbB/JroSE4RyVplqabpaRTtnpXmH8fcwBstOJLJLUnLJ0yv2o8Jr5tf5FpnTFlAZ+MP/dY+pv1eCQkOaus0eNHPCtxeJvqBVBvdw1SUi//jYdO5VMasBkZVjMhcgjbZqZ6og53RqRsev+ke/FfUKbnRlCMxMmTo40QBsn/HyKxv+ez02y6+6KA59YwhXV/S//TfbujEcPLlbM4t0Rx4fZwRX/hJii79GoN6Dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3o/n8fnpKpzY8b63/83dKH8Rw5doDN5ddstQUn4U8rE=;
- b=TpDVE1VcGM5gNMRI17jtyvsT+oib2zs9DXECGvcXQ+Qmg8zLp6T9K3zlxJP0DTzBlhVSoZvY7h3wtah1ZnW1SZW/yIwAae7cmd5bnSaM66lU23ILJsir/oAq2jcmIygotWxMQUcbgivWHbSVdP/sv8kRVLRoxVdNOfW9J61CpceYuHdbzBZGVP3C0rhh/Ged9jOEAKT7XKFDFvo6hGMWIG16cJeIfXhv+FRpAbyuOREaiddoqYz2xwIKOyBguWrlc+ykaS1uatTA9Ml1DZB2tXxjTK+icp0QLsyy6snB6lusldyDsrkqUjSAsyjAWLeY36CVm5woMI8nJW7nkjmvcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3o/n8fnpKpzY8b63/83dKH8Rw5doDN5ddstQUn4U8rE=;
- b=tUDN9BoD1NPZZZVFYEcNazRv0eoCHnt2sgYR/ku6XYXHusUlVTaarWHk+n+8z39x24GtZNjbqNo2DqYZu9Xs55Z25z4cu7qylqmhFzBxNQSuX3aJ3A4EPHDzYsNgy2HhghkKMWPaYoytVeo3/C+nCZzgWg3yA9kfB8wXYiGwx9uePIfduLteHhqoUB+vZUk77Pl7UMPT1P4hrNvNiMnaj5mPct3QIMNp8Yaj+fb2oySJWkIZaeBeIPQsmyDwoolAmS20aMhKeE9hY/gIDL0xub5V2FzDNQ8QYOQ7puLiGk35jOPF5FU5HVUkzHa8N4t31dJlDPvcPFiqhzUKmwxX1g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by MN2PR12MB4423.namprd12.prod.outlook.com (2603:10b6:208:24f::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Mon, 24 Aug
- 2026 12:52:05 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
- 12:52:05 +0000
-Date: Mon, 24 Aug 2026 09:52:04 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
-	tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
-	anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
-	fangyu.yu@linux.alibaba.com
-Subject: Re: [PATCH v4 02/21] iommufd: Add iommufd_sw_map_msi()
-Message-ID: <20260824125204.GP244917@nvidia.com>
-References: <20260821140033.GH244917@nvidia.com>
- <yikhefui2flgfffmtbpdxemjtto2ryfmkgtlgdtmr2ndgxrw3r@rcjz523m3sw5>
- <20260821143155.GI244917@nvidia.com>
- <pzlzv2lzik4miqc5oejichltnyqabolyaezbkrufcl7nbttygm@7rdmkig3t56u>
- <20260821161256.GK244917@nvidia.com>
- <dug43layphru76sqleerwtryyerwa4a6n5s4xwrk4iyfru4o7m@al37eknignld>
- <20260821172015.GL244917@nvidia.com>
- <t2l77h22pz2jg5vsgoth6324u36szra3orgr2g2xo7olyuhzlb@53wnsyhz7aqr>
- <20260822140625.GM244917@nvidia.com>
- <r47pwpyoc4ynv57vtwer73dwikqkev5nfy7kqyba7sqzh5pryi@teiqr5a4cw4p>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <r47pwpyoc4ynv57vtwer73dwikqkev5nfy7kqyba7sqzh5pryi@teiqr5a4cw4p>
-X-ClientProxiedBy: BN1PR13CA0013.namprd13.prod.outlook.com
- (2603:10b6:408:e2::18) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NMJ7ghik"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4953de5be0aso21663905e9.0
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 06:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787576849; x=1788181649; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=II0EHdpiWVifHn+uIz31c6Jp5mdC3hunRFCnEAwNy/g=;
+        b=NMJ7ghik2ogSBQA6F/ncOLyHdOtrTDLNEBLnfP6HDs5AzKpUhAneJJYrt5tmJ/L6dj
+         hzhc7QkbsgpzIXEzL2nlYf5ON8yllzMf9V/I/S5UQSOvoOcjEn4eiaWyOHix9N/sHElv
+         pPKw9egSLZZQup8i3FEltvy8ZK9piyAldHXGBAk5QCVWEUr6r9XxBPD8tpp5mkMHTJRE
+         m2/VexgG/jkJl8ogRfEJLftH1u2opsc+Lm8UUrIon2jVY/JaNMtPqfEU84IABBG2w9+m
+         Cu7xp58okhRYvN8M86IQYkjJfVGgIgrSRR0ClV/T4pVEfucumJSbAlULoCIukNliC8j5
+         57wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787576849; x=1788181649;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=II0EHdpiWVifHn+uIz31c6Jp5mdC3hunRFCnEAwNy/g=;
+        b=eRYrG4Xn8Ui8dgTMoz5+0gSXOjCBIROXbovbIES0PGr3lvKg1dDVBE0KDI+xtqJ+4z
+         cZcPdUQHD5G8R0EuDJrYw3yfftapvNysVRr1SC3Ynjbh8MuoCZnjnDfgo7O51siJ0EFq
+         gHDcblZLdRDCUaMJZWR9A1fNJGj4ej9NrkpEwi4XEHrx5tnzkr2gyRQRUUhnKQhUngQk
+         zEs+IP9lwws7tIskm0WQ0uwcRuJIyHjgSMdMQlySA5flg7i3WXEiTgwXaEVB2b51kzcM
+         pP5KVdBnrLcA92uNLdR5QP7+kybuXiPMmj6i7pRY/pxfj8CxppPxUQjFeBvm0k03uso3
+         9cww==
+X-Forwarded-Encrypted: i=1; AHgh+RpE7iS1Pcjv7aiGnT8sux3HrgE4YO21jS+ded6A+Vn0kSqTZEJwOUNrDYkjG9WwgGwpahGB9g==@lists.linux.dev
+X-Gm-Message-State: AFuF++l6UONaGlOFNUo7jqMsA2csMrcg4wY7q4kHK+Dqsb1s/e1BwqJE
+	lMdLAxR8iEWyQwjz8V6XvDICR2QHbldZvS1HQNrd8VkHZhlkgRKRhSG4myjhJvuT/w==
+X-Gm-Gg: AR+sD11McY1+iHiUYrMNwOe5CLGK91pkBB+dih7SAhQCRXf5/XcK4eScmczVfJc0gw0
+	kKCp6RgWd6cBgoEN39ruM6WhO4STYzip9OwarMfVgreaWvRrUo/FlDfIWIWtiChvXZmXEAzBryG
+	XxJ+8zQ4F6X5VLdVeDs8xo0fkCT0jweEo1i2mkHZScFVPfPxaOuO93yJN9W3vvvmsOvtzy6JDCY
+	4ex4ZIZ6lv/RSeW5Xp3bZI5cA6xEq6BUaEvLGjlWEJwLxeXtr11oIYwJ+E6C8m9vySV+mJMGtA5
+	JqlVdjgGPMqZuN3QUxhb5Jf4pr4qFuibcRrVv6UNs/qJKb3wiEE5a87mvLZzapk0lJn8kuSUsXt
+	wYuZz2I91rm717VnDbVV9sBHGsM7ekGXx81UXgup+EUXtJ5w2Um9ebsdMt4sE9Y7784qq1OLHEs
+	uyDQFq8yxuYjf7SPwsNIcjHBKOOa1mvYAd6nb9uhuEjYAfQu7qgEf57FuBXOBqNFZUNGzTozvRj
+	PP/93PqVHV5HleWvMZoqHawky0ybVn7
+X-Received: by 2002:a05:600c:8b76:b0:499:8c68:a3aa with SMTP id 5b1f17b1804b1-499b8475133mr350361245e9.13.1787576848494;
+        Mon, 24 Aug 2026 06:07:28 -0700 (PDT)
+Received: from google.com (135.91.155.104.bc.googleusercontent.com. [104.155.91.135])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499c355e1ddsm85389525e9.5.2026.08.24.06.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Aug 2026 06:07:27 -0700 (PDT)
+Date: Mon, 24 Aug 2026 14:07:23 +0100
+From: Vincent Donnefort <vdonnefort@google.com>
+To: Thierry Reding <thierry.reding@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Sowjanya Komatineni <skomatineni@nvidia.com>,
+	Luca Ceresoli <luca.ceresoli@bootlin.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Yury Norov <yury.norov@gmail.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Russell King <linux@armlinux.org.uk>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
+	linux-trace-kernel@vger.kernel.org,
+	Thierry Reding <treding@nvidia.com>, pavan.kondeti@oss.qualcomm.com
+Subject: Re: [PATCH v4 07/10] dma-buf: heaps: Add support for Tegra VPR
+Message-ID: <aoxCC1yPFdutU5vB@google.com>
+References: <20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com>
+ <20260807-tegra-vpr-v4-7-5510d16af89e@nvidia.com>
+ <an4MEI7lkc2p3nKI@google.com>
+ <an8K2gb1pIqbDj6-@orome>
+ <aoNDRTKCUkzd2n5G@google.com>
+ <aoQ1lhZojzsSkWHQ@orome>
+ <aoVy8dj8f3ll5-M4@google.com>
+ <aobOs0ZidWzgoHut@orome>
+ <aoi4wZJIutMWu9Ux@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|MN2PR12MB4423:EE_
-X-MS-Office365-Filtering-Correlation-Id: c9e86c35-52de-4160-6c0f-08df01de800a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|23010399003|366016|6133799003|56012099006|10067099003|4143699003|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	cPWu+eATR3wRnlmiXs561NBw3s6VxGRyTyzbHKGAz1hO0vP3UKlSm91aOSm4Rb9by6n7OuCCg6Ki2L0mfLBtH4BG5n6QnPrP6RMR7EGn5JzCupDgCraqBBRDTcRbsEGjutpb3FXUs5tXctYqECbrNtceCPKAZDdfaHg4al+0FTpmDAFBjNYDR6jJGKchrYVO+ZLhFYBFRtg92/OXlNlPbnhC3qLW1PuFeLdScYqxwiQfqZ408VPT8+e2TIBURYPGuqjtAzM/ljohOekY4+NZEP2pFatlpKvcr9K5M7NGHxdQd3WgSIlZxMaiDl8f4OkNyxYHJIi3ULAjNAGmzixDmRoJ+OO3dACkkpjAC2omsAeGLn+0HxBlJyi6D6RkVWll81UR24zTMIjTvH/CkDp6Z3cWdsOlWDWwC7zYND8frdNGc9dzyMWNV9kFEwoc109QHONjKPX+3dpxLxT1hS1U0IoSDm5Vmgrzyy5uQBFmgY9ezcmLCJb0OHmnOZ9rONZlpq1bv8g38DmgzO4IcDUBK1M58gd2Tbmyx6JVi9jnqCE3qxmEJTd3jaXQeLaXnf2K5SZHinkOAg4IO3As6N59np8RDUvZWUcEuEPk248Skh3kaBbk3mju2zjaxi26wfem0pPI6kMCLjBxym9XRUlD6Il3UR67j2mAeRPCX/ZraVU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(23010399003)(366016)(6133799003)(56012099006)(10067099003)(4143699003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?GdRLW1Ed0swm+/S4LVbbEQ7D7m7t1tM4ocEzzpsl4NYhCxWtOBGKTlWYSBSK?=
- =?us-ascii?Q?8omAWGpoetmzPekiu05ZotyTZB2ZnozFYScJg6Yapfo3rc5CfM7EamhIFnCR?=
- =?us-ascii?Q?1cWKoJBrJpK8GioXxtSGc84fz6kbqB7Wsx4VeUQSQndd84kg35dWvy/fS05V?=
- =?us-ascii?Q?slQ7LUCqNLri1V3qOOk6dFru8ProOUNmqpjKsj8kGlzaS2Mqii4ekv4ioOD8?=
- =?us-ascii?Q?R/JvWy1iclgBJ4XSmShB9LFJKgYu905ZwtEiUSp59Z4cJWWD4dvd6R1nbG5D?=
- =?us-ascii?Q?+k684IgT+SakG20sBkVuUsqq+kaBhblRi5vDYzq2kGir7qsRNm+iDlWlBNz0?=
- =?us-ascii?Q?xNA+HFy1CpkQslUAHDBBjpqJHKhgJlE64XVy7KuzPYUuTAOq81CRDZZSspo6?=
- =?us-ascii?Q?plaI1YmWywh4U3gw8XG3h7srVYZf7zlRKfbmFLnx83jgl/G1zRJgpId8br6x?=
- =?us-ascii?Q?tz2jWOmRg2HUnQT7qhTmnQM5zW9W/go5hUi/PecbtPnvAAU2/Vo8BtOuQR6v?=
- =?us-ascii?Q?NECdp05b0qJaSj1wnXD7I+GAMNXJoIdtEfRgCY8bC8zNIeMBPDtvlv1Wj4Wh?=
- =?us-ascii?Q?IX5W8AMmaoAl+NXicQ+4MFF9v6bTIGAA95UddsuwWZzMRRTDb5GIwpg0sq7g?=
- =?us-ascii?Q?KtLBH1mfd3HeaGbEJVhXxvQbltYBIfkPjj/psttwj7tXuaLMj6/zQzIZJPZ7?=
- =?us-ascii?Q?0mF4g3fxWCAcDpAVlMmKe2HUfj5FoAa0PkPPlpRghWZfpmFAu0vWvn0JcIgg?=
- =?us-ascii?Q?ZTU4TZjNWT4uBYpihsQe6QIg5/Q5zihhFC8Na7TJ6hn4iBFWCx0YDfak7gS4?=
- =?us-ascii?Q?nOFwngCJ6zA/OyJGSj5x5/2GRazChUdQLAGAEhGqGzU4dPUpkZKqWNSV9Xui?=
- =?us-ascii?Q?VRljwrfGBqiNIdsdhl8smS63MvcqG0iHTEbQrtI3gpwG8yh0DqOBFmYJI1cK?=
- =?us-ascii?Q?I7nyBk50all4pdLt7CYBE7qmo6eUm1jpFdhhP9IWzh9zCaaRAmOsEpRQTpJO?=
- =?us-ascii?Q?Z/ukO//eV60H9Oy12UKQw2YGUDmmR/b1UyHKqeTeaijGpJoUw5Vcibnt6kAc?=
- =?us-ascii?Q?smduFNZbWCFdl9jELQ3j1K8Jm1j2CkHAb9CUafdRsIxVo7oi7eHOVt2w0Ga4?=
- =?us-ascii?Q?z6Lz4NDEyUSzjDOOskjC4Y5Ene+aqL6FI08ku6dChi3BaV2irmDmWAzKFPx8?=
- =?us-ascii?Q?l+buQCaeDpa1uCzTJyxwDNFcBgy0yxRhp9tx4WLgzazY462mS6Rt7QnDelGB?=
- =?us-ascii?Q?CKmVvrrNAb4ode8mCQjt/M4XE2JB4TUr1dLTb/NUe2DhTk6kJposJ1i2rdO5?=
- =?us-ascii?Q?Z3GsPhalMlIaVa1j4uddhfU7g39J4CfwRBUzPP166wuIsHc1l99CZP26M5LI?=
- =?us-ascii?Q?1Y33FsH+tYIsGNI3MrwyPANP7HJfaFDlScjbLMTToZX3eMIqWI5MOWwpeUSJ?=
- =?us-ascii?Q?KdI2MebbfxnShH1yONBAJKbO+UGmZqqAUSrJYtrQKzmsawC7HlS/Th7duLuu?=
- =?us-ascii?Q?Y4OeJiB5gybgzknc6Q10foj3KTHFiUw28W1UN3DNjwt8vrnZ72WbO7rVxsXV?=
- =?us-ascii?Q?6UA5IPFsbZ9pUgwrM8vYfAsHecwSPggdFTLGgwMm31k0z8ijw2hYMFdYSoxP?=
- =?us-ascii?Q?1QGTBoPVERrCm/aRfBgPR7NQhaClsMBv6cB9WSF7O4VCQV1LVmRTuThrB1Gm?=
- =?us-ascii?Q?3YN+LkDB2r4+ajaOqtqIe+uM1DDSTe1XJReyayHdpIWP5NSF?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c9e86c35-52de-4160-6c0f-08df01de800a
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2026 12:52:05.7329
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Hgf+HVe8x3LX26MFnJNX0A4L6q2WWVUA25H5RpSxKU3JeiK3tXvKHJ10ryMU6CZK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4423
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aoi4wZJIutMWu9Ux@google.com>
 
-On Mon, Aug 24, 2026 at 10:50:07AM +0200, Andrew Jones wrote:
-> On Sat, Aug 22, 2026 at 11:06:25AM -0300, Jason Gunthorpe wrote:
-> > On Sat, Aug 22, 2026 at 03:50:05PM +0200, Andrew Jones wrote:
-> > > With the RISC-V IOMMU MSI table and irqbypass support in KVM, we can
-> > > write the guest's MSI messages directly to the device without
-> > > interpreting the IOVAs. 
-> > 
-> > Every architecture can work this way. Nobody has impleented Linux
-> > support for it, and if we do, it must be arch generic.
-> > 
-> > Not being able to discover the vCPU from the MSI descriptor means you
-> > can't use any of the existing less-optimal Linux flows and are forced
-> > to implement this hard thing..
+On Fri, Aug 21, 2026 at 09:44:49PM +0100, Vincent Donnefort wrote:
+> [...]
 > 
-> The RISC-V irqbypass work does not require a new framework, or even
-> callback. It uses the existing irqbypass framework and implements
-> irq_set_vcpu_affinity(). Since that callback programs the IOMMU MSI table,
-> it belongs in the IOMMU irqdomain.
-
-My point is you can't use the normal flow which relies on Linux fully
-programming the MSI-X on the host side and only uses the guest
-descriptor as input to that flow.
-
-The iommu msi table doesn't actually help unless you can also directly
-use the guest's descriptor. Right?
-
-> > ARM is basically the same, the ITS page goes through the S1 and S2, so
-> > the goal is to get a valid ITS page into the S2, tell the guest to use
-> > it and create a S1 pointing at it then feed the MSI descriptor from
-> > the guest unmodified to the HW.
+> > > > Interesting. I had been thinking more along the lines of adding this
+> > > > directly into memblock using a new entry in enum memblock_flags. None of
+> > > > the existing ones seem to do what we need here, though some are closely
+> > > > related. MEMBLOCK_SECURE or MEMBLOCK_PROTECTED are quite specific and
+> > > > don't necessarily mean that we need the mapping to be page-granular, so
+> > > > MEMBLOCK_PAGE_GRANULAR is perhaps clearer.
+> > > 
+> > > I thought it would be interesting to not have to modify memblock since it is
+> > > used for all architectures, while the DT is at least slightly less widespread.
+> > 
+> > This isn't something that is DT specific. On the Tegra side, I suspect
+> > we might need this on ACPI platforms eventually, too. And it's not an
+> > ARM specific feature either. Other platforms could use shared carveouts,
+> > too.
 > 
-> On ARM, the SMMU translates the MSI address, but the ITS performs the
-> interrupt remapping. KVM must therefore know which vITS the guest IOVA
-> selects so it can resolve that vITS's DeviceID/EventID mapping and program
-> the physical ITS with the corresponding vCPU-specific state.
+> Agreed, and actually I have tried the memblock version and it looks quite neat!
+> 
+> I will share what I have after the merge-window.
+> 
+> > 
+> > > Also, cma_init_reserved_mem() could use an order 9. In that case PTE-level isn't
+> > > necessary and we could just use PMD-level. Extending that support would be more
+> > > cumbersome with a memblock flag than with a callback.
+> > > 
+> > > rmem_cma_setup() hardcoding an order 0, perhaps this isn't really a problem at
+> > > the moment?
+> > 
+> > How so? memblock is really just used as a way of backing the CMA. How
+> > CMA subdivides it doesn't really matter, right?
+> > 
+> > Or are you suggesting that if we use an entire PMD as granularity, we
+> > could equally well remove the entire PMD from the linear mapping instead
+> > of doing it page-by-page? I think that'd work really well for at least
+> > VPR, since it is 1 MiB aligned anyway. Using a granularity of 2 MiB is
+> > easily doable.
+> 
+> Yes, that is what I meant. We could easily force a PMD-level mapping instead of
+> PTE-level one. But then that means declaring another memblock flag. 
+> 
+> > 
+> > For anything that doesn't require a single contiguous area to be
+> > protected this might be a bit more challenging since it potentially
+> > wastes a lot of memory. On the other hand, a lot of this is heavily
+> > custom code anyway, so the entire stack could be modified to make
+> > efficient use of this (i.e. userspace could allocate a larger chunk
+> > for a pool of buffers, etc.).
+> > 
+> > > But yeah, the alternative is to create a "memblock_mark_forcepte" (it seems
+> > > memblock_setclr_flag does split memblocks) and let of_reserved_mem call that
+> > > function. Finally the arm64 mmu code can simply check for the flag before
+> > > calling __map_memblock. Perhaps it isn't that bad in the end?
+> > 
+> > It sounds like the right level of abstraction to me. But I'm not too
+> > familiar with this code, so it'd be good to hear from the MM and/or ARM
+> > maintainers what they think about this.
+> > 
+> > [...]
+> > > I had in mind to extend "shared-dma-pool" to handle
+> > > set_direct_map_invalid_noflush()/set_direct_map_default_noflush() based on an
+> > > option. But perhaps it is better to create another separate driver. And VPR
+> > > needing a specific dma-heap driver anyway, it could call the direct-map
+> > > functions there too without relying on CMA to do anything?
+> > 
+> > I think it'd be nice to have separate APIs for this case where we know
+> > the memory region is already page-granular (or, I suppose, PMD granular)
+> > and removing from (or adding back to) the linear mapping is safe. That
+> > way we could avoid the checks for can_set_direct_map() for each page.
+> > 
+> > It'd also be nice to have a version that can update the protection bits
+> > for a range of pages (would map directly to update_range_prot()) instead
+> > of having to manually iterate over each page in a range.
+> >
+> 
+> How about?
+> 
+>   /* True if can_set_direct_map() or [start, end) is mapped at PTE-level */
+>   can_set_direct_map_range(phys_addr_t start, phys_addr_t end); 
+> 
+>   /* Must check can_set_direct_map() or can_set_direct_map_range() first */
+>   __set_direct_map_invalid_noflush(phys_addr_t start, phys_addr_t end)
+>   __set_direct_map_default_noflush(phys_addr_t start, phys_addr_t end)
+> 
+> > A good middle-ground might be to have helpers that do the grunt work and
+> > they can then be called from VPR and the shared-dma-pool drivers to have
+> > pages removed from the linear mapping. VPR and similar can then perform
+> > the hardware protection bits on top of that.
+> 
+> I believe between the reserved-memory attribute to force the last-level mappings
+> and the direct map functions above, there's enough for the VPR driver?
+> 
+> -- 
+> Vincent
+> 
+> > 
+> > Thierry
 
-Not quite..
+I have pushed a first version here [1]. I am waiting for the merge window to end
+before posting anything on the list, but let me know if you have any comment.
 
-IIRC the MSI entry itself tells which pITS page has to be used since
-they are 1:1. That tells KVM which vGIC has the vITS table so it can
-read that and get the vCPU. Now the IRQ layer has the pGIC, IRQ #, MSI
-# and vCPU. It then creates an entirely new MSI descriptor and
-programs the pITS and pMSI entry. The guest MSI descriptor is thrown
-away.
+[1] https://android-kvm.googlesource.com/linux/+/refs/heads/vdonnefort/ffa-lend-pool
 
-It is like this because this is how x86 does things so it is easy to
-implement.
-
-However in idyllic ARM land it could work like RISC-V. The GIC could
-mirror the vITS table into th pITS table and apply the vCPU to pCPU
-mapping through an irq domain. Then the guest MSI descriptor would be
-used unmodified. These days x86 can be similar, if the guest has the
-iommu remapping HW it could be similarly mirrored into the physical
-remapping HW instead of reconstructing the MSI descriptors.
-
-This has never been implemented because there are alot of missing
-generic pieces to use an unmodified guest MSI descriptor.
-
-Now, risc-v doesn't need to mirrow TIS/remapping tables from guest to
-host, because it doesn't have such tables, but it still will need the
-rest of the generic machinery to use unmodified guest MSI descriptors.
-
-> This ownership of remapping (for ARM in the ITS and for RISC-V in the
-> IOMMU) also justifies why ARM does not need an irqdomain in the IOMMU and
-> RISC-V does.
-
-Yes, that's right, as I said earlier the irqdomain for the msi
-remapping table seems appropriate.
-
-> The irqbypass support is already separate from this series. This series
-> only introduces the IOMMU irqdomain, which owns the IOMMU-specific MSI
-> composition now and will provide the irq_set_vcpu_affinity() hook needed
-> later. Putting the compose code in the IMSIC irqdomain now, only to move
-> it into the IOMMU irqdomain with irqbypass later, would add unnecessary
-> churn.
-
-I'm sure you need more than irq_set_vcpu_affinity() - it still has to
-use the guest descriptor unchanged, and it still has to get the
-correct pages into the S2 at match them to the ACPI/DT description. We
-don't have any common APIs to do that, and every arch can use this
-stuff.
-
-Without seeing the whole thing it is hard to be sure exactly what
-arrangement people are going to want to see. I'm also not sure how to
-combine the iommu MSI handling, unmodified guest MSI descriptor and
-this msiremapping all together. A guest centric flow and an normal
-host flow are very differnt in this model. This is all new.
-
-This is why I'd rather have this patch be something entirely normal
-following existing patterns then you can come and propose the changes
-to bring in all this new stuff that must be made more general and it
-is a self contained picture. The churn is sort of the point to help
-people understand exactly what is being proposed.
-
-Jason
+-- 
+Vincent
