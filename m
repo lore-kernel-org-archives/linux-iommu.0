@@ -1,326 +1,118 @@
-Received: from rs1.nue.1e30.net (rs1.nue.1e30.net [152.53.122.0])
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16B6382299;
-	Mon, 24 Aug 2026 21:00:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=152.53.122.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9894C33A9FE;
+	Mon, 24 Aug 2026 21:08:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787605263; cv=none; b=QQm5MUx3Vy+mfB+cO4kGwwd1Rzo7BXcaBeTIUspQetNC42ry9ay5CdPcvQqOj7cDTmkz62ZDtBDlsptmBkJZjLjnCAvq3mmNCWPGZuzWenzJnfs2vJZ4zWAgodsCrs5NnRU28+TByAvXexavr7xV/gZNVHdaGtKqYFtplO/ol6s=
+	t=1787605700; cv=none; b=RX4zm3oAm5gHYdYRAN7Z6Iw7f+47GnXx0UUiCTLUCZJletuL34o5lgytiYIQ7STlyY/M1PAQN/Bbj8uTxZ9Dyf1rlwyf8Cx7pm3SicpdeNPYazWngJxcEWjqzXbLk7t/Ef4aEphutd/esDBFwgVqoIYtO53+n0yK12WAKOfG3u0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787605263; c=relaxed/simple;
-	bh=uFpBlKSm0qbtsSTFmNw486Km5v/ZAesu7I1l0CEBENQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=r6uFJ0Upis7aHrLUnVvnhxpAxEcMSWOHKS1p0IwZubZFjUp0xH/6nwEtbMB0+0auPhMQbA9pEZDdLE0/3E3WSEGsectWIvwRvJ8RE17wclG1a0fClkpiYM+fJIfZAwDxi1I9+MYVoWECp5EOuVcNpCkcZpGcPTa2fol5KFzj3wg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=juch.cc; spf=pass smtp.mailfrom=juch.cc; dkim=pass (2048-bit key) header.d=juch.cc header.i=@juch.cc header.b=dwfUg4vW; arc=none smtp.client-ip=152.53.122.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=juch.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=juch.cc
+	s=arc-20240116; t=1787605700; c=relaxed/simple;
+	bh=l8I+S9y4BKMpZ/Y9Pvym3mb+rgUfggvWVJJBECIvn58=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
+	 Content-Type:Subject; b=WBsSXS9xjdjIc+HoQ3WsyVXApwwUqm7xh5qOd+pL4Z3gXkQ5sYnCZxkOCfzyBkZOt/f//8ZIrw/6naAfcZMIfHwchVrF3gH27JbLg8fgR8iQOlhFNp+2egcwvsdwNnvjbP8RC+QodGxUgfW4J2e+TQCMxhLK075rX8xT+FDSHHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=Ew9/QkpD; arc=none smtp.client-ip=204.191.154.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=juch.cc header.i=@juch.cc header.b="dwfUg4vW"
-Message-ID: <f805ff79-f108-4b5d-a9a1-3c447ee564b4@juch.cc>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juch.cc; s=rsa-2026-06;
-	t=1787605250;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=myJpwBCzhnFsY3H4itePgNGjUGKg7mmppy7sopdAVdg=;
-	b=dwfUg4vW7rVzKHhN4DyoZN5ibaC84EbguBXsP7L1YqGgB70o7fm9jeM31/7MxkxT/0dXCy
-	Bs20svBTmZY34fU282NXe0wp7EZqeP+addYvZyk5TEm/AgAm84RneAe+OfhkV5WpW1eCs1
-	70dErMOubGoIIBHGb0HRtukBOXKEhTfZuGEbloMqQAAqMc4XcRygAsanM0IGdc9qRLRKda
-	z5CleKG9QZrTcWderzWbLqkI3TrieATn+OnY1SS2lRm/zK4dtWczR5gKrn+75DNN49Qiy7
-	MBXECUUIZ5H+GgRRZxyNDf9O2CQWecL/jsR7BUjAeoXvPJ/I+oQ8Hc8v81Gl6w==
-Date: Mon, 24 Aug 2026 23:00:49 +0200
+	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="Ew9/QkpD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+	MIME-Version:Date:Message-ID:content-disposition;
+	bh=WF8EC2mFbNXoLTZj2YF3+N5Uv2mpjuhJFHeVK5S2Wgg=; b=Ew9/QkpDEziZ9MGMsFjj0oWU6t
+	M/0Pfw4x509w2ymBfz8xFzNbu5WiSd6El2HYsvaFG99GCCD99kBfa7BwG47fB5VRmJj4ONS/A/ua0
+	INg7R7MDXlOTyxRa+3x9JepG6g6XWaQwZO49vDztuswNnL+1RCVTpOTqkJhA7bTnnq2gqJjIPC2H1
+	0ew4MYFM4UxA85DFa/rT3gJjE2kO+swcvx7U0d6ed4e1jGTh0dc0h3+noqZZ+x2eCb26u64PRPvEE
+	mp0arshtYPutFCqf0Tfu7yc0NJUxq/WN4hwUoSvvrp2XRrHZ2xSHdMnfCR1GXq1nNxJALzkDtnnFQ
+	GJnUmbuQ==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.98.2)
+	(envelope-from <logang@deltatee.com>)
+	id 1wybtu-00000005a3P-20sR;
+	Mon, 24 Aug 2026 15:08:15 -0600
+Message-ID: <87700873-1e4b-43a3-948b-c6e84ed11f5a@deltatee.com>
+Date: Mon, 24 Aug 2026 15:08:09 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [REGRESSION] iommu/amd: "Fix premature break in init_iommu_one()"
- causes early boot hang
-To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Robert Richter <rrichter@amd.com>, linux-kernel@vger.kernel.org,
- regressions@lists.linux.dev
-References: <07b2d390-f7a0-47e2-bc2c-eb0853acf52e@juch.cc>
- <aok4Ko0mpC4fdGPg@8bytes.org> <6a61edf7-157c-4069-a1c3-78d1138b061c@amd.com>
- <912b9d43-1205-4753-afe1-60cd149679b4@juch.cc>
- <905c7511-d7bb-4ca6-918f-71846e436062@amd.com>
-Content-Language: en-US
-From: Andreas Juch <andreas@juch.cc>
-In-Reply-To: <905c7511-d7bb-4ca6-918f-71846e436062@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-
-Hi Vasant,
-
-
-On 8/24/26 07:52, Vasant Hegde wrote:
-> Hl Andreas,
->
->
-> On 8/22/2026 7:02 PM, Andreas Juch wrote:
->> [Some people who received this message don't often get email from
->> andreas@juch.cc. Learn why this is important at https://aka.ms/
->> LearnAboutSenderIdentification ]
->>
->> Hello Vasant,
->>
->> On 8/22/26 12:17, Vasant Hegde wrote:
->>> Andreas,
->>>
->>> On 8/22/2026 11:19 AM, Joerg Roedel wrote:
->>>> Adding Vasant.
->>>>
->>>> On Fri, Aug 21, 2026 at 11:11:07PM +0200, Andreas Juch wrote:
->>>>> Hello,
->>>>>
->>>>> I noticed that one of my NixOS sytems failed to boot with kernel 6.18.40.
->>>>> The
->>>>> older 6.18.39 booted fine. A full git bisect of v6.18.39..v6.18.40
->>>>> identified
->>>>> the following commit as the first bad commit:
->>>>>
->>>>>     dc266f6c4e2628576ab33042b6b2a12480220026
->>>>>     iommu/amd: Fix premature break in init_iommu_one()
->>>>>
->>>>> The visible symptom is a black screen immediately after systemd-boot. The
->>>>> machine also remains unreachable over SSH and leaves no persistent journal
->>>>> entry
->>>>> for the failed boot. A reset or power cycle is required.
->>> Interesting. I never imagined above fix will break some system!
->>>
->>> I assumed below dmesg is from good boot (without above patch) and did the
->>> analysis (code walk with below IVRS data):
->> Yes, that's correct, it's from the .40 kernel without commit dc266f6c.
->>
->>>     - EFR advertised by IVRS is different from actual EFR (read by IOMMU MMIO
->>> register). Its worse because IVRS advertised few features like GT/PPR which is
->>> not supported by IOMMU.
->>>     - Without this patch we would have skipped early_iommu_features_init() so
->>> global EFR is zero and then init_iommu_one_late() set the EFR properly based on
->>> actual IOMMU capability.
->>>
->>> Only with this log, its hard to tell where exactly system failed. My guess is
->>> driver enabled features which are not supported (like GT/PPR) or we setup 32bit
->>> interrupt remapping table.
->>>
->>> I believe above patch exposed an existing bug with some other commit.
->>>
->>>
->>> Ideally we should properly fix late_iommu_features_init() and use actual EFRs.
->>> But for now lets fix the regression. Can you please try below fix?
->>>
->>> -Vasant
->> Thank you for investigating! I created a new branch from the v6.18.40
->> tag and
->> applied your patch. The resulting kernel booted without any issues!
->
-> Thanks a lot. This is like another band-aid fix, but I think it's good enough
-> for a stable backport. In my view, we should prioritize the IOMMU
-> MMIO-advertised EFR over the one reported via IVRS. However, that would require
-> much more extensive changes and isn't a good candidate for stable.
->
->
->> If you need any further information or testing (for a proper fix later
->> on), I'd
->> be happy to test patches again!
-> Can you help me to test below patch (just apply this patch and remove previously
-> provided fix patch). I want to make sure that prioritizing MMIO EFR doesn't
-> break things.
-I compiled the kernel with just your patch on top of the 6.18.40 tag and it
-didn't boot. Please let me know how I can provide better diagnostics. I 
-tried to
-get serial output over IPMI SoL, but never got anything useful back.
+User-Agent: Mozilla Thunderbird
+To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
+ <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+ Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+ Tushar Dave <tdave@nvidia.com>
+References: <20260821-fix-p2p-acs-v4-0-v4-0-94426b96de73@nvidia.com>
+ <20260821-fix-p2p-acs-v4-0-v4-6-94426b96de73@nvidia.com>
+Content-Language: en-CA
+From: Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <20260821-fix-p2p-acs-v4-0-v4-6-94426b96de73@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: leon@kernel.org, bhelgaas@google.com, kch@nvidia.com, gregkh@linuxfoundation.org, axboe@kernel.dk, alex@shazbot.org, ankita@nvidia.com, jgg@ziepe.ca, corbet@lwn.net, skhan@linuxfoundation.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux.dev, tdave@nvidia.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Level: 
+Subject: Re: [PATCH v4 06/18] PCI/P2PDMA: Gate the host bridge whitelist
+ warning on verbose
+X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
 
-Andreas
 
-> -Vasant
->
-> ---<---
-> commit aa5f50f1ee66ebf7a219906a4df6aa2b7cae9717
-> Author: Vasant Hegde <vasant.hegde@amd.com>
-> Date:   Mon Aug 24 11:12:27 2026 +0530
->
->      iommu/amd: Prioritize IOMMU MMIO advertised EFR over IVRS
->
->      Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
->
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 69170146d442..0172db87b1df 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -2153,9 +2153,11 @@ static void __init late_iommu_features_init(struct
-> amd_iommu *iommu)
->   	if (features != amd_iommu_efr ||
->   	    features2 != amd_iommu_efr2) {
->   		pr_warn(FW_WARN
-> -			"EFR mismatch. Use IVHD EFR (%#llx : %#llx), EFR2 (%#llx : %#llx).\n",
-> +			"EFR mismatch. Use MMIO EFR (%#llx : %#llx), EFR2 (%#llx : %#llx).\n",
->   			features, amd_iommu_efr,
->   			features2, amd_iommu_efr2);
-> +		amd_iommu_efr = features;
-> +		amd_iommu_efr2 = features2;
->   	}
->   }
->
->
->
->
->
->
->> Thanks again!
->>
->> Andreas
->>
->>> ---<---
->>>
->>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
->>> index 69170146d442..7a5b78beb352 100644
->>> --- a/drivers/iommu/amd/init.c
->>> +++ b/drivers/iommu/amd/init.c
->>> @@ -1930,19 +1930,20 @@ static int __init init_iommu_one(struct amd_iommu
->>> *iommu, struct ivhd_header *h,
->>>                else
->>>                        iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
->>>
->>> +             if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
->>> +                     pr_warn_once("Host Address Translation is not supported.
->>> \n");
->>> +                     amd_iommu_hatdis = true;
->>> +             }
->>> +
->>>                /* XT and GAM require GA mode. */
->>>                if ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0) {
->>>                        amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
->>> +                     break;
->>>                } else {
->>>                        if (h->efr_reg & BIT(IOMMU_EFR_XTSUP_SHIFT))
->>>                                amd_iommu_xt_mode = IRQ_REMAP_X2APIC_MODE;
->>>                }
->>>
->>> -             if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
->>> -                     pr_warn_once("Host Address Translation is not supported.
->>> \n");
->>> -                     amd_iommu_hatdis = true;
->>> -             }
->>> -
->>>                early_iommu_features_init(iommu, h);
->>>
->>>                break;
->>>
->>>
->>>
->>>>> I reverted that single commit, built the kernel again and the machine
->>>>> booted, so
->>>>> I'm quite sure that I found the right commit.
->>>>>
->>>>> System information:
->>>>>
->>>>> ASRockRack B550D4-4L
->>>>> BIOS P1.10 (06/28/2021)
->>>>>
->>>>> I'm no expert at all, but my research found that the following information
->>>>> might
->>>>> be relevant:
->>>>>
->>>>>     journalctl -W -b -k --no-pager | rg -i 'AMD-Vi|AMD IOMMU|IOMMU|IVRS|IVHD'
->>>>>     Aug 21 22:24:17 kernel: ACPI: IVRS 0x00000000BB062000 0000D0 (v02 AMD
->>>>> AmdTable 00000001 AMD  00000001)
->>>>>     Aug 21 22:24:17 kernel: ACPI: Reserving IVRS table memory at [mem
->>>>> 0xbb062000-0xbb0620cf]
->>>>>     Aug 21 22:24:17 kernel: AMD-Vi: Using global IVHD EFR:0x0, EFR2:0x0
->>>>>     Aug 21 22:24:17 kernel: iommu: Default domain type: Translated
->>>>>     Aug 21 22:24:17 kernel: iommu: DMA domain TLB invalidation policy: lazy
->>>>> mode
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:01.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:01.2: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:02.0: Adding to iommu group 1
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:03.0: Adding to iommu group 2
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:04.0: Adding to iommu group 3
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:05.0: Adding to iommu group 4
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:07.0: Adding to iommu group 5
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:07.1: Adding to iommu group 6
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:08.0: Adding to iommu group 7
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:08.1: Adding to iommu group 8
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:14.0: Adding to iommu group 9
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:14.3: Adding to iommu group 9
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.0: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.1: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.2: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.3: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.4: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.5: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.6: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:00:18.7: Adding to iommu group 10
->>>>>     Aug 21 22:24:17 kernel: pci 0000:02:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:02:00.1: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:02:00.2: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:01.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:02.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:03.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:04.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:08.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:20:09.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:21:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:22:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:23:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:24:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:25:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:29:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2a:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2b:00.0: Adding to iommu group 0
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2c:00.0: Adding to iommu group 11
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.0: Adding to iommu group 12
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.1: Adding to iommu group 13
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.3: Adding to iommu group 14
->>>>>     Aug 21 22:24:17 kernel: pci 0000:2d:00.4: Adding to iommu group 15
->>>>>     Aug 21 22:24:17 kernel: AMD-Vi: Extended features (0x58f77e022294881,
->>>>> 0x0): PreF GA GA_vAPIC
->>>>>     Aug 21 22:24:17 kernel: AMD-Vi: Interrupt remapping enabled
->>>>>
->>>>> And the output of the decoded IVRS table, captured by `acpidump -n IVRS -b`:
->>>>>
->>>>>     00000000  49 56 52 53 d0 00 00 00  02 e2 41 4d 44 20 20 00 |IVRS......AMD
->>>>> .|
->>>>>     00000010  41 6d 64 54 61 62 6c 65  01 00 00 00 41 4d 44 20
->>>>> |AmdTable....AMD |
->>>>>     00000020  01 00 00 00 41 30 20 00  00 00 00 00 00 00 00 00 |....A0
->>>>> .........|
->>>>>     00000030  10 b0 48 00 02 00 40 00  00 00 50 fd 00 00 00 00
->>>>> |..H...@...P.....|
->>>>>     00000040  00 00 00 00 2e 8f 04 80  03 08 00 00 04 fe ff 00
->>>>> |................|
->>>>>     00000050  43 00 ff 00 00 a5 00 00  04 ff ff 00 00 00 00 00
->>>>> |C...............|
->>>>>     00000060  48 00 00 00 00 a0 00 02  48 00 00 d7 0d a0 00 01
->>>>> |H.......H.......|
->>>>>     00000070  48 00 00 00 0e 01 00 01  11 b0 58 00 02 00 40 00
->>>>> |H.........X...@.|
->>>>>     00000080  00 00 50 fd 00 00 00 00  00 00 00 00 00 02 04 00
->>>>> |..P.............|
->>>>>     00000090  5a 4a 29 22 ef 77 8f 05  00 00 00 00 00 00 00 00
->>>>> |ZJ)".w..........|
->>>>>     000000a0  03 08 00 00 04 fe ff 00  43 00 ff 00 00 a5 00 00
->>>>> |........C.......|
->>>>>     000000b0  04 ff ff 00 00 00 00 00  48 00 00 00 00 a0 00 02
->>>>> |........H.......|
->>>>>     000000c0  48 00 00 d7 0d a0 00 01  48 00 00 00 0e 01 00 01
->>>>> |H.......H.......|
->>>>>     000000d0
->>>>>
->>>>> The relevant part (after decoding with `iasl -d ivrs.dat`):
->>>>>
->>>>>     [090h 0144 008h]                   EFR Image : 058F77EF22294A5A
->>>>>
->>>>> I'll provide any required details and test patches!
->>>>>
->>>>> Thanks for your work, it's very appreciated!
->>>>>
->>>>> Andreas
->>>>>
+On 2026-08-21 13:38, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> calc_map_type_and_dist() prints every other diagnostic under its verbose
+> argument, but reaches the "Host bridge not in P2PDMA whitelist" warning
+> through host_bridge_whitelist(), which it hands acs_redirects instead.
+> A caller that asked for a silent answer still gets the warning whenever
+> any port on the path has an ACS redirect bit set, the CPU is not
+> whitelisted by cpu_supports_p2pdma(), and the host bridge is not in
+> pci_p2pdma_whitelist[].
+> 
+> pci_p2pmem_find_many() is such a caller. It sweeps every device with
+> published p2pmem and asks for the distance to each client with
+> verbose=false, and pci_p2pdma_distance_many() recomputes rather than
+> consulting the map_types cache, so the warning repeats on every sweep.
+> 
+> The argument was never meant to say "ACS redirects were found". When
+> commit cf201bfe8cdc ("PCI/P2PDMA: Warn if host bridge not in whitelist")
+> added it, acs_redirects was a bool pointer that the quiet entry point
+> passed as NULL:
+> 
+> 	if (verbose)
+> 		map = calc_map_type_and_dist_warn(provider, pci_client,
+> 						  &distance);
+> 	else
+> 		map = calc_map_type_and_dist(provider, pci_client,
+> 					     &distance, NULL, NULL);
+> 
+> so the argument was true on exactly the path that commit describes.
+> Folding the two entry points into one verbose flag turned the pointer
+> into a value and left the call site alone, silently narrowing the
+> warning to paths that carry an ACS redirect.
+> 
+> Pass verbose. This also restores the warning for a verbose caller that
+> takes the host bridge route with no ACS redirect on the path, which
+> until now was told it could not use peer-to-peer DMA without being told
+> which vendor and device would have to be added to the whitelist.
+> 
+> Tested-by: Tushar Dave <tdave@nvidia.com>
+> Fixes: d1b8dc09dd71 ("PCI/P2PDMA: Simplify distance calculation")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+
+Took me a bit of effort to understand this history, but I think the end
+result makes more sense than what is currently there.
+
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
 
