@@ -1,56 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0DA2414A2A;
-	Mon, 24 Aug 2026 13:18:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBF063DDDDA
+	for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 13:24:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787577522; cv=none; b=f8HYzBhrNVz/GalUNvAJEAWV3htgBS01B0c0KYZYaO2UWCncMuCTzK5FFqLyDNcgkERT28mJmcoyC5vktUaW17FPLn2m6K6XEWvunKpPcgJJTOEjRcIplwaAJGykZGnO8dJnnTlBsjKoG7HCq7/8O7Yq/5RgIgE/wR7wX9R4/k4=
+	t=1787577859; cv=none; b=O6LW5rzZcfnxip7tV7w1hpfxhHJdBFENz5gkXZ8HzD35+mjGxVEYGgYR+QiUHFIX9vw8gvUtrA9h6ro9K/6EnqywsK/RfobOTCEgeu5chlMqi97EmjP83ETgMffZLTh6RL+WktPL1YW7QLKa2ExJlPqIID43Dxw4S2xRGpGX9Ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787577522; c=relaxed/simple;
-	bh=RaqWv4sdKtg9Q3FZzE5iObYvjNivT1+7Vq8G2WtzWio=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZYrExkC439SjgSNOQJSQcA3h+Kmet28mcfSlNLL8mOaPT56zHDd/OYnbjfRdr2KIAw3657+ixatE2I6YNXjjggoeE1824d4Z0hZbp0RNrUUEDEJLoZFNcdNbMVZSIDrW59YSxc2yQAbdAVxWNwbRNv/kRpq5aGl2Ql+txSomw60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WtBnfeHa; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787577859; c=relaxed/simple;
+	bh=1U6NyzXgzghwmgznfZeRYyFAcgGDs0fm45Rk9Z3dM4Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZFicuHFaldQJ81Xf2fXuA95XUZM8zae34ZEYo/dkl/02wFd1/BLWKL8AWSjWRKhRIluoFhqBp4Wbh+7hB/qlWO04X1USZ+71Br4phgMT+NlEjC+oh1DIuDNeEjnb44fiAmn3IaII77pwjodNdaBbdhNmYRHK08qgaqVPF10jc8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DX/fuluK; arc=none smtp.client-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WtBnfeHa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D6F1F000E9;
-	Mon, 24 Aug 2026 13:18:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787577520;
-	bh=2IgTliCBEsxoRkWaJ+7cQfG5+XmFVKCBOQc7JnQ9X5Q=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=WtBnfeHa6q0Ge+TozwySnv15XYNhGwozXp2NSFNiasl1r3GBtaFGS2d0nM25KBNsD
-	 I1QPXOxMHpQOAgaHmSUJmV47luhioE9wGYACB7fJXdfzHyPXFIWafyA2QQIcznCtn5
-	 GOf/IP/lD9ZLo/o1OJjmNYHKFhvUlm7IcGtQnFCYsF5hQpMjlFY5Xejo8puXzYE4ni
-	 jSQzPS2kS7VxUGdCcwn/jUqH3p//WfgUn2tc2UfD5k3BGOFY6T23tnoB9/A3j8CIkj
-	 vus26x4omePWeVCCrW3gpblarFPrW+AuvQiIOYBKh3qNFNkXPb/5FpiIYVF7ZU7zQI
-	 bYOZYE9ux4omQ==
-Message-ID: <54938b27-7f97-4027-b7b7-1b6efad8c72a@kernel.org>
-Date: Mon, 24 Aug 2026 08:18:38 -0500
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DX/fuluK"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-92e85499ffbso266909485a.0
+        for <iommu@lists.linux.dev>; Mon, 24 Aug 2026 06:24:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1787577853; x=1788182653; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Av++B0/o7UC1jj49c6nzmrH1j+NIAZ2vTywjWODYChQ=;
+        b=DX/fuluKTyU5WMViAEX8ZFVS8urxLLLfKSDrRAF4TVViCwDo0UvNtbLNMNdUrIr2v5
+         5qK0P4VyxlwKqbxgpqjXrg6GbobPSuPl6ArVtf98EchDzy+TUyrlTnwyJjgxrh/wepJS
+         oiVk7XyEbESnRHjhSTUwtrT7kibeYRUQZwaDwWlwfcfpJP4zoknjVKb3OlzB9PpUq7i5
+         xZo9QLNlqW1/WVJBQoZ9DpKYrSj1ChkE2856XHI8NHI2pkrmAOHmb0SRplFp8pQUSDFi
+         HB+lqU5Fq/FuWJGEmP51acdWywpzkQ4q3ThsoUXT5p8FwjLWXrG46sFcjkvE+3FHoxI/
+         N2bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787577853; x=1788182653;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Av++B0/o7UC1jj49c6nzmrH1j+NIAZ2vTywjWODYChQ=;
+        b=skJ++8U+UI/SpMbsF4fY5lRRXRfXo5FNJeh0w1BNc0N9SPyrIae9nr3pP/cScX5BK9
+         RbwhIFK6V7FY/rRxbqaLC45h+tgG4mfwdjxtEMJwI/wyi49kS9r4LwdHeetvPPR1gIib
+         daggv2TxU3qzP4qPDGaCgR0D86NtQXCHmvAOC5SsJp7WilpWwZ+lEuI06v8uLMMxE5lI
+         AaDHkQ+bTqfvBEnNmdTQ37SRBoCcedwDF+ei6+E9rhF83f1Y0L7pk89UKhXqvVcAskYa
+         9el+zvamXWxG5NjtRF0Nm9rfRzSBr4AGBa7H4DRYFcFHKtfkxbZpzipa/fDI/jOYrRDa
+         WMUA==
+X-Gm-Message-State: AFuF++nXSWKVTgxEgibk9g9y+cLQNoMHIB9ddvBVo0hDO9W9ijbpngsN
+	z1/mH5BADf4dws0vvjPPcWxQ+fmZ30syWddRWvU7wbW/NiAYVMDz4ICOHFZWVqWvXLA=
+X-Gm-Gg: AR+sD13/JJ/KaXiLRJMRBQbyG5Rp0GLLERNSBZMzZZ4gl3eJgifQLo4FXRqR90CNou0
+	I8fXiOOUAUnqnQ+6AnI0Zqd3/0w7NlAgwfVXNLbpximNxUEn+Q5KA9zNyBUh2M1xWBEn9a+MWW7
+	N9q6+3dbz2mrJBZuAli1p7Mw3FnNXiYRLczicwH5XTK+jy8wFn0yq944OSErqvtZ0iXFyOypKbs
+	FH093TUMiO+1HlbcJ+7vrI2XJDP4sPXIwH1TgsYynXj8ID46TqGmCGS2mv/dZTS2L62EzbXDNF7
+	+ugOLxhigeRM0a2wWmy9qbuS2rA1Od2TeiiCpaiqOfOVSNcIdOiSKSgyoe58cARmuUVWYslrCnT
+	2GSAYRgJUYzMigDWXyc9x+8JI+WPxap3HAoKqvJ6G7/Zm/WuHNJaypY0vLHCaC81XFswq1KWZ7Q
+	CUn/Tz34Hd5YiJHMD2orJOT+gX/NdbStkiHq/MsVGQNN9hPLgWucyrxFSPDSvVS6M4BZiFAtoCu
+	0VumD9NYVbUMXVIBRdVWRBuXjlEDaLSk9Z4Z27Uz64Vaw==
+X-Received: by 2002:a05:620a:1195:b0:92e:4799:a808 with SMTP id af79cd13be357-937395be432mr1945679685a.40.1787577852646;
+        Mon, 24 Aug 2026 06:24:12 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93749abe858sm495557985a.6.2026.08.24.06.24.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Aug 2026 06:24:11 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wyUen-0000000Cnw4-2s5a;
+	Mon, 24 Aug 2026 10:24:09 -0300
+Date: Mon, 24 Aug 2026 10:24:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, linux-pci@vger.kernel.org,
+	will@kernel.org, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com, bhelgaas@google.com,
+	alexander.deucher@amd.com, mario.limonciello@amd.com,
+	felix.kuehling@amd.com
+Subject: Re: [PATCH v2] iommu/amd: Force identity mode for selected GPUs only
+Message-ID: <20260824132409.GC1449020@ziepe.ca>
+References: <20260824085821.5422-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/amd: Force identity mode for selected GPUs only
-Content-Language: en-US
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org, linux-pci@vger.kernel.org
-Cc: will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
- bhelgaas@google.com, alexander.deucher@amd.com, felix.kuehling@amd.com,
- jgg@ziepe.ca
-References: <20260824085821.5422-1-vasant.hegde@amd.com>
-From: Mario Limonciello <superm1@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20260824085821.5422-1-vasant.hegde@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-
-
-On 8/24/26 03:58, Vasant Hegde wrote:
+On Mon, Aug 24, 2026 at 08:58:21AM +0000, Vasant Hegde wrote:
 > Certain AMD GPUs must always operate in IOMMU identity mode. This was
 > previously enforced using a PASID check, which happened to work because
 > these specific GPUs are PASID-capable. However, this approach incorrectly
@@ -70,8 +104,8 @@ On 8/24/26 03:58, Vasant Hegde wrote:
 > 
 > With this change, a system booting in DMA translation mode will now
 > select:
->   * Guest (v2) page table for PASID-capable devices
->   * Host (v1) page table for non-PASID-capable devices
+>  * Guest (v2) page table for PASID-capable devices
+>  * Host (v1) page table for non-PASID-capable devices
 > 
 > Also drop the amd_iommu_snp_en check, as SNP enforces paging domain,
 > which doesn't work with the identity requirement of these GPUs.
@@ -81,77 +115,23 @@ On 8/24/26 03:58, Vasant Hegde wrote:
 > Cc: Alex Deucher <alexander.deucher@amd.com>
 > Cc: Mario Limonciello <mario.limonciello@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Mario Limonciello (AMD) <superm1@kernel.org>> ---
+> ---
 > Changes in v2:
->    - Dropped disabling ATS for "Radeon Pro WX 4100"
->    - Addressed review comments
+>   - Dropped disabling ATS for "Radeon Pro WX 4100"
+>   - Addressed review comments
 > 
 > @Jason,
->    Once this patch settles, I will send separate patch to drop
->    'untrusted' check inside amd_iommu_def_domain_type().
+>   Once this patch settles, I will send separate patch to drop
+>   'untrusted' check inside amd_iommu_def_domain_type().
 > 
->    Regarding SME check, I have retained SME chek inside
->    quirks_force_identity_mapping(). If everyone is fine to drop then I
->    will do follow up patch later.
-> 
-> -Vasant
-> 
->   drivers/iommu/amd/iommu.c | 45 +++++++++++++++++++++++++++++----------
->   1 file changed, 34 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 29dc18d3d22e..fc7819f57521 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3122,6 +3122,26 @@ static bool amd_iommu_is_attach_deferred(struct device *dev)
->   	return dev_data->defer_attach;
->   }
->   
-> +static bool quirks_force_identity_mapping(struct pci_dev *pdev)
-> +{
-> +	int class = pdev->class >> 8;
-> +
-> +	/* AMD GPU vendor ID */
-> +	if (pdev->vendor != PCI_VENDOR_ID_ATI)
-> +		return false;
-> +
-> +	/* GPU class */
-> +	if (class != PCI_CLASS_DISPLAY_VGA &&
-> +	    class != PCI_CLASS_DISPLAY_OTHER)
-> +		return false;
-> +
-> +	if (pci_upstream_bridge(pdev)->vendor == PCI_VENDOR_ID_ATI)
-> +		return false;
-> +
-> +	/* It is the GPU in an APU, force identity domain */
-> +	return true;
-> +}
-> +
->   static int amd_iommu_def_domain_type(struct device *dev)
->   {
->   	struct iommu_dev_data *dev_data;
-> @@ -3130,20 +3150,23 @@ static int amd_iommu_def_domain_type(struct device *dev)
->   	if (!dev_data)
->   		return 0;
->   
-> +	if (!dev_is_pci(dev))
-> +		return 0;
-> +
->   	/* Always use DMA domain for untrusted device */
-> -	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
-> +	if (to_pci_dev(dev)->untrusted)
->   		return IOMMU_DOMAIN_DMA;
->   
-> -	/*
-> -	 * Do not identity map IOMMUv2 capable devices when:
-> -	 *  - memory encryption is active, because some of those devices
-> -	 *    (AMD GPUs) don't have the encryption bit in their DMA-mask
-> -	 *    and require remapping.
-> -	 *  - SNP is enabled, because it prohibits DTE[Mode]=0.
-> -	 */
-> -	if (pdev_pasid_supported(dev_data) &&
-> -	    !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
-> -	    !amd_iommu_snp_en) {
+>   Regarding SME check, I have retained SME chek inside
+>   quirks_force_identity_mapping(). If everyone is fine to drop then I
+>   will do follow up patch later.
+
+Sure
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
 > +	/* Apply device specific quirks */
 > +	if (quirks_force_identity_mapping(to_pci_dev(dev))) {
 > +		/*
@@ -161,8 +141,20 @@ Reviewed-by: Mario Limonciello (AMD) <superm1@kernel.org>> ---
 > +		 */
 > +		if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
 > +			return 0;
-> +
->   		return IOMMU_DOMAIN_IDENTITY;
->   	}
->   
+
+I still haven't seen an explanation why this make sense. This
+patch says two conflicting things:
+
+1) We need identity for the APU cases because they can't handle
+   translation
+2) We can't have identity for the SME case because it can't handle the
+   high address bit, so use paging.
+
+Surely #2 is also a per-GPU version thing and this address width issue
+was fixed in newer chips?
+
+But even so, if paging doesn't work why is it OK to use it for SME? If
+paging does work then why do we quirk it away?
+
+Jason
 
