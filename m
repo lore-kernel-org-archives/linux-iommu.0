@@ -1,149 +1,162 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012010.outbound.protection.outlook.com [52.101.53.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mta1.migadu.com (out-70.mta1.migadu.com [95.215.58.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F43E3BFE21
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 07:06:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787641592; cv=fail; b=rBpu5vcjdhTIvfArpd3ALY5A4SbX/7UD86ERnARxYet8BQz9Rp4hx/DoBfNKAxaZtE610zlwt9RVrrHQOdGIIUy/+1SYSp47NfDfcnF17Tqy1p70SFA+CFd3E2UzSxoIkGvLjERvWAgQvUKjEdocD4m3Lrq58l7OVAxfC2BWVyk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787641592; c=relaxed/simple;
-	bh=PlIgye5hGGZ3dN7bQVYTIo3h56/NcCt3T3YK6jOrHjE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Pu4RQ+npGdDwBiuesob4oFNqCc3V/qNtNDR7H+nju6E64ddhrTxl0gRlwfb0a3KLnbJ33L2krItGPdl7PX6dQny+5a0BRyMYzMcwJwDNVsW79H1SV+FEQsC5bCIoumOlWfmP7uBY/gT4+UfW2F2D8cUyT0CBm1EIoVHz/RVR60Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=5t72lrS1; arc=fail smtp.client-ip=52.101.53.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0F123CC9E4
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 07:12:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.70
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787641966; cv=none; b=NcdcZvNI1qSAoNzaHkBz2OoRx2v45Ry+0bwbAg8WxDA/uGNKI4w2gE1PrSYmiviqmqg/App0JcEM/h5QtI6IJgjsogQMJTj0Q+kHVm+cmeqkCzv9+4xmNsJOKKkMH4Oi13+HDINTOfKoBDjVCPNusmycpHHLShiB/g/sBy5kHdg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787641966; c=relaxed/simple;
+	bh=vrqAFbQm5tBczLY4hb4nFOlOxMC1/kc+DDXxwinK16Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uyhTf4AAvP04R+v8zOiFXkhKOArYKSfka6LXvaCHEsBN1zqIe70ZYvlSWfJXmxyWp/BWfLxXjHvMZg5cZAnOvRUcn3HbBscd2hHEk/XFcQNCRRfJ/YKluWh5AQioGgEVVYSZUIt0z1yP0uVujTnC6DgawZ1obwbT35XIu1cmv/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=RZ2vBCYU; arc=none smtp.client-ip=95.215.58.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="5t72lrS1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vw7Do79no0LvBNOgGqLer6+qT20aYNxrcAriqdMnwAueOsVgMPFpOavNchhOEIYO/GDSU+qgjDA5WYs2HXnOkiS/v6DxC7optmowJ4nP7lesd9JKzqpkfH2ickf3K8RroTZ4SJFRObR3HA1n/YaFRWNggjFNaZGdjEWJVzxitPknrS72XnAqaay6AVWCoHPOaR8w55TftqNdZ+IKsd/qfsb910DcaePOsUFpWANzxfuXVgI59+Kz521XnxNz9TTQN+IRyhgiYAaN/t++ZI49O1Yg5Ls+ywYVZm0SKn1y0oObe370w5Ob81YUFhRCUBVdGV+t/KnmxZYQYZ+awgmrFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tszzytVXFHQvdN3uFPDsmywf+cqgIbEHR89lUKqM+Cg=;
- b=dg2e0mFwRUscd4jv3tZPebU4qOyQJFPr6apItAJrverj5CZle2anKybMEA1BCReukSMub7ZMi0RXuVnaaP3Eewfi4iWSibSinFwLCL3/SD7oKfBNUUdTpwA6CWqA8iyItf8EE3fbM4HpJeBJsmk0UQjSK0omjRuk+XsacCUITqslZwUJllctesvMwJPn+KC7An2W9qzM+8qlTb+64e3yg827NnY5neiGaB/EUIWVqHAksHWy9x7c908xiz5fJw769LyVQR4/fvZcBeThcEBAvg7iDoye1XDYbwykiGbIO9+vYH1ybGph26ZUrF+h2K+3p7Nfw1jLLY7AneOULnoZFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tszzytVXFHQvdN3uFPDsmywf+cqgIbEHR89lUKqM+Cg=;
- b=5t72lrS1iYy951XzeL0+Utbrxtb3wZHozKa3pKSjJpePdgG/OmYkgFcGZbs+oKZok6XrXPwDo8GPITeI4UvwA76tFCOGhB53JP97B5IOkEaxSEjs7NCOP/OTDM5nF4paMYMX3iw4/6l9XcpFMaqifcWz9tGJ2FAfYBVI0w4wMQU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by IA1PR12MB8080.namprd12.prod.outlook.com (2603:10b6:208:3fd::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Tue, 25 Aug
- 2026 07:06:25 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0339.012; Tue, 25 Aug 2026
- 07:06:25 +0000
-Message-ID: <8e53fdee-2c3a-47c6-9478-19fbabef18eb@amd.com>
-Date: Tue, 25 Aug 2026 12:36:18 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/5] iommu/amd: Refactors for ATS robustness
-To: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Ankit Soni <ankit.soni@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Samiullah Khawaja <skhawaja@google.com>
-References: <20260824122347.1588592-1-praan@google.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260824122347.1588592-1-praan@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA5P287CA0030.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:17a::14) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="RZ2vBCYU"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=vrqAFbQm5tBczLY4hb4nFOlOxMC1/kc+DDXxwinK16Q=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1787641961; v=1; x=1788246761;
+ b=RZ2vBCYUJdlQ2ouUbpplBqf0V0IfdZLhmUhRPBFubqs5J7C1o2Tl/sLF4DvU+JPz3goGPA4R
+ RSBGovrjrO7ZisJXlZQiZkwYt42mBOr1XRwPC7WU1sU6cVt7G1eSIrfHWh2tFlOetQZGPNxIwu5
+ EOiCcFpU4qevjltscGqgZmaE=
+X-Envelope-To: iommu@lists.linux.dev
+Received: from [IPV6:2620:10d:c085:21d6::12f9] (2620:10d:c090:400::5:e4ca)
+	by smtp.migadu.com with ESMTPS id 29ba699e53c601c6;
+	Tue, 25 Aug 2026 07:12:41 +0000
+X-Mizu-Trace-ID: 29ba699e53c601c6
+X-Migadu-Flow: FLOW_OUT
+Message-ID: <556337a8-5e2b-45fe-a1ba-90a90c1f3c4d@linux.dev>
+Date: Tue, 25 Aug 2026 00:12:32 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|IA1PR12MB8080:EE_
-X-MS-Office365-Filtering-Correlation-Id: 279988e7-d809-4ca9-912f-08df027760b8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|23010399003|366016|56012099006|10067099003|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	X30tQ6r1JTHXO4fgBr3oaQ1gtXdeDB8zYUs16fUN97vUpE9kEIIe3IZCEMl8zAULabXb//5mUbAyiYzGfLdOwttKfy5xF1Il3y7LlwaJIGAUq7k+zYSvAg58Rrko0hLNRzNbaBVc/ElgZ04PXSzMUUswEk5sW6t7y4gzvfObulNFCnNXr0AadtiJAA2JWyVguMPMFuL4lVFWjpC2uAbQ/QQsL5uFmNHuvHV6HSj4XzgYOMY4wNyWvfnuoHPgf2Oi2uifp4ygeh4Nn8etJg6D7Ogl/e36Zz5unFBNcfbnVn5Ho0101CkKJHFdqPAssx/HvbLXznrC75SeqXxEwscevRsrxDm83flSlUTQj7HOP81X7lSKK+Wr6EzqDQSVasDnULxDauFl0CfZs9FFMkqSdlZmyJVFosBnVhsYj9pMMq7knuhJgX1yymWfKTDQ/I9i67dr5MGirai9k8Wug+CL/cPdW8LFuiKKJoxJZVhQlPvY4za5xGs++kiovwMQMm4lD0bTP8ZpqZetkMZU6xuy+b3fO7s70SIfbYsm4qFGFWa3QzpNNHTeDJBoq2uotoktgxdumgOOTqFvFJHAMmf8JaNKd3OCvNyKSly3JXV3wmecpCmeCel7BjX4ecxAm+4T51Jc2uHYrnif8w85QCLeB3rj6UWA5RcXuzIilKXeh3Q=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(366016)(56012099006)(10067099003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Y0JhcGtyYTY1d1lGVDZIQzdLZTdZaWZkOGJkalFEZEdZZkoxSExOS3owSlpL?=
- =?utf-8?B?eFFXbkh5VU1Bb3BSRCthUnNjZittK2hsVlVQQWtVdG1odUxUWHRlZC94NmlX?=
- =?utf-8?B?NUdjWkRSOWJxSEV6cmovcWdya2tLQUNqYnBrNHRHd0IrVWgvSWJIYm5HSE9s?=
- =?utf-8?B?Z3BQOHlpaHE1WTZCUFVlZFB3em8rWlZDZlloZUJuQ21zTTRvcGw2SWxyaTFl?=
- =?utf-8?B?VXlFRC80MTBBVkhtMHhnc21SWmt1c3ByTlZPa3Z0bmlzd2txM3d3S1hkSDMx?=
- =?utf-8?B?ZTNCL1hKYXFMb21peUc3bUk1TDRRYmEwb0FSWE5nVGpuZndJR3daNVVNU0Z6?=
- =?utf-8?B?ZEZ6UzZjbitMeGJrUDNGSHR3UjFXOC9neDd0SEl5SUpBdFVobEkwL1hKNitu?=
- =?utf-8?B?QXRuWUVSYkM2RE5jR3E5MnR3cEZYOG5TSnh3V1hMaXc2N1Q5ZXJGT2p3VkI0?=
- =?utf-8?B?NHlOSi8xZkhTaFZGVm1raUZxZHM2d2dWb3ZjU3R3U2xPRWozM0FoUWNLR3Bv?=
- =?utf-8?B?SVpmSmRITjU3MTJ5MWMyVmx4TUtzN2ZRaTZjZVFuekM4M0RUdFE4Q2NyR2JK?=
- =?utf-8?B?TmN0STdoZ25PWGJlOU5BVGhkejF6QVJLRHhtVjl4UzMyOUpaYmJXQUpaelZD?=
- =?utf-8?B?bnlUc3UvUzB4YTh5blQwYStsOTBMQmlaWTZWdkJoUHN5UjhTTkZRTFJkamlz?=
- =?utf-8?B?NmRVRHdranp0aXA1K3dYZHJNMjQvUyt2eG1pUEVMRitIWFBOeElWUnc1aVpJ?=
- =?utf-8?B?MGVWdExDTERra256ZnR2WnRJajhoN0RSNm1lME1kY0JPVnRaUWp4Q2d3NEIv?=
- =?utf-8?B?Z3g1eGRXTEZuc3VPaDIrK0NaajVQbm13T0kzcHYyaDJCVTRUK1h5ZjUxOWtS?=
- =?utf-8?B?emN2cG1YTFk3VW9CNE9YSlVyK0VJN1AyKzRPTnRHdjF1dVhKdGc1WGNjNUNT?=
- =?utf-8?B?UUt1anJEQUtHK05IT1JCOGdyakVxenpKTTVnNHBNWmFqL251SThCQjgwVldW?=
- =?utf-8?B?aVBkSzRwalRvbEUzY0QxOEJ2b0Z5ZDQ2aGJTL3d2NnZjRmZmOGlKa3k3Y28x?=
- =?utf-8?B?R0E3YW5nejFxS085V1U3czB6Lzc3VW9heit6bnROeXRvTkRCandRNW9BSW1S?=
- =?utf-8?B?S2dhbENmR0R2bEtydXlUUm03clZhTm9ta2dHTHN3cDJrOUtENDRRT3VvSE5v?=
- =?utf-8?B?RzdtN3JEamN0MkNEa2w1SHdaTGVNM3lEMHkxWXVSeUVUN0cyaDc3QTBkQXly?=
- =?utf-8?B?REZTRHhoZHhMYUF6N096T0hDNlR3NVFJWHNiTStoVXJiTDBDZHFid0lMNUc5?=
- =?utf-8?B?VzUwd3JpQUdMMFoyRjBUZm8zTXNmbU1SNlh5empoWXVma0ZiaDV6M3RlNSsv?=
- =?utf-8?B?bHlIMW1rYWdUQ1FmRHJnZGpHL2daM1llZG14ZXM5SC8rRGpBRnFlVFNrL1U1?=
- =?utf-8?B?bmkxN0JaL3FXamJqY1ZrcWVkWmZ3WWVTY3BlRHpRdzlvWThBdGU2ajNwSFdy?=
- =?utf-8?B?c1ZPbGFLWHptSHpNS3NQQW4wajlDNGpwb0tOVzJUd2RVZENOVklDVnNkQkRw?=
- =?utf-8?B?SXMvdWViK29IZy9teHBrOHFoWnlUVllLZ3B4YTBNVEtxYUhoUEcydjJIRUpH?=
- =?utf-8?B?UmV3S3lkeE1DbjhNbGRrWWNGWWErTkt2Tnh3SGZmV1FKTXJ4UDBFSWREZlk0?=
- =?utf-8?B?bHVoKzVVSTdCMnFyZVFQQ0VkZmdBRE5iRURBS0RqdjJ5VkR4U0EzemcyaEVt?=
- =?utf-8?B?Ulp4czhpNiszeENwVFVxblZpUmhzN0NHci8vUmNYODlwR3RLTjRqYXdhVU1i?=
- =?utf-8?B?QVc4WlpEaHdCbVkwbjgvaVM3K2I4dzhjbGJEMTU3V2RRc2V1aHprWkI1TCt5?=
- =?utf-8?B?eENMUmRGc05uYVhSMlBuQ1YxMzFGTTdVeUlNUlRuaHFoQ0JjTFdYSGtBeXlv?=
- =?utf-8?B?dVgybU1TekY3YS85OUFuQnpST1pMVTZmVmlqL2VrNnRiWFhTM0wwYzJ0d2pW?=
- =?utf-8?B?a0VKVlJKaGZ0OXZWaWxVbmVpNEh5Q1NzS3pQNTl6TTVSWjl0VHhmelZabWxP?=
- =?utf-8?B?K0k5T2F4bkRpUTlZeHF4QjFMckdmRUEwczlCZENYbkFtZ3dvMkQwRmhJWVRM?=
- =?utf-8?B?VHdHamM0NyttdFBCQ1FBYlJIZUJQL0hvQUo5MU5nQVlTOFV1K3NvZXlrN1V1?=
- =?utf-8?B?ZWc0TGVhdHIwdW1wbGxSZUZBajduUUcxd0hrK0gxcm1yV0JOby9hNHdicXZZ?=
- =?utf-8?B?dEdqTU5odmpzczJBemE3VEc5UWNCQnN2ajhKV0NaN0JySUdSVnpEcm1BM3Rq?=
- =?utf-8?B?YkFKZlYvV2dKN3dwUXdoQi8rUFlOdFpIbFJ5b3FrQ1JZdVZPNVNTdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 279988e7-d809-4ca9-912f-08df027760b8
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2026 07:06:25.7904
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G0bHCXDrMBrrp0sSJUaJZQ7uUWCqSPWwpWAqE+auTHkMBuDKYfsbNaSgp8lZKMdLO7ArA1YtxKvbLdKJJWDLGg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8080
-
-Pranjal,
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/5] x86/mm/pat: CPA fixes
+To: Mike Rapoport <rppt@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ David CARLIER <devnexen@gmail.com>, David Hildenbrand <david@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Jiri Slaby <jirislaby@kernel.org>, Juergen Gross <jgross@suse.com>,
+ Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>,
+ "Liam R. Howlett" <liam@infradead.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Nikunj A Dadhania <nikunj@amd.com>,
+ Pedro Falcato <pfalcato@suse.de>, "H. Peter Anvin" <hpa@zytor.com>,
+ Peter Zijlstra <peterz@infradead.org>, Shakeel Butt
+ <shakeel.butt@linux.dev>, Steffen Dirkwinkel <lists@steffen.cc>,
+ Suren Baghdasaryan <surenb@google.com>, Thomas Gleixner <tglx@kernel.org>,
+ Toshi Kani <toshi.kani@hpe.com>, Vishal Moola <vishal.moola@gmail.com>,
+ Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ stable@vger.kernel.org, syzbot@syzkaller.appspotmail.com, x86@kernel.org
+References: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
+Content-Language: en-US
+From: Atish Patra <atish.patra@linux.dev>
+In-Reply-To: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
-On 8/24/2026 5:53 PM, Pranjal Shrivastava wrote:
-> This series forms the second half of the subsystem-wide ATS robustness
-> updates. The first part (focusing on the core subsystem, Intel, and ARM
-> SMMUv3) has already been merged upstream [1]. This half addresses the
-> AMD IOMMU driver and standardizes the PCI ATS API.
-> 
-> In v2, the series has been significantly restructured based on feedback
-> on v1. 
+On 8/13/26 2:01 AM, Mike Rapoport wrote:
+> The first three patches are urgent, the third patch fixes BUG() reported
+> y several people and it depends on the first two.
+>
+> There were no bug reports that the last two patches fix because bug
+> manifestations won't yell at users.
+>
+> TL;DR version:
+>
+> There are a couple of CPA fixes floating around:
+>
+> Denis Lunev fixed races between split and collapse of the large mappings:
+>
+> https://lore.kernel.org/all/20260715183453.2381141-1-den@openvz.org
+>
+> Lorenzo Stoakes fixed UAF caused by races between CPA and ptdump:
+>
+> https://lore.kernel.org/all/20260723-series-vmap-race-fix-v6-0-8cc77dcc0018@kernel.org
+>
+> and an issue with stale page tables in IOMMU:
+>
+> https://lore.kernel.org/all/20260721-fix-cpa-kernel-pagetables-v2-1-2b255deed710@kernel.org
+>
+> Mike Rapoport fixed a check of RW attribute in lookup_address_in_pgd_attr()
+> used for the verification of RWX:
+>
+> https://lore.kernel.org/all/20260715144519.934289-1-rppt@kernel.org
+>
+> Pedro Falcato closed a race between text poking and collapse of large
+> pages:
+>
+> https://lore.kernel.org/all/anCK3eWFMwZqq5ka@pedro-suse
+>
+> Some of the fixes got merged into x86 tree, some of them got merged into mm
+> tree and some are still hanging in the air.
+>
+> The changes here are collected from all these fixes into a single coherent
+> set on top of tip/x86/mm:
+>   
+> * fix for races between CPA and ptdump causing UAF
+> * update to the fix of the race between split and collapse of large
+>    mappings
+> * fix for races between CPA and vmalloc_to_page() in text poking
+> * fix for stale page tables in IOMMU
+> * fix for effective RW computation in lookup_address_in_pgd_attr()
+>
+> ---
+> v2 changes:
+> * rebased on the current tip/x86/mm that includes peterz's changes for
+>    DEBUG_PAGEALLOC
+> * added fix for CPA vs text poking race
+>
+> v1: https://patch.msgid.link/20260728-cpa-fixes-v1-0-2ed2352300b3@kernel.org
+>
+> ---
+> Lorenzo Stoakes (ARM) (3):
+>        x86/mm/pat: acquire init_mm write lock on collapse to avoid UAF
+>        x86/mm/pat: acquire init_mm read lock on attribute change to avoid UAF
+>        x86/mm/pat: allocate split page tables as kernel page tables
+>
+> Mike Rapoport (Microsoft) (1):
+>        x86/mm/pat: fix effective RW computation in lookup_address_in_pgd_attr()
+>
+> Pedro Falcato (1):
+>        x86/alternative: exclude text poking against change_page_attr()
+>
+>   arch/x86/kernel/alternative.c | 39 ++++++++++++++++++++++++---
+>   arch/x86/mm/pat/set_memory.c  | 61 +++++++++++++++++++++++++++++++------------
+>   include/linux/mmap_lock.h     |  2 ++
+>   3 files changed, 83 insertions(+), 19 deletions(-)
+> ---
+> base-commit: 7da514d819a0afb148634aac92b3d190f34947c3
+> change-id: 20260727-cpa-fixes-d3c73c075672
 
-Overall this looks good to me. We did run our CI w/ v2 and no regression found.
+Reproduced and verified this series (patches 1-3) on 4vcpu guest running two different kernels
+1. mainline (commit: 77ae27fd98f3)
+2. Ubuntu Resolute 7.0.0-26 (production kernel hitting the issue in a VM)
+
+The Reproducer consisted of
+1. A debug patch a cmdline-gated stall between the two *pmd reads in vmalloc_to_page()
+2. One taskset-pinned insmod/rmmod worker per module over stock cfg80211/dummy/veth modules
+
+With the above reproducer, both BUG within seconds in unpatched kernel.
+1. Resolute in 0.71s at alternative.c:2564 (BUG_ON(!pages[0] ...), RAX=0)
+2. mainline at alternative.c:2473 (BUG_ON(memcmp(addr, src, len))).
+
+With patches 1-3: zero splats across 10 runs each (600s/11,378 module load/unload cycles on mainline and 1200s/55,980 module load/unload cycles on Resolute).
 
 
--Vasant
+Tested-by: Atish Patra<atishp@meta.com>
 
+> --
+> Sincerely yours,
+> Mike.
+>
