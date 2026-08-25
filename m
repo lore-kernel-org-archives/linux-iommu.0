@@ -1,82 +1,78 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26B6248C3E3
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 17:30:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46F1338D407
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 17:35:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787679015; cv=none; b=D/kDvVhJq8S4Y5CnA1YHjo7RNWOPnvZ0Navy/IvY2R+B1b3+DiqBTktesd5LYsIWhiv9joRgTphLacdrLPnnIQG2mQOij6oaHQBvWLB7ZTQpByBULNZHPy3JdssMcjzuZyCcosSXxI3M+Rja8pN9FfyaOqciEdiPnWOu78oP7TQ=
+	t=1787679339; cv=none; b=P6nEBZNxcF8M1We5QwMFhhm/9qlRFuuTW1v+lpo2aopiwWYLcQd42CWo1EMz7TxoZEPRi4TtI+r7G/VVaQPWlOC8sm+lprHI7ONAOQvqkpmMv+Kdy2+Q+a/8m6mXxXkGRsiQDU30UvMSwRWO72AXzV33vIBt7WXJqeCGaNFQQIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787679015; c=relaxed/simple;
-	bh=WF09Bx2mtfrt6hRVd0SLFSWF4rEJup3wBMbdU8OJyJ4=;
+	s=arc-20240116; t=1787679339; c=relaxed/simple;
+	bh=VGDDNEzdcpOazILVBmVrGlbpQtUqztuHvLbCit3KQoc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kMfF1OUtcdKLrhnmtlx0k7GfW88qzNWcuZfiB5oBa4KiL2DLpDHskUYaFyjuRfLlzBnPJWABMY0xlrO03GFMSNIExvVzi7+8yiFkzl+20irPeeSGc62u+G+L416Z/BgqPD6wWvsPCdDwACqvhGMJkP+6TOl/3SVXVTzHv/hTf7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=W1BH/euZ; arc=none smtp.client-ip=209.85.214.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=cWFqnDeKhjQmJ9zp3ySz9dHKfTtGTOz2mDilA1rA0lYYrro+PtnhzDzVgGNbc7VWRShqZsAmMVLhVUTfGQBLqvFmGCgFczMKFaFGkLbEekUcSeHmEWWbUotrIok6yv4BPCtApWWPS3iP4grrPjMFWAXlBK4mZ3WVwJea9HtjQV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SdrFIPw9; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="W1BH/euZ"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2d3b445a84fso6145ad.1
-        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:30:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SdrFIPw9"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2d3b440b97aso7295ad.1
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:35:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787679006; x=1788283806; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1787679335; x=1788284135; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=8wBJpCqawgcwqwfKU05d1Z2ZrVuf5nK5DNpdSKbZyiM=;
-        b=W1BH/euZEBwdEEYBa4x4NK/qjalOxXX1yDiQ+w/uJxIK8wi5MzSrbq8dSsJkZPqmQ9
-         iBA8n9EMAAHXogyU4VDh8fYewN9HECsRLbXsD186IbxHUM/KeN3PAbE51t+SsuOF5q8P
-         7fMvMBq7JFlO9x2f5NHnfZ9cmuHQQFsy0cm3zcB/ztq0xTzBYdkycg3HCoMgKr46d3IG
-         qHp/Xs7JPTpZCM5tOL0tjBbBz7yc14j3S8r53y1k6V/YttLO7HjctxdIRbb7Fna5/lU2
-         bVWyyRe2i4AY9dVB3OevbDEjnAghP3KgD/PqxE1YwhRzEjwm3YxQ+sPtqqhqBX0QceB+
-         Yytg==
+        bh=Gwb8vYO3uznd15Zsf6rDYA4qtHhV4Fr7KW8splPiq7U=;
+        b=SdrFIPw9Sjl/zHVC3bR4Fx1JmYM3xVtlSS2uWa6gYobqiAZmyMr6Cgndpylhok81Q4
+         hQq6mshkYV5B3m3+P4z8nzWxk+EJ1fDqfLo+fURbjeDC/8aHmh+qe0Wa0X7mHBKIFFvA
+         yZNYXIYTzwmshZ4blqDgAiuM1ZglRsSXT3DfR2hVbUGIkO3HcK0jNk8TxT1B2J026azr
+         YQmnVh/OZh21zY68GI8Z85oHR0v3hykoBTYRhojuxGPPBXi7/UVJtRXhASqGRS4kSJu3
+         YQ3DupvZKCHlAVJGaocqFQP6F9phYAVR3yhgRMsrBL9LgkCUBAZNH4AF6fgP+9Qmfw0Q
+         3B3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787679006; x=1788283806;
+        d=1e100.net; s=20251104; t=1787679335; x=1788284135;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=8wBJpCqawgcwqwfKU05d1Z2ZrVuf5nK5DNpdSKbZyiM=;
-        b=EeRIjsBpEyYBkZuSi3k+wFCVTTryAkHx675qzv9BgdVe6Yi+KGkkG+sG1eKZD67pyl
-         zmvDxJgXi348LachiOeRf4L0DxyuHf30D86Y0lbjVUdttj0gC9Ip9Qe7XGTEepVwLzlb
-         CGz/24Eu85Ict0RVMVX4jIl9nrWB7U2lSq5Go/yJN9K0rJU1pQ6F13+tlNecd6MGvlQZ
-         KM7ex1/gp3O6KRLFB/b9EBPgeKdfGnjLcCVKNuqBQ+30V7pjFTtV3ZQFtXAkvbp13pRD
-         ni5l2Ds3VRF0HQ9GbeTRkBJhNwDA5/NlBVLFcIifSkD7Gx2rc9kq0Mv4jZr1Tx9V1wMY
-         MWQQ==
-X-Gm-Message-State: AFuF++ndSOngjOuX1ShpGqywR1cQX+v7C7JwzQG/xK0RM/hWWLmwEUto
-	1MMFH2VORmu+uBSQy86jMQxiE1LDNNzxvURvPy+SFwoK0YfCdLz5SwBN06aodp20gw==
-X-Gm-Gg: AR+sD12Fs4/AxECQs0PwHMSx8JcNM46XhCbHOWCKZcSdNNqFBROAatogml1+LaC2+nA
-	ySJo+Vi7xQvickVyAg1Tz4PgSEHUvznFsIyyKC2q/21pNx2ihRDAwSyPykLePrGisTbdg4NYa5/
-	7R++2ejgZip694V08b+koFr4GaWBj22REu0myEC7YqJ1Z2CDQHcBCOYh5lZXyEGSUZgNPDqtNfU
-	zM1/wZyBhxykSa06zvA6Su+3MxBmPdVm9jzrt7loP8OX4zy5r+zpesQRkrdE5tTBuCh7p15BCo+
-	d3Gv+SAZEcEvmljXU24kJ6r7ii6XgVzqmk9AywexWzz8xaRfcmO3FWZOoP5q3xxg7Aq+1rsRWfQ
-	G+q/AlO0HVqhnUStWdq9M2+xHtbwdVuH+ETlCte43Ypn7GL0StDmamc2GTKUqo5miFP47PhC+wY
-	lEaYKLZ1GOJvICtLQg0p9IvnSTDfQvSYRtBO3jlywWcEPpQr06mAcq6mn0Vqy3YlYiI4FeW9cIg
-	wTPC2EJORxoCNSoL9zNAkP4zJBWtKcVvcNF3w==
-X-Received: by 2002:a17:903:acf:b0:2cf:4353:f117 with SMTP id d9443c01a7336-2d6e036d4cbmr8058505ad.0.1787679005676;
-        Tue, 25 Aug 2026 10:30:05 -0700 (PDT)
+        bh=Gwb8vYO3uznd15Zsf6rDYA4qtHhV4Fr7KW8splPiq7U=;
+        b=rKdLavbuxpKNap6xM2X4WWdQ6BHp/bnQXbPG1BZO73pG3b6dbF3+rHCI00dWJWOOQ8
+         aDiZ/5nxyE5lHTs6iJqrLcKxMpL+jmLf+drLqeoyP91rWShF60jpQak47q4bYAR554km
+         k7iR5qXvAg9ZusdosBs5DkxlLQmDPR7cRwlzvECL/loEHd0pWYHWJxi+zKEHLguuoFvq
+         bYUh16EejPpr3lDfP3ZO/z6rljwE5LeBZkeW4eAHcrY7Qq2LGhqhuuSKkdXGZ5LvAcp6
+         2I1TpH55TEVfODYAupRrn6SnoVH3mDFkf9Px3X+18IwymsXrL2RkXOvEcymGhJ7hyGGS
+         4r2w==
+X-Gm-Message-State: AFuF++n6cNomtH+IQXuOYUcmO3oBDeY0kQLCA4KwmDnm97MqPmJT/DJm
+	biRHQXoOyyL3SuY88yTNHJrLvcqqJIJ9XMjCd476ce5H/i5AxsgatFOfVL/g8ivFxA==
+X-Gm-Gg: AR+sD13lFfGN1ua8oVKUzg2V5f4deh4kReerYuw96fg2eiTLiJrfERZVcF9H6FkPLxz
+	yJPoRTwTt/s+vOvYXv7Nr5Z5W2WDM4X0Oi+TgmNcKok4TAhlZp5FKMI84bLGi6wQXnjVFvyyiyC
+	g21xVan/SKoKDJbq47QIt2ZRgNlvly3qWmXawmZNEkhw19n+eJdfYbZ+ps5QLXdkBBJLv5Rk8Kn
+	78hHcivGU5vmax0uN1ZsWOL8SCKhW6cPOir5fhPMMVF4+CLgCbZNbxkjYtVmDAi3+jctwsnecpo
+	kTt3ZALvrtiAfDEEMNFlsFwRUe1KADSHMtafVWB6eXtfhEOowDEXvNIEaHy02a5sUUmY0emVKO0
+	LuBHfeBoDsHLLTgaSSUiHwJO0jRLi5NokO3bWn6QkS+igodgIhIjvv7eRjSBUGh3A1Yflpzqt44
+	TEgsmwWyOdyAWlo3pS7EYPlP4ZjRdU/EW07wtmbJGhMh7PwV5QPHhyFJj+vuaO6fC9cfunw77g/
+	JbCvJWvQw4z2HanQUjfQeDnvA==
+X-Received: by 2002:a17:903:8c8:b0:2d5:c090:3810 with SMTP id d9443c01a7336-2d6e0518b75mr9553085ad.2.1787679334305;
+        Tue, 25 Aug 2026 10:35:34 -0700 (PDT)
 Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39662c80d6csm1544432a91.1.2026.08.25.10.30.02
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39668767d65sm579978a91.8.2026.08.25.10.35.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 10:30:05 -0700 (PDT)
-Date: Tue, 25 Aug 2026 17:29:59 +0000
+        Tue, 25 Aug 2026 10:35:33 -0700 (PDT)
+Date: Tue, 25 Aug 2026 17:35:28 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Ankit Soni <ankit.soni@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 2/5] iommu/amd: Fix DTE clearing and rename
- iommu_ignore_device()
-Message-ID: <ao3RF0w_AXo5EXxv@google.com>
-References: <20260824122347.1588592-1-praan@google.com>
- <20260824122347.1588592-3-praan@google.com>
- <178759520117.3131778.15279605903087565179.b4-review@b4>
- <ao1vJxkZsJpr1qXG@google.com>
- <20260825114916.GT244917@nvidia.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v9 01/12] iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
+Message-ID: <ao3SYLiFAQnsfJGb@google.com>
+References: <20260728210928.1050849-1-praan@google.com>
+ <20260728210928.1050849-2-praan@google.com>
+ <178767577112.3356902.15076197547390630060.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,53 +81,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260825114916.GT244917@nvidia.com>
+In-Reply-To: <178767577112.3356902.15076197547390630060.b4-review@b4>
 
-On Tue, Aug 25, 2026 at 08:49:16AM -0300, Jason Gunthorpe wrote:
-> On Tue, Aug 25, 2026 at 10:32:07AM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Aug 24, 2026 at 03:13:21PM -0300, Jason Gunthorpe wrote:
-> > > > [ ... 52 lines skipped ... ]
-> > > > +/*
-> > > > + * Invalidate a DTE by clearing the Valid bit first.
-> > > > + * Note: Lockless; Not to be used on a fully probed
-> > > > + * device with live dev_data.
-> > > > + */
-> > > > +static void amd_iommu_disable_dte(struct dev_table_entry *ptr)
-> > > > +{
-> > > > +	struct dev_table_entry new = {};
-> > > > +
-> > > > +	write_dte_lower128(ptr, &new);
-> > > > +	write_dte_upper128(ptr, &new);
-> > > > +}
-> > > 
-> > > No need just call update_dte256() with a 0'd new. This is how all the
-> > > update flows work, and it flushes the DTE which this looks like it has
-> > > been missing all long.
-> > 
-> > I originally considered using update_dte256(), but iommu_disable_device
-> > is called from the early probe error path (err_deinit).
+On Tue, Aug 25, 2026 at 01:36:11PM -0300, Jason Gunthorpe wrote:
+> > [ ... 84 lines skipped ... ]
+> > +	/* Setup interrupt handlers */
+> > +	ret = arm_smmu_setup_irqs(smmu);
+> > +	if (ret) {
+> > +		dev_err(smmu->dev, "failed to setup irqs\n");
+> > +		return ret;
+> > +	}
+> > +
 > 
-> There is no reason to do that, the DTE isn't written by
-> amd_iommu_probe_device(), so there is no reason to clear it on an
-> error path.
+> The sashiko remark makes sense to me, we should not enable interrupts
+> until everything has been initialized and things are ready to go. So
+> this is better done after the device reset call, which is the thing
+> that is setting up the queue pointers in HW..
 > 
-> It is wrong to write to the DTE table without flushing the
-> HW cache.
+> I'm not sure what to make of the MSI register ordering around kdump
+> comment.. Nicolin?
 > 
 
-I agree, but I wonder why the existing code used memset here 
-(in ignore_device):
+Ack. I agree with Sashiko's remarks, we'd need to call this within
+device_reset right before the SMMU is enabled (same place as today).
+I factored this out to avoid setting up irq handlers multiple times
+across a suspend / resume cycle (for e.g. we can't request_irq multiple
+times for the same irq). Otherwise, we'd have to de-register IRQ
+handlers in the suspend callback. Maybe we could do this ONCE based on 
+some smmu->inited bool?
 
-memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
-
-I was thinking it might've been done for probe failures in a kdump
-kernel (normal kexec would've called shutdown for clearing all DTEs).
-(I see this was added long time back and existed when PCI segments were
-added [1]).
-
-Are you suggesting to remove the DTE clearing from this path entirely?
+> But the refactoing looks fine to me
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> 
 
 Thanks,
 Praan
-
-[1] https://lore.kernel.org/all/20220706113825.25582-23-vasant.hegde@amd.com/
