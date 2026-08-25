@@ -1,162 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E3926ED46;
-	Tue, 25 Aug 2026 09:38:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C1C3E5EEC
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:06:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787650682; cv=none; b=VMrzHsDXKchH7cbF9k8pZhLLMds0Lp47r5sErvtABQZjRtVaU5X45+Lmav9lBBFvlHw4ZDEsKQDCe0eonIvEvyk1iDPxJZF1gfgh8qcw0vT3yTYs42lzTmYmFeGoXDK/bqomDS76J97ZSXhlh5BRQbm+gvraGfwg2enXTDCllpI=
+	t=1787652379; cv=none; b=Lo210D4fyZ855YgvAZiWiMCBNBSdTKi7SxMgvMPJQannUpB2zcpRPtjUmzaMSo03z1ADn7vqIRDke6QIXLo+V/NZwYQf4rF+WGXX0TX3ROZa85fAARrE1u8dgYojmq/vbI6g9haojdtt07SGjFKwegB07C4c0MiH3d2Vskop8mc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787650682; c=relaxed/simple;
-	bh=fsyUPCOMWirZH7lhIrLk49oBm6i10sLeX8WRTXlnxZY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=j09HtkJ8AodwD8erS5pbURxjPqfumBQavOxq+Jul5vHS2Kfa2DG7HJGj1EqO1Y/9KXIzgQFTCHkgSEp/DtkBO+kgj34Nh7fRl0wTI8JIk8/G+VlWijzsf+W5rh4KC03uGcJW2eDFyCnADpdqMKtxj8TGar7TU3pV9WURaPAgs4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XjGu6Cl7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787652379; c=relaxed/simple;
+	bh=kC0aTN0K7u9RCDOE2X6e4KofmqQ39JXeOz9FhSIz23Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=R35zLxY69CbkxdMwRHWQLpa8kumlwRBEglajKp29OFZ8WT3c50K750MJbBFLvFXTT3y1TwQidoWBX6CwoZD5m3NTiYpdNkviOAgdTme17UnDX6FA+DPVNC6acHFvOpyDoICWTnqlQ1dmtfHnMGg/lyscSsoe7KtvggVzl7x37Cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ECaStI30; arc=none smtp.client-ip=209.85.167.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XjGu6Cl7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D2391F000E9;
-	Tue, 25 Aug 2026 09:37:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787650679;
-	bh=uHMbwppkoGY2sHxRgCTh9Ue6zxQIMWpcljbfz+/NqZQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=XjGu6Cl72Sv4ZQ8ciSrINAMtN6nEKV9RpdGUJHvBp+azwFwyeB1z73CkMeIrUmeoJ
-	 LWn0l23yBBk6KjDAZIqAc4NB3RL272gxTQzY5cBfv0B4Gbi0WzKeLX0TFUuXcA7tiU
-	 SqrXzLtr2+8QqlAcSiF0adrEUoRlUDQJMglWQSgSynVLwwovlJr5oYCdEzIWgFlHYQ
-	 m4nyxFRlpOTfwNHd7jwcSeMtzTLJ8Z5vBici7PAS8FF11OI+Q5XqWRYN9JGaX5UGTb
-	 BqUGY9LP/kyTJXYVFFY+WwZyp5CgpteabzL7IL1+EzknQkS9T3+XTIsVZnjSH/0h6M
-	 hIioTqJLOg76g==
-Message-ID: <0a00c5c4-5dca-4957-b4cf-2a52efb2deb1@kernel.org>
-Date: Tue, 25 Aug 2026 11:37:50 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ECaStI30"
+Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-4a45b3f0becso4166624b6e.1
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 03:06:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787652377; x=1788257177; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ITNgIlTwsBrNBLrYNkaCeP0gJOrZpKRql3oj7U2AlDY=;
+        b=ECaStI30AwVW9OM7EI4HihC1FaLfA9JkSKjCjzhARFCXyGoP4NKL1RFuB9Z2/3QE6y
+         fgqKaSWbeU/X2PjQh0KHWphnQwUag84dFs2dj5X8wqhMwGzCKwUEV0vkRnoGK3EA1l8l
+         DNdmUT7p51v0sXhnrDy3aQhHiip5IAd3A3eY9pqQPLbmDAaNXxtCDbR4kJ2cx6Gk+aUl
+         3CSaPL8PhxDQgzJ0dxcC8dmpj5h6YKR6lUnuP0w/aeBSgZIigW7vbwYEiMHkvNZRxIzG
+         SEr2etLue6RPigZpt1/Glx3xs5gLVfnN0I7V/edvmpheoICZqz/4ZLugv9wS+WOci5s1
+         n+5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787652377; x=1788257177;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ITNgIlTwsBrNBLrYNkaCeP0gJOrZpKRql3oj7U2AlDY=;
+        b=Ik498nYC+3AiU6HwL5T7eL4/ia1t6zR5YL1giqVoLUPXElqMR/hAB4s+1UCM0j6EVw
+         4+Kig4UFYQYFX+qBDuWrtrCuY95bll9XBvHj69N87K/2QFkuW64x3UG/V/vlTWq8guUK
+         7tyEOIZZQIczIWPJOK9LUC4hYUy/ZbwPLPjxnYMA2GHyIW12+5gzu/omryh9Yk+Vxbaw
+         SIjy0roUoaelkIvKd/OcoswcZXMXIEajud7WWt5wxObFo67lEO5UWQpNxuD284LGIT2t
+         WvYzgdpYXNJ9iuRGRsjOGlMwFrbbPErXiO/Y66GnivHpI13e8VwOoiPzKy4oufUeEGXX
+         ALSQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqE5ufiYJzA6E11hJWAx5PHAi1Cn96N9qlQQg3WIAoYu0AZtFbmz4qJ/JUyqQgGssg0zBihAA==@lists.linux.dev
+X-Gm-Message-State: AFuF++kfCs30rpK6w67I8J1Cyrq/UhN5xQ5AJ3cAuS2qTDvT7t07G7UT
+	FakBCj9qPKIG5whprVOMwJ/wYzVwWpEA21it8/rJKRkJBMdgihlp8uZM
+X-Gm-Gg: AR+sD11JopXkjd9MtLNnUZInVgCCaq7ughakTukxEG59hQRu8cYWSm2+QPPLpPFh/dq
+	iob57Ec91l6st9kKloBOwvTwoHg3j54VSezi9V6ZyXx/kPar/QWYwDxYsTzoWmoZry03kPq2mMb
+	krxtGzJJTtmwM0B/TWsIp15c4Q7BXBhRWT0UIMDuMXvacIxWUC4Z3wEzD9o3RAaTCaHRBGD6YuR
+	ZlZJ31UOFG6U83OKbtjOsgkogQ5Fb6Rk2IrbrqjPFNQsKp8Pr54IFTNFuaK/uaVoDt8uCefyVJA
+	mjHyk1vHsqlY7z0Esb39JJH73Q/+CCHbVo6cEGMSnXwvsr3WEH9btIblA6cJdSWQNad5XCJFp1y
+	/IOqJ5Tb6yzp9uzYbHQHQ8XFmLstJyV3dTm9++uX/CLKwlJF+9KMqmyufPgOyTE8ind179jAMyQ
+	+9ETQ/wJX4/AK0cdQk5CkV33qhcrH6bfVXbcVqMO5HibPjpk62bKCAPFN3JpumOH/+Eqsns8PFI
+	TJy0LKMW1c=
+X-Received: by 2002:a05:6808:1201:b0:4a3:3108:866a with SMTP id 5614622812f47-4b2ef480315mr28341239b6e.17.1787652376848;
+        Tue, 25 Aug 2026 03:06:16 -0700 (PDT)
+Received: from volcano9f8e-host.amd.com ([165.204.217.251])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14186183f31sm29502922c88.13.2026.08.25.03.06.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2026 03:06:16 -0700 (PDT)
+From: Hemanth Selam <hemanth.selam@gmail.com>
+To: joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	jgg@nvidia.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/amd: Fix ineffective error check in nested domain allocation
+Date: Tue, 25 Aug 2026 15:35:54 +0530
+Message-ID: <20260825100554.2787577-1-hemanth.selam@gmail.com>
+X-Mailer: git-send-email 2.43.7
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/5] x86/alternative: exclude text poking against
- change_page_attr()
-To: Mike Rapoport <rppt@kernel.org>, Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
- Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
- David CARLIER <devnexen@gmail.com>, David Hildenbrand <david@kernel.org>,
- Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Juergen Gross <jgross@suse.com>, Kevin Tian <kevin.tian@intel.com>,
- Kiryl Shutsemau <kas@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
- Lorenzo Stoakes <ljs@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Nikunj A Dadhania <nikunj@amd.com>, Pedro Falcato <pfalcato@suse.de>,
- "H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>,
- Shakeel Butt <shakeel.butt@linux.dev>, Steffen Dirkwinkel
- <lists@steffen.cc>, Suren Baghdasaryan <surenb@google.com>,
- Thomas Gleixner <tglx@kernel.org>, Toshi Kani <toshi.kani@hpe.com>,
- Vishal Moola <vishal.moola@gmail.com>, Vlastimil Babka <vbabka@kernel.org>,
- Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org, stable@vger.kernel.org,
- syzbot@syzkaller.appspotmail.com, x86@kernel.org
-References: <20260813-cpa-fixes-v2-0-39b4ff90f91d@kernel.org>
- <20260813-cpa-fixes-v2-3-39b4ff90f91d@kernel.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260813-cpa-fixes-v2-3-39b4ff90f91d@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 13. 08. 26, 11:01, Mike Rapoport wrote:
-> From: Pedro Falcato <pfalcato@suse.de>
-> 
->  From time to time, the following BUG can be observed[0]:
-> 
->> kernel BUG at arch/x86/kernel/alternative.c:2576!
->> Oops: invalid opcode: 0000 [#1] SMP NOPTI
->> CPU: 0 UID: 0 PID: 355 Comm: (udev-worker) Not tainted 7.1.3-1-default #1 PREEMPT(full) openSUSE Tumbleweed  8c1795b03ec64f997e57a8ad38b1161e3b98da64
->> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS unknown 02/02/2022
->> RIP: 0010:__text_poke+0x2aa/0x450
->> Call Trace:
->>   <TASK>
->>   smp_text_poke_batch_finish+0x2a7/0x320
->>   __static_call_transform+0xb7/0x220
->>   arch_static_call_transform+0x5b/0xb0
->>   __static_call_init+0xe9/0x270
->>   static_call_module_notify+0x11f/0x150
->>   notifier_call_chain+0x61/0xe0
->>   blocking_notifier_call_chain_robust+0x63/0xc0
->>   load_module+0x1c92/0x20c0
->>   init_module_from_file+0xd8/0x140
->>   idempotent_init_module+0x100/0x2f0
->>   __x64_sys_finit_module+0x71/0xe0
->>   do_syscall_64+0xe1/0x610
->>   entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> 
-> which matches the following BUG_ON in alternative.c:
-> 	/*
-> 	 * If something went wrong, crash and burn since recovery paths are not
-> 	 * implemented.
-> 	 */
-> 	BUG_ON(!pages[0] || (cross_page_boundary && !pages[1]));
-> 
-> This can happen if vmalloc_to_page() fails, for any reason. Such can happen
-> if text poking races with CPA, which can possibly result in the collapsing
-> of page tables (or breaking of PMD hugepages). It is not a problem for most
-> users of vmalloc_to_page() (they solely own the vmalloc'd range) but, when
-> CONFIG_ARCH_HAS_EXECMEM_ROX=y, various modules own a single execmem vmalloc
-> range, and can call set_memory_*() in parallel on it. This can happen to
-> race against __text_poke and cause havoc in vmalloc_to_page().
-> 
-> Fix it by excluding against CPA using the init_mm mmap read lock.
-> 
-> Fixes: 64f6a4e10c05 ("x86: re-enable EXECMEM_ROX support")
-> Reported-by: Jiri Slaby <jirislaby@kernel.org>
+amd_iommu_pdom_id_alloc() returns an int: a domain ID on success, or the
+negative errno from ida_alloc_range() when the ID space is exhausted or
+memory is short.  amd_iommu_alloc_domain_nested() stores that return value
+in gdom_info->hdom_id, which is a u32, and only then tests it:
 
-FWIW
-Tested-by: Jiri Slaby <jirislaby@kernel.org>
+	gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
+	if (gdom_info->hdom_id <= 0) {
 
-We have not seen any BUGs since applied to the SUSE's kernel.
-https://bugzilla.suse.com/show_bug.cgi?id=1271202#c26
+The assignment discards the sign, so -ENOSPC becomes 0xffffffe4 and the
+test never fires.  The nested domain is then set up with a host domain ID
+that was never allocated, instead of the allocation failing with -ENOSPC.
 
-thanks,
+Keep the value in an int, test it there, and store it only once it is
+known to be valid, which is what the other amd_iommu_pdom_id_alloc()
+callers already do.
+
+Fixes: 757d2b1fdf5b ("iommu/amd: Introduce gDomID-to-hDomID Mapping and handle parent domain invalidation")
+Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
+---
+Verified by driving amd_iommu_alloc_domain_nested() directly from a debugfs
+hook, since the normal entry point needs iommufd to request a nested HWPT on
+real hardware.  No error injection was used: the harness allocates domain IDs
+until ida_alloc_range() genuinely runs out, then calls the function with a
+zeroed guest DTE, which is what validate_gdte_nested() accepts.
+
+Without this patch:
+
+  NESTEDTEST: first alloc, IDs available        -> success, hdom_id=1 (0x00000001)
+  NESTEDTEST: second alloc, same gDomID (reuse) -> success, hdom_id=1 (0x00000001)
+  NESTEDTEST: exhausted the ID space after 65534 IDs, allocator returns -28
+  NESTEDTEST: third alloc, IDs exhausted        -> success, hdom_id=4294967268 (0xffffffe4)
+
+With this patch:
+
+  NESTEDTEST: first alloc, IDs available        -> success, hdom_id=1 (0x00000001)
+  NESTEDTEST: second alloc, same gDomID (reuse) -> success, hdom_id=1 (0x00000001)
+  NESTEDTEST: exhausted the ID space after 65534 IDs, allocator returns -28
+  NESTEDTEST: third alloc, IDs exhausted        -> error -28
+
+The successful and the reuse paths are unchanged; only the exhausted case
+differs, and the result was the same in three runs of each kernel.  Built with
+CONFIG_AMD_IOMMU_IOMMUFD=y; sparse and checkpatch are clean.
+
+ drivers/iommu/amd/nested.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
+index 63b53b29e029..f1c7987fc585 100644
+--- a/drivers/iommu/amd/nested.c
++++ b/drivers/iommu/amd/nested.c
+@@ -96,7 +96,7 @@ struct iommu_domain *
+ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
+ 			      const struct iommu_user_data *user_data)
+ {
+-	int ret;
++	int ret, hdom_id;
+ 	unsigned long irqflags;
+ 	struct nested_domain *ndom;
+ 	struct guest_domain_mapping_info *gdom_info;
+@@ -161,8 +161,8 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
+ 	}
+ 
+ 	/* The gDomID does not exist. We allocate new hdom_id */
+-	gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
+-	if (gdom_info->hdom_id <= 0) {
++	hdom_id = amd_iommu_pdom_id_alloc();
++	if (hdom_id <= 0) {
+ 		__xa_cmpxchg(&aviommu->gdomid_array,
+ 			     ndom->gdom_id, gdom_info, NULL, GFP_ATOMIC);
+ 		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
+@@ -170,6 +170,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
+ 		goto out_err_gdom_info;
+ 	}
+ 
++	gdom_info->hdom_id = hdom_id;
+ 	ndom->gdom_info = gdom_info;
+ 	refcount_set(&gdom_info->users, 1);
+ 
 -- 
-js
-suse labs
+2.43.7
+
