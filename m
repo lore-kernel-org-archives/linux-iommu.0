@@ -1,157 +1,130 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011011.outbound.protection.outlook.com [52.101.52.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDEFD3F6C58
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 11:14:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787656500; cv=fail; b=POiNaN7yBG5ERU9cWrygkginUv97wSjuoc3v8AuN3h8R5SPSJjBlJBpp2V/T+BHonMPFjHE5eIvY+WWr1c5QS/+LL5i9fj94oPFkRiFvqL4kfIkQFVy1FUPOnUpy/HGH/r/EqLbhZy1rBIBmZ7XtdKX8y0gzfa1M314+n7QcASQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787656500; c=relaxed/simple;
-	bh=V8cV8AiTWTVOImuQSWbbljqeKLOMOLH90tdoefF46Ms=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ppz7k9CTLGmpj3IEJfCgq6YAgXS2Yphei2pUjyxgL2Pa0iTKgRQLWuIMp6IH8Qz2aL59x9rgmqB8f34+av8ZUJ+HIxzyymch8/xU5KVZtw5UaTaymxNEOnupDlKWNhNMd8scbmuay9jlIoMjnn/yxgrYgv1rNqyq85/BpPUFsns=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=S+TifQji; arc=fail smtp.client-ip=52.101.52.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F873FD14F
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 11:32:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787657553; cv=none; b=gAJr1oRao/g3LFVOuUPAEibcod0vWVLC2L9Vpgn/ykw0tcTUpeC1MJrmXHgn9g3rc5x6X/a5cPYM9WZ+LEke2Wmn1A6Y/awkT5ZygiamS0c9TmsByfi3TTDstLQeMZTQQtWhe2StcSVVHMebbiHTpmEKSWqe37K9H70TuSC5zd4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787657553; c=relaxed/simple;
+	bh=77FV4gAwZHhe5VsNEn+/kHl0xzti0KlAzAXbsklLkdo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rhM9Am9CpYwP88bNZAvxcd02cgO0g01fapG4Gr7bH2MWyV1yNWlEQSgnK+cXLN6TmIDjBdWINZCZv36rX/HDo38AejZMtQle5vZcFaVa3CdxBlrj37bOeDGw4uxLDmRITzsJLGLa4rpihT89hcaMC/FOXJjuRlCk/O1mclvkURM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=QDhOfTGi; arc=none smtp.client-ip=209.85.219.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="S+TifQji"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eEh/hyFQmo6gnCBkWNdUHbTTxrMF0VCwW0q+s8Nu6z2Cv7t5lQsr462XhSkqui8O4Qf8c9pAdrETvC0qSDUeQ7ZAuJOlszN0SW9Sw0Urkm6eIjPSGz3NzvIOOvUzMNLDTsOdH1RurEvCX1417YqUhEG5iPPgc87T6EST7K8gAQRbnJkaExwWBT6eymKjyuCJMOi+PdPQBrLafhtEMHp51zfRviEDo0P0aX6e44JzgCyWPluH2BhdL5D9fJqM9n4YxhyXaSytsDdGnr5eoZMkHKsQuu3Q3y1rZQQxzm59PVit+YniKbXUZYKL9ToPhCp+gs37BjAv0+VoeUjog+indg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jCSrFLzBRgtTvMehuWejCnRVg9jXhJX+zebMrOOLme0=;
- b=dJi30I+xPd/s1POjyhlEcRffvnIWOGxn+M+cX9TBn9+fWdjOJNX7Fdbda7dEnVrUbD6LUaio2WOVGm3dN6SyNwUNvyFlrbO6HqxRsEX+svl/+5xB2JpKMM0vBKf/uTqnB8nBtOVt75KQWYS6nyQnMAuPNbwOXhJ36lLHTNg1oUzcBu2kZd2euei46btSmOKP6g0erZTY/ysrIrj6bfxVMX7iJehJhBsjNVP8jkHSonNdIxEITpFRRhhYEdH9HxgrV85EB5BWvlr2VLejhrPlheLskcx+5r6o9/7oskWSEIWHfh0c0wZUaHnA9dlWR0KopQkrxQ1xDqDgf+8Xy5rkYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jCSrFLzBRgtTvMehuWejCnRVg9jXhJX+zebMrOOLme0=;
- b=S+TifQjiG7DK7BrA+GENPDAx/E7IFJ68rZ7C7SbjL86PsPyOGpQlZuI3PoNyrO8vOtW3wX5EDat8uu+uq/vxC/iPHOGB/T0hz32Fgs645fIdFEzNskYKHg+NeEFY5pw8xhJRs+lrX8+yNMMVZoSYUH2C/QSBDYOlSKRrB79jYXs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by MW6PR12MB8951.namprd12.prod.outlook.com (2603:10b6:303:244::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Tue, 25 Aug
- 2026 11:14:54 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0339.012; Tue, 25 Aug 2026
- 11:14:54 +0000
-Message-ID: <c20208dd-b3e7-4fe4-a1cf-1d671d3985d7@amd.com>
-Date: Tue, 25 Aug 2026 16:44:46 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/amd: Fix ineffective error check in nested domain
- allocation
-To: Hemanth Selam <hemanth.selam@gmail.com>, joro@8bytes.org
-Cc: suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
- jgg@nvidia.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260825100554.2787577-1-hemanth.selam@gmail.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260825100554.2787577-1-hemanth.selam@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA5PR01CA0238.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:1f4::19) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QDhOfTGi"
+Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-8efbafa1bacso26704666d6.1
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 04:32:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1787657550; x=1788262350; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=vVQT3N6kOOE5myTvrMMJJrC2le/iHw4etRZgWkc2XyQ=;
+        b=QDhOfTGiKjhihZ8576HO3woVbv5KfVSoK7stwMDNKiPtQwSJNX13ZuRYAoqfOSwrww
+         gLCpRpBmN6cxtc7UlsH6UB8I3VCmN/c9RA4OkwWWsIZIMiuvs7ZbmqtlruWD5aiiRj3O
+         GUWJrLviv7fAFu0jV+Y0WNo9t2bIoJq2Aw97k3szoxpg576vp3eVFO2/LixzoQqf9K89
+         66ZQlcQaFNNMz9dr9JSdWmzJHvaakeOMjCh8hnMtYtCOpaHsoufbLnD++IXT3+3SP//F
+         l7HH3BfSvDReqRsyKqE9vLfNioV124Dq5RnLO0sIQ2zTVcUwwWbdWmpqZcnGjIsnOb3v
+         ltOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787657550; x=1788262350;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=vVQT3N6kOOE5myTvrMMJJrC2le/iHw4etRZgWkc2XyQ=;
+        b=o+8eWq6eoemMTGeuBY56I3Bvk8XHi0R82Q4dE7QauwAUupmZOFvesi4YDgpe8S3cDQ
+         Rl99UY8BOL6cPi/6EBhla6bZo1Z8UDmruwbQQL6eVcblJloL7mf72uoEJoCaK4bFGpDM
+         mWD7jjUGC+u/bAMLskuxfw3CHe3IbRN1BORH7ws1+Br+H1OnWjpjpRObse2DwXqkz7dj
+         XPoP5Z0Mwee9eiGn94U8i70ITGuHTMtC24i8XPjc30ER5LTMfY4KVRisIuipOFeumvq7
+         6jzqiHh0AZwvVtnFenHxO8+CwsKsU/nYy5fRLIO9CSrUQRVZbWPGeqDYiiuDp+OcDw6P
+         k4+w==
+X-Gm-Message-State: AFuF++nirVt2A4bDSprdB25WYwb6BxY1O94HT1mh4xx/lNB4dBx7aQq7
+	8o6GENbC07Wj3Ww2VAwETLfQ0lq0ZUCqBLk+yhaodBnDIxz9vksF/VmlXxEDe21qd/g=
+X-Gm-Gg: AR+sD12Vi3F0gw7WXScVS8AkmujNQ58tsyuzxI1MQQUrptMz87DkVzB71IeI7csu+Ob
+	oStfl8tm9mYroAvv+Clwtth+pO7uNdityT3LZ22zikiCDs6cs76zP5tIboS73ZqALfbo8MQ9gqw
+	Dtb8/UQVmEQ02dJNZlp6TiCUGPzG/vTsuzhU4NAR9jUGDPsav+xvEFL+xRA+qGTmvXiQPvgzRDR
+	k116KP8zITt8WFd6bX5kGySzEbWxwOARdBw0WFquAp7FvdHwGNhFY9gHtovvAdLSwFsNSBrQalZ
+	dPU/BYhYzr1kLURT9zeWKK3Ax0z3P153ETNhzCKona5YC7NK1fP0NGna0aaIXTRMYddKtSZeQWA
+	/1ZqrlbmvhW7QlI8O3ZX28rMT7qLZkY1qzwZyqi1ByIPVpkY+PcWRsvDEuiQqL9ezAHL/nJYLvR
+	kFYlb73/2ii++sV1QsCSXKUxKFv3ZvCwgMDOvG5rhJV8EiRzi/4LJ9BCi3pIVrSSNBPs1jw/TgS
+	yVFKre3xGNySZDbDALPiyhYrB3epU7L8I0qUFRHAAWzDQ==
+X-Received: by 2002:a05:6214:5018:b0:8be:7779:d1b1 with SMTP id 6a1803df08f44-90c8fa906bbmr219810756d6.30.1787657550233;
+        Tue, 25 Aug 2026 04:32:30 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90cbbb90726sm12891346d6.2.2026.08.25.04.32.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2026 04:32:29 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wypOG-0000000DpSk-3lDg;
+	Tue, 25 Aug 2026 08:32:28 -0300
+Date: Tue, 25 Aug 2026 08:32:28 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Zhenzhong Duan <zhenzhong.duan@intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
+	Joerg Roedel <joerg.roedel@amd.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix page table level calculation in
+ compute_vasz_lg2_ss()
+Message-ID: <20260825113228.GD1449020@ziepe.ca>
+References: <20260825080002.117412-1-zhenzhong.duan@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|MW6PR12MB8951:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3aa9f2b1-95a1-4903-f253-08df029a16a1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|10067099003|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	JnvBz7VrYJO4Om7bgTHp688BuIECpn1V2xu7UkBNtWyAOVd4TScDf9DOIUT6+zga9HBHOIudniPWwFbYGVs4t0B7f65nbcAKacGXs5nExvcv382FYjcLh52oKx3cvpQ91nUjtq6wPxwJZI6V6jc7fdPRLyNlrV8c2tI1P/HfjexWOsEYWLZVu8aloiLeD21aEqaIet/z5FqLy42KE9TONiUTQy4VIs3D12QsiU+hQ51GNwhWDJYXcUp8iv31Hhxb5pxCSy7UYF8IeXKudikSxVhsohkVoaVK86LECSrRef2VUHz4BVyX7eTh6XqpPsvxrMIQDJzT81EMT9CQNUGWdfk4Z3DuaLMBpUW6UYgLh/gl9Q8QuxQRkNt1t3G574hN5OiiXfp/d3PM2mFKFO8pVp5tjOM+uoDwkq6Wcwt8Ewk14SMLmytZsCmLgeknHdsM0PUFlVqNI3gIyTm9BhUyZLrqzpxIBwf5BGKklr4I0seSls//rqf7N7rv8tI4cFCVVCWxoiUT7l2XDotgIhoMOtk3l0GYLc97PN5EGs9L0VgTcdCLC7hjqtYYVqXMXvNSAoUD6lhoUUHtHbI6KD68cxc/uAN1fhqbxvBaS1Kh5UZLjTdrYz8k7GHgNVwqmOxzrzwmZsg+hxy7vG1ujfNDpQ1zB0Trk5EhdDy7QKxPAZo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Q0xFVlNPY1poaTNsVEhtaXdWOGlSS2xIQnF5bGFSK2k3cHArR0lWU0ZmL1ZO?=
- =?utf-8?B?cG00ajY4YmJOWTlrZHBHVzkvdm5ZNW1FU00xZzVFbjc5S01JQ3ZoZFIwdzFp?=
- =?utf-8?B?NW4yUkJNaVBPdXJBWXBoVnlIdk5IK2xWeVNRcElxNjEvdDkwdU5uZHdnNVNm?=
- =?utf-8?B?SGVrVEJ2NVI3TmJCakp6d0tIRGRDdUp4cUpTQ0c3TVpUK2tPT1ZQdnUwU3h3?=
- =?utf-8?B?R0Zsek5uNStUK3RPYU9yWGEwL1RzWnhmYnljbVNUMWh4TGdjRHpFMVV5ejBQ?=
- =?utf-8?B?cU9ZVG9sbWdaNEVGL2JLSGhBclVxY3RIRTJ4V1U4Y2FPdzRmMmRtcDUzODBm?=
- =?utf-8?B?a1JDY05tTzVaZ3UxaU53Y2JBN1Fld1RtUWc1NFpDaFBiNVF6M0tEb0VEWDRy?=
- =?utf-8?B?dXVER3dmU0ZFR21FMEY3R0FBTUVGcnpwZ2JtMHE1Y0FCWkxoUWFhVW12cVZn?=
- =?utf-8?B?TzZxbm9aS1lXb3FJdTBzbFQvRGN5azBKN0NYTkJZSmRRdS9RcE5hbUpQT25X?=
- =?utf-8?B?eTFUK1RtZmNjTG90WVB5Y3hkU3F6dzVHUG9NcDZPZXBTd3ZiNXNRbkxXRWQw?=
- =?utf-8?B?R1FSMmFLWEZuVU1TdDV5L0NFMjEyUnhpbnRmeEhLUGppMVc4eFM5Y0MxRU51?=
- =?utf-8?B?SkV1MDFoVmtqME5MRmhMdVU5NTg1OWx2c0hnR0dEMXNQWWgwMFZDbnhYSXVm?=
- =?utf-8?B?RVAzc04vTytiOTRaN2c5blIwdVZHM3lsS2hINHc1aVFpckdCSFFTaTZmNlNF?=
- =?utf-8?B?NXpRaGJGWU5qckZzNzJUamEzOXVxbGI2Ly9PQk5sSkh1ZndFcm9RWkpaOW9Q?=
- =?utf-8?B?eVV5aE1UUHpqQmpEWnNYUi95U2V3TDFXd2ROcGFBQ1R0ZUZ6ZStkNjBXa2pF?=
- =?utf-8?B?UHl1Y1Era05QVmREQ2F0V29ielpDY25WNFlHRStLVTEraG13aTlXWWxBUEVn?=
- =?utf-8?B?ZWM3R1BQS2h5b2lnMzlmVGNheFpQTUc0Wmlocmd3eCtaMDRja3VBTzUrOXhx?=
- =?utf-8?B?cXhvMmFTd0ZLTnB2Z1daZVdacmtIc0FoNS90aEh3YitMWmovdCs0WHNSQUpy?=
- =?utf-8?B?djNCZWVLMHZSTzdzNGdoTEFuRGpnZS9UWTFKZVh5eFN2ZFVpVFNTSHBmTzFk?=
- =?utf-8?B?QTR2RlJPMEZOeWE4OTR6djJLVGZJakYvVmZOQnVTMWpuM2VKNFVTUG44ZHEr?=
- =?utf-8?B?R3R5K1M2ZUJKeXhpY3NlSkc4cmdiNnpTWm91V2pMb2JCV0RLSW5qL3A2UEJU?=
- =?utf-8?B?U2krNVViWUhUUFNUbzltcFc3aWZtUzRwSiszVXAyUS9VOC81cWxSRDFBclBU?=
- =?utf-8?B?VHVQcTlzWk03cjF1WFhDcThRblRTUFZOUHhrN0MzczBWMHprdlBCK1F1RitE?=
- =?utf-8?B?ZkV5RFFaSVJrWFBhaTVLTkVjZkVCRUZ3MDU5Yk1Hekg3T09zVUVNVnl0RFBI?=
- =?utf-8?B?MVJMU0Z4NytRT1VSMVJVSzdjYmhYZ05jT2kyUmdjL0RFWjhLeVNRNDFTd1Bl?=
- =?utf-8?B?U245eUFlL01JZmZINUV3cHBGZCtSSnRKcHdSRC9kNGZSYThNajM1VStGZGRV?=
- =?utf-8?B?cVYxNENidTJJclpvRmR1bjhXZmNVSFVVV1oyTEgydzJvcjBlcTk4cDhad3pI?=
- =?utf-8?B?bG4xcVJIMnBhbXErWW1aUEQxcFdHeGFjS2ZQZjFPbUtJRGVhUUxPU2QvS2tw?=
- =?utf-8?B?ODZtVmRrS2RDVURZZnBDTHB4S05tR3VTQXdIanJnUFBpcTJqZUdnNWZMak5N?=
- =?utf-8?B?ajlUY1hGbVhkRE1Jc0hRdlc4cXBIY3Y3ejRBOVNDWGJtMm9JdnA4N1lVd2hV?=
- =?utf-8?B?UGxQa24xdVhzMEhZeFFGSlRaTXppZldSdG95Uzc2WlNyWUpzNHBuaXgrYWpp?=
- =?utf-8?B?K0FOUGJuSDdvT3lwcUEvODRySnptejJrU0pvNDVJV3preW5TNjFrTmhxZFNK?=
- =?utf-8?B?QlozajRKVGdmSFRMdWNoYVZYSkFiMzF2NVVQUlBIdGpuRjJIam92L3dQR2dq?=
- =?utf-8?B?YzI1NktyeVpyaE1QbEVIdDluWnFjWFFOV1NkSUNUdk9aOENiR3I2TWk0MWM1?=
- =?utf-8?B?akhZR0lSSGo5M0Vyd3RraFkyaEFUdUpBWmlHQUhrUDZFdXdQTXkrT29aamxM?=
- =?utf-8?B?c1ZUYWNGT0ZGSUIwNEhQSWdDcDIyRDlkcXpYLzhLbUxKR0VLY2U4SmtlUENn?=
- =?utf-8?B?Tys5aDNEalpqRHJQenFXVEN0QkNZU2poR0F4NDRRZFdCQ2JEd0dlOTRFdFFP?=
- =?utf-8?B?T0hsYXJCUytMcGZncGM3OWttSDZNZDNnVlg4Q1h1Z2VIRzk4eko3aTYvUDRQ?=
- =?utf-8?B?ZFlDSG5KbVJJOGFLbnhGS1dYUWp3TVJPVlBTY0FPTkxORFR6OEMwUT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3aa9f2b1-95a1-4903-f253-08df029a16a1
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2026 11:14:54.1216
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gNmDMaPjanx0qGCSoPqfQOpy0qVSJJhwuPNUKK8hCUyY5hBAADAAgUZNTrGsOOtKeqqZZwFPbwZKiCU68LhhXg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8951
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260825080002.117412-1-zhenzhong.duan@intel.com>
 
-
-
-On 8/25/2026 3:35 PM, Hemanth Selam wrote:
+On Tue, Aug 25, 2026 at 04:00:02PM +0800, Zhenzhong Duan wrote:
+> compute_vasz_lg2_ss() finds the optimal Second-Stage page table level by
+> intersecting the maximum guest address width (mgaw) with the hardware's
+> SAGAW capability register.
 > 
-> amd_iommu_pdom_id_alloc() returns an int: a domain ID on success, or the
-> negative errno from ida_alloc_range() when the ID space is exhausted or
-> memory is short.  amd_iommu_alloc_domain_nested() stores that return value
-> in gdom_info->hdom_id, which is a u32, and only then tests it:
+> The VT-d spec maps the SAGAW bit field positions as:
+>   - Bit 1: 39-bit AGAW (3-level page table, top_level = 2)
+>   - Bit 2: 48-bit AGAW (4-level page table, top_level = 3)
+>   - Bit 3: 57-bit AGAW (5-level page table, top_level = 4)
 > 
->         gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
->         if (gdom_info->hdom_id <= 0) {
+> The fallback paths use bit shifts that are one position too large,
+> causing ffs() to select a deeper page table level than the mgaw window
+> requires:
 > 
-> The assignment discards the sign, so -ENOSPC becomes 0xffffffe4 and the
-> test never fires.  The nested domain is then set up with a host domain ID
-> that was never allocated, instead of the allocation failing with -ENOSPC.
+>   - mgaw > 39: "3 + ffs(sagaw >> 3)" evaluates to top_level = 4 (5-level)
+>     instead of top_level = 3 (4-level) when hardware supports both
+>     48-bit (Bit 2) and 57-bit (Bit 3) AGAW.
+>   - mgaw > 30: "2 + ffs(sagaw >> 2)" evaluates to top_level = 3 (4-level)
+>     instead of top_level = 2 (3-level) when hardware supports both
+>     39-bit (Bit 1) and 48-bit (Bit 2) AGAW.
 > 
-> Keep the value in an int, test it there, and store it only once it is
-> known to be valid, which is what the other amd_iommu_pdom_id_alloc()
-> callers already do.
+> In both cases the selected level is still one that the hardware advertises
+> in its SAGAW capability, so IOVA translation remains functionally correct.
+> However, an unnecessarily deep page table may be selected, adding an extra
+> level of page walk overhead and reducing TLB and cache efficiency without
+> providing any increase in addressable IOVA space beyond what the mgaw
+> window already caps.
 > 
-> Fixes: 757d2b1fdf5b ("iommu/amd: Introduce gDomID-to-hDomID Mapping and handle parent domain invalidation")
-> Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
+> Fix by decreasing the shift offset by one in each fallback case, ensuring
+> ffs() targets the correct SAGAW bit position and selects the smallest
+> page table level that fully covers the mgaw range:
+> 
+>   - mgaw > 39: "2 + ffs(sagaw >> 2)" correctly yields top_level = 3
+>   - mgaw > 30: "1 + ffs(sagaw >> 1)" correctly yields top_level = 2
+> 
+> Fixes: d856f9d27885 ("iommupt/vtd: Allow VT-d to have a larger table top than the vasz requires")
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
--Vasant
-
+Jason
