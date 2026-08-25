@@ -1,157 +1,137 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010047.outbound.protection.outlook.com [52.101.46.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01453332907;
-	Tue, 25 Aug 2026 17:20:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787678420; cv=fail; b=HQYyNK4Ul5lAt7Zl5V7BK00v16JMscu/rADReQfOtZKrR6K66izvoXuJxHZ2MCIHiv6sCuAc2mOI5ps4VHJdcMvrz9obl0TE14G42JtrZ9ZcHBgR8O9Bem6Q9CpkegNVK3CPqlx93Vg0qSB6tj5d8EXmYDMm71ykGIPOc1Qmm4Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787678420; c=relaxed/simple;
-	bh=V2/jMGeMxSmf1JYYlX6sgajhRQP7KtGUe2A1YtVXajg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=MUVRylRshGWb/6DIDQPYqp/a5665f7WxuU+7sFA7qtBLdPncO6BHXGX/fAmPsWj849rpcWJCKxdu1vwpDUu6Q/OXvSVmgejo5XYT60koin+SrGS1fiKRIzyqnO5hq62wPMwjWzp0DEwIjp2wsDdNCZpx/vUuzbztVWrpofpZYgY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Q9nlLerm; arc=fail smtp.client-ip=52.101.46.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26B6248C3E3
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 17:30:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787679015; cv=none; b=D/kDvVhJq8S4Y5CnA1YHjo7RNWOPnvZ0Navy/IvY2R+B1b3+DiqBTktesd5LYsIWhiv9joRgTphLacdrLPnnIQG2mQOij6oaHQBvWLB7ZTQpByBULNZHPy3JdssMcjzuZyCcosSXxI3M+Rja8pN9FfyaOqciEdiPnWOu78oP7TQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787679015; c=relaxed/simple;
+	bh=WF09Bx2mtfrt6hRVd0SLFSWF4rEJup3wBMbdU8OJyJ4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kMfF1OUtcdKLrhnmtlx0k7GfW88qzNWcuZfiB5oBa4KiL2DLpDHskUYaFyjuRfLlzBnPJWABMY0xlrO03GFMSNIExvVzi7+8yiFkzl+20irPeeSGc62u+G+L416Z/BgqPD6wWvsPCdDwACqvhGMJkP+6TOl/3SVXVTzHv/hTf7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=W1BH/euZ; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Q9nlLerm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EHZbFL1ZVQh1vK7AobK76IH3BsyRgQd3Wri+BNNMWjgY0LwcQlDrLYqAlwdjT077yrtQm5OOLODD83pV9oVcuRsi0PJ4r01ft3sozvz66Rv3db8hRIW8CJykZUnXmIwg3SprUHVwvPzi3zo3T08UuVIaqU5vUG1LYvUq9m31cXArdUBaSo4jKDuQEWb5Sq+8ogbnXlhrdOoDFF7921H3cOSAV4/2F0FcStVozTNeigSUza+iJtBFME84HxmR7pjgWjR1JbTC6xGScS02q1lfKimg3EkrNM6TaOsSiIlS9IoJK1Z9IXpaFWyAwAucSDk28XV2FdJODUUHooguwrpbtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Y8WbuWOxoUI23uVPsJ5MOpoiaFDfUDAUu5MlX5lc2s=;
- b=CHAFdAbVwKNTfJNROUIBfMbHVfHI5/G92B8CnLrZ+PS7+Q3Cj4/GosfHcMgeM8seYbWBnrRXJEd8jNZnW2HUawurtiwaJVnr9oIfUck/f9SXuOtdqoQNd4oHNVpTMJ9lYYTZDdu9kFe1X68NQfvcRpTWWE0LNZwhbzEoHuIi0VNP6z/MEtzOcu56TfPC8kD7u0CfIHlgZtbT5JSFA8Nngj30VK9GnT0nFWxvbTyDfkR57CYixsslvYQwT6t/Y//YMIIdURDJfZesK3ZOW/dUQR08aNoiLShTi2Lc3X4G+5U3CEBXh7Vk+NFq+S5Gcfq+D7D/9DXW6HPYPBURzqDv1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Y8WbuWOxoUI23uVPsJ5MOpoiaFDfUDAUu5MlX5lc2s=;
- b=Q9nlLermdL/6qo/7ZbwSMQgm4uwfE8eO4U+vh6uvGZFov6HloP65y1jRak6XODP32/FYoKyoAcZmkc8lW4cTEWjVZD4ey80oskGT1sgBobmHQxLiUX7wF6ZfGBAhWxMI13SkFD/UlHyNav72avi1datEVDUALdX0Ik/moulm7p5m0di/oMM3Top5gAd8L1K5UOquwjX6wJtnXbWXnT3ZrCbVzCk9ngJ/kDI7NAByvznmD9D3OEgr18tROxseNBcaHT5TZJrudEaxuxi6CM6c4d1dgLgmv8dl36MHH9Sc1WGXLVoVWyeg4uwzzC1BZTKfiSpAOzHpeMNLx4puZSGH2A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DM4PR12MB5771.namprd12.prod.outlook.com (2603:10b6:8:62::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.11; Tue, 25 Aug
- 2026 17:20:12 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.012; Tue, 25 Aug 2026
- 17:20:10 +0000
-Date: Tue, 25 Aug 2026 14:20:09 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu-v3: Optimize range invalidation
- for latency
-Message-ID: <20260825172009.GC3325090@nvidia.com>
-References: <20260708001058.GA422027@nvidia.com>
- <an3MSKEj7VhT4WkP@google.com>
- <20260813141320.GF730363@nvidia.com>
- <an3ew9xbnLe1dr5g@google.com>
- <1791d7da-ecd9-4475-8f27-c8857477b442@arm.com>
- <20260813180102.GH730363@nvidia.com>
- <an7UNAA1WlEXG23-@willie-the-truck>
- <20260814123417.GB510472@nvidia.com>
- <20260818184338.GF5432@nvidia.com>
- <ao3LpdSgK7ZBrLza@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ao3LpdSgK7ZBrLza@willie-the-truck>
-X-ClientProxiedBy: YT4PR01CA0345.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:fc::26) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="W1BH/euZ"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2d3b445a84fso6145ad.1
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:30:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787679006; x=1788283806; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=8wBJpCqawgcwqwfKU05d1Z2ZrVuf5nK5DNpdSKbZyiM=;
+        b=W1BH/euZEBwdEEYBa4x4NK/qjalOxXX1yDiQ+w/uJxIK8wi5MzSrbq8dSsJkZPqmQ9
+         iBA8n9EMAAHXogyU4VDh8fYewN9HECsRLbXsD186IbxHUM/KeN3PAbE51t+SsuOF5q8P
+         7fMvMBq7JFlO9x2f5NHnfZ9cmuHQQFsy0cm3zcB/ztq0xTzBYdkycg3HCoMgKr46d3IG
+         qHp/Xs7JPTpZCM5tOL0tjBbBz7yc14j3S8r53y1k6V/YttLO7HjctxdIRbb7Fna5/lU2
+         bVWyyRe2i4AY9dVB3OevbDEjnAghP3KgD/PqxE1YwhRzEjwm3YxQ+sPtqqhqBX0QceB+
+         Yytg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787679006; x=1788283806;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=8wBJpCqawgcwqwfKU05d1Z2ZrVuf5nK5DNpdSKbZyiM=;
+        b=EeRIjsBpEyYBkZuSi3k+wFCVTTryAkHx675qzv9BgdVe6Yi+KGkkG+sG1eKZD67pyl
+         zmvDxJgXi348LachiOeRf4L0DxyuHf30D86Y0lbjVUdttj0gC9Ip9Qe7XGTEepVwLzlb
+         CGz/24Eu85Ict0RVMVX4jIl9nrWB7U2lSq5Go/yJN9K0rJU1pQ6F13+tlNecd6MGvlQZ
+         KM7ex1/gp3O6KRLFB/b9EBPgeKdfGnjLcCVKNuqBQ+30V7pjFTtV3ZQFtXAkvbp13pRD
+         ni5l2Ds3VRF0HQ9GbeTRkBJhNwDA5/NlBVLFcIifSkD7Gx2rc9kq0Mv4jZr1Tx9V1wMY
+         MWQQ==
+X-Gm-Message-State: AFuF++ndSOngjOuX1ShpGqywR1cQX+v7C7JwzQG/xK0RM/hWWLmwEUto
+	1MMFH2VORmu+uBSQy86jMQxiE1LDNNzxvURvPy+SFwoK0YfCdLz5SwBN06aodp20gw==
+X-Gm-Gg: AR+sD12Fs4/AxECQs0PwHMSx8JcNM46XhCbHOWCKZcSdNNqFBROAatogml1+LaC2+nA
+	ySJo+Vi7xQvickVyAg1Tz4PgSEHUvznFsIyyKC2q/21pNx2ihRDAwSyPykLePrGisTbdg4NYa5/
+	7R++2ejgZip694V08b+koFr4GaWBj22REu0myEC7YqJ1Z2CDQHcBCOYh5lZXyEGSUZgNPDqtNfU
+	zM1/wZyBhxykSa06zvA6Su+3MxBmPdVm9jzrt7loP8OX4zy5r+zpesQRkrdE5tTBuCh7p15BCo+
+	d3Gv+SAZEcEvmljXU24kJ6r7ii6XgVzqmk9AywexWzz8xaRfcmO3FWZOoP5q3xxg7Aq+1rsRWfQ
+	G+q/AlO0HVqhnUStWdq9M2+xHtbwdVuH+ETlCte43Ypn7GL0StDmamc2GTKUqo5miFP47PhC+wY
+	lEaYKLZ1GOJvICtLQg0p9IvnSTDfQvSYRtBO3jlywWcEPpQr06mAcq6mn0Vqy3YlYiI4FeW9cIg
+	wTPC2EJORxoCNSoL9zNAkP4zJBWtKcVvcNF3w==
+X-Received: by 2002:a17:903:acf:b0:2cf:4353:f117 with SMTP id d9443c01a7336-2d6e036d4cbmr8058505ad.0.1787679005676;
+        Tue, 25 Aug 2026 10:30:05 -0700 (PDT)
+Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39662c80d6csm1544432a91.1.2026.08.25.10.30.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2026 10:30:05 -0700 (PDT)
+Date: Tue, 25 Aug 2026 17:29:59 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Ankit Soni <ankit.soni@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
+Subject: Re: [PATCH v3 2/5] iommu/amd: Fix DTE clearing and rename
+ iommu_ignore_device()
+Message-ID: <ao3RF0w_AXo5EXxv@google.com>
+References: <20260824122347.1588592-1-praan@google.com>
+ <20260824122347.1588592-3-praan@google.com>
+ <178759520117.3131778.15279605903087565179.b4-review@b4>
+ <ao1vJxkZsJpr1qXG@google.com>
+ <20260825114916.GT244917@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM4PR12MB5771:EE_
-X-MS-Office365-Filtering-Correlation-Id: ffd22cab-c030-444f-7110-08df02cd1dee
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|4143699003|56012099006|11063799006|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	oLaUYEqDu6U0i9YC0MtL57t2mj5i89AFqBPy8s0E6SLGvLsDMGrzxib1OS2gLnE9if7ibPceRSEpr0hDIaH5VDBkhqEBzWQww3EEt0EilPsOj+EDc1h6HQwI7BdpaXqH5UfkE5XVCfqnnZoYvqkkIdwFhwoWNaExYrYYDk0B0D2G0rlJAbeKtS9bceuLt96nJJ9W89ZP4ENL1XXV/IuFiYH18EXzTzLEu3O5B76zJ4THbuFkh0yqMCfloFNIIGUyXyd5K8mGmrFkGDu/pZYfEF9AiZf+Zx/06t8NBFF9dJhuQ3wXN48QS7LsZ7nJP/PY8BOGUhzbeERm9MRJ7cyDkqOrYcEQgllRpn2qdcMM7lPj3OnxpxWczCwq0W4JNxtiTdsOW/1SAL5eC990oDlYCDWuVsboIJRdRB6wV7yvmJQsVynAGJ9SF9VAxdANe5C/I1+CANU4VXCnzhUBg6QmqZ9Afn8BQs8TQWaDXNyM+4qdbsWJ+fZe928Y4D6BHJRGLRw5kO7HB0LBMSnTHQktDcP7ld8GncwwloPFX+eb7PWKCQRDqlwFILaD318FBYAJyjDsuaOD0ZR8RSrisnk7XU+SkLEwMDWCkUmplynVh+G+fkRqUs44w51TDmFEXk6jUspTR1Qw5Kx4VyqrbaC0f1NSydBLRm8N81Q5DvnJdYY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(4143699003)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?cCc0S0n8TQ1M4hIMDMYcxAi8/udfHpVNibJewqw9zanzMFg/mhe40dYmGgIV?=
- =?us-ascii?Q?D+c5ESnLXizYy3FxOr3AshUqs9113Dy9qIGdFcG0Q7xUIvixViBhhftwMtXL?=
- =?us-ascii?Q?9hLNb55E3yjGfK107fDa/3amaYJjejw8FW5VjwfRJTiCkvrMADhjDELDjiP3?=
- =?us-ascii?Q?PLZP6HboSr51EpKaIFLpgATcQZmbazXZonVRKlpv49ogYkYvsr9pLttK/iaI?=
- =?us-ascii?Q?TD4Ijs7ScFixkF/nR6qZQmc/wnY/oAHjdGREln9qTDXwfVn8VidZrJfKX+HX?=
- =?us-ascii?Q?BO2twnh88861ZChB6LEWMgkJGkiEXlCeulh743Yr/9gF33KXGq/N2T8vAGBu?=
- =?us-ascii?Q?vuzIdiDuKWIHArwEM8HezVi7f0+nE/zRu9+eWjKLDi6kRxJVOISdRTMgZDkR?=
- =?us-ascii?Q?3mgrp0QwPod6AheUZKynmAKm3sSBxzqrjR8oFoI4oxwHkOP917h6DU1ZgtkG?=
- =?us-ascii?Q?VQj90DeDt7A4aKdB4vNLPo7bEdzfC0jIrgHvPYGNtUlLutoZgN/hF9WwEG6X?=
- =?us-ascii?Q?fTTSTby+JGw8TefiLpogeRSWckA1vK9fL9/gzBcsNSMyycb+cTF6qiSnv0ux?=
- =?us-ascii?Q?t4gSjnZ+DVprdaix/fPN2Ng+MGcAUGMlLiE6ladsrYHK8oknupZeg5asdtDm?=
- =?us-ascii?Q?EuujvSkJaXigSrTW3EfcJGdg3iDoK95OWXbTosOHKBki39pVNqPO4PZRj5xY?=
- =?us-ascii?Q?W+agcErPpx5f6tNLcxrFI+FasB5E2sWpO+WQgEXXDwYlCVzMNUfe+bbA8EZ7?=
- =?us-ascii?Q?JfAZZ8BdH6e8+YmUBapfx4L5YvQVIqLtzU8AYCxS/6zbV+jNMOuYrT97dFGS?=
- =?us-ascii?Q?sLl8GzbzmeSJR2TP1b0z8Bn4sw5rjhkGN8+aUuixz9f/C9MZMwxr6fODwu94?=
- =?us-ascii?Q?B4MOaaGRZNfYtf1LdHJpj6wbzG7s6GspIVkfnXdMdoPX5v2/tKWRCDHzxZTG?=
- =?us-ascii?Q?Ajrl1g1s79Qg+iujGCZr+6J637Xle+1IMy3AHSWweaNg1GEcOKhJye3+8EMb?=
- =?us-ascii?Q?+2QgZy5AB9vv4P+xF3bmXVT9f5P73nXyOne4xpKpwOqlgN+wGaPZgXQvi6GF?=
- =?us-ascii?Q?a8boonuStxPn/+SHGoDXOabImIZ1P2TtSvw74yNW9YPN302ksKZSwbHHNzu0?=
- =?us-ascii?Q?3KZOjNcfURry8G8M9ooNCaOxC8nsxI4diAPwjNh/7z0jcqzz5fHCy8bihXIA?=
- =?us-ascii?Q?R5y2iC+/0yZK9VZ2ZsxqS9/7XTW8t4zCU6Fde7NKrLi1GUIQ5h5EhHCKNNND?=
- =?us-ascii?Q?pzqJFlD30CgGzrqhtPagetWf+zxDHng/ec71DuDU686PnKWqcirxsmeJK6el?=
- =?us-ascii?Q?+iAmUbWqQqT4FLX/cpK1BP8EHkZcmOYmMlursp+4YLa8MkH2zoPQRSdyZU65?=
- =?us-ascii?Q?4xGwX1kk5PQI1zoUBUNNzXpEPFKea8sxNDB+fGyw9brV6NF5chqVZm9bKsZG?=
- =?us-ascii?Q?DBp2D09qizOSTaqNzGiYm8ZagctFWmCWbtkbPAkZIUUao6YpcDya70UMlAKo?=
- =?us-ascii?Q?7C24EQ2ax6KfIQpNycQmYmdOc1eRQeAKC0dbY08Vk+b/pSaYDWhuw/f8YlAo?=
- =?us-ascii?Q?YnM35t5SoWeXT5Zh5SrK3XT/n4dzXkD8wdwnOEqAnTAlL38TNed/wxzpGuVx?=
- =?us-ascii?Q?9+veUWCUFrkRUck26EOHqPkt2ziEH1C3eXr4kJJW9vivpDujgVAmJP2aZPpW?=
- =?us-ascii?Q?vVCzrlZr/Dm+dRgSlNDhbK1cREyfADSrQh0Zps7PgeYcVemn?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ffd22cab-c030-444f-7110-08df02cd1dee
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2026 17:20:10.5062
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lt13N1SS/KIfuDztY3WLPaYqvwcxzKx1LiN3qkcuAcJKHY8eDnxzSEhr8Bexr2hC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5771
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260825114916.GT244917@nvidia.com>
 
-On Tue, Aug 25, 2026 at 06:06:45PM +0100, Will Deacon wrote:
-> The documentation for 3673557 gives a possible workaround of:
+On Tue, Aug 25, 2026 at 08:49:16AM -0300, Jason Gunthorpe wrote:
+> On Tue, Aug 25, 2026 at 10:32:07AM +0000, Pranjal Shrivastava wrote:
+> > On Mon, Aug 24, 2026 at 03:13:21PM -0300, Jason Gunthorpe wrote:
+> > > > [ ... 52 lines skipped ... ]
+> > > > +/*
+> > > > + * Invalidate a DTE by clearing the Valid bit first.
+> > > > + * Note: Lockless; Not to be used on a fully probed
+> > > > + * device with live dev_data.
+> > > > + */
+> > > > +static void amd_iommu_disable_dte(struct dev_table_entry *ptr)
+> > > > +{
+> > > > +	struct dev_table_entry new = {};
+> > > > +
+> > > > +	write_dte_lower128(ptr, &new);
+> > > > +	write_dte_upper128(ptr, &new);
+> > > > +}
+> > > 
+> > > No need just call update_dte256() with a 0'd new. This is how all the
+> > > update flows work, and it flushes the DTE which this looks like it has
+> > > been missing all long.
+> > 
+> > I originally considered using update_dte256(), but iommu_disable_device
+> > is called from the early probe error path (err_deinit).
 > 
->   - When invalidating a contiguous set of page tables, perform the
->     invalidation sequence twice. Only the invalidation sequence needs to
->     be performed twice, not the SYNC.
+> There is no reason to do that, the DTE isn't written by
+> amd_iommu_probe_device(), so there is no reason to clear it on an
+> error path.
 > 
-> and we just merged something very similar from Ashish. Could we use that
-> for domains that want to use contiguous ptes?
+> It is wrong to write to the DTE table without flushing the
+> HW cache.
+> 
 
-I figured out a way to bound it to at most 3 RILs (and that is rare,
-mostly it is two RILs), so double invalidation would be at least 4
-RILs using Robin's trick and way more using the existing algorithm.
+I agree, but I wonder why the existing code used memset here 
+(in ignore_device):
 
-So it would work but I'm happy enough with the 3 RIL path + SVA over
-invalidation. I was just waiting for one testing result before posting
-the series but it is on my github..
+memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
 
-https://github.com/jgunthorpe/linux/tree/iommu_pt_arm64 
+I was thinking it might've been done for probe failures in a kdump
+kernel (normal kexec would've called shutdown for clearing all DTEs).
+(I see this was added long time back and existed when PCI segments were
+added [1]).
 
-Jason
+Are you suggesting to remove the DTE clearing from this path entirely?
+
+Thanks,
+Praan
+
+[1] https://lore.kernel.org/all/20220706113825.25582-23-vasant.hegde@amd.com/
