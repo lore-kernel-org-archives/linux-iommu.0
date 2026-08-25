@@ -1,65 +1,66 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 006651FF7C8
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 18:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7C363515DD
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 18:46:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787683124; cv=none; b=NfdTigxpfrQDQzRN6oZBzBopgpFnbA/K6Wt0zAS5UqemiRzklJJvytxP3YBBTL+RyiuOM8dE2zmApcxxMLwK4dgSEbW4FFXRauRCcnn4TSmmIrRBKb20dLAFznHDz3bx90lhSPk6nXQ2OcaF+ClyJpfl98h33Rw4ukjlG+nV1kY=
+	t=1787683596; cv=none; b=Wrvvp7H1iiN7yp3c0c5zcwfg/Xdyx1DqPIBAERaV94OfrFo8TMiAdUgt+5NQwZLnMbw9eD4SR8yxu3cZdngdy+Bx/Dh06LHtKl18BJVBdsnXHYsf6uvHvNY+fwVOSlQQMYhftRkjg44n4crOz324ltY9H7/Aw7DV8xN/kNYcvaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787683124; c=relaxed/simple;
-	bh=GD1npOOyjQvxhGYc6rKPeAvQpElnkJZmgPQ59evE++k=;
+	s=arc-20240116; t=1787683596; c=relaxed/simple;
+	bh=MBAXutSpYxwjH9g4UfLSkmHw2JXLVaEMrHn18gd+ppc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hECtBXgB/9mGbxgvuXa8s6lYTPodVJUFAKL01tvsCwk0IfXJXZJqgHwKIX38DuN9JGrWL0tCV1esJhkXDJ6ohvoX281+9bBoxrogxuOAGd0IsAkUy0FTl0e1PcuitYVsLvbcWFIW8/EsAMV1eRPvxag6e+5OH+AIxZAiekgvPJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JxWVARro; arc=none smtp.client-ip=209.85.214.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=VCHzXuCtZqZs3kM/OSgdjfIZOtEtGVMxm8vCYqfe2yWvly2TWePx2guy157eL8UVGXsbXYgdJ4rY3gZrM7a2fPti4jSxToa/8jDTRZ7uHiKVh9FKrdRzLjMgZXSBjMP9RfrMNoRMDHAoHJj4AXs+ToxKp0yMBFzWjWh4MgLKvZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=S9+OEfDt; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JxWVARro"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2cede6375caso20935ad.0
-        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 11:38:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="S9+OEfDt"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2ccdf36f63dso22145ad.0
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 11:46:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787683122; x=1788287922; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1787683594; x=1788288394; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=eRzZo2BIrzS2/3EuB48709dCjGwV5yrxCu6+EuEuEXg=;
-        b=JxWVARroqqIl+igP+6mW4wz8EK+PsFJNr9eKLMiP74nSpWpJMkAInyd5Vo7HITc0uE
-         tWn5oWNF4sgbQga0v0ncNNIOgCd6pilb/6nlgB2FxAMExGbVFL1y1in0vOc4/qeU1mbR
-         iwJXPtYkYaxF4WeDSYEMzXG16lki9F6cgBk5/eP5nP72hWSJV0WfT/NbfXpVwVvotkhT
-         t99+YozeOj+W1t2dJZRoQA8owcMFLvQ+ulZ4iNDDeRTQustM4Ectl8HD8nLeNE4R/rhh
-         xRxVr2PjHQr5TOkV5eeIHCJqnIjYk7FXii43tJuKM6Q82RCrZ821+iWR9WqmQ+lsbFdH
-         Es6Q==
+        bh=d5ZVhM5BdQv8jrNqiOtUyy67C6fu1vs3KMfmpNkDQyQ=;
+        b=S9+OEfDt1KQuwsfzNcEza8NCrskZvJ3eZpBTU19wqczfMlhaHR/6EoALE9o8rN8NFI
+         AK249DmhyP/omit0BR/LesV1FBsvE0jup9rw23nYR2VLpT/ieeGhwnEgTQkaLODa0ysD
+         rsXwQnpFlAX+E2PZNfbnU/y2fMTpyDG4ysc1qk5kufdcbRF4/zLtvxOaHj9vokbz7MZ5
+         poyXzvKsh0MIBX/tpZ+mh++xeDVjeAnP0r47lPSBpV/PQF1uh3N1FkeFeRNRbaOORmZX
+         Amdc/1FAhHGglvtZEUeU3GktZDNikEnmVkD80Osm0LwDFztsOy9NAHTtw7YVheZiIeGN
+         rPkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787683122; x=1788287922;
+        d=1e100.net; s=20251104; t=1787683594; x=1788288394;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=eRzZo2BIrzS2/3EuB48709dCjGwV5yrxCu6+EuEuEXg=;
-        b=CLw8wd1/e5nFkTBQsrvbS9FCobr6m1R/q/jNT89625iocNb3IaMIifR0Z5os5INd6C
-         NbK6orYuF+9xreoWeJGkAfgF4D5db76p0NO7nMy6muAdmS9zuFTwWRKPsGTARwuKB/4m
-         DEm15rhZpWpCfyoTeUqQmyePWpNIUqMyVNBvcToErriAFJX7rI9LBnoQmgfPTWYiEJS+
-         +qSmCEjJmEqEERecO7zqLdOlFvuQpjZILEDZNRHNBAsK4ehcpjpeIeK6tsMttm0HAb/L
-         Q9PdRXonRAVOOpObcJvU1osSGuRcuoY3fbh4yPQM9MzmO63BjpAJwtzzSD6R6ZD8NWdX
-         4VaA==
-X-Gm-Message-State: AFuF++lyYlOfu6kvCrvHDkRsVR5rwMa0uMjNg459dURKZO/IO2am/RFL
-	cZpAlTEBetuPwcObeYduznLZ3SDDnBfQu7pLMH464mHQu78kHw+0wrfoY47WKCBfog==
-X-Gm-Gg: AR+sD13TGT3rNOw9+fMVkwIhrwN/bDeOPwf3GB9QhKljFx7EnPaiPGQPyzf3orcqO8D
-	RJGECqFTqlAs/u3Ve+//mRAhdxnMCdpQ0FmnoLsSbeZKen8+SRrxJl/fRZU0+pVMnZZKfMf6bA3
-	CKuO50LaQoApiZZ32GE6O+l4ZC903XofcO103d+uaIZ7jaB+Na1sUBqmCjTxmUjLZA7Um0fwODD
-	NnFDerl4Ycc1EZy1BFeHdIwOCu3OhXUfFUThamd7MNBVWj0dGn4+aseeDf+vL7PCv3i1Hq+T9+q
-	qpbaLPBIDicXl5o4oWmMeMx11vfGm6VX30XLXPy48Bt0sxsvfZSFHkJ5r3EePr0VC1XS7JjJymG
-	ARAvO2+BD3/YIZoPcOwkroUx/kDAV5g8T8Q1pePaNYG7VeYRGHk465jryyEJT56UH+lOXcS2iRW
-	JXGHd9uMplIUSl7zlV0vN4bnrG2+0j6LC9UyOhI1/VteBz9QW21r2hMbOt4R1ei2DSrFkSyiqhL
-	Dpf/Nl9RbECPdOufq+f9l6vNw==
-X-Received: by 2002:a17:903:440c:b0:2cf:9ec1:ea6e with SMTP id d9443c01a7336-2d6e077122amr9153765ad.8.1787683121595;
-        Tue, 25 Aug 2026 11:38:41 -0700 (PDT)
+        bh=d5ZVhM5BdQv8jrNqiOtUyy67C6fu1vs3KMfmpNkDQyQ=;
+        b=LOJodEAVIY6HxAx7FuG9zWUmH5CigFjz6o26mGrHfsaBYX6ff8nM953TcE4v4WRDfr
+         2E7edLnA1M04R7xRhX46FgfxyLmYa+PyyeRpP2hM8F0toTQX6jU4jwUumUL9FoakC61E
+         8f2g5Boal+oo9Vw0pYQgU5mUdCxoBDrheOil2sbV9cHoGw7DT5OLgrJ+vqMlz4x89NIm
+         7LiMv7jYS24yKBH6kx0/TSw6m+EN2rVeNdmYyYyyV2khuDOncFLTOpYYhg8N5PtxAK37
+         ASXXk/PdRSr1wA5mG0F9if9HgrKxI5OYkZ49xUj5DAwQuLprwOrMJZFePnAj3MKpr+CU
+         T60Q==
+X-Gm-Message-State: AFuF++mFrSsp+kuIgBPoxTERaOCVqNSHhz0y6F9qF+W9EAWlB226V5Lx
+	tGQa8zpOLa1zYUZStHAMzq1ACxxC1pwkMezi+/DyjM1XBra+XSj4L5HOmb+nuNVi4oiaAnbr6zY
+	OyjrAHw==
+X-Gm-Gg: AR+sD10bsOIVUbiQH67Foqmq+lb/tnkQnjEftHVdBK1zAOWGHoeomljA2AfmdfWnQA3
+	X41t7qtUynLm6Q9YbTrgtKiFxOPPdcJRG0ms8Oz253gnj0fd0Gxrqcg8CR5BR339zwG4IDCCuRZ
+	aqrm63Oj7tvPhJMWJaTwNspOWW4wUfLH7GkYzNfudlIe+IkCEzD6vcrFwvALHRQOt/LdDeWl6vo
+	JDX5TT655OSlDnx6jNGWOowZZMH1/RAuzaCDjT2cJU4WSy8LahGCRYYVeoNF1vxJxKRCYO63Ipf
+	4V6hUqxDYuFLdDTUuMan0YcohdIbf8JHX0XdaZzrHOTgcZ3WJ4N6A2NRb73dMNqKYc5EsZavCGo
+	hFQ/mxEHqA+33TcKV4AlC9iC0EiTcrD+/OJHOhM4Xu67uvJjQBAN4DY86XEc6CQCUb1+Wl84BM6
+	i1TCe+DA90lRnFsWwX2ck6kudPmF9wVo0k7+QPaluTLYwqgerAWfyoTmn9eHyDOH4PzOk/R26aX
+	J8Z4FVxuOiChoSEW3pDLTlKRjJo1HtneCqe
+X-Received: by 2002:a17:903:1212:b0:2ca:4bb4:4bd with SMTP id d9443c01a7336-2d707b56b7emr456705ad.5.1787683593338;
+        Tue, 25 Aug 2026 11:46:33 -0700 (PDT)
 Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3967083e4b0sm26532a91.3.2026.08.25.11.38.38
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39645d69f74sm4422680a91.14.2026.08.25.11.46.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 11:38:41 -0700 (PDT)
-Date: Tue, 25 Aug 2026 18:38:35 +0000
+        Tue, 25 Aug 2026 11:46:32 -0700 (PDT)
+Date: Tue, 25 Aug 2026 18:46:27 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
@@ -68,12 +69,12 @@ Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Daniel Mentz <danielmentz@google.com>,
 	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v9 07/12] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
- gate CMDQ submissions
-Message-ID: <ao3hK8tdOPLvbpfK@google.com>
+Subject: Re: [PATCH v9 08/12] iommu/tegra241-cmdqv: Add a helper to quiesce
+ VCMDQs
+Message-ID: <ao3jA8HjxzaGqby0@google.com>
 References: <20260728210928.1050849-1-praan@google.com>
- <20260728210928.1050849-8-praan@google.com>
- <178767577113.3356902.16348370784507904981.b4-review@b4>
+ <20260728210928.1050849-9-praan@google.com>
+ <178767577113.3356902.12387755135854957596.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,45 +83,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <178767577113.3356902.16348370784507904981.b4-review@b4>
+In-Reply-To: <178767577113.3356902.12387755135854957596.b4-review@b4>
 
 On Tue, Aug 25, 2026 at 01:36:11PM -0300, Jason Gunthorpe wrote:
-> > [ ... 52 lines skipped ... ]
-> >  		while (!queue_has_space(&llq, n + sync)) {
-> >  			local_irq_restore(flags);
+> > [ ... 73 lines skipped ... ]
+> > @@ -467,6 +487,14 @@ static int tegra241_cmdqv_drain_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
+> >  	if (!READ_ONCE(vintf->enabled))
+> >  		return 0;
+> >  
+> > +	/*
+> > +	 * Gate all vCMDQs by setting the STOP_FLAG in a separate,
+> > +	 * initial loop to ensure no new commands can be submitted
+> > +	 * to any secondary queue while we are waiting to drain them.
+> > +	 */
+> > +	tegra241_cmdqv_quiesce_vintf0_lvcmdqs(smmu);
 > > +
-> > +			/* Avoid waiting for space if the SMMU is suspending */
-> > +			if (Q_STOP(READ_ONCE(cmdq->q.llq.prod)))
-> > +				return 0;
-> > +
-> >  			if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
-> >  				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-> >  			local_irq_save(flags);
+> > +	/* Now that all queues are safely gated, drain them sequentially. */
+> >  	for (lidx = 0; lidx < cmdqv->num_lvcmdqs_per_vintf; lidx++) {
+> >  		struct tegra241_vcmdq *vcmdq = vintf->lvcmdqs[lidx];
+> >  
 > 
->  [Severity: Critical]
->  Can this loop bypass the Q_STOP check if a suspend happens concurrently?
+>  [Severity: High]
+>  If arm_smmu_queue_poll_until_empty() fails during this sequential drain, it
+>  returns an error without clearing the CMDQ_PROD_STOP_FLAG that was just set on
+>  all queues:
 > 
->  If a thread enters the while loop because there's no space, and a concurrent
->  task sets the CMDQ_PROD_STOP_FLAG while space becomes available:
+> Make sense to me, the earlier patch added:
 > 
->  1. arm_smmu_cmdq_poll_until_not_full() updates llq.val with the latest global
->     state, which now includes the newly set STOP_FLAG in llq.prod.
->  2. The loop condition !queue_has_space(&llq, n + sync) now evaluates to false,
->     causing the thread to exit the inner loop.
->  3. This bypasses the Q_STOP(READ_ONCE(cmdq->q.llq.prod)) check inside the
->     loop, as well as the Q_STOP(llq.prod) check at the top of the do-while loop.
-> 
->  The thread would then successfully cmpxchg the new producer index with the
->  STOP_FLAG set.
-> 
-> Make sense to me, having arm_smmu_cmdq_poll_until_not_full() reload
-> the llq and then not loop again from the top skips the Q_STOP
-> flag.
+> 		ret = arm_smmu_queue_poll_until_empty(smmu, &vcmdq->cmdq.q);
+> 		if (ret)
+> 			break;
 > 
 
-Right. I guess we should check the condition again after exiting the
-loop or add the point of commitment to this space loop somehow. I'll
-take care of this.
+Yes, I plan to treat this the same as the primary CMDQ and move on 
+instead of break; I'll address this in v10.
 
 Thanks,
 Praan
