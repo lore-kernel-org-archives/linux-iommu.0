@@ -1,126 +1,199 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02FC33CFF65
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 08:00:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC64D3D75A8
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 08:03:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787644842; cv=none; b=N9rjsiO1qPqzcb0pHVowvW9qM7MlFzxMA5qTYqNP0RL0WeGEYQaZLIvOepznupT8HwjVgIgflnlxyUPd5KMv/+RYMdiUMbLe2k6pIqT1ZnNQ+tMoccWwbuQu4BD45OHqhqQ4Kl72rWkl89efOdq4ZEtg1Kid4YFJ8h8rpMVfA/g=
+	t=1787645033; cv=none; b=rRsjoF4zXw3M8jJGNzncR9fPLz/20+qxDzc4h4NioV8zzWdue9AFCqEVnLz6nnrPMgc612cTk8DAplI3nnMcdoi/5s9/aXP1/8BN0NEokH20aO/7MonSp4RZ+VRYN+SBWVDqvf1gSSDVqHYQ060uCeq8qZs/XfUtvpWY7DcnU8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787644842; c=relaxed/simple;
-	bh=V+Xi6AkeKBo95x+OkZ9Z0tTyPCJrEga08xdKfVcyxOE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WJu/Zm/Y5KaEym4o5iaq/6HCGzbJD9b7rHBhawiQohfGa4oJRSG/RWP7rKdtsw0o9FK5Z7cG7RdPVlQYkhJaEEhP9NLM3brY/HRtZ47Fdir5wT0v+994GxuJXUcKAWa8MlZY763TOa4a1xFUmwY6e24tMPf4Bhd/OoZ++amEO0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eXos7e77; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eXos7e77"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787644840; x=1819180840;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=V+Xi6AkeKBo95x+OkZ9Z0tTyPCJrEga08xdKfVcyxOE=;
-  b=eXos7e77dDlR8ri2PlITaOILEZqsNINL7gwAf3gw6D2V6sFBN8iW2J8Y
-   lO2+T8QKtVdtbjwlTU1M4xeoLB9A5ac6812NYftyrjEmLUkjsvay2r5Da
-   B3GHMvLvuXfzszmaLRpeAiFIzzX1GMfuFZTJk/jZvenItbVU3poJiU7Ak
-   3dBWukyrpmnAeqxwXlSQTsD6T2OuNn5vHUx7sSfBj5l1bzTiW/J1+mtMV
-   a66HRg2E/O6ulAQaVTU0xaBNthhfJ6HPX+Nn/5g74QgPpOZXAAVZ5feqM
-   1LtUC+g/DW7AHrDFDORBcnw7pMcuayype2QZL1iNPr/ftXvwoBEKDFYQN
-   g==;
-X-CSE-ConnectionGUID: nXdK1IFARuuANhARGWmMog==
-X-CSE-MsgGUID: hL1gJpiuR+ydtqC9PJIG8Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11885"; a="99452934"
-X-IronPort-AV: E=Sophos;i="6.25,242,1779174000"; 
-   d="scan'208";a="99452934"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 01:00:37 -0700
-X-CSE-ConnectionGUID: YTsaLPHSRb+GC5bpvi94gw==
-X-CSE-MsgGUID: HB5c2gWuT+u120Fqk5+OkQ==
-X-ExtLoop1: 1
-Received: from unknown (HELO gnr-sp-2s-612.sh.intel.com) ([10.112.229.148])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 01:00:33 -0700
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
-To: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	Zhenzhong Duan <zhenzhong.duan@intel.com>,
-	Joerg Roedel <joerg.roedel@amd.com>
-Subject: [PATCH] iommu/vt-d: Fix page table level calculation in compute_vasz_lg2_ss()
-Date: Tue, 25 Aug 2026 16:00:02 +0800
-Message-ID: <20260825080002.117412-1-zhenzhong.duan@intel.com>
-X-Mailer: git-send-email 2.52.0
+	s=arc-20240116; t=1787645033; c=relaxed/simple;
+	bh=zE/6PpAbFwbSHzEnUEO8gwXvJ5QKAZ5ylc2eCikFt+w=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=SUpr68iAb5X+azwBWi8Vxhi6uWrHE2icT9flQvKla2viy7mS58J8x8YrrI1oKCxv/+BOHjesVgfv1Y0GPdusNpH3xoXeM34QM9Rnk+w97Nwpuk1vzbiN0lLYRtKivgN4Kz6ktO0DpoJNTjtkQt4pcyXjTqvvD82DEbLpEMWh9u8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4b28d8d1b76so4631177b6e.3
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 01:03:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787645030; x=1788249830;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=AtGfEt5fG2go9z5Op71wQEx7a+tRBKr+1KtptibDM+E=;
+        b=CuqgzT/6AGby+sJ63XlVDYK5c/Di6agfPn8fXtapxmS8/jUOooGQKnwMpotmvsiJYO
+         hJJ5+A2Fs4iGyQ36jP9zKcSdeqJYT27K9sBlQcd9UQ+qK5dOP+nu73SU+EpSgVuJmpQx
+         +mob00cAxp760kXJ2hgTt161rxHeaZJNdFM6O2DfDOkZq4/fUOZAL+VUIYNXDikktvdI
+         yk32WOPBftsKXm1JArmsrlb82NmltQtayAyu6A67/7cInCFg5Gdz9zKbAHTKDfXAj/32
+         AeXybFAH1E7XZIibKvCegJKM0hBxh1sreOUT3ygXugUcQ1HdfAy8L3Rqqiy3HPFaUgOo
+         Hr4w==
+X-Forwarded-Encrypted: i=1; AHgh+RqoD0+0mxG74lGl+CG0SffJFOuElpwvXYE85AWIMm/CV/oelCabEskwJ7ELRitGpxT6SJZNbA==@lists.linux.dev
+X-Gm-Message-State: AFuF++lWjtfykje4geFluExbQ9CrlEpY9i4+E6NeWwZqt1sz2AmVjoZ/
+	sGb0/22+LfaswPFHGMB7PXj956NKHs8D1yq+nMzzee9+UyOy75dWNPIG4boDcnp33mj9/wXDqLZ
+	FjvM5eKawNqrp5TJGRcyg80+v4lXblK5/bLh/i035bWubBt2jwdEEarsUcZ0=
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6808:1c09:b0:496:a36:b5e5 with SMTP id
+ 5614622812f47-4b35089c71bmr4724901b6e.17.1787645029903; Tue, 25 Aug 2026
+ 01:03:49 -0700 (PDT)
+Date: Tue, 25 Aug 2026 01:03:49 -0700
+In-Reply-To: <20260824152932.1583506-1-lrizzo@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a8d4c65.a5a502ce.31d34.0049.GAE@google.com>
+Subject: [syzbot ci] Re: swiotlb: avoid swiotlb copy on network sockets
+From: syzbot ci <syzbot+ci194162eefbbbb459@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, davem@davemloft.net, david@kernel.org, 
+	driver-core@lists.linux.dev, dtatulea@nvidia.com, edumazet@google.com, 
+	gregkh@linuxfoundation.org, iommu@lists.linux.dev, kuba@kernel.org, 
+	kuniyu@google.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	lrizzo@google.com, m.szyprowski@samsung.com, netdev@vger.kernel.org, 
+	pabeni@redhat.com, rafael@kernel.org, rizzo.unipi@gmail.com, 
+	robin.murphy@arm.com, willemb@google.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-compute_vasz_lg2_ss() finds the optimal Second-Stage page table level by
-intersecting the maximum guest address width (mgaw) with the hardware's
-SAGAW capability register.
+syzbot ci has tested the following series
 
-The VT-d spec maps the SAGAW bit field positions as:
-  - Bit 1: 39-bit AGAW (3-level page table, top_level = 2)
-  - Bit 2: 48-bit AGAW (4-level page table, top_level = 3)
-  - Bit 3: 57-bit AGAW (5-level page table, top_level = 4)
+[v2] swiotlb: avoid swiotlb copy on network sockets
+https://lore.kernel.org/all/20260824152932.1583506-1-lrizzo@google.com
+* [PATCH v2 1/5] swiotlb: enforce pool nareas and nslabs invariants
+* [PATCH v2 2/5] swiotlb/mm: Implement SWIOTLB nocopy page allocator
+* [PATCH v2 3/5] net/swiotlb: Track bounce device per socket
+* [PATCH v2 4/5] net: Divert socket allocations to SWIOTLB for nocopy TX
+* [PATCH v2 5/5] swiotlb: Implement RX nocopy with fast recycling eviction
 
-The fallback paths use bit shifts that are one position too large,
-causing ffs() to select a deeper page table level than the mgaw window
-requires:
+and found the following issue:
+general protection fault in page_pool_put_unrefed_netmem
 
-  - mgaw > 39: "3 + ffs(sagaw >> 3)" evaluates to top_level = 4 (5-level)
-    instead of top_level = 3 (4-level) when hardware supports both
-    48-bit (Bit 2) and 57-bit (Bit 3) AGAW.
-  - mgaw > 30: "2 + ffs(sagaw >> 2)" evaluates to top_level = 3 (4-level)
-    instead of top_level = 2 (3-level) when hardware supports both
-    39-bit (Bit 1) and 48-bit (Bit 2) AGAW.
+Full report is available here:
+https://ci.syzbot.org/series/b17756c4-983f-4d7a-8415-3da06c0dda99
 
-In both cases the selected level is still one that the hardware advertises
-in its SAGAW capability, so IOVA translation remains functionally correct.
-However, an unnecessarily deep page table may be selected, adding an extra
-level of page walk overhead and reducing TLB and cache efficiency without
-providing any increase in addressable IOVA space beyond what the mgaw
-window already caps.
+***
 
-Fix by decreasing the shift offset by one in each fallback case, ensuring
-ffs() targets the correct SAGAW bit position and selects the smallest
-page table level that fully covers the mgaw range:
+general protection fault in page_pool_put_unrefed_netmem
 
-  - mgaw > 39: "2 + ffs(sagaw >> 2)" correctly yields top_level = 3
-  - mgaw > 30: "1 + ffs(sagaw >> 1)" correctly yields top_level = 2
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      0a0d1d55dad570724bf8c7ea83409639cfb4be9b
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/20e51ca2-88da-4674-9797-a62c64743095/config
+syz repro: https://ci.syzbot.org/findings/4385dd7f-d1fc-4627-ad19-6862c780a90c/syz_repro
 
-Fixes: d856f9d27885 ("iommupt/vtd: Allow VT-d to have a larger table top than the vasz requires")
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000082: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000410-0x0000000000000417]
+CPU: 0 UID: 0 PID: 5836 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:swiotlb_addr_in_default_pool include/linux/swiotlb.h:177 [inline]
+RIP: 0010:swiotlb_is_nocopy_addr include/linux/swiotlb.h:184 [inline]
+RIP: 0010:__page_pool_put_page net/core/page_pool.c:851 [inline]
+RIP: 0010:page_pool_put_unrefed_netmem+0x22a/0xd20 net/core/page_pool.c:930
+Code: 5c 63 00 00 89 c5 31 ff 89 c6 e8 61 17 04 f8 85 ed 0f 84 07 08 00 00 e8 54 12 04 f8 49 81 c4 10 04 00 00 4c 89 e0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 e7 e8 37 c7 73 f8 4d 8b 24 24 4d 85 e4
+RSP: 0018:ffffc900039df230 EFLAGS: 00010206
+RAX: 0000000000000082 RBX: 0000000000000000 RCX: ffff888160efda00
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffffffff89c3aca5 R09: 0000000000000000
+R10: 0000000000000000 R11: ffffffff8ed5a4e0 R12: 0000000000000410
+R13: dffffc0000000000 R14: ffffea0004450300 R15: 0000000004450300
+FS:  00007f08f83e86c0(0000) GS:ffff88818d6fc000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd455a8fe8 CR3: 00000001134ac000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ page_pool_put_netmem include/net/page_pool/helpers.h:343 [inline]
+ page_pool_put_full_netmem include/net/page_pool/helpers.h:373 [inline]
+ napi_pp_put_page+0x133/0x1e0 net/core/skbuff.c:1036
+ skb_pp_recycle net/core/skbuff.c:1047 [inline]
+ skb_free_head net/core/skbuff.c:1091 [inline]
+ skb_release_data+0x8c3/0xab0 net/core/skbuff.c:1122
+ skb_release_all net/core/skbuff.c:1197 [inline]
+ __kfree_skb+0x5d/0x210 net/core/skbuff.c:1211
+ llc_rcv+0x77a/0xcb0 net/llc/llc_input.c:-1
+ __netif_receive_skb_list_ptype net/core/dev.c:6312 [inline]
+ __netif_receive_skb_list_core+0x784/0x830 net/core/dev.c:6354
+ __netif_receive_skb_list net/core/dev.c:6406 [inline]
+ netif_receive_skb_list_internal+0x995/0xcf0 net/core/dev.c:6497
+ netif_receive_skb_list+0x67/0x480 net/core/dev.c:6549
+ xdp_recv_frames net/bpf/test_run.c:268 [inline]
+ xdp_test_run_batch net/bpf/test_run.c:349 [inline]
+ bpf_test_run_xdp_live+0x1875/0x1c20 net/bpf/test_run.c:378
+ bpf_prog_test_run_xdp+0x7d8/0x11d0 net/bpf/test_run.c:1463
+ bpf_prog_test_run+0x2c5/0x340 kernel/bpf/syscall.c:4804
+ __sys_bpf+0xa22/0xd90 kernel/bpf/syscall.c:6385
+ __do_sys_bpf kernel/bpf/syscall.c:6486 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:6483 [inline]
+ __x64_sys_bpf+0xba/0xd0 kernel/bpf/syscall.c:6483
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f08f759e0d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f08f83e8028 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00007f08f7825fa0 RCX: 00007f08f759e0d9
+RDX: 0000000000000048 RSI: 0000200000000600 RDI: 000000000000000a
+RBP: 00007f08f7635024 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f08f7826038 R14: 00007f08f7825fa0 R15: 00007fffc4c69778
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:swiotlb_addr_in_default_pool include/linux/swiotlb.h:177 [inline]
+RIP: 0010:swiotlb_is_nocopy_addr include/linux/swiotlb.h:184 [inline]
+RIP: 0010:__page_pool_put_page net/core/page_pool.c:851 [inline]
+RIP: 0010:page_pool_put_unrefed_netmem+0x22a/0xd20 net/core/page_pool.c:930
+Code: 5c 63 00 00 89 c5 31 ff 89 c6 e8 61 17 04 f8 85 ed 0f 84 07 08 00 00 e8 54 12 04 f8 49 81 c4 10 04 00 00 4c 89 e0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 e7 e8 37 c7 73 f8 4d 8b 24 24 4d 85 e4
+RSP: 0018:ffffc900039df230 EFLAGS: 00010206
+RAX: 0000000000000082 RBX: 0000000000000000 RCX: ffff888160efda00
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffffffff89c3aca5 R09: 0000000000000000
+R10: 0000000000000000 R11: ffffffff8ed5a4e0 R12: 0000000000000410
+R13: dffffc0000000000 R14: ffffea0004450300 R15: 0000000004450300
+FS:  00007f08f83e86c0(0000) GS:ffff88818d6fc000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd455a8fe8 CR3: 00000001134ac000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess), 2 bytes skipped:
+   0:	00 00                	add    %al,(%rax)
+   2:	89 c5                	mov    %eax,%ebp
+   4:	31 ff                	xor    %edi,%edi
+   6:	89 c6                	mov    %eax,%esi
+   8:	e8 61 17 04 f8       	call   0xf804176e
+   d:	85 ed                	test   %ebp,%ebp
+   f:	0f 84 07 08 00 00    	je     0x81c
+  15:	e8 54 12 04 f8       	call   0xf804126e
+  1a:	49 81 c4 10 04 00 00 	add    $0x410,%r12
+  21:	4c 89 e0             	mov    %r12,%rax
+  24:	48 c1 e8 03          	shr    $0x3,%rax
+* 28:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
+  2d:	74 08                	je     0x37
+  2f:	4c 89 e7             	mov    %r12,%rdi
+  32:	e8 37 c7 73 f8       	call   0xf873c76e
+  37:	4d 8b 24 24          	mov    (%r12),%r12
+  3b:	4d 85 e4             	test   %r12,%r12
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
 ---
- drivers/iommu/intel/iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2e3b3ab216f8..05f351833d0b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2911,10 +2911,10 @@ static unsigned int compute_vasz_lg2_ss(struct intel_iommu *iommu,
- 		*top_level = 4;
- 		return min(57, mgaw);
- 	} else if (mgaw > 39 && sagaw >= BIT(2)) {
--		*top_level = 3 + ffs(sagaw >> 3);
-+		*top_level = 2 + ffs(sagaw >> 2);
- 		return min(48, mgaw);
- 	} else if (mgaw > 30 && sagaw >= BIT(1)) {
--		*top_level = 2 + ffs(sagaw >> 2);
-+		*top_level = 1 + ffs(sagaw >> 1);
- 		return min(39, mgaw);
- 	}
- 	return 0;
--- 
-2.52.0
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
