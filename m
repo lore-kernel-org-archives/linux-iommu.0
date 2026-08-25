@@ -1,168 +1,153 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013044.outbound.protection.outlook.com [40.93.196.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7458A37F33C
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 16:33:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787675609; cv=none; b=t28F7ffxLmrfEga2wDmQQ7Df8lo8Sxxt3/EpntwcFWMJxm4AsFoyjnqXq6aXkHDVUYMGrbIQfBM8/B1987q/sY3ISPECYPpHe1PrF5R0ixmNu3bf+5NGytTJPML6MSOWJxRNpjoI4+UVuvpDpLCJdPFWTknj04mvnXUQWE0PwDs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787675609; c=relaxed/simple;
-	bh=B0G9v6BhBY4Fuj6Zio2PzdtQEPK77b2tYVyr2I4VYEA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O9JeBYjrCfHZjq3En+xjZDirVwUNPoHnAQldySYEgFVod9RDKZDfkKDiaA3bIedzitKWK0HSgTJc9xphUPnxS3+8jFl/X/ERRsGaAAg9YR7jjIJW8Q5EHb5eaMa813/0PBUdKIteexeImfOyuzlk71IKimzPWDKO8Yhdahfx0Xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s9ivUXIo; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4480E32B105
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 16:36:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787675779; cv=fail; b=kEnC7mSf6UQkr83n2YjoJNunLRpXGrgVLWE/cq6uwQdLQp2QhQzutFobHNMKlho+boE13hT1V+8RmB4oRQvlAvhvS8gEdeS8shlC2zrjuiywXlo8/jmApand/pYzv2Y0lHZ04CMGz7EtUzIT7urC2NAV0APGif7TumrDT2Qm3KE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787675779; c=relaxed/simple;
+	bh=EAwigCqkKtjs5avoiLpIZ6kiaBrd64noppKB/R30ot8=;
+	h=Content-Type:Subject:From:To:Cc:In-Reply-To:References:Date:
+	 Message-Id:MIME-Version; b=HP/r/VfKrEgbi9SMVgTZBq2T5LVN5EPukG0P776MG4v0TB6TNuMRO3ubkzw5XTFVJBxrFEN0QFQ2sclfFd7L8kwDKD0svm0Qz8lIkQip0YMyeeh2Il913vXGzSKk1ImEwRnExO1wCCFgBc7p4hjiTsLlEJyvsvAa4rfkrDEA618=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=uDu2dCxt; arc=fail smtp.client-ip=40.93.196.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s9ivUXIo"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4996e2575dbso67505e9.0
-        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 09:33:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787675604; x=1788280404; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=SkuHlshzOD+AxFcfYa+qONyS5a/GbEXwYVTwh7Zfzc8=;
-        b=s9ivUXIonynx2mGvSKgvmM/Sj9b1AWJhVusuV6j9WvVgq+dWLo0NS9pHI6ojlb5bPp
-         8Na82NpkPnI01yACTJTQpg1w+KJacs/8fj6kF+tphfnpgAH5ayBX0p/kPri0myIwZjhy
-         WT/CX1Nd33i9sRpJhOyZ64vLInuggeTALq5pOAyBtcJej9PKQy3aVVB5HhFh2ETJBb9M
-         sEFnYzqo01utZLnquZ5lqsIMgFPXSdNUGqitvfNUVAwgz/H4i0hpIJ95ox1Ta0XUitj2
-         RRBhBpYvZ4qb7IKwdlHt/2L7Kb/9ecw2QlUWJVjRWQgFlENJYP9I5BBQqX2z9Oip1pAw
-         m+EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787675604; x=1788280404;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=SkuHlshzOD+AxFcfYa+qONyS5a/GbEXwYVTwh7Zfzc8=;
-        b=qTN24xDhl/RyMOPbC1JK7oHZSBv2bLqn88myl4geT0DK2/c0yIrOvoStT9Iey2rtft
-         +aYCr1Oxc5xfTtvKzPesS3n5wkwUophFIKKIKwGKf62nKJ5ciyf5rp0cC75F5MmdsqY5
-         vIrr0JsKEsO+9CKM9hvNPcvnSLJuYgQqZSw3ytwUulQdUO5VKo9JSAzh7z8MdU1wEqE1
-         ia6CKoADBVeB1PsAE0lk82tEO16nOcOD2pUnjZT+dnaB97SSoFa4Tscb9nCOAGGZO4F+
-         TchBgw09zXc37jiFxqqIAmpGMNcRda/85pqQoVE5iYNtdNxbR69yEp09JlePfLc8TUTP
-         6R7g==
-X-Forwarded-Encrypted: i=1; AHgh+RoRRrJmy8w64m3qqOGNTKZSpDCy965fLogp7JvAVh4VTowyzU2c1C/JjJ7Pt/CtxhpKOlwzzQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++nwBhqfPio2mHLpQbqRNorRRR6ngPN7wIZw6Z1iBdHkiKlzQT4b
-	01iUeRizsPeFLEN7NTH/0sM86g9PIArfqjmqO8HUaaEvfwos8rM90kFAwwdIMfxtwQ==
-X-Gm-Gg: AR+sD120nYSRje0oeH6vzkav7WPnplYjYJM2j17Y8W8YvHJdkxuEq655XbVji+Ieskb
-	N++6OLy9F8leIBlU4GZehte81eDtLQFqSbhaii+9MavZYlYBRklpfRjCr2QIhsxx8ZIUfHtoccE
-	VRM/229uEBFTuyJBS/fvSOTrltvvhx9QqHy/j45pI+tJK6D3AY9TkFt/F7mSdiWEvqN3OmSND/Y
-	wXVxZJSU9ceLkJL0zNujcdulU3QZoarpxd659TjF1DGedEgvEJSidaGPrN2UFO3No8urSASs55m
-	jygEKofgIf6X4M6XkSNoLRR+SoXhdWzzSYkPrhdwQrW5T8PTpCJ92S08N4iUdvEFidlhShry6v4
-	JSLueS3yVjtTjJ0axpJ63xii3y67+qv4dGeTiRu//3oYKDUA21d9fhbC3t+En199JMvpkkaiOc0
-	h6HZbhGBz1JJYeVN//RTsVreYUdA66G+THU/b+2S7hqsOI/W7n+MV0Sy0V9rKtOY/4jY76hgpvg
-	xSzOhZ6PPrKA8fuQatzIyw56h3gng==
-X-Received: by 2002:a05:600c:a31c:b0:499:7da3:dd0c with SMTP id 5b1f17b1804b1-499d867c424mr1003585e9.0.1787675603950;
-        Tue, 25 Aug 2026 09:33:23 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499dc960f24sm217945e9.3.2026.08.25.09.33.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 09:33:23 -0700 (PDT)
-Date: Tue, 25 Aug 2026 16:33:19 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Dragos Tatulea <dtatulea@nvidia.com>
-Cc: Luigi Rizzo <lrizzo@google.com>, Jakub Kicinski <kuba@kernel.org>,
-	rizzo.unipi@gmail.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, willemb@google.com, kuniyu@google.com,
-	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-	gregkh@linuxfoundation.org, rafael@kernel.org,
-	akpm@linux-foundation.org, david@kernel.org, netdev@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev,
-	driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
-Message-ID: <ao3DzzFIVPdtL7MX@google.com>
-References: <20260615234220.3946885-1-lrizzo@google.com>
- <20260615172535.080cf94f@kernel.org>
- <CAMOZA0KAHKsvA9yRcdrjG13S+=rJhw-Cvnw2WdLjGGY0azG0kw@mail.gmail.com>
- <ajEuUZMgS_NRmDcp@google.com>
- <ac473a83-c77f-4a41-bc86-8a857d2d6e36@nvidia.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="uDu2dCxt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MIf/CX8kwmp3PuKkf7hFd3bWIDtpKwm5IEM9b+SnqeoMsMNMzj7M/8nSCouQamdVND6Vu95Qoxm8/CcIKQLWEAd2qJ1VJLXyZsSGaHOy/+gkpRDSSES9STmd2MHwnOiZ3SLBmREpG/Y2oug9dcBEMcnXhew8sPRUkLXKR2a73A66iVJSi/zOT2fv+pSruxkRB4XDziUyTHBS97xaB0vnlrA5Wz+KFOkpUN74lKGFIm+PEQJbiaZU1PgRDpdRYnOWBKKY+KT0v+JxYSMlIGtu1CZK8zMsdlATC+V9AB9ch2CGPGSOuvpHht9FFC4QTk0SG43EHAg/S9yfsvfZeUQs8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AHPTtxtmedqfZgXjqDDSsL1hEt0snnUPutHEFyzrTb0=;
+ b=vRiw73baFdYNqseVn2dujvXfPEuSbrK+dq09z48pIN0AOj14n9vWcTEV37MTOwd0SSt0+qI6dOhQPZvArcOSQBO+voAOPMX12HpjJ430oRuMmZ2f8KfZnpLkP7bUjnSBjTqXf8j4VwIQemEVn8mNhIOMhEOGFDXqHDlfJksqzyohtfm061BziTw3Es1UvpN8lUBQWbHG3wvNVKZNFPqLAoieefD4FlJhID1r5Y2FUZ9GKgukPLPhYI6R+MB4DGgWfiTiLN/Jej8YXua3FjYPC57pmZvLSd2uRzPf1gokd+BpF14upPRUzFQ5IVSjHpUG/CyeDBjLY0tF2MIypjP8iQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AHPTtxtmedqfZgXjqDDSsL1hEt0snnUPutHEFyzrTb0=;
+ b=uDu2dCxtTafLtBLQsxGJcig6s9NWf13LkBCbG2HekMplMXfsmRQTJC9Vrwf2hHUlJJK3XJf4ngqaBELYV0L6gR3dwRxMhdB5c9cTnQ4skXULpddWDYxgveg46S53bfre0NOxUHJerTEwYA4TdQA5WHk374bU//QKBOr1Vl8NFcgOzMx6naotluCUVUVdTf727JFhegBNSHEHmq7AsqpSjcEzkiqEb5oUX0M4PKdynrVpFPUnSQI7jtwBsVT8JRH9r/nlNSB7eKrCTcxDRcZYikqOPv4Jzh8W2xh3a38xQ86CZembKjntZLUxU3GE1cM18q5alMCsCgU2waz+ArnydQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by IA1PR12MB9466.namprd12.prod.outlook.com (2603:10b6:208:595::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Tue, 25 Aug
+ 2026 16:36:14 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0339.012; Tue, 25 Aug 2026
+ 16:36:14 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v9 06/12] iommu/arm-smmu-v3: Handle gerror during
+ suspend
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, 
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+ Nicolin Chen <nicolinc@nvidia.com>, Daniel Mentz <danielmentz@google.com>, 
+ linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@nvidia.com>
+In-Reply-To: <20260728210928.1050849-7-praan@google.com>
+References: <20260728210928.1050849-1-praan@google.com>
+ <20260728210928.1050849-7-praan@google.com>
+Date: Tue, 25 Aug 2026 13:36:11 -0300
+Message-Id: <178767577113.3356902.10872241669143339312.b4-review@b4>
+X-Mailer: b4 0.17-dev
+X-ClientProxiedBy: YT3PR01CA0150.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:83::18) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ac473a83-c77f-4a41-bc86-8a857d2d6e36@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA1PR12MB9466:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2ac24ece-7ffd-4ac1-ffa7-08df02c6fa56
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|366016|23010399003|10067099003|5023799004|4143699003|56012099006|11063799006|6133799003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	ZJBV23iTZ2KLLIwvEVRqWNGfR1HhYLSa3fw6usHE4u2wahKLqzzZEy31ST3yraMX4sVzIUK2paEFLiP8ApbJ+PiWNNOi/0Yq4chCqnGoGBx6APxMZhBKqgPUWXkkVVaQlpHo+lZPdils1R3FjnBw9vQbQ1PQxXOnqLzaz+MGcTB0es/+3FAlG6cjqslQDt7EfkYwI3hM/g5HG4YiEubkblc3UkMqgggGIv0YHwz7zvhI9FJk948im7qps36XTxMJyCwZVljP+vNaAfCl6riqpOh8LylBVWS3sD0ZSzCgDcnJLcgaYzI/f4yxEST66+BNnVDKjtby0N3nm7/LnsciL19ADeL4M3pxImztvzP3ED+umBNAlYkkTaUa78g7Z48uM5Yqfk2TKODrd6nU0Fxlusck5Tj3EpopiOM7rs+YG/++gOtDrESv9D06uiZSVySgS4y4FnSkBqf/D2KkmMSTYCphKDgf4MsF/7Hyur7YDpQPpsdx9B9QgXARFgGyVB5TsA6gygeuJOvoXu0S2NllRTlN+1pL1MuwDgdSk0e98NcKkN+uyT477DMB7326xGgpNqmTms1Cty6WUFEJJBIW0ft6L81usjrzqJyb1W+N/mw5DLlnjRmYpuU9GhUpX88+QhVkg14Ga1kLpj4Edat7beFnV6SPiqntNIVyscLX/BE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(23010399003)(10067099003)(5023799004)(4143699003)(56012099006)(11063799006)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?V2lWc0hWdHh0U2E1ak1vSUdxNm9OMmlqZkh0aktST2tiWFQ1a21oZTVZWE5w?=
+ =?utf-8?B?NlV6VVIrZ3k5dDA4TjRaRVlLN3NITzJ0S0NkMXdzWjh5am5Cb1VIcXlraWh5?=
+ =?utf-8?B?UHZUdnZIU0d1TkNnSlI5dUdpOFJCT0RVWmE1NUgxT2hobGt5aTlmL0NXTVN3?=
+ =?utf-8?B?cElVNVVCVVJEOUNjRDFEUytKUXpyM0tsTXZHTDhVZnZybURHNEJzUUR0R0VW?=
+ =?utf-8?B?RmRJRndUSm5vSzVsUWhzaHdkcjNWL0dKRlRaUWVYK3dOTEh3S0Q1MjhiUXpN?=
+ =?utf-8?B?VDRSUExBT3Z4cjJZVm8vWTJBTmpRdEFFNGk5REtFSXc2VUlOSFNsWnpiV2tX?=
+ =?utf-8?B?ZGRHMlJSZ0Vlb2szQzBrWFZxV1ZCOEQ1NlRCcjlXdldVSzl1YzlVRmRjWFRS?=
+ =?utf-8?B?NHN6U1JxTHdMN3lTSTg1blA1M2pzUzBxVEZzbHJaWDhGemhsMDBMRTFNSDVo?=
+ =?utf-8?B?WmI0Mkg0dkJlVGJjcmV6QVlTTnRlL1pvMEluam1BTVBEcFMxZlpwMlV1M3E1?=
+ =?utf-8?B?bzF6cUxlb1QycUdPUnlWT2ZhdStZK2JsQ0w4RExsZkVVYjI3WHMzZURUMkc3?=
+ =?utf-8?B?WHNhdkVpWTdsdnZIVjFsRFhqeG5iNVdhVHgyb3Q1RjZnZUJEbEU1R3hSWVJD?=
+ =?utf-8?B?QmtTT2Z6MEdaREh3Q1ZSaWxXalJ5dVlKRzFzK3lXMk9YVjVjeGl6VW1saWRt?=
+ =?utf-8?B?emZ6b01QUmRXOWxvM3hzeVdIUEk2bVlDRjVxK1VtVFU0RzNZZ1J0WmgyQlFZ?=
+ =?utf-8?B?c1E5dkkxQVdNM1lFWUtyT0RWdlIrekxTWTZXYkhnV01SdUIwcmRGODlMYmkv?=
+ =?utf-8?B?bTlXQ0Y1Q2pTR0JqK012UGJMRXNaYUI2SFh5dzVzc3diRWhLcEVXd3pBKy8z?=
+ =?utf-8?B?S1lWQkNlZHFxSkx5RUJ4V3RCNmgrT3R6V1FUcmgrN1UvUXVZYXVWU0o5SXJp?=
+ =?utf-8?B?MUZpOU9DTjk5L3NucG5ySE81dXQwWnRVTllWTGNKM2lub0hwTHhZWnl3eWJ4?=
+ =?utf-8?B?KzhHdnJlU0YwVE5FczNnY204YVlOVEJxeCs1a1pLa3hQbUwveWlrekpIVG1x?=
+ =?utf-8?B?aE8wZDVDeHNHaG92amNpYXZITzFJajJnM1JVbDAyWUNDMnhRUkhWL0Y0Rm1v?=
+ =?utf-8?B?eFo3MVZBSi9STWFoS0orbTJjb2hjYTROcXZWZVBlOTBMdXF2elc3d2VtZ1B2?=
+ =?utf-8?B?R0NnYVkrNk41b2dubk9uVkdMemJYS2hFdzA4MVlQd3UxNnRoOXlHb0w2ajdW?=
+ =?utf-8?B?dHFoNGZHV3B0enNLejh0Q0tnTzUyNVgwWmR0TFd6SlQrSk1UK3hiMExPUzUx?=
+ =?utf-8?B?U05YWnhNVEhwZ3RWWGVNYmtya0ZnSERzb0ozemgzaVpBeldka2UzMmhYL2Jo?=
+ =?utf-8?B?TXVRTjVreWxMZXJURTVaYmFMdytmcHdpWVhITzJVeUhuOE5aN1NmVHdWZG92?=
+ =?utf-8?B?WDJTWCtnMERrMnB1UjRUY3NKdDEvUUlFV3FFSU1lMkZuTlBDMCtVQ0c1Ykd4?=
+ =?utf-8?B?aWY0Q0luQm5mb1VwTWFoSEh1VTJSajIxOStNajZvMThFMUNDbFRIRVA5cFBM?=
+ =?utf-8?B?cFFWUG5jSklVVWNpMTZvREN0S1pNQmQydHNEczZVdFZZY2RIWWpsbmtYWHdl?=
+ =?utf-8?B?N2NEdFluRFJlT2RwWk5pYjh0RmJVSzYwVWdmNGIxZW1reU1lVkNoVDF0K1dt?=
+ =?utf-8?B?b2Y0V1RmWEVtVU4vWUR5anpKZVE5cDNLREFEbWtSakllVTJJWTlMUlk1RVli?=
+ =?utf-8?B?NER0cDlySnBwbFlmSkZtd2pick9BNlF6TFo2MmZjQk1pK2R2NzYxUEcxMVIx?=
+ =?utf-8?B?OTFEWHNDTXhOODFvU1FzSXRmUzdxbTVRcTAxOWgzcjgwaUtiWEppSFVoazJT?=
+ =?utf-8?B?SXJ0U3lDdjlIMUYzcmdOTDZqYmFHUkd3akxxTW5xcmh2eEZVMitKU3BZYml3?=
+ =?utf-8?B?Y29qd2xmdHpBSjVpOEJLQlZScHVPYStUVWRxaHNEV3djMkNhK3BBQUpGSHBR?=
+ =?utf-8?B?Z0hZcWhyeFBJall1YkVTd0h1eXFOZk92Nk83blhXOWFOd1dHNHBsRjUwS0ht?=
+ =?utf-8?B?Z2pmRnJzUy8zVUZIRExRc3hCNFI3Q0Mzc0hnOVVpYVRxR28vclRka1pzKytj?=
+ =?utf-8?B?SE5tRG5yOTFtdnVEVWF2Z2s0ellQZjVkV2d4NnArdXg1OWU4YjZEdVZXUmRF?=
+ =?utf-8?B?YnZkUFpqT2xpcmpNNG93cVljbGVuc2hvR3FMTkxtVUlYRjkwRUN5blhNbjhk?=
+ =?utf-8?B?TEgxMkpFSThXMmVEdlpBVkE2K0YycFI3KzlDdUN1WTA0YWxCSFIvMTBocERp?=
+ =?utf-8?Q?ogm8i4+IKAE7+C2ZLY?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ac24ece-7ffd-4ac1-ffa7-08df02c6fa56
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2026 16:36:13.8338
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uKbAAPZ/fpwlbA1i1TnxjfRTHZB32+DiyQ7C+Ge3+0CRoS5yC3LK6StklKTxVjtK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB9466
 
-On Mon, Aug 24, 2026 at 10:59:21AM +0200, Dragos Tatulea wrote:
+> The GERROR register's state might be lost when the SMMU is powered down
+> during runtime suspend. Handle any pending errors before suspending.
 > 
-> 
-> On 16.06.26 13:06, Mostafa Saleh wrote:
-> > On Tue, Jun 16, 2026 at 02:33:52AM +0200, Luigi Rizzo wrote:
-> >> On Tue, Jun 16, 2026 at 2:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >>>
-> >>> On Mon, 15 Jun 2026 23:42:20 +0000 Luigi Rizzo wrote:
-> >>>> The use of swiotlb causes an extra data copy on I/O.  For tx sockets,
-> >>>> especially with greedy senders, this has a high chance of happening in
-> >>>> the softirq handler for tx network interrupts, creating a significant
-> >>>> performance bottleneck.
-> >>>
-> >>> What's the use case? I associate swiotlb with debug / testing mostly,
-> >>> so it'd be useful for people like me to explain why you care.
-> >>
-> >> Ah sorry, I forgot to mention.
-> >> swiotlb is used in guest kernels for confidential computing VMs.
-> >> Ordinary memory pages are encrypted and the host or devices
-> >> have no way to decrypt them, so the kernel must use
-> >> unencrypted bounce buffers to exchange data with I/O devices.
-> > 
-> > I started looking into the same problem recently, to reduce the
-> > bouncing in protected KVM (pKVM) confidential guests.
-> > My first attempt was to update dma_direct_map_phys() to skip
-> > bouncing and do inline memory decryption (for pKVM that is a hypercall
-> > which updates the stage-2 page tables), however, that was really slow
-> > compared to the memcpy in bouncing even for massive pages.
-> > My conclusion was similar that we need to solve this at construction
-> > by making this memory allocated from a pre-decrypted pool (which
-> > does not have to be part of the SWIOTLB)
-> > My initial idea was to teach some of the kernel subsystems (SKB,
-> > BLK, SLAB) about "CoCo allocators" that allocate decrypted memory,
-> > as this is not a net specific problem.
-> > 
-> An example of this is Jiri's system_cc_shared heap which is a dma-buf
-> heap with decrypted memory for userspace.
-> 
-> > I am still looking into this, I was planning to bring this up in the
-> > upcoming LPC.
-> > I will give this patch a try. However, I believe that we need a more
-> > generalised concept for CoCo pre-decrypted allocators in the kernel.
-> > 
-> There is a talk at LPC in the networking track about this [2]. This is
-> exactly the type of discussion that I was hoping to have there.
+> Refactor the gerror handling logic into a helper function and invoke it
+> from the runtime suspend callback after disabling the SMMU. This ensures
+> that any late-breaking gerrors are logged and ack'ed before the hardware
+> state is lost.
 
-I see, thanks for point that. I plan to be in LPC, so I will aim to
-attend this talk.
+The commit message isn't clear, this is just a refactoring patch it
+does not "Handle gerror during suspend"
 
-> 
-> Besides the issues mentioned in this thread we've also found that a lot
-> of overhead can come only from swiotlb allocations when running many queues.
-> 
-> I will add information about this series in my talk. Hopefully I will also
-> have time to add some numbers for comparison.
+But the refactoring is fine
 
-I had a quick look, I am not sure how that will shape at the end, but I
-think we need a general solution beyond NICs. For example in pKVM the
-bouncing is used with virtio devices, so doing this per-driver won't
-really work and is not possible in some scenarios where memory is
-allocated from the core kernel and then passed to the driver.
-So, I was thinking the kernel relying on
-CC_ATTR_MEM_ENCRYPT/force_dma_unencrypted() could detect that and
-allocate pre-shared memory for those cases.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Thanks,
-Mostafa
+Though sashiko seems right about the pre-existing bug.
 
-> 
-> Sorry for the late reply but I spotted this thread only now by
-> accident.
-> 
-> [1] https://lore.kernel.org/all/20260325192352.437608-3-jiri@resnulli.us/
-> [2] https://lpc.events/event/20/contributions/2464
-> 
-> Thanks,
-> Dragos
+-- 
+Jason
