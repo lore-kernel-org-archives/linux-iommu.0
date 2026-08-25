@@ -1,161 +1,110 @@
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C1C3E5EEC
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:06:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 499A937F336
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:24:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787652379; cv=none; b=Lo210D4fyZ855YgvAZiWiMCBNBSdTKi7SxMgvMPJQannUpB2zcpRPtjUmzaMSo03z1ADn7vqIRDke6QIXLo+V/NZwYQf4rF+WGXX0TX3ROZa85fAARrE1u8dgYojmq/vbI6g9haojdtt07SGjFKwegB07C4c0MiH3d2Vskop8mc=
+	t=1787653464; cv=none; b=aURrwZnVbCLep12RoX5/ocRBsKm8hPawRtkGmExVtLLWI1Z3e5WdSkiVcHrwQQGEc6FJFIWhv6/zaPheuLbQ+wix2t5y4E7Gdyog1t4xx3NsGKsKqNqS5uJkBoPENIpL+HtFJ4S36XqyHYo4nBZnQM/KBqHVDIjubiK56MEdqEk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787652379; c=relaxed/simple;
-	bh=kC0aTN0K7u9RCDOE2X6e4KofmqQ39JXeOz9FhSIz23Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=R35zLxY69CbkxdMwRHWQLpa8kumlwRBEglajKp29OFZ8WT3c50K750MJbBFLvFXTT3y1TwQidoWBX6CwoZD5m3NTiYpdNkviOAgdTme17UnDX6FA+DPVNC6acHFvOpyDoICWTnqlQ1dmtfHnMGg/lyscSsoe7KtvggVzl7x37Cs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ECaStI30; arc=none smtp.client-ip=209.85.167.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787653464; c=relaxed/simple;
+	bh=lK2BFmWVVl023uFQVfWzK7Q0QzOCzFmm33ddjKEUoBA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F02SoudnmWH/HtTqYWF4qKiwHGHH8w6mqfNWsaK66thbQ5O7l5wlLtbVo0MSvhsnUdtoRVr0jYi7nDZz9mes2CO48jGPn799aWHDnJOR6QROpBL+orrA+uvZJd+vrXUJ1Av1mF/9x9GSFpGkMN/ZqhJov54tuO5KsOsaQ/lqCzQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JC6Scfsz; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ECaStI30"
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-4a45b3f0becso4166624b6e.1
-        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 03:06:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JC6Scfsz"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2ccdf36f63dso100745ad.0
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 03:24:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787652377; x=1788257177; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ITNgIlTwsBrNBLrYNkaCeP0gJOrZpKRql3oj7U2AlDY=;
-        b=ECaStI30AwVW9OM7EI4HihC1FaLfA9JkSKjCjzhARFCXyGoP4NKL1RFuB9Z2/3QE6y
-         fgqKaSWbeU/X2PjQh0KHWphnQwUag84dFs2dj5X8wqhMwGzCKwUEV0vkRnoGK3EA1l8l
-         DNdmUT7p51v0sXhnrDy3aQhHiip5IAd3A3eY9pqQPLbmDAaNXxtCDbR4kJ2cx6Gk+aUl
-         3CSaPL8PhxDQgzJ0dxcC8dmpj5h6YKR6lUnuP0w/aeBSgZIigW7vbwYEiMHkvNZRxIzG
-         SEr2etLue6RPigZpt1/Glx3xs5gLVfnN0I7V/edvmpheoICZqz/4ZLugv9wS+WOci5s1
-         n+5w==
+        d=google.com; s=20251104; t=1787653463; x=1788258263; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=3wkoXmohD3gha4H5ZeL5zxsjojGVMUQObrPCKo/HBgk=;
+        b=JC6ScfszUKBUzXwa6TC/TK9SOYjWXlFPAoL/CBf3pcfK8aIJGb75EpXtJXL7lZjnQp
+         5bx8eqZzlcgDBSWXYq1wlJPTGLWZgnS+V5wsMJ9M4Iack1lCZ8+lc0xToDfmjywooW3g
+         JOD+3ViSwTLdik5Pr94q1MTQgOeaOEFzzXD/Y6LY5RKzjsXXD0aekEtFmNhFY4KTVnWj
+         8PGXcnR4Epv79V8ZDSWKj8PTlmzjDbJeUKrMeTFZjHzEe0SYtrc93yMLk56ngfSBwYn1
+         omYJ2QDCKK42nXT75W3YsuRnlZG66MDqruE8h0Wd93A574mf7v6EDsDiSHxKG4HZE80Z
+         QXnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787652377; x=1788257177;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ITNgIlTwsBrNBLrYNkaCeP0gJOrZpKRql3oj7U2AlDY=;
-        b=Ik498nYC+3AiU6HwL5T7eL4/ia1t6zR5YL1giqVoLUPXElqMR/hAB4s+1UCM0j6EVw
-         4+Kig4UFYQYFX+qBDuWrtrCuY95bll9XBvHj69N87K/2QFkuW64x3UG/V/vlTWq8guUK
-         7tyEOIZZQIczIWPJOK9LUC4hYUy/ZbwPLPjxnYMA2GHyIW12+5gzu/omryh9Yk+Vxbaw
-         SIjy0roUoaelkIvKd/OcoswcZXMXIEajud7WWt5wxObFo67lEO5UWQpNxuD284LGIT2t
-         WvYzgdpYXNJ9iuRGRsjOGlMwFrbbPErXiO/Y66GnivHpI13e8VwOoiPzKy4oufUeEGXX
-         ALSQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqE5ufiYJzA6E11hJWAx5PHAi1Cn96N9qlQQg3WIAoYu0AZtFbmz4qJ/JUyqQgGssg0zBihAA==@lists.linux.dev
-X-Gm-Message-State: AFuF++kfCs30rpK6w67I8J1Cyrq/UhN5xQ5AJ3cAuS2qTDvT7t07G7UT
-	FakBCj9qPKIG5whprVOMwJ/wYzVwWpEA21it8/rJKRkJBMdgihlp8uZM
-X-Gm-Gg: AR+sD11JopXkjd9MtLNnUZInVgCCaq7ughakTukxEG59hQRu8cYWSm2+QPPLpPFh/dq
-	iob57Ec91l6st9kKloBOwvTwoHg3j54VSezi9V6ZyXx/kPar/QWYwDxYsTzoWmoZry03kPq2mMb
-	krxtGzJJTtmwM0B/TWsIp15c4Q7BXBhRWT0UIMDuMXvacIxWUC4Z3wEzD9o3RAaTCaHRBGD6YuR
-	ZlZJ31UOFG6U83OKbtjOsgkogQ5Fb6Rk2IrbrqjPFNQsKp8Pr54IFTNFuaK/uaVoDt8uCefyVJA
-	mjHyk1vHsqlY7z0Esb39JJH73Q/+CCHbVo6cEGMSnXwvsr3WEH9btIblA6cJdSWQNad5XCJFp1y
-	/IOqJ5Tb6yzp9uzYbHQHQ8XFmLstJyV3dTm9++uX/CLKwlJF+9KMqmyufPgOyTE8ind179jAMyQ
-	+9ETQ/wJX4/AK0cdQk5CkV33qhcrH6bfVXbcVqMO5HibPjpk62bKCAPFN3JpumOH/+Eqsns8PFI
-	TJy0LKMW1c=
-X-Received: by 2002:a05:6808:1201:b0:4a3:3108:866a with SMTP id 5614622812f47-4b2ef480315mr28341239b6e.17.1787652376848;
-        Tue, 25 Aug 2026 03:06:16 -0700 (PDT)
-Received: from volcano9f8e-host.amd.com ([165.204.217.251])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14186183f31sm29502922c88.13.2026.08.25.03.06.13
+        d=1e100.net; s=20251104; t=1787653463; x=1788258263;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=3wkoXmohD3gha4H5ZeL5zxsjojGVMUQObrPCKo/HBgk=;
+        b=aKnlMFWxoavNwvLn7pZJ7nsSOlv8JqWBvTKbs/ivtMQNOwLUATS2wi3svoEoxqqcQ5
+         vweykveaEyfdHg5X5ljLrlQy2NvJmNKwmAjfMLWbj8ItQCxUlkknOXH8nxYNYZ82+MIn
+         ur1oDuXuZpcXfDzR47kIIzzV8Y3BZLNu1XwBukR9AFD/g5CBz/TF7BIaeFPJxGJqqVyH
+         vgoN/3GFmNURScwGSbVYB1LKMcNHeXkL6Xf4K5ml2jmDNdeweP018dp6UuMoiFowVHV0
+         zWSWRbPwkWho0+aG2cFANfv952TtX24hFR39Fh28z4dj8LeZiS2ak2DVxcClKPGAs1Vc
+         qyZA==
+X-Gm-Message-State: AFuF++lVZ8vj25TarEYi/MLl+ib7DsmNTgaNxvtp1DzJTKiNwL689sYP
+	1oz5GlR4Tc6lc7MiBG4c/qPIu39esK3qSoTOuq+rvVDr2Nkm16I4+6dhvb8bSeodtw==
+X-Gm-Gg: AR+sD13g1dnvv74jo5Am5GlHtYmcLllTv2/L+4Lk8weddfccIotj1RQrJjQ0iQZlZc5
+	hbIX18vu6f5Ehd9OD+QIcMzFnWauchUmNEnkKqo9D1UoOA8vK5x3tE/UbBYSQKaaPogem/YSJ0S
+	DI1aITWzTE2MLqLgADJQYh/BzC434TmU6zzx39BLVXpazf6hkANIENF80mB/DYtS5rKBx8Q67HD
+	DeScqczzR5mrg3G8WqxQXPRPWCIcFIME6eKdXfrzqb92i1y92Q8e8DzXz/P/NEarj7lYzyh+482
+	tPLDlRTEgZzn4fhBISZldFmqs6m6AT3omEH80nh0u4QhNmrIkHB3Xnyz6DAzcEviFXS5KORGA0R
+	X2nr68LlSAMmMRY1kG3Jjt+EAqSF0/5++MLUjkYNHFd9KHxK1sGfz2hQfbTTYgzfIkaZcxYUhcF
+	QG/Hx2h2jLiRJGMpUSXphZ8EShFrekoX3vYLNxPIF+0BAxc9rmV8bRgTzxT+8rAE+3wDJ+bKHwX
+	iUq1VZOKOSNg3vu5NHl1/jzU6olrfgy+gMk
+X-Received: by 2002:a17:902:ef4c:b0:2d5:db38:8010 with SMTP id d9443c01a7336-2d6f2f25ba2mr2716195ad.15.1787653462056;
+        Tue, 25 Aug 2026 03:24:22 -0700 (PDT)
+Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8520f16d77csm2916024b3a.59.2026.08.25.03.24.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 03:06:16 -0700 (PDT)
-From: Hemanth Selam <hemanth.selam@gmail.com>
-To: joro@8bytes.org
-Cc: suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	jgg@nvidia.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/amd: Fix ineffective error check in nested domain allocation
-Date: Tue, 25 Aug 2026 15:35:54 +0530
-Message-ID: <20260825100554.2787577-1-hemanth.selam@gmail.com>
-X-Mailer: git-send-email 2.43.7
+        Tue, 25 Aug 2026 03:24:21 -0700 (PDT)
+Date: Tue, 25 Aug 2026 10:24:16 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Ankit Soni <ankit.soni@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v3 1/5] iommu/amd: Refactor device probe and capability
+ initialization
+Message-ID: <ao1tUKdiMZSoM82a@google.com>
+References: <20260824122347.1588592-1-praan@google.com>
+ <20260824122347.1588592-2-praan@google.com>
+ <178759520116.3131778.9383172724893797706.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <178759520116.3131778.9383172724893797706.b4-review@b4>
 
-amd_iommu_pdom_id_alloc() returns an int: a domain ID on success, or the
-negative errno from ida_alloc_range() when the ID space is exhausted or
-memory is short.  amd_iommu_alloc_domain_nested() stores that return value
-in gdom_info->hdom_id, which is a u32, and only then tests it:
+On Mon, Aug 24, 2026 at 03:13:21PM -0300, Jason Gunthorpe wrote:
+> > [ ... 14 lines skipped ... ]
+> > @@ -675,7 +675,8 @@ static void pdev_disable_caps(struct pci_dev *pdev)
+> >   * This function checks if the driver got a valid device from the caller to
+> >   * avoid dereferencing invalid pointers.
+> >   */
+> > -static bool check_device(struct device *dev)
+> > +static bool iommu_lookup_device(struct device *dev,
+> > +				struct amd_iommu **iommu_out, u16 *devid_out)
+> >  {
+> 
+> If we are touching the names driver functions should not be called
+> iommu_*, it is confusing..
+> 
 
-	gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
-	if (gdom_info->hdom_id <= 0) {
+Ack. So just lookup_device works?
 
-The assignment discards the sign, so -ENOSPC becomes 0xffffffe4 and the
-test never fires.  The nested domain is then set up with a host domain ID
-that was never allocated, instead of the allocation failing with -ENOSPC.
+> Otherwise looks OK
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Keep the value in an int, test it there, and store it only once it is
-known to be valid, which is what the other amd_iommu_pdom_id_alloc()
-callers already do.
-
-Fixes: 757d2b1fdf5b ("iommu/amd: Introduce gDomID-to-hDomID Mapping and handle parent domain invalidation")
-Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
----
-Verified by driving amd_iommu_alloc_domain_nested() directly from a debugfs
-hook, since the normal entry point needs iommufd to request a nested HWPT on
-real hardware.  No error injection was used: the harness allocates domain IDs
-until ida_alloc_range() genuinely runs out, then calls the function with a
-zeroed guest DTE, which is what validate_gdte_nested() accepts.
-
-Without this patch:
-
-  NESTEDTEST: first alloc, IDs available        -> success, hdom_id=1 (0x00000001)
-  NESTEDTEST: second alloc, same gDomID (reuse) -> success, hdom_id=1 (0x00000001)
-  NESTEDTEST: exhausted the ID space after 65534 IDs, allocator returns -28
-  NESTEDTEST: third alloc, IDs exhausted        -> success, hdom_id=4294967268 (0xffffffe4)
-
-With this patch:
-
-  NESTEDTEST: first alloc, IDs available        -> success, hdom_id=1 (0x00000001)
-  NESTEDTEST: second alloc, same gDomID (reuse) -> success, hdom_id=1 (0x00000001)
-  NESTEDTEST: exhausted the ID space after 65534 IDs, allocator returns -28
-  NESTEDTEST: third alloc, IDs exhausted        -> error -28
-
-The successful and the reuse paths are unchanged; only the exhausted case
-differs, and the result was the same in three runs of each kernel.  Built with
-CONFIG_AMD_IOMMU_IOMMUFD=y; sparse and checkpatch are clean.
-
- drivers/iommu/amd/nested.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-index 63b53b29e029..f1c7987fc585 100644
---- a/drivers/iommu/amd/nested.c
-+++ b/drivers/iommu/amd/nested.c
-@@ -96,7 +96,7 @@ struct iommu_domain *
- amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 			      const struct iommu_user_data *user_data)
- {
--	int ret;
-+	int ret, hdom_id;
- 	unsigned long irqflags;
- 	struct nested_domain *ndom;
- 	struct guest_domain_mapping_info *gdom_info;
-@@ -161,8 +161,8 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 	}
- 
- 	/* The gDomID does not exist. We allocate new hdom_id */
--	gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
--	if (gdom_info->hdom_id <= 0) {
-+	hdom_id = amd_iommu_pdom_id_alloc();
-+	if (hdom_id <= 0) {
- 		__xa_cmpxchg(&aviommu->gdomid_array,
- 			     ndom->gdom_id, gdom_info, NULL, GFP_ATOMIC);
- 		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
-@@ -170,6 +170,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 		goto out_err_gdom_info;
- 	}
- 
-+	gdom_info->hdom_id = hdom_id;
- 	ndom->gdom_info = gdom_info;
- 	refcount_set(&gdom_info->users, 1);
- 
--- 
-2.43.7
-
+Thanks,
+Praan
