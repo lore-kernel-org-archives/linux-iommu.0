@@ -1,80 +1,77 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BF9F383C83
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:34:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDFCE393DFB
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 10:37:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787654076; cv=none; b=IJVYrLQIdWHjXSr+dfdianzFyy5u3dcYydZMBpyibuNglDMYnJI4F7HaK9sMr8v7rJZHbyNPnILDMgIIOHXtN1RCQfHfAjqIBLDoEr9DseDhmhshl4I/b1uQrfu3eUPHiOsLPg/8nsBeWU+dxDjFR80IpcnHsHMnVqpvnIAPxBU=
+	t=1787654238; cv=none; b=SHjzQZnH17WhB5lhX4mD8HWmWvpL7EwT4wZ1wAckJQFCAxNT1MQcTMijuzKWjCr/Nwm0hKVfRPTRmKRMhrWkjT5GawxAAge8En/kmBHZKLUrIvLJSrZGaAx4F+IG9t+LL538zi9VtATHuwPOeHHyPDAJzXxmzQnpZqV3OkRJnbY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787654076; c=relaxed/simple;
-	bh=O+P3xJqQ2iemp3Ulde4Fu2+lem2DE6IjQORZXOXh08Y=;
+	s=arc-20240116; t=1787654238; c=relaxed/simple;
+	bh=6Zmbfl5t350g/ikDeKV9bfW8BGWB5eR0UjWTzntGkJ8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aN5WAQmz35YZqIyri+eb/c6M50ss9OWe03mdnsBynb+pTMZtYrQUbhXaC641tIMVFTSTukXvLFiTrXcMULTJ7AeU/pcWjqCBbJs7GFHXRiAIJj891vHUrUnjTVapxP7XUPg8jn+8oY96fLhgJaEOkYkSMdqneKzO+zu0eCU9PW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Nhert8On; arc=none smtp.client-ip=209.85.214.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=gO2kvvddvnmGI8SMnU4forLvAp+bVyfsBrRDsEjuDNeh1G/Laq0OlotdY4ypc5LZxyzoCvAKU7D7kWPf3iq+dgMhmkuRRADAOq9zqTOXnV5NHnzlcKRUCTn0DkYmydPxvWrwvbq1+sQE9ktTJczfiQucxtoDCvJcYpHirLodqh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QnM3swWl; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Nhert8On"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2d3b440b97aso78705ad.1
-        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 03:34:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QnM3swWl"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2d3b445a84fso71055ad.1
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 03:37:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787654075; x=1788258875; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1787654236; x=1788259036; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=3I7M6+VDRcRqN+go+MtLjnMG5u02OBvW+7qZt2cSYZg=;
-        b=Nhert8On7L3uz7O07S7wc/ZtQkXUCNsQ4PTSJ/dtLy6tOTVcuKzyI9KKGZr0Go1nWM
-         QMpY6BchGdmIP2ZsC2SMpWE2U+UYoPWy9FVJivELYgFQSsqHmOYlir3Zjd1TqbcBHpIb
-         2tkPJZ/Zxe44l1RMiGToCp7bQO5rScvFyPYeLCbhKjfyKF15xARgFb9Iits7gNHHg1rj
-         Cgm5MlfCaJrvMYgTsH/A6jx8uvMw5G3aYfOnHmRcAr1S9byFgCcsqoOsLxWdIlLj6NJ+
-         QygmptEoG603IFozeUwCYQSD0EuxsNB0yFKh9Ny6njh85J2DJ221jJ8M/lJGY0t7BVPf
-         ZfGw==
+        bh=W7fh18dW+kUBCYJPdPDVxmB9qh9dvTUt5azKdgYfYsE=;
+        b=QnM3swWlv2P3O6xVHu80yU9lBr7pHbnbHMDx0XbAft7i3muh2Yk9xXF4xuV2tNenwY
+         vDYTwLgGVjdV2qJ7pBKhnjnEfxy5/si31+lISNyTPjuKiXoFjI4AXRmVVNsBdsS1VADJ
+         LjPirkQR3W4tHZcUrsIh74R6rssGRJAOorChC6eKd/JkIE1BOlm95a6z43AkO6abTcMS
+         PalqX/VZuGsnBpUPheG+xa0ksQdLQSkORvt1Nl/ouk5M/aHYhebqEvZzX0Q/ku5TaW3W
+         rquUS5U1O9xRpb3n2OGI+cnpgZ7W+qfG/nDKH6aG8GtP4RBwF2OkZdVUcy+ja7tLCJWy
+         /JLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787654075; x=1788258875;
+        d=1e100.net; s=20251104; t=1787654236; x=1788259036;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=3I7M6+VDRcRqN+go+MtLjnMG5u02OBvW+7qZt2cSYZg=;
-        b=NWk7y/UG18mRpnLO97gWuES+EMhSGrOQ9qSx2kPzL1dVAPEK3aPuq6DPJ6wKudsD6k
-         6bynqZVtWgione4Argcga1p0IltHWxmbwJkhmBYXZ8hvQcEI16ly06UHUSRRybJ1m1Sv
-         cod8a6E9N4Vs3ftek4QVcnZnCJMIicUFI3jp3f2k1dda4eRPDuTnZ1uOyuGKDAfGfgHh
-         bHafUOjaU8Col5882RSp0dPYmGSZHKtPQeDe87xEy2a72s92A+qF9h4buZ+mZGof9gvN
-         S5Q516/qyldZl3dlgKwxX3cXRNPYLiAUrLiPESd9HJ9pm5oFfxZBtVY4kqTrFYW3oodu
-         7FyQ==
-X-Gm-Message-State: AFuF++lUCdI+mqWJeNQhwoSgaybWFQTTxllvS39L0SoCOlmaUIC6UuVg
-	RLz5zkMTf/TTAWUA1Qnykwesg0pZ68t3oIocP4B3I0rK2EO8QzxMHhBHOzxRgv1/ig==
-X-Gm-Gg: AR+sD11bDGjQGjCCJWrUI8QwPoe3NdpSvIho4InsBIZ4+HEr5smqDqYmLKIxkkV8QtD
-	rtDsbANSv74VWE2QSfNhUw1Uj53v9BrYsvLrA06leJRpZV/9fNj3AQt5SwmCyp/xYNyFMn+U/yW
-	1IShXxnS6+PwZkF+l+DADdncbd0heifM4O+aDvvPjy7ig9mNoXpGWlR6kOGAwMJsok0trcdR9Fx
-	vHh36+FuDtRiYOcnypPiRNU+R5bFF9J5ITdN9t/G9hJ3dw2myMlfPhqe+DJ49j18tJ8jJztXlMe
-	pjPsZN94Pjx7pnxAbe280Tq5z3gdsK+0sQQPSQnJbkJa1F7xpm334OBeXKFPfxRTiFU/Klgl7OJ
-	NOZlvddL4mDcUHuZ6IRAK+dy4w0+oKG25IQOZ6WgmFdWDQQnQQIiVqvlRcP14Vm/XwyEyE7u9jA
-	C9kZm/J4wJmfp2ASuS6kXv54/GVg1BXtv7jCL5kivNe733M0nQJ47DswrqCqCmZjAmozPN/3BQX
-	hg1jqQt/Ja55sB0Fg0LtpTpNw==
-X-Received: by 2002:a17:902:ef4c:b0:2d5:db38:8010 with SMTP id d9443c01a7336-2d6f2f25ba2mr2769375ad.15.1787654074163;
-        Tue, 25 Aug 2026 03:34:34 -0700 (PDT)
+        bh=W7fh18dW+kUBCYJPdPDVxmB9qh9dvTUt5azKdgYfYsE=;
+        b=ro3qLapjZVXpZuOzm9sQkFYopcBCRmSD0KDd5CxYT/msYKbKZjbJgc+En5mfmfhYWz
+         880AuVQ9ajuuLNKVKTOKadt+asLIgqazeyBe0V8fs/QoltfdXW4n9c0QwWFpjBoJBaK5
+         KgwrSRbHbXIXeXbkLzLKuoa0G7HBbozbSq2/LyrGbBVJAGN3ftvA9BRqvDZxUEaT3GEJ
+         zTZYTQRVDi/AGnptvcqJ8DGAY8UA/o3BDUFwqkyMEp4UQkp6sH5x6NppGRWLFjEFmyA0
+         COWk037OS6O24wV304KH5E3NR/GI93AntJtrqN+SQVH3V0+SI5RK1w+G/ZV+5MGyhYn3
+         REpA==
+X-Gm-Message-State: AFuF++lNbT0RQdyMtVUvI1+WoawKD9bUSuxiaG84T9dyutSpur3lmk1/
+	TLICNQk5v1TFIa7Y0ZucvpBJeDIbuerU3Lc6+HOIyPBZZqJ4wFJzFs9M+QWLZTZDkQ==
+X-Gm-Gg: AR+sD11p5+fXp2VozO22vZPXcAVcxqqRzFGuqvnR51/x7wAQGUZuIV4LV7wDPLQfj8T
+	0OtLq0DIvHXDYyWnEpjDZZo2qV7FIXVyqG/RwGZivI2PWWy1yTqB2lgA4HmPJNzblfy0IOQCN6R
+	GqfnEP7G8013lyRUjmr10zrTZWIOGT5xZDJADkngbsXjHNNB+ofMCpQz/JOb6uF6HljNBmOnkMh
+	9eFg/jHZSk1sUEb2FdtkG8MAp7WLD40itghcXI1ML5BT3N4exAchPwIC43J7O1i3lJ5VCPe7Fgo
+	fBxIJE2XaTrcAlgCzOL3MqcIG9YnNgf7z/w2rvEXlm1MvHHj+T3uvpr2S4R5cThn0joUM21zPip
+	b0I6CEALjhmYb5lVAonaM2r0BelIkdXywuTlUuHapGKrcqvBqVj8zwcxDZeklNwy0z3iLro53cs
+	A4pJjJp2/Y9I541lMUww9BDFl28HZM5zKXtfgjcL45kVYsIRBqXm7oSjyjlJOopR7c7R7+nJFQE
+	KLK6wvtsN1KzN/NPCdbBQXRbClEOHqqvNhGzw==
+X-Received: by 2002:a17:903:acf:b0:2cf:4353:f117 with SMTP id d9443c01a7336-2d6e036d4cbmr5203815ad.0.1787654235552;
+        Tue, 25 Aug 2026 03:37:15 -0700 (PDT)
 Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39645d31e74sm3331799a91.11.2026.08.25.03.34.31
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d676895799sm26786905ad.38.2026.08.25.03.37.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 03:34:33 -0700 (PDT)
-Date: Tue, 25 Aug 2026 10:34:22 +0000
+        Tue, 25 Aug 2026 03:37:15 -0700 (PDT)
+Date: Tue, 25 Aug 2026 10:37:09 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Ankit Soni <ankit.soni@amd.com>,
+	Ankit Soni <ankit.soni@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
 	Bjorn Helgaas <bhelgaas@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 3/5] iommu/amd: Split probe error paths to preserve
- IRQ remapping
-Message-ID: <ao1vrkp3b8n3U4xT@google.com>
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v3 0/5] iommu/amd: Refactors for ATS robustness
+Message-ID: <ao1wVQzyCW22iNlQ@google.com>
 References: <20260824122347.1588592-1-praan@google.com>
- <20260824122347.1588592-4-praan@google.com>
- <178759520117.3131778.6953869487486713121.b4-review@b4>
+ <8e53fdee-2c3a-47c6-9478-19fbabef18eb@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,27 +80,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <178759520117.3131778.6953869487486713121.b4-review@b4>
+In-Reply-To: <8e53fdee-2c3a-47c6-9478-19fbabef18eb@amd.com>
 
-On Mon, Aug 24, 2026 at 03:13:21PM -0300, Jason Gunthorpe wrote:
-> > [ ... 15 lines skipped ... ]
-> > @@ -2540,8 +2540,7 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
-> >  		ret = PTR_ERR(dev_data);
-> >  		dev_err(dev, "Failed to initialize - trying to proceed anyway\n");
-> >  		iommu_dev = ERR_PTR(ret);
+On Tue, Aug 25, 2026 at 12:36:18PM +0530, Vasant Hegde wrote:
+> Pranjal,
 > 
-> I would drop this line and fix the return to have the ERR_PTR
 > 
-> > +err_deinit:
-> > +	iommu_disable_device(iommu, dev);
-> >  out_err:
-> >  	return iommu_dev;
+> On 8/24/2026 5:53 PM, Pranjal Shrivastava wrote:
+> > This series forms the second half of the subsystem-wide ATS robustness
+> > updates. The first part (focusing on the core subsystem, Intel, and ARM
+> > SMMUv3) has already been merged upstream [1]. This half addresses the
+> > AMD IOMMU driver and standardizes the PCI ATS API.
+> > 
+> > In v2, the series has been significantly restructured based on feedback
+> > on v1. 
 > 
-> Otherwise this landmine is going to hurt someday since there is only
-> one flow that would have an err ptr in iommu_dev.
+> Overall this looks good to me. We did run our CI w/ v2 and no regression found.
 > 
 
-Ack. I'd refactor this.
+Ack. v3 Just addressed a few comments. I'll send out a v4 based on the
+feedback on this one soon.
 
 Thanks,
 Praan
