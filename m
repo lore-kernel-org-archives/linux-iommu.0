@@ -1,157 +1,279 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E54142E42D
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 12:30:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787661012; cv=none; b=qmXCJNE/KCN7gvnKpTX9XkbVNXoI6Cg9TCbpoiF1H/buJ6y23Ei+UXuwIqEfq7YDZLAgEkbbELkEpLkQkPpDIicBj+xiAIWVy66w2e0Aj0Hcgc8zcf4wNON6HH15xwx0+TGVreGH3JylPaGeC30/liI3ZG+yiVtWYIvI9sw4C60=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787661012; c=relaxed/simple;
-	bh=DBxi0BOOwrT4xCseyDgm+w1BLMxRq77pCreq5EfGDkY=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:In-Reply-To:
-	 Content-Type:References; b=ZYcxMKhJtRhQIbP2NEJHmzHMFhu54IvZ5Z/lyf92Pq5+3SNkJyDELKarJXkw/G0/TgPzPNLOv47QbaXsIpCMQHjmAKwyabk1YRxLVzUoM+ZSIW174FbyyW84GTZqLk/vzHtDg6ChvBVx8RtMQXiO0WtGckku5UD+IKpND4afyXU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=M/plwnle; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C38D43801C
+	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 12:31:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787661101; cv=pass; b=PK6OmZCip+d6Jfn6Cokktk9IbfYFP/EckuTqA0Fh4HyPcDvoAjrENwT22RQ7TgDTjJPsMkMd5ZVVchtNfuqJztHEjCwb5xSa5OgS9HNND3izQV3zCMH/mlCfRDNWlE42CI65e0tah3Isc7d3IQZcqn40kSaLj3XUmMbpFze+6Qk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787661101; c=relaxed/simple;
+	bh=KLVbc8WLHKERKnG9obTVBGbSM+aCFle3c4tKE2S94Jc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=isNQA6X4gz91Nc02V/7NS4S4EelTp/P29uR2Edx0GjJRtGogka+WCOdfx4aWR8Idjvv+8ebixMuVn0rk1dG9Cmpi8i7AxFSXv64WIIxdfFq9i3L2xxxS1DX9FndGqZVgGsnYOKYEf/AAt+9Ebng14VY5odE1wR/njW0pgxZZbdY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K0AHM7na; arc=pass smtp.client-ip=74.125.224.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="M/plwnle"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260825123000euoutp02f3faea6165864afaaaa0b9b5ff90b235~PDDVaDTlP1710317103euoutp02f
-	for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 12:30:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260825123000euoutp02f3faea6165864afaaaa0b9b5ff90b235~PDDVaDTlP1710317103euoutp02f
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1787661000;
-	bh=/CFXDg3L0aD6SB3xy+cQUqcdazmfSamoOM2pD2VK9/8=;
-	h=Date:From:Subject:To:Cc:In-Reply-To:References:From;
-	b=M/plwnleb557HnWW2Dgy9vnFWSWbm89jMkXmfdBPQP4QBiSMtpwH1WVf0GPG0YzkB
-	 gifzRvzJLk6W7MqMdMgDOgPSNREwbE762LekRDsHSM41/dqjMNjK0W8f2FmZQdds1C
-	 PimsNKW8gsS17sEJpl3sKl4RVUT9KVaiQ48N53po=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260825123000eucas1p248f943e21b217192142c843eb427dd76~PDDVEpmia1504115041eucas1p2S;
-	Tue, 25 Aug 2026 12:30:00 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260825122959eusmtip1bd8675e1e80e324fa87b118bf74d4d66~PDDULpsjo1767517675eusmtip1d;
-	Tue, 25 Aug 2026 12:29:59 +0000 (GMT)
-Message-ID: <e7605d7a-85f1-4339-99d2-85c0df884ec2@samsung.com>
-Date: Tue, 25 Aug 2026 14:29:58 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K0AHM7na"
+Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-66d15f22652so146531d50.2
+        for <iommu@lists.linux.dev>; Tue, 25 Aug 2026 05:31:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787661091; cv=none;
+        d=google.com; s=arc-20260327;
+        b=eqdTphwGfWQ2/FAf8nlSevx69yovZF46bW9RnribSOr1FR2+MCwEy0Zvw18b7ybUwA
+         n+h0EAa7OdZ4JgEdbsfx1CwPnxlNwK0JsgnIvUB8iJ2YL9s25pTGMsj2jEgDhUbPMjxH
+         K1GunQP92ngMrZKXZe/InigUm6wCZzHrKtSKb8dBqVZOTy7aZn/cmNBf5yYoa2bdukl8
+         n51y2yeQ8AxXSrxc2OOqUYePjMdcKdKqJK6k0lenKEYWt+rjwLKju8FNLIYA6T33vf/G
+         12Om9oTwlt9tD1BPSnaste3ntVILmPSPPPxwjEVVfe4kO5opBdTjrycJkFmZi0sgUiYY
+         9zsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Q0gYjv1ucDokxKoaaL4BAfVfT4VkNcel3INzlS65MsI=;
+        fh=7TADwq0i1r3w6t8TMicHFcKZpnm1kZa932LTHbRvIIY=;
+        b=buecEGgt4PcsAKxYrO0G5OgHoRf3/aYdwQPxEdaMsMxLwx6Tf9s85jFSlppP+BpAC7
+         W6kd2tXnIYPo5moSwnz6wOduus+dMPEsjPBchR5ipxSfoeidRoDOTlup04SpZc5fv18y
+         O10JaJvqUg261Z+TFonPb1Kwbp5NtFGpXt389gjwAdx9Ql/WjBr6/b9+D85gZRT0fft7
+         SSSwYtttxzSElNhTt9PJ8TQoIDAQl4FNPexAiSSvb6WJUNvyE6wKQ1eyftvXekygpceM
+         PrsiV1uvWekDbxpmIPm2hOniwJ5WvtLIv74VCtuTZA+xFDFn7jLHVL6MAR9Mle7eLbzo
+         4S2A==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787661091; x=1788265891; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Q0gYjv1ucDokxKoaaL4BAfVfT4VkNcel3INzlS65MsI=;
+        b=K0AHM7naAArh7W4mO+cKMFOCa3SFwOPSJ6/9izfuX/ic1tc3MGes2QbIJpQ9kims75
+         hpIj897SucVJ2FiWUx7MaM5YjgCy/zJdqdjp7L81gZEOkMedNl55ACmzfYGOTPzWfbX/
+         BT6OQzYEH6ruyEeXGptilGuK+XuYt4NRicNLAhwgrmEzwSuFmTkD6YIX7N2pjfRlpK6M
+         GL0mPnPNupV81wRJBs/5XRUDlIYszeG1QsFj9CN2wuQwe1FFkLGeMjmRyhd3a4MuqyzW
+         2ucAN0XzyH4ib+lwQ6+Ptt/1Su3enciDg5UvmrIBNtMhxMTguqijut5a4lJbrVIBxoQ8
+         4ceg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787661091; x=1788265891;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Q0gYjv1ucDokxKoaaL4BAfVfT4VkNcel3INzlS65MsI=;
+        b=mYrw6a2kpQXc651J5ILiLQnORTWpoytSc6p2ojygIH/+hvfvsVogmzSRk1zkcL4RGT
+         o1OwBblal7ACFoAAmBQDU/VbdDG+cjgjoGEcF2KPj4vy7qguZrevol56CrZTazVlNMHN
+         +VwktPm4OTAjSIfUVueDSvG9w/tae3zD+7PSmdpY6pyMSmLkW/hrqin/vl+iAZkh5hcg
+         6Sqw60DKzxsHNjVUAs/SlhG+FWhOt/l57ImgFbNiD24kcSxoSOVNmHqkZeoq+QSaCpBm
+         URNwncPPTJIaRiJ42Xc88naUWQp5otPyrLYRz4d0FeFSVAh/2H/N5bHxZVYpME/97Pc2
+         UBNw==
+X-Forwarded-Encrypted: i=1; AHgh+Rocc0cHaRtRc5PFvAC5UYr4E4Uj8tvYhxnyQ5K9cRiadQC7B7HnWen0AIS62gXYL5zoOmPtLQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++l6dkjqpv49MaxT3jaSJi8BK1TFnIQGF2MUcqwwzvVRKP6eiV1V
+	BjUdOAf/KFLDo8v7venlUGYV8BDEjqt7xQjruFgm6ktlABYQQSLOwdTOgVDUcCrpZMqjQvYZ+WH
+	5wBfYL0BKZrT3y8R+l08C1aSfZmTE2WM=
+X-Gm-Gg: AR+sD12/Duf2aIma5o/2jMyv3ejcwSbrjFilzOX0BQFn1NNYxYzQhd4Lv8JUxgsvRd8
+	eTGJEdXdPXA5W0+bPBksx8lbuJMHF0mLioavtOxogw2bH5+vRc04jnyy5fwcKYnkekiurr9ShdD
+	8jzfd5YK0p9oBjLRxn5hRLOhCnT+t/n3M18GZxsiVW/ZD8DvZzmc9vyjOsqMAN+MkdhOw65c/vk
+	fgfz9e8LzNbmRe46Je0peyPys82BqDyRTwH955x4vVrGHIpkd6FwOmxGL5UWfxa1c5wU+AKu2jj
+	k9O6ip2NdW330qNzb/M7YZD4l/8qh9CFbKxwjEx/L36XAQ==
+X-Received: by 2002:a05:690c:610d:b0:81f:45f0:21b7 with SMTP id
+ 00721157ae682-854bd19ce2bmr22184007b3.0.1787661091147; Tue, 25 Aug 2026
+ 05:31:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v5 05/10] mm/cma: Introduce cma_alloc_at() API
-To: "David Hildenbrand (Arm)" <david@kernel.org>, Thierry Reding
-	<thierry.reding@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
-	Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Jonathan
-	Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org,
-	linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
-	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-Content-Language: en-US
-In-Reply-To: <ae6c93e6-10f2-4bac-be61-118bbfc3c05d@kernel.org>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260825123000eucas1p248f943e21b217192142c843eb427dd76
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260820180431eucas1p21be3f213606c4dbef2e4a73a2c1623f0
-X-EPHeader: CA
-X-CMS-RootMailID: 20260820180431eucas1p21be3f213606c4dbef2e4a73a2c1623f0
-References: <20260814-tegra-vpr-v5-0-71832b5d0246@nvidia.com>
-	<20260814-tegra-vpr-v5-5-71832b5d0246@nvidia.com>
-	<CGME20260820180431eucas1p21be3f213606c4dbef2e4a73a2c1623f0@eucas1p2.samsung.com>
-	<ae6c93e6-10f2-4bac-be61-118bbfc3c05d@kernel.org>
+References: <f1805c2bce56c89d8ace35f67c665b24bab90965.1787568944.git.gahing@gahingwoo.com>
+ <7d47bbef8b629eb287fdfa3e8d6c62b95de6b61d.1787568944.git.gahing@gahingwoo.com>
+In-Reply-To: <7d47bbef8b629eb287fdfa3e8d6c62b95de6b61d.1787568944.git.gahing@gahingwoo.com>
+From: Igor Paunovic <royalnet026@gmail.com>
+Date: Tue, 25 Aug 2026 14:31:19 +0200
+X-Gm-Features: AcwNN1UBjSiDmBbvi-rdrGxY2QMseNtuQmYMP06jtM-iH2d8s_qF62MX0JMUhl8
+Message-ID: <CAEWPSH5mxTbUkNouxm6yecMZYvDowquhvYvhaXQ8HoMtHD5U1g@mail.gmail.com>
+Subject: Re: [PATCH v9 02/13] accel/rocket: wait for a running IRQ handler
+ before resetting a core
+To: Jiaxing Hu <gahing@gahingwoo.com>
+Cc: tomeu@tomeuvizoso.net, heiko@sntech.de, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, ulfh@kernel.org, p.zabel@pengutronix.de, 
+	ogabbay@kernel.org, zhangqing@rock-chips.com, u.kleine-koenig@baylibre.com, 
+	chaoyi.chen@rock-chips.com, diederik@cknow-tech.com, alchark@flipper.net, 
+	dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 20.08.2026 20:04, David Hildenbrand (Arm) wrote:
->> /* This part must be outside protection */> diff --git a/mm/cma.c b/mm/cma.c
->> index a10ea37a261d..1e1ebae79090 100644
->> --- a/mm/cma.c
->> +++ b/mm/cma.c
->> @@ -936,6 +936,141 @@ struct page *cma_alloc_frozen_compound(struct cma *cma, unsigned int order)
->> return __cma_alloc_frozen(cma, 1 << order, order, gfp);
->> }
->> +static int cma_range_alloc_at(struct cma *cma, struct cma_memrange *cmr,
->> + unsigned long offset, unsigned long count,
->> + struct page **pagep, gfp_t gfp)
->> +{
->> + struct page *page = NULL;
->> + unsigned long pfn;
->> + int ret = -EBUSY;
->> +
->> + spin_lock_irq(&cma->lock);
->> +
->> + /*
->> + * If the request is larger than the available number of pages, stop
->> + * right away.
->> + */
->> + if (count > cma->available_count)
->> + goto unlock;
->> +
->> + ret = bitmap_allocate(cmr->bitmap, offset, count);
->> + if (ret < 0)
->> + goto unlock;
->> +
->> + pfn = cmr->base_pfn + offset;
->> + page = pfn_to_page(pfn);
->> +
->> + /*
->> + * Do not hand out page ranges that are not contiguous, so
->> + * callers can just iterate the pages without having to worry
->> + * about these corner cases.
->> + */
->> + if (!page_range_contiguous(page, count)) {
->> + pr_warn_ratelimited("%s: %s: skipping non-contiguous area [0x%lx-0x%lx]",
->> + __func__, cma->name, pfn, pfn + count - 1);
->> + ret = -EBUSY;
->> + goto clear;
->> + }
->> +
->> + cma->available_count -= count;
->> +
->> + /*
->> + * It's safe to drop the lock here. We've marked this region for
->> + * our exclusive use. If the migration fails we will take the
->> + * lock again and unmark it.
->> + */
->> + spin_unlock_irq(&cma->lock);
->> +
->> + mutex_lock(&cma->alloc_mutex);
->> + ret = alloc_contig_frozen_range(pfn, pfn + count, ACR_FLAGS_CMA, gfp);
->> + mutex_unlock(&cma->alloc_mutex);
->> +
-> There is quite some code duplication with cma_range_alloc(). Please try harder
-> to factor common code out and reuse it.
+Hi Jiaxing,
+
+As promised, the 19 August protocol re-run on v9, as-is.
+
+Setup, identical to the run reported against v8 1-2/12: same
+board (RK3588, Orange Pi 5 Plus), same personal 7.2-rc6 tree,
+same config (PROVE_LOCKING=3Dy, DEBUG_ATOMIC_SLEEP=3Dy), all three
+cores bound with scheduler-driven placement, and the same local
+test-only patch lowering JOB_TIMEOUT_MS to 2 ms. The serial
+console was captured on a second machine for the whole session.
+Two passes per kernel, at console_loglevel 8 and 4. The only
+difference from 19 August: the two rocket changes on top of the
+base are now v9 1/13 and 2/13 instead of the v8 pair. Both
+applied cleanly.
+
+v9 arm: two passes, 12 and 11 induced "NPU job timed out"
+resets. Every reset recovered, every inference matched the CPU
+oracle within 1 (48/48), including the one issued after a
+forced autosuspend and resume. No MMU faults, no raw reset
+messages, no lockdep hits, nothing on the serial console.
+
+Differential arm, fresh in the same session (same base with the
+two patches removed, same config, same timeout): five runs -
+the protocol pair at loglevel 8 and 4, plus three extra runs at
+loglevel 8 to gauge repeatability. Reset counts 8/10/12/8/15,
+all recovered. Four runs clean. One of the extra runs came back
+with something I had not seen before: the inference after the
+forced autosuspend "succeeded" but returned a constant buffer -
+all 48 output channels uniformly 128 (0x80), which is not the
+output zero point of this model, while the CPU reference varies
+normally. Zero kernel messages, zero lockdep hits, nothing on
+the serial console. A job that signals completion while its
+output buffer is never written is exactly the silent flavour of
+the race these two patches close, and in 102 induced resets
+across nine runs today it appeared only on the arm that does
+not carry them. Full artifacts are preserved (scorer output,
+runtime and genpd state, journal, serial log) if anyone wants
+them.
+
+Before testing I also compared the tagged patches against their
+v8 counterparts: 1/13 is byte-identical to v8 1/12 up to the
+base-commit trailer, and 4/13 is identical to v8 3/12, so the
+tags they carry describe exactly what was tested here.
+
+For this patch:
+
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, three
+cores, induced reset, differential base, JOB_TIMEOUT_MS=3D2
+
+Regards,
+Igor
+
+On Mon, Aug 24, 2026 at 1:09=E2=80=AFPM Jiaxing Hu <gahing@gahingwoo.com> w=
+rote:
 >
+> rocket_reset() calls drm_sched_stop(), which stops the scheduler and
+> returns. It does not wait for a threaded handler that is already
+> running, so the comment that follows, "Remaining interrupts have been
+> handled", states an assumption rather than something the code arranges.
 >
-> > ...
-> Also here, way too much code duplication with __cma_alloc_frozen().
+> Call synchronize_irq(core->irq) after drm_sched_stop() and reword the
+> comment to say what holds afterwards.
 >
-> There must be a better way :)
-
-Maybe the existing 'alloc' functions could call 'alloc_at' variant internally
-
-(with locks adjusted and moved out).
-
-
-> (I really prefer this direction of the patch set)
-
-Definitely, I also like this approach much more than previous attempt with
-
-'dynamically' instantiated cma regions.
-
-
-
-Best regards
-
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> It has to go before the scoped_guard(mutex, &core->job_lock) rather than
+> inside it. rocket_job_handle_irq() takes job_lock, so waiting for the
+> handler while holding that lock would be waiting for a handler that is
+> waiting for us. Nothing is held at that point, and both callers,
+> rocket_job_timedout() and rocket_reset_work(), run in process context,
+> so sleeping there is allowed.
+>
+> This does not stop a handler that has already read in_flight_job from
+> finishing its work on the job the reset is about to drop. That window
+> needs the check and the register writes to be one step under the lock,
+> which is what the previous patch does; the two are complementary.
+>
+> Mask the block before the sync as well. INTERRUPT_MASK is armed by
+> hw_submit() on every submit and cleared only by the hardirq, so on an
+> ordinary timeout it is still live and a completion can arrive after
+> synchronize_irq() returns. Nothing is lost by clearing it, since the next
+> submit arms it again.
+>
+> That write is the first register access this function has ever made, and
+> it is guarded, because the function holds no runtime PM reference of its
+> own. The only reference in the window belongs to in_flight_job, and the
+> completion path can have put it and cleared the pointer before the
+> timeout worker arrives: drm_sched_stop() sits in between and can block on
+> cancel_work_sync() and on a dma_fence_wait(), and it subtracts every
+> pending job's credits, so rocket_job_is_idle() is true and
+> rocket_device_runtime_suspend() will not refuse. With the autosuspend
+> delay elapsed the clocks are off and both NPU domains are down. A
+> register access in that state takes an async SError on this hardware,
+> which is the failure two later patches in this series describe from the
+> power-on side.
+>
+> pm_runtime_get_if_active() resumes nothing and allocates nothing; if the
+> core is already down there is no live interrupt to mask and the following
+> synchronize_irq() is all that is needed. Igor Paunovic asked the general
+> form of this on v8 -- whether rocket_reset() should hold a reference --
+> and it was deferred then because nothing in the path touched a register.
+> This patch is what makes it matter.
+>
+> The deadlock this placement avoids would not have been reported. The wait
+> is on desc->wait_for_threads rather than on a lock, so lockdep does not
+> model it and it would have hung silently.
+>
+> Suggested-by: Igor Paunovic <royalnet026@gmail.com>
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+> ---
+>  drivers/accel/rocket/rocket_job.c | 34 ++++++++++++++++++++++++++++---
+>  1 file changed, 31 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/roc=
+ket_job.c
+> index 5f0f9682e..3c0ed4605 100644
+> --- a/drivers/accel/rocket/rocket_job.c
+> +++ b/drivers/accel/rocket/rocket_job.c
+> @@ -377,9 +377,37 @@ rocket_reset(struct rocket_core *core, struct drm_sc=
+hed_job *bad)
+>         drm_sched_stop(&core->sched, bad);
+>
+>         /*
+> -        * Remaining interrupts have been handled, but we might still hav=
+e
+> -        * stuck jobs. Let's make sure the PM counters stay balanced by
+> -        * manually calling pm_runtime_put_noidle().
+> +        * Mask the block before waiting. hw_submit() arms INTERRUPT_MASK=
+ on
+> +        * every submit and only the hardirq clears it, so on an ordinary
+> +        * timeout it is still live and a completion can arrive after the=
+ sync
+> +        * returns. The next submit re-arms it, so nothing is lost here.
+> +        *
+> +        * Only when the device is already awake, though. This function h=
+olds no
+> +        * runtime PM reference of its own: the only one in the window be=
+longs to
+> +        * in_flight_job, and the completion path may have put it and cle=
+ared the
+> +        * pointer before the timeout worker got here. drm_sched_stop() a=
+bove can
+> +        * block for a long time, and it drops every pending job's credit=
+s, so
+> +        * rocket_job_is_idle() is true and nothing keeps the core resume=
+d. On
+> +        * this hardware a register access with the domain down takes an =
+async
+> +        * SError, so a reset must not be the thing that causes one.
+> +        */
+> +       if (pm_runtime_get_if_active(core->dev) > 0) {
+> +               rocket_pc_writel(core, INTERRUPT_MASK, 0x0);
+> +               pm_runtime_put_autosuspend(core->dev);
+> +       }
+> +
+> +       /*
+> +        * drm_sched_stop() returns without waiting for a threaded handle=
+r that
+> +        * is already running, so wait for one here. This has to stay out=
+side
+> +        * job_lock: the handler takes that lock, so waiting for it while
+> +        * holding it would deadlock instead of fencing anything.
+> +        */
+> +       synchronize_irq(core->irq);
+> +
+> +       /*
+> +        * No handler is running now, but we might still have stuck jobs.=
+ Let's
+> +        * make sure the PM counters stay balanced by manually calling
+> +        * pm_runtime_put_noidle().
+>          */
+>         scoped_guard(mutex, &core->job_lock) {
+>                 if (core->in_flight_job)
+> --
+> 2.43.0
+>
