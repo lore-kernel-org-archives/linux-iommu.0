@@ -1,166 +1,179 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010002.outbound.protection.outlook.com [52.101.201.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DDFC3B7747
-	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 09:44:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787737468; cv=none; b=C9O1cqDnxGEE6LIIyFVuRAy3+clEGHdRQ1WWjj+xboprRVOS8xMUKhNRRQmh1YfeH/Vob4cS9/+S6F/u684Cdt+b06HkV5pOXzw3WWOWvO+CJx2uiH0Ou2iF5kEqsQUn0W0lwF2Nxl0DfoHfNsd7uvMsJpiqU5gQlHAhWzEWlb4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787737468; c=relaxed/simple;
-	bh=9GuDmecgyVvxCQJOyCXGHOjgfhqUN7ivkB/e7B/dl2g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sIoHftEXumsccOPAuONlbrRqKG6/1kpA14JFmmoFtevCtgJiq2YmhqtMdS6gbHwOnnuaLsjkZv0w6EuZQGxmXhDuuEJReK/9jJGvK9OWpU10Y234erpL70oThb/gcU3AbM/G9gsJr4YNL0l5Y/XmoCJwdfLWFbh/HNpSDf/OJhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=f59f9pDy; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 095D63BBFA0
+	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 11:28:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.2
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787743714; cv=fail; b=ldbKLqzgee0ZRh0KO7KMXRKf2m/s5s9TEC+/PdsVfARfbKoFaAYSCgKU9+NSTpeAsdjJOUTweKcZh9vpEUzCTxM/N2tbuoCb60Ol3yf1XTZ9ffNIoUIxUqNAYq/bJ+kaCb/Z5WinzhJKAlZ0oRWSW+e2GEJUM1jlZaQpKuIdFAw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787743714; c=relaxed/simple;
+	bh=ED85NIl1Jm8L3y4XvkitpZ4z50egid014x6jN0YQUkM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Df7SIhGiYOPDvUB3wxkq+/wkHCNuwMumCttm2UadW5DpPO1s009QF502hOzHnEQI0CHC/7vXEeHkMp51gCgaQE9BlAhy9xYPpzzDzEvbGBQ3d7KLnQ36PrT9wYTN9abMXaLsh75tlK+VMHKssRl9xpppG3jJZBUNpr+Vif3DDdg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=q6/Eqn0A; arc=fail smtp.client-ip=52.101.201.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="f59f9pDy"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-499b1409a75so35885e9.1
-        for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 02:44:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787737465; x=1788342265; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=DCpGxFqreLjSVtJ1Gq5kxQUJHIsXo7AfwLCjemfnd9c=;
-        b=f59f9pDyq0XxLi/KXxBA5PNCzAd6tUTRlUJ2NP0NEmdnHA2zXjiXJS4qanoVyv9Uoi
-         v3+jWcLs+YUTCk93yISkvey6DRpb4pt0cePSy27Q7SiMs2ySIBRmy5xoUt/g1aOb103q
-         pMhqTKURuexb7yLiZMgEGYWZomzqWNwFa49iWWc5V7skseQ+hZn//DlU8fVggm1rnW0p
-         wAdKqHa9nlTg6PTcS+1JoD4HFIC4hwoLg4GztYT653Y3Sx7W+tc1eUQyU29l7XsIhYeM
-         RIeConBlN7olZ0KCL6eBAPMQtjJUUHMF0NR+1sDUTvD+Pnk/x99Z0WXJkEM1zwJyvnCK
-         bLdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787737465; x=1788342265;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DCpGxFqreLjSVtJ1Gq5kxQUJHIsXo7AfwLCjemfnd9c=;
-        b=exCbgfrT1SkCQ5NpLjY18lxV9cqfzqOMLZAv3ZvUfsTJJc6Fim253t0PaXxeYmw9s3
-         Ji00riYrFzMWy3QRBdjbmO+4ro81grph226Fm5ssKzX5hIfu8CBHtt8ETBbB3OleY9KJ
-         OEM6SvPdzQiK1Fn4pooicY2O0A139Co9UDavXMTnr/0d/HHcLAu3nUnAPcBNVNOJuFY8
-         pn3CRAjf216xtyE2ovs+SK4kAsj+eVzwTXZHuB10EHBax4nO3gYvLRFeeaER7kW4cSOO
-         b2mOVZL9vinLgKCE8pGX6/y7Q/Cpj6Q46w73C/2GC36ftWRTqj1RleNK4R52llB4GagD
-         B7rA==
-X-Forwarded-Encrypted: i=1; AHgh+RrdclkSDypN6LWii6tvqNgeW+LVzjcZ8+k6kQ8AQp50K1MlqA2teZK3dZIGywgZGJg5nMaiAw==@lists.linux.dev
-X-Gm-Message-State: AFuF++nAWOS/Z5zYaCb/F1Foa//fbqnQNC/tMYDjhe0LK4xLi4j2d2D3
-	KmS3ZggAnBfQJL4gWprwRkfRM23jcj27yq5zomIFaeGY+QPH/JjgZtgLzCCFwVkXjQ==
-X-Gm-Gg: AR+sD11gvDzuBZ6HJ6O0ok5LrxjKOQPpE63ojBQGWnY9zkJKIR1h5qBGFEYzdLTiJax
-	ygP4dvUF1+6Mqav9CmIouGEEnfdwK9S6K8bsTzHB0WRQW58x0os8dbRIzEvWBV7/k6mqznQCkas
-	1mX2BLhoI7T6ZCq4bWM7xAcqDZB8KSNfAZ79+i31DiIWn2GdUt23fYQWHO6CUXa4kcIFHQm32DO
-	OYvp1rMdQLP7eIarbDlJmur7hTWSCK/EAkTgwu23Ci58qs2lLs5ffgMJuHy0pKqFk2j3aIG1w0H
-	Uva9T9LJQSSSuGDhnfFdtrRdD/VE6WFducISCHi596DRfSqg96JXhoZDuWh81gv+V402pgv/ZFf
-	zKs4CM+iQI3WAXxolfToxTKAx1l17Dg01NgqFrGLIPqR0/gDpsolhIWcHAMf7JIGxeiYH6AH85R
-	oIz65QLiDZ+oWUSsG4qepPk1l+kiyvSChoGeQyD7qsnFVqkE39Y2V+mAmdXSCHsmRZyPC6kj4AN
-	RxvkKTtGbKDZby2Q7ArLwql5c6KoQ==
-X-Received: by 2002:a05:600c:6085:b0:48a:623c:8859 with SMTP id 5b1f17b1804b1-499dda23078mr651695e9.7.1787737464409;
-        Wed, 26 Aug 2026 02:44:24 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499dca8c75csm20805035e9.2.2026.08.26.02.44.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2026 02:44:23 -0700 (PDT)
-Date: Wed, 26 Aug 2026 09:44:20 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v7 05/24] iommu/arm-smmu-v3: Move IDR parsing to common
- functions
-Message-ID: <ao61dMZqUEgC7huD@google.com>
-References: <20260715115906.2664882-1-smostafa@google.com>
- <20260715115906.2664882-6-smostafa@google.com>
- <178769159057.3356902.8176677714818911833.b4-review@b4>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="q6/Eqn0A"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=p417zAjzBWDOjPdRfqL+hCnhDpB/j9a/kbtRsjLS7lBs4Y1s/sF27Kp4OBH2oFy32BJz9twECRfmo4TihJfYGo6hrIuBGt+JRla8Xfa6g384tFb4RN1ufrd6VL+ymsRIxzP//kxf89/B0dbgzQ18qv+VBA1olX2BZyq6cNNxqMT2VMrsHlxKDToEQh4R6t46Ct3bInXPK3NROZ3R4HwuTBYWa7wdUG93/C+bnR89stPKhqTRtKFPDGMuxMBt/pzWfIq80M4LRmDvSg4a0/Hs3eKOw90gDCnprylT1Ekfm4DfJUV1WDtFFVIq2AUAB4lHJ1+cULPlPl/TobLeHoygSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ko/296osBhFa2IPnpcLzb/A+Mz3f5a1PxBYVMBcQ9+o=;
+ b=uR9h9alaxF5ORzP2AuZ8zXAazYfSb4rBBOT3HkT57Zbce3361VVtxtsSFCqDXIva5U0OQi7VM024HvWF+mGV9+5i+T7OqU5bGvJrSE7LVvFhEnOLPgLW8nuy5rF5vLaAnPH02JQasnGAunE79CHfFCatUHgDQCTCj1v0WaqJCxLg0w5PtgeHrrWNBMjmDDIrvhgdh4DybH5OgoHhwwJZBnF9XoOq0mZr09l8yj2h5gksyexBnMlcyTPvXMyvHsXT+/U/LV49wtDtWyBzWo9QMzI0Dy/jxZIqaixGCPlFGCY4XdZyFHkxt8zyDTO6ZzToLas84DjpaPgaqBfxIViwKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ko/296osBhFa2IPnpcLzb/A+Mz3f5a1PxBYVMBcQ9+o=;
+ b=q6/Eqn0AU6P2KDRAfJgN9GRlgTE2564B1ChoyslevP8f8wg14JbbfnqkG2zxxX45UNj3Rsz88vttkhxeZETdInmp9HT90UfjEpj4dd430b/sHkJB61aoA86P2nybSsFMwbqPyZvEq7w2MhSUCTnz/38DdeOyFy6TTWqxqgQMEWw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by SN7PR12MB7370.namprd12.prod.outlook.com (2603:10b6:806:299::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Wed, 26 Aug
+ 2026 11:28:28 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0360.008; Wed, 26 Aug 2026
+ 11:28:28 +0000
+Message-ID: <50ffc453-f918-47f8-9556-9813308690a9@amd.com>
+Date: Wed, 26 Aug 2026 16:58:15 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/5] iommu/amd: Fix DTE clearing and rename
+ iommu_ignore_device()
+To: Pranjal Shrivastava <praan@google.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Ankit Soni <ankit.soni@amd.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
+References: <20260824122347.1588592-1-praan@google.com>
+ <20260824122347.1588592-3-praan@google.com>
+ <178759520117.3131778.15279605903087565179.b4-review@b4>
+ <ao1vJxkZsJpr1qXG@google.com> <20260825114916.GT244917@nvidia.com>
+ <ao3RF0w_AXo5EXxv@google.com> <20260825175315.GD3325090@nvidia.com>
+ <ao3oHn8HiXIx5Wrl@google.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <ao3oHn8HiXIx5Wrl@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN4P287CA0061.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:c01:267::10) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <178769159057.3356902.8176677714818911833.b4-review@b4>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|SN7PR12MB7370:EE_
+X-MS-Office365-Filtering-Correlation-Id: a830e9a2-b7b4-47c9-5484-08df03652681
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|366016|23010399003|11063799006|10067099003|4143699003|6133799003|56012099006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	UsqXEcMm9bPmgHcWW3ofCYF4e58Kaptj/FuV/w0lx16dOWVp4Cn21C9t3uFCrMmzNZbwDV8i2biimJUjbuIp/v9X29//8IE5ZRsqyP+IvBRB50kaIbc8nz0m9d4Qu9S8aIVB7ADgaiAdZ7FOLYg4Am4Eagn+aSLWBT88/RfTywZ1JP6sLdVCYIEDzGJ+ucI5cIf3szR8hF7ijHVvcdIeHmvaziKSkHxzMhp8yLXDvVsoeFBE3mHxQfBCxOQ7Ii1+wMK1+d0ouEWZLi/75s9DS1QkRP75ViS1jEGYEY7D2AFJDSlO8ChFk7oawoLDAV2F+J7BWYsznBjrsfJOylfywgxKVn7bPvnZgcOWu6tcfCoYnpORUCfK3wvcM4dVC7oVU/ACXtPJw8JQbL2b9ZgEXbLQcPaCegLSDCiEg7Gjl1+vSotFRdKTkCl6YiFBPvqvWIglnvngAxSqr50c/5jBSLKDlIYJ/ixm3YyIvbCKaRNaXt8t0PMtd6p+k9AarI76g038mAeqnZCzM2xGjj0JaHDB/PFa/mNipJl5zWImu7g4AUHUmxNhRzX/RP0edxDuodLsX89Aaut59a4wk1XOJnwq/5KBam+mzsmFps2dXCNs/WJZjUCX/6dUHgPWnu5Ozqe3keWrF7XpggvsqfPoYmWBk7lQ98SEd/VfiQBqSdE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(23010399003)(11063799006)(10067099003)(4143699003)(6133799003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?QXIydEFDWGUwVU1VNkVlSDMvQXJ0MTZWc3prc1pUZFQ4d2h6a2VnaFpQN3lP?=
+ =?utf-8?B?aWVwL1prL05MNVMwa3QrRUM1OGRGUVA2NDVVVVVkYlJTRlNmWUxnSGRiMVQz?=
+ =?utf-8?B?alE5SlBzRkQvMUgyaEZtRXEzVUx6TlgxczQrbHZzZ2IvZFc5eldtek5aNEli?=
+ =?utf-8?B?ZjV4RVg3VThLYmdNZ1VGMkxOdDF2K2xWc0N4bGpVNVNVU3JQb29WQWoxaTdx?=
+ =?utf-8?B?MjNscytlMUl0Q0N0MWN2a09kRWFPQVBwMjc1bGFBVDVkQXJ2bm0vdzhnOVp2?=
+ =?utf-8?B?MzRlN1NxaWNLV0hONDc0RHV4dHQwc0tsLzZnakQ4TjE3eC9kOEViNVJ3N3VE?=
+ =?utf-8?B?OEJkOEpxcjgrbUJGdEw2NHdLQXNsRFZMTlpwNjh5YVFhLzRaT2VReklEMmF2?=
+ =?utf-8?B?QmhzZ0lOQjNQR3lYYXNvTlN5OWRwd2NwZlFwOEdUZUpZRnM1VG8xMUhmOHBs?=
+ =?utf-8?B?OUdCbmJEVnlieU1ldjRYVDE1cmYxS291M0NJVS9zU204YXJWajZabW54QXRv?=
+ =?utf-8?B?eEhmRGZzL1prcVVGWmZVdUEyaS9VK2hSK1VIaUxlRGhOZlJwbDJiZkhBUk5a?=
+ =?utf-8?B?ZGpmQ0lJc2Y4NnhNUGRlb1dpSStCZmwrVDdLZEEzOWpSWnp4K01mOUIyV3pP?=
+ =?utf-8?B?QjFkNjFaQXNSUFIxRGJQVlZOVlJoTWZzYUI0aURFbXNDRFpSSUJVb1lSMEN6?=
+ =?utf-8?B?UHJ3d0xQbTFDOVFlcjFROXNESXVBR0JzM2IrRVdOK2dGcGNkamVIakJ0eUxp?=
+ =?utf-8?B?dFhRU0dTMXgzTkU3Z2tQSVZDQlBmRWxKRVl0djc4VUw2VlptcXpudENqbFFn?=
+ =?utf-8?B?d3dUalZFYUZhMDY0TTRlMmF2ZkU5MlRGcVQ2QjhVTFhNLzdOdlB2ZHJETWRO?=
+ =?utf-8?B?cmxTYkJCK1RKaEVaT1ZuSytlUlB1NlM5a2ZTRTh6SGlORlgwRmdIdFMrSmFh?=
+ =?utf-8?B?UGtWR0ErYm5UaTJSZmhDa3FobkdTOW9QSnE3b3RacXIycWhuMUYveDRTckVW?=
+ =?utf-8?B?VUJ3cWhsTk9UcGZId2x1U2svdnJKaG1IMzJaSURaYm9mZkI4eXB2eXdldTdn?=
+ =?utf-8?B?OGVucWxSeUpaR0xOcGMyazdidlB3STFsakxLSmNhbE9HOU1PdXByUHhpZ1pO?=
+ =?utf-8?B?ZWNTd1JDZ0JHaWROQ1FBZnJtdmh1SkJxMCtvVVJwS0RSdTI5S2xOTUs2Zlgr?=
+ =?utf-8?B?K3ZNR1RZaFRJMjYxRUphMk44VndVV3ROclgwMkZCZFpkbFZuY2lKVE5OeXJh?=
+ =?utf-8?B?YjNtUnNwNjNyaEFxbGptRm15NzlxOEprOG1EeEdlRnlvMHhhTzdldmJHYkRS?=
+ =?utf-8?B?SEpXYk5STlFyTUlMRWxicHBJb3VqckF0M1VZYnBUQ0hoM2ZJT2lWdVA0RzNU?=
+ =?utf-8?B?UTJtUzk4TWdFTFlKNXl3d3IvckRzMFJHRWo0UHVsMVk1cHFGSzcrT0JoMDFH?=
+ =?utf-8?B?elB6aTNtY050SVpJQ090dGlESFhiZzNiMCtwQkx5N3N6R3NscU03NFR1ZWxs?=
+ =?utf-8?B?Yit0dlNsczJuL0hSVGpmUk1nUDhpTGRYR1BEbkxXT2pybk1TOWthaEZ4TW5M?=
+ =?utf-8?B?b0xKTGZJMGxkVWpPS3NFclNIbkpzMXAyMlZwRkxkNzcybjJYL1MveC9ZaVRZ?=
+ =?utf-8?B?UWdwa0ozLysrWXlNbFpoYlk0UFVKckJ2Uko4UFhrb2hLVHpodFc5NXQ1S2tD?=
+ =?utf-8?B?WnN0VndkTng0bjRhMWNWNEU4T0FSMHQwOXdxT0hrNEpYNnNtVEhKRFIvUjV0?=
+ =?utf-8?B?K2R3dC91aktZWndJTWV0eG8vVmlNU3FDR3hlVWJFQXh1dXpjNDBmNzQ4YWQ1?=
+ =?utf-8?B?Q0ZvWWpnbE5hR1I2U1YrT2pWTVpmTFNyU29JQVVucXhQRm5oV0R5S0NvRmF1?=
+ =?utf-8?B?R09VdkM5blV2K2h5MmpieWhyRzNMWUtkSUJESHI3UjZZTkdZYlJqSTVKOWZt?=
+ =?utf-8?B?OEUrT0VPUEZuaUFmWFI4S25xcGJGdDZNcmNvQXhDODNJdDVLMHNQUVM5M0JR?=
+ =?utf-8?B?YS90RTE4VElKN1kxcks3TjRKeEl1Njdsa1M2ZjI0SXlyWFNoSDZJbll3VlY0?=
+ =?utf-8?B?TFdnWE9SWnBtYitBeGxFdzRRbEJIZ25HMTNkbkY4QUFFTTJieUdEYlUranBp?=
+ =?utf-8?B?RnpqQ3RMM3pYMDJScG1GZW5FeFR4ZTEyM3pIcEphSzNkcUZOSkl2Rm5RTm5T?=
+ =?utf-8?B?MnNGdVlTTlVMOFUxbUY3YlkxcDR0K3czR3VpNUY1bTRKQ05kOW4xYnRJZkNI?=
+ =?utf-8?B?Z3ovYkdLMGJKMnhxYjNldFFtd3ZVaXpLQ1VYbHhyL3lqeFR3MDl6S01kNTNy?=
+ =?utf-8?B?blJSQnQ0b01XcjY4SlhhelRtYzl2OElQbjBXcGRMZFI4S00rTTBvUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a830e9a2-b7b4-47c9-5484-08df03652681
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2026 11:28:28.5904
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C5QEtbA2B0xPa/5/Cnow5sLRgw9he3E2QoolzwOcabMbludv6U+JO3w41gKDh/27ZYrNDdHIjrHpybJmrLUSlw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7370
 
-On Tue, Aug 25, 2026 at 05:59:50PM -0300, Jason Gunthorpe wrote:
-> > [ ... 21 lines skipped ... ]
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-lib.c
-> > @@ -0,0 +1,184 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (C) 2015 ARM Limited
-> > + *
-> > + * Author: Will Deacon <will.deacon@arm.com>
-> > + * Arm SMMUv3 driver functions shared with hypervisor.
-> > + */
-> > +
-> > +#include "arm-smmu-v3.h"
-> > +#include <asm-generic/errno-base.h>
-> > +
-> > +#include <linux/string.h>
-> > +
-> > +u32 smmu_idr0_features(u32 reg)
-> > +{
-> 
-> I think you should do more to make this shared C file usable by both
-> compiles with more of the infrastructure available.
-> 
-> For instance, something like this at the top:
-> 
->  #ifdef __KVM_NVHE_HYPERVISOR__
->  #include "pkvm/arm_smmu_v3.h"
->  #define arm_smmu_device  hyp_arm_smmu_v3_device
->  #else
->  #include "arm-smmu-v3.h"
->  #endif
-> 
-> (heh you used _ and the driver uses - in file names)
+Pranjal,
 
-Yes, that's a bit ugly, I can rename it to arm-smmu-v3-hyp.h
 
-> 
-> Then the existing code using 'arm_smmu_device' just works fine since
-> the hyp version has the same structure members. Now just move the code
-> as-is.
-> 
-> Otherwise we still have alot of cut and paste duplication:
-> 
-> 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
-> 
-> 	smmu->features |= smmu_idr0_features(reg);
-> 	if (!(smmu->features & (ARM_SMMU_FEAT_TT_LE | ARM_SMMU_FEAT_TT_BE))) {
-> 		dev_err(smmu->dev, "unknown/unsupported TT endianness!\n");
-> 		return -ENXIO;
-> 	}
-> 
-> vs
-> 
-> 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
-> 
-> 	smmu->features |= smmu_idr0_features(reg);
-> 	if (!(smmu->features & (ARM_SMMU_FEAT_TT_LE | ARM_SMMU_FEAT_TT_BE)))
-> 		return -ENXIO;
+On 8/26/2026 12:38 AM, Pranjal Shrivastava wrote:
+> On Tue, Aug 25, 2026 at 02:53:15PM -0300, Jason Gunthorpe wrote:
+>> On Tue, Aug 25, 2026 at 05:29:59PM +0000, Pranjal Shrivastava wrote:
+>>
+>>> I agree, but I wonder why the existing code used memset here 
+>>> (in ignore_device):
+>>>
+>>> memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
+>>>
+>>> I was thinking it might've been done for probe failures in a kdump
+>>> kernel (normal kexec would've called shutdown for clearing all DTEs).
+>>> (I see this was added long time back and existed when PCI segments were
+>>> added [1]).
+>>
+>> For kdump you'd want to keep the original translation running in this
+>> case.
 
-I am not sure I get this, the only difference is the printk?
+If probe is failed then we can't do much. Why keep original translation running?
 
-We can do more with that, but as discussed last time, I am worried that
-re-defining structs using macros just makes things harder for
-maintenance and more fragile to changes, causing build failures,
-and mismatch in types between the 2 structs.
-I can experiment with that when working on the next version and see
-if the there is significant benefits.
-
-Thanks,
-Mostafa
-
+>>  
+>>> Are you suggesting to remove the DTE clearing from this path entirely?
+>>
+>> Yes
+>>
 > 
-> Then you can put the prior patches tlbi stuff here instead of the
-> header file, which is important because after I get the CONT and
-> errata stuff worked in it becomes really quite big.
+> Even I'm not sure why we had this memset here, I'll just dig into
+> the history once if there's anything. Otherwise, I'll simply drop this.
 > 
-> -- 
-> Jason
+> Vasant, please let us know if there was a different context to it?
+
+Looking into git history, it looks like, during boot init_device_table_dma()
+sets dte.v bit for all devices. So probe fails then clear everything in DTE.
+
+memset was added long back (commit 26018874e3584) and we never hit any issues.
+Hence I guess no one bother to change this.
+
+
+-Vasant
