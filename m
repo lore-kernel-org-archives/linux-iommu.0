@@ -1,324 +1,193 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69C553803FD
-	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 08:05:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BED083B6C14;
+	Wed, 26 Aug 2026 08:13:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787731560; cv=none; b=HCmixP2ERdTyVEj9ndrrSx6Tm2ydGFvBbCRJcMUQEAK7JBFO8Gg4BXtwciL4dxLNMg5JF66TWUf4cCOfX9o/liGcPIqF4vN1A7kF/ifm+mUgIza5zps58+geVKU7ODa6aPlxAdWNUn/cHyaCfn2Jh44AnnvgRbnOAOj7/kJQ364=
+	t=1787731999; cv=none; b=hkK5Kuh8YKvkh9Y3nAqvJuVUbR2pf2vlIQ8CN8aeH+Wlqy5WOzlberCjR/bgC6browwoRQ1uR4hB5TbbAjGV/7kERjP0hcwnahixjUGHSRve1DdQIYXK3HMTyqxpcbLLKfk+jtuezEEbiQS1ejWeojSzbN4Vd5TUk5nGfETwfH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787731560; c=relaxed/simple;
-	bh=bkjiUmi4q16nO656UkaZfuh/7jbNbfvJjs6cLNisWVs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=W5roQFxNAA25uK+zjg++Q4XAKGX/+oG7tx73mPPhgwsae2FfMNiPkzRWly7pSPcCn8gEYgi5JYNlfYm3Oc0HmVhQzsJsNK65r5z/MqutpALGlIr8XeGvBl2lo/dYBP6DwPt1l+N5PzKS/040WCih2NEUXQ1y+hc6RqTZrvYGmYs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TrktiOE9; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1787731999; c=relaxed/simple;
+	bh=f4R9TfWG7E7lRWHyK9E/VZFak1hRXnFWBSImZpQLqaU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=YJHKZ0nAwXuEP6QgKh1roQrqwYlN3wXdlvAY1dqDEKDy9ql5bNvI1jpFHVs8/enrQf4Jr9uUHyqori5siieKWOQkrNYx7HCHYqb+nqbEe8oqJRpQ3WDm4OQPyP1HeHKKju7HHUzQNS9GrAYnLCZJCxE4gUGOigjUvXdKkFD7OvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=beY8The1; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TrktiOE9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787731559; x=1819267559;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bkjiUmi4q16nO656UkaZfuh/7jbNbfvJjs6cLNisWVs=;
-  b=TrktiOE9lSqtUPveWJbjTMdVL7op0EzZsL405NYLQmQlQxm9bajkWhWG
-   IkUcE7LWwv+ZkfAVSzn9LtAoKxzDc7QadxCTmc+AQOXg/wUMS/qnJQL3t
-   NQPvjXyyN0JCdUIip+xmOzI0MD7PhEpPR0OOYsAqpNO3z+DEpC5E4/zut
-   xwMyg/tT8/mLlySNlGUw0yr8cEqeOdnlP/G/+i7m+U/caFhRpEx5XMWMl
-   V31GQ8i7yytrp8IstHCUVX3+imdnZP5IS7TP9JPSN7NhxpZ0tlwVil0un
-   +t7CO5gKEn8jD0Yv/iuJ39C3P0/G6osvb0uSg7h9o+Bhjue/N8lV8apsr
-   w==;
-X-CSE-ConnectionGUID: R5EwEa9OQheXB40bORft9w==
-X-CSE-MsgGUID: yulh1S+1RBWIlah83p6nZA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="88235483"
-X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
-   d="scan'208";a="88235483"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 01:05:58 -0700
-X-CSE-ConnectionGUID: QDdWVPiFQEyfhCtzESp+3g==
-X-CSE-MsgGUID: IK2Sz66uTFOu21+4qTcFzQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
-   d="scan'208";a="291037790"
-Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 01:05:53 -0700
-Message-ID: <446684d8-44d0-47c5-9301-172c55efd950@linux.intel.com>
-Date: Wed, 26 Aug 2026 16:05:51 +0800
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="beY8The1"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=f4R9TfWG7E7lRWHyK9E/VZFak1hRXnFWBSImZpQLqaU=; b=beY8The1AKucx5Grre2Ob4sExP
+	njapBJlkeUNL2CcJXWDOR/OPWWXcO3zypgTNCBK+Mx5j2T70Y+MNtUt2Xf6qAb5+jMWN2VcQX9jLT
+	4ofvusLKY0hpZ8SH3JI5XH+ib5zNQD75YtHx1F3ZN3ZDVu/r/y/dRNYulf0ggvvaHjDuJvpQfnYD7
+	q3Qg2gzk7KAL5Z3Ps+3bdHiN6uaxclnJ4dFXDjkvL6/GTkwqDw5f6WrYmSYkDFtVTxPaibAepRSpO
+	1eGgH928bmqiKWvaZXunCuRTYcpTKUfHoXAO88ZuUgJzIPS64VZWq9V7eqbtq3wpv114zFBuOLyL/
+	tkHiKZLg==;
+Received: from [2001:8b0:10b:5:faaa:2547:1b33:7d6f] (helo=u09cd745991455d.ant.amazon.com)
+	by casper.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wz8kq-0000000AXFJ-3SLU;
+	Wed, 26 Aug 2026 08:13:05 +0000
+Message-ID: <67a636351d656e032bbe64b1ae113821ea4694b7.camel@infradead.org>
+Subject: Re: [PATCH v4 00/18] iommu: Add live update state preservation
+From: David Woodhouse <dwmw2@infradead.org>
+To: Samiullah Khawaja <skhawaja@google.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>,  Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+ Alex Williamson	 <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+ iommu@lists.linux.dev, 	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav	 <pratyush@kernel.org>, Pasha Tatashin
+ <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, Andrew
+ Morton <akpm@linux-foundation.org>, Pranjal Shrivastava	
+ <praan@google.com>, Vipin Sharma <vipinsh@google.com>
+Date: Wed, 26 Aug 2026 09:12:53 +0100
+In-Reply-To: <20260808022723.3893618-1-skhawaja@google.com>
+References: <20260808022723.3893618-1-skhawaja@google.com>
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
+	boundary="=-J1dNl+ciUXuOeoyFOU2K"
+User-Agent: Evolution 3.60.3-0ubuntu1~ppa9~24.04 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 08/18] iommu/vt-d: Clear unpreserved context entries
- during shutdown
-To: Samiullah Khawaja <skhawaja@google.com>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
-References: <20260808022723.3893618-1-skhawaja@google.com>
- <20260808022723.3893618-9-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260808022723.3893618-9-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
-On 8/8/26 10:27, Samiullah Khawaja wrote:
-> During normal shutdown the iommu translation is disabled. Since the root
-> table is preserved during live update, it needs to be cleaned up and the
-> context entries of the unpreserved devices and root entries for the
-> unpreserved context tables need to be cleared.
 
-The key assumption here seems to be that, during a live-update kexec,
-most devices do not go through the normal iommu release path. Otherwise,
-their context entries should already be torn down in the
-iommu_release_device path.
+--=-J1dNl+ciUXuOeoyFOU2K
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Could you please confirm this assumption and add some short note in the
-comments or commit message?
+On Sat, 2026-08-08 at 02:27 +0000, Samiullah Khawaja wrote:
+> This patch series introduces a mechanism for IOMMU state preservation
+> across live update, including the Intel VT-d driver support
+> implementation.
 
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   drivers/iommu/intel/iommu.c      |  15 +++-
->   drivers/iommu/intel/iommu.h      |   5 ++
->   drivers/iommu/intel/liveupdate.c | 140 +++++++++++++++++++++++++++++++
->   3 files changed, 158 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index aeae0563dfd0..eca3944d9cf5 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1832,6 +1832,14 @@ static int iommu_suspend(void *data)
->   
->   	iommu_flush_all();
->   
-> +	/*
-> +	 * Note that IOMMU suspend doesn't affect live update. The state
-> +	 * preserved during live update is not released and remains valid during
-> +	 * suspend and reused during IOMMU resume.
-> +	 *
-> +	 * Also note deployment of suspend/resume and live updated use case
-> +	 * should be mostly mutually exclusive.
-> +	 */
->   	for_each_active_iommu(iommu, drhd) {
->   		iommu_disable_translation(iommu);
->   
-> @@ -2377,8 +2385,11 @@ void intel_iommu_shutdown(void)
->   		/* Disable PMRs explicitly here. */
->   		iommu_disable_protect_mem_regions(iommu);
->   
-> -		/* Make sure the IOMMUs are switched off */
-> -		iommu_disable_translation(iommu);
-> +		/* Make sure the IOMMUs are switched off if not preserved. */
-> +		if (iommu_preserved_state(&iommu->iommu))
-> +			clear_unpreserved_context_entries(iommu);
-> +		else
-> +			iommu_disable_translation(iommu);
->   	}
->   }
->   
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index 4906cce1e66e..6c971f04ead3 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -1306,6 +1306,7 @@ int intel_iommu_preserve(struct iommu_device *iommu,
->   			 struct iommu_hw_ser *iommu_ser);
->   void intel_iommu_unpreserve(struct iommu_device *iommu,
->   			    struct iommu_hw_ser *iommu_ser);
-> +void clear_unpreserved_context_entries(struct intel_iommu *iommu);
->   #else
->   static inline int intel_iommu_preserve_device(struct device *dev,
->   					      struct iommu_device_ser *device_ser)
-> @@ -1328,6 +1329,10 @@ static inline void intel_iommu_unpreserve(struct iommu_device *iommu,
->   					  struct iommu_hw_ser *iommu_ser)
->   {
->   }
-> +
-> +static inline void clear_unpreserved_context_entries(struct intel_iommu *iommu)
-> +{
-> +}
->   #endif
->   
->   #ifdef CONFIG_INTEL_IOMMU_SVM
-> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
-> index ffdcebf2b773..b5aaebeeb5c1 100644
-> --- a/drivers/iommu/intel/liveupdate.c
-> +++ b/drivers/iommu/intel/liveupdate.c
-> @@ -77,6 +77,146 @@ static int preserve_context_table(struct intel_iommu *iommu,
->   	return 0;
->   }
->   
-> +static void clear_unpreserved_context_root_entries(struct intel_iommu *iommu,
-> +						   struct iommu_hw_ser *ser)
-> +{
-> +	struct root_entry *root;
-> +	int i;
-> +
-> +	for (i = 0; i < ROOT_ENTRY_NR; i++) {
-> +		root = &iommu->root_entry[i];
-> +
-> +		if (!is_context_table_preserved(iommu, ser, i, 0) && (root->lo & 1)) {
-> +			root->lo = 0;
-> +			__iommu_flush_cache(iommu,
-> +					    &root->lo,
-> +					    sizeof(root->lo));
-> +		}
-> +
-> +		if (!sm_supported(iommu))
-> +			continue;
-> +
-> +		if (!is_context_table_preserved(iommu, ser, i, 0x80) && (root->hi & 1)) {
-> +			root->hi = 0;
-> +			__iommu_flush_cache(iommu,
-> +					    &root->hi,
-> +					    sizeof(root->hi));
-> +		}
-> +	}
-> +}
-> +
-> +static void clear_unpreserved_context(struct device_domain_info *info, u8 bus, u8 devfn)
-> +{
-> +	struct context_entry *context;
-> +
-> +	/*
-> +	 * This cleanup is done during shutdown, so it should be fine to only
-> +	 * clear the entries here and issue one global invalidation later to
-> +	 * invalidate all cleared entries.
-> +	 *
-> +	 * Note that the device IOTLB invalidation for unpreserved devices is
-> +	 * skipped this way, but that should not be needed as the devices are
-> +	 * quiesced at this point. This should improve the performance of the
-> +	 * cleanup process and avoids any invalidation timeouts because drivers
-> +	 * might have moved devices to D3 state.
-> +	 */
-> +	context = iommu_context_addr(info->iommu, bus, devfn, 0);
-> +	if (context) {
-> +		context_clear_entry(context);
-> +		__iommu_flush_cache(info->iommu, context, sizeof(*context));
+Nice work; thanks. Do you have any timing information? Every
+millisecond spent on work here is perceived as steal time by the guests
+which are paused while it happens.
 
-For tearing down a present context entry, please follow the VT-d
-recommended sequence:
+So very quickly after the "yay! it works!" stage, we get to the "how do
+we do it in <100ms overall steal time" stage...=20
 
-- clear only the Present bit,
-- flush the updated entry to memory if necessary,
-- issue the required cache invalidations,
-- then clear the remaining fields of the entry.
+--=-J1dNl+ciUXuOeoyFOU2K
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-> +	}
-> +}
-> +
-> +static int clear_unpreserved_alias_cb(struct pci_dev *pdev, u16 alias, void *data)
-> +{
-> +	struct device_domain_info *info = data;
-> +
-> +	clear_unpreserved_context(info, PCI_BUS_NUM(alias), alias & 0xff);
-> +	return 0;
-> +}
-> +
-> +static int clear_unpreserve_context_entry_fn(struct device *dev,
-> +					     struct iommu_device *iommu_dev,
-> +					     void *arg)
-> +{
-> +	struct device_domain_info *info;
-> +	struct context_entry *context;
-> +
-> +	info = dev_iommu_priv_get(dev);
-> +	if (!info)
-> +		return 0;
-> +
-> +	if (!dev_is_pci(dev) || !dev_iommu_preserved_state(dev))
-> +		goto out_unpreserved;
-> +
-> +	/*
-> +	 * PRE use cases are not supported with Live Update and a preservation
-> +	 * attempt on such domains returns an error. But Intel IOMMU driver
-> +	 * enables PRE by default on all devices that support it. For preserved
-> +	 * entries, the PRE needs to be disabled so preserved PCI devices do not
-> +	 * generate PRQs, during kexec, as translations are kept enabled during
-> +	 * live update. There is no need to disable these for DMA aliases.
-> +	 */
-> +	if (sm_supported(info->iommu)) {
-> +		context = iommu_context_addr(info->iommu, info->bus, info->devfn, 0);
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCE8Ew
+ggWvMIIEl6ADAgECAhANkOKMSmGXhF5eMl0rsRhvMA0GCSqGSIb3DQEBDAUAMGUxCzAJBgNVBAYT
+AlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAi
+BgNVBAMTG0RpZ2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBHMjAeFw0yNDAzMTMwMDAwMDBaFw0zNDAz
+MTIyMzU5NTlaMGIxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE6MDgGA1UE
+AxMxRGlnaUNlcnQgQXNzdXJlZCBHMiBTTUlNRSBSU0E0MDk2IFNIQTM4NCAyMDI0IENBMTCCAiIw
+DQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAOfSIeC0vv1xPQ+dgSxbIIrkaru6skAWJYaGFzmv
+q4Kq+2wU2jxhcWlJg/JeP5jEkq/LM3pn5aaLao79j+XRmS7J1ZpJKUODJVoM4s9MQJhTMvo4qS5Z
+S64g6QR7Obkz3I1Lr3aWeSBmDDEyzue+NKtuWZ1Cxy3RdXo/w5HgRc3l2AercOM3Gt1XonTzEtTb
+Z/Hwc0Sn9Gz8RmGRK6Ka4hVDl8q/2l110KaV233Kh5etP0csXS8MIMdVRfRu3sc5hp13DG7lCKzK
+72a2GEpI8Wpl26G6I1/LMzz/98T+FqjTqxsdquk7Cj7m2vKGLW1BorpQH7WFGPdJQXJe1hfbfiZA
+CcVdCtl4nAacFacmsiArZBfX7AQGL7isvHUwwYFEtcApyGW4p2Lt+t8nvU0CANA6BHOpOz1xOP8W
+mAESbUriIjyuTUf3fJ9oDNCurVqhASMJCDaWI3lYX/QAoiAzt6akqbbZxo2ujW7mGGqc0KxqE2cs
+h2T79v7pC8aUtHBfwNrTR19GnZVxE0eQ7ViIQhR6mpSaUQFA9sG+cmD2G8TnCgYsLa0q8De6F61a
+CBevQGHNzrbZ3JAMneveYg/Jy1XxQHDRcvrMfWKe0jjcWbdKYlaGVPm5V1ILwYz7Yv5ewo3NUrxI
+GJiywe9qPhuJSDZs7VehTuI0FxGIsgKzVjgbAgMBAAGjggFcMIIBWDASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBT3m6JO05fF9DQPQw6Bhc6RkzKv+TAfBgNVHSMEGDAWgBTOw0q5mVXyuNtg
+v6l+vVa1lzan1jAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
+MHkGCCsGAQUFBwEBBG0wazAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tMEMG
+CCsGAQUFBzAChjdodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1cmVkSURS
+b290RzIuY3J0MEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdp
+Q2VydEFzc3VyZWRJRFJvb3RHMi5jcmwwEQYDVR0gBAowCDAGBgRVHSAAMA0GCSqGSIb3DQEBDAUA
+A4IBAQA+b8Uw53sDspdZgukU+qzLyyHkcjlxGGhHlP+zrmDLKm1wEFvCRS2pili3Hy67i8N4N5NU
+vw5Rg6kv3lxb9S9Rktxk43k+tvm68pl7OxQE55ZjVY87P0lUPGwEqOOwLLyH02ZQcsfq5p5LrOH9
+0JvmvZ1yy73HS+VpDAqOlytE0NSvTIRqFFkKQGQwfjvtql9YflujuNNvJztjBaHKYZsnNSg+J38o
+jYq4TP3pSg3UdVH0PncVjPQyqxC9xef5Xae92Kbkzol3x7Nel3A1bwAkalrDMspvTHvey6LfiBks
+FIqviTnoy7fgjaRAJgHS+RXx/cmuRd3rUAclSVVrYu8RMIIHAzCCBOugAwIBAgIQAzUotrsybJHx
+HTjKOIVdIDANBgkqhkiG9w0BAQsFADBiMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQs
+IEluYy4xOjA4BgNVBAMTMURpZ2lDZXJ0IEFzc3VyZWQgRzIgU01JTUUgUlNBNDA5NiBTSEEzODQg
+MjAyNCBDQTEwHhcNMjYwNzE4MDAwMDAwWhcNMjgwMTA0MjM1OTU5WjAeMRwwGgYDVQQDDBNkd213
+MkBpbmZyYWRlYWQub3JnMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2pYux73kdbYX
+sWF8f1u6DJP91qcqaZetsyfPkZk0B+MmXmAEv0kVes5n15V2mbDThOnpoPFly0UugQO9JYqLfrtD
+tKD5yL58fgrDB9Dw+LQikgrHafl6YSCds5AvUu/8hw2J6noKrcOLJpKlKn9Fl/4IB9Q3JIdLx5aa
+EtTqMalIPqHFOlgrJ7s+aua8xbB8YQ9ahqYBXWRJNv3P/2b1DYtdrz1oqZPE3CcB8Pc6Gf2a1Tcm
+6TAgtEx7Cf1BFcrsrMz7TWHmGQITieNb2r9UYWSc2Gp+GtYFNJCgT0JJXKUBIauPMKBLteYrL8Fo
+ff/uY44dC/mDWjdCP/5x0qelPQjlBvWdHL5zvBTOj06rJ0m3HNI/hnIcDh0Qu2j9reb9rLVcdym6
+bWmBM4uDEB8Zv9Ph0KTBFSy1IosyakuD1j1Os30EzjGfbi0EUXIvnOcYbTBAbM5UAzrxEHMhBvoX
+Pvnx+OyvjJmc9tWxTX6AcSz+m40esbT17URBeZS18afgieiikm5TynlUYP1LciR3hSgGVzvGXnKO
+02VDFR5itGWdRKZ2W5wIShNfWfhSa0D0K5UdIDt5Qc7sjzwK1Yb1sY5Tu0uA5mhIS82q1ov83uxB
+sFkriNnhGv/M1NCDVLBiOMsHu73qUM+yKmgKLwF9Hfn9WI25glbAMI4S5r3hYzcCAwEAAaOCAfcw
+ggHzMB8GA1UdIwQYMBaAFPebok7Tl8X0NA9DDoGFzpGTMq/5MB0GA1UdDgQWBBRcYhqbcGzn1jrT
+JOZaB8O7qllDpzAwBgNVHREEKTAngRNkd213MkBpbmZyYWRlYWQub3JngRBkYXZpZEB3b29kaG91
+LnNlMBQGA1UdIAQNMAswCQYHZ4EMAQUBAjAOBgNVHQ8BAf8EBAMCBeAwHQYDVR0lBBYwFAYIKwYB
+BQUHAwIGCCsGAQUFBwMEMIGpBgNVHR8EgaEwgZ4wTaBLoEmGR2h0dHA6Ly9jcmwzLmRpZ2ljZXJ0
+LmNvbS9EaWdpQ2VydEFzc3VyZWRHMlNNSU1FUlNBNDA5NlNIQTM4NDIwMjRDQTEuY3JsME2gS6BJ
+hkdodHRwOi8vY3JsNC5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1cmVkRzJTTUlNRVJTQTQwOTZT
+SEEzODQyMDI0Q0ExLmNybDCBjQYIKwYBBQUHAQEEgYAwfjAkBggrBgEFBQcwAYYYaHR0cDovL29j
+c3AuZGlnaWNlcnQuY29tMFYGCCsGAQUFBzAChkpodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20v
+RGlnaUNlcnRBc3N1cmVkRzJTTUlNRVJTQTQwOTZTSEEzODQyMDI0Q0ExLmNydDANBgkqhkiG9w0B
+AQsFAAOCAgEAocabrh1cPd5s3vY5rnlBVQSTc7zs2ZWs67dAIltR+05WELrYClVzzUhMs/LOJPlr
+EUo45UDDomXq38DxFepaPd9+iNLjXfn33EX/IG44j04lU/oF/Rg9VeQILkYLbCZ/x9wOjNHZc4SN
+ydY7Dhvf/sT5aBz88u7D5+azZJ7Qf1U57wYseCH1Mt0nDrtr5y19IJ8D9xJJ33RFL6vfpHZBBAQ8
++3RqkKNxLoV2aFvQhxdhjNLDqTv3LjUIdicwPraN7JkxEu7CV2Lka7eRqJgkWL7SK0YmBjGpRafs
++icP/ON5RCCKTTb6VlX8eTG2sJJfsFhvJNCCt6xexbWzWtIrfP7NvPBvwBB737AyEGBZkS5aNizT
+McURJGTv9UKvBh1LF/+tNhYtLvPCN7oecGzhCHht9jcwSkygTo3Y6YlK3QgOu+ncmiBbfeuwlLZ1
+LxbYvG6hgNqXv7u6YyADbYajAQJXJ2OQen39pm3Q/AQSyLYG+B8lDglWsM8tYXPlEdrYJcksGK6F
+nqIX6Bumn43rBooLJdiZp4WmfWdL2pxe+LxRDjprmqu1WprixDxULSTOKJZoqTlugs6y3Bc+if+s
+gHnBBtz9WQ6MtPHkh7zONDAFIKcBmv8OqPQCx0F3Wv3OEybwMpXx0OsKgK8wLldaX1pXcMuyDgTL
+Sqs0AV0OHUgwggcDMIIE66ADAgECAhADNSi2uzJskfEdOMo4hV0gMA0GCSqGSIb3DQEBCwUAMGIx
+CzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE6MDgGA1UEAxMxRGlnaUNlcnQg
+QXNzdXJlZCBHMiBTTUlNRSBSU0E0MDk2IFNIQTM4NCAyMDI0IENBMTAeFw0yNjA3MTgwMDAwMDBa
+Fw0yODAxMDQyMzU5NTlaMB4xHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcwggIiMA0GCSqG
+SIb3DQEBAQUAA4ICDwAwggIKAoICAQDali7HveR1thexYXx/W7oMk/3Wpyppl62zJ8+RmTQH4yZe
+YAS/SRV6zmfXlXaZsNOE6emg8WXLRS6BA70liot+u0O0oPnIvnx+CsMH0PD4tCKSCsdp+XphIJ2z
+kC9S7/yHDYnqegqtw4smkqUqf0WX/ggH1Dckh0vHlpoS1OoxqUg+ocU6WCsnuz5q5rzFsHxhD1qG
+pgFdZEk2/c//ZvUNi12vPWipk8TcJwHw9zoZ/ZrVNybpMCC0THsJ/UEVyuyszPtNYeYZAhOJ41va
+v1RhZJzYan4a1gU0kKBPQklcpQEhq48woEu15isvwWh9/+5jjh0L+YNaN0I//nHSp6U9COUG9Z0c
+vnO8FM6PTqsnSbcc0j+GchwOHRC7aP2t5v2stVx3KbptaYEzi4MQHxm/0+HQpMEVLLUiizJqS4PW
+PU6zfQTOMZ9uLQRRci+c5xhtMEBszlQDOvEQcyEG+hc++fH47K+MmZz21bFNfoBxLP6bjR6xtPXt
+REF5lLXxp+CJ6KKSblPKeVRg/UtyJHeFKAZXO8Zeco7TZUMVHmK0ZZ1EpnZbnAhKE19Z+FJrQPQr
+lR0gO3lBzuyPPArVhvWxjlO7S4DmaEhLzarWi/ze7EGwWSuI2eEa/8zU0INUsGI4ywe7vepQz7Iq
+aAovAX0d+f1YjbmCVsAwjhLmveFjNwIDAQABo4IB9zCCAfMwHwYDVR0jBBgwFoAU95uiTtOXxfQ0
+D0MOgYXOkZMyr/kwHQYDVR0OBBYEFFxiGptwbOfWOtMk5loHw7uqWUOnMDAGA1UdEQQpMCeBE2R3
+bXcyQGluZnJhZGVhZC5vcmeBEGRhdmlkQHdvb2Rob3Uuc2UwFAYDVR0gBA0wCzAJBgdngQwBBQEC
+MA4GA1UdDwEB/wQEAwIF4DAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwgakGA1UdHwSB
+oTCBnjBNoEugSYZHaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZEcyU01J
+TUVSU0E0MDk2U0hBMzg0MjAyNENBMS5jcmwwTaBLoEmGR2h0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNv
+bS9EaWdpQ2VydEFzc3VyZWRHMlNNSU1FUlNBNDA5NlNIQTM4NDIwMjRDQTEuY3JsMIGNBggrBgEF
+BQcBAQSBgDB+MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5jb20wVgYIKwYBBQUH
+MAKGSmh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRHMlNNSU1FUlNB
+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
+E3TiEx52t6Zx18XvI5gMYvIAAAAAAAA=
 
-Nit: please add a brief comment explaining why locking is not needed at
-this call site.
 
-> +		if (context) {
-> +			context_clear_sm_pre(context);
-
-For cache invalidation considerations when changing the PRE bit in a
-present context entry, please follow the VT-d spec guidance (Table 28,
-“Guidance to Software for Invalidations”).
-
-> +			__iommu_flush_cache(info->iommu, context, sizeof(*context));
- > +		}> +	}
-> +
-> +	return 0;
-> +
-> +out_unpreserved:
-> +	if (dev_is_pci(dev))
-> +		pci_for_each_dma_alias(to_pci_dev(dev),
-> +					clear_unpreserved_alias_cb, info);
-> +	else
-> +		clear_unpreserved_context(info, info->bus, info->devfn);
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * clear_unpreserved_context_entries() - Clear context entries for unpreserved devices
-> + * @iommu: Target IOMMU
-> + *
-> + * Clear the context entries of unpreserved devices during shutdown before kexec.
-> + */
-> +void clear_unpreserved_context_entries(struct intel_iommu *iommu)
-> +{
-> +	struct iommu_dev_iter iter = {
-> +		.fn = clear_unpreserve_context_entry_fn,
-> +		.iommu = &iommu->iommu,
-> +		.arg = NULL,
-> +
-> +	};
-> +
-> +	/*
-> +	 * Clear context entries for unpreserved devices.
-> +	 *
-> +	 * Note that the error can be ignored as the iterator function does not
-> +	 * fail.
-> +	 */
-> +	iommu_for_each_dev(&iter);
-> +
-> +	/* Clear reference to unpreserved context tables */
-> +	clear_unpreserved_context_root_entries(iommu,
-> +					       iommu_preserved_state(&iommu->iommu));
-> +
-> +	/*
-> +	 * Some devices might not have teardown/detached properly depending on
-> +	 * whether a proper device remove is done before kexec is triggered.
-> +	 * Also unpreserved context tables and entries are removed during
-> +	 * shutdown. So issue global invalidations to remove references to
-> +	 * unpreserved tables and entries.
-> +	 */
-> +	iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
-> +	if (sm_supported(iommu))
-> +		qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
-> +	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-> +}
-> +
->   static void unpreserve_iommu_context_tables(struct intel_iommu *iommu,
->   					    struct iommu_hw_ser *ser)
->   {
-
-Thanks,
-baolu
+--=-J1dNl+ciUXuOeoyFOU2K--
