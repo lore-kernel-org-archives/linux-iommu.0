@@ -1,157 +1,114 @@
-Received: from sg-3-28.ptr.tlmpb.com (sg-3-28.ptr.tlmpb.com [101.45.255.28])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3698E381EA2
-	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 08:30:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.45.255.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF2B2EC57C
+	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 08:45:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787733033; cv=none; b=gOUT823G/E+mA4rpMKxw01f8q+hUfjMeldRcXFTmJfWWZEJev8DayFq6YIQZgrkF7RXgFuzAhYweHYiE383sw07VO2rNuRMKo4YTQhkf50Si0B00SfbVaYJf0A5AYvnyzoJViuUicX7nEbzeCLiiV1FbdVk65hVIidIx23ICotQ=
+	t=1787733960; cv=none; b=f7a3v92fTWZdyyB8hKC71KyNU6ufwKC7ZV8w4wawvwH8Mi6el4TCIiZQ+ymuR6HKtKzfB2A6CtTINwGgbYqmg7h4pctSU5/GVZWiIPpwMRHS0aOTkT76fWV0UrKFxv4fZ4BWBMAJ4bAcsKUmBlf6ZVG76ZrvqYrpGLYSjXtCMc0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787733033; c=relaxed/simple;
-	bh=9ShPCCNq5dQxHrM+wtim7pj2qMWPe/vNu0bW6s8wI00=;
-	h=Subject:Date:Mime-Version:Content-Type:In-Reply-To:From:
-	 Message-Id:Cc:To:References; b=IU5BYFiiJ7IQmV5Z/qGet2e1N0t4IF6NWcux4UwmYguCwZeqZOR5ilY0VfvvhEABVoKATXNn4Sbhod1AYIrDGjo6SyQ1FdJ+A9BmlIT6gZYGDtGsboOOiNOM6oyIWjJ/gvpJPRVA4OGJlSh04w+vQy/hhHqN//55Pt2pL6PEgO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=i/FoCy0U; arc=none smtp.client-ip=101.45.255.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
+	s=arc-20240116; t=1787733960; c=relaxed/simple;
+	bh=K9/006qP2S/t1c0k8aOwQB0wN1VttIpqm0FmDwp5pK0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SN9+W3Egf24w7MmCXI+D1Cot4WctQ0oa81yhfFRk5L8OSq3YWuewKQ/ELJXia09+n2Kkh37L36kYfhb2+MH+5I2MxKsWkBI0QPk4J3EhbzJYoBhthK5IGUwmY8voqXKzJJCy7ROzRvJ0aCgC/7MAW6EoeE9960940GTHNyQENwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=B5tzQ9Dd; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="i/FoCy0U"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604151535; d=picoheart.com; t=1787732977; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=HzdH8nsqTysaIedViXV7Z9XxXF8cCq89j3KqpBDmv5o=;
- b=i/FoCy0UAYSWhTFfxs4N+tQYdKiEKIY7Q02+ElGjQpppoKorysZHuM/wZzTKvDGJlTwsQD
- gpcvWi9G03LE0c3fmAJ26EigOLdmXwIaJCjSwYxg9vnqM1KybIwSk0a7N4AL4nwS7LABIG
- HmCrh3zSADnjQIGMfetSrdcuub5/d99/6JJ34wMGeFksypuJ00j2mr3CvAcKPjuG/1fitV
- N55d4CjhOYxNg1FlfDsYCAwnk/KfGfbHXDDmZtJxyxHufXJUjWs/U1Pu6bOegDXe24Zlbs
- ITW32ET/zVsrRW+j6LWlveRC/+n0tnxiYhLbSyg6+tVtwOaHjZHhmCvFzRlkEg==
-X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
-Received: from [100.86.213.231] ([120.234.91.234]) by smtp.feishu.cn with ESMTPS; Wed, 26 Aug 2026 16:29:33 +0800
-Subject: Re: [PATCH v6 2/2] iommu/riscv: create a auxiliary device for HPM
-Date: Wed, 26 Aug 2026 16:29:30 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="B5tzQ9Dd"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-499add6348fso30965e9.1
+        for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 01:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787733957; x=1788338757; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=z7ckLEdPbhTyPVPfJ+i3gxu5g8YB3cToPtYH/B0h4a8=;
+        b=B5tzQ9DdcUvydmP4iZKvGr8HijcQgGBvzTeg1Swhh2QxG8ZyEYHwoJz5/gvzYafBPf
+         ic6g1HIxIlja+4De63xs8j4j0HquiRqdX7lhf6hNX/dDsrdv+9DiBMv4tIL2E9vY4uVs
+         IqwmUubKK64BDf0EYg81j6pOtlTOjej8jzHyovCpip12lzM8+39lm4I/XOtvrHX5ggaV
+         +lYUsCwr+h0HYe2JLadX3Duuv72KyYzlwWYGsmli4pe9D4LIxU1LFJ91RrG9LlEIpUs1
+         AUgE7QS704KGZDnjO/nmdqPquhhb34Rl9bm9IRH98tBH98beDQMyK2/WArCMaDtx32Uo
+         bs7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787733957; x=1788338757;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=z7ckLEdPbhTyPVPfJ+i3gxu5g8YB3cToPtYH/B0h4a8=;
+        b=DhcNZAuymJ3U9ZJ7drHwSkqbaxM8QGf8bqZ5VhJNxrs/A+TXqXo4VClyHEO4ZRXMMg
+         v2CBql4ORa2aVJ2Z/gqCrLW44Vxy9IxJaxpiKnSHmCHAsz95fjhDDlc/PnO8dwitxoak
+         CgNMC8WqfrCA8+R4CaKPGddO40AG4/pyt46y6ASg72D+TeMikFyjVcHufSAzIiN1F3l2
+         R2c+amXMMkG0mwhYevpx0Ytx6VytjXjAFHnSSSxOTk3/0E2iEI4DhI4JTMNanQuDIOuC
+         WO4dro4sY0SiBzQ2BTmJcwycZfw3mKs8CBWnqswb4QPtbf/J+dU41HUEijT5OH3S1Aez
+         VRzA==
+X-Forwarded-Encrypted: i=1; AHgh+RoGFP/RaUN97OpGtBQ46zSbk0Xes++6zIQU80QKINMY+HyFQiSlkkASNRGahMLmeLRGl79VuA==@lists.linux.dev
+X-Gm-Message-State: AFuF++m7rEr8hhkMW1MCqgKmKcIOrnx7U/7xf3anNg1QYdwX7LcutEkr
+	lK4sq/cfR6LEKSMFdrsqxOuufnlhMRDfPfCfyVIB/tP/KLnxXOplDFewgLvFLBZYnA==
+X-Gm-Gg: AR+sD11dLPHeN1+GNcnH7eu1dJUist/MEkt5FP7qcBYizJiF8b1KM8DRcJcZbDZKtQz
+	vG3AIHqspcul60W4vCcUt8r+QAE/48Je+zXvU0KnJaNEsKYSd7eoFmZkQQ7KpdkovXYGfxd1FmF
+	9Bjk/apZ2UIkuUsMcUMYOHVcppwZzH7zOFuin6MbafXkD6RbqZwq3sOxslZnnF8zCNz5pXWwlJh
+	iIzV+D4YtiIpbMX2y/2alXWQtbOeMAhdEo0WGTz68iFU56Rew09PWj4jg03K8xmezO1J4OlI/z3
+	i3hIfSa3Qel8o9mWYEYWziV97kOOZCxsjRpEKVsTjK/6zpsYvkD/dFuSPiOWKzZ+nJ90X8RzPn+
+	igTGub65tZ2ZNVhIiSn0nsllBY8mIIPs1sM4tUF9UzF0QRyWTvGQRnuDtlpgrx2wPqPQzmyLQfS
+	3qjLYrhvOP+NRc+cUz2qS7mVnvY7sIJqVrDyi+WCYJg2ZjgConv5oxMtQbQ3VxT7tEIYAxcE7k8
+	otm9oAaUiloEfAQ1ldn6cQdZyHGOYxqWe/9ozTQ
+X-Received: by 2002:a05:600c:2d91:b0:493:b47f:a24 with SMTP id 5b1f17b1804b1-499dd500ce3mr457395e9.6.1787733956245;
+        Wed, 26 Aug 2026 01:45:56 -0700 (PDT)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499dd5b3958sm8743505e9.0.2026.08.26.01.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2026 01:45:54 -0700 (PDT)
+Date: Wed, 26 Aug 2026 08:45:50 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v7 00/24] KVM: arm64: SMMUv3 driver for pKVM (trap and
+ emulate)
+Message-ID: <ao6nvupFg7neLqbN@google.com>
+References: <20260715115906.2664882-1-smostafa@google.com>
+ <178769159057.3356902.1232440069489543145.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <20260824022034.3916570-3-zong.li@sifive.com>
-Content-Language: en-US
-From: "Yicong Yang" <yang.yicong@picoheart.com>
-Message-Id: <612d401c-2543-44aa-8b16-9f571432a788@picoheart.com>
-X-Lms-Return-Path: <lba+26a8ea3ef+e0889c+lists.linux.dev+yang.yicong@picoheart.com>
-Cc: <tomasz.jeznach@linux.dev>, <joro@8bytes.org>, <will@kernel.org>, 
-	<robin.murphy@arm.com>, <pjw@kernel.org>, <palmer@dabbelt.com>, 
-	<aou@eecs.berkeley.edu>, <alex@ghiti.fr>, <mark.rutland@arm.com>, 
-	<andrew.jones@oss.qualcomm.com>, <guoren@kernel.org>, 
-	<david.laight.linux@gmail.com>, <zhangzhanpeng.jasper@bytedance.com>, 
-	<iommu@lists.linux.dev>, <linux-riscv@lists.infradead.org>, 
-	<linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>, 
-	<yang.yicong@picoheart.com>, "Chen Pei" <cp0613@linux.alibaba.com>, 
-	"Fangyu Yu" <fangyu.yu@linux.alibaba.com>, 
-	"Samuel Holland" <samuel.holland@sifive.com>
-Content-Transfer-Encoding: 7bit
-User-Agent: Mozilla Thunderbird
-To: "Zong Li" <zong.li@sifive.com>
-References: <20260824022034.3916570-1-zong.li@sifive.com> <20260824022034.3916570-3-zong.li@sifive.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <178769159057.3356902.1232440069489543145.b4-review@b4>
 
-On 8/24/26 10:20 AM, Zong Li wrote:
-> Create an auxiliary device for HPM when the IOMMU supports a
-> hardware performance monitor.
+On Tue, Aug 25, 2026 at 05:59:50PM -0300, Jason Gunthorpe wrote:
+> > This is v7 of pKVM SMMUv3 support with trap and emulate
 > 
-> Tested-by: Chen Pei <cp0613@linux.alibaba.com>
-> Tested-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-> Reviewed-by: Guo Ren <guoren@kernel.org>
-> Suggested-by: Samuel Holland <samuel.holland@sifive.com>
-> Signed-off-by: Zong Li <zong.li@sifive.com>
-
-Reviewed-by: Yicong Yang <yang.yicong@picoheart.com>
-
-> ---
->  drivers/iommu/riscv/Kconfig |  1 +
->  drivers/iommu/riscv/iommu.c | 37 +++++++++++++++++++++++++++++++++++++
->  2 files changed, 38 insertions(+)
+> I tried to compile it:
 > 
-> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
-> index b86e5ab94183..8025bf0fb67f 100644
-> --- a/drivers/iommu/riscv/Kconfig
-> +++ b/drivers/iommu/riscv/Kconfig
-> @@ -10,6 +10,7 @@ config RISCV_IOMMU
->  	select GENERIC_PT
->  	select IOMMU_PT
->  	select IOMMU_PT_RISCV64
-> +	select AUXILIARY_BUS
->  	help
->  	  Support for implementations of the RISC-V IOMMU architecture that
->  	  complements the RISC-V MMU capabilities, providing similar address
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index cec3ddd7ab10..7f619971bb70 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -14,6 +14,7 @@
->  
->  #include <linux/acpi.h>
->  #include <linux/acpi_rimt.h>
-> +#include <linux/auxiliary_bus.h>
->  #include <linux/compiler.h>
->  #include <linux/crash_dump.h>
->  #include <linux/init.h>
-> @@ -48,6 +49,9 @@
->  static DEFINE_IDA(riscv_iommu_pscids);
->  #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
->  
-> +/* IOMMU PMU auxiliary device id allocation namespace. */
-> +static DEFINE_IDA(riscv_iommu_pmu_ida);
-> +
->  /* Device resource-managed allocations */
->  struct riscv_iommu_devres {
->  	void *addr;
-> @@ -565,6 +569,36 @@ static irqreturn_t riscv_iommu_fltq_process(int irq, void *data)
->  	return IRQ_HANDLED;
->  }
->  
-> +/*
-> + * IOMMU Hardware performance monitor
-> + */
-> +static void riscv_iommu_pmu_id_free(void *data)
-> +{
-> +	ida_free(&riscv_iommu_pmu_ida, (unsigned long)data);
-> +}
-> +
-> +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
-> +{
-> +	struct auxiliary_device *auxdev;
-> +	int id, ret;
-> +
-> +	id = ida_alloc(&riscv_iommu_pmu_ida, GFP_KERNEL);
-> +	if (id < 0)
-> +		return id;
-> +
-> +	ret = devm_add_action_or_reset(iommu->dev, riscv_iommu_pmu_id_free,
-> +				       (void *)(unsigned long)id);
-> +	if (ret)
-> +		return ret;
-> +
-> +	auxdev = __devm_auxiliary_device_create(iommu->dev, "riscv-iommu",
-> +						"pmu", iommu, id);
-> +	if (!auxdev)
-> +		return -ENODEV;
-> +
-> +	return 0;
-> +}
-> +
->  /* Lookup and initialize device context info structure. */
->  static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_device *iommu,
->  						 unsigned int devid)
-> @@ -1613,6 +1647,9 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
->  		goto err_remove_sysfs;
->  	}
->  
-> +	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM)
-> +		riscv_iommu_hpm_enable(iommu);
-> +
->  	return 0;
->  
->  err_remove_sysfs:
+> ld.lld-21: error: undefined symbol: __kvm_nvhe_iova_bitmap_set
+> >>> referenced by __kvm_nvhe_io-pgtable-arm.c
+> >>>               arch/arm64/kvm/hyp/nvhe/kvm_nvhe.o:(__kvm_nvhe_visit_dirty) in archive vmlinux.a
+> 
+> I think it is because I have CONFIG_IOMMUFD turned on.
+> 
+> -#if IS_ENABLED(CONFIG_IOMMUFD_DRIVER)
+> +#if IS_ENABLED(CONFIG_IOMMUFD_DRIVER) && !IS_ENABLED(__KVM_NVHE_HYPERVISOR__)
+>  struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
+> 
+> ?
+
+Ah, I don't think I tested that config, sorry about that, I will fix
+it in the next version, I think I will just stub it in the hypervisor
+if possible.
+
+Thanks,
+Mostafa
+
+> 
+> -- 
+> Jason
