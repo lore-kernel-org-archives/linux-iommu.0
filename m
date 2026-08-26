@@ -1,298 +1,183 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012006.outbound.protection.outlook.com [40.93.195.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C175F44C518
-	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 14:53:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787756005; cv=none; b=rGzNDGWPLI9S3TjGxyJjORLHcmy8Rcz1oRZuIMzsV9bGHXUTWlAj3q7pazHEmgndxy+0RqGkT4i2YIeNylxBjsRFBpkHfdWALomrpas2wDxp0EgTh9l9MQE70fJxS8nQneAcs6giJ6rI5WksPy++8mLoDgG0H6kTYQUIKuDm/1k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787756005; c=relaxed/simple;
-	bh=8HiNwjyq1vjwoAfAkbPp//4KpZ6m4wxpLdb5cYJtqFA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=GZqhQc2DRPh738wmEkbKf37gnGYmFtwQfrUVnpaAkWGUmnB9nihOQqXGd933dgjgz13XoDJ+VKw2l+sgtrgoexAv01VSlM6DIAuAXd0OL0ImlER+otecr380Y16gXuwkG/NJfv6veFZFnP3LHtdinCWHQb36mCtX6bnUF6RYOu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=F4BQriiR; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BytoTWeS; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 458D3314B66;
+	Wed, 26 Aug 2026 15:39:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.6
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787758781; cv=fail; b=WxvlouU2OqN7VSmXoQ39fiKRGbgvp8elDr39PtNqKA6LfBRPb91FvZ4ff/0qOZwVoJL/sdkJFq6EBR69X7NJkuGKiS6EfOtYo+9Nud6zfRAXZ94+WK+V9wcIQafff7vxK+vlEOxASMV0+KLNmgZ89orLD+v84T8vyEWgBezdv1A=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787758781; c=relaxed/simple;
+	bh=V/84nM68ahBLqJVDV6xUWnX2a2ZIe/PrDPKP0tebO5M=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Xq2NVbglr/cmm58mtqyrM4JA67LY16nhFVAaVwvdVoVhG9CmlXT7hZ1OAVV85Yt6Q3KP59UA85o2aoIPXiJIm+pyG8DjgyK4kruEyfRYMp3XzO4a1c9QpENoksEntXLKxEEUF+cGsyhfCjPzbAx5IN5WysOoC5DxEmuDPCe7uzY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dT3OoIBY; arc=fail smtp.client-ip=40.93.195.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="F4BQriiR";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BytoTWeS"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67QDv4Fk503650
-	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 14:53:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=l+wO2YNnEaL
-	XrAQk2P5XKsnRLtuMJ3Ijr8ghrcqISrk=; b=F4BQriiRTl6H154dJwEadc43NPg
-	gtvTEYHtbelPxHw24ruq9Za5cpT2bjw0Dz9BfV3dRq7bJvvlT4G8Cl0WyNOn4HsX
-	AaUxENLmXigV2vcNe2FX9WqGbfxjxTYi+XBRihzeFk5hZpsFmUJm4UOfac2crsRp
-	knP03cvWEku/kHf39X7rV7BUWGTPpQitQPbc55RmyaUqIxDpDXRWQ7fWOa3npr/B
-	n4JdbkBvvRfE/+s5oPltDS6DuyUexgCQBYWpzm4X+4XDpiITAUxwdragP1hTvYNZ
-	J0xFohQWWD0oXCd5nq/Mej7+60S0ipvB2owfX0ALuGqDWH1WkcTbqInhtbw==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ga03u0kau-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 14:53:20 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-52ee59064d2so4891011cf.1
-        for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 07:53:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787755999; x=1788360799; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=l+wO2YNnEaLXrAQk2P5XKsnRLtuMJ3Ijr8ghrcqISrk=;
-        b=BytoTWeS2JaSClc0Y1W1kg3tH+tzy9lFziAtW4/mGeQ40nQl7I8o4wEr3Km4ssXZJj
-         8KW1LSoxQwLc9lhbyFTOVDBdhryKsZKjW290dM+nj9Qifp0tKIqKwFYi/mi8UIQiKBS7
-         Aaq2Iq/+FU1s/q9/V5gpFMBQUVnyefbuT4r0Fj12QCLlzJsF+vf+egzM1c+7ukEJFafj
-         FkoScA0smeLKBxOPKYS0stWmkNYPnzgPb/Hiw78vQpTaHh0mkB+E930ITHFvOgTifnPe
-         c+WM24mGHnlR8Gpxu9dfkn4XhuLTU3z57qF9T1Et5ji/CyrnjUVbtdO/lM4dGx4QfMLg
-         2azw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787755999; x=1788360799;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=l+wO2YNnEaLXrAQk2P5XKsnRLtuMJ3Ijr8ghrcqISrk=;
-        b=ds38qymh3AcBSehh0wDuVL8pgBk49R3Bg+UH7hQnK9+ln1JTqrtw6xIeOLTpcMolia
-         V2Ofe9CxGVTZl/3ooHiU0YKJOMPhg4+GxqxwK1MxXRhjYBsQdG1Wl9+auFzaP/LR01Bp
-         nK+9xsW2N9UWZ5Pp1ZFswx+8Ji1dms+0CvksX00JwWSFA70e9VX225fUUnQ/LzWsPaDu
-         DZlUYPlwB2SdeqK/EAGTGp7uSoNZCI9YXBOWNdFHOgeQpcBH33SMzKRmXhnmZFOZpt7J
-         38bv30qZVHmZfwFHHFdAAm21iFrVIpKcbMqFOY8bJpmwv5GL7mWfpEJTb3QRxuYp3TnW
-         4Ovg==
-X-Gm-Message-State: AFuF++kl9z5uBvW1/Tmf+4GkO5bGpyEzpqWdXzkHXU+Oui99aLdkhIz1
-	eyuJrA0TFgVIlHWNJ09CBo7zr6YCs8dNP7bs3J9kozwUZMT/I6HsMTaR40+eX2coQTbICK8LGKx
-	Iudjm1RMxnlrpFLCLVMx8mdnkUo+7xnTyhxOQK4IAczJfFGiA008Zo2ibNao2NuQxeA==
-X-Gm-Gg: AR+sD11yKWS0FIhYrMSYyR2+uh9j1G+HfZrGPvhc432/MAgttd9AQP+AjfBFcCA+qWH
-	eNSRJVsQsXqdqjp9Ozhr9x7UVE29Aswi2bFonZuKX8gr4oWqJ+dNdWqiyYdH+afOZt9kbD8H8l4
-	C/tGJFLPcKa751LdV1JInB+283Gi62Ao3oSpJ/8Opjqze253MrP42/n9HGJZrpdQTAbCShgOI+R
-	ueYUQmUkdNgBRn/NPpZAbBAhOZprZyt0ilYedDYlGhdNDyhCEXSomFN/Qa4vj2dOOd/gNCLszU4
-	CRzXpEXr7K1rZOm0ko3IoxR6gOxlLMtU7Pe9O8kP9FDJLNpyjYNgn5Cs3U6AlDwtArFIpX1SwU5
-	wXRZy07J7
-X-Received: by 2002:ac8:5c84:0:b0:51c:291:82eb with SMTP id d75a77b69052e-52e2ecc055bmr165468831cf.14.1787755999108;
-        Wed, 26 Aug 2026 07:53:19 -0700 (PDT)
-X-Received: by 2002:ac8:5c84:0:b0:51c:291:82eb with SMTP id d75a77b69052e-52e2ecc055bmr165468161cf.14.1787755998546;
-        Wed, 26 Aug 2026 07:53:18 -0700 (PDT)
-Received: from localhost ([193.165.40.195])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a5de8ea655sm4777485a12.12.2026.08.26.07.53.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2026 07:53:17 -0700 (PDT)
-From: Andrew Jones <andrew.jones@oss.qualcomm.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: jgg@ziepe.ca, kevin.tian@intel.com, robin.murphy@arm.com, joro@8bytes.org,
-        will@kernel.org
-Subject: [RFC PATCH v1 7/8] iommufd: Prepare software MSI installation for address lists
-Date: Wed, 26 Aug 2026 16:53:01 +0200
-Message-ID: <20260826145302.449904-8-andrew.jones@oss.qualcomm.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260826145302.449904-1-andrew.jones@oss.qualcomm.com>
-References: <20260826145302.449904-1-andrew.jones@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dT3OoIBY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vooHsJbcObTzYef7DiLbNtN7e3WMwDXUGptaoxYqyPEcA/bZCt6xaEoKOVwVg1sXz6bPWbpBC40mKdWM72VRXxmQ+hTs/5Tx/0PjHpucPSiSmYZxVi02NRf8AekJydrbjpzcKeCbf4EgygGal3TKXHaSjELqvYpNsGOeaklwjK7z+FJc4Us649xo25SyxXOvq2GMuE5ccZkUPIDq8jdXNqXBLxICfKp6g18+qYo7xioX2kbm96QiuhL5VmmsNv9GWn/c1eM+CX4kYTjD+5SWMhAD15D7u22FTiCI00MeIzlgL6qqZ4dDbttBOS+9+ZpITghL9mY84zy0KS+fYYhtmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jTQNsz/Wja0N/SSjuVRsEjik1ZGWR23+xu3Z38xgeZg=;
+ b=PqaKOwcq7gjwOxNzJWhlsrcLs+1u8oKwzWz7LKvdrkMH/geKwV5lxTzvc6w3Q5AC8CAWYNfkV6EjPHka73GGieUFgU3jAcBpVa4jJNpcMuMnfji3AsykFUufl9gjJdisAkwcLA3G/7gwltbOcK6NIchA34P20KTvjfTpyRve6ClY2NLHQbejcNXWrZdKWN4kKyAqW9fJ21uLP6snV0GXH6cwrAhyaixsErz8e2td63oWhXqoKVCXMteIKIaEDQ6TeqP0/HsovqFJh6PaHi2k6O7NPpuGYC5xzEqOiaw1e/wg1sf2NjuwIKvYkwpVpG6DY3GG17Yq474qaYBdiWB9AA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jTQNsz/Wja0N/SSjuVRsEjik1ZGWR23+xu3Z38xgeZg=;
+ b=dT3OoIBY4qSceOy5aspmvGdOclKHH/v1hpazCguXSEjyg1SfMrW7VarMXLxAeN5dZEOPKHyCgApvLFnFUtq9f9YHQn+Cgq0P+y9HTIKTGhqP8B91N+mrW37xzID5mELKN3ZOALB0t5d7e7dKt23KnE7l9iDWX4N/Zxszh0HzCE5AFmXWjONy8TpWwKcPxyBPfRXbNEhnL9kA/zJJvNYJciB/9wti/xBFIkwYEI+1R2f6UPYQkfmtIU2I9r4iywn1eyVzAM39LdePS/1efHg0pBSFlaJxwbq1P6CQmNCJhhEsMYqAqZ1jryDRMNLdN88UGNuJCZog4uKNtH0+DdZCpg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from IA0PR12MB8716.namprd12.prod.outlook.com (2603:10b6:208:485::18)
+ by DS0PR12MB9397.namprd12.prod.outlook.com (2603:10b6:8:1bd::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.7; Wed, 26 Aug
+ 2026 15:39:26 +0000
+Received: from IA0PR12MB8716.namprd12.prod.outlook.com
+ ([fe80::c18d:8eab:b36c:32da]) by IA0PR12MB8716.namprd12.prod.outlook.com
+ ([fe80::c18d:8eab:b36c:32da%5]) with mapi id 15.21.0360.006; Wed, 26 Aug 2026
+ 15:39:25 +0000
+Message-ID: <e2a95399-be5a-4194-8368-69599291ad66@nvidia.com>
+Date: Wed, 26 Aug 2026 17:39:19 +0200
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Luigi Rizzo <lrizzo@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ rizzo.unipi@gmail.com, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ willemb@google.com, kuniyu@google.com, davem@davemloft.net,
+ edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+ rafael@kernel.org, akpm@linux-foundation.org, david@kernel.org,
+ netdev@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
+ driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260615234220.3946885-1-lrizzo@google.com>
+ <20260615172535.080cf94f@kernel.org>
+ <CAMOZA0KAHKsvA9yRcdrjG13S+=rJhw-Cvnw2WdLjGGY0azG0kw@mail.gmail.com>
+ <ajEuUZMgS_NRmDcp@google.com>
+ <ac473a83-c77f-4a41-bc86-8a857d2d6e36@nvidia.com>
+ <ao3DzzFIVPdtL7MX@google.com>
+Content-Language: en-US
+From: Dragos Tatulea <dtatulea@nvidia.com>
+In-Reply-To: <ao3DzzFIVPdtL7MX@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0253.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:af::8) To IA0PR12MB8716.namprd12.prod.outlook.com
+ (2603:10b6:208:485::18)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI2MDEyNCBTYWx0ZWRfXy1nDn9MD1gdh
- CICWs/348asOmlPr8BRvCGhdszfGyTC0Y9X4s/jW26OKRJWBByl52clWc+ee1aZHdSLV7StYo4o
- 31m6vCo4RAPUGgMtX/ZfO+4qnnob07SslINwGNImMLL9idmlxVYZCPxneBeAJ6knJ7WJ8l2BGjD
- Pvo04Mok/5mUG+gitmEt55prEyrqdOnWAnMYU6K4oruOeLJakortXdetTMKM5/EnJVXmKSOrXre
- OJNRjwqHAQRYvJ5YOEtM4kbe1fp1yZpX2fa3aQ8K28ncsP8UwgaKQVlfIpzGSQ/YvdtDI1JpiSb
- QXO23JprIwtpPX4+fAAL5WciuX2buybp462RiQA4llApLENYeq26JFCWBz/LsX7Jeu/YjYl5SJ/
- Ul8uGqG9OloS9GJ+OvAmYek36BWSKidYZkkLl2TbQ/auaoKLVtWeDzPcZJBMdPuk2f2wn5sgix1
- KFGT/4IaKpdIK7dFYgg==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODI2MDEyNCBTYWx0ZWRfX54sYhxvF+xo7
- XwUvNe3bGaSR3P+7CdEG5lROFm824qZ2QDp/vYgB320d249JGnhZFJ68e4kmgwY83dNkujrIkta
- jvzb11LQPV5kRa6FDvKSiWEYoCddM5I=
-X-Proofpoint-ORIG-GUID: tqGXl5xdO_HpDpDU_ek7Ki61A859YoPJ
-X-Authority-Analysis: v=2.4 cv=RcqgzVtv c=1 sm=1 tr=0 ts=6a8efde0 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=CzrpMg+lqiTzknPDBj2tlw==:17
- a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22 a=EUspDBNiAAAA:8
- a=fyE6B5mSzfnmm1qxREQA:9 a=a_PwQJl-kcHnX1M80qC6:22
-X-Proofpoint-GUID: tqGXl5xdO_HpDpDU_ek7Ki61A859YoPJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-26_04,2026-08-26_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 priorityscore=1501 adultscore=0 spamscore=0 bulkscore=0
- phishscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608260124
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA0PR12MB8716:EE_|DS0PR12MB9397:EE_
+X-MS-Office365-Filtering-Correlation-Id: bf00e31b-298c-4d1a-b0d4-08df03883529
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|7416014|10067099003|4143699003|11063799006|56012099006|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	2vAiH9WlRO/QIBul3BUcqHMZES9GIAnu5CuEucmtauX65B6UkH78owbxkD4uqnVCpNd11UmwZwg7j3FWCSem8IGsWCi8qS2BqJX83fhLqfTA8zvRDaBCHxR8/eQKL8Th40S6Fkdq8MCVObdLYgmvr5H5v2HkDKOzia5fTCHy9NY91qnX6eN+/e5ypajA4+e0wFOmfTiSRef03BEa++Biws41HtWWBYcVsU6P1/2rGVJF0Rk1svs2f6YFiAxBAttGU0VY98CFQAsfjFGdoy0OCt4x2x6D8olAEA9Or5t3zt6hvGSHDVywwk2nVD62Fedr84VLlqGVYoZZE8N2LEgwWw4P20B5mJp84HHpVIOCVREVrmZIQ+uOe2QbIjFfTLjpCdYw1c8CQk/linozjlyEL1ArU34Yj/OJU8BQ0PaGHzbIbLDhLiCtVe7x8v/ZyryW4peHm/wdNn61o+Efz4s/rvKKRQ2TuDKyNMCg2YVvGtJd1QX8HDd1rxzafcCpHeRz+KjqJHMTbqFbuSDY6RO7U/Wgvs9rfw2cyUggV293yc1Sy3Y1A1k2V2umFyDTtejl2F7Yvmp75f23mL/8mGKpT9v2BWyLUvv3RUQS5y9LLMU8pPMDgpmwWq5keggkX+d1vBaZltTdPDagpWqsr6K37g==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA0PR12MB8716.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(7416014)(10067099003)(4143699003)(11063799006)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?b3hlTnNKbjVSc3FtYmkxbGZRMHJoeTVSZzZjb3RMaUc5MEdoc3NzbUVndDRr?=
+ =?utf-8?B?U2lmRlc2MGMzRDVSc0lwb1FRditRMDM4WFQ1UkhrVlpsOWdkNDJBZmEyajNU?=
+ =?utf-8?B?T0dHL0lVd2RKMGxjN3B6eDdLWmpkVUdyNFpGTmtaNTZwQUZxWndpWUIrRkxD?=
+ =?utf-8?B?dFZ0Wi9Tak5RR1gwRzIwbnNVUlo1S05HenJYWDEzem0waUNrR0hTMStIejJV?=
+ =?utf-8?B?MHVab2ZGbnpKRFQxQ0FDMlh5cXozMFpPbGpLSHFVY2NNa1hhTjZRaGR1bTJv?=
+ =?utf-8?B?Rjc5emF1dHNaV0diYVBvYkc5cVBqVHpjcDJNSlJ6RXJ3SjBmRUtXKzA5SkpT?=
+ =?utf-8?B?cEkvQldJVmxwQ2VabFFWbWpMYXlxRjJScm9ZdTI4Vkl2RExMU1Y2ZmdoczYy?=
+ =?utf-8?B?akcvV3VhYjU5cXFVOGxRWnNtVGZiN1BpRmt2NUpGYmNSQ1UzTFRJeVRJR1oy?=
+ =?utf-8?B?N2ZkZHR0bnN2Y05JcmMyUDYwQWtJaFZCYzlBMFpzSHNDTkk3V2w3ZUhDTldy?=
+ =?utf-8?B?K1NSTmJjcmIwOGE4bnIyWDJrYlZjQXdraVhEVk0xWUlnV1Y0TWZwTmtIRGFK?=
+ =?utf-8?B?ZXFLS1FsaVNETTFJVjF0WGtVdUoyaUgvYTlIdSs4c0p4eEV5YThkTjFZMExM?=
+ =?utf-8?B?T1FhZUhSMDJ4Wlg0cmlVZ200cFNqK2NXVU0rNmpwRGgrMUlqLzRyRm5Xb3pz?=
+ =?utf-8?B?d1E0QjF4bWpFMFo1MkMzenpiVS96V3l4cHhiVnBwTG0zQnJuV3BOMUFRdS83?=
+ =?utf-8?B?NUtwRVhESHB2L05PNW45b2VVRnhCODdwK0Y3Y3BoRFlqb0M0OW5TUzRXdFVP?=
+ =?utf-8?B?MnZEc2ZOQ1QxUTdMREVhVVhoVDdJT1QxdTZUZytRR2FIdi80YytDRElGdkFY?=
+ =?utf-8?B?QVBjWm8rZEx2NjRPVXgvcElLUUFjTEhlNHJhYUxyNm5LUHE2aFVNL1ppT0pW?=
+ =?utf-8?B?YWRWcERhcnpUbXloZDFUVG9UV2hjRUU3MXNjTjBZUTJMaitlL2Nabnc2cjZQ?=
+ =?utf-8?B?TVN2UmlPQm5nclpNNHVTWHlnelNOTnQ2SDQ2UnZWWjJTdWxHYWVzamhyN1A0?=
+ =?utf-8?B?MDVmK2FJWDJVUU1EOS9Cc2FHa3pxZGlMWkl4Y0twNlBlMXVzdUR6MzAzdVd6?=
+ =?utf-8?B?Y2dOUG0yY0IrZmlNdzUvZXFSRU1oSDhQUlN4UzFNYzkxRmdmang0MVZxMTdW?=
+ =?utf-8?B?Z0JYNTJvZTB6UTlZczZIOWo2WlN0YjlZUEJuNnF3b21CWEtZbXBJMUxFQ2RX?=
+ =?utf-8?B?YTQ2eTlmdFRCRE1nakNwMUltV1lkK1NBandKRVVaZWt5SWxZOUE4d1FCc1RI?=
+ =?utf-8?B?UlljblZRUlR3UngwUnhQSm5PeXcvSmhmV1l4VGxPSnhvMlJEMjMydTB2ckFl?=
+ =?utf-8?B?MmM4MzN4QUl4clpxREs4amwxUXhnY0RrRW1QeDVRcThPdDYyelhPakk2VVps?=
+ =?utf-8?B?bzVmTHNndUVJVThFN25VbktYWXZqR2dWUk1QUm4xaEZuWkhvRkQyL0ZtdWZK?=
+ =?utf-8?B?S0dUcnZISEFSczJMTFpuMzBJbVRCdWtRQ0FYbFF3OUE2d2FDdXpuQ3RiMGhY?=
+ =?utf-8?B?SU0wTkw3V1lYRXdhVW5hOXBDcGlEZjV0MmlVT0V4N3FheWc1NzhpbWtPclYr?=
+ =?utf-8?B?MnZCOHhONGRQckk4ZG5WcWw5SElvQ1Z0ZitQU3VxZnFOTHZXUnNacnhIbmpW?=
+ =?utf-8?B?WkR2M3lIbktwZ056MVRCcEYyeFl1WVNXQlhZQTFTaXNFcVFwNEg1ck96Z1BM?=
+ =?utf-8?B?K3B1SDdpL3RCNDdSWnV5cisvK3lMbGc5alE0K3l2Nis0Y1NiZlhrK0VWWTB6?=
+ =?utf-8?B?S25VUzlkdG4zRW9zSDUzb1hoTk1mUjE0TjJaRUNnb1dqWlJDSmg2cGNYWS9z?=
+ =?utf-8?B?R3J0RzlTVWltZXdtQ3ZWUHB2WVNUbjdCdWJ4RElFMFB6RVN0bXFxYXB3bnky?=
+ =?utf-8?B?RzNzbmcwRE9aQVl3d1ZXazNIeE1LZlJmdzQ4WDVCeDNTaStTSUIvK1ZxY3Iv?=
+ =?utf-8?B?SERmQkdmK0EvK2MwZzdwbyttNU1kWWZQdUg3ZGVzTWtINnM3NElKVXU5dklU?=
+ =?utf-8?B?R0d6Y1dqTklIdjYxa3NwNitFVzBmMGRDUWlpTUp1a3FpcEM1MWFGbVZnSGpm?=
+ =?utf-8?B?NEFSeDFDK2E3djgzTlBoVG5UcFRIUVdsaWZhRmZ4bW9UQjV5Z1FaNHhOY1hE?=
+ =?utf-8?B?V0cvL0RaU3RDSUIxcTlrLzhCNEdHZXhOeE9TVVFoNWF4NXBVMjNTOTFVWEwx?=
+ =?utf-8?B?d0Y1YW5SbVNDSFNSK2pMWHFRU1R5RW55eW1vdWdxcktzV094RUY3Qlp0aTgw?=
+ =?utf-8?B?OU5NV04rNXBCOWVrUXB0MVBOM3RSZWJOK0pBdFpvakRCZ3RwUHltQT09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf00e31b-298c-4d1a-b0d4-08df03883529
+X-MS-Exchange-CrossTenant-AuthSource: IA0PR12MB8716.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2026 15:39:25.5086
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yuDZUJk0MEl+6MBRg4iCoqaHhSrRVYpKiAG+vx0jSkSZCPqj0pjWNbVAt8ZegjmN2A9nzwSR1XhZHWdwktlQOg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9397
 
-Teach the software MSI path to install every mapping in an address list
-before publishing newly allocated maps. Mark the complete list as
-required by the group and roll back mappings installed by a failed
-operation.
 
-Keep iommufd_sw_msi() as a one-address wrapper so existing callers
-retain their current behavior.
 
-Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
----
- drivers/iommu/iommufd/driver.c | 101 +++++++++++++++++++++++----------
- 1 file changed, 72 insertions(+), 29 deletions(-)
+On 25.08.26 18:33, Mostafa Saleh wrote:
+> On Mon, Aug 24, 2026 at 10:59:21AM +0200, Dragos Tatulea wrote:
+>>
+>>
+>> On 16.06.26 13:06, Mostafa Saleh wrote:
+>>> On Tue, Jun 16, 2026 at 02:33:52AM +0200, Luigi Rizzo wrote:
+>>> [...]
+>>> I am still looking into this, I was planning to bring this up in the
+>>> upcoming LPC.
+>>> I will give this patch a try. However, I believe that we need a more
+>>> generalised concept for CoCo pre-decrypted allocators in the kernel.
+>>>
+>> There is a talk at LPC in the networking track about this [2]. This is
+>> exactly the type of discussion that I was hoping to have there.
+> 
+> I see, thanks for point that. I plan to be in LPC, so I will aim to
+> attend this talk.
+> 
+Great!
 
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index a43a25078f87..45278c11c688 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -340,14 +340,14 @@ static int iommufd_sw_msi_install_one(struct iommufd_ctx *ictx,
- 	return 0;
- }
- 
--int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
--			   struct iommufd_hwpt_paging *hwpt_paging,
--			   struct iommufd_sw_msi_map *base_map)
-+static int __iommufd_sw_msi_install_range(struct iommufd_ctx *ictx,
-+					  struct iommufd_hwpt_paging *hwpt_paging,
-+					  struct list_head *msi_maps,
-+					  const struct iommufd_sw_msi_map *base_map,
-+					  unsigned int nr_addrs)
- {
- 	struct iommufd_sw_msi_map *msi_map;
--	struct list_head *msi_maps = &ictx->sw_msi_list;
- 	unsigned long *newly_mapped;
--	unsigned int nr_addrs = base_map->range_size ? base_map->range_size / PAGE_SIZE : 1;
- 	unsigned int nr_found = 0;
- 	unsigned int index;
- 	int rc = 0;
-@@ -392,16 +392,36 @@ int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
- 	bitmap_free(newly_mapped);
- 	return rc;
- }
-+
-+int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
-+			   struct iommufd_hwpt_paging *hwpt_paging,
-+			   struct iommufd_sw_msi_map *base_map)
-+{
-+	unsigned int nr_addrs = base_map->range_size ? base_map->range_size / PAGE_SIZE : 1;
-+
-+	return __iommufd_sw_msi_install_range(ictx, hwpt_paging, &ictx->sw_msi_list, base_map,
-+					      nr_addrs);
-+}
- EXPORT_SYMBOL_NS_GPL(iommufd_sw_msi_install, "IOMMUFD_INTERNAL");
- 
--/*
-- * Called by the irq code if the platform translates the MSI address through the
-- * IOMMU. msi_addr is the physical address of the MSI page. iommufd will
-- * allocate a fd global iova for the physical page that is the same on all
-- * domains and devices.
-- */
--int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
--		   phys_addr_t msi_addr)
-+static void iommufd_sw_msi_set_required(struct iommufd_group *igroup,
-+					struct list_head *msi_maps,
-+					const struct iommufd_sw_msi_map *base_map,
-+					unsigned int nr_addrs)
-+{
-+	struct iommufd_sw_msi_map *msi_map;
-+	unsigned int index;
-+
-+	list_for_each_entry(msi_map, msi_maps, sw_msi_item) {
-+		if (!iommufd_sw_msi_range_index(msi_map, base_map, nr_addrs, &index))
-+			continue;
-+		__set_bit(msi_map->id, igroup->required_sw_msi.bitmap);
-+	}
-+}
-+
-+static int iommufd_sw_msi_list(struct iommu_domain *domain, struct msi_desc *desc,
-+			       const phys_addr_t *phys_addrs, unsigned int nr_addrs,
-+			       size_t granule)
- {
- 	struct device *dev = msi_desc_to_dev(desc);
- 	struct iommufd_hwpt_paging *hwpt_paging;
-@@ -410,10 +430,19 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
- 	struct iommufd_sw_msi_map *msi_map;
- 	struct iommufd_ctx *ictx;
- 	LIST_HEAD(new_msi_maps);
-+	struct list_head *msi_maps;
- 	unsigned long iova;
--	phys_addr_t phys_addr;
-+	unsigned int i;
- 	int rc;
- 
-+	if (granule != PAGE_SIZE)
-+		return -EOPNOTSUPP;
-+	if (!nr_addrs || nr_addrs > SIZE_MAX / PAGE_SIZE)
-+		return -EINVAL;
-+	for (i = 0; i < nr_addrs; i++)
-+		if (!IS_ALIGNED(phys_addrs[i], PAGE_SIZE))
-+			return -EINVAL;
-+
- 	/*
- 	 * It is safe to call iommu_attach_handle_get() here because the iommu
- 	 * core code invokes this under the group mutex which also prevents any
-@@ -434,33 +463,33 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
- 
- 	ictx = handle->idev->ictx;
- 	guard(mutex)(&ictx->sw_msi_lock);
--	/*
--	 * The input msi_addr is the exact byte offset of the MSI doorbell, we
--	 * assume the caller has checked that it is contained with a MMIO region
--	 * that is secure to map at PAGE_SIZE.
--	 */
--	phys_addr = msi_addr & PAGE_MASK;
--	msi_map = iommufd_sw_msi_get_map(ictx, &phys_addr, 1, &handle->idev->igroup->sw_msi_range);
--	if (!msi_map)
--		msi_map = iommufd_sw_msi_alloc_map(ictx, &phys_addr, 1,
-+	msi_map = iommufd_sw_msi_get_map(ictx, phys_addrs, nr_addrs,
-+					 &handle->idev->igroup->sw_msi_range);
-+	if (msi_map) {
-+		msi_maps = &ictx->sw_msi_list;
-+	} else {
-+		msi_map = iommufd_sw_msi_alloc_map(ictx, phys_addrs, nr_addrs,
- 						   &handle->idev->igroup->sw_msi_range,
- 						   &new_msi_maps);
--	if (IS_ERR(msi_map))
--		return PTR_ERR(msi_map);
-+		if (IS_ERR(msi_map))
-+			return PTR_ERR(msi_map);
-+		msi_maps = &new_msi_maps;
-+	}
- 
- 	rc = iommufd_sw_msi_maps_ensure(&handle->idev->igroup->required_sw_msi,
--					msi_map->id);
-+					msi_map->id + nr_addrs - 1);
- 	if (rc)
- 		goto err_free;
- 
--	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
-+	rc = __iommufd_sw_msi_install_range(ictx, hwpt_paging, msi_maps, msi_map, nr_addrs);
- 	if (rc)
- 		goto err_free;
--	__set_bit(msi_map->id, handle->idev->igroup->required_sw_msi.bitmap);
-+
-+	iommufd_sw_msi_set_required(handle->idev->igroup, msi_maps, msi_map, nr_addrs);
- 
- 	if (!list_empty(&new_msi_maps)) {
- 		list_splice_tail_init(&new_msi_maps, &ictx->sw_msi_list);
--		ictx->sw_msi_id++;
-+		ictx->sw_msi_id += nr_addrs;
- 	}
- 
- 	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
-@@ -475,6 +504,20 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
- 	}
- 	return rc;
- }
-+
-+/*
-+ * Called by the irq code if the platform translates the MSI address through the
-+ * IOMMU. msi_addr is the physical address of the MSI page. iommufd will
-+ * allocate a fd global iova for the physical page that is the same on all
-+ * domains and devices.
-+ */
-+int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
-+		   phys_addr_t msi_addr)
-+{
-+	phys_addr_t phys_addr = msi_addr & PAGE_MASK;
-+
-+	return iommufd_sw_msi_list(domain, desc, &phys_addr, 1, PAGE_SIZE);
-+}
- EXPORT_SYMBOL_NS_GPL(iommufd_sw_msi, "IOMMUFD");
- #endif
- 
--- 
-2.43.0
+>>
+>> Besides the issues mentioned in this thread we've also found that a lot
+>> of overhead can come only from swiotlb allocations when running many queues.
+>>
+>> I will add information about this series in my talk. Hopefully I will also
+>> have time to add some numbers for comparison.
+> 
+> I had a quick look, I am not sure how that will shape at the end, but I
+> think we need a general solution beyond NICs. For example in pKVM the
+> bouncing is used with virtio devices, so doing this per-driver won't
+> really work and is not possible in some scenarios where memory is
+> allocated from the core kernel and then passed to the driver.
+> So, I was thinking the kernel relying on
+> CC_ATTR_MEM_ENCRYPT/force_dma_unencrypted() could detect that and
+> allocate pre-shared memory for those cases.
+>
+Ideally it shouldn't be per driver. But I was thinking that there should
+be a way for the user to provision memory for certain devices.
 
+Thanks,
+Dragos
