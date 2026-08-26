@@ -1,155 +1,521 @@
-Received: from out16-31.antispamcloud.com (out16-31.antispamcloud.com [185.201.18.31])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F8D233924;
-	Tue, 25 Aug 2026 22:23:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.18.31
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB3C37A4AF
+	for <iommu@lists.linux.dev>; Wed, 26 Aug 2026 07:10:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787696598; cv=none; b=FhSnwBAuSljN4mrn8tX4F91j1zJWwSV80hANZXz9+TCrw6VVjkGqmCuPc2HRwwfSF+yQzi3oZD6+c8p3LUUq02RfeqAiIkj7dxj2gLvUWy3ha1S1Ssu8B5Cht3iLKUQERn2zDDGDiZjUVV6zdsp9qmjdVzImAFIpXIoVfbXt3n4=
+	t=1787728240; cv=none; b=iSkvqVaRvwk7PKcaJpSimZKNQzSozS9V/ZOT79d8x5789IMGxR1S2NkTifsgg7UY9M1mDMkOeQKhKPeeaV7Mhnfw1Di61PEDCCxej02UkmBq8doDOELdIH/HutZeGKCMy6rbbvGvREaT2KqApa2c5YEQvH27Mp0qoFWFLtheEwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787696598; c=relaxed/simple;
-	bh=jhOSHKKWvdGf+373qgi+uNlImBVNl8of8Byvc26bMTs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=c+YOvYb3PmNq0CtbkJpVJ7yqcvpZNpZF8KLhiNeriSu11rFdTw6KFVH4n62xIyHZJ59b3uuMDhWYcyg/0RMirFl1fTU4WiUFQDGm1y0FOrb3nEtBvhihDYcEPcUJgMu6g82mB/uKnhHMb8M+/nobHxoCaYxz/h8NdiC2TqpJ33A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=lDal8ZLn; arc=none smtp.client-ip=185.201.18.31
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1787728240; c=relaxed/simple;
+	bh=igsS+i1+R6ldFfaZzDh1PXkfxvgl7Kuv+Wpuh0oPVcs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DFkH3gZoiXmTUce7sCwwM2uqu1Pu0Vt9Bjuu+ypRcvtX6ZGMxzj0BYTZmt2WZZGErWWzC6HtGFdvtU6px4NluMN8Ppes8SOwegLoiubAfG7v/9nv+Otu0Pw2HvA5kn1oPr6Or3Ovo2mkw/6JQar4wOoQc6gDp7+rT9SpuRcbhvY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d9YrNhRt; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="lDal8ZLn"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx321.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1wyyCt-009yCr-De; Tue, 25 Aug 2026 22:57:21 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=+U98VHTJnoCJClU4vtKi3XydHHa9Y5G8dke5eY353k8=; b=lDal8ZLnh5dmyAq20fBfmuv7MY
-	l4i/pW4yYCw/tmp7TTXfS9nGQnC2lJR1/MOYFPiSHJmpULu1Or0FLFSyINpcbc7pQXtYGbJsP014h
-	6y3t+oRrRZgzswOQOTIPszs6Nx6v/iZZM9vl/B0vh+zjNJTe5qM/k6A2/WIbyWsV55rURi+7bhpNI
-	PskTXI/jjCJQSxVgVjGioZjLJiqKP2byp+kF2nAx0ta7hN4tI4yg2SYGeKAyXdyOL/Z0hB8MNJACd
-	ombvQdIN01QN7hLvlpcjFLBpJ+tq1INm7CdGIikZZTSkYQZiALTMDxRjBxyoS20Fc2IYp7gbBDL/N
-	sbDsaUJg==;
-Received: from [188.251.249.2] (port=59110 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.99.5)
-	(envelope-from <dan@reactivated.net>)
-	id 1wyyCr-00000007Cd8-0I5r;
-	Tue, 25 Aug 2026 20:57:16 +0000
-From: Daniel Drake <dan@reactivated.net>
-Date: Tue, 25 Aug 2026 21:56:08 +0100
-Subject: [PATCH v3 5/5] arm64: dts: broadcom: bcm2712: Add GPU IOMMU and
- IOMMU cache nodes
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d9YrNhRt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787728238; x=1819264238;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=igsS+i1+R6ldFfaZzDh1PXkfxvgl7Kuv+Wpuh0oPVcs=;
+  b=d9YrNhRtmWiDVhP7oqUDoBgX1mrI9Pb0wymYwtndPU2C8OPlpZueSGWx
+   ByZ2/ngBbXmZz0Vssz0QZz0iDta1rQeR6GfP7LuCIFEXEMIlwjevoH5Ew
+   thI0uCJ3psifSJ+IQ+HAX7eaLJq0ukilhPtxLwBUzDkcG9VythUc14WeK
+   DTAbhu1Yo5yVsQ3peEIrwycxTQYP0HcbSfKGW6Q5beIIivrtoABDt/qiQ
+   WIOO3AxQ24LQ7sbzAdGojaepPcVbvi5AKZZ+EcMphseoEucfP4aH/HEfS
+   TSWVr090LPiYyG/enUYl2hltYDn1nYkxmxObnBv7xaKn8TZnv0nPvZqIr
+   Q==;
+X-CSE-ConnectionGUID: XXdBhF+NRsmh1Ri0pgiFHQ==
+X-CSE-MsgGUID: EnxcIfvbT6yssTGhHAvHPQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="75742259"
+X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
+   d="scan'208";a="75742259"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 00:10:37 -0700
+X-CSE-ConnectionGUID: fKUrZBt0TF6paIgE+YoEpw==
+X-CSE-MsgGUID: llkuth/WR5G1O+g9mD4R5Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
+   d="scan'208";a="266207409"
+Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 00:10:33 -0700
+Message-ID: <065b2be2-2ff1-42a0-99b1-ed81e783dca1@linux.intel.com>
+Date: Wed, 26 Aug 2026 15:10:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 07/18] iommu/vt-d: Implement device and iommu
+ preserve/unpreserve ops
+To: Samiullah Khawaja <skhawaja@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
+References: <20260808022723.3893618-1-skhawaja@google.com>
+ <20260808022723.3893618-8-skhawaja@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260808022723.3893618-8-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260825-bcm2712-iommu-submit-v3-5-7f143e7289b6@reactivated.net>
-References: <20260825-bcm2712-iommu-submit-v3-0-7f143e7289b6@reactivated.net>
-In-Reply-To: <20260825-bcm2712-iommu-submit-v3-0-7f143e7289b6@reactivated.net>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Daniel Drake <dan@reactivated.net>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
-X-Mailer: b4 0.14.3
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: SB/global_tokens (0.00684167432342)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVOT+A2Kg7Fq7YwtVrRLGVygN4JWRjTqyvf
- DSrj/vbnVyu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVIOwqOrUsWnwk6uqkD8xcwQBGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWD7cCGtDjbxRVgnsKOrWMc2eB7itP8hgjDRserKv4bhb7ubyJcscJCC/8jhyq4eIIJWBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
- j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5AygJMVWPun
- 1fB37VxVhASG8hN+IElQvHervZEzNuSEoswa+OggXLEoEANlDvY/gFZy/MXBXk8D5mjUeQRayE6u
- dz97s/DG8E3upRpJ0bS+wzRBHUR15RaqDwm4ioO24b2V/xoVM7xa9YKQVz3PCbzL9B0khM/Q6RX5
- n4wBXe4eJbd26ZpMsCKGEUNQoHD1dBwhSjvFGee+Sma/00rxpBtmA6JtX1tl9hlvVkB9JeTcvfje
- ogVSYoS8EzjRInfDtnb9xonw6auRGB+OqkfrxZvcAu63p/UbUTcmIpuXtxg/CxkM6Ccrh6NgeWPZ
- s2GGiUiSf3BA53ZrBURq7d95Cv9KDCFTYFcUbz5aS+1lWj4m3FNu1rSqDrVNGOYEXgKxu9VpMkhE
- mWb0+yA4G0yKmjhEqma1+/4Wol0EDMzOaSXdF5ul5d/P34eiOeGg3eceP8JBR+Z2rauNhtOAipyU
- VUOpJpoR8LmZMG0KW2fLvmDcwq5ovx/jotULrGAMzuIdJELu9Wrt/oF2ofKYeezPZTW+uJOuOlF5
- x2YtjfaUnDylc396zd5b9fxPYcgbuN9DD1eMzs1Q66kV+UAovquwsOu3XxP+6w9smK/hg5o9u16q
- yIzlag+DgD9xY7Yj7fvC65xWAU3TJceJXG+jXar6FtDTl6SazWHDhW0k3iY0Nxd1+egvPpyylyRk
- sDtvh9EglVwlBP3PkVHlQGQFk2KBEkFw3+vw1RS8zKP8o2x05FSSJsC7k+LzVpQY05oubiJ9GrzY
- ++DuIQUs/5JJj4C/n4CILpFTKQlqbzX/LSb50zWeMLtz8gacq+U9Dqtm91PWIuQm2xDvQwKzzdsI
- 7TYy29zNpaJfN6DTVjUszJAalIcW0Bh5dbygTK7jtNAOpOLoYrBwYYKC6XIWdfPsJXrcrDW6vfdj
- zQ6YC7Heg3Xf7O1TOd7yUx++SDY6V9XDGiqeh8jJhxFbE1QSjfwMTndprmVkWxS1mi+nw+nJxqi8
- G/0EWIVbz7StnzDMV8fRd3yoW2k7yN+hG4BzNMiSVhwzB5XeanNHf6G/7NjKIViWFaEeldR/m2+i
- TN8ji+Mhbk3TTo2Lw6nIoDr0sXUZ7YZoZ/GZ+slJL25ATsZTVifNjYlkFmCz0w5vcdcHI3py3L8t
- PqWAmEN/CjKjK3VVq9SDkpBDU8/nN9BMID38D/++xf97O23y3deP8vNnmz84mDUvZqxnHNc/wp8s
- bbUui5b8WkACIg5AB/ilm4apSU2goW8TQ8+z0w5vcdcHI3py3L8tPqWAC7xZyfryQF81aCkSJYKS
- vg==
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
 
-Define the IOMMU and IOMMUC nodes for the Broadcom BCM2712 SoC found in
-the Raspberry Pi 5. Enable use of the IOMMU for the graphics/display
-block.
+On 8/8/26 10:27, Samiullah Khawaja wrote:
+> Add implementation of the device and iommu presevation in a separate
+> file. Also set the device and iommu preserve/unpreserve ops in the
+> struct iommu_ops.
 
-Signed-off-by: Daniel Drake <dan@reactivated.net>
----
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+This patch, on its own, does not fully implement the preserve operation.
+At this point, the callback preserves all root/context entries used for
+live update, but it does not yet clear non-preserved entries and
+invalidate the related caches; that cleanup is supposed to be done in
+the next patch.
 
-diff --git a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-index 45aa8ec5e2b1..f40651ea29bb 100644
---- a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-@@ -626,6 +626,19 @@ pcie2: pcie@1000120000 {
- 			status = "disabled";
- 		};
- 
-+		iommu4: iommu@1000005200 {
-+			/* IOMMU for VC4 (HVS & MPL/TXP), Unicam, PISP-FE, MiniBVN */
-+			compatible = "brcm,bcm2712-iommu";
-+			reg = <0x10 0x5200 0x0 0x80>;
-+			#iommu-cells = <0>;
-+			brcm,iommu-cache = <&iommuc>;
-+		};
-+
-+		iommuc: iommuc@1000005b00 {
-+			compatible = "brcm,bcm2712-iommuc";
-+			reg = <0x10 0x5b00 0x0 0x80>;
-+		};
-+
- 		mip0: msi-controller@1000130000 {
- 			compatible = "brcm,bcm2712-mip";
- 			reg = <0x10 0x00130000 0x00 0xc0>,
-@@ -667,6 +680,7 @@ v3d: gpu@1002000000 {
- 
- 	vc4: gpu {
- 		compatible = "brcm,bcm2712-vc6";
-+		iommus = <&iommu4>;
- 	};
- 
- 	timer {
-@@ -701,5 +715,6 @@ hvs: hvs@107c580000 {
- 		interrupt-parent = <&disp_intr>;
- 		interrupts = <2>, <9>, <16>;
- 		interrupt-names = "ch0-eof", "ch1-eof", "ch2-eof";
-+		iommus = <&iommu4>;
- 	};
- };
+So I think we should either:
 
--- 
-2.55.0
+- add a brief note here to make this dependency explicit, or
+- merge these two patches into a single patch for completeness.
 
+?
+
+> 
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>   MAINTAINERS                      |   8 ++
+>   drivers/iommu/intel/Makefile     |   1 +
+>   drivers/iommu/intel/iommu.c      |   9 +-
+>   drivers/iommu/intel/iommu.h      |  35 +++++
+>   drivers/iommu/intel/liveupdate.c | 220 +++++++++++++++++++++++++++++++
+>   include/linux/kho/abi/iommu.h    |  25 ++++
+>   6 files changed, 296 insertions(+), 2 deletions(-)
+>   create mode 100644 drivers/iommu/intel/liveupdate.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 25707398426a..2ed856ab0501 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13132,6 +13132,14 @@ S:	Supported
+>   T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+>   F:	drivers/iommu/intel/
+>   
+> +INTEL IOMMU LIVEUPDATE (VT-d)
+> +M:	Samiullah Khawaja <skhawaja@google.com>
+> +M:	Lu Baolu <baolu.lu@linux.intel.com>
+> +L:	iommu@lists.linux.dev
+> +S:	Maintained
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+> +F:	drivers/iommu/intel/liveupdate.c
+> +
+>   INTEL IPU3 CSI-2 CIO2 DRIVER
+>   M:	Yong Zhi <yong.zhi@intel.com>
+>   M:	Sakari Ailus <sakari.ailus@linux.intel.com>
+> diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+> index ada651c4a01b..d38fc101bc35 100644
+> --- a/drivers/iommu/intel/Makefile
+> +++ b/drivers/iommu/intel/Makefile
+> @@ -6,3 +6,4 @@ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
+>   obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
+>   obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
+>   obj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) += perfmon.o
+> +obj-$(CONFIG_IOMMU_LIVEUPDATE) += liveupdate.o
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 849d06dfe1ae..aeae0563dfd0 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/crash_dump.h>
+>   #include <linux/dma-direct.h>
+>   #include <linux/dmi.h>
+> +#include <linux/iommu-liveupdate.h>
+>   #include <linux/memory.h>
+>   #include <linux/pci.h>
+>   #include <linux/pci-ats.h>
+> @@ -60,8 +61,6 @@ static int force_on = 0;
+>   static int intel_iommu_tboot_noforce;
+>   static int no_platform_optin;
+>   
+> -#define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+> -
+>   /*
+>    * Take a root_entry and return the Lower Context Table Pointer (LCTP)
+>    * if marked present.
+> @@ -3931,6 +3930,12 @@ const struct iommu_ops intel_iommu_ops = {
+>   	.is_attach_deferred	= intel_iommu_is_attach_deferred,
+>   	.def_domain_type	= device_def_domain_type,
+>   	.page_response		= intel_iommu_page_response,
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +	.preserve_device	= intel_iommu_preserve_device,
+> +	.unpreserve_device	= intel_iommu_unpreserve_device,
+> +	.preserve		= intel_iommu_preserve,
+> +	.unpreserve		= intel_iommu_unpreserve,
+> +#endif
+>   };
+>   
+>   static void quirk_iommu_igfx(struct pci_dev *dev)
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 775f1c4ae346..4906cce1e66e 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -552,6 +552,8 @@ struct root_entry {
+>   	u64     hi;
+>   };
+>   
+> +#define ROOT_ENTRY_NR (VTD_PAGE_SIZE / sizeof(struct root_entry))
+> +
+>   /*
+>    * low 64 bits:
+>    * 0: present
+> @@ -1295,6 +1297,39 @@ static inline int iopf_for_domain_replace(struct iommu_domain *new,
+>   	return 0;
+>   }
+>   
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +int intel_iommu_preserve_device(struct device *dev,
+> +				struct iommu_device_ser *device_ser);
+> +void intel_iommu_unpreserve_device(struct device *dev,
+> +				   struct iommu_device_ser *device_ser);
+> +int intel_iommu_preserve(struct iommu_device *iommu,
+> +			 struct iommu_hw_ser *iommu_ser);
+> +void intel_iommu_unpreserve(struct iommu_device *iommu,
+> +			    struct iommu_hw_ser *iommu_ser);
+> +#else
+> +static inline int intel_iommu_preserve_device(struct device *dev,
+> +					      struct iommu_device_ser *device_ser)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void intel_iommu_unpreserve_device(struct device *dev,
+> +						 struct iommu_device_ser *device_ser)
+> +{
+> +}
+> +
+> +static inline int intel_iommu_preserve(struct iommu_device *iommu,
+> +				       struct iommu_hw_ser *iommu_ser)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void intel_iommu_unpreserve(struct iommu_device *iommu,
+> +					  struct iommu_hw_ser *iommu_ser)
+> +{
+> +}
+> +#endif
+
+I believe the #else ... #endif stubs are unnecessary and can be removed.
+
+Specially iommu core checks driver support via callback pointer
+presence:
+
+         if (!iommu->iommu_dev->ops->preserve_device ||
+             !iommu->iommu_dev->ops->unpreserve_device ||
+             !iommu->iommu_dev->ops->preserve ||
+             !iommu->iommu_dev->ops->unpreserve)
+                 return -EOPNOTSUPP
+
+So when CONFIG_IOMMU_LIVEUPDATE is disabled, simply not wiring these
+callbacks is sufficient.
+
+> +
+>   #ifdef CONFIG_INTEL_IOMMU_SVM
+>   void intel_svm_check(struct intel_iommu *iommu);
+>   struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
+> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
+> new file mode 100644
+> index 000000000000..ffdcebf2b773
+> --- /dev/null
+> +++ b/drivers/iommu/intel/liveupdate.c
+> @@ -0,0 +1,220 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +/*
+> + * Copyright (C) 2026, Google LLC
+> + * Author: Samiullah Khawaja <skhawaja@google.com>
+> + */
+> +
+> +#define pr_fmt(fmt)    "DMAR: liveupdate: " fmt
+> +
+> +#include <linux/kexec_handover.h>
+> +#include <linux/liveupdate.h>
+> +#include <linux/iommu-liveupdate.h>
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +
+> +#include "iommu.h"
+> +#include "../iommu-pages.h"
+> +
+> +/* 2 tables per bus in scalable mode with upper table at odd bit */
+> +#define CONTEXT_TABLE_PRESERVED_BIT(bus, devfn) ((bus << 1) + (devfn >> 7))
+> +static bool is_context_table_preserved(struct intel_iommu *iommu,
+> +				       struct iommu_hw_ser *ser,
+> +				       u8 bus, u8 devfn)
+> +{
+> +	return test_bit(CONTEXT_TABLE_PRESERVED_BIT(bus, devfn),
+> +			(unsigned long *)&ser->intel.context_tables_bitmap[0]);
+> +}
+> +
+> +static void unpreserve_context_table(struct intel_iommu *iommu,
+> +				     struct iommu_hw_ser *ser,
+> +				     u8 bus, u8 devfn)
+> +{
+> +	struct context_entry *context;
+> +
+> +	/*
+> +	 * In the Intel IOMMU driver, context tables are never freed once they
+> +	 * are allocated during runtime, as they can be shared across multiple
+> +	 * devices. So taking the iommu lock here to protect against concurrent
+> +	 * allocations inside iommu_context_addr() should be enough. Once the
+> +	 * address is read, it is safe to use it without holding the lock.
+> +	 */
+> +	spin_lock(&iommu->lock);
+> +	context = iommu_context_addr(iommu, bus, devfn, 0);
+> +	spin_unlock(&iommu->lock);
+> +	if (context && is_context_table_preserved(iommu, ser, bus, devfn)) {
+> +		iommu_unpreserve_pages(context);
+> +		clear_bit(CONTEXT_TABLE_PRESERVED_BIT(bus, devfn),
+> +			  (unsigned long *)&ser->intel.context_tables_bitmap[0]);
+> +	}
+> +}
+> +
+> +static int preserve_context_table(struct intel_iommu *iommu,
+> +				  struct iommu_hw_ser *ser,
+> +				  u8 bus, u8 devfn)
+> +{
+> +	struct context_entry *context;
+> +	int ret;
+> +
+> +	spin_lock(&iommu->lock);
+> +	context = iommu_context_addr(iommu, bus, devfn, 0);
+> +	spin_unlock(&iommu->lock);
+> +
+> +	/*
+> +	 * Intel IOMMU context tables are never freed by the driver once
+> +	 * allocated. It is safe to access the context pointer outside of the
+> +	 * iommu->lock.
+> +	 */
+> +	if (context && !is_context_table_preserved(iommu, ser, bus, devfn)) {
+> +		ret = iommu_preserve_pages(context);
+> +		if (ret)
+> +			return ret;
+> +
+> +		set_bit(CONTEXT_TABLE_PRESERVED_BIT(bus, devfn),
+> +			(unsigned long *)&ser->intel.context_tables_bitmap[0]);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void unpreserve_iommu_context_tables(struct intel_iommu *iommu,
+> +					    struct iommu_hw_ser *ser)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+> +		unpreserve_context_table(iommu, ser, i, 0);
+> +
+> +		if (!sm_supported(iommu))
+> +			continue;
+> +
+> +		unpreserve_context_table(iommu, ser, i, 0x80);
+> +	}
+> +}
+> +
+> +static int preserve_iommu_context_tables(struct device_domain_info *info)
+> +{
+> +	struct iommu_hw_ser *iommu_ser;
+> +	struct intel_iommu *iommu;
+> +	int ret;
+> +	int i;
+> +
+> +	/* IOMMU for this device should already preserved.*/
+> +	iommu = info->iommu;
+> +	iommu_ser = iommu_preserved_state(&iommu->iommu);
+> +	if (!iommu_ser)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * We could do preservation of context tables only for the bus of this
+> +	 * device, but these devices can have PCI aliases, so context tables for
+> +	 * those will also require preservation. Also unpreserve would require
+> +	 * some kind of refcounting where the context table will only be
+> +	 * unpreserved when the last device associated with it is unpreserved.
+> +	 *
+> +	 * This introduces unnecessary complication with minimum benefits as the
+> +	 * unpreserved context tables will probably be recreated by the next
+> +	 * kernel as these are all active devices. We follow simpler approach by
+> +	 * just preserving the currently active context tables.
+> +	 */
+> +	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+> +		ret = preserve_context_table(iommu, iommu_ser, i, 0);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (!sm_supported(iommu))
+> +			continue;
+> +
+> +		ret = preserve_context_table(iommu, iommu_ser, i, 0x80);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * intel_iommu_preserve_device() - Intel IOMMU callback to preserve device state
+> + * @dev: Target device
+> + * @device_ser: Struct to populate with serialized device state
+> + *
+> + * Return: 0 on success, or negative error code.
+> + */
+> +int intel_iommu_preserve_device(struct device *dev,
+> +				struct iommu_device_ser *device_ser)
+> +{
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	int ret;
+> +
+> +	if (!dev_is_pci(dev)) {
+> +		dev_err(dev, "Cannot preserve non-PCI device\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (dev_is_real_dma_subdevice(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (!info || !info->domain)
+> +		return -EINVAL;
+> +
+> +	ret = preserve_iommu_context_tables(info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	device_ser->domain_iommu_ser.attachment_id = domain_id_iommu(info->domain,
+> +								     info->iommu);
+> +	return 0;
+> +}
+> +
+> +/**
+> + * intel_iommu_unpreserve_device() - Intel IOMMU callback to unpreserve device state
+> + * @dev: Target device
+> + * @device_ser: Struct containing serialized device state
+> + */
+> +void intel_iommu_unpreserve_device(struct device *dev,
+> +				   struct iommu_device_ser *device_ser)
+> +{
+> +}
+
+Please add a comment explaining why this callback is intentionally
+empty.
+
+> +
+> +/**
+> + * intel_iommu_preserve() - Intel IOMMU callback to preserve hardware state
+> + * @iommu_dev: Generic IOMMU device handle
+> + * @ser: Struct to populate with serialized hardware state
+> + *
+> + * Return: 0 on success, or negative error code.
+> + */
+> +int intel_iommu_preserve(struct iommu_device *iommu_dev,
+> +			 struct iommu_hw_ser *ser)
+> +{
+> +	struct intel_iommu *iommu;
+> +	int ret;
+> +
+> +	iommu = container_of(iommu_dev, struct intel_iommu, iommu);
+> +
+> +	ret = iommu_preserve_pages(iommu->root_entry);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ser->intel.phys_addr = iommu->reg_phys;
+> +	ser->intel.root_table = __pa(iommu->root_entry);
+> +	ser->type = IOMMU_INTEL;
+> +	ser->token = ser->intel.phys_addr;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * intel_iommu_unpreserve() - Intel IOMMU callback to unpreserve hardware state
+> + * @iommu_dev: Generic IOMMU device handle
+> + * @ser: Struct containing serialized hardware state
+> + */
+> +void intel_iommu_unpreserve(struct iommu_device *iommu_dev,
+> +			    struct iommu_hw_ser *ser)
+> +{
+> +	struct intel_iommu *iommu;
+> +
+> +	iommu = container_of(iommu_dev, struct intel_iommu, iommu);
+> +
+> +	unpreserve_iommu_context_tables(iommu, ser);
+> +	iommu_unpreserve_pages(iommu->root_entry);
+> +}
+> diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
+> index 7641a86684e2..430c42bf9561 100644
+> --- a/include/linux/kho/abi/iommu.h
+> +++ b/include/linux/kho/abi/iommu.h
+> @@ -81,6 +81,7 @@
+>    */
+>   enum iommu_type_ser {
+>   	IOMMU_INVALID,
+> +	IOMMU_INTEL,
+>   };
+>   
+>   #define IOMMU_SER_FLAG_DELETED	(1 << 0)
+> @@ -142,16 +143,40 @@ struct iommu_device_ser {
+>   	struct iommu_dev_map_ser domain_iommu_ser;
+>   } __packed;
+>   
+> +
+> +/* There are maximum 256 buses, so maximum 512 context tables */
+> +#define VTD_PRESERVED_BITMAP_LONGS  DIV_ROUND_UP(512, BITS_PER_LONG_LONG)
+> +
+> +/**
+> + * struct iommu_intel_ser - Serialized state of an Intel IOMMU instance
+> + * @restored: Whether IOMMU state is restored
+> + * @phys_addr: Physical address of the IOMMU register base
+> + * @root_table: Physical address of the root entry table
+> + * @context_tables_bitmap: Bitmap representing the context tables that are
+> + * preserved.
+> + */
+> +struct iommu_intel_ser {
+> +	u8 restored;
+> +	u8 padding[7];
+> +	u64 phys_addr;
+> +	u64 root_table;
+> +	u64 context_tables_bitmap[VTD_PRESERVED_BITMAP_LONGS];
+> +};
+> +
+>   /**
+>    * struct iommu_hw_ser - Serialized state of an IOMMU instance
+>    * @hdr: Common object header
+>    * @token: Unique token for the IOMMU
+>    * @type: IOMMU type serialized state belongs to
+> + * @intel: Intel specific serialization data
+>    */
+>   struct iommu_hw_ser {
+>   	struct iommu_hdr_ser hdr;
+>   	u64 token;
+>   	u64 type;
+> +	union {
+> +		struct iommu_intel_ser intel;
+> +	};
+>   } __packed;
+>   
+>   /**
+
+Thanks,
+baolu
