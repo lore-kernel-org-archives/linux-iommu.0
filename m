@@ -1,117 +1,128 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 951453C8C65
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 08:13:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4533D23C4F3
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 08:24:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787818429; cv=none; b=UN0ctjdbTWSTYcu+ve7XLFuU/F7DyQFLXNOSZm9E6fxajm8W6lqcoH5Rwa6gLYH2Ut2CtAFWW+10LaNX/gwV756vugATxgwP7tugV45WmwRlJn+Jt+V4Vu7hUu6Pc+EkvTfWisb1IxswLnnDlG40FBCABdmioZ0dsqN0Q6cqBSI=
+	t=1787819088; cv=none; b=m/DQ4w5nq1SeaL1pZNrmELvoWAPUdR5nD2P5ipLw93zyePXcmVP/mNcRPYYS6GbOlvlF3Zb5xvNVN2rU4JttafmLomNFEJjnKpXBOtbXQAVWYGVM4mLn/DI+78n6xG7i40FadzV01Jcz3zhe/G9EJkMqE9ePOFbUYL22yOUSkE8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787818429; c=relaxed/simple;
-	bh=EcGvZsbnoCJNIDMssVScuqlTcYDHHVb5XgWdPanN+f8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PEitPBuEEvaDpjB+lBeD59+GyUednh6bclnKDzd/qq7U2jDx3to3w+Mm9cYkrrcIHy8mWf1ZkE3CaNixe+Hxj/xqPOkrVRPYwZ5p450uYqnj63Y2KvYGVMk99vuiKapjaCq7q3XmPkJpY3H8QXReC6oSj2A7Ov7dnhMBX6YC0vo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=YYph8g5C; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=WqX756tU; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1787819088; c=relaxed/simple;
+	bh=/Q0aJrv+yl12z/4UckcwepB9NSMo1dKRgB+t+KI/qk8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uRvQB/fSO0YUWbYGnXqJbkWgZ6wa4idJfUVtq3Q1K696EdUWbo1Q7sOai98WaQwAt2XbKYMDxA/lqr6aev8Xqa5kvkIEwTSO3wieABLc7KttfDT1793urkKuXqjITM25drvNb1lb05AWasOB5ttBbsjKakT7VIe0SsxTOnMmrNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=cHTYdhin; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=GEBwsgiX; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="YYph8g5C";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="WqX756tU"
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="cHTYdhin";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="GEBwsgiX"
 Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67R6RFkd087957
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 08:13:40 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67R6R83Z087755
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 08:24:46 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=7knKTinTUheTHdWdoJsyJUaJ
-	WeLVQNabqsJFNmIigFg=; b=YYph8g5CqAiSfeGRCz1flJeDtistSfU9QRPTF5dy
-	7qIs6fqQVfW92VQgmfY1YAz9X7qLq6Zy9Bir7mIODQiPL5TS/LvuT+013XARXbJr
-	P9+x0LkipEufx6hq7GwHY9ygSm7LRULUbCqzafEt2nBupVBmTDxvTno3OiMd2QNZ
-	VrqqmgEOo6iIUMrOnaI/1lwr1U6ZigsYOJ/jvRHn2astdYx6c0WOydR+E0xs723S
-	uTNQcyURSNmkaS/coCs+qiy76R7Qu9zaOc+4zwoxeYVjJ0mJXsBSS6JqHnlUV5qN
-	erveudL4MLrtPrim5GnBylqhJtbFjo//kuWQRWD6sfWj6A==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ga8m5hrju-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	0WOkKUTTNS6mJs2BwdqhMg+NA2BpiKjHIQAe3GoU9ZE=; b=cHTYdhinTE2J6jHu
+	CRsL3AEWHTNk59lfjUAvsY2eSKPkO65LCpqfIwm/F11fPHe/TxipKRpCch1qPUkZ
+	g0Zdv5f7ZZXJglBzZ++Pp45Lmlp9ohyoW6BLLGdr+ZP+Eb2pjefHo3Nyqtq7TFBn
+	tGBokPgf5kGmoiQD6ZWQttK8rcjHUoqkv7dbovdNbY3RHs9MfrB9/KowXcrbm+3g
+	RoPU5AWjwPUqM57H5P/JtaOoIrJdhJG7Qsdqkkkb23DvYJsyWys2s3IEe4/ALx17
+	qERojUpilfpRoAI/RLXWthRvqKZ7pp0nSDOrVbBrd+YGq69eQYKQZctTWJXklQ4n
+	4ra5MA==
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ga8m5ht87-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 08:13:40 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-52fa5c5a4a6so5740911cf.0
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 01:13:40 -0700 (PDT)
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 08:24:46 +0000 (GMT)
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-cbb92868263so441140a12.2
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 01:24:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787818419; x=1788423219; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=7knKTinTUheTHdWdoJsyJUaJWeLVQNabqsJFNmIigFg=;
-        b=WqX756tUxmht/Bkft2NrG6KOdX6y76uzGqIXxs/4dwY76zWN7rms2fN2MUBp9LAm4O
-         BpFClLT2x8HoJNQlo1JfSur2oDwyAFCs1pSDdHnZ75dHUEQ3uG1pP8ocSHY2qhOBSogn
-         vsTky89eOkJwf2BsZXxs03bppuxtBwjoISfGvuLYt+ZSamxCyKjRIs4BhSoWFDwT7Gge
-         eXo2yllMiFOPyclLymI1nSbuMfybjM2neYS9dMGSykZtt44Og+CTdQtwbME8wjBY+UKI
-         KxAWnvNmNiw9tcSpXvZ01fTEs/zvhkuWmoKcvbb2HIaghTgSBeSVBC8xLfVu3n0h5ZP4
-         Ubcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787818419; x=1788423219;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=oss.qualcomm.com; s=google; t=1787819086; x=1788423886; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7knKTinTUheTHdWdoJsyJUaJWeLVQNabqsJFNmIigFg=;
-        b=ja1HJdSeE+w3PCeY8CpS04fEO7pfFMpRdNpn85Wg0dLMlhqOa2ImObq7UAcOVhilDz
-         CiJMQa/3DSYU2BGrnMHxi9KPG78asHJ6RdVHoen3GKKGbuVKP6AeNERblTn1NYpbKKJ+
-         jcmeWsTPeY7CZchselYUTfqPsRDVoRT3OOxQLVHYuZQebTLeDy+Wi7M7BSwGUJEOnnnm
-         5hvG6YNSRvLBpkt4X+JNXe0i36DITYoMw8O0Mi9X48biUgA1zn5bJAUo/imXI/Oy5JD1
-         OjAAZtIFgtojEPHEsqV0Zpfprj4/W8JkeYOQgNNZHJXqTmqRZt7wo1MNzYhlywljllgL
-         aNbg==
-X-Gm-Message-State: AFuF++k9ude9IiKDr/fItKrVmxqVdMSJpj8KenvwYqx2ANpI8iCAWHva
-	CGoDCn/BlTMjV1b0kKsLxYxV/P5BSmndWp29vcLMYaRzqIWIoZ/t/3al19PD3lGxnic+MT9+9pt
-	R6XfuLxS1tvL61oFXpReVTWBaC1jSn9mUkvNM0q8agugXORKvff5XPgv4a5o15xXTLw==
-X-Gm-Gg: AR+sD12DjUK+VjMJhJKj9fl1GMGj733YR/KgsdW0I5f5QoIRlwLj8IHYTxq3MZXHqTR
-	1BjcOkI5Dz+CCZim/LeX2cd/rsFcPAX+FvRoSS9wwptn5/dW/FmVM9uZgcdf39fDEj3MeCI+DNk
-	P6kxtP4cHT1PuzvVH1cCYvC9AnfFjDof/CNdsrhcVyE0wa/aDn3bmp+h4ojhlrdguGcuNfTm1et
-	VCnqczWjZICeIZiKZeny9DhOr/PCjJy8WCCFE/IV1mpYiW1yvh+jgE2uVZw1zlyBcEhW+eV9CBs
-	vTyJQ7kQOJqL8ghGSvL2Mes89WboGtv9CXzBVkMVZPdpJ7IxquThF1b/qZGkhsQaAoNWlGm7d09
-	CZ99wxSGM81L/0nARYjrpfctXVnY0O7HPoBI=
-X-Received: by 2002:a05:622a:608a:b0:52d:99e8:46b7 with SMTP id d75a77b69052e-52e42323362mr147992131cf.22.1787818419439;
-        Thu, 27 Aug 2026 01:13:39 -0700 (PDT)
-X-Received: by 2002:a05:622a:608a:b0:52d:99e8:46b7 with SMTP id d75a77b69052e-52e42323362mr147991621cf.22.1787818418960;
-        Thu, 27 Aug 2026 01:13:38 -0700 (PDT)
-Received: from localhost (ip-86-49-251-7.bb.vodafone.cz. [86.49.251.7])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482e27ab6d0sm7031965f8f.13.2026.08.27.01.13.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 01:13:38 -0700 (PDT)
-Date: Thu, 27 Aug 2026 10:13:37 +0200
-From: Andrew Jones <andrew.jones@oss.qualcomm.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: jgg@ziepe.ca, kevin.tian@intel.com, robin.murphy@arm.com, joro@8bytes.org,
-        will@kernel.org
-Subject: Re: [RFC PATCH v1 0/8] iommu: Add contiguous MSI mapping support
-Message-ID: <wvwuvvhmhdoa5kbx3gqae7lrvrseubeg2hepc3xswwjad672xb@5n67tcvbkavm>
-References: <20260826145302.449904-1-andrew.jones@oss.qualcomm.com>
+        bh=0WOkKUTTNS6mJs2BwdqhMg+NA2BpiKjHIQAe3GoU9ZE=;
+        b=GEBwsgiXm4T8aVCq3Nd54Q/RRpbuV6bf1jTLtqwG6+wbxB5uEn/JneLUHWlT4uQlVb
+         vXPZBkwBxyFFCfTDVKt54n3C3uZr/655A9+2EJtrz9RTN1Yal2ipzMe2JR5FHWNDa5ie
+         vtAUMrGWEpU4wCpbiqpMYQzwXwk3SrgUDX2qlpECRT483vWUzOa3r1xB7xJ5KW3gKx+O
+         f2QmkqdwyWzZlmPLrUImC26zeh9pSyFBM4rJLVHCY+/ZDA0ODwbTydXd/AxK9et1Wqjn
+         Gg0l59JLtxbSIiH8aMMYGMJNoqzwASKzzPmDHtvGW+8WTfjxPz7fCuNq/nhdr6UXrYtW
+         lZIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787819086; x=1788423886;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0WOkKUTTNS6mJs2BwdqhMg+NA2BpiKjHIQAe3GoU9ZE=;
+        b=EvEfB5l+mte1U7efc+CUDVFY2FZTXdoUy5TCzRSEb/2oVQ3m7ieTJUfO1ssMmtoetD
+         jqnsikfHe20zyKSXgQKuWtXA47qiUYX/7d6Jm/fHSVdUILZq5ait9mTCKaKaWQ1hTOsD
+         PHsss5zo8GkXlcRTJ+a6HwxO6N4+1mlg+Gf+fCwCxoOD4xKHzUOmEdnccD7xMG33OmvG
+         SMs/m84UHkz653C13I4GR2ZGVnfrz/POpFtii15u2aiDNr0Gbl6O0jAnxggWWfyVysa/
+         hxvt0+Vq+wQeL58j5U3gJcDPESYBUYbVJaB43R472wHmGo+vVYqPFklwh5B/NWFx40Rx
+         RWzg==
+X-Forwarded-Encrypted: i=1; AHgh+RqUWqeVNVX6/a6LCxddFXaklDuyR+lb8qvgm+gb1pyZMe23NVGPUPXSilRTW+8xI3tkq3MXZA==@lists.linux.dev
+X-Gm-Message-State: AFuF++kT+X/09SS6yud16KrKpQENXZS3dfBrWb2DPMmV3BXfCwnisboF
+	Ig+T/ij3tvdHWTjstFqsmRrXl5QXRm5DAshBtCRrv92WDW43PuMoNVzGRnEQD5BEvfoMJaXfso8
+	XbPH1ZxTgcsrA7jTw5qFX762FrkYoeDSdTIih5Cns3PPdXPTdPmN/wLMfog==
+X-Gm-Gg: AR+sD11hLPnWDzVdXloseXKqt4wIAXoOn/30rej7GUQ+ukNw0mqKmiNaOsSOS+ZnWGx
+	kk5kcKGXvBBUeIBcZaDZw6v8Wk5Pd1+W1ihFs7j78effqwgZ3zRZpJHePuJ4cA5Vxuyj+vkLYTX
+	gUe1Su25oHQf7equSYEj/ozTcTp1RPA+mTn51EHUqjfcidom4Gw/hy8rleNj1wPBF3mabwvZPb6
+	u2zC38UYBySudsWul23wTEPYKjc7pjbr9RZ580jHY+eZ6zIfMbv8UPvXkeamzi3hJQPsKMaw7cJ
+	FzhhJDxgOIAxgtfNpWQrGke/QNhicbfAp1nzhLFbfxQFuYfclHhm/Yp5ARjfaTZOPxmDS9fft8D
+	sgBk/NjrFQrP0YHXzIUHf9YiIhCsqoT9cGQ==
+X-Received: by 2002:a05:6a21:9d84:b0:3c3:f371:1ea9 with SMTP id adf61e73a8af0-3cf844449abmr28579008637.10.1787819085636;
+        Thu, 27 Aug 2026 01:24:45 -0700 (PDT)
+X-Received: by 2002:a05:6a21:9d84:b0:3c3:f371:1ea9 with SMTP id adf61e73a8af0-3cf844449abmr28578942637.10.1787819085169;
+        Thu, 27 Aug 2026 01:24:45 -0700 (PDT)
+Received: from [10.218.39.50] ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cc1bec989f2sm1835547a12.28.2026.08.27.01.24.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Aug 2026 01:24:44 -0700 (PDT)
+Message-ID: <8188c158-60ed-4d05-a26e-c127850520cb@oss.qualcomm.com>
+Date: Thu, 27 Aug 2026 13:54:40 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260826145302.449904-1-andrew.jones@oss.qualcomm.com>
-X-Proofpoint-ORIG-GUID: jLWeiYiId76Vl4zqoVvLYUlBdeoubFLR
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODI3MDA2NyBTYWx0ZWRfX3cuuMjjZ7PVu
- k8GrepoY2PL3ujAoLf5if7l5KZtGMndtAWyM07hrKSc24re0jlLSwQ/wxVZ0JV96lqQ467JJE98
- fRXBz8tro8vocrOJvEAyJ0pYoeHkPr8=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI3MDA2NyBTYWx0ZWRfXyyxCmgp3ukQB
- UUNqTcBWQWbtI984VEMLkV28qRUya0dBQhjBCUATZ1DhtcKxI4Xt0LuxoCGnZPrp9tYn1lYjmoQ
- U6MvHrhicOjLel23Z1QaaVVHHYWT1mTeQBiFG7MC5DTRNBwHDauHySNdNDOu0uhp8Sf9CV1N2EA
- ZfMUbEpTtP4J1+65bGuqtwA1iBUQRUHG3LdpsgvJLtJI5V1v9Ouyy/fPiuMeitiwDvzKiQTOS4F
- KOHFuZWLEq6IHuQfvP34XnEOkGqqUEydEw7wDavYXl4P3s0InGvPefFCVBn/I+Kl9HDl79pSXNW
- vrUQU0z9pxdmnRq9TjYEa0OmosNHTZxh3brYEPn74Tbam1Ny7/7SL5icIZ+Db9IdVDsj26WY+E2
- +LdTRslOXtJ1hJoHTQTmaJqtuClxcsCCKnZ7+pH5a0Pr+2YIjWP5L3jty3aUFxXBTbbhj/zne8k
- rlpJpAxn+D/NQmiVRqQ==
-X-Proofpoint-GUID: jLWeiYiId76Vl4zqoVvLYUlBdeoubFLR
-X-Authority-Analysis: v=2.4 cv=SomgLvO0 c=1 sm=1 tr=0 ts=6a8ff1b4 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=on9AXyaqQ0RhfYpiXjjEXA==:17
- a=kj9zAlcOel0A:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] iommu/io-pgtable-arm: Add support for contiguous hint
+ bit
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+References: <20260804-iommu_contig_hint-v4-1-d7a47ed5db98@oss.qualcomm.com>
+ <CAE2F3rB7zpPFfC376mP=god9HWRmKOaQUEgPVzKScxS12pZrvQ@mail.gmail.com>
+Content-Language: en-US
+From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+In-Reply-To: <CAE2F3rB7zpPFfC376mP=god9HWRmKOaQUEgPVzKScxS12pZrvQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: lgc3rIO-OLjdlXOKmyOPbYzjQBR_Hkdo
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODI3MDA2OCBTYWx0ZWRfX6X9Hq/ZXlI+Y
+ c9l4tjlborpodFFXDFmuANysDd0d904Wn9IpFdl8D+Y9gryyAt8zFTUzINpNezRZTlgJWEB3eYn
+ hYOLl3rT9PU2WMyJ1YGeccp3y93Xtus=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI3MDA2OCBTYWx0ZWRfX85a02zTiXj1T
+ RxlTpgCuExTENAt0sX9GkIUIc7NQQtmnJ1OrXzUyBuJbjPUVH93am98oth/WPIl62cvWWN0rteG
+ 2RkQ6REWyBmMgeheBc+G9c7Bw2jd2hvmOfsT+SppfhS2jUnorahccVo+jIFrTeKXfODBFS9Hwvr
+ 3dCQd/EGEuJzcuEGbvP5vgyzFqBMUK5shou9e51I2NtXAeQHJwpidiVwCxL6i4GDRbPVF7avrwK
+ iBPhJWmWVLeyoYgGR7h/S8AE2qDPm18wUfbbKb6E/WCtrw2/SNRX7tjUGWyVj2qqOaPPHIYrLJE
+ WV4BIgphsQ70jAxlN49c+cLuMnQ1M1MyoDEnCbiJxp+eHPENPToemR+28hbiovLz/PsqGDr+sdW
+ VEzoIYcfsoKKXMRvmBXZPV43l8bTImKPrN3+x1r1Cb2JhvViqn4onvHNvmEhiG4I7P96zx4DfcP
+ D4HglUN4aPwTHSoV3kg==
+X-Proofpoint-GUID: lgc3rIO-OLjdlXOKmyOPbYzjQBR_Hkdo
+X-Authority-Analysis: v=2.4 cv=SomgLvO0 c=1 sm=1 tr=0 ts=6a8ff44e cx=c_pps
+ a=Qgeoaf8Lrialg5Z894R3/Q==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
  a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=2znifY0NdIQrjKshjbUA:9 a=CjuIK1q_8ugA:10 a=a_PwQJl-kcHnX1M80qC6:22
+ a=EUspDBNiAAAA:8 a=hD7wzR-C_dcGOD24FjMA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=x9snwWr2DeNwDh03kgHS:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-27_03,2026-08-26_02,2025-10-01_01
@@ -119,219 +130,171 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  malwarescore=0 clxscore=1015 phishscore=0 spamscore=0 priorityscore=1501
  suspectscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 adultscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608270067
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608270068
 
-On Wed, Aug 26, 2026 at 04:52:54PM +0200, Andrew Jones wrote:
-> The RISC-V IOMMU MSI remapping series [1] needs to prepare mappings for
-> every possible IMSIC target before MSI composition may occur in atomic
-> context. The previous approach mapped each physical address separately
-> and kept a driver-owned PA-to-IOVA lookup table.
-> 
-> Jason Gunthorpe suggested passing the complete list of physical
-> addresses through the existing MSI preparation flow. This series
-> implements that idea as iommu_dma_prepare_msi_list(), which maps the
-> ordered list into one contiguous IOVA range and records its base and
-> granule shift in the MSI descriptor. The interrupt-remapping driver can
-> then derive the IOVA for each list entry without maintaining a separate
-> IOVA array.
-> 
-> Both DMA-IOMMU and iommufd backends are extended to support these list
-> mappings. The existing per-page mapping objects are retained, while
-> the first object identifies the complete range so identical lists can
-> reuse an existing mapping. iommufd allocates and installs a complete
-> range atomically and grows its software-MSI bitmaps beyond their
-> previous 64-entry limit.
-> 
-> This is being posted separately from the RISC-V MSI remapping work for
-> early RFC review of the common DMA-IOMMU and iommufd interfaces. The
-> RISC-V adaptation to iommu_dma_prepare_msi_list() is still in progress
-> and will be posted later.
->
 
-Applying this to riscv makes the MSI remapping surprisingly (to me) simple
-and unintrusive (IMHO) to the IMSIC driver. Only the changes below were
-needed.
 
-I'll post this series along with the imsic and kconfig changes as v5 of
-the riscv host msi remapping series without the RFC tag.
+On 8/15/2026 3:27 AM, Daniel Mentz wrote:
+> On Mon, Aug 3, 2026 at 11:19 PM Vijayanand Jitta
+> <vijayanand.jitta@oss.qualcomm.com> wrote:
+>> +static unsigned long arm_lpae_get_cont_sizes(struct io_pgtable_cfg *cfg)
+>> +{
+>> +       unsigned long pg_size, blk_size, l1_blk_size, cont_sizes = 0;
+>> +       unsigned long cont_leaf_size, cont_blk_size, cont_l1_blk_size;
+>> +       int pg_shift, bits_per_level;
+>> +
+>> +       if (!cfg->pgsize_bitmap || (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NO_CONT_HINT))
+>> +               return 0;
+>> +
+>> +       pg_shift = __ffs(cfg->pgsize_bitmap);
+>> +       bits_per_level = pg_shift - ilog2(sizeof(arm_lpae_iopte));
+>> +       pg_size = 1UL << pg_shift;
+>> +       blk_size = pg_size << bits_per_level;
+>> +       l1_blk_size = blk_size << bits_per_level;
+>> +
+>> +       cont_leaf_size = arm_lpae_num_cont(pg_size) * pg_size;
+>> +       if ((cfg->pgsize_bitmap & pg_size) &&
+>> +           arm_lpae_cont_size_fits(cfg, cont_leaf_size))
+>> +               cont_sizes |= cont_leaf_size;
+>> +
+>> +       if (cfg->pgsize_bitmap & blk_size) {
+>> +               cont_blk_size = arm_lpae_num_cont(blk_size) * blk_size;
+>> +               if (arm_lpae_cont_size_fits(cfg, cont_blk_size))
+>> +                       cont_sizes |= cont_blk_size;
+>> +       }
+>> +
+>> +       /*
+>> +        * l1_blk_size is only set in pgsize_bitmap if level-1 blocks are
+>> +        * supported for this granule (not 16K/64K, per
+>> +        * arm_lpae_restrict_pgsizes()), so no extra gating is needed here.
+>> +        */
+>> +       if (cfg->pgsize_bitmap & l1_blk_size) {
+>> +               cont_l1_blk_size = arm_lpae_num_cont(l1_blk_size) * l1_blk_size;
+> 
+> Our AI model is saying that this might overflow cont_l1_blk_size on 32
+> bit platforms i.e. 16 * 1G doesn't fit into a 32 bit type. It says
+> that cont_l1_blk_size will be truncated to 0, and
+> arm_lpae_cont_size_fits() then calls ilog2(0) which is undefined.
+> 
+
+Ack. With arm_lpae_cont_size_fits removed this won't be an issue anymore.
+
+>> +               if (arm_lpae_cont_size_fits(cfg, cont_l1_blk_size))
+>> +                       cont_sizes |= cont_l1_blk_size;
+>> +       }
+>> +
+>> +       return cont_sizes;
+>> +}
+> [...]
+>> @@ -660,6 +829,8 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>  {
+>>         arm_lpae_iopte pte;
+>>         struct io_pgtable *iop = &data->iop;
+>> +       size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+>> +       int num_cont = arm_lpae_num_cont(block_size);
+>>         int i = 0, num_entries, max_entries, unmap_idx_start;
+>>
+>>         /* Something went horribly wrong and we ran out of page table */
+>> @@ -674,10 +845,22 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>                 return 0;
+>>         }
+>>
+>> +       /*
+>> +        * Normalize an exact whole-CONT-group request down to the
+>> +        * equivalent block_size/pgcount, mirroring __arm_lpae_map().
+>> +        */
+>> +       if (!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NO_CONT_HINT) &&
+>> +           num_cont > 1 && size == block_size * num_cont) {
+>> +               pgcount *= num_cont;
+>> +               size = block_size;
+>> +       }
+>> +
+>>         /* If the size matches this level, we're in the right place */
+>> -       if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
+>> +       if (size == block_size) {
+>> +               size_t cont_size = num_cont * block_size;
+>> +
+>>                 max_entries = arm_lpae_max_entries(unmap_idx_start, data);
+>> -               num_entries = min_t(int, pgcount, max_entries);
+>> +               num_entries = min_t(size_t, pgcount, max_entries);
+>>
+>>                 /* Find and handle non-leaf entries */
+> 
+> This comment is no longer accurate. The handling now extends beyond
+> non-leaf entries.
+> 
+
+Agreed, that comment is stale -- the loop now also validates CONT-group
+alignment on leaf entries (rejecting an unmap that would split a tagged
+group) before falling through to the non-leaf teardown. Will update it to
+something like:
+
+/* Validate leaf entries and handle non-leaf entries */
+
+
+>>                 for (i = 0; i < num_entries; i++) {
+>> @@ -687,6 +870,40 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>                                 break;
+>>                         }
+>>
+>> +                       /*
+>> +                        * A real CONT group must always be invalidated as a
+>> +                        * unit, so reject an unmap that splits one. Check the
+>> +                        * PTE's own CONT bit rather than the caller's size,
+>> +                        * since a legitimate unmap can span multiple prior
+>> +                        * iommu_map() calls and its size alone doesn't say how
+>> +                        * the underlying PTEs were grouped. Only the first and
+>> +                        * last entries can straddle a group boundary; an
+>> +                        * interior CONT-tagged entry's group is necessarily
+>> +                        * fully covered by this unmap, since groups can't
+>> +                        * overlap without also covering everything between
+>> +                        * them.
+>> +                        */
+>> +                       if (pte & ARM_LPAE_PTE_CONT) {
+>> +                               bool ok = true;
+>> +
+>> +                               if (i == 0)
+>> +                                       ok = ok && IS_ALIGNED(iova, cont_size);
+>> +                               if (i == num_entries - 1)
+>> +                                       ok = ok && IS_ALIGNED(iova + (i + 1) * block_size,
+>> +                                                             cont_size);
+>> +
+>> +                               /*
+>> +                                * Stop short of this entry instead of returning
+>> +                                * 0: entries before i may already have had
+>> +                                * non-leaf sub-tables torn down above, so the
+>> +                                * caller needs the real unmapped count, and the
+>> +                                * loop exit below still clears/gathers entries
+>> +                                * [0, i) correctly.
+>> +                                */
+>> +                               if (WARN_ON_ONCE(!ok))
+> 
+> Consider aligning with the following WARN_ONCE in the same function:
+> 
+> WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
+> 
+
+Ack.
+
+>> +                                       break;
+> 
+> I think this behavior is inconsistent: when a problem is detected at
+> the beginning of the unmap range, you return without modifying the
+> table, whereas if it's detected at the end, the code proceeds with
+> unmapping and leaves the table misconfigured. Could these checks be
+> performed before entering the loop?
+> 
+
+Agreed, Will move both checks before the loop so a rejected unmap is always a
+full no-op, regardless of whether the violation is at the start or end of
+the range.
 
 Thanks,
-drew
+Vijay
 
+>> +                       }
+>> +
+>>                         if (!iopte_leaf(pte, lvl, iop->fmt)) {
+>>                                 __arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
+>>
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 42f2278a702d..c7cda52b21eb 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -656,6 +656,7 @@ config RISCV_IMSIC
- 	select IRQ_DOMAIN_HIERARCHY
- 	select GENERIC_IRQ_MATRIX_ALLOCATOR
- 	select GENERIC_MSI_IRQ
-+	select IRQ_MSI_IOMMU
- 	select IRQ_MSI_LIB
- 
- config RISCV_RPMI_SYSMSI
-diff --git a/drivers/irqchip/irq-riscv-imsic-platform.c b/drivers/irqchip/irq-riscv-imsic-platform.c
-index 643c8e459611..72f595c0d320 100644
---- a/drivers/irqchip/irq-riscv-imsic-platform.c
-+++ b/drivers/irqchip/irq-riscv-imsic-platform.c
-@@ -10,6 +10,7 @@
- #include <linux/cpu.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-+#include <linux/iommu.h>
- #include <linux/irq.h>
- #include <linux/irqchip.h>
- #include <linux/irqdomain.h>
-@@ -69,8 +70,10 @@ static void imsic_irq_ack(struct irq_data *d)
- 	irq_move_irq(d);
- }
- 
--static void imsic_irq_compose_vector_msg(struct imsic_vector *vec, struct msi_msg *msg)
-+static void imsic_irq_compose_vector_msg(struct irq_data *d, struct imsic_vector *vec,
-+					 struct msi_msg *msg)
- {
-+	struct msi_desc *desc = irq_data_get_msi_desc(d);
- 	phys_addr_t msi_addr;
- 
- 	if (WARN_ON(!vec))
-@@ -79,6 +82,14 @@ static void imsic_irq_compose_vector_msg(struct imsic_vector *vec, struct msi_ms
- 	if (WARN_ON(!imsic_cpu_page_phys(vec->cpu, 0, &msi_addr)))
- 		return;
- 
-+	if (desc->iommu_msi_shift) {
-+		const struct imsic_local_config *local;
-+
-+		local = per_cpu_ptr(imsic->global.local, vec->cpu);
-+		msi_addr = (desc->iommu_msi_iova << desc->iommu_msi_shift) +
-+			   local->smode_msi_pa_index * IMSIC_MMIO_PAGE_SZ;
-+	}
-+
- 	msg->address_hi = upper_32_bits(msi_addr);
- 	msg->address_lo = lower_32_bits(msi_addr);
- 	msg->data = vec->local_id;
-@@ -86,7 +97,7 @@ static void imsic_irq_compose_vector_msg(struct imsic_vector *vec, struct msi_ms
- 
- static void imsic_irq_compose_msg(struct irq_data *d, struct msi_msg *msg)
- {
--	imsic_irq_compose_vector_msg(irq_data_get_irq_chip_data(d), msg);
-+	imsic_irq_compose_vector_msg(d, irq_data_get_irq_chip_data(d), msg);
- }
- 
- #ifdef CONFIG_SMP
-@@ -94,7 +105,7 @@ static void imsic_msi_update_msg(struct irq_data *d, struct imsic_vector *vec)
- {
- 	struct msi_msg msg = { };
- 
--	imsic_irq_compose_vector_msg(vec, &msg);
-+	imsic_irq_compose_vector_msg(d, vec, &msg);
- 	irq_data_get_irq_chip(d)->irq_write_msi_msg(d, &msg);
- }
- 
-@@ -225,7 +236,9 @@ static struct irq_chip imsic_irq_base_chip = {
- static int imsic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
- 				  unsigned int nr_irqs, void *args)
- {
-+	msi_alloc_info_t *info = args;
- 	struct imsic_vector *vec;
-+	int ret;
- 
- 	/* Multi-MSI is not supported yet. */
- 	if (nr_irqs > 1)
-@@ -235,6 +248,13 @@ static int imsic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (!vec)
- 		return -ENOSPC;
- 
-+	ret = iommu_dma_prepare_msi_list(info->desc, imsic->smode_msi_pa,
-+					 imsic->nr_smode_msi_pa, IMSIC_MMIO_PAGE_SZ);
-+	if (ret) {
-+		imsic_vector_free(vec);
-+		return ret;
-+	}
-+
- 	irq_domain_set_info(domain, virq, virq, &imsic_irq_base_chip, vec,
- 			    handle_edge_irq, NULL, NULL);
- 	irq_set_noprobe(virq);
-diff --git a/drivers/irqchip/irq-riscv-imsic-state.c b/drivers/irqchip/irq-riscv-imsic-state.c
-index b8d1bbbf42f7..082522081a2d 100644
---- a/drivers/irqchip/irq-riscv-imsic-state.c
-+++ b/drivers/irqchip/irq-riscv-imsic-state.c
-@@ -687,6 +687,32 @@ static int __init imsic_get_mmio_resource(struct fwnode_handle *fwnode,
- 	return of_address_to_resource(to_of_node(fwnode), index, res);
- }
- 
-+static int __init imsic_init_smode_msi_pa(void)
-+{
-+	struct imsic_global_config *global = &imsic->global;
-+	phys_addr_t *smode_msi_pa;
-+	unsigned int cpu, index = 0;
-+
-+	smode_msi_pa = kcalloc(num_possible_cpus(), sizeof(*smode_msi_pa), GFP_KERNEL);
-+	if (!smode_msi_pa)
-+		return -ENOMEM;
-+
-+	for_each_possible_cpu(cpu) {
-+		struct imsic_local_config *local = per_cpu_ptr(global->local, cpu);
-+
-+		if (!local->msi_pa)
-+			continue;
-+
-+		local->smode_msi_pa_index = index;
-+		smode_msi_pa[index] = local->msi_pa;
-+		index++;
-+	}
-+
-+	imsic->smode_msi_pa = smode_msi_pa;
-+	imsic->nr_smode_msi_pa = index;
-+	return 0;
-+}
-+
- static int __init imsic_parse_fwnode(struct fwnode_handle *fwnode,
- 				     struct imsic_global_config *global,
- 				     u32 *nr_parent_irqs,
-@@ -937,6 +963,12 @@ int __init imsic_setup_state(struct fwnode_handle *fwnode, void *opaque)
- 		goto out_local_cleanup;
- 	}
- 
-+	rc = imsic_init_smode_msi_pa();
-+	if (rc) {
-+		pr_err("%pfwP: failed to initialize S-mode MSI addresses\n", fwnode);
-+		goto out_local_cleanup;
-+	}
-+
- 	/* Initialize matrix allocator */
- 	rc = imsic_matrix_init();
- 	if (rc) {
-@@ -962,6 +994,7 @@ int __init imsic_setup_state(struct fwnode_handle *fwnode, void *opaque)
- out_free_local:
- 	free_percpu(imsic->global.local);
- out_free_priv:
-+	kfree(imsic->smode_msi_pa);
- 	kfree(imsic);
- 	imsic = NULL;
- 	return rc;
-diff --git a/drivers/irqchip/irq-riscv-imsic-state.h b/drivers/irqchip/irq-riscv-imsic-state.h
-index c42ee180b305..7bc519340b12 100644
---- a/drivers/irqchip/irq-riscv-imsic-state.h
-+++ b/drivers/irqchip/irq-riscv-imsic-state.h
-@@ -49,6 +49,8 @@ struct imsic_priv {
- 
- 	/* Global configuration common for all HARTs */
- 	struct imsic_global_config		global;
-+	phys_addr_t				*smode_msi_pa;
-+	unsigned int				nr_smode_msi_pa;
- 
- 	/* Per-CPU state */
- 	struct imsic_local_priv __percpu	*lpriv;
-diff --git a/include/linux/irqchip/riscv-imsic.h b/include/linux/irqchip/riscv-imsic.h
-index ce8fe1ead7a0..523022e0a144 100644
---- a/include/linux/irqchip/riscv-imsic.h
-+++ b/include/linux/irqchip/riscv-imsic.h
-@@ -40,6 +40,7 @@
- struct imsic_local_config {
- 	phys_addr_t				msi_pa;
- 	void __iomem				*msi_va;
-+	unsigned int				smode_msi_pa_index;
- 
- 	/* Number of guest interrupt files per-HART */
- 	u32					nr_guest_files;
