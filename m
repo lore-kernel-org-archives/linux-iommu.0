@@ -1,274 +1,119 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE83643B4B8
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 16:18:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787847489; cv=pass; b=iI0hV092uUaMzwF2ueluWl0riKPPjZM/lq9dS9us4b8gHyQ4m/4M0vSwRrABvQB6znxfi1h6dzenZFTb+1FZvbKgPkvplgwVeAYbgQdrkL9WoXJm/UuNJbK95m1aDphVwSMh/czS8IF9EvX0J+YIjMKB3DrPXQBkAZQl8kLtXG8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787847489; c=relaxed/simple;
-	bh=Bl9N4NIOdfVqZOwR5kgJa0N0qb0p2zQM+IJ95fURflg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=By3pt4AJYfKPovN6PbNMuK7XCY+KRBBFCIMUfhK+0db2bHbmVvNgGbsax7NUWrXC9KTVJEZ6hbsS5uUtpzOzM5Pk3GemOEqJufbGXKNVaFXKE9f+NVKpFIuiPNZkXU/rndksKlY4DHZZuzSJMdtiXc1k7E0FyqI05Ds98izAOk4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jtJP+eV0; arc=pass smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19DCB486B8C
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 16:19:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787847549; cv=none; b=Ej3FM8NKWeWfGQ0K4eF/hSoE0UpCHr+BoDC/r6Tf+Z6aCP1NodHxqzB2jXtrX0IXCIIQ4ccl8D46tPgZuKKtisAGmTlIAzhhG9uPHkBCfK5YtT95hyl0qo2efuUJQ6GS3mDHNphWoqTa2zMn8i5Y/FyiUM8aeyWmnSrhkfECgvI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787847549; c=relaxed/simple;
+	bh=DiUjG0T0zuWI7L/yvvGgeVYz8NadRp7w7Ygor662/N0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Suro/HtlVsfMmsjUCmUnLU/YblKfmdbu1jwMD689xscXNotell37R7xFqoMk2rQPjGJAvQROJBAkGrAUaILQB2xRvps94flYC49RLrG0+G+Z0SdGAX2Wfj1TT7YdCUTOPFOH9mF58f9PkiDiMfKZMGV0Doe0u1KFaCOcjZRmasU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jtxqf4tP; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jtJP+eV0"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a5dce0aacdso13807a12.0
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 09:18:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787847486; cv=none;
-        d=google.com; s=arc-20260327;
-        b=s1btMMTVzP2s1rtIr2NoZJWeLZypjf9fozDbexYhZVfZu0uv6tcYHa6mxKS2z7ODei
-         ZZm2XEyosh4RCfNVZQ4lmUj2YlzmkyKb1uPPcOQhZ0YO981BF7IqFoGWo1L9pgQMrKIh
-         VDILAdZ8JzIMVoSqFD0rkRDqPtMQ+xSbEBb4HbUisQpFCUGIPLY9g7q5KOIkPyLukTAv
-         Sx/8yQ6K9V2I77uYj6qehz1H5qKRzlDZkcZUHMA/aNZU20+8hBIkF/X+5z71zb9P51A5
-         YgJnbAzu81V4kobM8x4je6GWTS2WSBg6DTmLCbibb57YfbuwD1HLxE5KFszFwCRVPpxN
-         CgkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=m7ZkTNQPG4sK1dnK6dVjipvBVeIi19Kxu7dkafH7UEY=;
-        fh=ja1UWhQ2ciwymFqNC/FUzqUl9Oi+DcWgrCjrLqhJivw=;
-        b=nCfEVDGfS/+v0pgRNnAMQa/HOS3LJ4LuslwYIPu7kgS+vlGnjseyYnHerL1dpgfnQQ
-         Ucd32lbr1AInvGAYGNTH8CWSD1j1MjIGcymPAeidI+sio0dWiHtOAqO1+vg20sdDOETP
-         deaHCdbZd854xVYj5SqUS4qL2yNogarJLjqCqBy031sIDSqdEK8SqJfKJXFbUJ+yaHEc
-         HTWgtmrzcBLq22x5QXgHnJzRa3yyoOJJhhrj+OV8GOmUogfQSVcaZ7EQaNo+SAxVcLy5
-         Y49ErvYf+iNtsVfOurUaPw1GT/Z0M+LMeACB8trp/L56ao/P6mb3b+e7vKbQp8XENpQY
-         RZfA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jtxqf4tP"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8ee43b3e5abso808366d6.3
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 09:19:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787847486; x=1788452286; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=ziepe.ca; s=google; t=1787847547; x=1788452347; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=m7ZkTNQPG4sK1dnK6dVjipvBVeIi19Kxu7dkafH7UEY=;
-        b=jtJP+eV09jVNFqaYC4GYWBz9PxdcnFWtjMXltu9F8e3rdYZ3iEU/fPpejI1MAytejf
-         YLaLaNWqywq0PPeu+PbUW2f2ky7AL4T6q+52Lrtx1Dmsx+yEAvfyEm5m9M3E5XaAJkJO
-         3Zz5x78ii1VRREW4UFHT92eOJ8uABtAdskOcX2+Hg7DEt2KljCQtDwlIh62hL3FfrBVI
-         megDHkbtzJFOEmbuWRNWC2+8wC+XYY7I9SE8AxwLbqqSIx+vQ8Hy7vz+Z8rd+7dpzFkh
-         6jhg0kIZuoGG/tLee+w1891odvQreo2lRgNITAM/sgRw4rB5qKCmUeMkoK5d4ufoGIfu
-         GgNg==
+        bh=PHNKzqddJq8qH4vR69ILQzFreGWmgpWijEaEyQN0PLk=;
+        b=jtxqf4tP0VLf/xeb1Hm5xD5408HQWQk/WN1FZS91fa44chSk2IdiX9VkK1u6rqblyc
+         o88wrK96aeW4iYYmh/hbM1J4XOFWD4zdey8qRDrZsO1oTxLxHqrmvT8lNdadIBW4rLUd
+         l8ZAoc3pE8BFSIkFBWWv7QCIuTJah34AHDKtXBepAoNBnUxuEXYnjgLBoFEZBwOa34SD
+         /TSlPqW2pV7qxRN4t2TrQ9tmbtIEuC56NxNkRS1Q5w2DX+3iMpgGTpT/wSUlcyIvtEu/
+         l8GLRS488vGz+QLIXXFy0hhN+AnT3f2MwIu2GCPixEEcLmktCgQ+O2iajbWuIf4nid11
+         ECZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787847486; x=1788452286;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1787847547; x=1788452347;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=m7ZkTNQPG4sK1dnK6dVjipvBVeIi19Kxu7dkafH7UEY=;
-        b=Bn90rBCkuPBi//uELoHKfvqBYvubwcwwcasZfIpnoIKiV3O0WS9KFBDqclOdNQ5J+L
-         vgyRxn1v5skcFth9vrOnlrnj0UeJYNS7M27+UCyl+rG7MhFE4qQkpljWcRbhKaHBEy5i
-         KT66SVgxhRaXGlQz9aWFLuHmQwgVVmWEj6MXHSBvAteWSMRLg8pqFDAnpaBRoONItDmd
-         hqHyLF+hB3lVwwU1VCGJVXLBBuwBb4PmKX0+u/aQH+g7VkMEEb4sM7n7UxGLtQhCVLKq
-         LcRYwEaWndpXJjCk4UHOhvc7/FHQNb4d/ZqwMvDKw5o0X8vAFM6x4kb9/inJPzQjThTS
-         dBug==
-X-Forwarded-Encrypted: i=1; AHgh+RpggBrGQJHyxISejRiL8IsFF2Tgk2ofOSX3Bf57K+cVXnRkxRo3IWDHVz5RW39akcxs3wYGNQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++mCxO0kjSBPrJEjd385kfSd01HkHcCFqup/XxVYL8Vl61qPYYlz
-	girhfE/9VuQmyk6VxFstuHIWxEV69zUCw67qnsZoGMrzt2+pTTPxfiLa+UvMyasOZXqNR1cvkel
-	AuYOAtkFVE8p9sULp5shLRVwPAYdxrNm8MtMiYdw/
-X-Gm-Gg: AR+sD117xKyCDbm5MdtgRK41QhZNjB2FOkuWMU2hOiLMRwmyIB1ng6G1/70/njaBuO4
-	2XsRTbfANJgXNg4pZsHjyU9SzfuPdKOC84aEa5KK3/4EyHOlkuGcsODT3hVmizJv57a8dt9kCFG
-	noGk/hLoaX40mS8x4+r+y5ztPq9dA2qDJbip4xV+hhLT8M+Sbt3JX4ioXL8tvya5V4ZB0s3lNWV
-	U8b8fZuc0rNrRz960iVVPM5Sj2wQWqk0U7nPXZySUkTg5xVp1gvWO9cZJpemjE/C6haRkz0wYs3
-	h3r2DHZMh6ODVzefYwkJLWoHYVt7TDqqqovBp/4L0CtVvNGx6iQEkt4qRBNnaXHaRsWJJLCY9a8
-	vZg==
-X-Received: by 2002:aa7:d514:0:b0:672:117e:55d4 with SMTP id
- 4fb4d7f45d1cf-6a5f56fbb2amr67818a12.0.1787847485181; Thu, 27 Aug 2026
- 09:18:05 -0700 (PDT)
+        bh=PHNKzqddJq8qH4vR69ILQzFreGWmgpWijEaEyQN0PLk=;
+        b=fs+W6HWhyihf02N2/SqIvw0ax2Sbs9g4+Wv9P6VqlxE81J3nKd4WTioocAAXcRm7Du
+         iEUqV+YSP1YH0p56rRPko8ZdibqPMySVUYI+VhKACkVQ/fG13L/+aZbU7qCHWSzAZgit
+         VMdZnNS7065u0E1mD0SyglAIfd28+160BB66rKaFXqTqzH9tB751iSSYwC3XuGSFBezJ
+         8pweymrpBE0WtH0LnDbcUFDZHeJOinZqS/OsH8dQu6pWW61C4Zu/nBnwrmArQ70LETiP
+         NpD7N5e2NTGbXjxYXIZubTabkln+mlsm/ofiDjSQdiBsFdtx6WDIoTgojd2snAEG+NOd
+         sKPw==
+X-Forwarded-Encrypted: i=1; AHgh+Rpqs2VQe2pNDXPY9bZPLuR4K/hB3WJwN4LZSRrDvcO6Y5k421+Yre//a12YGmNOBtSf07YR9Q==@lists.linux.dev
+X-Gm-Message-State: AFuF++n4kq2tCbPKiO8uTxd7kogMBCZFFFjrcvmGnkDcAVwdLctQ6Vwx
+	PbeJMr/mBU9yptdSw9zJrmQ0IFFfbzdaendHgxjkIJtIbU3YJeSnBnyDUowmzAUXXc0=
+X-Gm-Gg: AR+sD120XYJnIDSSqhcNKo3F2EJZS6w5Nhy5NBsfFnFtIeSzZVt5S95UN232MFWOh6w
+	RmXUsSjQhSWWGZ7fBNT4D9SPNAt1XFnruUoItcxAA3nmoZG8upRp0/tp2NnQEXnZLzeZ8RtCwGQ
+	2ExlGUOeSC1AhqTZNwCBgE2rC5250kRugJXXRY76kWeXpijSYmOrocUDa8xAZicBY0zZIpRC7RD
+	eDr6mS44sbbRxcXX7IOFudOJdkmU12B3MCNLui4sR/Ol6URHGgU79yCV7trzlQ1H7iOqU0n9MkZ
+	WJBtUtc0HR+8jDhlnc5+Koj8usfCBhHP1ZKGVlszRsRgrwoV8lDLceMZ/wQgCwWncGgRaVL3JC4
+	MMoGVbWStg6zfBfS4kgIV5/T0Zonx5AXTSSU36gLar3jvjgo99gJsdisBLIMhruJvNmu7sEeEjU
+	pQE1RTboGSXX4UjeXw6tAJ3++nbwCBsjaMGbn5vF+xWwJSKGDErmqt5rrsyxxri3oZVq1q5WXh2
+	Bjry1XDcyDEeMntU+mb1Dav650515KwNwjC+WFu6tnEFg==
+X-Received: by 2002:a05:6214:5b0f:b0:90c:5947:7e60 with SMTP id 6a1803df08f44-90ce0c3d7bemr5926226d6.4.1787847510292;
+        Thu, 27 Aug 2026 09:18:30 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90cd73fc2c9sm19944946d6.35.2026.08.27.09.18.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Aug 2026 09:18:29 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wzco8-0000000G4Wr-2czS;
+	Thu, 27 Aug 2026 13:18:28 -0300
+Date: Thu, 27 Aug 2026 13:18:28 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Yuanhe Shu <xiangzao@linux.alibaba.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com, smostafa@google.com,
+	praan@google.com, skhawaja@google.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommupt: Drop pagealloc references during domain
+ deinit
+Message-ID: <20260827161828.GA3769797@ziepe.ca>
+References: <20260827145855.1616223-1-xiangzao@linux.alibaba.com>
+ <20260827145855.1616223-3-xiangzao@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260827145855.1616223-1-xiangzao@linux.alibaba.com>
- <20260827145855.1616223-2-xiangzao@linux.alibaba.com> <apBiJk_zhaNjW0er@google.com>
-In-Reply-To: <apBiJk_zhaNjW0er@google.com>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Thu, 27 Aug 2026 17:17:53 +0100
-X-Gm-Features: AcwNN1WR6tg9hLH542gIZv7DpP21v-yYeSwugCbSEAU1tVFSn-44FUNwUbQjGhs
-Message-ID: <CAFgf54qF=nyLvyOPKB=aLmWJ=C40ZTXeNaBhsdFgnzT3jyLKEA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iommu: Add __iommu_debug_unmap_phys() to drop refs by
- physical address
-To: Yuanhe Shu <xiangzao@linux.alibaba.com>
-Cc: joro@8bytes.org, will@kernel.org, jgg@ziepe.ca, robin.murphy@arm.com, 
-	baolu.lu@linux.intel.com, kevin.tian@intel.com, praan@google.com, 
-	skhawaja@google.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260827145855.1616223-3-xiangzao@linux.alibaba.com>
 
-On Thu, Aug 27, 2026 at 5:13=E2=80=AFPM Mostafa Saleh <smostafa@google.com>=
- wrote:
->
-> On Thu, Aug 27, 2026 at 10:58:54PM +0800, Yuanhe Shu wrote:
-> > The IOMMU_DEBUG_PAGEALLOC sanitizer takes a reference on each page at
-> > iommu_map() time, keyed by physical address, and the only way to drop
-> > them is the IOVA based iommu_debug_unmap_begin()/end().  A path that
-> > tears down a page table with mappings still installed has no IOVA to
-> > unmap with, so add a physical address based counterpart of
-> > __iommu_debug_map() for those paths, sharing the counting loop through
-> > __iommu_debug_update_phys().
->
-> But the IOVA can be calculated when walking the table from freeing
-> context or am I missing something?
->
+On Thu, Aug 27, 2026 at 10:58:55PM +0800, Yuanhe Shu wrote:
+> Since commit b948a8722848 ("iommu: Fix up map/unmap debugging for
+> iommupt domains") iommu_map() takes an IOMMU_DEBUG_PAGEALLOC reference
+> for every page it maps into a generic_pt domain, and those references
+> are only dropped by the IOVA based unmap path.  When a domain is freed
+> while mappings are still installed, pt_iommu_deinit() releases the page
+> table memory without dropping them, so every mapped page stays counted
+> as IOMMU-mapped after it returns to the buddy allocator and each later
+> allocation or free of it reports:
+> 
+>     WARNING: drivers/iommu/iommu-debug-pagealloc.c:91 at __iommu_debug_check_unmapped+0x4e/0x70, CPU#0: init/1
+>     iommu: Detected page leak!
+> 
+> Freeing a domain with mappings still installed is not driver misuse:
+> the deinit contract in include/linux/generic_pt/iommu.h only requires
+> the table to be removed from HW access and caches, with no requirement
+> to unmap first, and the kunit suite itself frees domains with live
+> mappings in pt_kunit_iommu_exit().
 
-Ok I am missing that it might not be possible to call in the table
-(iova_to_phys) while it is being freed.
+It is not misusing iommupt, but it is definitely misusing any iommu
+API built on top of it. How did you trigger this?
 
-> Thanks,
-> Mostafa
->
-> >
-> > Export the iommu_debug_initialized static key, as the generic_pt format
-> > code using these helpers can be built as a module.
-> >
-> > Signed-off-by: Yuanhe Shu <xiangzao@linux.alibaba.com>
-> > ---
-> > Build tested as built-in and as a module (AMD_IOMMU=3Dn,
-> > CONFIG_IOMMU_PT_AMDV1=3Dm).
-> >
-> >  drivers/iommu/iommu-debug-pagealloc.c | 30 ++++++++++++++++++++++++---
-> >  drivers/iommu/iommu-priv.h            | 24 +++++++++++++++++++++
-> >  2 files changed, 51 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/iommu/iommu-debug-pagealloc.c b/drivers/iommu/iomm=
-u-debug-pagealloc.c
-> > index 80164df5bab1..a2e55164e6a4 100644
-> > --- a/drivers/iommu/iommu-debug-pagealloc.c
-> > +++ b/drivers/iommu/iommu-debug-pagealloc.c
-> > @@ -15,6 +15,8 @@
-> >
-> >  static bool needed;
-> >  DEFINE_STATIC_KEY_FALSE(iommu_debug_initialized);
-> > +/* The generic_pt format code using the key can be built as a module *=
-/
-> > +EXPORT_SYMBOL_GPL(iommu_debug_initialized);
-> >
-> >  struct iommu_debug_metadata {
-> >       atomic_t ref;
-> > @@ -96,7 +98,8 @@ void __iommu_debug_check_unmapped(const struct page *=
-page, int numpages)
-> >       }
-> >  }
-> >
-> > -void __iommu_debug_map(struct iommu_domain *domain, phys_addr_t phys, =
-size_t size)
-> > +static void __iommu_debug_update_phys(struct iommu_domain *domain,
-> > +                                   phys_addr_t phys, size_t size, bool=
- inc)
-> >  {
-> >       size_t off, end;
-> >       size_t page_size =3D iommu_debug_page_size(domain);
-> > @@ -104,9 +107,30 @@ void __iommu_debug_map(struct iommu_domain *domain=
-, phys_addr_t phys, size_t siz
-> >       if (WARN_ON(!phys || check_add_overflow(phys, size, &end)))
-> >               return;
-> >
-> > -     for (off =3D 0 ; off < size ; off +=3D page_size)
-> > -             iommu_debug_inc_page(phys + off);
-> > +     for (off =3D 0 ; off < size ; off +=3D page_size) {
-> > +             if (inc)
-> > +                     iommu_debug_inc_page(phys + off);
-> > +             else
-> > +                     iommu_debug_dec_page(phys + off);
-> > +     }
-> > +}
-> > +
-> > +void __iommu_debug_map(struct iommu_domain *domain, phys_addr_t phys, =
-size_t size)
-> > +{
-> > +     __iommu_debug_update_phys(domain, phys, size, true);
-> > +}
-> > +
-> > +/*
-> > + * Physical address counterpart of __iommu_debug_map(), for teardown p=
-aths
-> > + * that destroy mapped entries without an IOVA.  The OAs must have bee=
-n
-> > + * accounted by a prior iommu_map().
-> > + */
-> > +void __iommu_debug_unmap_phys(struct iommu_domain *domain, phys_addr_t=
- phys,
-> > +                           size_t size)
-> > +{
-> > +     __iommu_debug_update_phys(domain, phys, size, false);
-> >  }
-> > +EXPORT_SYMBOL_GPL(__iommu_debug_unmap_phys);
-> >
-> >  static void __iommu_debug_update_iova(struct iommu_domain *domain,
-> >                                     unsigned long iova, size_t size, bo=
-ol inc)
-> > diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-> > index aaffad5854fc..12528a40bcd8 100644
-> > --- a/drivers/iommu/iommu-priv.h
-> > +++ b/drivers/iommu/iommu-priv.h
-> > @@ -71,11 +71,18 @@ int iommu_replace_device_pasid(struct iommu_domain =
-*domain,
-> >
-> >  void __iommu_debug_map(struct iommu_domain *domain, phys_addr_t phys,
-> >                      size_t size);
-> > +void __iommu_debug_unmap_phys(struct iommu_domain *domain, phys_addr_t=
- phys,
-> > +                           size_t size);
-> >  void __iommu_debug_unmap_begin(struct iommu_domain *domain,
-> >                              unsigned long iova, size_t size);
-> >  void __iommu_debug_unmap_end(struct iommu_domain *domain,
-> >                            unsigned long iova, size_t size, size_t unma=
-pped);
-> >
-> > +static inline bool iommu_debug_pagealloc_enabled(void)
-> > +{
-> > +     return static_branch_unlikely(&iommu_debug_initialized);
-> > +}
-> > +
-> >  static inline void iommu_debug_map(struct iommu_domain *domain,
-> >                                  phys_addr_t phys, size_t size)
-> >  {
-> > @@ -83,6 +90,13 @@ static inline void iommu_debug_map(struct iommu_doma=
-in *domain,
-> >               __iommu_debug_map(domain, phys, size);
-> >  }
-> >
-> > +static inline void iommu_debug_unmap_phys(struct iommu_domain *domain,
-> > +                                       phys_addr_t phys, size_t size)
-> > +{
-> > +     if (static_branch_unlikely(&iommu_debug_initialized))
-> > +             __iommu_debug_unmap_phys(domain, phys, size);
-> > +}
-> > +
-> >  static inline void iommu_debug_unmap_begin(struct iommu_domain *domain=
-,
-> >                                          unsigned long iova, size_t siz=
-e)
-> >  {
-> > @@ -101,11 +115,21 @@ static inline void iommu_debug_unmap_end(struct i=
-ommu_domain *domain,
-> >  void iommu_debug_init(void);
-> >
-> >  #else
-> > +static inline bool iommu_debug_pagealloc_enabled(void)
-> > +{
-> > +     return false;
-> > +}
-> > +
-> >  static inline void iommu_debug_map(struct iommu_domain *domain,
-> >                                  phys_addr_t phys, size_t size)
-> >  {
-> >  }
-> >
-> > +static inline void iommu_debug_unmap_phys(struct iommu_domain *domain,
-> > +                                       phys_addr_t phys, size_t size)
-> > +{
-> > +}
-> > +
-> >  static inline void iommu_debug_unmap_begin(struct iommu_domain *domain=
-,
-> >                                          unsigned long iova, size_t siz=
-e)
-> >  {
-> > --
-> > 2.43.5
-> >
+> Verified with the generic_pt kunit suite as an in-tree reproducer:
+> running the x86_64 format's test_pgsize_boundary() with
+
+If this is the only trigger, then it is different testing things
+interacting badly and I don't think it should be fixed like this.
+
+Probably have the kunits directly unmap as they were being lazy
+
+Jason
