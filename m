@@ -1,332 +1,176 @@
-Received: from va-2-51.ptr.blmpb.com (va-2-51.ptr.blmpb.com [209.127.231.51])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6186A439008
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 09:57:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD7AA426D2E
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 10:04:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787824657; cv=none; b=uD7no2hKwG/r86pI2EInB8HkKqehgmxdZO0OgLRB3tBqo5UH1La/9eAQqSLA2wqC+XMm/wEGIgw0T1UE1ErwfWK60NhxAOiE6vbBon1XIcfuOividciJQ2mNibHOPdRxMtx/pae9z4ef2Wha1kkx651uX+NtDiSW3sJfRRYJzfg=
+	t=1787825102; cv=none; b=WkvT4V6eM1nkFqSPPBvX0h7WsVS0l3dMf3mA65MuIpOPZAXqYa+5dB39LLUk2gsH3zq0WqWDyBxKwFQ4G5hARqhqYMa+tkcnJVE0sEmc5gKBKkl8VFyuuGXMXvfYCmaR1UcB/lNo9yhmYmCVnVPI74/H5/cjQYArUgCNoWqlOsI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787824657; c=relaxed/simple;
-	bh=g0i7BzTHw+LoTqsWFZHKrxgcUsHHBFnN2GgyqE5Nr3M=;
-	h=In-Reply-To:References:Subject:Mime-Version:Content-Type:To:From:
-	 Date:Message-Id:Cc; b=q8Sd6j4eBK1iJtgnhskVjfMdynTe/IwKXjocnrJ+JPybq37eP8lmx1+alKDHH4sad9bqB+BF2C3LvC4FRrcDeCZOGHNTr9mQpH4Jhg1Q8qok0x/o7MVSpQ66+96n4YeY6blRFXrJB/aMNJ1TK8L0grPNCZ2OSVoCUnijH8pTtng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=hGWauXts; arc=none smtp.client-ip=209.127.231.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
+	s=arc-20240116; t=1787825102; c=relaxed/simple;
+	bh=w2JktL+v61DL4h6yBVGKzzOAstSuMDYAe6/bKIYCI7U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=adVuRC7nImxogtHJdL5w/rBO23n3kV0819vMpEzzQZ3Fg0edioO0WFG7s3TjyuvfmaqECUsYeitzUazD/vkO20TrJX0qmrCi3T7r8Sh0gp12MkC9CCoyiZs56wII+icAHqnp5chgGQt3WrdAIYikDLQtwPQzdGusztbcaBaMUnU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WQAXTCky; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="hGWauXts"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604151535; d=picoheart.com; t=1787824628; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=m/El6VdFg1V5R5NeV9pyCuzRYF24l5MoaRr2+pu7OAE=;
- b=hGWauXtsaX9vcbe6SeS9b8MWvo62NijGlKVwvpLjCWIzOMlH3jjfeHM7PSvJWKsItPUB9I
- YlpV33gtUZYwUCODtpQf9iUYfLTJcNnJWKnf1wPj2MVkalKXKo9E8cc+G305kLFkDDu/Eb
- jusM662k+Zn6s9QFVIJwfo2MLyjRQOBVuYYdzY63x8SIAHdPwAij7W7oM8sTLonFVDj8WX
- KJTMweSQeBaRv7BxY6GwiSGF7dTUa8Ma3BALPTSnm1EUl2lbCP1mFatLMHhy1qe3IuKtlF
- EpHazMzlP5roWmx84Z+5twyOMMfbmIs+dd9vp9foFaUSxNk3ZR2dThsXIiIIiw==
-In-Reply-To: <CANXhq0rBYWyLztFQzLCPx1vMSdahcuH-kfKPGO+WRDvFEW6Osg@mail.gmail.com>
-References: <20260824022034.3916570-1-zong.li@sifive.com> <20260824022034.3916570-2-zong.li@sifive.com> <ab59c5b8-2915-4d59-8766-7a6297224494@picoheart.com> <CANXhq0rBYWyLztFQzLCPx1vMSdahcuH-kfKPGO+WRDvFEW6Osg@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WQAXTCky"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4996e2575dbso42745e9.0
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 03:04:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787825095; x=1788429895; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=cyXgf/imt42EyjU9r/iWXqABk8Dr5fOp0hkHgXnc/1I=;
+        b=WQAXTCkyL6rBCcec+c5sq7DiZ6Wk9zMQfL9lAK9OZSSV9qQ3fqS3XlmVjEnSXPF5aR
+         x/O7NaZqubiGk61bRDxHLi7BdbUdD/aXQXSN1VMZs93KgXLbBajM/9U1ur8OGKyIQlo0
+         6BAZGQyQ9o7Cn+uJHLvtsr4DDVxBfbYP5fUKPEnzvN63XkSuUJvPrRnVhzxNJfGs7Gp2
+         xoLN0x6awCUBEI3i0TggbxQDnCJe3fvp2qgickXonsFvwDUPUTCfsHum/kgxLTzmiN+S
+         0phrjrcjmkeP/CluEkIQRYoPM8zIGpKx1/CSKqqQBtomM0lyAs8AcvJnZujAIQsnpS3K
+         Tf+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787825095; x=1788429895;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=cyXgf/imt42EyjU9r/iWXqABk8Dr5fOp0hkHgXnc/1I=;
+        b=CQTBUaOOt3a6sO2oy6CouMQ2NPh+8+FpY/u3GGcBCVTJ4LcjA6ViFhaJfyTMi3b8hi
+         7bI7dXDeFYoSiKkHWMwVlN3h1AWwl4W+itv3YmJeigCbvTYjg4rsKuopwj2DQZFq/A3t
+         Yefo1pz6gtrYVFHlNlFva5MHFTTWtuQb/Tk2rSUsg/8CoUs+EEXutduMTBTpXHegSvud
+         P/Ofw6EiWcT7iCW7eZGoiRjPxjCWbrNZ/fOBcxfGJMiEo2IkUSCTkDnwEII9Uiebp3uo
+         LrXcCIg58B9l5Dco9noZF/Xp3Iy1R/12yV4r3UdCipG3E8YJ3UtLufKQkUdxgIZ00iSz
+         5qIQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rr6OdhPNBAkIvR3Z7Kpj00dFtiAFmFD4Eddu6Gh7ojPwlTYmO0fqPfMGSjuIY2LtF/acHQANA==@lists.linux.dev
+X-Gm-Message-State: AFuF++kD+jl4+Lrb9v5Qhl6cD2/gRxR4ucckwpWx8oODAkjVIjuogjUz
+	vN2P6DgJB3dVc/LFW3JgHgEOZRvC5TbDLcTUfvjOqVvH/kZooPPhAgK8zupQyoOuEg==
+X-Gm-Gg: AR+sD12AGZAmlwZpmRK/7LQFdNxH/3wg1C5UNZcFVwHCBvJdOOtHXgUSjWWvrcy1GON
+	J6ZCx/ACHOaRATinlNARepG17bAVr5zJrWzjGalMaa3wTlac8HXcAyrUwKmNwFVmOoe6S/pa4fT
+	LxlUfC74M/HxpZYwkC2/08HBNIfprUlbgu1kP+eMdcZhGjICK63y6KO4Xkg1yG/y66dqM1FVwEg
+	fvN1dhQ1hsEerhFd4aCvVn1qSYv7HotbJpGOABOiNN1S5GDtyVs8Qm2/iPoYdZ3/CAqa+7n2t+u
+	5jh3lT9MzTzZ14AaT1T1uW9vHaxuNdRBf4bxo78P9n4VErW+hMXmkalf28CUSKcEq48XpOyu7tZ
+	A8A12tpMNaBWAP6P91f+3Uj8OaoC5uwEPXNIR0C7gLLponlvlJ/TVgEV0IOmwkaQoWHtuARzOCc
+	VvqNokz2di5KcjuLqLitDy+MXGhNYK/HNrMW+r4/F+8ZL8SwR0UF9pz8gohd4lwgBz9LdL6E3qN
+	W1sHmOumjEfdU8zCQbaXL56s6K++A==
+X-Received: by 2002:a05:600c:68d2:b0:499:cb15:4511 with SMTP id 5b1f17b1804b1-49b0e6483acmr671155e9.8.1787825094654;
+        Thu, 27 Aug 2026 03:04:54 -0700 (PDT)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b4af00fd2sm36028375e9.12.2026.08.27.03.04.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Aug 2026 03:04:53 -0700 (PDT)
+Date: Thu, 27 Aug 2026 10:04:50 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, mark.rutland@arm.com,
+	qperret@google.com, tabba@google.com, vdonnefort@google.com,
+	sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v7 23/24] iommu/arm-smmu-v3-kvm: Enable nesting
+Message-ID: <apALwh7sRMsn7WS-@google.com>
+References: <20260715115906.2664882-1-smostafa@google.com>
+ <20260715115906.2664882-24-smostafa@google.com>
+ <178769159057.3356902.13161185498161727294.b4-review@b4>
+ <ao6puxVSNsLC8aql@google.com>
+ <20260826123831.GA3667628@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-To: "Zong Li" <zong.li@sifive.com>
-From: "Yicong Yang" <yang.yicong@picoheart.com>
-Content-Language: en-US
-X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
-X-Lms-Return-Path: <lba+26a9009f2+b0807c+lists.linux.dev+yang.yicong@picoheart.com>
-Date: Thu, 27 Aug 2026 17:57:01 +0800
-Message-Id: <6c4c4785-eb68-47b2-bbf5-ad77a9414100@picoheart.com>
-Cc: <yang.yicong@picoheart.com>, <tomasz.jeznach@linux.dev>, 
-	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>, 
-	<pjw@kernel.org>, <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>, 
-	<alex@ghiti.fr>, <mark.rutland@arm.com>, <andrew.jones@oss.qualcomm.com>, 
-	<guoren@kernel.org>, <david.laight.linux@gmail.com>, 
-	<zhangzhanpeng.jasper@bytedance.com>, <iommu@lists.linux.dev>, 
-	<linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>, 
-	<linux-perf-users@vger.kernel.org>, 
-	"Chen Pei" <cp0613@linux.alibaba.com>, 
-	"Fangyu Yu" <fangyu.yu@linux.alibaba.com>
-Received: from [100.86.213.231] ([61.141.241.110]) by smtp.feishu.cn with ESMTPS; Thu, 27 Aug 2026 17:57:04 +0800
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260826123831.GA3667628@nvidia.com>
 
-On 8/27/26 5:22 PM, Zong Li wrote:
-> On Wed, Aug 26, 2026 at 4:28=E2=80=AFPM Yicong Yang <yang.yicong@picohear=
-t.com> wrote:
->>
->> On 8/24/26 10:20 AM, Zong Li wrote:
->>> Add a new driver to support the RISC-V IOMMU PMU. This is an auxiliary
->>> device driver created by the parent RISC-V IOMMU driver.
->>>
->>> The performance monitor provides counters with filtering support to
->>> collect events for specific device ID/process ID, or GSCID/PSCID.
->>>
->>> The RISC-V IOMMU PMU separates the cycle counter from the event counter=
-s.
->>> The cycle counter is not associated with iohpmevt0, so a software-defin=
-ed
->>> cycle event is required for the perf subsystem.
->>>
->>> The number and width of the counters are hardware-implemented and must
->>> be detected at runtime.
->>>
->>> Leave out all the dead cleanup code (i.e. .remove() operation) if the
->>> PMU driver is tied to the IOMMU driver and can never realistically be
->>> removed.
->>>
->>> PMU-related definitions are moved into the perf driver, where they are
->>> used exclusively.
->>>
->>> According to RISC-V IOMMU specification Chapter 6:
->>> Whether an 8 byte access to an IOMMU register is single-copy atomic is
->>> UNSPECIFIED. Use two separate 4 byte accesses for hardware
->>> compatibility.
->>>
->>> Tested-by: Chen Pei <cp0613@linux.alibaba.com>
->>> Tested-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->>> Reviewed-by: Guo Ren (Alibaba DAMO Academy) <guoren@kernel.org>
->>> Suggested-by: David Laight <david.laight.linux@gmail.com>
->>> Suggested-by: Guo Ren <guoren@kernel.org>
->>> Link: https://lore.kernel.org/linux-riscv/20260618143634.7f3dd6c5@pumpk=
-in/
->>> Signed-off-by: Zong Li <zong.li@sifive.com>
->>> ---
->>>  drivers/iommu/riscv/iommu-bits.h |  61 ---
->>>  drivers/perf/Kconfig             |  12 +
->>>  drivers/perf/Makefile            |   1 +
->>>  drivers/perf/riscv_iommu_pmu.c   | 813 +++++++++++++++++++++++++++++++
->>>  4 files changed, 826 insertions(+), 61 deletions(-)
->>>  create mode 100644 drivers/perf/riscv_iommu_pmu.c
->>>
->>
->> [...]
->>
->>> +
->>> +/* cpumask */
->>> +static ssize_t riscv_iommu_cpumask_show(struct device *dev,
->>> +                                     struct device_attribute *attr,
->>> +                                     char *buf)
->>> +{
->>> +     struct riscv_iommu_pmu *pmu =3D to_riscv_iommu_pmu(dev_get_drvdat=
-a(dev));
->>> +
->>> +     return cpumap_print_to_pagebuf(true, buf, cpumask_of(pmu->on_cpu)=
-);
->>
->> needs to use sysfs_emit(), cpumap_print_to_pagebuf is removed in 7.3-rc
->>
->> https://lore.kernel.org/lkml/20260702154725.185376-1-ynorov@nvidia.com/
->>
->=20
-> I will fix it in the next version. Thanks
->=20
->>> +}
->>> +
->>
->> [...]
->>
->>> +
->>> +static int riscv_iommu_pmu_probe(struct auxiliary_device *auxdev,
->>> +                              const struct auxiliary_device_id *id)
->>> +{
->>> +     struct  riscv_iommu_device *iommu_dev =3D dev_get_platdata(&auxde=
-v->dev);
->>> +     struct riscv_iommu_pmu *iommu_pmu;
->>> +     void __iomem *addr;
->>> +     char *name;
->>> +     int ret;
->>> +
->>> +     iommu_pmu =3D devm_kzalloc(&auxdev->dev, sizeof(*iommu_pmu), GFP_=
-KERNEL);
->>> +     if (!iommu_pmu)
->>> +             return -ENOMEM;
->>> +
->>> +     iommu_pmu->reg =3D iommu_dev->reg;
->>> +
->>> +     /*
->>> +      * Counter number and width are hardware-implemented.
->>> +      * Detect them by write 1s. Counter should be consecutive.
->>> +      */
->>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOCOUNTINH;
->>> +     writel(RISCV_IOMMU_IOCOUNTINH_HPM, addr);
->>> +     iommu_pmu->num_counters =3D hweight32(readl(addr));
->>> +
->>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOHPMCYCLES;
->>> +     riscv_iommu_pmu_writeq(RISCV_IOMMU_IOHPMCYCLES_COUNTER, addr);
->>> +     iommu_pmu->cycle_cntr_mask =3D riscv_iommu_pmu_readq(addr);
->>> +
->>> +     /* Assume the width of all event counters are the same */
->>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOHPMCTR_BASE;
->>> +     riscv_iommu_pmu_writeq(RISCV_IOMMU_IOHPMCTR_COUNTER, addr);
->>> +     iommu_pmu->event_cntr_mask =3D riscv_iommu_pmu_readq(addr);
->>> +
->>> +     iommu_pmu->pmu =3D (struct pmu) {
->>> +             .module         =3D THIS_MODULE,
->>> +             .parent         =3D &auxdev->dev,
->>> +             .task_ctx_nr    =3D perf_invalid_context,
->>> +             .event_init     =3D riscv_iommu_pmu_event_init,
->>> +             .add            =3D riscv_iommu_pmu_add,
->>> +             .del            =3D riscv_iommu_pmu_del,
->>> +             .start          =3D riscv_iommu_pmu_start,
->>> +             .stop           =3D riscv_iommu_pmu_stop,
->>> +             .read           =3D riscv_iommu_pmu_read,
->>> +             .attr_groups    =3D riscv_iommu_pmu_attr_grps,
->>> +             .capabilities   =3D PERF_PMU_CAP_NO_EXCLUDE,
->>> +     };
->>> +
->>> +     auxiliary_set_drvdata(auxdev, iommu_pmu);
->>> +
->>> +     name =3D devm_kasprintf(&auxdev->dev, GFP_KERNEL,
->>> +                           "riscv_iommu_pmu_%u", auxdev->id);
->>> +     if (!name) {
->>> +             dev_err(&auxdev->dev, "Failed to create name riscv_iommu_=
-pmu%u\n",
->>> +                     auxdev->id);
->>> +             return -ENOMEM;
->>> +     }
->>> +
->>> +     iommu_pmu->numa_node =3D dev_to_node(iommu_dev->dev);
->>> +     iommu_pmu->irq =3D riscv_iommu_pmu_get_irq_num(iommu_dev);
->>> +
->>> +     ret =3D riscv_iommu_pmu_request_irq(auxdev, iommu_dev, iommu_pmu)=
-;
->>> +     if (ret) {
->>> +             dev_err(&auxdev->dev, "Failed to request irq %s: %d\n", n=
-ame, ret);
->>> +             return ret;
->>> +     }
->>> +
->>> +     /*
->>> +      * Bind all events to the same cpu context to avoid race enabling=
-.
->>> +      * Pick a local CPU from the numa node of this iommu for the loca=
-lity.
->>> +      *
->>> +      * Hold the hotplug lock until this instance is registered, other=
-wise
->>> +      * the CPU picked here could go offline in between. The teardown
->>> +      * callback does not run for an instance which is not registered =
-yet,
->>> +      * so nothing would move the PMU off that CPU afterwards.
->>> +      */
->>> +     cpus_read_lock();
->>> +
->>> +     iommu_pmu->on_cpu =3D cpumask_local_spread(0, iommu_pmu->numa_nod=
-e);
->>> +     ret =3D irq_set_affinity(iommu_pmu->irq, cpumask_of(iommu_pmu->on=
-_cpu));
->>> +     if (ret)
->>> +             dev_dbg(&auxdev->dev, "failed to set irq %u affinity to c=
-pu %u: %d\n",
->>> +                     iommu_pmu->irq, iommu_pmu->on_cpu, ret);
->>> +
->>> +     ret =3D cpuhp_state_add_instance_nocalls_cpuslocked(cpuhp_state,
->>> +                                                      &iommu_pmu->node=
-);
->>> +
->>> +     cpus_read_unlock();
->>
->> it could be simplified to init the ->on_cpu in the hotplug handler witho=
-ut
->> holding the cpu hotplug lock like below:
->>
->> iommu_pmu->on_cpu =3D -1;
->> ret =3D cpuhp_state_add_instance() /* init the ->on_cpu in the hotplug h=
-andler */
->=20
-> It seems we might lose the benefits of cumask_local_spread this way.
->=20
+On Wed, Aug 26, 2026 at 09:38:31AM -0300, Jason Gunthorpe wrote:
+> On Wed, Aug 26, 2026 at 08:54:19AM +0000, Mostafa Saleh wrote:
+> > On Tue, Aug 25, 2026 at 05:59:50PM -0300, Jason Gunthorpe wrote:
+> > > > [ ... 129 lines skipped ... ]
+> > > > +	ret = smmu_attach_stage_2(&target);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +	hyp_spin_lock(&smmu->hw_lock);
+> > > > +	cur_valid = FIELD_GET(STRTAB_STE_0_V, le64_to_cpu(hyp_ste_ptr->data[0]));
+> > > > +	target_cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(target.data[0]));
+> > > > +	target_valid = FIELD_GET(STRTAB_STE_0_V, le64_to_cpu(target.data[0]));
+> > > > +	if ((cur_valid && !target_valid) ||
+> > > > +	    (target_cfg == STRTAB_STE_0_CFG_ABORT)) {
+> > > > +		WRITE_ONCE(hyp_ste_ptr->data[0], target.data[0]);
+> > > > +		WARN_ON(smmu_send_cmd(smmu, &cfgi_cmd));
+> > > > +		for (i = 1; i < STRTAB_STE_DWORDS; i++)
+> > > > +			WRITE_ONCE(hyp_ste_ptr->data[i], target.data[i]);
+> > > > +	} else {
+> > > > +		for (i = 1; i < STRTAB_STE_DWORDS; i++)
+> > > > +			WRITE_ONCE(hyp_ste_ptr->data[i], target.data[i]);
+> > > > +		WARN_ON(smmu_send_cmd(smmu, &cfgi_cmd));
+> > > > +		WRITE_ONCE(hyp_ste_ptr->data[0], target.data[0]);
+> > > > +	}
+> > > 
+> > > This doesn't look good enough, a driver can't safe writely to a valid
+> > > STE in any order like this, and it can't make it non-valid or risk
+> > > breaking guests. We had this bug in linux already, the hitless STE
+> > > update in the hypervisor is mandatory for linux guests using PASID.
+> > 
+> > This piggy-backs on the kernel algorithm, as described in the comment
+> > in this patch:
+> > +       /*
+> > +        * Summary of each host emulated state vs real HW.
+> > +        * |    Host    |       HW      |
+> > +        * ==============================
+> > +        * |    V=0     |       V=0     |
+> > +        * |    Abort   |       Abort   |
+> > +        * |    Bypass  |       S2      |
+> > +        * |    S1      |       S1+S2   |
+> > +        *
+> > +        * For the host, any V=0 transition is not hitless, all other permutations of
+> > +        * (abort, bypass, S1) transitions are hitless.
+> > +        * For the HW state, any V=0 transition is not hitless, as all the S2 config is
+> > +        * always the same (ttbr, vtcr...), all other transitions should be hitless too.
+> > +        * However, the host is not trusted, which means that any V=0 <=> V=1 transitions
+> > +        * or any transition to an abort STE we need to enforce writing order of the STE
+> > +        * dword 0 and add CFGI.
+> > +        * Otherwise, we write the STE in the opposite order to cover cases from abort
+> > +        * to S2 or nested.
+> > +        */
+> > 
+> > So this way, the hypervisor doesn't break the STE and keeps the host
+> > STE transitions hitless.
+> > 
+> > Or there is an example that I missed and is broken by this?
+> 
+> If we are exiting S1DSS mode it looks like this clears S1DSS before
+> changing to S2 only mode? That would be a bug.
+> 
 
-could use cpumask_local_spread() in the online handler for a local cpu,
-refer to dwc_pcie_pmu.c.
+From S1DSS (nested in HW) to bypass (S2 in HW), the kernel STE writer
+will do a hitless update by writing DWORD 0 => CFGI => DOWRD1-3 => CFGI
+The hypervisor will transition Nested to S2 only on the first CFGI which
+is safe.
 
->>
->> otherwise looks good to me.
->>
->> Reviewed-by: Yicong Yang <yang.yicong@picoheart.com>
->>
->>> +
->>> +     if (ret) {
->>> +             dev_err(&auxdev->dev, "Failed to register hotplug %s: %d\=
-n", name, ret);
->>> +             return ret;
->>> +     }
->>> +
->>> +     ret =3D devm_add_action_or_reset(&auxdev->dev,
->>> +                                    riscv_iommu_pmu_remove_cpuhp_insta=
-nce,
->>> +                                    iommu_pmu);
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     ret =3D perf_pmu_register(&iommu_pmu->pmu, name, -1);
->>> +     if (ret) {
->>> +             dev_err(&auxdev->dev, "Failed to registe %s: %d\n", name,=
- ret);
->>> +             return ret;
->>> +     }
->>> +
->>> +     ret =3D devm_add_action_or_reset(&auxdev->dev,
->>> +                                    riscv_iommu_pmu_do_unregister,
->>> +                                    iommu_pmu);
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     /*
->>> +      * The PMU name only carries the aux dev id, not the iommu dev na=
-me, so
->>> +      * find the iommu dev name here to map this PMU back to its iommu=
- dev.
->>> +      */
->>> +     dev_info(&auxdev->dev, "%s: Registered with %d counters (iommu %s=
-)\n",
->>> +              name, iommu_pmu->num_counters, dev_name(iommu_dev->dev))=
-;
->>> +
->>> +     return 0;
->>> +}
->>> +
->>> +static const struct auxiliary_device_id riscv_iommu_pmu_id_table[] =3D=
- {
->>> +     { .name =3D "riscv-iommu.pmu" },
->>> +     {}
->>> +};
->>> +MODULE_DEVICE_TABLE(auxiliary, riscv_iommu_pmu_id_table);
->>> +
->>> +static struct auxiliary_driver iommu_pmu_driver =3D {
->>> +     .driver =3D {
->>> +             .suppress_bind_attrs =3D true,
->>> +     },
->>> +     .probe          =3D riscv_iommu_pmu_probe,
->>> +     .id_table       =3D riscv_iommu_pmu_id_table,
->>> +};
->>> +
->>> +static int __init riscv_iommu_pmu_init(void)
->>> +{
->>> +     int ret;
->>> +
->>> +     cpuhp_state =3D cpuhp_setup_state_multi(CPUHP_AP_ONLINE_DYN,
->>> +                                           "perf/riscv/iommu:online",
->>> +                                           riscv_iommu_pmu_online_cpu,
->>> +                                           riscv_iommu_pmu_offline_cpu=
-);
->>> +     if (cpuhp_state < 0)
->>> +             return cpuhp_state;
->>> +
->>> +     ret =3D auxiliary_driver_register(&iommu_pmu_driver);
->>> +     if (ret)
->>> +             cpuhp_remove_multi_state(cpuhp_state);
->>> +
->>> +     return ret;
->>> +}
->>> +module_init(riscv_iommu_pmu_init);
->>> +
->>> +MODULE_DESCRIPTION("RISC-V IOMMU PMU");
->>> +MODULE_LICENSE("GPL");
+However, it would be harder to reason about a buggy or a malicious kernel,
+my impression was it can only shoot it's own foot with bad STEs.
+
+I will give this more thought.
+
+> There are also gotchas where writing things out of order can make the
+> STE UNPREDICTABLE that must be avoided too.
+> 
+> We really don't need two versions of this stuf, just use the
+> programmer we know it is right at this point.
+
+The problem with that it needs to pull a lot of code out of the
+SMMUv3 driver which has things as struct arm_smmu_master.
+I will need to check how that can work, but I will try to avoid
+that, specially this is not a generic STE writer it has quite
+small transitions which shouldn't change in the future.
+
+Thanks,
+Mostafa
+
+> 
+> Jason
