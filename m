@@ -1,80 +1,82 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A0A305674
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 18:03:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88DB336E484
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 18:47:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787853803; cv=none; b=irCCNvBl8JDyq6Y/ZNNAh6SuyY7TnO4Rp5LTVjkbNSALvuZ7M2+HfFjcySHd7P/zg4u7BpJK1F9R92g/0QffiwieM/m5zuvCbmkvfZFb5gXJhKA40+IDQbiXDfXOinN4o1LKk2zXJFskA6hAE6B8Eppkq4OyP5qPGyGbVtVH4MY=
+	t=1787856458; cv=none; b=nXXToAEenSoP/vZdxRlio82x9OxVyM3HHJRmrfaGl5eQJwzVTEPUaSivrdLZcjQSfDCziPzu26tUaDv8YTRyJilh6XpAOiEFe/B3jgasxoJw73QtsNYNVten68WQu6JVZf1eAcS8G6VJHBkBynrzRz0/gsMTSmbEbEo9yI/+fsM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787853803; c=relaxed/simple;
-	bh=aVJvper34EDrUAZdd4lOfHj1wCc4uQDuLNlXgq1p1YQ=;
+	s=arc-20240116; t=1787856458; c=relaxed/simple;
+	bh=s6TDNkQ3m5Ifn1QOQ+tRlAhnTRhRVstkHNNtZuESBYc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XCftx8qJqz5ROBUzXLq9OmauA/jRYEYTSevvjxqS4PZDpgKGtgRG+HGa0I5RtA8rXsJ+YGYXd87R5T7GYX3aLlEEtZpXhaLaBVHYi5J0dQkiyIlgqQrT1TveFwkC69rppbK+sC+1PVZ2Qx2Q50kOAkDpjd4Bttt/HxsxIMi0+Ts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MpfKfD3y; arc=none smtp.client-ip=209.85.214.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=ky0mQ4IuVn4g3ZldgocGUPQV9NOfK6ZEdRE9X+nJhL7e4Dw1KtldigD9clPSiuIR/ECv/8sHBQARyvUmh3rERnmJhfrWJiENI1poQav9pkd0t3vJ8C+fe6XDXp8AEvTmQv03fq+nJViqSaHJ3tK3zjmaminxlW+rqOnvFn1Vmh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=X0Kcge2T; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MpfKfD3y"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2d3b445a84fso14505ad.1
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 11:03:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="X0Kcge2T"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2d3b445a84fso22115ad.1
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 11:47:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787853801; x=1788458601; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1787856457; x=1788461257; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=KoGSjfHeCXk5ZMZawIjFrD2nA/EHJWwuQY/vd3YWCZ4=;
-        b=MpfKfD3yUqQLshgUUu1NpxIjlDgjAglrakaCAAoWhaGQLiHb46SbQp3vD5oH5AbAwI
-         dJ1nNbQEsvf9//gtCY8vDjnnVi8Kuc7/weIIDAAy9+WTR24pfjjkTc6F6hWgAeAb6Spb
-         615Lo0K0l6bFLYzOS9C1kZOe0fj3ZXv1+0Tgo+2TisADY6qeiSo6IyqvvO9TJwOKgHbU
-         NX0aiOfFaW9cx6y0NC5wyB73LbKuHUerg2WKU13lokgBfb0TKrGVtG0D4h7PViYNn+hW
-         TDf9yr8EqHzbqCDIXnpISJ3X31y+YO+adZwzpG9VPCmTYPd//bhAoLTSfcJjiT5JAcJp
-         93sA==
+        bh=8TWHy0fq0LlmFIRlDT3XzMY9bVByxWoJTpTIiV/A2Vg=;
+        b=X0Kcge2T87ZoXNdelQ/l/MziqnHKfYjdt1Wt4EK+G5HiAHQiZ6I+XB2SmFMJs5z8Of
+         QvPN0wWkJKsW4KU4XUXoC+JHw8XbBqz5GPpbiia7KlrD3Z2eRYYKzxSWVAvvkwh1v+Og
+         eRc6+KcasKYSqjtetWGwOVfN6S1RxTqLYBFP2TJW3LZfUdquyHG1Oyd6ohVG8gELNMfo
+         QBh3tl58mC0lA3YCSr19xV1xru5BzZY2byRP4FZH+lWa/aZdQbyMBPdH5mCsGJShMANS
+         v9Rc8dGrlb0gUYs59WVtjDZplibML8WaHUnHl079i8Ro+RzYKv5IofjXNn5hDMZop3SL
+         AtYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787853801; x=1788458601;
+        d=1e100.net; s=20251104; t=1787856457; x=1788461257;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=KoGSjfHeCXk5ZMZawIjFrD2nA/EHJWwuQY/vd3YWCZ4=;
-        b=XQLiQ4o36kieQdtuutEzXmabpvPRxvuSpT/kuINKNikYkokaG5gLOoC5XzsbYiYwf0
-         FCHoGxHKOSF9NRSjrel23QkARyYSIpmFabSk6oU7NEuItDKYRkiaukJ26QVy5jGcx8vL
-         trWglIMJHIdXKOWAbCxkhICbpNz15tqX+CdbFaq4PZdArWxCmKBDJvZqLSvzr4BGYX1f
-         o/vNQ8y1NL/IoPc5S5poZ4CagJi+bh+76koNGL4VYjwlWOtNlnlcf22ezIlGj9Le+jx8
-         hnw6eeF9nBGlAD0vywycb6QYESjpN+i6Vm+QPZirnvbHijqKP5y5A11V6vqQY8vFDiNh
-         8SEg==
-X-Forwarded-Encrypted: i=1; AHgh+RqEoM0T4Hary/SHrD+qHJH/UJEb/86LKBCE9XQrSyXpaUxrIOqOx7CGlKcaEXQCzyuxIVU2xQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++n1i4Pn6YJhRwxIoEgIp9R/rBDUsLlFn12SWyKz1uUD7cTfdWmx
-	B254GMuu/jBlw1YRlcJlderMmQhPzdh9JknAl1TUoBxfOj+kKI6bsBM8l5T35zZ7SA==
-X-Gm-Gg: AR+sD12Z8OHjI3cQ+sbquXUciUzgbNprpgGbhOC22d9vSo8FvohAuCbVItdCcTOLDlM
-	Tex2y6sZuHahR7s/wMnkOL3kR9lS4wjisgSbiFcl5KVdadkFfW2+9CFsh5CqQfHm6G9k22+A25o
-	ITRh/Mm9lvXdBwrQkalWQkkinfsQlume4LOVGhIJPtMgz0yRBKiT1fcAJD3yUQs6xnG4/VFc9cP
-	9R/c2iYUui6R16Cd0LoP4ML5gGn3Y6NeG9cBUurgpGhdPSLxlI86nYSOXmJ09uW5y8m0a2WfQ1b
-	RTWRzHyscYlG7h7S9qVYe1wpzGl+LQh0AOZsETwruGwSiUJ8Q0saIh2Iksg4b+FsLPsQIqA4umK
-	uqQWfI+8X5y/tvDd8MkLIkyj9/zDUEHgYdL0va9NJSHDuAc8mie6/QcuutVoiF+CotObe0SowdT
-	nGnN9sScu1qaz3szUn9WkQxENU8c5yXVraDYE6UbUWQaZIdpNH6z+D3HNrYxF/OXwjSmXbThmg4
-	aQVlmi3ceVdH0Kp+CSC8itIRXDLTTu4xvc2xHoexIngzg/5Jun4v45iX/8=
-X-Received: by 2002:a17:903:8c5:b0:2d5:db3d:1a44 with SMTP id d9443c01a7336-2d74f6efb5bmr432895ad.17.1787853800262;
-        Thu, 27 Aug 2026 11:03:20 -0700 (PDT)
+        bh=8TWHy0fq0LlmFIRlDT3XzMY9bVByxWoJTpTIiV/A2Vg=;
+        b=kcie8bWdNM/EQhNvji0iqAJNTiMSYiD/06c474IWkDI5mK9W6hzhHxsBLCePE+S7c5
+         8iguajZoTSqYNdMoDTPhQ6aTQIWUwZkk2+usxPCKinWC0w63PqL7fNmSCKFt9EEvSdY0
+         Mi2Fk12TC938yVJy7cYbz8hncuV0Ll6kfoM5owwQgsHjgaIUx1Qa6njG4fu6hcfd1QfZ
+         SqDO+N0Z6014YbvDCevInQ2UtTErXGeDvppCd2C0OiJXRLUU7YLz5VQcbzDtAGkOiNGJ
+         53kn+mMS7zQ94tByqV7QD+MXOVSemARIPHqTgM+CIYxl/QSAN23GN44Yub+66PHO93aB
+         g5zw==
+X-Forwarded-Encrypted: i=1; AHgh+Ro4mtyEJSmMkkwoLU1t6iTa2PjSV/zIPIfJ0ucKgiv+P1m7XRrw5jMPhKhg2SWHD9gKFDpQ7Q==@lists.linux.dev
+X-Gm-Message-State: AFuF++n+2s+LRVnLwKmDGzOTwbtxnRsfHiNj69kUzejZJic+Af+W43Az
+	6biyrc9CDY5SkG5Id0NyITsiuxnUQ+zK8wTxjBgTdSEoUC+8SpSTFwZlCEiWyfKDFA==
+X-Gm-Gg: AR+sD10VRMcMCR8EApbz35x9sjvH1ZlkCJFjwCUhSi3TU8PL9WVAB7e0f/atld7HN4V
+	M7GpW/V0tRWVKv0JMYZdUJQD17ZIQ+D3azINKvL/nVVFGp7OfCA8U2Y6aXSLa2pnm43g8rFkzpz
+	ONdld+Yr76X5+U/ZHB/O74LC2Rjw3Sd+nQ00LOarSRV0NiWW+hC8jgUtem/BPwR7id/ilsmcE57
+	4Nz+4z8U5Ce4NbvV9Q7/3lvy6BcwV0zQ65nQF1p8/p1hbhNQF+70rMNHcb40Q3aJbQZ9C+J4/s4
+	yLlCxaOqSATN0JXBCqKoZuTPRY4bMad+pbKzNfLjRvJdH8NSGR9qWdPh9+rE8CPMsCsVJ3yS3Jk
+	uPdkQEOT6ak6CerDPfwFKjB49+KiXZMq303BTdbaEiDUdwepNbwTqJiSji4UEUTII2/11BvNqwr
+	Vxm8+pZpUHAhmnHodjIk0EWeQsA0FYWMpPVPtc611WNx2DtY8LTRy1AHI/MR42G1iKEKINMY3tu
+	l5Qou21wgtn7Ni5Fj158fwiK1ocsGp2MNX5jXuOjGS4MFZF9cUnaRT9bFs=
+X-Received: by 2002:a17:903:2c10:b0:2d5:db3d:1a41 with SMTP id d9443c01a7336-2d74f558e45mr1373495ad.14.1787856456011;
+        Thu, 27 Aug 2026 11:47:36 -0700 (PDT)
 Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39675867f73sm3108022a91.4.2026.08.27.11.03.19
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-85359cd5eb4sm2424811b3a.11.2026.08.27.11.47.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 11:03:19 -0700 (PDT)
-Date: Thu, 27 Aug 2026 18:03:15 +0000
+        Thu, 27 Aug 2026 11:47:35 -0700 (PDT)
+Date: Thu, 27 Aug 2026 18:47:31 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
-To: David Matlack <dmatlack@google.com>
-Cc: Vipin Sharma <vipinsh@google.com>, Alex Williamson <alex@shazbot.org>, 
-	Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>, jrhilke@google.com, 
-	tatashin@google.com, Will Deacon <will@kernel.org>, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 0/1] vfio: circular locking dependency in
- pci_dev_reset_iommu_prepare()
-Message-ID: <apB6tsN6cHz9Iuv3@google.com>
-References: <20260821193502.92431-1-vipinsh@google.com>
- <ao3nr1-t0DxANAyC@google.com>
- <CALzav=f5wUUt4mKZn0tvQez6_1iYPcb8eX5q-XjabTNy03JiNg@mail.gmail.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [PATCH v4 10/18] iommu/vt-d: Restore IOMMU state and reclaimed
+ domain ids
+Message-ID: <apCC3xMkYkEyQRID@google.com>
+References: <20260808022723.3893618-1-skhawaja@google.com>
+ <20260808022723.3893618-11-skhawaja@google.com>
+ <5f8963c4-f6b1-44b3-ab2c-ed658822efb4@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,81 +86,123 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALzav=f5wUUt4mKZn0tvQez6_1iYPcb8eX5q-XjabTNy03JiNg@mail.gmail.com>
+In-Reply-To: <5f8963c4-f6b1-44b3-ab2c-ed658822efb4@linux.intel.com>
 
-On Wed, Aug 26, 2026 at 01:27:20PM -0700, David Matlack wrote:
->On Tue, Aug 25, 2026 at 12:06 PM David Matlack <dmatlack@google.com> wrote:
+On Thu, Aug 27, 2026 at 03:22:26PM +0800, Baolu Lu wrote:
+>On 8/8/26 10:27, Samiullah Khawaja wrote:
+>>During boot fetch the preserved state of IOMMU unit and if found then
+>>restore the state.
 >>
->> On 2026-08-21 12:35 PM, Vipin Sharma wrote:
+>>- Reuse the root_table that was preserved in the previous kernel.
+>>- Reclaim the domain ids of the preserved domains for each preserved
+>>   devices so these are not acquired by another domain.
 >>
->> > ================================================================================
->> > Potential Solutions Suggested by AI
->> > ================================================================================
->> >
->> > 1. Decouple iommu_setup_dma_ops() from group->mutex in drivers/iommu/iommu.c:
->> >    iommu_setup_dma_ops() only requires struct device * and the domain pointer
->> >    (group->default_domain); it does not mutate any fields in struct iommu_group.
->> >    Moving the iommu_setup_dma_ops() calls after mutex_unlock(&group->mutex) in
->> >    iommu_probe_device(), bus_iommu_probe(), and iommu_group_store_type() breaks
->> >    the initial &group->mutex -> cpu_hotplug_lock dependency.
+>>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>>---
+>>  drivers/iommu/intel/iommu.c      | 111 +++++++++++++++++++------------
+>>  drivers/iommu/intel/iommu.h      |   7 ++
+>>  drivers/iommu/intel/liveupdate.c |  69 +++++++++++++++++++
+>>  3 files changed, 144 insertions(+), 43 deletions(-)
+>>
 
-The group->mutex is needed here also since it sets up the dma_ops on the
-default_domain that is currently attached to the device. And those
-attachments are protected with group->mutex.
->>
->> Are there any other code paths that rely on group->mutex -->
->> mm->mmap_lock ordering? If so fixing this one case wouldn't help.
->>
->> > 2. Avoid holding down_write(&vdev->memory_lock) across pci_try_reset_function()
->> >    in VFIO:
->> >    vfio-pci could zap active BAR mappings under memory_lock and set a state
->> >    flag / disable memory decoding, drop memory_lock before calling
->> >    pci_try_reset_function(), and then re-acquire memory_lock to re-enable
->> >    memory. While resetting, any concurrent user fault will see the memory
->> >    disabled condition and return VM_FAULT_SIGBUS safely.
->>
->> This would change the userspace-visible behavior of faulting on a VFIO
->> device BAR from "block until reset is done and the succeed" to "fail
->> with SIGBUS". And it would allow VFIO to access VFIO device BARs during
->> the reset through vfio_pci_core_iowrite*().
->>
->> But I think we can extend this idea to solve those problems by
->> introducing a wait queue for tasks to sit on while a device is being
->> reset.
->>
->> e.g. Something like this (completely untested and partially written by AI):
->>
->> From: David Matlack <dmatlack@google.com>
->> Date: Tue, 25 Aug 2026 18:37:52 +0000
->> Subject: [PATCH] vfio/pci: Avoid circular locking dependency during device reset
->>
->> Avoid a circular locking dependency during VFIO device reset by dropping
->> vdev->memory_lock prior to calling PCI reset functions
->> (pci_try_reset_function() and pci_reset_bus()). Introduce an explicit reset
->> state flag (vdev->resetting) and wait queue (vdev->reset_done_wq) to stall
->> concurrent BAR page faults and MMIO accesses during reset without holding
->> vdev->memory_lock across PCI reset operations.
->...
+[snip]
+
+>>+
+>>+static int _restore_used_domain_ids(struct iommu_device_ser *ser, void *arg)
+>>+{
+>>+	int id = ser->domain_iommu_ser.attachment_id;
+>>+	struct iommu_hw_ser *iommu_hw_ser;
+>>+	struct intel_iommu *iommu = arg;
+>>+
+>>+	if (WARN_ON(!ser->domain_iommu_ser.iommu_phys))
+>>+		return 0;
+>>+
+>>+	iommu_hw_ser = phys_to_virt(ser->domain_iommu_ser.iommu_phys);
+>>+	if (iommu_hw_ser->type != IOMMU_INTEL)
+>>+		return 0;
+>>+
+>>+	/* Only allocate domain ID from associated IOMMU HW unit */
+>>+	if (iommu_hw_ser->intel.phys_addr != iommu->reg_phys)
+>>+		return 0;
+>>+
+>>+	/*
+>>+	 * This can fail as multiple preserved devices can share the same domain
+>>+	 * ID. Since this is done during DMAR init so these failures can be
+>>+	 * ignored.
+>>+	 */
+>>+	ida_alloc_range(&iommu->domain_ida, id, id, GFP_ATOMIC);
 >
->This approach does not look ideal. The implementation has a bug where
->concurrent resets can lead to vdev->resetting being cleared too early.
->And from a maintainability perspective, there are more call sites that
->currently take memory_lock that would probably also have to be updated
->to wait for vdev->resetting to become false.
+>This mixes two different cases:
 >
->> >
->> > 3. Refine synchronization in pci_dev_reset_iommu_prepare():
->> >    Evaluate if attaching to the blocking domain and pausing ATS during device
->> >    reset can be protected using more fine-grained locking or atomic state
->> >    flags without holding the coarse &group->mutex.
+>- another preserved device has already reserved the same DID.
+>- the DID is not reserved because ida_alloc_range() failed (for example,
+>  memory allocation failure).
+>
+>Case #1 is expected. Case #2 must not be ignored, because it means
+>restore failed. So this should probably be something like (not tested):
+>
+>	mutex_lock(&iommu->did_lock);
+>	if (ida_find_first_range(&iommu->domain_ida, id, id) >= 0)
+>		BUG_ON(ida_alloc_range(&iommu->domain_ida, id, id, GFP_KERNEL) < 0)
+>	mutex_unlock(&iommu->did_lock);
 
-This might not work as reset_iommu_prepare() changes the domain of the
-device being reset and those things protected by the group->mutex.
->>
->> I don't know enough about this part of the kernel to say, but this would
->> directly address the new lock ordering dependency vdev->memory_lock -->
->> group->mutex introduced by commit f5b16b802174 ("PCI: Suspend iommu function
->> prior to resetting a device"), which is what led to this lockdep error.
+This is a good point, I will update this. Actually, I was thinking of
+adding a new struct in the preserved state that represents the
+association between domain-iommu-device. All the drivers have this, so
+it is better to have a representation of this. Let me evaluate that.
+>
+>?
+>
+>By the way, why GFP_ATOMIC here at all?
+
+Will update as you suggested.
+>
+>>+	return 0;
+>>+}
+>>+
+>>+/**
+>>+ * intel_iommu_liveupdate_restore_root_table() - Restore root table and reclaim domain IDs
+>>+ * @iommu: Target IOMMU
+>>+ * @iommu_ser: Serialized IOMMU hardware state from previous kernel
+>>+ *
+>>+ * Restores the preserved root table and context tables for the IOMMU hardware
+>>+ * instance across Live Update, and reclaims all domain IDs previously allocated
+>>+ * to preserved devices so they are not reused.
+>>+ */
+>>+void intel_iommu_liveupdate_restore_root_table(struct intel_iommu *iommu,
+>>+					       struct iommu_hw_ser *iommu_ser)
+>>+{
+>>+	if (!iommu_ser->intel.restored)
+>>+		iommu_restore_pages(iommu_ser->intel.root_table);
+>>+
+>>+	iommu->root_entry = __va(iommu_ser->intel.root_table);
+>>+
+>>+	if (!iommu_ser->intel.restored)
+>>+		restore_iommu_context(iommu);
+>>+
+>>+	iommu_ser->intel.restored = 1;
+>
+>This uses iommu_ser->intel.restored to prevent restoring the root and
+>context tables multiple times. For this to work safely, iommu_ser-
+>>intel.restored must be 0 the first time restore runs after kexec.
+>
+>The problem is: this field is inside struct iommu_hw_ser, and that
+>struct is allocated in the old kernel. How to ensure that the previous
+>kernel has zeroed this out? Maybe I’m overthinking this.
+
+This is a valid point. However, the old kernel allocates this struct
+with GFP_ZERO and it never touches the restored field prior to kexec.
+So it should be zero in the new kernel.
+>
+>>+	BUG_ON(iommu_for_each_preserved_device(_restore_used_domain_ids, iommu));
+>>+}
+>>+
+>>  /**
+>>   * intel_iommu_preserve_device() - Intel IOMMU callback to preserve device state
+>>   * @dev: Target device
+>
+>Thanks,
+>baolu
 
 Thanks,
 Sami
