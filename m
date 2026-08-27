@@ -1,201 +1,261 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4DD547CA87
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 17:36:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787852217; cv=pass; b=CvX2PFsQYeLUXJZOiDqzknpY7SNABPluEK068ipuoVD5/1F5gD+AbEJf1OYD9v4fTmNfEdZpSj3MY36DyAHWaxcv9c/UEgX3tSoNCI1nE5XVQKJSlyUg5RwuEfVbFnLGcEpsBwYnufIPhn9kYvs2oQC/heeVgaPfrwPjIcy0Zts=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787852217; c=relaxed/simple;
-	bh=zx9m3UJWLQKbi0/pNDNNX6lZqJj4z+ajiJa/RVGEIzM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MQRDTf5VB8+g1rWMpWumU/EWhmaflS+RFoBvXuYCoqnpZ6pXmfRrxsOewr84Svohb5U1zE7a0Hbir4DtKbS8nj6sStRi6jUEd7E54yMOibwE0AeQZ6N6kBJk8YHItpAB4NPcVa4VrtLFrt6AOmTBw7Aj4gXvWYuH4SYxYGd3YbA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aK+mIoxI; arc=pass smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65BCF4B048C
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 17:52:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787853178; cv=none; b=Jj9hbta+a3svAP1IAx6wHBFDPG0AtZoZGzP4la6I1kPTidS+7CLvNb4BwNoO4kUZksCqsnH9m1Ak1LvBGbEsOm1COApCfL8orx/yxr/ixki5nGrALXAHL+uXZUSQXyeta48BUamNNDI8w+lTtnmTSWeubMOrutXw0hkcnn3CGsA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787853178; c=relaxed/simple;
+	bh=cF6NYXhDGfB74HoBaloQ4sZUldwQ5oUq/5AOtANebOY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XyawY3xKyR6xOtMUsFjEO6xnPUVg6gHpleeTL4ClVEt5azflnzqCGQ9+S8TsxtzxUu6bDg2kUjswYd/lsZn3rkFE9ksSigotp9w3vFED51FRZx4wwj2SCEY9o4+vjFrLJEtbx0nozMY17b6dpAR9sj8Y/lv0tJxkkvLigxCcpJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Fl5jdhVU; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aK+mIoxI"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c247f6687dcso16479766b.2
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 10:36:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787852214; cv=none;
-        d=google.com; s=arc-20260327;
-        b=S1j3KUAoR5nEgTMTp5gMA/tR4NBjLRDvOLQZvK7RRUDh0zBTyH8cOrvVaDslO7XKOH
-         MqPiVjdkJfJO89+Oum9r21jz1wQnpeRBjBlchGUpuoVTeFPIMOflDkeGvyVd3866soZS
-         Z9x+Fco/mJKwnGJguTNYF6tGSs4ZH7ksyfbWUdmm7KXH+9vrhNC1hErkleJ5l2A6m90L
-         3OQTEy/C8b0WDUvfmD2kkswCPEHGsJrkOHJQfC943aptsgfomW09cR/rrLa+kIXjfWfD
-         8R6LRtD77RFbJbsOwZA9BF3B8BsAWkSRCSj4Ium14O4YU78kvKoA4bn+d/dUVlI59axt
-         iDgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=cU2IdGj8HYn85rF2dapXdYr5omVVmX8wN53COGpvOpk=;
-        fh=kO9Nx9ThERmQ106HSDTHDSXQ9DRM3gi8pGsSIBZUs/o=;
-        b=XxKD4npMpYmctfyaRoEcbehwf1E7ulyTJucQXAQRcGLLzyHCAa5hGGdVlEKBVDnDFx
-         lh24IiRyk80Jd28UHuINwoD+GEU/BTVPTGmR7G83NPEjypakgMV0jBLikGEUntkW6dhW
-         ZuTLv+uqhQVwUfcIds63D+qp7l22Ofa2lw09wcy0AN1/B/AkysKRP6tZJoovvzM0zeud
-         UT/Szq8R7DEbR7RoYe7aEkrN+/oAJ9kRvRmR1g/h3SV5G5AbvKkX7G1wc6QzjzB3Dv8p
-         tll5Fp5+ADfgbnPRsdEXP96MZ8nTsWl8/keOXdTv/GlnqzlP9fxCbM3UxQ/75uXBi6te
-         Arpw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Fl5jdhVU"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2d3b440b97aso10505ad.1
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 10:52:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787852214; x=1788457014; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=google.com; s=20251104; t=1787853174; x=1788457974; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=cU2IdGj8HYn85rF2dapXdYr5omVVmX8wN53COGpvOpk=;
-        b=aK+mIoxI4HHtk4ESGuQ3RD37XlblYi4paaAUkye5L4AkaQuhtfpXzpFpAzAQqVn8bj
-         bnp4iD0QTbm+nFwjLicdlxadjE4MpUq9Rfw658anJ4zE1FwFkV/w72Y4pjWcv0fX/5wL
-         QyngBopeVd49Mbgcb46ZrUbqpVYYYMpUxIVS743UNwdhIkPT6Gz/DcTPrb+2BYi6Swmv
-         IdzTMoRJX0wQU5BQvln0vadi9i2q+h4gFv2kHiRD+syJetBpLaEgLe73C/vZtCqCjWZ7
-         O9iWvywqas0OTV/zkQLwtqtRojUcGx2GiMMQa9BLQSzCreCSdINnRmTYIUy28YP4dPPq
-         IFNQ==
+        bh=P+fTw5/xN6iO4FdPKCmZVQ2MDNmjfRNyCIFQIOLN/Mk=;
+        b=Fl5jdhVU79aJxf1w+gaCaB5mNkcY1GRYS2mkPzU+7hMLMuMcB4KGtFlUBmm2gem8aK
+         E41XszclVoq9gcoGPE4C+A8AwGexMiVguJRXXaU2LDfcM4Dqgw/a6QOvKFkAC0JHyp8n
+         Gtvqmzy5b2ryre4Ge94pFTSXIU2f5Qv6HqChCdjKPsccCzhnrCOcc1c1cau2nrfC+/Ry
+         CATQdxXMmuWpsA0iHBY6dVVKo3bLcd/MnTq194DyqOJqHCWo1ILcYUtZjowB7yvbVr7Z
+         Z+vyJ6zTxiBhmEs+/JXIltz+zAkagZpaeQIkoKOJOpJiwZnzs18k4XwJ8xYjmhmt4W5W
+         SdxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787852214; x=1788457014;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1787853174; x=1788457974;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=cU2IdGj8HYn85rF2dapXdYr5omVVmX8wN53COGpvOpk=;
-        b=oPtoQ6HvaUtHVBFO23rXqztQM77uU1Ew+g0vxHRTNNZr3Lq8clTuedK3LqwJg0Xdkw
-         609iIM1pklvEPA7udqMD4pvvzxjRkXg66+boJwMkhxOoIUSbBvi/xi9BGpkrTChhVN+D
-         yrK+frQSFArvphvssJv+BCubEtF82g0SSvI6FdAuiq9fibUUUrmBniUUj3MXGXHz0BvF
-         nKODrY8JoL2F8w22JUNRNUt7tw4bq0QNED6+dNA7CywiA4DNKjtcNGPPyCiraGEtx3j+
-         9ezmhcGEx/k0qbuBAqLYt3FNg+RkHIhDgRgLTjHlrVdYZIgMEq3HO6RxUbh3V6vOERNw
-         54/g==
-X-Forwarded-Encrypted: i=1; AHgh+Rq+sNanZo4qrJHkFhBR/99k5qIkC24Kk+T1SzuRTZpJKbDiewA3G8BNH2NcmhqWo+I/rXPcvA==@lists.linux.dev
-X-Gm-Message-State: AFuF++lmfbGzSUCTVlr8QD8/c2yeJMzwneAqYuAxh5HPSBQhG2Kmo0QX
-	QLB6MZQl2ZRs13YzQWzXepH0XkNinutdcV5tSkKA5AFS7b9IjFSTdt9gzwwedsH1Pm/mSpp4LXy
-	R/ty4oClIuktzlnTRPaQqh/NDJAZNlnFBsr6xkIaH
-X-Gm-Gg: AR+sD12gz/xvo2m5MHSMkGfpPT14Z/b/AQQs4pCIFmO/JexarlCcjSxp54ens+wjtH4
-	EvEUjEaxyl91UWpD5QkgaY85nJgtgI1irJG3Ie+hOLsg2CdTpcdcHTSiuhcsjdoJrPIkYVM9TUj
-	cHikmt4GByiyxENGgXM0bRWNDbxmovvonjW7Lf7Cnf2Z6X2gy9R1pSP6PvChfxJEXpBtWS+BBIc
-	XZ1zh0YIr6xsiCpzR9hyDffFl/yrnXDf/qVac3aELRvsoCgrhqkLQrd0jIin+Um9tJIBh7lrXwm
-	l1UDRma1S7g5tsrILwbQetQDgcZq9DuWLEVNh1/lmD9V1g==
-X-Received: by 2002:a17:906:628b:b0:c1f:8021:deef with SMTP id
- a640c23a62f3a-c2556c61defmr29002166b.10.1787852213404; Thu, 27 Aug 2026
- 10:36:53 -0700 (PDT)
+        bh=P+fTw5/xN6iO4FdPKCmZVQ2MDNmjfRNyCIFQIOLN/Mk=;
+        b=J+Wj0ruzWWV9ElTn017Ivt0y0+NwHvb0yJlUZjHPfY5HYBKGhp2tA4Y9BB5GL7VNy6
+         swXvTWAbF+0ShWWeDtfC2bIZtS6PYIUC5wnJ1yRdTUAAPBb8h1LtS83jMApR+Rxe1/6h
+         W5w45q7jg+9CR37pCgCzpijwfmOkLxQ8sK8SepIdp/ejNeQRtcwlOx4nRaWkrXPHqxKx
+         uo3M3QlvqX86lhdNHR0nEW37W0OMYNxbuyEnjHFa2Gkb7Sz91fB2f2aq5Ux5F3lA97ZB
+         CJz6fSgGmZeimFzyeMgveMpG7j67oHLn0i2ySu5k82mkVo+xzTtCbV8f6iweHJD5J/fK
+         rhVA==
+X-Forwarded-Encrypted: i=1; AHgh+RoECls/4UzZmWPNlQhnu3cy3IfNJgQi7bBB0RU7umWWzQB20e8DXNex7ofT8EXDs/XM6AJo5w==@lists.linux.dev
+X-Gm-Message-State: AFuF++mIXZW/TaCKX1i+VZhLKDGakuWDqhQGMD9j9FZDxQaSMwonClAE
+	pGrDIkGInKVfEZIrV3FfRPqAaT/TdnDAm7ruAVKx+4xsN0bmVJaUQX2Kg6Q+IPseGg==
+X-Gm-Gg: AR+sD10KTsv2kwuvJBedMfDXliCPCfvDxBJNUprqqh1OwKJxmeJBOmoSijcG6igwoRU
+	ZgpNRqrKaBJMPylpXrklbNhoQL7nC3J0YRJcHmw1kP9RGGF8gH8TMTNYeKPwdRakDlHtCAYerMv
+	sApndGUr0tbJ5yIYi4BjjiPwfyOB9mFIeifyJf5/wWQ8bifPuqg+9Qu8m9B0HH++4iG/E38vJaa
+	XcltegINRCrC4/g93i4uw9ctybxn5ltFjQrbdmavwncT1pnsAZTqDKuTLEiY9zqKhBPA6f7yUVk
+	wh21G7zyxXQ1AIfIm7qxnmak4+n7999tO43Ni/bnGcjIlZdvELDzOJT60HuYvNYMrgMmViRY7o+
+	3lfweXhR8HrRqMnLxT+9HaZFZQG1ifEtoFJ1dTvw8ReRlLzvojHdB6K2hccrHF2vrXs+EdWiPWG
+	kG5+MCCaeT6/9QRWBQJdMz3SHx60rRLousUA1zG6xAsyZTvJJmTYlSXBavkrC4QAD+HxpyrBepN
+	GMwqlleiqx4Nk+zliB6050M9YjG4uu3FmXgYKzwn/ra5Wzc9kpndIJMyZo=
+X-Received: by 2002:a17:903:1b48:b0:2ca:6bf:5bac with SMTP id d9443c01a7336-2d74f53de42mr551995ad.8.1787853173817;
+        Thu, 27 Aug 2026 10:52:53 -0700 (PDT)
+Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-396b1123142sm3639572a91.15.2026.08.27.10.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Aug 2026 10:52:52 -0700 (PDT)
+Date: Thu, 27 Aug 2026 17:52:49 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [PATCH v4 12/18] iommu/vt-d: Handle reattach of the restored
+ domain
+Message-ID: <apBso6So7UqwR3AX@google.com>
+References: <20260808022723.3893618-1-skhawaja@google.com>
+ <20260808022723.3893618-13-skhawaja@google.com>
+ <5b920299-260b-4025-ac4f-e8f83beebf95@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260821193502.92431-1-vipinsh@google.com> <ao3nr1-t0DxANAyC@google.com>
- <CALzav=f5wUUt4mKZn0tvQez6_1iYPcb8eX5q-XjabTNy03JiNg@mail.gmail.com>
-In-Reply-To: <CALzav=f5wUUt4mKZn0tvQez6_1iYPcb8eX5q-XjabTNy03JiNg@mail.gmail.com>
-From: David Matlack <dmatlack@google.com>
-Date: Thu, 27 Aug 2026 10:36:25 -0700
-X-Gm-Features: AcwNN1XNPft5Ueou-qlSyAtHB2c_Ktuq8wp3SGgI-T0tZ93zrinbZgmtLF9T5Xs
-Message-ID: <CALzav=cEmjnYAZDS8Le_FkaZW1xE+pP1B+mks0Of85YWG-3_vg@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/1] vfio: circular locking dependency in pci_dev_reset_iommu_prepare()
-To: Vipin Sharma <vipinsh@google.com>
-Cc: Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>, 
-	jrhilke@google.com, skhawaja@google.com, tatashin@google.com, 
-	Will Deacon <will@kernel.org>, kvm@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <5b920299-260b-4025-ac4f-e8f83beebf95@linux.intel.com>
 
-On Wed, Aug 26, 2026 at 1:27=E2=80=AFPM David Matlack <dmatlack@google.com>=
- wrote:
->
-> On Tue, Aug 25, 2026 at 12:06=E2=80=AFPM David Matlack <dmatlack@google.c=
-om> wrote:
-> >
-> > On 2026-08-21 12:35 PM, Vipin Sharma wrote:
-> >
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D
-> > > Potential Solutions Suggested by AI
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D
-> > >
-> > > 1. Decouple iommu_setup_dma_ops() from group->mutex in drivers/iommu/=
-iommu.c:
-> > >    iommu_setup_dma_ops() only requires struct device * and the domain=
- pointer
-> > >    (group->default_domain); it does not mutate any fields in struct i=
-ommu_group.
-> > >    Moving the iommu_setup_dma_ops() calls after mutex_unlock(&group->=
-mutex) in
-> > >    iommu_probe_device(), bus_iommu_probe(), and iommu_group_store_typ=
-e() breaks
-> > >    the initial &group->mutex -> cpu_hotplug_lock dependency.
-> >
-> > Are there any other code paths that rely on group->mutex -->
-> > mm->mmap_lock ordering? If so fixing this one case wouldn't help.
-> >
-> > > 2. Avoid holding down_write(&vdev->memory_lock) across pci_try_reset_=
-function()
-> > >    in VFIO:
-> > >    vfio-pci could zap active BAR mappings under memory_lock and set a=
- state
-> > >    flag / disable memory decoding, drop memory_lock before calling
-> > >    pci_try_reset_function(), and then re-acquire memory_lock to re-en=
-able
-> > >    memory. While resetting, any concurrent user fault will see the me=
-mory
-> > >    disabled condition and return VM_FAULT_SIGBUS safely.
-> >
-> > This would change the userspace-visible behavior of faulting on a VFIO
-> > device BAR from "block until reset is done and the succeed" to "fail
-> > with SIGBUS". And it would allow VFIO to access VFIO device BARs during
-> > the reset through vfio_pci_core_iowrite*().
-> >
-> > But I think we can extend this idea to solve those problems by
-> > introducing a wait queue for tasks to sit on while a device is being
-> > reset.
-> >
-> > e.g. Something like this (completely untested and partially written by =
-AI):
-> >
-> > From: David Matlack <dmatlack@google.com>
-> > Date: Tue, 25 Aug 2026 18:37:52 +0000
-> > Subject: [PATCH] vfio/pci: Avoid circular locking dependency during dev=
-ice reset
-> >
-> > Avoid a circular locking dependency during VFIO device reset by droppin=
-g
-> > vdev->memory_lock prior to calling PCI reset functions
-> > (pci_try_reset_function() and pci_reset_bus()). Introduce an explicit r=
-eset
-> > state flag (vdev->resetting) and wait queue (vdev->reset_done_wq) to st=
-all
-> > concurrent BAR page faults and MMIO accesses during reset without holdi=
-ng
-> > vdev->memory_lock across PCI reset operations.
-> ...
->
-> This approach does not look ideal. The implementation has a bug where
-> concurrent resets can lead to vdev->resetting being cleared too early.
-> And from a maintainability perspective, there are more call sites that
-> currently take memory_lock that would probably also have to be updated
-> to wait for vdev->resetting to become false.
->
-> > >
-> > > 3. Refine synchronization in pci_dev_reset_iommu_prepare():
-> > >    Evaluate if attaching to the blocking domain and pausing ATS durin=
-g device
-> > >    reset can be protected using more fine-grained locking or atomic s=
-tate
-> > >    flags without holding the coarse &group->mutex.
-> >
-> > I don't know enough about this part of the kernel to say, but this woul=
-d
-> > directly address the new lock ordering dependency vdev->memory_lock -->
-> > group->mutex introduced by commit f5b16b802174 ("PCI: Suspend iommu fun=
-ction
-> > prior to resetting a device"), which is what led to this lockdep error.
+On Thu, Aug 27, 2026 at 04:12:01PM +0800, Baolu Lu wrote:
+>On 8/8/26 10:27, Samiullah Khawaja wrote:
+>>Reattach the restored domain to the preserved device using restored
+>>domain ID. While reattaching do not setup the context and PASID entries
+>>as those are preserved during liveupdate.
+>>
+>>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>>---
+>>  drivers/iommu/intel/iommu.c      |   9 ++-
+>>  drivers/iommu/intel/iommu.h      |  10 +++
+>>  drivers/iommu/intel/liveupdate.c | 120 +++++++++++++++++++++++++++++++
+>>  3 files changed, 136 insertions(+), 3 deletions(-)
+>>
 
-I sent a proposed fix that takes this approach here:
+[snip]
 
-  https://lore.kernel.org/linux-iommu/20260827173511.2322549-1-dmatlack@goo=
-gle.com/
+>>+
+>>+static int domain_reattach_iommu(struct dmar_domain *domain,
+>>+				 struct intel_iommu *iommu,
+>>+				 struct iommu_device_ser *device_ser)
+>>+{
+>>+	struct iommu_domain_info *info, *curr;
+>>+	int restored_did;
+>>+	int ret;
+>>+
+>>+	if (!iommu_domain_restored_state(&domain->domain))
+>>+		return -EINVAL;
+>>+
+>>+	restored_did = device_ser->domain_iommu_ser.attachment_id;
+>>+	if (!ida_exists(&iommu->domain_ida, restored_did))
+>>+		return -EINVAL;
+>
+>It seems that checking only whether the domain ID is reserved on this
+>IOMMU may not be sufficient. It would be safer to also verify that:
+>
+>- device_ser->domain_iommu_ser.iommu_phys matches iommu->reg_phys, and
+>- device_ser->domain_iommu_ser.domain_phys matches @domain.
+>
+>?
+
+Interesting.. The caller of this attach from core fetches the correct
+domain based on the checks you mentioned. But you are right, adding a
+check here makes sense to prevent anyone else calling attach with a
+mismatch.
+>
+>>+
+>>+	info = kzalloc_obj(*info);
+>>+	if (!info)
+>>+		return -ENOMEM;
+>>+
+>>+	guard(mutex)(&iommu->did_lock);
+>>+	curr = xa_load(&domain->iommu_array, iommu->seq_id);
+>>+	if (curr) {
+>>+		curr->refcnt++;
+>>+		kfree(info);
+>>+		return 0;
+>>+	}
+>>+
+>>+	info->refcnt	= 1;
+>>+	info->did	= restored_did;
+>>+	info->iommu	= iommu;
+>>+	curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
+>>+			  NULL, info, GFP_KERNEL);
+>>+	if (curr) {
+>>+		ret = xa_err(curr) ? : -EBUSY;
+>>+		goto err_unlock;
+>>+	}
+>>+
+>>+	return 0;
+>>+
+>>+err_unlock:
+>>+	kfree(info);
+>>+	return ret;
+>>+}
+>>+
+>>+/**
+>>+ * intel_iommu_restore_device() - Restore device domain attachment after live update
+>>+ * @domain: Restored domain
+>>+ * @dev: Restored device
+>>+ *
+>>+ * Return: 0 on success, or negative error code.
+>>+ */
+>>+int intel_iommu_restore_device(struct iommu_domain *domain,
+>>+			       struct device *dev)
+>>+{
+>>+	struct iommu_device_ser *device_ser = dev_iommu_restored_state(dev);
+>>+	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>>+	struct intel_iommu *iommu = info->iommu;
+>>+	unsigned long flags;
+>>+	int ret;
+>>+
+>>+	if (!device_ser)
+>>+		return -EINVAL;
+>>+
+>>+	if (dev_is_real_dma_subdevice(dev))
+>>+		return -EOPNOTSUPP;
+>
+>... or, move above check here to ensure the attachment relationship
+>between the @device and @domain?
+
+I think it is good to keep it in the domain_reattach_iommu() as that
+does the iommu <-> domain association.
+>
+>>+
+>>+	ret = domain_reattach_iommu(dmar_domain, iommu, device_ser);
+>>+	if (ret)
+>>+		return ret;
+>>+
+>>+	info->domain = dmar_domain;
+>>+	info->domain_attached = true;
+>>+	spin_lock_irqsave(&dmar_domain->lock, flags);
+>>+	list_add(&info->link, &dmar_domain->devices);
+>>+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
+>>+
+>>+	if (!sm_supported(iommu))
+>>+		intel_iommu_enable_pci_ats(info);
+>
+>Could you please clarify the PCI ATS behavior across live update?
+>
+>My understanding is that PCI devices may bypass reset during kexec and
+>are then re-initialized by the new kernel (is that correct?). If so, ATS
+>state in hardware would depend on its state before kexec in the old
+>kernel.
+>
+>In a normal reboot, ATS is expected to be disabled and the device ATC is
+>empty. But that assumption may not hold for live update. If that is
+>true, can we still use the same approach to keep hardware ATS state and
+>info->ats_enabled in sync?
+
+Regarding ATS, it remains enabled in the preserved device during kexec
+and we should keep it in sync with the info->ats_enabled here. We might
+have to disable it in the next kernel if it is unsupported (or disabled
+globally) in the next kernel. I will put those changes here in next
+revision.
+>
+>>+
+>>+	ret = cache_tag_assign_domain(dmar_domain, dev, IOMMU_NO_PASID);
+>>+	if (ret)
+>>+		goto err;
+>>+
+>>+	ret = iopf_for_domain_set(domain, dev);
+>>+	if (ret)
+>>+		goto err;
+>>+
+>>+	return 0;
+>>+
+>>+err:
+>>+	/*
+>>+	 * Detach the restored domain from device and iommu on failure, but keep
+>>+	 * the hardware state intact.
+>>+	 */
+>>+	info->domain_attached = false;
+>>+	cache_tag_unassign_domain(info->domain, dev, IOMMU_NO_PASID);
+>>+	spin_lock_irqsave(&info->domain->lock, flags);
+>>+	list_del(&info->link);
+>>+	spin_unlock_irqrestore(&info->domain->lock, flags);
+>>+
+>>+	domain_detach_reattached_iommu(info->domain, iommu);
+>>+	info->domain = NULL;
+>>+	return ret;
+>>+}
+>>+
+>>  /**
+>>   * intel_iommu_preserve_device() - Intel IOMMU callback to preserve device state
+>>   * @dev: Target device
+>
+>Thanks,
+>baolu
+
+Thanks,
+Sami
