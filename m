@@ -1,63 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013042.outbound.protection.outlook.com [40.93.201.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FDF1376BC2;
-	Thu, 27 Aug 2026 20:25:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787862343; cv=none; b=DxxsV363X5KRfO/DYL/vhZoHF3QwerBIWrNRcK0PyLruYiuNJcStJMFesEDeL7eMR9hW40wT8pkw2X3y8H2oxxUcH1kSJ4zDn6Q7uXw71QpEOYE5hKi6FP0zTg9t9cMvVdgGQCXH0NMrkGshV4iWQroWX8TQ37lzd10kMT0UoK4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787862343; c=relaxed/simple;
-	bh=luLC2ZXiKsBejSwnmFYZ1u+4SpxT4ZJ6yes4TmdBJ/o=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=D46fKZaZXBgHy+dr8Tedr5PpAGQqcHYwE5BlqNvlxq79+sguAqD9phSYNFevBsBFgY8sgC8ns/kqXYip/cF7YscUzuJ1Q5xuDKVTJiYHKsbtpHzZWlyYtttdd9S1j/H1IhYNWUDzDkMee6wJv/US5eSz8dWajA27GrtOnJ6jVDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fYwFGHxs; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E9553F1076
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 20:31:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787862717; cv=fail; b=dANhDQBIfpBrav6rrggHziakgnO4FKHffSKXh9IhecK0Y5uV7zsdms08frLvk/pEx+T4be70ziZpiXXclFC3E+enjrc4FelAccYT067thkZg8pD0heZEIJ1MpFYRGX29O74XaUZ+8Z4bjNXwAMfIQ3liuTacBMaLP+FdB9gXyDM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787862717; c=relaxed/simple;
+	bh=+01EsLCuDOmfR43yclJja9aty4cvYy0Erf3Qg8dQV0U=;
+	h=Content-Type:Subject:From:To:Cc:In-Reply-To:References:Date:
+	 Message-Id:MIME-Version; b=p2DIepxqzwrCIdhX/Pj+B4Yz2DGE9cZwjaAZcb9ZXLqI/FDSKKFlsW97kzEv0nIy58sMbRAlqtjWFNHqotdlbNVhOpsmJ0SIuWLhcUwoQIAWazcawVSgKj1sYR70vLOI00Gn+1d5FsFzKPSz5wgWriB0qUmJ5y2VRm9ptxb8ITs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=J8Ai5ruZ; arc=fail smtp.client-ip=40.93.201.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fYwFGHxs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6EFF1F00A3A;
-	Thu, 27 Aug 2026 20:25:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787862341;
-	bh=LM4LoupxT1zkzzs0m5yR4DW6kWEASa7J5Uzzh4GSP5M=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc;
-	b=fYwFGHxsojcC+hVNRbZlFag2FtUss38Qfnv5ELMnRF7KJ9Y5hRcOxOGsR777gdOKn
-	 UkeHEx9f4oP+3PxXInuVZNlVxPs2BRJ+hRqDr66VfAKZOdjQwnipIkVEMSAywdsqXc
-	 00r2S13Hv29Pq3VByAgAwZDZuUTl0wOxb8caDTpxTUiCe+WDzOTBsI42Ez6odChTeO
-	 M26zL3U8Md79sIgdNdcT7b8qUMLJNdAD1mPsuQv8xk1qgcPRNwxx3a/pAw6K80mMCa
-	 /KBVi2PXKo7zL/Pw7nTyL4WwDVLDhkP16+Bv3Wmr6vzBiAK2z/EkU+VjVSkvethcQd
-	 AlQSzFzOX55uA==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 93A5E3809A8D;
-	Thu, 27 Aug 2026 20:24:48 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fix for Linux 7.3
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20260827103127.4074178-1-m.szyprowski@samsung.com>
-References: <CGME20260827103141eucas1p1a97fc08693ac663d8e8382e2ffb7f800@eucas1p1.samsung.com> <20260827103127.4074178-1-m.szyprowski@samsung.com>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <20260827103127.4074178-1-m.szyprowski@samsung.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.3-2026-08-27
-X-PR-Tracked-Commit-Id: 1476cca098f6d3a553fcec6fe9b7d86e15c00b59
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7cec13314dd8935afbfc0430d9d43fad75285b37
-Message-Id: <178786228724.1831091.2047778443859484545.pr-tracker-bot@kernel.org>
-Date: Thu, 27 Aug 2026 20:24:47 +0000
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Alexander Graf <graf@amazon.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="J8Ai5ruZ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nH600IbS27q3Du37mMvwzMttMPgR9Hrtmq7H0GokXrf2V9COsVlJHErAtQJji1sA6sVjc0dqe1XncWOJ8muRPC88S66TbUVlXWWuejvUvlu83lnz9/IQt2FPCpO6cZhuEdVfQICfVFOWteJjxUoPOS9tOZOyLjA+7wc2JTNOyq02AwkcEC8MGg5uYE1uKF8BEIdHXXthJRlApn+rufxu0VeLwzfNPc5T4ZqkJAFtBpEaPaZNmnldzaZzJ+E+i6l4zxpAEZMVq6Zp6PXJDTqgF8GlkqOaymFxQ+cwWoxZEjVtH+xNHAX3ZZTfSPUmNr0GPtDCuqSHF8ApJo+51KqFOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=63aJYhtp/sCPXuE+IaFJCw2afa/vPx6sj1s0Xm3OpfU=;
+ b=PXC2x/Tsc5aA+UTdId7Jnl7a19yjuCsU+Thzh3hemWF3pZj5AGYDcouE19UPC1gFDwz5HUWNgATebsENyiWuSPrma6zj/fBdNNOfHxc/QUKVrzf8GaeWkAwsKpewDgVRsfDh/DzE22NoXXtq8V1DREmMzZtA+eSI9/q4m2cWXBNAAMvxIsSjmAtbwYYJrYinDfoCPLS8kFeicBHyZSYRqeyDdjrXJwNM1Wkfz4h+Y9cjCAvQT5alGwc1MObySjfEfnaniuVvjWzKTt9+L6dPAJ8YRTJ0H5MEsH2ldxZmBvBhzGjOIapxHc+/FDARTEW7aLSpr508UJidLRU6nJedBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=63aJYhtp/sCPXuE+IaFJCw2afa/vPx6sj1s0Xm3OpfU=;
+ b=J8Ai5ruZjSYj+scFzxz4zGQv3rhPOAxwVi4ARwe1Okma268rOvV9nnEd5F7M6aZ0xaNZuWlghB8tBBY+/7jme16SxrcWEBgELwVXxvARImngoBBqPdy/BYekGCi02t3ppugtmPD20HS/0A1aj/t58iTjNRi5ZyiqxfC/g7fJ7VrnIFDu1tUujWLv9RVSUUOrxwbIKyMW+vTDulrTudshmDye1lMCSbYN5af/9dzRc0ZY4/31I61aui3jDJK93z8o2r0gMWRIxcUXfl0blmMeZvl3rjttWhG8D3xeKmDI8dwTsCoutqtsGlEcK5HDyHhc7x3NuruuBokK8MxumBQ1NQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SN7PR12MB6839.namprd12.prod.outlook.com (2603:10b6:806:265::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.13; Thu, 27 Aug
+ 2026 20:31:35 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0360.008; Thu, 27 Aug 2026
+ 20:31:35 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v5 02/18] PCI/CXL: Probe the underlying bus reset in
+ cxl_reset_bus_function()
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+ Jason Gunthorpe <jgg@nvidia.com>, "Rafael J . Wysocki" <rafael@kernel.org>, 
+ Len Brown <lenb@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
+ Mostafa Saleh <smostafa@google.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+ Kevin Tian <kevin.tian@intel.com>, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, vsethi@nvidia.com, 
+ Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <eb77bc0422c77158f48f370c3f7c1b937c319894.1783044582.git.nicolinc@nvidia.com>
+References: <cover.1783044582.git.nicolinc@nvidia.com>
+ <eb77bc0422c77158f48f370c3f7c1b937c319894.1783044582.git.nicolinc@nvidia.com>
+Date: Thu, 27 Aug 2026 17:31:31 -0300
+Message-Id: <178786269177.3808739.5968833634148757858.b4-review@b4>
+X-Mailer: b4 0.17-dev
+X-ClientProxiedBy: BL1PR13CA0315.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::20) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SN7PR12MB6839:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8e10be46-c52e-41ce-c3fc-08df047a2ff1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|1800799024|23010399003|376014|366016|10067099003|4143699003|18002099003|11063799006|56012099006|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	4EsEVEZUVMVDMKVsNd1FhPmioq4kCU1DxITGNQdC8e6J4kXBx5848HYFSwJlHFF15lp69Oap62dtrZBtgze6H7cSIUgCH2xRAgGHHIY3+FiB5e3barOmZ5yEhmqEWHdGppL8W0c07/YKcNgCxH06svFfOFZ2ain5dgXjO+gJxoIngPn4Ovkx3hsAYpgSJ6YlaEmqfcVMXSu8aoirRpjUIxjTFFfcLdlF0lhTqbHDF70POTy4cmDcfCmYbaXW1zg/mGSKmXkKoXWTNCltoFbaCapO/5Fqf0J/UAVxmykxBt3BQY5qUky5iu1Wg8A33v8Rqyg9+hZG8G8YS59pnI676xHtFtEqq1KuT8Cz5c+twM1CMUAatX6HOXjYTdnlCxRkj9uNi66DgWv3DVwicQgEfXpkd/qaDmttKjQPycQgl/dIVREK9uvqvUdM2qENi0ZRr6Ic4vI1o/EX3vQOHD/60fPff6M2gxAD1Zf03AvGCV6KGKZc6KJLJWgHx+hgcbcNWQg89uCGQwMNd2f/r19KFmDQOOHNV420kW+aHpQd0EYReC5sxyxt+nphOHMiSy83YgzNoiNMstwzDzItgq7Bl0xWP6ktbHD4TGzUPnoG4ZEfn113oSCqCkMlQTxsk0BoNTebOMs++Ii4Gik6AJVCaVrRbSyu+avo58dJYiCvdkc=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(23010399003)(376014)(366016)(10067099003)(4143699003)(18002099003)(11063799006)(56012099006)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?M0F6V1docFV0TFphVEM4N3dya3F4NG1VNlhrQXpieTlmN0NBQVp6Q3MvRzRL?=
+ =?utf-8?B?NWpvRXc1dXNQWTBjeXhwbUhUZk81UU1ONE5MU3FHNXZHTTRJWk1qWjVjUFNl?=
+ =?utf-8?B?bTRyanoxOUtCUG9kWjJoeXRCMTlVcE05N2tJUU4rQ3NVNVp1eVRLRG9QUjJZ?=
+ =?utf-8?B?ZnJUczc3U2hlUHZpVDJ2VzBzdW0xeVVQdytPZjA3YUZkcGRsUzNQci9SY05i?=
+ =?utf-8?B?OENGUGpPYUVlcDdGdnBLb0VXcEpBdWgrbkg4K2xPaWtvREtSbUpoRzdscmtj?=
+ =?utf-8?B?YkEvbWFGbUsrTHlzSEthWENROFJrQ1JZb3FvMkkwM0p0TURaZ0l3Vy9BMzdB?=
+ =?utf-8?B?eXFGNGMrN3M3T1UwYVlVZmJ6M3g3SWNJa3puZlJlSFZNQlJYVjcyQzR6MUxL?=
+ =?utf-8?B?S3pwUXNuUStqYXdYdjUxT0lVVVFuaU50WEs3SEdBR1BjVzlqVDQvOWNyS3d2?=
+ =?utf-8?B?dTlIY21scy9yK0J5OVozRjVUaDBBYkFQS1lmMTBpZTlJc0NJVEtoRUVSYVJJ?=
+ =?utf-8?B?SUhSOGFIellWZXpOTXBaV3N1SE0rTkcyZ2tTTmpZckZDeUJzNG5QSVRYWlZn?=
+ =?utf-8?B?M3pjVHVvQkEvSHR3K3hULzUrWFZNRkJQejdTMzU0Mm9hMk5Qd3drNEtSSWFT?=
+ =?utf-8?B?Ti9xSDRZL2tQTk83VkhqQVFKUWJjS0JLNlB2cURIOVgzR1ZtWUhhd3Y4YW9I?=
+ =?utf-8?B?VXQ1aE9oeTVzUnJWVWNFdnBSMkFSa1ByblZnbWtIaFhUREZNRGRFclpRNVpV?=
+ =?utf-8?B?aGM1R1VVRW5rYjhOWFlGcEtkbnNJN3dVR2Z3NVI1OVdHeElJU2lYcHBkdm44?=
+ =?utf-8?B?eG1wS0NqMFlpaTNqai9NdUZFejVWZGdlbEdrVXlqZkRQbGRvcGlwUVZpVXNE?=
+ =?utf-8?B?citmdFQ1bzhxTlNOYnlLZ0hWQzZzVnkrT2RMS0t3dS9uSjFhRzB4VWdzTElR?=
+ =?utf-8?B?cDc1Rkh2Q2l1MTgrRHAvZlVPaWJ1QTFUNFNlR3pkaXBHZHRoa2xRb0RaazJK?=
+ =?utf-8?B?dXhjZkNFRWNaUmcvY0FZQ1pwQ3FyNjRNVlEwYXlpSHlsSGxNMEU4dG42TmNy?=
+ =?utf-8?B?Q01qSGdwT0NReGlGN2VOSlRTRVNYYW42UWpoNDc0Tkk0c3BJZ0QzTDg4dzJO?=
+ =?utf-8?B?WUVyWGpEMFFmZmdEdEdaNFNzeExCRnBlZ3NFRVN6UjlLbE1uUHQ4TENUa1ly?=
+ =?utf-8?B?cEw2aXlmaWlOb255K0VzMU91OXdMRmc2L3Nocmt4eWlvRFF0L3dXaWt3K212?=
+ =?utf-8?B?YlVDamRyTnovQ213NHY2Y2pUSFdlNjJBUnJESzZONWxCbnRNM1ZKZWFlWFQw?=
+ =?utf-8?B?c1M4QUhnenQ4TDJFd3E3NUEvU2ptVk1DYkczWUJ3Z0Evb0hrbWk5RUR1Tzl3?=
+ =?utf-8?B?SjFPL3JyWnYyaFp4a0FqZjhrb0NjcVFOVm5PK0RCSVE5b2RPaVhjWldBdU5m?=
+ =?utf-8?B?L1pScjF1bXJSbzJKeUNEcnM5a1paaXI3Umd2Q3BDQXAxR1gwemZYdmZtOU4y?=
+ =?utf-8?B?NDBZajRuR3lwT3dOOGNFa2cxMnJQOXFOeE1jZ3RLbVU5Qmc1Tko5eEt2L1JV?=
+ =?utf-8?B?VGZTQ1NjdFYxaG5ieHFuL3hiWm9uc0xveG15MVJVeDMvcnFoZkJjdk0xKy9v?=
+ =?utf-8?B?dE01eDI4eU81OExjMkFwbjZRYzVSc1owVGlNM3oreWNOOVNmRDY0ZG9sczdz?=
+ =?utf-8?B?aGJITk93azE1VURWV1JmK3BYMG1hRkQxc3JpRjBQZ3JyK1NYVEJZN2lOd3hl?=
+ =?utf-8?B?b3ZXTCtVcXYyb284ZUxpZXpxTWNYbzJrRmFra2tCYjB0VnVONldENWlFUHJq?=
+ =?utf-8?B?NHgzMmd5OHVENS9FL2d3MUxyZ1czRDN6NDZReHdGbHAzbmwvbzBtS3BUcDdC?=
+ =?utf-8?B?Y3hFai9SQUpCKytlTTBwWUdwdU9TdUtINHh0eitGekY1aUN2WFNrVG1hbW50?=
+ =?utf-8?B?eHZpa0crYTFBVjV1VFFGeEFOb2NxaHI4a3QxVVE0cVp0KzJpejlpZDAzMDVH?=
+ =?utf-8?B?dG1NOUdiM1NDQ2E3Rkw3Y2QvVDNkcmc4YTNxT3p2QkRKOTFkQUtBYTRKamxB?=
+ =?utf-8?B?UlVlL2tyamJaV3psU0piNEhzUTVSUHF5OHRKS2w4QjFOVjJ0MUFwVEUvL2hr?=
+ =?utf-8?B?R1pwaEtBbnAvcjZvcFBGNzAyNXFIYVdqS0F1NGlHcFh6cElUcEhpeFNxa2hE?=
+ =?utf-8?B?ZlR3bnpXMjg1Qk5zblVZa2NJYjRZOGhvN21oeDlRd3Q2R2Z3VXM3NkhTVEFq?=
+ =?utf-8?B?YXdIaHpKdGgvZURRbXhlZUFhYVJxOFlxNDZoYnJGOFdXYnI0eStFNWlNK1JU?=
+ =?utf-8?Q?TQfnJh9eQyINNmmXBz?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e10be46-c52e-41ce-c3fc-08df047a2ff1
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2026 20:31:34.9713
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EwRoTG2CMkvTjySxQZ/O2YkMxszhaQ2j9cgVWXv5fjlOJqHugt8a8SR5Jogi2Afd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6839
 
-The pull request you sent on Thu, 27 Aug 2026 12:31:26 +0200:
+> [ ... 27 lines skipped ... ]
+> @@ -4979,8 +4979,16 @@ static int cxl_reset_bus_function(struct pci_dev *dev, bool probe)
+>  	if (!dvsec)
+>  		return -ENOTTY;
+>  
+> -	if (probe)
+> -		return 0;
+> +	/*
+> +	 * Do not probe via pci_reset_bus_function(), which would reject a
+> +	 * masked SBR that the do-reset path below unmasks before resetting.
+> +	 */
+> +	if (probe) {
+> +		rc = pci_dev_reset_slot_function(dev, PCI_RESET_PROBE);
+> +		if (rc != -ENOTTY)
+> +			return rc;
+> +		return pci_parent_bus_reset(dev, PCI_RESET_PROBE);
+> +	}
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.3-2026-08-27
+Why not put this a little lower after the:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7cec13314dd8935afbfc0430d9d43fad75285b37
+>
+>  	rc = pci_read_config_word(bridge, dvsec + PCI_DVSEC_CXL_PORT_CTL, &reg);
+>  	if (rc)
 
-Thank you!
+?
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Jason
