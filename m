@@ -1,98 +1,120 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1CEB3CB8F1
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 13:10:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6512E8DE3
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 14:59:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787836243; cv=none; b=Uoyu5xbcgrCgRgGtnutQ2CynlXNDwn93OKas17hfAcBsIQH82/Mj52475yzUXlk9SURoSqdHI7OrowqOe8mdR0naVdqprDoIzRfpv5r5bHCZKpqDXsn0eL5TsInBIjhTYmiq8wsZIDWrRhyHFndSf4unhJjwc4JmiZI2B9wZAoc=
+	t=1787842756; cv=none; b=MHDe3BTv8JIde7S4Ql/f6W339uiWYiXc53EhINvEo8jMXRYfxu5XeC++6mVGN6mlX7K8dudu3sFNK88ei9grCIE469GrECP8d+A2TEG1jPPwe3XBPZZwM2Ztc2lxztxWOOMJ8uJg2kxJkG2bb1AMNTLWWL38MqfJOelEHj6FbMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787836243; c=relaxed/simple;
-	bh=ODna5VuKF+k/H3KNl1U5Jwcfx/yL3NhPgueLFtXANYw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k0ZvSv+CtdiXN3cmLk2oYtMAMnU1G/t7NKi5Wvzjbn3AeGoHYROqtZA2CQEAXyCKWUK1zs+3l7fft7rbA+9qaf8lMzqQLnaW5DDBrT3Ir/h0ZCZLBmcjhtTNnndI2G3KH9DWHVfxjj+7TEQ83B1dSfne/LcUBBz2xD0rwenMFeI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TdV61Hvs; arc=none smtp.client-ip=209.85.219.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1787842756; c=relaxed/simple;
+	bh=dWc2LBW7tnbzd8aYpAR6curDlQuV3nqCzpnmJ7AjROQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=n0Ol1R0LvyXLLOYzMD8wPCIrvENLvxE4N6BZpNcGpwJ3bLkOM5O7JWuxHTZS5uWG5ZedU7Eog6b3fPPMufkhYR96oT4g6woU+C5FH4bT8t6jtdUkd9eVf/I/HE4ai0lxE7SY1BWBcVHNtf9bPYAJh38578ZrnnoluF6nOC/8tME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=lBorrZyG; arc=none smtp.client-ip=115.124.30.119
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TdV61Hvs"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-90cc372d6b2so17859886d6.3
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 06:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1787836227; x=1788441027; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ndKIThMIJu+DQfTWfwfS9UtTsZjKDkhTAUOgVWRNeBc=;
-        b=TdV61HvsIbxwtFg4Lu+Ps5XvMzdWe7tWfSLxjzhpvSoNMu/aOTuRp/fFxvhfy9QJVU
-         1ouD/KuhCZjP3VNuY0uU3HouYbxkjAfnlJ7e5GNr2Q55wFocVl/FJseuUn6oc+Kvgtv5
-         n/mzs+Vp/4t2jzLYOG3lYdWM2LfnF7yTKZA0poaOv/igSFlir4CdaXyIVXsZ2YBTH7gH
-         xpp1tGbPePYRtWZxUxqJbE5bZIO6KFOBq8/21114VYGuwPgVolVxneqQ1RPqG06kgSO+
-         UFbDuA2HbHSaHuVg4WJ3oocg4YartkzTxRRePeKW/ERmIb1Xcx9AOJ/hggsMRYwW1j5j
-         mAFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787836227; x=1788441027;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ndKIThMIJu+DQfTWfwfS9UtTsZjKDkhTAUOgVWRNeBc=;
-        b=kQDBFrGoOfESDNE7sSQjEq9k0vr9RfRJ+yYQsOtRn/XHOSyul/oj9cn0YXUMWD2MaZ
-         LWbTtex5GR3ggHgQ+cKUFOu6y0+tMKRM7+F7V204kJLdepr27W0QgdwJYYtK6/pybT7+
-         3CDxHnRTsb4YENFGwP6ekC47DOIAxYvUpjhwLDMAFvMmurXKqSxSVpfA6WEMQRNkF0z/
-         v1sfzAu5lsIBI4ob+Ada1+aRxGUjPPqBvVKw5zb4tHGEVC6yt19Jq8E37Jzsw1FrzNMJ
-         fylwRiXTbwl3O5SsYRXMpLwDLaECVgtWHX4VYYeheZNGNSGU7eLjbMfpuWGKEhSBbx1n
-         zcAQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrlM/414jRSKd1zScAUTQa8+/urZlISDNCXqASyg3MSKUsx+fpqVcAHiySMBKmzoNxd7gcJ/A==@lists.linux.dev
-X-Gm-Message-State: AFuF++n2ffTcZ+FQ3Dq47E1WJnMgRfUMF1YOjJSqibB+1sFm/h+nZ6VQ
-	FEzr+tcI02EIZQUr3AVdQcFE7xwI/cSKOBY7WQFA51JxUl2CDfCckU7K4u6SZwwBOuA=
-X-Gm-Gg: AR+sD11vulSLWwl6WJKsXtwYDNY90EWhdCY10gkmoBArpj2pu8yF45AocDajTw/Elv9
-	MeOZofhaLeUzdHOxD1bggeIdQpEdT5hfH4USPbORWqQ28wQ3jimomWfRlIjgyB53ilYKEAokupx
-	DxvyuLkHICPAQXRph6Hqjm8ydy1KgDGkm0dcSSiQ1Qq4YqgBkDlIsCmcc41kuyG4TelF9GabAu4
-	qYbuTp/+mrP/pYq/xUtjydPUS4rvC30Bm2/UrTnwB7VVD0VH7NiHj6+0gpFP7/QZbJU6muzde9p
-	mqXTC2JImZod8OSaMnRX4RYvYRUmNkMXeCKf+J++/ERIk1Sm432LeJfjPj3eiiOV6VEln4GYSOr
-	zyQ7Fjfiut0sPvmrVVajkUiwa3fG8dXt1nv/XXEOQlMLgIIILAQkesS81K5BOOKg6HDCD5DnukB
-	ejSp0oqMlAaZAH37louiT847XVq/KWOzFCcFH4wq/yQ464WouDTCeYn9jvlrVinpMIAlhwLsFgs
-	z5EXDjvMKXNCbG0O0JVRf/rJO9rYw2hqarauJ7b54gg2A==
-X-Received: by 2002:a05:620a:40c8:b0:939:869:a8bb with SMTP id af79cd13be357-9390869b48bmr364870585a.14.1787836227038;
-        Thu, 27 Aug 2026 06:10:27 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9377e30adcesm438997585a.4.2026.08.27.06.10.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 06:10:26 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wzZs9-0000000FntS-2wGs;
-	Thu, 27 Aug 2026 10:10:25 -0300
-Date: Thu, 27 Aug 2026 10:10:25 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Zhaoyu Liu <liuzhaoyu.zackary@picoheart.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	baolu.lu@linux.intel.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/sva: remove iommu_sva_present flag
-Message-ID: <20260827131025.GF1449020@ziepe.ca>
-References: <aoq8VGFL/Mdjd/M5@hostpc>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="lBorrZyG"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1787842750; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=aP3yTfYoCLgwuuWPChjMO7/4qA/BZGkazKY2jAbx8uY=;
+	b=lBorrZyGMiCoykuwpMj1YkpLAc9ErhA27VDZbs74cVbkA64siDfbSNEnVXytQhC+BgtmrpU6x0oOr/UJUs+BoRBcLlqf1T+9WEcogtmKQ7IesTLdwCWtIBEGn9G8tbPFu3bOusOeE3gEPC3JorcO25IJp9dqreMMmupe3WA8csE=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=xiangzao@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0X9jzaBc_1787842739;
+Received: from banye.tbsite.net(mailfrom:xiangzao@linux.alibaba.com fp:SMTPD_---0X9jzaBc_1787842739 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 27 Aug 2026 22:59:10 +0800
+From: Yuanhe Shu <xiangzao@linux.alibaba.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	jgg@ziepe.ca
+Cc: robin.murphy@arm.com,
+	baolu.lu@linux.intel.com,
+	kevin.tian@intel.com,
+	smostafa@google.com,
+	praan@google.com,
+	skhawaja@google.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Yuanhe Shu <xiangzao@linux.alibaba.com>
+Subject: [PATCH 0/2] iommu: Drop IOMMU_DEBUG_PAGEALLOC refs on iommupt domain teardown
+Date: Thu, 27 Aug 2026 22:58:53 +0800
+Message-ID: <20260827145855.1616223-1-xiangzao@linux.alibaba.com>
+X-Mailer: git-send-email 2.43.7
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aoq8VGFL/Mdjd/M5@hostpc>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Aug 23, 2026 at 05:24:36PM +0800, Zhaoyu Liu wrote:
-> The global iommu_sva_present bool merely mirrors
-> !list_empty(&iommu_sva_mms) under the same mutex. Remove it and rely
-> on list_for_each_entry to handle the empty list case, which is a no-op.
-> 
-> Signed-off-by: Zhaoyu Liu <liuzhaoyu.zackary@picoheart.com>
-> ---
->  drivers/iommu/iommu-sva.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
+Since commit b948a8722848 ("iommu: Fix up map/unmap debugging for
+iommupt domains") iommu_map() takes an IOMMU_DEBUG_PAGEALLOC reference
+for every page it maps into a domain, and the only path that drops
+those references is the IOVA based unmap.  When a generic_pt domain is
+freed while mappings are still installed, pt_iommu_deinit() releases
+the page table memory without going through that path, so every mapped
+page keeps its reference forever and each later allocation or free of
+it trips:
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+    WARNING: drivers/iommu/iommu-debug-pagealloc.c:91 at __iommu_debug_check_unmapped+0x4e/0x70, CPU#0: init/1
+    iommu: Detected page leak!
 
-Jason
+Freeing a domain with mappings still installed is not driver misuse:
+the deinit contract in include/linux/generic_pt/iommu.h only requires
+the table to be removed from HW access and caches, with no requirement
+to unmap first.  iommu_setup_default_domain() frees the old domain with
+its IOMMU_RESV_DIRECT mappings still installed (those pages normally
+never return to the page allocator, so it does not WARN today), and the
+generic_pt kunit suite (CONFIG_IOMMU_PT_KUNIT_TEST) does the same in
+pt_kunit_iommu_exit().
+
+Patch 1 adds __iommu_debug_unmap_phys(), the physical address based
+counterpart of __iommu_debug_map().  Patch 2 wires it into the deinit
+walk: a debug_unmap flag makes __collect_tables() drop the reference of
+every OA leaf it destroys, symmetric to how iommu_map() created them.
+
+io-pgtable has the same gap in __arm_lpae_free_pgtable(), but its
+cookies cannot reach the struct iommu_domain, so that fix needs an ABI
+change or per-driver handling and is left as a follow-up.
+
+The kunit suite doubles as an in-tree reproducer: with
+CONFIG_IOMMU_DEBUG_PAGEALLOC=y and CONFIG_IOMMU_PT_KUNIT_TEST=y, boot
+with iommu.debug_pagealloc=1
+kunit.filter_glob=x86_64_iommu_test.test_pgsize_boundary, then
+allocate and free most of memory (the case maps 128K at the hard-coded
+OA 0x208b95d000 and never unmaps it, so the machine needs enough RAM
+for that address to be online memory - a 150G guest was used here, and
+the sweep was a tmpfs filled to 95% of RAM):
+
+    unpatched:          64 page leak WARNINGs
+    with this series:   0
+
+The 64 is one WARNING for each of the 32 mapped pages on both its
+allocation and free.  On unpatched mainline the suite already fails
+test_random_map's NR_SECONDARY_PAGETABLE assertion, which aborts its
+cleanup and cascades into the following cases, hence the isolation.  An
+out-of-tree module mapping a page into an amdv1 domain and freeing the
+domain without unmapping shows the same behaviour, 384 WARNINGs over
+64 iterations unpatched and none with the series; each leaked page is
+reported again on every later allocation and free, so the count
+exceeds the 64 leaked pages.  The control case that unmaps first stays
+silent.
+
+The generic_pt format code can be built as a module (e.g.
+CONFIG_IOMMU_PT_AMDV1=m), so the new helper and the
+iommu_debug_initialized static key are exported GPL.
+
+Yuanhe Shu (2):
+  iommu: Add __iommu_debug_unmap_phys() to drop refs by physical address
+  iommupt: Drop pagealloc references during domain deinit
+
+ drivers/iommu/generic_pt/iommu_pt.h   | 22 +++++++++++++++++---
+ drivers/iommu/iommu-debug-pagealloc.c | 30 ++++++++++++++++++++++++---
+ drivers/iommu/iommu-priv.h            | 24 +++++++++++++++++++++
+ 3 files changed, 70 insertions(+), 6 deletions(-)
+
+base-commit: 45c13f3f9e3bb15fd89ff2864c6f627a3b4b4229
+-- 
+2.43.5
