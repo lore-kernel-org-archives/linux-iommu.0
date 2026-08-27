@@ -1,81 +1,81 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19DCB486B8C
-	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 16:19:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FB1D3CEBB8
+	for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 16:21:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787847549; cv=none; b=Ej3FM8NKWeWfGQ0K4eF/hSoE0UpCHr+BoDC/r6Tf+Z6aCP1NodHxqzB2jXtrX0IXCIIQ4ccl8D46tPgZuKKtisAGmTlIAzhhG9uPHkBCfK5YtT95hyl0qo2efuUJQ6GS3mDHNphWoqTa2zMn8i5Y/FyiUM8aeyWmnSrhkfECgvI=
+	t=1787847712; cv=none; b=AzXfEco70vPJMcVd8iBw30g1lQLtSXK6QJgOUNPC8CfJIWVqdGFbLgSHeHlVDH/rltAihQ2nVd8IBHAWmkZ/Z3U2X3cZJlKwgQ4DidjvrcQtSXDo+/sxwwZ3Yp4tyLJT/we7STtncx4QxLFOxe6lAThUxPoG7qk0ehRRsalVD1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787847549; c=relaxed/simple;
-	bh=DiUjG0T0zuWI7L/yvvGgeVYz8NadRp7w7Ygor662/N0=;
+	s=arc-20240116; t=1787847712; c=relaxed/simple;
+	bh=mAh3nAX3kL7MLxSzGqnmDDPsPCYD6Z7jzPbZ8dZAykg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Suro/HtlVsfMmsjUCmUnLU/YblKfmdbu1jwMD689xscXNotell37R7xFqoMk2rQPjGJAvQROJBAkGrAUaILQB2xRvps94flYC49RLrG0+G+Z0SdGAX2Wfj1TT7YdCUTOPFOH9mF58f9PkiDiMfKZMGV0Doe0u1KFaCOcjZRmasU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jtxqf4tP; arc=none smtp.client-ip=209.85.219.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=kAYSAzkHBAEmf2ixpA6hOnKtFTKTGRKO/XodyS9btYQgkje3l/8Nd4Damq0A9395uRqRElYFCHbi7lHf4Y0I31W8D9syr/EhKpk9vwWCFmG3B7jmLnpE0d4qoSvQoCTVW4L+z1SStXORa/6OJ/lF4vlL6agYErqgEegJX87r4Vk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=CLjw7yOP; arc=none smtp.client-ip=209.85.160.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jtxqf4tP"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8ee43b3e5abso808366d6.3
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 09:19:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="CLjw7yOP"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-51c2a818fc4so537691cf.2
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 09:21:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1787847547; x=1788452347; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1787847710; x=1788452510; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=PHNKzqddJq8qH4vR69ILQzFreGWmgpWijEaEyQN0PLk=;
-        b=jtxqf4tP0VLf/xeb1Hm5xD5408HQWQk/WN1FZS91fa44chSk2IdiX9VkK1u6rqblyc
-         o88wrK96aeW4iYYmh/hbM1J4XOFWD4zdey8qRDrZsO1oTxLxHqrmvT8lNdadIBW4rLUd
-         l8ZAoc3pE8BFSIkFBWWv7QCIuTJah34AHDKtXBepAoNBnUxuEXYnjgLBoFEZBwOa34SD
-         /TSlPqW2pV7qxRN4t2TrQ9tmbtIEuC56NxNkRS1Q5w2DX+3iMpgGTpT/wSUlcyIvtEu/
-         l8GLRS488vGz+QLIXXFy0hhN+AnT3f2MwIu2GCPixEEcLmktCgQ+O2iajbWuIf4nid11
-         ECZg==
+        bh=yzfjA7QFnokR+rC2Mkf2GkJZ8x+lNdvBL5B9Dfcy6Vs=;
+        b=CLjw7yOP5fcThUCB0kFII2h0H73mWdY7XnIY4iCLt5PUhySO5U2YBfujdnNwQmD8Os
+         qqZRJTYjqixV6xGgTsma3dm4ueXzQQt5Mj//hKwpXvPek+3MpKxcfy2hkSKGpWIh4xhZ
+         vgLvu4KZfYqeqxMkmI4HCxGJqVqHyfuoHmwW4Ncmmd0s55asmj/j9i7sAHYnU+GGu51S
+         eTC/JdzMTlcLu9V9Cvu2n0qqsppL+A8rroIRtPa19upzlzISQ/DnZiSV0lWW+d+UBuOd
+         yyncyjNiG/JVf41pcuNo+4AKAFioDzhsvdwC5YBC6SFa7iRWfDRMDzKqf2sB+b+FO8BE
+         1NaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787847547; x=1788452347;
+        d=1e100.net; s=20251104; t=1787847710; x=1788452510;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=PHNKzqddJq8qH4vR69ILQzFreGWmgpWijEaEyQN0PLk=;
-        b=fs+W6HWhyihf02N2/SqIvw0ax2Sbs9g4+Wv9P6VqlxE81J3nKd4WTioocAAXcRm7Du
-         iEUqV+YSP1YH0p56rRPko8ZdibqPMySVUYI+VhKACkVQ/fG13L/+aZbU7qCHWSzAZgit
-         VMdZnNS7065u0E1mD0SyglAIfd28+160BB66rKaFXqTqzH9tB751iSSYwC3XuGSFBezJ
-         8pweymrpBE0WtH0LnDbcUFDZHeJOinZqS/OsH8dQu6pWW61C4Zu/nBnwrmArQ70LETiP
-         NpD7N5e2NTGbXjxYXIZubTabkln+mlsm/ofiDjSQdiBsFdtx6WDIoTgojd2snAEG+NOd
-         sKPw==
-X-Forwarded-Encrypted: i=1; AHgh+Rpqs2VQe2pNDXPY9bZPLuR4K/hB3WJwN4LZSRrDvcO6Y5k421+Yre//a12YGmNOBtSf07YR9Q==@lists.linux.dev
-X-Gm-Message-State: AFuF++n4kq2tCbPKiO8uTxd7kogMBCZFFFjrcvmGnkDcAVwdLctQ6Vwx
-	PbeJMr/mBU9yptdSw9zJrmQ0IFFfbzdaendHgxjkIJtIbU3YJeSnBnyDUowmzAUXXc0=
-X-Gm-Gg: AR+sD120XYJnIDSSqhcNKo3F2EJZS6w5Nhy5NBsfFnFtIeSzZVt5S95UN232MFWOh6w
-	RmXUsSjQhSWWGZ7fBNT4D9SPNAt1XFnruUoItcxAA3nmoZG8upRp0/tp2NnQEXnZLzeZ8RtCwGQ
-	2ExlGUOeSC1AhqTZNwCBgE2rC5250kRugJXXRY76kWeXpijSYmOrocUDa8xAZicBY0zZIpRC7RD
-	eDr6mS44sbbRxcXX7IOFudOJdkmU12B3MCNLui4sR/Ol6URHGgU79yCV7trzlQ1H7iOqU0n9MkZ
-	WJBtUtc0HR+8jDhlnc5+Koj8usfCBhHP1ZKGVlszRsRgrwoV8lDLceMZ/wQgCwWncGgRaVL3JC4
-	MMoGVbWStg6zfBfS4kgIV5/T0Zonx5AXTSSU36gLar3jvjgo99gJsdisBLIMhruJvNmu7sEeEjU
-	pQE1RTboGSXX4UjeXw6tAJ3++nbwCBsjaMGbn5vF+xWwJSKGDErmqt5rrsyxxri3oZVq1q5WXh2
-	Bjry1XDcyDEeMntU+mb1Dav650515KwNwjC+WFu6tnEFg==
-X-Received: by 2002:a05:6214:5b0f:b0:90c:5947:7e60 with SMTP id 6a1803df08f44-90ce0c3d7bemr5926226d6.4.1787847510292;
-        Thu, 27 Aug 2026 09:18:30 -0700 (PDT)
+        bh=yzfjA7QFnokR+rC2Mkf2GkJZ8x+lNdvBL5B9Dfcy6Vs=;
+        b=eVXZqLsgtlcH5oTFmNYnBtw6z7u7yD5t8U4TyjvcZEuRz1rq8lHdJE3Jm0MQi+svpG
+         pcY2A3uU/27WFhNegJTr/+DU1+OdBF/FkwGb9YbBtyc8E2am2StG8K2T8fP4hKR33oNi
+         CcRTYP+pvAfNLfinNc048n52+c5+fKSrhNfbsJT1e2/5ekSUlgeaw6KlNtrXo6iaT1OQ
+         smVm+/YemhVlVyqErmQPowZ7GUtsJqNoZiYKg1mHeJQRc3SFtgmPrlI7JVrA6/Stn//z
+         kXx+aHXJOE3aiF5xs4U99cLJ3fRi4TGvW1wGsEqjfwdnee9Cb+vvw1yAYSSgAyc76Efs
+         0n8Q==
+X-Forwarded-Encrypted: i=1; AHgh+RofXgKGpDc3V+9AHj+nIFHLp37TDKog6HWzj3x2n1i99lqd7NEavrJ6bZs8NSGvF5aSzJaQ1A==@lists.linux.dev
+X-Gm-Message-State: AFuF++mDAMv9lbgE6+GfybsE8loeKciONSbIEKwEJdb1VCGj9WM1qutK
+	u+OLOWstZsxaLgkxzedR0NyTZhaXucowUG4Co9VRrnRoQ1xHAkYjqUQn7t7k66oGiP4=
+X-Gm-Gg: AR+sD10cRAnQu6gYIOYbFQhViLFzibjuQv5ViJ61SO8mPgTEt2tGwW94fkdOjWqsioL
+	Fbr8/n0aOR3UIeqeiy9GHjy+nhM8ZC77c8H+sT+SUItTZHO63FPjLf0O27br0jHf+CC3P5r6Bp2
+	Rh10ZG/pbZ2hSHC8ERlrtel4sL2F6hYrzafO5GyJfqIU3y8EhMIuxwYq1+Kfl+5G437dVsruSSk
+	BiEyZLsiBHv24+cGqpPKEP4hhbcO5uhcZFspyxUhIt9oYfcW0UCcDNTc7fA56BRnogylag3W187
+	JHzWJ0l2DKQW/2N3dLgV3yLr/dHrxQanZ0dQi0hx/aIxi60nvkyvuymzpUXAfdng8iNNbWYQsW/
+	wUfFMBjuDXN0DGP2E0AvxjFQqHXW2t49vNk8CPVz7NAdLy99fd0ycUrB2BGhawPuDMCUHlqMyHl
+	qWm+7BCphFOgh0ySVxqdn8jl1K/Cijzw7vWpIgeairhV37Fxatt6De7/T3ayVbnU39ydd6sxz+M
+	AKExH0OokKxha8xsLUqP2eHCN5b7xXbJcVjXpGTPsmwRA==
+X-Received: by 2002:a05:622a:10a:b0:51c:8432:1753 with SMTP id d75a77b69052e-52fb96736b4mr922801cf.30.1787847710507;
+        Thu, 27 Aug 2026 09:21:50 -0700 (PDT)
 Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90cd73fc2c9sm19944946d6.35.2026.08.27.09.18.29
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-52e4270aae9sm40204551cf.16.2026.08.27.09.21.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 09:18:29 -0700 (PDT)
+        Thu, 27 Aug 2026 09:21:49 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wzco8-0000000G4Wr-2czS;
-	Thu, 27 Aug 2026 13:18:28 -0300
-Date: Thu, 27 Aug 2026 13:18:28 -0300
+	id 1wzcrM-0000000G4hm-2y5d;
+	Thu, 27 Aug 2026 13:21:48 -0300
+Date: Thu, 27 Aug 2026 13:21:48 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Yuanhe Shu <xiangzao@linux.alibaba.com>
 Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
 	baolu.lu@linux.intel.com, kevin.tian@intel.com, smostafa@google.com,
 	praan@google.com, skhawaja@google.com, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommupt: Drop pagealloc references during domain
- deinit
-Message-ID: <20260827161828.GA3769797@ziepe.ca>
+Subject: Re: [PATCH 1/2] iommu: Add __iommu_debug_unmap_phys() to drop refs
+ by physical address
+Message-ID: <20260827162148.GB3769797@ziepe.ca>
 References: <20260827145855.1616223-1-xiangzao@linux.alibaba.com>
- <20260827145855.1616223-3-xiangzao@linux.alibaba.com>
+ <20260827145855.1616223-2-xiangzao@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,36 +84,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260827145855.1616223-3-xiangzao@linux.alibaba.com>
+In-Reply-To: <20260827145855.1616223-2-xiangzao@linux.alibaba.com>
 
-On Thu, Aug 27, 2026 at 10:58:55PM +0800, Yuanhe Shu wrote:
-> Since commit b948a8722848 ("iommu: Fix up map/unmap debugging for
-> iommupt domains") iommu_map() takes an IOMMU_DEBUG_PAGEALLOC reference
-> for every page it maps into a generic_pt domain, and those references
-> are only dropped by the IOVA based unmap path.  When a domain is freed
-> while mappings are still installed, pt_iommu_deinit() releases the page
-> table memory without dropping them, so every mapped page stays counted
-> as IOMMU-mapped after it returns to the buddy allocator and each later
-> allocation or free of it reports:
-> 
->     WARNING: drivers/iommu/iommu-debug-pagealloc.c:91 at __iommu_debug_check_unmapped+0x4e/0x70, CPU#0: init/1
->     iommu: Detected page leak!
-> 
-> Freeing a domain with mappings still installed is not driver misuse:
-> the deinit contract in include/linux/generic_pt/iommu.h only requires
-> the table to be removed from HW access and caches, with no requirement
-> to unmap first, and the kunit suite itself frees domains with live
-> mappings in pt_kunit_iommu_exit().
+On Thu, Aug 27, 2026 at 10:58:54PM +0800, Yuanhe Shu wrote:
+> The IOMMU_DEBUG_PAGEALLOC sanitizer takes a reference on each page at
+> iommu_map() time, keyed by physical address, and the only way to drop
+> them is the IOVA based iommu_debug_unmap_begin()/end().  A path that
+> tears down a page table with mappings still installed has no IOVA to
+> unmap with, so add a physical address based counterpart of
+> __iommu_debug_map() for those paths, sharing the counting loop through
+> __iommu_debug_update_phys().
 
-It is not misusing iommupt, but it is definitely misusing any iommu
-API built on top of it. How did you trigger this?
+This is not right. The following patch has the iova:
 
-> Verified with the generic_pt kunit suite as an in-tree reproducer:
-> running the x86_64 format's test_pgsize_boundary() with
++                               iommu_debug_unmap_phys(&iommu_table->domain,
++                                                      pt_entry_oa(&pts), oasz);
 
-If this is the only trigger, then it is different testing things
-interacting badly and I don't think it should be fixed like this.
-
-Probably have the kunits directly unmap as they were being lazy
+Every pts has the iova of its current iteration location. Call
+pt_index_to_va() and then pts->range->va is the current spot.
 
 Jason
