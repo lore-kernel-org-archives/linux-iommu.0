@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B0B1F91E3
-	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 01:36:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3889A1A38F9
+	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 01:43:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787881012; cv=none; b=FpbENOQdTkXou+BBdWhwhjdsKkJDIqzhKr5EPRWwYDv057jc9q4wdM3VnfpMvs25hiADkGaWdX5D1mB8Yk3C8CkGtpE9piQdlt0eR/Oeav4zSgF4t0MgGeg1lj45OB2daAZFRO2jmNKOdDADD1oXl4Wv4PWnHk721+Yanu9HB/k=
+	t=1787881381; cv=none; b=gcFvnBTWot3QOpwP2TqoP3JFysSdQzAB6/5Kd74gsxP5rlGkaop7wXjAf/XVUyAb50VEiyZTa5hr1xZL9rYZzo9SVxyEfZZBGFHIVQFsJf62G8j15aDMNCwh8bDvlvMYmE94g0h4ZhsJsjNpfTDzvZHNR5A7KaRefzL0WTDeD7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787881012; c=relaxed/simple;
-	bh=cdO5eb1mpdd48MIqU7gFur0NAuLj29gr8djf2dB0r6Y=;
+	s=arc-20240116; t=1787881381; c=relaxed/simple;
+	bh=vqaChCZkyZZZIvsTx/SEe3/93qR/OjmGOLlRobYJrM0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bpMLxYx81fxbMBigK/ek6kMKJCvqSymYOh9raq/Xs27LyLf6byau5TQDtoa2eJMC836ee0gX4qBZJHBFzTeTIuVYkDk/D00Hw/GrFyNd0uB3nUFx4vaGbXNeWDiMoorR3CCIGdB6gBdIAqCtt7stoMeJWSsjAvlzsyBt/++DQOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PiQM+ixN; arc=none smtp.client-ip=192.198.163.10
+	 In-Reply-To:Content-Type; b=mR2sdpuoCwiT12gcG7ZyN/2R5XflJZgHCXnMqxbWXr9LBIxNhjZNUJej/Su01Do6QelMXGceeEFWg9A0VmTfutldkMq/fQ+RHJaQ56YFr5ugs3ZZPQ57TldrHau9VeOM77D4TjRmTngd8QK8pSahamSEe2amnA+/Ua4HUO2nqno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Syw0EC8U; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PiQM+ixN"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Syw0EC8U"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787881011; x=1819417011;
+  t=1787881380; x=1819417380;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=cdO5eb1mpdd48MIqU7gFur0NAuLj29gr8djf2dB0r6Y=;
-  b=PiQM+ixNdI19dNjbO7TIMPbiRtgzLU354wBPbZ6m6uxq5wtuXzi5E8mT
-   yX4YsRIAq3RL5raGW4IlXIHDRzYmAvYkMLsfOOC533duxyS1KvUQaMls2
-   ku98r+QZ2bOkFnqZSNHlalvDH3CxBXzmXEnd3m5omdD5cApcbbQFH/8tl
-   XKNxShyH78MA0Xx78TDSMal4R7kCVWsiMNsfby2cfOiZcuAjRMZDUtORY
-   agZzWpAeRpT+7IM/M0UyNB2zsyw/siQpSB8N0cc8Q9tKPv+bwjxO6U3B8
-   wnTznTu3lBmFjo4ELJ3iQ5uf9/05o3PF4ExFWxZDJgVNgdiEvJIt08mUX
-   Q==;
-X-CSE-ConnectionGUID: bbHQ9QLmQ8yhxaxDnZ64tg==
-X-CSE-MsgGUID: N781SChOTL2rkNShtudQlQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11888"; a="99739764"
+  bh=vqaChCZkyZZZIvsTx/SEe3/93qR/OjmGOLlRobYJrM0=;
+  b=Syw0EC8UIxZ5iayRqddt3/WncL5gzCHT44e7av3tvzd5N8DhUCXXbC0A
+   Ejzw8K35VTL6rScvE0SW6MnHmrmpZydFZg96EHqN5jjj4m/IRP2jnpPPJ
+   oSJmfdJb38ebg13VayVLn7x3ofhFbwV1Y7Stiy7cLrneVyVc12fXYgDR4
+   tASCZsisHcuefhvZRS7YBE8AjPKq/k9ogogCRNoy+qmCucvqa5K2sTRH+
+   V2ktBdm9Ick+5xRRhoGxs5UvmsXrnnIRZXX6NVdg8XKmebVaEeztj/7RG
+   /W+QT1IF6Qz2drQ71p9gm3R38Ep9ee1v8i5KzrtznZ2xkEKm83jlEWUYR
+   g==;
+X-CSE-ConnectionGUID: BNpxi365QleUCDT8Qm1dlg==
+X-CSE-MsgGUID: +YUbrmnYQ76KaZs53I92yQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11888"; a="92074066"
 X-IronPort-AV: E=Sophos;i="6.25,247,1779174000"; 
-   d="scan'208";a="99739764"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2026 18:36:50 -0700
-X-CSE-ConnectionGUID: zdx/iSvHSzaJJ8Y+xCV3lw==
-X-CSE-MsgGUID: nXBAuRgORAiVCoPizAgZqg==
+   d="scan'208";a="92074066"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2026 18:43:00 -0700
+X-CSE-ConnectionGUID: Xgwwq5bnRCKnKggV6d4E0g==
+X-CSE-MsgGUID: +JgdhPQqSEOJuQsCaeqAPg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,247,1779174000"; 
-   d="scan'208";a="267432266"
+   d="scan'208";a="264256923"
 Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2026 18:36:46 -0700
-Message-ID: <1f6d5804-8f96-4963-995c-2bafa69505f5@linux.intel.com>
-Date: Fri, 28 Aug 2026 09:36:44 +0800
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2026 18:42:56 -0700
+Message-ID: <1849b176-4aa4-437f-8dd1-b91993f73b4d@linux.intel.com>
+Date: Fri, 28 Aug 2026 09:42:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,8 +52,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 10/18] iommu/vt-d: Restore IOMMU state and reclaimed
- domain ids
+Subject: Re: [PATCH v4 12/18] iommu/vt-d: Handle reattach of the restored
+ domain
 To: Samiullah Khawaja <skhawaja@google.com>
 Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
@@ -66,58 +66,49 @@ Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
  Andrew Morton <akpm@linux-foundation.org>,
  Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
 References: <20260808022723.3893618-1-skhawaja@google.com>
- <20260808022723.3893618-11-skhawaja@google.com>
- <5f8963c4-f6b1-44b3-ab2c-ed658822efb4@linux.intel.com>
- <apCC3xMkYkEyQRID@google.com>
+ <20260808022723.3893618-13-skhawaja@google.com>
+ <5b920299-260b-4025-ac4f-e8f83beebf95@linux.intel.com>
+ <apBso6So7UqwR3AX@google.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <apCC3xMkYkEyQRID@google.com>
+In-Reply-To: <apBso6So7UqwR3AX@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 8/28/26 02:47, Samiullah Khawaja wrote:
->>> +/**
->>> + * intel_iommu_liveupdate_restore_root_table() - Restore root table 
->>> and reclaim domain IDs
->>> + * @iommu: Target IOMMU
->>> + * @iommu_ser: Serialized IOMMU hardware state from previous kernel
->>> + *
->>> + * Restores the preserved root table and context tables for the 
->>> IOMMU hardware
->>> + * instance across Live Update, and reclaims all domain IDs 
->>> previously allocated
->>> + * to preserved devices so they are not reused.
->>> + */
->>> +void intel_iommu_liveupdate_restore_root_table(struct intel_iommu 
->>> *iommu,
->>> +                           struct iommu_hw_ser *iommu_ser)
+On 8/28/26 01:52, Samiullah Khawaja wrote:
+>>> +
+>>> +static int domain_reattach_iommu(struct dmar_domain *domain,
+>>> +                 struct intel_iommu *iommu,
+>>> +                 struct iommu_device_ser *device_ser)
 >>> +{
->>> +    if (!iommu_ser->intel.restored)
->>> +        iommu_restore_pages(iommu_ser->intel.root_table);
+>>> +    struct iommu_domain_info *info, *curr;
+>>> +    int restored_did;
+>>> +    int ret;
 >>> +
->>> +    iommu->root_entry = __va(iommu_ser->intel.root_table);
+>>> +    if (!iommu_domain_restored_state(&domain->domain))
+>>> +        return -EINVAL;
 >>> +
->>> +    if (!iommu_ser->intel.restored)
->>> +        restore_iommu_context(iommu);
->>> +
->>> +    iommu_ser->intel.restored = 1;
+>>> +    restored_did = device_ser->domain_iommu_ser.attachment_id;
+>>> +    if (!ida_exists(&iommu->domain_ida, restored_did))
+>>> +        return -EINVAL;
 >>
->> This uses iommu_ser->intel.restored to prevent restoring the root and
->> context tables multiple times. For this to work safely, iommu_ser-
->>> intel.restored must be 0 the first time restore runs after kexec.
+>> It seems that checking only whether the domain ID is reserved on this
+>> IOMMU may not be sufficient. It would be safer to also verify that:
 >>
->> The problem is: this field is inside struct iommu_hw_ser, and that
->> struct is allocated in the old kernel. How to ensure that the previous
->> kernel has zeroed this out? Maybe I’m overthinking this.
+>> - device_ser->domain_iommu_ser.iommu_phys matches iommu->reg_phys, and
+>> - device_ser->domain_iommu_ser.domain_phys matches @domain.
+>>
+>> ?
 > 
-> This is a valid point. However, the old kernel allocates this struct
-> with GFP_ZERO and it never touches the restored field prior to kexec.
-> So it should be zero in the new kernel.
+> Interesting.. The caller of this attach from core fetches the correct
+> domain based on the checks you mentioned. But you are right, adding a
+> check here makes sense to prevent anyone else calling attach with a
+> mismatch.
 
-That should be fine.
-
-I just found it a bit odd that a variable used only by the incoming
-kernel depends on initialization done in the old kernel. :-)
+If the iommu core has already verified the domain-device relationship,
+then we probably don’t need to duplicate that check in the iommu driver.
+Maybe just add a short comment above this function stating that
+validation is done by the iommu core?
 
 Thanks,
 baolu
