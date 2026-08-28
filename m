@@ -1,284 +1,223 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010058.outbound.protection.outlook.com [52.101.201.58])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203553AB48F
-	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 04:56:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787893016; cv=none; b=gy3kP26qs4V0/tyryB9K10crxPROVC3b+Kxf5su2BXd631cg2vs5hYjIQGLst4R1+pcD59pVf92IHnCwg0aFAewcssVPsyPlKVC/rA2U1pK6JnNHEVsoCkKdVXEdEwODUWc5/RMkCgvdUutl78IInvtSHrAuzJWqJIoGLhFnfNg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787893016; c=relaxed/simple;
-	bh=77wrUWwNZTmgFB8/L0BIsaNPPrH2bZi7tGTp6vlHBvI=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=rLyTKSm+jiNrjf7ChyGrSDPgcbOI0TVsEIdHmYpFX3lDUWZA4iChoF4qWDuvrfwjIeyOH6cLRD2T0qKW1D25erDFWzO04lo9gkJ/BTgRiSiEAaR7dRJJ78iDRtZBHNkAd+bdQ/RcqCjzfpBS9orEKP96MQOqkSYeifYEx3abjyw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k3B99WFm; arc=none smtp.client-ip=209.85.216.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941BA286A4
+	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 05:16:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787894219; cv=fail; b=SEO3EUMIr224UG0ru3EG6Y5MwLGDWqNvvsO9v1/QCZti6ksC0i43kipV0mrWW92eeMQ3lxMroU3+2hcW+0ZUD4qLmFtAv28kc1X/lHRaJ16y+kqs3hnCE3pKzg3pqSj6zNzM/BBu9t5g0gGYg/IrJVt9X5243ByI6BAs1TK/67k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787894219; c=relaxed/simple;
+	bh=dNO2y73tmxd+hucyNgi54ZT8T/H+u8B/n23dVRoeVXI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Gx8HFjcWfMpWlPEm4UWtvTR7ym/VdlqqVdq8gn5SiT+7XShRm7BDBy079aQaLk/ad57gZjtIfP56e5dcolT6p7Wnguc/mu2rYvYJhi3KyYZH8nE+tVKuFK999+lBRhZOb64dIy1b75IwbRrjEoxKV0hc5kYoArAN4MllHw+2Q/o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=d7ZIFA1E; arc=fail smtp.client-ip=52.101.201.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k3B99WFm"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-396750cfee6so428445a91.2
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 21:56:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787893014; x=1788497814; darn=lists.linux.dev;
-        h=mime-version:content-transfer-encoding:content-type:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+lid+8x57/u4+O0NBSStfeDrDE5jCqjkQVo9yG43Fj8=;
-        b=k3B99WFmvhpPuzeaXZPfas+Or3bqXxvieTrhl8l2XOiCbs8cbZhXEujYEtwOQ/YNRF
-         RmhrktkPyzP2QqOH8d8rF1eqR6DQCPJ21os8b1FlugjB4gzG5ZNFkK5MwD3ce7c0389e
-         SwR1yc8JUFzYTXC2Z/3a+YxNyhPPUGhyClVz8Ut5dzv41cluw/yrKDOvHgbc6gbSt9B+
-         +y1rrS5NJO4fQnu6Czgy2WTpsyaja/rR2eRWyoD+FyNKDiTFFB6fJx5PoqXERbk2hGTk
-         yqTluDBQ2ZkOeumtuuXOieqjwlkvKx78qwMjyRVYhra66tpEIhiUrkVF7dlzupNWZ+/Z
-         7rqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787893014; x=1788497814;
-        h=mime-version:content-transfer-encoding:content-type:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+lid+8x57/u4+O0NBSStfeDrDE5jCqjkQVo9yG43Fj8=;
-        b=WsXI/+twU6NV/W0dK78uBJ6C9plzHtzEe/gCxe+ACJ5ytPRnngkk7YSiZp96JWxY9Q
-         KGIYwjuTljbMkSubipQRLQ/wnglIFwsXE1F8dA9r7dc2cVBxo/MQYXEr+s261BYTn2pm
-         h8DV3p9zT7Bl0YRMyzh9D7+BtdUsfBpyQPGyA9099+v3eT6eGeKJPd2DIdUux/SkKDvv
-         YAumqpfSghu5Wz4AECLAuhRYsPmkhfxejfME6hSzg/riSV75T13vwNiyfmsi2HASvTDk
-         fgTSYCRVw0girjAd8RxhVYUVTDg/lg0NGKUhAxQjtQyxpceSyGvjDAQhJzNEBP2Jv5L5
-         rsoQ==
-X-Gm-Message-State: AFuF++mZu9GDGc86+qN/HjLSKDWEdIiPv0UT36aS/yfhLX/yrjKfc0Wx
-	KdgU6iEIVBjtYu64D3jEc8j5QOGNVqZaBOwTQC7JfNKCLE1jlFq0zqnC1ASPRxHfaVA=
-X-Gm-Gg: AR+sD12SVAcGBrH/y0jc5rN6xFCOekDbNX0RiNAIlj4wOdOCffGuBNpm12ACf0hA1Y/
-	BXBEEbi9UdWadBg1k3q6D9XH3CA1Rz/VSBCHuamOFBMQ4oX7X++eD2K2aAao4kYApq66JVo0FyE
-	lKP5OOWcUXQDSptUD5/vwPiTrTGBLXDrFW1ji2b4OM5KlVt9qUyIB6e8ujQZL9zx0MWuBg3UAlM
-	ix2B7eY7puKDgC2zRLqxq5lV/X3257PmV7Csw6E3z0nnEPLxZZ8sMFYMy5ICwhjzICE3bWcj5lq
-	u5LDAjOqKF396Jf3HdWSnNS+NsdzWmzop4uwEgiBjtEjwwOqf3K0LBbnUIH+qyeqqkodkvW2b9P
-	kxanLuaZXdmHj8l9srzETEf0LAVFa44MnwyN3fp+2LjC917rCKIuJBiFOPd4joYID5LRYMYNb42
-	8ikOmMt2fbtZ6PNkgxCDZwNRFqjopfEJCoOSsOLjV2fAArlZj0dvDWJ2vwI+oa7ZVJPk7KaXNhn
-	HfDBD2979RPC4MbSjYylzuly3Tmt+WmmBXzf6fsrl40bVWkMYPnOahD8P30pDsJnVxA
-X-Received: by 2002:a17:90b:180e:b0:396:5c22:b1f1 with SMTP id 98e67ed59e1d1-396d0e26ca8mr6874731a91.8.1787893013979;
-        Thu, 27 Aug 2026 21:56:53 -0700 (PDT)
-Received: from [127.0.1.1] (ppp-124-121-113-94.revip2.asianet.co.th. [124.121.113.94])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-142e0d3fdf6sm2945568c88.6.2026.08.27.21.56.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 21:56:53 -0700 (PDT)
-From: Mikael Etienne <mikael1022bzh@gmail.com>
-To:
- iommu@lists.linux.dev, linux-ide@vger.kernel.org, linux-block@vger.kernel.org
-Cc: regressions@lists.linux.dev, joro@8bytes.org,
- suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
-Subject: [REGRESSION] Silent SATA read corruption with dma-iommu on AMD
- 600-series AHCI (6.19 good, 7.0+ bad)
-Date: Fri, 28 Aug 2026 11:56:48 +0700
-Message-ID: <178789300872.392066.15963676631650361573@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="d7ZIFA1E"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xRGd5kuvwdNAUamgJTAt0oF198KaOtdWOxyEsdEz0+k4Xag+bOZ0Tpcla4ZCdKQ4zZXPBSKkL5V9FVsN8u8ohXsY0AULFtgFQcEe9E97nZGBpvE1BMxBl35wYx5LmwKe4kQJc+NPsGwoYe71XrlTWaH0sU0f8IEDkeNpK3hH09w+WI3/mzUw0zlPZ0AiRwfFNCtKXBPgpRdZ3SrXebc560jfC5FRhS/qkAuXzPb6XVQK1qQaend0GxxmFRQaWwuN80OmrXrvS6cBEou7niEDXq8kwCYw/B38QowiTOYcLy76WE+p7CR8XVWkazZl0IqcivFUlfUZ3qBLy97NKvzzXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mLNX5U3Zss6zZ6YcUmTwb8qzVP5SdczyuIQm/EjKdKk=;
+ b=URnO6rqudDbgIq1VxFFg+0hHgpJUHFBL8fLCllgBCS5EOH5YIYTGDrERU0gcts36Pcjw/81bRZabIOvt28oBgSgQzfIz4s+eiZoJ3V/momMQz6qzva4LWg7tJ8MgmIqz1TjR2fyCZBZJlQEF7OVVx6u01cEQ9ORAKeTGa4Eo1ByrEMHl1Y+fSuYMAqpdlAFOnByEHMMUF2e/dZt7ND5fETxIpoPSgVT16AT0BQsHhzmkSxoS2QIkvYx3mqYwifJ122XnlwtCt/MARFi+LuLYhKRNLFMnsouvmKSXwXaSlZ7d6RFn+IMp+EPSMk+BlIwhBas1LgKNieUpT6R3TfIFpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mLNX5U3Zss6zZ6YcUmTwb8qzVP5SdczyuIQm/EjKdKk=;
+ b=d7ZIFA1E23LJINSeMmTYvoEd9fXBXWGeWVd87nc0eTwtg4NqAW0ZLsel6o/oimiq2eMBmbm6JVsXO8aJeyt6rJjbO9bBuP/QKwq94+S0l2tj05nWMyA79MbhxpGb4hvwDCA7yShmgNovQ4V1ME78sLlp7OChX+kE3T1H4UObAb8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by IA1PR12MB9062.namprd12.prod.outlook.com (2603:10b6:208:3aa::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.10; Fri, 28 Aug
+ 2026 05:16:54 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0360.008; Fri, 28 Aug 2026
+ 05:16:54 +0000
+Message-ID: <bfb7be5b-2da3-4bd3-8146-9bd079011a75@amd.com>
+Date: Fri, 28 Aug 2026 10:46:48 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/5] iommu/amd: Fix DTE clearing and rename
+ iommu_ignore_device()
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Ankit Soni <ankit.soni@amd.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
+References: <20260824122347.1588592-1-praan@google.com>
+ <20260824122347.1588592-3-praan@google.com>
+ <178759520117.3131778.15279605903087565179.b4-review@b4>
+ <ao1vJxkZsJpr1qXG@google.com> <20260825114916.GT244917@nvidia.com>
+ <ao3RF0w_AXo5EXxv@google.com> <20260825175315.GD3325090@nvidia.com>
+ <ao3oHn8HiXIx5Wrl@google.com> <50ffc453-f918-47f8-9556-9813308690a9@amd.com>
+ <20260826122147.GA3666382@nvidia.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260826122147.GA3666382@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5P287CA0357.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:219::6) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-
-[Resend as plain text. The first attempt was rejected by all four lists for
-containing an HTML part -- apologies to those in Cc who receive this twice.]
-
-Hi,
-
-Since Linux 7.0 I observe silent read corruption on SATA disks behind an AMD
-600-series chipset AHCI controller. AHCI/libata, the block layer, the IOMMU and
-PCIe AER report no error at all; only consumers that validate the returned bytes
-(btrfs data checksums, fio --verify) notice. SMART stays PASSED throughout.
-
-Hardware, up front because it may matter: AMD Ryzen 7 8700G, with the SATA
-controller integrated in the chipset:
-
-  0e:00.0 SATA controller [0106]: Advanced Micro Devices, Inc. [AMD]
-          600 Series Chipset SATA Controller [1022:43f6] (rev 01)
-
-This is the same SoC as bug 219609, where dma-iommu was already identified as the
-trigger for a different device class (NVMe). Details in section 6.
-
-Two observations sharply constrain the failure:
-
-1. Once corruption starts, rebooting with the same kernel and the same command
-   line, WITHOUT rewriting the test file, makes the very same blocks verify
-   correctly again. Continued reads can later trigger the failure again. I have
-   therefore observed no persistent corruption of the test file contents; this
-   behaves like transient read-path state.
-
-2. Adding only "iommu=pt" to the command line (nothing else changed): no
-   corruption observed over 40 consecutive verification passes, 10 TiB re-read
-   in 17 h. In the default translated mode the same test failed after 768 GiB
-   / 3 h 25 m.
-
-Good/bad boundary: 6.18.16 and 6.19.x are clean, every 7.0.x and 7.1.x is
-affected. Kernel is untainted (/proc/sys/kernel/tainted = 0), no out-of-tree or
-DKMS modules loaded.
-
-Important caveat, stated up front: all kernels tested so far are Fedora-packaged.
-I have not confirmed this on vanilla upstream and I have not bisected. See "What
-I can and cannot do" at the end.
-
-#regzbot introduced: v6.19..v7.0
-
-
-## 1. Test matrix
-
-Test file: 256 GiB fio canary with crc32c verification, on btrfs, on the 12 TB
-drive (WDC WD120EFGX-68CPHN0).
-
-  7.1.10-200.fc44, translated (DMA-FQ):
-      first verify failure after 768 GiB re-read / 3 h 25 m
-      once in the failed state, a plain 4 GiB O_DIRECT read of the same file
-      produced tens of thousands of further csum failures
-      btrfs corruption_errs reached 20,858,094 in that session
-      reboot -> counters back to 0, same file verifies clean again
-
-  7.1.10-200.fc44, iommu=pt (identity):
-      40 consecutive clean passes, 10 TiB re-read, 17 h
-      btrfs corruption_errs = 0, zero kernel error lines
-
-  Earlier, translated mode, other workloads on the 8 TB drive:
-      read-only workload      9 h 30 m clean
-      deduplication workload  failed at 3 h 17 m
-      sequential write        failed at 6 h 35 m
-
-I have not yet run enough boots to give a proper min/median/max distribution.
-The 3 h 25 m figure above is a single, carefully instrumented data point.
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|IA1PR12MB9062:EE_
+X-MS-Office365-Filtering-Correlation-Id: f50dd465-f7e3-4002-91e3-08df04c392cd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|6133799003|10067099003|11063799006|4143699003|56012099006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	eRExMbH/8MTKE8wOFvL+/7aWyiZJ0WzKvgOSz4TE7bLc0ODxuK8Q32uym+A0vC7koCWGvq2KlZo5gsslRC0okaKukDEi8EAHrx3wZEY0lWB10hKMEYAXxGWJ+VFoIlBN14eECbDgseUpeokA7drYN/sNx9iGnLvznDxMDzs2FtnB/WmOmanu+p1BK5jiav/HczUHZ7sIH3h+ox6GlVNzoRpttvgYFUk0tkJ4taa/qQ597vIvLl5TwQ8GaDaZvbx7/WvbELTSrEd7Eob489lLKHXPfC88+ub7Sy9TXc+dS4hwHvx0dh2noITJiGCWru322akVoeow7Q8Yf0e8TIrE3qQhaAiVxgFG5xIXHLxPut+Tmyswl8p/B2wHHqHCrr9Vp0f/2tSwbK5RThGRVBZzeIt8N+C61tmcbx3rdSMIeHdM+U8lvgy3YVGQmyR5qC8pfiEh0AJ2gcOa9epADmcCGJxR4P7aQv6kbaVN+p7a8HJ/7xZpyl0VSfE5j3ifb+HI+wyQsdRRwxt+3TitTbdVwYGBIOZEzxLfWz4SkczGyQVl0lsWl9pBZEcGKATM2upI4xzq7kaB49H/YwS8+F8I7mZBZEAP8bJiEsZjVMjvo+b503LSqtC5ljpP9e9WW1FeDF6VsoA78fQ2ig8iB3FiXv1AmQ9pWfMDHGUy46cxGcI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(6133799003)(10067099003)(11063799006)(4143699003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TkFocHdmSVhzS1NWU0dPdDAvN3lCd29IUGswOTNLY3AvcC91Qm5sN284ZDdQ?=
+ =?utf-8?B?dndXa0NDaXBvd3BJR0tjT1ZYK1B5UnBRenVYbXltNGFSbllOUFVGNzNPL00w?=
+ =?utf-8?B?aVJrNHE1Y0xmWFAzMmVOQkV5MXBiOW5hR3A1a3lRZzAySHNrRGhGUi82ajhh?=
+ =?utf-8?B?WFhRUWdDc05KZjc4YmhaYlZ4eXArd0FSVW1yU1F0QmxXNmdoT1RZNU1qQ0FT?=
+ =?utf-8?B?WEgzSS9ZZlZldEpvQ0xrc25wOFpWWjhsTlNNTXNsRWlXYVpEK0tuVWFjVGpL?=
+ =?utf-8?B?ZExlL1BVaXpQR3lZQjJRc21kVlo1OC9yQnBnN2ljbGd1cVJGdGFWM2hEWlhu?=
+ =?utf-8?B?OWc0MDY2a1NnOXJHclYwU2paVUIzbHpkamxzSHhOc3p0akF2bjFEY2RVTzI4?=
+ =?utf-8?B?SzBnTGdnRi9PWERIWDlEaGpBTi9MaTlsOGpDL1lBUzFqbkt2SURBQlJLb0N3?=
+ =?utf-8?B?UlMxTy9wdWRXK0hnbGdTRitiQzVZWnZVMGR5R0FqMGNDd2N1NlB0dHFEYlRv?=
+ =?utf-8?B?RFAvVTlWYUF5QmlFZ0Q5bGE1eDVFSDVQc3lIL05Bak4zRy8wazFTMmJwKzJU?=
+ =?utf-8?B?TThhOTJ6dVdpbk9FSmJqbFBUbEVpTC9EWXlma3lQVmU0T3B3anJoZjIxNTVR?=
+ =?utf-8?B?d1EyTXYxUWJtZGhNTGFZQlpRK0R1ZlFNa3U5YTZpRDFJMHhHQUhSanoyNWZw?=
+ =?utf-8?B?QUJZWGpmaG01QmdPbUJiWklKbEo5SmFhbDNvc3UxZXdnMlVDNVp2MkZwZDlB?=
+ =?utf-8?B?bDhZc3JlUEhaVkluampaeXN4dzIzUUUyQyswYmFxK2FPQ2ZTN3I3akVKbC83?=
+ =?utf-8?B?Y3QwVlROdlV4b1VDMGVYNVU1VU0yN1BjbUVhYm85QVE3MVRUY25nSG1ybjVl?=
+ =?utf-8?B?YkxrYTBuakZid0d4alI0U0dqNGsxWktaWFRwRkZFN1ExazBUUlp2UEYzamFm?=
+ =?utf-8?B?Z0VqUW5LeVluMlZIb2c1djN3TjR3MHlkV0NocXp6UGxPb1NIQUkrRE11RDFr?=
+ =?utf-8?B?cnRBdThFWDh6bUo4c0h3V1MyUjlobGk3ZmJqTXJlbVpCUndZODlaQk0xUkht?=
+ =?utf-8?B?K3Z2WDFIdmJBRDQzdDdIbEtJN2cxUXU4WEpSZkV3ZEdaemtORWlxeklpZFo2?=
+ =?utf-8?B?bm1xVEJKMkVWTTcreG1Td3RGUzcvc3JVN3FLdnA4NUNJMUhIWGRUa01CdUJG?=
+ =?utf-8?B?Z2piODV4UmVzMFh6QndVV0cyMHlPMFVIc0crMTBUZDN1WFd1OTBpVFJYTFJu?=
+ =?utf-8?B?NU1FODRIZDUxbERVVDJJUUllUmxIT2JwT1h4R2lmYWZPNFhsZkIwWTRkam1Z?=
+ =?utf-8?B?RWhZQ2ltQTd2ZUpFa2gzdXpxR3lncjRSc093TFEvUWozWTFOc01Hc1JESzhR?=
+ =?utf-8?B?bXFYY0poTVppQUpGNi9EMnpWbDJ4ei9iRXF2T3dJVzNHcXlPYWxPbWYvQUx6?=
+ =?utf-8?B?ekl1L0FJT0tzWlArOWwxaGNlN25oaDhrLzg0cE1TMFBIUStkRk9QWFJ3ZUx1?=
+ =?utf-8?B?d2JwWlFZK01rVW9DSXZXektuOElKYWl1ajl4Z1RHeUJTN2hXK0tyN2xGTERU?=
+ =?utf-8?B?ZEdLSklGaWx4OG5LTkYraHY0eGdRNHJ0dkFaMmpaMXVieHpuK0VPNDYrazZu?=
+ =?utf-8?B?Qng3aUhOMFMyQkFxRTgrTUoveW5TdVhQUlp6dEV0eXVpZkJCVXgxZ0V2Ylps?=
+ =?utf-8?B?OVRmUU1uNHNkcUJLVEtKRFBsaEtXV1RkUTNsdGgzQUJFNjM5a0VZbmVrWDZX?=
+ =?utf-8?B?ZkxTcjNtK3pzOVI3dzVTTHV3cUFCYjdGclo3OUI4bzhJRkFqUytyNCtwSUk2?=
+ =?utf-8?B?TjkwT2VhWGJWT2JMUGNKaUpGWVhYK0VvLzBubW12aFNJclNYdGpUWlJlNHRS?=
+ =?utf-8?B?ZFp4TnJIeHBBQjZKaklsckc3WlN3N2h6U0hTZGhDRUE4T1FWeTF3cklmSkxY?=
+ =?utf-8?B?MnhUZUdaSjlZdXhDckx5OEV1S2VwUXpPdG1JKzNwaFlqc25tOWVTck55dW55?=
+ =?utf-8?B?b1cxOXozSnM4VXVTS3VSOFVyR0pIOHRMWkRLSGN4dVBRbmsvV3AvTXJKdDhv?=
+ =?utf-8?B?MXpXd1VkUmFOejNaZFUzVlVHbjBmT0t0eHBUbnJCbk5rQU5HZTlwdzRUVGdr?=
+ =?utf-8?B?QmJpVFNGMGtWR1RHaEthbkY5ek1TUk8yNEphTjA3UE94VzhST2J4Q3FlZUJX?=
+ =?utf-8?B?RGFtTEdmek5iNlVTaGpGSStNZkVjUjBlSVRNVXI3Q2JNTGN1Q0lTT0FxVndE?=
+ =?utf-8?B?T3hmQXpwMXd0TEp1UkVnbHV0azdpZzNEMDUwc3dPVTRYbFV4ZHNydXJIVGRI?=
+ =?utf-8?B?WWltUWtlbTFzT0EySFFVMWlBYjdlSUNiVXRIYUxsVkJiRnJtUDdkUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f50dd465-f7e3-4002-91e3-08df04c392cd
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2026 05:16:54.1162
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: byVrety+V6aqsuwqlboeuuZDMT/Hr/6r1WfW36X65GOhUPp+lnuoMTSiNoYcjzbsNEZ13K2Lc6liplCEv9nXmQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB9062
 
 
-## 2. Reproducer
 
-fio 3.40, io_uring engine (libaio not tested yet).
+On 8/26/2026 5:51 PM, Jason Gunthorpe wrote:
+> On Wed, Aug 26, 2026 at 04:58:15PM +0530, Vasant Hegde wrote:
+>> Pranjal,
+>>
+>>
+>> On 8/26/2026 12:38 AM, Pranjal Shrivastava wrote:
+>>> On Tue, Aug 25, 2026 at 02:53:15PM -0300, Jason Gunthorpe wrote:
+>>>> On Tue, Aug 25, 2026 at 05:29:59PM +0000, Pranjal Shrivastava wrote:
+>>>>
+>>>>> I agree, but I wonder why the existing code used memset here 
+>>>>> (in ignore_device):
+>>>>>
+>>>>> memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
+>>>>>
+>>>>> I was thinking it might've been done for probe failures in a kdump
+>>>>> kernel (normal kexec would've called shutdown for clearing all DTEs).
+>>>>> (I see this was added long time back and existed when PCI segments were
+>>>>> added [1]).
+>>>>
+>>>> For kdump you'd want to keep the original translation running in this
+>>>> case.
+>>
+>> If probe is failed then we can't do much. Why keep original translation running?
+> 
+> It might cause the kdump to fail if you abruptly change the DTE. The
+> kdump semantics are to leave the DTE unchanged until a defered attach
+> event. An error flow should not defeat that.
 
-Write the canary once:
-
-  fio --name=canary --filename=/srv/12to/.sata-canary --size=256G --bs=128k \
-      --ioengine=io_uring --direct=1 --iodepth=32 \
-      --verify=crc32c --verify_interval=4096 --rw=write \
-      --do_verify=0 --fsync_on_close=1
-
-Then loop the verification until it fails:
-
-  while :; do
-      fio --name=canary --filename=/srv/12to/.sata-canary --size=256G --bs=128k \
-          --ioengine=io_uring --direct=1 --iodepth=32 \
-          --verify=crc32c --verify_interval=4096 --rw=write \
-          --verify_only=1 --verify_fatal=1 || break
-  done
-
-The reboot-without-rewrite protocol: when it fails, reboot and re-run only the
-verification loop above. The canary file is never rewritten. It verifies clean.
-
-
-## 3. Corruption signature
-
-The frequent mode is a 4096-byte page read back as all zeros. btrfs reports
-"csum 0x8941f998", which is the CRC32C of a zero-filled 4 KiB block.
-
-The interesting mode is a structured permutation. From one btrfs report, inode
-6646:
-
-  offset A   offset B   delta
-  1314816    1355776    40960
-  1318912    1351680    32768
-  1323008    1347584    24576
-  1327104    1343488    16384
-  1331200    1339392     8192
-
-Verified programmatically from the raw btrfs csum lines: the data read at offset
-A is exactly what was expected at offset B, and vice versa. Five reciprocal
-pairs, symmetric around the pivot at 1335296 -- a run of 11 consecutive 4 KiB
-blocks in reverse order, the centre block mapping onto itself.
-
-This pattern suggests incorrect DMA/scatterlist mapping or descriptor handling,
-because the affected chunks form a structured permutation rather than random bit
-corruption. It does not by itself identify the faulty layer.
+Since probe is failed we are not going to attach device again.
 
 
-## 4. Hardware and storage stack
+> 
+> It was already running when probe fails, it can keep going.
+> 
+> The memset doesn't even work since it doesn't flush the DTE cache, it
+> isn't going to actually change any active transfer with a cache hit
+> DTE anyhow.
 
-  Gigabyte X870I AORUS PRO ICE, BIOS FB1c (2026-07-21)
-  AMD Ryzen 7 8700G w/ Radeon 780M Graphics
-  32 GB DDR5 non-ECC, single stick, JEDEC 4800 (EXPO/XMP off)
+Yeah. We can keep it as is and it can keep going.
 
-  0e:00.0 SATA controller [0106]: Advanced Micro Devices, Inc. [AMD]
-          600 Series Chipset SATA Controller [1022:43f6] (rev 01)
-
-  ahci flags: 64bit ncq sntf stag pm led clo only pmp pio slum part sxs deso
-              sadm sds apst
-  32 command slots, queue_depth 32, max_segment_size 65536, max_segments 168,
-  max_sectors_kb 4096, scheduler bfq
-
-  IOMMU: AMD-Vi, "Default domain type: Translated",
-         "DMA domain TLB invalidation policy: lazy mode"
-  Controller iommu_group type: DMA-FQ, becomes "identity" with iommu=pt
-
-  Test drive: /dev/sdb1 -> /srv/12to
-    btrfs, data single, metadata DUP, mounted rw,noatime,compress=zstd:3,
-    space_cache=v2. Plain partition: no LVM, no dm-crypt, no mdraid.
-
-  Drives that showed the symptom (three different drives, one taken new out of
-  its box and affected within hours of first use):
-    WDC WD120EFGX-68CPHN0, fw 85.00B85   (btrfs, quantified above)
-    Seagate ST8000VN004-2M2101, fw SC60  (btrfs)
-    WDC WD101EFBX-68B0AN0                (ext4)
-
-  NVMe devices in the same machine have never shown the symptom.
-
-
-## 5. What I ruled out
-
-  - NCQ: queue_depth 32 -> 1, no change (304 vs 769 csum failures per 4 GiB read)
-  - transfer size: max_sectors_kb 4096 -> 64, no change (388 vs 342)
-  - both combined: no change
-  - SATA link power management: already max_performance on the affected ports
-  - PCIe ASPM: disabled on that link
-  - PCIe AER: all correctable and non-fatal counters at 0
-  - SATA link CRC (SMART attribute 199): 0 on every drive
-  - temperature: 41-56 C
-  - swiotlb=force does NOT help, which is consistent with the dma-iommu path
-    still being used underneath
-  - not btrfs-specific: at the same moment, ext4 on a second drive reported
-    "bad header/extent: invalid magic - magic 0", and parted reported a corrupt
-    GPT on it. Both drives read correctly again after a reboot.
-
-btrfs is what first exposed the problem, through its data checksums. Filesystems
-without user-data checksums may hand affected data to userspace without noticing,
-although metadata validation or application-level checksums can still catch some
-of it -- which is what happened with ext4 and parted above.
+> 
+>>> Even I'm not sure why we had this memset here, I'll just dig into
+>>> the history once if there's anything. Otherwise, I'll simply drop this.
+>>>
+>>> Vasant, please let us know if there was a different context to it?
+>>
+>> Looking into git history, it looks like, during boot init_device_table_dma()
+>> sets dte.v bit for all devices. So probe fails then clear everything in DTE.
+> 
+> That isn't how a secure'd iommu driver should boot..
+> 
+> In a secure boot flow (eg DRTM or something with untrusted PCI) the FW
+> will leave the iommu setup to block dma when booting the OS. The OS
+> should then ensure that it never permits an identity mapping as it
+> boots up the iommu.
+> 
+> Having the driver boot up with all DTEs programmed to identity (eg
+> 0'd) and then try to fix them to blocking after the iommu probes
+> devices is security backwards.
 
 
-## 6. Possibly related
-
-Bug 219609, "File corruptions on SSD in 1st M.2 socket of AsRock X600M-STX +
-Ryzen 8700G". Christoph Hellwig writes there that "the problem only happens when
-using the dma-iommu code (with or without swiotlb buffering for unaligned /
-untrusted data)", and that iommu=pt or amd_iommu=off fix it.
-
-Same SoC (Ryzen 8700G) as this machine, but a different device class (SATA/AHCI
-here, NVMe there) and a different kernel window, so I am reporting separately and
-cross-referencing rather than piling onto that bug.
+During boot, it only sets dte.v bit. For DMA to work we have to set dte.tv bit
+that's done in set_dte_entry. So it doesn't break the security.
 
 
-## 7. What I can and cannot do
+> 
+> Look at how ARM sequences it, the stream table (aka DTEs) are fully
+> configured before programming to HW. First it loads force blocking
+> then it does a pass to switch those with IOMMU_RESV_DIRECT to identity
+> (see arm_smmu_rmr_install_bypass_ste), then it tells the HW to
+> hitlessly switch from the FW configuration to the table. Ensuring no
+> device that shouldn't has even a moment of identity access.
+> 
+> Since these secure boots have become very trendy now, I saw AMD PR
+> about their version, this should probably be fixed! :)
 
-This is a production home server, not a test bench, so I want to be straight
-about it:
+Yep! We have secure vIOMMU prototype. We want to start discussion once hw-viommu
+series settles.
 
-  I CAN: run any specific test, boot parameter or debug patch you ask for, and
-         report back with full instrumentation. I have a working reproducer and
-         a drive I can dedicate to it.
+-Vasant
 
-  I CANNOT realistically: dedicate the machine to a multi-day v6.19..v7.0
-         bisection. Classifying a kernel as "good" currently costs several hours
-         and several TiB of reads, which makes ~13 bisection steps impractical
-         for me. If someone can suggest a faster trigger, that changes.
-
-I have not yet tested: vanilla upstream kernels, libaio instead of io_uring,
-iommu.strict=1, or amd_iommu=off. I am happy to test any of these.
-
-Available on request, immediately: full dmesg from a bad boot and from an
-iommu=pt boot, kernel .config for good and bad, /proc/cmdline, uname -a,
-/proc/sys/kernel/tainted, lspci -nnvv, lspci -t, IOMMU group and domain types,
-queue/DMA sysfs attributes, SMART reports, AER counters, raw fio logs, the raw
-btrfs csum lines, and the script that proved the A/B swaps.
-
-Thanks,
-Mikael Etienne
