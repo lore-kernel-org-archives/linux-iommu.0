@@ -1,466 +1,218 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53FD12D3EEB
-	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 02:24:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DAC92C0261
+	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 02:52:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.45
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787883866; cv=pass; b=YQ5vtW1P7+lkZ7uLx6k6UQSDj4kJSjukI92KwZKA3mAUzW/iiscIj5nBKhGg2pgiQzlhCiu2rUdoItgYqcnaY+xcMkV8w2nLos9D7CxOPrVNtNKORwgdR9QVA3QQ07NwktgHEQY3Su7pkK/QNTj9NFr/IB2j0MjkSJ+jVxEsq4Q=
+	t=1787885544; cv=pass; b=ArsSj5tCchoCLQJPY6W/Or71EY0XQO2x55MskZXzt0BOIFcEZJ/dxv683zqxPoBHCPMGL/Iqafi/nxjPlMhahf440Ykl7tELUT/gKL//ysgnvD9cJ7cu+4r2F98iR8tmoJhIWQtVvyQB6Iu3vECD0jLz9DERtLoAA+5j9lOFUrk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787883866; c=relaxed/simple;
-	bh=XssY/Ag2bMB7mb27MbqGh/p8ihJ49N4V0GEqbAMtdvU=;
+	s=arc-20240116; t=1787885544; c=relaxed/simple;
+	bh=jVA0PcZIH71MOyCtuzwmqMkCrpkwsifi0+vB2mTyXio=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=I+fa7jake2vIObmfzAfXQ1afPVUN3hrv2wOMCLgaNKee58+J+rF56r0DCmNwET9X6xHbXdEpKLjK3oTRKqcWat7JHmnTo2BEaqAotbgC47uKKYQl5LDk1FtbamsVl/X9R6XhQCIIoBcPYnpe4YUD37vyS+ONahaHVMXOHbUTnv4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=lbrBsVKG; arc=pass smtp.client-ip=209.85.218.54
+	 To:Cc:Content-Type; b=gXmu0i8MR3e70aoHLb+0MhL6yPHdKY/sltOyLWiviDdLMUriBomPRR7NfgUBeLUwPZyi6pzzP3J9iVdY6JR9apKUHLK7CMdGLusM7T9h3erXfsSAkwAMxx64H+bAIwiHN5g+RJhbcO12A/kazOqZxfIlC//9CNX+88aFjPQVCPE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=D9+CQMzG; arc=pass smtp.client-ip=209.85.218.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="lbrBsVKG"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c160420289bso75363466b.0
-        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 19:24:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787883862; cv=none;
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="D9+CQMzG"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-c25420fe973so99220466b.0
+        for <iommu@lists.linux.dev>; Thu, 27 Aug 2026 19:52:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787885541; cv=none;
         d=google.com; s=arc-20260327;
-        b=FRFbs1vGA6GS6LFqw/m+CMORsY5JAmMNcoCAOlPcLW2/PxeKHX8GzKAxwZKlMtR3Zw
-         siO7+fz+FF41qLt7UOXLSEv7WO0p3ZoQJIzESByqcgdxqKvRP5UhUDUYx0HlSRnUyXCM
-         3XsYrLGDqMGcKkSnPQLRKKj5QEST8Z3gHg/gTdBE/EU3HP0ACIpiV/SA6vVFQr9hyDzR
-         PryY9a0O/yRPcTyJM27T1CSTk55s8vMr18ghlMOkUF0qeE6ApHcg6Tzyl9TF8dAhj4+v
-         OhrojtC+53NJHLTjB9gARwV1i3jSaYlMlQasg7IwJhb+0Se3AtMRnP2zTmc1/2wsU5sT
-         94vg==
+        b=rAuisJG/7ace14+dHj5LbCgjjIG8xEvYjbk1MVJGtJvdH4zSSxilM5ybcBrQzq2tWk
+         UJ63gDqxzuptLZv6gHPr0WpoFUYtcK3xjhls4XiVflSMTPVBb/XGd+s5SD/hrzCEniKt
+         Nj01tTwLhJ79jarr4qikM9rBrbIV5rJbo1MhyrPLBFlskAKX1JA0qu0j53OCNKCYOKN6
+         kF9Jyv56CYChiUE7thoip95Q783gv9quk8Rd9vVZ9KuQVJkcGSff8/2yXMS0OfpRVXmh
+         4hnbL5kmNfX3JMpxUkvjL+fQrx/B1PTB/WP08PgNEUzXlKKYc6B9Ffm/IRpSPOlM/eT9
+         gO6g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=LpY4Xg0DZOqzdq9EYZ1ldhFFRYnkNlLXXK3mNdSnahk=;
-        fh=WaJOcPE68Nt5Dmjd1PvPBfOFCfeGt2C74iBTKKLn5Vc=;
-        b=dSSuFS/wUEIJS32TAgNLlkLBXu8B0QbpHafmsZtWVnlfRtNmdT00ZfWMF3QRqJwck9
-         myOEj58TEa/qYLDwJcp5rknk/8scXoCvVIRNSdi87ykSz7nlO2ZIyrNJ1sdIOHCeQTQC
-         CRteQI80uz2G7Kz+nm9xzOXOqUtSwLobrMdVcXjbWqP+8wL3MhuCsqkEIiwBl3NDF7FB
-         BygehyC/2T8G6IOAmYJrbr9pXoWASqILmdIIt3lWE2YR8Rh8YitMXT+m2Rynk0lqTnoa
-         GOz0+zxSZOF0hApioNEXV7IKY6KG56Xa4rl8TDYLPlrB6NnNuSZH3UI9Mn9RMn6Sd3GA
-         ePGw==;
+        bh=8h8ajQ5iXnMhCt1P+yDUVUP4cBmcnCV7lKhnpULiS68=;
+        fh=m2xxPGZa8rbx9hsGxyKMoZOl1WMfwPKpGSxYwfYejVg=;
+        b=bEdwOhy4YfjNbI74NCmkv7s6ud9ht7CeGJd4CWrlnPAo68ZHf5XMPfj3XU1LzFGag4
+         PsowPtrbipbSJANIGoYtd5l5b8WZMTSNMG2lYgLGtoIJqfUt4Hif8n0XvBlRyDmxDfLj
+         LN+SlQh4JNQsboTTpocFyKRvPOsQgTaB5iM2rd3xMu0rjBeWdthotv9GDmnJzVkhYT/o
+         8x4TJDO/oVFtFFAeprF47L4Tek9jReqCTNwXzb9kGWpSEIebCaNWk8d/Sezo0UBy8mEr
+         nnCMnf++p3Nh5a8LyEiW5MmHcW2ZD2GbpVz/4n+bYmRCz76xH8wZQ/+h6EUDDEDwUEjD
+         aiXQ==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1787883862; x=1788488662; darn=lists.linux.dev;
+        d=sifive.com; s=google; t=1787885541; x=1788490341; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=LpY4Xg0DZOqzdq9EYZ1ldhFFRYnkNlLXXK3mNdSnahk=;
-        b=lbrBsVKG3JASxQmxT7JOokKSZwXFAHGRhg9GYj8k3iD6E85fIhNWk6QUDP/DPvlML6
-         +duwZ+X1KGlySlVn5Ggd3Bg6rW0b04AZES81rZLWF3hbJGtpuB7yH2QhOltEV7kKZAqX
-         PrWikTzvzyLzkqjKcUvDTh45bPkrs1OJwaeahaHl0tEyoAQqRqtPnyRL/iiHP80cHsQW
-         YlZptyEI/TMUyTQwI50+2JxJBVFi/o05aS/rBl1OHRU93DFS06Djuo33nO74U+mMb9cK
-         AEld/efC7YmgCxLDZ1tfuEfQcKHlOO+MBwIqFczLuFODimlE7+rU4Xm5gkCQTOhEbgNs
-         D9kQ==
+        bh=8h8ajQ5iXnMhCt1P+yDUVUP4cBmcnCV7lKhnpULiS68=;
+        b=D9+CQMzGsXXawlkJOZztbIL7iB95yJ+nle7Zsf0eu2TsWGqI6GBzW6S/H1qzi3l3Vd
+         f/4kVmjgJxw2XsjcvUzGoAqHOiD+jDE6oc47p9Co1QRYZd1sPrU3GTD7GLOTTvenLCtR
+         VYZ3Lnj/KTagtTrWi/634OEuEAdQPTjecKSXkBAHjL+MxRqq9tRCxR/tbm/6fOZdKSSc
+         lvmlYxX9wuJD8oKhqd5d1moclpCj4XaDn+pVov/besZJPS2grQUlL1nOichzrF5m5QzT
+         fGVJoCf6p9Tbtcn5eLOojvyf1BAPCF4JZ1A9U8kGS5xkY0GFaQ4euEWk3JjgVCxoevHj
+         ZbNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787883862; x=1788488662;
+        d=1e100.net; s=20251104; t=1787885541; x=1788490341;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=LpY4Xg0DZOqzdq9EYZ1ldhFFRYnkNlLXXK3mNdSnahk=;
-        b=r7UhYPCmAIFWa+ewr7wkPRLc2pwyUwkwdyb7w9ImlkDemoHbl/f9/ysntRuvg9Nn9P
-         Kth2vPFlMMOMPfqE0aFaBxk7XecFEvrfo6zMqW1gcWgbdkHxNYac9MCQoDauCyMZZidN
-         NVbgBT24qMNQY5lDt1wTrYdKGfm3kmeyU6Pk3t8L8LhdrY9VmDuSJfVQDKLpE5K5Y5pz
-         YTJPMv+6cFDY9Gg2dp5oqxtUw4RP93pA1W9rrt99OImRwN0xfeyI6T7G73AV3Zx8UI4Q
-         i3wYFEdWTNmAdCQRRpYFGPE3/Z5/erc4i2o6UZPQ3k4fMmPcjdRCJWreQdcJAy6wwk19
-         EWyA==
-X-Forwarded-Encrypted: i=1; AHgh+RpWnaFz6qRn+/h9Sl1SQL226Acu23QrW/mHPGfVegIHVoCeOp57FRIlsatxKsdex5tJ0ZrgeQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++k0Fxr1PNykusO5iyelKs6BmiNJUSMxpP6OTXxcQQTKvRX3JorD
-	qfCW17D73N81/bXNBjCMtn/vHXwxkx9ouycJScrFKzEQWaFOweqMdT/4CXLK6ax6I13TEecUR9n
-	RCdqvahsVEjLqQsvcY2qoJeRa2NK8CiJIsgHDg7fjGg==
-X-Gm-Gg: AR+sD10YnHsFouCIfVBIg1wjEYsvOnPy1Otcvx98wZidwWkMjSkRgrf+HBjIWZdsuz9
-	umuK2VSlXk5s4CDZf0XQNqg4iBqzBLtFHUwSsF/PEcLT4lsF2UpU2knQAyZFkSEVZX7hZNFIdC3
-	Wgfw3gVpRCYhEM/oQAXeNoMcS5lVCP0ZgrTo9Ln2sgbB/3yrzRzQtFUAgK7KNl5JcYV+mF/aHFv
-	BD02t3sVbjs6AgFjsKMAVEu7RDWcagoIlUJebFt+pJZTqBKrz9c4MDOj1pVfcLoPBOQLKGbmADo
-	vhECu+4LatwRmKmWQCdv3R2xzS+PAJJ1TM7DGzvTVn+952c=
-X-Received: by 2002:a17:907:1c90:b0:c25:362e:fb8b with SMTP id
- a640c23a62f3a-c2556d9cd56mr193722766b.7.1787883861790; Thu, 27 Aug 2026
- 19:24:21 -0700 (PDT)
+        bh=8h8ajQ5iXnMhCt1P+yDUVUP4cBmcnCV7lKhnpULiS68=;
+        b=UOOcvvhrJrNVZz+17yqP067qq99xeN2bd6X32B4uhk+JDUUQvJ0S3mV44GCAh//GeN
+         SJZUuW8B1rAKLfm3hvwlkwxM+yoWB1x2ZqUuVNladjwcn96KbEo5BP+EVaquV7YIQoYK
+         U+bMaKluf6UruS6oP67TTxE2IlSRRCPqX9uDvMx/tXjQvn4Z4CT6noMf147S/JNin8m+
+         JGlt/EmNAHSDYuI3im/PY1QWa642O9FM6qO+XwIil0GnUkxcGjXWgH1YQWVUPLaUH51n
+         RPhU9Oa6OSvD+2lhDbWLO0CxIyxS8mJJoVHc9De79c6nDAsvE4YBlLppOogz1ZqTxabe
+         RlUQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrQQXRBGot897T5+L6OqRZ3L6DgDKsScwqMxo9R1QKScU+MhpecTA2tL2SNaQ6fPZcMIls+lQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++lzb2f8qOeb/dWrtMeBA1KlW5rWcMNVNP0pUWKK+Rt5OOC1HdES
+	Y8Ze50VAqGbj1tHjge/15ZdmoOGx+dcLCJOeY5Pg/AUEeI/By2tZGICFKQoHR92qsMoqaHmc2bf
+	Q0Ygzr5VueMQH0zXOqgFg8zwE44IAtOCe5kPUoZclDA==
+X-Gm-Gg: AR+sD13glZbiZYgSU06on8U5xqo2vF0vR5sV3a6V4/eZc1K8sBH7w4pDDOLpuuafr4/
+	zT0SS8qnACxcuxQJHxO/XJPuZsb5H+H3i4oKRrU2u0CPL+P0n5Mie6Hd8QnqjaQCBLvyDs3JNyE
+	0Vfak/I/JiDAzLOs/az21P+JqfflKeTRXZ1NUFjTC73E8RPm7OLYYdVtR9H9u9xWxIWYQ8X12ux
+	wWSKQyefVPVBNB5KJkkUjDkmoBo8hi1tvk6NE1TwpZJLfAkQvS+qDgItarQzezUViKnDv1fkKEA
+	LImOg4EkrNjlGSfAfsqobjMSiou2oDj5G/fq1UXz61bvUCuzAWwCYZJ2tQ==
+X-Received: by 2002:a17:907:a091:b0:c16:8adf:f183 with SMTP id
+ a640c23a62f3a-c255742f3e2mr190741766b.14.1787885540701; Thu, 27 Aug 2026
+ 19:52:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260714083625.1083606-1-zong.li@sifive.com> <20260714083625.1083606-2-zong.li@sifive.com>
- <6a5dc092-d0b5-4304-acfb-9de161f2bfd6@picoheart.com> <CANXhq0o1t5D76pscjqHteLjGJB4Z2iSS1a=o0+JCjKQtdPJ+vQ@mail.gmail.com>
- <47de2c31-04e0-4095-84a2-81e18b5fc855@picoheart.com>
-In-Reply-To: <47de2c31-04e0-4095-84a2-81e18b5fc855@picoheart.com>
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+ <20260615123821.373248-1-guoren@kernel.org> <7c490aeb-a3d9-4fe9-81de-f9662577851d@iscas.ac.cn>
+ <CAJF2gTQ+-gpvUDtOh99aKP2-iDJy3MYOWti9k2Ntd0-J0MXqxQ@mail.gmail.com>
+ <e051d822-d0be-4a88-ba86-ec9b5905fd1e@iscas.ac.cn> <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
+ <20260618143634.7f3dd6c5@pumpkin>
+In-Reply-To: <20260618143634.7f3dd6c5@pumpkin>
 From: Zong Li <zong.li@sifive.com>
-Date: Fri, 28 Aug 2026 10:24:10 +0800
-X-Gm-Features: AcwNN1VOA2vMcYC0NmbKrDuaHyI1jtEH3jjzW6dgRq0nLljGyv_kKIaUYA5XyZo
-Message-ID: <CANXhq0rmh3UoXt+=Wi6XBXrAi6nT8_XUUtdCZSMm=YWLV+Jpiw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] drivers/perf: riscv-iommu: add risc-v iommu pmu driver
-To: Yicong Yang <yang.yicong@picoheart.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, 
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
-	mark.rutland@arm.com, andrew.jones@oss.qualcomm.com, guoren@kernel.org, 
-	david.laight.linux@gmail.com, zhangzhanpeng.jasper@bytedance.com, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Date: Fri, 28 Aug 2026 10:52:08 +0800
+X-Gm-Features: AcwNN1XwesBjMwTR7nVyOfHazvWEdcWRn6IE55RF21RXQf02dtzp-bwH5tm1dh0
+Message-ID: <CANXhq0qtt7U3jKEB4drvSn7gg55nwWm8VFnfY-NRGjBaWVr_MQ@mail.gmail.com>
+Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
+To: David Laight <david.laight.linux@gmail.com>
+Cc: Guo Ren <guoren@kernel.org>, Vivian Wang <wangruikang@iscas.ac.cn>, 
+	zhangzhanpeng.jasper@bytedance.com, alex@ghiti.fr, aou@eecs.berkeley.edu, 
+	cuiyunhui@bytedance.com, iommu@lists.linux.dev, joro@8bytes.org, 
+	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	luxu.kernel@bytedance.com, palmer@dabbelt.com, pjw@kernel.org, 
+	robin.murphy@arm.com, tjeznach@rivosinc.com, will@kernel.org, 
+	yuanzhu@bytedance.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 22, 2026 at 5:32=E2=80=AFPM Yicong Yang <yang.yicong@picoheart.=
-com> wrote:
+On Fri, Jun 19, 2026 at 12:02=E2=80=AFAM David Laight
+<david.laight.linux@gmail.com> wrote:
 >
-> On 7/22/26 1:15 PM, Zong Li wrote:
-> > On Mon, Jul 20, 2026 at 3:29=E2=80=AFPM Yicong Yang <yang.yicong@picohe=
-art.com> wrote:
-> >>
-> >> Hi Zong,
-> >>
-> >> On 7/14/26 4:36 PM, Zong Li wrote:
-> >>> Add a new driver to support the RISC-V IOMMU PMU. This is an auxiliar=
-y
-> >>> device driver created by the parent RISC-V IOMMU driver.
-> >>>
-> >>> The RISC-V IOMMU PMU separates the cycle counter from the event count=
-ers.
-> >>> The cycle counter is not associated with iohpmevt0, so a software-def=
-ined
-> >>> cycle event is required for the perf subsystem.
-> >>>
-> >>> The number and width of the counters are hardware-implemented and mus=
-t
-> >>> be detected at runtime.
-> >>>
-> >>> The performance monitor provides counters with filtering support to
-> >>> collect events for specific device ID/process ID, or GSCID/PSCID.
-> >>>
-> >>> According to RISC-V IOMMU specification Chapter 6:
-> >>> Whether an 8 byte access to an IOMMU register is single-copy atomic i=
-s
-> >>> UNSPECIFIED. Use two separate 4 byte accesses for hardware
-> >>> compatibility.
-> >>>
-> >>> PMU-related definitions are moved into the perf driver, where they ar=
-e
-> >>> used exclusively.
-> >>>
-> >>> Suggested-by: David Laight <david.laight.linux@gmail.com>
-> >>> Suggested-by: Guo Ren <guoren@kernel.org>
-> >>> Link: https://lore.kernel.org/linux-riscv/20260618143634.7f3dd6c5@pum=
-pkin/
-> >>> Signed-off-by: Zong Li <zong.li@sifive.com>
-> >>> ---
-> >>>  drivers/iommu/riscv/iommu-bits.h |  61 ---
-> >>>  drivers/perf/Kconfig             |  12 +
-> >>>  drivers/perf/Makefile            |   1 +
-> >>>  drivers/perf/riscv_iommu_pmu.c   | 722 +++++++++++++++++++++++++++++=
-++
-> >>>  4 files changed, 735 insertions(+), 61 deletions(-)
-> >>>  create mode 100644 drivers/perf/riscv_iommu_pmu.c
-> >>>
+> On Thu, 18 Jun 2026 17:51:34 +0800
+> Guo Ren <guoren@kernel.org> wrote:
 >
-> [...]
->
-> >>> +
-> >>> +static irqreturn_t riscv_iommu_pmu_irq_handler(int irq, void *dev_id=
-)
-> >>> +{
-> >>> +     struct riscv_iommu_pmu *pmu =3D (struct riscv_iommu_pmu *)dev_i=
-d;
-> >>> +     DECLARE_BITMAP(ovf_bitmap, RISCV_IOMMU_HPM_COUNTER_NUM);
-> >>> +     u32 ovf, idx;
-> >>> +
-> >>> +     /* Check whether this interrupt is for PMU */
-> >>> +     if (!(readl_relaxed(pmu->reg + RISCV_IOMMU_REG_IPSR) & RISCV_IO=
-MMU_IPSR_PMIP))
-> >>> +             return IRQ_NONE;
-> >>> +
-> >>> +     /* Process PMU IRQ */
-> >>> +     riscv_iommu_pmu_stop_all(pmu);
-> >>> +
-> >>> +     ovf =3D readl(pmu->reg + RISCV_IOMMU_REG_IOCOUNTOVF);
-> >>> +     if (!ovf)
-> >>> +             return IRQ_NONE;
-> >>> +
-> >>> +     bitmap_from_u64(ovf_bitmap, ovf);
-> >>> +     for_each_set_bit(idx, ovf_bitmap, pmu->num_counters) {
-> >>> +             struct perf_event *event =3D pmu->events[idx];
-> >>> +
-> >>> +             if (WARN_ON_ONCE(!event))
-> >>> +                     continue;
-> >>> +
-> >>> +             riscv_iommu_pmu_update(event);
-> >>> +             riscv_iommu_pmu_set_period(event);
-> >>> +             riscv_iommu_pmu_clear_ovf(event, idx);
-> >>> +     }
-> >>> +
-> >>> +     /* Clear performance monitoring interrupt pending bit */
-> >>> +     writel_relaxed(RISCV_IOMMU_IPSR_PMIP, pmu->reg + RISCV_IOMMU_RE=
-G_IPSR);
-> >>> +
-> >>> +     riscv_iommu_pmu_start_all(pmu);
-> >>> +
-> >>> +     return IRQ_HANDLED;
-> >>> +}
-> >>> +
-> >>> +static unsigned int riscv_iommu_pmu_get_irq_num(struct riscv_iommu_d=
-evice *iommu)
-> >>> +{
-> >>> +     /* Reuse ICVEC.CIV mask for all interrupt vectors mapping */
-> >>> +     int vec =3D (iommu->icvec >> (RISCV_IOMMU_INTR_PM * 4)) & RISCV=
-_IOMMU_ICVEC_CIV;
-> >>> +
-> >>> +     return iommu->irqs[vec];
-> >>> +}
-> >>> +
-> >>> +static int riscv_iommu_pmu_request_irq(struct riscv_iommu_device *io=
-mmu,
-> >>> +                                    struct riscv_iommu_pmu *pmu)
-> >>> +{
-> >>> +     return devm_request_irq(iommu->dev, pmu->irq, riscv_iommu_pmu_i=
-rq_handler,
-> >>> +                             IRQF_NOBALANCING | IRQF_SHARED, dev_nam=
-e(iommu->dev), pmu);
-> >>
-> >> need IRQF_NO_THREAD to avoid force thread of the handler.
-> >>
-> >> it's a PMU exclusive interrupt, reason to make it IRQF_SHARED?
+> > Hi Vivian,
 > >
-> > PMU interrupt can be shared with the queue's interrupt (such as the
-> > command queue, fault queue, and so on). Also, in the IOMMU driver,
-> > these queue interrupts are handled as threaded IRQ
+> > As noted in the RISC-V IOMMU Specification, Chapter 6:
+> > > Whether an 8-byte access to an IOMMU register is single-copy atomic i=
+s UNSPECIFIED, and such an access may appear, internally to the IOMMU, as i=
+f two separate 4-byte accesses =E2=80=94 first to the high half and second =
+to the low half =E2=80=94 were performed.
 > >
+> > Therefore, the atomicity of 64-bit MMIO accesses is UNSPECIFIED and
+> > not clearly defined in the current ratified RISC-V IOMMU
+> > specification. To handle this correctly, the Linux RISC-V IOMMU driver
+> > should fall back to 32-bit MMIO accesses when reading 64-bit registers
+> > (e.g., performance counters). The behavior of 32-bit MMIO accesses is
+> > more precisely defined in the RISC-V IOMMU specification.
+> >
+> > Thus, many hardware vendors implement 32-bit MMIO (rather than 64-bit
+> > MMIO) based on the current ratified RISC-V IOMMU specification, and
+> > this driver does not appear to benefit from 64-bit MMIO access either.
+> > Performance is fundamentally constrained by bus latency; assuming that
+> > simply reducing the number of accesses will improve performance is an
+> > oversimplification that ignores the underlying hardware
+> > characteristics.
 >
-> you can keep iommu's handler threaded while pmu's still in
-> the top half, so it doesn't matter to set IRQF_SHARED.
+> If the bus latency is significant it is almost certainly worth using
+> memory accesses to avoid re-reading the hi register.
+>
+> Something like this might work:
+>
+> static volatile u32 hi_prev, lo_prev;
+>
+>         u32 hi =3D read_reg_hi();
+>         u32 lo =3D read_reg_lo();
+>
+>         if (lo <=3D lo_prev || hi !=3D hi_prev) {
+>                 u32 hi_tmp =3D read_reg_hi;
+>                 if (hi_tmp !=3D hi) {
+>                         hi =3D hi_tmp;
+>                         lo =3D 0;
+>                 }
+>                 lo_prev =3D ~0u;
+>                 hi_prev =3D hi;
+>         }
+>         lo_prev =3D lo;
+>         return (u64)hi << 32 | lo;
+>
 
-I notieced that this conflates two independent checks in
-__setup_irq(). Both are in kernel/irq/manage.c, on the path taken when
-the virq already has an action installed:
+Hi Daivd,
 
-         if (!((old->flags & new->flags) & IRQF_SHARED) ||
-             (oldtype !=3D (new->flags & IRQF_TRIGGER_MASK)))
-                 goto mismatch;
+I included this in my v5 of the IOMMU PMU series, but we noticed that
+sashiko-bot AI reported two issues:
 
-         if ((old->flags & IRQF_ONESHOT) &&
-             (new->flags & IRQF_COND_ONESHOT))
-                 new->flags |=3D IRQF_ONESHOT;
-         else if ((old->flags ^ new->flags) & IRQF_ONESHOT)
-                 goto mismatch;
+1: The lo_prev is immediately overwritten:
+The trailing 'pmu->lo_prev[idx] =3D lo;' is outside the if block and
+runs unconditionally, so the 'lo_prev =3D ~0u' is clobbered before the
+function even returns. It never survives to the next call. lo_prev
+ends up holding the guessed value (typically 0) instead, which is a
+perfectly ordinary small number, and the intended "always re-verify
+next time" behaviour never happens. The sentinel write was effectively
+dead code.
 
-There is no path anywhere in __setup_irq() that relaxes the
-requirement because one requester runs in hard IRQ context and the
-other one is threaded. The iommu driver requests its queue interrupts
-with IRQF_ONESHOT | IRQF_SHARED, so old->flags has IRQF_SHARED.
-Without it in new->flags the AND is zero and we take the mismatch
-path, which means -EBUSY.
+2: The wrap check itself can miss a wrap
+Here is a concrete sequence. Assume a previous call left hi_prev =3D 1
+and lo_prev =3D 5, i.e. the counter was 0x1_00000005. Some time later
+the counter has advanced close to 0x1_FFFFFFFF:
 
-I will add a comment above the call recording why IRQF_SHARED is
-needed, so this does not get dropped again in a later revision.
+  1. hi =3D readl(addr + 4)  -> counter is 0x1_FFFFFFF0, so hi =3D 1
+  2. the counter crosses the boundary and becomes 0x2_00000008
+  3. lo =3D readl(addr)      -> lo =3D 8
 
+The check then evaluates:
+
+  lo (8) <=3D lo_prev (5)   -> false
+  hi (1) !=3D hi_prev (1)   -> false
+
+Both are false, so the fast path is taken and 0x1_00000008 is
+returned. The true value is 0x2_00000008, so the result is short by
+2^32 and the third read of the high half never even executes.
+
+Both situations share the same root cause: It puts the reliable check
+(the third read) inside an if guarded by the unreliable cross-call
+heuristic 'lo <=3D lo_prev || hi !=3D hi_prev)'
+Case 1 is an issue in the bookkeeping that heuristic depends on, and
+case 2 shows that even with correct bookkeeping the heuristic is not
+sound.
+
+To make everything simpler, I would use your first version for the
+latest IOMMU PMU series:
+
+        hi =3D read_hi();
+        lo =3D read_lo();
+        if (hi !=3D read_hi()) {
+                // Pick a value that happened while doing the reads.
+                hi++;
+                lo =3D 0;
+        }
+
+> It shouldn't need any locking but the accesses do need to be ordered.
 >
-> if so we cannot ensure the count's updated in the atmoic
-> context on event->cpu, which is required by the perf core
-> to keep serializaiton. e.g. possible for the other users
-> bind this irq to another cpu other than event->cpu?
+>         David
 >
 >
-> >>
-> >>> +}
-> >>> +
-> >>> +static int riscv_iommu_pmu_probe(struct auxiliary_device *auxdev,
-> >>> +                              const struct auxiliary_device_id *id)
-> >>> +{
-> >>> +     struct  riscv_iommu_device *iommu_dev =3D dev_get_platdata(&aux=
-dev->dev);
-> >>> +     struct riscv_iommu_pmu *iommu_pmu;
-> >>> +     void __iomem *addr;
-> >>> +     char *name;
-> >>> +     int ret;
-> >>> +
-> >>> +     iommu_pmu =3D devm_kzalloc(&auxdev->dev, sizeof(*iommu_pmu), GF=
-P_KERNEL);
-> >>> +     if (!iommu_pmu)
-> >>> +             return -ENOMEM;
-> >>> +
-> >>> +     iommu_pmu->reg =3D iommu_dev->reg;
-> >>> +
-> >>> +     /* Counter number and width are hardware-implemented. Detect th=
-em by write 1s */
-> >>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOCOUNTINH;
-> >>> +     writel(RISCV_IOMMU_IOCOUNTINH_HPM, addr);
-> >>> +     iommu_pmu->num_counters =3D hweight32(readl(addr));
-> >>> +
-> >>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOHPMCYCLES;
-> >>> +     riscv_iommu_pmu_writeq(RISCV_IOMMU_IOHPMCYCLES_COUNTER, addr);
-> >>> +     iommu_pmu->cycle_cntr_mask =3D riscv_iommu_pmu_readq(addr);
-> >>> +
-> >>> +     /* Assume the width of all event counters are the same */
-> >>> +     addr =3D iommu_pmu->reg + RISCV_IOMMU_REG_IOHPMCTR_BASE;
-> >>> +     riscv_iommu_pmu_writeq(RISCV_IOMMU_IOHPMCTR_COUNTER, addr);
-> >>> +     iommu_pmu->event_cntr_mask =3D riscv_iommu_pmu_readq(addr);
-> >>> +
-> >>> +     iommu_pmu->pmu =3D (struct pmu) {
-> >>> +             .module         =3D THIS_MODULE,
-> >>> +             .parent         =3D &auxdev->dev,
-> >>> +             .task_ctx_nr    =3D perf_invalid_context,
-> >>> +             .event_init     =3D riscv_iommu_pmu_event_init,
-> >>> +             .add            =3D riscv_iommu_pmu_add,
-> >>> +             .del            =3D riscv_iommu_pmu_del,
-> >>> +             .start          =3D riscv_iommu_pmu_start,
-> >>> +             .stop           =3D riscv_iommu_pmu_stop,
-> >>> +             .read           =3D riscv_iommu_pmu_read,
-> >>> +             .attr_groups    =3D riscv_iommu_pmu_attr_grps,
-> >>> +             .capabilities   =3D PERF_PMU_CAP_NO_EXCLUDE,
-> >>> +     };
-> >>> +
-> >>> +     auxiliary_set_drvdata(auxdev, iommu_pmu);
-> >>> +
-> >>> +     name =3D devm_kasprintf(&auxdev->dev, GFP_KERNEL,
-> >>> +                           "riscv_iommu_pmu_%s", dev_name(iommu_dev-=
->dev));
-> >>
-> >> this name is a bit unfriendly for a platform iommu. perf use ":" as
-> >> a special delimiter, so I need to double quote the event like:
-> >>
-> >>   perf stat -e "'riscv_iommu_pmu_RSCV0004:00'/cycle/"
-> >>
-> >> possible to make it something like riscv_iommu_pmu_RSCV0004_00?
-> >
-> > Ok, this will also happen in the PCIe case. Let's find a way to modify
-> > it. Or do you have any idea for the name?
-> >
 >
-> maybe just replace ":" with "_" or use the PFN to distinguish
-> like arm smmu pmcg. the latter one will eliminate the
-> implementation differences (platform or pci device) but may
-> not suitable since it's hard to find the connection between
-> iommu and it's related pmu as iommu is still named by device
-> name.
->
-> I see the PCIe based IOMMU is named in the raw BDF encoding
-> in fengyu's test [1] but it should be separate by ":", did
-> I miss something for the name of PCIe based IOMMU?
->
-> [1] https://lore.kernel.org/linux-riscv/20260714083625.1083606-1-zong.li@=
-sifive.com/T/#m847cd5cba7f53e9191e09e64ef604c7c38fd0173
->
-> >>
-> >>> +     if (!name) {
-> >>> +             dev_err(&auxdev->dev, "Failed to create name riscv_iomm=
-u_pmu_%s\n",
-> >>> +                     dev_name(iommu_dev->dev));
-> >>> +             return -ENOMEM;
-> >>> +     }
-> >>> +
-> >>> +     /* Bind all events to the same cpu context to avoid race enabli=
-ng */
-> >>> +     iommu_pmu->on_cpu =3D raw_smp_processor_id();
-> >>
-> >> smp_processor_id() should be enough.
-> >
-> > Perhaps we should try to get the local CPU of iommu as above.
-> >
-> >>
-> >>> +     iommu_pmu->irq =3D riscv_iommu_pmu_get_irq_num(iommu_dev);
-> >>> +     WARN_ON(irq_set_affinity(iommu_pmu->irq, cpumask_of(iommu_pmu->=
-on_cpu)));
-> >>> +
-> >>> +     ret =3D riscv_iommu_pmu_request_irq(iommu_dev, iommu_pmu);
-> >>> +     if (ret) {
-> >>> +             dev_err(&auxdev->dev, "Failed to request irq %s: %d\n",=
- name, ret);
-> >>> +             return ret;
-> >>> +     }
-> >>> +
-> >>> +     ret =3D cpuhp_state_add_instance_nocalls(cpuhp_state, &iommu_pm=
-u->node);
-> >>> +     if (ret) {
-> >>> +             dev_err(&auxdev->dev, "Failed to register hotplug %s: %=
-d\n", name, ret);
-> >>> +             return ret;
-> >>> +     }
-> >>> +
-> >>> +     ret =3D perf_pmu_register(&iommu_pmu->pmu, name, -1);
-> >>> +     if (ret) {
-> >>> +             dev_err(&auxdev->dev, "Failed to registe %s: %d\n", nam=
-e, ret);
-> >>> +             goto err_unregister;
-> >>> +     }
-> >>> +
-> >>> +     dev_info(&auxdev->dev, "%s: Registered with %d counters\n",
-> >>> +              name, iommu_pmu->num_counters);
-> >>> +
-> >>> +     return 0;
-> >>> +
-> >>> +err_unregister:
-> >>> +     cpuhp_state_remove_instance_nocalls(cpuhp_state, &iommu_pmu->no=
-de);> +  return ret;
-> >>> +}
-> >>> +
-> >>> +static const struct auxiliary_device_id riscv_iommu_pmu_id_table[] =
-=3D {
-> >>> +     { .name =3D "iommu.pmu" },
-> >>
-> >> it's clear and consistent to name it as "riscv-iommu.pmu".
-> >> you've already have this "riscv" prefix in other places
-> >> like the name of the PMU.
-> >
-> > Ok. Let's add prefix in the next version
-> >
-> >>
-> >>> +     {}
-> >>> +};
-> >>> +MODULE_DEVICE_TABLE(auxiliary, riscv_iommu_pmu_id_table);
-> >>> +
-> >>> +static struct auxiliary_driver iommu_pmu_driver =3D {
-> >>> +     .probe          =3D riscv_iommu_pmu_probe,
-> >>
-> >> need ->remove() to clean up the resources like PMU and cpuhp instance
-> >> on driver unbind. otherwise you can use devm_add_action_or_reset()
-> >> to make them device managed.
-> >
-> > As suggested by Robin in my v1 version,  we might be inclined to just
-> > leave out all the dead cleanup code if the PMU driver is tied to the
-> > IOMMU driver and can never realistically be removed. So in my
-> > subsequent versions, I didn't add any cleanup code.
-> >
->
-> ok, thanks for the background.
->
-> then need to ensure there will be no possible removal from the
-> userspace, e.g. at least set driver::suppress_bind_attrs to
-> avoid manual unbind.
->
-> in fact it's the auxiliary device tied to the iommu driver
-> rather than this auxiliary driver. as only the pmu and
-> cpuhp registration lack cleanups (you've already made
-> other resources device managed), it'll be easy to do
-> the cleanups and support this driver as a module. but it's
-> up to you.
->
-> thanks.
->
-> >>
-> >>> +     .id_table       =3D riscv_iommu_pmu_id_table,
-> >>> +};
-> >>> +
-> >>> +static int __init riscv_iommu_pmu_init(void)
-> >>> +{
-> >>> +     int ret;
-> >>> +
-> >>> +     cpuhp_state =3D cpuhp_setup_state_multi(CPUHP_AP_ONLINE_DYN,
-> >>> +                                           "perf/riscv/iommu:online"=
-,
-> >>> +                                           riscv_iommu_pmu_online_cp=
-u,
-> >>> +                                           riscv_iommu_pmu_offline_c=
-pu);
-> >>> +     if (cpuhp_state < 0)
-> >>> +             return cpuhp_state;
-> >>> +
-> >>> +     ret =3D auxiliary_driver_register(&iommu_pmu_driver);
-> >>> +     if (ret)
-> >>> +             cpuhp_remove_multi_state(cpuhp_state);
-> >>> +
-> >>> +     return ret;
-> >>> +}
-> >>> +module_init(riscv_iommu_pmu_init);
-> >>
-> >> it'll be easy to make it a module for debug and test.
-> >>
-> >> thanks.
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
