@@ -1,146 +1,188 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azolkn19010094.outbound.protection.outlook.com [52.103.10.94])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993B7378822
-	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 16:42:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787935338; cv=none; b=Z9h4MPTBttMFeRydcQzAZOUbSFaDaockdhmRIRoYR1vr6k30uIrQgEN5CAPxMdIE9GzSFhaWyNRLbFr1Bq06az38mYO2rRbRVdWtzTVlL4MkY5OwEKCmOM+JOmet4XniQY5V8clQGIGjVShFdkJvIDN5wzzUx0uqsu27a+1Rmfs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787935338; c=relaxed/simple;
-	bh=iWJRGJo8GOhSzF7hKjM4hSEZnaMvnsnJxm8SvJPRXuM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=rQZDHRn7heLY+fcJYcb4wzIIrJcdVMzVjNYVcWb8NuwrhxvF403bj1UJsLekOFaxU99FSXCpZT9hvheYfhMsxPajHpch5NaSUCcFkEsYzsXXienvAKz38MBEGwoQ5an62VbSX11cKfMVV+gX3KYl9Q8XoiEKFcDMvR9A60imsW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ebzPrflr; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0816437F8A7
+	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 17:21:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.10.94
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787937677; cv=fail; b=ghk1dltaBFlAx0Aih07AIvccHCwNMjyT0zkCAB4OwkjqPpTTHfAEkYSxwUDfIGoOWWl7BuCuv6YrdfQLZ6S46uT7fpz+/+1LSEMlBehO4PhIae+IqQ4y0TSrDWjwqrDoeQNrXCSPxZQffWOWST8aLCCcVeatIrccXTxqYpostF4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787937677; c=relaxed/simple;
+	bh=SMjzccn2lewmW/sYScQfk16ZuNSNTq1OW9bzzL2FOfA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=a/50LI9p69kC0ZJPnSUhRIfhVr4hidhetyCzdm3S5hwU/5vT/yF2jXVUdXenq+QWVpx2tTt6qyAVmylCFo4MHuXqMn9vIQXunITjgHj3OIanP8Dmj2tiARidTMZjxbZ+jt0L1jzAcyLIi+kHMo2YCqWuWx5XjPiRGSZd81Twp5o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=GDfJJIB2; arc=fail smtp.client-ip=52.103.10.94
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ebzPrflr"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7f4b94d72acso923873a34.1
-        for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 09:42:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787935335; x=1788540135; darn=lists.linux.dev;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=qltHbqH6zAk9rxLPd6W/XN3mLDgy50kN6vVpjpgbgd0=;
-        b=ebzPrflreWhwKdjmE0dl6tDqZ/2IhTTtcVCpzt2Ls8vPUfjwyUXKmYU50BIKKP1aX+
-         fp8vRI+GtV2FtOs8qFTV2h9crYLTYXlfSqm07zAthbzJJxV7VqNXwK/r7Z1vJRek51s5
-         LihWnDzyTv/9O/u/cih3BXmdQ2gf6zA57DFTR0l7X/CN25jzhfwywokCZ6kUZy4yrKFd
-         +yw6FZfKyz6FhLliP9+bq2ywz3F6MOUw3yXE2BBQhEkGMOLfGSzQU7Pv4vLbNDI22dG2
-         06SavfORYg4JxyRVD1KKtVVBE34XazKM7BQtL/IUF61vJ3JS7oV2ayxZa06cRq9xk1cp
-         K69Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787935335; x=1788540135;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=qltHbqH6zAk9rxLPd6W/XN3mLDgy50kN6vVpjpgbgd0=;
-        b=b1eVkLO4mUOsHIjJa2QJAyw9tECwi7A0LMhAjeW6pnak+pI0AE72Zw2YBbC+76bn38
-         0CXMSN33R8+I9x9EgbAAEy+fHnRSdb/3VvNPVL6Sz6KI2ikJKowt085eF2yvh5akF7Dm
-         tdffGyTRKxIwX0/ExY5jahoo6OKf7tWe+eu9+7zNLuQyF8+b8Btonka4OQFghmvMMN0I
-         /L+v/XZUX+80kJ8ekfAk+0iTcBppCBCF+oWUP8euphBKY2CWEbcEd9y/FZYhynO7qAqb
-         Zbs0kGODbUl7irag9h17GG3Wc3BzVSZxQ0wcB4dqR8hA1u9OlgZfqgW1Wn7TewDdYRI7
-         iZEA==
-X-Forwarded-Encrypted: i=1; AHgh+RqKDfUy56edkklIQt4oERsoSh2CwPCqR4c/xVikU/l5amFM/LIGKRJHUiK6NOSe6h8XIeqthA==@lists.linux.dev
-X-Gm-Message-State: AFuF++nwLAYbHcaTHoXW+nCJtcogfxJ18KQ8121wbmVigBCNpiOzmI1s
-	A5zg85JEPD6pcaSEweYhsNg+cuEtae/Yr/WbfMpaMNfjntxmfRd3dn0w
-X-Gm-Gg: AR+sD12OEAY+uoVs/4RGgM60tjgM1BFDsgji40smRLGjB3WR/+rDTXcCbHhfKOZJNIb
-	XVZXc03lDyf6A0a2o+O+q/IGGm+57BJwl4Wr75q/WQ7NOJMlZVniFzGt6Wucv6a8fkYNYH9y/wQ
-	jF1zcDFizd+13Y8ZRFtespu36GYcP1Nen3jVwPYvkgKYgORbHDdfzWbwZ1dBbCUfs8DqD3oxLj3
-	3A74BUPMPNcqyqiy0X5QZM24LgGMW2SuXbenriVUVocfTAGTwFaPApPTXqPIFDYV2Y1ImkV5M4o
-	HzXxkxQV2vx1Q/fckJwOr1YsOD7CjAUaF8EPoNv3cg3OxmOkZhnnC0nkx2VbhRwFDP/2kp9CMOx
-	Y6e8zVMncWzwjf9f+zrYyZz6oSYjeOPHJuAbjXMFb9ZTfAJU7Snh3asOHDC0+HTxB1NvM/zZ084
-	tmGMqCVkYXE9kUnUkPBiGFhA1z5B2iyNd7cfveRWp4hyYxvaEhUOYCT3PnNUYGIpoYeeeu8T1ab
-	TLDnkxYrNu58OKfui47r8u9h1PCjd5srB3KpXN1qpkkYCf9cQjuEO2mUn6OUcHNNZnE
-X-Received: by 2002:a05:6830:4491:b0:7f4:eb7e:c8f7 with SMTP id 46e09a7af769-7f4f2365bb9mr8713253a34.5.1787935335216;
-        Fri, 28 Aug 2026 09:42:15 -0700 (PDT)
-Received: from [127.0.1.1] (ppp-124-121-113-94.revip2.asianet.co.th. [124.121.113.94])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f4fa99d87fsm1567760a34.20.2026.08.28.09.42.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2026 09:42:14 -0700 (PDT)
-From: Mikael Etienne <mikael1022bzh@gmail.com>
-To: Mario.Limonciello@amd.com, vasant.hegde@amd.com, iommu@lists.linux.dev,
- linux-ide@vger.kernel.org, linux-block@vger.kernel.org
-Cc:
- regressions@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Subject: Re: [REGRESSION] Silent SATA read corruption with dma-iommu on AMD
- 600-series AHCI (6.19 good, 7.0+ bad)
-Date: Fri, 28 Aug 2026 23:42:09 +0700
-Message-ID: <178793532947.1861819.4688629821762072134@gmail.com>
-In-Reply-To: <d49add14-c8de-4b6b-9049-4a07e5692ee9@amd.com>
-References:
- <CAHEgv3TiJUvS=Hustyem0ts8jkbFVAdzBazmPhCbv2sNnTsZkg@mail.gmail.com>
- <c5c2b503-e273-4aa5-ad9f-f7afee02ab9e@amd.com>
- <178791494900.1152725.12728124457005560389@gmail.com>
- <fb875f14-3b47-4d43-ae3a-0d0b17e1c64a@amd.com>
- <178793069172.1699234.13635367891277204598@gmail.com>
- <d49add14-c8de-4b6b-9049-4a07e5692ee9@amd.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="GDfJJIB2"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=S4Rm3yuP5HyV4fiAaKGgOWfoMiwBlR7aiN3TSu2me+/ueNq513mZOz+0QsthvVsCzeasB2Yy5maF3VUDZYL2OymHifEX/BflYIDaYGSH12hLh4ligsq+jdNO/pg95Q3KW9Iig3ZHT9tJXE8hDmgBZ9sg4EOWEdrSYjQHhQHRfkyiC+JLe2/WTqB+ZqO5MNH1vC3SF8QR8rzpo1ha+X18Hd5aiX5Wj83y4bOnXwgojkIxU8LAOHqYuIeFjOQeF36iSBkhLZJRDyJIgPvzz8MnLcPvp97cI2qdL4uH9QPSH9YgC9zSmHM37KanX3VS+TI3znvyPI/GQCPXvsQU7hpQTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GjR7CVGan6e+V3VSCgNMq1DOCZpC/yo+g1uSunHxlGY=;
+ b=eoTEPjOgPdOd8IyGV0/zsX5J4mY0lrpXlan/MzqDnIi9Eva2ztI2keSPXOnUMW5pKWW4PX2vcqIhrc9FYFrvr8M96c1RuSrWBdoaUlk6VDL0cSPS9lHGWN4S57Mvqni7stwjQgH4rvakVTHSQjgWIUsG9hVNUNmiizDHz7zgvmhdPeP0yX9qhvk3pij1brPa5JWJJBznL5GFVwXu6h5DxgBkEW7BbxbSLFMrGraLqMSRhizgy1DoIyhBLHnp5Bv56WyTuhczWKxrFltWx8sVpZiMGiKtxY6ksVvarfmI4dxh7Le3AcKvpxf5lSMLt3NDfZcAHa+GvJfTkNk8B/ERqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GjR7CVGan6e+V3VSCgNMq1DOCZpC/yo+g1uSunHxlGY=;
+ b=GDfJJIB26K4jW6IcNWXdCSE1wXnPH7pqsGlWp3VEli0rBiNLGmrIc6Zrgs7NrTrWkFAYdKCZLXZpDjb7HDttQPlhV05/octgUblL0h3eh0drOLodlpaDeFml2mDOS+rzfxb/ErbDzaqOlpuE590t095U2YxFOZwMbS3rMtlqK6m8mIsliFgkPBm0vcGZOB1wyod7dZ4NGwleOy1V1JgTU/L4YAMUnzRqXrJVuDiH5HzZrJvfdM0zNIAUOpyykBDnLdFiMaBR3xNDQhv8yhUdkQhnktGcidj2bhvq3B9I3l/j3yO8Fzz1Um3SZ8j6KGAfRWEnnWIS+6/T0aogo0J/wg==
+Received: from BN7PR02MB4148.namprd02.prod.outlook.com (2603:10b6:406:f6::17)
+ by MN2PR02MB6973.namprd02.prod.outlook.com (2603:10b6:208:20d::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.11; Fri, 28 Aug
+ 2026 17:21:12 +0000
+Received: from BN7PR02MB4148.namprd02.prod.outlook.com
+ ([fe80::6007:d1a1:bcf9:58ef]) by BN7PR02MB4148.namprd02.prod.outlook.com
+ ([fe80::6007:d1a1:bcf9:58ef%3]) with mapi id 15.21.0360.008; Fri, 28 Aug 2026
+ 17:21:12 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Yu Zhang <zhangyu1@linux.microsoft.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>
+CC: "wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com"
+	<kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com"
+	<longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>,
+	"jgg@ziepe.ca" <jgg@ziepe.ca>, Michael Kelley <mhklinux@outlook.com>,
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
+	"tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>,
+	"easwar.hariharan@linux.microsoft.com"
+	<easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com"
+	<mrathor@linux.microsoft.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "suravee.suthikulpanit@amd.com"
+	<suravee.suthikulpanit@amd.com>, "vasant.hegde@amd.com"
+	<vasant.hegde@amd.com>
+Subject: RE: [PATCH v4 1/5] hyperv: Introduce new hypercall interfaces used by
+ Hyper-V guest IOMMU
+Thread-Topic: [PATCH v4 1/5] hyperv: Introduce new hypercall interfaces used
+ by Hyper-V guest IOMMU
+Thread-Index: AQHdMXDIfQUKjMLd50yyWV+rJanBB7azwFoQ
+Date: Fri, 28 Aug 2026 17:21:12 +0000
+Message-ID:
+ <BN7PR02MB4148D654408E5D3DBE075DD4D4AC2@BN7PR02MB4148.namprd02.prod.outlook.com>
+References: <20260821132654.211730-1-zhangyu1@linux.microsoft.com>
+ <20260821132654.211730-2-zhangyu1@linux.microsoft.com>
+In-Reply-To: <20260821132654.211730-2-zhangyu1@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN7PR02MB4148:EE_|MN2PR02MB6973:EE_
+x-ms-office365-filtering-correlation-id: ce7ff51e-4034-4035-206d-08df0528c229
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|12121999013|15080799012|37011999003|24021099003|55001999006|51005399006|13091999003|31061999003|25010399006|19110799012|8060799015|8062599012|40105399003|2607281247196008|102099032|3412199025|440099028|1710799026;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?db3ZHWG7MIFMqEixJ0lSsyTor4Q1CBbw8+5+pQUS4qkiKO1vEJV+QHW6zs0Y?=
+ =?us-ascii?Q?/1Jem1hlfVfyOrfRxZZBPAfrTGxd8nvZsolTlNusGrpyi3fOl6khS1CpEmmO?=
+ =?us-ascii?Q?Rj8DlUxf+V/dDhsFKnG4uLZSLSuRkMv38d1fBwhJVobr1zOsxmN5U+4qa/BG?=
+ =?us-ascii?Q?4Li+DULc9FJXiNPMTO4cWBzQrAAjGR/cK3dh1vLjnkVBTtCq07Yn5tGAhVQM?=
+ =?us-ascii?Q?yWqxATKQLNlJ8k9qDTkCgp666/Zq/jCTuFEV2JzRG9TUqypwVqfG7Qu9f17L?=
+ =?us-ascii?Q?YQyYm/sxgoQKFEEOjsBOHQ5zryYBgq1EVo06S6JKjMOKurCFOU9sGlGawSy4?=
+ =?us-ascii?Q?+ci0mhAnffAj4S4uCa/lWFuNf5Oi4li0gGlMCIO2BIOJwhVJE7PfUzik/yRm?=
+ =?us-ascii?Q?TOAgrdLu+bwNoqs6f6yfCwB1PAxhI0xHM/y0zUWflPmbwKgpKTEGzpoM8WOo?=
+ =?us-ascii?Q?kC0yaKmDjPscaEJ1fe6wCNRnalc2X7aO5ikYKYvpDeQQCmqpU0wY0PTDZ33z?=
+ =?us-ascii?Q?mbRVwvvnIxDDWwgV/UwNX+qH7F/u5bK3YlzzRo0HHDpLLPaIAOapHPkYVT2w?=
+ =?us-ascii?Q?RGotlY7P9slFywcuPc9v/utNTrlmYb0KF2ynKKviNTQzqrBPZUJm7uDXaL6R?=
+ =?us-ascii?Q?ILRqszSaVxgNsH9i0fH4qGWu0Qmqf7jF9hb41PAdjRIQiV4jDL/OtPSU5aku?=
+ =?us-ascii?Q?hzSKsZsClfYUdoed4pj7CXfa9AvPc1mJbvAGB1Js3X/LdEllGFNI+26VOFhz?=
+ =?us-ascii?Q?dYGDf1wSFV3/1Don4Ygp6/Y0TX1n2vOWctoxcD+qvzU97nE4odzirPTcMAbw?=
+ =?us-ascii?Q?MQW1WY+3fLqX06navneR/+Psg41moHeyPIw/gfC3RM0NPuGl7nYgCLQVlNDN?=
+ =?us-ascii?Q?c2BzfFUN5bG3HurU1+wrL0EWX868WeuU9OdLjFPqjIOfJ0YYpVTbIPAc2iwN?=
+ =?us-ascii?Q?PIqHzd2BHLnPIWdVuSdD93niyUGwbYKFpkh2LzFYdsPibbGtKqUR/KQteKUL?=
+ =?us-ascii?Q?hwDR96MkNZ4Z7gpzMDCLPCJa/2S79OHl8nabGpfq6SYnwHHTq3So7AJsCEV3?=
+ =?us-ascii?Q?HscODr67gOfr0ZN6Dt1VY1QO3wHFEeO59uvZzsx+P3Sc00TGDTE=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?zkYJeJUFAbkzKNTnd9iyfmv5lE1VIUaIYQRfOYboQGgJzo//RMN4Y/VzPAxX?=
+ =?us-ascii?Q?KANY49blh1YYgj4zCUskqx2BirJlsrQ6qfFXQHzFXzhcyUG5YoEG4kMXLpw1?=
+ =?us-ascii?Q?6hSZtjFQ/Evo8QGLrOtlSMsXyxCxxxCwFulOzQ/dBNO8AnXilqxAAf3AFt9O?=
+ =?us-ascii?Q?QkP7MO8dMd2iZZR4cq4C4qTiQ43p4ImHL0MUhA+IFl1MkDpZZgBTn0bef2fS?=
+ =?us-ascii?Q?KpTAYeXdVc16G2z+Z72ePQMgNcl++2OjQdRrHef4W1cy1Lg1slxAzsAtJc7n?=
+ =?us-ascii?Q?Dfs67jdaki/Pwd/3O03cKbW6fRz5jmSqUsyCQwrds+mGRnjwFNStz48zRGbW?=
+ =?us-ascii?Q?loGl860W4gYVig5Y67DRrR7oJ1YHSb+FUuGoozfFgcPIk1+Z32GCX19fFmP+?=
+ =?us-ascii?Q?hYovbeH87G8cKknnyezgm90jzhLssCoOrE/nZohpmYT9qoAxMEYOpAt4qOcT?=
+ =?us-ascii?Q?8bjxsifKcA8Ycls/fE3UxaBZRe2rD0set5ezYCKIaaY6ablZkMOSCrxrq5K8?=
+ =?us-ascii?Q?uXwxvoXQ7vrr4JLvwrwJEgQvHrU7S3dJuLWhbGcHP3WH5/4Fm48SRl91+zm4?=
+ =?us-ascii?Q?LzLLZKTmYcw2115iL6Lz96nlBVb9MaZRiRMAPaT2Zv4VV8qvfLPJihqBolI5?=
+ =?us-ascii?Q?JJfUgq3b3v1SwoyOuC3w6wVspJdz5JgPiZ7m2rGIZQJepbEl3MmbysC+LS5n?=
+ =?us-ascii?Q?Yh+iP8YII6q1mIqOWvk6FNPnDVtcHYPtlVxejhiYvKQiK25KE3sf7Ouv3b0B?=
+ =?us-ascii?Q?0xgwXXK23ARIWHyyEtirHhyp00MScwE4ajHm0jzV5/5rGUmMMCMLTJ9GEyr9?=
+ =?us-ascii?Q?wX6h74pKBA7x6E0YZYjnLLsgU9xjAfo8W+TkrSTpABEPoWEAhYALQTw+I9cX?=
+ =?us-ascii?Q?Sy43wFt1YoAQOH7hB6FH80BSZfndbq2lmJPvAT+d+Rvp3SIyRwakRbjc+/K3?=
+ =?us-ascii?Q?E3VlpwtKWwMsbwmtpIPwrsjgjeGe76Y8KDhBBIX0bHesX0YbP3Gz9ZXt1j9/?=
+ =?us-ascii?Q?/kxOjliJ4Y2pHA020FwZlrOcu3zPK809sSKXPAZ8y+TIUgGKY5yHtwOfjOMj?=
+ =?us-ascii?Q?dCGhdxBfkbHq0oNkEuZq8dULvGEEmIRKVsb1+Zov6sn9axuvWCTfkIoRiG6I?=
+ =?us-ascii?Q?IBKjdDvzgdxnVdOQ2lxpuR1Zpl8hfRcI2KwWi+GzPDXCxNrVlroYj6tZhqLO?=
+ =?us-ascii?Q?ICY/DMo6fVs/FIi3YKL6gRQb+s1y+7ivWvv9w8b0RTo9fhzqAT50q+3lwjEE?=
+ =?us-ascii?Q?V+n4fzTyRB5mRE/BAZ3rJfc1IlTricGGa0kpfJUramkUI+Jtk29ZjpCQqBeX?=
+ =?us-ascii?Q?cY60w1T4ucrSXZ8LMDvaH9Dg5fSz4xtTKJ/A4E2xTsLfUpskKtlrWAOH4TCy?=
+ =?us-ascii?Q?TWTNJEk=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN7PR02MB4148.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce7ff51e-4034-4035-206d-08df0528c229
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Aug 2026 17:21:12.3691
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6973
 
-On 8/28/26 10:37, Limonciello, Mario wrote:
-> By chance did this issue coincide with you switching from something
-> different to the Ryzen 7 8700G?  For example switching from Raphael or
-> Granite Ridge parts to that Phoenix part.
+From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, August 21, 2026=
+ 6:27 AM
+>=20
+> Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
+> Introduce the hypercalls used by the child partition to interact with
+> this facility.
+>=20
+> These hypercalls fall into below categories:
+> - Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
+>   detect the existence and capabilities of the guest IOMMU.
+>=20
+> - Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
+>   check whether an endpoint device is managed by the guest IOMMU.
+>=20
+> - Domain management: A set of hypercalls is provided to handle the
+>   creation, configuration, and deletion of guest domains, as well as
+>   the attachment/detachment of endpoint devices to/from those domains.
+>=20
+> - IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
+>   for a domain-selective IOTLB flush (which in its handler may flush
+>   the device TLB as well).
+>=20
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 
-No -- same CPU throughout, no hardware change at all.
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
 
-My persistent journal goes back to 2026-02-27 and every boot in it reports the
-same part:
-
-  smpboot: CPU0: AMD Ryzen 7 8700G w/ Radeon 780M Graphics
-  family 25, model 117, stepping 2
-
-That covers 2026-03-17, 03-27, 05-04, 06-03, 08-23 and today. Same board, same
-CPU, same SATA controller. The 8 TB drive that first showed the problem has been
-in the machine since 2026-03-11, on the same port, and it absorbed two full
-multi-TB backup reads on 2026-04-01 and 2026-05-01 with zero storage errors
-under 6.18.16 / 6.19.x.
-
-So on this machine the only thing that changed between "three months clean" and
-"corruption" is the kernel: 6.19.14 until 2026-05-10, then 7.0.4. First
-corruption 2026-06-02.
-
-I realise that sits awkwardly next to your internal issue not following a kernel
-version. Two readings I can think of, without picking one:
-
-  - the hardware/firmware behaviour is constant, and something in 7.0 changed
-    how quickly or how often the 32-bit IOVA space gets exhausted here, so the
-    latent problem simply became reachable; or
-  - they are genuinely two different problems that happen to share a
-    workaround.
-
-I have no way to tell those apart from here, and I am not going to guess.
-
-> We do have a reproducer in our lab environment that will rapidly
-> allocate and trip this issue which is how we could analyze it and root
-> cause it.
-
-Good -- then I will not spend the evening trying to build a fast one, and I will
-drop the bisection idea unless you tell me it would still add something. If at
-some point you want my slow reproducer run against a specific kernel or debug
-patch, I am happy to do that; it is only my time that is expensive, not the
-machine's.
-
-> I don't yet have any confirmation we can patch this at runtime.  If I do
-> come up with a way to do that which works will let you know.
-
-Thank you, that is appreciated. For reference, iommu=pt has been completely
-clean here: 40 consecutive 256 GiB verification passes, 10 TiB re-read over 17 h,
-btrfs corruption counters at zero. I am running with it permanently for now and I
-am not in any hurry.
-
-If it helps your case, I am happy to be a data point on the SATA/AHCI side of
-this, since the ASM1166 report and mine are both ASMedia silicon advertising
-CAP.S64A.
-
-Thanks,
-Mikael Etienne
+> ---
+>  drivers/hv/hv_common.c      |   1 +
+>  include/hyperv/hvgdk_mini.h |   9 +++
+>  include/hyperv/hvhdk_mini.h | 137 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 147 insertions(+)
