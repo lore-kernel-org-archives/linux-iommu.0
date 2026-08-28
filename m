@@ -1,133 +1,139 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC84045D5E2
-	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 14:35:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABE01353A6A
+	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 15:24:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787927751; cv=none; b=MWu4varutjtZ6Mqs17ODl6dY/NUcwguWOXwXLn6adbTKd+OY/5+AdS3KykkAK8I+oXkQaRHpamPJJ5OnP6qY8emvYiisdIOkSxhU2E9zW8Kuk7W1l8NKz29mjgIRGcMpFKxyuPgHDFnzDg7VOCqX7cIEAkNl3AjmRuz/xIotIOo=
+	t=1787930699; cv=none; b=OGi8AcGoChkO5QwcMrBtr3Ii8PTzdXVrIYGoZGL0NWg9vsJ//OPVHufIlRPb/mGIzMh4Bo+WrP2XlSHg44/IweJq5dVHkFc6OsHZersVvPjogiFDT7H9CKbbHh3Vf+niOsf5CwU/13T/1aITvj+dOnIRKNn6MgpKPOdeCx+h0Uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787927751; c=relaxed/simple;
-	bh=b7h8dV9oHVBHfBv6mxuKsP2hyM8HHn6hEleZHSArLSw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XHVGtgjYE+VIvllxM6hHbgCccQSHkhdsY3afsWQWcxYiLNlZ8MR5fLAIgNGglkQO2ybfQphvXsUqhDwKqYZQ5e+PoOZWXyFZ7AhfXCyBRk239wu0m48b8nNQxVcyrdXZ9RyUZxcBnSOca0+lCZ8gRIXD5KrUkw06bdvyrIZ+mN8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jzD4hmCL; arc=none smtp.client-ip=209.85.222.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1787930699; c=relaxed/simple;
+	bh=tpyZvgdIuReJeSrdOPCyYr8fsLpfLCii8h1S1BKcev0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=XvwY2xT7yRr6H24aRqVz0UfwjCJs4NvGdEqShArSnfwmLYXWp12Qtzs93aBwGC0DZliIe7nVxoTWPVKs5D/fnrXmxsdJw8vEz+kN7bzzelYhNOPQ5uVXYr1OxjWQADHKx+deZQe6NoOEQB1W9Ms7/rx2MnJS1DQGkwIyyFjP/rM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pKtR4C9C; arc=none smtp.client-ip=209.85.215.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jzD4hmCL"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-936cda0e3fbso93088985a.3
-        for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 07:35:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pKtR4C9C"
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-ca80d708489so760686a12.1
+        for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 08:24:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1787927748; x=1788532548; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1787930697; x=1788535497; darn=lists.linux.dev;
+        h=mime-version:content-transfer-encoding:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=1CA/dtHk3Ua/1jrmqIIittu4ca0gllo+cVF1m+itAJ8=;
-        b=jzD4hmCLeRz06vnl7NmXW61ijH28F+N5mL8OoPnQVIA8tQwTcxQN5XslodLkLTLiXs
-         7G3GIsGeoxJVYa/ZMZDfGKmwS3bbO1J2sQNthgrVYLWZRP1Pn3D/NbWMzKyCRhj1HL2L
-         yCDg2q9xm2bXkEvoimLnp19Csdzu9puiwudA+yk8C1XzUnlK8ZtiI2MHuPpPG8NK0m9P
-         wqM41XtxoOtIkRNTV4qW/7vEje0BALX88MEzzBaRKOZrA81tB1T9g3f+Xhas0qHPeNjd
-         EKwrCk7LKz7b/aB196r8AIxlxqM3Y2q5n4rR9pi23PICEVQHI0tnXiNWbYCie+tqYf+H
-         ZoOQ==
+        bh=Y9a+pZojUOO4HpL0ROFDlkkfxxX7L9GiDlhrWObpWAw=;
+        b=pKtR4C9CpR3Pl8G6Ck6Zyc7MSWCzgGtIeAeWk3d2mWTnnruqYE4FXRTQnSACPhMART
+         5vwKG53EZal8F7pxuXMn6cIbLbUyfFG1Y75FEklK2Cx45GgCVWuTC9KASPYVfrEX1g9Y
+         BS91s6l1G44UHad3oHeLg6VC8zxJouU2cZZz+t1DoKgGjDNVrx09hjpGTeiwkk1kOplV
+         4RVR+72d3kB6kcumi8C2sgd6naUJJj9nKNO5s0diBP8N+uNUY742o8pbmQRW2JzD0OWx
+         XIc14GSXEVM7VzKL5jufmK4VfiQatY/GBEwhSo5qjdXeBAyRMCKaIZ+FPcTvYQh8ZKqk
+         TJFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787927748; x=1788532548;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1787930697; x=1788535497;
+        h=mime-version:content-transfer-encoding:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=1CA/dtHk3Ua/1jrmqIIittu4ca0gllo+cVF1m+itAJ8=;
-        b=dNfGjNrqskfKyB1ggb1VcLK32mQXowYheobvov67NHH98M2jW0gJHGDfHovPTOmUIc
-         4qnSUi8hGAEFBufsDngRcctllAX1CCzo3Wa3JPO4boSgY7WzxGEEDsuwktd+wCOrUjFB
-         NHw9flGaSCx4rBVSXL1Ygcb0bxnDLANBAus5fY0WbNoz5wqZN0R1jWNt2cNR8XcdkbIm
-         Yt/jY/LSuCfLBJe1Amv1GCQGTn4E3ga4IOlaGvmlTUwpZrWU7uIIWgzQeU1refNDzt8z
-         o/+R4QATPl30xyGvvXDMS4zCoAQnKi64WvVc/TvP4IcDw72fo9RTap9xK9Jsqm5DhY+x
-         zWig==
-X-Forwarded-Encrypted: i=1; AHgh+Rpos1Sr2vIWDz/RvEc60rsuF+KUpnVcV4XifPA65T1+B7l0MoUqWEpn1591rY56bvvMu/P4BQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++m4YGgN0tS6MAUCu8W/nL0VixjPTL5saPz4lkTbV7/ztgTh1vPT
-	E/W50tyPA5m/XGqp8zOI4Z4Dfb1TTnK9g5pNoMS9Ibj+S9BfbuFUq6d2/SsdYIeRo6g=
-X-Gm-Gg: AR+sD12KBzjms/2IgaP65pukY8nOlpZg02vFFCsC3PYUOeh8h8YL3WuAWQvnUhLEibm
-	mepiHjKr35KI6/wzSNyFNmvjOPb3sEL2Ka5nNcfo8nNGntvc4tfp/YB558ta24miW36DaJs6nR+
-	bMynfq2zlvjiWW/tRHSRYWMKBtnqYM1Tmma0lZOobLdh3GnjU0Sm1BguYfqQl0WGJj5oV/LsHi4
-	5uq20iZiWzRK8yKnZHT5tGkCInzRkMnc+VAZbLhou6UraD2WZtxM8ISNogaDdTvaMs3xTL+7NF7
-	/4ctvkqYERFZfBrfeB+OIgH0bV62I0q5M27hKxJCfywNTqPaD0HnLULqlElxaEBU5RnMOIzkjWR
-	xrl9b29/NM+1MAkX2l4hDyf/F1DCNTxCFP7lGnrdRNzA08kvZzdI9aFFJiWpo1sCusm9pQihlZb
-	HK8D2Wq/wYoz++je9dHkhMMaR4umK0TkCpF3XYzLWtaT6G+QRb1K4DKrorkvpj4PNCm41iepHcM
-	x5bbc7W9cRuIH93d4rYG1qIPRazROwFqiVj944nD3s/Fw==
-X-Received: by 2002:a05:620a:a0a:b0:92e:6637:da8 with SMTP id af79cd13be357-939138ffc3dmr615678585a.28.1787927748313;
-        Fri, 28 Aug 2026 07:35:48 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93917014c56sm157064785a.10.2026.08.28.07.35.47
+        bh=Y9a+pZojUOO4HpL0ROFDlkkfxxX7L9GiDlhrWObpWAw=;
+        b=U49ywxRfhSHgFQ6x32d3+9mpQA3tF+9GS+uuhCq+R/3rVMniQfM014G5C9pUKuoiyT
+         xCMDP3p58zGWoH0jb5sw6rSrXtqnlpdFcbbT96J2LvK3PoHaE3iIorKea4suyVb53pKB
+         X3btfvFq3hzKuCR0d7HDOwoG1TFuP5Fhc1HY3l2ojP/XfCKDCU0qrtQAY5HLZlCM55rT
+         7BSoN1TP/Wlni9Y+2fgu2RRAqmAmWiRho+xJvB1nKxYVqzJ397Vkm4r7d86IzfgdWQja
+         U+1KLsPgFYaQ8oKgjFnyM7wmMFpTE15aV84lvX+b2DqxF2Bq8qQOZA+RcdxBcGsyQuPv
+         f1Sg==
+X-Forwarded-Encrypted: i=1; AHgh+RqizhP9t09Ra2cinEEGCP7AuTe7SMqiqP9h0qNiMA7itdDUkV+a1G6wWeLLOgAQGeuNGJadlw==@lists.linux.dev
+X-Gm-Message-State: AFuF++nJvn9jZ83LYqTlR6nh6gPvqccVhd07KaVp+/7rU8ZIlTJtQdt8
+	+KCrTpA99GhL3FhFncU9SSgAxT9SlOJy36U/j1FcOlLho2tvfid6KlG6
+X-Gm-Gg: AR+sD11bEiA6mYpbPpunMzm6QsLexE6i8vak9JFQaiwBrjVtO4/Tyl7ie/AHsfSFPmX
+	K3IhyHr7FkxfCa6eD8ezezkppwTEvS+a60zwn+whGvqB2fifc7kP/W5YFmkVEROnFWLGs45ShBy
+	SLZOgS3TNIf8QpBiSb9mAoG+j9xjPQNUa8UjpVqfKZcz3n/sgpMESbNg0H91JUEAcBg9PZ/8A8g
+	qVD9AAWoegICgFknmVzwpfFAF+t0ys42BoXdhDCHnpMbAzXzQJ0ATN5AxKF/aU/l7IulmLTRmhi
+	uKUDf+GWE+t3uv8vDpkAnIkdJL9QXGJmHZP9Eo/tEsj4ELEE9qT4D8ISYO1Uoxo2ZBxag9ba33F
+	mmEdEmiDGHqywGgc0xnClpZcXQwcjSsy9i8Evp3rzRxAur4HpJElv0Bl5uLlgqewZvMyXBmvyVb
+	Iz3E/jajUzDxJEbb4ELU6Y8exi/iSJ0RFXA6npZTlDx/8Rm72tVYivtWjlmKO40/VdWz6mxj/uX
+	60+V8L9OgOwQGJmcEYadqAGNhbKDZxmEBypLTZixHNtRITuwU1ZURq6aB0MKMeIlxWp
+X-Received: by 2002:a17:90a:f088:b0:398:9beb:a2bd with SMTP id 98e67ed59e1d1-3989beba8bdmr429233a91.31.1787930696923;
+        Fri, 28 Aug 2026 08:24:56 -0700 (PDT)
+Received: from [127.0.1.1] (ppp-124-121-113-94.revip2.asianet.co.th. [124.121.113.94])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-328713b0451sm7412788eec.16.2026.08.28.08.24.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2026 07:35:47 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wzxgI-0000000HRQV-3Jl4;
-	Fri, 28 Aug 2026 11:35:46 -0300
-Date: Fri, 28 Aug 2026 11:35:46 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Samiullah Khawaja <skhawaja@google.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Pranjal Shrivastava <praan@google.com>,
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v4 12/18] iommu/vt-d: Handle reattach of the restored
- domain
-Message-ID: <20260828143546.GC3769797@ziepe.ca>
-References: <20260808022723.3893618-1-skhawaja@google.com>
- <20260808022723.3893618-13-skhawaja@google.com>
- <5b920299-260b-4025-ac4f-e8f83beebf95@linux.intel.com>
- <apBso6So7UqwR3AX@google.com>
- <bb7052d7-51fa-42e0-9eb5-ba4743956688@linux.intel.com>
+        Fri, 28 Aug 2026 08:24:56 -0700 (PDT)
+From: Mikael Etienne <mikael1022bzh@gmail.com>
+To: Mario.Limonciello@amd.com, vasant.hegde@amd.com, iommu@lists.linux.dev,
+ linux-ide@vger.kernel.org, linux-block@vger.kernel.org
+Cc:
+ regressions@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
+Subject: Re: [REGRESSION] Silent SATA read corruption with dma-iommu on AMD
+ 600-series AHCI (6.19 good, 7.0+ bad)
+Date: Fri, 28 Aug 2026 22:24:51 +0700
+Message-ID: <178793069172.1699234.13635367891277204598@gmail.com>
+In-Reply-To: <fb875f14-3b47-4d43-ae3a-0d0b17e1c64a@amd.com>
+References:
+ <CAHEgv3TiJUvS=Hustyem0ts8jkbFVAdzBazmPhCbv2sNnTsZkg@mail.gmail.com>
+ <c5c2b503-e273-4aa5-ad9f-f7afee02ab9e@amd.com>
+ <178791494900.1152725.12728124457005560389@gmail.com>
+ <fb875f14-3b47-4d43-ae3a-0d0b17e1c64a@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bb7052d7-51fa-42e0-9eb5-ba4743956688@linux.intel.com>
 
-On Fri, Aug 28, 2026 at 09:55:18AM +0800, Baolu Lu wrote:
-> That looks reasonable to me. I have no concerns about keeping ATS
-> enabled on preserved devices across kexec reboot, as long as the
-> software state is synchronized in the new kernel.
+On 8/28/2026 6:22 PM, Limonciello, Mario wrote:
+> BUT the issue internally does show the issue is specificially once the
+> 32-bit IOVA space is exhausted.
+>
+> Unfortunately; the solution is currently a BIOS change in how the type
+> bytes of the IOVA is handled.
 
-The new kernel should issue an ATC flush when it changes away from the
-inherented domain.
+Hi Mario,
 
-> By the way, is disabling ATS an option? 
+Thanks -- the 32-bit IOVA exhaustion detail is the first thing that explains
+the timing I see. My failure takes 3h25m of sustained reads to appear, and a
+reboot clears it completely with the same kernel and the same on-disk data.
+"Low IOVA space works, high IOVA space does not, and a reboot starts from an
+empty low space again" fits that exactly.
 
-No, many devices require ATS.
+The ASM1166 write-up you linked is also a very close match: a controller that
+advertises CAP.S64A but cannot actually reach above 4 GB. My SATA controller is
+the AMD 600-series chipset one (1022:43f6), which is Promontory/ASMedia silicon,
+and it likewise advertises 64bit in its AHCI flags.
 
-It is not that ATS and PRI are coupled, there are good reasons to do
-ATS to pinned memory too.
+Firmware, since you mention a BIOS fix: I am already on the latest available for
+this board.
 
-PRI is a PITA, I continue to think PRI through the iommu was a
-mistake. Devices that have device-specific PRI handling are fine
-because that all lives in the VM. Devices relying on SMMU PRI
-forwarding must also somehow not loose any PRI events across the kexec
-and must ultimately inject all of them into the VM.
+  Gigabyte X870I AORUS PRO ICE
+  BIOS FB1c, 2026-07-21, AMI, platform firmware revision 5.41
+  AGESA!V9 ComboAm5PI 1.3.0.1c
+  CPU microcode 0x0a70520a
 
-> The current design already requires disabling PCI/PRI during kexec,
-> right? 
+So whatever BIOS-side change you have internally is either not in AGESA
+1.3.0.1c, or not sufficient on this board.
 
-That is also not OK, but there certainly is a useful universe of VMs
-that might pretend to use PRI but actually only use device specific
-fault delivery.
+On the bisection: before committing to two weeks, I would like to try making the
+reproducer fast. If the trigger really is 32-bit IOVA exhaustion, then booting
+with iommu.forcedac=1 alone should hand out high IOVAs immediately and fail in
+minutes rather than after 3h25m. If that works, a v6.19..v7.0 bisection becomes
+an evening rather than a fortnight, and you would also have a reproducer that is
+practical to run in a lab.
 
-So ignoring PRI for the moment is possibly OK. Someone using this
-should understand what VM shapes thay are making and if that
-limitation is OK.
+I will try that tonight, with all services stopped, then the
+amd_iommu=pgtbl_v2 iommu.forcedac=1 combination Vasant asked for. I will report
+bytes re-read, wall time and workload rather than a verdict.
 
-Jason
+If you already know that forcedac alone will not behave that way, please tell me
+and I will not waste the evening on it.
+
+And to be straight about the rest: this is a production home server, so a
+two-week bisection is a real cost for me. The reproducer is three lines of fio.
+If you can run it on comparable hardware in your lab, that would very likely be
+faster than me doing it here -- and I am happy to run any specific kernel or
+debug patch you want in the meantime.
+
+Thanks,
+Mikael Etienne
