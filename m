@@ -1,80 +1,81 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012006.outbound.protection.outlook.com [52.101.48.6])
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011067.outbound.protection.outlook.com [52.101.57.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98098376490
-	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 15:52:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB7C136C581
+	for <iommu@lists.linux.dev>; Fri, 28 Aug 2026 15:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.67
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787932323; cv=fail; b=ZVEfu0F6UuHjfCWtjBGKcl7bbBWcFZvjr3JFEFT/0Pl1hR96l9/jBJi3alQ+BIQGBZLmwQ/7iNV88WZmmlAqHLSPEAFPX5lOfpikkFuzVaFjWp2fTmpLDxpRt8OTg7QfzaiZa7+g63txk2ffbwoPCPHjalDJg+vBealIx4dARA4=
+	t=1787932422; cv=fail; b=aIb76i+rJTDMN4nNrgZFl2ti/IXEVwIk7dVpoUrjiP4HVRIunAiZkZTNkUp7H81Ncagxgsni1Lnv7UIWjlUqlSL9ljAOukXmS5tD1fv8HXprJsh0eSddX7Gn5vcez8rcX4U2GYBgPwLXw5XKevlcAwRjVkSoXLRPBUTOE6CwDQI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787932323; c=relaxed/simple;
-	bh=4KM40vTqajdC/nDeLN5w3uKXz8b3OFqFmKoPRQ0+jyE=;
+	s=arc-20240116; t=1787932422; c=relaxed/simple;
+	bh=/Qnk3NHscVx0ldx9vHuvL/A2TlQScAE4TGef7PuTe+k=;
 	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aIQy0Z6zJee50OyVwekNoR8VIbdCUW1O5a9qyC6QAiX+s+9rHSbLTHCpHoCqroc9S5vTlxsadcbeCOEVcV3qvuIxDEXLbBuWcIAkFUmc/pA50BB1PJ+kzTXyBXjdvMh4+vj5SNKvS5Ilv8oGiwYO6JK3dwt/bqYtFWTWUKc6T30=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=l2P8szl1; arc=fail smtp.client-ip=52.101.48.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=dP68I4cHhW7KYDsMw4kEYLNUGs2BQueqGdOAY7FU4z+UPrY71j8bMCr1366k1db8IYQwEKy2/9j+mF+H59Nc6DUHn1uUpU7UqxYVT6eD+VNyEpzuqGxEFSmkZrYRXiyxWhLJWI3P7ErGSo9VS1E5QlBn93rbzAanb0jo106hGO8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=jc3L6i9M; arc=fail smtp.client-ip=52.101.57.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="l2P8szl1"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="jc3L6i9M"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZkCs21mtrfPcl/l6kXE/LEwatbiKbfz/IrIKd1EbxVpKrfokpjgFtcKiUMcGWQV2hh3LHGlmAeeE/UxrcrRXe4wCU6nH269LY3Ma8giGPgdVqLW4avpIcTdbM0qDThp0F5zJlagzpJOLxhQPwlZ3JTxK3IPQfBk9MWlGudXXIG6HHuWJmJtMgJkSl6ixRw9jMDhQauwoAIh3rnQ+UsFhTSl/V9oUKcOXdPF7TX4tTGwBKmwuO2Lsiiz4jnAGBiqHBo8joHQqf6PlzlR1xq3ukgLZmcsQ6YUICjzBgWLr0Hnuw2KBxU1HIQB9Ctgz2fgQNT/hlZIt9RnaC7L6RQy16w==
+ b=dMBKOO2R5O6twqwKui6BQmoo3sRGgYAT25OyYo/l7E2i9F5J5NYopyPj3x4newFvlG6gbWuZ87F7cm2CztgWtGIqFu6gUTeepMOf1b6+rv8uCFdTaqqpCcY8n2tllO7PfrfVZJPDt5QxwEmbJ7+LFKZrPQ2pLpu9deglJ5bYycgEMY4yGHdFhg574dveoJcmeyEUY+qDyf4MAHO8LJ62swt+tXNPaAAzwF3764MWBlExCcjUE+A+OqJK26WkmRasDz2theumPzoPmCwzuyZVtAd8QuIAqxzHuUkvMhFgWxXw99BGLJhVMVbu/dpRH+htYjIFvWej+uvUrxDt/z3kig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tmgsPmW3iKnKr1pRc894hOmrT/H1572O1cUohF59kMw=;
- b=BcrNLg2kjMvtg9b4RkczNzVAstDo3906vIINp9XmY3dtw6ukNkDsX/rRCVfyjmZ7e4/QXOAI5XC9PTh6vw1ELjW0xjfeutgaPhe/LyvM49cb87yuUILFnVbg0E5X3GsGLM92PtdCpQ7M+iys5i+YkVcF8jWq5Q8g3dxZzDMSFGzdcLwuycF+wY/eoUaxoN73ahY+Q4gnGeAXTm/GjpmmkRiBajEKZ7rslqDxgMD3P1oKmDlzJC96+dUKhRz00mZvfBot/LzUUlvsGR0qUanlNl5Yq/Ycl0vWJqBkm5lq/PpTgeW+M6bjBXUXhUJl4rC2zr03fGiVEsPuARzslz8cuw==
+ bh=Te/nibzvRNz/l4yc+XX1tJsA5REE/CbQ0uUXruNZAF4=;
+ b=eFtpLXMp1jfLNuZqPI9DyaWOzueSFu02J2jSqWHIkgNJhCzCRCFNMsrCMOOsFLlwmxnNGtoyPtXMQNpUpJP8dXATpAZ7l/6G82GQqEtXk3K4mzxSotqazpDlNBI0P13bOJ2h+e+95ccXVDGmC2wxYnm3+j0yiVxJIORXwVZBio7p0VEkjexXwA+ix2b+THajJ4Q3hjhLR/CnidIRSJ23weGP0CNyWpwc8Z33GJzx84s9UTkBYC29/tuPOZMQdW+Irv70mQ94rOGKFl53bqZtNHPX0lcMoMzLFuvQ8R1/dv0P8qEbEfxfU/vUODIl1a/lBpNUlohiuWXAIglOxQFfBw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ 165.204.84.17) smtp.rcpttodomain=rong.moe smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tmgsPmW3iKnKr1pRc894hOmrT/H1572O1cUohF59kMw=;
- b=l2P8szl1xHfpbNIWnCfXMXShG38s0EwxPYQ1c1Ny6/72/U0mgm2ISlsIJT8lmfAwvtXxlpIri1GZV92aCCmcse+Mkc6LG7AnKcAP1bWfr2Rdh+K4Go+ndCAa2L+SdbiJcZ3z1yW6s4HcS0vayOLs6TxbePhuTSyLXXsZNoqOVwY167DjiLon3IS7YhYebX8vF7JEH/Jw8GRmvIqHUeayMCxxxJj6cc9h8Vf4PW2HRcW+VMO1kzE6jpwLD1cFCD2dE4ZvRyj9CGhBg8RS6CNZzzA6AhQmcW0uuHS9cRS6Mc6P2klBJIT5mUcYqCnpKSES6f9XzCqoWsOgVw9ktJ1F6A==
-Received: from CH0P220CA0017.NAMP220.PROD.OUTLOOK.COM (2603:10b6:610:ef::34)
- by CY8PR12MB7705.namprd12.prod.outlook.com (2603:10b6:930:84::9) with
+ bh=Te/nibzvRNz/l4yc+XX1tJsA5REE/CbQ0uUXruNZAF4=;
+ b=jc3L6i9Mh3Q7sf7gccjWINRqbyovs1x6NWpkucHJviDAp2uIHxJmKOQm63orv2Ir++0FIGBs/OwRdSU0EYG/Glz4rgUMjbAZ5MMzjSOLrFxlBrKpcjnYv4peVILPWjBPlGZrzxzCOBi6c8oytma8vyGr7kZ+SS7pGc32azrWHpA=
+Received: from PH7P223CA0001.NAMP223.PROD.OUTLOOK.COM (2603:10b6:510:338::22)
+ by DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.11; Fri, 28 Aug
- 2026 15:51:55 +0000
-Received: from CH1PEPF0000A348.namprd04.prod.outlook.com
- (2603:10b6:610:ef:cafe::15) by CH0P220CA0017.outlook.office365.com
- (2603:10b6:610:ef::34) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 15:53:36 +0000
+Received: from CY4PEPF0000E9D1.namprd03.prod.outlook.com
+ (2603:10b6:510:338:cafe::6f) by PH7P223CA0001.outlook.office365.com
+ (2603:10b6:510:338::22) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.360.11 via Frontend Transport; Fri,
- 28 Aug 2026 15:51:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CH1PEPF0000A348.mail.protection.outlook.com (10.167.244.4) with Microsoft
+ 28 Aug 2026 15:53:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CY4PEPF0000E9D1.mail.protection.outlook.com (10.167.241.136) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.382.8 via Frontend Transport; Fri, 28 Aug 2026 15:51:52 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Fri, 28 Aug
- 2026 08:51:18 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Fri, 28 Aug
- 2026 08:51:17 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46 via Frontend
- Transport; Fri, 28 Aug 2026 08:51:17 -0700
-Date: Fri, 28 Aug 2026 08:51:18 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Mostafa Saleh <smostafa@google.com>
-CC: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <joro@8bytes.org>, <jgg@ziepe.ca>, <praan@google.com>
-Subject: Re: [PATCH 2/7] iommu/arm-smmu-v3: Prevent rbtree corruption from
- duplicate streams
-Message-ID: <apGudts94pqFL20G@nvidia.com>
-References: <20260828125409.1921538-1-smostafa@google.com>
- <20260828125409.1921538-3-smostafa@google.com>
+ 15.21.382.8 via Frontend Transport; Fri, 28 Aug 2026 15:53:33 +0000
+Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Fri, 28 Aug
+ 2026 10:53:32 -0500
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb10.amd.com
+ (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Fri, 28 Aug
+ 2026 10:53:32 -0500
+Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45 via Frontend
+ Transport; Fri, 28 Aug 2026 10:53:28 -0500
+Date: Fri, 28 Aug 2026 15:53:26 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Rong Zhang <i@rong.moe>
+CC: "Joerg Roedel (AMD)" <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Huang Rui
+	<ray.huang@amd.com>, Sairaj Kodilkar <sarunkod@amd.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 3/3] iommu/amd: Remove ad-hoc checks that are never
+ true
+Message-ID: <ocec7sibtqumour7yrbom46ya3rpyfrhe4yhi446gluf4i5e24@an5rjva2wlyh>
+References: <20260823-amd-iommu-fix-acs-v3-0-dd768e09d771@rong.moe>
+ <20260823-amd-iommu-fix-acs-v3-3-dd768e09d771@rong.moe>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,62 +84,103 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20260828125409.1921538-3-smostafa@google.com>
-X-NV-OnPremToCloud: ExternallySecured
+In-Reply-To: <20260823-amd-iommu-fix-acs-v3-3-dd768e09d771@rong.moe>
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000A348:EE_|CY8PR12MB7705:EE_
-X-MS-Office365-Filtering-Correlation-Id: f265d673-5bb6-4ce9-0bc4-08df051c4789
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D1:EE_|DM6PR12MB4202:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5826d314-c125-4130-0432-08df051c8384
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|376014|1800799024|10067099003|22082099003|18002099003|11063799006|4143699003|56012099006;
+	BCL:0;ARA:13230040|1800799024|23010399003|82310400026|36860700016|376014|6133799003|10067099003|4143699003|11063799006|18002099003|22082099003|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	y1rBw821mxY2zYBx3dw099KH4PqiqIInOZ4dfWDVWZbR3kQsTbn5MsEI66ng24oGU5qX7CAId/r0ZU0bo0hLrxSiBopPv70vp1VwfBqR8nxJ3GHjauLYU2zYqo8xOrSb+ro0R9LjarTSKew1bQkxm3xXeOYqkZmCZFUryH23bXOVCEKYHFAKsttYwh+KqdKzV9cUI+Xn1eW4q5E+BGyI23vQb3VmwyiAO9rz29OkgaVTTzCgv5xB6JRItRzYO8XAiLLVi9wkB4qoFoUS/Q9CwsEhP4WTOvvyUlMJGijQfKE+tg0QiLVPY7WH5JAZ4jVLEpf+UIA5d2zfyflIECm2wLEUn9SW8RMoUQaP4ZaGIpUzeASsizKBLL7xg0H2CMefttTdVpcLZZJ/gUVxG7KHuQfzp+VeJ0UKboVQ2jjFrHePZqmve031AWzafiwdFATk++hjpd5u0v6V/9XDD+rUYNybdTnEP56c8MV2GK7n4ijN+dZwX4n0L79X2TEYgyj5J1J3Qk+RuLjI9xTWjpwY+FxazuTAzc+2RxRIxFK1Alzt49BEy1aGj0t6wiuWopjHNv0+0vKxQLogVxOFBh//LLAOlJgNN/6kmwlnGo05HEi6HrAUeJuHNvSJ4NF/2ACJwC8JNhKrr0OsDrOMhurIR5YC2es+I61sUnZyqj+sIvXa/5rfemph5iL7ZqOklns0zCGnpJSYQ0KgO4epsgNkKw==
+	/n7nKEL0D6T7zoXO5eg3X/gW71W4lI0sKhI+dY3JEx91t+CRRG69qDDt/ao27UZ1F9shfUj57P81bHUZ+b4oaEXllNYKB7TTGqFb0danfyVnIAaNBnAquOVvgL49k1MTIVIDCuGzCj2dLEAYwWKh+cQu8p0CcjxxYYN2yvo2mdDpW/E9ycSjN3zumlAK6VYb/zcbLpi5b8HLSon//v1YoIBzzf6bQmyoajthAA6TI8T+clmmdf+7c8ze3HLZhTfR4zgUuWpEyVGY2vDIguIxP8Z/WexIYxhhIyfikemGJ3d+ROSR/xJE4V1QF3cL1pXMOyZXJUkT2Ywh/1absL7N5hi7lYhxtFZNTbC489Zepzz5hAzuUcR9aJkA7TTyJpG7pFmJhTs/sqHdLeMtTApdnIiirRgHH4EAHhcVDl3MfulSndmgqMTeKRSj0sd4CUkhAEhUEd4SpC4ME1NgSXfEOnLftuEEt74NLtCbFPND7VmJqe9xbiooMzMLq6Qq8OnXzy8BUWJYg6PhgwT3ieAFUTZfhS3Z5qSaNyhrzw+jYdZJiHFIqHkaICIR3Z8bEztlpFb9Gon/oGv98WRQjt1O/aK4WwHQdIBSEsKRsPH9ep1518eBobEj6Uxi7ppdEMnk663J3gLF4AybrgnddebOXmb4lRdKRA+E6TSqjs+vjVhUPNOmmTdEX+Wf8oOU47vzul2Ij1XjFKi99AowQD+RQw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(376014)(1800799024)(10067099003)(22082099003)(18002099003)(11063799006)(4143699003)(56012099006);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(82310400026)(36860700016)(376014)(6133799003)(10067099003)(4143699003)(11063799006)(18002099003)(22082099003)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	7eOhTPLg1cEgD403fDj6f7g1ssBBUmqjnpg2ouw6yFJmvUY8c75+rB5h8RYFbF9pF7pjpxJZlE7J57wRhCwF8WdgxHvT5IpI/66gCYTxk2lxhBwHrpouFm7TcjvVdzYEA9zXEjZaTxsOfX7lVxmKXzlvEf++PEVCcQdAx5e+PNFbvolJbw09O1eWTYiKoYDhIlhxI4T7xju38ypL+C4pJHJqQLw1fBsHraKNuIKw425CFusvHvX2HdUy/OmRkEuHqyB8S5z6Hd8EwsEsooQorrwzx8tN+ij96Rd2lWaV8LeMq13VQUzrvMF7I17Jvagv+ACbqf+wvxqmQhZxomQPUSBJvOsU+cxLdqw2ZqWiAjK8J1/cb6iENBsSgXhNPOf591U9gx05IJLiMfq2jwcC1n0EgjmzrC6dlkorSon0hBqZMApOMXI1hdJdafaB8Kq/
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2026 15:51:52.3895
+	P93M6RweapjHGljXi3IbmCD65WzZylSFPVLeFLS1yGe5hYcIgkUUhNdjJXxeh+IaMt3/Aku6R6SbeBwzXGdlYqxHv5Y1tMh+wJsfMZpqX326DrY9KbaBQplFafx/zxcvlihhfpHVVevq9ETSZBPItQQHEZwY8uqZhV94uUd4Y4ArcEZtSpVfSgoQGbTgP/UwgJgvqFrz03ITJ8uYWKiMJhrzg1RGoU3Td/DFeWf8kjPug1+ZIjjVKn9v5REpzDaUjQCSVK1xbX4rthQtQ/jAxVkzU7F3zak5V0+P7EoqodgNN5lb/reeqAT1dlfwvvVVN0r8dKNvkcr01h8itdbbYb5CUfLSxO34pO5oIpOPmjKSuLtG9gZhUouG1LUXkLf738AlSJlgVH/x2vkivXU9SLPoyCvfmsex78wCB37JDn4kcIVPRRjocDAc/I+a1skt
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2026 15:53:33.2714
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f265d673-5bb6-4ce9-0bc4-08df051c4789
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5826d314-c125-4130-0432-08df051c8384
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0000A348.namprd04.prod.outlook.com
+	CY4PEPF0000E9D1.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7705
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4202
 
-On Fri, Aug 28, 2026 at 12:53:37PM +0000, Mostafa Saleh wrote:
-> In handling PCI devices with duplicate IDs, arm_smmu_insert_master()
-> will continue the loop skipping the duplicate sids insertion in the
-> rbtree.
-> However, in the error path of arm_smmu_insert_master() and in
-> arm_smmu_remove_master(), the code loops over all fwspec->num_ids and
-> calls rb_erase() unconditionally.
+On Sun, Aug 23, 2026 at 06:20:17AM +0800, Rong Zhang wrote:
+> The state transitions of the AMD IOMMU Initialization State Machine
+> imply that some ad-hoc checks will never be true. In detail, they are
+> only reachable if the previous state transitions have succeeded, but the
+> conditions are only true if the previous state transitions have failed.
 > 
-> For the duplicate streams, the node is zero allocated including the
-> parent pointer "__rb_parent_color". That means rb_erase() will think
-> that this node is root and it will corrupt the tree which includes
-> other masters not being removed.
+> Therefore, remove the redundant ad-hoc checks.
 > 
-> Fix this by initializing those nodes with RB_CLEAR_NODE() and check
-> if they are empty before erasing.
+> Signed-off-by: Rong Zhang <i@rong.moe>
+
+Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+
+> ---
+>  drivers/iommu/amd/init.c | 13 +------------
+>  1 file changed, 1 insertion(+), 12 deletions(-)
 > 
-> Fixes: cdf315f907d4 ("iommu/arm-smmu-v3: Maintain a SID->device structure")
-> Reported-by: Sashiko <>
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-
-I submitted a similar patch a while ago :)
-https://lore.kernel.org/linux-iommu/9136477b9c737a50cecc38f2ee6704a01510169a.1783044582.git.nicolinc@nvidia.com/
-
-And I think the fix tag, as mine posted, should be:
-Fixes: b00d24997a11 ("iommu/arm-smmu-v3: Fix iommu_device_probe bug due to duplicated stream ids")
-
-Before that commit, a duplicated SID gets -EINVAL and errors out.
-
-Thanks
-Nicolin
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 72b5b11b9d75..d81adb8efe0e 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -163,7 +163,6 @@ int amd_iommu_gpt_level = PAGE_MODE_4_LEVEL;
+>  int amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_VAPIC;
+>  static int amd_iommu_xt_mode = IRQ_REMAP_XAPIC_MODE;
+>  
+> -static bool amd_iommu_detected;
+>  static bool amd_iommu_disabled __initdata;
+>  static bool amd_iommu_force_enable __initdata;
+>  static bool amd_iommu_irtcachedis;
+> @@ -3222,9 +3221,6 @@ static int __init early_amd_iommu_init(void)
+>  	acpi_status status;
+>  	u8 efr_hats, max_vasize;
+>  
+> -	if (!amd_iommu_detected)
+> -		return -ENODEV;
+> -
+>  	status = acpi_get_table("IVRS", 0, &ivrs_base);
+>  	if (status == AE_NOT_FOUND)
+>  		return -ENODEV;
+> @@ -3303,7 +3299,7 @@ static int __init early_amd_iommu_init(void)
+>  	}
+>  
+>  	/* Disable any previously enabled IOMMUs */
+> -	if (!is_kdump_kernel() || amd_iommu_disabled)
+> +	if (!is_kdump_kernel())
+>  		disable_iommus();
+>  
+>  	if (amd_iommu_irq_remap)
+> @@ -3398,12 +3394,6 @@ static __init void iommu_snp_enable(void)
+>  	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+>  		return;
+>  
+> -	/* SNP support required IOMMU to be ON */
+> -	if (no_iommu) {
+> -		pr_warn("SNP: IOMMU disabled, SNP cannot be supported.\n");
+> -		goto disable_snp;
+> -	}
+> -
+>  	amd_iommu_snp_mode0_sup = check_feature2(FEATURE_SNP_PAGE_MODE0_SUP);
+>  	/*
+>  	 * If SNP page mode 0 is not enabled, then SNP support requires that IOMMU
+> @@ -3716,7 +3706,6 @@ void __init amd_iommu_detect(void)
+>  	if (ret)
+>  		goto disable_snp;
+>  
+> -	amd_iommu_detected = true;
+>  	iommu_detected = 1;
+>  	x86_init.iommu.iommu_init = amd_iommu_init;
+>  	return;
+> 
+> -- 
+> 2.55.0
+> 
