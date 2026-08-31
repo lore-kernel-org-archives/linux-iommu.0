@@ -1,502 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from fhigh-a6-smtp.messagingengine.com (fhigh-a6-smtp.messagingengine.com [103.168.172.157])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8666049483A;
-	Mon, 31 Aug 2026 13:38:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0623454937E;
+	Mon, 31 Aug 2026 13:46:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.157
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788183522; cv=none; b=QwDfMgs5bOw1Qk6o6NISEGA43No2PI98rPidxaIBjmD3fIqnyf/MI+4gm7v7sCwJdcmdTLFSVlqbjDdAqMrlSYQEVltZlp1EmZ3M/meJZMkGWYm1soVx89+CH59PJdrRkURuLHf1O84Pw+3L4vPnV/8w65Hx+5Ai+ohEnEnfi10=
+	t=1788183989; cv=none; b=st4b+GiKg60gwZp4AksRvFCf3tfAEIT0rZvGuX/fTm3JX+hAiKD6oItLJ25AknG78r6utUpLgVmTOsFFUr0TjnERE20tOiFMmaQBxOtCp6tmV61Ho01y1nIeGYENy+UpJ+MCQ2ipGpu9a+MtTzouwXWGS6TaSz9pVzfyKNTkbbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788183522; c=relaxed/simple;
-	bh=bvb1vYoHFhqP2VcEmDuAujeIx3RJWVaMILC+JHETH0Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YN/5Y7UizgWVYwAD0ztJcj7fOcAt95sMxHrWKNcOy+njXpcR2HiTtBR5EFMUJlI1pD1xNtfwg85c+jKu/+TTqt2NNFObBH32Q2RkviQXg7mnXmzJ1O497Cuenpbm6cT6lhgOjav6wUIA2/eIbnQ+GXcKtYAuJi95qjM+jDIoi6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A4Tk7qT/; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788183989; c=relaxed/simple;
+	bh=g3bHuiF2eZyWuULtviNSCTfwDIZfKAG9MuMKJoMM/e4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=a4HPG+lx77WPxZNOGzYXxhMNbdIUd+HkfyK9YPlM4RcbvpTWaTojUlEYy7CQwlwylvrIl9MHBM4Lq/KXiFhVIlPpFbpRUCFECB4ej4KS1+SJF9n3r0PgncEfS3p22wIX6Hx7gzfyrv5t0obdLd2pSN6FxvMhmrF94oLWkIf8prY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=pWyC59VG; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=PyaRBkqn; arc=none smtp.client-ip=103.168.172.157
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A4Tk7qT/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E40FE1F00A3E;
-	Mon, 31 Aug 2026 13:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788183520;
-	bh=xG2t2y2lKLQXDUfdvcxJHobwIOaB1uVKJu1HoXcWyes=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=A4Tk7qT/W9BYLhBZAo4JFJUDq9oD4147ZGoZ7tU3TacdSSo3qs6kTsgLTQXh6Xx9x
-	 41FTjliOOiS4As+vtRtfoELJgaUmMtvhd4/0hQ+Nf2uVT8NE7u7U6R950fqXzvkz9I
-	 ZaDlFJrfzqH3RA3S2uvw7NlhqrpKc+0IOypxS2/gxTgCDqmmY49+MzJe6t2E+E3FEG
-	 OPbS3/u14fd1eUQQGxMk47f6+rjQ45KuGXzx+LrPFR3ecAZhvIVj9CE7BeSZO5q4CA
-	 xKAyWVn3maNB/3CG3qMozpEX46xnucMr3iHb3gqf+pvR84n8z3PDywRzqZXZ+frN3B
-	 5ONnXEit+3mjw==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Simon Xue <xxm@rock-chips.com>,
-	=?UTF-8?q?Sven=20P=C3=BCschel?= <s.pueschel@pengutronix.de>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-5.10] iommu/rockchip: disable fetch dte time limit
-Date: Mon, 31 Aug 2026 09:22:53 -0400
-Message-ID: <20260831133314.4125787-145-sashal@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260831133314.4125787-1-sashal@kernel.org>
-References: <20260831133314.4125787-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="pWyC59VG";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="PyaRBkqn"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 75D7B1400041;
+	Mon, 31 Aug 2026 09:46:24 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-05.internal (MEProxy); Mon, 31 Aug 2026 09:46:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:message-id:mime-version:reply-to
+	:subject:subject:to:to; s=fm2; t=1788183984; x=1788270384; bh=g4
+	/XPVLrP5egtPNVWUyJ/PG5UFV4N/qltkV3ELg9guw=; b=pWyC59VGXVwtGE7jxK
+	0fvG5y9233VGY9k2Pp4TKIbBHpUmdOWYPROY+8jzilZ9qBnwb3aAqFs+9A7H0LCf
+	V2swXI611Al3ogdwMZ2H4OjYgoL1Bj22+G6It77CnYp0SeTSGR3DHL8MolybURWf
+	A6IBF86BRxCIHWyy2F3XL9cdxa2lnCneK6g21k2tMMpVLiUvu2cYD58T7qL24MPw
+	x2B4yvY2cND4vAjQNtA/lC4XnlFXVM4y/K4Ysw9hLnsiSdI59AlocRsqCsoQ+ki7
+	scbGCwqzWMtpIb7dI9MOeGZ6ltPQziUApHWngoQMjEf8djNOVk0PLeYHQznqXXX0
+	6/1A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm3; t=1788183984; x=1788270384; bh=g4/XPVLrP5egtPNVWUyJ/PG5UFV4
+	N/qltkV3ELg9guw=; b=PyaRBkqngoXLhLW0vtay3lx32XeqT4Xo89hqv78sf9AA
+	tXlrYNwG+FRyd9UZ3hWnkGYkxQxVjTs83GVTw05Tsd0bp5x/rXNsGjxHGZO6VuQg
+	1nd2mOc+kEWpbT/O6wDToS4IpCn+E2ZStyfN7+0G0I7aXUvOpo7UABBZHJ00T2Qu
+	YkQa0UHsqpBPmv2eb23sTVnCLKgO6JopelsLwGxxdUyD7crbr1D2e+p3XNsv/J8v
+	ZH28wH5ZyqHiaVdisZYk2DhpJ6+hrQ2YLt0cLv5EdELGFiDgf/fngfNUKoO/4p7M
+	Jhb7I8aitc/tYE4twQ1o6ZdYJz2SuAr+hdOG+T3EEw==
+X-ME-Sender: <xms:sIWVagpRnYxRqO4aYwMtyOWrQVcTowCgLYNCcu75vDSlnzgGt1qxIw>
+    <xme:sIWVauNMlO01SI9I4okCxgZ8kVd1wxjo1fpcDyhhFPCIQ120jaAD7CvksfKX4Kxg0
+    9dYEmS40lpkdjU06HovQB3kL5EjmV_DgCVWqALdG3N8gIE23iNmYUU>
+X-ME-Received: <xmr:sIWVak25JzsUSjExxmVAeZY_1FjyrJHhABWfEKz92ptsx9ZxS8-ymd4j4eTPWcmhcySWRBEzJWETYUToNVF18FhP8s4DLhllodmVCw>
+X-ME-Proxy-Cause: dmFkZTEvZMkLEr7MhWmsStG7sJZXSLt7S/MV99zX9keQluRTeC57NW+zSl9TBQNf7FCT0S
+    RXUa9Qi0huZw7DA+PRaJ8kjJOGulGLX/LiEN4HozDLX996QN7h/AOwG62KOyPTtLmclyik
+    UHj7e7+vMjCfGxOG7OXwW475YieXIhYchvFCr+heSc7oFhINNeY21c1xRHLgBdfYjwDmVO
+    grhY5RQNgA1kjTZTEMjAFDX+9YjO6jFERPW1FbHLuNe+dmrUdOEfypWf5n9tbhXajYMKiT
+    QqEDXTOJ+ghOws43X9Z+YPTMVomE7EACJ7/jHjGM9Yme83Mw/KKcvSxUFWyF/TlOEVUvIn
+    uU+2rlECtsqv3fBiGUSDwjJu7QdT3GfY0D5J9WrlLI8ygmpkx1tolzbXB4MWB63spDLuUy
+    V1D4Yc2MMkpXvdW6P97vYdip1ZyQfOB02veRDW/eteKeamSgh+e5xrP5puCcjMYTwkBpSM
+    mTcI/mEJgLi+UO/mCGPRtOY7GiNmrI6T0zVfR3jXmowo3epjNdDCH9iNAObwTBr4bdO5Gj
+    UShA9Ck3lIRf7kZ98bp2YdEF7aUOWZp6+dcvxjKlioYlk0kYOeuekjuswa0Jdska1bs7ou
+    x2Px/mOodOEGCibbDTDsoM7EsQMWm6qZIX5i+MfcNUkMRO0eEL4fn4fzZ6fA
+X-ME-Proxy: <xmx:sIWVakpzFC2EjKUzSrmGuzKUDNTfvCCZyYiO40u62GaQnvgDtZ-icQ>
+    <xmx:sIWVamca0xnfrYqJrJSI5_K_Pd4R8w3opLkgTPVOSTr_TfoaSZaV-g>
+    <xmx:sIWVausFFTEhiamIR823ckEc_yjVmcx-1M9hr_TvLZuJEpE3dTwlIA>
+    <xmx:sIWVauXC5H3dhH69dF_q5s1lkynYDgfMSXPjdMvtOiX5a-87WpuaKw>
+    <xmx:sIWVaqM-_XAM7WANhzrvEK8yMGjyFkOSYj9-i4XcBVhEc8K-AtpCpOZo>
+Feedback-ID: i47b949f6:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 31 Aug 2026 09:46:23 -0400 (EDT)
+From: Janne Grunau <j@jannau.net>
+Subject: [PATCH v2 0/2] iommu: apple-dart: device specific DMA aperture
+ support
+Date: Mon, 31 Aug 2026 15:46:07 +0200
+Message-Id: <20260831-iommu-apple-dart-aperture-v2-0-d16ce3770299@jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.18.48
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42NQQ6CMBBFr0Jm7Zi2RAFX3sOwGMsgNdKSaSEaw
+ t2tnMDdfz/5768QWRxHuBQrCC8uuuAzmEMBdiD/YHRdZjDKnFWtG3RhHGekaXoxdiQpR5Y0C6M
+ t7421VdNVrCHvJ+HevXf3rc08uJiCfParRf/af6yLRoXmZCpV9mWtia5P8p7mo+cE7bZtX5sWL
+ aDDAAAA
+X-Change-ID: 20260819-iommu-apple-dart-aperture-c3b9cc79d7e1
+To: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Janne Grunau <j@jannau.net>, 
+ Hector Martin <marcan@marcan.st>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2211; i=j@jannau.net;
+ s=yk2025; h=from:subject:message-id;
+ bh=g3bHuiF2eZyWuULtviNSCTfwDIZfKAG9MuMKJoMM/e4=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqyprWs62h1eFt7nVK6b+eLhibSEegfJpetf9G1stC2Ze
+ DF3p0tiRykLgxgXg6yYIkuS9ssOhtU1ijG1D8Jg5rAygQxh4OIUgImkbWD4p/Put7t0181crdWS
+ +luXNspsY/9b8sItYKcvv0hlgKDNIUaGu0cuGU/VPhh6mEdr4s5tXC/YjptX/9j39qtvb+tx8eZ
+ 53AA=
+X-Developer-Key: i=j@jannau.net; a=openpgp;
+ fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-From: Simon Xue <xxm@rock-chips.com>
+Apple DARTs are often connected directly to devices that expect only a
+portion of their address space to be used for DMA (for example, because
+other ranges are mapped directly to something else).
 
-[ Upstream commit 8d4346ecd4950ae08cc76a6de327c264e846758c ]
+The USB4 native host controller on M2 Pro/Max/Ultra devices expected to
+be sent by Sven after v7.3-rc1 requires this. In the Asahi downstream
+kernel the display controller and ISP require a specified DMA aperture
+as well.
+The downstream kernel uses a "apple,dma-range" property in the  iommu
+node to specify the aperture. This is not a good way to describe the
+aperture as it is not property of the iommu itself but of its connected
+device. iommu.txt describes this use case as DMA window in its
+"#iommu-cells = <4>" example.
 
-Disable the Bit 31 of the AUTO_GATING iommu register, as it causes
-hangups with the RGA3 (Raster Graphics Acceleration 3) peripheral.
-The RGA3 register description of the TRM already states that the bit
-must be set to 1. The vendor kernel sets the bit unconditionally to
-1 to fix VOP (Video Output Processor) screen black issues. This patch
-squashes the 2 vendor kernel commits with the following commit messages:
+Implement this for DART allowing additionally 5 iommu-cells specifying a
+64-bit aperture start and length. 0x100_0000_0000 is a commonly used
+aperture start and the aperture often spans a 36-bit address space.
 
-Master fetch data and cpu update page table may work in parallel, may
-have the following procedure:
+This range *can* be outside of the DART's IAS. In that case, it is
+assumed that the hardware truncates addresses and the page tables will
+only map the lower bits of the address. However, the specified range
+cannot straddle an IAS boundary (you cannot cover more than IAS worth
+of address space nor wrap).
 
-	master                  cpu
-	fetch dte               update page tabl
-	        |                       |
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make iommu block)  <-  zap iotlb entry
+This corresponds to the vm-base and vm-size properties on the Apple
+device tree side of things.
 
-New iommu version has the above bug, if fetch dte consecutively four
-times, then it will be blocked. Fortunately, we can set bit 31 of
-register MMU_AUTO_GATING to 1 to make it work as old version which does
-not have this issue.
-
-This issue only appears on RV1126 so far, so make a workaround dedicated
-to "rockchip,rv1126" machine type.
-
-iommu/rockchip: fix vop blocked and screen black on RK356X and RK3588
-
-RK3568 and RK3588 has the same issue as RV1126/RV1109 that caused by
-dte fetch time limit, So we can set BIT(31) of register 0x24 default
-to 1 as a workaround.
-
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
-Signed-off-by: Sven Püschel <s.pueschel@pengutronix.de>
-Acked-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Janne Grunau <j@jannau.net>
 ---
-
-LLM Generated explanations, may be completely bogus:
-
-## PHASE 1: COMMIT MESSAGE FORENSICS
-
-### Step 1.1: PARSE THE SUBJECT LINE
-**Record:** `[iommu/rockchip]` `[disable]` — Disable the fetch-DTE time-
-limit hardware behavior in the Rockchip IOMMU AUTO_GATING register
-(BIT(31)).
-
-### Step 1.2: PARSE ALL COMMIT MESSAGE TAGS
-**Record:**
-- **Fixes:** — not present (expected for manual review)
-- **Reported-by:** — none
-- **Tested-by:** — none
-- **Reviewed-by:** — none
-- **Acked-by:** Heiko Stuebner `<heiko@sntech.de>` (Rockchip maintainer)
-- **Link:** — none in commit (submission thread references vendor
-  commits and RGA3 driver series)
-- **Cc: stable:** — not present (expected)
-- **Signed-off-by:** Simon Xue, Sven Püschel, Joerg Roedel (ignore
-  pipeline-added SOBs)
-- **Notable:** Ack from subsystem maintainer; no syzbot/fuzzer
-  involvement
-
-### Step 1.3: ANALYZE THE COMMIT BODY TEXT
-**Record:**
-- **Bug description:** Newer Rockchip IOMMU hardware has a DTE-fetch
-  time limit. When a master re-fetches DTE four times while the CPU
-  concurrently zaps IOTLB entries (during page-table updates), the IOMMU
-  enters a blocked state.
-- **Symptom/failure mode:** IOMMU hang/block → RGA3 peripheral hangups,
-  VOP (display) blocked with black screen.
-- **Affected hardware:** RV1126/RV1109, RK3568, RK3588 (commit message
-  also mentions RK356X broadly).
-- **Root cause:** BIT(31) of `RK_MMU_AUTO_GATING` (offset 0x24) defaults
-  to 0 on affected silicon; TRM says it must be 1. Vendor kernel sets it
-  unconditionally.
-- **Version info:** Not tied to a specific kernel version; this is a
-  silicon/hardware behavior issue.
-
-### Step 1.4: DETECT HIDDEN BUG FIXES
-**Record:** Not disguised — this is an explicit hardware workaround.
-Despite "disable" wording in the subject, the fix **sets** BIT(31) to
-disable the faulty time-limit feature. This is a classic hardware
-quirk/workaround, not a cosmetic cleanup.
+Changes in v2:
+- validation of the DTS supplied aperture: page size alignment and
+  overflow checks
+- actually add `64BIT` to the COMPILE_TEST depends
+- Link to v1: https://lore.kernel.org/r/20260819-iommu-apple-dart-aperture-v1-0-252703f381aa@jannau.net
 
 ---
+Janne Grunau (2):
+      dt-bindings: iommu: dart: Support specifying the DMA aperture
+      iommu: apple-dart: Support specifying the DMA aperture in the DT
 
-## PHASE 2: DIFF ANALYSIS
-
-### Step 2.1: INVENTORY THE CHANGES
-**Record:**
-- **Files:** `drivers/iommu/rockchip-iommu.c` (+8 lines, 0 removed)
-- **Functions modified:** `rk_iommu_enable()` only
-- **Scope:** Single-file, surgical fix
-
-### Step 2.2: UNDERSTAND THE CODE FLOW CHANGE
-**Record:**
-- **Hunk 1 (define):** Adds `#define DISABLE_FETCH_DTE_TIME_LIMIT
-  BIT(31)`.
-- **Hunk 2 (`rk_iommu_enable`):**
-  - **Before:** After writing DTE address, ZAP cache, and IRQ mask,
-    proceeds directly to enable paging.
-  - **After:** Reads `RK_MMU_AUTO_GATING`, ORs in BIT(31), writes it
-    back — for each MMU instance.
-  - **Affected path:** IOMMU enable during device attach and
-    system/runtime resume.
-
-### Step 2.3: IDENTIFY THE BUG MECHANISM
-**Record:**
-- **Bug category:** Hardware workaround / logic correctness fix
-- **Mechanism:** Without BIT(31)=1, concurrent DTE fetch + IOTLB zap can
-  trigger a silicon bug after four consecutive DTE fetches, permanently
-  blocking the IOMMU. Setting BIT(31) restores legacy (non-buggy)
-  behavior.
-
-### Step 2.4: ASSESS THE FIX QUALITY
-**Record:**
-- **Quality:** Obviously correct — read-modify-write preserves other
-  AUTO_GATING bits; matches vendor kernel and TRM guidance.
-- **Regression risk:** Very low. Vendor sets unconditionally on all
-  affected platforms; bit is documented as should-be-1.
-- **Red flags:** Commit message still mentions RV1126-only workaround,
-  but code applies unconditionally (intentional per vendor practice and
-  RK3568/RK3588 need).
-
+ .../devicetree/bindings/iommu/apple,dart.yaml      | 12 ++--
+ drivers/iommu/apple-dart.c                         | 74 +++++++++++++++++++---
+ 2 files changed, 72 insertions(+), 14 deletions(-)
 ---
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+change-id: 20260819-iommu-apple-dart-aperture-c3b9cc79d7e1
 
-## PHASE 3: GIT HISTORY INVESTIGATION
-
-### Step 3.1: BLAME THE CHANGED LINES
-**Record:** `rk_iommu_enable()` core logic dates to 2014 (Daniel Kurtz).
-`RK_MMU_AUTO_GATING` defined since original driver (2014,
-`c68a292152d32`). The **missing workaround** has been present since the
-driver's introduction — not a recent regression.
-
-### Step 3.2: FOLLOW THE FIXES: TAG
-**Record:** No `Fixes:` tag. Not applicable — this is a hardware silicon
-bug, not a commit-introduced regression.
-
-### Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES
-**Record:**
-- Recent related fix already in tree: `62e062a29ad51` — "prevent iommus
-  dead loop when two masters share one IOMMU" (different bug, has `Cc:
-  stable`).
-- `rk3568-iommu` v2 support added in `c55356c534aa6` (2021), present in
-  this tree.
-- This fix is **standalone** — not part of a multi-patch series
-  requiring prerequisites.
-- On `master`, this commit (`8d4346ecd4950`) is ahead of
-  `stable/linux-6.18.y`.
-
-### Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS
-**Record:** Simon Xue is an active Rockchip IOMMU contributor (multi-irq
-support, dead-loop fix, ISP reset handling). Sven Püschel (Pengutronix)
-submitted and tested on RK3588 RGA3.
-
-### Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS
-**Record:** No dependencies. Patch applies cleanly (`git apply --check`
-succeeded). No new structures, APIs, or helper functions required.
-
----
-
-## PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
-
-### Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION
-**Record:**
-- **Lore URL:** https://patch.msgid.link/20251126-spu-
-  iommudtefix-v1-1-f90003dbfcc4@pengutronix.de
-- **Series revisions:** v1 submitted 2025-11-26; author pinged
-  2026-04-28; Heiko Stuebner suggested resend/v2 due to age; committed
-  as-is on mainline 2026-06-02.
-- **Reviewer feedback:** Shawn Lin (Rockchip) noted TRM offset
-  clarification (RGA3-specific offset vs general IOMMU 0x24) — comment-
-  only, no code objection.
-- **Stable nominations:** None found in thread.
-- **NAKs:** None.
-
-### Step 4.2: CHECK WHO REVIEWED THE PATCH
-**Record:** CC'd: Joerg Roedel, Will Deacon, Robin Murphy, Heiko
-Stuebner, iommu@, linux-arm-kernel@, linux-rockchip@. Heiko Stuebner
-Acked-by in final commit.
-
-### Step 4.3: SEARCH FOR THE BUG REPORT
-**Record:** Real-world trigger documented by Pengutronix — sporadic RGA3
-hangs on RK3588 during driver development. Vendor kernel commits [2][3]
-document VOP black-screen issues. No syzbot/bugzilla report.
-
-### Step 4.4: CHECK FOR RELATED PATCHES AND SERIES
-**Record:** Related but independent: RGA3 upstream driver series (v5,
-2026-04-28) depends on this IOMMU fix. The IOMMU fix stands alone and is
-not a "preparation" commit.
-
-### Step 4.5: CHECK STABLE MAILING LIST HISTORY
-**Record:** No stable-list discussion found for this specific fix. (Lore
-direct fetch blocked by bot protection; analysis via `b4 dig -m` mbox
-download.)
-
----
-
-## PHASE 5: CODE SEMANTIC ANALYSIS
-
-### Step 5.1: IDENTIFY KEY FUNCTIONS IN THE DIFF
-**Record:** `rk_iommu_enable()` — only function modified.
-
-### Step 5.2: TRACE CALLERS
-**Record:**
-- `rk_iommu_attach_device()` → `rk_iommu_enable()` (line 1043) — called
-  when a device attaches to an IOMMU domain (e.g., VOP, RGA, NPU).
-- `rk_iommu_resume()` → `rk_iommu_enable()` (line 1330) — called on PM
-  resume.
-- Both are common, user-visible paths on Rockchip boards.
-
-### Step 5.3: TRACE CALLEES
-**Record:** Uses existing `rk_iommu_read()` / `rk_iommu_write()`
-register accessors, plus existing stall/reset/paging enable sequence. No
-new dependencies.
-
-### Step 5.4: FOLLOW THE CALL CHAIN
-**Record:** Device probe → `iommu_attach_device` →
-`rk_iommu_attach_device` → `rk_iommu_enable`. Triggered during normal
-graphics/media driver initialization and suspend/resume. **Reachable
-from userspace** indirectly via device usage (display, GPU, RGA
-workloads causing IOTLB zaps).
-
-### Step 5.5: SEARCH FOR SIMILAR PATTERNS
-**Record:** No similar workaround elsewhere in `rockchip-iommu.c`.
-Vendor kernel sets this bit unconditionally — external confirmation of
-the pattern.
-
----
-
-## PHASE 6: CROSS-REFERENCING AGAINST THE LOCAL TREE
-
-### Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?
-**Record:** **YES.** Local tree is **Linux 6.18.44** (`git describe
-HEAD` → `v6.18.44-1-gef4bf62bccf3c`). `rk_iommu_enable()` at lines
-928–960 lacks the BIT(31) workaround. `RK_MMU_AUTO_GATING` is defined at
-line 42. `DISABLE_FETCH_DTE_TIME_LIMIT` is **not** present. Affected DT
-platforms exist: `rv1126.dtsi` (v1 `rockchip,iommu`), `rk356x-base.dtsi`
-and `rk3588-base.dtsi` (v2 `rockchip,rk3568-iommu`).
-
-### Step 6.2: CHECK FOR BACKPORT COMPLICATIONS
-**Record:** **Clean apply** — `git format-patch` + `git apply --check`
-succeeded with no conflicts. No refactoring churn in `rk_iommu_enable()`
-since 6.18 branch.
-
-### Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE
-**Record:** The dead-loop fix (`62e062a29ad51`) is present. This DTE
-time-limit workaround (`8d4346ecd4950`) is **not** present on
-`stable/linux-6.18.y`.
-
----
-
-## PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
-
-### Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY
-**Record:** `drivers/iommu/rockchip-iommu.c` — IOMMU driver for Rockchip
-SoCs. **IMPORTANT** for ARM/ARM64 embedded (display, media, NPU, ISP).
-`CONFIG_ROCKCHIP_IOMMU=y` in `arch/arm64/configs/defconfig`.
-
-### Step 7.2: ASSESS SUBSYSTEM ACTIVITY
-**Record:** Actively maintained — recent fixes in 6.17/6.18 merge window
-(dead-loop fix, iommu-pages migration). Rockchip platforms (RK3568,
-RK3588) are widely deployed.
-
----
-
-## PHASE 8: IMPACT AND RISK ASSESSMENT
-
-### Step 8.1: DETERMINE WHO IS AFFECTED
-**Record:** Users of Rockchip SoCs with IOMMU-enabled peripherals —
-**platform-specific** but covering popular boards (RK3568, RK3588,
-RV1126). Display (VOP), graphics acceleration (RGA3), and other IOMMU-
-backed masters.
-
-### Step 8.2: DETERMINE THE TRIGGER CONDITIONS
-**Record:** Concurrent IOMMU master DTE fetch + CPU IOTLB zap during
-page-table updates. Realistic during graphics/media workloads and driver
-activity. Not every boot, but reproducible under load (Pengutronix
-observed sporadic RGA3 hangs).
-
-### Step 8.3: DETERMINE THE FAILURE MODE SEVERITY
-**Record:** IOMMU permanent block → **CRITICAL** system hang for
-affected peripherals; VOP black screen (display unusable); potential
-soft lockup of dependent subsystems.
-
-### Step 8.4: CALCULATE RISK-BENEFIT RATIO
-**Record:**
-- **Benefit:** HIGH — prevents hardware IOMMU lockup and
-  display/peripheral hangs on widely used SoCs.
-- **Risk:** VERY LOW — 8-line register write matching vendor kernel and
-  TRM; read-modify-write preserves other bits.
-- **Ratio:** Strongly favors backport.
-
----
-
-## PHASE 9: FINAL SYNTHESIS
-
-### Step 9.1: COMPILE THE EVIDENCE
-
-**FOR backporting:**
-- Real hardware bug with documented failure mode (IOMMU block, display
-  black, RGA3 hang)
-- Hardware quirk/workaround — explicitly allowed stable category
-- Small (8 lines), surgical, applies cleanly to 6.18.44
-- Vendor kernel already does this unconditionally
-- TRM documents BIT(31) should be 1
-- Acked-by Rockchip maintainer (Heiko Stuebner)
-- Affected SoC DT support present in this tree
-- Buggy code path exists and has existed since driver introduction
-- No prerequisite commits
-
-**AGAINST backporting:**
-- No `Cc: stable` or `Fixes:` tag (expected, not disqualifying)
-- Applies to all Rockchip IOMMU instances, not SoC-gated (but vendor
-  does same; low risk)
-- Stale RV1126-only wording in commit message (code is correctly
-  unconditional)
-
-**Unresolved:** None that affect the decision.
-
-### Step 9.2: STABLE RULES CHECKLIST
-1. Obviously correct and tested? **PASS** — TRM + vendor kernel +
-   Pengutronix RK3588 testing
-2. Fixes a real bug affecting users? **PASS** — IOMMU hang, black screen
-   on production hardware
-3. Important issue? **PASS** — CRITICAL (hang, display failure)
-4. Small and contained? **PASS** — 8 lines, one function
-5. No new features or APIs? **PASS** — register workaround only
-6. Can apply to local tree? **PASS** — clean apply verified
-
-### Step 9.3: EXCEPTION CATEGORIES
-**Record:** **Hardware quirk/workaround** — qualifies under stable
-exception rules.
-
-### Step 9.4: DECISION RATIONALE
-
-For **Linux 6.18.44**, Rockchip IOMMU users on RK3568, RK3588, and
-RV1126 platforms are exposed to a silicon bug where the IOMMU can enter
-a blocked state during normal page-table maintenance, causing peripheral
-hangs and display black screens. The fix is a minimal, vendor-validated
-register write that matches TRM documentation. It applies cleanly, has
-maintainer ack, and fixes a serious user-visible failure on hardware
-well-supported in this tree.
-
----
-
-## Verification
-
-- [Phase 1] Parsed commit `8d4346ecd4950`: subject, body, tags (Acked-by
-  Heiko Stuebner; no Fixes/stable/syzbot)
-- [Phase 2] Diff analysis: +8 lines in `rk_iommu_enable()`, adds BIT(31)
-  write to `RK_MMU_AUTO_GATING`
-- [Phase 3] `git blame`: `rk_iommu_enable()` from 2014;
-  `RK_MMU_AUTO_GATING` from original 2014 driver
-- [Phase 3] No Fixes: tag to follow
-- [Phase 3] Related commit `62e062a29ad51` (different bug) already in
-  tree; this fix is not
-- [Phase 3] `git format-patch` + `git apply --check`: applies cleanly
-- [Phase 3] Commit on `master` but not on current `stable/linux-6.18.y`
-  HEAD
-- [Phase 4] `b4 dig -c 8d4346ecd4950`: lore thread found
-- [Phase 4] `b4 dig -a`: v1 submission 2025-11-26; committed 2026-06-02
-- [Phase 4] `b4 dig -w`: Joerg Roedel, Heiko Stuebner, Robin Murphy CC'd
-- [Phase 4] Mbox: Pengutronix confirmed RK3588 RGA3 hangs; Shawn Lin
-  comment-only TRM note; Heiko suggested resend; no NAKs, no stable
-  nomination
-- [Phase 5] Callers: `rk_iommu_attach_device()` (line 1043),
-  `rk_iommu_resume()` (line 1330)
-- [Phase 5] IOTLB zap path: `rk_iommu_zap_iova()` used from map/unmap —
-  confirms concurrent zap mechanism
-- [Phase 6] `git describe HEAD`: v6.18.44; `make kernelversion`: 6.18.44
-- [Phase 6] Buggy code confirmed present: no
-  `DISABLE_FETCH_DTE_TIME_LIMIT` in tree
-- [Phase 6] DT: `rv1126.dtsi`, `rk356x-base.dtsi`, `rk3588-base.dtsi`
-  have IOMMU nodes
-- [Phase 6] `rk3568-iommu` support since 2021 (`c55356c534aa6`), in tree
-- [Phase 7] `CONFIG_ROCKCHIP_IOMMU=y` in arm64 defconfig
-- [Phase 8] Failure mode: IOMMU block → hang/black screen, severity
-  CRITICAL
-
-**YES**The background search on `master` found the commit:
-**`8d4346ecd4950`** — `iommu/rockchip: disable fetch dte time limit`.
-
-**Summary:** This is an 8-line hardware workaround for Rockchip IOMMU
-silicon (RK3568, RK3588, RV1126). Without setting BIT(31) of
-`RK_MMU_AUTO_GATING`, the IOMMU can block during concurrent DTE fetch
-and IOTLB zaps, causing peripheral hangs and VOP black screens. The
-patch applies cleanly to the local **6.18.44** tree, where the buggy
-code is still present.
-
-**YES**
-
- drivers/iommu/rockchip-iommu.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 0861dd469bd86..2d0dabb0d101a 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -76,6 +76,8 @@
- #define SPAGE_ORDER 12
- #define SPAGE_SIZE (1 << SPAGE_ORDER)
- 
-+#define DISABLE_FETCH_DTE_TIME_LIMIT BIT(31)
-+
-  /*
-   * Support mapping any size that fits in one page table:
-   *   4 KiB to 4 MiB
-@@ -930,6 +932,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 	struct iommu_domain *domain = iommu->domain;
- 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	int ret, i;
-+	u32 auto_gate;
- 
- 	ret = clk_bulk_enable(iommu->num_clocks, iommu->clocks);
- 	if (ret)
-@@ -948,6 +951,11 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 			       rk_ops->mk_dtentries(rk_domain->dt_dma));
- 		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
- 		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
-+
-+		/* Workaround for iommu blocked, BIT(31) default to 1 */
-+		auto_gate = rk_iommu_read(iommu->bases[i], RK_MMU_AUTO_GATING);
-+		auto_gate |= DISABLE_FETCH_DTE_TIME_LIMIT;
-+		rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATING, auto_gate);
- 	}
- 
- 	ret = rk_iommu_enable_paging(iommu);
+Best regards,
 -- 
-2.53.0
+Janne Grunau <j@jannau.net>
 
