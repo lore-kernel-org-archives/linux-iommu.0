@@ -1,30 +1,30 @@
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35FDE3AFB07
-	for <iommu@lists.linux.dev>; Mon, 31 Aug 2026 06:16:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A3229408
+	for <iommu@lists.linux.dev>; Mon, 31 Aug 2026 06:21:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788157008; cv=none; b=qN33MAg45Zgd1VW017290PPWLS423NBlhs9EBdwP1KObjOfGvxnLQe+UFp5H9w4uUGoyC3IsHkgFOCgMvYChic3y1GwvAB0kP2pf7QAFteWcIez+uq5TJ2zGlhRAV+q4I72LtkaX6zOo35xasDGjnTbGIJ5SBusq7BvnanUHiAQ=
+	t=1788157298; cv=none; b=tlLUS279m+73XHCaovHDocgx8O0nB0QPbudUi+Q8o1Y3htrp/QSYUoWZKDJ1RNCQwDoh8eejuihRRp4Pr9Dc6NTD0mER5H/VtD8RNq+O6FYTCMzPYN1VMzwHt7XEyp+GVrFYn8svvucs1rQLLPoYFcqoANxO4q+BtdC26L317oI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788157008; c=relaxed/simple;
-	bh=WuZkdyKN/x+MMvkKHt+vWao2nKepqydzUABIUDFpYSM=;
+	s=arc-20240116; t=1788157298; c=relaxed/simple;
+	bh=eUvsAfzz+e5aNY/TsIfJgNeqShM5YG+g4j1nbqEC5lU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IWF/RSxj6KFo750VTux4/A3dcTXZYpnc7t9jWblhVRz4fUVq+yUiCbr4vfvz3k0b39e91jq3AkL+6Dr8G/I1yqvWveASOcAUT0q2dWuXmxbXKEOLASkfntMtZtV+5PZrFSe72/sPHNgI81ZDlQCr43qw4drpzElzv5fh29RNCNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Rq+vmw7o; arc=none smtp.client-ip=115.124.30.118
+	 MIME-Version; b=SeAAZRV0Ww+gTIFDbqIyDHSO2fzIc+eI3H4vUDwZUXrJyJOK7rTJHgZQac7agofXo4SMhN2ICGlMGG6+F7PTas5qtipNc2XAQqOi9tkj47uzyWLxjIVQPLxyaWgdcy+LXC1BJbZRvRBqkZIIpcZrjezmXtfWDTACE9PfHt3TBoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Bi/lSzJU; arc=none smtp.client-ip=115.124.30.119
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Rq+vmw7o"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Bi/lSzJU"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1788156997; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=F7PUgZ6rG5RVEqeO1XKlyylkawAdGS5wSTdnvgKctqo=;
-	b=Rq+vmw7o9XC4gsDTnXVAXmHXtgn5J1b8M1T2xWbfVjBbIXg9rwhXkG+2jGy76COWaF8vSaXUEFjmt2AfCzS+JOd94jG5KzqipyhsMu7QL7tzagjWN/UCFmA2WC3x/+8Iad1Q+nEMetwmKrn+ITnws+wezfpiZppJPSSp4cXhBbY=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=xiangzao@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0X9st-yR_1788156985;
-Received: from banye.tbsite.net(mailfrom:xiangzao@linux.alibaba.com fp:SMTPD_---0X9st-yR_1788156985 cluster:ay36)
+	t=1788157287; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=dHNppGEbHFmiYLlqOhoL9xC65y2QF19Ima5W5LWEsiI=;
+	b=Bi/lSzJUMHuT3ydgkKgi8rn+za1bC+N7KN0T7tbj95p5OeNsOLBxC8fqHIkx+eF9434E6gEhnlX1Q9R18Oe/qPbgQ42G0iy4xpxdedSoY/TXmMDgwj3ao8cyhECCh45qmZgIkS/Qgnk6ZfWfPIrWVhYDlwr76gX2n8FGv+gRnrU=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=xiangzao@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0X9tzDsa_1788157277;
+Received: from banye.tbsite.net(mailfrom:xiangzao@linux.alibaba.com fp:SMTPD_---0X9tzDsa_1788157277 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Mon, 31 Aug 2026 14:16:36 +0800
+          Mon, 31 Aug 2026 14:21:26 +0800
 From: Yuanhe Shu <xiangzao@linux.alibaba.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Yuanhe Shu <xiangzao@linux.alibaba.com>,
@@ -38,12 +38,12 @@ Cc: Yuanhe Shu <xiangzao@linux.alibaba.com>,
 	skhawaja@google.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommupt: Drop pagealloc references during domain deinit
-Date: Mon, 31 Aug 2026 14:16:20 +0800
-Message-ID: <20260831061623.2164384-1-xiangzao@linux.alibaba.com>
+Subject: Re: [PATCH 1/2] iommu: Add __iommu_debug_unmap_phys() to drop refs by physical address
+Date: Mon, 31 Aug 2026 14:21:14 +0800
+Message-ID: <20260831062116.2173451-1-xiangzao@linux.alibaba.com>
 X-Mailer: git-send-email 2.43.7
-In-Reply-To: <20260827161828.GA3769797@ziepe.ca>
-References: <20260827145855.1616223-1-xiangzao@linux.alibaba.com> <20260827145855.1616223-3-xiangzao@linux.alibaba.com> <20260827161828.GA3769797@ziepe.ca>
+In-Reply-To: <20260827162148.GB3769797@ziepe.ca>
+References: <20260827145855.1616223-1-xiangzao@linux.alibaba.com> <20260827145855.1616223-2-xiangzao@linux.alibaba.com> <20260827162148.GB3769797@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,35 +52,13 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Thu, Aug 27, 2026 at 01:18:28PM -0300, Jason Gunthorpe wrote:
-> It is not misusing iommupt, but it is definitely misusing any iommu
-> API built on top of it. How did you trigger this?
+On Thu, Aug 27, 2026 at 01:21:48PM -0300, Jason Gunthorpe wrote:
+> Every pts has the iova of its current iteration location. Call
+> pt_index_to_va() and then pts->range->va is the current spot.
 
-The kunit suite, nothing else.  test_pgsize_boundary() maps 128K at a
-hard-coded OA and never unmaps it, so with iommu.debug_pagealloc=1 those
-32 pages stay counted after pt_iommu_deinit() and every later allocation
-or free of one of them WARNs.  The out-of-tree module in the cover letter
-was something I wrote to confirm the mechanism, not a real driver.
-
-The only non-test path I found that frees a populated domain is
-iommu_setup_default_domain(), which releases the old domain with its
-IOMMU_RESV_DIRECT mappings still installed.  I have not seen that WARN,
-presumably because those pages do not come from the page allocator, so it
-is not evidence of a bug and I am not proposing to change it.
-
-> If this is the only trigger, then it is different testing things
-> interacting badly and I don't think it should be fixed like this.
->
-> Probably have the kunits directly unmap as they were being lazy
-
-Agreed, and my "not driver misuse" framing was wrong: the iommupt deinit
-contract says nothing about unmapping, but the iommu API above it does.
-Dropping this series.
-
-You were right about the tests: adding a count_valids() == 0 check to
-pt_kunit_iommu_exit() without touching anything else fails exactly
-test_increase_level(), test_pgsize_boundary() and test_mixed(); the other
-cases already unmap.  I will send that as a single patch.
+You're right, and pt_next_entry() already keeps it current, so there was
+never a need for a phys based helper.  Both patches dropped, see my reply
+on 2/2.
 
 Thanks,
 Yuanhe
