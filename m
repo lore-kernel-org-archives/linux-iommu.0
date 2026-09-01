@@ -1,78 +1,78 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC011432E64
-	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 08:47:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63761372ED0
+	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 08:51:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788252454; cv=none; b=N6QAiaJITztkchCtVgjb4rtUZhN+ASAc1YdQmpGu5P8vJywgCQuqsfl6H3THR0VufSgO2dnlHfVVq1cFLmzuFtZbG3oiOEESS+9yeSl4b4quvTUO46c6z0qix0wTNPuxNi1uw/SogaWjwpRkifZMRYb+7ERNgKeiAVBq7IfBRic=
+	t=1788252702; cv=none; b=KRig0de8Hirc3SfnmDEGcDzII9u/QcUQgQ6gTIIJf9yAlGJ89RfOoSnC7fcvY+OKhEhaRekS8qfLmJMAMbiMD6EBLebZFcqSZ/12Sb1iZiHEIg5Xauon7fG88buR01Yb3Dooi/fkyWQEsIXYq+M9yVfDKKy2E+BRbNswFzQ+/8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788252454; c=relaxed/simple;
-	bh=GuYMv+3OeZM7dBc1rScPdv7HA9p75oDjDJJKhqaCJCk=;
+	s=arc-20240116; t=1788252702; c=relaxed/simple;
+	bh=1dljEFWF149FOJ57AsRvt4hi6edE+9V4/CmIdnlyfUc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YuxkIxPgMDwiJO6T7vtEThAnkdAQg420GMTd20I29Zkpn522hwK5fpEKqwJsUpO+knonWTxhH2t2qsWKxB3hIjta05U5Kbjm36c36dux7nnZBSF9E2r5VNFUL1419VijnaVuBBF6icHG83x0UqxxdBvVwNYsUTPuwIo4njOpXBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LHZFhDVE; arc=none smtp.client-ip=209.85.128.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=GgkHrKPjv2vN/O5/ouR/kYLVZC6DdE9oCSo1+gR+yMJSKs+oL6DyapPk30ft8Y0LBChNDXwrjEXALl2jjznj444fNTR393KpI2c45SC2qRpBWfv8ur1XbXLSsoK02/vDnSL8Uvevbz2QsvsqhFK4ISGTBRhLyjtObjMg7GB+UX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cQh+ad2e; arc=none smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LHZFhDVE"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-49ccf12bed0so25715e9.1
-        for <iommu@lists.linux.dev>; Tue, 01 Sep 2026 01:47:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cQh+ad2e"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6a5f91ae397so6620a12.1
+        for <iommu@lists.linux.dev>; Tue, 01 Sep 2026 01:51:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788252451; x=1788857251; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1788252699; x=1788857499; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=k+HrXbMbxa/Y02K3QZMbt843lXkhHRmzbDFOaV/a9gQ=;
-        b=LHZFhDVE9Ce5q9FcldaIj1qztrfFaDbZIT47Db1YvWEIV8OQ7S7yymjmkIkMyOYUQt
-         sK2EkvXetMtV+3t9Kt0twDSJF+zXDWqBjfjBZxRjGeEiIIupiB3EGy7YLJjlE536waTu
-         77ssxpjdCB80XJ5nOcab+G84fHmRXTMUe9fBKorC88mAWDqFAeCeXg4lCi5gHvwT0d6B
-         D/+ZHM4DEBbOMJl8O3ocbyBlGzIQGrM1NibXrFSquQGKh2AUkMj6Pulh+FJClr5e8eNG
-         1+M/MyEi5aY5q3dc8rp1d7HdBtzq4GC2Zi6+CVJo1FlGj5qCC2Ib5fQPtxQjalR0HgWQ
-         pRKg==
+        bh=538Bban5iOQuAF/2OvLsm8VbhbA6yCMNVAJAEEAo3ew=;
+        b=cQh+ad2eO+P6tefDp/onxUUU52rYDtE7egWBNJnhM367vvTaeivUDCLCPSOajx2ih5
+         rqprbnoXeSe5NcnWvDWHDCwE9/Mez4eoXdHvTFbT1vFpVowH4c323sh6Lo6mVUh4YRql
+         a7zQoURPpUgGEp8wt0Tz5KUr5cgdbQc+dvtCrk9qzCZjEUe+KmsBsw6VIPF74Ffa+0wJ
+         L9FOVVmFHXhsELyyoLnWa1sH2s5mAKruvTwQ781o5ezSeKXG+9mfUq5He+D1xf/28PNa
+         Ae+8OZLzvXwAgEfCes8N2feu6yJqH+FL/SpcTQMEGv1vRorCbQqZsDYW75B+Xb049nLF
+         lxfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788252451; x=1788857251;
+        d=1e100.net; s=20251104; t=1788252699; x=1788857499;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=k+HrXbMbxa/Y02K3QZMbt843lXkhHRmzbDFOaV/a9gQ=;
-        b=IfKH85OeG5Vzdh1EpsMk1ocB6/bRP6o13dC2IqhyJSMF/SsVzR7g6p/nsDrBT9qOTR
-         EytfII0yddzTjA84e6dV0MfAbwvLrK9RPEAA6lUxALytugnxog4KhZif7tRzW8qR/sDX
-         fkdZVQeRuIe32WQ0O49ShcZ96b0zHVYDgsn4pmVr4SOpsCn2ZvzhkX5RNrAUxLAy3qrT
-         bwcDimEbbho0uguxP7jTooNzmotK2baxXjKUkf5g3Kjhoc5CH4cBf0hjVBj7gm7A6Ro1
-         K5OUq+kcA0YbI+n/cVwe2CL0MBdSRVGjRoOhVw5IWoZuNoQPhiTFzxUph1jQRwd+ubne
-         +RFA==
-X-Forwarded-Encrypted: i=1; AHgh+RqPztD0eT3iqbcsy8h/f0gazI38SxtLlC16E+COBkOrYPrpXfvph+y4ruwWYMSHt/REUkm/LA==@lists.linux.dev
-X-Gm-Message-State: AFuF++kpbKA51l/htJJ+6Kwz/ug9VWHRiC6EJHMwIaoQvMYgSovr6XKu
-	/rDOceOqqcNMQAgVoo+GxVb03v3GQp5mp6uXcTtNc0eafXZ7Uvh7FFqFaKsEsPZ+wQ==
-X-Gm-Gg: AR+sD11Q2ZfD7X6RnKBlV19c+4VSnFKWpKK/y6/OgxbnyVAfStqj7LmTh/+GsY2b5kP
-	BnaaoW8TABbKEhy54JCgobgBPlz2q/wK49D/GrMjN1l+3ihgBQxEZtQmRr7sdJbNGrmMyYEoiPP
-	/jSl/GcJ3bpFUCKDEbaTIWC39a45VlKFP6CJ2+fm5GklDfa3kr/ClwIyhce7IYLsXuKpboN/w1S
-	3UJZ7aucRJGZ8ONUj3apDSlm3bPxeofzvbRIyVwoBUxJN5pLS2GHAmQpOqm+WLjNVafDqlsvnIC
-	YFhJ0AQjxlviFZQT2ykpZ+I9Wsi4Gy8GlKNuY8BSEJLHpxL0MSQtEpTWj1zzqZT58M1G23Ji74B
-	YmKlyxoOqJUnCLrKjC1pnvwZClH08CCDFrYX0fw1e0isi/q6u7ZoYD8XW7H5xtEvHvkT7RdkJqX
-	OmN7+x9c9qz5pfzZo+7BmUm7HJ9NmNk+SRf1Eb1Yl5qYuPQU2IeqRUszfui7c6Nc+X8Uzs2Oxu4
-	Uq2f8XCf9jrWMIzE3WwrcYtJXD7Vg==
-X-Received: by 2002:a05:600c:12c2:b0:499:be2c:94f3 with SMTP id 5b1f17b1804b1-49cdd26e207mr507145e9.6.1788252450501;
-        Tue, 01 Sep 2026 01:47:30 -0700 (PDT)
+        bh=538Bban5iOQuAF/2OvLsm8VbhbA6yCMNVAJAEEAo3ew=;
+        b=eRJHGi/Ct4sNjVl2CdBbqrechhwheQSP6QDv7WgKOoEPjSe58jONCmfGiMkejjDt++
+         YmGwkRIrltHEf/S1pp92WQDgF68ePnyHmpAra8U3UHOtHfcha/NVIhiA6GJCNEiIKR++
+         eU8JPrEJevDlodjSuFn2pAkYmwzTg6h9F/4GGjq6QbyE8JnrX7cn1A97TzAyZov1bmAc
+         AK5hCHuElJDnbS1recEF87YOJq+BK74OrABhA3Bg8TYJWOLu7TvFeN0MNkTuTWwtUJJQ
+         0moeb2hfWZTBb6gs/XLQ2bp2rFYEwMH3UI+MoTdB/YDUWhClV9WcBttJ/9LSpiwCQZmw
+         3fFA==
+X-Forwarded-Encrypted: i=1; AKwUvByXK4vXX2ocwfL3oSCQmJfybI7UQU1hR5z3aWMz6To37giqmLOkh2/NMzB5hP6ZWzbR1mb0pQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++lXOYRdiHmaybAxIzDBp2vrohGY0vJQqulQJnJbq97lKtc6KppI
+	ZzIjnbtc3fYWQKadTpGk1/aJMGKZL+wbLqPGdK+IWUgPIG5xhnv+Nt2sqNPyG4ammQ==
+X-Gm-Gg: AYBFou2fOnVumS0iuz3+clws5OAP3dBcE8KsDihs/Zfk7hIAxh6BZB5WrYiEiEdwxPw
+	7l/5XMbscTxrnx1Xz2uiFQx9RbfOp2WDEKtLx2+MH/NJLT4K/jhMmlOrgHXbMY0Bemp1He1AITw
+	8IEWRzm5LdGga40UCe8tiWmKOpC7J7qldQURtVN0nhGqHIfbMjZG5IC/M42LX3m4DpAe4QVLFXs
+	oVbSgrEjrp19U9r6OkRS3wQ5wikO9tUTMLuroyyh1mbmQu9LAYTZcRYfLbImJPmcM6YjtJuGAqK
+	e5kbDKCNfGG1tV+rCp6xPMRSMV74ApdLQIe+peJ27aTyRHx9U5NItzm9sTu2TlJP0F7TyuRJ0Ov
+	6/ml7zAaFaP/AHJdFXNCZliSVczg7N5hNeFjMP58tK5PTUX9kfrEf36Dx5GXSqCuo5uXlp812bI
+	0N3v9jCJSLpo8zOk++xDrqhUbmcII3uwuIyzJfMP3CPjUTKMjOzeIIM2FJOizqXQ8SGjQCy6iP0
+	7PxxySZNRRqXb514jfA72RqwitFkUV9jpk5HF6U
+X-Received: by 2002:aa7:dcca:0:b0:6a0:6677:37f9 with SMTP id 4fb4d7f45d1cf-6a66d5c18e0mr19763a12.1.1788252698938;
+        Tue, 01 Sep 2026 01:51:38 -0700 (PDT)
 Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49c5a903eebsm220827575e9.4.2026.09.01.01.47.29
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a66ccdc50bsm466634a12.11.2026.09.01.01.51.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 01:47:29 -0700 (PDT)
-Date: Tue, 1 Sep 2026 08:47:25 +0000
+        Tue, 01 Sep 2026 01:51:38 -0700 (PDT)
+Date: Tue, 1 Sep 2026 08:51:34 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org, will@kernel.org,
 	robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
 	nicolinc@nvidia.com, praan@google.com
-Subject: Re: [PATCH 3/7] iommu/arm-smmu-v3-iommufd: Fix error path in
- arm_vsmmu_cache_invalidate()
-Message-ID: <apaRHXMxfM7lxdJV@google.com>
+Subject: Re: [PATCH 5/7] iommu/arm-smmu-v3-test: Add missing error checks for
+ inv array
+Message-ID: <apaSFtf2xe-qbKbg@google.com>
 References: <20260828125409.1921538-1-smostafa@google.com>
- <20260828125409.1921538-4-smostafa@google.com>
- <178792724269.3808739.17189675074822824146.b4-review@b4>
+ <20260828125409.1921538-6-smostafa@google.com>
+ <178792724271.3808739.15472225478426952013.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,37 +81,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <178792724269.3808739.17189675074822824146.b4-review@b4>
+In-Reply-To: <178792724271.3808739.15472225478426952013.b4-review@b4>
 
 On Fri, Aug 28, 2026 at 11:27:22AM -0300, Jason Gunthorpe wrote:
-> > arm_vsmmu_cache_invalidate() issues commands in batch size.
-> > However, if arm_vsmmu_convert_user_cmd() fails, it will return to the
-> > user that it processed "cur - cmds" which may be part of a batch not
-> > issued yet.
+> > arm_smmu_invs_merge() and arm_smmu_invs_alloc() can return NULL or
+> > errors which are checked by the driver but not the test.
 > > 
-> > Fix this by calculating the returned entry_num solely based on the
-> > "last" that tracks the last batch that was successfully issued.
-> > 
-> > Also, fix the number of commands for early failing condition.
-> > 
-> > Fixes: d68beb276ba2 ("iommu/arm-smmu-v3: Support IOMMU_HWPT_INVALIDATE using a VIOMMU object")
-> > Reported-by: Sashiko <>
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > Add KUNIT_ASSERT_NOT_ERR_OR_NULL() after calling them to fail the
+> > test instead of accessing NULL or ERR pointers.
 > 
-> Nicolin's series fixes this and the other sashiko note about over
-> allocation:
-> 
-> https://lore.kernel.org/all/cover.1785258826.git.nicolinc@nvidia.com/
-> 
+> I've generally had the opinion that if kunit tests hit bugs I don't
+> actually care what happens next so long as the bug is evident.. Many
+> tests can't clean up when they get longjump'd out like this too.
 
-I see, I will add it to my review list. Hopefully I can get to it by
-this week.
+I tend to agree as that's how I use kunit also, but I'd be extra
+careful around crashing the kernel from kunit as it can be triggered
+from userspace.
 
 Thanks,
 Mostafa
 
-> I think it is in good shape, I would rather merge it than hack on this
-> further.
+> 
+> So, IDK, it is fine but I also think this is in a category that maybe
+> sashiko prompts should address instead somehow.
 > 
 > -- 
 > Jason
