@@ -1,340 +1,153 @@
-Received: from TYDPR03CU002.outbound.protection.outlook.com (mail-japaneastazolkn19013085.outbound.protection.outlook.com [52.103.43.85])
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011016.outbound.protection.outlook.com [40.93.194.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50994348C75
-	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 07:52:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.43.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25A2A46C4CD
+	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 07:56:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788249180; cv=fail; b=J3OClO5FHD0XNdd8k4K+Hwk6PfkG1uGSljaViIKvCFgkliwngm7hZqEUyx3nyg6+bHO0u1OD84Vqe9XNwj9cHOMNgkXrHAOFhyCv60bHqJ03wzwMzy/AmO7/aCT6iwYCxyyASbu116NK4uCg6ATMvHmNANMdGZw6qLMD96hJF6k=
+	t=1788249394; cv=fail; b=ohQ8Gzj+L0/Yfq+A1wMhLfceIdRsyJdmJ951v953rSiYVhsv2MuhZyR9s1cH2fRDRghQwTn/YPflVbZ0A3mmXPZUJ2liOHPwDnrtAlZf46GhCXcxi9epX8zmLWVu8ioH0zrP4TDZWjgbCqUnTj67rhL9T/JUDc17qGmXppzqqEw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788249180; c=relaxed/simple;
-	bh=ehOHTWZNLUOlzMISuMT2fbmY2JZ0lFoMJZfX3SUBu0c=;
+	s=arc-20240116; t=1788249394; c=relaxed/simple;
+	bh=qs+Cu+uYZOpcbOQq8mRXC2wgQQ6VrWj4yAu/qd083jE=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=blU5CEYOXDKIKWj2Xn5OVv2m0Gk0xe0MHBo7SxQwhYX7h1J6kM02WVLNVQCEPdtEIiACDLzSj8BUuTGNaUyzh7rkVbxXFgxyTFbdUqJ/mycwdVCYmN61M9NhiEBb+x/0KbrSeaOEVGF9yn/kLY450Hc05rNjnkd/BTOvPpbPou4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=E7+bI9Oz; arc=fail smtp.client-ip=52.103.43.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	 Content-Type:MIME-Version; b=O7AfYRI3rwU0wSX5Ju/64g8VQd7RapaekxujTpV1hZGEilhiJeok07J/6fPYyXwNPvTypM5/i+ls4aAMKLWtwoJkNLmlHP2f6WOlsZnEkQYz+kzyJfhKYvEvQ6TI0OsF7m9DnfSJ1hNd0KgUkSfAcCVi62Jd76rtR/9i8caQe2w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=k3rvX6js; arc=fail smtp.client-ip=40.93.194.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="E7+bI9Oz"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="k3rvX6js"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nRo4ddttJJkPMaFS5bXzWF9fHcjwvGqMw6pkon4e6T6/rofJTSPQWtilp3pHi4oWGEGDgzM+mCabmPyOOWzBK8ZNICFB0ZLn4wMxh4lM1Zm2Y6mb1/U7nTnGTefByCosPrRlWjirc9Tlx/wOyYWUFBH77qW5g7jVv9Q8y33LVP++6AT20tWlIoq4ywGYfW6PMv93EpJ2iqD08hMgVY3gnm8d2pMW+Z7uRMyrXMhGsXaFvRib/zYgVASolL77pdop/FN4ymeHwS1qmlAssKfY25sjB7nKQaIrkRJvhx5DGa3yKYN601KMbIPuLkoKnhjiv176w3Zuog1/MTAsJ8T1BQ==
+ b=UDpZoGpJkKVKQvZHf1IRJBYBhpLtq/Sudu+D2zizlrOAtvQFrAtJQFbSAxPj/tJVYW/fT6rKCouqywIc96GFL1n2HW8wxD+xPeFRXcyKeyJ/ZiqCtQX2xfXVjoQOYz638ZvHoUnJTcicdoKnPVJphIHeYRF15ZLPG1uVaxvFw76QqeHdIZ16sy53xrWk4/DMUtuoyHrSS1dvzi5nLXxPkotgTa5lpjP9Yg0frj+1WNs9dIMaxlNotHncJWtK21lb2l+JenVQLlIhDVwfaQfxa/Rpf7VfcdXtu3a4xyET5yTsf1DdQKg1qaPEDz4a0gT5SeTQIIec/avlsDCwnxpAdg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QNyt63D2q+wanEOtPcVDqHMyhKZ1//zPysJDrEhDYXk=;
- b=J86OWnCNg9aM4J2ZRvIVAOl2xgH/Soh3Hv74scjAGIi8VfF76zoEHrYwmw8v6jZidOLvhM/AxNmt/V1Szkb9LjKK+X/C1qaZWsglXwLHRCBr2/DjeGpQqFq/pZjaZFZZprEr07vfbc1+KQ5+l3pmuwG+n/zTGmKKoqf588aiPvMWnstLwNcArLfYh/OuE//0rkepqGTNQSg+CiMZigr4HwegEsxA1npJ7KMqG0pQRem2ane2x0pkMOyyhKvIJX7tpgM02+se1oxfQf0oclEouDvQPU4dbVtHWAdlu9Sdzi0O11FUCTlV9gbpfGCOzRJPt8HGwugFkm28pCOGFcLs5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
+ bh=z4iyUqK94g23NZLvg0LGVQVFP42usBrQbtnnuW64sIk=;
+ b=pntY84sPpa8qjmQd/zIsfHfTGPZBYOdJ2YCN3TpcD6Ls1Ub63dHzi+hoRKSTDihV0QZPjwgmC1kD0GZ1KEK65Rp29oSktRhoNORp2Ngo3IxlplrC1ZCD3z74oD2S/xT4F0MAwbTGRo0E0GvNHqG92ot4aocQaB6dIg7pv8wR5cTovxi16hUhkc+r5zieDSQQqwJWUwAfmPuy1wV0/mCpCnKrqD0BTX7riJOsGz+zVhTChsV5b40iNkI2ZuSN5FC+Atbd8xDzWmi53Aa1CV7mpedjXyWVck/clLrodNSSsKxutZO03d+2UJAQTx7p3X9skmH6q3zxO+TDHwz/8nT47w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QNyt63D2q+wanEOtPcVDqHMyhKZ1//zPysJDrEhDYXk=;
- b=E7+bI9OzAog6xAXMgIwju1/PSyCecFa1QKjqZI349e/NHzdO02NjWKV9gwEBXsBE98W/G5XCNpiv/0Zm7eWsYkB8ik2pDdYTr3m0B1Y3KfMDLzAAaP3Ng4P7g9RkidOZLttlBimWb8Hogtfp4Auvv9tMONO87e7g3pHSuVKYQqrBAPbsVPUT5cCgO5PWRNljBXKFthLoCleM33FPE9k3btr4vSbHdqrmH3nFrroHjhkNGOB4wh2KvauvDwD4YEXj7B2Bkjwyu4dPkNzy2Eu6a2YInXQHUi0bDLx/PReDdejYJhDBEJaPfkMUo/FumA5ga5+x062vGtoVUj8qBfxR6Q==
-Received: from KUZPR04MB8925.apcprd04.prod.outlook.com (2603:1096:d10:46::5)
- by TYZPR04MB5680.apcprd04.prod.outlook.com (2603:1096:400:1c7::10) with
+ bh=z4iyUqK94g23NZLvg0LGVQVFP42usBrQbtnnuW64sIk=;
+ b=k3rvX6jsa0Wti48IYtaKYmC6jDuPWCNPKaiGQQ85/XyiBGdxlvEn4YQEPaZ8YDzV1pJFHK5rb4+zKQvbjpNRLH8yZOsc9JRgNnCzRtx2YiZXDbP9DnHHL4vFw8vrjVmZdYDVZ/H0jAdsrtqqRT1vcvR17Z00OADImpcHaTNYgSM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com (2603:10b6:8:388::22)
+ by CH1PR12MB9719.namprd12.prod.outlook.com (2603:10b6:610:2b2::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Tue, 1 Sep
- 2026 07:52:48 +0000
-Received: from KUZPR04MB8925.apcprd04.prod.outlook.com
- ([fe80::e3dd:6f77:3be9:b71d]) by KUZPR04MB8925.apcprd04.prod.outlook.com
- ([fe80::e3dd:6f77:3be9:b71d%7]) with mapi id 15.21.0360.008; Tue, 1 Sep 2026
- 07:52:48 +0000
-Message-ID:
- <KUZPR04MB8925FC23C61FFB353A126EE7F3A82@KUZPR04MB8925.apcprd04.prod.outlook.com>
-Date: Tue, 1 Sep 2026 15:52:39 +0800
+ 2026 07:56:29 +0000
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19]) by DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19%4]) with mapi id 15.21.0382.007; Tue, 1 Sep 2026
+ 07:56:29 +0000
+Message-ID: <1659245c-cebf-483b-8aaf-fb277f65f1c3@amd.com>
+Date: Tue, 1 Sep 2026 14:56:19 +0700
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 02/17] iommufd: Convert struct iommufd_sw_msi_maps to a
- growable bitmap
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>,
- linux-riscv@lists.infradead.org, iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
- tjeznach@rivosinc.com, jgg@ziepe.ca, jgg@nvidia.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
- anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
- fangyu.yu@linux.alibaba.com
-References: <20260831145943.313726-1-andrew.jones@oss.qualcomm.com>
- <20260831145943.313726-3-andrew.jones@oss.qualcomm.com>
+Subject: Re: [PATCH 01/24] iommu/amd: Make amd_iommu_completion_wait()
+ non-static
+To: Vasant Hegde <vasant.hegde@amd.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, joro@8bytes.org, jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ jon.grimm@amd.com, santosh.shukla@amd.com, Sairaj.K@amd.com,
+ jay.chen@amd.com, wvw@google.com, wnliu@google.com, dantuluris@google.com,
+ chriscli@google.com, kpsingh@google.com, alejandro.j.jimenez@oracle.com,
+ joao.m.martins@oracle.com
+References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
+ <20260727132913.22475-2-suravee.suthikulpanit@amd.com>
+ <be2f6b1d-69cc-4a5c-9de4-f3fab9a5ad1a@amd.com>
 Content-Language: en-US
-From: "Nutty.Liu" <nutty.liu@hotmail.com>
-In-Reply-To: <20260831145943.313726-3-andrew.jones@oss.qualcomm.com>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <be2f6b1d-69cc-4a5c-9de4-f3fab9a5ad1a@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PS2PR01CA0051.apcprd01.prod.exchangelabs.com
- (2603:1096:300:57::15) To KUZPR04MB8925.apcprd04.prod.outlook.com
- (2603:1096:d10:46::5)
-X-Microsoft-Original-Message-ID:
- <8299fd99-bfd1-4640-832d-dda9de19fd95@hotmail.com>
+X-ClientProxiedBy: KU2P306CA0051.MYSP306.PROD.OUTLOOK.COM
+ (2603:1096:d10:3d::12) To DSVPR12MB999171.namprd12.prod.outlook.com
+ (2603:10b6:8:388::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: KUZPR04MB8925:EE_|TYZPR04MB5680:EE_
-X-MS-Office365-Filtering-Correlation-Id: be774bc2-5fd5-4313-158a-08df07fe03a3
+X-MS-TrafficTypeDiagnostic: DSVPR12MB999171:EE_|CH1PR12MB9719:EE_
+X-MS-Office365-Filtering-Correlation-Id: 64503f56-f846-4088-4555-08df07fe878d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|24121999003|12121999013|41001999006|5072599009|6090799003|25010399006|4140399003|22091999003|23021999003|19101099003|55001999006|8060799015|19110799012|15080799012|51005399006|3412199025|440099028|40105399003|2607281247196008;
+	BCL:0;ARA:13230040|366016|23010399003|376014|7416014|1800799024|4143699003|56012099006|10067099003|11063799006|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?SVVJeXMwY1hxNHVkbUpNVnJ6VnhRUTl6ZnJjVmZJMFhaYW1tenNlMlZ1UU50?=
- =?utf-8?B?emZoTkY3VWFuUFZOOE5jT08vVE45Z3VId2hOZlRrdjIzcENiTnZNaGNBdkh6?=
- =?utf-8?B?YXlwWG0weVBIaThuQmN0Q2N5U1U0bWZPOW1lM1VBQ1U4cGRaWlRXcXRTTGVa?=
- =?utf-8?B?Wml3SjNKdUt3QWdBOTdhSjBJZ1R4ZWVpbXNYeDAyUnJ2WmxXR2JzYlp3Rm5O?=
- =?utf-8?B?cld1YXhyUVJmWE1aTnNRYzhSRm14bDJFaGR2RnFyaWpoMXpPRkFTWEJ0eEFE?=
- =?utf-8?B?MWFBSWwyanZra0ZxbG52R0ZseVUyYU5FYUlCbEtteFExZnFkd3czMmYrMzZk?=
- =?utf-8?B?VjlCY1d6MVcyYkhDUkh4VjZ2OVJsN0U0YUhFaTh6RGhPb2xNWDJBaDczYTB3?=
- =?utf-8?B?eW1zZUkxSWlhcmhza1lsY3N1bk1pRzIrT0dCWGE3Wm5kSG9EWnFNQ0h1aVBq?=
- =?utf-8?B?bGYyWHlNVFA0R205bVNDZ3V4UlFTRkhiYWtJN0g2MGhuV0NTQVpoNTc0S0hk?=
- =?utf-8?B?b3NyMnE0Nm5xcDNoNmd4dkRaQlViWWV6bElKT0UyY0JTMjZJczNjdDJoRXBB?=
- =?utf-8?B?UWZ5T3dXL2ZuNTRMOHlJR1NtdDVZN01Oc2hORHBtTGNndU94ZVVjNEZWZXRm?=
- =?utf-8?B?TjV4RFRWeHNkWmFIcUUvT1RJZTVjOThVeWNCd0lIVXBsL01yc0VjeStaZS91?=
- =?utf-8?B?TUVybTFUSThZUFFCbUVRWDlBbXd1SlBlWFUxYldvODhaelJlQ2M2Vk52cllD?=
- =?utf-8?B?aXBSSXpHdjMydmlOOURycTZtZHFtS2dzMkFDRkxuY1lidkxDUjRJckQ3Wkxw?=
- =?utf-8?B?K2U1N21ULzFpMk9yQzlRZ3lrcUlkNG1TU0lmNXZqUXdkUzZSUUxqQjE2MnNo?=
- =?utf-8?B?WnVSRXFCd0pGNGxxQ3RPNEgzSlc2VXVXTlJTNXV4SEo0RjJLYm1JQ3hrcUov?=
- =?utf-8?B?eGx5cEhKL0Vnc0hEQXE5VGExK1ltelM5Uk90M3RtMHFKUEpSWDFKSFFyUjhB?=
- =?utf-8?B?N3EwOG1nM3V0Uk5vNVJkVlk3aWszOVFQS0FTbkNOdjIzS2d2dHFMaTc1eWhw?=
- =?utf-8?B?TXZvd2JONHM3Q1FOSllvb3ZvQURMcjN2RDJzbk5Oa0dXbVRBQUF1MjhISlFX?=
- =?utf-8?B?bDRiaktFRHZtc3F0aCszSFpHdWNNcE9CU1p0dDlRalpEQ3dqK084S0Ztekox?=
- =?utf-8?B?Zmd6YlIrNVpNbVp0MEd2NUtTaG9yaEhyYXRZdFhPbkkrN3g3WEk4VTg1UEFG?=
- =?utf-8?B?Wm11R3lmY1RHQ3pGdy80bUN1ekpjWURTVncxSU91Zy82bXdMS1VtOXU1WlMx?=
- =?utf-8?B?ZnAxYmUxdkRaWXQ0RzNnaGxCT2puNG1wd3FqZ0h4SE9TeGUzRUFCUytrNGNi?=
- =?utf-8?B?MkJaWVhGbEVZbytOWTh6RStmSktTQTdFRkxDZUdRZGZtRk9DZ3BmQ1hGbW5Y?=
- =?utf-8?B?ckRmQWZmMDFOZi9KeVJESzZsZ0U2OXp2akU2TkM4dm9OTUZsQVMvS3JML0Vz?=
- =?utf-8?Q?LUbTMPMCvr9LMm5YM35pIkYRdM/?=
+	iosKZpnvf5lCZ5S5al/KKWlUdKvthRx2mEwpg6lTQ8r8jBNJK5DYNJg7D12pTkHvqrphhX6+ST0z1WdXsKwxqsH7LA8os2Ur0AXSpUdeykyBmBkdZfFa/Ig2+0pedOezeLrWDu58dKlPZ0MxFLV3uCnP3OxprgTtBUzs1fy0Bkih7CkgDhQQrgY3XKC3xuIRal73CAUYHZNW1ZYsRRuE+y8wvTt0hoNo+4TzkDnG+n0STERan4USwa17J0I0ddRoh/6iHsdIb4ETmP8lBreXeSwts5zta65Bk/tptm5bPcsmz3hwDRYfmgFJ6yhOFLf5OsPhuw3dfUJW7MKrtK+1sjdLNcWeGC/Q/2VvYtGJxWzVJmucsNQPfi42wkYx0AqwCEv+hC3p8/kT/2tb/XDxdz+naPL9fPukqreTC0Qy+AvfztfqmM4RlsZjdt5r2BN3FZ6sJ/MwrO/sZ9FtIDsmRw18wtgKG1jpcJn/wFVil02xo9is5mPSGS9FaZodVQvRdF96STpGN1ymlXRykEf+hjd2BWAvAWXi910J9gYDrjov9r2bdN96t662aLofXV6YhzxVFMI2F4my2eC0PIRFxKtaCHqmUwSEVbIfgoZmoRdJsYF+Dq0tVLfLidrQ0TfLscAVJekSrM7A0q9voLNUcVCpexjbvEtfJR7qWxVAeeM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DSVPR12MB999171.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(7416014)(1800799024)(4143699003)(56012099006)(10067099003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RG5zWjMyblFTWWh0R2YyMzN2QTRxUDZ2SEN6U1RPN2NjNEl6KzFHbk05MFNm?=
- =?utf-8?B?WURPYk1ER0FtZmtZRjdrQm85Z0FuOVMvMkIwMWlWTE5GVy9DSThMSmRrK1lM?=
- =?utf-8?B?a3Z5cWZsZGZETHlFYW5zUWRlQTJFak1JQzlZUDdySjlRMWlGK1JXVi81SUlW?=
- =?utf-8?B?U2NFSUlId1FOeFFpeXFyN091dmc2WEFYZ083c1U1MWJkaEtlaCtKN3ZuNmFi?=
- =?utf-8?B?ODVzajdDbXFUNjJOVDVyOHBFWUt5ZEx2WFdPaE5Xd2lpbGYxcWZtc0VsTW5K?=
- =?utf-8?B?WCtaN2p6SmltSllFSE9OTmZRZVVuNnVTbFFFUXlVNHdBMXhPNHRRdS9wa0tF?=
- =?utf-8?B?WFFPcDdvaHQxMWljakpaWDh4TTlBZEhiYVNPMCtDUVdobWxjYi84bEt3eUJm?=
- =?utf-8?B?K0UrQUNZSld2VW1wWTlzbXAwY1ZLYU5xMHBVeXdLeE82QVRST0VkRzF5MDAr?=
- =?utf-8?B?K1RIUE4rSkUzY3AxYkpReWhwT0VRTXlLMjVLTlpuZ0RFaGxtR21lVTNudjRV?=
- =?utf-8?B?MEpvc0Jva3V5MVlDNkNVNUo0T1luZ3FXOXVUQTdVa0RzMjZ1QmR6SUd3Ly9k?=
- =?utf-8?B?QXppaEN5UmxsZ1RxbmtpREZFNm84OEVwNlRtSFdKdU9Na2dIYk1OQU1xMXFn?=
- =?utf-8?B?MDN5bnF0a3MrTHRrSG5tUTdZaVNCakFjNlF3RDdVeDJXN2xtd2pLMVhJWXBi?=
- =?utf-8?B?MTBNR1cwdkNIcWhKZVhXUW1iVjZyT2t6Mkl6WWowSGhTU1Rob1lGVWM3TlJ4?=
- =?utf-8?B?amNTNzhnSXFsMnBGUWI4cSttZkhUeTM5OHBwR1JEcFVXREF3N3lDRGFYTjdC?=
- =?utf-8?B?bVl6QzdVYWpmVEZIc3lmaFVIOXNlVXZYYmlhVGYrUThxVitBRTY1em5UQzJt?=
- =?utf-8?B?QW9LUGw3aGZmVzExRkJSWEx3WlhMTlFWOWhIVThrSmNtZXpWTDl3bmVMU09w?=
- =?utf-8?B?ZUt0a3JVL0ZQYlVFeEZvZkZqYUdNUGtYVCtabHE0WVk0bjBiRTdZNEE3czFl?=
- =?utf-8?B?SGwraCs3dVBjbmRudmlrejNubWFKYmNxU0ozUXpEQzQ3eTNHSHZ3K2Q0K0dz?=
- =?utf-8?B?RDVkRktJVkdESnVYdUlHamNEekduNFRzNVNSekhhWFA1dTI3WGUxN0FDS2VX?=
- =?utf-8?B?N2ZRS3I0ZE4ycE53VWgwN0d0ZVpUTktDZlRadXNDN0tQYzdWdk9oVFEyRVVQ?=
- =?utf-8?B?NmVMdWdzU280cDJJK2ZXNjdTMERaYy9Dc3Z4aWtWbmlZUTVwN1ZjQ0JBWkYv?=
- =?utf-8?B?aGVCODRwbXdUYjB4Qjcxc0MycDlodGw3MzVCM1BWbjU5NWlQU1UrLzRXRS9E?=
- =?utf-8?B?b25Od2RwOFJ6MDFEcUJNUXQ3bU5aRHpMYStiVy9KM0YramIwMG13L2pvVWhh?=
- =?utf-8?B?RlQ1N01iUVFCT1ZHQk02QkN3ekJ1ZUIwSnMxMWVVc21VWnk4T2doQ2tOeVVk?=
- =?utf-8?B?cWd6R3V5Mk5NbzdpcWU5U2k5aTA4V21WbUMwN3ZRMmpHVmFFUDgrV21JTXg0?=
- =?utf-8?B?bFRSR0RHMnFPSUJmS1hSdmJtQmhscEt6NHN3YUFFcWwyUFA1RnArTzlzOXVh?=
- =?utf-8?B?d21Wem9kcFhTR0krSEZtaWtjNmJ3eVRhUk42OEkzTDF4SnNpdjF6dmJ2MzZt?=
- =?utf-8?B?U3V1YzVTTGdrTkZOdmQ2aWpud0FjMVF5TXRlQTNMTnR0STZPWWNFT2x6UlVL?=
- =?utf-8?B?Mzh0UHZZVkJGS2lnS21uZkw0RVR0V2lxOGtVc2h6NmxjcEdVVy8wQUdKOGdE?=
- =?utf-8?B?ZTZPamxvaHdzU09rbjdUWGsrODRabnNsZEJkOTFOd0ZyTE5RWDJBaEpUay9M?=
- =?utf-8?B?NWZibFk0c0N5bmoxZmRLZHpTcmVBSlc4UXV0aWFWZlhZYzdhdlBKcmdobFZ0?=
- =?utf-8?Q?PwVQoE6ylPkSa?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-c3e7a.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: be774bc2-5fd5-4313-158a-08df07fe03a3
-X-MS-Exchange-CrossTenant-AuthSource: KUZPR04MB8925.apcprd04.prod.outlook.com
+	=?utf-8?B?eStzdVh4SW1zZy9IRWYwcHdWdU4ra0RzRGZCVGFwbmxhK05NUkErdHlxOUR2?=
+ =?utf-8?B?cmpZNDR5d00rQlg0NktQZzJCdUVsSngwNmxyQUhRZFIrYkd3dEtnMEQ4djcr?=
+ =?utf-8?B?VHFKRGZnMGFjVHlJczhmWEpzNDVISWRaUVNoc2NIUkNGaXB6alZxYVRTVVp6?=
+ =?utf-8?B?SEIyT0lsbFNtUEI1SnFPdWRGVllTUDArVTR0R2h5SURybHF2dEFOLzd0K1hO?=
+ =?utf-8?B?MXJ0TzJZSkdDdlY2NEloSW9wdTNEVXBJZUt3VXJKdmdTc0tPU2laYnpQOWZl?=
+ =?utf-8?B?ZTFxc2ozQ1lPODM4WWk1aG4weWhXRkNZY2FNeXRQa3JzUWg0aHdjUXdYWTBv?=
+ =?utf-8?B?S21taUsxZVMwS0cyNE16dmtWbkJHR0JjNlN2TTVTN0lJZzdkcEZzRUlBZmNV?=
+ =?utf-8?B?cEVBQTJ2SFZoTHowZ3NCUFVqeU9JUXEwbll2SHdrUWllTzlEUVBkL2t1SHRD?=
+ =?utf-8?B?T3JOVFE1eUJENnVKTEhFQjFCaGtpSURnL2YweG1oK0tlVlZqOXBaRTIxNHVT?=
+ =?utf-8?B?VE1MaWVkWUl2TTFXS1pBNVZHSEc4Yzk0RHMxUUlNdmNDelFyZnd5eDVmYVhx?=
+ =?utf-8?B?Y2I5TkRNQ29jRmRxZ3lUenJwRmowd1ZnbzhWYy8yKzVreGYxN2ErZTBmZitB?=
+ =?utf-8?B?SWptNllnaWhDdlRxU1o5RU1ySUJ5akRYT0ZlUVpOSTV5NTZldDA3cXd2ZVJR?=
+ =?utf-8?B?bC90Q2g2OHkyZHRaUWNLQVlubDF5bXl0WlJKRGRzZjBYYnl5aGNwdFIyTlV2?=
+ =?utf-8?B?Mmk0Y0xYOHdNWkxZTFpRMEcvYzY1SVZJRmRwNUhTOUFwa0VZQ0wybVRhekhN?=
+ =?utf-8?B?SnNUSjJRTXVSTEg0NFZYcGJSMHdaMmNMYm1OaWdzekxqQkkwOUxOODVlWWRO?=
+ =?utf-8?B?dkpQNjhINWVZdjZyTWFwTlZuUXJEdjBVRmxvUE1LdmRHZWlqeWl4LzBSZFlO?=
+ =?utf-8?B?TTBCV0REeWNHQUxITHVic0xuOExXbmwyNCthSjNaRHQ2T3d3NmZTMVg2dk44?=
+ =?utf-8?B?OE94WmVYSzB6aHZpZ3VxbGtmayswM29SMG81bzRiU3ZndThKVzZMaFdkWitq?=
+ =?utf-8?B?QVBGWTQwdzZKcDR4SlJoekZPSHhFMEpLUXdvRTJYbDQ0Y3BlUlk5Tks4STlm?=
+ =?utf-8?B?M2lXMVl1VWJMeXNQRGE4bWo3bWNnbm0xWW1vR3BYNlhJSS9iYlpEd05RNWgr?=
+ =?utf-8?B?d2NnQTl5M3VMUW96V1grQUdhVVRiakIzMWtrZ1N1d2JUVHdjYk4ra2FJQmVv?=
+ =?utf-8?B?NjA5MFRNNUVUa1JHMmplT2NDSDdyZWpERlE0eExUQzZyQnFCNmZyUXg2WnEx?=
+ =?utf-8?B?NmpTN1RYcHpNd1lhazg1c3N0NVdYNmxPOWxnaUtSaVRUSzlYaUhrL01CZGQ3?=
+ =?utf-8?B?ZzQvTkM2eTE2R3cxYjJ3QjlCNGs5dk5ObjBpM0RFMkhFS1I4OCs5QlhicG9x?=
+ =?utf-8?B?Z2E1dytyVVpTKzJpaHNhUUVPa20rYXJ2MmhiYlJzWVduTXdTNFFDV0l0dHJE?=
+ =?utf-8?B?aFk5TU5YanVOQXZvblFHTTdLenRPQWV2ang4cGJ2MTZKeWVNWUg0dUlLTm91?=
+ =?utf-8?B?SHRRTnBpYWp3eUtlRld1UFRXeUNzdFJkVmxHZm1HelFERjVNbGJQWkt1Z24r?=
+ =?utf-8?B?a2RRVW41YmVUcEkzWjg5WllXT09zU09nV1lVKzVwNVJmMU50RmxSanFtdjdU?=
+ =?utf-8?B?OWpkdG9QOXQ0QUNFdFkzOGk5V0tZcUt0NmNtUHBRMW5VU01VVUlQdVAyamY5?=
+ =?utf-8?B?REJ5TjNRaFhDTUs0UnZISCtETHFVL0hHaWlCeDRLS3FxS1hielFFOTh0cDJp?=
+ =?utf-8?B?VU5YYlYxT2NlL1JaUXNaSDdRTExhNmdoRDhkY043QW9vWVcrWU9EYTQ5RU00?=
+ =?utf-8?B?bzRYS1NYMUVGcjk3T0VKQjl3bWJONW5aS3BETWRhOEliWTY3Sk1rMzJXNXQ1?=
+ =?utf-8?B?Nk1IWU11ZURPOTZLK2NiU2RVWEtaSWU2UDFqTTZBQVdlOGU1NHZiU05jRXVl?=
+ =?utf-8?B?WXJpUi9tRCtyRTI1WVZhNk85eGtuVVBybTh3SFovZ2IwMXZ6ZEp6cW80dEVI?=
+ =?utf-8?B?QjNCN1d1RkV2NDlMSE40T0YraXZGbXVhdFIrVCtydEdJdVpsTjE1cjgyQUk2?=
+ =?utf-8?B?V3RwdkZDdWRhazAyQXhXaDYrKzQybE9PODFpcEd1Zk1BVStQRVhHTWRYa05y?=
+ =?utf-8?B?ckQvWkNGZjhpZHRXUnpiNWRrczhCYTQxY21obGMwbjdvWHJPVW5tOG5pSHU4?=
+ =?utf-8?B?ZUxpYlQraTR6TWl4OTFCa29FOVlETE9Hdi9NR093ZnVOVnNWMjB2KzVhVHdX?=
+ =?utf-8?B?WStCNEd2TGlVQ0ErVGlTanlxUnRUVlY1TjZuakx1ellaVjlKZzFoZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64503f56-f846-4088-4555-08df07fe878d
+X-MS-Exchange-CrossTenant-AuthSource: DSVPR12MB999171.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2026 07:52:48.5429
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2026 07:56:29.0480
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR04MB5680
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hpl17AKR1QD0QLX92u8DRyfxhxyxBnvXv+ZUb41fL4xR1+FPDjBtmiyXUAdGjmsqmNviuqNCf83TlvkIRxxqYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PR12MB9719
 
 
-On 8/31/2026 10:59 PM, Andrew Jones wrote:
-> struct iommufd_sw_msi_maps uses a fixed 64-bit bitmap, limiting each
-> group and hardware page table to 64 software MSI mappings. RISC-V
-> interrupt remapping needs a mapping for every possible CPU, so this
-> limit is insufficient.
->
-> Make the bitmap grow on demand and treat IDs beyond its current size
-> as absent. Cap it at 16K entries to bound allocation size while leaving
-> ample room for expected software MSI users.
->
-> Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
 
-Thanks,
-Nutty
-> ---
->   drivers/iommu/iommufd/device.c          |  3 +-
->   drivers/iommu/iommufd/driver.c          | 37 ++++++++++++++--------
->   drivers/iommu/iommufd/hw_pagetable.c    |  1 +
->   drivers/iommu/iommufd/iommufd_private.h | 41 +++++++++++++++++++++++--
->   4 files changed, 66 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index d488c23fd353..868f1e591208 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -34,6 +34,7 @@ static void iommufd_group_release(struct kref *kref)
->   		   NULL, GFP_KERNEL);
->   	iommu_group_put(igroup->group);
->   	mutex_destroy(&igroup->lock);
-> +	kfree(igroup->required_sw_msi.bitmap);
->   	kfree(igroup);
->   }
->   
-> @@ -384,7 +385,7 @@ static int iommufd_group_setup_msi(struct iommufd_group *igroup,
->   		int rc;
->   
->   		if (cur->sw_msi_start != igroup->sw_msi_start ||
-> -		    !test_bit(cur->id, igroup->required_sw_msi.bitmap))
-> +		    !iommufd_sw_msi_maps_test_bit(&igroup->required_sw_msi, cur->id))
->   			continue;
->   
->   		rc = iommufd_sw_msi_install(ictx, hwpt_paging, cur);
-> diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-> index 3b8067976eac..d0b05b1fda42 100644
-> --- a/drivers/iommu/iommufd/driver.c
-> +++ b/drivers/iommu/iommufd/driver.c
-> @@ -196,13 +196,15 @@ iommufd_sw_msi_get_map(struct iommufd_ctx *ictx, phys_addr_t msi_addr,
->   	list_for_each_entry(cur, &ictx->sw_msi_list, sw_msi_item) {
->   		if (cur->sw_msi_start != sw_msi_start)
->   			continue;
-> +		if (cur->pgoff == UINT_MAX)
-> +			return ERR_PTR(-EOVERFLOW);
->   		max_pgoff = max(max_pgoff, cur->pgoff + 1);
->   		if (cur->msi_addr == msi_addr)
->   			return cur;
->   	}
->   
-> -	if (ictx->sw_msi_id >=
-> -	    BITS_PER_BYTE * sizeof_field(struct iommufd_sw_msi_maps, bitmap))
-> +	if (ictx->sw_msi_id > IOMMUFD_SW_MSI_MAX_ID ||
-> +	    max_pgoff > (ULONG_MAX - sw_msi_start) / PAGE_SIZE)
->   		return ERR_PTR(-EOVERFLOW);
->   
->   	cur = kzalloc_obj(*cur);
-> @@ -222,21 +224,25 @@ int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
->   			   struct iommufd_sw_msi_map *msi_map)
->   {
->   	unsigned long iova;
-> +	int rc;
->   
->   	lockdep_assert_held(&ictx->sw_msi_lock);
->   
-> +	if (iommufd_sw_msi_maps_test_bit(&hwpt_paging->present_sw_msi, msi_map->id))
-> +		return 0;
-> +
->   	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
-> -	if (!test_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap)) {
-> -		int rc;
-> -
-> -		rc = iommu_map(hwpt_paging->common.domain, iova,
-> -			       msi_map->msi_addr, PAGE_SIZE,
-> -			       IOMMU_WRITE | IOMMU_READ | IOMMU_MMIO,
-> -			       GFP_KERNEL_ACCOUNT);
-> -		if (rc)
-> -			return rc;
-> -		__set_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap);
-> -	}
-> +	rc = iommufd_sw_msi_maps_ensure(&hwpt_paging->present_sw_msi, msi_map->id);
-> +	if (rc)
-> +		return rc;
-> +
-> +	rc = iommu_map(hwpt_paging->common.domain, iova,
-> +		       msi_map->msi_addr, PAGE_SIZE,
-> +		       IOMMU_WRITE | IOMMU_READ | IOMMU_MMIO,
-> +		       GFP_KERNEL_ACCOUNT);
-> +	if (rc)
-> +		return rc;
-> +	__set_bit(msi_map->id, hwpt_paging->present_sw_msi.bitmap);
->   	return 0;
->   }
->   EXPORT_SYMBOL_NS_GPL(iommufd_sw_msi_install, "IOMMUFD_INTERNAL");
-> @@ -290,6 +296,11 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
->   	if (IS_ERR(msi_map))
->   		return PTR_ERR(msi_map);
->   
-> +	rc = iommufd_sw_msi_maps_ensure(&handle->idev->igroup->required_sw_msi,
-> +					msi_map->id);
-> +	if (rc)
-> +		return rc;
-> +
->   	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
->   	if (rc)
->   		return rc;
-> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-> index 623cc608ca0c..54873de43eb0 100644
-> --- a/drivers/iommu/iommufd/hw_pagetable.c
-> +++ b/drivers/iommu/iommufd/hw_pagetable.c
-> @@ -32,6 +32,7 @@ void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
->   	}
->   
->   	__iommufd_hwpt_destroy(&hwpt_paging->common);
-> +	kfree(hwpt_paging->present_sw_msi.bitmap);
->   	refcount_dec(&hwpt_paging->ioas->obj.users);
->   }
->   
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 43fbc5bed8de..9ca5f9f92cdf 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -9,6 +9,7 @@
->   #include <linux/iova_bitmap.h>
->   #include <linux/maple_tree.h>
->   #include <linux/rwsem.h>
-> +#include <linux/slab.h>
->   #include <linux/uaccess.h>
->   #include <linux/xarray.h>
->   #include <uapi/linux/iommufd.h>
-> @@ -29,11 +30,47 @@ struct iommufd_sw_msi_map {
->   	unsigned int id;
->   };
->   
-> -/* Bitmap of struct iommufd_sw_msi_map::id */
-> +/* Bitmap of struct iommufd_sw_msi_map::id; starts empty, grows on demand. */
->   struct iommufd_sw_msi_maps {
-> -	DECLARE_BITMAP(bitmap, 64);
-> +	unsigned long *bitmap;
-> +	unsigned int nbits;
->   };
->   
-> +/* Large enough for foreseeable SW MSI users while bounding bitmap growth. */
-> +#define IOMMUFD_SW_MSI_MAX_ID	(16U * 1024 - 1)
-> +
-> +/* Grow bitmap to accommodate id. Must be called under ictx->sw_msi_lock. */
-> +static inline int iommufd_sw_msi_maps_ensure(struct iommufd_sw_msi_maps *maps,
-> +					     unsigned int id)
-> +{
-> +	unsigned long *new_bitmap;
-> +	unsigned int new_nbits;
-> +
-> +	if (id < maps->nbits)
-> +		return 0;
-> +	if (id > IOMMUFD_SW_MSI_MAX_ID)
-> +		return -EOVERFLOW;
-> +
-> +	new_nbits = max(ALIGN(id + 1, BITS_PER_LONG), 64U);
-> +	new_bitmap = krealloc(maps->bitmap,
-> +			      BITS_TO_LONGS(new_nbits) * sizeof(unsigned long),
-> +			      GFP_KERNEL_ACCOUNT);
-> +	if (!new_bitmap)
-> +		return -ENOMEM;
-> +	bitmap_clear(new_bitmap, maps->nbits, new_nbits - maps->nbits);
-> +	maps->bitmap = new_bitmap;
-> +	maps->nbits = new_nbits;
-> +	return 0;
-> +}
-> +
-> +static inline bool iommufd_sw_msi_maps_test_bit(const struct iommufd_sw_msi_maps *maps,
-> +						unsigned int id)
-> +{
-> +	if (id >= maps->nbits)
-> +		return false;
-> +	return test_bit(id, maps->bitmap);
-> +}
-> +
->   #ifdef CONFIG_IRQ_MSI_IOMMU
->   int iommufd_sw_msi_install(struct iommufd_ctx *ictx,
->   			   struct iommufd_hwpt_paging *hwpt_paging,
+On 8/6/2026 12:01 AM, Vasant Hegde wrote:
+> 
+> 
+> On 7/27/2026 6:58 PM, Suravee Suthikulpanit wrote:
+>> This will be reused in a new iommufd.c file for nested translation.
+> 
+> With all the changes, looks like amd_iommu_completion_wait() is not used outside
+> iommu.c. May be drop this patch?
+> 
+> -Vasant
+> 
+
+Good call. I'll remove this patch in V5.
+
+Suravee
