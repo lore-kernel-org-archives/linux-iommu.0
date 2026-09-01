@@ -1,56 +1,96 @@
-Received: from canpmsgout08.his.huawei.com (canpmsgout08.his.huawei.com [113.46.200.223])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D366531E834
-	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 14:08:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.223
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814E338B7B0
+	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 14:08:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788271698; cv=none; b=oS7xRBiqtH/UuvXle/2rUwytk7bfU22Xgplxjc36ywE/+vY0ipPb96gbkRYi57iBeL5tufPHbfP4gvLWbvW4UK1OpCG5p4vfpdYhQjZkL6+VWtbb5YrwWacGUYM5vlYFhS8vN25bc47om/08HZmMX5+tCdJd8nzj0M7jI977iJY=
+	t=1788271716; cv=none; b=Kja7IBrKM8MUh2tbFaZ2A3MHicIPI1Nyfmvw5tziQClUkxH91+sL3aL8BQpMEcbrkCAykAheP30lhkqD6WPVssnFhRhDYYc3jydD8l7EccvIPRjfyyUFkx8QKusJqAkhrlJ6BFzZ/+/OiaZZ1OLYw6JNn5KWZxbRZhsqJSDn/PU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788271698; c=relaxed/simple;
-	bh=EVB+lA5myfzb3tQ/c6BDnSI9Nq3hG2yWIB6cxALQSLc=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LcvDie7NN8ulkuovaeghPNwuVxzIq5BfxPaN8sacKgxM7Z2R+mk6f1h7Nk/m9i9trxBTrzZQKl8P2pv6wrU+Dph3YqDlc8m7jg/2LlWJC7qIckaq31QLYLfxzkvFkyrqpy6Sey1JV00ANY4jsgjhSaYgJzQY4JS1A90N1jOnGHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=r3ULZqNc; arc=none smtp.client-ip=113.46.200.223
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1788271716; c=relaxed/simple;
+	bh=colpSvQ380ywH2w2lEES0eevoSl8wWJBS0QAQ8Hjf1M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WDyv8HW0fsYDo3jjyo6Z1YSLmCs54QqqiDopwfr6bM0lNlx9ngJFNVUfJH2vdN1wRrZhpegTHJruKCaHzKuT7CGTSYV26ghOR+vlfJFDQFGYCiyy+HIVr9YYUZJqxwoaHxkJ4JNbFawPKPFz2nU3hJboumV9UyL9w2OAbkh6s1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kgIepFhy; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=TYJJeGcc; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="r3ULZqNc"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=06tMOEVizMmDTKQSyYnrlOXakbIpvRYxitn5j9k6NYc=;
-	b=r3ULZqNcqsK25YSJzBxVW3TOnImsVtBmH3FEp+L0P0I5hwoqroH3j2Mxq/pA8q7pJ7nl84C6b
-	8em6IK/iTRvEHoIrdUJxSdMsQisSbY9gcp9Yyho4kuPCC2hAK526x/DBhzM732vnKGHCv+ERCO7
-	Lb+L4ww4Wcs276KyDoIXo8E=
-Received: from mail.maildlp.com (unknown [172.19.163.200])
-	by canpmsgout08.his.huawei.com (SkyGuard) with ESMTPS id 4hZ6qc1lz9zmVXs;
-	Tue,  1 Sep 2026 21:57:16 +0800 (CST)
-Received: from kwepemo500007.china.huawei.com (unknown [7.202.195.114])
-	by mail.maildlp.com (Postfix) with ESMTPS id DDB324055B;
-	Tue,  1 Sep 2026 22:08:05 +0800 (CST)
-Received: from localhost.huawei.com (10.90.31.46) by
- kwepemo500007.china.huawei.com (7.202.195.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.45; Tue, 1 Sep 2026 22:08:04 +0800
-From: Qinxin Xia <xiaqinxin@huawei.com>
-To: <ben.horgan@arm.com>, <zhangzhanpeng.jasper@bytedance.com>,
-	<joro@8bytes.org>, <palmer@dabbelt.com>, <tony.luck@intel.com>,
-	<reinette.chatre@intel.com>, <tomasz.jeznach@linux.dev>,
-	<zengheng4@huawei.com>, <fustini@kernel.org>, <cuiyunhui@bytedance.com>,
-	<wangzhou1@hisilicon.com>, <xiaqinxin@huawei.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <pjw@kernel.org>,
-	<aou@eecs.berkeley.edu>, <alex@ghiti.fr>, <Dave.Martin@arm.com>,
-	<james.morse@arm.com>, <babu.moger@amd.com>, <corbet@lwn.net>,
-	<shuah@kernel.org>, <jgg@ziepe.ca>, <kevin.tian@intel.com>,
-	<yuanzhu@bytedance.com>, <iommu@lists.linux.dev>, <linuxarm@huawei.com>,
-	<baolin.wang@linux.alibaba.com>
-Subject: [RFC PATCH 2/5] arm_mpam: resctrl: Add arch query for device DMA QoS support
-Date: Tue, 1 Sep 2026 22:07:59 +0800
-Message-ID: <20260901140802.1215508-3-xiaqinxin@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20260901140802.1215508-1-xiaqinxin@huawei.com>
-References: <20260901140802.1215508-1-xiaqinxin@huawei.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kgIepFhy";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="TYJJeGcc"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 681E8YxI3495538
+	for <iommu@lists.linux.dev>; Tue, 1 Sep 2026 14:08:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=Oa5JSaR2HXZbUmoPEdwIB4s32xvCS0qi1Pl
+	yRPcXY4M=; b=kgIepFhy1XHtm0FYuPNVqACvHfAd8lpc129/YWZ0kIP+tvQ/MDs
+	QpXkSjnSAS9TgmamOYXzRjoRh/34hn5xFIcvhxjAeJvBRruXqynT3+s0BJxgBVbK
+	aDg21qL5AxhBhmgoix+HqsA4ifWsbRATbzG8I9enKZDB/WgessrYES1khb/TUfeq
+	CBdnTd97J/1oTw94F8d0NwboA1NGyr8G1001ss4vT6wo3nsjEsiEFrr3V8ikzww5
+	OtSAuPmUwtVN6RqCIGuMve+6Xq63BPQjxptYqTLlw634fzqz/ntGKcyAnKIezbR5
+	jurnC5uJn0qDoOcA/WJyJ6Dte4eeNRdRFcQ==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gdy9ng8mg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 01 Sep 2026 14:08:34 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-396901263b6so7405053a91.2
+        for <iommu@lists.linux.dev>; Tue, 01 Sep 2026 07:08:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1788271712; x=1788876512; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Oa5JSaR2HXZbUmoPEdwIB4s32xvCS0qi1PlyRPcXY4M=;
+        b=TYJJeGccByKmxdlC/oyF2D57csypkMHB/JP+OavdQ697rvuw4GIfWBq65X9X1WtbKF
+         gP0juVPM6KxquQDnBodQ4ASopit41WRokkgMu5spRjldvziJ9CMxFBG4fwPSbNPiGEHV
+         Km3N17YGe9VyyGv7F2gPvxF6usqeWNvFyDcEKpMWlx1nMnNstADASGBpK1VTLbKFk21m
+         GVkRGD8aS+W+3JD6Y33/bO0G48DZrcf8nQyRQ3uVS+9UtYRCJJM+MitGCG6/egCXVRRq
+         RlKBZdY67W1QG+dPHOwxva2cKJDC7C14Nw2Akh+Lr8p8u/9kns0OnUwi7HqNZKFq/ovk
+         96QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788271712; x=1788876512;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Oa5JSaR2HXZbUmoPEdwIB4s32xvCS0qi1PlyRPcXY4M=;
+        b=LqcFBKLHbsCy+agz3fyk1zwB/n/W6XT2ArF7nF/DYn1t/nyPVEgM86C+v+9+XKST+4
+         M7JYzG5vrTxJpZ2EBzjm4luORWyljLIPdZ77Ho7A3mJ+ym+hhl2L9ksJP5fU7X6Lc79N
+         0g4dvOImQP8TA+usTreCr4NYTbKuSMk6qptufTVl56vumPHjLuKjiLVomVmR6mEkcjFq
+         CioTyqfZznYUqLTeuQvicwGh4We0L0Ylj6G+tDGjgYjcEz2igyJzhXE0NHd0gBzjV9Mh
+         rqeDsRMWlQa/054YlCYQnmvBUWpaw1y/1JpjpEOd0CbGuc0dGRVMv97UXw3a7BGOuAXW
+         lj9Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxtLb+tDqSTSE/+YhFUi0ODMGo6mDVSFVEllEwUlUNLTClcyd6GqXeAKnCoUbGnQYuYvymk/g==@lists.linux.dev
+X-Gm-Message-State: AFuF++lOOaTDKagg/ZrbNAhUWjOQrUV2J6H0Q8Cv7H6GxxLghoXHGbw/
+	I1cM9uEh7Gr0uL/ehwz++UH2cM34wOrTyvpmmz7g8Q5YVU2nqrbusDAbrITBVXpu2ETBXwYapxB
+	nrdTpjPzYmkv0ELPnxAkRiQBup76b6mFibLTcp4jyyTtL8L1sUFjjxUfE3A==
+X-Gm-Gg: AYBFou3BbaIYJlvWOf8nIW2eFh3sa3fljcmyTb0g523BOs7ygrPGiZ26jzRcj9w3myg
+	d1pcE+s1Su80ZbLwNxSZfousgBWwzRF9MZ92FQfalzroGsiOnpCtxb8RUHuOXbRfTPSHT48joCu
+	5lUw3RU0ILg9DU9AB+LLdSYbH8EVODS0S50Zq086h1xZzli5TDqJ8+db/3svEP2RkDd4urpLQmV
+	0uxfiVqDyrRi6chOimp9lI1MJB/zGm1i9I6t544YmVl8b+vPz0t0qL1t352yoj5vtrhR0IEtnr2
+	6DP7S3RdMdD3/hnWzrVZfeB6ySBsdAoRIROwKIcwN5e6CykllfBmM/OXKJFL8n9Su8p/njBJjz5
+	i1MO0TVdrgTnvYKSKmXUxDSWIQtBghVUkbuJQVjv3sdW8wb/faqQcfqFbCvS7
+X-Received: by 2002:a17:90a:d887:b0:392:b509:b1a5 with SMTP id 98e67ed59e1d1-39907e0f87bmr12734699a91.14.1788271712082;
+        Tue, 01 Sep 2026 07:08:32 -0700 (PDT)
+X-Received: by 2002:a17:90a:d887:b0:392:b509:b1a5 with SMTP id 98e67ed59e1d1-39907e0f87bmr12734531a91.14.1788271711452;
+        Tue, 01 Sep 2026 07:08:31 -0700 (PDT)
+Received: from QCOM-aGQu4IUr3Y.qualcomm.com (i-global052.qualcomm.com. [199.106.103.52])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-142e0bf8a13sm56447342c88.0.2026.09.01.07.08.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Sep 2026 07:08:29 -0700 (PDT)
+From: Shawn Guo <shengchao.guo@oss.qualcomm.com>
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@kernel.org>,
+        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shawn Guo <shengchao.guo@oss.qualcomm.com>
+Subject: [PATCH] dt-bindings: arm-smmu: Document Adreno SMMU for Nord SoC
+Date: Tue,  1 Sep 2026 22:08:16 +0800
+Message-ID: <20260901140816.74200-1-shengchao.guo@oss.qualcomm.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,104 +98,54 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: kwepems200002.china.huawei.com (7.221.188.68) To
- kwepemo500007.china.huawei.com (7.202.195.114)
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTAxMDEyNSBTYWx0ZWRfX6nMRpWKpXKO4
+ UmA2yRqdN+toIOCAfZ48nyXILFqe8BAlgflHI38rB30goyfatT/v5SyONgIc/cg9BtqNh1mPdyh
+ 0ZYNN/8hC7CYtlZ+Dpfx5ZoI3SODFMA=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTAxMDEyNSBTYWx0ZWRfX7+x71XVG3ngS
+ Z6sOVr+beo9KIBDIZNlgT9J2nUdDlCV65o3zmt66mHnodkmoZP/VzffqbQucPyLL/E3EgS/4Ena
+ zsLY7ugZgZO8ZsZwpKkFCkT7q0mMd3inFHjFe0t/rc4xHk5eIWc9lPwYb79KFPeQZvkxhJ0Npmy
+ oM0JKXa3lV962k0ds+cg0kN7p8ZSnyH5LiODg1rEXVw3HjeX6Vbh30VfJkvVhvX0hrKdNbgtcmC
+ GUKO6Z/awVREYcb7io0BOsJHLEJAAazt4sMWcBt4Cj4Y6doEt1Qa+caQ7F2NAETMSPMyQOodB5b
+ 0B++L3jN/0BVdVctn23KTKTR0r7nnSJm+bbH5H3U2R7ST1M7Gfi44+FT31G+SCwIjMno2K4XMCv
+ traO/lpuETcbY4tKBZr+Egr70Hiql0AscDz3aHzTykcU675JeAwOOpi50ip6Kp7zB2do1Yc6MKW
+ L7Clw7c45xL5L4Cptrw==
+X-Authority-Analysis: v=2.4 cv=e/02j6p/ c=1 sm=1 tr=0 ts=6a96dc62 cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=b9+bayejhc3NMeqCNyeLQQ==:17
+ a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22 a=EUspDBNiAAAA:8
+ a=W7vQhCiC0Tbq709-ndwA:9 a=uKXjsCUrEbL0IQVhDsJ9:22
+X-Proofpoint-ORIG-GUID: ISEp5hdIoBmrbOLF3jUkUsI6oYQVtqn5
+X-Proofpoint-GUID: ISEp5hdIoBmrbOLF3jUkUsI6oYQVtqn5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-01_04,2026-09-01_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 lowpriorityscore=0 suspectscore=0 priorityscore=1501
+ impostorscore=0 malwarescore=0 spamscore=0 adultscore=0 bulkscore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2609010125
 
-Add an architecture query so core resctrl can decide whether to expose the
-"devices" file.
+Add specific compatible string to document the GPU SMMU present on
+Nord SoC.
 
-The file is only meaningful when an IOMMU can tag the DMA of devices behind
-it with a QoS class (such as an MPAM PARTID/PMG), so the query reports
-support only on platforms where that is available.
-
-Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+Signed-off-by: Shawn Guo <shengchao.guo@oss.qualcomm.com>
 ---
- arch/x86/include/asm/resctrl.h |  5 +++++
- drivers/resctrl/mpam_devices.c | 20 ++++++++++++++++++++
- drivers/resctrl/mpam_resctrl.c |  5 +++++
- include/linux/arm_mpam.h       |  5 +++++
- 4 files changed, 35 insertions(+)
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/include/asm/resctrl.h b/arch/x86/include/asm/resctrl.h
-index 8f6edcdcfd87..744a04f06025 100644
---- a/arch/x86/include/asm/resctrl.h
-+++ b/arch/x86/include/asm/resctrl.h
-@@ -71,6 +71,11 @@ static inline bool resctrl_arch_mon_capable(void)
- 	return rdt_mon_capable;
- }
- 
-+static inline bool resctrl_arch_devices_supported(void)
-+{
-+	return false;
-+}
-+
- static inline void resctrl_arch_enable_mon(void)
- {
- 	static_branch_enable_cpuslocked(&rdt_mon_enable_key);
-diff --git a/drivers/resctrl/mpam_devices.c b/drivers/resctrl/mpam_devices.c
-index dd422c56fbb1..882184651c14 100644
---- a/drivers/resctrl/mpam_devices.c
-+++ b/drivers/resctrl/mpam_devices.c
-@@ -67,6 +67,26 @@ u8 mpam_pmg_max;
- static bool partid_max_init, partid_max_published;
- static DEFINE_SPINLOCK(partid_max_lock);
- 
-+/*
-+ * Set once an IOMMU (e.g. ARM SMMU v3) has registered that it can tag
-+ * device DMA with a PARTID/PMG. resctrl only exposes the "devices" file
-+ * when this is true, so unsupported architectures never see it. The flag
-+ * only ever flips false -> true and is read with READ_ONCE().
-+ */
-+static bool mpam_device_requestor_registered;
-+
-+void mpam_register_device_requestor(void)
-+{
-+	WRITE_ONCE(mpam_device_requestor_registered, true);
-+}
-+EXPORT_SYMBOL(mpam_register_device_requestor);
-+
-+bool mpam_devices_supported(void)
-+{
-+	return READ_ONCE(mpam_device_requestor_registered);
-+}
-+EXPORT_SYMBOL(mpam_devices_supported);
-+
- /*
-  * mpam is enabled once all devices have been probed from CPU online callbacks,
-  * scheduled via this work_struct. If access to an MSC depends on a CPU that
-diff --git a/drivers/resctrl/mpam_resctrl.c b/drivers/resctrl/mpam_resctrl.c
-index 9d223057953a..71ccb3db5987 100644
---- a/drivers/resctrl/mpam_resctrl.c
-+++ b/drivers/resctrl/mpam_resctrl.c
-@@ -97,6 +97,11 @@ bool resctrl_arch_mon_capable(void)
- 	return l3->mon_capable;
- }
- 
-+bool resctrl_arch_devices_supported(void)
-+{
-+	return mpam_devices_supported();
-+}
-+
- bool resctrl_arch_is_evt_configurable(enum resctrl_event_id evt)
- {
- 	return false;
-diff --git a/include/linux/arm_mpam.h b/include/linux/arm_mpam.h
-index f92a36187a52..9d2deee604ce 100644
---- a/include/linux/arm_mpam.h
-+++ b/include/linux/arm_mpam.h
-@@ -53,6 +53,11 @@ static inline int mpam_ris_create(struct mpam_msc *msc, u8 ris_idx,
- bool resctrl_arch_alloc_capable(void);
- bool resctrl_arch_mon_capable(void);
- 
-+bool resctrl_arch_devices_supported(void);
-+
-+void mpam_register_device_requestor(void);
-+bool mpam_devices_supported(void);
-+
- void resctrl_arch_set_cpu_default_closid(int cpu, u32 closid);
- void resctrl_arch_set_closid_rmid(struct task_struct *tsk, u32 closid, u32 rmid);
- void resctrl_arch_set_cpu_default_closid_rmid(int cpu, u32 closid, u32 rmid);
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index ffa33b7f4a96..ea338d313c05 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -102,6 +102,7 @@ properties:
+               - qcom,hawi-smmu-500
+               - qcom,kaanapali-smmu-500
+               - qcom,milos-smmu-500
++              - qcom,nord-smmu-500
+               - qcom,qcm2290-smmu-500
+               - qcom,qcs615-smmu-500
+               - qcom,qcs8300-smmu-500
 -- 
-2.33.0
+2.43.0
 
