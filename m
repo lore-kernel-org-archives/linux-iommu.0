@@ -1,65 +1,65 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1EF3483809
-	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 17:09:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E3A1485CF9
+	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 17:09:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788282560; cv=none; b=GWOLRjouAkR1BgYeE3unEZDYKhOGEbAihNKHkj/p7jDNwvEN7UhT8mJ9Lsu1EPpa3T4lNjq92AmevUe0QLAbsghUhQDLI2FxksSka8h9guZpF+novKWvvJzteDV8TxB8kq2QpElUABI8r/rkL5wrlqQNW/wWJNJPzGOe49owVHY=
+	t=1788282564; cv=none; b=NZkQ3vWBvAPOIhuFmRr+YgLdLqx4+tyUG3UPOAQUT4z59N6jzGs6mPUXQPUi9jyURJ0FwoU2bkkWDpJSfdVfRRti2zVL9O++FhE86UxB1Wfzl+7Mv6+HgXDGs2J1vPDX6n6diC1eZhumkp9sfOtnGWnc0QHWjAK3muy1ZwJtO+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788282560; c=relaxed/simple;
-	bh=eMYBy3+ZGvIA2q+GBQf+ypcxSsYooXlDBhWmvVgQbzI=;
+	s=arc-20240116; t=1788282564; c=relaxed/simple;
+	bh=zrnOF43taoerZ+b1qJhujsiK8novkLtc50y8hRyQ+78=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gLZxvgVHU9gE6wDSDUA3FJBtZ0KTRQB48i9jPfcKaaS5FdVBnQdJqibglVNAxuH2CiOxNJUdpe2kqdngEzMPOqeVddVvgvEKzDEaVKRPXGkOBwjSkB7CAfErQ5egYkG9ISLoG/tTsNPjVf7meESNkxtZvpMfAvSpMFbyA5J/MDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=x6u.co; spf=pass smtp.mailfrom=x6u.co; dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b=KLi2P05x; arc=none smtp.client-ip=209.85.128.176
+	 MIME-Version; b=gO1Gko8/5T/MhvrEyYtOVDo43+CXbkJbfIWmrKMYRnAIckXsMOeOuTNXp9o/R4ZhnTk4bI0KqqStP3bYo4oGthQn9yWlqlACQGWa07KG0GjDwQ5ZanEGCyA6745Xg2WsblTLyx6LCnmzyj3bhYPCEdTmnEbErQaxKApAGHNdqJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=x6u.co; spf=pass smtp.mailfrom=x6u.co; dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b=IhfxUnoE; arc=none smtp.client-ip=209.85.128.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=x6u.co
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=x6u.co
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b="KLi2P05x"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-86b03b75fecso3814487b3.0
-        for <iommu@lists.linux.dev>; Tue, 01 Sep 2026 10:09:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=x6u.co header.i=@x6u.co header.b="IhfxUnoE"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-8549a96e93cso1710397b3.3
+        for <iommu@lists.linux.dev>; Tue, 01 Sep 2026 10:09:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=x6u.co; s=google; t=1788282558; x=1788887358; darn=lists.linux.dev;
+        d=x6u.co; s=google; t=1788282561; x=1788887361; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=IbWwW5sIPuPDCzD8yPpWzav/RwZMe+wNYupbv2vHzg4=;
-        b=KLi2P05xqM6Zz74OWTo26i2st5Uo09zc2JxFRT1Dz4M4H98hwoXTxaFOUYBWzg5uMP
-         R8EQSh/pxnfo9ziWB1W0L6EVgYa7f2swcEf6lKfmzLaMeuzeX2Pk5qLpQXRyw++jQY0s
-         yWF5M+DM2U1nKzqrVoU8jg5NN1Y0ul94Hzmbp2/TFLgI7BUOqIApq0D56s4QTIRKcrDz
-         Mjluhws4drxZkfeImtfuoEIka2UZJRwo0PI1GTn1qHv3J1D29to+TINEgyrRoVBzluvD
-         yyziMA+a2/MFCZR9JnLPMfpgyGxYZCjvOLEzd3v2LNXRGDQR7E7GC3KBXGw4swdeQgD1
-         zygA==
+        bh=+HsJ7WWSDXGGxM5KQ2N5tTmcNL3Nov2eFWn2UfdJVq4=;
+        b=IhfxUnoEdIeX7xMtuX+7fw6JPXr+OTdySBdWrQrliZiDCkH6clPSuxzBj9QnSuuVSL
+         hM9Qej9NpYsRpNPmNnP749S10vQu825ZKXALmtaaabpCBz9UK764rBUkWTagL/iDNpx5
+         LyNmRvvRcxfdA2CBfzejnM9D/POJ4BOEHerKYk3AIj/hkH1PDp74XEPh4FlAHj+EKras
+         J2PjSpo+9A/xefbaDeLRP2EWGkilILDgDeM+/15YHau8pE0uOg7ngWxxnYNh73+M6IaL
+         LbfWcSVvpGL2eZkoEBoVdxkz7I35Dul54LsF8StMiJQc82Cy2OUYa875+jh7KXq3VeZF
+         Eh1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788282558; x=1788887358;
+        d=1e100.net; s=20251104; t=1788282561; x=1788887361;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=IbWwW5sIPuPDCzD8yPpWzav/RwZMe+wNYupbv2vHzg4=;
-        b=sgHqGWGl+r/JHDbt7V7V/oPvS3rnPAm5A91PVJEA6UQb9ND6lpzRKjW0EXXdx0BBZz
-         zrBe2ncmNjgEEouWlo1YkOeb63GEMHj8xBkesIqWigKJrF6Tqo7gvGTRJOq59nnSr8x9
-         kRPSQ9gSJDQzgPK1RLtqPbwkT613N+UpkdzD5Wtuhpz4Nxn0/pzJvUQPCBk4eYZCH1Lx
-         mpx/I7R+vftI8laITclS2sxmBhJ9x9tvTNK6MBzJT1sBcSafco8UGr1idwxBiTZEjYiy
-         YY8EqZ8BcL/ZXJL97uzcGLSpfqw+wlUM/3ItXlB+7c12Q/9IRF0DqkRkC/GazYaMbqje
-         lFew==
-X-Forwarded-Encrypted: i=1; AKwUvBwBO7WL3AH0C1rStdFhpo3v6vx8M7g3lWfUjFmKB/vxxUGCi5ITwBWcH73tXPH0/oa+YE1mTw==@lists.linux.dev
-X-Gm-Message-State: AFuF++mBpPl1l/9FTuopJm2gKhkpemtfxdWb4pUgTF8NQxYH5F7pwFfk
-	MKDx71lqFn+Xp3eNsM0Zsp0qRyLF4Wdlr94Uo07VxXwsaUMQQx65zgRZJOc+lPBKXHaY
-X-Gm-Gg: AYBFou3AYE5qKqRdz0mplAn/wHH1ow/VbAVgyZ69dGeNjmi8hevPOgVjN6qpIb6FC5x
-	7ey3Bq8cRA9iqL9CDrfNLiOXsS9xy7RbUUh4bFQGC4Wf79BXWtpwVJBSsTbciR1w9rce8689Kcb
-	osm0iFA+M5ujFnQeDy0xlzWZ8qEB+Aq5Aq1d1KqxmkwMHWctOzRFdwPDLS2ck7yc4Tunj0L2/MD
-	eOYYUfhSN8xRwZ5MZ2VzagcXufAoA/5JfpFJDaNHhaoH1lDnGf6F+PS/mMskFQDgZKXyDoba48r
-	fr4GIpC0F0cmG8rUFlsGEYHrcTTr2/J1vbOp2KVE6WTYMyTkcPju233DCUSoxtbR/w/Sf41/WUU
-	Jn/hJDSv6JOvUiZQT4eQe8+mYPGHnN4cvM3BN5Fx7UVW382IztewhYYMCdyp3cQrHDKSeYbWqbh
-	fRBcTqjoGcZG7k4YwarwB+IgXKwbhswE6HXQxk8tjvfuHOl570rMqcZFn9fWCAsqDfu3WdgvBKd
-	vUY5fnFE7/AavB1pjf3i2VNGAqaSfXm1+XN1+2APGb9w+8gMq9p6+5HxXyCfMVtWUGFTjBpfI8O
-	EQ==
-X-Received: by 2002:a05:690c:a7c2:b0:854:74e:ad6b with SMTP id 00721157ae682-8686ff0ecabmr35913247b3.15.1788282557505;
-        Tue, 01 Sep 2026 10:09:17 -0700 (PDT)
+        bh=+HsJ7WWSDXGGxM5KQ2N5tTmcNL3Nov2eFWn2UfdJVq4=;
+        b=NV9gmNUQ32X6fmqIZO/hFC3waBZApP7xbANa4mKH1w3bT+gR/4bxI+1HHnfKOqZSf0
+         l5xKekoB3yROoKeoSXXJf9g42zsXS6BBNJGqPR6Ji0AIYucsDIb2viPmSWaLRzCRfpuc
+         XJGgy83xOB6a/4RacCE2KWCorqIIj/S2hK3ttS85kJRbll/4vb+gRcE4XA6MzgS12hqu
+         LNMweGd+HvYcBvhKWqTjptxRw/wo9A2JiR0LVTc2xTMSc6i7n3CZkLdpJ/q9YMExarJr
+         xr1cAk1u9ta1DIzPJS+cUhZLap7bMb/LYuz68/S9EXPsA8/g+q4ijkgvLVTdMgYaq4eO
+         Z8KQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwy4AyFbYsIBo26qn0yIzfeNtyBDwentQKI+bO5TzgFkwh1o1/KQmdOWcQMxKZlBBRcCkCP9g==@lists.linux.dev
+X-Gm-Message-State: AFuF++mDYv687zT8RJ4BOWQlhMhZLlpkxESgvmqiIx9kVqTubHWffiD2
+	Zr4zgyKvcu9KRkv0wxNwxdzucqSKfBzkUngHysLuRIsxY7+4flBqhuarSJtYoMr0+seU
+X-Gm-Gg: AYBFou0hfbx9GqpHxwwKOlAOUOoUGO0TQ8ACEgVeeqhsz/eaU11EM33kx9vpQV9A5z1
+	GbHHJ8+XehlwPPSvIKeUkaLTHNMzhCqNw0EvSk0o5fhEWfkSMKZDKKxe+gIQarRILY7tI1RoieE
+	mh3gbc21xrZVesTA6CqUZE2/YdV42BJtjvJVD3W4CZHyopjauQwPw9MVt5qAIY/+E50f6qZ5Ajz
+	rwmeR0Z5V/84dyfG/cdvpkZKH6m1rVwnM8LM7PIHT3iB27MivVIUmLgUabxpG15/ivJSP7FA/yJ
+	3p9FYXC5zWRBgaIwT8Ls4RS8pGHXdE85iCqde3ybxguDS3CrVqDgDB13/JtsBnhhOBn2jIs12/G
+	nkQ62WzZPk1mbAzMq5zaNlN5QdZzgvRoRgTPGeGq4fDs9ATimwgF8KHaxoZydVmeOIROofx5DPN
+	spu3f81XmBHAJRX6fwSd+gJmZz/rBucMBiv7kedRxg++jj7i7juDQz42IuoVStWSTwzyxH76rZX
+	AC/gD3FTYEZ2m9W0+mRzdZlZXpYD7NHBtijr6ItiGmyLOED5XNKD7/GIPZpBKeJMHXL1x80GiQb
+	+pM=
+X-Received: by 2002:a05:690c:6603:b0:81f:e85b:f9f4 with SMTP id 00721157ae682-85d6b8472ebmr126795317b3.27.1788282561098;
+        Tue, 01 Sep 2026 10:09:21 -0700 (PDT)
 Received: from worldpeace10.c.googlers.com.com (109.243.150.34.bc.googleusercontent.com. [34.150.243.109])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e65f146edsm79761867b3.32.2026.09.01.10.09.16
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e65f146edsm79761867b3.32.2026.09.01.10.09.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 10:09:17 -0700 (PDT)
+        Tue, 01 Sep 2026 10:09:20 -0700 (PDT)
 From: David Hu <dhu@x6u.co>
 To: sumit.semwal@linaro.org,
 	christian.koenig@amd.com
@@ -82,10 +82,11 @@ Cc: alex@shazbot.org,
 	sashiko-bot@kernel.org,
 	stable@vger.kernel.org,
 	viursachi@google.com,
-	xuehaohu@google.com
-Subject: [PATCH v8 1/2] dma-buf: Fix silent overflow for phys vec to sgt
-Date: Tue,  1 Sep 2026 17:08:48 +0000
-Message-ID: <20260901170849.4052816-2-dhu@x6u.co>
+	xuehaohu@google.com,
+	Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH v8 2/2] dma-buf: Split sgl by largest page-aligned chunk
+Date: Tue,  1 Sep 2026 17:08:49 +0000
+Message-ID: <20260901170849.4052816-3-dhu@x6u.co>
 X-Mailer: git-send-email 2.55.0.966.g6673acef38-goog
 In-Reply-To: <20260901170849.4052816-1-dhu@x6u.co>
 References: <20260901170849.4052816-1-dhu@x6u.co>
@@ -99,120 +100,121 @@ Content-Transfer-Encoding: 8bit
 
 From: David Hu <xuehaohu@google.com>
 
-In case MMIO size is bigger than 4G and peer2peer DMA goes
-through host bridge, we trigger a code path that assigns the
-total linked IOVA (which is greater than 4G) to mapped_len.
+Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
+This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
+first entry, resulting in non-page-aligned DMA addresses for all
+subsequent entries.
 
-Previously, `mapped_len` was declared as 32-bit `unsigned int`.
-When accumulating `size_t` lengths, this leads to a silent wrap-around.
-This truncation causes truncated lengths to be passed to functions
-like `fill_sg_entry()`.
+While the underlying IOMMU mapping may be contiguous, hardware
+DMA engines often require explicit address alignment (e.g., page,
+cacheline, or storage sector boundaries). Passing unaligned
+addresses and lengths can cause explicit failures in DMA descriptor
+creation or silent data corruption if lower unaligned bits are
+truncated.
 
-Fix this by changing `mapped_len` to `size_t` (64-bit). While
-at it, fix similar potential overflow issues in `calc_sg_nents`
-by using `check_add_overflow()` for `nents` and using
-`unsigned int` for the loop iterator in `fill_sg_entry` to match.
+In addition, a non-page-aligned sgl length will trigger an edge case
+in `ib_umem_find_best_pgsz()`. In case of a discontinuity in later
+buffers, we will have a `va` with lowest bit set to 1. That will lead
+to `ib_umem_find_best_pgsz()` always return 0, and break the promise
+to find best page size for the mapping on the NIC side.
 
+Fix this by splitting the scatterlist by the largest possible page
+aligned chunk within `UINT_MAX` (`ALIGN_DOWN(UINT_MAX, PAGE_SIZE)`).
+This ensures all scatterlist DMA addresses and lengths remain page
+aligned, while minimizing the total number of sgl entries.
+
+Page-aligned entries allow the system to cleanly chunk payloads into
+PCIe MaxPayloadSize (MPS) (e.g., 128 bytes, 256 bytes, 512 bytes).
+As a result, this may help reduce TLP fragmentation in P2P transfers
+and alleviate potential congestion within a logical PCIe switch
+partition, especially when Relaxed Ordering is not possible due to
+hardware constraints.
+
+Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+Closes: https://lore.kernel.org/all/20260609165431.778061F00893@smtp.kernel.org/
 Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
 Cc: stable@vger.kernel.org
-Cc: iommu@lists.linux.dev
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Leon Romanovsky <leon@kernel.org>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: David Hu <xuehaohu@google.com>
 ---
-Changes in v7:
- - Added a missing blank line after local variable declaration in
-   `calc_sg_nents()` (Leon).
- - Collected Reviewed-by from Leon Romanovsky.
+ Changes in v3:
+ - Removed the type cast for `min` (David Laight)
+ - Reverted max ent size to be `ALIGN_DOWN(UINT_MAX, PAGE_SIZE)` and
+   updated commit message to reflect that (Jason Gunthorpe)
+ - Updated commit message to reflect that this also fixes an edge case
+   in `ib_umem_find_best_pgsz()`
 
-Changes in v6:
- - Used `check_add_overflow()` in `calc_sg_nents()` for safer
-   accumulation (Leon).
- - Dropped explicit `!nents` check and added a comment noting that
-   `sg_alloc_table` handles `nents == 0` (Leon).
- - Collected Reviewed-by from Kevin Tian.
+ Changes in v2:
+ - Updated commit title and message to reflect the switch to 2G chunks
+ - Switch to using 2G as the max sg entry size as it naturally aligns
+   with most hardware boundaries, while allowing compiler optimizations
+   with bit shifts (David Laight)
+ - Optimized away division calculation for `nent`, and multiplication
+   calculation for sgl address, by dropping the `for` loop in favor of a
+   `while (length)` loop (David Laight)
+ - Dropped `min_t` in favor of `min()` to maintain a strict type
+   checking safety net (David Laight)
 
-Changes in v5:
- - Removed WARN_ON_ONCE from calc_sg_nents() to avoid log noise (Jason).
- - Added explicit check for `!nents` in dma_buf_phys_vec_to_sgt() to
-   cleanly return -EINVAL on overflow (Jason).
-
-Changes in v4:
- - Added WARN_ON_ONCE() to the nents overflow check to prevent silent
-   failures (Claude Bot).
-
-Changes in v3:
- - Removed leftover sentence fragment from the commit message.
- - Kept `nents = 0` initialization (previously stated as removed in the
-   v2 changelog) as it is strictly required for the `+=` accumulation
-   loop in `calc_sg_nents()`.
-
-Changes in v2:
- - Fixed 'IVOA' -> 'IOVA' typo and expanded commit message (Claude Bot).
- - Added Reverse Xmas tree formatting (Pranjal).
- - Folded in extra bounds checking for calc_sg_nents() (Pranjal).
- - Folded in type consistency fix for fill_sg_entry() (Pranjal).
- - Collected Reviewed-by from Pranjal Shrivastava.
-
- drivers/dma-buf/dma-buf-mapping.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/dma-buf/dma-buf-mapping.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
-index 794acff2546a..80f6ab2f4809 100644
+index 80f6ab2f4809..833be519e1e6 100644
 --- a/drivers/dma-buf/dma-buf-mapping.c
 +++ b/drivers/dma-buf/dma-buf-mapping.c
-@@ -5,12 +5,13 @@
-  */
+@@ -6,16 +6,17 @@
  #include <linux/dma-buf-mapping.h>
  #include <linux/dma-resv.h>
-+#include <linux/overflow.h>
+ #include <linux/overflow.h>
++#include <linux/align.h>
++
++#define MAX_SG_ENT_SZ ALIGN_DOWN(UINT_MAX, PAGE_SIZE)
  
  static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
  					 dma_addr_t addr)
  {
- 	unsigned int len, nents;
--	int i;
-+	unsigned int i;
+-	unsigned int len, nents;
+-	unsigned int i;
++	size_t len;
  
- 	nents = DIV_ROUND_UP(length, UINT_MAX);
- 	for (i = 0; i < nents; i++) {
-@@ -40,8 +41,12 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
- 	size_t i;
- 
- 	if (!state || !dma_use_iova(state)) {
--		for (i = 0; i < nr_ranges; i++)
--			nents += DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
-+		for (i = 0; i < nr_ranges; i++) {
-+			unsigned int added = DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
-+
-+			if (check_add_overflow(nents, added, &nents))
-+				return 0;
-+		}
- 	} else {
+-	nents = DIV_ROUND_UP(length, UINT_MAX);
+-	for (i = 0; i < nents; i++) {
+-		len = min_t(size_t, length, UINT_MAX);
++	while (length) {
++		len = min(length, MAX_SG_ENT_SZ);
+ 		length -= len;
  		/*
- 		 * In IOVA case, there is only one SG entry which spans
-@@ -95,9 +100,10 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
- 					 size_t nr_ranges, size_t size,
- 					 enum dma_data_direction dir)
- {
--	unsigned int nents, mapped_len = 0;
- 	struct dma_buf_dma *dma;
- 	struct scatterlist *sgl;
-+	size_t mapped_len = 0;
-+	unsigned int nents;
- 	dma_addr_t addr;
- 	size_t i;
- 	int ret;
-@@ -133,6 +139,8 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+ 		 * DMABUF abuses scatterlist to create a scatterlist
+@@ -25,8 +26,10 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+ 		 * does not require the CPU list for mapping or unmapping.
+ 		 */
+ 		sg_set_page(sgl, NULL, 0, 0);
+-		sg_dma_address(sgl) = addr + (dma_addr_t)i * UINT_MAX;
++		sg_dma_address(sgl) = addr;
+ 		sg_dma_len(sgl) = len;
++		addr += len;
++		/* Unconditionally advance. On last segment, this becomes NULL */
+ 		sgl = sg_next(sgl);
  	}
  
- 	nents = calc_sg_nents(dma->state, phys_vec, nr_ranges, size);
-+
-+	/* sg_alloc_table will cleanly fail and return -EINVAL if nents == 0 */
- 	ret = sg_alloc_table(&dma->sgt, nents, GFP_KERNEL | __GFP_ZERO);
- 	if (ret)
- 		goto err_free_state;
+@@ -42,7 +45,7 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 
+ 	if (!state || !dma_use_iova(state)) {
+ 		for (i = 0; i < nr_ranges; i++) {
+-			unsigned int added = DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
++			unsigned int added = DIV_ROUND_UP(phys_vec[i].len, MAX_SG_ENT_SZ);
+ 
+ 			if (check_add_overflow(nents, added, &nents))
+ 				return 0;
+@@ -53,7 +56,7 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 		 * for whole IOVA address space, but we need to make sure
+ 		 * that it fits sg->length, maybe we need more.
+ 		 */
+-		nents = DIV_ROUND_UP(size, UINT_MAX);
++		nents = DIV_ROUND_UP(size, MAX_SG_ENT_SZ);
+ 	}
+ 
+ 	return nents;
 -- 
 2.55.0.897.gb25b4bd76c-goog
 
