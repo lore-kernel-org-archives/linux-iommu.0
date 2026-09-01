@@ -1,45 +1,43 @@
-Received: from mta0.migadu.com (out-175.mta0.migadu.com [91.218.175.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m49198.qiye.163.com (mail-m49198.qiye.163.com [45.254.49.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4D1385D90
-	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 08:53:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C0A233263B
+	for <iommu@lists.linux.dev>; Tue,  1 Sep 2026 13:05:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788252842; cv=none; b=o9/ue2V6rOQbcZ9/JxTtn6A84mJEr1qMpIaIHXjoUReVfTWlvV2VYC1ge7ZzQ03vYULvtf7AJyeJhontqUg5R65cxQu5zMtrdYFK1gii34igB9ebERsJ25MfuZcSFKqB0I/cuXrjTr4nEcB6y4miYd1PQR//ohs8OAIVu1c+Etw=
+	t=1788267943; cv=none; b=FOdImxxdIqawH97q4CPn/NqMr+PcZ0mebfy9Bjku5M3uPGcLX08YRqkAc3jtBQoBrzaktJiRUoSX0pyBz2c8t2yRRdB6kKH78dnO2xWEkY1EAHuxpr8waKMFEOB75sPHUQnKVBlJk42a1ZofP5WvJyS0vD/03j34TeBShlcmHiQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788252842; c=relaxed/simple;
-	bh=g8f2dez90PDz4Ck0r4rT5yrBdapilOB4Xhu/hGJhOsQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fatCmsFdpySFxanN9Q3wjJba768pJgc2hBkifXHoNwQ5nLk7I/PnA7eoR/wi/5JpgAmbm+Y3aLCXNTUmHOuuNJDB1Lie/9I55Tq/W1qXsdvX9XXq2sGdFVE3BZQyJ7AYMOhgsaMaWd3unp8BXBd3PKTRgLQu4bK+BL/iPcCENgM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=W/id62mP; arc=none smtp.client-ip=91.218.175.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1788267943; c=relaxed/simple;
+	bh=5uvSyPqYCtbnZfV5lhvBwzVleX03dnMpFSh6P5iyWAk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jeyVky6S9FbvEIPFTPO+nQpjpW88R9Av0prBDscBbRu+CW8ggVz41G12P0VCu8FjmHwOPq8hr6D0tpNqme/xuPwdgOSL06eG0oBQOLz304JIabK/kgs5WhM9HSxO/aPiGNWprNDitUmcAhSdpUuYxBbZLpLGlWXGNrwpWL6sOWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn; spf=pass smtp.mailfrom=seu.edu.cn; dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b=EOgFoxRw; arc=none smtp.client-ip=45.254.49.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seu.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="W/id62mP"
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=g8f2dez90PDz4Ck0r4rT5yrBdapilOB4Xhu/hGJhOsQ=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1788252838; v=1; x=1788857638;
- b=W/id62mPRQHfrzSUbD098yBlivdFaey4THjK+sQym6YolrsTDn1f6KQ1IVLM0deAk8BM9M8/
- 45xSerPPTy+1QjtAgvZohdxDLA6NgSZfAEaLC2uHIpkaEjmo+j/wVooM+WQ/MGKbpNRFQqk/zsR
- u249c/5LNtUvNCYvyW9VhEU0=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id 01307ef19bc2d902;
-	Tue, 01 Sep 2026 08:53:58 +0000
-X-Mizu-Trace-ID: 01307ef19bc2d902
-X-Migadu-Flow: FLOW_OUT
-From: Qingfang Deng <qingfang.deng@linux.dev>
-To: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b="EOgFoxRw"
+Received: from PC-202605011814.localdomain (unknown [223.112.146.162])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 4c1f46417;
+	Tue, 1 Sep 2026 21:05:33 +0800 (GMT+08:00)
+From: Runyu Xiao <runyu.xiao@seu.edu.cn>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	KyongHo Cho <pullip.cho@samsung.com>,
+	Kukjin Kim <kgene.kim@samsung.com>,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Qingfang Deng <qingfang.deng@linux.dev>
-Subject: [PATCH] dma-mapping: use exact allocation for DMA pages
-Date: Tue,  1 Sep 2026 16:53:47 +0800
-Message-ID: <20260901085348.53140-1-qingfang.deng@linux.dev>
-X-Mailer: git-send-email 2.43.0
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Runyu Xiao <runyu.xiao@seu.edu.cn>,
+	Jianhao Xu <jianhao.xu@seu.edu.cn>
+Subject: [PATCH] iommu/exynos: Initialize lock before requesting IRQ
+Date: Tue,  1 Sep 2026 21:05:27 +0800
+Message-Id: <20260901130527.3289245-1-runyu.xiao@seu.edu.cn>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,135 +45,49 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0aa05d132e6603a1kunm445721fa16f246
+X-HM-MType: 10
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCTBkdVkhOTkIdTxhJSUhNGFYeHw
+	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlJSUhVSkpJVUpPTVVKTUlZV1kWGg8SFR0UWUFZT0tIVUpLSE
+	pPSExVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=EOgFoxRwxzQxfvlYFYg841s7jzQqgANec6RRRQkmlaoB0ROYTaT/yN4FOZfSa+n3LZVnlZLSXJ+hqRca9EvEaOInR1CpEExYk86+iLZIK8/H5C65FPTD6U5qRg+X+VQUPW3UE8rrNXtusalywWgPJPGlfs2DQMthhffCQBXkmH4=; s=default; c=relaxed/relaxed; d=seu.edu.cn; v=1;
+	bh=LQLxe3McHBmGULMFD/4NkaDRFU0WQZ/I3unsR12nsDs=;
+	h=date:mime-version:subject:message-id:from;
 
-DMA page allocation fallbacks use alloc_pages_node() with get_order(size),
-wasting the unused tail for non-power-of-two requests.
+The SysMMU interrupt handler can run as soon as devm_request_irq() is
+called. Initialize the driver lock before registering the handler so an
+early interrupt cannot use an uninitialized lock.
 
-Use alloc_pages_exact_nid() and free_pages_exact() so that a buddy
-fallback retains only requested pages.
-
-Signed-off-by: Qingfang Deng <qingfang.deng@linux.dev>
+Fixes: 2a96536e77b4 ("iommu/exynos: Add iommu driver for EXYNOS Platforms")
+Cc: stable@vger.kernel.org
+Signed-off-by: Runyu Xiao <runyu.xiao@seu.edu.cn>
+Assisted-by: Codex:GPT-5
 ---
- drivers/iommu/dma-iommu.c   | 10 ++++++----
- include/linux/dma-map-ops.h |  2 +-
- kernel/dma/contiguous.c     |  6 +++---
- kernel/dma/direct.c         |  8 +++++---
- kernel/dma/ops_helpers.c    | 11 +++++++----
- 5 files changed, 22 insertions(+), 15 deletions(-)
+ drivers/iommu/exynos-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 58c624513cd4..8f262c83802c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1628,10 +1628,12 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	void *cpu_addr;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 874d05f4b..e9feb83b3 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -735,6 +735,8 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	if (!data)
+ 		return -ENOMEM;
  
- 	page = dma_alloc_contiguous(dev, alloc_size, gfp);
--	if (!page)
--		page = alloc_pages_node(node, gfp, get_order(alloc_size));
--	if (!page)
--		return NULL;
-+	if (!page) {
-+		cpu_addr = alloc_pages_exact_nid(node, alloc_size, gfp);
-+		if (!cpu_addr)
-+			return NULL;
-+		page = virt_to_page(cpu_addr);
-+	}
- 
- 	if (!coherent || PageHighMem(page)) {
- 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 8fae2b7deb20..3ef3003713a6 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -143,7 +143,7 @@ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
- static inline void dma_free_contiguous(struct device *dev, struct page *page,
- 		size_t size)
- {
--	__free_pages(page, get_order(size));
-+	free_pages_exact(page_address(page), size);
- }
- #endif /* CONFIG_DMA_CMA*/
- 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 66093460584e..90937dc7c627 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -451,8 +451,8 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-  *
-  * This function releases memory allocated by dma_alloc_contiguous(). As the
-  * cma_release returns false when provided pages do not belong to contiguous
-- * area and true otherwise, this function then does a fallback __free_pages()
-- * upon a false-return.
-+ * area and true otherwise, this function then does a fallback
-+ * free_pages_exact() upon a false-return.
-  */
- void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
- {
-@@ -476,7 +476,7 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
- 	}
- 
- 	/* not in any cma, free from buddy */
--	__free_pages(page, get_order(size));
-+	free_pages_exact(page_address(page), size);
- }
- 
- /*
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index da665ca22d5c..ea64453d7370 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -120,6 +120,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	int node = dev_to_node(dev);
- 	struct page *page;
- 	u64 phys_limit;
-+	void *va;
- 
- 	WARN_ON_ONCE(!PAGE_ALIGNED(size));
- 
-@@ -133,9 +134,9 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		dma_free_contiguous(dev, page, size);
- 	}
- 
--	while ((page = alloc_pages_node(node, gfp, get_order(size)))
--	       && !dma_coherent_ok(dev, page_to_phys(page), size)) {
--		__free_pages(page, get_order(size));
-+	while ((va = alloc_pages_exact_nid(node, size, gfp)) &&
-+	       !dma_coherent_ok(dev, virt_to_phys(va), size)) {
-+		free_pages_exact(va, size);
- 
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
- 		    phys_limit < DMA_BIT_MASK(64) &&
-@@ -146,6 +147,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		else
- 			return NULL;
- 	}
-+	page = va ? virt_to_page(va) : NULL;
- 
- 	return page;
- }
-diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index 6b5f9208d31c..5cdf3f60cf47 100644
---- a/kernel/dma/ops_helpers.c
-+++ b/kernel/dma/ops_helpers.c
-@@ -67,10 +67,13 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
- 	phys_addr_t phys;
- 
- 	page = dma_alloc_contiguous(dev, size, gfp);
--	if (!page)
--		page = alloc_pages_node(dev_to_node(dev), gfp, get_order(size));
--	if (!page)
--		return NULL;
-+	if (!page) {
-+		void *va = alloc_pages_exact_nid(dev_to_node(dev), size, gfp);
++	spin_lock_init(&data->lock);
 +
-+		if (!va)
-+			return NULL;
-+		page = virt_to_page(va);
-+	}
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	data->sfrbase = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(data->sfrbase))
+@@ -773,7 +775,6 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 		return PTR_ERR(data->clk_master);
  
- 	phys = page_to_phys(page);
- 	if (use_dma_iommu(dev))
+ 	data->sysmmu = dev;
+-	spin_lock_init(&data->lock);
+ 
+ 	__sysmmu_get_version(data);
+ 
 -- 
-2.43.0
-
+2.34.1
