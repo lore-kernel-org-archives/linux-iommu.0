@@ -1,112 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010061.outbound.protection.outlook.com [52.101.201.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE534746A5
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 11:22:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788348170; cv=none; b=XLakuyV7zcgxO9a3L2XLjL6AObBnpHePaZNmZ1mxJDsVsA/aPryyS82Zlk62XavCmkDI4sSak+P7f6p7BXoTBAT4h3lrTgzj4jn0hODJJXYHLJiyGfqOwZszckx6yKuxbHwM9VMO7XNn7ZnYx6+KPJQYtXvAkqE2Nsqm0mLwVB8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788348170; c=relaxed/simple;
-	bh=hLAeniJJgZxr1vBaB9I/irR39/2wmQpDrTfM6QLVtjw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VfvDGnkAyKCSFqCdKHkFasTnJZEYfpUnK4n+g6AJD69hdUR7PR8FJYGLnowa2d4GJILAtL9q/qklig2cxvPJWGK9UEne14jtDb88AjCTc7weDa/gnmLLpOufLkqOHv0xR8gak+egoDjwK/GzTH6K/joHRtOJtYYUSqeXt1mOBXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XUT8yFQF; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A75F53D9529
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 12:03:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788350615; cv=fail; b=tfuG6YQn5jCTi7jnfaEgxUMI6rG4+7FqkRtFAvEzOOirIIzwHlB2WJCbMTmA1SygPrclapXg5oQPf130txABF/neV8l1wyjH2riSjmj7hAvoS4yloXjJZoiUt4raYgrVRiCSK0fHqQOiHI81O35hLZiZNY50buZGKTJVNAYnPL0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788350615; c=relaxed/simple;
+	bh=qRSJFAPVucL+zhzt72kR9bLOKYdJya1rzlqhGg+o+YA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=hFZ9pPE9wsiou5jrywPuTj65xr/45C/eKuaCNk6vgybspMsotT73/ESm8PJidFkbUdQOVfdL74fCKMCfF8ha11QJWJtWxKyWUqstrpylZp/70MKkaIpvT80Vv4Ymmj0lHO3euUkeUQcB9oeRyPwJ69Pcopp6qHGaUY7jL0hg30g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=THX54xcB; arc=fail smtp.client-ip=52.101.201.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XUT8yFQF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FEED1F00A3D;
-	Wed,  2 Sep 2026 11:22:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788348163;
-	bh=VI+zTa/H4brk4hljsWHx5rnTWZGudrTivFOtubthDSY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XUT8yFQFIDAXpJNheMQDAc0u9jQeTZYSg6YEzu3bttwqEFwjfRvwneXYGPOPvT3do
-	 1AHDF3G8NEShvO5v/yxoQTav/PLUJRBdY/qGxocMEvdFe5dDJeR9keggoBS64Q91Wl
-	 N5Kpbazegv+XETjnI5S55SxA6pij6Ye8shiUFa0VgJ9SKHXpdyYeYlK5rHcI9X9WX+
-	 TCc4kIk/23CsoMmoQtjuLIMyKa+9djFumuYiKepkDd1PPUgmnTZvSQ8JJOrsqtGYNg
-	 Z926LX0rZkRzyFwif0h1ZLRm22R9hD0JPofEKDATAbHh6I2bNhRKOY2xqY5VQTCD/c
-	 Puq7EMndNkPGw==
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailfauth.ams.internal (Postfix) with ESMTP id 5622A198003A;
-	Wed,  2 Sep 2026 07:22:39 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-05.internal (MEProxy); Wed, 02 Sep 2026 07:22:41 -0400
-X-ME-Sender: <xms:_gaYaivawVJwMuL9zUKR0N0wUoDQHsvFMWRhd3fVHlDEVSYpdqRdwQ>
-    <xme:_gaYai6Yec-jc2kQ7kNbWqp2eEC8TnOxxQjiNHahL1ufRXnGyZsZ6kj-RbfMg8f8_
-    WbH9VuFpYu_UK6mBOboPS0f9UkXNv3kaer1kXaQY7gzR9ZEb9Nm0fU8>
-X-ME-Received: <xmr:_gaYasdF2BPNtoAy21DfX8FMRVmh1bFwOSyk-ZKYAt-0SFm8Ob1C1h6h2ag>
-X-ME-Proxy-Cause: dmFkZTFz6itMPqahSEtPkdJJ9WVlua6VjGYOXQgtB6H3nUwkTCAeCZ7daCaLn5zON1t/5A
-    MwWZ4U0HUxKeDH0x08LvUy2Gpht1F9Gi71lOZ5nSHj0qarS92q8yZpXwg0ERpN7IexVqoQ
-    rCXc+94u/RibKKQ9IAsd+X4y4hMuNhJyDmQvT5hKcDPMF120/cUdT4/Tq6AmKcsnk6v++5
-    /oMEJEwD2wTfPUps0KMjrJxACRV2mqyYw3yu2TEQqOIdZmcFBbdRWzRh0bZZ8Gg7jrLNBY
-    /TrgKqBEcdSeQqKtKM3yTlGC1/LlhFGaVy0VgQb9RdHKxxi/xfP8tbOhqqNspPwC1LnlR4
-    RG00hbJbFkJixN0Y1uvZGtWRKNW9GgQv0IUgu6Oj3n7otFGxiy5XG76k+BR8k/O5iTYyF/
-    FwpvXpT5pTGZbkjJlNIncDpg8NyX3LveylVcs+7DDs+LjyVgJVc3vR2rX+orXLmT+GbvLo
-    UB1XA2t094+SPBpEqpc0W3Veap6B3/IUiWyZ/VzXmA7W6UgTdY78NL3S2pjVQh9yv2zF3w
-    y0j/VnrJMFr4g4vKBArfmHHGNrIMnN2ZwIswOcTI1aL8aaWcvaLXiHk3aRV9kK8TY9zKSc
-    2Tx3FbzLtX8FSrS4lQBH+Qxvy4hUXNh7dUkgEPSxc9dcoig7jpmfVyTyjLNw
-X-ME-Proxy: <xmx:_gaYaqWu3P8bxchyU4iAh9qlll9KgTrepKuTfuum4GUdJ6UuUGsaKA>
-    <xmx:_gaYapXmRHSBDfLJpqErgSpOQTwWnhY_mn92ggpAUG_HmjSIG9rO7w>
-    <xmx:_gaYarSmOMMgSDvkOfA8PkuNSGYnT6lbGfMqM985o2faUNa_DsYlYQ>
-    <xmx:_gaYao1j08e-Eqgp_24jYNAKcMcrnhJ7jNSbbbhUPeLUfzLxa1xscA>
-    <xmx:_gaYasIG3WWRsMQITpsJ2YlV5g3ZKL1IU4QAICJOX_RDeg8ll1NKyqXd>
-Feedback-ID: i10464835:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 2 Sep 2026 07:22:38 -0400 (EDT)
-Date: Wed, 2 Sep 2026 12:22:36 +0100
-From: Kiryl Shutsemau <kas@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org, 
-	praan@google.com, kevin.tian@intel.com, smostafa@google.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	jamien@nvidia.com
-Subject: Re: [PATCH v10 04/13] iommu/arm-smmu-v3: Disable the EVTQ and the
- PRIQ in a kdump kernel
-Message-ID: <apgG2jvqgd4T58br@thinkstation>
-References: <cover.1788130528.git.nicolinc@nvidia.com>
- <861f488cbbfa84a4d222a22615adbe5d2617bc87.1788130528.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="THX54xcB"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ojMYXou5EYV+67DGEFtx0Efz6Jwby/6N3mSGarNAJK0CvPooW7Jd4MU8/xUTHIbm0QTk26uvdZeF7T6aLe6+yLrU2/uyvepOODU4LSTjP7Zu6c2n0HI+Zqv/OeojZu8gN9B0gDlFOopoE17nbGm0kKTlCTkf7hfZNJOIauf411+IIHxzLJ0uEr/DoM8kD/rrQM/P7hKslvxvchwXLfjugEft2aMuiTf82YdXNzkSg3032r8WTd8hyzm9PZyqhP5ndIzoUphCesUiObM2NcZNxeSOjCyboc6//gQefa00dD0SlZxO5RCsl/RFPSvfWAZPWY9hfo6Hox/DRLq/00stSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wk0xjYcH116U+Cjtgj2XnbtnW52fS2CDQEcXmBTCjAk=;
+ b=lYEDePWh1L4cvF+CyfN3ko+ELNXpxRSgSCH9AliUTOfQCA6Wm/1QP7H2jwjhfTKUoq6oqTE3ZnI/E21PoFahjnX7Vsi0Zukucv8QNHD3ca14b1+t9J0fRnSnO1P8Ns4Rtv+ccJaYz6M4Pcbwy+MRlI1b6X+R0+GMN+FFX2ZFXnkWJTI+quJ/iL4tskOGcaHo0mFhhvI+ZsMCUadHaIfit2SjD5mAIcFaDdgMI5iA0EI4m1VWYauIYRGdm3eUdZtecU3V5esTEcQfXXPx72QgNVrWdzOaHbDx84AMSh4+NNRkKZWvYxc5uWqcSfAi/2CueD9/n+g8ePvFhc+BJntJMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wk0xjYcH116U+Cjtgj2XnbtnW52fS2CDQEcXmBTCjAk=;
+ b=THX54xcBoOWfge0jzMhyDAWX1CO/xAPQEn+Sm2Eo/gjXhUVqRLPeYnNAm8i7+bN6V+X7eMQXGzKDnCPv1UFsfSnKngHPM0Ibxes6a6iI1RwjPP0zTUs1qWr0Yav6asIXL+qUKWPCuzE0K7fpJRcfojhITuikIPUMIciHZL6Z8qNH4tsffs+dC/BmUppFFmYwrvvh7LmCI/DTiLSaaRtieWTTMi2W/P1JbkGYCcWvFUmeXmqywTOJGhHfEWJ9ZAN7E+GBwcrwhModEIzgA0WctYmFG2b/fANjvCqoVO9AoPba/BQA3T98Fs28Ecr5++9iMtws2buZeQ6mHu8CumRWyw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SA0PR12MB4400.namprd12.prod.outlook.com (2603:10b6:806:95::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Wed, 2 Sep
+ 2026 12:03:12 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0360.008; Wed, 2 Sep 2026
+ 12:03:12 +0000
+Date: Wed, 2 Sep 2026 09:03:10 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: David Hu <dhu@x6u.co>, sumit.semwal@linaro.org, alex@shazbot.org,
+	ankita@nvidia.com, chriscli@google.com,
+	david.laight.linux@gmail.com, dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev, jmoroni@google.com, kevin.tian@intel.com,
+	kpberry@google.com, leon@kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+	nicolinc@nvidia.com, praan@google.com, sashiko-bot@kernel.org,
+	stable@vger.kernel.org, viursachi@google.com, xuehaohu@google.com
+Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
+Message-ID: <20260902120310.GA3370894@nvidia.com>
+References: <20260901170849.4052816-1-dhu@x6u.co>
+ <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
+X-ClientProxiedBy: YT4P288CA0082.CANP288.PROD.OUTLOOK.COM
+ (2603:10b6:b01:d0::12) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <861f488cbbfa84a4d222a22615adbe5d2617bc87.1788130528.git.nicolinc@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SA0PR12MB4400:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5016f1f7-4fcf-46f7-9270-08df08ea2929
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|23010399003|10067099003|11063799006|56012099006|4143699003|6133799003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	dkqWNi4Agh8Jj6YPuFzddLtZxUr+hDIkhrPUbWCV3TCC78Ck0vTGj2fTFeHmQYcoRYQNJG9PeCzlZ7QxgjfZikbERYaEWmPEzdDA8wkjhg66PHHCSzSRP0E1ZGjiPZDDUe2lQKpzT1g27NM7tTRY03Gg8VYx1LJGQg0FwHTzp6Otz01GUW2hzVkaHk1A6f1HSJgawqYeAWgiiyP+4OzK3ombp/Y4r/2R3b9gsjIvWbmnA6s1Rcrg0gBRUrAy9Xi6d/fOj3oe9Uiii71/W//6/yrb6/57RG2par3uYlyfZ5SKhunfifGqN8GktuR9Pz+ko7kkI/6N79Y7JeycCdpvfVO1zIA/Gc8UB49TqRM6AL5g80P+tBRse7PkAKpVwaaqofYVVbrfEqSl2fn2jRD7ZS17Qw99aAHUwMzlC6rqCXhPy1a/t+av1/HIhhg4TNqn0N4CbCUH8zeP/G1xbRFTqvjoZTQAhTMMLoQclmGgOt8cRxUQD6r44pofSoLGrzIADTsTLIMQC8NgBLuntz4agGT6Y6MCDwDpjhhZbkMnyfI4qQqLoXJOROtLIFvnnP1QQxZgAfzzVGretGmUPFJLGzDT5mTxlQVe9RgbLGrCuv0TU8xKC1lSvDCSdiL5fMnGcXtldS4WeXGhbA3yMhAeD3213h7wRF3PZpFvZuQM93o=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(23010399003)(10067099003)(11063799006)(56012099006)(4143699003)(6133799003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SFB3Y0pXbVd6OTlNMTFYekRxSDlQSjRPN0JKQ2huQmVId1VSTitLMUtBSEZW?=
+ =?utf-8?B?N04vY2hxcXBwaDBRaXNYRm51VzB0WEZLV3ZrVDBpdUF0S0IrWFdrVSt6SGJr?=
+ =?utf-8?B?Y1RMVmkzaXRPOHJ2ZisyR1hnelA1d3lTTlZjL3Z5ZTMvUU9GTmt5MGFzK0lJ?=
+ =?utf-8?B?MlRGblRERTVVTTEyUlFXYkJyLytyV2s4UUNLeVVjQ1BYc1d5VW8ydG5pTFZP?=
+ =?utf-8?B?SnZ1OFZES1ZhV0krNHh3TFQ2Mk81VmZ1bXM3Q0J3eXJpTVM0d1RQbmQra2ph?=
+ =?utf-8?B?MHhqY1pDYjVpWTF6WWNtUE9rZmY0MjJKdU9FblJCYmN1em42Y1pzcDl4Z2d0?=
+ =?utf-8?B?ZCtadCsxV0szU2NZN2NQQXErSmZKTUJ5WEc1UE4vaFd5R09xM1JWVDJVd202?=
+ =?utf-8?B?bFBVbWsrbUNFbWh0Umd3OEYxL2hEL0h5U1JqQnM5dnBkalc0cmJibHQ4cFZO?=
+ =?utf-8?B?TkRkMlh0cTNVOXhCdGJnWWhUdmFuTGJjWUdlQkFaMnVjN21KQjRwRG40NHYv?=
+ =?utf-8?B?ZEJRNUVzdEpSek1WdGRmdG5KY1BhZ0NPa1hST1N4UjdmeTFxeVR6djFMNHdn?=
+ =?utf-8?B?QjlDd05MN3pZVmVlcUlSYVpCRENpVlZKcU4zRmxnNzgwVG1Ea1FhZExnYVpn?=
+ =?utf-8?B?c2hlTFdNblVuT3FPLzlPeVNFaXorcGdjMnFJRitCWUJxMTBsSWE4RFFaTFB5?=
+ =?utf-8?B?ZytSQUpVMlcrOHl0QTJyakN6SHI1a3ZCRXZOUE9rK3BEbENMZjlLZjN5R0hL?=
+ =?utf-8?B?K1VBSmVGOXR5S2hwUEtDNGtnTlgxYWhPMHZxaFJ4emhIaldVVWhRSmNPeGVq?=
+ =?utf-8?B?U3B1QU5pYlprc1VWc0xxSFhGcEdYRERPMWNpNDhVS1hJMjM5WkJVY1hJenUz?=
+ =?utf-8?B?U2M2dlFxUHBYZ0VKOStFUHNBbE56ZHpNRzBCRW1RNy9nQnd6YnhDSWxWdXVl?=
+ =?utf-8?B?eGh3NCsvYktNYzFBZWY2dnlNMHBUbFVDdzJWUXBWME94UlFya01pL25rNTdH?=
+ =?utf-8?B?MHFwa1B6YThQcEZmbGFPMG9YeDdrc1Nweit5dE4yU2czL1dxUHlXeXlXSi9Y?=
+ =?utf-8?B?NVN5VWJtbGh5QjNSQzdzLzgxc21RbzVTODUxREVqVU8rd3lnaU80RFdIZDVY?=
+ =?utf-8?B?bU9yRlhzNnJseVBKNC9Vc1dnY0lON3VrMFpLOCtadEdCQXk1WEFxRDJMQngr?=
+ =?utf-8?B?aE41b0ZuWDVvRUg5RWtKZ3lpazRMRmtBQ3NSM0k2ZlZVdXNZNjBRTkxOeFJO?=
+ =?utf-8?B?c3BOZU83S0svMEl1M0NLNnYrdStkdFpraGFaWHNHRmExd2RIVGo2VTI5alZI?=
+ =?utf-8?B?anRhU0s0RGpRYlRrQVhuS3dqRHpRSFVYWmdJaWdoUVU3cXN0YzZWZ0hjVWNz?=
+ =?utf-8?B?dG0zV0FiamY5cS83M3lJWWpzblFoM0hKaVBBWGF2L1hueUFhMFMyNjJiT3Zy?=
+ =?utf-8?B?WXpaSjQxckZSTnFPSEtGaHZBdHFiTE5EZWMzR3BQWGVvZFF4TFdENHpwQkdW?=
+ =?utf-8?B?dTlvNVF0RkpoMjZtSUJBcWIza3MrblJvU2FXaHRwQXNlaXpTcDVac2YyV2ZB?=
+ =?utf-8?B?QytDT253V2VjcE1GWmZsa29GOUdEWm83YktnMTBISFBjaEFDbEgra1B1Q2Zq?=
+ =?utf-8?B?WDBhbC9BMTQ4MUhaWXp4TEtEallQTkR4SmVsTGRzNmVwUUZJL0N3dVo4Z1lC?=
+ =?utf-8?B?NkROQXJ2UVVpTUI5eE9OZU02bXhpREY0MU1xdmsrL09mMHdXTk5haFN4K3Jk?=
+ =?utf-8?B?dTY0TEdlM3k2NWh5OERWcDdDUFVzbzRVMUNMSFhKRE1XWE1lcnRCZkpnS0Zt?=
+ =?utf-8?B?TGlNN1hCNEwvODJFd2IwejJJVmRmSnM0TlJMM00xK2kwUUMzdnFUdHJ3aERl?=
+ =?utf-8?B?dTI3TXFTKytpUFdIWWdpSXVZbC95eXA3TXVDM1k1K2l6SENGdk94R2hHd3hs?=
+ =?utf-8?B?d0dIZDFrRUdjeEVCdEQxYkJBUVdVaFF2ZVM5UnRFeUlEelFuN21UWFY5WU1h?=
+ =?utf-8?B?bmNQaElxVThvV1pWZjlnMldwTnI4L1BzSUs4ZHRPZDQ1Yldwc2I3NmxCeTR4?=
+ =?utf-8?B?ODViREFsL2Y5VW5OSVpmR000Nk9PRjBsL1FHL0lUNkJSbE03RWpXT2VURHk3?=
+ =?utf-8?B?N2d3VTczVW1kLzJKYXk5Yy9JN0EwMnN2RlZWeXNZZXR2T3VuYWpKTTJHa1pw?=
+ =?utf-8?B?b0pBUjBDMlpiN3p6MlJTYllUTm40OE0vWitsVmVjLzNhRFVPUU1mYUFIWnZ1?=
+ =?utf-8?B?YkUwU1JYSW1YM1NvbUZuSC9HeVhnUllYTDRZNzZmMUdpUytxeWJEbDNHMlM2?=
+ =?utf-8?Q?enpq/MjdENtVZ7G393?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5016f1f7-4fcf-46f7-9270-08df08ea2929
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2026 12:03:12.0000
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 30lwjZNiTFNLuyPF2pb5tQKWP5E8Dkc3NnD6oWaqgClRECIx9BUy+DTrvAqP8fZV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4400
 
-On Sun, Aug 30, 2026 at 04:18:05PM -0700, Nicolin Chen wrote:
-> A kdump kernel cannot use either queue. The crashed kernel's CDs and page
-> tables might be corrupted, so events would spam the EVTQ, and there is no
-> way to serve the page requests that would arrive at the PRIQ.
+On Wed, Sep 02, 2026 at 09:00:46AM +0200, Christian König wrote:
+> On 9/1/26 19:08, David Hu wrote:
+> > From: David Hu <xuehaohu@google.com>
+> > 
+> > This series address two related issues in scatter-gather mapping,
+> > specifically for the MMIO based dma-buf mapping. The fixes ensure
+> > sgt mapping is correct, and proper for large MMIO regions.
+> > 
+> > Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
+> > (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
+> > phys vec to sgt)
+> > https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
+> > 
+> > Patch 2 Splits sgl by largest page aligned chunk
+> > (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
+> > https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
 > 
-> The reset routine still enables both of the queues and then masks the two
-> enable bits back out, having already programmed the queue bases and taken
-> the interrupts of both.
-> 
-> Clear ARM_SMMU_FEAT_EVTQ and ARM_SMMU_FEAT_PRI in the probe instead, so all
-> of the queue handling, i.e. the interrupts, the IRQ_CTRL bits and the CR0
-> enables, keeps away from a kdump kernel via the feature tests.
-> 
-> Both queues also go unallocated now, as the two allocations test the same
-> features. Each of them is sized from the maxima that IDR1 advertises, so up
-> to 4MB apiece on a 4K-page kernel, which a kdump kernel would otherwise pay
-> for every SMMU instance out of a small crashkernel reservation.
-> 
-> The IOPF workqueue of the event queue stays allocated here, as untangling
-> it from the SVA and the stall features takes a pair of changes carried by
-> the PRI series. It costs a struct and a workqueue rather than the megabytes
-> that the two queues take, so leave it to that series.
-> 
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Suggested-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
-> Suggested-by: Will Deacon <will@kernel.org>
-> Link: https://lore.kernel.org/all/amiBagGKn-Aym1DK@willie-the-truck/
-> Assisted-by: Claude:claude-opus-5
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> *sigh* such issues are exactly the reason why I didn't wanted the
+> *dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
 
-Acked-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
+So you'd rather have these tricky bugs in every driver using dmabuf?
 
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+The scatterlist construction in most of the DRM drivers is not in good
+shape. They should be converting to call these APIs so they can do it
+properly.
+
+> I'm going to push those fixes to drm-misc-next now, but when there
+> are more issues like that will mark the code as abandoned and not
+> maintained.
+
+Code that is getting bugs fix is not abandoned, please be reasonable.
+
+Jason
