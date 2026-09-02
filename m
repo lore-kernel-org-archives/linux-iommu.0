@@ -1,173 +1,104 @@
-Received: from mail-pj2-f12.google.com (mail-pj2-f12.google.com [74.125.227.140])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90DB747DF80
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 13:42:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.140
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788356566; cv=none; b=SBWZ/vRVEaUgxyQapXmDdv7RnKodL1D3bR8MIuz9r0DoqtR0998Jhnbbj2QQnSxR+scYKKGxZ/aO0WJO3V1i9MDDPASgj55agzb7xerEBMGhsr2cHKaYNWxDYNf1KLa9wWfYJOBDMO5t1bDGyeL97QdIN0d/wUzSeJcuI3s+dd0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788356566; c=relaxed/simple;
-	bh=UnVBDT2yMgSQ4ZRWdKz2B29xT09qz00hTJhXeeB15OA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JEMqbKn1g3rdoPvQbrQrG4kJKTDwfOEFh1DEUktNrlAnk3Pifu8Ork10gqNXrauSPr8WWC/di/2Oldaj0uVvo4wxupfBFcjJ6kZVdTjy+dIFbbcJms3vlvkQJiyxfvPfDX0VGLrvfvmkr//XXUjCK1bybwst1C3ft6XixNgpzZY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Gp9mhH4P; arc=none smtp.client-ip=74.125.227.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34DD64A0914
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 13:48:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.181
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788356904; cv=pass; b=jIfEdks4kuLWQ/oxPGN8PWWMlWoEbpIo0JxYxenbKgQhPit4eyyVg/YbnVPmW5Bq5uo1sfRCUDorB0K3tfzDqycLVtO4q6ysuTpgfnddBJu6w6PsmAcTzRtFRjNWtnWtYs/SVDsvWFcl+u9xkER++fSoBIhUNRwf/N9rw+tp1fc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788356904; c=relaxed/simple;
+	bh=+42ZwAZfWz6EQJuENr4K5+WECumrM9FQdFwIi3wiFxg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kwiYWWJyiP8YHku4Q5xxSV/ixwe2qJR8ru4kEjyZIV9xsxqr6psr0dFnRV7d+cNWFqHG2gw8hLZ9pQMa/rz0BOqyUb2PQSrR6FySQ6efGPPAxG06ESW8m8g8pnneDpq1iLZ0YzXhAt3+00i9f3gtDvSJaYZyqJV/kIlDQvGFSxQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L+HSOjH9; arc=pass smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Gp9mhH4P"
-Received: by mail-pj2-f12.google.com with SMTP id d9443c01a7336-2d6ff3aca07so27295ad.1
-        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 06:42:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L+HSOjH9"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2d942c7cc2fso8741905ad.3
+        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 06:48:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788356902; cv=none;
+        d=google.com; s=arc-20260327;
+        b=leM7/72pEztczOXmfNeyisTbsU+KulQ5eqrxs732hXGtmhP//nUiS9uNmw0unLNE9C
+         9BKXRX3QsCNYD0Hm+pq+bEIQjdRF3Ica0PFUXSZjcSRjPEuj9qgiF/2chw7wA4Zm4UdO
+         p9BmxsE8jNX3yrra83CtEDKgL0Bt3yrTR5BH0dKU2HBAxUDDxsppa8je1l+mH3na12Ml
+         EwuCFoRnSs+EJ74z7NM3j4xSgU5W5vb9+aZGR+cpR4u5jw3K6XoIUo5Trku/2UmDJFqR
+         jt1Frayk+QthzoNzNXrBFOHpQcQZ8F2uLW9QbaVbPN9d6pEEbEPI2+7BxdNoEjvX7CmA
+         G/Pw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=QypsYKIskc6MAKJkcpIiHDdNJyIbCg7f80xVvnLCTGA=;
+        fh=dT37VVfygpyHHEF5lzg946gSvBePcBYb6/k4r10Nh1I=;
+        b=ZMS4UaS60zSrVdQHV6Vru2xKywqqfz8EOiJ/gSZXyKz2O/YlyXcxA5FKusm/bd6vbz
+         j7gPlIoA/M54L1yAvxm9GreIV8Yf1GVvnXRxKbMIuMyYKWPekpW7N2DjW3+h98lCGvgp
+         My9ThdSbnxMiaLAUCbL4+DD9y3nTNIpFRCgidV/fgFnwCuGxa8FuZY7l7uXQhKVbJHtj
+         00aXzCNljInjOaOOCqn52rgubIjc5UH1NIpOiellwvWVB6jvwke+j5LaxrDAmPAwPTNG
+         yncfoHaeoDDtb8539LsRapUjcYDrCx8xtydQngdf44kh4NCYSPreM6vYUD4cthZipDw/
+         N5KQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788356561; x=1788961361; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ZSTpKHWOHnBacMTdwSxpJ9Et4v7FJnMFRqiSvtmfiLI=;
-        b=Gp9mhH4PSO4J9kGXlKvuCveAKp+uh/s5GFWC33EXsUtwAtr65NYOnTyxACwrjtK6yf
-         rQYP7TZMoGhZdxZecd2Je17Iv1cNGVksiqgEd23/Bgg5O2Ne3mwgjbNU0SqYmp3dLAtS
-         sC/+SL8hns+qXzy7hTI/nSh3RYZJmEWusQAN6iYw2NZ8gY8xj0HqT1QtO8+wyGDLM8GV
-         51moe+MKLSrl5mYs6UienDTA9l9/XP+584UHJaiMc+00AVPa9k5opvstdp9SyPnGyEwO
-         y4QkJve4XHVv1DoGRBrgFHQ/oYtcBNR9SSW2JyclLDTM2pqWd/dyF4ff3FeHBlMDvTA5
-         2AQg==
+        d=gmail.com; s=20251104; t=1788356902; x=1788961702; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QypsYKIskc6MAKJkcpIiHDdNJyIbCg7f80xVvnLCTGA=;
+        b=L+HSOjH90V/4rAt3MA+WMh6s7BZuttY9rqpB0IOUB6Q9hzUHxHXM+uNh7doXLkz+ax
+         lBf+6pRbhxQ/iP7hHufPazN7w7jYC4QuV9Z6TBkiAYM3fT9JEQVPMwRpiav1gVjtIzZV
+         1rWVipewwSv30L9n5AKsgpAPEarP7hsCtWHaZc9fiRkmaIjgffuJxAYOl1KOB8E6a8ea
+         ob5UFQ3jZHtYYWTV49OjhD8nyS2m2LoYCnSjUfk5nyOEO/Ejtqa/kNg5DQHNjMiRdDfb
+         UeyqKDhol5UjuvhP1jpbTLWBUe0qsAzqwp3SwVNcXr9XaSj1HykKKbDBnCgmn7thVFTH
+         McbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788356561; x=1788961361;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=ZSTpKHWOHnBacMTdwSxpJ9Et4v7FJnMFRqiSvtmfiLI=;
-        b=rcmFu/WtqIjjPPfkD4VZ06CKfc4dn0iPFJD4fOKhANMRWwY6KmeQqREPbDAPU3uIc5
-         Se3xWDhWym+raijuqIokW9chvR5PFMLT08eR1AvqYUdxURWHPB2NHgfltrNCcE+IHOKA
-         tjLuDd1GP4j/MXcgK48j8SfCfgkIn18IBLDHTGtevdAdxE7CeySCjxNIeKdqpX+RlJ6m
-         TxfjrrDHnyLRq7NoqfR352uMnnf5veuNDwClaJG4sh4ZyreaQ0jMLqkZngcM4A3+piV4
-         /eYArOopPBaQ5L0aZdLfo+sQgk52FIscY+9M4NMlx896qjxN4VKpJOeys/sjtAnz/all
-         vj6g==
-X-Forwarded-Encrypted: i=1; AKwUvBwCjP3/GH+gfU8e7IXIBTnG4TaUQX9BMiz03mgMZKB4D9azKiktY2K3UUKEWmgu1slDehhwwg==@lists.linux.dev
-X-Gm-Message-State: AFuF++maOaqC01EqvxHbGq2NArDz4vYHCdaZ+sBbreOGK6qoei0ey2VY
-	ccND5g1nPG4Vzr+qFpEKC/zP2EskpiPQg+qk2hX0NIphkhMNO4ZVzVGW7twIwCxZeQ==
-X-Gm-Gg: AYBFou2PCr+FbvU11Yg2DrmZazRdAvocHd7dNS7mraI01OKW+XwuE336vfhgo1gMPX9
-	sYnlPtUyC41tI7FzCWND39BgLZRCHgkVyhE4dIjm3I096cc66Dm0HhYxrzM9WzFwpdlrLUf59l0
-	Z5+gfEHTYGrc/ZNvdZvV+fA412ax0Zs/ZTYN/06xRwZXk0xkuwrk/dHpUaKuQufeLr+tVgC+QrK
-	Ar3O2I71AFSH6KiVeazs8Obf3LkGPyz7OZufQwXnPy1cRRNRCThHb2TOc+Q4148bRc5mQZN9+yF
-	cxwzyubJzzv+DCS+xt0g7T2vFQvX7B2WyZ4/rrkSCmPRAHv2XW4s/CMdQxmVFLM7torh1ZqtXSG
-	uTdCoRyKGi0XU3LU5YTSCg3J1EK0tQfaFTztry1JniQaSO2FSan3K5HJsvxN+hDaEDr2P8yT7xX
-	lBVYP8NouHBha8sVvQc9Oao7EgXStbReadjWiqCASrnn68pnsDCJr28pjhKxEt4B5t/MW1CN6PW
-	5eLvAY9aXiS5Z6zlNQENTkJPVg=
-X-Received: by 2002:a17:903:19e3:b0:2ca:4bb4:4bd with SMTP id d9443c01a7336-2daf66043c8mr1378505ad.5.1788356560192;
-        Wed, 02 Sep 2026 06:42:40 -0700 (PDT)
-Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-85dc003aee2sm1404704b3a.30.2026.09.02.06.42.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2026 06:42:39 -0700 (PDT)
-Date: Wed, 2 Sep 2026 13:42:31 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: Leon Romanovsky <leon@kernel.org>, David Hu <dhu@x6u.co>,
-	sumit.semwal@linaro.org, alex@shazbot.org, ankita@nvidia.com,
-	chriscli@google.com, david.laight.linux@gmail.com,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	jgg@ziepe.ca, jmoroni@google.com, kevin.tian@intel.com,
-	kpberry@google.com, linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	nicolinc@nvidia.com, sashiko-bot@kernel.org, stable@vger.kernel.org,
-	viursachi@google.com, xuehaohu@google.com
-Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
-Message-ID: <apgnx0pirQ2SUcmY@google.com>
-References: <20260901170849.4052816-1-dhu@x6u.co>
- <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
- <20260902073936.GR24140@unreal>
- <aed39f83-6340-4fe9-890c-6d5f340c97d6@amd.com>
- <20260902083232.GT24140@unreal>
- <aae19599-2ba8-41fd-b3a9-b1f80107f563@amd.com>
- <20260902095338.GU24140@unreal>
- <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
+        d=1e100.net; s=20251104; t=1788356902; x=1788961702;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=QypsYKIskc6MAKJkcpIiHDdNJyIbCg7f80xVvnLCTGA=;
+        b=RJd4FPC8LUO0SRbgJO/uTqh4O8lZS04bqbwpJeZZaFpaUZhVtAJdssauE12XiAXXOR
+         sojedSHLNuREFt3X05PnS8jCnK9wGdhWRpRs0S/w4TIAscm1EvOuOgDNZwonSIXyYPmP
+         gKt5AdfgkeyL950l+ewXvjK1JSsioR4smuKXYoUcCjuJheRrroHZqWuEo+yiTiaw10F4
+         ggsmE/ARCgebHQl6v9q0gCEOJBQ3brc5niuzRhW20hpYe2aE3oyCRyRmMNC6bNcGBG71
+         m7sY+Y97372aIPt+vZ/2nc/TsIGdzdcBHenCXvVSQoxlvYc9Hqe770zf9ug8ypYluBp7
+         qQLg==
+X-Forwarded-Encrypted: i=1; AKwUvBxbSNo0zX0GuK3jnDKaN1XXmxCyrwxotFuOVDF5jw2zKfR8ImYF7y0sUDa+cqrlJ59NLbnlsg==@lists.linux.dev
+X-Gm-Message-State: AFuF++ng2PovzxPUbkCr/hlhjjJ23nM16EuobTIWVF2lWzVYDWUUZQmt
+	OXfLZOGLNlzkUFi1jPZvp/jevFvH/pTJ2WrTLxLKnm0C/CLZKu/SoeFCMvcoqKwYSAS4D3coJBO
+	rNafnDehh4+9+kdfGsR5GmqHk/v4rGRQ=
+X-Gm-Gg: AYBFou0FVFU/Fhyx63wdOV+E0UEs7cARnF15o1up0dDDjsmh3KBSQQmMInxJWXrUqAT
+	wtrAPICMlfDg9QwzL5EDhXoi9u5QezzOl3lb0TQ4n0meZ4ZhTHQjy5xMAGl2DJI9vn95Tgi0XKa
+	iNV5+S3hx15X1sllwMrfwSte1VNsRlzTc1XfMcXoGXtLkFty2EurAG4m0Mxb06K/gyJDhJ4wsbo
+	5gMOavyOClooXzP+eUl56Tker1fpiNeYyPV4Jdb4CposVcMI/ZfJkPpwpAU+UBBxaI2YVGiV1dS
+	DnNRJ6DcRPjC3OMDadcaGTRhtuPI4vYTKuFPdfT/XzzJTHKneMpHY1tbWT1r
+X-Received: by 2002:a17:903:19ec:b0:2d6:e4ff:9cad with SMTP id
+ d9443c01a7336-2daec5ab9c5mr78487095ad.3.1788356902265; Wed, 02 Sep 2026
+ 06:48:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
+References: <20260902085414.549830-1-qinyuntan@linux.alibaba.com>
+In-Reply-To: <20260902085414.549830-1-qinyuntan@linux.alibaba.com>
+From: Yee Li <seven.yi.lee@gmail.com>
+Date: Wed, 2 Sep 2026 21:47:44 +0800
+X-Gm-Features: AcwNN1UhpA6oUFXyIwwyE7i3ckphOc8Hf2zTXfKohJhd0MCGqD6y-NygI40bV2I
+Message-ID: <CALX8JfSMTECqP4FY5T3WPBwF-+RPfdAnN9pZWO0s2E8OVOQMGw@mail.gmail.com>
+Subject: Re: [PATCH] iommufd/selftest: Return dmabuf fd from
+ IOMMU_TEST_OP_DMABUF_GET again
+To: Qinyun Tan <qinyuntan@linux.alibaba.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Xunlei Pang <xlpang@linux.alibaba.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Sep 02, 2026 at 12:00:25PM +0200, Christian König wrote:
-> On 9/2/26 11:53, Leon Romanovsky wrote:
-> > On Wed, Sep 02, 2026 at 10:44:59AM +0200, Christian König wrote:
-> >> On 9/2/26 10:32, Leon Romanovsky wrote:
-> >>> On Wed, Sep 02, 2026 at 09:56:06AM +0200, Christian König wrote:
-> >>>> On 9/2/26 09:39, Leon Romanovsky wrote:
-> >>>>> On Wed, Sep 02, 2026 at 09:00:46AM +0200, Christian König wrote:
-> >>>>>> On 9/1/26 19:08, David Hu wrote:
-> >>>>>>> From: David Hu <xuehaohu@google.com>
-> >>>>>>>
-> >>>>>>> This series address two related issues in scatter-gather mapping,
-> >>>>>>> specifically for the MMIO based dma-buf mapping. The fixes ensure
-> >>>>>>> sgt mapping is correct, and proper for large MMIO regions.
-> >>>>>>>
-> >>>>>>> Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
-> >>>>>>> (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
-> >>>>>>> phys vec to sgt)
-> >>>>>>> https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
-> >>>>>>>
-> >>>>>>> Patch 2 Splits sgl by largest page aligned chunk
-> >>>>>>> (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
-> >>>>>>> https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
-> >>>>>>
-> >>>>>> *sigh* such issues are exactly the reason why I didn't wanted the dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
-> >>>>>
-> >>>>> And this is why so many in the kernel community want to get rid of SG
-> >>>>> lists. It would be great if DMA-BUF could also eliminate the need to
-> >>>>> convert to an SGL, like Jason proposed.
-> >>>>>
-> >>>>> The DMA layer no longer needs SGL. These bugs belong to the DMA-BUF layer,
-> >>>>> which is the one that depends on it.
-> >>>>
-> >>>> I'm all fine using an array/xarray of dma_addr_t in DMA-buf, just phys_vec is a clear no-go.
-> >>>
-> >>> You are proposing the same thing as an SGL, just in a different format.
-> >>
-> >> Yes, because that is the right thing todo as far as I can see.
-> >>
-> >>> It does not address the issue that dma_addr_t is expected to hold a DMA
-> >>> address, while that is not always the case. For example, in the P2P case,
-> >>> the addresses are not DMA addresses.
-> >>
-> >> Yes they are. They must be DMA addresses because that is the only thing the importer needs to do it's DMA.
-> > 
-> > They can perform DMA, but that still does not make them suitable for the
-> > dma_addr_t type. For the PCI_P2PDMA_MAP_BUS_ADDR flow, these addresses
-> > follow completely different rules: they are not unmapped, require no cache
-> > synchronization, are valid only for peer access, and require separate error
-> > handling.
-> 
-> The PCI_P2PDMA_MAP_BUS_ADDR is not supported by DMA-buf and as far as I can see is a complete dead end.
-> 
-> > All of this information is lost if only the dma_addr_t is stored.
-> 
-> Yes and that is fully intentional.
-> 
-> DMA-buf handles that cleanly on the buffer object level and not like PCI_P2PDMA_MAP_BUS_ADDR as a completely broken design on a per address/page basis.
-> 
-> Technical background is that the PCI_P2PDMA_MAP_BUS_ADDR approach can only be handled by a very very small subset of HW.
-> 
+> failure, but the applied version also changed the success path to
+> return 0, so userspace no longer receives the fd.  Note the patch as
+> posted on the list returned rc here; the change to return 0 appeared
+> when it was applied:
 
-With the rise of accelerators, the P2PDMA_MAP_BUS_ADDR is going to be 
-increasingly more common where accelerators directly transfer data to
-NICs, storage devices, other accelerators etc. 
-
-With VFIO gaining a DMABUF exporter the use has already spread to RDMA &
-NVMe devices (w/ SPDK). In fact, we found these bugs while trying to map
-large BAR regions for RDMA.
-
-Thus, it would be great if we could find alignment here. 
-AFAICT, I foresee the use of dmabufs to only increase for
-PCI_P2PDMA_MAP_BUS_ADDR. IIRC when the network stack moved to net_iovs
-to support dmabufs, the SGL became a primary concern and partly the 
-reason why we have "unreadable" skbs for memory we can indeed access
-if mapped correctly.
-
-Thanks,
-Praan
+Thanks for catching it.
