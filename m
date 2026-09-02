@@ -1,172 +1,270 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012020.outbound.protection.outlook.com [52.101.48.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-3-27.ptr.tlmpb.com (sg-3-27.ptr.tlmpb.com [101.45.255.27])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1313E2754
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 07:56:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.20
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788335778; cv=fail; b=Bk8P9mpz7f/DYHAe4xUBuQ2xoqWhBycVyMZdpZCODr3FXSXoscA8bR4l6FFBZLA+mHKSAbs1+B1MwkacDY6QmkKJaOXCy/qZxOYUbvhQVqXaP8+Grbd3FBNVlbyFpPjifzc7so9MrYH1zLvoTSVqayOp7yQy0+r7bXZZ338NRyc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788335778; c=relaxed/simple;
-	bh=a+DIFGInLS/T650rp6Lmdwqfb2HML4m4uWnfDderQSs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=I9ISknh/T5L3JFUqz2+2ZtQjyqcMmozKMHR8sjXP86IOIhnM9O4ZPWmCyCPXS98Ebj7qlftQvBH+S1A94jwc9UiBvukzT9m1/ItRcA3Z12bgrGrgAqI5b4MnGqmuf37DXVJhwtn02IIN3Ag6ZVRFoo7JP6GJRWaTC+aF1ZAwyno=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ex3eeh4I; arc=fail smtp.client-ip=52.101.48.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F29274CCDF0
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 08:08:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.45.255.27
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788336492; cv=none; b=l2MvwXeTOv0/2G8YMHTmzgdL1hkp6MeQ/FWD8BrwXSN21v21TTSYPZDL3ehYSTVRjt5UQV1Xgyp1sJwpGWJuJ63YFkb/CnFn3+osf04fh13ZiJzFfVXa9oWkAdpuR2WGmE0/4uSIstAo7ivkiWfGHQwo5JVshV8IXGPSigIcqZ4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788336492; c=relaxed/simple;
+	bh=Q83DtHeGnaSXKynOURw9BcEve26kEwOps/1w432YEXc=;
+	h=Subject:Date:Message-Id:Content-Type:In-Reply-To:Cc:From:
+	 Mime-Version:References:To; b=gFVKeFrvZBsyJqBKlscGInwPs6w8GFZ6O6XyLi8Sbe6g9sK2LKhwz9sFWFaWXDKV0VEPWPC/Zv2z5iRoDHXFaPa2PSpMe80Xn0ikUjRJ/LdACd7kSadqdonouSWdSWniBMJFUIbrLYLnAYAuLBiK5Pph8rTJ4QlKNx94lxB0pDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=PZCbv27G; arc=none smtp.client-ip=101.45.255.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ex3eeh4I"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=F7WjG/a0IeaH8/NqrLxdlTrutXIkHQ27iCXyNAJP+ymP1tSuunMYdBIsd1ue+Oe2yk+4kjt/+vp7UVTgJjXhXoj9HC44gJ3wNXwPl8o+drMs+1Wzeprum8euWCCoEhvTDknOmWHTIRV011Z1Qq1VfzAOnnYNJDPETKtT6W7CDLAeGPMfeXp+TTVN+2OCVA6mR00TTNtHUXwGe2D/qHhQYSKztDjiMbAymFeDwgheSoRA7tkghNwX9ODqqYDOgaB648MPZ5txuuK25AtGlKB5nZQqr9FyvvOYyNca+HNPvOPLvAdWeqhofY7h0piZLCrQKwotScTOUvWeuDSBO3Nxjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=psCUADqtW9u7HV0GyI6Kb3uS5JpkFGgefbruKrwnB58=;
- b=slDBIk5SJR9CZTaAr0ROTHB3ub/dqFiGaZDxn86UJnP6YST0wkY/E/Ykmvvb9k/cbmlkRhoqaIm7zeyax2cZ0l3Zxf7OOXIuJ0VD/c+lrcUNZbDOO/Lm+QWpVQtx/KLHx54DguiL2FHdZ98R6jPF+nnjDaw+rpeu4L1GiSCZWvUZ/ZpXjdwtppSuD+bBwAi9tw/wb6UXjMkTWu3a3mrx7ycyMLkYl43NqHi664RMDMuVQXW3oplnmx5NFzdG6Kmg9ohY1wj/eY/LW9AQrGK/gndS2Va0zYQASMJhD2YuNYSEwRONtl4U+pLLFOnk5MLQ6duVCntExSIkgrOrinYbdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=psCUADqtW9u7HV0GyI6Kb3uS5JpkFGgefbruKrwnB58=;
- b=ex3eeh4IMBkRqUx6HWlBExyQ8d2gpHBGEq9dxQHTx16/pZsmXxK4rUT7qt4VCidjqVLTfzp1VqWGizPOU7lU3ZI033VHQ251iDDOBHeGjSJv6l5KvqQbUu75AD8LiaorbKavWhQccB0Wnl9LNaC3C5taI4DkqOw/9XbAelxAuGE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by CY3PR12MB9704.namprd12.prod.outlook.com (2603:10b6:930:102::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Wed, 2 Sep
- 2026 07:56:13 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0339.007; Wed, 2 Sep 2026
- 07:56:13 +0000
-Message-ID: <aed39f83-6340-4fe9-890c-6d5f340c97d6@amd.com>
-Date: Wed, 2 Sep 2026 09:56:06 +0200
+	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="PZCbv27G"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604151535; d=picoheart.com; t=1788336442; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=JtUcpfCIQENx/RAqzn2XCRp4WPXE5eT3JQCOCuuv+HE=;
+ b=PZCbv27GGJClC4UJJrXdSQdMd3+b6n9EO7mhXltb2MM9F2JtM3mmS+kRbELDodn1uI6dgW
+ DfPj/ws1x23RssEXBcC+JEEx9a73vudtkkHQLXnXzsHGlSGaF9S5bn2oRPa2tpBUtHMXxo
+ 3NmVYQX+/ns8ZrKOKurlW/jvmW5p5a352eHacJOMGkjDapBUaoVrXySY7VV5Ret4rafa3N
+ GMktlVKpoZELn4SBuae84/o3rmAWBNBBRBNHQuS6Yz9DJ5NJ9EeJQGHwIzBEbNgXcRqaDw
+ GXDM9xiVB3d3+DXd8xRjFdTdSUQMC+tMlN6z1OYoW1WV/1jKFey1nU/NS7D9mA==
+X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
+Subject: Re: [PATCH RESEND v7 3/3] drivers/perf: riscv-iommu: protect shared state with a raw spinlock
+Date: Wed, 2 Sep 2026 16:07:16 +0800
+Message-Id: <8267ee7a-98b7-42a5-b479-648d2bec8ade@picoheart.com>
+X-Lms-Return-Path: <lba+26a97d938+2019d2+lists.linux.dev+yang.yicong@picoheart.com>
+Content-Transfer-Encoding: 7bit
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
-To: Leon Romanovsky <leon@kernel.org>
-Cc: David Hu <dhu@x6u.co>, sumit.semwal@linaro.org, alex@shazbot.org,
- ankita@nvidia.com, chriscli@google.com, david.laight.linux@gmail.com,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, jgg@ziepe.ca,
- jmoroni@google.com, kevin.tian@intel.com, kpberry@google.com,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
- sashiko-bot@kernel.org, stable@vger.kernel.org, viursachi@google.com,
- xuehaohu@google.com
-References: <20260901170849.4052816-1-dhu@x6u.co>
- <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
- <20260902073936.GR24140@unreal>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260902073936.GR24140@unreal>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BL1PR13CA0022.namprd13.prod.outlook.com
- (2603:10b6:208:256::27) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+In-Reply-To: <20260828085819.4076449-4-zong.li@sifive.com>
+Cc: <tomasz.jeznach@linux.dev>, <joro@8bytes.org>, <will@kernel.org>, 
+	<robin.murphy@arm.com>, <pjw@kernel.org>, <palmer@dabbelt.com>, 
+	<aou@eecs.berkeley.edu>, <alex@ghiti.fr>, <mark.rutland@arm.com>, 
+	<andrew.jones@oss.qualcomm.com>, <guoren@kernel.org>, 
+	<david.laight.linux@gmail.com>, <zhangzhanpeng.jasper@bytedance.com>, 
+	<iommu@lists.linux.dev>, <linux-riscv@lists.infradead.org>, 
+	<linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>, 
+	<yang.yicong@picoheart.com>
+From: "Yicong Yang" <yang.yicong@picoheart.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CY3PR12MB9704:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0eda70d5-f63d-4031-9896-08df08c7a8ac
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|23010399003|7416014|376014|10067099003|11063799006|22082099003|56012099006|4143699003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	YRZoxo0wJudvHPqleQhpqNRShAWIUJIiEoFnIJQXWg7VH9+FkbLgXK9PTcFpJtsWZZWeUlURWvfFAUTPMX8ayCoujypwLJTi+p8dSHFfbzwYInFIHd1axICi/CeIx4dZGF9KIUjNvmSOlRqxh62ui1eDkymKQEE4o/x5ZNGDWdK/7sIv4XPG7qdH0syCElmCkvEw/Lhw0I/3mDW6WyggTYtJsBdI9uPawKHOd1nmwFNS7HFQSt3KeZ75y+PL6BYZANlVeXh2G9L8sJrYF8h98zr6BNHOb+lndqu9fD8kke8R00rrhLunGU+PXsPoLLRS5n4hIUc7tn+vQBXHqivzmOEMjQQhDU7f6Qg+hk+GxDxp7nwApLc8Oe+Yr/ysIn6yPc92EZrfu3FjJTix++jpQHxj20pwHRY+S35VN5Qc4qinrUs+4zs3As2Afnr5/HWd/7CqOwvP8GLgVLopRdC+aCpTTgRhyRbBm4NtTeOXZeSktNn3pEjlcad0oBrW3Z9GwmFopt2dglsooZtmWMY2zCxelvgLPgV6Zs1KYRn3rozaS/2TsluSfJjZT33Gn2WQ21jXp1wKAWLKJGAEH6bHYmkRARxhwNhd1TID//IDBJQK68HVHyYY8fPbV5nHH3H8VClhUAIcnFdD8ADzxjdNv/mfR8wI6zdHDN1b1YmFQCY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(7416014)(376014)(10067099003)(11063799006)(22082099003)(56012099006)(4143699003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?OCtyWDlnUWcvQ3lOWTNJNzFrU2hqRGw0OXZHcS9KYWF5bE9Ya2FDeDY5STF1?=
- =?utf-8?B?VVVPWStxNTcwR0Q1WlZJWmh1Y1IwUmEzR0loWFNpeXkxQTNWNGtZaVdhemdK?=
- =?utf-8?B?MkVESmRDaCt6R3NZaVFZY0FmcEk1KzBXeXZRSERwOE1vd2YyakpuZ3NJZklN?=
- =?utf-8?B?U0dlckw1M2ZnYnpON2FEYTNZbmFncm4zS1NFSHFuaXNPVnZYTnFrYlV2L0FY?=
- =?utf-8?B?T1Y5dlNYbUFQOWhBcHE0b2xqdENGR3V5dE8vTDVGaGVwTFpqSUlFT1U5Vk5z?=
- =?utf-8?B?ai9VdXZueUhJSUYrT241UWhEZnRWOTFyK1VSUWhnM3JLZDZLRjhhK3Y2eUh0?=
- =?utf-8?B?d3lqamd4Mk9mRVpCZUxkRjFrNUNMaCtvWU9ZMWRGVDNBVW1rQndTRHN6NTRm?=
- =?utf-8?B?NkphNGxscFBoem9iR0dESVhpbk93WGY4aXJGOXM5SGN6V3RmNUlyNFNCK1JG?=
- =?utf-8?B?QjRhWXFZSXpIQWVmc0NaNTJjWWFxTzZuM3pxS1RTNFBqc3lBakRVUzNYSFYr?=
- =?utf-8?B?QnNDZnZJYkxHWmFlSG8zdFJrUHgyeTB1TU1pM1FnekpyWjF3REpFeCsydkNZ?=
- =?utf-8?B?QkY1OERpQWdyaUxxMlVzU3hGdUxtcHdqQlh3RUE0Sm5rUUxIN0dEbzJrbkJM?=
- =?utf-8?B?TWxva05LS1BrditKaFIwZUNlRTR4aGhLTVJGN3NBdldsb2NIYWlQSmRiSzRs?=
- =?utf-8?B?YTI3WDh5UmxNb3Z4MkN2QUZFOXhaWE5lOWlqZ3VRZld4bWdqcE9tWmlDV081?=
- =?utf-8?B?cHZXSnlEbVcwa3pIbnJzV2laVVhGT0pLY0xzRk5qVXlCYUNPSHYwYkoza0Fh?=
- =?utf-8?B?LzZzOHVNMmpxTEFEMS8xVWVkUW54MjZ6RzQ4ZEFvUlJzT1ArQXlIWjd4R2Fj?=
- =?utf-8?B?MzE2Z1VXSTlPVmkwbXE0MXJWODFsQU5jM3AyUkZSZWthWUtLSkRPaHkzdVUx?=
- =?utf-8?B?MGpHemROR2w1dzBVWDJUR2tMcFpidFVibnlnN21BUzBiVTdhWGhrbDRwYmx0?=
- =?utf-8?B?eWFadlZTTlNpTHlBRndLMC9RTmtDQTR5and5K2JaeVQvQnBySFJPZ0dLY1Fr?=
- =?utf-8?B?NHN6VjY5WHJvcm0rYlhJK3hnLzZraTh2L0FXc29jaHhxRVJSdjlUU0FLNmUr?=
- =?utf-8?B?ZkMxZjArRlJQWmZVUTZHWHByOFBxZzREUzY2L1dPZVJMWjNuTkUyNDNlb1pI?=
- =?utf-8?B?L3hWS3hodFlVejF3SzlkckwwanNoT05tbUR0RDFkdkorOFpKUDhxc0dwV3hh?=
- =?utf-8?B?ZllVYjhjSFh1RXZWLzY4SGYralpuTzZBWTU5SkVkTlF4bzBLQ2t6NlhzcjZG?=
- =?utf-8?B?aW45N1dqdUxCVFFhdnorVUdkSmRBWkt4dU5jMzlwb3BPTXppY1o1V1NQWldE?=
- =?utf-8?B?YzV3bVlHMWhWTm4zRlRaRWtSOHgzemdJakFUbXRpb3paUWlnWUJ4YVhJZUE4?=
- =?utf-8?B?dXEzekJ2N3FmYmE2b21BckVxcEN6Zk0rUExyOTNtUGpoTWhhaGdFVlZ6TjVv?=
- =?utf-8?B?SEFzaEhqczRNOTY5WDdMS2tlb1pJeE5VZ1orSEp1R0RFWGFoT0hVV0ZQRDAx?=
- =?utf-8?B?WG1oclRFYkFZNEV0Z09ld0lWVm05T0t3Rlppek91ODFRV0NJajR0MzM4MTVV?=
- =?utf-8?B?eWhyZzhzY0xXYWdHOHBzY0w1TnRPalRmMnBDTXNDKzY2R2lYM0dRYlRPT3RU?=
- =?utf-8?B?Y0xvSHJ4L1Rud2dHVWF6YWlERGxoMU5VUjFPSUQ1VllpRWdzQkxIdGtxeXNY?=
- =?utf-8?B?NVJNSGMwS09kajVDcWFWSWU5eXlwMlJldDI3cUFydFdGcTlVU2w2cW1lTDdx?=
- =?utf-8?B?NGpPQ3FQdWRORWNwcUVBVHRYRmZ6d093NVcyazI5SUROK1ExNnlLQWpFczZO?=
- =?utf-8?B?QW56bHgyR2FXN3BqK0VJN0tRVC9vblJkWGhNTWlHaEtRMkdJV2FMcW40Zksy?=
- =?utf-8?B?RThXaVhuK2JDVGRtaDZkcXV3UGl0UXNYTWkrM29TQlBGcmRSQnU2aktmQTdO?=
- =?utf-8?B?SnIzcFNNR1ZQQTdobzFtaHhEeDRCT2Fxc1hJb3JnM29veW9Ma01HdWpZS3l3?=
- =?utf-8?B?S2ZQYWZ5VW9YZUQ2MS94ekRJQk14S2hCajBVYWlXKyt0dmJnVDdrdm9hYmRX?=
- =?utf-8?B?SEVQRWRhK0FRbHlxbTY5bHcxQSt5NnAzT2oxSWlUUWNma0p1OFdIS0YvZDRY?=
- =?utf-8?B?eWV0NUVZVXdQT1M5NnhMcXdKRGtVcHFsL1hPQzVOS3N4dXdxd0pseE9sSngw?=
- =?utf-8?B?aWprUW9OQUI3dDFMZ1NVRDNhQmpDRmxZUEkzOEtQMXlZT0dBMVY1Y21tUGgx?=
- =?utf-8?Q?bKRwqag5/t5KGDCYaK?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0eda70d5-f63d-4031-9896-08df08c7a8ac
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2026 07:56:13.2346
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P3hOtKCk898+MwjQWqFT5oLAUoAtjsLfXLFWm+QsVmUK0np05q8mmuUxdOq4bdLT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY3PR12MB9704
+Mime-Version: 1.0
+Received: from [100.86.218.63] ([61.141.241.110]) by smtp.feishu.cn with ESMTPS; Wed, 02 Sep 2026 16:07:19 +0800
+Content-Language: en-US
+References: <20260828085819.4076449-1-zong.li@sifive.com> <20260828085819.4076449-4-zong.li@sifive.com>
+To: "Zong Li" <zong.li@sifive.com>
 
-On 9/2/26 09:39, Leon Romanovsky wrote:
-> On Wed, Sep 02, 2026 at 09:00:46AM +0200, Christian König wrote:
->> On 9/1/26 19:08, David Hu wrote:
->>> From: David Hu <xuehaohu@google.com>
->>>
->>> This series address two related issues in scatter-gather mapping,
->>> specifically for the MMIO based dma-buf mapping. The fixes ensure
->>> sgt mapping is correct, and proper for large MMIO regions.
->>>
->>> Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
->>> (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
->>> phys vec to sgt)
->>> https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
->>>
->>> Patch 2 Splits sgl by largest page aligned chunk
->>> (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
->>> https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
->>
->> *sigh* such issues are exactly the reason why I didn't wanted the dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
+On 8/28/26 4:58 PM, Zong Li wrote:
+> Events are bound to one CPU and the interrupt is affine to it, so the
+> perf callbacks running with interrupts disabled would be enough to
+> exclude the handler.
 > 
-> And this is why so many in the kernel community want to get rid of SG
-> lists. It would be great if DMA-BUF could also eliminate the need to
-> convert to an SGL, like Jason proposed.
+> PCI MSI/MSI-X on IMSIC breaks that: the irqchip sets
+> IRQCHIP_MOVE_DEFERRED, so irq_set_affinity() reports success while only
+> recording the request, and the move is applied in interrupt context upon
+> the next device interrupt. Until then the interrupt is still routed to
+> the CPU IMSIC picked initially, so the first overflow interrupt can run
+> concurrently with the perf callbacks on the CPU the events are bound to.
 > 
-> The DMA layer no longer needs SGL. These bugs belong to the DMA-BUF layer,
-> which is the one that depends on it.
-
-I'm all fine using an array/xarray of dma_addr_t in DMA-buf, just phys_vec is a clear no-go.
-
-Regards,
-Christian.
-
+> Take a raw spinlock, with interrupts disabled so that the handler can
+> never interrupt a holder on the same CPU, rather than depending on that
+> irqchip behaviour. It covers the state which is reachable from both
+> sides:
 > 
-> Thanks
+>  - IOCOUNTINH is read-modify-written by ->start()/->stop() and is saved
+>    and restored around the whole handler.
+>  - pmu->events[] is written by ->del() and read by the handler.
+>  - hw_perf_event::prev_count is updated by both.
+> 
+> ->add() and ->del() call the unlocked __riscv_iommu_pmu_start() and
+> __riscv_iommu_pmu_stop() so the lock is taken once per callback.
+> 
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> ---
+>  drivers/perf/riscv_iommu_pmu.c | 66 ++++++++++++++++++++++++++++++----
+>  1 file changed, 60 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/perf/riscv_iommu_pmu.c b/drivers/perf/riscv_iommu_pmu.c
+> index f6acd56f2f61..ee2f6d1fbece 100644
+> --- a/drivers/perf/riscv_iommu_pmu.c
+> +++ b/drivers/perf/riscv_iommu_pmu.c
+> @@ -101,6 +101,7 @@ struct riscv_iommu_pmu {
+>  	u64 event_cntr_mask;
+>  	struct perf_event *events[RISCV_IOMMU_HPM_COUNTER_NUM];
+>  	DECLARE_BITMAP(used_counters, RISCV_IOMMU_HPM_COUNTER_NUM);
+> +	raw_spinlock_t lock;
+>  };
+>  
+>  #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
+> @@ -485,7 +486,8 @@ static void riscv_iommu_pmu_update(struct perf_event *event)
+>  	local64_add(delta, &event->count);
+>  }
+>  
+> -static void riscv_iommu_pmu_start(struct perf_event *event, int flags)
+> +/* Called with pmu->lock held */
+> +static void __riscv_iommu_pmu_start(struct perf_event *event, int flags)
+>  {
+>  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+>  	struct hw_perf_event *hwc = &event->hw;
+> @@ -500,11 +502,22 @@ static void riscv_iommu_pmu_start(struct perf_event *event, int flags)
+>  	riscv_iommu_pmu_set_period(event);
+>  	riscv_iommu_pmu_set_event(pmu, hwc->idx, hwc->config);
+>  	riscv_iommu_pmu_enable_counter(pmu, hwc->idx);
+> +}
+> +
+> +static void riscv_iommu_pmu_start(struct perf_event *event, int flags)
+> +{
+> +	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+> +	unsigned long irqflags;
+> +
+> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
+> +	__riscv_iommu_pmu_start(event, flags);
+> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
 
+could use guard(raw_spinlock_irqsave)() to help handle the lock release.
+
+I'm considering if it'll better to use irq_work or function call to handle the
+counts update from the interrupt handler, e.g. in the irq handler first check
+if current cpu is the pmu->on_cpu, if so update the counts, otherwise queue
+the update work to pmu->on_cpu by irq work or smp_call_function_single_async.
+In this way we can use pmu's original synchronization mechanism without
+extra spin locks since the callbacks will always run and synchronized by
+the same cpu, and the shared interrupt doesn't matter at all.
+
+any thoughts on this?
+
+thanks.
+
+>  
+>  	perf_event_update_userpage(event);
+>  }
+>  
+> -static void riscv_iommu_pmu_stop(struct perf_event *event, int flags)
+> +/* Called with pmu->lock held */
+> +static void __riscv_iommu_pmu_stop(struct perf_event *event, int flags)
+>  {
+>  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+>  	struct hw_perf_event *hwc = &event->hw;
+> @@ -521,13 +534,26 @@ static void riscv_iommu_pmu_stop(struct perf_event *event, int flags)
+>  	hwc->state |= PERF_HES_STOPPED | PERF_HES_UPTODATE;
+>  }
+>  
+> +static void riscv_iommu_pmu_stop(struct perf_event *event, int flags)
+> +{
+> +	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+> +	unsigned long irqflags;
+> +
+> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
+> +	__riscv_iommu_pmu_stop(event, flags);
+> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+> +}
+> +
+>  static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
+>  {
+>  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+>  	struct hw_perf_event *hwc = &event->hw;
+>  	unsigned int num_counters = pmu->num_counters;
+> +	unsigned long irqflags;
+>  	unsigned int idx;
+>  
+> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
+> +
+>  	/* Reserve index zero for iohpmcycles */
+>  	if (is_cycle_event(event->attr.config))
+>  		idx = RISCV_IOMMU_HPM_CYCLE_IDX;
+> @@ -535,8 +561,10 @@ static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
+>  		idx = find_next_zero_bit(pmu->used_counters, num_counters, 1);
+>  
+>  	/* All event counters or cycle counter are in use */
+> -	if (idx == num_counters || pmu->events[idx])
+> +	if (idx == num_counters || pmu->events[idx]) {
+> +		raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+>  		return -EAGAIN;
+> +	}
+>  
+>  	set_bit(idx, pmu->used_counters);
+>  
+> @@ -546,7 +574,9 @@ static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
+>  	local64_set(&hwc->prev_count, 0);
+>  
+>  	if (flags & PERF_EF_START)
+> -		riscv_iommu_pmu_start(event, flags);
+> +		__riscv_iommu_pmu_start(event, flags);
+> +
+> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+>  
+>  	/* Propagate changes to the userspace mapping. */
+>  	perf_event_update_userpage(event);
+> @@ -556,18 +586,26 @@ static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
+>  
+>  static void riscv_iommu_pmu_read(struct perf_event *event)
+>  {
+> +	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+> +	unsigned long irqflags;
+> +
+> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
+>  	riscv_iommu_pmu_update(event);
+> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+>  }
+>  
+>  static void riscv_iommu_pmu_del(struct perf_event *event, int flags)
+>  {
+>  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
+>  	struct hw_perf_event *hwc = &event->hw;
+> +	unsigned long irqflags;
+>  	int idx = hwc->idx;
+>  
+> -	riscv_iommu_pmu_stop(event, PERF_EF_UPDATE);
+> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
+> +	__riscv_iommu_pmu_stop(event, PERF_EF_UPDATE);
+>  	pmu->events[idx] = NULL;
+>  	clear_bit(idx, pmu->used_counters);
+> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+>  
+>  	perf_event_update_userpage(event);
+>  }
+> @@ -635,12 +673,24 @@ static irqreturn_t riscv_iommu_pmu_irq_handler(int irq, void *dev_id)
+>  {
+>  	struct riscv_iommu_pmu *pmu = (struct riscv_iommu_pmu *)dev_id;
+>  	DECLARE_BITMAP(ovf_bitmap, BITS_PER_TYPE(u64));
+> +	unsigned long irqflags;
+>  	u32 ovf, idx, inhibit;
+>  
+> -	/* Check whether this interrupt is for PMU */
+> +	/*
+> +	 * Check whether this interrupt is for PMU. Done outside the lock so
+> +	 * that a shared interrupt line is left alone as cheaply as possible.
+> +	 */
+>  	if (!(readl_relaxed(pmu->reg + RISCV_IOMMU_REG_IPSR) & RISCV_IOMMU_IPSR_PMIP))
+>  		return IRQ_NONE;
+>  
+> +	/*
+> +	 * Hold the lock across the whole sequence below. Stopping the
+> +	 * counters, processing them and restoring the previous inhibit state
+> +	 * has to be atomic against ->start()/->stop(), otherwise a counter
+> +	 * enabled in between would be inhibited again by the restore.
+> +	 */
+> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
+> +
+>  	/* Process PMU IRQ */
+>  	inhibit = riscv_iommu_pmu_stop_all(pmu);
+>  
+> @@ -672,6 +722,8 @@ static irqreturn_t riscv_iommu_pmu_irq_handler(int irq, void *dev_id)
+>  
+>  	riscv_iommu_pmu_start_all(pmu, inhibit);
+>  
+> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+> +
+>  	return IRQ_HANDLED;
+>  }
+>  
+> @@ -735,6 +787,8 @@ static int riscv_iommu_pmu_probe(struct auxiliary_device *auxdev,
+>  
+>  	iommu_pmu->reg = iommu_dev->reg;
+>  
+> +	raw_spin_lock_init(&iommu_pmu->lock);
+> +
+>  	/*
+>  	 * Counter number and width are hardware-implemented, detect them by
+>  	 * writing 1s and reading back which bits stuck.
