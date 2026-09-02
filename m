@@ -1,117 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9EF4469850;
-	Wed,  2 Sep 2026 10:59:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4A73AAF62;
+	Wed,  2 Sep 2026 11:18:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788346766; cv=none; b=foHzRhKW1GBLNZHWdihho9JnBgKpzwA4sxqatSq5zFriT77Ve6D00aBNwdNOHXizYsgkygmwNQJsnwVvqLBsSWoOU6b4ZHGc6x2rEN3kq4lAvp2tL8RovNeCF4Q2wB52t+lcpr/2gQ3nWgF8iq90qr4zEIKgHgkoEVVSUr28K/Y=
+	t=1788347941; cv=none; b=uD7+WXpMgc1AkemdcmQvxmXxpImEDnY18Z9m781dEyAwuw52gvrKMk7GJlVV4bc4BzWeoDToDJzWiSczR5zb0zT6ecBdjfXh9/sxSMFNgzt7hQ0FYGrouGDbrYImJDnV3EJQjiZgmshqI4vG65BnGzHnxFoQ1cW1Zabr73h3VP8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788346766; c=relaxed/simple;
-	bh=Gh1H1EvwMuh/anlHK9ilAHykEwwjqfKnDlxe1j1WiIg=;
+	s=arc-20240116; t=1788347941; c=relaxed/simple;
+	bh=YG86Tsd5NYoxHqXO1/4RjI2Hwk53MaPPEvTOL3eNPGI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y8RPn/S/pYUk/xYKuzMzS7uMfdTBGSFmDE4XpxW07vg+ovG2eFL4oNlW95K0M5F3rvbU7Ssf7UtY5CIm0+j8jWgIgqi9wLdQb2Ht/RVPFPl2QJ3B2/eDI1ceZVAvEucvD7iTtpC59T+p+Aiwjj4FhhLJjQHGrdjI0Qkj9UGXK0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RyOKoEmb; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=OLoIOxQum4vywXvHgdpHu4GydMi8U0RAiSbomCAyleBnABfCktSUyGj3nqwbkQFJ2XR4vWB6r/c3s2kBgQJ7isJgQix1QYc7iEumuiK0l8lqINjXuWyca8IZO67E1HNdgIA2+FoKtapMdDcM/WGlJV4WZqSjeeT9dGru2iFw/I8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kclkmO4Z; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RyOKoEmb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4C91F000E9;
-	Wed,  2 Sep 2026 10:59:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788346764;
-	bh=OBVmQw0sO4Pqp+7c+CugRQe5Vt/ZmRFWAeUf3jC3dWA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RyOKoEmbZeg1aphhoTTpEaSIx8jXa6UWfDyctpucawNu6Z8Z3QEFvG+aAQiX5811Q
-	 UhaExyceGBB/5wIot7ioceNrrpzg0hJOhDlHLxle+yiT6zHlJlKqEtrq/LFGvcRbu/
-	 bU4B4iQMLzRRiczAfE8WSQLzCOBAmES3EPeT+pvdv65HRWkWrKSlkwQguvv6M/Snai
-	 nEkEca7YfmhKCToruciCfWidpSlY3S01HOhHZyrCJ0+g8Hz2eMDMUqDiN1qiEbrkwB
-	 NdnTFIO5Kz0F8tVGTocGnZYK2DRb6d4NmBy0ufnb4yXJDSQX5jUtHXv6a5Qb1qqnCG
-	 t9/dRhGdQCAHg==
-Date: Wed, 2 Sep 2026 13:59:19 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: David Hu <dhu@x6u.co>, sumit.semwal@linaro.org, alex@shazbot.org,
-	ankita@nvidia.com, chriscli@google.com,
-	david.laight.linux@gmail.com, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, jgg@ziepe.ca, jmoroni@google.com,
-	kevin.tian@intel.com, kpberry@google.com,
-	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
-	sashiko-bot@kernel.org, stable@vger.kernel.org,
-	viursachi@google.com, xuehaohu@google.com
-Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
-Message-ID: <20260902105919.GV24140@unreal>
-References: <20260901170849.4052816-1-dhu@x6u.co>
- <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
- <20260902073936.GR24140@unreal>
- <aed39f83-6340-4fe9-890c-6d5f340c97d6@amd.com>
- <20260902083232.GT24140@unreal>
- <aae19599-2ba8-41fd-b3a9-b1f80107f563@amd.com>
- <20260902095338.GU24140@unreal>
- <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kclkmO4Z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788347939; x=1819883939;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YG86Tsd5NYoxHqXO1/4RjI2Hwk53MaPPEvTOL3eNPGI=;
+  b=kclkmO4ZvrkCq3GAgh1ah6XOnJLUlcmgy3QYs/owomseziG5lFKgfUOu
+   X+f504/cwENY7B0c1/N7d5uizgVY6eOqii9voWzhputSZZeyA/aoFWe5G
+   qQ632tmmSTosCDhxwOkPDTf3zMSkGLFZy6zKGVGUXsDmjeqKBKHWqSxIJ
+   ya0LY298htHcvq+jd+DtEDnI+OJsh0KNzfK/SJ3+vWbCOBE+AnZyYRcrf
+   geAK7rl2PMlM/EKek3VHprqS9y9r2e2MSR9ROrSTQra2kO/B+ZrcN7qth
+   ZjyupWcnn8E/iCBGItjwrMOGsyxRf9k0ZBp+yNLM4lYRM5sSOE+7HVqXQ
+   g==;
+X-CSE-ConnectionGUID: RL6csouKT/iDzZsvAHrImQ==
+X-CSE-MsgGUID: TwwuSTAdTCqlsyXtVSAVTA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11893"; a="87738081"
+X-IronPort-AV: E=Sophos;i="6.25,257,1779174000"; 
+   d="scan'208";a="87738081"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 04:18:58 -0700
+X-CSE-ConnectionGUID: BYFYmw2iQLyOKvLknLn45w==
+X-CSE-MsgGUID: XIK0qokdTzKqWtv/Tl3PxA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,257,1779174000"; 
+   d="scan'208";a="268078884"
+Received: from lkp-server01.sh.intel.com (HELO bfac249b2189) ([10.239.97.150])
+  by orviesa010.jf.intel.com with ESMTP; 02 Sep 2026 04:18:56 -0700
+Received: from kbuild by bfac249b2189 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1x1izV-000000002UI-3sbM;
+	Wed, 02 Sep 2026 11:18:53 +0000
+Date: Wed, 2 Sep 2026 19:18:02 +0800
+From: kernel test robot <lkp@intel.com>
+To: Qingfang Deng <qingfang.deng@linux.dev>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	Qingfang Deng <qingfang.deng@linux.dev>
+Subject: Re: [PATCH] dma-mapping: use exact allocation for DMA pages
+Message-ID: <202609021920.kdbedjPR-lkp@intel.com>
+References: <20260901085348.53140-1-qingfang.deng@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
+In-Reply-To: <20260901085348.53140-1-qingfang.deng@linux.dev>
 
-On Wed, Sep 02, 2026 at 12:00:25PM +0200, Christian König wrote:
-> On 9/2/26 11:53, Leon Romanovsky wrote:
-> > On Wed, Sep 02, 2026 at 10:44:59AM +0200, Christian König wrote:
-> >> On 9/2/26 10:32, Leon Romanovsky wrote:
-> >>> On Wed, Sep 02, 2026 at 09:56:06AM +0200, Christian König wrote:
-> >>>> On 9/2/26 09:39, Leon Romanovsky wrote:
-> >>>>> On Wed, Sep 02, 2026 at 09:00:46AM +0200, Christian König wrote:
-> >>>>>> On 9/1/26 19:08, David Hu wrote:
-> >>>>>>> From: David Hu <xuehaohu@google.com>
-> >>>>>>>
-> >>>>>>> This series address two related issues in scatter-gather mapping,
-> >>>>>>> specifically for the MMIO based dma-buf mapping. The fixes ensure
-> >>>>>>> sgt mapping is correct, and proper for large MMIO regions.
-> >>>>>>>
-> >>>>>>> Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
-> >>>>>>> (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
-> >>>>>>> phys vec to sgt)
-> >>>>>>> https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
-> >>>>>>>
-> >>>>>>> Patch 2 Splits sgl by largest page aligned chunk
-> >>>>>>> (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
-> >>>>>>> https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
-> >>>>>>
-> >>>>>> *sigh* such issues are exactly the reason why I didn't wanted the dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
-> >>>>>
-> >>>>> And this is why so many in the kernel community want to get rid of SG
-> >>>>> lists. It would be great if DMA-BUF could also eliminate the need to
-> >>>>> convert to an SGL, like Jason proposed.
-> >>>>>
-> >>>>> The DMA layer no longer needs SGL. These bugs belong to the DMA-BUF layer,
-> >>>>> which is the one that depends on it.
-> >>>>
-> >>>> I'm all fine using an array/xarray of dma_addr_t in DMA-buf, just phys_vec is a clear no-go.
-> >>>
-> >>> You are proposing the same thing as an SGL, just in a different format.
-> >>
-> >> Yes, because that is the right thing todo as far as I can see.
-> >>
-> >>> It does not address the issue that dma_addr_t is expected to hold a DMA
-> >>> address, while that is not always the case. For example, in the P2P case,
-> >>> the addresses are not DMA addresses.
-> >>
-> >> Yes they are. They must be DMA addresses because that is the only thing the importer needs to do it's DMA.
-> > 
-> > They can perform DMA, but that still does not make them suitable for the
-> > dma_addr_t type. For the PCI_P2PDMA_MAP_BUS_ADDR flow, these addresses
-> > follow completely different rules: they are not unmapped, require no cache
-> > synchronization, are valid only for peer access, and require separate error
-> > handling.
-> 
-> The PCI_P2PDMA_MAP_BUS_ADDR is not supported by DMA-buf and as far as I can see is a complete dead end.
+Hi Qingfang,
 
-Maybe you mean DRM, but VFIO works perfectly with PCI_P2PDMA_MAP_BUS_ADDR flow in DMA-buf.
-What am I missing?
+kernel test robot noticed the following build warnings:
 
-Thanks
+[auto build test WARNING on linus/master]
+[also build test WARNING on v7.3-rc1 next-20260901]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Qingfang-Deng/dma-mapping-use-exact-allocation-for-DMA-pages/20260901-165347
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20260901085348.53140-1-qingfang.deng%40linux.dev
+patch subject: [PATCH] dma-mapping: use exact allocation for DMA pages
+config: arm-allnoconfig (https://download.01.org/0day-ci/archive/20260902/202609021920.kdbedjPR-lkp@intel.com/config)
+compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260902/202609021920.kdbedjPR-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202609021920.kdbedjPR-lkp@intel.com/
+
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
+
+WARNING: modpost: vmlinux: section mismatch in reference: __dma_direct_alloc_pages+0xdd (section: .text) -> alloc_pages_exact_nid_noprof (section: .init.text)
+>> WARNING: modpost: vmlinux: section mismatch in reference: dma_common_alloc_pages+0x17 (section: .text) -> alloc_pages_exact_nid_noprof (section: .init.text)
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
