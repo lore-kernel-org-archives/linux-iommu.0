@@ -1,57 +1,57 @@
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40E774AD4A6
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 19:13:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10D074AA003
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 19:13:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788376409; cv=none; b=FBzdror03J+P+SbPmN7k/B22iJm049OwOk0pa65Zy+vHw3OXC9haKyGNnvNUuiH8T80/7gFAvcPFXnfu2o54YB5dXE4Ujzv2GiSjXPgvhpypyzKQV+p7eGrJ0OLjEBktxw3K2RHM1dZJX0vfWuD4aU9mCH8+QgohenNOwW8xl+U=
+	t=1788376410; cv=none; b=GdJz4UT6QqbZyHzqmJrkmD52DrY1I8p2zyGo63q6dEqZXoycKa2gB8EE/eusepW+s//jM+83app7/0VWdzHvTNMXotwvqEKRhELR+9yGxanaAzzzgEo1n1LYYRkuRq7U7mIhdQVpVqmoYIdZM89TPkPgfcaO/0ienV7iFTouSqQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788376409; c=relaxed/simple;
-	bh=PFLrtI8FJvq4Xkwov+zqiL8iQ5uTOI2l8tCCPKjbTGI=;
+	s=arc-20240116; t=1788376410; c=relaxed/simple;
+	bh=heFBTe4Azj4loNK0+guseUepFSEbMsjiIjxwRabDFvk=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=oJRayeJfHDX62jEjXQE9DbPfOqEQBmKVEdzxOtkFJxIcrpLbruWtJ3mlVP8jLK0ZXPat1Cn59/+NTGulVr1GpLgPR9jkrEAiVJj55hgEeKiEwCR1c0MuhQ230/A+tnj/k+UdyuJ+D7I7aNh0plT0k9eDWQzNpEchcN9CBvHBVxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=f3/cOTXL; arc=none smtp.client-ip=209.85.216.72
+	 To:Cc:Content-Type; b=lA+NFyy75/+XNjX6hBVWrqfHdkJ59M4aLV0r5B+qo44d3eRCUL2Vf4yEz7X1qH/7YEVU1FDaRkGOFH/y77kQSMjEGWKinwUGH/85q9sP5Ug2asseLdbUfCPfZ2I1fQiC7EI2mCVyeZgYTomPGokWr2ehEaghZIBT4Vy5gWVM/cU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SpfeDemk; arc=none smtp.client-ip=209.85.210.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="f3/cOTXL"
-Received: by mail-pj1-f72.google.com with SMTP id 98e67ed59e1d1-38dbf293831so3384282a91.3
-        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 12:13:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SpfeDemk"
+Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-8544b721ce9so1934663b3a.1
+        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 12:13:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788376406; x=1788981206; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1788376407; x=1788981207; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:reply-to:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=S7KYRpQb2qK2BMI5cWRKmHlXxuXkcNUnDHM16soIFqI=;
-        b=f3/cOTXLGMNjdcU0oU3bLhBMgY0cIJEYw0Xx6gWsJhKjperWRyoRoxtjlSNtTUgw8G
-         6zzgZveuSp2ZlKKOyOZPZZzvmcOPfGV05QTDEO5KOAYqdMdsisHqSOeRuXaDiu/FWTrY
-         Mps5CeDqRI/H1PSQN0nnvxI/3v2Z7kKTg7i2mJPgjdNU3+ppLx6BQq7adCmHzhdTAode
-         ycCzC49iXPymwt8xFl/nh+FB5cByqQ/paYN26CUcS8ePB/dy2/bBHJK843mpliaVulMb
-         vKd/Ueafwqq2t43Hc62mzzNJ14qCAOkPDScFdvLeD+qoloaNe1AbV4F0xetefhxApLTf
-         UIrg==
+        bh=FR4OS7s1XbcA2FA5sOcuBurTuZ/ng9SBzZ/wefEfnhg=;
+        b=SpfeDemku5gQYKlB9geyivKtc7JH0fjwHKIth5rYbHAvMX324DSrGdQuueAQHJadDf
+         vziXvkEyzyoNeGfk8EHHY3/hF6e+gyyoQsIrIg4t8UQOHrnKVyrVxvXgikpm9hbucGtC
+         ddqfVOtLWwMhsx7DC0nSHN6rbGEr4houdfWZbZF/S9K7+ydPWj7A3idtQ3QjY1MfoplI
+         uQY70pVVNIJr8zBbg4A4bLr96HzpHeOOmarFtPul90PiSkdkek/LsjUf/43H4F/QMvKr
+         Of/VRA20tGtOlV0zWCTTf0CpkHmurBwkwjx349wpYjI3CV8QAO1OnmfOqokRfnGp/7Go
+         rWCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788376406; x=1788981206;
+        d=1e100.net; s=20251104; t=1788376407; x=1788981207;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:reply-to:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=S7KYRpQb2qK2BMI5cWRKmHlXxuXkcNUnDHM16soIFqI=;
-        b=D4fLTJmh2fHn18g0Rus2OG/QhYWWHuAderp0osS7+hJk+J4Ep029+AakQwnyLCbxPv
-         72fejHFePS51z5/FPgynVf9sST71ugDK835//14/Ai9CdUJ/UbhQxB42QmMNInPB7JnD
-         iw3hDZICbxdrzYQj+3JRpFz2hwonVpEjEmugFs24iZQkxldbb2v/BPIK154V6Sw4lm9J
-         rpXzjpnEkAHM37Rxuymla9jn0EwOuYtVbwP8zrHsYJjGVXo9+kXSwvdDPTbRdHTBYIkL
-         9ejAfVkHzGpgJXCpfG4Z20LLsR6hxXtRxH071sT11whikKHFt755Cbzby0HiBracDvzT
-         eAoQ==
-X-Forwarded-Encrypted: i=1; AKwUvBykNMJBS4XTh8enoQvzjstcVZbYlMa2EuvNvbV2rOrP7sHdNvgdroQPKE7+8WVh6G3eADAjYA==@lists.linux.dev
-X-Gm-Message-State: AFuF++lwL7kLnOdZx4JsTYrJW+aVFxvM004daUN2A8RvnsHaKWoc/API
-	rISJjybeNR57g3oT3R9nUGDKXR8+kW4kbqa4aF+IFynbblDh14qMgo1w1V6um4CMqjVIujLoOBo
-	XGVbwUQ==
-X-Received: from pjbhk14.prod.google.com ([2002:a17:90b:224e:b0:398:cd79:3b48])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:4b8b:b0:398:9be5:b419
- with SMTP id 98e67ed59e1d1-39aee1c9b76mr7984963a91.20.1788376405725; Wed, 02
- Sep 2026 12:13:25 -0700 (PDT)
+        bh=FR4OS7s1XbcA2FA5sOcuBurTuZ/ng9SBzZ/wefEfnhg=;
+        b=HbuQ3WLkWsskf5Uxe7CqLSqUSL9SBGCgUWgAI7p+PJ0QbBChj9TxNCj0FalVUmR9uE
+         YSVZZp77TbVOiS62fqOAkUdzP2Jt1iaw54u/xCCt2FrFT9Y7CUx7a2KyiA6srv6JZctJ
+         GzN3uWhSgzQmSC84xeyKQL+VFb4iAeiml60DvfYcd0tkQjlBSsbCr0DGolsaL5mepop8
+         CY95lO5UbIhVvG3FyLqaDcOUrHcK3NxA4CXFCioFwb/BrFd0tlq4EDf/YArY+N9OJYw2
+         xlmOVMBs227AxeeQ8hyYoLuxw/NW2vlAaqtWB/K/w1Fi9kJqoCG8/rFZjrij/VC+qu4b
+         b2Og==
+X-Forwarded-Encrypted: i=1; AKwUvBzKepWadR/j414XZhZDTKLSRraPm2v/VcQwzAVAZF3JETSssM98g4IwvwQAhwPNwsDmqT4eHQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++lw5DjuBnErFBIW9nlT79sRS4bVaQXOr4jD8ndsM7FTDg7h9L//
+	GtdPRSmW4Kys0e+VnRFM37dQgXsIbhAKvtgKesWvglVuh64CxFAFleqYqWbW6FHb+jXypFtCgZd
+	PGWWwmQ==
+X-Received: from pfj21.prod.google.com ([2002:a05:6a00:a415:b0:84a:3bc9:3bcd])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:4287:b0:857:7337:5db5
+ with SMTP id d2e1a72fcca58-85ed98b4d7amr11675821b3a.19.1788376407043; Wed, 02
+ Sep 2026 12:13:27 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Wed,  2 Sep 2026 12:13:20 -0700
+Date: Wed,  2 Sep 2026 12:13:21 -0700
 In-Reply-To: <20260902191321.2644150-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,8 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260821-stable-item001-snp-builtin-kvm@kernel.org> <20260902191321.2644150-1-seanjc@google.com>
 X-Mailer: git-send-email 2.55.0.970.g62bdec98f9-goog
-Message-ID: <20260902191321.2644150-2-seanjc@google.com>
-Subject: [PATCH 6.12.y 1/2] iommu/amd: remove return value of amd_iommu_detect
+Message-ID: <20260902191321.2644150-3-seanjc@google.com>
+Subject: [PATCH 6.12.y 2/2] x86/sev: Fix broken SNP support with KVM module built-in
 From: Sean Christopherson <seanjc@google.com>
 To: stable@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
 	Sasha Levin <sashal@kernel.org>
@@ -76,75 +76,303 @@ Cc: "H. Peter Anvin" <hpa@zytor.com>, Suravee Suthikulpanit <suravee.suthikulpan
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-From: Gao Shiyuan <gaoshiyuan@baidu.com>
+From: Ashish Kalra <ashish.kalra@amd.com>
 
-[ Upstream commit 5bb494d5cbb9a3403ba8b1c8bc145b42fc119078 ]
+[ Upstream commit 409f45387c937145adeeeebc6d6032c2ec232b35 ]
 
-The return value of amd_iommu_detect is not used, so remove it and
-is consistent with other iommu detect functions.
+Fix issues with enabling SNP host support and effectively SNP support
+which is broken with respect to the KVM module being built-in.
 
-Signed-off-by: Gao Shiyuan <gaoshiyuan@baidu.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Link: https://lore.kernel.org/r/20250103165808.80939-1-gaoshiyuan@baidu.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+SNP host support is enabled in snp_rmptable_init() which is invoked as
+device_initcall(). SNP check on IOMMU is done during IOMMU PCI init
+(IOMMU_PCI_INIT stage). And for that reason snp_rmptable_init() is
+currently invoked via device_initcall() and cannot be invoked via
+subsys_initcall() as core IOMMU subsystem gets initialized via
+subsys_initcall().
+
+Now, if kvm_amd module is built-in, it gets initialized before SNP host
+support is enabled in snp_rmptable_init() :
+
+[   10.131811] kvm_amd: TSC scaling supported
+[   10.136384] kvm_amd: Nested Virtualization enabled
+[   10.141734] kvm_amd: Nested Paging enabled
+[   10.146304] kvm_amd: LBR virtualization supported
+[   10.151557] kvm_amd: SEV enabled (ASIDs 100 - 509)
+[   10.156905] kvm_amd: SEV-ES enabled (ASIDs 1 - 99)
+[   10.162256] kvm_amd: SEV-SNP enabled (ASIDs 1 - 99)
+[   10.171508] kvm_amd: Virtual VMLOAD VMSAVE supported
+[   10.177052] kvm_amd: Virtual GIF supported
+...
+...
+[   10.201648] kvm_amd: in svm_enable_virtualization_cpu
+
+And then svm_x86_ops->enable_virtualization_cpu()
+(svm_enable_virtualization_cpu) programs MSR_VM_HSAVE_PA as following:
+wrmsrl(MSR_VM_HSAVE_PA, sd->save_area_pa);
+
+So VM_HSAVE_PA is non-zero before SNP support is enabled on all CPUs.
+
+snp_rmptable_init() gets invoked after svm_enable_virtualization_cpu()
+as following :
+...
+[   11.256138] kvm_amd: in svm_enable_virtualization_cpu
+...
+[   11.264918] SEV-SNP: in snp_rmptable_init
+
+This triggers a #GP exception in snp_rmptable_init() when snp_enable()
+is invoked to set SNP_EN in SYSCFG MSR:
+
+[   11.294289] unchecked MSR access error: WRMSR to 0xc0010010 (tried to write 0x0000000003fc0000) at rIP: 0xffffffffaf5d5c28 (native_write_msr+0x8/0x30)
+...
+[   11.294404] Call Trace:
+[   11.294482]  <IRQ>
+[   11.294513]  ? show_stack_regs+0x26/0x30
+[   11.294522]  ? ex_handler_msr+0x10f/0x180
+[   11.294529]  ? search_extable+0x2b/0x40
+[   11.294538]  ? fixup_exception+0x2dd/0x340
+[   11.294542]  ? exc_general_protection+0x14f/0x440
+[   11.294550]  ? asm_exc_general_protection+0x2b/0x30
+[   11.294557]  ? __pfx_snp_enable+0x10/0x10
+[   11.294567]  ? native_write_msr+0x8/0x30
+[   11.294570]  ? __snp_enable+0x5d/0x70
+[   11.294575]  snp_enable+0x19/0x20
+[   11.294578]  __flush_smp_call_function_queue+0x9c/0x3a0
+[   11.294586]  generic_smp_call_function_single_interrupt+0x17/0x20
+[   11.294589]  __sysvec_call_function+0x20/0x90
+[   11.294596]  sysvec_call_function+0x80/0xb0
+[   11.294601]  </IRQ>
+[   11.294603]  <TASK>
+[   11.294605]  asm_sysvec_call_function+0x1f/0x30
+...
+[   11.294631]  arch_cpu_idle+0xd/0x20
+[   11.294633]  default_idle_call+0x34/0xd0
+[   11.294636]  do_idle+0x1f1/0x230
+[   11.294643]  ? complete+0x71/0x80
+[   11.294649]  cpu_startup_entry+0x30/0x40
+[   11.294652]  start_secondary+0x12d/0x160
+[   11.294655]  common_startup_64+0x13e/0x141
+[   11.294662]  </TASK>
+
+This #GP exception is getting triggered due to the following errata for
+AMD family 19h Models 10h-1Fh Processors:
+
+Processor may generate spurious #GP(0) Exception on WRMSR instruction:
+Description:
+The Processor will generate a spurious #GP(0) Exception on a WRMSR
+instruction if the following conditions are all met:
+- the target of the WRMSR is a SYSCFG register.
+- the write changes the value of SYSCFG.SNPEn from 0 to 1.
+- One of the threads that share the physical core has a non-zero
+value in the VM_HSAVE_PA MSR.
+
+The document being referred to above:
+https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/revision-guides/57095-PUB_1_01.pdf
+
+To summarize, with kvm_amd module being built-in, KVM/SVM initialization
+happens before host SNP is enabled and this SVM initialization
+sets VM_HSAVE_PA to non-zero, which then triggers a #GP when
+SYSCFG.SNPEn is being set and this will subsequently cause
+SNP_INIT(_EX) to fail with INVALID_CONFIG error as SYSCFG[SnpEn] is not
+set on all CPUs.
+
+Essentially SNP host enabling code should be invoked before KVM
+initialization, which is currently not the case when KVM is built-in.
+
+Add fix to call snp_rmptable_init() early from iommu_snp_enable()
+directly and not invoked via device_initcall() which enables SNP host
+support before KVM initialization with kvm_amd module built-in.
+
+Add additional handling for `iommu=off` or `amd_iommu=off` options.
+
+Note that IOMMUs need to be enabled for SNP initialization, therefore,
+if host SNP support is enabled but late IOMMU initialization fails
+then that will cause PSP driver's SNP_INIT to fail as IOMMU SNP sanity
+checks in SNP firmware will fail with invalid configuration error as
+below:
+
+[    9.723114] ccp 0000:23:00.1: sev enabled
+[    9.727602] ccp 0000:23:00.1: psp enabled
+[    9.732527] ccp 0000:a2:00.1: enabling device (0000 -> 0002)
+[    9.739098] ccp 0000:a2:00.1: no command queues available
+[    9.745167] ccp 0000:a2:00.1: psp enabled
+[    9.805337] ccp 0000:23:00.1: SEV-SNP: failed to INIT rc -5, error 0x3
+[    9.866426] ccp 0000:23:00.1: SEV API:1.53 build:5
+
+Fixes: c3b86e61b756 ("x86/cpufeatures: Enable/unmask SEV-SNP CPU feature")
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Message-ID: <138b520fb83964782303b43ade4369cd181fdd9c.1739226950.git.ashish.kalra@amd.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[sean: handcode/port the sev.c changes]
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/iommu/amd/init.c  | 10 ++++------
- include/linux/amd-iommu.h |  4 ++--
- 2 files changed, 6 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/sev.h |  2 ++
+ arch/x86/virt/svm/sev.c    | 21 ++++++---------------
+ drivers/iommu/amd/init.c   | 34 ++++++++++++++++++++++++++++++----
+ 3 files changed, 38 insertions(+), 19 deletions(-)
 
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index ee34ab00a8d6..2524ada3708e 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -440,6 +440,7 @@ static inline void snp_update_svsm_ca(void) { }
+ 
+ #ifdef CONFIG_KVM_AMD_SEV
+ bool snp_probe_rmptable_info(void);
++int snp_rmptable_init(void);
+ int snp_lookup_rmpentry(u64 pfn, bool *assigned, int *level);
+ void snp_dump_hva_rmpentry(unsigned long address);
+ int psmash(u64 pfn);
+@@ -450,6 +451,7 @@ void kdump_sev_callback(void);
+ void snp_fixup_e820_tables(void);
+ #else
+ static inline bool snp_probe_rmptable_info(void) { return false; }
++static inline int snp_rmptable_init(void) { return -ENOSYS; }
+ static inline int snp_lookup_rmpentry(u64 pfn, bool *assigned, int *level) { return -ENODEV; }
+ static inline void snp_dump_hva_rmpentry(unsigned long address) {}
+ static inline int psmash(u64 pfn) { return -ENODEV; }
+diff --git a/arch/x86/virt/svm/sev.c b/arch/x86/virt/svm/sev.c
+index 9a6a943d8e41..738698390ebf 100644
+--- a/arch/x86/virt/svm/sev.c
++++ b/arch/x86/virt/svm/sev.c
+@@ -189,7 +189,7 @@ void __init snp_fixup_e820_tables(void)
+  * described in the SNP_INIT_EX firmware command description in the SNP
+  * firmware ABI spec.
+  */
+-static int __init snp_rmptable_init(void)
++int __init snp_rmptable_init(void)
+ {
+ 	u64 max_rmp_pfn, calc_rmp_sz, rmptable_size, rmp_end, val;
+ 	void *rmptable_start;
+@@ -197,11 +197,11 @@ static int __init snp_rmptable_init(void)
+ 	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+ 		return 0;
+ 
+-	if (!amd_iommu_snp_en)
+-		goto nosnp;
++	if (WARN_ON_ONCE(!amd_iommu_snp_en))
++		return -ENOSYS;
+ 
+ 	if (!probed_rmp_size)
+-		goto nosnp;
++		return -ENOSYS;
+ 
+ 	rmp_end = probed_rmp_base + probed_rmp_size - 1;
+ 
+@@ -218,13 +218,13 @@ static int __init snp_rmptable_init(void)
+ 	if (calc_rmp_sz > probed_rmp_size) {
+ 		pr_err("Memory reserved for the RMP table does not cover full system RAM (expected 0x%llx got 0x%llx)\n",
+ 		       calc_rmp_sz, probed_rmp_size);
+-		goto nosnp;
++		return -ENOSYS;
+ 	}
+ 
+ 	rmptable_start = memremap(probed_rmp_base, probed_rmp_size, MEMREMAP_WB);
+ 	if (!rmptable_start) {
+ 		pr_err("Failed to map RMP table\n");
+-		goto nosnp;
++		return -ENOSYS;
+ 	}
+ 
+ 	/*
+@@ -261,17 +261,8 @@ static int __init snp_rmptable_init(void)
+ 	crash_kexec_post_notifiers = true;
+ 
+ 	return 0;
+-
+-nosnp:
+-	cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+-	return -ENOSYS;
+ }
+ 
+-/*
+- * This must be called after the IOMMU has been initialized.
+- */
+-device_initcall(snp_rmptable_init);
+-
+ static struct rmpentry *get_rmpentry(u64 pfn)
+ {
+ 	if (WARN_ON_ONCE(pfn > rmptable_max_pfn))
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 36a814b6c4de..0e270533bf12 100644
+index 0e270533bf12..54f3c17520d5 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -3484,25 +3484,23 @@ static bool amd_iommu_sme_check(void)
-  * IOMMUs
-  *
-  ****************************************************************************/
--int __init amd_iommu_detect(void)
-+void __init amd_iommu_detect(void)
+@@ -3219,7 +3219,7 @@ static bool __init detect_ivrs(void)
+ 	return true;
+ }
+ 
+-static void iommu_snp_enable(void)
++static __init void iommu_snp_enable(void)
  {
+ #ifdef CONFIG_KVM_AMD_SEV
+ 	if (!cc_platform_has(CC_ATTR_HOST_SEV_SNP))
+@@ -3244,6 +3244,14 @@ static void iommu_snp_enable(void)
+ 		goto disable_snp;
+ 	}
+ 
++	/*
++	 * Enable host SNP support once SNP support is checked on IOMMU.
++	 */
++	if (snp_rmptable_init()) {
++		pr_warn("SNP: RMP initialization failed, SNP cannot be supported.\n");
++		goto disable_snp;
++	}
++
+ 	pr_info("IOMMU SNP support enabled.\n");
+ 	return;
+ 
+@@ -3381,6 +3389,19 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
+ 		ret = state_next();
+ 	}
+ 
++	/*
++	 * SNP platform initilazation requires IOMMUs to be fully configured.
++	 * If the SNP support on IOMMUs has NOT been checked, simply mark SNP
++	 * as unsupported. If the SNP support on IOMMUs has been checked and
++	 * host SNP support enabled but RMP enforcement has not been enabled
++	 * in IOMMUs, then the system is in a half-baked state, but can limp
++	 * along as all memory should be Hypervisor-Owned in the RMP. WARN,
++	 * but leave SNP as "supported" to avoid confusing the kernel.
++	 */
++	if (ret && cc_platform_has(CC_ATTR_HOST_SEV_SNP) &&
++	    !WARN_ON_ONCE(amd_iommu_snp_en))
++		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
++
+ 	return ret;
+ }
+ 
+@@ -3489,18 +3510,23 @@ void __init amd_iommu_detect(void)
  	int ret;
  
  	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
--		return -ENODEV;
-+		return;
+-		return;
++		goto disable_snp;
  
  	if (!amd_iommu_sme_check())
--		return -ENODEV;
-+		return;
+-		return;
++		goto disable_snp;
  
  	ret = iommu_go_to_state(IOMMU_IVRS_DETECTED);
  	if (ret)
--		return ret;
-+		return;
+-		return;
++		goto disable_snp;
  
  	amd_iommu_detected = true;
  	iommu_detected = 1;
  	x86_init.iommu.iommu_init = amd_iommu_init;
--
--	return 1;
++	return;
++
++disable_snp:
++	if (cc_platform_has(CC_ATTR_HOST_SEV_SNP))
++		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
  }
  
  /****************************************************************************
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index 2b90c48a6a87..062fbd4c9b77 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -31,11 +31,11 @@ struct amd_iommu_pi_data {
- struct task_struct;
- struct pci_dev;
- 
--extern int amd_iommu_detect(void);
-+extern void amd_iommu_detect(void);
- 
- #else /* CONFIG_AMD_IOMMU */
- 
--static inline int amd_iommu_detect(void) { return -ENODEV; }
-+static inline void amd_iommu_detect(void) { }
- 
- #endif /* CONFIG_AMD_IOMMU */
- 
 -- 
 2.55.0.970.g62bdec98f9-goog
 
