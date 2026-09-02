@@ -1,175 +1,225 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012054.outbound.protection.outlook.com [40.93.195.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pz2-f1.google.com (mail-pz2-f1.google.com [74.125.228.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC74371876
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 07:01:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788332470; cv=fail; b=LAcSrs5+v5r7d+FWgyCQlfK5NbggCryEQaKlTfWpVztD9Ew4tAp5hfqLY9USzlWadI1pWEgFy+9c0E120a1baFEFUJHUa6trpoqrtS47A7D6s/cOLaekneD7Jt3OnPbmst40Tuuq08NEZ7X0gZilMlSPZCStbW0fM5JA8lRf+h8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788332470; c=relaxed/simple;
-	bh=I0CBiSXcsXzIcii/s/txvo+jZNEj4lMydrJoAvHCVQw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=UUViS0Mt4Jp2mNr9Dv2VfHeyKD+/mPL+5dl5tjOM6YDs7MotqXvHNSCAlPTBxHg4YJ1Gcawga8FB7Swn7D3ftE97GzdxWRXl1Au3srUdJyUxPEaaV6JtEtblU4LbAKVLrBk8fVmsyizVxvQTtni0sTmwiiH9Ehzzr2BFkk1wECo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=OmcJRcdR; arc=fail smtp.client-ip=40.93.195.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0373D353A75
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 07:31:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788334295; cv=none; b=R2zqmqUbk4IoPSrje18sVL8aMJi2SOWhxBJiDt7lDs8XnfQgJKNopyTP/d7TRDiJWl0AMK3mPdBGATzNEXp8UpIDCiPggn6URG8vx3Wj3MdMi6kgY79+rvyUcxPVYqx6HKPmitYTxKEt2PWgO/8glXK/GxF0pjrucjLvKVntX80=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788334295; c=relaxed/simple;
+	bh=RWIEXwoFCLRI4LG31OsYGEbdius9ZAooyaqbm1078lw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=c4D5eBveXA0Ln4QrDf8Uietu/paLDLHuglYO7ludoWzdEtCza1WeBTjhsgxarbj5GVSKOo0S2JaHX5zJmcu7jFSdoKA5NRo7sn8lh8rTlk0j2PcWxNSgdWGF0HyvcKc9Y9OmdJ1zGk2r2wfPMFyuOT8MEIgCyOt6AXsxbhEc/bI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rG3zx2lL; arc=none smtp.client-ip=74.125.228.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="OmcJRcdR"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BvA7yoonWupkJKzwfxfZkBfLnTzzk8h+aEVQRift9Fr4S3mPxUlIL05AQHcOBt0PEG50aQg3Qv9tv3zNK77DchJZ2s9QmyDFtL8oKLBmcVgoBf3kMfOv8HUKsM14Gb/qlIYLm+l3xbHpuURnAzpZisIpI3aJDdSDtCMAJNvuA/WYtPik109y1Jeu7p8wfZb52F834+H9ILeYUvcmiZoNDE7DiVbKaMHiM/RTk2b3zMEpOiXKmBOysXpNPIWIphtOhiHXd2r1xDBxsAcB7fy1rHf5aALy3cgaV/eCIPnKIRPI8VW6qDmBKeVguao4OmqNrH7p6XN+AuWO1IAbxKWhTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vf6wwMPwlWMZrXz4ZL1yAc1mP8vVfrc88R5rHdNY7Gw=;
- b=ypFYt2vj4ZFEzY9Ty8Omefdg5GAZ73go9PAYVmYltKhTw8/v2+YwPTcxabDcDFrg8vBhYYt9lF2LrgHeELXHJ78Sm6jeJ3FUEXBmIxHG6lnmlEuD1+Ldk5ID1TZPbN2EGAfGMG9gozfIuBWQYehryya8JkBDRi3VhwjHGJ7LmMmOZuABgXZ01brItYDYuBHVpBBFkx3P/LQUbXRq8IN78BkP9uRFAbCPt0Wa26dOveeRv2fIuqlCAjTamP6Zo8bGYkZFAQdBhIcscFWmJAuhyjpJf/IdvNuo6lQwYb8sCftyDe2uGuZ7f3I6+7gDnoV4HCAENGIy7l8U/dfuU12Z3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vf6wwMPwlWMZrXz4ZL1yAc1mP8vVfrc88R5rHdNY7Gw=;
- b=OmcJRcdRWHVQazFlOm7UnIS6afJ+ZFzA+sOHHGmiFp9X8fwjDRfTrJhMl/GHFzazInt+Cc82TSybVf8oIXDyLMxcaP6iwm55HFbs9+gjatXft2rvnvV8TE44x93TTzbvheeTPUAVLN1mQQnORnyMDzhi5q7JanNcI4kk7mK8jZg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by IA0PR12MB8302.namprd12.prod.outlook.com (2603:10b6:208:40f::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Wed, 2 Sep
- 2026 07:00:53 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0339.007; Wed, 2 Sep 2026
- 07:00:53 +0000
-Message-ID: <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
-Date: Wed, 2 Sep 2026 09:00:46 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
-To: David Hu <dhu@x6u.co>, sumit.semwal@linaro.org
-Cc: alex@shazbot.org, ankita@nvidia.com, chriscli@google.com,
- david.laight.linux@gmail.com, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, jgg@ziepe.ca, jmoroni@google.com,
- kevin.tian@intel.com, kpberry@google.com, leon@kernel.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
- sashiko-bot@kernel.org, stable@vger.kernel.org, viursachi@google.com,
- xuehaohu@google.com
-References: <20260901170849.4052816-1-dhu@x6u.co>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260901170849.4052816-1-dhu@x6u.co>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR22CA0018.namprd22.prod.outlook.com
- (2603:10b6:208:238::23) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rG3zx2lL"
+Received: by mail-pz2-f1.google.com with SMTP id 41be03b00d2f7-ca7a25cd87dso588220a12.1
+        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 00:31:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788334293; x=1788939093; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=B5vjeiQCLsTjdZkQJr1qZRy9fU+p/hRxqt/dZCpjN/k=;
+        b=rG3zx2lLE0HupEIKv2dSc4NNPtCWPHtGb03Ev8dHvL3zkBm4gwFlzlDBT0wPTC5aOo
+         bNJxvP4qsIRcVBniHSYqdEWir+4gFqPO0BUWS667aPA0wnboEza5MFF8WF85O+Ls+TmX
+         7W6VROaX/0n8YHgJoJpHxb34nSRCmDSjBQPdoR/q8fi2Jm9CKPulqyQ0JYuQfNQZCHly
+         /YZDTBUpc19x3AXmZ8WDJWEw4A5ghtjxbQXjs7MDZLoiir5WITu6IkKQG6gpY+NVvzd8
+         nBHjBS5zsPty7OgFosicSMGBtVmZK/kA1RVZnu4JFDr6tnkf/zG8lO2VeU7le2KqPfm7
+         F3WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788334293; x=1788939093;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=B5vjeiQCLsTjdZkQJr1qZRy9fU+p/hRxqt/dZCpjN/k=;
+        b=l8ai89YafcBVWf5nXSYa8wvNAL6wS/EfV93hWZalL0KDcs/UheP9xrwhGN6t3JsYAz
+         pHv9nXazAWUaNYeSeupEZjDNfQMHwVPMniYG0pufxBrVieFqXQJ9bUlZMdzx/xDFn/ps
+         YKmRw5nvh0+4kDpKUfoli4YEmjIcvXoFy50Fj9u7hc13relSI5P/8YGoOWQaL8SP6ob4
+         XSb0X18ym/UGjuq5tbD6+CP4qvMFpqLK2g+btLR5d8MnmqXB/f0lztHngX4PCJr9spDW
+         i25QzQ2MPeaMlLYxpggG0UcTPDLC8D4ms5p9sXn3fIQfEJvR0hNsxP+JonZtLFwsD7qh
+         9/LA==
+X-Forwarded-Encrypted: i=1; AKwUvBzXCWmwDeHyrp+nWfCiCp/52Vu/fBISY5IqhdqXBEYmF/Nhz8lU4n2nOyUJb8pwiDe+id3jcw==@lists.linux.dev
+X-Gm-Message-State: AFuF++lqR4jQZ4v4ZyXQJJjZpa7Yq45gYw0I1UGbhsxOonf0FVjpahOi
+	IpcOSY9EhjIbSFZtp6a8miP8JTxN8df8j/idh7whRT5WOCkO2AE3EfUF
+X-Gm-Gg: AYBFou003fyoxxbC4EcReVkyrQm/5i9CUuGf1JcFF8v4qrmO9/rdJsPnqFtyyg7bjRi
+	0lGGOhELcG3b0fyOfDi2LkO9XXGsey4OhoIFusBLjoXf0Q4Qm0+jU92MyWvEhTmjZpa6sCfVo7v
+	4KJtmCYbY9c5zeT7iGCdJ/EcQVsBvfrgX4Rv3UxykvDYyM8oJmD+sVlQFNvQH6ugekFRy+gR1mB
+	/swUqheVwReR28oC8K4OBjdAFL/r3I2OSDRwILJ8Z98yshaXL/HXhMESWSlpTii97VKcHFFAZY8
+	bgCJdgDpajH3dqm4L0vNdl7ipvZAM0lxYOfMJ7bAhoTVN/wWviCYGGrsPqhPfPB8/5J23gRMH9I
+	84S/n53f+k4oycsyB4aKjaBFD5QKMhaPdaSjTsWsKAY0s+mg6byKlv4uzcAagm+n0WICGpsFE8T
+	RPfchLPsf1lVEccHSGWVY0nVKodKZgJeAzBbP0ftxwIkAl/iBA/wif57aouirVXx7nQyokFsFD
+X-Received: by 2002:a05:6a00:148e:b0:847:893f:2d0c with SMTP id d2e1a72fcca58-85ed1d0414dmr5028771b3a.5.1788334293213;
+        Wed, 02 Sep 2026 00:31:33 -0700 (PDT)
+Received: from intel.company.local ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-85db2adcbedsm926914b3a.20.2026.09.02.00.31.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2026 00:31:32 -0700 (PDT)
+From: Wandun Chen <chenwandun1@gmail.com>
+To: catalin.marinas@arm.com,
+	will@kernel.org,
+	chenhuacai@kernel.org,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	robh@kernel.org,
+	saravanak@kernel.org,
+	akpm@linux-foundation.org,
+	baoquan.he@linux.dev,
+	rppt@kernel.org,
+	pasha.tatashin@soleen.com,
+	pratyush@kernel.org,
+	m.szyprowski@samsung.com
+Cc: mark.rutland@arm.com,
+	kernel@xen0n.name,
+	alex@ghiti.fr,
+	hpa@zytor.com,
+	ruirui.yang@linux.dev,
+	robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	kexec@lists.infradead.org,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: [PATCH v6 00/10] kdump: reduce vmcore size and capture time
+Date: Wed,  2 Sep 2026 15:31:06 +0800
+Message-ID: <20260902073116.802752-1-chenwandun1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|IA0PR12MB8302:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35a62942-64d2-4bd5-83d5-08df08bfedbf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|7416014|22082099003|18002099003|10067099003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	5eQbdpSIvG4I0wIDrp1rmkseJwf9WsMl3IfAYONaNdY8uJcenJ5LfAC8paV66MlGTsaGGEX3PMtc4kc2lpBOQZbmBGGr7n9cl3s4RwvZEi0MyNNCxovTAKWJUojaP4SiY4l9rOjmJLsifP1o47uw1s7QfKxwqi5bw3R+4j4LibOdARtk1R1ihjdUmTgIOqX1ocEHAqfhhr60z2sJjehefsX7jr7QEHTjeE4F9Lm2mlEvSQluyQoUux6hdljKRx7Cn+GEK6lENOUHn/8XQ46Nwo7HPlBXQBzSkTbR9OcuJtaIwHHL5IlskJ6TIMug1a5JeEkAwW89vkFfwClRpujIz1LkQEEFz3EhfMwj3qAPX1gZlBeAOlzyXUczHgh1UCpysLr2Z7ZdStobxAGz78j5FYDpBZoVYg5bSRChR7CJtZwbRmDy9rIYoX/Wzn0Gpyg1MQO0KOXM6YEfPdV+vhepp+r0SLhN713E7BpfI4OQJDBL9yuPS//SFiEpYzPBCwHZuceAbyvLwah2hPT5KIBEtETaXEQAfm5YliFvh9bPgoflv7XbCsEtO3qDtEvuIASBlBNgBZ+hTMg18Q/ExWAHnVvgXxNxpAMfZt55QTGp9QBeVd6zgUprTYUt8ZPaptjnpyf8Ck7ShUANefNWslKExtTPmQujFM0ZF25ROQ1K3eo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(7416014)(22082099003)(18002099003)(10067099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?S1RpdzlwMjZzL2ovTFZyZk5SWkNNeng3NDN6R3ZSM2FDelg3eldqeEpuMFBs?=
- =?utf-8?B?a29uOUNJeUkwUnQ2VDRielJKYlhoenFmTGxmVVRTd003eThSN05GenJnanpa?=
- =?utf-8?B?aHZWVEFKclVWWlB4QUdYK1Q4clBwUFdNK2RwOG13UldJVVU1NDd4ZlRWOWll?=
- =?utf-8?B?VG1FbmtzbG9jOU9qcDh2eGFJcGhFWnJFSUpMbXlIT29pSER5ZlgxMXJYZjJz?=
- =?utf-8?B?bWZxMkowY2VYcVovblJOdlpSQm1sUHV6WVRzN2pKa1dxd3QwRjNwRlJxdTI1?=
- =?utf-8?B?SlpBTUV2VlNoK1JPbVJBbTVXZ0U2SGJFM1F6MDZuZmg0MTZublhLVzllWSs2?=
- =?utf-8?B?WHJsQW1zV3NKbDBLY2JrWTd5Mk1vam9CbWVpYW9sVmNaVjlwMWhUQUtETlZ4?=
- =?utf-8?B?bDZ3bGc3djRjdmhTaFpMYkxXVUxORkd3L2dCbjZWNHpyUnVyUkREZUFGUUJs?=
- =?utf-8?B?ckh3VkxUOTUza1FSRW5jUjlLWGhpR25jdG8wMVZTUkJCYjRMenVJb3NqV3FM?=
- =?utf-8?B?KzRwWTdOMTB3ZjhNS1RHZjRaWGlhOFdEQkY4VnA0T0N3OVFackxuOS94MXhD?=
- =?utf-8?B?d0pGTlJJcWMwMGxBcWVEcXp0L25Xekk1MjZwekxtOW02eWx5SmkvdStBUzQ3?=
- =?utf-8?B?d1lvSVBYTG9Fak9VVkVHcE5TaHAzZzFleGNDdjZZbnNFeU05b3lITmdCYkk4?=
- =?utf-8?B?ZzdZa2tJNi8zYmpqcUVsTmo5czRCcEZlNzdkS2QycFIrMUpFeE1YRTkvK3VL?=
- =?utf-8?B?ZE5xeHY1VWVWR1FpNEw5azgxQi9zaTRveXJNLzNHRXdBQVBZcVVhbVRSN1Fl?=
- =?utf-8?B?Y1JuRjVEQ1liWmx5cFRtUEZEcW03U3NZOXdNa1djRmNUbVg5WmVtVHBKSjh5?=
- =?utf-8?B?RGxtUmo4WGlmaUxBRkgweUMwZnNuQnVYb1JwZVVzdDlzRzRnMGFkTUN2RUVE?=
- =?utf-8?B?bnFDQnUvTjJNbEtwMHk2bkI0QkhORXl1N1dJUWJZby9zazNBb3VBMHdId2c3?=
- =?utf-8?B?bzFOR2g1VTVMMnRZcmlUZzNraStzSFRPcXhCdnVkY3I2bXBmMGlPZ29Pck80?=
- =?utf-8?B?T2NWV1hDOXIwVEx0ME5BMkRhbVVpTWdkZDhqSlgwWUlUYmxLU1lkN3Z1dk1H?=
- =?utf-8?B?MDBONmpDblprdlcvWGpNSnNEUmtjYU1MZG5relVFRlJmcEpRVnFYZkIzNHdF?=
- =?utf-8?B?TFNCOHRjRGluditLMWhuc1Blbzc5TjlsRW5sR1dQYlBscWlmN0loRzAreENx?=
- =?utf-8?B?OGloUVBrUDhCWk5lMmdWcGFqeTBoNXV3Z0UvSWQ4YzhNYXZIUFJEVUR6eHpU?=
- =?utf-8?B?RzdjNllka1YyM21FK0gzWWw4cVBrNmN6VFRKZ1BJcDkwekVJVWVWMndCY29a?=
- =?utf-8?B?cVJyNTNrRzN1eStPU3VCOTFwMDJOYjVaWmUrdDdZMnBERE5BdEdERlBmSVQ3?=
- =?utf-8?B?MmM3NmxscENFMkxFL0R0cHd0S0Z1TlRWVUd3VnNFbEdJNTA4dnB4ZFJ6MEtB?=
- =?utf-8?B?bFJPU2lKbGo0bFJxcWQ5bzVtZVQ1VTNFdk8vVGtzdnlOYkZNbGpheXRVd0pL?=
- =?utf-8?B?SExFeGF0QmEvYUZGSXV3ejhwdWZ3bmJsTVUvMW1hNkRwb1RaVUlpbmFvNzFQ?=
- =?utf-8?B?eWl3SitjTW5pSjBVN1M3NUViTEhrNTBKeElabGRxUVFsVW5KMXJFNDlrS1Bk?=
- =?utf-8?B?M1BQTjJYSVY4ODhsaFN2Tzd0eGpIYjFwajF4TDFtQ3pKVXhJdEFRdXY5Vk0w?=
- =?utf-8?B?WWhzMVJETG1HNGMrZlJMU0xEaVlVMFVMRUZMdkRRazNZRUNhRW5mcEswdk5a?=
- =?utf-8?B?OVBUTmpNbkloUFRrQ1Y0WUZEcnl2UGp4ZVRwMFpSekMwTGR1ck0zVWxpdU9q?=
- =?utf-8?B?SFFPd2QvSkU2aWxBdXNVcEZBU3lmTTVXQ3dDUG9zd1pxTjJ0anhOR1dGZDNY?=
- =?utf-8?B?NVJ4YTlXazlPVmNyMWxwQmluK1NvYktDMTRLUVpBenp6QzcrQS9BdDJSYm5Q?=
- =?utf-8?B?RUVyOURCckx3OVlYMU0xQkZHcWhySUZTMTdkeXVGaHltTElaSmpEQThmUlU4?=
- =?utf-8?B?bVg5cHkraVFMdlN4UXZYUDVIeThRL2tnMEMyQy84Y1BmZkpDMlNzQmxPS09m?=
- =?utf-8?B?RDc1cEU3ZkZqRXBjQ2ZyZHAxTER4SUFhTFRFOEVlNmhmR1FIdko0RVNRY25i?=
- =?utf-8?B?YXUyTnpuZmNFUmpwQkZwMHdmVUlwWUdvSU9URWZjL2ZZeUJ0amlZckNMcWR5?=
- =?utf-8?B?bC9pZGQxRmh5RHRlSXJMakUzZ1QrRnZLQ1VBRWZZUVQ2Q2FWKy9kcXEzVGxw?=
- =?utf-8?Q?n377lXyE8MSy7aIlWV?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35a62942-64d2-4bd5-83d5-08df08bfedbf
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2026 07:00:53.3687
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: r5Dm6Ery9wZ16ZM7HVDRgoGDidZOlHF/Vxwv70obn12Lcy2jDjBNGao9rKB3n2y9
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8302
+Content-Transfer-Encoding: 8bit
 
-On 9/1/26 19:08, David Hu wrote:
-> From: David Hu <xuehaohu@google.com>
-> 
-> This series address two related issues in scatter-gather mapping,
-> specifically for the MMIO based dma-buf mapping. The fixes ensure
-> sgt mapping is correct, and proper for large MMIO regions.
-> 
-> Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
-> (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
-> phys vec to sgt)
-> https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
-> 
-> Patch 2 Splits sgl by largest page aligned chunk
-> (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
-> https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
+From: Wandun Chen <chenwandun@lixiang.com>
 
-*sigh* such issues are exactly the reason why I didn't wanted the dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
+On SoCs that carve out large firmware-owned reserved memory (GPU,
+camera ISP, ...), kdump currently dumps those carveouts as part of
+system RAM even though their contents are firmware state that is not
+useful for kernel crash analysis.
 
-I'm going to push those fixes to drm-misc-next now, but when there are more issues like that will mark the code as abandoned and not maintained.
+This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
+reserved memory on DT-based architectures (arm64, riscv, loongarch).
+Reserved regions default are marked MEMBLOCK_NODUMP so kdump omits them;
+reusable CMA regions are different because their pages are handed back
+to the buddy allocator and may carry crash-relevant data.
 
-Regards,
-Christian.
+ACPI systems already filter reserved memory out of the vmcore through
+their existing path; only DT-based systems currently fail to filter these
+regions, which is what this series addresses. The flag lives in memblock
+itself rather than in a DT-only structure, so the mechanism is generic and
+both ACPI and DT systems can benefit from it (suggested by Rob, thanks) [1].
 
-> 
-> Changes in v8:
->  - Combined the two patches into one unified series to avoid merge
->    conflicts.
->  - Collected Reviewed-by tag from Leon Romanovsky for Patch 2.
-> 
-> David Hu (2):
->   dma-buf: Fix silent overflow for phys vec to sgt
->   dma-buf: Split sgl by largest page-aligned chunk
-> 
->  drivers/dma-buf/dma-buf-mapping.c | 31 +++++++++++++++++++++----------
->  1 file changed, 21 insertions(+), 10 deletions(-)
-> 
-> --
-> 2.55.0.897.gb25b4bd76c-goog
-> 
+Since the reserved memory regions are filtered out, the vmcore is
+smaller in size and faster to produce. 
+
+The series is based on linux-next and is organized as follows:
+
+Patches 1-4: Preparation and bugfixes: fix the missing HugeTLB
+             flagname, switch riscv crash_mem to memblock, fold the
+             duplicated per-arch memblock walks into the weak
+             defaults, and serialize crash header preparation against
+             memory hotplug.
+Patches 5-9: NODUMP infrastructure: switch crash_core to
+             for_each_mem_region(), introduce the MEMBLOCK_NODUMP
+             flag, add a dumpable flag to struct reserved_mem, and
+             mark /reserved-memory and /memreserve/ entries with
+	     MEMBLOCK_NODUMP flag.
+Patch 10:    Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
+             header.
+
+In v5, Sashiko found some pre-existing issues related to reserved-memory,
+and has no dependency on this series, so these issues have been addressed
+in a separate series [2].
+
+v5 --> v6:
+1. Serialize crash header preparation against memory hotplug to avoid
+   out-of-bounds or use-after-free issues.
+
+2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
+   avoiding a panic from too few regions before resize is permitted.
+
+3. Reordered the patches, put pre-existing bugfixes earlier in the series.
+
+
+v4 --> v5:
+1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
+   (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
+   DT-only struct reserved_mem.
+2. Switch the riscv vmcore elf header preparation to use memblock
+   instead of the resource tree, aligning it with arm64 and loongarch,
+   so riscv also can exclude reserved memory from vmcore.
+3. Deduplicate the vmcore elf header preparation: arm64, riscv and
+   loongarch open-coded the same logic, so fold it into shared
+    __weak defaults in crash_core.
+4.  Drop the v4 patch that saved /memreserve/ entries into the
+    reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
+    directly.
+
+v3 --> v4:
+1. Rebase this series on v7.2-rc1.
+2. Add two cleanup patches (patch 02/03).
+3. Simplify patch 03 to avoid checking whether initial_boot_params is
+   NULL multiple times, suggested by Rob.
+
+v2 --> v3:
+1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
+2. Fix UAF issue when alloc_reserved_mem_array() fails.
+3. Add some prepare patches.
+
+v1 --> v2:
+1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+   feedback [3], v2 drop that property and exclude reserve memory
+   by default.
+2. Split some prepared patches from the original patches.
+3. Address coding-style comments on patch 5 from Rob.
+
+[1] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
+[2] https://lore.kernel.org/lkml/20260818092420.2859026-1-chenwandun1@gmail.com/
+[3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+
+Meijing Zhao (1):
+  mm: memblock: add missing HugeTLB flag name
+
+Wandun Chen (9):
+  riscv: build crash_mem ranges from memblock instead of resource tree
+  crash_core: fold duplicated memblock arch hooks into the weak default
+  crash_core: serialize crash header preparation against hotplug
+  crash_core: replace for_each_mem_range() with for_each_mem_region()
+  memblock: introduce MEMBLOCK_NODUMP flag
+  of: reserved_mem: add dumpable flag to opt-in vmcore
+  of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+  of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+  crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+    header
+
+ arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
+ arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
+ arch/riscv/Kconfig                         |  2 +-
+ arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
+ arch/x86/kernel/crash.c                    |  2 +-
+ drivers/of/fdt.c                           |  2 +
+ drivers/of/of_private.h                    |  2 +
+ drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
+ include/linux/crash_core.h                 |  2 +
+ include/linux/memblock.h                   |  9 ++++
+ include/linux/of_reserved_mem.h            |  1 +
+ kernel/crash_core.c                        | 51 ++++++++++++++++++++--
+ kernel/dma/contiguous.c                    |  1 +
+ mm/memblock.c                              | 17 ++++++++
+ 14 files changed, 131 insertions(+), 95 deletions(-)
+
+-- 
+2.43.0
 
