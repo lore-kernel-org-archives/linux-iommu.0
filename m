@@ -1,270 +1,184 @@
-Received: from sg-3-27.ptr.tlmpb.com (sg-3-27.ptr.tlmpb.com [101.45.255.27])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F29274CCDF0
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 08:08:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.45.255.27
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788336492; cv=none; b=l2MvwXeTOv0/2G8YMHTmzgdL1hkp6MeQ/FWD8BrwXSN21v21TTSYPZDL3ehYSTVRjt5UQV1Xgyp1sJwpGWJuJ63YFkb/CnFn3+osf04fh13ZiJzFfVXa9oWkAdpuR2WGmE0/4uSIstAo7ivkiWfGHQwo5JVshV8IXGPSigIcqZ4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788336492; c=relaxed/simple;
-	bh=Q83DtHeGnaSXKynOURw9BcEve26kEwOps/1w432YEXc=;
-	h=Subject:Date:Message-Id:Content-Type:In-Reply-To:Cc:From:
-	 Mime-Version:References:To; b=gFVKeFrvZBsyJqBKlscGInwPs6w8GFZ6O6XyLi8Sbe6g9sK2LKhwz9sFWFaWXDKV0VEPWPC/Zv2z5iRoDHXFaPa2PSpMe80Xn0ikUjRJ/LdACd7kSadqdonouSWdSWniBMJFUIbrLYLnAYAuLBiK5Pph8rTJ4QlKNx94lxB0pDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=PZCbv27G; arc=none smtp.client-ip=101.45.255.27
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 278BA34DCCD
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 08:25:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788337554; cv=fail; b=hp8fBcRoMUArWi02gG4S1FAEZTOKyUeGZrJhdkzlPF/bBiEjutun47mBE15uLszURrFmxeipbV+0Jwzznm3TPRBtsz2oYovGokGGEnd4Y1Xfo/OId1HxJp9w98Y7+PKxN6qrWMxI+7MPfMSGUNUFz9jsBR/2Oi1D8lNjrUvvkac=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788337554; c=relaxed/simple;
+	bh=5j1iUB7evyz9zP4nzdQBh8wre1KU4TKWIKcfvwKy7mQ=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=Mogb95+ZmF6y/FD2IVvWIcu4S56MIck8bgSr6sapXN4ZmPW6Jmi1Tr4dynRFHU6IeVqPkBLJCPstj+ZTIeQSXPiTnWY74GKLtf6mo1icS7nviZfXwN8a/S5Bew0ih9Lvyl9b7iwGVcwGJv23sdTn3tF1JNlOlek5yrOmHC4Vp2Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UALwLQ1c; arc=fail smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="PZCbv27G"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604151535; d=picoheart.com; t=1788336442; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=JtUcpfCIQENx/RAqzn2XCRp4WPXE5eT3JQCOCuuv+HE=;
- b=PZCbv27GGJClC4UJJrXdSQdMd3+b6n9EO7mhXltb2MM9F2JtM3mmS+kRbELDodn1uI6dgW
- DfPj/ws1x23RssEXBcC+JEEx9a73vudtkkHQLXnXzsHGlSGaF9S5bn2oRPa2tpBUtHMXxo
- 3NmVYQX+/ns8ZrKOKurlW/jvmW5p5a352eHacJOMGkjDapBUaoVrXySY7VV5Ret4rafa3N
- GMktlVKpoZELn4SBuae84/o3rmAWBNBBRBNHQuS6Yz9DJ5NJ9EeJQGHwIzBEbNgXcRqaDw
- GXDM9xiVB3d3+DXd8xRjFdTdSUQMC+tMlN6z1OYoW1WV/1jKFey1nU/NS7D9mA==
-X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
-Subject: Re: [PATCH RESEND v7 3/3] drivers/perf: riscv-iommu: protect shared state with a raw spinlock
-Date: Wed, 2 Sep 2026 16:07:16 +0800
-Message-Id: <8267ee7a-98b7-42a5-b479-648d2bec8ade@picoheart.com>
-X-Lms-Return-Path: <lba+26a97d938+2019d2+lists.linux.dev+yang.yicong@picoheart.com>
-Content-Transfer-Encoding: 7bit
-User-Agent: Mozilla Thunderbird
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <20260828085819.4076449-4-zong.li@sifive.com>
-Cc: <tomasz.jeznach@linux.dev>, <joro@8bytes.org>, <will@kernel.org>, 
-	<robin.murphy@arm.com>, <pjw@kernel.org>, <palmer@dabbelt.com>, 
-	<aou@eecs.berkeley.edu>, <alex@ghiti.fr>, <mark.rutland@arm.com>, 
-	<andrew.jones@oss.qualcomm.com>, <guoren@kernel.org>, 
-	<david.laight.linux@gmail.com>, <zhangzhanpeng.jasper@bytedance.com>, 
-	<iommu@lists.linux.dev>, <linux-riscv@lists.infradead.org>, 
-	<linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>, 
-	<yang.yicong@picoheart.com>
-From: "Yicong Yang" <yang.yicong@picoheart.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UALwLQ1c"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788337552; x=1819873552;
+  h=from:to:cc:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=5j1iUB7evyz9zP4nzdQBh8wre1KU4TKWIKcfvwKy7mQ=;
+  b=UALwLQ1cGuZkzSsiILYOjcao9DJMjoOGahOX3s92emnMh6NwozC9Okwl
+   OEAHB588pFIkG8gL8clQoT3tkcgCG3NtvWcasqchUrIrfH5lL7tzJip9A
+   SGNq3n1BNKfNWPZG/LC54yRQdSvJwI/Hyd4gmxBk0rpg8L3tvOheqTrtp
+   +sbe/1FvUXW2hl5JmsHNU+FzI/YSp3/IKAa4bKsSYKPtImUTigcBlwdL0
+   LvJ/z1nSJxiB3XqL0sr289J6BmL/9ZWW9nKsHR+mX6E49AEaO9NagXKHV
+   l+NVoj5FZ0aa6o4pkheA7wyugHZ99+NwR+9BmZ3nDhU1trAZFyr/S1FYA
+   w==;
+X-CSE-ConnectionGUID: zH72zsA8TY+9E0lI4FxScg==
+X-CSE-MsgGUID: JFxvCf0qSxakML4U71cpUg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11893"; a="106156697"
+X-IronPort-AV: E=Sophos;i="6.25,257,1779174000"; 
+   d="scan'208";a="106156697"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 01:25:51 -0700
+X-CSE-ConnectionGUID: +bNSXEXeRE+ZqSBAWPIN1g==
+X-CSE-MsgGUID: Sh5Q5xcyS7SiMLxZGCgEOA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,257,1779174000"; 
+   d="scan'208";a="269364454"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 01:25:52 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46; Wed, 2 Sep 2026 01:25:50 -0700
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46 via Frontend Transport; Wed, 2 Sep 2026 01:25:50 -0700
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.57) by
+ edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46; Wed, 2 Sep 2026 01:25:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=R+5HepZ4jFqPGleOo9HrMXKgUMzHf7FINNyJby8HEcjZ/dWihIuHB8tSI/gzGfcWXVkjO2FP1qrT1PiDJNzxr9QvFXtpwH2GyGcTrwwqU+kG3iBetT7XuIfcO2Do+hjeWHaJcZ2OpIeXh8PA0wEohy1qIzI2UA4wUaR2ymkHPrR6MTN6eYU/Y8V0gTRylRvv2MRdwo6HcQLVyFUFMsYh+bc/kIWWkQep1EvDi6I6MgHWfV/NoGDBCwE2OvnfbKQDyO3Y0b8tu/dqXF5KtI+fZEbHuy0VU45w3pko8urDFLnmJRMAMelY9B1ItyY80uyI+gydJdAb8rvm5nRXt8ZNsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/7M+J/uMyvAzSzMPh21pBKSWJJzD1BL1r4XBlDCg4Ms=;
+ b=l8EjlJQ20nnDTQragqvJW2wk41Q9UiY8T/ZBPJnLR13mdRukb5UuyP+l31cAqi0Q8efw98W/v2W062PvEWC4ODEM0D3rvKLnATXvv9APX+OM4jTtvYF76q/GqeEehEOx1yzcYUxN985e4GU7QUURDd0O7zhRoszG/ZdjI642r3glkIoxPyA3hVTl8EQM4DZKbduvC9NdP/mjja5ojhRS4eT0e78i5i36LG+vF5mUOeQHoNoNzkldyEaWHWQPmLMsViYyMqhJBZv0t+xxaB2FkYUo9XfKjTRIJApFN/EY/l2SebS6GMkoKRU147j2D44DMMwEpdxZZzKUQtFArr9/cQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB7424.namprd11.prod.outlook.com (2603:10b6:510:287::7)
+ by SABPR11MB9937.namprd11.prod.outlook.com (2603:10b6:806:4f0::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Wed, 2 Sep
+ 2026 08:25:47 +0000
+Received: from PH0PR11MB7424.namprd11.prod.outlook.com
+ ([fe80::c448:1138:6981:52e2]) by PH0PR11MB7424.namprd11.prod.outlook.com
+ ([fe80::c448:1138:6981:52e2%5]) with mapi id 15.21.0360.008; Wed, 2 Sep 2026
+ 08:25:47 +0000
+From: Krzysztof Karas <krzysztof.karas@intel.com>
+To: <intel-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
+	<iommu@lists.linux.dev>
+CC: Andi Shyti <andi.shyti@linux.intel.com>, Robin Murphy
+	<robin.murphy@arm.com>, =?UTF-8?q?Micha=C5=82=20Grzelak?=
+	<michal.grzelak@intel.com>, Janusz Krzysztofik
+	<janusz.krzysztofik@linux.intel.com>, Sebastian Brzezinka
+	<sebastian.brzezinka@intel.com>, Krzysztof Niemiec
+	<krzysztof.niemiec@intel.com>, Krzysztof Karas <krzysztof.karas@intel.com>
+Subject: [PATCH v6 0/7] drivers: Improve memory management for large object allocations when i915/shmem is used with iommu
+Date: Wed, 2 Sep 2026 08:25:18 +0000
+Message-ID: <20260902082525.1149367-1-krzysztof.karas@intel.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: DU2PR04CA0200.eurprd04.prod.outlook.com
+ (2603:10a6:10:28d::25) To PH0PR11MB7424.namprd11.prod.outlook.com
+ (2603:10b6:510:287::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Received: from [100.86.218.63] ([61.141.241.110]) by smtp.feishu.cn with ESMTPS; Wed, 02 Sep 2026 16:07:19 +0800
-Content-Language: en-US
-References: <20260828085819.4076449-1-zong.li@sifive.com> <20260828085819.4076449-4-zong.li@sifive.com>
-To: "Zong Li" <zong.li@sifive.com>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR11MB7424:EE_|SABPR11MB9937:EE_
+X-MS-Office365-Filtering-Correlation-Id: 07fdf3d0-a26d-4886-e0d4-08df08cbca2d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|6133799003|56012099006|10067099003|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info: t5/wD90M6sPjOuw/UxAqWUTY64q6rKg/iOcFr8F9JnP1cj+6gvSe91rjtJqRIHEFlWKgVLhW6rQ9ajg+7sWIjjMHLZjBBKMX7ymFsO4U+sZsvau3a4Wfz0cBpiGm99Fsv4x5Kz3i7/UkPKmVtvq/jM4d9DflqruodOMl8p4A5xKbExq/M2mlpIOB8egZyUqnlZzaXYBuzVooQYfIl8yTwgeL2Nat3QMZo/dMTIpjF8aXY9CxVWNEJFUyE+DzN4M3J47frb+LXFbxolPkhGU2ICU8OF1LSHygsEQVvL0/H0GYqrBVq86nKU2lZcdn/7kH5OGXH3VKBoOmt/tls2Gp3zezVIBopAlz1aX2eAAQbAht343268C8P+5P7+wWAL/d5gHfdHUjjJ0yVSlACR3H+3p6GHojRMjEEjzX3jCcJ2tjGD2pUthZzwNvv8/eai+5nZWwqcVc0Jip8lzDSEd6WP+1dC6Ul8ejgy2iIhiMm7urBcr3uSZBeA3PyFkf8gHa+nILSbGDh0zSaEyVG2UWTqRD907ZubaRP6QdZHFX9GkM0dbsngDdccDgRVdSBVmjAFuezYhvtWpx5msZgE0XN6ipx0DNMjqUuEiIa79DaW9L6MyV6fjvXPlZY9Jsr+2h/uJ8L2WgXag+1p4cD6sU2nAk5l1ptNqIPQnFMVfcDqk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7424.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(6133799003)(56012099006)(10067099003)(11063799006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+RA9dBkxeotyBfiXKKILXsXYmrIM9m81kjsUjoaLqLuGY2NU6/LWFGUrafaD?=
+ =?us-ascii?Q?SmSc6Tph7sJWiLapwumSJ7Rm4Ugo+VU1UE+SlNwbRcuqJOjpXz19yC0vn4Ri?=
+ =?us-ascii?Q?C1wSWOhWVXHJG2NPF0sXNQlAxihR2ezi/BSDVRyQIc0SABA5e6IosRucXFsP?=
+ =?us-ascii?Q?P8ryToWy8RP7aaJGbbmWoSQf00kpH69EuGP0L4MKcG92z+cy9lGrbD/d3M82?=
+ =?us-ascii?Q?RxvSEEnjV5izMdoeHAWbf4jOlHL01Ji0ddMkovDbW54d/THzN6N0TsIx8gBL?=
+ =?us-ascii?Q?4QtLAdf08bI74ImqwJPlbOzFjSAXgiBV+j0djDQ0EoaOJe+EW1jYZ9NBY5QR?=
+ =?us-ascii?Q?aiS5IHe4bxXk/MJG60YiqQfgLz7b1Z2BHxRJocAlwDTgUBnn3dssb8+uKArY?=
+ =?us-ascii?Q?1WX9mepSEXdSzDp3kqBD3OCcHtiFXMJHgCWTWtsS0qncrRTouKw9/R+SjxYg?=
+ =?us-ascii?Q?wk/w/O+yCWdaeOD6M/VkTMO+f2YK4/R67bAiFk2F0dXcQUD5Yj04bBRfw0o4?=
+ =?us-ascii?Q?J6RYXk7ozYKGC57+UXx5NmCXDnrPrd/NWgvZ6B2eCOYRJPAl6APpiITKx/mb?=
+ =?us-ascii?Q?te6++hRAajbmRgpN8/xBC11YAO+qmGhY3/7gxHdd4tKYRSMrjSDj7HnVMBcW?=
+ =?us-ascii?Q?CyXLDhm6xrMFdyT0amWxMfDBrmXY/R/gXCFB+Rd5OPnrIu070V3+AmooToPH?=
+ =?us-ascii?Q?eNjnMInVNPB8NO9qqOwMrkhaLpp15zlU0gh3auIcM/KI0OMOHmJOUhHz8OTI?=
+ =?us-ascii?Q?EDzSMeKwUVOtdxgkaX2feexjRaBqI75eby4ORbxze1q+KvMtIDBnyzYiUdrK?=
+ =?us-ascii?Q?cp0i9IYZ6frV9QijW2Z2Bod9VEDCGM/nE43YrxesIUWsjQ5le1hGqOkLb6oS?=
+ =?us-ascii?Q?4GALGaCr3tymJvEMWecBjG1ys6LWcxKFzEXoiEKQYIFBL/+qOkDQ2/OtCaIA?=
+ =?us-ascii?Q?g+n1qucnDo8nFzf2371HARtzbmazSA6iB3DtO1wDgePhi9sb1GVwRjeAqNcS?=
+ =?us-ascii?Q?CTZYerU2BF/b2iAUfQNDXAptx5eW68aAke0g8HWUVjFA1ExX4QhyyE08UZv3?=
+ =?us-ascii?Q?7OIuZRHvatp2BnW+mckaqvRQ9e2duYFoHnDQg2tSB4oP3uuhRbKneUQ4JIOa?=
+ =?us-ascii?Q?aznPvNcFFUpoTg10RbJXz926x2GysqYlvpRh4uo2NOBkCjSU1H8jhs+shtPo?=
+ =?us-ascii?Q?UwqBZG8pFjfzkqxEP4HEbx4ipPX/iwzmoToeP49mGcwI8PW9XtQO461kKfn3?=
+ =?us-ascii?Q?3DueKCcKgU+2h6/LS1y1OMtNJaCnTbvxTv+rZuTl4iL7tsmdA2OIIPBsFa2U?=
+ =?us-ascii?Q?SiahFvLPldoBAfSDnvLmujhT/RD42tPPjRbAXryECT8jSns3wltb2wWdTm6l?=
+ =?us-ascii?Q?j+LBd0l4HFX2CXIFqicmRUpXRONbvHBpNkfcHq0L+JmQ7XwciMXc0BgaKcQ5?=
+ =?us-ascii?Q?ZbmQVfpjNvk9qhJpO0VT4W2wDsF6pffvU2PkIhwElxkZKitPPInoSXbEKg1C?=
+ =?us-ascii?Q?UHW1KNqmCIg3jFZCVJ2WZtRQcWdxFcPwaL7f6yvEFkIj+5QGIDjQMYpQwi0E?=
+ =?us-ascii?Q?ZHfyHizyVNQVLKCOZBqVqE/XnJEbAjQGjS/kN8WSaQnb7ISDlt6Jkgj8mhqk?=
+ =?us-ascii?Q?/VbkL9SkuiJ+da65W5TS8Xug37M4FHLVepHl6GZEIgdTKPXYnw/UlnKh1DP0?=
+ =?us-ascii?Q?bdwyfOAuZwY22v+NbYCgYtwl9FlLXRtqNHggivMJw3NhcQOlMZj0arUM6AlV?=
+ =?us-ascii?Q?v+Vnm5aWlYqlElqrAdntzd0jBrX5nYk=3D?=
+X-Exchange-RoutingPolicyChecked: RVOibnZuELEe9xtqaqT7wN2zKD+UVtTBhnvd7pf6o3xFIQK7bxm+aCEg/ZkeIDyrZzhYsl27+2rJ/4QRHNgN72Fh7MmIwE4G3BaOdE7WarHO9dSO98O5vxDuW1D+m6PjlgE4m+khLqQsuK1AA1GbPHKXOY4Kd3GFAZfHaQ+tkQkXbUXo0wEQGxJ8Sc6+L96I6uK9uoGoOBqypXw0YcXHA1j7bmBNYeAEHm3v80b3C7qXV3LnacZK8VnWGs5zQAYUTWx0mJE7+6gWvW+w5+L+cKRVqgzS/4oyYstSzX37SpiKKAU3tZ0CjtaQMq3xEgL3sqKlv6pnFxdaPRnrQiCX+g==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07fdf3d0-a26d-4886-e0d4-08df08cbca2d
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7424.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2026 08:25:47.6137
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CcTYiSjgsIVPkzfCr0geq1eWaS6e5kyeZi5Ap6MLTLksTfjSf84V17+489hymxi3okFqfWEtENvNAfW/kSqr2/vtdi6d/No0on2PjtFLTK8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SABPR11MB9937
+X-OriginatorOrg: intel.com
 
-On 8/28/26 4:58 PM, Zong Li wrote:
-> Events are bound to one CPU and the interrupt is affine to it, so the
-> perf callbacks running with interrupts disabled would be enough to
-> exclude the handler.
-> 
-> PCI MSI/MSI-X on IMSIC breaks that: the irqchip sets
-> IRQCHIP_MOVE_DEFERRED, so irq_set_affinity() reports success while only
-> recording the request, and the move is applied in interrupt context upon
-> the next device interrupt. Until then the interrupt is still routed to
-> the CPU IMSIC picked initially, so the first overflow interrupt can run
-> concurrently with the perf callbacks on the CPU the events are bound to.
-> 
-> Take a raw spinlock, with interrupts disabled so that the handler can
-> never interrupt a holder on the same CPU, rather than depending on that
-> irqchip behaviour. It covers the state which is reachable from both
-> sides:
-> 
->  - IOCOUNTINH is read-modify-written by ->start()/->stop() and is saved
->    and restored around the whole handler.
->  - pmu->events[] is written by ->del() and read by the handler.
->  - hw_perf_event::prev_count is updated by both.
-> 
-> ->add() and ->del() call the unlocked __riscv_iommu_pmu_start() and
-> __riscv_iommu_pmu_stop() so the lock is taken once per callback.
-> 
-> Signed-off-by: Zong Li <zong.li@sifive.com>
-> ---
->  drivers/perf/riscv_iommu_pmu.c | 66 ++++++++++++++++++++++++++++++----
->  1 file changed, 60 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/perf/riscv_iommu_pmu.c b/drivers/perf/riscv_iommu_pmu.c
-> index f6acd56f2f61..ee2f6d1fbece 100644
-> --- a/drivers/perf/riscv_iommu_pmu.c
-> +++ b/drivers/perf/riscv_iommu_pmu.c
-> @@ -101,6 +101,7 @@ struct riscv_iommu_pmu {
->  	u64 event_cntr_mask;
->  	struct perf_event *events[RISCV_IOMMU_HPM_COUNTER_NUM];
->  	DECLARE_BITMAP(used_counters, RISCV_IOMMU_HPM_COUNTER_NUM);
-> +	raw_spinlock_t lock;
->  };
->  
->  #define to_riscv_iommu_pmu(p) (container_of(p, struct riscv_iommu_pmu, pmu))
-> @@ -485,7 +486,8 @@ static void riscv_iommu_pmu_update(struct perf_event *event)
->  	local64_add(delta, &event->count);
->  }
->  
-> -static void riscv_iommu_pmu_start(struct perf_event *event, int flags)
-> +/* Called with pmu->lock held */
-> +static void __riscv_iommu_pmu_start(struct perf_event *event, int flags)
->  {
->  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
->  	struct hw_perf_event *hwc = &event->hw;
-> @@ -500,11 +502,22 @@ static void riscv_iommu_pmu_start(struct perf_event *event, int flags)
->  	riscv_iommu_pmu_set_period(event);
->  	riscv_iommu_pmu_set_event(pmu, hwc->idx, hwc->config);
->  	riscv_iommu_pmu_enable_counter(pmu, hwc->idx);
-> +}
-> +
-> +static void riscv_iommu_pmu_start(struct perf_event *event, int flags)
-> +{
-> +	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-> +	unsigned long irqflags;
-> +
-> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
-> +	__riscv_iommu_pmu_start(event, flags);
-> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
+It was observed that allocating large objects via i915 driver
+(igt-gpu-tools/tests/gem_exec_big/single) the folios and their
+pages were not handled properly leading to buffer corruptions
+during relocations.
+Furthermore, using iommu driver in this context would leave
+residual mappings in memory that could not be released, hogging
+available RAM even after the process ended.
 
-could use guard(raw_spinlock_irqsave)() to help handle the lock release.
+v6:
+ * split max_segment validation into its own patch;
+ * added Fixes: tags and Cc: stable to the fixup patches;
+ * repaired bits pointed out by checkpatch;
+ * ran local regression checks and automated review process via
+   Claude Opus and added Assisted-by: tags.
 
-I'm considering if it'll better to use irq_work or function call to handle the
-counts update from the interrupt handler, e.g. in the irq handler first check
-if current cpu is the pmu->on_cpu, if so update the counts, otherwise queue
-the update work to pmu->on_cpu by irq work or smp_call_function_single_async.
-In this way we can use pmu's original synchronization mechanism without
-extra spin locks since the callbacks will always run and synchronized by
-the same cpu, and the shared interrupt doesn't matter at all.
+Krzysztof Karas (7):
+  drm/i915/shmem: Validate max_segment
+  drm/i915/gem: Count mapped pages in a folio
+  drm/i915/gem: Free sg table on failure to acquire second folio
+  iommu/dma: Catch scatterlist length overflows
+  drm/i915/gem: Pull out size validation into a separate function
+  drm/i915/gem: Read and shrink memory in a separate function
+  drm/i915/gem: Remove iterator and use while loop
 
-any thoughts on this?
+ drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 172 ++++++++++++++--------
+ drivers/iommu/dma-iommu.c                 |  17 ++-
+ 2 files changed, 124 insertions(+), 65 deletions(-)
 
-thanks.
+-- 
+2.34.1
 
->  
->  	perf_event_update_userpage(event);
->  }
->  
-> -static void riscv_iommu_pmu_stop(struct perf_event *event, int flags)
-> +/* Called with pmu->lock held */
-> +static void __riscv_iommu_pmu_stop(struct perf_event *event, int flags)
->  {
->  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
->  	struct hw_perf_event *hwc = &event->hw;
-> @@ -521,13 +534,26 @@ static void riscv_iommu_pmu_stop(struct perf_event *event, int flags)
->  	hwc->state |= PERF_HES_STOPPED | PERF_HES_UPTODATE;
->  }
->  
-> +static void riscv_iommu_pmu_stop(struct perf_event *event, int flags)
-> +{
-> +	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-> +	unsigned long irqflags;
-> +
-> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
-> +	__riscv_iommu_pmu_stop(event, flags);
-> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
-> +}
-> +
->  static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
->  {
->  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
->  	struct hw_perf_event *hwc = &event->hw;
->  	unsigned int num_counters = pmu->num_counters;
-> +	unsigned long irqflags;
->  	unsigned int idx;
->  
-> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
-> +
->  	/* Reserve index zero for iohpmcycles */
->  	if (is_cycle_event(event->attr.config))
->  		idx = RISCV_IOMMU_HPM_CYCLE_IDX;
-> @@ -535,8 +561,10 @@ static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
->  		idx = find_next_zero_bit(pmu->used_counters, num_counters, 1);
->  
->  	/* All event counters or cycle counter are in use */
-> -	if (idx == num_counters || pmu->events[idx])
-> +	if (idx == num_counters || pmu->events[idx]) {
-> +		raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
->  		return -EAGAIN;
-> +	}
->  
->  	set_bit(idx, pmu->used_counters);
->  
-> @@ -546,7 +574,9 @@ static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
->  	local64_set(&hwc->prev_count, 0);
->  
->  	if (flags & PERF_EF_START)
-> -		riscv_iommu_pmu_start(event, flags);
-> +		__riscv_iommu_pmu_start(event, flags);
-> +
-> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
->  
->  	/* Propagate changes to the userspace mapping. */
->  	perf_event_update_userpage(event);
-> @@ -556,18 +586,26 @@ static int riscv_iommu_pmu_add(struct perf_event *event, int flags)
->  
->  static void riscv_iommu_pmu_read(struct perf_event *event)
->  {
-> +	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
-> +	unsigned long irqflags;
-> +
-> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
->  	riscv_iommu_pmu_update(event);
-> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
->  }
->  
->  static void riscv_iommu_pmu_del(struct perf_event *event, int flags)
->  {
->  	struct riscv_iommu_pmu *pmu = to_riscv_iommu_pmu(event->pmu);
->  	struct hw_perf_event *hwc = &event->hw;
-> +	unsigned long irqflags;
->  	int idx = hwc->idx;
->  
-> -	riscv_iommu_pmu_stop(event, PERF_EF_UPDATE);
-> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
-> +	__riscv_iommu_pmu_stop(event, PERF_EF_UPDATE);
->  	pmu->events[idx] = NULL;
->  	clear_bit(idx, pmu->used_counters);
-> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
->  
->  	perf_event_update_userpage(event);
->  }
-> @@ -635,12 +673,24 @@ static irqreturn_t riscv_iommu_pmu_irq_handler(int irq, void *dev_id)
->  {
->  	struct riscv_iommu_pmu *pmu = (struct riscv_iommu_pmu *)dev_id;
->  	DECLARE_BITMAP(ovf_bitmap, BITS_PER_TYPE(u64));
-> +	unsigned long irqflags;
->  	u32 ovf, idx, inhibit;
->  
-> -	/* Check whether this interrupt is for PMU */
-> +	/*
-> +	 * Check whether this interrupt is for PMU. Done outside the lock so
-> +	 * that a shared interrupt line is left alone as cheaply as possible.
-> +	 */
->  	if (!(readl_relaxed(pmu->reg + RISCV_IOMMU_REG_IPSR) & RISCV_IOMMU_IPSR_PMIP))
->  		return IRQ_NONE;
->  
-> +	/*
-> +	 * Hold the lock across the whole sequence below. Stopping the
-> +	 * counters, processing them and restoring the previous inhibit state
-> +	 * has to be atomic against ->start()/->stop(), otherwise a counter
-> +	 * enabled in between would be inhibited again by the restore.
-> +	 */
-> +	raw_spin_lock_irqsave(&pmu->lock, irqflags);
-> +
->  	/* Process PMU IRQ */
->  	inhibit = riscv_iommu_pmu_stop_all(pmu);
->  
-> @@ -672,6 +722,8 @@ static irqreturn_t riscv_iommu_pmu_irq_handler(int irq, void *dev_id)
->  
->  	riscv_iommu_pmu_start_all(pmu, inhibit);
->  
-> +	raw_spin_unlock_irqrestore(&pmu->lock, irqflags);
-> +
->  	return IRQ_HANDLED;
->  }
->  
-> @@ -735,6 +787,8 @@ static int riscv_iommu_pmu_probe(struct auxiliary_device *auxdev,
->  
->  	iommu_pmu->reg = iommu_dev->reg;
->  
-> +	raw_spin_lock_init(&iommu_pmu->lock);
-> +
->  	/*
->  	 * Counter number and width are hardware-implemented, detect them by
->  	 * writing 1s and reading back which bits stuck.
