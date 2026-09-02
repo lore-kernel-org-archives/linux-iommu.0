@@ -1,59 +1,79 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011015.outbound.protection.outlook.com [52.101.62.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f12.google.com (mail-pj2-f12.google.com [74.125.227.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7814137AE
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 13:34:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788356077; cv=fail; b=mS6PImWDYOkoqpdhlExrWii6xeL3YRHWE5WDy5FFRNw5cC6qmFuELwjMsJ9IAe1M4gwhu8jg3Hi6j15KiMXwSnQJbHwCRLTXU2yh+UZL06asbdFoVn27/4lmzqu4vB4LwGoh8ahH2l2yvKoVMQZqEnRAALT7cA8GzZYrYQ7U21w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788356077; c=relaxed/simple;
-	bh=K80U0W99W+yrVl0Lh15gdLWvV8p7t7NOfnk26rGurIs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=tnj/xzKXHCmY/JBt8EdwMjxX1V9kSBaxaPxInxXnYGTxeGe2Hv4NLR7R1KIzL185qUTN3W4yMYpYtkOCO9x1dr+zWxvt5jSPXdYB82Haxm3AuKRrN9m1jQhoP+ySAhh7SnSUIt88sjuTCwtv3le73TCnTS9D6VjMMWvFyaV+wHc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=SkyyMM1v; arc=fail smtp.client-ip=52.101.62.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90DB747DF80
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 13:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.140
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788356566; cv=none; b=SBWZ/vRVEaUgxyQapXmDdv7RnKodL1D3bR8MIuz9r0DoqtR0998Jhnbbj2QQnSxR+scYKKGxZ/aO0WJO3V1i9MDDPASgj55agzb7xerEBMGhsr2cHKaYNWxDYNf1KLa9wWfYJOBDMO5t1bDGyeL97QdIN0d/wUzSeJcuI3s+dd0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788356566; c=relaxed/simple;
+	bh=UnVBDT2yMgSQ4ZRWdKz2B29xT09qz00hTJhXeeB15OA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JEMqbKn1g3rdoPvQbrQrG4kJKTDwfOEFh1DEUktNrlAnk3Pifu8Ork10gqNXrauSPr8WWC/di/2Oldaj0uVvo4wxupfBFcjJ6kZVdTjy+dIFbbcJms3vlvkQJiyxfvPfDX0VGLrvfvmkr//XXUjCK1bybwst1C3ft6XixNgpzZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Gp9mhH4P; arc=none smtp.client-ip=74.125.227.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="SkyyMM1v"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ya/PS1SwExXU8A9HWdp5BW80RZ4AHgyyDF6O3Ls8ukcXUBgwOifYm94iI0Y5gsb+icAkBQhQBC43B4t27rmz/ywRorFmEDD+cfYRadP8+IOWvtvDRjROH8rs8bR/QvsaEXaq63hh+yHxzBHnkcl6k0VSqljFfcXIoabBi6QH/Wd+W8tciLBORqGqQZCeHTtJAEQXTlH/DTmJucrrIxaohqIlHGpJxKr3RWwn+NQiEQT9N236r7TmdstL1QTmO8EeIXZKaLN4bclo05X4RY4d5F+eS/ulPDyg3F/IgBE/JQpDovrKxut3vu7I7LPSEaRWD3AT+gCkGQx5xkeIvoygvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FfJCBw0Qvw3HdzwXTgbj28ghteUL5B+j/R4+mIY7xsg=;
- b=B1CKKd0CDY7RLErtkYUR5lb9CHwAb4+lMUGLCaXtjkpw0ZAwJSVQ2gsm4czxl2/G+ChLJT/Io/HuYqCQgM3nXYQZAEJWeL/BUd3VdeXcsLd6sUdJ0xU7yWqBeiJuIaRlCu7Z19rfc/1DIxYe0EAwnvLw6X6nhYpatafX3bR8Jbq3upxXNp57cYoRHTuMMl+Nfg4sXkd1p4UBBBKTvzMlIQgV9TEXZ86mDMZKsIFJJ8PQLZki+k3LYFuZMEAoG/iyDicgIFmmQrkNZxQAl2SSGrUJrdV3gzmrmb9I1tpIK+XqhGmd4Xb8kkAgCti871lAN6MTsHP9DOmZzCqaopSG/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FfJCBw0Qvw3HdzwXTgbj28ghteUL5B+j/R4+mIY7xsg=;
- b=SkyyMM1vhIZhFXGpbrlVFHnLskRQnS/B67uNuL7RqE5T5QbAQ06NIYYj5PVkN8pkmdsgERe+8BkyniyuuQnGyQKW5ldCf2wp9MgqBtB+vYBclHSkWTFXcLExIDeF4oO+k6l1VZGsJoyIwTIXqaHNkJIFXpNuGIjulYLAp3Pk89Q=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by SN7PR12MB8434.namprd12.prod.outlook.com (2603:10b6:806:2e6::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Wed, 2 Sep
- 2026 13:34:30 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0339.007; Wed, 2 Sep 2026
- 13:34:26 +0000
-Message-ID: <7471c6e1-fbba-4430-a196-3f57a73505b7@amd.com>
-Date: Wed, 2 Sep 2026 15:34:18 +0200
-User-Agent: Mozilla Thunderbird
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Gp9mhH4P"
+Received: by mail-pj2-f12.google.com with SMTP id d9443c01a7336-2d6ff3aca07so27295ad.1
+        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 06:42:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1788356561; x=1788961361; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ZSTpKHWOHnBacMTdwSxpJ9Et4v7FJnMFRqiSvtmfiLI=;
+        b=Gp9mhH4PSO4J9kGXlKvuCveAKp+uh/s5GFWC33EXsUtwAtr65NYOnTyxACwrjtK6yf
+         rQYP7TZMoGhZdxZecd2Je17Iv1cNGVksiqgEd23/Bgg5O2Ne3mwgjbNU0SqYmp3dLAtS
+         sC/+SL8hns+qXzy7hTI/nSh3RYZJmEWusQAN6iYw2NZ8gY8xj0HqT1QtO8+wyGDLM8GV
+         51moe+MKLSrl5mYs6UienDTA9l9/XP+584UHJaiMc+00AVPa9k5opvstdp9SyPnGyEwO
+         y4QkJve4XHVv1DoGRBrgFHQ/oYtcBNR9SSW2JyclLDTM2pqWd/dyF4ff3FeHBlMDvTA5
+         2AQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788356561; x=1788961361;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=ZSTpKHWOHnBacMTdwSxpJ9Et4v7FJnMFRqiSvtmfiLI=;
+        b=rcmFu/WtqIjjPPfkD4VZ06CKfc4dn0iPFJD4fOKhANMRWwY6KmeQqREPbDAPU3uIc5
+         Se3xWDhWym+raijuqIokW9chvR5PFMLT08eR1AvqYUdxURWHPB2NHgfltrNCcE+IHOKA
+         tjLuDd1GP4j/MXcgK48j8SfCfgkIn18IBLDHTGtevdAdxE7CeySCjxNIeKdqpX+RlJ6m
+         TxfjrrDHnyLRq7NoqfR352uMnnf5veuNDwClaJG4sh4ZyreaQ0jMLqkZngcM4A3+piV4
+         /eYArOopPBaQ5L0aZdLfo+sQgk52FIscY+9M4NMlx896qjxN4VKpJOeys/sjtAnz/all
+         vj6g==
+X-Forwarded-Encrypted: i=1; AKwUvBwCjP3/GH+gfU8e7IXIBTnG4TaUQX9BMiz03mgMZKB4D9azKiktY2K3UUKEWmgu1slDehhwwg==@lists.linux.dev
+X-Gm-Message-State: AFuF++maOaqC01EqvxHbGq2NArDz4vYHCdaZ+sBbreOGK6qoei0ey2VY
+	ccND5g1nPG4Vzr+qFpEKC/zP2EskpiPQg+qk2hX0NIphkhMNO4ZVzVGW7twIwCxZeQ==
+X-Gm-Gg: AYBFou2PCr+FbvU11Yg2DrmZazRdAvocHd7dNS7mraI01OKW+XwuE336vfhgo1gMPX9
+	sYnlPtUyC41tI7FzCWND39BgLZRCHgkVyhE4dIjm3I096cc66Dm0HhYxrzM9WzFwpdlrLUf59l0
+	Z5+gfEHTYGrc/ZNvdZvV+fA412ax0Zs/ZTYN/06xRwZXk0xkuwrk/dHpUaKuQufeLr+tVgC+QrK
+	Ar3O2I71AFSH6KiVeazs8Obf3LkGPyz7OZufQwXnPy1cRRNRCThHb2TOc+Q4148bRc5mQZN9+yF
+	cxwzyubJzzv+DCS+xt0g7T2vFQvX7B2WyZ4/rrkSCmPRAHv2XW4s/CMdQxmVFLM7torh1ZqtXSG
+	uTdCoRyKGi0XU3LU5YTSCg3J1EK0tQfaFTztry1JniQaSO2FSan3K5HJsvxN+hDaEDr2P8yT7xX
+	lBVYP8NouHBha8sVvQc9Oao7EgXStbReadjWiqCASrnn68pnsDCJr28pjhKxEt4B5t/MW1CN6PW
+	5eLvAY9aXiS5Z6zlNQENTkJPVg=
+X-Received: by 2002:a17:903:19e3:b0:2ca:4bb4:4bd with SMTP id d9443c01a7336-2daf66043c8mr1378505ad.5.1788356560192;
+        Wed, 02 Sep 2026 06:42:40 -0700 (PDT)
+Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-85dc003aee2sm1404704b3a.30.2026.09.02.06.42.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2026 06:42:39 -0700 (PDT)
+Date: Wed, 2 Sep 2026 13:42:31 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Leon Romanovsky <leon@kernel.org>, David Hu <dhu@x6u.co>,
+	sumit.semwal@linaro.org, alex@shazbot.org, ankita@nvidia.com,
+	chriscli@google.com, david.laight.linux@gmail.com,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	jgg@ziepe.ca, jmoroni@google.com, kevin.tian@intel.com,
+	kpberry@google.com, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+	nicolinc@nvidia.com, sashiko-bot@kernel.org, stable@vger.kernel.org,
+	viursachi@google.com, xuehaohu@google.com
 Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
-To: Leon Romanovsky <leon@kernel.org>
-Cc: David Hu <dhu@x6u.co>, sumit.semwal@linaro.org, alex@shazbot.org,
- ankita@nvidia.com, chriscli@google.com, david.laight.linux@gmail.com,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, jgg@ziepe.ca,
- jmoroni@google.com, kevin.tian@intel.com, kpberry@google.com,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
- sashiko-bot@kernel.org, stable@vger.kernel.org, viursachi@google.com,
- xuehaohu@google.com
+Message-ID: <apgnx0pirQ2SUcmY@google.com>
 References: <20260901170849.4052816-1-dhu@x6u.co>
  <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
  <20260902073936.GR24140@unreal>
@@ -62,101 +82,92 @@ References: <20260901170849.4052816-1-dhu@x6u.co>
  <aae19599-2ba8-41fd-b3a9-b1f80107f563@amd.com>
  <20260902095338.GU24140@unreal>
  <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
- <20260902105919.GV24140@unreal>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260902105919.GV24140@unreal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0414.namprd13.prod.outlook.com
- (2603:10b6:208:2c2::29) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|SN7PR12MB8434:EE_
-X-MS-Office365-Filtering-Correlation-Id: b72f6a5f-06b1-470f-8288-08df08f6e881
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|23010399003|366016|56012099006|10067099003|11063799006|4143699003|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	GOO6VBHnI47U6sIL2Neh/6WXJ3IPblseNnsVkX/cqH0bIAxYiXYlcq9cKlo0+VfEj3wU0mzvdaCnvU52PV/5BD4xyd1vwthLYb1pfTL6hy/lrYI4/v4d3EsGlQrP+4KDNNj5WejUSAano2gfKM2c0XDyMA1ts9Ve2AqpUc1TD6rAMfNNCu2ar697h/uNdY62gWEvZ03p4Zo3VUwHGc4q0MFdu319wcLs+y8M+9Fzj3frugB1sES+HV91Nr5Knu6jtrWCnZVZQ6uoU+8HHtYiyBHW28Re0qyfLAh4qhk+Q4bFy5F8biZigwy0w0MMditsDjp3K+1EkJ7GDyHYYDz387IPcXTr9D2Zmu2aSxtSrsMfdIwEaArwfVwrpAhiawUWhJpLIXdfO1ug1VBp/U+Qrtt6PYwUyzYxaOX81eVSlDWCPJXxgMA0Quy8LzjWxeEWujy76imncjjPw5dWJ+98YBS7UC44joDV4BZkxvn7rbY4ZT+fw1oxbvm2ONwyFZtF9O5uL3i/SdYaO9ew551aLnedlgn1x/zooUHHhJuDcviFC7duX3sWGT0R45r42CQaf4fxVWo8AhlDBrbMxZLMBwTZ0sydI2n7ukB/QC3IiUQ87f+U2CM2m6O7QKMx3WSULB5gnYrvE7XQoSHi35Fz6EEfq0zNhWE4k3v3EuyxXsg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(23010399003)(366016)(56012099006)(10067099003)(11063799006)(4143699003)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YTEwTEs4S0xDY29KSVlYVUo0UDVzWlNpVVAxT1A2ZjEzODV6L2Nab245KzM2?=
- =?utf-8?B?MlBrUXpWc1AxVHpWaisveUYrY1l3YUNRbzVrNE1hVWdXNndiNzQzRTZubWNV?=
- =?utf-8?B?VmJKN1FGankzM2NSdldSK0I4Zmk3RzkyT2hwM1YxNHFRVzNFUzV6bUVnclRW?=
- =?utf-8?B?SDBpT1QwL2ZFODBtWGhlazdpSHNXVytnNENVcit2WlhjaVZYOFhHaGRaSlc4?=
- =?utf-8?B?YlZRazhzRHNqVjZXUDBWL2lMUHF5eFlaVkhaR3FuenhzczNpMjVaakw1ajM0?=
- =?utf-8?B?TURkY2hOT3VlV2xhMUhEaGJpS2NLOGFpWWlLcFBET0pQZEttRzB4d0o3RzNF?=
- =?utf-8?B?YlFIdmEwaHlRMHZsVmtoNXlIRnFscGZpNXNJTmVTUEdwcWkvRXZDNG1iMThs?=
- =?utf-8?B?akF1UlQzVDd4RjdXdDNseG85SHlKc3ZPZ1Ard3Z0VU5LbXNWT0srbEFzQ0FZ?=
- =?utf-8?B?ZUFSMzUxYWh3K1puNWJXN0ovaHRVSnd3Y3NiM05SNmpodlorenprWUlTSmZZ?=
- =?utf-8?B?QXF2QVJkVEVwMFc5YWMvaDM2cmd3U0ptaWw5M3lQTm1vVDdhL1JJL3ZTY1lQ?=
- =?utf-8?B?dzV2aXdDdFlrdk9Mb3VCYlo2K3p2UWtsNGFtM080bi9QV0M0cTh1MU9hYVBW?=
- =?utf-8?B?UTc1MzFsZ0h5OTNJZnJ2aEl5UmcrNnhyTGgzamNnVWdRSjNzMkkwbU8xSUpI?=
- =?utf-8?B?T2pyK3RtT1NDQ3hmYmp4Z2o1dWxVTWh3QjlZQU0zL0lTekdaVEhVTU8zdzBm?=
- =?utf-8?B?eUFYdTk2eW9uSzBWR2hOaHlGWnVkRkNlbUxiK2RBM0t0UzljRXFHSjExYTNm?=
- =?utf-8?B?YkNPc2FtSXVzTitqVmxJaE5URHBPWStJSW5XYjdHYjN6U2lCYTJDK1czSlZw?=
- =?utf-8?B?RmNVNHJoMGZaWTUrc2RHTEZlcjZMNXBxenBhMjFVQXY0cGphSmZsTDJBc0ZL?=
- =?utf-8?B?N2NmUFQrcjBPek9veGlmMDd5WGlMWVdnZXcwenh5UWVxYkxjRE1tZVhTSkgw?=
- =?utf-8?B?aUZlQ2FhSGZzMFIxU3M3a3dIdlhtR084Z2p1QURBdXhsZEdOZ0JCQkExdkcw?=
- =?utf-8?B?KzlBOVptbzFXajZ1K1g4WjRvWGVsbktyOVVETGNiMlFVTDVXRGJIK1Mwbjdj?=
- =?utf-8?B?MmNJeTlPSVNPRmVncHVWbmtTSVRNYUhNSTFSYlVGSTBaT1V0UU9rbkcrUG5H?=
- =?utf-8?B?bjNSZ0ZoTDlNYi8vaENYQWFvVmQ5QXIvaWhPM0tDUWNsTmpyTm1IZkpYYXFJ?=
- =?utf-8?B?U1BDTG4veEdaTDJTUTBybnJtdGo0SHd5M3R0SVgyZG40WVUrQVFNQ2pBNUdh?=
- =?utf-8?B?MFROSXlRdHpic2paYi80T1cvem9SL2RUTllERmpBcTBnWm9SMzRuTU8xRy9Q?=
- =?utf-8?B?dU9tcnhPNFRET1VabG8yTllIamF4dGErUzRxbEpJN1JCRktyanY3Zis2Tlkv?=
- =?utf-8?B?dWxrN2hycThoWHNvblpFRWcvb3FrR0lLMW83ZWZGeVhyZE02TzVaOVJQckc0?=
- =?utf-8?B?bE5HeXBFUm15ZFpqK2Q5SDlrZUdmRE9iSjNndWVlVXkzL01YcWZHNGdCK3M5?=
- =?utf-8?B?TVZBREV1dXYwTkN6NzAvTlpwQUhHbGRKVi85VzdWa2xXU25TeC9NZStETmRy?=
- =?utf-8?B?enphWWlIY0djSXR5Q2lpVGJQbjF3ZWVEVVAzcVhza2ZnRUdoS0xmMG9tZEtD?=
- =?utf-8?B?MmluV3hsRmVqNFFiZkNRVjNIR3BqdEVOd1ZGZkxRemp4U0k4L053OW51MENU?=
- =?utf-8?B?eFFOVHFIWHh3NERCVzB4R0tJaWtQc2NGM1YyNGovR2l3WFhnM3dtZ2JHR0FB?=
- =?utf-8?B?U2tOd2Z2aXhVZFdkbklOTTZoZ3hwamR2OS9DOE9xSTFEQnIzN1c3TEFMV2pH?=
- =?utf-8?B?YWRRbnBzK2hMS0hzUzJCRy81aTRtRVdKMUdjSXc1Um1JcHMrRWs0Z1F0SnpP?=
- =?utf-8?B?STY3OWdITVowSEJvcXVGT2RlT2tPNWZ2UUJOMk9xd0wyOWVNU0p3Z2MrRENL?=
- =?utf-8?B?Zzl1ekJyaWRNK29LanFzTUw4ZmI4OTZnc1QrRzhJQ0pFUVRNQW1aYjhPd0cx?=
- =?utf-8?B?eWtiZkt4RmVhN1FmdjlDNncralUyem94bVNEdmk3dGFkR2lOTDF0WENOWlNK?=
- =?utf-8?B?aHR4VG9KS2F2aTNrWUFndTVxSDBTbGlua1pER3MzR09nWENqVjVWVVU5WDNa?=
- =?utf-8?B?QWpYNXNpK0xBQTVydlNpRERVUDBsdnNsbk9xc216S3lWRzNNK0J4RDMzSnJN?=
- =?utf-8?B?MUttcEpET3FORXVsNENMYmtXbXNJaWlvVFRRbWpYVEo5em9Udnh0bmZadFl5?=
- =?utf-8?Q?nZ8daaMyaQblg907FW?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b72f6a5f-06b1-470f-8288-08df08f6e881
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2026 13:34:26.7558
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tHXdzdX1mPObGzH90BcRJ/kkojS6e1FmjKMaH0P/WB+1ib0XKRwqD2IuDALeP9bX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8434
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
 
-On 9/2/26 12:59, Leon Romanovsky wrote:
-...
->> The PCI_P2PDMA_MAP_BUS_ADDR is not supported by DMA-buf and as far as I can see is a complete dead end.
+On Wed, Sep 02, 2026 at 12:00:25PM +0200, Christian König wrote:
+> On 9/2/26 11:53, Leon Romanovsky wrote:
+> > On Wed, Sep 02, 2026 at 10:44:59AM +0200, Christian König wrote:
+> >> On 9/2/26 10:32, Leon Romanovsky wrote:
+> >>> On Wed, Sep 02, 2026 at 09:56:06AM +0200, Christian König wrote:
+> >>>> On 9/2/26 09:39, Leon Romanovsky wrote:
+> >>>>> On Wed, Sep 02, 2026 at 09:00:46AM +0200, Christian König wrote:
+> >>>>>> On 9/1/26 19:08, David Hu wrote:
+> >>>>>>> From: David Hu <xuehaohu@google.com>
+> >>>>>>>
+> >>>>>>> This series address two related issues in scatter-gather mapping,
+> >>>>>>> specifically for the MMIO based dma-buf mapping. The fixes ensure
+> >>>>>>> sgt mapping is correct, and proper for large MMIO regions.
+> >>>>>>>
+> >>>>>>> Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
+> >>>>>>> (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
+> >>>>>>> phys vec to sgt)
+> >>>>>>> https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
+> >>>>>>>
+> >>>>>>> Patch 2 Splits sgl by largest page aligned chunk
+> >>>>>>> (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
+> >>>>>>> https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
+> >>>>>>
+> >>>>>> *sigh* such issues are exactly the reason why I didn't wanted the dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
+> >>>>>
+> >>>>> And this is why so many in the kernel community want to get rid of SG
+> >>>>> lists. It would be great if DMA-BUF could also eliminate the need to
+> >>>>> convert to an SGL, like Jason proposed.
+> >>>>>
+> >>>>> The DMA layer no longer needs SGL. These bugs belong to the DMA-BUF layer,
+> >>>>> which is the one that depends on it.
+> >>>>
+> >>>> I'm all fine using an array/xarray of dma_addr_t in DMA-buf, just phys_vec is a clear no-go.
+> >>>
+> >>> You are proposing the same thing as an SGL, just in a different format.
+> >>
+> >> Yes, because that is the right thing todo as far as I can see.
+> >>
+> >>> It does not address the issue that dma_addr_t is expected to hold a DMA
+> >>> address, while that is not always the case. For example, in the P2P case,
+> >>> the addresses are not DMA addresses.
+> >>
+> >> Yes they are. They must be DMA addresses because that is the only thing the importer needs to do it's DMA.
+> > 
+> > They can perform DMA, but that still does not make them suitable for the
+> > dma_addr_t type. For the PCI_P2PDMA_MAP_BUS_ADDR flow, these addresses
+> > follow completely different rules: they are not unmapped, require no cache
+> > synchronization, are valid only for peer access, and require separate error
+> > handling.
 > 
-> Maybe you mean DRM, but VFIO works perfectly with PCI_P2PDMA_MAP_BUS_ADDR flow in DMA-buf.
-> What am I missing?
-
-Well not quite.
-
-The approach PCI_P2PDMA_MAP_BUS_ADDR takes is fundamentally tied to only map a physical CPU address into a PCI address and doesn't take into account that in a lot of configurations the CPU can't access all resources.
-
-So when VFIO uses PCI_P2PDMA_MAP_BUS_ADDR it only works for a small subset of the use cases DMA-buf supports, but yeah as always in DMA-buf pretty much everything is optional.
-
-Regards,
-Christian.
-
+> The PCI_P2PDMA_MAP_BUS_ADDR is not supported by DMA-buf and as far as I can see is a complete dead end.
 > 
-> Thanks
+> > All of this information is lost if only the dma_addr_t is stored.
+> 
+> Yes and that is fully intentional.
+> 
+> DMA-buf handles that cleanly on the buffer object level and not like PCI_P2PDMA_MAP_BUS_ADDR as a completely broken design on a per address/page basis.
+> 
+> Technical background is that the PCI_P2PDMA_MAP_BUS_ADDR approach can only be handled by a very very small subset of HW.
+> 
 
+With the rise of accelerators, the P2PDMA_MAP_BUS_ADDR is going to be 
+increasingly more common where accelerators directly transfer data to
+NICs, storage devices, other accelerators etc. 
+
+With VFIO gaining a DMABUF exporter the use has already spread to RDMA &
+NVMe devices (w/ SPDK). In fact, we found these bugs while trying to map
+large BAR regions for RDMA.
+
+Thus, it would be great if we could find alignment here. 
+AFAICT, I foresee the use of dmabufs to only increase for
+PCI_P2PDMA_MAP_BUS_ADDR. IIRC when the network stack moved to net_iovs
+to support dmabufs, the SGL became a primary concern and partly the 
+reason why we have "unreadable" skbs for memory we can indeed access
+if mapped correctly.
+
+Thanks,
+Praan
