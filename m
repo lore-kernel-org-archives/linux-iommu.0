@@ -1,77 +1,77 @@
-Received: from fhigh-a3-smtp.messagingengine.com (fhigh-a3-smtp.messagingengine.com [103.168.172.154])
+Received: from fout-a2-smtp.messagingengine.com (fout-a2-smtp.messagingengine.com [103.168.172.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A14381AE5;
-	Wed,  2 Sep 2026 19:19:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 043CB3905EA;
+	Wed,  2 Sep 2026 19:19:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788376750; cv=none; b=LL95J61sstHX+s7g5XEgWfJVTEnbuCRE3ZRx/jeejb3cIElnfEHYZb6OrTB0kUAOlrFphMFtLR/EVjW+NzM/UBi0Qh0QUIiJh4mk0jcWTklMpgtjBXBIwX/eWqHonUcJLsUROlYXFgCSV0b2QIeRIe/CFxe9UUnr0shCFKfV04U=
+	t=1788376751; cv=none; b=BfESxNsOwzT+lpTnQ1tBIvCOEixy/aQaTCvGyt44X7s7uKyKFpyWu5eehattAKhNNf1v4DIv6KAMsjsAM03G8T7x9ulTwZ6QznG0NcWORneVD9CUlpMrdKHnxVRaYfjP2uV3lydbkowF69TvafTNAcCj/fLlFiIree6BZNPESRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788376750; c=relaxed/simple;
-	bh=8Rv9OVc1AW97l/UiCVzPt+gRZOTmtkExTv7zaq6GYSo=;
+	s=arc-20240116; t=1788376751; c=relaxed/simple;
+	bh=AzFRd3uMZ0IcJqKW0o690cDqHnbklcnOKswFQ0IdXwg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=JZxd6338um/a0EtbUtYIlwDfOYtcBsVNPecGhV0UVjdVkDAc4U7EpGQ0lvvzsbWIPkII/mnMTv4wjhTTf+Bf/cqlzEAir1K8MV0p7VOQ+ZlAAv3ebJSB+98lWvyVOpQYsZbmwe4eCFpYe/yVHV4JCOd8wKTGTxeTFYq2UH8qA2g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=Kd+TffTV; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=hvbDMkGc; arc=none smtp.client-ip=103.168.172.154
+	 In-Reply-To:To:Cc; b=nW1sttzIzJMdlO19lp1ruSX6Cx8zYRJeiWpZJ5D3kK4rKucBpAEkStr9fdPqEKornMP92gxI6m8T6DBPHbtf3sKVzaZ/XK5V7UewLeISaxdcALYLYoRQnoQqvLy6FcDxPbXn8e+ibi3Pjsf0amOe2uyxfrt3pfhgmPG2yN60/Ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=MAieeHfX; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XYxlkVQq; arc=none smtp.client-ip=103.168.172.145
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="Kd+TffTV";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="hvbDMkGc"
-Received: from phl-compute-08.internal (phl-compute-08.internal [10.202.2.48])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 4D8E814001E8;
-	Wed,  2 Sep 2026 15:19:07 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-08.internal (MEProxy); Wed, 02 Sep 2026 15:19:07 -0400
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="MAieeHfX";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XYxlkVQq"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfout.phl.internal (Postfix) with ESMTP id 39F55EC026E;
+	Wed,  2 Sep 2026 15:19:09 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-05.internal (MEProxy); Wed, 02 Sep 2026 15:19:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1788376747;
-	 x=1788463147; bh=QR9hH2qCFCqj8AmL9TfSa9UfhVhgFX2hAhjrgRMsWck=; b=
-	Kd+TffTVcDSMc5PNgNWEtMj5CQvR4VoGRJmfXT0Q7t0Jifr0msF29Dd/LPmdMRhj
-	7sJ4JWHex5TpZNlMNWsOR/eA+rOg0FXJ6qNNPZofBwIbuu8wmwmHW4QJobNjrD/2
-	B6zyoKsgSQvrETFnTcEQKMqxZh4CjwlJ8rBpqTKWR4e981iZx5ni3/GLFjof/ys4
-	D4RXcxbtmNS2U6nS/QH08nSdjqh1H+RIZGw1LuPMY5psorOIwl3LMKk8NxwoOt5A
-	oRn3UGyrgo8geO6U6CTlgQe3eOKX7xXu0st8sesNFKLWY+RPywzu1HsiiccP9ZU3
-	Edq+AckPwsmqnuZw2LvXeg==
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1788376749;
+	 x=1788463149; bh=NQdO7P96jiTQ2vGB+LQMTce6TI6ijWre0g6HXNRAZnQ=; b=
+	MAieeHfXCgyqIZiuglMyJGbkL7xZntf7dp8HR9VnfCNxT8JT5Cmnp8Vaayw/vhF+
+	TEuVh6aS7oSruuY5sHle7TbGy5760v4Y/Y88TLfQNCCQN9xWrEOwnf69qDMtt42e
+	YpigM878IwvsTdudrZ+h4cSKQONhi95HeurDR7IaHGKz+c5C5d+Iu5J4sCygw2uP
+	9U8upk4/HXG4MuA9CfxvL6ZYuVpNwkWqWGjQuNWI3xzRb02Yk5YiUZ8+Kval63Nr
+	UOVPKFaY6TpCmDgt8TQ1btEDWisE2XcSx6KysKtogbbnW/zwszkFDDGybO3PR60b
+	K4kUmVIGPXFh7Tn9jPWz8w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1788376747; x=
-	1788463147; bh=QR9hH2qCFCqj8AmL9TfSa9UfhVhgFX2hAhjrgRMsWck=; b=h
-	vbDMkGc/3d9pe1obvBPf1Yj7VmD/ofcL+cznaT0qOtPrMRcEF/d6pyGJ1PnyHKpa
-	mQOkM42YatoA/uzfn2Tl/rKe9VUjiRdnuwdWv7rm8uywiediwlWqIgERbZMLkBfo
-	CuHP4eHFoEwmFgbzJnCmx/q0gP/cGF2jpcrBgLSYDoWVerzI5siloJCJKK9iEvs9
-	ZUY1cI8ViYcOkkIgDJjV94pTZ+6PWCpxmEtR0ykhoCub2i+MZOZZEHYlutAZbi5s
-	M9qgEQcmzW3r91XPD5EIRXL4gqKfDScwnYnHHNLTWh5wTJQ+VoojE3fZTeRkBrIu
-	uyJdy7pcAA6wq7S4KCiFA==
-X-ME-Sender: <xms:q3aYaiiz_dVN5-mcRDC4chueqd_mmmO5005ZGG47SBLtEfOU8_Y-QQ>
-    <xme:q3aYau3XoZEc5F8W7eHs4F2xr2nYFbq97lJ5UkXpm-QlyKujVJ5up41YWVB0Ps5PM
-    8HUk_Bjb6FeyXPPYjFyiRVQLfoqQhkrK_Bhyikrfl6mrGhp1riS0mFL>
-X-ME-Received: <xmr:q3aYaggCyxlNR85GJ-MTs2tM4GCrAeBAkhq-uVMYDBngrAsvKvAC9c1lcO6c6uNx8D9SFI_Z6vr6qxtC44I5AB-_oib0SVeH25vzqQ>
-X-ME-Proxy-Cause: dmFkZTFQ80BQ8y9z/ksxzIu+u1KCHp9sDl92lTo61ffLa70nJ1hlaumln8PTa7TjEGVGmG
-    OxaLJCLNxn78gkoJ1fkMmhBvP15zPz/pklDJMfTZzvs/BljAU46a3ReBzGx/XFz5udidth
-    BL7cvbmjaDhWK0PxsjIueQbxY67eTcMlHwjCey97chTvnS9ssKH7FX64SxVQF1uP44aUiX
-    d0QMim9BVRCLqTEGdp95PxDcAF6A1QXWMoXXmVqdQg0fO271cwzSUsV/bYxv83G5gKMTm0
-    aQuDw9nClzjO58SOPDKposjdmYiqOTrXegZCC+4HfUflHioGe/yFKBWwReUIl11HFEXWto
-    2sHxVV5X5H9nFZd9YRNwVhEmHDNE2EWI46+PM8MW8yIyMzCQyizhLXPlCH+F1117Y1Kb2R
-    9W1DRBnYyEKsiYJNqm12GHNMePmIVXdmF51x5ZtUkV3/4RMrmvrmfl760knvOqHgXgEgzv
-    k6FWXLQFg0hp2a7O4tLqED16zJSmBm+w5E0PucTlXh0w5lKqH97LY8wdkXwMSLOAnf5gv2
-    B6AUSAFr8zB6Diijk/T0AhoVwDosrvBWZiBw2pN4xD5LCzZ0uC/EXG6BGNzT1O0RqE+X1S
-    tk/MGmAId6lXeJqGxTSIOxaATc5zXyIXux4p2vMH4FXWufy55yO+xWGrVk0A
-X-ME-Proxy: <xmx:q3aYan8SzsIgDX-IMMiDbUHoWozFhVFeEx_md0KdbHKjMZFLVXKpgw>
-    <xmx:q3aYakJtGnkC1VuGcVfh90ddmoyp-zSNkJVgdOw9KJAqNHeoaJsr-Q>
-    <xmx:q3aYakxBJaRzaBowOlUKXx75zevAHjHwNI5e_7n5xm5RbZfyJoswaA>
-    <xmx:q3aYav3kKM0sXykyvetWn6p9IlrJQt-CMAaee2r24jDWvZttscubxQ>
-    <xmx:q3aYarJuer6FHgWmGVq0-86Q1CM_h5qULh80VkUm5ElcqoL8uOsp8fiY>
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1788376749; x=
+	1788463149; bh=NQdO7P96jiTQ2vGB+LQMTce6TI6ijWre0g6HXNRAZnQ=; b=X
+	YxlkVQqvnaALTgr/+kH0/YNW8+27O4U/+XR0RBReV+jHvjxVgOr0NiKf/PzMi2Hc
+	rRJBVmYv0HRNUE4HThlbPdP4gaiL8EFUpZk1fDvVMyUYBmpJw+tngdIul7pi4Xy0
+	/Xhw+0Mx4dDf6uaQgaiGE9lYfhzYetbIkTo0yJuCiUUKYhvK4cP2QwN+YJuv9g6J
+	mtYOi+t9e5ExK63O4cnIa+/FYer/e71kvj11WGxL9rgdYD8r8gDGAZioi6lTV20z
+	+WSuiqzqy6kdNYofI2cseBNUWFfElGnZdCTynh5WKyJvd1n5F8UKhgN+9yxaufh2
+	5b634RQlUIRfgCj5zJlsg==
+X-ME-Sender: <xms:rXaYahY2A3ILvpMZtmdTJ3jdeUJu7FslXhwqNMF5zlsb6X-Z8YC9NQ>
+    <xme:rXaYav-az7TrKtBJQoHD2EA0Z1409Gt8vLX3zRV8NHw55q_mWbS0jR5mrEY_8G_FQ
+    rIMBryxmUWQfXIRi7q8RYT0bJ_IMiJBS8PpWMZQHrRBr6FDiyj1sTyH>
+X-ME-Received: <xmr:rXaYajkjZaFAUB9hSZJsmZEXFAm8cFOFDcIzijqhTcW1D1pAkWW2NAlWUIwAfAM7FC8paevKZntoXrQ_P4DigKFGlToqql4UZn5LuQ>
+X-ME-Proxy-Cause: dmFkZTE89tjtn2Bc6WrCwdLeNoBdvJR6LgkOyMNQKpFp1TjkiaqcmsCiC8kvrS7T8Jp5oi
+    cIW0UnwXmqV3oC7eAHpTzIGJga2xoAPx8GEnFdDNBab77iSzjXmCh1vKt+5d7wJkXOr2VC
+    rE5841g2jNxb6p1kbNpFRDNDdq1GYBQSQBcl+GE4IEVVOkkhbgZApi3Ptb2xxuKlhSMG0E
+    EOS48D6SGNDHa/XRZdR6SN1/sKBEBUdJJkTJl+8d2Yfwe7ahYEwxJfjYD63OgrtT4gIYR1
+    hwNIjQzSLtryyDlnl+S3fmeeQKlp2yc1//CP8qulUPt9Gc7zUmxU+NSlYVI0CNef0PA6qg
+    u+KpiwXV4qWtaS5Q1OphHYXkO9rRemOOmitHGKrw/mrnroj3f4u9NtpxlVZYQYahircdo4
+    nQ9xcOY4qc5rESeJyIt4mOQ6kYwTF3M2310JmwLboZPtJo7lyv6cL/iYk0iYOVM1E5n67m
+    fWEJd9dHH+uiic+TlGlACkZXdN9F1tAYRhEPaOlccZjTDBP0IeMTBzWph3Vz7TNa95Ueeg
+    ZF7bVTbeITwiYx+vcNIPWQTLRZPZxdkOofgl7QwCDRNENqghGNJegZSrNCiy2cwOvU2VFQ
+    grwoXmBRXUL/BmQVO6GhhKkLEGku0r/vClHwuFdeuojioHfLlkKgwXbr6xJA
+X-ME-Proxy: <xmx:rXaYasaU9C-NRIvCl7pkgnZdVIEpqtRM-7ub9DVelfHZn73TPwQI3g>
+    <xmx:rXaYajPEphcAugqq6-Wr5Ry05xMoXuj9tsdCv7QhGpbsDCOYC5mjOw>
+    <xmx:rXaYaseZ0d7nK4H7jV7K-WLEtZxoyDewXWwbVnz4O1qNVaROq8Jeqg>
+    <xmx:rXaYapFf1_oo4TeFP7qif4mSk8agQAcTn2J6CLSj4vWeLoMmSgc9iQ>
+    <xmx:rXaYavj3OWzEO3yn0_zc3QDNmzn6dE41Btnv8GK92XG1-jg9qjkSEc6B>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 2 Sep 2026 15:19:06 -0400 (EDT)
+ 2 Sep 2026 15:19:08 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-Date: Wed, 02 Sep 2026 21:18:54 +0200
-Subject: [PATCH v3 1/2] dt-bindings: iommu: dart: Support specifying the
- DMA aperture
+Date: Wed, 02 Sep 2026 21:18:55 +0200
+Subject: [PATCH v3 2/2] iommu: apple-dart: Support specifying the DMA
+ aperture in the DT
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,7 +80,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260902-iommu-apple-dart-aperture-v3-1-252ce55b7001@jannau.net>
+Message-Id: <20260902-iommu-apple-dart-aperture-v3-2-252ce55b7001@jannau.net>
 References: <20260902-iommu-apple-dart-aperture-v3-0-252ce55b7001@jannau.net>
 In-Reply-To: <20260902-iommu-apple-dart-aperture-v3-0-252ce55b7001@jannau.net>
 To: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
@@ -90,73 +90,221 @@ To: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>,
  Conor Dooley <conor+dt@kernel.org>
 Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
  iommu@lists.linux.dev, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Janne Grunau <j@jannau.net>
+ linux-kernel@vger.kernel.org, Janne Grunau <j@jannau.net>, 
+ Hector Martin <marcan@marcan.st>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2153; i=j@jannau.net;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=7155; i=j@jannau.net;
  s=yk2025; h=from:subject:message-id;
- bh=8Rv9OVc1AW97l/UiCVzPt+gRZOTmtkExTv7zaq6GYSo=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqwZZcsfWj5gSPxnyvlnt07hpieXJ/Zcfdj7Zlet85vk7
- rr4r6s0OkpZGMS4GGTFFFmStF92MKyuUYypfRAGM4eVCWQIAxenAExk6VpGhqW/53mdcjxqWPBr
- gf+mvTYBxZZGOzZpLHCq6V1y44jN+hiG/4HeWxdpTvpTw/Znve/e2Fz5lNvCbsuXL3359sz+Y79
- NEpgB
+ bh=AzFRd3uMZ0IcJqKW0o690cDqHnbklcnOKswFQ0IdXwg=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqwZZcs9GnwvauaULRa4l8JUXS5vHrxXOcjk1suPFeWPn
+ 7bEqHV2lLIwiHExyIopsiRpv+xgWF2jGFP7IAxmDisTyBAGLk4BmIiOJcP/sNYj7Ctuv9j265Zf
+ ZAG/VY67zDvbJbfPuHzaIPolwn7jbYY/XJIrjNdwNNg0vFghdN9Xm2FJ0N/Yd6v2d6++s7n+442
+ dzAA=
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
 Apple DARTs are often connected directly to devices that expect only a
 portion of their address space to be used for DMA (for example, because
-other ranges are mapped directly to something else).
+other ranges are mapped directly to something else). Devices can specify
+the start and end of the aperture via "iommus" args if the DART device
+node specifies "#iommu-cells = <5>. Aperture start and length are 64-bit
+values as apertures above and larger than 4GB are used.
+Limit compile testing to 64-bit architectures to avoid warnings in the
+calculation of 64-bit dma_addr_t values.
 
-Follow the "#iommu-cells = <4>" example from iommu.txt and allow
-specifying the DMA aperture via additional cells. Since DART is used on
-64-bit Apple silicon systems use two cells to specify the start and
-length of the aperture. A common aperture starts at 0x100_0000_0000
-and spans a 36-bit address space.
+This range *can* be outside of the DART's IAS. In that case, it is
+assumed that the hardware truncates addresses and the page tables will
+only map the lower bits of the address. However, the specified range
+cannot straddle an IAS boundary (you cannot cover more than IAS worth
+of address space nor wrap).
 
 This corresponds to the vm-base and vm-size properties on the Apple
 device tree side of things.
 
-As not all devices require this and to keep compatibility with existing
-device trees allow 1 and 5 as values for #iommu-cells.
-
+Co-developed-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Sven Peter <sven@kernel.org>
 Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- Documentation/devicetree/bindings/iommu/apple,dart.yaml | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iommu/Kconfig      |  2 +-
+ drivers/iommu/apple-dart.c | 74 ++++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 66 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/apple,dart.yaml b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
-index 47ec7fa52c3a..6efbe732b4ce 100644
---- a/Documentation/devicetree/bindings/iommu/apple,dart.yaml
-+++ b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
-@@ -44,10 +44,12 @@ properties:
-       Optional since not all IOMMUs are attached to a clock gate.
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 6e07bd69467a..27954f462582 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -303,7 +303,7 @@ config SPAPR_TCE_IOMMU
  
-   '#iommu-cells':
--    const: 1
-+    enum: [ 1, 5 ]
-     description:
--      Has to be one. The single cell describes the stream id emitted by
--      a master to the IOMMU.
-+      Has to be one or five. The first cell describes the stream id emitted by
-+      a master to the IOMMU. The optional second and third cell describe the
-+      aperture start of a master's DMA window and fourth and fifth cell describe
-+      the size of DMA window.
+ config APPLE_DART
+ 	tristate "Apple DART IOMMU Support"
+-	depends on ARCH_APPLE || COMPILE_TEST
++	depends on ARCH_APPLE || (COMPILE_TEST && 64BIT)
+ 	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_DART
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_DART
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index b160fb464c5f..ebf4547d32b4 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -21,6 +21,7 @@
+ #include <linux/io-pgtable.h>
+ #include <linux/iommu.h>
+ #include <linux/iopoll.h>
++#include <linux/minmax.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -267,6 +268,7 @@ struct apple_dart_domain {
+ 	struct io_pgtable_ops *pgtbl_ops;
  
-   power-domains:
-     maxItems: 1
-@@ -66,11 +68,11 @@ examples:
-       compatible = "apple,t8103-dart";
-       reg = <0x82f80000 0x4000>;
-       interrupts = <1 781 4>;
--      #iommu-cells = <1>;
-+      #iommu-cells = <5>;
-     };
+ 	bool finalized;
++	u64 mask;
+ 	struct mutex init_lock;
+ 	struct apple_dart_atomic_stream_map stream_maps[MAX_DARTS_PER_DEVICE];
  
-     master1 {
--      iommus = <&dart1 0>;
-+      iommus = <&dart1 0 0x100 0x0 0x10 0x0>;
-     };
+@@ -285,6 +287,13 @@ struct apple_dart_master_cfg {
+ 	/* Intersection of DART capabilitles */
+ 	u32 supports_bypass : 1;
  
-   - |+
++	/*
++	 * DMA aperture start and end to be overridden by "iommus"' phandle
++	 * args. By default determined by DART's ias but may be outside of it.
++	 */
++	dma_addr_t dma_min;
++	dma_addr_t dma_max;
++
+ 	struct apple_dart_stream_map stream_maps[MAX_DARTS_PER_DEVICE];
+ };
+ 
+@@ -537,7 +546,7 @@ static phys_addr_t apple_dart_iova_to_phys(struct iommu_domain *domain,
+ 	if (!ops)
+ 		return 0;
+ 
+-	return ops->iova_to_phys(ops, iova);
++	return ops->iova_to_phys(ops, iova & dart_domain->mask);
+ }
+ 
+ static int apple_dart_map_pages(struct iommu_domain *domain, unsigned long iova,
+@@ -551,8 +560,8 @@ static int apple_dart_map_pages(struct iommu_domain *domain, unsigned long iova,
+ 	if (!ops)
+ 		return -ENODEV;
+ 
+-	return ops->map_pages(ops, iova, paddr, pgsize, pgcount, prot, gfp,
+-			      mapped);
++	return ops->map_pages(ops, iova & dart_domain->mask, paddr, pgsize,
++			      pgcount, prot, gfp, mapped);
+ }
+ 
+ static size_t apple_dart_unmap_pages(struct iommu_domain *domain,
+@@ -563,7 +572,8 @@ static size_t apple_dart_unmap_pages(struct iommu_domain *domain,
+ 	struct apple_dart_domain *dart_domain = to_dart_domain(domain);
+ 	struct io_pgtable_ops *ops = dart_domain->pgtbl_ops;
+ 
+-	return ops->unmap_pages(ops, iova, pgsize, pgcount, gather);
++	return ops->unmap_pages(ops, iova & dart_domain->mask, pgsize, pgcount,
++				gather);
+ }
+ 
+ static void
+@@ -590,6 +600,7 @@ static int apple_dart_finalize_domain(struct apple_dart_domain *dart_domain,
+ {
+ 	struct apple_dart *dart = cfg->stream_maps[0].dart;
+ 	struct io_pgtable_cfg pgtbl_cfg;
++	u32 ias = min_t(u32, dart->ias, fls64(cfg->dma_max));
+ 	int ret = 0;
+ 	int i, j;
+ 
+@@ -610,7 +621,7 @@ static int apple_dart_finalize_domain(struct apple_dart_domain *dart_domain,
+ 
+ 	pgtbl_cfg = (struct io_pgtable_cfg){
+ 		.pgsize_bitmap = dart->pgsize,
+-		.ias = dart->ias,
++		.ias = ias,
+ 		.oas = dart->oas,
+ 		.coherent_walk = 1,
+ 		.iommu_dev = dart->dev,
+@@ -623,10 +634,10 @@ static int apple_dart_finalize_domain(struct apple_dart_domain *dart_domain,
+ 		goto done;
+ 	}
+ 
++	dart_domain->mask = DMA_BIT_MASK(pgtbl_cfg.ias);
+ 	dart_domain->domain.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+-	dart_domain->domain.geometry.aperture_start = 0;
+-	dart_domain->domain.geometry.aperture_end =
+-		(dma_addr_t)DMA_BIT_MASK(pgtbl_cfg.ias);
++	dart_domain->domain.geometry.aperture_start = cfg->dma_min;
++	dart_domain->domain.geometry.aperture_end = cfg->dma_max;
+ 	dart_domain->domain.geometry.force_aperture = true;
+ 
+ 	dart_domain->finalized = true;
+@@ -803,20 +814,65 @@ static int apple_dart_of_xlate(struct device *dev,
+ 	struct platform_device *iommu_pdev = of_find_device_by_node(args->np);
+ 	struct apple_dart *dart = platform_get_drvdata(iommu_pdev);
+ 	struct apple_dart *cfg_dart;
++	dma_addr_t dma_max = DMA_BIT_MASK(dart->ias);
++	dma_addr_t dma_min = 0;
+ 	int i, sid;
+ 
+ 	put_device(&iommu_pdev->dev);
+ 
+-	if (args->args_count != 1)
++	if (args->args_count != 1 && args->args_count != 5)
+ 		return -EINVAL;
++
+ 	sid = args->args[0];
+ 
++	if (args->args_count == 5) {
++		dma_addr_t length = ((dma_addr_t)args->args[3] << 32) | args->args[4];
++
++		if (!length)
++			return -EINVAL;
++
++		dma_min = ((dma_addr_t)args->args[1] << 32) | args->args[2];
++
++		if (!IS_ALIGNED(dma_min, dart->pgsize) ||
++		    !IS_ALIGNED(length, dart->pgsize)) {
++			dev_err(dev, "Unaligned DMA window %pad, %pad (0x%x)\n",
++				&dma_min, &length, dart->pgsize);
++			return -EINVAL;
++		}
++		if (check_add_overflow(dma_min, length - 1, &dma_max)) {
++			dev_err(dev, "DMA window length (%pad) overflows range for start %pad\n",
++				&length, &dma_min);
++			return -EINVAL;
++		}
++
++		/*
++		 * Ensure that the DMA window does not exceed the DART's ias.
++		 */
++		if ((dma_min ^ dma_max) & ~DMA_BIT_MASK(dart->ias)) {
++			dev_err(dev, "Invalid DMA window for ias=%d\n",
++				dart->ias);
++			return -EINVAL;
++		}
++	}
++
+ 	if (!cfg) {
+ 		cfg = kzalloc_obj(*cfg);
+ 		if (!cfg)
+ 			return -ENOMEM;
+ 		/* Will be ANDed with DART capabilities */
+ 		cfg->supports_bypass = true;
++		/* Will be merged with other DARTs to the common range. */
++		cfg->dma_min = dma_min;
++		cfg->dma_max = dma_max;
++	} else {
++		if (dma_min >= cfg->dma_max || cfg->dma_min >= dma_max) {
++			dev_err(dev, "non-overlapping DMA windows: %pad..%pad, %pad..%pad\n",
++				&dma_min, &dma_max,
++				&cfg->dma_min, &cfg->dma_max);
++			return -EINVAL;
++		}
++		cfg->dma_min = max(dma_min, cfg->dma_min);
++		cfg->dma_max = min(dma_max, cfg->dma_max);
+ 	}
+ 	dev_iommu_priv_set(dev, cfg);
+ 
 
 -- 
 2.55.0
