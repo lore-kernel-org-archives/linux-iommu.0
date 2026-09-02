@@ -1,93 +1,234 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012018.outbound.protection.outlook.com [40.93.195.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E7B42379A
-	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 09:59:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788343150; cv=none; b=ghiuSXOdhi53FrLb9p4QoUVc8+v2kFu6rHy73BxX71valCtfq8bB0c4FB36XeAtlkrqmOr/Mpt1jqSCRUC/gHd+LYbywIPOUVgsf+2Nm9YOUg/0DdzNclqM1KGmH0s7J5xt6l0D0qr6l9U+KaS/jKcQuTZDVN/F4wXLGobVSQpI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788343150; c=relaxed/simple;
-	bh=J85HAMAqNi17n39O03dkp3947FIlh+7wEj67sZU4iKI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tflqsciaeMyyaHjWhMs9OzeVwc5qOD/OdAfRIZ7N0F+ipp5dqIht1js4FUOKUM9Manh5nnk5bQxPU78iJRMtysgcmSCP5Cos+/cFNgAUD4dFHnADtWZefTrkvlJNbNYEfTWIGjzvmgtqssPckXwIlg5+VUDsCeeDdURb3iDjyF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D2R64CHs; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22C6D39A4B3
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 10:00:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788343239; cv=fail; b=AVt6uV0mSEOPVINI0RpqKXO3Opa4iti9ODq3FgWeBnl8idd0z695IQdsgCLMxpshkBTXAlAQS6tgEkTiVmJt5euP8kLNnNWqOgp7UTVwq5AVrLCEjpOW5BlTCuGcUvDXHObteN14XI95720WZ6J9YY6umzfw71bPknM2lhFhIvU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788343239; c=relaxed/simple;
+	bh=p1IBVH65GAqh9n4XfrLEv9lJZhZANT7r1t/Rq0/G30Y=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=dLZtn3NTYqms5lQbMht5F+9GNy/h6UwIvaAxXshN0X5M0Y+5WqiFoWA0LsbKdY7867hfy3oSDj1QlbkqVNFV1q838l1T41tsO5FpAztUtX9u3PpLiq1wuEaMsvFNjxN5HFqvAuF93fzF7EAb6lL15vNuTivdHvXstRnZkAkeBDk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=GAVMRQ6D; arc=fail smtp.client-ip=40.93.195.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D2R64CHs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142061F000E9;
-	Wed,  2 Sep 2026 09:59:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788343148;
-	bh=IUEw1FOd8zcMeMpMJbYNkq7JQANmfKBQ20pgpZdmY5g=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=D2R64CHsB+0/08hnvlPkgoAWppFuLcRNOrghJhxEz83smpvAnU3DGYS5I9nKEmbk5
-	 7K2TlnjTDQq1pwG7rSRp0QwCj3WH3iyCeSDKNU6MYmYaGBpcYKMga4x1dkwwMIe+n5
-	 xhvKH4Id7UCMT265e7BlO9RvqY4J1zIL4VQ/bez9Y39QEkpHTxFA5zt85mmTSreASW
-	 HibUdnIFxHo8kOdWKm7YfCl8SDV944U5P0bBlmeH2/kMkU62+G6jUw/eXllwhIbeci
-	 8zn2Ab69n4NHPS/dWq1b63wjAgnlx4Zt7IFRKI0M5YL6bURTi1mHY7XM02rdvfTJJi
-	 rT0QM0SBMEaNQ==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Timo Witte <timo.witte@gmail.com>, iommu@lists.linux.dev
-Cc: m.szyprowski@samsung.com,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, joro@8bytes.org,
-	"alexander.deucher@amd.com" <alexander.deucher@amd.com>
-Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
- regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs (commit
- 8277a12d0d60)
-In-Reply-To: <CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com>
-References: <CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com>
-Date: Wed, 02 Sep 2026 15:29:04 +0530
-Message-ID: <yq5aqzjcynx3.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="GAVMRQ6D"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=AJwBgJXk/Hp05jXOwlY0v/1Gv8HHoEprCiO6lTADncbrxcWC/4vpJ2TznVBSMFXGRJJvHKmkiGTfvumSiT4Wx/GOgthbpQV7XCJKoVKJ6bkTjWBVgfJkMkbXdDCZkpyySjdoRmrea2945NZecJ7IXlTZXDJ0ngMes9mInhZyJzG4zC6g4tOKiwy28VfXrKHFL2lnRygjN58szpi7vN7mje3fRHoy8af+VZL7QNrUTCgy1Z5r4r06r3+X7zgTHPXkn5Jh5fRdHJjoz5/vC4xmudRLNLfkpEHtd312+Zb2F9bMQ37fPzuZKKDjpDSWbUyBZ5kLB51pewkn2oDBOlJuPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eIFNRqKXnOZJHzE6OX0NTZjnHdjH4ecpiQl6Sgc9nZM=;
+ b=ANipPF1eG35z+vBTWSc+YrdshNJ2xt4o8sBffrSusFk3gq9UHA3JQY3vGQNI8j0HhsdINc8hSbDWDQJ4AEdl8/0+3uxKxnd1bi0Cg8kfr/v557/PYXHM2lPup5xmjEetjD4TQE/AYQ4AId3mOCcf2s6nR3W2pm2w7lreRHLwnNacTNPn2Ol0fcMYX/ye2lJ/5axbHFynxfQgK3sylDjw8YdwFErNfOC51K9Lor+ox/9L3wigcIc+EPoAmZaxc+sjfeY/hmIDmZ1CeILRAGEsr74nPOpSn8SPmO1PrSnBLU8zld7Jbk1ftW2P4er3uor5LV3QvWOnWItPm5Zcd0ZUiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eIFNRqKXnOZJHzE6OX0NTZjnHdjH4ecpiQl6Sgc9nZM=;
+ b=GAVMRQ6D1cgAd+S1G2kn607SLed+0x5d3pX+wHfbhJvZq7kt2nSq65I9lqKHxSXlSHfgtB5yHTswzC/DNtBcfufET5UFQppAPzmddT5cIuz31zScJAlW0M5+tdLYaMc/VdIZBuIfFDA9rTSC/Xo/Glh6+CsMEy/R5VoeFPULVXk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by CH2PR12MB9458.namprd12.prod.outlook.com (2603:10b6:610:280::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Wed, 2 Sep
+ 2026 10:00:32 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0339.007; Wed, 2 Sep 2026
+ 10:00:31 +0000
+Message-ID: <65dc4ca1-6882-490d-baad-3e0abd708af3@amd.com>
+Date: Wed, 2 Sep 2026 12:00:25 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 0/2] dma-buf: Fix silent overflow and alignment
+To: Leon Romanovsky <leon@kernel.org>
+Cc: David Hu <dhu@x6u.co>, sumit.semwal@linaro.org, alex@shazbot.org,
+ ankita@nvidia.com, chriscli@google.com, david.laight.linux@gmail.com,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, jgg@ziepe.ca,
+ jmoroni@google.com, kevin.tian@intel.com, kpberry@google.com,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+ linux-media@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
+ sashiko-bot@kernel.org, stable@vger.kernel.org, viursachi@google.com,
+ xuehaohu@google.com
+References: <20260901170849.4052816-1-dhu@x6u.co>
+ <2bf581db-7cc5-4f38-a075-1b988c332f3c@amd.com>
+ <20260902073936.GR24140@unreal>
+ <aed39f83-6340-4fe9-890c-6d5f340c97d6@amd.com>
+ <20260902083232.GT24140@unreal>
+ <aae19599-2ba8-41fd-b3a9-b1f80107f563@amd.com>
+ <20260902095338.GU24140@unreal>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20260902095338.GU24140@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BLAPR03CA0159.namprd03.prod.outlook.com
+ (2603:10b6:208:32f::34) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CH2PR12MB9458:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7568e83e-7d44-4567-eb0d-08df08d9063b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|7416014|366016|1800799024|10067099003|56012099006|22082099003|18002099003|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	jcUe6roz4DwyyRo7qAym0hPigAPtavDhyj4P04XRJkRlx1S/Rc/wQj0eAW/0ykPdvOEHji9il/YhsSyN2guS0JC79mKFTr8TqtqhUFTTRUkTPxQRK90N7VMKwyEZw1cH/HxchcQsvtDqZewZdz0y5OcqIsG9qMNqTgu/f7SN0xHh54eESfiC77un1LARbHVgALbK273IVIbh6gU8/fugQlSmENA00xQw0IWQ0Sjc77Bo/RqzMl4duwdLHcnNHiQGs4YKuwVmKVSOjVHKCg2ntzjqEIfUMd0qt2VEgX40mf67EwsNGvy6uW8woPnbl+Z6VY0P5IiJJ4299E4rfNobevR+cJVNr/mMXfq20Br4Rw+utNbTMQaQNnTlBYsb+1WKx/WkWYvBvBs+4uPDpy0J3mp3SW8WefBXWZIeMOZ5e8Cvmnn2uLPcZkNMAKd/A6f2ry7yWxnDjJLa3qwIvtUS6/DKc8X60giJGzPrCN/PCvbLTPFCQq5dRvNQc+J4rEhpHO1CwGzTKxyqxNfMT5H0zXzn0tiXP8HcKrSpBBfHBOyPRd+yxu/uFmt2G7bsTtz/xUY0wntrSxHR03xi0cg/mWFcIv05/On1BEXGu3ox1sYFbFARu0/9mO9MCyKXdQhn
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(366016)(1800799024)(10067099003)(56012099006)(22082099003)(18002099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WVJpS0tvOGRKUURVaStEaXlxOUdibmdURkZ5M3JxZzdQTmcyOXhhSCt1NlNt?=
+ =?utf-8?B?WFBCK3V3M2NIN2ZsM09abkFjRi9BRTZZTXFQNmVOUDdiZmJiRktyUmNIVExW?=
+ =?utf-8?B?NEJrSUtGQ1N1Wk1kV3RJTGNNOVNsMFRHU0FVWjBzdkRYWUdBUVc5bUoreG5n?=
+ =?utf-8?B?S2FmSzdjaU9wQXhHMDk5dEpTazRvcGtraENUYlBRaFBYUXZjOFhXRlZvU0l4?=
+ =?utf-8?B?d1VhUXZJdG5xWE92V3RWUVlwbG5PQzZTenFKK0xvUnFDaUV1MUxML2c3VlpO?=
+ =?utf-8?B?RkRpaUcyeUljd2ZuSkxiZ1ZBMWtaa0crdTR2Slp3SHdJUnJkK3VRVWFTMU40?=
+ =?utf-8?B?eG91YVVreEU2aTdhZXNCbWo0dHFNclJ1Tzh5eE5iN28wM2tHWVZIM1BSWDVC?=
+ =?utf-8?B?UlNKbktiVmpqLzNTSElzWVhEYUVWOVZDNmRMTnNDZnRoTnZuTXQ2c1Arb0ZY?=
+ =?utf-8?B?Rm5ZQ0R4aG9qSmk5L282ZFJqaG0vZmo3aFFLaUQxRVFvRTJZclRSbDNTZnFB?=
+ =?utf-8?B?OGc2OGo0OTNmZHBxa2VTUTVIcnBhbHhBc25GeEYzNEhFWjIrM1pqdEF5NnR3?=
+ =?utf-8?B?WFk3Zld5MjlvU3FCN1VZbThjYnorcndhNFNLSEwrKzRVcTdWZUpXUWYxMjdB?=
+ =?utf-8?B?TjZRNXhIZmlGMkRTWi9McVE5MXZlZVBYWXdLWm9KY242UXFtdmFPcTR6Mm5B?=
+ =?utf-8?B?czZwM2dNM2IxVFpLR1ZMZjJsQ2loWkJjaklKVmZmS1BqdmtESXUrb0FaRXNZ?=
+ =?utf-8?B?dVpaVWs1QmNDaEFReXhTWWRUdkY3S0cyeUp6THJhQmg1bHp3bkJyTXVoaEp4?=
+ =?utf-8?B?Q3NKNk5MRVdPeWZpVnNWV2p1cmRXVnZvRE5EaEdSZ1FTMEZudVdrN1pmNzUr?=
+ =?utf-8?B?Q0tmaFl0YVYrajdGeVo3djA5aWN5SWNWTGpFcTAvQUlrK0I1WCtOWUE0Mk9m?=
+ =?utf-8?B?clAyY3ZWenBUWXJPOXFrYlMzZ25qYkRTZHZjaXdTeHNrQnNlK0RCQ3J3N1pJ?=
+ =?utf-8?B?Z3B6SlRUdmNnT2kzVUFUMU1mckl3MGhPeXFoeDYwcStkMDRnUFMzbi80RWhS?=
+ =?utf-8?B?bmlycElmNThhUngrRCt3aEgwcGhVN0theEN3TXlQL1E4N1JEeDFIRk5zNHpP?=
+ =?utf-8?B?U1d3NnExRk9DR1dDRmpnU2V0T0N1NXVEb2x2bFdjSjVzT2V0UENWV2liYmhN?=
+ =?utf-8?B?cUZ4bktOb2t2NmtGWm5ieDYrRXEralVQUW1SYzFkSHd1bzlkY01Jc3UxalJv?=
+ =?utf-8?B?ditSNyswZUZEV0V2eFVyVGt6Ui9pcVpMcW4zajVIcHQxRG9RRTRFYnRGTzBi?=
+ =?utf-8?B?YzNjT1dKRmxRSXg3MEV3VEN0RlNzREhreHNMTit3a2lmamIvNGZHU3BvVmZ1?=
+ =?utf-8?B?UkZCQ0p4ODN2QmwwOGwxUkFtWEZHRHIyZitOVVcwU2pXbTk4UU0yYVp3blla?=
+ =?utf-8?B?bkEycjE5UFg2OVdlQm1JOHI2ZlNXMWdsRjlhYmdBc0JPUlNpbnlKbWhjYStX?=
+ =?utf-8?B?SVk3ZUhLbTREd2VGM05TUVE5TEhzSk50aVFqdkk3Q3FvNVp4Z3VrVjgzSVk2?=
+ =?utf-8?B?LzlJOVJ5eUtVRkNpZmVON2JUb2FGdlMwcHZIUXVlZmtQNEEwVzhKbmowUlVU?=
+ =?utf-8?B?VnlXcGNjNVArcS9MdXVCR0xoYUdKTEpNQzFvS21YWkZjTzNXeFM4R2dmeFky?=
+ =?utf-8?B?Tkd0bnNna0pBSk54ZkpVK1pCTmRYaEN5cnRHYWNEWnpOZzFDS1h0VW53Z0xN?=
+ =?utf-8?B?eVFhZjlDQVZKclFxSFBEWFdYUXlNWC84em83VW13MkFOOXgwNGdEWWdYVjk3?=
+ =?utf-8?B?MThXLzNNMUd6d0hrNDdZUjVHMDhhNFFyc2tzMGoxMzZZbmplMGlHanlRY2Zz?=
+ =?utf-8?B?bEhIYVpOOXdZU3grZTAvdXRHTFhXbmdoK0pXcm93SHNVc3o3YWVkbXVndmE1?=
+ =?utf-8?B?djZOaCtUV2kzbVNaV0xPdkVaTUVWUzAwM2praGtWY3VSVmNyN1d1Y1RhaGZ6?=
+ =?utf-8?B?V1FPekFMWU5uWFY1M3ZxeDdWMzhyaFdoeklCbHdIMVJmclQyUFg3aGs4aEpF?=
+ =?utf-8?B?Z0pCek0wL0JVRS9TK0ZKbS96U2lUQ3Z0U2R6bkdXUXpwQmZ5MCthczNCekxX?=
+ =?utf-8?B?L0dhMlB3TGQzTjJLa1FyL1BKWndta0lPLyt4a1I4NXhTNzQ5MEtvMmp4Tm1s?=
+ =?utf-8?B?aWUwa2VjYXRhalVLVlBuRWNMWmc1QWRRdFViQlhUVjVuWjVjY1N6WDFNOFM5?=
+ =?utf-8?B?amRHcVdWRjR2ajI0TXRqMkxmQ1BpQjRXd3h6QnRSTEhLMXZCVXNTdWF3ekll?=
+ =?utf-8?Q?NU8hc/dCm/WoC9S91V?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7568e83e-7d44-4567-eb0d-08df08d9063b
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2026 10:00:31.6861
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uIXPPRdO5+mY8QMcOzABY6Mi2Tt/ov+lFCPu9hL6yzxFsW5AbNnBvKOb1/JW9MaJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB9458
 
-Timo Witte <timo.witte@gmail.com> writes:
+On 9/2/26 11:53, Leon Romanovsky wrote:
+> On Wed, Sep 02, 2026 at 10:44:59AM +0200, Christian König wrote:
+>> On 9/2/26 10:32, Leon Romanovsky wrote:
+>>> On Wed, Sep 02, 2026 at 09:56:06AM +0200, Christian König wrote:
+>>>> On 9/2/26 09:39, Leon Romanovsky wrote:
+>>>>> On Wed, Sep 02, 2026 at 09:00:46AM +0200, Christian König wrote:
+>>>>>> On 9/1/26 19:08, David Hu wrote:
+>>>>>>> From: David Hu <xuehaohu@google.com>
+>>>>>>>
+>>>>>>> This series address two related issues in scatter-gather mapping,
+>>>>>>> specifically for the MMIO based dma-buf mapping. The fixes ensure
+>>>>>>> sgt mapping is correct, and proper for large MMIO regions.
+>>>>>>>
+>>>>>>> Patch 1 fixes a silent integer overflow for mapping length exceeding 4G
+>>>>>>> (Previously submitted as [PATCH v7] dma-buf: Fix silent overflow for
+>>>>>>> phys vec to sgt)
+>>>>>>> https://lore.kernel.org/all/20260609164047.486227-1-xuehaohu@google.com/
+>>>>>>>
+>>>>>>> Patch 2 Splits sgl by largest page aligned chunk
+>>>>>>> (Previously submitted as [PATCH v3] dma-buf: Split sgl by largest page-aligned chunk)
+>>>>>>> https://lore.kernel.org/all/20260722233806.3922093-1-dhu@x6u.co/
+>>>>>>
+>>>>>> *sigh* such issues are exactly the reason why I didn't wanted the dma-mapping stuff inside DMA-buf. That clearly doesn't belong here.
+>>>>>
+>>>>> And this is why so many in the kernel community want to get rid of SG
+>>>>> lists. It would be great if DMA-BUF could also eliminate the need to
+>>>>> convert to an SGL, like Jason proposed.
+>>>>>
+>>>>> The DMA layer no longer needs SGL. These bugs belong to the DMA-BUF layer,
+>>>>> which is the one that depends on it.
+>>>>
+>>>> I'm all fine using an array/xarray of dma_addr_t in DMA-buf, just phys_vec is a clear no-go.
+>>>
+>>> You are proposing the same thing as an SGL, just in a different format.
+>>
+>> Yes, because that is the right thing todo as far as I can see.
+>>
+>>> It does not address the issue that dma_addr_t is expected to hold a DMA
+>>> address, while that is not always the case. For example, in the P2P case,
+>>> the addresses are not DMA addresses.
+>>
+>> Yes they are. They must be DMA addresses because that is the only thing the importer needs to do it's DMA.
+> 
+> They can perform DMA, but that still does not make them suitable for the
+> dma_addr_t type. For the PCI_P2PDMA_MAP_BUS_ADDR flow, these addresses
+> follow completely different rules: they are not unmapped, require no cache
+> synchronization, are valid only for peer access, and require separate error
+> handling.
 
-> Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select
-> them via attrs") added to iommu_dma_alloc():
->
->     /* Not yet supported */
->     if (is_alloc_cc_shared)
->         return NULL;
->
+The PCI_P2PDMA_MAP_BUS_ADDR is not supported by DMA-buf and as far as I can see is a complete dead end.
 
+> All of this information is lost if only the dma_addr_t is stored.
 
-Is this the only hunk you had to remove?
+Yes and that is fully intentional.
 
->
-> dma_alloc_attrs() auto-sets __DMA_ATTR_ALLOC_CC_SHARED whenever
-> force_dma_unencrypted() is true. On an SME host (mem_encrypt=on) an AMD
-> GPU with a 44-bit DMA mask hits that condition, so every GTT (system-RAM)
-> allocation fails with NULL/-ENOMEM, amdgpu init aborts and the system
-> boots without a display.
-> IOMMU in Translated/DMA-FQ mode (iommu group 29).
->
-> Before the mentioned patch it worked: the IOMMU PTE carries the SME C-bit,
-> so the memory controller transparently decrypts for the device while pages
-> stay
-> encrypted at rest. For IOMMU-backed devices force_dma_unencrypted() is a
-> false positive - the device DMA mask does not limit addressing once the
-> IOMMU translates, so CC_SHARED should not be auto-set for them.
->
-> When i remove the rejection and clear __DMA_ATTR_ALLOC_CC_SHARED
-> in iommu_dma_alloc(), so encrypted pages are mapped with the C-bit and
-> everything works again.
->
-> Maybe we can implement real CC_SHARED support in the IOMMU path,
-> so SEV + IOMMU works on x86?
->
+DMA-buf handles that cleanly on the buffer object level and not like PCI_P2PDMA_MAP_BUS_ADDR as a completely broken design on a per address/page basis.
 
-Yes, this should be fixed in the IOMMU path.
+Technical background is that the PCI_P2PDMA_MAP_BUS_ADDR approach can only be handled by a very very small subset of HW.
 
->
-> I already reported this in the amdgpu driver:
-> https://gitlab.freedesktop.org/drm/amd/-/work_items/5735
-> But i think it should be fixed in the iommu code as it's a regression.
+Regards,
+Christian.
 
--aneesh
+> 
+>>
+>> It can be that those are DMA addresses on private interconnects between devices, but it should *never* be a phys_addr_t because that is limited to the address space the CPU can see.
+>>
+>>> Jason's proposal:
+>>> https://lore.kernel.org/all/0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com/
+>>
+>> Yeah, I have commented quite a bit on that.
+> 
+> Right, I posted it for reference.
+> 
+> Thanks
+> 
+>>
+>> Regards,
+>> Christian.
+>>
+>>>
+>>> Thanks
+>>>
+>>>>
+>>>> Regards,
+>>>> Christian.
+>>>>
+>>>>>
+>>>>> Thanks
+>>>>
+>>>>
+>>
+>>
+
