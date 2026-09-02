@@ -1,155 +1,338 @@
-Received: from out13-174.antispamcloud.com (out13-174.antispamcloud.com [185.201.17.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DCB1380FCD;
-	Wed,  2 Sep 2026 18:18:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.174
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB47838CFFA
+	for <iommu@lists.linux.dev>; Wed,  2 Sep 2026 18:19:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788373089; cv=none; b=ZC0OyZ6Sf1B0ecmc8tfq064iwr3uH9eQxdEU1VnLc3AQ0ewqWwkBgDj3SlnXMsqBus5+xBr2yJ6vdX9SG93l4nxEJzJNBVF4lJqaAw+ohN2pj/7tpbJ6k8052VkFVHZ2lCM11D1CP0I5ygEmRX5keyoKQUXd6TR/ZDxrKNcBWyM=
+	t=1788373150; cv=none; b=pE9quU18MLy49JXgX3ZlxX7UV8xKfEu7Xa/evIdnA0f7pi9Yh9o3YyWFKcxEutQxHf5YL+SnxvxyzHz7OGI9XX9DfBG5B8VllNCs1QoJFZaGl1CHM/fazPiwNhu766LSPqjSpiIHG0D6n+jpF1ptlaptrdfoCVEBPRqzmM6gwgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788373089; c=relaxed/simple;
-	bh=jhOSHKKWvdGf+373qgi+uNlImBVNl8of8Byvc26bMTs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=shpSir5DY8k1Yl+3oWhJsWJLIfs76w9/v1cvHRpmO9We4nHc8YCamQp3MhBrhVYEINac5a4m1A5sx0w8cDIZ/xUgParwtQZzxWOQj9f6yJ9bInZ9eB0r0Wm70DcvHvAA63wsocB9TpZ4qwQ+TcWz0bFV4pEiHB9+E3czOrUcuFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=zdO0zaf7; arc=none smtp.client-ip=185.201.17.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1788373150; c=relaxed/simple;
+	bh=hbgQzV4TsDAypUVt+pVQPQwNL/J0nnyascedAv8GyCE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SV1U2B8CGodF9AugCOvl+HcKKPEsY3wVSh74TjwC8AGEpX1srfEfaCeIHIs7UOf8cjoB+7nhWE0I+zgYGEPyqKcatvQzSdvCuF8tNJlF8p7iX+TYZ0E9Ws1MTChHQjvhlB36/hXdge1XiN3QGYhEmKD4KhPb8yeTMQpP0tKhguY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=MRvP+jmb; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="zdO0zaf7"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx322.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1x1pE1-009oh3-6C; Wed, 02 Sep 2026 19:58:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=+U98VHTJnoCJClU4vtKi3XydHHa9Y5G8dke5eY353k8=; b=zdO0zaf7qNBSQeVjPDM4QtFbdg
-	AN0FKTlS+WtrHf0tj/jKzrRjV4y3HZoFcKcW/Z2zNFJ1yyhoA0N6UIE6F/htRkMQImaeo0bqVafxW
-	pbb3v4FeUYSmbkLOpMgzLGcbUsRy6Iub4UjaNfiHyECLv+uaOR4DsrRwOiatkkc/1XooKFGYLvHSi
-	UKd5YvzP77ca9GPOWamEHtLHmYeR9E0AvDD0Sra1IbrGO2mpmeOul76TwtXckkYw99/aLpD8TfaDH
-	P6cXeyKGzGTzEBHmdT/Sa0kfbk+v3MLI4A7bOefiwn+SRO/L+hfkF3byn1oui0FNmMbPcEIfuoBKY
-	IoVQb9vw==;
-Received: from [188.251.249.2] (port=45118 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.99.5)
-	(envelope-from <dan@reactivated.net>)
-	id 1x1pDx-0000000F9KQ-2gCz;
-	Wed, 02 Sep 2026 17:58:14 +0000
-From: Daniel Drake <dan@reactivated.net>
-Date: Wed, 02 Sep 2026 18:57:07 +0100
-Subject: [PATCH v4 5/5] arm64: dts: broadcom: bcm2712: Add GPU IOMMU and
- IOMMU cache nodes
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="MRvP+jmb"
+Received: from localhost (unknown [20.236.11.69])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 788CA20B7129;
+	Wed,  2 Sep 2026 11:18:29 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 788CA20B7129
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1788373110;
+	bh=+S/srMXP148DJ3iow1AbhMmsg6NLcnBjUJW+9hsDjsM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=MRvP+jmbcxjA1akLb6PZdjxYAno+m1CEsNlvjaABGK4UkOXZ3Uq4KcDSP4M4D0Sxs
+	 5qxACRfR2y1RFd89YdjcR6EEDDTyQ42NT8JOZ6pdrnBVg+Xj7TQBjXk3shjikZ2zcE
+	 tE5RGLu+9W1vsUNGJKTtWaIbxkR7ZpI/VXYDHc9I=
+Date: Wed, 2 Sep 2026 11:19:05 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>, Alex Williamson
+ <alex@shazbot.org>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+ wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+ namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+ anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, jgg@nvidia.com,
+ kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+ longli@microsoft.com, tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, joro@8bytes.org,
+ will@kernel.org, lpieralisi@kernel.org, kwilczynski@kernel.org,
+ bhelgaas@google.com, arnd@arndb.de, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v5 3/9] mshv: Introduce basic mshv bridge device for
+ VFIO to build upon
+Message-ID: <20260902111905.000079d4@linux.microsoft.com>
+In-Reply-To: <20260731223427.2554388-4-mrathor@linux.microsoft.com>
+References: <20260731223427.2554388-1-mrathor@linux.microsoft.com>
+	<20260731223427.2554388-4-mrathor@linux.microsoft.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260902-bcm2712-iommu-submit-v4-5-9dbb657578c1@reactivated.net>
-References: <20260902-bcm2712-iommu-submit-v4-0-9dbb657578c1@reactivated.net>
-In-Reply-To: <20260902-bcm2712-iommu-submit-v4-0-9dbb657578c1@reactivated.net>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Daniel Drake <dan@reactivated.net>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
-X-Mailer: b4 0.14.3
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: SB/global_tokens (0.0067731402425)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuXPTXrqbLhK6UNQeYl88mCSTcQmDfZvca+5
- 2pjxjOHAtyu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVIOwqOrUsWnwk6uqkD8xcwQBGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWBpY9ovdkP9RmEvieRDWoEFGZ7f+7oeClYYrL6OxfWC1jM0MOKiGRkxO3FaI58br05WBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
- j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5AyJ9N3+CB9
- 4aFbAhtG8w3Ly5ZVKmISsN3IhGLWYd0758XIiXx6YYOeazosCcxmb7RWPITtorGl87DPy4ds+UWq
- MUZTL/tWkSfK5K31nzL0AFHJBtc8x8t5TwPji0j+tEORarofO5AIaedOveY7zQj5YZ/cd7uPDhKh
- WGZMn/d4/04OdrifJPLFYXIpN2MC8oCi+3TnddL52Wxml9vX6xG9HT1hMqJwIOFdI2S/IkjHcgoN
- +lE++lajS+EBz4etym25QPOIjlkSAfAYMUguLL/iJ3dHHZk8+BacxJzH0Weev4hlgCBkpmIIyJOF
- ryTdK/1e0oTCxtGGr3tflBYFGrNrmHsCV6TDdtit68pQ4Nki0TzxZwPxmW1OTT5gM4+GMuFG0h5K
- 1JfG3OtnsbD10lahPkuf+eM3l5KPnbp/eQthjVMIXiM548XiUPzdeM2DpJkNlS+QlzUpPwM5oicr
- BfHSx0cq8sPOf6wGW9u/lWd24hqw3yFuMpe/j6ywHoVhi9eN8zV1w9vIuEkKCYJ47Q917xCQbH1y
- M38733VOnxhw2U5RfvwcBhGdh7y1bw2tAk6MiqGkBrRAoXiKcRnEPA3cog/JkEYusjKvZuah7Eo5
- LC3lag+DgD9xY7Yj7fvC65xWAU3TJceJXG+jXar6FtDTl6SazWHDhW0k3iY0Nxd1+egvPpyylyRk
- sDtvh9EglVwlBP3PkVHlQGQFk2KBEkFw3+vw1RS8zKP8o2x05FSSJsC7k+LzVpQY05oubiJ9GrzY
- ++DuIQUs/5JJj4C/n4CILpFTKQlqbzX/LSb50zWeMLuo5Hnmju/07lE8IgUQIRKq2N/bp3cwIvg1
- 2Mf6vRseTqJfN6DTVjUszJAalIcW0Bh5dbygTK7jtNAOpOLoYrBwYYKC6XIWdfPsJXrcrDW6vfdj
- zQ6YC7Heg3Xf7O1TOd7yUx++SDY6V9XDGiqeh8jJhxFbE1QSjfwMTndprmVkWxS1mi+nw+nJxqi8
- G/0EWIXX8bOwrtW89m+3fa3mCGC7ZpCUmSZ9iG177dYc0ZbObnNHf6G/7NjKIViWFaEeldR/m2+i
- TN8ji+Mhbk3TTo2Lw6nIoDr0sXUZ7YZoZ/GZ+slJL25ATsZTVifNjYlkFmCz0w5vcdcHI3py3L8t
- PqWAmEN/CjKjK3VVq9SDkpBDU8/nN9BMID38D/++xf97O23y3deP8vNnmz84mDUvZqxnHNc/wp8s
- bbUui5b8WkACIg5AB/ilm4apSU2goW8TQ8+z0w5vcdcHI3py3L8tPqWAC7xZyfryQF81aCkSJYKS
- vg==
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
 
-Define the IOMMU and IOMMUC nodes for the Broadcom BCM2712 SoC found in
-the Raspberry Pi 5. Enable use of the IOMMU for the graphics/display
-block.
+Hi Mukesh,
 
-Signed-off-by: Daniel Drake <dan@reactivated.net>
----
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+On Fri, 31 Jul 2026 15:34:21 -0700
+Mukesh R <mrathor@linux.microsoft.com> wrote:
 
-diff --git a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-index 45aa8ec5e2b1..f40651ea29bb 100644
---- a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-@@ -626,6 +626,19 @@ pcie2: pcie@1000120000 {
- 			status = "disabled";
- 		};
- 
-+		iommu4: iommu@1000005200 {
-+			/* IOMMU for VC4 (HVS & MPL/TXP), Unicam, PISP-FE, MiniBVN */
-+			compatible = "brcm,bcm2712-iommu";
-+			reg = <0x10 0x5200 0x0 0x80>;
-+			#iommu-cells = <0>;
-+			brcm,iommu-cache = <&iommuc>;
-+		};
-+
-+		iommuc: iommuc@1000005b00 {
-+			compatible = "brcm,bcm2712-iommuc";
-+			reg = <0x10 0x5b00 0x0 0x80>;
-+		};
-+
- 		mip0: msi-controller@1000130000 {
- 			compatible = "brcm,bcm2712-mip";
- 			reg = <0x10 0x00130000 0x00 0xc0>,
-@@ -667,6 +680,7 @@ v3d: gpu@1002000000 {
- 
- 	vc4: gpu {
- 		compatible = "brcm,bcm2712-vc6";
-+		iommus = <&iommu4>;
- 	};
- 
- 	timer {
-@@ -701,5 +715,6 @@ hvs: hvs@107c580000 {
- 		interrupt-parent = <&disp_intr>;
- 		interrupts = <2>, <9>, <16>;
- 		interrupt-names = "ch0-eof", "ch1-eof", "ch2-eof";
-+		iommus = <&iommu4>;
- 	};
- };
+> Add a new file to implement basic VFIO-MSHV bridge pseudo device.
+> These functions are called in the VFIO framework, and credits to
+> kvm/vfio.c as this file was adapted from it. This is a basic version
+> to build upon.
+> 
+> Co-developed-by: Wei Liu <wei.liu@kernel.org>
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  drivers/hv/Makefile       |   3 +-
+>  drivers/hv/mshv_vfio.c    | 211
+> ++++++++++++++++++++++++++++++++++++++ include/uapi/linux/mshv.h |
+> 1 + 3 files changed, 214 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/hv/mshv_vfio.c
+> 
+> diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
+> index 888a748cc7cb..9ab6fc254c38 100644
+> --- a/drivers/hv/Makefile
+> +++ b/drivers/hv/Makefile
+> @@ -14,7 +14,8 @@ hv_vmbus-y := vmbus_drv.o \
+>  hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
+>  hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
+>  mshv_root-y := mshv_root_main.o mshv_synic.o mshv_eventfd.o
+> mshv_irq.o \
+> -	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o
+> +	       mshv_root_hv_call.o mshv_portid_table.o
+> mshv_regions.o  \
+> +               mshv_vfio.o
+>  mshv_root-$(CONFIG_DEBUG_FS) += mshv_debugfs.o
+>  mshv_root-$(CONFIG_TRACEPOINTS) += mshv_trace.o
+>  mshv_vtl-y := mshv_vtl_main.o
+> diff --git a/drivers/hv/mshv_vfio.c b/drivers/hv/mshv_vfio.c
+> new file mode 100644
+> index 000000000000..92cfbaef0328
+> --- /dev/null
+> +++ b/drivers/hv/mshv_vfio.c
+> @@ -0,0 +1,211 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * VFIO-MSHV bridge pseudo device
+> + *
+> + * Heavily inspired by the VFIO-KVM bridge pseudo device.
+> + */
+> +#include <linux/errno.h>
+> +#include <linux/file.h>
+> +#include <linux/list.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/slab.h>
+> +#include <linux/vfio.h>
+> +#include <asm/mshyperv.h>
+> +
+> +#include "mshv.h"
+> +#include "mshv_root.h"
+> +
+> +struct mshv_vfio_file {
+> +	struct list_head node;
+> +	struct file *file;	/* list of struct mshv_vfio_file */
+> +};
+> +
+> +struct mshv_vfio {
+> +	struct list_head file_list;
+> +	struct mutex lock;
+> +};
+> +
+> +static bool mshv_vfio_file_is_valid(struct file *file)
+> +{
+> +	bool (*fn)(struct file *file);
+> +	bool ret;
+> +
+> +	fn = symbol_get(vfio_file_is_valid);
+> +	if (!fn)
+> +		return false;
+> +
+> +	ret = fn(file);
+> +
+> +	symbol_put(vfio_file_is_valid);
+> +
+> +	return ret;
+> +}
+> +
+> +static long mshv_vfio_file_add(struct mshv_device *mshvdev, unsigned
+> int fd) +{
+> +	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
+> +	struct mshv_vfio_file *mvf;
+> +	struct file *filp;
+> +	long ret = 0;
+> +
+> +	filp = fget(fd);
+> +	if (!filp)
+> +		return -EBADF;
+> +
+> +	/* Ensure the FD is a vfio FD. */
+> +	if (!mshv_vfio_file_is_valid(filp)) {
+> +		ret = -EINVAL;
+> +		goto out_fput;
+> +	}
+> +
+> +	mutex_lock(&mshv_vfio->lock);
+> +
+> +	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
+> +		if (mvf->file == filp) {
+> +			ret = -EEXIST;
+> +			goto out_unlock;
+> +		}
+> +	}
+> +
+> +	mvf = kzalloc(sizeof(*mvf), GFP_KERNEL_ACCOUNT);
+> +	if (!mvf) {
+> +		ret = -ENOMEM;
+> +		goto out_unlock;
+> +	}
+> +
+> +	mvf->file = get_file(filp);
+> +	list_add_tail(&mvf->node, &mshv_vfio->file_list);
+> +
+Why there is no vfio_device_file_set_kvm equivalent for mshv? since VFIO
+device open/bind path will do vfio_device/group_get_kvm_safe() to ensure
+lifetime alignment. Otherwise, vfio group/device can outlive mshv
+partition.
 
--- 
-2.55.0
+If we do want to support this kvm-vfio bridge semantics beyond kvm,
+maybe this should be abstracted as a generic VFIO "hypervisor
+partition" association, with hypervisor-specific get/put callbacks,
+rather than adding an MSHV-only copy of the KVM hook.
++Alex
+
+> +out_unlock:
+> +	mutex_unlock(&mshv_vfio->lock);
+> +out_fput:
+> +	fput(filp);
+> +	return ret;
+> +}
+> +
+> +static long mshv_vfio_file_del(struct mshv_device *mshvdev, unsigned
+> int fd) +{
+> +	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
+> +	struct mshv_vfio_file *mvf;
+> +	long ret;
+> +
+> +	CLASS(fd, f)(fd);
+> +
+> +	if (fd_empty(f))
+> +		return -EBADF;
+> +
+> +	ret = -ENOENT;
+> +	mutex_lock(&mshv_vfio->lock);
+> +
+> +	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
+> +		if (mvf->file != fd_file(f))
+> +			continue;
+> +
+> +		list_del(&mvf->node);
+> +		fput(mvf->file);
+> +		kfree(mvf);
+> +		ret = 0;
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&mshv_vfio->lock);
+> +	return ret;
+> +}
+> +
+> +static long mshv_vfio_set_file(struct mshv_device *mshvdev, long
+> attr,
+> +			      void __user *arg)
+> +{
+> +	int32_t __user *argp = arg;
+> +	int32_t fd;
+> +
+> +	switch (attr) {
+> +	case MSHV_DEV_VFIO_FILE_ADD:
+> +		if (get_user(fd, argp))
+> +			return -EFAULT;
+> +		return mshv_vfio_file_add(mshvdev, fd);
+> +
+> +	case MSHV_DEV_VFIO_FILE_DEL:
+> +		if (get_user(fd, argp))
+> +			return -EFAULT;
+> +		return mshv_vfio_file_del(mshvdev, fd);
+> +	}
+> +
+> +	return -ENXIO;
+> +}
+> +
+> +static long mshv_vfio_set_attr(struct mshv_device *mshvdev,
+> +			      struct mshv_device_attr *attr)
+> +{
+> +	switch (attr->group) {
+> +	case MSHV_DEV_VFIO_FILE:
+> +		return mshv_vfio_set_file(mshvdev, attr->attr,
+> +
+> u64_to_user_ptr(attr->addr));
+> +	}
+> +
+> +	return -ENXIO;
+> +}
+> +
+> +static long mshv_vfio_has_attr(struct mshv_device *mshvdev,
+> +			      struct mshv_device_attr *attr)
+> +{
+> +	switch (attr->group) {
+> +	case MSHV_DEV_VFIO_FILE:
+> +		switch (attr->attr) {
+> +		case MSHV_DEV_VFIO_FILE_ADD:
+> +		case MSHV_DEV_VFIO_FILE_DEL:
+> +			return 0;
+> +		}
+> +
+> +		break;
+> +	}
+> +
+> +	return -ENXIO;
+> +}
+> +
+> +static long mshv_vfio_create_device(struct mshv_device *mshvdev)
+> +{
+> +	struct mshv_device *tmp;
+> +	struct mshv_vfio *mshv_vfio;
+> +
+> +	/* Only one VFIO "device" per VM */
+> +	hlist_for_each_entry(tmp, &mshvdev->device_pt->pt_devices,
+> +			     device_ptnode)
+> +		if (tmp->device_ops == &mshv_vfio_device_ops)
+> +			return -EBUSY;
+> +
+> +	mshv_vfio = kzalloc_obj(*mshv_vfio);
+> +	if (mshv_vfio == NULL)
+> +		return -ENOMEM;
+> +
+> +	INIT_LIST_HEAD(&mshv_vfio->file_list);
+> +	mutex_init(&mshv_vfio->lock);
+> +
+> +	mshvdev->device_private = mshv_vfio;
+> +
+> +	return 0;
+> +}
+> +
+> +/* This is called from mshv_device_fop_release() */
+> +static void mshv_vfio_release_device(struct mshv_device *mshvdev)
+> +{
+> +	struct mshv_vfio *mv = mshvdev->device_private;
+> +	struct mshv_vfio_file *mvf, *tmp;
+> +
+> +	list_for_each_entry_safe(mvf, tmp, &mv->file_list, node) {
+> +		fput(mvf->file);
+> +		list_del(&mvf->node);
+> +		kfree(mvf);
+> +	}
+> +
+> +	kfree(mv);
+> +	kfree(mshvdev);
+> +}
+> +
+> +const struct mshv_device_ops mshv_vfio_device_ops = {
+> +	.device_name = "mshv-vfio",
+> +	.device_create = mshv_vfio_create_device,
+> +	.device_release = mshv_vfio_release_device,
+> +	.device_set_attr = mshv_vfio_set_attr,
+> +	.device_has_attr = mshv_vfio_has_attr,
+> +};
+> diff --git a/include/uapi/linux/mshv.h b/include/uapi/linux/mshv.h
+> index be6fe3ee8707..b038a79786d2 100644
+> --- a/include/uapi/linux/mshv.h
+> +++ b/include/uapi/linux/mshv.h
+> @@ -254,6 +254,7 @@ struct mshv_root_hvcall {
+>  #define MSHV_GET_GPAP_ACCESS_BITMAP	_IOWR(MSHV_IOCTL, 0x06,
+> struct mshv_gpap_access_bitmap) /* Generic hypercall */
+>  #define MSHV_ROOT_HVCALL		_IOWR(MSHV_IOCTL, 0x07,
+> struct mshv_root_hvcall) +#define MSHV_CREATE_DEVICE
+> _IOWR(MSHV_IOCTL, 0x08, struct mshv_create_device) 
+>  /*
+>   ********************************
 
