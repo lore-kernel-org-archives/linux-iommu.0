@@ -1,140 +1,161 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFBB4B0CA3
-	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 13:49:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 953294A840D
+	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 14:00:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788443404; cv=none; b=ViM5GJVF9xTKA6T/Xw4KiZLu/uOoT7Y83q9EWwyWqGvNOZA+7Ljt/Cp6YryoF/GKkBp7oRuOmaML/N0cCHB8liuGrTBw6vdFDEx9Rl7jf+JCqswbJymFDCrbAzOaJi2bVg19eontKOlb2QpF1jUemzv4nSOreGLp0FESnJn8B2w=
+	t=1788444057; cv=none; b=rY/99uJn3TcCGF+AIKJ778UudVNeaXrNXz+O1xi72wXnf1quo+8ndiSg8Rzlz3qtrtwTSQUoN3IuuZywdooYgt4FjRtCOAHOqoNskNjAiIpeNCfEUyaaz55HhpM5pZJNtiV9SiIN5L19+TB4Br5sCAHPUbAvJDXPvhFszIWrTZY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788443404; c=relaxed/simple;
-	bh=tSyD1Hrg7szl6jqzgDqZId8g0ww2LMpu6Dfemvgzz8k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C/05ZpyD4+GTjA64f5DKRMN0o9AEPoIxg2taVdNOry5VbK8gXoftlDDYEYzx5fUue9viyH9q8KzAiw1klZ8iRMl8eK4gFKkAThPjPtVfTxbGt7wiJOEyIK3HO3j5yyUadQ/SgSlCOI2ndyVQAGq/JXncG6S9kow0jcA1TJ2RQ6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DhLqoXck; arc=none smtp.client-ip=209.85.222.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1788444057; c=relaxed/simple;
+	bh=jY9nHpNgEvlW8JyWvz3Jehy7FPbVDgI1Ta6inmZFL4s=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pIgRaAtzdauFjVcjS7xVdM2o8sI75pttDB8GMmpV1C6oQBQe6yymwUweaSEdktc2TEsodhjsYry7wTCiA3J7I6U6I+kIA2GE04HzbDw397uIULgTlB4AQys5Fx+0rF4WkepKBsE8QLQ7+U07oLVvH8i88K+SFN/VOnP5AEUGbwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=cpx103/W; arc=none smtp.client-ip=115.124.30.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DhLqoXck"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-93959320373so194469985a.1
-        for <iommu@lists.linux.dev>; Thu, 03 Sep 2026 06:49:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1788443381; x=1789048181; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=W0FzzBf86DLShcrb30vlY9xIuH5mW18Cg/ZW31lMTS4=;
-        b=DhLqoXck6ZCSfTJD9ErC+GpXbBS5MCxrYtwnYNIeH7ZdaLumgFxZnlIxewSlonBZWC
-         9h8H0PwiWHQ59R37f11bIlvowgH9txW2WV7pDWuAdl2vw3OPFPdCw2yerJS1e9zXNpI3
-         8SS/f39hMiRFONMoBiMSFrLOUklQUwSzKs3Jh9dmujgAY0sW0oH5SQI2lVc8NIC5IC+Y
-         7jj72phrtXcIng3xheDnDxbe/ztyOeECBEbdIZnobdMFsdvoIkzs0wJH659msCJ9G9Dx
-         k5WE5F1J25iSGWZf48ywyoWSFMaejNMQnXxGIx8L/p+qIGB+AfRmG+XPYjMUIbKhkttV
-         5D2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788443381; x=1789048181;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=W0FzzBf86DLShcrb30vlY9xIuH5mW18Cg/ZW31lMTS4=;
-        b=gTKsPvurskHybcOePzAy3gtf5Ylftf8MIWOYkGR+Ds7azsGroWGMyNDiXkhASsOZt3
-         uPe0sDiKtudWYl0gjHCkhHv4WrwXiKZvCDOeiQo4IfvxIyon4I9njPS1jHV8mNeDzFB6
-         Aq4mEuBYEuoJYlFWJWRIxL97rXpiYPFgy7FJ+YQjf9sm6ETnlb+L0mREZsXXrMJuHRCA
-         03597NaYXjjnGb524aG2oXcAAB6NKFnUoVqRF3vDeFwWYbU4wuciaOFCwj04ZZwZYNhQ
-         Vz+jTmMJ8AFch8Ang4dyQ99ukbaam4YOKF+KCW3GlQKOAbCcYCpojF8RS1Lq0DvYkhzz
-         ygDw==
-X-Forwarded-Encrypted: i=1; AKwUvBzYjP8CdW8a1GZTXRPr6rEWT5TiA+IrN3oUwyWnF8DlL2HVD4403rstMPRezVqhTUejkdOMnw==@lists.linux.dev
-X-Gm-Message-State: AFuF++kMSX+0ec/krE6zru6anHjod/8xNxp9fOvIP/UxNcJfzJ3IfDsJ
-	6GD8WTTkJLNvlNKLdNKdLiBNT3Oy+zS1A6FruZDEbddpA6C+UePakHIwoPHUdNnFucQ=
-X-Gm-Gg: AYBFou2UcMEatxYvUFcgW0Q8xb4XYMwx2PI8rvOyOqGaIpujyFFBNwMmPOTrAk8qiV4
-	nSzNMxT8624OFm49xDGyvioD/5EsKgUgcLrNtSA0SJfo6YaZHB+6X9DNlstwOqS9ZMH0apiCsIN
-	gndoI3h9eQlgkK5u4ddRMtTK4L5l5fgmfLCk3xzGWvpIrUhuYAwWLf7RwhETzjD3e/YG4fTomeb
-	EZOIyYqTR3bWckVDYi1h3RPnU5AHjL++XtuTc2euOHlfqLy2bGgL9fIazWcUAqms1JJYWJfLGDG
-	1P3+DI8yAHYJ0zeuGI0K/ZssJ9l7COA84RdAR/ozUXUM+PO1RXKAjZH1X51/gm682brtusHIkWQ
-	rvQmITFVsxaMt/fiHOTsCeyDjEFc5qpvqMh68dOvpdWEyTqB2qDpbV8AOxpef5pLshzDNMJI91N
-	cj0BizIXbagb/CQy2DxlwOyUmNZRqSWlbbj07rnmLLYjPPftfKS9WBf43++0QHHt9Tq7LdExv+a
-	gkax9oVq9kT/h1svn00OI3JXkB4n5f7ncth0JIhUdEA4A==
-X-Received: by 2002:a05:620a:47b6:b0:936:576e:227b with SMTP id af79cd13be357-93960f3c98amr1203618685a.24.1788443380734;
-        Thu, 03 Sep 2026 06:49:40 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9395f398a18sm497088985a.37.2026.09.03.06.49.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2026 06:49:39 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1x27ow-0000000H8XN-3MX1;
-	Thu, 03 Sep 2026 10:49:38 -0300
-Date: Thu, 3 Sep 2026 10:49:38 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: David Hu <dhu@x6u.co>
-Cc: sumit.semwal@linaro.org, christian.koenig@amd.com, alex@shazbot.org,
-	ankita@nvidia.com, chriscli@google.com,
-	david.laight.linux@gmail.com, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, jmoroni@google.com, kevin.tian@intel.com,
-	kpberry@google.com, leon@kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	nicolinc@nvidia.com, praan@google.com, sashiko-bot@kernel.org,
-	stable@vger.kernel.org, viursachi@google.com, xuehaohu@google.com,
-	Leon Romanovsky <leonro@nvidia.com>
-Subject: Re: [PATCH v8 2/2] dma-buf: Split sgl by largest page-aligned chunk
-Message-ID: <20260903134938.GI2890729@ziepe.ca>
-References: <20260901170849.4052816-1-dhu@x6u.co>
- <20260901170849.4052816-3-dhu@x6u.co>
- <20260902120832.GB2890729@ziepe.ca>
- <CABdL-LTO5OKkDmtXpiLury=2n6q6Rcm42_qqz8U+JkEu=v886Q@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="cpx103/W"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1788444035; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=EeH6bdDAEIQqh3qtw9ytOgfSyurKW+ipErCrXEGxYck=;
+	b=cpx103/Wm0Y1mFRFhn7w7+Naq5aAOctYx9jvfBv3FpRuMLEdLJ1GexXdmYrJJy8YA/aLl5U8RpDE8mGCFUVzV59cL0KU9BjIAdrqA6TrElt12jq+KJgKVsbBk/absg1iPgDF9Gj8MVsl6uZsM+QqnGOgBw6vmy2oczx1V7UUzMk=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0XAG8g3p_1788444033;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XAG8g3p_1788444033 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 03 Sep 2026 22:00:34 +0800
+From: fangyu.yu@linux.alibaba.com
+To: sunilvl@oss.qualcomm.com,
+	rafael@kernel.org,
+	lenb@kernel.org,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr
+Cc: fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org
+Subject: [PATCH v2] ACPI: RIMT: Enable PCI ACS for root complexes mapped to an IOMMU
+Date: Thu,  3 Sep 2026 22:00:31 +0800
+Message-Id: <20260903140031.3684-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CABdL-LTO5OKkDmtXpiLury=2n6q6Rcm42_qqz8U+JkEu=v886Q@mail.gmail.com>
 
-On Wed, Sep 02, 2026 at 07:07:50PM -0400, David Hu wrote:
-> On Wed, Sep 2, 2026 at 8:08 AM Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> >
-> > On Tue, Sep 01, 2026 at 05:08:49PM +0000, David Hu wrote:
-> > > From: David Hu <xuehaohu@google.com>
-> > >
-> > > Currently, `fill_sg_entry()` splits the scatterlist using `UINT_MAX`.
-> > > This creates a non-page-aligned DMA length (`0xFFFFFFFF`) for the
-> > > first entry, resulting in non-page-aligned DMA addresses for all
-> > > subsequent entries.
-> >
-> > This patch is fine, but pedenatically a scatterlist's entry limit
-> > should be bounded to dma_get_max_seg_size(), though I don't think it
-> > helps this. Operating scatterlists at the size limits has proven
-> > problematic in a number of places already...
-> >
-> > > In addition, a non-page-aligned sgl length will trigger an edge case
-> > > in `ib_umem_find_best_pgsz()`. In case of a discontinuity in later
-> > > buffers, we will have a `va` with lowest bit set to 1. That will lead
-> > > to `ib_umem_find_best_pgsz()` always return 0, and break the promise
-> > > to find best page size for the mapping on the NIC side.
-> >
-> > That's an IB side bug, the newer logic that joins adjacent SGLs should
-> > have avoided it?
-> 
-> Hi Jason,
-> 
-> Thank you for the review. I think you are right on both counts.
-> Regarding the IB side, the new SGL joining logic in
-> `ib_umem_find_best_pgsz()` indeed avoids the issue. `mask |= va` is
-> skipped for artifically split, contiguous SGLs. Since Christian has
-> already pulled v8 into drm-misc-next, I won't spin a v9 to avoid
-> creating unnecessary noise on the list. If you prefer a followup,
-> please let me know.
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-Nope, I'm fine, it just explains why it wasn't seen in other
-tested. You were backporting and mix&matched things. It confirms the
-upstream kernel was fine from the start.
+Mirror the ACPI IORT solution used on arm64 (see iort_enable_acs())
+by scanning the RIMT table for PCIe root complex nodes during
+riscv_acpi_rimt_init(), which runs before ACPI PCI enumeration. If a
+root complex node's ID mapping points at an IOMMU node, call
+pci_request_acs() immediately, so pci_acs_enable is already set by
+the time any PCI device is scanned and pci_enable_acs() runs.
 
-There are other importers besides RDMA, so I still think that this is
-a good change regardless. Having each segment remain page aligned, and
-staying away from ULONG_MAX that might trigger overflows is a friendly
-and robust thing to do for less sophisticated importers.
+Only one call to pci_request_acs() is needed regardless of how many
+root complexes are found, so track that with a static acs_enabled
+flag, same as iort_enable_acs() does.
 
-Jason
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Reviewed-by: Sunil V L <sunilvl@oss.qualcomm.com>
+
+---
+Changes in v2 (Suggested by Sunil):
+    - Check the RIMT node type in riscv_acpi_rimt_init() and invoke
+      rimt_enable_acs() only for PCIe root-complex nodes.
+---
+ drivers/acpi/riscv/rimt.c | 58 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+
+diff --git a/drivers/acpi/riscv/rimt.c b/drivers/acpi/riscv/rimt.c
+index e4538fa6c2c8..edbd04a9e03b 100644
+--- a/drivers/acpi/riscv/rimt.c
++++ b/drivers/acpi/riscv/rimt.c
+@@ -179,6 +179,42 @@ static struct acpi_rimt_node *rimt_scan_node(enum acpi_rimt_node_type type,
+ 	return NULL;
+ }
+ 
++#ifdef CONFIG_PCI
++static void __init rimt_enable_acs(struct acpi_rimt_node *rimt_node)
++{
++	static bool acs_enabled __initdata;
++	struct acpi_rimt_pcie_rc *pci_rc;
++	struct acpi_rimt_id_mapping *map;
++	struct acpi_rimt_node *parent;
++	int i;
++
++	if (acs_enabled)
++		return;
++
++	pci_rc = (struct acpi_rimt_pcie_rc *)rimt_node->node_data;
++	if (!pci_rc->id_mapping_offset || !pci_rc->num_id_mappings)
++		return;
++
++	map = ACPI_ADD_PTR(struct acpi_rimt_id_mapping, rimt_node,
++			   pci_rc->id_mapping_offset);
++
++	for (i = 0; i < pci_rc->num_id_mappings; i++, map++) {
++		if (!map->dest_offset)
++			continue;
++
++		parent = ACPI_ADD_PTR(struct acpi_rimt_node, rimt_table,
++				      map->dest_offset);
++		if (parent->type == ACPI_RIMT_NODE_TYPE_IOMMU) {
++			pci_request_acs();
++			acs_enabled = true;
++			return;
++		}
++	}
++}
++#else
++static inline void rimt_enable_acs(struct acpi_rimt_node *rimt_node) { }
++#endif
++
+ /*
+  * RISC-V supports IOMMU as a PCI device or a platform device.
+  * When it is a platform device, there should be a namespace device as
+@@ -509,7 +545,10 @@ int rimt_iommu_configure_id(struct device *dev, const u32 *id_in)
+ 
+ void __init riscv_acpi_rimt_init(void)
+ {
++	struct acpi_rimt_node *rimt_node, *rimt_end;
++	struct acpi_table_rimt *rimt;
+ 	acpi_status status;
++	int i;
+ 
+ 	/* rimt_table will be used at runtime after the rimt init,
+ 	 * so we don't need to call acpi_put_table() to release
+@@ -525,4 +564,23 @@ void __init riscv_acpi_rimt_init(void)
+ 
+ 		return;
+ 	}
++
++	rimt = (struct acpi_table_rimt *)rimt_table;
++	rimt_node = ACPI_ADD_PTR(struct acpi_rimt_node, rimt,
++				 rimt->node_offset);
++	rimt_end = ACPI_ADD_PTR(struct acpi_rimt_node, rimt_table,
++				rimt_table->length);
++
++	for (i = 0; i < rimt->num_nodes; i++) {
++		if (rimt_node >= rimt_end) {
++			pr_err("RIMT node pointer overflows, bad table\n");
++			return;
++		}
++
++		if (rimt_node->type == ACPI_RIMT_NODE_TYPE_PCIE_ROOT_COMPLEX)
++			rimt_enable_acs(rimt_node);
++
++		rimt_node = ACPI_ADD_PTR(struct acpi_rimt_node, rimt_node,
++					 rimt_node->length);
++	}
+ }
+-- 
+2.50.1
+
