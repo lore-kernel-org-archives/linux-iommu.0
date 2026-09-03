@@ -1,88 +1,196 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5CCB3955D3
-	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 18:46:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE7B43901F
+	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 19:18:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788461220; cv=none; b=X216jm8R2xk37i4n1LJ1YC1lV6pOtPErNu0MOSuW3280zIw5JHv4G6PJMar3bn3DlExwRXGD7LOUDlHeG5hns/xSoWhytTC0D8XnVDQ2WzUta1x1TJGF3O7hH4kYp41Gh7fvzSrEenoGqELEu0x0PwXk89BKY72XFI+Hq/4AUmU=
+	t=1788463138; cv=none; b=SIDUnHI+gcyk3Q9kjQm/CFHHO5v/HdTXAaGNwJyhUWNKlDXtjoGeFw3z2M+K454XLFMOhmd7TIbpRGni5KTw3AJ44/qR1YHHc47ij0lXPEV+mZ9WLORFxcu2bI7AY2B4C5xn7xAxGxzWZYF6YIeVf16DzrnAJO76nyiZbyLMkrY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788461220; c=relaxed/simple;
-	bh=AAOBbTX//dnshYHVuCrRy4d3uSMcIR6W5SJrVT1ox6M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kCP91qtO7gNr3aOUtFAs97Ayi9mIdRGWZCkdUsO5EcWqXICwPLPUE6kTllpOBSr1vWUChTR442ZvtRNelfjvLzc3OEJi3DxtUhdkSQpOgi+yUt7z1RZ4Sjj/IcXSF5kFRvAewiE3Ut85mxai7yhCj1gu885SPI8fZf7q6gDdDY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=GWoHdprR; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1788463138; c=relaxed/simple;
+	bh=+oHvx2p86yR18ioZGVS0GG3j14KXah5E2NiBfOuTsLs=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=TsXyP6LqIacDMndKBUzEDKSf4or2+4r14MkM8Z4Q6JviVWJJX+qs61otEL+Iw/vqy/YV3WvWWRW41cwMSvaC5xEG17B75AIl7KqP5a0r1ACMFB53eUz+QdgUlqMElZuaKc5SR3nhNUheJDcWZTdA/hvCaP3dkbh2/e6nmZVb0Fc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=VzmRDqIw; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="GWoHdprR"
-Received: from localhost (unknown [20.191.74.188])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 72A4D20B712B;
-	Thu,  3 Sep 2026 11:46:11 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 72A4D20B712B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1788461172;
-	bh=9417ftu6LLY+NWWmPrsJiSQmjQu6hJFyUo3Wc4rbzQ0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=GWoHdprR5u3g4iaUJw+ld4P0JfeaC8Zb35w8iS2kUbDkaZLOIqjnNUGhg/ccvjyZY
-	 mmtysBBIBD9xgJhoDgH5h8Z3gWvBzY61WsCRVuofFgYyI0XOB491W7t/B1v6jREMjn
-	 iCIC9tR1wosLiHfhUmIryXgNj0z5VXRKmXlv69Es=
-Date: Thu, 3 Sep 2026 11:46:47 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Wei Liu <wei.liu@kernel.org>, Mukesh R <mrathor@linux.microsoft.com>,
- Alex Williamson <alex@shazbot.org>, hpa@zytor.com, robin.murphy@arm.com,
- robh@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
- namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
- anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
- linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
- haiyangz@microsoft.com, decui@microsoft.com, longli@microsoft.com,
- tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, joro@8bytes.org,
- will@kernel.org, lpieralisi@kernel.org, kwilczynski@kernel.org,
- bhelgaas@google.com, arnd@arndb.de, "Aneesh Kumar K.V"
- <aneesh.kumar@kernel.org>, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v5 3/9] mshv: Introduce basic mshv bridge device for
- VFIO to build upon
-Message-ID: <20260903114647.00005a1f@linux.microsoft.com>
-In-Reply-To: <20260903174014.GM4157646@nvidia.com>
-References: <20260731223427.2554388-1-mrathor@linux.microsoft.com>
-	<20260731223427.2554388-4-mrathor@linux.microsoft.com>
-	<20260902111905.000079d4@linux.microsoft.com>
-	<20260903144236.GK4157646@nvidia.com>
-	<20260903161328.GA3102631@liuwe-devbox-debian-v2.local>
-	<20260903174014.GM4157646@nvidia.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="VzmRDqIw"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 683G3cp4820114;
+	Thu, 3 Sep 2026 19:18:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	+8xEV3gyB+b412oqy+yUU2duGYCltNshXlEAgs5AS5Y=; b=VzmRDqIw5n/9C8+6
+	rk00fIp9NHmuYzq/TUv6CIbqNuiqVN/pq6uZJGIw+6aTAKJ7Wa1qeNbdWL5b5UO2
+	gkKKDpbB6epH7ms6PyWVNxgoeSFzqKrRg5c5V6Wn48mwKFdUG58G20nvdes9/qhc
+	Vnsds/0eUHiUIfimK6PxMJb9red28X3akQon2YIXnfqnCb6tdu1Jq0GOQuX0vLI+
+	q/DKfh2sX6UudpkAOZKV4BcYqE0TX/5I+yXYrKf/HMwPdqL/744MOJNwCPh3HRsy
+	VK6KAtaQfTH5KpLd3bcy0acESzTTR1alHSn1/2OThtqiCGeuh2GA00NknyJZXGZ5
+	MI3rLw==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gf82ka6fn-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Thu, 03 Sep 2026 19:18:36 +0000 (GMT)
+Received: from pps.filterd (nalasppmta03.qualcomm.com [127.0.0.1])
+	by NALASPPMTA03.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 683JIZdl3196770;
+	Thu, 3 Sep 2026 19:18:35 GMT
+Received: from hu-devc-lv-u24-a.qualcomm.com (hu-jcameron-lv.qualcomm.com [10.81.84.69])
+	by NALASPPMTA03.qualcomm.com (PPS) with ESMTPS id 683JIZp63196746
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Thu, 03 Sep 2026 19:18:35 +0000 (GMT)
+Received: from hu-jcameron-lv.qualcomm.com (localhost [127.0.0.1])
+	by hu-devc-lv-u24-a.qualcomm.com (Postfix) with ESMTP id 64E7F23A06;
+	Thu,  3 Sep 2026 12:18:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v3 04/13] iommu/arm-smmu-v3: Flush in-flight fault work
+ on domain detach
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+        bhelgaas@google.com, praan@google.com, kevin.tian@intel.com,
+        kees@kernel.org, smostafa@google.com, baolu.lu@linux.intel.com,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        skaestle@nvidia.com, mmarrid@nvidia.com, skolothumtho@nvidia.com,
+        bbiber@nvidia.com, harsha.v@oss.qualcomm.com
+In-Reply-To: <45b6e8c6dab5b67a91ba54c32bf11ab3347d80f5.1788222485.git.nicolinc@nvidia.com>
+References: <cover.1788222485.git.nicolinc@nvidia.com>
+ <45b6e8c6dab5b67a91ba54c32bf11ab3347d80f5.1788222485.git.nicolinc@nvidia.com>
+Date: Thu, 03 Sep 2026 12:18:33 -0700
+Message-Id: <178846311317.1308030.4066178511081757826.b4-review@b4>
+X-Mailer: b4 0.16.0
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-GUID: Xg9Op-iI-ZDiO6YQlU-kMVWlq1BKuHgS
+X-Proofpoint-ORIG-GUID: Xg9Op-iI-ZDiO6YQlU-kMVWlq1BKuHgS
+X-Authority-Analysis: v=2.4 cv=OuJ/DS/t c=1 sm=1 tr=0 ts=6a99c80c cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=VwQbUJbxAAAA:8
+ a=Ikd4Dj_1AAAA:8 a=EUspDBNiAAAA:8 a=Sr6eo-UsTNkHwbmlQE8A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTAzMDE2OCBTYWx0ZWRfX0JaJGElLw2ei
+ I4E++lHkL1n3mpZ1ZFFPR4rUvVePpMioX17P+Y8Qyg6kOiT4QzcNGRkjPDQabvMlPJmzzs+tago
+ k97c7TjnIrLuUXYawAS9jT+JK0YoAUx3LOfeIW7mu3m90xtDdXTfcr7XngaT9n5UoTPG49Jmi0U
+ xYOsPreYw6R0wK+U/hqrZjH/ct1upZ16g+TmlpaqBJz/Ehi8cZwPg6R4vBU87SevAI3qfSx3fQN
+ U4GJH7Qi5fNcSty//B8iWbIVKMpiQe3GpJn7hcfEcT7YDy6kSwdZj8TmFukGbT91sC+Q7wv0VLa
+ qCGeYiWyXZip4ukN/UZ26V5mE4A0/J0Y35M2ne01g1XA9X9DuZn4ph5xsd4yDp2UF/Nb367MNDz
+ YtpABk1uWk59Bn/Avpn9SNXFbz/6WdKL+JbxaTr9og9hzoDWvvHW33KxW+WLDS23cJKdVVX/1ZV
+ DbxBMAMiqFMk/C+MVKA==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTAzMDE2OCBTYWx0ZWRfXzjcNfJpdMZyJ
+ Oa6cSkrDP0IJQ6nlxvBEG38oEDqp5H4Zhp2arfn8vncP/Tjmxhjc6+uZj5zx9t5x3XqmCEumjpF
+ 6MeuHSaY8/hkDWV7wu/7O62AxcusVEQ=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-03_05,2026-09-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 lowpriorityscore=0 suspectscore=0 clxscore=1011
+ priorityscore=1501 spamscore=0 adultscore=0 bulkscore=0 malwarescore=0
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2609030168
 
-Hi Jason,
-
-On Thu, 3 Sep 2026 14:40:14 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Thu, Sep 03, 2026 at 09:13:28AM -0700, Wei Liu wrote:
-> > > Does mshv use KVM at all? Can a kvm fd describe the partition?  
-> > 
-> > No. MSHV doesn't use KVM. We don't have a kvm fd. We have an mshv
-> > fd to describe the partition. They are different virtualization
-> > solutions.
-> > 
-> > In the ideal world, the fd should be hypervisor agnostic, not tied
-> > to kvm.  
+> arm_smmu_attach_release() polls the hardware event queue to drain all the
+> in-flight stall events for an old domain that the IOMMU core might free at
+> any moment. However, a drained event is dequeued, yet it is not necessarily
+> handled, and the IOPF work for a handled one can still be running.
 > 
-> There is a patch generalizing vfio to work on FDs instead of KVM
-> structures:
-> 
->  https://patch.msgid.link/20260903-vfio-v2-1-ef4cd4190ae7@linux.ibm.com 
-> 
-> That's probably a good step long that line.
-Yeah, ideally, it would be removing/rename device/group->kvm to
-something like group/device->vm_file?
+> So, first synchronize_irq() on the evtq and the combined IRQs following the
+> drain, in order to guarantee that every dequeued event has reached the IOPF
+> workqueue, since synchronize_irq() waits for an in-flight IRQ thread. Skip
+> the waits on a timed-out drain though, since a stuck consumer would block
 
+drop the "though" - doesn't read well or add anything.
+
+> the unbounded wait_event() inside synchronize_irq() as well.
+> 
+> Then, invoke iopf_queue_flush_dev() to finally drain the IOPF workqueue, as
+> the fault work references the old domain via its attach handle, while the
+> IOMMU core might free that old domain once the detach call returns.
+> 
+> If arm_smmu_drain_queue() times out, fault work may still be in flight, and
+> iopf_queue_remove_device() would free iopf groups that the queued work also
+> references. Skip the iopf teardown and leak the master_domain, rather than
+> risk a use-after-free.
+> 
+> The skip also leaks the iopf refcount, keeping the device enrolled on the
+> IOPF queue, which would strand its fault parameter on the queue list once
+> the device teardown frees dev->iommu, crashing a later iopf_queue_free().
+> Reclaim the enrollment in arm_smmu_release_device(), where all the attach
+> handles are gone so a straggler report cannot queue a new fault group.
+> 
+> Note that a residual race window remains between an iopf_queue_flush_dev()
+> and iopf_queue_remove_device(): a fault arriving in between still resolves
+> to the old attach handle, as the IOMMU core publishes a handle change only
+> after the driver ops return. This window predates the drain narrowing it,
+> and is only closable by an ordering fix in the IOMMU core. Furthermore, a
+> timed-out drain shares exactly the same window, given that it must keep the
+> device enrolled on the IOPF queue, where iopf_queue_remove_device() would
+> free the iopf groups that any in-flight fault work still references.
+> 
+> Fixes: cfea71aea921 ("iommu/arm-smmu-v3: Put iopf enablement in the domain attach path")
+> Cc: stable@vger.kernel.org # v6.16
+> Co-developed-by: Barak Biber <bbiber@nvidia.com>
+> Signed-off-by: Barak Biber <bbiber@nvidia.com>
+> Co-developed-by: Stefan Kaestle <skaestle@nvidia.com>
+> Signed-off-by: Stefan Kaestle <skaestle@nvidia.com>
+> Signed-off-by: Malak Marrid <mmarrid@nvidia.com>
+> Assisted-by: Claude:claude-fable-5
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index d255ff2519f9..1851ee7ec15b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3399,6 +3399,7 @@ void arm_smmu_attach_release(struct arm_smmu_attach_state *state)
+>  	struct arm_smmu_master_domain *master_domain = state->old_master_domain;
+>  	struct arm_smmu_master *master = state->master;
+>  	struct arm_smmu_device *smmu = master->smmu;
+> +	int ret = 0;
+>  
+>  	lockdep_assert_not_held(&arm_smmu_asid_lock);
+>  	iommu_group_mutex_assert(master->dev);
+> @@ -3412,8 +3413,40 @@ void arm_smmu_attach_release(struct arm_smmu_attach_state *state)
+>  	 * up once the IOMMU core swaps the handle, mistakenly resuming it
+>  	 * against the next domain.
+>  	 */
+> -	if (master->stall_enabled)
+> -		arm_smmu_drain_queue(smmu, &smmu->evtq.q, false);
+> +	if (master->stall_enabled) {
+> +		ret = arm_smmu_drain_queue(smmu, &smmu->evtq.q, false);
+> +		/*
+> +		 * Ensure pending events have reached the IOPF queue, unless
+> +		 * the drain timed out: a stuck consumer would also block an
+> +		 * unbounded wait_event() inside the synchronize_irq().
+> +		 */
+> +		if (!ret && smmu->evtq.q.irq)
+> +			synchronize_irq(smmu->evtq.q.irq);
+> +		/* Pending events might be in the combined_irq handler */
+> +		if (!ret && smmu->combined_irq)
+> +			synchronize_irq(smmu->combined_irq);
+
+I'd group the two things that happen if we didn't time out.
+
+		if (!ret) { /* Didn't time out */
+			if (smmu->evtq.q.irq)
+				synchronize_irq(smmu->evt.q.irq);
+			if (smmu->combined_irq)
+				synchronize_irq(smmu->combined_irq);
+		}
+		
+> +	}
+
+Thanks,
+Jonathan
+
+-- 
+Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
