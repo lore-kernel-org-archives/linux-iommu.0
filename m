@@ -1,244 +1,122 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 723BE389115
-	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 08:01:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D515B3A16BC
+	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 08:08:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788422494; cv=none; b=NWkr2rOO4dTfE+clW1sDouutfb1nfVcNpuWT4Ank5s0pWQnbsmAG9hUq87cW6tHKcNqydaYdyy7NJZ5JS9JONlDP66hA/qIo9PIKbOxFA5UtvEd9teS80xHPu/P0n8fhNLNeAEBjpUrtdypwSl3IeY1wz3UiR5TtxCJ9MeqtKTU=
+	t=1788422933; cv=none; b=Cxex16HhtU+rNImwvw+zk/Rxa8mCVVYy+zGUnno4SxX21SBTmMrkyHvIYxiXvnZ+AgbyYJrLNEJQJoSj1h2CzHzT6yyQA+nPixmzqkecwBkmWC1WXbZ9kzppf+yugAMUSNZYfizEgfoFB3kBloGbyV+MZ1B4rAWmskYNDFepc4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788422494; c=relaxed/simple;
-	bh=vpfLl3XOI7rlkVuJq1PgI2vEBKX0lNQYwDmbXu4z21o=;
+	s=arc-20240116; t=1788422933; c=relaxed/simple;
+	bh=YTXYR3HJ877QdAeG6YnuoEKdZssQR3Ei3AOpPYm8L/U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aRYsgCcMQiZwDDECArNyg4WPKRt9X4NKqCQGfmNHFlX0AxwHzQ6r+XRe3kSb79Jwd6gdYuyVh9sHyA2T/XmjtssdSjjZRtDf3i9llsiDGIzl8eR9ywMKWXqDR5xmmkksSFHJiH44IrFY4CDP+uQ6IgmJWoPZdr7UMzaJ1jvARwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=iuf0Zpbh; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=LrmcvZBNkuC21I3RsRhZ27epVYfneyazB1a0zuIh3YMo02VePsQEF9v0asiTN+QV3BMyX4ZrhOnmQ7MSTg6kXDDzSdbnKRO5gz55u8GlATZgBfV83e1r1PtShxBD1NUWNJ26exIBFa+ddVJIz6RfDWC0dOboWYIyq0f9ZoZg0n4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ir4E3dVe; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="iuf0Zpbh"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 47F8F20B712B;
-	Thu,  3 Sep 2026 01:00:54 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 47F8F20B712B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1788422454;
-	bh=nBs8WjtPOPK/iPmNWaCpV8vwPsHWUeve/Fx6Ar0apQE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iuf0ZpbhptHZ3cl4mdiP/4Cs20dPAJkKGF4XqAPMA12nffuZxczgkKZQYjeR2BctP
-	 atftrvhceIwIILopc5hfHxR3bKFtt+w1Riclz+/kBPA03AtigMIzyy5EXQyzlUu+tV
-	 f0nnpBM2QTvdnS0chPp0DGX4fSi9HD5b++yxWaa8=
-Date: Thu, 3 Sep 2026 16:01:29 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"x86@kernel.org" <x86@kernel.org>, "wei.liu@kernel.org" <wei.liu@kernel.org>, 
-	"kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>, 
-	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com" <longli@microsoft.com>, 
-	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, 
-	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
-	"mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>, 
-	"arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>, 
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, 
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>
-Subject: Re: [PATCH v4 4/5] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <xgcx7tq47d6wlw7glk7yoka5qr32hxv3rlrdzaw5i2kzs7b7s5@7xdljgmwo77n>
-References: <20260821132654.211730-1-zhangyu1@linux.microsoft.com>
- <20260821132654.211730-5-zhangyu1@linux.microsoft.com>
- <BN7PR02MB41489C44F11D14DDCEF925C7D4AC2@BN7PR02MB4148.namprd02.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ir4E3dVe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788422930; x=1819958930;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YTXYR3HJ877QdAeG6YnuoEKdZssQR3Ei3AOpPYm8L/U=;
+  b=Ir4E3dVeLHvo+CZgm0sZq/6oxygSa0KBB+8aqXlx1orX+fQVqZjeDcJR
+   UBOfEq3qLuyumAk5GL90ayyTTERWc7GohrtFmgZEFfWmNjXh9To8nA4dL
+   PIcGcNaFH6ustY9N7B0VkNq91RlD0PbXsrkkWW2OokVwiEIaFXr93lWOH
+   C1s2VD5P66dffqwXGxl5v7MZ+tR3CdAxMUmuP31Toq9PeakfMrjh0OsSL
+   pjdhBvM5OY4BtV2En8r7Woq0fJc0euYvhvZ5LDKs0yca12uYGsrDIkbyq
+   aBN3paLXAMtT7S4mjPZtZGTIYUsZ1uis4PggElNyQ803bWeYdaaTZxXXM
+   Q==;
+X-CSE-ConnectionGUID: Y9WSLas1Q5iIl+BjGGfSWA==
+X-CSE-MsgGUID: NTT1z6E0Qnyj4rJ5fBzdwA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11894"; a="88036677"
+X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
+   d="scan'208";a="88036677"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 01:08:50 -0700
+X-CSE-ConnectionGUID: 6paLz0wmQBKE09vOAy1JTg==
+X-CSE-MsgGUID: IwbFULBMTeyQCfCWutzFOw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
+   d="scan'208";a="299514253"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 01:08:48 -0700
+Date: Thu, 3 Sep 2026 16:08:44 +0800
+From: "Lai, Yi" <yi1.lai@intel.com>
+To: Qinyun Tan <qinyuntan@linux.alibaba.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, yeeli <seven.yi.lee@gmail.com>,
+	Xunlei Pang <xlpang@linux.alibaba.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, yi1.lai@inte.com
+Subject: Re: [PATCH] iommufd/selftest: Return dmabuf fd from
+ IOMMU_TEST_OP_DMABUF_GET again
+Message-ID: <apkrDCjfzBobiwm/@ly-workstation>
+References: <20260902085414.549830-1-qinyuntan@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN7PR02MB41489C44F11D14DDCEF925C7D4AC2@BN7PR02MB4148.namprd02.prod.outlook.com>
+In-Reply-To: <20260902085414.549830-1-qinyuntan@linux.alibaba.com>
 
-On Fri, Aug 28, 2026 at 05:22:25PM +0000, Michael Kelley wrote:
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, August 21, 2026 6:27 AM
-> > 
-> > Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
-> > This driver implements stage-1 IO translation within the guest OS.
-> > It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
-> > for:
-> >  - Capability discovery
-> >  - Domain allocation, configuration, and deallocation
-> >  - Device attachment and detachment
-> >  - IOTLB invalidation
-> > 
-> > The driver constructs x86-compatible stage-1 IO page tables in the
-> > guest memory using consolidated IO page table helpers. This allows
-> > the guest to manage stage-1 translations independently of vendor-
-> > specific drivers (like Intel VT-d or AMD IOMMU).
-> > 
-> > Hyper-V consumes this stage-1 IO page table when a device domain is
-> > created and configured, and nests it with the host's stage-2 IO page
-> > tables, therefore eliminating the VM exits for guest IOMMU mapping
-> > operations. For unmapping operations, VM exits to perform the IOTLB
-> > flush are still unavoidable.
-> > 
-> > Guest hibernation and resume are not supported by this initial
-> > implementation. The guest-owned stage-1 page tables reside in guest
-> > memory and are preserved in the hibernation image. However, the image
-> > does not by itself preserve the Hyper-V device-domain objects or their
-> > device attachments, and the current pvIOMMU interface does not define
-> > whether or how Hyper-V restores that state.
-> > 
-> > To identify a device in its hypercall interface, the driver looks up the
-> > logical device ID prefix registered for the device's PCI domain (see the
-> > logical device ID registry in hv_common.c) and combines it with the PCI
-> > function number of the endpoint device.
-> > 
-> > Co-developed-by: Wei Liu <wei.liu@kernel.org>
-> > Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> > Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> >  arch/x86/hyperv/hv_init.c             |   4 +
-> >  arch/x86/include/asm/mshyperv.h       |   4 +
-> >  drivers/iommu/Kconfig                 |   1 +
-> >  drivers/iommu/hyperv/Kconfig          |  16 +
-> >  drivers/iommu/hyperv/Makefile         |   1 +
-> >  drivers/iommu/hyperv/hv-iommu-guest.c | 620 ++++++++++++++++++++++++++
-> >  drivers/iommu/hyperv/iommu.h          |  49 ++
-> >  7 files changed, 695 insertions(+)
-> >  create mode 100644 drivers/iommu/hyperv/Kconfig
-> >  create mode 100644 drivers/iommu/hyperv/hv-iommu-guest.c
-> >  create mode 100644 drivers/iommu/hyperv/iommu.h
-> > 
+On Wed, Sep 02, 2026 at 04:54:14PM +0800, Qinyun Tan wrote:
+> The selftest helper reads the new dmabuf fd from the ioctl return
+> value:
 > 
-> [snip]
+> 	*out_fd = ioctl(fd, IOMMU_TEST_CMD, &cmd);
 > 
-> > +
-> > +static int hv_iommu_attach_dev(struct iommu_domain *domain, struct device *dev,
-> > +			       struct iommu_domain *old)
-> > +{
-> > +	u64 status;
-> > +	u32 prefix;
-> > +	unsigned long flags;
-> > +	struct pci_dev *pdev;
-> > +	struct hv_input_attach_device_domain *input;
-> > +	struct hv_iommu_domain *hv_domain = to_hv_iommu_domain(domain);
-> > +	int ret;
-> > +
-> > +	pdev = to_pci_dev(dev);
-> > +	dev_dbg(dev, "attaching to domain %d\n",
-> > +		hv_domain->device_domain.domain_id.id);
-> > +
-> > +	ret = hv_pci_lookup_dev_id(pci_domain_nr(pdev->bus), &prefix);
-> > +	if (ret) {
-> > +		dev_err(&pdev->dev, "no IOMMU registration for vPCI bus\n");
+> Commit dba4254e216d ("iommufd/selftest: Fix dmabuf leak in
+> iommufd_test_dmabuf_get()") fixed the dmabuf leak on dma_buf_fd()
+> failure, but the applied version also changed the success path to
+> return 0, so userspace no longer receives the fd.  Note the patch as
+> posted on the list returned rc here; the change to return 0 appeared
+> when it was applied:
 > 
-> Nit: Given that the device id registration is independent of IOMMUs,
-> this message seems a bit off. Maybe just drop "IOMMU"?
+>   https://lore.kernel.org/all/20260707030635.221577-1-seven.yi.lee@gmail.com/
+> 
+> Every test using test_cmd_get_dmabuf() then operates on fd 0 instead
+> of the dmabuf, and the dmabuf_simple and dmabuf_revoke selftests fail
+> across all fixtures:
+> 
+>   # iommufd.c:1595:dmabuf_simple:Expected -1 (-1) ==
+>     _test_ioctl_ioas_map_file(...) (0)
+> 
+> Keep the dma_buf_put() on failure but return the fd on success.
+> 
+> Fixes: dba4254e216d ("iommufd/selftest: Fix dmabuf leak in iommufd_test_dmabuf_get()")
+> Signed-off-by: Qinyun Tan <qinyuntan@linux.alibaba.com>
+> ---
+>  drivers/iommu/iommufd/selftest.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+> index ee706f18f7e91..f6da927461b57 100644
+> --- a/drivers/iommu/iommufd/selftest.c
+> +++ b/drivers/iommu/iommufd/selftest.c
+> @@ -2056,11 +2056,9 @@ static int iommufd_test_dmabuf_get(struct iommufd_ucmd *ucmd,
+>  	}
+>  
+>  	rc = dma_buf_fd(dmabuf, open_flags);
+> -	if (rc < 0) {
+> +	if (rc < 0)
+>  		dma_buf_put(dmabuf);
+> -		return rc;
+> -	}
+> -	return 0;
+> +	return rc;
+>  
+>  err_free:
+>  	kfree(priv->memory);
+> -- 
+> 2.43.7
 > 
 
-How about making the message more explicit and including the lookup key?
-E.g.,
+Applied on upstream v7.3-rc1 kernel, issue was resolved.
 
-	pci_domain = pci_domain_nr(pdev->bus);
-	ret = hv_pci_lookup_dev_id(pci_domain, &prefix);
-	if (ret) {
-		dev_err(dev,
-			"no logical device ID registered for PCI domain %04x\n",
-			pci_domain);
-		return ret;
-	}
-
-> > +		return ret;
-> > +	}
-> > +
-> > +	local_irq_save(flags);
-> > +
-> > +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-> > +	memset(input, 0, sizeof(*input));
-> > +	input->device_domain = hv_domain->device_domain;
-> > +	input->device_id.as_uint64 = (u64)prefix | PCI_FUNC(pdev->devfn);
-> > +	status = hv_do_hypercall(HVCALL_ATTACH_DEVICE_DOMAIN, input, NULL);
-> > +
-> > +	local_irq_restore(flags);
-> > +
-> > +	if (!hv_result_success(status) &&
-> > +	    hv_result(status) != HV_STATUS_DEVICE_ALREADY_IN_DOMAIN) {
-> > +		hv_status_err(status, "HVCALL_ATTACH_DEVICE_DOMAIN failed\n");
-> > +		return hv_result_to_errno(status);
-> > +	}
-> > +
-> > +	if (domain != &hv_blocking_domain.domain &&
-> > +	    !pdev->ats_enabled &&
-> > +	    hv_iommu_ats_supported(hv_iommu_device->cap) &&
-> 
-> Nit: In other places where the hv_domain is available, 
-> hv_domain->hv_iommu is used instead of directly accessing
-> hv_iommu_device. That's a good practice that limits references
-> to the static variable hv_iommu_device in case future enhancements
-> allow multiple IOMMUs in a VM. I'd suggest doing the same here.
-> 
-
-Good point. Will use hv_domain->hv_iommu.
-
-> > +	    pci_ats_supported(pdev))
-> > +		pci_enable_ats(pdev, PAGE_SHIFT);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> 
-> [snip]
-> 
-> > +
-> > +static struct iommu_device *hv_iommu_probe_device(struct device *dev)
-> > +{
-> > +	struct hv_iommu_endpoint *vdev;
-> > +	struct hv_output_get_logical_device_property device_iommu_property = {0};
-> > +
-> > +	if (!dev_is_pci(dev))
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	if (hv_iommu_get_logical_device_property(dev,
-> > +						 HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU,
-> > +						 &device_iommu_property) ||
-> > +	    !(device_iommu_property.device_iommu & HV_DEVICE_IOMMU_ENABLED))
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	vdev = kzalloc_obj(*vdev, GFP_KERNEL);
-> > +	if (!vdev)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	vdev->dev = dev;
-> > +	vdev->hv_iommu = hv_iommu_device;
-> > +	dev_iommu_priv_set(dev, vdev);
-> 
-> This struct hv_iommu_endpoint is set up, but doesn't seem to be
-> used for anything except to free it. Am I missing some reason that
-> it exists?
-> 
-
-Hah! You aren not missing anything. :)
-
-This structure used to carry more per-device state. In v3, it also
-contained hv_domain, which tracked the currently attached domain and
-was used to skip a duplicate blocking domain attach. v4 removed the
-hv_domain field in struct hv_iommu_endpiont, and also the redundant
-ATS cleanup in release_device().
-
-Next, I will remove struct hv_iommu_endpoint, its allocation, the
-dev_iommu_priv_set()/get() calls, the release_device() callback, and
-the corresponding iommu_ops entry. hv_iommu_probe_device() can return
-&hv_iommu_device->iommu  directly.
-
-If future work needs any per-device state, we can introduce the structure
-again. Keeping an unused data structure in the current code is indeed
-not a good practice. Thanks for pointing this out!
-
-B.R.
-Yu
-
+Tested-by: Yi Lai <yi1.lai@intel.com>
