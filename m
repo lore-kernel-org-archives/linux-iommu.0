@@ -1,170 +1,98 @@
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6E042E417
-	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 07:44:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.101
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788421463; cv=none; b=UoLRVNK6kxmlguzsXUGGlq6IurRmCFIB/HcxltB5zD6fT95w2EmGAw8k6isVA9jbKuOC3kxwXgB7fEIs3wSRJCUogsu3igMTteE9x3dxDpweT99pNBYwwIve7vA5M58jDghIiWEVcKZKUtN9uZHfTvLqN4YuARJLVa+YJS6JDSs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788421463; c=relaxed/simple;
-	bh=BhhbBow9CaHdcvbCIfGNDmsl/cn5E9ux6VKW5OeUCM0=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=oYosybXE1crBPSLSUTK0p+scgH71Hb1/8rpHrwpc0k/qB+98DfhsPt3ldfGjMp5Ak7QL4uX34VbX0gSYqAIV3uL5ExO6N28b34rRdiws61M813Mycw0txX1d9bMa6yaRB80RarWBjoOtBbQXc4MQefMuQJmK2Bwa8cwVxHMEscY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=H65wnqG8; arc=none smtp.client-ip=115.124.30.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AF5A3749F6
+	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 07:49:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.177
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788421774; cv=pass; b=fnrzQX/rrZ2Dz8tYp48h2k334dC7SWreXMrStgKzjTG+FavBCB219RlZsAwXgMVfhecBRtisWsq79szw7I2s3EcMeEgPMQgQ0zHPfc+AXni4zmkHLPaHxL6UOugYquRO3QTpkBpAV6qMyF9CXWTOjqfK0Xyalw+7Ur5KMNHJygI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788421774; c=relaxed/simple;
+	bh=Z+NPJm3/F4Yvk7odWAe7EADRWFhaUf6x0bt93hbRKNQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JjplMrRU8uNHRWm8QLCDWnGdF1KMAOESarHeD/aADIRaaqU6lOQaCG5oCzhUG0bWEh39UUXIR6aJSEoyoIzSReukKmhu0fdGyyIowUzNS+Yp87t/YsJbvZXPbWp+yGjRzOsrEst7ZNNuhDxKmFaY8JFKr5DEe/uWyNdqMth45so=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R0ubAkuN; arc=pass smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="H65wnqG8"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1788421449; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=ge6lR+8ZfIiyvJs0V7pajWNgEd552Utb9P7OOcSsdJo=;
-	b=H65wnqG8HnUs19vjwaZMaa0HRMPmbTAbjOxCYKNsxFU++9YCfrhws3T2NmOeuzEtKfcFOKhgF3ttNxIHGyycz+hAT8bwYVul0AeW7Knm3XHBsSmDiepXyaOk+OQPkMtRhlaaCaui+7HCBt+QOIVrOEIufCXblksKJWwVt0MZ6Nc=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R221e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0XAFO2XN_1788421446;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XAFO2XN_1788421446 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 03 Sep 2026 15:44:08 +0800
-From: fangyu.yu@linux.alibaba.com
-To: sunilvl@oss.qualcomm.com
-Cc: alex@ghiti.fr,
-	aou@eecs.berkeley.edu,
-	fangyu.yu@linux.alibaba.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	lenb@kernel.org,
-	linux-acpi@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	rafael@kernel.org
-Subject: Re: [PATCH] ACPI: RIMT: Enable PCI ACS for root complexes mapped to an IOMMU  
-Date: Thu,  3 Sep 2026 15:44:06 +0800
-Message-Id: <20260903074406.43565-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <CAB19ukHwcDnApuWcn4MWm=bJZS2=UqbLT2=MnpfsJePG=qA_wA@mail.gmail.com>
-References: <CAB19ukHwcDnApuWcn4MWm=bJZS2=UqbLT2=MnpfsJePG=qA_wA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R0ubAkuN"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-85590c5aeabso1757724b3a.3
+        for <iommu@lists.linux.dev>; Thu, 03 Sep 2026 00:49:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788421772; cv=none;
+        d=google.com; s=arc-20260327;
+        b=W89TRsEGT9kt9GWQkpxWBMnZl6wcIRdZ4MnFcbmcvdQrgHXRB++ZkCGQp8ChMrmhYy
+         yXKmBqXgOFd9rgcFFRZeGrirC0zSJUVeQFn/nl3UDqqWazoxAt9k8y9R7lowv3oEsAXp
+         ucXIkrtKctt1oZmg78u9EQlg/3zhvaxUZqYImKEHm9Xk10jcnPhvXxLrENL8jliv5ps2
+         0fY24GUVjSbkw0oUwyTcp6PdDRGNpEHwQvbKL1uMlG1jm0rtHnFfZVj29kpYMCfhbX9g
+         S5y+0/dpiCYTlv4GGyXLBXLKwufNdRTw/L7ixMoNFOilGOvYBAulqD4w8fQyV6l+MUdC
+         /0ZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Z+NPJm3/F4Yvk7odWAe7EADRWFhaUf6x0bt93hbRKNQ=;
+        fh=JYa2gFigYFMC+1cPNRTsdwZuV94wQ3RrAEBR4qYviak=;
+        b=e47vBwxrrbetVk+yIQeyoLUHUj3bpDSSoR78rTBo6675fJwCCgzAGY1nlGPWcCSn4G
+         uhjcKzWbH8w6lXj6RifT3l4kGugatgMXSr1LvHM5qkH2A6ewC+TTXXUISRJdIACgij6z
+         5SuUj5BmpNVkSvVvvganga7bgwR6t9NjPnMYW/xs2Y5fxE79bi9sf4seUX2/bF3o3/aN
+         YuK1lhpJoleWC1CcwHeINOiR9EVvAV9fUA0dGhfN3uTGYagPGOZ/JbLA1xZgkowNwwR7
+         1qmULF4RKu312cVju/C0HBsEWp+NNHO6IIrJqLhwZcXjPjTHQVAtsChndKWOq1T6GjDJ
+         +CWQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788421772; x=1789026572; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Z+NPJm3/F4Yvk7odWAe7EADRWFhaUf6x0bt93hbRKNQ=;
+        b=R0ubAkuNAWlUzvz70Ogh2t2NGPSXKT6ggyPxYkDjjTPDCMrTdSUHGAtBe8XPD/9Gog
+         4i0sHn5ReJ35HPkDxDZcrUg4bmd5rWJY33Qdqfj1rCmxe3MxHf2zsazKUcp8o11verkH
+         8Z0JL8UZw3XbeJW8pgHcb2JCBDwwQGiswbsGks1RrXDnbMrppW50B0rDWaPZUUoLDNhB
+         3bOD0gjMZ7V1hVyq4ahizF8ipbUyENP73nYe3FlR42GuBIgr4bN9e4bPw+7lG2HdzGxZ
+         IOEoix0tTZSfZcGgxRGDYNb2234oDOgFk3yKoUhpMLsAv/qi+mGoRJMaGb2GgphbC9n6
+         y8oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788421772; x=1789026572;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=Z+NPJm3/F4Yvk7odWAe7EADRWFhaUf6x0bt93hbRKNQ=;
+        b=T4dM09jQMiX92jyKFfRfyeeZmfeFn/s5XFg4DXgbS+RKVkY5NvskQUNZyppvvYHkZ2
+         nKpWxxpCzW7I8F2z3FygKoZOhMJWF/B2AGgl4nlijAiLP/yOhc8BHsCeCn2Lq2GG1WQ1
+         3q6O6QiHPTYbdBAWw5IOvQBU0JRtVr+2vO47EL5YWDH4ywXIIRxXwler7ppZDrZ/LvS6
+         rh8hTsN0MCoTnQ70uX+XnRoV/Xdy+UPkSvZ5Avw/47+YlBCEomb2nayq0dyUEhxtw8ij
+         VHcB8gU9xsHX5Xup4LRx8FcOg4XnbAsL29bzmDD7xja8pugHJW/8M0rhSHtrJmAWeEaO
+         iTGA==
+X-Forwarded-Encrypted: i=1; AKwUvBzyj7LJig1zINzn34bjzo9XVTYIN/uqGbGYaRuNNSRdtaulqbeTDuW0WlJIOJS7kbCk7ZCpPA==@lists.linux.dev
+X-Gm-Message-State: AFuF++m3GeCLZbcccBn6WLaiP3b0KeGJTqZ9GoCFKK+eshVLRJBaityN
+	31fE/UGNTxmBzjEe138Mdu3aj54QFPuI6Rj2LM/C3y+DpwFVUGYmbQwBbEetOsJlR1SaLTCZ5z8
+	FCvaEqZF1awxgK9oxFcgoayZ+Y1t5RRg=
+X-Gm-Gg: AYBFou1YlDpTP59gzpUaOIhX9TlXmUJ2XknMEmK3nkP5DwhgmDiukQg5f5dRVAN6SRz
+	7U9SACimM6Tx8LWLwfZ146hQI80agaYHQM/5ij8Omfdm1wC5wBa9SRCJ5u1zO1ivQP81AOAAIB+
+	LDFLRaL2svn7ksYaFCj5J1gKKsQOT8+mF++8G1C5Xaevd9jO+rrnFTam+leUDYMTP3ChD6IFnUD
+	ZVmYDqYhzWH9Oa7z8DUXNKq+67S50W/Mz/FLLKxqPRQuRQu8n2rR2jlQhGPz1vrrnkPv8/ZUEXG
+	pkR3UIqkqPNCOAIp4sfKFyyLQHsufzt95ZpkLievdOZQLYTUkA7F6h7y+A==
+X-Received: by 2002:a05:6a00:4397:b0:857:7317:cff8 with SMTP id
+ d2e1a72fcca58-85ed4b21177mr15299064b3a.25.1788421772181; Thu, 03 Sep 2026
+ 00:49:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260903072419.1485256-1-yi1.lai@intel.com>
+In-Reply-To: <20260903072419.1485256-1-yi1.lai@intel.com>
+From: Yee Li <seven.yi.lee@gmail.com>
+Date: Thu, 3 Sep 2026 15:48:55 +0800
+X-Gm-Features: AcwNN1X-vSoSXYVOWj3GC5Kk__19V18MGkeSjvgHea1GqX_QFYbmP-LQSIwPwb0
+Message-ID: <CALX8JfQ6dT2gV2xbSf+_9j=P2i+0K5pXVQ2YdCs+zoxp_QaC=A@mail.gmail.com>
+Subject: Re: [PATCH] iommufd/selftest: Fix wrong return value in iommufd_test_dmabuf_get()
+To: Yi Lai <yi1.lai@intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, joro@8bytes.org, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
->> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->>
->> Mirror the ACPI IORT solution used on arm64 (see iort_enable_acs())
->> by scanning the RIMT table for PCIe root complex nodes during
->> riscv_acpi_rimt_init(), which runs before ACPI PCI enumeration. If a
->> root complex node's ID mapping points at an IOMMU node, call
->> pci_request_acs() immediately, so pci_acs_enable is already set by
->> the time any PCI device is scanned and pci_enable_acs() runs.
->>
->> Only one call to pci_request_acs() is needed regardless of how many
->> root complexes are found, so track that with a static acs_enabled
->> flag, same as iort_enable_acs() does.
->>
->> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->> ---
->>  drivers/acpi/riscv/rimt.c | 56 +++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 56 insertions(+)
->>
->> diff --git a/drivers/acpi/riscv/rimt.c b/drivers/acpi/riscv/rimt.c
->> index e4538fa6c2c8..f22e28c8211e 100644
->> --- a/drivers/acpi/riscv/rimt.c
->> +++ b/drivers/acpi/riscv/rimt.c
->> @@ -179,6 +179,42 @@ static struct acpi_rimt_node *rimt_scan_node(enum acpi_rimt_node_type type,
->>         return NULL;
->>  }
->>
->> +#ifdef CONFIG_PCI
->> +static void __init rimt_enable_acs(struct acpi_rimt_node *rimt_node)
->> +{
->> +       static bool acs_enabled __initdata;
->> +       struct acpi_rimt_pcie_rc *pci_rc;
->> +       struct acpi_rimt_id_mapping *map;
->> +       struct acpi_rimt_node *parent;
->> +       int i;
->> +
->> +       if (acs_enabled || rimt_node->type != ACPI_RIMT_NODE_TYPE_PCIE_ROOT_COMPLEX)
->> +               return;
->> +
->> +       pci_rc = (struct acpi_rimt_pcie_rc *)rimt_node->node_data;
->> +       if (!pci_rc->id_mapping_offset || !pci_rc->num_id_mappings)
->> +               return;
->> +
->> +       map = ACPI_ADD_PTR(struct acpi_rimt_id_mapping, rimt_node,
->> +                          pci_rc->id_mapping_offset);
->> +
->> +       for (i = 0; i < pci_rc->num_id_mappings; i++, map++) {
->> +               if (!map->dest_offset)
->> +                       continue;
->> +
->> +               parent = ACPI_ADD_PTR(struct acpi_rimt_node, rimt_table,
->> +                                     map->dest_offset);
->> +               if (parent->type == ACPI_RIMT_NODE_TYPE_IOMMU) {
->> +                       pci_request_acs();
->> +                       acs_enabled = true;
->> +                       return;
->> +               }
->> +       }
->> +}
->> +#else
->> +static inline void rimt_enable_acs(struct acpi_rimt_node *rimt_node) { }
->> +#endif
->> +
->>  /*
->>   * RISC-V supports IOMMU as a PCI device or a platform device.
->>   * When it is a platform device, there should be a namespace device as
->> @@ -509,7 +545,10 @@ int rimt_iommu_configure_id(struct device *dev, const u32 *id_in)
->>
->>  void __init riscv_acpi_rimt_init(void)
->>  {
->> +       struct acpi_rimt_node *rimt_node, *rimt_end;
->> +       struct acpi_table_rimt *rimt;
->>         acpi_status status;
->> +       int i;
->>
->>         /* rimt_table will be used at runtime after the rimt init,
->>          * so we don't need to call acpi_put_table() to release
->> @@ -525,4 +564,21 @@ void __init riscv_acpi_rimt_init(void)
->>
->>                 return;
->>         }
->> +
->> +       rimt = (struct acpi_table_rimt *)rimt_table;
->> +       rimt_node = ACPI_ADD_PTR(struct acpi_rimt_node, rimt,
->> +                                rimt->node_offset);
->> +       rimt_end = ACPI_ADD_PTR(struct acpi_rimt_node, rimt_table,
->> +                               rimt_table->length);
->> +
->> +       for (i = 0; i < rimt->num_nodes; i++) {
->> +               if (rimt_node >= rimt_end) {
->> +                       pr_err("RIMT node pointer overflows, bad table\n");
->> +                       return;
->> +               }
->> +
->> +               rimt_enable_acs(rimt_node);
->>
->NIT: Can we check here itself if it is a PCI RC node and then only
->call enable_acs()?
->
-
-Agreed, I will add the PCI RC node check here and invoke enable_acs()
-only for that node type.
-
-Thanks,
-Fangyu
-
->> +               rimt_node = ACPI_ADD_PTR(struct acpi_rimt_node, rimt_node,
->> +                                        rimt_node->length);
->> +       }
->>  }
->> --
->> 2.50.1
->>
->Otherwise, LGTM.
->
->Reviewed-by: Sunil V L <sunilvl@oss.qualcomm.com>
+Please refer,
+https://lore.kernel.org/linux-iommu/20260902085414.549830-1-qinyuntan@linux.alibaba.com/
