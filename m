@@ -1,226 +1,142 @@
-Received: from mta1.migadu.com (out-251.mta1.migadu.com [95.215.58.251])
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B99D78C9C
-	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 01:29:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.251
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57900339360
+	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 02:34:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788398970; cv=none; b=nF8OT3Yq6O43pQ1RXzlzNU0MgcVzzwNdj6mdGq2BLEzuB1I2oROfBuF+cyw6Sj23aeE/enstBGTFHOZudzmq9ZFlXZEyYxd1PW+Rya3Y5rX5VJpmQrYFgJydgfxivsfPHKFuwOsMBK7u40WVRR5gu8fZIfsMePt3hC3TOYXnWeo=
+	t=1788402903; cv=none; b=ApP2fQgSKUWd11cHbmwMnlXaMRnLxGInjiB0fy6SxiRokYg2+L6nJ178cnGGiK8yDxOZ1Uq7QGvd0ahKZzbOfu7ChuZmeUScxt+SShKn3/hS6nOq50c6zVn747eOrnQUFzF7Ta8DZERcn0xAJuxLKy7qI8rPL5cvw7WlIkHqXW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788398970; c=relaxed/simple;
-	bh=biYsCQdlpI1jiJazmEVMkrZxW/wkfpV5LjcpXes0HIc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uEKCBCbTfK4dNDUAXJr0TSpXJ1SsEgNCebn1DgYah6y/1ix/b602DsCT/4Sc+xndT85xYKWTrQC4Dg9Vg9SP6Dk+g2jDX0MigYv3Y9QO2s2nW4cakqqYPY83J00fHcgdp8fy1G1cMaGA+hwlsuldsvASwE4zz7mMKToAGdkEjGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=DP4/cesi; arc=none smtp.client-ip=95.215.58.251
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1788402903; c=relaxed/simple;
+	bh=KttI8yN3SEE9knj1xRs/FNrG5jE/gzLZlVVCanD/Yjg=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=sokry9n9kTuEYsRkNgokL6HnKxOeNKrDU5VH/Z81f0H6IHUu27gcZnXY88IYgZf/l111Uw9ZfcnbSJ4DxDuRN1kXg3utUw+oqCaURnrWWRa1MDKh8ZQtGO3H3UX1qAN6Hu+fy0OxgTEM/kWOKB9839e2Tjt5e67xqMIgpXADN9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--loganodell.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t9lxLB8B; arc=none smtp.client-ip=209.85.216.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--loganodell.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="DP4/cesi"
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=biYsCQdlpI1jiJazmEVMkrZxW/wkfpV5LjcpXes0HIc=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1788398965; v=1; x=1789003765;
- b=DP4/cesi19OdPFl7IZNTLN1DuWAY0mTraf3Y0vn5LG8eMRHQKWPyoHGYtYO3C1HN78H3vfB6
- drxouMi4S1sZzUlcppo9BbYEGceH8caIdZsde2TOE6Z0dwjsEAFedVCRTtMTUuqmqdD+LGbaJFq
- if1SbpDGPJ6AJLD2K6l6ypR0=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id 0070fac8265920a4;
-	Thu, 03 Sep 2026 01:29:25 +0000
-X-Mizu-Trace-ID: 0070fac8265920a4
-X-Migadu-Flow: FLOW_OUT
-From: Qingfang Deng <qingfang.deng@linux.dev>
-To: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Brendan Jackman <brendan.jackman@linux.dev>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Zi Yan <ziy@nvidia.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org
-Cc: Qingfang Deng <qingfang.deng@linux.dev>
-Subject: [PATCH v2] dma-mapping: use exact allocation for DMA pages
-Date: Thu,  3 Sep 2026 09:29:13 +0800
-Message-ID: <20260903012914.312305-1-qingfang.deng@linux.dev>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t9lxLB8B"
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-38ecc48b3c2so2941754a91.1
+        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 19:34:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1788402896; x=1789007696; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Z/CUOTjDyaAxtZC1lTIYdZbcKOF2SIWxflbwVxpxItE=;
+        b=t9lxLB8BOhqyGYJtj7Mlxn82IqyEKvzP8Rf354ECHj/4gTs6C3GGF0ztPlxzTi7v5Z
+         qvTNvY0dTB7BFYhSaHJ9EtsQgtC6SjEBkJKAdglDU+NOm2MFN4JexOjPJFYlIojXNqUh
+         viwPKqme8+XPEQkzT2m5YiLTaCI24RBnv59X/+pLsNZtS9LVzYnB89wgP8L4EZta+k/L
+         Fd3vtFHQbT7xaXxXDx03CaJui9BivGkcoDv28COX5q8V0AI+8mbBWQNK/tdxCfO/0wOF
+         9BgM9F9UdtbWizeSxKdvQ5NiYgV+fk7VNzP6LSKhuhWLwwzuSZNEwGl5RlfyuQIWbA36
+         +erw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788402896; x=1789007696;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Z/CUOTjDyaAxtZC1lTIYdZbcKOF2SIWxflbwVxpxItE=;
+        b=RnX8IMgPoq/2yKOEgYKmBXHJZHX/5BZ/sIBJndMYMJRXX14c0vD4eWRlAiJLNy6KIL
+         rb/p4rFaZRmzZaQGSDOnf42eRnZbRBMI4oxX0T9kfydpWNkCb3SnEvTOg3IAIc13et8s
+         4TnyjV9RUKaaXJOBCZ+XoD4VoHyMeBLh1391aibWSpO6Jmhr2U7dkfqc6aYkCoBHlorT
+         sQqeFiwT6zhqRc7XCazkXj8/5QgVJAgr77IwpqSh/J+YYMJRs4F9upcoLxzPk0iVvmHH
+         v5buwOIaOkrAShOEz8YJVdowZOOqlpOCuTmCEoadttHD6matVmRIx9xVXIWhXVDj6nhR
+         eXIw==
+X-Forwarded-Encrypted: i=1; AKwUvByXlCK+3PNJcQy5XAMpH3KSdlVBPweP2p6X0psloKi2FnH80ONZE+jQks6gdbaLBZUb/nSgSA==@lists.linux.dev
+X-Gm-Message-State: AFuF++l0SwLcvsKVFQ/1aZS4KGam0U+Q2b+GBS8GkoVZopDRECYkcbaZ
+	ggcXvn3ntTYa6L1bUkTDLMurqpqzCq+ZCTdrlbe7eLXZEVsXLkb3fNQArofCVSsrMzIZ82q+VSD
+	LQtI50zNFktSMWFirpzJ2sg==
+X-Received: from dysc26.prod.google.com ([2002:a05:7300:3b1a:b0:332:2edd:e13a])
+ (user=loganodell job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:90b:2d85:b0:398:9c00:29f0 with SMTP id 98e67ed59e1d1-39aee249bd7mr14082963a91.24.1788402895806;
+ Wed, 02 Sep 2026 19:34:55 -0700 (PDT)
+Date: Wed,  2 Sep 2026 19:34:49 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.55.0.979.g7e5102b832-goog
+Message-ID: <20260903023452.721732-1-loganodell@google.com>
+Subject: [RFC PATCH 0/3] liveupdate: Move to feature flags for LUO and memfd
+ ABI compatibility
+From: Logan Odell <loganodell@google.com>
+To: arnd@arndb.de, pasha.tatashin@soleen.com, rppt@kernel.org, 
+	pratyush@kernel.org, graf@amazon.com, akpm@linux-foundation.org, 
+	pbonzini@redhat.com, maz@kernel.org, oupton@kernel.org, seanjc@google.com, 
+	bhelgaas@google.com, alex@shazbot.org, jgg@nvidia.com, kevin.tian@intel.com, 
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org, 
+	will@kernel.org, robin.murphy@arm.com
+Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	kexec@lists.infradead.org, linux-mm@kvack.org, kvm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev, 
+	Logan Odell <loganodell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-DMA page allocation fallbacks use alloc_pages_node() with get_order(size),
-wasting the unused tail for non-power-of-two requests.
+We're including maintainers from all subsystems that currently is or
+will be expected to participate in live update to ensure alignment on
+the path forward for compatibility.
 
-Use alloc_pages_exact_nid() and free_pages_exact() so that a buddy
-fallback retains only requested pages.
+Currently, Live Update Orchestrator (LUO) and its file handlers rely on
+monolithic compatibility strings (such as "luo-v5" and "memfd-v1") to
+validate ABI compatibility across kexec live updates. Any modification
+to serialized structures requires bumping the version string, which
+strictly breaks compatibility between adjacent kernels even when changes
+are additive, backwards-compatible, or optional.
 
-Signed-off-by: Qingfang Deng <qingfang.deng@linux.dev>
----
-v2: drop __meminit to fix section mismatch
+This RFC series transitions LUO and subsystem file handlers to use
+granular feature bitmasks instead of compatibility strings. We replace
+the compatibility string with a header structure that includes some
+reserved space to define the features that are included after the
+feature.
 
-v1:
-https://lore.kernel.org/linux-iommu/20260901085348.53140-1-qingfang.deng@linux.dev/
----
- drivers/iommu/dma-iommu.c   | 10 ++++++----
- include/linux/dma-map-ops.h |  2 +-
- include/linux/gfp.h         |  2 +-
- kernel/dma/contiguous.c     |  6 +++---
- kernel/dma/direct.c         |  8 +++++---
- kernel/dma/ops_helpers.c    | 11 +++++++----
- mm/page_alloc.c             |  2 +-
- 7 files changed, 24 insertions(+), 17 deletions(-)
+We include 3 bits of data for each feature: supported, active, and
+required. When the supported bit is set in the next kernel, the previous
+kernel can serialize the feature and pass it to the next kernel. When
+the active bit is set, it means the previous occurred and the data for
+that feature is valid. When the required bit is set, it means that the
+next kernel must have the associated supported bit in order to be
+compatible.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 58c624513cd4..8f262c83802c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1628,10 +1628,12 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	void *cpu_addr;
- 
- 	page = dma_alloc_contiguous(dev, alloc_size, gfp);
--	if (!page)
--		page = alloc_pages_node(node, gfp, get_order(alloc_size));
--	if (!page)
--		return NULL;
-+	if (!page) {
-+		cpu_addr = alloc_pages_exact_nid(node, alloc_size, gfp);
-+		if (!cpu_addr)
-+			return NULL;
-+		page = virt_to_page(cpu_addr);
-+	}
- 
- 	if (!coherent || PageHighMem(page)) {
- 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 8fae2b7deb20..3ef3003713a6 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -143,7 +143,7 @@ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
- static inline void dma_free_contiguous(struct device *dev, struct page *page,
- 		size_t size)
- {
--	__free_pages(page, get_order(size));
-+	free_pages_exact(page_address(page), size);
- }
- #endif /* CONFIG_DMA_CMA*/
- 
-diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-index 872bc53f32ec..aa4601805f21 100644
---- a/include/linux/gfp.h
-+++ b/include/linux/gfp.h
-@@ -329,7 +329,7 @@ void *alloc_pages_exact_noprof(size_t size, gfp_t gfp_mask) __alloc_size(1);
- 
- void free_pages_exact(void *virt, size_t size);
- 
--__meminit void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask) __alloc_size(2);
-+void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask) __alloc_size(2);
- #define alloc_pages_exact_nid(...)					\
- 	alloc_hooks(alloc_pages_exact_nid_noprof(__VA_ARGS__))
- 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 66093460584e..90937dc7c627 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -451,8 +451,8 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-  *
-  * This function releases memory allocated by dma_alloc_contiguous(). As the
-  * cma_release returns false when provided pages do not belong to contiguous
-- * area and true otherwise, this function then does a fallback __free_pages()
-- * upon a false-return.
-+ * area and true otherwise, this function then does a fallback
-+ * free_pages_exact() upon a false-return.
-  */
- void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
- {
-@@ -476,7 +476,7 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
- 	}
- 
- 	/* not in any cma, free from buddy */
--	__free_pages(page, get_order(size));
-+	free_pages_exact(page_address(page), size);
- }
- 
- /*
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index da665ca22d5c..ea64453d7370 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -120,6 +120,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	int node = dev_to_node(dev);
- 	struct page *page;
- 	u64 phys_limit;
-+	void *va;
- 
- 	WARN_ON_ONCE(!PAGE_ALIGNED(size));
- 
-@@ -133,9 +134,9 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		dma_free_contiguous(dev, page, size);
- 	}
- 
--	while ((page = alloc_pages_node(node, gfp, get_order(size)))
--	       && !dma_coherent_ok(dev, page_to_phys(page), size)) {
--		__free_pages(page, get_order(size));
-+	while ((va = alloc_pages_exact_nid(node, size, gfp)) &&
-+	       !dma_coherent_ok(dev, virt_to_phys(va), size)) {
-+		free_pages_exact(va, size);
- 
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
- 		    phys_limit < DMA_BIT_MASK(64) &&
-@@ -146,6 +147,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		else
- 			return NULL;
- 	}
-+	page = va ? virt_to_page(va) : NULL;
- 
- 	return page;
- }
-diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index 6b5f9208d31c..5cdf3f60cf47 100644
---- a/kernel/dma/ops_helpers.c
-+++ b/kernel/dma/ops_helpers.c
-@@ -67,10 +67,13 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
- 	phys_addr_t phys;
- 
- 	page = dma_alloc_contiguous(dev, size, gfp);
--	if (!page)
--		page = alloc_pages_node(dev_to_node(dev), gfp, get_order(size));
--	if (!page)
--		return NULL;
-+	if (!page) {
-+		void *va = alloc_pages_exact_nid(dev_to_node(dev), size, gfp);
-+
-+		if (!va)
-+			return NULL;
-+		page = virt_to_page(va);
-+	}
- 
- 	phys = page_to_phys(page);
- 	if (use_dma_iommu(dev))
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index c4dc61ec663e..d3a135dfcdd3 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5637,7 +5637,7 @@ EXPORT_SYMBOL(alloc_pages_exact_noprof);
-  *
-  * Return: pointer to the allocated area or %NULL in case of error.
-  */
--void * __meminit alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask)
-+void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask)
- {
- 	unsigned int order = get_order(size);
- 	struct page *p;
+If a feature is required in that it cannot live update to a kernel that
+does not support the feature, it is expected that the feature not be
+active or required initially. This allows for an intermediate upgrade
+path.
+
+Overview of Changes:
+1. Define feature header and migrate luo_ser (Patch 1):
+  - Introudce the feature header with the supported, active, and
+    required bits.
+  - Replace the luo compatibility string with this new header.
+  - Validate the preserved size is at least the size of the header. This
+    breaks compatibility with the old way.
+
+2. Export feature header information to vmlinux (Patch 2):
+  - Adds a .liveupdate_features section in vmlinux containing
+  - Adds helper macros to export feature information for a given
+    subsystem
+  - Export luo's feature information
+
+3. Memfd Handler Migration (Patch 3):
+  - Migrate memfd to use the feature header instead of compatibility
+    strings
+
+Logan Odell (3):
+  luo: Move to feature flags instead of compatibility strings
+  luo: Export feature support to vmlinux section
+  luo: memfd: Move to feature flags instead of compatibility strings
+
+ include/asm-generic/vmlinux.lds.h |  12 ++++
+ include/linux/kho/abi/luo.h       | 114 +++++++++++++++++++++++++-----
+ include/linux/kho/abi/memfd.h     |  41 +++++++----
+ include/linux/liveupdate.h        |  22 ++++--
+ kernel/liveupdate/luo_core.c      |  60 ++++++++++++----
+ kernel/liveupdate/luo_file.c      |  28 ++++----
+ kernel/liveupdate/luo_flb.c       |   2 +-
+ lib/tests/liveupdate.c            |   2 +-
+ mm/memfd_luo.c                    |  40 ++++++++---
+ 9 files changed, 246 insertions(+), 75 deletions(-)
+
 -- 
-2.43.0
+2.55.0.979.g7e5102b832-goog
 
