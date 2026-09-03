@@ -1,466 +1,194 @@
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010046.outbound.protection.outlook.com [52.101.46.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1574A33D4FD
-	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 02:35:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.71
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788402908; cv=none; b=a4GoiDNGemjoLQQVgy5IzeFSbIHoq0ZWLWTZwZIY0wVbdWpjPRzrwQwrIpGzVb6WdF1v+HQBE8eN2n0AZmyeqWMTgSgNqr4DvAkthdwFcHPCOilwfesIanvCG+Kw5Sy/9hag9VCCRAYat0vcf+h5dMI7/HhDoI3UnqAcbyOX2Og=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788402908; c=relaxed/simple;
-	bh=KkllZ0CXRBgyZYgnbfWvEuICZuPWHeEgnlWGgS0PT3U=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=f0ZmexPX/okMYkx3piKySWZe/qpNgO88UhU8Mfn83Qrl7K9SwByrb0+XWXsmE7aiJ6v+1hlmy+8JSW/0B9RMy7l7e2k9hLD1aPlJG9OCXfKdFM9tUuOXt8MykslP+OtnzAbiUbtlNCNi6NWMIksDkh9L5IvtX5HVM27DyWgUIF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--loganodell.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TS4aD6zd; arc=none smtp.client-ip=209.85.216.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--loganodell.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ED6034027B
+	for <iommu@lists.linux.dev>; Thu,  3 Sep 2026 02:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788403304; cv=fail; b=HOuJSbh6Tc9pHcjQ9eFwvMy5Sr+v0r5/aggbENizug+4vPrFHnm4X4HtCCULe27M2+SJacXHKvO4CIIHuLhtOfCABHx135mtAcBX83H3aovhmf8Z1PWPOwt/32MKG1K7c3ExmHnxJN+wfozjxeFM7hdiMLpGry8xhs5HajOHoQc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788403304; c=relaxed/simple;
+	bh=iGsmd9bGrONe41b/sHa10EdIXR62ehMoVKCON6kRicI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=NhjYlwyCEwfMP00kUWTyin273J8i6hSbCmZnwKoq99x7OfW43fD79RM9qwjAfmP25kM1F8+WHneXm+gbLrTziZmwMkcPMB7eCn+SrzNy/RSf61YOMbwdnn5Ulu+UJb7p1WALzdcbyAv8380WtFFc+aQclLMJpvke7S3YRwDqbbw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0HAiZW7u; arc=fail smtp.client-ip=52.101.46.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TS4aD6zd"
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-38f5ac7416eso2720078a91.3
-        for <iommu@lists.linux.dev>; Wed, 02 Sep 2026 19:35:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788402899; x=1789007699; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=3jZRbPTlJQ2oU3N5reiU/R1oleIxZE7zMycKAHKHmwY=;
-        b=TS4aD6zdwxEN/eCiiXWKbuo3v1HQ7BAba2lIu1u6lgxD57I+nU90+a71xO54WBCqqG
-         bR0TjVGfDRNYmP0kJzHSvLoqydkjemOrn9lwcrrl2kgnQihSmy0sokwKhKa/xuUFVNeM
-         xxOzWDw2l+G51kpOoyof5MkYe/zhMQR43ojJVH/OuM+erfEuvKZDSrZqN/kz3+I/QYnQ
-         gYM6YkuWHmk5g17CpCIIyXTfDGJT0oWnAgdtZsX79mLoGte66J5RhA6QPbdM22AxL8pl
-         FCbye5bbxRAoDmnEX7BQofmqp6vWnQwgO39qK5OZP2WWNJZml5TZdv0zNu6Mvp52buls
-         OO4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788402899; x=1789007699;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=3jZRbPTlJQ2oU3N5reiU/R1oleIxZE7zMycKAHKHmwY=;
-        b=EVus9KseUBFRqIdwogaje9NgQFOHIwkHuh3VMiuSvcTa6pEeYSF59tjwFTMnrfEqYF
-         9dPMkj6YTBekpF3olvCyviV004m4tO3GACPZLRAh0O4SI/2frkQnTz81ylDifhrXfqLv
-         hQjP+Lr5tnG82JDKdGjkAPUZyW549X6aLHHiZ1hEJSWLMHkAnzMwLbLHScBRpfjeJwDi
-         /jzKvpf80mm25ZcyeuNpwGuNjHn02VtfQFW4+dDMbSIso/mGx0O2pCpvI/EHswBGTX5s
-         uUcZ172xJmAjFNYspHfYKyDyChxBpzgAdjTq+acVuNrwgEDZKUJEZ9/1AKDGj7SAgHPT
-         Zs3w==
-X-Forwarded-Encrypted: i=1; AKwUvBzfRuIBsS175YAQcmmxL8A9BIdnCQbGulo/k7HWMiM6f/8iVgX1NP2ITlgDBuHNU/IbIT9iJQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++mEQNpxR5KTw/CTY8aun/0WasiVE4CsmKbs1A+9jHW9smFfQUmi
-	WVmx7EafUBcu6JQ71o7yHvtblBK51KI7ElxRiP8ijUB4xBLPi2gZUPGusCqse7APAk/+W7hk15M
-	9aajV6THc4I3HzvGcBJ8cXQ==
-X-Received: from dyboc22.prod.google.com ([2002:a05:7301:3f16:b0:32b:1306:42ad])
- (user=loganodell job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:90b:288a:b0:380:21b7:e727 with SMTP id 98e67ed59e1d1-39aee0848bbmr14352175a91.14.1788402898410;
- Wed, 02 Sep 2026 19:34:58 -0700 (PDT)
-Date: Wed,  2 Sep 2026 19:34:52 -0700
-In-Reply-To: <20260903023452.721732-1-loganodell@google.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0HAiZW7u"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=izXG7Tvj8R19yc/YRgVsItyd1IpLOnyIuTGEzVQ6v5ncuA32GESkTy1ktzVQ+yw0usHeSIMB1QlGhdBChf3BWk0jV35kWVUU+F5lyTJSO48BnkexyaCuaMa487DYl5DKWS1p4c9RG9SSe4kqF/3ntb/r92EAYr7LNtrOwoZHLkVsADROuz77EfycgNwRtlL5BNr+PtMrwwfRy+VeKrtu4qXJQIodfzlVSO5DwU5RL4aSZcLf5oAXZxQ9tj7FEsoqO/16DtOWYtOjRp+FcO1Xcj+pt+fOAprjfVGif4t4HQR4XAuwFZ7I195Zg1kAmftKS8b1OaVsw8Y8Ln+YDajtog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gv4kSuUhVjPKv5I5OHmxJUM2YNrcqrHU6r0FfkCoiKk=;
+ b=tamExSZQciAolu5H8N/wiIblb5c30JPrlgoj+sHwinD0W1TDfGIwNjELQ0JEVrhSixm9oETrU/Lqld/6XnK0CsNrak58ALJZJrmatY6fKXDBiQYOLeFTzYD7s0XwubHxqNKtsO7wAyGSL3Nz+KvgUmW0N6uViM3gybAd48eV82Oo7ET8+3bl69DTjd9YcwRaFbf0VQZFzeicud2LqDyeA4cpTaa3vWXdokl2RwmeWaeWgcWxe8T6A69jM2ylmvRX0rLo7XRt9fKjKJTR0LMMdx1XhiTn2ck45WE5dvnnvCuwUKarrvGvpIZjGJmOQpCunl1RL0gGsWi6c8pRr8ERZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gv4kSuUhVjPKv5I5OHmxJUM2YNrcqrHU6r0FfkCoiKk=;
+ b=0HAiZW7ugJiNoW6C/i11eeNBdtvusLByL5cyNLx4Ou2QLH0DYhLjipj+ZGXxx6GoopkWkEv1kJifVfzy1IEbiEZS8/QKfW7K6uLtFbWwEOssqrxERTxMd4Qa2+bsJCMPDHTQn4khxh3UPBIjmM/Og2REUuci2Jke2WeEKiYjaOA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com (2603:10b6:8:388::22)
+ by LV5PR12MB9778.namprd12.prod.outlook.com (2603:10b6:408:300::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Thu, 3 Sep
+ 2026 02:41:37 +0000
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19]) by DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19%4]) with mapi id 15.21.0382.007; Thu, 3 Sep 2026
+ 02:41:37 +0000
+Message-ID: <073887b6-f226-4802-8a72-2d6a319f9238@amd.com>
+Date: Thu, 3 Sep 2026 09:41:27 +0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 16/24] iommu/amd: Introduce IOMMUFD vDevice support for
+ AMD
+To: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
+ Sairaj.K@amd.com, jay.chen@amd.com, wvw@google.com, wnliu@google.com,
+ dantuluris@google.com, chriscli@google.com, kpsingh@google.com,
+ alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com
+References: <20260727132913.22475-1-suravee.suthikulpanit@amd.com>
+ <20260727132913.22475-17-suravee.suthikulpanit@amd.com>
+ <916adcd5-63fd-49b2-b175-c7b509991e37@linux.alibaba.com>
+Content-Language: en-US
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <916adcd5-63fd-49b2-b175-c7b509991e37@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: KUZPR03CA0026.apcprd03.prod.outlook.com
+ (2603:1096:d10:24::10) To DSVPR12MB999171.namprd12.prod.outlook.com
+ (2603:10b6:8:388::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260903023452.721732-1-loganodell@google.com>
-X-Mailer: git-send-email 2.55.0.979.g7e5102b832-goog
-Message-ID: <20260903023452.721732-4-loganodell@google.com>
-Subject: [RFC PATCH 3/3] luo: memfd: Move to feature flags instead of
- compatibility strings
-From: Logan Odell <loganodell@google.com>
-To: arnd@arndb.de, pasha.tatashin@soleen.com, rppt@kernel.org, 
-	pratyush@kernel.org, graf@amazon.com, akpm@linux-foundation.org, 
-	pbonzini@redhat.com, maz@kernel.org, oupton@kernel.org, seanjc@google.com, 
-	bhelgaas@google.com, alex@shazbot.org, jgg@nvidia.com, kevin.tian@intel.com, 
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com
-Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	kexec@lists.infradead.org, linux-mm@kvack.org, kvm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
-	linux-pci@vger.kernel.org, iommu@lists.linux.dev, 
-	Logan Odell <loganodell@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DSVPR12MB999171:EE_|LV5PR12MB9778:EE_
+X-MS-Office365-Filtering-Correlation-Id: 94cc25bb-9b22-4432-0699-08df0964e029
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|7416014|376014|10067099003|4143699003|6133799003|22082099003|56012099006|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	szulgLqn0ZOm4DTfRxStHK3NXMTD6rHtmj/Nim/NBr89QQX/CEsNedJQ+Jljp9aZd5upk2Xiox2/1e5p7upmFawkGD4qsjLfDCF9Pi5erRhx0KSXP/wF9s9mUrRkEDgo/whyMEzBsf+QUw163svMCRo3P/GoTTl+vp3dtAdTx8gVhWOToV5tzJwxYmLffoSmACsYx7Tn0HmL+d1B0+1rLq3EIrwzLT2OqaoD7yxW3+oheMJf10/jRyUfqb0m/iGUfIq61DrY2nbMKi7kk+yPkeilK0OBv1ZyB9gsiwTqsR7xF9nDKGhpMef1lXkM/FB4rgvj3IElEpnxbMTmyR0k3bhDMEuVb6ZYR0NamCv/KjBCrv9ZwYLxGtbHd2yJzwklNvBA5/0yJyzfUm/jZpN087c/MCzWXVlzcKmWfy7QYAiQ/FwtXo8fqkFtLT0rPcwOgAdFlxh3+6E5gmNTK3w5qRaq6vt1SU1pJYW7BqEnOT6U8l9TmICiQPcSLvA/YWtlyXap0Mya2itZT5j7gUxIRCqKdh++d9di0SylzW4OSIAHohgHGl7YUCqjXiLAhX2KrOpaNg+qBChQ2xqcsOSuoOeSOCoyRpf1jEifF/8bX9ddzfGzr5YAQXGCSE4qEDD/YVEM1ozGvH91F6o2AikPKQW/Yisze42YJBaIcfQcpWg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DSVPR12MB999171.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(7416014)(376014)(10067099003)(4143699003)(6133799003)(22082099003)(56012099006)(11063799006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TFloWGZVSVFHU05CMXlsZ1pGRnJseHk2L2hOc282c3puTlZKVUpMNlFsRHZK?=
+ =?utf-8?B?UGlpckxKVWllU3hNTVB1Z2VrU3I3eHR6UEd4QkFIZFJRRGxUZTlQa3A4ZWF2?=
+ =?utf-8?B?SHNySzVTa2pmUlorOVMzak5rN1hKUE0rZ3BQRVJHWFpSTlowVEVRQVFvN0tX?=
+ =?utf-8?B?UlNqbHd6d1kydVd1OU45TUpWZG1VODdJY2JGR3poMkRwcmRmU3ZJZEJIY2tn?=
+ =?utf-8?B?aXkrWHJQVklQcUxIL2hCNVBZVThhWDV5am9rb3BnU0QxUHB3MzU0SmVqSWlD?=
+ =?utf-8?B?TVFHOXVhSUdWS3ByYTF6V0QyNWpEMFhITExhc2MwVlVySHRyaVVLWWFNQ09h?=
+ =?utf-8?B?cjh5VHhMWUE5Rzd5YnBHNWVOZTNFa3JRUFBDNlp3REE0UVBNbVFqYVg1Y0Rl?=
+ =?utf-8?B?TmUwM2ozZ0JxSUp1cngrbmp3SndseDg3MlJxKzJoTFVSd2VHVWJTUEJyUUVy?=
+ =?utf-8?B?UzRPMWQweFcwU3Y2TkllSDBZSDVBNExoekNZQStid1c5WER5TFFFL3NBcFk5?=
+ =?utf-8?B?eElTVm9RTXJ1MVRHWXV2ZGVwalIyaGRzeU5jRDYwZzBveXRub1dUNFNsRC9z?=
+ =?utf-8?B?Q1lHdlhGQWg5YWFwK0UvT3RRREc3QTVVSVpWSkVpcjkraEwyQWQrSEVwYllE?=
+ =?utf-8?B?QjlKUHBITEN3eVQ3ZFhRNEJ5d092QzhvNVdkV3hzczFnMU5tQ3Fvd1hWWkd4?=
+ =?utf-8?B?aXFFOGlkNTJFNkF2blBFd3ZFZUFRaldUa0xJNlZtbFh1aHErWnExWjdSUUps?=
+ =?utf-8?B?bStNaTRKQ3g4ZWpuQ245TGZVYWlpelI0Z3JrcTUwTGJMeGF6RC83T2N3Znhn?=
+ =?utf-8?B?SVh6b3pCV21DQzdyQkw4VlRNSVYwVmluS1c2MFgvWTJEY29JVGdQTEJUTE5n?=
+ =?utf-8?B?WEQ0NVhIODNOU1U1YUMxSkJsV1hDaGZVQWdkR1J0SUwraVRGT2QxczFhTENB?=
+ =?utf-8?B?NE1EdmttZDlXOU5Pd1Q2VmVRUGg2ekRwbkRBSmcrbzduS3lBTjNuVTd0Y3RM?=
+ =?utf-8?B?bEd3bTI1VTUwU3VleHlua0pEK0tSQnZ3ZzRzeDVRak5EMFFNK3NocGE0WW81?=
+ =?utf-8?B?VzFWeFQ2R3NOZmtPbzVVUU1VRTVRazhSSFZLMnYzREN2RGZjc1VranVGY0xC?=
+ =?utf-8?B?dkVLWm1rc0tkUmlzNjdRbHlOaHVJOGlyRkY3d3QvdGloV01Bbm9aVGpVQlBU?=
+ =?utf-8?B?dlo3eGtoZGhURmVEUlgyNmp3dEltcktKVHhhclpkb1hKWWl0VHFsZmVvdTNh?=
+ =?utf-8?B?YlE4R0RiTXA1b050RzVVNkl5Z2pKZkJJYmd4U0RkNHhBMlEvd1l2bm5QNDFx?=
+ =?utf-8?B?d2ZpZ1NYVElVKzhuSVNVMmZnMUdBZFc4NUFHRE9pYXgwTjQ3THlJV1IyY1Vo?=
+ =?utf-8?B?WkdPbUZpdnA1TGc1MFZZKy8zVlg5bFpGUmFrMXl3YXVwS1hDRHZQZ3ljVVdC?=
+ =?utf-8?B?c2tQVnBaRndRSW9WUVJ4TXQzbnBlSU03L0xuKzVsV2hqdkM1L3JldTJkdjJH?=
+ =?utf-8?B?ekM2TTVuTlFlT2hEMVZER3duRUdRbWZkVVNNVWZaS3VxamExY1IxWDg4eFRZ?=
+ =?utf-8?B?dk5VeVZ3VzlwaTlLYmhTZERwZmRodWNFc3JGZVg1YktRZ0FYajc4bEFVdjBh?=
+ =?utf-8?B?ekhGMWhaYnRVY0VESTlFNkttSURDRWJkQzVGcmFiYTAwMjNFSUUwTDMzNTVt?=
+ =?utf-8?B?ZndVcmJNZGtjVnRGUlRteUExOEJGMUEyblhDVlRsTmtOa3d6dEcrYWM5ODlw?=
+ =?utf-8?B?eHFRcU45Nkkyd3Z5WGdQaHdpb2ExbDhmTG44SzkyamhXL2J5YUR4Z0N0OStB?=
+ =?utf-8?B?eEF3TkNXZWlsYWt6UmxXYjBONCszQ1cvWkFPZE9JK25SaHVQNDhSSUMyZFZz?=
+ =?utf-8?B?RUNVWmRBUHBRVHNGSjhvOVlmQW03eHZKRDZ4OXkwU3lrcWE3cDdYS3BMR2xP?=
+ =?utf-8?B?M2Yza1FrbEdRMkY1aS9mTUxNek5tK3dRL25EOUg2Z0dPR1ZTRHRTOEEzU1Z0?=
+ =?utf-8?B?T1g1R2poekhVRUxjaHNWK3lZSjBTODJ0QTI3TVJLTFMzWVErMXd0TUJlbW1V?=
+ =?utf-8?B?aUJTdmdvbm1BSFlpeGJhM3BIejhNeEVnUGZ0RW0rMHdFU25xUnNkMjRFUlNO?=
+ =?utf-8?B?aURDNkJsalRyZEN0czgvSnlaYVFiSDVGN2NRa2FnQ0krc1pFM1ZnVmZWTEN1?=
+ =?utf-8?B?TkgyOWFrNTNOQ0VKeXVpbmJ6VE9ETGUzMVlUcVJiOHY1RVd4eGw2eWtocGRO?=
+ =?utf-8?B?enNISTJRK2U1Q0cyZmQ4bXV1bWYrL25YcmZ3SzVoR0IySGVuakZ2Q29SejZ2?=
+ =?utf-8?Q?MRNZoJsXbRK7hbw6A3?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94cc25bb-9b22-4432-0699-08df0964e029
+X-MS-Exchange-CrossTenant-AuthSource: DSVPR12MB999171.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2026 02:41:37.3443
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: at8pbxj6m0Q17jOg4SMnqOdpO3cO0kdtDv5ZFgMOI33n/n0Tpz6++u2Yrmh3BLCZ0wbUmeYmDXJVBz9c8JlXIA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV5PR12MB9778
 
-Update struct memfd_luo_ser to embed struct luo_feature_hdr features.
-Define feature flags for memfd (MEMFD_LUO_FEATURE_SEALS and
-MEMFD_LUO_FEATURE_FOLIOS), emit the liveupdate feature entry for memfd,
-and validate required features and active flags during deserialization.
-Also replace the version bump requirement for seals with
-MEMFD_LUO_BASE_SEALS to allow new seals to be introduced granularly as
-feature bits.
 
-Signed-off-by: Logan Odell <loganodell@google.com>
----
- include/linux/kho/abi/luo.h   |  8 +++---
- include/linux/kho/abi/memfd.h | 41 ++++++++++++++++++++----------
- include/linux/liveupdate.h    | 10 ++++----
- kernel/liveupdate/luo_file.c  | 28 ++++++++++-----------
- kernel/liveupdate/luo_flb.c   |  2 +-
- lib/tests/liveupdate.c        |  2 +-
- mm/memfd_luo.c                | 47 +++++++++++++++++++++++++----------
- 7 files changed, 87 insertions(+), 51 deletions(-)
 
-diff --git a/include/linux/kho/abi/luo.h b/include/linux/kho/abi/luo.h
-index 5b25e1b48cf5..450a0e40e2ab 100644
---- a/include/linux/kho/abi/luo.h
-+++ b/include/linux/kho/abi/luo.h
-@@ -132,18 +132,18 @@ struct luo_ser {
- 	u64 flbs_pa;
- } __packed;
- 
--#define LIVEUPDATE_HNDL_COMPAT_LENGTH	48
-+#define LIVEUPDATE_HNDL_NAME_LENGTH	48
- 
- /**
-  * struct luo_file_ser - Represents the serialized preserves files.
-- * @compatible:  File handler compatible string.
-+ * @name:        File handler name.
-  * @data:        Private data
-  * @token:       User provided token for this file
-  *
-  * If this structure is modified, `LUO_ABI_COMPATIBLE` must be updated.
-  */
- struct luo_file_ser {
--	char compatible[LIVEUPDATE_HNDL_COMPAT_LENGTH];
-+	char name[LIVEUPDATE_HNDL_NAME_LENGTH];
- 	u64 data;
- 	u64 token;
- } __packed;
-@@ -256,7 +256,7 @@ struct liveupdate_ver_hdr {
-  * @active:     Bitmask of active features.
-  */
- struct liveupdate_feature_entry {
--	char name[LIVEUPDATE_HNDL_COMPAT_LENGTH];
-+	char name[LIVEUPDATE_HNDL_NAME_LENGTH];
- 	u32 feat_bytes;
- 	u32 reserved;
- 	u64 supp;
-diff --git a/include/linux/kho/abi/memfd.h b/include/linux/kho/abi/memfd.h
-index 08b10fea2afc..9961df5be423 100644
---- a/include/linux/kho/abi/memfd.h
-+++ b/include/linux/kho/abi/memfd.h
-@@ -11,6 +11,8 @@
- #ifndef _LINUX_KHO_ABI_MEMFD_H
- #define _LINUX_KHO_ABI_MEMFD_H
- 
-+#include <linux/bits.h>
-+#include <linux/kho/abi/luo.h>
- #include <linux/types.h>
- #include <linux/kho/abi/kexec_handover.h>
- 
-@@ -23,11 +25,20 @@
-  * The state is serialized into a packed structure `struct memfd_luo_ser`
-  * which is handed over to the next kernel via the KHO mechanism.
-  *
-- * This interface is a contract. Any modification to the structure layout
-- * constitutes a breaking change. Such changes require incrementing the
-- * version number in the MEMFD_LUO_FH_COMPATIBLE string.
-+ * This interface is a contract. Any changes should be additive using feature
-+ * flags to ensure backwards compatibility.
-  */
- 
-+#define MEMFD_LUO_FEATURE_SEALS		BIT_ULL(0)
-+#define MEMFD_LUO_FEATURE_FOLIOS	BIT_ULL(1)
-+
-+#define MEMFD_LUO_FEATURES_SUPP		(MEMFD_LUO_FEATURE_SEALS | \
-+					 MEMFD_LUO_FEATURE_FOLIOS)
-+#define MEMFD_LUO_FEATURES_REQ		(MEMFD_LUO_FEATURE_SEALS | \
-+					 MEMFD_LUO_FEATURE_FOLIOS)
-+#define MEMFD_LUO_FEATURES_ACTIVE	(MEMFD_LUO_FEATURE_SEALS | \
-+					 MEMFD_LUO_FEATURE_FOLIOS)
-+
- /**
-  * MEMFD_LUO_FOLIO_DIRTY - The folio is dirty.
-  *
-@@ -57,18 +68,21 @@ struct memfd_luo_folio_ser {
- } __packed;
- 
- /*
-- * The set of seals this version supports preserving. If support for any new
-- * seals is needed, add it here and bump version.
-+ * The set of base seals supported by MEMFD_LUO_FEATURE_SEALS.
-+ * If support for new seals is needed, define a dedicated feature bit
-+ * (e.g. MEMFD_LUO_FEATURE_SEAL_<NAME>) to allow granular compatibility.
-  */
--#define MEMFD_LUO_ALL_SEALS (F_SEAL_SEAL | \
--			     F_SEAL_SHRINK | \
--			     F_SEAL_GROW | \
--			     F_SEAL_WRITE | \
--			     F_SEAL_FUTURE_WRITE | \
--			     F_SEAL_EXEC)
-+#define MEMFD_LUO_BASE_SEALS	(F_SEAL_SEAL | \
-+				 F_SEAL_SHRINK | \
-+				 F_SEAL_GROW | \
-+				 F_SEAL_WRITE | \
-+				 F_SEAL_FUTURE_WRITE | \
-+				 F_SEAL_EXEC)
-+#define MEMFD_LUO_ALL_SEALS	MEMFD_LUO_BASE_SEALS
- 
- /**
-  * struct memfd_luo_ser - Main serialization structure for a memfd.
-+ * @features:  Bit mask of supported, required, and active features.
-  * @pos:       The file's current position (f_pos).
-  * @size:      The total size of the file in bytes (i_size).
-  * @seals:     The seals present on the memfd. The seals are uABI so it is safe
-@@ -79,6 +93,7 @@ struct memfd_luo_folio_ser {
-  *             struct memfd_luo_folio_ser.
-  */
- struct memfd_luo_ser {
-+	struct luo_feature_hdr features;
- 	u64 pos;
- 	u64 size;
- 	u32 seals;
-@@ -87,7 +102,7 @@ struct memfd_luo_ser {
- 	struct kho_vmalloc folios;
- } __packed;
- 
--/* The compatibility string for memfd file handler */
--#define MEMFD_LUO_FH_COMPATIBLE	"memfd-v2"
-+/* The name for memfd file handler */
-+#define MEMFD_LUO_FH_NAME	"memfd"
- 
- #endif /* _LINUX_KHO_ABI_MEMFD_H */
-diff --git a/include/linux/liveupdate.h b/include/linux/liveupdate.h
-index e058df23fed1..4489e344f76f 100644
---- a/include/linux/liveupdate.h
-+++ b/include/linux/liveupdate.h
-@@ -90,10 +90,10 @@ struct liveupdate_file_ops {
- /**
-  * struct liveupdate_file_handler - Represents a handler for a live-updatable file type.
-  * @ops:                Callback functions
-- * @compatible:         The compatibility string (e.g., "memfd-v1", "vfiofd-v1")
-- *                      that uniquely identifies the file type this handler
-- *                      supports. This is matched against the compatible string
-- *                      associated with individual &struct file instances.
-+ * @name:               The name (e.g., "memfd", "vfiofd") that uniquely
-+ *                      identifies the file type this handler supports. This
-+ *                      is matched against the name associated with individual
-+ *                      &struct file instances.
-  *
-  * Modules that want to support live update for specific file types should
-  * register an instance of this structure. LUO uses this registration to
-@@ -102,7 +102,7 @@ struct liveupdate_file_ops {
-  */
- struct liveupdate_file_handler {
- 	const struct liveupdate_file_ops *ops;
--	const char compatible[LIVEUPDATE_HNDL_COMPAT_LENGTH];
-+	const char name[LIVEUPDATE_HNDL_NAME_LENGTH];
- 
- 	/* private: */
- 
-diff --git a/kernel/liveupdate/luo_file.c b/kernel/liveupdate/luo_file.c
-index dbae0715220b..775484af0750 100644
---- a/kernel/liveupdate/luo_file.c
-+++ b/kernel/liveupdate/luo_file.c
-@@ -480,13 +480,13 @@ int luo_file_freeze(struct luo_file_set *file_set,
- 		err = luo_file_freeze_one(file_set, luo_file);
- 		if (err < 0) {
- 			pr_warn("Freeze failed for token[%#0llx] handler[%s] err[%pe]\n",
--				luo_file->token, luo_file->fh->compatible,
-+				luo_file->token, luo_file->fh->name,
- 				ERR_PTR(err));
- 			goto err_unfreeze;
- 		}
- 
--		strscpy(file_ser->compatible, luo_file->fh->compatible,
--			sizeof(file_ser->compatible));
-+		strscpy(file_ser->name, luo_file->fh->name,
-+			sizeof(file_ser->name));
- 		file_ser->data = luo_file->serialized_data;
- 		file_ser->token = luo_file->token;
- 	}
-@@ -732,7 +732,7 @@ static int luo_file_deserialize_one(struct luo_file_set *file_set,
- 
- 	down_read(&luo_register_rwlock);
- 	list_private_for_each_entry(fh, &luo_file_handler_list, list) {
--		if (!strcmp(fh->compatible, ser->compatible)) {
-+		if (!strcmp(fh->name, ser->name)) {
- 			if (try_module_get(fh->ops->owner))
- 				handler_found = true;
- 			break;
-@@ -741,9 +741,9 @@ static int luo_file_deserialize_one(struct luo_file_set *file_set,
- 	up_read(&luo_register_rwlock);
- 
- 	if (!handler_found) {
--		pr_warn("No registered handler for compatible '%.*s'\n",
--			(int)sizeof(ser->compatible),
--			ser->compatible);
-+		pr_warn("No registered handler for name '%.*s'\n",
-+			(int)sizeof(ser->name),
-+			ser->name);
- 		return -ENOENT;
- 	}
- 
-@@ -774,9 +774,9 @@ static int luo_file_deserialize_one(struct luo_file_set *file_set,
-  * in-memory linked list of 'struct luo_file' instances.
-  *
-  * For each serialized entry, it performs the following steps:
-- *   1. Reads the 'compatible' string.
-+ *   1. Reads the 'name' string.
-  *   2. Searches the global list of registered file handlers for one that
-- *      matches the compatible string.
-+ *      matches the name.
-  *   3. Allocates a new 'struct luo_file'.
-  *   4. Populates the new structure with the deserialized data (token, private
-  *      data handle) and links it to the found handler. The 'file' pointer is
-@@ -870,7 +870,7 @@ void luo_file_set_destroy(struct luo_file_set *file_set)
-  * liveupdate_register_file_handler - Register a file handler with LUO.
-  * @fh: Pointer to a caller-allocated &struct liveupdate_file_handler.
-  * The caller must initialize this structure, including a unique
-- * 'compatible' string and a valid 'fh' callbacks. This function adds the
-+ * 'name' string and valid 'fh' callbacks. This function adds the
-  * handler to the global list of supported file handlers.
-  *
-  * Context: Typically called during module initialization for file types that
-@@ -893,11 +893,11 @@ int liveupdate_register_file_handler(struct liveupdate_file_handler *fh)
- 	}
- 
- 	down_write(&luo_register_rwlock);
--	/* Check for duplicate compatible strings */
-+	/* Check for duplicate handler names */
- 	list_private_for_each_entry(fh_iter, &luo_file_handler_list, list) {
--		if (!strcmp(fh_iter->compatible, fh->compatible)) {
--			pr_err("File handler registration failed: Compatible string '%s' already registered.\n",
--			       fh->compatible);
-+		if (!strcmp(fh_iter->name, fh->name)) {
-+			pr_err("File handler registration failed: Handler name '%s' already registered.\n",
-+			       fh->name);
- 			err = -EEXIST;
- 			goto err_unlock;
- 		}
-diff --git a/kernel/liveupdate/luo_flb.c b/kernel/liveupdate/luo_flb.c
-index cd715a7c1d99..cb8c15f181e0 100644
---- a/kernel/liveupdate/luo_flb.c
-+++ b/kernel/liveupdate/luo_flb.c
-@@ -337,7 +337,7 @@ static void luo_flb_unregister_one(struct liveupdate_file_handler *fh,
- 
- 	if (!found) {
- 		pr_warn("Failed to unregister FLB '%s': not found in file handler '%s'\n",
--			flb->compatible, fh->compatible);
-+			flb->compatible, fh->name);
- 		return;
- 	}
- 
-diff --git a/lib/tests/liveupdate.c b/lib/tests/liveupdate.c
-index 4c08a7c6fb78..d3a8573a648e 100644
---- a/lib/tests/liveupdate.c
-+++ b/lib/tests/liveupdate.c
-@@ -135,7 +135,7 @@ void liveupdate_test_register(struct liveupdate_file_handler *fh)
- 	}
- 
- 	pr_info("Registered %d FLBs with file handler: [%s]\n",
--		TEST_NFLBS, fh->compatible);
-+		TEST_NFLBS, fh->name);
- }
- 
- MODULE_LICENSE("GPL");
-diff --git a/mm/memfd_luo.c b/mm/memfd_luo.c
-index 59de210bee5f..36ee503672a2 100644
---- a/mm/memfd_luo.c
-+++ b/mm/memfd_luo.c
-@@ -52,8 +52,8 @@
-  *
-  * Seals
-  *   File seals set on the memfd are preserved and re-applied on restore.
-- *   Only seals known to this LUO version (see ``MEMFD_LUO_ALL_SEALS``) may
-- *   be present; preservation fails with ``-EOPNOTSUPP`` otherwise.
-+ *   Only base seals supported by this LUO version (see ``MEMFD_LUO_BASE_SEALS``)
-+ *   may be present; preservation fails with ``-EOPNOTSUPP`` otherwise.
-  *
-  * Non-Preserved Properties
-  * ========================
-@@ -273,6 +273,10 @@ static int memfd_luo_preserve(struct liveupdate_file_op_args *args)
- 		goto err_unlock;
- 	}
- 
-+	ser->features.supp = MEMFD_LUO_FEATURES_SUPP;
-+	ser->features.req = MEMFD_LUO_FEATURES_REQ;
-+	ser->features.active = MEMFD_LUO_FEATURES_ACTIVE;
-+
- 	seals = memfd_get_seals(args->file);
- 	if (seals < 0) {
- 		err = seals;
-@@ -352,8 +356,9 @@ static void memfd_luo_unpreserve(struct liveupdate_file_op_args *args)
- 
- 	ser = phys_to_virt(args->serialized_data);
- 
--	memfd_luo_unpreserve_folios(&ser->folios, args->private_data,
--				    ser->nr_folios);
-+	if (LUO_FEATURE_IS_ACTIVE(ser, MEMFD_LUO_FEATURE_FOLIOS) && ser->nr_folios)
-+		memfd_luo_unpreserve_folios(&ser->folios, args->private_data,
-+					    ser->nr_folios);
- 
- 	kho_unpreserve_free(ser);
- 	inode_unlock(inode);
-@@ -401,7 +406,7 @@ static void memfd_luo_finish(struct liveupdate_file_op_args *args)
- 	if (!ser)
- 		return;
- 
--	if (ser->nr_folios) {
-+	if (LUO_FEATURE_IS_ACTIVE(ser, MEMFD_LUO_FEATURE_FOLIOS) && ser->nr_folios) {
- 		folios_ser = kho_restore_vmalloc(&ser->folios);
- 		if (!folios_ser)
- 			goto out;
-@@ -526,12 +531,21 @@ static int memfd_luo_retrieve(struct liveupdate_file_op_args *args)
- 	if (!ser)
- 		return -EINVAL;
- 
--	/* Make sure the file only has seals supported by this version. */
--	if (ser->seals & ~MEMFD_LUO_ALL_SEALS) {
-+	if (ser->features.req & ~MEMFD_LUO_FEATURES_SUPP) {
-+		pr_err("Unsupported required memfd feature (req: 0x%llx, supp: 0x%llx)\n",
-+		       ser->features.req, (u64)MEMFD_LUO_FEATURES_SUPP);
- 		err = -EOPNOTSUPP;
- 		goto free_ser;
- 	}
- 
-+	if (LUO_FEATURE_IS_ACTIVE(ser, MEMFD_LUO_FEATURE_SEALS)) {
-+		/* Make sure the file only has seals supported by this version. */
-+		if (ser->seals & ~MEMFD_LUO_ALL_SEALS) {
-+			err = -EOPNOTSUPP;
-+			goto free_ser;
-+		}
-+	}
-+
- 	/*
- 	 * The seals are preserved. Allow sealing here so they can be added
- 	 * later.
-@@ -543,16 +557,18 @@ static int memfd_luo_retrieve(struct liveupdate_file_op_args *args)
- 		goto free_ser;
- 	}
- 
--	err = memfd_add_seals(file, ser->seals);
--	if (err) {
--		pr_err("failed to add seals: %pe\n", ERR_PTR(err));
--		goto put_file;
-+	if (LUO_FEATURE_IS_ACTIVE(ser, MEMFD_LUO_FEATURE_SEALS)) {
-+		err = memfd_add_seals(file, ser->seals);
-+		if (err) {
-+			pr_err("failed to add seals: %pe\n", ERR_PTR(err));
-+			goto put_file;
-+		}
- 	}
- 
- 	vfs_setpos(file, ser->pos, MAX_LFS_FILESIZE);
- 	i_size_write(file_inode(file), ser->size);
- 
--	if (ser->nr_folios) {
-+	if (LUO_FEATURE_IS_ACTIVE(ser, MEMFD_LUO_FEATURE_FOLIOS) && ser->nr_folios) {
- 		folios_ser = kho_restore_vmalloc(&ser->folios);
- 		if (!folios_ser) {
- 			err = -EINVAL;
-@@ -601,9 +617,14 @@ static const struct liveupdate_file_ops memfd_luo_file_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+LIVEUPDATE_FEATURE_ENTRY(memfd_luo, MEMFD_LUO_FH_NAME,
-+			 MEMFD_LUO_FEATURES_SUPP,
-+			 MEMFD_LUO_FEATURES_REQ,
-+			 MEMFD_LUO_FEATURES_ACTIVE);
-+
- static struct liveupdate_file_handler memfd_luo_handler = {
- 	.ops = &memfd_luo_file_ops,
--	.compatible = MEMFD_LUO_FH_COMPATIBLE,
-+	.name = MEMFD_LUO_FH_NAME,
- };
- 
- static int __init memfd_luo_init(void)
--- 
-2.55.0.979.g7e5102b832-goog
+On 8/19/2026 8:34 PM, guanghuifeng@linux.alibaba.com wrote:
+> 
+> 在 2026/7/27 21:29, Suravee Suthikulpanit 写道:
+>> Initialize vDevice for AMD vIOMMU by setting up the Device ID Mapping
+>> table using the guest device ID.
+>>
+>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> ---
+>>   drivers/iommu/amd/amd_iommu_types.h | 10 ++++++++++
+>>   drivers/iommu/amd/iommufd.c         | 31 +++++++++++++++++++++++++++++
+>>   drivers/iommu/amd/nested.c          | 27 ++++++++++++++++++++++---
+>>   3 files changed, 65 insertions(+), 3 deletions(-)
+>>
+>> ....
+>>
+>> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
+>> index bfc4b0ec22a9..1975b2932107 100644
+>> --- a/drivers/iommu/amd/iommufd.c
+>> +++ b/drivers/iommu/amd/iommufd.c
+>> @@ -9,6 +9,7 @@
+>>   #include "amd_iommu.h"
+>>   #include "amd_viommu.h"
+>>   #include "amd_iommu_types.h"
+>> +#include "../iommufd/iommufd_private.h"
+>>   static const struct iommufd_viommu_ops amd_viommu_ops;
+>> @@ -126,6 +127,34 @@ static void amd_iommufd_viommu_destroy(struct 
+>> iommufd_viommu *viommu)
+>>       amd_iommu_gid_free(iommu, aviommu->gid);
+>>   }
+>> +/*
+>> + * Called from drivers/iommu/iommufd/viommu.c: 
+>> iommufd_vdevice_alloc_ioctl()
+>> + */
+>> +static int _amd_viommu_vdevice_init(struct iommufd_vdevice *vdev)
+>> +{
+>> +    struct iommu_dev_data *dev_data;
+>> +    struct pci_dev *pdev = to_pci_dev(vdev->idev->dev);
+>> +    struct iommufd_viommu *viommu = vdev->viommu;
+>> +    struct amd_iommu_viommu *aviommu = container_of(viommu, struct 
+>> amd_iommu_viommu, core);
+>> +
+>> +    if (!pdev) {
+>> +        pr_err("%s: not a PCI device\n", __func__);
+>> +        return -EINVAL;
+>> +    }
+>> +
+> 
+> to_pci_dev() is a container_of(), so it can never return NULL and the
+> !pdev check is dead code. Worse, for a non-PCI device it yields a bogus
+> pointer which is then dereferenced through dev_iommu_priv_get() below.
 
+I will fix the code to check dev_is_pci() properly.
+
+Thanks,
+Suravee
