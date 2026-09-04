@@ -1,162 +1,182 @@
-Received: from mail-oo2-f5.google.com (mail-oo2-f5.google.com [74.125.231.133])
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D74843900F
-	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 09:18:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A034E438023
+	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 09:21:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788513492; cv=none; b=eE4w4uRE5vmuGLrSBfRA+dX8RW6KWR89oMusHeHbMI9c5SLAaRsgduoYrPPzDHxZMYOX9Y2j2mnGUBqeckX8eXXZekOVg0boYvOwryogo7kwTzfMBBv60cTuAOj96r4GNumiEcIqOq/x3ke7vL4V8uU+AtNJEjDkOfpJI23YpsU=
+	t=1788513707; cv=none; b=e1YGKVJ7xXT+OY9p67dbmpOJwAygJmMDf1HsGXy2NN65S6RdGqbBf6SBGzRHqXBRMHITGBZX9wDKILKmx5R/ibgl1Cf/qxHM4Esh5GPJLNCPGaXaZbwWBS2oK0Uarnwr4aX6N7bZ3X7xz2u4nSvPCxJi0pMnmmHOFcn/XqyUBiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788513492; c=relaxed/simple;
-	bh=OR2W4C5RJeu31LTWR0IuWWn8GbjlLAisu1bzfRpRmto=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=t67OICs1XhrBm08EPz/IexO8dKV5CAONwEIa0YBHuRB/8/PjJxIkfe9AWoaN5Zw63LdbYZWPm/pCu+CdAY5hrlkowTojfuXIdgnCcDBbZHQxWqbx7LJrqjAMdsw/frYC1+E6wXiwSUUvy+pfxG5nbl1yuvOx2mo9d5H2x2IbA1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=74.125.231.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo2-f5.google.com with SMTP id 46e09a7af769-7f66624aa21so83761a34.1
-        for <iommu@lists.linux.dev>; Fri, 04 Sep 2026 02:18:10 -0700 (PDT)
+	s=arc-20240116; t=1788513707; c=relaxed/simple;
+	bh=66UZqVClFVVA1O7tD4q6NQPzk7bNbkSIzh/ikTXNEQQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VLyaWcjNYsTjBcrBDNxyh4nNhkiLsdsX8wZAx6AYpMizjbGZ2WlNCv5uy4TUxz8ch+ItSyoqG+Ar1N9bS5zU3zJgzT+NCYqDsOQtmIZr2TrodZUgrcNh10MmdZANwQga+CvSPOH3woUYsZ6kodhLVy6AnaZ4QaIYrpDwpg7YVNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=Xxgov3cS; arc=none smtp.client-ip=209.85.216.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="Xxgov3cS"
+Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-398b3c37877so771451a91.0
+        for <iommu@lists.linux.dev>; Fri, 04 Sep 2026 02:21:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1788513701; x=1789118501; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Q9+T08Ol1yj/MMF/M6cDqb87S/P26Yho6EBQQNhwINA=;
+        b=Xxgov3cSNltu+CcTkKPqWZMbNoZ21B3388R8G2AxzmvL4VPIGJpsU7HwT3J9V109Rg
+         IDfVE2n/mKseEw7K3G/rDNHCza8Ohjk2e3K1/PUJzqv68OUby8+ad5G9ZhrmRQ10JTd7
+         vixeu2s8UBSGcQn+ZFJfZEKluzDwh7OtVaMNLU9yE0osWBtKeFlgcgv/VR7QuMl4Kj3B
+         VMcZXHppNLhnq5pUUqIwNBStNm+4pexbWQenCKJgsgwLRh18zRvBZLDsGohbbnJW1u1E
+         XejIJGcTIBFYnOL7lbYFB37JzCmLGZOAzJfxKDsRTABHM0qygYWjU2NDnvbVw3JQ3GQW
+         PVVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788513489; x=1789118289;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:in-reply-to:date:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=lWA7gjj4ueJ+MIU8cYLOnoqtXa/lQkjXbHrHZ6qQ27s=;
-        b=Vdw4BjBV8ZRBCAir1ByXXLli6erSHs1l2aBgq1AeKSmQ0+Az5phZhw9eHoVcvH+s7P
-         jHJkcOP63RDMIMvu/Q0vX4mQDARCvJBky1jWo2ZQpTpLA4OGpTL3V0rLo5vHyXOg3s5R
-         bdpzcLhdXGlbP6vlZTcRGfp2WXzIy+ZPm3V4doA6Rw6TXL3vnbjtiPNK0IxywoxB8Fwe
-         VfwAi+uCqdjfiYcL82uqcFhlji8FINEyXlQvH5xbxa2EHHbJM9LuOSUIqGcPqkjoTRFF
-         hUDID3iUWpwh6Xr5W7Cs/9ZG/jXxWb7yY1plkb+lAY/+CMIz3G5ZaFtHLWZvJ77GKbDd
-         ca6g==
-X-Forwarded-Encrypted: i=1; AKwUvBzE/kCaWANoys8jIIQcjPgRpHKJ/9JnpNP0M0O93drtv/xbLRSiShHxib57InrbZyHVPrRelA==@lists.linux.dev
-X-Gm-Message-State: AFuF++meyQayJDcfHafpcFXliGSe43mzvX3Og89prq+JCHMOuL8Xz9GL
-	0fyL4w4ytdF034XTxd2lv2HS48hLdrvKGBsAYwelOE6Er88S6FANYEegGBZQRW8WDTtKvz3SgXN
-	iAMrTZ3/WmMVvlm40vLdHfT56KbuZkPG/Z2REGJs4RXIv+M+zK84sRs7bVms=
+        d=1e100.net; s=20251104; t=1788513701; x=1789118501;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Q9+T08Ol1yj/MMF/M6cDqb87S/P26Yho6EBQQNhwINA=;
+        b=G5IIov2KjJtIeczC6I7PM9Ug0DV8GhmOzIw3oZ4RpyxNaU7xfpLJWTLCLMGCOAsH4L
+         aJnMKV1SSb7QVYdttf+bj/imZiOGrJaMp2WpS+yicFtC97VoJlnu+c3n49F70Rs9tt1W
+         2Q6nJJCeBM4ykejeV1O20GSbAUsDyOaoFHfOeXLaWwLebR2ZXAh/4ByPUyr8jCrw8+4i
+         nRmUl+IKUwah2XvQiIIUg1s9PQ6s5mBn3Dwx0jw+O9H/5pO/x531DVKnWPKe0IyZGuR2
+         cYfqbOwEfhTIzZwoiEtdRRwUknxZ6csQBmpKSe7GOCXhGe1uD7C1gkNbDa/yCePCwXaG
+         6J7w==
+X-Forwarded-Encrypted: i=1; AKwUvByV9jFzctg/N3lpdFO4Nz5ZVaPHgrSlRKUiavhcjflnvqRASxC/n0mLdSktjlRmrGG23LvHBw==@lists.linux.dev
+X-Gm-Message-State: AFuF++mcaxSBKo3+IarF8LSG8XYLfxwRBU3XAjVp+0+oe6UVmLryDdUM
+	zsV8YOPjrrXKwUz4mga6buRxm3fdmOXaITGTQ2ToZeR6Pa44RWJzcHgePziFuOEeK9g=
+X-Gm-Gg: AYBFou2Ydt7JtrGKjdvwB6y1vhYUVSsBnXDd+z77Dwh8lTgmVc8MUr/s1aNSTSp5SpR
+	GCwmkNxb20iY9TZf+PgyxryYpfLDjiBpyrV6uQIrJAo+frB1AHPhy7Bm2QV88geh47wl0QKfwW3
+	yDkfALb3YIMU9sXMGf90IgWc2pO2M3pVGD4pun3z+q2M8aEYMyDFxF82a4l2cu/y3UNePH9JXIn
+	YBvtq5H6HCWugotPkRVww92Hw5UpCSRjLDC7Tr4h5QuInD/oyRTRz094g1upPwC4Iq43541oJL8
+	CLCc0E1Os8K1Jp6vb89QsoEWBC2CJdJWBnff7lT5kQ03K+ZnqqE7Vroj6NL2pGEOSlKSIrnrcCb
+	z5jFoS7CixyI8ZemuFaRqhNm516bsCk/EVyR/duSAf+f28Os15pP14E0sg/RVL5N+x5P5PtofjB
+	tfTGahjNjldfkidbuZKF4l00/I3yA1BRzTt8+7RuvSsMSuao2kC7mBDqHlNmIxXpkk9B5AoD+hv
+	wMI/mIPS8s=
+X-Received: by 2002:a17:90b:1dc3:b0:398:d6f4:c61a with SMTP id 98e67ed59e1d1-39b26207ee4mr7536728a91.17.1788513700711;
+        Fri, 04 Sep 2026 02:21:40 -0700 (PDT)
+Received: from sw04.internal.sifive.com ([4.53.31.132])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1432438497csm5275575c88.8.2026.09.04.02.21.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2026 02:21:39 -0700 (PDT)
+From: Zong Li <zong.li@sifive.com>
+To: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	mark.rutland@arm.com,
+	andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org,
+	david.laight.linux@gmail.com,
+	zhangzhanpeng.jasper@bytedance.com,
+	yang.yicong@picoheart.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-perf-users@vger.kernel.org
+Cc: Zong Li <zong.li@sifive.com>
+Subject: [PATCH v8 0/2] RISC-V IOMMU HPM support
+Date: Fri,  4 Sep 2026 02:21:31 -0700
+Message-ID: <20260904092136.113321-1-zong.li@sifive.com>
+X-Mailer: git-send-email @GIT_VERSION@
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2912:b0:6b7:46e9:9702 with SMTP id
- 006d021491bc7-6b746e9a327mr1580777eaf.50.1788513489314; Fri, 04 Sep 2026
- 02:18:09 -0700 (PDT)
-Date: Fri, 04 Sep 2026 02:18:09 -0700
-In-Reply-To: <20260904-clown-zersplittern-sequenz-987f972a607b@brauner>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a9a8cd1.a011d2ce.399d32.0000.GAE@google.com>
-Subject: Re: [syzbot] [fs?] memory leak in path_openat (4)
-From: syzbot <syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com>
-To: brauner@kernel.org
-Cc: brauner@kernel.org, iommu@lists.linux.dev, jack@suse.cz, jgg@nvidia.com, 
-	kevin.tian@intel.com, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com, 
-	viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-> On Wed, Aug 26, 2026 at 07:54:38AM -0700, syzbot wrote:
->> Hello,
->>=20
->> syzbot found the following issue on:
->>=20
->> HEAD commit:    26260251022f Merge tag 'livepatching-for-7.3' of git://g=
-it..
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=3D1196a1795800=
-00
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D6c1b5958b2d1=
-207f
->> dashboard link: https://syzkaller.appspot.com/bug?extid=3D7666ed2c3d4219=
-6bf7e3
->> compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for =
-Debian) 2.44
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D139f717958=
-0000
->>=20
->> Downloadable assets:
->> disk image: https://storage.googleapis.com/syzbot-assets/0f75e7622b1f/di=
-sk-26260251.raw.xz
->> vmlinux: https://storage.googleapis.com/syzbot-assets/2bbff9fd7b60/vmlin=
-ux-26260251.xz
->> kernel image: https://storage.googleapis.com/syzbot-assets/95d733004907/=
-bzImage-26260251.xz
->>=20
->> IMPORTANT: if you fix the issue, please add the following tag to the com=
-mit:
->> Reported-by: syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com
->
-> #syz set subsystems: iommufd
+This series implements support for the RISC-V IOMMU hardware performance
+monitor.
 
-The specified label value is incorrect.
-"iommufd" is not among the allowed values.
-Please use one of the supported label values.
+The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver
+created by the parent RISC-V IOMMU driver. Therefore, the child driver
+can obtain resources and information from the parent device, such as
+the MMIO base address and IRQ number.
 
-The following labels are suported:
-actionable, missing-backport, no-reminders, prio: {low, normal, high}, subs=
-ystems: {..
-see below ..}
-The list of subsystems: https://syzkaller.appspot.com/upstream/subsystems?a=
-ll=3Dtrue
+Changed in v7:
+- Rebased onto the v7.3-rc1
+- Remove raw spinlock
+- Check CPU matching at the beginning of irq handler
+- Add PERF_HES_STOPPED check before overflow handling
 
->
-> This seems to be a reference cycle in iommufd. path_openat() and
-> alloc_empty_file() is just the place where the file is allocated.
->
-> The reproducer does:
->
->   r0 =3D openat$iommufd(AT_FDCWD, "/dev/iommu", 0, 0)      /* =E2=86=92 f=
-d 4 */
->   ioctl$IOMMU_IOAS_ALLOC(r0, 0x3b81, {size=3D0xc})         /* =E2=86=92 i=
-oas_id 1 */
->   ioctl(r0, 0x3b8f, "2800...0400000000...0010")          /* IOMMU_IOAS_MA=
-P_FILE */
->
-> So that last payload can be decoded as:
->
->   iommu_ioas_map_file: size=3D40, flags=3DR|W, ioas_id=3D1, fd=3D4, start=
-=3D0, length=3D0x1000
->
-> So fd is r0 itself which is the iommufd fd which is handed back to IOMMU_=
-IOAS_MAP_FILE.
->
-> That causes a cycle:
->
-> iopt_map_file_pages() does fget(fd) without worrying what it calls it
-> on. So that does iopt_alloc_file_pages() which takes a long-term referenc=
-e in pages->file =3D get_file(file)
->
-> The reference is dropped in iopt_release_pages() in fput(pages->file)
-> from the IOAS teardown. That in turn runs from iommufd_fops_release().
->
-> TL;DR:
->
->   struct file(/dev/iommu)->private_data-> ictx->objects->ioas->iopt->area=
-->iopt_pages
->           ^                                                              =
-      ^
->           |____________________________ get_file() ______________________=
-______|
->
-> Closing the fd does nothing. The hex dump shows the same pattern btw:
->
->   - obj1 struct file @ ffff88812811f9c0, obj2 its LSM blob
->   - obj3 iommufd_ctx @ ffff88811161cd80, first word =3D ffff88812811f9c0 =
-=E2=86=92 ictx->file is obj1
->   - obj5 xa_node, its ->array =3D ffff88811161cd88 =3D &ictx->objects
->   - obj4 iommufd_object: shortterm_users=3D1, users=3D1, type=3D4, id=3D1=
- =E2=86=92 the IOAS with ioas_id =3D=3D 1 from the repro
->   - obj6 iopt_pages, kref =3D=3D 1
->
-> Likely caused by f4986a72d6e4 ("iommufd: Add IOMMU_IOAS_MAP_FILE")
->
-> Afaic,t, this should either reject based on file->f_op =3D=3D &iommufd_fo=
-ps.
-> But iiuc there's other cycles that can be formed.
-> For example, via a vfio device fd that's bound to the iommufd. It holds a=
-n iommufd_ctx reference via iommufd_ctx_from_fd().
-> So mapping a bound but unattached vfio fd builds the same cycle.
->
-> So probably this should do validation what type of file can actually be
-> used like shmem and hugepage file.
+Changed in v6:
+- Rebased onto the latest v7.3-rc
+- Use sysfs_emit instead of cpumap_print_to_pagebuf
+- Set up on_cpu and irq affinity by cpuhp callbacks
+- Change type of on_cpu from unsigned int to int
+- Reject filter operands of cycle event in event_init
+- Check return value of counter number and  masks in probe
+- Add raw spinlock for race condition (third commit)
+
+Changed in v5:
+- Pick up suggestions from sashiko-bot as follows
+- Fix event group validation for sw event
+- Bind IRQ to aux PMU dev instead of parent IOMMU dev
+- Clear OF bit when event is NULL
+- Improve hi-lo-hi patten
+- Add back IRQF_SHARED flag due to mismatch
+- Manage cpuhp and pmu register by devre
+
+Changed in v4:
+- Rebased onto v7.3-rc
+- Use is_sampling_event() instead of accessing vairable directly
+- Rename the matching name from "iommu.pmu" to "riscv-iommu.pmu"
+- Change the naming of PMU device for avoid ":" in PCIe case
+- Add suppress_bind_attrs attribute
+- Remove IRQF_SHARED flag
+- Set irq affinity to local CPU of IOMMU
+- Allocate ID by IDA for auxiliary device
+- Pick up suggestions from sashiko-bot
+
+Changed in v3:
+- Rebased onto v7.2-rc3
+- Use hi_lo_writeq/readq to access register
+- Pick comments from sashiko-bot as follows
+- Set IRQ CPU affinity
+- Remove IRQF_ONESHOT flag when request irq
+- Adjust cycle event check by checking event_id field only
+- Fix bug for group events verificaiton
+- Fix KASAN issue about casting 32-bit variable to unsigned long pointer
+- Clear IPSR pending bit before starting counter
+- Clear OF bit in event selector register in irq handler
+- Release irq by devm instead of explicit free_irq
+
+Changed in v2:
+- Rebased onto v7.2-rc1
+- Use hi-lo-hi mechanism to read counter.
+  Suggested by Guo Ren and David Laight
+
+Changed in v1:
+- Rebased onto v6.19-rc8
+- Pick all suggestions and feedbacks from v1 series
+- Add cpu hotplug implementation to avoid race enablement
+- Move PMU-related definition from header to c file
+- Change PMU driver to auxiliary device driver
+
+Changed in RFC:
+- Rebase onto v6.13-rc7
+- Clear interrupt pending before handling interrupt
+- Fix the counter value issue caused by OF bit in the cycle counter.
+- Invoke riscv_iommu_hpm_disable() instead of riscv_iommu_pmu_uninit()
+  in riscv_iommu_remove()
+
+Zong Li (2):
+  drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+  iommu/riscv: create a auxiliary device for HPM
+
+ drivers/iommu/riscv/Kconfig      |   1 +
+ drivers/iommu/riscv/iommu-bits.h |  61 --
+ drivers/iommu/riscv/iommu.c      |  37 ++
+ drivers/perf/Kconfig             |  12 +
+ drivers/perf/Makefile            |   1 +
+ drivers/perf/riscv_iommu_pmu.c   | 941 +++++++++++++++++++++++++++++++
+ 6 files changed, 992 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/perf/riscv_iommu_pmu.c
+
+-- 
+2.43.7
+
