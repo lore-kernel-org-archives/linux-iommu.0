@@ -1,169 +1,198 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013054.outbound.protection.outlook.com [40.93.201.54])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D3B5456DF3
-	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 10:13:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788516795; cv=fail; b=P8OlVTpUfx34nXRK4YIEAeZ9tNPuIbD16CbL4Pfx/rKc45qEdH+Rb30dcZhBwmZ2bQe85u6kkMi/zIdFa4UqIPZ0gX3STDEINAiTTM37G24Nrp11mKqF6m+87xvAS32dHBYt9MvPEnyXBsIxrNVS7nUNSjrbPDahuPgd0JY+T7o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788516795; c=relaxed/simple;
-	bh=EY+DzYJTeIdF1IE+gPNtaoPAL0t77bOpaDE8cSOLP4g=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=s/cgOg5P1TkgLs61yOLiRMC8+6XXlNE6v6r4BblCf8xli80I42iiWPNKM/X9bYCTfVv/46t8SKIutFibtSk2bdyMcg4oA9nTvD2XLdNTcJS9p6dZRIKAlql5nL/Vhekst5jFanMHijE2/wFl9HbdFaWb+jBlCwjhsvgE5Nsmaus=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=py1u5l3k; arc=fail smtp.client-ip=40.93.201.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98B523E557E;
+	Fri,  4 Sep 2026 10:18:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788517113; cv=none; b=kyVMoTrzDmxGCcgcuvd4gus9MizGVkZmQrMSINYybYau53CupRiuQhHvUlrkoTFZCVu8QlsAYMT5oz2qCEtVH488FgWeYOp9G/fY7z1TTGQYs2G63ro4Lp85oSrA+VmyitUJWvFzoTuA4fEIHCNjPRDkeGXRsBqdz5eg27Q8xFI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788517113; c=relaxed/simple;
+	bh=oq+cZelW3ujf4BrdR2asPIBbVU8EA7VZbw7V1OVVmXo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bWLaaujXHbfOkgL1ymQPO+kmDFZZn1VIiBUdW1yxIgmvrAdXkq8w7brgdU8znbewRm2zRqjXEQU8Jn11QK96n0psYapa5s5loQ05NNtLO3wO/Ys4faaye1O5YalSKbt1/Pu5uzfwWhFmMUkuc0rXLaAssNpQD/HYGB7FOGmDKHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VeD6Tsvu; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="py1u5l3k"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FC43MuQONbYgd5BI86INNNKGcvNkmZqiA7T+6c3MrIBOsb1rb4YdjiZ7fpdx0efDkOottFOPrPAzH159v6qApVnOfjLPDwNrG6QiswpblqJfsR5DZgOoV46BFue6po6AX9NfvKsT7zzbW5WrehweICMFhdvHuYbPHEfliyFoq/jCi85Z9akIH9BoNro6nzyk7fogLOw8TbY6LjcimpYW/ZF/5aR5RMHUpwdDHhbUcc7xXnYYM6FVwB4dO7GYcrBY4Lh8oS4VwKZK9uVlndWzTX56O9MORb15QrAixtC7sA0ewfr6pxmKIIE9LWTivUvu1g4yXW5qrtbYLzR9IZDViQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Bc9udo52fl2HPR56uC2nWQrcdxjU1eGKvulC+ntihQU=;
- b=dBZN9WWGqZksEwyBWl415Hrt0PS8GuFUAlt8yka89laW26LF9B21WG+mA+SHUWKziyotQ0mAVBBnDTpqLqHjriAo9WJeOmwS0bZm9m8zoijBkWduz7C0obL3mIpmZJck42nUBdDYr8rk8WRbzddTBYZ9OgIn0V0U95mcsX6i+DzOO6fcpUQ+P9jOtyarV+4bTB+qRRdt8gOJGlNPIIp3dgczlbKs94JSUTyfMg1teQpW7ngekad6WSaKmqgNAyW8bbv0DM0ud3mk1la7Kl9g6eKJHZCS5fnW9VwKNxMC0uZ+q3dMgW/uF1zLhbrLeIsw3GSMWqaf2u+n6IEzz9qUqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Bc9udo52fl2HPR56uC2nWQrcdxjU1eGKvulC+ntihQU=;
- b=py1u5l3kwM5Ea1MfP0jsMMW0ZqLWRg0gQ82QeryXMtUoNMCmM8vbQHLckpVfx4OBqfYkk25NDjaI/UcHMVfQqgGwTQmZKlVj2HerBZo0v9fe/9wbqSPl7TIwZRRC7REVeB3FPx23N+5Rj/HyiL7NjHS4hZFWkaDYnJqK/umrMp4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by DS7PR12MB6021.namprd12.prod.outlook.com (2603:10b6:8:87::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.360.13; Fri, 4 Sep 2026 10:13:09 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0360.008; Fri, 4 Sep 2026
- 10:13:09 +0000
-Message-ID: <399db967-050d-48dc-afb5-5c77ee9cce65@amd.com>
-Date: Fri, 4 Sep 2026 15:43:01 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/5] iommu/amd: Fix DTE clearing and rename
- iommu_ignore_device()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Ankit Soni <ankit.soni@amd.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
-References: <20260824122347.1588592-3-praan@google.com>
- <178759520117.3131778.15279605903087565179.b4-review@b4>
- <ao1vJxkZsJpr1qXG@google.com> <20260825114916.GT244917@nvidia.com>
- <ao3RF0w_AXo5EXxv@google.com> <20260825175315.GD3325090@nvidia.com>
- <ao3oHn8HiXIx5Wrl@google.com> <50ffc453-f918-47f8-9556-9813308690a9@amd.com>
- <20260826122147.GA3666382@nvidia.com>
- <bfb7be5b-2da3-4bd3-8146-9bd079011a75@amd.com>
- <20260828115331.GC3922654@nvidia.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260828115331.GC3922654@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0185.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:be::9) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VeD6Tsvu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 583791F00A3D;
+	Fri,  4 Sep 2026 10:18:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788517109;
+	bh=tw800+P4uDfhJ9ocmTWTBk5vEmN83SP+jsZApX/yv74=;
+	h=From:To:Cc:Subject:Date;
+	b=VeD6TsvuxNdszngd9kfRSkBJ6wa+qxTTVLQDoCKpXCgqM3cJiEvokNzjA3rxoeTTi
+	 MKqpiukio34QjfY74UOEleZKzmBCDhEaOZgLRF4nsRgjo4boReS7dBvvdH4L+8Agv/
+	 UheiOOtvWR52mJOsspkre/rzDUAGWb3jaigazXbTkTsVmbDmSEcuYr5Hlzbmoao8M5
+	 XdMkR1WsmH8Z0lfPojuOIreL3BXvH0yzmNvftiKypljjLqP4B89FE8ETuLNdYr1W4t
+	 GG3OxFHpAe6m/5nn8gwJDaHkUMpXRtIRruqKlK+LFkd1ZB4xByDyS+dH2m8zWWMCIj
+	 lPBfH2ns3cLUQ==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: [PATCH v3 0/4] dma: swiotlb: Centralize default pool policy and sizing
+Date: Fri,  4 Sep 2026 15:48:06 +0530
+Message-ID: <20260904101810.1193505-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|DS7PR12MB6021:EE_
-X-MS-Office365-Filtering-Correlation-Id: b20f2807-30be-4390-d4db-08df0a6d1ef6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|366016|23010399003|22082099003|56012099006|10067099003|11063799006|4143699003|6133799003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	45eI5d2iwkgG2F8D8kH+1LeWq+bPNvGZ5wD0SO4gp9FGuQpQemYZDXZjdMZSvEYjhi8gT0jPnpBUo8LHr0GcW9xHnJQGmikx+4tzXD+tbZu3iZ9TvJxOCcCChfQnLPDE5/uFeQM9eX6YVuHee5uB8S/wpqmy7Fufe2SpLAM3wR0CXER0HCBLjNTfyrweAmOfWZphx/qFbxE/E8WSE6a8pT5ORM83gTpFy6PqKScjkot+0O3brLcaw5rDLQ7STUeeqM866dIrOoeKbBY8NGrQZ93ZyNgrTiN9J3oadpDUcKqJ2wFnx9UXdeOICtRMoX2jhdTMPP12UBbUaQVFDpJXs22wK8y9Jx/gtBymCsOYd7Z1FoO9KVaAU99joygV5DBspbf+86/rYVFjhisBkJyDcyCAroEkmWQFvxeCq9Ip6zq5AIMTczWz2ld8b+5KBmBE+hdZwctLzSg08DXrX8auiNlkmxN6gYd8fjN4x/LyXu/w8/yBXb5frhLNaHek4r54rCF1s1MTug+bX0SPrWENuDtuOthnTJHp+svDDJbcgedxKZUWDksc6luc5m/UFOFdzphBav9qaBTF4e74KIhHHhadjIiNZeDpOIPUBsqq3xmgOLSH11eGGgqy+JG4axhKteKjMxZVdVRz0bs2/2HxS3ghJi79wRsmUMvHJc+jD7I=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(23010399003)(22082099003)(56012099006)(10067099003)(11063799006)(4143699003)(6133799003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dUE5OStVTi9NNysrMGdoQ0RzOVJFV1hYUWZ5NHBaOXh3SDUwdGtsZzdSUmUw?=
- =?utf-8?B?SmxSYzQ1ZFB6SGs4dnNwN1hYdkVyblpaN0FOQU93ZkdkZjY4VUJ0M0VRVlNq?=
- =?utf-8?B?NElyZGNyWHhzbEhoQmZVcXlqUm1BNXQ3Z0Z0T2cwVytWMXpHYW9FZVFMSWNp?=
- =?utf-8?B?WFFrMUUyZ0tNUzg5bjMzczg3Y2JCd0dyOWRicXdpT3hiZCt4THBHUmVyVkty?=
- =?utf-8?B?azJodTB4dUYvdFc1V0gzU2FrM3Z6Z3VjaTE4SXdoQU5rcTdMSE10T3c1eTZh?=
- =?utf-8?B?cFNTbWs3T3lTRDRpbUp2eWdCb2hLUGMzSWpqbHorbFpsa1dIb01UbkYvcm45?=
- =?utf-8?B?MG9KUVN5N0ZzNzJjd3RIT09xU1lFNjV1N1FiaWx2bUVlRStweGFQbk12dnlt?=
- =?utf-8?B?QWNhbEI1ajQ2VjdKYndPMmdRd3FvNWJLdkprcUpMYkxORHVoVHlEY2pYRGgr?=
- =?utf-8?B?VVZoZnFyak05RU9WRzBZbXVKQnB2anhBNzNuZzBKa3ozSHdXQzByVWlEVDRy?=
- =?utf-8?B?a0RsM0dDa1dIa2c4blNFN3dTSUd2azdsUFdhZUlTWjExdEpHN1hxSGFPcUtt?=
- =?utf-8?B?MVBIRG9TRFFRTzROT09RY1VMRzR0cjRjSi9kaXc0cjZiZXpCSHVDK0dobTls?=
- =?utf-8?B?V0NGNlFBSWEweTNwUU5RbWJVTGZhbEVvN1k5YWVuZncrNGhlaUp6YUd4eXVt?=
- =?utf-8?B?cEx2T0l5QWIxMVhMRHRUbnRWN0IvQXZHajFuRzdacE0xTVZSQUZ1N1lYaFd0?=
- =?utf-8?B?eUJGRzBFUE5JdE4xQ2N5Zk5pWUJrSmw2WmZtdVYrSkFGM3puVXBlR2dRTFVs?=
- =?utf-8?B?MnFrc3FMOTR2aXJjME01OUw2NTRSS0xsNTdCTVVpaDlnUE9PL2tZcGozN0k3?=
- =?utf-8?B?V2xzWGtkb2hPa3RKRWg3SDVYY3NwaDVsc2UrY244UGlpMDl3LzR3dHF0bUtN?=
- =?utf-8?B?ZkhhWU43Z3AzbXpmT0NFMzdkVDFENHZaZDNGakkvbTExVGs1MFVHTXNjZUJS?=
- =?utf-8?B?L3pTUzhTRVhPWmdiRyt5VThUMnFiZzVsTWJ0ZVdsVWZrcElEdjZ5MlVmcXY1?=
- =?utf-8?B?WkF6VllLNTF3bTJqK3pOWHFScDhvQ2dtME44cjc3U2FNK0hTUXcvZFp6UGtu?=
- =?utf-8?B?eDhVMjNwTG1LVkxpR3NLSnFXSmJ0WmlOaVJKOTFHV0tNc0pOakp5S0lVTi9x?=
- =?utf-8?B?UzBUbTAvMFpPd3lMbmtUR1c3RXJMb2ZiZzdxaTFPeUk2dGlnVGM1RFoycmNX?=
- =?utf-8?B?UXVHVVQxbGE3ZVQ4TDE2SUkrODNtVWtzQTlCQ3FhS01RZ0ZablhETTFYZi83?=
- =?utf-8?B?eWFFVjEvS1dFSUltSGFXanVOWHVKNitPRXgrbDNuNFloanhRS254WHdjVWZM?=
- =?utf-8?B?QWFZeG4rVDY2R1E2ZzNTYy9lN3hFRmUxM2c5Vmx2NXU4QVdmVVlkTW9qYUMw?=
- =?utf-8?B?SHZ3SnoxV0xEQXoxVkZTS2JmcFhRd2tmZ0o5WEJRVFJtUmFKQU9WL2YzN0Jj?=
- =?utf-8?B?by9qbWc0ZURJNHorM0FjNEdtcVZDdVgyLzFKLzQ1c1oxNzkxdkpDU1JNMGU4?=
- =?utf-8?B?TnNuRURuSVFqSlJiSzkyVUUycWYwQzd2YUI0dDBtQlpZam9WRFB3VGJWb3FU?=
- =?utf-8?B?eUN1VEFZR3U0RVdKWk8xeGpQSEJuYURudzM2a01pY25VTFg5ZS8rbTlSNHV6?=
- =?utf-8?B?bWY2Tlh4L0o5cCtxbmtNdkJPV1ZKK3liOU5qNG9wdS9CQkErd0crUFRodE1F?=
- =?utf-8?B?TXJBejJPQkNaWGljd0RiMFJON1hjcGtjVFhPRlRNVkwxaldIYmh3U1BzYnhh?=
- =?utf-8?B?SzhLcUFUUk9zaG9SeC9yaE1nLzNoL2thdDRlTnNCRXJpSlpUSmg3R1NaK0NU?=
- =?utf-8?B?dEFmUDRxd09JSHBKK3dOL01ySFVWSml5SW5OamowVEU2bVVoQUJES0ZpM211?=
- =?utf-8?B?R1lYK1QrZTl2bEZ2bkI5VzVmc2wwMHlsclhBblhIWXBxMlZlaHhHZmplaFVr?=
- =?utf-8?B?bmRvNEg0dWduU3FBZUZicmVwdGQ0bitKRVFkTHNoUmNxeHpHNTdIaUUzcmda?=
- =?utf-8?B?Z2tJTmsySHVsRHlLV2JMRGVrOWdTcERySlhjLzFZWWZOUXhJNStML3dJeGhq?=
- =?utf-8?B?VzBtbU9FUFNSdjMweFZnb3JVSFhId3VHenc3NHU5bjljRkEzeUN4THk1TnpT?=
- =?utf-8?B?bkJOajV3VlplNHFKclA4azhrR2FWZGhqM0FYSTdGdGZOQWtiTm43TnB0aDMv?=
- =?utf-8?B?KzFVTGNOQ2xXM2xHdWt6NHFndng4N1pyR09WR29Id0wvTit3VEc3Vys5K0VJ?=
- =?utf-8?B?c1NtTnFrRUJsNE5NcVJkZTRTMWdCck43VHFvdkxmY0c1Nm1MdzY1dz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b20f2807-30be-4390-d4db-08df0a6d1ef6
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2026 10:13:09.8074
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: f7XLRDHAViRmAXRxtc4JFBfnB8rw7Q4nS7SkGSZDn0jQvSAYeXzNIuLNPTbzB31qFCZzMKMQxU/RYf+aRbMkzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6021
+Content-Transfer-Encoding: 8bit
 
-Jason,
+Hi,
+
+This series centralizes swiotlb default-pool selection and sizing, and
+simplifies the initialization flags used to describe pool placement.
+
+The first patch replaces the addressing-limit argument with initialization
+flags and introduces explicit policies for the different reasons a default
+pool may be needed. Architectures now report DMA addressing constraints with
+SWIOTLB_INIT_ADDRESSING_LIMIT, while the core selects the corresponding pool
+policy.
+
+The second patch moves the reduced sizing used when the pool is needed only
+for unaligned kmalloc bouncing from arm64 and RISC-V into the swiotlb core.
+
+The third patch centralizes swiotlb sizing for memory-encrypted systems. It
+moves the existing x86 guest-sizing policy into the core. Host memory
+encryption retains the normal pool size, and a shared default pool is not
+selected solely for guest memory encryption when a restricted DMA pool is
+present.
+
+The fourth patch removes SWIOTLB_ANY. Pool placement is derived directly from
+SWIOTLB_INIT_ADDRESSING_LIMIT: pools required for limited DMA addressing are
+allocated below the architecture's low address limit, while other pools may
+be allocated anywhere in directly mapped memory. Xen continues to request a
+pool explicitly with SWIOTLB_INIT_REMAP without imposing a low-address
+constraint.
+
+Changes from v2:
+https://lore.kernel.org/all/20260813102521.1367737-1-aneesh.kumar@kernel.org
+* Rebase to latest tree.
+* Drop SWIOTLB_ANY and derive that based on SWIOTLB_INIT_ADDRESSING_LIMIT
+* Add SWIOTLB_INIT_REMAP.
+
+v1:
+https://lore.kernel.org/all/20260811134056.756015-1-aneesh.kumar@kernel.org
+
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mostafa Saleh <smostafa@google.com>
+Cc: Petr Tesarik <ptesarik@suse.com>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Huacai Chen <chenhuacai@kernel.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc: Paul Walmsley <pjw@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: Thomas Gleixner <tglx@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: loongarch@lists.linux.dev
+Cc: linux-mips@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-s390@vger.kernel.org
+Cc: x86@kernel.org
+
+Aneesh Kumar K.V (Arm) (4):
+  dma: swiotlb: Centralize default pool policy selection
+  dma: swiotlb: Centralize minimal pool sizing
+  dma: swiotlb: Centralize memory-encryption pool sizing
+  dma: swiotlb: Remove SWIOTLB_ANY
+
+ Documentation/core-api/swiotlb.rst   |   8 +-
+ arch/arm/mm/init.c                   |   6 +-
+ arch/arm64/mm/init.c                 |  14 +-
+ arch/loongarch/kernel/setup.c        |   2 +-
+ arch/mips/cavium-octeon/dma-octeon.c |   2 +-
+ arch/mips/loongson64/dma.c           |   2 +-
+ arch/mips/sibyte/common/dma.c        |   2 +-
+ arch/powerpc/kernel/dma-swiotlb.c    |   4 +-
+ arch/powerpc/mm/mem.c                |  17 ++-
+ arch/powerpc/platforms/pseries/svm.c |  10 --
+ arch/powerpc/sysdev/fsl_pci.c        |   1 +
+ arch/riscv/mm/init.c                 |  24 +--
+ arch/s390/mm/init.c                  |   2 +-
+ arch/x86/include/asm/crash_reserve.h |   4 +-
+ arch/x86/include/asm/iommu.h         |   2 +
+ arch/x86/kernel/amd_gart_64.c        |   1 +
+ arch/x86/kernel/pci-dma.c            |  19 ++-
+ arch/x86/mm/mem_encrypt.c            |  24 ---
+ include/linux/swiotlb.h              |  19 ++-
+ kernel/dma/swiotlb.c                 | 214 ++++++++++++++++++++-------
+ 20 files changed, 236 insertions(+), 141 deletions(-)
 
 
-On 8/28/2026 5:23 PM, Jason Gunthorpe wrote:
-> On Fri, Aug 28, 2026 at 10:46:48AM +0530, Vasant Hegde wrote:
->>> Having the driver boot up with all DTEs programmed to identity (eg
->>> 0'd) and then try to fix them to blocking after the iommu probes
->>> devices is security backwards.
->>
->> During boot, it only sets dte.v bit.
-> 
-> First it clears it to fully 0, what does 0 do in HW?
-
-IF DTE is fully zero, then all requests are blocked for that devid.
-
-> 
-> It doesn't make sense that you'd pass over the DTEs after
-> probing if the original 0'd DTE was actually blocking?
-
-During boot, it sets certain default values includ dte.v. It doesn't clear
-everything.  In probe path, if probe fails then its clearing it entirely.
-
-May be we should just remove ignore_device() completely? as
-  - normal boot, its not yet configured, so no DMA is allowed
-  - kdump boot, old DTE is still valid and let it continue?
-
-
--Vasant
+base-commit: 89a312991dc6e638a36adc43ccb91dbc25504c04
+-- 
+2.43.0
 
