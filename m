@@ -1,83 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D993E7BA0;
-	Fri,  4 Sep 2026 10:19:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1452D445AC6;
+	Fri,  4 Sep 2026 10:35:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788517176; cv=none; b=deWbnssEFl2UbwEDFFBPz/du6j+MvCu/BPZxlYQfXhao/iTEQ7P3sBMm9SvxKQu4C1ymKEqXAF5Kmpp50ZioHevSxooBC1SuX+u0v+sVHnavpIuMGdQ7c9TGwebop62H8PVUlOeunX0Tpgc/1mIbVcokedxoU7xT8uzVPaiUTNY=
+	t=1788518103; cv=none; b=s9LU4DN6J6eugbuKGxynp3SypZxujqmYnwRSqjOgskca7CF8p4rpNxlEBBRovJw1vsdnE+sSBnTZBTyvEE+87QRAWF2Rq+P8OeNtyfds4I1CsjEA7M7o4+t70y8N1QUf3D+EQn7deq6TemCKlorcnLZ1WQQRSMek/jmeEFN1gts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788517176; c=relaxed/simple;
-	bh=e+2C/GXVQE723YGDM2YvxWMx6NVoWmgrtOxNKOFfzdE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eehlV5o6e4SkwS1CCTVfUUZWPbxpWljIp6sFUmmmFUxUJYBbZK0z0U3hWt1U2BXRaQAgg/H80OjMLR1u/57nGk//BruGVmIRR+/YTvK2TqPZtuzwUivqGsGL/BlneObjHykUOPa8Rf9oQiE2ZcE30dhVR1g+86/BmURZtGT8iJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DDJwGiQQ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788518103; c=relaxed/simple;
+	bh=IiqIIXpFTZchANpAN7BLielx1XgzcWqLsJ7ouGx+x/4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=g/ne5rb6IGnvwuTRtbykMvsMXXedWAcUJUS9ZXZbV1MNwgcJhvpiiRjAk9WfwVOpwLTDGet17Wi7r436F6uc5/AV+vmez7sNO8F8ULL5vEktZjwyDWpvgJnnZUh9rojk2WhvSWuj6TSXgs1L7p74zBVjPt60dm5zC5Pfb3hynkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nvvEVimK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DDJwGiQQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89C2D1F00A3D;
-	Fri,  4 Sep 2026 10:19:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nvvEVimK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56471F00A3D;
+	Fri,  4 Sep 2026 10:34:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788517169;
-	bh=zHj7Jl4ER2+DUDGeXhri9eyZ/g0x3N0pfswy8RuEkQ0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=DDJwGiQQcGBuD0sr5QOJBi+FgIhBc6LUaQyqvxbdxT16FlQzs1rjs6WEKus4Lnn6A
-	 j60NR7rPgDsW/izsP6g8SwYmgeQcWtkQnzsA17fbOjIpNNwqwDIKSGawoO5zUcrd6P
-	 ROEwa06rDkQUmdUdxMhLSZU43vk2Qwv+Y6pEHSqySVc34BQFt+oam7yM7iIuC4h62s
-	 nlfQok5mVyqLOw4VBO9dCWVtya4Z27wHZi1BX3rnDSQd/dMW6ETJiOZdH5ae15CtD9
-	 55bF4NAMgiET9n38B/U1Z9dQGEFPES5opWTgNAAcPm5CYWSddF/U9QOWcd+tKSmTHF
-	 24urd22gLAZuA==
+	s=k20260515; t=1788518102;
+	bh=tyPYU1f1yklcgFnqxEkox2QMD90Yx5NyCT5BxOVddLo=;
+	h=From:To:Cc:Subject:Date;
+	b=nvvEVimKQovlw/06o8Odf76g8c0JNyjUfG4n7w7PaFjLWkNhGidX2u5aPBzTUcMYz
+	 R/qSFbRTY1SGFNlueur5Bp2XcbNRc85DbCODRU2U/z/dggMgISZ6rzScgh1wlGlxJC
+	 EbmgDEqK4GXtCH6NAVFVdFU4rA0BWsgecf93Ly6B9yYXVPsXxlRAoqoiKedrONN+s4
+	 +4qwUEk5HnDcpy3v1jkH9hMrhMbISi+nANzgwLn8xhR95uYthQx3SODQ0dm8TBO5g+
+	 w5yJtg64+01BGOoBm0pt31v7xiAVCRDnWuP25zqvz8Pk0VjJ3ZEmLkwlMRzqTYcuEK
+	 ZSgMltNl1yLOw==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-To: iommu@lists.linux.dev
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>,
-	Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
+To: linux-coco@lists.linux.dev,
+	kvmarm@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	x86@kernel.org
-Subject: [PATCH v3 4/4] dma: swiotlb: Remove SWIOTLB_ANY
-Date: Fri,  4 Sep 2026 15:48:10 +0530
-Message-ID: <20260904101810.1193505-5-aneesh.kumar@kernel.org>
+	iommu@lists.linux.dev
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH v6 0/9] coco: guest: Enforce host page-size alignment for shared buffers
+Date: Fri,  4 Sep 2026 16:04:43 +0530
+Message-ID: <20260904103452.1197239-1-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260904101810.1193505-1-aneesh.kumar@kernel.org>
-References: <20260904101810.1193505-1-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,143 +53,152 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-SWIOTLB_ANY permits the swiotlb pool to be allocated outside the
-architecture's low address limit. This is already implied when
-SWIOTLB_INIT_ADDRESSING_LIMIT is not set, making SWIOTLB_ANY redundant.
+Hi,
 
-Use SWIOTLB_INIT_ADDRESSING_LIMIT as the sole indication that the
-default pool and any dynamically allocated pools must reside below
-ARCH_LOW_ADDRESS_LIMIT. Otherwise, allow the pools to use any directly
-mapped memory.
+This series tightens the alignment requirements for buffers that are shared
+between confidential-computing guests and the host.
 
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
----
- Documentation/core-api/swiotlb.rst |  8 ++++----
- arch/powerpc/mm/mem.c              |  6 ++++--
- arch/s390/mm/init.c                |  2 +-
- arch/x86/kernel/pci-dma.c          |  2 +-
- include/linux/swiotlb.h            |  5 ++---
- kernel/dma/swiotlb.c               | 17 ++++++-----------
- 6 files changed, 18 insertions(+), 22 deletions(-)
+When a guest runs with private memory, buffers shared with the hypervisor
+are not only accessed by the guest. They are also accessed by the host
+kernel, and the host may manage the corresponding shared/private state at a
+granularity larger than the guest page size.
 
-diff --git a/Documentation/core-api/swiotlb.rst b/Documentation/core-api/swiotlb.rst
-index 71b4e4c27eb5..06d9f88fdf7b 100644
---- a/Documentation/core-api/swiotlb.rst
-+++ b/Documentation/core-api/swiotlb.rst
-@@ -148,10 +148,10 @@ may also be adjusted
- due to other conditions, such as running in a CoCo VM, as described above. If
- CONFIG_SWIOTLB_DYNAMIC is enabled, additional pools may be allocated later in
- the life of the system. Each pool must be a contiguous range of physical
--memory. The default pool is allocated below the 4 GiB physical address line so
--it works for devices that can only address 32-bits of physical memory (unless
--architecture-specific code provides the SWIOTLB_ANY flag). In a CoCo VM, the
--pool memory must be decrypted before swiotlb is used.
-+memory. The default pool is allocated below the architecture's low address
-+limit when it is needed for devices with limited DMA addressing. Otherwise,
-+it may be allocated anywhere in directly mapped memory. In a CoCo VM, the pool
-+memory must be decrypted before swiotlb is used.
- 
- Each pool is divided into "slots" of size IO_TLB_SIZE, which is 2 KiB with
- current definitions. IO_TLB_SEGSIZE contiguous slots (128 slots) constitute
-diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-index 006ed41097e9..1bdea6c03848 100644
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -295,9 +295,11 @@ void __init arch_mm_preinit(void)
- 		/*
- 		 * Since the guest memory is inaccessible to the host,
- 		 * devices always need to use the SWIOTLB buffer for DMA
--		 * even if dma_capable() says otherwise.
-+		 * even if dma_capable() says otherwise. The hypervisor has
-+		 * no addressing limitation, so the buffer may be allocated
-+		 * anywhere.
- 		 */
--		ppc_swiotlb_flags |= SWIOTLB_ANY;
-+		ppc_swiotlb_flags &= ~SWIOTLB_INIT_ADDRESSING_LIMIT;
- 	}
- 
- 	/*
-diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
-index 78f507e24ceb..ce10292447f1 100644
---- a/arch/s390/mm/init.c
-+++ b/arch/s390/mm/init.c
-@@ -166,7 +166,7 @@ static void __init pv_init(void)
- 	virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
- 
- 	/* make sure bounce buffers are shared */
--	swiotlb_init(SWIOTLB_VERBOSE | SWIOTLB_ANY);
-+	swiotlb_init(SWIOTLB_VERBOSE);
- 	swiotlb_update_mem_attributes();
- }
- 
-diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-index 3c82ebb5b6e0..e472631a5bd7 100644
---- a/arch/x86/kernel/pci-dma.c
-+++ b/arch/x86/kernel/pci-dma.c
-@@ -84,7 +84,7 @@ static void __init pci_xen_swiotlb_init(void)
- 	x86_swiotlb_enable = true;
- 	/* Xen can use a SWIOTLB pool anywhere in directly mapped memory. */
- 	x86_swiotlb_flags &= ~SWIOTLB_INIT_ADDRESSING_LIMIT;
--	x86_swiotlb_flags |= SWIOTLB_INIT_REMAP | SWIOTLB_ANY;
-+	x86_swiotlb_flags |= SWIOTLB_INIT_REMAP;
- 	swiotlb_init_remap(x86_swiotlb_flags, xen_swiotlb_fixup);
- 	dma_ops = &xen_swiotlb_dma_ops;
- 	if (IS_ENABLED(CONFIG_PCI))
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index be3962a33fc6..b3da751a81dd 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -15,11 +15,10 @@ struct page;
- struct scatterlist;
- 
- #define SWIOTLB_VERBOSE	(1 << 0) /* verbose initialization */
--#define SWIOTLB_ANY	(1 << 1) /* allow any memory for the buffer */
- /* Initialize a default-sized pool for devices with limited DMA addressing. */
--#define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 2)
-+#define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 1)
- /* Initialize a default-sized pool that requires architecture remapping. */
--#define SWIOTLB_INIT_REMAP		(1 << 3)
-+#define SWIOTLB_INIT_REMAP		(1 << 2)
- 
- /*
-  * Maximum allowable number of contiguous slabs to map,
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index c4611b2c4540..2715833a21f8 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -448,15 +448,10 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
- 	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
- 	void *tlb;
- 
--	/*
--	 * By default allocate the bounce buffer memory from low memory, but
--	 * allow to pick a location everywhere for hypervisors with guest
--	 * memory encryption.
--	 */
--	if (flags & SWIOTLB_ANY)
--		tlb = memblock_alloc(bytes, PAGE_SIZE);
--	else
-+	if (flags & SWIOTLB_INIT_ADDRESSING_LIMIT)
- 		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
-+	else
-+		tlb = memblock_alloc(bytes, PAGE_SIZE);
- 
- 	if (!tlb) {
- 		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
-@@ -598,10 +593,10 @@ void __init swiotlb_init_remap(unsigned int flags,
- #ifdef CONFIG_SWIOTLB_DYNAMIC
- 	if (!remap)
- 		io_tlb_default_mem.can_grow = true;
--	if (flags & SWIOTLB_ANY)
--		io_tlb_default_mem.phys_limit = virt_to_phys(high_memory - 1);
--	else
-+	if (flags & SWIOTLB_INIT_ADDRESSING_LIMIT)
- 		io_tlb_default_mem.phys_limit = ARCH_LOW_ADDRESS_LIMIT;
-+	else
-+		io_tlb_default_mem.phys_limit = virt_to_phys(high_memory - 1);
- #endif
- 
- 	/* if we have host or guest memory encryption */
+This matters for CCA systems where the Realm stage-2 mappings managed by
+the RMM can still operate at 4K granularity, while the non-secure host may
+manage the IPA state change at a larger page size, for example 64K. In that
+case, allowing a guest to convert and share only a 4K subrange of a
+host-managed granule is unsafe.
+
+Architectures such as Arm can detect incorrect accesses to Realm physical
+address space PFNs through GPC faults. However, relying on that as the only
+line of defence is fragile and can still lead to kernel crashes. The risk
+is especially visible for shared buffers that are later mmapped into
+userspace, such as guest_memfd or dma-buf backed allocations. Once
+userspace can access the mapping, the kernel cannot guarantee that
+applications will only touch the intended 4K region rather than the whole
+host page mapped into their address space. Those userspace addresses may
+also be passed back into the kernel and accessed through the linear map,
+resulting in a GPC fault.
+
+To avoid this, shared buffers must satisfy two constraints:
+
+  - the address must be aligned to the CoCo shared-granule size
+  - the size must be a multiple of that granule size
+
+The series adds generic helpers for this:
+
+  - mem_cc_shared_granule_size()
+  - mem_cc_align_to_shared_granule()
+
+The generic implementation defaults to PAGE_SIZE. arm64 CCA overrides this
+by querying the host IPA state change granule size through RHI and exposing that
+value through the arm64 memory-encryption operations.
+
+The patche series update the main shared-buffer allocation paths that can
+be used by private-memory guests:
+
+  - arm64 set_memory_encrypted()/set_memory_decrypted() now reject unaligned
+    addresses or sizes.
+  - GIC ITS shared allocations are rounded to the shared granule size.
+  - dma-direct and atomic DMA pool allocations use aligned allocation and
+    conversion sizes.
+  - SWIOTLB pools, including dynamic pools, are allocated and converted at the
+    shared granule size.
+  - restricted-dma-pool regions are checked and rejected if firmware did not
+    provide a base and size aligned to the shared granule size.
+  - dma-buf system heap cc-shared allocations require aligned sizes and use at
+    least the required allocation order.
+
+Hyper-V users of set_memory_encrypted() and set_memory_decrypted() are not
+changed by this series. Those paths are not currently used by the arm64 CCA
+code path, and therefore are not part of the arm64 CCA IPA state change alignment
+problem addressed here.
+
+The series is based on:
+  - https://lore.kernel.org/all/20260904095000.1184861-1-aneesh.kumar@kernel.org
+
+Changes from v5:
+https://lore.kernel.org/all/20260706060432.1375570-1-aneesh.kumar@kernel.org
+* Rebased to latest kernel
+* Drop patch arm64: realm: Move Realm memory encryption ops to RSI code
+
+Changes from v4:
+https://lore.kernel.org/all/20260427063108.909019-1-aneesh.kumar@kernel.org
+* Rename the helpers to use CoCo terminology
+  (mem_cc_shared_granule_size() / mem_cc_align_to_shared_granule() instead of
+  mem_decrypt_granule_size() / mem_decrypt_align()).
+* Use __DMA_ATTR_ALLOC_CC_SHARED to pass CoCo shared allocation requirements
+  down to CMA-based allocation helpers.
+* Add validation for restricted DMA pools to reject pools that are not aligned
+  to the shared granule size.
+* Add dma-buf system heap handling for cc-shared buffers.
+* Split the previous combined DMA/SWIOTLB/ITS change into smaller subsystem
+  patches covering ITS, DMA direct, SWIOTLB, restricted DMA pools, dma-buf
+  system heap, and arm64 Realm support.
+* Rework arm64 Realm support by moving Realm memory encryption ops into RSI
+  code and exposing the CCA shared granule size through arm64_mem_crypt_ops.
+
+Changes from v3:
+https://lore.kernel.org/all/20260309102625.2315725-1-aneesh.kumar@kernel.org
+* Fix build error reported by kernel test robot <lkp@intel.com>
+
+Changes from v2:
+https://lore.kernel.org/all/20251221160920.297689-1-aneesh.kumar@kernel.org
+* Rebase to latest kernel
+* Consider swiotlb always decrypted and don't align when allocating from swiotlb.
+
+Changes from v1:
+* Rename the helper to mem_encrypt_align
+* Improve the commit message
+* Handle DMA allocations from contiguous memory
+* Handle DMA allocations from the pool
+* swiotlb is still considered unencrypted. Support for an encrypted swiotlb pool
+  is left as TODO and is independent of this series.
+
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Thomas Gleixner <tglx@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+
+Aneesh Kumar K.V (Arm) (9):
+  mm/mem_encrypt: Add helpers for shared-buffer alignment
+  irqchip/gic-v3-its: Align shared ITS allocations to the CoCo shared
+    granule size
+  dma-mapping: Pass allocation attrs to contiguous allocation helpers
+  dma-direct: Align CoCo shared DMA allocations to the shared granule
+    size
+  swiotlb: Align shared IO TLB pools to the shared granule size
+  swiotlb: Reject misaligned restricted DMA pools for CoCo guests
+  dma-buf: system_heap: Enforce shared-granule alignment for cc-shared
+    buffers
+  arm64: realm: Add RHI helper to query IPA state change alignment
+  arm64: realm: Expose the CCA shared granule size through mem_encrypt
+    ops
+
+ arch/arm64/include/asm/mem_encrypt.h |  4 ++
+ arch/arm64/mm/mem_encrypt.c          | 32 ++++++++++++++--
+ drivers/dma-buf/heaps/system_heap.c  | 50 +++++++++++++++++++-----
+ drivers/firmware/arm_rmm/rsi.c       | 57 ++++++++++++++++++++++++++++
+ drivers/iommu/dma-iommu.c            |  2 +-
+ drivers/irqchip/irq-gic-v3-its.c     |  6 ++-
+ include/linux/arm-rsi-cmds.h         | 10 +++++
+ include/linux/arm-smccc-rhi.h        | 25 ++++++++++++
+ include/linux/arm-smccc-rsi.h        |  7 ++++
+ include/linux/dma-map-ops.h          |  5 ++-
+ include/linux/mem_encrypt.h          | 14 +++++++
+ kernel/dma/contiguous.c              | 13 ++++++-
+ kernel/dma/direct.c                  | 27 +++++++++----
+ kernel/dma/ops_helpers.c             |  3 +-
+ kernel/dma/pool.c                    |  4 +-
+ kernel/dma/swiotlb.c                 | 36 ++++++++++++++----
+ 16 files changed, 260 insertions(+), 35 deletions(-)
+ create mode 100644 include/linux/arm-smccc-rhi.h
+
 -- 
 2.43.0
 
