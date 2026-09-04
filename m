@@ -1,213 +1,217 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25AED47143A;
-	Fri,  4 Sep 2026 10:35:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17FC146D545;
+	Fri,  4 Sep 2026 10:45:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788518156; cv=none; b=Iexdq0BLogUJ3wa4S70iwdAgXwO55IZSUOWJX6/24xXwJSJLF7z+FnAJdTwHLDNFGxtSeWjFktcDzvA8udonY+lGvKxPzzKPi6Qip/VGMb4NcwfmidJh+dCY+YEGHaa3MtfFo+LdqQ3i11e/NL4CvV+uQFj/jet5yI0/y7Q2XJQ=
+	t=1788518721; cv=none; b=jMn2ZtRimc22OcBgSOXTjmeCk+sH0BmwD/1zaP9bjGnPqr2RVf8UD4k7JIlXS3dVK4EajhiLfAuF6frHxHcmWIlOYaIeS2Fj2GiO+CHClzvfrqb14qnhenzBL3hJMjsastthZVFFaLdCnFJTCqHF+GwLRLLIK4/uC+7M6ghqoqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788518156; c=relaxed/simple;
-	bh=nd6sf8naTpyYqcNuS3y+EeUYR4Zl5gEmukrd0lFeVSc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jP00SoZSDtNlRqU0JtMqx/RNrs8upjF/bevVg7NzEGgezgn+CFQTyUGGZegl1tBzjmm8Mx8SONQ2tf3DGgRoHkXVJ1lfe8I0k6P4++nxSui1seV8WlYIyUzvWCfG6RDOxU9t9NL3xhLgnsRcxUTcTSUfdT/h1UEGwvzV1ZUWi7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ag3TqrjJ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788518721; c=relaxed/simple;
+	bh=56VMz5vHAxhz+LRAnNs/TniTeXBpTxsK81BlkdKdQFQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ObFLkVO8jiECLOGYe9AX0wzWn8xCXfRRXWhnryd088TcpRbrt6wcySKk55pXEJprU3Q+WWjMhu+GGrk8+qgvBI73LZMdUEf+rdlR0HDBYj6Q6g/x+YVXErOGPnU0HAzt0AMeNwxX3JFFfGabXkIHoOnWUBM5kv1yDeiqMN4OLII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BALLR90L; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ag3TqrjJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65AAD1F00A3E;
-	Fri,  4 Sep 2026 10:35:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BALLR90L"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5731F00A3D;
+	Fri,  4 Sep 2026 10:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788518153;
-	bh=u9I2WPocLUacIb6MXv6UW+BXVCGDKNGSQF8ffRh5uJE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Ag3TqrjJK6NyKSY5HFriLni2RYiMqOyiczi4SedYu9aoxcW7VAiIQmq3OgqnuN+lO
-	 t48NCzb9u4ItoAs2nwdCm3BWWbyM8Xvcw4b6JOsIo8nyL+wIOL70dofHXvFQelH2ac
-	 rn+fVTW4+VlGbZZYilrDNAqmBV+FoOb6MZh3IgTYfl8Q4U4ujL6wxVBM1KCNyVlsKS
-	 nK/KT/uyhGZUhQI6zI29x8SiDyrL1zQquaWzefOINBzcZVtLdxb6pPiclH0+ORPito
-	 iSkjUKubJh7FuCBbH0uEHgDigwKXqLbpesSLWU023N2AVQpJipCrJ3qgT24kYgyhoC
-	 RwplQVNBH5AaQ==
-From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-To: linux-coco@lists.linux.dev,
-	kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Will Deacon <will@kernel.org>
-Subject: [PATCH v6 9/9] arm64: realm: Expose the CCA shared granule size through mem_encrypt ops
-Date: Fri,  4 Sep 2026 16:04:52 +0530
-Message-ID: <20260904103452.1197239-10-aneesh.kumar@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260904103452.1197239-1-aneesh.kumar@kernel.org>
-References: <20260904103452.1197239-1-aneesh.kumar@kernel.org>
+	s=k20260515; t=1788518718;
+	bh=cqzmU3ki12NU7A9MsQeD++1Ge35jyyBd0fg3ah73vk4=;
+	h=From:Subject:Date:To:Cc;
+	b=BALLR90LQiklf7wRvUntz6hV9ibA9IU37ldiy/b2lr0DHgnfxUshPFPfKoIZpUQac
+	 2NIYe949sQbBzLmLQAddAeBccv8aF/vnXwhWrEiU1+v4AkkHf0f1WikP6WTmUAdeu8
+	 cMDCIhn9y7YswrVcgVXNKynOHhJHsvFODSSi/LTrxX3U2KKqBKKySNkkzjvyYXcQLx
+	 YxTbvhz7STECbXG3TKRHFpnHAAoWRKVg510AXmK2Ywpl19wqrxucjlN/gte+8FpRPG
+	 XpNhfZVnbwUYhnWkAv9x0EWl1x6Q9XJhLhK8FMa2YjtTn+49W3lgpAtC8qTRw5Vnpl
+	 faSQQCCnrvMmw==
+From: Thierry Reding <thierry.reding@kernel.org>
+Subject: [PATCH v6 00/12] dma-buf: heaps: Add support for Tegra VPR
+Date: Fri, 04 Sep 2026 12:44:51 +0200
+Message-Id: <20260904-tegra-vpr-v6-0-79042cfa8de5@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2XQ0W6DIBQG4FdpuB7mHATEXfU9ll0IHJWt1QYdW
+ dP47sM2iza9/JP/+0/gxiaKgSb2frixSClMYRxy0G8H5vpm6IgHnzMTIDQoqPhMXWx4ukTuvLR
+ OKKiddCz3L5Ha8Hvf+vh85OnHfpGb14G10YdpHuP1fizh2lt38wIIVFKXUEgoRW0kRz73gWK8F
+ pF8GLpjd27CqXDjma3TSfxjDSgEagSoi9JoZYx5xd8UBzoVY+weutx0Bbh7Uio5cG+grayp0Fp
+ 5HFLwodkOy42ap99IMlOlEDzqpjU1vVC1oyj3VGVaoSmFVR6E1E90WZY/tLGVgaYBAAA=
+X-Change-ID: 20260507-tegra-vpr-cd4bc2509c4c
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Thierry Reding <thierry.reding@kernel.org>, 
+ Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Sowjanya Komatineni <skomatineni@nvidia.com>, 
+ Luca Ceresoli <luca.ceresoli@bootlin.com>, 
+ Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
+ Russell King <linux@armlinux.org.uk>, 
+ Alexander Gordeev <agordeev@linux.ibm.com>, 
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+ Christian Borntraeger <borntraeger@linux.ibm.com>, 
+ Sven Schnelle <svens@linux.ibm.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ David Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+ "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+ Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+ Michal Hocko <mhocko@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Steven Rostedt <rostedt@goodmis.org>, 
+ Masami Hiramatsu <mhiramat@kernel.org>, 
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Chun Ng <chunn@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, 
+ Saravana Kannan <saravanak@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, 
+ linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, 
+ linux-mm@kvack.org, iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+ linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5267; i=treding@nvidia.com;
+ h=from:subject:message-id; bh=56VMz5vHAxhz+LRAnNs/TniTeXBpTxsK81BlkdKdQFQ=;
+ b=owEBbQKS/ZANAwAKAd0jrNd/PrOhAcsmYgBqmqE1V2RBeSbaiERM5hkiP3BUdWdEmk8oeAwvr
+ DB4qXKfIXyJAjMEAAEKAB0WIQSI6sMIAUnM98CNyJ/dI6zXfz6zoQUCapqhNQAKCRDdI6zXfz6z
+ oUAnEACicMN7Orn8rhXBkLGkym+SdqsGrfqanUEAABndk3P8jAL4jPW9sZd8oMfdN7WwRfDGeSS
+ 2yH8tjJn9mDIBQtCvu9eZqErBbBJXluj+9kDosqusPTGZfNj2bCGTAHWEAlZlHA61YROjnlwl0c
+ yi++/TuAmiSx++NIWF9QEnA0GU3ScxjLiDdiT7Vo3Z0iVf3nPwQt6h8y6jDwbq25MQ/vLwldQd3
+ YliwIYC8jA/QftAgEZVrjJgPEkJTqdB3TYbRx73m3rQgBfmY9N3DmGlmcWgBhlFdXO2opW8FKwU
+ OKWVFabqWMlENHMjpmzJCOFVPyE9TbVGjbawfumEyMl6mTbAUDMefOv3oFDJsG3+AIHz4GXNnJ9
+ R4P7DrNg3TaN1JlLAjxz+apP5yQc+Ap05MHlg8HizQLNyJyrAhx5+oY9GIx9UHrVhjA1h3vzes5
+ 9UVqDKYanfSmRY+dCMCcKLVII5VRVCUD6Vr1T3EslJXmWLjamUlaBa3QdpHIfdTyDt7Sj3IyRjq
+ pIEDqUXMhr05l6zFoQugXJ/GrDn8H8CHauucpvvQHekWiNQdj4JPqT7ak+H8XAfOU8fsZxgVLUa
+ S3VXZNY7/0ifbaxeLlLVsPPB8dhNB/2MQk9SC5AxQcmuBT04wlrOsl2vmvk9lDT+Qzl0gUMaerq
+ s2MsaOD+Z20vWEg==
+X-Developer-Key: i=treding@nvidia.com; a=openpgp;
+ fpr=88EAC3080149CCF7C08DC89FDD23ACD77F3EB3A1
 
-CCA guests must align shared/private memory transitions to the size
-reported by the host for IPA state changes. This size can be larger than
-PAGE_SIZE, so allowing a guest to convert only a PAGE_SIZE-sized subrange
-can leave the remaining part of that host-sized range in the wrong state.
+This series adds support for the video protection region (VPR) used on
+Tegra SoC devices. It's a special region of memory that is protected
+from accesses by the CPU and used to store DRM protected content (both
+decrypted stream data as well as decoded video frames).
 
-Cache the RHI-reported IPA sate change alignment during Realm
-initialization and expose it through a new arm64 mem_encrypt callback. Use
-PAGE_SIZE as the default shared granule size when no backend callback is
-registered.
+Patches 1 through 3 add DT binding documentation for the VPR and add the
+VPR to the list of memory-region items for display, host1x and NVDEC.
 
-Validate both the address and byte size passed to set_memory_encrypted()
-and set_memory_decrypted() against mem_cc_shared_granule_size() before
-calling into the backend. This prevents callers from converting only part
-of a host-managed page.
+The set_direct_map_*_noflush() functions that will be used later in this
+series are exported in patch 4 so that the drivers that use them can be
+built as a module.
 
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+Patch 5 adds bitmap_allocate(), which is like bitmap_allocate_region()
+but works on sizes that are not a power of two.
+
+The of_node_to_nid() function is exported in patch 6 because it is used
+in a later patch adding a driver that can be built as a module.
+
+Patch 7 introduces new APIs needed by the Tegra VPR implementation that
+allow memory to be allocated at a fixed offset within a CMA area. Tegra
+VPR needs this in order to implement its own allocator on top of CMA to
+meet the strict hardware requirements. This replaces the dynamic CMA
+area creation patch from earlier versions.
+
+Patch 8 adds some infrastructure for DMA heap implementations to provide
+information through debugfs.
+
+The Tegra VPR implementation is added in patch 9. See its commit message
+for more details about the specifics of this implementation.
+
+Finally, patches 10-12 add the VPR placeholder node on Tegra234 and
+Tegra264 and hook it up to the host1x node so that it can make use of
+this region.
+
+Changes in v6:
+- refactor cma_alloc_at() to maximize code reuse
+- allow building Tegra VPR support as a module
+- requires two new patches to export symbols
+- Link to v5: https://patch.msgid.link/20260814-tegra-vpr-v5-0-71832b5d0246@nvidia.com
+
+Changes in v5:
+- use a single CMA area in combination with the new cma_alloc_at() API
+- drop dynamic CMA area allocation patch
+- various cleanups
+- Link to v4: https://patch.msgid.link/20260807-tegra-vpr-v4-0-5510d16af89e@nvidia.com
+
+Changes in v4:
+- Link to v3: https://patch.msgid.link/20260701-tegra-vpr-v3-0-d80f7b871bb4@nvidia.com
+- fully remove from linear map while chunks are active
+- address checkpatch.pl and Sashiko comments
+- improve error handling
+- remove freezer support
+
+Changes in v3:
+- Link to v2: https://patch.msgid.link/20260122161009.3865888-1-thierry.reding@kernel.org
+- introduce set_memory_device() and set_memory_normal()
+- rename VPR nodes to "protected"
+- add Tegra264 placeholder nodes
+
+Changes in v2:
+- Link to v1: https://patch.msgid.link/20250902154630.4032984-1-thierry.reding@gmail.com
+- Tegra VPR implementation is now more optimized to reduce the number of
+  (very slow) resize operations, and allows cross-chunk allocations
+- dynamic CMA areas are now trackd separately from static ones, but the
+  global number of CMA pages accounts for all areas
+
+Thierry
+
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- arch/arm64/include/asm/mem_encrypt.h |  4 ++++
- arch/arm64/mm/mem_encrypt.c          | 32 ++++++++++++++++++++++++----
- drivers/firmware/arm_rmm/rsi.c       | 13 ++++++++++-
- 3 files changed, 44 insertions(+), 5 deletions(-)
+Thierry Reding (12):
+      dt-bindings: reserved-memory: Document Tegra VPR
+      dt-bindings: display: tegra: Document memory regions
+      dt-bindings: gpu: host1x: Document memory-regions for NVDEC
+      arm64/mm: Export set_direct_map_*_noflush() APIs
+      bitmap: Add bitmap_allocate() function
+      of: Export of_node_to_nid()
+      mm/cma: Introduce cma_alloc_at() API
+      dma-buf: heaps: Add debugfs support
+      dma-buf: heaps: Add support for Tegra VPR
+      arm64: tegra: Add VPR placeholder node on Tegra234
+      arm64: tegra: Hook up VPR to host1x
+      arm64: tegra: Add VPR placeholder node on Tegra264
 
-diff --git a/arch/arm64/include/asm/mem_encrypt.h b/arch/arm64/include/asm/mem_encrypt.h
-index ef8b8463e52b..890faeed0eb3 100644
---- a/arch/arm64/include/asm/mem_encrypt.h
-+++ b/arch/arm64/include/asm/mem_encrypt.h
-@@ -10,6 +10,7 @@ struct device;
- struct arm64_mem_crypt_ops {
- 	int (*encrypt)(unsigned long addr, int numpages);
- 	int (*decrypt)(unsigned long addr, int numpages);
-+	size_t (*cc_shared_granule_size)(void);
- };
- 
- int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops);
-@@ -18,6 +19,9 @@ int set_memory_encrypted(unsigned long addr, int numpages);
- int set_memory_decrypted(unsigned long addr, int numpages);
- int __set_memory_enc_dec(unsigned long addr, int numpages, bool encrypt);
- 
-+#define mem_cc_shared_granule_size mem_cc_shared_granule_size
-+size_t mem_cc_shared_granule_size(void);
-+
- static inline bool force_dma_unencrypted(struct device *dev)
- {
- 	return is_realm_world() || is_protected_kvm_guest();
-diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
-index ee3c0ab04384..69783c6a3c08 100644
---- a/arch/arm64/mm/mem_encrypt.c
-+++ b/arch/arm64/mm/mem_encrypt.c
-@@ -17,8 +17,7 @@
- #include <linux/compiler.h>
- #include <linux/err.h>
- #include <linux/mm.h>
--
--#include <asm/mem_encrypt.h>
-+#include <linux/mem_encrypt.h>
- 
- static const struct arm64_mem_crypt_ops *crypt_ops;
- 
-@@ -33,18 +32,43 @@ int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops)
- 
- int set_memory_encrypted(unsigned long addr, int numpages)
- {
--	if (likely(!crypt_ops) || WARN_ON(!PAGE_ALIGNED(addr)))
-+	unsigned long size = (unsigned long)numpages << PAGE_SHIFT;
-+
-+	if (likely(!crypt_ops))
- 		return 0;
- 
-+	if (WARN_ON(!IS_ALIGNED(addr, mem_cc_shared_granule_size())))
-+		return -EINVAL;
-+
-+	if (WARN_ON(!IS_ALIGNED(size, mem_cc_shared_granule_size())))
-+		return -EINVAL;
-+
- 	return crypt_ops->encrypt(addr, numpages);
- }
- EXPORT_SYMBOL_GPL(set_memory_encrypted);
- 
- int set_memory_decrypted(unsigned long addr, int numpages)
- {
--	if (likely(!crypt_ops) || WARN_ON(!PAGE_ALIGNED(addr)))
-+	unsigned long size = (unsigned long)numpages << PAGE_SHIFT;
-+
-+	if (likely(!crypt_ops))
- 		return 0;
- 
-+	if (WARN_ON(!IS_ALIGNED(addr, mem_cc_shared_granule_size())))
-+		return -EINVAL;
-+
-+	if (WARN_ON(!IS_ALIGNED(size, mem_cc_shared_granule_size())))
-+		return -EINVAL;
-+
- 	return crypt_ops->decrypt(addr, numpages);
- }
- EXPORT_SYMBOL_GPL(set_memory_decrypted);
-+
-+size_t mem_cc_shared_granule_size(void)
-+{
-+	if (likely(!crypt_ops) || !crypt_ops->cc_shared_granule_size)
-+		return PAGE_SIZE;
-+
-+	return crypt_ops->cc_shared_granule_size();
-+}
-+EXPORT_SYMBOL_GPL(mem_cc_shared_granule_size);
-diff --git a/drivers/firmware/arm_rmm/rsi.c b/drivers/firmware/arm_rmm/rsi.c
-index 2cd53f82432f..eeb797c6c2c7 100644
---- a/drivers/firmware/arm_rmm/rsi.c
-+++ b/drivers/firmware/arm_rmm/rsi.c
-@@ -19,6 +19,7 @@
- 
- static struct realm_config config;
- static struct kobject *cca_kobj;
-+static unsigned long ipa_state_change_granule_size;
- 
- unsigned long prot_ns_shared;
- EXPORT_SYMBOL(prot_ns_shared);
-@@ -155,9 +156,17 @@ static int realm_set_memory_decrypted(unsigned long addr, int numpages)
- 	return ret;
- }
- 
-+static size_t realm_cc_shared_granule_size(void)
-+{
-+	if (is_realm_world())
-+		return ipa_state_change_granule_size;
-+	return PAGE_SIZE;
-+}
-+
- static const struct arm64_mem_crypt_ops realm_crypt_ops = {
- 	.encrypt = realm_set_memory_encrypted,
- 	.decrypt = realm_set_memory_decrypted,
-+	.cc_shared_granule_size = realm_cc_shared_granule_size,
- };
- 
- static int realm_register_memory_enc_ops(void)
-@@ -167,7 +176,7 @@ static int realm_register_memory_enc_ops(void)
- 
- /* we need an aligned struct for rsi_host_call. slab is not yet ready */
- static struct rsi_host_call hostconf_call __initdata;
--static unsigned long __maybe_unused __init get_ipa_state_change_alignment(void)
-+static unsigned long __init get_ipa_state_change_alignment(void)
- {
- 	long ret;
- 	unsigned long shared_granule_size;
-@@ -218,6 +227,8 @@ void __init arm64_rsi_init(void)
- 		return;
- 	if (WARN_ON(rsi_get_realm_config(lm_alias(&config))))
- 		return;
-+
-+	ipa_state_change_granule_size = get_ipa_state_change_alignment();
- 	prot_ns_shared = __phys_to_pte_val(BIT(config.ipa_bits - 1));
- 
- 	if (arm64_ioremap_prot_hook_register(realm_ioremap_hook))
--- 
-2.43.0
+ .../display/tegra/nvidia,tegra124-vic.yaml         |    8 +
+ .../bindings/display/tegra/nvidia,tegra186-dc.yaml |   10 +
+ .../bindings/display/tegra/nvidia,tegra20-dc.yaml  |   10 +-
+ .../display/tegra/nvidia,tegra20-host1x.yaml       |    7 +
+ .../bindings/gpu/host1x/nvidia,tegra234-nvdec.yaml |    8 +
+ .../nvidia,tegra-video-protection-region.yaml      |   75 ++
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi           |   45 +
+ arch/arm64/boot/dts/nvidia/tegra264.dtsi           |   33 +
+ arch/arm64/mm/pageattr.c                           |    2 +
+ drivers/dma-buf/dma-heap.c                         |   52 +
+ drivers/dma-buf/heaps/Kconfig                      |   12 +
+ drivers/dma-buf/heaps/Makefile                     |   10 +
+ drivers/dma-buf/heaps/tegra-vpr-init.c             |  133 +++
+ drivers/dma-buf/heaps/tegra-vpr.c                  | 1210 ++++++++++++++++++++
+ drivers/dma-buf/heaps/tegra-vpr.h                  |   73 ++
+ drivers/of/of_numa.c                               |    1 +
+ include/linux/bitmap.h                             |   25 +-
+ include/linux/cma.h                                |    4 +
+ include/linux/dma-heap.h                           |    2 +
+ include/trace/events/cma.h                         |   77 +-
+ include/trace/events/tegra_vpr.h                   |   57 +
+ mm/cma.c                                           |   88 +-
+ 22 files changed, 1913 insertions(+), 29 deletions(-)
+---
+base-commit: 850de4c714df026eb4c869fdb01dd722003e1ae3
+change-id: 20260507-tegra-vpr-cd4bc2509c4c
+
+Best regards,
+--  
+Thierry Reding <treding@nvidia.com>
 
