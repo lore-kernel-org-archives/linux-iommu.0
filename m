@@ -1,29 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F09523DAAAE
-	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 07:55:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8A0F373C17
+	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 07:55:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788508523; cv=none; b=ivJAFm84ShfkuUYNMV/UgNxql5IIAIKUtlfHSzRy4bWIU5NxmK05kjfNXu1kJNe8xqXvMEU7qJ4opu0gDikuf2Mps3pyuid6L1tPohLxhenuqasB3KdJYQWjxP4A5QsDG1ewd4dA3S+k8iWhIfaFNtEPMclkWmph/H7U97ate4g=
+	t=1788508529; cv=none; b=neACTTkriI1gPkM7ReVp6/lwGFvM8LbbRzQKzZI8/ZNa1Bu1871fVpGMwJgzqGXTGTQTUIZnl3lZJhQce7dLHQBfEzqdpeJZm3WlW0dCCNCWhn7lyEWxDBSZG/XNGihLmnB3jnQa9uBJ8sPpTMwFYMmH8as5CDP230rGvqtNG0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788508523; c=relaxed/simple;
-	bh=rYFXavGBOdRRGhoqbu/DB1zkk6W5ARB32bpnpq4rmVA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=K9cZ/wmIWwl9idYHhp7lnjWNK0TNbJNQJE9uLGRbGo5Vi4YJhVvOwlZpUq/hx9bJ2TilULdj6ZY+i+8SG6hFNGqymWFKkAK9Oc1/mKO6+maQQQLomVivNhwhjDLZMvQJAzvpSweG8bj3n2/9STOoRvG+fRS8i+JdZQlQPaSruhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=i4W8Beh4; arc=none smtp.client-ip=13.77.154.182
+	s=arc-20240116; t=1788508529; c=relaxed/simple;
+	bh=MgsOnSPI18/lPcOqjXi5Ci1t1cSJm08d/y88hnqb4kQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=f6NrKGyEdrGpZmVRhR81sZLjt8nS333YIonRR1x1AzfeKyquLQ+/HXLntjv+02tPae0MVTc/+F2RKVaYtuJgVqvU+RuxK7zqBkZRUr/v5QbrmLPmW5h1Kp9VkMdGuk1K2AMqge85zN8rDjVYKhe6hzBEDzw2PUdSspNEwXTMrYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Y+OORXik; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="i4W8Beh4"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Y+OORXik"
 Received: from zhangyu-hyperv.mshome.net (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 7DAF120B7167;
-	Fri,  4 Sep 2026 00:54:38 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7DAF120B7167
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7BAEC20B712B;
+	Fri,  4 Sep 2026 00:54:44 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7BAEC20B712B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1788508483;
-	bh=PxT+KFNvPC6DPdyBrzhyrHIN3duc88e64E7deFyacRk=;
-	h=From:To:Cc:Subject:Date:From;
-	b=i4W8Beh4/clPaYCXxj++4TYGSWNBltQjle6i3tCHUFbQmY5dw0zAuL0sVtQIH9ssD
-	 Vm2CHQRnFO+2vaU01lU7f0PnUmmQ+d+EPVFoYcu8F2ziMFww5XXgpZRL4en7cd4OxG
-	 6+orgYWIJkPF4QNpy4PnRupUEU9bv4U0GmbmnDmM=
+	s=default; t=1788508489;
+	bh=GrkUbCx1rMvHDUBAxHwhu2yGimv7MTKuPSLdFBVCBRE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Y+OORXik/3mAZmW2sjSWO3iNiM3HKZsC1NbxXsbrbbRivL+bu+i3T1j42c54mfO9m
+	 g6b+90Oa4YoZZmZpDjhSvnG14S+qh9pTZOPIF+haLU22J9HbjZiQxlLbQ9XHp/f91E
+	 wyc4wpMBuYsgqVhC/v3WBW60pBwT99aEqJEa82g4=
 From: Yu Zhang <zhangyu1@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	linux-hyperv@vger.kernel.org,
@@ -54,10 +55,12 @@ Cc: wei.liu@kernel.org,
 	baolu.lu@linux.intel.com,
 	suravee.suthikulpanit@amd.com,
 	vasant.hegde@amd.com
-Subject: [PATCH v5 0/5] Hyper-V: Add para-virtualized IOMMU support for Linux guests
-Date: Fri,  4 Sep 2026 15:55:07 +0800
-Message-ID: <20260904075512.174154-1-zhangyu1@linux.microsoft.com>
+Subject: [PATCH v5 1/5] hyperv: Introduce new hypercall interfaces used by Hyper-V guest IOMMU
+Date: Fri,  4 Sep 2026 15:55:08 +0800
+Message-ID: <20260904075512.174154-2-zhangyu1@linux.microsoft.com>
 X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20260904075512.174154-1-zhangyu1@linux.microsoft.com>
+References: <20260904075512.174154-1-zhangyu1@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,236 +69,236 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This patch series introduces a para-virtualized IOMMU driver for
-Linux guests running on Microsoft Hyper-V. The driver enables two
-primary use cases:
-  1) In-kernel DMA protection for devices assigned to the guest.
-  2) Device assignment to guest user space (e.g., via VFIO).
+From: Wei Liu <wei.liu@kernel.org>
 
-The driver implements the following core functionality:
-*   Hypercall-based Enumeration
-    Unlike traditional ACPI-based discovery (e.g., DMAR/IVRS),
-    this driver enumerates the Hyper-V IOMMU capabilities directly
-    via hypercalls. This approach allows the guest to discover
-    IOMMU presence and features without requiring specific virtual
-    firmware extensions or modifications.
+Hyper-V guest IOMMU is a para-virtualized IOMMU based on hypercalls.
+Introduce the hypercalls used by the child partition to interact with
+this facility.
 
-*   Domain Management
-    The driver manages IOMMU domains through a new set of Hyper-V
-    hypercall interfaces, handling domain allocation and attachment
-    for endpoint devices.
+These hypercalls fall into below categories:
+- Detection and capability: HVCALL_GET_IOMMU_CAPABILITIES is used to
+  detect the existence and capabilities of the guest IOMMU.
 
-*   Nested Translation Support
-    This implementation leverages guest-managed stage-1 I/O page
-    tables nested with host stage-2 translations. It is built
-    upon the consolidated IOMMU page table framework (IOMMU_PT).
-    This design eliminates the need for emulating map operations.
-    Both Intel VT-d and AMD IOMMU platforms are supported.
+- Device management: HVCALL_GET_LOGICAL_DEVICE_PROPERTY is used to
+  check whether an endpoint device is managed by the guest IOMMU.
 
-*   IOTLB Invalidation
-    IOTLB invalidation requests are marshaled and issued to the
-    hypervisor through the same hypercall mechanism. Both domain-
-    selective and page-selective flushes are supported.
+- Domain management: A set of hypercalls is provided to handle the
+  creation, configuration, and deletion of guest domains, as well as
+  the attachment/detachment of endpoint devices to/from those domains.
 
-Implementation Notes:
-*   Platform Support
-    The current implementation targets x86 platforms with Intel
-    VT-d and AMD IOMMU hardware.
+- IOTLB flushing: HVCALL_FLUSH_DEVICE_DOMAIN is used to ask Hyper-V
+  for a domain-selective IOTLB flush (which in its handler may flush
+  the device TLB as well).
 
-*   MSI Region Handling
-    The standard x86 MSI interrupt range
-    (0xfee00000 - 0xfeefffff) is reserved from normal IOVA mappings.
-    Future updates may allow this configuration to be queried via
-    hypercalls if new hardware platforms are to be supported.
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+---
+ drivers/hv/hv_common.c      |   1 +
+ include/hyperv/hvgdk_mini.h |   9 +++
+ include/hyperv/hvhdk_mini.h | 137 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 147 insertions(+)
 
-*   Reserved Regions (RMRR)
-    There is currently no requirement to support assigned devices with
-    ACPI RMRR limitations. Consequently, this patch series does not
-    specify or query reserved memory regions.
-
-*   Guest Hibernation
-    Guest hibernation and resume are not supported by this initial
-    implementation. The current pvIOMMU interface does not define how
-    Hyper-V device-domain objects and device attachments are restored.
-
-Testing:
-Validated with the following configurations:
-- NVMe devices assigned to the guest on AMD platforms, tested
-  with fio.
-- Intel DSA devices assigned to the guest, tested with dmatest.
-- dma_map_benchmark for DMA mapping performance evaluation.
-
-Changelog:
-
-v4[1] -> v5:
-- Added Michael Kelley's Reviewed-by tags for patch 1/2/3/4.
-
-- hv: logical device ID registry:
-  - Used four-digit hexadecimal values to print PCI domain numbers.
-  - Included the PCI domain number in the unregister failure warning.
-
-- iommu/hyperv: para-virtualized IOMMU:
-  - Removed the unused per-device endpoint structure, allocation,
-    private pointer, and release_device() callback.
-  - Clarified the logical device ID lookup failure message.
-  - Read the ATS capability from the IOMMU associated with the domain
-    instead of the global IOMMU pointer.
-
-- iommu/hyperv: page-selective IOTLB flush:
-  - Unified normal and full-range descriptor construction around the
-    aligned range start.
-  - Used max() to express the minimum Hyper-V page granularity.
-  - Reported Hyper-V status values in warnings when the flush fails.
-
-v3[2] -> v4:
-- Added Jacob Pan's Reviewed-by tag for patch 1/4/5.
-
-- hyperv: hypercall interfaces:
-  - Added the authoritative Hyper-V type names to imported definitions.
-  - Added HV_STATUS_DEVICE_ALREADY_IN_DOMAIN and mapped it to -EEXIST.
-
-- hv: logical device ID registry:
-  - Made the registry independent of CONFIG_HYPERV_PVIOMMU.
-  - Renamed the APIs to hv_pci_xxx_dev_id(),
-  - Reworked initialization and error cleanup to propagate failures.
-  - Return -EEXIST with a warning for duplicate registration.
-
-- iommu/x86: architectural MSI reserved region:
-  - Replaced the exported range constants with
-    iommu_alloc_resv_x86_msi_region().
-
-- iommu/hyperv: para-virtualized IOMMU:
-  - Accepted HV_STATUS_DEVICE_ALREADY_IN_DOMAIN as a successful attach,
-    and removed the blocking-domain-specific duplicate check.
-  - Removed the redundant ATS disable from release_device(); ATS is
-    disabled when attaching the release domain.
-
-- iommu/hyperv: page-selective IOTLB flush:
-  - Removed the redundant include of linux/hyperv.h.
-  - Documented that the list flush also invalidates non-leaf page-walk
-    caches before detached page-table pages are freed.
-
-v2[3] -> v3:
-- Added a separate patch defining the common x86 architectural MSI
-  reserved range and converted the Intel, AMD, and Hyper-V IOMMU
-  drivers to use it.
-
-- hyperv: hypercall interfaces:
-  - Used BIT_ULL() for 64-bit capability flags.
-  - Matched the create-device-domain input layout to the 32-byte
-    Hyper-V ABI.
-  - Corrected the page-selective flush range layout to 6/6/52 bits.
-
-- hv: logical device ID registry:
-  - Replaced the linear list with an rhashtable for the sparse PCI
-    domain number mapping.
-  - Used RCU-protected lookup and deferred freeing on removal.
-  - Simplified the registration and cleanup paths.
-
-- iommu/hyperv: para-virtualized IOMMU:
-  - Renamed the guest driver source to hv-iommu-guest.c.
-  - Enabled ATS only after a device-domain attachment succeeds, and
-    disabled ATS before attaching the blocking domain.
-  - Removed the obsolete deferred-flush capability, unused geometry,
-    and redundant device-private-data clearing.
-  - Made the Hyper-V domain settings explicit at each caller instead
-    of deriving them from the Linux domain type.
-  - Added transactional create/configure domain handling with rollback.
-  - Required only the base page size and masked the domain page-size
-    bitmap with the Hyper-V-supported bitmap.
-  - Silenced detection for unsupported hosts while retaining errors
-    for actual hypercall and capability failures.
-  - Clarified Kconfig support for assigned PCI devices and documented
-    the lack of guest hibernation/resume support.
-
-- iommu/hyperv: page-selective IOTLB flush:
-  - Removed the inclusive-end overflow and kept the range calculation
-    in byte addresses until the final page conversion.
-  - Cleared both the fixed hypercall header and the range entry.
-  - Warned on selective-flush failure before falling back to a
-    full-domain flush.
-
-v1[4] -> v2:
-- Dropped the "move to subdirectory" patch; the directory now exists
-  upstream.
-
-- hv: logical device ID registry:
-  - Moved the registry to hv_common.c so it can be shared, and derived
-    the prefix via a shared helper instead of caching it in pci-hyperv's
-    private struct.
-  - Moved the lookup out of the irq-disabled region (PREEMPT_RT).
-
-- iommu/hyperv: para-virtualized IOMMU:
-  - Removed the unused detach_dev op.
-  - Rejected a hypervisor not advertising x86 page sizes instead of
-    masking and warning.
-  - Statically initialized the identity and blocking domains.
-  - Gave the blocking domain its own attach op, which returns the hypercall
-    status and WARNs on failure.
-
-- iommu/hyperv: page-selective IOTLB flush:
-  - Used a single descriptor covering a slightly larger power-of-two
-    range, instead of splitting the range into multiple descriptors.
-  - Fixed the inclusive-end corner case in the flush range calculation.
-
-RFC v1[5] -> v1[4]:
-- Scoped platform support to x86 only (Intel VT-d and AMD IOMMU);
-  initialization now uses x86_init.iommu.iommu_init
-- Added page-selective IOTLB flush support
-- Disable device ATS in hv_iommu_release_device()
-- Addressed review comments from Michael Kelley:
-  - Reversed dependency: pvIOMMU exports registration API for
-    pci-hyperv to call, instead of pci-hyperv exporting
-    hv_build_logical_dev_id()
-  - Dropped separate output page allocation patch; hypercall input
-    and output now share the same per-CPU page
-  - Cleaned up Kconfig (removed PCI_HYPERV dependency, unnecessary
-    selects)
-  - Removed dev_list, per-domain spinlock, and syscore_ops
-  - Removed forward declarations by reordering functions
-  - Fixed typos, cleaned up Kconfig selects, improved pr_info
-    messages, etc.
-
-[1] v4:
-https://lore.kernel.org/linux-hyperv/20260821132654.211730-1-zhangyu1@linux.microsoft.com/
-[2] v3:
-https://lore.kernel.org/linux-hyperv/20260811155022.108148-1-zhangyu1@linux.microsoft.com/
-[3] v2:
-https://lore.kernel.org/linux-hyperv/20260702160518.311234-1-zhangyu1@linux.microsoft.com/
-[4] v1:
-https://lore.kernel.org/linux-hyperv/20260511162408.1180069-1-zhangyu1@linux.microsoft.com/
-[5] RFC v1:
-https://lore.kernel.org/linux-hyperv/20251209051128.76913-1-zhangyu1@linux.microsoft.com/
-
-Wei Liu (1):
-  hyperv: Introduce new hypercall interfaces used by Hyper-V guest IOMMU
-
-Yu Zhang (4):
-  Drivers: hv: Add logical device ID registry for vPCI devices
-  iommu/x86: Add architectural MSI reserved region helper
-  iommu/hyperv: Add para-virtualized IOMMU support for Hyper-V guest
-  iommu/hyperv: Add page-selective IOTLB flush support
-
- arch/x86/hyperv/hv_init.c             |   4 +
- arch/x86/include/asm/iommu.h          |  14 +
- arch/x86/include/asm/mshyperv.h       |   4 +
- drivers/hv/hv_common.c                | 115 +++++
- drivers/iommu/Kconfig                 |   1 +
- drivers/iommu/amd/iommu.c             |   6 +-
- drivers/iommu/hyperv/Kconfig          |  16 +
- drivers/iommu/hyperv/Makefile         |   1 +
- drivers/iommu/hyperv/hv-iommu-guest.c | 679 ++++++++++++++++++++++++++
- drivers/iommu/hyperv/iommu.h          |  44 ++
- drivers/iommu/intel/iommu.c           |   6 +-
- drivers/pci/controller/pci-hyperv.c   |  21 +-
- include/asm-generic/mshyperv.h        |   4 +
- include/hyperv/hvgdk_mini.h           |  10 +
- include/hyperv/hvhdk_mini.h           | 155 ++++++
- include/linux/hyperv.h                |   8 +
- 16 files changed, 1073 insertions(+), 15 deletions(-)
- create mode 100644 drivers/iommu/hyperv/Kconfig
- create mode 100644 drivers/iommu/hyperv/hv-iommu-guest.c
- create mode 100644 drivers/iommu/hyperv/iommu.h
-
+diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+index 31256cb22b39..8896fb4809b5 100644
+--- a/drivers/hv/hv_common.c
++++ b/drivers/hv/hv_common.c
+@@ -808,6 +808,7 @@ static const struct hv_status_info hv_status_infos[] = {
+ 	_STATUS_INFO(HV_STATUS_PROCESSOR_FEATURE_NOT_SUPPORTED,	-EOPNOTSUPP),
+ 	_STATUS_INFO(HV_STATUS_INVALID_LP_INDEX,		-EINVAL),
+ 	_STATUS_INFO(HV_STATUS_INVALID_REGISTER_VALUE,		-EINVAL),
++	_STATUS_INFO(HV_STATUS_DEVICE_ALREADY_IN_DOMAIN,	-EEXIST),
+ 	_STATUS_INFO(HV_STATUS_OPERATION_FAILED,		-EIO),
+ 	_STATUS_INFO(HV_STATUS_TIME_OUT,			-EIO),
+ 	_STATUS_INFO(HV_STATUS_CALL_PENDING,			-EIO),
+diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+index 6a4e8b9d570f..5d1338197eee 100644
+--- a/include/hyperv/hvgdk_mini.h
++++ b/include/hyperv/hvgdk_mini.h
+@@ -37,6 +37,7 @@ struct hv_u128 {
+ #define HV_STATUS_PROCESSOR_FEATURE_NOT_SUPPORTED	0x20
+ #define HV_STATUS_INVALID_LP_INDEX			0x41
+ #define HV_STATUS_INVALID_REGISTER_VALUE		0x50
++#define HV_STATUS_DEVICE_ALREADY_IN_DOMAIN		0x66
+ #define HV_STATUS_OPERATION_FAILED			0x71
+ #define HV_STATUS_INSUFFICIENT_ROOT_MEMORY		0x73
+ #define HV_STATUS_INSUFFICIENT_CONTIGUOUS_MEMORY	0x75
+@@ -486,10 +487,16 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+ #define HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a
+ #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af
+ #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0
++#define HVCALL_CREATE_DEVICE_DOMAIN			0x00b1
++#define HVCALL_ATTACH_DEVICE_DOMAIN			0x00b2
+ #define HVCALL_SIGNAL_EVENT_DIRECT			0x00c0
+ #define HVCALL_POST_MESSAGE_DIRECT			0x00c1
+ #define HVCALL_DISPATCH_VP				0x00c2
++#define HVCALL_DETACH_DEVICE_DOMAIN			0x00c4
++#define HVCALL_DELETE_DEVICE_DOMAIN			0x00c5
+ #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
++#define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
++#define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
+ #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
+ #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
+ #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
+@@ -502,6 +509,8 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+ #define HVCALL_MMIO_READ				0x0106
+ #define HVCALL_MMIO_WRITE				0x0107
+ #define HVCALL_DISABLE_HYP_EX                           0x010f
++#define HVCALL_GET_IOMMU_CAPABILITIES			0x0125
++#define HVCALL_GET_LOGICAL_DEVICE_PROPERTY		0x0127
+ #define HVCALL_MAP_STATS_PAGE2				0x0131
+ 
+ /* HV_HYPERCALL_INPUT */
+diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+index 035ba20870f7..7b9f43b320cd 100644
+--- a/include/hyperv/hvhdk_mini.h
++++ b/include/hyperv/hvhdk_mini.h
+@@ -548,4 +548,141 @@ union hv_device_id {		/* HV_DEVICE_ID */
+ 	} acpi;
+ } __packed;
+ 
++/* Device domain types */
++#define HV_DEVICE_DOMAIN_TYPE_S1	1 /* HV_DEVICE_DOMAIN_ID_TYPE_S1 */
++
++/* ID for default domain and NULL domain */
++#define HV_DEVICE_DOMAIN_ID_DEFAULT 0
++#define HV_DEVICE_DOMAIN_ID_NULL    0xFFFFFFFFULL
++
++union hv_device_domain_id {	/* HV_DEVICE_DOMAIN_ID */
++	u64 as_uint64;
++	struct {
++		u32 type: 4;
++		u32 reserved: 28;
++		u32 id;
++	} __packed;
++};
++
++struct hv_input_device_domain {	/* HV_INPUT_DEVICE_DOMAIN */
++	u64 partition_id;
++	union hv_input_vtl owner_vtl;
++	u8 padding[7];
++	union hv_device_domain_id domain_id;
++} __packed;
++
++/* HV_CREATE_DEVICE_DOMAIN_FLAGS */
++union hv_create_device_domain_flags {
++	u32 as_uint32;
++	struct {
++		u32 forward_progress_required: 1;
++		u32 inherit_owning_vtl: 1;
++		u32 reserved: 30;
++	} __packed;
++};
++
++/* HV_INPUT_CREATE_DEVICE_DOMAIN */
++struct hv_input_create_device_domain {
++	struct hv_input_device_domain device_domain;
++	union hv_create_device_domain_flags create_device_domain_flags;
++	u32 padding;
++} __packed;
++
++/* HV_INPUT_DELETE_DEVICE_DOMAIN */
++struct hv_input_delete_device_domain {
++	struct hv_input_device_domain device_domain;
++} __packed;
++
++/* HV_INPUT_ATTACH_DEVICE_DOMAIN */
++struct hv_input_attach_device_domain {
++	struct hv_input_device_domain device_domain;
++	union hv_device_id device_id;
++} __packed;
++
++/* HV_INPUT_DETACH_DEVICE_DOMAIN */
++struct hv_input_detach_device_domain {
++	u64 partition_id;
++	union hv_device_id device_id;
++} __packed;
++
++struct hv_device_domain_settings {	/* HV_DEVICE_DOMAIN_SETTINGS */
++	struct {
++		/*
++		 * Enable translations. If not enabled, all transaction bypass
++		 * S1 translations.
++		 */
++		u64 translation_enabled: 1;
++		u64 blocked: 1;
++		/*
++		 * First stage address translation paging mode:
++		 * 0: 4-level paging (default)
++		 * 1: 5-level paging
++		 */
++		u64 first_stage_paging_mode: 1;
++		u64 reserved: 61;
++	} flags;
++
++	/* Address of translation table */
++	u64 page_table_root;
++} __packed;
++
++/* HV_INPUT_CONFIGURE_DEVICE_DOMAIN */
++struct hv_input_configure_device_domain {
++	struct hv_input_device_domain device_domain;
++	struct hv_device_domain_settings settings;
++} __packed;
++
++/* HV_INPUT_GET_IOMMU_CAPABILITIES */
++struct hv_input_get_iommu_capabilities {
++	u64 partition_id;
++	u64 reserved;
++} __packed;
++
++/* HV_OUTPUT_GET_IOMMU_CAPABILITIES */
++struct hv_output_get_iommu_capabilities {
++	u32 size;
++	u16 reserved;
++	u8  max_iova_width;
++	u8  max_pasid_width;
++
++#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
++#define HV_IOMMU_CAP_S2         BIT_ULL(1)
++#define HV_IOMMU_CAP_S1         BIT_ULL(2)
++#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
++#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
++#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
++#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
++
++	u64 iommu_cap;
++	u64 pgsize_bitmap;
++} __packed;
++
++/* HV_LOGICAL_DEVICE_PROPERTY_CODE */
++enum hv_logical_device_property_code {
++	HV_LOGICAL_DEVICE_PROPERTY_PVIOMMU = 10,
++};
++
++/* HV_INPUT_GET_LOGICAL_DEVICE_PROPERTY */
++struct hv_input_get_logical_device_property {
++	u64 partition_id;
++	u64 logical_device_id;
++	/* Takes values from enum hv_logical_device_property_code. */
++	u32 code;
++	u32 reserved;
++} __packed;
++
++/* HV_OUTPUT_GET_LOGICAL_DEVICE_PROPERTY */
++struct hv_output_get_logical_device_property {
++#define HV_DEVICE_IOMMU_ENABLED	BIT_ULL(0)
++	u64 device_iommu;
++	u64 reserved;
++} __packed;
++
++/* HV_INPUT_FLUSH_DEVICE_DOMAIN */
++struct hv_input_flush_device_domain {
++	struct hv_input_device_domain device_domain;
++	u32 flags;
++	u32 reserved;
++} __packed;
++
+ #endif /* _HV_HVHDK_MINI_H */
 -- 
 2.52.0
+
