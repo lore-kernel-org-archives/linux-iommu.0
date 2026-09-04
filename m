@@ -1,148 +1,226 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010022.outbound.protection.outlook.com [52.101.56.22])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F1141F5F3
-	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 19:06:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788548796; cv=none; b=FMw83JbgPeNa7EG8XJdi97QFeUDhe7yd0RjcJF5s202tLgKQN4yUNaxiCS5sXSLnOKtQf8vbadx3uV5C0KDUK1DVpGC8l6nQ49t5QpXgIQTBAwmaxbPgqs4dl+9HjAorRoXjyl2XO29qvuHTLbYIJWARMHndm3c5arpiZ1VAuWM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788548796; c=relaxed/simple;
-	bh=21Bh4RJxpeiCW82oSWerk5Qo5AfL15/5sh5ePR1ifY8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XcfQFC0uPNQPTcXmrovKfUlvXY9Nno9QBST3WsfBE/jAaSeJI2XYUvHClMz4tu9AQSRbgDpHmKm5A56zOGNNZ2d/cIJoEX0YWm/n+K4lnVPrEhZtGQBWiRiISw68uuYcA3A76VwT/Qe8CXUSA44hNYbn/vgoXrtyqcutn8saZ1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XlO4Owia; arc=none smtp.client-ip=209.85.128.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4AA051A726
+	for <iommu@lists.linux.dev>; Fri,  4 Sep 2026 20:17:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.22
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788553035; cv=fail; b=sEzm7rj6x1NxIGMaYF3/TTSLmd0SWzMTft0l6yecV8MNkQyYf/1H0tWQ0Mq3h3i29vEPKwCGrq2JhVQtEXPvHPydzV1QY0knS1P2dPIvihaREOktktseNq8zjkNDrkFIzlisW9FrZZWS+f0/ip1LCgU5lwrQpntQbMSpBYUGCnI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788553035; c=relaxed/simple;
+	bh=CN9n3F5UIdovbyqroH23SBjgXs6hhlyjoBvftMmaQLc=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kz9FIL/SpjCjwCq0PD9B51L5o4GsCsB961+b4HcZZYlniIv7P3BsChCUncxHuPz3YXXq3ciM8BpLFRgmgSbGDbslN8OuDAL3LDFeyHUa9vGUKqZACgMHXwzno5jXH1qufK9MufFCLS9qF1ZXKmoN6tdztQV0gUobghgGB51tuvs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Wv/8y+Iw; arc=fail smtp.client-ip=52.101.56.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XlO4Owia"
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-86b03b75fecso23902407b3.0
-        for <iommu@lists.linux.dev>; Fri, 04 Sep 2026 12:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1788548787; x=1789153587; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=P3rzU4rRnN7pu/GZMmTRQuFVrRv0l5idd5+55lRqVAM=;
-        b=XlO4Owia3UaDqO6YmrPTEvz8hk2SLPFksr2HNQHnzX4vuB+yCOLdu4NrKP5JWDJX12
-         Af3pluPSXd7xSldPOzdikTJ5Vdsz2a7wVeYkLogEE5KhRKvlrGZU7BkeVIfKj0XH0Gag
-         O0KJDYNE1flrqYbqowOM6fnh4UJsPbnzm+suQ9yZKA/4RUlPxTpbe1qC0COt8BhLbM6p
-         BpvIZ1vnyieOz/txNy2lx+EDdMScLc4w5sBZk1eMUU3PHzP63MS/aX8vl8OQ2zM0neuv
-         QKpXo2mk2EvZ51bQ/Lk++LwlA8X7wlPo0qwBI4/V32CGfi5N4mWQ/XlUCLA0kuLD222Q
-         zbYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788548787; x=1789153587;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=P3rzU4rRnN7pu/GZMmTRQuFVrRv0l5idd5+55lRqVAM=;
-        b=XEk+0ZAurXItA6vszFiZ9BCrByQJSETQqqaCYOGmM7ofbGjcsZdkfLBMu2bQxj7ZKS
-         FOjU8EBm5mpWWSrMolvsAcNAtFC1ziAar0a9GGcYQVZxYVYEOxBqvBXD8ZMp72NT8ZT+
-         0ohi0eFDkTNa5/t45v3tWba44r/HbQLt6m5WtjWdvhFUHFvOzeZjE9G0bhIpXSMunqyd
-         S5tEDzC4AEk3EwODhBLrZYVowliSy8QjdAzWAjJ7Ud6DOVU1b4xKi3tgpfEzqREhqD1U
-         TNipr+mbBY6jo87g5eZmKpPMO5f54/Kzbf8xC46oNtH5Ssg++V4bDS++qBLDiToQqdct
-         cG9g==
-X-Forwarded-Encrypted: i=1; AKwUvByYat7UVB6KIAufsX/7I+BHDjq59VRahxyeF3VF2HzORh1r+zEyKdy1niX7iwOZ3PcPgDfGVg==@lists.linux.dev
-X-Gm-Message-State: AFuF++nlC17rqx/s599kEZIYfzglno3668RPAAf6JNXG8PmtnfcSVaRD
-	6yxMSa5ks+6PBzrqkB4BocxOrFRu8/a3COHuAMYI51a+vRxOhldLBlEHH7EJTnuzByE=
-X-Gm-Gg: AYBFou1VlTeriyYDTKjTQYDxSjRLmGr4NiysPabU0yVYg9txduwf9e1hF5//654WwMQ
-	/r+e1r5KX0mmwhHNHlcE+cW3/+lhCLaTBkIJO0Dl/orcDls+JkBuxgo6xwQ8DaC7mbyMfDfPuhi
-	Z3kKywzSyjqSoZ/SdJD/3fA9rXUfVLgcuz+j6+QaKw//TqeJtS5gUYqS6vBfCx4ACVkOEZAgYCY
-	28CQ9uXvVLPC/bu+uVxyLH6OQqoUlpCbjGUkBrzJchz4E9sOMJFxNCfU5USSSG08EzvHfq83OF4
-	XJPPKfS9F/rAVNRk24AgjhCxcVZwocQ32nKbDFxUgkNUBXAtDt5qxha9aVVgZSQmWouH2nqlHXw
-	HRo4k2C9UttoYgC9fTGMrHB+Xemit3u5g2m3qe0LMx+bXD6vpAumy0pOQYPUAB1fscqTj+QPIBb
-	SgFnDrJwK/8YFw6ryknjt6mOHSpEXqRvfLHGmNfeGPZiyvcMSqtrSoliGcp6N/RziTe5nI8lv/D
-	8RK5P2uqHHtiU62+bqAdT2RYiYS3tH/Hi9PxAMlVnrW1qdov5Q28wzLWg==
-X-Received: by 2002:a05:690e:2026:b0:66f:c284:4834 with SMTP id 956f58d0204a3-66fc2844e8amr819081d50.60.1788548787246;
-        Fri, 04 Sep 2026 12:06:27 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-910406481b4sm27434626d6.17.2026.09.04.12.06.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2026 12:06:26 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1x2ZF3-00000002uJq-3KUc;
-	Fri, 04 Sep 2026 16:06:25 -0300
-Date: Fri, 4 Sep 2026 16:06:25 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	Alex Williamson <alex.williamson@nvidia.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, kvm <kvm@vger.kernel.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 1/5] PCI: Refuse function reset of an SR-IOV PF with
- enabled VFs
-Message-ID: <20260904190625.GA667892@ziepe.ca>
-References: <20260812045325.2733631-2-alex.williamson@nvidia.com>
- <an5JbIzz40svS3xe@google.com>
- <20260814083737.66bb83fb@nvidia.com>
- <20260817121810.GC933791@ziepe.ca>
- <CO1PR11MB48354AC2854C4D8E9984FD8E8CA62@CO1PR11MB4835.namprd11.prod.outlook.com>
- <20260818140304.GC5482@ziepe.ca>
- <20260818143906.1f58aecb@nvidia.com>
- <aod22_H66eUth9av@google.com>
- <20260820233722.GA1110819@ziepe.ca>
- <aoeffe1v--CgRK0a@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Wv/8y+Iw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=RRtY931JbRL1V8vUaSry8pvYVui+uJlS8cXJKyebLX2poqNDjtMzZuhc4RwXPU79vFev1GMcMDQR/DkBXfAd2hxTkOz6zm6SwrGMgHmRaEengdu92sgJlefYWie84fZPfuFmOgGw9jJKrXHNdABvlT73cPOT7Iry3yyBOK2rPn7Ox5a93cGznB6fE/suOco6gnbBF3cw+Ayc8fO6SHHhVNycriw+/gu49np96V3thrhe3KHDmGZD9JDOTmJMxh/2LoZ5yMK6hnYqGLs6mj83z7WDEJ96gf6thEFVY+r6e64xva+lRBFfwWW/5vFnyFehJb/ep9Orb8wPYBt04LACtw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IdAmSLJebVhinKcoPq7CPjEUQ5Rr2lwNv46T1EU5zcI=;
+ b=ycEaUuh6h/NYbCqkmaRuma1684p8XSMP8Ci/aThPAXqgQsJAx4jrTwXbGcjChQIZCjQ2SYzdr+sxlmfpblXg1UTPrLKrztwso9rVIVIvphat8d1hxboPilBjFGkzjdkimb8WkbwhnqCI+HI80Dwy2gKtoQpe8tZvpf8pWq0bXjDCtNtiN1JjXMNMwv7m5xEil+5U+GF+oFFASU7O0yg2xFBPnjDzN09CpqYsDHTenEFk5aTCHS+qMI7bGtpMBk7ZZVLg+EhvQ2WBPzno9rliSaIKIgAdwxs7H/nXuimhfpPBebFFurj4d+aDYZ4RSD3K7EY6koG/OxolB3GSYgkciw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=oss.qualcomm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IdAmSLJebVhinKcoPq7CPjEUQ5Rr2lwNv46T1EU5zcI=;
+ b=Wv/8y+IwvJTg+tqLM0DMwqM/t89s1XMhNTpWU1yWWwi8D76Dx2Rnk1FFkta9cq0tokrcrDP06EVyYrPe+4TE9ZU7pRnsOKOhaOKBhLYl1KNyAvkxNO8OYU/RSRlW0AMlA22JFkVoEHOFJV2MxPjnwSYtFVBSHcZYPQJ4Gy98fqGBZZoyb5nKm2BV5/+Q/3NiWGCa0e/9kv60Q9VgLhYCAnw8ks+RIQkV/YvKka/+2kpP0tsX8QY/ijIUTFBEl6l/tHvTrbXFb1aiu3GwT0RPj3hisb7jCcuZIeo+xqUZTUo088jC+u2bUNtRrRaRnLqEkkPe+aRQ6j0hlZGDUtCvpA==
+Received: from BN9PR03CA0777.namprd03.prod.outlook.com (2603:10b6:408:13a::32)
+ by CH3PR12MB8935.namprd12.prod.outlook.com (2603:10b6:610:169::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Fri, 4 Sep
+ 2026 20:17:04 +0000
+Received: from BN2PEPF0000A805.namprd02.prod.outlook.com
+ (2603:10b6:408:13a:cafe::3) by BN9PR03CA0777.outlook.office365.com
+ (2603:10b6:408:13a::32) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.382.13 via Frontend Transport; Fri, 4
+ Sep 2026 20:17:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN2PEPF0000A805.mail.protection.outlook.com (10.167.245.169) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.382.8 via Frontend Transport; Fri, 4 Sep 2026 20:17:04 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Fri, 4 Sep
+ 2026 13:16:34 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Fri, 4 Sep
+ 2026 13:16:34 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46 via Frontend
+ Transport; Fri, 4 Sep 2026 13:16:31 -0700
+Date: Fri, 4 Sep 2026 13:16:30 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<joro@8bytes.org>, <bhelgaas@google.com>, <praan@google.com>,
+	<kevin.tian@intel.com>, <kees@kernel.org>, <smostafa@google.com>,
+	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <skaestle@nvidia.com>, <mmarrid@nvidia.com>,
+	<skolothumtho@nvidia.com>, <bbiber@nvidia.com>, <harsha.v@oss.qualcomm.com>
+Subject: Re: [PATCH v3 01/13] iommu/arm-smmu-v3: Add arm_smmu_attach_release()
+Message-ID: <apsnHhQAVPRN6AMJ@nvidia.com>
+References: <cover.1788222485.git.nicolinc@nvidia.com>
+ <7dcf4aaa538a6a14626f5e2854141f14268250fa.1788222485.git.nicolinc@nvidia.com>
+ <178846311316.1308030.7431615023426150106.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <aoeffe1v--CgRK0a@google.com>
+In-Reply-To: <178846311316.1308030.7431615023426150106.b4-review@b4>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF0000A805:EE_|CH3PR12MB8935:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48684fce-75c1-4720-1a2c-08df0ac17c75
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|23010399003|7416014|376014|18002099003|22082099003|11063799006|4143699003|56012099006|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	p3BffhH/2gxNSDUIxW30ngWn36DvEY4lN5FBhvho4KeeU4j1iiv+71jcvRrnZRSRQO09KQTTq9tAfGUeF3WBI07iQbpTKwojQvJLw5mcEkNgoxXOj8aq+AxAOS4rjnqwMJyluIF3iXQo6aMBAXYbBqMpS4FLCnDeU/9fYAMOPgNEyxVYX2PYZZ92jNLtakRC8/a+rP8bNYxEFtfLeevFn5LG8/3qa81/k4mfplEf4p1lBiuuVwHtufYPqh0x26+F3TRoVwHhg5Qt3rkkYa+3PhfpDisCy1dj/+3PN5EJe18qYBoTZJi7q3hHmDpUwSnNWMZUvJX6ZOfZsyEcgRdI0D82ygpVUs/vkYdbz4iq7JY0Q9Jpl/azoaFsfrlakcRMr9fFu1zkWmOHhXkVXiNDoYspDLICnihxc9NLPLBXbflUXV2uoKylqQ7m+ZzlngjCLQOUZbjH/bbVO0ElJr0l3Uh0VIEy17sWhOhdGNTA7z6/xja1SL1+Q6kzO5Mfy+ZCfFyJGaXmRNNCOWV3h7KUKo86vK1MtRbdTbrxNzk24oJQ6QCw/R5qG/+RZQ5iW9J2H4zrcK06I4WTBE2KeHxzMPWoSenHxxIYeBEcyYMZeym83jbRZ3p3q+RpOOrRkX4E3ishdWqQiNEIpY3J6AEU1UhaY4G5BA6XDMIokMDPCsFtq/UH8OfRPARoyAtlLKRZlQF5S6PKw6UyXsaUhOT76g==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(23010399003)(7416014)(376014)(18002099003)(22082099003)(11063799006)(4143699003)(56012099006)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Jl2nhBBDAshfsf9wMlFtZqSiy2w3hRW7E+VVS/TShrSWVXaq2EZpfKdpck7FlBh8EIM23weVboLH4pfcgdpC8zirZ95sJZdd3iphZfbduVYp1xpn2HD+Hk9lT3LSVdEIm47rDHLf1bJBkSUdCGB53agDtNYe7Ox7SNleISNlpQ4lT4C7xR/13lm0Nebabw+XPs6IMBH52+j3ZF0ZrWWw/Zj0zSqNjz8rhqafrNVydQ92QFxBSVainURzGUX4CJC1hjdpmRSfyixDs4suukaRyYSqrk/U5O/V4t2B7SmAnTUdqTGeXQ/PSt0ZQD7CTizePaqC+RSWeao4Q4w7MCq4WY9duBMB/Hzo4MsTP2I8oPHzEOwimxW+JEzO+mfJRspjOMgtli8y0iERXkeMIpeIZkx7QWSgClKAv1nqiN0yZtd8Vluyyqf5cfE+5fk1jUcL
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2026 20:17:04.1141
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48684fce-75c1-4720-1a2c-08df0ac17c75
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF0000A805.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8935
 
-On Fri, Aug 21, 2026 at 02:20:55AM +0000, Samiullah Khawaja wrote:
-> On Thu, Aug 20, 2026 at 08:37:22PM -0300, Jason Gunthorpe wrote:
-> > On Thu, Aug 20, 2026 at 10:38:07PM +0000, Samiullah Khawaja wrote:
+Thanks for the reviews.
+
+On Thu, Sep 03, 2026 at 12:18:33PM -0700, Jonathan Cameron wrote:
+> > The IOPF teardown is done in arm_smmu_remove_master_domain() when releasing
+> > the master_domain on detach, under the global arm_smmu_asid_lock mutex. But
+> > the teardown must drain any in-flight IOPF (for the old domain), before the
+> > master_domain is freed via iopf_queue_flush_dev() calling flush_workqueue()
+> > that can block on user-faulting page-fault handlers. Doing so while holding
+> > the arm_smmu_asid_lock would stall any unrelated attachment in the system.
 > > 
-> > > > The blocking domain operation looks like it might be simplest to
-> > > > implement in the IOMMU core.  We can set a flag for a default blocking
-> > > > domain on the IOMMU group when we take_dma_ownership of the group.  Then
-> > > > release_dma_ownership picks the blocking rather than default domain.
-> > > >
-> > > > This is then unwound in use_default_domain, called via dma_configure,
-> > > > attaching the device to the default domain in probe of the next driver.
-> > > > Therefore until probe by another driver, a device used by vfio would
-> > > > remain in a blocking domain even while unused and unbound.
-> > > 
-> > > The devices are expected to be attached to the default_domain even when
-> > > these are unbound and the use_default_domain assumes that, and it only
-> > > checks the ownership and doesn't switch the domain to default_domain. I
-> > > guess we should add a WARN in use_default_domain() if that is not true.
-> > > I will probably send out a patch for that separately.
-> > > 
-> > > I think we can move the device back to default_domain after reset after
-> > > unbind, maybe it can be done in pci_dma_cleanup() based on
-> > > driver_managed_dma?
+> > Split the teardown out of arm_smmu_remove_master_domain(), to a new helper
+> > arm_smmu_attach_release() that runs after arm_smmu_asid_lock is released.
 > > 
-> > This blocking domain stuff sounds very similar to what Nicolin
-> > implemented for the per-function ATS issue?
+> > Since no other device would use the old master_domain that is being freed,
+> > it's safe to move out of arm_smmu_asid_lock (still under the protection of
+> > iommu_group->mutex).
 > 
-> I see you are talking about this invalidation stuff:
+> This is a lot of text if the next bit about being a refactor only
+> is accurate.  Seems that not blocking attachments is the issue and
+> to me that is a functional and useful change. However, is that
+> in this patch?  Anyhow to me this needs a rewrite to focus on just
+> what is actually changing here rather than the eventual picture.
+
+I rewrote it:
+
+The IOPF teardown is done in arm_smmu_remove_master_domain() when releasing
+the master_domain on detach, under the global arm_smmu_asid_lock mutex.
+
+A later change will add an IOPF workqueue flush to that teardown, which can
+block on a user-faulting page-fault handler. Holding the arm_smmu_asid_lock
+across it would stall every unrelated attachment in the system.
+
+Split the teardown out of arm_smmu_remove_master_domain(), to a new helper
+arm_smmu_attach_release() that runs after arm_smmu_asid_lock is released.
+
+No functional change: the old master_domain belongs to no other device, so
+freeing it outside the lock stays safe, still under iommu_group->mutex.
+
+> > +/* Release the old master_domain detached by arm_smmu_remove_master_domain() */
+> > +void arm_smmu_attach_release(struct arm_smmu_attach_state *state)
+> > +{
+> > +	struct arm_smmu_master_domain *master_domain = state->old_master_domain;
+> > +	struct arm_smmu_master *master = state->master;
+> > +
+> > +	iommu_group_mutex_assert(master->dev);
+> > +
+> > +	if (!master_domain)
 > 
-> https://lore.kernel.org/all/348c50ab6e95b5ec6d48ee3fa05d529a784a34c3.1765834788.git.nicolinc@nvidia.com/
+> I guess this makes sense in later patches, but for now the local
+> variable seems more confusing than anything.
+
+I'd like to keeping this: this is prep patch anyway, so pre-adding
+the local variable here can make later patches slightly cleaner.
+
+> > +		return;
 > 
-> But this was the case where the device is going to be reset and to
-> prevent ATS issues, we attach it to blocking domain before doing the
-> reset. But of course, with the PF reset here, it induces the same kind
-> of ATS issues on the VFs.
+> I'd add a blank line here to separate the sanity checks from bulk
+> code.
 
-Yes, we need to attach a blocking domain before we make the function
-unable to respond to ATC invalidation. PF or VF reset both trigger
-this condition.
+Done.
 
-> Hmm... doing that for SRIOV also, by allowing PF reset but attaching the
-> VFs to blocking domains before the PF is reset, will only resolve the
-> ATS issues. But the software state is still out of sync with hardware
-> state.
+> >  	arm_smmu_disable_iopf(master, master_domain);
+> >  	kfree(master_domain);
+> > +	state->old_master_domain = NULL;
+> >  }
+> >  
+> 
+> > @@ -3784,6 +3801,7 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
+> >
+> This path is hit from a failure of arm_smmu_attach_prepare()
+> At that point the old domain hasn't been detached.
+> 
+> Now it doesn't matter because of what is currently done in release,
+> but from a code flow / what that function is documented to be for
+> this seems wrong to me.  I'd separate the good and the bad
+> paths in the function.
 
-Sure, it doesn't fix everything, but it is something you'd need to do
-to avoid problems in the iommu driver side..
+I cleaned that up -- once prepare() is done, it is in a no-fail path:
 
-Jason
+@@ -3783,8 +3784,10 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
+ 
+ 	mutex_lock(&arm_smmu_asid_lock);
+ 	ret = arm_smmu_attach_prepare(&state, &smmu_domain->domain);
+-	if (ret)
+-		goto out_unlock;
++	if (ret) {
++		mutex_unlock(&arm_smmu_asid_lock);
++		return ret;
++	}
+ 
+ 	/*
+ 	 * We don't want to obtain to the asid_lock too early, so fix up the
+@@ -3798,11 +3801,9 @@ int arm_smmu_set_pasid(struct arm_smmu_master *master,
+ 	arm_smmu_update_ste(master, sid_domain, state.ats_enabled);
+ 
+ 	arm_smmu_attach_commit(&state);
+-
+-out_unlock:
+ 	mutex_unlock(&arm_smmu_asid_lock);
+ 	arm_smmu_attach_release(&state);
+-	return ret;
++	return 0;
+ }
+ 
+ static int arm_smmu_blocking_set_dev_pasid(struct iommu_domain *new_domain,
+
+Thanks
+Nicolin
