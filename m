@@ -1,72 +1,75 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4783BF684
-	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 07:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D9F73806CA
+	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 08:42:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788594453; cv=none; b=ZEMJk0wqbI3ZII1FBd4dUxLe+5ieatvgNjupERRbebfqfyu4D8Tp8F3bBeyO05CZBPuVnwtfGQU1X4bHJFj3ZC/nzZdCOTr3JYTOlFLoXcyOklMWDAb6OB58EELZabqJT+dXWlkKLS52FTGY4hpGLWMlozHwZWkWA0aRcE3eVF8=
+	t=1788597737; cv=none; b=TX9Qlm+UXLYBOvQbQUjVVIRLxNv8LMJSdmp8tm/hnyDhnDv1dx5V+VT1maaqZWjxeibfXCq7mbAcJj1OB/lZUA1FijobHwparG6E/k5iSWeQfQWGCCsbzudZReOvUteQHGizGf9N1nhBJfxWCfLbwspVNDlzH7I5lSh5qqvsUG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788594453; c=relaxed/simple;
-	bh=/DUmFgUshaIxy2hcef3/zwHcOL5WrkX2I9pNOXhsYB4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rZPpS277nba9jyy8xFm7P5awqi0meKB5cLA7WhVWuYI9pkJ0AhrG3FF+RSEuG9ekQpREDVxVkfZhP7nN5K2fhfEVgMeYFn6KTSnVsmFifTuiZ3iagRsEHK9df/IaFkXa7sM9x/0qB8/0lnmfnYOKWiP2HNu24+w8yBu61tHbNFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Py2/olQe; arc=none smtp.client-ip=209.85.214.180
+	s=arc-20240116; t=1788597737; c=relaxed/simple;
+	bh=9j6NYG0hkRG6PdUmh1zEaxVWk06YE1JQZ514CGCZKkk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nAlTL4uG37FyWU9aZgz3qIz4lFkzXZDF0n40bqz3ZPN8ZRWzj5IaWZmonE1sjElNFPIwJP7vjzPyMvWZSyUxsHLGnLbwvXlO6M7G1ckv083kmHGdtotocahV7LB2vRa2uhsHYtv+nI2bMvUtJSijhtA1EbggfohNSxmNKRwCH+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W9vkWqK/; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Py2/olQe"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2d7200b2e15so20314835ad.3
-        for <iommu@lists.linux.dev>; Sat, 05 Sep 2026 00:47:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W9vkWqK/"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2ce98cb8165so20158405ad.1
+        for <iommu@lists.linux.dev>; Sat, 05 Sep 2026 01:42:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788594451; x=1789199251; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1788597735; x=1789202535; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=py7XZS9hG76KDb+4aP7Vck11HgV2PvXOdVNmCjDkqo0=;
-        b=Py2/olQeiGCoZI0jAidllGzLNKgC+ui23rlTZehtGmgawJDtVvxeah39MSkpexj6QC
-         619uTdn0kdyxMEjbvALYOArbIXsZMoB46ZGRDObYhOMJxrPBtw6VREj2rKow1b8d244s
-         KUY72UE3jvxGxfrL1xHLKT8Z/DOsMhkJCJOwouURTbx1teEZyxnXl9pPyuK+8psFqNw6
-         cDWfTrI7rQpaoFYbtkO2ZqUy9+0tEvdAJTgb8OTC8H8ZTpMAHjWTH0GjXAvbb1QFbJZb
-         qW6pFSw4zofE0kE71VgtGKLCmw5SEQ8hWftW19hcnSRJxJfo0qB6pAa0kRDvRHrrs1Fz
-         b+og==
+        bh=+VobeyYxIxVOojjPHLkwwdR8KDg6vnqQTELSH5lLU28=;
+        b=W9vkWqK/rLSomjfW5n0RrPtC0a6Vz6uWvG6QAG+l8hjjyacm+GQHHEtDvLgzKCz64Y
+         IpctYCN3HfsCZtfCNkvRoj6FFkxJurlTI5VrL3ngaXl/xbwK1Tsf/7X5MN08kDvEH13l
+         ZzAx4G0P1zapmteGdbB5HriVRIKVS9e+T60jutBT6xnkERXrb6PgWkEOL9wPC/5e8Vr9
+         tWqAoAhTM3R1cVlI65XVCNRaiXaRlDwJVEBCptBuRT+nc7uOC4alFotGeVFCTy8SfOJr
+         xw5cAeSDbwBHEaHccvBjj/0Iya1GX+gS0Z9lfi4jfpPSRZx+wDOIOCktU01D84DNuZQM
+         b4BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788594451; x=1789199251;
+        d=1e100.net; s=20251104; t=1788597735; x=1789202535;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=py7XZS9hG76KDb+4aP7Vck11HgV2PvXOdVNmCjDkqo0=;
-        b=DrKEL9+xacb23twrttN5eja2j4vY8rab1xAjFmewEo8eQ5TYdIL8/WopXgx66pZ41B
-         XADZaKum0IpUmYwFyngH41Xq2QNij2+7RRhsouh/FhsPZmBkra1krnQOh89zsauIG6Hm
-         EX21JPLroHHrOvLKy1+kPdlZI97tZSINynaBvT5+4S/5CMmlvB/pjxt0V4IRSvkaBbqF
-         Rqtg3aLJlOTlVIpr2wDKd+JFWpSPIezkC/Q9yrPhB21ndePrk8Qvk7/UlwdiIQGxseBL
-         nxrtcSSiWMls80nmh+Uob9l6JBCJ9zCBNKjHJNGFDU73v1XJBfJL+Aa10YzebsC4cZyW
-         m4NQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzQ6x5Okwp7VTvy+fsk0ujq8vHaiuOGif5Wrg4TqwulJGtjpw/mLu7AAbw+CLkDEYgNdUdcaQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++mctSiap2TSuBZKIudRPsqHTNpyB1i3bre0eje+MP4vFJe2r+SF
-	yV68h4MMKCY+qQRTWAtHMYGKfAap5/7Y0nVH4QFXPCfWHx+9ojw/noI=
-X-Gm-Gg: AYBFou2rwIkoSdedNbdDHsRZIZr9ZlclVmDmONcjhkLx+QS7IL1vuYSr2I33sE3XgAj
-	37OaTRdzcQD8Zi52C4MwBaz4PpZvXSGRPbDvpJtO6mAdaStdyPd10H8JxtBqXTFn4f5wPIuMJ+P
-	VaUfkxj06l953xbWub9SwvRMKhYB916Ai18doqEbEglkpe3ufb5J+zKtyAegL8jhtMd3hcVFOvb
-	1/SBknp5WeuE8gY6YwI6g7Oo2C/28koBVnrYJxb0ZNk6gSs9ea5Sf7dtp1XvKz/T80NPUo3SfKX
-	hCW+khEjqc9mFls/bDvJlBL1y7bTVbKzpMVZeJZeHRHhkG44FSRXkqeyGpM+WseymhoeS4oKxZK
-	3HPqKzwAN7+0whvlYQYmYxvV1cMQgxAdFCDUC6yqqmk00YA+X7eHuYUNLekI7KCQFBk32yS84yp
-	rjATwa9G7AKzLwCWFnohRt2AWudboqhT7wW6nCohvnlBrOu0pQU3drqKrtaXuB18niH07wzGlgW
-	ruI9HN/ObZPFu0=
-X-Received: by 2002:a17:90b:1343:b0:38e:9eb2:9d43 with SMTP id 98e67ed59e1d1-39b261b1bcfmr19773477a91.16.1788594451255;
-        Sat, 05 Sep 2026 00:47:31 -0700 (PDT)
+        bh=+VobeyYxIxVOojjPHLkwwdR8KDg6vnqQTELSH5lLU28=;
+        b=P1T1z1rJnjmebRdZYV9elkq8vu9J+XZNDHhcRFDjpJvb7Emb1kLsKMr96wbqwx2rHg
+         AkmoIaWtXmp0ZLcRA1hF6jLA2ofY+Q48Eg5MHvAo8WQgIEZERiE0EEIHKH5CaPU+nqNt
+         V5jyogd30bVsCa8MJ4041jicJ7p107AY5Kp1pgp5Y/vj4wtRH8WI9tye9c69YOJgF4Jr
+         ojHzTqQReYLWC+w5MT5b54yjlQXlnKf9LO+PMYd4p8AZzYBsOnrefj1mdCEdTZldu6ZA
+         fJ2hgk8bH5WSMFh/AtPJR8LEkbiXbE7AnKbNNha2IAFcpvL817ZJ4a6DeMmijZnHYgAo
+         BFWw==
+X-Forwarded-Encrypted: i=1; AKwUvBwkuweYs4Lu3h83ZUwzu5h/Yfl4Nj26YUHzAL/GUHDBE1GJE09rrlVB9Svb3FZGyIJgcUecCQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++nWGrzLyBFDCWbyroIWu/Gr35yB3iSe5uoMvEMOkicummUBLMHq
+	WCxtHhzXLJmvtxP4agNL/alV/2OokzWsDuHYk24q6KH65sGLsc7/1jk=
+X-Gm-Gg: AYBFou21WuvmCF7ym9oHRoqnnqw29rlBoYlUCH7HiaVUufIy14UoO5ycVD/M6ayK0JQ
+	6DZ7Z+JKzFcvD55GGxXoqlmLuvKFP3+lWTXTAIw2Gp+W92fw2lfUzO1xvjYDYHgrEb45blyM+u/
+	BmWwBOsszheo/Wqh6brEpCBQBJo6/l2/Oxq9ClDpJclG93WR/tcfJYDIwq5wiO1Ka5hbMk4hXuk
+	P6AK5UZfQsdP1xak9Z4rv2BEOuunhKKL6yKpFzv5gsgbfTEBExK81l9JlWVoolK9NNorX6IJVZA
+	DmWoJXmYk58HnLCfw/ky7ZZ9XR6G7pP5TGMLkzGVj3ofd73ehCve9/dijkxzHjz2KFgPYeggI3X
+	+ZcZBUJSOlPidQXRx4Rw3bt1Fziw6P7AXlzYf92W3T4itUQ3dqO8X7lwswI20MdEGDcxuqouM5Y
+	o8bRfeqWC7PlSRf8gpNJUUBbGSxHTJUdRGvHJGrd5VaxbEN0N8+MZjuw+BrHl8gM+VgV/ediQFc
+	jsRaemokRoO3w==
+X-Received: by 2002:a17:90b:4d91:b0:398:c6e8:3fc2 with SMTP id 98e67ed59e1d1-39b27c42b89mr7855112a91.4.1788597735226;
+        Sat, 05 Sep 2026 01:42:15 -0700 (PDT)
 Received: from ydg-Zenbook-14-UM3406GA ([211.230.25.193])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b08bcc060sm16677217a91.3.2026.09.05.00.47.29
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b25f8d2c5sm9079660a91.2.2026.09.05.01.42.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2026 00:47:30 -0700 (PDT)
+        Sat, 05 Sep 2026 01:42:14 -0700 (PDT)
 From: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: Robin Murphy <robin.murphy@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Chanho Park <chanho61.park@samsung.com>,
+	Bumyong Lee <bumyong.lee@samsung.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	donggeunyoo.kernel@gmail.com
-Subject: [PATCH] dma-coherent: report a failed reserved memory assignment
-Date: Sat,  5 Sep 2026 16:47:27 +0900
-Message-ID: <20260905074727.108029-1-donggeunyoo.kernel@gmail.com>
+	donggeunyoo.kernel@gmail.com,
+	stable@vger.kernel.org
+Subject: [PATCH] swiotlb: use the adjusted address for the highmem page lookup
+Date: Sat,  5 Sep 2026 17:42:10 +0900
+Message-ID: <20260905084210.148255-1-donggeunyoo.kernel@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -76,49 +79,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-rmem_dma_device_init() drops the return value of
-dma_assign_coherent_memory() and always reports success. That call fails
-with -EBUSY when the device already has a coherent pool, and the file
-allows only "*one* such region of memory" per device.
+swiotlb_bounce() reads the page frame number from the slot's recorded
+orig_addr, then advances orig_addr by tlb_offset to reach the address
+the caller asked about. The highmem branch mixes the two: the offset
+within the page comes from the adjusted address, the page from the value
+before it.
 
-of_reserved_mem_device_init_by_idx() reads the zero as success. It logs
-"assigned reserved memory node" for a region that was not assigned and
-records the pairing, so of_reserved_mem_device_release() later runs
-rmem_dma_device_release() for it. That clears dev->dma_mem without
-looking at which region it was called for, dropping the pool the device
-did get and leaving it on ordinary memory.
+Once the adjustment crosses a page boundary the pair no longer describes
+one location, and the whole copy lands one page below the intended one
+for a positive tlb_offset, one above for a negative one. DMA_FROM_DEVICE
+writes the device data over the wrong page and leaves the intended one
+stale, DMA_TO_DEVICE feeds the device from a page the mapping may not
+cover. Partial syncs through dma_sync_single_range_for_*() are what make
+tlb_offset non-zero.
 
-dma_declare_coherent_memory() checks the same call and releases the
-memory on failure, and rmem_swiotlb_device_init() propagates its own
-errors. Return the error here as well, so a device tree that assigns two
-pools to one device fails the probe instead of half working.
+The branch test is picked the same way, so a slot recorded in lowmem can
+be adjusted into highmem and the lowmem path then hands a highmem
+address to phys_to_virt().
 
-Fixes: 7bfa5ab6fa1b ("drivers: dma-coherent: add initialization from device tree")
+Take both from orig_addr once it is final and keep pfn in the branch
+that uses it. PhysHighMem() asks the question straight from the address,
+as dma-debug already does.
+
+Fixes: 5f89468e2f06 ("swiotlb: manipulate orig_addr when tlb_addr has offset")
+Cc: stable@vger.kernel.org
 Signed-off-by: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
 ---
-Compile-tested only, with CONFIG_DMA_DECLARE_COHERENT=y and
-CONFIG_OF_RESERVED_MEM=y. I do not have a board that assigns two
-shared-dma-pool regions to one device; the release path was traced
-through of_reserved_mem_device_release() and rmem_dma_device_release()
-rather than observed.
+Reproduced under QEMU (qemu-system-arm -M virt, 2G) with a 32-bit ARM
+kernel built from multi_v7_defconfig plus CONFIG_ARM_LPAE=y and
+CONFIG_HIGHMEM=y, which brings in CONFIG_SWIOTLB, booted with
+swiotlb=force. A test module maps two highmem pages at page offset 3840,
+writes a pattern into the bounce buffer 500 bytes in and calls
+dma_sync_single_range_for_cpu() over that range, so that 3840 + 500
+crosses into the second page:
 
- kernel/dma/coherent.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+  before: swbug: pages pfn=700d4 highmem=1
+          swbug: orig phys=700d4f00 (page off 3840)
+          swbug: RESULT page0_off=244 page1_off=-1
+  after:  swbug: RESULT page0_off=-1 page1_off=244
 
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 45bbae947f4b..4d0266893bcc 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -352,8 +352,7 @@ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
- 	    min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit))
- 		dev_warn(dev, "reserved memory is beyond device's set DMA address range\n");
+The pattern lands one page below its intended location without the
+change and in the right place with it.
+
+ kernel/dma/swiotlb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index ded7016a46a7..aa2f1c4588b9 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1019,7 +1019,6 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
+ 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+ 	size_t alloc_size = mem->slots[index].alloc_size;
+-	unsigned long pfn = PFN_DOWN(orig_addr);
+ 	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
+ 	int tlb_offset;
  
--	dma_assign_coherent_memory(dev, mem);
--	return 0;
-+	return dma_assign_coherent_memory(dev, mem);
- }
+@@ -1052,7 +1051,8 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 		size = alloc_size;
+ 	}
  
- static void rmem_dma_device_release(struct reserved_mem *rmem,
+-	if (PageHighMem(pfn_to_page(pfn))) {
++	if (PhysHighMem(orig_addr)) {
++		unsigned long pfn = PFN_DOWN(orig_addr);
+ 		unsigned int offset = orig_addr & ~PAGE_MASK;
+ 		struct page *page;
+ 		unsigned int sz = 0;
 -- 
 2.53.0
 
