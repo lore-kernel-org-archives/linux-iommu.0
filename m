@@ -1,111 +1,132 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mta0.migadu.com (out-97.mta0.migadu.com [91.218.175.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D09B2448BAF
-	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 10:38:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F11EE3DDAE2
+	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 12:57:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788604708; cv=none; b=SuLMwweJeSpVHWFNEl6KwTFZQ4XxFJA7u4Hd6gX4ABpFEPgWlvP8B41qKlUOgVRiXk/FNKOdjmor3HaeRu90704ra9s3lFMkGFge+41x+8Fxg6Dh+HsCcOfO4Ge/paEdQ855wfw7RGMcWIUgtKdY6fomg4bnGtnOANLrSzLv8vA=
+	t=1788613078; cv=none; b=Br8aeD/np4pFTmK+ITM/8YlXLap/gzWAIXuDG3UNITqw5WZDUyIfO7X9knbmtHPtGmnNXzLIdus0el6a9wwGW+Ahh2v61ZOCxVx0vN/Ls8Vx/08OMW6UMflWdCjZsHvLs+8VKQqOZoRgg7retlt44pzzYI1PMMt1FfsiDNoc2zQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788604708; c=relaxed/simple;
-	bh=6k1nS/F9xk3/l6EbkKNHsEdhtudmFiQXpV5uPZWMm9A=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=G+rafrEmbaj1c+46eLXVEltPbR4p4Y3om8wSMXFub9RThXsNLivdGNVbt4agFEEC7/DZwm3opllRg6yfsEV+aqSidJeR4QjOgKHrK2mjo3KEt4GfWJ3dG9GGU9LDWgsHh+1YJr3LKtIM2wRDciW68HL5no4gvbpwWnAzj60oL+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dK9QIhQ1; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788613078; c=relaxed/simple;
+	bh=6PIvpKWK+Ee59Xh6tlvDfoJ4/XkFQFEdfgzS5msTKzA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WhNSfY1Tin7/+wtKnvHfRr0Qkbm2/UY0zGhCSdDO1TsKdxoKxGrG0VI+MMvUBFSMqIW0fMqyiPvQRV9TgfRzkPSz48faQL6HHAJV+PhwYqwqUHaE200x3I3y4R5cqtoRLAji/WztCUHz15iEh1p4VGasTc75pVx3HEFVhCMh4Ls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=i5NENDXr; arc=none smtp.client-ip=91.218.175.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dK9QIhQ1"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49556f97a9dso15507555e9.1
-        for <iommu@lists.linux.dev>; Sat, 05 Sep 2026 03:38:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788604703; x=1789209503; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EuOySspaniUOzxdoDKGAWC5U3uQzn5Y/9QqLZWlIQck=;
-        b=dK9QIhQ1dduU+VYENJKoeBfFpTo1p5JZNyprgPMoqdX+hS47ZZTBBB9MCIB/ldc4rh
-         TbYdP4wsm1g0F/MTU4nTzAodMfyGOyR8H+jjTYSjTnIGJ9KHwvGiWeAxKApTW1g9zKAp
-         XhDXl+u01reHqAW1dXegKYWqHOdR80MbHFtt0k5NB+vWQ2ftkO+Y9YsuwNQGcVXrOSck
-         J8BvED7p9O5Pn1eMfBo3J+xwT4YTCx8QQLOSQJHVYBlOJOxnhzzdqeyx0z2NIAtFDNwP
-         g/U4lJiuh7sOE0FFGhHzWfcQLvHJV2Cj5TKYx/zu7YIz8KnoZZBk2eMO61CWgy76Whbj
-         himA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788604703; x=1789209503;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EuOySspaniUOzxdoDKGAWC5U3uQzn5Y/9QqLZWlIQck=;
-        b=gG+nzVEWc4XH59IMXYjYwfcwWhPefgfM3LYelBJTCR5/t+XcQfL+gNLcLTJjM37ZS3
-         TPZx8O61qjayZc8resbECFl8ZSHVmSTnwbS5SM62piCFcHeW7CQJgWICehE98VifJ2wE
-         Ytcg0OTJMxtdklbPJSr4/1r3VxNNOhFHqvUteqOss7C7+kLP4NkBpvwVT0h34OX6khFg
-         75sp2KiuRqeVfdfZCjARsr78ZUWIQWwTfVHdO2qz4KURwpuxCl8SrczLRqeU1OOtZ6jP
-         yaQylb7VXBaLg1jg9mMBo/+T945iTjBGOrP30xTC4FJ9+Y0HBDrFDq7HW86mQevwrxVF
-         fklw==
-X-Forwarded-Encrypted: i=1; AKwUvByM7VDM0doXN1g1C/9E68+G42Js9pC0MYv/FZyIWQ/kqXVri0/n/HFi6WRhCEXXaURCCUhapw==@lists.linux.dev
-X-Gm-Message-State: AFuF++lXtukjZhU+jM9ChFgXiDXmDmxbwaw0oODO7JSPKTkF2v/8F6XD
-	jJEHbdG6c61AF6BUzhLpZ33hwrwVFxMtueVsz8xU9vA0P+nyF4A6HiqV
-X-Gm-Gg: AYBFou1J2fHvENcBcLOzQdSFzmR93Ry+kdlXg/6FuZVlYvtIF70QHDWKa7FW/6pxan1
-	oY7jfZMH/QXpLm575L1cTTCcSJlsYgAaRCRd6fMaKI/JiE+jEntgIAaCLpnLSS67q7YLtkEQ3/x
-	K0KMQFZMwmdxGODz6KVORh25VuCSYeKd21DOUqMN7kZNRRe6qh9GPhg6Dei+0Q212VWq8GWORCu
-	wHbdC1Unq0KVTORFIfBTEP/R/nVIUo4kbTUHI+axiVbFTA+xgECkFo87egf+W3nuNXWdHaUeF/+
-	lhvnr7ObgCLCfFm9Oufdx2GVXzBlbAV5mKVn41roQH/mxR/n+sL1CaB/XREduJ2OvuqVOcC5I+1
-	jkSifgb6W34TYRGPHIMcvurWZmhTOWOIwqqSV8iQMtTwsfeu8hkFgieirKZsLMUbU9NbQoGQA0S
-	hexOWu5MtieDT8D1kxNeqDs9NmJc0EYeDFIpNpDvDbX8DqAdjNsPydOJZrqPXtF4P69Dr3cJpc+
-	8UiknlsLjapXUAerffKORCfwvtY8pCMM+gEO/KnYE8D15a0tW8+/vvgvvABWXSOC6Mab+TjsCom
-	qpK+M3Mng704FMa5q08XGrfhB/bsAh51eZeK/VAHjQCKe5r/wMIaEhYdl5Et+MGBvP1bk7S0P9G
-	4Zg==
-X-Received: by 2002:a05:600c:a4b:b0:499:4e47:eaf2 with SMTP id 5b1f17b1804b1-49cf824020amr106100295e9.6.1788604703271;
-        Sat, 05 Sep 2026 03:38:23 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-2a02-3100-a4eb-3001-c06d-af27-9fa2-ea53.310.pool.telefonica.de. [2a02:3100:a4eb:3001:c06d:af27:9fa2:ea53])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48591eb3d3bsm3335250f8f.0.2026.09.05.03.38.22
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sat, 05 Sep 2026 03:38:22 -0700 (PDT)
-From: Karl Mehltretter <kmehltretter@gmail.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Karl Mehltretter <kmehltretter@gmail.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Subject: [PATCH] Documentation: userspace-api: iommufd: Fix the struct iommu_hwpt_alloc name
-Date: Sat,  5 Sep 2026 12:38:19 +0200
-Message-Id: <20260905103819.43424-1-kmehltretter@gmail.com>
-X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="i5NENDXr"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=6PIvpKWK+Ee59Xh6tlvDfoJ4/XkFQFEdfgzS5msTKzA=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1788613073; v=1; x=1789217873;
+ b=i5NENDXr/ZrDyO6VqLA7b42fpX/hQMJoCXqfg2fMu/9kq8uwIM622WgEYZncHFu0MA5ZQd7U
+ ccGN5+c0VlelVwcmxIGdFnWlW43wem2tkhULMgNXt1oAa5qAHgYySkkzFoWZ8DEtZaLbAe41Rd8
+ v6XX7en4NTzvr+7zaRvKNJGM=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id fc90dd21752b853b;
+	Sat, 05 Sep 2026 12:57:43 +0000
+X-Mizu-Trace-ID: fc90dd21752b853b
+X-Migadu-Flow: FLOW_OUT
+Message-ID: <568a4f04-e0db-342a-13a8-886cf6b2a8ab@linux.dev>
+Date: Sat, 5 Sep 2026 08:57:42 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dma-mapping: don't trace the DMA address when the
+ allocation fails
+Content-Language: en-US
+To: Donggeun Yoo <donggeunyoo.kernel@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Steven Rostedt
+ <rostedt@goodmis.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260905071919.30784-1-donggeunyoo.kernel@gmail.com>
+From: Sean Anderson <sean.anderson@linux.dev>
+In-Reply-To: <20260905071919.30784-1-donggeunyoo.kernel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-struct iommufd_hwpt_alloc does not exist; the name is struct
-iommu_hwpt_alloc.
+On 9/5/26 03:19, Donggeun Yoo wrote:
+> dma_alloc_attrs() passes *dma_handle to trace_dma_alloc() and
+> debug_dma_alloc_coherent() without checking whether the allocation
+> succeeded.
 
-Use struct iommu_hwpt_alloc.
+I don't understand what you mean. We are literally in an if-statement
+that checks whether the allocation succeeded.
 
-Fixes: e2d8fe9148b7 ("Documentation: userspace-api: iommufd: Update HWPT_PAGING and HWPT_NESTED")
-Assisted-by: LLM
-Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
----
- Documentation/userspace-api/iommufd.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--Sean
 
-diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/userspace-api/iommufd.rst
-index f1c4d21e5c5e..763b23339480 100644
---- a/Documentation/userspace-api/iommufd.rst
-+++ b/Documentation/userspace-api/iommufd.rst
-@@ -242,7 +242,7 @@ creating the objects and links::
- 
-       Either a manual IOMMUFD_OBJ_HWPT_PAGING or an IOMMUFD_OBJ_HWPT_NESTED is
-       created via the same IOMMU_HWPT_ALLOC uAPI. The difference is at the type
--      of the object passed in via the @pt_id field of struct iommufd_hwpt_alloc.
-+      of the object passed in via the @pt_id field of struct iommu_hwpt_alloc.
- 
- 5. IOMMUFD_OBJ_VIOMMU can be only manually created via the IOMMU_VIOMMU_ALLOC
-    uAPI, provided a dev_id (for the device's physical IOMMU to back the vIOMMU)
--- 
-2.53.0
+> No backend writes it on failure: dma_direct_alloc(),
+> iommu_dma_alloc() and the dma_map_ops instances assign it only on the
+> path that returns a buffer. Callers usually pass an uninitialized
+> automatic variable, so with the tracepoint enabled a failed allocation
+> records whatever the stack held, next to the virt_addr=(null) that marks
+> the record as an error.
+> 
+> The device coherent pool path is the same: a non-zero return from
+> dma_alloc_from_dev_coherent() means the request was handled, not that it
+> succeeded, so cpu_addr is NULL and dma_handle untouched once the pool
+> runs out.
+> 
+> Split both sites on cpu_addr, as dma_alloc_pages() and
+> dma_alloc_noncontiguous() do further down the file, and pass 0 for the
+> failure case like the two error paths already in this function.
+> 
+> Fixes: 038eb433dc14 ("dma-mapping: add tracing for dma-mapping API calls")
+> Fixes: 68b6dbf1f441 ("dma-mapping: trace more error paths")
+> Signed-off-by: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
+> ---
+> Compile-tested only, with CONFIG_DMA_API_DEBUG=y and CONFIG_TRACEPOINTS=y
+> so that both changed calls are built. The claim that no backend writes
+> *dma_handle on failure was checked against dma_direct_alloc() and its
+> helpers, iommu_dma_alloc(), iommu_dma_alloc_remap() and every in-tree
+> dma_map_ops .alloc implementation.
+> 
+>   kernel/dma/mapping.c | 20 +++++++++++++++-----
+>   1 file changed, 15 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index bf2651a70b7c..098cd57e1157 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -656,8 +656,12 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
+>   
+>   	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
+> -		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+> -				DMA_BIDIRECTIONAL, flag, attrs);
+> +		if (cpu_addr)
+> +			trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+> +					DMA_BIDIRECTIONAL, flag, attrs);
+> +		else
+> +			trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL,
+> +					flag, attrs);
+>   		return cpu_addr;
+>   	}
+>   
+> @@ -676,9 +680,15 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   		return NULL;
+>   	}
+>   
+> -	trace_dma_alloc(dev, cpu_addr, *dma_handle, size, DMA_BIDIRECTIONAL,
+> -			flag, attrs);
+> -	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
+> +	if (cpu_addr) {
+> +		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+> +				DMA_BIDIRECTIONAL, flag, attrs);
+> +		debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr,
+> +					 attrs);
+> +	} else {
+> +		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
+> +				attrs);
+> +	}
+>   	return cpu_addr;
+>   }
+>   EXPORT_SYMBOL(dma_alloc_attrs);
 
