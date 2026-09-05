@@ -1,83 +1,132 @@
-Received: from mta0.migadu.com (out-102.mta0.migadu.com [91.218.175.102])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m49197.qiye.163.com (mail-m49197.qiye.163.com [45.254.49.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B2E442391
-	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 18:37:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.102
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F52936A35C
+	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 18:39:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788633441; cv=none; b=FgT/cTJS5zDThnxydMX0euKmrduMO4RisW/yRn4SFPPAP8kHn+Xf7MCAysjcaBae7S2RwOypJWTyDwAPKFu9NmGg0cVaq+NfY0NOgUhJ4sFoLaElcdEJkh3WaJs85K+kJ+IrYR3O3xIDTUSE3aQVt6rDaJqsOSzuFBMOLPorFZ4=
+	t=1788633548; cv=none; b=Mne4c6WCsCXfoGMWehh7bxmu5CsLDJ8dmwyjYVKVYuP8Yz68sZw7kLqelg4iEIIPzlDV2/oANflb/1EIGI4tKg28zKadxy6uaIrq4sUb5s7QZyKYQTt8J0TaMUApl3kIkKFRB4mpUq38E6xdMlsM8oA+9HDrvV6Jb5GG2gXwkko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788633441; c=relaxed/simple;
-	bh=I2hZAS3S7zBbw3qzs6V1oH6J1n9227ey8lD2DiKGnxs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XSWf6pIW4IXhZolHhPOQuujQvksyWhAQvbRh1vW2ZeTkFONUFAh/TJDeLWa9QceT2n+41qVDXaTRfyVzAzoLV/y+unXBiqtlLyshwefYhCvj2zQF9g3O7Sg8/Grbt09mLtfiF2QLfeIoUrCiJCs6EyAqh/A6esRrJTLbFxNPevE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Tgwr3fBy; arc=none smtp.client-ip=91.218.175.102
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1788633548; c=relaxed/simple;
+	bh=xYGYa9Hek/Obo34kwAq80rWFnedafs19PROnm7BcfPg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=j4ZGZh/+b0QgI+npmWTSq09bHFSF0XUxYjPqls9vAwd3wioLk0ZlF9rJv/JqrO45KebyP7KgFNWiSBj1qw8HSQNO2BWbV017v6HB/oItQcQ+//LD1oD1hoMDwUFZo5WjZXePNdtaCLeOkrInelpnH1GYh8fYvKwMJlcOVHSUyYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tju.edu.cn; spf=pass smtp.mailfrom=tju.edu.cn; dkim=pass (1024-bit key) header.d=tju.edu.cn header.i=@tju.edu.cn header.b=VmlBupvG; arc=none smtp.client-ip=45.254.49.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Tgwr3fBy"
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=I2hZAS3S7zBbw3qzs6V1oH6J1n9227ey8lD2DiKGnxs=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1788633437; v=1; x=1789238237;
- b=Tgwr3fByoRlxbTz+enl3FTypVoOTKxfx6DQ7FukQerkr5XKMsnMPIX5w1Tn8+Ov1WzT7FZAc
- oUasCBoBFYaT1dnOlMTFql3NssmB1Uzy+8J6IGV/dEzurnxf9K/LLXe2pQ72dFd8Bfeg56JpAE5
- 009OmVZjFZBT75GPWAyq4i5A=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id ea0f1e74fddd1034;
-	Sat, 05 Sep 2026 18:37:07 +0000
-X-Mizu-Trace-ID: ea0f1e74fddd1034
-X-Migadu-Flow: FLOW_OUT
-Message-ID: <b36f40ac-cd77-a480-d558-139334334b16@linux.dev>
-Date: Sat, 5 Sep 2026 14:37:05 -0400
+	dkim=pass (1024-bit key) header.d=tju.edu.cn header.i=@tju.edu.cn header.b="VmlBupvG"
+Received: from tju.edu.cn (gy-adaptive-ssl-proxy-4-entmail-virt151.gy.ntes [183.242.150.9])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 4caa43901;
+	Sun, 6 Sep 2026 02:38:50 +0800 (GMT+08:00)
+From: Yibo Tan <lhfff@tju.edu.cn>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1] iommu/vsi: Fix use-after-free during module unload
+Date: Sun,  6 Sep 2026 02:38:34 +0800
+Message-Id: <20260905183834.3447662-1-lhfff@tju.edu.cn>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dma-mapping: don't trace the DMA address when the
- allocation fails
-Content-Language: en-US
-To: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260905071919.30784-1-donggeunyoo.kernel@gmail.com>
- <568a4f04-e0db-342a-13a8-886cf6b2a8ab@linux.dev>
- <20260905172650.158565-1-donggeunyoo.kernel@gmail.com>
-From: Sean Anderson <sean.anderson@linux.dev>
-In-Reply-To: <20260905172650.158565-1-donggeunyoo.kernel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0aa072ddc17603a1kunm5373407b79fa9
+X-HM-MType: 10
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCSk0fVkoaSk9CGkhIHxpKSlYeHw
+	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlKQ0hVSU9JVUpOS1VCWVdZFhoPEhUdFFlBWU9LSFVKS0lCQ0
+	NMVUpLS1VLWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=VmlBupvGNP5sT1YTTDm8c/ZyiJKLmZrzlFLGrlWvNhurMYrxJsFTGAV4EovS7riY1H0AUw6fiIKDKw50aU9GBmtvzEFXA4gxVBfz2tsG4RypMCDQsjevgkcMfBiEecR++WVC9Dq6nP9XdkZwe0GPY953AVd2o4Ls4TAhIPleZlU=; c=relaxed/relaxed; s=default; d=tju.edu.cn; v=1;
+	bh=SBfpfvviXC7wJ6dAgnKEWOLkJQUtf7iwlRWX3rcK50o=;
+	h=date:mime-version:subject:message-id:from;
 
-On 9/5/26 13:26, Donggeun Yoo wrote:
-> On 9/5/26 08:57, Sean Anderson wrote:
->> I don't understand what you mean. We are literally in an if-statement
->> that checks whether the allocation succeeded.
-> 
-> That if checks whether the device has a coherent pool, not whether the
-> allocation out of it worked. dma_alloc_from_dev_coherent():
-> 
->   * Returns 0 if dma_alloc_coherent should continue with allocating from
->   * generic memory areas, or !0 if dma_alloc_coherent should return @ret.
-> 
-> It returns 1 as soon as it finds a pool; __dma_alloc_from_coherent()
-> stores NULL in @ret and leaves *dma_handle alone when the request is
-> larger than the pool or the pool is full. The third paragraph of the
-> commit message says this.
-> 
-> The second hunk is under no condition at all: dma_direct_alloc(),
-> iommu_dma_alloc() and ops->alloc() return NULL on failure, and the trace
-> below the if/else chain runs either way.
+iommu_device_register() links the embedded iommu_device into the IOMMU
+core's global device list. The VSI driver can be built as a module, but
+has no remove callback to unregister the device before devres frees the
+containing struct vsi_iommu.
 
-Ah, I see what you mean. TBH I would just do something like
+With no attached consumer holding a module reference, unloading
+vsi-iommu.ko succeeds. A later platform device registration enters the
+IOMMU bus notifier and scans the stale list entry. KASAN reports a
+slab-use-after-free in __iommu_probe_device().
 
-cpu_handle ? *dma_handle : NULL
+The missing unregister operation on driver unbind was also noted during
+review of the driver's fwnode lookup lifetime handling.
 
-to make it clear what we're doing
+Add the missing remove callback. Unregister the IOMMU device and remove
+its sysfs object while the provider is still alive. Release the exact
+shared IRQ action before forcing runtime suspend, then unprepare the
+clocks acquired during probe.
 
---Sean
+The failure was reproduced on the 2026-08-11 IOMMU next snapshot with
+real module load and unload syscalls. With the same KASAN kernel, the
+unmodified driver produced two invalid reads from the same freed list
+entry. The patched driver removed the entry, completed the later device
+registration and produced no KASAN, WARNING, Oops or panic.
+
+The remove callback also builds with W=1 for arm64 with
+ARCH_ROCKCHIP=y and CONFIG_PM=y, and for the arm64 COMPILE_TEST path
+with CONFIG_PM=n.
+
+A standalone reproducer, the vulnerable and fixed serial logs, and
+their checksums are available at:
+
+https://github.com/kimaiden1984-boop/linux-vsi-iommu-unload-uaf-reproducer
+
+Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
+Link: https://lore.kernel.org/0e405cb3-1227-4ad2-96ff-aa0db3124381@arm.com/
+Cc: stable@vger.kernel.org
+Assisted-by: Codex:GPT-5
+Signed-off-by: Yibo Tan <lhfff@tju.edu.cn>
+---
+The QEMU helper supplies the platform device, MMIO resource, IRQ and
+firmware node normally provided by RK3588 hardware. The failing access
+occurs while the IOMMU core scans its provider list, before VSI register
+access.
+
+Not tested on physical RK3588 hardware: removal with an attached
+decoder, a runtime-active device, or concurrent interrupt delivery.
+
+ drivers/iommu/vsi-iommu.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
+index 42c424496..7fa7ee8cf 100644
+--- a/drivers/iommu/vsi-iommu.c
++++ b/drivers/iommu/vsi-iommu.c
+@@ -728,6 +728,17 @@ static int vsi_iommu_probe(struct platform_device *pdev)
+ 	return err;
+ }
+ 
++static void vsi_iommu_remove(struct platform_device *pdev)
++{
++	struct vsi_iommu *iommu = platform_get_drvdata(pdev);
++
++	iommu_device_unregister(&iommu->iommu);
++	iommu_device_sysfs_remove(&iommu->iommu);
++	devm_free_irq(&pdev->dev, iommu->irq, iommu);
++	pm_runtime_force_suspend(&pdev->dev);
++	clk_bulk_unprepare(iommu->num_clocks, iommu->clocks);
++}
++
+ static void vsi_iommu_shutdown(struct platform_device *pdev)
+ {
+ 	struct vsi_iommu *iommu = platform_get_drvdata(pdev);
+@@ -776,6 +787,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(vsi_iommu_pm_ops,
+ 
+ static struct platform_driver rockchip_vsi_iommu_driver = {
+ 	.probe = vsi_iommu_probe,
++	.remove = vsi_iommu_remove,
+ 	.shutdown = vsi_iommu_shutdown,
+ 	.driver = {
+ 		   .name = "vsi_iommu",
+-- 
+2.39.5
+
