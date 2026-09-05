@@ -1,73 +1,72 @@
-Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48C493F4125
-	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 07:19:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4783BF684
+	for <iommu@lists.linux.dev>; Sat,  5 Sep 2026 07:47:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788592765; cv=none; b=a/N5CsWJDnnATCy90NIveZpu2KKkq4gRABPUXat/mbuvrhVJ7EXzamhjbU5C6L5xAQFTEkmEQ3GLRWCEyJtc9d94bYRgJfkwYasfIO9RBbU9wiWMujo44NCw4ArAUz6uqenl4mZHpbijH362Rj+70u4Ak7WamgjvbuvchQFEO7c=
+	t=1788594453; cv=none; b=ZEMJk0wqbI3ZII1FBd4dUxLe+5ieatvgNjupERRbebfqfyu4D8Tp8F3bBeyO05CZBPuVnwtfGQU1X4bHJFj3ZC/nzZdCOTr3JYTOlFLoXcyOklMWDAb6OB58EELZabqJT+dXWlkKLS52FTGY4hpGLWMlozHwZWkWA0aRcE3eVF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788592765; c=relaxed/simple;
-	bh=6b8GbCqKZboTdKKyOVySbbcctduCni9WHEE4apbn298=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=p+PGx1pS/EVdrmljzX1bt4pbSaPGWofDsfld1A7D++b2b0OE2hX2o3a5XPWpCWn4KYC2bDdjOWVY87T5IEuOUDahw2QF5XGlq98vYVIeuiBnZPHrrjl7U9duTZzwQYb5LPvvcvAAeZm0aEs47UGv5Z5a/ZtxPNRsXV6qk0RAqbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L3NUIRRr; arc=none smtp.client-ip=209.85.210.172
+	s=arc-20240116; t=1788594453; c=relaxed/simple;
+	bh=/DUmFgUshaIxy2hcef3/zwHcOL5WrkX2I9pNOXhsYB4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rZPpS277nba9jyy8xFm7P5awqi0meKB5cLA7WhVWuYI9pkJ0AhrG3FF+RSEuG9ekQpREDVxVkfZhP7nN5K2fhfEVgMeYFn6KTSnVsmFifTuiZ3iagRsEHK9df/IaFkXa7sM9x/0qB8/0lnmfnYOKWiP2HNu24+w8yBu61tHbNFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Py2/olQe; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L3NUIRRr"
-Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-84e27035206so1610492b3a.3
-        for <iommu@lists.linux.dev>; Sat, 05 Sep 2026 00:19:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Py2/olQe"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2d7200b2e15so20314835ad.3
+        for <iommu@lists.linux.dev>; Sat, 05 Sep 2026 00:47:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788592763; x=1789197563; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1788594451; x=1789199251; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Kniu51pKGU1eVNIl2Gb8/92qXSKg7BhfDHviVd7hho4=;
-        b=L3NUIRRrMXFoaauzCw4DXktex0iiCJC/B3l02gib/hkjysrevmizR/UdpeNJ6hhH2J
-         0CQChi5EkfnriccVDeKgMoRbvnN/3AzWaEzYUz0MD7gvb7yfuFnUm+n8S+RBVf/F3GiR
-         9nXiffsRAG0ScUdzlmHNi5pVSu5KVGRTSAZwSxB/y76ObHyo0DG7kN7RTg/1rsd56NRM
-         1iJ5poPx6w96q7z2eSj3nJWxqbtU0JVc70HhjKHJEaQ8j9X7nTkxofIAr5uE0TqRPtzU
-         aC0m0V3Rog3WnfY33A8Lu3uKwKcMPLN/Q9nXpncgNjKFXTAQE6s/YZp7sS2EbgR2qKv4
-         VJ+Q==
+        bh=py7XZS9hG76KDb+4aP7Vck11HgV2PvXOdVNmCjDkqo0=;
+        b=Py2/olQeiGCoZI0jAidllGzLNKgC+ui23rlTZehtGmgawJDtVvxeah39MSkpexj6QC
+         619uTdn0kdyxMEjbvALYOArbIXsZMoB46ZGRDObYhOMJxrPBtw6VREj2rKow1b8d244s
+         KUY72UE3jvxGxfrL1xHLKT8Z/DOsMhkJCJOwouURTbx1teEZyxnXl9pPyuK+8psFqNw6
+         cDWfTrI7rQpaoFYbtkO2ZqUy9+0tEvdAJTgb8OTC8H8ZTpMAHjWTH0GjXAvbb1QFbJZb
+         qW6pFSw4zofE0kE71VgtGKLCmw5SEQ8hWftW19hcnSRJxJfo0qB6pAa0kRDvRHrrs1Fz
+         b+og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788592763; x=1789197563;
+        d=1e100.net; s=20251104; t=1788594451; x=1789199251;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Kniu51pKGU1eVNIl2Gb8/92qXSKg7BhfDHviVd7hho4=;
-        b=NPhisLff8oa1/RO/zB4RDkmRVF/n9qkoY/A2XlMXFbKBCslrd3mXWJ0V0R+C/3os7p
-         YUWuNwjBPkUafrgkEeX8bV/d1ZZn+EzJxM0noKRV3+j7RWsLbcgf6K914oS/LxzktxHc
-         FSfgDsoIDGZGOMjbNlluWSsMDh522zo+PyWxtM8feoykFEIcRQ7C4i7Xfn9kh0n6PdXs
-         85lV3yAHTnqBN+Gd79yiWBKoMc3Id1+Fel0+zR/r2MMP3yBi4HbtnjxwvrWD+cRhbW43
-         YgDIv1ZAe1vejQRtGdzzOEv8pc5QUOCEobN7oBBDNGBmzzIiiWAQVf0sZmcQ8UOjk+Jb
-         9K5A==
-X-Forwarded-Encrypted: i=1; AKwUvByyOndzs+iVz9JJEOQ694pVRwBnW0DhCHq9cJkhrhT3Xcbpb2+OCp0aDnxeEg9Iyjd3frEYmA==@lists.linux.dev
-X-Gm-Message-State: AFuF++mOvD17NnKQXkRhyqyuitoifiNehkRu1U1e1NZxgaOrdPTYGKQS
-	tkz0gLK2VYoHGTXzA5Dp4abH7KWjJMmZCJzBSW+oCI418JoO8EE9Djj7EwK50mDU5A==
-X-Gm-Gg: AYBFou08OzIFT+lJ427iPlQiKofXHH4fYeTt+MEbL8l2fk66qlHSOGrmEWurnd9ug9A
-	L0KQtjti8a/FDj62leXf18DGT8rnbAMR1Jo8iZVhj66EO3wk6I7ZovnaixzpOzb1hsDRZy04wwL
-	QVJSRAW8tpHWoHOVO7XytnL4lGrCim0ZHW5WesZoWyBGbI10lLV1sb2d67+jVAejChN+b6snYhc
-	eVUysYxrVP7vp4nge6+Cjd89cvbPcKbhAjT43+Jn+aMnLYS7RXPPgQtp4I98xqeqK1rzI8IcWkR
-	qnoBCHzgUpowhFCJo/aSRgyXTYt+gvN0/a9uzDavJGjNxO/5O1FMKu0YQ6iWxIysckbbHs7nxan
-	rAWdinJAsX0VMGRQRjxYqyp3oCu2IDpS1gQKhDb61QvaTkI7kLU5KoK9swSn4pi6TNX8WsMWSMd
-	RgKxv0ZKiCwFo79DNKf5jchhvSqVWbvoVgTxQa1li2lTueyMRnnLS4k0D9LAIorJPh27SjXP5gx
-	jIjeuIeFRvzYrc=
-X-Received: by 2002:a05:6a00:3008:b0:857:3b70:209 with SMTP id d2e1a72fcca58-86167aa9918mr14558768b3a.1.1788592763408;
-        Sat, 05 Sep 2026 00:19:23 -0700 (PDT)
+        bh=py7XZS9hG76KDb+4aP7Vck11HgV2PvXOdVNmCjDkqo0=;
+        b=DrKEL9+xacb23twrttN5eja2j4vY8rab1xAjFmewEo8eQ5TYdIL8/WopXgx66pZ41B
+         XADZaKum0IpUmYwFyngH41Xq2QNij2+7RRhsouh/FhsPZmBkra1krnQOh89zsauIG6Hm
+         EX21JPLroHHrOvLKy1+kPdlZI97tZSINynaBvT5+4S/5CMmlvB/pjxt0V4IRSvkaBbqF
+         Rqtg3aLJlOTlVIpr2wDKd+JFWpSPIezkC/Q9yrPhB21ndePrk8Qvk7/UlwdiIQGxseBL
+         nxrtcSSiWMls80nmh+Uob9l6JBCJ9zCBNKjHJNGFDU73v1XJBfJL+Aa10YzebsC4cZyW
+         m4NQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzQ6x5Okwp7VTvy+fsk0ujq8vHaiuOGif5Wrg4TqwulJGtjpw/mLu7AAbw+CLkDEYgNdUdcaQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++mctSiap2TSuBZKIudRPsqHTNpyB1i3bre0eje+MP4vFJe2r+SF
+	yV68h4MMKCY+qQRTWAtHMYGKfAap5/7Y0nVH4QFXPCfWHx+9ojw/noI=
+X-Gm-Gg: AYBFou2rwIkoSdedNbdDHsRZIZr9ZlclVmDmONcjhkLx+QS7IL1vuYSr2I33sE3XgAj
+	37OaTRdzcQD8Zi52C4MwBaz4PpZvXSGRPbDvpJtO6mAdaStdyPd10H8JxtBqXTFn4f5wPIuMJ+P
+	VaUfkxj06l953xbWub9SwvRMKhYB916Ai18doqEbEglkpe3ufb5J+zKtyAegL8jhtMd3hcVFOvb
+	1/SBknp5WeuE8gY6YwI6g7Oo2C/28koBVnrYJxb0ZNk6gSs9ea5Sf7dtp1XvKz/T80NPUo3SfKX
+	hCW+khEjqc9mFls/bDvJlBL1y7bTVbKzpMVZeJZeHRHhkG44FSRXkqeyGpM+WseymhoeS4oKxZK
+	3HPqKzwAN7+0whvlYQYmYxvV1cMQgxAdFCDUC6yqqmk00YA+X7eHuYUNLekI7KCQFBk32yS84yp
+	rjATwa9G7AKzLwCWFnohRt2AWudboqhT7wW6nCohvnlBrOu0pQU3drqKrtaXuB18niH07wzGlgW
+	ruI9HN/ObZPFu0=
+X-Received: by 2002:a17:90b:1343:b0:38e:9eb2:9d43 with SMTP id 98e67ed59e1d1-39b261b1bcfmr19773477a91.16.1788594451255;
+        Sat, 05 Sep 2026 00:47:31 -0700 (PDT)
 Received: from ydg-Zenbook-14-UM3406GA ([211.230.25.193])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-861520404f7sm2033047b3a.16.2026.09.05.00.19.21
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b08bcc060sm16677217a91.3.2026.09.05.00.47.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2026 00:19:22 -0700 (PDT)
+        Sat, 05 Sep 2026 00:47:30 -0700 (PDT)
 From: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: Robin Murphy <robin.murphy@arm.com>,
-	Sean Anderson <sean.anderson@linux.dev>,
-	Steven Rostedt <rostedt@goodmis.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	donggeunyoo.kernel@gmail.com
-Subject: [PATCH] dma-mapping: don't trace the DMA address when the allocation fails
-Date: Sat,  5 Sep 2026 16:19:19 +0900
-Message-ID: <20260905071919.30784-1-donggeunyoo.kernel@gmail.com>
+Subject: [PATCH] dma-coherent: report a failed reserved memory assignment
+Date: Sat,  5 Sep 2026 16:47:27 +0900
+Message-ID: <20260905074727.108029-1-donggeunyoo.kernel@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -77,75 +76,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-dma_alloc_attrs() passes *dma_handle to trace_dma_alloc() and
-debug_dma_alloc_coherent() without checking whether the allocation
-succeeded. No backend writes it on failure: dma_direct_alloc(),
-iommu_dma_alloc() and the dma_map_ops instances assign it only on the
-path that returns a buffer. Callers usually pass an uninitialized
-automatic variable, so with the tracepoint enabled a failed allocation
-records whatever the stack held, next to the virt_addr=(null) that marks
-the record as an error.
+rmem_dma_device_init() drops the return value of
+dma_assign_coherent_memory() and always reports success. That call fails
+with -EBUSY when the device already has a coherent pool, and the file
+allows only "*one* such region of memory" per device.
 
-The device coherent pool path is the same: a non-zero return from
-dma_alloc_from_dev_coherent() means the request was handled, not that it
-succeeded, so cpu_addr is NULL and dma_handle untouched once the pool
-runs out.
+of_reserved_mem_device_init_by_idx() reads the zero as success. It logs
+"assigned reserved memory node" for a region that was not assigned and
+records the pairing, so of_reserved_mem_device_release() later runs
+rmem_dma_device_release() for it. That clears dev->dma_mem without
+looking at which region it was called for, dropping the pool the device
+did get and leaving it on ordinary memory.
 
-Split both sites on cpu_addr, as dma_alloc_pages() and
-dma_alloc_noncontiguous() do further down the file, and pass 0 for the
-failure case like the two error paths already in this function.
+dma_declare_coherent_memory() checks the same call and releases the
+memory on failure, and rmem_swiotlb_device_init() propagates its own
+errors. Return the error here as well, so a device tree that assigns two
+pools to one device fails the probe instead of half working.
 
-Fixes: 038eb433dc14 ("dma-mapping: add tracing for dma-mapping API calls")
-Fixes: 68b6dbf1f441 ("dma-mapping: trace more error paths")
+Fixes: 7bfa5ab6fa1b ("drivers: dma-coherent: add initialization from device tree")
 Signed-off-by: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
 ---
-Compile-tested only, with CONFIG_DMA_API_DEBUG=y and CONFIG_TRACEPOINTS=y
-so that both changed calls are built. The claim that no backend writes
-*dma_handle on failure was checked against dma_direct_alloc() and its
-helpers, iommu_dma_alloc(), iommu_dma_alloc_remap() and every in-tree
-dma_map_ops .alloc implementation.
+Compile-tested only, with CONFIG_DMA_DECLARE_COHERENT=y and
+CONFIG_OF_RESERVED_MEM=y. I do not have a board that assigns two
+shared-dma-pool regions to one device; the release path was traced
+through of_reserved_mem_device_release() and rmem_dma_device_release()
+rather than observed.
 
- kernel/dma/mapping.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ kernel/dma/coherent.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index bf2651a70b7c..098cd57e1157 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -656,8 +656,12 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
+diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+index 45bbae947f4b..4d0266893bcc 100644
+--- a/kernel/dma/coherent.c
++++ b/kernel/dma/coherent.c
+@@ -352,8 +352,7 @@ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
+ 	    min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit))
+ 		dev_warn(dev, "reserved memory is beyond device's set DMA address range\n");
  
- 	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
--		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
--				DMA_BIDIRECTIONAL, flag, attrs);
-+		if (cpu_addr)
-+			trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
-+					DMA_BIDIRECTIONAL, flag, attrs);
-+		else
-+			trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL,
-+					flag, attrs);
- 		return cpu_addr;
- 	}
- 
-@@ -676,9 +680,15 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		return NULL;
- 	}
- 
--	trace_dma_alloc(dev, cpu_addr, *dma_handle, size, DMA_BIDIRECTIONAL,
--			flag, attrs);
--	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
-+	if (cpu_addr) {
-+		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
-+				DMA_BIDIRECTIONAL, flag, attrs);
-+		debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr,
-+					 attrs);
-+	} else {
-+		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
-+				attrs);
-+	}
- 	return cpu_addr;
+-	dma_assign_coherent_memory(dev, mem);
+-	return 0;
++	return dma_assign_coherent_memory(dev, mem);
  }
- EXPORT_SYMBOL(dma_alloc_attrs);
+ 
+ static void rmem_dma_device_release(struct reserved_mem *rmem,
 -- 
 2.53.0
 
