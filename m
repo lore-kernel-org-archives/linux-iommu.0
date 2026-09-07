@@ -1,92 +1,154 @@
-Received: from mail-m1973191.qiye.163.com (mail-m1973191.qiye.163.com [220.197.31.91])
+Received: from mail-m3268.qiye.163.com (mail-m3268.qiye.163.com [220.197.32.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DDE416878
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 07:40:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.91
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A3DE431A50
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 08:07:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.32.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788766807; cv=none; b=YcYyk30afA7y7JWaKD6o09YglNg957k7LN2raGE/CEMPboqMWy+CL1CnCoWgOzMM5xTub3VSYQALAiVuB1XfMfeecsIBHXqcd+0LBCytjGZnv2ic9Og04R/JHkHwJi0U3HCkMQjpzTMHh4Sax9rDH4FjUkkav7Kre+lXyJ1NQSw=
+	t=1788768427; cv=none; b=T1vaQZtmHv/oWMUvlQhP86ULk71PmXHuR+ODKXsDoIJi52n064obD5aT/PO1+8PZB2Tt8YJgeSNB8L61SLx9gCCEF39xU73eX2h+v+KQQ4QILJ4NOyOMONySRkuB65WnpWmkzJWHD2/ujs0W/Ue3PXNL4egmBF5hShQf99HIN5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788766807; c=relaxed/simple;
-	bh=FETyHV5oNdwe2B+5dMcqMzeGfptPLJBq55LFY+oJtxI=;
-	h=Content-Type:Message-ID:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:From:Date; b=YsN3al8SgnA77t7CZXpc7Sp3o1B7EsTYcqeVn+hwtuQTemoyTSPp5EkgsmuGaQHzX/Tetdrr2YRzLYTpHTjZgFV/JYogsLwVqqAFzaedZkrxphPRUfnh1OHp6D5wwmTd/VN6zXrgOGgVjK48IKgfchQindcvFWgqRI207Qs6slI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=resnics.com; spf=pass smtp.mailfrom=resnics.com; arc=none smtp.client-ip=220.197.31.91
+	s=arc-20240116; t=1788768427; c=relaxed/simple;
+	bh=talLoTtij+UAkEmWW9J4GgHZ/+d8CSO0ec8BjSHv8F8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=VcFBTkXLRVBPUJayS86jhoVM2ODNlmS5SVOouz2jYTzqjTRvsHuZGUu5PEIqR72caRZJEMU0ZWGGVqblTqa1+SI5/I68IEb0asttjckh4qu0c+HGKqHz0zArlYW/0Tz8u0tf0GLI8/I5m3rRsUM/rEYOvJ38E8xE6dIMKmr5CSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=resnics.com; spf=pass smtp.mailfrom=resnics.com; arc=none smtp.client-ip=220.197.32.68
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=resnics.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=resnics.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Message-ID: <AAoAJADfK4tx**u*ymw4P4pP.3.1788766489184.Hmail.zhouruizhe@resnics.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
-	Frank Li <Frank.li@oss.nxp.com>, 
-	Shuah Khan <skhan@linuxfoundation.org>, 
-	Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: =?UTF-8?B?UmU6UmU6IFtQQVRDSF0gZG9jczogZG1hLWFwaTogcmVxdWlyZSBjaGVja2luZyBETUEgbWFzayBzZXR1cCBlcnJvcnM=?=
-X-Priority: 3
-X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com web
-In-Reply-To: <20260907054733.GA31481@lst.de>
-References: <20260907054400.1088151-1-zhouruizhe@resnics.com> <20260907054733.GA31481@lst.de>
+Received: from localhost.localdomain (unknown [115.204.15.233])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 4cc44d0f6;
+	Mon, 7 Sep 2026 13:44:23 +0800 (GMT+08:00)
+From: Ruizhe Zhou <zhouruizhe@resnics.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>
+Cc: Ruizhe Zhou <zhouruizhe@resnics.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Frank Li <Frank.li@oss.nxp.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	linux-doc@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] docs: dma-api: require checking DMA mask setup errors
+Date: Mon,  7 Sep 2026 13:44:00 +0800
+Message-Id: <20260907054400.1088151-1-zhouruizhe@resnics.com>
+X-Mailer: git-send-email 2.27.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Received: from zhouruizhe@resnics.com( [103.23.89.253] ) by ajax-webmail ( [127.0.0.1] ) ; Mon, 7 Sep 2026 15:34:49 +0800 (GMT+08:00)
-From: Ruizhe Zhou <zhouruizhe@resnics.com>
-Date: Mon, 7 Sep 2026 15:34:49 +0800 (GMT+08:00)
-X-HM-Tid: 0aa07ab8203402eekunm82ad2a0a8e0f
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0aa07a656e9c03ackunmc3184f181a2d46
 X-HM-MType: 1
-X-HM-NTES-SC: AL0_4z5B86Wr4Tz9jdMF+bhXMdz8H/g99eSjsmp79ug4TtUOfceK239+6Wx8rS
-	Mt4AmfBcwCFqZ+1IZEb/P4yrJDw3D5ktAxUewQQNUzChlx4Ph2Q2L9LR/RpKEmchiGgC4lZSc7VZ
-	8kfhB+Z9K1dTvdgjh2PPkTjttTX9Ls/rO9ypA=
 X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkZQ04eVh1PTB4YTk9LTE0YSFYVFA
-	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlKS0hVSUhVQ0JVSU5IWVdZFhoPEhUdFFlBWU9LSFVCQk
-	lOS1VKS0tVSkJLQlkG
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCTx9CVklKSEpOSxhJTRhMTFYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlKSk5VSUtPVUpOVUlISFlXWRYaDxIVHRRZQVlPS0hVSk
+	tISk5MTlVKS0tVSkJLS1kG
 
-Cj5Gcm9tOiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4KPkRhdGU6IDIwMjYtMDktMDcg
-MTM6NDc6MzMKPlRvOiAgUnVpemhlIFpob3UgPHpob3VydWl6aGVAcmVzbmljcy5jb20+Cj5DYzog
-IE1hcmVrIFN6eXByb3dza2kgPG0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbT4sUm9iaW4gTXVycGh5
-IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4sSm9uYXRoYW4gQ29yYmV0IDxjb3JiZXRAbHduLm5ldD4s
-Q2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+LEZyYW5rIExpIDxGcmFuay5saUBvc3Mubnhw
-LmNvbT4sU2h1YWggS2hhbiA8c2toYW5AbGludXhmb3VuZGF0aW9uLm9yZz4sUmFuZHkgRHVubGFw
-IDxyZD51bmxhcEBpbmZyYWRlYWQub3JnPixsaW51eC1kb2NAdmdlci5rZXJuZWwub3JnLGlvbW11
-QGxpc3RzLmxpbnV4LmRldixsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCj5TdWJqZWN0OiBS
-ZTogW1BBVENIXSBkb2NzOiBkbWEtYXBpOiByZXF1aXJlIGNoZWNraW5nIERNQSBtYXNrIHNldHVw
-IGVycm9ycz5PbiBNb24sIFNlcCAwNywgMjAyNiBhdCAwMTo0NDowMFBNICswODAwLCBSdWl6aGUg
-WmhvdSB3cm90ZToKPj4gVGhlIERNQSBIT1dUTyBzYXlzIGRtYV9zZXRfbWFza19hbmRfY29oZXJl
-bnQoKSBjYW5ub3QgZmFpbCBmb3IKPj4gRE1BX0JJVF9NQVNLKDY0KSwgYW5kIG1vcmUgZ2VuZXJh
-bGx5IGZvciBtYXNrcyB3aWRlciB0aGFuIDMyIGJpdHMuIEl0Cj4+IGNvbnNlcXVlbnRseSByZWNv
-bW1lbmRzIGNhbGxzIHRvIGRpc2NhcmQgdGhlIGNoZWNrIGZvciByZXR1cm4gdmFsdWUuCj4+IAo+
-PiBUaGUgZ2VuZXJpYyBkaXJlY3QtRE1BIHBhdGggZG9lcyBhY2NlcHQgZXZlcnkgbWFzayBvZiBh
-dCBsZWFzdCAzMiBiaXRzLAo+PiBidXQgdGhhdCBpcyBub3QgYW4gQVBJLXdpZGUgc3VjY2VzcyBn
-dWFyYW50ZWUuIEJhY2tlbmQgY2FsbGJhY2tzIGNhbgo+PiByZWplY3Qgd2lkZXIgbWFza3M6IGli
-bWVidXNfZG1hX3N1cHBvcnRlZCgpIGFuZAo+PiB4ZW5fZ3JhbnRfZG1hX3N1cHBvcnRlZCgpIGFj
-Y2VwdCBvbmx5IERNQV9CSVRfTUFTSyg2NCksIHNvIGEgNDAtYml0IG1hc2sKPj4gZmFpbHMuCj4K
-PlBsZWFzZSBmaXggdGhlbSBhcyB0aGV5IGJyZWFrIHRoZSB2ZXJ5IHNlbnNpYmxlIEFQSSBndWFy
-YW50ZWVzCj5pbnN0ZWFkIG9mIG9mZmljaWFsbHkgc2FuY3Rpb25pbmcgdGhpcyBiZWhhdmlvci4K
-CkknbSBzZW5kaW5nIHRoaXMgYmVjYXVzZSBteSBhdWRpdCB0ZWxscyBtZSB0aGF0IHRoZXJlIGFy
-ZSBtdWx0aXBsZSBjYXNlcwp3aGVyZSBhID4zMiBiaXQgc2V0IG1hc2sgY2FsbCB3b3VsZCBmYWls
-LiBBbmQgdGhhdCBkaXJlY3RseSBjb250cmFkaWN0cyB0aGUKZG9jdW1lbnQuIEkgaGF2ZSBubyBj
-bHVlIHRoYXQgdGhlc2UgbXVsdGlwbGUgYmFja2VuZHMgYnJlYWsgdGhlCkFQSSBndWFyYW50ZWUs
-IGFuZCB3aGV0aGVyIHRoZXNlIGJhY2tlbmRzIGFyZSByZXF1aXJlZCB0byBkbyB3aGF0IHRoZXkg
-ZG8gbm93LiAKTWF5YmUgd2Ugc2hvdWxkIGNjIHRoZSBwZW9wbGUgdGhhdCBtYWludGFpbiB0aGVz
-ZSBhbmQgZ2V0IHRoZWlyIGlucHV0PwpNb3Jlb3ZlciwgSSdtIHNlbmRpbmcgdGhpcyB0byBhc2sg
-b25lIHNwZWNpZmljIHRoaW5nOgpBY2NvcmRpbmcgdG8gbXkgYXVkaXQsID4zMiBiaXQgc2V0IG9w
-IGNhbiBmYWlsLCB3aGljaCBtZWFucyB0aGF0IGRyaXZlcnMgc2hvdWxkCmNoZWNrIHRoZWlyIHJl
-dHVybiB2YWx1ZSwgd2hpY2ggaGFwcGVucyB0byBiZSB0aGUgYmVoYXZpb3VyIGFkb3B0ZWQgYnkg
-bW9zdAppbi10cmVlIGRyaXZlcnMsIHdoaWNoIGNvbnRyYWRpY3RzIHRoZSBIT1dUTyBndWlkZS4g
-U2hvdWxkIHRoZSBkcml2ZXIgcmV0YWluIHRoZQpyZXR1cm4gdmFsdWUgY2hlY2sgb3Igbm90PwoK
-Pgo+PiAKPj4gRXZlbiBETUFfQklUX01BU0soNjQpIGNhbiBmYWlsIHdoZW4gRE1BIHNldHVwIGlz
-IHVuYXZhaWxhYmxlIG9yCj4+IGluY29uc2lzdGVudC4gRm9yIGV4YW1wbGUsIGRtYV9kdW1teV9z
-dXBwb3J0ZWQoKSByZWplY3RzIGV2ZXJ5IG1hc2suCj4KPlNvPyAgRGlkIHlvdSBhY3R1YWxseSB0
-cnkgdG8gdW5kZXJzdGFuZCB0aGlzIGNvZGUgb3IgaXMgdGhpcyBqdXN0IGR1bWIKPmFnZW50IHdv
-cms/Cj4KClllcywgYW5kIHRvIG15IGJlc3QgdW5kZXJzdGFuZGluZ3MgdGhhdCB0aGlzIG1lYW5z
-ICJETUEgYmVpbmcgdW5hdmFpbGFibGUiLgpBbmQgdGhhdCBpcyBhbm90aGVyIHJlYXNvbiBmb3Ig
-ZHJpdmVycyB0byBjaGVjayB0aGUgcmV0dXJuIHZhbHVlIG9mCmRtYV9zZXRfbWFza19hbmRfY29o
-ZXJlbnQoKS4KCg==
+The DMA HOWTO says dma_set_mask_and_coherent() cannot fail for
+DMA_BIT_MASK(64), and more generally for masks wider than 32 bits. It
+consequently recommends calls to discard the check for return value.
+
+The generic direct-DMA path does accept every mask of at least 32 bits,
+but that is not an API-wide success guarantee. Backend callbacks can
+reject wider masks: ibmebus_dma_supported() and
+xen_grant_dma_supported() accept only DMA_BIT_MASK(64), so a 40-bit mask
+fails.
+
+Even DMA_BIT_MASK(64) can fail when DMA setup is unavailable or
+inconsistent. For example, dma_dummy_supported() rejects every mask.
+acpi_dma_configure_id() installs dma_dummy_ops and returns success when
+the DMA attribute is DEV_DMA_NOT_SUPPORTED. DMA configuration can
+therefore succeed while leaving the device with a backend that rejects
+every mask. The PowerPC legacy IOMMU backend also rejects a mask when
+no IOMMU table is available, and the default IOMMU path rejects
+conflicting dma_ops state.
+
+Failure is therefore not limited to an unsupported address width.
+Ignoring the return value could let a driver continue with an unusable
+DMA backend.
+
+At the same time, failure of a wider mask does not indicate that a
+narrower one can succeed. Clarify for DMA driver authors that they should
+select the mask matching the device's actual addressing capability, call
+the mask setter once, and treat an error as a DMA setup failure. Update
+the examples accordingly.
+
+Fixes: f7ae20f2fc4e ("docs: dma: correct dma_set_mask() sample code")
+Link: https://lore.kernel.org/all/AEEA1wBuK97oyrSN8q4l4KpK.3.1788520536000.Hmail.zhouruizhe@resnics.com/
+Signed-off-by: Ruizhe Zhou <zhouruizhe@resnics.com>
+---
+This follows the discussion linked above about retaining the error check
+when removing narrower-mask fallbacks. Is there an invariant that makes
+these failure paths unreachable for drivers calling
+dma_set_mask_and_coherent(), or should the HOWTO retain the check as
+shown here? Feedback from DMA maintainers would be appreciated.
+
+ Documentation/core-api/dma-api-howto.rst | 39 ++++++++++++------------
+ 1 file changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/Documentation/core-api/dma-api-howto.rst b/Documentation/core-api/dma-api-howto.rst
+index e97743ab0f26..a28be86666da 100644
+--- a/Documentation/core-api/dma-api-howto.rst
++++ b/Documentation/core-api/dma-api-howto.rst
+@@ -237,11 +237,11 @@ device struct of your device is embedded in the bus-specific device struct of
+ your device.  For example, &pdev->dev is a pointer to the device struct of a
+ PCI device (pdev is a pointer to the PCI device struct of your device).
+
+-These calls usually return zero to indicate your device can perform DMA
+-properly on the machine given the address mask you provided, but they might
+-return an error if the mask is too small to be supportable on the given
+-system.  If it returns non-zero, your device cannot perform DMA properly on
+-this platform, and attempting to do so will result in undefined behavior.
++These calls return zero to indicate your device can perform DMA properly on
++the machine given the address mask you provided.  They return an error if the
++requested mask cannot be used with the device or if the device is not capable
++of DMA.  If a call returns non-zero, your device cannot perform DMA properly
++on this platform, and attempting to do so will result in undefined behavior.
+ You must not use DMA on this device unless the dma_set_mask family of
+ functions has returned success.
+
+@@ -264,23 +264,24 @@ The 24-bit addressing device would do something like this::
+
+ The standard 64-bit addressing device would do something like this::
+
+-	dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))
+-
+-dma_set_mask_and_coherent() never return fail when DMA_BIT_MASK(64). Typical
+-error code like::
++	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
++		dev_warn(dev, "mydev: No suitable DMA available\n");
++		goto ignore_this_device;
++	}
+
+-	/* Wrong code */
+-	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64)))
+-		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32))
++Failure to set a 32-bit or wider DMA mask must not be treated as an indication
++that retrying a narrower mask can succeed.  Drivers must select the mask based
++on the device's actual DMA addressing capability and treat failure to set that
++mask as a DMA setup failure.  For example, a device supporting either 32-bit
++or 64-bit addressing would do something like this::
+
+-dma_set_mask_and_coherent() will never return failure when bigger than 32.
+-So typical code like::
++	u64 mask;
+
+-	/* Recommended code */
+-	if (support_64bit)
+-		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
+-	else
+-		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
++	mask = support_64bit ? DMA_BIT_MASK(64) : DMA_BIT_MASK(32);
++	if (dma_set_mask_and_coherent(dev, mask)) {
++		dev_warn(dev, "mydev: No suitable DMA available\n");
++		goto ignore_this_device;
++	}
+
+ If the device only supports 32-bit addressing for descriptors in the
+ coherent allocations, but supports full 64-bits for streaming mappings
+
+base-commit: ab2704c2a884028fd12d455cf27a9585aefe2961
+--
+2.27.0
