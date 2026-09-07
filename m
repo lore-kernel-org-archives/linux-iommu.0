@@ -1,62 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D38ED46EC77;
-	Mon,  7 Sep 2026 13:13:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C544E66B8
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 13:55:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788786800; cv=none; b=fGAuTgMSwQD/63iUTqsHW1Tr16Ay/SVAz32lCiSGXkBljr/bcIjJ/HWF/RJK4RePPGflHLPeCAOlXcDS09TTugw+9xcpd/fgzRBQHsDw1xa3H4gjyuormbbgoFeQTJFMBw7JbvZqTYH6pz6pj/JjidzPCwuhm82B8MWgkBPLrsI=
+	t=1788789330; cv=none; b=D8ICMlZH2eHrZtRiBd27R4TLIlahzbogDlLz5WRuUjONrRdrNM5PExH78FGYILKk9fMuyC326gxuQ58u8T8lLFCcLS9Kw0jyQNevCUEjBKNKpkP2cddohPksaLuzXyrhgCMBkwA8TfeSN0Z8+UjlIJTMwlJhnvBZ2gJ7gdR4Tc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788786800; c=relaxed/simple;
-	bh=sCyqdA7XYz/cXsFKfyuwykcilF3WMPlvoJkerdQfDrs=;
+	s=arc-20240116; t=1788789330; c=relaxed/simple;
+	bh=KIUNvPwrGyxsIDRPQXT9srRO+CI5YFjK9h9LJbAruPc=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=O2YhCzUgDBNziiD1Gp9nOhXXKLk9p7MwXm+vRE0RyfDCpSxwyAxEP29fSXpHPkdPas+/+yBwvI6zdPj+jHA+13KPy51boRqZa+XSI3JxxMFUET8tBIm+UEDy127V+Esq2OHlNPhn9X4Ihhif+gdgd7g5AOTJnClbp9NUuZbJfGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mHWLJ5ee; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=uhVMB/S6/V2bfp1BIJ4KzRfQv215GxuvfGqS8BCjE8fDkeYrJFfTg0U66dNAZif0QVVrrkCj21h8hKs+MtQpqwt2B1acTLXlYqVwP87hKkWZ4+w/rN/OuhY6LC5wJg8eKa3wJyL8VXtwK6kRTUdgDlR6GGuU07P4MkCvv+yKtpU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hlvY0/CU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mHWLJ5ee"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9BB81F00A3A;
-	Mon,  7 Sep 2026 13:13:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hlvY0/CU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 439141F00A3A;
+	Mon,  7 Sep 2026 13:55:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788786795;
-	bh=sCyqdA7XYz/cXsFKfyuwykcilF3WMPlvoJkerdQfDrs=;
+	s=k20260515; t=1788789328;
+	bh=2TwcZ1+U4EkpfoCEwGw6K4Z2pr3uBnAtvvFMpD6NyR0=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=mHWLJ5eejw1DAWE24BKkr7csqEjBElRPKGHJPmtHXeCTNjccZW0Dnu3fn8UL955U3
-	 fQB5ucZqA9OMqXI/Md+NP2OC/gXAYre7PULDNaJ8H2eeyCspoD4Z1829FeRSylPUQX
-	 vOLSNE8ULcuYlgf7uMpicB7OVcyrUV5VKD96apvjkgKtwBFP2ywujSY6a+DvyoDRk3
-	 LSEZ3cm8B0atA6WRgQvHnQe1VR3EmE4xai945KgHQNXoFTOxrxmYuc8BfDrHEOCqKy
-	 XgGLXMdc9qrCCNrvYrOTCH1/lcg8eyRjljzDeJUDFYH7GAZ87WpC1ONUgaqhpviwJU
-	 9bAWGKoVLzxJg==
-From: Thomas Gleixner <tglx@kernel.org>
-To: Naman Jain <namjain@linux.microsoft.com>, Ingo Molnar
- <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H . Peter Anvin"
- <hpa@zytor.com>, Wei Liu <wei.liu@kernel.org>, "K . Y . Srinivasan"
- <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui
- <decui@microsoft.com>
-Cc: Michael Kelley <mhklinux@outlook.com>, Long Li <longli@microsoft.com>,
- Nam Cao <namcao@linutronix.de>, Joerg Roedel <joro@8bytes.org>, Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde
- <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, Manivannan
- Sadhasivam
- <mani@kernel.org>, Rob Herring <robh@kernel.org>, Bjorn Helgaas
- <bhelgaas@google.com>, Kees Cook <kees@kernel.org>, "Rafael J . Wysocki"
- <rafael@kernel.org>, Radu Rendec <radu@rendec.net>, Sean Christopherson
- <seanjc@google.com>, Kai Huang <kai.huang@intel.com>, Dmitry Ilvokhin
- <d@ilvokhin.com>, Shradha Gupta <shradhagupta@linux.microsoft.com>,
- Christophe JAILLET <christophe.jaillet@wanadoo.fr>, Thierry Reding
- <treding@nvidia.com>, Jiri Wiesner <jwiesner@suse.de>, Daniel J Blueman
- <daniel@quora.org>, linux-hyperv@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] x86/irq, iommu/amd, x86/hyperv, PCI: Drop
- redundant irq_retrigger inits
-In-Reply-To: <20260907065129.269262-4-namjain@linux.microsoft.com>
-References: <20260907065129.269262-1-namjain@linux.microsoft.com>
- <20260907065129.269262-4-namjain@linux.microsoft.com>
-Date: Mon, 07 Sep 2026 15:13:12 +0200
-Message-ID: <87o6e92oif.ffs@fw13>
+	b=hlvY0/CUYY0egubX++alD4btdyX6+atUB3P+iSRXke3TAweTxb9mzf99QKIz4DYnN
+	 LBIoMa3Sk+JOnxX3TzhOI8p0uitysG32KYYyVm44vtdwTf9p38GKas3K6Ofhj/Lp8S
+	 5h5fGPhs3NmFadhSQaEuwepXKCGR2GzxgXsnAT5FdxL88Jag8pIg6TXRJgrSljUUaD
+	 X+KH4KB50KlLqlvABiXqnOh58fU7nUc6fxc6d3MVGZDz9fd9+n11wq31yBkZzZMeJZ
+	 qvpEv8agc7x5kM0SXi471Vgq78jaxw4M8JCj/eE92Y6+L/SGlHLM9jR6a35VoAfr2q
+	 6/Jf+sV0CxOLA==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>, "Deucher,
+	Alexander" <Alexander.Deucher@amd.com>,
+	Timo Witte <timo.witte@gmail.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Lendacky,
+	Thomas" <Thomas.Lendacky@amd.com>, "Hegde,
+	Vasant" <Vasant.Hegde@amd.com>
+Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
+ regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs (commit
+ 8277a12d0d60)
+In-Reply-To: <f48c2a3f-38c8-44ab-8352-35ee1874b420@samsung.com>
+References: <CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com>
+ <yq5ao6egyn5j.fsf@kernel.org>
+ <CGME20260902182632eucas1p2d0caf5a54243c630ecbd4844cc278a0d@eucas1p2.samsung.com>
+ <BN9PR12MB5146EB49E0988618FBC13515F7B72@BN9PR12MB5146.namprd12.prod.outlook.com>
+ <f48c2a3f-38c8-44ab-8352-35ee1874b420@samsung.com>
+Date: Mon, 07 Sep 2026 19:25:20 +0530
+Message-ID: <yq5abja9p3nb.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,24 +55,54 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-On Mon, Sep 07 2026 at 06:51, Naman Jain wrote:
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
 
-> With fixup_irqs() and the generic resend path (try_retrigger()) now both
-> falling back to irq_chip_retrigger_hierarchy(), installing it as the
-> irq_retrigger() callback on the outermost domain chips is no longer
-> required. The hierarchy walk reaches the x86 vector domain's
-> apic_retrigger_irq() for all of these stacked domain chips.
+> On 02.09.2026 20:26, Deucher, Alexander wrote:
+>>> -----Original Message-----
+>>> From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+>>> Sent: Wednesday, September 2, 2026 6:16 AM
+>>> To: Timo Witte <timo.witte@gmail.com>; iommu@lists.linux.dev
+>>> Cc: m.szyprowski@samsung.com; robin.murphy@arm.com;
+>>> joro@8bytes.org; Deucher, Alexander <Alexander.Deucher@amd.com>
+>>> Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
+>>> regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs
+>>> (commit 8277a12d0d60)
+>>>
+>>> Timo Witte <timo.witte@gmail.com> writes:
+>>>
+>>>> Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and
+>>>> select them via attrs") added to iommu_dma_alloc():
+>>>>
+>>>>     /* Not yet supported */
+>>>>     if (is_alloc_cc_shared)
+>>>>         return NULL;
+>>>>
+>>>> dma_alloc_attrs() auto-sets __DMA_ATTR_ALLOC_CC_SHARED whenever
+>>>> force_dma_unencrypted() is true. On an SME host (mem_encrypt=on) an
+>>>> AMD GPU with a 44-bit DMA mask hits that condition, so every GTT
+>>>> (system-RAM) allocation fails with NULL/-ENOMEM, amdgpu init aborts
+>>>> and the system boots without a display.
+>>>> IOMMU in Translated/DMA-FQ mode (iommu group 29).
+>>>>
+>>>> Before the mentioned patch it worked: the IOMMU PTE carries the SME
+>>>> C-bit, so the memory controller transparently decrypts for the device
+>>>> while pages stay encrypted at rest. For IOMMU-backed devices
+>>>> force_dma_unencrypted() is a false positive - the device DMA mask does
+>>>> not limit addressing once the IOMMU translates, so CC_SHARED should
+>>>> not be auto-set for them.
+>>>>
+>>>
+>>> This means that, with host memory encryption, DMA does not need to be
+>>> forced unencrypted when the device uses the IOMMU?
+>> + Tom and Vasant.
+>>
+>> Yes, otherwise most devices won't be able to work with encrypted memory since most devices don't support a DMA mask large enough to cover the C bit.
 >
-> Remove the now redundant irq_retrigger() initializations from the outermost
-> domain interrupt chips, including the Hyper-V root partition PCI/MSI chip.
-> msi_set_affinity() is the only site that invoked the outermost chip's
-> irq_retrigger() directly. Convert it to irq_chip_retrigger_hierarchy() so
-> the x86_init_dev_msi_info() initialization can be dropped as well.
+> Is this the proper fix/workaround for v7.3-rc? If so, then Aneesh, please
+> send it as a complete patch so I will take it to the dma-mapping-fixes.
 >
-> No functional change intended.
->
-> Suggested-by: Thomas Gleixner <tglx@kernel.org>
-> Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
-> Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
 
-Reviewed-by: Thomas Gleixner <tglx@kernel.org>
+
+I am still waiting for testing feedback. I sent a reminder on Friday.
+
+-aneesh
