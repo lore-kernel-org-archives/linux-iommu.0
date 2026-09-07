@@ -1,206 +1,150 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 319FA409635
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 06:52:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788763936; cv=none; b=P7ya5fqjUpATVmGlLaJOfiODWEWkAEwHP8NWk7JjTcLorX3+PbiVzkbpL/cW9WvxPsRN0OnLcOZtqUHSotlI6W0F9iL4iVFkKxbcxF3gQDB6dng8c6gQE3l/PtxYbx3Uk+PXkw8BofONcUYOVnExR0VpvUGcJtzvDhi2EKpffqA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788763936; c=relaxed/simple;
-	bh=0tbKc9fZhKvoTnOKxwtOQaa2+oMH40JwveDwxJpUM1c=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TH13Rr8ylFK6NSRWL/m8VLA1HbtwvonYNyLkuGDrw8g3ekETXULlm8DwrHFTviZEljhlmn8ed3yMzy0JeCa1n5OIY/68E6F5aEs4lsi++GNFIco8QUJtd/ZOwzMkywEkBOcAl0ov+RdGRIlUVQN3MJjZKzZ3awFiKpVkNiR/0D0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=aETJPblr; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 385A2415F2B
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 07:30:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=165.173.180.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788766223; cv=pass; b=HixgjMvlFmzKddPiE9Pzjbh+gZ2uPB8FNzwbbNx5BRTZr/5YcZvynU8jFuhzYWXqa50JqhxG+KBr/+8rJlUZPvtwFvtYNcALkPKEYYtiyGhfhp8g8GCuNvHarkbTcrcr59HR/rcIzqwFJRLcJyVLo7g1fq+SDPOGHNA6eqRLeL0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788766223; c=relaxed/simple;
+	bh=gUujX7fW634HYARr37s4suMeomh5Vu3Ki++zKPfmHkY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MLAQrPcgbKbY+FGrDsb1h0owj6khkubKJLeIwysIdocbSOKxacT6Lyo0K5venj9ijeO/qXt4NarVTvg0Y2xp+JPH26mDQ3/jrnqqCe3s019JcwKUICfOEA/a6ePMravANXBF+r7WXlYJrWmlQ9vqvq2mHqBrh7/jCqwmrQnPvTA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=BilZhe1Q; arc=pass smtp.client-ip=165.173.180.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="aETJPblr"
-Received: from CPC-namja-026ON.localdomain (unknown [4.213.232.18])
-	by linux.microsoft.com (Postfix) with ESMTPSA id ECEDF20B710C;
-	Sun,  6 Sep 2026 23:51:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com ECEDF20B710C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1788763893;
-	bh=E4c7wIrlFU3ULdF2/N81BPKnHb8lv3UruDQAdVdOzLI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=aETJPblrODw/dZpUUqVs3rsgFqLEzTlKpgEOWQxGDs1u41pgApn3sSBgfzQc2WkSt
-	 C8fGTrCx2s1jkFXNn22J5RSRCN1edQl7oLdFRJicocXKoB0tpxdTo6pU8cVyQe8kac
-	 0MAnD7hGhnvCp48WxM4Ft6lrqQyoZyH7rziaDZsM=
-From: Naman Jain <namjain@linux.microsoft.com>
-To: Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	"K . Y . Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>
-Cc: Michael Kelley <mhklinux@outlook.com>,
-	Long Li <longli@microsoft.com>,
-	Nam Cao <namcao@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kees Cook <kees@kernel.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Radu Rendec <radu@rendec.net>,
-	Sean Christopherson <seanjc@google.com>,
-	Kai Huang <kai.huang@intel.com>,
-	Dmitry Ilvokhin <d@ilvokhin.com>,
-	Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Thierry Reding <treding@nvidia.com>,
-	Jiri Wiesner <jwiesner@suse.de>,
-	Daniel J Blueman <daniel@quora.org>,
-	linux-hyperv@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org
-Subject: [PATCH v3 3/3] x86/irq, iommu/amd, x86/hyperv, PCI: Drop redundant irq_retrigger inits
-Date: Mon,  7 Sep 2026 06:51:29 +0000
-Message-ID: <20260907065129.269262-4-namjain@linux.microsoft.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260907065129.269262-1-namjain@linux.microsoft.com>
-References: <20260907065129.269262-1-namjain@linux.microsoft.com>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="BilZhe1Q"
+ARC-Seal: i=1; a=rsa-sha256; t=1788766213; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=FHeADlHqFwKW4xKPtaLytIBO9jj6vKHnaD/LzMNVv10bsRq5eEZ/CKlAMEJG6F7eEwpYb6Kh5hkWKqTGUdg44daQL0qg9c4xzjjdq2ZRhr6qFWqB6bOznLd+XuoglmV0LxplDd0D7+V+6MUzMytKPDPKzkEtnTFG/I44CmE36sk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1788766213; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=03amPyL4kdQy0Wn3WJ+VSO8pe9I6M+yzG5HGbJ1F2O8=; 
+	b=BKq+sSGMlfhizvCeFDEFO+RQrLWbbrfT5Pps+Go9i7mASHGT+xwAcq4mXFI75lLB11aHv4a3ksyD00E0K44JVNhSBu13tDTtDtTmTCpgius1teAL4lDOk3+t+eX5EE7gZLTtpmLvMcoSi5CvqEwVWSuCB4NA84K8HRk3LKmR8IQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1788766213;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=03amPyL4kdQy0Wn3WJ+VSO8pe9I6M+yzG5HGbJ1F2O8=;
+	b=BilZhe1QjaYMplVtS4sbYy4EF9HRBwPdfT3sZArka/c1Hyd0n6gIEx5Gk5wbUuNE
+	ApvMddbCBYDGXTeEygivu4FPaj0lct0eeMpnvvxxO5NRv9DSzmWrBxmTvNcOjuZ25oz
+	qmD6LkLdnphNDoRuRPgq1NaTRxk9QTgWavGtqwRw=
+Received: by mx.zohomail.com with SMTPS id 1788766211524608.4449046809453;
+	Mon, 7 Sep 2026 00:30:11 -0700 (PDT)
+Message-ID: <aa503065-cd97-47cd-894c-bd660e59f5f9@collabora.com>
+Date: Mon, 7 Sep 2026 09:30:09 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] iommu/vsi: Fix use-after-free during module unload
+To: Yibo Tan <lhfff@tju.edu.cn>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260905183834.3447662-1-lhfff@tju.edu.cn>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20260905183834.3447662-1-lhfff@tju.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-With fixup_irqs() and the generic resend path (try_retrigger()) now both
-falling back to irq_chip_retrigger_hierarchy(), installing it as the
-irq_retrigger() callback on the outermost domain chips is no longer
-required. The hierarchy walk reaches the x86 vector domain's
-apic_retrigger_irq() for all of these stacked domain chips.
 
-Remove the now redundant irq_retrigger() initializations from the outermost
-domain interrupt chips, including the Hyper-V root partition PCI/MSI chip.
-msi_set_affinity() is the only site that invoked the outermost chip's
-irq_retrigger() directly. Convert it to irq_chip_retrigger_hierarchy() so
-the x86_init_dev_msi_info() initialization can be dropped as well.
+Le 05/09/2026 à 20:38, Yibo Tan a écrit :
+> iommu_device_register() links the embedded iommu_device into the IOMMU
+> core's global device list. The VSI driver can be built as a module, but
+> has no remove callback to unregister the device before devres frees the
+> containing struct vsi_iommu.
+>
+> With no attached consumer holding a module reference, unloading
+> vsi-iommu.ko succeeds. A later platform device registration enters the
+> IOMMU bus notifier and scans the stale list entry. KASAN reports a
+> slab-use-after-free in __iommu_probe_device().
+>
+> The missing unregister operation on driver unbind was also noted during
+> review of the driver's fwnode lookup lifetime handling.
+>
+> Add the missing remove callback. Unregister the IOMMU device and remove
+> its sysfs object while the provider is still alive. Release the exact
+> shared IRQ action before forcing runtime suspend, then unprepare the
+> clocks acquired during probe.
+>
+> The failure was reproduced on the 2026-08-11 IOMMU next snapshot with
+> real module load and unload syscalls. With the same KASAN kernel, the
+> unmodified driver produced two invalid reads from the same freed list
+> entry. The patched driver removed the entry, completed the later device
+> registration and produced no KASAN, WARNING, Oops or panic.
+>
+> The remove callback also builds with W=1 for arm64 with
+> ARCH_ROCKCHIP=y and CONFIG_PM=y, and for the arm64 COMPILE_TEST path
+> with CONFIG_PM=n.
+>
+> A standalone reproducer, the vulnerable and fixed serial logs, and
+> their checksums are available at:
+>
+> https://github.com/kimaiden1984-boop/linux-vsi-iommu-unload-uaf-reproducer
+>
+> Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
+> Link: https://lore.kernel.org/0e405cb3-1227-4ad2-96ff-aa0db3124381@arm.com/
+> Cc: stable@vger.kernel.org
+> Assisted-by: Codex:GPT-5
+> Signed-off-by: Yibo Tan <lhfff@tju.edu.cn>
+> ---
+> The QEMU helper supplies the platform device, MMIO resource, IRQ and
+> firmware node normally provided by RK3588 hardware. The failing access
+> occurs while the IOMMU core scans its provider list, before VSI register
+> access.
+>
+> Not tested on physical RK3588 hardware: removal with an attached
+> decoder, a runtime-active device, or concurrent interrupt delivery.
+>
+>   drivers/iommu/vsi-iommu.c | 12 ++++++++++++
+>   1 file changed, 12 insertions(+)
+>
+> diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
+> index 42c424496..7fa7ee8cf 100644
+> --- a/drivers/iommu/vsi-iommu.c
+> +++ b/drivers/iommu/vsi-iommu.c
+> @@ -728,6 +728,17 @@ static int vsi_iommu_probe(struct platform_device *pdev)
+>   	return err;
+>   }
+>   
+> +static void vsi_iommu_remove(struct platform_device *pdev)
+> +{
+> +	struct vsi_iommu *iommu = platform_get_drvdata(pdev);
+> +
+> +	iommu_device_unregister(&iommu->iommu);
+> +	iommu_device_sysfs_remove(&iommu->iommu);
+> +	devm_free_irq(&pdev->dev, iommu->irq, iommu);
 
-No functional change intended.
+I don't think devm_free_irq() is needed here.
+That said we need to fix the problem.
+Why not introduce devm_ functions for iommu_device_unregister(), iommu_device_sysfs_remove() and
+clk_bulk_unprepare() ? That could be useful for lot of drivers.
 
-Suggested-by: Thomas Gleixner <tglx@kernel.org>
-Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
-Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
----
- arch/x86/hyperv/irqdomain.c         | 1 -
- arch/x86/kernel/apic/io_apic.c      | 2 --
- arch/x86/kernel/apic/msi.c          | 4 +---
- arch/x86/kernel/hpet.c              | 1 -
- drivers/iommu/amd/init.c            | 1 -
- drivers/pci/controller/pci-hyperv.c | 1 -
- 6 files changed, 1 insertion(+), 9 deletions(-)
+Regards,
+Benjamin
 
-diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
-index 1e273d7d6c5b3..b3ad50a874dca 100644
---- a/arch/x86/hyperv/irqdomain.c
-+++ b/arch/x86/hyperv/irqdomain.c
-@@ -304,7 +304,6 @@ static struct irq_chip hv_pci_msi_controller = {
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_compose_msi_msg	= hv_irq_compose_msi_msg,
- 	.irq_set_affinity	= irq_chip_set_affinity_parent,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- };
- 
- static bool hv_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 7d7175d012288..18f49a251f23b 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -1857,7 +1857,6 @@ static struct irq_chip ioapic_chip __read_mostly = {
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_eoi		= ioapic_ack_level,
- 	.irq_set_affinity	= ioapic_set_affinity,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED |
- 				  IRQCHIP_AFFINITY_PRE_STARTUP,
-@@ -1871,7 +1870,6 @@ static struct irq_chip ioapic_ir_chip __read_mostly = {
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_eoi		= ioapic_ir_ack_level,
- 	.irq_set_affinity	= ioapic_set_affinity,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE |
- 				  IRQCHIP_AFFINITY_PRE_STARTUP,
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 66bc5d3e79db3..aad2f15eb2176 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -137,7 +137,7 @@ msi_set_affinity(struct irq_data *irqd, const struct cpumask *mask, bool force)
- 	 * IRR.
- 	 */
- 	if (lapic_vector_set_in_irr(cfg->vector))
--		irq_data_get_irq_chip(irqd)->irq_retrigger(irqd);
-+		irq_chip_retrigger_hierarchy(irqd);
- 
- 	return ret;
- }
-@@ -246,7 +246,6 @@ static bool x86_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
- 	info->ops->msi_prepare		= x86_msi_prepare;
- 
- 	info->chip->irq_ack		= irq_chip_ack_parent;
--	info->chip->irq_retrigger	= irq_chip_retrigger_hierarchy;
- 	info->chip->flags		|= IRQCHIP_SKIP_SET_WAKE |
- 					   IRQCHIP_AFFINITY_PRE_STARTUP;
- 
-@@ -313,7 +312,6 @@ static struct irq_chip dmar_msi_controller = {
- 	.irq_mask		= dmar_msi_mask,
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_set_affinity	= msi_domain_set_affinity,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_compose_msi_msg	= dmar_msi_compose_msg,
- 	.irq_write_msi_msg	= dmar_msi_write_msg,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED |
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 8dc7b710e1250..2bb7a6f466af3 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -509,7 +509,6 @@ static struct irq_chip hpet_msi_controller __ro_after_init = {
- 	.irq_mask = hpet_msi_mask,
- 	.irq_ack = irq_chip_ack_parent,
- 	.irq_set_affinity = msi_domain_set_affinity,
--	.irq_retrigger = irq_chip_retrigger_hierarchy,
- 	.irq_write_msi_msg = hpet_msi_write_msg,
- 	.flags = IRQCHIP_SKIP_SET_WAKE | IRQCHIP_AFFINITY_PRE_STARTUP,
- };
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 40726dfef2733..a19e1faf98750 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2471,7 +2471,6 @@ static struct irq_chip intcapxt_controller = {
- 	.irq_unmask		= intcapxt_unmask_irq,
- 	.irq_mask		= intcapxt_mask_irq,
- 	.irq_ack		= irq_chip_ack_parent,
--	.irq_retrigger		= irq_chip_retrigger_hierarchy,
- 	.irq_set_affinity       = intcapxt_set_affinity,
- 	.irq_set_wake		= intcapxt_set_wake,
- 	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_MOVE_DEFERRED,
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index 89816a2bd7cd3..cfc8fa403dad6 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -2119,7 +2119,6 @@ static bool hv_pcie_init_dev_msi_info(struct device *dev, struct irq_domain *dom
- 	info->ops->msi_prepare = hv_msi_prepare;
- 
- 	chip->irq_set_affinity = irq_chip_set_affinity_parent;
--	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
- 
- 	if (IS_ENABLED(CONFIG_X86))
- 		chip->flags |= IRQCHIP_MOVE_DEFERRED;
--- 
-2.43.0
-
+> +	pm_runtime_force_suspend(&pdev->dev);
+> +	clk_bulk_unprepare(iommu->num_clocks, iommu->clocks);
+> +}
+> +
+>   static void vsi_iommu_shutdown(struct platform_device *pdev)
+>   {
+>   	struct vsi_iommu *iommu = platform_get_drvdata(pdev);
+> @@ -776,6 +787,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(vsi_iommu_pm_ops,
+>   
+>   static struct platform_driver rockchip_vsi_iommu_driver = {
+>   	.probe = vsi_iommu_probe,
+> +	.remove = vsi_iommu_remove,
+>   	.shutdown = vsi_iommu_shutdown,
+>   	.driver = {
+>   		   .name = "vsi_iommu",
