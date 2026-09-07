@@ -1,14 +1,14 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3F554A6CEF
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 12:35:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C8304A9D48
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 12:36:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788784528; cv=none; b=QQSoGCQI27BYgWYgdR+mnsOr4zEMOGjeLAYkiDIf//bI9WVEkjJM1x3mWOdrhn07sXCmcxwL8JbnF7Kexk6cZMUZJGcbF+f5UZz5pLtOTBw9Akn9K1mr5WHwzeW/+jy1++LPWtFHfqr7lReOQSI2Ahdg16LmgPbGrtvJ0zm6HVA=
+	t=1788784605; cv=none; b=UFQTl1GxHGptYgN7nb8aZPuLkC2v49gfjXGst5AhFdYo1ZJLeg6YT0w9RY/RvkeCdp2O/EoLPrInNEXqKrgahBxDzF3+WBei5E8lGFar6J5QyI1W6UX6mJGayLg2UoGBysFi2+ZWIzSltXQXuGw+06OUEAi8w7pgczWTJfDABhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788784528; c=relaxed/simple;
-	bh=1cNPswN7JJF1hEN/8JK45QLPJaEGl/7/REtDmalhhHQ=;
+	s=arc-20240116; t=1788784605; c=relaxed/simple;
+	bh=E2mReioDtdPeHkxkBC3oT4CocMJFs0sLzUXgsU+H2hI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HyUVFAHkYowIY9PdgiB2buOEucTytQRpqTq4tT2haCC1SqLLJtu3D9Fz2XEIcl1Cmzx1ipn2ZMIpZ+J3DWFqQCgXM9QXrP4U1qhfeIY0tw5gcoXVbxI2H20u252zAC4srX1PKso3k/x+hR7xB4NMNtHQkNFhQDp6OnU/wEzBh0Q=
+	 Content-Type:Content-Disposition:In-Reply-To; b=oZFtvzUwHtTjdsbW0/jQ0tNEUvgAKv1uIZ2c/jEUBPWVyuf/WAL3kh0FhFea32CX1VB7UfYtdZ8waNxoSskGetM2tFPk/izyAmLSnu8VvRizB8dG52olo2nXDM3hhyNed1xHmDvcPlQtBlHzwsCCqaVkv63HoEMMfu9Ri3vd6q8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
@@ -16,20 +16,26 @@ Received: from 8bytes.org (p200300f6af085a0015db8e28914752a6.dip0.t-ipconnect.de
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 8E03620A085;
-	Mon,  7 Sep 2026 14:35:25 +0200 (CEST)
-Date: Mon, 7 Sep 2026 14:35:24 +0200
-From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: fangyu.yu@linux.alibaba.com
-Cc: tomasz.jeznach@linux.dev, will@kernel.org, robin.murphy@arm.com, 
-	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
-	baolu.lu@linux.intel.com, jroedel@suse.de, zong.li@sifive.com, 
-	andrew.jones@oss.qualcomm.com, anup@brainfault.org, jgg@nvidia.com, jgg@ziepe.ca, 
-	guoren@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 0/3] iommu/riscv: Fix command queue publishing races
-Message-ID: <ap6veD4V8RGHL9zE@8bytes.org>
-References: <20260901133920.14550-1-fangyu.yu@linux.alibaba.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id 144D020A089;
+	Mon,  7 Sep 2026 14:36:43 +0200 (CEST)
+Date: Mon, 7 Sep 2026 14:36:41 +0200
+From: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, 
+	Farhan Ali <alifm@linux.ibm.com>, Omar Elghoul <oelghoul@linux.ibm.com>, 
+	Gerd Bayer <gbayer@linux.ibm.com>, Benjamin Block <bblock@linux.ibm.com>, 
+	Julian Ruess <julianr@linux.ibm.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
+	Ramesh Errabolu <ramesh@linux.ibm.com>, Tobias Schumacher <ts@linux.ibm.com>, 
+	Halil Pasic <pasic@linux.ibm.com>, Peter Oberparleiter <oberpar@linux.ibm.com>, 
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	linux-s390@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/s390: Fix NULL dereference in iova_to_phys() with
+ ZPCI_TABLE_TYPE_RFX
+Message-ID: <ap6vw9b1ki1oHPnK@8bytes.org>
+References: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,22 +44,14 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260901133920.14550-1-fangyu.yu@linux.alibaba.com>
+In-Reply-To: <20260818-iommu_fix_iova_to_phys-v1-1-1cd76d2a55b8@linux.ibm.com>
 
-On Tue, Sep 01, 2026 at 09:39:17PM +0800, fangyu.yu@linux.alibaba.com wrote:
-> Changes in v2:
->     - Avoid reacquiring the command queue lock after waiting for space
->       times out.
->     - Link to v1:
->       https://lore.kernel.org/linux-riscv/20260817142728.61783-1-fangyu.yu@linux.alibaba.com/
-> 
-> Fangyu Yu (3):
->   iommu/riscv: Add command queue lock
->   iommu/riscv: Serialize command queue publishing
->   iommu/riscv: Avoid waiting on failed command enqueue
-> 
->  drivers/iommu/riscv/iommu.c | 117 +++++++++++++++++++++---------------
->  drivers/iommu/riscv/iommu.h |   2 +
->  2 files changed, 72 insertions(+), 47 deletions(-)
+On Tue, Aug 18, 2026 at 09:13:17PM +0200, Niklas Schnelle wrote:
+> Cc: stable@vger.kernel.org
+> Fixes: 81244074b518 ("iommu/s390: allow larger region tables")
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
 Queued for -rc, thanks.
