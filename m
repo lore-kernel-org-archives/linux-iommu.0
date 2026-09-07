@@ -1,154 +1,118 @@
-Received: from mail-m3268.qiye.163.com (mail-m3268.qiye.163.com [220.197.32.68])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A3DE431A50
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 08:07:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.32.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B4F43DA2C
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 08:25:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788768427; cv=none; b=T1vaQZtmHv/oWMUvlQhP86ULk71PmXHuR+ODKXsDoIJi52n064obD5aT/PO1+8PZB2Tt8YJgeSNB8L61SLx9gCCEF39xU73eX2h+v+KQQ4QILJ4NOyOMONySRkuB65WnpWmkzJWHD2/ujs0W/Ue3PXNL4egmBF5hShQf99HIN5A=
+	t=1788769555; cv=none; b=dDRFRlDH7zkSQkGZN94OjSw1OpEagTC6i44aQA7ijmu1nESiq5UXhbN2pP8UWVn9O/R0rYWChETW7nNVS/jvAJE6mQCeDxq8iVrCLDKNvZ1l5DCVJBfmdVAn47ROH8bqFTvXVuYatn4U+YsxC4yq/bJPDWpwjyXGcBDwoyVjJl8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788768427; c=relaxed/simple;
-	bh=talLoTtij+UAkEmWW9J4GgHZ/+d8CSO0ec8BjSHv8F8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=VcFBTkXLRVBPUJayS86jhoVM2ODNlmS5SVOouz2jYTzqjTRvsHuZGUu5PEIqR72caRZJEMU0ZWGGVqblTqa1+SI5/I68IEb0asttjckh4qu0c+HGKqHz0zArlYW/0Tz8u0tf0GLI8/I5m3rRsUM/rEYOvJ38E8xE6dIMKmr5CSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=resnics.com; spf=pass smtp.mailfrom=resnics.com; arc=none smtp.client-ip=220.197.32.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=resnics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=resnics.com
-Received: from localhost.localdomain (unknown [115.204.15.233])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 4cc44d0f6;
-	Mon, 7 Sep 2026 13:44:23 +0800 (GMT+08:00)
-From: Ruizhe Zhou <zhouruizhe@resnics.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>
-Cc: Ruizhe Zhou <zhouruizhe@resnics.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Frank Li <Frank.li@oss.nxp.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] docs: dma-api: require checking DMA mask setup errors
-Date: Mon,  7 Sep 2026 13:44:00 +0800
-Message-Id: <20260907054400.1088151-1-zhouruizhe@resnics.com>
-X-Mailer: git-send-email 2.27.0
+	s=arc-20240116; t=1788769555; c=relaxed/simple;
+	bh=RZt2HxwrlC7uM1wf0OZHImMU77vwR9/ueHK3GkdCeIg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=rtj2aN2gxNLCCwobToQDQcPsNeEXGUjOdgiXo7OjClXmbxN18JeKeR2Ht06VeVTRPIShBgYC6QVyhHjeaMyjK1Ds83tiIg+7amWno2penxFDqFUAscKWhJ/dhm0aVa0jbYwYDKsFYRQIg/rs3bRkl1q2VirZ1oYOBwh7aa8AA5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=GBRixlW/; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="GBRixlW/"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260907082550euoutp015cbcad5d5f3337ab2e0fdc513c1cb573~S-G3autfy1005510055euoutp01S
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 08:25:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260907082550euoutp015cbcad5d5f3337ab2e0fdc513c1cb573~S-G3autfy1005510055euoutp01S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1788769550;
+	bh=w+8hDv++QER8tTjVBYnJIRDhbNZxRtLnMUyxOZM4uAY=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=GBRixlW/RfPkYfMKb7gsx8Yyyc3F/rIpyVrStQX+0vQqoi0jjngN0GGr+VuOZ5bqd
+	 qfa8tkj077rIwjX0jJV82Bt2Faa99pGEpeTPob5E66ucqEBZGX1RqrL2Sq+D+VBpTB
+	 cS78SJXZ3dmT2rft6BWK6nqR3oDswrlSHdvi2P8E=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260907082550eucas1p1df7edf0bbcda200a8b4700bdd6d459bf~S-G3M2bFq1513915139eucas1p1m;
+	Mon,  7 Sep 2026 08:25:50 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260907082550eusmtip11ff6e8f686a5255952ae24f85591701c~S-G2vcEC_1356513565eusmtip1i;
+	Mon,  7 Sep 2026 08:25:49 +0000 (GMT)
+Message-ID: <f48c2a3f-38c8-44ab-8352-35ee1874b420@samsung.com>
+Date: Mon, 7 Sep 2026 10:25:48 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa07a656e9c03ackunmc3184f181a2d46
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCTx9CVklKSEpOSxhJTRhMTFYVFA
-	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlKSk5VSUtPVUpOVUlISFlXWRYaDxIVHRRZQVlPS0hVSk
-	tISk5MTlVKS0tVSkJLS1kG
+User-Agent: Betterbird (Windows)
+Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
+ regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs (commit
+ 8277a12d0d60)
+To: "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Aneesh Kumar K.V"
+	<aneesh.kumar@kernel.org>, Timo Witte <timo.witte@gmail.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Lendacky, Thomas"
+	<Thomas.Lendacky@amd.com>, "Hegde, Vasant" <Vasant.Hegde@amd.com>
+Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <BN9PR12MB5146EB49E0988618FBC13515F7B72@BN9PR12MB5146.namprd12.prod.outlook.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260907082550eucas1p1df7edf0bbcda200a8b4700bdd6d459bf
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260902182632eucas1p2d0caf5a54243c630ecbd4844cc278a0d
+X-EPHeader: CA
+X-CMS-RootMailID: 20260902182632eucas1p2d0caf5a54243c630ecbd4844cc278a0d
+References: <CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com>
+	<yq5ao6egyn5j.fsf@kernel.org>
+	<CGME20260902182632eucas1p2d0caf5a54243c630ecbd4844cc278a0d@eucas1p2.samsung.com>
+	<BN9PR12MB5146EB49E0988618FBC13515F7B72@BN9PR12MB5146.namprd12.prod.outlook.com>
 
-The DMA HOWTO says dma_set_mask_and_coherent() cannot fail for
-DMA_BIT_MASK(64), and more generally for masks wider than 32 bits. It
-consequently recommends calls to discard the check for return value.
+On 02.09.2026 20:26, Deucher, Alexander wrote:
+>> -----Original Message-----
+>> From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+>> Sent: Wednesday, September 2, 2026 6:16 AM
+>> To: Timo Witte <timo.witte@gmail.com>; iommu@lists.linux.dev
+>> Cc: m.szyprowski@samsung.com; robin.murphy@arm.com;
+>> joro@8bytes.org; Deucher, Alexander <Alexander.Deucher@amd.com>
+>> Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
+>> regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs
+>> (commit 8277a12d0d60)
+>>
+>> Timo Witte <timo.witte@gmail.com> writes:
+>>
+>>> Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and
+>>> select them via attrs") added to iommu_dma_alloc():
+>>>
+>>>     /* Not yet supported */
+>>>     if (is_alloc_cc_shared)
+>>>         return NULL;
+>>>
+>>> dma_alloc_attrs() auto-sets __DMA_ATTR_ALLOC_CC_SHARED whenever
+>>> force_dma_unencrypted() is true. On an SME host (mem_encrypt=on) an
+>>> AMD GPU with a 44-bit DMA mask hits that condition, so every GTT
+>>> (system-RAM) allocation fails with NULL/-ENOMEM, amdgpu init aborts
+>>> and the system boots without a display.
+>>> IOMMU in Translated/DMA-FQ mode (iommu group 29).
+>>>
+>>> Before the mentioned patch it worked: the IOMMU PTE carries the SME
+>>> C-bit, so the memory controller transparently decrypts for the device
+>>> while pages stay encrypted at rest. For IOMMU-backed devices
+>>> force_dma_unencrypted() is a false positive - the device DMA mask does
+>>> not limit addressing once the IOMMU translates, so CC_SHARED should
+>>> not be auto-set for them.
+>>>
+>>
+>> This means that, with host memory encryption, DMA does not need to be
+>> forced unencrypted when the device uses the IOMMU?
+> + Tom and Vasant.
+>
+> Yes, otherwise most devices won't be able to work with encrypted memory since most devices don't support a DMA mask large enough to cover the C bit.
+Is this the proper fix/workaround for v7.3-rc? If so, then Aneesh, please
+send it as a complete patch so I will take it to the dma-mapping-fixes.
 
-The generic direct-DMA path does accept every mask of at least 32 bits,
-but that is not an API-wide success guarantee. Backend callbacks can
-reject wider masks: ibmebus_dma_supported() and
-xen_grant_dma_supported() accept only DMA_BIT_MASK(64), so a 40-bit mask
-fails.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Even DMA_BIT_MASK(64) can fail when DMA setup is unavailable or
-inconsistent. For example, dma_dummy_supported() rejects every mask.
-acpi_dma_configure_id() installs dma_dummy_ops and returns success when
-the DMA attribute is DEV_DMA_NOT_SUPPORTED. DMA configuration can
-therefore succeed while leaving the device with a backend that rejects
-every mask. The PowerPC legacy IOMMU backend also rejects a mask when
-no IOMMU table is available, and the default IOMMU path rejects
-conflicting dma_ops state.
-
-Failure is therefore not limited to an unsupported address width.
-Ignoring the return value could let a driver continue with an unusable
-DMA backend.
-
-At the same time, failure of a wider mask does not indicate that a
-narrower one can succeed. Clarify for DMA driver authors that they should
-select the mask matching the device's actual addressing capability, call
-the mask setter once, and treat an error as a DMA setup failure. Update
-the examples accordingly.
-
-Fixes: f7ae20f2fc4e ("docs: dma: correct dma_set_mask() sample code")
-Link: https://lore.kernel.org/all/AEEA1wBuK97oyrSN8q4l4KpK.3.1788520536000.Hmail.zhouruizhe@resnics.com/
-Signed-off-by: Ruizhe Zhou <zhouruizhe@resnics.com>
----
-This follows the discussion linked above about retaining the error check
-when removing narrower-mask fallbacks. Is there an invariant that makes
-these failure paths unreachable for drivers calling
-dma_set_mask_and_coherent(), or should the HOWTO retain the check as
-shown here? Feedback from DMA maintainers would be appreciated.
-
- Documentation/core-api/dma-api-howto.rst | 39 ++++++++++++------------
- 1 file changed, 20 insertions(+), 19 deletions(-)
-
-diff --git a/Documentation/core-api/dma-api-howto.rst b/Documentation/core-api/dma-api-howto.rst
-index e97743ab0f26..a28be86666da 100644
---- a/Documentation/core-api/dma-api-howto.rst
-+++ b/Documentation/core-api/dma-api-howto.rst
-@@ -237,11 +237,11 @@ device struct of your device is embedded in the bus-specific device struct of
- your device.  For example, &pdev->dev is a pointer to the device struct of a
- PCI device (pdev is a pointer to the PCI device struct of your device).
-
--These calls usually return zero to indicate your device can perform DMA
--properly on the machine given the address mask you provided, but they might
--return an error if the mask is too small to be supportable on the given
--system.  If it returns non-zero, your device cannot perform DMA properly on
--this platform, and attempting to do so will result in undefined behavior.
-+These calls return zero to indicate your device can perform DMA properly on
-+the machine given the address mask you provided.  They return an error if the
-+requested mask cannot be used with the device or if the device is not capable
-+of DMA.  If a call returns non-zero, your device cannot perform DMA properly
-+on this platform, and attempting to do so will result in undefined behavior.
- You must not use DMA on this device unless the dma_set_mask family of
- functions has returned success.
-
-@@ -264,23 +264,24 @@ The 24-bit addressing device would do something like this::
-
- The standard 64-bit addressing device would do something like this::
-
--	dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))
--
--dma_set_mask_and_coherent() never return fail when DMA_BIT_MASK(64). Typical
--error code like::
-+	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
-+		dev_warn(dev, "mydev: No suitable DMA available\n");
-+		goto ignore_this_device;
-+	}
-
--	/* Wrong code */
--	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64)))
--		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32))
-+Failure to set a 32-bit or wider DMA mask must not be treated as an indication
-+that retrying a narrower mask can succeed.  Drivers must select the mask based
-+on the device's actual DMA addressing capability and treat failure to set that
-+mask as a DMA setup failure.  For example, a device supporting either 32-bit
-+or 64-bit addressing would do something like this::
-
--dma_set_mask_and_coherent() will never return failure when bigger than 32.
--So typical code like::
-+	u64 mask;
-
--	/* Recommended code */
--	if (support_64bit)
--		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
--	else
--		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
-+	mask = support_64bit ? DMA_BIT_MASK(64) : DMA_BIT_MASK(32);
-+	if (dma_set_mask_and_coherent(dev, mask)) {
-+		dev_warn(dev, "mydev: No suitable DMA available\n");
-+		goto ignore_this_device;
-+	}
-
- If the device only supports 32-bit addressing for descriptors in the
- coherent allocations, but supports full 64-bits for streaming mappings
-
-base-commit: ab2704c2a884028fd12d455cf27a9585aefe2961
---
-2.27.0
