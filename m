@@ -1,57 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BED3545A2A8;
-	Mon,  7 Sep 2026 09:58:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8759445A287;
+	Mon,  7 Sep 2026 09:58:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788775125; cv=none; b=uMYQH0JBF3aSMS7WmMl8vj/017rzHWthWnV8f0tvvLuMTo9OwPc5g4PpOlwcFVcfEIMsCAVcE7w4DGbcXIbrcSpirdbbEFxMEGBr9h6A0HUTeMd9v6ahNOuj7t0sq3RNoQe2oyGGxXimZdc1IrkBQecfCjdxDhlkTWVP6SDT9Vk=
+	t=1788775129; cv=none; b=UIvGbfIiKrCCYlHX02IV6v3AWIszSIpVqI0DmpGmefRQon2TVQ0J4cbCXU+IQIuk6k8xOo04QRsXnAxvTFXjaCko0F8czE8YByWbQrg0pogCmU0azJtQlTP2ohGTcjdlWfZP8UTHR9xmtjpoPt418cPi8bIArgLqT7O/hwJ2bVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788775125; c=relaxed/simple;
-	bh=tKlHQiLj6V2+z78rD86wz0xE1D7o/oc1OYrMImWW2GU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=O7VzO+QmJE57Ma9ikR53r/Onc/T+ePnk1Its+S/a9xKLhK7dTEvew5L0Cjqi7AfcDkl9fZN1a7Pz8nNqGmqRiSjMhH65u0PC+JsKUQEc6dSNGzveuIalHuzKP49Ghg8s8TPw2aiC/vdVu8h1eDF5IgCunkn1TubOfngmHW6qbn4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PXRgUb86; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788775129; c=relaxed/simple;
+	bh=zG0tMoR3O5dMHQvDkhsl+Zpb0Vw/qkekKBrBeRsCL9s=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=BRDuENn8gp5fQwBv1YguWM8DkXp6yCj4pg3fIqUnE0KZ0as3aNzMWr0tHSR/l7g1byFfh/zyArjxH2PKd9CXF37LmSjpylhCpjlWWCvY7/XKk5By41FoVKXAA/HvZxQIjrXs84VlPSu16dkxsfAnLAL1zJxUmuNYWJHw/Ou/pTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DDEKCtWW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PXRgUb86"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7071B1F00A3E;
-	Mon,  7 Sep 2026 09:58:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DDEKCtWW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056E61F00A3A;
+	Mon,  7 Sep 2026 09:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788775123;
-	bh=cwxlOO0PfaD5LKIbexp9WWtgAxdWlrrDi1uOebkoVNs=;
-	h=From:To:Cc:Subject:Date;
-	b=PXRgUb861dJgKWzTDP+4eM3m158NKzsswprYUAuWm3jIB7Fms700gjHy6BLvU94tC
-	 v8G6wq1HwEd4Ao5TvnN0p2+/ZC0j+U7PozoX/tEEoVSKfzKqz+DB7nbh5M3IfygEpg
-	 x6dk9xSdDb+qYjiUqpxcLVdJUfFbeUFZCJuRSs1Yyc1oyRaOIsAWBKaU11F4sOXFQq
-	 KslL8zcSZPuPQVc0axgZX4KtoHq47eT45JuUByXYAFP7Z1QGo84DtDfwtmbE77sOlw
-	 uhnrwzE153VXKbDqFV3C9LruFjXYaEVjyCnVi6ZddhMuI12rHbY/LJmItnJZ/n7T5a
-	 U/b2YS9qXCeKw==
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailfauth.ams.internal (Postfix) with ESMTP id F1EF3198003A;
-	Mon,  7 Sep 2026 05:58:38 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-02.internal (MEProxy); Mon, 07 Sep 2026 05:58:40 -0400
-X-ME-Sender: <xms:zoqeahtfyvj_lFiq-wb-s8-9cZ3dod28hZy1Y13JeieCcir0kvSMnA>
-    <xme:zoqeahYeZOtXwRhAklzmxKH36hjAIYX6QTcp7Oz5IlD8kxlcWWc0TuMZD9W2SLFDg
-    5nqhIZmDcW3F2jNXTZ4CyIpTEmBK0Ma1clP7FeKV3YcMx0KTpYr5s7u>
-X-ME-Received: <xmr:zoqeap3l367qfTXBo0SIfnixVryaJ3akomYxzfyn1DZtE2IXFku6XKQ4Z00>
-X-ME-Proxy-Cause: dmFkZTGOV4s0uqSOWo1zXxwIR6fcdFJstUkJy5optG3EbWoIJs8tjmFUmicxaGh26muWSG
-    xy/3REBSdKsUcMFMUlAjIu8YODwHEX4lsV4qe45YL34oIYFTVpgyGwGf2Ds26aCbOvpBDx
-    DnxUbElYo4AqNs65BHucRKNh1y5AIS+6ewBGq+NkIzzJZj0MwRfH1Qc+isRhy05PMUybM3
-    iLd8gImKieA4rTwFlNzaRKHkRM01L22dI0RPtn6h1PSywIGXBvB9/mRWMRjn+4Ath1iPFh
-    T2I16TeZ5yqfuQrazi57AgN/r8uGsBM7zZtDM4Yf4ozUB/9vNb2B7MwHncknlMYxxx1vj6
-    GCdpqN0JeaayTK+j22D1kYaGoDqUb4hhr5HU2i43VGz8VqW7nDAxMuZ1IZKbfDi77zlizC
-    CL+7eEEPL8T0OtuxfEIsZO2a201HRM/811zb1CbPPU4Sk0OWDJSCW+3vKUhNdinqVNhlwz
-    tpvO6TVEKHybtjpZE2CnsVJUO6mTO7OKPN7aafBBSA7iKDvmuZeviapeuIInWi4okt1ST9
-    EE908a7oQFh084WIPJVLVFYiNGp14fCuwHewCP67enikwJsk2YGgXVl9qgOADUoh/RE8IO
-    ioTTssyorZGOFDsUHN112/LKt7pClvc1ISeHz8kKn3g2pCl/BJA0p0/xDslQ
-X-ME-Proxy: <xmx:zoqeavUJEpU2PeTOqrQ3CdbWm_wldu50Y2C2ThKIrMnBAzZIb9oZAA>
-    <xmx:zoqeastP22u5Gk-ep2A4fxPf1YH2RKEAAoRSwI-49TZLSmo0Q94Y5w>
-    <xmx:zoqeauUyBwyFZbRo7WYDFftRpwHHhbyWcKb48JcEfYSUJye1BcT17w>
-    <xmx:zoqeagWyMkvyv1U311GuuBQWPbRcGmM7y6Pr3YIKT5c2UnxvZ4bmDw>
-    <xmx:zoqeageZJd_hybtwzeUZh3Ve5ZgE0j7KbdPsLEkz9vuhMTMw-8veO-Du>
+	s=k20260515; t=1788775127;
+	bh=BhPP1JAiNiKkOvrHNFMFzIUMy7btuiCwX6565yHzAys=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=DDEKCtWWqf8MTZsscjIaQG1p4bJhKuAZldH8t08mtXsCciI6o9mUWUvZjU7craFS8
+	 Y+XD9gmbhA9W67pD4POin1scIrCl+tHsRWG60/g+TDVE/dNk2afb+DjZnUj1k1OJdT
+	 7YK3wHOVRFKRMrE55WzOrp08nEujQgr0aMfH6GyXqS6lUSz52Ov99cz8bVtvKCXLo3
+	 /cac1WciBBvuTBR+8HRlskJf4b4lG7+KUw3bAlFH2HoS1tzuMOozTgdOridBD7JuW7
+	 TZKMN3X1uKG/y57TObd+5Pdg1tX9DXEeKbIdGRyh8N7goii7fyNlj+1wV9bCiOnFYE
+	 6mIaRuW13qqtQ==
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfauth.ams.internal (Postfix) with ESMTP id 4618F1980045;
+	Mon,  7 Sep 2026 05:58:43 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-05.internal (MEProxy); Mon, 07 Sep 2026 05:58:44 -0400
+X-ME-Sender: <xms:0oqealXkTF2WPLg9zFBxlw2nuVRgbJ2AHrlPE6iuyiwfO70vLal08g>
+    <xme:0oqeasjzIBixyR5j4wJez9xF3cRB5vooHrfG8DUfuo6n9F4El6sebSO2DGl4zas5E
+    nXfEWJqZLWUPbDZo_4_qEylJ0P9WFbgrwFaan1sy1C69RT4I9_SBZM>
+X-ME-Received: <xmr:0oqeamfOXL_wnTUQXzpjMrol2RZ9eOtUzF1pbZXFJdUu38SHcwnWl2iMFe0>
+X-ME-Proxy-Cause: dmFkZTEfmTDj/r+7N3SoJC/vnCUjsKNijMe1VXFD0b88h55H2gBIFouQJkZSZK1yyk30Sm
+    mIpo4+lqFBdKW9tiCpcqxnDvXOftY/uwGIbts6csXqNfxsNqOfnYnFu40A0wAOj35G9s+w
+    IAMv9bbisiS7ei9Uc4aFfDLSUxZi6vkR+vpXkb8NeS63qvjIFlVzXVDhwHvtwaAOtbHyG2
+    EUUfEj73JOAPxGIHZGnc8vHsjF2mphj6z1w+QhR+1XLYLXNDi1frGA6EeIrPkmhp8ZYVyp
+    w0DvRbQmjeBcjm+uOYs5drfpJJgg1sHnCQ9G2soFC7z9xfrcgmKRrSpzbA16VZVaATLmZT
+    ZZpZOu0tl5/4gKg+qoZ5IZ7qaYPHwrqUKdHIExtFs7fioLI5gLTr0F4QHJVJBRKlkzLr4m
+    K5YGuRZ4f8L82cQXLfUa4Kr66Wq5HTJN5P34au8kd6WXzHrq3dZjIsF2Jdg8ZgBGK8io1B
+    XiVuO1rHVxWbmb57VJuGh/Xg5U2eq5i+YXPNRjXNOlFSJH7ixGQqALgROdryD6te1lBVi9
+    +IvFds5vBbSeGlRVpA9VO8QgGbou5n3M858WuEy1X5lIyV8RaV/nZmfZ+RuJLshVtx9w8Q
+    Ue+xTAtMVMu3jSx8F35nt7wB3L+lykYzzizAZTrw5mwcsVrOsTVaT2NhQoDw
+X-ME-Proxy: <xmx:0oqeavejnpkj9DshRpHV-EHWvSLETyqCwVmdfj4Le5Ha8riI9ZahSA>
+    <xmx:0oqeaqWu7mMOgx40XlzHU_PBletIZ3WUpCym12-lUtLRS0kddKYEuw>
+    <xmx:0oqeardxdpCkX47cG2-jLQWbfcXrUWkEw73ejK2ey5ukEokXfk397Q>
+    <xmx:0oqeam8dmaY6ETqZy1QZxqXslHkrkaqvhvMmBS1kSMxwIp3X-rgJFA>
+    <xmx:0oqeaimR-r9dbXUywGLTOhHtvjhgh_Ol1WVsl9pVa1YiVIEGgTK_EBbc>
 Feedback-ID: i10464835:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Sep 2026 05:58:37 -0400 (EDT)
+ 7 Sep 2026 05:58:42 -0400 (EDT)
 From: "Kiryl Shutsemau (Meta)" <kas@kernel.org>
 To: Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
@@ -72,10 +73,12 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>,
 	linux-tegra@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Kiryl Shutsemau (Meta)" <kas@kernel.org>
-Subject: [PATCH v5 0/2] iommu/arm-smmu-v3: Make the queue depths tunable, and shrink them in a kdump kernel
-Date: Mon,  7 Sep 2026 10:58:33 +0100
-Message-ID: <20260907095835.1233352-1-kas@kernel.org>
+Subject: [PATCH v5 1/2] iommu/arm-smmu-v3: Add a cmdq_max_entries module parameter
+Date: Mon,  7 Sep 2026 10:58:34 +0100
+Message-ID: <20260907095835.1233352-2-kas@kernel.org>
 X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260907095835.1233352-1-kas@kernel.org>
+References: <20260907095835.1233352-1-kas@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,53 +87,130 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The queues are sized from the IDR1 maxima and allocated at probe, costing
-megabytes per queue per SMMU instance. A kdump capture kernel pays that out
-of a small crashkernel reservation, for queues it barely uses and two of
-which it switches off anyway.
+The command queue depth comes straight from the maximum the hardware
+advertises in IDR1, which reaches megabytes of coherent DMA per queue.
+A system with several SMMUv3 instances pays that per instance, and the
+Tegra241 CMDQV pays it again for every VCMDQ it preallocates.
 
-Patch 1 adds a cmdq_max_entries module parameter, decided in a per-queue
-helper and floored at one page. Patch 2 has a kdump kernel default all
-three depths to one page through the same helper. An explicit
-cmdq_max_entries still wins.
+Queue depth only bounds how many commands may be in flight before a sync.
+A machine driving a handful of devices, or one with a tight memory budget,
+has no use for the maximum, and no way to say so.
 
-Measured per instance under QEMU on -M virt,iommu=smmuv3, through a real
-panic and kexec into a capture kernel:
+Add cmdq_max_entries, an upper bound on the number of command queue
+entries. Decide the depth in arm_smmu_cmdq_max_n_shift(), which caps the
+IDR1 value for natural alignment and then applies the parameter, so the
+queue is allocated at the requested size. The Tegra241 CMDQV sizes its
+VCMDQs from IDR1 itself, so route that through the same helper.
 
-                        4K page          64K page
-      cmdq         1 MB -> 4 KB      8 MB -> 64 KB
-      evtq         1 MB -> 4 KB     16 MB -> 64 KB
+Round the request down to a power of two and floor it at one page worth of
+entries. Without the floor, a small request trips the CMDQ_BATCH_ENTRIES
+check in arm_smmu_device_hw_probe() and the SMMU fails to probe. The floor
+also costs nothing: coherent DMA is page granular, so a shallower queue
+occupies the same memory as one that fills the page.
 
-Every clamped queue lands on exactly one page. cmdq_max_entries moves the
-command queue alone and beats the kdump default; the capture kernel
-attached four devices with no CMD_SYNC timeout, GERROR or context fault.
-QEMU exposes no PRI queue, which takes the same path. Build-tested across
-4K/16K/64K, TEGRA241_CMDQV=n, CRASH_DUMP=n and =m, every commit
-warning-free.
-
-v5:
- - Rename cmdq_entries to cmdq_max_entries (Nicolin).
- - Take Nicolin's refactor: ceiling/floor naming, the alignment cap inside
-   the per-queue helpers, evtq/priq helpers, FIELD_GET() at the call sites.
- - Keep the override in entries rather than a shift: ilog2(1) is 0 and
-   collides with the "use the default" sentinel, so cmdq_max_entries=1
-   would have given the hardware maximum instead of the floor.
- - min() for min_t() now that the types allow it. Changelogs tightened.
-
-v4: https://lore.kernel.org/all/20260902121724.3494954-1-kas@kernel.org/
-v3: https://lore.kernel.org/all/20260706084708.8072-1-kas@kernel.org/
-
-Kiryl Shutsemau (Meta) (2):
-  iommu/arm-smmu-v3: Add a cmdq_max_entries module parameter
-  iommu/arm-smmu-v3: Default queue depths to one page in a kdump kernel
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 78 +++++++++++++++++--
+Signed-off-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
+Assisted-by: Claude-Code:claude-opus-5
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 45 ++++++++++++++++++-
  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  1 +
  .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  2 +-
- 3 files changed, 73 insertions(+), 8 deletions(-)
+ 3 files changed, 45 insertions(+), 3 deletions(-)
 
-
-base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 5732f3ba0122..4550b1105e9c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -40,6 +40,11 @@ module_param(disable_msipolling, bool, 0444);
+ MODULE_PARM_DESC(disable_msipolling,
+ 	"Disable MSI-based polling for CMD_SYNC completion.");
+ 
++static unsigned int cmdq_max_entries;
++module_param(cmdq_max_entries, uint, 0444);
++MODULE_PARM_DESC(cmdq_max_entries,
++	"Upper bound on the number of command queue entries, rounded down to a power of two and up to at least one page. Zero means the hardware maximum.");
++
+ static const struct iommu_ops arm_smmu_ops;
+ static struct iommu_dirty_ops arm_smmu_dirty_ops;
+ 
+@@ -4412,6 +4417,42 @@ static struct iommu_dirty_ops arm_smmu_dirty_ops = {
+ };
+ 
+ /* Probing and initialisation functions */
++
++/**
++ * arm_smmu_queue_max_n_shift() - pick the log2 depth of a queue
++ * @ceiling: default log2 depth ceiling of the queue
++ * @ent_sz_shift: log2 of the queue entry size in bytes
++ * @entries: number of entries to cap the queue at, or zero for the default
++ *
++ * @entries is rounded down to a power of two and floored at one page, because
++ * coherent DMA is page granular: a shallower queue occupies the same memory as
++ * one that fills the page, and arm_smmu_init_one_queue() stops shrinking at a
++ * page too.
++ */
++static u32 arm_smmu_queue_max_n_shift(u32 ceiling, u32 ent_sz_shift,
++				      u32 entries)
++{
++	u32 floor = PAGE_SHIFT - ent_sz_shift;
++
++	if (!entries)
++		return ceiling;
++
++	return min(ceiling, max(ilog2(entries), floor));
++}
++
++/*
++ * Command queues are also allocated by the Tegra241 CMDQV for its VCMDQs, which
++ * need the same depth decision.
++ */
++u32 arm_smmu_cmdq_max_n_shift(u32 ceiling)
++{
++	/* Capped to ensure natural alignment */
++	ceiling = min(CMDQ_MAX_SZ_SHIFT, ceiling);
++
++	return arm_smmu_queue_max_n_shift(ceiling, CMDQ_ENT_SZ_SHIFT,
++					  cmdq_max_entries);
++}
++
+ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 			    struct arm_smmu_queue *q, void __iomem *page,
+ 			    unsigned long prod_off, unsigned long cons_off,
+@@ -5156,8 +5197,8 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 		smmu->features |= ARM_SMMU_FEAT_ATTR_TYPES_OVR;
+ 
+ 	/* Queue sizes, capped to ensure natural alignment */
+-	smmu->cmdq.q.llq.max_n_shift = min_t(u32, CMDQ_MAX_SZ_SHIFT,
+-					     FIELD_GET(IDR1_CMDQS, reg));
++	smmu->cmdq.q.llq.max_n_shift =
++		arm_smmu_cmdq_max_n_shift(FIELD_GET(IDR1_CMDQS, reg));
+ 	if (smmu->cmdq.q.llq.max_n_shift <= ilog2(CMDQ_BATCH_ENTRIES)) {
+ 		/*
+ 		 * We don't support splitting up batches, so one batch of
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 50f8321e979c..11ae4d8f4ad2 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -1165,6 +1165,7 @@ static inline void arm_smmu_domain_inv(struct arm_smmu_domain *smmu_domain)
+ 
+ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
+ 			      struct arm_smmu_cmdq *cmdq);
++u32 arm_smmu_cmdq_max_n_shift(u32 ceiling);
+ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 			    struct arm_smmu_queue *q, void __iomem *page,
+ 			    unsigned long prod_off, unsigned long cons_off,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+index 6644075c1431..710a4c694b94 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
++++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+@@ -663,7 +663,7 @@ static int tegra241_vcmdq_alloc_smmu_cmdq(struct tegra241_vcmdq *vcmdq)
+ 	/* Cap queue size to SMMU's IDR1.CMDQS and ensure natural alignment */
+ 	regval = readl_relaxed(smmu->base + ARM_SMMU_IDR1);
+ 	q->llq.max_n_shift =
+-		min_t(u32, CMDQ_MAX_SZ_SHIFT, FIELD_GET(IDR1_CMDQS, regval));
++		arm_smmu_cmdq_max_n_shift(FIELD_GET(IDR1_CMDQS, regval));
+ 
+ 	/* Use the common helper to init the VCMDQ, and then... */
+ 	ret = arm_smmu_init_one_queue(smmu, q, vcmdq->page0,
 -- 
 2.54.0
 
