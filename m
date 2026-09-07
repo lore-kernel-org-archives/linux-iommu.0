@@ -1,190 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A91F43636B
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 09:58:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 374024734FC
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 11:05:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788775132; cv=none; b=UNu62zugrFSSUpjmsvGWUtAFvQLh0pDmGpiKzifE9DsnS/tOM2XfiATtVrwmHQcDypfhx0Tkc+PLIExOq2H99ONJxBw/Tn1MxUMBcZUcsO/2+ylJ0TnP1Ur1JlW6plaAXJYCyDcbi4aFuVrAhm5HnPVieqdcrmy1aZDDsu6uJa0=
+	t=1788779126; cv=none; b=aA0pohGfu1XqBeGk3CPBUf7zGgMBSaRC0ob6oJB1iszMiN+hneTQ8BWtQ1E2rzJWvabvJv6QVrkWDhaLi3g50Xcpo1dHd0Wx3n+Vtb1ATEsoVVNS7sGlVS1XsausRNWDxhA5GxlbMT+nX0ME4tOoUxSSEXeh+tRRHfHPTdyDwJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788775132; c=relaxed/simple;
-	bh=2WSeminL2sHAHn+HbQhaOX4FADTSAQfyN4PN41I4lsw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=g9A5jgw2QeHU86V7RqFd6tUObLof1IeZv8lrIIQLserIo3UR8RmZ/feJc9p5L+6XnnuJYVBE9EvNAzTuRhSJVS94+MlcOn6H7ZCkIh6of7PoBD5EJsXR8nLstoyUpnKNaD9CIC5uFB+RkiXMxyqFF1j8G7cA9XsR+Qtomd8l6Uc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oMbfZ+DP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788779126; c=relaxed/simple;
+	bh=zqXmbd2Z50wJl0hBIofHZ5M98CDm1cup+pJ6kyw+sNY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=e4zXXeaUX0euaCcAXismdKdaft33U4mjQaZZtAe1WH0EhHo9zpk6ON1KE86U5D4PaTfR2ZjP9O8GcLY9xAdwvE2ueMnQToFcOE17D2D/VoRDbV+22gB27JSWh7na8jujrxTb39JzcO1ncml+kZYM0q3hKZciP5iRuunuqiVvPoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ZU1pLrNm; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oMbfZ+DP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B07231F00AC4;
-	Mon,  7 Sep 2026 09:58:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788775131;
-	bh=BqnIWeCAGaPUYlaZlk6L1OPF4VRf6Uq0c3BQIWypxoA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=oMbfZ+DPKvFe0X8s6kwUNnC1NeJ1jwAr/6V+vXkcRc6iR7x+NpZqaVvLWw96+belB
-	 +1NT+MlNFY9F+F4TFJodcW0Vps3xCgAQrem2VR+4RQ+1CCl0NQGUYtVV24rUAceM7A
-	 5z2NXCRvdzJgG/ukEYj2t2Ch2sQeIz7D/qVIFXueH9TugVcJFzQXE7gD+hMAVM8IkA
-	 WC3YXzZB1/+IjJhM3S8RCPGCJeXwX0nrmT0f3oceqgORqorfNE7mPsEYqbKjG38QE8
-	 4CA0Tcoy+29jfOHozB1f0L+dk73F04dooIC0DAIT73xjINXKdlh9Xrdl3+PfB8SwFR
-	 3QvtSHyQbnwHw==
-Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
-	by mailfauth.ams.internal (Postfix) with ESMTP id EACA0198003A;
-	Mon,  7 Sep 2026 05:58:46 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-06.internal (MEProxy); Mon, 07 Sep 2026 05:58:48 -0400
-X-ME-Sender: <xms:1oqeanAtK-gOkFsE1aBfOLFFC9pXpzo0_Qe9O1FIZeZ2A1HjEHe2Bg>
-    <xme:1oqeakdWWL0GWfydQXyrNBYjTLZ9S5v5kJOyUijVf5qRY4UXsG4_oXFB36xFhOnpI
-    3d5KLWn_sjCO-JtAy5pjdKCbiSoU3utNwI86P_KdDsIif3_Y24RG4QG>
-X-ME-Received: <xmr:1oqeanrYg8mzNtlwyuthz3qFkAU7LgF2mo4WD8PPxz6ZVWcKCtJ8S4_7QCI>
-X-ME-Proxy-Cause: dmFkZTEfmTDj/r+7N3SoJC/vnCUjsKNijMe1VXFD0b88h55H2gBIFouQJkZSZK1yyk30Sm
-    mIpo4+lqFBdKW9tiCpcqxnDvXOftY/uwGIbts6csXqNfxsNqOfnYnFu40A0wAOj35G9s+w
-    IAMv9bbisiS7ei9Uc4aFfDLSUxZi6vkR+vpXkb8NeS63qvjIFlVzXVDhwHvtwaAOtbHyG2
-    EUUfEj73JOAPxGIHZGnc8vHsjF2mphj6z1w+QhR+1XLYLXNDi1frGA6EeIrPkmhp8ZYVyp
-    w0DvRbQmjeBcjm+uOYs5drfpJJgg1sHnCQ9G2soFC7z9xfrcgmKRrSpzbA16VZVaATLmjT
-    G3X7mrluRu/OP7GWi6COueqWAS0H3GTAGJ/fm56NGzoGd7yk6zkLuzmNrmSMjr6442CP+y
-    HnlPe3n8Xk+qYwbdJcNYCz0zhVGBp52fzd8usy6Fv9D8UkByjw9bqELipPUY49VIjGJE2y
-    JcYI/8qNW7KnpCpfbw5A/XZmV7qwKjxVYos5Scwlkivj00woZwco40oiQ1DODWrecViyGZ
-    ov5bIFs7u1nvBAMGn0nSs7osJZqBdFI2+Je/NL7bbI8gmBfKSV2p5aE0ilvuAaSk5uQcds
-    Tvsfw7j9v1iyR6EXzbNGjAsmmJ+QAREUZ87tqDPg3s1zIjJQp39uQZ/tNe5A
-X-ME-Proxy: <xmx:1oqeag4Az8IE3i1krUREylLDILUEbfW7dkcW1CaAGsjwR1DL-Ly7Sw>
-    <xmx:1oqeanCOdjfvxxZvT36qwvehRFKmPrKF7gQvR3GoKQ-qrlDkWl_hmw>
-    <xmx:1oqeaiYdhQ3Fxw6SiYkbkGC_fPKuSWHl02pJZCbdBTWCeKVMDB3F0g>
-    <xmx:1oqearLVMWATyBz1DjlLACTAyFKCiDw1mxgsZSbfxI7njkhAQ7pv5g>
-    <xmx:1oqearA3UfMNpPQTwLpiEqugOEzXKL3E_KY3Yt5Q3Fh4g57KL8KnO63f>
-Feedback-ID: i10464835:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Sep 2026 05:58:45 -0400 (EDT)
-From: "Kiryl Shutsemau (Meta)" <kas@kernel.org>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Breno Leitao <leitao@debian.org>,
-	Kyle McMartin <jkkm@meta.com>,
-	Usama Arif <usama.arif@linux.dev>,
-	kernel-team@meta.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Kiryl Shutsemau (Meta)" <kas@kernel.org>
-Subject: [PATCH v5 2/2] iommu/arm-smmu-v3: Default queue depths to one page in a kdump kernel
-Date: Mon,  7 Sep 2026 10:58:35 +0100
-Message-ID: <20260907095835.1233352-3-kas@kernel.org>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260907095835.1233352-1-kas@kernel.org>
-References: <20260907095835.1233352-1-kas@kernel.org>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ZU1pLrNm"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260907110521euoutp0214ec9465ffeb3750bbedda336f904120~TBSIjX67I1014010140euoutp02t
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 11:05:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260907110521euoutp0214ec9465ffeb3750bbedda336f904120~TBSIjX67I1014010140euoutp02t
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1788779121;
+	bh=cdiHqfP066vD1Eme2p0UfDhpDV63v+NMGx+7TiqjvH4=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=ZU1pLrNmQtu2fdBgeTKgZ3z0T+DgIKLXmUWcUc9fU+XMzqvwSUnVEoi1XDJ4oTDrG
+	 HOS3gEyx6c4hv7w2W/vOGGUEm/Khow2RhaLjXAVvuJYr5a9x1ZhEfG3Jx56Bx2hC0j
+	 oacx2+DsPSOqWQsvRTQMGZe0gWSbRZkgFQ9yFxQo=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260907110521eucas1p2b210f0e3af19462cd56aaf34a8236055~TBSIZXzKe2716927169eucas1p20;
+	Mon,  7 Sep 2026 11:05:21 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260907110520eusmtip17567050ca784110fbe7d68f6cd8f16ef~TBSIFRM0h1147811478eusmtip1g;
+	Mon,  7 Sep 2026 11:05:20 +0000 (GMT)
+Message-ID: <ff20483d-c701-4cdb-8db8-15aa79bc32cf@samsung.com>
+Date: Mon, 7 Sep 2026 13:05:20 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma-mapping: don't trace the DMA address when the
+ allocation fails
+To: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Sean Anderson
+	<sean.anderson@linux.dev>, Steven Rostedt <rostedt@goodmis.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260905071919.30784-1-donggeunyoo.kernel@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260907110521eucas1p2b210f0e3af19462cd56aaf34a8236055
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260905071928eucas1p1c5690e441968982d4acd9ea1c43b02e5
+X-EPHeader: CA
+X-CMS-RootMailID: 20260905071928eucas1p1c5690e441968982d4acd9ea1c43b02e5
+References: <CGME20260905071928eucas1p1c5690e441968982d4acd9ea1c43b02e5@eucas1p1.samsung.com>
+	<20260905071919.30784-1-donggeunyoo.kernel@gmail.com>
 
-All three queues are sized from the maxima the hardware advertises in IDR1
-and allocated at probe, up to 4 MB each on a 4K-page kernel. The capture
-kernel already disables two of them: arm_smmu_device_reset() drops
-CR0_EVTQEN and CR0_PRIQEN. It still allocates both at full size.
+On 05.09.2026 09:19, Donggeun Yoo wrote:
+> dma_alloc_attrs() passes *dma_handle to trace_dma_alloc() and
+> debug_dma_alloc_coherent() without checking whether the allocation
+> succeeded. No backend writes it on failure: dma_direct_alloc(),
+> iommu_dma_alloc() and the dma_map_ops instances assign it only on the
+> path that returns a buffer. Callers usually pass an uninitialized
+> automatic variable, so with the tracepoint enabled a failed allocation
+> records whatever the stack held, next to the virt_addr=(null) that marks
+> the record as an error.
+>
+> The device coherent pool path is the same: a non-zero return from
+> dma_alloc_from_dev_coherent() means the request was handled, not that it
+> succeeded, so cpu_addr is NULL and dma_handle untouched once the pool
+> runs out.
+>
+> Split both sites on cpu_addr, as dma_alloc_pages() and
+> dma_alloc_noncontiguous() do further down the file, and pass 0 for the
+> failure case like the two error paths already in this function.
+>
+> Fixes: 038eb433dc14 ("dma-mapping: add tracing for dma-mapping API calls")
+> Fixes: 68b6dbf1f441 ("dma-mapping: trace more error paths")
+> Signed-off-by: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
+> ---
+> Compile-tested only, with CONFIG_DMA_API_DEBUG=y and CONFIG_TRACEPOINTS=y
+> so that both changed calls are built. The claim that no backend writes
+> *dma_handle on failure was checked against dma_direct_alloc() and its
+> helpers, iommu_dma_alloc(), iommu_dma_alloc_remap() and every in-tree
+> dma_map_ops .alloc implementation.
+>
+>  kernel/dma/mapping.c | 20 +++++++++++++++-----
+>  1 file changed, 15 insertions(+), 5 deletions(-)
+>
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index bf2651a70b7c..098cd57e1157 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -656,8 +656,12 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
+>  
+>  	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
+> -		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+> -				DMA_BIDIRECTIONAL, flag, attrs);
+> +		if (cpu_addr)
+> +			trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+> +					DMA_BIDIRECTIONAL, flag, attrs);
+> +		else
+> +			trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL,
+> +					flag, attrs);
+Frankly speaking I would prefer to fix this in include/trace/events/dma.h with
+__entry->dma_addr = virt_addr ? dma_addr : 0;
 
-A kdump capture kernel runs from a small crashkernel reservation, and every
-SMMUv3 instance pays that cost again, up to 12 MB apiece. It goes to queues
-that either serve the handful of devices used to save the dump or are
-switched off outright, and it is memory the dump itself needs.
 
-Default all three depths to one page worth of entries when
-is_kdump_kernel(). The queues carry commands and fault records rather than
-DMA data, so dump throughput is unaffected. A shallower command queue only
-bounds how many commands may be in flight before a sync, which does not
-matter for the few devices that save the dump.
+>  		return cpu_addr;
+>  	}
+>  
+> @@ -676,9 +680,15 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>  		return NULL;
+>  	}
+>  
+> -	trace_dma_alloc(dev, cpu_addr, *dma_handle, size, DMA_BIDIRECTIONAL,
+> -			flag, attrs);
+> -	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
+> +	if (cpu_addr) {
+> +		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+> +				DMA_BIDIRECTIONAL, flag, attrs);
+> +		debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr,
+> +					 attrs);
+> +	} else {
+> +		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
+> +				attrs);
+> +	}
+Here You remove the debug_dma_alloc call for the failed case. Right, it
+is a noop now for the allocation failure, but it might be extended with
+some kind of debugging in the future, so I prefer to keep the current
+code here.
+>  	return cpu_addr;
+>  }
+>  EXPORT_SYMBOL(dma_alloc_attrs);
 
-An explicit cmdq_max_entries still wins, so a capture kernel that wants a
-deeper command queue can ask for one on the command line.
-
-Suggested-by: Kyle McMartin <jkkm@meta.com>
-Signed-off-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
-Assisted-by: Claude-Code:claude-opus-5
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++++----
- 1 file changed, 30 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 4550b1105e9c..67dca0cb487b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4424,6 +4424,9 @@ static struct iommu_dirty_ops arm_smmu_dirty_ops = {
-  * @ent_sz_shift: log2 of the queue entry size in bytes
-  * @entries: number of entries to cap the queue at, or zero for the default
-  *
-+ * The default is @ceiling, except in a kdump capture kernel, which defaults to
-+ * one page worth of entries.
-+ *
-  * @entries is rounded down to a power of two and floored at one page, because
-  * coherent DMA is page granular: a shallower queue occupies the same memory as
-  * one that fills the page, and arm_smmu_init_one_queue() stops shrinking at a
-@@ -4433,11 +4436,32 @@ static u32 arm_smmu_queue_max_n_shift(u32 ceiling, u32 ent_sz_shift,
- 				      u32 entries)
- {
- 	u32 floor = PAGE_SHIFT - ent_sz_shift;
-+	u32 new_ceiling;
- 
--	if (!entries)
-+	if (entries)
-+		new_ceiling = max(ilog2(entries), floor);
-+	else if (is_kdump_kernel())
-+		new_ceiling = floor;
-+	else
- 		return ceiling;
- 
--	return min(ceiling, max(ilog2(entries), floor));
-+	return min(ceiling, new_ceiling);
-+}
-+
-+static inline u32 arm_smmu_evtq_max_n_shift(u32 ceiling)
-+{
-+	/* Capped to ensure natural alignment */
-+	ceiling = min(EVTQ_MAX_SZ_SHIFT, ceiling);
-+
-+	return arm_smmu_queue_max_n_shift(ceiling, EVTQ_ENT_SZ_SHIFT, 0);
-+}
-+
-+static inline u32 arm_smmu_priq_max_n_shift(u32 ceiling)
-+{
-+	/* Capped to ensure natural alignment */
-+	ceiling = min(PRIQ_MAX_SZ_SHIFT, ceiling);
-+
-+	return arm_smmu_queue_max_n_shift(ceiling, PRIQ_ENT_SZ_SHIFT, 0);
- }
- 
- /*
-@@ -5196,7 +5220,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	if (reg & IDR1_ATTR_TYPES_OVR)
- 		smmu->features |= ARM_SMMU_FEAT_ATTR_TYPES_OVR;
- 
--	/* Queue sizes, capped to ensure natural alignment */
- 	smmu->cmdq.q.llq.max_n_shift =
- 		arm_smmu_cmdq_max_n_shift(FIELD_GET(IDR1_CMDQS, reg));
- 	if (smmu->cmdq.q.llq.max_n_shift <= ilog2(CMDQ_BATCH_ENTRIES)) {
-@@ -5211,10 +5234,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 		return -ENXIO;
- 	}
- 
--	smmu->evtq.q.llq.max_n_shift = min_t(u32, EVTQ_MAX_SZ_SHIFT,
--					     FIELD_GET(IDR1_EVTQS, reg));
--	smmu->priq.q.llq.max_n_shift = min_t(u32, PRIQ_MAX_SZ_SHIFT,
--					     FIELD_GET(IDR1_PRIQS, reg));
-+	smmu->evtq.q.llq.max_n_shift =
-+		arm_smmu_evtq_max_n_shift(FIELD_GET(IDR1_EVTQS, reg));
-+	smmu->priq.q.llq.max_n_shift =
-+		arm_smmu_priq_max_n_shift(FIELD_GET(IDR1_PRIQS, reg));
- 
- 	/* SID/SSID sizes */
- 	smmu->ssid_bits = FIELD_GET(IDR1_SSIDSIZE, reg);
+Best regards
 -- 
-2.54.0
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
