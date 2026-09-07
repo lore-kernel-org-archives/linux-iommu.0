@@ -1,14 +1,14 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 143584908BC
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 12:28:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3F554A6CEF
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 12:35:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788784113; cv=none; b=QLlDGwNe9jk/ELvQKXeWs0mwLGcBTahhlG9kL6LDyg+pto4XsyKTz4mBJMuq5jt8DYajGJQvfcQfOiopGqEu5zy1WPkzYDLSdVVT3FVXmjj0+JAntzPlI03n32YjkgXD0S0t5Wf/9ciD3RCFaJvojnw0t0v13W5Gf86ciLWDOkE=
+	t=1788784528; cv=none; b=QQSoGCQI27BYgWYgdR+mnsOr4zEMOGjeLAYkiDIf//bI9WVEkjJM1x3mWOdrhn07sXCmcxwL8JbnF7Kexk6cZMUZJGcbF+f5UZz5pLtOTBw9Akn9K1mr5WHwzeW/+jy1++LPWtFHfqr7lReOQSI2Ahdg16LmgPbGrtvJ0zm6HVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788784113; c=relaxed/simple;
-	bh=z7v/kmNec9IA4rwzn52gnsYGYmHKBsJPvU4XU2Q46/A=;
+	s=arc-20240116; t=1788784528; c=relaxed/simple;
+	bh=1cNPswN7JJF1hEN/8JK45QLPJaEGl/7/REtDmalhhHQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=csgk8SuHQTwMi64znf3gPcgKs7hb5w2nezC6XLw1IUP/632sFWGo+l/EhhE7SMeiIt/l0mwxcrudizyBXOWXTwGYLGCAaWyQsM4vBkMH1KjEvIEUB9yVHeGCMu4m1l6tMOEKgYkSbGOJmLs8Y8S3GQfGh608TlkjEt1HDaiTu+o=
+	 Content-Type:Content-Disposition:In-Reply-To; b=HyUVFAHkYowIY9PdgiB2buOEucTytQRpqTq4tT2haCC1SqLLJtu3D9Fz2XEIcl1Cmzx1ipn2ZMIpZ+J3DWFqQCgXM9QXrP4U1qhfeIY0tw5gcoXVbxI2H20u252zAC4srX1PKso3k/x+hR7xB4NMNtHQkNFhQDp6OnU/wEzBh0Q=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
@@ -16,17 +16,20 @@ Received: from 8bytes.org (p200300f6af085a0015db8e28914752a6.dip0.t-ipconnect.de
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 8F82D209F7F;
-	Mon,  7 Sep 2026 14:28:24 +0200 (CEST)
-Date: Mon, 7 Sep 2026 14:28:23 +0200
+	by mail.8bytes.org (Postfix) with ESMTPSA id 8E03620A085;
+	Mon,  7 Sep 2026 14:35:25 +0200 (CEST)
+Date: Mon, 7 Sep 2026 14:35:24 +0200
 From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com, 
-	suravee.suthikulpanit@amd.com, Max Zhen <max.zhen@amd.com>, Liang Wendy <Wendy.Liang@amd.com>
-Subject: Re: [PATCH] iommu/amd: Remove iommu_group_mutex_assert() from
- amd_iommu_clear_gcr3()
-Message-ID: <ap6tleS-DuRr7OOT@8bytes.org>
-References: <20260814104029.71021-1-vasant.hegde@amd.com>
+To: fangyu.yu@linux.alibaba.com
+Cc: tomasz.jeznach@linux.dev, will@kernel.org, robin.murphy@arm.com, 
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
+	baolu.lu@linux.intel.com, jroedel@suse.de, zong.li@sifive.com, 
+	andrew.jones@oss.qualcomm.com, anup@brainfault.org, jgg@nvidia.com, jgg@ziepe.ca, 
+	guoren@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v2 0/3] iommu/riscv: Fix command queue publishing races
+Message-ID: <ap6veD4V8RGHL9zE@8bytes.org>
+References: <20260901133920.14550-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,15 +38,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260814104029.71021-1-vasant.hegde@amd.com>
+In-Reply-To: <20260901133920.14550-1-fangyu.yu@linux.alibaba.com>
 
-On Fri, Aug 14, 2026 at 10:40:29AM +0000, Vasant Hegde wrote:
-> Remove the iommu_group_mutex_assert() call from
-> amd_iommu_clear_gcr3(), since PASID teardown via the mmu_notifier
-> release path is a legitimate caller that does not and need not hold
-> the group mutex.
+On Tue, Sep 01, 2026 at 09:39:17PM +0800, fangyu.yu@linux.alibaba.com wrote:
+> Changes in v2:
+>     - Avoid reacquiring the command queue lock after waiting for space
+>       times out.
+>     - Link to v1:
+>       https://lore.kernel.org/linux-riscv/20260817142728.61783-1-fangyu.yu@linux.alibaba.com/
+> 
+> Fangyu Yu (3):
+>   iommu/riscv: Add command queue lock
+>   iommu/riscv: Serialize command queue publishing
+>   iommu/riscv: Avoid waiting on failed command enqueue
+> 
+>  drivers/iommu/riscv/iommu.c | 117 +++++++++++++++++++++---------------
+>  drivers/iommu/riscv/iommu.h |   2 +
+>  2 files changed, 72 insertions(+), 47 deletions(-)
 
-Jason is right, there is a race around pasid_cnt. Either make that atomic, or,
-since it is never read, remove it.
-
--Joerg
+Queued for -rc, thanks.
