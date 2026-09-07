@@ -1,108 +1,355 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed2-f12.google.com (mail-ed2-f12.google.com [74.125.228.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C544E66B8
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 13:55:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3966B390219
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 14:21:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788789330; cv=none; b=D8ICMlZH2eHrZtRiBd27R4TLIlahzbogDlLz5WRuUjONrRdrNM5PExH78FGYILKk9fMuyC326gxuQ58u8T8lLFCcLS9Kw0jyQNevCUEjBKNKpkP2cddohPksaLuzXyrhgCMBkwA8TfeSN0Z8+UjlIJTMwlJhnvBZ2gJ7gdR4Tc4=
+	t=1788790914; cv=none; b=R0D9ojEr8yXbmKB+HpB/DHyZftRNTiMjD9zn6XqcR6rispCnBkyfc8uva0GcqoJ7V1FGyoDC0IuNH8rfr0MiLb7laZClVwRPVeiHN3BKFPLO1NFABORU6vajO0a1S7O+midVxAIs1cn9kUTbDPf5Owt8xCcqt6vstpSbxNh+dGQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788789330; c=relaxed/simple;
-	bh=KIUNvPwrGyxsIDRPQXT9srRO+CI5YFjK9h9LJbAruPc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uhVMB/S6/V2bfp1BIJ4KzRfQv215GxuvfGqS8BCjE8fDkeYrJFfTg0U66dNAZif0QVVrrkCj21h8hKs+MtQpqwt2B1acTLXlYqVwP87hKkWZ4+w/rN/OuhY6LC5wJg8eKa3wJyL8VXtwK6kRTUdgDlR6GGuU07P4MkCvv+yKtpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hlvY0/CU; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788790914; c=relaxed/simple;
+	bh=7Regah+qf9wEx4AtaNocLUxqNjPHScB3MmjBW5AC9Ec=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q19r1Bt2Hg2kjQYjvNcv147Ujx7VqK2siOorcEkAxftdXSjeRDW3dIQGieEzhmV+ey11eDMJmsT8i0eow9nTeMoF7d1kHHuIoE083mBwOBMf0pwXFsR+eLcEp7KeVBu8754ojmfokP2GLm8X0bYQVzNMsEXvQI9wew5F6v6yxmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ndhKfbxV; arc=none smtp.client-ip=74.125.228.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hlvY0/CU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 439141F00A3A;
-	Mon,  7 Sep 2026 13:55:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788789328;
-	bh=2TwcZ1+U4EkpfoCEwGw6K4Z2pr3uBnAtvvFMpD6NyR0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=hlvY0/CUYY0egubX++alD4btdyX6+atUB3P+iSRXke3TAweTxb9mzf99QKIz4DYnN
-	 LBIoMa3Sk+JOnxX3TzhOI8p0uitysG32KYYyVm44vtdwTf9p38GKas3K6Ofhj/Lp8S
-	 5h5fGPhs3NmFadhSQaEuwepXKCGR2GzxgXsnAT5FdxL88Jag8pIg6TXRJgrSljUUaD
-	 X+KH4KB50KlLqlvABiXqnOh58fU7nUc6fxc6d3MVGZDz9fd9+n11wq31yBkZzZMeJZ
-	 qvpEv8agc7x5kM0SXi471Vgq78jaxw4M8JCj/eE92Y6+L/SGlHLM9jR6a35VoAfr2q
-	 6/Jf+sV0CxOLA==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, "Deucher,
-	Alexander" <Alexander.Deucher@amd.com>,
-	Timo Witte <timo.witte@gmail.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Lendacky,
-	Thomas" <Thomas.Lendacky@amd.com>, "Hegde,
-	Vasant" <Vasant.Hegde@amd.com>
-Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"joro@8bytes.org" <joro@8bytes.org>
-Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
- regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs (commit
- 8277a12d0d60)
-In-Reply-To: <f48c2a3f-38c8-44ab-8352-35ee1874b420@samsung.com>
-References: <CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com>
- <yq5ao6egyn5j.fsf@kernel.org>
- <CGME20260902182632eucas1p2d0caf5a54243c630ecbd4844cc278a0d@eucas1p2.samsung.com>
- <BN9PR12MB5146EB49E0988618FBC13515F7B72@BN9PR12MB5146.namprd12.prod.outlook.com>
- <f48c2a3f-38c8-44ab-8352-35ee1874b420@samsung.com>
-Date: Mon, 07 Sep 2026 19:25:20 +0530
-Message-ID: <yq5abja9p3nb.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ndhKfbxV"
+Received: by mail-ed2-f12.google.com with SMTP id 4fb4d7f45d1cf-6a5d8fd8d88so15160a12.0
+        for <iommu@lists.linux.dev>; Mon, 07 Sep 2026 07:21:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1788790910; x=1789395710; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=VX/qjX8bBihd5ue2J42v1DAvcCr2XZH6u/7IYMXwpfs=;
+        b=ndhKfbxVqDY4x40HlUU7VGRC6HqWCQd42GUEmF/9Pf1kzTCTjMWoUz8xVess08i3hv
+         brzD7PCV/UkMTogQImzjw8vHJCJ9W1xjKXd/HdJtHFyHBUTQf2IU4V4Dwx6ixaeyF2ru
+         TL/02WWfZEiR2YhTb0x0NaK8A4CtkAoUEo6cipN/PFLROGKTjUasQFyG0p9yonyWDMiX
+         55Kxs3Pd7d+7ADszsi4latQih03Q8hO0/TQjIdmfA5F0pe4yoBYzVmuuAeZda6kCoc3N
+         eGhChV5/GjfqI6LKrK90CFcnQqXKM7OfOxph2p4THWypTHcO3XxTRgZ8jv6kMs+e7ejb
+         5a2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788790910; x=1789395710;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=VX/qjX8bBihd5ue2J42v1DAvcCr2XZH6u/7IYMXwpfs=;
+        b=D92GZv7N891DJJQH+NWKHNWjzwsDrgtCO2VjyqD0pf7TwRlFTeGpavyv7h/Faoh3BU
+         OSdzxGXGe7Vw7LJgPByP78rHkvXOCUiYjc5GJ999VDj0MzTo1xyWIn3AZhwQmNT6Mete
+         YJe1PMgePqvsSnzxvSp2ZTmZ7Y94hrjgm2vGVUYuwl00p8m88kDL0/aaSurzxdPJ1gQw
+         WKSx/EAxQPX94MRas8fqmJPb/PCFU1jZI4GvRP3NHoPb/sp4UxI8/hclKJ8thmgmEueq
+         AhemqjArMZ8iON2V9e9q4m6aBIySR7lRC5XeZ2x5MviG0fwtFMxwqO78Tg27UzF9DkU9
+         zLIQ==
+X-Forwarded-Encrypted: i=1; AKwUvByN01t5w6GY84ToNmLSDfoac9zoW2xCEdpmFi8ygYuYod2yf2os615X/scJlcAddh61oI2mtg==@lists.linux.dev
+X-Gm-Message-State: AFuF++kuoBH0UN/hyoaMhdg5UfUA+DGEt0Yvw3/NGAohTkLe5WZxKLaV
+	qaEzGhZeDWC2F8E7qyB7e9GTjoRgUKSc1SAfOH7daD2jS2FrwbuzdIdy8/z5aY+WbQ==
+X-Gm-Gg: AYBFou3paUyHy1oDMdTgZHN2gVQKOoAiAb81E2DzZtZvRSnz5SHHhkz+j1cuuyrNvMI
+	vre7EZ5mSZSh1mJ+642Rp/OYcLj0UJDlDwWjNlMi/N4c29bR+RsYyazwmW7J6woclD+UpKuzveP
+	UC5deVR2iMzLchJOHVGH5Vb96kIjIoPQBaIsY2029+1bLD27W/ZDI1Et9hZcfwVLs6K725g8+ec
+	5NMSznTaP5Ap7B9erHrVluXOTZ9BtvKm57ocY46Aly5lQpGMlZvYdwITO6/WVJgEt59zOL1Re1x
+	XDPMZB8vkAvBtZag9LUieC0R6Ua73tfmnNAtTRkqBjXBOXUf8acGVP6jQp3ERfPzpN8SweZ6le8
+	Acg4m3WaU86fJ7UR4HN5Zc+BZ9pEmH34pCHfiAWpHGIVhh+tMNR+w2E92Bl3eK3WJrGIARl25K7
+	PLjVvQXUdI0OgMMHjzQ1BmwDtJWwAK+/8ysfeV6HY+dc2VgzxuDRukowezM1C0XO9IIiJyWz+6k
+	iTyQghJf5e3QQlb0OR5ZtAWBlGASw==
+X-Received: by 2002:a05:6402:4602:20b0:6a6:f2a5:1b4f with SMTP id 4fb4d7f45d1cf-6a7f67ae513mr51553a12.4.1788790909668;
+        Mon, 07 Sep 2026 07:21:49 -0700 (PDT)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c260d4a98efsm490693566b.14.2026.09.07.07.21.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2026 07:21:48 -0700 (PDT)
+Date: Mon, 7 Sep 2026 14:21:44 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+	Mark Rutland <mark.rutland@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>, stable@vger.kernel.org,
+	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: Re: [PATCH v5 1/9] iommu/arm-smmu-v3: Handle ARM erratum for CONT
+ under invalidation with SVA
+Message-ID: <ap7IeAfVPZL3Hqt_@google.com>
+References: <0-v5-b810cf379bfc+13d738-smmu_tlbi_jgg@nvidia.com>
+ <1-v5-b810cf379bfc+13d738-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1-v5-b810cf379bfc+13d738-smmu_tlbi_jgg@nvidia.com>
 
-Marek Szyprowski <m.szyprowski@samsung.com> writes:
+On Tue, Sep 01, 2026 at 02:49:50PM -0300, Jason Gunthorpe wrote:
+> The erratum (MMU-700: #3777127, S3: #3673557) deals with under
+> invalidation of a CONT PTE grouping in the SMMU. The recommended work
+> around is to use a Range Invalidate (RIL) that spans the entire CONT. The
+> only user of CONT in the kernel right now is through SVA sharing a CPU
+> page table that contains a CONT created by the mm.
+> 
+> Previously it was thought that this errata was dealt with because the
+> driver always uses RIL. However, there is a subtle detail in the errata
+> that the RIL range must fully enclose the entire CONT for it to work.
+> 
+> It seems that two sequential RILs, with a split point falling inside a
+> CONT grouping, will not prevent the errata.
+> 
+> The SMMU's RIL generation algorithm does not produce a single RIL for a
+> single SVA invalidation request, nor does the mm carefully align the SVA
+> invalidation ranges to accommodate the RIL splitting.
+> 
+> Thus, when processing a SVA invalidation, the RIL splitting routine can
+> generate a RIL that is split in the middle of the CONT and risk under
+> invalidation from this errata. This condition could be triggered by a
+> malicious userspace manipulating the TLB gathers via mmap/mprotect/munmap.
+> 
+> Update the errata list to the include the S3 variation, detect the IOMMUs
+> that have it, and then have SVA invalidations use a simplified version of
+> the over invalidation algorithm from the tlbi rework series. This ensures
+> that a single RIL is issued for a single MMU notifier callback and now the
+> RIL is guarenteed to cover any posible CONT.
+> 
+> Future work to add CONT to iommu_domain page tables should either use this
+> one-invalidate/one-RIL algorithm or disable CONT support in the
+> iommu_domain.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 3f1ce8e85ee0 ("iommu/arm-smmu-v3: Share process page tables")
+> Cc: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  Documentation/arch/arm64/silicon-errata.rst   |  3 +-
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  7 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 87 +++++++++++++++----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 +
+>  4 files changed, 81 insertions(+), 18 deletions(-)
+> 
+> diff --git a/Documentation/arch/arm64/silicon-errata.rst b/Documentation/arch/arm64/silicon-errata.rst
+> index ac3248b9f2f3bb..68018bf75b7910 100644
+> --- a/Documentation/arch/arm64/silicon-errata.rst
+> +++ b/Documentation/arch/arm64/silicon-errata.rst
+> @@ -271,7 +271,8 @@ stable kernels.
+>  +----------------+-----------------+-----------------+-----------------------------+
+>  | ARM            | MMU L1          | #3878312        | N/A                         |
+>  +----------------+-----------------+-----------------+-----------------------------+
+> -| ARM            | MMU S3          | #3995052        | N/A                         |
+> +| ARM            | MMU S3          | #3995052,       | N/A                         |
+> +|                |                 | #3673557        |                             |
+>  +----------------+-----------------+-----------------+-----------------------------+
+>  | ARM            | GIC-700         | #2941627        | ARM64_ERRATUM_2941627       |
+>  +----------------+-----------------+-----------------+-----------------------------+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 0a429c64fbf3e7..a0c9078646fb55 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -215,6 +215,13 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>  	if (system_supports_haft())
+>  		feat_mask |= ARM_SMMU_FEAT_HAFT;
+>  
+> +	/*
+> +	 * The workaround for ARM_SMMU_OPT_FULL_CONT_RIL requires range
+> +	 * invalidation support.
+> +	 */
+> +	if (smmu->options & ARM_SMMU_OPT_FULL_CONT_RIL)
+> +		feat_mask |= ARM_SMMU_FEAT_RANGE_INV;
+> +
+>  	if ((smmu->features & feat_mask) != feat_mask)
+>  		return false;
+>  
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 5732f3ba0122d6..d6896e25b6632a 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2538,6 +2538,36 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
+>  	}
+>  }
+>  
+> +/*
+> + * Generate a RIL for ARM_SMMU_OPT_FULL_CONT_RIL by ensuring the entire SVA
+> + * requested range is covered with a single RIL command. The scale is adjusted
+> + * so that the RIL may extend past the end of the requested range. This ensures
+> + * that any CONT the MM is invalidating is covered by a single RIL. TTL and LEAF
+> + * are always 0 because this is only used by SVA.
+> + */
+> +static bool arm_smmu_cmdq_batch_add_ril(struct arm_smmu_device *smmu,
+> +					struct arm_smmu_cmdq_batch *cmds,
+> +					struct arm_smmu_cmd *cmd,
+> +					unsigned long iova, size_t size,
+> +					u8 tgsz_lg2)
+> +{
+> +	u64 cur_tg = iova >> tgsz_lg2;
 
-> On 02.09.2026 20:26, Deucher, Alexander wrote:
->>> -----Original Message-----
->>> From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
->>> Sent: Wednesday, September 2, 2026 6:16 AM
->>> To: Timo Witte <timo.witte@gmail.com>; iommu@lists.linux.dev
->>> Cc: m.szyprowski@samsung.com; robin.murphy@arm.com;
->>> joro@8bytes.org; Deucher, Alexander <Alexander.Deucher@amd.com>
->>> Subject: Re: [BUG] iommu/dma: "Not yet supported" CC_SHARED rejection
->>> regresses dma_alloc_attrs() on SME hosts with IOMMU-attached GPUs
->>> (commit 8277a12d0d60)
->>>
->>> Timo Witte <timo.witte@gmail.com> writes:
->>>
->>>> Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and
->>>> select them via attrs") added to iommu_dma_alloc():
->>>>
->>>>     /* Not yet supported */
->>>>     if (is_alloc_cc_shared)
->>>>         return NULL;
->>>>
->>>> dma_alloc_attrs() auto-sets __DMA_ATTR_ALLOC_CC_SHARED whenever
->>>> force_dma_unencrypted() is true. On an SME host (mem_encrypt=on) an
->>>> AMD GPU with a 44-bit DMA mask hits that condition, so every GTT
->>>> (system-RAM) allocation fails with NULL/-ENOMEM, amdgpu init aborts
->>>> and the system boots without a display.
->>>> IOMMU in Translated/DMA-FQ mode (iommu group 29).
->>>>
->>>> Before the mentioned patch it worked: the IOMMU PTE carries the SME
->>>> C-bit, so the memory controller transparently decrypts for the device
->>>> while pages stay encrypted at rest. For IOMMU-backed devices
->>>> force_dma_unencrypted() is a false positive - the device DMA mask does
->>>> not limit addressing once the IOMMU translates, so CC_SHARED should
->>>> not be auto-set for them.
->>>>
->>>
->>> This means that, with host memory encryption, DMA does not need to be
->>> forced unencrypted when the device uses the IOMMU?
->> + Tom and Vasant.
->>
->> Yes, otherwise most devices won't be able to work with encrypted memory since most devices don't support a DMA mask large enough to cover the C bit.
->
-> Is this the proper fix/workaround for v7.3-rc? If so, then Aneesh, please
-> send it as a complete patch so I will take it to the dma-mapping-fixes.
->
+Nit: tg suffix is a bit confusing, I guess pfn is more accurate, but
+no strong opinion.
 
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
 
-I am still waiting for testing feedback. I sent a reminder on Friday.
+Thanks,
+Mostafa
 
--aneesh
+> +	u64 num_tg = ((iova + size - 1) >> tgsz_lg2) - cur_tg + 1;
+> +	unsigned int scale = fls64((num_tg - 1) / 32);
+> +
+> +	if (scale > 31)
+> +		return false;
+> +
+> +	cmd->data[0] |=
+> +		FIELD_PREP(CMDQ_TLBI_0_NUM,
+> +			   DIV_ROUND_UP_ULL(num_tg, 1ULL << scale) - 1) |
+> +		FIELD_PREP(CMDQ_TLBI_0_SCALE, scale);
+> +	cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_TG, (tgsz_lg2 - 10) / 2) |
+> +		       (cur_tg << tgsz_lg2);
+> +	arm_smmu_cmdq_batch_add_cmd_p(smmu, cmds, cmd);
+> +	return true;
+> +}
+> +
+>  static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu, size_t size,
+>  				      size_t granule)
+>  {
+> @@ -2565,21 +2595,30 @@ static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu, size_t size,
+>  static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
+>  				       struct arm_smmu_cmdq_batch *cmds,
+>  				       struct arm_smmu_cmd *cmd,
+> -				       bool leaf,
+> +				       bool single_ril, bool leaf,
+>  				       unsigned long iova, size_t size,
+>  				       unsigned int granule)
+>  {
+> -	if (arm_smmu_inv_size_too_big(inv->smmu, size, granule)) {
+> -		struct arm_smmu_cmd nsize_cmd = *cmd;
+> +	struct arm_smmu_cmd nsize_cmd;
+>  
+> -		u64p_replace_bits(&nsize_cmd.data[0], inv->nsize_opcode,
+> -				  CMDQ_0_OP);
+> -		arm_smmu_cmdq_batch_add_cmd_p(inv->smmu, cmds, &nsize_cmd);
+> +	if (arm_smmu_inv_size_too_big(inv->smmu, size, granule))
+> +		goto full_inv;
+> +
+> +	if (single_ril && size > granule) {
+> +		if (!arm_smmu_cmdq_batch_add_ril(inv->smmu, cmds, cmd, iova,
+> +						 size, inv->pgsize))
+> +			goto full_inv;
+>  		return;
+>  	}
+>  
+> -	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, leaf,
+> -				      iova, size, granule, inv->pgsize);
+> +	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, leaf, iova, size,
+> +				      granule, inv->pgsize);
+> +	return;
+> +
+> +full_inv:
+> +	nsize_cmd = *cmd;
+> +	u64p_replace_bits(&nsize_cmd.data[0], inv->nsize_opcode, CMDQ_0_OP);
+> +	arm_smmu_cmdq_batch_add_cmd_p(inv->smmu, cmds, &nsize_cmd);
+>  }
+>  
+>  static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
+> @@ -2600,7 +2639,8 @@ static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
+>  
+>  static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+>  					unsigned long iova, size_t size,
+> -					unsigned int granule, bool leaf)
+> +					unsigned int granule, bool single_ril,
+> +					bool leaf)
+>  {
+>  	struct arm_smmu_cmdq_batch cmds = {};
+>  	struct arm_smmu_inv *cur;
+> @@ -2630,14 +2670,14 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+>  		case INV_TYPE_S1_ASID:
+>  			cmd = arm_smmu_make_cmd_tlbi(cur->size_opcode,
+>  						     cur->id, 0);
+> -			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, leaf,
+> -						   iova, size, granule);
+> +			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, single_ril,
+> +						   leaf, iova, size, granule);
+>  			break;
+>  		case INV_TYPE_S2_VMID:
+>  			cmd = arm_smmu_make_cmd_tlbi(cur->size_opcode,
+>  						     0, cur->id);
+> -			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, leaf,
+> -						   iova, size, granule);
+> +			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, single_ril,
+> +						   leaf, iova, size, granule);
+>  			break;
+>  		case INV_TYPE_S2_VMID_S1_CLEAR:
+>  			/* CMDQ_OP_TLBI_S12_VMALL already flushed S1 entries */
+> @@ -2684,6 +2724,9 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
+>  			       unsigned int granule, bool leaf)
+>  {
+>  	struct arm_smmu_invs *invs;
+> +	bool single_ril =
+> +		smmu_domain->stage == ARM_SMMU_DOMAIN_SVA &&
+> +		(smmu_domain->smmu->options & ARM_SMMU_OPT_FULL_CONT_RIL);
+>  
+>  	/*
+>  	 * An invalidation request must follow some IOPTE change and then load
+> @@ -2723,10 +2766,12 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
+>  		unsigned long flags;
+>  
+>  		read_lock_irqsave(&invs->rwlock, flags);
+> -		__arm_smmu_domain_inv_range(invs, iova, size, granule, leaf);
+> +		__arm_smmu_domain_inv_range(invs, iova, size, granule,
+> +					    single_ril, leaf);
+>  		read_unlock_irqrestore(&invs->rwlock, flags);
+>  	} else {
+> -		__arm_smmu_domain_inv_range(invs, iova, size, granule, leaf);
+> +		__arm_smmu_domain_inv_range(invs, iova, size, granule,
+> +					    single_ril, leaf);
+>  	}
+>  
+>  	rcu_read_unlock();
+> @@ -5009,12 +5054,20 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>  				/* Arm errata 2268618, 2812531 */
+>  				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+>  			}
+> +			/* Arm errata 3777127 */
+> +			smmu->options |= ARM_SMMU_OPT_FULL_CONT_RIL;
+>  			break;
+>  		case IIDR_PRODUCTID_ARM_MMU_L1:
+> -		case IIDR_PRODUCTID_ARM_MMU_S3:
+> -			/* Arm errata 3878312/3995052 */
+> +			/* Arm errata 3878312 */
+>  			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+>  			break;
+> +		case IIDR_PRODUCTID_ARM_MMU_S3:
+> +			/* Arm errata 3995052 */
+> +			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+> +			/* Arm errata 3673557 */
+> +			if (variant < 1 || (variant == 1 && revision < 1))
+> +				smmu->options |= ARM_SMMU_OPT_FULL_CONT_RIL;
+> +			break;
+>  		}
+>  		break;
+>  	}
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 50f8321e979cef..065d76eb148119 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -934,6 +934,8 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
+>  #define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
+>  #define ARM_SMMU_OPT_TEGRA241_CMDQV	(1 << 4)
+> +/* RANGE_INV is mandatory and one RIL must fully span an invalidated CONT */
+> +#define ARM_SMMU_OPT_FULL_CONT_RIL	(1 << 5)
+>  	u32				options;
+>  
+>  	struct arm_smmu_cmdq		cmdq;
+> -- 
+> 2.43.0
+> 
