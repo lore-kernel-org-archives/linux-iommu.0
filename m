@@ -1,119 +1,161 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E4A2F2DC331
-	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 21:08:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788815319; cv=none; b=UWRnLgBsVkb3NazS1aIo3tZYHrCnhJ7jTs+T1EPzDXh3SpsO9LSqe0H9VXMR7R/Umto+ohbLxOIL/0TaAfqSX8RK4UBPC1nWx+KyvUitKNDGxPvCUTRIC0FOtnYDwpHuGUhZ5I2POv9YkpT4DKr9n2G3gUmgUFfn1HRB+9aYV5w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788815319; c=relaxed/simple;
-	bh=CRknQiozJQuLcNkSrtiRtM/kdCB8yooI2gbfGFTtfE8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RHlDuie9JCwnmqatpHbrvA79GkBCkjHQGSEoBigm5Jabiy1A+4NtAZp7nIdH9BCcAvp5iLVFafcTFVVk0qO2PbnDzIfjiGEsMGEhUDZ790G5m/kuPvD6NP7gT4aA+CJmxcebGX/uTg+X174UzT3w7z3nSv7D6yrARA8RmJkRoM8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=gVyv5bPu; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012057.outbound.protection.outlook.com [52.101.48.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 919B83CC9E9
+	for <iommu@lists.linux.dev>; Mon,  7 Sep 2026 21:56:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788818213; cv=fail; b=DvcKmyLfm5T6BsuDSYz9oMnIk/6eGXkEoNqcydH8Bo5JYF9UYK1O0WKqXi5IE+i+/8tqYCjH6HQA/w53ECA0S5dLmzlPGCTnVOEfNJctgyiqu32h6B8dcBCXic0Ifbc4CWQI1FRTEq6fRos+930UG85CxBcMR6nRpiIK42x4PHU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788818213; c=relaxed/simple;
+	bh=/t0v3tKcAfvEQ9jVObat2LFb+pZBTHBcs+7/VBGnSQU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fzM4gavpQbexBezAr37WXNID1Xg6iWY2P0MXUYdHre3ws11GEOVsgna6eVDfQ1TI2mNTQG/d8H76HM+WEk59/qTQjVOnJe4/vxmtjFVLCqx/0+di0N9addqFC5bLAMLGlVW8mxPlDjnHViUbh9scmPVsO8UNFu5pCBXb/DlhEwI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hAiQUdkN; arc=fail smtp.client-ip=52.101.48.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="gVyv5bPu"
-Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id DCAD820B6F01;
-	Mon,  7 Sep 2026 14:07:56 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DCAD820B6F01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1788815277;
-	bh=kY/lfW05YvJHRzh3O0sx3RlULE7OXDqOdzjhtNx8jWw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gVyv5bPuda4Xj5AdVX6X/uEViR9zPXkZjQ4CdjQ6i/hVtDSAsJNqWF2sMP+ELFkeo
-	 ngypYO4qT9g25FiAV/jDoEwB1yyj3jKncLHmPBucrPQUVksocReCdFW62sV4eUzsSr
-	 xW5x2ITYbMHUKS/pdh6FXQA3BluobC8AzAVN3OIU=
-Message-ID: <421b3805-5b90-dfc9-b84c-ee58969f5e36@linux.microsoft.com>
-Date: Mon, 7 Sep 2026 14:08:35 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hAiQUdkN"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OUgZ8VIgHvN2p7VYrst05LB8VYRMjgHUbrrtNWawdmgiV9evxMbFGT4lZFfxKDQZekjOYwAwTzTncJmmAyd00WbUCNiSchmLvs5fhFzhS4iLeKWoJdx7KHR0oDIgfcGokEfwsC0tqdiJZh3K+SVOjMFkFLqCEqiUxIgs7IC0oUDg0N2dKhsQm3RaikWEcTv/ayi4wVR8CVDCu68HbHZhQdpkgpr+220cQ/oYQ59Iiu1zSjbF0cjMjgItGHzoazeg8E1tVFXAy6CoGluk1O44xN2KW07Uij1IwZ0Fab618bC8Tkuwmsm4XO/M+Gc+H+9IqsHmrhfvAfQ4vO+Z1q5I9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v40ONGwGK1odTrzT/SeSukYXQkCgxxciNXn5WMOKaAo=;
+ b=evEKT7UfZYJcAaX9a7kdVDulgTERPiN/iVTmnEs00ep3mbhit5LS890OZkpdmRS0p0VI5Zix01WRwISgO1Rku3vTu9HxTI7A3+6AOefaYeRSl9EPJ7WtGboSYDb+K/sUgapqAOTqlW13YKi/o2Wi2jTvWjTFBjd+fucUi7PdJe9g6FuleVWNBNefr02hZe2IGllLIQGxUcLTIWgzH7Fcq+94aicFoKhx6D4U+vXwncORqj+C7wUNk8A0vEu8HCb+tvCezr5JBW3IXY1K7fT3N8zSNwd+7UzoQwG9HVw5BEwktZIfnjx8WL14o3qxk5VqOZJ8BjUxixAv+Yha7mVixA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v40ONGwGK1odTrzT/SeSukYXQkCgxxciNXn5WMOKaAo=;
+ b=hAiQUdkNqRo8/KdDBYuQy15TqEr3u6IWiz0F46OR2TuAkDm908bTdsvdGzzP1ykUUu3yuiKw7RH9KGAe1Uhmvt2Uh5a+8g/aFs8jdLU0XbHMucqZn51d2He+1rlOaI4Fc4HvEaw1gaNa5iavcvMXAVtZutP/8fpWZdqlKUHvpBZhlP9NsvoMBdbUTW709Mv4gxJsRwDTzZa2bLkn0xnDMH37Ao+R/UPXFo4bhSMSF8waVYgyiIF6xfuPZZOVm4S+bOnVD036U9n/9B87YgjW3A0SNSldE4LyyKZ/a6F9JTOuuM3lZpdkoWgPyiSCj2kcDGLhCbSWu27qdzRRIf6gPw==
+Received: from MW4PR03CA0207.namprd03.prod.outlook.com (2603:10b6:303:b8::32)
+ by MN0PR12MB6152.namprd12.prod.outlook.com (2603:10b6:208:3c4::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.382.15; Mon, 7 Sep
+ 2026 21:56:41 +0000
+Received: from BY1PEPF0001AE1C.namprd04.prod.outlook.com
+ (2603:10b6:303:b8:cafe::35) by MW4PR03CA0207.outlook.office365.com
+ (2603:10b6:303:b8::32) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.382.15 via Frontend Transport; Mon, 7
+ Sep 2026 21:56:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BY1PEPF0001AE1C.mail.protection.outlook.com (10.167.242.105) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.406.5 via Frontend Transport; Mon, 7 Sep 2026 21:56:41 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Mon, 7 Sep
+ 2026 14:56:30 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Mon, 7 Sep
+ 2026 14:56:30 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46 via Frontend
+ Transport; Mon, 7 Sep 2026 14:56:27 -0700
+Date: Mon, 7 Sep 2026 14:56:26 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Kiryl Shutsemau (Meta)" <kas@kernel.org>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>, "Pranjal
+ Shrivastava" <praan@google.com>, Mostafa Saleh <smostafa@google.com>,
+	"Thierry Reding" <thierry.reding@kernel.org>, Krishna Reddy
+	<vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, Breno Leitao
+	<leitao@debian.org>, Kyle McMartin <jkkm@meta.com>, Usama Arif
+	<usama.arif@linux.dev>, <kernel-team@meta.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 1/2] iommu/arm-smmu-v3: Add a cmdq_max_entries module
+ parameter
+Message-ID: <ap8zCvk8zUPZAJpH@nvidia.com>
+References: <20260907095835.1233352-1-kas@kernel.org>
+ <20260907095835.1233352-2-kas@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH v5 4/5] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Content-Language: en-US
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, x86@kernel.org, wei.liu@kernel.org,
- kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
- longli@microsoft.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, bhelgaas@google.com, kwilczynski@kernel.org,
- lpieralisi@kernel.org, mani@kernel.org, robh@kernel.org, arnd@arndb.de,
- jgg@ziepe.ca, mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
- tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
- baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
-References: <20260904075512.174154-1-zhangyu1@linux.microsoft.com>
- <20260904075512.174154-5-zhangyu1@linux.microsoft.com>
- <af047ef8-91ef-7786-c230-25e28b1c8c04@linux.microsoft.com>
- <re2lmz757bvtzbkylxtsj7zu2pjqz7ro752tcg7bpjaicuj6ml@mgsg6jnvgbyd>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <re2lmz757bvtzbkylxtsj7zu2pjqz7ro752tcg7bpjaicuj6ml@mgsg6jnvgbyd>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260907095835.1233352-2-kas@kernel.org>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BY1PEPF0001AE1C:EE_|MN0PR12MB6152:EE_
+X-MS-Office365-Filtering-Correlation-Id: db40b927-3502-4567-c0eb-08df0d2ae648
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|82310400026|1800799024|376014|7416014|36860700016|10067099003|6133799003|56012099006|4143699003|11063799006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	GBNXHkjzzXefbtq65V+yXgvCzc5D+iTCMmmy5ZJk12E9gjx/ZJod3vqaMf9wL0b/9L5HglvVQp2BiZfbaJa4KcIuv8t0InmWvRQRbTmvmTOGAMkT1hRIz1KfGsjAB+meE8K4pB+SfIW0BTc3IH0PVGL7czU0LAmbBoAf4C9tjJCszQ9rd98/0sftsZEesCmPYVdqMlPWXQC9sDSZXqGlUlS6EQ4/1p7tlXkjni3ira5jb46r2KtIQlvKv02tFJ17meUtAI3qLYcJTVEzpVF3FhFX0H1wn9bCydg7nv3+0DlCE7TRhPzDeAHVkIzVrPOvuomFYKpyaYsP+X7IMZJiYCmEvKouy1H6gqIsao6zdsTL8m9y7lYTx9L0Tus5CN5H3L4PYtub3cUewCugD4pILXTOTS32BUCWr8Wus+/c2PSGQZ1/NkylDG3j4lwkeLfhEGJCE/MPJdQnEaVqlW0LCOlPIo8FQgM4atQZma9NgtzXXZDKDb6VxwkJI8KgpSNThvB1Jao0l0NWBeX/jLtR+I6n33XQB5gWt0dMdzXPr8oCnMs2s3EwqOqjskkKX8GknEuThS9bt4nhlFKqGNVDv2nFMzOMRij0FcTyVJzhh19r2yO8BoyNjFWw3UvuCh6CQyfueUoUSniQwukh4HQ8X5aE+KQhGsQWp8V95Ug90QVGIBgo8ykg7CqapPpgqrpAB2wGAFi22l5aH9f+djFY/w==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(1800799024)(376014)(7416014)(36860700016)(10067099003)(6133799003)(56012099006)(4143699003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	QoKLLn70cqciB5M3IUPp7//9ejYjN34UKhBGDhgG/EzaHwW/DQWTBXitn/T/bFfM+3TxXdEqiysU0Fp/DfmN/OPvns98JGoTI9kP1oZmnbxmRDUpBEmK4gzvdzzEtLdAj0+1ZTTi0s2YqpNrh41ARbmXmYq5f+ZyGOAR6vwts7F0PDNzRuwe52TYLik41HqEwZrG9GVS8No4K9RMGt/I5w7OBq3uGVOxHng1f7Km+node7QogscaLc7Cz1LyoYaDwyRMNbHuEgn92rwkqV2icmA8gnv5YmBZj1D1LV18a4OPfUJnwvy1+GzzCbJBpAvEIYc81tO/kPZE1MyUbWinrEU3R8EO+S2Y58DXafAt+8VO0gNXTCr92cA32pj4l/WcGT+Gqa1jDOW6mGOF6gd/QKd4mqp9B3M1x3MXRW/4nhYutDUrnXMcq0TJ0LMQ+sgL
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2026 21:56:41.2961
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: db40b927-3502-4567-c0eb-08df0d2ae648
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BY1PEPF0001AE1C.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6152
 
-On 9/7/26 01:41, Yu Zhang wrote:
-> <snip>
-> 
->>> +{
->>> +	u64 status;
->>> +	u32 prefix;
->>> +	unsigned long flags;
->>> +	int ret;
->>> +	struct pci_dev *pdev = to_pci_dev(dev);
->>> +	struct hv_input_get_logical_device_property *input;
->>> +	struct hv_output_get_logical_device_property *output;
->>> +
->>> +	ret = hv_pci_lookup_dev_id(pci_domain_nr(pdev->bus), &prefix);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	local_irq_save(flags);
->>> +
->>> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
->>> +	output = (struct hv_output_get_logical_device_property *)(input + 1);
->>
->> Any reason for not using pcpu output arg like we do in all other places?
->> If there is a technical reason, please document it, otherwise when revisited
->> in future for re-design, anyone looking at this will be confused and
->> waste time investigating if there is anything different about this hypercall.
->>
->>
-> 
-> Thank you, Mukesh. I had also incorrectly assumed that output required
-> a separate page, which is why the RFC included a separate output-page
-> allocation patch. Michael clarified during that review [1] that input
-> and output can share a page as long as their buffers do not overlap,
-> so I dropped that patch latter.
+On Mon, Sep 07, 2026 at 10:58:34AM +0100, Kiryl Shutsemau (Meta) wrote:
 
-They can share a page, but we don't enforce the sizes combined do
-not overflow a page, and that could be an issue in future. There is
-a tool on the hyp side i believe to check that input and output struct
-sizes do not exceed page size.
+I still think that cmdq_max_n_shift can slightly tidy things here.
 
-Also, both the input and output pages are pre-allocated, so there is no
-extra allocation (otherwise, we'd have changed all places by now). So
-it's better to just follow the convention we've so far just to avoid
-confusion during future redesign imo. We def need to revisit this in
-near/medium future for all hypercalls.
+> +static u32 arm_smmu_queue_max_n_shift(u32 ceiling, u32 ent_sz_shift,
+> +				      u32 entries)
 
-Thanks,
--Mukesh
+Here, all three inputs would have been "shifts", instead of two
+"shifts" and one "number of entries".
 
-> Actually, there's nothing specific to this hypercall here - it follows
-> the existing usage. E.g., hv_pci_read_mmio() already uses such arrangement,
-> as Michael noted in [2]. pvIOMMU queries fit within the existing per-CPU
-> page, with output placed after input, avoiding an unnecessary allocation.
->                                                                           
-> [1] https://lore.kernel.org/all/SN6PR02MB4157C3EF6617A7BA4CA9E432D485A@SN6PR02MB4157.namprd02.prod.outlook.com/
-> [2] https://lore.kernel.org/all/SN6PR02MB4157BF936EBDA23AD1EC5183D480A@SN6PR02MB4157.namprd02.prod.outlook.com/
->                                                                                                                 
-> B.R.
-> Yu
+> +{
+> +	u32 floor = PAGE_SHIFT - ent_sz_shift;
+> +
+> +	if (!entries)
+> +		return ceiling;
+> +
+> +	return min(ceiling, max(ilog2(entries), floor));
 
+And I see Sashiko keeps complaining against the ilog2 here:
+"
+Does this trigger a build failure due to strict type checking?
+The ilog2(entries) expression returns a signed int when entries is derived
+from a runtime value like the module parameter, while floor is explicitly
+declared as an unsigned u32.
+Since the kernel's max() macro enforces strict type compatibility, this
+mismatch evaluates to 0 in the type checking logic, triggering a signedness
+error during compilation.
+Should this use max_t(u32, ilog2(entries), floor) instead?
+"
+
+Though Sashiko complained about the min_t() in v4 as well..
+
+With cmdq_max_n_shift, there is no ilog2 and no type mismatch.
+
+If you can address or justify the Sashiko finding, I am fine with
+the cmdq_max_entries though..
+
+So, in either way, the patch looks good to me,
+
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
