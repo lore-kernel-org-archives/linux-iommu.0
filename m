@@ -1,177 +1,192 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010004.outbound.protection.outlook.com [52.101.193.4])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D358854DAEF
-	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 21:57:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.4
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788904626; cv=fail; b=YCB0iQp0A3CHW3PvqsSk2uhx6QIjD/Ky8ZNI+1SZ3mY+kyJXBr4VQD662AeBbGmmgXyKBSD7BKSa4MSQxgylXGD9rpNq3SclrHlNwS1WD71GsNdqRtJLJBwgXqtd9Hv5bkugvrgopgSal4Rmghia2FsHSn3HzcZT1fu7urc1PxU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788904626; c=relaxed/simple;
-	bh=0ZWr+YC0fW/p7Q5FyS0abqySNttyy34fqtEYij+M2Is=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GTjTUkAV0a6DUFuNUF2OkZDH7eqGSYajs7wW/ze/mZ5iyU32bWVv20LOdVTMMAJW9HPqkdS5FuRSRlbrGWfrGckoM4bzJzjhLcVF0xI8gVV4xCzU1d3MlaiEG3MMoIAxe7ZN6ROKPmKYe3op830A7//qHLCfhULxQuuh9B19OEc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=maBazIlZ; arc=fail smtp.client-ip=52.101.193.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40BC56B87D;
+	Tue,  8 Sep 2026 22:44:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788907463; cv=none; b=jjLMi1uWb+ITMnyFg9UQUsJycSBaiCUWrfm/8Z8n/sxvm0iMmAddEcvAwP6Uz/qiXby5JiBTiCqk8XFZgZo4RrDuSdkg4dZyRKOyGDGRjZ0QKkjWFgEOBwcpqytvDpmKPIhdY7gDjrEI0Qo8P+ijVIWxEDRKHiuRjzMq4amysBg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788907463; c=relaxed/simple;
+	bh=JOEDJP2DW+ls2ZC/0vA+O8vm2ntANqCPaKHWS5/MXzg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y1h2+yN28INookQpg1EARSBKMOCN/Szr7zrztX/ALooM/5oRifrnLId1HUkCpQl9SRo062vYsczTCoqkBbBoTckJEayIKQHT8tQJ8GrwRl4hVHl9gPXmijS7hHVujVo6hDXUBhw76HvskvIWa2AFsniD8vFBhW8quVINMJdyCKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QAh3jSaG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="maBazIlZ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MQg3pbJR/XDHimSmXApU2wjEivdl1fNbWMDXbcQ+Dre7xuW4uTmINRUEihcZvl76nEp/WQnPRw1T/zCyDNdkHviArppZyzRX3oMrMfq64OihXHyEg0mngqavDhos0MSOZblcp0gEg0YR50lskPUDUmjIfZQXv6nsdLKBSd3lJ4wy0mswIfSWCpAwzl+jZqJ8v1STuUg8AS6pi4nL73oL8tm0YbQu3xtuY06VOLnJqVEkWhHdg90axHJ9Wy6Xnu1dX2lQorof0B1YKbLcAyEFi3wyKOdk/58cbynpnS0WwmKnuYYXgrvBdMRNCMZdzDbP20msu/5lyIU+tmLItP6hXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/Xo07CCDhRFwb3C3gOCeA4ZjykFZglOHtaokmQ7QZ9I=;
- b=OzncojDt7dPqEjya4mVF1bW9fSwZDTSdQz4ktK7LQ3m2Ps+R2iVHbvGyGFTl1KjlNOxKbGDgHkkxMBV0jhsjrfBkH3MK+g70HEyAUnmgMpi7vhi43j+FuBjMKmEb8i4CdNsc5XK/8PmjvtAV6rMb4wVB5/1Ds3XyrIX6U3osFjKi8+r7O1rQtK+WdBv4gX3BQI94zzNhcOsSPeQLmqjecfTW1YYY+OHgN34z7nngbhcPS+EScDmXZMUx4/ehnxBYr0/jw4UGWNjkACmlyLRQ8YSLnpxGGsR/RHxoupg7gxA74yyVJKFpzcW/P3RaLr6zU6jwb/7+eyiHgHFHCstzlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/Xo07CCDhRFwb3C3gOCeA4ZjykFZglOHtaokmQ7QZ9I=;
- b=maBazIlZELPlmJhLnwXeGOX20SbxdsmS6E3Fm8bep1d1GUZRNPIBaMSX+XII6tW7B/CtOsfwoarmNZGCmRjIMDI80JgF7Q96Ay4VO7UEetVxoVdT4WsS0VneDudni8sCIinfJT6xeaHxgE7vx+MX8Oeonsbp7HtG/pm54r5KyOde3ytgcBQvhC/nj+1xNLB0mNS8/lQDm567FH4eUB5AepnA2AfZoXBmKABGgjytiDFjbGPa2RofzXuhdnGKdtznnINfc+bKmW2xEO2UZjx+pjjFtO74KuWNnAX+k1LXtSyhLONWmdPyQk9G4jHCLqBOf2YIxMoWc4sTcyhxtoAr+Q==
-Received: from BN9PR03CA0196.namprd03.prod.outlook.com (2603:10b6:408:f9::21)
- by SA1PR12MB7269.namprd12.prod.outlook.com (2603:10b6:806:2be::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.382.15; Tue, 8 Sep
- 2026 21:56:56 +0000
-Received: from BN2PEPF000044A5.namprd04.prod.outlook.com
- (2603:10b6:408:f9:cafe::9) by BN9PR03CA0196.outlook.office365.com
- (2603:10b6:408:f9::21) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.382.15 via Frontend Transport; Tue, 8
- Sep 2026 21:56:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN2PEPF000044A5.mail.protection.outlook.com (10.167.243.104) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.406.5 via Frontend Transport; Tue, 8 Sep 2026 21:56:56 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Tue, 8 Sep
- 2026 14:56:26 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Tue, 8 Sep
- 2026 14:56:26 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46 via Frontend
- Transport; Tue, 8 Sep 2026 14:56:23 -0700
-Date: Tue, 8 Sep 2026 14:56:20 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Kiryl Shutsemau <kas@kernel.org>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>, "Pranjal
- Shrivastava" <praan@google.com>, Mostafa Saleh <smostafa@google.com>,
-	"Thierry Reding" <thierry.reding@kernel.org>, Krishna Reddy
-	<vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, Breno Leitao
-	<leitao@debian.org>, Kyle McMartin <jkkm@meta.com>, Usama Arif
-	<usama.arif@linux.dev>, <kernel-team@meta.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 1/2] iommu/arm-smmu-v3: Add a cmdq_max_entries module
- parameter
-Message-ID: <aqCEhG6NA3Ho5noV@nvidia.com>
-References: <20260907095835.1233352-1-kas@kernel.org>
- <20260907095835.1233352-2-kas@kernel.org>
- <ap8zCvk8zUPZAJpH@nvidia.com>
- <ap_Rktiv5hms9IvH@thinkstation>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QAh3jSaG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 318A01F00A3A;
+	Tue,  8 Sep 2026 22:44:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788907454;
+	bh=1ZnYa73NqlHvx0NBeklkPLHckc4CqlArTF1KYVVsrjI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=QAh3jSaGlsGc3Fayn5XHnyXj4mBXkPfEEtBja09rGhxffJ28vDMcMuS4JLz5xE0di
+	 yPWz64mObi0YhHANOZ0uZGGmyNYvnLv/YG4QiXX0h8IRkaktrgSZiK+pACQt4/rSHR
+	 OqIjN7Ij5ZYkA2VLYTd/wkpqKt2pt+MVJjrrOrJbLaVvMK3RRQhtS13Yc+fpvN7stJ
+	 4oWbgpvB3lfi7YbjpsX0TbgdMRkiUomrr07LJgsP2Knx6PCXMHSMswat18fbg6/o+h
+	 SCSmpTcc9BkN8QVIbZqxthpFyBqMT+elACJHuS3a6XSuO+9S+361SMrCH3FNRuqH3Q
+	 PDrH30/JDB/aQ==
+Date: Tue, 8 Sep 2026 17:44:10 -0500
+From: Bjorn Andersson <andersson@kernel.org>
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+Cc: rob.clark@oss.qualcomm.com, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Bharath Kumar <quic_bkumar@quicinc.com>, Chenna Kesava Raju <quic_chennak@quicinc.com>, 
+	srinivas.kandagatla@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com, linux-kernel@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	llvm@lists.linux.dev, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+	linaro-mm-sig@lists.linaro.org, Anandu Krishnan E <anandu.e@oss.qualcomm.com>
+Subject: Re: [PATCH v2 00/15] accel/qda: Qualcomm DSP Accelerator driver
+Message-ID: <aqCKgM1yCbWjFdgO@baldur>
+References: <CACSVV01eYr6FyA6XBG0xw0yv2dydvTEhcY-WUy07mxM8WwkZcg@mail.gmail.com>
+ <318f14c2-0e87-4e07-8173-1511dca67d78@kernel.org>
+ <CACSVV01T=ytVJKM7NRoBTAJm7vH+JPJNT9Tftu5X9YskGXerwg@mail.gmail.com>
+ <e7b4eceb-cb3a-49ea-bed9-728c958594b0@kernel.org>
+ <CACSVV03ypjBYkhRpt=TyDwOKhejKKke3x=Fi_TvxXN-5U_rCsw@mail.gmail.com>
+ <fb834ae5-7113-4a86-bb84-ca5115c8d7ff@kernel.org>
+ <CACSVV018jB4WRRJ_CUHQmkHXZcqauWJXWGgrzY_HA6cFQ+Q3Xw@mail.gmail.com>
+ <dd3da35b-1db6-43a4-ae1f-35620692f51f@kernel.org>
+ <CACSVV01o_XYuSzaYGbo9pY=459qiA_fgL_KRHVJH+LH4RYcMzQ@mail.gmail.com>
+ <23e31249-cce2-421e-88f7-1a2af66e34b6@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ap_Rktiv5hms9IvH@thinkstation>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF000044A5:EE_|SA1PR12MB7269:EE_
-X-MS-Office365-Filtering-Correlation-Id: afb7254a-23c3-475a-3113-08df0df419df
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|7416014|36860700016|376014|23010399003|6133799003|10067099003|5023799004|4143699003|56012099006|11063799006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	hZJar9nqfN/mAhoRxiqLSlZTKUU2WE3dEgwK2dxn/jGlN0bNI1M/kAb6kw4qm59YxW9SxEN/AhzOSihxxg9Tkrr+TCAtPENyY7Z06iMYMN3vEcSbLhTNbxsODFgQuDewx9J+VuKsCwcUsrZcWbaOidUhP+KsDyZdd5TJQgje1/X2z/hrDvaC1hr7Su05HgLdvMcaSio21fPNW3U9XRYk3RKd6O/V8Qs3FS8YByHEaRP9q5TlteNRVivg4yfcOlAvJLD1GxpwjpMf9Ds0X6WXoHHlh09c22YtQpOkzdykp3A7l69Z2ZageNgkrhsV34dmjkXcSacrSN3ry2lAqv9hqF7lpL3YB5bHB9UmVjR4x5GHUU3DzjwC4k6Y/aZ07LlaJXOjdyAN2sOTi6T7HlKw3t/UoqnFahw08lDAMlyHZTym9sY0evkBwoaCfG7DmDmv7k48xnq1O2VL6LCUloyy77CQsr8rKNPp/JG4A/3FgzW9XuBZmV/2QGp02aZQYzP7EZTRiKiU0tU9nIegylzBrZLpAnmTaeCwJcNBiERRn+6Q11qGM1fo9ozSFQ7FAPTmreFpzqsSmzZx+03LePsP3ZIfqsV8YzuEKHzYvWwiOSmTr9XiYdF0FcOZP36vs/5tnvRri0t2kL4LTCq6LoubJR5X2KVy6aMv0rTFZ/eV7fXG7uAH5F5I9yBq8ug790tKmG5ATZWxEJVVLYCar5/ZJQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(7416014)(36860700016)(376014)(23010399003)(6133799003)(10067099003)(5023799004)(4143699003)(56012099006)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	0IjOLcoHrNRDPRd/vGPGf8UuCDzsfK+QK5lWM3DJS+ovRUa2tGDHBAtZfJ+BG1jqYqXtS01k5AMtGVtnyNQlfM73G9NDlU3PPVkfR2QMNB1iZscbiCe20awhQWnkYKNBg4nvfNnkRsoZLTQk6jhxDP4L3PED0ZhmUJRkGzL+DR2HeDWbD5ZZVSKyAJwlua8/Csc0MUVEct0y8Lxvv5JS7NYOFy68aQ+DEe0gbVjVFeYaeJryOsCQtQPlLhln9yNLJ2qeUCsbp/dAxSvqeW+fGFMdEGQ6gFpGOOOROA8HNECP8r0KtGCaIOeQ8hS01UhJs9uojqZ5P3NnWEUibWRqtyYYhemke78iIRuUZwy/wQs7aSI/6A5a91V6lr0COJLmz8njADlApgbDo8T/RgUuR5Qox8GOlaO6qvEzk91gEy61ZCDZBMAhtffU6NU6DJf/
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2026 21:56:56.5231
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: afb7254a-23c3-475a-3113-08df0df419df
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF000044A5.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7269
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <23e31249-cce2-421e-88f7-1a2af66e34b6@oss.qualcomm.com>
 
-On Tue, Sep 08, 2026 at 10:19:44AM +0100, Kiryl Shutsemau wrote:
-> On Mon, Sep 07, 2026 at 02:56:26PM -0700, Nicolin Chen wrote:
-> > On Mon, Sep 07, 2026 at 10:58:34AM +0100, Kiryl Shutsemau (Meta) wrote:
+On Wed, Aug 26, 2026 at 06:37:00PM +0530, Ekansh Gupta wrote:
+> On 20-08-2026 20:17, Rob Clark wrote:
+> > On Wed, Aug 19, 2026 at 11:15 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >>
+> >> On 19/08/2026 17:48, Rob Clark wrote:
+> >>> On Wed, Aug 19, 2026 at 8:27 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >>>> The rule of usptream development is that we do not accept duplicated
+> >>>> code, just because a vendor wants to write something new. This is
+> >>>> basically the concept applied all over the drivers tree, where we pushed
+> >>>> back against all sorts of duplications all over the vendors.
+> >>>>
+> >>>> What I miss in this thread is why would there be any exception here. We
+> >>>> do not grant exceptions from standard practices on "I want" reasons.
+> >>>
+> >>> I agree that we should not have duplicated drivers just for vendor
+> >>> lolz.  But when it comes to adopting common frameworks and integrating
+> >>> better into the ecosystem, this doesn't seem like something we should
+> >>> actively discourage.  I don't think this is a case of vendor lolz, but
+> >>
+> >> No one discourages it. Following standard Linux kernel practices and
+> >> requirements is not discouraging, do not twist the narrative here.
+> >> Again, it is standard upstream review telling that we do not duplicate
+> >> drivers. Ever, unless there is serious exception needed.
 > > 
-> > I still think that cmdq_max_n_shift can slightly tidy things here.
+> > I wasn't trying to twist the narrative, just trying to come up with a
+> > path forward that isn't "no" or "improve existing driver", since
+> > neither of those gets us towards a future using common frameworks.
 > > 
-> > > +static u32 arm_smmu_queue_max_n_shift(u32 ceiling, u32 ent_sz_shift,
-> > > +				      u32 entries)
+> >> I asked why there should be an exception granted? Is the reason for
+> >> exception following:
+> >> "We want to adopt common framework"
+> >> ?
 > > 
-> > Here, all three inputs would have been "shifts", instead of two
-> > "shifts" and one "number of entries".
+> > Possibly?  But I don't think we want two drivers to be any sort of
+> > long term solution.  (Ie. as long as venus/iris have co-exist.)
 > > 
-> > > +{
-> > > +	u32 floor = PAGE_SHIFT - ent_sz_shift;
-> > > +
-> > > +	if (!entries)
-> > > +		return ceiling;
-> > > +
-> > > +	return min(ceiling, max(ilog2(entries), floor));
+> >>
+> >>> rather reacting to drm/accel emerging as the standard framework for
+> >>> this sort of driver.
+> >>>
+> >>> So how do we get from here to there?
+> >>
+> >> What is wrong with my proposal?
 > > 
-> > And I see Sashiko keeps complaining against the ilog2 here:
+> > Maybe I missed something, my understanding was your proposal was
+> > "Grow/replace/improve existing driver instead of coming with a
+> > duplicate"..  grow or improve doesn't move us toward common
+> > frameworks.  Maybe "replace" is a valid option.  If there is something
+> > I missed, then I apologize.
+> > 
+> > Options I can think of are:
+> > 
+> > 1. Hardware cutoff.. new hw gets new driver, existing hw gets existing
+> >    driver
+> > 2. Backwards compat chardev registered by new driver, providing existing
+> >    UABI.  I'm not 100% sure about the feasibility/drawbacks of this..
+> >    AFAIU the fastrpc folks where planning a backwards compat layer in
+> >    userspace, so maybe it is possible.
+> > 3. exception?
+> > 
+> > I'd like to know what the feasibility of #2 is, since at a high level
+> > that sounds like the best option.  Possibly limit exposure of legacy
+> > UABI to existing hw so we don't get into a place of needing to extend
+> > the legacy UABI for new hw?
+> > 
+> > But #1 sounds like a non-controversial place to start regardless.
+> > Possibly with #2 coming as followup and necessary step before eventual
+> > migration to new driver for existing hw?
+> > 
+> > Even if we start with #2, how do we handle first-merge-window
+> > bugs/regressions without reverting addition of new driver and removal
+> > of old?  It seems like we'd need a window of a couple release cycles
+> > where both drivers exist?
+> > 
+> > Maybe others have other/better options in mind?
+> To all, I'm seeking on the approach I should follow to go ahead here. I
+> can work on implementing #1(as per Rob's list) with hw specific
+> compatible for v4 if it's acceptable.
 > 
-> It does build: GCC 15 and clang 21, at -O2 and -Os, without a warning.
-> 
-> But the reason is not obvious.
-> 
-> ilog2() on a runtime u32 returns int, and minmax.h only accepts an int
-> against a u32 when __is_nonneg() can prove it non-negative at compile
-> time.
-> 
-> __ilog2_u32() is fls(n) - 1, so that proof only exists because the
-> if (entries) guard lets the compiler see entries != 0 through the inlined
-> fls().
-> 
-> But this is fragile. If a compiler does not get there, or a later change
-> that moves the guard, it turns it into a BUILD_BUG_ON.
-> 
-> Rather than a max_t() cast, we can give the shift its type first:
-> 
-> 	if (entries) {
-> 		new_ceiling = ilog2(entries);
-> 		new_ceiling = max(new_ceiling, floor);
-> 	} else if (is_kdump_kernel()) {
-> 
-> Two u32s, nothing left for the compiler to prove, same result.
-> 
-> If it looks good, I can re-spin v6 with the change.
 
-It looks probably okay.. though I still don't get why you aren't
-picking the straightforward "max_n_shift" over "max_entries".
+I don't see any reason for you to define a "hw specific compatible",
+because as you have shown in this series (and as Rob point out), there's
+no difference in the "hardware".
 
-max_n_shift is used by both HW and SW, and it does not have such
-converting problem or need min/max, making the code cleaner :-/
+The only reason for your "hw specific compatible" is to make a software
+selection in Linux - and that's not what DeviceTree is for.
 
-Nicolin
+
+As such, I don't see that you have a DeviceTree problem at all, because
+this is a Linux-internal problem.
+
+> #2(compat driver) is something that we are still exploring as we
+> couldn't find any standard way to achieve it. We might start a separate
+> discussion for that once we have few possible designs with us.
+> 
+
+This is the actual problem!
+
+We have existing user space that depends on the ioctl interface exposed
+by the current misc driver. You must not break these.
+
+Hardware cutoff is not a viable solution, because that's just a
+declaration that we'll let the old platforms rotten - or alternatively
+you commit to maintain two drivers to the very same feature and quality
+level.
+
+So the only reasonable solution is #2; from there it's a valid question
+if you reach that point my stepwise migrating the current misc driver
+that solution, or if you present a new driver with the fully backwards
+compatible interface, alongside the new ABI.
+
+
+But this does bring to a question which the cover letter should explain
+- but doesn't: what problem does this patch series actually solve?
+
+Regards,
+Bjorn
+
+> Happy to take any other suggestion also.>
+> > BR,
+> > -R
+> 
+> 
