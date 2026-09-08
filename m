@@ -1,34 +1,33 @@
 Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83DA54A0902;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83E50538D7E;
 	Tue,  8 Sep 2026 21:48:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.117.225.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788904120; cv=none; b=W04zIfClJx/zeF8ZcKiVR65XdEOW6TUXcpxyVdRjPrzfE5pyAQGtvQxJdBBRoixrMo282W0WB6lt5POrA92/bOQz4fVHJyvNHJ2g6wIlMS40F2bZUQEkD22FdjLM3sfg51wJVcZaf+qpZ7MeCmG2c7hp86tqw5AxwYqlxi23aXc=
+	t=1788904121; cv=none; b=PiiPRUEmCZhawzfG3j8dlFfzWnbEUss+2EcOjhllQRZTI+xcIuuVG/xpTmWFkONmg9OpX5VPLGwY3Cq6dN9SQl/Gn3viu9pKUUNyVGpeEMJ64O2foZ+gomJwFGHwJBEoSMB5KlVCPCf8a1aRjrmmSaOAalJnsAV4Y/2XOORMaeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788904120; c=relaxed/simple;
-	bh=Bo+6Rdn77POaJ6YwdOntdmZgfwKCdhinnWntII9lVdY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ISoMW6OQle22j7lYCbTVp+3zVjcxWsXxKVXqxrex619rh6ovPsqlejRsBvbE0PvEThLir2CjT4IsXvIVRbHaODGXV2PAg5yFTkuz+0IgSA2M1/AcMwcgKHwhxBvI0Jf2Ck0b3sdcmdRLMnKm+s2sKIJqP1yOuohNcQUKSf9IXsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=virtuozzo.com; spf=pass smtp.mailfrom=virtuozzo.com; dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b=ioicMYGF; arc=none smtp.client-ip=130.117.225.111
+	s=arc-20240116; t=1788904121; c=relaxed/simple;
+	bh=NBn1b/pAJh9jp5+mm3asIR3e5//SYND5JIWJyHvtzQo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DKVfl2YB+/03NRx4srTrEhT24AFG4W/u09vjKcjXn0kYrZTJsXyccTah1Lazg/i7sXKJxJ5egW5pZb3+2eFGB1ARJTHw7t3BQGbcIhTTxGGCDhdS+VaG2Ymq8U3KiOgkQoilLGhNLh7WljDTBOR0RJAkgQTRUXHbg3Lz7dykgzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=virtuozzo.com; spf=pass smtp.mailfrom=virtuozzo.com; dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b=Gj1B+zLC; arc=none smtp.client-ip=130.117.225.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=virtuozzo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=virtuozzo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b="ioicMYGF"
+	dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b="Gj1B+zLC"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=virtuozzo.com; s=relay; h=MIME-Version:Message-ID:Date:Subject:From:
-	Content-Type; bh=1f34i7ELcyl//Ubi8x1ZRHLDiv9uG7Y8v6wrp7ZZgSE=; b=ioicMYGF/98d
-	qqjSckkmuGfCT4jG2sqqS5SHNBYilUq7PKPSjAOqQ97blwRkAbMGvXwul/TqrGC2PoyXN5pZl4+I9
-	BisoZ1Jrs7mHw0YphNv29cCzAYkFZLdRUAtThlbGn6+IYXSAHe4Y5j54TrYMfzDB2g+r87bjD9l2S
-	sJ3wDPOI4SKkE2DgHNGPdYZLpQ+z2XL/y5hCyiU85K5QbjLTSOG4bMcbztR3DCX/lo114qVxjfNTa
-	afzC6XCwu9zY1Fzz5R7kmLCH91yfXLiS0g64cudwuG2v+dhwPXsVmPQWRNHE4wSRpADBDdOcbLBeb
-	UOq8JbAcCCsEs49oUYBgRA==;
+	Content-Type; bh=EprWQ6/5qkuwvBjUQ8U8imK3Hu0Noopy2ZG9qCCogmk=; b=Gj1B+zLCiH/g
+	CdYgMrXYgnOzqmX9EeEiKPFopMhOaJeFUis7Lu1RWJK4OBNcjI/Xx134BX1tte/64o07DHehG/cDe
+	0UinIoKZVoU0fSwHs4OwdRJzLtFAgSLws37y54y71mtCUboBMOjRBSheeU721U9KXOZpxLP8VKsqM
+	MFrzegaGzGf02B396HZ6rWg9/VMZPbIBoQEiIYZ/GANpJLg3yS8HOB33FXG6S86zAMoQyIbKsi8GC
+	y6/QwH57Q/4tTTreurivGFASQAGO9XpBV3pT6upzn9ofQd0Hbj1IjhHjRB8O71XjsJbrMRGozspTv
+	UV/WKEizR3UU9yhHR8fdIQ==;
 Received: from ch-vpn.virtuozzo.com ([130.117.225.6] helo=LekKit-T14)
 	by relay.virtuozzo.com with esmtp (Exim 4.96)
 	(envelope-from <eva.kurchatova@virtuozzo.com>)
-	id 1x43db-002qQQ-1B;
-	Tue, 08 Sep 2026 23:48:23 +0200
+	id 1x43da-002qQQ-0v;
+	Tue, 08 Sep 2026 23:48:22 +0200
 From: Eva Kurchatova <eva.kurchatova@virtuozzo.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>,
@@ -37,12 +36,10 @@ Cc: linux-kernel@vger.kernel.org,
 	Eva Kurchatova <eva.kurchatova@virtuozzo.com>,
 	iommu@lists.linux.dev,
 	linux-kselftest@vger.kernel.org
-Subject: [PATCH 2/2] selftests: iommu: skip when the mock device is not there
-Date: Wed,  9 Sep 2026 00:48:12 +0300
-Message-ID: <20260908214825.2682078-2-eva.kurchatova@virtuozzo.com>
+Subject: [PATCH 1/2] selftests: iommu: suppress -Warray-bounds in _test_cmd_get_hw_info
+Date: Wed,  9 Sep 2026 00:48:11 +0300
+Message-ID: <20260908214825.2682078-1-eva.kurchatova@virtuozzo.com>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260908214825.2682078-1-eva.kurchatova@virtuozzo.com>
-References: <20260908214825.2682078-1-eva.kurchatova@virtuozzo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,76 +48,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Both iommufd tests need the mock device the iommufd module registers
-under CONFIG_IOMMUFD_TEST, and they open /dev/iommu in every fixture
-without checking, so on a kernel that does not provide it every case
-fails on the open.
+  In function '_test_cmd_get_hw_info',
+      inlined from 'iommufd_ioas_get_hw_info' at iommufd.c:614:3,
+      inlined from 'wrapper_iommufd_ioas_get_hw_info' at iommufd.c:589:1:
+  iommufd_utils.h:683:37: warning: array subscript 'struct iommu_test_hw_info[0]'
+  is partly outside array bounds of 'struct iommu_test_hw_info_buffer_smaller[1]'
+  [-Warray-bounds=]
+    683 |                         assert(!info->flags);
+        |                                 ~~~~^~~~~~~
 
-Checking the open is not enough on its own. /dev/iommu appears as soon
-as the iommufd module is loaded, which says nothing about the mock
-device: the release config here is CONFIG_IOMMUFD=m with
-CONFIG_IOMMUFD_TEST unset, so the open succeeds and the tests fail later
-in the ioctls that drive the mock device instead. Only the debug config
-sets CONFIG_IOMMUFD_TEST.
-
-/sys/bus/iommufd_mock covers both, it exists only once the module is
-loaded and the kernel was built with CONFIG_IOMMUFD_TEST. Check for it
-once before handing over to the harness, rather than in each of the
-fixtures, and report a skip. test_harness_run() is what TEST_HARNESS_MAIN
-calls anyway, so the tests still run exactly as they did.
+The test intentionally passes a smaller buffer to exercise the kernel's
+handling of undersized user buffers. Runtime data_len checks make the
+access safe, but GCC cannot prove this statically. Suppress the warning
+locally with a pragma.
 
 Signed-off-by: Eva Kurchatova <eva.kurchatova@virtuozzo.com>
 ---
- tools/testing/selftests/iommu/iommufd.c          | 15 ++++++++++++++-
- tools/testing/selftests/iommu/iommufd_fail_nth.c | 15 ++++++++++++++-
- 2 files changed, 28 insertions(+), 2 deletions(-)
+ tools/testing/selftests/iommu/iommufd_utils.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index d44b34b05757..446306badcdc 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -3613,4 +3613,17 @@ TEST_F(iommufd_device_pasid, pasid_attach)
- 	test_cmd_mock_domain_replace(self->stdev_id, self->ioas_id);
- }
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index b4928cbd4d9c..c4dfa05e0612 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -866,12 +866,19 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id, __u32 data_type,
+ 		}
+ 	}
  
--TEST_HARNESS_MAIN
-+static bool iommufd_mock_available(void)
-+{
-+	return access("/sys/bus/iommufd_mock", F_OK) == 0;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	if (!iommufd_mock_available())
-+		ksft_exit_skip("no iommufd mock device, the tests need "
-+			       "CONFIG_IOMMUFD_TEST=y and the iommufd "
-+			       "module loaded\n");
-+
-+	return test_harness_run(argc, argv);
-+}
-diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-index 25495d8dceb3..c516e00f7316 100644
---- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
-+++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-@@ -745,4 +745,17 @@ TEST_FAIL_NTH(basic_fail_nth, device)
- 	return 0;
- }
++	/*
++	 * When data_len is smaller than sizeof(*info), GCC warns about
++	 * out-of-bounds access.  The runtime data_len checks make this safe.
++	 */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Warray-bounds"
+ 	if (info) {
+ 		if (data_len >= offsetofend(struct iommu_test_hw_info, test_reg))
+ 			assert(info->test_reg == IOMMU_HW_INFO_SELFTEST_REGVAL);
+ 		if (data_len >= offsetofend(struct iommu_test_hw_info, flags))
+ 			assert(!info->flags);
+ 	}
++#pragma GCC diagnostic pop
  
--TEST_HARNESS_MAIN
-+static bool iommufd_mock_available(void)
-+{
-+	return access("/sys/bus/iommufd_mock", F_OK) == 0;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	if (!iommufd_mock_available())
-+		ksft_exit_skip("no iommufd mock device, the tests need "
-+			       "CONFIG_IOMMUFD_TEST=y and the iommufd "
-+			       "module loaded\n");
-+
-+	return test_harness_run(argc, argv);
-+}
+ 	if (max_pasid)
+ 		*max_pasid = cmd.out_max_pasid_log2;
 -- 
 2.55.0
 
