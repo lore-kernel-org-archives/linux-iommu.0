@@ -1,142 +1,109 @@
-Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F3E3290A5
-	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 10:40:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788864026; cv=pass; b=H9YbHND9XcyAo3kyKwEuNmF5GVAAqs0LKPHx8DxdYNvzYlwB2sHZ4j6vmsHFr2tGG6jWFmBHFCK+j/+bpYD5H5sUwfccDhyBo9YF9Zk2dOus5g+nc9XnWmHBLq40NSBpnGs3UIi5lDREo6W/ZYfJms46lLmJc4NL0Iosr2fKgt0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788864026; c=relaxed/simple;
-	bh=nD294C8T0Zy/I/TGy6pWixESaQsfYnAVs54uddAPGaY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=csfcS4FcEOQ+nD3EFxld5HQMj51b64BC5LvmHyj9IWFdb7cHF/kpl0b8Z2t3wrY11TGlvLqRyclHggv6MpcP7HbJRKWetoyi4VjA5rI//Qb4WNL8kZ7+sJBNAJRjJI9zXJZjqqecbvOa4ILkif7DnzNoAueKPo0joRenUJZqvOg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=OAy+sMBe; arc=pass smtp.client-ip=136.143.188.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90EFA4A8FC7;
+	Tue,  8 Sep 2026 11:32:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788867174; cv=none; b=op0ygWinlPmsBwohn90lqKf5lZzugPIPSz8TZRozA5ftadMYrHlfUrEiGhIf2ydna08tzATsyeNmgMEMEETZu8ix/Ntpw8C9opFjZzEjjZT3SN9sJ6djbW46XEUge2SRiVgxm9v7+iGQYBMZbJWccsH67LhsOKq6hT1tpnlqOSg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788867174; c=relaxed/simple;
+	bh=35hgWuDFJJqbTBxmJnJ57l3+9GRQQ6qZ4Rul2TtgEiA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=J/mqQCC2oEnEBl26SvO31EB1CwTQxONVzBnTfiClIJ/h+bEzJ0QGoHvJQLKLMnvcffUj+nMpeQHblpdulAdq/K8EBSA2/D1Z5QXN7M0KX4PG8zWs5Nfg0siMv30DAw8SDrYGojUlCkxafyw//7yJmp120cZz6I7nJf8CHPXECYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iVyJU94Z; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="OAy+sMBe"
-ARC-Seal: i=1; a=rsa-sha256; t=1788864016; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=iW8TKO861x5+1U7iT7/sxwC+BTSEzFiEA6uFyPfVdy00l0+8yXO6nnTXVLlDs03GTd3hVBnscfNPJ8AcINFWlM6FiI5WUNxqRCYlE4a6lq+TdmbFZjlwGYVd8rm17QipOEqfrQ27tDheYtZL1PH/lF+mqkXok6T6BF2uUYOSuDo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1788864016; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=bY8+oIhPgwK+JLNx5WiJOoy8wSD3OQGQ54+z+6oCOcg=; 
-	b=E1SeOU3KG2zX97FegGIwokUKJu5M9GUelcAQYcia+nX6OUL9TvC0DX6jxJsK1yypurDDk0fTrcIF/mCLg0JF2+qRgV9cbvxWMhAYsvwWamehHnDfU5QXmG2ttDbewiNg9OhhRhFJGgQthxPxozcFict/+WUVbkoZgoPik64BBGk=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1788864016;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=bY8+oIhPgwK+JLNx5WiJOoy8wSD3OQGQ54+z+6oCOcg=;
-	b=OAy+sMBeUsYESqMxFLQ3h2ImQl9u5Fm6c+h43QmkOXtAthRAi6Jf3fqgW7cTEFgg
-	6GIlDy4EV0QmuJFFdFMXrzsN8TmlQWmGh6nBUijbiuiPIA7zYJFVRcpCTsJks4EsxCz
-	9FIZhjiG4uzHjY+NJxqh6YCMk2N+MA2RRtumSj7U=
-Received: by mx.zohomail.com with SMTPS id 1788864014838186.0345934633475;
-	Tue, 8 Sep 2026 03:40:14 -0700 (PDT)
-Message-ID: <402b9f73-03b0-433b-baa1-01b57038ee31@collabora.com>
-Date: Tue, 8 Sep 2026 12:40:11 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iVyJU94Z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029B61F00A3A;
+	Tue,  8 Sep 2026 11:32:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788867163;
+	bh=T3bfuKnIDLKBYWubE5n0qpIfcywQnWZyol1/WTQ0KNU=;
+	h=From:To:Cc:Subject:Date;
+	b=iVyJU94ZTzqH5cP7b+nkZZ60NPVtcggewHM3kTKwES92MMlEVdjTJmxSG8FR2YxkO
+	 MMz1ZskncIhd9nSNGlCpnM3su7xV1PUNwcDGzmR4s9tNAYQCwnAEx8+QYVwnFhop1y
+	 tAdIq+5xvsujlM5nMyiQyxbsHg5NW+Rus29zp/42eukdlgrDzr/Eu/kEqPG7PjpUCc
+	 FqhacDVfeHXBng2yUDUoInQNYhnXUFrH8sUgZEwozMmAkSTuML3R3ueah/wpqFP+w2
+	 grolg6pPg0CSdkLqRtKORx31+lKc8Pjv64NofWt5yWphPWKWIXKQS/tljsKpONtvSN
+	 cNc8HIiHSDvAw==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: x86@kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: Dave Hansen <dave.hansen@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	"H . Peter Anvin" <hpa@zytor.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Alexander.Deucher@amd.com,
+	Thomas.Lendacky@amd.com,
+	Vasant.Hegde@amd.com,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Timo Witte <timo.witte@gmail.com>
+Subject: [PATCH] x86/mm: Don't force unencrypted DMA for IOMMU-backed devices
+Date: Tue,  8 Sep 2026 17:02:32 +0530
+Message-ID: <20260908113232.247457-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/vsi: Fix use-after-free during module unload
-To: Yibo Tan <lhfff@tju.edu.cn>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <aa503065-cd97-47cd-894c-bd660e59f5f9@collabora.com>
- <20260907195228.812227-1-lhfff@tju.edu.cn>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20260907195228.812227-1-lhfff@tju.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select
+them via attrs") exposed an issue with force_dma_unencrypted() on
+systems using host memory encryption.
 
-Le 07/09/2026 à 21:52, Yibo Tan a écrit :
-> iommu_device_register() links the embedded iommu_device into the IOMMU
-> core's global device list. The VSI driver can be built as a module, but
-> has no remove callback to unregister the device before devres frees the
-> containing struct vsi_iommu.
->
-> With no attached consumer holding a module reference, unloading
-> vsi-iommu.ko succeeds. A later platform device registration enters the
-> IOMMU bus notifier and scans the stale list entry. KASAN reports a
-> slab-use-after-free in __iommu_probe_device().
->
-> The missing unregister operation on driver unbind was also noted during
-> review of the driver's fwnode lookup lifetime handling.
->
-> Add the missing remove callback. Unregister the IOMMU device and remove
-> its sysfs object while the provider is still alive, then force runtime
-> suspend and unprepare the clocks acquired during probe. Leave the IRQ
-> and other managed resources to devres teardown.
->
-> The failure was reproduced with real module load and unload syscalls.
-> With the same KASAN kernel, the unmodified driver produced two invalid
-> reads from the same freed list entry. The patched driver removed the
-> entry, completed the later device registration and produced no KASAN,
-> WARNING, Oops or panic.
->
-> The remove callback also builds with W=1 for arm64 with
-> ARCH_ROCKCHIP=y and CONFIG_PM=y, and for the arm64 COMPILE_TEST path
-> with CONFIG_PM=n.
->
-> A standalone reproducer, the vulnerable and fixed serial logs, and
-> their checksums are available at:
->
-> https://github.com/kimaiden1984-boop/linux-vsi-iommu-unload-uaf-reproducer
->
-> Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
-> Link: https://lore.kernel.org/0e405cb3-1227-4ad2-96ff-aa0db3124381@arm.com/
-> Cc: stable@vger.kernel.org
-> Assisted-by: Codex:GPT-5
-> Signed-off-by: Yibo Tan <lhfff@tju.edu.cn>
+force_dma_unencrypted() checks whether the device DMA mask can address
+the encryption bit and, if not, requires DMA allocations to use
+unencrypted memory. However, this check is not applicable when the
+device is using the IOMMU. In that case, the device DMA mask constrains
+the IOVA seen by the device, not the backing physical address, so it
+does not need to cover the C-bit.
 
-Reviewed-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+This currently causes dma_alloc_attrs() to set
+__DMA_ATTR_ALLOC_CC_SHARED for such devices. iommu_dma_alloc() does not
+support that attribute and rejects the allocation, causing DMA
+allocations to fail.
 
-> ---
-> Changes in v2:
-> - Drop devm_free_irq() and leave managed IRQ teardown to devres.
-> - Re-run the KASAN A/B test and arm64 PM-enabled and PM-disabled builds.
->
-> v1: https://lore.kernel.org/all/20260905183834.3447662-1-lhfff@tju.edu.cn/
->
->   drivers/iommu/vsi-iommu.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
->
-> diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
-> index 42c424496d07..f73bcc82c472 100644
-> --- a/drivers/iommu/vsi-iommu.c
-> +++ b/drivers/iommu/vsi-iommu.c
-> @@ -728,6 +728,16 @@ static int vsi_iommu_probe(struct platform_device *pdev)
->   	return err;
->   }
->   
-> +static void vsi_iommu_remove(struct platform_device *pdev)
-> +{
-> +	struct vsi_iommu *iommu = platform_get_drvdata(pdev);
-> +
-> +	iommu_device_unregister(&iommu->iommu);
-> +	iommu_device_sysfs_remove(&iommu->iommu);
-> +	pm_runtime_force_suspend(&pdev->dev);
-> +	clk_bulk_unprepare(iommu->num_clocks, iommu->clocks);
-> +}
-> +
->   static void vsi_iommu_shutdown(struct platform_device *pdev)
->   {
->   	struct vsi_iommu *iommu = platform_get_drvdata(pdev);
-> @@ -776,6 +786,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(vsi_iommu_pm_ops,
->   
->   static struct platform_driver rockchip_vsi_iommu_driver = {
->   	.probe = vsi_iommu_probe,
-> +	.remove = vsi_iommu_remove,
->   	.shutdown = vsi_iommu_shutdown,
->   	.driver = {
->   		   .name = "vsi_iommu",
+Do not force DMA allocations to be unencrypted when the device is using
+the IOMMU. This allows the IOMMU to map the encrypted physical pages as
+before and avoids incorrectly requesting CC_SHARED allocations.
+
+Fixes: 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select them via attrs")
+Reported-by: Timo Witte <timo.witte@gmail.com>
+Link: https://lore.kernel.org/all/CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+---
+ arch/x86/mm/mem_encrypt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 912f22ca838f..a349d8d21569 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -13,6 +13,7 @@
+ #include <linux/cc_platform.h>
+ #include <linux/mem_encrypt.h>
+ #include <linux/virtio_anchor.h>
++#include <linux/iommu-dma.h>
+ 
+ #include <asm/sev.h>
+ 
+@@ -30,7 +31,7 @@ bool force_dma_unencrypted(struct device *dev)
+ 	 * device does not support DMA to addresses that include the
+ 	 * encryption mask.
+ 	 */
+-	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
++	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) && !use_dma_iommu(dev)) {
+ 		u64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));
+ 		u64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,
+ 						dev->bus_dma_limit);
+-- 
+2.43.0
+
