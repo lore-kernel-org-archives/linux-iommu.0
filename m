@@ -1,133 +1,129 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F050953ECED
-	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 12:42:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B05455293F
+	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 13:08:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.112
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788871367; cv=none; b=I/4TEqC/Lx30U1If0bwY/P/4vqpm4i/RjGtRJ4FqKutlqrik72He/LGSzkGMv/YWTzv/u4aA5WEvlNGQXb9bCM2qPqu0+TJdDLvt8Oc2A6i/fQUlnBL4vFpwISi3FeiUwWOGEWFR+BLm3Ia/46dJTPFF1qBBH7Z5VQhDxgATBBM=
+	t=1788872925; cv=none; b=cNmoru54Mx62sQbzKTHng9cV1ZaoqQYGKY1U8J/enTkOQ+RaRPPk6WvLAMz208ZhPfPv5iRHDYrEHTU/HIcRS1aoGFr9qFiSZo1nh7kxaB+CZkYqf5J1C6tzQYNWN8iNtRySXyTdv3HO+1BefuQ5NTIS6NkuS1ffeP6Q7Tass34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788871367; c=relaxed/simple;
-	bh=js9UEC/Am5qL7fXzeGsFiojuhESRYv+hLExCRcXvxRI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NINxU+LqA/eEb5BPXMEdUfvh5X6hUSQdBtNiN1Nd33Wcx1qzWpYNolrswuf8OYzoFx2i04zb98kshWIdzKW/uj8GLRZk+R0gie7Lb0pO3zoDf8VAPZ/H4LRNTjt245Je6p3n+eLVRfef+ALuW5FFzzBJwae/51EFPi10YOrLkKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=iVPPW+gc; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1788872925; c=relaxed/simple;
+	bh=lZOJZ1eXA52ShReNf9dL+c4a3gllm4PudhUTHQNpfUI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=XvYjFIdbPC/Khah2BqWx+LC1RGJmFSdlSM8hHNzr6pVwsqgy8BJtV9NLo1urzW6GLDCerlYKztC/WAMIrZaerfVtJS1mhJFulh6vxMQAKyZm7ed7EAgg6yvxR23pgv+84rmp0S725pzAznsjxW6DxpYwNIV6ukw4Ze5YtGzL4z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=r9ZOx5PG; arc=none smtp.client-ip=115.124.30.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="iVPPW+gc"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-9399e925dcaso210846485a.3
-        for <iommu@lists.linux.dev>; Tue, 08 Sep 2026 05:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1788871365; x=1789476165; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=KO3kIc1VAMjPhAEaclJXkC8aa4/+237lrdumobzVsjA=;
-        b=iVPPW+gcq9rJxqjNXPq0OpolmVc5KHlQ1dXH1JS3xpkZOB/pdZTFbauIc+9wfjfwuv
-         41l7AnSOad2m39k7bNBbrCG6S4s8Tv1f5lTchXE9JYO2OnJ7XkENQCVTfAqZui/Ln66O
-         /waBgnP6aSu+18xpUgDtn8ZlL10Prv4tfD2WuNr8pBnBo2OeNRcuL8zVsTUOGs/eqdoM
-         zXyT7djlz/+TRpDvDKRrOUOqfF1dPeob3VzkxK0J8dofU66cyYnBbB7vZEmdZcNknLG0
-         lRFnIJv6zKaO6r7JMSwEgDUPWpKGWjLkPg2PJ6dGIAvxvKpGBX7RMKE5HOzagp6baPIH
-         O8mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788871365; x=1789476165;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=KO3kIc1VAMjPhAEaclJXkC8aa4/+237lrdumobzVsjA=;
-        b=tREB/2JViv3owAeQoABOfV8k1LsaOJfieX3Xw+Sx2cqJs6cZ4v5Pr6UpoDuAaw0Z3z
-         TE5WQHAlBbiZFShYwOsdcIS573vxFWYTA/czskxvo592PcKVm1YZRAMGHqjK4qERUprz
-         Gvp0JwPsIx661UBVGNedhR/zrgmvSa9ZFj90BHpfXAnRFmfUFrsGlCT52lEbzSXWG3P3
-         mobpQAM7/q0tPF6MntnariVqTMddMRICpGOPdQ7QuX4B8JUVPHBd6cupK3eZAxUqiMdo
-         +rOjZ9fUnobM0hcPDU5Evm0a+TPSOPkCbhIW3mDXDLiQRh45RrIMIQ0vwyPL2pxN1VTg
-         wymw==
-X-Forwarded-Encrypted: i=1; AKwUvBzvzlzMHDTXYVTla272sLMZl2dC9x/mlyjxhB8pPhxpqkpIeuKmP26goUlJfPWaI9wGMLKp6Q==@lists.linux.dev
-X-Gm-Message-State: AFuF++mI9sSOezfz9BPJtdBE4ySP6o4IJiJA1ReSJI4qJ+PeQ5czYyKw
-	6SkESAuMpMyIz+YtqVntrG23rMwedXwbePWJ0KJkK++rUBMf43oF5sauU/B69T3xi2M=
-X-Gm-Gg: AYBFou2Ta3Lq33M+RNBWjcWK+rVDC6Y0HXX9AyDI24fjS2PtOlnUTd3MFsuH7KTBRLq
-	Byme71j7YwcBSBNj+yY6NIm3WwoG0GH8OCXYoZDAU353tdJDROMABKbgGsm9HW45n3H+OpwJJ9e
-	Qu4KB9QGDv/PbK+IZx61hcypA3u6EtXKGRaCUTtoZY4T1pOW9HUF2yRZG76/M5BtkFMG4zkSov4
-	6HTeodKyqeh2byx65JcZFuP9HrTbaBfO3hoJSg3uwjbuS9Ewf/4I0IFCtfGU9tkFUzzKcKN4hv4
-	28ogRpZNFwhxuSC/9XGFK3lf3hgxB94TKg9Oy+swW8OpjUKySq54cg2dQbb94GfiInjS341ksD8
-	D8Lm2jGLUgvQN9clzQuo+ocHddwXYI+1dOCIJynBRqeoJ2vgjrERbm9Vt4AVXh7cSjFwg1PDUm/
-	ZStaG0xGeDzLboS8UI+7hu7lsxYB2VqBARh0zfKxVzKqfmIG+dw3ATcXr9qQ3F0z70HE9drywib
-	3uXCsTR7TXXAaVkzkh6Ql1Nri7AwvvHYfVtQk61vFZTog==
-X-Received: by 2002:a05:620a:a108:b0:91c:c20b:a135 with SMTP id af79cd13be357-939804af44amr2957913285a.40.1788871364777;
-        Tue, 08 Sep 2026 05:42:44 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-910406b0f51sm115856516d6.42.2026.09.08.05.42.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2026 05:42:44 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1x3v9v-0000000Dgue-1sWF;
-	Tue, 08 Sep 2026 09:42:43 -0300
-Date: Tue, 8 Sep 2026 09:42:43 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, jpb@kernel.org,
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	nicolinc@nvidia.com, praan@google.com
-Subject: Re: [PATCH] iommu/arm-smmu-v3-sva: Relax ASID requirements
-Message-ID: <20260908124243.GB2543240@ziepe.ca>
-References: <20260907154928.4012151-1-smostafa@google.com>
- <20260907184513.GA2543240@ziepe.ca>
- <ap_JokRTsUHtF4dN@google.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="r9ZOx5PG"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1788872913; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=lZOJZ1eXA52ShReNf9dL+c4a3gllm4PudhUTHQNpfUI=;
+	b=r9ZOx5PGf0NRmLJOUPdvc7WFOcP18Qr8g4ttnw0niASlGqGtRI63Jfhkm1iJfukT3mEOCGkwH2ak6dzhMenPJ5iYdLGkBRvKaliuSWGsSzR+vl6eYZB6ULIb20kTOtfyXgfEP7hq+b+k7sGFryFbjJgwUDszvNKWYygvqZZFa5U=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0XAbablx_1788872910;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XAbablx_1788872910 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 08 Sep 2026 21:08:32 +0800
+From: fangyu.yu@linux.alibaba.com
+To: andrew.jones@oss.qualcomm.com
+Cc: anup@brainfault.org,
+	fangyu.yu@linux.alibaba.com,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	tglx@kernel.org,
+	tjeznach@rivosinc.com,
+	tomasz.jeznach@linux.dev,
+	will@kernel.org
+Subject: Re: [PATCH v5 00/17] iommu/riscv: Enable MSI remapping, IOMMU_DMA and VFIO
+Date: Tue,  8 Sep 2026 21:08:28 +0800
+Message-Id: <20260908130828.14195-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20260831145943.313726-1-andrew.jones@oss.qualcomm.com>
+References: <20260831145943.313726-1-andrew.jones@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ap_JokRTsUHtF4dN@google.com>
 
-On Tue, Sep 08, 2026 at 08:38:58AM +0000, Mostafa Saleh wrote:
-> On Mon, Sep 07, 2026 at 03:45:13PM -0300, Jason Gunthorpe wrote:
-> > On Mon, Sep 07, 2026 at 03:49:28PM +0000, Mostafa Saleh wrote:
-> > > arm_smmu_sva_supported() have some residual checks for ASID from the
-> > > original commit d744f9e6c222 ("iommu/arm-smmu-v3: Check for SVA features")
-> > > 
-> > > As DVM was used for TLB invalidation and the ASID of the domain was shared
-> > > with the CPU process.
-> > > 
-> > > However, the commit
-> > > d38c28dbefee ("iommu/arm-smmu-v3: Put the SVA mmu notifier in the smmu_domain")
-> > > removed that support.
-> > > 
-> > > So matching the SMMU ASID space to the CPU is unnecessary and can be
-> > > relaxed.
-> > > 
-> > > Remove the CPU ASID related code, and update the print for the SMMUv3.
-> > 
-> > It is OK, but maybe this could also be but under an if
-> > ARM_SMMU_FEAT_BTM?  That is never enabled and is a placeholder to for
-> > eventual BTM support.
-> 
-> Yes, otherwise SMMUs with BTM would regress in the future.
-> But I’d assume non-BTM SMMUs will still be supported; falling back
-> to SW invalidation?
+>This series adds MSI remapping for IMSIC so a device's MSI target gets
+>translated the same way its DMA does, allowing RISC-V to enable IOMMU_DMA
+>and paging domains by default.
+>
+>v1[1] used get_resv_regions() with IOMMU_RESV_DIRECT_RELAXABLE to identity
+>map IMSIC pages, but that was rejected as only a workaround. v2 through
+>v4[2] instead introduced a RISC-V IOMMU IRQ domain which pre-mapped every
+>possible IMSIC target and maintained a domain-local PA-to-IOVA table. The
+>v4 discussion with Jason identified a simpler way to handle the RISC-V
+>requirement that the MSI target address changes with interrupt affinity:
+>extend the existing iommu_dma_prepare_msi() model to prepare an ordered
+>list of MSI targets as one contiguous IOVA range. v5 is a complete redesign
+>around that approach.
+>
+>The IMSIC driver now builds an array containing the supervisor IMSIC page
+>for every possible CPU, indexed by logical CPU number. When allocating an
+>IRQ, it passes the complete array to iommu_dma_prepare_msi_list(). The new
+>API maps the ordered physical address list into one contiguous IOVA range
+>through either DMA-IOMMU or iommufd, then caches the base IOVA and mapping
+>granule in the MSI descriptor. MSI composition can therefore select the
+>target for the current CPU with simple arithmetic, including during an
+>affinity change, without allocating memory or consulting IOMMU-owned state
+>in atomic context.
+>
+>DMA-IOMMU extends its existing per-page MSI cache to recognize and reuse
+>complete ranges. iommufd grows its software-MSI bitmap on demand, bounds
+>allocations to the reserved MSI window, and prepares, installs, rolls back,
+>and replays a range as one unit. This keeps the descriptor's contiguous
+>IOVA valid across iommufd paging-domain replacement without exposing a
+>partially installed range.
+>
+>Unlike v4, v5 has no RISC-V IOMMU IRQ domain, no domain-local IMSIC mapping
+>table, and no IOMMU lookup during MSI composition. The IMSIC IRQ domain
+>owns the target list and message composition, while the IOMMU layers only
+>provide the mappings. Devices which do not need IOMMU MSI translation keep
+>using physical MSI addresses through the same IMSIC path.
+>
+>The series also carries the remaining plumbing needed for RISC-V PCIe
+>device assignment through VFIO/KVM: the RISC-V IOMMU reports DMA
+>cache-coherency capability for coherent devices, VFIO type1 and KVM_VFIO
+>are enabled for RISC-V, defconfig enables IOMMUFD/VFIO as modules with cdev
+>support, and the generic VFIO/iommufd selftests can be built for RISC-V.
+>The RISC-V IOMMU specification does not provide MSI data validation, so
+>VFIO device assignment requires the applicable allow_unsafe_interrupts=1
+>module parameter. Direct MSI routing to guest interrupt files (irqbypass)
+>is not yet supported by this series and will be posted separately on top.
+>
 
-Yeah, there is no idea to make BTM mandatory, just some people who
-built BTM into their HW would like to use it because it maybe performs
-better.
+Hi Andrew:
 
-So the thought was if the HW supports it then Linux would turn it on
-automatically for SVA.
+I tested this on riscv64 QEMU with an emulated NVMe device and e1000e
+network adapter. The fio and iperf3 tests both completed successfully,
+and the interrupt status was as expected.
 
-I think we can land "vBTM" support upstream which does not require
-solving the ASID problem since in a VM there would be no S2 at all.
+For this series
+Tested-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-The main issue was renumbering the ASIDs of already active
-domains. Prior to the invs list this could not be done correctly
-without races. Now that we can invalidate the same domain multiple
-times in the invs list it can be done race free.
-
-But, I don't have any BTM HW.
-
-Jason
+>LLM-based coding assistants were used during development for code
+>exploration, patch review, test execution, and drafting and editing
+>commit messages and this cover letter. I reviewed and finalized all
+>resulting code and text. Per-patch Assisted-by tags are omitted in
+>light of ongoing discussions about simplifying coding-assistant
+>attribution.
+>
+>Thanks,
+>drew
+>
+>[1] https://lore.kernel.org/all/20260508212339.381933-1-andrew.jones@oss.qualcomm.com/
+>[2] https://lore.kernel.org/all/20260820214150.545737-1-andrew.jones@oss.qualcomm.com/
+>
