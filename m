@@ -1,197 +1,181 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazolkn19013070.outbound.protection.outlook.com [52.103.20.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BB775625E9
-	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 13:29:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788874154; cv=none; b=jUpJ+EMMgxZehi5dwODRv8HrjbcedD7Pg0Z6H0MMIoIfb1MT/Mt3+V82IoUhaQQsxNVfqIm3MQEyZj8ObuofuCG9tBVkJz16J0GAM52F8e3rorBM4fO3N54HqML3CiT4cZsKo8/haONRhf8Nbnk03rWYudGz7OjQn/AbKUCQstU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788874154; c=relaxed/simple;
-	bh=k5HCTeqFbMi57vKLkj2X7I2avf2P/QWPZAnpsRan1nY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gQfpZicW8215rlNgz1LwzW5oiF23FM1cV0rGbfLbxiyF0ZtKtG5ishe3xCkKbvIfuaiFQXF+TiB/DIcFThaIipmNfiWsr7GSbxUIo95/FviJ9g42OVIwyPEOn4w1zlvEX36eDfvMpi4UtSOK5qgrkSygBvAuMvs6nTubaBuG/Us=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NTivlwwr; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=kxtW2+Z7; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CA6B1FECCD
+	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 14:25:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.20.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788877527; cv=fail; b=XSNMIIjXADvslgHu77PMQ7I5Uyv9g+XI/F2/PfQrsrbOBlL5zNyubBmoqbmm4+xXHhzZiwtF0K6WS+IWRFxWWOd/CjWWbpPdAaERK0yUXHoamMdLGv30omcBz7cz2TclYC6zSbBe6kAi9TcvDAgGIyEyOI0BoDDeo9Kj+lRCY3c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788877527; c=relaxed/simple;
+	bh=lXGzyY0zSf8mhLN3SuZgXnIYyq0piYlHnPjx4Q7B+eA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=e5r3T3u9U6ijY0xV6emD1DmC9PEUE40YqVfzdEIWoMk/K9kjDawUwgF/zfxu6fM7iWdVQG1mPwM9mXUA+t5nukpGXENGjegBRa4Xn3J2I4zHofY4xOAq6PZPvlIqSXJ7tJmjP4loz/hUWpWyDkVCmrxg0EoElWgOUG+pgewu8iQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=c9iTDyPu; arc=fail smtp.client-ip=52.103.20.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NTivlwwr";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="kxtW2+Z7"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 688CkfDv1807599
-	for <iommu@lists.linux.dev>; Tue, 8 Sep 2026 13:28:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=LvFFq7I3YnVJDfVFV9SMgv5R
-	NwImgPOEhF+SmMTxkq8=; b=NTivlwwrnwlzxFRnUFxldBN/eOUOXanZpJrDmPEi
-	PwFbeBqjwtJ3WRLAj5OqONcO+mFxHFzzc5RmULIGhNTcKj7vCGvIMZvQEIoqSQyH
-	XnqzHAyH7vLlzZz6u0lpYeCuuYq+mkpv/8zdEzG4FlEH4hHLORky7EqyC8Tjrvuj
-	cUz39Om5GnyznOOx91XC3O0rEx5ygfwg8oHCYsl1Eu6SowI+pxlq8tuSjJZmFlYU
-	WQCPirjuiZra+4zo1RYOMB6VcbJtagVF7dVfLjRYUrXOtt3j8wPyXqmGA6e1u7YP
-	zTFAMt0hNT9nCtx9AEXYZbwNCiKkhIOgkfNOdGqYWvr/1Q==
-Received: from mail-ua1-f72.google.com (mail-ua1-f72.google.com [209.85.222.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gjcrp9py2-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 08 Sep 2026 13:28:57 +0000 (GMT)
-Received: by mail-ua1-f72.google.com with SMTP id a1e0cc1a2514c-97c3796d17dso190801241.2
-        for <iommu@lists.linux.dev>; Tue, 08 Sep 2026 06:28:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1788874136; x=1789478936; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=LvFFq7I3YnVJDfVFV9SMgv5RNwImgPOEhF+SmMTxkq8=;
-        b=kxtW2+Z7ZnuyhiFOABao54GwpWzFowZLQjfXi/P+zvz/YJ4BVgOlM/5zpx8PBElmo0
-         UPhWlpyLV7Xfl2N/HysTTXo0iRjpOtHweC3BNUMVbnm/uaHFaoAtcYMI30wzgKI41XIi
-         VPLVRe9yDFuR9pdBeh1cdjutO/EIDk9NOWGx6xpun4D7vZAUWIDVILDESLzCIhMGjSwX
-         WVPCOGVMC+3xZ5fcrdtP4NTptuUDEHcP79b2WlokXYWe2/MYWwwNqYw1mwArf1VoynnE
-         9ay+ovPiDOIGLVywFMirsNAd2G0fHONe7buWK3u54dCQifw+buhJ0ck2dmFk5P2W3p6H
-         cHrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788874136; x=1789478936;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LvFFq7I3YnVJDfVFV9SMgv5RNwImgPOEhF+SmMTxkq8=;
-        b=AFkLl1OvJAUPL2VRIJl7c5VrwPvyxqjEVkc5hQ9SDM+JI93GaGxn/8ngFiOGzSsFzF
-         mfh+8fISy10+4d8CqkT6s53RbnkXC65j7/qf4s7w5p1YxmNQwayQTxZ9nFbJQbyhf9uT
-         ZfqYU/2wLo+lZ+cLQl30/XCWMDvyU4Y1xrcPqlTTet9dihoXQz9VW4dEAhp5PHShV5KZ
-         wL7FdkwYoBifaJGySk77BuaOPGEJv+0VsXlXZgCvAUGtwCc6S8qdFMAO3AJf0r2FeE0L
-         S0XWzn7sMRlqSccWGxjKWhzBFW+kcMlei1QzDaPENuY2vUzJ1oCVZqetjs5oxiQD8laQ
-         lSwA==
-X-Forwarded-Encrypted: i=1; AKwUvBxNqhFYX/Vk675xflSpeS1GvI6LDlFTRgQWw9SfJl9aqYJWAz+W5G6krQXYuMcnuCGhGSBHrQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++n06kKKpCOw9cBt3N40sfN5zLX0S8HPoG4IZiuuwYC6m8vFQot9
-	JDk7MlEgyMRLzh+hI5a10lsz4cQEi2mRm2egwgxDxRef9l8BgcYVF0MEmlqMqI4/gUPhoGROn6S
-	oPQSgZ9FPXpywQkyKiEKq3VBf4AZRpIx7u7l9enI8J6WNnIx8gpkUTRwgAg==
-X-Gm-Gg: AYBFou1tryBP6cexTC54ApXvQf7YFSuflm43Q/lDRDCPa1iRL2jMeMcStmRxcx0uljP
-	54M3de/uu8Xe6dz4vkju3xep+nPvUefxjjbtS98/XJ2FjqCxdknV0X/5Q+bdjdfnKi+NU2NTYTo
-	g7EGXSaJBaNvkh6ewliB7fYo98n4azVo+XYO8o53XnrzEEgne7DGv6Z5sRc2s+WMLc+CDE8snEb
-	co/A1c8cfl8Z34VzS0VzGmWyNu9nixXoG/lMFgXPGH3LrDVsYWxYpwI0pQojJwe3sBwgPYbgduy
-	QkhMQCblVa0IUNXnZLIlXFgvZk1IP7C0+yV1KU0l7B3n4ONc6u8nfceYvQ+Krr7qDQ1D7lP8/3o
-	6fPrmmQmMGEV/M/GR49mt1fGXB8sf8QGIsM44mDeNKAgW7IDyUE7NVB+pbrHnhPu5l1atVjL8sW
-	T6vRarcjjUpU0D
-X-Received: by 2002:a05:6102:4409:b0:789:56eb:39a5 with SMTP id ada2fe7eead31-78a4a836e1amr8346233137.5.1788874136321;
-        Tue, 08 Sep 2026 06:28:56 -0700 (PDT)
-X-Received: by 2002:a05:6102:4409:b0:789:56eb:39a5 with SMTP id ada2fe7eead31-78a4a836e1amr8346200137.5.1788874135747;
-        Tue, 08 Sep 2026 06:28:55 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b6166ed043sm3118098e87.24.2026.09.08.06.28.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2026 06:28:54 -0700 (PDT)
-Date: Tue, 8 Sep 2026 16:28:52 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 00/12] iommu: qcom_iommu: implement support for instances
- on MSM8974
-Message-ID: <ssleznoahzs4wgf5irjiagss2rjwl2s2jjnqrrnlpp74rdkgfs@au6x63ykyjfs>
-References: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com>
- <DKL6P7G0WTM7.UJ6KZERQZDFK@fairphone.com>
- <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz>
- <DKX384NK76OS.3NNOMAH72PV2P@fairphone.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="c9iTDyPu"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=TQ+ziJoER+39lQTUclGFCpPXfXNJaKstfmjsVfynJIjnI0jIOshTpapJaTbYzFWjs4WObvuRjIXnzCN5h3zY1rllN6Y4nWg9S0wF5njwG5QxVAieIuds0vif5ZQNKN+n25Y/CBdqR/pirMHb7aaGnGnYieEt3mNCi5CjMZs5IBWrXxSGuBEx0CBiHwwKXwAMIrV7L8hkq8xdeATmmAR095Nq4ZRTJP/N8q0RplR/c8SoiRrlgiXO7ZnjgXbRnQ4z0Zd0hdrRrvpNJbFvYyrds8HmZQnFy8KruCjudzWP/NLEydJKHJj3xPa1WzyCdJy6bjZ/isfW7/SkU36Q1/XhUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qqfBQ/1kIGf2OQJGA5YSgvBA25uBCnSoGvzoZcCAdGQ=;
+ b=jn3WEFAPnETSBXvJX/3rSBKk98UkoFz+d/f0ySYTQnAYGcxnY+NP+/uEv9EePOoFhB/Klk2AACebHIncEqatP61mqmfNUHonP8vLdlsz4MjHZ6CG/WgDhJLLXhIipBbUgcSrmJEFooSStYNd6FPRZKOUUzUA1VzQzAnpo04kzdAwF4h4meHXEedSTttscpvQiRThA49igUe7e2kf+zkAZ/O9i45gwYZynU5TdOLeYs8Kx2ahJRtv7miEHVSYiZa1LaUlP7C1nj/KwFoBKzZrtLzmXp5yGhjoX8XUSPeTHQpeXux6iXiSCSJX1mSNIMx0aWJGGcftWa3Bfi0rwlytYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qqfBQ/1kIGf2OQJGA5YSgvBA25uBCnSoGvzoZcCAdGQ=;
+ b=c9iTDyPuhC/nms3RXfApcelR4xNBPxyD78Hd55jTNlrekV3KHN8L7BphuKsFWlkqt0+b/LcC7OkzNtIM4If1tPS0YU9aUvIirUyc08xFTTPJYM/AQGH2+svoi1WSUFAOkBTUjQG2Wv9fzDZwnWPatflOliJVS7u5Z5JImemCxR+ZMo4P8R90vIesCvJU81i3rhPRlIZOYZlSWu3jGFF+aynUl/VHv4BabPDG8Pjj2HzVAr/UMKnh3pZd+KxTBZRfn/ZalAWs1mGiqTvGzPI333SwDuu/0UkWPJ1/KRs0t87FkvDwuqDtr1mjXx0zs2/yrv/Kg0/50Y2ZW7mp6Th7gw==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by CH9PR02MB12104.namprd02.prod.outlook.com (2603:10b6:610:355::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.7; Tue, 8 Sep 2026
+ 14:24:56 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%3]) with mapi id 15.21.0382.014; Tue, 8 Sep 2026
+ 14:24:56 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, "x86@kernel.org"
+	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+CC: Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski
+	<luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner
+	<tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+	<bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Mostafa Saleh <smostafa@google.com>,
+	"Alexander.Deucher@amd.com" <Alexander.Deucher@amd.com>,
+	"Thomas.Lendacky@amd.com" <Thomas.Lendacky@amd.com>, "Vasant.Hegde@amd.com"
+	<Vasant.Hegde@amd.com>, Timo Witte <timo.witte@gmail.com>
+Subject: RE: [PATCH] x86/mm: Don't force unencrypted DMA for IOMMU-backed
+ devices
+Thread-Topic: [PATCH] x86/mm: Don't force unencrypted DMA for IOMMU-backed
+ devices
+Thread-Index: AQIm1+hGQddDw3OG1Q7D/TKUOjO/e7YxizUg
+Date: Tue, 8 Sep 2026 14:24:56 +0000
+Message-ID:
+ <SN6PR02MB41571F1762544B6157C475BFD4B12@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260908113232.247457-1-aneesh.kumar@kernel.org>
+In-Reply-To: <20260908113232.247457-1-aneesh.kumar@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CH9PR02MB12104:EE_
+x-ms-office365-filtering-correlation-id: a0858d92-1fe2-492f-8d44-08df0db4f4e6
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|13091999003|4140399003|15080799012|25010399006|31061999003|8060799015|19110799012|41001999006|8062599012|2604032031799003|12121999013|37011999003|51005399006|24021099003|55001999006|40105399003|1602099012|10035399007|2607281247196008|102099032|440099028|4302099013|3412199025;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?nfFzsjeohobBuAWIm4ZLi4ZJxL/adUUS8fPGWfGleuhhPm/eYM6RJXnDH3O8?=
+ =?us-ascii?Q?PAjeYZNIWTvmkqWmCfQK8qveGiMDBF5zTLjr3ge6ZsKxSfCuB3aqxaIT8FJ8?=
+ =?us-ascii?Q?UDMBmqOpWaeHWDBIsovIo00MiCR+R/rU1cbfrWWSccF6ewnxHuRKuh2+T1wH?=
+ =?us-ascii?Q?yUTkVgfHA/8z1X9HOc+dGgwsvnUyskNrt9pDe/5HJoyRwhAggWPIr7gXOUjh?=
+ =?us-ascii?Q?D/0TjzAuWttNu5lpKfdd/uefe5VVXn8LlIFQjVM7IXRE6H/F3+LekPVrzOZe?=
+ =?us-ascii?Q?6JB6yBRH7YnjznFgrfZjiirsCIl7bkxOZonohH9G30TfpRbFSwPH5K9jHU3C?=
+ =?us-ascii?Q?9L+KCYeyRSy3+viJaCP6b9maFjkUeuLlJ/l8NKzlKCoNxfO7GLTk/PyyjZ+4?=
+ =?us-ascii?Q?hs2tnG6QZ8uNGlTI+LzLw3X65KaTGmfbrVAD7vI7im/oTl4S1xGe2vi1cqh9?=
+ =?us-ascii?Q?NpSxJzuvN4cNtVVQj82IKLyuRnL53FIgz2LsLMT2S2uLa/R05TESDXW2lVqQ?=
+ =?us-ascii?Q?OpJMiNvS9iQoqBMLqr3z4LQbiv4d4mScHS59Z8bN9fyEq/T+UDWknhT8vVg5?=
+ =?us-ascii?Q?arW/PIl07BLubaWTb+CDbjV9P8aH/ZGojwyFAY9iSKEXY7/yDeNztig0rATH?=
+ =?us-ascii?Q?ejvSo+Lf2S/8v9ZEJgXgCn1/FaYNXyDD1d9/oDPg2IxEDDv5v3NV7DMQMiC/?=
+ =?us-ascii?Q?MkusPXqoeh/Q/1q6AMXQXon3pgvF5Toh5q9MP5sMN70lGL9PzLcnW4TVIxtJ?=
+ =?us-ascii?Q?vKL/ymj/bDewW2kvnP9rAkDKci2Zuabir1h/ero5RD5fFaenjzgghYeT8Umd?=
+ =?us-ascii?Q?vemDEADZ0IfuKkWpK1E3L2k4K/UEIM1Go4jJFmySvjnAW9LrkKNqpbQLn9jd?=
+ =?us-ascii?Q?Rcw/Cr4xCt2pLLJI9H/CYEhl0DBqlfGhdRiINSkOnPpY2SupAsP6hOBfzyUP?=
+ =?us-ascii?Q?/MdN3gD6vbJCaVogKZiC3qGgUiHyVjmW4u9JJly4pT/mSOwz1N6UM2Cw8b3Z?=
+ =?us-ascii?Q?OQ/bp+WGeuhi2aVjaVO697nYZEvcEDLaY+vdTYblHzWYpQDkd/OQYI1tSBxS?=
+ =?us-ascii?Q?8y2kFtTm2heQRvu2LG+0COjOBiM9H43eQPPser4YC93K0aAXLYMq+HvUwube?=
+ =?us-ascii?Q?J4RlvOgtIFBxNJuZcou8Z7uHqO4pwNlP1hhToLeMLQQFbA2Og7MkBzUq05w2?=
+ =?us-ascii?Q?xkiUaz8k3RDvjHlqD/8BWu9ddhyJ5w9rRtQ7Akvcs1YRNOUGAIxjpxmDzq4?=
+ =?us-ascii?Q?=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?bKDS5mVikrBI3r8WJy35WgB3wKhiu5GWjY+K988g9dAmNQ9bb0n40D8tsyYQ?=
+ =?us-ascii?Q?8XmSPGfzaFdUTUMMHAz8xqhZRVYldjASGbwOLwnc3peGszXs8qaRzBDdqCmu?=
+ =?us-ascii?Q?k+vUJu+RElA/nIf847OD6oQkQ92rU3dQR7zwtRY3K5e9ba2k20QgRbvuFe3K?=
+ =?us-ascii?Q?a4vFbZzs7HjKTvph69LrLashbyn0n4tbxmzjmqQp0o5E6cDbGJ+cpCqZOkeS?=
+ =?us-ascii?Q?HEsGrvlhNG/evs5NeIl2jKhTyqg+/ycARBKzE8T52Ie6pNRSHd8wVK9g93fr?=
+ =?us-ascii?Q?cqB+FkkolFwwsk6cSEuXpQsmaNoDNCv3tOqF2cMe5ZlWgGNn26gQf+ZNnRGx?=
+ =?us-ascii?Q?V/obAWQrfNwJFrERw90Yh8wbMkvhlEJIulPxre9r0f7GNxfAa7b+lssvenNw?=
+ =?us-ascii?Q?IbazFkXhts0cwWlQZIqG6MHU5a8Q3scov5TeXUOaH299ZkpGxgQG1qSZ0rhF?=
+ =?us-ascii?Q?5k+t0kzpvaZtTa4PXi+xmUjY8BwXFopVit2dEC1wBSkX5xSywPjleQh2tGgS?=
+ =?us-ascii?Q?rAsuXtBfFKrlY0jsc7lolWED+/AmLuEZuymeSOjHEayl7hlJTnj05S4ckXSQ?=
+ =?us-ascii?Q?k6hwZxLcRCGGnIOEQe1rncr9o8/fW0OF0GcqRrGM3oxN5sDcbB/h79yK8aAA?=
+ =?us-ascii?Q?LPUDpUpOK+qeMamsVDZVV0vj4mXQYUaQKQt/tqUiJnjy4RyRppDnQD0x2bFy?=
+ =?us-ascii?Q?hdu2LIL9mzSmnKFJ4amJtLjhWWDs2/w9twWAKVLg9IzUubpoNcqhKQB1PYXE?=
+ =?us-ascii?Q?RGWWjz+grQsFKMzdQYmsRKkhpx7e1WUAgcG1I3FF3NB0E4QtnIDNVhiWj/Oz?=
+ =?us-ascii?Q?ePWGx6SCWhFENlha+fIW/MxnQUSCtlrgJS7O/+N+uZV73OeFsh2SkPcnzPrE?=
+ =?us-ascii?Q?Sv/68TbfM6rP2GUeTS2i1AXfkcVMcZECVSM0M7cFavshXZin3SaO8tmyIPKm?=
+ =?us-ascii?Q?l+7TH9Q6zbkX10eMJxwItu2+7er0hZtq28xWV7U+P7NUSdWwWi7onMlRyNyk?=
+ =?us-ascii?Q?9d0SFmGPe5Ma9kFYRo1qpnSk0syvw4+qUS9Ev4VkZx22+ik/jlHveK7xl0/c?=
+ =?us-ascii?Q?a7UkBu7qUjQMGNfOtjVrmcvA4Cmw7/wncjOHsYvglHz3jk+BH1LQspgEgyd3?=
+ =?us-ascii?Q?cW+Ih25Jwf19jfrwpekhvs7eaFIjqi0QZZ8i3zeN14oOV+f3aYer/0pIpZSS?=
+ =?us-ascii?Q?1Fe32AoIbNVkYZunpb9456SOgJVA2C+tmfRQRd9GKceTQmgCBjis7gW1kJoO?=
+ =?us-ascii?Q?Gt6POZaQgFZoPiUY8gnJJliGCHYJxKrLzw/MeXU10h8dNRz1/Rckwqo9NWDO?=
+ =?us-ascii?Q?FsdjVQ2FCCnj1iLSRVDnH4QjFQqqM+7pEOG3APzgpVdrLwjfnUHF5caputik?=
+ =?us-ascii?Q?RB8oPbo=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DKX384NK76OS.3NNOMAH72PV2P@fairphone.com>
-X-Authority-Analysis: v=2.4 cv=UfRhjqSN c=1 sm=1 tr=0 ts=6aa00d99 cx=c_pps
- a=ULNsgckmlI/WJG3HAyAuOQ==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22 a=bC-a23v3AAAA:8
- a=EUspDBNiAAAA:8 a=uEsHIfJi1mZuTdkiAjUA:9 a=CjuIK1q_8ugA:10
- a=1WsBpfsz9X-RYQiigVTh:22 a=FO4_E8m0qiDe52t0p3_H:22
-X-Proofpoint-ORIG-GUID: bCF6GC6koSyx8JOs0kxkQbwSc7Diulwj
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA4MDE0NCBTYWx0ZWRfX+JJn/2Zy5kqj
- YP4T6j/FzBm+86GPNFRIW3UoyWHTrTDTDWKmdEGkxFxGSNCGK9OajHtlEe/PeGS2WxmfJZYycIB
- WV9pvnA6VrhOvglzr779RTCUh3FyxIRs83OTTH02Q/J/ZjUx0YAPsdttzHyQR1G/yTMPs+4Ij7d
- x1tO9lmS4kwukBPO8U5tbDWgCgeJ8jf2XQVHhq1qEIbZBgk3/tMhobZo1wqBR2e0UFw5FM/6nLc
- oZXvtQPbIOJpS+GCh0lEfGSg2z/8ALceBh/oOynSmna/9MwdoignDyaD4Tz05pp1IuZzXMr1laA
- +VMzm4VGnEJzr4aDZL9yviqlmPQr1D3Lki/iC6a1qFZ8gz2Dki24k9xV67rCS733HA6SV48nl0C
- OUGn/1+8M6PkQOVNgJ1oZqVIAZHsaRjwA4ld4sNxPB436vXZF+QBit11SMELpPC1NOMRcvJOF9y
- r0omCkoUZZnrxMiXr+A==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA4MDE0NCBTYWx0ZWRfXwYxR/P2Z8216
- To/GhNSrEiNoi/Xzt2gxJc9VpDKkagrug1BDwRC9aMfz1K4GusFmhnYN61M6OF1sN0oTEF0wACt
- 8qjj0ITTXfctWANT9p1G+VBkoU+ugEY=
-X-Proofpoint-GUID: bCF6GC6koSyx8JOs0kxkQbwSc7Diulwj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-08_02,2026-09-08_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 adultscore=0 clxscore=1015 phishscore=0 suspectscore=0
- spamscore=0 bulkscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2609080144
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0858d92-1fe2-492f-8d44-08df0db4f4e6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2026 14:24:56.3429
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH9PR02MB12104
 
-On Mon, Aug 24, 2026 at 12:04:57PM +0200, Luca Weiss wrote:
-> Hi Dmitry,
-> 
-> On Tue Aug 11, 2026 at 2:43 PM CEST, Dmitry Baryshkov wrote:
-> > On Mon, Aug 10, 2026 at 12:16:19PM +0200, Luca Weiss wrote:
-> >> Hi Dmitry,
-> >> 
-> >> Many thanks for working on this and sending this patch series!
-> >> 
-> >> On Sun Aug 9, 2026 at 10:15 PM CEST, Dmitry Baryshkov wrote:
-> >> > Qualcomm MSM8974 platform has five SMMU instances, used by display, GPU,
-> >> > Venus, VFE (camera) and JPEG encoder. Each of them follows ARM SMMU v1
-> >> > spec, however they differ from other Qualcomm platforms in the
-> >> > implementation-specific registers and also in interaction with TZ.
-> >> > Venus, MDP and VFE SMMUs are secured and require programming only of
-> >> > CBs, while GPU and JPEG require full programming.
-> >> >
-> >> > This series skips IOMMUs which can't be tested right now (VFE and JPEG),
-> >> > and adds only MDP, GPU and Venus (although untested, it is required for
-> >> > display to work) SMMU instances.
-> >> 
-> >> I do have a patch series (sent years ago to the mailing lists as well)
-> >> for CAMSS so I can definitely test this in the future.
-> >
-> > Ok, let's land these first, unless VFE IOMMU blocks display on your
-> > platform (Venus was blocking display on APQ8074 DragonBoard).
-> >
-> >> > Note, to get display to work properly one fix is necessary, [1]
-> >> >
-> >> > [1] https://patch.msgid.link/20260809-msm8974-mmcc-fix-v1-1-50f2dcf18d2e@oss.qualcomm.com
-> >> 
-> >> I've applied this series on v7.2-rc7, with the extra commits between
-> >> that and linux-next for qcom_iommu.c backported so that your series
-> >> applies without conflicts.
-> >> 
-> >> So far I'm stuck with the GPU not being able to probe, adding some
-> >> printk's shows that in msm_iommu_new() the call for
-> >> iommu_attach_device() is failing.
-> >> 
-> >> [    5.971154] msm_mdp fd900100.display-controller: failed to load adreno gpu
-> >> [    5.972991] msm_mdp fd900100.display-controller: failed to bind fdb00000.gpu (ops a3xx_ops [msm]): -16
-> >> [    5.974073] msm_mdp fd900100.display-controller: adev bind failed: -16
-> >> [    5.974152] panel-s6d6fa1 fd922800.dsi.0: error -EBUSY: Failed to attach to DSI host
-> >> [    5.974230] panel-s6d6fa1 fd922800.dsi.0: probe with driver panel-s6d6fa1 failed with error -16
-> >
-> > See the patch [1], it's picked up for 7.3
-> 
-> I missed replying to you, with this patch the display lights up again!
-> 
-> Unfortunately the GPU still seems to have issues, I don't have a log
-> right now (I think even SSH was dropping then with a bunch of log lines
-> appearing in kernel log on screen). I assume kmscube + more complex
-> workloads worked fine for you?
+From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org> Sent: Tuesday, Septe=
+mber 8, 2026 4:33 AM
 
-I was mostly using kmscube, but I can try running the CTS once I get
-back to it, sorry for the delays.
+>=20
+> Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select
+> them via attrs") exposed an issue with force_dma_unencrypted() on
+> systems using host memory encryption.
+>=20
+> force_dma_unencrypted() checks whether the device DMA mask can address
+> the encryption bit and, if not, requires DMA allocations to use
+> unencrypted memory. However, this check is not applicable when the
+> device is using the IOMMU. In that case, the device DMA mask constrains
+> the IOVA seen by the device, not the backing physical address, so it
+> does not need to cover the C-bit.
+>=20
+> This currently causes dma_alloc_attrs() to set
+> __DMA_ATTR_ALLOC_CC_SHARED for such devices. iommu_dma_alloc() does not
+> support that attribute and rejects the allocation, causing DMA
+> allocations to fail.
+>=20
+> Do not force DMA allocations to be unencrypted when the device is using
+> the IOMMU. This allows the IOMMU to map the encrypted physical pages as
+> before and avoids incorrectly requesting CC_SHARED allocations.
+>=20
+> Fixes: 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select t=
+hem via attrs")
+> Reported-by: Timo Witte <timo.witte@gmail.com>
+> Link: https://lore.kernel.org/all/CANB4YXR7h8V5Xp=3DMXVZeSdvw9UiriSagp=3D=
+E+ju5RRDNghoPHLQ@mail.gmail.com
 
--- 
-With best wishes
-Dmitry
+There seems to be something wrong with this link. Just viewing the
+email thread in lore.kernel.org shows a [not found] error in the thread.
+
+Michael
+
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>  arch/x86/mm/mem_encrypt.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
