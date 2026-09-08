@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF851D5CFB;
-	Tue,  8 Sep 2026 19:40:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E65E548579;
+	Tue,  8 Sep 2026 19:56:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788896454; cv=none; b=s2VBCrWg9o4Hd07ycU0HsN5lceZ3NvjMoLtlP34wXK3tl4Bej24RPw91UmAO0fmztC6wRE9GXo7KjY3JED/IOj/62umO9TXMLj+1REQBTWjMssk743sfXMqqwOf4bITuqdBN7z3Wv3iZxhyBFb3gsTb1+kinpFnKPAt4Crd0yMI=
+	t=1788897398; cv=none; b=CpY8iogyAuRY7zaVO68WBiH1p0naML+hfir3yu9dZAitoubPu+pY7weBeN9nTKUdGt/d4gtJvwkbjoxIG2gtZc2JKtvMaj7AXyus0jv9t2345//PzSnPk+6Hy5mf8hB+/ALwDZTuxdYZrCz8noJB1BRuaWs98o0aN2UC00JRewI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788896454; c=relaxed/simple;
-	bh=4VYHrutiMEH1I6r/JQfYGA3zdT7OLpPQnZhFeeRaj68=;
+	s=arc-20240116; t=1788897398; c=relaxed/simple;
+	bh=dhRmcjWikcj4PTT48pa64UM3Z3XiVBej7nBKNxMNLSk=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=de5TCXDvU9l1PJv4Jp2VKhc+ifYmeQJr9vo3ssOQy0EAPg+0FU7qjiGpBwTyX76WSQGnHTIp7YqtATOgBZfrNaDhPkBGikMVcHj5sD5uXSDZhYh7XJZxltFZD1VmsFTC2woTP0VNxIW2Pmcl9/ckB4IqIjq/WEs8veSs3R15UmQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GHJuzKov; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=g+44SO6A6hT6AfdP2k6ILSlAzRWK9PC9Lxam1hSUQlwhoJhSCR7ayQnmyUqNwvR2+LRpN5XVZ4uR/mgKFxihNCWggDqtpAonTwzwTegjJO8YTVcWFObPdqG3kAJCk6CEeYcYzMyKcyIzB1Jg/hi8TZYgbNPj/sjAp0JXSJlOB4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ei5MZjQh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GHJuzKov"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C68671F00A3A;
-	Tue,  8 Sep 2026 19:40:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ei5MZjQh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7725C1F00A3A;
+	Tue,  8 Sep 2026 19:56:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788896452;
-	bh=3SmaP2tfLo8P8qtLQeaRMf/6n6ZlUEcUp+fVq7MKCr4=;
+	s=k20260515; t=1788897397;
+	bh=vXhWQw22vhXAQ2gomRzDVD1jyGqiKml9QCCpuAJzC6k=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=GHJuzKoviIlcBoSUX8/bjnpkTnczaGSKZszt3GgXggayzktfr5jLR+6enahj4Qj0E
-	 OmkXcUFPCucE58VGivtjTT5/8Tt/AaOaZQKCqcdP+1fhOwWIJldZBop7m4K31RjZEv
-	 DHDF/SxfqXSriM0jif5tAUVI2qjnTlO7HY8oABbJapcFmLxtossJ9Hgl/7qMiexSC3
-	 gEjK8bqDeb8PQ86l6yTSh7wBLcBFaYIBVLhyYfxuHouMLBr4LKYn0C0+99+uhMK3CC
-	 UAdYCfZ3PFCHOSH2Vke/Ggp0YEWwuCGLcIPkhcYbSyQhh47/zCkClrA6hB9OfMpP/e
-	 mamdEEcu26zHA==
+	b=ei5MZjQhnv1BJZ4J4jb+4yGVs4QfDIeXmSd/v+LcQAbS04thRvfCeILdLXHdDOo5l
+	 cB1cEzL4ZurUh5asediffjsprVN3X6WBt7/6JezEycGc5SvgBN5ywWYRCYJAobIwGR
+	 EvwzGcSvoLr74k8E3DDlGgJ9Ys+xyEBEfTdRxVEnBoz+H5WdPhhL8ID5XsK4kGv4XS
+	 p3f1JVoI+nWUkaHlynnHrITNae9llhsy44HndAPOvYcwjMWk221vRFffnsFXDEvoG7
+	 UEgpkq7u2iC6Lhz6GkyhOJYm2R66XREDjqkp6y6YLdWa0RuKxJPfKmX2S/sK3OkxxB
+	 ggHUaEijiRGYg==
 From: Thomas Gleixner <tglx@kernel.org>
 To: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin
@@ -35,15 +35,13 @@ Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin
  linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman
  <gregkh@linuxfoundation.org>, rafael@kernel.org, Danilo Krummrich
  <dakr@kernel.org>, driver-core@lists.linux.dev, Pranjal Shrivastava
- <praan@google.com>, Jason Gunthorpe <jgg@nvidia.com>, Marc Zyngier
- <maz@kernel.org>
-Subject: Re: [PATCH v10 07/15] platform-msi: Introduce
- platform_device_msi_rewrite()
-In-Reply-To: <20260908171712.356645-8-praan@google.com>
+ <praan@google.com>
+Subject: Re: [PATCH v10 08/15] iommu/arm-smmu-v3: Cache and restore MSI config
+In-Reply-To: <20260908171712.356645-9-praan@google.com>
 References: <20260908171712.356645-1-praan@google.com>
- <20260908171712.356645-8-praan@google.com>
-Date: Tue, 08 Sep 2026 21:40:49 +0200
-Message-ID: <87se3j1qgu.ffs@fw13>
+ <20260908171712.356645-9-praan@google.com>
+Date: Tue, 08 Sep 2026 21:56:33 +0200
+Message-ID: <87pkyn1pqm.ffs@fw13>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,129 +51,66 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 On Tue, Sep 08 2026 at 17:17, Pranjal Shrivastava wrote:
-
-...
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason. You really should know better by now :(
-
-> +/**
-> + * platform_device_msi_rewrite - Rewrite the MSI config for a platform device
-> + * @dev:		The device for which to rewrite interrupt
-> + * @irq:		The interrupt number to be rewritten.
-> + * @write_msi_msg:	Callback to write the interrupt message for @dev
-> + *
-> + * Rewrites the cached MSI message for a platform device.
-> + *
-> + * Note: Platform MSI does not automatically cache composed messages. The caller's
-> + * @write_msi_msg callback is expected to cache the message (e.g. into desc->msg)
-> + * during initial configuration so it can be rewritten on resume.
-> + */
-> +void platform_device_msi_rewrite(struct device *dev, unsigned int irq,
-> +				 irq_write_msi_msg_t write_msi_msg)
-
-Why is this a platform device specific function and why does this need to
-hand in the write_msi_msg() callback, which is already known through the
-interrupt descriptor and the top level interrupt chip?
-
-I spent an awful lot of time and effort to get rid of these platform MSI
-layering violations and now you start adding the same mess again.
-
-Not going to happen.
-
+> +static void __maybe_unused arm_smmu_resume_msis(struct arm_smmu_device *smmu)
 > +{
-> +	struct msi_desc *desc;
-> +	struct msi_msg msg;
+> +	/* Clear the MSI address regs as they reset to unknown value */
+> +	writeq_relaxed(0, smmu->base + ARM_SMMU_GERROR_IRQ_CFG0);
+> +	writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
 > +
-> +	if (!irq || !write_msi_msg)
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +		writeq_relaxed(0, smmu->base + ARM_SMMU_PRIQ_IRQ_CFG0);
+> +
+> +	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
+> +		return;
+> +
+> +	if (!smmu->dev->msi.domain) {
+> +		dev_err(smmu->dev, "msi_domain absent during resume\n");
+> +		smmu->features &= ~ARM_SMMU_FEAT_MSI;
 > +		return;
 
-Oh well.
+If dev->msi.domain == NULL then arm_smmu_setup_msis() already cleared
+the MSI feature bit. Has it magically been set again or does resume run
+before init or does dev->msi.domain magically disappear during suspend?
 
-> +	desc = irq_get_msi_desc(irq);
-> +	if (!desc) {
-> +		dev_err(dev, "Failed to get MSI descriptor for irq %u\n", irq);
-> +		return;
-> +	}
+I'm all for defensive programming, but this is voodoo and not structured
+defense.
 
-Doing this without having the underlying interrupt descriptor locked is
-a recipe for an undebuggable disaster waiting to happen. It might be
-"safe" in the context you are calling it but it's absolutely not safe in
-general.
+Aside of that dev->msi.domain is the patently wrong condition. For
+devices which instantiate a MSI device domain dev->msi.domain points to
+the MSI parent domain and not to the actual relevant device domain.
 
-> +	__get_cached_msi_msg(desc, &msg);
-> +	if (!msg.address_hi && !msg.address_lo) {
-> +		dev_warn(dev, "No cached MSI message found for irq %u\n", irq);
+You can't query that easily by chasing pointers (for a reason), but
+there is no point to do so. See below and the patch I sent you.
 
-That's just wrong. A message with a zero address is valid, e.g. when an
-interrupt is shut down. So if there is random crap after resume in the
-message store and the interrupt is valid, but not requested, then the
-cached message still has to be written even if it is zero.
+> +	platform_device_msi_rewrite(smmu->dev, smmu->gerr_irq, arm_smmu_write_msi_msg);
+> +	platform_device_msi_rewrite(smmu->dev, smmu->evtq.q.irq, arm_smmu_write_msi_msg);
+> +
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +		platform_device_msi_rewrite(smmu->dev, smmu->priq.q.irq, arm_smmu_write_msi_msg);
 
-So this want's to be a function in the MSI core code. Also this is not a
-per interrupt problem it is obviously a per device domain problem.
-Simply because the device provides the message store for all MSI interrupts
-which originate from that same device and therefore _all_ MSI interrupts
-are affected by that, no?
+And that's exactly the point I made about sprinkling this stuff all over
+the place and thereby violating all layering rules.
 
-So this all can be solved at the device domain level without sprinkling
-per interrupt invocations including conditionals all over the place.
+Done correctly this whole function boils down to:
 
-Something like the completely untested below should just work.
+static void __maybe_unused arm_smmu_resume_msis(struct arm_smmu_device *smmu)
+{
+	/* Clear the MSI address regs as they reset to unknown value */
+	writeq_relaxed(0, smmu->base + ARM_SMMU_GERROR_IRQ_CFG0);
+	writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
+
+	if (smmu->features & ARM_SMMU_FEAT_PRI)
+		writeq_relaxed(0, smmu->base + ARM_SMMU_PRIQ_IRQ_CFG0);
+
+        msi_device_domain_restore_msi_msgs(smmu->dev, 0);
+}
+
+It just works simply because the function returns early when there is no
+domain or the domain is not a MSI device domain, which is correct
+because there is nothing to do when nothing is set up.
+
+But that results in too comprehensible code I fear.
 
 Thanks,
 
         tglx
----
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -669,6 +669,8 @@ void msi_domain_free_irqs_all(struct dev
- 
- struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain);
- 
-+void msi_device_domain_restore_msi_msgs(struct device *dev, unsigned int domid);
-+
- /* Per device platform MSI */
- int platform_device_msi_init_and_alloc_irqs(struct device *dev, unsigned int nvec,
- 					    irq_write_msi_msg_t write_msi_msg);
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -1775,3 +1775,34 @@ bool msi_device_has_isolated_msi(struct
- 	return arch_is_isolated_msi();
- }
- EXPORT_SYMBOL_GPL(msi_device_has_isolated_msi);
-+
-+void msi_device_domain_restore_msi_msgs(struct device *dev, unsigned int domid)
-+{
-+	if (!dev->msi.data)
-+		return;
-+
-+	guard(msi_descs_lock)(dev);
-+	struct irq_domain *domain = msi_get_device_domain(dev, domid);
-+
-+	if (!domain || !irq_domain_is_msi_device(domain))
-+		return;
-+
-+	struct xarray *xa = &dev->msi.data->__domains[domid].store;
-+	struct msi_domain_info *info = domain->host_data;
-+	struct msi_desc *msi_desc;
-+	unsigned long idx;
-+
-+	xa_for_each_range(xa, idx, msi_desc, 0, info->hwsize) {
-+		/* Only handle MSI entries which have an interrupt associated */
-+		if (!msi_desc_match(msi_desc, MSI_DESC_ASSOCIATED))
-+			continue;
-+
-+		scoped_irqdesc_get_and_lock(msi_desc->irq, 0) {
-+			struct irq_data *data = irq_desc_get_irq_data(scoped_irqdesc);
-+			struct msi_msg msg = msi_desc->msg;
-+
-+			if (data->chip)
-+				irq_chip_write_msi_msg(data, &msg);
-+		}
-+	}
-+}
-
-
-
-
