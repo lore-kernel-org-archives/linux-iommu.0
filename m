@@ -1,56 +1,56 @@
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772385908DE
-	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 17:17:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 914755908DE
+	for <iommu@lists.linux.dev>; Tue,  8 Sep 2026 17:17:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788887860; cv=none; b=tquBwHOIjdroNIZRwUZcxDZQO92kf21Y11jmFXQiZsaE2q2DbVlIvs6T+xKwyAwzXWRcYWqLX3qTuT7bgn2ld4yg+vtFB8treIj64ne+yOeBD1gYHRbp1EgvAu8TT8KEXdWuAA51OHGyj4huJmogUJ6RWOssB18gi2wpArSzs4o=
+	t=1788887863; cv=none; b=W8tnftxZ5PzwAvVrCp4uyoy+3IwbWQ8DTu1ZLAXIVWymYWkNQDRSpDQOYgraHdIj5YksVe+wBadfUdiiFBV7LE+3K18seS91rcmkCvZOfkCnx74B480rw6btx+kbG3P+It/LaPJS8ewYycwQVMl+RruZ03w61NLPgRy6tkswXmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788887860; c=relaxed/simple;
-	bh=3ks5V6Ofdruc8FIg084YSeYPdHUEOsTEhfR4gWyXmvs=;
+	s=arc-20240116; t=1788887863; c=relaxed/simple;
+	bh=zM+tCTjupWWSNDc0JdOOTYJEJ+KiPBNCIv/k9bHAYd8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=T6mDOOa6bmdBf8LnlZ3UH6Eq52nG1RV8Lfc47PZL9pL0dvmKaCFpFixGaMSLiDDNT1csw7i8fr7tT0yDWQEX23JkUDnZid8RTfyTZKW6uJ+8SoH3BmgRoyBcV6+viXDayb3KjPsqKS/7gSgZ+SB0wXxF2RCekoYbHUXxURs+tWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TPopIQiK; arc=none smtp.client-ip=209.85.210.197
+	 To:Cc:Content-Type; b=Toe02YqSp9fnlybrSh7VeaXFYUV6UAOP1ppVCUTrwQhyErcGimyKG8JJ7kw5R08hCvlJLQ7j+FlUSh5WE9zV3kmBUN82F9kCnTfuKNTJ63zNGGCdC9pfzTjbCbLHHD+H9ZDS5XbNYzBz+BbRcyTc5YY0bOGFwwap0AVLshYeH5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TBjklQt1; arc=none smtp.client-ip=209.85.216.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TPopIQiK"
-Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-85f3a39f3beso6414161b3a.0
-        for <iommu@lists.linux.dev>; Tue, 08 Sep 2026 10:17:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TBjklQt1"
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-396638f9a18so3582031a91.2
+        for <iommu@lists.linux.dev>; Tue, 08 Sep 2026 10:17:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788887859; x=1789492659; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1788887861; x=1789492661; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=J/jv1ovVCNeCubLupVeuht7eNIRLVbkvYJqOaymhU6s=;
-        b=TPopIQiKw4+R/tamrO9iwugtO2a5oQuf6W0LGA89Va5JmZ6sYL4tOaiGhByk3QmW7k
-         GDXDMGiBSYaoP7ms3BD4fpJvhQSLZig7i6WDTY4CUzTJ+Dw5NhIkAili1Jc8aQVdveC0
-         iiHcT0k1WmzDK7I2F6Vvju/x4eePLjkeNzBRztqguT6tmtdJZHM/0jh/qtcmutCCOkGq
-         YuIUEvnkL5r9+vnq1wNNV17PS4ULlxavODTN4DvF9cStAa1PMNt5S4sK2P5fBoXBV0FZ
-         Wc0+K9BPOtf3pT3fHaWsL2LxEJyIV7XCrh6X2t+Py1o1obY/HEaLZQrS+MXF2Eugaa3Z
-         SWHA==
+        bh=uONWWaSJb8FTHdgaUf0CJlqohoMDMyLvCC6od1SxwCM=;
+        b=TBjklQt1UJ/2OrKeY4CNdjMxh3SsZb0Nb/6sFY7yHyvLFlk6vPUi5nS71OwW/3l0lY
+         y/w9S/6PFpEnub/UpaLSNIHk8PTVA6fuUUqUFFlK0116i7w81bDymgFnV/e1TEVbqbFW
+         nWR+8uJtbSukXcanUDcjtHNViESNlnPpD1ZvkfL6q3sfvI5IeUtEHhKC7YxrYNxNq8r/
+         tRsuJxtog0aiqf3uPvJHsNwaB8aSo2sU/aaoDkzsXkUhE8k8UUv1aCkJ9i7JWBaPnUGR
+         cDRjN1vnSFSUThuqcHkkMUmQhko1XLrA+8rVY3SL40ih4ZWNFysJUZov/l6mkaKibgNY
+         XsCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788887859; x=1789492659;
+        d=1e100.net; s=20251104; t=1788887861; x=1789492661;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=J/jv1ovVCNeCubLupVeuht7eNIRLVbkvYJqOaymhU6s=;
-        b=PH3zEaIvgRgiEVwJWjz0FEjlsmDZavxFaitSkbQo9UPA3iIlbAb70s6rN5SEuG/GmY
-         SZfK/Ab1z7SV65xbvW6Sn00JB2VDVUVlwxC+vwV6xC4HqgsFV/+w72RtgKi2nX5cUrVJ
-         SGn0hoojIzjWYb/j/kOQVov2iyUvEIHyK9FP2xoeP6/FyjQopuoI1FI0PICbjIRLEKEx
-         WoTubnZYTT8EJyGnMnYJJ6seCDglgDOHXDACrOPJKWun2wtjuQAJv0A+9mMRDQjAtouz
-         8IwfoGOhM1FaFDsdi3XlndLLVKQm96X/Gfk4mZYmaFtEX/9IMhLmhwOCgDnz4yNNhEs4
-         9OKQ==
-X-Gm-Message-State: AFuF++m3cPK6HN2PGXx/Ey9hcPyZy0R1e7FaIMm0GMyX6QHI5rKS9FqR
-	sOphyVYscIUgRtOaFnUobheUt3UtwSM65Qh7/uQGZuGJ+qHSh6aXVdwhNfddOjDCkHel0dkZYmq
-	vgg2tFjOnog89i4HriKS6VaBudki3RJsRMm/ZyOIl42BQuud+MXCkgJJ9kpPfDFM+v6KgR8Fxdk
-	A6f87R4xoSf63ONqjQwBHPwPYEGkl5Ww==
-X-Received: from pfbce7.prod.google.com ([2002:a05:6a00:2a07:b0:866:a8ba:a59])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:1950:b0:85c:3922:25d5
- with SMTP id d2e1a72fcca58-8616aa68194mr43353950b3a.21.1788887858247; Tue, 08
- Sep 2026 10:17:38 -0700 (PDT)
-Date: Tue,  8 Sep 2026 17:17:06 +0000
+        bh=uONWWaSJb8FTHdgaUf0CJlqohoMDMyLvCC6od1SxwCM=;
+        b=DVYSs4bvfSgceAxJ6wHHtFnqvIHnw0cxoqGvA9hb+k823NWaIv/oiQ5npaVuUKZgFC
+         6yjD1ltS7CyrzVLxJKt+2FwIgtezuP7dPD7ZnflbjxovVUt2ZowYqgaY5tfwQi2MPIa6
+         DaRFcPdmPZYIUkirD61JmQWc2fK0zqkhd08aZmKw7Os7OoNYcH2urIR43F4Yo7Bo3YBs
+         nk7iLCqbpTbWtvUufv7Gh631Posg1bEr8Kk7r4mOGDRlvYlj3YByhtp0oulzw13efHru
+         5nE0IUxT6B5zwY9jO4ERPtHysfL6ElNOj53mkUtP+Uc9zOUkcvwbvU4lhbHyqJneDA3r
+         34fg==
+X-Gm-Message-State: AFuF++mcPz35lzTT+2IsT+/AFpMRZ1nlcZg478czQ5t4SP+TvZhIGuQ0
+	XaNnbMobNFmlN70aNB8ALDnrv50U1DE+IUNu0nfU6yIfUZMoCXMLr8K3oqoJmN62xq0wDhC3SYW
+	yuYfjGc5Im+2k171Ed4oP1Ds+adRYkrWkBxmmgrbVll5PFRdasdAQwnWj6qwVprcIJij3LErn95
+	zzcnX4N/moNIVRdOzZS84YmUvNDcdmdA==
+X-Received: from pjbgg16.prod.google.com ([2002:a17:90b:a10:b0:39b:8e8b:e1f3])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2ccd:b0:398:9c00:29f0
+ with SMTP id 98e67ed59e1d1-39b2628fc25mr48793062a91.24.1788887860460; Tue, 08
+ Sep 2026 10:17:40 -0700 (PDT)
+Date: Tue,  8 Sep 2026 17:17:07 +0000
 In-Reply-To: <20260908171712.356645-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,9 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260908171712.356645-1-praan@google.com>
 X-Mailer: git-send-email 2.55.0.979.g7e5102b832-goog
-Message-ID: <20260908171712.356645-11-praan@google.com>
-Subject: [PATCH v10 10/15] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to gate
- CMDQ submissions
+Message-ID: <20260908171712.356645-12-praan@google.com>
+Subject: [PATCH v10 11/15] iommu/tegra241-cmdqv: Add a helper to quiesce VCMDQs
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
@@ -74,115 +73,190 @@ Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
 	Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Introduce a new bit flag, CMDQ_PROD_STOP_FLAG (bit 30), in the command
-queue's producer index to safely gate command submissions during device
-suspension.
+The tegra241-cmdqv driver supports vCMDQs which need to be quiesced using
+the STOP_FLAG. The current driver implementation only uses VINTF0 for
+vCMDQs owned by the kernel which need to be stopped. Add a helper that
+sets the CMDQ_PROD_STOP_FLAG on these vCMDQs.
 
-The flag embeds the suspend state directly into the existing global state
-The flag is checked in the cmpxchg loop in arm_smmu_cmdq_issue_cmdlist(),
-which acts as a Point of Commitment, ensuring that no indices are
-reserved or committed once the SMMU begins suspending.
+Consolidate this logic by renaming the implementation hook to
+quiesce_and_drain_queues and ensuring that the tegra241-cmdqv driver
+gates all active local virtual queues before starting the drain loop.
+Additionally, clear the STOP_FLAG in tegra241_vcmdq_hw_init() as a part
+of tegra241_cmdqv_hw_reset().
 
-This prevents a situation of "abandoned batches" where indices are
-incremented but commands are never written, which would otherwise
-lead to timeout during the drain poll.
-
-Update queue_inc_prod_n() to preserve this flag during index
-calculations, ensuring that any in-flight commands that successfully
-passed the point of commitment can proceed to completion while the
-flag remains set.
-
-Suggested-by: Daniel Mentz <danielmentz@google.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Suggested-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 35 +++++++++++++++++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 +++
- 2 files changed, 38 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  4 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 +-
+ .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 77 ++++++++++++++++++-
+ 3 files changed, 76 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 98af7c1fac94..65939a9b0619 100644
+index 65939a9b0619..7eb939888735 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -218,7 +218,8 @@ static int queue_sync_prod_in(struct arm_smmu_queue *q)
- static u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
- {
- 	u32 prod = Q_POS(q, q->prod) + n;
--	return Q_OVF(q->prod) | Q_POS(q, prod);
-+
-+	return Q_OVF(q->prod) | Q_STOP(q->prod) | Q_POS(q, prod);
- }
+@@ -1077,8 +1077,8 @@ static int __maybe_unused arm_smmu_drain_cmdqs(struct arm_smmu_device *smmu)
+ 	ret = arm_smmu_drain_queue(smmu, &smmu->cmdq.q, true);
  
- static void queue_poll_init(struct arm_smmu_device *smmu,
-@@ -726,13 +727,42 @@ int __arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 	do {
- 		u64 old;
- 
-+		/*
-+		 * If the SMMU is suspended/suspending, any new CMDs are elided.
-+		 * This loop is the Point of Commitment. If we haven't cmpxchg'd
-+		 * our new indices yet, we can safely bail. Once the indices are
-+		 * committed, we MUST write valid commands to those slots to
-+		 * avoid indefinite polling in the drain function.
-+		 */
-+		if (Q_STOP(llq.prod)) {
-+			local_irq_restore(flags);
-+			return 0;
-+		}
-+
- 		while (!queue_has_space(&llq, n + sync)) {
- 			local_irq_restore(flags);
-+
-+			/* Avoid waiting for space if the SMMU is suspending */
-+			if (Q_STOP(READ_ONCE(cmdq->q.llq.prod)))
-+				return 0;
-+
- 			if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
- 				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
- 			local_irq_save(flags);
- 		}
- 
-+		/*
-+		 * If we exited the polling loop because the queue finally
-+		 * has space, but the STOP_FLAG was set during the poll,
-+		 * we must abort immediately. If we proceed, we will
-+		 * commit new commands beyond the Point of Commitment while
-+		 * the SMMU is suspending.
-+		 */
-+		if (Q_STOP(llq.prod)) {
-+			local_irq_restore(flags);
-+			return 0;
-+		}
-+
- 		head.cons = llq.cons;
- 		head.prod = queue_inc_prod_n(&llq, n + sync) |
- 					     CMDQ_PROD_OWNED_FLAG;
-@@ -779,7 +809,8 @@ int __arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 		/* b. Stop gathering work by clearing the owned flag */
- 		prod = atomic_fetch_andnot_relaxed(CMDQ_PROD_OWNED_FLAG,
- 						   &cmdq->q.llq.atomic.prod);
--		prod &= ~CMDQ_PROD_OWNED_FLAG;
-+		/* Strip all metadata flags */
-+		prod &= CMDQ_PROD_IDX_MASK;
- 
- 		/*
- 		 * c. Wait for any gathered work to be written to the queue.
+ 	/* Drain all implementation-specific queues */
+-	if (smmu->impl_ops && smmu->impl_ops->drain_queues) {
+-		err = smmu->impl_ops->drain_queues(smmu);
++	if (smmu->impl_ops && smmu->impl_ops->quiesce_and_drain_queues) {
++		err = smmu->impl_ops->quiesce_and_drain_queues(smmu);
+ 		if (err)
+ 			ret = err;
+ 	}
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index deefb17e31eb..794b258550dd 100644
+index 794b258550dd..0a841441cc44 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -394,6 +394,11 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
- #define CMDQ_ERR_CERROR_ATC_INV_IDX	3
+@@ -896,7 +896,7 @@ struct arm_smmu_impl_ops {
+ 	size_t (*get_viommu_size)(enum iommu_viommu_type viommu_type);
+ 	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
+ 			  const struct iommu_user_data *user_data);
+-	int (*drain_queues)(struct arm_smmu_device *smmu);
++	int (*quiesce_and_drain_queues)(struct arm_smmu_device *smmu);
+ };
  
- #define CMDQ_PROD_OWNED_FLAG		Q_OVERFLOW_FLAG
-+#define CMDQ_PROD_STOP_FLAG		(1U << 30)
-+#define Q_STOP(p)			((p) & CMDQ_PROD_STOP_FLAG)
+ /* An SMMUv3 instance */
+diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+index c7989fcd2c62..61847f2802a3 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
++++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+@@ -447,6 +447,54 @@ tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu,
+ 	return &vcmdq->cmdq;
+ }
+ 
++static void tegra241_cmdqv_quiesce_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
++{
++	struct tegra241_cmdqv *cmdqv =
++		container_of(smmu, struct tegra241_cmdqv, smmu);
++	struct tegra241_vintf *vintf = cmdqv->vintfs[0];
++	u16 lidx;
 +
-+/* Mask out software-only metadata flags to get the pure queue index/wrap bits */
-+#define CMDQ_PROD_IDX_MASK		~(CMDQ_PROD_STOP_FLAG | CMDQ_PROD_OWNED_FLAG)
++	if (!READ_ONCE(vintf->enabled))
++		return;
++
++	for (lidx = 0; lidx < cmdqv->num_lvcmdqs_per_vintf; lidx++) {
++		struct tegra241_vcmdq *vcmdq = vintf->lvcmdqs[lidx];
++
++		if (!vcmdq || !READ_ONCE(vcmdq->enabled))
++			continue;
++
++		atomic_or(CMDQ_PROD_STOP_FLAG, &vcmdq->cmdq.q.llq.atomic.prod);
++	}
++}
++
++static void tegra241_vcmdq_wait_quiescent(struct arm_smmu_device *smmu,
++					 struct tegra241_vcmdq *vcmdq)
++{
++	u32 target = READ_ONCE(vcmdq->cmdq.q.llq.prod) & CMDQ_PROD_IDX_MASK;
++	int timeout = ARM_SMMU_POLL_TIMEOUT_US;
++
++	/* Wait for the last committed owner to reach the hardware */
++	while (atomic_read(&vcmdq->cmdq.owner_prod) != target && timeout) {
++		udelay(1);
++		timeout--;
++	}
++
++	if (!timeout)
++		dev_err(smmu->dev, "vintf0 lvcmdq%u owner wait timeout\n",
++			vcmdq->lidx);
++
++	/* Wait for queue lock to be released */
++	timeout = ARM_SMMU_POLL_TIMEOUT_US;
++	while (atomic_read(&vcmdq->cmdq.lock) != 0 && timeout) {
++		udelay(1);
++		timeout--;
++	}
++
++	if (!timeout)
++		dev_err(smmu->dev, "vintf0 lvcmdq%u lock wait timeout\n",
++			vcmdq->lidx);
++}
++
+ static int tegra241_cmdqv_drain_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
+ {
+ 	struct tegra241_cmdqv *cmdqv =
+@@ -467,6 +515,21 @@ static int tegra241_cmdqv_drain_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
+ 	if (!READ_ONCE(vintf->enabled))
+ 		return 0;
  
- struct arm_smmu_cmd {
- 	u64 data[CMDQ_ENT_DWORDS];
++	/*
++	 * Gate all vCMDQs by setting the STOP_FLAG in a separate,
++	 * initial loop to ensure no new commands can be submitted
++	 * to any secondary queue while we are waiting to drain them.
++	 *
++	 * Client devices are suspended at this point due to devlinks,
++	 * ensuring no concurrent command submissions race with this
++	 * drain sequence.
++	 */
++	tegra241_cmdqv_quiesce_vintf0_lvcmdqs(smmu);
++
++	/* Ensure all CPUs observe the STOP_FLAG before draining */
++	smp_mb();
++
++	/* Now that all queues are safely gated, drain them sequentially. */
+ 	for (lidx = 0; lidx < cmdqv->num_lvcmdqs_per_vintf; lidx++) {
+ 		struct tegra241_vcmdq *vcmdq = vintf->lvcmdqs[lidx];
+ 		int rc;
+@@ -474,6 +537,9 @@ static int tegra241_cmdqv_drain_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
+ 		if (!vcmdq || !READ_ONCE(vcmdq->enabled))
+ 			continue;
+ 
++		/* Wait for the last committed owner to reach the hardware */
++		tegra241_vcmdq_wait_quiescent(smmu, vcmdq);
++
+ 		rc = arm_smmu_drain_queue(smmu, &vcmdq->cmdq.q, true);
+ 		if (rc) {
+ 			/*
+@@ -489,7 +555,7 @@ static int tegra241_cmdqv_drain_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
+ 		}
+ 
+ 		/* Avoid consuming stale commands on resume */
+-		vcmdq->cmdq.q.llq.cons = vcmdq->cmdq.q.llq.prod;
++		vcmdq->cmdq.q.llq.cons = vcmdq->cmdq.q.llq.prod & CMDQ_PROD_IDX_MASK;
+ 	}
+ 
+ 	return ret;
+@@ -566,7 +632,6 @@ static int tegra241_vcmdq_hw_init(struct tegra241_vcmdq *vcmdq)
+ 
+ 	/* Configure and enable VCMDQ */
+ 	writeq_relaxed(vcmdq->cmdq.q.q_base, REG_VCMDQ_PAGE1(vcmdq, BASE));
+-
+ 	/*
+ 	 * HW Registers reset to 0 when power-cycled. Restore them from their
+ 	 * SW copies to prevent executing stale/ghost commands after resume.
+@@ -574,7 +639,8 @@ static int tegra241_vcmdq_hw_init(struct tegra241_vcmdq *vcmdq)
+ 	 * to the Guests since the relevant frameworks (IOMMUFD / VFIO) hold
+ 	 * active PM references preventing suspend while VMs are active.
+ 	 */
+-	writel_relaxed(vcmdq->cmdq.q.llq.prod, REG_VCMDQ_PAGE0(vcmdq, PROD));
++	writel_relaxed(vcmdq->cmdq.q.llq.prod & CMDQ_PROD_IDX_MASK,
++		       REG_VCMDQ_PAGE0(vcmdq, PROD));
+ 	writel_relaxed(vcmdq->cmdq.q.llq.cons, REG_VCMDQ_PAGE0(vcmdq, CONS));
+ 
+ 	ret = vcmdq_write_config(vcmdq, VCMDQ_EN);
+@@ -587,6 +653,9 @@ static int tegra241_vcmdq_hw_init(struct tegra241_vcmdq *vcmdq)
+ 		return ret;
+ 	}
+ 
++	/* Clear the CMDQ_PROD_STOP_FLAG */
++	atomic_andnot(CMDQ_PROD_STOP_FLAG, &vcmdq->cmdq.q.llq.atomic.prod);
++
+ 	dev_dbg(vcmdq->cmdqv->dev, "%sinited\n", h);
+ 	return 0;
+ }
+@@ -963,7 +1032,7 @@ static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
+ 	.device_reset = tegra241_cmdqv_hw_reset,
+ 	.device_disable = tegra241_cmdqv_hw_disable,
+ 	.device_remove = tegra241_cmdqv_remove,
+-	.drain_queues = tegra241_cmdqv_drain_vintf0_lvcmdqs,
++	.quiesce_and_drain_queues = tegra241_cmdqv_drain_vintf0_lvcmdqs,
+ 	/* For user-space use */
+ 	.hw_info = tegra241_cmdqv_hw_info,
+ 	.get_viommu_size = tegra241_cmdqv_get_vintf_size,
 -- 
 2.55.0.979.g7e5102b832-goog
 
