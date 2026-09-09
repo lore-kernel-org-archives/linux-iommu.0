@@ -1,238 +1,234 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D713F8254
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:34:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC9F43B3EA
+	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:34:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788946456; cv=none; b=CEzgooBt4JLRowGrVrR/CKpcXuHJUkBz5dgBd9yDzODreTexf5cldlrmbei4bSSmud1OuhC4evcveFfqM821FFHo23HDxMff7HXWVPXWN6NcfJnltHYp0UQ6HYdNR7yyE1t0j1vP0NVdVyuXvX8SycNFlP9eOIDzN3h7y7JCqps=
+	t=1788946483; cv=none; b=aBlS7mrV5iDNvXzowOKzRPL6+THlwauCNGdpRtEb3dUkT4qiWI5wR7YMYdL6XfSfoM3y0/ESM5GKWFPZcRCb+zdxvlpfje+50lrFcCSRPHkAa2ci2YOlcyO+kW2x3pmIBgg+gpXx/C5ojKRJGwSWjT/V6Ws/oIZVo/3bh2EP2uY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788946456; c=relaxed/simple;
-	bh=kI0dFl9THJgq2NRN3l8zcpKi8pMsX5t348uZacY6h58=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:In-Reply-To:
-	 Content-Type:References; b=r1QuTlH+sQnG9yNexsoBzVSN6YVeS2P35XtZ0QHS1172gBbJXvTk/BeHWMmQkpxRCgJHTfdxnpRs4zOn3w9+awDjXF17gbO9ovVqn/9qhMBAf6JBuJGnYJhuu/RzcV239Eh1BJnFK5Q48gpAAyjMB+od/mMd2yY0fvWvtF088fg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=qGFwFM9t; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1788946483; c=relaxed/simple;
+	bh=kNqW4sSYGE5RLkZoBx/ZOl+rx5XiXMMo2xzg3a4N4Js=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XcsxEGmi74OYUR1v+96xkfOM0KU0BixxJW9RW9RhwuEBd0dFSfKNGEKuK9c8Ja7j8VmgZocC/D9wBbPZVQ9rjq9ICVMINDqeEZKitNxCzI84nnGnmZ5GqfKoQHP7o9RzXwG8k6CAoH/n9TgMW0BkxTOFzYTLutleeW/459T0DOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jSd6TU9i; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=kaLFgAez; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="qGFwFM9t"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260909093401euoutp0269abef05669019a9ffff6516d9c2a8ef~TnU9weya71745717457euoutp02U
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:34:01 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260909093401euoutp0269abef05669019a9ffff6516d9c2a8ef~TnU9weya71745717457euoutp02U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1788946441;
-	bh=UV0/+f1l1BoLThd42Ew9ojQmpG98ujp+B6DNFtXMLB0=;
-	h=Date:Subject:To:From:In-Reply-To:References:From;
-	b=qGFwFM9tX/POMB+cQXb+N3gFZtllUteEnaYW/feAzpisaHwTmSrLknMNODUX+2+UL
-	 QIFUXIjgsWhk54Q+6dHd5FmBOwbLGezgtyHlrwzcYMHn381fM3QogCqd6nesWjrxad
-	 bsOo4TD+5t/1/mAha5R/CuffwjY9IqfOmSLpPYhM=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260909093401eucas1p1978a50cffbadcd28189328b8a35181f1~TnU9aG9Mo1629716297eucas1p1H;
-	Wed,  9 Sep 2026 09:34:01 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260909093358eusmtip199556b4956c3d189eaf7446be74818ee~TnU7Tv7y41967519675eusmtip1Q;
-	Wed,  9 Sep 2026 09:33:58 +0000 (GMT)
-Message-ID: <c694433e-4006-40f9-81a0-f1de58f0c93e@samsung.com>
-Date: Wed, 9 Sep 2026 11:33:58 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jSd6TU9i";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="kaLFgAez"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6896iItF3653864
+	for <iommu@lists.linux.dev>; Wed, 9 Sep 2026 09:34:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	G3ioQZMKHwe0XM4c4x4bDZIuIz125l7nRfQhXfiQNYQ=; b=jSd6TU9ikeRQPs3y
+	FeEwVvdiWJ1SfErQCQQiALnOJ0hXnDx0R6jmtUmWrtbvMlDXaMiLwB4GFCgl1Guh
+	lCm+eOMTpPIjeu+JFw6a16zZRtaO4Z9eYJu3BMOfYjVFoetNySyIYSPunU94X5a+
+	UsruwzKZT8hVNpeC61WX/V1UQjWb6cwgYewmIQPMnZpdFSV4Hg+7hkZbc0y0HHog
+	/nAWya5FprPJiKaO+fu0Q/wnD+LnWYe8xaefRVyy6b5+5clRNqKdMofwq6e7RQim
+	JgNdjESDhTlmWd5C0lLvmxSxjPAJ9R47vOIaS7D/gDpjkdzbI6O/LQyt2dMF1pLO
+	h/ZiVw==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gjppp3jb2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 09 Sep 2026 09:33:44 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-398ba5404d2so1597864a91.1
+        for <iommu@lists.linux.dev>; Wed, 09 Sep 2026 02:33:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1788946421; x=1789551221; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=G3ioQZMKHwe0XM4c4x4bDZIuIz125l7nRfQhXfiQNYQ=;
+        b=kaLFgAezhBwacp1pjYGxdlXUm3mhIewhyjg9hRbDGw2C+GCLFkSZmxOw6lXUojyTLG
+         ZXyJOwHEE+IS4zgFJgvjblcC9vHoSa89Bg+yNE3LrD/hnGXNClqDR+JzWe9kFUSfud2X
+         i4w14oRhQq9Xxu1adTd33D2BBYHqoqayXiiFqGpO2h49p1teY7Dr62oQzyReMQ6JdFWu
+         8sShI6PbuD0SC2rG6PYuOsC1zZan+WbRd7ArbJ6CGsa/n9OFC6RAId/sysuEpDG+bZAf
+         uv/dRA5AGKgq4jHl38WxAOWrn0/hksQHV2JD2eAu6iaF6C8sU2jvhsjVz+z1xbPQMSGS
+         uxIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788946421; x=1789551221;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=G3ioQZMKHwe0XM4c4x4bDZIuIz125l7nRfQhXfiQNYQ=;
+        b=tTF3OwJUeQN1csC776VsjBMIyiemOOr+P0ZzXlieBq0LH0k1HEVbZ42iN15PTH4Nq6
+         7fESViTdRU4dChbDD53vBCZ86IXj5ylW0IFgII4ORUoy0rDv6dERGAbGnwSj24GURSgk
+         B146P2Mg4qPnCbQums/ulIE/RLYezzv58bu0dZkdcAr8DaNZ++dK1OPd8DTGYM5rclEx
+         bT0+Z99VCZnQs26IF1qcTu8NlRm/hU1Wq3PKlOn1/7XU2KKJHHbAtdWCXAJmxj0GbWbR
+         k6dy2mB6alAiHTf5L3jbQyO2bpaR4OWyiKEYmwn8cZ43PFGf8nLpc0KmQWNppWKtqVSx
+         hF2w==
+X-Forwarded-Encrypted: i=1; AKwUvBxa0kpA3xMtZXbcpohXZYBNLq7WKmaqyoi20GqGHw2/hrKjIN76eaCoNGmC5XTeFwk/qagFHg==@lists.linux.dev
+X-Gm-Message-State: AFuF++mXBtGLp+4e7bqZ5sFZU4LaXoOZ0mLCSwsTfSZJNqxtKGW+orFj
+	iAU2nrrF5kVUJvsBUltvwDmUqpugfVK4sIRxR2LsEkdcNowjsCMYg24xub6rBEHCE6pXuansCXD
+	zuP3SX7VYT25/v/GpHg6YeoZTrgCSGfYOZpFhSz6fgOZJe5bsed8Xv5aRsQ==
+X-Gm-Gg: AYBFou2qPSH7d+9c9/ZUmFVgcZxtGfrUOmfYR9LICefkYERsVmhabZCyt4empkhLGLt
+	BkglpSq8rovnMhY9psuVh7/ntVRiK7PWCoPGj0YzFmXJDlvUVfGB4zBE9llnIVUGYvSagE5NTBD
+	U1tW/TZcLn8ArgG0e5gDxzJhWJKRQrdQUjyuzW3CNkZIhQo7AcG+diF+dlNIGHO0cj1l+qjlJsA
+	yjkdSqNmfdJPO9mG5Fq5zC40UcfNV641RUmLaWTrAF7CY1lxQjqAtldUZR0bg3GdDBJeqW8TCGJ
+	+9X7RuHuj5YESj3ucS5r84RwEE8e0xUbhrSKANJDN3Wcjtn195Zk11yuhWkITXm9G9/BGbTdGuB
+	j2akkKBQArPJ2SQu8v4RUmqQnj6I/eA==
+X-Received: by 2002:a17:90b:2c88:b0:398:ba56:b926 with SMTP id 98e67ed59e1d1-39b262e28c2mr56016269a91.25.1788946420998;
+        Wed, 09 Sep 2026 02:33:40 -0700 (PDT)
+X-Received: by 2002:a17:90b:2c88:b0:398:ba56:b926 with SMTP id 98e67ed59e1d1-39b262e28c2mr56016151a91.25.1788946420231;
+        Wed, 09 Sep 2026 02:33:40 -0700 (PDT)
+Received: from [10.219.57.226] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3339a534df1sm49524306eec.7.2026.09.09.02.33.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Sep 2026 02:33:39 -0700 (PDT)
+Message-ID: <33042b5b-28c9-4df6-9c97-8b389a3f1112@oss.qualcomm.com>
+Date: Wed, 9 Sep 2026 15:03:28 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2] dma-mapping: use exact allocation for DMA pages
-To: Qingfang Deng <qingfang.deng@linux.dev>, Robin Murphy
-	<robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, David
-	Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, "Liam R.
- Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, Mike
-	Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, Michal
-	Hocko <mhocko@suse.com>, Brendan Jackman <brendan.jackman@linux.dev>,
-	Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/15] accel/qda: Qualcomm DSP Accelerator driver
+To: Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc: rob.clark@oss.qualcomm.com, Krzysztof Kozlowski <krzk@kernel.org>,
+        Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap
+ <rdunlap@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Bill Wendling
+ <morbo@google.com>,
+        Justin Stitt <justinstitt@google.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>,
+        dmitry.baryshkov@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org,
+        Anandu Krishnan E <anandu.e@oss.qualcomm.com>
+References: <CACSVV01eYr6FyA6XBG0xw0yv2dydvTEhcY-WUy07mxM8WwkZcg@mail.gmail.com>
+ <318f14c2-0e87-4e07-8173-1511dca67d78@kernel.org>
+ <CACSVV01T=ytVJKM7NRoBTAJm7vH+JPJNT9Tftu5X9YskGXerwg@mail.gmail.com>
+ <e7b4eceb-cb3a-49ea-bed9-728c958594b0@kernel.org>
+ <CACSVV03ypjBYkhRpt=TyDwOKhejKKke3x=Fi_TvxXN-5U_rCsw@mail.gmail.com>
+ <fb834ae5-7113-4a86-bb84-ca5115c8d7ff@kernel.org>
+ <CACSVV018jB4WRRJ_CUHQmkHXZcqauWJXWGgrzY_HA6cFQ+Q3Xw@mail.gmail.com>
+ <dd3da35b-1db6-43a4-ae1f-35620692f51f@kernel.org>
+ <CACSVV01o_XYuSzaYGbo9pY=459qiA_fgL_KRHVJH+LH4RYcMzQ@mail.gmail.com>
+ <23e31249-cce2-421e-88f7-1a2af66e34b6@oss.qualcomm.com>
+ <aqCKgM1yCbWjFdgO@baldur>
+ <09f62d84-18ad-4d7a-ad18-9abccfd5e508@oss.qualcomm.com>
+ <c447c7ef-828c-4fda-8e82-6983a3d0eddc@oss.qualcomm.com>
 Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260903012914.312305-1-qingfang.deng@linux.dev>
+From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+In-Reply-To: <c447c7ef-828c-4fda-8e82-6983a3d0eddc@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260909093401eucas1p1978a50cffbadcd28189328b8a35181f1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260903012931eucas1p1d558f849340fa7b92074201c28f7937b
-X-EPHeader: CA
-X-CMS-RootMailID: 20260903012931eucas1p1d558f849340fa7b92074201c28f7937b
-References: <CGME20260903012931eucas1p1d558f849340fa7b92074201c28f7937b@eucas1p1.samsung.com>
-	<20260903012914.312305-1-qingfang.deng@linux.dev>
+X-Proofpoint-GUID: vOREOZlD4Rag2J2f7JnfIwPUscGsXTvO
+X-Proofpoint-ORIG-GUID: vOREOZlD4Rag2J2f7JnfIwPUscGsXTvO
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA5MDEwNiBTYWx0ZWRfX26sjt7Q8eIHU
+ nZb/62c3XKidVgo9BHcQv8B1+lxuJGhTHxQXDRKfi9vt1JsLLwbdPQIfn4e9iyysCpG50VlbQSu
+ 9FCx1f7SoxlXVYc2eokWKgEWxQFRlfVhBXOmLIp9oRxlaxdwlXHB8swZ9rt94TQFmP7X0F0U0fJ
+ YcNKIV17lRBM1LZDTtvbRHaovm4CwSxaiGoTrFopWV9DqE3zsyadpaUdYnbmziLUGRvxRoI2OJk
+ XHkjk2ntWu2eJMk89bkhjXtrgu/MI0GICYGf9Gheu/CslnpGBniypQFynnEd8z6JlyTxRscPp5R
+ CyIlki+n6WXLkt3v0sFxFQXXAEJQYQtLIrCasvQmXLYEbl49fqzCd+mWwI6hZ0mLp1VFjxy98sj
+ WZ6MRhORLqH6+vyovWjqRse96zWGA6JJLRBKufsn24OaxKzdDU5J1N8ymWF9tp82tI3AZW9jVbV
+ KIvJzsf9zVEpL9VtrnA==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA5MDEwNiBTYWx0ZWRfX7gYJbMjRAySS
+ ju7/rUexDt0oD+gS54ftmnxbk6UHrB2ytkpclqnNQCPSs0XKsnLmXbXj2oeEbvmqkSXNODe2gRL
+ 65eyEufTP2m+VARI6X5a5eOVBJ/ZU5s=
+X-Authority-Analysis: v=2.4 cv=DcInbPtW c=1 sm=1 tr=0 ts=6aa127f9 cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
+ a=aHQZQ_1TodyndcZw4m4A:9 a=QEXdDO2ut3YA:10 a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-08_03,2026-09-08_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 bulkscore=0 suspectscore=0 phishscore=0 clxscore=1015
+ lowpriorityscore=0 adultscore=0 spamscore=0 malwarescore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2609090106
 
-On 03.09.2026 03:29, Qingfang Deng wrote:
-> DMA page allocation fallbacks use alloc_pages_node() with get_order(size),
-> wasting the unused tail for non-power-of-two requests.
->
-> Use alloc_pages_exact_nid() and free_pages_exact() so that a buddy
-> fallback retains only requested pages.
->
-> Signed-off-by: Qingfang Deng <qingfang.deng@linux.dev>
-Applied to dma-mapping-for-next, thanks!
-> ---
-> v2: drop __meminit to fix section mismatch
->
-> v1:
-> https://lore.kernel.org/linux-iommu/20260901085348.53140-1-qingfang.deng@linux.dev/
-> ---
->  drivers/iommu/dma-iommu.c   | 10 ++++++----
->  include/linux/dma-map-ops.h |  2 +-
->  include/linux/gfp.h         |  2 +-
->  kernel/dma/contiguous.c     |  6 +++---
->  kernel/dma/direct.c         |  8 +++++---
->  kernel/dma/ops_helpers.c    | 11 +++++++----
->  mm/page_alloc.c             |  2 +-
->  7 files changed, 24 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 58c624513cd4..8f262c83802c 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1628,10 +1628,12 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
->  	void *cpu_addr;
->  
->  	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-> -	if (!page)
-> -		page = alloc_pages_node(node, gfp, get_order(alloc_size));
-> -	if (!page)
-> -		return NULL;
-> +	if (!page) {
-> +		cpu_addr = alloc_pages_exact_nid(node, alloc_size, gfp);
-> +		if (!cpu_addr)
-> +			return NULL;
-> +		page = virt_to_page(cpu_addr);
-> +	}
->  
->  	if (!coherent || PageHighMem(page)) {
->  		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 8fae2b7deb20..3ef3003713a6 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -143,7 +143,7 @@ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
->  static inline void dma_free_contiguous(struct device *dev, struct page *page,
->  		size_t size)
->  {
-> -	__free_pages(page, get_order(size));
-> +	free_pages_exact(page_address(page), size);
->  }
->  #endif /* CONFIG_DMA_CMA*/
->  
-> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-> index 872bc53f32ec..aa4601805f21 100644
-> --- a/include/linux/gfp.h
-> +++ b/include/linux/gfp.h
-> @@ -329,7 +329,7 @@ void *alloc_pages_exact_noprof(size_t size, gfp_t gfp_mask) __alloc_size(1);
->  
->  void free_pages_exact(void *virt, size_t size);
->  
-> -__meminit void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask) __alloc_size(2);
-> +void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask) __alloc_size(2);
->  #define alloc_pages_exact_nid(...)					\
->  	alloc_hooks(alloc_pages_exact_nid_noprof(__VA_ARGS__))
->  
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 66093460584e..90937dc7c627 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -451,8 +451,8 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
->   *
->   * This function releases memory allocated by dma_alloc_contiguous(). As the
->   * cma_release returns false when provided pages do not belong to contiguous
-> - * area and true otherwise, this function then does a fallback __free_pages()
-> - * upon a false-return.
-> + * area and true otherwise, this function then does a fallback
-> + * free_pages_exact() upon a false-return.
->   */
->  void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
->  {
-> @@ -476,7 +476,7 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
->  	}
->  
->  	/* not in any cma, free from buddy */
-> -	__free_pages(page, get_order(size));
-> +	free_pages_exact(page_address(page), size);
->  }
->  
->  /*
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index da665ca22d5c..ea64453d7370 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -120,6 +120,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->  	int node = dev_to_node(dev);
->  	struct page *page;
->  	u64 phys_limit;
-> +	void *va;
->  
->  	WARN_ON_ONCE(!PAGE_ALIGNED(size));
->  
-> @@ -133,9 +134,9 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->  		dma_free_contiguous(dev, page, size);
->  	}
->  
-> -	while ((page = alloc_pages_node(node, gfp, get_order(size)))
-> -	       && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-> -		__free_pages(page, get_order(size));
-> +	while ((va = alloc_pages_exact_nid(node, size, gfp)) &&
-> +	       !dma_coherent_ok(dev, virt_to_phys(va), size)) {
-> +		free_pages_exact(va, size);
->  
->  		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
->  		    phys_limit < DMA_BIT_MASK(64) &&
-> @@ -146,6 +147,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->  		else
->  			return NULL;
->  	}
-> +	page = va ? virt_to_page(va) : NULL;
->  
->  	return page;
->  }
-> diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-> index 6b5f9208d31c..5cdf3f60cf47 100644
-> --- a/kernel/dma/ops_helpers.c
-> +++ b/kernel/dma/ops_helpers.c
-> @@ -67,10 +67,13 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
->  	phys_addr_t phys;
->  
->  	page = dma_alloc_contiguous(dev, size, gfp);
-> -	if (!page)
-> -		page = alloc_pages_node(dev_to_node(dev), gfp, get_order(size));
-> -	if (!page)
-> -		return NULL;
-> +	if (!page) {
-> +		void *va = alloc_pages_exact_nid(dev_to_node(dev), size, gfp);
-> +
-> +		if (!va)
-> +			return NULL;
-> +		page = virt_to_page(va);
-> +	}
->  
->  	phys = page_to_phys(page);
->  	if (use_dma_iommu(dev))
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index c4dc61ec663e..d3a135dfcdd3 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5637,7 +5637,7 @@ EXPORT_SYMBOL(alloc_pages_exact_noprof);
->   *
->   * Return: pointer to the allocated area or %NULL in case of error.
->   */
-> -void * __meminit alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask)
-> +void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask)
->  {
->  	unsigned int order = get_order(size);
->  	struct page *p;
+On 09-09-2026 13:32, Srinivas Kandagatla wrote:
+> On 9/9/26 8:53 AM, Ekansh Gupta wrote:
+>>> This is the actual problem!
+>>>
+>>> We have existing user space that depends on the ioctl interface exposed
+>>> by the current misc driver. You must not break these.
+>>>
+>>> Hardware cutoff is not a viable solution, because that's just a
+>>> declaration that we'll let the old platforms rotten - or alternatively
+>>> you commit to maintain two drivers to the very same feature and quality
+>>> level.
+>>>
+>>> So the only reasonable solution is #2; from there it's a valid question
+>>> if you reach that point my stepwise migrating the current misc driver
+>>> that solution, or if you present a new driver with the fully backwards
+>>> compatible interface, alongside the new ABI.
+>>>
+>>>
+>>> But this does bring to a question which the cover letter should explain
+>>> - but doesn't: what problem does this patch series actually solve?
+>>>
+>>> Regards,
+>>> Bjorn
+>> Agreed. I'll target #2: QDA implementing the existing fastrpc UABI
+>> alongside the new one, rather than a driver split by platform.
+>>
+>> On how to get there: the blocker we hit in v1 was that legacy fastrpc
+>> buffer semantics appeared to need a drm_file, and there's no exported
+>> way to construct one outside the DRM core. I want to re-examine that
+>> constraint rather than treat it as final, since the legacy interface's
+>> own buffer model (a dma_buf fd as the buffer identity, no GEM
+>> involved) is not inherently tied to drm_file, that's how the existing
+>> misc driver implements it today. I don't have a concrete design yet
+>> and would rather work through it here than commit to one prematurely.
+>> If anyone has thoughts on how the legacy UABI could be served without
+>> requiring a drm_file per session or if I can somehow bind drm_file with
+>> chardev by exposing some APIs from DRM core, I'd welcome them.
+>>
+>> On the cover letter: fair point, and I'll fix it. The problem this
+>> series solves is that a miscdevice interface requires us to hand-roll
+>> what the accel/DRM subsystem already provides as common
+>> infrastructure: GEM for buffer lifecycle and reference counting,
+>> PRIME for cross-driver import/export, per-file (per-open) context and
+>> handle-namespace isolation, and the existing debug and lifecycle
+>> tooling the DRM core already ships. Every accelerator driver added to
+>> drivers/accel (habanalabs, ivpu, qaic, rocket) has taken this path for
+>> the same reason, rather than each maintaining its own equivalent
+>> inside drivers/misc. Building QDA directly on this shared
+>> infrastructure, instead of extending fastrpc's own ad hoc buffer and
+>> session tracking to cover the same ground, avoids that duplication
+> Am sure you must have already tried this, but Can you not migrate
+> existing fastrpc driver to this shared infrastructure under the hood?
+> 
+> Can you elaborate on what are the blockers you hit in doing so?
+> 
+> This will ensure that UAPI is retained and still get benefit of QDA.
+> 
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+QDA's session model is built around drm_file, and fastrpc's chardev has
+no drm_file associated with it. I'm still checking whether that
+dependency is unavoidable for fastrpc's case, or whether there's a way
+to use the underlying buffer-management infrastructure without it.
+
+Please correct me if you are asking/suggesting a different approach?
+
+> --srini
+>> going forward.
+> 
 
