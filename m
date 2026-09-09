@@ -1,85 +1,111 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E9A4C0433
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 10:16:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6C1037A822;
+	Wed,  9 Sep 2026 10:24:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788948980; cv=none; b=L3yfzL5UbtCrcQ1nzugahVkbODXPUAcUEALfNiMK3fLuzObP4lBDdpvMFzcnlGJl+ZrUll1rkrnLnB98Aqz+9pUxIVfsvOhBo+0mMQ8ubE0VRpgmtBFFOkOQF/h8s3b8C4zkTiAMNKSNJgR7GGTO7oqI1b7mew4aIiAfZAPULLI=
+	t=1788949472; cv=none; b=KwdHuUG50h9zgbBL8PD64TIGqaJUfgzunGs1UYM0F8oyyp8W1JtIrtWtMDtGX3fzLBsx+LR17Zm+Gt8fYBX9ntPmgHeI260z3/9yL2wZdNeFQYPoxiYiHJFNQJ/65ZkSTqeCG5wp42d6nFLzhOI3apjkcDr3iqGxwEXdCCf6GvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788948980; c=relaxed/simple;
-	bh=ts4ZfRfU5KIs8UOnNvnduy7S8V7kGQ8dyuu1V4a1j2c=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
-	 References; b=ANt3idTgBrTAtTXu2mrdUmQR1NTJYYiy4KFsowPUkVnNF92vPCpGCdvj57CUsbRim30HVSgddcq4cKia/g6yoNpcVI0Xcywrr5qOFWHoHxBZ9ODUiPE7XsszcHHA2g6fUZtDoR9nKfPAN+y8mbIUox93eK4MAB+a0yClJjy9eCc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=q6DIARwo; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1788949472; c=relaxed/simple;
+	bh=I8Onle8fDcB2jJH/6ZCRLaXNOxUd6QuB/0FGJ6RuK6c=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Dc1i56k62MYBQdjz9mkoY12znDIV/GpMiAcUvJ6EdbTw2NqUCX0bo9fVwJ27jXkeGPQ15nupPYxYzoKc800tlCvcCGTdnQg5BkJClV0jSo7tCjH8inZoLv/6YIO58Nc0VLdKvDTUO1KygcHiyI8M8AkbYeAWBWkfVMNWaJR3iFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JLovTtU8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="q6DIARwo"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260909101611euoutp02c3351e516468cc77b9e1b54c41198aff~Tn5x3ZB9O3092030920euoutp02R
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 10:16:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260909101611euoutp02c3351e516468cc77b9e1b54c41198aff~Tn5x3ZB9O3092030920euoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1788948971;
-	bh=LGz0mAO/Rs5US72whCiR/JF88NXIVvHWv+a8QAaScfw=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=q6DIARwoFfgiNlnynGM3cbcW0S434TF9s3kCKfB6Q5ByLQ8YURSHfRWanS63oCwYV
-	 FjxJID0jYVBby1fMoSqjvxx2LqzbgSuTapisRjo6/+lbpgV5tuxJiKwHzjSAwPnUdf
-	 azftai2xgg6iZ8buka55ILKQZOCyqAgGXqGrTRGM=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260909101610eucas1p112489c6964a217b1c15fd19a7fc55645~Tn5xSkgZk2468724687eucas1p13;
-	Wed,  9 Sep 2026 10:16:10 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260909101610eusmtip248bbb2ac03e9b72cbab004bdf7c6b6aa~Tn5xBhjcA1849518495eusmtip2z;
-	Wed,  9 Sep 2026 10:16:10 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Donggeun Yoo <donggeunyoo.kernel@gmail.com>
-Subject: [PATCH] MAINTAINERS: Add files to the DMA MAPPING HELPERS entry
-Date: Wed,  9 Sep 2026 12:15:52 +0200
-Message-ID: <20260909101554.2106545-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JLovTtU8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD6FF1F00A3A;
+	Wed,  9 Sep 2026 10:24:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788949471;
+	bh=gbV02tkIR0l5+u0XIgUNoM3WdEsWs96K0HwU9kLHxWA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=JLovTtU8ApoMQpMX5pDtVyhtOFv/Glvm3zMo8dcpf76G+RSWmHoiTBS3WRw4ShQkv
+	 Yt93feqcMS9bZwLHeqwYNTe76OrQ7Aj2jzuHo5zKdYiaWck4KRJ2KHT3oyb5vg7b71
+	 pO0FLMvr7AXwYeOKjIi0rL7iF4aEACVceVIlRioRQfFOK+FLTUELHwjNCTU8HDFBNS
+	 hujPHhJcpkYem4MSeRlW7bRb7H5iqNEErxtpIWq/1wk+EGRpe2WfbCCqqWT51sMfU+
+	 BzNINXI3vSeWDj2A/I24P6C4F5tEyoUNJvf+XkYGjwalWmMO5inCt+1seGL53F+oWz
+	 j5pG+i3gSZ6Jg==
+From: Thomas Gleixner <tglx@kernel.org>
+To: Naman Jain <namjain@linux.microsoft.com>, Ingo Molnar
+ <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+ <dave.hansen@linux.intel.com>, x86@kernel.org, "Joerg Roedel (AMD)"
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, "K. Y. Srinivasan"
+ <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu
+ <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, Long Li
+ <longli@microsoft.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, Manivannan
+ Sadhasivam
+ <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>, Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Shradha Gupta <shradhagupta@linux.microsoft.com>, Aditya Garg
+ <gargaditya@linux.microsoft.com>, iommu@lists.linux.dev,
+ linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] x86/irq, iommu/amd, PCI: Drop redundant
+ irq_retrigger inits
+In-Reply-To: <20260810090716.2325295-4-namjain@linux.microsoft.com>
+References: <20260810090716.2325295-1-namjain@linux.microsoft.com>
+ <20260810090716.2325295-4-namjain@linux.microsoft.com>
+Date: Wed, 09 Sep 2026 12:24:28 +0200
+Message-ID: <875x0e204j.ffs@fw13>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260909101610eucas1p112489c6964a217b1c15fd19a7fc55645
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260909101610eucas1p112489c6964a217b1c15fd19a7fc55645
-X-EPHeader: CA
-X-CMS-RootMailID: 20260909101610eucas1p112489c6964a217b1c15fd19a7fc55645
-References: <CGME20260909101610eucas1p112489c6964a217b1c15fd19a7fc55645@eucas1p1.samsung.com>
+Content-Type: text/plain
 
-Add DMA trace events file to the DMA MAPPING HELPERS entry to get proper
-notification for further changes there.
+On Mon, Aug 10 2026 at 09:07, Naman Jain wrote:
+> --- a/arch/x86/kernel/apic/msi.c
+> +++ b/arch/x86/kernel/apic/msi.c
+> @@ -137,7 +137,7 @@ msi_set_affinity(struct irq_data *irqd, const struct cpumask *mask, bool force)
+>  	 * IRR.
+>  	 */
+>  	if (lapic_vector_set_in_irr(cfg->vector))
+> -		irq_data_get_irq_chip(irqd)->irq_retrigger(irqd);
+> +		irq_chip_retrigger_hierarchy(irqd);
 
-Reported-by: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
-Closes: https://lore.kernel.org/all/20260907120156.603600-1-donggeunyoo.kernel@gmail.com/
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+That's broken because irqd points at the vector domain already, so there
+is no parent and nothing gets retriggered.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3a19da74d00c..e2f922cf5996 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7728,6 +7728,7 @@ F:	include/linux/dma-direct.h
- F:	include/linux/dma-map-ops.h
- F:	include/linux/dma-mapping.h
- F:	include/linux/swiotlb.h
-+F:	include/trace/events/dma.h
- F:	kernel/dma/
- 
- DMA MAPPING & SCATTERLIST API [RUST]
--- 
-2.43.0
+Let's look at the hierarchy when interrupt remapping is enabled:
 
+             | --- [DMAR]
+[VECTOR] --- |                | -- [IOAPIC]
+             | --- [REMAP] ---| -- [HPET]
+                              | -- [DEVICE MSI]
+
+All outer domains have .irq_set_affinity = msi_domain_set_affinity,
+which does:
+
+msi_domain_set_affinity(irqdata, ....)
+
+    irqdata->parent->irq_set_affinity(irqdata->parent, ....);
+    
+In that case msi_set_affinity() is only reachable for the DMAR domain
+and all others (IOAPIC, HPET, DEVICE MSI) end up in the REMAP domain
+which handles irq_set_affinity and never ends up in the above code.
+
+In the non-remapping case:
+
+             | -- [IOAPIC]
+[VECTOR] --- | -- [HPET]
+             | -- [DEVICE MSI]
+
+In this case the vector domain is the MSI parent domain for all of them
+and all outer domains will end up in msi_set_affinity() via
+msi_domain_set_affinity().
+
+In any case 'irqd' in msi_set_affinity() will always point to the vector
+domain and therefore the exiting code is correct and can't be changed to
+retrigger hierarchy as that would see irqd->parent == NULL and do
+nothing. Neither will adding a conditional there do anything useful
+because the vector domain always has the retrigger callback set.
+
+Thanks,
+
+        tglx
