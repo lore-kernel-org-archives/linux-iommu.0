@@ -1,224 +1,236 @@
-Received: from out13-173.antispamcloud.com (out13-173.antispamcloud.com [185.201.17.173])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F124568552;
-	Wed,  9 Sep 2026 20:31:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3048739C649
+	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 20:57:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788985873; cv=none; b=FuWByNVUWswLWieV0Anl3G6bvjJ3pepUSJN4mP+ci0+Nr/As4fh1Tfya3Am8whhh1+bXc3Wg2kUyzDslbnZIfYEXbbbyic9qQah7IkGG5vcQ1/+OiISl6lU46v2RDamxYIzkHWmwVE0/AmYqcZUCE3lTP8241EvsS1hVc3uX/BY=
+	t=1788987473; cv=none; b=WRqUHK8AqatLCsSbBOAVwQmMHNKrD8Ik6B4CZ8AksdEMbQBaP++jsyzg3S/DhMfVfb7YBU6Z8zB0ZE1X55CTFJ6uvlvY9ObQbt4GfQh5FudeO5xJnHpd1PCFhm9/wX3VMErLoErCUSlN/JlMEKZdQ186wC/rLXKNuE/HDnAScqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788985873; c=relaxed/simple;
-	bh=x6pgQwKcY8upD0GzRuBHTdmAfa1u6vpVC6e75tH0Qd8=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=bJO1dpGWMED4U+QSRGHILmu+4AmEvba6pRiRTOXZ88GcuKdK+pgYl9XSpZ4m5LM6nR2drwwHWODCNvxEPbHCBR5o9get0Cq7ecsofjae1GDIBgtYRtL+HJN6+aFSY+hp4183IXDcckWePELT5kBxxn3Ge+1swExz61htxZ7AI9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=ncsk7XkX; arc=none smtp.client-ip=185.201.17.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1788987473; c=relaxed/simple;
+	bh=BDmAOXk/J0il5WGjLq49F7s//UAnHfnxlMZpGTigT3s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TVpXEjbATlwa0xY+gdLjqVwc7KzQgfNWPKowN83k3/qU2w7NYGu5HDgzlcnZ2AzsaS5sdYEMg8Yhbc4gGf9ngzf0wTzcCRq267zDLKEHiIg8OHdGHQq5N/Yz0TnwbpEKrRJ0ZrfTdvyk2QPjCTAGiVBxo6It2K2EYkHWQ/Pwers=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=XBQnBnW+; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BK7rIuYl; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="ncsk7XkX"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx321.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1x4Ob8-003TGG-Jx; Wed, 09 Sep 2026 22:08:50 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Cc:To:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Message-Id:Date:Subject:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=vPKSlNolXPH6rCn+Caj0ZbcfKCoB9Ntr63Fw+6l5YuQ=; b=ncsk7XkXa1YKvBgB8AFVz4zpue
-	7+Q/QmMaiTFAWv7OuU6ggK7AQTVzJ44LPqiCJUBQVCKWctcCPUl60lM8TsNIzNZfI5pN8TEx5iP7d
-	cDV2/72evCoSK5YU36eH8KI2IqYFeegTfqaCyscSa0GLgCQEslKUn4IKg2pvfD6DR2nrikQQMhgR5
-	G5fR8QAIYE64AsZtn1d9az7sTMwrV79FH+Ww8NRGXoO4cPJx175R9uCrp0iZhgO+95SHUMXJSX/CY
-	HFQKBa59xaoRnOO5q5Z4BXU3j9wa4g5OCC7X8Lcr5vGwiYN6BurQjuWSyoabG/MhXyZ11ZI9FWODt
-	fYY+jLfQ==;
-Received: from [188.251.249.2] (port=52430 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.99.5)
-	(envelope-from <dan@reactivated.net>)
-	id 1x4Ob3-0000000DWp8-3XHd;
-	Wed, 09 Sep 2026 20:08:40 +0000
-From: Daniel Drake <dan@reactivated.net>
-Subject: [PATCH v5 0/5] Add support for Broadcom BCM2712 IOMMU driver
- (Raspberry Pi 5)
-Date: Wed, 09 Sep 2026 21:08:06 +0100
-Message-Id: <20260909-bcm2712-iommu-submit-v5-0-2539c52b249e@reactivated.net>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="XBQnBnW+";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BK7rIuYl"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 689JIa9Z2773648
+	for <iommu@lists.linux.dev>; Wed, 9 Sep 2026 20:57:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=aD1svCqhonHuEhBxqeD/lMr7
+	ELQWc/Ex9Uh61jsKr0I=; b=XBQnBnW+o0JuCdB1nHL7fsroyLQyb4ry0bYaN3EI
+	ZTdLoK43rd2Apyj64z62cFGax6reUMgTQH3xkaLqf+WbKbwP1yQ4xRrEE/SQR//f
+	7ZRSfPC9SPLkHGrP329/P3RkqLBSt5QUQ7GWMUA0GIy4Ev0ITk26HGULM79d4/LQ
+	Zj53VfleseFH/KN1lBauIOMoObdOCgLv3IX8uLGODFfd61SyfxOPoNKFLfIWZcmt
+	42wwSamxdxHFrLYmw7OHxa8LLYw5ts/5aKJJmTwmOC0AwGfI7gpYXLpAh1vRcqjp
+	hfo7U4cE+5iiJB8uhDkC4gP9MxtlfQU/aDRoUB5DRV8/ww==
+Received: from mail-ua1-f69.google.com (mail-ua1-f69.google.com [209.85.222.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gkcyfrn5v-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 09 Sep 2026 20:57:42 +0000 (GMT)
+Received: by mail-ua1-f69.google.com with SMTP id a1e0cc1a2514c-97e9cc5ac86so579993241.1
+        for <iommu@lists.linux.dev>; Wed, 09 Sep 2026 13:57:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1788987461; x=1789592261; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=aD1svCqhonHuEhBxqeD/lMr7ELQWc/Ex9Uh61jsKr0I=;
+        b=BK7rIuYlCj0ejyCr26RK6GYbqSPjRtrit7DAmibM6muHv6/1kk3daEqzQf0wzRz7es
+         N+WB2ctnUCrrsPePeQ6PTg6rY72H1766/77PS+3BmuEFEFLgJ1Ifn7GEU6oqRCpXT9fe
+         UKLjalwBxpB/Kcy2AZvsAacBF1XwyXTBbIniT688D0G951MsO/27lIvv+Ws+MfzNbfHS
+         X1teiAWSQIBz3ODf/gCkwq9cGLuT86UWo85RhcbHBOGVjMrbxYa/3HIO8bEa045zVjNN
+         863v97A7OCclituEkX6I8a+nRPuC9NXAtrdHIYA9YnpHd04JEaW819S/BQblM7oYn5D4
+         R6mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788987461; x=1789592261;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aD1svCqhonHuEhBxqeD/lMr7ELQWc/Ex9Uh61jsKr0I=;
+        b=eCc3akIo6P2Wf/PwflkYOjoI9MNq5CPOmOPPtOWDhmwPDqfaya0xWa96Mbt8Dxu1BO
+         q5KWpqjDN7Ej5o3t+H1O622Nh/y4ZGRjgL56synAFmNWuz7pMQNP3d3ReOefintjEoXH
+         uq2IcTBzAkqA1OC0d3aC9pSRD83/tf+wFvtcgjEKTujkK4GJ6DrvnK1EnJcdEYxSCu9X
+         VS9yJ/h0XOnYM+oxLY2/c0H2opg44VL2ilaBjZoSyidNNLDueKnLWvWwaLhcbsfUa+if
+         OBGt438F+A8UxCJVjKafYv9kfYC0NH4+YvFI39fGTlNevqC1FXRdfUNN6o5MUVvGledB
+         7r8g==
+X-Forwarded-Encrypted: i=1; AKwUvBy+6RLdYAQQYHSPhQ1hZYc6Gr7sRIXA4YL80mmO+PkZ21ZrMUgppWDtQdun1cmLegoBp3wcbg==@lists.linux.dev
+X-Gm-Message-State: AFuF++kL/poVnn33PzG8SxsRzVGsCER5Ef7t9Su8upcwxZk+cUIl9mM7
+	189I23tT/skfsyuyaCVqXadl0Qa/uOgSCoqsBteqYWqTrry55XvSQAVPMunTi1nOD0KMUMACn0B
+	VFnNMl89Vu8JD5IAwCfjy/bMDLUXIX+0jTNhXJOn8iBn+AtfQOkjOMYDOJA==
+X-Gm-Gg: AYBFou0HHrKRizmSkJ9j+HxCV4Js+RWPARjZ52v4WHrODINqlBBo98D/gKjik8l13x1
+	+2Cw1Yw7z02AVP2uupbGcHIfsYoxP0kDuwRe+k6QAIic+M66ewzYGRFoIbANaad5dl/yoVPYaUd
+	nWVa2+CIJk7UCZJNKPArxPjlE4XdekIvn7iQhe40CAPp4nPqu87oUC5qPzXz1Ygz+SGLwZtspxd
+	/L7FW4ib2JUb63d3vf4fPMB2hFVNyyjHNtabpdnwfGMp2eFgfR/UcvFvKbKAXmXA+11fEpeD2Vh
+	5mhHnND4fX3jZ0GSjJmDrfs7lzpdzwP+VkqAaWRvo2Z8IU5WTgUXZquZQiKnx4VTarpBxromuj1
+	dwg5Ubz5EgCjKnjJc4aMNyHT7LKukTi89sAi5fiwn3JceOjEftpi8GvNJzuyyyQxd4FMGm2YLZ2
+	Pkd/ko0ern8eNc
+X-Received: by 2002:a05:6102:160f:b0:781:210d:28aa with SMTP id ada2fe7eead31-78a4a8be7c5mr16080293137.2.1788987461342;
+        Wed, 09 Sep 2026 13:57:41 -0700 (PDT)
+X-Received: by 2002:a05:6102:160f:b0:781:210d:28aa with SMTP id ada2fe7eead31-78a4a8be7c5mr16080274137.2.1788987460865;
+        Wed, 09 Sep 2026 13:57:40 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b765bfc42bsm728249e87.18.2026.09.09.13.57.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2026 13:57:39 -0700 (PDT)
+Date: Wed, 9 Sep 2026 23:57:37 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Stephan Gerhold <stephan.gerhold@linaro.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux.dev,
+        Daniel J Blueman <daniel@quora.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Subject: Re: [PATCH v3 02/13] dt-bindings: media: qcom,sm8550-iris: Add
+ context bank subnodes
+Message-ID: <dulfxazlrtqc4swjeuxmriudzzm23z3wea5n7tfflaeb5644kg@6buydclxzmab>
+References: <20260909-vpu_iommu_iova_handling-v3-0-2fe43ae45495@oss.qualcomm.com>
+ <20260909-vpu_iommu_iova_handling-v3-2-2fe43ae45495@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XPzW7DIAwH8FepOI8NnBBgp71HtQMfbuNDkgkoW
- lXl3Ud66aQ12sn6S/bP9o1lTISZvR9uLGGlTMvcgno5sDC6+YycYssMBAxCS+A+TLBVWqbpwvP
- FT1Q4oLDGWhxU6Fkb/Up4ou87e/xs2buM3Cc3h3HDlkRnmt8mlwumrX+kXJZ0vV9R5Tb1z8Iqu
- eBGoBQhRgR0HwldKFRdwfg6Y2Hb2gq/KNA7FDRKQK+9CqKLaJ5T3YMyoHaorlH6JPsONRjrh+d
- U/6Cs2Huwb5SN3g9KK22C/Eut6/oD06G9br8BAAA=
-X-Change-ID: 20260712-bcm2712-iommu-submit-2e09899e65c4
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Daniel Drake <dan@reactivated.net>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: SB/global_tokens (0.00290311307859)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVoIpDH6QgvTjj4ojH4sjzU5GZX7JxARh0S
- 3Wdt5Q1YsCu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVINvrgr5Tk+ogTDEKUDvAnxtGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWBp35AJbRNknLgMOj3O/cqXeB7itP8hgjDRserKv4bhb7ubyJcscJCC/8jhyq4eIIJWBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
- j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5Ay6i8PhAwy
- ohd+GCGjMSaCo2g+pLXSstFFr2Pmsof7eeRHKvLDzn+sBlvbv5VnduIaCC8T432LXhcN9iDypd/G
- jBIJaw3nA0JWQqC5+Jig4CpfjrlgQefNeWcxSH+UCzbtFoUUErjvkjClnO+z3Y8BCB4GKZ8tHsR5
- A+L9kzDG/K63IFf1tTl6XjJBLr8hyqcPiIfzvuBQjcdRxCwh8eiHlonTJYQp6P0LGGk5YcssJBnE
- oCFelNEuPkquluSoEnYwJqEylk1bBhjIWUVQpiEaCXgutbnJ8XLRZlxuyGE4ZkJ+Ct1rytEV3nXE
- 30Z2uRLE/8mc4sO+W8vok4IjJdnmU8DTX941WdbezDc4vvZrV3V8zxJiAh4HD0pbHodESl7kaNlb
- x8xIGSNGie95MFeWVyO9Qfhfm+3ZVXwsV2bUYWW4ep6BcO097ndMLXudKQNeFU4oFhi1MNpONIVI
- cKQLYpRI/YdWVB4RLR9xg0malhL/zrerFdzyp80QodgbrP5s8nByAM67kkfx5CxJZu8aTgJ5f3aq
- udJOEH3RuyZ+8leu7vxlwaJe4HXvh1KDzbyuhe3rKagUdobsFC0Ri8UJKkNYEwQtgFkgklp04bUn
- b1qdOer54gFeYIyf/VI1wUg/RktiFekFeW+7U10rT7jLCnLvR/Y0+hqFCvJ5ztihCGpdCKDGFJnk
- 5eJFcFklVb9231/E3ahF5MMcDI7KdpjQKdEz/+/QkUVhwSqO+QS+xjCZ3JKVmi72ocgY5kMQSjs7
- CnU3Vkswnvz2sY575f5VZdC7A9EkfupFeybqiokSL/UoBa9Z74L1QD5u7fk/CB2ffOy/knOaqu9M
- jU02vQscbFXfLr4QfL2DDLcpCTGg9PS1ky5OPdlHgN5e9b5Lw3uYqSlLt4GHpuaxlbA6FJuCeRY+
- C3NKVBiu9E09fH2QcWWDSTfRyaGsL+KZNwpYGCN6yCqJqJMY7uMzxq3+Ecx6Ww+vAj0HbLbveTIz
- fDDueIdjUxTaa0dmGx2m78JeU6J5dQk8TiQJh7U9utxWE7LPnybsgEYdqBiEd1NUIwnN5yx+uk9D
- Y1su2KLgOMypo5wFPAlbDjazCbhs7qBpykynMlI8ehauFjA7dVMOTKcW5c6UnY64mAykh3LBvXwi
- LIjlrjIuKSKddsFYTaIZy4Zvun7pGU7uz9Qh2BYl/pOFic8JjqapLpwrwdUQz9MPWEmV3jR5NeVa
- JQBh0uawl0Cg8hPs+cRD5TJxNzOPadp3mtqXN3cCIyIm263/n4zqghav48Y+3YiJRbPwEKhVXmMF
- SH7pGU7uz9Qh2BYl/pOFic/qXKRF3uOx1VRdI9vLlOBy9jihx+Za/cV70jOJzN2r4A==
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260909-vpu_iommu_iova_handling-v3-2-2fe43ae45495@oss.qualcomm.com>
+X-Proofpoint-GUID: h6eN1g-06ZmLymoLsTJKy1iAIS-Ofr_m
+X-Authority-Analysis: v=2.4 cv=GNqdgeNK c=1 sm=1 tr=0 ts=6aa1c846 cx=c_pps
+ a=UbhLPJ621ZpgOD2l3yZY1w==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=e5mUnYsNAAAA:8
+ a=VwQbUJbxAAAA:8 a=NEAV23lmAAAA:8 a=t9ty7G3lAAAA:8 a=EUspDBNiAAAA:8
+ a=JqCuCV_VPJ6-B_cMBtcA:9 a=CjuIK1q_8ugA:10 a=TOPH6uDL9cOC6tEoww4z:22
+ a=Vxmtnl_E_bksehYqCbjh:22 a=CsAS6f0m0zARWR-uHzm3:22
+X-Proofpoint-ORIG-GUID: h6eN1g-06ZmLymoLsTJKy1iAIS-Ofr_m
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA5MDIzNSBTYWx0ZWRfX2orgqVbVCLa1
+ 6wIm3UxAOqQUCfFAG3JWfMOrwtFNJt35eNtZ8RrI9nAAXQra/3Io6AvWXjfp/mZJHuYX0CPfesv
+ P8D5nDOkJvnvwhhNpFHFcVpeYUyJLP8oJ3URee/TraXQjZBd+h3LmdTZ3gTUBPoAOCpKZo46Krm
+ IZwVS14gfw/r+irqSbVUMHgvYnMc5e8PTNxy7MQv2JwBmxdQkpo1esNsdi/FIPH7MoigFaCMKl5
+ bw6igKNZ36E2DtOfDxYsmjgm3FfCE/CrPBmFdihmbJEVyBZdNHigmawVR+eUVrRzyaeFEogPqoO
+ uc2XqBmErHfGR8TZtznk03D0CsJuEIqqHB1k0yqZSELmyYFvFKHf4tH+Yh6W9HHWpmkwXXrxzQq
+ jsahlmgp8HIySrDmUkRSDKbrvqv+e7/uZpmfB0qcj27znjwhw+rAHu+o8EXBNgwxilfLEOI83Dk
+ Rpt/IOLDDF6kErAivHA==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA5MDIzNSBTYWx0ZWRfX4pjlZOkaCyVN
+ VBx841TrNkBrONLuJrnMOYH/aIvbv5O5W1TMb1/S5RNwgawLyA3hBX1m8QpuRTATGB79Zrb4CJ/
+ 7wO31X9fNnyO46ABPMqvro9I84tsbo8=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-09_01,2026-09-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 impostorscore=0 priorityscore=1501 adultscore=0 phishscore=0
+ malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609090235
 
-Hi,
+On Wed, Sep 09, 2026 at 08:27:09PM +0530, Vikash Garodia wrote:
+> The VPU issues DMA through several SMMU streams, and the hardware does
+> not give every stream the same addressable range. The non-pixel stream
+> cannot address the low 600MB of IOVA space, while the pixel stream can
+> address the full range:
+>     +-----------------------------------------------------------+
+>     | non-pixel stream addressable range (600 MB - 3.5 GB)      |
+>     | 0x25800000 - 0xe0000000                                   |
+>     +-----------------------------------------------------------+
+>     | pixel stream addressable range (0 - 3.5 GB)               |
+>     | 0x00000000 - 0xe0000000                                   |
+>     +-----------------------------------------------------------+
+> A single "iommus" property on the video-codec node puts every stream in
+> one IOMMU domain sharing one IOVA allocator, so nothing restricts a
+> non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
+> that boundary the hardware faults, which shows up as unhandled SMMU page
+> faults and spontaneous reboots:
+> https://gitlab.freedesktop.org/drm/msm/-/work_items/100
+> 
+> Given that the address range restriction is for specific VPU stream, it
+> should be ideally be moved to that stream. To achieve the same, a subset
+> of streams is now represented as subnodes, so that each can be
+> associated with its respective addressable range. The design was
+> discussed and agreed by mainatiners here
+> https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
+> 
+> In the past, this limitation was addressed with an iommu-map approach,
+> with the iris driver dynamically creating the devices. That approach was
+> later concluded to be a hack to avoid having subnodes, and was NAKed by
+> the iommu maintainers. It was discussed in detail here:
+> https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+> 
+> Update example to the subnode form. Doing so, it picks up the supporting
+> properties needed on the video-codec node, address-cells, size-cells and
+> dma-ranges to declare 1:1 DMA translation into the parent. Given a soc
+> with address-cells and size-cells as 2, update the video-codec "reg"
+> accordingly.
+> 
+> This patch depends-on:
+> https://github.com/devicetree-org/dt-schema/pull/207
+> 
+> Tested-by: Daniel J Blueman <daniel@quora.org>
+> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> ---
+>  .../bindings/media/qcom,sm8550-iris.yaml           | 118 ++++++++++++---------
+>  1 file changed, 67 insertions(+), 51 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml b/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
+> index 0400ca1bff05dcef6b742c3fbf77e38adca9f280..dd80526838f1193f4c9105793ae4bf4fe0755ec2 100644
+> --- a/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
+> +++ b/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
+> @@ -98,10 +98,10 @@ required:
+>    - interconnect-names
+>    - resets
+>    - reset-names
+> -  - iommus
+>    - dma-coherent
+>  
+>  allOf:
+> +  - $ref: qcom,venus-common.yaml#
+>    - if:
+>        properties:
+>          compatible:
+> @@ -150,70 +150,86 @@ examples:
+>      #include <dt-bindings/power/qcom-rpmpd.h>
+>      #include <dt-bindings/power/qcom,rpmhpd.h>
+>  
+> -    video-codec@aa00000 {
+> -        compatible = "qcom,sm8550-iris";
+> -        reg = <0x0aa00000 0xf0000>;
+> -        interrupts = <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
 
-This series adds a driver for the Broadcom BCM2712 IOMMU found on
-Raspberry Pi 5, and hooks up the display controller IOMMU for efficient
-management of graphics memory. This is adapted from the downstream driver
-from Raspberry Pi (original author Nick Hollinghurst), with main changes:
- - In page mapping mode, operate the translation aperture from address 0,
-   with no bypass window. More like a IOMMU and less like a GART.
- - Implement the page table management using generic_pt
- - Support 4MB hugepage mapping in top level page table
- - Implement brcm,iommu-cache as standards-compliant DT property
- - Drop the dma-iova-offset hack, used to work around some issue seen with
-   dma-ranges. This will need to be investigated separately and solved
-   properly. (It's not needed for display controller iommu support included
-   here.)
- - Misc simplifications/standardisations/cleanups
- 
-The IOMMU works strictly with 4KB pages. This means that unfortunately
-when the kernel is compiled with PAGE_SIZE=16KB (the Raspberry Pi 5
-kernel default), 12KB is wasted in each page that is allocated for page
-tables. I plan to address this in followup work.
+No. The SoC node must go away. None of the schema examples have it.
 
-It has been tested on Raspberry Pi 5 using a 3D-accelerated graphical
-environment which causes plenty of IOMMU maps & unmaps.
+>  
+> -        power-domains = <&videocc VIDEO_CC_MVS0C_GDSC>,
+> -                        <&videocc VIDEO_CC_MVS0_GDSC>,
+> -                        <&rpmhpd RPMHPD_MXC>,
+> -                        <&rpmhpd RPMHPD_MMCX>;
 
-Thanks for the review comments and discussion. Further feedback and
-testing welcome!
-
-Changes in v5:
-- Drop blocked_domain support as hardware always translates a minimum
-  256MB aperture when enabled
-- Restrict Kconfig dependency to ARCH_BCM2835, matching other RPi drivers
-- Improved error handling in device attach
-- Add missing iommu_put_pages_list() in iotlb sync
-- Minor readability improvements
-- Link to v4: https://lore.kernel.org/r/20260902-bcm2712-iommu-submit-v4-0-9dbb657578c1@reactivated.net
-
-Changes in v4:
-- Add Jim Quinlan and Florian Fainelli as bindings maintainers
-- Replace MMU register access macros with static inline functions
-- Clear illegal address register and flush caches on blocking domain attach
-- Add __must_hold annotations in TLB helpers
-- Use BIT() macro for MMUC_CONTROL definitions
-- Link to v3: https://lore.kernel.org/r/20260825-bcm2712-iommu-submit-v3-0-7f143e7289b6@reactivated.net
-
-Changes in v3:
-- Switch from a aperture and bypass window GART-like approach
-  to IOMMU-like 0-based translation
-- Add 3 SW bits which seem unused (per the chipset docs); drop patch
-  for NO_SW_BIT handling. This reduces the claimed address space, so I had
-  to tweak a iommu_pt test accordingly.
-- Disallow domain sharing across multiple hardware IOMMU instances
-- Clear and flush local MMU TLB during domain attach
-- Handle unattached domains safely during TLB sync
-- Set cache platform driver data late during probe to prevent race condition
-- Improved handling of cache flush timeouts
-- Use format string for device name in iommu_device_sysfs_add()
-- Use cleanup.h helpers for scope management
-- Expand DT binding descriptions for IOMMU and IOMMUC
-- Add iommus property to HVS display node in DT
-- Drop iommuc back-compat with current RPi DT
-- Link to v2: https://lore.kernel.org/r/20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net
-
-Changes in v2:
-- Use iommu_fwspec in xlate & probe_device
-- Add blocked_domain support
-- Simplify page size configuration between iommu driver and format
-- Introduce PT_FEAT_NO_SW_BIT flag to allow formats to explicitly opt-in to
-  a defensive flushing algorithm when no sw bit is available
-- Implement 4MB pages at Level 1; this is more efficient and means the
-  "allow full-table contiguous leaves in unit tests" commit has been
-  dropped because it is no longer needed.
-- Hardcode the aperture in an unused part of the address space, removing
-  it from DT (it's a software-specific decision, not an attribute of the
-  hardware), adding more explanatory comments
-- Use pt_full_va_prefix to have the PT format operate within the aperture
-  space, enabling use of IOMMU_PT_DOMAIN_OPS
-- Add more dt-bindings explanation to brcm,iommu-cache and drop docs
-  around the cache property used in RPi firmware (the driver still supports
-  this however, for fw compat reasons)
-- Correct iommu device address in bcm2712.dtsi
-- Link to v1: https://lore.kernel.org/r/20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net
-
----
-Daniel Drake (5):
-      iommu_pt: Fix test_pgsize_boundary() failure on narrow-OA formats
-      dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
-      iommu/generic_pt: Add Broadcom BCM2712 page table format
-      iommu: Add Broadcom BCM2712 IOMMU driver
-      arm64: dts: broadcom: bcm2712: Add GPU IOMMU and IOMMU cache nodes
-
- .../bindings/iommu/brcm,bcm2712-iommu.yaml         |  54 ++
- .../bindings/iommu/brcm,bcm2712-iommuc.yaml        |  40 ++
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi          |  15 +
- drivers/iommu/Kconfig                              |  15 +
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/bcm2712-iommu-cache.c                |  84 ++++
- drivers/iommu/bcm2712-iommu-cache.h                |   9 +
- drivers/iommu/bcm2712-iommu.c                      | 550 +++++++++++++++++++++
- drivers/iommu/generic_pt/.kunitconfig              |   1 +
- drivers/iommu/generic_pt/Kconfig                   |  10 +
- drivers/iommu/generic_pt/fmt/Makefile              |   2 +
- drivers/iommu/generic_pt/fmt/bcm2712.h             | 288 +++++++++++
- drivers/iommu/generic_pt/fmt/defs_bcm2712.h        |  18 +
- drivers/iommu/generic_pt/fmt/iommu_bcm2712.c       |   6 +
- drivers/iommu/generic_pt/kunit_iommu_pt.h          |   2 +-
- include/linux/generic_pt/common.h                  |   6 +
- include/linux/generic_pt/iommu.h                   |  12 +
- 17 files changed, 1112 insertions(+), 1 deletion(-)
----
-base-commit: 28924df2a08f440c73991b83028032c901de2ae4
-change-id: 20260712-bcm2712-iommu-submit-2e09899e65c4
-
-Best regards,
 -- 
-Daniel Drake <dan@reactivated.net>
-
+With best wishes
+Dmitry
