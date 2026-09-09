@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C11D46EF9E
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 08:03:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B14A74A204A
+	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 08:03:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788940995; cv=none; b=rf3mq1lw/opD2VpCyjico4W6532jjFPQU6QNISfLKmsxvgoZDV8fXbAod3aQG/MF3SLu65NHfDovDNtUdaOJ8Df47iJGcP5VzVdUHZi09bTFsJyoix0LEd9CfdIg0Dl3AQ+tPGUhmcWIlwZ38UKId1FQZA25z66GOBxo/L1/q/E=
+	t=1788940996; cv=none; b=ivNLu1UW7PFw8k0m1twVp1iqQsx9dH60WkCZ/U8sJUSsInw/4/ERowTFEKRlSqOWUiBg7gyPJwaiQcnkbTYpNvf4n6gUiRJezIYVoTvYer+onyyRGGBRFVBSQEqdNEiAuqN+Gr/Xh53kOCnx8zwtbGgd//66ukS0aiw4atAgXoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788940995; c=relaxed/simple;
-	bh=/nE+REOqy9M2IpNzvnk2Ic0a9WthxFdNejXS8EPSm94=;
+	s=arc-20240116; t=1788940996; c=relaxed/simple;
+	bh=vyYjMjf3vmlIjqvA15FNQsnMHUfwEKOpBSAQ/vbKBjk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r5KcB7nNxztZjF7NsyjbegovkRhgKEMrNwe+ddc5TzKjsPZF/JxyTquGUSE7vTwPQDvVpbwVj8zXNajDvPRhSg8hiXx9VlcFeDgYHNfX4mzPygWwnlvYgkecfSDLVg3TkLLLPtP1jvow3yvC2HPxqqSDf5IXrikAECnAUZIt8DM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nAG1d2HH; arc=none smtp.client-ip=198.175.65.10
+	 MIME-Version; b=E1aqsNBr28naEOXaAAsw3gEfhrUToSDM7OhLzih9VAXU6sAE9dUfrEW40EJzckQQBQdrXpXV/DCecSZ0lXvhCeW+9KhQd8yq5tNVDzjF7wZVbmH81I5g9KSXVfEoqPhzg747HaBAJ+PYGnqth+/Ui8aSNAawqxgDqK6j8Zc65pY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kkuhiy1Q; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nAG1d2HH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kkuhiy1Q"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788940993; x=1820476993;
+  t=1788940995; x=1820476995;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/nE+REOqy9M2IpNzvnk2Ic0a9WthxFdNejXS8EPSm94=;
-  b=nAG1d2HH9weZChH8LQISuE6SDSXM6Yl6x9QHyvOLHETmR5P+/5mORr06
-   qx4oCtg+M4cYrPSPtDIQX7YqQ35DSIeQl3qVO7W0bPicNIsLrm8aolaHv
-   mJlU+cxyeRNXuxJ0nqB6mplFvkAsepkiDIsjSBW+w+FcekgYpNwWmF/sX
-   7WbwRWMnvME1z3Zv7TdL45ODiiAdvT/sL5wl5HCjwjq92PobP4IkxMjej
-   dBVRn+nif9+nzSVOgKYxqmfqkdeE8cbfuGZe1ToQkIdBsvNIAjYZ1GZVp
-   /q4Sit+YhOa96anlh714hyENi8t1W/OWp+1OD+X0UdFevpiEC+tdEcttX
+  bh=vyYjMjf3vmlIjqvA15FNQsnMHUfwEKOpBSAQ/vbKBjk=;
+  b=Kkuhiy1Ql48Fzin2QgrzMz6CqzIR5E43pAzvd+ruiZjAbSYJCEFxVtri
+   Gt/fOOXKw7GJqW66dmQ+vq3QBqbrGHX2UrtQQo8fwxYSEBP1M7piYln3J
+   Y3rUwogqwpPojlPxUVgNwMb62ZMSeHhSCu98N4GLl6hv4P+CMp7c0QEgt
+   dTXjudPkASUQIqWoXRIRiPev7lE9Q0w1b8h/5Lhv5cq4bf/bRWY/f5f9a
+   aYPh+ky1ThlRNTXauwRzaL/Mbzt/aEsrb18VQUB0ozEd3fjTc1F/QU1gz
+   7vDT3ccGRs/JBIJyKhbsjuocMQf6PL11N7CwH7yXtP7YxbXZsaGYm8Mna
    w==;
-X-CSE-ConnectionGUID: KnLVTyuES3+8BUashuJbFA==
-X-CSE-MsgGUID: o7zvnPOKTU6Cr45pEDDwTQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="106726454"
+X-CSE-ConnectionGUID: GAPpB1FHRhWLpURUVuaGrg==
+X-CSE-MsgGUID: HMND39KNQ4utM7XakpJmiw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="106726463"
 X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
-   d="scan'208";a="106726454"
+   d="scan'208";a="106726463"
 Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 01:03:13 -0700
-X-CSE-ConnectionGUID: ST6kraoGTkmCc0JkTC/pog==
-X-CSE-MsgGUID: wCwfUJhSS66+LVsNf5f+EQ==
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 01:03:14 -0700
+X-CSE-ConnectionGUID: uxMEKfikTVqQopMTz5feQg==
+X-CSE-MsgGUID: mxELoZJJSMSDa9PAHPVZdg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
-   d="scan'208";a="301119244"
+   d="scan'208";a="301119251"
 Received: from allen-box.sh.intel.com ([10.239.48.101])
-  by orviesa002.jf.intel.com with ESMTP; 09 Sep 2026 01:03:10 -0700
+  by orviesa002.jf.intel.com with ESMTP; 09 Sep 2026 01:03:12 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -51,12 +51,10 @@ To: Joerg Roedel <joro@8bytes.org>,
 	Kevin Tian <kevin.tian@intel.com>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org,
-	Sashiko <sashiko-bot@kernel.org>
-Subject: [PATCH 1/7] iommu/vt-d: Avoid out-of-range shift in qi_desc_dev_iotlb_pasid()
-Date: Wed,  9 Sep 2026 15:51:00 +0800
-Message-ID: <20260909075106.738691-2-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 2/7] iommu/vt-d: Do not ignore context table copy failures
+Date: Wed,  9 Sep 2026 15:51:01 +0800
+Message-ID: <20260909075106.738691-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260909075106.738691-1-baolu.lu@linux.intel.com>
 References: <20260909075106.738691-1-baolu.lu@linux.intel.com>
@@ -68,106 +66,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Callers request a full Device-TLB flush by passing MAX_AGAW_PFN_WIDTH
-(64 - VTD_PAGE_SHIFT == 52) as @size_order.  Two expressions in
-qi_desc_dev_iotlb_pasid() are not prepared for a value that large:
+copy_translation_tables() currently logs copy_context_table() failures
+but still returns success, so partial copy failures are silently ignored.
 
-  unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
-  ...
-  if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
+That means Intel IOMMU may run with only part of the old tables copied.
+Then some old domain IDs may not be reserved, and later may be reused by
+new domains. With stale hardware cache entries still around, this can
+cause bad DMA translations, DMA faults, or domain aliasing.
 
-The second evaluates to 1UL << 64, which is undefined on all
-architectures.  On x86_64 the shift count masks to zero, IS_ALIGNED(addr,
-1) is trivially true, and the alignment sanity check silently degrades
-into a no-op.
+Fix by aborting on the first context-table copy failure, freeing temporary
+context-table pages, and returning an error so caller falls back to a
+clean root table path.
 
-The first evaluates to 1UL << 63.  That is well defined on 64-bit builds,
-where unsigned long is 64 bits wide, but is undefined on 32-bit ones.  In
-practice x86 masks the shift count to five bits, so the expression yields
-1UL << 31 and ~mask becomes 0x7fffffff.  That value is zero-extended when
-applied to the 64-bit descriptor, so
-
-  desc->qw1 &= ~mask;
-
-clears qw1[63:32] as well as bit 31, collapsing the ADDR field that had
-just been filled with ones.  Reaching that requires a scalable-mode PASID
-configuration on 32-bit x86, which is not a realistic deployment, but the
-construct is wrong regardless.
-
-Compute the mask with BIT_ULL() so that it is 64-bit on every
-architecture, and skip the alignment check for a full flush, where it is
-both meaningless and the source of the out-of-range shift.
-
-Note that @size_order must not be clamped below 64 - VTD_PAGE_SHIFT.  With
-S set, hardware derives the invalidation range from the least significant
-zero bit N of ADDR and matches bits [63:N+1] of the incoming address.  For
-size_order 52 the descriptor sets ADDR[63:12] and clears bit 63, making
-N = 63 and the comparison range empty, so everything is invalidated.
-Reducing @size_order to 51 would instead leave N = 62 and cause hardware
-to compare address bit 63; since callers pass an address of 0, only the
-lower half of the address space would be invalidated.  Bound @size_order
-at 64 - VTD_PAGE_SHIFT so that a bogus caller cannot reintroduce an
-out-of-range shift, without altering the full-flush encoding.
-
-The non-PASID variant qi_desc_dev_iotlb() already uses 1ULL and is
-unaffected.
-
-Fixes: f701c9f36bcb7 ("iommu/vt-d: Factor out invalidation descriptor composition")
-Cc: stable@vger.kernel.org
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/patchset/20260623060122.3796325-1-guanghuifeng%40linux.alibaba.com
-Assisted-by: Claude:claude-opus-5
+Fixes: f93b4ac5929a ("iommu/vt-d: Use ida to manage domain id")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.h | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iommu/intel/iommu.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 23dbe6c24439..5b3d234ae265 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1105,12 +1105,20 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
- 					   unsigned int size_order,
- 					   struct qi_desc *desc)
- {
--	unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
--
- 	desc->qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
- 		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
- 		QI_DEV_IOTLB_PFSID(pfsid);
- 
-+	/*
-+	 * The widest range the descriptor can express is a full flush, encoded
-+	 * by making bit 63 the least significant zero bit of ADDR, that is
-+	 * @size_order == 64 - VTD_PAGE_SHIFT.  Bound @size_order there so that
-+	 * a caller passing something larger cannot produce an out-of-range
-+	 * shift below.
-+	 */
-+	if (size_order > 64 - VTD_PAGE_SHIFT)
-+		size_order = 64 - VTD_PAGE_SHIFT;
-+
- 	/*
- 	 * If S bit is 0, we only flush a single page. If S bit is set,
- 	 * The least significant zero bit indicates the invalidation address
-@@ -1120,7 +1128,8 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
- 	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
- 	 * ECAP.
- 	 */
--	if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
-+	if (size_order < 64 - VTD_PAGE_SHIFT &&
-+	    !IS_ALIGNED(addr, BIT_ULL(VTD_PAGE_SHIFT + size_order)))
- 		pr_warn_ratelimited("Invalidate non-aligned address %llx, order %d\n",
- 				    addr, size_order);
- 
-@@ -1136,7 +1145,7 @@ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
- 		desc->qw1 |= GENMASK_ULL(size_order + VTD_PAGE_SHIFT - 1,
- 					VTD_PAGE_SHIFT);
- 		/* Clear size_order bit to indicate size */
--		desc->qw1 &= ~mask;
-+		desc->qw1 &= ~BIT_ULL(VTD_PAGE_SHIFT + size_order - 1);
- 		/* Set the S bit to indicate flushing more than 1 page */
- 		desc->qw1 |= QI_DEV_EIOTLB_SIZE;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e3b3ab216f8..38e2a670df9a 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1591,7 +1591,7 @@ static int copy_translation_tables(struct intel_iommu *iommu)
+ 		if (ret) {
+ 			pr_err("%s: Failed to copy context table for bus %d\n",
+ 				iommu->name, bus);
+-			continue;
++			goto err_free_ctxt_tbls;
+ 		}
  	}
+ 
+@@ -1623,11 +1623,27 @@ static int copy_translation_tables(struct intel_iommu *iommu)
+ 	memunmap(old_rt);
+ 	return 0;
+ 
++err_free_ctxt_tbls:
++	/*
++	 * None of these tables have been linked into iommu->root_entry yet,
++	 * so they are unreachable and must be freed here.
++	 */
++	for (bus = 0; bus < ctxt_table_entries; bus++)
++		iommu_free_pages(ctxt_tbls[bus]);
++	kfree(ctxt_tbls);
+ out_unmap:
+ 	memunmap(old_rt);
+ err_free_bitmap:
+ 	bitmap_free(iommu->copied_tables);
+ 	iommu->copied_tables = NULL;
++
++	/*
++	 * Only reservations taken from the old context entries can be in the
++	 * ida at this point; no domain has been allocated on this IOMMU yet.
++	 * ida_destroy() empties it and leaves it ready for reuse.
++	 */
++	ida_destroy(&iommu->domain_ida);
++
+ 	return ret;
+ }
+ 
 -- 
 2.43.0
 
