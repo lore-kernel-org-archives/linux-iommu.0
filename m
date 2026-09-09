@@ -1,257 +1,245 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905E056E070;
-	Wed,  9 Sep 2026 14:09:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A702D572692;
+	Wed,  9 Sep 2026 14:14:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788962960; cv=none; b=N2KKhZL4eZZpDJlqxBVN7VbrzGatkBRbtBoRbZjZ72KdLoprHdb220OV3evoJ1fx1HB1l/a7IC0MQuo/3rrbOJnlujqf7KYiN374KtQ16WmyLqolQxwioDtlGGqg3ZC5kdb0LwBf9cm7zayXL6A2WmuFzdQ8+oEtMJulvUv6gP0=
+	t=1788963263; cv=none; b=ZpEfzcJ7A8l1bTKJSC9xjQIYcoI8O1V3feyJyTVagjyDOMt7OxhHNtCt3zEqBJdZ3W9/ijDJoheAxTlDKiNFSCBwtITWLGpcjZS4v8Fchyq0BtCgfY61r/xqwyJ8ZysIlvOZijk2QJhCESMeC9MlY1nL0hmvTqRhOyMZhU80Muo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788962960; c=relaxed/simple;
-	bh=UYl0oDkXo/O834y0le8l/SaNgp2VNh/d6jQw3dgbD28=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X5wL8CKbJkSaV+nU+qLRE+5IxJFZUUWv8+hwVpkSbOZ3XmCsXg+b4v4NDWeffelyHufh/PGE/IFn1+TzhIbjCfv+Gw9H5mq2bkqEYKFM4y/wjtPU9Vn2yTc0HCiVLQLdUbTfuxwrg6N3t1QrNJ+TPpVR2VhUeWq8K7ebkSnxt/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DpsxHwVy; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788963263; c=relaxed/simple;
+	bh=gx+oIcs0P6H8PbwV9ZJxkS0GLSxCT6o0xFPNtdzRzAQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=U6tXJO07+yJLa+mu1K1IlFFj/WbdEkUsm4+ZuCsEg1/wOdrkxc+x/92VKsj7ynWA+fDrAFXB5KnhcWE3AHNk6TBUVHqkWBZmCX1vh0Cxwd/ZXkmcBGD3mXQlofUhXQmjIUwy+YdHyp+sprAwF5/s+LaHLOmo5w+z8dgJ1wZaYng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IgBhc+fv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DpsxHwVy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69AE61F00AC4;
-	Wed,  9 Sep 2026 14:09:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788962958;
-	bh=O1ST6aXUH4vLpGnMtkmVRunw3NWN0K0+mb6hBsdUCQI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=DpsxHwVyJX+mrQa6mAky5OHHf6TFNA21E6ZCddduSrSRcT71dXX+HYOrNVCiH02lh
-	 0epweTWOEemt3L0dqdvgVp6qEO9xKlgTASLFi5+Ge5GqannAwBDJ6JIQgsnh9vmmX5
-	 0LD/ql5NK8av7/oJ/DIG2iW7PTrztIVCyd1JyMeniKbr6LmCan8I7BsDAsTXiamNbi
-	 vDx3BbpxlyFntwBuYSHr50Bdq12mThCO9ojnYQkFCPesgUNK9O1sYznv3WoboWSSxV
-	 hbPbUeLOMHIuF1GDyZWbgY3rR9lv8C+aW40dmHgEN2w10T7hwE10LEVo9Pr2AD5x84
-	 OvExso9usG7FA==
-Date: Wed, 9 Sep 2026 16:09:15 +0200
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Christian =?utf-8?B?S8O2bmln?= <ckoenig.leichtzumerken@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
-	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>, 
-	Mark Rutland <mark.rutland@arm.com>, Saravana Kannan <saravanak@kernel.org>, 
-	Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
-	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 08/12] dma-buf: heaps: Add debugfs support
-Message-ID: <aqFnTYSaVfNrDzLN@orome>
-References: <20260904-tegra-vpr-v6-0-79042cfa8de5@nvidia.com>
- <20260904-tegra-vpr-v6-8-79042cfa8de5@nvidia.com>
- <a77730b2-b5d6-49f9-a8ab-72eac4e241b6@amd.com>
- <2fd989b4-06ea-42e6-b18a-bc3ef2e069f5@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IgBhc+fv"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 68D94C2BCF6;
+	Wed,  9 Sep 2026 14:14:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1788963263;
+	bh=gx+oIcs0P6H8PbwV9ZJxkS0GLSxCT6o0xFPNtdzRzAQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=IgBhc+fvT6IZTgQqnCNeyD7NNmsT/If/5WATYEguG+Cs4fK+I9AK7J7+NTj+d+aA2
+	 4dDif4toDKlYIe1AGfhrw+hcmwCnXvZZZMUsnrm7lCMfyJPNK9ookZLGmbZt4C9Hk7
+	 qnNERlrEI793k/O227tWLjQAO4WWYFQ+Xvc9Isiu4z+5K38fAIIYidMABJI/Bd1gi/
+	 Iwbz0KuBI5McRGpGlO0/Dluc0UNA6MgVtdgXN0hOmbKy4liSw5nBJ86bc02SlTebRw
+	 uNaERM8oFzRftCDp/5rjMQW4pQFHPdTHeyXV4YeKNhe5oNyfynnMaXow0I5eCFyoIC
+	 DRrpvpNAsp2Bw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E63C79FBB;
+	Wed,  9 Sep 2026 14:14:23 +0000 (UTC)
+From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Date: Wed, 09 Sep 2026 17:14:07 +0300
+Subject: [PATCH 3/3] iommu/mediatek-v1: add mt6572 support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="3xrykvyn4aewo5kb"
-Content-Disposition: inline
-In-Reply-To: <2fd989b4-06ea-42e6-b18a-bc3ef2e069f5@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260909-6572-iommu-v1-3-de261da09fb2@protonmail.com>
+References: <20260909-6572-iommu-v1-0-de261da09fb2@protonmail.com>
+In-Reply-To: <20260909-6572-iommu-v1-0-de261da09fb2@protonmail.com>
+To: Yong Wu <yong.wu@mediatek.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, Roman Vivchar <rva333@protonmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788963261; l=5880;
+ i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
+ bh=Q9DENazAgwi3T2qykCPLy9Ktvy2jjfeMJUql9cSW4PY=;
+ b=8+P8cpShisgwoJq0VZRjZTKZLtcBmRIMxKVIDut/OQ5H+DuS0IRCr8OkGmuFQBBntJL5u+eAM
+ gSO9ctW66BlAB6sGh2wQRaETyPAsSTIhioXn1Gf/IaQj0ZaS0FCL5+k
+X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
+ pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
+X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
+ auth_id=777
+X-Original-From: Roman Vivchar <rva333@protonmail.com>
+Reply-To: rva333@protonmail.com
+
+From: Roman Vivchar <rva333@protonmail.com>
+
+mt6572 SoC utilizes an earlier version of the IOMMU, that shares the
+same v1 architecture, but has minor hardware differences compared to
+mt2701.
+
+Introduce mtk_iommu_type to distinguish between mt2701 and mt6572
+variant and apply the necessary logic.
+
+Finally, add a platform data for the mt6572 SoC.
+
+Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+---
+Based on my downstream findings, this change may also support mt6582 SoC,
+but I don't have the hardware to test if it actually works.
+---
+ drivers/iommu/mtk_iommu_v1.c | 72 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 55 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 72355f41c36a..b6f547b100d1 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -7,6 +7,7 @@
+  *
+  * Based on driver/iommu/mtk_iommu.c
+  */
++#include <linux/bitfield.h>
+ #include <linux/bug.h>
+ #include <linux/clk.h>
+ #include <linux/component.h>
+@@ -85,6 +86,13 @@ struct dma_iommu_mapping {
+ #define F_DESC_NONSEC				BIT(3)
+ #define MT2701_M4U_TF_LARB(TF)			(6 - (((TF) >> 13) & 0x7))
+ #define MT2701_M4U_TF_PORT(TF)			(((TF) >> 8) & 0xF)
++
++#define MT6572_MMU_INT_ID_PORT_ID		GENMASK(12, 8)
++#define MT6572_MMU_INT_ID_LARB_ID		GENMASK(14, 13)
++
++#define MT6572_M4U_TF_PORT(TF)			FIELD_GET(MT6572_MMU_INT_ID_PORT_ID, TF)
++#define MT6572_M4U_TF_LARB(TF)			(FIELD_GET(MT6572_MMU_INT_ID_LARB_ID, TF) - 1)
++
+ /* MTK generation one iommu HW only support 4K size mapping */
+ #define MT2701_IOMMU_PAGE_SHIFT			12
+ #define MT2701_IOMMU_PAGE_SIZE			(1UL << MT2701_IOMMU_PAGE_SHIFT)
+@@ -96,6 +104,11 @@ struct dma_iommu_mapping {
+  */
+ #define M2701_IOMMU_PGT_SIZE			SZ_4M
+ 
++enum mtk_iommu_type {
++	MTK_IOMMU_MT6572,
++	MTK_IOMMU_V1,
++};
++
+ struct mtk_iommu_v1_suspend_reg {
+ 	u32			standard_axi_mode;
+ 	u32			dcm_dis;
+@@ -116,6 +129,8 @@ struct mtk_iommu_v1_data {
+ 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
+ 
+ 	struct mtk_iommu_v1_suspend_reg	reg;
++
++	enum mtk_iommu_type type;
+ };
+ 
+ struct mtk_iommu_v1_domain {
+@@ -170,8 +185,12 @@ static inline int mt2701_m4u_to_port(int id)
+ 
+ static void mtk_iommu_v1_tlb_flush_all(struct mtk_iommu_v1_data *data)
+ {
+-	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+-			data->base + REG_MMU_INV_SEL);
++	u32 val = F_INVLD_EN0;
++
++	if (data->type == MTK_IOMMU_V1)
++		val |= F_INVLD_EN1;
++
++	writel_relaxed(val, data->base + REG_MMU_INV_SEL);
+ 	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
+ 	wmb(); /* Make sure the tlb flush all done */
+ }
+@@ -180,25 +199,33 @@ static void mtk_iommu_v1_tlb_flush_range(struct mtk_iommu_v1_data *data,
+ 					 unsigned long iova, size_t size)
+ {
+ 	int ret;
+-	u32 tmp;
++	u32 tmp, val = F_INVLD_EN0;
+ 
+-	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+-		data->base + REG_MMU_INV_SEL);
++	if (data->type == MTK_IOMMU_V1)
++		val |= F_INVLD_EN1;
++
++	writel_relaxed(val, data->base + REG_MMU_INV_SEL);
+ 	writel_relaxed(iova & F_MMU_FAULT_VA_MSK,
+ 		data->base + REG_MMU_INVLD_START_A);
+ 	writel_relaxed((iova + size - 1) & F_MMU_FAULT_VA_MSK,
+ 		data->base + REG_MMU_INVLD_END_A);
+ 	writel_relaxed(F_MMU_INV_RANGE, data->base + REG_MMU_INVALIDATE);
+ 
+-	ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
+-				tmp, tmp != 0, 10, 100000);
+-	if (ret) {
+-		dev_warn(data->dev,
+-			 "Partial TLB flush timed out, falling back to full flush\n");
+-		mtk_iommu_v1_tlb_flush_all(data);
++	if (data->type == MTK_IOMMU_V1) {
++		ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
++						tmp, tmp != 0, 10, 100000);
++		if (ret) {
++			dev_warn(data->dev,
++				 "Partial TLB flush timed out, falling back to full flush\n");
++			mtk_iommu_v1_tlb_flush_all(data);
++		}
++
++		/* Clear the CPE status */
++		writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
++	} else {
++		/* Make sure the TLB flush is done */
++		wmb();
+ 	}
+-	/* Clear the CPE status */
+-	writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
+ }
+ 
+ static irqreturn_t mtk_iommu_v1_isr(int irq, void *dev_id)
+@@ -215,8 +242,14 @@ static irqreturn_t mtk_iommu_v1_isr(int irq, void *dev_id)
+ 	fault_iova &= F_MMU_FAULT_VA_MSK;
+ 	fault_pa = readl_relaxed(data->base + REG_MMU_INVLD_PA);
+ 	regval = readl_relaxed(data->base + REG_MMU_INT_ID);
+-	fault_larb = MT2701_M4U_TF_LARB(regval);
+-	fault_port = MT2701_M4U_TF_PORT(regval);
++
++	if (data->type == MTK_IOMMU_V1) {
++		fault_larb = MT2701_M4U_TF_LARB(regval);
++		fault_port = MT2701_M4U_TF_PORT(regval);
++	} else {
++		fault_larb = MT6572_M4U_TF_LARB(regval);
++		fault_port = MT6572_M4U_TF_PORT(regval);
++	}
+ 
+ 	/*
+ 	 * MTK v1 iommu HW could not determine whether the fault is read or
+@@ -539,7 +572,10 @@ static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
+ 		return ret;
+ 	}
+ 
+-	regval = F_MMU_CTRL_COHERENT_EN | F_MMU_TF_PROTECT_SEL(2);
++	regval = F_MMU_TF_PROTECT_SEL(2);
++	if (data->type == MTK_IOMMU_V1)
++		regval |= F_MMU_CTRL_COHERENT_EN;
++
+ 	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
+ 
+ 	regval = F_INT_TRANSLATION_FAULT |
+@@ -588,7 +624,8 @@ static const struct iommu_ops mtk_iommu_v1_ops = {
+ };
+ 
+ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
+-	{ .compatible = "mediatek,mt2701-m4u", },
++	{ .compatible = "mediatek,mt2701-m4u", .data = (void *)MTK_IOMMU_V1 },
++	{ .compatible = "mediatek,mt6572-m4u", .data = (void *)MTK_IOMMU_MT6572 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, mtk_iommu_v1_of_ids);
+@@ -612,6 +649,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	data->dev = dev;
++	data->type = (enum mtk_iommu_type)(uintptr_t)of_device_get_match_data(dev);
+ 
+ 	/* Protect memory. HW will access here while translation fault.*/
+ 	protect = devm_kcalloc(dev, 2, MTK_PROTECT_PA_ALIGN,
+
+-- 
+2.55.0
 
 
---3xrykvyn4aewo5kb
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v6 08/12] dma-buf: heaps: Add debugfs support
-MIME-Version: 1.0
-
-On Wed, Sep 09, 2026 at 01:04:03PM +0200, Christian K=C3=B6nig wrote:
-> Since AMDs mail servers blocked me from sending this out, here once more =
-=66rom my gmail account.
->=20
-> Regards,
-> Christian.
->=20
-> On 9/4/26 15:00, Christian K=C3=B6nig wrote:
-> > On 9/4/26 12:44, Thierry Reding wrote:
-> >> From: Thierry Reding <treding@nvidia.com>
-> >>
-> >> Add a callback to struct dma_heap_ops that heap providers can implement
-> >> to show information about the state of the heap in debugfs. A top-level
-> >> directory named "dma_heap" is created in debugfs and individual files
-> >> will be named after the heaps.
-> >>
-> >> Reviewed-by: Maxime Ripard <mripard@kernel.org>
-> >> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> >=20
-> > One minimal nit pick below, with that taken care of Reviewed-by: Christ=
-ian K=C3=B6nig <christian.koenig@amd.com>.
-> >=20
-> >> ---
-> >> Changes in v5:
-> >> - fix failure handling during debugfs root directory creation
-> >> - add more cleanup to the newly introduced dma_heap_exit()
-> >> ---
-> >>  drivers/dma-buf/dma-heap.c | 52 +++++++++++++++++++++++++++++++++++++=
-+++++++++
-> >>  include/linux/dma-heap.h   |  2 ++
-> >>  2 files changed, 54 insertions(+)
-> >>
-> >> diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
-> >> index 8a6c2b6e0cc6..65c80dac6500 100644
-> >> --- a/drivers/dma-buf/dma-heap.c
-> >> +++ b/drivers/dma-buf/dma-heap.c
-> >> @@ -7,6 +7,7 @@
-> >>   */
-> >> =20
-> >>  #include <linux/cdev.h>
-> >> +#include <linux/debugfs.h>
-> >>  #include <linux/device.h>
-> >>  #include <linux/dma-buf.h>
-> >>  #include <linux/dma-heap.h>
-> >> @@ -225,6 +226,40 @@ const char *dma_heap_get_name(struct dma_heap *he=
-ap)
-> >>  }
-> >>  EXPORT_SYMBOL_NS_GPL(dma_heap_get_name, "DMA_BUF_HEAP");
-> >> =20
-> >> +#ifdef CONFIG_DEBUG_FS
-> >> +static int dma_heap_debug_show(struct seq_file *s, void *unused)
-> >> +{
-> >> +	struct dma_heap *heap =3D s->private;
-> >> +	int err =3D 0;
-> >> +
-> >> +	if (heap->ops && heap->ops->show)
-> >> +		err =3D heap->ops->show(s, heap);
-> >> +
-> >> +	return err;
-> >> +}
-> >> +DEFINE_SHOW_ATTRIBUTE(dma_heap_debug);
-> >> +
-> >> +static struct dentry *dma_heap_debugfs_dir;
-> >> +
-> >> +static void dma_heap_init_debugfs(void)
-> >> +{
-> >> +	dma_heap_debugfs_dir =3D debugfs_create_dir("dma_heap", NULL);
-> >> +}
-> >> +
-> >> +static void dma_heap_exit_debugfs(void)
-> >> +{
-> >> +	debugfs_remove_recursive(dma_heap_debugfs_dir);
-> >> +}
-> >> +#else
-> >> +static void dma_heap_init_debugfs(void)
-> >> +{
-> >> +}
-> >> +
-> >> +static void dma_heap_exit_debugfs(void)
-> >> +{
-> >> +}
-> >> +#endif
-> >> +
-> >>  /**
-> >>   * dma_heap_add - adds a heap to dmabuf heaps
-> >>   * @exp_info: information needed to register this heap
-> >> @@ -299,6 +334,13 @@ struct dma_heap *dma_heap_add(const struct dma_he=
-ap_export_info *exp_info)
-> >> =20
-> >>  	/* Add heap to the list */
-> >>  	list_add(&heap->list, &heap_list);
-> >> +
-> >> +#ifdef CONFIG_DEBUG_FS
-> >> +	if (heap->ops && heap->ops->show)
-> >> +		debugfs_create_file(heap->name, 0444, dma_heap_debugfs_dir,
-> >> +				    heap, &dma_heap_debug_fops);
-> >> +#endif
-> >> +
-> >>  	mutex_unlock(&heap_list_lock);
-> >> =20
-> >>  	return heap;
-> >> @@ -335,6 +377,16 @@ static int dma_heap_init(void)
-> >>  	}
-> >>  	dma_heap_class->devnode =3D dma_heap_devnode;
-> >> =20
-> >> +	dma_heap_init_debugfs();
-> >> +
-> >>  	return 0;
-> >>  }
-> >>  subsys_initcall(dma_heap_init);
-> >> +
-> >> +static void __exit dma_heap_exit(void)
-> >> +{
-> >> +	dma_heap_exit_debugfs();
-> >> +	class_destroy(dma_heap_class);
-> >> +	unregister_chrdev_region(dma_heap_devt, NUM_HEAP_MINORS);
-> >> +}
-> >> +__exitcall(dma_heap_exit);
-> >> diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
-> >> index 648328a64b27..1c9bed1f4dde 100644
-> >> --- a/include/linux/dma-heap.h
-> >> +++ b/include/linux/dma-heap.h
-> >> @@ -12,6 +12,7 @@
-> >>  #include <linux/types.h>
-> >> =20
-> >>  struct dma_heap;
-> >> +struct seq_file;
-> >> =20
-> >>  /**
-> >>   * struct dma_heap_ops - ops to operate on a given heap
-> >> @@ -24,6 +25,7 @@ struct dma_heap_ops {
-> >>  				    unsigned long len,
-> >>  				    u32 fd_flags,
-> >>  				    u64 heap_flags);
-> >> +	int (*show)(struct seq_file *s, struct dma_heap *heap);
-> >=20
-> > I found it good coding practice for objects ops pointer tables to have =
-the object the function works with as first parameter.
-> >=20
-> > Absolutely not a must have, but just looks a little bit more consistent.
-
-Agreed, I generally prefer that too. However, in this case I thought it
-more important to model this after how pretty much every debugfs file
-operation works, which is to take the seq_file as first parameter. It's
-the same order as for the main dma_heap_debug_show() entry point that
-this is called from, so it's consistent that way.
-
-I guess an alternative way to think about it is that in this case the
-object that we're really working with is the seq_file and the dma_heap
-is what gets written to that seq_file.
-
-Thierry
-
---3xrykvyn4aewo5kb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmqhaIgACgkQ3SOs138+
-s6HunhAAiN37Dd+TG+BFBCdSRmV2hMHjWc+FdBQaTN44THpv2z6VMPtar+lpEOnj
-ebQ25tBFfYNr5t1GcY62OjCbvi/nUicdtL8MDwLDFBlN7Klb2heTA6ahS/DbqzaM
-g35ClGbknLWH/2yEe3Wff2iduod4n7FhE5HM19ScvUcISiIhCVlHuki/axbv+c94
-jHwJA3xCbYyCA22i6ss9TBlxL6V0eerGlHSsnuXwsfV/f9/SHw3MoH3LrA1nlS08
-csdw+ZNM3zf8cE0jJll9c9NgdvTDzn00bilN8r8tt4tnKofQRJ03VhlBCvOtdzYl
-7LFnV+2C3V7Go2x8cInDtWmz0Uatp9H7gCsZ/AofL8i+HoiOpfsqoHWZaoNxLPGv
-Th28zBw41Il1iqyN4qN39Xir+SpyZrI4ltGF2+CHMBK+3/czC/UUhh3wev+fVdnR
-JL9BfJo1SbiPT8mk/uyZziU+wXJz0HQ/MNwX1fZjNHcOKn+hfHnSnV36uqcVFxJ3
-DcXi/LFGMKZ6M5pXSprA26JBc3wJZwMWBIR1ouZZxJLef0sZARBlRNjobVJ+9z6r
-7Wu/0KnLumcEpKcvleRPffm/phk+cjMESwnvx7gq6Blmo/8weR179dWKjb1NhNkb
-GyYJGi/bcNybqbqfqrn5F0FLm+a/1qG78dywKqc/4yrX6HWPnFA=
-=gj3n
------END PGP SIGNATURE-----
-
---3xrykvyn4aewo5kb--
