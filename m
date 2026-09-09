@@ -1,42 +1,42 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8CEE3546C6
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:33:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D713F8254
+	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:34:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788946409; cv=none; b=KSalx6k2X/YjYFje6BUo1I0beuOrWwBHwLotr574fUqoMnV0quOOyrqFUyXeL57TaesJs2i5UbU7H1qtZf93bCgH8LledMfVwmRsUuLS6A0DmsgQ2l7uCdNTG8fzS1AC3VlG2LDC1deCa0niy+gxMZE07s/5LiMSQM/3xaQh9ZA=
+	t=1788946456; cv=none; b=CEzgooBt4JLRowGrVrR/CKpcXuHJUkBz5dgBd9yDzODreTexf5cldlrmbei4bSSmud1OuhC4evcveFfqM821FFHo23HDxMff7HXWVPXWN6NcfJnltHYp0UQ6HYdNR7yyE1t0j1vP0NVdVyuXvX8SycNFlP9eOIDzN3h7y7JCqps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788946409; c=relaxed/simple;
-	bh=oYm9hZ9oiO9Bjj0eMQMf2WQxoTXXj32OWZHcxdpZtLA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=KgqrnnEKuDkLt8F51Awt2j/vyfYGd27yTnnIbYlj5ImWCKFISkuYTHGqZ+hY0BETn7Rbvw6BvanRl9+789p5TsR/eeuvOwBEG9wrxlNtq7MF2Drp6Yiw3pFZfn/E5e0wXo6qFdTskU9qX6d8d4hTpuahOlkdDgHi+QbI46XDCvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=C/kV9M3W; arc=none smtp.client-ip=210.118.77.11
+	s=arc-20240116; t=1788946456; c=relaxed/simple;
+	bh=kI0dFl9THJgq2NRN3l8zcpKi8pMsX5t348uZacY6h58=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:In-Reply-To:
+	 Content-Type:References; b=r1QuTlH+sQnG9yNexsoBzVSN6YVeS2P35XtZ0QHS1172gBbJXvTk/BeHWMmQkpxRCgJHTfdxnpRs4zOn3w9+awDjXF17gbO9ovVqn/9qhMBAf6JBuJGnYJhuu/RzcV239Eh1BJnFK5Q48gpAAyjMB+od/mMd2yY0fvWvtF088fg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=qGFwFM9t; arc=none smtp.client-ip=210.118.77.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="C/kV9M3W"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260909093317euoutp018766109937b1437dec671ee1882beef3~TnUUjF_mn0950609506euoutp01o
-	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:33:17 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260909093317euoutp018766109937b1437dec671ee1882beef3~TnUUjF_mn0950609506euoutp01o
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="qGFwFM9t"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260909093401euoutp0269abef05669019a9ffff6516d9c2a8ef~TnU9weya71745717457euoutp02U
+	for <iommu@lists.linux.dev>; Wed,  9 Sep 2026 09:34:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260909093401euoutp0269abef05669019a9ffff6516d9c2a8ef~TnU9weya71745717457euoutp02U
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1788946397;
-	bh=zfo8YHC50Fl3ZDYN0nijYPMjYSxHIoKJMO4F8frAXnU=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=C/kV9M3WRkFTIiHUJ8QOf7pYfyOw1aBdcGtpVshU7iADJls+5G5Y/T0CnXV1edH1N
-	 hctXOFL6mdtwRf0+dLYQJkrQapMtxjuEHvnqiKRWzNGvxCBsqWlbkpYyRu4Mt1ivjc
-	 OeTpprLX7QLGy3VH+Y5XHvsyrM1OSac2eb0MvMoo=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260909093316eucas1p29c13790e88a78fc6dee44d78e1498080~TnUUAa8EZ0620106201eucas1p2j;
-	Wed,  9 Sep 2026 09:33:16 +0000 (GMT)
+	s=mail20170921; t=1788946441;
+	bh=UV0/+f1l1BoLThd42Ew9ojQmpG98ujp+B6DNFtXMLB0=;
+	h=Date:Subject:To:From:In-Reply-To:References:From;
+	b=qGFwFM9tX/POMB+cQXb+N3gFZtllUteEnaYW/feAzpisaHwTmSrLknMNODUX+2+UL
+	 QIFUXIjgsWhk54Q+6dHd5FmBOwbLGezgtyHlrwzcYMHn381fM3QogCqd6nesWjrxad
+	 bsOo4TD+5t/1/mAha5R/CuffwjY9IqfOmSLpPYhM=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260909093401eucas1p1978a50cffbadcd28189328b8a35181f1~TnU9aG9Mo1629716297eucas1p1H;
+	Wed,  9 Sep 2026 09:34:01 +0000 (GMT)
 Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260909093315eusmtip27dce3e492bedeac71737c1cb92630b08~TnUSkSu-H2587025870eusmtip2v;
-	Wed,  9 Sep 2026 09:33:15 +0000 (GMT)
-Message-ID: <565dcd03-4787-4e0f-a37b-9d04a9296b78@samsung.com>
-Date: Wed, 9 Sep 2026 11:33:14 +0200
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260909093358eusmtip199556b4956c3d189eaf7446be74818ee~TnU7Tv7y41967519675eusmtip1Q;
+	Wed,  9 Sep 2026 09:33:58 +0000 (GMT)
+Message-ID: <c694433e-4006-40f9-81a0-f1de58f0c93e@samsung.com>
+Date: Wed, 9 Sep 2026 11:33:58 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,194 +44,192 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-mapping: rename dma_opt_mapping_size()
-To: John Garry <john.g.garry@oracle.com>, robin.murphy@arm.com,
-	joro@8bytes.org, will@kernel.org, axboe@kernel.dk, hch@lst.de,
-	sagi@grimberg.me, James.Bottomley@HansenPartnership.com, mkp@kernel.org
-Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-scsi@vger.kernel.org, John Garry <john.garry@linux.dev>
+Subject: Re: [PATCH v2] dma-mapping: use exact allocation for DMA pages
+To: Qingfang Deng <qingfang.deng@linux.dev>, Robin Murphy
+	<robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, David
+	Hildenbrand <david@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, "Liam R.
+ Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, Mike
+	Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, Michal
+	Hocko <mhocko@suse.com>, Brendan Jackman <brendan.jackman@linux.dev>,
+	Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org
 Content-Language: en-US
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260831093620.3481337-1-john.g.garry@oracle.com>
+In-Reply-To: <20260903012914.312305-1-qingfang.deng@linux.dev>
 Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260909093316eucas1p29c13790e88a78fc6dee44d78e1498080
+X-CMS-MailID: 20260909093401eucas1p1978a50cffbadcd28189328b8a35181f1
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260831093715eucas1p296758c633e8ab3c48b3070ae4f5e2f1f
+X-RootMTR: 20260903012931eucas1p1d558f849340fa7b92074201c28f7937b
 X-EPHeader: CA
-X-CMS-RootMailID: 20260831093715eucas1p296758c633e8ab3c48b3070ae4f5e2f1f
-References: <CGME20260831093715eucas1p296758c633e8ab3c48b3070ae4f5e2f1f@eucas1p2.samsung.com>
-	<20260831093620.3481337-1-john.g.garry@oracle.com>
+X-CMS-RootMailID: 20260903012931eucas1p1d558f849340fa7b92074201c28f7937b
+References: <CGME20260903012931eucas1p1d558f849340fa7b92074201c28f7937b@eucas1p1.samsung.com>
+	<20260903012914.312305-1-qingfang.deng@linux.dev>
 
-On 31.08.2026 11:36, John Garry wrote:
-> From: John Garry <john.garry@linux.dev>
+On 03.09.2026 03:29, Qingfang Deng wrote:
+> DMA page allocation fallbacks use alloc_pages_node() with get_order(size),
+> wasting the unused tail for non-power-of-two requests.
 >
-> Function dma_opt_mapping_size() implies from its name that it returns a
-> target or sweet spot DMA mapping size. However, it is just an upper limit
-> optimal DMA mapping size. Above this size, DMA mapping performance may
-> significantly degrade.
+> Use alloc_pages_exact_nid() and free_pages_exact() so that a buddy
+> fallback retains only requested pages.
 >
-> Rename to dma_max_opt_mapping_size() to reflect the real behaviour. Also
-> rename the internal DMA mapping symbols to align with this.
->
-> The DMA API documentation already described this behaviour properly (so
-> there is nothing to update).
->
-> Signed-off-by: John Garry <john.garry@linux.dev>
+> Signed-off-by: Qingfang Deng <qingfang.deng@linux.dev>
 Applied to dma-mapping-for-next, thanks!
-> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
-> index ba23a472f7948..69d4ebe4f96db 100644
-> --- a/Documentation/core-api/dma-api.rst
-> +++ b/Documentation/core-api/dma-api.rst
-> @@ -154,7 +154,7 @@ others should not be larger than the returned value.
->  ::
->  
->  	size_t
-> -	dma_opt_mapping_size(struct device *dev);
-> +	dma_max_opt_mapping_size(struct device *dev);
->  
->  Returns the maximum optimal size of a mapping for the device.
->  
+> ---
+> v2: drop __meminit to fix section mismatch
+>
+> v1:
+> https://lore.kernel.org/linux-iommu/20260901085348.53140-1-qingfang.deng@linux.dev/
+> ---
+>  drivers/iommu/dma-iommu.c   | 10 ++++++----
+>  include/linux/dma-map-ops.h |  2 +-
+>  include/linux/gfp.h         |  2 +-
+>  kernel/dma/contiguous.c     |  6 +++---
+>  kernel/dma/direct.c         |  8 +++++---
+>  kernel/dma/ops_helpers.c    | 11 +++++++----
+>  mm/page_alloc.c             |  2 +-
+>  7 files changed, 24 insertions(+), 17 deletions(-)
+>
 > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 58c624513cd43..1b26c9ce4aabe 100644
+> index 58c624513cd4..8f262c83802c 100644
 > --- a/drivers/iommu/dma-iommu.c
 > +++ b/drivers/iommu/dma-iommu.c
-> @@ -1762,7 +1762,7 @@ unsigned long iommu_dma_get_merge_boundary(struct device *dev)
->  	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
->  }
+> @@ -1628,10 +1628,12 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+>  	void *cpu_addr;
 >  
-> -size_t iommu_dma_opt_mapping_size(void)
-> +size_t iommu_dma_max_opt_mapping_size(void)
->  {
->  	return iova_rcache_range();
->  }
-> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-> index da93b505d2394..d87d268037d81 100644
-> --- a/drivers/nvme/host/pci.c
-> +++ b/drivers/nvme/host/pci.c
-> @@ -3747,7 +3747,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
->  	 */
->  	dev->ctrl.max_hw_sectors = min_t(u32,
->  			NVME_MAX_BYTES >> SECTOR_SHIFT,
-> -			dma_opt_mapping_size(&pdev->dev) >> 9);
-> +			dma_max_opt_mapping_size(&pdev->dev) >> SECTOR_SHIFT);
->  	dev->ctrl.max_segments = NVME_MAX_SEGS;
->  	dev->ctrl.max_integrity_segments = 1;
->  	return dev;
-> diff --git a/drivers/scsi/scsi_transport_sas.c b/drivers/scsi/scsi_transport_sas.c
-> index d689b9ed08a6c..aaa47552a215c 100644
-> --- a/drivers/scsi/scsi_transport_sas.c
-> +++ b/drivers/scsi/scsi_transport_sas.c
-> @@ -223,8 +223,8 @@ static int sas_bsg_initialize(struct Scsi_Host *shost, struct sas_rphy *rphy)
+>  	page = dma_alloc_contiguous(dev, alloc_size, gfp);
+> -	if (!page)
+> -		page = alloc_pages_node(node, gfp, get_order(alloc_size));
+> -	if (!page)
+> -		return NULL;
+> +	if (!page) {
+> +		cpu_addr = alloc_pages_exact_nid(node, alloc_size, gfp);
+> +		if (!cpu_addr)
+> +			return NULL;
+> +		page = virt_to_page(cpu_addr);
+> +	}
 >  
->  /*
->   * Set shost->opt_sectors from the DMA optimal mapping size, but only
-> - * when dma_opt_mapping_size() is strictly less than dma_max_mapping_size(),
-> - * indicating a genuine optimization hint from an IOMMU or DMA backend.
-> + * when dma_max_opt_mapping_size() is strictly less than
-> + * dma_max_mapping_size(), indicating a genuine optimization hint.
->   * When the two are equal (e.g. IOMMU disabled / passthrough), no real
->   * hint exists, so leave opt_sectors at 0 to avoid bogus optimal_io_size
->   * values that break filesystem geometry (e.g. mkfs.xfs stripe alignment).
-> @@ -232,16 +232,16 @@ static int sas_bsg_initialize(struct Scsi_Host *shost, struct sas_rphy *rphy)
->  static void sas_dma_setup_opt_sectors(struct Scsi_Host *shost)
->  {
->  	struct device *dma_dev = shost->dma_dev;
-> -	size_t opt = dma_opt_mapping_size(dma_dev);
-> +	size_t max_opt = dma_max_opt_mapping_size(dma_dev);
->  	size_t max = dma_max_mapping_size(dma_dev);
->  	unsigned int opt_sectors;
->  
-> -	/* opt >= max means no real hint was provided by the DMA layer */
-> -	if (opt >= max)
-> +	/* max_opt >= max means no real hint was provided by the DMA layer */
-> +	if (max_opt >= max)
->  		return;
->  
->  	/* Clamp to max_sectors to avoid overflow in sector arithmetic */
-> -	opt_sectors = min_t(unsigned int, opt >> SECTOR_SHIFT,
-> +	opt_sectors = min_t(unsigned int, max_opt >> SECTOR_SHIFT,
->  			    shost->max_sectors);
->  
->  	/* Guard against zero before rounddown_pow_of_two() */
+>  	if (!coherent || PageHighMem(page)) {
+>  		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
 > diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 8fae2b7deb20d..eee6de5188c76 100644
+> index 8fae2b7deb20..3ef3003713a6 100644
 > --- a/include/linux/dma-map-ops.h
 > +++ b/include/linux/dma-map-ops.h
-> @@ -60,7 +60,7 @@ struct dma_map_ops {
->  	int (*dma_supported)(struct device *dev, u64 mask);
->  	u64 (*get_required_mask)(struct device *dev);
->  	size_t (*max_mapping_size)(struct device *dev);
-> -	size_t (*opt_mapping_size)(void);
-> +	size_t (*max_opt_mapping_size)(void);
->  	unsigned long (*get_merge_boundary)(struct device *dev);
->  };
->  
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index a3e880649fa41..efde0e5a58dc2 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -207,7 +207,7 @@ int dma_set_coherent_mask(struct device *dev, u64 mask);
->  u64 dma_get_required_mask(struct device *dev);
->  bool dma_addressing_limited(struct device *dev);
->  size_t dma_max_mapping_size(struct device *dev);
-> -size_t dma_opt_mapping_size(struct device *dev);
-> +size_t dma_max_opt_mapping_size(struct device *dev);
->  unsigned long dma_get_merge_boundary(struct device *dev);
->  struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
->  		enum dma_data_direction dir, gfp_t gfp, unsigned long attrs);
-> @@ -326,7 +326,7 @@ static inline size_t dma_max_mapping_size(struct device *dev)
+> @@ -143,7 +143,7 @@ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
+>  static inline void dma_free_contiguous(struct device *dev, struct page *page,
+>  		size_t size)
 >  {
->  	return 0;
+> -	__free_pages(page, get_order(size));
+> +	free_pages_exact(page_address(page), size);
 >  }
-> -static inline size_t dma_opt_mapping_size(struct device *dev)
-> +static inline size_t dma_max_opt_mapping_size(struct device *dev)
->  {
->  	return 0;
->  }
-> diff --git a/include/linux/iommu-dma.h b/include/linux/iommu-dma.h
-> index 060f6e23ab3c8..fae5d50e4f277 100644
-> --- a/include/linux/iommu-dma.h
-> +++ b/include/linux/iommu-dma.h
-> @@ -39,7 +39,7 @@ int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
->  		void *cpu_addr, dma_addr_t dma_addr, size_t size,
->  		unsigned long attrs);
->  unsigned long iommu_dma_get_merge_boundary(struct device *dev);
-> -size_t iommu_dma_opt_mapping_size(void);
-> +size_t iommu_dma_max_opt_mapping_size(void);
->  size_t iommu_dma_max_mapping_size(struct device *dev);
->  void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
->  		dma_addr_t handle, unsigned long attrs);
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index bf2651a70b7c2..82e701648d604 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -1012,19 +1012,19 @@ size_t dma_max_mapping_size(struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(dma_max_mapping_size);
+>  #endif /* CONFIG_DMA_CMA*/
 >  
-> -size_t dma_opt_mapping_size(struct device *dev)
-> +size_t dma_max_opt_mapping_size(struct device *dev)
->  {
->  	const struct dma_map_ops *ops = get_dma_ops(dev);
->  	size_t size = SIZE_MAX;
+> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> index 872bc53f32ec..aa4601805f21 100644
+> --- a/include/linux/gfp.h
+> +++ b/include/linux/gfp.h
+> @@ -329,7 +329,7 @@ void *alloc_pages_exact_noprof(size_t size, gfp_t gfp_mask) __alloc_size(1);
 >  
+>  void free_pages_exact(void *virt, size_t size);
+>  
+> -__meminit void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask) __alloc_size(2);
+> +void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask) __alloc_size(2);
+>  #define alloc_pages_exact_nid(...)					\
+>  	alloc_hooks(alloc_pages_exact_nid_noprof(__VA_ARGS__))
+>  
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 66093460584e..90937dc7c627 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -451,8 +451,8 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>   *
+>   * This function releases memory allocated by dma_alloc_contiguous(). As the
+>   * cma_release returns false when provided pages do not belong to contiguous
+> - * area and true otherwise, this function then does a fallback __free_pages()
+> - * upon a false-return.
+> + * area and true otherwise, this function then does a fallback
+> + * free_pages_exact() upon a false-return.
+>   */
+>  void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+>  {
+> @@ -476,7 +476,7 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+>  	}
+>  
+>  	/* not in any cma, free from buddy */
+> -	__free_pages(page, get_order(size));
+> +	free_pages_exact(page_address(page), size);
+>  }
+>  
+>  /*
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index da665ca22d5c..ea64453d7370 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -120,6 +120,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>  	int node = dev_to_node(dev);
+>  	struct page *page;
+>  	u64 phys_limit;
+> +	void *va;
+>  
+>  	WARN_ON_ONCE(!PAGE_ALIGNED(size));
+>  
+> @@ -133,9 +134,9 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>  		dma_free_contiguous(dev, page, size);
+>  	}
+>  
+> -	while ((page = alloc_pages_node(node, gfp, get_order(size)))
+> -	       && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> -		__free_pages(page, get_order(size));
+> +	while ((va = alloc_pages_exact_nid(node, size, gfp)) &&
+> +	       !dma_coherent_ok(dev, virt_to_phys(va), size)) {
+> +		free_pages_exact(va, size);
+>  
+>  		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
+>  		    phys_limit < DMA_BIT_MASK(64) &&
+> @@ -146,6 +147,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>  		else
+>  			return NULL;
+>  	}
+> +	page = va ? virt_to_page(va) : NULL;
+>  
+>  	return page;
+>  }
+> diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
+> index 6b5f9208d31c..5cdf3f60cf47 100644
+> --- a/kernel/dma/ops_helpers.c
+> +++ b/kernel/dma/ops_helpers.c
+> @@ -67,10 +67,13 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
+>  	phys_addr_t phys;
+>  
+>  	page = dma_alloc_contiguous(dev, size, gfp);
+> -	if (!page)
+> -		page = alloc_pages_node(dev_to_node(dev), gfp, get_order(size));
+> -	if (!page)
+> -		return NULL;
+> +	if (!page) {
+> +		void *va = alloc_pages_exact_nid(dev_to_node(dev), size, gfp);
+> +
+> +		if (!va)
+> +			return NULL;
+> +		page = virt_to_page(va);
+> +	}
+>  
+>  	phys = page_to_phys(page);
 >  	if (use_dma_iommu(dev))
-> -		size = iommu_dma_opt_mapping_size();
-> -	else if (ops && ops->opt_mapping_size)
-> -		size = ops->opt_mapping_size();
-> +		size = iommu_dma_max_opt_mapping_size();
-> +	else if (ops && ops->max_opt_mapping_size)
-> +		size = ops->max_opt_mapping_size();
->  
->  	return min(dma_max_mapping_size(dev), size);
->  }
-> -EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
-> +EXPORT_SYMBOL_GPL(dma_max_opt_mapping_size);
->  
->  unsigned long dma_get_merge_boundary(struct device *dev)
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index c4dc61ec663e..d3a135dfcdd3 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5637,7 +5637,7 @@ EXPORT_SYMBOL(alloc_pages_exact_noprof);
+>   *
+>   * Return: pointer to the allocated area or %NULL in case of error.
+>   */
+> -void * __meminit alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask)
+> +void *alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_mask)
 >  {
+>  	unsigned int order = get_order(size);
+>  	struct page *p;
 
 Best regards
 -- 
