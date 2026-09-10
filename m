@@ -1,138 +1,212 @@
-Received: from pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.13.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65D2B4A4857
-	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 15:05:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.13.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AF843D4135
+	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 15:35:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789052738; cv=none; b=W9ThqMle9bkmQmnR3bHeqeUBUaxY8jtx7b9SfNfI0yRTWJXrJLtu10LuGJJs0LYCglhkgTFB4R7Y30ddu1Sm6Ke1RH/7x5GpY1ILc/p/ggOhhYXzZcL0LDhnMUDwTVTBixG8g4n5TvgfqXeWo/fDLrqNCCsjBQo92ESiGd9nOdM=
+	t=1789054557; cv=none; b=GWzrPG90FqjXegGfYYyHV0r37UOZUh5jHCQuBMtB0omcmEpL+r/LqbPQJH0zdXAmeyAK+gSQzv4yclaAu6JCrivXlpMuigC86iqNWkq5BJh1R3C0w7C9v7HS1katTmNBESHiqtLDh1bQJFAt5TN4Ng1UfPd3+KatHf7hen2xz3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789052738; c=relaxed/simple;
-	bh=d2VACGD2Y+Pcowukn+YH9kJBcwGZQz4IndLM4cjc8qw=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dopwJQgWz429tCLog5oR4/ybGOhI569XHVWGMgg4Wmj8PmGm4M45wNQpEduudXCSo61PODM74+34tLco/oUgqxezpJtujPc3Rzyd7ifurxxHy2B26w7InvmztA42SrdfFJRyAT0pOVyeb37+i5hnuT/PMlSNEty85E9oamileAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de; spf=pass smtp.mailfrom=amazon.de; dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b=iyFddndi; arc=none smtp.client-ip=52.13.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
+	s=arc-20240116; t=1789054557; c=relaxed/simple;
+	bh=Xgcjqjf3P4MGGbQztdNdBHKpAHb0Y3bYS7ovsxn2/ek=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=onPJretQhsmo7JQ3I+8EFNF1sagPZyoNXMPFlAXdH6LcesHwmWdW1+E3+Y4HqejW/CpxLRjDiJOkJ+jrsY001OlsyFQlw6SXswJmEH3RL1O3P/to92a9SDPiAEU2aaGYwuOJfsW7+2H1gm5h0VrYJtRw75VX1voEqIBXJ40z41U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fp5zmmVD; arc=none smtp.client-ip=209.85.216.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b="iyFddndi"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fp5zmmVD"
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-38f57e31b6eso4367431a91.1
+        for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 08:35:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
-  t=1789052733; x=1820588733;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yQBhl1VDWRy2DT2o61x3397a3YMvKwrUwztfIj/WO08=;
-  b=iyFddndik78K7klUmWRMg4w2bL7jnjOVpp0PhKT6DDq63C1Q+h/vB3eY
-   01sopCqPU893SX9ksvAzbazobJOfcYbGPeMwZMuh65iWJd6sPSUHqMtCF
-   xtjqRl2Axn+XZFC4GG/vRaOeMWFSfChqTyre9TXetrxmmMjHBxEOXE4/W
-   LNyIjjujEvnBmc8u4v7fiR1nZmIKWRMqBCdW3OKCcAGe8NFzLXDs9npuz
-   /VXyhAgJOycTXmc/iykRtSU8LSc1kUFj3xFswaeI1Vf1d0E3PxHIFdXB9
-   WR+PPn2fHjn/aGEpyqSSoBJACJOBWXhckYfmWPJb4X8Ka8ihjX9G3O8SO
-   A==;
-X-CSE-ConnectionGUID: QaaPeaiXRrq5Rc1ecG+pjg==
-X-CSE-MsgGUID: ewR6b+nxTQqWR4lFlPzxfQ==
-X-IronPort-AV: E=Sophos;i="6.27,95,1787011200"; 
-   d="scan'208";a="28310213"
-Received: from ip-10-5-9-48.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.9.48])
-  by internal-pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 15:05:28 +0000
-Received: from EX19MTAUWC002.ant.amazon.com [205.251.233.51:29016]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.19.159:2525] with esmtp (Farcaster)
- id e28b0798-0ce6-4826-aa25-e422267bb4b0; Thu, 10 Sep 2026 15:05:28 +0000 (UTC)
-X-Farcaster-Flow-ID: e28b0798-0ce6-4826-aa25-e422267bb4b0
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.45;
- Thu, 10 Sep 2026 15:05:28 +0000
-Received: from dev-dsk-fparola-1b-85ea2014.eu-west-1.amazon.com
- (10.13.236.104) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.46; Thu, 10 Sep 2026
- 15:05:26 +0000
-From: Federico Parola <fparola@amazon.de>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-CC: <nh-open-source@amazon.com>
-Subject: [PATCH v2] iommu: Finalize deferred attachments when mapping MSI pages
-Date: Thu, 10 Sep 2026 15:04:47 +0000
-Message-ID: <20260910150517.95239-1-fparola@amazon.de>
-X-Mailer: git-send-email 2.47.3
+        d=google.com; s=20251104; t=1789054555; x=1789659355; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=2+MOwVd/hSplAvFbBk52yvKLS3w7cDWTRO3ieRL0csc=;
+        b=fp5zmmVDdkf1G007+OCK8cBr9Z+VDHt+bwaPFnpCx40dCsENOS46rwxRwYYa5oPakk
+         qwFltJJ+iDE9ImfRKlaFNUwK48cNBar21e7xWKvA2xW4tnlIkjpPQXXupxmsKN4WYSqi
+         1l5/h2SKdc41KsCSuJCkKqa1OZhNBchdUmm1gLRQXLO/3KBbaMl5jBz/DNJWhHPtFedC
+         8PTzb0ef8jobmTkvjyNw5XP/Hubu6xGV2ETY84qjGv+ucmWCpF5WDOdVQ9GvZtyWTJZ8
+         AAgl6zk2mKFSbOkpRDUGaE6nqXcO5wL1ivn2G+kL3/by51ftcgdU7bPbJ71sH4Wsch97
+         6zIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789054555; x=1789659355;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=2+MOwVd/hSplAvFbBk52yvKLS3w7cDWTRO3ieRL0csc=;
+        b=iuxA1/kBfftY94lRbfLPsBVpKp1egSr0NumvnzEjmEqDbGUOyPmgjomqFs4D4rgERZ
+         yhSxhmkxgs7o969x4evh8JvYPfDwTq+bOYQL7qAN9WcwLV1RBkeRP31/zNkZnA2ylh8c
+         NG4VrASqTEFqeO58S79SAUBCAfeojRTJD23KKI3kYUKndmoNcyLGHnxeN1+rfGp6FjIo
+         tSrNdseCLLGmsNUlS8IZUS5eC5hE+kWvB/2NAh9RO9CJhJpjfmu6GcGLgb7N4VS29CI0
+         x4uv8uLiwBxS1G7syZMVF/Y854DlV/aq7J3rQJomF4YrjQQHv9cYeyjMn/Wz36LLbr2p
+         6NPQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzG5rnuGy9iW2zJPT9ZEKcmUtNQR95Mv5Tg0faHfoJ0O/zSBARAzgWUuxoWJd6+XWehNrpOBg==@lists.linux.dev
+X-Gm-Message-State: AFuF++kHh6FUZAuS7B/8x9brkid9BaMF1ibT456lpDNY+uBmXp7bfPoA
+	HU6xTUUV+El7bPqDAHecAyguU1njudYFrjDSw+3D3pUkw4SsdREpgUoHWyCdLk+rLhI4EgHwAo4
+	cCVaQ2A==
+X-Received: from pjbdt17.prod.google.com ([2002:a17:90a:fa51:b0:39d:8f18:feb5])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90a:6081:b0:39b:51cc:4586
+ with SMTP id 98e67ed59e1d1-39b51cc65admr27199424a91.19.1789054554982; Thu, 10
+ Sep 2026 08:35:54 -0700 (PDT)
+Date: Thu, 10 Sep 2026 08:35:54 -0700
+In-Reply-To: <20260910143448.GD3968357@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EX19D039UWB001.ant.amazon.com (10.13.138.119) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
+Mime-Version: 1.0
+References: <20260903023452.721732-1-loganodell@google.com>
+ <20260904160009.GV4157646@nvidia.com> <aptFFYqcSiBdMLE8@google.com>
+ <20260905012403.GX4157646@nvidia.com> <aqIAtOoew-_6jw29@google.com> <20260910143448.GD3968357@nvidia.com>
+Message-ID: <aqLOWkuVKccR-I7W@google.com>
+Subject: Re: [RFC PATCH 0/3] liveupdate: Move to feature flags for LUO and
+ memfd ABI compatibility
+From: Sean Christopherson <seanjc@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Matlack <dmatlack@google.com>, Logan Odell <loganodell@google.com>, arnd@arndb.de, 
+	pasha.tatashin@soleen.com, rppt@kernel.org, pratyush@kernel.org, 
+	graf@amazon.com, akpm@linux-foundation.org, pbonzini@redhat.com, 
+	maz@kernel.org, oupton@kernel.org, bhelgaas@google.com, alex@shazbot.org, 
+	kevin.tian@intel.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	kexec@lists.infradead.org, linux-mm@kvack.org, kvm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="us-ascii"
 
-When a device's attachment to its default domain is deferred, the IOMMU
-is still translating the device with the tables inherited from the
-previous kernel. Any mapping installed in that domain does not take
-effect until the deferred attachment is finalized.
+On Thu, Sep 10, 2026, Jason Gunthorpe wrote:
+> On Wed, Sep 09, 2026 at 05:58:28PM -0700, Sean Christopherson wrote:
+> > On Fri, Sep 04, 2026, Jason Gunthorpe wrote:
+> > > On Fri, Sep 04, 2026 at 10:24:21PM +0000, David Matlack wrote:
+> > > 
+> > > > The proposal here (which is inspired by the KVM UAPI) is to ensure every
+> > > > LUO ABI struct has 2 properties:
+> > > > 
+> > > >  1. A field to encode options/features (e.g. u64 flags).
+> > > >  2. A way way to grow without breaking backward compatibility (e.g. so
+> > > >     we can add new fields).
+> > > > 
+> > > > Each flag can mean whatever it needs to. e.g. It can indicate the
+> > > > precence of one or more fields (i.e. new fields in the struct), or it
+> > > > can mean a field now has a different meaning (i.e. union in the struct).
+> > > > 
+> > > > This would enable adding support for new features without breaking
+> > > > backward compatibility. Downstream users would have to ensure their
+> > > > kernel does not start using a new feature while it can still rollback to
+> > > > a version that does not support the new feature.
+> > > 
+> > > This was never the biggest problem. The main issue was the functional
+> > > behaviors of the kernel that cannot be represented simply as data in a
+> > > struct with some flag bits.
+> > > 
+> > > Like for instance kernel A supports memfd folio sizes far larger than
+> > > kernel B because we fixed MAX_ORDER. You can't fix that just with
+> > > simplistic flags.
+> > 
+> > Can you elaborate on why the folio sizes matter?  Honest question, because I don't
+> > understand why the serialization format wouldn't express things as "N contiguous
+> > pages starting at PFN X".  Then the implementation would rebuild its folios as
+> > appropriate.
+> 
+> That's an idyllic view, yes, but my point is (IIRC) we didn't do
+> exactly that for memfd.
 
-iommu_deferred_attach() covers the DMA mapping paths, but nothing covers
-iommu_dma_prepare_msi(): programming an MSI installs the MSI page in
-group->domain and hands the resulting IOVA to the irqchip, so an MSI
-programmed before the first DMA map is written using an IOVA that the
-hardware does not yet translate.
+Well, y'all screwed up then.  I don't see why past mistakes should force other
+subsystems to support a flawed implementation.  Learn from the mistakes, add v2
+of serialization for memfd, and move on.
 
-This issue is currently not triggerable as the two IOMMU implementations
-supporting deferred attachments, Intel and AMD, do not rely on DMA
-translations for MSI transactions. However, the Arm implementation being
-introduced in [1] will be subject to it.
+> Sometimes you can do more and more work to try and be more and more
+> general but this is *alot* of work and even then eventually hits
+> problematic limits. Like what do you do with the sealing flags? That's
+> ABI breaking if the successor does not support them, and downgrades
+> make exactly that possible.
+>
+> A CSPish user can do things like patch the new sealing flag into their
+> current kernel (while preventing userspace from using it), ensure
+> everything is updated to that, then jump ahead to a newer kernel and
+> enjoy the new flag with full downgrade support. There is so much more
+> control on their part that makes the problem far more managably simple
+> that upstream does not get to have.
 
-Finalize the deferred attachment from iommu_dma_prepare_msi() too,
-before the MSI page is mapped. Do it outside group->mutex, as
-iommu_deferred_attach() takes the mutex itself and the two operations do
-not need to be atomic with respect to each other: if an attach replaces
-group->domain in between, the MSI page is mapped into whatever
-group->domain holds once the mutex is taken.
+I guess maybe we have a different definition of ABI? 
 
-iommu_get_domain_for_dev() cannot return NULL here: MSI setup only runs
-for a device whose driver is bound, and of_iommu_configure() and
-acpi_iommu_configure_id() hold the bind off until the IOMMU is
-registered, hence until iommu_device_register() has set up the group's
-default domain. group->domain then stays non-NULL until
-iommu_deinit_device() clears it once the group is empty.
-dma_iova_try_alloc() already relies on the same guarantee.
+I'm not saying that upstream has to be 100% forwards and backwards compatible.
+I'm saying the serialization payload itself should communicate what features are
+effectively required.  I.e. *if* there are incompatibilities, they should be
+naturally expressed in the serialization format, not communicated out-of-band
+through magic numbers.
 
-The static key gating the iommu_deferred_attach() calls in dma-iommu.c
-is private to that file, and replicating it here is not worthwhile since
-MSI page mapping is not a fast path.
+The scenario you describe fits exactly with what I am proposing.  Until something
+actually starts using the new sealing flag, the CSP can downgrade to older kernels
+at will.  And if the user cares about downgrading, then they need to prevent the
+flag from being used until the new kernel is rollback-safe and deployed to enough
+hosts to prevent stockout.
 
-The behaviour of a rejected attach changes slightly: an attach refused
-because the device is being reset (-EBUSY) now fails MSI setup rather
-than only the first DMA map.
+> This is why I think the very idea we can support any version pair is
+> too much to ask for. We should focus on supporting a small set of
+> version pairs and not making it too invasive or hard in the kernel or
+> on the maintainers.
+>
+> Thus live update within a stable branch only is my proposal for
+> upstream support.
+> 
+> If it really succeeds at that and it becomes very popular, then let's
+> discuss upstreaming doing additional version combinations.
 
-Link: https://lore.kernel.org/linux-iommu/cover.1788130528.git.nicolinc@nvidia.com/ [1]
-Assisted-by: Claude:claude-opus-5
-Signed-off-by: Federico Parola <fparola@amazon.de>
----
-Changes in v2:
-- Moved up iommu_deferred_attach() from iommu_dma_sw_msi() to
-  iommu_dma_prepare_msi() and removed unlocked variant of the function.
-- Link to v1: https://lore.kernel.org/linux-iommu/20260910115152.54108-1-fparola@amazon.de
----
- drivers/iommu/iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Why on earth would we have version numbers in the first place?  IMO, monotically
+increasing version numbers are flat out the worst way to communicate features.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cd1bca7ede9a..b486b8bbd1fc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -4243,6 +4243,10 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
- 	if (!group)
- 		return 0;
- 
-+	ret = iommu_deferred_attach(dev, iommu_get_domain_for_dev(dev));
-+	if (ret)
-+		return ret;
-+
- 	mutex_lock(&group->mutex);
- 	/* An IDENTITY domain must pass through */
- 	if (group->domain && group->domain->type != IOMMU_DOMAIN_IDENTITY) {
--- 
-2.47.3
+I am completely against supporting any scheme that relies on magic version numbers.
+It creates problems where none need exist, and checking for compatibility can't be
+sanely done in a programmatic way, because by definition it relies on magic numbers.
 
+E.g. if the ABI for a given component hasn't changed, why should anyone care if
+the overall "version" of the kernel is ahead or behind by N kernels?
+
+> > I could see things like HugeTLB not working if someone booted the kernel with
+> > support for only 1GiB pages and then tried to feed it payload with sub-1GiB ranges.
+> > But to me, those sorts of things fall into the "well yeah, don't do that" category.
+> 
+> Okay, how about worse, todays kernel has hugetlbfs and there are
+> patches around to luo serialize that. Lots and lots of talks about a
+> post-hugetlbfs world out there.
+
+And?  Adding a compatibility layer to a future kernel so that it understands an
+incoming HugeTLBFS payload should be trivial.  I can totally see not wanting to
+support serializing a post-HugeTBLFS kernel's memory representation into the "old"
+format, though even that probably wouldn't be all that difficult.
+
+> Do we want to constrain what is possible to ensure we accomodate this
+> hugetlbfs serialization? I vote no.
+
+In what way is providing strong ABI guarantees for individual components
+constraining HugeTBLFS serialization?
+
+> Do we want to reject the hugetlbfs serialization until we have a year
+> of debate outlining every possible ABI scenario? I also vote no.
+
+That's a bit of a strawman argument.  Is designing a forward-looking ABI easy?
+No, but IMO "a year" is a massive exaggeration of the effort required to come up
+with a scheme that can survive a variety of plausible upgrade/downgrade scenarios.
+
+And again, I'm not saying we have to support infinite compatibility.  If some
+future kernel drops HugeTLBFS, and we decide not to provide a shim to support
+downgrading (which IMO is totally reasonable), then it's on the user to understand
+that moving to that new kernel is a one-way street.  Given that dropping something
+like HugeTLBFS would require significant changes in the software stack, I think
+it's perfectly fine to put the burden of understanding the implications on the end
+user (though realistically, there would be a copious amount of documentation and
+deprecation warnings).
+
+> Should we make a downgrade round trip a downstream problem? I think
+> so!
+
+Hard NAK.  There will inevitably be boundaries that cannot be crossed, but I am
+not at all ok punting on downgrades.  To me, that's basically saying "we want to
+add just enough support upstream so that it's not too painful to carry full support
+out-of-tree".  That completely goes against the spirit of open source and upstream
+Linux, and I want no part of it.
