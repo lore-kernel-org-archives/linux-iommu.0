@@ -1,98 +1,84 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6CFF40911B
-	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 12:53:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95202424D76;
+	Thu, 10 Sep 2026 13:03:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789044806; cv=none; b=o2fTCOY242fmvy8Vpo5+NchXCZiX9mdKrikmJXmEwrww9bX25oXas7g6odbK92EUiT36FBDxOqqUhzKtPDcbCFuN5/eTedEA5c/nhwJ+uAjsDvIeLkdI65VSF4CbjRmD3vvIJvIbFnsZtBd5XRG0jjVGkKRlsvcQ2N8SxJxXhJ4=
+	t=1789045435; cv=none; b=WrR/preTjISa2TeBF/f8Y+Ci/6R02I7u+H8Qk3egeWoUIk/V8C818lYyuYU1QK9XhuQyKd3FFi0pCw2y4eJoibmXfWNy2MCaXwOXLgG1hSWMioZaKO0QVzk82xgu+Q8joatdRZfVwjlhtHZldprNL/8yrBnna+Bn0KIuTz9PDEg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789044806; c=relaxed/simple;
-	bh=guLDhJ6ZyKq8+hcs+PxAXVS1CrsGCXfmslmq82z2LuI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hNpFqlBUKSckRibbG6dLz8z0AJJKW4tWUGurwj+ZJ/srBGRNYlbR9wac9xXaeO1dWmyI+ANTY0CrYjQis3VOO7mf0gPo6jecJ+nVwxMcsMnWjanQRdaRBI4LIRRMd/KNJp+vQuMByacXiE9Lcy86UWitUk9oFv2RXr9cCzgZDmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=NsFi2Pfv; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1789045435; c=relaxed/simple;
+	bh=8vbrxyk8QgfjJxIanOGBIOBFPTuckTL5rE5O7frqejc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=B4/f0gT6YP/YETAoSuDo2DtH0zQhMPOvJBY4iBatk9G79zA7c8KFQapxjDLNac5dQy8jirkiTN+LpSX8T4aQ4HCEQ2v+G0Xz4cz88wk1o4GYvUYXPTbTHTrnMkb4lr8KFMisFEOJachmsrOTqZY14tHIKobNn8EPmbVvi2H/5+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L4RxqsBU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="NsFi2Pfv"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6021B153B;
-	Thu, 10 Sep 2026 05:53:20 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E68303F7B4;
-	Thu, 10 Sep 2026 05:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1789044804; bh=guLDhJ6ZyKq8+hcs+PxAXVS1CrsGCXfmslmq82z2LuI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=NsFi2PfvyLst+INRWtF2yNw0Omd4UwkceAxkwK5wIm59I/pNOA42pZ29ILrJ1dUBW
-	 sMeXXpzg0BjgT5HtTQByXqrn53rtnxBwG4dMGTYsv/ed4APaFU4mf4eehAX7SNVw4C
-	 S/IZx7MJ8g/DM8eMZ5IfOjS3FCQf3VeoehWuCebk=
-Message-ID: <a219c25b-bc19-4a48-ba0e-dc50ad36f3b2@arm.com>
-Date: Thu, 10 Sep 2026 13:53:20 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L4RxqsBU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230771F000FF;
+	Thu, 10 Sep 2026 13:03:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789045434;
+	bh=OqcFvD1oHRf3CUmqeRwBVe/Vdci4v9WF/u/pqTn5yLY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=L4RxqsBUHTVxjSuPWc45IGy/B74umFjvmOW9asWW3od5itQxQtL7xMlZovDPny9Fb
+	 KEdGDtmIL7pdE/LoHU1DskTR32BIH5cPHgB81uBvyVaJUsnNLiATeoxK8n+i75skXs
+	 NrSVKSubGuhlWmW3Lb2DmqI814P00DbQH6S57flQ2a41cA/7M4iOBHzPLBvkdfWEd2
+	 ZChSiTirWrzp2QviAqgv30HntCUPbM44od62Z8JwOLn8HVnjM41nzr0oz9VheKbSVd
+	 ln+h8yja8EWIdLvs5UjAFDabadqV1mvvy+kcYqqcOpjcsJ5fQXdc48gkTGTG5ArPnZ
+	 /kmoeljNtnaag==
+Date: Thu, 10 Sep 2026 14:03:48 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+	joro@8bytes.org, Kevin Tian <kevin.tian@intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Pranjal Shrivastava <praan@google.com>
+Subject: Re: [PATCH v6 0/5] iommufd: Iterate the cache invalidation array in
+ the core
+Message-ID: <aqKqtJguAfzDSiZE@willie-the-truck>
+References: <cover.1788127877.git.nicolinc@nvidia.com>
+ <20260909164107.GA4147563@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] ARM: dma-mapping: split cache maintenance at highmem
- boundary
-To: Karl Mehltretter <kmehltretter@gmail.com>, Arnd Bergmann <arnd@arndb.de>
-Cc: Russell King <linux@armlinux.org.uk>, Nicolas Pitre
- <npitre@baylibre.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-References: <20260909064443.90544-1-kmehltretter@gmail.com>
- <ff220a24-edae-4b75-9873-1a58f5948a01@app.fastmail.com>
- <aqJJ5fQ60Nm6xf5G@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <aqJJ5fQ60Nm6xf5G@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260909164107.GA4147563@nvidia.com>
 
-On 10/09/2026 7:24 am, Karl Mehltretter wrote:
-> On Wed, Sep 09, 2026 at 09:24:23AM +0100, Arnd Bergmann wrote:
->> I can see how the fix addresses the problem, but I don't yet see
->> how you can arrive in this situation. What type of memory allocation
->> can produce a physically contiguous page range from multiple
->> zones?
->>
+On Wed, Sep 09, 2026 at 01:41:07PM -0300, Jason Gunthorpe wrote:
+> On Sun, Aug 30, 2026 at 03:26:37PM -0700, Nicolin Chen wrote:
+> > The vIOMMU cache_invalidate() and the nested-HWPT cache_invalidate_user()
+> > ops are each handed the full user invalidation array and must report, via
+> > array->entry_num, how many of its entries they handled. That makes every
+> > driver open-code the same array walk, with real downsides:
+> [..]
+> > Nicolin Chen (5):
+> >   iommu/arm-smmu-v3-iommufd: Reject unsupported bits in invalidation
+> >     commands
+> >   iommufd: Iterate the cache invalidation array in the core
+> >   iommufd/selftest: Convert cache invalidation mocks to the core array
+> >     loop
+> >   iommu/arm-smmu-v3-iommufd: Convert cache invalidation to the core
+> >     array loop
+> >   iommu/vt-d: Convert nested cache invalidation to the core array loop
+> > 
+> >  include/linux/iommu.h                         |   6 +-
+> >  include/linux/iommufd.h                       |   2 +
+> >  include/uapi/linux/iommufd.h                  |   4 +-
+> >  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 197 ++++++++++++++----
+> >  drivers/iommu/intel/nested.c                  |  54 ++---
+> >  drivers/iommu/iommufd/hw_pagetable.c          |  25 ++-
+> >  drivers/iommu/iommufd/selftest.c              | 147 +++++++------
+> >  7 files changed, 282 insertions(+), 153 deletions(-)
 > 
-> Hi Arnd,
-> 
-> You're right that a buddy allocation cannot span zones. I found this issue
-> during code review while investigating another ARM DMA issue. I plan to
-> post a patch for that soon.
-> 
-> My Pi test deliberately reserved the last lowmem and first highmem pages
-> in DT. It confirms the crash with a crossing SG entry, but I have not
-> found an ordinary workload that creates one. I should have made that
-> clear in the changelog.
-> 
-> In a follow-up QEMU test, sg_alloc_table_from_pages() merged the reserved
-> pair into one 8192-byte entry. It checks that the pages are physically
-> adjacent but does not check page_zone().
-> 
-> I also searched a bit for a real-world example. Rockchip's vendor 4.4
-> boot-logo code looks like a possible case: it builds an SG table from
-> firmware-reserved pages and calls dma_map_sg() when no display IOMMU is
-> used. Product logs show the boot-logo feature in use, but I found no
-> record of its reserved memory crossing the lowmem/highmem boundary.
-> Such a crossing seems unlikely.
+> Will, can I pick this up, or did you want a branch or something?
 
-That is completely bogus to begin with though. Calling dma_map_* on 
-reserved non-kernel memory is liable to blow up in various ways anyway 
-(e.g. in sparsemem page_to_pfn/pfn_to_page) - what's the justification 
-for being more lenient towards one particular corner of invalid usage?
+All yours!
 
-Thanks,
-Robin.
-
-> I still think the change is worthwhile. For v2, I will update the
-> changelog to make the test setup and its limits clear. I may also drop the
-> Cc: stable tag.
-> 
-> Thanks,
-> Karl
-
+Will
