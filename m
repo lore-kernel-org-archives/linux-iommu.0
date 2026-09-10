@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE271F1534;
-	Thu, 10 Sep 2026 07:00:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD84C35C6AA;
+	Thu, 10 Sep 2026 07:01:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789023643; cv=none; b=VeiEZ30ycJDxCiQmmeHBJFX27op2VInS2ibh5S5q+JVuxuUQdz6lR9B7/RKZKW+FCalKOvF5gbAWKnnmBmrqjWhwCwJlgb1Ied2MnhCWkO5hMqil48U/cZuTUs7RC4WtahAa7LCSgFg9yKBYTA4Yps0F3d1AZwssAscvYponzCU=
+	t=1789023692; cv=none; b=trK11RPSfDLV0Q6RIflHv+jV83NSOpAmhc7izWOYWUbU4ic4jLt/nmnSDlTbvDNeaSnY+LWaATPMohgrxd/XENVkh6LcMpSgg7Id040eZwtx8pibPq6YlFy4RXeuTnHnORzUn23gbHwjDjxIY/NrLsnuH3JO1S4QgxyiWSgmGeE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789023643; c=relaxed/simple;
-	bh=b2PTiwNpdiJ2jDGC/0d1pDN9PZeipK7iUziHSTPl/Cc=;
+	s=arc-20240116; t=1789023692; c=relaxed/simple;
+	bh=XsD3VHRHoZNsJMnDJCcob/vJuS4VBV4jS5bilr28moI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FBzVc9hl8IC5/3mUC5+usowhol+jeL9KM4D6h5+rlw7zJJ45WMWbgwD8cpf/7czmR0cYGgAdWABXQl2MJeRZMiNnTvi4EmiotlzOhwuFA77sqia2nS7pwSh88Mz5IOIW/3d8Kwtgj/PGQ43MPrsPgGQDj6QBZcjRKTo8p0BjELA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j+kW54PL; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=uT2ugBbCLsBeysQguYloE1ysWxpKi6xS5m8p0I4p5wMifhwqf5begSytTEyR1X/c5PmIZT8vS0kETtznPy/y/Uw5KLcCFZA2Vq4NJOc/gM1nRV1qSO6GCfLyz0lgr4JXmpNDk0C9cHoSaXG+YKzD8VVPlAV+KEXZD0tUN3WcNXQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e6V29vN1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j+kW54PL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43C431F000FF;
-	Thu, 10 Sep 2026 07:00:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e6V29vN1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 521921F000FF;
+	Thu, 10 Sep 2026 07:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789023636;
-	bh=PLB7kdrnKKPLtjHGr3TMWL2XoiSmb4bVzzTlrFoNjDY=;
+	s=k20260515; t=1789023690;
+	bh=ypJiqvLlRL2rV4USZE9HiM/RVrXNG6BAdIEP6VExYrI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=j+kW54PLttAEPCNTppMGzu9T/O7QsFxFVkduNmwUAxX3ZpjY8bzatNCtrzaICDpWj
-	 fPHknBWxpcNPrElEhmi/9wOh+fRRCQV0Pbe50RFTWvvh8F2ATgsw/i/XVvh8KwwVjW
-	 wuyz0ywCkxxp8+2iotnZYdtM3Q0bQ950awJYhgSayQL+qh/4GiQ8rBqGuEZw6r/HOt
-	 Gaq20jgN/54M1nq6RKuivcmVrGSh1AIYhkrgyz+5+Z38AuxX4+u433Z+T7ZX0ATPxf
-	 PpdgvxZwjTaZUosut4zmJHNceIZ7VVoJiBHB8RxCxLIr2vbdWGdIAYqTiwVzQUl1xt
-	 UNAIe1I+AkE4g==
-Date: Thu, 10 Sep 2026 09:00:32 +0200
+	b=e6V29vN1bnvazKSHBTzHKaj/UMTLOQ8JzG8Ccn7b8bif+QKX40RlVIWbpmd4dJsce
+	 gHMDhXPLFFFdk4k7hZvBmZFE5Kt+9xsR+KBESnLF/35KQrN4rSehNgWqb//JZs4zgV
+	 M0P4QMZssVFuFWfe31tYKuGL8YAUYGo5fcKZRlr8AYps+xPe/nFPLi43fIureMlmae
+	 /aY27qbFeLCNJurr9iB2tn6x3yBVzTnNpzHqt/NwCxYUmdu3VqkAIvVvwRRdolGgIL
+	 max/sgT8x7GWxnCyNWIDssXitWvyUKy3Uh1zgt6QDkTo1gsR6Q6hrJ6L+kW5SauRge
+	 r81hsp0dR5zpA==
+Date: Thu, 10 Sep 2026 09:01:26 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, 
@@ -41,11 +41,11 @@ Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
 	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, iommu@lists.linux.dev, Daniel J Blueman <daniel@quora.org>, 
 	Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Subject: Re: [PATCH v3 02/13] dt-bindings: media: qcom,sm8550-iris: Add
- context bank subnodes
-Message-ID: <20260910-gracious-angelic-frogmouth-bcddc1@quoll>
+Subject: Re: [PATCH v3 10/13] arm64: dts: qcom: lemans: Add Iris context bank
+ subnodes
+Message-ID: <20260910-glaring-chocolate-caterpillar-0bf216@quoll>
 References: <20260909-vpu_iommu_iova_handling-v3-0-2fe43ae45495@oss.qualcomm.com>
- <20260909-vpu_iommu_iova_handling-v3-2-2fe43ae45495@oss.qualcomm.com>
+ <20260909-vpu_iommu_iova_handling-v3-10-2fe43ae45495@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,9 +54,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260909-vpu_iommu_iova_handling-v3-2-2fe43ae45495@oss.qualcomm.com>
+In-Reply-To: <20260909-vpu_iommu_iova_handling-v3-10-2fe43ae45495@oss.qualcomm.com>
 
-On Wed, Sep 09, 2026 at 08:27:09PM +0530, Vikash Garodia wrote:
+On Wed, Sep 09, 2026 at 08:27:17PM +0530, Vikash Garodia wrote:
 > The VPU issues DMA through several SMMU streams, and the hardware does
 > not give every stream the same addressable range. The non-pixel stream
 > cannot address the low 600MB of IOVA space, while the pixel stream can
@@ -78,28 +78,22 @@ On Wed, Sep 09, 2026 at 08:27:09PM +0530, Vikash Garodia wrote:
 > Given that the address range restriction is for specific VPU stream, it
 > should be ideally be moved to that stream. To achieve the same, a subset
 > of streams is now represented as subnodes, so that each can be
-> associated with its respective addressable range. The design was
-> discussed and agreed by mainatiners here
+> associated with its respective addressable range. The design was discussed
+> and agreed by mainatiners here
 > https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
 > 
 > In the past, this limitation was addressed with an iommu-map approach,
-> with the iris driver dynamically creating the devices. That approach was
-> later concluded to be a hack to avoid having subnodes, and was NAKed by
-> the iommu maintainers. It was discussed in detail here:
+> with the iris driver dynamically creating the devices. That approach
+> was later concluded to be a hack to avoid having subnodes, and was NAKed
+> by the iommu maintainers. It was discussed in detail here:
 > https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
 > 
-> Update example to the subnode form. Doing so, it picks up the supporting
-> properties needed on the video-codec node, address-cells, size-cells and
-> dma-ranges to declare 1:1 DMA translation into the parent. Given a soc
-> with address-cells and size-cells as 2, update the video-codec "reg"
-> accordingly.
-> 
-> This patch depends-on:
-> https://github.com/devicetree-org/dt-schema/pull/207
+> The video-codec node includes address-cells, size-cells and dma-ranges
+> to declare 1:1 mapping for DMA translation to the parent.
 > 
 > Tested-by: Daniel J Blueman <daniel@quora.org>
 
-I already asked at v2.
+Really, this commit on Lemans platform was tested?
 
 Best regards,
 Krzysztof
