@@ -1,124 +1,114 @@
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E6CC391849
-	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 06:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.206.34.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C0AE3A785C
+	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 06:55:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789023330; cv=none; b=T2UgUh5bXPkqvGix9rc7IyO3bfMkqltwRW5Okv25uzkD9KZ4y4yy4Rpqic41xso2Zh6LIbGDnQ00NHy7e/VtBGVJNMJpsBRrEmoF9np1UaznvlzVfwI0y+3u89jJGdrdn8klvDGktE7iXi7zEcxD7QhK8/xyU3gMq4FnVfftvbw=
+	t=1789023346; cv=none; b=thr3GTvAyZyB+swD8kwGjoVLkZjHUJ0FfK95NUOtPkmgZTrg5ZdRYmpou2aF4ET4UrmmYMUT9YOFcQlYOW+zevVgXh1xc3xGGhBpWhfYW/S23oNuikcyOD92yy2n8l2R9BiGoIiPQha9Zrp6/KhdS9l33UKgajYCfHLaMzoDaso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789023330; c=relaxed/simple;
-	bh=JbJ0jb4ejrFmyQLGc2y25VOtYx2Utyegas11w/+uOLA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=I3fdqhNhFw2E/3P8ssjiuhx3D55fdBqcH7QjPNoD/+Dg75plQAyPV2llNL8K+2DukKGgVClE/WH1aoadj076MyfRh7ijj9Jf23uZS9OMcr+Dp4VWpAmWD25fvSFz3ouiXYA6pXXRnvtiet7v+ko9ipnW0JkgniFa9SQ1VdC658o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=Pw8xYkIn; arc=none smtp.client-ip=54.206.34.216
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	s=arc-20240116; t=1789023346; c=relaxed/simple;
+	bh=Nv+I0RNdwzf6AstOSUSy6pZKd3pcHzupoCEKAqMrplE=;
+	h=From:To:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LONXHuIl6XKERLXUpf+iuvgRqsVGCH+RmBtmc2FNHWprv8TCMHcvKWDHChgYEntRw8llDpsUnq6awN3KMxUFTCTqXcDZY5i0z3Qr5+4naNqARNr5pkSTi2KNmlCtGIp/G0HhA+Znp1PoFGSCcr7e+rnrpRpRAIGPOC4Qen5ekZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aqTYy6Vc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="Pw8xYkIn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1789023292;
-	bh=uTV/qjut2EJ2HSX5Racn0nEgdyfczq3XC0HT2J7tQJ8=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=Pw8xYkInqTFVGkaQo9KeLd1+skui5OlfdikTMjNF9Jf6/F96iPLxJeW/TCkIZuhIL
-	 4W60bxY5oS+6HGVBCmEC/sqfmTCu/rRZSPSBuHdmQEJeIRalbfZJa41uJRxvunwex5
-	 1XPmimzYeMQzWnMGznAP1vpBRo6ICZ9059FulCL4=
-X-QQ-mid: zesmtpgz4t1789023273ta1fbe3da
-X-QQ-Originating-IP: xX/ut/FNG2CYqFuk52gzzhzwcGrktHAvSAisDQIiWWM=
-Received: from localhost.localdomain ( [113.57.152.160])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Thu, 10 Sep 2026 14:54:31 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 8036773416646181260
-EX-QQ-RecipientCnt: 10
-From: Wentao Guan <guanwentao@uniontech.com>
-To: sashal@kernel.org,
-	jgg@nvidia.com
-Cc: will@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	stable@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nicolinc@nvidia.com,
-	skolothumtho@nvidia.com,
-	Wentao Guan <guanwentao@uniontech.com>
-Subject: [PATCH 7.2.y] iommu/arm-smmu-v3: Disable implementations during devm teardown
-Date: Thu, 10 Sep 2026 14:54:29 +0800
-Message-Id: <20260910065429.1703706-1-guanwentao@uniontech.com>
-X-Mailer: git-send-email 2.30.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aqTYy6Vc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9BC1F00893;
+	Thu, 10 Sep 2026 06:55:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789023344;
+	bh=2ppyMVf6o5Ao81HKc3ta7j6fgbkG/0SWr/iD0d0NsGQ=;
+	h=From:To:Subject:In-Reply-To:References:Date;
+	b=aqTYy6VcpGUu5ny1rT5wmZR4THcHBw1Acx1Pze3HyAKnytd61QsYrQ6HFL+bWupB/
+	 XNeH9yuNm9r5ZHtfbr8EB+FnVhzDc+1I1uq772qgEQi5tHYWzVhwiVvUTIB3tQoDMy
+	 WRxznLiya9hxR2QEUpmVoCYnsYCAqsvAqMrVzkpGb8v8aynZRy17AjjAXehmtVDknM
+	 OgMau/Yx3A+UhzF8RoMZXKugIRND0nvv7XXIeJ7kNaVLT96Lz9HIKYCC8VnWeQRHKU
+	 vgMRvxu1mzeko6aKVciASxoY11jJj6F+UZ8810igfz2kNxPGLOI6+PZO0Na26x04cW
+	 aQwWbs91vs6/A==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Alexey Kardashevskiy <aik@amd.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH] x86/mm: Don't force unencrypted DMA for IOMMU-backed
+ devices
+In-Reply-To: <da147aa4-79b6-4388-bdf4-d1af28b1ae77@amd.com>
+References: <20260908113232.247457-1-aneesh.kumar@kernel.org>
+ <da147aa4-79b6-4388-bdf4-d1af28b1ae77@amd.com>
+Date: Thu, 10 Sep 2026 12:25:40 +0530
+Message-ID: <yq5ao6e5a93n.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
-X-QQ-XMAILINFO: OJaSdNvGbayWw4qAVkkuh1KpQ/b2Xb5b/0vdvNM5yQujF9elfdqdk2ce
-	jqqDAOxTroYJHA6bjQERqy1mxSciX2iWuH98R99yEWQxKjUOezJblj3M1q5Qy6nlUIHFb0q
-	Uf+3CHTL/rkhWgAUAfVXxg7kgeJLvutbB0Ii8jX1OVG8KowhAdZSpD/7CJDB1RYadcXAwTA
-	QD7nqrJo2t0Z2Pkm48r+FL3A3W3ogPTgdbmQiAoFZyGAfffqqYqMHKfrWtBTf0k+fOqqYCF
-	Io4+vKMba3T0nHSeDbCTDVhbE4jc436Hsv9zJ4tXskdRgkTD02ESLsNoMj/HlY4NhT2DhND
-	YjK5lBVw7PAdOTztELIrRvewBoyv23a0U/jsFqht490tiHt3oujxLxULlOCaRCe4gOn9xH7
-	NsNhGkw9ldlYqaBYIYSMTO5H/Ul4uM6h7UxmS715odQINXA+fbzDtZNofwV4RkKIHn67/O/
-	nCvUTc39e7tTPSFPwAESzxtGZSUfZc/9th3Io0NEN3OCjXk6wXpwv+gQ4ZmVt2xGl8D+t8m
-	IA2iE7JsED0VgNivoYQZdDD/k4emm/4Utf791X90RnB+4Eo/Vn68FALI9PXrpKGlV0Jg6yd
-	75apmuUGA9b1qX8u/t9CkhcJKdFax7z+TVeALN363BNpsk38QtFNC3GEdUOVcWKTxCNDg5w
-	bGjQgVOBqgnwRHK9ZR3iieLu0ZLhQdumHQHr0gZ+5eWyN6LrXB9FN7/3I4GvHzcqBDO0SYa
-	/Cx668PZlycgHREcRRz+Wmcruag8iRGnuMiXSx1auh4mERHWZnuWh6jmcNYNdxMrb4jjaNp
-	v/0PeJp7jiXKaKkqvypK9WjUW0MmuWELPZEE67z+6By46HUFtfgKsnFHj/sgPMkigG8HZD9
-	qHVIYJ6lmxa9sojoG2TzsichRIx31TRVp60O6DgO6S7c7dVVF5GaQqbQNr4gKXkFq8b/3Ep
-	4ssIBYbOLnEzK5CptWns9rqY6mo25PyXnFaQsBdwI3tFp02ubmopthaYOu47Oe53UKc1TR/
-	NDIfXwqctWw8aIgmTVfbi5l+SKyYCtR+2v6fbnewrDEhEyz9dNvgawpna6fxA=
-X-QQ-XMRINFO: NyFYKkN4Ny6FuXrnB5Ye7Aabb3ujjtK+gg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain
 
-The Tegra241 CMDQV teardown fix moved VINTF hardware deinitialization
-into the implementation device_disable() callback. However, its stable
-backport preceded the conversion to devm teardown and could only invoke
-the callback from the shutdown path.
+Alexey Kardashevskiy <aik@amd.com> writes:
 
-Now that arm_smmu_disable_action() manages normal teardown, invoke the
-implementation callback there while the command queue is still alive.
-This prevents the subsequent implementation remove action from releasing
-resources while the CMDQV hardware remains active.
+> On 8/9/26 21:32, Aneesh Kumar K.V (Arm) wrote:
+>> Commit 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select
+>> them via attrs") exposed an issue with force_dma_unencrypted() on
+>> systems using host memory encryption.
+>> 
+>> force_dma_unencrypted() checks whether the device DMA mask can address
+>> the encryption bit and, if not, requires DMA allocations to use
+>> unencrypted memory. However, this check is not applicable when the
+>> device is using the IOMMU. In that case, the device DMA mask constrains
+>> the IOVA seen by the device, not the backing physical address, so it
+>> does not need to cover the C-bit.
+>> 
+>> This currently causes dma_alloc_attrs() to set
+>> __DMA_ATTR_ALLOC_CC_SHARED for such devices. iommu_dma_alloc() does not
+>> support that attribute and rejects the allocation, causing DMA
+>> allocations to fail.
+>> 
+>> Do not force DMA allocations to be unencrypted when the device is using
+>> the IOMMU. This allows the IOMMU to map the encrypted physical pages as
+>> before and avoids incorrectly requesting CC_SHARED allocations.
+>> 
+>> Fixes: 8277a12d0d60 ("dma-pool: track decrypted atomic pools and select them via attrs")
+>> Reported-by: Timo Witte <timo.witte@gmail.com>
+>> Link: https://lore.kernel.org/all/CANB4YXR7h8V5Xp=MXVZeSdvw9UiriSagp=E+ju5RRDNghoPHLQ@mail.gmail.com
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>   arch/x86/mm/mem_encrypt.c | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+>> index 912f22ca838f..a349d8d21569 100644
+>> --- a/arch/x86/mm/mem_encrypt.c
+>> +++ b/arch/x86/mm/mem_encrypt.c
+>> @@ -13,6 +13,7 @@
+>>   #include <linux/cc_platform.h>
+>>   #include <linux/mem_encrypt.h>
+>>   #include <linux/virtio_anchor.h>
+>> +#include <linux/iommu-dma.h>
+>>   
+>>   #include <asm/sev.h>
+>>   
+>> @@ -30,7 +31,7 @@ bool force_dma_unencrypted(struct device *dev)
+>>   	 * device does not support DMA to addresses that include the
+>>   	 * encryption mask.
+>>   	 */
+>> -	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
+>> +	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) && !use_dma_iommu(dev)) {
+>>   		u64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));
+>>   		u64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,
+>>   						dev->bus_dma_limit);
+>
+> if we drop this whole "if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))"
+> chunk, won't dma_alloc_attrs()&co be able to figure out this from
+> dev->bus_dma_limit and other DMA masks we have all over the place? I
+> should probably just try it... Thanks,
+>
 
-After ("iommu/arm-smmu-v3: Manage teardown with devm") merged in stable,
-now keep the shutdown path consistent with mainline, where disabling
-the base SMMU is sufficient.
 
-It is a fix for stable tree commit to aligned with mainline, so no
-upstream commit id here.
+That would imply that, with host memory encryption, no device requires
+unencrypted DMA. IIUC, that is not true. There are three cases:
 
-Fixes: 5994617e09ee ("iommu/tegra241-cmdqv: Fix CMD_SYNC use-after-free on teardown")
-Signed-off-by: Wentao Guan <guanwentao@uniontech.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+1. Host memory encryption with an IOMMU: unencrypted DMA is not required.
+2. Host memory encryption without an IOMMU, where the device's DMA addressing constraints cannot cover the C-bit: unencrypted DMA is required.
+3. Host memory encryption without an IOMMU, where the device can address the C-bit: unencrypted DMA is not required.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index c993e101fab3a..ea908afb0da9d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4789,6 +4789,8 @@ static void arm_smmu_disable_action(void *data)
- {
- 	struct arm_smmu_device *smmu = data;
- 
-+	if (smmu->impl_ops && smmu->impl_ops->device_disable)
-+		smmu->impl_ops->device_disable(smmu);
- 	arm_smmu_device_disable(smmu);
- }
- 
-@@ -5621,8 +5623,6 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
- {
- 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
- 
--	if (smmu->impl_ops && smmu->impl_ops->device_disable)
--		smmu->impl_ops->device_disable(smmu);
- 	arm_smmu_device_disable(smmu);
- }
- 
--- 
-2.30.2
-
+-aneesh
