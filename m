@@ -1,91 +1,79 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB7903B14CD;
-	Thu, 10 Sep 2026 05:52:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57D0B3806DC
+	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 06:24:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789019523; cv=none; b=fQjaEACBAGS4joc3ZQopb56QSlVKRUhWFm33/DTC2UZ8hbPhnQ+03bz8I02uwodZdv+FTtzQwG5kEyJBYVdsrm5Br0PwSzWCtwmwlLQ1QOmznZHWIzqgrIDDr9310WLZAeB0qVI/GXfX6vU8VJmoGPxVAI+K+YIpkwB4XZV5KZc=
+	t=1789021491; cv=none; b=PeVHcvWsx7kPYE4onxhODftyRydc6GpQRQWTqsE7iFTB3xtJUSnGVKWuSFDx/N/GhxJY6z6QgKKIYWqDAzReiWvH9GqPS82FUJVfSY8BJxUYYk/+CNeyzR0w/kRCc7bbuH7Pqiq3nXXYXztv5PtSKQnlhsxVHAcZ6VaI/56+buk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789019523; c=relaxed/simple;
-	bh=eFkoKLMx6CWrBqLzh/2OAEjPMcLMJex/CnSZuYJAeB4=;
+	s=arc-20240116; t=1789021491; c=relaxed/simple;
+	bh=PavTPaSl7E4nl9f4cmxZDgR2MPv8hxGhKaAc6xi59I0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZSpC9r/5zYKIfGeL5XnmMYlW4WIA5yMRGgqhtFIrE16yueqpxB3spXRaTTqKdiggzuRJm9TnPnEtVvr8v5yWvjazEN0UTJkRsgDqe6naaJzRB6EwotaIIhZsZb+ClXjYNOsUZXOEJalw594//Lx7Kstp6CEJePRMX9nPQj0n8PY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=2YEpsF2d; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=FwUvz67KRioHcM/x48fZwwTT01WVHxNVYPepQQsHLa1RRWE2kWj6XazNfDdErexZOmEzd8fxrayl+x82v2Bt4wQzjV+JHIMGZ9EJASbXc0fo0p7D3UyWlh1guqj0KRZMzfbY55dUzlw69cr7xetTTeCy6qptZ0G72857tFD66u0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FEFLEu4A; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="2YEpsF2d"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=dr2hlvGX1oeEKCxfnd5X9ajv/3V1RzuH6f6k+gKLa1I=; b=2YEpsF2dy4dF+E5OuE1/Zk6cNe
-	QCygMlId9eCRm2NVbsLffeSSqzYB99gs9iLF5flp3UVvUh//R01ZysL5QM1R/nsZazvygWachsRy1
-	kqlHp5S2/99fGgHycoYYi/OGBrD8bvH8pyCKJjzQzmiAWUwSsFVcYy4xcFdR6BHD7Lp5m1LHvtkV2
-	aEPgjFnNYdipWh0pO1JY2H+aZOpxYJ5lrn1vkFQxdRjHOegKXlWcaGKZq8lUZLXjvjzDBRAklcON3
-	PWUYt2D20iByPA9g1u6y5Mm9bbo16VIWK8E7NgHiRbGGTdT5Ww4o10UajRwh/yOEqCHg2Jg8tcB6Z
-	b0GhXEgQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1x4XhH-0000000DTvB-33x3;
-	Thu, 10 Sep 2026 05:51:43 +0000
-Date: Wed, 9 Sep 2026 22:51:43 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Thierry Reding <thierry.reding@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Sowjanya Komatineni <skomatineni@nvidia.com>,
-	Luca Ceresoli <luca.ceresoli@bootlin.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Russell King <linux@armlinux.org.uk>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>,
-	"T.J. Mercier" <tjmercier@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org,
-	linux-trace-kernel@vger.kernel.org,
-	Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 04/12] arm64/mm: Export set_direct_map_*_noflush() APIs
-Message-ID: <aqJFb3VtsYtnIa1c@infradead.org>
-References: <20260904-tegra-vpr-v6-0-79042cfa8de5@nvidia.com>
- <20260904-tegra-vpr-v6-4-79042cfa8de5@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FEFLEu4A"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-485888b3c3dso6698515f8f.2
+        for <iommu@lists.linux.dev>; Wed, 09 Sep 2026 23:24:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789021488; x=1789626288; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GwOPl6TUJvjurtx0SFT9PFDoGeN1jMxDAChV6NjVqrM=;
+        b=FEFLEu4Aorc4489zMoFInxdyNlEaFFpWPiU6uzUCd7qB38rhREft3I+KEboTE24ywV
+         V3m7ugDdFUN1tsSQ3EO+xFBg1gk/qmA+4Y6jbk9pfslC0MRcKZ25EXbagNhE2b10oIb5
+         p4IhJ0JwG68BgT2sa4clG1sBqCLQwLmYbFqTIbxilt6rgjgsWH2Os6JQPtfU8ssP4MI/
+         QzGL8y79WxPIjFgpgbx8DcuOTZC/FzTT33334xm1lOBsnbO16nx2pDu0Z2374VNmEN7R
+         bnfoP+9VFgKXXZAALitQVXh+JrBsihG9U8c4JG3BzTHctLvL0YlNi1v6cxPRVq+UcDVm
+         zWWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789021488; x=1789626288;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GwOPl6TUJvjurtx0SFT9PFDoGeN1jMxDAChV6NjVqrM=;
+        b=Uedni+n+ElLlcbY6qtnE4ckfGmov/SEoqeIzPrdqBVVvwuF2ARqt4RwhIQJqFdnlel
+         NVFkl6kui7HFDciSuBbEc5veI/fqhGb1ntgKtOvXt6TZEO1P883gKL2oPQ7w5p9KoPrk
+         hwZglYrQVyAmEPQnLz7ymeAEaQiDQuMh6Wnz3i4dq9M8Cy00L4ZpE7DJOC6DFmShesaN
+         0857mq6ys1+Vu9z2uw9le2QBRwMjjt98okyhDkAKoir4BDhnyblKBvQDNrJU29aVgt9H
+         zEhgwAuFkIzAHUucoYKx+97PJ27xVSGsUnuo/B6xE49RV/ob+0POHUhiQZyQcfF7dghs
+         FVYQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzas1CJUNCdAK2KvF2q41hh5IGKVin5CxFflBQgpBsvjqFh1S8E35jfnqqx2bcn7qhmcjwsaQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++lvB6CG/E3TrbeqjcXTCk7bhNnicmfBHd5Eh6KzqcUwXeFBSfty
+	fZwnrZk1o7SOVvYaYR7d2pBBA9hHhDGu0bQqP9hbTMy2OUX1pv0e3PAG
+X-Gm-Gg: AYBFou3mbA/qFEzhPu7sQ5AeM9n8IqWaUGYQSSJMNSXKNXBpAC9xxn1uwbMUX7l3rGf
+	6WKf+ix6JBCTJQ67T8jZhPE4UK6OQcLfHJyQX4F2Eu74p59fOBVGLBQAsizc4AQO7Hbs1n3pqhD
+	rvprVluTO3ZhoKR5y8T8pQqhJADOle4ownMY8AsI6IBUWnHwkyKyClMpkDebklzH3E4FgJp+lIf
+	3nzXJa7OU/8+6vZxtFuilu34m0Lo9wvzpgmEWvIMguaRJA+HliZdZ9hr9oX8XFU81VWrlkJaumA
+	3DfMIWo5S7MeewHZ9f6fcztFhMW+t3oTXSXCfMeJVekIbkf530/8znbapttoxkYhXPBs4j8DqDe
+	PhILcTETIZdsN/lmtO9URxNC/mEMYrg6/3dpZtFJdbvII2Lr5uJo8Dq0G0EeCjvCpUSBH5xN0ax
+	VpMM6QUdVv251UBQnvjF8WGPuQeh5ztgkhY6j071jfTfI6q94yEhbw773nl4gs7GqvCefEb0yKt
+	71S+iebFz8WEO4PL8XfsVPNtzW1cHQY+ZFqYDXa/VolAR04MXa6wLK9vGmOAmoRvwYSPHulWV4e
+	zlLrdTJAC2dO+Z0RziD0eF5gjpi4ryxiXxOLUR51WnWoVAkcB01vyzMmoYh5arNfofMiS1I5g/X
+	9UfEJjpAJiIYa
+X-Received: by 2002:a05:6000:310d:b0:486:e24f:335a with SMTP id ffacd0b85a97d-486e24f39e9mr2649724f8f.21.1789021488301;
+        Wed, 09 Sep 2026 23:24:48 -0700 (PDT)
+Received: from unknown748F3CBA5068 (dynamic-2a02-3100-b3d9-b901-0402-5aad-0ef4-88ac.310.pool.telefonica.de. [2a02:3100:b3d9:b901:402:5aad:ef4:88ac])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-485883c6ba4sm53896552f8f.25.2026.09.09.23.24.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2026 23:24:47 -0700 (PDT)
+Date: Thu, 10 Sep 2026 08:24:45 +0200
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Russell King <linux@armlinux.org.uk>, 
+	Nicolas Pitre <npitre@baylibre.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: dma-mapping: split cache maintenance at highmem
+ boundary
+Message-ID: <aqJJ5fQ60Nm6xf5G@gmail.com>
+References: <20260909064443.90544-1-kmehltretter@gmail.com>
+ <ff220a24-edae-4b75-9873-1a58f5948a01@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -94,23 +82,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260904-tegra-vpr-v6-4-79042cfa8de5@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <ff220a24-edae-4b75-9873-1a58f5948a01@app.fastmail.com>
 
-On Fri, Sep 04, 2026 at 12:44:55PM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
+On Wed, Sep 09, 2026 at 09:24:23AM +0100, Arnd Bergmann wrote:
+> I can see how the fix addresses the problem, but I don't yet see
+> how you can arrive in this situation. What type of memory allocation
+> can produce a physically contiguous page range from multiple
+> zones?
 > 
-> Drivers that use this may want to be built as a module, so export them.
 
-That's one of the worst commit log ever.  No, we don't just export
-core symbols dealing with the kernel direct map because
-"Drivers that use this may want to be built as a module".
+Hi Arnd,
 
-For one exporting this at all needs a very good justification and
-not just hand waiving.  But more importantly if we can't avoid
-exporting it, it needs to be exported at the tightest sensible
-scope.  E.g. for a given module if it is so special, or a namespace
-if it's not that special.  But in doubt we should have a proper
-core abstraction instead of opening up direct map manipulation to
-random modules.
+You're right that a buddy allocation cannot span zones. I found this issue
+during code review while investigating another ARM DMA issue. I plan to
+post a patch for that soon.
 
+My Pi test deliberately reserved the last lowmem and first highmem pages
+in DT. It confirms the crash with a crossing SG entry, but I have not
+found an ordinary workload that creates one. I should have made that
+clear in the changelog.
+
+In a follow-up QEMU test, sg_alloc_table_from_pages() merged the reserved
+pair into one 8192-byte entry. It checks that the pages are physically
+adjacent but does not check page_zone().
+
+I also searched a bit for a real-world example. Rockchip's vendor 4.4
+boot-logo code looks like a possible case: it builds an SG table from
+firmware-reserved pages and calls dma_map_sg() when no display IOMMU is
+used. Product logs show the boot-logo feature in use, but I found no
+record of its reserved memory crossing the lowmem/highmem boundary.
+Such a crossing seems unlikely.
+
+I still think the change is worthwhile. For v2, I will update the
+changelog to make the test setup and its limits clear. I may also drop the
+Cc: stable tag.
+
+Thanks,
+Karl
