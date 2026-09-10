@@ -1,239 +1,282 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B0F4A0924
-	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 14:20:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.168.131
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789050036; cv=pass; b=az1ggdJUaC/3dcjwJIKaiWw3bhOYRW3ZyebuZwYUe22QrmCFArSMSP3jJWz/MMZ4QOqtzf/3lDW0UDFy8afaRYmFrGf5DcURu8KHNr+qafLCv15LtJaW9fseT7n8xtRhVJsuISajawJ8mwIj/bxyqfuziarYM+u9+WiuRqTOoj0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789050036; c=relaxed/simple;
-	bh=9QJteI92RwPPdOMUgnNnI7QviKfuZP58/utp5AmqgiE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZW0j3N2gUU+HJhAm2U4XG8AcjJcA6Ccuco23jKgCl/Y3beGGEC6BYm2ycmqF4UTeivr1dxBSVaEOd3dwFpvIvq6N6vmS3U6wr+WdJ9AB7DnAb/SJUHuq+226f7dzGHX1a5hKFNdl1YrnyPAYK6okogJnyd94Y9GKm3nwUgAybz8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=TEl+QYBj; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=XpU1pppX; arc=pass smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD943515CE;
+	Thu, 10 Sep 2026 14:25:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789050358; cv=none; b=NGZbNGQpG0IkzLc6Fxz1Nz/MriHmVzlqpYJFloqz3/xAcROkNhgKwZ1h8iEEFQZV0zi43OxlCSo2XfdnDPYVsHxL0B6x0ElPVRfMjjxdAQ+LSGocy08a6ioXzZC61VQPrcD02N/CkcHdh4JbjqIuFcxM3ZPUjhm1FHRc3TFoSOk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789050358; c=relaxed/simple;
+	bh=CiWVE0+PmUIya0wtLCtpcFBUlKmhTKJzjeXReZv/EYc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DfwlW6p700qpssY9NUFgTO7zlVWMx63dcShiR/l9zVKieKU3KO+cAZZB5FFP8nWxtp6dom0jKRxkxv5PWqNnFn+vgPxh8b3oM0Rudcw6y0O5L9gAV8vSkXNITJb02e6syJMIect6ocpzi06aa7xyy7uX+7dtiJg6s0XBpLdDsjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RhTmJB27; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="TEl+QYBj";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="XpU1pppX"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68AC7hN81732398
-	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 14:20:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=LzPgv+JUw7blI/3j2Lv9Lk9a
-	WSnQjmSVlk9jgF9EUWw=; b=TEl+QYBjvKr7HpD3M/E1C0inzzxT3wPzMBXyaxhQ
-	JS/k2+jCEgSrZI5BXgXVlsRw8NSb9S6vwE+BV6TNPQgVtJ1i/VGUYRW8xvArJpBb
-	/FExhwovNJjR603crm8ThBG4bbHouAHtaZpkFVtj6BKT+ii/rzl6nGDYwhdmj4Ps
-	/vIW9HOv7ifG3YpVyTiyfvPIMG12n812GMt2C72XhR4SfIJeR1BK0QjC2mRH9q8H
-	CX8pRnTA46axH3If96TmEpgPN2r7k4NWxWdZR3TEf1+tKv/S3/XwAl62V2FMl6ZU
-	XGM1IaoqCeU7iFyUzmBIrAeE5yMqXRYPbUS/inILFhZTrw==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gkcydma5x-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 14:20:33 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2d6df0a1e18so143940535ad.1
-        for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 07:20:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789050033; cv=none;
-        d=google.com; s=arc-20260327;
-        b=CEYChVX4AwgLje1KwFF18WMj/eE2VTuTPwWdTM8FAw4XPgCdr8O3/kNK2BhToZ5TkU
-         e/tePrCMLndnddHPdTgxq+WAtY5ONLTJf2xx2YSckCR5O2TSeNchA7VpBj+zjQTB/riZ
-         SQ65hF7atrfe6H/tmv0Na6A5vYTFbOWOhcFVJq/A3pxtPAAF/2ntOqZ5q0R9MIPJJgz0
-         8jyVgsoJ24ZuTg/4yWJA1rPfa9bj2bEZPR0BfrLyhMUsxbvSMjG6OYJFwwCdFsTv2yzD
-         Zwq3wfJGL0vFaRXfEUagA42roRvkQWxPNiPvTiLmK+U+HazoMWfu9yYZ30WS3hamR2Gf
-         jJpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=LzPgv+JUw7blI/3j2Lv9Lk9aWSnQjmSVlk9jgF9EUWw=;
-        fh=lT4M3sXPPKxT4vfO5D2u4MfU2s2MqOghR7JabuB62+E=;
-        b=U7lOK1fCn1VEevP2qgapP0Wjp6ZiBAY+O2BVjJ6lNSXS8ypWc7KavKcXmXhS4Lsts0
-         uBLWTqm3azXcBeEno/NJpnOvbtrXEuJqdE0LvSlNwOt7lj7BZ7k8Pve4ev+EUlVnocK5
-         7Oex7KwV/Iv4HUHD9oLL6hekCrUIQKyfVe/7pheEmAXEWac2RpNtl2Iw960xEEx9wkrr
-         J4dZCEsCeau53agfLmgJBtVdqoqgoN6bg2d9sfmcCII6PxlEFkGz24DIOdgYlDRMOHzQ
-         vzUoRyami9cNd94qe/CT+OdTgVNRAh0I+G6ZnOm7sUKukRwqTpaOFzfOo8vbF7qGN8WX
-         st8Q==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1789050033; x=1789654833; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LzPgv+JUw7blI/3j2Lv9Lk9aWSnQjmSVlk9jgF9EUWw=;
-        b=XpU1pppXgge8P6KuZaVxSes6fg4qangXvPdun7fTqd/1JFt5xLWYLY9SatdlFRcZ8t
-         LY2L1/gpE/BebESQqOISvOqFey1QvTV1NXpnEw1O55WjeXuWLQ6jiS8V5NM/rCMtmp0o
-         kb1t7ypGl9NRJfwz8pjFiPBVLQA7CM9jEWXD1O9KPnjb4blWb7AW5BHA9z+cKlWAbBQY
-         M8G5acf4ofOS897lui8bXew6D140WQPHE1dRRWc8a/KiDxhoI7XwPc6RPG4o5OYA5733
-         hvIZpYwk+rAI84iLsjEkL+OeTq2wNzjju9G9CMhOKyoLqHJAo2mgCgtnUIN19RcBSN/3
-         HQhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789050033; x=1789654833;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=LzPgv+JUw7blI/3j2Lv9Lk9aWSnQjmSVlk9jgF9EUWw=;
-        b=HCbfEspDYl4/bj4lf7CB7mspdQzDL/QrnamZir2biZom8A1tlORE/v25IRgTBM+Qp0
-         2bn+KTUxlt/PjSDBSSspCQb2NeUknDYlJrqKMG3GoyAuDJwtJfayg6uoe2pRpvgHbzne
-         v84DpB0da1JQmxYANDSmgRSVI4aSX1enD/H15qZuWe5ydmyovLcrWgSHil6tMpFep95k
-         O0Yj4t0TWrjQ9r5s20rtehSkIsLmgNRq+OsJijTtIMcEYn87poKpJKrx52TwsXz5/mvF
-         1JhUUFLOKHsyHxlvG6Bsul969YLkZ3LqOtsHSDbfR7FEXjwE6kh/6grYrIsGknIEUjzC
-         r3Hw==
-X-Forwarded-Encrypted: i=1; AKwUvBxP/1VJcfWZ8lUzKCAXPNq7oUs/FdnQG7vUvW5pkidMcBlPoDOOQpLWRw40N/qFp3bYCPvi5w==@lists.linux.dev
-X-Gm-Message-State: AFuF++klkKix0n4xKRTR+ve63ycYnsbsN20LQc35sO5RxSDrlHr2tTQl
-	IulykiT+iKXnZ2LoOhMlLKYBraNWEhXu90+rveL817GSfLn8PJ36fbPsWVi7zH8G4oMARo1crXQ
-	VlhQrBcEwlbLLHYFXFCBiTZIivSXGba/da2Pa7A/8h4D0fxP6QYd/u8ht8ZmifwOSkTW7SoJ/2P
-	qtMAymIT+psOjfW8O1XSWxoF6zISpCx1yk
-X-Gm-Gg: AYBFou3BVaqem8wf+lnvT3wGLKp2bwpOGtdNBtW2b/mA3JE//D+Pv7zVEBeZDjJmIM+
-	jyL2F+fkTEgXnPWZ+heob0FOIf8YtwKlBArGHPXS14JEK7kKMvrzlyegeoOqq66tZ52ABcNzj6+
-	zt13uPLQTncbDh7gL0mWpGiCSbPDBnx5ACRsiPbGmqElIiyRNBGnRzur+9AGkdnmnyKevQRj8=
-X-Received: by 2002:a17:903:3d0e:b0:2db:2c09:98ad with SMTP id d9443c01a7336-2db8dc82407mr200795515ad.12.1789050031335;
-        Thu, 10 Sep 2026 07:20:31 -0700 (PDT)
-X-Received: by 2002:a17:903:3d0e:b0:2db:2c09:98ad with SMTP id
- d9443c01a7336-2db8dc82407mr200793205ad.12.1789050030094; Thu, 10 Sep 2026
- 07:20:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RhTmJB27"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B67301F00893;
+	Thu, 10 Sep 2026 14:25:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789050356;
+	bh=K9MG0POJcCzKTJ8y6rRwFBLrTMZZTXDnDUSDdpkFC68=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=RhTmJB27ZhldTKn5H1jXdcqGKl9BKpl3r63bZQAhWNqZnbqXMbItfl3DTHTn3YUBv
+	 Kvl/YAOdsIc7wnu3odV9OJ74cxciKanvo/jpMrkyHmLpOD7STLcWtOnubtN5xNBzgi
+	 sN7UfmlBOVk7cY2ObgNnHFk3nWqsECAoJHsLyugd8EERBe9KWD/IWchAoJ+1qsPyrn
+	 eNSZQGmKAcnjn4Ruv1c4yTDqcJz4FmcOIjMFbeffSgKc5KPyG4GuqeNK/GSw0UFnTF
+	 m7TQhjqiKScpkDdEI3PGpL+j+iji95YjLj5+w2rcVYg4pRSbRy7VAZnJGs+o8BoJnw
+	 vUKxGtB64vg1Q==
+Date: Thu, 10 Sep 2026 09:25:50 -0500
+From: Bjorn Andersson <andersson@kernel.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>, 
+	rob.clark@oss.qualcomm.com, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Bharath Kumar <quic_bkumar@quicinc.com>, Chenna Kesava Raju <quic_chennak@quicinc.com>, 
+	srinivas.kandagatla@oss.qualcomm.com, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, llvm@lists.linux.dev, 
+	iommu@lists.linux.dev, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
+	Anandu Krishnan E <anandu.e@oss.qualcomm.com>
+Subject: Re: [PATCH v2 00/15] accel/qda: Qualcomm DSP Accelerator driver
+Message-ID: <aqK3QiR3nsXtHTwL@baldur>
+References: <CACSVV01T=ytVJKM7NRoBTAJm7vH+JPJNT9Tftu5X9YskGXerwg@mail.gmail.com>
+ <e7b4eceb-cb3a-49ea-bed9-728c958594b0@kernel.org>
+ <CACSVV03ypjBYkhRpt=TyDwOKhejKKke3x=Fi_TvxXN-5U_rCsw@mail.gmail.com>
+ <fb834ae5-7113-4a86-bb84-ca5115c8d7ff@kernel.org>
+ <CACSVV018jB4WRRJ_CUHQmkHXZcqauWJXWGgrzY_HA6cFQ+Q3Xw@mail.gmail.com>
+ <dd3da35b-1db6-43a4-ae1f-35620692f51f@kernel.org>
+ <CACSVV01o_XYuSzaYGbo9pY=459qiA_fgL_KRHVJH+LH4RYcMzQ@mail.gmail.com>
+ <23e31249-cce2-421e-88f7-1a2af66e34b6@oss.qualcomm.com>
+ <aqCKgM1yCbWjFdgO@baldur>
+ <rh5ufacfap4x63rjmgd76wlwgn3n2wuelpe4sqwy4yda27nsiq@lg4ltoqwz7ba>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com>
- <DKL6P7G0WTM7.UJ6KZERQZDFK@fairphone.com> <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz>
- <DKX384NK76OS.3NNOMAH72PV2P@fairphone.com> <ssleznoahzs4wgf5irjiagss2rjwl2s2jjnqrrnlpp74rdkgfs@au6x63ykyjfs>
- <DLBKL8SJL58R.2XQ76X6JILZ8E@fairphone.com>
-In-Reply-To: <DLBKL8SJL58R.2XQ76X6JILZ8E@fairphone.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Date: Thu, 10 Sep 2026 17:20:18 +0300
-X-Gm-Features: AcwNN1VVA4SntoL5ZvQXqShw0ZuVR288fdr4bQQ_lWLwdYYaNA3KoOK8hgJ80N8
-Message-ID: <CAO9ioeUEQ+kzBLj3KTv+uayaE-5aw-aL49-0pJ-x_Vwq4nu9JA@mail.gmail.com>
-Subject: Re: [PATCH 00/12] iommu: qcom_iommu: implement support for instances
- on MSM8974
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTEwMDE3MiBTYWx0ZWRfXwXPZfBG/jzm5
- eOZee03Mx0Us9A+4EPPbUOPB2L150ZLz08Yl1eh4z0gTQ3fg7yez0RN+dH+4PmyCK7KcKjDp+q2
- 91d8SeYo4Ohi+FWzKvZE4nHHoAdgXzE=
-X-Authority-Analysis: v=2.4 cv=UJNIjyfy c=1 sm=1 tr=0 ts=6aa2bcb1 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=Um2Pa8k9VHT-vaBCBUpS:22 a=bC-a23v3AAAA:8 a=EUspDBNiAAAA:8 a=dlmhaOwlAAAA:8
- a=6H0WHjuAAAAA:8 a=YxQatw1j_ZWosVD_vr4A:9 a=QEXdDO2ut3YA:10
- a=GvdueXVYPmCkWapjIL-Q:22 a=FO4_E8m0qiDe52t0p3_H:22 a=y4cfut4LVr_MrANMpYTh:22
- a=Soq9LBFxuPC4vsCAQt-j:22
-X-Proofpoint-GUID: e1ru5g2UekIaQjoNgjWMbdadSYYlBcFn
-X-Proofpoint-ORIG-GUID: e1ru5g2UekIaQjoNgjWMbdadSYYlBcFn
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTEwMDE3MiBTYWx0ZWRfX11AYzK/QPPtw
- +MLgKXmqU8K8gACQxc1t4ZWFTWTxqU+CZ1e+Jx/BVLmbT4rbeSVG9YyRH/OEzlBSFziZvwBdPtU
- WWXYaAx5JqlQFkTAA7qL+MgYhqe8lJujFh4JzbgqukD+JFEbVDCy4rKWbt+mK39Q1Ga3jsOSSBa
- Sphcoy7lupC46KG6YPjOfPTR1LzBNxPX0lpAw7o5cuIOKYgPIGU7trU7sdfSsRYIO+M+c6FTC2q
- 1cVVvuq1SbL8v+OE8GBBVTGAuIaAbnUdyZWy2PHOStrq3LyvpjdKdt+hjeM2TJzi3w1tJbv5CAI
- w4nxG7+M+A8+oiF5gb8YOnu5HcxwNR6Hub0Ep8KUq3E8/7PoveL08EOliUZDHKqiz1+D8mteUuE
- d7HNciq8LUjQXE5rLPs95BBHqK3ucuK1Xsw+/uJkzswuERVx5sGNifDGVRccd7nGAQlAh+a4wXD
- uqNwylgqnUzeTanagNQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-10_04,2026-09-09_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 bulkscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0
- spamscore=0 priorityscore=1501 malwarescore=0 adultscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609100172
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <rh5ufacfap4x63rjmgd76wlwgn3n2wuelpe4sqwy4yda27nsiq@lg4ltoqwz7ba>
 
-On Thu, 10 Sept 2026 at 13:38, Luca Weiss <luca.weiss@fairphone.com> wrote:
->
-> Hi Dmitry,
->
-> On Tue Sep 8, 2026 at 3:28 PM CEST, Dmitry Baryshkov wrote:
-> > On Mon, Aug 24, 2026 at 12:04:57PM +0200, Luca Weiss wrote:
-> >> Hi Dmitry,
-> >>
-> >> On Tue Aug 11, 2026 at 2:43 PM CEST, Dmitry Baryshkov wrote:
-> >> > On Mon, Aug 10, 2026 at 12:16:19PM +0200, Luca Weiss wrote:
-> >> >> Hi Dmitry,
-> >> >>
-> >> >> Many thanks for working on this and sending this patch series!
-> >> >>
-> >> >> On Sun Aug 9, 2026 at 10:15 PM CEST, Dmitry Baryshkov wrote:
-> >> >> > Qualcomm MSM8974 platform has five SMMU instances, used by display, GPU,
-> >> >> > Venus, VFE (camera) and JPEG encoder. Each of them follows ARM SMMU v1
-> >> >> > spec, however they differ from other Qualcomm platforms in the
-> >> >> > implementation-specific registers and also in interaction with TZ.
-> >> >> > Venus, MDP and VFE SMMUs are secured and require programming only of
-> >> >> > CBs, while GPU and JPEG require full programming.
-> >> >> >
-> >> >> > This series skips IOMMUs which can't be tested right now (VFE and JPEG),
-> >> >> > and adds only MDP, GPU and Venus (although untested, it is required for
-> >> >> > display to work) SMMU instances.
-> >> >>
-> >> >> I do have a patch series (sent years ago to the mailing lists as well)
-> >> >> for CAMSS so I can definitely test this in the future.
-> >> >
-> >> > Ok, let's land these first, unless VFE IOMMU blocks display on your
-> >> > platform (Venus was blocking display on APQ8074 DragonBoard).
-> >> >
-> >> >> > Note, to get display to work properly one fix is necessary, [1]
-> >> >> >
-> >> >> > [1] https://patch.msgid.link/20260809-msm8974-mmcc-fix-v1-1-50f2dcf18d2e@oss.qualcomm.com
-> >> >>
-> >> >> I've applied this series on v7.2-rc7, with the extra commits between
-> >> >> that and linux-next for qcom_iommu.c backported so that your series
-> >> >> applies without conflicts.
-> >> >>
-> >> >> So far I'm stuck with the GPU not being able to probe, adding some
-> >> >> printk's shows that in msm_iommu_new() the call for
-> >> >> iommu_attach_device() is failing.
-> >> >>
-> >> >> [    5.971154] msm_mdp fd900100.display-controller: failed to load adreno gpu
-> >> >> [    5.972991] msm_mdp fd900100.display-controller: failed to bind fdb00000.gpu (ops a3xx_ops [msm]): -16
-> >> >> [    5.974073] msm_mdp fd900100.display-controller: adev bind failed: -16
-> >> >> [    5.974152] panel-s6d6fa1 fd922800.dsi.0: error -EBUSY: Failed to attach to DSI host
-> >> >> [    5.974230] panel-s6d6fa1 fd922800.dsi.0: probe with driver panel-s6d6fa1 failed with error -16
-> >> >
-> >> > See the patch [1], it's picked up for 7.3
-> >>
-> >> I missed replying to you, with this patch the display lights up again!
-> >>
-> >> Unfortunately the GPU still seems to have issues, I don't have a log
-> >> right now (I think even SSH was dropping then with a bunch of log lines
-> >> appearing in kernel log on screen). I assume kmscube + more complex
-> >> workloads worked fine for you?
-> >
-> > I was mostly using kmscube, but I can try running the CTS once I get
-> > back to it, sorry for the delays.
->
-> Yeah, kmscube doesn't even work for me.
->
-> Bootup works to a tty with screen on (mdss doesn't seem to have any
-> problems for me), but then as soon as I run kmscube the device shows a
-> few errors on the tty0 on the screen (USB stops working apparently since
-> my "dmesg -w" doesn't show anything) and a few seconds later the device
-> reboots.
+On Wed, Sep 09, 2026 at 02:48:17PM +0300, Dmitry Baryshkov wrote:
+> On Tue, Sep 08, 2026 at 05:44:10PM -0500, Bjorn Andersson wrote:
+> > On Wed, Aug 26, 2026 at 06:37:00PM +0530, Ekansh Gupta wrote:
+> > > On 20-08-2026 20:17, Rob Clark wrote:
+> > > > On Wed, Aug 19, 2026 at 11:15 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> > > >>
+> > > >> On 19/08/2026 17:48, Rob Clark wrote:
+> > > >>> On Wed, Aug 19, 2026 at 8:27 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> > > >>>> The rule of usptream development is that we do not accept duplicated
+> > > >>>> code, just because a vendor wants to write something new. This is
+> > > >>>> basically the concept applied all over the drivers tree, where we pushed
+> > > >>>> back against all sorts of duplications all over the vendors.
+> > > >>>>
+> > > >>>> What I miss in this thread is why would there be any exception here. We
+> > > >>>> do not grant exceptions from standard practices on "I want" reasons.
+> > > >>>
+> > > >>> I agree that we should not have duplicated drivers just for vendor
+> > > >>> lolz.  But when it comes to adopting common frameworks and integrating
+> > > >>> better into the ecosystem, this doesn't seem like something we should
+> > > >>> actively discourage.  I don't think this is a case of vendor lolz, but
+> > > >>
+> > > >> No one discourages it. Following standard Linux kernel practices and
+> > > >> requirements is not discouraging, do not twist the narrative here.
+> > > >> Again, it is standard upstream review telling that we do not duplicate
+> > > >> drivers. Ever, unless there is serious exception needed.
+> > > > 
+> > > > I wasn't trying to twist the narrative, just trying to come up with a
+> > > > path forward that isn't "no" or "improve existing driver", since
+> > > > neither of those gets us towards a future using common frameworks.
+> > > > 
+> > > >> I asked why there should be an exception granted? Is the reason for
+> > > >> exception following:
+> > > >> "We want to adopt common framework"
+> > > >> ?
+> > > > 
+> > > > Possibly?  But I don't think we want two drivers to be any sort of
+> > > > long term solution.  (Ie. as long as venus/iris have co-exist.)
+> > > > 
+> > > >>
+> > > >>> rather reacting to drm/accel emerging as the standard framework for
+> > > >>> this sort of driver.
+> > > >>>
+> > > >>> So how do we get from here to there?
+> > > >>
+> > > >> What is wrong with my proposal?
+> > > > 
+> > > > Maybe I missed something, my understanding was your proposal was
+> > > > "Grow/replace/improve existing driver instead of coming with a
+> > > > duplicate"..  grow or improve doesn't move us toward common
+> > > > frameworks.  Maybe "replace" is a valid option.  If there is something
+> > > > I missed, then I apologize.
+> > > > 
+> > > > Options I can think of are:
+> > > > 
+> > > > 1. Hardware cutoff.. new hw gets new driver, existing hw gets existing
+> > > >    driver
+> > > > 2. Backwards compat chardev registered by new driver, providing existing
+> > > >    UABI.  I'm not 100% sure about the feasibility/drawbacks of this..
+> > > >    AFAIU the fastrpc folks where planning a backwards compat layer in
+> > > >    userspace, so maybe it is possible.
+> > > > 3. exception?
+> > > > 
+> > > > I'd like to know what the feasibility of #2 is, since at a high level
+> > > > that sounds like the best option.  Possibly limit exposure of legacy
+> > > > UABI to existing hw so we don't get into a place of needing to extend
+> > > > the legacy UABI for new hw?
+> > > > 
+> > > > But #1 sounds like a non-controversial place to start regardless.
+> > > > Possibly with #2 coming as followup and necessary step before eventual
+> > > > migration to new driver for existing hw?
+> > > > 
+> > > > Even if we start with #2, how do we handle first-merge-window
+> > > > bugs/regressions without reverting addition of new driver and removal
+> > > > of old?  It seems like we'd need a window of a couple release cycles
+> > > > where both drivers exist?
+> > > > 
+> > > > Maybe others have other/better options in mind?
+> > > To all, I'm seeking on the approach I should follow to go ahead here. I
+> > > can work on implementing #1(as per Rob's list) with hw specific
+> > > compatible for v4 if it's acceptable.
+> > > 
+> > 
+> > I don't see any reason for you to define a "hw specific compatible",
+> > because as you have shown in this series (and as Rob point out), there's
+> > no difference in the "hardware".
+> > 
+> > The only reason for your "hw specific compatible" is to make a software
+> > selection in Linux - and that's not what DeviceTree is for.
+> 
+> That's not exactly true. There are protocol differences. For example,
+> polling mode is supported only since a certain timeline in the history.
+> Likewise other interface features are not supported on all the FastRPC
+> devices. For the polling mode support we were already beaten by the lack
+> of SoC-specific compats.
+> 
 
-Interesting. I wonder if it's TZ tripping on the VFE IOMMU.
+I can see the benefit of capturing some of the generational features in
+a compatible, like the changes related to address width. But for pure
+software features that doesn't have an actual bearing in the hardware,
+I'd prefer if we relied on dynamic discovery.
 
->
-> dmesg: https://public.lucaweiss.eu/tmp/fp2-iommu-dmesg.txt
->
-> The SoC in my device should be MSM8974PRO-AA (a.k.a. MSM8974AB-AA).
->
-> I know there are some differences for some bits between MSM8974
-> (Snapdragon 800) and MSM8974PRO (Snapdragon 801), which variant do you
-> have? Maybe that's relevant, also since downstream splits devicetree
-> based on 8974 and 8974pro.
+But none of that applies to the question of "can I use compatible to
+select if we should use the new or old Linux driver".
 
-Mine is APQ8074, not sure if there were revisions.
+> > As such, I don't see that you have a DeviceTree problem at all, because
+> > this is a Linux-internal problem.
+> > 
+> > > #2(compat driver) is something that we are still exploring as we
+> > > couldn't find any standard way to achieve it. We might start a separate
+> > > discussion for that once we have few possible designs with us.
+> > > 
+> > 
+> > This is the actual problem!
+> > 
+> > We have existing user space that depends on the ioctl interface exposed
+> > by the current misc driver. You must not break these.
+> 
+> This is clear.
+> 
+> > Hardware cutoff is not a viable solution, because that's just a
+> > declaration that we'll let the old platforms rotten - or alternatively
+> > you commit to maintain two drivers to the very same feature and quality
+> > level.
+> > 
+> > So the only reasonable solution is #2; from there it's a valid question
+> > if you reach that point my stepwise migrating the current misc driver
+> > that solution, or if you present a new driver with the fully backwards
+> > compatible interface, alongside the new ABI.
+> 
+> I think the general direction was #3 (or #2.1): implement a shim layer
+> on top of the QDA driver as a separate module. Put all the historical
+> over-complicated solutions into that shim module and let it die at some
+> point. Current fastrpc driver lets userspace specify buffers in several
+> different ways, forcing the kernel driver to perform a lot of work
+> with buffer addresses. I don't think that this legacy code should be a
+> part of the QDA. It can go to qda-fastrpc-shim, keeping it out of the
+> kernel memory if it's not necessary.
+> 
+> > But this does bring to a question which the cover letter should explain
+> > - but doesn't: what problem does this patch series actually solve?
+> 
+> I agree that it should be a part of the cover letter.
+> 
+> As a person who triggered this work, I can propose my reasons:
+> 
+> - Current driver has over-complicated memory manager (both on the
+>   userspace and on the kernel side).
 
--- 
-With best wishes
-Dmitry
+The userspace library is spaghetti, but when I wrote my own it turned
+out quite succinct. The ioctl structs certainly could have been cleaner,
+and documented, but it seems to me that a fair amount of the complexity
+comes from the different use cases - such as SMMU vs XPU, secure and
+unsecure buffers, remnants of now unsupported options.
+
+I'm presuming that QDA will need to adopt most of these, and that QDA
+support will be bolted into the spaghetti library.
+
+> Correspondng uAPI is not really
+>   suitable for virtualization. Using GEM simplifies both the kernel
+>   driver and uAPI. Also using handle-offset-length to specify the
+>   buffers makes it easy to support virtual QDA devices.
+
+I'm looking forward to learn more about this!
+
+> 
+> - Current driver predates the accel subsystem. Using common subsystem
+>   simplifies reviews. The QDA driver has gotten several comments about
+>   the usage of the DMA-BUFs. It'not unlikely that the same issues are
+>   present in the current FastRPC driver, just being unnoticed.
+
+Yeah, this is unfortunate. It would certainly be nice to have a
+documented and clean ABI.
+
+> 
+> - The ideas present in the current FastRPC driver also predate the
+>   current design practices. The uAPI was created in the ad-hoc way, just
+>   following the momentary needs. Driver code also shows the result of
+>   that, having enough of the spaghetti code.
+> 
+
+Yeah, again, this isn't desirable.
+
+> Given all of that, yes, it is possible to provide an evolution of the
+> FastRPC driver into the accel+shim, improve the code quality meanwhile
+> and end up with the good enough split. However I think that the path
+> taken would be longer and the net result might be worse.
+> 
+> With all of that in mind, my suggestion is to continue working on the
+> QDA driver, get the core of it to integrate nicely with the accel and
+> DMA-BUF usage requirements and implement the (minimal?) fastrpc shim on
+> top of it.
+> 
+
+If you believe this is the way to reach the proper design, then I won't
+object. My requirement is that my userspace continues to work when my
+distro suddenly switches FASTRPC=n/QDA=m.
+
+I have no problems with dropping the fastrpc driver once the QDA is
+drop-in-compatible. I'm also open to marking the compat layer deprecated
+and eventually drop it once we're certain that users have moved to a
+userspace that used the accel interface.
+
+But we can't merge the QDA driver as long as we believe that
+implementing a compat layer will be hard/impossible.
+
+Regards,
+Bjorn
+
+> 
+> -- 
+> With best wishes
+> Dmitry
