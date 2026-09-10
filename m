@@ -1,131 +1,259 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDCE43E44EB;
-	Thu, 10 Sep 2026 09:21:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A5853C76AD
+	for <iommu@lists.linux.dev>; Thu, 10 Sep 2026 10:24:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789032099; cv=none; b=Ib6y/z55sZPBliyJ196o6Qpu6QsIsyErjHYIqEPLCXVy/x5BG4J0e/OC1BEqFn+wfVallPkvlWLY8/YDEUqxQSqf/S5uYdgDRW0X80+Zo9uausErw8EtZZ9+elcvIi+/J2JDFvJ+lmO0it7FLIlI5SfaYNfV4TwZfFuAoSrYh5g=
+	t=1789035867; cv=none; b=Av3IQcehn3WSztA2A6RghoSACnNLobX1/ZCYLrsxayxPHLetvYWMMGqnUXNFUbrm7Ia+Va+yyn3JZCxYjPmxBO4aIe/cEKN8djrmZdnGuZRiKFNs4QLT5DYOMvNNU0MEaNH8b12wSfbenpyxA85QhVsZ9rGp5BbbC4sBZFw78lc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789032099; c=relaxed/simple;
-	bh=aCdo8Bbt4RuE2BEnSXUF/igiOBHVMvKWYIliqMf4Hnk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jZjdq5mYBL4xGQQ5nj8+BEGiyO/0oYHTt/755QpxeerOh4v8uzWFf3VCn7NBQ40gCR5NN1Al7LiLGNjTAPeVq14XOqHkwRlWOUdIFoEB7CHNqh4q5F9/T7VhJ2H6I7H2Uv9ya9SZOqSf3awCa85ReRWSQmtzVlqOBYIusj6iYEo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SWenu4/b; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789035867; c=relaxed/simple;
+	bh=0VyEVvYeNWtZqLC2vVA2N3epmqwfXEEJjEfrshlgK8k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=S3rqAVLwvx6RF9/ArjAF5xNUPPpEcLXZqyy3d1I2B8CpJdvGe4Yvj+2wawiZCnRlCYmTplRp5N1Bt018kD2x1XKtO3wcRDtwXyPgoQ1sYOZly+iwUWSn81L0AazFq3wk7v5WpZ1G3ecsObRgMKKbKdOWh2VKSErpvZFjQM9BUQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=U9PHLvJ3; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SWenu4/b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE2DF1F000FF;
-	Thu, 10 Sep 2026 09:21:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789032097;
-	bh=etegQPhHDYYXKpgN5HhrDD3ja2BilOp/q9xebohgcXg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=SWenu4/bhQp/ebHqQ47mZ8ttape8v/6aPUf2kjB/Ld/j9zBiWoVDmMFM2WXUeFpA4
-	 Tz4kQl6h6D02ibEHqRfMCGmzm4F4W385fd4iPw4EV/b0R7FrEPUyPOdgqYghnwGSlg
-	 wlCNkIv6fYWAYcTfK4O6DgrRMLRvCHdb42c6Z5fPxcblq5pU74lnZfaSijO4QJtgql
-	 XWi5JzunvwkhvBE8/kV9Y4Q9psgLSZ8fOLaxugK+zflWpyfdSLe5ID2gv+8YzALlTs
-	 DNEG/urmvrS21JPGf+b18of+CcOKc6HBFiQHYWy3kARa8VmrNDWDGEakhoATI6H2NQ
-	 gKLgojcgqTT1g==
-Date: Thu, 10 Sep 2026 11:21:34 +0200
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Sowjanya Komatineni <skomatineni@nvidia.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Yury Norov <yury.norov@gmail.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Russell King <linux@armlinux.org.uk>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
-	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Chun Ng <chunn@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, 
-	Saravana Kannan <saravanak@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, 
-	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
-	linux-trace-kernel@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 04/12] arm64/mm: Export set_direct_map_*_noflush() APIs
-Message-ID: <aqJjL-kDfl2_wwHG@orome>
-References: <20260904-tegra-vpr-v6-0-79042cfa8de5@nvidia.com>
- <20260904-tegra-vpr-v6-4-79042cfa8de5@nvidia.com>
- <aqJFb3VtsYtnIa1c@infradead.org>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="U9PHLvJ3"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3CFA1143D;
+	Thu, 10 Sep 2026 03:24:21 -0700 (PDT)
+Received: from [10.2.212.8] (e134344.arm.com [10.2.212.8])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 689913F7B4;
+	Thu, 10 Sep 2026 03:24:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1789035864; bh=0VyEVvYeNWtZqLC2vVA2N3epmqwfXEEJjEfrshlgK8k=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=U9PHLvJ3ax9U5iM/TVSVBsRv3Hxc8mks2EqBXvTRpWpNdsjerhR7/N4LrFKSbD7V1
+	 fZXIAw1mslbH2YxsrIU22+UX9eYsxbU+CNPD0tjBT0kkHzyFcRzwGeGHV8rYAlhPnf
+	 u5EkbdWxmSUU+2Q5bo+nHgLv0Tlm95ARxRol5i24=
+Message-ID: <d006c7e3-e270-4261-b1bb-f5e6420c084c@arm.com>
+Date: Thu, 10 Sep 2026 11:24:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="nc5ni6zymi4hrk6h"
-Content-Disposition: inline
-In-Reply-To: <aqJFb3VtsYtnIa1c@infradead.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 5/5] fs/resctrl: Add a "devices" file to assign
+ devices to groups
+To: Qinxin Xia <xiaqinxin@huawei.com>, zhangzhanpeng.jasper@bytedance.com,
+ joro@8bytes.org, palmer@dabbelt.com, tony.luck@intel.com,
+ reinette.chatre@intel.com, tomasz.jeznach@linux.dev, zengheng4@huawei.com,
+ fustini@kernel.org, cuiyunhui@bytedance.com, wangzhou1@hisilicon.com
+Cc: will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, Dave.Martin@arm.com,
+ james.morse@arm.com, babu.moger@amd.com, corbet@lwn.net, shuah@kernel.org,
+ jgg@ziepe.ca, kevin.tian@intel.com, yuanzhu@bytedance.com,
+ iommu@lists.linux.dev, linuxarm@huawei.com, baolin.wang@linux.alibaba.com
+References: <20260901140802.1215508-1-xiaqinxin@huawei.com>
+ <20260901140802.1215508-6-xiaqinxin@huawei.com>
+Content-Language: en-US
+From: Ben Horgan <ben.horgan@arm.com>
+In-Reply-To: <20260901140802.1215508-6-xiaqinxin@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+Hi Qinxin,
 
---nc5ni6zymi4hrk6h
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v6 04/12] arm64/mm: Export set_direct_map_*_noflush() APIs
-MIME-Version: 1.0
+On 01/09/2026 15:08, Qinxin Xia wrote:
+> Expose the device QoS tracking through a new "devices" file. Writing a
+> device name assigns it to the group, tagging its DMA with the group's QoS
+> IDs.
+> 
+> The file is only shown where an IOMMU can tag device DMA.
+> 
+> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+> ---
+>  Documentation/filesystems/resctrl.rst |  18 ++++-
+>  fs/resctrl/rdtgroup.c                 | 101 ++++++++++++++++++++++++++
+>  2 files changed, 117 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/filesystems/resctrl.rst b/Documentation/filesystems/resctrl.rst
+> index e4b66af55ffb..aa205ccaabf6 100644
+> --- a/Documentation/filesystems/resctrl.rst
+> +++ b/Documentation/filesystems/resctrl.rst
+> @@ -546,8 +546,8 @@ directories can be created to monitor subsets of tasks in the CTRL_MON
+>  group that is their ancestor. These are called "MON" groups in the rest
+>  of this document.
+>  
+> -Removing a directory will move all tasks and cpus owned by the group it
+> -represents to the parent. Removing one of the created CTRL_MON groups
+> +Removing a directory will move all tasks, cpus and devices owned by the
+> +group it represents to the parent. Removing one of the created CTRL_MON groups
+>  will automatically remove all MON groups below it.
+>  
+>  Moving MON group directories to a new parent CTRL_MON group is supported
+> @@ -581,6 +581,20 @@ All groups contain the following files:
+>  	idle tasks. Instead, a CPU's idle task is always considered as a
+>  	member of the group owning the CPU.
+>  
+> +"devices":
+> +	Reading this file shows the list of all devices that belong to
+> +	this group. Writing a device name to the file will add a device to
+> +	the group, tagging its DMA with the group's QoS IDs. Multiple
+> +	devices can be added by separating the names with commas. A single
+> +	failure encountered while attempting to assign a device will cause
+> +	the operation to abort and already added devices before the failure
+> +	will remain in the group. Failures will be logged to
+> +	/sys/fs/resctrl/info/last_cmd_status.
+> +
+> +	The device name is the one listed under
+> +	/sys/kernel/iommu_groups/<id>/devices/. This file is only present
+> +	when an IOMMU can tag the DMA of devices behind it with a QoS class.
 
-On Wed, Sep 09, 2026 at 10:51:43PM -0700, Christoph Hellwig wrote:
-> On Fri, Sep 04, 2026 at 12:44:55PM +0200, Thierry Reding wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> >=20
-> > Drivers that use this may want to be built as a module, so export them.
->=20
-> That's one of the worst commit log ever.  No, we don't just export
-> core symbols dealing with the kernel direct map because
-> "Drivers that use this may want to be built as a module".
->=20
-> For one exporting this at all needs a very good justification and
-> not just hand waiving.  But more importantly if we can't avoid
-> exporting it, it needs to be exported at the tightest sensible
-> scope.  E.g. for a given module if it is so special, or a namespace
-> if it's not that special.  But in doubt we should have a proper
-> core abstraction instead of opening up direct map manipulation to
-> random modules.
+What's the expectation when there is more than one device listed? It seems odd to specify the
+iommu_group by device name when there may be more than one device. Would it not be better to just
+use the id directly?
 
-Fair points. In an earlier set of patches this was abstracted behind a
-set of set_memory_*() functions, modelled after set_memory_encrypted()
-and set_memory_decrypted(), which I think I'd still prefer, too.
+There are also other platform devices such as the GPU which may not be behind an SMMU/IOMMU but can
+be an MPAM requester. We should also take these into account when designing the interface. One
+,unworkable, idea is that under a 'devices' directory there could be two files, iommu_group and
+platform_device. The iommu_group would take an iommu_group id (as per /sys/kernel/iommu_groups/<id>)
+and the platform_device the name from /sys/bus/platform/devices/. I suggest separate files to avoid
+any naming conflicts. However, this does leave the problem that the 'devices' directory would likely
+then be considered a CTRL_MON group by tools and so not a usable interface.
 
-Is that more along the lines of what you had in mind?
+One other consideration is the life cycle and scope of the resctrl domains. For instance, if the
+IOMMU is upstream of a cache which supports cache allocation then the cache allocation for the
+instance downstream of the IOMMU should still be configurable even if the associated CPUs are
+disabled. For MPAM systems IIUC this would require extra topology information than what is currently
+available in the ACPI description. I plan to bring this up with the MPAM architects. I'm not sure
+what's available for other architectures. The existing 'io_alloc' and 'io_alloc_cbm' (not used on
+MPAM) look to side step this by keeping them in the info directory.
 
 Thanks,
-Thierry
 
---nc5ni6zymi4hrk6h
-Content-Type: application/pgp-signature; name="signature.asc"
+Ben
 
------BEGIN PGP SIGNATURE-----
+> +
+>  "cpus":
+>  	Reading this file shows a bitmask of the logical CPUs owned by
+>  	this group. Writing a mask to this file will add and remove
+> diff --git a/fs/resctrl/rdtgroup.c b/fs/resctrl/rdtgroup.c
+> index c33891ead788..3633b3521941 100644
+> --- a/fs/resctrl/rdtgroup.c
+> +++ b/fs/resctrl/rdtgroup.c
+> @@ -985,6 +985,92 @@ static const struct iommu_qos_device_ops rdtgroup_qos_device_ops = {
+>  	.remove = rdtgroup_remove_device,
+>  };
+>  
+> +static ssize_t rdtgroup_devices_write(struct kernfs_open_file *of,
+> +				      char *buf, size_t nbytes, loff_t off)
+> +{
+> +	struct rdtgroup *rdtgrp;
+> +	char *token;
+> +	int ret = 0;
+> +
+> +	if (!buf)
+> +		return -EINVAL;
+> +
+> +	rdtgrp = rdtgroup_kn_lock_live(of->kn);
+> +	if (!rdtgrp) {
+> +		rdtgroup_kn_unlock(of->kn);
+> +		return -ENOENT;
+> +	}
+> +	rdt_last_cmd_clear();
+> +
+> +	if (rdtgrp->mode == RDT_MODE_PSEUDO_LOCKED ||
+> +	    rdtgrp->mode == RDT_MODE_PSEUDO_LOCKSETUP) {
+> +		ret = -EINVAL;
+> +		rdt_last_cmd_puts("Pseudo-locking in progress\n");
+> +		goto unlock;
+> +	}
+> +
+> +	while ((token = strsep(&buf, ","))) {
+> +		struct device *dev;
+> +
+> +		token = strim(token);
+> +		if (!*token) {
+> +			rdt_last_cmd_puts("Device list parsing error\n");
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		dev = iommu_group_find_device_by_name(token);
+> +		if (!dev) {
+> +			rdt_last_cmd_printf("No device %s\n", token);
+> +			ret = -ENODEV;
+> +			break;
+> +		}
+> +
+> +		ret = rdtgroup_set_device(dev, rdtgrp);
+> +		if (ret == -EOPNOTSUPP)
+> +			rdt_last_cmd_printf("Device %s does not support QoS\n",
+> +					    token);
+> +		else if (ret)
+> +			rdt_last_cmd_printf("Error while processing device %s\n",
+> +					    token);
+> +		/*
+> +		 * rdtgroup_set_device() takes its own reference on a new
+> +		 * rdtdev; drop the temporary reference returned by the
+> +		 * lookup regardless of the outcome.
+> +		 */
+> +		put_device(dev);
+> +		if (ret)
+> +			break;
+> +	}
+> +
+> +unlock:
+> +	rdtgroup_kn_unlock(of->kn);
+> +	return ret ?: nbytes;
+> +}
+> +
+> +static int rdtgroup_devices_show(struct kernfs_open_file *of,
+> +				 struct seq_file *s, void *v)
+> +{
+> +	struct rdtgroup *rdtgrp;
+> +	struct rdtdev *rdtdev;
+> +
+> +	rdtgrp = rdtgroup_kn_lock_live(of->kn);
+> +	if (!rdtgrp) {
+> +		rdtgroup_kn_unlock(of->kn);
+> +		return -ENOENT;
+> +	}
+> +
+> +	mutex_lock(&rdtdev_mutex);
+> +	list_for_each_entry(rdtdev, &rdtdev_list, node)
+> +		if (is_rmid_match_dev(rdtdev, rdtgrp) ||
+> +		    is_closid_match_dev(rdtdev, rdtgrp))
+> +			seq_printf(s, "%s\n", kobject_name(&rdtdev->dev->kobj));
+> +	mutex_unlock(&rdtdev_mutex);
+> +
+> +	rdtgroup_kn_unlock(of->kn);
+> +	return 0;
+> +}
+> +
+>  static void rdt_move_group_devices(struct rdtgroup *from, struct rdtgroup *to)
+>  {
+>  	struct rdtdev *rdtdev;
+> @@ -2295,6 +2381,14 @@ static struct rftype res_common_files[] = {
+>  		.seq_show	= rdtgroup_tasks_show,
+>  		.fflags		= RFTYPE_BASE,
+>  	},
+> +	{
+> +		.name		= "devices",
+> +		.mode		= 0644,
+> +		.kf_ops		= &rdtgroup_kf_single_ops,
+> +		.write		= rdtgroup_devices_write,
+> +		.seq_show	= rdtgroup_devices_show,
+> +		.fflags		= RFTYPE_BASE,
+> +	},
+>  	{
+>  		.name		= "mon_hw_id",
+>  		.mode		= 0444,
+> @@ -2363,6 +2457,13 @@ static int rdtgroup_add_files(struct kernfs_node *kn, unsigned long fflags)
+>  
+>  	for (rft = rfts; rft < rfts + len; rft++) {
+>  		if (rft->fflags && ((fflags & rft->fflags) == rft->fflags)) {
+> +			if (!strcmp(rft->name, "devices") &&
+> +			    (!resctrl_arch_devices_supported() ||
+> +			     ((fflags & RFTYPE_CTRL) &&
+> +			      !resctrl_arch_alloc_capable()) ||
+> +			     ((fflags & RFTYPE_MON) &&
+> +			      !resctrl_arch_mon_capable())))
+> +				continue;
+>  			ret = rdtgroup_add_file(kn, rft);
+>  			if (ret)
+>  				goto error;
 
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmqidpsACgkQ3SOs138+
-s6GwVg//eIawY/jpVU95C05IvqaJG4LAKMlyvX0vCt0yTbFrsPQhY7RDigfanDMo
-ycZhJCp/jyLprOkhxYEUmbLqCr6cn+5taI7LSQYIjkP+XRbG7rM7vYOynCANDeOS
-uvUxtRu/8HlB0epcBAco9xhyX6Orb7w61HB8DspHAB/maQpHwCg8ce2/etTREXvK
-qXc3uVrtfrsVNKgZgNtSuHcYX5NyIIwuNKc7rwiU+Q3EFcYAF3RpG6XCrncuKajI
-GReiAWqBsyzzgM93zbemv3DKjbQkqVBl2fSZzTeguSv5KrJnFFd6n+JnHpHMPQPJ
-gg6l3zWb7P8nlPRtlEJh87sNZJ3F8nVYStP5WpaCgjFDW5WrMcTTj/SBKMQqeroe
-tgGkEMSMZAew1mtkyy5v0oaaialjMZ7796mpFs9J5GZv1PilvW/3Gn7D91zK4Yii
-N923BVwEz9EnkPER42dP9AfLUCDE0lwc4A5t7ezgKbOKLXUIfDN6zlZe3jWQ6LO3
-ALOl0JSYvlMX2izpQ4Pyl0/CSFHa5im5+5+o734Ql7U0mBOfpYYziOfPE9NJg5Xm
-hINUJ4RiAi1x2e7iP05HqJutCO2hXPdalSnK5rzuosZjqma4SvMo/Ma1P7bcFkJw
-2WDAAeRbtHk8qNOioz1Kp3UhdQCwFSP9Wa5RAtfvrmhE1X5Ap8I=
-=EeFB
------END PGP SIGNATURE-----
-
---nc5ni6zymi4hrk6h--
