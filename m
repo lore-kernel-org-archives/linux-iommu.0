@@ -1,219 +1,122 @@
-Received: from pdx-out-002.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-002.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.246.1.125])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DD647D93E
-	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 13:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.246.1.125
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94A4648AE1B
+	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 13:44:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789131635; cv=none; b=hcExqsYyR7+fF4FesC7JOgArG6DQrr2YKchFhhz9pHrKVglx3KNCLdHH4tFrrIwPPN7c8ELo9ZM2s8691n9IJhgNK4H6rOs89CVNnRHlZwkA33kYUSiFUqofcg79R/AmtRVm/FvzlogtTwXNUjMh94Hgr/21KC+I9kLT+B2gh50=
+	t=1789134299; cv=none; b=g8dBBSYwSC/Qzu6WvaMy6Dp6T8Znk6gTpnnPwja+oTAPqERhbbC46uIJHVmmdaK+mU03oYpiVtCEAArJDK9+KnG+ZdSGsbH7RYWXCdAGhkHDgNsp41p2cYXjfJ0bD0FmI8SiAfkZ8k4rc7f9pilxV+B0X/tUkQd0dPXVAI3YpOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789131635; c=relaxed/simple;
-	bh=S6mB6tAfA18u0SeIBQ79vmZ4kKuamVt3f/eGRJ+jtnY=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=X8m75erloWtwKMVnus7K9L5sOQ246eYyzPiabD7SeAB1+0Dhhy1aaoBqAsSYRSUjhCEWiCa3ZetQhpLP4Xt03f9t/YBa9gRaIdI2bPfgiibhUm0dpNBTSOCDnsMJ4P9zOfeOzB6Ejw1Ilq/07zICM/TVw0LVZkUqqmyQUeNIMrg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de; spf=pass smtp.mailfrom=amazon.de; dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b=BhtcKOoR; arc=none smtp.client-ip=44.246.1.125
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
+	s=arc-20240116; t=1789134299; c=relaxed/simple;
+	bh=z1IBBN+1WUfDf5cT8bAka5f8p45OV+l+sxZzQy3xMvk=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=lBXUhCHKlKbyMytlKYaU78oe7PC9CGDGEHOcg1uZCOil0q+ymOTPQhpKAdZEfZ+tgvYQyx07APXZ6864BqlYTIosjJmXwbU71zTIoUvOnltWvVvN+tKp9TFxQ5caHnpQA61l5QVWFN7McGK0f9gyz3cPbGdwocL2l5x69mkqgng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ewDHLYok; arc=none smtp.client-ip=209.85.215.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b="BhtcKOoR"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ewDHLYok"
+Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c85798977dcso1506327a12.0
+        for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 06:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
-  t=1789131622; x=1820667622;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0tN/bx7Tag7WLT7gLKiEvgdR33AXYplSodqqSmnbwXs=;
-  b=BhtcKOoRlIHrymz7QnFNgnRQsGWXS8zaXZTnURmpyygryXtLt4ukeDOt
-   D2sA4cN8ADh6AWh+v4LUK7L4QoHadN3AZkqzK1/3IxIUtoeeDRYtuloz/
-   Jvy8gBn0pRjYykzFt+ENYC49D8Gt/lSnmOk3sCRtz1Zr1d1x5WyPQzFNb
-   DBkO6xU0T24wrLXrgvOwvFFdJs+8fwoMHEKJRS+vFMEGAIcm322TWCJSv
-   i/27zhIsTA0Pih0pVpHitjUKbbZb6zvwGVt9RnKjsYtbjyQQWfsCn0lQS
-   NpE+iv3wkgR3/3PfWNfWXbdTRJZ/G2XjYX+ExDWOs+VWWsUajnAUJ+GXs
-   A==;
-X-CSE-ConnectionGUID: f4KebPnHSOKcqD4LJ3FNJw==
-X-CSE-MsgGUID: Pw6GVIvFSYiYEhG0pJ72mA==
-X-IronPort-AV: E=Sophos;i="6.27,97,1787011200"; 
-   d="scan'208";a="28428211"
-Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
-  by internal-pdx-out-002.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2026 13:00:17 +0000
-Received: from EX19MTAUWB002.ant.amazon.com [205.251.233.111:16618]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.43.236:2525] with esmtp (Farcaster)
- id 9a453679-8488-4fa8-871e-1c9c62cab044; Fri, 11 Sep 2026 13:00:17 +0000 (UTC)
-X-Farcaster-Flow-ID: 9a453679-8488-4fa8-871e-1c9c62cab044
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.45;
- Fri, 11 Sep 2026 13:00:17 +0000
-Received: from dev-dsk-sakacpav-1a-480d1124.eu-west-1.amazon.com
- (172.19.96.155) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.46; Fri, 11 Sep 2026
- 13:00:15 +0000
-From: Pavol Sakac <sakacpav@amazon.de>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-CC: Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	<linux-pci@vger.kernel.org>, <nh-open-source@amazon.com>
-Subject: [RFC PATCH 3/3] iommu: set up the default domain outside iommu_probe_device_lock
-Date: Fri, 11 Sep 2026 14:58:34 +0200
-Message-ID: <20260911125907.67105-3-sakacpav@amazon.de>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260911-vfopt-s2-v1-0-fff3db7e01c2@amazon.de>
-References: <20260911-vfopt-s2-v1-0-fff3db7e01c2@amazon.de>
+        d=google.com; s=20251104; t=1789134291; x=1789739091; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=35qTFGciq12kEJU+EMJ4woELZzEj6I4YMtoPAd4aNAQ=;
+        b=ewDHLYok0hz6jSUZb51Zl9R14qTwzUXqsAfXC4yGTS8ZzlV+7sGmt4nwqGCbGztQbe
+         GW/kCVqwNPO93zS7oPzQ9L2/gvV09aE8LrlMaNE8Lh8Q1kM1uap3w4GiRoEYO8n9clVU
+         0A6nWnsaWqV/EhpfhxDZ5GF18cD9f65U0M77Z/fIUKgotGYhat+0Rr76GeCxUig1ZlER
+         1lWrxtlpwIiBGSSUe60ET9L41tlUb0qCZyY9VSBsb+fV0DQAPXP86KVO0TR6gtLsXix2
+         aL/2nqRMBtLKAfV+aT5NvkA9gbxd3xIS1Bdx8j/7buGp1q4WVy5i8KTLvuyZ4O8b80tc
+         EPvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789134291; x=1789739091;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=35qTFGciq12kEJU+EMJ4woELZzEj6I4YMtoPAd4aNAQ=;
+        b=ZPpjNegMr9dr8uRY9ys08cmvQMiWtEXTOVIOlaSu+YPcEiCx9yWbr/mkzBX4I4FdsO
+         FsT1HUjVIjZjWYb2OTtvAQs6AzZNB3L+oh05036K1vDhcvV9Iv+vbtiy5iszbwW+U5H5
+         ZWvlPrmiff0Yz3oKXYzTML/WB+61jUsksdMz+lA+o8+uQCxt9RPfTBcXyMasUmUXOlUO
+         c4bv8/NSjPnMfyHLyiXjEP2TiXbew5G1xdH8UTUnniPEuWtE3ZzaJqSLJjM9BqKR/9JN
+         Z8ctQ0GzugXfoyWoHsXn4mQzxrmtEwUY0qPbD3BLp/mk+doOb1NapTNbWImXoQYOnA4m
+         Jy4Q==
+X-Forwarded-Encrypted: i=1; AKwUvBwCxEihw0E1a5SJMbyJaUK417ER0V97D2XAuxGonQg3Ae5j6zWxXQw4EUtuwDlbwCwuL1YqiA==@lists.linux.dev
+X-Gm-Message-State: AFuF++mPboQL3p642hkSIO+gRQaPWuTuqqTPHjqxiNJkET67FwlEwvpz
+	FGJWvuupWrKH8+0LR56E4jyZo7FyB2P9DDn1n+XWbmBrPkddg/Co6JzEhgCbYmmOBe9XcKpjzD8
+	aN4ybfg==
+X-Received: from pgjj10.prod.google.com ([2002:a63:230a:0:b0:cc4:5907:21e9])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:b08d:b0:3c6:61b9:917c
+ with SMTP id adf61e73a8af0-3daed1fd3cfmr8633653637.11.1789134291123; Fri, 11
+ Sep 2026 06:44:51 -0700 (PDT)
+Date: Fri, 11 Sep 2026 06:44:50 -0700
+In-Reply-To: <20260910225728.GB857650@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EX19D039UWA002.ant.amazon.com (10.13.139.32) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
+Mime-Version: 1.0
+References: <aptFFYqcSiBdMLE8@google.com> <20260905012403.GX4157646@nvidia.com>
+ <aqIAtOoew-_6jw29@google.com> <20260910143448.GD3968357@nvidia.com>
+ <aqLOWkuVKccR-I7W@google.com> <20260910171210.GF3968357@nvidia.com>
+ <aqMgjXfTJ8u3n7Kj@google.com> <20260910221832.GH3968357@nvidia.com>
+ <aqMyXE-fD-UN6w5L@google.com> <20260910225728.GB857650@nvidia.com>
+Message-ID: <aqQF0gz3Q2weDyEd@google.com>
+Subject: Re: [RFC PATCH 0/3] liveupdate: Move to feature flags for LUO and
+ memfd ABI compatibility
+From: Sean Christopherson <seanjc@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Matlack <dmatlack@google.com>, Logan Odell <loganodell@google.com>, arnd@arndb.de, 
+	pasha.tatashin@soleen.com, rppt@kernel.org, pratyush@kernel.org, 
+	graf@amazon.com, akpm@linux-foundation.org, pbonzini@redhat.com, 
+	maz@kernel.org, oupton@kernel.org, bhelgaas@google.com, alex@shazbot.org, 
+	kevin.tian@intel.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	kexec@lists.infradead.org, linux-mm@kvack.org, kvm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="us-ascii"
 
-Default domain allocation, attach and direct-mapping setup for a group's
-first device still run inline under iommu_probe_device_lock, though they
-need only group->mutex: iommu_group_store_type() does this at runtime
-under group->mutex alone, and bus_iommu_probe() already defers it via the
-group_list. With publication moved out it is the largest term left under
-the hold, and parallel VF initialisation convoys behind it.
+On Thu, Sep 10, 2026, Jason Gunthorpe wrote:
+> On Thu, Sep 10, 2026 at 03:42:36PM -0700, Sean Christopherson wrote:
+> > On Thu, Sep 10, 2026, Jason Gunthorpe wrote:
+> > > Sean's initial email was asking for strict never-break ABI compatability
+> > > rules on top, and that is what I've been reacting to.
+> > 
+> > No, I was never asking for that.  I think we just have a different interpretation
+> > of ABI, or rather are talking about different pieces of ABI.
+> > 
+> > I am still asking for never-break serialization format compatibility, i.e. the
+> > more literal save/restore ABI.  I'm not asking for full backwards/forwards
+> > compatibility across all kernels version, i.e. the higher level "kernel" ABI.
+> > 
+> > To phrase things differently: I am a-ok if kernels are inherently incompatible
+> > because they fundamentally operate differently and/or support different features.
+> > I am not ok if we end up with incompatible kernels because the save/restore
+> > interfaces and payloads are poorly designed, lack abstraction, etc.  
+> 
+> I can more agree with this, it is mostly what I thought we'd end up
+> doing anyhow with version numbers and growing the structs not
+> replacing them.
+> 
+> So you still end up with a version label (string I guess?) because we
+> can break it from time to time, 
+   
+Why bother with a label/string?  I don't understand what it buys us; I see only
+pain.  Make the features discoverable and punt on all of the "is this pile of
+insanity my company has created compatible with this other pile of insanity?" to
+layers above the kernel.
 
-Use the group_list deferral for the singleton probe path too:
-iommu_probe_device() passes a list and runs the setup after the global
-unlock, under group->mutex. The global lock's original purpose - commit
-01657bc14a39 ("iommu: Avoid races around device probe") - kept two devices
-of one group from double-initialising it; that invariant moves to
-group->mutex, where the setup is rechecked: of two racing siblings the
-first to find the group unset sets it up for every member, and the rest
-skip.
+IMO, trying to capture compatibility in a version string is doomed to fail.  To
+be useful, the version would have to be extremely sensitive to changes, otherwise
+userspace will have to do its own compatibility analysis/checks anyways.  And at
+that point, a verson string will be too restrictive, e.g. will mismatch due to
+changes in features the deployment isn't using.
 
-A failed setup unwinds only the calling device, like a failed publication;
-siblings wait in -EPROBE_DEFER until a later probe finalises the group, or
-until a new member joins if the failing call had claimed a bus-scanned
-group's queued entry - the same terminal shape a failed bus_iommu_probe()
-drain leaves today. A domain the failed setup published stays attached
-(the first attach is IOMMU_SET_DOMAIN_MUST_SUCCEED), so members left
-behind get the DMA ops it owed them.
-
-bus_iommu_probe() rechecks group->default_domain, as a hotplug probe can
-finalise a queued group before the drain takes the mutex.
-
-Assisted-by: LLM
-Signed-off-by: Pavol Sakac <sakacpav@amazon.de>
----
- drivers/iommu/iommu.c | 48 ++++++++++++++++++++++++++++++-------------
- 1 file changed, 34 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a5e3327aeaca..48fe22bbd1bc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -657,10 +657,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 		goto err_put_group;
- 	}
- 
--	/*
--	 * The gdev must be in the list before calling
--	 * iommu_setup_default_domain()
--	 */
-+	/* List the gdev first: the finaliser covers every listed member. */
- 	list_add_tail(&gdev->list, &group->devices);
- 	WARN_ON(group->default_domain && !group->domain);
- 	if (group->domain || group->default_domain) {
-@@ -676,15 +673,10 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 						0);
- 		if (ret)
- 			goto err_remove_gdev;
--	} else if (!group->default_domain && !group_list) {
--		ret = iommu_setup_default_domain(group, 0);
--		if (ret)
--			goto err_remove_gdev;
- 	} else if (!group->default_domain) {
- 		/*
--		 * With a group_list argument we defer the default_domain setup
--		 * to the caller by providing a de-duplicated list of groups
--		 * that need further setup.
-+		 * Defer setup to the caller draining group_list; both in-tree
-+		 * callers pass one.
- 		 */
- 		if (list_empty(&group->entry))
- 			list_add_tail(&group->entry, group_list);
-@@ -713,6 +705,7 @@ int iommu_probe_device(struct device *dev)
- 	const struct iommu_ops *ops;
- 	struct group_device *gdev, *own;
- 	struct iommu_group *group;
-+	LIST_HEAD(group_list);
- 	int ret;
- 
- 	mutex_lock(&iommu_probe_device_lock);
-@@ -721,7 +714,7 @@ int iommu_probe_device(struct device *dev)
- 		mutex_unlock(&iommu_probe_device_lock);
- 		goto probe_finalize;
- 	}
--	ret = __iommu_probe_device(dev, NULL);
-+	ret = __iommu_probe_device(dev, &group_list);
- 	if (!ret) {
- 		/*
- 		 * Not every caller pins the device, so pin the group across
-@@ -735,6 +728,9 @@ int iommu_probe_device(struct device *dev)
- 		return ret;
- 
- 	mutex_lock(&group->mutex);
-+	/* Only the caller that queued the entry may unlink it. */
-+	if (!list_empty(&group_list))
-+		list_del_init(&group->entry);
- 	/* iommu_group_link_device() is all-or-nothing. */
- 	for_each_group_device(group, gdev) {
- 		if (gdev->linked)
-@@ -743,6 +739,20 @@ int iommu_probe_device(struct device *dev)
- 		if (ret)
- 			goto err_remove_device;
- 	}
-+	/*
-+	 * First thread to find the group unset sets it up for every member;
-+	 * binding needs a default domain, so no DMA races the window.
-+	 */
-+	if (!list_empty(&group->devices) &&
-+	    !group->domain && !group->default_domain) {
-+		ret = iommu_setup_default_domain(group, 0);
-+		if (ret)
-+			goto err_remove_device;
-+		for_each_group_device(group, gdev)
-+			if (dev_has_iommu(gdev->dev))
-+				iommu_setup_dma_ops(gdev->dev,
-+						    group->default_domain);
-+	}
- 	mutex_unlock(&group->mutex);
- 	iommu_group_put(group);
- 
-@@ -765,8 +775,15 @@ int iommu_probe_device(struct device *dev)
- 	if (own) {
- 		list_del(&own->list);
- 		__iommu_group_free_device(group, own);
--		iommu_deinit_device(dev);
- 	}
-+	/* Members left behind stay attached; give them the DMA ops owed. */
-+	if (group->default_domain)
-+		for_each_group_device(group, gdev)
-+			if (dev_has_iommu(gdev->dev))
-+				iommu_setup_dma_ops(gdev->dev,
-+						    group->default_domain);
-+	if (own)
-+		iommu_deinit_device(dev);
- 	mutex_unlock(&group->mutex);
- 	if (own)
- 		iommu_group_put(group);	/* iommu_init_device()'s reference */
-@@ -2077,7 +2094,10 @@ static int bus_iommu_probe(const struct bus_type *bus)
- 		 * that the cross-group default domain type and the setup of the
- 		 * IOMMU_RESV_DIRECT will work correctly in non-hotpug scenarios.
- 		 */
--		ret = iommu_setup_default_domain(group, 0);
-+		ret = 0;
-+		/* A hotplug probe may have finalised this group meanwhile. */
-+		if (!group->default_domain)
-+			ret = iommu_setup_default_domain(group, 0);
- 		if (ret) {
- 			mutex_unlock(&group->mutex);
- 			return ret;
--- 
-2.47.3
-
+> just the version should have the feature mechanism layered under it? I'm fine
+> with that
+> 
+> Jason
