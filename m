@@ -1,87 +1,33 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4053A4AA585
-	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 17:44:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39E633D9DD3
+	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 17:45:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789148652; cv=none; b=jthTnJ2k74ZSkJe94guqXd1P3sBND25FcuaQVkaor/ext/7GdGnGFZ+lbv8HQZmnnVfrBvGBtZolVv3D4xLNEA3f8mbhKeAS0VVGLtbewQpUb2fdQcoWCOJHa6CLpwQYY7d+LLjd2L2Qd51fzt++8SMELGrWE78Qa1ptfH2Z0Io=
+	t=1789148758; cv=none; b=SIWc+SMMiy5U2tZ+n/8cdkYFkLJ/DFqz3XeTlAOi9bUmq5xDKuJLaVDSKoqPY2Hf7uURWvz/enbvfivHluZjNH0lxh4qwpBfxSFcG7aB021eA4kTT9zIMmbABWua3yrftAt9brYDaxycrYYPwLfHuS9FY5JYSNBGgPxXtiDM8NY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789148652; c=relaxed/simple;
-	bh=iSPOqrPEqNzouRgsfdtXLZvJztzijYXXcFDpMwJ0MLA=;
+	s=arc-20240116; t=1789148758; c=relaxed/simple;
+	bh=vqNXLstQ6G+A9gRpKcQ/FaWOMhaFZmotqLSI45wThoI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Qjdjr83iw0iXEMCDRBs186UItwREFVQ9znq4PXhHO83OzEPF+tyb0Ptdf/JLgAUH/Nlgx5+BjQbxjBwNIpKP6ZMZHCliy+fZid336Faut8ekLgSD3inFoaN8gdUFTrHoLmW4mG+e8O+fDmCJYqqkA4Xs81m/Fu2khxJoCWc6PNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=n4IDtP6q; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KaQgauph; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=pc5dv+os3Uut2NsDuayZXhLSVR+G+b1lrJ82KHEm9mzvv4gIVrs2yTdB+gpxOsTNYG+zUpsd7JuQydQiPkA35Y/lbT9DvredF8tUEwlw9+xVlc3Om6pdHOjfV8gA1o0qVarLmuTJpAqP5gKy9Sm3kbWPwXjBMsSA7qqA8eNQmgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=pJMm1oNc; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="n4IDtP6q";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KaQgauph"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68BHWVEM972042
-	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 17:44:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	DgHv3EdPhIoOXyHYgFVg1PHeH4W7/S2tlAAVOYQ4qy8=; b=n4IDtP6qSCRsrs5Q
-	Ci4u+5w6+EkIJ71oFw1Y1zQstpX89A/BA76Y5fXofq8whvtRYA60+EDh++ODP6je
-	093MTlj0PZIJ9QWlFP+CTD4uZZMyeiGMunBt7EcTEScrl+C01OLfh7GHre4s12y1
-	p1emmt65w4qtjfhKGdQ0ybxnk3ASvHxEWv4UMubu4tDmyIPnDgj9gYU53c/dwkf2
-	FvTwmMILkTRQLxInIObPo6sbKMLwJc3pzEHDkZlbI1ur/FbH7M7BQO++fEB6M6AC
-	1K4lQ4UInF8h8uKQJHH7mm5sHbSuXVZkUgL19Gd7LkJbRFxbUT0AZfrhu4yu0VMT
-	UWsiCQ==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gmm22rkra-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 17:44:04 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-39906175917so1507207a91.2
-        for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 10:44:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1789148644; x=1789753444; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DgHv3EdPhIoOXyHYgFVg1PHeH4W7/S2tlAAVOYQ4qy8=;
-        b=KaQgauph13MmQU+zcYdOfyodD87fxeImFWFljMzDwCLrVsNaoUrGW/iaC9nP3nHalW
-         L6XcUNvne5L/7imGLd3N0+riP60URCp0Q1c0TnQW39T1QK/v7mLSXzuAmc1OQJOQ44XH
-         myYvd2o56waT5YZ7hG19OR7CYMuUA2oKStQdkxFh/ylBRLg+5lEJnJV9KEtgsyvd3l7J
-         muUeHtBN+bMLU56Q1z+R0jnH/VZcTXRQIsSsxrpqPeZDGVxm6J0p96qz/l2yE/ZSOELj
-         hNTJacT7vEp/K2XjR0d01R/fIpGinq+zqQ6OIImgNoRAprOzi3Rg48H14UAhRk92MDi/
-         70NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789148644; x=1789753444;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=DgHv3EdPhIoOXyHYgFVg1PHeH4W7/S2tlAAVOYQ4qy8=;
-        b=P3/KgNj7cHN2GvIkCQ2a7xxmgoAp5WCJ2ocyvjJsFjUARCRPVmKTkU9YOveMXSw7e1
-         1lMG09bjgg9F5onEZ28KbAVouXkIW1Lu6nigxQm4a7j5fPPAprvI/c9julNvzZczxX0w
-         SzStjMu+rHmPXRYGqlXNr4Pq/X3e+DK9+Fkk3wIAEACZwtDg15HZcTBZn2fsUIMbgexG
-         Sk3nxtB3Uwl14uiyeZbTkhcsa7z9FkgCfK1d7WmV/AoKGEVxIHfPbschl7Dff0xv73jm
-         H9fKMFQA20whF4BWQ2oBvaSLzCZPADpXJjp9stUpgrFNVaIeiCRqhCpbKzKeQOIpQoPg
-         QkTg==
-X-Forwarded-Encrypted: i=1; AKwUvBxM7sbSvMT86DD4OFxYc9qR/4qayUSy5xSznWWmBenolV4Rj6/Lq+esvxH8eCseRa8VAJ9azQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++kzTCF7PFaud20nIgKtxH5F1fqSPIZ9cIO/cCodH5Qotg933cq0
-	UkSUBL7VglebbJlSTfGkVvrrNzxuQFDFGTu1h6cTr7GIQ8HjxZY3+T5rZkRztgwcQ/pK0O2eIMM
-	F75D7FaH8B860xvgeLQxG0BQ0h55qZhBeRKpodMQgspV7nPPAQGUvZG/l/RVjRpeg9w==
-X-Gm-Gg: AYBFou2Uep7XBhM/XdAUcOaqEbXMP0Zi3o1RedRWvECFclLhsHZDFG+AGUWJ4JARNNE
-	BtyYl6IufJRiDaOaiAq3vNUix+GRsueXmVTHl5buMN+GLjjYHyypciu9C69cpnBcAfC7+A+NNB2
-	MqP8+f+Ve4NCekLfZqlZuYCuWttCdvJ3RYwq0g0tuiSY8w8zMtXPB3uSnLDaTuYVKwWUYRpgPeR
-	sF7ZAEfEOYli/h1UREu7XDouF4ZhO4qW1uXJIes2mQ5UbkO6IH54LbuA67sR9NfpBcQo53t9PGN
-	HMfNUIrvWNnxlVPiJWwoZuZJGlloYBwa1097r3Mditn2VvSk2u1eCy1G7i3yW7yYyonwatadSzh
-	+w//pCpqwQZ1w6TTtljJC0Ul1QZFPvrsnqxg=
-X-Received: by 2002:a17:90b:2689:b0:38d:ddc2:7ccb with SMTP id 98e67ed59e1d1-39d9bbc81damr9099637a91.1.1789148643606;
-        Fri, 11 Sep 2026 10:44:03 -0700 (PDT)
-X-Received: by 2002:a17:90b:2689:b0:38d:ddc2:7ccb with SMTP id 98e67ed59e1d1-39d9bbc81damr9099566a91.1.1789148643138;
-        Fri, 11 Sep 2026 10:44:03 -0700 (PDT)
-Received: from [192.168.0.172] ([183.83.137.104])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14365b78d59sm7652016c88.8.2026.09.11.10.43.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Sep 2026 10:44:02 -0700 (PDT)
-Message-ID: <ccd42f9e-935a-438e-b5c8-2643cd5cedf9@oss.qualcomm.com>
-Date: Fri, 11 Sep 2026 23:13:53 +0530
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="pJMm1oNc"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6480C16F2;
+	Fri, 11 Sep 2026 10:45:46 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1C8A33F8C6;
+	Fri, 11 Sep 2026 10:45:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1789148750; bh=vqNXLstQ6G+A9gRpKcQ/FaWOMhaFZmotqLSI45wThoI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=pJMm1oNcdYKueu9D95IWWioliFwd6SXi9fhAyOnY6niH5LkpKAyBF4t3YZaJzMTCO
+	 9ydzebNZ2ZfRCLTfyifsBjaCV9dabFWStUcgmAyVVpNAeysxrg4x+aJaeUq6AMnoq6
+	 hRdklboGrqiwEwID3cGK+Xmq9bqjnJG+2W7lUED0=
+Message-ID: <1785d4ce-03f5-4226-9987-d267a10a360d@arm.com>
+Date: Fri, 11 Sep 2026 18:45:40 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,142 +35,286 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 01/13] dt-bindings: media: qcom,venus: Add context bank
- subnodes to common schema
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Stephan Gerhold <stephan.gerhold@linaro.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Konrad Dybcio
- <konrad.dybcio@oss.qualcomm.com>, iommu@lists.linux.dev,
-        Daniel J Blueman <daniel@quora.org>
-References: <20260909-vpu_iommu_iova_handling-v3-0-2fe43ae45495@oss.qualcomm.com>
- <20260909-vpu_iommu_iova_handling-v3-1-2fe43ae45495@oss.qualcomm.com>
- <20260910-careful-finch-of-fame-eeeac7@quoll>
-Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <20260910-careful-finch-of-fame-eeeac7@quoll>
+Subject: Re: [RFC PATCH 0/3] iommu: Reduce iommu_probe_device_lock contention
+To: Pavol Sakac <sakacpav@amazon.de>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+ nh-open-source@amazon.com
+References: <20260911-vfopt-s2-v1-0-fff3db7e01c2@amazon.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260911-vfopt-s2-v1-0-fff3db7e01c2@amazon.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTExMDI0OCBTYWx0ZWRfX44jBVWGhj4oJ
- EOCAbr+nXIRBktGFtvViMkK1aX+vSkmd/ybduRTYl1HeEBn2AN4oDvVxxzGs6FJ4xXfuAfgdRhx
- zQiUi+rJsHKiCl5YprRKwlbb9SWLlT6FwOcCyriu75JcAiWMTjJNoP3+/aqwLAsu8WmF5+GNfqZ
- UlOigysiMNb435eYd1VEWeOKBB2NBJDiDDbzGxgDMXB4JJpy3PDDzEln544SgYC/odvvYkefWe8
- gFFVQPzW6GU2UwAwSH0JdeiHyxKhbGHaucQRzul5rNLaXZWFHNaH2fEPryoYJVe0P2Lth2/QmGy
- d+/kvfC6uhPDDT2apKG5w6Tl6/cCXRvzPto35wc/47ot+mNLX0WPZrjTo1aSm3/DSG62J+7cesD
- bZvCdOJ1cNJDM94KoL+60BvLO+LXTOCQVEDBIdp/UXNxA+6mUetxqOuPpCeu0h5+YIYiJ6uNSHU
- fGivW65E+vXdKZImxlg==
-X-Authority-Analysis: v=2.4 cv=LPDz05W9 c=1 sm=1 tr=0 ts=6aa43de4 cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=TwCXObd+TJU0JWB7kQOUgw==:17
- a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=e5mUnYsNAAAA:8 a=VwQbUJbxAAAA:8 a=NEAV23lmAAAA:8 a=t9ty7G3lAAAA:8
- a=EUspDBNiAAAA:8 a=gweAf5VaqOsLJRT3hzwA:9 a=QEXdDO2ut3YA:10
- a=uKXjsCUrEbL0IQVhDsJ9:22 a=Vxmtnl_E_bksehYqCbjh:22 a=CsAS6f0m0zARWR-uHzm3:22
-X-Proofpoint-ORIG-GUID: iGxXNoxy4gCFpuc-o7HD3wkQjRgKuMlp
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTExMDI0OCBTYWx0ZWRfX/Dy6OzzQfUmP
- MVS9XXZckYP3VYhp7Jh6XxZF3ZMlwNJJUdhxAXd8fh6ZkoaVaJt4lk216woha6VRIdruyJ9Q+Ld
- BOgCEVKTaowewBwvx0eUKk+kkJFa9z0=
-X-Proofpoint-GUID: iGxXNoxy4gCFpuc-o7HD3wkQjRgKuMlp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-11_06,2026-09-11_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 adultscore=0 clxscore=1015 bulkscore=0 impostorscore=0
- malwarescore=0 spamscore=0 suspectscore=0 priorityscore=1501 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609110248
 
+On 11/09/2026 1:58 pm, Pavol Sakac wrote:
+> iommu_probe_device_lock is a file-scope mutex held across
+> __iommu_probe_device(): every device's IOMMU probe serializes against
+> every other. With "PCI/IOV: Initialize virtual functions in
+> parallel" [1] fanning an SR-IOV enable across CPUs, it collects 94.7%
+> of all lock wait. Patch 1 gathers per-member sysfs publication into one
+> all-or-nothing helper (no functional change); patches 2-3 move that
+> publication and first-device default-domain setup into per-group
+> finalisation after the global unlock, under group->mutex, mirroring the
+> removal path and bus_iommu_probe().
+> 
+> Lock statistics and SR-IOV init time for 4x PF (NVMe, 255 VFs each), on
+> the reproducer from the parallel VF initialization cover letter [1]:
+> 
+>    lock_stat:
+>    Lock                     wait: Before     After   contentions: Before   After
+>    iommu_probe_device_lock      25507 ms  10471 ms                  1143     841
+>    &root->kernfs_rwsem            942 ms   1834 ms                 93208  116316
+>    &vfio.group_lock               425 ms   3614 ms                   497     736
+> 
+>    avg wait per acquisition  6.3 ms -> 2.6 ms (4080 acq., both arms)
+> 
+>    Stage                 SR-IOV init time:
+>    S0 (baseline)         3027 ms
+>    S1                     999 ms
+>    S2 (this series)       995 ms
+> 
+> Reproducer disclaimer:
+> I lean primarily on lock_stat numbers to defend the improvements. In
+> the reproducer, this lock's residual hold dominates the window and
+> masks the later series' wall-time gains, more in [1].
+> 
+> This is relief, not removal: the lock still has the highest wait
+> time in the profile after this series. Wait per acquisition drops
+> from 6.3 ms to 2.6 ms, which is what makes the smaller
+> serialization points behind it measurable for the later series.
+> 
+> RFC on the direction: The comment in __iommu_probe_device() expects
+> the lock to narrow to device_lock() once the ACPI/OF replay calls
+> are cleaned up. I could not make that work for the whole section:
+> group formation in ops->device_group() is a cross-device decision a
+> per-device lock cannot order. This series instead moves the work
+> that needs no global ordering out of the section. Is that an
+> acceptable step, or is there a scoping or removal plan this should
+> wait for?
 
+The point of probe_device_lock is to prevent multiple threads trying to
+probe the *same* device concurrently; it protects the per-device state
+of dev->iommu and dev->iommu_group until the latter is assigned or the
+former is cleaned up (depending on how the probe goes). The replay calls
+are mostly gone, but the main reason device_lock() still won't work is
+that the same problem exists for driver-model-based IOMMU drivers
+themselves, since we don't have a good way to avoid bus_iommu_probe()
+deadlocking on IOMMU devices that are in the middle of registering
+during their own driver bind (not least the caller itself).
 
-On 9/10/2026 12:29 PM, Krzysztof Kozlowski wrote:
-> On Wed, Sep 09, 2026 at 08:27:08PM +0530, Vikash Garodia wrote:
->> The VPU issues DMA through several SMMU streams, and the hardware does
->> not give every stream the same addressable range. The non-pixel stream
->> cannot address the low 600MB of IOVA space, while the pixel stream can
->> address the full range:
->>      +-----------------------------------------------------------+
->>      | non-pixel stream addressable range (600 MB - 3.5 GB)      |
->>      | 0x25800000 - 0xe0000000                                   |
->>      +-----------------------------------------------------------+
->>      | pixel stream addressable range (0 - 3.5 GB)               |
->>      | 0x00000000 - 0xe0000000                                   |
->>      +-----------------------------------------------------------+
->> A single "iommus" property on the video-codec node puts every stream in
->> one IOMMU domain sharing one IOVA allocator, so nothing restricts a
->> non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
->> that boundary the hardware faults, which shows up as unhandled SMMU page
->> faults and spontaneous reboots:
->> https://gitlab.freedesktop.org/drm/msm/-/work_items/100
->>
->> Given that the address range restriction is for specific VPU stream, it
->> should be ideally be moved to that stream. To achieve the same, a subset
->> of streams is now represented as subnodes, so that each can be
->> associated with its respective addressable range. The design was
->> discussed and agreed by mainatiners here
->> https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
->>
->> In the past, this limitation was addressed with an iommu-map approach,
->> with the iris driver dynamically creating the devices. That approach was
->> later concluded to be a hack to avoid having subnodes, and was NAKed by
->> the iommu maintainers. It was discussed in detail here:
->> https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
->>
->> "iommu-ranges" on the subnode describes the *allowed* IOVA range that
->> stream is allowed to use, so the IOVA is allocated from the specified
->> range only. Define all the possible subnodes so as to describe all the
->> VPU hardware iommu interfaces, both secure as well as non secure.
->>
->> address-cells, size-cells and dma-ranges declares the 1:1 DMA
->> translation into the parent.
->>
->> The parent "iommus" is kept as an alternative via "oneOf", so platforms
->> that have not been converted to subnodes still validate. New platforms
->> should use the subnode form.
->>
->> This patch depends-on:
->> https://github.com/devicetree-org/dt-schema/pull/207
-> 
-> Please drop, not suitable for commit, keep it in the changelog
-> 
+> A second question: I have measured where 90% of the residual hold goes:
+> get_pci_alias_group() walks every PCI device in the system to find
+> same-bus DMA aliases. It runs once per device probed, so once per VF,
+> under this lock, and the VFs keep growing the list it walks. A prototype
+> that skips the walk when no device has a dma_alias_mask and this device
+> has no pci_real_dma_dev() override cuts this lock's hold time by about
+> 90%, for the same acquisitions and the same groups. I am not proposing
+> it here, as I do not have the time to get it right this cycle. How can
+> we optimize this preferably in O(1) time?
 
-Sure, will add this to changelog.
+TBH that makes it sound like optimising pci_device_group() is the better
+thing to do. We were never really meant to have a global lock here - it
+was just an acceptable compromise for simplicity at the time - so I'm
+still not keen on adding yet more complexity to the probe flow to work
+around it as if global serialisation was necessary when it isn't.
 
->>
->>   Tested-by: Daniel J Blueman <daniel@quora.org>
-> 
-> Plese drop, not true here
-> 
+Heck, even if you do just want a quick bodge to ease contention then I'd
+still lean more towards something more self-contained like this
+hometime-on-a-Friday fun I couldn't resist sketching out...
 
-ok, got picked in b4 trailers, will drop.
+Thanks,
+Robin.
 
-> 
->> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> ---
->>   .../bindings/media/qcom,sc7180-venus.yaml          | 15 ----
->>   .../bindings/media/qcom,venus-common.yaml          | 97 ++++++++++++++++++++++
->>   2 files changed, 97 insertions(+), 15 deletions(-)
->>
-> 
-> I see this causes DT checks failures but I don't see the report, so
-> probably it was because of schema dependency.
-> 
-> Best regards,
-> Krzysztof
+----->8-----
+
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] UNTESTED: iommu: Reduce iommu_probe_device_lock contention
+
+The purpose of iommu_probe_device_lock was to prevent multiple threads
+trying to probe the same device concurrently, it's only global for the
+sake of simplicity, as there are still reasons why we can't use
+device_lock(), and adding a whole other lock to struct device itself
+just for this would be unreasonable.
+
+However, we're now getting sufficiently large systems with enough
+devices to start seeing significant contention on this lock, so let's
+scale it to a lock table to reduce contention between unrelated devices.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/acpi/scan.c      |  6 +++---
+  drivers/iommu/iommu.c    | 37 +++++++++++++++++++++++++------------
+  drivers/iommu/of_iommu.c |  6 +++---
+  include/linux/iommu.h    |  2 +-
+  4 files changed, 32 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index f48715ed827c..33d6a758042a 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1620,10 +1620,10 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+  	int err;
+  
+  	/* Serialise to make dev->iommu stable under our potential fwspec */
+-	mutex_lock(&iommu_probe_device_lock);
++	mutex_lock(iommu_probe_device_lock(dev));
+  	/* If we already translated the fwspec there is nothing left to do */
+  	if (dev_iommu_fwspec_get(dev)) {
+-		mutex_unlock(&iommu_probe_device_lock);
++		mutex_unlock(iommu_probe_device_lock(dev));
+  		return 0;
+  	}
+  
+@@ -1633,7 +1633,7 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+  	if (err && err != -EPROBE_DEFER)
+  		err = viot_iommu_configure(dev);
+  
+-	mutex_unlock(&iommu_probe_device_lock);
++	mutex_unlock(iommu_probe_device_lock(dev));
+  
+  	return err;
+  }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index cd1bca7ede9a..11519e195aaf 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -381,9 +381,9 @@ int iommu_mock_device_add(struct device *dev, struct iommu_device *iommu)
+  {
+  	int rc;
+  
+-	mutex_lock(&iommu_probe_device_lock);
++	mutex_lock(iommu_probe_device_lock(dev));
+  	rc = iommu_fwspec_init(dev, iommu->fwnode);
+-	mutex_unlock(&iommu_probe_device_lock);
++	mutex_unlock(iommu_probe_device_lock(dev));
+  
+  	if (rc)
+  		return rc;
+@@ -400,7 +400,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+  {
+  	struct dev_iommu *param = dev->iommu;
+  
+-	lockdep_assert_held(&iommu_probe_device_lock);
++	lockdep_assert_held(iommu_probe_device_lock(dev));
+  
+  	if (param)
+  		return param;
+@@ -457,7 +457,7 @@ void dev_iommu_priv_set(struct device *dev, void *priv)
+  {
+  	/* FSL_PAMU does something weird */
+  	if (!IS_ENABLED(CONFIG_FSL_PAMU))
+-		lockdep_assert_held(&iommu_probe_device_lock);
++		lockdep_assert_held(iommu_probe_device_lock(dev));
+  	dev->iommu->priv = priv;
+  }
+  EXPORT_SYMBOL_GPL(dev_iommu_priv_set);
+@@ -483,9 +483,9 @@ static int iommu_init_device(struct device *dev)
+  	 * found no IOMMU to wait for, so there's no point calling it again.
+  	 */
+  	if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
+-		mutex_unlock(&iommu_probe_device_lock);
++		mutex_unlock(iommu_probe_device_lock(dev));
+  		dev->bus->dma_configure(dev);
+-		mutex_lock(&iommu_probe_device_lock);
++		mutex_lock(iommu_probe_device_lock(dev));
+  		/* If another instance finished the job for us, skip it */
+  		if (!dev->iommu || dev->iommu_group)
+  			return -ENODEV;
+@@ -622,7 +622,20 @@ static struct iommu_domain *pasid_array_entry_to_domain(void *entry)
+  	return ((struct iommu_attach_handle *)xa_untag_pointer(entry))->domain;
+  }
+  
+-DEFINE_MUTEX(iommu_probe_device_lock);
++static struct mutex __iommu_probe_device_lock[4] = {
++	__MUTEX_INITIALIZER(iommu_probe_device_lock),
++	__MUTEX_INITIALIZER(iommu_probe_device_lock),
++	__MUTEX_INITIALIZER(iommu_probe_device_lock),
++	__MUTEX_INITIALIZER(iommu_probe_device_lock),
++};
++
++struct mutex *iommu_probe_device_lock(const struct device *dev)
++{
++	int hash = ((uintptr_t)dev / roundup_pow_of_two(sizeof(*dev))) %
++		    ARRAY_SIZE(__iommu_probe_device_lock);
++
++	return __iommu_probe_device_lock + hash;
++}
+  
+  static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+  {
+@@ -637,7 +650,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+  	 * probably be able to use device_lock() here to minimise the scope,
+  	 * but for now enforcing a simple global ordering is fine.
+  	 */
+-	lockdep_assert_held(&iommu_probe_device_lock);
++	lockdep_assert_held(iommu_probe_device_lock(dev));
+  
+  	/* Device is probed already if in a group */
+  	if (dev->iommu_group)
+@@ -711,9 +724,9 @@ int iommu_probe_device(struct device *dev)
+  	const struct iommu_ops *ops;
+  	int ret;
+  
+-	mutex_lock(&iommu_probe_device_lock);
++	mutex_lock(iommu_probe_device_lock(dev));
+  	ret = __iommu_probe_device(dev, NULL);
+-	mutex_unlock(&iommu_probe_device_lock);
++	mutex_unlock(iommu_probe_device_lock(dev));
+  	if (ret)
+  		return ret;
+  
+@@ -1803,9 +1816,9 @@ static int probe_iommu_group(struct device *dev, void *data)
+  	struct list_head *group_list = data;
+  	int ret;
+  
+-	mutex_lock(&iommu_probe_device_lock);
++	mutex_lock(iommu_probe_device_lock(dev));
+  	ret = __iommu_probe_device(dev, group_list);
+-	mutex_unlock(&iommu_probe_device_lock);
++	mutex_unlock(iommu_probe_device_lock(dev));
+  	if (ret == -ENODEV)
+  		ret = 0;
+  
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index a18bb60f6f3d..b5e3a425ca2d 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -121,9 +121,9 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+  		return -ENODEV;
+  
+  	/* Serialise to make dev->iommu stable under our potential fwspec */
+-	mutex_lock(&iommu_probe_device_lock);
++	mutex_lock(iommu_probe_device_lock(dev));
+  	if (dev_iommu_fwspec_get(dev)) {
+-		mutex_unlock(&iommu_probe_device_lock);
++		mutex_unlock(iommu_probe_device_lock(dev));
+  		return 0;
+  	}
+  	dev_iommu_present = dev->iommu;
+@@ -151,7 +151,7 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+  		iommu_fwspec_free(dev);
+  	else if (err && dev->iommu)
+  		dev_iommu_free(dev);
+-	mutex_unlock(&iommu_probe_device_lock);
++	mutex_unlock(iommu_probe_device_lock(dev));
+  
+  	/*
+  	 * If we're not on the iommu_probe_device() path (as indicated by the
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ac43b8b93f14..3b876cb285e0 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1201,7 +1201,7 @@ static inline void *dev_iommu_priv_get(struct device *dev)
+  
+  void dev_iommu_priv_set(struct device *dev, void *priv);
+  
+-extern struct mutex iommu_probe_device_lock;
++struct mutex *iommu_probe_device_lock(const struct device *dev);
+  int iommu_probe_device(struct device *dev);
+  
+  int iommu_device_use_default_domain(struct device *dev);
+-- 
+2.54.0.dirty
 
