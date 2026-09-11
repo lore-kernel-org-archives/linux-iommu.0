@@ -1,155 +1,161 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012065.outbound.protection.outlook.com [40.93.195.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC0D649482F
-	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 17:16:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789147012; cv=none; b=GacYatg2CpS86H9rKYhFNl2MEeXVldvOillxa0ABh2Kl61jQfkhEkSYrdFs8qeDFjH4tpNlRTO5Q2MkilRXo2jpDVp2H92WLJAQqTewUtrNwHqnuofeMyjr9KMInkfLxgj0v0orbdQmfcIO6rW7vEvpWNDM0qMRkcjAIF1yJIns=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789147012; c=relaxed/simple;
-	bh=GMwpKaQo+b1xj3kxl72UkiN0737lUQVYesuUiulsvUs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KiZ9TLr7No3LWm1n76YM2fTJxhFAFr0iu24Blc1/ieGxBWrfI46rT4O9SXdzlCqLJw62KqH+DV+InBsOTGHyi61S/Hdoh1tuR36fSoL8PUIsHQdvRYBm2Bmlt6DDJOQg36210wmw4YxhJs+AUuO7iDJxWssfUOYiMlyQODoIRQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Jegzyb6w; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45AE838DC6C
+	for <iommu@lists.linux.dev>; Fri, 11 Sep 2026 17:19:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789147181; cv=fail; b=TOBP1EQzX4lwSldve2jHCsAJjui3RIVUqyer+PV04EXeznNfKKlglMJDeYq6X63gXzh4JJjBHX4pYUfKBQ2e0gH2JSjobeSKNJPf/bVu8TfIQcuCmxhXGDqcMLbUU0hnBECu5tlXpg1f2MpiTFh8MoAfsR7Ds+yTyRWxLnYRChs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789147181; c=relaxed/simple;
+	bh=Rd6toRH+p88Oq3M7uUHt7pe/9G6Onay2CQkHv9PY+74=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 Content-Type:MIME-Version; b=ED4Kpa6v9PGiGEXP4N90Pri6L3oLpGUpuqvsYU0mh0A1VKYkG9oYx9N6TTptjgpvKENTHF9PVKaB/ueDJQ+VKnL84eFGRfdUx7xsQJKmbZyHJC67PvhlZCKoh7zsg9/lY1HHkfBD6O41fbLEpC17B6vpOuOWTbRxkjGNSuMnoBc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tQOOqxqF; arc=fail smtp.client-ip=40.93.195.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Jegzyb6w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1789147005;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=2gLJ161dkwsq964nEcXmxhgBhqu8XXJwXX0byV6GR0o=;
-	b=Jegzyb6w1GOcwCA2AdjYkBa4u/Wnuzmo6D8KOb7fTvyDaBRKIKoF5h4LbjhGpVp/p0cvxa
-	SAVkRzJS90PIeF/4T12HWT/rCvgaWWjhResUmsYuSXsyMs7WZkTMELhTa0RZTcS9/4sAQI
-	DCYPX4LssLJdhMmBGisTXWb6M11k1NY=
-Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-648-Rj-cvUwGMAyGPQnZAnD2Fw-1; Fri,
- 11 Sep 2026 13:16:39 -0400
-X-MC-Unique: Rj-cvUwGMAyGPQnZAnD2Fw-1
-X-Mimecast-MFC-AGG-ID: Rj-cvUwGMAyGPQnZAnD2Fw_1789146996
-Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 3F1851801366;
-	Fri, 11 Sep 2026 17:16:35 +0000 (UTC)
-Received: from [100.90.56.12] (headnet05.pony-001.prod.iad2.dc.redhat.com [10.2.32.117])
-	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 21D561956095;
-	Fri, 11 Sep 2026 17:16:26 +0000 (UTC)
-Message-ID: <a3c2d0f6-a7b5-4344-b837-434aeac5dbc0@redhat.com>
-Date: Fri, 11 Sep 2026 19:16:23 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tQOOqxqF"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=g4miuq/ALJS2aeVw/vfqSDqFb0pNMhJM2uKRjT3pQAfjVWcVf7H+XbzPujMfyd1nmAxRusPUZpQowFqFfvNOaiKJTZlS3vMWJtYFbQxag8msaarUg/K8vYFmIU+fNwtLmxrRiQ1qbXFfepMf0p373wZmW8Ua76r5ATlzwZGoPAOZPe7mE2zxek81wC1jE7KLhLB8I1ZMRWG8O4y9q6rFHHjCWztkSXhkU3KPXkyMmjcWQnstbm/0cFhliRyQFYq9GCgjuYiAUZn5EvgXCMuy/55/gTT2TJugzVTqmRZ3qeMMoV5alAZEhdsKbAW/zlh39o/PrxbmP8hEptAfo+v6WA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vR0PPC+DdafEEJrPjdMbe2X1KdK10mX0EBZSjGpZALM=;
+ b=Y53BWVZqdYl8wcUkctaCfqX6c3tCnuMIaoUwSPgt+OX5R7c0LWU4aav6XsG4r/+NqW/mc6+Zxuv6Y+FEPQf+M3N7SCay4KagQ1viJoFtattvvh7a8XC6F4Yg27KdRz8yYYbuCttj8udnATkja+XwOsTySk3/g2Wu+UJrlSuceS+yu1wLQAaSzLYjbo/qONen3YNM5FxHsrgveDpRsVy5WSalDrT4We3JAeDh2bGCkyclozVu2jn1LBIcsB7iwMOnQZkr1cGH1UaMDDt/YCccE+6HLQH7aXjlyP10ejiVbYNyGoaLdDI7x6ObC1uF6uvJZYjfs33Wv4kypgne/8xwJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vR0PPC+DdafEEJrPjdMbe2X1KdK10mX0EBZSjGpZALM=;
+ b=tQOOqxqF1dBPgihLTXQRi07u4SJd8A2oxyfoSfvbt56rtlFixZ+DKNzqFlsped0jaJva2QinYGuwNqDtsoD8mHvTxhkOxtv+QpoRjmMNF78IHo6s3NoY5EmFJeVVjsaY8wR2MjkRz02LTE9K7P4QNDF4f0Ayu9V7InXLJMB1qZsM5dsR15lYMJbPjh4tV732hPefj6hquGxyXpmvGvPqH5JzBH9MD/mr18PNqTGRvQZYE3HlNvrmtYnE52Aogn2iTLFhMqz1aXcSurdVBgOMR2xfj1U8ORxLZPkS7Fc8FjvLUNUPp85FhP/x+5BFTMm12OkymuHtDm6RP2Su0C6WcQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by MN0PR12MB6127.namprd12.prod.outlook.com
+ (2603:10b6:208:3c5::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.9; Fri, 11 Sep
+ 2026 17:19:35 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0406.007; Fri, 11 Sep 2026
+ 17:19:35 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, 
+ Kevin Tian <kevin.tian@intel.com>, David Woodhouse <dwmw2@infradead.org>, 
+ Lu Baolu <baolu.lu@linux.intel.com>, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Pranjal Shrivastava <praan@google.com>
+In-Reply-To: <cover.1788127877.git.nicolinc@nvidia.com>
+References: <cover.1788127877.git.nicolinc@nvidia.com>
+Subject: Re: [PATCH v6 0/5] iommufd: Iterate the cache invalidation array
+ in the core
+Message-Id: <178914599038.1311365.11397999399990847073.b4-ty@b4>
+Date: Fri, 11 Sep 2026 13:59:50 -0300
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.17-dev
+X-ClientProxiedBy: YT4PR01CA0341.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:fc::27) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] liveupdate: Move to feature flags for LUO and
- memfd ABI compatibility
-To: Jason Gunthorpe <jgg@nvidia.com>, Sean Christopherson <seanjc@google.com>
-Cc: David Matlack <dmatlack@google.com>, Logan Odell <loganodell@google.com>,
- arnd@arndb.de, pasha.tatashin@soleen.com, rppt@kernel.org,
- pratyush@kernel.org, graf@amazon.com, akpm@linux-foundation.org,
- maz@kernel.org, oupton@kernel.org, bhelgaas@google.com, alex@shazbot.org,
- kevin.tian@intel.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
- kexec@lists.infradead.org, linux-mm@kvack.org, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
- linux-pci@vger.kernel.org, iommu@lists.linux.dev
-References: <20260903023452.721732-1-loganodell@google.com>
- <20260904160009.GV4157646@nvidia.com> <aptFFYqcSiBdMLE8@google.com>
- <20260905012403.GX4157646@nvidia.com> <aqIAtOoew-_6jw29@google.com>
- <20260910143448.GD3968357@nvidia.com> <aqLOWkuVKccR-I7W@google.com>
- <20260910171210.GF3968357@nvidia.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Autocrypt: addr=pbonzini@redhat.com; keydata=
- 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
-In-Reply-To: <20260910171210.GF3968357@nvidia.com>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
-X-Mimecast-MFC-PROC-ID: gDn9wNp2aFqybXaKp6R9lvckVmeoD1g_jcHWWUkhCpg_1789146996
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|MN0PR12MB6127:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e199b45-69ea-4c47-de58-08df1028da19
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|7416014|376014|1800799024|23010399003|56012099006|11063799006|10067099003|18002099003|22082099003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	DUn51RXlPPBGQiVjcKnYQdfBAv/af6WNigDDd/SrsPSX5tbo3LhQ6Y5Jqtc6+d20d4b3OHECY2oWya0ywCQF3aABokZ4GBbQ+F+Xj5g5ertbxQXRnmS+RkiE38gjpbeM3hfKqGbGKKsqY9rs6hU6h1+6lymhavj6PMrTQ7/ANg+8tNzC4lgjs1dUshu7FHUssxlT6cw/J0duVUmz7Qg6X3kq5R8U1W9drMA9eJM5Ji5Gt2GMNqCzwLw4DnAjfpW1/Sszppu7IE5t/zalgFVJ11hpgz6KFPtSYswRffZaEALp3Xjp8V/9vDp8PUmXMR8Pk9usitA4k04IWyH2W7BQnompS/aKQ4gjlHI9QH16Fr/DLwoCD2Mr/gZ+CDjuzNhi+U3QjtjKtK0su6jsPeCKWmSLo5b5DHTd9CmApQhaM+vdXjJ8wIvQDl65JRJSlO4T9Yo7VZGyP4Gum13/VpxhMUG/VQKd1QJVgY6fIcEKRMTQ/yPs+hTPUpHcQ+O6IlR1FpWMWNrLJrJ8WbnaRNLWLGfQf8/5vtXYLAyy+RUoXq2geF9+fvHMgGWGS3M/zKHoGHY0UmwOHDN/CfERv10OzlGbeo9wsLkCn4LiBUKtNgRS3FOD04ixLgqsxACF/0W+SM0FDMFE0qtJ7St/ZmPeEZZ4Bb68zMX0bYaUaQ4MX98=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(23010399003)(56012099006)(11063799006)(10067099003)(18002099003)(22082099003)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?NDRMZUhSQnRjZEQ2RUE5dmFRUHV2REpBYjRYQ0I2QStReERJRDRxdk81R1ly?=
+ =?utf-8?B?SkRCdll0OWZrUjdnT2ZKVDBtM2xkUFRMNjVDVGJ5OVR4MlB6OVR4SzllRG5E?=
+ =?utf-8?B?WnNJbk9HWTNsbEhqNHdleGx2WWpmRlRnUkhwOTdwK3FPTXJ1U3ZyV2xXMW9R?=
+ =?utf-8?B?a1BEaUdRSmRiMkZ6OFJCQmNNODg0b1gzSWl3Q25Bc0hwb1cyb1M4RWR3a0pT?=
+ =?utf-8?B?U2dEOVQ4ZkN0VUdUbG8xb054aXptTWh0bHNUNVJDUytLa291MXJUbDIvNmZ1?=
+ =?utf-8?B?RUQ5ZnhreithM0FZS0RVTG1PcmVaV3hmTkllMjlNbFVFMWRzQldJTzdJYVl1?=
+ =?utf-8?B?Qzl2WnVEYmEyemhSYVpSYmJJbVB6a1lGamdEWkc2S1ZpTGZkQjNjVlU3OU9C?=
+ =?utf-8?B?dm84UExYM2R6UEVTejZJVzQ2Vmg3Rk5XZXdFYis5aXpLQ1pXZkRyUWtIUmNC?=
+ =?utf-8?B?Snl0QUY0ZVNycWRrWElRUFNQdzBtQ3BjS3A1SlhqOWpLaVAyajFqMXFuNG8w?=
+ =?utf-8?B?NUtQM3RrUUx5SllMSS9TNjJEWUtncUtjcnk5VUVKa2h2ME5VZ2hOZzR4cGlC?=
+ =?utf-8?B?T1o2eFl5d2tybXl4elkvOEFFYlJqbm93Ti9MSk56aXcxM1g0MnVGOTVYZHpX?=
+ =?utf-8?B?VmJ0cUlMbDkrZTkzM2tOVCtlRnVZc3BZZmIxV2VXOERjSjN3SDltQmExeVF0?=
+ =?utf-8?B?SXdiTUJ5aFFudXNodUFUejFNd1IwaUcyaFNTTzlJdkJwVGxPZng5RkY5RFZ6?=
+ =?utf-8?B?UmZUWGVUbHdqOElnZjY4NHVMZEFvWUloN1lHVVYzQTNHMXhleENlRUc0UCtI?=
+ =?utf-8?B?UG5MU0tIZVdYdTNDM0ROb3BZTUpFcVQrUWoreTdVZkI5QXJRTDE3YzJLWjho?=
+ =?utf-8?B?cFM4clR5QVN0b2hWbnU4VVoyVVdXQnM3VU9vd1RBcEN5KzA4Ri9vUFFYeTFh?=
+ =?utf-8?B?VmxGZnJBcEx4Z3B0cktEUWxRcDBVRFRUVUx2VDB1Kys0QUxaV1M5R3pBaWha?=
+ =?utf-8?B?bndhK0ZaSWtjUUZWQzRPQWQ2d0FCRlNhVVJscmpFT29XWTNsdzdLaWhBSGhF?=
+ =?utf-8?B?aFhlYnpCbEVDc1FiYkg1TjlLNlY4dDJ6ZVFHRmQycjQrdGh4WVJUb2ptSEh2?=
+ =?utf-8?B?MW9vcHAyZlc5UWhGMjdKY2dtaGNJOHBCMVVmbnZQTW94bnRMc3dPRFBzOGtx?=
+ =?utf-8?B?cnUwdHhqS3ZaWXlVTGFGMUkzR0VDM0VtektpaElMRDBaWERYelhMQjgrLzdR?=
+ =?utf-8?B?NFJkQUo2Zk5DUDJOQkF2SitkNG9oR0NHUkM1Y3I3NVFLQUw1VjIrMlJtTWgy?=
+ =?utf-8?B?M0NPUExiakpORS8wbHdaVDRXUW5CWEFxNjBacVZQV2V2czVHTWw2SGw0Q1NB?=
+ =?utf-8?B?dUNrdDluSjV0UC84bkpkSEtvWTZVemZnalNyK0EwcFYzR0RYOUlzNi9zd0ds?=
+ =?utf-8?B?UFFYR3Zyc0NYNU5BeVJmNXB2TTJ1OVpWLzh2aTE5eURha3RhWHhpQzhZa2JV?=
+ =?utf-8?B?V1VveG9lQk9BRCthdUduVWNvZk9IQVpwT1BvZHg5Nlh5VXRVLy9zZDQ1OVhi?=
+ =?utf-8?B?bm40WWg2SlQvMGk5Qk1tV3AyR2x4U215cDNiVzNkTUw5TjhLdEQ0emZ2SjRQ?=
+ =?utf-8?B?V1lORVo2TTN1Sy9rZCtsSFlSWGEwQ0xsdjB0a2N1ZmphQnIzWlI0d3VYa1V5?=
+ =?utf-8?B?NlpYMXhXdmJTVHVSOWVoNnZPSU5tQkZsMmhIWlV4S1RYR2sya01vb1o4MUNk?=
+ =?utf-8?B?U0pFeXBGdytvTXMySXdGV29jTUROMkpGUGdVeTdCSjh4QWFhSmUwZ2pWWDVF?=
+ =?utf-8?B?YTBLa3JoZU1ZYk45cFVnMTZXS0U1WHpMTVIyTEhCTUxhdUhpYW9jcnEydDI2?=
+ =?utf-8?B?cDk1REQ2aVc3cUVTeWY1Z0YxR1AyWEg5MTNOWVN1emlYV2ZGRnZ4L21uOXNr?=
+ =?utf-8?B?QTZLWFEwWmwxdmJMdUxZU0tIS21jME1FaitZRHk4VFVoL094RlYyUFlKMWFI?=
+ =?utf-8?B?a28vSEZQNWhSQ01CVzR1UmJpcGIraHJidGkvMXRYUU1qNXhwdzFuaUdja0F4?=
+ =?utf-8?B?WmYvQVZLUnRrRURlRU4wODQxdlJQSVVFaHZSMnlHSERtSk5ibmxsMER4V2t1?=
+ =?utf-8?B?OUFUdFNuaGYzY2pabTZ0YVBJNU9vMmdTaTFvRkl2eEtsNnhEUEo5czg1K3Aw?=
+ =?utf-8?B?cHJMNCtPZnQzUkxpcytYbGtXVGQ4U2t3aTEveDAwQnYyOTdGNmRBQS94UUtX?=
+ =?utf-8?B?dmxrbUQ3SG44WjBGWjVRVVhNQUlvemYreEZ6K0pVS2hSaUZqZDFoeUxhdHNB?=
+ =?utf-8?Q?3msVDdxp3qDIYizTcI?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e199b45-69ea-4c47-de58-08df1028da19
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2026 17:19:35.4951
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: evTt913/hTBbwg4yylXtIkYoKSOeA6ISnim4sjbQhUI71Q+2QwSfsPCYB4UZb4si
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6127
 
-On 9/10/26 19:12, Jason Gunthorpe wrote:
-> Keep in mind the actual goal here. Someone has kernel A and they need
-> to blind kexec into kernel B and NOT have the machine explode, or all
-> the VMs sitting on it lost.
+
+On Sun, 30 Aug 2026 15:26:37 -0700, Nicolin Chen wrote:
+> iommufd: Iterate the cache invalidation array in the core
 > 
-> Meaning you must have a way to determine before the kexec if kernel A
-> is producing something B will *accept*. Accept is not "parse and fail
-> with EOPNOTSUPP" like most uapi schems. Aceept means bring in and
-> actually fully support and use.
->
-> So how do you solve this problem? You MUST declare in some kind of
-> manifest exactly what ABIs are supported, in some way.
+> The vIOMMU cache_invalidate() and the nested-HWPT cache_invalidate_user()
+> ops are each handed the full user invalidation array and must report, via
+> array->entry_num, how many of its entries they handled. That makes every
+> driver open-code the same array walk, with real downsides:
+> 
+> [...]
 
-You still have to pass out of band what B will accept.  Passing a string 
-or a bitvector doesn't change much.
+Applied, thanks!
 
-The problem, again is that memfd is the easy case.  KVM would bump the 
-version number on every other release, as even a new serialized MSR will 
-be an incompatibility.
+[1/5] iommu/arm-smmu-v3-iommufd: Reject unsupported bits in invalidation commands
+      https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?id=26564d25cd814dfd72a21a2c52b81e678cf02bae
+[2/5] iommufd: Iterate the cache invalidation array in the core
+      https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?id=61e2f25a49bc4d274e71856b2bcac0753f38bafb
+[3/5] iommufd/selftest: Convert cache invalidation mocks to the core array loop
+      https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?id=5519695903a4b443903dd6d9207ad340bc3c984b
+[4/5] iommu/arm-smmu-v3-iommufd: Convert cache invalidation to the core array loop
+      https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?id=2d4f03f6610d569070a86d8d2c583ddfcd390f75
+[5/5] iommu/vt-d: Convert nested cache invalidation to the core array loop
+      https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?id=fe85c40e992be9578b8cdfa992d9e23005e25e77
 
-Rather, forwards kexec *must* work (again, that's nothing but a variant 
-of "we don't break userspace") and for backwards kexec, well, you must 
-know what you're doing.  QEMU has been doing backwards live migration 
-forever, and QEMU is a gnarly C program that has grown by accretion as 
-we were learning all this stuff, so it's not impossible at all.
-
-> Yeah, CSP broadly has to do exactly this across a wide range of
-> topics. It is a further reason why this feature is not exactly usable
-> by a "mainstream" user :\
-It's not easy, but you aren't even trying to do it right in the kernel. 
-You are starting from *a* solution and saying that it makes the feature 
-hard to use.
-
-And I'm not saying to dismiss your work or ability, quite the contrary 
-in fact!  It's just that you're solving for the wrong complexity, and 
-only partially so because (if I'm not wrong) there's still the question 
-of how to bring the manifest of kernel B into kernel A.
-
-Paolo
+Best regards,
+-- 
+Jason
 
