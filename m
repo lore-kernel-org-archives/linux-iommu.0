@@ -1,164 +1,206 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 60C59472556
-	for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 12:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49AED46F484
+	for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 12:42:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789389149; cv=none; b=OD+WAxUd5AHxJLJWLyarcozQRhKQtUWBpjdy1eQiKx7QUtCDqYHNRuyU9kmxMv4NyALJIw7FsYu8aMhjAVwYtkBqDvwX1CKjSqSMkMSVEUIRJXNqo0ibaQ/yXunfJZ26pEn2w9qtnL2vWpF0wdHzsO7CoFVqR3LbZc/BLDg2deI=
+	t=1789389763; cv=none; b=Hab4KsKPV6O9p8F85hEIMEXFbN1+yO0xR64jFRjMAWnJxtV3f/ayfb7Ae9YG5H85ah3ZSCl1Dqq/DsZ9iib2ujTkp4xCbSRBSLeCB8DhgXFw0V4ZHyHcLd9VzewDZ+BIlBm6KL1u4mh721tdnRDaQd+AuwqPcibVCvHPIn8t9Gw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789389149; c=relaxed/simple;
-	bh=//mVfT+cS6bsEEtaMcIXiUoj03Wbk2JdXzrCu9QKdyU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XdnEAWJ+w3K3y4dYqH95jAisjSpB0NrPyqQWsAzkHZx/zilrJehhNMjTCpI98LCDn3P+kZ6x2LYhzzaFdApzZ9W9GgYosrrBRKeE2ZIGZyS/TFd04VQQGZ9b0avgJfEeB+fQqr+FVLNi/hOL1JLpxM38AaNegg88VnzS/tMLeRM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=vzKnHSdK; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1789389763; c=relaxed/simple;
+	bh=kKUjFxTDzaIvfCLVxP1OmjKiQRgwNhTIUBFn6PNx22w=;
+	h=From:Subject:Date:Message-Id:MIME-Version:To:Cc:Content-Type; b=cziYUsd813akEukdj5zuhCoLCRPA51DYguXo8yqEcRASoxshKSBvoOSgPnUsmw94sv0QODNxliOTcbA5dIgCqZhhNKhoWfazT2+FdB3k2T66+hemBdC00ntW36yraegijcCT3AJbnGopulMN1vlmIxT0r1Z16BlrDudHgc+zY58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NDdhQ8OG; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="vzKnHSdK"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 856191570;
-	Mon, 14 Sep 2026 05:32:18 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EBC8D3F86F;
-	Mon, 14 Sep 2026 05:32:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1789389142; bh=//mVfT+cS6bsEEtaMcIXiUoj03Wbk2JdXzrCu9QKdyU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=vzKnHSdKbin0VxCTUDozy936CXwnZ/R6yHiNneZhuEooJRckC2b3b/3cDvQz6g7NQ
-	 EDbJ4v+G1Disjqeycfm076iot2cIQi216QhEGxfBgTwPMeZPQww1CDLP4/uTNYKQ3/
-	 9uIii6KCKAS7CGPMY9JU2rgfVNqlhesVxcszDx6M=
-Message-ID: <fe22fb3d-77dd-4b34-9dd8-aafe11f36988@arm.com>
-Date: Mon, 14 Sep 2026 13:32:11 +0100
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NDdhQ8OG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1789389760;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=gS0PasUdCVmtQZHlDSGBeMxyLgFshGbkXoV5dyvEzpg=;
+	b=NDdhQ8OGBhs8bjyyKbFwHdUKZeLryp0M/WnCSxrSDb8ZoOJfKwkwQdXk9aBVsnW0LrVTE6
+	0AJjEY35NTV/qtPM4NtTyaoAAWfuP5aothpVx+Z7Nv0AjWsfc4DXAwx66Es5JaM8Gwkd3w
+	Vq7PmWwbLvPWdIbT2mt8EBbTG4KFnsc=
+Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-21-ROAKiUATP9Sm4zdp5Rer-Q-1; Mon,
+ 14 Sep 2026 08:42:36 -0400
+X-MC-Unique: ROAKiUATP9Sm4zdp5Rer-Q-1
+X-Mimecast-MFC-AGG-ID: ROAKiUATP9Sm4zdp5Rer-Q_1789389751
+Received: from mx-prod-int-10.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-10.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.95])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id F119A180A9F5;
+	Mon, 14 Sep 2026 12:42:28 +0000 (UTC)
+Received: from aesteve-thinkpadp1gen8.rmtes.csb (headnet05.pony-001.prod.iad2.dc.redhat.com [10.2.32.117])
+	by mx-prod-int-10.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id B83C341D;
+	Mon, 14 Sep 2026 12:42:13 +0000 (UTC)
+From: Albert Esteve <aesteve@redhat.com>
+Subject: [PATCH 0/3] firmware: qcom: scm: pass struct qcom_scm through the
+ API
+Date: Mon, 14 Sep 2026 14:41:53 +0200
+Message-Id: <20260914-scm-device-api-v1-0-3573e2596c51@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu: arm-smmu-qcom: Skip fault-info reads when
- suspended
-To: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260912-priv_call_runtime_handlers-v1-1-fc0c3a17523f@oss.qualcomm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260912-priv_call_runtime_handlers-v1-1-fc0c3a17523f@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x2MQQqAIBAAvyJ7bsE0tPpKdBBdaw+VKEQQ/j3pO
+ DAzLxTKTAVm8UKmmwtfZ4O+E+B3d26EHBqDksrISY5Y/IGhiZ7QJUajB+ets1FbCy1KmSI//3B
+ Za/0AntZYi2AAAAA=
+X-Change-ID: 20260908-scm-device-api-634ac7a7f377
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, 
+ Philipp Zabel <p.zabel@pengutronix.de>, 
+ Russell King <linux@armlinux.org.uk>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, 
+ Christian Loehle <christian.loehle@arm.com>, 
+ Maximilian Luz <luzmaximilian@gmail.com>, 
+ Bartosz Golaszewski <brgl@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>, 
+ Akhil P Oommen <akhilpo@oss.qualcomm.com>, 
+ Dmitry Baryshkov <lumag@kernel.org>, 
+ Abhinav Kumar <abhinav.kumar@linux.dev>, 
+ Jessica Zhang <jesszhan0024@gmail.com>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Thomas Gleixner <tglx@kernel.org>, 
+ Radu Rendec <radu@rendec.net>, 
+ Vikash Garodia <vikash.garodia@oss.qualcomm.com>, 
+ Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, 
+ Bryan O'Donoghue <bod@kernel.org>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, 
+ Srinivas Kandagatla <srini@kernel.org>, 
+ Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>, Arnd Bergmann <arnd@arndb.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jeff Johnson <jjohnson@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+ Mathieu Poirier <mathieu.poirier@linaro.org>, 
+ Amirreza Zarrabi <amirreza.zarrabi@oss.qualcomm.com>, 
+ Jens Wiklander <jenswi@kernel.org>, Sumit Garg <sumit.garg@kernel.org>, 
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
+ Brian Norris <briannorris@chromium.org>, 
+ Govind Singh <govinds@codeaurora.org>, 
+ Niklas Cassel <niklas.cassel@linaro.org>, Kalle Valo <kvalo@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+ linux-wireless@vger.kernel.org, ath10k@lists.infradead.org, 
+ linux-gpio@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
+ op-tee@lists.trustedfirmware.org, Maxime Ripard <mripard@kernel.org>, 
+ Albert Esteve <aesteve@redhat.com>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789389733; l=4126;
+ i=aesteve@redhat.com; s=20260827; h=from:subject:message-id;
+ bh=kKUjFxTDzaIvfCLVxP1OmjKiQRgwNhTIUBFn6PNx22w=;
+ b=ptN78nZt4fGWWnpdDZyVENIgI04y8a4PWpV9Q7ESU1lJXI6I5/2224GMHxqfT8NR3RqXorNth
+ jHJX4SMRZ0tCfmG8DtbgRZpcTf2pE4dns304nz4VWJerDfTGzhcT+6A
+X-Developer-Key: i=aesteve@redhat.com; a=ed25519;
+ pk=zI2RBeZgocwYm3AkJW4CtjoJnKoDZrfBl1xe5Ed6h+U=
+X-Scanned-By: MIMEDefang 3.6 on 10.30.177.95
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 8rlABcEIhUEkSObvdodeXtt72BfZ2mX_I1FRXnQU3og_1789389751
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
-On 11/09/2026 11:25 pm, Bibek Kumar Patro wrote:
-> qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
-> holding a runtime PM reference. A fault is raised while the SMMU is
-> active, but the GPU may drop its power vote before the threaded fault
-> handler reaches the callback, allowing the SMMU to runtime suspend.
-> 
-> Accessing the SMMU registers after suspend has started is unsafe and
-> may cause subsequent register accesses during runtime resume to fail
-> with a NoC error and an asynchronous SError.
+The SCM driver still funnels every call through a process-wide
+__scm singleton.
 
-But hang on, if I'm following the code correctly, the callchain would be:
+This series threads struct qcom_scm through the driver and the
+exported API, then drops the global.
 
-arm_smmu_context_fault
-   report_iommu_fault
-     msm_gpu_fault_handler
-      qcom_adreno_smmu_get_fault_info
+Series summary
+--------------
+Patch 1: Internal helpers take the instance. Callbacks that only
+have a struct device or reset_controller_dev recover it
+with drvdata / container_of. Exported signatures stay
+unchanged so this patch is bisectable on its own.
 
-and from here we still need to return to arm_smmu_context_fault() to 
-clear the FSR, so surely that still has the same problem in itself?
+Patch 2: Exported calls take struct qcom_scm * as the first
+argument. The type stays opaque in qcom_scm.h.
 
-Thanks,
-Robin.
+    Children of the SCM device (qseecom, tzmem, qcomtee)
+    use dev_get_drvdata() on the parent. Other consumers
+    call qcom_scm_get(), which finds the bound platform
+    device and returns NULL until probe has marked the
+    instance ready. Callers that need SCM return
+    -EPROBE_DEFER; callers that only use it for an optional
+    path (rmtfs VMIDs, fastrpc vmids, PAS region assign,
+    Venus CP, HDMI HDCP, Adreno fuse poke) skip the lookup
+    or tolerate NULL. qcom_pas_* is unchanged: PAS has a
+    TEE backend, so those ops keep struct device * and the
+    SCM backend uses drvdata.
 
-> Use pm_runtime_get_if_active() to keep the SMMU active while collecting
-> the fault information, and skip the register reads if suspend has
-> already started.
-> 
-> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-> ---
-> qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
-> holding a runtime PM reference. A fault is raised while the SMMU is
-> active, but the GPU may drop its power vote before the threaded fault
-> handler reaches the callback, allowing the SMMU to runtime suspend.
-> 
-> The failure sequence:
-> 
->    GPU context fault
->            |
->            v
->    qcom_adreno_smmu_get_fault_info()
->            |
->            | GPU drops its power vote
->            | SMMU starts runtime suspend
->            v
->    SMMU register access without an active RPM reference
->            |
->            v
->    later Adreno PRR private-interface operation
->            |
->            v
->    pm_runtime_resume_and_get()
->            |
->            v
->    arm_smmu_runtime_resume()
->            |
->            v
->    arm_smmu_device_reset()
->            |
->            v
->    SMMU register access
->            |
->            v
->    NoC error / asynchronous SError
-> 
-> Use pm_runtime_get_if_active() to keep the SMMU active while collecting
-> the fault information. If suspend has already started, skip the register
-> reads instead of accessing the SMMU while it is being powered down.
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 14 ++++++++++++++
->   1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 795e8ec7e8fa..b1787a4ba0d3 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -129,6 +129,18 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   
-> +	/*
-> +	 * A fault can only fire while the SMMU is active (GPU is issuing
-> +	 * transactions). Use get_if_active so that if by a rare race the
-> +	 * device has already suspended, we skip the register reads rather
-> +	 * than triggering a cold resume which would call device_reset and
-> +	 * destroy the fault state we are trying to capture.
-> +	 */
-> +	if (pm_runtime_get_if_active(smmu->dev) <= 0) {
-> +		dev_warn(smmu->dev, "get_fault_info: device not active, skipping\n");
-> +		return;
-> +	}
-> +
->   	info->fsr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSR);
->   	info->fsynr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR0);
->   	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
-> @@ -136,6 +148,8 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
->   	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
->   	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
->   	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
-> +
-> +	pm_runtime_put_autosuspend(smmu->dev);
->   }
->   
->   static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
-> 
-> ---
-> base-commit: f61bb3920fa8cb44b84d32e0fa9fbaab4eb00c80
-> change-id: 20260912-priv_call_runtime_handlers-7f3547544040
-> 
-> Best regards,
-> --
-> Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-> 
+Patch 3: Drop __scm. Readiness is scm->available with the same
+release/acquire pairing as today. Module-parameter
+stores reuse qcom_scm_get(); shutdown uses
+platform_get_drvdata().
+
+No intended change in SCM calling convention or wait-queue
+behaviour.
+
+Testing
+-------
+
+Booted to a shell on Qualcomm SA8775P Ride4 with current series.
+qcom_scm bound as firmware:qcom_scm; probe logged SMC ARM 64 and
+the tz-ffi reserved-memory assignment. Consumers were not exercised.
+
+Suggested-by: Maxime Ripard <mripard@kernel.org>
+Signed-off-by: Albert Esteve <aesteve@redhat.com>
+---
+Albert Esteve (3):
+      firmware: qcom: scm: pass qcom_scm to internal helpers
+      firmware: qcom: scm: pass qcom_scm through the exported API
+      firmware: qcom: scm: drop the __scm global
+
+ arch/arm/mach-qcom/platsmp.c                     |   3 +-
+ drivers/cpuidle/cpuidle-qcom-spm.c               |  28 +-
+ drivers/firmware/qcom/qcom_qseecom.c             |   3 +-
+ drivers/firmware/qcom/qcom_scm-smc.c             |   2 +-
+ drivers/firmware/qcom/qcom_scm.c                 | 518 +++++++++++++----------
+ drivers/firmware/qcom/qcom_scm.h                 |   2 +-
+ drivers/firmware/qcom/qcom_tzmem.c               |   6 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c            |   6 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c          |   8 +-
+ drivers/gpu/drm/msm/hdmi/hdmi_hdcp.c             |   6 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c |   9 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c       |   8 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h       |   3 +
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c          |  18 +-
+ drivers/irqchip/qcom-pdc.c                       |   6 +-
+ drivers/media/platform/qcom/venus/firmware.c     |  10 +-
+ drivers/misc/fastrpc.c                           |  31 +-
+ drivers/net/wireless/ath/ath10k/qmi.c            |  12 +-
+ drivers/net/wireless/ath/ath10k/qmi.h            |   3 +
+ drivers/nvmem/sec-qfprom.c                       |   6 +-
+ drivers/pinctrl/qcom/pinctrl-msm.c               |  11 +-
+ drivers/remoteproc/qcom_q6v5_mss.c               |   6 +-
+ drivers/remoteproc/qcom_q6v5_pas.c               |  12 +-
+ drivers/soc/qcom/ice.c                           |  23 +-
+ drivers/soc/qcom/ocmem.c                         |  22 +-
+ drivers/soc/qcom/rmtfs_mem.c                     |   8 +-
+ drivers/tee/qcomtee/call.c                       |   7 +
+ drivers/tee/qcomtee/core.c                       |   6 +-
+ drivers/tee/qcomtee/qcomtee.h                    |   2 +
+ drivers/thermal/qcom/lmh.c                       |  22 +-
+ include/linux/firmware/qcom/qcom_qseecom.h       |   5 +-
+ include/linux/firmware/qcom/qcom_scm.h           | 117 ++---
+ 32 files changed, 566 insertions(+), 363 deletions(-)
+---
+base-commit: bc35965f6940a9bf834d54187b6088b8eb09206d
+change-id: 20260908-scm-device-api-634ac7a7f377
+
+Best regards,
+-- 
+Albert Esteve <aesteve@redhat.com>
 
