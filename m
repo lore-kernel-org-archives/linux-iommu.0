@@ -1,78 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-38.ptr.blmpb.com (va-2-38.ptr.blmpb.com [209.127.231.38])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CD452475E3;
-	Mon, 14 Sep 2026 05:20:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A7D3D0C09
+	for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 06:28:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.38
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789363228; cv=none; b=gMt5yQiSOgj8bhPcYGajrevRRGCV+ds9B7N3d474qij0W8GBgJM2cTzcY/LRxDHfmKlVR6hKbYvhM/zCTp28dneXPDcXp7HRUn3vRiS4pR2YOPAjdJhPMiqmzJyGqaz+kIxrBr3+qaq3I7yUK/YB4H3X1VHJz99yfigNSuP8L8c=
+	t=1789367326; cv=none; b=ED+v8vFIWbFuJxn4OY2wMfTDcDkEAJpQrXGKEzUgzn/KzvdQBDzM9DS42n+8Q0WlDO8uV30ATcPoWKkL1PRgjb0JzrCyCkkxyx4xrFjDrhhKMNMyNcxemx83n9yoeD1l31DlzCzbvkThWPVFT/Bve9CIiunt7ww03pWlEJp3c2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789363228; c=relaxed/simple;
-	bh=TE6lnEedq9AEX81sCvjlzrnKeWus+zLHddFN4XOUUJ4=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=iXewhPblM9evkvgG7NvxL9+5MmdjEVzPEf8KnbNpVjwxNYVRx5ekMf6SAOEVeldT7nCrvW7SbPlVZxhXU2NdeYAQzfhu6ouDnO4zkgvHZxYbwFVs11oJYNFdrqqFla25lsgwbdYnuPbEc2HL+/Ro/eDRhW4NDEfPCc8Zw2+AS4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CkTExBz8; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789367326; c=relaxed/simple;
+	bh=qQbNDtGIEBu1d7dXB51yp73gOkY2ynQCu3xKODdhecw=;
+	h=Message-Id:Content-Disposition:To:From:References:In-Reply-To:
+	 Content-Type:Cc:Subject:Date:Mime-Version; b=CJl6wDUOXW8mPK6CrV5/P0NNS3p5CsUMjYjkQH/CzvFSwP/aRbKar8EqIuYBKF46/x7gC0dTs+ihkPlNpxBzQ/DdH9KMND4I/In6T/tFPNJGEeqb4gRw+7M8LwEgQMWQc1pQ1xIHo3ZaQTlYdK7Ac44Q/zlZKvoRvMxH+wW+eHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=vtHhwFkD; arc=none smtp.client-ip=209.127.231.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CkTExBz8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998861F000FF;
-	Mon, 14 Sep 2026 05:20:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789363226;
-	bh=o779dzepK0mFhzpZscdSpSvYUsF1kQ6qSiTkadkPzf4=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=CkTExBz8pPEMBf1jk73HqRy9cRVhv5/C+/iPCXbOYp6XW7Lzx+sQ1dPL4vfhzGUKD
-	 1Qo4YLuCVLvhPKTxzUqjNbUy1Uvh7gG1I3nHUUqHzs/WEJuNkr9qBqahooT/6T5ZVm
-	 oR6CnuJc3DGdo2E3oDlVtXriiCz3rzEwiOys5VH0cgx+ZEDK5FyJNz90827TMmdf6G
-	 W2CcXEXQKcYkcl5oqdBHkuIsqpx+QgJgJl5qBheg0r2tbsTh9PXCq9NF/SX2bSEv/+
-	 2xV2YnJfUQF8bV7GrpUBqRvCECLrzr3MeGPvYWJKa4h381dPopjrSfvVE5ZktcPrKV
-	 K+Ef5ba1feaow==
+	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="vtHhwFkD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604151535; d=picoheart.com; t=1789367313; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=sQMkuUXUspgukwSOb26Oq32mNEp/z9l0P4KjT+/v4T0=;
+ b=vtHhwFkDXlFepJgpWBBnyZ7kW8fFQ4shf3ixMXKW6/OIpDidkh48B/ZjAJ65kCXd63DHcr
+ IMydUSYGJmU9PQK+kMuOOCVeWiU0M+M4WOLacYTPiFdNgEUQEd3Yn3Jzhdj/0wBfRL3G+r
+ hIp4f+D04MAORUCy4C+I9+Mf1zrPLBHj04uaKddZ68IIffqx7W8Tr8o7uJ4PSVuXoT1y4k
+ 2dyLm8eXTZrWd/lpL+t0P5hf2IyymnOaDlGUWr9Vx9UpifDEClDv/rJ6fJbN3wz0IVNDvC
+ yyK2HVxhWycsQRaU8mKBkU/iBYFBpNMIgi31dviPwmBgxVNNCm6BvNx5x4ciYA==
+Message-Id: <aqeUDObfmw+ZlFUj@hostpc>
+X-Lms-Return-Path: <lba+26aa7940f+c87e23+lists.linux.dev+liuzhaoyu.zackary@picoheart.com>
+Content-Transfer-Encoding: quoted-printable
+X-Original-From: Zhaoyu Liu <liuzhaoyu.zackary@picoheart.com>
+Content-Disposition: inline
+To: "Baolu Lu" <baolu.lu@linux.intel.com>
+From: "Zhaoyu Liu" <liuzhaoyu.zackary@picoheart.com>
+Received: from hostpc ([124.160.26.250]) by smtp.feishu.cn with ESMTPS; Mon, 14 Sep 2026 14:28:30 +0800
+References: <aoq8VGFL/Mdjd/M5@hostpc> <19132505-225a-45fb-a507-b916a718dccc@linux.intel.com>
+In-Reply-To: <19132505-225a-45fb-a507-b916a718dccc@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Cc: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>, 
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/sva: remove iommu_sva_present flag
+Date: Mon, 14 Sep 2026 14:28:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v6 01/10] mm: memblock: add missing HugeTLB flag name
-From: Mike Rapoport <rppt@kernel.org>
-To: Wandun Chen <chenwandun1@gmail.com>
-Cc: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org, 
- pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org, 
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
- robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org, 
- baoquan.he@linux.dev, rppt@kernel.org, pasha.tatashin@soleen.com, 
- pratyush@kernel.org, m.szyprowski@samsung.com, mark.rutland@arm.com, 
- kernel@xen0n.name, alex@ghiti.fr, hpa@zytor.com, ruirui.yang@linux.dev, 
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, 
- linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, 
- linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, 
- kexec@lists.infradead.org, linux-mm@kvack.org, iommu@lists.linux.dev
-In-Reply-To: <20260902073116.802752-2-chenwandun1@gmail.com>
-References: <20260902073116.802752-1-chenwandun1@gmail.com>
- <20260902073116.802752-2-chenwandun1@gmail.com>
-Date: Mon, 14 Sep 2026 08:20:16 +0300
-Message-Id: <178936321614.3691424.10386784926753862087.b4-review@b4>
-X-Mailer: b4 0.17-dev
+Mime-Version: 1.0
 
-Hi,
+Thank you, Baolu.
 
-> Commit 7d163a75f821 ("memblock: make HugeTLB bootmem allocation work
-> with KHO") added MEMBLOCK_RSRV_HUGETLB but did not add the corresponding
-> entry to flagname[]. As a result, memblock debugfs cannot report the
-> flag by name.
-> 
-> Add the missing RSV_HUGETLB entry.
-> 
-> Fixes: 7d163a75f821 ("memblock: make HugeTLB bootmem allocation work with KHO")
-> Signed-off-by: Meijing Zhao <zhaomeijing@lixiang.com>
-> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
-> Link: https://lore.kernel.org/lkml/20260821020910.3428585-2-zhaomeijing100@gmail.com/
+One more thing =E2=80=94 do you know why the maintainers haven't noticed / =
+responded to this patch?
+Jason, Baolu, are you able to contact them directly?
 
-Can you please send this as a separate patch, I'll pick it to the
-memblock tree.
+Thanks,
+zackary
 
--- 
-Sincerely yours,
-Mike.
-
+On Wed, Sep 02, 2026 at 09:37:00AM +0800, Baolu Lu wrote:
+> On 8/23/2026 5:24 PM, Zhaoyu Liu wrote:
+> > The global iommu_sva_present bool merely mirrors
+> > !list_empty(&iommu_sva_mms) under the same mutex. Remove it and rely
+> > on list_for_each_entry to handle the empty list case, which is a no-op.
+> >=20
+> > Signed-off-by: Zhaoyu Liu<liuzhaoyu.zackary@picoheart.com>
+> > ---
+> >   drivers/iommu/iommu-sva.c | 14 +++-----------
+> >   1 file changed, 3 insertions(+), 11 deletions(-)
+>=20
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
