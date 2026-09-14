@@ -1,180 +1,277 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80D2643F8B6
-	for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 11:23:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4963944CF22;
+	Mon, 14 Sep 2026 11:23:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789385006; cv=none; b=lcAn61kpmaQpF0AcimEtBtEaR1IGCx5GLy1x1O78fD35yS+yEyeKNFnc71N9wqLge/fTv9C/JudhK6u5iFviyTzfQGcv1U5uOQD137O8IfLp3eNipwYSbkBsBCOzdeSIGRM2hmGhDIEhF9FfVViDpqBol/gOZa0fxDX/O5mJal0=
+	t=1789385008; cv=none; b=Wlrf1/1gf/xgpvLXZGe2WoXPzQhrC8zMK55rDB9UBX4fbFreJhQkuYDk4k2dPhlmkmkVc1MZpGM20HLzyPq8M/6QrQrahIRhoreDwyOK7y8skBbdV/YJNo1z41voVXFQ9FyCDbfVCqwFOSJS5aO9GBr20eXxgorja+/TAJob6DY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789385006; c=relaxed/simple;
-	bh=9NTdtJ/TSp6i9fELQDWEuFYvwbqy3ev3R+H2YTC2xv4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=E19aYPJkRpjOoCazxiTomAnk6KQrv79NK6l24KF2+Dpy33CoGlIt2ZMGNKkB7WIQDI0xLki/9LSbiWqgvoR/ppZNHka6iZdbsjc+Rs5CLsvn2nNYYLGSf9hLwF2PKi7Q+/rnI0hs9EeIN1HRnzbBdytYReemfUX9c/8nC9ACaAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=E/WVOCmY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=UBANMgqk; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1789385008; c=relaxed/simple;
+	bh=uUPkLTIdOcJG98wcuOEorHeRIFvb1d4Zm1COLXqc4b4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jmoS/ze2TjUzx26svFPMPRoFnGdmjFqg1NpdAU5MmkqSskkgawEwunLs2zelhDQOT5MVQWJBEfOfouW1Y8o/aPKxsxvNTaC8/PzZ46yibe5Suj3LT+niIZ8IoB3wDlsSvwBYK55l7aWft6ihkvF4SuB1nNUkNtRWOKlupz9Uf1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nP1rFGIc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="E/WVOCmY";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="UBANMgqk"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68EAlwUn3860401
-	for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 11:23:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	C99yA2ahM9Y0TtIpiFt1fwPT2Pp5VWgJygOu7Ai3npc=; b=E/WVOCmY/+5Enkgw
-	YEeOQ9dPHJUB8CWxTR20yFYOlY8UkoMJaYfEbZw5mtWvnO47B9tf1wMQPeafNwuh
-	wcPa+7jFxuwllxPm+71b/159YFvZtg/2RACZvfhGXsdX3lRflqfucbjNfAT60rpW
-	nT2W6tgRlLZN6L+MSJ/TNerjJkANtic5DzviOrYF00TQxSgNoyEqEGVr9kcRPO/3
-	gIuOu7yV0ud+xAE5Z0o7WnQCbf35GMdm9FpQLiSsBTvoxEBODy0Mr28DtrxMTC/P
-	1BajQAshRn13edHqPJho+jbGH0cD+CYPJc+8jjhbFR5E60BgJZv+Py3P6XJNpBgD
-	ZRcYpg==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gpd1f0rek-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 11:23:23 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-930a312222dso32873285a.2
-        for <iommu@lists.linux.dev>; Mon, 14 Sep 2026 04:23:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1789385003; x=1789989803; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=C99yA2ahM9Y0TtIpiFt1fwPT2Pp5VWgJygOu7Ai3npc=;
-        b=UBANMgqkRFiewqfYVK7iLce4yO10mBa6PCV2j0I0H/cTYrFgblyWQ65qOUmSO9TKEk
-         n0LxBlNadhqQKZtRGGRX4xyzenkOVqfFwVFyffPYQlUYoPFKbtuPcs9E0euMzu+ZQAwr
-         KLPWMgcMVFET7vWJSe7mIG4IaueVDuig9xDhpsx0crZj1q/7vEYngMOSHu8Vr0yNd6LK
-         qd7ndU/ItW+LtGpHo15sW3zvCdfiZiJpaQLdYnhSzdazPR7Daus0Jeg4LhRcNmqHT8ws
-         /1u6ual2EPt2Sb1Nm40r8PuQbzoF3chjYvH/DHoKhE/di3qjEmWoaiHQp+k9leTlfj7q
-         A3sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789385003; x=1789989803;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=C99yA2ahM9Y0TtIpiFt1fwPT2Pp5VWgJygOu7Ai3npc=;
-        b=p1SFhsjJex1iQMZx81uMh+mpc9Ga43e3tGpwl3WA1nBKNpzsXJr040DPVDqSqMmUoi
-         Sp42d8oYFsAzXk8NBNow+s+0JxAIS1C9KbfO5E2fAxxldWqfcTdYBzzyCc4CBg2bG0jY
-         eCfSAHmOmmIAQGP26fS//Lp23smq9Upi0RN3v+kblA4U3hmNl6edGx+npRXeP2MP2Quf
-         TjJpsWh1HgAEgPBWIQ5FJD1whgQMECOy2Csva4jrxkJ9uTnBGyOa1PATLQganx1VAaEz
-         6YZevkZPHFt98/g3xp3gamjzr23ANlkvYa7NHDztYMmQxlrXgjEID4OVXnI+SHRJNrxx
-         BFrA==
-X-Forwarded-Encrypted: i=1; AKwUvByOC9m4cJHuGdfqMHZ3ZZU4iBQauF3+KJN7DQr1GxIFQ6wJiXETFQ+n7cCq1rn94/hTxGS1ag==@lists.linux.dev
-X-Gm-Message-State: AFuF++lJAZt4ExlmHwg5ki/o73klbAcuesmOxEAkbeD/m6lE93Z0Ptdb
-	2Y5pD0/u4knIzysiqDKDPb6ZXMzc7Yt5hlU+uHQZqOg0BZv3vQAmZ+fxCQOcJ9N/7VxHrQNH/61
-	m9pglTo2ShleTxG/IkxJS1Umt+AuVQLubUSTVoQeQYZUyH9uJTWS3pM0sHw==
-X-Gm-Gg: AYBFou1cQWQfs8bYlIaCf/RRkzff07YS99UBWj3XuR/10fWuB97XOagkB213djfhugG
-	lW3gkq1DlsikrrTllZp5MUdlSWvXLbeCzX4akI5Rrnl2x354DoggdpPuHUnW3OAuh5pxRcmqAMp
-	W8UXaCOmvgy6wmXBd03TPOhIitF6FNnsujijL0XzA3+D+ujRx3aFQnybTq6KXS9DlQ6f1tGAiyy
-	wUcnpiUvWmJAruisMxyva/sj+xvmRFyGeWYKZ+/xG0fCxZqb3qD1FuREpWkmn1cPyHpDWDbPgCP
-	Y6rJ7SG3xfK5I0vB067jSXPfybxMTQOqeYEyjLFdPzUWWBqSn+XR9+qdAgk38PfxaAB83jpX8gV
-	K1IGQPRw0M6oWSSVCT14wBA==
-X-Received: by 2002:a05:620a:4555:b0:934:95d9:85fe with SMTP id af79cd13be357-93a29a8d250mr214251985a.3.1789385002640;
-        Mon, 14 Sep 2026 04:23:22 -0700 (PDT)
-X-Received: by 2002:a05:620a:4555:b0:934:95d9:85fe with SMTP id af79cd13be357-93a29a8d250mr214244085a.3.1789385002074;
-        Mon, 14 Sep 2026 04:23:22 -0700 (PDT)
-Received: from [192.168.202.12] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c296601f4ccsm406660866b.20.2026.09.14.04.23.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Sep 2026 04:23:21 -0700 (PDT)
-Message-ID: <757e124a-4c7b-4d3b-b73f-19e7e39f2677@oss.qualcomm.com>
-Date: Mon, 14 Sep 2026 13:23:16 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nP1rFGIc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C3F31F000FF;
+	Mon, 14 Sep 2026 11:23:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789385005;
+	bh=A4ZAZK3Ia0RfkaGkN5vfdYSNwiPoFjQt6i6vVfKhRQI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=nP1rFGIcQJBjg0/Nj8UqZtnsnRiV9YvryBQak9pDPrHs85KCLIWZd5h4vpi0v/OyQ
+	 7jvaMn4KPv7H3jqS1BmBPu6ORsYerwUf7suO0L5p5vozqI69zXUYr1+mYJaCjyhAMg
+	 +zAE1TkwUYPb4QThZ+2UE1XI5bVwBFFgwNavb91jgcuw2ONe7rO3UGxbOBVZnQz6X2
+	 N5+JZ03g7S9Nb524YooFYIokglfBGsCiZIYc2P6VJZuLvjnGS7dodoUOOfT/k0PJ58
+	 mecsg6omtfwtLZGweVgKRO2TlLiY4ooJ4j3PblKRVnGuzC6NCfYtWHZXtAWBdIFX8B
+	 K6X6RnStY9ZEQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	Alex Williamson <alex@shazbot.org>,
+	Leon Romanovsky <leon@kernel.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>,
+	linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org,
+	kvm@vger.kernel.org
+Subject: [PATCH v6 05/18] PCI/P2PDMA: Evaluate ACS controls at the path divergence
+Date: Mon, 14 Sep 2026 14:22:38 +0300
+Message-ID: <20260914-fix-p2p-acs-v4-0-v6-5-5ef07ec9ef06@nvidia.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
+References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 15/20] soc: qcom: ubwc: Add UBWC config for MSM8952
-To: muzafferkadir@mainlining.org, Bjorn Andersson <andersson@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-        Brian Masney <bmasney+clk@redhat.com>,
-        Jerome Brunet <jbrunet+clk@baylibre.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Srinivas Kandagatla <srini@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov
- <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Robert Marko <robimarko@gmail.com>,
-        Guru Das Srinagesh <linux@gurudas.dev>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli"
- <gpiccoli@igalia.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: David Heidelberg <david@ixit.cz>, Dang Huynh <danct12@riseup.net>,
-        phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        iommu@lists.linux.dev, mfd@lists.linux.dev,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
-        linux-input@vger.kernel.org
-References: <20260912-msm8952-initial-support-v1-0-0e742578b524@mainlining.org>
- <20260912-msm8952-initial-support-v1-15-0e742578b524@mainlining.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260912-msm8952-initial-support-v1-15-0e742578b524@mainlining.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: bjWn8px-QKi3Us2zXb9-mwAJENeY6Ur3
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE0MDE2MSBTYWx0ZWRfX8fx3eee9TZNe
- UslqctOFMC5S7amnJ0/OuiLMIrKncOotVessT74wv6oJzctImwx5Pg/VRsf/bUUPjVDW2DUiUio
- 6tybhF0D47afa4vsMQsX5t8O0r/mZTY=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE0MDE2MSBTYWx0ZWRfX+CBa23NuKPP9
- 7Y42IHBB7gVZ3eBuhQ0ZJoXUN58IQEMnKbDk4RgxJFOejahJ53ypF9I8XEG6EbuJ9Y+w7W6d0TG
- eaTF5gCwWrjhkYs6Al9mzsGHtFFfuS2UJM0Wv2xqrz4p9F3Oi/GIN9WG3389M0BDgCESwZWnFTl
- Psf8LHqs1QvjSqlHuB7C1+M2+1X2rKnAymZeKsxTan61vCJqu6wH60AO72UmEjGSzzagOekK+L1
- WI4CSrKc8N81oWcrVMk6HTbVU1oSFporsLMrRz6ZUUutCOrhIoz+kPA5OeGM8x2hhUZ5ABzmUEW
- YElA5FrWq7hTYsDnCh5O3d0dJrbY1pfFVL8gyN60rpKIt3bKFhPS7gsekskk7fFSKKt7a4eK701
- y3rb+VPw6b2SKL8S+VVvo01wi6I2tDt+2AKb8+BsOmoHGrCaxHObGnV3fY7zp7Jzmbvw9AmZ39l
- XfzMVMgbM8eCvhkfJaA==
-X-Authority-Analysis: v=2.4 cv=XKel2ghE c=1 sm=1 tr=0 ts=6aa7d92b cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=OuZLqq7tAAAA:8 a=EUspDBNiAAAA:8 a=OvtQcJRYg_U4C0nSOkMA:9 a=QEXdDO2ut3YA:10
- a=bTQJ7kPSJx9SKPbeHEYW:22 a=AKGiAy9iJ-JzxKVHQNES:22
-X-Proofpoint-GUID: bjWn8px-QKi3Us2zXb9-mwAJENeY6Ur3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-14_03,2026-09-13_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 adultscore=0 spamscore=0 bulkscore=0 phishscore=0
- priorityscore=1501 impostorscore=0 malwarescore=0 clxscore=1015
- lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
- definitions=main-2609140161
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.15-dev-18f8f
+Content-Transfer-Encoding: 8bit
 
-On 9/12/26 10:39 AM, Muzaffer Kadir via B4 Relay wrote:
-> From: Muzaffer Kadir <muzafferkadir@mainlining.org>
-> 
-> MSM8952 uses Adreno 405 and predates ubwc just like MSM8939.
-> 
-> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
-> ---
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+ACS redirect controls choose between peer and upstream routes only at the
+path divergence. Applying them below that point rejects valid nested
+topologies because traffic already has only an upstream route.
 
-Konrad
+Evaluate Request controls on the client-side divergence port and Completion
+Redirect on the provider-side port and reject an unreadable ACS Control
+register.
+
+Fixes: 52916982af48 ("PCI/P2PDMA: Support peer-to-peer memory")
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ drivers/pci/p2pdma.c       | 101 +++++++++++++++++++++++++++++----------------
+ include/linux/pci-p2pdma.h |   8 ++--
+ 2 files changed, 70 insertions(+), 39 deletions(-)
+
+diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+index 6da68ec99601..43219a67aaf6 100644
+--- a/drivers/pci/p2pdma.c
++++ b/drivers/pci/p2pdma.c
+@@ -516,6 +516,7 @@ static struct pci_dev *find_parent_pci_dev(struct device *dev)
+ }
+ 
+ enum pci_acs_p2pdma_state {
++	PCI_ACS_P2PDMA_NOT_SUPPORTED,
+ 	PCI_ACS_P2PDMA_DIRECT,
+ 	PCI_ACS_P2PDMA_REDIRECT,
+ };
+@@ -753,13 +754,13 @@ static unsigned long map_types_idx(struct pci_dev *client)
+  * then to Device B. The mapping type returned depends on the ACS
+  * redirection setting of the ports along the path.
+  *
+- * The client initiates Requests to provider memory. Check Request Redirect
+- * on the client path and Completion Redirect for read Completions on the
+- * provider path.
++ * The client initiates Requests to provider memory. At the path divergence,
++ * check Request Redirect and Egress Control on the client-side port, and
++ * Completion Redirect for read Completions on the provider-side port.
+  *
+- * If ACS redirect is set on any port in the path, traffic between the
+- * devices will go through the host bridge, so return
+- * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE; otherwise return
++ * If ACS redirects traffic at either divergence port, return
++ * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE. If the ACS Control register cannot be
++ * read, return PCI_P2PDMA_MAP_NOT_SUPPORTED. Otherwise, return
+  * PCI_P2PDMA_MAP_BUS_ADDR.
+  *
+  * Any two devices that have a data path that goes through the host bridge
+@@ -773,10 +774,13 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 		int *dist, bool verbose)
+ {
+ 	enum pci_p2pdma_map_type map_type = PCI_P2PDMA_MAP_THRU_HOST_BRIDGE;
++	enum pci_acs_p2pdma_state state = PCI_ACS_P2PDMA_NOT_SUPPORTED;
+ 	struct pci_dev *a = provider, *b = client, *bb;
++	struct pci_dev *a_child = NULL, *b_child = NULL;
++	struct pci_dev *acs_unreadable = NULL;
+ 	struct pci_p2pdma *p2pdma;
+ 	struct seq_buf acs_list;
+-	int acs_cnt = 0;
++	int acs_redirect_cnt = 0;
+ 	int dist_a = 0;
+ 	int dist_b = 0;
+ 	char buf[128];
+@@ -791,51 +795,67 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 	 */
+ 	while (a) {
+ 		dist_b = 0;
+-
+-		if (!pci_acs_p2pdma_ctrl(a, &ctrl) ||
+-		    pci_acs_p2pdma_completion(ctrl) ==
+-			    PCI_ACS_P2PDMA_REDIRECT) {
+-			seq_buf_print_bus_devfn(&acs_list, a);
+-			acs_cnt++;
+-		}
+-
++		b_child = NULL;
+ 		bb = b;
+ 
+ 		while (bb) {
+ 			if (a == bb)
+-				goto check_b_path_acs;
++				goto check_paths_acs;
+ 
++			b_child = bb;
+ 			bb = pci_upstream_bridge(bb);
+ 			dist_b++;
+ 		}
+ 
++		a_child = a;
+ 		a = pci_upstream_bridge(a);
+ 		dist_a++;
+ 	}
+ 
++	/*
++	 * The paths share no upstream bridge, so there is no direct path for
++	 * ACS to gate: PCI_P2PDMA_MAP_BUS_ADDR is not reachable here and the
++	 * request can only get to the peer through the host bridge.
++	 */
+ 	*dist = dist_a + dist_b;
+ 	goto map_through_host_bridge;
+ 
+-check_b_path_acs:
+-	bb = b;
+-
+-	while (bb) {
+-		if (a == bb)
+-			break;
++check_paths_acs:
++	*dist = dist_a + dist_b;
+ 
+-		if (!pci_acs_p2pdma_ctrl(bb, &ctrl) ||
+-		    pci_acs_p2pdma_request(ctrl) ==
+-			    PCI_ACS_P2PDMA_REDIRECT) {
+-			seq_buf_print_bus_devfn(&acs_list, bb);
+-			acs_cnt++;
++	/*
++	 * ACS P2P routing controls apply where a TLP can route toward the peer
++	 * or upstream. Below that divergence, its only route toward the other
++	 * branch is upstream, so redirect controls do not affect the path.
++	 */
++	if (a_child && b_child) {
++		if (pci_acs_p2pdma_ctrl(a_child, &ctrl))
++			state = pci_acs_p2pdma_completion(ctrl);
++		if (state != PCI_ACS_P2PDMA_DIRECT) {
++			seq_buf_print_bus_devfn(&acs_list, a_child);
++			if (state == PCI_ACS_P2PDMA_REDIRECT)
++				acs_redirect_cnt++;
++			else if (!acs_unreadable)
++				acs_unreadable = a_child;
+ 		}
+ 
+-		bb = pci_upstream_bridge(bb);
++		state = PCI_ACS_P2PDMA_NOT_SUPPORTED;
++		if (pci_acs_p2pdma_ctrl(b_child, &ctrl))
++			state = pci_acs_p2pdma_request(ctrl);
++		if (state != PCI_ACS_P2PDMA_DIRECT) {
++			seq_buf_print_bus_devfn(&acs_list, b_child);
++			if (state == PCI_ACS_P2PDMA_REDIRECT)
++				acs_redirect_cnt++;
++			else if (!acs_unreadable)
++				acs_unreadable = b_child;
++		}
+ 	}
+ 
+-	*dist = dist_a + dist_b;
+-
+-	if (!acs_cnt) {
++	/*
++	 * Below a shared upstream bridge, a path whose divergence ports do not
++	 * redirect routes the request directly.
++	 */
++	if (!acs_unreadable && !acs_redirect_cnt) {
+ 		map_type = PCI_P2PDMA_MAP_BUS_ADDR;
+ 		goto done;
+ 	}
+@@ -844,10 +864,21 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 		/* Drop the final semicolon; the list is not empty here. */
+ 		if (!seq_buf_has_overflowed(&acs_list))
+ 			acs_list.buffer[acs_list.len - 1] = '\0';
+-		pci_warn(client, "ACS redirect is set between the client and provider (%s)\n",
+-			 pci_name(provider));
+-		pci_warn(client, "to disable ACS redirect for this path, add the kernel parameter: pci=disable_acs_redir=%s\n",
+-			 seq_buf_str(&acs_list));
++		if (acs_unreadable)
++			pci_warn(client, "ACS Control is unreadable for provider %s at %s\n",
++				 pci_name(provider), pci_name(acs_unreadable));
++		else {
++			pci_warn(client, "ACS redirect is set between the client and provider (%s)\n",
++				 pci_name(provider));
++			pci_warn(client, "to disable ACS controls for this path, add the kernel parameter: pci=disable_acs_redir=%s\n",
++				 seq_buf_str(&acs_list));
++		}
++	}
++
++	/* An unreadable control does not establish an upstream redirect. */
++	if (acs_unreadable) {
++		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
++		goto done;
+ 	}
+ 
+ map_through_host_bridge:
+diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
+index 873de20a2247..dd17501ba1b6 100644
+--- a/include/linux/pci-p2pdma.h
++++ b/include/linux/pci-p2pdma.h
+@@ -42,10 +42,10 @@ enum pci_p2pdma_map_type {
+ 	PCI_P2PDMA_MAP_NONE,
+ 
+ 	/*
+-	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
+-	 * traverse the host bridge and the host bridge is not in the
+-	 * allowlist. DMA Mapping routines should return an error when
+-	 * this is returned.
++	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates no safe mapping is available,
++	 * for example because ACS blocks the direct path or the required host
++	 * bridge is not in the allowlist. DMA Mapping routines should return an
++	 * error when this is returned.
+ 	 */
+ 	PCI_P2PDMA_MAP_NOT_SUPPORTED,
+ 
+
+-- 
+2.55.0
+
