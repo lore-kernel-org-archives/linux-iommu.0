@@ -1,121 +1,218 @@
-Received: from mail-pj2-f1.google.com (mail-pj2-f1.google.com [74.125.227.129])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE843CB8EF
-	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 12:49:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.129
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175663A9622;
+	Tue, 15 Sep 2026 12:58:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789476589; cv=none; b=dw54ruDQf4+n4uPvaP07Dn8rYPHvQgJ96y/+PiSSsujZiwA6uxXEGIRcQvMiO6MoxnhAs5qZ6zCwsddhPEyHv4FVCqfdIHWwD3HJrZ570AkesE/7egpPusVGG+1oBL/GhkCinMitr1ppcqQ9G6V/CQpl05BYezCHpbqzTvCHaGQ=
+	t=1789477096; cv=none; b=P1xlnuTwx81HKEa4xBwdDANvCujnyD6S95YB/T2NBlIqke2C2a+YfINiwCeCKQFO+TK+C0UIvg8a2zgQAyZc5N3CqJfR1XlHaQTIWwEoxqKoVyEyYK3j1hUh8p0A3CW3saB0lc0QcyeoFhmAIfG8GCT5v8uVSrGhr602EnCK1pU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789476589; c=relaxed/simple;
-	bh=ui4ICGb/kqsSx5sis20c9sxB7gn9IT8brWRsdIH3KRA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eBY+VJzFnyyu43psQUSLME8R8fZGjlmoNdSwsVNLOzzI7hffYdeJiaKOrnh1727iiVyB/2bo1GZaqJrQVSlKRLzfGw0YX0yAecBA2mkWSQFHg0+97DSFrUMPtzQIwuTetuaHq/Oapr/Bosvwm/Q2PUdjP0YorSn1ugQ2OmTevLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VyFM3y+m; arc=none smtp.client-ip=74.125.227.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789477096; c=relaxed/simple;
+	bh=P002CZDa1g32upMI8F/p03n30wWNyTPTUS/pn4g4o2A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ScDjWYNd0MdkE7xRYpX1mho8MGD+5u2r0M1zOdYQrgav+1MUFa8+QiSxpj5nzePJQ25VEdzJPILtkLUDEmjvNQYBJYF0uQOKrrV28gS9bF2IRQng/wINySUwR/cHPFimmkP3BoLlUPfafW3a4DXdJbEYv08wTNZZ259KwDafzEE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=b1b1sx4T; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VyFM3y+m"
-Received: by mail-pj2-f1.google.com with SMTP id d9443c01a7336-2dae660f31bso31695215ad.1
-        for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 05:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789476587; x=1790081387; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mP8qopDle1Sc4k8F6w5GND/XUp1RUEWcrZG95tdjUPs=;
-        b=VyFM3y+m5eNWMXZwTy15+YeTbFtPZ8Xfb25JdtENMO8I1OhunwXOUn/JCQzSrMCpCy
-         bdDUE6DM6fuJPDTUWEaNEerr0tgJXUFfypGwPVKscpb9+PWIhFv+nbHI7ubBFmk+MCJ7
-         bkqnPdgUWXU/McG3UdMiWgwEcM6m6aZzRssZh6To+Xc6YVHPbvK2rKqn5vLn1aTyzoxf
-         JlS7h33tQC70Tp5TLGhoE2SzTXvREEl2psz87ppViiTrxLXcaBGU6Zx/KwC8zESqREOa
-         YW/c4cn1QzzD8HdMOtdHvK9O0mHXn4sRH6VWVOGoAIZxz9hkFrv9P1GtayUnaLQN8dpU
-         TxWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789476587; x=1790081387;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=mP8qopDle1Sc4k8F6w5GND/XUp1RUEWcrZG95tdjUPs=;
-        b=JLx0VjdeJJ7jRATSZTzsbxOzhx6QK2x9jUSXtbt0iVab4H9cp+RCczjnaTykVSpH6z
-         PoNrpfCSGDdhiOiSfWhJHHw+QfskI/qiAIZN0qlXuoWWDAKnkKTPRaAUwLanozLLpsyx
-         rjEOlVFk/MgMNUbbECXqKps5bVCItfaMf7NYf0ubUEMi3LWfLDXlKilFhT+SY50FTZkl
-         eTfSs2vP1ma8957stjrw7bgFYtTCFe0vhEF9TffVYsMV4jXF46TokFwNMGTzDKENtzfv
-         UiEgav2EvKOTAuPaJlcjv37+z3KrHmX6KI4OOtnFzMN24IztUyKtAODdsa4mt4LfiKuR
-         q6vQ==
-X-Forwarded-Encrypted: i=1; AKwUvByhpWKBgAMVcZXAsd6UNE07b3b7/8IxtbPL/UXsoMECyzZoYjLdl5ITyQsm99JO6zJpQaQARQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++lWpturhOsxhBu+oIpKV8kMWObqgc3VO8VbByYtkPPs0Gn++fqw
-	vpBD7L2OL+Q5HKl22vFpkfMvSQtE4TXxrzkOp6ruff8PWHH44MVKGH7J
-X-Gm-Gg: AYBFou2CLkHr4LadnjJO40iw/o3ctWgsPTj2ZFeDelR6tJrO9Elr2W5kAxpBg4BygRh
-	sInADMUswINYgZu0bFZ8XFoyBnRdNYm2fcNXA9JaZ9I8f7bptRIT+WwCARqTaYUsuBF93uq53eL
-	ALVtWGTMwqwmLHFssVqklyJfwE0LARmnK6jOXTCobSlK73+Gj1nHctPqKq4hN58x0fauR49yFGg
-	TxzS+/Ifvl8m4oqKEmGuLBPZSjZlIKGIxl6STdFofuQ+BeugClhCnUqWu1hLWj7k7mtDMALCM6v
-	TMmn42Ipx3PSnLwL2Vkq1CK4UDyLX/FOhTLhemm2XOxQkg4Qhrnie9OgSVM16UFl0bflfbbCbKl
-	Ed16c8nEV0syBm7zHmEElNyQoNpUc+VUNAy/FaYOekCcVmFX4PM+ECdTRuIHTUrBJQY1M8AMlFX
-	0MS45y7nI4kNerw6zd3/EnwMsmxKasiSoQ5nuTHjsZhRMj4syAl47+A4NOY+rbkTns5XAN6BUU7
-	uonx1A=
-X-Received: by 2002:a17:903:1a0b:b0:2d8:d4cc:be64 with SMTP id d9443c01a7336-2dd6c7134b4mr167097285ad.17.1789476587316;
-        Tue, 15 Sep 2026 05:49:47 -0700 (PDT)
-Received: from [10.125.112.20] ([122.11.210.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2dd6f8ebbdfsm26424855ad.38.2026.09.15.05.49.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Sep 2026 05:49:46 -0700 (PDT)
-Message-ID: <86a09d26-2de8-4590-b135-31564e2c7049@gmail.com>
-Date: Tue, 15 Sep 2026 20:49:32 +0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="b1b1sx4T"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68F9hMi42675157;
+	Tue, 15 Sep 2026 12:58:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=UbKFa6dG5UBkDfq3ndVqVEPf
+	2wDCJCG6++eqJMrwxIs=; b=b1b1sx4T/TbvEJ6t0UPMYxeQD8KFltkntWoh9Foh
+	sX05R8XrcnvOkQUpwGfi3jKxC6JdJDOZidBhng2WQ4fd0K9PgqnrfHRclABUMPTU
+	mFvzMDvu2xB1JWsd8DVY82NRYAhOWt0IySJMX1y9cBn6lkUVCO6kn7aXngyl4K4J
+	1I++lyboZLSOwtNPl3nMUR9k33K0PpfzsxTrVVnatVdVeZrLn7KmGIK0BdmqZw0C
+	UXugNJZ+zR2rLz/CJ70pN8bjkAyNr4foVlrCnmKSSXY3zGfO3RqeqjZw3BUyfe8P
+	CB5u1KuFSntk5RVB8QXIZ3i1zcOuuYlLy8OQebJYFGOVQQ==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gpye71xbr-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Tue, 15 Sep 2026 12:58:03 +0000 (GMT)
+Received: from pps.filterd (apblrppmta01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 68FCvx4w2370413;
+	Tue, 15 Sep 2026 12:57:59 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-bibekkum-hyd.qualcomm.com [10.147.243.199])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 68FCvxoC2370407
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Tue, 15 Sep 2026 12:57:59 +0000 (GMT)
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4253010)
+	id 99CB35E3; Tue, 15 Sep 2026 18:27:58 +0530 (+0530)
+Date: Tue, 15 Sep 2026 18:27:58 +0530
+From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: arm-smmu-qcom: Skip fault-info reads when
+ suspended
+Message-ID: <20260915125758.ekt323jhwsiis6bp@hu-bibekkum-hyd.qualcomm.com>
+References: <20260912-priv_call_runtime_handlers-v1-1-fc0c3a17523f@oss.qualcomm.com>
+ <fe22fb3d-77dd-4b34-9dd8-aafe11f36988@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 01/10] mm: memblock: add missing HugeTLB flag name
-To: Mike Rapoport <rppt@kernel.org>
-Cc: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
- pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org,
- baoquan.he@linux.dev, pasha.tatashin@soleen.com, pratyush@kernel.org,
- m.szyprowski@samsung.com, mark.rutland@arm.com, kernel@xen0n.name,
- alex@ghiti.fr, hpa@zytor.com, ruirui.yang@linux.dev, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
- devicetree@vger.kernel.org, kexec@lists.infradead.org, linux-mm@kvack.org,
- iommu@lists.linux.dev
-References: <20260902073116.802752-1-chenwandun1@gmail.com>
- <20260902073116.802752-2-chenwandun1@gmail.com>
- <178936321614.3691424.10386784926753862087.b4-review@b4>
-Content-Language: en-US
-From: Wandun <chenwandun1@gmail.com>
-In-Reply-To: <178936321614.3691424.10386784926753862087.b4-review@b4>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <fe22fb3d-77dd-4b34-9dd8-aafe11f36988@arm.com>
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE1MDE4NyBTYWx0ZWRfX4copq2whpTUq
+ skDCKOJ5ityBv84+tFSxUzk2CR+tK+qHdrtB6k0lx91khZ4Z9uMy8McIqXflmCjgJayvto0MpBm
+ Zyib+wI3RfFaHFtNWmgtNkTzBrFbx4mHMaWr/uLxIL7TTsTyF9Hmjva0v5pufxjgNV/JGGXdsqt
+ gQiQzd+SAT+7EYeJEABGEym5/PtqxprIbj6hgxzBlnBi/HxRaRAKeGrXoYf7B/iZfWpdroeiLZu
+ 3UrBqkNWO5Q3/A6Pk9M2cpZ3Erp/ePfjf5sbu5qxAcgLMD4zMlRqRQRZ5TnldbH5U2HLtZHBtlg
+ G9FVblkFKAb+otRGHhx2xLCTe5Fgjj/wVgVscsBcYFR5fAkikNcloAdbQCM4UDeTnoK1AHRldaH
+ XNN3bslFaXIWZ8tk/Wlx1mk1tTm8kan6K/W8WHiWUab8H7YX2wTSwxPfXTdg1KXttqs46muATP3
+ oyuleQZizSupEUnmOdA==
+X-Proofpoint-GUID: wFe0_PrRhd-FsqBF57E34UOXZmZzEjYQ
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE1MDE4NyBTYWx0ZWRfXyzAZkhIst5QZ
+ mXrwxcdX/JbVpeExZJANiduJrbBL4TS2t4FueVFTNA4Hgfj13craL3xeU661aCAY7o5Qfiaqalq
+ JetUvJz3tSoijFwYYvrQ4HBMdcYLyaM=
+X-Authority-Analysis: v=2.4 cv=fck4WEQF c=1 sm=1 tr=0 ts=6aa940db cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=kj9zAlcOel0A:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22 a=VwQbUJbxAAAA:8
+ a=EUspDBNiAAAA:8 a=NEAV23lmAAAA:8 a=WfeKVc-BsYg2EYeYhGIA:9 a=CjuIK1q_8ugA:10
+X-Proofpoint-ORIG-GUID: wFe0_PrRhd-FsqBF57E34UOXZmZzEjYQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-15_03,2026-09-14_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 suspectscore=0 bulkscore=0 malwarescore=0 phishscore=0
+ spamscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609150187
 
-
-
-On 9/14/26 13:20, Mike Rapoport wrote:
-> Hi,
-> 
->> Commit 7d163a75f821 ("memblock: make HugeTLB bootmem allocation work
->> with KHO") added MEMBLOCK_RSRV_HUGETLB but did not add the corresponding
->> entry to flagname[]. As a result, memblock debugfs cannot report the
->> flag by name.
+On Sep 14, Robin Murphy wrote:
+>On 11/09/2026 11:25 pm, Bibek Kumar Patro wrote:
+>>qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
+>>holding a runtime PM reference. A fault is raised while the SMMU is
+>>active, but the GPU may drop its power vote before the threaded fault
+>>handler reaches the callback, allowing the SMMU to runtime suspend.
 >>
->> Add the missing RSV_HUGETLB entry.
+>>Accessing the SMMU registers after suspend has started is unsafe and
+>>may cause subsequent register accesses during runtime resume to fail
+>>with a NoC error and an asynchronous SError.
+>
+>But hang on, if I'm following the code correctly, the callchain would be:
+>
+>arm_smmu_context_fault
+>  report_iommu_fault
+>    msm_gpu_fault_handler
+>     qcom_adreno_smmu_get_fault_info
+>
+>and from here we still need to return to arm_smmu_context_fault() to 
+>clear the FSR, so surely that still has the same problem in itself?
+>
+
+Ah, yes this path also should have the same problem for GPU smmu.
+But I am carrying [1] in my workspace [2] for testing currently.
+So haven't encountered the same yet. We might need to address [1]
+also as part of this thread. wdyt?
+
+[1]: https://lore.kernel.org/all/20260313-smmu-rpm-v2-1-8c2236b402b0@oss.qualcomm.com/
+[2]: https://github.com/qualcomm-linux/kernel/blame/aff7542c319ede2037eeee316f20c2429062c08a/drivers/iommu/arm/arm-smmu/arm-smmu.c#L500
+
+Thanks & regards,
+Bibek
+
+>Thanks,
+>Robin.
+>
+>>Use pm_runtime_get_if_active() to keep the SMMU active while collecting
+>>the fault information, and skip the register reads if suspend has
+>>already started.
 >>
->> Fixes: 7d163a75f821 ("memblock: make HugeTLB bootmem allocation work with KHO")
->> Signed-off-by: Meijing Zhao <zhaomeijing@lixiang.com>
->> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
->> Link: https://lore.kernel.org/lkml/20260821020910.3428585-2-zhaomeijing100@gmail.com/
-> 
-> Can you please send this as a separate patch, I'll pick it to the
-> memblock tree.
-
-A separate patch has been sent.
-https://lore.kernel.org/lkml/20260915124641.2498280-1-chenwandun1@gmail.com/
-
-Best regards,
-Wandun
-> 
-
+>>Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>---
+>>qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
+>>holding a runtime PM reference. A fault is raised while the SMMU is
+>>active, but the GPU may drop its power vote before the threaded fault
+>>handler reaches the callback, allowing the SMMU to runtime suspend.
+>>
+>>The failure sequence:
+>>
+>>   GPU context fault
+>>           |
+>>           v
+>>   qcom_adreno_smmu_get_fault_info()
+>>           |
+>>           | GPU drops its power vote
+>>           | SMMU starts runtime suspend
+>>           v
+>>   SMMU register access without an active RPM reference
+>>           |
+>>           v
+>>   later Adreno PRR private-interface operation
+>>           |
+>>           v
+>>   pm_runtime_resume_and_get()
+>>           |
+>>           v
+>>   arm_smmu_runtime_resume()
+>>           |
+>>           v
+>>   arm_smmu_device_reset()
+>>           |
+>>           v
+>>   SMMU register access
+>>           |
+>>           v
+>>   NoC error / asynchronous SError
+>>
+>>Use pm_runtime_get_if_active() to keep the SMMU active while collecting
+>>the fault information. If suspend has already started, skip the register
+>>reads instead of accessing the SMMU while it is being powered down.
+>>---
+>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 14 ++++++++++++++
+>>  1 file changed, 14 insertions(+)
+>>
+>>diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>index 795e8ec7e8fa..b1787a4ba0d3 100644
+>>--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>@@ -129,6 +129,18 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
+>>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>+	/*
+>>+	 * A fault can only fire while the SMMU is active (GPU is issuing
+>>+	 * transactions). Use get_if_active so that if by a rare race the
+>>+	 * device has already suspended, we skip the register reads rather
+>>+	 * than triggering a cold resume which would call device_reset and
+>>+	 * destroy the fault state we are trying to capture.
+>>+	 */
+>>+	if (pm_runtime_get_if_active(smmu->dev) <= 0) {
+>>+		dev_warn(smmu->dev, "get_fault_info: device not active, skipping\n");
+>>+		return;
+>>+	}
+>>+
+>>  	info->fsr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSR);
+>>  	info->fsynr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR0);
+>>  	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
+>>@@ -136,6 +148,8 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
+>>  	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
+>>  	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
+>>  	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
+>>+
+>>+	pm_runtime_put_autosuspend(smmu->dev);
+>>  }
+>>  static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
+>>
+>>---
+>>base-commit: f61bb3920fa8cb44b84d32e0fa9fbaab4eb00c80
+>>change-id: 20260912-priv_call_runtime_handlers-7f3547544040
+>>
+>>Best regards,
+>>--
+>>Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>
+>
