@@ -1,30 +1,30 @@
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D6E4078DC
-	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 03:28:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B498140926C
+	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 03:28:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.113
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789442928; cv=none; b=PUqFebY757FCZBl9bJpc3X/7s23J9OI3CIfe1UeIALThJq+oAX7Q2UePGYoziik3E+aaGzF2rVW5kcnSnWAAuNdUwc8CZ3qX5MnSZ+8Qz24jW7AfPTdCOyjubGvMV5w/6y92a4W6dh3IP47gYZxgjW6qR2hrgih6qhurdsf6dhs=
+	t=1789442930; cv=none; b=K8xCyrzDb/X71PjwAUDkrJjYEFcWXUGzthvh9m19JQoeH5u0P0d8A5RVl20FrMxtLVuwPfGaMTc057NsX91KdTkhMKNFnuK8lBJY4dF4ZCWf791LIFchbP+8eYguRSqCkv/NSOXX5wt5Bl89PnPXxxmV22iOD41bczXfoBKLszQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789442928; c=relaxed/simple;
-	bh=2vbFkOEkqz2GIPIkmdLsdHq26yJYb34LTREDE6fVz5I=;
+	s=arc-20240116; t=1789442930; c=relaxed/simple;
+	bh=TJtwwmOes+WMqZV10KyeFqw49c64kqL7395J+MxsNMo=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ZJCwlq5KU+Aq4Xa/dPsw53q8SkYV48VSvIw87aE21LFDhZFjpFFOpW4MtzQLHeuInki7Q83M7+gKuX914A9i7Khay8a36JlTHjEmqphuVnQV8uuDBd8sPh++BmB6PWsW2X4WIVXQSJVMrgob10VresxjigcYKbAP5M2XzQ0uLp0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=vcyA5fzD; arc=none smtp.client-ip=115.124.30.132
+	 MIME-Version; b=U47r6V2ccPRsXxNPQzGzuaNmWgUw5UFmXOKA1gd2lONYUJQMk6+xBgQH+A0mR5VLgCka4UrYCu887J5avPBmb6sk4D4GNdaP9uZNcyl5pM6ZPUkV901av9J+fzelemtZFgmUWBF467gZOCsP0cirhT52PvrMVearQ7H1uzMP2kw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=w9hUZ+RP; arc=none smtp.client-ip=115.124.30.113
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="vcyA5fzD"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="w9hUZ+RP"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1789442924; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=iJuM/I3QzzZ29IqRau9ZBf+7q6zMX3YoOle6ur78Bj0=;
-	b=vcyA5fzDffMje1pUhZT/do+XPpr7So1dKAo8OmPthPnXWxfh+rdJjX7LYV/x78hthpNa8soG0QM9az8JH2Fz1I+ilkVYxJy47u+WcEkwO/m6qitGL8Stz8YdxLIJFc0Kk5gSq9Th8nAUSOYNzvgZ7h/ewhGS9PhMl82AnViXHFk=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=26;SR=0;TI=SMTPD_---0XB.uvQP_1789442921;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XB.uvQP_1789442921 cluster:ay36)
+	t=1789442926; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=RWu/puVJ24xC3wGWoddID7UrDVPs6J4eX8hoo+uZKZs=;
+	b=w9hUZ+RP6JVokGsoTihgCUs1F1zTVHwxdglwYgpZoQcyz7l4m0df4EvX3ug9K4Iusd83GmTFFgW3JscXv4tBV+kERKWgf9uAFC3PCLZSHtBI0265qyjkPToyj2w4eq9L9BT0tEP3jglqhUKR1Akv9Ib335COz78KPaLQRuvHlrc=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XB.uvQz_1789442923;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XB.uvQz_1789442923 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 15 Sep 2026 11:28:42 +0800
+          Tue, 15 Sep 2026 11:28:44 +0800
 From: fangyu.yu@linux.alibaba.com
 To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
@@ -51,10 +51,12 @@ Cc: fangyu.yu@linux.alibaba.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	linux-riscv@lists.infradead.org,
-	kvm-riscv@lists.infradead.org
-Subject: [RFC PATCH v4 05/10] iommu/riscv: support GSCID and GVMA invalidation command
-Date: Tue, 15 Sep 2026 11:28:24 +0800
-Message-Id: <20260915032828.11250-6-fangyu.yu@linux.alibaba.com>
+	kvm-riscv@lists.infradead.org,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Andrew Jones <ajones@ventanamicro.com>
+Subject: [RFC PATCH v4 06/10] RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
+Date: Tue, 15 Sep 2026 11:28:25 +0800
+Message-Id: <20260915032828.11250-7-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 In-Reply-To: <20260915032828.11250-1-fangyu.yu@linux.alibaba.com>
 References: <20260915032828.11250-1-fangyu.yu@linux.alibaba.com>
@@ -66,178 +68,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Zong Li <zong.li@sifive.com>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
 
-This patch adds a ID Allocator for GSCID and a wrap for setting up
-GSCID in IOTLB invalidation command.
+Enable KVM/VFIO support on RISC-V architecture.
 
-Set up iohgatp to enable second stage table and flush stage-2 table if
-the GSCID is set.
-
-The GSCID of domain should be freed when release domain. GSCID will be
-allocated for parent domain in nested IOMMU process.
-
-Signed-off-by: Zong Li <zong.li@sifive.com>
+Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
 Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 ---
- drivers/iommu/riscv/iommu-bits.h |  7 ++++
- drivers/iommu/riscv/iommu.c      | 62 ++++++++++++++++++++++++++------
- 2 files changed, 58 insertions(+), 11 deletions(-)
+ arch/riscv/kvm/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-index f2ef9bd3cde9..65d1f2250011 100644
---- a/drivers/iommu/riscv/iommu-bits.h
-+++ b/drivers/iommu/riscv/iommu-bits.h
-@@ -720,6 +720,13 @@ static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command *cmd)
- 	cmd->dword1 = 0;
- }
- 
-+static inline void riscv_iommu_cmd_inval_gvma(struct riscv_iommu_command *cmd)
-+{
-+	cmd->dword0 = FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_CMD_IOTINVAL_OPCODE) |
-+		      FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA);
-+	cmd->dword1 = 0;
-+}
-+
- static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
- 						  u64 addr)
- {
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index c5b6214ee672..99f05f1db35b 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -48,6 +48,10 @@
- static DEFINE_IDA(riscv_iommu_pscids);
- #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
- 
-+/* IOMMU GSCID allocation namespace. */
-+static DEFINE_IDA(riscv_iommu_gscids);
-+#define RISCV_IOMMU_MAX_GSCID		(BIT(16) - 1)
-+
- /* Device resource-managed allocations */
- struct riscv_iommu_devres {
- 	void *addr;
-@@ -819,6 +823,7 @@ struct riscv_iommu_domain {
- 	struct list_head bonds;
- 	spinlock_t lock;		/* protect bonds list updates. */
- 	int pscid;
-+	int gscid;
- };
- PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
- 
-@@ -981,7 +986,7 @@ static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
- }
- 
- static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
--					  int pscid,
-+					  int pscid, int gscid,
- 					  struct riscv_iommu_tlbi *tlbi)
- {
- 	bool use_nl = tlbi->non_leaf &&
-@@ -989,8 +994,13 @@ static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
- 	struct riscv_iommu_command cmd;
- 	unsigned int i;
- 
--	riscv_iommu_cmd_inval_vma(&cmd);
--	riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
-+	if (gscid) {
-+		riscv_iommu_cmd_inval_gvma(&cmd);
-+		riscv_iommu_cmd_inval_set_gscid(&cmd, gscid);
-+	} else {
-+		riscv_iommu_cmd_inval_vma(&cmd);
-+		riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
-+	}
- 
- 	/*
- 	 * If non-leaf entries were changed and the IOMMU doesn't
-@@ -1074,7 +1084,7 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 		if (iommu == prev)
- 			continue;
- 
--		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, &tlbi);
-+		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, domain->gscid, &tlbi);
- 		prev = iommu;
- 	}
- 
-@@ -1208,6 +1218,7 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
- 
- 		WRITE_ONCE(dc->fsc, new_dc->fsc);
- 		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
-+		WRITE_ONCE(dc->iohgatp, new_dc->iohgatp);
- 		/* Update device context, write TC.V as the last step. */
- 		dma_wmb();
- 		WRITE_ONCE(dc->tc, tc);
-@@ -1258,16 +1269,19 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
- 
- 	WARN_ON(!list_empty(&domain->bonds));
- 
--	if ((int)domain->pscid > 0)
-+	if (domain->pscid > 0)
- 		ida_free(&riscv_iommu_pscids, domain->pscid);
-+	if (domain->gscid > 0)
-+		ida_free(&riscv_iommu_gscids, domain->gscid);
- 
- 	pt_iommu_deinit(&domain->riscvpt.iommu);
- 	kfree(domain);
- }
- 
--static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_mode)
-+static bool riscv_iommu_fsc_supported(struct riscv_iommu_device *iommu,
-+				      int mode)
- {
--	switch (pgd_mode) {
-+	switch (mode) {
- 	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39:
- 		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39;
- 
-@@ -1280,6 +1294,22 @@ static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_m
- 	return false;
- }
- 
-+static bool riscv_iommu_iohgatp_supported(struct riscv_iommu_device *iommu,
-+					  int mode)
-+{
-+	switch (mode) {
-+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39X4;
-+
-+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48X4;
-+
-+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57X4;
-+	}
-+	return false;
-+}
-+
- static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
- 					    struct device *dev,
- 					    struct iommu_domain *old)
-@@ -1292,11 +1322,21 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
- 
- 	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
- 
--	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
--		return -ENODEV;
-+	if (domain->gscid) {
-+		if (!riscv_iommu_iohgatp_supported(iommu, pt_info.iohgatp_mode))
-+			return -ENODEV;
-+
-+		dc.iohgatp =
-+			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
-+			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
-+			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
-+	} else {
-+		if (!riscv_iommu_fsc_supported(iommu, pt_info.fsc_iosatp_mode))
-+			return -ENODEV;
- 
--	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
--	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-+		dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
-+			 FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-+	}
- 	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
- 	     RISCV_IOMMU_PC_TA_V;
+diff --git a/arch/riscv/kvm/Kconfig b/arch/riscv/kvm/Kconfig
+index ec2cee0a39e0..54ee90f010ef 100644
+--- a/arch/riscv/kvm/Kconfig
++++ b/arch/riscv/kvm/Kconfig
+@@ -30,8 +30,10 @@ config KVM
+ 	select KVM_GENERIC_HARDWARE_ENABLING
+ 	select KVM_MMIO
+ 	select VIRT_XFER_TO_GUEST_WORK
++	select KVM_VFIO
+ 	select SCHED_INFO
+ 	select GUEST_PERF_EVENTS if PERF_EVENTS
++	select SRCU
+ 	help
+ 	  Support hosting virtualized guest machines.
  
 -- 
 2.50.1
