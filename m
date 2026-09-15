@@ -1,218 +1,226 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f8.google.com (mail-pj2-f8.google.com [74.125.227.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175663A9622;
-	Tue, 15 Sep 2026 12:58:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692FA3B71B0
+	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 13:01:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789477096; cv=none; b=P1xlnuTwx81HKEa4xBwdDANvCujnyD6S95YB/T2NBlIqke2C2a+YfINiwCeCKQFO+TK+C0UIvg8a2zgQAyZc5N3CqJfR1XlHaQTIWwEoxqKoVyEyYK3j1hUh8p0A3CW3saB0lc0QcyeoFhmAIfG8GCT5v8uVSrGhr602EnCK1pU=
+	t=1789477284; cv=none; b=uu0x/EHM3tztsXmilfFFvwLNDQNXO8S/vvknhPaWMy6Mp4HsXDT2nED9thp19Y+g2nmncdyiGk48QwtH57oKlDIV2JhTQJzCD5vnsMCJ+v4DwUfwEQOuj779Xci/YYQUNIKZz9cYbZirCK/AHklzMxSAjrJKUMleS64facdszD4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789477096; c=relaxed/simple;
-	bh=P002CZDa1g32upMI8F/p03n30wWNyTPTUS/pn4g4o2A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ScDjWYNd0MdkE7xRYpX1mho8MGD+5u2r0M1zOdYQrgav+1MUFa8+QiSxpj5nzePJQ25VEdzJPILtkLUDEmjvNQYBJYF0uQOKrrV28gS9bF2IRQng/wINySUwR/cHPFimmkP3BoLlUPfafW3a4DXdJbEYv08wTNZZ259KwDafzEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=b1b1sx4T; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1789477284; c=relaxed/simple;
+	bh=ELVDuyLraG4tCEzT09pv2uLB8CM6aiSV+ZaKG06n9sY=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=LV+irRdyEP8N2AH1sJk4Ak5WIdecZwsveYvK2drmqTryyzgZmOnmDB+V+ha1E8UM5fhm81fGJzGqTi90XoJZ+sxCbTRWCE/E6LdBij334FKrltMbSUwv3vEdveElOJg3HRqdJTtpgcNQLHlJI69+3y6P8Vs2FHcwwQHHzCJERIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JrBd/ghN; arc=none smtp.client-ip=74.125.227.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="b1b1sx4T"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68F9hMi42675157;
-	Tue, 15 Sep 2026 12:58:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=UbKFa6dG5UBkDfq3ndVqVEPf
-	2wDCJCG6++eqJMrwxIs=; b=b1b1sx4T/TbvEJ6t0UPMYxeQD8KFltkntWoh9Foh
-	sX05R8XrcnvOkQUpwGfi3jKxC6JdJDOZidBhng2WQ4fd0K9PgqnrfHRclABUMPTU
-	mFvzMDvu2xB1JWsd8DVY82NRYAhOWt0IySJMX1y9cBn6lkUVCO6kn7aXngyl4K4J
-	1I++lyboZLSOwtNPl3nMUR9k33K0PpfzsxTrVVnatVdVeZrLn7KmGIK0BdmqZw0C
-	UXugNJZ+zR2rLz/CJ70pN8bjkAyNr4foVlrCnmKSSXY3zGfO3RqeqjZw3BUyfe8P
-	CB5u1KuFSntk5RVB8QXIZ3i1zcOuuYlLy8OQebJYFGOVQQ==
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gpye71xbr-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Tue, 15 Sep 2026 12:58:03 +0000 (GMT)
-Received: from pps.filterd (apblrppmta01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 68FCvx4w2370413;
-	Tue, 15 Sep 2026 12:57:59 GMT
-Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-bibekkum-hyd.qualcomm.com [10.147.243.199])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 68FCvxoC2370407
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Tue, 15 Sep 2026 12:57:59 +0000 (GMT)
-Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4253010)
-	id 99CB35E3; Tue, 15 Sep 2026 18:27:58 +0530 (+0530)
-Date: Tue, 15 Sep 2026 18:27:58 +0530
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: arm-smmu-qcom: Skip fault-info reads when
- suspended
-Message-ID: <20260915125758.ekt323jhwsiis6bp@hu-bibekkum-hyd.qualcomm.com>
-References: <20260912-priv_call_runtime_handlers-v1-1-fc0c3a17523f@oss.qualcomm.com>
- <fe22fb3d-77dd-4b34-9dd8-aafe11f36988@arm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JrBd/ghN"
+Received: by mail-pj2-f8.google.com with SMTP id d9443c01a7336-2d8fcda61c8so20306155ad.1
+        for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 06:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789477282; x=1790082082; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=+F7E7Bq/M1FITHwdNffpUS733lAk0A+k2uxZSk0JCQc=;
+        b=JrBd/ghNZyUQvhdgp0120qaZ4vDklUIIP5F0Ht9PoDUidwOwrH3D0J1+iagr0+eZFZ
+         OpPu7pupAwLR1/LKlqmQe49UC35dP0XKklVzUfKiCz4733ai+wxStO06loQ+SeCxY3sH
+         5sRl2TZLP8/5lLfbMiXO6dFpSuTkAK8Mgttnxun8t0Ol+oK+7HQvWEIGGZQJV95BvSbp
+         jC0eXMvOOE5e5t6Qa37GSDriwD6ZtywDTIJCEs+Do0fruDHIhTYQlRkq8ytdQzLhe5Uw
+         YEEzrcZkDKHbCsSDGBlvQSMFEe1bAdh5GoJBpW7RtRnnf3adqv7yFo8OER/b56OdUbOL
+         24yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789477282; x=1790082082;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=+F7E7Bq/M1FITHwdNffpUS733lAk0A+k2uxZSk0JCQc=;
+        b=Xz9zbwHIfrNVlv77vlg55rDZm6INkgHFxecuJt88vOqGbCzQj2LtekqaDGS/f10Tl6
+         aPkBm3D3Sbz3vfaC9AcV/EWe98SvA+UhHM6cmOj8rhalbwMfBHdHDAOAbyqTLowLrO0l
+         9YdsZg1MNJwfZafN7xq9t/l70pT8BgXT7YSQFFmrHkRTMhVdSPF1InVfZ2UL4Y6TqJli
+         thh8nwrKTvNnlRrAyP+Cw7Zfkg8NbTUt9nnJb4z3tzATN9hvd70WbFq6z9Xvo0Nj2leH
+         +Jiq8pBuEvvOLpBYDup5tA7ZcX2X0E6Jy/lEucFSugbBAv/FQzsHzwgQbbVczctyxFHy
+         /reg==
+X-Forwarded-Encrypted: i=1; AKwUvBw9ULAKdkhVEGC7Qz42oKvO4IU5GCCJe03fHC16FUWtl3CsG9/1uGlDFs/lZgGQCawI/yslBA==@lists.linux.dev
+X-Gm-Message-State: AFuF++kmvp7t6bg3P9mI9s0X7S4kN0KBmXVKU4S4JWkBxDG/ut415uZB
+	PZNCe9ZJcXVkAI68EbuePFeLMb98QJr/eOJdNRYxGMgxHfVF1WG+MZBE
+X-Gm-Gg: AYBFou0ETQtLQru1UiqpWttHskBie//Z1UFUZOhZIlgZSqsgOLwuPuBcRfn0aYcghEg
+	JJJQJ24V+5qhJFpIfyNV6roEimGoS7wAnEP8jDHupnVFjNeKxrjxBnrCFZUOybC8j/HYvzwQLle
+	ZWjdU5YLJ9g3dokL4wmCBj/smjwQYOxwvfbWJ3/TVKcjie9KZQeDksFTKqVefmBHVsiwYY9GtlK
+	6169GCGvrkrWmKntJxdPANwI/zj5xdecf6TJUKW88jXuupfN3UxNRl7oqMnWiKBk+Vy+xuFpaq9
+	VTP6Li50VKb7/ObGdJBe7tIt4kpYqQ/fvU6hm+eQCXMitYeoGC1McR8gDps0dQ8R6mEAHmsIdEa
+	xrifm9fcyqrgjnk4sCeEUncvNHqD/+G3TuvovgbhOuyUIx122IkM68LQl4hx2U8lx59RsLcAM0y
+	r7kJQszL7OJeWtSyUudkM3xGAZVl4FstOA+VVTG167zUVaCdkfp++RfWBkNV31YxV3/+0+3qJAl
+	RdfzQ==
+X-Received: by 2002:a17:903:3d0d:b0:2d6:3c2f:6a4 with SMTP id d9443c01a7336-2dd6c6eb7a4mr138425825ad.13.1789477281468;
+        Tue, 15 Sep 2026 06:01:21 -0700 (PDT)
+Received: from [10.125.112.20] ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2dd2cfd87e5sm67187695ad.58.2026.09.15.06.01.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Sep 2026 06:01:20 -0700 (PDT)
+Message-ID: <13cfcd99-e420-478b-8ce8-06674727977d@gmail.com>
+Date: Tue, 15 Sep 2026 21:01:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <fe22fb3d-77dd-4b34-9dd8-aafe11f36988@arm.com>
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE1MDE4NyBTYWx0ZWRfX4copq2whpTUq
- skDCKOJ5ityBv84+tFSxUzk2CR+tK+qHdrtB6k0lx91khZ4Z9uMy8McIqXflmCjgJayvto0MpBm
- Zyib+wI3RfFaHFtNWmgtNkTzBrFbx4mHMaWr/uLxIL7TTsTyF9Hmjva0v5pufxjgNV/JGGXdsqt
- gQiQzd+SAT+7EYeJEABGEym5/PtqxprIbj6hgxzBlnBi/HxRaRAKeGrXoYf7B/iZfWpdroeiLZu
- 3UrBqkNWO5Q3/A6Pk9M2cpZ3Erp/ePfjf5sbu5qxAcgLMD4zMlRqRQRZ5TnldbH5U2HLtZHBtlg
- G9FVblkFKAb+otRGHhx2xLCTe5Fgjj/wVgVscsBcYFR5fAkikNcloAdbQCM4UDeTnoK1AHRldaH
- XNN3bslFaXIWZ8tk/Wlx1mk1tTm8kan6K/W8WHiWUab8H7YX2wTSwxPfXTdg1KXttqs46muATP3
- oyuleQZizSupEUnmOdA==
-X-Proofpoint-GUID: wFe0_PrRhd-FsqBF57E34UOXZmZzEjYQ
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE1MDE4NyBTYWx0ZWRfXyzAZkhIst5QZ
- mXrwxcdX/JbVpeExZJANiduJrbBL4TS2t4FueVFTNA4Hgfj13craL3xeU661aCAY7o5Qfiaqalq
- JetUvJz3tSoijFwYYvrQ4HBMdcYLyaM=
-X-Authority-Analysis: v=2.4 cv=fck4WEQF c=1 sm=1 tr=0 ts=6aa940db cx=c_pps
- a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=kj9zAlcOel0A:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22 a=VwQbUJbxAAAA:8
- a=EUspDBNiAAAA:8 a=NEAV23lmAAAA:8 a=WfeKVc-BsYg2EYeYhGIA:9 a=CjuIK1q_8ugA:10
-X-Proofpoint-ORIG-GUID: wFe0_PrRhd-FsqBF57E34UOXZmZzEjYQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-15_03,2026-09-14_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 suspectscore=0 bulkscore=0 malwarescore=0 phishscore=0
- spamscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609150187
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 00/10] kdump: reduce vmcore size and capture time
+From: Wandun <chenwandun1@gmail.com>
+To: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
+ pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+ robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org,
+ baoquan.he@linux.dev, rppt@kernel.org, pasha.tatashin@soleen.com,
+ pratyush@kernel.org, m.szyprowski@samsung.com
+Cc: mark.rutland@arm.com, kernel@xen0n.name, alex@ghiti.fr, hpa@zytor.com,
+ ruirui.yang@linux.dev, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+ devicetree@vger.kernel.org, kexec@lists.infradead.org, linux-mm@kvack.org,
+ iommu@lists.linux.dev
+References: <20260902073116.802752-1-chenwandun1@gmail.com>
+Content-Language: en-US
+In-Reply-To: <20260902073116.802752-1-chenwandun1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sep 14, Robin Murphy wrote:
->On 11/09/2026 11:25 pm, Bibek Kumar Patro wrote:
->>qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
->>holding a runtime PM reference. A fault is raised while the SMMU is
->>active, but the GPU may drop its power vote before the threaded fault
->>handler reaches the callback, allowing the SMMU to runtime suspend.
->>
->>Accessing the SMMU registers after suspend has started is unsafe and
->>may cause subsequent register accesses during runtime resume to fail
->>with a NoC error and an asynchronous SError.
->
->But hang on, if I'm following the code correctly, the callchain would be:
->
->arm_smmu_context_fault
->  report_iommu_fault
->    msm_gpu_fault_handler
->     qcom_adreno_smmu_get_fault_info
->
->and from here we still need to return to arm_smmu_context_fault() to 
->clear the FSR, so surely that still has the same problem in itself?
->
 
-Ah, yes this path also should have the same problem for GPU smmu.
-But I am carrying [1] in my workspace [2] for testing currently.
-So haven't encountered the same yet. We might need to address [1]
-also as part of this thread. wdyt?
 
-[1]: https://lore.kernel.org/all/20260313-smmu-rpm-v2-1-8c2236b402b0@oss.qualcomm.com/
-[2]: https://github.com/qualcomm-linux/kernel/blame/aff7542c319ede2037eeee316f20c2429062c08a/drivers/iommu/arm/arm-smmu/arm-smmu.c#L500
+On 9/2/26 15:31, Wandun Chen wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
+> 
+> On SoCs that carve out large firmware-owned reserved memory (GPU,
+> camera ISP, ...), kdump currently dumps those carveouts as part of
+> system RAM even though their contents are firmware state that is not
+> useful for kernel crash analysis.
+> 
+> This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
+> reserved memory on DT-based architectures (arm64, riscv, loongarch).
+> Reserved regions default are marked MEMBLOCK_NODUMP so kdump omits them;
+> reusable CMA regions are different because their pages are handed back
+> to the buddy allocator and may carry crash-relevant data.
+> 
+> ACPI systems already filter reserved memory out of the vmcore through
+> their existing path; only DT-based systems currently fail to filter these
+> regions, which is what this series addresses. The flag lives in memblock
+> itself rather than in a DT-only structure, so the mechanism is generic and
+> both ACPI and DT systems can benefit from it (suggested by Rob, thanks) [1].
+> 
+> Since the reserved memory regions are filtered out, the vmcore is
+> smaller in size and faster to produce. 
+> 
+> The series is based on linux-next and is organized as follows:
+> 
+> Patches 1-4: Preparation and bugfixes: fix the missing HugeTLB
+>              flagname, switch riscv crash_mem to memblock, fold the
+>              duplicated per-arch memblock walks into the weak
+>              defaults, and serialize crash header preparation against
+>              memory hotplug.
+> Patches 5-9: NODUMP infrastructure: switch crash_core to
+>              for_each_mem_region(), introduce the MEMBLOCK_NODUMP
+>              flag, add a dumpable flag to struct reserved_mem, and
+>              mark /reserved-memory and /memreserve/ entries with
+> 	     MEMBLOCK_NODUMP flag.
+> Patch 10:    Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
+>              header.
 
-Thanks & regards,
-Bibek
+Hi,
 
->Thanks,
->Robin.
->
->>Use pm_runtime_get_if_active() to keep the SMMU active while collecting
->>the fault information, and skip the register reads if suspend has
->>already started.
->>
->>Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->>---
->>qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
->>holding a runtime PM reference. A fault is raised while the SMMU is
->>active, but the GPU may drop its power vote before the threaded fault
->>handler reaches the callback, allowing the SMMU to runtime suspend.
->>
->>The failure sequence:
->>
->>   GPU context fault
->>           |
->>           v
->>   qcom_adreno_smmu_get_fault_info()
->>           |
->>           | GPU drops its power vote
->>           | SMMU starts runtime suspend
->>           v
->>   SMMU register access without an active RPM reference
->>           |
->>           v
->>   later Adreno PRR private-interface operation
->>           |
->>           v
->>   pm_runtime_resume_and_get()
->>           |
->>           v
->>   arm_smmu_runtime_resume()
->>           |
->>           v
->>   arm_smmu_device_reset()
->>           |
->>           v
->>   SMMU register access
->>           |
->>           v
->>   NoC error / asynchronous SError
->>
->>Use pm_runtime_get_if_active() to keep the SMMU active while collecting
->>the fault information. If suspend has already started, skip the register
->>reads instead of accessing the SMMU while it is being powered down.
->>---
->>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 14 ++++++++++++++
->>  1 file changed, 14 insertions(+)
->>
->>diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>index 795e8ec7e8fa..b1787a4ba0d3 100644
->>--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>@@ -129,6 +129,18 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
->>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->>+	/*
->>+	 * A fault can only fire while the SMMU is active (GPU is issuing
->>+	 * transactions). Use get_if_active so that if by a rare race the
->>+	 * device has already suspended, we skip the register reads rather
->>+	 * than triggering a cold resume which would call device_reset and
->>+	 * destroy the fault state we are trying to capture.
->>+	 */
->>+	if (pm_runtime_get_if_active(smmu->dev) <= 0) {
->>+		dev_warn(smmu->dev, "get_fault_info: device not active, skipping\n");
->>+		return;
->>+	}
->>+
->>  	info->fsr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSR);
->>  	info->fsynr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR0);
->>  	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
->>@@ -136,6 +148,8 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
->>  	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
->>  	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
->>  	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
->>+
->>+	pm_runtime_put_autosuspend(smmu->dev);
->>  }
->>  static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
->>
->>---
->>base-commit: f61bb3920fa8cb44b84d32e0fa9fbaab4eb00c80
->>change-id: 20260912-priv_call_runtime_handlers-7f3547544040
->>
->>Best regards,
->>--
->>Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->>
->
+Gentle ping on the remaining patches of this series.
+Patches 1, 7, 8 and 9 have been reviewed (thanks Mike and Marek);
+Still looking for review on patches 2-6 and 10.
+
+Would appreciate a look when you have a moment, happy to rework
+anything based on feedback.
+
+Best regards,
+Wanun
+
+> 
+> In v5, Sashiko found some pre-existing issues related to reserved-memory,
+> and has no dependency on this series, so these issues have been addressed
+> in a separate series [2].
+> 
+> v5 --> v6:
+> 1. Serialize crash header preparation against memory hotplug to avoid
+>    out-of-bounds or use-after-free issues.
+> 
+> 2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
+>    avoiding a panic from too few regions before resize is permitted.
+> 
+> 3. Reordered the patches, put pre-existing bugfixes earlier in the series.
+> 
+> 
+> v4 --> v5:
+> 1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
+>    (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
+>    DT-only struct reserved_mem.
+> 2. Switch the riscv vmcore elf header preparation to use memblock
+>    instead of the resource tree, aligning it with arm64 and loongarch,
+>    so riscv also can exclude reserved memory from vmcore.
+> 3. Deduplicate the vmcore elf header preparation: arm64, riscv and
+>    loongarch open-coded the same logic, so fold it into shared
+>     __weak defaults in crash_core.
+> 4.  Drop the v4 patch that saved /memreserve/ entries into the
+>     reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
+>     directly.
+> 
+> v3 --> v4:
+> 1. Rebase this series on v7.2-rc1.
+> 2. Add two cleanup patches (patch 02/03).
+> 3. Simplify patch 03 to avoid checking whether initial_boot_params is
+>    NULL multiple times, suggested by Rob.
+> 
+> v2 --> v3:
+> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
+> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
+> 3. Add some prepare patches.
+> 
+> v1 --> v2:
+> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+>    feedback [3], v2 drop that property and exclude reserve memory
+>    by default.
+> 2. Split some prepared patches from the original patches.
+> 3. Address coding-style comments on patch 5 from Rob.
+> 
+> [1] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
+> [2] https://lore.kernel.org/lkml/20260818092420.2859026-1-chenwandun1@gmail.com/
+> [3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+> 
+> Meijing Zhao (1):
+>   mm: memblock: add missing HugeTLB flag name
+> 
+> Wandun Chen (9):
+>   riscv: build crash_mem ranges from memblock instead of resource tree
+>   crash_core: fold duplicated memblock arch hooks into the weak default
+>   crash_core: serialize crash header preparation against hotplug
+>   crash_core: replace for_each_mem_range() with for_each_mem_region()
+>   memblock: introduce MEMBLOCK_NODUMP flag
+>   of: reserved_mem: add dumpable flag to opt-in vmcore
+>   of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+>   of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+>   crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+>     header
+> 
+>  arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
+>  arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
+>  arch/riscv/Kconfig                         |  2 +-
+>  arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
+>  arch/x86/kernel/crash.c                    |  2 +-
+>  drivers/of/fdt.c                           |  2 +
+>  drivers/of/of_private.h                    |  2 +
+>  drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
+>  include/linux/crash_core.h                 |  2 +
+>  include/linux/memblock.h                   |  9 ++++
+>  include/linux/of_reserved_mem.h            |  1 +
+>  kernel/crash_core.c                        | 51 ++++++++++++++++++++--
+>  kernel/dma/contiguous.c                    |  1 +
+>  mm/memblock.c                              | 17 ++++++++
+>  14 files changed, 131 insertions(+), 95 deletions(-)
+> 
+
