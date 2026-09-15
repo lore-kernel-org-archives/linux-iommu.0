@@ -1,108 +1,56 @@
-Received: from flow-b6-smtp.messagingengine.com (flow-b6-smtp.messagingengine.com [202.12.124.141])
+Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A1E47D473
-	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 10:46:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB9FA49B201
+	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 11:20:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789469192; cv=none; b=fxk5nI9JpWBlMccbP6k1pWvYij7REuYk7a0DttW4H1h3Ge6U1oN9ZcZ6Fn04Tb4+LEv9x/wF+I/Pq0Jv4EsCu53LZoJXuH6564R/IDXbZNKiS6OpUYpC5jC67+SW+P81Xj1e1+2wkfxyCTx8cjqqvDQgGgUtBhuxPJ13HAWas18=
+	t=1789471264; cv=none; b=YPZw3d+CacpIfbn8i+wwPUKjr8eGe0824+81kBUSO1zgvfPsjMYRgskd47fvSJuV4Xkq1wSFYqEKGAuwNj3HuKZQw4qBzBMHD1MA1FBvYBC4nZPrSU4BmCeEbUWKY9Tvkq1HPYvSorvPANusdsIrDKfb1+0f2EV7ppyJal5egWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789469192; c=relaxed/simple;
-	bh=D4ppPQapyLhd/s9SIDIm3/DEZoesU7DqcPjoruLNSyw=;
+	s=arc-20240116; t=1789471264; c=relaxed/simple;
+	bh=uqIgqIxz2MYxpYQY//sxZKjBZmFrVGjSYU/hzUgktt4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Gf2S5FJbwNyk5yR2CjR7SIYEdsR6/K00rKbcMvmp8BCA8Oc5THriuHalTJhBQNOT8ISwEh/x3ltQ4g1f9J/PD51kg5BlYJjCHxukUH6OLZI7z08dsDM5xsJpx7Y8GHcsJcpq9ejbRpm+noouR4ST6Y4/psgUJLidIrgLisgZYP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=o5KcKxv/; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=a+jRTOGW; arc=none smtp.client-ip=202.12.124.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	 MIME-Version; b=hX9uoCneEO0POYpaZcCaOKMS4kr39kP+lsMCMawKxbz9IdppAl2fqbkHijY6CCS48akSH0UOQzj6DKkbBSw27zkfJv0wmxznBXDuaCNBNLw+aPZNCsUCJ3dY68pg6X+dBuigLvIiqhXK3t9u+xSVdbU4kGOLYDjM9XKAzLXbJes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=yme4vGVo; arc=none smtp.client-ip=115.124.30.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="o5KcKxv/";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="a+jRTOGW"
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailflow.stl.internal (Postfix) with ESMTP id E4CEA130050E;
-	Tue, 15 Sep 2026 06:46:25 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-02.internal (MEProxy); Tue, 15 Sep 2026 06:46:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1789469185; x=
-	1789476385; bh=0k2WO5fN2pPgdnD7jJ6cdxK1ff8uhQPVB9+e5XeZDfk=; b=o
-	5KcKxv/SlV2aYjj0KfjiwqAjYLU/J+yZ4Wg+42qPde9qFeZvxLQ2rwR3iKzjj4bc
-	W4Z9gQ02OpW9Ea6eEGxBrBB1lP8Q2/HoBxkn7NYRajwK0KjZC911AfQv8TJsa0zL
-	3htZhYruMmYsYuQjHFV9chxWRcRR1A58CTs+blKNLNjCIUndc68BWHDqTcdltfOw
-	0p0rme9iLcfYJsSCpYJ1cwyOcAoAJh2Ti4EWHQ4cvUKYYwvLPNOu/dkbPbWFPQN3
-	6L2uFEay0F8S2qk3pTBCPJxpztTMUF04R3GUZay6TjndIYeWw5JqkvLdIfcVCaKI
-	8CzVuB9D9RzMoy6B6hpvA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm1; t=1789469185; x=1789476385; bh=0
-	k2WO5fN2pPgdnD7jJ6cdxK1ff8uhQPVB9+e5XeZDfk=; b=a+jRTOGW2gW9D9uRd
-	58qAB2jFVMu687OEygroRLYvOHTqlqcoevsa09QZw19JfgWWwRSMJOeOIJ1oRN9B
-	s/KCkeXvl1D6vTx+U0yKCdxa34GkeheHmC7XrVlVZfDQANh9Y1pSwuemxg50SEFW
-	9/K1rczH8Qorot9wneCm501+E3iktZ54ecMmMmHC1afyjOEIR6RYGuHr95vZKbJy
-	BIVmDvj/bLjWG3CMV+tz3LiBXdH096RUoo3q9vM5+2YJgutpMvshrp5qhL+SDb4l
-	iOx7SgPQxzvMI6HwVnl7YG5fL5fyW3qew0qUM9FsFozDe1lZuY/3oO674iVk4deu
-	gFGhg==
-X-ME-Sender: <xms:ASKpaizMRspP3fbEvI2dGg0t-RTXliI_XiiADwnKD57TFz0NihB0pg>
-    <xme:ASKpauZWLIo-vyYCI-R7ULaRwWjZpCYqsmSl_VJx__fzoDyOkrI2YxS4a2cYN9_mt
-    SXWWq6yGToGb5o4NhW2Saw1NsKvDAWlr1q8KYqXvrIMdQhmPgvYzsE>
-X-ME-Received: <xmr:ASKpaiIC0jXkdKuoIMc0YMCl3QzKJ1CUQPl3wcDwgbNzSK3JfJtdO7NpWKtCfxONG8RtIebaow>
-X-ME-Proxy-Cause: dmFkZTERaSqH5KPECAN19InuPeLsiKMx6D5y15UiNi79LQSE+6PwQZueGcEC5S1rOFrK3s
-    AYJQ5gLhphYiIeKw6agxUW6Fop3EpWpekZBzn5CD9c5ViahuaZguxQ6ney6sO43OfzeyFX
-    kYhoR9UDnAzR8pnmcjQlc+x5gLPOpxNVIBYuMwia89SdQ/qFDD3jNxIWu4HvJyRrQkT5fi
-    Bc2tWX66wGyq3ia2uvvLsx+3+MQXh8ILcdhexnLin+iBHzzQwqqqN6rvF+dRwz/tz6mc79
-    V2Z2N8t1wVU0baTbSz4IGhSDBvU+gOblwoPbiM80kR6dUxb7moWmec21zQauVhFlqpiZq+
-    vpW0GhBX31bWwlGN0QFZ/wI39d6+Fet+dUwUDz5xKxisTx6SB3mk5UuglUIe5BsqJZck8R
-    TZ5r3ICH6hOBlPs29Do869msBDk3MBAG12RC0wVjVCLn5K+URgWZ8eGYfaxral+2o4ELka
-    S4o2LahSPRTF8U6V+UNvoq5fHZQ21M73f6wKlYeBfP4nd7vfxuuIIjSbTzHtbyUh2Ps5D/
-    NooK3dyiiu2xLcMiqWy6Sx9UoOaN3HueZgsJbt/7aynudz+zMJYu+7/oTzABlpdKLo2m01
-    WWr7b0rPSU+KYpcPkJ05VaRdzLeSUFMrH2a1A2a1jzwlUIM1QTcdgtVs1PtQ
-X-ME-Proxy: <xmx:ASKpasyzop8wr_1qQHyjE6ogIMVjYNLJx7VmPdpEFT1d6_IPmPZAug>
-    <xmx:ASKpaiOE-SerW_LfM8vlP-XAzDNYULceF2hJX1eCLBsCIJIXRbXjJA>
-    <xmx:ASKpaouovgujGa6FmJeZf_TURPb3_Y1G239Aivjj0M-R6SLrgXhe2A>
-    <xmx:ASKpan3LMBlQPNMFWOovbcFLvxu97-TWDHE3weardQIWY5ghPKKqog>
-    <xmx:ASKpatEaD5OAsnQBocHErXMdYUVIMi2yBP2_aCANuJrBbGwKS181LExo>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 15 Sep 2026 06:46:17 -0400 (EDT)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: tomeu@tomeuvizoso.net,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org,
-	zhangqing@rock-chips.com
-Cc: royalnet026@gmail.com,
-	abel.vesa@oss.qualcomm.com,
-	sebastian.reichel@collabora.com,
-	sidong.yang@furiosa.ai,
-	u.kleine-koenig@baylibre.com,
-	chaoyi.chen@rock-chips.com,
-	diederik@cknow-tech.com,
-	alchark@flipper.net,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="yme4vGVo"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1789471257; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=pJ9Rr9CykAOIDKHJD/CzvfpeB8yYEsova679wlOFG74=;
+	b=yme4vGVoBl2QGh6JGypvXCT/Iw9Ib3fYE/4s01F1tDF6W/hVHqtSVG375BSZ/go8Dx4q4SdZcf44P7yYiEhOjmKs0w8NekmrxnXTbUldjGCFarrXd94kpvqaDl0f+97sK7G1ehLKsU4RqKkHTvMt2xxOjLAhOHyhKmuUBfCMMkk=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=xiangzao@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0XB1X-IG_1789471237;
+Received: from banye.tbsite.net(mailfrom:xiangzao@linux.alibaba.com fp:SMTPD_---0XB1X-IG_1789471237 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 15 Sep 2026 19:20:56 +0800
+From: Yuanhe Shu <xiangzao@linux.alibaba.com>
+To: Kiryl Shutsemau <kas@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Breno Leitao <leitao@debian.org>,
+	Kyle McMartin <jkkm@meta.com>,
+	Usama Arif <usama.arif@linux.dev>,
+	kernel-team@meta.com,
 	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: [PATCH v13 14/14] arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
-Date: Tue, 15 Sep 2026 22:43:28 +1200
-Message-ID: <20260915104328.45901-15-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260915104328.45901-1-gahing@gahingwoo.com>
-References: <20260915104328.45901-1-gahing@gahingwoo.com>
+	iommu@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] iommu/arm-smmu-v3: Default queue depths to one page in a kdump kernel
+Date: Tue, 15 Sep 2026 19:20:36 +0800
+Message-ID: <20260915112037.1495272-1-xiangzao@linux.alibaba.com>
+X-Mailer: git-send-email 2.43.7
+In-Reply-To: <20260909095228.2174031-3-kas@kernel.org>
+References: <20260909095228.2174031-1-kas@kernel.org> <20260909095228.2174031-3-kas@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -111,69 +59,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Enable both RKNN cores and their IOMMUs on the Radxa ROCK 4D, and hand
-vdd_npu_s0 to the NPU power domain as its domain-supply, so the rail is
-switched by the domain that gates the block.
+Tested-by: Yuanhe Shu <xiangzao@linux.alibaba.com>
 
-Measured on a ROCK 4D with this in place. The rail's regulator debugfs
-reports open_count 1, so the domain is the consumer that took it. A sampler
-running beside an inference caught use_count at 1, and three reads at rest
-report use_count 0 with the rail disabled, so it follows the domain rather
-than staying on. Over the same run the genpd active_time of all four NPU
-domains rises by roughly 60ms per inference, and the inferences either side
-of that are 128 of 128 channels against the CPU reference.
+We hit the same problem on our arm64 platform: the kdump capture kernel
+runs out of memory because the SMMUv3 queues are still allocated at full
+hardware size. We had started looking into it ourselves, then came across
+this series, so we tested it on the affected hardware rather than prepare
+a duplicate fix.
 
-Both cores keep npu-supply on the same rail, which the binding requires.
-v11 enabled rknn_core_0 alone and left the second to whoever could test it;
-it has been tested since. Both cores probe, each with its IOMMU, and a
-runtime that deals its submits across the two returns text identical to the
-one-core run over nine language models.
+It resolves the problem for us - details below.
 
-Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
----
- .../boot/dts/rockchip/rk3576-rock-4d.dts      | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+Test platform: an arm64 server, 128 cores, 2 NUMA nodes, 512 GiB RAM,
+exposing 6 SMMUv3 instances. 64K-page kernel (PAGE_SHIFT=16) based on
+Linux 7.0.14 with the series applied on top; crashkernel reservation is
+512 MiB.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-index 272af1012..93d59c0a9 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-@@ -722,6 +722,10 @@ &pcie0 {
- 	status = "okay";
- };
- 
-+&pd_npu {
-+	domain-supply = <&vdd_npu_s0>;
-+};
-+
- &pinctrl {
- 	hdmi {
- 		hdmi_tx_on_h: hdmi-tx-on-h {
-@@ -779,6 +783,24 @@ wifi_en_h: wifi-en-h {
- 	};
- };
- 
-+&rknn_core_0 {
-+	npu-supply = <&vdd_npu_s0>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_0 {
-+	status = "okay";
-+};
-+
-+&rknn_core_1 {
-+	npu-supply = <&vdd_npu_s0>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_1 {
-+	status = "okay";
-+};
-+
- &sai6 {
- 	status = "okay";
- };
--- 
-2.43.0
+On this platform kdump FAILS without the patch, and the series fixes it.
 
+Before - capture kernel WITHOUT the series:
+  All 6 SMMUv3 instances still allocate the hardware-maximum queues:
+    arm-smmu-v3 arm-smmu-v3.0.auto: allocated 524288 entries for cmdq
+    arm-smmu-v3 arm-smmu-v3.0.auto: allocated 524288 entries for evtq
+    arm-smmu-v3 arm-smmu-v3.0.auto: allocated 524288 entries for priq
+    (... same for all 6 instances)
+  That is 8 + 16 + 8 = 32 MiB per instance, 192 MiB total - 37.5% of the
+  512 MiB reservation. The capture kernel OOMs before makedumpfile runs:
+    swapper/0 invoked oom-killer: gfp_mask=0x2040cc0(GFP_KERNEL|...), order=0
+    Out of memory and no killable processes...
+    Rebooting in 10 seconds..
+  => no vmcore is saved.
+
+After - capture kernel WITH the series:
+  All three queues are floored to one page per instance:
+    arm-smmu-v3 arm-smmu-v3.0.auto: allocated 4096 entries for cmdq
+    arm-smmu-v3 arm-smmu-v3.0.auto: allocated 2048 entries for evtq
+    arm-smmu-v3 arm-smmu-v3.0.auto: allocated 4096 entries for priq
+    (... same for all 6 instances)
+  => ~1.1 MiB total (~191 MiB freed). All 6 instances re-probe cleanly
+  (no -ENXIO, no allocation failure) and a 608 MB vmcore is saved.
+
+Same machine, same 512 MiB reservation; the only difference is the v6
+series, so this is a controlled before/after.
+
+Thanks,
+Yuanhe
