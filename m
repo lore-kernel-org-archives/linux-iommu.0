@@ -1,276 +1,152 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013048.outbound.protection.outlook.com [40.93.201.48])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013008.outbound.protection.outlook.com [40.93.196.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 515BE374E42
-	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 14:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AB983FB7E1
+	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 16:39:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.8
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789483951; cv=fail; b=JiqoUjv73RQFg2BTrzIxoiRWCJLNZShD8ET7EthLLu4JRBw8DfhYCXkgO+2pSeuZ30uT6SlRCMvZ3bR6EKcB/OLF1gPpUMStsoe4sU3we6OZYa6Ui6LVlDwldO0tBN2hcjBElOoRoNsZR5Xrezh87+B+Fqz7UonCSiWyaksTRs8=
+	t=1789490351; cv=fail; b=Awo4HLiEsFAKVYtNb2fcfuzVr6WQY9ldQ+CrwxyfY7b1D+zW/VbywVs5++o0ub1oiAZTZEC5DDKmmfC8ZumdvbRJR2mXMSaow17+s5uW70I+V6HhE88LUDAdJxi69iR9Ogz+hfxjIpfW34gVZs7ILd9628LXwo1ArsIN5BMOtOE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789483951; c=relaxed/simple;
-	bh=SySGYJIlb3IrwlzUKNu890PrXZJQGhasgbgSnz19WME=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B2iczSLUfBJzjo2rbxOA5WmOgQ2mihWCV2y2s+vDA+zhbP2bKgIsXPv4jODW0GnMsYdTuPff95C2NBzkNMYrT/Q5/alMvdtOqlymAT0jXCD0y56glXK44our0AWbdBIpBmF3Q5h8bmbO+PM1ZHmU3W0pPE+09CL4JwaAMW+K6NQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gWW54ABR; arc=fail smtp.client-ip=40.93.201.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1789490351; c=relaxed/simple;
+	bh=JmmsKWBKQSDv9BdB1kqyuOMBz8qOXlOzyAkI/VWUcSw=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=eKVwmhgXJrHfQLuiCYdkfGCVVI4vbmu2bgNC0VmJtlsrOicg06xBta+3HZfofKaGa6kEJhaeK3HIgJUWW1z7HP5DbLqsiHEt4Q8074KD0B8c4W5U7qEVHNz0EibyfpWAQZaO1xXLfxq+VCL/cftyjIF7MTs248K44NDfQPucaXU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cCpK3FYR; arc=fail smtp.client-ip=40.93.196.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gWW54ABR"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cCpK3FYR"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=B9u5sq42reaHIXqpKAjJGi9g6gFT8gS64yGNRavu8V1DAgPOkNO1MabmofmqEx/e5VWTRc0V6/PGPOJdwIgaDgvRNwGOaskjmvPakpMG5i5xP5u+HFHZb3mJ64u1EhewVQkySBNaLcWMPB0yxpBuxV9IrEeVw1ocvcVdfmcz4ryIr5la48lghDSoEf3g+b16cMLei8OWVp3ooQ7h3XUTG7a/iiaTz1znwbQOycvuTUYXXFS4pIJyZg27APl5CrERDd3lrGU6kKWjc0dXajKqpc+XXdASyC16swC3s9tGkMIoYFb+8SL4SKtAP3zoHO1joebtkiG2gTI/IoEMz0PNAA==
+ b=KVcYXU6JvvrBDfNWZcB/1laREcfGPvfa33YcoLPIklNqcVicZfFbRfAdMcvkKmRwwXt1CxgW7ipohzdOcJme0ZLOxtSogPVXTqNS0lPSByn79QaRtWexaA+21+RnV3ZdBnPsVs2BAIDLG2ks3JK+Vblk8eKki2vG4VoZGItzl2L/NEvPosMMyPCuf/HvsCmT7zcChpceDfWLWfjOr0y8F8rqcdbH2E5qCPKUNSOF+RqWn8TiqPNU2eJj9sDisBgj+6QBTM3ezhUNzxieLqSgvY0F6FSQS6s+xLHKNs1exsfDAa2PYW/FzI7IPT1SjbCmQ9M6oXva2Ob6OXBmftvesw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SUy0pr4vt390kw7Tfas0GUCPL91wKehUET8MOM34iAA=;
- b=RmApTUDz+qAq8uREZI2tfUg9nwDxlXyhKIYnhlwxiHtKyasYU6z+Yv+Qc3D/KJrjNoFZvZ/wV2K56l5VphAMdd3ZIOnyLrLIzIy8vyTMViwGxw5iYUiswhVed8+NwmH9RnIo4WhzRrJMTbvfbUco33oOUC4NhxmXDgGGCMMpzIC/pE9VJ8tUbSQ1xnaxM1Z31L4ClS7ckfNdJ8tW02Jo4EWAtunff0KmiOW+1cJHGm6x5mfH7FcKEnzZIb8cHoXmagCIFULkNAf895Qazx6Mm4cBbfxn1+eV+u15GZ70JVYvfe/H5WLnrk/oS7KTUyaIb+unLq/4FcSGrtCoWZ6NOg==
+ bh=impFxQxxgsyX6QED2fmE+ctggluPe9CnUh1LjpZ0iio=;
+ b=Kx98RCYKOuq19zyBN5ZSZKg/ZNbssmBfyCvvV4FUFZSc4hEmcv2dbN/0JWNkcAcE7DLGq5rvhYfAQbNnLvfkwnyhqcP7uejKWlACJmPhmRcAUjAdDAdbsKYeqTQNFil3hP4WuFaDBWu0xJLyPKib74IpXzCpQWhCiDM5Ysgd3EKX1p+NGG8G7o4TdFoTvajAcCeOZOtoZcB0CA2ckqyyGh6G3hyuLimsdZ43XuVjJTv4umDvNfg0udbvt0ABnmY/aFD4UQ+qEWuX1Q7vC0uJZ88PXSdPgwsHJEUM3hexQ1UsJVkpGW6+MhjmzVR2Twab3VxIR+GqYbYfYsMuB6VFAQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SUy0pr4vt390kw7Tfas0GUCPL91wKehUET8MOM34iAA=;
- b=gWW54ABRbiaca8EVgRfI5+zH+8GaSpRFYVSjzj2jYIbSaK56Eb0UeMs4+/ZHVJxec5BAHGE/ep7MvLi+WDXKbB3rOE2xbb2xsGtU35IqFOhLLIw+RgzVJumXKywft3aJEDcP7EySgTTwPi3fHpFYKKAJamP/nHdPfhNyolER8CE=
-Received: from MW4PR04CA0041.namprd04.prod.outlook.com (2603:10b6:303:6a::16)
- by LVUPR12MB999183.namprd12.prod.outlook.com (2603:10b6:408:3a3::15) with
+ bh=impFxQxxgsyX6QED2fmE+ctggluPe9CnUh1LjpZ0iio=;
+ b=cCpK3FYRtsSOor1VyKMYd3aOFKakZUwJnVES2j+4PpIYDvThQguCTW3cO4t/Ly4Xqgh+lXrlcl9hUWat/QtFptiI+SDnYgcs8sOQbKJiT8hzpfVsR+r/XfCkwejXJJMCCy5rO58ARZZWseuQYtVuz/rS0GmZ2VHytb7Vofu7liwtlOYaGBu+xBdZOX2HBwuroQx/h6IzQPqvtwYCXIw1PCDzpqpC4hylNKmVm9DKoqwXxvWW8j8rWf/qfzYgSiH+eFjZ8y0dGpS8H3jrYr9LjQEMdDBJeeOeja3dk9hP3J0VRUYomlYJgx/j5lPOufSM6NF2RRVuDDAaJSJhVKKgqQ==
+Received: from CH5P222CA0009.NAMP222.PROD.OUTLOOK.COM (2603:10b6:610:1ee::25)
+ by SJ1PR12MB6315.namprd12.prod.outlook.com (2603:10b6:a03:456::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.11; Tue, 15 Sep
- 2026 14:52:25 +0000
-Received: from CO1PEPF000066ED.namprd05.prod.outlook.com
- (2603:10b6:303:6a:cafe::9d) by MW4PR04CA0041.outlook.office365.com
- (2603:10b6:303:6a::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.12; Tue, 15 Sep
+ 2026 16:39:03 +0000
+Received: from BN1PEPF0001806E.namprd04.prod.outlook.com
+ (2603:10b6:610:1ee:cafe::45) by CH5P222CA0009.outlook.office365.com
+ (2603:10b6:610:1ee::25) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.9 via Frontend Transport; Tue, 15
- Sep 2026 14:52:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- CO1PEPF000066ED.mail.protection.outlook.com (10.167.249.10) with Microsoft
+ Sep 2026 16:39:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BN1PEPF0001806E.mail.protection.outlook.com (10.167.245.196) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.428.7 via Frontend Transport; Tue, 15 Sep 2026 14:52:24 +0000
-Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.428.7 via Frontend Transport; Tue, 15 Sep 2026 16:39:02 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 15 Sep
- 2026 09:52:23 -0500
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
- (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 15 Sep
- 2026 09:52:23 -0500
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Tue, 15 Sep 2026 09:52:20 -0500
-Date: Tue, 15 Sep 2026 14:52:12 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-CC: <iommu@lists.linux.dev>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Move GA log allocation to init
-Message-ID: <opyhwbfe5dz7puj7rbyvoq2e5npm2oe7wo2hzfsre3gwx37uzu@q6nlfqfwph6g>
-References: <20260911104317.5183-1-vasant.hegde@amd.com>
+ 2026 09:38:35 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.49; Tue, 15 Sep 2026 09:38:35 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server id 15.2.2562.49 via Frontend
+ Transport; Tue, 15 Sep 2026 09:38:34 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>, "Jonathan
+ Cameron" <jonathan.cameron@oss.qualcomm.com>
+CC: <joro@8bytes.org>, <bhelgaas@google.com>, <praan@google.com>,
+	<kevin.tian@intel.com>, <kees@kernel.org>, <smostafa@google.com>,
+	<baolu.lu@linux.intel.com>, Jean-Philippe Brucker <jpb@kernel.org>, "Eric
+ Auger" <eric.auger@redhat.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <skaestle@nvidia.com>, <mmarrid@nvidia.com>,
+	<skolothumtho@nvidia.com>, <bbiber@nvidia.com>, <harsha.v@oss.qualcomm.com>
+Subject: [PATCH v5 01/15] iommu/arm-smmu-v3: Disable the impl before disabling the SMMU on shutdown
+Date: Tue, 15 Sep 2026 09:38:13 -0700
+Message-ID: <3747b39aa5898f450535847760d9cebde37684e1.1789446520.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1789446520.git.nicolinc@nvidia.com>
+References: <cover.1789446520.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260911104317.5183-1-vasant.hegde@amd.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000066ED:EE_|LVUPR12MB999183:EE_
-X-MS-Office365-Filtering-Correlation-Id: 13e72e84-fea8-4bba-f750-08df1338f417
+X-MS-TrafficTypeDiagnostic: BN1PEPF0001806E:EE_|SJ1PR12MB6315:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8c18d032-def1-4e68-0315-08df1347d9ca
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|36860700016|1800799024|376014|82310400026|56012099006|11063799006|10067099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|36860700016|7416014|376014|1800799024|82310400026|23010399003|11063799006|56012099006|10067099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	aIXCm7DffoZ0N4+Fso87qkcpbqEsgbRAGCttU9CgEIdCxIPPHal+YliX81wU/FaPnZ5NCk8G8bLBbxhuL4rs0FmsFfo5mAgowLPIriBrf8XjEHhA0wxVenmCd4GKZ4zm/88v3mzDH+yWynPzU+qrPjdkmEoTd59nJtBLb1iqfURHBJGB5u53SMiRCmyvIunXdxUv/yvQ93FK9Q5y2qIoFUoUpUimkuNgkuc3cEsLk4uUT7RN4eTJgKiKItsFNPsh9Z+eHaSHpWu3M9ewoVO88NpCWuzBkEfiPlk0SxIdBRxeGsjc0eq0k4baQJQHjJTqy6L1x6F85c94Grs9YcwgAmDyOnXKLBJPykUHQrQ1HpnfayJqWLoMvNTYtrkmwyfZpaFd5VZ8tBwztSFD/5Od++yHAQxkH4L0vK+CKOGP5IyfofqdwtY9o8EPeUgk3F4mO8/05+Pvl0DAkVU9Xm8wLjMSJ5CzmmFgop4BOQ7v/1oK0H0jYbzU/VVGz1jkkWk5k++JQ4wQwaN7d5sko5S0VFu0Njkcwu5k4Jkwgx4iIhoHiUJvlOP54HUVy/cHoi+SKJAr3k/7ue1J7QiimisAHJq4/PamobbX6zJWsDkFI+NnYW6noD6sa2539i4uWaoI2ntjEx3cTObCmDN8hxHw+2OQta1pVWg8vOzudnXO1GyIE8wp9Pc7aYgjUwT2WrUiDJ8N4ejErM+OhhBeEyzWPA==
+	PYeC1WSknQDkHtJC4JjXKJrAFNSS81mYv4q4rLhREnJXeFChiZBQSfGol/j54JPa95k2UkDzkxFQgp8MxLGiDHITtKonObYRr8UmN2xKi9MJA/quk6DcVuo4l5bg1ItDjRYQKBEdfUSuWcn/Yv98qDC0UTmwr94BFvhyAe1tO+O0b1Gg7WzcOcvRPOUOkXhuh3Ho4fWiY+CrZKpFzLtMzLTdYLUuq1aMD/RWfxdTsJKYTnn7AUtRNTumwpnnbphTFcIjuiSL7rvLHIeNkS7+/WZ/AwRpnuyjVjmKapC3sCksknUuoYd5Pv2rOzGhVn4b08LgehPa9YIPQiEvkOHBRlEbQ3u8rxE4/3ozojsXHsZsqZL/o6U+sZP3QTkeVFFZqb6NazJ+Pxu/fQ6USvtvxNO5QngWs+0kD8xpMmBlDBzPpao826qXy/E+fjuCe1yEK3WEkAvayQjdleOCBkZVAboDTYSmciDJJeHi7ubF9BogQdb0Pk7yNrF12tnIhUUQez+Tj/MOL5fvjzPe7vDazgISZER0d4K2+F8juz927TEVrsrTW3mbMYOcwhULsC7AWW/HU9dHq/5w45fE51xlF9wMA4+QSZAm7HXYn75w6oYty2Y2bK6Lh30FBiCCF2iezn9/sDeovlQT0RpT5xXppWgXtHsApLNkzZCVD0t4655gTyXLq+WlcDhTBUyx2zcq6u2TlbSdmxGWMgr/5Ft6iQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(36860700016)(1800799024)(376014)(82310400026)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(376014)(1800799024)(82310400026)(23010399003)(11063799006)(56012099006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	kpZTS8pcRS3QJ/HJ6g7QF3Og9t7OS1pxOLVmTqU7KG974KWg8d1A9H/tqTz0N4mEW2G99Ffm1fkLFabNbFxUpwHjhuSql9eZHkaabrh8FMVzTKsVbhsPAiifLIREkcmGhLEkEVuImvYIMFA0kx/aMUwpcYTpj/YF0MKHGKUyP30+GX2bMiBGyWhnvC5DWmGmFw8Fr+n4Ju0c798gJDXMPcISMSvtfkIF1kiiP1I04GtSTV31f+AcUqpBpx8Z2VA38uKpQ+6n9BG1QzAAaunHGxVx22x50bhkj4m9FvIyc17ai8oh94eUjRcmICzwhxX9FNw9d5TFiWu7dcX1Dp8gk7t2nmQJ0zzj+YguJmVKbBPYec5IfMJc+ryQl2NNM52e5qG0Bf/ZFsfjovbptpeuz5PkdWBxHYVUaDF/i1YjwgzsMpTqZq3Q0aK2Irljn44j
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2026 14:52:24.2849
+	VsE3ne4bJveisvu33juOwkBqqDWNZKFrqgfzmNq+bfKEuBuvijma5c4Nk5wsiz/EvIvGgycYZQSA+fztDMq9b1Lh8NkA+N/ERuJcrOUBJOe+CEBERxFCsN+T51czatX53aCHOYENwAWwKEW9RGfDdY3IhapyzaBE7g0rImCO2tX5ckRmsREX3W7CmLgYHmz8Na4u1bWPX8Kr5DhhtTZatAes2jvG3/70zypAFMuDfagaq8SUnBNZAx0Y9036K2gzq98m84NuDzdcy/NhIErkc01QbufIIA6hDqKC1PB9h3vg9Tu+twFLtGk6WVR2DhTZmtyakO2ySSXGquJkqgoS3IhnIjUU9fahu5fFzdEyDx6X7UYtvcg/FIr5vP9pMFgOTl9tkrRKagaH4MeO6hFO3oGtJxeSismo04S9JUDwgEVUeY/zhWz7hknxfAp2PfF1
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2026 16:39:02.5622
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13e72e84-fea8-4bba-f750-08df1338f417
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c18d032-def1-4e68-0315-08df1347d9ca
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000066ED.namprd05.prod.outlook.com
+	BN1PEPF0001806E.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LVUPR12MB999183
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6315
 
-On Fri, Sep 11, 2026 at 10:43:17AM +0000, Vasant Hegde wrote:
-> Currently GA log buffer allocation is done at the time of enabling ga
-> log. This mixes capability checking, resource allocation, and hardware
-> enablement into a single late stage code path.
-> 
-> Move capability checking and buffer allocation to init path:
->   - check_vapic_support(): Checks AVIC support
-> 
->   - alloc_ga_log(): Rename iommu_init_ga_log() as alloc_ga_log(). It will
->     allocate the GA log and GA log tail buffers for a given IOMMU. Remove
->     redundant checks inside alloc_ga_log().
-> 
->   - enable_iommus_vapic() is simplified - it handles enabling GA log and
->     GAM/SNPAVIC support for IOMMUs.
-> 
-> Finally update iommu_ga_log_enable() return value from int to bool as
-> return value is used in boolean context only.
-> 
+arm_smmu_device_shutdown() only calls arm_smmu_device_disable(), and never
+the impl_ops->device_disable() hook. On tegra241-cmdqv, that hook quiesces
+every VINTF through tegra241_vintf_hw_deinit(), which issues a CMD_SYNC on
+the shared CMDQ while it is still enabled.
 
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+arm_smmu_disable_action() already runs this hook before disabling the SMMU,
+to cover an unbind or a probe failure, and no devres release ever follows a
+reboot or a kexec to run it again. Have arm_smmu_device_shutdown() call it
+directly, instead of reimplementing part of what it already does.
 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
-> 
-> Base commit: adbd8a08208 from iommu/fixes branch.
-> 
-> -Vasant
-> 
->  drivers/iommu/amd/init.c | 74 +++++++++++++++++++++++-----------------
->  1 file changed, 42 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 8a410d4aa370..3c72701d2306 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -916,13 +916,13 @@ static void free_ga_log(struct amd_iommu *iommu)
->  }
->  
->  #ifdef CONFIG_IRQ_REMAP
-> -static int iommu_ga_log_enable(struct amd_iommu *iommu)
-> +static bool iommu_ga_log_enable(struct amd_iommu *iommu)
->  {
->  	u32 status, i;
->  	u64 entry;
->  
->  	if (!iommu->ga_log)
-> -		return -EINVAL;
-> +		return false;
->  
->  	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
->  	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
-> @@ -946,35 +946,31 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
->  	}
->  
->  	if (WARN_ON(i >= MMIO_STATUS_TIMEOUT))
-> -		return -EINVAL;
-> +		return false;
->  
-> -	return 0;
-> +	return true;
->  }
-> +#endif /* CONFIG_IRQ_REMAP */
->  
-> -static int iommu_init_ga_log(struct amd_iommu *iommu)
-> +static int alloc_ga_log(struct amd_iommu *iommu)
->  {
-> +#ifdef CONFIG_IRQ_REMAP
->  	int nid = iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
->  
-> -	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-> -		return -EINVAL;
-> -
-> -	if (iommu->ga_log && iommu->ga_log_tail)
-> -		return 0;
-> -
->  	iommu->ga_log = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, GA_LOG_SIZE);
->  	if (!iommu->ga_log)
-> -		goto err_out;
-> +		return -ENOMEM;
->  
->  	iommu->ga_log_tail = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, 8);
-> -	if (!iommu->ga_log_tail)
-> -		goto err_out;
-> +	if (!iommu->ga_log_tail) {
-> +		iommu_free_pages(iommu->ga_log);
-> +		iommu->ga_log = NULL;
-> +		return -ENOMEM;
-> +	}
-> +#endif
->  
->  	return 0;
-> -err_out:
-> -	free_ga_log(iommu);
-> -	return -EINVAL;
->  }
-> -#endif /* CONFIG_IRQ_REMAP */
->  
->  static int __init alloc_cwwb_sem(struct amd_iommu *iommu)
->  {
-> @@ -2152,6 +2148,27 @@ static void __init late_iommu_features_init(struct amd_iommu *iommu)
->  	}
->  }
->  
-> +/* Must be called after SNP support check is complete (iommu_snp_enable()) */
-> +static bool check_vapic_support(void)
-> +{
-> +	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
-> +		return false;
-> +
-> +	if (!check_feature(FEATURE_GAM_VAPIC)) {
-> +		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
-> +		return false;
-> +	}
-> +
-> +	if (amd_iommu_snp_en &&
-> +	    !FEATURE_SNPAVICSUP_GAM(amd_iommu_efr2)) {
-> +		pr_warn("Force to disable Virtual APIC due to SNP\n");
-> +		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
->  static int __init iommu_init_pci(struct amd_iommu *iommu)
->  {
->  	int cap_ptr = iommu->cap_ptr;
-> @@ -2196,6 +2213,12 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
->  	if (check_feature(FEATURE_PPR) && amd_iommu_alloc_ppr_log(iommu))
->  		return -ENOMEM;
->  
-> +	if (check_vapic_support()) {
-> +		ret = alloc_ga_log(iommu);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
->  	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE)) {
->  		pr_info("Using strict mode due to virtualization\n");
->  		iommu_set_dma_strict();
-> @@ -3010,22 +3033,9 @@ static void enable_iommus_vapic(void)
->  	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
->  		return;
->  
-> -	if (!check_feature(FEATURE_GAM_VAPIC)) {
-> -		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
-> -		return;
-> -	}
-> -
-> -	if (amd_iommu_snp_en &&
-> -	    !FEATURE_SNPAVICSUP_GAM(amd_iommu_efr2)) {
-> -		pr_warn("Force to disable Virtual APIC due to SNP\n");
-> -		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
-> -		return;
-> -	}
-> -
->  	/* Enabling GAM and SNPAVIC support */
->  	for_each_iommu(iommu) {
-> -		if (iommu_init_ga_log(iommu) ||
-> -		    iommu_ga_log_enable(iommu))
-> +		if (!iommu_ga_log_enable(iommu))
->  			return;
->  
->  		iommu_feature_enable(iommu, CONTROL_GAM_EN);
-> -- 
-> 2.31.1
-> 
+Fixes: 9ff145a25c5c ("iommu/tegra241-cmdqv: Fix CMD_SYNC use-after-free on teardown")
+Cc: stable@vger.kernel.org
+Reviewed-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Assisted-by: LLM
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 5732f3ba0122d..81baafaffc410 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -5633,7 +5633,7 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
+-	arm_smmu_device_disable(smmu);
++	arm_smmu_disable_action(smmu);
+ }
+ 
+ static const struct of_device_id arm_smmu_of_match[] = {
+-- 
+2.43.0
+
