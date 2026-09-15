@@ -1,226 +1,276 @@
-Received: from mail-pj2-f8.google.com (mail-pj2-f8.google.com [74.125.227.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013048.outbound.protection.outlook.com [40.93.201.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692FA3B71B0
-	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 13:01:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.136
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789477284; cv=none; b=uu0x/EHM3tztsXmilfFFvwLNDQNXO8S/vvknhPaWMy6Mp4HsXDT2nED9thp19Y+g2nmncdyiGk48QwtH57oKlDIV2JhTQJzCD5vnsMCJ+v4DwUfwEQOuj779Xci/YYQUNIKZz9cYbZirCK/AHklzMxSAjrJKUMleS64facdszD4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789477284; c=relaxed/simple;
-	bh=ELVDuyLraG4tCEzT09pv2uLB8CM6aiSV+ZaKG06n9sY=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=LV+irRdyEP8N2AH1sJk4Ak5WIdecZwsveYvK2drmqTryyzgZmOnmDB+V+ha1E8UM5fhm81fGJzGqTi90XoJZ+sxCbTRWCE/E6LdBij334FKrltMbSUwv3vEdveElOJg3HRqdJTtpgcNQLHlJI69+3y6P8Vs2FHcwwQHHzCJERIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JrBd/ghN; arc=none smtp.client-ip=74.125.227.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 515BE374E42
+	for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 14:52:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789483951; cv=fail; b=JiqoUjv73RQFg2BTrzIxoiRWCJLNZShD8ET7EthLLu4JRBw8DfhYCXkgO+2pSeuZ30uT6SlRCMvZ3bR6EKcB/OLF1gPpUMStsoe4sU3we6OZYa6Ui6LVlDwldO0tBN2hcjBElOoRoNsZR5Xrezh87+B+Fqz7UonCSiWyaksTRs8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789483951; c=relaxed/simple;
+	bh=SySGYJIlb3IrwlzUKNu890PrXZJQGhasgbgSnz19WME=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=B2iczSLUfBJzjo2rbxOA5WmOgQ2mihWCV2y2s+vDA+zhbP2bKgIsXPv4jODW0GnMsYdTuPff95C2NBzkNMYrT/Q5/alMvdtOqlymAT0jXCD0y56glXK44our0AWbdBIpBmF3Q5h8bmbO+PM1ZHmU3W0pPE+09CL4JwaAMW+K6NQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gWW54ABR; arc=fail smtp.client-ip=40.93.201.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JrBd/ghN"
-Received: by mail-pj2-f8.google.com with SMTP id d9443c01a7336-2d8fcda61c8so20306155ad.1
-        for <iommu@lists.linux.dev>; Tue, 15 Sep 2026 06:01:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789477282; x=1790082082; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :references:cc:to:from:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=+F7E7Bq/M1FITHwdNffpUS733lAk0A+k2uxZSk0JCQc=;
-        b=JrBd/ghNZyUQvhdgp0120qaZ4vDklUIIP5F0Ht9PoDUidwOwrH3D0J1+iagr0+eZFZ
-         OpPu7pupAwLR1/LKlqmQe49UC35dP0XKklVzUfKiCz4733ai+wxStO06loQ+SeCxY3sH
-         5sRl2TZLP8/5lLfbMiXO6dFpSuTkAK8Mgttnxun8t0Ol+oK+7HQvWEIGGZQJV95BvSbp
-         jC0eXMvOOE5e5t6Qa37GSDriwD6ZtywDTIJCEs+Do0fruDHIhTYQlRkq8ytdQzLhe5Uw
-         YEEzrcZkDKHbCsSDGBlvQSMFEe1bAdh5GoJBpW7RtRnnf3adqv7yFo8OER/b56OdUbOL
-         24yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789477282; x=1790082082;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :references:cc:to:from:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=+F7E7Bq/M1FITHwdNffpUS733lAk0A+k2uxZSk0JCQc=;
-        b=Xz9zbwHIfrNVlv77vlg55rDZm6INkgHFxecuJt88vOqGbCzQj2LtekqaDGS/f10Tl6
-         aPkBm3D3Sbz3vfaC9AcV/EWe98SvA+UhHM6cmOj8rhalbwMfBHdHDAOAbyqTLowLrO0l
-         9YdsZg1MNJwfZafN7xq9t/l70pT8BgXT7YSQFFmrHkRTMhVdSPF1InVfZ2UL4Y6TqJli
-         thh8nwrKTvNnlRrAyP+Cw7Zfkg8NbTUt9nnJb4z3tzATN9hvd70WbFq6z9Xvo0Nj2leH
-         +Jiq8pBuEvvOLpBYDup5tA7ZcX2X0E6Jy/lEucFSugbBAv/FQzsHzwgQbbVczctyxFHy
-         /reg==
-X-Forwarded-Encrypted: i=1; AKwUvBw9ULAKdkhVEGC7Qz42oKvO4IU5GCCJe03fHC16FUWtl3CsG9/1uGlDFs/lZgGQCawI/yslBA==@lists.linux.dev
-X-Gm-Message-State: AFuF++kmvp7t6bg3P9mI9s0X7S4kN0KBmXVKU4S4JWkBxDG/ut415uZB
-	PZNCe9ZJcXVkAI68EbuePFeLMb98QJr/eOJdNRYxGMgxHfVF1WG+MZBE
-X-Gm-Gg: AYBFou0ETQtLQru1UiqpWttHskBie//Z1UFUZOhZIlgZSqsgOLwuPuBcRfn0aYcghEg
-	JJJQJ24V+5qhJFpIfyNV6roEimGoS7wAnEP8jDHupnVFjNeKxrjxBnrCFZUOybC8j/HYvzwQLle
-	ZWjdU5YLJ9g3dokL4wmCBj/smjwQYOxwvfbWJ3/TVKcjie9KZQeDksFTKqVefmBHVsiwYY9GtlK
-	6169GCGvrkrWmKntJxdPANwI/zj5xdecf6TJUKW88jXuupfN3UxNRl7oqMnWiKBk+Vy+xuFpaq9
-	VTP6Li50VKb7/ObGdJBe7tIt4kpYqQ/fvU6hm+eQCXMitYeoGC1McR8gDps0dQ8R6mEAHmsIdEa
-	xrifm9fcyqrgjnk4sCeEUncvNHqD/+G3TuvovgbhOuyUIx122IkM68LQl4hx2U8lx59RsLcAM0y
-	r7kJQszL7OJeWtSyUudkM3xGAZVl4FstOA+VVTG167zUVaCdkfp++RfWBkNV31YxV3/+0+3qJAl
-	RdfzQ==
-X-Received: by 2002:a17:903:3d0d:b0:2d6:3c2f:6a4 with SMTP id d9443c01a7336-2dd6c6eb7a4mr138425825ad.13.1789477281468;
-        Tue, 15 Sep 2026 06:01:21 -0700 (PDT)
-Received: from [10.125.112.20] ([122.11.210.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2dd2cfd87e5sm67187695ad.58.2026.09.15.06.01.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Sep 2026 06:01:20 -0700 (PDT)
-Message-ID: <13cfcd99-e420-478b-8ce8-06674727977d@gmail.com>
-Date: Tue, 15 Sep 2026 21:01:07 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gWW54ABR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=B9u5sq42reaHIXqpKAjJGi9g6gFT8gS64yGNRavu8V1DAgPOkNO1MabmofmqEx/e5VWTRc0V6/PGPOJdwIgaDgvRNwGOaskjmvPakpMG5i5xP5u+HFHZb3mJ64u1EhewVQkySBNaLcWMPB0yxpBuxV9IrEeVw1ocvcVdfmcz4ryIr5la48lghDSoEf3g+b16cMLei8OWVp3ooQ7h3XUTG7a/iiaTz1znwbQOycvuTUYXXFS4pIJyZg27APl5CrERDd3lrGU6kKWjc0dXajKqpc+XXdASyC16swC3s9tGkMIoYFb+8SL4SKtAP3zoHO1joebtkiG2gTI/IoEMz0PNAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SUy0pr4vt390kw7Tfas0GUCPL91wKehUET8MOM34iAA=;
+ b=RmApTUDz+qAq8uREZI2tfUg9nwDxlXyhKIYnhlwxiHtKyasYU6z+Yv+Qc3D/KJrjNoFZvZ/wV2K56l5VphAMdd3ZIOnyLrLIzIy8vyTMViwGxw5iYUiswhVed8+NwmH9RnIo4WhzRrJMTbvfbUco33oOUC4NhxmXDgGGCMMpzIC/pE9VJ8tUbSQ1xnaxM1Z31L4ClS7ckfNdJ8tW02Jo4EWAtunff0KmiOW+1cJHGm6x5mfH7FcKEnzZIb8cHoXmagCIFULkNAf895Qazx6Mm4cBbfxn1+eV+u15GZ70JVYvfe/H5WLnrk/oS7KTUyaIb+unLq/4FcSGrtCoWZ6NOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SUy0pr4vt390kw7Tfas0GUCPL91wKehUET8MOM34iAA=;
+ b=gWW54ABRbiaca8EVgRfI5+zH+8GaSpRFYVSjzj2jYIbSaK56Eb0UeMs4+/ZHVJxec5BAHGE/ep7MvLi+WDXKbB3rOE2xbb2xsGtU35IqFOhLLIw+RgzVJumXKywft3aJEDcP7EySgTTwPi3fHpFYKKAJamP/nHdPfhNyolER8CE=
+Received: from MW4PR04CA0041.namprd04.prod.outlook.com (2603:10b6:303:6a::16)
+ by LVUPR12MB999183.namprd12.prod.outlook.com (2603:10b6:408:3a3::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.11; Tue, 15 Sep
+ 2026 14:52:25 +0000
+Received: from CO1PEPF000066ED.namprd05.prod.outlook.com
+ (2603:10b6:303:6a:cafe::9d) by MW4PR04CA0041.outlook.office365.com
+ (2603:10b6:303:6a::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.9 via Frontend Transport; Tue, 15
+ Sep 2026 14:52:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ CO1PEPF000066ED.mail.protection.outlook.com (10.167.249.10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.428.7 via Frontend Transport; Tue, 15 Sep 2026 14:52:24 +0000
+Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 15 Sep
+ 2026 09:52:23 -0500
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
+ (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 15 Sep
+ 2026 09:52:23 -0500
+Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Tue, 15 Sep 2026 09:52:20 -0500
+Date: Tue, 15 Sep 2026 14:52:12 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+CC: <iommu@lists.linux.dev>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Move GA log allocation to init
+Message-ID: <opyhwbfe5dz7puj7rbyvoq2e5npm2oe7wo2hzfsre3gwx37uzu@q6nlfqfwph6g>
+References: <20260911104317.5183-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/10] kdump: reduce vmcore size and capture time
-From: Wandun <chenwandun1@gmail.com>
-To: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
- pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org,
- baoquan.he@linux.dev, rppt@kernel.org, pasha.tatashin@soleen.com,
- pratyush@kernel.org, m.szyprowski@samsung.com
-Cc: mark.rutland@arm.com, kernel@xen0n.name, alex@ghiti.fr, hpa@zytor.com,
- ruirui.yang@linux.dev, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
- devicetree@vger.kernel.org, kexec@lists.infradead.org, linux-mm@kvack.org,
- iommu@lists.linux.dev
-References: <20260902073116.802752-1-chenwandun1@gmail.com>
-Content-Language: en-US
-In-Reply-To: <20260902073116.802752-1-chenwandun1@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260911104317.5183-1-vasant.hegde@amd.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000066ED:EE_|LVUPR12MB999183:EE_
+X-MS-Office365-Filtering-Correlation-Id: 13e72e84-fea8-4bba-f750-08df1338f417
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|36860700016|1800799024|376014|82310400026|56012099006|11063799006|10067099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	aIXCm7DffoZ0N4+Fso87qkcpbqEsgbRAGCttU9CgEIdCxIPPHal+YliX81wU/FaPnZ5NCk8G8bLBbxhuL4rs0FmsFfo5mAgowLPIriBrf8XjEHhA0wxVenmCd4GKZ4zm/88v3mzDH+yWynPzU+qrPjdkmEoTd59nJtBLb1iqfURHBJGB5u53SMiRCmyvIunXdxUv/yvQ93FK9Q5y2qIoFUoUpUimkuNgkuc3cEsLk4uUT7RN4eTJgKiKItsFNPsh9Z+eHaSHpWu3M9ewoVO88NpCWuzBkEfiPlk0SxIdBRxeGsjc0eq0k4baQJQHjJTqy6L1x6F85c94Grs9YcwgAmDyOnXKLBJPykUHQrQ1HpnfayJqWLoMvNTYtrkmwyfZpaFd5VZ8tBwztSFD/5Od++yHAQxkH4L0vK+CKOGP5IyfofqdwtY9o8EPeUgk3F4mO8/05+Pvl0DAkVU9Xm8wLjMSJ5CzmmFgop4BOQ7v/1oK0H0jYbzU/VVGz1jkkWk5k++JQ4wQwaN7d5sko5S0VFu0Njkcwu5k4Jkwgx4iIhoHiUJvlOP54HUVy/cHoi+SKJAr3k/7ue1J7QiimisAHJq4/PamobbX6zJWsDkFI+NnYW6noD6sa2539i4uWaoI2ntjEx3cTObCmDN8hxHw+2OQta1pVWg8vOzudnXO1GyIE8wp9Pc7aYgjUwT2WrUiDJ8N4ejErM+OhhBeEyzWPA==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(36860700016)(1800799024)(376014)(82310400026)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	kpZTS8pcRS3QJ/HJ6g7QF3Og9t7OS1pxOLVmTqU7KG974KWg8d1A9H/tqTz0N4mEW2G99Ffm1fkLFabNbFxUpwHjhuSql9eZHkaabrh8FMVzTKsVbhsPAiifLIREkcmGhLEkEVuImvYIMFA0kx/aMUwpcYTpj/YF0MKHGKUyP30+GX2bMiBGyWhnvC5DWmGmFw8Fr+n4Ju0c798gJDXMPcISMSvtfkIF1kiiP1I04GtSTV31f+AcUqpBpx8Z2VA38uKpQ+6n9BG1QzAAaunHGxVx22x50bhkj4m9FvIyc17ai8oh94eUjRcmICzwhxX9FNw9d5TFiWu7dcX1Dp8gk7t2nmQJ0zzj+YguJmVKbBPYec5IfMJc+ryQl2NNM52e5qG0Bf/ZFsfjovbptpeuz5PkdWBxHYVUaDF/i1YjwgzsMpTqZq3Q0aK2Irljn44j
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2026 14:52:24.2849
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13e72e84-fea8-4bba-f750-08df1338f417
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000066ED.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LVUPR12MB999183
 
-
-
-On 9/2/26 15:31, Wandun Chen wrote:
-> From: Wandun Chen <chenwandun@lixiang.com>
+On Fri, Sep 11, 2026 at 10:43:17AM +0000, Vasant Hegde wrote:
+> Currently GA log buffer allocation is done at the time of enabling ga
+> log. This mixes capability checking, resource allocation, and hardware
+> enablement into a single late stage code path.
 > 
-> On SoCs that carve out large firmware-owned reserved memory (GPU,
-> camera ISP, ...), kdump currently dumps those carveouts as part of
-> system RAM even though their contents are firmware state that is not
-> useful for kernel crash analysis.
+> Move capability checking and buffer allocation to init path:
+>   - check_vapic_support(): Checks AVIC support
 > 
-> This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
-> reserved memory on DT-based architectures (arm64, riscv, loongarch).
-> Reserved regions default are marked MEMBLOCK_NODUMP so kdump omits them;
-> reusable CMA regions are different because their pages are handed back
-> to the buddy allocator and may carry crash-relevant data.
+>   - alloc_ga_log(): Rename iommu_init_ga_log() as alloc_ga_log(). It will
+>     allocate the GA log and GA log tail buffers for a given IOMMU. Remove
+>     redundant checks inside alloc_ga_log().
 > 
-> ACPI systems already filter reserved memory out of the vmcore through
-> their existing path; only DT-based systems currently fail to filter these
-> regions, which is what this series addresses. The flag lives in memblock
-> itself rather than in a DT-only structure, so the mechanism is generic and
-> both ACPI and DT systems can benefit from it (suggested by Rob, thanks) [1].
+>   - enable_iommus_vapic() is simplified - it handles enabling GA log and
+>     GAM/SNPAVIC support for IOMMUs.
 > 
-> Since the reserved memory regions are filtered out, the vmcore is
-> smaller in size and faster to produce. 
-> 
-> The series is based on linux-next and is organized as follows:
-> 
-> Patches 1-4: Preparation and bugfixes: fix the missing HugeTLB
->              flagname, switch riscv crash_mem to memblock, fold the
->              duplicated per-arch memblock walks into the weak
->              defaults, and serialize crash header preparation against
->              memory hotplug.
-> Patches 5-9: NODUMP infrastructure: switch crash_core to
->              for_each_mem_region(), introduce the MEMBLOCK_NODUMP
->              flag, add a dumpable flag to struct reserved_mem, and
->              mark /reserved-memory and /memreserve/ entries with
-> 	     MEMBLOCK_NODUMP flag.
-> Patch 10:    Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
->              header.
-
-Hi,
-
-Gentle ping on the remaining patches of this series.
-Patches 1, 7, 8 and 9 have been reviewed (thanks Mike and Marek);
-Still looking for review on patches 2-6 and 10.
-
-Would appreciate a look when you have a moment, happy to rework
-anything based on feedback.
-
-Best regards,
-Wanun
-
-> 
-> In v5, Sashiko found some pre-existing issues related to reserved-memory,
-> and has no dependency on this series, so these issues have been addressed
-> in a separate series [2].
-> 
-> v5 --> v6:
-> 1. Serialize crash header preparation against memory hotplug to avoid
->    out-of-bounds or use-after-free issues.
-> 
-> 2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
->    avoiding a panic from too few regions before resize is permitted.
-> 
-> 3. Reordered the patches, put pre-existing bugfixes earlier in the series.
-> 
-> 
-> v4 --> v5:
-> 1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
->    (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
->    DT-only struct reserved_mem.
-> 2. Switch the riscv vmcore elf header preparation to use memblock
->    instead of the resource tree, aligning it with arm64 and loongarch,
->    so riscv also can exclude reserved memory from vmcore.
-> 3. Deduplicate the vmcore elf header preparation: arm64, riscv and
->    loongarch open-coded the same logic, so fold it into shared
->     __weak defaults in crash_core.
-> 4.  Drop the v4 patch that saved /memreserve/ entries into the
->     reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
->     directly.
-> 
-> v3 --> v4:
-> 1. Rebase this series on v7.2-rc1.
-> 2. Add two cleanup patches (patch 02/03).
-> 3. Simplify patch 03 to avoid checking whether initial_boot_params is
->    NULL multiple times, suggested by Rob.
-> 
-> v2 --> v3:
-> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
-> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
-> 3. Add some prepare patches.
-> 
-> v1 --> v2:
-> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
->    feedback [3], v2 drop that property and exclude reserve memory
->    by default.
-> 2. Split some prepared patches from the original patches.
-> 3. Address coding-style comments on patch 5 from Rob.
-> 
-> [1] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
-> [2] https://lore.kernel.org/lkml/20260818092420.2859026-1-chenwandun1@gmail.com/
-> [3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
-> 
-> Meijing Zhao (1):
->   mm: memblock: add missing HugeTLB flag name
-> 
-> Wandun Chen (9):
->   riscv: build crash_mem ranges from memblock instead of resource tree
->   crash_core: fold duplicated memblock arch hooks into the weak default
->   crash_core: serialize crash header preparation against hotplug
->   crash_core: replace for_each_mem_range() with for_each_mem_region()
->   memblock: introduce MEMBLOCK_NODUMP flag
->   of: reserved_mem: add dumpable flag to opt-in vmcore
->   of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
->   of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
->   crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
->     header
-> 
->  arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
->  arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
->  arch/riscv/Kconfig                         |  2 +-
->  arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
->  arch/x86/kernel/crash.c                    |  2 +-
->  drivers/of/fdt.c                           |  2 +
->  drivers/of/of_private.h                    |  2 +
->  drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
->  include/linux/crash_core.h                 |  2 +
->  include/linux/memblock.h                   |  9 ++++
->  include/linux/of_reserved_mem.h            |  1 +
->  kernel/crash_core.c                        | 51 ++++++++++++++++++++--
->  kernel/dma/contiguous.c                    |  1 +
->  mm/memblock.c                              | 17 ++++++++
->  14 files changed, 131 insertions(+), 95 deletions(-)
+> Finally update iommu_ga_log_enable() return value from int to bool as
+> return value is used in boolean context only.
 > 
 
+Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+> 
+> Base commit: adbd8a08208 from iommu/fixes branch.
+> 
+> -Vasant
+> 
+>  drivers/iommu/amd/init.c | 74 +++++++++++++++++++++++-----------------
+>  1 file changed, 42 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 8a410d4aa370..3c72701d2306 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -916,13 +916,13 @@ static void free_ga_log(struct amd_iommu *iommu)
+>  }
+>  
+>  #ifdef CONFIG_IRQ_REMAP
+> -static int iommu_ga_log_enable(struct amd_iommu *iommu)
+> +static bool iommu_ga_log_enable(struct amd_iommu *iommu)
+>  {
+>  	u32 status, i;
+>  	u64 entry;
+>  
+>  	if (!iommu->ga_log)
+> -		return -EINVAL;
+> +		return false;
+>  
+>  	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
+>  	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
+> @@ -946,35 +946,31 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+>  	}
+>  
+>  	if (WARN_ON(i >= MMIO_STATUS_TIMEOUT))
+> -		return -EINVAL;
+> +		return false;
+>  
+> -	return 0;
+> +	return true;
+>  }
+> +#endif /* CONFIG_IRQ_REMAP */
+>  
+> -static int iommu_init_ga_log(struct amd_iommu *iommu)
+> +static int alloc_ga_log(struct amd_iommu *iommu)
+>  {
+> +#ifdef CONFIG_IRQ_REMAP
+>  	int nid = iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
+>  
+> -	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
+> -		return -EINVAL;
+> -
+> -	if (iommu->ga_log && iommu->ga_log_tail)
+> -		return 0;
+> -
+>  	iommu->ga_log = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, GA_LOG_SIZE);
+>  	if (!iommu->ga_log)
+> -		goto err_out;
+> +		return -ENOMEM;
+>  
+>  	iommu->ga_log_tail = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, 8);
+> -	if (!iommu->ga_log_tail)
+> -		goto err_out;
+> +	if (!iommu->ga_log_tail) {
+> +		iommu_free_pages(iommu->ga_log);
+> +		iommu->ga_log = NULL;
+> +		return -ENOMEM;
+> +	}
+> +#endif
+>  
+>  	return 0;
+> -err_out:
+> -	free_ga_log(iommu);
+> -	return -EINVAL;
+>  }
+> -#endif /* CONFIG_IRQ_REMAP */
+>  
+>  static int __init alloc_cwwb_sem(struct amd_iommu *iommu)
+>  {
+> @@ -2152,6 +2148,27 @@ static void __init late_iommu_features_init(struct amd_iommu *iommu)
+>  	}
+>  }
+>  
+> +/* Must be called after SNP support check is complete (iommu_snp_enable()) */
+> +static bool check_vapic_support(void)
+> +{
+> +	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+> +		return false;
+> +
+> +	if (!check_feature(FEATURE_GAM_VAPIC)) {
+> +		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
+> +		return false;
+> +	}
+> +
+> +	if (amd_iommu_snp_en &&
+> +	    !FEATURE_SNPAVICSUP_GAM(amd_iommu_efr2)) {
+> +		pr_warn("Force to disable Virtual APIC due to SNP\n");
+> +		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  static int __init iommu_init_pci(struct amd_iommu *iommu)
+>  {
+>  	int cap_ptr = iommu->cap_ptr;
+> @@ -2196,6 +2213,12 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+>  	if (check_feature(FEATURE_PPR) && amd_iommu_alloc_ppr_log(iommu))
+>  		return -ENOMEM;
+>  
+> +	if (check_vapic_support()) {
+> +		ret = alloc_ga_log(iommu);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE)) {
+>  		pr_info("Using strict mode due to virtualization\n");
+>  		iommu_set_dma_strict();
+> @@ -3010,22 +3033,9 @@ static void enable_iommus_vapic(void)
+>  	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+>  		return;
+>  
+> -	if (!check_feature(FEATURE_GAM_VAPIC)) {
+> -		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
+> -		return;
+> -	}
+> -
+> -	if (amd_iommu_snp_en &&
+> -	    !FEATURE_SNPAVICSUP_GAM(amd_iommu_efr2)) {
+> -		pr_warn("Force to disable Virtual APIC due to SNP\n");
+> -		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
+> -		return;
+> -	}
+> -
+>  	/* Enabling GAM and SNPAVIC support */
+>  	for_each_iommu(iommu) {
+> -		if (iommu_init_ga_log(iommu) ||
+> -		    iommu_ga_log_enable(iommu))
+> +		if (!iommu_ga_log_enable(iommu))
+>  			return;
+>  
+>  		iommu_feature_enable(iommu, CONTROL_GAM_EN);
+> -- 
+> 2.31.1
+> 
