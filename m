@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7812D513544;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF288514744;
 	Wed, 16 Sep 2026 14:23:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789568583; cv=none; b=jqqOu+LMzlsv3xXDTU36Sqyp+67VyaCrNPRSFdzcocdtm/gvhQo/Q/P+PmE2nl91tXTABONwrIhaAVVKv7MlkWhMq9nXv9ddHn5JfkPk2P28/547BfUSuNsrsW0c2fysaQxmQKik6LEmAbQL3bHkBSYeOIRp9dZOC8Vn3O2qxWc=
+	t=1789568584; cv=none; b=EqkYEbjtQID8inoTRb0aH8wKm5xsinrlvDJPUb8vHCA1xrjth6i0aS+YCJWRys9AQbrXdJFE6vsxXOyhnJn4/Ytvzu52Y6GhO3oB6naEFnF7PFjI7OPRpQOxw0nIkXDehAe5Kkw1hqOpBikzZBY6uHk4yhKSyxEWKQQFEBT3ymM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789568583; c=relaxed/simple;
-	bh=kL7kpIG3qA+4AejsWI3BHXBQrYH/6KaVhM51d9C5+XE=;
+	s=arc-20240116; t=1789568584; c=relaxed/simple;
+	bh=lN9T+SnZbhrnmjxbeR5SCQJLtUqETglj+iS5dEIdadI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=TD2PxWLc6jfi35QqlsDbAMHG+Nx4oiPdmWBMFUWificU4agievQITRr61dbi4zgal5A05k+5T0a3t7BhB+Z5o0P7ALdwtUbpWxeOwX9pHcPRIVlkKhni5mh+U3/AbSCLo04165iBz85Y7YNMZgjQsDkRuv8AfNey6IuIRA5OFoc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iN4XZ0Xb; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=tmVYBncbaR8KGVx1bpUxPm+vGkE40Q7/MwP2JI5FSm+me5jOHp47fHVHsGiIN/MH+ZsIpfzUdpKJ6QFXOf+FeBZh7dBDALgwFY9imciE/FnJRecOTEHa2GjJAKv7Iuk+shzzgPPzQzNul1ibL6hDpE/qERO7z6ql3nnYbjcm/uM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W92aILws; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iN4XZ0Xb"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3048AC2BD05;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W92aILws"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B2F6FC4AF15;
 	Wed, 16 Sep 2026 14:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1789568583;
-	bh=kL7kpIG3qA+4AejsWI3BHXBQrYH/6KaVhM51d9C5+XE=;
+	bh=lN9T+SnZbhrnmjxbeR5SCQJLtUqETglj+iS5dEIdadI=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=iN4XZ0XbH7ZSY5939J76DcOjxQd40aWBMdxb1yLM+X3ruSQRps3dTMB9VbJVxg8OW
-	 C5nH9t+vkXxZD9HlpX9spThfWpNfXfXDgjkuGHVu6wVMRulRN1JsWUwlc6zLjCA0jG
-	 nWw69bsWGt9psGSiyryMAOAfeI7oBUT8B4ymsPI9jYQjV4sepCpGjSTdWui5NiDrks
-	 kOYiCP2DvcPQpTgAAEJZLTWaSMGxuEzne692qhd+yjpciI1+buce1TIG3Xp2hAVhTA
-	 B5H86kztNYwWocdFd97ZJI4MT4l0Si8Lq0bAboKq2+5vcrfad0tp9ublM8gg3Kjqlw
-	 jNFmQk7lRMUkw==
+	b=W92aILwsEI2LZQNiHqgP5wC42RfgE1VXqajS5g+oSqXrebzaZozYR0nHF8oVcUiqi
+	 bKsnU3t828WTbI8WI8byNNa5l3UHxOQP3/ToJq/BcS3RiVmeNEnxtunnkcPcsIDWMt
+	 qsusMTwk8q2X3zYEdr73VEGCD+7DqiZXUM/c21DCz14FJe+YTw5K8qtKFPdjlpvt7n
+	 +PDsM+brQt8ADZGQ8blUvxvF0H5DCxGxZ5gbv7UdNQzG8jphrzE9C7WAD8Yy3f0BjF
+	 Z/VOSWmOBy0uTP4VfnzWConx2C6XQWnNUq7dUjBrbuPdn9n8Vp+co6twGVhVSHaKEt
+	 fh7CeWAxEoB4A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19091C982C3;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D38CC982C3;
 	Wed, 16 Sep 2026 14:23:03 +0000 (UTC)
 From: Muzaffer Kadir via B4 Relay <devnull+muzafferkadir.mainlining.org@kernel.org>
-Date: Wed, 16 Sep 2026 17:22:15 +0300
-Subject: [PATCH v2 10/19] dt-bindings: display/msm: qcom, mdp5: Add MSM8952
- compatible
+Date: Wed, 16 Sep 2026 17:22:19 +0300
+Subject: [PATCH v2 14/19] soc: qcom: ubwc: Add UBWC config for MSM8952
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260916-msm8952-initial-support-v2-10-798c2602dde1@mainlining.org>
+Message-Id: <20260916-msm8952-initial-support-v2-14-798c2602dde1@mainlining.org>
 References: <20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org>
 In-Reply-To: <20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org>
 To: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>, 
@@ -75,13 +74,15 @@ Cc: David Heidelberg <david@ixit.cz>, Dang Huynh <danct12@riseup.net>,
  iommu@lists.linux.dev, mfd@lists.linux.dev, dri-devel@lists.freedesktop.org, 
  freedreno@lists.freedesktop.org, Krzysztof Kozlowski <krzk@kernel.org>, 
  linux-pm@vger.kernel.org, linux-input@vger.kernel.org, 
- Muzaffer Kadir <muzafferkadir@mainlining.org>
+ Muzaffer Kadir <muzafferkadir@mainlining.org>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
+ Abel Vesa <abel.vesa@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789568579; l=837;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789568579; l=1046;
  i=muzafferkadir@mainlining.org; s=20260816; h=from:subject:message-id;
- bh=j1cyFUrA8K2mGnvaltP8lasGm8e1/N+retm6o6lMinU=;
- b=Sd9tzlC4Xu7TGLcWPZSbxF86KgcgyzvvPzeBb0XmLLia8ok8x+YRMBOuc+MkIw6ZdW/DgUnx2
- G+qU3ERkFWRCw3Jz57IG09IrV5ZbH30BPOxo/j/eDslCfWwEk4LsBgD
+ bh=wTQZRJDoSbh+aK8zsamDgiJT0DGZohLPPtS+hjHbra4=;
+ b=rLiDG4DvfwWoU6/aTYqLOcLfSWhlO5y5ZHJQUGn5Ge1EbSNtHYyEECiEtJrskfe76FWn9Psvk
+ uq/4jddWBXrDmYOw4xz+neldTl20XqZPdDe5PLW7bqC9rNzwJLMhqpZ
 X-Developer-Key: i=muzafferkadir@mainlining.org; a=ed25519;
  pk=4zkv4suQ3cYcO4Z7CrV8JSSjEGLBGepUtvQCFjgnYIU=
 X-Endpoint-Received: by B4 Relay for muzafferkadir@mainlining.org/20260816
@@ -91,25 +92,27 @@ Reply-To: muzafferkadir@mainlining.org
 
 From: Muzaffer Kadir <muzafferkadir@mainlining.org>
 
-Add the compatible for the MDP5 found on MSM8952.
+MSM8952 uses Adreno 405 and predates ubwc just like MSM8939.
 
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
 Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
 ---
- Documentation/devicetree/bindings/display/msm/qcom,mdp5.yaml | 1 +
+ drivers/soc/qcom/ubwc_config.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/display/msm/qcom,mdp5.yaml b/Documentation/devicetree/bindings/display/msm/qcom,mdp5.yaml
-index 2735c78b0b67..2f0a32a3f586 100644
---- a/Documentation/devicetree/bindings/display/msm/qcom,mdp5.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/qcom,mdp5.yaml
-@@ -26,6 +26,7 @@ properties:
-               - qcom,msm8916-mdp5
-               - qcom,msm8917-mdp5
-               - qcom,msm8937-mdp5
-+              - qcom,msm8952-mdp5
-               - qcom,msm8953-mdp5
-               - qcom,msm8974-mdp5
-               - qcom,msm8976-mdp5
+diff --git a/drivers/soc/qcom/ubwc_config.c b/drivers/soc/qcom/ubwc_config.c
+index 36c90f72943f..53c1df3ca641 100644
+--- a/drivers/soc/qcom/ubwc_config.c
++++ b/drivers/soc/qcom/ubwc_config.c
+@@ -130,6 +130,7 @@ static const struct of_device_id qcom_ubwc_configs[] __maybe_unused = {
+ 	{ .compatible = "qcom,msm8937", .data = &ubwc_1_0_hbb14 },
+ 	{ .compatible = "qcom,msm8929", .data = &no_ubwc_data },
+ 	{ .compatible = "qcom,msm8939", .data = &no_ubwc_data },
++	{ .compatible = "qcom,msm8952", .data = &no_ubwc_data },
+ 	{ .compatible = "qcom,msm8953", .data = &ubwc_1_0_hbb14 },
+ 	{ .compatible = "qcom,msm8956", .data = &no_ubwc_data },
+ 	{ .compatible = "qcom,msm8974", .data = &no_ubwc_data },
 
 -- 
 2.55.0
