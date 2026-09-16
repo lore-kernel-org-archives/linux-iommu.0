@@ -1,136 +1,392 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73C714E2349
-	for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 13:28:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 853C84F30EF;
+	Wed, 16 Sep 2026 14:23:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789565336; cv=none; b=S23bbTNtJ5lxqLUAx0gD1RxnhOKe1JnCwNYuAHp0DYno0CEjyq0c6sCzPLKLZhDuamqsuvXctZkcfOk6oOCJOYechvojVIEBDi4SAbXTvzfe0rQasfIvPjugUSMSAsx3uIMgtwrIDskmGIQf/FPgLPb7h2tTU0/Xa4M9mCWJMhU=
+	t=1789568582; cv=none; b=IoFe39ZuZWAFkIJy8H9auERVzWm8boVMzv1CjAHhvOUptkGfhW56GIjv83HoLCHJw5fIU1RSCdpzKDI7E7oN63Cgkyck1pe4Fncl5bNRfXvBVbUoj+sVTkxE9O0KIoKIPFfM4afVtsG5BVrpkrGKUMV0CjU7+D1hhp/WaQgG+yU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789565336; c=relaxed/simple;
-	bh=TqbeODdYQEEftgsPxXsYkF97yhYGAJosPirzjv//pFQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Oot4QvJbTs/n7vv2RBQwGMxxNg9BejyMjwCG5egZAlIGIcTc0CPs83Ox/ZCyMHE84SEVAD4rhQc5fSyHFJ73PpTsJUOwq3Unt8e/sxhHedMV70zHOzgF/qPsBsBdyzB4zFohKQUcYWosx0OyLYGiIiHZhZhiMAySVbicKVSD5L8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jDIY5hPn; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789568582; c=relaxed/simple;
+	bh=lLOwADckT4HRkCNEFypEGoduXnEFTxA1o9kfE8PKOJg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=XB8zbZec9ms3EqYavL0aOv5o6vsc3EC7qE7C51hn5Wn9aaItY1OrQlDqEGobMzvvQzvVtW49yd0jtP9G9dC5igAGLNOC26WI4pq+E9rtEuLy/uYVAyDysLWDzUiDzb6MKtn7S9rTLomT+uyoquEfStG4Q43ZuCwx1tMGg9X68KA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jsi+PY4v; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jDIY5hPn"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e7c6dbc60so395325e9.3
-        for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 06:28:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789565333; x=1790170133; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=TqbeODdYQEEftgsPxXsYkF97yhYGAJosPirzjv//pFQ=;
-        b=jDIY5hPnBSIAWFO0AYjhn/q2cpndDcBj/UiDN40Wrovub17jLmk9mTB3pKUprgA824
-         poNK49bWhFh4tTwZPtVoyUKJKRUs1W26QOHE0L4rsZypuGGliTAic5DkjY/sZ+l0WMcK
-         Nx72Drr8iC3jF4MrPcxhvWarVafN9Fm8BFsVKVZVwefLhAUaDLXylM9YVdnZK/nyqtmM
-         LNgS2GjicZD2rq6wNItuvvJytO7rDg00xKP6liEzmlYrSIwt3RGX/86sDAnmrzPN6nUe
-         UCsIsut+zQREs5kxApamvv5iO3JS4TRSi/6KIQSfYGtFNnmug1Agxz+xWmO039Aucq8U
-         21Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789565333; x=1790170133;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=TqbeODdYQEEftgsPxXsYkF97yhYGAJosPirzjv//pFQ=;
-        b=j52V0mwOw4+dRlQ980fbmYMN9+JFzf1PeTxs+RcUG1wL3n+kE3bJOwzTgjgXZ4rg5p
-         WBFIVtheBHVm0lCQ2p65ODXPsFvflY47VSny9Gs4Q3xsOsvu0DCGiGwl4kMFDFETzH1O
-         tg73evOIQCxKcSzclrQOqIoKsAxxH80nj4gphNwVqlE5H9T1qDzhkTL6FDL7FUE/UsbC
-         j26cgihog4QAoSf/QjLJnqOomgISUAZCvYcwamCuiaj12hUbSO6VWpzCCKMH5Miru/JY
-         g5F08b9Vl1xPSU7iVxdx4lR9+u4v9saSJnrSg7aWmx5fX7L1fKXBYqevihH2MdrG3v/D
-         HdHA==
-X-Forwarded-Encrypted: i=1; AKwUvBwM3jwlHBRt6354rKTZUA033YY1U+W445XAamdEPSAP0YiFHgYQ2Vv+nC9Ff9osrkqftKpwiA==@lists.linux.dev
-X-Gm-Message-State: AFuF++kCHvNccEFpuZf+G2Z/8hoaSMJa2CqpJ/1uuV5aNNBvCqpZmPWp
-	YMi4eS13Eanusg+UmXwzf+hOyyVxj8VQBnZjm/epZ0R79D/08iCjpbz1
-X-Gm-Gg: AYBFou1So6MK511rPtzcJNcG+/UM1fWsylsgqEtg1ET4loQYw2Lg/lKKSvuhTwAYFCo
-	4SJlzJJqzn9QM+BQMef55xa6xDDNPK5id5lMVAyRlUphswOjEzm7vS/7iE/plpA0apgBgfwCoZP
-	Raens9LSNokd/qm/LPWaqOL1Knrh1Dzcau7wIVZFxlue5Ra9vg29TY9LsIjR7A+DL7Xf9nsFFkr
-	rQeAH30Rk2QuGa35+e/ajA0GPyKMoMKwP1aggNpEIo9gThO/aUUaPUVNxLoVd6eaTHn0KjthBML
-	ea5wdey4F46YQgHlb04VKRaO8nHRMRlCxiH2Uue8pGq9WCxzLqHVYnFNWHaTtDl3HhCymeZpS9b
-	lLw6yKw17NzX5wAZcKzh6MyQzQWw7buVhnPVpWj4bEhz+ZAugLyLu/7RPapMce0a5SGbLSCakIM
-	zN87MfPFyoG27YceDM7p0qFNIAj30N9DODOXCUpSwQrTcXxSgIP9deQPi4ixSf+fskUO/ySzGGX
-	W085dqbQZcd9/OJf70W2BTM1zR7u/d5fliHN7rTBc9kLR+fAEe/1MMrmmpNKpq4dLy+YXlhOAcR
-	qlw=
-X-Received: by 2002:a05:600c:4e89:b0:49e:745d:5768 with SMTP id 5b1f17b1804b1-49eac4112e9mr27160505e9.0.1789565332521;
-        Wed, 16 Sep 2026 06:28:52 -0700 (PDT)
-Received: from OrangePi5-Plus.BB-HOME (20014C4E1B8E02001A623C292D45A2B3.dsl.pool.telekom.hu. [2001:4c4e:1b8e:200:1a62:3c29:2d45:a2b3])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49e847da0cdsm594135e9.2.2026.09.16.06.28.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2026 06:28:52 -0700 (PDT)
-From: Igor Paunovic <royalnet026@gmail.com>
-To: Jiaxing Hu <gahing@gahingwoo.com>
-Cc: Tomeu Vizoso <tomeu@tomeuvizoso.net>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Ulf Hansson <ulfh@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Oded Gabbay <ogabbay@kernel.org>,
-	Elaine Zhang <zhangqing@rock-chips.com>,
-	Abel Vesa <abel.vesa@oss.qualcomm.com>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	Sidong Yang <sidong.yang@furiosa.ai>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Chaoyi Chen <chaoyi.chen@rock-chips.com>,
-	Diederik de Haas <diederik@cknow-tech.com>,
-	Alexey Charkov <alchark@flipper.net>,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Igor Paunovic <royalnet026@gmail.com>
-Subject: Re: [PATCH v13 03/14] accel/rocket: wait for a running IRQ handler before resetting a core
-Date: Wed, 16 Sep 2026 15:28:24 +0200
-Message-ID: <20260916132824.13527-1-royalnet026@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260915104328.45901-4-gahing@gahingwoo.com>
-References: <20260915104328.45901-1-gahing@gahingwoo.com> <20260915104328.45901-4-gahing@gahingwoo.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jsi+PY4v"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2B681C2BCF7;
+	Wed, 16 Sep 2026 14:23:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1789568582;
+	bh=lLOwADckT4HRkCNEFypEGoduXnEFTxA1o9kfE8PKOJg=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=Jsi+PY4vgSKtULyzzVhYss5GjsEY8mzH7QwlJi9IpYYDq3+QAeFSJDPG+0Tp3nQ4V
+	 kC9Bu7cKtz/jV/l8OFeA0DBW3sqQixJLIqMCOPNBG4z3YPNEHQk12VEY5qr2EqM5sr
+	 /qDaq0MVvCkhTGCQb8GawB5WLPI5ymEfcTqBnEOESkIj7ex7oY2ojo4c0DB/W6Ik2+
+	 M5Xo5uS+usSOp3r20Kn4vHdghe6sBvOziBb0SuQpiUoifKxGD+49UGi2QSTke5J56o
+	 N4PFpji4QLS3fC0ReU85Qw2dB+51sJQaCXfRDB9aoHmfByihiMBL3EkAkNokLeOJIF
+	 mJ00LD/0Ivjpg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CF2C982C3;
+	Wed, 16 Sep 2026 14:23:02 +0000 (UTC)
+From: Muzaffer Kadir via B4 Relay <devnull+muzafferkadir.mainlining.org@kernel.org>
+Date: Wed, 16 Sep 2026 17:22:06 +0300
+Subject: [PATCH v2 01/19] dt-bindings: clock: qcom: Add MSM8952 global
+ clock controller
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260916-msm8952-initial-support-v2-1-798c2602dde1@mainlining.org>
+References: <20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org>
+In-Reply-To: <20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org>
+To: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>, 
+ Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+ Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, 
+ Ulf Hansson <ulfh@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Dmitry Baryshkov <lumag@kernel.org>, 
+ Abhinav Kumar <abhinav.kumar@linux.dev>, 
+ Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Robert Marko <robimarko@gmail.com>, Guru Das Srinagesh <linux@gurudas.dev>, 
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Kees Cook <kees@kernel.org>, 
+ Tony Luck <tony.luck@intel.com>, 
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: David Heidelberg <david@ixit.cz>, Dang Huynh <danct12@riseup.net>, 
+ phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org, 
+ iommu@lists.linux.dev, mfd@lists.linux.dev, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, Krzysztof Kozlowski <krzk@kernel.org>, 
+ linux-pm@vger.kernel.org, linux-input@vger.kernel.org, 
+ Muzaffer Kadir <muzafferkadir@mainlining.org>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789568578; l=9825;
+ i=muzafferkadir@mainlining.org; s=20260816; h=from:subject:message-id;
+ bh=qlwLi8BQ1JRKl7cUmSOPyYwtwWj/q779GnrL9Yd3Pc4=;
+ b=SMfvAMWd451aPzv7lThIxnQ19x0ofg0KrOZ+A7Mjune+Qs9swLWi4o+4iJGqzeW/5hNyVkjzV
+ AZLHgxHLgL7Cq8mKicFKG87qcRzw8GEGPI/H9WRTEqKPb0BHM208vlU
+X-Developer-Key: i=muzafferkadir@mainlining.org; a=ed25519;
+ pk=4zkv4suQ3cYcO4Z7CrV8JSSjEGLBGepUtvQCFjgnYIU=
+X-Endpoint-Received: by B4 Relay for muzafferkadir@mainlining.org/20260816
+ with auth_id=954
+X-Original-From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Reply-To: muzafferkadir@mainlining.org
 
-Hi Jiaxing,
+From: Muzaffer Kadir <muzafferkadir@mainlining.org>
 
-Thanks for flagging the job_lock change in the cover. I re-ran the
-same protocol today on v13 as posted, 2+3 and 2+3+4, three runs each,
-same board, base and config as on 12 September (JOB_TIMEOUT_MS=2,
-PROVE_LOCKING, DEBUG_ATOMIC_SLEEP): 73 induced resets with nothing
-from the driver beyond the timeout message itself, no MMU faults, no
-lockdep report or warning, and lockdep still armed at the end on both
-kernels. Of the 126 inferences scored, 118 matched the CPU reference
-within 1 on all 48 channels, and 8 missed on all 48 with the channels
-the scorer prints reading 0x80; in the two runs traced with the
-kprobe, those 5 results sit exactly where the 5 -ECANCELED completions
-do.
+Add a device tree binding to describe clocks, resets and power domains
+provided by the global clock controller on MSM8952 SoC.
 
-The limits are those of my 12 September mail (all resets on core 0,
-one client), plus one more: the model is a single 1x1 convolution,
-which Mesa submits as a one-task job (one completion interrupt per
-good inference), so hw_submit() never ran from the IRQ thread, which
-the race you describe needs. So this shows the lock adds no lockdep
-report or hang on this path, not that it closes the race. On that
-basis the tag stands for the v13 form of 3/14, with the same comment:
+Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
+---
+ .../bindings/clock/qcom,gcc-msm8952.yaml           |  56 ++++++
+ include/dt-bindings/clock/qcom,gcc-msm8952.h       | 217 +++++++++++++++++++++
+ 2 files changed, 273 insertions(+)
 
-Tested-by: Igor Paunovic <royalnet026@gmail.com> # RK3588, three cores, induced reset, JOB_TIMEOUT_MS=2
+diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8952.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8952.yaml
+new file mode 100644
+index 000000000000..274dde633e17
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8952.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: GPL-2.0-only
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/qcom,gcc-msm8952.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Global Clock & Reset Controller on MSM8952
++
++maintainers:
++  - Muzaffer Kadir <muzafferkadir@mainlining.org>
++
++description: |
++  Qualcomm global clock control module provides the clocks, resets and power
++  domains on MSM8952.
++
++  See also::
++    include/dt-bindings/clock/qcom,gcc-msm8952.h
++
++properties:
++  compatible:
++    enum:
++      - qcom,gcc-msm8952
++
++  clocks:
++    items:
++      - description: XO source
++      - description: Always-on XO source
++      - description: DSI phy instance 0 dsi clock
++      - description: DSI phy instance 0 byte clock
++
++  clock-names:
++    items:
++      - const: xo
++      - const: xo_a
++      - const: dsi0pll
++      - const: dsi0pllbyte
++
++required:
++  - compatible
++  - '#power-domain-cells'
++
++allOf:
++  - $ref: qcom,gcc.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    clock-controller@1800000 {
++      compatible = "qcom,gcc-msm8952";
++      #clock-cells = <1>;
++      #reset-cells = <1>;
++      #power-domain-cells = <1>;
++      reg = <0x01800000 0x80000>;
++    };
++...
+diff --git a/include/dt-bindings/clock/qcom,gcc-msm8952.h b/include/dt-bindings/clock/qcom,gcc-msm8952.h
+new file mode 100644
+index 000000000000..fc592228675d
+--- /dev/null
++++ b/include/dt-bindings/clock/qcom,gcc-msm8952.h
+@@ -0,0 +1,217 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright 2020 Linaro Limited
++ * Copyright 2026 Muzaffer Kadir <muzafferkadir@mainlining.org>
++ */
++
++#ifndef _DT_BINDINGS_CLK_MSM_GCC_8952_H
++#define _DT_BINDINGS_CLK_MSM_GCC_8952_H
++
++#define GPLL0						0
++#define GPLL0_VOTE					1
++#define GPLL3						2
++#define GPLL3_EARLY					3
++#define GPLL4						4
++#define GPLL4_VOTE					5
++#define GPLL6						6
++#define GPLL6_VOTE					7
++#define CAMSS_TOP_AHB_CLK_SRC				8
++#define APSS_AHB_CLK_SRC				9
++#define CSI0_CLK_SRC					10
++#define CSI1_CLK_SRC					11
++#define GFX3D_CLK_SRC					12
++#define VFE0_CLK_SRC					13
++#define BLSP1_QUP1_I2C_APPS_CLK_SRC			14
++#define BLSP1_QUP1_SPI_APPS_CLK_SRC			15
++#define BLSP1_QUP2_I2C_APPS_CLK_SRC			16
++#define BLSP1_QUP2_SPI_APPS_CLK_SRC			17
++#define BLSP1_QUP3_I2C_APPS_CLK_SRC			18
++#define BLSP1_QUP3_SPI_APPS_CLK_SRC			19
++#define BLSP1_QUP4_I2C_APPS_CLK_SRC			20
++#define BLSP1_QUP4_SPI_APPS_CLK_SRC			21
++#define BLSP1_UART1_APPS_CLK_SRC			22
++#define BLSP1_UART2_APPS_CLK_SRC			23
++#define CCI_CLK_SRC					24
++#define CAMSS_GP0_CLK_SRC				25
++#define CAMSS_GP1_CLK_SRC				26
++#define JPEG0_CLK_SRC					27
++#define MCLK0_CLK_SRC					28
++#define MCLK1_CLK_SRC					29
++#define CSI0PHYTIMER_CLK_SRC				30
++#define CSI1PHYTIMER_CLK_SRC				31
++#define CPP_CLK_SRC					32
++#define CRYPTO_CLK_SRC					33
++#define GP1_CLK_SRC					34
++#define GP2_CLK_SRC					35
++#define GP3_CLK_SRC					36
++#define BYTE0_CLK_SRC					37
++#define ESC0_CLK_SRC					38
++#define MDP_CLK_SRC					39
++#define PCLK0_CLK_SRC					40
++#define VSYNC_CLK_SRC					41
++#define PDM2_CLK_SRC					42
++#define SDCC1_APPS_CLK_SRC				43
++#define SDCC2_APPS_CLK_SRC				44
++#define USB_HS_SYSTEM_CLK_SRC				45
++#define VCODEC0_CLK_SRC					46
++#define GCC_BLSP1_AHB_CLK				47
++#define GCC_BLSP1_QUP1_I2C_APPS_CLK			48
++#define GCC_BLSP1_QUP1_SPI_APPS_CLK			49
++#define GCC_BLSP1_QUP2_I2C_APPS_CLK			50
++#define GCC_BLSP1_QUP2_SPI_APPS_CLK			51
++#define GCC_BLSP1_QUP3_I2C_APPS_CLK			52
++#define GCC_BLSP1_QUP3_SPI_APPS_CLK			53
++#define GCC_BLSP1_QUP4_I2C_APPS_CLK			54
++#define GCC_BLSP1_QUP4_SPI_APPS_CLK			55
++#define GCC_BLSP1_UART1_APPS_CLK			56
++#define GCC_BLSP1_UART2_APPS_CLK			57
++#define GCC_BOOT_ROM_AHB_CLK				58
++#define GCC_CAMSS_CCI_AHB_CLK				59
++#define GCC_CAMSS_CCI_CLK				60
++#define GCC_CAMSS_CSI0_AHB_CLK				61
++#define GCC_CAMSS_CSI0_CLK				62
++#define GCC_CAMSS_CSI0PHY_CLK				63
++#define GCC_CAMSS_CSI0PIX_CLK				64
++#define GCC_CAMSS_CSI0RDI_CLK				65
++#define GCC_CAMSS_CSI1_AHB_CLK				66
++#define GCC_CAMSS_CSI1_CLK				67
++#define GCC_CAMSS_CSI1PHY_CLK				68
++#define GCC_CAMSS_CSI1PIX_CLK				69
++#define GCC_CAMSS_CSI1RDI_CLK				70
++#define GCC_CAMSS_CSI_VFE0_CLK				71
++#define GCC_CAMSS_GP0_CLK				72
++#define GCC_CAMSS_GP1_CLK				73
++#define GCC_CAMSS_ISPIF_AHB_CLK				74
++#define GCC_CAMSS_JPEG0_CLK				75
++#define GCC_CAMSS_JPEG_AHB_CLK				76
++#define GCC_CAMSS_JPEG_AXI_CLK				77
++#define GCC_CAMSS_MCLK0_CLK				78
++#define GCC_CAMSS_MCLK1_CLK				79
++#define GCC_CAMSS_MICRO_AHB_CLK				80
++#define GCC_CAMSS_CSI0PHYTIMER_CLK			81
++#define GCC_CAMSS_CSI1PHYTIMER_CLK			82
++#define GCC_CAMSS_AHB_CLK				83
++#define GCC_CAMSS_TOP_AHB_CLK				84
++#define GCC_CAMSS_CPP_AHB_CLK				85
++#define GCC_CAMSS_CPP_CLK				86
++#define GCC_CAMSS_VFE0_CLK				87
++#define GCC_CAMSS_VFE0_AHB_CLK				88
++#define GCC_CAMSS_VFE0_AXI_CLK				89
++#define GCC_CRYPTO_AHB_CLK				90
++#define GCC_CRYPTO_AXI_CLK				91
++#define GCC_CRYPTO_CLK					92
++#define GCC_OXILI_GMEM_CLK				93
++#define GCC_GP1_CLK					94
++#define GCC_GP2_CLK					95
++#define GCC_GP3_CLK					96
++#define GCC_MDSS_AHB_CLK				97
++#define GCC_MDSS_AXI_CLK				98
++#define GCC_MDSS_BYTE0_CLK				99
++#define GCC_MDSS_ESC0_CLK				100
++#define GCC_MDSS_MDP_CLK				101
++#define GCC_MDSS_PCLK0_CLK				102
++#define GCC_MDSS_VSYNC_CLK				103
++#define GCC_MSS_CFG_AHB_CLK				104
++#define GCC_OXILI_AHB_CLK				105
++#define GCC_OXILI_GFX3D_CLK				106
++#define GCC_PDM2_CLK					107
++#define GCC_PDM_AHB_CLK					108
++#define GCC_PRNG_AHB_CLK				109
++#define GCC_SDCC1_AHB_CLK				110
++#define GCC_SDCC1_APPS_CLK				111
++#define GCC_SDCC2_AHB_CLK				112
++#define GCC_SDCC2_APPS_CLK				113
++#define GCC_GTCU_AHB_CLK				114
++#define GCC_JPEG_TBU_CLK				115
++#define GCC_MDP_TBU_CLK					116
++#define GCC_SMMU_CFG_CLK				117
++#define GCC_VENUS_TBU_CLK				118
++#define GCC_VFE_TBU_CLK					119
++#define GCC_USB2A_PHY_SLEEP_CLK				120
++#define GCC_USB_HS_AHB_CLK				121
++#define GCC_USB_HS_SYSTEM_CLK				122
++#define GCC_VENUS0_AHB_CLK				123
++#define GCC_VENUS0_AXI_CLK				124
++#define GCC_VENUS0_VCODEC0_CLK				125
++#define GCC_APSS_TCU_CLK				126
++#define GCC_GFX_TCU_CLK					127
++#define GCC_BIMC_GFX_CLK				128
++#define GCC_BIMC_GPU_CLK				129
++#define GCC_MSS_Q6_BIMC_AXI_CLK				130
++#define GCC_GFX_TBU_CLK					131
++#define GCC_CPP_TBU_CLK					132
++#define USB_FS_SYSTEM_CLK_SRC				133
++#define USB_FS_IC_CLK_SRC				134
++#define GCC_USB_FS_AHB_CLK				135
++#define GCC_USB_FS_IC_CLK				136
++#define GCC_USB_FS_SYSTEM_CLK				137
++#define GCC_VENUS0_CORE0_VCODEC0_CLK			138
++#define GCC_VENUS0_CORE1_VCODEC0_CLK			139
++#define GCC_OXILI_TIMER_CLK				140
++#define GCC_USB_HS_PHY_CFG_AHB_CLK			141
++#define CSI2_CLK_SRC					142
++#define GCC_CAMSS_CSI2_AHB_CLK				143
++#define GCC_CAMSS_CSI2_CLK				144
++#define GCC_CAMSS_CSI2PHY_CLK				145
++#define GCC_CAMSS_CSI2PIX_CLK				146
++#define GCC_CAMSS_CSI2RDI_CLK				147
++#define SDCC1_ICE_CORE_CLK_SRC				148
++#define GCC_SDCC1_ICE_CORE_CLK				149
++#define BLSP2_QUP1_I2C_APPS_CLK_SRC			150
++#define BLSP2_QUP1_SPI_APPS_CLK_SRC			151
++#define BLSP2_QUP2_I2C_APPS_CLK_SRC			152
++#define BLSP2_QUP2_SPI_APPS_CLK_SRC			153
++#define BLSP2_QUP3_I2C_APPS_CLK_SRC			154
++#define BLSP2_QUP3_SPI_APPS_CLK_SRC			155
++#define BLSP2_QUP4_I2C_APPS_CLK_SRC			156
++#define BLSP2_QUP4_SPI_APPS_CLK_SRC			157
++#define BLSP2_UART1_APPS_CLK_SRC			158
++#define BLSP2_UART2_APPS_CLK_SRC			159
++#define GCC_BLSP2_AHB_CLK				160
++#define GCC_BLSP2_QUP1_I2C_APPS_CLK			161
++#define GCC_BLSP2_QUP1_SPI_APPS_CLK			162
++#define GCC_BLSP2_QUP2_I2C_APPS_CLK			163
++#define GCC_BLSP2_QUP2_SPI_APPS_CLK			164
++#define GCC_BLSP2_QUP3_I2C_APPS_CLK			165
++#define GCC_BLSP2_QUP3_SPI_APPS_CLK			166
++#define GCC_BLSP2_QUP4_I2C_APPS_CLK			167
++#define GCC_BLSP2_QUP4_SPI_APPS_CLK			168
++#define GCC_BLSP2_UART1_APPS_CLK			169
++#define GCC_BLSP2_UART2_APPS_CLK			170
++#define VFE1_CLK_SRC					171
++#define GCC_CAMSS_VFE1_CLK				172
++#define GCC_CAMSS_VFE1_AHB_CLK				173
++#define GCC_CAMSS_VFE1_AXI_CLK				174
++#define GCC_CAMSS_CSI_VFE1_CLK				175
++#define MCLK2_CLK_SRC					176
++#define GCC_CAMSS_MCLK2_CLK				177
++#define GCC_VFE1_TBU_CLK				178
++#define GCC_IPA_TBU_CLK					179
++#define GCC_CAMSS_CPP_AXI_CLK				180
++
++/* Indexes for GDSCs */
++#define VENUS_GDSC				0
++#define MDSS_GDSC				1
++#define JPEG_GDSC				2
++#define VFE0_GDSC				3
++#define VFE1_GDSC				4
++#define OXILI_GX_GDSC				5
++#define VENUS_CORE0_GDSC			6
++#define VENUS_CORE1_GDSC			7
++#define CPP_GDSC				8
++
++/* Indexes for Resets */
++#define RST_CAMSS_MICRO_BCR			0
++#define RST_USB_HS_BCR				1
++#define RST_QUSB2_PHY_BCR			2
++#define RST_USB2_HS_PHY_ONLY_BCR		3
++#define RST_USB_HS_PHY_CFG_AHB_CBCR		4
++#define RST_USB_FS_BCR				5
++#define RST_CAMSS_CSI1PIX_CBCR			6
++#define RST_CAMSS_CSI_VFE1_CBCR			7
++#define RST_CAMSS_VFE1_CBCR			8
++#define RST_CAMSS_CPP_CBCR			9
++#define RST_MSS_BCR				10
++#define RST_MDSS_BCR				11
++
++#endif
 
-If 4/14 changes shape in v14, I will re-run that arm. The scripts and
-the tallies were prepared with an LLM assistant; every number above
-was counted from the raw files of each run (scorer output, kernel and
-serial logs, kprobe trace), not from the scripts' summaries.
+-- 
+2.55.0
 
-Regards,
-Igor
+
