@@ -1,317 +1,167 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73D103B9D83
-	for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 06:23:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789539814; cv=none; b=CsGnnkpb3Bo5ylnAAfInAKz0J1Jyl+/ituhmxSBITvi69hJTJzhU8VSd3znY7ROYTx58NXtOwgUkHP9CM51XyZr/+XZinEUPQaZPBhyAfWcfQbKmJl3ZVouXYV9MCqR/N+tvIKck1BvbTRjvOsEK8z63HkFLsd1C8uM1BGt/Rp0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789539814; c=relaxed/simple;
-	bh=KUtBdq12OEY1wSIMIJXVPi81koLSIF0WSo9YTwXXD4s=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=oO4kTyvbPdI74Y2NlWeUpgx2JIvi0kKue8TrqTKU+Oa4JuhEtt+4+ocWWUQ7rZGTMU0EOOeEFR8xOkMLvc+1Ah/0rMWrra4CwEeMHXtpJdVAvcitGuzv/RW9kc7lFhhtRJPIihHTwRDkh7Gh3N3BrfNbNSvYWqS5qXlVMV7hMDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=brqwwvhe; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9D893C0603
+	for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 06:59:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789542001; cv=fail; b=resMRR0i5gKRgaxs2/nifDhFlNHA8SOUPiBG8IG4Xq6H73kmrtr2Yzzgi9IOrKRhHVFpT0qfrKiSs1EfgXutjD7aXXcGNB1fN90Q3Kq6WC0dr9uh8GgGVLrGAh4AntVmxebuRlinbLAa08kG0yErI2dMQmIabMS7OYluB3C/P90=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789542001; c=relaxed/simple;
+	bh=r2Z5uOmYYQPIIDJaU83KHUL1mym6Og96C6HjVMCyGSM=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=EpjennTKAEzHx8pBuMEUQOAO4Q29bcoe4OBCIv/xWPL0PxRuj8NCEdDFGSQ7TLh6LpuRz1ZuxhVBIWE3GBVDvMO7hXQCR4b1LIxdsmMIXHMxv2kcKfOaHA4Vk8VveqSwHcWqJXzdDKvlwFudezR/QBkFvW7aLgBusZugb3HIQnc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h2V6UJDu; arc=fail smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="brqwwvhe"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h2V6UJDu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789539813; x=1821075813;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KUtBdq12OEY1wSIMIJXVPi81koLSIF0WSo9YTwXXD4s=;
-  b=brqwwvhecDCJGLjTTaKDKp7BcYGH8JjyPr+irR4/qaSuM5X+/6nCwxkT
-   bD2hn2AVQPnl95XlPFUjBEV8BQvYdvniTJMos1z8nwrzHvzko0nD8Oc2r
-   xF8UDBWT9MSJxg+e1tJrSjLU2bnNO7yDuHB3q8wqVTQOGfxlkL2unh9If
-   w7zyJnfdJhFzEg4doctOeFM+kbetOo8uHdRfExK0gw8kT/SR9IHL0QEpK
-   ACxRwv2bnaNh9zV0AyG6N6ukA1a92SpO4cOqh+3W4Zej9VwNhdGePXm60
-   q7MaNwhnfDkGfpfL+P4yqc82sGyQk57gAVESItmKe0QXjx1ymEzbtO7QK
-   w==;
-X-CSE-ConnectionGUID: OAB9mT1qQdWk7inIvD+fxA==
-X-CSE-MsgGUID: o79xXDaZTsCoRSSWz8+Zlg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="93612114"
+  t=1789541999; x=1821077999;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=r2Z5uOmYYQPIIDJaU83KHUL1mym6Og96C6HjVMCyGSM=;
+  b=h2V6UJDuLqxbd3ZJKX8lg+WqJ5CWKesJGZa8FqzypO7RPVa6BDHbJ4Bv
+   aLhxWc+27vbOPQIQRH9MIEH2zedI3CWQTlkp0nQ0g7z66LwP4QqDdfMvq
+   eDeNODhUMOwYUj5msfpDVUGX6xUBtaHIfqkDIc+dd//KmmTemmVvNLhTN
+   YUGeNr2DpHDe3Qtynw6sxhzfMXsZ8yCbFht6GGbBNt+xnS6wHxcmwqfC2
+   igZSPfxJtFJbg7Gmj1QnU7E7aAW+StrsQKtThdlwwSk73HQSj8VY86hgd
+   dyVljnijiunAmEIb6QebQnhx6+HAaEC+2ms1rHeJpbmzF5nhnRsRgUXpE
+   Q==;
+X-CSE-ConnectionGUID: eu4Dzin4TF6fD+lmXZnYuQ==
+X-CSE-MsgGUID: whY7YU0oTqW+7anEVq10+w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="89957248"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="93612114"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 23:23:32 -0700
-X-CSE-ConnectionGUID: mkW9Ij6OR6qOzjT60bIdvw==
-X-CSE-MsgGUID: NUUKZEE9SvOVMQPDRRHlfg==
+   d="scan'208";a="89957248"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 23:59:58 -0700
+X-CSE-ConnectionGUID: pQh3t+ldSRCnqoWqsGXYhw==
+X-CSE-MsgGUID: BFQgPhRDSXmbpX58K11How==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="271796302"
-Received: from unknown (HELO [10.238.1.188]) ([10.238.1.188])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 23:23:30 -0700
-Message-ID: <e56a23f2-216c-41ea-991d-495962e6b7af@linux.intel.com>
-Date: Wed, 16 Sep 2026 14:23:27 +0800
+   d="scan'208";a="273216404"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 23:59:59 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46; Tue, 15 Sep 2026 23:59:58 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46 via Frontend Transport; Tue, 15 Sep 2026 23:59:58 -0700
+Received: from CH1PR05CU001.outbound.protection.outlook.com (52.101.193.70) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46; Tue, 15 Sep 2026 23:59:55 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wgKvoJDsv59e6xUYWrdftsfqRbwMQ6VyNMyCq24PtIP8qCFsWKBK3MXVNVmj3DBHL+TP7ySi7f0W15naueEhSwyq4gRBa13oBOi8L1VC0NZznX9QVSK0lwUB6GpkwSV0FUmhR2Y8PuBA+5jDiycK6AexVqT9noNGzqp/4v4x3ky7rqigXFr9YXTYuSR+y39ShB8qlziIiPn/qQVQ7yZOBB2edQpFCsHS5drKcOJIxKi8QGosJ+iGRm26GIqTQrLJ8kB+XxnQQWXLN/oIPGI+k2FAjoCdQhAUSKfJDsHzcp80U7YN0mOP+fCqDX5r9whc0ffVE9iBQu8YUmWr9a5pxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r2Z5uOmYYQPIIDJaU83KHUL1mym6Og96C6HjVMCyGSM=;
+ b=muNzHF0VAULr7sTdU10SmG79IBtxUv5WtC4/NEppH5aZ/N+iPJprKYN5GFS2ZyGwjtJ023pUlYcRKzfvIXRxp79FhY0LZVlsx3FuelhBLIX9ggK8E/EQUcfyN5jukT3IKCjIjf/WAGSNK0LueaFRaqW6/2mWVZehrNH9KbwfvtU8mRnr4x3qB+k/D58wlKQ9nA5R/MiqngV6XrceKlDK6RHTZfk1SNQAWE1YdvbHRKuQRsM94ttbFDrWnIhBX+zZyWsDB8IDCIX1fsimWB+tBjrHbJc58egNEHDmgwwU57xnLfvjboCOkNoU3yJQ8yVy3RMxpHOjOE8JBf2jpDv9vQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com (2603:10b6:303:9e::22)
+ by SAWPR11MB9545.namprd11.prod.outlook.com (2603:10b6:806:4e3::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.12; Wed, 16 Sep
+ 2026 06:59:54 +0000
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225]) by CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225%4]) with mapi id 15.21.0406.007; Wed, 16 Sep 2026
+ 06:59:53 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Karl Mehltretter <kmehltretter@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>
+CC: Joao Martins <joao.m.martins@oracle.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] iommufd: Fix iommufd_hw_capabilities reference in
+ kernel-doc
+Thread-Topic: [PATCH] iommufd: Fix iommufd_hw_capabilities reference in
+ kernel-doc
+Thread-Index: AQHdQkQjWbjVZ+0c5UyOUWdHn1Vl2bbQzRkA
+Date: Wed, 16 Sep 2026 06:59:53 +0000
+Message-ID: <CO1PR11MB483528118DF38CBA06BFCDC08CB92@CO1PR11MB4835.namprd11.prod.outlook.com>
+References: <20260911231850.20737-1-kmehltretter@gmail.com>
+In-Reply-To: <20260911231850.20737-1-kmehltretter@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB4835:EE_|SAWPR11MB9545:EE_
+x-ms-office365-filtering-correlation-id: 21a6e5b4-ac89-49d3-13c5-08df13c01c35
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|38070700021|11063799006|56012099006|10067099003|18002099003|6133799003|22082099003;
+x-microsoft-antispam-message-info: vDae6qBMOr66N24QAw+0looH+b2T4tMs+JooLByiNGh2VtpV9a7lpl+FhhKQpw6i/AAV9J78jujMkzevjGF7wSrB3GtX+su9QeBlWpeq1MJWW8biR54q7XXEL1FRIKriEmth9/haa6FCCj7Ij5wAYqUid66KzqxZdME2fKm8YMDqsewubb6rFvv2dLfuZ3FXzlq+HtSq8NbH6Ntrq4TwKZz3bg3ws7tFCflt+tyG1MIZS7CAgSZCwIoFUsdmy/WKNaK3DidSC7x5PCAXEGFZFb5fXfU0HLdYppZNfJJAPvw3WRlafSwwiraEiVbt43AypJqjpj1bhnydOYJwqEtdtErt/1Tvtl2LvkhzkwxgbSUXHfns/i24wd9b6sJYPn+8XHb+rtFWPuVqbbSilyIW8/QGUZIbLcO2RVuDMrWw7K5FPdEtQg1rgbrGhsBVilYVy1zvxGR1uVOUhbT6KvVMeJ5MGxT/61lu8rykK2XsEmwvaYSK0pltu4gYg+4dtqZCrmN+1OT59ftGFb81WIVYVEDMYgSE4Yz58sI71nWlmP3bJX++QkaGsa6er/vTn21JQJXksGzCt6so7EL8doIyAkSMaHo/k3Ts1yyPOKVqk+3rOIyeG6CFXsNNjIqeC2MAyNlgTVKuBlCY0MavjS6O9vyxh5ws5/jSMwTsGOdJnKsIGARfT0/4szyh78HdZ2r1YZlj/8zartfEZa0Pk+PG/QNojJAbOlA2a6CGT9z1yOY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4835.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(38070700021)(11063799006)(56012099006)(10067099003)(18002099003)(6133799003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5Hg0qsjeE75gXaVOGfhKO1C4tjA32+u0dGQh3XxlK5mag5SX1OoS19JVtOaX?=
+ =?us-ascii?Q?0gh37rwMDjwGiSloVEnGjqhlBhJpzs3JTUMEexWVzZdpGtCPnZq0/gwL0UWv?=
+ =?us-ascii?Q?LaQF2+YJxY9ahbRZj17VshZcjy4w/+l16Vvpqy+e6HUWKsnKJjZM42Q1V2gp?=
+ =?us-ascii?Q?VvTqPOON0SPfKwKTsYoMZRDRyUkUr2XyTfd0ZYEw6YG6/fkyo0DUaUoiQcjE?=
+ =?us-ascii?Q?GrDP1bNqkZWYnmkbI562S9WoVj8lfYMmvGBdmpL1V398BlojvDwP8M5uqEOb?=
+ =?us-ascii?Q?ICopeOlYZWNCXdkG+Lu/C0grMaqosnnkAsxdQomKUILWt84raFtqUi9nWKBG?=
+ =?us-ascii?Q?QIg9UXCMbGt6UhgEGNPjHnL8rQpbkTOTSjNtW2mS6CTUevHs9ynXETQXqB1U?=
+ =?us-ascii?Q?FmUR5g+IoJBkXyu2f3v4NnH7RRzpceF+B0Vqggw2d+/hQHI5VFAk1vj1Oy7E?=
+ =?us-ascii?Q?JRoRY5TbQxFTcFwIfCo55aR9SY0pceEcT01ca0qWUwF7cFtOUsZDbtm2/5m7?=
+ =?us-ascii?Q?1g69ZqToOiqDOZuWn7GDYmFiIpLlULUl05gCHFiSoM7P5K19aiVwcwnItCA7?=
+ =?us-ascii?Q?uwFoHJ7rQzJBC5spo++nqOX1eCO1sr5UeUqnLuM9h9tGNdUdEQomQaTc2XOx?=
+ =?us-ascii?Q?h9y8F8faTqC/NADy2r1zuzIMWkPFk++T9qiT4Z7PCZRR95J8WEYjAwM5TOtT?=
+ =?us-ascii?Q?kPq3Lpg/BtWabPC4E91cGvFaWKFk8Ho8ocwNO7t15/MUkDwo/M/4+fxfBdr2?=
+ =?us-ascii?Q?BPRbPLEoqD0O0t9G3zrRdYhvFQ8CX0c9673RDqqWlZO/4l7vCNBmz1rCZiIY?=
+ =?us-ascii?Q?KbFdMPJAKyMYRiGkGo26m9Y1F8PWSHzIHg2q3VTA/TXZkMfeBPhHE+xcQB2H?=
+ =?us-ascii?Q?fh4SKfWWp/XOurdEYSMPeXTZtIBIe85Q2fQDEGCqoIU97PGEJASiycFCVMqK?=
+ =?us-ascii?Q?Jpxky7UgVYFfmK9O7k+J6TtjUY4zY64ExcAEqzVRBiDh0OK6oEm0aJbh4b2P?=
+ =?us-ascii?Q?nBnwLP1UMgz3/vZe5mzlUzlOfO4RFD5kScnz8GZVH1B0hs1lz1npfokDGmwG?=
+ =?us-ascii?Q?pX0hDov8NCbmcBupucVvBwlgcNPQqCN20RWPHvK/7BNDQfRD/r7KFa97l+DT?=
+ =?us-ascii?Q?fWtU90ctq9vNjTzfOdLzz5sv67b2Q0RUv0jkUQHAwkLWgQjYrKKRaeHLnImE?=
+ =?us-ascii?Q?l0LWPiXu1X05trrGuRTMgF/jrMmkDkDqzBvqHEt09abjBgz7F74QA9kh0k9W?=
+ =?us-ascii?Q?oeV7y9lOq8sAwSxKNu5mpj0xerEAwzLemraubiDqwIqs5jIcO0KBU26jt7CT?=
+ =?us-ascii?Q?sEfV2U/UZZM3owolXcIQc9cShFnwh4CcjBdR7igJuObyDF8DkMDk4zCsHgwO?=
+ =?us-ascii?Q?mOFQdD7xUT5i9Ic2m9Dvy+mar7bVTTQMUgwsGVuo1PR1jCfg777rBvNOogmp?=
+ =?us-ascii?Q?1+Z16D3HUFZU/XK/wl2seQqQr1zYvAR+2+IZofpstluEkfEtyjeMilc7BQ6h?=
+ =?us-ascii?Q?klUOfgCikKl34tUnNDXFG9WIIIdQC0bBhMyy9xbNBXnXNEX+zyf47bb+wKfV?=
+ =?us-ascii?Q?0nNWUgd/Lq9lSGenv0jlWDWnD16qgJULaRraXf2BpiGenXhkUXmZWAO4vXWe?=
+ =?us-ascii?Q?jCG/3D9ycEKfcN+e6FzIdKkRobHEFBYIxOxQytMk2miWYsh8JWosE+himBTA?=
+ =?us-ascii?Q?pTzgWNIrHJ90+hzvUa49Ig5y//trgqsp46+UM2gWKh96mMH/?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, bikuan.zbk@alibaba-inc.com,
- dwmw2@infradead.org, iommu@lists.linux.dev, joro@8bytes.org,
- linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org
-Subject: Re: [PATCH v3] iommu/vt-d: Fix IQE handling to cover all descriptors
- in submission range
-To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-References: <2c0d1b6d-6844-4413-b399-1000cc6712e4@linux.intel.com>
- <20260914141958.584919-1-guanghuifeng@linux.alibaba.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260914141958.584919-1-guanghuifeng@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked: UMrRdth9cdvvaBoIXLI6KZRek1VHzoCDHX9wMe3fik5G4lYCIyfdH1/UorxYfPYUNCCvulwHwKn36ChVYjKMgTkdClR6OE65atKa+S7dcn6UedDZxsU8c4+gIsh1U2sY7jzezv1tLdPToeRvhO4NBQimS/yjf2BCFHAGLD38YOZDdO0M3/HTJq6r86NjBioLYZeGptWuv4KGamCKKoBobfBnILViq72lyc8gK1FUKjzE54mWWW8lYjBB30pHnJ6GcY2DpHzaXzzgGFYP4nV06PE+nfOoPEKM1dwYjTX13kbq38sj328hi3jK26vvH0Xcv0QrzIkjrJwF/B+y1W1+4g==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4835.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 21a6e5b4-ac89-49d3-13c5-08df13c01c35
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 06:59:53.7146
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SzFxjjK1FghsNCPYn5YqKGmcW+iUSRoiw1CIEAe0a58qxej0beaViMkzrGBj4LSNbshxSiHaZpe4vm2X3dlf3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SAWPR11MB9545
+X-OriginatorOrg: intel.com
 
-On 9/14/2026 10:19 PM, Guanghui Feng wrote:
-> When an Invalidation Queue Error (IQE) occurs, hardware halts fetching
-> and IQH points at the faulting descriptor. The previous code only
-> checked whether IQH matched the first descriptor index of the current
-> submission, missing faults on any other descriptor within the batch.
-> 
-> Expand the check to cover the entire submission range [index, wait_index],
-> accounting for circular wrap-around.
-> 
-> Furthermore, after detecting IQE, the old recovery only replaced the
-> single faulting slot with a copy of the wait descriptor and immediately
-> returned -EINVAL. This left two problems:
-> 
->    a) Hardware resumed fetching and could hit another invalid descriptor
->       in the same abandoned batch, raising a second IQE that no submitter
->       would claim — permanently deadlocking the queue.
-> 
->    b) The caller reclaimed all batch slots (QI_FREE) while hardware might
->       still be asynchronously processing descriptors from that batch,
->       allowing concurrent overwrite and descriptor corruption.
-> 
-> Fix both by introducing qi_drain_remaining_descs(): upon IQE detection,
-> overwrite the stranded slots in [IQH, wait_index) with no-op wait
-> descriptors, resubmit the wait descriptor at wait_index, then clear IQE.
-> The caller's existing poll loop naturally waits for QI_DONE — which per
-> VT-d spec §6.5.2.12 is only written after ALL preceding descriptors
-> complete — guaranteeing hardware has fully drained the batch before
-> slots are reclaimed.
-> 
-> Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-> Signed-off-by: bikuan.zbk <bikuan.zbk@alibaba-inc.com>
-> ---
->   drivers/iommu/intel/dmar.c | 78 ++++++++++++++++++++++++++++++--------
->   1 file changed, 63 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index ba675b08cd20..db92fb247131 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -1344,6 +1344,43 @@ static void qi_dump_fault(struct intel_iommu *iommu, u32 fault)
->   	       (unsigned long long)desc->qw1);
->   }
->   
-> +/**
-> + * qi_drain_remaining_descs - drain descriptors stranded by an IQE
-> + * @iommu: the affected IOMMU
-> + * @wait_index: slot index of the wait descriptor of the current submission
-> + * @shift: qi_shift(iommu), converts a slot index into a byte offset
-> + * @options: QI_OPT_* flags of the current submission
-> + *
-> + * Overwrite the slots in [IQH, @wait_index) with no-op descriptors, resubmit
-> + * the wait descriptor at @wait_index, and clear IQE so hardware resumes and
-> + * eventually signals QI_DONE. Must be called with qi->q_lock held.
-> + */
-> +static void qi_drain_remaining_descs(struct intel_iommu *iommu,
-> +				     int wait_index, int shift,
-> +				     unsigned long options)
+> From: Karl Mehltretter <kmehltretter@gmail.com>
+> Sent: Saturday, September 12, 2026 7:19 AM
+>=20
+> The kernel-doc comment of struct iommu_hw_info refers to
+> iommu_hw_capabilities, which does not exist. The name is
+> iommufd_hw_capabilities. Say iommufd_hw_capabilities.
+>=20
+> Fixes: 7623683857e5 ("iommufd: Add capabilities to IOMMU_GET_HW_INFO")
+> Assisted-by: LLM
+> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
 
-This is only an internal helper, so there is no need to add a kernel-doc
-comment like this.
-
-> +{
-> +	struct q_inval *qi = iommu->qi;
-> +	struct qi_desc desc;
-> +	int head_idx;
-> +	int cur;
-> +
-> +	head_idx = (readl(iommu->reg + DMAR_IQH_REG)) >> shift;
-> +
-> +	memset(&desc, 0, sizeof(desc));
-> +	desc.qw0 = QI_IWD_TYPE;
-> +	for (cur = head_idx; cur != wait_index; cur = (cur + 1) % QI_LENGTH)
-> +		memcpy(qi->desc + (cur << shift), &desc, 1 << shift);
-> +
-> +	desc.qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
-> +			QI_IWD_STATUS_WRITE | QI_IWD_TYPE;
-> +	if (options & QI_OPT_WAIT_DRAIN)
-> +		desc.qw0 |= QI_IWD_PRQ_DRAIN;
-> +	desc.qw1 = virt_to_phys(&qi->desc_status[wait_index]);
-> +	memcpy(qi->desc + (wait_index << shift), &desc, 1 << shift);
-> +
-> +	writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
-> +}
-
-I would like this helper to be self-contained; that is, it should
-replace all abandoned descriptors with wait descriptors and then wait
-until hardware fetch passes those descriptors. Something like this (not
-tested yet):
-
-+static int qi_drain_remaining_descs(struct intel_iommu *iommu, int head,
-+				    int wait_index)
-+{
-+	struct q_inval *qi = iommu->qi;
-+	int shift = qi_shift(iommu);
-+	struct qi_desc wait_desc = {};
-+	struct qi_desc nop_desc = {};
-+	cycles_t start;
-+
-+	nop_desc.qw0 = QI_IWD_FENCE | QI_IWD_TYPE;
-+
-+	wait_desc.qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
-+			QI_IWD_STATUS_WRITE | QI_IWD_FENCE | QI_IWD_TYPE;
-+	wait_desc.qw1 = virt_to_phys(&qi->desc_status[wait_index]);
-+
-+	while (head != wait_index) {
-+		memcpy(qi->desc + (head << shift), &nop_desc, 1 << shift);
-+		head = (head + 1) % QI_LENGTH;
-+	}
-+
-+	WRITE_ONCE(qi->desc_status[wait_index], QI_IN_USE);
-+	memcpy(qi->desc + (wait_index << shift), &wait_desc, 1 << shift);
-+
-+	/*
-+	 * Order the descriptor rewrites before the writel() that restarts
-+	 * the fetch engine.
-+	 */
-+	wmb();
-+
-+	writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
-+
-+	start = get_cycles();
-+	while (READ_ONCE(qi->desc_status[wait_index]) != QI_DONE) {
-+		if (DMAR_OPERATION_TIMEOUT < (get_cycles() - start)) {
-+			pr_err("Timeout draining invalidation queue after IQE\n");
-+			return -ETIMEDOUT;
-+		}
-+		cpu_relax();
-+	}
-+
-+	return 0;
-+}
-
-> +
->   static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->   {
->   	u32 fault;
-> @@ -1366,21 +1403,22 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->   	 * is cleared.
->   	 */
->   	if (fault & DMA_FSTS_IQE) {
-> +		int head_idx;
-> +
->   		head = readl(iommu->reg + DMAR_IQH_REG);
-> -		if ((head >> shift) == index) {
-> -			struct qi_desc *desc = qi->desc + head;
-> +		head_idx = head >> shift;
->   
-> -			/*
-> -			 * desc->qw2 and desc->qw3 are either reserved or
-> -			 * used by software as private data. We won't print
-> -			 * out these two qw's for security consideration.
-> -			 */
-> -			memcpy(desc, qi->desc + (wait_index << shift),
-> -			       1 << shift);
-> -			writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
-> -			pr_info("Invalidation Queue Error (IQE) cleared\n");
-> +		/*
-> +		 * The faulting descriptor can be anywhere within the current
-> +		 * submission's range [index, wait_index]. Since the queue is
-> +		 * circular, this submission may wrap around QI_LENGTH
-> +		 * (index > wait_index in that case), so check both the
-> +		 * non-wrapped and wrapped cases of the range.
-> +		 */
-> +		if (index <= wait_index ?
-> +		    (head_idx >= index && head_idx <= wait_index) :
-> +		    (head_idx >= index || head_idx <= wait_index))
->   			return -EINVAL;
-> -		}
->   	}
-
-Then call the above helper directly here.
-
-@@ -1366,18 +1409,25 @@ static int qi_check_fault(struct intel_iommu 
-*iommu, int index, int wait_index)
-  	 * is cleared.
-  	 */
-  	if (fault & DMA_FSTS_IQE) {
-+		int head_idx, ret;
-+
-  		head = readl(iommu->reg + DMAR_IQH_REG);
--		if ((head >> shift) == index) {
--			struct qi_desc *desc = qi->desc + head;
-+		head_idx = (head >> shift) % QI_LENGTH;
-+
-+		/*
-+		 * The faulting descriptor can be anywhere within the current
-+		 * submission's range [index, wait_index]. Since the queue is
-+		 * circular, this submission may wrap around QI_LENGTH
-+		 * (index > wait_index in that case), so check both the
-+		 * non-wrapped and wrapped cases of the range.
-+		 */
-+		if (index <= wait_index ?
-+		    (head_idx >= index && head_idx <= wait_index) :
-+		    (head_idx >= index || head_idx <= wait_index)) {
-+			ret = qi_drain_remaining_descs(iommu, head_idx, wait_index);
-+			if (ret)
-+				return ret;
-
--			/*
--			 * desc->qw2 and desc->qw3 are either reserved or
--			 * used by software as private data. We won't print
--			 * out these two qw's for security consideration.
--			 */
--			memcpy(desc, qi->desc + (wait_index << shift),
--			       1 << shift);
--			writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
-  			pr_info("Invalidation Queue Error (IQE) cleared\n");
-  			return -EINVAL;
-  		}
-
->   
->   	/*
-> @@ -1452,7 +1490,7 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
->   	int wait_index, index;
->   	unsigned long flags;
->   	int offset, shift;
-> -	int rc, i;
-> +	int rc = 0, fault, i;
->   	u64 type;
->   
->   	if (!qi)
-> @@ -1528,9 +1566,19 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
->   		 * a deadlock where the interrupt context can wait indefinitely
->   		 * for free slots in the queue.
->   		 */
-> -		rc = qi_check_fault(iommu, index, wait_index);
-> -		if (rc)
-> +		fault = qi_check_fault(iommu, index, wait_index);
-> +		if (fault == -EINVAL) {
-> +			/*
-> +			 * IQE in our batch: drain the remaining descriptors
-> +			 * and keep polling until hardware completes.
-> +			 */
-> +			qi_drain_remaining_descs(iommu, wait_index, shift,
-> +						  options);
-> +			rc = -EINVAL;
-> +		} else if (fault) {
-> +			rc = fault;
->   			break;
-> +		}
-
-As a result, there is no need to change the caller of qi_check_fault().
-
->   
->   		raw_spin_unlock(&qi->q_lock);
->   		cpu_relax();
-
-Thanks,
-baolu
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
