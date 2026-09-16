@@ -1,214 +1,160 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B77B4C226B;
-	Wed, 16 Sep 2026 16:17:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE05D3CC334;
+	Wed, 16 Sep 2026 17:51:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789575478; cv=none; b=pj0rNx3uMgHUNFePwXWbgs188h3pSgIV+HSXIHBytj/2hFRS0j+WO/6ppuZ25b7ydjAPoPepxNs+vQzB64QosxERM5SmIGqNXG0ih6kTq8CuVr3lG6DL1XfYTBcLphA68ebS2M8MYmbQohZUE3/rwPvWRK9NkjmX4bpxCNeqgXk=
+	t=1789581078; cv=none; b=eUYhFLgFC8wXOsHk0owBR5gmAQBfR3xJ4CeuAlNYyMLuM3EO/tXXlsY8dI6DVzUMNHja8iiyvcVqJYlGp/ZaNoXFdtJK7B8KirDh5QS2X8wfF0hG/XGfFrEpiRkJi4o/y+afWyYKhXggS+pP4pNqvnT6xC3pAwaPWvqhV/memTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789575478; c=relaxed/simple;
-	bh=p3tHar0dLjbf4nNwS6ekOIUqzn63ULh+WZ3W0oLTGoo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uCD6DhCU9jDBWXIb5mmxYB4pQ9Ob0XA+4uv9UOWyFjFE0hdeRQktickcE+SuhFZ2T/uFMRk5gEY1YHkuKSd8IhSM7AB7IvvudhpciGybM6Mfx05F67+hY1zGIDW7H/BLfGXldeS3iJmeTBLAL6/Sme8fWfPFKn6eOECNxIIldYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=cn6Vo8NC; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1789581078; c=relaxed/simple;
+	bh=ipTJmkF3/zpr+sbsZHP7u7xHksn9daIAXHVrXTmWyRY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hyjfKWIPwBbXwkb6fQ/hpC5Ymt2SR8XoYd4sihk21EX/05KvcdBkGeWNIpP8GIJskErcQAIqhYG/6HYz3Kv29hHnIJxbVnEebzv5umwih1Og+fysZl8y/X6XKy701hWbGqsnNcmNi/d2dwtswWuZ6fbdOA7GzVqatdRV+G+LauY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=E7FjhsZ1; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="cn6Vo8NC"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BCF451516;
-	Wed, 16 Sep 2026 09:17:51 -0700 (PDT)
-Received: from [10.57.8.14] (unknown [10.57.8.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 76BF43F7B4;
-	Wed, 16 Sep 2026 09:17:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1789575475; bh=p3tHar0dLjbf4nNwS6ekOIUqzn63ULh+WZ3W0oLTGoo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=cn6Vo8NCPcegLEUNK1RPA8H5PEILXVRQTJQ0cZ22KykkzbVPmh3J4vOId9XA0Z+Rc
-	 kQVHuuBeJR4G+Z4A3QZ5PHT0nng89xsb+GtY1WCGoGnODFg4yXAbRUtfTx4ZRskudM
-	 CY59agMktmzbpubX7yNFseXn1IiE4HaasgegGCpc=
-Message-ID: <05239c7a-bdee-4d24-9375-c5b3497a4f78@arm.com>
-Date: Wed, 16 Sep 2026 17:17:51 +0100
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="E7FjhsZ1"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 99E4540E00E8;
+	Wed, 16 Sep 2026 17:51:09 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id 9zV9muLWubjt; Wed, 16 Sep 2026 17:51:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1789581064; bh=or2++1LeeipZYCb3G9WRgyA4slOHEhMs91sMxm37PrE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=E7FjhsZ1898C+iRkHA2e9itQoyiqH/Ch3CRAiwQscnU0CXAU1B3A58i/8qF7CWRQh
+	 G9fmEyLGGIFdYQql64Uc91Gneuv+SDG6aDTZnURc3lGHscWFc5r5ZPh1vPnn+mqjo9
+	 KFHhO1O53B1kflUQZ5pwBl1X+TZ/YeOf6S4ukWau6F9Oy2bvc2AkWVFtpJFZA/d20Q
+	 giWI8kOs24tcni/YN9qyJ2ifRbE9E3/xTzGmQUWsiuXTEhyoEZljOUczoL/sJ+VORm
+	 Jkvi5hPfZD2JyHdgx2JTUeJM+9EfC5lNAKlo3wpXrtxjuZdy0HbqzBa/nrDlGGXUEB
+	 T6ChTVHnrHjzueQm9iG6UjvNvWs1Ci2nBGXVxdIW5G0N5g5YvMPiyWBQmN/KIt+8BJ
+	 4nMWbx4zbda4r5Pe4F71yKd9gdBn5WVrThXpykty5Y9ZS6rxK/Zy/4imk+qiuwIQBK
+	 +J/Y7B2Xd/vbfAw0NWAJZRMYwlCrFpuzM/A8ynROZCZpyn7YbI8CMVxBS6k2Zrpwya
+	 T6Y4mlUo4kZxEKXRc1Vy6jsORFjfP4A+DtCjZKq1wSzIccfVVxpJX103Kp6LkYYPGE
+	 WV11UFcMReR+2ndH81MYlmJrtQ8QF3VCSlMJid4YqIKWMK9eHGy2UwsKc4B1bjlrvo
+	 ZcjWPKxqQS0jjFQdEECxxF+M=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::a])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6DA8240E00B9;
+	Wed, 16 Sep 2026 17:49:32 +0000 (UTC)
+Date: Wed, 16 Sep 2026 10:49:29 -0700
+From: Borislav Petkov <bp@alien8.de>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ashish Kalra <ashish.kalra@amd.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jini Susan George <jinisusan.george@amd.com>,
+	Kees Cook <kees@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>,
+	Nikunj A Dadhania <nikunj@amd.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Eric Biggers <ebiggers@kernel.org>,
+	Kim Phillips <kim.phillips@amd.com>, Joerg Roedel <jroedel@suse.de>,
+	Ethan Nelson-Moore <enelsonmoore@gmail.com>,
+	"Tycho Andersen (AMD)" <tycho@kernel.org>,
+	Liam Merwick <liam.merwick@oracle.com>,
+	Michael Kerrisk <mtk.manpages@gmail.com>,
+	Suresh Siddha <suresh.b.siddha@intel.com>,
+	Xiaotian Feng <dfeng@redhat.com>,
+	Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>,
+	Andi Kleen <ak@linux.intel.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Tony Luck <tony.luck@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Carlos =?utf-8?B?TMOzcGV6?= <clopez@suse.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jori Koolstra <jkoolstra@xs4all.nl>,
+	Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Ian Campbell <ian.campbell@citrix.com>,
+	Jeremy Fitzhardinge <jeremy.fitzhardinge@citrix.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	David Howells <dhowells@redhat.com>,
+	Haavard Skinnemoen <hskinnemoen@atmel.com>,
+	Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Christian Marangi <ansuelsmth@gmail.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Ilias Stamatis <ilstam@amazon.com>,
+	Sumanth Korikkar <sumanthk@linux.ibm.com>,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Toshi Kani <toshi.kani@hp.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	Jiang Liu <jiang.liu@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Anshuman Khandual <anshuman.khandual@arm.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	Palmer Dabbelt <palmerdabbelt@google.com>,
+	linux-coco@lists.linux.dev, xen-devel@lists.xenproject.org,
+	iommu@lists.linux.dev, linux-mm@kvack.org, aik@ozlabs.ru,
+	Santosh Shukla <santosh.shukla@amd.com>,
+	"Pratik R . Sampat" <prsampat@amd.com>,
+	Scott Soule Cheloha <scott.cheloha@amd.com>,
+	Ackerley Tng <ackerleytng@google.com>,
+	Fuad Tabba <tabba@google.com>
+Subject: Re: [RFC PATCH kernel 01/17] pci/dma/tsm: Call disable DMA bus hook
+ on cleanup
+Message-ID: <20260916174929.GCaqrWqZ1fIhi4Rgbn@fat_crate.local>
+References: <20260916115159.1938195-1-aik@amd.com>
+ <20260916115159.1938195-2-aik@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 9/9] arm64: realm: Expose the CCA shared granule size
- through mem_encrypt ops
-Content-Language: en-GB
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Jason Gunthorpe
- <jgg@ziepe.ca>, Marc Zyngier <maz@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Steven Price <steven.price@arm.com>,
- Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>
-References: <20260904103452.1197239-1-aneesh.kumar@kernel.org>
- <20260904103452.1197239-10-aneesh.kumar@kernel.org>
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20260904103452.1197239-10-aneesh.kumar@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260916115159.1938195-2-aik@amd.com>
 
-On 04/09/2026 11:34, Aneesh Kumar K.V (Arm) wrote:
-> CCA guests must align shared/private memory transitions to the size
-> reported by the host for IPA state changes. This size can be larger than
-> PAGE_SIZE, so allowing a guest to convert only a PAGE_SIZE-sized subrange
-> can leave the remaining part of that host-sized range in the wrong state.
-> 
-> Cache the RHI-reported IPA sate change alignment during Realm
-> initialization and expose it through a new arm64 mem_encrypt callback. Use
-> PAGE_SIZE as the default shared granule size when no backend callback is
-> registered.
-> 
-> Validate both the address and byte size passed to set_memory_encrypted()
-> and set_memory_decrypted() against mem_cc_shared_granule_size() before
-> calling into the backend. This prevents callers from converting only part
-> of a host-managed page.
-> 
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+On Wed, Sep 16, 2026 at 09:51:41PM +1000, Alexey Kardashevskiy wrote:
+> +	if (device_tcb_trusted(dev))
 
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Where is that function and the rest of the gunk needed for me to apply before
+I review those?
 
+The patches on that branch:
 
-> ---
->   arch/arm64/include/asm/mem_encrypt.h |  4 ++++
->   arch/arm64/mm/mem_encrypt.c          | 32 ++++++++++++++++++++++++----
->   drivers/firmware/arm_rmm/rsi.c       | 13 ++++++++++-
->   3 files changed, 44 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/mem_encrypt.h b/arch/arm64/include/asm/mem_encrypt.h
-> index ef8b8463e52b..890faeed0eb3 100644
-> --- a/arch/arm64/include/asm/mem_encrypt.h
-> +++ b/arch/arm64/include/asm/mem_encrypt.h
-> @@ -10,6 +10,7 @@ struct device;
->   struct arm64_mem_crypt_ops {
->   	int (*encrypt)(unsigned long addr, int numpages);
->   	int (*decrypt)(unsigned long addr, int numpages);
-> +	size_t (*cc_shared_granule_size)(void);
->   };
->   
->   int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops);
-> @@ -18,6 +19,9 @@ int set_memory_encrypted(unsigned long addr, int numpages);
->   int set_memory_decrypted(unsigned long addr, int numpages);
->   int __set_memory_enc_dec(unsigned long addr, int numpages, bool encrypt);
->   
-> +#define mem_cc_shared_granule_size mem_cc_shared_granule_size
-> +size_t mem_cc_shared_granule_size(void);
-> +
->   static inline bool force_dma_unencrypted(struct device *dev)
->   {
->   	return is_realm_world() || is_protected_kvm_guest();
-> diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
-> index ee3c0ab04384..69783c6a3c08 100644
-> --- a/arch/arm64/mm/mem_encrypt.c
-> +++ b/arch/arm64/mm/mem_encrypt.c
-> @@ -17,8 +17,7 @@
->   #include <linux/compiler.h>
->   #include <linux/err.h>
->   #include <linux/mm.h>
-> -
-> -#include <asm/mem_encrypt.h>
-> +#include <linux/mem_encrypt.h>
->   
->   static const struct arm64_mem_crypt_ops *crypt_ops;
->   
-> @@ -33,18 +32,43 @@ int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops)
->   
->   int set_memory_encrypted(unsigned long addr, int numpages)
->   {
-> -	if (likely(!crypt_ops) || WARN_ON(!PAGE_ALIGNED(addr)))
-> +	unsigned long size = (unsigned long)numpages << PAGE_SHIFT;
-> +
-> +	if (likely(!crypt_ops))
->   		return 0;
->   
-> +	if (WARN_ON(!IS_ALIGNED(addr, mem_cc_shared_granule_size())))
-> +		return -EINVAL;
-> +
-> +	if (WARN_ON(!IS_ALIGNED(size, mem_cc_shared_granule_size())))
-> +		return -EINVAL;
-> +
->   	return crypt_ops->encrypt(addr, numpages);
->   }
->   EXPORT_SYMBOL_GPL(set_memory_encrypted);
->   
->   int set_memory_decrypted(unsigned long addr, int numpages)
->   {
-> -	if (likely(!crypt_ops) || WARN_ON(!PAGE_ALIGNED(addr)))
-> +	unsigned long size = (unsigned long)numpages << PAGE_SHIFT;
-> +
-> +	if (likely(!crypt_ops))
->   		return 0;
->   
-> +	if (WARN_ON(!IS_ALIGNED(addr, mem_cc_shared_granule_size())))
-> +		return -EINVAL;
-> +
-> +	if (WARN_ON(!IS_ALIGNED(size, mem_cc_shared_granule_size())))
-> +		return -EINVAL;
-> +
->   	return crypt_ops->decrypt(addr, numpages);
->   }
->   EXPORT_SYMBOL_GPL(set_memory_decrypted);
-> +
-> +size_t mem_cc_shared_granule_size(void)
-> +{
-> +	if (likely(!crypt_ops) || !crypt_ops->cc_shared_granule_size)
-> +		return PAGE_SIZE;
-> +
-> +	return crypt_ops->cc_shared_granule_size();
-> +}
-> +EXPORT_SYMBOL_GPL(mem_cc_shared_granule_size);
-> diff --git a/drivers/firmware/arm_rmm/rsi.c b/drivers/firmware/arm_rmm/rsi.c
-> index 2cd53f82432f..eeb797c6c2c7 100644
-> --- a/drivers/firmware/arm_rmm/rsi.c
-> +++ b/drivers/firmware/arm_rmm/rsi.c
-> @@ -19,6 +19,7 @@
->   
->   static struct realm_config config;
->   static struct kobject *cca_kobj;
-> +static unsigned long ipa_state_change_granule_size;
->   
->   unsigned long prot_ns_shared;
->   EXPORT_SYMBOL(prot_ns_shared);
-> @@ -155,9 +156,17 @@ static int realm_set_memory_decrypted(unsigned long addr, int numpages)
->   	return ret;
->   }
->   
-> +static size_t realm_cc_shared_granule_size(void)
-> +{
-> +	if (is_realm_world())
-> +		return ipa_state_change_granule_size;
-> +	return PAGE_SIZE;
-> +}
-> +
->   static const struct arm64_mem_crypt_ops realm_crypt_ops = {
->   	.encrypt = realm_set_memory_encrypted,
->   	.decrypt = realm_set_memory_decrypted,
-> +	.cc_shared_granule_size = realm_cc_shared_granule_size,
->   };
->   
->   static int realm_register_memory_enc_ops(void)
-> @@ -167,7 +176,7 @@ static int realm_register_memory_enc_ops(void)
->   
->   /* we need an aligned struct for rsi_host_call. slab is not yet ready */
->   static struct rsi_host_call hostconf_call __initdata;
-> -static unsigned long __maybe_unused __init get_ipa_state_change_alignment(void)
-> +static unsigned long __init get_ipa_state_change_alignment(void)
->   {
->   	long ret;
->   	unsigned long shared_granule_size;
-> @@ -218,6 +227,8 @@ void __init arm64_rsi_init(void)
->   		return;
->   	if (WARN_ON(rsi_get_realm_config(lm_alias(&config))))
->   		return;
-> +
-> +	ipa_state_change_granule_size = get_ipa_state_change_alignment();
->   	prot_ns_shared = __phys_to_pte_val(BIT(config.ipa_bits - 1));
->   
->   	if (arm64_ioremap_prot_hook_register(realm_ioremap_hook))
+https://github.com/AMDESE/linux-kvm/commits/tsm-next
 
+which come before those here are enough?
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
