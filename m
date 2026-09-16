@@ -1,160 +1,89 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE05D3CC334;
-	Wed, 16 Sep 2026 17:51:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5B2E4E50D4
+	for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 18:53:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789581078; cv=none; b=eUYhFLgFC8wXOsHk0owBR5gmAQBfR3xJ4CeuAlNYyMLuM3EO/tXXlsY8dI6DVzUMNHja8iiyvcVqJYlGp/ZaNoXFdtJK7B8KirDh5QS2X8wfF0hG/XGfFrEpiRkJi4o/y+afWyYKhXggS+pP4pNqvnT6xC3pAwaPWvqhV/memTo=
+	t=1789584842; cv=none; b=Gbnwn5acHJSDuZVWkUnD3bhRMzLWbK+y1j1+5i+6O/1FdeAHiaxDpRxceP39/TXp5sUG82rJIFvxwhe1F56PFw7vbUwW5C5Zx9HMuBcsuGPHTLYF3IUfvznVOqRnr2U5nHw0URtH148h940hPZqZk882z4vPXVC6r8k4pw40uP8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789581078; c=relaxed/simple;
-	bh=ipTJmkF3/zpr+sbsZHP7u7xHksn9daIAXHVrXTmWyRY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hyjfKWIPwBbXwkb6fQ/hpC5Ymt2SR8XoYd4sihk21EX/05KvcdBkGeWNIpP8GIJskErcQAIqhYG/6HYz3Kv29hHnIJxbVnEebzv5umwih1Og+fysZl8y/X6XKy701hWbGqsnNcmNi/d2dwtswWuZ6fbdOA7GzVqatdRV+G+LauY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=E7FjhsZ1; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="E7FjhsZ1"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 99E4540E00E8;
-	Wed, 16 Sep 2026 17:51:09 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 9zV9muLWubjt; Wed, 16 Sep 2026 17:51:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1789581064; bh=or2++1LeeipZYCb3G9WRgyA4slOHEhMs91sMxm37PrE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=E7FjhsZ1898C+iRkHA2e9itQoyiqH/Ch3CRAiwQscnU0CXAU1B3A58i/8qF7CWRQh
-	 G9fmEyLGGIFdYQql64Uc91Gneuv+SDG6aDTZnURc3lGHscWFc5r5ZPh1vPnn+mqjo9
-	 KFHhO1O53B1kflUQZ5pwBl1X+TZ/YeOf6S4ukWau6F9Oy2bvc2AkWVFtpJFZA/d20Q
-	 giWI8kOs24tcni/YN9qyJ2ifRbE9E3/xTzGmQUWsiuXTEhyoEZljOUczoL/sJ+VORm
-	 Jkvi5hPfZD2JyHdgx2JTUeJM+9EfC5lNAKlo3wpXrtxjuZdy0HbqzBa/nrDlGGXUEB
-	 T6ChTVHnrHjzueQm9iG6UjvNvWs1Ci2nBGXVxdIW5G0N5g5YvMPiyWBQmN/KIt+8BJ
-	 4nMWbx4zbda4r5Pe4F71yKd9gdBn5WVrThXpykty5Y9ZS6rxK/Zy/4imk+qiuwIQBK
-	 +J/Y7B2Xd/vbfAw0NWAJZRMYwlCrFpuzM/A8ynROZCZpyn7YbI8CMVxBS6k2Zrpwya
-	 T6Y4mlUo4kZxEKXRc1Vy6jsORFjfP4A+DtCjZKq1wSzIccfVVxpJX103Kp6LkYYPGE
-	 WV11UFcMReR+2ndH81MYlmJrtQ8QF3VCSlMJid4YqIKWMK9eHGy2UwsKc4B1bjlrvo
-	 ZcjWPKxqQS0jjFQdEECxxF+M=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::a])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6DA8240E00B9;
-	Wed, 16 Sep 2026 17:49:32 +0000 (UTC)
-Date: Wed, 16 Sep 2026 10:49:29 -0700
-From: Borislav Petkov <bp@alien8.de>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ashish Kalra <ashish.kalra@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S. Miller" <davem@davemloft.net>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jini Susan George <jinisusan.george@amd.com>,
-	Kees Cook <kees@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>,
-	Nikunj A Dadhania <nikunj@amd.com>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Eric Biggers <ebiggers@kernel.org>,
-	Kim Phillips <kim.phillips@amd.com>, Joerg Roedel <jroedel@suse.de>,
-	Ethan Nelson-Moore <enelsonmoore@gmail.com>,
-	"Tycho Andersen (AMD)" <tycho@kernel.org>,
-	Liam Merwick <liam.merwick@oracle.com>,
-	Michael Kerrisk <mtk.manpages@gmail.com>,
-	Suresh Siddha <suresh.b.siddha@intel.com>,
-	Xiaotian Feng <dfeng@redhat.com>,
-	Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>,
-	Andi Kleen <ak@linux.intel.com>, Kiryl Shutsemau <kas@kernel.org>,
-	Tony Luck <tony.luck@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Carlos =?utf-8?B?TMOzcGV6?= <clopez@suse.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jori Koolstra <jkoolstra@xs4all.nl>,
-	Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Ian Campbell <ian.campbell@citrix.com>,
-	Jeremy Fitzhardinge <jeremy.fitzhardinge@citrix.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	David Howells <dhowells@redhat.com>,
-	Haavard Skinnemoen <hskinnemoen@atmel.com>,
-	Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Christian Marangi <ansuelsmth@gmail.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Ilias Stamatis <ilstam@amazon.com>,
-	Sumanth Korikkar <sumanthk@linux.ibm.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	Toshi Kani <toshi.kani@hp.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Vinod Koul <vkoul@kernel.org>,
-	Jiang Liu <jiang.liu@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Anshuman Khandual <anshuman.khandual@arm.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Palmer Dabbelt <palmerdabbelt@google.com>,
-	linux-coco@lists.linux.dev, xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev, linux-mm@kvack.org, aik@ozlabs.ru,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	"Pratik R . Sampat" <prsampat@amd.com>,
-	Scott Soule Cheloha <scott.cheloha@amd.com>,
-	Ackerley Tng <ackerleytng@google.com>,
-	Fuad Tabba <tabba@google.com>
-Subject: Re: [RFC PATCH kernel 01/17] pci/dma/tsm: Call disable DMA bus hook
- on cleanup
-Message-ID: <20260916174929.GCaqrWqZ1fIhi4Rgbn@fat_crate.local>
-References: <20260916115159.1938195-1-aik@amd.com>
- <20260916115159.1938195-2-aik@amd.com>
+	s=arc-20240116; t=1789584842; c=relaxed/simple;
+	bh=oZ74DBm5ryiVX5dnrDePlI2yqZz3F2DEUP8ILajCMyU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=k/ve2eVXjjUGWnAKqjh1hzZvBjPf5lsRwWaI9Sq6PCGSLyQUSvn4CWD+wKoUX1nrSKHV8CHS/AHaZ+fyD7LfuUTNCJ52URSR908ceZWMahh1NhYcY6FVZSp2/ENMY9DaPXnp12KbRVTxcFgRd5Qjc/KbmHOx7yAOB6L4fyC+Ku4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
+	by APP-05 (Coremail) with SMTP id zQCowAD3J0Ky5apqU+pvCA--.24921S2;
+	Thu, 17 Sep 2026 02:53:38 +0800 (CST)
+From: Wentao Liang <vulab@iscas.ac.cn>
+To: iommu@lists.linux.dev
+Cc: joro@8bytes.org,
+	linux-kernel@vger.kernel.org,
+	mingo@elte.hu,
+	robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	Wentao Liang <vulab@iscas.ac.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/amd: Fix IOMMU PCI device reference leak in iommu_init_pci()
+Date: Wed, 16 Sep 2026 18:53:10 +0000
+Message-Id: <20260916185310.2093691-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260916115159.1938195-2-aik@amd.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:zQCowAD3J0Ky5apqU+pvCA--.24921S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKr4kCryUAFWxWw13tFykuFg_yoWDtwc_Cr
+	W0qFn7Xry5Ga1jkw1qqr93Zr1DKa4DZFn7XrW0kwsYy34S9F4UJ34Yvr98GFW7Ww4YyF9F
+	yr1DGay3J3srZjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbx8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+	Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+	2Ix0cI8IcVAFwI0_Jw0_WrylYx0Ex4A2jsIE14v26F4j6r4UJwAm72CE4IkC6x0Yz7v_Jr
+	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0En4kS14v2
+	6r1q6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+	AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
+	c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267
+	AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Cr0_
+	Gr1UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdYxBIdaVFxhVjvjDU0xZFpf9x0JUCNt
+	xUUUUU=
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiDAQMA2qqpO+GbQABsm
 
-On Wed, Sep 16, 2026 at 09:51:41PM +1000, Alexey Kardashevskiy wrote:
-> +	if (device_tcb_trusted(dev))
+iommu_init_pci() takes a reference on the IOMMU's PCI device with
+pci_get_domain_bus_and_slot() and keeps it for the lifetime of the
+IOMMU, but free_iommu_one() frees the IOMMU without ever dropping that
+reference.  It is leaked whenever an IOMMU is torn down again on an
+init error path.
 
-Where is that function and the rest of the gunk needed for me to apply before
-I review those?
+Release the reference in free_iommu_one(), after the sysfs device that
+uses it as parent has been removed.
 
-The patches on that branch:
+Fixes: 3eaf28a1cd26 ("AMD IOMMU: save pci_dev instead of devid")
+Cc: stable@vger.kernel.org
+Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
+---
+ drivers/iommu/amd/init.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-https://github.com/AMDESE/linux-kvm/commits/tsm-next
-
-which come before those here are enough?
-
-Thx.
-
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 3bdb380d23e9..4b155970151d 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1810,6 +1810,7 @@ static void __init free_iommu_one(struct amd_iommu *iommu)
+ 	free_ga_log(iommu);
+ 	iommu_unmap_mmio_space(iommu);
+ 	amd_iommu_iopf_uninit(iommu);
++	pci_dev_put(iommu->dev);
+ }
+ 
+ static void __init free_iommu_all(void)
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
