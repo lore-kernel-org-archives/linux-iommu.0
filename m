@@ -1,96 +1,200 @@
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.0])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0B203DAAAF
-	for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 18:58:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789585141; cv=none; b=QnjwvRlLC54QPepOZCmYJv5t9cIrmRRjZSXXu5EXWAJSD56cHR13pV7JEX70bfyWSMMjIIbJ01wTGtoX/kX0l3QOVHA2uiHosmvXfxZ/sq5FBm2jKCkUOv3KdEyzDXqRxWF/pOYx9ii++coXOltZ7I9LIQKkWrHcnIDZZ85l6hE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789585141; c=relaxed/simple;
-	bh=FQ5/IXI6ngyKjEXmTzOIjn8L5yo3/n8SygYFq+HbAbU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=O6ogXZFlP26xHwKg2PwttcWmMZqWoAD4t+pHxCCuS/me3awZRSIkWdnh9bsgi04MepU+bCRp6iC3M+NGzz5C+ppu3utVWE46Fp1mauikQGRbs2M++yVM2wCsJqf4m8HmwePq61OvhuAjetFhOF7SAFs1XUVVgegvWsIgArObv9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
-	by APP-05 (Coremail) with SMTP id zQCowADnVD_Y5qpqnvtvCA--.24836S2;
-	Thu, 17 Sep 2026 02:58:32 +0800 (CST)
-From: Wentao Liang <vulab@iscas.ac.cn>
-To: iommu@lists.linux.dev
-Cc: jgg@ziepe.ca,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	wei.huang2@amd.com,
-	will@kernel.org,
-	Wentao Liang <vulab@iscas.ac.cn>,
-	stable@vger.kernel.org
-Subject: [PATCH] iommu/amd: Fix PCI device reference leak in iommu_call_iopf_notifier()
-Date: Wed, 16 Sep 2026 18:58:04 +0000
-Message-Id: <20260916185804.2093996-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A764C6503;
+	Wed, 16 Sep 2026 21:11:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.0
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789593084; cv=pass; b=lpLGY6/9ooFQQu+4HbzOl5KxsZUIPeQJYCaiH7gJrSnrMKIgWdIEpAwNg+60IK3Kx8mkub+1+xVTl99fYmCTTTQPgBO0u6Krta0Z34Sm86u3zzQo2I+xvogKjC3f56G+AC6nMyf5KeFNFUz7QmRhIssBXlnRxP651gX8lrf+RRY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789593084; c=relaxed/simple;
+	bh=GA43VkbHqER01zDTwAx5YQK+oTAg4fjkEJYtZq+Av3o=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Elhj73zuphje7SP6lZfRob96hD7LHZ49Rkdk/yyNEPoM8Nwg6h1ivLBnaTGp+qCUDnVnjw9iYCXG8kj4H24YyezcogfiGFRSToS6i6nc+emFpGK9wp7vTg1464YspNwGdDmy3vxDc/JymLRu7F6kjAinLjwyUDO/EabP42aWaV0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=qS3IFrt2; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=DF7q3DU5; arc=pass smtp.client-ip=185.56.87.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="qS3IFrt2";
+	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="DF7q3DU5"
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-f940.prod.antispam.mailspamprotection.com; s=arckey; t=1789593079;
+	 b=L7XGOxp7FdazYx8QC72JSvFL5zq003os3e0XvFdPy1ZWeat47dlw+6c+9YVZdB9tabm3bV4Hcd
+	  pkKCofbgNt1D07h2DZE91DalJdBt1NhFwl/hIPgJw/WR7nCxpleVR6qfYyAzxkzB6LAd2uhUjp
+	  ZZPOxFYazuYHF2+/lIIfMKFys/LYKUdFMs6tp1z3QQN056mo8ZQc6epeekpm0DSdW+D0+uv5uT
+	  u8z1ROG3XP/1qb4RpojdciXfGovY772/hN9rNf/3qn0+IHZGeFmKTVpsHmxa030eVuSQpgKHoN
+	  0L14rwcnZuGfbRK+pwz7qkiwJfcYzC19OoDWOJ3Cw2PkRw==;
+ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-f940.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
+	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
+	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
+	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
+	arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-f940.prod.antispam.mailspamprotection.com; s=arckey; t=1789593079;
+	bh=GA43VkbHqER01zDTwAx5YQK+oTAg4fjkEJYtZq+Av3o=;
+	h=Cc:To:In-Reply-To:References:Message-ID:Content-Transfer-Encoding:
+	  Content-Type:MIME-Version:Subject:Date:From:DKIM-Signature:DKIM-Signature;
+	b=tep3/cN9CU555pW4iaewxaqxYoL5W8Yken/2ClgHWKoxUcKMJ+GKETYPXcUwGy9WwbxncG452/
+	  jUU26La7LjQdEWHwS6nIDX+4B2+XT+7z27Bo0gDnsPvX9xiLd/v67IJmK0v8cLxiO6OiytuFEw
+	  A1iEEQC230JdzenfmPb6t2pCJKUGNfX+hw3+5Ic+vxcdvzTnzDwOQTSMBjOSoUOA4nn0ljxQNc
+	  fvZYbX9sFTpGs3l1nXY0gkg/HdDDrKt5Dvi8862ZyM6bE+R81Mf3gC7gcgoQpYyP1/uiQzjWBA
+	  432gOCgo46c+aWzRjDhT8Zz7NAI6xHYpuIFEWwDSznKisQ==;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
+	:Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:MIME-Version:Subject
+	:Date:From:Reply-To:List-Unsubscribe;
+	bh=0bfi//4iBWflpifsqQu1VKkBu2tJTFizXLg4sdBHJQ0=; b=qS3IFrt2tWS5woS8bDaYTTAlLb
+	OPtxO0JH5rKUV99gMIvCxzaOpqxmmJvMc51pgNi0Zs0JuGiTQT/6zN8ZBEKq2lp6I7RfCSF79+PZo
+	1o1W9eSpgYZbh3oTM1r7fdOyaqrkmkhGzVIdsd/mv6gh2KZtROZDeytl2p5H53kEcl+w=;
+Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
+	by instance-europe-west4-f940.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.99.5)
+	(envelope-from <francesco@valla.it>)
+	id 1x6wuK-00000002DM5-1Xgr;
+	Wed, 16 Sep 2026 21:11:09 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
+	s=default; h=Cc:To:Subject:Date:From:list-help:list-unsubscribe:
+	list-subscribe:list-post:list-owner:list-archive;
+	bh=0bfi//4iBWflpifsqQu1VKkBu2tJTFizXLg4sdBHJQ0=; b=DF7q3DU5LJeHMMSDvxyO4rrxqW
+	qWIJk0NYo14ZmYU2P9BItxIUY8RzG74/+He5UXGD5TLl4ACrA4C3gPumz/6Qd6OkYzpZxux31EAJe
+	okiQCQ9cLa0eBFsEHDNyLCqWbqjF4gWzSGpfws9bJfsQIO6WsoEy8oSyY0Od73o7Ovyk=;
+Received: from [95.233.221.121] (port=62880 helo=[192.168.178.175])
+	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.99.5)
+	(envelope-from <francesco@valla.it>)
+	id 1x6wuE-0000000058P-3bHV;
+	Wed, 16 Sep 2026 21:11:02 +0000
+From: Francesco Valla <francesco@valla.it>
+Date: Wed, 16 Sep 2026 23:10:46 +0200
+Subject: [PATCH RFC 01/12] remoteproc: virtio: cleanup rproc_add_virtio_dev
+ error path
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowADnVD_Y5qpqnvtvCA--.24836S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XF48JF1fWr4xtr4rKFWxJFb_yoWkurcE9F
-	4rZas7Xw15Ar4qyr4UtFZFvr9Iv3ZruF1kZFZFg3s3G34YvF10vw45XFZ8Jw47W3yUJasr
-	Kwn8WF13X39rujkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbakFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-	Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_Jw0_WrylYx0Ex4A2jsIE14v26F4j6r4UJwAm72CE4IkC6x0Yz7v_Jr
-	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-	8cxan2IY04v7MxkF7I0En4kS14v26r1q6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFV
-	Cjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWl
-	x4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r
-	4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6r1j
-	6r1xMIIF0xvEx4A2jsIE14v26F4j6r4UJwCI42IY6I8E87Iv6xkF7I0E14v26F4UJVW0ob
-	IYCTnIWIevJa73UjIFyTuYvjfUFhL0UUUUU
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCRMMA2qqozWPWQAAsV
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260916-remoteproc_virtio_map-v1-1-dac8c5eb4aa9@valla.it>
+References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+In-Reply-To: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Mathieu Poirier <mathieu.poirier@linaro.org>, Kees Cook <kees@kernel.org>, 
+ "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+ Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, virtualization@lists.linux.dev, 
+ imx@lists.linux.dev, iommu@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, Francesco Valla <francesco@valla.it>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2153; i=francesco@valla.it;
+ h=from:subject:message-id; bh=GA43VkbHqER01zDTwAx5YQK+oTAg4fjkEJYtZq+Av3o=;
+ b=owGbwMvMwCX2aH1OUIzHTgbG02pJDFmrWR8ft9qsOP/6zc0mqevMn+124n6Yp8jQ/WWyXeyha
+ 9Zb9s481FHKwiDGxSArpsgSsu7GvT1zzb+lbWB8BDOHlQlkCAMXpwBMxCCAkWGuxe+LPYcj5DpF
+ F9gUGx7g2BFwMZmnVvqU2R2Nr1cusr9k+F9vfUM6/Nec806yHg8PmRe/Wqz192+OE3te+WPJ61v
+ zNjIAAA==
+X-Developer-Key: i=francesco@valla.it; a=openpgp;
+ fpr=CC70CBC9AA13257C6CCED8669601767CA07CA0EA
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - esm19.siteground.biz
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - valla.it
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-SGantispam-id: d258709059a72cc5e6b226d3055748b8
+X-AntiAbuse: ID - d258709059a72cc5e6b226d3055748b8
+AntiSpam-DLS: false
+AntiSpam-DLSP: 
+AntiSpam-DLSRS: 
+AntiSpam-TS: 1.0
+CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
+CFBL-Feedback-ID: 1x6wuK-00000002DM5-1Xgr-feedback@antispam.mailspamprotection.com
+Authentication-Results: outgoing.instance-europe-west4-f940.prod.antispam.mailspamprotection.com;
+	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
+	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
+	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
+	arc=none
 
-pci_get_domain_bus_and_slot() returns a PCI device with an elevated
-reference count, but iommu_call_iopf_notifier() never drops it, neither
-when the page request has been reported nor on the abort path.
+There is no cleanup to perform in case an error occurs inside
+rproc_add_virtio_dev, so remove the goto label and just return in such
+cases.
 
-Put the device reference on both exits.
-
-Fixes: 978d626b8f1a ("iommu/amd: Add IO page fault notifier handler")
-Cc: stable@vger.kernel.org
-Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
+Signed-off-by: Francesco Valla <francesco@valla.it>
 ---
- drivers/iommu/amd/ppr.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/remoteproc/remoteproc_virtio.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
-index 1f8d2823bea4..1e4392b17bd8 100644
---- a/drivers/iommu/amd/ppr.c
-+++ b/drivers/iommu/amd/ppr.c
-@@ -151,6 +151,7 @@ static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
+diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
+index d5e9ff045a28..096bcba527c1 100644
+--- a/drivers/remoteproc/remoteproc_virtio.c
++++ b/drivers/remoteproc/remoteproc_virtio.c
+@@ -376,9 +376,8 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+ 	int ret;
  
- 	/* Submit event */
- 	iommu_report_device_fault(&pdev->dev, &event);
-+	pci_dev_put(pdev);
+ 	if (rproc->ops->kick == NULL) {
+-		ret = -EINVAL;
+ 		dev_err(dev, ".kick method not defined for %s\n", rproc->name);
+-		goto out;
++		return -EINVAL;
+ 	}
  
- 	return;
+ 	/* Try to find dedicated vdev buffer carveout */
+@@ -394,7 +393,7 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+ 								 mem->of_resm_idx);
+ 			if (ret) {
+ 				dev_err(dev, "Can't associate reserved memory\n");
+-				goto out;
++				return ret;
+ 			}
+ 		} else {
+ 			if (mem->va) {
+@@ -412,7 +411,7 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+ 							   mem->len);
+ 			if (ret < 0) {
+ 				dev_err(dev, "Failed to associate buffer\n");
+-				goto out;
++				return ret;
+ 			}
+ 		}
+ 	} else {
+@@ -431,11 +430,10 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
  
-@@ -159,6 +160,7 @@ static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
- 	amd_iommu_complete_ppr(&pdev->dev, PPR_PASID(raw[0]),
- 			       IOMMU_PAGE_RESP_FAILURE,
- 			       PPR_TAG(raw[0]) & 0x1FF);
-+	pci_dev_put(pdev);
+ 	/* Allocate virtio device */
+ 	vdev = kzalloc_obj(*vdev);
+-	if (!vdev) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
+-	vdev->id.device	= id,
++	if (!vdev)
++		return -ENOMEM;
++
++	vdev->id.device = id,
+ 	vdev->config = &rproc_virtio_config_ops,
+ 	vdev->dev.parent = dev;
+ 	vdev->dev.release = rproc_virtio_dev_release;
+@@ -447,13 +445,12 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+ 	if (ret) {
+ 		put_device(&vdev->dev);
+ 		dev_err(dev, "failed to register vdev: %d\n", ret);
+-		goto out;
++		return ret;
+ 	}
+ 
+ 	dev_info(dev, "registered %s (type %d)\n", dev_name(&vdev->dev), id);
+ 
+-out:
+-	return ret;
++	return 0;
  }
  
- void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
+ /**
+
 -- 
-2.34.1
+2.55.0
 
