@@ -1,448 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv2-f12.google.com (mail-qv2-f12.google.com [74.125.230.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D90D4CDA22;
-	Thu, 17 Sep 2026 14:17:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B8A59220B
+	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 14:28:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789654653; cv=none; b=sCf5Vlzmj+mqIDvNdqiWnMuU9GxjfxGyN8AGRHUHiwQNXHKEFBQExFTCASxLAZIOgVTCle577LMNCZengR/JNd4N/diozRvfyJDLKXauopbtdlHIusxPCQBnwjRqzZ29fjbnH/XH1ywducAy/vZuIB/EeMEJVLG3kXkAcgAAgYw=
+	t=1789655294; cv=none; b=Zn7zeTQhcz4ydoCLJCvmJRLkD59CvHK7w7Hatuem5SEGGHSBzLsGvS8CShaDcQ2Wr63hieIcyUxi7nCNUKpjIP376cLxYGorJ+9W64PdTZDXU0vQgV9mwtfJC6CQ9CKq23/njNWY6GAu0KqoSQ2J/r1iL4XHa6l04PlLkV9UPB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789654653; c=relaxed/simple;
-	bh=KUsWfUmR/YkNz1cVII4rJx/gCm1LD/pb+4mqpUO+M4c=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Qh6DbD2l8h5QFlPpHzPteR3BHpMLp7TFaTpD6uyLlK5yY74gV4+GD2RxPFqNi9SVrxV/8T83/ToHzSjmk7cWoIxXNVlQBM1weD4PJ68mtrnGkUawShTd3AY2ySmefF4HDx1LJ0ddILElvm2SukKU6mufeipYTPMQkH8Vd9vj6VU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YB6En9N7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789655294; c=relaxed/simple;
+	bh=zD+yqYOk9BEwYrlkE41XIJFd2WjARDFI5ce4WJxm+Ls=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Qetht6IUWWCdp3WT1AaXLF7YxN9tfEKDlUFA4KxpJILxiHH7qHV5dkOui/iqy3IhfinDV0IdlNobAYEx9vt9pxgXE9v6GY+bp7VJHpbRndXc0g0CI57YchDj3I+PLC8JucprB+TLnXGzOuGILZ7SNA4f2sWDkpaMDG/NR9Ula/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hsfj+92u; arc=none smtp.client-ip=74.125.230.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YB6En9N7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2C9D1F000FF;
-	Thu, 17 Sep 2026 14:17:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789654651;
-	bh=rnjriWvdE1yvZq6NzpfFMgF3p9YCgsclH/C0ba5bhBY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=YB6En9N7IUjIl3x29LX93QGBwHx6qcTGsAQ1SzImnoREdd40/BS+NOIqYCP/4dXjK
-	 N3RFRx9kcsWNpDbXESFuvQrqnNDZmFCdf0OI/I1SC1QnFTjvLDhAdVEhUYOxf6YPQV
-	 HcGNvX3eBNnWZW5pdKM4j9SLckYzxo7eiiTFJmJUtUEASL9mjWTUrpEObcSSiBh3Ke
-	 16hRI/Qqjsx3cCY+zQkntTUaEENlzcfHJ0F1uQsBHd99kByWq3V6Cb3H6IZmPTRY1b
-	 ejz5qlBgY/0G19vMsa+mqywCzTX0LINfNGLNokauo1N5MuGJZ1ATfxVP8QbkDw7zde
-	 VZawm0aUR1SDw==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: linux-coco@lists.linux.dev, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [RFC PATCH v6 00/11] iommufd: Infrastructure for vIOMMU
- creation for confidential guests and guest TSM requests
-In-Reply-To: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
-References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
-Date: Thu, 17 Sep 2026 19:47:21 +0530
-Message-ID: <yq5afqz80xou.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hsfj+92u"
+Received: by mail-qv2-f12.google.com with SMTP id 6a1803df08f44-91058dd77a2so9285566d6.3
+        for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 07:28:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1789655290; x=1790260090; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Jw1k2NAja1Um952Tl85LJupIp0nZbLj8NYpKbR9I6hU=;
+        b=hsfj+92uJM/NVcCc40Z0dfIVut1ueNMt3nKKrxMG5aLSDj1HQYlhKVYljOIRvOe7hj
+         8stG43Ht99Xqg7NRO7hV2aBWNu56uHSfICZcflNkJtNXcG33N49m7zGupUvrs3IAzRvV
+         Zp+fYXJl0Tm0gEXZSHchdTBPn/zjUWJUOpK8VnZUnkV5rCu7cwx77Pr6MfKaqPvn719u
+         aGC4BgvLDfX1OA8MwFElzeJuHDzyX6Ly7QTv6Sj/5UYAsYIkkVhLdVV/SSNFZoRWewmQ
+         0/x0CYkMlhkdVQjSagBg0ihLG+nIENqc1+DnWIP0OKw7g2R9X1mEhaEgN8OqRK8UovII
+         e6MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789655290; x=1790260090;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=Jw1k2NAja1Um952Tl85LJupIp0nZbLj8NYpKbR9I6hU=;
+        b=ZCZCADmBWghktdLSQvyvWzpHrKedoLjzpSfNrk+XD9/2xpBAvjSfZEymM8xKd8yQE4
+         D6SDXsf0wztNKrDyueqXU/ke7zpl0sUlz5rZwGxO/gc8IEj0e6bLb72F0fPRKgsCpEYi
+         AfUnPbHscYrxXqrb9k0hSrYn/17BbFcJ1KilJHvEmQmrlP1Ymo7w5EXzsr8jEjLHl8xn
+         TFMMi9Wf9U0TVzNWtW2oEz1CnS01ayMIst6mlQZp4vnb0UtT1DWswWa/icCnDH9ms9Ge
+         zWMFlDyKQy8AKWxN+2PGN5ApXHOPDGqIybGbDN7x9XiKFU7ZF9JiQZfQ5jAcVztjuV2N
+         pNsQ==
+X-Forwarded-Encrypted: i=1; AKwUvByu0YjH3Fl0NaxSQ11WP3QDcZFiAwg63aaHGDzVnH9OEukyk2rlrhn3AEZrVio7h55btt9ASg==@lists.linux.dev
+X-Gm-Message-State: AFuF++mxsswqIeGWWEu+3eha3SdpvJbV0vT4FLwpxszEuJ76BZBkgeB8
+	axoCISAhf4l5fWYUzZVKMOh4jx0pblGIKo3fV4KDpb7tZYt3iL1CUaYfBuFTvmlYMbo=
+X-Gm-Gg: AYBFou2bvNgqdHgrecHzeE5NXyK6tp5E3y4ISSGtXIk+dnS3Ld8rj9R7boI9/vN63t1
+	GXGreMxbN8OhK9bqxoP3jrUhw0s8pvqJdXgQCCVf396+9eKhUmZYs/q6EV86Ag23gdKaegY8Vau
+	P0Y+t4w5bvnTFvriYQ2bvC20wjxNNWyCLF5BRAlAmEQAFoi/aiUce74k4lLqwOSp7nc1t5zt5+w
+	A2F2VF/l5eoRZH1wQ5EE6hKPrGArSNnqrU5OcDM5WETN1jTTD0F3Il1SbcMfn8sEDdxUkmGuuni
+	wH3NMsorQTY+/chA7a81x19BnKXJ3cYrm2tYT883wENqoDYynuMmt63GFgEDsehc1QVQHkz4X0x
+	vGFtRQydJZ+IeU87l1oNCjY473x+Vomt6TCUTghOmGef/LWmorLSk/rJqoIFlypc1LVQf8jHpVj
+	CoRmLyAyjSAvwlohxnHCYuNI2Iu3QQIbi1ZE1jXqfuVvyQ0wZ9gGLlz4YQVK66Gv/PRPX826t9H
+	hpQX6rlBEVVfupZZCEkoOYBe/2hFSzPjb7NXsJhqFv7SV1aWVcV0KoG
+X-Received: by 2002:a05:6214:1316:b0:912:517b:911 with SMTP id 6a1803df08f44-912517b0beamr9926716d6.48.1789655289706;
+        Thu, 17 Sep 2026 07:28:09 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9123be9ca82sm51192626d6.32.2026.09.17.07.28.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Sep 2026 07:28:09 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1x7D5s-0000000CrE5-25RS;
+	Thu, 17 Sep 2026 11:28:08 -0300
+Date: Thu, 17 Sep 2026 11:28:08 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Leon Romanovsky <leon@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	iommu@lists.linux.dev, Tushar Dave <tdave@nvidia.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-rdma@vger.kernel.org,
+	kvm@vger.kernel.org
+Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
+ direct peer-to-peer route
+Message-ID: <20260917142808.GH3196566@ziepe.ca>
+References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
+ <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
+ <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
+ <f3708893-4760-4157-83a3-313867a94e78@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f3708893-4760-4157-83a3-313867a94e78@amd.com>
 
-"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+On Thu, Sep 17, 2026 at 04:00:33PM +0200, Christian König wrote:
+> > However, at least for the Intel GPUs, ATS enablement is based on the
+> > PCIe-side enable bit.
+> 
+> Yeah, I can confirm as well that this is something really exotic.
 
-> This series adds the IOMMUFD and PCI/TSM infrastructure required for device
-> assignment. It introduces an IOMMUFD-owned vIOMMU provider registry and the
-> IOMMU_VDEVICE_TSM_REQ ioctl.
->
-> The series adds a vIOMMU provider abstraction that allows a subsystem
-> other than the physical IOMMU driver to implement a vIOMMU type. It groups
-> the vIOMMU operations with their module owner and private data, and makes
-> that implementation discoverable during vIOMMU allocation.
->
-> External providers are selected by exact vIOMMU type. When no provider
-> matches, vIOMMU creation falls back to the physical IOMMU driver. Once a
-> provider matches, its result is authoritative and failures do not trigger
-> fallback.
->
-> Guest TSM requests are dispatched through the vdevice. PCI/TSM uses
-> reference-counted contexts to retain the resources needed by providers,
-> without introducing separate IOMMUFD TSM bind or unbind ioctls.
->
-> Note: Codex was used to assist with commit message formatting and code
-> rearrangement.
->
+In most datacenter systems it is only the NIC that initiates the P2P
+transfers, so it should not be surprising that NIC HW has more
+optimizations for this. In real systems ATS carries such a perf cost
+that you do need to be selective about it. I would expect every
+serious NIC to have this capability or it will not be perf
+competitive.
 
- [ ... 99 lines skipped ... ] 
+NIC and GPU are using ATS for completely different reasons.
 
-Related Arm CCA host changes is below
+> Additional to that the setup that ACS seems to be disabled for some
+> bridges bit not all also sounds extremely uncommon.
 
-commit 66225895e48fa38b13aea493e1e6e3babab8f6aa
-Author: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-Date:   Wed Sep 16 14:06:15 2026 +0530
+I'm not sure where you saw ACS disabled, you can look rdma-core now
+has a tool to help people get their RDMA NICs working in GPU systems:
 
-    virt: arm-cca-host: Register the Realm vIOMMU provider with IOMMUFD
-    
-    Register the Realm SMMUv3 provider directly with IOMMUFD. Retain active TSM
-    resources until the final provider release and remove the registration
-    before TSM teardown.
-    
-    Create CCA-owned vdevices using PCI/TSM contexts, balance pSMMU stream-
-    table lifetime, and mark a function bound only after successful
-    initialization. Keep the KVM file and active pSMMU alive through the vIOMMU
-    lifetime.
+https://github.com/linux-rdma/rdma-core/blob/master/kernel-boot/rdma_topo
 
-diff --git a/drivers/virt/coco/arm-cca-host/Kconfig b/drivers/virt/coco/arm-cca-host/Kconfig
-index 4a2bc64c2568..d0c636f92d9e 100644
---- a/drivers/virt/coco/arm-cca-host/Kconfig
-+++ b/drivers/virt/coco/arm-cca-host/Kconfig
-@@ -7,6 +7,7 @@ config ARM_CCA_HOST
- 	depends on ARM64
- 	depends on PCI
- 	depends on ARM_RMM
-+	depends on IOMMUFD
- 	depends on HAVE_ARM_SMCCC_DISCOVERY
- 	select PCI_TSM
- 	select KEYS
-diff --git a/drivers/virt/coco/arm-cca-host/Makefile b/drivers/virt/coco/arm-cca-host/Makefile
-index d48e8940af46..2732352a7ae2 100644
---- a/drivers/virt/coco/arm-cca-host/Makefile
-+++ b/drivers/virt/coco/arm-cca-host/Makefile
-@@ -2,4 +2,4 @@
- #
- obj-$(CONFIG_ARM_CCA_HOST) += arm-cca-host.o
- 
--arm-cca-host-y	+=  arm-cca.o rmi-da.o
-+arm-cca-host-y	+=  arm-cca.o rmi-da.o viommu.o
-diff --git a/drivers/virt/coco/arm-cca-host/arm-cca.c b/drivers/virt/coco/arm-cca-host/arm-cca.c
-index 182733e00dfc..b5d50685eaeb 100644
---- a/drivers/virt/coco/arm-cca-host/arm-cca.c
-+++ b/drivers/virt/coco/arm-cca-host/arm-cca.c
-@@ -5,6 +5,7 @@
- 
- #include <linux/arm-smccc.h>
- #include <linux/arm-smccc-bus.h>
-+#include <linux/iommufd.h>
- #include <linux/pci-tsm.h>
- #include <linux/pci-ide.h>
- #include <linux/module.h>
-@@ -427,6 +428,24 @@ static struct pci_tsm_ops cca_link_pci_ops = {
- 	.disconnect = cca_tsm_disconnect,
- };
- 
-+static void cca_viommu_provider_release(void *data)
-+{
-+	tsm_put(data);
-+}
-+
-+static const struct iommufd_viommu_provider_ops cca_viommu_provider_ops = {
-+	.owner = THIS_MODULE,
-+	.type = IOMMU_VIOMMU_TYPE_ARM_REALM_SMMUV3,
-+	.get_size = cca_viommu_get_size,
-+	.init = cca_viommu_init,
-+	.release = cca_viommu_provider_release,
-+};
-+
-+static void cca_viommu_provider_remove(void *provider)
-+{
-+	iommufd_unregister_viommu_provider(provider);
-+}
-+
- static void cca_link_tsm_remove(void *tsm_dev)
- {
- 	tsm_unregister(tsm_dev);
-@@ -439,7 +458,9 @@ static bool rmi_has_reg2_feature(unsigned long feature)
- 
- static int cca_link_tsm_probe(struct arm_smccc_device *sdev)
- {
-+	struct iommufd_viommu_provider *provider;
- 	struct tsm_dev *tsm_dev;
-+	int ret;
- 
- 	if (!rmi_has_reg2_feature(RMI_FEATURE_REGISTER_2_DA))
- 		return -ENODEV;
-@@ -448,8 +469,22 @@ static int cca_link_tsm_probe(struct arm_smccc_device *sdev)
- 	if (IS_ERR(tsm_dev))
- 		return PTR_ERR(tsm_dev);
- 
--	return devm_add_action_or_reset(&sdev->dev, cca_link_tsm_remove,
--					tsm_dev);
-+	ret = devm_add_action_or_reset(&sdev->dev, cca_link_tsm_remove, tsm_dev);
-+	if (ret)
-+		return ret;
-+
-+	/* Retain PCI/TSM resources until the last provider user is released. */
-+	tsm_get(tsm_dev);
-+	provider = iommufd_register_viommu_provider(&cca_viommu_provider_ops,
-+						  tsm_dev);
-+	if (IS_ERR(provider)) {
-+		tsm_put(tsm_dev);
-+		return PTR_ERR(provider);
-+	}
-+
-+	/* Remove from lookup before the earlier TSM unregister action runs. */
-+	return devm_add_action_or_reset(&sdev->dev, cca_viommu_provider_remove,
-+					provider);
- }
- 
- static const struct arm_smccc_device_id cca_link_tsm_id_table[] = {
-diff --git a/drivers/virt/coco/arm-cca-host/rmi-da.h b/drivers/virt/coco/arm-cca-host/rmi-da.h
-index 306f64749f26..07642eeb3245 100644
---- a/drivers/virt/coco/arm-cca-host/rmi-da.h
-+++ b/drivers/virt/coco/arm-cca-host/rmi-da.h
-@@ -16,6 +16,11 @@
- #include <linux/atomic.h>
- #include <linux/kref.h>
- #include <linux/wait.h>
-+#include <uapi/linux/iommufd.h>
-+
-+struct iommufd_viommu;
-+struct iommu_domain;
-+struct iommu_user_data;
- 
- #define MAX_CACHE_OBJ_SIZE	SZ_16M
- #define CACHE_CHUNK_SIZE	SZ_4K
-@@ -119,6 +124,11 @@ struct cca_host_fn_dsc {
- 	struct pci_tsm pci;
- };
- 
-+size_t cca_viommu_get_size(struct device *dev, enum iommu_viommu_type type);
-+int cca_viommu_init(struct iommufd_viommu *viommu, struct device *dev,
-+		    struct iommu_domain *parent,
-+		    const struct iommu_user_data *user_data);
-+
- enum dev_comm_type {
- 	PDEV_COMMUNICATE = 0x1,
- 	VDEV_COMMUNICATE = 0x2,
-diff --git a/drivers/virt/coco/arm-cca-host/viommu.c b/drivers/virt/coco/arm-cca-host/viommu.c
-index 5cd261551b17..9daa3ff3ca1c 100644
---- a/drivers/virt/coco/arm-cca-host/viommu.c
-+++ b/drivers/virt/coco/arm-cca-host/viommu.c
-@@ -32,6 +32,13 @@ struct cca_viommu {
- 	struct cca_psmmu *psmmu;
- };
- 
-+struct cca_vdevice {
-+	struct iommufd_vdevice core;
-+	struct pci_tsm_context *tsm_context;
-+	struct cca_host_tdi host_tdi;
-+	u32 l2_sid;
-+};
-+
- static LIST_HEAD(cca_psmmus);
- static DEFINE_MUTEX(cca_psmmus_lock);
- 
-@@ -40,6 +47,11 @@ static struct cca_viommu *to_cca_viommu(struct iommufd_viommu *viommu)
- 	return container_of(viommu, struct cca_viommu, core);
- }
- 
-+static struct tsm_dev *cca_viommu_tsm_dev(struct iommufd_viommu *viommu)
-+{
-+	return viommu->provider_data;
-+}
-+
- static struct cca_psmmu *
- cca_psmmu_get(const struct arm_smmu_realm_params *params)
- {
-@@ -99,3 +111,192 @@ static void cca_psmmu_put(struct cca_psmmu *psmmu)
- 	list_del(&psmmu->node);
- 	kfree(psmmu);
- }
-+
-+static void cca_viommu_destroy(struct iommufd_viommu *viommu)
-+{
-+	struct cca_viommu *cca = to_cca_viommu(viommu);
-+
-+	if (cca->psmmu)
-+		cca_psmmu_put(cca->psmmu);
-+}
-+
-+static int cca_psmmu_create_l2(struct cca_psmmu *psmmu, u32 l2_sid)
-+{
-+	unsigned long rmi_ret = 0;
-+	int ret;
-+
-+	guard(mutex)(&cca_psmmus_lock);
-+	ret = rmi_psmmu_st_l2_create(psmmu->phys, l2_sid, &rmi_ret);
-+	if (!ret && !rmi_ret)
-+		return 0;
-+	if (RMI_RETURN_STATUS(rmi_ret) == RMI_ERROR_PSMMU_ST &&
-+	    RMI_RETURN_INDEX(rmi_ret) == 2)
-+		return 0;
-+	return -EIO;
-+}
-+
-+static void cca_psmmu_destroy_l2(struct cca_psmmu *psmmu, u32 l2_sid,
-+				 struct device *dev)
-+{
-+	unsigned long rmi_ret = 0;
-+	int ret;
-+
-+	guard(mutex)(&cca_psmmus_lock);
-+	ret = rmi_psmmu_st_l2_destroy(psmmu->phys, l2_sid, &rmi_ret);
-+	if (!ret && !rmi_ret)
-+		return;
-+	if (RMI_RETURN_STATUS(rmi_ret) == RMI_ERROR_PSMMU_ST &&
-+	    RMI_RETURN_INDEX(rmi_ret) == 2)
-+		return;
-+	dev_warn(dev, "failed to destroy Realm stream mapping\n");
-+}
-+
-+static void cca_vdevice_destroy(struct iommufd_vdevice *vdev)
-+{
-+	struct cca_vdevice *cca_vdev =
-+		container_of(vdev, struct cca_vdevice, core);
-+	struct cca_viommu *cca = to_cca_viommu(vdev->viommu);
-+	struct device *dev = iommufd_vdevice_to_device(vdev);
-+	struct pci_tsm_context *context = cca_vdev->tsm_context;
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct pci_tsm_pf0 *pf0 = pci_tsm_context_pf0(context);
-+	struct pci_dev *dsm_dev = pci_tsm_context_dsm_dev(context);
-+	struct cca_host_tdi *host_tdi = &cca_vdev->host_tdi;
-+	struct realm *realm = &host_tdi->kvm->arch.realm;
-+
-+	scoped_guard(mutex, &pf0->lock) {
-+		cca_vdev_destroy(host_tdi, realm, pdev, dsm_dev);
-+		kvfree(host_tdi->interface_report);
-+		kvfree(host_tdi->measurements);
-+		cca_psmmu_destroy_l2(cca->psmmu, cca_vdev->l2_sid, dev);
-+	}
-+	pci_tsm_context_put(context);
-+}
-+
-+static int cca_vdevice_init(struct iommufd_vdevice *vdev)
-+{
-+	struct cca_vdevice *cca_vdev =
-+		container_of(vdev, struct cca_vdevice, core);
-+	struct arm_smmu_realm_params params;
-+	struct cca_viommu *cca = to_cca_viommu(vdev->viommu);
-+	struct cca_psmmu *psmmu = cca->psmmu;
-+	struct device *dev = iommufd_vdevice_to_device(vdev);
-+	struct tsm_dev *tsm_dev = cca_viommu_tsm_dev(vdev->viommu);
-+	struct pci_tsm_context *context;
-+	struct pci_dev *pdev;
-+	struct pci_tsm_pf0 *pf0;
-+	struct pci_dev *dsm_dev;
-+	struct cca_host_tdi *host_tdi = &cca_vdev->host_tdi;
-+	struct kvm *kvm = vdev->viommu->kvm_file->private_data;
-+	void *rmm_vdev;
-+	int ret;
-+
-+	if (!dev_is_pci(dev))
-+		return 0;
-+	/* Devices without a Link TSM remain ordinary vdevices. */
-+	pdev = to_pci_dev(dev);
-+	context = pci_tsm_context_get(pdev);
-+	if (IS_ERR(context)) {
-+		if (PTR_ERR(context) == -EOPNOTSUPP)
-+			return 0;
-+		return PTR_ERR(context);
-+	}
-+	if (pci_tsm_context_tsm_dev(context) != tsm_dev) {
-+		ret = -EXDEV;
-+		goto out_put_context;
-+	}
-+
-+	ret = iommu_viommu_get_params(dev,
-+		IOMMU_VIOMMU_TYPE_ARM_REALM_SMMUV3, &params,
-+		sizeof(params));
-+	if (ret)
-+		goto out_put_context;
-+	if (params.psmmu_phys != psmmu->phys) {
-+		ret = -EINVAL;
-+		goto out_put_context;
-+	}
-+
-+	host_tdi->kvm = kvm;
-+	cca_vdev->l2_sid = params.l2_sid;
-+	pf0 = pci_tsm_context_pf0(context);
-+	dsm_dev = pci_tsm_context_dsm_dev(context);
-+
-+	scoped_guard(mutex, &pf0->lock) {
-+		ret = cca_psmmu_create_l2(psmmu, params.l2_sid);
-+		if (!ret) {
-+			rmm_vdev = cca_vdev_create(host_tdi, &kvm->arch.realm,
-+						   pdev, dsm_dev, vdev->virt_id);
-+			if (IS_ERR_OR_NULL(rmm_vdev)) {
-+				ret = rmm_vdev ? PTR_ERR(rmm_vdev) : -ENOMEM;
-+				cca_psmmu_destroy_l2(psmmu, params.l2_sid, dev);
-+			}
-+		}
-+		if (!ret)
-+			pci_tsm_context_mark_bound(context);
-+	}
-+	if (ret)
-+		goto out_put_context;
-+	cca_vdev->tsm_context = context;
-+	vdev->destroy = cca_vdevice_destroy;
-+	return 0;
-+
-+out_put_context:
-+	pci_tsm_context_put(context);
-+	return ret;
-+}
-+
-+static const struct iommufd_viommu_ops cca_viommu_ops = {
-+	.destroy = cca_viommu_destroy,
-+	.vdevice_size = VDEVICE_STRUCT_SIZE(struct cca_vdevice, core),
-+	.vdevice_init = cca_vdevice_init,
-+};
-+
-+size_t cca_viommu_get_size(struct device *dev, enum iommu_viommu_type type)
-+{
-+	struct arm_smmu_realm_params params;
-+
-+	if (type != IOMMU_VIOMMU_TYPE_ARM_REALM_SMMUV3)
-+		return 0;
-+	if (iommu_viommu_get_params(dev, type, &params, sizeof(params)))
-+		return 0;
-+	return VIOMMU_STRUCT_SIZE(struct cca_viommu, core);
-+}
-+
-+int cca_viommu_init(struct iommufd_viommu *viommu, struct device *dev,
-+		    struct iommu_domain *parent,
-+		    const struct iommu_user_data *user_data)
-+{
-+	struct arm_smmu_realm_params params;
-+	struct cca_viommu *cca = to_cca_viommu(viommu);
-+	struct cca_psmmu *psmmu;
-+	struct kvm *kvm;
-+	int ret;
-+
-+	(void)user_data;
-+
-+	if (viommu->type != IOMMU_VIOMMU_TYPE_ARM_REALM_SMMUV3)
-+		return -EOPNOTSUPP;
-+	if (!viommu->kvm_file)
-+		return -EINVAL;
-+	kvm = viommu->kvm_file->private_data;
-+	ret = kvm_realm_ensure_created(kvm);
-+	if (ret)
-+		return ret;
-+
-+	ret = iommu_viommu_validate_parent(dev, viommu->type, parent);
-+	if (ret)
-+		return ret;
-+	ret = iommu_viommu_get_params(dev, viommu->type, &params,
-+				      sizeof(params));
-+	if (ret)
-+		return ret;
-+
-+	psmmu = cca_psmmu_get(&params);
-+	if (IS_ERR(psmmu))
-+		return PTR_ERR(psmmu);
-+	cca->psmmu = psmmu;
-+	viommu->ops = &cca_viommu_ops;
-+	return 0;
-+}
-+
-+MODULE_IMPORT_NS("IOMMUFD");
+I would view most of that stuff as completely normal at this point,
+people have been doing versions of this by hand for almost 10 years
+now. Especially the asymmetric translated/untranslated routing.
+
+Jason
