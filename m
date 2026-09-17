@@ -1,197 +1,209 @@
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013018.outbound.protection.outlook.com [52.101.72.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f8.google.com (mail-pj2-f8.google.com [74.125.227.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C27F53769EC
-	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 01:29:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789608586; cv=fail; b=FoXzy46LjcYpRTSzV4Gtz7mEUOEacbpv8E0iXjS2RJJa7QHRKPKfq30Sl7RjY20wRm8K4k3ucTH9jPhQzV3fIl45ykYqeNTRTbQ2CoL80+4shQq/FvxyMLSNrYY0QPKX2t/HYE5vM1TBz3ExhRr9hUPsZKBOqwjoWQlNh7cc7yI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789608586; c=relaxed/simple;
-	bh=BfU7LPGobMi/DTKH/bIrkpzuL6aUYJC1vXu7bGdseFA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=A76Vnpu/5DN1eXarFeMWH1t8xv5LtOo+OWuqX6maSKPKz1UgsLUQIzP35dbG/MGry8z2AfNKiDvvICPoCsS9e5LiQEzan4gpkMtjm8nVqIMlLFZf/0i2hX3LLKkNXYif0woE5aPobgNHC9xewUp/GRlm2KUVT6kwMYB1gyXOwi0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=ONq0Kqfj; arc=fail smtp.client-ip=52.101.72.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BE0357CF1
+	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 01:41:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.136
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789609276; cv=none; b=omY7fTka8PXa6JgZymDipB/Ud5kg+k787XfznoaAF9n3EC3JHKiBU+MlzUs2TKUGie3oedxi1FD4t7WcKsT0OAUND4PvWya/15JAmHEC2Bk9gfLgJAogLzH8ktkLuFo6KJ46wQR90M+1bCRMEPeH/qZ5czaThDHfRa/gbmuWIfg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789609276; c=relaxed/simple;
+	bh=pCZRKaN7b0DZpONbjkmfo6/OIA6Jc9dc5IrybdG4dlU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=caURGz41W6T4lrU5nIhwC19xj0EQQPHXuU4TQGQYnBTv7JXGkt0IbPoA7ndFoogzcY90Xy79zsIcpQEW4iHCbjXGMBpytF7XCckZAbTMFbZ1zhYrmNhcJmb/z+GJo1TO29sMrxYz3Kq4lT9Jm7UY/eL5qGmNxziN3xRAcA6SraM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bPp1ZSsh; arc=none smtp.client-ip=74.125.227.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="ONq0Kqfj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aMLJ8/a10F39Gm+U7/x/wpp+jN0k+YxREGYM27yuiL/QZnPfqbPHJMqxK3KdYwq2qxyBsHQqWCZNXieCa/7IZC3GkEdzRCeJABIRYPHAHfI5MilXru0f+Ty59ZI5y4j6uIViNn4kYmP3g950A3se6E4XhSge8HSJrOctwJkdQt6KgaKloIc1d20yjjj5G0s+Mlytxo8u26mQxLyWO9qlIOK7SFIOS6FPHYkNLESAl8ZECgIpb++aVV71fbLDpN/RFmNAROWqKBL0Nfq7sKpf8XdwSTrzefexviIAvNfGBhFiVedrcVQdszLokfB0CjgKld7W5IiF4YC4DLFw9XsAJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TrDm+w5JVDK58UejizeyXKNYWhQ9/YdYtHwWPcPi0rk=;
- b=yy2Zwk40kSoJadbMk30J0iI8cF1R796rVAU5hTVhMVlUEViBJ6R1h4kT5lrFIcO6G7MsfjfW54YfwUFTePXoVebUaTkTzi+uqPbPnPQ2S0tSt7NxWph0ZfagDy0P8vtgar2N4a4ZVFk5Nz6MUQMDdrUSu6PJv4aVmoqaFVWAcquDxsJgmbH66KQ8QdoiX13IVXS/7KxmobH8qYnfkvH8of6LAdMa7FdXLqEgc1tnhV0EKE3pgg4Gh31+6VDGwnBUkQeMNSAvVGJAkSyqAW5zYUgD7HXjxej2G9jfFzj+LwuUP/lYnwquCywCGk2JrqYdaR7Z3h0lOqNRBPiXJTOMOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TrDm+w5JVDK58UejizeyXKNYWhQ9/YdYtHwWPcPi0rk=;
- b=ONq0KqfjEsTr3IVvtI38WORc5ogj/KI/j+emlohr5QKijS3VRv5IsEQApSwkYgbdElGb0T1uovZm1/F0IaY/JJcCX5OqN/o8dEPUb9Eh4J2y1WF8w4XgMw0DO7XhEAPUl7NjFLeG6AfbskerTFq2ha41bMdtKH0nXoOCB4BfHOSf/6OwWXUvCzLStl9hL+PYwPxw9YYi0pyxQ4aTWuuv9nv3nnLl9XC0S1fjkPm6iM2o/CPmYT6xmTBxxsu6YhAGtia2ZuJr51yNN9duLz9GholX/OvrQ5GpMi2jRedOAvM4czoycReRR2Yf4HoyHM01ZFcKfmtYUauqzDDvyey6tA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by PAWPR04MB9910.eurprd04.prod.outlook.com (2603:10a6:102:380::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.12; Thu, 17 Sep
- 2026 01:29:38 +0000
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0428.009; Thu, 17 Sep 2026
- 01:29:38 +0000
-Date: Thu, 17 Sep 2026 09:33:55 +0800
-From: Peng Fan <peng.fan@oss.nxp.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC 0/4] iommu/arm-smmu-v3: Support shared Stream IDs
-Message-ID: <aqtDg1EH95RYOdCJ@shlinux89>
-References: <20260916-smmu-shared-sid-v1-0-517384504aee@nxp.com>
- <20260916161018.GE3196566@ziepe.ca>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260916161018.GE3196566@ziepe.ca>
-X-ClientProxiedBy: MA5P287CA0071.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:1b3::10) To AM8PR04MB7874.eurprd04.prod.outlook.com
- (2603:10a6:20b:24d::9)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bPp1ZSsh"
+Received: by mail-pj2-f8.google.com with SMTP id 98e67ed59e1d1-38fd9408220so64303a91.1
+        for <iommu@lists.linux.dev>; Wed, 16 Sep 2026 18:41:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789609274; x=1790214074; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=phs6j4c6GSVsgWqjzCyy6AX6x537GMsS5N7HEcIYNoA=;
+        b=bPp1ZSshGAHkKgtw8cvGCGx1HtfBndV9Sb+IcPVbQwBcfK2mehGvd2k7bO5xto+dCR
+         0MsAkumcxONUJSpFaR/8AumfLFeuPVPKMB4OpvTQ2teJd4gG22aXSzInYnltiJVRdzcT
+         FGQwXlomuAtQWdGuKn4t7Dgil5hoyTnqe2bGnJn29UaCKuGZON5xJvhX1fItBbd5Qrkg
+         kPayWSoSvDyjsVmC4NRcJHEQu29+7Pm2/Z3bSy6pLJqeI25Plqyc1Y+PuBRcgRdiEQE0
+         FOfXMxH4c+PTDt2KlQdhXN7alEdTHR8MRmx0Js5EUmYQO9YPuS+oVNADj3NvOrx8AV7/
+         pL+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789609274; x=1790214074;
+        h=content-transfer-encoding:content-type:in-reply-to:from:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=phs6j4c6GSVsgWqjzCyy6AX6x537GMsS5N7HEcIYNoA=;
+        b=HEjuKrmLjvAW6U+SwsipaWjufvuv09bIsV9nIHwK2O+HLoPEzwuPMVMli59ggljHO8
+         qgjiGRb+eewgfCpl0CjpJFMTU81hlE1oFdBwtH9R2mDNGQhnlzj0k6+f+Ig8611G5w3z
+         w17PcJl6ViH4/LDJ4zr+YrMoVY4dRGNoZ2ntMndzBqAplIAHV2G45OuoSJwIkhuWBiY7
+         QnSpisOebr1fge2mF76mIN44mtElQU43DfAiwX+U/BO0KqhbTjXP2J6nxUoLoCOFmDIO
+         3gkW1HPY8/raqi9GUDaJmwyr/zPRMPyUZM+cgrmfRoJiX/IsmHJ04l+jKutcYRI8m3si
+         mwiQ==
+X-Forwarded-Encrypted: i=1; AKwUvByha8tNQh5JKFlfvf3WuLg5aHYIpvwCGsn3Ht4z9Q6UVxhjB1l9i99W26B0tPkkAqYuc7qgfA==@lists.linux.dev
+X-Gm-Message-State: AFuF++nMNfOCRt529ZNGru7d7nXpDhTrc3rmsO2QQ6fhHJ0nFkRlsS8P
+	nbyV037r48riU55kgLMqx4xE6cT89BmJN2iy8KFurGY6Yddi9IMUdMZv
+X-Gm-Gg: AYBFou3zdkH6K3NynBjSuX3PbuoN6jY041kIRzTDpYMMqzrtmk7ctasNujqt3QKLbV6
+	LFX55aOIlJzHsC8b9Ie/8u1Hg///tGyVliMVaH0TiXgGzu4Uf3NgJBNYm7BYHB9KuvMxKibgVIi
+	fSdqWbrzwJVcdBWtfqf6/R9HQgeDgkfIrVoW6+PuSWQJ8iJFxcCfkP4++QBWQ1Z0p/erd+wYQGb
+	jmz1UFipOUO5GJljS7mUSyw0QmgvCPuRJvFtGtE/E78ziHkH/1uI7JT5XrWxbH4GAOPAyJ3rFev
+	xdqaNcWHlsFJFM9MhQyfM5O94xqTpZeWRxz2YPqKEr7RwZy5FVoFp6YXDtnZHcX78l2m2HXP4v/
+	iR6CYtVUS1LMS+DowBtC0+DoC+ek3Ah36qdkNZFL7jN1NpXO2ZlBU4zA+5iqY5EsoA95o49F9Lp
+	Z46rfut4sMnt3ePokDprx/rJ5s34Pr8CCNAxIH7Dkx4c2pXTk2Dr7iDlTMpeSN6RQuUFTC1WEoi
+	GzbtvZqratjfghe/AdDGZFenCUHjj23vpstKLFNASXPFVgeFI2Mgg==
+X-Received: by 2002:a17:90b:3b41:b0:38c:a59b:5189 with SMTP id 98e67ed59e1d1-39e1e48a416mr10022482a91.15.1789609273770;
+        Wed, 16 Sep 2026 18:41:13 -0700 (PDT)
+Received: from ?IPV6:2409:8900:87c0:1605:195c:9057:4549:3b0b? ([2409:8900:87c0:1605:195c:9057:4549:3b0b])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39e3618ab38sm1949715a91.10.2026.09.16.18.41.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Sep 2026 18:41:13 -0700 (PDT)
+Message-ID: <8530f6cf-3c61-4bd1-871d-b589ef0412bd@gmail.com>
+Date: Thu, 17 Sep 2026 09:40:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|PAWPR04MB9910:EE_
-X-MS-Office365-Filtering-Correlation-Id: 39356197-8c90-4d36-ad72-08df145b2377
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|23010399003|376014|19092799006|11063799006|56012099006|4143699003|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	4SpdiQvtVZ6rMAHemZ5Vh1UsFLjEtiLzWWvTmKT6KDkPibAB4CPPVEZ+0CWHPGR9hZDiYKICT8nqDYno7nc8WNgZDCoL3GVdDPTyizna6b7UYRz8Niijqyp6caOsJv+Q9tUktD0QhpJ3vO9Gxh8gh+k+CnT0BUSyJcZRcfRx6fFJ/4bYpxsiq3wvFh+2XT74De82nUYr4LDZ2Avtab0zcF+//6GVsbVg/v9H8EATzUzuW7yd1BjuVIczCLMqVeALRYKR8tIyCTot6WZB/+yEtndHiF6jK0J5CiIBUoSeF5cbZRZw0TTZWho67C87iF72rNoM4Uf+MGmxHLF6sOg0wE7V9ItOPwxW81t+JAT/tLuYGR4FYdHJxqalx6SW1c94s5JJs83cGf/hiYeo6AUEIIgoDO5nXA/M/pIN6zxJthQfUBwevZ2Z8VxurReVqx9P61THuuUzpx3n+e9EhQxfdugXs2xPaskc50IzRgDZfXQL32kJs5Bxxe2UDCkETPPITx1XX/V2i/WqdLtEMl4WA/xtt9X9i253+UghZcONfvBbsWmClKL1dzhilU9GQgSZhojShtGlDssTkyxxB2QH86qqAvs4d/pQt6ha+W+faUIbhuc2ZDTt/e6t/QFGo3id7RxezCP8DSoPC6GJ7h3hIfeytMiu/YYoUnBv5S4MFes=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(376014)(19092799006)(11063799006)(56012099006)(4143699003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?D0rn1KXhDlYYBtfRaU9nUBHp66Yhw8xOSvd6NTmBxcwXsCycFFWa88cWA0et?=
- =?us-ascii?Q?2RIdHi/icFBKX8qB2aJavT2AwCZCngTtMHlYkW2AOYRv0e3JvSz1WkaUkDMy?=
- =?us-ascii?Q?67vLl0vBuBTCROhdbbV1h2T7tCKkduzoTT0LFDE4OTnVh0l1FwSUiRNuzvvS?=
- =?us-ascii?Q?ZIBXRMmCq4OkkdHvVGMJV3t9DXLoSQZ5bZTUioKfTg/1xNLIGsQjskIvtAvJ?=
- =?us-ascii?Q?LqZXkxAKNtA8O8thdC7Q4QvNN/eY6nmKKbPQxgaKq8gbk1uUrrpII7+pgrhU?=
- =?us-ascii?Q?bQAZ8Ll0FvPskZaM9FjmqfrH8kQzYRtegfhmtdLJeUlGdvx06Db2N51ARDrK?=
- =?us-ascii?Q?1I3ChGH59If5L8PXYHJBxkB4uXiHazONgUw27S3nu8z8Mj09OMqc/HXMGBUt?=
- =?us-ascii?Q?lWZuYu1miWktWRJ0PXVcW88NrPabzSzpG34nv8IYT3A9NxLbrpeX7Nvnrb18?=
- =?us-ascii?Q?xYNCvCGUVsBIjsbeCxvUzqVljFsIqJgMHKY8X4ySAINqKkrz6urbjU78lsBW?=
- =?us-ascii?Q?i3kw2a5P6Xy2dAm9+rra8EF3GQkX3+s4PWdHW1jFeNBimIgALcNJVxYiLahk?=
- =?us-ascii?Q?YgQrZlDxcmfq/V407sSGNYnyQezXQte0GHSxqPHhRG+jr6mtyjxBZga8qvvr?=
- =?us-ascii?Q?xn4pJ75DdhbzZSYKbzzLEamjPtAJzkbjUzZEjCSi2NTAf/GH0uy/OM910QbP?=
- =?us-ascii?Q?UkrhI7wEqKEqEMrhIhk9SAwoq7e3JGHDEZmITBN5Z6sFCX6gSrcfkHb+yqV5?=
- =?us-ascii?Q?8VgEhfQqDlM2S0tUUkDEPGYG3yT5YYXDR97C/Ep63rlXYHZ/QSt/14wUYf+W?=
- =?us-ascii?Q?7R/t+wkxsQjsprQ4KuW4qNbFstfwK9q4u/r2MCCIsw87HTTGafxhvZJIwCAB?=
- =?us-ascii?Q?KUMr+jKju2Zut4KLpwgqRIGrFaTKOVpilchVfeyHbWMzP9ArBMW8qKWQOGQ9?=
- =?us-ascii?Q?71awdTAa5/2/t84GA2SRvciNCfysG631c/Q2j437Yp5WahvMoYxN8r4l7xbJ?=
- =?us-ascii?Q?JT/MllKFFkQ6houSzo1PSdCVwH0RfDMrReQj6yw8jREZgI7ZqrEk6z92wDOH?=
- =?us-ascii?Q?CCFAi63YN3sSSu+cQFJEGcSiy0gkNAZjJ0mh00aDXMyQEJFteD01I8G/n9M/?=
- =?us-ascii?Q?uX6mIInzPtxhvk8tKuw3qIAIxEiBJKcIOc89o2Hyhd3ZU6sAtVEiruAhCNxy?=
- =?us-ascii?Q?bCZZcQiZul9oafEpEDzdS3Wm4DA2bW8B72/urz4oMHdsBmF+kQuxxq2uCP22?=
- =?us-ascii?Q?4RFv/6SyOCG45lIFxjVCOQxMH9RQ6HF8FNY+aTLWiURJUvoC7Sdp65y3ItkT?=
- =?us-ascii?Q?EZeO3nApIntLj9ElHSEfeHQkm0n6LtfhpeBDcw7NgcdO20mfouulQFYo1nwN?=
- =?us-ascii?Q?8pCt/2i59RVx8dEUpRJ0egsYBNPunuMnNeZZruCSuugFQIwks99LypbAihCp?=
- =?us-ascii?Q?SMEMCXibYJyWPK0b7gQ4mqLrpqwg/22yeiCDye1ukjMmDJNkv3mvo8lhgcSI?=
- =?us-ascii?Q?xrJvZKJaVKtA1m7scTiZn8fENF5oXG3Vv0X9rpy2Y1eiJVEk49LDO3FYuFYA?=
- =?us-ascii?Q?jzZSnAsVdW+WZap0eRK4IWGbSdVpZ1SZ+yhwsiJC6OJDZya1hQLyaLddD0T6?=
- =?us-ascii?Q?/bkQcNj2oCrWceaxl+yl41G2img6Mh+ud8iZdM9OsQTDJEfmMYMDbI5BUoXS?=
- =?us-ascii?Q?nlUUlKct29UuPKWIZVRGAZGhxA4+F7y3T2VzkvDb1BMKXW94NxbHkUlBpdWR?=
- =?us-ascii?Q?g4WqrcVkRUQVj8Em8YpFijke0wFTLjnDg4BDyOkbTMymVPLkaTik?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39356197-8c90-4d36-ad72-08df145b2377
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2026 01:29:38.3171
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d8r/luRDXD9mjSK2VQkDOiNZaI4vJhcwNNy+4/3w276XdtMNhsYNDZcL/d5IU9eic1Z3VyVC46Ci4MnwmxoyymejHAKKqkSXG61AA1P857Clte5eG71bI6Nc3KhLkh+4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9910
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v4 00/10] iommu/riscv: Add hardware dirty tracking for
+ second-stage domains
+To: fangyu.yu@linux.alibaba.com
+Cc: guoren@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
+ tomasz.jeznach@linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, baolu.lu@linux.intel.com,
+ jroedel@suse.de, zong.li@sifive.com, andrew.jones@oss.qualcomm.com,
+ anup@brainfault.org, jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com,
+ atish.patra@linux.dev, skhawaja@google.com, vasant.hegde@amd.com,
+ joerg.roedel@amd.com, gong.shuai@sanechips.com.cn
+References: <20260915032828.11250-1-fangyu.yu@linux.alibaba.com>
+From: Gong Shuai <gsh517025@gmail.com>
+In-Reply-To: <20260915032828.11250-1-fangyu.yu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Jason,
+On 9/15/2026 11:28 AM, fangyu.yu@linux.alibaba.com wrote:
+> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> 
+> The RISC-V IOMMU architecture defines an AMO_HWAD capability (Hardware
+> Access/Dirty update) that allows the IOMMU to atomically set the A/D bits
+> in second-stage PTEs on DMA access.  When DC.tc.GADE is asserted, the IOMMU
+> autonomously sets D on the first write to a page mapped by an iohgatp
+> domain.  This series wires that capability up to the iommufd dirty-tracking
+> interface (IOMMU_HWPT_SET_DIRTY_TRACKING / IOMMU_HWPT_GET_DIRTY_BITMAP) and
+> reports IOMMU_CAP_DIRTY_TRACKING.
+> 
+> Design notes
+> ------------
+> 
+> * The feature is scoped to second-stage (iohgatp) domains only; these are
+>    the domains created for KVM / VFIO device pass-through when userspace
+>    allocates an HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT or
+>    IOMMU_HWPT_ALLOC_DIRTY_TRACKING.  First-stage (iosatp) domains are not
+>    touched by this series.
+> 
+> * The page-table side plugs into the existing generic_pt dirty hook
+>    framework (amdv1 / vtdss style).  RISC-V adds the three required PTE
+>    ops – is_write_dirty / make_write_clean / make_write_dirty.
+> 
+> Testing
+> -------
+> 
+> * Test on QEMU RISC-V, a nvme and an e1000e device was passed through
+>    to an L2 guest via vfio-pci + iommufd.
+> 
+> * generic_pt KUnit: the existing test_dirty case now runs and passes for
+>    the RISC-V 64-bit format.
+> 
+> Follow-up work
+> --------------
+> * Build a dedicated end-to-end test case that drives the full flow
+>    (HWPT_ALLOC with DIRTY_TRACKING -> attach -> IOAS_MAP -> generate real
+>    DMA -> SET_DIRTY_TRACKING -> GET_DIRTY_BITMAP -> verify bitmap against
+>    expected IOVA footprint) so that the behaviour can be regression-tested
+>    beyond the KUnit PTE-level coverage.
+> 
+> * If possible, rebase and retest on top of the updated "iommu irqbypass"
+>    patchset.
+> 
+> ---
+> Changes in v4 (Jason's suggestions):
+>      - Rebased the series on top of [1] and [2].
+>      - Drop the RISC-V-specific pt_num_items_lg2() top-level special case.
+>      - Validate page-table address widths by translation stage: accept only
+>        Sv39/Sv48/Sv57 widths for first-stage tables and only Sv39x4/Sv48x4/
+>        Sv57x4 widths for second-stage tables.
+>      - Replace the aliased first-stage/second-stage MODE union with
+>        independent FSC/IOSATP and IOHGATP MODE fields.
+>      - Add pt_dirty_supported() to restrict RISC-V generic_pt dirty tracking
+>        to second-stage tables.
+>      - Link to v3:
+>        https://lore.kernel.org/linux-riscv/20260821132749.82070-1-fangyu.yu@linux.alibaba.com/
+> Changes in v3 (Andrew Jones's suggestions):
+>      - Rebased the series on top of Andrew Jones' generic_pt RISC-V supported
+>        feature mask fix, which adds PT_FEAT_RISCV_SVPBMT to the supported feature
+>        set.
+>      - Added PT_FEAT_RISCV_S2 to the RISC-V generic_pt supported feature mask and
+>        KUnit feature matrix.
+>      - Kept PT_FEAT_SIGN_EXTEND only for first-stage RISC-V KUnit configs; second
+>        stage configs now use PT_FEAT_RISCV_S2 without sign-extension semantics.
+>      - Split RISC-V IOMMU capability checks into first-stage FSC and second-stage
+>        IOHGATP helpers.
+>      - Updated second-stage paging domain setup to use GPA widths 41/50/59 and to
+>        avoid PT_FEAT_SIGN_EXTEND.
+>      - Link to v2:
+>        https://lore.kernel.org/linux-riscv/20260507113706.11400-1-fangyu.yu@linux.alibaba.com/
+> Changes in v2 (Jason's suggestions):
+>      - Introduced a single PT_FEAT_RISCV_S2: second-stage selection is driven
+>        purely by this feature bit.
+>      - Switched from dynamic DC.tc.GADE toggling to static pre-enable.
+>      - domain_alloc_paging_flags: follow the switch/case design from other
+>        drivers.
+>      - Drop IOMMU_CAP_DEFERRED_FLUSH in riscv_iommu_capable.
+>      - Remove the .hw_info-related patch.
+>      - Link to v1:
+>        https://lore.kernel.org/linux-riscv/20260428131359.34872-1-fangyu.yu@linux.alibaba.com/
+> 
+> [1] https://lore.kernel.org/linux-iommu/1-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com/
+> [2] https://lore.kernel.org/linux-iommu/20260818092444.42755-1-andrew.jones@oss.qualcomm.com/
+> 
+> Fangyu Yu (6):
+>    iommupt: Add RISC-V Second-stage (iohgatp) page table support
+>    iommupt: Add RISC-V dirty tracking PTE ops
+>    iommu/riscv: Add domain_alloc_paging_flags for second-stage domain
+>    iommu/riscv: Pre-enable GADE for second-stage domainsgon
+>    iommu/riscv: Add dirty tracking support for second-stage domains
+>    iommu/riscv: Add IOTINVAL.GVMA after updating DDT/PDT entries
 
-On Wed, Sep 16, 2026 at 01:10:18PM -0300, Jason Gunthorpe wrote:
->On Wed, Sep 16, 2026 at 11:12:33PM +0800, Peng Fan (OSS) wrote:
->> Some SoCs have a limited number of IOMMU Stream IDs (SIDs) and
->> hardware that inherently shares them. For example, the NXP i.MX95
->> eDMA controller has 64 channels where each TX/RX pair is assigned
->> a single SID by the hardware - the two channel devices are distinct
->> from Linux's perspective but present the same SID to the SMMU.
->
->Is that a reflection of poor DT modelling though?
->
->Why must a TX/RX *PAIR* have two platform_devices nodes?
->
->Fix it there and you don't need any of this? Or is there more?
+Hi Fangyu,
 
-I think there may be a misunderstanding about the device topology here.
-
-There is only one platform device node for the eDMA controller
-(dma-controller@42000000). There are no separate platform device nodes per
-channel pair.
-
-What happens instead:
-The fsl-edma driver probes the single platform device. During
-dmaenginem_async_device_register(), the dmaengine core calls
-__dma_async_device_channel_register() for each channel, which creates a
-struct dma_chan_dev containing a struct device - registered via
-device_register() with class = &dma_devclass and parent = edma_platform_dev
-(see drivers/dma/dmaengine.c line 1115-1125)
-
-For a 64-channel eDMA, this creates 64 channel devices: dma0chan[0-63]
-These channel devices are not platform devices. They are class devices under
-the dma device class. They have no DT node, no of_node. They are purely
-software constructs created by the dmaengine framework.
-
-The iommu-map property sits on the eDMA controller's DT node. At channel
-allocation time (xlate), the driver calls of_dma_configure_id(chan_dev,
-edma_np, true, &chan_id) to look up the channel index in the eDMA node's
-iommu-map and attach an IOMMU domain to that specific channel device. The
-dmaengine framework's dmaengine_get_dma_device() API
-(which checks chan->dev->chan_dma_dev) then returns the per-channel device
-instead of the parent platform device, so DMA clients map buffers through
-the correct IOMMU context.
-
-The shared-SID situation arises because in hardware, each TX/RX channel
-pair presents the same Stream ID to the SMMU. So dma0chan0 and dma0chan1
-both get configured with SID 0x30 via:
-iommu-map = <2  &smmu 0x30 1>,
-            <3  &smmu 0x30 1>,
-            ...
-Both channel devices end up in the same IOMMU group, but currently the SMMU
-driver rejects the second device trying to register the same SID. That is
-what this series fixes.
-
-And merging TX and RX into a single channel device is not possible -
-the dmaengine framework allocates one dma_chan (and thus one dma_chan_dev) per
-direction. SPI/I2C/UART clients call dma_request_chan() separately
-for "tx" and "rx", each returning an independent channel with its own device.
-The two channels have different source ids (e.g. 83 for TX, 84 for RX) and
-are independently programmable hardware resources - they only share a SID per
-hardware design.
-
-one more point to support SID sharing is that i.MX95 only support 64 SIDs,
-however there are more than 64 DMA initiators. 
-
-Hope this explains well.
+This patch (10/10) is missing from this series.
+It was also missing in RFC v3.
 
 Thanks,
-Peng
+Shuai
 
->
->Jason
->
->
+> 
+> Tomasz Jeznach (2):
+>    iommu/riscv: report iommu capabilities
+>    RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
+> 
+> Zong Li (2):
+>    iommu/riscv: use data structure instead of individual values
+>    iommu/riscv: support GSCID and GVMA invalidation command
+> 
+>   arch/riscv/kvm/Kconfig                       |   2 +
+>   drivers/iommu/generic_pt/fmt/iommu_riscv64.c |   2 +-
+>   drivers/iommu/generic_pt/fmt/riscv.h         | 158 +++++++++++--
+>   drivers/iommu/riscv/iommu-bits.h             |   7 +
+>   drivers/iommu/riscv/iommu.c                  | 224 +++++++++++++++----
+>   include/linux/generic_pt/common.h            |   4 +
+>   include/linux/generic_pt/iommu.h             |  11 +
+>   7 files changed, 336 insertions(+), 72 deletions(-)
+> 
+
