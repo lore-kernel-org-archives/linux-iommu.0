@@ -1,187 +1,203 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed2-f12.google.com (mail-ed2-f12.google.com [74.125.228.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 399A13B42E6;
-	Thu, 17 Sep 2026 07:12:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8313EFFDB
+	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 08:11:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789629122; cv=none; b=LNsTU0hQi9lSKd2OewdyAYFyc2LBIh0bHDbq2Wt4x6Uv1OWb/lNcFeESa52f6tVB+jF4+/aT15tFjuN9xx3BXMeO0SqpY0zmcOvgzZBIcL6k6aYupJ2p59VlDEAob4Eoae5qEHnqGjo6+8++XqgYv/DtmtLZK38bvok2uW1WmqA=
+	t=1789632692; cv=none; b=VmO0TFU5uNluX2LZQliDCfNzZOoTP2efNAORpmhnJ1oO/OuFvnwGxNdLbtwdvHQGRC5KF4XMdcO8WmHln0lepLwSX+ZnoIadgndy3WAcdOVFJoYSxDBXVy5JHjM+5Nmt7gfY5Wo6i5gsR6qhSKsmhLMllaQCxxNR6jiMVJMsE8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789629122; c=relaxed/simple;
-	bh=Xn1OBadHWVaPTEqbMA1foV4rLoLSSPbQZxUyg+8DgOA=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=eRb0oCJPV6xf9Cx37YC20tmYCCl7Ff4l5x+gX/W+Z10qx2s8EOVXSMrS56jnDUdnKa1Kmmjc1OmGGmNsWfWpfVyW138OvHshhkpUDL/RxmiBSPyAmGLqKTzMTsjSKqSd+KT1cAGuPfKzzOmRugs5yyknVmQENN3SrGL3FZ7gxpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KXmVaRXz; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789632692; c=relaxed/simple;
+	bh=pPdt+eVUGT67x+IwAHC1ZsE6n9l1yCrm23aUxT3YHnQ=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=pOKVeNCw4mO8N/zO7O9N+0nWhYzdpPHjTE4J5GnRwBXfNUX2PEJ1aTpanAxxn2SvkFZ6ZRzSxjhufQw9uU/iOLE+uXLylHdarTf3PYe0JUs+4NRMuoo1Y+yz4yzm5eVqO7UqQB6QVwygjzGh4HXmvsSORaOu6bxh7hJ9vlGw8sY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=XxU/ImY4; arc=none smtp.client-ip=74.125.228.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KXmVaRXz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0805A1F000FF;
-	Thu, 17 Sep 2026 07:11:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789629121;
-	bh=QZWvj0y2qYypNkhqYeG+rMh9NEA31Cl9OJ6XafQCJgo=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To;
-	b=KXmVaRXzE1da74MR6oQokswU3bLeCRwAHFedrXabp3UUCO9Kdvx/MeoI9kbDmWQUO
-	 qpEXLyjlVso3sqxxU8Uj72ZMRq2zLWFh5YeIeMy8BKf9sM2EadUMah8Ob5d+k4ewMa
-	 FBZmEdIxskTVIN5zwgQ8XYetPzqONy2GM5a6KuYkpoh3HoYDOXPa+kC6/jlD2lmMzS
-	 +W7K5JLQlqlPXAbxnSZ/BQ6vDZ716L47RkcoGHyRzQ5+rL4srEOOlUO2AnzkYKSSy2
-	 exiINVlRe+lg86z+EmDNHHYRWzJHJLUTZ6XOA4meMGwiSinqXmIoPEGcte+ClYw6tL
-	 KO84VWL75ywoA==
-Message-ID: <ad32f584-ea27-4da9-9397-147b887a7d68@kernel.org>
-Date: Thu, 17 Sep 2026 09:11:50 +0200
+	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="XxU/ImY4"
+Received: by mail-ed2-f12.google.com with SMTP id 4fb4d7f45d1cf-6a9a2b95b72so878401a12.2
+        for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 01:11:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair; t=1789632688; x=1790237488; darn=lists.linux.dev;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=ul3iVroMFe8qrm8FbvVkT98nKEMOhIID1sGLRlIk0SE=;
+        b=XxU/ImY4g0hnbo0PPANDZZMlz/CKuEM/MXqHc2RcgkPB5AQu/paPZgFnijIdTbu8PX
+         LIZd7OHCJL+qDjMzNjOaHmhcw46Fe8H1yCrGHv/UFHb2Q+0kb2FNujFCMTZIj+T5LzP9
+         hBsGSVEJSBCaF7wcGRmqAJ9u7/p+w0cLAwNZ0UrNlPjfdBqhp5uWySBWDS9ZqJB1N/lp
+         nuZXv9x/MaItzqN4gUVsG7whF7NtjxdBL9R3i8NG3zJzoIwV9Rl4+QbaVC2ir969vyuN
+         NxsKiGJ438yoT/Yv2a7qT0YI0sc7mffUmcYVfeuV0lwiExyHjxUju7hu7xXzaFf8cQwt
+         kiUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789632688; x=1790237488;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ul3iVroMFe8qrm8FbvVkT98nKEMOhIID1sGLRlIk0SE=;
+        b=0FD3xoWeQAP/WNaqZ6O+eFlZeUJWH1Skyet8lIGwhMKI4tUaVA/tnhqfIpCG6012ty
+         4fjCPsyk34jpFfJe2NzIwz+Lh6gZ1VsEPXqAjFgZECeB6ZlJP1Tl0IVGK43/Nbz9t7H9
+         YXD196yxLLdeqvic1mCXY9AhtfbbPwwIE59Hd+bnH68USR1EeaVb89TKAurEF0B2rqpk
+         h1a2K/IVDlHD/nh5eeU8Ks4AFQAdVR+HJSD4LmgwRtlsecd5RfwK6Fekw4SReqSTbSF7
+         lSxPO34lzOzaV90ohhno8MZtVXEZcT7QVQdmo3w762ky94cfPXDHDoEJmSLvUrj3nxtr
+         oVVQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxAC3Jtbcah9/j3n6xHYDZygd03aI615IV40ZgYbYA3MTbt/DsHYm3oNE0ABEeLEY0hj/h6RA==@lists.linux.dev
+X-Gm-Message-State: AFuF++n+66ZOIkR4kiYQkBo3VvQWtogdlImu8LEKcl16jUbuJjBxRuBW
+	RKdIxoEg7Um/2HDb4HH+v2Z4RqpNaOPP8ALf7wfsZvlDdRNAQOopRtXUPhw2pPb+W20=
+X-Gm-Gg: AYBFou1bpth/wf4keAyHkeiwon2BAt1yjAsqbs62mtWtpQvyf3jEZik8Ofu44uzBCsz
+	vTDMh3FqCXvWYsDiT6YGm554yux7J40D29Mn8qEufcx/2rnMmWf8TS3m1jDVqicyJLjR+eEZWn5
+	BH/Af11hHJBP56zZXRMTM0P2cHbZpVe4+l+sQSPjXpRTrpXfFn9rWSvA/T/tk3SOFCbPj89ATYg
+	zt1nSx+WoCERwpsms84XzqUnMgI+RkB0QJ3MU45fN2+VBtkf9aadAy9uAh0eacTmTiAiceaT+Aw
+	ShdwI+7ZBK28JzctafUBOmADvVbbEah3GhqYDGsUN8TVqRjPhZKrzRnUvZP0dlOokykEQ1f8x1k
+	rwGRGoNHPQwyiCxJvFvGT+5C5I+24UTQqjk1isydHSAj+y+8jaKeHRnm/QmG6DOW9Z386nOSahg
+	UlaCt5jHzwk5TJPNOwNygLpFxDUhp4AOrAHOgLTX1sg2ewgID5o7vHIUD1U5wNa7FMaknK1BKd9
+	gb9ppRCeQYOH0p88k1t+tfG6YcSlwVxIBFVjicMq3A=
+X-Received: by 2002:a17:906:478a:b0:c29:1133:e17b with SMTP id a640c23a62f3a-c29e523e769mr435122166b.19.1789632688364;
+        Thu, 17 Sep 2026 01:11:28 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c29de63c5e7sm238690466b.53.2026.09.17.01.11.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2026 01:11:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 0/9] media: iris: Add support for glymur platform
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Bryan O'Donoghue <bod@kernel.org>,
- Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>,
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-References: <20260917-glymur-v11-0-e0c8bc914742@oss.qualcomm.com>
- <20260917-dangerous-illegal-honeybee-cf479a@quoll>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20260917-dangerous-illegal-honeybee-cf479a@quoll>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Thu, 17 Sep 2026 10:11:27 +0200
+Message-Id: <DLHFUAOHVWN7.1K596C038662Y@fairphone.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>,
+ "Robin Murphy" <robin.murphy@arm.com>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Rob
+ Clark" <robin.clark@oss.qualcomm.com>, "Bjorn Andersson"
+ <andersson@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+ <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 00/12] iommu: qcom_iommu: implement support for
+ instances on MSM8974
+From: "Luca Weiss" <luca.weiss@fairphone.com>
+To: "Dmitry Baryshkov" <dmitry.baryshkov@oss.qualcomm.com>, "Luca Weiss"
+ <luca.weiss@fairphone.com>
+X-Mailer: aerc 0.22.0-0-gc2f86b7abde3-dirty
+References: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com> <DKL6P7G0WTM7.UJ6KZERQZDFK@fairphone.com> <iv5radfllym2bjvkrdu4ffs25bqixyos7k3ymncpcdtc2uobn2@zlhsybrj3pwz> <DKX384NK76OS.3NNOMAH72PV2P@fairphone.com> <ssleznoahzs4wgf5irjiagss2rjwl2s2jjnqrrnlpp74rdkgfs@au6x63ykyjfs> <DLBKL8SJL58R.2XQ76X6JILZ8E@fairphone.com> <CAO9ioeUEQ+kzBLj3KTv+uayaE-5aw-aL49-0pJ-x_Vwq4nu9JA@mail.gmail.com>
+In-Reply-To: <CAO9ioeUEQ+kzBLj3KTv+uayaE-5aw-aL49-0pJ-x_Vwq4nu9JA@mail.gmail.com>
 
-On 17/09/2026 09:09, Krzysztof Kozlowski wrote:
-> On Thu, Sep 17, 2026 at 10:30:19AM +0530, Vishnu Reddy wrote:
->> ---
->> Mukesh Ojha (1):
->>       media: iris: Enable Secure PAS support with IOMMU managed by Linux
+On Thu Sep 10, 2026 at 4:20 PM CEST, Dmitry Baryshkov wrote:
+> On Thu, 10 Sept 2026 at 13:38, Luca Weiss <luca.weiss@fairphone.com> wrot=
+e:
 >>
->> Vishnu Reddy (8):
->>       dt-bindings: media: qcom,glymur-iris: Add glymur video codec
->>       media: iris: Replace enum-indexed clock and power domain tables with per-block structures
->>       media: iris: Add power sequence for glymur
->>       media: iris: Handle CPU_CS_SCIACMDARG3 register write via program bootup registers hook
->>       media: iris: Add support to select core for dual core platforms
->>       media: iris: Add platform data for glymur
->>       arm64: dts: qcom: glymur: Add iris video node
->>       arm64: dts: qcom: glymur-crd: Enable iris video codec node
+>> Hi Dmitry,
 >>
->>  .../bindings/media/qcom,glymur-iris.yaml           | 218 +++++++++++++++++++++
->>  .../bindings/media/qcom,sm8550-iris.yaml           |   6 +
->>  .../bindings/media/qcom,sm8750-iris.yaml           |   6 +
->>  .../bindings/media/qcom,venus-common.yaml          |  11 +-
->>  arch/arm64/boot/dts/qcom/glymur-crd.dtsi           |  10 +
->>  arch/arm64/boot/dts/qcom/glymur.dtsi               | 120 ++++++++++++
->>  drivers/media/platform/qcom/iris/Makefile          |   1 +
->>  drivers/media/platform/qcom/iris/iris_common.c     |  10 +
->>  drivers/media/platform/qcom/iris/iris_common.h     |   1 +
->>  drivers/media/platform/qcom/iris/iris_core.h       |  32 ++-
->>  drivers/media/platform/qcom/iris/iris_firmware.c   |  69 +++++--
->>  drivers/media/platform/qcom/iris/iris_hfi_common.h |   1 +
->>  .../platform/qcom/iris/iris_hfi_gen2_command.c     |  19 ++
->>  .../platform/qcom/iris/iris_hfi_gen2_defines.h     |   1 +
->>  drivers/media/platform/qcom/iris/iris_instance.h   |   2 +
->>  .../platform/qcom/iris/iris_platform_common.h      |  46 ++---
->>  .../platform/qcom/iris/iris_platform_glymur.c      |  78 ++++++++
->>  .../platform/qcom/iris/iris_platform_glymur.h      |  15 ++
->>  .../platform/qcom/iris/iris_platform_sc7280.h      |  28 ++-
->>  .../platform/qcom/iris/iris_platform_sm8250.h      |  26 ++-
->>  .../platform/qcom/iris/iris_platform_sm8550.h      |  26 ++-
->>  .../platform/qcom/iris/iris_platform_sm8750.h      |  29 ++-
->>  .../media/platform/qcom/iris/iris_platform_vpu2.c  |  20 +-
->>  .../media/platform/qcom/iris/iris_platform_vpu3x.c |  67 ++++---
->>  .../platform/qcom/iris/iris_platform_x1p42100.h    |  27 ++-
->>  drivers/media/platform/qcom/iris/iris_power.c      |  20 +-
->>  drivers/media/platform/qcom/iris/iris_probe.c      | 153 +++++++++++++--
->>  drivers/media/platform/qcom/iris/iris_resources.c  |  81 ++++----
->>  drivers/media/platform/qcom/iris/iris_resources.h  |   8 +-
->>  drivers/media/platform/qcom/iris/iris_utils.c      |  58 ++++--
->>  drivers/media/platform/qcom/iris/iris_utils.h      |   3 +-
->>  drivers/media/platform/qcom/iris/iris_vb2.c        |   4 +
->>  drivers/media/platform/qcom/iris/iris_vidc.c       |   6 +-
->>  drivers/media/platform/qcom/iris/iris_vpu3x.c      | 216 +++++++++++++++++---
->>  drivers/media/platform/qcom/iris/iris_vpu4x.c      | 137 ++-----------
->>  drivers/media/platform/qcom/iris/iris_vpu_common.c | 102 ++--------
->>  drivers/media/platform/qcom/iris/iris_vpu_common.h |   3 +
->>  .../platform/qcom/iris/iris_vpu_register_defines.h |  13 ++
->>  38 files changed, 1229 insertions(+), 444 deletions(-)
->> ---
->> base-commit: 0d9d0dbf2fddcff5859d623e90ca73c4054276e1
->> change-id: 20260917-glymur-627d049900e0
-> 
-> Look here:
-> https://lore.kernel.org/all/20260726-glymur-v10-0-de451559e88b@oss.qualcomm.com/
-> change-id: 20260601-glymur-4fcd4d832ecc
-> 
-> so now does this work?
-> 	b4 diff '20260917-glymur-v11-1-e0c8bc914742@oss.qualcomm.com'
-> 
-> No, it does not. You are sending bigger work, multi-version one, part of
-> even bigger work, so please get the process working correct to make
-> reviews easier.
-> 
+>> On Tue Sep 8, 2026 at 3:28 PM CEST, Dmitry Baryshkov wrote:
+>> > On Mon, Aug 24, 2026 at 12:04:57PM +0200, Luca Weiss wrote:
+>> >> Hi Dmitry,
+>> >>
+>> >> On Tue Aug 11, 2026 at 2:43 PM CEST, Dmitry Baryshkov wrote:
+>> >> > On Mon, Aug 10, 2026 at 12:16:19PM +0200, Luca Weiss wrote:
+>> >> >> Hi Dmitry,
+>> >> >>
+>> >> >> Many thanks for working on this and sending this patch series!
+>> >> >>
+>> >> >> On Sun Aug 9, 2026 at 10:15 PM CEST, Dmitry Baryshkov wrote:
+>> >> >> > Qualcomm MSM8974 platform has five SMMU instances, used by displ=
+ay, GPU,
+>> >> >> > Venus, VFE (camera) and JPEG encoder. Each of them follows ARM S=
+MMU v1
+>> >> >> > spec, however they differ from other Qualcomm platforms in the
+>> >> >> > implementation-specific registers and also in interaction with T=
+Z.
+>> >> >> > Venus, MDP and VFE SMMUs are secured and require programming onl=
+y of
+>> >> >> > CBs, while GPU and JPEG require full programming.
+>> >> >> >
+>> >> >> > This series skips IOMMUs which can't be tested right now (VFE an=
+d JPEG),
+>> >> >> > and adds only MDP, GPU and Venus (although untested, it is requi=
+red for
+>> >> >> > display to work) SMMU instances.
+>> >> >>
+>> >> >> I do have a patch series (sent years ago to the mailing lists as w=
+ell)
+>> >> >> for CAMSS so I can definitely test this in the future.
+>> >> >
+>> >> > Ok, let's land these first, unless VFE IOMMU blocks display on your
+>> >> > platform (Venus was blocking display on APQ8074 DragonBoard).
+>> >> >
+>> >> >> > Note, to get display to work properly one fix is necessary, [1]
+>> >> >> >
+>> >> >> > [1] https://patch.msgid.link/20260809-msm8974-mmcc-fix-v1-1-50f2=
+dcf18d2e@oss.qualcomm.com
+>> >> >>
+>> >> >> I've applied this series on v7.2-rc7, with the extra commits betwe=
+en
+>> >> >> that and linux-next for qcom_iommu.c backported so that your serie=
+s
+>> >> >> applies without conflicts.
+>> >> >>
+>> >> >> So far I'm stuck with the GPU not being able to probe, adding some
+>> >> >> printk's shows that in msm_iommu_new() the call for
+>> >> >> iommu_attach_device() is failing.
+>> >> >>
+>> >> >> [    5.971154] msm_mdp fd900100.display-controller: failed to load=
+ adreno gpu
+>> >> >> [    5.972991] msm_mdp fd900100.display-controller: failed to bind=
+ fdb00000.gpu (ops a3xx_ops [msm]): -16
+>> >> >> [    5.974073] msm_mdp fd900100.display-controller: adev bind fail=
+ed: -16
+>> >> >> [    5.974152] panel-s6d6fa1 fd922800.dsi.0: error -EBUSY: Failed =
+to attach to DSI host
+>> >> >> [    5.974230] panel-s6d6fa1 fd922800.dsi.0: probe with driver pan=
+el-s6d6fa1 failed with error -16
+>> >> >
+>> >> > See the patch [1], it's picked up for 7.3
+>> >>
+>> >> I missed replying to you, with this patch the display lights up again=
+!
+>> >>
+>> >> Unfortunately the GPU still seems to have issues, I don't have a log
+>> >> right now (I think even SSH was dropping then with a bunch of log lin=
+es
+>> >> appearing in kernel log on screen). I assume kmscube + more complex
+>> >> workloads worked fine for you?
+>> >
+>> > I was mostly using kmscube, but I can try running the CTS once I get
+>> > back to it, sorry for the delays.
+>>
+>> Yeah, kmscube doesn't even work for me.
+>>
+>> Bootup works to a tty with screen on (mdss doesn't seem to have any
+>> problems for me), but then as soon as I run kmscube the device shows a
+>> few errors on the tty0 on the screen (USB stops working apparently since
+>> my "dmesg -w" doesn't show anything) and a few seconds later the device
+>> reboots.
+>
+> Interesting. I wonder if it's TZ tripping on the VFE IOMMU.
 
-And it is getting even better:
-v6 change id was:
-	change-id: 20260515-glymur-6e69bc258fb0
+Do you have any suggestions for me to try?
 
-https://lore.kernel.org/all/20260515-glymur-v6-0-f6a99cb43a24@oss.qualcomm.com/
+>
+>>
+>> dmesg: https://public.lucaweiss.eu/tmp/fp2-iommu-dmesg.txt
+>>
+>> The SoC in my device should be MSM8974PRO-AA (a.k.a. MSM8974AB-AA).
+>>
+>> I know there are some differences for some bits between MSM8974
+>> (Snapdragon 800) and MSM8974PRO (Snapdragon 801), which variant do you
+>> have? Maybe that's relevant, also since downstream splits devicetree
+>> based on 8974 and 8974pro.
+>
+> Mine is APQ8074, not sure if there were revisions.
 
-???
+Maybe /sys/devices/soc0/* or /sys/kernel/debug/qcom_socinfo/* has info
+about the revision? But maybe it's also not useful. I checked a bit more
+before and all msm8974-v2 downstream seem to have the same IOMMU config,
+just msm8974-v1 (which was barely shipped?) has different configs. So
+hopefully the SoC revisions shouldn't make a difference here.
 
-Best regards,
-Krzysztof
+Regards
+Luca
