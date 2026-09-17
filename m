@@ -1,351 +1,180 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010064.outbound.protection.outlook.com [52.101.61.64])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62DB55C335
-	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 14:00:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789653656; cv=fail; b=NfYROoJUqBVP+2drkr6Is26VHMJHqJi6a6ETku5LItvO6nEsSgK8BOe5r86dfPUa580sjEICgc6chRN4WHqJE89U7dI9vY581GDYl3CwL9r/PjhsGfyZTad/E8Xq60igxvUnDWPaqEsbgNSHaiQQHg++uh10Qf+3IU7u7pUrugY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789653656; c=relaxed/simple;
-	bh=hXk1BWgOd6o9tJoOl9FegQFysJCl8tMeVyPzwUqxZPU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=lsRnrb7YG52gJ3RqoA9oZvDk6I/4EG+DRZT+GAIQdhn+TWcvFUqwTBqmNH5tbHWnVm9e52zZeC4utV58T3kwLUvwnCe1YO125tnJx+dFdndt+kJBNs/gf5OSOvxHe+6u+cAiLGzsFGwl+KKN4ysw15z7yKpQCCeOe2h0R/zUGhA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=GOuX6chE; arc=fail smtp.client-ip=52.101.61.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05F6757D230;
+	Thu, 17 Sep 2026 14:02:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789653753; cv=none; b=ayJ8Dx4hFNKKryN+f5f/FNTpdxJ88U2PUV/2Yli4oqen7YT7BXisbCR6LUCIiIXn6jGFr1P2eiLpmeoNsNeTbaFcbhRHp2B4bUrXT2qVgUwh/QN3LLqERE7WjnE0DrI64jCX7GmVlY1r0tkoxX8X4M6oy3kX+rNp8JjMdAXvRYo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789653753; c=relaxed/simple;
+	bh=UL2y8zOrLA4NiU4VIcQUTmVYr/Y/eUfnHg52b7dqraA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EBdoJY4bsXZo2XS8Yx6FrU8DYCZ6Z+ZIMwCqOPmFFWIRM8S/ZoVmQFihOVVRRDWxP96dh412GVAxJo5qekCQQFE31THgAObozUOICve+h/0zUq1CC9YFXlXrYUf4HXxxiLKgqVX/Nd4NOVqWRzOPuy7A1q/JLzyxOcZdGWgkZVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WgRfl2k7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="GOuX6chE"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bGoV24B6mtqC1357VQhAG/S6jSycChKXK33o4klT2YEHtlTYaDLtVDllPFnfUIpsm+qJIy4Pr2lpy8vwcWZJs6izhqgJeA0S8EKDDOTcue2eSp0fFaSlc/cXcIqvUYR4/wWaPIaG0SGkvMo3odT+BlyT1JJH+JK3FxUYfeo4dlCN0Mvb1NJLyqqxXZB13rfDRLzKh2o7wWB+hBIOfEAutZq2knyYo7mlLZ9qs8Lyb4zj5MTkEznEK/HxWZm+16f09KkkJRhEJ9m3iWdRuPw3TCDUMyHXLv+LU5bPb4h4mpYDICtMgmuD8Z1vi3wMUjs1QoLXP42SsIv25YfJAG7j+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s+Ewu4dQwO8rAuFHbMSzCBfiPVJHIX1dQpiTq9du+Ew=;
- b=JpRjWVQPiC09Ay1hgiySMpf5DPpbtR95oJgVMmb9qmETViDtX+Zv3lrj89zvbXknX7wQkFKtkSdG62QDxdqyxiSJxGqzXaWWbWCJqRMmoRJ6mH3pOhH74USKayyoesYc8xWI9jWCVV8QLsD5PjYGeGJLZs64u0P9R7T6qAzX3sm5sUJSq1wXipnZVfw03MBLcNCyzWj/7ihw89Lbo4oxnLHDvkxNrOSWKR2WVon6A1hCLS0X/BK3kgroXBGf3Q2HdZrBg+J3tIx2R65KWSquVYwNe2cNJEV4tk9B4hiO7hBhVEJDA5t7AaTTDfK899/sHiJCr2I9ZmHD1xjVJgV2MA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s+Ewu4dQwO8rAuFHbMSzCBfiPVJHIX1dQpiTq9du+Ew=;
- b=GOuX6chEs6UZbp77ERa18HWdXE/WmU8wUEC81wDcTZ6gt3TG1o4YMbWhpBDdWtT7USNHSECqDROy40emz92CUo80sii9g6yO4uyPq9TKQG1Tzi4rjxWo7eupvqtfJWp/RmoFtC4UwuQp8vfQEkHBrDos05o6eFD+AspK/gUrieQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by BL1PR12MB5897.namprd12.prod.outlook.com (2603:10b6:208:395::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.12; Thu, 17 Sep
- 2026 14:00:43 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0428.011; Thu, 17 Sep 2026
- 14:00:42 +0000
-Message-ID: <f3708893-4760-4157-83a3-313867a94e78@amd.com>
-Date: Thu, 17 Sep 2026 16:00:33 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a direct
- peer-to-peer route
-To: =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Logan Gunthorpe <logang@deltatee.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
- <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Randy Dunlap <rdunlap@infradead.org>,
- Sumit Semwal <sumit.semwal@linaro.org>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, iommu@lists.linux.dev,
- Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
- <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
- <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0209.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e5::8) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WgRfl2k7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF591F000FF;
+	Thu, 17 Sep 2026 14:02:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789653751;
+	bh=LzKajrBn/qC8mgh1RH/uGLuNLuDzCmGSRhLwjf+Ueok=;
+	h=From:To:Cc:Subject:Date;
+	b=WgRfl2k7qtXCTWaiEs2GORh3UIHYae846WygWIEpP2Qk6WuoA4xOXCb/CEXjMwKMF
+	 89DR4VlDKnRG9OzYg47Ir1zCSDss9G+/ITNRKe3WXP56LXtwCSw6qng9+ooE4S5iiL
+	 bFD5XJUEbtrsObxAtWcwbnKaFT9NuAeoUd2wcx6oX74Byy30MhzSYdfHcDsCN5yWiJ
+	 gKNSZM36ZZSASo1R39OZdlcIukVQdcyrwIgi/s/Kb0TCt9FYZFEU6USzj6QLDHVr5w
+	 SFsuP/hyZnZU31n+M3SH0S0dJO/qGhLFR18wJPrQVFgDbSCaAtQyqpymiekBoRdEx2
+	 ViZu+WIgsLygQ==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>
+Subject: [RFC PATCH v6 00/11] iommufd: Infrastructure for vIOMMU creation for confidential guests and guest TSM requests
+Date: Thu, 17 Sep 2026 19:31:48 +0530
+Message-ID: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|BL1PR12MB5897:EE_
-X-MS-Office365-Filtering-Correlation-Id: 490942c8-a3dc-4ede-b866-08df14c40f35
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|18002099003|921020|22082099003|10067099003|11063799006|5023799004|56012099006|4143699003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	5HWkF+lUKVGYI/uu3XrIkDkirgdhKd2JAX07D7euMQA8jLo9taJOpQZ/4MvoZiN/kPvm8AHbDWdEYZ7PP59DaMS4LOEmbvWIE0sEEeUvxFhAsZfnGr/WIOEoHzDasnSWj1Sbocwlt+4mgDsk80RWGQCrlk7jBD9nY4p8n0wNXJMYNlp/me2FrcYhO0WIp8wObte7Ng2KLQyCYiYbd16JXP5qd6vumKEgk+ljt2f2UG/SQgp1JN/sjmAVFkeIYl1e0ijklLubg9iC+T8wozXF7NywoU4/8+yZU0GsER6pgZg/82TdfxRPEuG/PpmgwNCk25aCTjxzqE4bscpVhkWgC9D3Filn/P3R6XWEhkUH/lt+G51Vk2flRiQVJFodKTK0TjUMHLCEEg7Bob7pXFq2gdBqaYlq6FySoEbJnuI9GYfOo7ifFS/hnj3vTKxXbYheoLE97+elEL1O+dLIckwBLp++iOF6DW5UTBWm1JjD/JarTdjWynwHVDjeNhkChMA2xQJD85SyNxwW55zvbwtNHDzXZ6s0CbDGZozE0b4z9TvNt32+68SbqUZ4yuh+5pLhc75b+WPVOxF6tb6T1WsJ1a3j4eaa1PthqjzxWPJ8tjiI8EUBCiLyYM7iZdndvxjMOgJuiUrBUIPT8C7wA3Cbd2pD6phDasEIe79sEgVBlyAE9ftOj6ocsVKI9QgUvgUEeL0c7KvACcSC44LANZsfEQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(18002099003)(921020)(22082099003)(10067099003)(11063799006)(5023799004)(56012099006)(4143699003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SHNEVmdGaGxZYWdkZXZnVXUvcEROZmVwQmZsRGFITGpVblNLOXNmRFBVQm5V?=
- =?utf-8?B?M1VtM1NqNjNwN0VwSU5sYzY5TERCZjFQNklRRlBubUVTWTAvRkVQa3pLaFRQ?=
- =?utf-8?B?QWJJN2Zzck05dUthM0FrdzIzdXJFYmV1M0E3WmUyMGRrck15UzZab3lBZzVx?=
- =?utf-8?B?djJyaHdaaExJOXU2VmJabklGK2VDZGlLQ0VqSGd0NVdmTVdhY1BNa05TREQz?=
- =?utf-8?B?UEE2c28zZmcxUFFOcmxYd0hiSTlsOWFISCtOTXBXOTI0Rjd3WURsNjVPc0Uv?=
- =?utf-8?B?cjRXOEtmS1piQ2g5Y0p6cTF4VTNCM3drR1hLQnJMQzcwUFR2UEhQa05jSkhF?=
- =?utf-8?B?eGxnNitrc2picDF5VEtnQi9DamZkazZzck9WYUNJWFNyVXhOMmtjbkxiUFNl?=
- =?utf-8?B?TmdjUFF5QUsxd0hlSUdpL1liVG1LTkovaFErRjg0TzlRd2dQM0xVNHFoaFBR?=
- =?utf-8?B?OTJZZUJNUEZDMmdNdlhOeDFPU3dSRGtLZ0l1cXdiYkRROVZ1WG5ZSy9pdHE1?=
- =?utf-8?B?a3lGNmJ3VXJVODdxSFFOYmg2T1pvdkQramlLY29BR1o5eFo3UERkQ0xBclFr?=
- =?utf-8?B?Q1plS2Y5cGRZRkVoSUMrd0tUeWN3eENld0p5dEJRZmNkdnB0bTF2ZVI1eWQy?=
- =?utf-8?B?Ty9tTCtXRnhMVzRDYW1lMXFkZzZ1eDQ3ek9VeXZSUWZMemtDYUZZUzlKbGhJ?=
- =?utf-8?B?MEVLd1V4dVpDd29EZ0o0YSthdS9oNXVDb094VVFtY2xvTlRkMlE1czhsRFpq?=
- =?utf-8?B?RHNaNzZtdzdXTENiSkpIelk3SnZwdTdGWjY2Mm5HSm9NRU9XVDJnUHBTRUgx?=
- =?utf-8?B?WVZGT1phM2FYQlQxdmlqME0vWjJBbGVtMisxVEpkMnM0R0JMR1IvZS8vV2Ny?=
- =?utf-8?B?ZHN1OTNWRHVlSTV1eFlyNlRQMjdGYVhwd056QlVmSk1sbytIYUJmaEh1dmFm?=
- =?utf-8?B?dUpxREJwTEVQb09DWS9yZlFlMFlUR0RmQ3o4T2ZmV3IwclBKU2NidXhTSGUy?=
- =?utf-8?B?WlBzMGpyTGlNTlVZakgxeVVhMEhMa2s5dkpvbkNUYU5BN3FESGlxQkxESjMv?=
- =?utf-8?B?MHFqbmQ3WDlHc1JMVmhvNER5VHFvLzEvcE11ZE9YZHpXb2lRcjM5Qkc3akFa?=
- =?utf-8?B?dTVabFIra0tSM25wSi9DQU1ZUFpyUHpIT0I1ZUlzMTZNTmY0MWUyblp0UzV2?=
- =?utf-8?B?WUNqUlpzeEk0QXBxcnhqakhHNjc1bVUvM2NWRmJGTEZoWEg3c1ZnUS9KbWJZ?=
- =?utf-8?B?WCt1K2VxZE5reFFVOFFBMTNWREdmcFd1WU12Zk1uRkd1ZTRHRkR6SS9Zbmgv?=
- =?utf-8?B?UHUvWGdxaWdpZ1JuTDZjZ2Z3T1k4ZEZlcDduMFRTN29vUmgxZys4cHN6TDV0?=
- =?utf-8?B?eGRMdWtGVFYvOWhQQzVzQk8ySXNic2xQMHViUkpsQ04xU3pJcG1rZmpnT2Mz?=
- =?utf-8?B?ZHpJQ1hvOHlwanJPUHhxUFJlWDhJWk5OUURpbGxtMUZsTjlWNVFwbmdyQnU4?=
- =?utf-8?B?S2oyaWVsR2hheVp6cSs4R3d4WU1OZHBuazE5UktZdmpYMFdiRnp4ZmxzR29n?=
- =?utf-8?B?M3k5QWErbWYvTDdaTGVscFpQTVM0NUZ2TjZwZEFYODEweStqaDVCdUh5cGFr?=
- =?utf-8?B?TDlza284ZEVvaUNhaTlyR09Xb0l3Zklaa2FjeHdZQzk2VmxHdkVFYXJqYUhH?=
- =?utf-8?B?TTBxbGdrOGE3R2ViUUNLWFhSWUlwQ1paYnlOa0x1bk0zQUJKOW5PelFNTytJ?=
- =?utf-8?B?TUJFWHc2VjRuSks4Tmp3WEUxaHoyTjcyMmRzVlNiTkpxbTBrVVIxUFdQczhV?=
- =?utf-8?B?RDB2SVRkZnZDKzlDTzVXUG5ySDg2KzA4REJqeXhZdllkVFY0dHdhNVR6a1lC?=
- =?utf-8?B?MUxqRXYweFJkYS9kaG82aGxOWVpZV0E0WWtGelVFU0ZMMHo2TklUQkl4RUs0?=
- =?utf-8?B?T2Q2cHpDby9IWDVIQXA4Zlc1QjEyNW1XYVMyejhXRlhzZ0Q0Q2ZjMnhMRjlU?=
- =?utf-8?B?S2VrQThlZkFpNHNUYTRzS0N0T0ZLS2srTDZqekg4MkRnUm9qSU5CVk1HOTdJ?=
- =?utf-8?B?S3BLT0ZtOWhGRGM2UFNaNFFCcnpjcEdja254anVnWVM1aXNnbCtTTVBIajlH?=
- =?utf-8?B?N0pCYldoTEtLZi9uTDFrQXhlWEZheDI5bkY1QUpKMFJlWHlkb25Yd2hoc25t?=
- =?utf-8?B?QkNRYkhsUVpOd0pNUHpHZEEvVHZzTFUyNURmQ3I5SkhCTTF6VnZCSmFFT2RW?=
- =?utf-8?B?bGpiRFgxQVJxR3NjNHphcVZxQWRCU0hBV0JnZGovYmxNaE0zOWZ1bC9zS1E2?=
- =?utf-8?Q?Q9oYJQ/mJVd8y9DSZI?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 490942c8-a3dc-4ede-b866-08df14c40f35
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2026 14:00:41.5075
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YEVYm34Z6IVTlqJhpgSz3rXTw6MRliTKtwhhTmPvHyKT+YfJ/hz7NMsfTSPXvN0/
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5897
+Content-Transfer-Encoding: 8bit
 
-On 9/17/26 15:56, Thomas Hellström wrote:
-> Hi
-> 
-> On Mon, 2026-09-14 at 14:22 +0300, Leon Romanovsky wrote:
->> From: Leon Romanovsky <leonro@nvidia.com>
->>
->> mlx5_umem_needs_ats() enables ATS for any dma-buf whose caller asked
->> for
->> Relaxed Ordering, on the assumption that a switch in the path has CR,
->> RR
->> and DT all set. It also enables it for a buffer already mapped with
->> the
->> peer's bus addresses, which are not translatable at all.
->>
->> P2PDMA has read the ACS controls, so ask it through
->> dma_buf_p2pdma_map_type(): enable ATS only where the path is not
->> routed
->> directly as it stands, but would be for a Translated Request whose
->> Completions carry Relaxed Ordering. Exporters that name no provider
->> keep
->> the old assumption, since their ACS settings remain hidden.
->>
->> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->> ---
->>  drivers/infiniband/hw/mlx5/mlx5_ib.h | 36 ++------------------------
->> ------
->>  drivers/infiniband/hw/mlx5/mr.c      | 40
->> ++++++++++++++++++++++++++++++++++++
->>  2 files changed, 42 insertions(+), 34 deletions(-)
->>
->> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h
->> b/drivers/infiniband/hw/mlx5/mlx5_ib.h
->> index e9ddf2e97a76..ab32742b2180 100644
->> --- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
->> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
->> @@ -1646,40 +1646,8 @@ static inline bool rt_supported(int ts_cap)
->>  	       ts_cap ==
->> MLX5_TIMESTAMP_FORMAT_CAP_FREE_RUNNING_AND_REAL_TIME;
->>  }
->>  
->> -/*
->> - * PCI Peer to Peer is a trainwreck. If no switch is present then
->> things
->> - * sometimes work, depending on the pci_distance_p2p logic for
->> excluding broken
->> - * root complexes. However if a switch is present in the path, then
->> things get
->> - * really ugly depending on how the switch is setup. This table
->> assumes that the
->> - * root complex is strict and is validating that all req/reps are
->> matches
->> - * perfectly - so any scenario where it sees only half the
->> transaction is a
->> - * failure.
->> - *
->> - * CR/RR/DT  ATS RO P2P
->> - * 00X       X   X  OK
->> - * 010       X   X  fails (request is routed to root but root never
->> sees comp)
->> - * 011       0   X  fails (request is routed to root but root never
->> sees comp)
->> - * 011       1   X  OK
->> - * 10X       X   1  OK
->> - * 101       X   0  fails (completion is routed to root but root
->> didn't see req)
->> - * 110       X   0  SLOW
->> - * 111       0   0  SLOW
->> - * 111       1   0  fails (completion is routed to root but root
->> didn't see req)
->> - * 111       1   1  OK
->> - *
->> - * Unfortunately we cannot reliably know if a switch is present or
->> what the
->> - * CR/RR/DT ACS settings are, as in a VM that is all hidden. Assume
->> that
->> - * CR/RR/DT is 111 if the ATS cap is enabled and follow the last
->> three rows.
->> - *
->> - * For now assume if the umem is a dma_buf then it is P2P.
->> - */
->> -static inline bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev,
->> -				       struct ib_umem *umem, int
->> access_flags)
->> -{
->> -	if (!MLX5_CAP_GEN(dev->mdev, ats) || !umem->is_dmabuf)
->> -		return false;
->> -	return access_flags & IB_ACCESS_RELAXED_ORDERING;
->> -}
->> +bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev, struct ib_umem
->> *umem,
->> +			 int access_flags);
->>  
->>  int set_roce_addr(struct mlx5_ib_dev *dev, u32 port_num,
->>  		  unsigned int index, const union ib_gid *gid,
->> diff --git a/drivers/infiniband/hw/mlx5/mr.c
->> b/drivers/infiniband/hw/mlx5/mr.c
->> index 00e13028762a..286f372e5b0c 100644
->> --- a/drivers/infiniband/hw/mlx5/mr.c
->> +++ b/drivers/infiniband/hw/mlx5/mr.c
->> @@ -38,6 +38,7 @@
->>  #include <linux/export.h>
->>  #include <linux/delay.h>
->>  #include <linux/dma-buf.h>
->> +#include <linux/dma-buf-mapping.h>
->>  #include <linux/dma-resv.h>
->>  #include <rdma/frmr_pools.h>
->>  #include <rdma/ib_umem_odp.h>
->> @@ -47,6 +48,45 @@
->>  #include "data_direct.h"
->>  #include "dmah.h"
->>  
->> +MODULE_IMPORT_NS("DMA_BUF");
->> +
->> +bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev, struct ib_umem
->> *umem,
->> +			 int access_flags)
->> +{
->> +	struct dma_buf_attachment *attach;
->> +
->> +	if (!MLX5_CAP_GEN(dev->mdev, ats) || !umem->is_dmabuf)
->> +		return false;
->> +
->> +	/*
->> +	 * The Completer decides whether its Completions carry
->> Relaxed
->> +	 * Ordering, and only a Request that asked for it can expect
->> them to.
->> +	 */
->> +	if (!(access_flags & IB_ACCESS_RELAXED_ORDERING))
->> +		return false;
->> +
->> +	attach = to_ib_umem_dmabuf(umem)->attach;
->> +	switch (dma_buf_p2pdma_map_type(attach, 0)) {
->> +	case PCI_P2PDMA_MAP_NONE:
->> +		/* Nothing is known about the route, so fall back to
->> the bet. */
->> +		return true;
->> +	case PCI_P2PDMA_MAP_BUS_ADDR:
->> +		/*
->> +		 * The path is routed directly already and is
->> programmed with
->> +		 * the peer's bus addresses. Those are not
->> translatable, so
->> +		 * ATS would be wrong as well as pointless.
->> +		 */
->> +		return false;
->> +	default:
->> +		break;
->> +	}
->> +
->> +	return dma_buf_p2pdma_map_type(attach,
->> +				       PCI_P2PDMA_TLP_TRANSLATED |
->> +					      
->> PCI_P2PDMA_TLP_RELAXED_CPL) ==
->> +	       PCI_P2PDMA_MAP_BUS_ADDR;
->> +}
->> +
-> 
-> It looks like this works well when the device can choose whether to
-> enable ATS per transaction. 
-> 
-> However, at least for the Intel GPUs, ATS enablement is based on the
-> PCIe-side enable bit.
+This series adds the IOMMUFD and PCI/TSM infrastructure required for device
+assignment. It introduces an IOMMUFD-owned vIOMMU provider registry and the
+IOMMU_VDEVICE_TSM_REQ ioctl.
 
-Yeah, I can confirm as well that this is something really exotic.
+The series adds a vIOMMU provider abstraction that allows a subsystem
+other than the physical IOMMU driver to implement a vIOMMU type. It groups
+the vIOMMU operations with their module owner and private data, and makes
+that implementation discoverable during vIOMMU allocation.
 
-I never heard of any other device who can enable/disable ATS on a transaction basis.
+External providers are selected by exact vIOMMU type. When no provider
+matches, vIOMMU creation falls back to the physical IOMMU driver. Once a
+provider matches, its result is authoritative and failures do not trigger
+fallback.
 
-Additional to that the setup that ACS seems to be disabled for some bridges bit not all also sounds extremely uncommon.
+Guest TSM requests are dispatched through the vdevice. PCI/TSM uses
+reference-counted contexts to retain the resources needed by providers,
+without introducing separate IOMMUFD TSM bind or unbind ioctls.
 
-> This means that if p2pdma tells the dma-mapping layer to give an Xe
-> device a bus address rather than an IOVA, things break, while
-> pci_p2pdma_distance says everything is OK.
-> 
-> It looks like the infrastructure and solution added in this series is
-> targeted at fixing this on the device side by conditionally enabling
-> ATS. However I think we need to look also at having the computed
-> routing assume untranslated transactions using IOVA rather than bus
-> address.
-> 
-> That is, a flag to tell the topology check that some transactions
-> *will* take the host-bridge path due to IOVA being used, and that the
-> computations including pci_p2pdma_distance() need to check whether that
-> is possible (checking whitelist etc.) and return the corresponding
-> THRU_HOST_BRIDGE mapping type. Translated transactions taking a short-
-> cut using the bus-address would then be hidden from the driver.
-> 
-> Whether that is best done as a parameter to these functions or perhaps
-> as a flag in the PCI device, I'm not sure.
+Note: Codex was used to assist with commit message formatting and code
+rearrangement.
 
-That sounds totally reasonable to me as well.
+Changes from v5:
+https://lore.kernel.org/all/20260525154816.1029642-1-aneesh.kumar@kernel.org
+* Replace the TSM bind/unbind interface with reference-counted contexts.
+* Add the IOMMUFD vIOMMU provider abstraction.
+* Route TSM guest requests through viommu operations.
 
-Regards,
-Christian.
+Changes from v4:
+https://lore.kernel.org/all/20260427061005.901854-1-aneesh.kumar@kernel.org
+* Switch VFIO/iommufd to use struct file *kvm_file instead of relying on
+  kvm->users_count references.
+* Define TSM request scope values globally in iommufd.
+* Rename the ioctl to IOMMU_VDEVICE_TSM_REQ.
+* Address other review feedback.
 
-> 
-> Thanks,
-> Thomas
-> 
-> 
-> 
-> 
->>  static int mkey_max_umr_order(struct mlx5_ib_dev *dev)
->>  {
->>  	if (MLX5_CAP_GEN(dev->mdev,
->> umr_extended_translation_offset))
+Changes from v2:
+https://lore.kernel.org/all/20260309111704.2330479-1-aneesh.kumar@kernel.org
+* Bump the series revision to v4 to keep it in sync with the dependent CCA DA
+  patchsets. There was no v3 posting.
+* Drop [PATCH v2 1/3] iommufd/viommu: Allow associating a KVM VM fd with a
+  vIOMMU
+* Add two new patches to associate a struct kvm * with iommufd objects:
+  iommufd/device: Associate a kvm pointer to iommufd_device
+  iommufd/viommu: Associate a kvm pointer to iommufd_viommu
+* Address review feedback
+
+Changes from v1:
+https://lore.kernel.org/all/20250728135216.48084-8-aneesh.kumar@kernel.org
+* Rebase onto the latest kernel
+* Address review feedback
+* Drop the TSM map ioctl; the KVM prefault patch will be used instead to
+  ensure that private memory is preallocated
+
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Samuel Ortiz <sameo@rivosinc.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+
+Aneesh Kumar K.V (Arm) (9):
+  vfio: cache KVM VM file references instead of raw struct kvm pointers
+  vfio: cdev: Reject duplicate bind before updating KVM file
+  iommu: Add a helper to validate a vIOMMU parent
+  iommu: Add a helper to query vIOMMU hardware parameters
+  coco: tsm: Expose active-user lifetime references
+  iommufd: Add vIOMMU provider support
+  iommufd: Add the vdevice TSM request ioctl
+  PCI/TSM: Remove the legacy guest request interface
+  PCI/TSM: Add reference-counted contexts for vdevice providers
+
+Nicolin Chen (1):
+  iommufd/viommu: Keep a reference to the KVM file
+
+Shameer Kolothum (1):
+  iommufd/device: Associate KVM file pointer with iommufd_device
+
+ Documentation/ABI/testing/sysfs-bus-pci |  29 ++-
+ drivers/iommu/iommu.c                   |  22 ++
+ drivers/iommu/iommufd/Makefile          |   5 +-
+ drivers/iommu/iommufd/device.c          |   7 +-
+ drivers/iommu/iommufd/iommufd_private.h |  32 +++
+ drivers/iommu/iommufd/main.c            |   3 +
+ drivers/iommu/iommufd/selftest.c        |   2 +-
+ drivers/iommu/iommufd/tsm.c             |  98 ++++++++
+ drivers/iommu/iommufd/viommu.c          |  36 ++-
+ drivers/iommu/iommufd/viommu_provider.c | 160 ++++++++++++
+ drivers/pci/tsm/core.c                  | 312 ++++++++++--------------
+ drivers/s390/crypto/vfio_ap_ops.c       |   5 +-
+ drivers/vfio/device_cdev.c              |  14 +-
+ drivers/vfio/group.c                    |  14 +-
+ drivers/vfio/iommufd.c                  |   3 +-
+ drivers/vfio/pci/vfio_pci_zdev.c        |   7 +-
+ drivers/vfio/vfio.h                     |  16 +-
+ drivers/vfio/vfio_main.c                |  81 +++---
+ drivers/virt/coco/tsm-core.c            |  55 ++++-
+ include/linux/iommu.h                   |  15 ++
+ include/linux/iommufd.h                 |  42 +++-
+ include/linux/kvm_host.h                |   3 +
+ include/linux/pci-tsm.h                 | 140 ++++-------
+ include/linux/tsm.h                     |  38 +++
+ include/linux/vfio.h                    |  17 +-
+ include/uapi/linux/iommufd.h            |  73 ++++++
+ samples/devsec/link_tsm.c               | 146 -----------
+ tools/testing/devsec/devsec.sh          |  27 +-
+ virt/kvm/kvm_main.c                     |   2 +
+ 29 files changed, 866 insertions(+), 538 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/tsm.c
+ create mode 100644 drivers/iommu/iommufd/viommu_provider.c
+
+-- 
+2.43.0
 
