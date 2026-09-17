@@ -1,87 +1,106 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C0B684A0EE8;
-	Thu, 17 Sep 2026 09:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3DCB4A0EE8
+	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 09:25:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789637059; cv=none; b=LspEXWxGR61o3yV5pgoDrgE8k/d7z/5BI0wMZv8TJtgvqEpW8RCq/pjQIZMUEEuUjsI1QJTQkmHjkBNfHZ2eVyZiKnw5pWU9asL/U18Zdyx+60onqCgZQj1g2d8At5Tmd/EVzy9L6+ALurcqQn5emATJV1tixdcWWPAz0UNEnrM=
+	t=1789637108; cv=none; b=Pmlz/HKWtw7RdqjjhWNn9JwPGBerC1DPnO5KoxmP5sryq9gd8KfutjLodTkoRhzaKlmLAndVzWVqcoIu55mDbgxPupVstsiKzubLSCpqY4GIvxWRcXXHi2w+4RYTEDxViLq5mfF/4PMefO2qpQo5mjuNHZ67mydgS3J/2CUdKY0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789637059; c=relaxed/simple;
-	bh=sIT7gK6myMlC0MkhhrFdGW+pdZ57n54Ge/impHw3fJI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TkEV45zJuhMN/jN1N1hgAAJNA8qGDznh2eQFGU8sn6lp+uMz/994YqrEorLQuj6FO2TpV8lHXZvov3ts1eW1OhJuzHah2TFrGB4Io6Nkv+DNOhWl+iFovlQN5fXEPY/PBQUXZ7bmzFfMVYFzCPlxtJ8yz7GYo2w4eR6YH/r7AdA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=L7GdL8vs; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1789637108; c=relaxed/simple;
+	bh=UjSFHajnMILZWxbmA5Zc/wuKB0wweyyY0bVfJnze0YU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 References; b=Yf0ez9GqD5qk2jeqgGh1WTphTQciXi2YNzL346t0hPgBGU8PcdG/l4coiP0Wis95USkxk1yrd1yiGMAlPvjl3YZT/UZbYiOOJ9GfZPUV+bGb4NK9VDMJk9zelQEl9l0AoqNSdTBNx0by1e/b1XCyGDuhTYq0WBw/bkEy1mn+1Rk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=IRDofwK8; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="L7GdL8vs"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 916F41476;
-	Thu, 17 Sep 2026 02:24:13 -0700 (PDT)
-Received: from J2N7QTR9R3 (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C5C313F7B4;
-	Thu, 17 Sep 2026 02:24:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1789637057; bh=sIT7gK6myMlC0MkhhrFdGW+pdZ57n54Ge/impHw3fJI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=L7GdL8vsGKEmaHpBo+qCZDuZPOa023qP2/nhUH2BJ4KcPpmnDmpj3kiwXlwm2J6gl
-	 U2T14K+mz6GUdh3g1YVTF+ze9PPzmY86a8koarA7M/h2I/iyGS9Y/gWaekuiodFmM8
-	 MIaWPPL8o5Wibq6sTWKEvcDyq8MV5L3te6jCQL7U=
-Date: Thu, 17 Sep 2026 10:24:08 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>, stable@vger.kernel.org,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Subject: Re: [PATCH v6 1/9] iommu/arm-smmu-v3: Handle ARM erratum for CONT
- under invalidation with SVA
-Message-ID: <aquxuBnh6pdxu4-8@J2N7QTR9R3>
-References: <0-v6-9cd17417d355+281836-smmu_tlbi_jgg@nvidia.com>
- <1-v6-9cd17417d355+281836-smmu_tlbi_jgg@nvidia.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="IRDofwK8"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260917092456euoutp028601a095e90f8086755c3f65c6eb1449~WEXUvTW1q3122331223euoutp02l
+	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 09:24:56 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260917092456euoutp028601a095e90f8086755c3f65c6eb1449~WEXUvTW1q3122331223euoutp02l
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1789637096;
+	bh=z7NFobjYfhJYbpAFEGtTimYkcpegeHRA1ijapWFH4zQ=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=IRDofwK8Y3UGSYQzYKV/RHkSmStHK8cg/tfU3Ju6AzVjBRdoSwByh+r/BPFEyAdMm
+	 G+d7T19a2U3LsQb+aNHagX11JYPAX9TMuM8tvpedgMvOoeVWZQ2Zy2RQNjzqZ7uF3k
+	 0biU/6MbYSQieV+coJFJaQvdpVBIPd+T2vX3cDNg=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260917092456eucas1p138229ed33c56428e9c0f2247245bad18~WEXUi_g3v2137821378eucas1p1z;
+	Thu, 17 Sep 2026 09:24:56 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260917092455eusmtip1c7e28d52ddeab9ff3b1103116c3a2409~WEXTV1Ev_1342913429eusmtip1Y;
+	Thu, 17 Sep 2026 09:24:55 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "Aneesh
+ Kumar K . V" <aneesh.kumar@kernel.org>, Donggeun Yoo
+	<donggeunyoo.kernel@gmail.com>
+Subject: [GIT PULL] dma-mapping fixes for Linux 7.3
+Date: Thu, 17 Sep 2026 11:24:42 +0200
+Message-ID: <20260917092443.342396-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1-v6-9cd17417d355+281836-smmu_tlbi_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260917092456eucas1p138229ed33c56428e9c0f2247245bad18
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260917092456eucas1p138229ed33c56428e9c0f2247245bad18
+X-EPHeader: CA
+X-CMS-RootMailID: 20260917092456eucas1p138229ed33c56428e9c0f2247245bad18
+References: <CGME20260917092456eucas1p138229ed33c56428e9c0f2247245bad18@eucas1p1.samsung.com>
 
-Hi Jason,
+The following changes since commit cee9395acd8043be0644b25c34bfa86623f2b935:
 
-Nit on terminology below.
+  Linux 7.3-rc1 (2026-08-30 13:34:40 -0700)
 
-On Wed, Sep 16, 2026 at 09:27:42PM -0300, Jason Gunthorpe wrote:
-> The erratum (MMU-700: #3777127, S3: #3673557) deals with under
-> invalidation of a CONT PTE grouping in the SMMU. The recommended work
-> around is to use a Range Invalidate (RIL) that spans the entire CONT. The
-> only user of CONT in the kernel right now is through SVA sharing a CPU
-> page table that contains a CONT created by the mm.
+are available in the Git repository at:
 
-As someone familiar with VMSA, I've never seen "RIL" used to describe a
-range invalidate and I think using that in the code below is confusing.
-I *think* "RIL" has come from "SMMUv3.2-RIL", which is the SMMU feature
-for Range Invalidate *and* Level hint, where "RI" is Range Invalidate,
-and "L" is Level.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.3-2026-09-17
 
-Can we please spell that out as "range invalidate" or "range op"
-(matching the arm64 architecture code) rather than "RIL"?
+for you to fetch changes up to 55a8e1451869233db837a97e8f3cbf9983bc8678:
 
-That'll be easier to follow, especially as nothing in the code mentions
-what "RIL" means -- that's only mentioned in this commit message.
+  x86/mm: Don't force unencrypted DMA for IOMMU-backed devices (2026-09-11 10:30:50 +0200)
 
-Mark.
+----------------------------------------------------------------
+dma-mapping fixes for Linux 7.3
+
+A few fixes for the DMA-mapping code:
+- resolved regression in accessing encrypted memory by IOMMU-backed
+devices (Aneesh Kumar K.V),
+- improved failure handling and removed rare bug in swiotlb/highmem
+(Donggeun Yoo).
+
+----------------------------------------------------------------
+Aneesh Kumar K.V (Arm) (1):
+      x86/mm: Don't force unencrypted DMA for IOMMU-backed devices
+
+Donggeun Yoo (3):
+      dma-coherent: report a failed reserved memory assignment
+      swiotlb: use the adjusted address for the highmem page lookup
+      dma-mapping: don't trace the DMA address when the allocation fails
+
+ arch/x86/mm/mem_encrypt.c  | 3 ++-
+ include/trace/events/dma.h | 2 +-
+ kernel/dma/coherent.c      | 3 +--
+ kernel/dma/swiotlb.c       | 4 ++--
+ 4 files changed, 6 insertions(+), 6 deletions(-)
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
