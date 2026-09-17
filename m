@@ -1,80 +1,94 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05CD242C508;
-	Thu, 17 Sep 2026 21:56:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAFE244607E;
+	Thu, 17 Sep 2026 22:38:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789682220; cv=none; b=eemZ9L06jO6sTQukKiMGeWo6U9SCAHv7va1W1fo4aINOgSYckC3LV8H5xNEILXZREgx0ksMppNQGCkKzcY/T1liDRMw6f10aGE1Nu+H9NcPtAOsERcoFPWzdV5lr1iFsB7NMtvrpYHnT3Z9qVzMxPYSy35Ovi/qTqyrRljS0OZY=
+	t=1789684740; cv=none; b=eNq0NwVEF4OMi17NnnkyeIfsZeE2rNjXUNa1VqdPtUdIxJaQ1DNm6XIDsk07JuhtMFMjWzsDkoZMozpJEinKUPcksbPFjhcivxNzlqej4iBSC0FCS7ef0hPXa1Gu2cDGOSeapKtU6kRQsOFY8dUsRl5bbq01bNzS+91kRScvQtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789682220; c=relaxed/simple;
-	bh=vvN1do1b5vxeWmLcBK5HgVMxtBO1ML3wxGKsgO4thWM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cAmL7a0f/0zPC+atJPRMtWdb0Yvd84NajFNf/c72fGi0HCgZUAfYvK58bGXNnccIP/oyZmKXxagJ0k1laS1pE7MBUb680ji+t/q2MYswCthAG0z+PtjQ3/RWcf4sj3CJ3+BwGOMkwa9Ih9uhOjX5mYeQngoaTK6XXBs8HcXRDvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bE+Lz4Bp; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789684740; c=relaxed/simple;
+	bh=DI13kaWhMR7VVEXysPrSREcpe7Iqfs/kvZYijSu02eA=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=Eq6+DVAE6CbEWgCWjbTZ8xRzAF+ItPPpN99UEkvPjgqD4TbeF6v/m5sgeExyvokqy6g0AbqQiBAtLLsIiIhssIfnwCS1LadyKiVbqiHZSrE+DPtmNuIZdq5lBThVZ992LObqrIhztQK7lemkTv5a2XOyAS3NyQRHvoAr1sxkFM8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DzwVsXoX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bE+Lz4Bp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 681611F000FF;
-	Thu, 17 Sep 2026 21:56:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DzwVsXoX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 986F41F00893;
+	Thu, 17 Sep 2026 22:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789682215;
-	bh=kuBtV4+7ALBPAyy2nomafqxqzWcbcsqKb3dSOrzTp7c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=bE+Lz4BpzH5TSV1jWou2OBtlqHsC//L3WyTj9bXi6va6c8nZfLJ4ol68JuU+o3r2M
-	 TAu2icEvroIVO5OuYcPgJYCAhNQXTzOAIclO3FED1OglGnXQvoVgXQi9NkcPaNCm7C
-	 NxCHhu8wntvOtj4LO509qvBQvss+eZM34/jEYGD2HXc7uGKovRY4ujMtUk30a4EgKF
-	 zPD0eqlpLObbbLfAP2BCbHPLwLZz0rgjBIedFlBVM78LXQPEzVbz5SKMMk3kZSKLLI
-	 Ww16aNzudepZDNF3jG6O0DxZCUHUXGJHhXcE+1AZc6MCWnHl/xvccdOs6+sET6/9Sd
-	 Dca8d8QUwinxQ==
-Date: Thu, 17 Sep 2026 16:56:53 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Wandun Chen <chenwandun1@gmail.com>
-Cc: m.szyprowski@samsung.com, hpa@zytor.com, chenhuacai@kernel.org,
-	pasha.tatashin@soleen.com, devicetree@vger.kernel.org,
-	linux-mm@kvack.org, tglx@kernel.org, robin.murphy@arm.com,
-	kernel@xen0n.name, mingo@redhat.com, saravanak@kernel.org,
-	loongarch@lists.linux.dev, dave.hansen@linux.intel.com,
-	will@kernel.org, akpm@linux-foundation.org, rppt@kernel.org,
-	iommu@lists.linux.dev, mark.rutland@arm.com, alex@ghiti.fr,
-	linux-riscv@lists.infradead.org, pjw@kernel.org,
-	linux-kernel@vger.kernel.org, baoquan.he@linux.dev,
-	aou@eecs.berkeley.edu, kexec@lists.infradead.org,
-	pratyush@kernel.org, linux-arm-kernel@lists.infradead.org,
-	ruirui.yang@linux.dev, catalin.marinas@arm.com, bp@alien8.de,
-	palmer@dabbelt.com, x86@kernel.org
-Subject: Re: [PATCH v6 08/10] of: reserved_mem: mark /reserved-memory entries
- with MEMBLOCK_NODUMP
-Message-ID: <178968221332.3991643.14928206071521736133.robh@kernel.org>
-References: <20260902073116.802752-1-chenwandun1@gmail.com>
- <20260902073116.802752-9-chenwandun1@gmail.com>
+	s=k20260515; t=1789684738;
+	bh=FYqD+8EuHNbP6ZIkLeQ20YUnJezRRXMcecWfjRiQZw0=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=DzwVsXoXHLMEaSwh8pkPEtTZNMxKgNsQlbsMxoVgE6nuxkw3wcNDQaK6f+HiIiWIR
+	 VuedDSXpyvp/BYW+rDGHCPD7sripNpVxMuH6d63EF1h90INd98Ajq2S3kIt64SZp4C
+	 QcjWZpTzIX1/K+PiEnIjwv0K3aZyl7SJy8m+xYkqj1//ac48wqkrz8Y+fOYdwk9G2H
+	 mzADuqrUn/xju4AAj9rY1p/FSZ5xZcdq3upVmldTPYTgsehphCm0wthg9NZi1vjNxd
+	 ZsqAiD5E+9vIz2H8d5MNFMZ/aejOTey6vbLh48rAn2we7H2OneoLeAcZ0mf5B0kkyD
+	 46uX+D4jfGQkQ==
+From: Srinivas Kandagatla <srini@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+ Madhavan Srinivasan <maddy@linux.ibm.com>, 
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
+ Andi Shyti <andi.shyti@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Doug Berger <opendmb@gmail.com>, 
+ Florian Fainelli <florian.fainelli@broadcom.com>, 
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
+ Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+ Sascha Hauer <s.hauer@pengutronix.de>, 
+ Pengutronix Kernel Team <kernel@pengutronix.de>, 
+ Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>, 
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, 
+ Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Cc: brgl@kernel.org, driver-core@lists.linux.dev, 
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
+ linux-i2c@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org, 
+ linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, mfd@lists.linux.dev, 
+ linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org
+In-Reply-To: <20260720-pdev-set-fwnode-instead-of-of-node-v1-0-2dee93f42c54@oss.qualcomm.com>
+References: <20260720-pdev-set-fwnode-instead-of-of-node-v1-0-2dee93f42c54@oss.qualcomm.com>
+Subject: Re: (subset) [PATCH 0/8] driver core: prefer
+ platform_device_set_fwnode()
+Message-Id: <178968473139.466806.13272492778306156816.b4-ty@kernel.org>
+Date: Thu, 17 Sep 2026 23:38:51 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260902073116.802752-9-chenwandun1@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.14.3
 
 
-On Wed, 02 Sep 2026 15:31:14 +0800, Wandun Chen wrote:
-> From: Wandun Chen <chenwandun@lixiang.com>
+On Mon, 20 Jul 2026 11:24:47 +0200, Bartosz Golaszewski wrote:
+> With the final platform device and software node rework changes having
+> been queued in the driver core tree, Danilo pointed out that
+> platform_device_set_fwnode() is no longer used and should be removed. I
+> argued that instead we should prefer it over the OF-specific
+> platform_device_set_of_node().
 > 
-> Mark non-dumpable reserved-memory regions with MEMBLOCK_NODUMP so
-> kdump can omit them from the vmcore.
+> This series converts drivers using platform_device_set_of_node() to
+> platform_device_set_fwnode() and does not intend any functional change
+> as the semantics of:
 > 
-> The marking is guarded by CONFIG_CRASH_DUMP so non-kdump kernels do not
-> pay the cost of splitting memblock.memory entries at NODUMP boundaries.
-> 
-> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
-> Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
-> ---
->  drivers/of/fdt.c             |  1 +
->  drivers/of/of_private.h      |  1 +
->  drivers/of/of_reserved_mem.c | 15 +++++++++++++++
->  3 files changed, 17 insertions(+)
-> 
+> [...]
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Applied, thanks!
+
+[8/8] slimbus: qcom-ngd-ctrl: use platform_device_set_fwnode()
+      commit: bb74fae19700fd1fa92def9daf49e6fbdea26006
+
+Best regards,
+-- 
+Srinivas Kandagatla <srini@kernel.org>
 
