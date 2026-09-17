@@ -1,153 +1,165 @@
-Received: from mail-qk2-f12.google.com (mail-qk2-f12.google.com [74.125.230.204])
+Received: from mail-qk2-f13.google.com (mail-qk2-f13.google.com [74.125.230.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D2937A832
-	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 14:48:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.204
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F258A4E73D6
+	for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 15:15:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789656498; cv=none; b=ihtnrAHBfSftiRvnCVfJ/FgK5dP+bXyEd5+sKFkp+woN/myITcHuKSvpb01uxJ8EaScQE52zMDihgJwQVfD41VkvSXy9522cz62RMKBPxQurLiwpua40JlwpVkMnmTpJuV/2k+vHTUc6RLYotOyZszeUFhGIHLcO9pSyPY5SPhM=
+	t=1789658148; cv=none; b=GHtG8exS8ZYr1kpMXfYIF0AZ09rZzeVeSaAGSLwX6ckDugtNpnsbP7WSPTYDHW18DiSml2jeRi1Ak4zRLcm8qEzhm6gPBzf6Itq5ANa25LbtUcycA3vVGwI9u5k3F3kp2KlIrMeu/dBAAVt1bTwwm47xLT+bmx8gnEco0son4C8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789656498; c=relaxed/simple;
-	bh=5QCP3+8j+na07v88Li8T9o1YahfFEwfdrkmj0+NLdCU=;
+	s=arc-20240116; t=1789658148; c=relaxed/simple;
+	bh=jmjcmemHiZ7FQbMcc82ajlGpQ++hpMbdtAMvlMwreUA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ngIVCJ7xoMw8wm8yZzcIZl+94/DWK+rvFwPDZH8bZHVqi6dku7c2PYcl15cQmFli7jNuwXMBmV4w6vrw03wyleNwsLS18sX0HBs98OuP/hR8Ck8Yj/GHQS1eI6Wf3lvbRG3MHJ7WaqM6j3XL/jm4reHssOgqS/Q5UJ8cD81Ojyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DPkdlQlZ; arc=none smtp.client-ip=74.125.230.204
+	 Content-Type:Content-Disposition:In-Reply-To; b=L2SboltMJf/V080bQHQw1EDHC6+y2US2aU8/J1NDKN0/3eHSmazUrv0ZFaoHFVLI4/xq4SIosu+1zXgyO1sL5xwdwhxblmB3XEsVyNkybY3D/cYSq4pxI/zb1lVotAyH7idOa82Wjr4+/cbTRqgZwSNrMgJ8vKL3OTK1E8s7S3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=U+6FSN7L; arc=none smtp.client-ip=74.125.230.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DPkdlQlZ"
-Received: by mail-qk2-f12.google.com with SMTP id af79cd13be357-93910ca5aa8so76504685a.3
-        for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 07:48:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="U+6FSN7L"
+Received: by mail-qk2-f13.google.com with SMTP id d75a77b69052e-530c602630bso7827951cf.3
+        for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 08:15:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1789656486; x=1790261286; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=3dWYS3ZZvJkfTmwwGBzOMGNsuxhzxqg/70St3SRcFJY=;
-        b=DPkdlQlZBA5tp3VXj17pT+uhuxAkbSd9i6ULEOf2pN5SpMExewdJH5JeB6bgcaMH+a
-         9KbxSFzjS/CNGlbZtntNtnCMAssKnXBmAh51DB5flHSrN0kq0JkCXpzr1crUrZ2B8ARO
-         S30jw1XMDgisQ+kvEttdrCiRpAQ8yXmtckmAA7f280GVqfHPtZ3CnXTf3FhqEk3Gs7uw
-         anzVDbWpQfOFb3hEahzBZuUpPCdPo7ClmRjeAos1VRSkmToYXyXHQ/6TlujguXi1Z6gE
-         I2RaqDkq4hh9G/P3R9Ms2j4giBWjbn9lZUwFxElaCzbYj3xfuH4Zahty0V3rdxics/BD
-         z6GQ==
+        d=ziepe.ca; s=google; t=1789658139; x=1790262939; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=eNGwdDF4ki7ojFW7+l1TCezZJgsNPf4Ld7gCqIxw2+Y=;
+        b=U+6FSN7Lq/459OaQzIZEu8rAllWY6wLmk1LFRhTwLJcjxlJloGCAj+kGvKjvNzS3Fc
+         8bguBQX7UWz5TV+azn/IfXUg8iDO6arVKLJFocrd8XmeiFzyo3oF2jABSrkEEUvh4Thi
+         eJPvcrxAH6n0JdeXKDlg36Ea3pjze/lZNoEZowJsH7P7ryR0lVwt0Nj89Hyofrm+b/+b
+         TQU+rky0LG/tIGlVpbFrbGK4CBGNOlQ1qvBENFvgjDiPlcUFUpFHPeJxLpAhNnAxo6U7
+         DGjwYYr+/dFXE7Rw1ulWy4Ztp8Nn60FjtXzo9S933dvBw+2Mim4LzMrznFq7BQyEELxW
+         B7Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789656486; x=1790261286;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=3dWYS3ZZvJkfTmwwGBzOMGNsuxhzxqg/70St3SRcFJY=;
-        b=ARt5V/UeMqFoNspm6MQ+Z36mGNZIHVL+ukktvrHmycMef0K5Q3Ca/2I/ReOZ8jWbba
-         OE26xdhwPwhd/xp6907qL2wNu1Uvq+/Ec7DvRsYVfFttGT8NSl3YMXpp1S0QZGKB+wup
-         /u6CE4efV9EMoDAvRYRoKkEqQ9knwpcIQP0CVBKs1Z/UK70r/0HfU9ziQRt8q2C1xsoQ
-         VDxG8YcDCws0bw2tuJe19WD7EIyWq6kU/9RNBVig0GahDMcvZq52fu+9/N97rO+lLT/G
-         MYgpJpKwPpyCxo/8X6rKJmuKffJWgCJ+zkF/zBoDVjoEL/KqCZqNPJiZ/J4d7+1bTI2Q
-         O4Zw==
-X-Forwarded-Encrypted: i=1; AKwUvBwB6WU7Fwb3BxiFaIT+jIRXSfqKxQPYbtXT09vtVrbFhjCTVz/n8VdeZL5qdS1bqWl4IRkqNQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++mjJfppFdj+Q4OQxCexFtBS1ToGe0H5jRmO1kw8IyTE3oz2N3Yr
-	vnBBODomoJWC8QbiSSJ1OSKM0PGNYnxV7gTqow9jTfcZYBx+TzGA26q/1F2rEl5Xaug=
-X-Gm-Gg: AYBFou2HrjhzudEQXsHLgBHDDL7nlR8TluS4VPYX6dE0L5xOh3K/TwCfBnJ7OdYRvXC
-	dtzdIkIhbtsjHxuevef1LsMUGIRH/OUOOOSwgURAEpub9W3vR+8wYLEu4W5UEBMGL/CWEimUdwB
-	eZ87AWfAjrZi2uCuJbB68x325LPxxFpVxYm23v+Lrwbvwb09aHhPjhzc3dHD7f0Svrbi8sQA4C5
-	BxOO05SP1Ee1HtXZNxYe6ALyc0AR4pyb7FGQppAGq8+m9px4xFB8ax4luzq/mBfgnk1Nkp63tix
-	6mTS0hDdoQmQ3p58V4stT4+CoZ6gAzUH5ZFwMJd6DWR+nTfPEkQNwlEDFDafw0GCcgIAvJl8YUl
-	4hjRkjxPxt8FGp4rLBqcqVgtMnRrgWRLy18+KcJh02s4nV+C1ncK0nTydg+Q7Wgqx0886F2EBzx
-	P3R2Elk3ENazEwKbcSz+F2sssNFDXhRvYWVLvPSmFQDBdslqsceitqaug78bTvWld74cMf12tSX
-	dYuNPblMmkiZeP5lXaIy4C0SoBF3qD+igo73d55fVFjOBBArCv7Lco9
-X-Received: by 2002:a05:620a:800e:b0:939:5c62:fddd with SMTP id af79cd13be357-93bb772cd8cmr1243423385a.19.1789656485922;
-        Thu, 17 Sep 2026 07:48:05 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1789658139; x=1790262939;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=eNGwdDF4ki7ojFW7+l1TCezZJgsNPf4Ld7gCqIxw2+Y=;
+        b=KJ4Bth7LHkHSyWLbdFKqBrvj+dTnqzT1LJHNvo6Gazt2uZ5OZ3EgwSipSiODdvd/v9
+         XsSItUrnZaNZP8uXfglKREMXYgjYlp15phdXLqokG0VCZz6ss5lpJC+L5GZqh2a20hHS
+         6xTZQaSWpEDlKUWVnwVG7glzEG3dpnmX7RurTfXkg6CSSz6sBpjSMh4BBgw40qFDo3Ss
+         Oq+oanfaJBfgIkow3GV/91QgYvUReULuh6VR/JjCNVd/B7SZG9wdKI7b4LE9YR3YZKR1
+         vFfcFwkI6ujso/NNxmJamXqPUQa+x5MJFKAKNTjq0jGne+bStMF4uLyL/CibmVdHaxE2
+         FRdg==
+X-Forwarded-Encrypted: i=1; AKwUvBzzkFNjRlQWtwwkPDPZvqXV8m5bpo8Uinh0XE8yBk3bx4GYpeAWZwM39e8gIZCRytFBwMV5cA==@lists.linux.dev
+X-Gm-Message-State: AFuF++m55TkSpYSl0GQ4CQQ5H154zYp1z0hTzmw7UxSnazMfloWPOGu2
+	lZhs1hcpK8h/mXwngOQllaIHSOx32QhliKQU5I/sqRSEzHhC9CGPnfennMW84rZSIqo=
+X-Gm-Gg: AYBFou3dw5G43+rUccam92vJqc09FiYORVtdfV/79Id+a/ggdikGLek0J8fn6uwpDOl
+	bzKlvAmrNLivLWNiCg9ddiyAdsQaFlbYlzpM9wHScjNUdhLvGgZ88HFj2PAoQ8GbR70H88qM+uQ
+	6pYqXKfKeqwJ3q/JVp1dNw9HpoCmhi6O9xsyP1ihoqHjsGk9Ka6jPMbXfFjSA6nLdnKJBKClxYP
+	D9K8u04UslmIXP92hgBldnx/Pk+I7HyvywoK/Wc1oUEfA5/Nyc12ndm1M3hQ2iXBpvINuskDREk
+	pkTnMXyo2ZiqUihkZLa5QSpB+UtEJx8H7qHpv0gLGYHZbWU8w9dxOHIO/iAmG85/SbbqyPg5ilU
+	GSvR9XJNVPF2OO1Pz5mTZdhxjIaJA6pQ2korXefQdS+kMuw8AXXyb97LT8ZImaQEYilcWA23eRB
+	QPjfUvze6GD10PAbgu6llb0n2FpE9ojP2EGt8cvsRqGBwsrVJqqTmS2y4cj/f2fCqtJuNcqkV3Y
+	aNSPnpz+wz8tBA1SxgUJrfmiDaDQs6lNiTB4bJUcadsS0SxGrbOVLV7
+X-Received: by 2002:a05:6214:5903:b0:90e:8be9:c384 with SMTP id 6a1803df08f44-9123d7b301dmr139360466d6.27.1789658138557;
+        Thu, 17 Sep 2026 08:15:38 -0700 (PDT)
 Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93b7821d231sm483562385a.21.2026.09.17.07.48.05
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91252cb0b52sm26856d6.28.2026.09.17.08.15.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2026 07:48:05 -0700 (PDT)
+        Thu, 17 Sep 2026 08:15:37 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1x7DPA-0000000Ctlh-2V45;
-	Thu, 17 Sep 2026 11:48:04 -0300
-Date: Thu, 17 Sep 2026 11:48:04 -0300
+	id 1x7Dpp-0000000CyZf-0zOc;
+	Thu, 17 Sep 2026 12:15:37 -0300
+Date: Thu, 17 Sep 2026 12:15:37 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Peng Fan <peng.fan@oss.nxp.com>, Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+To: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
 	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC 0/4] iommu/arm-smmu-v3: Support shared Stream IDs
-Message-ID: <20260917144804.GI3196566@ziepe.ca>
-References: <20260916-smmu-shared-sid-v1-0-517384504aee@nxp.com>
- <20260916161018.GE3196566@ziepe.ca>
- <aqtDg1EH95RYOdCJ@shlinux89>
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
+ direct peer-to-peer route
+Message-ID: <20260917151537.GJ3196566@ziepe.ca>
+References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
+ <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
+ <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
+ <20260917140253.GG3196566@ziepe.ca>
+ <7d8118ee06f29b73988108c0892022b3a2626f1d.camel@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aqtDg1EH95RYOdCJ@shlinux89>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7d8118ee06f29b73988108c0892022b3a2626f1d.camel@linux.intel.com>
 
-On Thu, Sep 17, 2026 at 09:33:55AM +0800, Peng Fan wrote:
-> Hi Jason,
+On Thu, Sep 17, 2026 at 04:16:57PM +0200, Thomas Hellström wrote:
+> On Thu, 2026-09-17 at 11:02 -0300, Jason Gunthorpe wrote:
+> > On Thu, Sep 17, 2026 at 03:56:12PM +0200, Thomas Hellström wrote:
+> > 
+> > > That is, a flag to tell the topology check that some transactions
+> > > *will* take the host-bridge path due to IOVA being used, and that
+> > > the
+> > > computations including pci_p2pdma_distance() need to check whether
+> > > that
+> > > is possible (checking whitelist etc.) and return the corresponding
+> > > THRU_HOST_BRIDGE mapping type. Translated transactions taking a
+> > > short-
+> > > cut using the bus-address would then be hidden from the driver.
+> > 
+> > I imagined it would work by the driver passing in what modes it
+> > supports and Intel GPU would simply pass in ATS only.
+> > 
+> > Even something like mlx has variation, only some operations can opt
+> > into ATS, many others are never-ATS.
+> > 
+> > Driver should not make statements like " *will* take the host-bridge
+> > path" since it has no idea.
 > 
-> On Wed, Sep 16, 2026 at 01:10:18PM -0300, Jason Gunthorpe wrote:
-> >On Wed, Sep 16, 2026 at 11:12:33PM +0800, Peng Fan (OSS) wrote:
-> >> Some SoCs have a limited number of IOMMU Stream IDs (SIDs) and
-> >> hardware that inherently shares them. For example, the NXP i.MX95
-> >> eDMA controller has 64 channels where each TX/RX pair is assigned
-> >> a single SID by the hardware - the two channel devices are distinct
-> >> from Linux's perspective but present the same SID to the SMMU.
-> >
-> >Is that a reflection of poor DT modelling though?
-> >
-> >Why must a TX/RX *PAIR* have two platform_devices nodes?
-> >
-> >Fix it there and you don't need any of this? Or is there more?
-> 
-> I think there may be a misunderstanding about the device topology here.
-> 
-> There is only one platform device node for the eDMA controller
-> (dma-controller@42000000). There are no separate platform device nodes per
-> channel pair.
-> 
-> What happens instead:
-> The fsl-edma driver probes the single platform device. During
-> dmaenginem_async_device_register(), the dmaengine core calls
+> Yes, agreed, but anyway DMA-BUF would then, as part of the
+> dynamic_attach negotiation have an interface that takes an ATS only
+> flag and use it to determine whether P2P is possible at all, and use
+> them at mapping time to set up the correct SG list (IOVA or BUS
+> address).
 
-Yes, and if your DT is correct then that platform device should have a
-single iommus = [] listing all the SIDs for that logical device.
+Yeah, where I was going with mapping type was to have the core code
+"DMA buf PCI bus mapping type" perform the pci p2p operations,
+(especially the calc distance that has been open coded in GPU
+drivers!!) and I imagined it would take in information from the
+exporter and importer about things like ATS capabilities.
 
-Using iommu-map to describe synthetic dma_chan_dev devices that the
-kernel creates is the same kind of DT abuse from over here:
+There is worse coming here soon people are working on multi-path PCI
+and we even already have such systems. Multi-path PCI means you have
+to select the best quality path from a NxM matrix of options and then
+inform both sides which path you picked.
 
-https://lore.kernel.org/linux-iommu/20260618151745.GD231643@ziepe.ca/
+> Similarly the dma_map_page() needs to know these flags for p2pdma pages
+> so that it never sets up a BUS_ADDRESS to an ATS-enabled device that
+> didn't explicitly ask for it?
 
-So the problem is self created, by using iommu-map instead of iommus
-and using DT to describe linux SW expectations you end up in this
-strange place of asking for aliases.
+You don't use dma_map_page() with P2P, use the new interface and then
+the details are visible and the mapper can do the right logic.
 
-> The iommu-map property sits on the eDMA controller's DT node. At channel
-> allocation time (xlate), the driver calls of_dma_configure_id(chan_dev,
-> edma_np, true, &chan_id) to look up the channel index in the eDMA node's
-> iommu-map and attach an IOMMU domain to that specific channel device. The
-> dmaengine framework's dmaengine_get_dma_device() API
-> (which checks chan->dev->chan_dma_dev) then returns the per-channel device
-> instead of the parent platform device, so DMA clients map buffers through
-> the correct IOMMU context.
+> And this all (and in addition the previous discussion around pcie
+> subsystems calls from within dma-buf, and data-types for mapping
+> information) makes me think that abstracting fast dma-buf interconnects
+> along with our previous discussions is a good thing. Then interconnect
+> details and cross-subsystem dependencies can be hidden in the
+> interconnect implementations, suitably placed in the tree.
 
-So go back to the basics, why did this platform use iommu-map instead
-of iommus? The only real difference is you get a DMA translation per
-queue. Is that required? Are you short IOVA? Some other reason?
-
-You can read what I wrote about this general problem before:
-
-https://lore.kernel.org/linux-iommu/20260818130724.GA5482@ziepe.ca/
-
-It would be really nice if you all could work together to figure out a
-better way to handle this than through DT abuses.
-
-If you really need unique translations per sub-compoment of a logical
-device from some pool of SIDs that feels like a weird version of PASID
-to me, it may be an interesting to explore.
+Right exactly, I guess Christain will be more comfortable if we have a
+dma-mapping-type-pci.c that has all of this and only PCI drivers use
+that code so it makes logical layering sense with the needs of the
+embedded non-PCI drivers..
 
 Jason
