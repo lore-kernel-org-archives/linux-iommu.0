@@ -1,239 +1,256 @@
-Received: from mail-pj2-f12.google.com (mail-pj2-f12.google.com [74.125.227.140])
+Received: from mta0.migadu.com (out-106.mta0.migadu.com [91.218.175.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BF6449D5BF
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 07:20:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81BC14A014D
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 07:30:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789716044; cv=none; b=cuH+n+epPShllcJtFw/RxXwrKEFSn6QKFhGE3KaCPRtbVW4NjUIRWznEj3bj3XJliAGTHVDfNGPn6jrTedTmmvI9IzJSMIuqtI6C0jZcYT9Esufgq1N+wcgxxwHtxmPuIGOZedf0Jb+rgsvo/INYdyUNvt6hbmAcc7+xByZkF3A=
+	t=1789716639; cv=none; b=pY/PiasBSRr0O6K5ETKqA6JwAxkjFagmzdSgBsNHAnHbjzwc7lV02c6IQoPiKDS6dZxAlAhmiuxgh84/CWYpSKCM5a0Uo/zEAnnKu1Mp5moxvc22+fhHsZEx4okpaw8jLMAPmlnF+yNDZeSuUOthTyvnuUS8yvqIRCOXCEwRA3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789716044; c=relaxed/simple;
-	bh=yYqekLJ/G1t+rbxU0H1jBCLzz7cJv7e+IWYJeGIMiGU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tIZLhFvbybxvwMHmM5BIOwZheOGny6AbSkRbkAsuGBOt9lGdrBBlM1MAE1ZWsiIzQAxACOauEEhncYkPMAcZys2nl5XPrx2pkHwfs1UvlmUuEPkG7fWUNR7d+ORpU2DdOpkNvtZAdHB//4Jyx3BvnwnVNIw/k9GMSBZTVqL5YpQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=ZQz7GE+0; arc=none smtp.client-ip=74.125.227.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1789716639; c=relaxed/simple;
+	bh=UhePvlO6Uju4KMSGgi0DFyyW4sOpnmjHBEaUsD91vSc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cMq1KDwjmzOtN5LsM3c69jJR4D5FL7Euem5xtjmwOw7xJl2OgBgC97SyPsRPlo4OTCxQNcGc5qWxYN4ydt1pY5UlgiLE99JYZ8byR1kI3Kf0WOfEOiIAvruRDyoSx/A+DNqYVJ57bvANIrrYatbu8jd0OnyXSvNKNVCcoLBnR9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=ULNtSIa4; arc=none smtp.client-ip=91.218.175.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="ZQz7GE+0"
-Received: by mail-pj2-f12.google.com with SMTP id 98e67ed59e1d1-396cccbba91so297576a91.1
-        for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 00:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1789716040; x=1790320840; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=QtF+hEd4zxaSXZ54y5RlnY99ygpvKaq026DcmobuPXU=;
-        b=ZQz7GE+0EQTuRhxnzQ0Oh8XOi8jOHG/76oM3Xd/REZukMl6Rv1gGJ8gHprZZ3qEsrf
-         RuFiC7dnEJ3UYRYFVOR03iNiIQ6aFArDIl/OYWY7hfq6SBCdbYuWQnztCVWiArMjSd+J
-         5Te0/uZyrJI/eNwjT82An3nPNvHPpLjuKqEU4wgmnH6Qqy2dnMi6259+fMI49qaEMrsG
-         yQ3QAHPp0sX2ubp8c3ICMFv6zjKGaLlgbBtjGYIBu6M1CH7okUxEF2Jwq8j8jqVEivMp
-         SVrBmOgIbPx/JQVIfEaXUaZrlVIrP3yhmx9NATbwff/+kW/TcoDultJ35nGM7eXnRTuM
-         9IWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789716040; x=1790320840;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=QtF+hEd4zxaSXZ54y5RlnY99ygpvKaq026DcmobuPXU=;
-        b=dBE8a0TyCG7rhlLgNHB6vtUDTB6yVrLQjLoghENhNpLEmbb8GrUPIGyFd9Mre8RwzZ
-         /+dv64tfcwfF/NF+XOJaAB2msXM1qTHsbi501cRV5ueSFCU0Z240voMBWqgOs5EnlNQj
-         keFivOYKjzf+Z/pQla+6rLXsP96x6fKBu5UwAIfAWsuh9xl9ZTLakTcuEKt7bj2e70YT
-         CsgbfjmnmuaLTdXK+YjiqB86sqIfeXFREa4WFMVN1OaPi5t2RuQEEdh6O/0MwQ3R/AB7
-         b5Rr6PjEFRYGslK0G5GhsKj6fPRM36Gvs3pcJrqCCb1YH+0lp+EH4JMmIsLyjIxqRnTt
-         0MXg==
-X-Forwarded-Encrypted: i=1; AKwUvBzTRvrr2hL1IVh5HF4L3ydCu/QuNnyecV3BTWpz0+C/4SLy9oQi6p7MhlijSueT/SUuPvsHVg==@lists.linux.dev
-X-Gm-Message-State: AFuF++kXwXynUVEA6KHbxJQcL4nwAvUDUgcH6jMylwQINT7JuAGJ/NDR
-	3uELpbbTtnKiaC7ZK6qtiLFubKhj1SHDeTsKqJvawH+8B235jyyX0j/oTu4PMfo3JuE=
-X-Gm-Gg: AYBFou1xVJkfd5lsqULAR4kNpUMC/xbmPGfpsS+gpns5tdvldG8dOPjf+gwVK2w8q6P
-	w2rM51p+XwJ/x+gzGHZjSzI0DEZ/0zyRTI9aCodzwEV8sliqlApvZjdSSwsvXNMOcbo2HFLKSC1
-	Yc+j9my5Qg0gp2n91xLnNxQQixn87oqQy8RuWsCWHNRbrF2n8chRW19dOWHnftnNzT7ikoScnwo
-	3TnYpi47V4GG+jXa1wuFB78vlSV69GfSepRNEVNIwbWB9M+cN7xgChyPGINdhH3VgJ+veq8QXXt
-	X9hX+MuBNdpF3AZvesaW2iDLRgzMhOLKQK3NUu1aeAZxQDDC/LvQb85RLUgLvusgFJqlTkKlci2
-	WR8Yuwu3j0GX3CaWizLEZDByDVJ9ONtLWjnK2aPRd3mF3ZLVPtc30IhUZ7G7AGSWVMZjtjTSulQ
-	tT8BRKKGRlPK8Xksk8srMf1s/7a0rNhpGsQNvDoImT18DlPfM8nDI7AfzcloiH6zKfTWkfQfdYs
-	OVaUIMre+A=
-X-Received: by 2002:a17:90b:17cc:b0:39e:135e:130e with SMTP id 98e67ed59e1d1-39e54af6a0emr3710326a91.3.1789716040219;
-        Fri, 18 Sep 2026 00:20:40 -0700 (PDT)
-Received: from sw04.internal.sifive.com ([4.53.31.132])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-144ce03c682sm4416046c88.10.2026.09.18.00.20.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 00:20:39 -0700 (PDT)
-From: Zong Li <zong.li@sifive.com>
-To: tomasz.jeznach@linux.dev,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	mark.rutland@arm.com,
-	andrew.jones@oss.qualcomm.com,
-	guoren@kernel.org,
-	david.laight.linux@gmail.com,
-	zhangzhanpeng.jasper@bytedance.com,
-	yang.yicong@picoheart.com,
-	nutty.liu@hotmail.com,
-	iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-perf-users@vger.kernel.org
-Cc: Zong Li <zong.li@sifive.com>,
-	Chen Pei <cp0613@linux.alibaba.com>,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>,
-	Samuel Holland <samuel.holland@sifive.com>
-Subject: [PATCH v12 2/2] iommu/riscv: create a auxiliary device for HPM
-Date: Fri, 18 Sep 2026 00:20:26 -0700
-Message-ID: <20260918072027.639239-3-zong.li@sifive.com>
-X-Mailer: git-send-email @GIT_VERSION@
-In-Reply-To: <20260918072027.639239-1-zong.li@sifive.com>
-References: <20260918072027.639239-1-zong.li@sifive.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="ULNtSIa4"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=UhePvlO6Uju4KMSGgi0DFyyW4sOpnmjHBEaUsD91vSc=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1789716635; v=1; x=1790321435;
+ b=ULNtSIa4m9Ewij1GnUkqGxU9aXQ2oILTA+9T2u7ixLXmqYR0nKCO44mGqYBlywtYYqe+h75F
+ cwwwES+57lXO+C/ybgQiFLJQ5sAh/z90HQN0U4gkWvyg/gDIwUz7rPyp+n3UnwLXDcICr4PZZUq
+ Gj0ULHhyxmZmM4k7ZqWmX/LQ=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by mta10.migadu.com with ESMTPS id 37e6b37ee04b46ae;
+	Fri, 18 Sep 2026 07:30:35 +0000
+X-Mizu-Trace-ID: 37e6b37ee04b46ae
+X-Migadu-Flow: FLOW_OUT
+Date: Fri, 18 Sep 2026 15:30:28 +0800
+From: Baoquan He <baoquan.he@linux.dev>
+To: Wandun Chen <chenwandun1@gmail.com>
+Cc: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+	tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, robh@kernel.org,
+	saravanak@kernel.org, akpm@linux-foundation.org, rppt@kernel.org,
+	pasha.tatashin@soleen.com, pratyush@kernel.org,
+	m.szyprowski@samsung.com, mark.rutland@arm.com, kernel@xen0n.name,
+	alex@ghiti.fr, hpa@zytor.com, ruirui.yang@linux.dev,
+	robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+	kexec@lists.infradead.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v6 03/10] crash_core: fold duplicated memblock arch hooks
+ into the weak default
+Message-ID: <aqzolBceoRchBdbx@fedora>
+References: <20260902073116.802752-1-chenwandun1@gmail.com>
+ <20260902073116.802752-4-chenwandun1@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260902073116.802752-4-chenwandun1@gmail.com>
 
-Create an auxiliary device for HPM when the IOMMU supports a
-hardware performance monitor.
+On 09/02/26 at 03:31pm, Wandun Chen wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
+> 
+> arm64, loongarch and riscv open-code the same memblock walk in
+> arch_get_system_nr_ranges() and arch_crash_populate_cmem(). Move it into
+> the __weak defaults in kernel/crash_core.c and delete the arch copies.
+> 
+> No functional change.
 
-Tested-by: Chen Pei <cp0613@linux.alibaba.com>
-Tested-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Yicong Yang <yang.yicong@picoheart.com>
-Suggested-by: Samuel Holland <samuel.holland@sifive.com>
-Signed-off-by: Zong Li <zong.li@sifive.com>
----
- drivers/iommu/riscv/Kconfig |  1 +
- drivers/iommu/riscv/iommu.c | 48 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/riscv/iommu.h |  4 ++++
- 3 files changed, 53 insertions(+)
+In one version, you also tried to remove these functions on x86, I could
+remember it wrong. 
 
-diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
-index b86e5ab94183..8025bf0fb67f 100644
---- a/drivers/iommu/riscv/Kconfig
-+++ b/drivers/iommu/riscv/Kconfig
-@@ -10,6 +10,7 @@ config RISCV_IOMMU
- 	select GENERIC_PT
- 	select IOMMU_PT
- 	select IOMMU_PT_RISCV64
-+	select AUXILIARY_BUS
- 	help
- 	  Support for implementations of the RISC-V IOMMU architecture that
- 	  complements the RISC-V MMU capabilities, providing similar address
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index fe8e6d0f8a23..3c8f8adba647 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -14,6 +14,7 @@
- 
- #include <linux/acpi.h>
- #include <linux/acpi_rimt.h>
-+#include <linux/auxiliary_bus.h>
- #include <linux/compiler.h>
- #include <linux/crash_dump.h>
- #include <linux/init.h>
-@@ -48,6 +49,9 @@
- static DEFINE_IDA(riscv_iommu_pscids);
- #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
- 
-+/* IOMMU PMU auxiliary device id allocation namespace. */
-+static DEFINE_IDA(riscv_iommu_pmu_ida);
-+
- /* Device resource-managed allocations */
- struct riscv_iommu_devres {
- 	void *addr;
-@@ -587,6 +591,46 @@ static irqreturn_t riscv_iommu_fltq_process(int irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
-+/*
-+ * IOMMU Hardware performance monitor
-+ */
-+static void riscv_iommu_pmu_id_free(void *data)
-+{
-+	ida_free(&riscv_iommu_pmu_ida, (unsigned long)data);
-+}
-+
-+static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
-+{
-+	struct auxiliary_device *auxdev;
-+	int id, ret;
-+
-+	id = ida_alloc(&riscv_iommu_pmu_ida, GFP_KERNEL);
-+	if (id < 0)
-+		return id;
-+
-+	ret = devm_add_action_or_reset(iommu->dev, riscv_iommu_pmu_id_free,
-+				       (void *)(unsigned long)id);
-+	if (ret)
-+		return ret;
-+
-+	auxdev = auxiliary_device_create(iommu->dev, "riscv-iommu",
-+					 "pmu", iommu, id);
-+	if (!auxdev)
-+		return -ENODEV;
-+
-+	iommu->pmu_dev = auxdev;
-+	return 0;
-+}
-+
-+static void riscv_iommu_hpm_disable(struct riscv_iommu_device *iommu)
-+{
-+	if (!iommu->pmu_dev)
-+		return;
-+
-+	auxiliary_device_destroy(iommu->pmu_dev);
-+	iommu->pmu_dev = NULL;
-+}
-+
- /* Lookup and initialize device context info structure. */
- static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_device *iommu,
- 						 unsigned int devid)
-@@ -1570,6 +1614,7 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
- 
- void riscv_iommu_remove(struct riscv_iommu_device *iommu)
- {
-+	riscv_iommu_hpm_disable(iommu);
- 	iommu_device_unregister(&iommu->iommu);
- 	iommu_device_sysfs_remove(&iommu->iommu);
- 	riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_OFF);
-@@ -1636,6 +1681,9 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
- 		goto err_remove_sysfs;
- 	}
- 
-+	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM)
-+		riscv_iommu_hpm_enable(iommu);
-+
- 	return 0;
- 
- err_remove_sysfs:
-diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-index 5676001548cc..7fcd79fa47c8 100644
---- a/drivers/iommu/riscv/iommu.h
-+++ b/drivers/iommu/riscv/iommu.h
-@@ -19,6 +19,7 @@
- #include "iommu-bits.h"
- 
- struct riscv_iommu_device;
-+struct auxiliary_device;
- 
- struct riscv_iommu_queue {
- 	atomic_t prod;				/* unbounded producer allocation index */
-@@ -62,6 +63,9 @@ struct riscv_iommu_device {
- 	unsigned int ddt_mode;
- 	dma_addr_t ddt_phys;
- 	u64 *ddt_root;
-+
-+	/* PMU auxiliary device; torn down explicitly before MSI teardown */
-+	struct auxiliary_device *pmu_dev;
- };
- 
- int riscv_iommu_init(struct riscv_iommu_device *iommu);
--- 
-2.43.7
+Anyway, this looks good to me.
 
+Acked-by: Baoquan He <baoquan.he@linux.dev>
+
+> 
+> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
+> ---
+>  arch/arm64/kernel/machine_kexec_file.c     | 29 ----------------------
+>  arch/loongarch/kernel/machine_kexec_file.c | 27 --------------------
+>  arch/riscv/kernel/machine_kexec_file.c     | 26 -------------------
+>  kernel/crash_core.c                        | 25 +++++++++++++++++--
+>  4 files changed, 23 insertions(+), 84 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
+> index 854d872dfd0f..34d944d3f22f 100644
+> --- a/arch/arm64/kernel/machine_kexec_file.c
+> +++ b/arch/arm64/kernel/machine_kexec_file.c
+> @@ -14,7 +14,6 @@
+>  #include <linux/kernel.h>
+>  #include <linux/kexec.h>
+>  #include <linux/libfdt.h>
+> -#include <linux/memblock.h>
+>  #include <linux/of.h>
+>  #include <linux/of_fdt.h>
+>  #include <linux/slab.h>
+> @@ -39,34 +38,6 @@ int arch_kimage_file_post_load_cleanup(struct kimage *image)
+>  	return kexec_image_post_load_cleanup_default(image);
+>  }
+>  
+> -#ifdef CONFIG_CRASH_DUMP
+> -unsigned int arch_get_system_nr_ranges(void)
+> -{
+> -	unsigned int nr_ranges = 2 + crashk_cma_cnt; /* for exclusion of crashkernel region */
+> -	phys_addr_t start, end;
+> -	u64 i;
+> -
+> -	for_each_mem_range(i, &start, &end)
+> -		nr_ranges++;
+> -
+> -	return nr_ranges;
+> -}
+> -
+> -int arch_crash_populate_cmem(struct crash_mem *cmem)
+> -{
+> -	phys_addr_t start, end;
+> -	u64 i;
+> -
+> -	for_each_mem_range(i, &start, &end) {
+> -		cmem->ranges[cmem->nr_ranges].start = start;
+> -		cmem->ranges[cmem->nr_ranges].end = end - 1;
+> -		cmem->nr_ranges++;
+> -	}
+> -
+> -	return 0;
+> -}
+> -#endif
+> -
+>  /*
+>   * Tries to add the initrd and DTB to the image. If it is not possible to find
+>   * valid locations, this function will undo changes to the image and return non
+> diff --git a/arch/loongarch/kernel/machine_kexec_file.c b/arch/loongarch/kernel/machine_kexec_file.c
+> index 5412aa9f3568..481b8f906a56 100644
+> --- a/arch/loongarch/kernel/machine_kexec_file.c
+> +++ b/arch/loongarch/kernel/machine_kexec_file.c
+> @@ -13,7 +13,6 @@
+>  #include <linux/ioport.h>
+>  #include <linux/kernel.h>
+>  #include <linux/kexec.h>
+> -#include <linux/memblock.h>
+>  #include <linux/slab.h>
+>  #include <linux/string.h>
+>  #include <linux/types.h>
+> @@ -56,32 +55,6 @@ static void cmdline_add_initrd(struct kimage *image, unsigned long *cmdline_tmpl
+>  }
+>  
+>  #ifdef CONFIG_CRASH_DUMP
+> -unsigned int arch_get_system_nr_ranges(void)
+> -{
+> -	int nr_ranges = 2; /* for exclusion of crashkernel region */
+> -	phys_addr_t start, end;
+> -	uint64_t i;
+> -
+> -	for_each_mem_range(i, &start, &end)
+> -		nr_ranges++;
+> -
+> -	return nr_ranges;
+> -}
+> -
+> -int arch_crash_populate_cmem(struct crash_mem *cmem)
+> -{
+> -	phys_addr_t start, end;
+> -	uint64_t i;
+> -
+> -	for_each_mem_range(i, &start, &end) {
+> -		cmem->ranges[cmem->nr_ranges].start = start;
+> -		cmem->ranges[cmem->nr_ranges].end = end - 1;
+> -		cmem->nr_ranges++;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>  /*
+>   * Add the "mem=size@start" command line parameter to command line, indicating the
+>   * memory region the new kernel can use to boot into.
+> diff --git a/arch/riscv/kernel/machine_kexec_file.c b/arch/riscv/kernel/machine_kexec_file.c
+> index 808e872f4063..fdc6695e8588 100644
+> --- a/arch/riscv/kernel/machine_kexec_file.c
+> +++ b/arch/riscv/kernel/machine_kexec_file.c
+> @@ -37,32 +37,6 @@ int arch_kimage_file_post_load_cleanup(struct kimage *image)
+>  }
+>  
+>  #ifdef CONFIG_CRASH_DUMP
+> -unsigned int arch_get_system_nr_ranges(void)
+> -{
+> -	unsigned int nr_ranges = 2 + crashk_cma_cnt; /* For exclusion of crashkernel region */
+> -	u64 i;
+> -	phys_addr_t start, end;
+> -
+> -	for_each_mem_range(i, &start, &end)
+> -		nr_ranges++;
+> -
+> -	return nr_ranges;
+> -}
+> -
+> -int arch_crash_populate_cmem(struct crash_mem *cmem)
+> -{
+> -	u64 i;
+> -	phys_addr_t start, end;
+> -
+> -	for_each_mem_range(i, &start, &end) {
+> -		cmem->ranges[cmem->nr_ranges].start = start;
+> -		cmem->ranges[cmem->nr_ranges].end = end - 1;
+> -		cmem->nr_ranges++;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>  static char *setup_kdump_cmdline(struct kimage *image, char *cmdline,
+>  				 unsigned long cmdline_len)
+>  {
+> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> index 2b36aa9fade0..77285ae3ce60 100644
+> --- a/kernel/crash_core.c
+> +++ b/kernel/crash_core.c
+> @@ -281,8 +281,29 @@ static struct crash_mem *alloc_cmem(unsigned int nr_ranges)
+>  	return cmem;
+>  }
+>  
+> -unsigned int __weak arch_get_system_nr_ranges(void) { return 0; }
+> -int __weak arch_crash_populate_cmem(struct crash_mem *cmem) { return -1; }
+> +unsigned int __weak arch_get_system_nr_ranges(void)
+> +{
+> +	unsigned int nr_ranges = 2 + crashk_cma_cnt; /* crashk_res + crashk_low_res, +CMA splits */
+> +	phys_addr_t start, end;
+> +	u64 i;
+> +
+> +	for_each_mem_range(i, &start, &end)
+> +		nr_ranges++;
+> +	return nr_ranges;
+> +}
+> +
+> +int __weak arch_crash_populate_cmem(struct crash_mem *cmem)
+> +{
+> +	phys_addr_t start, end;
+> +	u64 i;
+> +
+> +	for_each_mem_range(i, &start, &end) {
+> +		cmem->ranges[cmem->nr_ranges].start = start;
+> +		cmem->ranges[cmem->nr_ranges].end = end - 1;
+> +		cmem->nr_ranges++;
+> +	}
+> +	return 0;
+> +}
+>  int __weak arch_crash_exclude_ranges(struct crash_mem *cmem) { return 0; }
+>  
+>  int __weak arch_crash_exclude_mem_range(struct crash_mem **mem,
+> -- 
+> 2.43.0
+> 
