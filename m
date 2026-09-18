@@ -1,131 +1,198 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazolkn19012059.outbound.protection.outlook.com [52.103.66.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B841A3CDBD3
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 02:59:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789700395; cv=none; b=coh48v0f1QlHnKNCXQYlwuD8fF+XZoZJ+vsP7R5wjNFxnyVP00sZXSLjfss3XsKMMWp4KQbCJhY1M/OXUZ/UwU+hHoeqGip8sE2E0wykiUH1riWj1y6CqjsFBlPud3BczQdm5CDs+Eu2r95Yqs8ywJhpUGi7BPCw7JKeFsczfVA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789700395; c=relaxed/simple;
-	bh=IA0A2RgVsub/BbYG7H2jzk5weAVNHePmc5M43c0YUF0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Oc0F5qgdftZfag4Wp/GjeopJx19HAMDaXGnR7GwvbJEDwvg85v+N2s4jLkeewt/Bz/UgDcoGQHznt/RN9a4V+9FomKiEVj2GiC2qsnEowQCbCsnrM5rLM9iLr/osQP6vSm/+xyTQFfbSBUwVKo1yyzKBjTRaI0V1E/UsbiK0S2U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ChRG4sJg; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E357538AC6A
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 03:39:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.66.59
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789702793; cv=fail; b=iYeyDENa6LkyHf9cAa4CpFZOuHt+Z6H0rD3P7DaU9H2yRnAprglPFE7wlbHKWKafajzqbeDE6Qs0yDNb8w/7Y67npHTF4a4BE3C97dWRRTMyvdcHp9elCZGTI0yfnXRrZRqIAy7Vf1/md7qLDyFdpZjLlpKs8c/2kW93CmxCsfo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789702793; c=relaxed/simple;
+	bh=px0OhpqWoIPuRSHACnThUWAFzojKKdwRxuox/FD4Tf4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=h0Kev9vIxb4Q16Aj9nw80CAbOvXSZgByUl0Qgos3A2wpEvYGgFUag13eN7ncAUflGmlXg4Fng7Ij4NNG3y6nMmuW2sZqB+FHnJKlLv8Jg/JwVCmZhCH6EaonMsORVGDr1SIlTEEpEJCWPhzfRp0oib+MaUsLCEAMYytuCvSQivI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=ASjhrxRT; arc=fail smtp.client-ip=52.103.66.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ChRG4sJg"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2d8fd7a3f38so35155ad.1
-        for <iommu@lists.linux.dev>; Thu, 17 Sep 2026 19:59:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1789700389; x=1790305189; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=IA0A2RgVsub/BbYG7H2jzk5weAVNHePmc5M43c0YUF0=;
-        b=ChRG4sJgOxcBVydtC0tY8LtP7y9017ONOjOx7TuzJ0YCqHxU8BecG/wiGP0nP6PD4P
-         C8Gj3dMA0Yfg3wbZtkUR9mZkA2XP4PBn+q3aaScI/6CdMNKKrjb/qJAEBSGaDL72mH/X
-         5BdXjsya9VVx/MlsgX60UxF6uZISbhwaWmwiKCBziidrbSKl8yH0kD9GjKrTl/9VPmm4
-         q0xyWIC30YI2YUA8ubgfVAu7nWVS8WdS0UR26iqwl7byWnKQPfiD454A/imanGsmyiCd
-         LPkPNsSzd6/Sq2g/WyO/s4tZ0IEAmVL99suzEKvj9yYIQ7lZmJ6emqZqTE3IC06ucS1/
-         mTmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789700389; x=1790305189;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=IA0A2RgVsub/BbYG7H2jzk5weAVNHePmc5M43c0YUF0=;
-        b=O550w9Q2PstbTjf/HoGBR0xHV1MMEIHvCeh51FQ+QGRXHzJrKewa6zUq1UYpnQzmvT
-         VaQatmytJc1Zel0C7E57E74n2FoC/AoxUpWR7fhJJt3ituAdGRA4A5IcfkjBjf3qbbag
-         u1pV0LUh4vJ4ssSMRgqh3tjiY09uKRSQwo9T+gVAG9CzZtPxyHADN2cMuEwFDugCqOVq
-         EeOJ2YeJ6yoviZB385owtyoFGI6b1CHLURkVxuWgHX5AHMbA5kgqW7vJUUXki3dLtQcL
-         V/0E3UT67XYCIkdJUDFQ/6RJSMDGXI1BE4pfSzikYHwjVCEo01c/w53qL+e3pajBeVUe
-         agKA==
-X-Forwarded-Encrypted: i=1; AKwUvBx+vIMcZUpwzycPJUi2fcZbA7MITUkr4dkw80H/jKjXXtg2IFMUXnGsIkD5vhnL5J80WMvM5A==@lists.linux.dev
-X-Gm-Message-State: AFuF++mniMlBax1zGc7FAL4p+X9zfdvwZkIQLf9AY/D0w3JbP5DjERCL
-	Cmnl53hWYNDfgtlgYyTmx9cbNPczozmg/d2zQH9SuCzSUDUQD0T9hH3EuLMQG20d/A==
-X-Gm-Gg: AYBFou3Ce3DPnVDQ7cswpWW7712aALDCujSM3VXuALIAJLVAxfZJrDWIKrhQz+VkS8S
-	XG7drYjkEk22UnP+uczJfyW1z9gpUNqfuVHh7DEXW+F6TzD64HUlYzWxJPVW3/MXSgXWFkfA8Xo
-	SozeMSLMFG6StvU1KiI0GsvNiIOtlVx0vc4AhBrLA+CDWAQHWTVmGUHjm/uShA4DyaWznR6/z96
-	DbvQK8dSDAxi/ThpYKNhmF+XBYxutWKSEc23YRkRqeNyxWJ6b8C6S8WP7tdVjLJwHaeKl9+twfK
-	nADxpa5fzZRilwfnYtD8PRvK6uPOPVoHPdBCWd83OASaaNuIJmfsSHvXMen2VNaRny/yLIVF6VW
-	O0p3u2iy/rU4bwGY91PlApVokrRsJF6+hxQYMpAdFJllMoRV4wCKKZRK5YR7y1FIxD3Jo5yy/tQ
-	qgiy8pEJagAQAesOlwwfOX5P04METRyXgj6Dv95SdMr8d2Gou7KnNBWZegH5zYuKuW6ubtQjndq
-	gDnKTLAyFVJqff872ZjTOwcIdMaQ0tCvJPBNY37Qi5h+n2PmYzmg8HmLyHAc+ZPDZNQDNrlKH3V
-	ytna
-X-Received: by 2002:a17:903:4b08:b0:2ca:6bf:5bac with SMTP id d9443c01a7336-2ddb13465cfmr4177465ad.8.1789700388427;
-        Thu, 17 Sep 2026 19:59:48 -0700 (PDT)
-Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39e55412d51sm555950a91.2.2026.09.17.19.59.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2026 19:59:47 -0700 (PDT)
-Date: Fri, 18 Sep 2026 02:59:43 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v4 12/18] iommu/vt-d: Handle reattach of the restored
- domain
-Message-ID: <aqyW3RzBGQyZebsG@google.com>
-References: <20260808022723.3893618-1-skhawaja@google.com>
- <20260808022723.3893618-13-skhawaja@google.com>
- <5b920299-260b-4025-ac4f-e8f83beebf95@linux.intel.com>
- <apBso6So7UqwR3AX@google.com>
- <bb7052d7-51fa-42e0-9eb5-ba4743956688@linux.intel.com>
- <20260828143546.GC3769797@ziepe.ca>
- <apGpHv8vy4SWIEaV@google.com>
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="ASjhrxRT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XGOj4ODPRheIZkSDuHK8aJI3FxMROWSgKpziXflbWjU4K596z3MRE2cLI9tXWsWtZK+Q8ER90wwJWAwdRtL4GzUeRg6CKQGl6EzehPdL42HQNjtqxevAh6wozNEt4WdN21b5mvA1tSKSjth1av7NWYUtvma9IxO2p8okvGQNX3/Lxj3d2W02YVjJ0wq5rsBH25Lh0gTyzSQS6bBcVJ6lUtFja7J4c+cHFcCGdIWkpUpwLEs7L2/4YgHr/As21FGfENxBzq5ko236sqfm94YsawaF0CVmjV67Ej7H3ubvU53wrBDqlKO6gcT7l9DD2Yp5HpwMSnQpp+U/5es9WX1FZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qQR9lADKHi8PvY/685xEyi55VSO5pV6EUt1WcHvhGQo=;
+ b=V3qVw721qHXlNXBhtJ+GZSZZHt81buRtbv0pwmwZjYpPwa+M7nMAZ/lw0eYW8XcWGJjuIb9nfNw3zqH25iE/GadQ4lf5CVibJCtk6zkWlp/9GU5hpsNVYuTPJnFaVpgJeJdMZ6qD3zQuAvVwzFyaphZcQiBulHj12CUQBuC58UpHGVzJNA+sxvm6apOAlpNsUHlUJu8ecpcBcbAE7K86gfeNWpBZNJOjXDdRizNdspVEPnRsSnbcL/OdyIp9ziWkuGqSHu9YKwONxVzp+MDwPFw5F1cPUUqw1b82shChutv2DhBBNrY/pMXEcV59RjcrSV/OyxNjhOrWF0NFcFf5bQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qQR9lADKHi8PvY/685xEyi55VSO5pV6EUt1WcHvhGQo=;
+ b=ASjhrxRTHuY6xavHu+MGCIH2CFZpjnn6OjLyhpeQ/tM3zBmMH0r0hTBCupaiUSdPUZcvcYL6n/mfDsRYgxQ6YYSk6KxE6gs7tQA6pqiF2xGfm5ghZHSJjowRGtohWYNUAzheOgFGhMJKBbi9RNLCw9Y9TwcPjSHanYOQQZLIgspqH33/905mno4MS8RwDJl1Hx26TXXliZzvnCvjN13TO1oyU/tObowsDRUQRgvtBYayG5HHgoBylS2IDi9MaBERrV3nS339SVglM4QaX3mVqMbDDuykCuUcrIRmGNuUMpeRqIJNg3TJwOO7JSuuF/Pkiifz3VWmB9iJR4CqEAh33Q==
+Received: from SE3PR04MB8922.apcprd04.prod.outlook.com (2603:1096:101:2e9::7)
+ by TYSPR04MB8290.apcprd04.prod.outlook.com (2603:1096:405:c6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.13; Fri, 18 Sep
+ 2026 03:39:42 +0000
+Received: from SE3PR04MB8922.apcprd04.prod.outlook.com
+ ([fe80::3450:f139:5238:8f58]) by SE3PR04MB8922.apcprd04.prod.outlook.com
+ ([fe80::3450:f139:5238:8f58%5]) with mapi id 15.21.0428.011; Fri, 18 Sep 2026
+ 03:39:42 +0000
+Message-ID:
+ <SE3PR04MB89225D0D13DE77F5BF65B8E2F3872@SE3PR04MB8922.apcprd04.prod.outlook.com>
+Date: Fri, 18 Sep 2026 11:39:32 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v4 03/10] iommu/riscv: report iommu capabilities
+To: fangyu.yu@linux.alibaba.com, tomasz.jeznach@linux.dev, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, baolu.lu@linux.intel.com,
+ jroedel@suse.de, zong.li@sifive.com, andrew.jones@oss.qualcomm.com,
+ anup@brainfault.org, jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com,
+ atish.patra@linux.dev, skhawaja@google.com, vasant.hegde@amd.com,
+ joerg.roedel@amd.com
+Cc: guoren@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
+ Tomasz Jeznach <tjeznach@rivosinc.com>
+References: <20260915032828.11250-1-fangyu.yu@linux.alibaba.com>
+ <20260915032828.11250-4-fangyu.yu@linux.alibaba.com>
+Content-Language: en-US
+From: "Nutty.Liu" <nutty.liu@hotmail.com>
+In-Reply-To: <20260915032828.11250-4-fangyu.yu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TPYP295CA0028.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:7d0:a::17) To SE3PR04MB8922.apcprd04.prod.outlook.com
+ (2603:1096:101:2e9::7)
+X-Microsoft-Original-Message-ID:
+ <72cf6afa-47cf-4971-84d9-6913ffff58ac@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <apGpHv8vy4SWIEaV@google.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SE3PR04MB8922:EE_|TYSPR04MB8290:EE_
+X-MS-Office365-Filtering-Correlation-Id: 47a08b6a-b2e0-44d1-4165-08df153678f0
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|6090799003|23021999003|5072599009|15080799012|55001999006|4140399003|51005399006|8060799015|19110799012|25010399006|19101099003|24121999003|22091999003|41001999006|3412199025|440099028|40105399003|2607281247196008;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?VnlzekNjcVhjeTB0amZackF3R0p0TksvbllUN2xmRGwwcHVwUW85R2o2TWMv?=
+ =?utf-8?B?UkVFdnNGcVVBUnRSTHlkT0VIb2pwRm9jVjRvTDlIQjlZd3A0V0l1MkFsanlC?=
+ =?utf-8?B?c0cvWHlWbjduRWlEOHAwSDJPcXZraEM0RDRsc3lXbTQ5azZOamcvNjQvVGcy?=
+ =?utf-8?B?dFEvNkVRUVJqMVlzRndUMXlMK3luNVczd1RDNWtmd2V6WjJmMUoyUG9RVEhq?=
+ =?utf-8?B?RHo5UDN3SkhmbzJCU0NhcnEwTlZlanNBOE1CZnZjaW9lUktIQ0FDdTBkZFBL?=
+ =?utf-8?B?NFdHMTlFaXRoMEg1alNKM2Eza3JpQUxaUDZLczJrbFlFYkZjV3lhVW1iZGxy?=
+ =?utf-8?B?Z1BJZ3V3SkNKeUo3OUhBalAxM1VvSTNoNHFNaytDOVZWdlhEbkhVR1JOTUt4?=
+ =?utf-8?B?cVkyamVtYVNjcDluZ0JFQjVuVDJuZjBmTFJuR1A0b1drQWhseXFxRE5PTVgx?=
+ =?utf-8?B?cmZFSjRVK210ZUt4ekNyL0Noa2tlZnBMVEdtTFloclo3Q2ZHN2NoeURkckF1?=
+ =?utf-8?B?ZytoeUp3VDk0VlZJaE9ZR014TkMwbFd1V1dWbGZUUEUxOExsK044cjdkeEky?=
+ =?utf-8?B?TXBiWjlDL2dtcHdwcEJHbTFLMzlIVmYvOGFlTUV0S2lYZVBTM0ZPUVcwb01Z?=
+ =?utf-8?B?dkhWazdPUHNJcmV3dUFxNkhoVjZvT0d1RW1qbHI4dWFOYkMzWkRjZlBmNTJY?=
+ =?utf-8?B?NjFKQ3BTZDU0Z0g2S2ltTGgyazZvNzNUNDQ5NFl1UTFSNDlmWEttSGJiSVpC?=
+ =?utf-8?B?S1B0bGluVmp1VitVaEZqUFQ3bnVxd2VvcFdWSE9QclE1NkJ4R3Z1cnk2T0ds?=
+ =?utf-8?B?aUJKZnFRUUQrdFBhT2dpZVVmRE5hdHdpRGFibytVR1M1ekxkclUyMVN6cG4r?=
+ =?utf-8?B?UDRReHdYVldYYnBBV1R2ZlRCdzVqd054ZFRKNkR3ZnE5NHloQUtORStKU0Zi?=
+ =?utf-8?B?eHdkdE5aUWYrRDNKdEdabWkrdTVNbUp6T1BqSldCcENDUGhuK3MwUDJYMWZX?=
+ =?utf-8?B?elZTU3hRM1gwZGlPeGJCQTUwRzVOcEhTdlltUi9JancvNzkwWkREc0N4cSs4?=
+ =?utf-8?B?dzJmaHV5ZnFvcVQ0UWFKVlJjUHEzYmw5MjE1V0pEa05VdVcxNjRoa0grcXY0?=
+ =?utf-8?B?NVB5OFIraW9QNjg4ZFVNT0t4UGZ0WFpjWit2NDg3MlVCMHhkVGs3YjlxWDBl?=
+ =?utf-8?B?R2k1b2xkRlU5VStuQWpndXdQWmprTkRRaTZRZ3d5dHRTNlpMV2VPU09xTHhH?=
+ =?utf-8?B?WWRUa0hsdDl5YVIyQnFTbXZWWGxUbldHa1pwdUsxZG1lWThUOThjTHduQWlL?=
+ =?utf-8?B?bWpRMTVlbTVuSkF1T0dOZ2R3SzBWNEh1NzRaNjdOZzVNZVQrQUJIK0ozS2ZS?=
+ =?utf-8?B?TzNuaUdYWEI0bWN5MUtkeEdibjY1SGYrdEh1emkrZjdFaU5mVVZnbEFMK0s4?=
+ =?utf-8?B?UnlmQjBtbjZYOG9ISHNVaDhCeExXbTVzQ2YzWWt3PT0=?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UGVVWHRhdnlpSXU0M21TL0Zvd2dDSmlPeldBNGVGa3lwSFRQOGtWcVNPY0Vn?=
+ =?utf-8?B?SDluVjJMaldBemRBR0l3WWUzZWJabXo0MnpDVEdpM1ZveXFwcll5Y1l0eFp1?=
+ =?utf-8?B?RVpaQTIwdW5hSFJlb1VMeEJSMmF0ckgzb3lVU0dxT2M2d3FEcEhUUnRqbWtW?=
+ =?utf-8?B?eGhpSnZEUTMzT3pGd0VFWC9Rb1gwcmpjaFV5UTBVUW80OG41bFNRY05qNzJQ?=
+ =?utf-8?B?RGJKK05RamFYTVRxRlVlNU5oUjBuS1I3VWowblRscUNYcEhJQVJqWVpoUjBM?=
+ =?utf-8?B?cEpJbWFHcHlIMk1IbVRrY1dxbkx2V2U3dW43aHZtWUJ2Z2NzeGdaU3VvSjda?=
+ =?utf-8?B?OW9vOVA5U2xKSGpjeFF3a3NoSnpPbEtGMitWQ3M5cHVtd25qd1BiVmdBcUFo?=
+ =?utf-8?B?TGcrTEN2WUJsaUdSU0x6WHd0NUpnR3dXVnp2bkhkQnlWTy9DZ0NFNXlEMzAr?=
+ =?utf-8?B?cVhFV2ZvdnVDZVBvcnU4c3hRcE9tNEs0MU04UGJ0clVSL0NzOXpHYW1iUjhP?=
+ =?utf-8?B?SkRZSnB2bzlsVlo0akRhb25WZ3piWElTNDl1Q2pOSWJRNmZMclRTbnFQS3lU?=
+ =?utf-8?B?ZWdjLzd0Smg3RncvVHJlK2c4aXpDR0R5V05XUzNRR2lDYlNvamhTdDdEMFFO?=
+ =?utf-8?B?bEVTeG45WkdrZzVCUGdHTmVOMzlGRVpBL1pCNW12NHBRd2FDb3BVS1NLanBw?=
+ =?utf-8?B?ZGl6enJMTHByeU9YQzNIVDR0eVVxOGZvS3kyQUNFb3Y2cjYzWUJjT1phUUhq?=
+ =?utf-8?B?UjZBTWpvaERHNGJsMUF3KzV4YWJRZFR2VGJwMlNERFRiQ2Ntd1R4c3J3ZVFy?=
+ =?utf-8?B?R2U5MlMxbnFjWDVkUWlDb3k0K1I1VE43TzYzaXpOODloU3FEemhpazE3VDJF?=
+ =?utf-8?B?WDJESldrMjlDY2lKY3hWZzRQbjFMeUlHRUgwYm9xSGFVRUxRUFpVVlk4N2o1?=
+ =?utf-8?B?TmFFZXdvK0tRTWlONC9sR21GMmlFaHFHODhUMTVJTFBaSW1adGxpa3VYL1NF?=
+ =?utf-8?B?c0p4bElMK0Y0QWh2OExSSitBY1BzSHhCdjRtUnlUdmhJWlR1NmJmWkQ2dnRE?=
+ =?utf-8?B?S2FmQmJ6L0pqMW1PU1JyejZRdHI2QzJqbmZKZTMwT2J1QTBqZHdYSXJRSDc2?=
+ =?utf-8?B?VFpBNklsc0JLWXR2Z1UvN3ROYVBhWk8rb0RZd1FpbktlN2ZSd2tMVEdVK0dt?=
+ =?utf-8?B?eHpuLzNlVkFhVmtMRU5yU1NRd0x1bEVkMFVqdHRvSHNiZURwbU91VmxoWStx?=
+ =?utf-8?B?ZlhmN1pMZnFkNE9KNlVLd1o2VktsakhvMHltbHhSTDA1UFI0bWlRZjhVOUlD?=
+ =?utf-8?B?QnVZOUNNUExsaEJZaThVVkV2WnRKV1lsN0RiVWpGZEQ2aUovcTR1UGxRSzhH?=
+ =?utf-8?B?enhZdmlIYTl3ZEZUYm9OSnA3MnZwcW9NVEdrTWppcEVXSHg3aW54b2lNS3Zx?=
+ =?utf-8?B?NUR4NmRsVjFHam1aVmV4aUJnWW0vbmFxNVRMM1NjdHZiaVFYYlZDNEZwd3lE?=
+ =?utf-8?B?eHZKcjZ6RHRzV016Lzl4WE03VUd4SyszUjVLUFBZTXo2d0thMGZUYkxlaEtq?=
+ =?utf-8?B?VkRHNUNZcmRaY2E2OTNDcTZKR2xXZEpVNzBXYjA2bXI0TzdyUmhTYW1zTEh2?=
+ =?utf-8?B?eXNtemZyOGxOUVRXdlMwd0RvREdjZElWeDcrWUk4SXpjcVQxajdBZDljV0xr?=
+ =?utf-8?B?NFpHZVZMdlJJV0xiN3VRL0dZNHZBbzNGTGFyTXI0WmhTUHNZcW1Hbjlvb0F5?=
+ =?utf-8?B?Ty8yOFhteUxHUUFHVzJtR2FrUG03SmRmaitzc2N0Q3VIdFZDMDUxS0x1ZDZu?=
+ =?utf-8?B?S0pMNkIxZVNhRVNhUElmWDR6MG9zR1MrQ3l2MTV5ZTBNNm5ST1FpUGpZbk1y?=
+ =?utf-8?Q?scfZWG29kST8T?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-c3e7a.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47a08b6a-b2e0-44d1-4165-08df153678f0
+X-MS-Exchange-CrossTenant-AuthSource: SE3PR04MB8922.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2026 03:39:41.7390
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYSPR04MB8290
 
-On Fri, Aug 28, 2026 at 04:15:56PM +0000, Samiullah Khawaja wrote:
->On Fri, Aug 28, 2026 at 11:35:46AM -0300, Jason Gunthorpe wrote:
->>On Fri, Aug 28, 2026 at 09:55:18AM +0800, Baolu Lu wrote:
->>>That looks reasonable to me. I have no concerns about keeping ATS
->>>enabled on preserved devices across kexec reboot, as long as the
->>>software state is synchronized in the new kernel.
->>
->>The new kernel should issue an ATC flush when it changes away from the
->>inherented domain.
+
+On 9/15/2026 11:28 AM, fangyu.yu@linux.alibaba.com wrote:
+> From: Tomasz Jeznach <tjeznach@rivosinc.com>
 >
->Yes, I will make sure this happens when we do the retrieval side. It
->should mostly work well with the existing replace machinery.
->>
->>>By the way, is disabling ATS an option?
->>
->>No, many devices require ATS.
+> Report RISC-V IOMMU capabilities required by VFIO subsystem
+> to enable PCIe device assignment.
 >
->Agreed on the ATS requirement. I had Nicolin's patch series for CXL
->devices in mind here.
-
-Having implemented this now, I am thinking about this again with respect
-to the scope of this series. To limit the scope of this series I am
-going to refuse preservation of devices that have ATS enabled. Once the
-base preservation logic goes in, I can add a separate series on top of
-it to add that support.
-
-The ATS adoption would need new helpers in the PCI core, handling of the
-ATS state in the context entries, and the disable-to-enable,
-enable-to-disable and STU mismatch for a live device. That is worth its
-own review rather than part of an already large series.
-
-This essentially means that preservation is supported if pci=noats is
-used, since by default ATS is enabled if the device supports it.
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
 
 Thanks,
-Sami
-
+Nutty
+> ---
+>   drivers/iommu/riscv/iommu.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+>
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index cec3ddd7ab10..a6c8307e82ea 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -1422,6 +1422,16 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
+>   	return generic_device_group(dev);
+>   }
+>   
+> +static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
+> +{
+> +	switch (cap) {
+> +	case IOMMU_CAP_CACHE_COHERENCY:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+>   static int riscv_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
+>   {
+>   	return iommu_fwspec_add_ids(dev, args->args, 1);
+> @@ -1483,6 +1493,7 @@ static void riscv_iommu_release_device(struct device *dev)
+>   
+>   static const struct iommu_ops riscv_iommu_ops = {
+>   	.of_xlate = riscv_iommu_of_xlate,
+> +	.capable = riscv_iommu_capable,
+>   	.identity_domain = &riscv_iommu_identity_domain,
+>   	.blocked_domain = &riscv_iommu_blocking_domain,
+>   	.release_domain = &riscv_iommu_blocking_domain,
