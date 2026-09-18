@@ -1,38 +1,46 @@
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+Received: from out13-75.antispamcloud.com (out13-75.antispamcloud.com [185.201.17.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B86C3AFCED;
-	Fri, 18 Sep 2026 22:07:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCF82135B8;
+	Fri, 18 Sep 2026 23:10:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789769236; cv=none; b=urYxUdJ6DsNJF7hVj/T+keVU/8HmlTvwB1Lp2712ClR7yU0X4wELL0lTkOvreb7jYYCaGpxoJ1tttMY7UrMyOIGhFH94vM/Tug3eIxMmk9b0y+CAQauI2T6B1Rv2z7+syfAckm3U/wMAEgWtEd7kO4OBpppFzgrJ/Vbob6psUjo=
+	t=1789773034; cv=none; b=LBtQg15dp9t3Hi8HqzP8t5q6qvSSzYtDHQJIAdsBdFzw8PdVOcIKSFgi0SmQY9KaWSNkRLbPLT7E0XYzz0EvwBeZzOmKRtSBFCmUKYPO9jQPKXjKt3+gp5Qd06j2w4tCe5XwhmDYdvUatSQVe6L3sdJ0s0pEhSsV7BebZEMRGfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789769236; c=relaxed/simple;
-	bh=/c1oMlmLTWJaN6avLnnwg95XZGTSRowOmDi8dACzT6g=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
-	 Content-Type:Subject; b=dAvMFvZquEPKcP1qMkaIBNf1awbnSTI3GkSOJBfHefQqbmDe0/IjbgPPDEop0fGVgChGxJf0pm/8ZJWNlGL7oezyZZUul6u7cjClUI2FWPEexQ8eIq+tB0FuqPGJHkW0obaaQqMvtIzv/Fp3DD0kWOY2PQ+uRmm9hE6UTKtmeTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=NatcX72N; arc=none smtp.client-ip=204.191.154.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
+	s=arc-20240116; t=1789773034; c=relaxed/simple;
+	bh=/6CKCPe5NKSJf4Pp90nvOGmgfKX4k0Rm+VSUMYFOlW4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qWaaYuYum6BmUIZl0cAbkDY+wL68kL61XIBMtKCByN2mbNwY7WDZ5H7/AEhYNpoC8IDU9z3DmXTOnXDaWLaxlVxnswMbOkJ2Ze13x029kS94i07xFmC1jc2L2RBVoCT0XLjE3QYE9/vWVoVPEWLTKA4Yqo3eOGrYoW5+WpsIDXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=Qgw2OE+g; arc=none smtp.client-ip=185.201.17.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="NatcX72N"
+	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="Qgw2OE+g"
+Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
+	by mx323.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <dan@reactivated.net>)
+	id 1x7fnO-002Yl8-Bb; Fri, 18 Sep 2026 23:07:01 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-	MIME-Version:Date:Message-ID:content-disposition;
-	bh=m94KH1rUE8xsCRUl4tYdgtiOBSbe9rGzqg8G+EWYrUw=; b=NatcX72NhP8Ze5rzpAsyRpUcdz
-	FRPn6jS30hDGnefYxuDW0GkBaqg7MW48ZwDR0idErdzBHZUekbclVL44XaibfKaaZP9r/bM9mkDbD
-	/oLY18+T20Vaq0isjzqm1AVuf0bC3P8M3+q52j9/jmXCUGHMz92M677710hG5qzR3NsUDuBjTjLgm
-	TyNzT1XctON/nZCdB4mcZ3BWHznHMhOcsHhPLeb1mRP2caOwURJ3wLJi0H3bBpcbrrtuPZaorvDYe
-	0L8T3j227XdyusqKBPRmoc8qoVOuXKzLEaKivPhHiFk0qbgxJ12d/VhLO8BBZye8CxEb7M58xRli5
-	sCK0wg0w==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.98.2)
-	(envelope-from <logang@deltatee.com>)
-	id 1x7gje-0000000Ctdy-3n0O;
-	Fri, 18 Sep 2026 16:07:11 -0600
-Message-ID: <0671be58-45d0-4448-a83f-eeae466c22cb@deltatee.com>
-Date: Fri, 18 Sep 2026 16:07:08 -0600
+	d=reactivated.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
+	List-Archive; bh=4x5/myjxPO1OExIcXHbLzVf6Ck/Kseoniz2MwqtIlwk=; b=Qgw2OE+gVwN8
+	dIA2u6uR/kP9kZwFCPlNiv9r8XO4dKYVJfi87H7UfZQF8NntRWPk/+nNvPlshITbkSFzdM+QqtkLw
+	z+hGVgJWTabVMByOepyMZ3PGS1sPZERBmKvdytD+atd+KFFNtk+BjPw3arGD003ZBJmzOl0dFIlUK
+	NtlPmUVZRg9A8ZX4yyLksB/9kGGXCrZ7GqJP5cnFCxaM65qOyiSfAotqb0AdAZ2+0w5DG7P/lhDvJ
+	PY6umONduJaRNGPNYyZHolZRtwRxH0bwSDBQOTfyuSnEr4E46epW7o/QcNQ6RG48mlI02shyE5LY0
+	xbmlOsWYwBUqLjzAJBIiRA==;
+Received: from [188.251.249.2] (port=52294 helo=[192.168.1.123])
+	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
+	(Exim 4.100)
+	(envelope-from <dan@reactivated.net>)
+	id 1x7fnG-00000003DTq-3iaV;
+	Fri, 18 Sep 2026 21:06:48 +0000
+Message-ID: <29bf6c8a-1689-4fda-b605-c972e91d1c73@reactivated.net>
+Date: Fri, 18 Sep 2026 22:06:43 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,52 +48,83 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
- <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Randy Dunlap <rdunlap@infradead.org>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, iommu@lists.linux.dev,
- Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
- <20260914-fix-p2p-acs-v4-0-v6-9-5ef07ec9ef06@nvidia.com>
-Content-Language: en-CA
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20260914-fix-p2p-acs-v4-0-v6-9-5ef07ec9ef06@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v5 5/5] arm64: dts: broadcom: bcm2712: Add GPU IOMMU and
+ IOMMU cache nodes
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com,
+ james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20260909-bcm2712-iommu-submit-v5-0-2539c52b249e@reactivated.net>
+ <20260909-bcm2712-iommu-submit-v5-5-2539c52b249e@reactivated.net>
+Content-Language: en-US
+From: Daniel Drake <dan@reactivated.net>
+In-Reply-To: <20260909-bcm2712-iommu-submit-v5-5-2539c52b249e@reactivated.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: leon@kernel.org, bhelgaas@google.com, kch@nvidia.com, gregkh@linuxfoundation.org, axboe@kernel.dk, alex@shazbot.org, ankita@nvidia.com, jgg@ziepe.ca, corbet@lwn.net, skhan@linuxfoundation.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, rdunlap@infradead.org, sumit.semwal@linaro.org, christian.koenig@amd.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux.dev, tdave@nvidia.com, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Level: 
-Subject: Re: [PATCH v6 09/18] PCI/P2PDMA: Route Relaxed Ordering Completions
- directly
-X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
+X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
+X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
+X-Spampanel-Username: 192.250.231.249
+Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
+X-Spampanel-Outgoing-Class: ham
+X-Spampanel-Outgoing-Evidence: Combined (0.04)
+X-Recommended-Action: accept
+X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuXrlO9wllOTdVCMR9b+jbqu2wFwG65a4Qh3
+ wUjvFN4P7Su2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
+ M0i5ZAms0EHrvcCaVIMrWUWuUTR6VtpnMiz/VOrxGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
+ EetczWCfZW7a9uhvfuE0J/hsBuu+eB7itP8hgjDRserKv4bhb0iZ5sDJvU3vQetKu48NmiFWBb39
+ uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKclZzoe+TZdeH39wA4E
+ grA4pE2PuLHIFQdBY9qb1rRWgyz0f29FZkQs6Ir87R/YNAu4LTp8S3dP3ahgJ5Qcw+TYW/Yi0hJk
+ 8x1QQxCxZuYYqu1Es/mNlaSZ677NPMmQgxXznb05WiC8jaGsg2zWAtSwOqsKFjyOw6ht9+0m+2HK
+ hyDZczNB19Zd16i8m1k/DGgEQyEoi1/j5tZiR031ah+gQPOIjlkSAfAYMUguLL/iJyO1DBoi69uN
+ i8SsHHKkwfIcMf/IXZptVL/AvAk4qADKpWAtS6hgL14V/ocDGzv3txBOv3jFjgsNoFxTfcJiJyEa
+ 2OI0tSy1D95E625Y16tBpucgO37djUJrXU/wgrKuQcWSKoKpHc12nUrWNUzw/3DGQdeBNIkLb6r4
+ 7afaw/CHM6llfItwtYhKi/k9/RA3UB2LIFGgh/QiXjPxB1Apcw3AHj9py9u4Cvw3T1rOV/d4D61d
+ j5p7BYnIfUPLdSLTlKS/neSdJxr5whbTg0m4/7LGifDpq5EYH46qR+vFm9wC7ren9RtRNyYim5e3
+ GD8LGQOAW9bE+k+gl+anV+4sNfMDJFSfqfmiZ+On+h6teTV37eoUTJObIfbUgxRJO5so89RJ9UeM
+ S3sx/LZgkEzT4R77BsVio7IvGyM4VI1B3eqGna9aZwZynFm29FaFzEVtpg4br2+mEmVJrJM4fd19
+ PqjIyvGxWL1rN3cWjPD5viEZJolz8ClgrSFC0qV2pwUtO92lcKbdXd1aPKEJfyZsBP+3ojxAc8lp
+ 0sobbdB+F7B3Y8TjGBGmQjnZT0wGxghmQiiyHai0+C+cV2SwXGGBGRJoh9VoIekQHpwUfpYnEThm
+ JIBq/vl4T589Eoyw88oKK2k2juCx8jpJuYnlmMrz5nN5IXEFyNeBSpOL6XLQkK7G/nvATdPRNfRC
+ ogKUBoiGk7+7TY+LxsYMBY14CoC2k4ZFj2kpuIv/9gSqTljzmaSLiwQzKw+6v3CaIMG6s7LqJEBr
+ r4RYD5fnTwa0tMnLz6SKQpgZ8zVbGmL5ozttECcg597p245AIcvvY28Ycjy4wX5942JtwBlZxZwg
+ qgCXen83SxxqV8dQK7QbjvOnC/QU02F0dRgAVZw81E22mZaseAdYAUt3zF2gN7skM/50TVH1H/aA
+ warQpYDOYx/6JtUORHHV0k7mR0VPG9HQWV7dXfBjXbvxH2nMLfV+SMGovieHnQDrcLDN17YMjSrM
+ Y2oTcPJOcrZu7OKsSObGAqhi7iERbInMiTBIUBbQ/Dy6Ip5s2Cc9h6F0bzi9eJvFy172Pif4H4Ku
+ 78pBi/ZAqnPyI/BjXbvxH2nMLfV+SMGovie1ATPpp8i1sHWZQrJ+tLuI
+X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
+X-Complaints-To: abuse@master.antispamcloud.com
+
+On 09/09/2026 21:08, Daniel Drake wrote:
+> Define the IOMMU and IOMMUC nodes for the Broadcom BCM2712 SoC found in
+> the Raspberry Pi 5. Enable use of the IOMMU for the graphics/display
+> block.
 
 
+> @@ -667,6 +680,7 @@ v3d: gpu@1002000000 {
+>   
+>   	vc4: gpu {
+>   		compatible = "brcm,bcm2712-vc6";
+> +		iommus = <&iommu4>;
+>   	};
+>   
+>   	timer {
+> @@ -701,5 +715,6 @@ hvs: hvs@107c580000 {
+>   		interrupt-parent = <&disp_intr>;
+>   		interrupts = <2>, <9>, <16>;
+>   		interrupt-names = "ch0-eof", "ch1-eof", "ch2-eof";
+> +		iommus = <&iommu4>;
 
-On 2026-09-14 05:22, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> ACS P2P Completion Redirect leaves Completions carrying the Relaxed
-> Ordering attribute alone. PCIe r7.0 sec 6.12.1.1 redirects only those "that
-> do not have the Relaxed Ordering Attribute bit set", and sec 7.7.12.5
-> describes the enable bit as "applicable only to Completions whose Relaxed
-> Ordering Attribute is clear". P2PDMA reports one answer for every kind of
-> TLP, so a client whose provider returns such Completions is sent through
-> the host bridge for a redirect that never happens to it.
-> 
-> Add enum pci_p2pdma_tlp_flags and let a caller state that property.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Found some issues here: the iommus property needs to be added to the 
+dt-bindings for this to be considered valid, and actually, it should not 
+be added to the vc4 node (that is just a virtual node), only the hvs node.
 
-Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+But that setup triggers a warning from the iommu layer because the 
+dma/iommu setup is established too late during vc4 device setup.
+
+Working on it...
