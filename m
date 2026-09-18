@@ -1,82 +1,160 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 733604D0CD1;
-	Fri, 18 Sep 2026 10:09:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 846BD4A3866;
+	Fri, 18 Sep 2026 10:39:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789726190; cv=none; b=BJ+fLNG+3jHwI13u+xL/4E9eL9dIpYPqOQb39nBFtuL/b1r9sOZMO2dCrYDqq2QpXYSlTHAigAHFkP1yLcmydu5QWkGhyPuCgQQgpn4Datol+gpP9l1h3dhOswxl8elTSM/X0hkQrVXzt8FPBqoWcp0MWYGAD0iaNm43bv7NmhY=
+	t=1789727992; cv=none; b=ckdfbarQCbNyp4svWI8Syq4Hwes6rhAZaJd3VefnxrQRhJ/j2jz/efeJmwebOA5oECA67b+5MhBgYXs2kSC4fURUeYm0MLi99bWvAlIjQuvyEBWWMtPb533W6nX9mq6jTB30Cz2kMf1cd7JGJimDQzAvQc+H7Sv+VjanXKHVpts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789726190; c=relaxed/simple;
-	bh=PiGN16huOR7UZBg19IM0Hy1A8JY0pHkClaJQHPzPjpo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NMZURNdHEvW4kDyvPMiUlCkxYCG+RLrTJdw4dsMUo/3h89/jdhTHZGZInuo8YIXSX+mL2cBNLjS7hidyNATwKieEFxIp3A2Iri9sIdSTZi8IPfK+KkKpxUWoqGrFhpi0FPvTWxorxhl0vFMbG7tROJZ0+bAJV4Jhk4b9k6Vk168=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bmc3aV1i; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789727992; c=relaxed/simple;
+	bh=Q3effGCMdhsIowj3+2D3KI8Gvn6WszBpcgNaEbD3C5o=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LYzivFUc31n8MJdcxtm7qoFijL3Bd6Nl3MmmDnaLSrinakcWHe3S1Yq0xxM0NioqeqBOBsIHi1dO/dh3JAqOTzY1aQNr99owymtm3gS/ylviUk+55SWUM0gN7jmZrwJpAv2Dm25wNtC/CRkT7HEAwrdYsAIYyKTu5eK/bx0TCiY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hBcdchVY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bmc3aV1i"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 369631F000FF;
-	Fri, 18 Sep 2026 10:09:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hBcdchVY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BC7F1F0089C;
+	Fri, 18 Sep 2026 10:39:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789726187;
-	bh=ldnhjGinl4eu4pR9zDJKuKw6fPmbARl0hSMqWh2pYUg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Bmc3aV1i24nMbRO7I0xJf6WGOSllIVEj/a1YQEqKBQkKys2OhpaNyRs54+f0xyeTN
-	 IAr1T9lNAumI7NoxUoGKzOgh+TNth4OWXyQW43AeolvQCDYZjPMCZ4S/aKqTZBGkFQ
-	 pVO+JVXiCAwhya04RBxZe1eijUveuVKl1XYFv2joaZJfUvKHeKKSnJa7v4ijPxOSuI
-	 mFJDNO2ZC1x+lZBTcacF4FKQUI1neRp5CCRaoDiz195DbggbnaaIswmePylaH9l2ra
-	 fuvieu3ySbYp/9nP8qi1XW61EHe+9U2z0wkKtaj4zZdW/zcEARybqQbHUHzJzc8NZz
-	 3ZmbszfbbbwiA==
-Date: Fri, 18 Sep 2026 12:09:43 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Muzaffer Kadir <muzafferkadir@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, 
-	Abel Vesa <abelvesa@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
-	Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, 
-	Ulf Hansson <ulfh@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>, 
-	Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Robert Marko <robimarko@gmail.com>, 
-	Guru Das Srinagesh <linux@gurudas.dev>, Amit Kucheria <amitk@kernel.org>, 
-	Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
-	Lukasz Luba <lukasz.luba@arm.com>, Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
-	David Heidelberg <david@ixit.cz>, Dang Huynh <danct12@riseup.net>, phone-devel@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org, iommu@lists.linux.dev, 
-	mfd@lists.linux.dev, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
-	linux-pm@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 03/19] dt-bindings: nvmem: Add compatible for MSM8952
-Message-ID: <20260918-tidy-rook-of-respect-deaaef@quoll>
-References: <20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org>
- <20260916-msm8952-initial-support-v2-3-798c2602dde1@mainlining.org>
+	s=k20260515; t=1789727989;
+	bh=l6Kjwu9OSKxioUG7up9HvmTZyOT5q6Qmeq/xm2VHMYM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=hBcdchVYzJfSkDZhhMg2J1WA+1AG5z73Fi/mCSF+R4bC8Q0+wQ6SFnK8li8MQ5Q/w
+	 gNODIKxkqE6vg9V+nbab0ZpgdPCSKmiAdiEPIZFHJs8FUf6w+G0E9l2NDWUZXJG3Sv
+	 WanFtejBRsZus0xR+KPUrKcV9zMcNJlG03TmUcH5uvbP7FFfwMzcbzh9uKquWSWhyE
+	 7Lp1OCdyAEYUHz20gYOkBvITSgGOpPC0lkc5fsCfaDUaT79jSKdanNfBUoU1Bikat+
+	 MXTbtjjSR3HHbSG/gSP7S10xTM/AxEtPrr+0W8SOdUKuV6dQGyEExsIZWjeDQ3hYC2
+	 WhOQpiXnNZH/A==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Suzuki K Poulose <suzuki.poulose@arm.com>,
+	linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v6 8/9] arm64: realm: Add RHI helper to query IPA state
+ change alignment
+In-Reply-To: <73c921bb-9897-481d-bcb2-ef9b578a7c9f@arm.com>
+References: <20260904103452.1197239-1-aneesh.kumar@kernel.org>
+ <20260904103452.1197239-9-aneesh.kumar@kernel.org>
+ <73c921bb-9897-481d-bcb2-ef9b578a7c9f@arm.com>
+Date: Fri, 18 Sep 2026 16:09:42 +0530
+Message-ID: <yq5awlsizvv5.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260916-msm8952-initial-support-v2-3-798c2602dde1@mainlining.org>
+Content-Type: text/plain
 
-On Wed, Sep 16, 2026 at 05:22:08PM +0300, Muzaffer Kadir wrote:
-> Document the QFPROM block found on MSM8952.
-> 
-> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
-> ---
->  Documentation/devicetree/bindings/nvmem/qcom,qfprom.yaml | 1 +
->  1 file changed, 1 insertion(+)
+Suzuki K Poulose <suzuki.poulose@arm.com> writes:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> On 04/09/2026 11:34, Aneesh Kumar K.V (Arm) wrote:
+>> Arm CCA guests need to know the granularity at which the host expects IPA
+>> state changes to be performed. This can be larger than the guest page size
+>> and is needed when deciding the alignment for memory shared with the host.
+>> 
+>> Add the Realm Host Interface host configuration definitions and an
+>> get_ipa_state_change_alignment() helper. The helper uses RSI_HOST_CALL to
+>> query the supported HostConf version and features, reads the IPA change
+>> alignment when available, and falls back to PAGE_SIZE if the interface is
+>> unavailable or returns an invalid value.
+>> 
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>
+> It may be worth mentioning the document number and may be the link
+> for RHI spec.
+>
+> e.g., The Realm Host Interface specification Arm DEN00148 defines ...
+>
+>
+>
+>> ---
+>>   drivers/firmware/arm_rmm/rsi.c | 46 ++++++++++++++++++++++++++++++++++
+>>   include/linux/arm-rsi-cmds.h   | 10 ++++++++
+>>   include/linux/arm-smccc-rhi.h  | 25 ++++++++++++++++++
+>>   include/linux/arm-smccc-rsi.h  |  7 ++++++
+>>   4 files changed, 88 insertions(+)
+>>   create mode 100644 include/linux/arm-smccc-rhi.h
+>> 
+>> diff --git a/drivers/firmware/arm_rmm/rsi.c b/drivers/firmware/arm_rmm/rsi.c
+>> index 52f40256bd78..2cd53f82432f 100644
+>> --- a/drivers/firmware/arm_rmm/rsi.c
+>> +++ b/drivers/firmware/arm_rmm/rsi.c
+>> @@ -9,6 +9,7 @@
+>>   #include <linux/swiotlb.h>
+>>   #include <linux/platform_device.h>
+>>   #include <linux/arm-rsi-cmds.h>
+>> +#include <linux/arm-smccc-rhi.h>
+>>   #include <linux/kobject.h>
+>>   #include <linux/sysfs.h>
+>>   
+>> @@ -164,6 +165,51 @@ static int realm_register_memory_enc_ops(void)
+>>   	return arm64_mem_crypt_ops_register(&realm_crypt_ops);
+>>   }
+>>   
+>> +/* we need an aligned struct for rsi_host_call. slab is not yet ready */
+>> +static struct rsi_host_call hostconf_call __initdata;
+>> +static unsigned long __maybe_unused __init get_ipa_state_change_alignment(void)
+>> +{
+>> +	long ret;
+>> +	unsigned long shared_granule_size;
+>> +
+>> +	hostconf_call.imm = 0;
+>> +	hostconf_call.gprs[0] = RHI_HOSTCONF_VERSION;
+>
+> Do we need to 0 out the other GPRs for RES0 arguments ?
+>
+>> +	ret = rsi_host_call(lm_alias(&hostconf_call));
+>> +	if (ret != RSI_SUCCESS)
+>> +		goto err_out;
+>> +
+>> +	if (hostconf_call.gprs[0] != RHI_HOSTCONF_VER_1_0)
+>> +		goto err_out;
+>> +
+>> +	hostconf_call.imm = 0;
+>> +	hostconf_call.gprs[0] = RHI_HOSTCONF_FEATURES;
+>
+> Same here, especially gprs[] could be overwritten by the results from
+> the Host for the previous call.
+>
 
-Best regards,
-Krzysztof
+ [ ... 75 lines skipped ... ] 
 
+>> +
+>> +#define RHI_HOSTCONF_VER_1_0		0x10000
+>> +#define RHI_HOSTCONF_VERSION		SMC_RHI_CALL(0x004E)
+>> +
+>> +#define __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT BIT(0)
+>
+> minor nit: Could this be:
+>
+> RHI_HOSTCONF_FEATURE_GET_IPA_CHANGE_ALIGNMENT	BIT(0)
+>
+> to indicate this applies to the RHI_HOSTCONF_FEATURES output ?
+>
+
+
+Will make this change.
+
+-	hostconf_call.imm = 0;
++	memset(&hostconf_call, 0, sizeof(hostconf_call));
+ 	hostconf_call.gprs[0] = RHI_HOSTCONF_FEATURES;
+ 	ret = rsi_host_call(lm_alias(&hostconf_call));
+ 	if (ret != RSI_SUCCESS)
+ 		goto err_out;
+ 
+-	if (!(hostconf_call.gprs[0] & __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT))
++	if (!(hostconf_call.gprs[0] & RHI_HOSTCONF_FEATURE_GET_IPA_CHANGE_ALIGNMENT))
+ 		goto err_out;
+
+-aneesh
