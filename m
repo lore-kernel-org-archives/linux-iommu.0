@@ -1,101 +1,167 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mta0.migadu.com (out-72.mta0.migadu.com [91.218.175.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09631370AE7
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 07:48:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94F6049A3B0
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 07:54:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789717741; cv=none; b=tjXpxBf1d8u1kFg+S6h+JnP5NneZ5pvKR8zOggqFOSkWHjy6fdSQOVC8ZZre+f+HQY4M2MWOHd9bKFIb7eAc+Izo8M0LCi7+y3pIq4OZj2OLmy3WTUjOk1KrtW9MzH11qV3VbI48ghtlAXIo2raPhRBk1+aEUf00XGeU57bSOHg=
+	t=1789718100; cv=none; b=USqtSH3xPDb7irsQLi4DJKGosAzLDI3JFAqcCGv8hFae7pX7Z9t1QuPWgU4OYjHH2ahO3ARyypthiWTiMa0Y0LnjjcOuWcW5zV7/GPydduTZNwNGE4mwYJmvJS6Z+W/PrzoZCLcFWj8dBjp/K9NgYkX6fppDRJ7uc7TeIyN4sAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789717741; c=relaxed/simple;
-	bh=o5pm3GYaGUF+3Y9lkTpazTM4AJYDdcCW8ONSi4MWHJE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=hgnJK7xmYKckPFZNTOZqo0jnjtOOuIV9fmfVUgp1XKjZhiIj7idYTfBzmXnNqfBe+9FHlSEI0XsOdKvyFIXBECVR/pCWOeMy+9CjkkeTXbbvfjQvZKPG5JJxM75iDuHsZBdaOjtzVQXtIXxRRvQ5lEziOQRI6IWl6TFhRJhzN7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ZA4IVbSo; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1789718100; c=relaxed/simple;
+	bh=w1C6Uq5LGLS5v5+hUhhr7wym9SsyY1oKg1mT464GIeo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SsJGqxsPYKC6zXPIqz92T8QEk3Q3ihI4w/VyDY5fVhdCcacjiV/436LZFq7x+UmEz0aKPoHXrCCGBuVGB5eVNwIeiU5uoOcp8TQUJVbNHjbZJEgqkl+jKy6UFtrWDGMMfeHpjdI/kw8cpv0Zo5M7fVbTbUwuStxPaSActcYz8PA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=cQTyQpN7; arc=none smtp.client-ip=91.218.175.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ZA4IVbSo"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260918074849euoutp0272fcc4234d48c85568b3bacd4c713722~WWsr7a4Q11058110581euoutp02s
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 07:48:49 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260918074849euoutp0272fcc4234d48c85568b3bacd4c713722~WWsr7a4Q11058110581euoutp02s
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1789717729;
-	bh=9LRBFHkYxsMPHxldhSoBfcRMe67HegoQO3fxwKGAgho=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=ZA4IVbSokPWcxbEovDrM9dv0tHKT+oK6CJcM5gMAOcDFDCFv+nN/bGAGSRAUY/SxA
-	 vsV46J8vI/rQCeWpuHIgeiiLastztygUel2sybT5fHV5vK8B+9naw4xtYHx1q2p0CY
-	 cLQjz77i+qCb3CMLPbYym39iG17CJQHQ9zR0rHyE=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260918074849eucas1p2f59ebb5edcf83292cd71fac7d0733896~WWsrk-7kH2296122961eucas1p2O;
-	Fri, 18 Sep 2026 07:48:49 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260918074848eusmtip187731a913ef6f63bbe35f6c4ba5f178b~WWsrFBHrg2379023790eusmtip1m;
-	Fri, 18 Sep 2026 07:48:48 +0000 (GMT)
-Message-ID: <e67609e4-6875-4759-bbe2-b94a1690309b@samsung.com>
-Date: Fri, 18 Sep 2026 09:48:48 +0200
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="cQTyQpN7"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=w1C6Uq5LGLS5v5+hUhhr7wym9SsyY1oKg1mT464GIeo=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1789718096; v=1; x=1790322896;
+ b=cQTyQpN72GWh0vFSP2OSSt6OoeLakd/ZFjqWUqc1nDBXGR9zWWRQY06J5rh0UbilUNacd91L
+ F3G0c+rlbShg36Rvo036m6CEVa69aFhh/lsy8ZZlyrfMz+5viDApJz7MxT8J9PiA6S061DCLYQJ
+ YoLnqz8tCr2yoVDATrSIr4e0=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by mta11.migadu.com with ESMTPS id ea360a8e458d95f5;
+	Fri, 18 Sep 2026 07:54:56 +0000
+X-Mizu-Trace-ID: ea360a8e458d95f5
+X-Migadu-Flow: FLOW_OUT
+Date: Fri, 18 Sep 2026 15:54:48 +0800
+From: Baoquan He <baoquan.he@linux.dev>
+To: Wandun Chen <chenwandun1@gmail.com>
+Cc: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+	tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, robh@kernel.org,
+	saravanak@kernel.org, akpm@linux-foundation.org, rppt@kernel.org,
+	pasha.tatashin@soleen.com, pratyush@kernel.org,
+	m.szyprowski@samsung.com, mark.rutland@arm.com, kernel@xen0n.name,
+	alex@ghiti.fr, hpa@zytor.com, ruirui.yang@linux.dev,
+	robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+	kexec@lists.infradead.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v6 04/10] crash_core: serialize crash header preparation
+ against hotplug
+Message-ID: <aqzuSJKR03zEOCan@fedora>
+References: <20260902073116.802752-1-chenwandun1@gmail.com>
+ <20260902073116.802752-5-chenwandun1@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: BUG kernel 6.12.19 defautl_swiotlb_limit() returns wrong value
- for CONFIG_SWIOTLB_DYNAMIC=y effects atm only under XEN dom0
-To: James Dingwall <james@dingwall.me.uk>, xen-devel@lists.xenproject.org,
-	linux-kernel@vger.kernel.org, Andreas Greve <andreas.greve@a-greve.de>
-Cc: iommu@lists.linux.dev
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <aqzcLJQCCmqpdxz3@dingwall.me.uk>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260918074849eucas1p2f59ebb5edcf83292cd71fac7d0733896
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260918063741eucas1p290cc7d0360de73b3d07a23316a238b48
-X-EPHeader: CA
-X-CMS-RootMailID: 20260918063741eucas1p290cc7d0360de73b3d07a23316a238b48
-References: <CGME20260918063741eucas1p290cc7d0360de73b3d07a23316a238b48@eucas1p2.samsung.com>
-	<aqzcLJQCCmqpdxz3@dingwall.me.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260902073116.802752-5-chenwandun1@gmail.com>
 
-On 18.09.2026 08:37, James Dingwall wrote:
-> I've been having a problem with a Dell HBA330 SCSI controller (mpt3sas)
-> when booting under Xen and CONFIG_SWIOTLB_DYNAMIC=y is set.  I had a
-> similar issue with a megaraid_sas card that I previously posted about:
->
-> https://lkml.iu.edu/hypermail/linux/kernel/2407.3/08254.html
->
-> In that case we rebuilt the kernel with CONFIG_SWIOTLB_DYNAMIC=n.
-> While investigating the current problem I came across a patch that was
-> posted on the xen-devel list:
->
-> https://protect2.fireeye.com/v1/url?k=202f9c3b-7fb4525f-202e1774-000babda0201-d2724d878716e4ba&q=1&e=538195f2-f8bd-499e-8576-5e3d7c8ebca6&u=https%3A%2F%2Flists.xen.org%2Farchives%2Fhtml%2Fxen-devel%2F2025-05%2Fmsg00991.html
->
-> I have applied that to the Ubuntu 7.0.0-31 kernel sources which has
-> resolved the controller initialisation error I was encountering and the
-> system now boots as expected.
->
-> [    3.921136] mpt3sas_cm0: no suitable DMA mask for 0000:03:00.0
-> [    3.921275] mpt3sas_cm0: failure at drivers/scsi/mpt3sas/mpt3sas_scsih.c:13610/_scsih_probe()!
->
-> I've included the patch below, I don't have the author's real address
-> for the s-o-b.  I'm able to test alternative fixes if there are any
-> issues with this one.
+On 09/02/26 at 03:31pm, Wandun Chen wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
+> 
+> crash_prepare_headers() counts memory ranges before populating the
+> allocated crash_mem array. The weak implementation used by ARM64,
+> RISC-V and LoongArch walks memblock.memory, while x86 performs the same
+> two-pass operation over system RAM resources. Concurrent memory hotplug
+> can change range source between the two walks and make the populate
+> pass overflow cmem->ranges.
+> 
+> Take device_hotplug_lock when preparing crash headers during
+> kexec_file_load(). The x86 memory hotplug path already takes
+> device_hotplug_lock, so call __crash_prepare_headers() directly
+> to avoid recursive locking.
+> 
+> Sashiko reported this issue in [1].
+> 
+> Fixes: 3751e728cef2 ("arm64: kexec_file: add crash dump support")
+> Fixes: 1bcca8620a91 ("LoongArch: Add crash dump support for kexec_file")
+> Fixes: 8acea455fafa ("RISC-V: Support for kexec_file on panic")
+> Fixes: dd5f726076cc ("kexec: support for kexec on panic using new system call")
+> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> Link: https://sashiko.dev/#/message/20260806101002.1F84E1F000E9@smtp.kernel.org [1]
+> ---
+>  arch/x86/kernel/crash.c    |  2 +-
+>  include/linux/crash_core.h |  2 ++
+>  kernel/crash_core.c        | 17 +++++++++++++++--
+>  3 files changed, 18 insertions(+), 3 deletions(-)
 
+LGTM,
 
-https://lore.kernel.org/xen-devel/93625976-e8af-4c39-90fb-45c926d420fd@a-greve.de/
+Acked-by: Baoquan He <baoquan.he@linux.dev>
 
-
-Andreas: could You send Your fix with a bit more elaborated description and to the
-proper recipients (hint: use scripts/get_maintainer.pl tool), so it can be reviewed
-and potentially applied?
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> 
+> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+> index e681ec9cf1dc..284d78bc3fd0 100644
+> --- a/arch/x86/kernel/crash.c
+> +++ b/arch/x86/kernel/crash.c
+> @@ -465,7 +465,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>  	 * memory resources.
+>  	 */
+> -	if (crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+> +	if (__crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+>  		pr_err("unable to create new elfcorehdr");
+>  		goto out;
+>  	}
+> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
+> index bc087124cd78..28e7a81cf263 100644
+> --- a/include/linux/crash_core.h
+> +++ b/include/linux/crash_core.h
+> @@ -61,6 +61,8 @@ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_ma
+>  				       void **addr, unsigned long *sz);
+>  extern int crash_prepare_headers(int need_kernel_map, void **addr,
+>  				 unsigned long *sz, unsigned long *nr_mem_ranges);
+> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> +			    unsigned long *nr_mem_ranges);
+>  extern int crash_exclude_core_ranges(struct crash_mem **cmem);
+>  
+>  struct kimage;
+> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> index 77285ae3ce60..3adee1ae120c 100644
+> --- a/kernel/crash_core.c
+> +++ b/kernel/crash_core.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/mm.h>
+>  #include <linux/cpuhotplug.h>
+>  #include <linux/memblock.h>
+> +#include <linux/device.h>
+>  #include <linux/kmemleak.h>
+>  #include <linux/crash_core.h>
+>  #include <linux/reboot.h>
+> @@ -338,8 +339,8 @@ int crash_exclude_core_ranges(struct crash_mem **cmem)
+>  	return 0;
+>  }
+>  
+> -int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> -			  unsigned long *nr_mem_ranges)
+> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> +			    unsigned long *nr_mem_ranges)
+>  {
+>  	unsigned int max_nr_ranges;
+>  	struct crash_mem *cmem;
+> @@ -376,6 +377,18 @@ int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>  	return ret;
+>  }
+>  
+> +int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> +			  unsigned long *nr_mem_ranges)
+> +{
+> +	int ret;
+> +
+> +	lock_device_hotplug();
+> +	ret = __crash_prepare_headers(need_kernel_map, addr, sz, nr_mem_ranges);
+> +	unlock_device_hotplug();
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * crash_exclude_mem_range - exclude a mem range for existing ranges
+>   * @mem: mem->range contains an array of ranges sorted in ascending order
+> -- 
+> 2.43.0
+> 
