@@ -1,382 +1,193 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011036.outbound.protection.outlook.com [52.101.65.36])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF6C4F85C5
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 13:42:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789738963; cv=none; b=XR/Qbo0oRsP3CtITENlmyFXXHU5flBRMZRv5j6G2UU0n+Svga7yxuscUDECA4U7qCKGSrmw8DPodRwkGOVZq75/2Fw+VyhEDjkUGIKaIOvtfQTlO8xicsBfP0GBMUEwsNfRX4pb/ckmV0rxqwZ66VdMtL1QYYI2o6iYz3qwnJXE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789738963; c=relaxed/simple;
-	bh=0oiHFMwARjeya69GcpvyV541pBNfoR0D+boudpmmdkc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=q44rDXsmJgQBN17aiGpahCL+6v5k75sNcAwAsE97XCo5LVaOsiAgstAy1MXDvUDGOPE76bVwDhaAftNARY2NkAXpQsRNKP6KGa8trjLxLhu4wrfeALUCuP2QHCAugXuF5lA6Nqi+msvonUHSyZbN4TfglqMk6gX/4nZ3G1kc9Aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KSAMxJGU; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944A0328B56
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 14:08:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.36
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789740491; cv=fail; b=dheD2dyCeROrMVsqpVPbg3KHwej21MfsrMSsqndhgX8yeB5GBamZ4GLrPiuIk+NS+qQTd+PUjTlZbZ3OkX/zva20niyg8flgk5tnCzlWxfteSUSlLrWouoifV9DFwZC7moj+suIGnC0oS+Pzb1/OAcgF24/rCxLa2DBqztS2hr0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789740491; c=relaxed/simple;
+	bh=DgQC/VhrmKMMt20PF57uipg1rzE7PI5VsNsEn5YQQKU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=BX0F+YubfvCwbQ5dlGFa+6oIDVKB6ZNsDIH6JtNdNE0sHTJn/BvPvYurlm809F+mS9iviZlssTPLdjKIq7EAk0KkXEQeWAY4PAI/nf/VhDQK9E0FiwYbUL/KXRqtNHYizeqpR5dvouX2IAWv6MyR3uZwZ10YmF/1cnuf/1ZRKU4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=rxLAVR7t reason="signature verification failed"; arc=fail smtp.client-ip=52.101.65.36
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KSAMxJGU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789738960; x=1821274960;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=0oiHFMwARjeya69GcpvyV541pBNfoR0D+boudpmmdkc=;
-  b=KSAMxJGUPuRH9WxLOWJQtLq6JCv3XOBrxSY7rVQ2OQ6hp8ST/d3lZBoZ
-   JIPb88CZfVqF7fLF4qOTGJEz8gbq68OH2kN98VBiQu0d4S/t41OXjolwo
-   GsY6ppyc0QZ/9HiGpfAPNb6lo3h2BUFJZKFRyEaRRbGxs7JUSINTf3uH5
-   dOJGQods1Sfp2qyE1j+H4zgSctKCH5d7nqGCRQQJ6k7+k+WWf+OkLO/iH
-   OxkDaXB8VIog0AJyTYOvB9HwgoMJMhf022R4w4MiAn/j54oPzUj14OVTb
-   MLGDl8tPixfbvawaKaHXX0pmFMrp8ga1U21KHd2gn4iayIIHUCkj/yKyq
-   A==;
-X-CSE-ConnectionGUID: /HvqoBmqQ6yrljCRn4ok6Q==
-X-CSE-MsgGUID: z2dybvGETxWOUiO5NaUOYw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11908"; a="89176890"
-X-IronPort-AV: E=Sophos;i="6.27,109,1787036400"; 
-   d="scan'208";a="89176890"
-Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 06:42:37 -0700
-X-CSE-ConnectionGUID: nlw35IBKQbaMx6YJ5XUK1g==
-X-CSE-MsgGUID: T2brE3rVRA+7nGvBdijE2w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,109,1787036400"; 
-   d="scan'208";a="2601666"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO [10.245.245.247]) ([10.245.245.247])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 06:42:31 -0700
-Message-ID: <b517070d0b9236b03962fcba649faffcacda23eb.camel@linux.intel.com>
-Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
- direct peer-to-peer route
-From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="rxLAVR7t"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=uoR/Go2rBSUB+KSxqtaYbSlQjHjJwAzbM6KDh/uI3KymsOjjQDUglZGPW/TFu3M4lpryCMkrhfAPOUAralnDgM+MVmswplkGS7/IhHZ9IDTmxaZ/dIaNn7LypJKMPXp/K1Ne8OFJ5zvwunHOsQiKH69TXNjGyWRAavp91dXvPzwIheVQpIyMId/h69NZnu6xgl6S94J4QonbdkkK+MGty/5slqG2fv2EdYsENbdvTLm90oG+BFfNa0gm8k87kuggHbQ/WT0pT0Act8bN2XDC//HSX2guHRB7isjSa7k82oWxear5grSYeA9L+tjE4Y9yzsbUzWdzzoqUD0xEsvdQLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=E6OIQ47BKAq/fzchBzulUB3oFRjIhXFvUWYkurc54CI=;
+ b=B/KxZOQlmF/HRuHTPA2aqjU8V1ZjkhyJiVADWWQPEDtP2HOqzdLMwVTDJ3vFcYQmeQBYtvzEpGfgKVPDLLfIxoiOPjOXohOyfCKbqOgyWTyHTuKbN3wjjd7MynaB3b2XWfk1DNeT3YjAzZPxQsPH2ztEyBIwTbiQ75jHvovvqLj/sn+XCr4dPFsClOMDddFMrH8Bw/8+ORkpYXRvv3ymA6onkvtNztFbpIrEP4zfjgIO+KoLGlcQqHr1bmHByq7Iens8b1rG3f2shGTlgzq3khEoKWWas6cH0l3w0dKaj/l0Dy4+8q0UVNCE6sr3htcnXKOHDVW6ZYjC9B0Bv+sKXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E6OIQ47BKAq/fzchBzulUB3oFRjIhXFvUWYkurc54CI=;
+ b=rxLAVR7tv/XJymU3NabBj51sa009Vj8YtcQesG/OkjmXpplj4hVnvBlPMgseB3BsGBeMaVoOJYOu5q8B9EQ9ToCqI2WRiwpOeU6EBrMQi0PuTANBwOY4gODt9TKaWWaPGIxvFp9E7pb7vYj3dYycze/+dkL2DBI13GhbnCY8HKI9wkEMgfpFUBciDWjWvMMMvTz3HgIozLqwD0R5eobfUR8oL9Q2boDQ866bQ5ObGhSryQ2VO1HUq2TcLKj1mxOjnSVBlR0UYfjNCsyHAQEXcRTS1WyiJWd27Xl9zdpcIBhdGbbBEilXtqcnCdM0PGv6OBFGIkTkid529cIjX3i1OQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
+ by PA4PR04MB7776.eurprd04.prod.outlook.com (2603:10a6:102:c4::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.13; Fri, 18 Sep
+ 2026 14:08:05 +0000
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0428.011; Fri, 18 Sep 2026
+ 14:08:05 +0000
+Date: Fri, 18 Sep 2026 22:12:24 +0800
+From: Peng Fan <peng.fan@oss.nxp.com>
 To: Leon Romanovsky <leon@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe
- <logang@deltatee.com>,  Chaitanya Kulkarni	 <kch@nvidia.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe	 <axboe@kernel.dk>,
- Alex Williamson <alex@shazbot.org>, Ankit Agrawal	 <ankita@nvidia.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Jonathan Corbet	 <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, "Joerg Roedel (AMD)"	 <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy	 <robin.murphy@arm.com>, Randy
- Dunlap <rdunlap@infradead.org>, Sumit Semwal	 <sumit.semwal@linaro.org>,
- Christian =?ISO-8859-1?Q?K=F6nig?=	 <christian.koenig@amd.com>,
- linux-pci@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, iommu@lists.linux.dev,  Tushar Dave
- <tdave@nvidia.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, 	linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-Date: Fri, 18 Sep 2026 15:42:28 +0200
-In-Reply-To: <20260918121500.GV13683@unreal>
-References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
-	 <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
-	 <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
-	 <20260918121500.GV13683@unreal>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH RFC 0/2] iommu/dma: Fix DMA_ATTR_MMIO swiotlb rejection
+Message-ID: <aq1GyO3vv8W6Adlr@shlinux89>
+References: <20260916-iommu-dma-fix-v1-0-a59a0c45ec5b@nxp.com>
+ <20260918123736.GW13683@unreal>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260918123736.GW13683@unreal>
+X-ClientProxiedBy: MA0PR01CA0097.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:af::14) To AM8PR04MB7874.eurprd04.prod.outlook.com
+ (2603:10a6:20b:24d::9)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|PA4PR04MB7776:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4196e794-472a-40b5-d99d-08df158e4279
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|23010399003|19092799006|366016|18002099003|22082099003|11063799006|10067099003|4143699003|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	BXvllwDmhYqxtxOTNNA7MS4e7hK7MEF9eg8F/KJv5lDEpgRsaNoZlDZhKUzDs1bCei1Go6qBfhvuOrekH47DLlRr6AicFcbV8yu8xa3X9BRNy2IrsG28zxCbym/jgt16cLEEvFr81+6uu8iJ+MfC+rG3hY7yu2Q10IHxIQpiYb85Fu1mRFjtBJQZBtUQLm0YI0oC4LLNnKKlbjl2tTIF3fbDsa+qLvIeWvi2U8fvVLf4CuOj5DTHUQ1qVzT1E50jzTgSwaX/A8zxPeYFCUgezUkzZpHfCboNvy+4AMN+GBjllrmkAZ5evljxNivREH/4PoQfZE1JDtdKbi0vd5BGRLv1dBRQN+3aKebuQch/fvxZhcJwLGCW0rviEpw/uIMJ7mL/OXS8QWNiDv/Bh3peslGdiMlL9b4PmKD+p3vsRi82XdJdp1dWOxTiG8dxz3a4ygV+zmcDlTtjN5Xh4I/A5tpQTYNPKwtUdbgjmvtdI7hZGtjPoyR3assZMTr99fEJkQrJiJdfgQL5jNuv/OdE102lSjcLjIh3cKJN8pRpKcp/5790wly/T9VpIAydlhnfCMIVnbPcytIGQToE5QTWhmgjiHk/nm1so+NyWDMy31dW0tKyOicrbZNXjAoMOSyDV/BdLjEE+wSRMaQf3wBBKXmm+CJl8Ukek/4LVPk1Nwk=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(23010399003)(19092799006)(366016)(18002099003)(22082099003)(11063799006)(10067099003)(4143699003)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?PadpIumFyeLQ/vT5dAmTYFwP2ldgQ9qtWDt7cdkidFqSCERoQvxiEfH2vz?=
+ =?iso-8859-1?Q?MQfW5J06L+d9AKYxQkwx67mz/bA2lmUlpotTwARmKjPk1M2cW8ipIlJSIG?=
+ =?iso-8859-1?Q?KACGjHJA6lNLCghsNK7Itr+jn0dUFuHp7rRzwYJYxdqPht1cVfkO5YokL9?=
+ =?iso-8859-1?Q?KeITTGLR6MLCvcbNLqxQkZDU6z61MEtmfEUhepkdd8a1MQSj97cPlBMS5I?=
+ =?iso-8859-1?Q?O67xDMqtHfxSKgjYCWzPMuWMVDsxQakXLRBE4861BvwpwU/mirEu+MVVUj?=
+ =?iso-8859-1?Q?DAnxpnqujtQ5HDaSQwRxlD66Yf2EMOjqa+9ckHkhddLRY8zey5yLt5Jgz6?=
+ =?iso-8859-1?Q?gob/MGPq1foe50XAONj/ZQWTNlClx8w6FRjv2Fi97+L+R9+T/zWv+M4KzH?=
+ =?iso-8859-1?Q?Vn/pn2QKIfAHZAJlhppEFKWPazyLBz9vgIFS7zmz11B3TSkr0s4ysu8vL5?=
+ =?iso-8859-1?Q?+UVeGE4vEV9TawpNn1mOlLWUG4hckpiiIDk0D1Vm45jbYo6zsZamcyCaaY?=
+ =?iso-8859-1?Q?q7QpKab0U9JkBedwPo/sP1HWN3n1wuYlQCniPOBNRdyg68lF4EyayEiqDv?=
+ =?iso-8859-1?Q?z5WBNgYbg7hBxFwuWGGuWO0T/PEFL518djnGAyxO+46pe2E5pX1l1tS0v8?=
+ =?iso-8859-1?Q?X5g78V68dn2iriHC0Zna5vMZeBHT/M4Z40Yo4o9OD/vUdmWHFIfEnAGYPx?=
+ =?iso-8859-1?Q?rT1ZgubmO90Pjj7LWtjwXR4GEv+rt+dDUo6Mu/cQ8Uvbm+eU3uW1tmUckY?=
+ =?iso-8859-1?Q?XanMENZsV6bSrX/2IqEnhfb9pHL4oP8h1Uz22+GBrc8n0owbi27Wa/Qnr1?=
+ =?iso-8859-1?Q?Dr1KT1p0hsRcLQZdhgVZY4/+zazLReJvvgqNfu2KaVlyxarHLHI7l1SwdL?=
+ =?iso-8859-1?Q?jcS6YQqBmPsSEmGMp8QWaHsgxMeBdN3r+j6Lz+lr0sItmz6yh3HlPRqmX8?=
+ =?iso-8859-1?Q?w5rzYq5cBDBSAVrF40QcQEzBvjyoWTZu8uYZCc0fHalL+etZ6eJakg8Qot?=
+ =?iso-8859-1?Q?O0OJ273NRPfthtGLmWHvpSUR6rT+jZmAgY7iPSFnNTXwW4Ig/OPkI3yvaA?=
+ =?iso-8859-1?Q?/iOzONuZz/HEvCoc4zRVGILwJ5t2U7hfVyr3iXbOmWlG5barDmCo+o3N0M?=
+ =?iso-8859-1?Q?4mJ8t2f9zAaolOsA715DA3s+B+k1rNAlNhtgNjU54fLY2hXY0XBzSTHQad?=
+ =?iso-8859-1?Q?HjIwd0XKCu26Dd4dnigknV/2lL/dWBkvnwCCRyl7PywKzW/nwb24lhyq9M?=
+ =?iso-8859-1?Q?z0CEo+a7H+LWZ5EtD5TgKqFf1ElLgVs4IOw3y2AAkJsCTlMmkDfE7jQ9Ui?=
+ =?iso-8859-1?Q?b3OlrU3GhNKxeBZUOzxzW+8gsp7hRmLSXKQNe2c4emX9YxbuRQl8SE2nb4?=
+ =?iso-8859-1?Q?TBCUBcOyDZRWhrZ8lK5dAOb6tGdZqSYhYzpVU3FOQFCEbB8QC4bckSgpQA?=
+ =?iso-8859-1?Q?AAZKnSDJrQbGv/c8DOSStAJ/zXUZZ9pFISR8NknGB4HoxOJOZb9s5o7dy7?=
+ =?iso-8859-1?Q?IHnpkzKlohHDazP46poZ25lw9i/X8O2HTNrgY24WTW0pNgukEZEn+8p6wz?=
+ =?iso-8859-1?Q?9ZEy6ohPTtNyxtFMVZ6BFjGHtB+SxfBXvWOI1SS/D2yUDpmqDWBQrb2KFA?=
+ =?iso-8859-1?Q?rECvV2jkuzSUGqghls+7zOOb6+yGcb2I2ObKojOFXsKHqcqXYezjiG+lBp?=
+ =?iso-8859-1?Q?aEqI8rmYaE9OkQTEyitFzg+CIx4F6GFkN3q4s/CH3Jdu12R69x+fkX4D0S?=
+ =?iso-8859-1?Q?4SZZ+hkBhqPvpnTY/fwNFFOaCHV0DLKM6tNj1TR0+zWqjLBRjOD8oRYKHT?=
+ =?iso-8859-1?Q?tD65Oj/OOUCeg9NPdutr+WtA4NX3wjqB5dfU3/SA5sP0SdZ8QghQ?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4196e794-472a-40b5-d99d-08df158e4279
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2026 14:08:05.6321
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dtJSSWJ4akPxnxgWXXHRPLdgpYdjQIoiVuRMnlEnJDBYwpK24AIiWpeD3414M5FHsidQNBH7xV41hlK046wuqqsTNrtPqsZgJ99Il7Ht5w0nPiaAs1rwOvbRZH3eWexT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7776
 
-Hi,=C2=A0Leon,
+Hi Leon,
 
-On Fri, 2026-09-18 at 15:15 +0300, Leon Romanovsky wrote:
-> On Thu, Sep 17, 2026 at 03:56:12PM +0200, Thomas Hellstr=C3=B6m wrote:
-> > Hi
-> >=20
-> > On Mon, 2026-09-14 at 14:22 +0300, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > >=20
-> > > mlx5_umem_needs_ats() enables ATS for any dma-buf whose caller
-> > > asked
-> > > for
-> > > Relaxed Ordering, on the assumption that a switch in the path has
-> > > CR,
-> > > RR
-> > > and DT all set. It also enables it for a buffer already mapped
-> > > with
-> > > the
-> > > peer's bus addresses, which are not translatable at all.
-> > >=20
-> > > P2PDMA has read the ACS controls, so ask it through
-> > > dma_buf_p2pdma_map_type(): enable ATS only where the path is not
-> > > routed
-> > > directly as it stands, but would be for a Translated Request
-> > > whose
-> > > Completions carry Relaxed Ordering. Exporters that name no
-> > > provider
-> > > keep
-> > > the old assumption, since their ACS settings remain hidden.
-> > >=20
-> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > ---
-> > > =C2=A0drivers/infiniband/hw/mlx5/mlx5_ib.h | 36 ++-------------------=
--
-> > > ----
-> > > ------
-> > > =C2=A0drivers/infiniband/hw/mlx5/mr.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=
- 40
-> > > ++++++++++++++++++++++++++++++++++++
-> > > =C2=A02 files changed, 42 insertions(+), 34 deletions(-)
-> > >=20
-> > > diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-> > > b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-> > > index e9ddf2e97a76..ab32742b2180 100644
-> > > --- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-> > > +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-> > > @@ -1646,40 +1646,8 @@ static inline bool rt_supported(int
-> > > ts_cap)
-> > > =C2=A0	=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ts_cap =3D=3D
-> > > MLX5_TIMESTAMP_FORMAT_CAP_FREE_RUNNING_AND_REAL_TIME;
-> > > =C2=A0}
-> > > =C2=A0
-> > > -/*
-> > > - * PCI Peer to Peer is a trainwreck. If no switch is present
-> > > then
-> > > things
-> > > - * sometimes work, depending on the pci_distance_p2p logic for
-> > > excluding broken
-> > > - * root complexes. However if a switch is present in the path,
-> > > then
-> > > things get
-> > > - * really ugly depending on how the switch is setup. This table
-> > > assumes that the
-> > > - * root complex is strict and is validating that all req/reps
-> > > are
-> > > matches
-> > > - * perfectly - so any scenario where it sees only half the
-> > > transaction is a
-> > > - * failure.
-> > > - *
-> > > - * CR/RR/DT=C2=A0 ATS RO P2P
-> > > - * 00X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X=C2=A0=C2=A0 X=C2=A0 OK
-> > > - * 010=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X=C2=A0=C2=A0 X=C2=A0 fai=
-ls (request is routed to root but root
-> > > never
-> > > sees comp)
-> > > - * 011=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0 X=C2=A0 fai=
-ls (request is routed to root but root
-> > > never
-> > > sees comp)
-> > > - * 011=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1=C2=A0=C2=A0 X=C2=A0 OK
-> > > - * 10X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X=C2=A0=C2=A0 1=C2=A0 OK
-> > > - * 101=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X=C2=A0=C2=A0 0=C2=A0 fai=
-ls (completion is routed to root but root
-> > > didn't see req)
-> > > - * 110=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 X=C2=A0=C2=A0 0=C2=A0 SLO=
-W
-> > > - * 111=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0 0=C2=A0 SLO=
-W
-> > > - * 111=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1=C2=A0=C2=A0 0=C2=A0 fai=
-ls (completion is routed to root but root
-> > > didn't see req)
-> > > - * 111=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1=C2=A0=C2=A0 1=C2=A0 OK
-> > > - *
-> > > - * Unfortunately we cannot reliably know if a switch is present
-> > > or
-> > > what the
-> > > - * CR/RR/DT ACS settings are, as in a VM that is all hidden.
-> > > Assume
-> > > that
-> > > - * CR/RR/DT is 111 if the ATS cap is enabled and follow the last
-> > > three rows.
-> > > - *
-> > > - * For now assume if the umem is a dma_buf then it is P2P.
-> > > - */
-> > > -static inline bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev,
-> > > -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ib_umem *umem, int
-> > > access_flags)
-> > > -{
-> > > -	if (!MLX5_CAP_GEN(dev->mdev, ats) || !umem->is_dmabuf)
-> > > -		return false;
-> > > -	return access_flags & IB_ACCESS_RELAXED_ORDERING;
-> > > -}
-> > > +bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev, struct ib_umem
-> > > *umem,
-> > > +			 int access_flags);
-> > > =C2=A0
-> > > =C2=A0int set_roce_addr(struct mlx5_ib_dev *dev, u32 port_num,
-> > > =C2=A0		=C2=A0 unsigned int index, const union ib_gid *gid,
-> > > diff --git a/drivers/infiniband/hw/mlx5/mr.c
-> > > b/drivers/infiniband/hw/mlx5/mr.c
-> > > index 00e13028762a..286f372e5b0c 100644
-> > > --- a/drivers/infiniband/hw/mlx5/mr.c
-> > > +++ b/drivers/infiniband/hw/mlx5/mr.c
-> > > @@ -38,6 +38,7 @@
-> > > =C2=A0#include <linux/export.h>
-> > > =C2=A0#include <linux/delay.h>
-> > > =C2=A0#include <linux/dma-buf.h>
-> > > +#include <linux/dma-buf-mapping.h>
-> > > =C2=A0#include <linux/dma-resv.h>
-> > > =C2=A0#include <rdma/frmr_pools.h>
-> > > =C2=A0#include <rdma/ib_umem_odp.h>
-> > > @@ -47,6 +48,45 @@
-> > > =C2=A0#include "data_direct.h"
-> > > =C2=A0#include "dmah.h"
-> > > =C2=A0
-> > > +MODULE_IMPORT_NS("DMA_BUF");
-> > > +
-> > > +bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev, struct ib_umem
-> > > *umem,
-> > > +			 int access_flags)
-> > > +{
-> > > +	struct dma_buf_attachment *attach;
-> > > +
-> > > +	if (!MLX5_CAP_GEN(dev->mdev, ats) || !umem->is_dmabuf)
-> > > +		return false;
-> > > +
-> > > +	/*
-> > > +	 * The Completer decides whether its Completions carry
-> > > Relaxed
-> > > +	 * Ordering, and only a Request that asked for it can
-> > > expect
-> > > them to.
-> > > +	 */
-> > > +	if (!(access_flags & IB_ACCESS_RELAXED_ORDERING))
-> > > +		return false;
-> > > +
-> > > +	attach =3D to_ib_umem_dmabuf(umem)->attach;
-> > > +	switch (dma_buf_p2pdma_map_type(attach, 0)) {
-> > > +	case PCI_P2PDMA_MAP_NONE:
-> > > +		/* Nothing is known about the route, so fall
-> > > back to
-> > > the bet. */
-> > > +		return true;
-> > > +	case PCI_P2PDMA_MAP_BUS_ADDR:
-> > > +		/*
-> > > +		 * The path is routed directly already and is
-> > > programmed with
-> > > +		 * the peer's bus addresses. Those are not
-> > > translatable, so
-> > > +		 * ATS would be wrong as well as pointless.
-> > > +		 */
-> > > +		return false;
-> > > +	default:
-> > > +		break;
-> > > +	}
-> > > +
-> > > +	return dma_buf_p2pdma_map_type(attach,
-> > > +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 PCI_P2PDMA_TLP_TRANSLATED
-> > > |
-> > > +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
-> > > PCI_P2PDMA_TLP_RELAXED_CPL) =3D=3D
-> > > +	=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 PCI_P2PDMA_MAP_BUS_ADDR;
-> > > +}
-> > > +
-> >=20
-> > It looks like this works well when the device can choose whether to
-> > enable ATS per transaction.=20
-> >=20
-> > However, at least for the Intel GPUs, ATS enablement is based on
-> > the
-> > PCIe-side enable bit.
-> >=20
-> > This means that if p2pdma tells the dma-mapping layer to give an Xe
-> > device a bus address rather than an IOVA, things break, while
-> > pci_p2pdma_distance says everything is OK.
-> >=20
-> > It looks like the infrastructure and solution added in this series
-> > is
-> > targeted at fixing this on the device side by conditionally
-> > enabling
-> > ATS. However I think we need to look also at having the computed
-> > routing assume untranslated transactions using IOVA rather than bus
-> > address.
-> >=20
-> > That is, a flag to tell the topology check that some transactions
-> > *will* take the host-bridge path due to IOVA being used, and that
-> > the
-> > computations including pci_p2pdma_distance() need to check whether
-> > that
-> > is possible (checking whitelist etc.) and return the corresponding
-> > THRU_HOST_BRIDGE mapping type. Translated transactions taking a
-> > short-
-> > cut using the bus-address would then be hidden from the driver.
->=20
-> The word *will* puzzles me. As I understand it, if your device has
-> ATS
-> enabled all the time, it should always get THRU_HOST_BRIDGE.
->=20
-> In the mlx5 case, we can enable or disable ATS on the fly, but what
-> does a
-> device with ATS enabled globally do for different mapping types? Do
-> you
-> simply not use dma_buf_p2pdma_map_type() at all and continue to
-> operate
-> as is?
->=20
-> I asked some questions my AI tool about XE:
-> ---------------------------------------------------------------------
-> ---------------------------
-> Xe needs THRU_HOST_BRIDGE even with ATS completely disabled.
-> xe_ttm_vram_mgr_alloc_sgt()
-> maps VRAM with dma_map_resource() unconditionally
-> (xe_ttm_vram_mgr.c:450) =E2=80=94 an IOVA under
-> an IOMMU, never a bus address, with no ATS involvement at all. ATS
-> only adds the possibility
-> that some of that traffic short-cuts invisibly. The actual
-> requirement is =E2=80=9Cthis caller cannot
-> program bus addresses=E2=80=9D, which is true of Xe regardless of the ATS
-> Enable bit.
-> ---------------------------------------------------------------------
-> ----------------------------
->=20
-> Could you please clarify what the expected behavior is here? My
-> series
-> does not change the existing behavior; it only reports the routing
-> more
-> clearly for each TLP class.
->=20
-> Thanks
+On Fri, Sep 18, 2026 at 03:37:36PM +0300, Leon Romanovsky wrote:
+>On Wed, Sep 16, 2026 at 11:23:32PM +0800, Peng Fan (OSS) wrote:
+>> Commit f9374de14c0e8 ("iommu/dma: implement DMA_ATTR_MMIO for
+>> iommu_dma_(un)map_phys()") and commit c288d657dd515 ("iommu/dma: implement
+>> DMA_ATTR_MMIO for dma_iova_link().") added DMA_ATTR_MMIO support to skip
+>> swiotlb bouncing and cache flushing for MMIO resources. However, both
+>> implementations placed the DMA_ATTR_MMIO check inside the swiotlb bounce block,
+>> causing non-page-aligned MMIO mappings to be rejected outright instead of
+>> skipping the bounce and proceeding to create the IOVA mapping.
+>> 
+>> This breaks dma_map_resource() for any non-page-aligned device register when
+>> behind an IOMMU: DMA controllers that map peripheral FIFO addresses
+>> (e.g. SPI controller TX/RX data registers) through an IOMMU for per-channel
+>> isolation.
+>> 
+>> Both patches move the DMA_ATTR_MMIO check before the swiotlb block so MMIO,
+>> resources skip the entire bounce path and fall through directly to the IOMMU
+>> mapping function.
+>
+>While I understand the rationale behind the first patch, why do we need the
+>second one? Do we want to allow unaligned addresses for the _link_ as well?
+>Current users don't need it.
 
-So the *current* concerns are these (assuming I haven't misunderstood
-the code).
+My intention with the second patch was to make the DMA_ATTR_MMIO handling
+consistent with iommu_dma_map_phys(), since MMIO cannot be bounced by
+SWIOTLB in either case.
 
-1) Xe attachment check if pci_p2pdma_distance() returns OK for the
-path. Then Xe always sets up dma-addresses using dma_map_resource(). If
-IOMMU is enabled, that's always the IOMMU VAs. But if the host bridge
-is not whitelisted, and pci_p2pdma_distance() has found a shortcut that
-works using BUS_ADDR, then p2pdma is incorrectly enabled, and will be
-routed using a non-supporting host bridge.
+However, I don't have a dma_iova_link() user that requires an
+unaligned MMIO address, so no need to relax the existing restriction there.
+ 
+I'll drop the second patch and keep this fix scoped to iommu_dma_map_phys()
+in v2. Does that sounds good to you?
 
-2) If an ATS on/off device (outside of dma-buf) were to map ZONE_DEVICE
-pci_p2pdma pages using dma_map_sgtable(), then again the dma addresses
-returned may be BUS_ADDR addresses, if the topology check finds a
-direct path. But if ATS is on, then this also breaks down.
-
-Now after your patch series, I tried to set up a patch for xe and ran
-into the following:
-
-1a) Let's say the importer (Xe) has ATS enabled, and the exporter is
-supposed to map dma_addresses.
-In between there is a switch that allows direct traffic.
-Now with your patch series, How would the exporter know that Xe has ATS
-enabled and therefore should return IOVA mappings rather than the BUS
-addresses representing the shortcut.
-
-2a) Does your patch series resolve that potential issue?
-
-It seems to me that a pci-device settable flag "ATS always enabled"
-should be enough to fix both issues?
+BTW, does patch 1 look good to you?
 
 Thanks,
-Thomas
+Peng
 
-
->=20
-> >=20
-> > Whether that is best done as a parameter to these functions or
-> > perhaps
-> > as a flag in the PCI device, I'm not sure.
-> >=20
-> > Thanks,
-> > Thomas
-> >=20
-> >=20
-> >=20
-> >=20
-> > > =C2=A0static int mkey_max_umr_order(struct mlx5_ib_dev *dev)
-> > > =C2=A0{
-> > > =C2=A0	if (MLX5_CAP_GEN(dev->mdev,
-> > > umr_extended_translation_offset))
+>
+>Thanks
+>
+>> 
+>> Tested on NXP i.MX95 with ARM SMMUv3 where the fsl-edma DMA controller maps
+>> SPI peripheral FIFO registers (non-page-aligned) via dma_map_resource()
+>> through per-channel IOMMU domains. Only the iommu_dma_map_phys() path was
+>> exercised; the dma_iova_link() fix is by code inspection of the same pattern.
+>> 
+>> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+>> ---
+>> Peng Fan (2):
+>>       iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in iommu_dma_map_phys
+>>       iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in dma_iova_link()
+>> 
+>>  drivers/iommu/dma-iommu.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>> ---
+>> base-commit: e6e35979777d646fe3c7c94dca7dd32fb25d45f4
+>> change-id: 20260916-iommu-dma-fix-9f55af1beb46
+>> 
+>> Best regards,
+>> --  
+>> Peng Fan <peng.fan@nxp.com>
+>> 
+>> 
+>
+>
