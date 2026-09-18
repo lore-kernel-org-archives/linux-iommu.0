@@ -1,127 +1,205 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f1.google.com (mail-pj2-f1.google.com [74.125.227.129])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 656DD49D5BA;
-	Fri, 18 Sep 2026 15:50:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E39C4F96BF
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 16:09:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.129
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789746606; cv=none; b=on/eAvFx9e2GkeqLbV3dr9gcl9cLygnYqb4JNp4T5TBuq6BvW3h7rdt/Yb6wlgvtyd4NoQS3zDIz1o6ciXntrrogERmXnmlgiMqXIHvCet8Muigxs2EdGeW491rYVeBTrhQzmnE8wpx9RC94hU+LB/cAF3A8eYjIwRPE9MXP4ow=
+	t=1789747745; cv=none; b=o0x9oy4TivvflqJckc/GlUGnvF4B2vqKaj3pQ3nZhIxW+1kj6OWmSzV6W9kL94RcYMyfCgZmCphPmoPDtPr1iIkXi3NsMPysr73pQB2SOUmLDRYaNRqtJ77CtbukFR8P4hCFm14CWOnB+rpRGu46gUUCE5NSGq5Wkr4lL/tGFOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789746606; c=relaxed/simple;
-	bh=NtTW+7R8syQSRECGj3UX4rZbRLNNdz3lSfU2efHFFpE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F04HBAP2h5JAFPUxSQXKS1GHQuchX3jphMQ8Ekenf+I9oLk3zK0s7mSQS+wv0gAfC6dHFbr6hNnn7HXF7d2pSrtS4wrkwqrG62LJBrhpAPWKgTUkLCRlZGReI3M5Q8lPQCHTiz7uhTVTQuiEfggOi3GTOhso/jABegHFbOV+L18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Tqqodusm; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789747745; c=relaxed/simple;
+	bh=cYI6D3YGhnxQDwopLlFtXMW15VE1IpzDLjkleshyjpE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aa/IhNkxueMGoGWAZo4rr975MCVPBsiVxJBxpYO8XhgMbMr59/xU1tUui/JqEgprP9dTd9l5EJj6rfZd2ksZ93d6ecSqo3cNrmnFtDfKUENUnhPdMANSqsU0ujsvQZIp7g9RiS5IdZZ8iHPPKZ9MTmLbmZWUv63oWhUGMQp3vDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fJXucjr/; arc=none smtp.client-ip=74.125.227.129
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tqqodusm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EEFA1F000FF;
-	Fri, 18 Sep 2026 15:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789746605;
-	bh=tEW1QDQGaeEjP2/bEOYM+rrJce5dTl6rQHpum/y6Jk4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=TqqodusmO+65WNT2urqrQ8BbzgUt3GYNxJA4+0GCWtGyNavFx75B2DOVLHJM7QDhM
-	 9QG8k5aWPz0WcWGYpmDi/UKNxwgo4wu5Nc9WunOpJpSA+Eee0Z9sV3fUa9dIPbugJp
-	 PCusP9TLoLVGfI3vkqYb1jda4BzO3vwaw/+ntuDUauWgsqr2R8N6enTMD5RT5goVyQ
-	 fwkc1+JQ1meZ6B1Jj934HOgZ8Ne0poG/1IXx2Lk8e39YzavLraR2/romfeXUY2WksU
-	 GAsLrr3QnW5XjlCNtJ5O7sNthm+MA7JgYJiaAqGcf9UmlrGW88np5SWn6UKzE2xDmk
-	 d8ra8JRu9/30Q==
-Date: Fri, 18 Sep 2026 18:49:59 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Peng Fan <peng.fan@oss.nxp.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC 0/2] iommu/dma: Fix DMA_ATTR_MMIO swiotlb rejection
-Message-ID: <20260918154959.GZ13683@unreal>
-References: <20260916-iommu-dma-fix-v1-0-a59a0c45ec5b@nxp.com>
- <20260918123736.GW13683@unreal>
- <aq1GyO3vv8W6Adlr@shlinux89>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fJXucjr/"
+Received: by mail-pj2-f1.google.com with SMTP id d9443c01a7336-2dae660f31bso6720825ad.1
+        for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 09:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789747743; x=1790352543; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=sTFwCwuuJBdUqXmrDgIcnP3ObUsaQ9UCrGTYomH04hg=;
+        b=fJXucjr/cRif87UORP46RWUhCih00AG6+XSSoUQQhOM3rm4wGkiVYGkw0PvZwPSqNF
+         R5jhkzYgzKrPL1JxLkF5DpL7dloZVLccVC8GuNNI6TU9sT8F9j3vLj5HZA6vBXd1bAuf
+         Lwb+f4tua7kxNfMDhJdTp7gWnGJty66NyvRZ8lSV34uZTaRxiL0Wacj31P3TBRrmRqbe
+         A2fAHNbc378caY79wT/M41zpp/49JPbeGhzNpi9T92e+9aZrun5L+BbCCRNYI8TgXfDa
+         i3NFYACMNyYsVAPxxKvzHImpjyFdhbXXIOWzA5iCzL3K1Q0VkMeH5SVf+TlbfIO6+buU
+         +kqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789747743; x=1790352543;
+        h=content-transfer-encoding:content-type:in-reply-to:from:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=sTFwCwuuJBdUqXmrDgIcnP3ObUsaQ9UCrGTYomH04hg=;
+        b=lUR7tuCGMSropN97Ot1XcKQOMdCqHQu9JsZ7V7NzHk8tILJFQkzuVu9D8JKaRO/v2+
+         0LzsM8baQUmwJJ66Lzwm5Wx/O4mYNahmYgn+LXny85nwUxuabTf1GbI3FLfvCIev5At1
+         pXQ+Q01zVzfaNsw/q0U6KTEonB/CIOyEyZKY12tV/iYM7Glm29Bn17nKVyV3zywmcNel
+         Gc9Q3XzeXt9YL29MjfVx7KFfjswrbAHKoN+iWV1dBkrSb70rE2WD6rGmOEO+EzVNTsNU
+         1T8iWKw3HhCPxeHf7SRFAqbpYPz7bro0cCD1vrBAFU7ad/CkjCctTrE/UxjcRyl93x2h
+         vv8A==
+X-Forwarded-Encrypted: i=1; AKwUvBwmPbg0NbIAzVsKiQ3dme+f4XJrU2uVo/QgweFtp670MfKiAUrkst2rWTxaUTfhgEo92CZItw==@lists.linux.dev
+X-Gm-Message-State: AFuF++nxGtxzrXcMDktriiSxDJNk81sXWQtYuXORNARVkdAsNRQm05FG
+	GzjmkbJVNZF9fh3Omru20gi/kJHSst51wR1nQJCo5DduUh2RL/+ewI+D
+X-Gm-Gg: AYBFou3kDcxW5LWvJvX4VQGAH/iocwtXRBPwqsliKeHQocAT3gSnVuAToXEp7OjTBXR
+	H43y+ZpkvXsF808aw9g6WLXmNKppfvdngJLL7N6MJfLXpi1WVxVQw+/glMCKS0FyWFouc1vNcvc
+	iJNO7ShLx3woNuQs5NSABUce69xVD6zo5STIA2iG57sLFz3ZBrde6nPz1B9zniNYxVP+Sje1Ccn
+	GLuz5FULrTNLtChe7IUK2f6LNDdlDQQd+jgiU3/bOx6WzXARh97atbuYUzbkse/At7ATHl5k0Q1
+	XRPqYCOKIkICFMGmFpCQoKsTbBE8QUMSgHVHgqqYgwAhj7CKzdmPnYBmTSBgCJGuag6Z3GjaYih
+	oP1yGBigSXlGgW3B9MsH8FEAOlaJ66J6ihKocH3UU9EBo7mUc1shUgfWn1+MlxpBCyEcgrAkASz
+	tJVsH+FuomWkgUijXeiaqGXF8p2RjTRDXRb6qvAsF3GIzlTO2JuP8Z4zjzM1mH4yTlqXdFU5RQR
+	9Jw6ppKLtr+6ZhhKA==
+X-Received: by 2002:a17:902:ea0c:b0:2dd:c100:7ccb with SMTP id d9443c01a7336-2ddc1007e5cmr1279195ad.71.1789747742619;
+        Fri, 18 Sep 2026 09:09:02 -0700 (PDT)
+Received: from [192.168.50.100] ([111.199.57.13])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ddb76025afsm10835745ad.73.2026.09.18.09.08.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Sep 2026 09:09:01 -0700 (PDT)
+Message-ID: <6d1bfb10-fd04-4e4e-895d-55c16fcea13f@gmail.com>
+Date: Sat, 19 Sep 2026 00:08:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aq1GyO3vv8W6Adlr@shlinux89>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v4 04/10] iommu/riscv: use data structure instead of
+ individual values
+To: fangyu.yu@linux.alibaba.com
+Cc: guoren@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
+ tomasz.jeznach@linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu, alex@ghiti.fr, baolu.lu@linux.intel.com,
+ jroedel@suse.de, zong.li@sifive.com, andrew.jones@oss.qualcomm.com,
+ anup@brainfault.org, jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com,
+ atish.patra@linux.dev, skhawaja@google.com, vasant.hegde@amd.com,
+ joerg.roedel@amd.com, gong.shuai@sanechips.com.cn
+References: <20260915032828.11250-1-fangyu.yu@linux.alibaba.com>
+ <20260915032828.11250-5-fangyu.yu@linux.alibaba.com>
+From: Gong Shuai <gsh517025@gmail.com>
+In-Reply-To: <20260915032828.11250-5-fangyu.yu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 18, 2026 at 10:12:24PM +0800, Peng Fan wrote:
-> Hi Leon,
-> 
-> On Fri, Sep 18, 2026 at 03:37:36PM +0300, Leon Romanovsky wrote:
-> >On Wed, Sep 16, 2026 at 11:23:32PM +0800, Peng Fan (OSS) wrote:
-> >> Commit f9374de14c0e8 ("iommu/dma: implement DMA_ATTR_MMIO for
-> >> iommu_dma_(un)map_phys()") and commit c288d657dd515 ("iommu/dma: implement
-> >> DMA_ATTR_MMIO for dma_iova_link().") added DMA_ATTR_MMIO support to skip
-> >> swiotlb bouncing and cache flushing for MMIO resources. However, both
-> >> implementations placed the DMA_ATTR_MMIO check inside the swiotlb bounce block,
-> >> causing non-page-aligned MMIO mappings to be rejected outright instead of
-> >> skipping the bounce and proceeding to create the IOVA mapping.
-> >> 
-> >> This breaks dma_map_resource() for any non-page-aligned device register when
-> >> behind an IOMMU: DMA controllers that map peripheral FIFO addresses
-> >> (e.g. SPI controller TX/RX data registers) through an IOMMU for per-channel
-> >> isolation.
-> >> 
-> >> Both patches move the DMA_ATTR_MMIO check before the swiotlb block so MMIO,
-> >> resources skip the entire bounce path and fall through directly to the IOMMU
-> >> mapping function.
-> >
-> >While I understand the rationale behind the first patch, why do we need the
-> >second one? Do we want to allow unaligned addresses for the _link_ as well?
-> >Current users don't need it.
-> 
-> My intention with the second patch was to make the DMA_ATTR_MMIO handling
-> consistent with iommu_dma_map_phys(), since MMIO cannot be bounced by
-> SWIOTLB in either case.
-> 
-> However, I don't have a dma_iova_link() user that requires an
-> unaligned MMIO address, so no need to relax the existing restriction there.
->  
-> I'll drop the second patch and keep this fix scoped to iommu_dma_map_phys()
-> in v2. Does that sounds good to you?
-> 
-> BTW, does patch 1 look good to you?
+Hi Fangyu,
 
-Yes, for both questions.
+On 9/15/2026 11:28 AM, fangyu.yu@linux.alibaba.com wrote:
+> From: Zong Li <zong.li@sifive.com>
+> 
+> The parameter will be increased when we need to set up more
+> bit fields in the device context. Use a data structure to
+> wrap them up.
+> 
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> ---
+>   drivers/iommu/riscv/iommu.c | 27 +++++++++++++++++----------
+>   1 file changed, 17 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index a6c8307e82ea..c5b6214ee672 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -1165,7 +1165,7 @@ static void riscv_iommu_iodir_iotinval(struct riscv_iommu_device *iommu,
+>    * interim translation faults.
+>    */
+>   static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+> -				     struct device *dev, u64 fsc, u64 ta)
+> +				     struct device *dev, struct riscv_iommu_dc *new_dc)
+>   {
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct riscv_iommu_dc *dc;
+> @@ -1204,10 +1204,10 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+>   	for (i = 0; i < fwspec->num_ids; i++) {
+>   		dc = riscv_iommu_get_dc(iommu, fwspec->ids[i]);
+>   		tc = READ_ONCE(dc->tc);
+> -		tc |= ta & RISCV_IOMMU_DC_TC_V;
+> +		tc |= new_dc->ta & RISCV_IOMMU_DC_TC_V;
 
-Thanks
+According to SPEC 3.1.3.3, the "V bit" does not exist in DC.ta.
+This should be a convention from when the iodir_update() function
+did not yet use `struct riscv_iommu_dc` as a parameter, using bit 0
+of DC.ta to indicate that the DC is valid. Now that iodir_update()
+receives the complete dc, it can directly access DC.tc.V, so this
+convention should no longer be necessary and will cause confusion.
 
-> 
-> Thanks,
-> Peng
-> 
-> >
-> >Thanks
-> >
-> >> 
-> >> Tested on NXP i.MX95 with ARM SMMUv3 where the fsl-edma DMA controller maps
-> >> SPI peripheral FIFO registers (non-page-aligned) via dma_map_resource()
-> >> through per-channel IOMMU domains. Only the iommu_dma_map_phys() path was
-> >> exercised; the dma_iova_link() fix is by code inspection of the same pattern.
-> >> 
-> >> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> >> ---
-> >> Peng Fan (2):
-> >>       iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in iommu_dma_map_phys
-> >>       iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in dma_iova_link()
-> >> 
-> >>  drivers/iommu/dma-iommu.c | 8 ++++----
-> >>  1 file changed, 4 insertions(+), 4 deletions(-)
-> >> ---
-> >> base-commit: e6e35979777d646fe3c7c94dca7dd32fb25d45f4
-> >> change-id: 20260916-iommu-dma-fix-9f55af1beb46
-> >> 
-> >> Best regards,
-> >> --  
-> >> Peng Fan <peng.fan@nxp.com>
-> >> 
-> >> 
-> >
-> >
-> 
+>   
+> -		WRITE_ONCE(dc->fsc, fsc);
+> -		WRITE_ONCE(dc->ta, ta & RISCV_IOMMU_PC_TA_PSCID);
+> +		WRITE_ONCE(dc->fsc, new_dc->fsc);
+> +		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
+
+`RISCV_IOMMU_PC_*` should be replaced with `RISCV_IOMMU_DC_*` for
+readability. There are several other similar places in this file
+that are unrelated to Process Context or PASID but use the *PC* macros.
+
+
+Thanks,
+Shuai
+
+>   		/* Update device context, write TC.V as the last step. */
+>   		dma_wmb();
+>   		WRITE_ONCE(dc->tc, tc);
+> @@ -1288,22 +1288,22 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+>   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+>   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+>   	struct pt_iommu_riscv_64_hw_info pt_info;
+> -	u64 fsc, ta;
+> +	struct riscv_iommu_dc dc = {0};
+>   
+>   	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
+>   
+>   	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
+>   		return -ENODEV;
+>   
+> -	fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+> +	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+>   	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
+> -	ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+> +	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+>   	     RISCV_IOMMU_PC_TA_V;
+>   
+>   	if (riscv_iommu_bond_link(domain, dev))
+>   		return -ENOMEM;
+>   
+> -	riscv_iommu_iodir_update(iommu, dev, fsc, ta);
+> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+>   	riscv_iommu_bond_unlink(info->domain, dev);
+>   	info->domain = domain;
+>   
+> @@ -1378,9 +1378,12 @@ static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
+>   {
+>   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+>   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+> +	struct riscv_iommu_dc dc = {0};
+> +
+> +	dc.fsc = RISCV_IOMMU_FSC_BARE;
+>   
+>   	/* Make device context invalid, translation requests will fault w/ #258 */
+> -	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, 0);
+> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+>   	riscv_iommu_bond_unlink(info->domain, dev);
+>   	info->domain = NULL;
+>   
+> @@ -1400,8 +1403,12 @@ static int riscv_iommu_attach_identity_domain(struct iommu_domain *iommu_domain,
+>   {
+>   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+>   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+> +	struct riscv_iommu_dc dc = {0};
+> +
+> +	dc.fsc = RISCV_IOMMU_FSC_BARE;
+> +	dc.ta = RISCV_IOMMU_PC_TA_V;
+>   
+> -	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, RISCV_IOMMU_PC_TA_V);
+> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+>   	riscv_iommu_bond_unlink(info->domain, dev);
+>   	info->domain = NULL;
+>   
+
