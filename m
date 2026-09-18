@@ -1,117 +1,137 @@
 Received: from mail-qk2-f13.google.com (mail-qk2-f13.google.com [74.125.230.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA85051AEED
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 16:57:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44B304F68DC
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 17:05:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789750685; cv=none; b=hORMwbRANq11livabA7gnfvq+bsu98Ej76u7JUNUG5JT6TjUweKtRIZXMaIgZS0g/xqnsONvTOiOLpgInmBSnaw0iKl6rbpR2G5xP//KjXhPJBxaoOzeThvQYlhVYgdt94nylsap+0Af5PCuP0fdeMoxyHs2eRAbRAi4E1h0zr0=
+	t=1789751131; cv=none; b=uJDFww9Xu5jY0hbxeRgRPwk6OLQoQ1yCcIiJ8GGGsgZEEhjIag15GGEOVVZS2OCOwy+jz0GpOWfnY7QOF+49Oh1ny41IVjBH83gwO/XSeKrsUuf7C9lPhdO9dwbkIrJypkyfMuAuCI9aSLwlXsHA5vtJY49xptuZJbd3t+R8yV4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789750685; c=relaxed/simple;
-	bh=6pCoeSjfIM1AWSdeWFfupOCaccy7EnX/IEuPyibjz0s=;
+	s=arc-20240116; t=1789751131; c=relaxed/simple;
+	bh=CJUtrnr9lbLTqP4H/g58GCIz+hH13m2n3S92AYR7A28=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K0lGZvrQrl4EhXHjdatKa9r3ZBT8FfA0ADn1VLESvkcknraaMcpwC/QHAccRE68fK8uml19b4wlwWs0xvH68kfjF9SUQghtW5k36T2LSfSBlVT217mFRtj43vJl3OGuIAUZpop5E8UDYSeYXEGqb/lWoOugjHsyjWdRx3rlvCoM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=EYyE62iZ; arc=none smtp.client-ip=74.125.230.205
+	 Content-Type:Content-Disposition:In-Reply-To; b=HFSkWnlwdTv5hMPexadgCfhuSVYxrI5RSAb+Slgg4Twx9VNYUjIq5tb+z1k0mVYnpj3lGQs65HHm++ZTvhXDlr79CcNPuzbD5IGEfDZSGfIfZt+yJT09RsSeHXDPXTHbdX4x6blbVIfQNkdQ70KUwb2mmqqWJxzw7Pf+lCJ0Aw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OLFqATx5; arc=none smtp.client-ip=74.125.230.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="EYyE62iZ"
-Received: by mail-qk2-f13.google.com with SMTP id d75a77b69052e-530301ff353so10619981cf.2
-        for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 09:57:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OLFqATx5"
+Received: by mail-qk2-f13.google.com with SMTP id af79cd13be357-939695b5741so92113685a.1
+        for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 10:05:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1789750677; x=1790355477; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=xg8bxcCx9Xplr0VksHoJCXIx7eh2ZBKcRPIgfCbqvCk=;
-        b=EYyE62iZOx9YOxUvHZZavua+NH1hUoSwUO4Kq+WoEYAleNzn3SZ+6g+YHgvPmTtRy1
-         Jzxp9cx7FI48pc+CD7Rb1ptMU43a0u+V83twfnWU6ZsuyCqD0ywyoS7Uu+m5r8sN7d94
-         SVsiVwo6DLVGpt2soH24COATMfVo8w1EkIKw+n1ay5klN6/wbyb8S+UUPMc/IdnlqTiG
-         IP2d9jvJepWxHM2KoaCdOPuw0w7jJu/kGOEl+3GqCMrl45ZvDI/m+NuX4sMTapFAKCNF
-         Wnfae0zz7mXMvlv5GV+65gKp2A5uxC1GOQqLHQlFSkWly2ekhmHjBIw5iA6UU20yqez2
-         T7eA==
+        d=ziepe.ca; s=google; t=1789751128; x=1790355928; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=zQcyEtFjPBr6Six+ddaDb/CoGlSZSKi7ev20pm6BxlM=;
+        b=OLFqATx5n5vD7sjkNjTEBwRAvg3WLkdwWKbXMMyIyTokPVnxpn3Ym+Nn/ct4pY2pEX
+         OUv4zqJS9DbMsyhfgM0q9GqnQYQ7gILcV3cBp92VTw9h/OpxHPSRh6ieZgmSFcsuH4ks
+         HWPkr39QaloJEtqiEznpJ1gRqOMCYdK5GzD9iKnC687hNtGEmZ6qRR7SfjxdxkQoJre8
+         zJ8jOPtSr6NV4JUbYazeekP4j1O6gm2s9AMsVjYxP/QEXu8DBhdhaJ5gnd50bIf9/emv
+         vaRD2qAOafKVRHHN2U7mEcwHdJ7VvOx5o6MKr6VWYubzerlFsFxIZtJ7BT7EFkkdnrPG
+         Az3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789750677; x=1790355477;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xg8bxcCx9Xplr0VksHoJCXIx7eh2ZBKcRPIgfCbqvCk=;
-        b=XohZOIEZM+7JUnjso50ARz8m+7Fo9MIZZ2Y0n1kOTrS3DFh+h7ZhZcefX3Jb8fDPQp
-         vNl3/efsl0j1CRQ0JR0fSMU5VlCbvBXDJOT37UX7EUJQ4j8oVUKffGpaYiTTt8ZKhaJV
-         KwwWx3+kwhoSX1jcx1aNsHKF8P12coo6zeg223OAO+3LjS2iF/ZNypp/Dm5b6o6HPtpU
-         kj1uTa9Mtv1b/z2smrnDVyrqtrFZHZzUi1MZhArNOmKevEMckxFBw3NF0v635lWuwzfN
-         424tkmh42vJCUhu2RhPxTmVgCsvJmGBX9L3MoFRHiZkard/xvsWqG8EcYDt4YOz2IJaM
-         JP6g==
-X-Forwarded-Encrypted: i=1; AKwUvBw+H19thtIioEW+UbyPCT6AexLCtmXTpqwvREHKYKD7UygmL/o8EgJUdzz8Rdk5WRCI6wCd+Q==@lists.linux.dev
-X-Gm-Message-State: AFuF++kJwM4ll7MQE/3bOzdfDpmliYMYwASsUjYC21J1C4Q5H1rbPpEM
-	PIo2H07sf/giL9gVtFnwBDRHyisXCX2NIfPK4osrfdRTsZQCx+Ec+h1+y6QHUz9Z1aaYYMXYjBN
-	C/hqv
-X-Gm-Gg: AYBFou3RJ/cEg9HQiFouDf/IMrCWyvI7hOQoz0bmMZlzDuX51GqM1B9w2je02544buz
-	VTIL21DALRnaPIjr5EP1gLRPQY+7MMgkFS9xmGkW7cP1U6IanYLguLuZZWK4tle8LJydwClUDIJ
-	u3eoAG/ZqQsrVsDlaOlgyl3oKempXyHMVAKo5yW+mjnsRBwUzZcAT+NByc0Ep34SieQ1iLCt9Ec
-	MqzU6PhzOjE/NUp8HGhYnJ6s3BYR2Iga1VUd0/TIfmU3cCu9nTkua/LmAPSJXbHQiOFxs5vL0Jp
-	mq4t2SjqJptvWrmvdCM0wM1a2zfWm5H8u7j/6Y4vxK1sfb4HV3OUhefQkXk2MDUtX36rk0vZ0rp
-	y3L7xITpq7uO0LmK2eykBsXsGQ8CMhWCI6QSGNwKr0aTPhZD9gMO7LV4XoJI9FIT0lIQzgGNvC3
-	8YizHmmJc4b04JfSRjp+HZQPPPtAPID/4DkXZcwDZaqpBdy3er3B1n6D4RgV8K/Ij5HkAlrZDSh
-	X5LZ+aaaLEI37ofhCdHCP6LnMIOoARSGr3OouaTI5+YpS13M/UBpI9i
-X-Received: by 2002:a05:622a:60d:b0:530:9bb:54ae with SMTP id d75a77b69052e-5329e259e51mr55816971cf.15.1789750676599;
-        Fri, 18 Sep 2026 09:57:56 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1789751128; x=1790355928;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=zQcyEtFjPBr6Six+ddaDb/CoGlSZSKi7ev20pm6BxlM=;
+        b=MfIX151Hgeo/4tr6h1IWp8IF9pK738ezp2JJSHoXWNFEloU3P5wEy3jSskP2pBubLU
+         4Ha6L13dNQtKdrekAzXD90pQYHW5Om2uC1+HpI0Hjeex18N9JKC3KArlGGZWgsw7TuNj
+         Pkul/7sp3LlODwYSx0Rkx7IvEc0WBIHHFgXBlZ5KG6zfLI7pxcJnHqnUlMrQ7BUzIeQ1
+         ku1ZbD7JOD6FOqEQWnnifzFuoExaAfQ7hukT/3XhV+qY58MTJEu/awQUy8vrS5VSnjNm
+         AHueSmqN63IJNw1LkK5jPSv69lffiNskTaFYYSftqQi8jiOPsOISbqZzYvkKguJ4HzMP
+         SZ/A==
+X-Forwarded-Encrypted: i=1; AKwUvBw7ss9kf8E+B+uADCDQMVVKnPWe2nUQ+ZbRXg54K5MzDuOaoQ3cW+wjgWt14eWcS+8qgdlkgQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++kcet0Q3gY1rjYrGDVMG9SquQ/3WWJl+Xi+7a/nZW1B37cLWuRu
+	WVFnvmM6GqUdwM/CM9AK+b6dR6Z0gbSgeYo9cc6v4hEcaWEMaWycqmHiqwY+1JAPurQ=
+X-Gm-Gg: AYBFou2BGkrfl3AoWv8r2qSZgaUjiXgD2/AdifsI1pQ4Oz9Z/2XIWev/zSyc+kzKLYD
+	0PF4TpCOBkhg3nSnHkSsOiUrFEayu4tdpJPREQGn8gmKmvBT/vtbuGrjMP4NDaBkGF9f2kS/Tir
+	EPcLVcTrewGGqQH9USCutYjtsD/J37QU1efVSFhL5fQ91iTyCn/8rIj7WC2LonnVXKAA7m7DG/F
+	3VdJc8kZ2uT8xgYknPqQIpqQ7+FBIoJah4421HMaSwqf0dbA80CMntKkRJP8bzJp8WWzZfsXqOH
+	J/XVFVltM+oXv1xWp2SQtD+Zo1Vj2znF1SfkSycHtvoiZPqHC0EealB0SMF5rLNpAdcHJpqKnyS
+	anpulXX3bYZSWRzhJyvlYY4H9QrKAbJO6fKfzEcorDFWD4NYxnlB/yMKK9SEjQcfVc1tLpd2oL8
+	ffrRVnkCTkqCPoINJslkxRJje0HBdB+eIqsUxUTtiWpHjs51/OU4RiYaceKsREGQU82CWG5VZFZ
+	hkBBT9LLd3bklGZEkUaatTpuEXZddeAyRZaN/7Ax42ttsOtP9jquQfk
+X-Received: by 2002:a05:620a:440d:b0:93a:83d:1d26 with SMTP id af79cd13be357-93bdc6c7741mr490404585a.32.1789751128040;
+        Fri, 18 Sep 2026 10:05:28 -0700 (PDT)
 Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-532ae2c6a33sm1773871cf.0.2026.09.18.09.57.55
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93be0cc67e6sm187224885a.5.2026.09.18.10.05.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 09:57:55 -0700 (PDT)
+        Fri, 18 Sep 2026 10:05:25 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1x7buM-00000001zBN-2BHs;
-	Fri, 18 Sep 2026 13:57:54 -0300
-Date: Fri, 18 Sep 2026 13:57:54 -0300
+	id 1x7c1c-00000001zVZ-3Nwz;
+	Fri, 18 Sep 2026 14:05:24 -0300
+Date: Fri, 18 Sep 2026 14:05:24 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v6 0/9] coco: guest: Enforce host page-size alignment for
- shared buffers
-Message-ID: <20260918165754.GG11599@ziepe.ca>
-References: <20260904103452.1197239-1-aneesh.kumar@kernel.org>
- <aq1sT2EDsGaomqST@arm.com>
+To: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
+ direct peer-to-peer route
+Message-ID: <20260918170524.GH11599@ziepe.ca>
+References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
+ <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
+ <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
+ <20260918121500.GV13683@unreal>
+ <b517070d0b9236b03962fcba649faffcacda23eb.camel@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aq1sT2EDsGaomqST@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b517070d0b9236b03962fcba649faffcacda23eb.camel@linux.intel.com>
 
-On Fri, Sep 18, 2026 at 05:52:31PM +0100, Catalin Marinas wrote:
+On Fri, Sep 18, 2026 at 03:42:28PM +0200, Thomas Hellström wrote:
+> 
+> 1) Xe attachment check if pci_p2pdma_distance() returns OK for the
+> path. Then Xe always sets up dma-addresses using dma_map_resource(). 
 
-> TBH, I'm tempted not to support this configuration at all, just fail
-> gracefully if the realm page size doesn't match the host's. However, if
-> that's a real world configuration, 
+Open coding pci_p2pdma_distance() in drivers is a hack. Using
+dma_map_resource() like this was never "allowed".
 
-realm != host is going to be fairly common.
+We've fixed things so these hacks are not needed, the drivers need to
+move over to things like dma_buf_phys_vec_to_sgt() and the hmm helpers
+to use the DMA API correctly.
 
-host > realm is probably not that common, I would guess.
+> 1a) Let's say the importer (Xe) has ATS enabled, and the exporter is
+> supposed to map dma_addresses.
+> In between there is a switch that allows direct traffic.
+> Now with your patch series, How would the exporter know that Xe has ATS
+> enabled and therefore should return IOVA mappings rather than the BUS
+> addresses representing the shortcut.
 
-> I wonder whether could we leverage the swiotlb mechanism but with a
-> separate io_tlb_mem as a shared coco allocator with the right
-> alignment and use this pool when force_dma_unencrypted() instead of
-> specific alloc_pages() with adjusted order.
+The thing that does the DMA map must be aware of what PCI TLPs the
+PCIe initiator will use to compute the proper P2P mapping mode.
 
-I propose we fix the far too low level set memory decrypted apis into
-proper allocators, with APIs that can handle a round up. Then see
-where we end up after that.
+ATS always needs an IOVA but that still doesn't mean the P2P will
+work.
 
-If we can hide 90% of it in an allocator then lets see if we can open
-code the rest.
+> It seems to me that a pci-device settable flag "ATS always enabled"
+> should be enough to fix both issues?
+
+It should be be per-mapping to support the NIC workflow that isn't a
+global operation.
 
 Jason
