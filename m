@@ -1,96 +1,152 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED89E38F250;
-	Fri, 18 Sep 2026 12:37:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C787B4A262C;
+	Fri, 18 Sep 2026 13:03:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789735062; cv=none; b=bNObdsSuzfI4Qjnbi49CGQ/kQoUOlbd23/XXBWsOoyHEInnKa16LMMDFqs2vmCyPlWW273Jx/tcIluLv8wiTBAMBl/U6dGY+lIJ+U/FTC+/SqFvoVFsJz7gTIRff4NhuRStB8Qdi8Fe4tqQtnXHM3lpJmb2gpi07xRI3+sOAEyE=
+	t=1789736590; cv=none; b=T0ICqi+CxLZD+Yymw0s9MoOOcgOWJzjXBV+X8GMl5xrWRj2/WHthMFtfIFIvKgjwQIhWmZL4t3QK9NYFqDaNMa/Wj8aDPdbGx3+SCeJ/gPKuJWpwVHxU/FNxSqarq9L+H/b/s7hFyv5sNlwPf8+M6sAa/ZyZqKnxvBYIDfEIQOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789735062; c=relaxed/simple;
-	bh=GRKtSV1oCx15Lx6vmy/Pr8Fys9refh9E8xXkh0/M9B8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BI8ZGT4+/ZgjPQCsyS4StJyWArzAhNnMHNQHlMvr+eMQ2R6ajP550Blegvc21ZqdM/QZnriFgsRVWXVg1aDB8ddbej0mtAikicz+Yrot3pbeJS0m7R3n86RL5Qom5bqWviFlMk+t17mLAeyU5QDsQoLMFFL4AQRZepFFckIVRwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e62CO7nK; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e62CO7nK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E71B01F000FF;
-	Fri, 18 Sep 2026 12:37:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789735060;
-	bh=TlHPawVeVCEe2FE2C/DD5dJed6U8heXd2s/+SPtJ32o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=e62CO7nKq2QG9a/NfuhcbhSfMZ1rOHxmQAjEIpPUqdxkwQrcLaULP3V4DmnlVDz1I
-	 4daeOL9rPH7tZ7NaFy4/BrGrmiTn0dkoJv88eewIOgAPPNPlvDZEmtr4A9yED3kWG3
-	 XM3twqz4pgSMCzNZzUnGIZig1+EVOPmhhWHAXCXLjNt7CNXiZUPwgA11zvO5jGcODH
-	 C6mUcIYf2ah05vduJVFQxTComO+AZ9/XlhUQqGl5aOrPfNDXWeuHKbJp/R/7O55Dqw
-	 ayXLlOOezwBAKotdSKY8Q8TFyyG1wJ9U7vkmekJt0euicFdmH3PKv1bpSN1zvGUH0D
-	 vm8nbRbWhDAtg==
-Date: Fri, 18 Sep 2026 15:37:36 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC 0/2] iommu/dma: Fix DMA_ATTR_MMIO swiotlb rejection
-Message-ID: <20260918123736.GW13683@unreal>
-References: <20260916-iommu-dma-fix-v1-0-a59a0c45ec5b@nxp.com>
+	s=arc-20240116; t=1789736590; c=relaxed/simple;
+	bh=yVcEqSXbP/8mFfz7dHA2v+SFBTVxlkUsy2wH62WCuGg=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=KEThj6DFAKFhS7aG9rgZuWG7ZQv6gCvKvSJn+O1jAMZ72rBv1vcSXIMBSMvPErHzK9HHEgraFz/RdbMevFRdVl9pVLJRn4SDr3lM0LD4LHstyf8edUxU06fVVGnOEi54Eb/m1hvjuO6wzRFj6eV46PG7SEzNYoAPcLwFRGP/WSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.helo=mail.mainlining.org; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.helo=mail.mainlining.org
+Message-ID: <29506e08-9337-487f-af2d-b75f5aa8341e@mainlining.org>
+Date: Fri, 18 Sep 2026 16:01:43 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260916-iommu-dma-fix-v1-0-a59a0c45ec5b@nxp.com>
+User-Agent: Mozilla Thunderbird
+From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Subject: Re: [PATCH v2 01/19] dt-bindings: clock: qcom: Add MSM8952 global
+ clock controller
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
+ Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
+ Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Srinivas Kandagatla <srini@kernel.org>,
+ Ulf Hansson <ulfh@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
+ Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
+ <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
+ Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Robert Marko <robimarko@gmail.com>, Guru Das Srinagesh <linux@gurudas.dev>,
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Kees Cook <kees@kernel.org>,
+ Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"
+ <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ David Heidelberg <david@ixit.cz>, Dang Huynh <danct12@riseup.net>,
+ phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+ iommu@lists.linux.dev, mfd@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, linux-pm@vger.kernel.org,
+ linux-input@vger.kernel.org
+References: <20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org>
+ <20260916-msm8952-initial-support-v2-1-798c2602dde1@mainlining.org>
+ <20260918-liberal-significant-crow-f1e66f@quoll>
+Content-Language: en-US
+In-Reply-To: <20260918-liberal-significant-crow-f1e66f@quoll>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 16, 2026 at 11:23:32PM +0800, Peng Fan (OSS) wrote:
-> Commit f9374de14c0e8 ("iommu/dma: implement DMA_ATTR_MMIO for
-> iommu_dma_(un)map_phys()") and commit c288d657dd515 ("iommu/dma: implement
-> DMA_ATTR_MMIO for dma_iova_link().") added DMA_ATTR_MMIO support to skip
-> swiotlb bouncing and cache flushing for MMIO resources. However, both
-> implementations placed the DMA_ATTR_MMIO check inside the swiotlb bounce block,
-> causing non-page-aligned MMIO mappings to be rejected outright instead of
-> skipping the bounce and proceeding to create the IOVA mapping.
-> 
-> This breaks dma_map_resource() for any non-page-aligned device register when
-> behind an IOMMU: DMA controllers that map peripheral FIFO addresses
-> (e.g. SPI controller TX/RX data registers) through an IOMMU for per-channel
-> isolation.
-> 
-> Both patches move the DMA_ATTR_MMIO check before the swiotlb block so MMIO,
-> resources skip the entire bounce path and fall through directly to the IOMMU
-> mapping function.
+Hi Krzysztof,
 
-While I understand the rationale behind the first patch, why do we need the
-second one? Do we want to allow unaligned addresses for the _link_ as well?
-Current users don't need it.
+On Fri, 18 Sep 2026 12:02:02 +0200, Krzysztof Kozlowski wrote:
+> On Wed, Sep 16, 2026 at 05:22:06PM +0300, Muzaffer Kadir wrote:
+>> Add a device tree binding to describe clocks, resets and power domains
+>> provided by the global clock controller on MSM8952 SoC.
+>>
+>> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
+> 
+> Please run scripts/checkpatch.pl on the patches and fix reported
+> warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
+> patches and (probably) fix more warnings. Some warnings can be ignored,
+> especially from --strict run, but the code here looks like it needs a
+> fix. Feel free to get in touch if the warning is not clear.
+> 
+
+Then I will ask a few things,
+
+WARNING: DT binding headers should be licensed (GPL-2.0-only OR .*)
+#88: FILE: include/dt-bindings/clock/qcom,gcc-msm8952.h:1:
++/* SPDX-License-Identifier: GPL-2.0-only */
+
+As I said on cover, I originally based on msm8939 gcc,
+would it cause license problems with file if I fix this
+warning?
+
+Some patches say "has style problems, please review."
+Is this related to formatting of code inside patch ?
+
+WARNING: Prefer a maximum 75 chars per line (possible unwrapped commit description?)
+#16: 
+[1] https://android.googlesource.com/kernel/msm.git/+/refs/tags/android-wear-7.0.0_r0.3/drivers/clk/qcom/clock-gcc-8952.c
+
+Should I move these to "Link:" to fix this type of warnings?
+Wouldn't moving them cause a bit understanding loss?
+
+grep: warning: stray \ before -
+What does this mean ?
 
 Thanks
 
+>> ---
+>>  .../bindings/clock/qcom,gcc-msm8952.yaml           |  56 ++++++
+>>  include/dt-bindings/clock/qcom,gcc-msm8952.h       | 217 +++++++++++++++++++++
+>>  2 files changed, 273 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8952.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8952.yaml
+>> new file mode 100644
+>> index 000000000000..274dde633e17
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8952.yaml
+>> @@ -0,0 +1,56 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/clock/qcom,gcc-msm8952.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Qualcomm Global Clock & Reset Controller on MSM8952
+>> +
+>> +maintainers:
+>> +  - Muzaffer Kadir <muzafferkadir@mainlining.org>
+>> +
+>> +description: |
+>> +  Qualcomm global clock control module provides the clocks, resets and power
+>> +  domains on MSM8952.
+>> +
+>> +  See also::
 > 
-> Tested on NXP i.MX95 with ARM SMMUv3 where the fsl-edma DMA controller maps
-> SPI peripheral FIFO registers (non-page-aligned) via dma_map_resource()
-> through per-channel IOMMU domains. Only the iommu_dma_map_phys() path was
-> exercised; the dma_iova_link() fix is by code inspection of the same pattern.
+> git grep "also::" -- Documentation/devicetree/bindings/clock/
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
-> Peng Fan (2):
->       iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in iommu_dma_map_phys
->       iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in dma_iova_link()
+> I asked you month ago here:
+> <e3fb3794-ca7a-4794-8036-b69e563aaa57@kernel.org>
+> to not work on old forks.
 > 
->  drivers/iommu/dma-iommu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> ---
-> base-commit: e6e35979777d646fe3c7c94dca7dd32fb25d45f4
-> change-id: 20260916-iommu-dma-fix-9f55af1beb46
-> 
-> Best regards,
-> --  
-> Peng Fan <peng.fan@nxp.com>
-> 
-> 
+> Old fork which you should not use is postmarketos, lineageos, whatever
+> Android fork kernel, and whatever other tree which is not upstream from
+> kernel.org.
+
+I created all of this before sending pinctrl. I tried to clean up by
+reading others in upstream before sending but I guess I didn't
+noticed that, sorry about that.
+I didn't reused fork and mainly used upstream after your reply.
+
+Best regards,
+Muzaffer Kadir
