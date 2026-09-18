@@ -1,160 +1,179 @@
-Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com [209.85.214.193])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF2013FCB3A
-	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 10:53:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 666514C10D1;
+	Fri, 18 Sep 2026 11:06:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789728829; cv=none; b=ZV7JfuI4YsNSDltM+OoEfqmwVLeNnWl/FXqySf0wXa/JQ0vqpZxfm5GUOzAVQ3iwKVvEoakIlj5gzRLZmJ9iWOo7pUGNJYb/ECA3cvxQTBI5/e5SAtkybVofIQOVX/MiopNprNp4Hq2wOGNqoAsb6r7wXTrU/ACkbbY/V+aLDsw=
+	t=1789729611; cv=none; b=nqZFmHDa/tfye90cFsV/5VGaEEJRIyL409yWgJdnToYVoB5D2qTjwip8z+z9//P9kBDYD7yo4pTOCFIbob65v4VEUdHlXXRM6ulVnVRI2bZANhn8o542KIAxd5TogtuVaDVXMfccHLxYLPz48J+81kOzLpMIIcS85pZGQmNc7R4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789728829; c=relaxed/simple;
-	bh=ZUwGpl30HDIT8l2z/Osc/Y3a2vr84b85yvTBFDvsGtA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SJgVdo9lgfIwSPe2nnEYIbDBnIhpsDGViU3wv6UfBViLoexrhKIdrr4ZaPLUoxAGAigAoqDJt/YsKAGDLW1g7bZwHLVPeIZ0+EhYe9jIw4uqfai4YkWAoYtr20D2BYbcD9F89fBBNyaWA9CO41lq2i42Tl0tG1ZG6GN/geBNWUg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GoSSnE/b; arc=none smtp.client-ip=209.85.214.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789729611; c=relaxed/simple;
+	bh=PawLXKvlJwv7D4KsJjXTvYA+h3NHb2+AdBM76dtcECM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=BLF14KEiZEpPIwL/qhQuh+yG8+KtZsFL6odmaLgSeJIo7Fq9IRzmLHkTYt82nluJkKF1TYVXXFQcYt7j56XZuDGavI8a8aoRUHGBXAJOS4OpXpl2pZ8Cv/iuipUpx0mJHa/drt7605kaH2QOJIyfsVvyCExpmxYhva/H2/Ho4ug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O7SpKCnA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GoSSnE/b"
-Received: by mail-pl1-f193.google.com with SMTP id d9443c01a7336-2caced6038eso4986835ad.0
-        for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 03:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789728825; x=1790333625; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=TAR8zhCOEVqWXPt6vBsjOMeeQmFuBz9UsZFbgyML5lo=;
-        b=GoSSnE/bQGOQZQkPu5rGRPLo6VEn83JoD6CiotL0+48UOkFJOUGdKxDMNh0RBly1Si
-         jVCkx5z4eCDtLSpWBmKM5tDO1ku00WrJiXQhBQ+mzCXbFSvnr1cXeNWgm33Epx0gx6vk
-         QPPfipsXyqf8wvEzD0lXkhhBsp4ZhDpScaOevQ12bwqHTs5PmikkhB0MUVlq1dQNNBXt
-         l3Gu1P8XbdqMrKriW7CcmPx3ZuJK2jWbTUZgGTnaCIDtxBFK5UV/skljxIVkToM/pWmA
-         efWlapsCNLiGwJWnXz8q1KKoxMSdZ0O2suBDIVZUd6ltRG+0aOfmv48q0jAg4gOlNnd7
-         AhPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789728825; x=1790333625;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=TAR8zhCOEVqWXPt6vBsjOMeeQmFuBz9UsZFbgyML5lo=;
-        b=gwU9cNW9J3luATFIYvVr9X4kt4oQFAUOaqv8cnO8vst5/OX0eaK2PkCTGL/EsLS2Sf
-         rFkszOaHCOzIl71fU0ZU9/gEBZIAUck4hrbEpihCvg2vPFZuyMJCRJ3REOStGFKoKEiI
-         JKRd+k9X3f4hhX+0WUO+K5265SisZ2d8DcJ6Tu720zUkgwCwyingBgIhEUvT17hJQhhm
-         U/2AgMJ2bTse49lS4ZgzU3rm3xUrZOlURqWKEvu2Qw5t9C1FIqDPgKBwTFb1pAjzoEsP
-         lZolQiqevj1klbMn2Uyw/sdpbcKc5yYhxjy8mmH+bdfVorgZCr7eXs+OsMl+Q85py8O0
-         QgLw==
-X-Forwarded-Encrypted: i=1; AKwUvBwDFc7i3St6zJQZ42A1nbM3/EJ2iL2O5rtzsQXo5fZ0A2DU/nZd2OdK0UdmxCFZu/H6luTpHA==@lists.linux.dev
-X-Gm-Message-State: AFuF++mlq+1JoMyV9OK/5nmS9KuMCdscb7XigSDPvMDJyD9Vy0NnWalz
-	115IqJYMPldguuR07Um1F7YoRj8yqY9YaVvCCk/ONhPF0zlL9etw9ke3
-X-Gm-Gg: AYBFou1ILR9U+VFKctw+XR9nuAD2ZFwYeZs9+o3CyMLlqrycVK6nvWubI3WaZytx9Pq
-	bF/YHp2OjyFkmDSwTm6RHsfZjNxY0DcrH5PwsxerOfD1C5IT6r3/XKFz43/XxoH9StnSkJ58ZfK
-	zx5oNlkXAO8EQqhZ5IXz3ksS0G3swot3fHomF7K3DeeqiOUAMoXXK3VOpByiymkm50n5spd8gqH
-	wC3+O7Kl9pCQTkBQV+jL/JnH1X+vYE3ESwB328wo6DjWU7/PL5UtBGrRCB1zSXStKWyp3HtELiS
-	NLfG2C6LXZwX3RSmOzCru0jsXeOiEmXQ90EstVTCitTHoRs8YWaJcvnMrQd90p66OmnEGXmeaXW
-	JV96+9u12046ryraWqOy19GMW+6p3CrglfzGGT2uGyYXLGnCqwYUFmWEeUMMmAgzq2seisgElrL
-	kKDjULMOO1lqRkOrzt8Ar9qaL6lRXeBRs+PuYyEFjAKcWmfgSjw2b7G9oi9iHmfhREUQkRUSHEa
-	kqJIQ==
-X-Received: by 2002:a17:902:cecc:b0:2d8:d4d2:d139 with SMTP id d9443c01a7336-2dd9ca3f088mr93269015ad.21.1789728825328;
-        Fri, 18 Sep 2026 03:53:45 -0700 (PDT)
-Received: from [10.125.112.20] ([122.11.210.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ddb7525b2asm5835555ad.19.2026.09.18.03.53.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Sep 2026 03:53:44 -0700 (PDT)
-Message-ID: <1a47d5de-fb68-4c10-a199-f0d274689cdc@gmail.com>
-Date: Fri, 18 Sep 2026 18:53:32 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O7SpKCnA"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2435CC2BCF6;
+	Fri, 18 Sep 2026 11:06:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1789729610;
+	bh=PawLXKvlJwv7D4KsJjXTvYA+h3NHb2+AdBM76dtcECM=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=O7SpKCnAchMviM60tVz+OncP9xqcXp740adol8HcbgG87moP/sz3Ab5zCF75KfSO5
+	 DZ/ENgtEwLQug35EH2NDNoZGg1yy2rEEfDJzleVt2oyn+odxI890VE0Ai8v5OZI97L
+	 yLo1XJEYGkEoi5pVmtO2pTzc6R+HIIjmN4P5EqB8T5qYLmYOF2+7OWsOpDppgMTxHj
+	 6n91Lfd6ZC04SjuKsmfvbGO8gZplp2rreHFLfM9ml6JJgSM//G0NYnBkM1OhUoS1xL
+	 jugnhrfZzH4ehXjFNtsL3y46YEcEYj6GhKjnbio/IQoAy+019yNj28APfgzRBndY0L
+	 QdLtH2UfcMFcA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E9AC982D7;
+	Fri, 18 Sep 2026 11:06:49 +0000 (UTC)
+From: Michael Reeves via B4 Relay <devnull+michael.reeves077.gmail.com@kernel.org>
+Subject: [PATCH v2 00/10] Add support for Apple Silicon DockChannel
+ internal keyboards
+Date: Fri, 18 Sep 2026 21:06:43 +1000
+Message-Id: <20260918-apple-mtp-keyboard-final-v2-0-a5c685e50b60@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/10] kdump: reduce vmcore size and capture time
-To: Baoquan He <baoquan.he@linux.dev>
-Cc: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
- pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org,
- rppt@kernel.org, pasha.tatashin@soleen.com, pratyush@kernel.org,
- m.szyprowski@samsung.com, mark.rutland@arm.com, kernel@xen0n.name,
- alex@ghiti.fr, hpa@zytor.com, ruirui.yang@linux.dev, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
- devicetree@vger.kernel.org, kexec@lists.infradead.org, linux-mm@kvack.org,
- iommu@lists.linux.dev
-References: <20260902073116.802752-1-chenwandun1@gmail.com>
- <aqzznOgILX2pZg7b@fedora>
-Content-Language: en-US
-From: Wandun <chenwandun1@gmail.com>
-In-Reply-To: <aqzznOgILX2pZg7b@fedora>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6WPMQ6DMAxFr4Iy11WAEkSn3qNiMMGBqIQgB6Eix
+ N1LmLp06vik7/fkTQRiS0Hck00wLTZYPx6QXRKhexw7AtseLDKZKamyCnCaBgI3T/CitfHILRg
+ 74gBVqpsClTE3o8VxPjEZ+z7Vz/rgBgNBwzjqPgodhpk4Dg17B3PPhF+lXP4uLSlIKKRqq1xhW
+ sry0Tm0w1V7F329DbPn9XxpSWP+T2e97/sHkmRq3ykBAAA=
+X-Change-ID: 20260629-apple-mtp-keyboard-final-91cb5a6ff4fc
+To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
+ Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>, 
+ Michael Reeves <michael.reeves077@gmail.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Kosina <jikos@kernel.org>, 
+ Benjamin Tissoires <bentiss@kernel.org>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-input@vger.kernel.org, 
+ Yureka Lilian <yureka@cyberchaos.dev>, Julian Braha <julianbraha@gmail.com>, 
+ Sasha Finkelstein <k@chaosmail.tech>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789729608; l=5150;
+ i=michael.reeves077@gmail.com; s=fedora-20260918;
+ h=from:subject:message-id;
+ bh=PawLXKvlJwv7D4KsJjXTvYA+h3NHb2+AdBM76dtcECM=;
+ b=DyM1kiGNSg27vuEC2T7JPVm2q4rWEodR3Ak0dpi7DGHZb9sUGUPU7nvYtFL3gCq+RL/xA5/wt
+ kORyTa+p2nFCwdMZwlGS4dnWRK/cgGi5vwoe7VjfsRsWtRbFvyW0p3d
+X-Developer-Key: i=michael.reeves077@gmail.com; a=ed25519;
+ pk=VJ0TvyQ9TvfzYZa908YSE9kpkjFLLD5luv0bERu+boc=
+X-Endpoint-Received: by B4 Relay for
+ michael.reeves077@gmail.com/fedora-20260918 with auth_id=1035
+X-Original-From: Michael Reeves <michael.reeves077@gmail.com>
+Reply-To: michael.reeves077@gmail.com
 
+This series introduces support for the internal keyboards on Apple
+Silicon M2 and M3 MacBook models.
 
+On these platforms, built-in input devices are managed by a dedicated
+coprocessor running an RTKit-based operating system. Communication
+between this coprocessor and the main processor is carried out over a
+low-latency hardware byte FIFO interface called DockChannel.
 
-On 9/18/26 16:17, Baoquan He wrote:
-> On 09/02/26 at 03:31pm, Wandun Chen wrote:
->> From: Wandun Chen <chenwandun@lixiang.com>
->>
-> ...snip... 
->> ACPI systems already filter reserved memory out of the vmcore through
->> their existing path; only DT-based systems currently fail to filter these
->> regions, which is what this series addresses. The flag lives in memblock
->> itself rather than in a DT-only structure, so the mechanism is generic and
->                                                                  ~~~
-> The patchset itself looks goot to me, while I am concerned if it's
-> really generic. I raised that in sub-thread talking with Wandun. Imagine
-> I tried to exclude many driver regions and split memblock regions into
-> hundreds, cma could yell out: cma_declare_contiguous_multi()?
+To support this input path, the series introduces a few new components:
+- An apple-dockchannel mailbox driver to handle the low-level
+  byte-stream FIFO.
+- A DockChannel HID transport driver (apple-hid) that boots the
+  coprocessor using the RTKit framework and encapsulates the HID
+  protocol over the mailbox.
+- Minor additions to the apple-rtkit and hid-apple drivers to support
+  the TraceKit endpoint and integrate the keyboards into the existing
+  input-quirks framework.
+- Devicetree bindings and DTS updates to describe the nodes on M2 and
+  M3 laptops.
 
-Are you concerned that setting the MEMBLOCK_NODUMP flag could split a memblock
-region into many smaller regions, which might then prevent
-cma_declare_contiguous_multi() from satisfying a multi-range allocation?
-If so, IICU I don’t think that applies here.
+The transport driver is based on an original out-of-tree implementation
+by Hector Martin, but it has been significantly rewritten for upstream
+inclusion to use the standard Linux mailbox framework and align better
+with upstream HID design patterns and reduce reliance on hacks.
 
-MEMBLOCK_NODUMP is currently only set on memory that has already been reserved.
-These regions are excluded when iterating over free memory, so marking them NODUMP
-does not increase the number of free regions seen by CMA.
+While the coprocessor manages both the keyboard and the trackpad, this
+series only enables keyboard support. The keyboard can be initialised
+without loading external firmware, whereas the trackpad requires
+firmware. Trackpad support will be submitted in a subsequent series
+once these base transport layers are established.
 
+Tested on: MacBook Air M3 (J613).
 
-Before marking NODUMP:
+Signed-off-by: Michael Reeves <michael.reeves077@gmail.com>
 
-  memblock.memory:    [ free ] [ reserved ] [ free ]
-  memblock.reserved:           [ reserved ]
+Changes in v2:
+- Link to v1: https://lore.kernel.org/asahi/20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com/
+- Rebase onto latest upstream and add M3 Pro/Max device-tree support.
+- Use an optional STM node to decide whether to wait for device IDs
+  (suggested by Yureka Lilian).
+- Rename bindings to match the t8112 fallback (suggested by Conor Dooley).
+- Fix FIFO MMIO write width (suggested by Yureka Lilian) and run mailbox
+  interrupt handling in the IRQ thread.
+- Remove the duplicate report fixup (suggested by Sasha Finkelstein)
+  and redundant HID dependency (suggested by Julian Braha).
+- Fix teardown and the missing HID stop callback; simplify interface lookup.
 
-Now, for memblock.memory, it is one region that contains free and reserved memory.
+---
+Michael Reeves (9):
+      dt-bindings: mailbox: apple: Add M3 ASC mailbox compatibles
+      dt-bindings: mailbox: apple: Add DockChannel mailbox
+      dt-bindings: iommu: apple,dart: Add M3 compatibles
+      dt-bindings: input: apple: Add DockChannel HID transport
+      mailbox: apple: Add DockChannel FIFO controller
+      HID: apple: Add support for DockChannel HID keyboards
+      HID: apple: Add DockChannel HID transport driver
+      arm64: dts: apple: Add MTP DockChannel HID nodes
+      arm64: dts: apple: Enable DockChannel HID on M2 and M3 laptops
 
+Sasha Finkelstein (1):
+      soc: apple: rtkit: Add tracekit endpoint
 
-After marking the reserved region NODUMP:
-
-  memblock.memory:    [ free ] [  NODUMP  ] [ free ]
-  memblock.reserved:           [ reserved ]
-
-for memblock.memory, it splits into 3 regions, 2 free regions, 1 nodump region.
-
-Although the memblock.memory array may be split internally, it does not create additional
-free ranges for cma_declare_contiguous_multi() to process.
-
-
-> 
-> IMHO, withdrawing the claim can fix the nit concern. If I am wrong,
-> please help point it out to let me learn more.
-
-I will revise this description to avoid any misunderstanding.
+ .../input/apple,t8112-dockchannel-hid.yaml         |  104 ++
+ .../devicetree/bindings/iommu/apple,dart.yaml      |    6 +-
+ .../devicetree/bindings/mailbox/apple,mailbox.yaml |    3 +
+ .../bindings/mailbox/apple,t8112-dockchannel.yaml  |   77 ++
+ MAINTAINERS                                        |    5 +
+ arch/arm64/boot/dts/apple/t602x-die0.dtsi          |   46 +
+ arch/arm64/boot/dts/apple/t602x-j414-j416.dtsi     |   29 +
+ arch/arm64/boot/dts/apple/t6030.dtsi               |   46 +
+ arch/arm64/boot/dts/apple/t6031-die0.dtsi          |   46 +
+ arch/arm64/boot/dts/apple/t603x-j514-j516.dtsi     |   24 +
+ arch/arm64/boot/dts/apple/t8112-j413.dts           |   24 +
+ arch/arm64/boot/dts/apple/t8112-j415.dts           |   24 +
+ arch/arm64/boot/dts/apple/t8112-j493.dts           |   26 +-
+ arch/arm64/boot/dts/apple/t8112.dtsi               |   46 +
+ arch/arm64/boot/dts/apple/t8122-j504.dts           |   26 +
+ arch/arm64/boot/dts/apple/t8122-j613.dts           |   27 +
+ arch/arm64/boot/dts/apple/t8122-j615.dts           |   27 +
+ arch/arm64/boot/dts/apple/t8122.dtsi               |   47 +
+ drivers/hid/Kconfig                                |    2 +
+ drivers/hid/Makefile                               |    2 +
+ drivers/hid/dockchannel/Kconfig                    |   14 +
+ drivers/hid/dockchannel/Makefile                   |    3 +
+ drivers/hid/dockchannel/apple-hid.c                | 1157 ++++++++++++++++++++
+ drivers/hid/hid-apple.c                            |  117 +-
+ drivers/mailbox/Kconfig                            |   12 +
+ drivers/mailbox/Makefile                           |    2 +
+ drivers/mailbox/apple-dockchannel.c                |  371 +++++++
+ drivers/soc/apple/rtkit.c                          |    2 +
+ include/linux/hid.h                                |    1 +
+ include/linux/mailbox/apple-dockchannel.h          |   29 +
+ 30 files changed, 2297 insertions(+), 48 deletions(-)
+---
+base-commit: 5dd1818b15d98d4a20806cd00b1b40320b06004f
+change-id: 20260629-apple-mtp-keyboard-final-91cb5a6ff4fc
 
 Best regards,
-Wandun
+-- 
+Michael Reeves <michael.reeves077@gmail.com>
 
-
-> 
-> Thanks
-> Baoquan
-> 
->> both ACPI and DT systems can benefit from it (suggested by Rob, thanks) [1].
->>
->> Since the reserved memory regions are filtered out, the vmcore is
->> smaller in size and faster to produce. 
->>
-> ...snip...
 
