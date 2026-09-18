@@ -1,271 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010058.outbound.protection.outlook.com [52.101.69.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8044F68D7;
-	Fri, 18 Sep 2026 13:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789738120; cv=none; b=BMepowVKewGy+0Hvw1vXevtT6PMCjvxh5JRuxz1qNxxF0Z/s7wTlJyldrRO+zt6rMvc1pce8/ShN3p5rHyi0yStT4NsrCkVoCfbIHWidkAHuzFzWIphHquKOKVemcgDcKLzVQQtK7V6gefVc65LxgaeC0R9YxgrHmadlkC2VWHQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789738120; c=relaxed/simple;
-	bh=kshdd0UgoZdMmGyTQdR78b5BxL4LZLWUeh+/eMSqKDQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SUqA2rqC39ckKMcF0W5xWOBzGcejY7aZ0YyaLoxAHzIfIqdkrAz9mf+cKvOFCM/ziiLYm9PXUs+coZcGSmh75s8HYQs3lpS0VLU5glYKJkjRo+nb4h956CDF7tQxiYqyv15//jgj2Sd2+HV8YoKk72LmlcGQlhq51ds2sY5tqT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dgg69dyq; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373B8509EF8
+	for <iommu@lists.linux.dev>; Fri, 18 Sep 2026 13:37:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789738636; cv=fail; b=bAns8Kcj3QEWDZeC1qy3l24LqQTPLoqWNHFjZefYYZSt9NiuaIp+z63UHNaDcNdhnl0DX4qLbeIer0+9AG/0TN6qZ+5hAcqeQL7r4dewoYDWDimdjCKSoqsAyQuQuz6NB3JAe+44vJWPacDL5xcNcWuLqwiITVCvvAEawDh92r0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789738636; c=relaxed/simple;
+	bh=w5zo8l/85O0D4TRhgIwIxx4HQMavUSSoKyctBsT5dRg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=qc9R6sYJIHMisBiBtIs8ADmYDKAW1L9OOz3B37nZCt+ISUiARSQUeLZQKwSSaamKC8gNwq89n+1bQMzNv74PDZW0G3noV3Y2e7Qk5vcNd3my5Zj6OrkW1MzWaEYBIgmoTQUL32YRKh3kfVJu2VRzqK73Zl2d4hJTkz9vuGrYgHg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=ZFrME8go; arc=fail smtp.client-ip=52.101.69.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dgg69dyq"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5168DC4AF15;
-	Fri, 18 Sep 2026 13:28:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1789738120;
-	bh=kshdd0UgoZdMmGyTQdR78b5BxL4LZLWUeh+/eMSqKDQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=dgg69dyqPjDbJkCHJy86/caNLZe3SQEm0XwzcNvJhEwUB1xjAQkZU6TSApJVQhzbM
-	 G4TpSZt4nDaIhgSQ0weihgl/k980sm+zCDKubw6Nji5HDWLZVnhYvmwt0zqJ4JpxXr
-	 /8Mpj9RdVzQamQZdFxWWPQ1NWl/iW85zfswOQPujEeBoPMPHHT0r65l/Cd/lIkcUXx
-	 s3p3xICge71MtwyxhQvbRZbm2FJrJCpCscrsAUJfd4yprVYAgZHI2WK+DNROraN+No
-	 4H38MVp3oBMi/6JhwoXjQlfoCYpuJ427Z4rKShiGLAn1uLprka+e8yS9bV3TBDimcK
-	 6vbnL01pvtyVw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDBFC982D8;
-	Fri, 18 Sep 2026 13:28:40 +0000 (UTC)
-From: Michael Reeves via B4 Relay <devnull+michael.reeves077.gmail.com@kernel.org>
-Date: Fri, 18 Sep 2026 23:28:37 +1000
-Subject: [PATCH v3 07/10] HID: apple: Add support for DockChannel HID
- keyboards
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="ZFrME8go"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tZhzrRLK1vPBK+/xWIWSuV+SyzR2UmXdN4wXMupt6U63pTnsdgOcgZM91zSR52029BdNQtJGQI01M3SzdKAegReZR13ba1XmI3H5m2bExkHlnAqeXqYbD7SlQOEeZ+zk6I+Sm5O0lmbEoC6GHZV9FYyCKpPf0cxsK9XvKv3ycDodQj4Q9sqX9LyZ1p6K0Qmni4JqJsUn4h7vVxi8aPi3i0FZOvJdHZ9d9ihcwDFu4i2w8jbpMcBfr2lKjWtBQHiVF3rd22nmM5oPYcdbf64xdqteU4G37DKuTRTnWgrJDPBOB6ebR8UnK4sXQtoyQsfQ3wHlzk1U8HZJn+mdZ5JcYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yjL3iUXwo2/cTbIpkMnuLytGjfyYr45FBZILjUnrt7E=;
+ b=t8K+1ipUDwL/BkJSBijB0gtCpUgiuDH4j8S7FDE1vgBaPh5FhP82sbldG+VjEq2Z4Si1+0xcNaQPNWBVussc1O8sN5l0pBcn9O+VoHGt8GHRO2Ck/Wx0lHF3S6EpTxhbtgTF1AK/skAGDEvZ9oAfQsAxifZHI3Bs0XQ0iUqQ26oL9iCruuUsFJX+yAwpbLVZWS49kptD8uTMoi6k7Wtue21SsiJowgJcnM8hEwlvis+gfieISGcgIeVXFMrcdkhkJA5oKUhA45AMvYfaZgofMk3wboxmGjaP3+XgQW7zz96B1d6MFbWOyYX7ypJ6CYR0lSlz1tLsTiYXi+i4eTv+Fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yjL3iUXwo2/cTbIpkMnuLytGjfyYr45FBZILjUnrt7E=;
+ b=ZFrME8gouncwh5/1T6uUrmdVkwblxPJD+370DcmaIjEJt+2yUxfwlbp0OzqbNu2RK+vY0yABQFFmI8WFRVlQi6ILtKw8jlGvauiuUIhNLVClG1t5e5cdzdz59C9g+1lHiGOgUpvwhN19QwlyjVKRULJba1eLKWm4VmSxHUwdo2Ui4dzIViQ8Zf3sXkS5J5FPV9MCQShV2VfiYaL0SwDcWic/qhWaHUNNeS55ZJjysMSQQJeSK+WGxuyzPsPMjqOhWk5YAaV3DQyqRRDRQKTa4yHgGgfNm9oQBJfL7Szn77z+H0fAuLKU9l+gCnGhgHw6pLBavK6Z0HoJVv6xMUHbBg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
+ by VI2PR04MB10785.eurprd04.prod.outlook.com (2603:10a6:800:26e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.12; Fri, 18 Sep
+ 2026 13:37:10 +0000
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0428.011; Fri, 18 Sep 2026
+ 13:37:10 +0000
+Date: Fri, 18 Sep 2026 21:41:29 +0800
+From: Peng Fan <peng.fan@oss.nxp.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Frank Li <frank.li@nxp.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH RFC 0/4] iommu/arm-smmu-v3: Support shared Stream IDs
+Message-ID: <aq0/iQKcWhgm5wqp@shlinux89>
+References: <20260916-smmu-shared-sid-v1-0-517384504aee@nxp.com>
+ <20260916161018.GE3196566@ziepe.ca>
+ <aqtDg1EH95RYOdCJ@shlinux89>
+ <20260917144804.GI3196566@ziepe.ca>
+ <aq0lEk56qRi93geW@shlinux89>
+ <20260918121132.GA11599@ziepe.ca>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260918121132.GA11599@ziepe.ca>
+X-ClientProxiedBy: SI2P153CA0011.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:140::14) To AM8PR04MB7874.eurprd04.prod.outlook.com
+ (2603:10a6:20b:24d::9)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260918-apple-mtp-keyboard-final-v3-7-e356464e454b@gmail.com>
-References: <20260918-apple-mtp-keyboard-final-v3-0-e356464e454b@gmail.com>
-In-Reply-To: <20260918-apple-mtp-keyboard-final-v3-0-e356464e454b@gmail.com>
-To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
- Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>, 
- Michael Reeves <michael.reeves077@gmail.com>, 
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, 
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Kosina <jikos@kernel.org>, 
- Benjamin Tissoires <bentiss@kernel.org>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
- iommu@lists.linux.dev, linux-input@vger.kernel.org, 
- Yureka Lilian <yureka@cyberchaos.dev>, Julian Braha <julianbraha@gmail.com>, 
- Sasha Finkelstein <k@chaosmail.tech>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789738118; l=7532;
- i=michael.reeves077@gmail.com; s=fedora-20260918;
- h=from:subject:message-id;
- bh=Jn8V1WltiVnkawdzC5bVKS+cIf6Ev+2/cLas2bYpiBs=;
- b=CCaAE3SKILaat8IshUCCrbFZQu9WJgizsWYZDIJbVD8PTc6Cc1dh/F3s9FFcyCmmn9/ysQgB+
- CZQe16TorGVCjkpNzvMDacYVQqhti4SCS+kgkcspXLT/MVO4lsLb2uP
-X-Developer-Key: i=michael.reeves077@gmail.com; a=ed25519;
- pk=VJ0TvyQ9TvfzYZa908YSE9kpkjFLLD5luv0bERu+boc=
-X-Endpoint-Received: by B4 Relay for
- michael.reeves077@gmail.com/fedora-20260918 with auth_id=1035
-X-Original-From: Michael Reeves <michael.reeves077@gmail.com>
-Reply-To: michael.reeves077@gmail.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|VI2PR04MB10785:EE_
+X-MS-Office365-Filtering-Correlation-Id: fb8ad6f0-b159-43ce-886d-08df1589f0a0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|19092799006|56012099006|11063799006|4143699003|10067099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	CifHkrZJqrHdFp/Xisjzl2m1uTe5p+c1Z27l7We3k3fVevX9jWBhXnSZQSmmKAzUc3teY0Rp0hsBLlxW89cmiX/H1aKl/oJPu+p++WUNCPIUuwBu+Q7biAV18Vo13/hSS9fWYcA9TZ7dBtmE9Na3AB1a7QuVUfmV1lmakeGuXqbZW8YGDFKIgNRV+DnYKihh+xE1twJB0VtvWWUhZtTs6NVHYX3IeaGuaQXs3ogcmSQeuu/25VZDPD+aziY9yEW72Gyqzy072p66lr70pUMpOaOhQXpoRH5sGmSeZcUQuUD7RWQZB9+bXROaQmba0t7aM7wWAGqatZyvs5SgRFQHIIf9rRCriFhOuzF3lriTF+drki1q0QTWLS0vLE+ciX2fUibQTLTjd+4SmxMTTuLWAf0qC1H8/2IxqbRXbhLEYc5n1n8/NWhiGOTkL2SbgUn70jgfIdBtCJAGjuivqT6+farEuuSHCbth1X1E3hgxEjVmDWtNu5pNU5KZSA/WxGGZ46JKsdwVz/oQt7PLuxuw35vjlHa7S13cQs/0inCMQo2YLyiCdTpgisBQC4PZ25oxrCxD6UWUeE5EzVlRaQ0YWiUgKYoc9OIuT0m8B6YjxSMAbdRXin0iCc0QW+KD7iKe0St0jKKLskewjeb6FXIrYAT6Y6e5lV0q1bgtRagahMQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(19092799006)(56012099006)(11063799006)(4143699003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1CL8gtuqfDbh7KSFIzBGcIfpgiBAnq+ZODvpEowYuyW5CNMBE6RKYcHre4I+?=
+ =?us-ascii?Q?OEtdwJ1EN/yO3TaaF9Khs/JD51ZGlyDhmdoNNs9yEceFvdg4HR1r2iHBeBMR?=
+ =?us-ascii?Q?RIBRgBk3s/4whxy5tYDeX79iV84kykqal3ek1FuIWo75qxqGY8BnMEwCgPnU?=
+ =?us-ascii?Q?gLhEZl7axerYNAPdzp6JTnmmjWRROT9GmXosxAxDsVtb1tmVIfNffejT526N?=
+ =?us-ascii?Q?EYUDC4+lxNkE5lnu3duhT5YImuJYXfT/Oq2BakwbWWBp0S5uvP1Sei6czN99?=
+ =?us-ascii?Q?E4F88MOx76x4W3GQ2JBH6Y8Al2/yHxP8aQ+qBEkLw/ug79tt40qespNAXKPb?=
+ =?us-ascii?Q?h9o+Pth4Wiv4hvTFJCe0R4v+fUK02POl0ZnNOG6aZ6r/ROxLZAksZaxvpzRV?=
+ =?us-ascii?Q?kEt655PBQC4AiqJOnEU79LGQkgKT54awiWfd0zbTzeLarn5xsIpwQIc67hHj?=
+ =?us-ascii?Q?6aMif0xqhVR9Z7C9ASCxiDx0VzBb29wNo2iQjAPtKs8nOvTITJ5jDnL5u3y2?=
+ =?us-ascii?Q?0fhnD2Fj92G+kH6OQVXq5N7zlLWonkWPGjX+3VZlO5owpskeDQnc83Rne1l3?=
+ =?us-ascii?Q?8SfOjpDUMeI9F9S5SnwzazjaAPEesQIweLPa6W9hRqzlOKhwwBQhmV/GaBuw?=
+ =?us-ascii?Q?ZSaY+jlfZa3sAjv1av6DK0tN3Dhp4X4y9RGlVw6toKXMlUcVK8RbLsekPd1q?=
+ =?us-ascii?Q?1Y3uaf0ibZkAeTGt+msCopC4MvTTdZwMTs3aZs9MeVs5cX9Sa7Gbk//G+q80?=
+ =?us-ascii?Q?swOhABNzXOrw0rY1XA3Zwpmx4fAATQQPcB3fB6recGfagZ0eLUa15ipTUsPt?=
+ =?us-ascii?Q?WywmwgZl4OyG99IrBMenyT41/UfwO1wgAq34Ap9tSEOVjtuOtLzqQVCSQKLq?=
+ =?us-ascii?Q?Wlw3kBpBW8Zdjtwila1qTwJ9PtLXNeHMpTKeGBmLCOV6Fr+FLzjRDtcTnZs7?=
+ =?us-ascii?Q?9hb8fWUmeAUyum98fydHxIrxPHlAJ6OQouA7iJ000OW2Wa8K4MEF2tD3hyLB?=
+ =?us-ascii?Q?gKa1fiUiJVnUB4nbyfN5w71yhtPJrwKqmhd5BTXDwwMev6+JkVjw7CrGMIeC?=
+ =?us-ascii?Q?jDneAeGsMEW/TenvRbMnzs9TLhCcyUoa8tp+BSr2cmoATn2xlFmqE+5/ujR4?=
+ =?us-ascii?Q?qyzwNPm/k/5FJdhcDZ1PQ31u2aEvPYXEA2Ko85H0D/WD+8vO9w6K8kzNHSP4?=
+ =?us-ascii?Q?k+jjpit/jl9fO7TCkDRDIfs1dkTKZa8/0H3DZD3c4pBt35Dak8ql+UcVu9Sj?=
+ =?us-ascii?Q?er7m+HKZcNutFqB7ccjCXIURUi9zQmU6+pgCk9staikifuO6DcebhlISntUV?=
+ =?us-ascii?Q?Zzc8xdmUtVuhiNXA+E3bp7ZWGRAABKa0QQ2PEVgoLiLFprVKR52kjOB4p3c+?=
+ =?us-ascii?Q?TCX1Nx1B8Ds/JtUJCN5L2zfqVzrUjxzkty7zgSXoYxLRkc32dLs97JxeVZqj?=
+ =?us-ascii?Q?YegUhwbE8r5lJvPLj3aHFYgjJZzPBmGccb+FwA6ujUn9o9ZvDG0KOWbQ4LFm?=
+ =?us-ascii?Q?cOMzdDegbcEkIVIsUP44Jyb5HNt9vHTJpwf4O/zwltYfcE5W3d5j5osg/C6c?=
+ =?us-ascii?Q?Qf9HhzbS++hnqRTX+LDzWJgvNkOYWlcpHF1cyuObn17bt/s6SVfPXgBytBAq?=
+ =?us-ascii?Q?xYkmlMW/inNzb7t1OnVuRoFdFr11jPSX7b7M1fGkvjKPMV+A0lpWFII75xad?=
+ =?us-ascii?Q?uTv1DUjU6YrFMZahMJ1pHtcd/cVmhy459vbWS8MLpFsGz/HCXwvh29ygbzDq?=
+ =?us-ascii?Q?71RQu+1I156pIyokuA1L5ZadM53V00J7di9FxgN6OWlNqnioofge?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb8ad6f0-b159-43ce-886d-08df1589f0a0
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2026 13:37:10.4770
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8v5vMc6jD26aI7ZAmfazV+BtzpRrUjACbmRtBGELgQVTOxH17Y1soGnJknhWLULeuC4GEFekXg1/8warYNFwbkG4JRXxVSiQk+pb6sZF8ZSIe5zGZdc7DU5IiGlTesTs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI2PR04MB10785
 
-From: Michael Reeves <michael.reeves077@gmail.com>
+On Fri, Sep 18, 2026 at 09:11:32AM -0300, Jason Gunthorpe wrote:
+>On Fri, Sep 18, 2026 at 07:48:34PM +0800, Peng Fan wrote:
+>
+>> However, the DMA channel case was just one example - the shared-SID
+>> need exists independently of it. Our SoC (i.MX95) has only 64 SIDs
+>> total, serving MMC, SD, NET, PCI, DMA, NPU, DSP, DISPLAY and more.
+>> Some of these are genuinely separate platform devices (distinct DT
+>> nodes, distinct drivers) that share a SID by hardware design because
+>> the SID space is exhausted.
+>> 
+>> That cross-IP case cannot be solved by DT restructuring - the devices
+>> really are separate. Would you be open to reviewing the shared-SID
+>> SMMU support (patches 1-4) on that basis, independent of the DMA
+>> channel question?
+>
+>I think you should revise your commit message/cover letter to focus on
+>something that is not a DT abuse and try again 
 
-DockChannel keyboards are registered as host-bus Apple HID devices
-instead of USB or Bluetooth devices.
+Yes. I will prepare RFC V2 with revised cover letter.
 
-Match them in hid-apple and use the modern Magic Keyboard function-key
-table. Honor the per-device special-driver quirk when matching.
+>
+>IIRC Robin said the SID aliasing was a PITA on SMMUv2 so it
+>really needs to have a strong reason.
 
-Signed-off-by: Michael Reeves <michael.reeves077@gmail.com>
----
- drivers/hid/hid-apple.c | 118 +++++++++++++++++++++++++++++-------------------
- include/linux/hid.h     |   1 +
- 2 files changed, 73 insertions(+), 46 deletions(-)
+Not like sever/data center chips, i.MX95 does not the advanced features,
+so in [PATCH RFC 4/4], those advanced features are marked as not supported.
 
-diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index f6134c582..524ac80cb 100644
---- a/drivers/hid/hid-apple.c
-+++ b/drivers/hid/hid-apple.c
-@@ -395,6 +395,12 @@ static bool apple_is_omoton_kb066(struct hid_device *hdev)
- 		strcmp(hdev->name, "Bluetooth Keyboard") == 0;
- }
- 
-+static bool apple_is_dockchannel_keyboard(struct hid_device *hdev)
-+{
-+	return hdev->bus == BUS_HOST &&
-+	       hdev->group == HID_GROUP_APPLE_DOCKCHANNEL;
-+}
-+
- static inline void apple_setup_key_translation(struct input_dev *input,
- 		const struct apple_key_translation *table)
- {
-@@ -482,53 +488,57 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
- 		asc->fn_on = !!value;
- 
- 	if (real_fnmode) {
--		switch (hid->product) {
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ANSI:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ISO:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_JIS:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_JIS:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO:
--		case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_JIS:
--			table = magic_keyboard_alu_fn_keys;
--			break;
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2015:
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2015:
--			table = magic_keyboard_2015_fn_keys;
--			break;
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021:
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021:
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021:
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2024:
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2024:
--		case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2024:
-+		if (apple_is_dockchannel_keyboard(hid)) {
- 			table = magic_keyboard_2021_and_2024_fn_keys;
--			break;
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J132:
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J213:
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680:
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680_ALT:
--			table = macbookpro_no_esc_fn_keys;
--			break;
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J152F:
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J214K:
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J223:
--			table = macbookpro_dedicated_esc_fn_keys;
--			break;
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J140K:
--		case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J230K:
--			table = apple_fn_keys;
--			break;
--		default:
--			if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
--			    hid->product <= USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS)
--				table = macbookair_fn_keys;
--			else if (hid->product < 0x21d || hid->product >= 0x300)
--				table = powerbook_fn_keys;
--			else
-+		} else {
-+			switch (hid->product) {
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ANSI:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_ISO:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_JIS:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_JIS:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO:
-+			case USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_JIS:
-+				table = magic_keyboard_alu_fn_keys;
-+				break;
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2015:
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2015:
-+				table = magic_keyboard_2015_fn_keys;
-+				break;
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021:
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021:
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021:
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2024:
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2024:
-+			case USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2024:
-+				table = magic_keyboard_2021_and_2024_fn_keys;
-+				break;
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J132:
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J213:
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680:
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J680_ALT:
-+				table = macbookpro_no_esc_fn_keys;
-+				break;
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J152F:
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J214K:
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J223:
-+				table = macbookpro_dedicated_esc_fn_keys;
-+				break;
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J140K:
-+			case USB_DEVICE_ID_APPLE_WELLSPRINGT2_J230K:
- 				table = apple_fn_keys;
-+				break;
-+			default:
-+				if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
-+				    hid->product <= USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS)
-+					table = macbookair_fn_keys;
-+				else if (hid->product < 0x21d || hid->product >= 0x300)
-+					table = powerbook_fn_keys;
-+				else
-+					table = apple_fn_keys;
-+			}
- 		}
- 
- 		trans = apple_find_translation(table, code);
-@@ -768,7 +778,7 @@ static int apple_input_configured(struct hid_device *hdev,
- 	struct apple_sc *asc = hid_get_drvdata(hdev);
- 
- 	if (((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) || apple_is_omoton_kb066(hdev)) {
--		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
-+		hid_info(hdev, "Disabling function quirk for device without function key\n");
- 		asc->quirks &= ~APPLE_HAS_FN;
- 	}
- 
-@@ -1019,6 +1029,18 @@ static void apple_remove(struct hid_device *hdev)
- 	hid_hw_stop(hdev);
- }
- 
-+static bool apple_match(struct hid_device *hdev, bool ignore_special_driver)
-+{
-+	if (ignore_special_driver ||
-+	    (hdev->quirks & HID_QUIRK_IGNORE_SPECIAL_DRIVER))
-+		return false;
-+
-+	if (hdev->group == HID_GROUP_APPLE_DOCKCHANNEL)
-+		return apple_is_dockchannel_keyboard(hdev);
-+
-+	return true;
-+}
-+
- static const struct hid_device_id apple_devices[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MIGHTYMOUSE),
- 		.driver_data = APPLE_MIGHTYMOUSE | APPLE_INVERT_HWHEEL },
-@@ -1240,6 +1262,9 @@ static const struct hid_device_id apple_devices[] = {
- 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_TOUCHBAR_BACKLIGHT),
- 		.driver_data = APPLE_MAGIC_BACKLIGHT },
-+	{ HID_DEVICE(BUS_HOST, HID_GROUP_APPLE_DOCKCHANNEL,
-+		     HID_ANY_ID, HID_ANY_ID),
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 
- 	{ }
- };
-@@ -1248,6 +1273,7 @@ MODULE_DEVICE_TABLE(hid, apple_devices);
- static struct hid_driver apple_driver = {
- 	.name = "apple",
- 	.id_table = apple_devices,
-+	.match = apple_match,
- 	.report_fixup = apple_report_fixup,
- 	.probe = apple_probe,
- 	.remove = apple_remove,
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index 8d17b7416..40be5eabf 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -441,6 +441,7 @@ struct hid_item {
- #define HID_GROUP_STEAM				0x0103
- #define HID_GROUP_LOGITECH_27MHZ_DEVICE		0x0104
- #define HID_GROUP_VIVALDI			0x0105
-+#define HID_GROUP_APPLE_DOCKCHANNEL		0x0106
- 
- /*
-  * HID protocol status
+In the chip internal bus, there are only 6 bits are used to carry SID
+on the bus, so limited SIDs.
 
--- 
-2.55.0
+Hope we could move forward to support just simple SID sharing between
+platform devices without advancing features.
 
+Thanks,
+Peng
 
+>
+>Jason
+>
+>
