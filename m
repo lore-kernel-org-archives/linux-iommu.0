@@ -1,206 +1,91 @@
-Received: from sender5-op-o12.zoho.com (sender5-op-o12.zoho.com [165.173.182.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8538147DF9C
-	for <iommu@lists.linux.dev>; Sat, 19 Sep 2026 11:23:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=165.173.182.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789816994; cv=pass; b=ZXuziF1N6QgvOFAoT37BLkSmja9HVR0jZZLbTVKANj3Cnx1CrZ+mDrHCql5TEes8acoEbRrz4TNbxQcqKEONOzV/OgwmzsRolUyqHC6fZGB4O+Kn6q7+exSc31VpvTZm5BzzTUwqSY6j5hScQ7qikq2sxWjF1lYoS5YhFEv3Deo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789816994; c=relaxed/simple;
-	bh=/tNjxEyNZLVJeOKDwh+VypPY5j7xuhRn5UqU+gNinkE=;
-	h=Message-ID:Subject:From:To:Cc:In-Reply-To:References:Content-Type:
-	 Date:MIME-Version; b=ONi5D5e2KlydcGcl94mnANKvLH/Ks07pZVnLJ6oUnO3HaKj6zN5V0dlnmnCDlpjgjyyFGFzw1I1McOqW023dRucLWLZvqIOPsHlh7hX2Uo+AMG3VOjAnwr7IDjV2lPMprSjSja82oM9vf1n2jvBsIbUkue5WjJZ6o18jQBpNnEQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=Mh5N90TC; arc=pass smtp.client-ip=165.173.182.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rong.moe
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19BA447CC8D;
+	Sat, 19 Sep 2026 11:26:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789817163; cv=none; b=pAjxPN2o+xoxcFHw1+OHZ/S4h5M1ZX0SHzAIlLa9LSg0fnB3cw4so/AUWbJWAqjUkybMKnP9ZuZpHGau2WdpuPYOwy72beOIyfyPrX8Fi88muGVgRYHo8grftfo/gb+m89cLUIBQxiq8xXgCwXIiEhzrXtXqfcZy/IwEhh9FEuE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789817163; c=relaxed/simple;
+	bh=nDD77lCUuGPanc1dIg/pQIPYUjWYdkS3J6zyyFNMC8w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=svqfMB9zvWH4WNA0TneA4edhLOfCZs6mD9kU2vebRRTCiB9poGUpO1+o3SD71dONSDaNzpmztF/YYuLhucom6U0eEVEFOWkM/8b9c4y1F9ro6jjgk4RHa5I+iwtLRBxZgVB28CAdNgu35xqszgv1zu9vEa7MG8+Hu2IiJIymKhQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Sui0KgF3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="Mh5N90TC"
-ARC-Seal: i=1; a=rsa-sha256; t=1789816986; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=lEIGtGAgWsYQaLVQyvz2gnw+JFOfeab6IZnG5LIot1bM5j2Oe1cXHPMN1sssd6cZLmF/9s5lVcAVE2UZ7br3rX3nCKiSe7rjTnGZIMmbrrxaHdCexB13wFXN6DratC9fW3HZqPIIAj8un8HV87RUFBX9BIGzz6pccmZLD+bJ7/I=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1789816986; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=MnBpje23BPtC5ZDdSbHc5BeKiFBt06m/9TBlaQpP79E=; 
-	b=nKi6/0CRSFBFG4TOaUXGhrnJLStVvQHk6q7POVU/RXYXOiw+l1CVtkw17GKoBhSt/vVz+4OHgbT0kLBngwXdnVtidsud6bxZ0sdvo7WqFS6u8fYyKle4N87TNYhmx+FfC0Hf/DuDWS5WyVMvGwWTkM/6JDIwloWBTvXuqaJJlgk=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=rong.moe;
-	spf=pass  smtp.mailfrom=i@rong.moe;
-	dmarc=pass header.from=<i@rong.moe>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1789816986;
-	s=zmail2048; d=rong.moe; i=i@rong.moe;
-	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:In-Reply-To:Content-Type:Content-Transfer-Encoding:Date:Date:MIME-Version:Message-Id:Reply-To;
-	bh=MnBpje23BPtC5ZDdSbHc5BeKiFBt06m/9TBlaQpP79E=;
-	b=Mh5N90TCYKD26raqCzJXpeHx1j51MwLPEJoK7AcLYHk/DA4QBT8w/Ko78bgZMjmD
-	9a+6K/TOmURfT1CdRlas61dbK3mCvmFN/g5izFqU+Z61yzYo8I5NIRaspYSDjO9s+3z
-	Bh14WGLOMY9utidxvtdUzkj4kb8FxPDeZ21QRhXVl7OKevV9IsC98xHagA9BPsHV8w7
-	/hknuuGAlwIFqJciw2svLkeZk48OOHxM55VjbBc6kJVFHWLvoojK999BRCaJNj/JA9c
-	EeV1Obcr8nD6NuEZWZ9Qt8KsnF3XbVUTGHtYT5Fksz86rtsBamkDHSqYx6Cp2DTcAvq
-	BMlhpy/5Gw==
-Received: by smtp.zohomail.com with SMTPS id 1789816984782821.5513919164255;
-	Sat, 19 Sep 2026 04:23:04 -0700 (PDT)
-Message-ID: <bf0217334a0f895d49e520b4a78f0a3fe686218c.camel@rong.moe>
-Subject: Re: [PATCH v3 0/3] iommu/amd: Do not request ACS when IOMMU is not
- going to be initialized
-From: Rong Zhang <i@rong.moe>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Suravee Suthikulpanit	
- <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Huang Rui
- <ray.huang@amd.com>
-Cc: Ankit Soni <Ankit.Soni@amd.com>, Sairaj Kodilkar <sarunkod@amd.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-In-Reply-To: <20260823-amd-iommu-fix-acs-v3-0-dd768e09d771@rong.moe>
-References: <20260823-amd-iommu-fix-acs-v3-0-dd768e09d771@rong.moe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 19 Sep 2026 19:17:58 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sui0KgF3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C851F000FF;
+	Sat, 19 Sep 2026 11:26:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789817161;
+	bh=fCBBvMJ9RrgDcgopr8ESfkQ/nu0fhXNb8XpG2GhGV3I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Sui0KgF3V2wTPBaekHDtIyHqVKUojFZmU+nR3zYPd4Qff3fAUw1mGdgQ2cFUX0D0I
+	 InGzWCQ//u4sYwraWmImGSipYxNodKmw9viNFmdga6R89wkkJa5kHmFghWOeMhAbEp
+	 VJgY2LR00tyXPtcMGnjB5oUHQeRY/ObD7gqxpxtnVlwqV1PRNatsiGmUFqix37NyI2
+	 +c1nS9yKklEMhDWGntIWA1dGxa7wrbzihQIU37bPl+8ce7ovJNklkrKtYmu5RSQVxs
+	 oCZVzA0RzhElJEh0/40G2hlT6zbBw/0uXiG9Z0GebhzupLJTpGvRH1fi7cdt8CIadC
+	 b4FjqbEqhQIbg==
+Date: Sat, 19 Sep 2026 14:25:56 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
+ direct peer-to-peer route
+Message-ID: <20260919112556.GB13683@unreal>
+References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
+ <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
+ <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
+ <20260918121500.GV13683@unreal>
+ <b517070d0b9236b03962fcba649faffcacda23eb.camel@linux.intel.com>
+ <20260918170524.GH11599@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Evolution 3.56.2-10+b1 
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260918170524.GH11599@ziepe.ca>
 
-Hi All,
+On Fri, Sep 18, 2026 at 02:05:24PM -0300, Jason Gunthorpe wrote:
+> On Fri, Sep 18, 2026 at 03:42:28PM +0200, Thomas Hellström wrote:
+> > 
+> > 1) Xe attachment check if pci_p2pdma_distance() returns OK for the
+> > path. Then Xe always sets up dma-addresses using dma_map_resource(). 
+> 
+> Open coding pci_p2pdma_distance() in drivers is a hack. Using
+> dma_map_resource() like this was never "allowed".
+> 
+> We've fixed things so these hacks are not needed, the drivers need to
+> move over to things like dma_buf_phys_vec_to_sgt() and the hmm helpers
+> to use the DMA API correctly.
 
-On Sun, 2026-08-23 at 06:20 +0800, Rong Zhang wrote:
-> The AMD IOMMU Initialization State Machine has the following state
-> transition diagram (only the very first states are showed, and the
-> `IOMMU_' prefix is omitted):
->=20
->    START_STATE
->         |
->         v
-> [0] detect_ivrs() --> NOT_FOUND
->         | ok
->         v
->   IVRS_DETECTED
->         |
->         v
-> [1] amd_iommu_disabled? (amd_iommu=3Doff) --> IOMMU_CMDLINE_DISABLED
->         | no
->         v
-> [2] early_amd_iommu_init()
->         |
->         +-- [3] amd_iommu_detected? (!iommu=3Doff && ...) -+
->         | yes                                            |
->         +-- ... --> IOMMU_INIT_ERROR <-------------------+
->         | ok
->         v
-> IOMMU_ACPI_FINISHED
->         |
->         v
->        ...
->=20
-> [0] always calls pci_request_acs() as long as there's a valid IVRS table
-> and no Stoney Ridge graphics. This is not optimal as ACS is not required
-> in an [amd_]iommu=3Doff boot.
->=20
-> In a normal boot, ACS is requested due to amd_iommu_detect() requesting
-> IVRS_DETECTED.
->=20
->     pci_request_acs+0x9/0x18
->     iommu_go_to_state+0x106/0x1a20
->     amd_iommu_detect+0x1c/0x50
->     pci_iommu_alloc+0x26/0x40
->     mm_core_init+0xa/0x120
->     start_kernel+0x527/0x7a0
->     x86_64_start_reservations+0x24/0x30
->     x86_64_start_kernel+0xd1/0xe0
->     common_startup_64+0x13e/0x158
->=20
-> This is intended to ensure ACS is requested before the PCI core
-> initialization, or else a !CONFIG_IRQ_REMAP, nointremap or intremap=3Doff
-> boot would be broken.
->=20
-> However, in an amd_iommu=3Doff boot, the state machine still requests ACS
-> at the exact same time, as amd_iommu_detect() has nothing to do with
-> amd_iommu_disabled.
->=20
-> Even worse, in an iommu=3Doff boot, though amd_iommu_detect() bails out
-> early, ACS is still requested due to amd_iommu_prepare() requesting
-> IOMMU_ACPI_FINISHED, which is called by irq_remapping_prepare() thanks
-> to CONFIG_X86_LOCAL_APIC (always set on X86_64) and CONFIG_IRQ_REMAP
-> (enabled by defconfig), unless nointremap or intremap=3Doff is also passe=
-d
-> to cmdline.
->=20
->     pci_request_acs+0x9/0x18
->     iommu_go_to_state+0x106/0x1a20
->     amd_iommu_prepare+0x15/0x40
->     irq_remapping_prepare+0x43/0x60
->     enable_IR_x2apic+0x22/0x190
->     x86_64_probe_apic+0xa/0x50
->     apic_intr_mode_init+0x70/0xd0
->     x86_late_time_init+0x28/0x40
->     start_kernel+0x6f9/0x7a0
->     ...
->=20
-> In both cases, [2] is still gated due to the [1] or [3] check, so that
-> IOMMU can be disabled per cmdline.
->=20
-> Technically, it makes no sense to detect IVRS at all in an
-> [amd_]iommu=3Doff boot or if IOMMU is not supported due to platform
-> settings. This is probably why amd_iommu_detect() bails out before
-> requesting IVRS_DETECTED. Apparently only bailing out there is not
-> sufficient, and the bailing-out paths should really have been parts of
-> the state machine.
->=20
-> PATCH 1 cleans up the initialization routines by moving the bailing-out
-> paths and [1] to the right place in the state machine (i.e., before
-> [0]), and always requesting IVRS_DETECTED in amd_iommu_detect() to
-> initialize the state machine early and properly.
->=20
-> PATCH 2 disallows implicit START_STATE =3D> IVRS_DETECTED transition, so
-> that amd_iommu_prepare() and other paths no longer progress the state
-> machine accidentally. This should also help prevent potential bugs if
-> more housekeeping work is added to amd_iommu_detect() in the future.
->=20
-> PATCH 3 removes all redundant ad-hoc checks, as they are now covered by
-> the state machine itself.
->=20
-> Signed-off-by: Rong Zhang <i@rong.moe>
+And this brings us back to my original question: what exactly should I
+change in this series, given that it works as expected for all users of
+the existing DMA and P2P APIs without any additional "hacks"? This
+includes, for example, VFIO, iommufd, and RDMA. In our internal tests,
+the GPU driver converted to use these interfaces also works as expected.
 
-Gentle ping.
+IMHO, it is time to update XE too.
 
-Thanks,
-Rong
-
-> ---
-> Changes in v3:
-> - Drop the dead condition (iommu_detected && !gart_iommu_aperture) as
->   now we always have iommu_detected =3D=3D gart_iommu_aperture (thanks
->   Sairaj Kodilkar)
-> - Link to v2: https://patch.msgid.link/20260821-amd-iommu-fix-acs-v2-0-98=
-2472452638@rong.moe
->=20
-> Changes in v2:
-> - New patch in the series
->   - PATCH 2 ("iommu/amd: Disallow implicit START_STATE =3D> IVRS_DETECTED
->     transition")
->   - Prevent PATCH 3 from accidentally allowing AMD IOMMU to probe in Xen
->     PV (thanks Ankit Soni)
-> - Drop Fixes: and Cc: stable (ditto)
-> - Rebase on top of the lastest changes
-> - Link to v1: https://patch.msgid.link/20260811-amd-iommu-fix-acs-v1-0-d6=
-4e2172408d@rong.moe
->=20
-> ---
-> Rong Zhang (3):
->       iommu/amd: Do not request ACS when IOMMU is not going to be initial=
-ized
->       iommu/amd: Disallow implicit START_STATE =3D> IVRS_DETECTED transit=
-ion
->       iommu/amd: Remove ad-hoc checks that are never true
->=20
->  drivers/iommu/amd/init.c | 52 ++++++++++++++++++++++++------------------=
-------
->  1 file changed, 26 insertions(+), 26 deletions(-)
-> ---
-> base-commit: 26260251022fbc2f248a3d747a9b2b961b18d2d8
-> change-id: d58d0f31-amd-iommu-fix-acs-8f3d4aba8183
->=20
-> Thanks,
-> Rong
+Thanks
