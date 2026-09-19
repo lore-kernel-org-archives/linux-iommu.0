@@ -1,132 +1,206 @@
-Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.2])
+Received: from sender5-op-o12.zoho.com (sender5-op-o12.zoho.com [165.173.182.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24DA07083C;
-	Sat, 19 Sep 2026 07:34:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8538147DF9C
+	for <iommu@lists.linux.dev>; Sat, 19 Sep 2026 11:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=165.173.182.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789803251; cv=pass; b=nP5MJZ800sGQ94/gaPHr8auDTd+TWP8L9WFPM85WE2a7YZmXqxESQwf8l2RFT/mmfmiai4T11KDkpAluktJbGC0nSgc1rk6DbjynO4793GqIBlclDPFmotedLcLApK1DjQpxfu4HPnMul7sgE/EyD2EtVhTOmxDvzNuIa8VEZno=
+	t=1789816994; cv=pass; b=ZXuziF1N6QgvOFAoT37BLkSmja9HVR0jZZLbTVKANj3Cnx1CrZ+mDrHCql5TEes8acoEbRrz4TNbxQcqKEONOzV/OgwmzsRolUyqHC6fZGB4O+Kn6q7+exSc31VpvTZm5BzzTUwqSY6j5hScQ7qikq2sxWjF1lYoS5YhFEv3Deo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789803251; c=relaxed/simple;
-	bh=llg/PF8nMnnpezaHPpy9KBWeZf3PiiHR8A/GPkRQCtQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HWj/pp3tGWuDjIS8U4sw+bvkS6glp/91kwJoSmJGv4K6Z11/DXf9Tc1bTADDDFGQES+ZltW4vgXwSy+1BAUCTVAWuVzWU8b7gn3dV6itoF7wTE87alYid1+Hao9e2NRtnjQ5PRc30ftRITA/loTznc8RGar+rDCAgFXLhDixfTY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=QM7y3zqc; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=UpO1qiOn; arc=pass smtp.client-ip=185.56.87.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
+	s=arc-20240116; t=1789816994; c=relaxed/simple;
+	bh=/tNjxEyNZLVJeOKDwh+VypPY5j7xuhRn5UqU+gNinkE=;
+	h=Message-ID:Subject:From:To:Cc:In-Reply-To:References:Content-Type:
+	 Date:MIME-Version; b=ONi5D5e2KlydcGcl94mnANKvLH/Ks07pZVnLJ6oUnO3HaKj6zN5V0dlnmnCDlpjgjyyFGFzw1I1McOqW023dRucLWLZvqIOPsHlh7hX2Uo+AMG3VOjAnwr7IDjV2lPMprSjSja82oM9vf1n2jvBsIbUkue5WjJZ6o18jQBpNnEQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe; spf=pass smtp.mailfrom=rong.moe; dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b=Mh5N90TC; arc=pass smtp.client-ip=165.173.182.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rong.moe
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rong.moe
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="QM7y3zqc";
-	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="UpO1qiOn"
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-h0bm.prod.antispam.mailspamprotection.com; s=arckey; t=1789803248;
-	 b=OhJk+gykLbfnab+nyPQc2vU/jzqdQkiQDSZoxgRJOXAxk7Cfm2yDGsUSFhFr9Nh3li5SgocvPD
-	  ToWZ3IRmeMvl3KiFIYSw+lvVuTnXpffVfMLZ6dUho6HC6c97DVgybZqgG+Z0ACeWziTj8H8KHy
-	  R79V1TwIBIRaBe78nv9iSaMt0kEYRyfYBULCIjJGeCpEGwcTXFH/AXTvPBiNu+lxDfm7xhrdly
-	  oMJjo/J9hEpx7L9FlHAE8XAt29mhybxzWT/y0MloPgpKP3LbQsK6IhXk4FS2X2BOav+vwSHQOH
-	  bwx8+JuufmQO20T8AJI4R6oYaRR91FrzsHM+qBeM30d+Hg==;
-ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-h0bm.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-h0bm.prod.antispam.mailspamprotection.com; s=arckey; t=1789803248;
-	bh=llg/PF8nMnnpezaHPpy9KBWeZf3PiiHR8A/GPkRQCtQ=;
-	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:
-	  From:Date:DKIM-Signature:DKIM-Signature;
-	b=V4Njr3XNcf0x5fLmZHSqFsD9oy06ks50IBpkf5zZoOsvO013o4hXE24dIIeJcDxC9sET9Nu6+4
-	  tSSgdwgsC6PBUJL4yKNAYlcwAH713KHQhI2NZtSAjlybVk23a0JmRZqqVMTFpySyPtex/UxVKi
-	  PYWMoUivTFZ+olfUbK7mdq/O3LNtpzOxbtrjodg2iT8xV79skrx6rEmsSGWBz1rDlYrmKPoKJu
-	  e7awLOauUAq/rjYlL+qLvo9Hupmft3dPjdUa8TXyrjZTiOQM3VuuDchUtvmvGcg8M4hnE91R9Y
-	  oeodhBF2VweBLYKP/tuTZbUEYKCm85L6tTas5o+BQxL0JA==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
-	:Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	List-Unsubscribe:Content-Transfer-Encoding;
-	bh=1CgMYzN7u/XA+bnop2JDgsNdowKH5ww277Ab2jeFzYI=; b=QM7y3zqcSH2FlgocRfPPmbaMad
-	3V+YineFUsBAjj1eS9GdJ5apHLMBjN2XESzhZZzeglXvSZlp1iwbuSFkPcJILFAkxbV9CdUCplI1I
-	HOeFBUHCnmKQNRSUp1Hw+yuMYuCnn53BsjWpBoQNXfoISQWUSqwSJpAa9EzYGeterYoo=;
-Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
-	by instance-europe-west4-h0bm.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.99.5)
-	(envelope-from <francesco@valla.it>)
-	id 1x7pa8-00000005bxU-2Wr0;
-	Sat, 19 Sep 2026 07:33:57 +0000
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
-	s=default; h=Subject:Cc:To:From:Date:list-help:list-unsubscribe:
-	list-subscribe:list-post:list-owner:list-archive;
-	bh=1CgMYzN7u/XA+bnop2JDgsNdowKH5ww277Ab2jeFzYI=; b=UpO1qiOnq7xdcWjgHZmVoz6PH6
-	qnX8EWkbIbCQnHos0YlsXjQrPVX98//3jAxv0fogZLwImFWx8HL4sgPGe3Cd6N7yD0LUfSxLJvPzr
-	CCHTUlfULmZRgWrMaDWDzF0qYbREJFaOi177rp4/VFmpRK+nl7GD9XvXkPWjmtJwzthc=;
-Received: from [95.75.45.71] (port=45394 helo=bywater)
-	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.99.5)
-	(envelope-from <francesco@valla.it>)
-	id 1x7pZp-000000006o5-4BDY;
-	Sat, 19 Sep 2026 07:33:38 +0000
-Date: Sat, 19 Sep 2026 09:33:36 +0200
-From: Francesco Valla <francesco@valla.it>
-To: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	virtualization@lists.linux.dev, imx@lists.linux.dev, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFC 00/12] remoteproc: add support for any virtio device
-Message-ID: <aq453yukMHiNb1jp@bywater>
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <aq1sooGCYUiWbhMH@p14s>
+	dkim=pass (2048-bit key) header.d=rong.moe header.i=i@rong.moe header.b="Mh5N90TC"
+ARC-Seal: i=1; a=rsa-sha256; t=1789816986; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=lEIGtGAgWsYQaLVQyvz2gnw+JFOfeab6IZnG5LIot1bM5j2Oe1cXHPMN1sssd6cZLmF/9s5lVcAVE2UZ7br3rX3nCKiSe7rjTnGZIMmbrrxaHdCexB13wFXN6DratC9fW3HZqPIIAj8un8HV87RUFBX9BIGzz6pccmZLD+bJ7/I=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1789816986; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=MnBpje23BPtC5ZDdSbHc5BeKiFBt06m/9TBlaQpP79E=; 
+	b=nKi6/0CRSFBFG4TOaUXGhrnJLStVvQHk6q7POVU/RXYXOiw+l1CVtkw17GKoBhSt/vVz+4OHgbT0kLBngwXdnVtidsud6bxZ0sdvo7WqFS6u8fYyKle4N87TNYhmx+FfC0Hf/DuDWS5WyVMvGwWTkM/6JDIwloWBTvXuqaJJlgk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=rong.moe;
+	spf=pass  smtp.mailfrom=i@rong.moe;
+	dmarc=pass header.from=<i@rong.moe>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1789816986;
+	s=zmail2048; d=rong.moe; i=i@rong.moe;
+	h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:In-Reply-To:Content-Type:Content-Transfer-Encoding:Date:Date:MIME-Version:Message-Id:Reply-To;
+	bh=MnBpje23BPtC5ZDdSbHc5BeKiFBt06m/9TBlaQpP79E=;
+	b=Mh5N90TCYKD26raqCzJXpeHx1j51MwLPEJoK7AcLYHk/DA4QBT8w/Ko78bgZMjmD
+	9a+6K/TOmURfT1CdRlas61dbK3mCvmFN/g5izFqU+Z61yzYo8I5NIRaspYSDjO9s+3z
+	Bh14WGLOMY9utidxvtdUzkj4kb8FxPDeZ21QRhXVl7OKevV9IsC98xHagA9BPsHV8w7
+	/hknuuGAlwIFqJciw2svLkeZk48OOHxM55VjbBc6kJVFHWLvoojK999BRCaJNj/JA9c
+	EeV1Obcr8nD6NuEZWZ9Qt8KsnF3XbVUTGHtYT5Fksz86rtsBamkDHSqYx6Cp2DTcAvq
+	BMlhpy/5Gw==
+Received: by smtp.zohomail.com with SMTPS id 1789816984782821.5513919164255;
+	Sat, 19 Sep 2026 04:23:04 -0700 (PDT)
+Message-ID: <bf0217334a0f895d49e520b4a78f0a3fe686218c.camel@rong.moe>
+Subject: Re: [PATCH v3 0/3] iommu/amd: Do not request ACS when IOMMU is not
+ going to be initialized
+From: Rong Zhang <i@rong.moe>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Suravee Suthikulpanit	
+ <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Huang Rui
+ <ray.huang@amd.com>
+Cc: Ankit Soni <Ankit.Soni@amd.com>, Sairaj Kodilkar <sarunkod@amd.com>, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+In-Reply-To: <20260823-amd-iommu-fix-acs-v3-0-dd768e09d771@rong.moe>
+References: <20260823-amd-iommu-fix-acs-v3-0-dd768e09d771@rong.moe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 19 Sep 2026 19:17:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aq1sooGCYUiWbhMH@p14s>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - esm19.siteground.biz
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - valla.it
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-SGantispam-id: 8e767977f36cde42fc16bbf5074ec7b6
-X-AntiAbuse: ID - 8e767977f36cde42fc16bbf5074ec7b6
-AntiSpam-DLS: false
-AntiSpam-DLSP: 
-AntiSpam-DLSRS: 
-AntiSpam-TS: 1.0
-CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
-CFBL-Feedback-ID: 1x7pa8-00000005bxU-2Wr0-feedback@antispam.mailspamprotection.com
-Authentication-Results: outgoing.instance-europe-west4-h0bm.prod.antispam.mailspamprotection.com;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
+User-Agent: Evolution 3.56.2-10+b1 
+X-ZohoMailClient: External
 
-Hi Mathieu,
+Hi All,
 
-On Fri, Sep 18, 2026 at 10:53:54AM -0600, Mathieu Poirier wrote:
-> Hi Francesco,
-> 
-> I have started reviewing this set but given the size and implications, it will
-> take me a few days to get through.
+On Sun, 2026-08-23 at 06:20 +0800, Rong Zhang wrote:
+> The AMD IOMMU Initialization State Machine has the following state
+> transition diagram (only the very first states are showed, and the
+> `IOMMU_' prefix is omitted):
+>=20
+>    START_STATE
+>         |
+>         v
+> [0] detect_ivrs() --> NOT_FOUND
+>         | ok
+>         v
+>   IVRS_DETECTED
+>         |
+>         v
+> [1] amd_iommu_disabled? (amd_iommu=3Doff) --> IOMMU_CMDLINE_DISABLED
+>         | no
+>         v
+> [2] early_amd_iommu_init()
+>         |
+>         +-- [3] amd_iommu_detected? (!iommu=3Doff && ...) -+
+>         | yes                                            |
+>         +-- ... --> IOMMU_INIT_ERROR <-------------------+
+>         | ok
+>         v
+> IOMMU_ACPI_FINISHED
+>         |
+>         v
+>        ...
+>=20
+> [0] always calls pci_request_acs() as long as there's a valid IVRS table
+> and no Stoney Ridge graphics. This is not optimal as ACS is not required
+> in an [amd_]iommu=3Doff boot.
+>=20
+> In a normal boot, ACS is requested due to amd_iommu_detect() requesting
+> IVRS_DETECTED.
+>=20
+>     pci_request_acs+0x9/0x18
+>     iommu_go_to_state+0x106/0x1a20
+>     amd_iommu_detect+0x1c/0x50
+>     pci_iommu_alloc+0x26/0x40
+>     mm_core_init+0xa/0x120
+>     start_kernel+0x527/0x7a0
+>     x86_64_start_reservations+0x24/0x30
+>     x86_64_start_kernel+0xd1/0xe0
+>     common_startup_64+0x13e/0x158
+>=20
+> This is intended to ensure ACS is requested before the PCI core
+> initialization, or else a !CONFIG_IRQ_REMAP, nointremap or intremap=3Doff
+> boot would be broken.
+>=20
+> However, in an amd_iommu=3Doff boot, the state machine still requests ACS
+> at the exact same time, as amd_iommu_detect() has nothing to do with
+> amd_iommu_disabled.
+>=20
+> Even worse, in an iommu=3Doff boot, though amd_iommu_detect() bails out
+> early, ACS is still requested due to amd_iommu_prepare() requesting
+> IOMMU_ACPI_FINISHED, which is called by irq_remapping_prepare() thanks
+> to CONFIG_X86_LOCAL_APIC (always set on X86_64) and CONFIG_IRQ_REMAP
+> (enabled by defconfig), unless nointremap or intremap=3Doff is also passe=
+d
+> to cmdline.
+>=20
+>     pci_request_acs+0x9/0x18
+>     iommu_go_to_state+0x106/0x1a20
+>     amd_iommu_prepare+0x15/0x40
+>     irq_remapping_prepare+0x43/0x60
+>     enable_IR_x2apic+0x22/0x190
+>     x86_64_probe_apic+0xa/0x50
+>     apic_intr_mode_init+0x70/0xd0
+>     x86_late_time_init+0x28/0x40
+>     start_kernel+0x6f9/0x7a0
+>     ...
+>=20
+> In both cases, [2] is still gated due to the [1] or [3] check, so that
+> IOMMU can be disabled per cmdline.
+>=20
+> Technically, it makes no sense to detect IVRS at all in an
+> [amd_]iommu=3Doff boot or if IOMMU is not supported due to platform
+> settings. This is probably why amd_iommu_detect() bails out before
+> requesting IVRS_DETECTED. Apparently only bailing out there is not
+> sufficient, and the bailing-out paths should really have been parts of
+> the state machine.
+>=20
+> PATCH 1 cleans up the initialization routines by moving the bailing-out
+> paths and [1] to the right place in the state machine (i.e., before
+> [0]), and always requesting IVRS_DETECTED in amd_iommu_detect() to
+> initialize the state machine early and properly.
+>=20
+> PATCH 2 disallows implicit START_STATE =3D> IVRS_DETECTED transition, so
+> that amd_iommu_prepare() and other paths no longer progress the state
+> machine accidentally. This should also help prevent potential bugs if
+> more housekeeping work is added to amd_iommu_detect() in the future.
+>=20
+> PATCH 3 removes all redundant ad-hoc checks, as they are now covered by
+> the state machine itself.
+>=20
+> Signed-off-by: Rong Zhang <i@rong.moe>
 
-I'm going through the review done by sashiko - would you prefer me
-sending a v2 with the trivial errors already ironed out before doing
-a complete review?
+Gentle ping.
 
-> 
+Thanks,
+Rong
+
+> ---
+> Changes in v3:
+> - Drop the dead condition (iommu_detected && !gart_iommu_aperture) as
+>   now we always have iommu_detected =3D=3D gart_iommu_aperture (thanks
+>   Sairaj Kodilkar)
+> - Link to v2: https://patch.msgid.link/20260821-amd-iommu-fix-acs-v2-0-98=
+2472452638@rong.moe
+>=20
+> Changes in v2:
+> - New patch in the series
+>   - PATCH 2 ("iommu/amd: Disallow implicit START_STATE =3D> IVRS_DETECTED
+>     transition")
+>   - Prevent PATCH 3 from accidentally allowing AMD IOMMU to probe in Xen
+>     PV (thanks Ankit Soni)
+> - Drop Fixes: and Cc: stable (ditto)
+> - Rebase on top of the lastest changes
+> - Link to v1: https://patch.msgid.link/20260811-amd-iommu-fix-acs-v1-0-d6=
+4e2172408d@rong.moe
+>=20
+> ---
+> Rong Zhang (3):
+>       iommu/amd: Do not request ACS when IOMMU is not going to be initial=
+ized
+>       iommu/amd: Disallow implicit START_STATE =3D> IVRS_DETECTED transit=
+ion
+>       iommu/amd: Remove ad-hoc checks that are never true
+>=20
+>  drivers/iommu/amd/init.c | 52 ++++++++++++++++++++++++------------------=
+------
+>  1 file changed, 26 insertions(+), 26 deletions(-)
+> ---
+> base-commit: 26260251022fbc2f248a3d747a9b2b961b18d2d8
+> change-id: d58d0f31-amd-iommu-fix-acs-8f3d4aba8183
+>=20
 > Thanks,
-> Mathieu
-> 
-
-Thank you!
-
-Regards,
-Francesco
-
+> Rong
