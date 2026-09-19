@@ -1,57 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68A3A2B9B7;
-	Sat, 19 Sep 2026 04:39:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05F86238C1A;
+	Sat, 19 Sep 2026 07:11:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789792757; cv=none; b=GflFr1aRHJ+PuwZdCIQgu6y7Xtkgs1LeRnwHE1FT0k+oXlMSIYeLCb4B5QsxNGwk23C/yer95WM7B7oVE7kHs3oSMC72bi0nw/Bb9mU0quHgTi15MqGmoeRhDKT1L3jKqXSVPLYDO9CtXP8DPeTW5DoN89rYCuXWMMmGad5spUM=
+	t=1789801897; cv=none; b=fvT//CZMjxvpoqjcrkzErzPXVh9dEWrxhWBNRObQHiv9Svx+o3HysJNgMCWikNG23X0anTEmlWHwR533PAnY1xi4qQWFsj8vvKdU0in1ZwE2+2kUAleNFROcwlshG9TmIqQf644YxJaggBNS7xBCdQH9XZ2hs7ZLKDHPASPE3Rs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789792757; c=relaxed/simple;
-	bh=OvzvCShvMMIyGA68THVgyk5YaLtsd0zcLW9UY7FgFCs=;
+	s=arc-20240116; t=1789801897; c=relaxed/simple;
+	bh=/2N3uvbIbDkxyC4wzUUbQ69EypzM5/Q2LWe/nHYww5c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DKdtaW9WXVPSoPwRhuXvM/MKrlTFC9OuctM/KLgitrayKadn2qIa2MlIXySxUnA1GI9n59TWKvOdtVdqwKxcmt1G6N472yDd9bx1ih6tb8U8kqc5hkWkI8/BcZ05f0xCb0Lsk1LWUK2noc5TKZ1L5/T610zCq3OF8eNv/+nnXIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gdc0Xb46; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=qlBvGyOG/yZBw+PykLoocWlZyZm1Q3c5kFz4ZTAEEynN5nKJbPWXEzjDy1y+SeXkv+a4OGlTVCMOSF8SpwtHg9eESurPbUa7M6gIUIaKT7iPzUsddiCBMjAvrBLO6lAS59oJADWe/3FHqWaY/6moTU/K+VmPfyCL8fy6UcWFz6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F4W1bQei; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gdc0Xb46"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551AD1F000FF;
-	Sat, 19 Sep 2026 04:39:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F4W1bQei"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3261F000FF;
+	Sat, 19 Sep 2026 07:11:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789792756;
-	bh=Igi4RHLJYWAKmVb+cd2dtDK1WqzkkFZ7X+ZVpe9M7cs=;
+	s=k20260515; t=1789801895;
+	bh=bEP94n9v3wLAo85N51UgdrheAoXFz2CprleV4BZJMM8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=gdc0Xb46lJVg8B0Ky3G0HTiETukThppICzF4vRLwyqtfTgn+OE2gznNkHPnuVAGJY
-	 K9Uxjjwig9JL6g81dNk6F8CBwe2qfsHjEcyYUpyHnEF0QU0XZx3mCcejc9ulWoA73t
-	 cUyf5iI7JwQ/Dne01j5S/F9qfVk6I9+TXhLkJI/IF5Ty9oDLe1rOCoL9oDKZFRr5Bz
-	 xMXVH3hljWKb0sw+4kVmogm2dnUqqwtWc5EPHrti3+K9eNozLx7YvvhQWh9a14/87S
-	 9whWSzdtS+08iIYTTQm7J1iG6vmO4t1WXjlcB5Tq/vlj8N3R1nj5PSQwgK5lPxgj89
-	 d/EgkVMuN0ntw==
-Date: Sat, 19 Sep 2026 07:39:11 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Matt Evans <matt@ozlabs.org>
-Subject: Re: [PATCH v6 01/18] PCI/P2PDMA: Document pdev->p2pdma lifetime rules
-Message-ID: <20260919043911.GA13683@unreal>
-References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
- <20260914-fix-p2p-acs-v4-0-v6-1-5ef07ec9ef06@nvidia.com>
- <6e4f0c2f-eae8-4cd5-9c10-9b9a59941d2f@deltatee.com>
+	b=F4W1bQei0WbJqW4r8EVplbGGhiwx7NXzD9fjTAJz1nnroqL5YVOgqQUiArkdtmHyr
+	 W9CUxLppulp2QWgWTUWbd/dAehRrSW/lkzZ8oqUe3f2GoaBZ9mxErL6fLMqXM7hUoW
+	 pflbnHmqkcZuRmlsQGGEHcLyopvAXc13ZfvUKI6JKD4iUk+a26j861qNbyRs7NwWAe
+	 5rxSiPFeIPanXD5TpncL4/J1QB4XlrZSZXGeFurkupyx3dvKksXmU0uWgTWfiWByEt
+	 kIY5KOkGCC+OaHU6gMgpAmJdMdOpQb8sI62v9yK0E5VZLKYJBnSZK7nFcRXx41rwCe
+	 CYxurd2l460hw==
+Date: Sat, 19 Sep 2026 10:11:24 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Baoquan He <baoquan.he@linux.dev>
+Cc: Wandun Chen <chenwandun1@gmail.com>, catalin.marinas@arm.com,
+	will@kernel.org, chenhuacai@kernel.org, pjw@kernel.org,
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, robh@kernel.org, saravanak@kernel.org,
+	akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+	pratyush@kernel.org, m.szyprowski@samsung.com, mark.rutland@arm.com,
+	kernel@xen0n.name, alex@ghiti.fr, hpa@zytor.com,
+	ruirui.yang@linux.dev, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org, kexec@lists.infradead.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v6 06/10] memblock: introduce MEMBLOCK_NODUMP flag
+Message-ID: <aq41nFRPtRWTQ7cK@kernel.org>
+References: <20260902073116.802752-1-chenwandun1@gmail.com>
+ <20260902073116.802752-7-chenwandun1@gmail.com>
+ <aqzxavL91icLw-Xv@fedora>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,34 +55,115 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6e4f0c2f-eae8-4cd5-9c10-9b9a59941d2f@deltatee.com>
+In-Reply-To: <aqzxavL91icLw-Xv@fedora>
 
-On Fri, Sep 18, 2026 at 12:25:01PM -0600, Logan Gunthorpe wrote:
-> 
-> 
-> On 2026-09-14 05:22, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
+On Fri, Sep 18, 2026 at 04:08:10PM +0800, Baoquan He wrote:
+> On 09/02/26 at 03:31pm, Wandun Chen wrote:
+> > From: Wandun Chen <chenwandun@lixiang.com>
 > > 
-> > pdev->p2pdma is normally accessed through provider-owned references, but
-> > pci_p2pmem_find_many() and the p2pmem sysfs attributes may race with driver
-> > unbind.
+> > Add MEMBLOCK_NODUMP to mark regions that should be excluded from
+> > kdump vmcores.
 > > 
-> > Document initialization, teardown, and how the release grace period
-> > protects both the P2PDMA state and its optional allocation pool.
+> > The flag is meant for reserved memory that carries no data useful for
+> > crash analysis. Reusable reserved regions such as CMA may hold useful
+> > data, so these regions must not be marked MEMBLOCK_NODUMP. Subsequent
+> > patches wire this up for /reserved-memory and /memreserve/ entries.
 > > 
-> > Cc: Alex Williamson <alex@shazbot.org>
-> > Cc: Matt Evans <matt@ozlabs.org>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> Reads correct to me.
-> 
-> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+> > Suggested-by: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> > Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
+> > ---
+> >  include/linux/memblock.h |  9 +++++++++
+> >  mm/memblock.c            | 16 ++++++++++++++++
+> >  2 files changed, 25 insertions(+)
+> > 
+> > diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+> > index d62db9e776cf..b2fcf11fba2b 100644
+> > --- a/include/linux/memblock.h
+> > +++ b/include/linux/memblock.h
+> > @@ -52,6 +52,8 @@ extern unsigned long long max_possible_pfn;
+> >   * kernel that we know is good to use. It is the only memory that
+> >   * allocations may happen from in this phase.
+> >   * @MEMBLOCK_RSRV_HUGETLB: memory is reserved for hugetlb pages
+> > + * @MEMBLOCK_NODUMP: exclude from kdump vmcore. It carries no data useful
+> > + * for crash analysis (e.g. firmware carveouts).
+> >   */
+> >  enum memblock_flags {
+> >  	MEMBLOCK_NONE		= 0x0,	/* No special request */
+> > @@ -63,6 +65,7 @@ enum memblock_flags {
+> >  	MEMBLOCK_RSRV_KERN	= 0x20,	/* memory reserved for kernel use */
+> >  	MEMBLOCK_KHO_SCRATCH	= 0x40,	/* scratch memory for kexec handover */
+> >  	MEMBLOCK_RSRV_HUGETLB	= 0x80, /* memory reserved for hugetlb pages */
+> > +	MEMBLOCK_NODUMP		= 0x100,/* exclude from kdump vmcore */
+> >  };
+> >  
+> >  /**
+> > @@ -160,6 +163,7 @@ int memblock_reserved_mark_noinit(phys_addr_t base, phys_addr_t size);
+> >  int memblock_reserved_mark_kern(phys_addr_t base, phys_addr_t size);
+> >  int memblock_mark_kho_scratch(phys_addr_t base, phys_addr_t size);
+> >  int memblock_clear_kho_scratch(phys_addr_t base, phys_addr_t size);
+> > +int memblock_mark_nodump(phys_addr_t base, phys_addr_t size);
+> >  
+> >  void memblock_free(void *ptr, size_t size);
+> >  void reset_all_zones_managed_pages(void);
+> > @@ -306,6 +310,11 @@ static inline bool memblock_is_kho_scratch(struct memblock_region *m)
+> >  	return m->flags & MEMBLOCK_KHO_SCRATCH;
+> >  }
+> >  
+> > +static inline bool memblock_is_nodump(struct memblock_region *m)
+> > +{
+> > +	return m->flags & MEMBLOCK_NODUMP;
+> > +}
+> > +
+> >  int memblock_search_pfn_nid(unsigned long pfn, unsigned long *start_pfn,
+> >  			    unsigned long  *end_pfn);
+> >  void __next_mem_pfn_range(int *idx, int nid, unsigned long *out_start_pfn,
+> > diff --git a/mm/memblock.c b/mm/memblock.c
+> > index f2952d725c10..2e87f39826dd 100644
+> > --- a/mm/memblock.c
+> > +++ b/mm/memblock.c
+> > @@ -1204,6 +1204,21 @@ __init int memblock_clear_kho_scratch(phys_addr_t base, phys_addr_t size)
+> >  				    MEMBLOCK_KHO_SCRATCH);
+> >  }
+> >  
+> > +/**
+> > + * memblock_mark_nodump - Mark a memory region with flag MEMBLOCK_NODUMP.
+> > + * @base: the base phys addr of the region
+> > + * @size: the size of the region
+> > + *
+> > + * Mark the region as not to be included in crash dumps.
+> > + *
+> > + * Return: 0 on success, -errno on failure.
+> > + */
+> > +int __init_memblock memblock_mark_nodump(phys_addr_t base, phys_addr_t size)
+>       ~~~~~~~~~~~~~~^
+> Is it impossible to use at runtime even thought it claims to be generic?
 
-Thanks, Logan. Unfortunately, I'm inclined to drop this patch. AI review
-makes it nearly impossible to write the description without complaints.
+This should only happen at boot.
 
-If I use my own words to describe the lifetime, the tools complain about
-almost every word or sentence. If I let the tools write it instead, the
-result is complete junk that merely describes basics already obvious from
-the code itself.
+Allowing modifications of memblock properties in runtime is a can of worms
+I don't want to open.
+ 
+> > +{
+> > +	return memblock_setclr_flag(&memblock.memory, base, size, 1,
+> > +				    MEMBLOCK_NODUMP);
+> > +}
+> > +
+> >  static bool should_skip_region(struct memblock_type *type,
+> >  			       struct memblock_region *m,
+> >  			       int nid, int flags)
+> > @@ -2887,6 +2902,7 @@ static const char * const flagname[] = {
+> >  	[ilog2(MEMBLOCK_RSRV_KERN)] = "RSV_KERN",
+> >  	[ilog2(MEMBLOCK_KHO_SCRATCH)] = "KHO_SCRATCH",
+> >  	[ilog2(MEMBLOCK_RSRV_HUGETLB)] = "RSV_HUGETLB",
+> > +	[ilog2(MEMBLOCK_NODUMP)] = "NODUMP",
+> >  };
+> >  
+> >  static int memblock_debug_show(struct seq_file *m, void *private)
+> > -- 
+> > 2.43.0
+> > 
 
-Thanks
+-- 
+Sincerely yours,
+Mike.
