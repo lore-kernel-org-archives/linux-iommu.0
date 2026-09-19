@@ -1,46 +1,50 @@
-Received: from out13-75.antispamcloud.com (out13-75.antispamcloud.com [185.201.17.75])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCF82135B8;
-	Fri, 18 Sep 2026 23:10:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.17.75
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B22A314B8F;
+	Sat, 19 Sep 2026 04:04:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789773034; cv=none; b=LBtQg15dp9t3Hi8HqzP8t5q6qvSSzYtDHQJIAdsBdFzw8PdVOcIKSFgi0SmQY9KaWSNkRLbPLT7E0XYzz0EvwBeZzOmKRtSBFCmUKYPO9jQPKXjKt3+gp5Qd06j2w4tCe5XwhmDYdvUatSQVe6L3sdJ0s0pEhSsV7BebZEMRGfc=
+	t=1789790675; cv=none; b=Wvs9Dqv0bxelpRyTWMx812kS8sY7J2OOVW2RtVAcuu636ewVrZT8OYQ25yEJergJGUQXahl7vEkdV/ImFdKgHP7zjSJHE4ZWlKxkdOc33e+wNLivmcTZwssRmVcvwLkGENVZhYLleO1FRX/KIXEyRHZmpIuilSh8ue0egCKvxLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789773034; c=relaxed/simple;
-	bh=/6CKCPe5NKSJf4Pp90nvOGmgfKX4k0Rm+VSUMYFOlW4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qWaaYuYum6BmUIZl0cAbkDY+wL68kL61XIBMtKCByN2mbNwY7WDZ5H7/AEhYNpoC8IDU9z3DmXTOnXDaWLaxlVxnswMbOkJ2Ze13x029kS94i07xFmC1jc2L2RBVoCT0XLjE3QYE9/vWVoVPEWLTKA4Yqo3eOGrYoW5+WpsIDXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=Qgw2OE+g; arc=none smtp.client-ip=185.201.17.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1789790675; c=relaxed/simple;
+	bh=nZJBvPIh95jUAFnRv6ZrsC/RbI3DEcyGbYX5M7J1+5U=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Wzqe6ktAr9n2FX2JrYgXGgy7tH1xz1+OuO0ITXEOqWt5ePG4BMAnsrbRsMKpMHV4GML38zLywkpFsVgyJFq6aLbNu2Z/XE84FXiopmV8FMzGho1aY7eJ0jFdZsNH1uHnRazF/aHbqn5P1V2Vz/w0yy2WUVL/1LXoHcF+PMNhijs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bcD3Enh1; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="Qgw2OE+g"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx323.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1x7fnO-002Yl8-Bb; Fri, 18 Sep 2026 23:07:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
-	List-Archive; bh=4x5/myjxPO1OExIcXHbLzVf6Ck/Kseoniz2MwqtIlwk=; b=Qgw2OE+gVwN8
-	dIA2u6uR/kP9kZwFCPlNiv9r8XO4dKYVJfi87H7UfZQF8NntRWPk/+nNvPlshITbkSFzdM+QqtkLw
-	z+hGVgJWTabVMByOepyMZ3PGS1sPZERBmKvdytD+atd+KFFNtk+BjPw3arGD003ZBJmzOl0dFIlUK
-	NtlPmUVZRg9A8ZX4yyLksB/9kGGXCrZ7GqJP5cnFCxaM65qOyiSfAotqb0AdAZ2+0w5DG7P/lhDvJ
-	PY6umONduJaRNGPNYyZHolZRtwRxH0bwSDBQOTfyuSnEr4E46epW7o/QcNQ6RG48mlI02shyE5LY0
-	xbmlOsWYwBUqLjzAJBIiRA==;
-Received: from [188.251.249.2] (port=52294 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
-	(Exim 4.100)
-	(envelope-from <dan@reactivated.net>)
-	id 1x7fnG-00000003DTq-3iaV;
-	Fri, 18 Sep 2026 21:06:48 +0000
-Message-ID: <29bf6c8a-1689-4fda-b605-c972e91d1c73@reactivated.net>
-Date: Fri, 18 Sep 2026 22:06:43 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bcD3Enh1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789790674; x=1821326674;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=nZJBvPIh95jUAFnRv6ZrsC/RbI3DEcyGbYX5M7J1+5U=;
+  b=bcD3Enh1pUm/mGYwR0Tbk/NqFoNSN78FvHvJGmwh/Ppu4YYPIzuj8qNV
+   W5CocJyznyeXyGrBgm9AhTxlrg508VBEu2huWr4OQwhQOYODbG+LuX7AT
+   wq4Jt4IGAvCnU0bAmhLfR4fu9kjX6gL0yBYrI+0zG9QmRVylextiwEx31
+   5POWJA9w5rp43zEQfgKvpzu5QvlqQqAq89tEsR73M8RbNNKCsNlj2IoTW
+   FEA9WuSW+BRt7n11q63OgG9xylv/N34c/x9rkGuoUVteuolgR6v1ThxBI
+   v01StGr8GqniiwJdHURrhJFtvirU7gzRR/PfuBwmhszhvuabDhskQfdq4
+   Q==;
+X-CSE-ConnectionGUID: fmHQs6ItSoyBFu846WKlRg==
+X-CSE-MsgGUID: gBNuDP4CQhGCr6kuAz1gKg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11909"; a="100926606"
+X-IronPort-AV: E=Sophos;i="6.27,109,1787036400"; 
+   d="scan'208";a="100926606"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 21:04:33 -0700
+X-CSE-ConnectionGUID: mKrWvurVSxqw55S/Q6751w==
+X-CSE-MsgGUID: l1N3vmyUSQ2LY2XhlDkSmQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,109,1787036400"; 
+   d="scan'208";a="270403709"
+Received: from unknown (HELO [10.238.1.188]) ([10.238.1.188])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 21:04:29 -0700
+Message-ID: <48f71e6e-7240-428d-a8a7-31542a880a18@linux.intel.com>
+Date: Sat, 19 Sep 2026 12:04:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,83 +52,76 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 5/5] arm64: dts: broadcom: bcm2712: Add GPU IOMMU and
- IOMMU cache nodes
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com,
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20260909-bcm2712-iommu-submit-v5-0-2539c52b249e@reactivated.net>
- <20260909-bcm2712-iommu-submit-v5-5-2539c52b249e@reactivated.net>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Dave Hansen <dave.hansen@linux.intel.com>,
+ Kiryl Shutsemau <kas@kernel.org>,
+ "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+ "yilun.xu@linux.intel.com" <yilun.xu@linux.intel.com>,
+ "Li, Xiaoyao" <xiaoyao.li@intel.com>, "Gao, Chao" <chao.gao@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/5] iommu/vt-d: Introduce trusted DMA initialization
+ support
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "x86@kernel.org" <x86@kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+References: <20260915074235.1219183-1-baolu.lu@linux.intel.com>
+ <CO1PR11MB48351B13F0143DE043EF15378C872@CO1PR11MB4835.namprd11.prod.outlook.com>
 Content-Language: en-US
-From: Daniel Drake <dan@reactivated.net>
-In-Reply-To: <20260909-bcm2712-iommu-submit-v5-5-2539c52b249e@reactivated.net>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CO1PR11MB48351B13F0143DE043EF15378C872@CO1PR11MB4835.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: Combined (0.04)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuXrlO9wllOTdVCMR9b+jbqu2wFwG65a4Qh3
- wUjvFN4P7Su2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVIMrWUWuUTR6VtpnMiz/VOrxGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWCfZW7a9uhvfuE0J/hsBuu+eB7itP8hgjDRserKv4bhb0iZ5sDJvU3vQetKu48NmiFWBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKclZzoe+TZdeH39wA4E
- grA4pE2PuLHIFQdBY9qb1rRWgyz0f29FZkQs6Ir87R/YNAu4LTp8S3dP3ahgJ5Qcw+TYW/Yi0hJk
- 8x1QQxCxZuYYqu1Es/mNlaSZ677NPMmQgxXznb05WiC8jaGsg2zWAtSwOqsKFjyOw6ht9+0m+2HK
- hyDZczNB19Zd16i8m1k/DGgEQyEoi1/j5tZiR031ah+gQPOIjlkSAfAYMUguLL/iJyO1DBoi69uN
- i8SsHHKkwfIcMf/IXZptVL/AvAk4qADKpWAtS6hgL14V/ocDGzv3txBOv3jFjgsNoFxTfcJiJyEa
- 2OI0tSy1D95E625Y16tBpucgO37djUJrXU/wgrKuQcWSKoKpHc12nUrWNUzw/3DGQdeBNIkLb6r4
- 7afaw/CHM6llfItwtYhKi/k9/RA3UB2LIFGgh/QiXjPxB1Apcw3AHj9py9u4Cvw3T1rOV/d4D61d
- j5p7BYnIfUPLdSLTlKS/neSdJxr5whbTg0m4/7LGifDpq5EYH46qR+vFm9wC7ren9RtRNyYim5e3
- GD8LGQOAW9bE+k+gl+anV+4sNfMDJFSfqfmiZ+On+h6teTV37eoUTJObIfbUgxRJO5so89RJ9UeM
- S3sx/LZgkEzT4R77BsVio7IvGyM4VI1B3eqGna9aZwZynFm29FaFzEVtpg4br2+mEmVJrJM4fd19
- PqjIyvGxWL1rN3cWjPD5viEZJolz8ClgrSFC0qV2pwUtO92lcKbdXd1aPKEJfyZsBP+3ojxAc8lp
- 0sobbdB+F7B3Y8TjGBGmQjnZT0wGxghmQiiyHai0+C+cV2SwXGGBGRJoh9VoIekQHpwUfpYnEThm
- JIBq/vl4T589Eoyw88oKK2k2juCx8jpJuYnlmMrz5nN5IXEFyNeBSpOL6XLQkK7G/nvATdPRNfRC
- ogKUBoiGk7+7TY+LxsYMBY14CoC2k4ZFj2kpuIv/9gSqTljzmaSLiwQzKw+6v3CaIMG6s7LqJEBr
- r4RYD5fnTwa0tMnLz6SKQpgZ8zVbGmL5ozttECcg597p245AIcvvY28Ycjy4wX5942JtwBlZxZwg
- qgCXen83SxxqV8dQK7QbjvOnC/QU02F0dRgAVZw81E22mZaseAdYAUt3zF2gN7skM/50TVH1H/aA
- warQpYDOYx/6JtUORHHV0k7mR0VPG9HQWV7dXfBjXbvxH2nMLfV+SMGovieHnQDrcLDN17YMjSrM
- Y2oTcPJOcrZu7OKsSObGAqhi7iERbInMiTBIUBbQ/Dy6Ip5s2Cc9h6F0bzi9eJvFy172Pif4H4Ku
- 78pBi/ZAqnPyI/BjXbvxH2nMLfV+SMGovie1ATPpp8i1sHWZQrJ+tLuI
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
 
-On 09/09/2026 21:08, Daniel Drake wrote:
-> Define the IOMMU and IOMMUC nodes for the Broadcom BCM2712 SoC found in
-> the Raspberry Pi 5. Enable use of the IOMMU for the graphics/display
-> block.
+On 9/18/2026 10:30 AM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, September 15, 2026 3:42 PM
+>>
+>> Hi,
+>>
+>> This series adds Intel VT-d trusted extension support to the host Intel
+>> IOMMU driver as groundwork for TEE I/O trusted DMA (e.g. TDX Connect).
+>>
+>> The trusted extension introduces a parallel, extension-specific path for
+>> trusted DMA assets used by confidential device assignment. Existing VT-d
+>> functionality remains unchanged for regular host DMA paths.
+>>
+>>  From the TDX Connect architecture perspective, VT-d is enhanced with:
+>>
+>>    1) Trusted DMA translation root table
+>>       - A second root-table address register, restricted to SEAM SAI.
+>>       - Programmed by the TDX module with the root of TDX-managed DMA
+>>         translation tables for TD-assigned devices.
+>>
+>>    2) Trusted invalidation queue
+>>       - A second invalidation-queue address register plus dedicated
+>>         head/tail registers, also restricted to SEAM SAI.
+>>
+>>    3) IOTLB / DID isolation
+>>       - When TDX Connect is enabled, VT-d restricts VMM DID usage and
+>>         reserves the DID MSB namespace bit for TDX-module use.
+>>
+>> This posting focuses on VT-d-side enablement only: it enables those
+>> extension-defined resources and control points while preserving existing
+>> host VT-d behavior for non-trusted flows. Higher-layer integration
+>> (TDX guest/device flows) will be posted separately.
+>>
+> 
+> Jason had a comment on this from another thread [1]:
+> 
+> "
+> Okay, so I saw the driver posting for basic iommu support, can we try
+> to rework that to be split out like Aneesh is doing so everything
+> about TDX calls lives in tsm and intel iommu only provides a small API
+> surface to exchange whatever details are needed to bootstrap TDX
+> module?
+> "
+> 
+> [1] https://lore.kernel.org/all/20260916123954.GC3196566@ziepe.ca/
 
+Yes, I will head in this direction in the next version.
 
-> @@ -667,6 +680,7 @@ v3d: gpu@1002000000 {
->   
->   	vc4: gpu {
->   		compatible = "brcm,bcm2712-vc6";
-> +		iommus = <&iommu4>;
->   	};
->   
->   	timer {
-> @@ -701,5 +715,6 @@ hvs: hvs@107c580000 {
->   		interrupt-parent = <&disp_intr>;
->   		interrupts = <2>, <9>, <16>;
->   		interrupt-names = "ch0-eof", "ch1-eof", "ch2-eof";
-> +		iommus = <&iommu4>;
-
-Found some issues here: the iommus property needs to be added to the 
-dt-bindings for this to be considered valid, and actually, it should not 
-be added to the vc4 node (that is just a virtual node), only the hvs node.
-
-But that setup triggers a warning from the iommu layer because the 
-dma/iommu setup is established too late during vc4 device setup.
-
-Working on it...
+Thanks,
+baolu
