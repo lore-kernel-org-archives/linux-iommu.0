@@ -1,124 +1,214 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C05E325495
-	for <iommu@lists.linux.dev>; Sat, 19 Sep 2026 21:35:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D812BEFEB
+	for <iommu@lists.linux.dev>; Sun, 20 Sep 2026 03:08:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789853736; cv=none; b=BOZlXJJwKX1N8A57VOv3YAzwEVaZ42KbtQQ/UOGwKgc4NnArjNY9wRDsVrXvIlRJ5NlSaZbF2SgMSqcHZj+tu/J9v/xsEWmbPHbH54g2HaIz64hMtu2hKtJQH/gug6s8tkQgnGng+nhKqaNvJghkLHIQ6WHzkc9BXkHn0hHQT04=
+	t=1789873741; cv=none; b=K11QapIVQ/Zz3fd/9RHie5ZaFmV5ol1clkArFLuf9/nwxBN3pGCJw4GAJzcX6n/vbSuBjDKSLO4v+p7dM4DhJ4stTphRYGutQCffAi1Y0d0fgmS7+UVj0NOaQtwKbVByO38Acn/J/rcEEQTpd5f2JiyEjSQJYMLMCkBJ3jnKelY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789853736; c=relaxed/simple;
-	bh=xlefR/akgVIwwabPG2m/iCIg0y04aOCKWgO4pB6evyM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kd9QBW5FihPkZhx1+M7JQv0YAuzO5DSxnWLhZ8u2QjeK79ZzV+9Yr0o6Q1093mC+v6JhnWrvf23RZngak1FoqGSRyM9EP6o+k2ksHDYHq2Oi6O3fBKPIrbwgNe/7D8gJNxWj+T9cpXMjukgUHJHx47f+TkwP8K9JMUY8uiier0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PAIIwRAV; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1789873741; c=relaxed/simple;
+	bh=GdC1OedL/4ySIzhuKX/hmq9lsGc6pa3Kd7GQt7te8gM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=aZiIkvJwp5Kf8EbpKEk3ept/Ir9wUJBm4YndEays60ajoAPRHHQp3ZJeLvd16I5GVrLjT16ELfoi/PGWqitiQBakXNLYDDd4JmcizSNJGV4suqs4tzkKgtv98sz5Zq0ikbKzEkak/aDepWJ6VbnCj0g6aTOSIkyv9RMHeQfunpU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=ir6zAVyY; arc=none smtp.client-ip=115.124.30.110
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PAIIwRAV"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-93a0fb2f9efso99729385a.1
-        for <iommu@lists.linux.dev>; Sat, 19 Sep 2026 14:35:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1789853734; x=1790458534; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=kmW9yHmD8Dyy4s5qckAMeYd2CA7UfeC/px2jAWNVXJs=;
-        b=PAIIwRAVAe/WOVLevVuGYmY8odDwwmClsabEE1TRoPCyBQVTkftWVtryVD6Rq4PB5b
-         JuYT0Kbw8Y+F4I5/lknGcqUqWFNKTFOqg6viUlUbqd9NNFpUf3G32ejGnHj2hwYXyI87
-         yev3NlHmIFZc6shHVWsGR32tdAfqmB+zZYdq8RFHfAvJZak79eZqw/O6Zf6lL7/ECtJx
-         6Upaa3DgBuS6jtsiTb0hXTXsnmH6UmADpQlapn0YE+Y3lZ9SzSQVDph5f8dzTTVSOXz0
-         ZEBQqxoFeBLTTmwoGfLEn5wlE1HNv54u23UGsJgJ9HmPD9Owad1jGFGmLwmjQPIUO96Y
-         TrDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789853734; x=1790458534;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=kmW9yHmD8Dyy4s5qckAMeYd2CA7UfeC/px2jAWNVXJs=;
-        b=gROJG9vqHRiG/MzV5D+eLkEUdbk8ngSthU6IwUwHKhUffC1V9cK6zs7ItWM93O5GOI
-         h11eSb1tX4J4SXH7dKMI/KLSb1Yi8TvBX2xSUqhtUB/+xqa2xEA48slbaFFjia068p9G
-         zGzW1exv8nIv0jhtFdFHK15msKwL2hIt6BM31zrABWu+3T9on51GRylCSRs694Hvjsdf
-         U0rkqJF+bvrt43WzyduxOJ0iwoslii85CWsit6xNKr/dQU3ZcsH3NXqHi97c4FMIezAB
-         ow+Qc/sKkVD09qLcW323izHqHgL33A2+a+s1Tj6bqGWccnDLOSi3njql2fkMWBquqF1z
-         m66g==
-X-Forwarded-Encrypted: i=1; AKwUvByc8VbJYJXlCWDfRGvasg2Q+drg0RQkye7swU1/QIoTWmk/WQBOg/8BSu727HgheU0witTYOw==@lists.linux.dev
-X-Gm-Message-State: AFuF++m8S2NrJdUmX6Srs1CCsTtg6v+tdZXSlqh4jjDy0nNjWu3uIm16
-	jnihr6VvOyH4Kpom8lwbg1aSzOnrHJNLTH3i/8zIve5sXwCbKAHhMdqZX/TOS6+QJy8=
-X-Gm-Gg: AYBFou3AsWTCLP9CtrWgJNRCsCJM3EKlG4e9+iyq649rhjkV4vX2+t/LQ/3hdjW7XrY
-	C9K12a4Ennggm4ZherLfdhkOReMNwmWlQPK0jiMqAz7PugD/5gLbSgz0XDFaI2duj45ETjaedqM
-	+mJaSC3jiGGT3q3x03oWmfiT9JUKhcBJucr35W69ivcZWq1Ed1Z1RqYECgea8YoVtaUHJhIOpMd
-	90E5fqiyKo/J38izmgAPAh9LHyl3WG8CzCbdEt41sRHv6lKtB4Zn5ePmwC2QjD2NH4i/N0Ov9Oi
-	ABvtsXqLn+ie4MLYxQne8pxDBx71+SpTrV5p79oi+29lMGM7Ifg1i+tPZR+XIgDmjO2JXccbHur
-	TGGMyYtcZ8r3uB2v67V/Bf9Nl0ws+s79k3ugdGbUydNy37qZzeNa+geOCia7hyFceKRtajgf9I9
-	jCH7ybfKAY6EVcL80IdLrOvaLwLksSeObTQMg+Ld13NMEv94AGak7ZpYh/5GbfIkFF+Fztufs0l
-	cQimHLexqR0Kotjg8M6IhuRdlTNfdQwjTAjNxAdT0M5e4o3wvUI//m4
-X-Received: by 2002:a05:620a:4416:b0:939:fe55:402a with SMTP id af79cd13be357-93bf577e246mr341980385a.31.1789853733973;
-        Sat, 19 Sep 2026 14:35:33 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93bed72215fsm275561085a.1.2026.09.19.14.35.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2026 14:35:32 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1x82iZ-00000003aXY-2gnK;
-	Sat, 19 Sep 2026 18:35:31 -0300
-Date: Sat, 19 Sep 2026 18:35:31 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	"T.J. Mercier" <tjmercier@google.com>
-Subject: Re: [PATCH v6 7/9] dma-buf: system_heap: Enforce shared-granule
- alignment for cc-shared buffers
-Message-ID: <20260919213531.GI11599@ziepe.ca>
-References: <aq1V3oeDdvXobt8J@arm.com>
- <97c30fce-9bda-4c61-b1b9-10297b89c8d9@amd.com>
- <20260918153642.GD11599@ziepe.ca>
- <yq5atsnl47c6.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="ir6zAVyY"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1789873730; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=wjTZldjz1iDULhUhQBqLiB6G8Q6aBj6HV95v1HhDU/I=;
+	b=ir6zAVyYKMVLLMWCwdx6kpHi4PDSA9tFahWH7DQ0IKCOXsV7FiCzqW61POaATls2yy2l1WDuKZK8VSnMmyy//1B7TEGGjpA5y3ZqfNalOtymGN7aGZF5OSYEDdkO0XRDQ0FhyCwVbFeIRyxEe+CFU2J8OOyhwsrIoN8UHy+GnV8=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R461e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XBErkLX_1789873726;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XBErkLX_1789873726 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sun, 20 Sep 2026 11:08:48 +0800
+From: fangyu.yu@linux.alibaba.com
+To: gsh517025@gmail.com
+Cc: alex@ghiti.fr,
+	andrew.jones@oss.qualcomm.com,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	gong.shuai@sanechips.com.cn,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joerg.roedel@amd.com,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kevin.tian@intel.com,
+	kvm-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tomasz.jeznach@linux.dev,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [RFC PATCH v4 04/10] iommu/riscv: use data structure instead of individual values
+Date: Sun, 20 Sep 2026 11:08:46 +0800
+Message-Id: <20260920030846.20403-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <6d1bfb10-fd04-4e4e-895d-55c16fcea13f@gmail.com>
+References: <6d1bfb10-fd04-4e4e-895d-55c16fcea13f@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5atsnl47c6.fsf@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Sep 19, 2026 at 08:27:29PM +0530, Aneesh Kumar K.V wrote:
- 
-> +static struct page *system_heap_alloc_order(unsigned int order, gfp_t flags,
-> +					    bool cc_shared)
-> +{
-> +	struct cc_shared_pages mem;
-> +
-> +	if (!cc_shared)
-> +		return alloc_pages(flags, order);
-> +
-> +	/* The shared granule can raise the actual allocation order. */
-> +	flags |= __GFP_COMP;
-> +	if (alloc_cc_shared_pages(flags, PAGE_SIZE << order, &mem))
-> +		return NULL;
+>Hi Fangyu,
+>
+>On 9/15/2026 11:28 AM, fangyu.yu@linux.alibaba.com wrote:
+>> From: Zong Li <zong.li@sifive.com>
+>>
+>> The parameter will be increased when we need to set up more
+>> bit fields in the device context. Use a data structure to
+>> wrap them up.
+>>
+>> Signed-off-by: Zong Li <zong.li@sifive.com>
+>> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>> ---
+>>   drivers/iommu/riscv/iommu.c | 27 +++++++++++++++++----------
+>>   1 file changed, 17 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>> index a6c8307e82ea..c5b6214ee672 100644
+>> --- a/drivers/iommu/riscv/iommu.c
+>> +++ b/drivers/iommu/riscv/iommu.c
+>> @@ -1165,7 +1165,7 @@ static void riscv_iommu_iodir_iotinval(struct riscv_iommu_device *iommu,
+>>    * interim translation faults.
+>>    */
+>>   static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+>> -				     struct device *dev, u64 fsc, u64 ta)
+>> +				     struct device *dev, struct riscv_iommu_dc *new_dc)
+>>   {
+>>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>>   	struct riscv_iommu_dc *dc;
+>> @@ -1204,10 +1204,10 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+>>   	for (i = 0; i < fwspec->num_ids; i++) {
+>>   		dc = riscv_iommu_get_dc(iommu, fwspec->ids[i]);
+>>   		tc = READ_ONCE(dc->tc);
+>> -		tc |= ta & RISCV_IOMMU_DC_TC_V;
+>> +		tc |= new_dc->ta & RISCV_IOMMU_DC_TC_V;
+>
+>According to SPEC 3.1.3.3, the "V bit" does not exist in DC.ta.
+>This should be a convention from when the iodir_update() function
+>did not yet use `struct riscv_iommu_dc` as a parameter, using bit 0
+>of DC.ta to indicate that the DC is valid. Now that iodir_update()
+>receives the complete dc, it can directly access DC.tc.V, so this
+>convention should no longer be necessary and will cause confusion.
+>
 
-Oh yeah that's surprisingly easy because of how this loop works with
-order
+Hi Shuai:
 
-Makes sense to me
+Thanks for the clarification.
 
-> int alloc_cc_shared_pages_node(int nid, gfp_t gfp, size_t requested,
-> 			       struct cc_shared_pages *mem)
+My understanding is that `ta` here is used as a
+combined concept, not only for `DC.ta`, but also
+for `PC.ta` in this flow.
 
-This argument order is a little weird from mm norms?
+The `V` bit is only initialized when `ta` is first
+set up, so the current usage still follows the
+original design, without changing most of the
+existing logic.
 
-Jason
+The original code also has comments describing
+this behavior.
+
+Thanks,
+Fangyu
+
+>>
+>> -		WRITE_ONCE(dc->fsc, fsc);
+>> -		WRITE_ONCE(dc->ta, ta & RISCV_IOMMU_PC_TA_PSCID);
+>> +		WRITE_ONCE(dc->fsc, new_dc->fsc);
+>> +		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
+>
+>`RISCV_IOMMU_PC_*` should be replaced with `RISCV_IOMMU_DC_*` for
+>readability. There are several other similar places in this file
+>that are unrelated to Process Context or PASID but use the *PC* macros.
+>
+
+My understanding is similar to the `ta` case: `fsc`
+likely refers to both `dc.fsc` and `pc.fsc` in this
+path, since some of their fields share the same bit
+layout.
+
+If we want to rename these for readability, I think
+that should be done in a separate patch set, rather
+than as part of this one.
+
+>
+>Thanks,
+>Shuai
+>
+>>   		/* Update device context, write TC.V as the last step. */
+>>   		dma_wmb();
+>>   		WRITE_ONCE(dc->tc, tc);
+>> @@ -1288,22 +1288,22 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+>>   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+>>   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+>>   	struct pt_iommu_riscv_64_hw_info pt_info;
+>> -	u64 fsc, ta;
+>> +	struct riscv_iommu_dc dc = {0};
+>>
+>>   	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
+>>
+>>   	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
+>>   		return -ENODEV;
+>>
+>> -	fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+>> +	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
+>>   	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
+>> -	ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+>> +	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+>>   	     RISCV_IOMMU_PC_TA_V;
+>>
+>>   	if (riscv_iommu_bond_link(domain, dev))
+>>   		return -ENOMEM;
+>>
+>> -	riscv_iommu_iodir_update(iommu, dev, fsc, ta);
+>> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+>>   	riscv_iommu_bond_unlink(info->domain, dev);
+>>   	info->domain = domain;
+>>
+>> @@ -1378,9 +1378,12 @@ static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
+>>   {
+>>   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+>>   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+>> +	struct riscv_iommu_dc dc = {0};
+>> +
+>> +	dc.fsc = RISCV_IOMMU_FSC_BARE;
+>>
+>>   	/* Make device context invalid, translation requests will fault w/ #258 */
+>> -	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, 0);
+>> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+>>   	riscv_iommu_bond_unlink(info->domain, dev);
+>>   	info->domain = NULL;
+>>
+>> @@ -1400,8 +1403,12 @@ static int riscv_iommu_attach_identity_domain(struct iommu_domain *iommu_domain,
+>>   {
+>>   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+>>   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+>> +	struct riscv_iommu_dc dc = {0};
+>> +
+>> +	dc.fsc = RISCV_IOMMU_FSC_BARE;
+>> +	dc.ta = RISCV_IOMMU_PC_TA_V;
+>>
+>> -	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, RISCV_IOMMU_PC_TA_V);
+>> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+>>   	riscv_iommu_bond_unlink(info->domain, dev);
+>>   	info->domain = NULL;
+>>
