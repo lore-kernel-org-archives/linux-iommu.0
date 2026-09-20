@@ -1,153 +1,114 @@
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mta1.migadu.com (out-76.mta1.migadu.com [95.215.58.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDBD7A59
-	for <iommu@lists.linux.dev>; Sun, 20 Sep 2026 03:13:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9098E34B662
+	for <iommu@lists.linux.dev>; Sun, 20 Sep 2026 03:33:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789873993; cv=none; b=gxNSFEC6G2GNU+lUNEt2VOytGnfbQVgP3bi3k3yY8wYhisnZl8pdr3C7cR31dHbiI07LVj8eazCFoZMRkGCOvkVZ/5xy/YeiM/Xnqp6x3iJtS0z8WCjsGl81pyN4GJ2e130Fdw9zBn2oSopVaGgjjj8V2gukllu+v1jclZ1sHkg=
+	t=1789875236; cv=none; b=Xw0m42XNH7SYANhunDjhtePuzi5/em3m7QozrhnOLpARwItQ2RlUqgdq/mwLzAlijIGGyY35rJTm6i4JgIvzKzbqzuf9CQRZD/5WwnDWQGQ44OaMlEb3TlIfsCzmJEfzVWt4KMzGxW4Hg+Fk4V+7lI2aJsewr78i5L09PGegw0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789873993; c=relaxed/simple;
-	bh=6fPFMYyTN3nTje5fG5HROv2QN6YclNlm1iEMeTFnYhs=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jgOqqlwxnrRX8gTQc1/U3r5wFpkbGWU6uBowkmpDK3XiNnUFVbiHIR9N0H07PA91vhCHG40Y7OgcIfdV2qOrxRTWDvPsqy/3w5WsN6RbxNxHr42+/eT0YZJHSWgFCVU2XgZ90crDnfr9vmU6VsnltVH1QwYD9rxRLktkBMWC2wQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=bszZavdA; arc=none smtp.client-ip=115.124.30.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1789875236; c=relaxed/simple;
+	bh=hXLqE47HqcLGyqOng+gJY4MA1aiOWDH2fotgfictL0g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jSti3n9owIdmV9WxfW0KQpXUTigNXb8Uzthk4VOZCdveI2rXRs1FCaKl0vViJ/HfbFT3EU6NqlCEzg1fOOQJVk8ZzZXsJOfdHZDZYuxR+YWunY3wAOqK/PmEGwTb231ZqG05OZoOzRS7oojmSRyez4cKOZooSZfk/Bj5MGSasm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=MjFuIBdx; arc=none smtp.client-ip=95.215.58.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="bszZavdA"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1789873983; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
-	bh=LHI1NO5JOiIuDGqpEcnCt7eW+JpawOKMKxw6jmu4FBU=;
-	b=bszZavdACUxxV4CJ9vkBQL4wShNUxNacoyWePK7VgLkhiasuyc8xLgeDn4jCG4tiy+qP3jaktvmVgvW1sCRTtIouHVqp2oeBfukUtjWT5eMbYNadfMaFGVLxETFAkUfianXP2GFc7wUYwu/qpc9p4TIh7EaeyZ/Jl0hdQOAkw5U=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XBErlvu_1789873979;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XBErlvu_1789873979 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Sun, 20 Sep 2026 11:13:01 +0800
-From: fangyu.yu@linux.alibaba.com
-To: gsh517025@gmail.com
-Cc: alex@ghiti.fr,
-	andrew.jones@oss.qualcomm.com,
-	anup@brainfault.org,
-	aou@eecs.berkeley.edu,
-	atish.patra@linux.dev,
-	baolu.lu@linux.intel.com,
-	fangyu.yu@linux.alibaba.com,
-	gong.shuai@sanechips.com.cn,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	jgg@nvidia.com,
-	jgg@ziepe.ca,
-	joerg.roedel@amd.com,
-	joro@8bytes.org,
-	jroedel@suse.de,
-	kevin.tian@intel.com,
-	kvm-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	robin.murphy@arm.com,
-	skhawaja@google.com,
-	tomasz.jeznach@linux.dev,
-	vasant.hegde@amd.com,
-	will@kernel.org,
-	zong.li@sifive.com
-Subject: Re: [RFC PATCH v4 08/10] iommu/riscv: Pre-enable GADE for second-stage domains 
-Date: Sun, 20 Sep 2026 11:12:59 +0800
-Message-Id: <20260920031259.20950-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <90826872-1374-49e4-832d-555abf8e8369@gmail.com>
-References: <90826872-1374-49e4-832d-555abf8e8369@gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="MjFuIBdx"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=hXLqE47HqcLGyqOng+gJY4MA1aiOWDH2fotgfictL0g=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1789875232; v=1; x=1790480032;
+ b=MjFuIBdxri6mnPIUOZ/bHRkOn9QfFFAQ/Q0tabD86fdfsLaHgHc5pFS1MJG6bPQIFl3Gca6t
+ kDUwPfcgXw4TbXfFtT1ksq+r5VLNgYmTTo+y/m6Qe1Fm5WLBb1VtWBJjhIKxd4GXgMgK888pnSb
+ W4ddmcOquFJ+NHn4dj3C3t4o=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by mta10.migadu.com with ESMTPS id 15499ad898b25d57;
+	Sun, 20 Sep 2026 03:33:52 +0000
+X-Mizu-Trace-ID: 15499ad898b25d57
+X-Migadu-Flow: FLOW_OUT
+Date: Sun, 20 Sep 2026 11:33:45 +0800
+From: Baoquan He <baoquan.he@linux.dev>
+To: Mike Rapoport <rppt@kernel.org>
+Cc: Wandun Chen <chenwandun1@gmail.com>, catalin.marinas@arm.com,
+	will@kernel.org, chenhuacai@kernel.org, pjw@kernel.org,
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, robh@kernel.org, saravanak@kernel.org,
+	akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+	pratyush@kernel.org, m.szyprowski@samsung.com, mark.rutland@arm.com,
+	kernel@xen0n.name, alex@ghiti.fr, hpa@zytor.com,
+	ruirui.yang@linux.dev, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org, kexec@lists.infradead.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v6 06/10] memblock: introduce MEMBLOCK_NODUMP flag
+Message-ID: <aq9UGXeqmCfuPHdD@fedora>
+References: <20260902073116.802752-1-chenwandun1@gmail.com>
+ <20260902073116.802752-7-chenwandun1@gmail.com>
+ <aqzxavL91icLw-Xv@fedora>
+ <aq41nFRPtRWTQ7cK@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aq41nFRPtRWTQ7cK@kernel.org>
 
->Hi Fangyu,
->
->On 9/15/2026 11:28 AM, fangyu.yu@linux.alibaba.com wrote:
->> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->>
->> Pre-enable RISCV_IOMMU_DC_TC_GADE in the device context when
->> attaching a second-stage domain, if the IOMMU supports AMO_HWAD.
->>
->> Software pre-populates second-stage page tables with D set, so
->> enabling GADE by default does not change normal behavior. When
->> dirty tracking is enabled, iommufd clears the pre-set D bits and
->> GADE becomes necessary for hardware to update the dirty bit on
->> write access.
->>
->> This avoids toggling GADE dynamically and keeps device context
->> setup consistent with second-stage domain attachment.
->>
->> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->> ---
->>   drivers/iommu/riscv/iommu.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->> index 16779877351b..f01fd4e2f840 100644
->> --- a/drivers/iommu/riscv/iommu.c
->> +++ b/drivers/iommu/riscv/iommu.c
->> @@ -1330,6 +1330,8 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->>   			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
->>   			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
->>   			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
->> +		if (iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD)
->> +			dc.tc |= RISCV_IOMMU_DC_TC_GADE;
+On 09/19/26 at 10:11am, Mike Rapoport wrote:
+> On Fri, Sep 18, 2026 at 04:08:10PM +0800, Baoquan He wrote:
+> > On 09/02/26 at 03:31pm, Wandun Chen wrote:
+...snip... 
+> > > +/**
+> > > + * memblock_mark_nodump - Mark a memory region with flag MEMBLOCK_NODUMP.
+> > > + * @base: the base phys addr of the region
+> > > + * @size: the size of the region
+> > > + *
+> > > + * Mark the region as not to be included in crash dumps.
+> > > + *
+> > > + * Return: 0 on success, -errno on failure.
+> > > + */
+> > > +int __init_memblock memblock_mark_nodump(phys_addr_t base, phys_addr_t size)
+> >       ~~~~~~~~~~~~~~^
+> > Is it impossible to use at runtime even thought it claims to be generic?
+> 
+> This should only happen at boot.
+> 
+> Allowing modifications of memblock properties in runtime is a can of worms
+> I don't want to open.
 
-Hi Shuai:
+Thank you. This is why I said this can't be claimed as a generic way to
+mark memory region as no dump. The generic way I'd like to see is
+at any time of system we can mark any unwanted memory region as no dump.
+And it won't impact the behaviour of the current system.
 
->
->I might be missing something, but I don't see how the GADE bit set
->here reaches the hardware IOMMU DC. In riscv_iommu_iodir_update()
->(in patch 04/10), it looks like only the V bit is taken:
->
->	tc = READ_ONCE(dc->tc);
->	tc |= new_dc->ta & RISCV_IOMMU_DC_TC_V;
->	...
->	WRITE_ONCE(dc->tc, tc);
->
-
-You’re right — this is a real issue.
-
-GADE was being set in the software-side dc, but it was not
-propagated into the hardware DC in riscv_iommu_iodir_update().
-
-I have already fixed this in my local tree, and I’ll include the
-change in the next version of the patchset:
-    tc &= ~RISCV_IOMMU_DC_TC_GADE;
-    tc |= new_dc->tc & RISCV_IOMMU_DC_TC_GADE;
-    tc |= new_dc->ta & RISCV_IOMMU_DC_TC_V;
-
->I saw that you mentioned you tested it on QEMU. As far as I know,
->mainline QEMU has not yet declared the AMO_HWAD capability. Could
->you clarify whether you used a modified QEMU for this test?
->
-
-I used mainline QEMU, not a modified one.
-
-In QEMU, I only tested the second-stage path with a
-VM using device passthrough.
-
-I did not test the dirty-log related part there,
-so that path cannot be covered there.
-
-That is why I noted in the TODO that I will build a
-dedicated test case for dirty log handling later.
-
-Thanks,
-Fangyu
-
->Thanks,
->Shuai
->
->>   	} else {
->>   		if (!riscv_iommu_fsc_supported(iommu, pt_info.fsc_iosatp_mode))
->>   			return -ENODEV;
+>  
+> > > +{
+> > > +	return memblock_setclr_flag(&memblock.memory, base, size, 1,
+> > > +				    MEMBLOCK_NODUMP);
+> > > +}
+> > > +
+> > >  static bool should_skip_region(struct memblock_type *type,
+> > >  			       struct memblock_region *m,
+> > >  			       int nid, int flags)
+> > > @@ -2887,6 +2902,7 @@ static const char * const flagname[] = {
+> > >  	[ilog2(MEMBLOCK_RSRV_KERN)] = "RSV_KERN",
+> > >  	[ilog2(MEMBLOCK_KHO_SCRATCH)] = "KHO_SCRATCH",
+> > >  	[ilog2(MEMBLOCK_RSRV_HUGETLB)] = "RSV_HUGETLB",
+> > > +	[ilog2(MEMBLOCK_NODUMP)] = "NODUMP",
+> > >  };
+> > >  
+> > >  static int memblock_debug_show(struct seq_file *m, void *private)
+> > > -- 
+> > > 2.43.0
+> > > 
+> 
+> -- 
+> Sincerely yours,
+> Mike.
