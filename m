@@ -1,82 +1,92 @@
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E08851C064;
-	Mon, 21 Sep 2026 22:17:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D98746EC9D
+	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 22:50:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790029026; cv=none; b=YNh5F4EWKCTzzVePJczWPE6pNd2Qj8tERMLwLmxXdnRmsP2ldMflt0gHNz8fg5ID6KuB85KAcyz5zGkZTDtW90SFM11L6LCkm7LTpA3D4psVxOlaLsj78FmGBWB/PPyX0vLHhu6gjGwBUXQ4lDGbxGkSEewUiw3Kyckg7Pjmpdo=
+	t=1790031046; cv=none; b=GQpC2eDPNUgaaP9DBdQl5ENK/2AuiL9R3vmF/uvEMFVlNfQFw/h1DULohr2Hbjm4LrJoFkjjxMgmKNjnOeD8MSzQpxQfZ/uAIsKVkNN15bGXhJHvQqVo+lHV2SpFWkWbcvlj0knJc3NfdbHE4PD+UYJDBvgVmNt33SBA1tDxyBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790029026; c=relaxed/simple;
-	bh=qZS43diFWuKFB0VBv8plxFaiwRVC4Irdx/++kTMpBxo=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
-	 Content-Type:Subject; b=FsOv1NSZ43CMWDrgC5ALxh7Hh4qQOVAr4XOx9eweLQGGd6sntfJN8YEISPzvGPSdBf2F66x/o+Mf9e76XGKX3eQ61y8SHPOrEvvGE50lEvhQBDbxcblXfhHf3NTWCmoa6xx7amGASMDGQHsegVASz76xD9Pm+BjhpKXRW3djOr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=gyPjGwgQ; arc=none smtp.client-ip=204.191.154.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
+	s=arc-20240116; t=1790031046; c=relaxed/simple;
+	bh=5GncTix9rPbaM092RkQHa4NAbSQPXMUaI3IxcIijcOk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dWct9X/4PBBjy5vK2f0wTZpIIqQ2KRrdZyqAlFuaRnrr37h/CODiVboU5VIgc+lprld5L9OSU/DDk3NEHSWtf5+Per0ARrerdx1hckkBOgrnL2okGpR+UhztX8FfFduJHOUCdf1etiEIwdIlv8pl4b+9Qqo2CSdNjqz9/NeEyY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QnoGr9Tv; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="gyPjGwgQ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-	MIME-Version:Date:Message-ID:content-disposition;
-	bh=qZS43diFWuKFB0VBv8plxFaiwRVC4Irdx/++kTMpBxo=; b=gyPjGwgQcjCiyKhPbAXmYXw3xl
-	+buvxHWSp3dQP9gg+OFi4M/6hYfsK9hkbTOt+ZvqPIGXQOdn5PU89otUyejBoLdwzF8gSa3NCjV98
-	lz9UjLBaq3YW2PjpxssUBJNyxcwoWW10iFN/pSwPlVTuHtKzvXVkxbhw5DGsy7/XnnHEQLU/NjxW2
-	LQX/gwFq0FxkNvESlQz0OyVDfnDGP5D0KSVxMysAdcUzk+IEM07qO4sFfRGEIWR6XNjL0vMGIpo0a
-	H+jfAaaHqUub5uXEZz+NZ/KTIo7bmibu/gMd53QCePldE1dSdT1wo37SkjCqDEmdx+nhjJePGNp8X
-	U0f8N5jA==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.98.2)
-	(envelope-from <logang@deltatee.com>)
-	id 1x8mJo-0000000F5pd-2GHB;
-	Mon, 21 Sep 2026 16:17:01 -0600
-Message-ID: <85bb90f0-5a02-4e35-9ed6-ad7e67c1c0d8@deltatee.com>
-Date: Mon, 21 Sep 2026 16:16:56 -0600
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QnoGr9Tv"
+Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 9370320B7167;
+	Mon, 21 Sep 2026 15:49:56 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9370320B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790030997;
+	bh=T4UVnmGAf435tUMVGxvn7eV45xDSW+zW2b/xkIrQNmw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=QnoGr9TvZoQOCoCydH+GCIPL7xj7wICqC4ntSF4eip4XXdEZaKubrKCthHtk4y4pw
+	 6kZg41hl+avfaA5ts4DQJoKJZeBF4NGLzUsv+ZnATYp4y6KzySZ8LxYV7B/2StBa2i
+	 7mIX3GGE9kH+ZTfU7ZuBpsKiUqs7WsLfz6bYz6pc=
+From: Mukesh R <mrathor@linux.microsoft.com>
+To: linux-hyperv@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Cc: jgg@nvidia.com,
+	jacob.pan@linux.microsoft.com,
+	kys@microsoft.com,
+	haiyangz@microsoft.com,
+	wei.liu@kernel.org,
+	decui@microsoft.com,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	arnd@arndb.de,
+	mrathor@linux.microsoft.com
+Subject: [PATCH V0 0/3] Hyper-V: root VM iommu kernel only driver
+Date: Mon, 21 Sep 2026 15:50:25 -0700
+Message-ID: <20260921225028.4007330-1-mrathor@linux.microsoft.com>
+X-Mailer: git-send-email 2.51.2.vfs.0.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
- <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Randy Dunlap <rdunlap@infradead.org>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, iommu@lists.linux.dev,
- Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-References: <20260920-fix-p2p-acs-v4-0-v7-0-ca0828ab697c@nvidia.com>
- <20260920-fix-p2p-acs-v4-0-v7-15-ca0828ab697c@nvidia.com>
-Content-Language: en-CA
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20260920-fix-p2p-acs-v4-0-v7-15-ca0828ab697c@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: leon@kernel.org, bhelgaas@google.com, kch@nvidia.com, gregkh@linuxfoundation.org, axboe@kernel.dk, alex@shazbot.org, ankita@nvidia.com, jgg@ziepe.ca, corbet@lwn.net, skhan@linuxfoundation.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, rdunlap@infradead.org, sumit.semwal@linaro.org, christian.koenig@amd.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux.dev, tdave@nvidia.com, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Level: 
-Subject: Re: [PATCH v7 15/19] PCI/P2PDMA: Document TLP-class routing
-X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Transfer-Encoding: 8bit
 
+This short series introduces hyperv root VM iommu kernel only driver. This
+driver acts as liason between the hypervisor and iommu layer. Details are
+both in the actual commit and in the comments in the file implementing it.
 
+Thanks,
+-Mukesh
 
-On 2026-09-20 05:41, Leon Romanovsky wrote:
-> +A path is bus addressable only where both directions route directly, so with
-> +nothing enabled every class is.
+V0: based on upstream hyperv-next commit be0cfab740e5
 
-I don't understand the sentence.
+Mukesh R (3):
+  PCI: hv: Export hv_build_devid_type_pci() and change return type
+  mshv: Import data structs around device domains from hyperv headers
+  x86/hyperv: Implement Hyper-V virtual IOMMU on root VMs
 
+ arch/x86/hyperv/irqdomain.c          |   9 +-
+ arch/x86/include/asm/mshyperv.h      |   6 +
+ arch/x86/kernel/pci-dma.c            |   2 +
+ drivers/iommu/Kconfig                |   1 +
+ drivers/iommu/hyperv/Kconfig         |  15 +
+ drivers/iommu/hyperv/Makefile        |   1 +
+ drivers/iommu/hyperv/hv-iommu-root.c | 645 +++++++++++++++++++++++++++
+ include/asm-generic/mshyperv.h       |   3 +
+ include/hyperv/hvgdk_mini.h          |   9 +
+ include/hyperv/hvhdk_mini.h          |  90 ++++
+ include/linux/hyperv.h               |   6 +
+ 11 files changed, 783 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/iommu/hyperv/Kconfig
+ create mode 100644 drivers/iommu/hyperv/hv-iommu-root.c
 
-Logan
+-- 
+2.51.2.vfs.0.1
+
