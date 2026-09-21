@@ -1,309 +1,210 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 878BB4DF4DC
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 16:55:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56EDA4E0B79;
+	Mon, 21 Sep 2026 18:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790009757; cv=none; b=B2tTadiCm0124XeL95Hk3VWfJAji3/VorP2W7gxa4LlsKrLsSAZbUAdFm4n1qxrqDCyXMtMesV7Lrr9umCXP53K5L8J1oXJ/i/mL4s+TFqgjXYNNWiXMXETpiFlpCkfQzOlQBtcwoMaXKdcfZB93BXlJu6EtNvxtHUoIFvXVTD8=
+	t=1790014752; cv=none; b=RdbioLmPoYcGNX1j4tXE15+TQRh1MIvfAytAzuBWXms27uTyMYrJj4AnfVVVZkeS+SPQXFj+7iMuqyyeoXpea5q4bJMKD9qZjymQrvj7hHnloR0cnNh3uDwvcHr8q9vUjOvH66dw0pcTu8bzHYtN4JiOwVMM43QGFmtVhy/75oA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790009757; c=relaxed/simple;
-	bh=SQPzN1fDOFqNzpN0tds5Q+wgRCbruZuRXYCGQEpQ8dY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=srJNo1vgveFtIo25UY0s1ufvCA9OETCaBrhX6BVIODA/RR0hmf/+8wT/u5tZDhsY4zNghq4PJ/fQ9sKP4Sp62qNyrcpmhal9kLb5/mFkkE+SwA3f0kbxOodVHoGylzy0kSdcQ1Z0Sq/eBH17nDpJ6MbwbMNx+MBea8K9fWKFygQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=KGgk5hN4; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1790014752; c=relaxed/simple;
+	bh=BpRcOMKg3LS8V8DqNarIsVgSnibco3n89MGgkueN2dc=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=moe0jViHK0FbBeJuizU71EQx1Pj1ScqL3XMM/vpituquXyixK8jWqOODy6kxd2eIsiP4J+2QQaaIMd3cX1UE+VAUr7lRBJ2E1mj88q3dz65L6gjkjtGF3GIMpaWYNNGMQpc/v3ezBPR5cXjgJKXhNIoU3fXQcRykUJdkVcPhLr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cExF5tZq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="KGgk5hN4"
-Received: from localhost (unknown [167.220.233.38])
-	by linux.microsoft.com (Postfix) with ESMTPSA id AE87520B7167;
-	Mon, 21 Sep 2026 09:55:05 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AE87520B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1790009706;
-	bh=3cNk5cj79jHTROllI+XO8920iIA7Bpi8q9KBRItuhh0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KGgk5hN4wPDCL8bKyLkcH12FidK+MT5CDgWxXpSOv/3KC6QWukbzwn7I/1mv/pba6
-	 GLCTGu8BjKV+hhWzR+qsK/TUvRxRGg5yUpJAq2hUDFmqs/kemKArsp2hwzxonjSXGw
-	 pvTQl3cLmYlZsUIrkrun5dKhgueLwT5iFyCdmVp0=
-Date: Tue, 22 Sep 2026 00:55:51 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: jgg@ziepe.ca, joro@8bytes.org, linux-kernel@vger.kernel.org, 
-	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
-	linux-arch@vger.kernel.org, x86@kernel.org
-Cc: wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, 
-	decui@microsoft.com, longli@microsoft.com, will@kernel.org, robin.murphy@arm.com, 
-	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org, mani@kernel.org, 
-	robh@kernel.org, arnd@arndb.de, mhklinux@outlook.com, 
-	jacob.pan@linux.microsoft.com, tgopinath@linux.microsoft.com, 
-	easwar.hariharan@linux.microsoft.com, mrathor@linux.microsoft.com, baolu.lu@linux.intel.com, 
-	suravee.suthikulpanit@amd.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v5 0/5] Hyper-V: Add para-virtualized IOMMU support for
- Linux guests
-Message-ID: <j3jyw3dlgvlooerixwybkqj3wjc6irqy2np55adqto7vhv4qad@tb5gvf5irvn3>
-References: <20260904075512.174154-1-zhangyu1@linux.microsoft.com>
- <5naiz3yuo5xo6mjyakckym3mrwzwr67cvvglkaqas7ev4lx6qf@muijinxpf3fa>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cExF5tZq"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 037BBC2BCFA;
+	Mon, 21 Sep 2026 18:19:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790014752;
+	bh=BpRcOMKg3LS8V8DqNarIsVgSnibco3n89MGgkueN2dc=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=cExF5tZqDDGIWkrqVOUJS1uzg/RBkCnHzxT6HcXgoDtmN1LAJbnTTv6oGPJqVQxAl
+	 k18J2I6fmd8xuZbx3LY8px3h0AkJZLwFSEdVEtrTTD60vFI4lPtkrYm9CFWKnDETHI
+	 CG8a0JmNb1Oj3febBeqMvVUek5StYiMlQhsHNoRAoxNjroHt+11lxxSrCO9u8xPY47
+	 BEwpPejlaWUL2kojHyZuxNLPUuKKXdKPawgMAcjCTfhVoPpo92KoZopXADc7XW2K9E
+	 HaQTtJ8prLX+WqGmQ7iA17VDJOhk1rw8HR9NCQIEgTLf5O+PaF3wpDjR3zw3U14ClY
+	 +QGoKqhWOcxKA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB63C982EE;
+	Mon, 21 Sep 2026 18:19:11 +0000 (UTC)
+From: Muzaffer Kadir via B4 Relay <devnull+muzafferkadir.mainlining.org@kernel.org>
+Subject: [PATCH v3 00/19] Add Initial Support For MSM8952, Add General
+ Mobile Shamrock
+Date: Mon, 21 Sep 2026 21:18:51 +0300
+Message-Id: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5naiz3yuo5xo6mjyakckym3mrwzwr67cvvglkaqas7ev4lx6qf@muijinxpf3fa>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3XNQQ6CMBAF0KuQrq1pRwrUlfcwLiqMMAm0pMVGQ
+ 7i7hbgwMSz/5P83MwvoCQM7ZzPzGCmQsymcDhmrO2Nb5NSkzEBAIbTQfAhDpRVwsjSR6Xl4jqP
+ zEy+EEUrXgFIhS+vR44Nem3y9pdxRmJx/b4+iXK9fU8KuGSUXXGCZgyqru4L8MhiyfarZ9uh8y
+ 1Y4wi9W7GOQsFJXdepB06D8w5Zl+QAMNnZ2EAEAAA==
+X-Change-ID: 20260909-msm8952-initial-support-60a059c2e15e
+To: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>, 
+ Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+ Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, 
+ Ulf Hansson <ulfh@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Dmitry Baryshkov <lumag@kernel.org>, 
+ Abhinav Kumar <abhinav.kumar@linux.dev>, 
+ Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Robert Marko <robimarko@gmail.com>, Guru Das Srinagesh <linux@gurudas.dev>, 
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Kees Cook <kees@kernel.org>, 
+ Tony Luck <tony.luck@intel.com>, 
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org, 
+ linux-input@vger.kernel.org, Muzaffer Kadir <muzafferkadir@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
+ Abel Vesa <abel.vesa@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790014748; l=5337;
+ i=muzafferkadir@mainlining.org; s=20260816; h=from:subject:message-id;
+ bh=BpRcOMKg3LS8V8DqNarIsVgSnibco3n89MGgkueN2dc=;
+ b=6d13bf2rcAw9hZjgCqRhx3KaAyNMRl7pBSwIaYokFdaChqCK+NJqUuNKUp/H2hb89vl9tkXXB
+ OZwD9zD3YBTDzCAbk2QST9OKaOBjHsbOO67kWdLyO/DWCgGUyfG7Vul
+X-Developer-Key: i=muzafferkadir@mainlining.org; a=ed25519;
+ pk=4zkv4suQ3cYcO4Z7CrV8JSSjEGLBGepUtvQCFjgnYIU=
+X-Endpoint-Received: by B4 Relay for muzafferkadir@mainlining.org/20260816
+ with auth_id=954
+X-Original-From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Reply-To: muzafferkadir@mainlining.org
 
-On Mon, Sep 07, 2026 at 04:48:23PM +0800, Yu Zhang wrote:
+MSM8952 is a SoC with 8 core cpu and Adreno 405 gpu.
 
-Hi Joerg, Jason,
+Ported without uart connection. ramoops and usb
+mainly used to debug.
+USB is not enabled in this series because it
+depends on the not yet upstreamed (and not developed by me)
+pmi8950_smbcharger.
 
-A gentle ping on this series. Could you let me know whether it is ready to be
-picked up, or whether any further changes or acks are needed? Thanks a lot!
+General Mobile shamrock display panel driver
+is generated using MSM8916's mdss dsi panel
+driver generator and tested with it. I didn't
+include it.
 
-B.R.
-Yu
+The GCC and DTS files are derived from existing
+Qualcomm source files. Original copyright notices
+are retained.
 
-> 
-> Hi Jason, Joerg,
->                                                                                                                                                         
-> Do you have any further comments on this version, particularly
-> any remaining issues that would warrant a respin before the series
-> can be considered for inclusion? Thanks a lot! 
-> 
-> B.R.
-> Yu
-> 
-> > This patch series introduces a para-virtualized IOMMU driver for
-> > Linux guests running on Microsoft Hyper-V. The driver enables two
-> > primary use cases:
-> >   1) In-kernel DMA protection for devices assigned to the guest.
-> >   2) Device assignment to guest user space (e.g., via VFIO).
-> > 
-> > The driver implements the following core functionality:
-> > *   Hypercall-based Enumeration
-> >     Unlike traditional ACPI-based discovery (e.g., DMAR/IVRS),
-> >     this driver enumerates the Hyper-V IOMMU capabilities directly
-> >     via hypercalls. This approach allows the guest to discover
-> >     IOMMU presence and features without requiring specific virtual
-> >     firmware extensions or modifications.
-> > 
-> > *   Domain Management
-> >     The driver manages IOMMU domains through a new set of Hyper-V
-> >     hypercall interfaces, handling domain allocation and attachment
-> >     for endpoint devices.
-> > 
-> > *   Nested Translation Support
-> >     This implementation leverages guest-managed stage-1 I/O page
-> >     tables nested with host stage-2 translations. It is built
-> >     upon the consolidated IOMMU page table framework (IOMMU_PT).
-> >     This design eliminates the need for emulating map operations.
-> >     Both Intel VT-d and AMD IOMMU platforms are supported.
-> > 
-> > *   IOTLB Invalidation
-> >     IOTLB invalidation requests are marshaled and issued to the
-> >     hypervisor through the same hypercall mechanism. Both domain-
-> >     selective and page-selective flushes are supported.
-> > 
-> > Implementation Notes:
-> > *   Platform Support
-> >     The current implementation targets x86 platforms with Intel
-> >     VT-d and AMD IOMMU hardware.
-> > 
-> > *   MSI Region Handling
-> >     The standard x86 MSI interrupt range
-> >     (0xfee00000 - 0xfeefffff) is reserved from normal IOVA mappings.
-> >     Future updates may allow this configuration to be queried via
-> >     hypercalls if new hardware platforms are to be supported.
-> > 
-> > *   Reserved Regions (RMRR)
-> >     There is currently no requirement to support assigned devices with
-> >     ACPI RMRR limitations. Consequently, this patch series does not
-> >     specify or query reserved memory regions.
-> > 
-> > *   Guest Hibernation
-> >     Guest hibernation and resume are not supported by this initial
-> >     implementation. The current pvIOMMU interface does not define how
-> >     Hyper-V device-domain objects and device attachments are restored.
-> > 
-> > Testing:
-> > Validated with the following configurations:
-> > - NVMe devices assigned to the guest on AMD platforms, tested
-> >   with fio.
-> > - Intel DSA devices assigned to the guest, tested with dmatest.
-> > - dma_map_benchmark for DMA mapping performance evaluation.
-> > 
-> > Changelog:
-> > 
-> > v4[1] -> v5:
-> > - Added Michael Kelley's Reviewed-by tags for patch 1/2/3/4.
-> > 
-> > - hv: logical device ID registry:
-> >   - Used four-digit hexadecimal values to print PCI domain numbers.
-> >   - Included the PCI domain number in the unregister failure warning.
-> > 
-> > - iommu/hyperv: para-virtualized IOMMU:
-> >   - Removed the unused per-device endpoint structure, allocation,
-> >     private pointer, and release_device() callback.
-> >   - Clarified the logical device ID lookup failure message.
-> >   - Read the ATS capability from the IOMMU associated with the domain
-> >     instead of the global IOMMU pointer.
-> > 
-> > - iommu/hyperv: page-selective IOTLB flush:
-> >   - Unified normal and full-range descriptor construction around the
-> >     aligned range start.
-> >   - Used max() to express the minimum Hyper-V page granularity.
-> >   - Reported Hyper-V status values in warnings when the flush fails.
-> > 
-> > v3[2] -> v4:
-> > - Added Jacob Pan's Reviewed-by tag for patch 1/4/5.
-> > 
-> > - hyperv: hypercall interfaces:
-> >   - Added the authoritative Hyper-V type names to imported definitions.
-> >   - Added HV_STATUS_DEVICE_ALREADY_IN_DOMAIN and mapped it to -EEXIST.
-> > 
-> > - hv: logical device ID registry:
-> >   - Made the registry independent of CONFIG_HYPERV_PVIOMMU.
-> >   - Renamed the APIs to hv_pci_xxx_dev_id(),
-> >   - Reworked initialization and error cleanup to propagate failures.
-> >   - Return -EEXIST with a warning for duplicate registration.
-> > 
-> > - iommu/x86: architectural MSI reserved region:
-> >   - Replaced the exported range constants with
-> >     iommu_alloc_resv_x86_msi_region().
-> > 
-> > - iommu/hyperv: para-virtualized IOMMU:
-> >   - Accepted HV_STATUS_DEVICE_ALREADY_IN_DOMAIN as a successful attach,
-> >     and removed the blocking-domain-specific duplicate check.
-> >   - Removed the redundant ATS disable from release_device(); ATS is
-> >     disabled when attaching the release domain.
-> > 
-> > - iommu/hyperv: page-selective IOTLB flush:
-> >   - Removed the redundant include of linux/hyperv.h.
-> >   - Documented that the list flush also invalidates non-leaf page-walk
-> >     caches before detached page-table pages are freed.
-> > 
-> > v2[3] -> v3:
-> > - Added a separate patch defining the common x86 architectural MSI
-> >   reserved range and converted the Intel, AMD, and Hyper-V IOMMU
-> >   drivers to use it.
-> > 
-> > - hyperv: hypercall interfaces:
-> >   - Used BIT_ULL() for 64-bit capability flags.
-> >   - Matched the create-device-domain input layout to the 32-byte
-> >     Hyper-V ABI.
-> >   - Corrected the page-selective flush range layout to 6/6/52 bits.
-> > 
-> > - hv: logical device ID registry:
-> >   - Replaced the linear list with an rhashtable for the sparse PCI
-> >     domain number mapping.
-> >   - Used RCU-protected lookup and deferred freeing on removal.
-> >   - Simplified the registration and cleanup paths.
-> > 
-> > - iommu/hyperv: para-virtualized IOMMU:
-> >   - Renamed the guest driver source to hv-iommu-guest.c.
-> >   - Enabled ATS only after a device-domain attachment succeeds, and
-> >     disabled ATS before attaching the blocking domain.
-> >   - Removed the obsolete deferred-flush capability, unused geometry,
-> >     and redundant device-private-data clearing.
-> >   - Made the Hyper-V domain settings explicit at each caller instead
-> >     of deriving them from the Linux domain type.
-> >   - Added transactional create/configure domain handling with rollback.
-> >   - Required only the base page size and masked the domain page-size
-> >     bitmap with the Hyper-V-supported bitmap.
-> >   - Silenced detection for unsupported hosts while retaining errors
-> >     for actual hypercall and capability failures.
-> >   - Clarified Kconfig support for assigned PCI devices and documented
-> >     the lack of guest hibernation/resume support.
-> > 
-> > - iommu/hyperv: page-selective IOTLB flush:
-> >   - Removed the inclusive-end overflow and kept the range calculation
-> >     in byte addresses until the final page conversion.
-> >   - Cleared both the fixed hypercall header and the range entry.
-> >   - Warned on selective-flush failure before falling back to a
-> >     full-domain flush.
-> > 
-> > v1[4] -> v2:
-> > - Dropped the "move to subdirectory" patch; the directory now exists
-> >   upstream.
-> > 
-> > - hv: logical device ID registry:
-> >   - Moved the registry to hv_common.c so it can be shared, and derived
-> >     the prefix via a shared helper instead of caching it in pci-hyperv's
-> >     private struct.
-> >   - Moved the lookup out of the irq-disabled region (PREEMPT_RT).
-> > 
-> > - iommu/hyperv: para-virtualized IOMMU:
-> >   - Removed the unused detach_dev op.
-> >   - Rejected a hypervisor not advertising x86 page sizes instead of
-> >     masking and warning.
-> >   - Statically initialized the identity and blocking domains.
-> >   - Gave the blocking domain its own attach op, which returns the hypercall
-> >     status and WARNs on failure.
-> > 
-> > - iommu/hyperv: page-selective IOTLB flush:
-> >   - Used a single descriptor covering a slightly larger power-of-two
-> >     range, instead of splitting the range into multiple descriptors.
-> >   - Fixed the inclusive-end corner case in the flush range calculation.
-> > 
-> > RFC v1[5] -> v1[4]:
-> > - Scoped platform support to x86 only (Intel VT-d and AMD IOMMU);
-> >   initialization now uses x86_init.iommu.iommu_init
-> > - Added page-selective IOTLB flush support
-> > - Disable device ATS in hv_iommu_release_device()
-> > - Addressed review comments from Michael Kelley:
-> >   - Reversed dependency: pvIOMMU exports registration API for
-> >     pci-hyperv to call, instead of pci-hyperv exporting
-> >     hv_build_logical_dev_id()
-> >   - Dropped separate output page allocation patch; hypercall input
-> >     and output now share the same per-CPU page
-> >   - Cleaned up Kconfig (removed PCI_HYPERV dependency, unnecessary
-> >     selects)
-> >   - Removed dev_list, per-domain spinlock, and syscore_ops
-> >   - Removed forward declarations by reordering functions
-> >   - Fixed typos, cleaned up Kconfig selects, improved pr_info
-> >     messages, etc.
-> > 
-> > [1] v4:
-> > https://lore.kernel.org/linux-hyperv/20260821132654.211730-1-zhangyu1@linux.microsoft.com/
-> > [2] v3:
-> > https://lore.kernel.org/linux-hyperv/20260811155022.108148-1-zhangyu1@linux.microsoft.com/
-> > [3] v2:
-> > https://lore.kernel.org/linux-hyperv/20260702160518.311234-1-zhangyu1@linux.microsoft.com/
-> > [4] v1:
-> > https://lore.kernel.org/linux-hyperv/20260511162408.1180069-1-zhangyu1@linux.microsoft.com/
-> > [5] RFC v1:
-> > https://lore.kernel.org/linux-hyperv/20251209051128.76913-1-zhangyu1@linux.microsoft.com/
-> > 
-> > Wei Liu (1):
-> >   hyperv: Introduce new hypercall interfaces used by Hyper-V guest IOMMU
-> > 
-> > Yu Zhang (4):
-> >   Drivers: hv: Add logical device ID registry for vPCI devices
-> >   iommu/x86: Add architectural MSI reserved region helper
-> >   iommu/hyperv: Add para-virtualized IOMMU support for Hyper-V guest
-> >   iommu/hyperv: Add page-selective IOTLB flush support
-> > 
-> >  arch/x86/hyperv/hv_init.c             |   4 +
-> >  arch/x86/include/asm/iommu.h          |  14 +
-> >  arch/x86/include/asm/mshyperv.h       |   4 +
-> >  drivers/hv/hv_common.c                | 115 +++++
-> >  drivers/iommu/Kconfig                 |   1 +
-> >  drivers/iommu/amd/iommu.c             |   6 +-
-> >  drivers/iommu/hyperv/Kconfig          |  16 +
-> >  drivers/iommu/hyperv/Makefile         |   1 +
-> >  drivers/iommu/hyperv/hv-iommu-guest.c | 679 ++++++++++++++++++++++++++
-> >  drivers/iommu/hyperv/iommu.h          |  44 ++
-> >  drivers/iommu/intel/iommu.c           |   6 +-
-> >  drivers/pci/controller/pci-hyperv.c   |  21 +-
-> >  include/asm-generic/mshyperv.h        |   4 +
-> >  include/hyperv/hvgdk_mini.h           |  10 +
-> >  include/hyperv/hvhdk_mini.h           | 155 ++++++
-> >  include/linux/hyperv.h                |   8 +
-> >  16 files changed, 1073 insertions(+), 15 deletions(-)
-> >  create mode 100644 drivers/iommu/hyperv/Kconfig
-> >  create mode 100644 drivers/iommu/hyperv/hv-iommu-guest.c
-> >  create mode 100644 drivers/iommu/hyperv/iommu.h
-> > 
-> > -- 
-> > 2.52.0
-> > 
-> 
+GCC is based on msm8939's gcc file.
+SoC device tree is based on MSM8937 file.
+
+in some downstreams MSM8952 GCC is merged with
+MSM8917 and MSM8937's. But upstreamed MSM8917 is
+based on different GCC and different pll structure.
+I have no way to verify MSM8952 pll so I am not sure
+about how correct pll structure is.
+
+Pinctrl driver was submitted and merged here:
+https://lore.kernel.org/all/20260907-msm8952-pinctrl-v5-0-9a2d8d72ffdb@mainlining.org/
+
+Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
+---
+Changes in v3:
+- Improved GCC driver, also rewrote resets part
+- Rewrote the dt-binding side of gcc
+- Reformatted Device tree files with dt-check-style tool
+- Added reset to sdhci1 and sdhci2
+- Added cx regulator to gcc
+- Added gcc commit messages that it is a derived driver
+- Dropped adsp_mem, renamed lpass_mem to adsp_mem
+- Changed tusb320 interrupt from rising to falling as downstream uses
+- Link to v2: https://patch.msgid.link/20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org
+
+Changes in v2:
+- Changed device dts file as David's and Konrad's suggestions
+- Removed accidental duplicated clock assigments and fixed wrong gcc gp1,gp2
+  and gp3 parent_maps
+- Updated commit messages to make it wrapped at 72 character.
+- Fixed spi1 tlmm node naming
+- Added remaining spi and i2c nodes
+- Wired up mpm
+- Add mmio-sram to rpm_msg_ram
+- Reformatted msm8952.dtsi
+- Removed rpmcc-msm8952 driver entry and replaced it with rpmcc-msm8976
+- Merged sdhci tlmm pins to single nodes, now it is similar to existing SoCs
+- Rebased to latest linux-next, now storage works
+- Removed polling-delay properties from tsens
+- Link to v1: https://lore.kernel.org/r/20260912-msm8952-initial-support-v1-0-0e742578b524@mainlining.org
+
+---
+Muzaffer Kadir (19):
+      dt-bindings: clock: qcom: Add MSM8952 global clock controller
+      clk: qcom: Add global clock controller driver for MSM8952
+      dt-bindings: nvmem: Add compatible for MSM8952
+      dt-bindings: power: rpmpd: Add MSM8952 power domains
+      dt-bindings: mmc: sdhci-msm: Add MSM8952 compatible
+      dt-bindings: vendor-prefixes: Add General Mobile
+      dt-bindings: arm: qcom: Document MSM8952 SoC binding
+      dt-bindings: iommu: qcom,iommu: Add MSM8952 IOMMU to SMMUv2 compatibles
+      dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8952
+      dt-bindings: display/msm: qcom, mdp5: Add MSM8952 compatible
+      dt-bindings: firmware: qcom,scm: Document MSM8952 SCM
+      dt-bindings: clock: qcom,rpmcc: Add MSM8952 compatible
+      drm: msm: mdp5: Add MDP5 configuration for MSM8952
+      soc: qcom: ubwc: Add UBWC config for MSM8952
+      dt-bindings: thermal: tsens: Add MSM8952
+      thermal: qcom: tsens: Add support for MSM8952 tsens
+      arm64: dts: qcom: Add initial support for MSM8952
+      dt-bindings: input: touchscreen: goodix: Add binding for GT970
+      arm64: dts: qcom: generalmobile-shamrock: new device
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    6 +
+ .../bindings/clock/qcom,gcc-msm8952.yaml           |   65 +
+ .../devicetree/bindings/clock/qcom,rpmcc.yaml      |    5 +
+ .../devicetree/bindings/display/msm/qcom,mdp5.yaml |    1 +
+ .../devicetree/bindings/firmware/qcom,scm.yaml     |    3 +
+ .../bindings/input/touchscreen/goodix.yaml         |   35 +-
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+ .../devicetree/bindings/mfd/qcom,tcsr.yaml         |    1 +
+ .../devicetree/bindings/mmc/qcom,sdhci-msm.yaml    |    1 +
+ .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
+ .../devicetree/bindings/power/qcom,rpmpd.yaml      |    1 +
+ .../devicetree/bindings/thermal/qcom-tsens.yaml    |    1 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |    2 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ .../dts/qcom/msm8952-generalmobile-shamrock.dts    |  435 +++
+ arch/arm64/boot/dts/qcom/msm8952.dtsi              | 2696 +++++++++++++++
+ drivers/clk/qcom/Kconfig                           |   10 +
+ drivers/clk/qcom/Makefile                          |    1 +
+ drivers/clk/qcom/gcc-msm8952.c                     | 3548 ++++++++++++++++++++
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c           |   81 +
+ drivers/soc/qcom/ubwc_config.c                     |    1 +
+ drivers/thermal/qcom/tsens-v1.c                    |   44 +
+ drivers/thermal/qcom/tsens.c                       |    3 +
+ drivers/thermal/qcom/tsens.h                       |    2 +-
+ include/dt-bindings/clock/qcom,gcc-msm8952.h       |  215 ++
+ 25 files changed, 7144 insertions(+), 16 deletions(-)
+---
+base-commit: e657a464aba873f5eaf3ca821b6e4016674492d6
+change-id: 20260909-msm8952-initial-support-60a059c2e15e
+
+Best regards,
+--  
+Muzaffer Kadir <muzafferkadir@mainlining.org>
+
+
