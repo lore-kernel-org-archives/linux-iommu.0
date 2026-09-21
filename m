@@ -1,30 +1,30 @@
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C5801A5B9E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA035435514
 	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 10:39:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789987192; cv=none; b=ICFLOPko67yCWNZzL0C4Ha5jbQuzljqwmCXZ+orWDGsbX2M8r/MyVAGBp4nbc0QjUtky49P9AGt6488Xg6ZsPJfrEcI9+7etXsY+tbsaf/ekXmMk/uBX4JoVdBACf9Xv5vSzDTBNUEVKJJPpdPd12eIutzWoo/V7YqG66Dxknf0=
+	t=1789987192; cv=none; b=V05/j4vqrFisXrL2ZSe3aeg5bSDkPWSgkv0A6QiyANBuMEyxRs9MPJqZinbi7xcsmg8ZBIlCfdr4nxtWxAK01VGzGNTg7MG79H+0S2+jakYqS6mhEPpSr5dAAbYbT7vhWXE88HrHUFTvcr51EfL8upP/ZMNBSAM1dI+sSMEON0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1789987192; c=relaxed/simple;
-	bh=UkhjINtAq6pVvDlyfn99Lk1sC5bm0tv9oHYzkNv9AMA=;
+	bh=cQKe33CkmGv2kL9EoHanYMLGJBVwaWAB6423BuYQQ5k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qkg1rOEEBHOZ6CJ6G5KHJ5ISe4lmqqB3LVgtlBCb+iFa27gkOFbNg4hZR1vueGrnS149Pd89s+WKvkZihsuGSm/LSAzyuJb1RezjQNdgraawrewTB0zFpL3WKFzpgvlwPVGW/gg5dzpsf7d3nQ09BvxrKb7aFTbBPCFHDDeIsAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=a4C2S6rl; arc=none smtp.client-ip=115.124.30.118
+	 MIME-Version; b=AUnZrFaGF1lbR9JWJW0/L7MXchL6th5UD6CogfhIXmuqCKHGUT9M6ywcsSPc6sWsLKqKprjTOfcJki62Df1BX1li1j/b7M7EAbTNvvE7+TUEs1YkzsIP20Av4YQO8Vjvv0KJRiIsfEkMBCjY+a+9Lf47VwZezSBDgFuc8gujoaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=LcvMQhNf; arc=none smtp.client-ip=115.124.30.97
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="a4C2S6rl"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="LcvMQhNf"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1789987179; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=5ZcZPnDGodXH/T9B5tDU4vKRkCmpolgJS5NkZsXR4g0=;
-	b=a4C2S6rl7h3Gbe1sMKRxj/BISdolrBcTVo5Xuxcl3rqW6y71tqI7ZGJ4fjYJzW9tUxee4bQi+QLCX7k6wIBGHCDFcbm4e+KH2kQ7e3IQHRglXLSoo6wnJcllFDd9wRYdagd09E3r88Cle/cMO0g7ldOfNyB3bBlt6x7RxspKf2w=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0XBMvKgm_1789987178;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XBMvKgm_1789987178 cluster:ay36)
+	t=1789987178; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=mzlY+7WKmWC1qIp/3zzQwEE6yf9TuN03YHdJStM2WvA=;
+	b=LcvMQhNf3BeAOCwuRy3PNQfRWTE9wVEZ+S4ayOdSR/OVqH68u+1PL07yPlQ4vUAr8n4V8NQNjVYBma0HWtHAad3ZPHoHUKYysCp9JaoywtxI02GoBlv0bG6TxysQAVCxPYG14xtBlpw/n49xPwS21fdfeIEKoQ6/ogwuCJO2d6o=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0XBMvKat_1789987163;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XBMvKat_1789987163 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Mon, 21 Sep 2026 18:39:38 +0800
+          Mon, 21 Sep 2026 18:39:37 +0800
 From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 To: jgg@ziepe.ca,
 	kevin.tian@intel.com,
@@ -35,13 +35,12 @@ To: jgg@ziepe.ca,
 Cc: iommu@lists.linux.dev,
 	kvm@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] iommufd: Reserve PCI host bridge MMIO windows in IOAS reserved regions
-Date: Mon, 21 Sep 2026 18:39:22 +0800
-Message-ID: <20260921103922.1113752-3-guanghuifeng@linux.alibaba.com>
+Subject: [PATCH v2 0/2] iommu: Reserve PCI host bridge MMIO windows for IOVA
+Date: Mon, 21 Sep 2026 18:39:20 +0800
+Message-ID: <20260921103922.1113752-1-guanghuifeng@linux.alibaba.com>
 X-Mailer: git-send-email 2.43.7
-In-Reply-To: <20260921103922.1113752-1-guanghuifeng@linux.alibaba.com>
+In-Reply-To: <20260921070234.897736-1-guanghuifeng@linux.alibaba.com>
 References: <20260921070234.897736-1-guanghuifeng@linux.alibaba.com>
- <20260921103922.1113752-1-guanghuifeng@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,72 +49,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-iommufd builds the reserved IOVA ranges of an IOAS in
-iopt_table_enforce_dev_resv_regions() by calling the per-device
-iommu_get_resv_regions(), which only returns IOMMU driver-level
-reserved regions (RMRR, unity maps, MSI windows, etc.) and does
-not include PCI host bridge MMIO windows.  As a result, the ranges
-reported to userspace by IOMMU_IOAS_IOVA_RANGES may overlap with a
-host bridge's MMIO windows, allowing userspace to map IOVAs that a
-PCIe switch might misinterpret as peer-to-peer DMA and misroute to
-the wrong device.
+The DMA IOVA layer reserves PCI host bridge MMIO windows via
+iova_reserve_pci_windows() to keep IOVA allocations from overlapping
+those address ranges.  As commit fade1ec055dc ("iommu/dma: Avoid PCI
+host bridge windows") explains, a host bridge may interpret addresses
+falling within its MMIO windows as peer-to-peer DMA, leading to
+faults, data corruption, or DMA transactions being misrouted to the
+wrong PCIe device.  This is especially dangerous when a device sits
+behind a PCIe switch and ACS Upstream Forwarding is not fully enabled.
 
-VFIO type1 avoids this because it collects reserved regions through
-iommu_get_group_resv_regions(), which already reserves PCI host
-bridge MMIO windows.
+Passthrough paths that let userspace pick IOVAs did not honour these
+windows: VFIO type1 and iommufd only excluded IOMMU driver-level
+reserved regions (RMRR, unity maps, MSI), not PCI host bridge MMIO
+windows.
 
-Switch iommufd to iommu_get_group_resv_regions() as well so that
-the IOAS reserved set includes PCI host bridge MMIO windows and
-IOMMU_IOAS_IOVA_RANGES no longer hands out IOVAs overlapping them,
-aligning iommufd behaviour with VFIO type1.  The per-device @dev is
-kept as the reservation owner so that per-device detach cleanup via
-__iopt_remove_reserved_iova() continues to work unchanged.
+This series closes that gap:
 
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
----
- drivers/iommu/iommufd/io_pagetable.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+  Patch 1 adds a common helper, iommu_get_pci_resv_windows(), and
+  reserves PCI host bridge MMIO windows in
+  iommu_get_group_resv_regions() so all group-level consumers (VFIO
+  type1, sysfs reserved_regions) avoid them; iova_reserve_pci_windows()
+  is refactored to reuse the helper.
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 4e447ce74cf6..7198deba378e 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -1582,6 +1582,7 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
- 					phys_addr_t *sw_msi_start)
- {
- 	struct iommu_resv_region *resv;
-+	struct iommu_group *group;
- 	LIST_HEAD(resv_regions);
- 	unsigned int num_hw_msi = 0;
- 	unsigned int num_sw_msi = 0;
-@@ -1591,8 +1592,16 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
- 		return -EINVAL;
- 
- 	down_write(&iopt->iova_rwsem);
--	/* FIXME: drivers allocate memory but there is no failure propagated */
--	iommu_get_resv_regions(dev, &resv_regions);
-+
-+	group = iommu_group_get(dev);
-+	if (!group) {
-+		rc = -ENODEV;
-+		goto out_unlock;
-+	}
-+
-+	rc = iommu_get_group_resv_regions(group, &resv_regions);
-+	if (rc)
-+		goto out_free_resv;
- 
- 	list_for_each_entry(resv, &resv_regions, list) {
- 		if (resv->type == IOMMU_RESV_DIRECT_RELAXABLE)
-@@ -1624,6 +1633,8 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
- 	__iopt_remove_reserved_iova(iopt, dev);
- out_free_resv:
- 	iommu_put_resv_regions(dev, &resv_regions);
-+	iommu_group_put(group);
-+out_unlock:
- 	up_write(&iopt->iova_rwsem);
- 	return rc;
- }
+  Patch 2 switches iommufd's iopt_table_enforce_dev_resv_regions() to
+  iommu_get_group_resv_regions() so IOMMU_IOAS_IOVA_RANGES also avoids
+  PCI host bridge MMIO windows, aligning iommufd with VFIO type1.
+
+v1: https://lore.kernel.org/all/20260921070234.897736-1-guanghuifeng@linux.alibaba.com/
+
+Changes since v1:
+- v1 was a single patch; v2 is a two-patch series.
+- Patch 1: build the reservations with iommu_insert_resv_region()
+  instead of list_add_tail(), so the group reserved list stays sorted
+  by start address and overlapping same-type regions are merged.  The
+  helper now frees its partial list itself on error and leaves the
+  caller's list untouched.
+- Patch 2 (new): reserve PCI host bridge MMIO windows for the iommufd
+  IOAS as well, so IOMMU_IOAS_IOVA_RANGES no longer reports IOVAs that
+  overlap PCI MMIO windows.
+
+Notes on earlier automated review feedback:
+- The size_t length of each window matches struct iommu_resv_region's
+  existing field type; no new truncation is introduced on 64-bit.
+- An IOMMU group cannot span multiple PCI host bridges:
+  pci_device_group() only groups devices within a single host bridge
+  hierarchy, so scanning the first PCI device of the group is enough.
+
+Guanghui Feng (2):
+  iommu: Reserve PCI host bridge MMIO windows in group reserved regions
+  iommufd: Reserve PCI host bridge MMIO windows in IOAS reserved regions
+
+ drivers/iommu/dma-iommu.c            | 17 ++++--
+ drivers/iommu/iommu-priv.h           | 11 ++++
+ drivers/iommu/iommu.c                | 85 ++++++++++++++++++++++++++++
+ drivers/iommu/iommufd/io_pagetable.c | 15 ++++-
+ 4 files changed, 121 insertions(+), 7 deletions(-)
+
 -- 
 2.43.7
 
