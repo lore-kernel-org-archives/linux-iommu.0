@@ -1,148 +1,155 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 984FB3C140F;
-	Mon, 21 Sep 2026 15:45:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pj2-f42.google.com (mail-pj2-f42.google.com [74.125.227.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8598C4D17A8
+	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 15:47:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790005559; cv=none; b=s2qMaGuEuIYR6ouhO4sqoeNdXgq39J+DD8D9k70GZ4em9x/l/C+n4XNNuLHZduhlFeJbVrpb84+pKoW+OKXxqFFuY9kCLRLl9y9urT0NquFK9dvWoOhik9YP/psdk7XIJKCmRg0dwfqHUZYaBv1XAbOxx24zPqTnDFK4cp6YbqQ=
+	t=1790005681; cv=none; b=hIJGhphx/uRyFqCFRuf5SeprcuoqNIBOjMPetho432FAY/Z79V3Cq5M8LQ9yFHIWVzbVVYMIWSDKHaxCXBGwtRt+/ZOHyy9B1XxYy5y9pftXiM5KTM76GDFX03/9wQazUjPGp/HkYXVE6QIho1pUTs+9hu32fskF9JMpo7+P7N0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790005559; c=relaxed/simple;
-	bh=cIKZrmFNDgxQa0qqmau+ZqQxkkl6FQkDRcq1dC9miXU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=l8T8Fz/gX5fRJOcJcBpwG3seaLwx5JDzjF/nJJbMaR+fHyl6ADt1R9mRXCQX7GRGayguZP+t20M35MHzQw5L7VWoHVZfjoERAr/uk6a9KJCLlTh8b7POIqzJaAoss2rDrqV9j67MP6SeT9HBA4gfzGLx2nZyH1aL1vX5+FVyGVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=EoC0cuIQ; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1790005681; c=relaxed/simple;
+	bh=xGLfA1m+bcd6cQO4yshQSi+ud4HVrdOAi+ou2Af706o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LD2XMl0Pm78qUyokXPx8kavVlH89kftAswuKDQebTdDk7NF3+yKv3oStXi5CDitLarThNYqK11Z9FBfyxVLH0q4sB2Z++/J5bUiD5cOT4u1fhePlhoiYZF1KkXSqkzXXA8OfKHGYWvUlnZDueYpjWbW4Wf2d27AuR/KKVkeIe4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=IdgbYm0D; arc=none smtp.client-ip=74.125.227.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="EoC0cuIQ"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CE1C176C;
-	Mon, 21 Sep 2026 08:45:52 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B5CD83F632;
-	Mon, 21 Sep 2026 08:45:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1790005555; bh=cIKZrmFNDgxQa0qqmau+ZqQxkkl6FQkDRcq1dC9miXU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=EoC0cuIQz6hLQwqx0QF1eocGbFHcONiXNcdsw4wKNlOhOiOhVhiSZSeViIz1bFPb7
-	 muOHOKkL6n9D40Sc0M8nsRMGJOPM/9pqWCmEHDGay46C0wCozVnJkI6euIIJu4A7eT
-	 wCKvl5TAYjrxpCiY2Dw1a5LcGTlG38H10QNCNR8Y=
-Message-ID: <94630348-d295-4424-9f6c-0dc3b8704077@arm.com>
-Date: Mon, 21 Sep 2026 16:45:36 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IdgbYm0D"
+Received: by mail-pj2-f42.google.com with SMTP id 98e67ed59e1d1-396ccafb74fso3054525a91.3
+        for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 08:47:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1790005678; x=1790610478; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=NymQllFGW/d7T1ecbWk0XQBpiDM3En0PKGwwReZs9hI=;
+        b=IdgbYm0DUM2tBR7WhX9ieXDvGpS8Hx18CY7oMfYWl5uFYyEp2rH/IhW2qMhXuJvhB+
+         4G8ZRUjlYziuRMcdkne7Gg6mTf8U5NcKXRKbDNyiBW7bbSIgzWVn1OL5vr3Ih+HqwZO+
+         0fLQ+ZkI9wH5hFMe6kZb1uo2E8dliaE0+CW7IlUjdTuLWJDMvG2V/IRAAXkZ3RxZy5xk
+         GKCEUA2jeM0Z5+70PiuiggD5b4LM2JSouZrzHvZRWiG+YjaIfsukQAvP1JFdz6oD4O95
+         +MspiJS5Mr/pQ37WG5UQ6U2DTj0opbYW/yrWal3iFaz5p+CZ/8zu4GqNG0mIgtNIsWIt
+         ZWxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790005678; x=1790610478;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=NymQllFGW/d7T1ecbWk0XQBpiDM3En0PKGwwReZs9hI=;
+        b=RcCEZno6bqaB7EDRKc64Btcl/CzA0m664wE7lqezsqMNobB42GIlHRYm0culDhlexj
+         N8dgvOeaAz5EUeT0LFzXX5I0w+IMYFwUnfGRS5USRG91w5/T5I0/wuwCBKcWkQigoy4U
+         Mr1XNh3AyhGNGPvn4Z7C2zDpgleTCCmdgYE+hOeS9oLH+gFUeIqHyXbZWGPwW/A9drLQ
+         JLgPW5gs65y4s/NilZFZ9MLeWbd8/ANiXM+jkjU9rHCQD5E3FZuKAqdnZGwCz7fN/auv
+         TUzrf+FVVTpeJbbLzaIrA3bCpE8FT31YHqpAtfyFcDJev4MBVkxUfX36XwzvXC6R4NJi
+         IaNQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzEgzjPnS4QeloMZGvs/ETUzZbrRWz431X1xu5wFFLWULbS5QNNmeMQn+rsafQOJsGpC1znNg==@lists.linux.dev
+X-Gm-Message-State: AFuF++mmsr/yVM0XyW+B3PDDAc9Oh3D7ZNGPdMoiL8BFXxUD6GdzvXiK
+	xDLJdAJJQLTk4NY11xfresdVsqkd7QwlzLX6UfCYx+tf3vHUXaBp7KWWzpW1qh1PNck=
+X-Gm-Gg: AYBFou2HxPcVA1qLz4vVUbpA0q2Da6xTbBJ5mzDDbDG7dyF/UszZwBJiTFC3d3imTgF
+	uZHvHYhcD4SlJ5FtSAJxN0e0s4Enh85iEzxsGILW0Dpmbtc1NeAwL9tvfHXodgTE7EY0u5Kc9CP
+	ehgzIt8iRRUWr9opgMvoWM6IPmj/rC093o4MsVtikjH2PZGjzhA7hI0u7btwSEtOhNo9AyEPnue
+	j2x+8iK+5cEbi1/AxiI/PXo7PJW0x9KMV3HzXLkxG3jpLzCIriezIUBT7uupUIGzFubP+b+u0tM
+	gmkB3ka2eUqP08TT7THwSQCy/AHNv9MJebgGGdyZcWuK5Y4oz0UJwaN47woUhrJBNw4XzjIThzv
+	/s0F7rPi4ifeUUcqoPw86+3NnDdn/mhmN5qyZR/GFQsCJSsCLN0bOZxMF7yP2Ifk7invOHw/5VJ
+	x3283iKK/PZ3+ETzOMX1LkSjCJ9CyIp/OhWq4oF0S4Q0SCEgauTUYZqjmunttNlYG7wYN0AgscU
+	g==
+X-Received: by 2002:a17:90b:2750:b0:39e:6c69:776f with SMTP id 98e67ed59e1d1-39e6c697934mr11058030a91.24.1790005677565;
+        Mon, 21 Sep 2026 08:47:57 -0700 (PDT)
+Received: from p14s ([2604:3d09:148c:c800:a714:d1ef:56ba:be47])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39e55c9cabdsm7471419a91.0.2026.09.21.08.47.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Sep 2026 08:47:57 -0700 (PDT)
+Date: Mon, 21 Sep 2026 09:47:54 -0600
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+To: Francesco Valla <francesco@valla.it>
+Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
+	imx@lists.linux.dev, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFC 05/12] remoteproc: always report VIRTIO_F_VERSION_1
+ feature
+Message-ID: <arFRqopkkJf7Nlq4@p14s>
+References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+ <20260916-remoteproc_virtio_map-v1-5-dac8c5eb4aa9@valla.it>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 2/6] dma: swiotlb: Track whether the pool size was
- explicitly set
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon
- <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Steven Price <steven.price@arm.com>,
- Suzuki K Poulose <Suzuki.Poulose@arm.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>,
- Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
- Petr Tesarik <ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>,
- Dan Williams <dan.j.williams@intel.com>, Xu Yilun
- <yilun.xu@linux.intel.com>, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, Russell King <linux@armlinux.org.uk>,
- Huacai Chen <chenhuacai@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Jiaxun Yang <jiaxun.yang@flygoat.com>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, x86@kernel.org
-References: <20260921063628.362078-1-aneesh.kumar@kernel.org>
- <20260921063628.362078-3-aneesh.kumar@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260921063628.362078-3-aneesh.kumar@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260916-remoteproc_virtio_map-v1-5-dac8c5eb4aa9@valla.it>
 
-On 21/09/2026 7:36 am, Aneesh Kumar K.V (Arm) wrote:
-> swiotlb_adjust_size() must not override a pool size supplied through the
-> swiotlb= command-line parameter.
+On Wed, Sep 16, 2026 at 11:10:50PM +0200, Francesco Valla wrote:
+> There is currently no way to report the VIRTIO_F_VERSION_1 using the
+> resource table alone, as the per-vdev feature array is limited to 32
+> bits.
 > 
-> Currently, it determines whether a size was supplied by comparing
-> default_nslabs with IO_TLB_DEFAULT_SIZE. This fails when the user
-> explicitly requests the compiled-in default size, allowing the request
-> to be overwritten by automatic pool sizing.
+> Considering that the VirtIO 1.0 specification is now ~10 years old,
+> always report the VIRTIO_F_VERSION_1 feature, as some drivers depend on
+> it.
 > 
-> Record whether swiotlb= supplied a numeric size and add
-> swiotlb_default_size_changed() to query that state.
-> 
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> Signed-off-by: Francesco Valla <francesco@valla.it>
 > ---
->   kernel/dma/swiotlb.c | 9 ++++++++-
->   1 file changed, 8 insertions(+), 1 deletion(-)
+>  drivers/remoteproc/remoteproc_virtio.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index aa19e81ae544..8f86deb25be2 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -107,6 +107,7 @@ static struct io_tlb_mem io_tlb_default_mem;
->   
->   static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
->   static unsigned long default_nareas;
-> +static bool swiotlb_size_set __initdata;
+> diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
+> index 74e0da970f1d..cfd66d9d1c9e 100644
+> --- a/drivers/remoteproc/remoteproc_virtio.c
+> +++ b/drivers/remoteproc/remoteproc_virtio.c
+> @@ -249,7 +249,7 @@ static u64 rproc_virtio_get_features(struct virtio_device *vdev)
+>  
+>  	rsc = (void *)rvdev->rproc->table_ptr + rvdev->rsc_offset;
+>  
+> -	return rsc->dfeatures;
+> +	return rsc->dfeatures | (1ULL << VIRTIO_F_VERSION_1);
 
-Nit: there are various ways and reasons that the size is set in general; 
-could this please be named something clearer, e.g. 
-"swiotlb_cmdline_size_set"?
+I understand this.
 
->   /**
->    * struct io_tlb_area - IO TLB memory area descriptor
-> @@ -269,6 +270,7 @@ setup_io_tlb_npages(char *str)
->   		/* avoid tail segment of size < IO_TLB_SEGSIZE */
->   		default_nslabs =
->   			ALIGN(simple_strtoul(str, &str, 0), IO_TLB_SEGSIZE);
-> +		swiotlb_size_set = true;
->   	}
->   	if (*str == ',')
->   		++str;
-> @@ -304,6 +306,11 @@ unsigned long swiotlb_size_or_default(void)
->   	return default_nslabs << IO_TLB_SHIFT;
->   }
->   
-> +static bool __init swiotlb_default_size_changed(void)
+>  }
+>  
+>  static void rproc_transport_features(struct virtio_device *vdev)
+> @@ -275,14 +275,16 @@ static int rproc_virtio_finalize_features(struct virtio_device *vdev)
+>  	/* Give virtio_rproc a chance to accept features. */
+>  	rproc_transport_features(vdev);
+>  
+> -	/* Make sure we don't have any features > 32 bits! */
+> -	BUG_ON((u32)vdev->features != vdev->features);
+> +	/* Make sure we don't have any features > 32 bits except VIRTIO_F_VERSION_1 */
+> +	if (WARN_ON_ONCE((u32)vdev->features !=
+> +			 (vdev->features & ~(1ULL << VIRTIO_F_VERSION_1))))
+> +		return -1;
 
-...and then do we really need a trivial wrapper function with the exact 
-same scope as the variable itself? (Plus the name is similarly confusing 
-as the places this is used are themselves potentially changing the 
-default size, if you consider "default" to mean "not explicitly 
-specified"...)
+And this.
 
-With the naming improved,
+>  
+>  	/*
+>  	 * Remember the finalized features of our vdev, and provide it
+>  	 * to the remote processor once it is powered on.
+>  	 */
+> -	rsc->gfeatures = vdev->features;
+> +	rsc->gfeatures = vdev->features & ~(1ULL << VIRTIO_F_VERSION_1);
+>  
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+But I'm having trouble with this one.  
 
-> +{
-> +	return swiotlb_size_set;
-> +}
-> +
->   void __init swiotlb_adjust_size(unsigned long size)
->   {
->   	/*
-> @@ -311,7 +318,7 @@ void __init swiotlb_adjust_size(unsigned long size)
->   	 * architectures such as those supporting memory encryption to
->   	 * adjust/expand SWIOTLB size for their use.
->   	 */
-> -	if (default_nslabs != IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT)
-> +	if (swiotlb_default_size_changed())
->   		return;
->   
->   	default_nslabs = swiotlb_aligned_nslabs(size);
+First bit 32 of vdev->features gets cleared and then bit 0 to 31 are assigned to
+rsc->gfeatures.  Why bother with clearing bit 32?
 
+>  	return 0;
+>  }
+> 
+> -- 
+> 2.55.0
+> 
