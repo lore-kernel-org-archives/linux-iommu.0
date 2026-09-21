@@ -1,170 +1,132 @@
-Received: from mail-qk2-f13.google.com (mail-qk2-f13.google.com [74.125.230.205])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B8E9328635
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 12:17:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.205
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61EA84963B0
+	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 12:17:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.252
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789993063; cv=none; b=hGUsVbhO1jXn4cyuqaVvilCUkom16z2YnP3T3qAOZc0rk7bjM9BB4kOgSqy9+TPsRV+dfzdP6xcLc0vaVo/sWKMv4443gg8Y77FUwsoysmkxGJjS4ox3CmwhwIRseEnJNPrHX10L7px2RDN2A62sIU1dg0THYMUpngLD5nRqFM0=
+	t=1789993067; cv=none; b=lLxKMpeFYm51Rg+Mi6y9T8WPvdk5H1eN70+urFi4nhDeY1S6WFCZunKSUeIqe4fWOLkdVGPg9AhcFu7N6+dYcKy3Fh2RyBMtpZjAywVTFzJjd3ZZqGZBk9UnLGFXJY2uxuAHWKRH4PWkbiJGzg8pTa77VMrYAP/HomPh0AmFQUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789993063; c=relaxed/simple;
-	bh=FiL7WiwJYKtgbYN0zFXCgciqh0a5CtLpGXjxvHa6q3U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rxTtB6LcIur7dDZSu6JbYyX4FRv3JcFs2mP4Myh8QF8AjqP0Mfo+ycL+edUxmXyhJD/cm7kVEm2pG0iBGpuaMl1bFPLFonB5w+YAAF/iuGVV8rHRozk6fg68X81Q3TgrySw8OaZNUws/APi6AjTDct8Zc/IMi+1x/ySEFjcDU2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=F3axcvcX; arc=none smtp.client-ip=74.125.230.205
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1789993067; c=relaxed/simple;
+	bh=rzJRF5WmGq7Bxi0zsjCgIoOokhqpSiImWxSiLoJIvJc=;
+	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=IcqRBMHtDF1n2tjgCz9+0ZVOTAjQGHAdB3h3qSXKkjhDGy9TcAfvhGHVyZiDpomxZtqWMpM0XyOtNwuwBiwgFaMgUhioRfjYtMymEm9U9J0lbPhbe0/TFue0UKaTZdeebSGjTPCOhihvSffLeF8U/szWu+vyZVv23GByh15V7IA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=fSfUq+yI; arc=none smtp.client-ip=162.62.57.252
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="F3axcvcX"
-Received: by mail-qk2-f13.google.com with SMTP id af79cd13be357-939109f067eso290883185a.0
-        for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 05:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1789993060; x=1790597860; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=w3UJ+jJG/fm0G4nquu0DTAR8wl/181muiJC8crp8lPM=;
-        b=F3axcvcXRbnjF08VhpkmK2Ja8dHL29tefYepnNd7526GEOA2AXqqIa7WFCjM9fgFJy
-         ZMtEcD4cf0S8knh7Z3Qg0sz6YmW6hbSsCWI4uzmKyqjK3ehohtHlM37Ghr1QiSEcoXLy
-         /8mqAZYmTbrwgAU/o9as4po1HmevijaUXnD3t5BERdjDDYZvn0vrHCJmbLRZFskeEbbm
-         cl826DZAABTe2lT95xvRSxWQm3QURHDTx0h2mvBJ3OUZ1xbE48PQT0ZhacezdN6NpxIG
-         7FXyYW8mYx1GoNd1XfNciOGJyFKFYKMNoQFqNzt4uYHz65v43jh35dlTQHpAOcZEIut+
-         Z2bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789993060; x=1790597860;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=w3UJ+jJG/fm0G4nquu0DTAR8wl/181muiJC8crp8lPM=;
-        b=aabW8jbN8DYIMrmxeyQoRZS5LlI3CoHcsKVEYTo3gCaklu/Q+BXyh2VDEDuspTCPfI
-         b9jrTY3ctWuWBolwqLa8+8CBo2IfFVx4t+hdH6vykAgT2uV9KGvF1DZFM8erJD6YXkqQ
-         /6bfJhtGHKQExJCV4FkuAVoi2AucMa1FUE/FKhI3bU/EpVMbpmdGXiS930sqQvmERge3
-         t5PgeiygBaF2j9E0NKyzHmpzeoGGbiEuS/EyBbUNtZnsLF1S19oxwwk11+/yniL8LCw1
-         pm5SsKTIqmjx4OKWqecqFHUlezBxTiH90Ediwhh1JtH9XXcgpnSLcqOYVCFfxcgcGcFJ
-         GgSQ==
-X-Forwarded-Encrypted: i=1; AKwUvByvuXURB3jnOxd94VhIzuVrYX8xFp8l8oHmXMXGuNq+k/0SjrtLGETswfMr6Hoi6WJTDeCWwA==@lists.linux.dev
-X-Gm-Message-State: AFuF++lWfr2utum6mWzik89AeeYucJGmrCC3qTflYiL5arBbHEeXwT5g
-	FGelaqBzgzxlUl2Og0Yzkh9ioz4LqYO84DQaM2oMCs0oyd3BcY9pyu6bRSwhn0qDoQQ=
-X-Gm-Gg: AYBFou2OLv8mQNAppS+JcSRbHA9T8VSIopP9hYpPa2ougiZs3O2Tv2kCfO1KdbPRP8R
-	eET9Gmwss6Cdo175WSsvrViwtpHgIAOzgSu2JiDWDpZsqWBrPTosJTIbQtsFpxIyvPuLm1aggVB
-	iySZoo05eGYDqKfO5dUydxDr+4MfFwFcOC1BnI08DvtmdAk+x6W2Tt7jeY5PEaBxcyD2WGb1ZlA
-	lDe9T1SsWJyhBRuCBWZFNnGpA53+ZHlsPb1EWitq+tTNX6x5oe1YlrJMT6/yrdMYZJEBngM+C9u
-	INTVwNV8AmWkh7nYsoTgqLXyG3cyOJQTR+8y7DVhtX2tpoO3Ecuz+ULf15p94S+6egjj1+DNWCb
-	pohEPZDoe8LaQl4boMRONRaFPhBpsaEH1jmvBHgQiXP6fmasRQVS8zEsUKk3aI5dQHWmIjJBJrp
-	3h9JaseErh06soqIchZgvJumfi+z9Kve0OIHITzSMpduRRInJx4hTT9X2vUSPR1nPZFr0gGICJR
-	NQhqisZC7125GPBWae46Bvs9VGfUMMXuYtR2cur4l6wqVwlsmS64kqBrAdxoRBfOXE=
-X-Received: by 2002:a05:620a:440d:b0:93b:e6d3:3149 with SMTP id af79cd13be357-93c15ec31camr28407885a.53.1789993060138;
-        Mon, 21 Sep 2026 05:17:40 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93bedac21c7sm633945285a.22.2026.09.21.05.17.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 05:17:39 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1x8cxn-00000006Foq-0Pwg;
-	Mon, 21 Sep 2026 09:17:39 -0300
-Date: Mon, 21 Sep 2026 09:17:39 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	"T.J. Mercier" <tjmercier@google.com>
-Subject: Re: [PATCH v6 7/9] dma-buf: system_heap: Enforce shared-granule
- alignment for cc-shared buffers
-Message-ID: <20260921121739.GM11599@ziepe.ca>
-References: <aq1V3oeDdvXobt8J@arm.com>
- <97c30fce-9bda-4c61-b1b9-10297b89c8d9@amd.com>
- <20260918153642.GD11599@ziepe.ca>
- <d8123f21-d5ce-415b-a05a-392d97b8b57d@amd.com>
- <20260918165315.GF11599@ziepe.ca>
- <6115eaf7-21bc-49ce-8a74-08fd37a1e2c9@amd.com>
- <20260921115141.GJ11599@ziepe.ca>
- <45dd7a2f-8474-4388-b383-2dee3ee62206@amd.com>
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="fSfUq+yI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1789993053;
+	bh=XavhzQr4VzmWd4Gut7X0rOtPYvCGyPMIEIKU9C9TmK0=;
+	h=From:To:Cc:Subject:Date;
+	b=fSfUq+yIEXvBtQ6G65u7pVYi9kXRiK2iRJoKa6hJRTd1s2FiG7vb4qEmHYGotRDYx
+	 bAKw5AhSEm0U3wXeI9x+3JsOGhT/TZuNqGGS9ZNtYbKaVuIzv7Y9XFyl44hZ9mn0eG
+	 /uoC75/9h2G5SiFe+pXz9ucM01qpN6UU0l3pqBwg=
+Received: from RE0700.barrietech.com ([183.156.165.242])
+	by newxmesmtplogicsvrsza53-0.qq.com (NewEsmtp) with SMTP
+	id 45DB3E18; Mon, 21 Sep 2026 20:17:29 +0800
+X-QQ-mid: xmsmtpt1789993049t1yb1seja
+Message-ID: <tencent_4392079B5C29406B923C037A7E66DD338005@qq.com>
+X-QQ-XMAILINFO: MRMtjO3A6C9X29aUms/wkM2a3TG0IvKdvfY2aRLFDQQl2s8lj9cjBlvjwtb16J
+	 KIYuGhAaWx8FZW7rP2C1DFX4lrDvtLuauytgZv25Ficwe+vM2ZSghpJJVXoxSi5bWPa5hennos0C
+	 MiCaP/DYKMBdrGy5aXrKZmrabvG+zzNGLe5cr/qfME6QgQYb//isr6OtZ2fTV9JMmVVbZoqr5DO9
+	 UxewZUMBlGViwZ7jJ1ZaFlvhs/7V4bV8Qt+DOK38+SClH1JAByUJ3cxuQ+xRY1XvlsmUrTQ3voGf
+	 lPwCRx4BzHFbxgP9diF1e2DePgRTvquiirO53MHDrii48KVtcONMQA8WMs5UL396ooL2bDn0ICGd
+	 IENHebzaiQyk5Rac0fqnQW/WIP4aeUR84mMK5Xldvn9Vcp6+sSYKydXqCvqEe3CMSEIedSdMHZEH
+	 9OpB4HdsD6jWxEy+PxwvYd4mzniHkoXYbt+o2Y+9IbnoxYRLieS9NNPgaEbAS5CwLpVEGpR2DNnr
+	 Q5WMo2wqv39+yKC7XoX38x7ezAceVZJfLdzCJ/8HRwEgrBTppd3GIQIrSZ+TQa/FpKam9pFNRUuk
+	 NohROcbuSuWkqDh7lu8eufR6z4esQUjET1pmf9K1WpjUk8jIKFHNtS9x+qA71o4ZEMtrw7fmXyAu
+	 UTCUPkEyefXB1bzgaQjWsneH0+uZKqYvpGU9ZUwIXZjnFEbf0DfcTC8AG+DqDgcLys9bMlZxJNX9
+	 5nYPo0z+fSdoejGh5iY1ZVyP+nZYS8XOXVW3gpYjfPJS9DLK8hoB06dBWrF5HGCcbWiHD2/FordF
+	 HwpAB20+Z/cC+xfEMqHz+JNWpY54sYEcLcrObIGBvMxHBUW6mWnrklgkox5m4PuVxHXpLr/CG7YF
+	 zGHuuS53itATt1FrKHE6+8mez+G/E13O9NvZqNTr9dZ21t7B3AB6GBLcVWhBo2ELWqRo6KFYJq9n
+	 ew3aNqA1jY4mX8lS2KO1DLUM/XvimSTx5bXtW5gR0QkEG08ab7+IO1xq5H7qrHTmmzPIFPzf4Mda
+	 69GE/GDCbRBeZO5lwNX27f9rud68Z7N5twfIS/1MnCLBikNmqIum4yH05YLSm7CKYunHfhSeRyEh
+	 AlDFSSzUW4SflXa6w=
+X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
+From: zhoumin <teczm@foxmail.com>
+To: will@kernel.org,
+	joro@8bytes.org
+Cc: robin.murphy@arm.com,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	teczm@foxmail.com,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/arm-smmu-v3: Skip unlinked duplicate stream nodes on removal
+Date: Mon, 21 Sep 2026 20:17:27 +0800
+X-OQ-MSGID: <20260921121727.630136-1-teczm@foxmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <45dd7a2f-8474-4388-b383-2dee3ee62206@amd.com>
 
-On Mon, Sep 21, 2026 at 02:05:50PM +0200, Christian König wrote:
-> On 9/21/26 13:51, Jason Gunthorpe wrote:
-> > On Mon, Sep 21, 2026 at 11:07:17AM +0200, Christian König wrote:
-> >> On 9/18/26 18:53, Jason Gunthorpe wrote:
-> >>> On Fri, Sep 18, 2026 at 05:39:55PM +0200, Christian König wrote:
-> >>>
-> >>>>> Arch code can figure out how to do it. If some ARM configs only give
-> >>>>> order 4 folios or whatever then dmabuf heap doesn't care.
-> >>>>
-> >>>> The fundamental problem is that DMA allocations are highly
-> >>>> architecture and device specific while Linux memory allocation APIs
-> >>>> are generic.
-> >>>
-> >>> This isn't a dma allocation, this is a memory allocation.
-> >>
-> >> No, I mean this is a DMA-buf heaps allocation. It is a DMA
-> >> allocation, we just don't know for which device.
-> > 
-> > So? How is it any different from the existing alloc pages?
-> 
-> That you need to specify that this is for DMA without encryption.
+A master's firmware stream ID list can contain duplicates, for example
+for PCI devices behind an aliasing bridge. arm_smmu_insert_master()
+accepts these IDs when the existing stream belongs to the same master,
+but does not link the duplicate stream's rb_node into the SID tree.
 
-It is not for "DMA without encryption". It creates shared pages in a
-CC guest which *every* guest device can DMA from.
+Both arm_smmu_remove_master() and the insertion error path nevertheless
+call rb_erase() for every stream in their respective ranges. Erasing a
+zero-initialized, unlinked node can clear the tree root, losing SID to
+master mappings for other devices sharing the SMMU and leaving the tree
+inconsistent for subsequent operations.
 
-> >> That userspace provides this cc_shared flag is a NO-GO to begin
-> >> with.
-> > 
-> > What do you mean? We discussed this with the heap maintainers and we
-> > all agreed this was a kind of heap just like any of the other kinds of
-> > heaps that userspace can request.
-> > 
-> > It is *exactly* the "special allocation requirements" you are talking
-> > about above.
-> 
-> I only see a fraction of the patch set (because no DMA-buf
-> maintainer was CCed) and to me it looked like the cc_shared flag was
-> added as an additional parameter to the allocation and not a
-> separate heap created.
+Mark skipped duplicate nodes with RB_CLEAR_NODE() and skip them in both
+removal paths. Set the marker after sorting the stream array, since it
+contains the node's own address. Keep the stream array and num_streams
+unchanged to preserve existing STE, invalidation and single-stream
+feature checks.
 
-?
+Fixes: b00d24997a11 ("iommu/arm-smmu-v3: Fix iommu_device_probe bug due to duplicated stream ids")
+Cc: stable@vger.kernel.org
+Signed-off-by: zhoumin <teczm@foxmail.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-It was merged months ago, and you were CC'd:
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 5732f3ba0122..2627d496921e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4141,8 +4141,10 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 					->master;
+ 
+ 			/* Bridged PCI devices may end up with duplicated IDs */
+-			if (existing_master == master)
++			if (existing_master == master) {
++				RB_CLEAR_NODE(&new_stream->node);
+ 				continue;
++			}
+ 
+ 			dev_warn(master->dev,
+ 				 "Aliasing StreamID 0x%x (from %s) unsupported, expect DMA to be broken\n",
+@@ -4154,7 +4156,8 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 
+ 	if (ret) {
+ 		for (i--; i >= 0; i--)
+-			rb_erase(&master->streams[i].node, &smmu->streams);
++			if (!RB_EMPTY_NODE(&master->streams[i].node))
++				rb_erase(&master->streams[i].node, &smmu->streams);
+ 		kfree(master->streams);
+ 		kfree(master->build_invs);
+ 	}
+@@ -4174,7 +4177,8 @@ static void arm_smmu_remove_master(struct arm_smmu_master *master)
+ 
+ 	mutex_lock(&smmu->streams_mutex);
+ 	for (i = 0; i < fwspec->num_ids; i++)
+-		rb_erase(&master->streams[i].node, &smmu->streams);
++		if (!RB_EMPTY_NODE(&master->streams[i].node))
++			rb_erase(&master->streams[i].node, &smmu->streams);
+ 	mutex_unlock(&smmu->streams_mutex);
+ 
+ 	kfree(master->streams);
+-- 
+2.53.0
 
-https://lore.kernel.org/all/20260325192352.437608-1-jiri@resnulli.us/
-
-It follows the design the dma heaps maintiners guided to create a new
-named heap:
-
-+	exp_info.name = "system_cc_shared";
-+	exp_info.priv = &system_heap_cc_shared_priv;
-
-Along side the normal heap:
-
- 	exp_info.name = "system";
-
-It is identical to "system" except the pages are "CC shared" meaning
-the hypervisor and every DMA device can access them.
-
-This series is just adjusting the rules around how
-set_memory_decrypted() works. It isn't changing any uAPI or adding
-anything new to dmabuf heaps.
-
-Yes, it ends up as a flag in the internal code flow, that is just how
-it got coded..
-
-Jason
