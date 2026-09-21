@@ -1,158 +1,254 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 207E42475D0
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 13:27:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E267426D3F;
+	Mon, 21 Sep 2026 14:49:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789997266; cv=none; b=k5zIoPgefZfVs6AHEYKiiTfiBteGh1YHFQ2HcGWcKQfzsLHOLY2VBVLd/3SKSuYpFj8vfRjlENx6bQvsRmpqj/Fe1uWp3B4iCoxo5YWYhZke8Cv49HPGnfu8ReK0EkwGeZVnd7xPbeP9GWxxQxcHuVTPJ9FwOq2WRV2l6avA5/k=
+	t=1790002146; cv=none; b=cAOtWCfue1N1zCwuWeGUeyw4ePUmzNxKSR8Zzvd6G0VPK7XcC+fuppFohhR3kyN4sCjgDhIEXS9NCxaqcXb1uRLH6q+G3M4Sq2mu0EBuVxkkNrMzC+el9iPpBRHiqq0TrLlVaj0zLNZh4s7G1mP36QLFbOjHp9sCkK7VCJJHNb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789997266; c=relaxed/simple;
-	bh=4nmoxw2ZHQofaj8EJj1UInlqle9eASAx4yPihU0NGKE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mJbE2s2CZ6YrLPkhrc6jKP52T1TqewXzS96701XOONsgVshEBNlG2dCbtJA6vgPt8XxAEabyZuXce26x6cWVAKY+yK6ejOzYFc1zJX+j+qh0g0HQ9c4ZaFJ0GoNRbyFiIt9Ke76U0g7Pt/3u9DGzSV4csZXlqssrqb4qPOS11yQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gSVwtMYm; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790002146; c=relaxed/simple;
+	bh=ntzqfdSuKUNloO/KJ7XmBrLseDoRU81902CsY3Of6Mw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RZtdzxTilCjkQblIEwkQV+XUEuLOYeb5NYYxsC9sEm7UlLdCZopdLuZiT1qgsE2FLPqDcRYg6dulmSfmtRHEJvrADiAsEHQrYOjpQ2aCL7ZDQN6A/TvEpVt3gu6Q7qh0sayL2A06h5cAHQa7Jf5BkmTM0+ePFvHy+OLGAWUQvAI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AZS5BWYg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gSVwtMYm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789997265; x=1821533265;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=4nmoxw2ZHQofaj8EJj1UInlqle9eASAx4yPihU0NGKE=;
-  b=gSVwtMYm9u8/TvRU/wBpgudO9Ehtse7UBnIlKa8lG/1MTfjZbfpLPAYx
-   +aTSirdYG17fXPQsa0/CjgrNyG/2X5D9OnBuZMgRyh7GC/W3sQjkpkIGU
-   g6QLJyJmTibkQa/yAdOMti5XmDK2iK91IcxklHYPijov10qlzhNnRrN9r
-   QPcsnXXeQddQ7n3JVC1wcMShUVIGW9iEjmqWcOPIvfjSrUOBmCJ1d0l6V
-   iF77jyoMenpeXvXfcJsGVxrTw+9aPFgSVd49KTGQlDpaoeECgqVOF99kr
-   DFdn1/SNN6GImu1J0DYU3ib1Zik14r9xJYBcVwhmYYcsI2nAoBo5iBpGG
-   g==;
-X-CSE-ConnectionGUID: 6pVZQuG0SHCNxkSLRPQpeQ==
-X-CSE-MsgGUID: cXvOENCPRX+TVhqpCH6zoQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11911"; a="89434439"
-X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
-   d="scan'208";a="89434439"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 06:27:44 -0700
-X-CSE-ConnectionGUID: 5cCwDP5/TEOO04pH4+JPkA==
-X-CSE-MsgGUID: YiaHkgBaTpKNVdfgWlxTsQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
-   d="scan'208";a="269165565"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO [10.245.244.155]) ([10.245.244.155])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 06:27:38 -0700
-Message-ID: <51ddde08ece4ca9dc277d799b3ea4f1f3cdf7e10.camel@linux.intel.com>
-Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
- direct peer-to-peer route
-From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Christoph Hellwig <hch@lst.de>
-Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
- Logan Gunthorpe <logang@deltatee.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Greg Kroah-Hartman	 <gregkh@linuxfoundation.org>, Jens Axboe
- <axboe@kernel.dk>, Alex Williamson	 <alex@shazbot.org>, Ankit Agrawal
- <ankita@nvidia.com>, Jonathan Corbet	 <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, "Joerg Roedel (AMD)"	 <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy	 <robin.murphy@arm.com>, Randy
- Dunlap <rdunlap@infradead.org>, Sumit Semwal	 <sumit.semwal@linaro.org>,
- linux-pci@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, iommu@lists.linux.dev,  Tushar Dave
- <tdave@nvidia.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, 	linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, kvm@vger.kernel.org
-Date: Mon, 21 Sep 2026 15:27:36 +0200
-In-Reply-To: <20260921131055.GP11599@ziepe.ca>
-References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
-	 <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
-	 <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
-	 <20260918121500.GV13683@unreal>
-	 <b517070d0b9236b03962fcba649faffcacda23eb.camel@linux.intel.com>
-	 <20260918170524.GH11599@ziepe.ca>
-	 <f9ced8cab6eb929a5f65d789fe6922458c6f3396.camel@linux.intel.com>
-	 <20260921131055.GP11599@ziepe.ca>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AZS5BWYg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D581F000FF;
+	Mon, 21 Sep 2026 14:48:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790002144;
+	bh=/Lkgz98kmoNVfPiZtUjlz1I7ZL706Byj55J2FNtyPqQ=;
+	h=From:To:Cc:Subject:Date;
+	b=AZS5BWYgcRs9dqkQfvQ6iimxVWMS0upWyGswZHtnACOlJPQp6vXIN4W+cmjg3N59a
+	 U0FN3eQ5R/r5/4dF5pqTEC4HteALSLwC/BzUm50j968a9Kioq54AhdIyJDi2fucnSg
+	 vwcxd98mb0Mg9TXXEgvG8WS4ptgAeJ8qJtjLUUj1OuW6JEVB/NNjvyiP8qG/0WarOI
+	 1xMgtBCoN6azE2ESjlDpM4qNAzdTNXkg1g2ugnpVngq7rQi0SuI3CC2OfZYqznaPqr
+	 ZluZjb7lwcLlweCWQ1w0Nj2ujGhRoIHX7XE/xrFKXoKry43DqzFBuRu/qBTE4euDms
+	 LnvETXcMVA0HA==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-coco@lists.linux.dev,
+	kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	christian.koenig@amd.com,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	linux-media@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [RFC PATCH v7 00/13] coco: guest: Add a shared-granule allocator for host-shared memory
+Date: Mon, 21 Sep 2026 20:18:34 +0530
+Message-ID: <20260921144847.501151-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2026-09-21 at 10:10 -0300, Jason Gunthorpe wrote:
-> On Mon, Sep 21, 2026 at 08:40:41AM +0200, Thomas Hellstr=C3=B6m wrote:
-> > On Fri, 2026-09-18 at 14:05 -0300, Jason Gunthorpe wrote:
-> > > On Fri, Sep 18, 2026 at 03:42:28PM +0200, Thomas Hellstr=C3=B6m wrote=
-:
-> > > >=20
-> > > > 1) Xe attachment check if pci_p2pdma_distance() returns OK for
-> > > > the
-> > > > path. Then Xe always sets up dma-addresses using
-> > > > dma_map_resource().=20
-> > >=20
-> > > Open coding pci_p2pdma_distance() in drivers is a hack. Using
-> > > dma_map_resource() like this was never "allowed".
-> > >=20
-> > > We've fixed things so these hacks are not needed, the drivers
-> > > need to
-> > > move over to things like dma_buf_phys_vec_to_sgt() and the hmm
-> > > helpers
-> > > to use the DMA API correctly.
-> > >=20
-> > > > 1a) Let's say the importer (Xe) has ATS enabled, and the
-> > > > exporter
-> > > > is
-> > > > supposed to map dma_addresses.
-> > > > In between there is a switch that allows direct traffic.
-> > > > Now with your patch series, How would the exporter know that Xe
-> > > > has
-> > > > ATS
-> > > > enabled and therefore should return IOVA mappings rather than
-> > > > the
-> > > > BUS
-> > > > addresses representing the shortcut.
-> > >=20
-> > > The thing that does the DMA map must be aware of what PCI TLPs
-> > > the
-> > > PCIe initiator will use to compute the proper P2P mapping mode.
-> > >=20
-> > > ATS always needs an IOVA but that still doesn't mean the P2P will
-> > > work.
-> > >=20
-> > > > It seems to me that a pci-device settable flag "ATS always
-> > > > enabled"
-> > > > should be enough to fix both issues?
-> > >=20
-> > > It should be be per-mapping to support the NIC workflow that
-> > > isn't a
-> > > global operation.
-> >=20
-> > OK. It looked to me from the series like the NIC workflow was to
-> > adapt
-> > its ATS settings per mapping depending on the p2p mapping type
-> > returned
-> > rather than vice versa. If so it would just clear "ATS always
-> > enabled".
-> >=20
-> > Admittedly a per-mapping flag would be more flexible, but also
-> > would
-> > require changed internal APIs?
->=20
-> Ah you didn't send this to the list, was it intentional?
+Hi,
 
-No, Just hit the wrong reply-button. +lists again.
+This series tightens the alignment requirements for buffers that are shared
+between confidential-computing guests and the host, and adds a common
+allocator for host-shared memory.
 
->=20
-> mlx5 has both cases, some DMA is flexable and can do either, some is
-> non-ATS only.
+When a guest runs with private memory, buffers shared with the hypervisor
+are not only accessed by the guest. They are also accessed by the host
+kernel, and the host may manage the corresponding shared/private state at a
+granularity larger than the guest page size.
 
-OK.
+This matters for CCA systems where the Realm stage-2 mappings managed by
+the RMM can still operate at 4K granularity, while the non-secure host may
+manage the IPA state change at a larger page size, for example 64K. In that
+case, allowing a guest to convert and share only a 4K subrange of a
+host-managed granule is unsafe.
 
->=20
-> Jason
+Architectures such as Arm can detect incorrect accesses to Realm physical
+address space PFNs through GPC faults. However, relying on that as the only
+line of defence is fragile and can still lead to kernel crashes. The risk
+is especially visible for shared buffers that are later mmapped into
+userspace, such as guest_memfd or dma-buf backed allocations. Once
+userspace can access the mapping, the kernel cannot guarantee that
+applications will only touch the intended 4K region rather than the whole
+host page mapped into their address space. Those userspace addresses may
+also be passed back into the kernel and accessed through the linear map,
+resulting in a GPC fault.
 
-Thanks,
-Thomas
+To avoid this, host-shared buffers must satisfy two constraints:
+
+  - the address must be aligned to the CoCo shared-granule size
+  - the size must be a multiple of that granule size
+
+The series adds a common CoCo shared-memory layer for enforcing these
+constraints. It provides shared-granule geometry and range-validation
+helpers, byte-oriented private/shared transition helpers, and
+alloc_cc_shared_pages() with a node-aware variant. The allocator rounds a
+request to the architecture shared granule, allocates suitably aligned
+contiguous pages, transitions the complete allocation to shared state, and
+returns the transitioned size alongside the page.
+
+The corresponding free helper restores the complete allocation to private
+state before returning it to the buddy allocator. If private state cannot
+be restored safely, the allocation is deliberately leaked rather than
+returning potentially shared memory for unrelated use. Since a
+private-to-shared transition may modify memory contents, __GFP_ZERO is
+applied after the transition.
+
+The generic shared-granule size defaults to PAGE_SIZE. For arm64 CCA, the
+series queries the host IPA state change alignment through the Realm Host
+Interface, caches it during Realm initialization, and exposes it through
+the arm64 memory-encryption operations.
+
+The common allocator is used for host-shared allocations whose backing is
+owned by an individual caller:
+
+  - GIC ITS command queues and tables
+  - dma-direct allocations backed by CMA or the page allocator
+  - backing allocations for the CoCo atomic DMA pools
+  - dma-buf system_cc_shared heap allocations
+
+Hyper-V users of set_memory_encrypted() and set_memory_decrypted() are not
+changed by this series. Those paths are not currently used by the arm64 CCA
+code path, and therefore are not part of the arm64 CCA IPA state change
+alignment problem addressed here.
+
+NOTE: I have not added explicit MAINTAINERS entries for mm/cc_shared.c and
+include/linux/cc_shared.h, as I am unsure whether we need a separate section
+for common CoCo-related files. I will add the entries based on feedback.
+
+The series is based on:
+  - https://lore.kernel.org/all/20260921053807.354802-1-aneesh.kumar@kernel.org
+
+Changes from v6:
+https://lore.kernel.org/all/20260904103452.1197239-1-aneesh.kumar@kernel.org
+* Add a common allocator and geometry/transition helpers for CoCo host-shared
+  memory.
+* Convert GIC ITS, dma-direct, atomic DMA pools, and the dma-buf
+  system_cc_shared heap to the common allocator.
+* Limit dma-buf scatterlist entries to the requested buffer size so rounded
+  backing is not exposed to importers.
+
+Changes from v5:
+https://lore.kernel.org/all/20260706060432.1375570-1-aneesh.kumar@kernel.org
+* Rebased to latest kernel
+* Drop patch arm64: realm: Move Realm memory encryption ops to RSI code
+
+Changes from v4:
+https://lore.kernel.org/all/20260427063108.909019-1-aneesh.kumar@kernel.org
+* Rename the helpers to use CoCo terminology
+  (mem_cc_shared_granule_size() / mem_cc_align_to_shared_granule() instead of
+  mem_decrypt_granule_size() / mem_decrypt_align()).
+* Use __DMA_ATTR_ALLOC_CC_SHARED to pass CoCo shared allocation requirements
+  down to CMA-based allocation helpers.
+* Add validation for restricted DMA pools to reject pools that are not aligned
+  to the shared granule size.
+* Add dma-buf system heap handling for cc-shared buffers.
+* Split the previous combined DMA/SWIOTLB/ITS change into smaller subsystem
+  patches covering ITS, DMA direct, SWIOTLB, restricted DMA pools, dma-buf
+  system heap, and arm64 Realm support.
+* Rework arm64 Realm support by moving Realm memory encryption ops into RSI
+  code and exposing the CCA shared granule size through arm64_mem_crypt_ops.
+
+Changes from v3:
+https://lore.kernel.org/all/20260309102625.2315725-1-aneesh.kumar@kernel.org
+* Fix build error reported by kernel test robot <lkp@intel.com>
+
+Changes from v2:
+https://lore.kernel.org/all/20251221160920.297689-1-aneesh.kumar@kernel.org
+* Rebase to latest kernel
+* Consider swiotlb always decrypted and don't align when allocating from swiotlb.
+
+Changes from v1:
+* Rename the helper to mem_encrypt_align
+* Improve the commit message
+* Handle DMA allocations from contiguous memory
+* Handle DMA allocations from the pool
+* swiotlb is still considered unencrypted. Support for an encrypted swiotlb pool
+  is left as TODO and is independent of this series.
+
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: christian.koenig@amd.com
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel (AMD) <joro@8bytes.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Thomas Gleixner <tglx@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: dri-devel@lists.freedesktop.org
+Cc: iommu@lists.linux.dev
+Cc: linaro-mm-sig@lists.linaro.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-mm@kvack.org
+
+
+Aneesh Kumar K.V (Arm) (13):
+  arm64: realm: Add RHI helper to query IPA state change alignment
+  mm: Add an allocator for CoCo shared memory
+  arm64: realm: Expose the CCA shared granule size through mem_encrypt
+    ops
+  irqchip/gic-v3-its: Resolve the default NUMA node explicitly
+  irqchip/gic-v3-its: Allocate shared tables using CoCo shared memory
+    allocator
+  dma-contiguous: Accept an explicit minimum alignment
+  dma-pool: Allocate CoCo atomic pools using CoCo shared memory
+    allocator
+  dma-direct: Align CoCo shared DMA allocations to the shared granule
+    size
+  swiotlb: Align shared IO TLB pools to the shared granule size
+  swiotlb: Reject misaligned restricted DMA pools for CoCo guests
+  dma-buf: system_heap: Limit scatterlist entries to the buffer size
+  dma-buf: system_heap: Allocate shared buffers using CoCo shared memory
+    allocator
+  swiotlb: Make rounded shared pool capacity allocatable
+
+ MAINTAINERS                          |   1 +
+ arch/arm/mm/dma-mapping.c            |   5 +-
+ arch/arm64/include/asm/mem_encrypt.h |   1 +
+ arch/arm64/mm/mem_encrypt.c          |  13 +-
+ drivers/dma-buf/heaps/system_heap.c  | 126 +++++++++-----------
+ drivers/firmware/arm_rmm/rsi.c       |  58 +++++++++
+ drivers/iommu/dma-iommu.c            |   2 +-
+ drivers/irqchip/irq-gic-v3-its.c     |  43 +++----
+ include/linux/arm-rsi-cmds.h         |  10 ++
+ include/linux/arm-smccc-rhi.h        |  25 ++++
+ include/linux/arm-smccc-rsi.h        |   7 ++
+ include/linux/cc_shared.h            |  39 ++++++
+ include/linux/dma-map-ops.h          |  10 +-
+ kernel/dma/contiguous.c              |  33 +++--
+ kernel/dma/direct.c                  |  55 +++++++--
+ kernel/dma/ops_helpers.c             |   2 +-
+ kernel/dma/pool.c                    |  23 +++-
+ kernel/dma/swiotlb.c                 |  81 +++++++++----
+ kernel/kexec_file.c                  |   3 +-
+ mm/Makefile                          |   1 +
+ mm/cc_shared.c                       | 172 +++++++++++++++++++++++++++
+ 21 files changed, 552 insertions(+), 158 deletions(-)
+ create mode 100644 include/linux/arm-smccc-rhi.h
+ create mode 100644 include/linux/cc_shared.h
+ create mode 100644 mm/cc_shared.c
+
+-- 
+2.43.0
+
