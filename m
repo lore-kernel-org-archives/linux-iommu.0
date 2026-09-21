@@ -1,132 +1,158 @@
-Received: from mail-vs2-f12.google.com (mail-vs2-f12.google.com [74.125.227.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C239949E12F
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 13:26:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 207E42475D0
+	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 13:27:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789997163; cv=none; b=WdBOmQ/F3TxiHcg/zW1F07gi4BeLocWss/9ndI3EQGHRPiumonyu1rQ+8+Dt5pxRKJU+U12iP7ADxiAeiJRmN/inslZIiiTzMx1DkyCMCjc/ovGKaipg91+cMlGWLXq4R+7/2svP2u21jpVMcdQa6NODnkKwdFP4O4j70KhEqA8=
+	t=1789997266; cv=none; b=k5zIoPgefZfVs6AHEYKiiTfiBteGh1YHFQ2HcGWcKQfzsLHOLY2VBVLd/3SKSuYpFj8vfRjlENx6bQvsRmpqj/Fe1uWp3B4iCoxo5YWYhZke8Cv49HPGnfu8ReK0EkwGeZVnd7xPbeP9GWxxQxcHuVTPJ9FwOq2WRV2l6avA5/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789997163; c=relaxed/simple;
-	bh=jI7O6dwFsIzcl16MuxgQK+8Hj3EPC7adm8Q/IYAxJFw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jT96eLGKqUlgaWEtBAL8mAEjq3xW2LXONBSxMK4EQPxN5fmPkbyXGkiC/nBcDpXSJYDPnoqxg5BslQCWA9D3UzZYTFWjj4fU2Fi8LvzD1hHLT0mI5a581SJvrpFU5d8Lasqy/g68HrTbU3zPwbrca+Mtsld6NLMtedaVisLy0UE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=R8L6iB+h; arc=none smtp.client-ip=74.125.227.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1789997266; c=relaxed/simple;
+	bh=4nmoxw2ZHQofaj8EJj1UInlqle9eASAx4yPihU0NGKE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mJbE2s2CZ6YrLPkhrc6jKP52T1TqewXzS96701XOONsgVshEBNlG2dCbtJA6vgPt8XxAEabyZuXce26x6cWVAKY+yK6ejOzYFc1zJX+j+qh0g0HQ9c4ZaFJ0GoNRbyFiIt9Ke76U0g7Pt/3u9DGzSV4csZXlqssrqb4qPOS11yQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gSVwtMYm; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R8L6iB+h"
-Received: by mail-vs2-f12.google.com with SMTP id 71dfb90a1353d-5c67e5059f9so1599470e0c.2
-        for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 06:26:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1789997160; x=1790601960; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Jdn4c9lGyFJE/+rps4rYYBXSqoAaBa5j8WwP9obCXz4=;
-        b=R8L6iB+hk3T96cTZBwalHt/o+3wkr7ww+6BQPeEvBsuN4m0im/FHZAamz3sR2STAFi
-         q76HrjAlIssFH0wsBwZYd4CLDKRdzWFNR5SwT+6sgIlZAxeusVOgpGFcdZRr+eL4sA7w
-         9pi6h66A4bszbFVZYcPY652B1LODNvUxUI2lHYZiizx/NvSaN4iWZrUR+ENjdwvgbhy0
-         rje9DMBQ9XTE3CZVNThGPUSlLxNeZek3aRXOiXYGXSBTGhFZigWj1lv+Y2wF95MNqO6L
-         sSScN318idD6otuQBNCjhX6SVFEiLEiKixh5tNySlhx3r31OF0YiHs4EWnkkfxbi+f0b
-         AsXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789997160; x=1790601960;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Jdn4c9lGyFJE/+rps4rYYBXSqoAaBa5j8WwP9obCXz4=;
-        b=o9sE3xB7vAmcG6CgQinj9velQyK25Hge+NdLcZ9/vh66khwSZIFtqdPkFUYwyhbsNu
-         6UKOFjZtzjn9RMJduzyFa46IjwzbeB2BpCeOP+sTbws2FTcxkRqnfO3y34RyyFArMOyK
-         jDA1zKX+YKUqJuyE0XOQOxba8YzvgT6togBXtOi0WchuhNKEvA6MPfIQfuOZIEtt+975
-         iwY38SQoqL0lHuhSU5uaCURiczYLzUiuVSiQ/LO8tdAIioXjQ9Iyyh3WsyrMi8NP/bE1
-         WEMhDa4fRHcCfMIU6F6NBd2MwLUhWZXOQqDT4ERfGlY295oFhstYVYNO6v662sHc/8W+
-         pRLg==
-X-Forwarded-Encrypted: i=1; AKwUvBzQAE/0PXyBTpc1JhrdDbKqDrxYBNmWIWm6rgCfxgQt81MdyrmQ+vKrhM66Tf5Tz3Qpxa/PIQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++n2KO43+2h39YZ9Mu7s2cXt5YcsD6iVfh0xpDRWGlDxylBVyAOu
-	73gTtC7cU5t8+/gNLUV1jJdvKkYMBg74h6vukRKaWEXaTc/DHZSRapCAwLHppmtxDe4=
-X-Gm-Gg: AYBFou36rh1YUJvW8xgOa77ODoUxJQEXf3hFisvEIoUqInHbU8QBPRcYRKxyfPGeQaQ
-	2I0sHks/T/U+TnP9h9bdWNJQXygNYAcpQ1AtBbLylHDWxhCIAsYtcGrNlIQpeuZcuf/LOxV/qPs
-	3Mj8AEFbS0b/swFH1fv5BcaycZ36A0Pee+zcgTLacAebfyG+udOOeRl+RWSU0Z6Nsff/EbiwBC5
-	Q4ih5fDYjhV/50Uv4nbGVj89yrcIaVbFO64e3MYTe5cpQl7gIn8hkFvV/HqA8xuQ6Wqdt3xn7i5
-	btwQiZsNx4AJPNubBcJByh+RbKFCJNCI1ohh85vonfOIezvoITdtcnjV82ifEc5htofJ+7rAP9d
-	lA4t6mEtGCdLn4zMvQu5y/MIUsqFZSnFr2Z4AxaOkRAW2ylcCd+TIzx5agFYFzm02IxYrVLNTlR
-	9eNqn1Mw2FVV2vR8eiGX8NdW30xJ7H50yqRbtN4UC88x1eCY3F5Dt5aif/8a4iarOm4+/ubeR6D
-	IGkRY4A8ok7HcT7gTIf7OerrQxmi6Uxn81LbgVyPCgiZ4/yfHRAcsbO
-X-Received: by 2002:a05:6122:209e:b0:5c9:a491:641a with SMTP id 71dfb90a1353d-5c9b8a6c1afmr4625797e0c.4.1789997160437;
-        Mon, 21 Sep 2026 06:26:00 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91260a60f21sm67324286d6.19.2026.09.21.06.25.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 06:25:59 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1x8e1v-00000006Knm-1R2E;
-	Mon, 21 Sep 2026 10:25:59 -0300
-Date: Mon, 21 Sep 2026 10:25:59 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gSVwtMYm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789997265; x=1821533265;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=4nmoxw2ZHQofaj8EJj1UInlqle9eASAx4yPihU0NGKE=;
+  b=gSVwtMYm9u8/TvRU/wBpgudO9Ehtse7UBnIlKa8lG/1MTfjZbfpLPAYx
+   +aTSirdYG17fXPQsa0/CjgrNyG/2X5D9OnBuZMgRyh7GC/W3sQjkpkIGU
+   g6QLJyJmTibkQa/yAdOMti5XmDK2iK91IcxklHYPijov10qlzhNnRrN9r
+   QPcsnXXeQddQ7n3JVC1wcMShUVIGW9iEjmqWcOPIvfjSrUOBmCJ1d0l6V
+   iF77jyoMenpeXvXfcJsGVxrTw+9aPFgSVd49KTGQlDpaoeECgqVOF99kr
+   DFdn1/SNN6GImu1J0DYU3ib1Zik14r9xJYBcVwhmYYcsI2nAoBo5iBpGG
+   g==;
+X-CSE-ConnectionGUID: 6pVZQuG0SHCNxkSLRPQpeQ==
+X-CSE-MsgGUID: cXvOENCPRX+TVhqpCH6zoQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11911"; a="89434439"
+X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
+   d="scan'208";a="89434439"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 06:27:44 -0700
+X-CSE-ConnectionGUID: 5cCwDP5/TEOO04pH4+JPkA==
+X-CSE-MsgGUID: YiaHkgBaTpKNVdfgWlxTsQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
+   d="scan'208";a="269165565"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO [10.245.244.155]) ([10.245.244.155])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 06:27:38 -0700
+Message-ID: <51ddde08ece4ca9dc277d799b3ea4f1f3cdf7e10.camel@linux.intel.com>
 Subject: Re: [PATCH v6 18/18] RDMA/mlx5: Ask P2PDMA whether ATS takes a
  direct peer-to-peer route
-Message-ID: <20260921132559.GQ11599@ziepe.ca>
+From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+ Logan Gunthorpe <logang@deltatee.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Greg Kroah-Hartman	 <gregkh@linuxfoundation.org>, Jens Axboe
+ <axboe@kernel.dk>, Alex Williamson	 <alex@shazbot.org>, Ankit Agrawal
+ <ankita@nvidia.com>, Jonathan Corbet	 <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, "Joerg Roedel (AMD)"	 <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy	 <robin.murphy@arm.com>, Randy
+ Dunlap <rdunlap@infradead.org>, Sumit Semwal	 <sumit.semwal@linaro.org>,
+ linux-pci@vger.kernel.org, 	linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,  Tushar Dave
+ <tdave@nvidia.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, 	linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+Date: Mon, 21 Sep 2026 15:27:36 +0200
+In-Reply-To: <20260921131055.GP11599@ziepe.ca>
 References: <20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com>
- <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
- <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
- <20260918121500.GV13683@unreal>
+	 <20260914-fix-p2p-acs-v4-0-v6-18-5ef07ec9ef06@nvidia.com>
+	 <321890690ce83d1943b2f678bd9bee9b8c895b66.camel@linux.intel.com>
+	 <20260918121500.GV13683@unreal>
+	 <b517070d0b9236b03962fcba649faffcacda23eb.camel@linux.intel.com>
+	 <20260918170524.GH11599@ziepe.ca>
+	 <f9ced8cab6eb929a5f65d789fe6922458c6f3396.camel@linux.intel.com>
+	 <20260921131055.GP11599@ziepe.ca>
+Organization: Intel Sweden AB, Registration Number: 556189-6027
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260918121500.GV13683@unreal>
 
-On Fri, Sep 18, 2026 at 03:15:00PM +0300, Leon Romanovsky wrote:
-> > That is, a flag to tell the topology check that some transactions
-> > *will* take the host-bridge path due to IOVA being used, and that the
-> > computations including pci_p2pdma_distance() need to check whether that
-> > is possible (checking whitelist etc.) and return the corresponding
-> > THRU_HOST_BRIDGE mapping type. Translated transactions taking a short-
-> > cut using the bus-address would then be hidden from the driver.
-> 
-> The word *will* puzzles me. As I understand it, if your device has ATS
-> enabled all the time, it should always get THRU_HOST_BRIDGE.
+On Mon, 2026-09-21 at 10:10 -0300, Jason Gunthorpe wrote:
+> On Mon, Sep 21, 2026 at 08:40:41AM +0200, Thomas Hellstr=C3=B6m wrote:
+> > On Fri, 2026-09-18 at 14:05 -0300, Jason Gunthorpe wrote:
+> > > On Fri, Sep 18, 2026 at 03:42:28PM +0200, Thomas Hellstr=C3=B6m wrote=
+:
+> > > >=20
+> > > > 1) Xe attachment check if pci_p2pdma_distance() returns OK for
+> > > > the
+> > > > path. Then Xe always sets up dma-addresses using
+> > > > dma_map_resource().=20
+> > >=20
+> > > Open coding pci_p2pdma_distance() in drivers is a hack. Using
+> > > dma_map_resource() like this was never "allowed".
+> > >=20
+> > > We've fixed things so these hacks are not needed, the drivers
+> > > need to
+> > > move over to things like dma_buf_phys_vec_to_sgt() and the hmm
+> > > helpers
+> > > to use the DMA API correctly.
+> > >=20
+> > > > 1a) Let's say the importer (Xe) has ATS enabled, and the
+> > > > exporter
+> > > > is
+> > > > supposed to map dma_addresses.
+> > > > In between there is a switch that allows direct traffic.
+> > > > Now with your patch series, How would the exporter know that Xe
+> > > > has
+> > > > ATS
+> > > > enabled and therefore should return IOVA mappings rather than
+> > > > the
+> > > > BUS
+> > > > addresses representing the shortcut.
+> > >=20
+> > > The thing that does the DMA map must be aware of what PCI TLPs
+> > > the
+> > > PCIe initiator will use to compute the proper P2P mapping mode.
+> > >=20
+> > > ATS always needs an IOVA but that still doesn't mean the P2P will
+> > > work.
+> > >=20
+> > > > It seems to me that a pci-device settable flag "ATS always
+> > > > enabled"
+> > > > should be enough to fix both issues?
+> > >=20
+> > > It should be be per-mapping to support the NIC workflow that
+> > > isn't a
+> > > global operation.
+> >=20
+> > OK. It looked to me from the series like the NIC workflow was to
+> > adapt
+> > its ATS settings per mapping depending on the p2p mapping type
+> > returned
+> > rather than vice versa. If so it would just clear "ATS always
+> > enabled".
+> >=20
+> > Admittedly a per-mapping flag would be more flexible, but also
+> > would
+> > require changed internal APIs?
+>=20
+> Ah you didn't send this to the list, was it intentional?
 
-The P2P subsystem currently does not understand ATS, it assumes the
-device will use untranslated requests and makes the routing
-calculation accordingly.
+No, Just hit the wrong reply-button. +lists again.
 
-If the device knows it will use ATS it should ask P2P for an ATS path,
-and P2P should only return THRU_HOST_BRIDGE or failure.
+>=20
+> mlx5 has both cases, some DMA is flexable and can do either, some is
+> non-ATS only.
 
-The purpose of involving the P2P subsystem is to verify that the ACS
-flags for the ATS translated path are going to work. There are many ACS
-configurations where the fabric will hang :(
+OK.
 
-For something like mlx5 it is ideal if P2P chooses between ATS or !ATS
-based on what provides an optimal transfer. eg there is usually no
-reason to use ATS to access system memory for streaming (ie non cache
-hitting) transfers.
+>=20
+> Jason
 
-Jason
+Thanks,
+Thomas
