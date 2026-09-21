@@ -1,131 +1,160 @@
-Received: from mail-ed2-f12.google.com (mail-ed2-f12.google.com [74.125.228.76])
+Received: from mta1.migadu.com (out-146.mta1.migadu.com [95.215.58.146])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FBCB2D0C8F
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 03:31:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789961485; cv=pass; b=hs+A1YAHYWQJWvFDmnwwim9fQg3cTzEDbSCb7aJ9u1mpGhW7tRDa7FRX0YMxwXARw6eETX0sHnnlBlsnWifIHJVj5axiCuOulFcBmCHLIOQL+s3AWpjWZjA6t3QLa5lGKk7GFfoKP+eL/TRMGyh5MnxCYOL3bNaCo2v47iHq+co=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789961485; c=relaxed/simple;
-	bh=1JgJndpiQjTJjF4DQFibfiYrBkEpUhcO1uo3E1MTk/w=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bquGRLZNOUBLYcH3Sddk9O1yMcUo+q3tN56Hld4bFP+Bz6jxbyC65R61QF6/xxU3i56kzI56lxYilv/TTnwzr4avVRbzL4E2rDA8/1Fr/gf2rv6SN1yIUh5+ThKBTFshCNQcTzZBqBo0lRLd2I9GFUsaW3SYtiswjxlKUAGWziA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RiLSjEYd; arc=pass smtp.client-ip=74.125.228.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEAF535FF58
+	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 05:48:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.146
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789969723; cv=none; b=QR3sJO7A0eg1kojaw4dUtaZiz9ylUEH/Mn+WtQJKdm/uq9ENCuapm3omKBkXBTW89jYN66BR5M6ngGYGWKxb3CokzezA2M+x+A92pQu+Ko1+fJn+4FUtn5EKvYapLHRwUtKiuPp3baTHdJSGijsWzPzyrjrs0OB/mJV9W7hFdC0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789969723; c=relaxed/simple;
+	bh=jhV/vw4+vWN8dqMOnDQNzr0Wd/YKWAZ5SZrLjVrKgJI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DHI3TJjgsXI/izCQHXeiGZeYntRTjVSqWfq8U7d/Admz0PRZVeI7YkmawdT03fqzPbBzGKKBXrWGfix1PKuoBA9YIDWBCZmY+KWvQAo5HgojTg0yUwRTImyKsxqpnJIIWOZWFlKexp+k4qeujZrSXyLGuMbOuUe2r5bfO1qVeVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=wsWyZ/it; arc=none smtp.client-ip=95.215.58.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RiLSjEYd"
-Received: by mail-ed2-f12.google.com with SMTP id 4fb4d7f45d1cf-6a9ab2a135dso3246175a12.1
-        for <iommu@lists.linux.dev>; Sun, 20 Sep 2026 20:31:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789961482; cv=none;
-        d=google.com; s=arc-20260327;
-        b=jplKjqRH7Lkz9VFQWP3UEt71hOREqAzigD0y5rr8/ksj+wXl2mKZehuNR46EN4kyxe
-         scGHNPtqNoUR9znOgmWmP7L/fvOebGfcT8BMrYknUfI3dQskCFpYeAx3E7ihSzgOjAfX
-         sNMBzQwCA5rmW4oWJlPo9FXMBVhhJagxZmisQIjqJYYKka0oe5h9fElerSdv1ERJUnSr
-         Bju+Kp3YEtC2ftzbGDU9TX0JVaXZpRvwh1+mv0fMOeeeXTJiokuJTGHTqswyk9auOs8E
-         NpOXFpIlSmOUuDNyEJfJ25eHjgDLmaRAUliY78cnh1IwffLL6uSlWGL9RgMB1kdQz5+p
-         TBxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=1JgJndpiQjTJjF4DQFibfiYrBkEpUhcO1uo3E1MTk/w=;
-        fh=fVmycuha3ZIzct1TMnTkculvqPug4hj5DUqICqCLZmw=;
-        b=Nh8xOhHu2QkgksY4lknf8vCGpRRuf+DgB7U/KGGd+JgHZllvvpNmvlOxMafHSArYng
-         HH84vBOtQdKffiG8OU759GDxUjI3qVBEaucjDq9G8GLzp/X0HWa4uRVNKNBVh6p4DBO0
-         1rbDgq/qMxK+YN5Jb3BV8BKO+57CVkOW/z5DgiQEGcqws4akgbnBFMC4oF3XTtHJwSwX
-         GgNkbQm9aFJPgd7JnyvmxAL5N2EKOLGFdrtZNQur6rggoqKTaf5cfJV4MlZeWqx9KMkN
-         LpwDzysVHBCtzCRWNAgNiriK2nb1PXJl71hCDIVvhJ59DGNgX8l1lmxQ/7e+M/y14eve
-         qnqw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1789961482; x=1790566282; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=1JgJndpiQjTJjF4DQFibfiYrBkEpUhcO1uo3E1MTk/w=;
-        b=RiLSjEYdPu5omADaMBZS/9YLX5kZkj9gO5rjW/VD+96biz1hgSuAiGZuKq4CNvPGtT
-         /0X4Y6MA3KpsUr+n5Odv2Ooj8CAZEkwiee6uqE8wlP7DUxYw0yEeXK7FyBI85aR6jHGy
-         /ZwtcieBfUVSJ7FiTJOmJMdRgn7mcpIdsai1nu2ubiJ+gmEmff8OVe0+D07vvoUnVO3A
-         bKiC46cQ0VZV2DPng8/5eG9FBeCT83yYHffvhmEiPEVUYHhaRxBTBETnHI7GsaupbCb1
-         0SnWWtH/WCrlNFt3yF2uSwcqjUH2ZAFKCKaxrsIshoDQnTl6hm0lGENufq7xTW5T5X93
-         YTqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789961482; x=1790566282;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=1JgJndpiQjTJjF4DQFibfiYrBkEpUhcO1uo3E1MTk/w=;
-        b=TPNv/5giMrgzR6QIbr5ikgcdgf41su3Aco/+omMzkxYQqTE7NrSFxlbGkJKaWGe5WI
-         HmlFpD7CfCcMisUSYDwGRFU9ovplKuD2aGqFdcU2SF0SH68wX5R0kdNwlPOgTRHg6zhQ
-         IoqahuZviMNCU/SGZ8t9nyXG1w4fmjW1LjL6P9emcwfxI5eDYRXEA4nBxBMuPikhv+kj
-         /l5Vt/RGMdn0qARp3Ytw7NeCPJcwkcowOty68tmB1G7be6QjWRA2QbZfLCG2Wf5K+KkE
-         waqdrJ9KRPNvDHid5bl10dmTCi4fuJ1zLU9FZn47poEHTBg+lJqJjLdCV3WA5UkEkDo+
-         lV2Q==
-X-Forwarded-Encrypted: i=1; AKwUvBxy2EshdxTTYc93fBfkztOYoxCCwSugobk3ij++ub8fHssmP0fuGfX5BVoiQF4QqGfjxyAi0w==@lists.linux.dev
-X-Gm-Message-State: AFuF++l4Fyx6QklgZcRXnYrFuZ14mpiwZSy8rJyauxCsfHPoeYZLExRu
-	p2sJZSYGl8X0dzM6BIjkAkcxDlaJ6XVUaZBcMsBO6SOOCqWoZvkdgMZrrfiev7nSn9u4Fn6E/uc
-	/M9Y08naxqvUUX3a8O07RN9DegM5FjWmfwBOxP4GC4Q==
-X-Gm-Gg: AYBFou0l6kGxzLffjrPgqwocoWAwzf9UoWOJNefbGfgtXZsP970nB1mKyrxqnK4RjA4
-	OXTfNK45Z4u/PYy8UJD8DI6+F+jMPi383jcurmjlMMj2rLcRZBCKiSt9M6UfZyWO9t5g90OEvq0
-	EBeNmWGK+sce+eTb4pzjMxgrzYh19gIwpqbTlvw5q4koGiOX94GSaLe0XOmobrFsA6In5RFfGY6
-	oMLNYjGSc+8jEUjUbXHtWwp/G/ykIXoOIl/8isPkHAU6ge5qK31i7QAxukiN3ESZKejye9XT9d0
-	YXhyq2NMR8g70sobG5IUx7t4oistf+H1Z4VEesbXOu5Keo8B3eXtt1lEQZ3xc3j4YkSrwBja+YC
-	3vYNRKa9mLHdakg==
-X-Received: by 2002:a05:6402:4394:b0:6a9:ab7f:c8f with SMTP id
- 4fb4d7f45d1cf-6aa54611e57mr5885453a12.17.1789961481999; Sun, 20 Sep 2026
- 20:31:21 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="wsWyZ/it"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=jhV/vw4+vWN8dqMOnDQNzr0Wd/YKWAZ5SZrLjVrKgJI=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1789969718; v=1; x=1790574518;
+ b=wsWyZ/itCi6fu86wCCcJ0RZGEFvh1E6p15NlDx9Adkkv4ElC8H2tSzAL4teGcsjDOD6R85qz
+ ElMAx70yL56Y1inpsiwWZHt2hrRRGoQ/lXhLrDGO15qK0CXIIZPbnue43uUKvmPYjDQXRaCwlcP
+ 2RBx/KWVKMVfSuslG0ikOMXY=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by mta11.migadu.com with ESMTPS id 417d6ee2dae11de6;
+	Mon, 21 Sep 2026 05:48:38 +0000
+X-Mizu-Trace-ID: 417d6ee2dae11de6
+X-Migadu-Flow: FLOW_OUT
+Date: Mon, 21 Sep 2026 13:48:34 +0800
+From: Baoquan He <baoquan.he@linux.dev>
+To: Wandun Chen <chenwandun1@gmail.com>
+Cc: catalin.marinas@arm.com, will@kernel.org, chenhuacai@kernel.org,
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+	tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, robh@kernel.org,
+	saravanak@kernel.org, akpm@linux-foundation.org, rppt@kernel.org,
+	pasha.tatashin@soleen.com, pratyush@kernel.org,
+	m.szyprowski@samsung.com, mark.rutland@arm.com, kernel@xen0n.name,
+	alex@ghiti.fr, hpa@zytor.com, ruirui.yang@linux.dev,
+	robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+	kexec@lists.infradead.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v6 02/10] riscv: build crash_mem ranges from memblock
+ instead of resource tree
+Message-ID: <arDFMqcUr6xkTn-h@fedora>
+References: <20260902073116.802752-1-chenwandun1@gmail.com>
+ <20260902073116.802752-3-chenwandun1@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <aq1sooGCYUiWbhMH@p14s> <aq453yukMHiNb1jp@bywater>
-In-Reply-To: <aq453yukMHiNb1jp@bywater>
-From: Mathieu Poirier <mathieu.poirier@linaro.org>
-Date: Sun, 20 Sep 2026 21:31:11 -0600
-X-Gm-Features: AcwNN1W3qE53RFtHuPGOztjJSdwljZIvy9Wk3z8AN3NJ17iDKQARaTMy5b-3hH0
-Message-ID: <CANLsYkySF+eF-FURnnT6UJv7P5Sg2HdfMSBZnZy_BLyCMvuofw@mail.gmail.com>
-Subject: Re: [PATCH RFC 00/12] remoteproc: add support for any virtio device
-To: Francesco Valla <francesco@valla.it>
-Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev, 
-	imx@lists.linux.dev, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260902073116.802752-3-chenwandun1@gmail.com>
 
-On Sat, 19 Sept 2026 at 01:33, Francesco Valla <francesco@valla.it> wrote:
->
-> Hi Mathieu,
->
-> On Fri, Sep 18, 2026 at 10:53:54AM -0600, Mathieu Poirier wrote:
-> > Hi Francesco,
-> >
-> > I have started reviewing this set but given the size and implications, it will
-> > take me a few days to get through.
->
-> I'm going through the review done by sashiko - would you prefer me
-> sending a v2 with the trivial errors already ironed out before doing
-> a complete review?
->
+On 09/02/26 at 03:31pm, Wandun Chen wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
+> 
+> Replace walk_system_ram_res() with for_each_mem_range(). A later patch
+> introduces MEMBLOCK_NODUMP in memblock, the reserved-memory regions
+> marked with MEMBLOCK_NODUMP can be excluded from the vmcore by walking
+> memblock.
+> 
+> for_each_mem_range() iterates memblock.memory, which is freed after
+> init unless ARCH_KEEP_MEMBLOCK is selected. riscv needs ARCH_KEEP_MEMBLOCK
+> to filter reserved memory from the vmcore, so extend its condition
+> (ACPI || KEXEC) with CRASH_DUMP. arm64 and loongarch already select
+> ARCH_KEEP_MEMBLOCK unconditionally.
+> 
+> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
+> ---
+>  arch/riscv/Kconfig                     |  2 +-
+>  arch/riscv/kernel/machine_kexec_file.c | 31 ++++++++++----------------
+>  2 files changed, 13 insertions(+), 20 deletions(-)
 
-We can wait if the errors are trivial.
+This looks good to me, FWIW,
 
-> >
-> > Thanks,
-> > Mathieu
-> >
->
-> Thank you!
->
-> Regards,
-> Francesco
->
+Acked-by: Baoquan He <baoquan.he@linux.dev>
+
+> 
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index d6c2dbf8455c..1de14a2d5aba 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -58,7 +58,7 @@ config RISCV
+>  	select ARCH_HAS_UBSAN
+>  	select ARCH_HAS_VDSO_ARCH_DATA
+>  	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+> -	select ARCH_KEEP_MEMBLOCK if ACPI || KEXEC
+> +	select ARCH_KEEP_MEMBLOCK if ACPI || KEXEC || CRASH_DUMP
+>  	select ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE	if 64BIT && MMU
+>  	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
+>  	select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
+> diff --git a/arch/riscv/kernel/machine_kexec_file.c b/arch/riscv/kernel/machine_kexec_file.c
+> index 26cd2a8bd0cd..808e872f4063 100644
+> --- a/arch/riscv/kernel/machine_kexec_file.c
+> +++ b/arch/riscv/kernel/machine_kexec_file.c
+> @@ -37,39 +37,32 @@ int arch_kimage_file_post_load_cleanup(struct kimage *image)
+>  }
+>  
+>  #ifdef CONFIG_CRASH_DUMP
+> -static int get_nr_ram_ranges_callback(struct resource *res, void *arg)
+> -{
+> -	unsigned int *nr_ranges = arg;
+> -
+> -	(*nr_ranges)++;
+> -	return 0;
+> -}
+> -
+>  unsigned int arch_get_system_nr_ranges(void)
+>  {
+>  	unsigned int nr_ranges = 2 + crashk_cma_cnt; /* For exclusion of crashkernel region */
+> +	u64 i;
+> +	phys_addr_t start, end;
+>  
+> -	walk_system_ram_res(0, -1, &nr_ranges, get_nr_ram_ranges_callback);
+> +	for_each_mem_range(i, &start, &end)
+> +		nr_ranges++;
+>  
+>  	return nr_ranges;
+>  }
+>  
+> -static int prepare_elf64_ram_headers_callback(struct resource *res, void *arg)
+> +int arch_crash_populate_cmem(struct crash_mem *cmem)
+>  {
+> -	struct crash_mem *cmem = arg;
+> +	u64 i;
+> +	phys_addr_t start, end;
+>  
+> -	cmem->ranges[cmem->nr_ranges].start = res->start;
+> -	cmem->ranges[cmem->nr_ranges].end = res->end;
+> -	cmem->nr_ranges++;
+> +	for_each_mem_range(i, &start, &end) {
+> +		cmem->ranges[cmem->nr_ranges].start = start;
+> +		cmem->ranges[cmem->nr_ranges].end = end - 1;
+> +		cmem->nr_ranges++;
+> +	}
+>  
+>  	return 0;
+>  }
+>  
+> -int arch_crash_populate_cmem(struct crash_mem *cmem)
+> -{
+> -	return walk_system_ram_res(0, -1, cmem, prepare_elf64_ram_headers_callback);
+> -}
+> -
+>  static char *setup_kdump_cmdline(struct kimage *image, char *cmdline,
+>  				 unsigned long cmdline_len)
+>  {
+> -- 
+> 2.43.0
+> 
