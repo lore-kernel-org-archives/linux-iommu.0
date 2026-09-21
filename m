@@ -1,108 +1,210 @@
-Received: from mta1.migadu.com (out-81.mta1.migadu.com [95.215.58.81])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 150693612F6
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 05:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 314562EEE67;
+	Mon, 21 Sep 2026 06:36:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789969952; cv=none; b=sTTzz7qSKnT02e+NFzi1UglChTAJ6oG1ZSk/r8kDrQa71tgAOCrzhDH9ovmwVcyHQeRvlpjgYiedmFBx2uP5Z+/Z7fq9lVcuS9k4fZvwC55zoRSCDUgbDfcgmq4gsQQ169IZDGfDBUWgau5YP5GBUsR6LKJamy0R4odKGRKZ+Do=
+	t=1789972617; cv=none; b=laUAHUdZay6L0iuppkCeJR6l+AxOBhYyONgJpWxqGpUJqPVmq9UqjqVNn9j8BzB+o/RHBDGoz5465wK9tS3Z7LuhGBKz/hQa0JC54ZCEuUPNhvX1BRp/maO2QLcIrdR9RP1xblnfRKD6QFQxd622+8Bi/ph/2WzXIoERg4wwny8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789969952; c=relaxed/simple;
-	bh=+3OQfzHRoTvBjBd8jB9/THE2C+GAiBoDPdOUT4cBopw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LJTQS008sdxkI5Xk7/lFXDVSIBR417iVnWMOHhHDHAvl5u9a1aGBhSZ9q2Vbo2HSYW6+JTLJ0Z6keJ4Rug85Mv6q4ezwIYniRdfA5LgNJGFixUbdJk3EM94MmV9MI64HzUeOJ9CqenHfBduetRW8Q6Q1Yxc/IJN4O80yjqiNyCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=AGqHNvoB; arc=none smtp.client-ip=95.215.58.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1789972617; c=relaxed/simple;
+	bh=CiKM5xgpv99M5lztSzRK6ETqhtT2OtqU5Hh6wvlsaCk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=B2MnIgtD7aAeuL6ve1vE5nluKMB7Mr0Y5JFAd8wEshCgjGtdTDiH41UlYl0W4v9D6mw7nK2RmRkOYrQEVgmmgopbVKhd/FIahO3Jbp870CRvcrk0wAzSUqCz3Mm4YW6/9kGALLJ1tXAsBKSs+K/PktDrHTCdFphxwVSDIz8gvKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n5EMJGDj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="AGqHNvoB"
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=+3OQfzHRoTvBjBd8jB9/THE2C+GAiBoDPdOUT4cBopw=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1789969947; v=1; x=1790574747;
- b=AGqHNvoBHNAK5Sgs8bbNFPB9LRfWqahsS8hsc3FUslRi1QNL9CbtcXuiBuAODhnoALewzvTz
- zAJKHdCmXss9/DvIqB5/J8rDlIqMR5eOYjWyZsTcomxdHzlJCmmDAyvIWSZur3TyrC6BPzAwIHN
- locxBrK8oD3Q849lc7AWjrUk=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by mta12.migadu.com with ESMTPS id 3106e5e1082e60f1;
-	Mon, 21 Sep 2026 05:52:26 +0000
-X-Mizu-Trace-ID: 3106e5e1082e60f1
-X-Migadu-Flow: FLOW_OUT
-Date: Mon, 21 Sep 2026 13:52:24 +0800
-From: Baoquan He <baoquan.he@linux.dev>
-To: Wandun <chenwandun1@gmail.com>
-Cc: Mike Rapoport <rppt@kernel.org>, catalin.marinas@arm.com,
-	will@kernel.org, chenhuacai@kernel.org, pjw@kernel.org,
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, tglx@kernel.org,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	x86@kernel.org, robh@kernel.org, saravanak@kernel.org,
-	akpm@linux-foundation.org, pasha.tatashin@soleen.com,
-	pratyush@kernel.org, m.szyprowski@samsung.com, mark.rutland@arm.com,
-	kernel@xen0n.name, alex@ghiti.fr, hpa@zytor.com,
-	ruirui.yang@linux.dev, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, kexec@lists.infradead.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v6 06/10] memblock: introduce MEMBLOCK_NODUMP flag
-Message-ID: <arDGGOhKFueI90tJ@fedora>
-References: <20260902073116.802752-1-chenwandun1@gmail.com>
- <20260902073116.802752-7-chenwandun1@gmail.com>
- <aqzxavL91icLw-Xv@fedora>
- <aq41nFRPtRWTQ7cK@kernel.org>
- <aq9UGXeqmCfuPHdD@fedora>
- <32b00102-0961-49e3-b780-74d6db182809@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n5EMJGDj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A9871F00893;
+	Mon, 21 Sep 2026 06:36:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789972615;
+	bh=R+xk4C4kNi+974cCDKa30TAiC73V15NHvprk7wFBCRE=;
+	h=From:To:Cc:Subject:Date;
+	b=n5EMJGDj+zLmxsPkZtyPhFMc5SdW91+kVGQKlZRGoEuRhgqy+jOXiC22FJZPTRnx/
+	 8ZWNT+7XmAJ6Y8z2LQmLv24qXA8HLxeuIXm/OFyOPPDkdoznCOj0FcrWVciDQWhWPZ
+	 r2BBS9zHeDeT40YsZcdE2X/nGO7Y+Pvl1UFRGID6F1kuxWb8hCPztYF6RvfyPIGzkN
+	 44/ltkFkEuJwpg83+HSydVZOf9Xq5rOieR5Vczi3Cxy3yVrWkPRZCX/sDeOksdaSHq
+	 noytLDOn+2WCcSM2Fxmcpi0kB7rsuWtI2CLNMRjSWllNrf1MYOx4tv5psHf8hAcATC
+	 QRVreDt2BG9Bg==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: [PATCH v5 0/6] dma: swiotlb: Centralize default pool policy and sizing
+Date: Mon, 21 Sep 2026 12:06:22 +0530
+Message-ID: <20260921063628.362078-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <32b00102-0961-49e3-b780-74d6db182809@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On 09/20/26 at 04:00pm, Wandun wrote:
-> 
-> 
-> On 9/20/26 11:33, Baoquan He wrote:
-> > On 09/19/26 at 10:11am, Mike Rapoport wrote:
-> >> On Fri, Sep 18, 2026 at 04:08:10PM +0800, Baoquan He wrote:
-> >>> On 09/02/26 at 03:31pm, Wandun Chen wrote:
-> > ...snip... 
-> >>>> +/**
-> >>>> + * memblock_mark_nodump - Mark a memory region with flag MEMBLOCK_NODUMP.
-> >>>> + * @base: the base phys addr of the region
-> >>>> + * @size: the size of the region
-> >>>> + *
-> >>>> + * Mark the region as not to be included in crash dumps.
-> >>>> + *
-> >>>> + * Return: 0 on success, -errno on failure.
-> >>>> + */
-> >>>> +int __init_memblock memblock_mark_nodump(phys_addr_t base, phys_addr_t size)
-> >>>       ~~~~~~~~~~~~~~^
-> >>> Is it impossible to use at runtime even thought it claims to be generic?
-> >>
-> >> This should only happen at boot.
-> >>
-> >> Allowing modifications of memblock properties in runtime is a can of worms
-> >> I don't want to open.
-> > 
-> > Thank you. This is why I said this can't be claimed as a generic way to
-> > mark memory region as no dump. The generic way I'd like to see is
-> > at any time of system we can mark any unwanted memory region as no dump.
-> > And it won't impact the behaviour of the current system.
-> 
-> Thanks Mike for the explanation and Baoquan for the suggestion.
-> I'll drop the "generic" related description in the next version.
-> 
-> 
-> Baoquan, by the way, patch 2 is still awaiting review. It rewrites
-> the riscv side of the code that patch 3 (which you've acked) then
-> folds into the weak defaults, if you could take a look at it too,
-> that would be very helpful.
+Hi,
 
-I checked and looks good, I have added ACK. While RISC-V people can hold
-it anytime if they have concern.
+This series centralizes swiotlb default-pool selection and sizing, and
+simplifies the initialization flags used to describe pool placement.
+
+The first patch replaces the addressing-limit argument with initialization
+flags and introduces explicit policies for the different reasons a default
+pool may be needed. Architectures now report DMA addressing constraints with
+SWIOTLB_INIT_ADDRESSING_LIMIT, while the core selects the corresponding pool
+policy.
+
+The second patch moves the reduced sizing used when the pool is needed only
+for unaligned kmalloc bouncing from arm64 and RISC-V into the swiotlb core.
+
+The third patch centralizes swiotlb sizing for memory-encrypted systems. It
+moves the existing x86 guest-sizing policy into the core. Host memory
+encryption retains the normal pool size, and a shared default pool is not
+selected solely for guest memory encryption when a restricted DMA pool is
+present.
+
+The fourth patch removes SWIOTLB_ANY. Pool placement is derived directly from
+SWIOTLB_INIT_ADDRESSING_LIMIT: pools required for limited DMA addressing are
+allocated below the architecture's low address limit, while other pools may
+be allocated anywhere in directly mapped memory. Xen continues to request a
+pool explicitly with SWIOTLB_INIT_REMAP without imposing a low-address
+constraint.
+
+Changes from v4:
+https://lore.kernel.org/all/20260914070135.313337-1-aneesh.kumar@kernel.org
+* Collect Reviewed-by tags.
+* Add a new patch, "dma: swiotlb: Track whether the pool size was explicitly set".
+* Retain SWIOTLB_ANY usage for RISC-V until patch 6.
+* Rename SWIOTLB_INIT_FORCE_DISABLE to SWIOTLB_INIT_DEFAULT_OFF.
+
+Changes from v3:
+https://lore.kernel.org/all/20260904101810.1193505-1-aneesh.kumar@kernel.org
+* Add a new patch, "dma: swiotlb: Add an overridable architecture pool opt-out".
+* Clarify the change in default behavior with the removal of SWIOTLB_ANY.
+
+Changes from v2:
+https://lore.kernel.org/all/20260813102521.1367737-1-aneesh.kumar@kernel.org
+* Rebase to latest tree.
+* Drop SWIOTLB_ANY and derive that based on SWIOTLB_INIT_ADDRESSING_LIMIT
+* Add SWIOTLB_INIT_REMAP.
+
+v1:
+https://lore.kernel.org/all/20260811134056.756015-1-aneesh.kumar@kernel.org
+
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mostafa Saleh <smostafa@google.com>
+Cc: Petr Tesarik <ptesarik@suse.com>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Huacai Chen <chenhuacai@kernel.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc: Paul Walmsley <pjw@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: Thomas Gleixner <tglx@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: loongarch@lists.linux.dev
+Cc: linux-mips@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-s390@vger.kernel.org
+Cc: x86@kernel.org
+
+Aneesh Kumar K.V (Arm) (6):
+  dma: swiotlb: Centralize default pool policy selection
+  dma: swiotlb: Track whether the pool size was explicitly set
+  dma: swiotlb: Centralize minimal pool sizing
+  dma: swiotlb: Centralize memory-encryption pool sizing
+  dma: swiotlb: Add an overridable architecture pool opt-out
+  dma: swiotlb: Remove SWIOTLB_ANY
+
+ Documentation/core-api/swiotlb.rst   |   8 +-
+ arch/arm/mm/init.c                   |   6 +-
+ arch/arm64/mm/init.c                 |  14 +-
+ arch/loongarch/kernel/setup.c        |   2 +-
+ arch/mips/cavium-octeon/dma-octeon.c |   2 +-
+ arch/mips/loongson64/dma.c           |   2 +-
+ arch/mips/sibyte/common/dma.c        |   2 +-
+ arch/powerpc/kernel/dma-swiotlb.c    |   4 +-
+ arch/powerpc/mm/mem.c                |  17 ++-
+ arch/powerpc/platforms/pseries/svm.c |  10 --
+ arch/powerpc/sysdev/fsl_pci.c        |   1 +
+ arch/riscv/mm/init.c                 |  24 +--
+ arch/s390/mm/init.c                  |   2 +-
+ arch/x86/include/asm/crash_reserve.h |   6 +-
+ arch/x86/kernel/pci-dma.c            |  23 ++-
+ arch/x86/mm/mem_encrypt.c            |  24 ---
+ include/linux/swiotlb.h              |  21 ++-
+ kernel/dma/swiotlb.c                 | 220 +++++++++++++++++++++------
+ 18 files changed, 248 insertions(+), 140 deletions(-)
+
+
+base-commit: 704340f1cd0dcef829eb62f5b48ae95a2ce17bdf
+-- 
+2.43.0
 
