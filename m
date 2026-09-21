@@ -1,41 +1,87 @@
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C3333ACEED
-	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 07:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBFD0434992
+	for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 08:15:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789974181; cv=none; b=mhOElJlh2pxJaSFd6mfu3e2o4XlVhgFo4GBpGDMz8xjBmvvok9TmwgFxRq6g1ayEpOuHaHHp/yw+z1HeehfGhkkV+1SzwyMyjseUyrjLKwHlifVrimWU7wg3Vjm9d5eUAZwpKEA15i9OiNLEKLBuFoiff5zP8dPF9CpSGC352VA=
+	t=1789978559; cv=none; b=HspNEHE8fl69Vsmb2BIuJ5nHc5mxYDUyrD6NHaveiHlxU+AonGfdCHZE5hoyA5wVBV/V3AI/8DVjnzjU02wtrV/3tI2PUlUtL/guhYV6twonsOUG8igWU43K13kxvURJuGep4XNzwi7lX4RUiFIw7QlVXA8lnKamqM4QHIpulXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789974181; c=relaxed/simple;
-	bh=3U4Ovp0ynC0fulSiroEpUMxha2GMqQD2AFLocjFCzrI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KxrN1lqGsiL5Q7aY8G9l1jzu/y9wyZ6RKkFjvPEkxVLac5HSRopkJBQoKW/mLvOfjTIKSoHRCkU3GoyTSzaxL4DJ9KdzUXJVFalvmUJg3HNNQ1hs+/htN8jTkjLsCoaEdpIrVsigcqceXzN8L1frZDo5ebEcMZFSzSdEsGz12AM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=LaAPZWcT; arc=none smtp.client-ip=115.124.30.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1789978559; c=relaxed/simple;
+	bh=xBIf3Pr0YmX+pDdZctFWoUSgPyNr7jHiFRAl3YR/qso=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BVddnQhdeZAXz9dSkD9jDTVcqjmeOuwTKE+C10KgvgCzQfEPOk5D70+iUtB6r28ZhOjcz6q/NmF2zfk0YJeQY1Q2bpl0K/2bvTWlw+WzSua6/VmP+esOBvvi8rT/3whXvWIWX5II8/aQKmkq83rYgIVVWbNUJeIg/k2ea9DOq8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=DSH3pKCe; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="LaAPZWcT"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1789974170; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=8ymtIVnhU6dCbTrVvPdPOmUpJ0Opv2VSNX9iXSB+xPQ=;
-	b=LaAPZWcTxu2YdScOPfRXxbPppW42TFN6D4nfINo/1DXUXdSZK25MR6BAPH1OcAoCd8h1vehQux7AdbIm5+9Ni84yrRv59W5BLZRgmw2pWAa398Ii/8wX9DqYUF4cJ+zvIsyu+MA+QIXThI0hQ9WH7nL+m4XtU6wqvF8Y9kIsEGA=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0XBJEbq-_1789974154;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XBJEbq-_1789974154 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 21 Sep 2026 15:02:49 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: robin.murphy@arm.com,
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="DSH3pKCe"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2db710396ffso27775065ad.1
+        for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 01:15:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1789978557; x=1790583357; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=txdK8zZNvr3IeIOXJRWIc2g69quLivVkGnF05uJ2f70=;
+        b=DSH3pKCeS48BcQCBinRqMg1PnLFg7IVwjdOnJsb2aaz8WgPjtqOhzh7BqSTISBKerK
+         RS+SBtR0dRKHpm0N2V7q4KmH9tERX43cymJ+imdLqsO5xJpXfL2GN0oRdSeb1TZysyc7
+         HdCTNfZon5l2v3xTqWYIT4jLsmH+CsTKUDwRcXMbCSjlfYD3W33l6by2VXMZDHUzVpmP
+         GbhdpQDTxijhEi0FDJL19cSDQwBLfMeMgWhvdTkyiGZ9i+yiMV0PgowudQKu9JSaz4uy
+         re65KqzcMlvjfHxyxywDKvV26ouW+fQqXc5dEYKrFYYu2kGQFhUkE4hlVtDX/VSvWd5x
+         gXDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789978557; x=1790583357;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=txdK8zZNvr3IeIOXJRWIc2g69quLivVkGnF05uJ2f70=;
+        b=JVpNKZoVYTsIb4DmpiKrFRMP/ImMwcPxGE65do5moj4U4Vh4WajT0d83JtMAcg+UCw
+         wMu3X/iE+zv70gzhYi/Gi2PHVHw4F0LFaNX+qzF8Gq8buOhSpiEkVZFLMp8r5g+6D5Co
+         9oaozPOpD6sbduGpecE69HY7ZsPNzrBOvVBkMx9fwxNgHFhq/sWquSxzrlW4/op90jOI
+         7LxqrMYvzC1ypFSD9FQVrqKp5t0D1/VdRWYoaQXRsMtqXPTvBYvoK8g7FFajcRTJiCa4
+         raclJ3a/erWxSfU2myRzQvwZOHRuDmioxd8WkmeYYFOvs8+PvSiOEEdb08V40ISYH176
+         oGKQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzHQpuLaumwv2h3hQ8tC8JfO71F1bERdzkIpGQDAON7JMz+Hg9sgPV0V8clVairCjzGdfdyGg==@lists.linux.dev
+X-Gm-Message-State: AFuF++nIO6MTLx0LYgx6MWjz8jxK0O50TaHMeLD7pHcFw+K8KrT1f1bG
+	Zl/4op8PgC3R32yuPipwyJy/RE+HOKEhIcBU4Xis/h/LsitGKhPHjzzWrEfgCARWVyA=
+X-Gm-Gg: AYBFou2gO6584a+hLTGUEJFvT0ahVTfTnRpLR5x3CzwLIhF3UlYOGkdnrYfZVJ/GVRj
+	BMKXWpeiWj3sOusbb5XABP1/LVTkMKhY27UhlHabJL0XLViuWTuNS+czFC3lcl0GYPCXmG/ouxM
+	ma/Rgj43uzRajnMVnazkUtUsj9XaQkQbu6qMn0xdQn4/3WcGvgWQTbCaNGwvg6kXXMUJs/6ckRS
+	Jevx2iqCgjfK86ZUgYxJbXpqJZN5W7oZd611Iw+f090N2fOl47icWKEm7my8n34ixQIN7qIysXp
+	X5eOijsDw0SUGd3y73gHf0v4m4ahbHxwDhiNnn/0N1V4jtGII7+yYDagQOcKg+bWTd9s1FVMA9C
+	mxmLLfSs3zHZUY5nTrcwWag9Ep/SiPfoAlISicdyDwVwUj9BLerBbE4KuPYg3E3IPF7soZcZCGp
+	etClQHqJmu5utzkxHh1p90h6tTFg5vEtU0EqHoal2w8992n5imlH3oG4RLKFuki85SIh4efgRRh
+	eVB9TJTYSo=
+X-Received: by 2002:a17:902:cf09:b0:2db:3734:cfa4 with SMTP id d9443c01a7336-2dd9c6b9151mr156850515ad.5.1789978557003;
+        Mon, 21 Sep 2026 01:15:57 -0700 (PDT)
+Received: from sw04.internal.sifive.com ([4.53.31.132])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33c32f16f9csm17151344eec.2.2026.09.21.01.15.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Sep 2026 01:15:56 -0700 (PDT)
+From: Zong Li <zong.li@sifive.com>
+To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	mark.rutland@arm.com,
+	andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org,
+	david.laight.linux@gmail.com,
+	zhangzhanpeng.jasper@bytedance.com,
+	yang.yicong@picoheart.com,
+	nutty.liu@hotmail.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	alex@shazbot.org,
-	kvm@vger.kernel.org
-Subject: [PATCH] iommu: Reserve PCI host bridge MMIO windows in group reserved regions
-Date: Mon, 21 Sep 2026 15:02:34 +0800
-Message-ID: <20260921070234.897736-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
+	linux-perf-users@vger.kernel.org
+Cc: Zong Li <zong.li@sifive.com>
+Subject: [PATCH v13 0/2] RISC-V IOMMU HPM support
+Date: Mon, 21 Sep 2026 01:15:41 -0700
+Message-ID: <20260921081544.1797510-1-zong.li@sifive.com>
+X-Mailer: git-send-email @GIT_VERSION@
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,206 +90,120 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The DMA IOVA layer reserves PCI host bridge MMIO windows via
-iova_reserve_pci_windows() to prevent IOVA allocations from
-overlapping with those address ranges.  As commit fade1ec055dc
-("iommu/dma: Avoid PCI host bridge windows") explains, a host
-bridge may interpret addresses falling within its MMIO windows as
-peer-to-peer DMA, leading to faults, data corruption, or DMA
-transactions being misrouted to the wrong PCIe device.
+This series implements support for the RISC-V IOMMU hardware performance
+monitor.
 
-However, VFIO type1 obtains reserved regions through
-iommu_get_group_resv_regions() and reports the available IOVA
-ranges to userspace via VFIO_IOMMU_GET_INFO.  Previously
-iommu_get_group_resv_regions() only returned IOMMU driver-level
-reserved regions (RMRR, Unity Maps, MSI regions, etc.) and did
-not include PCI host bridge MMIO windows.  This allowed userspace
-to choose IOVA addresses that overlap with bridge windows.
+The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver
+created by the parent RISC-V IOMMU driver. Therefore, the child driver
+can obtain resources and information from the parent device, such as
+the MMIO base address and IRQ number.
 
-The problem is especially dangerous when a device sits behind a
-PCIe switch and ACS Upstream Forwarding is not fully enabled: the
-switch may route DMA TLPs as peer-to-peer traffic to other
-downstream devices instead of forwarding them upstream to the
-root complex for IOMMU translation.
+Changed in v12:
+- Rebased onto v7.3-rc4
+- Add raw_spin_trylock_irqsave for ->read() flow
 
-Fix this by:
+Changed in v11:
+- Rebased onto v7.3-rc3
+- Add riscv_iommu_hpm_disaable to destroy aux dev before MSI is freed
+- Fix CPU hotplug race risks reported by sashiko-bot as follows
+- Re-validate pre_count after reading hw counter
+- Move hwc-state into atomic critical section (pmu->lock)
 
-  - Introducing iommu_get_pci_resv_windows(), a common helper
-    that walks a PCI host bridge's MMIO windows and creates
-    IOMMU_RESV_RESERVED region entries for each one.
+Changed in v10:
+- Optimize hi-lo-hi by do while for hypervisor case
+- Add raw spinlock for cpu hotplug race and IRQCHIP_MOVE_DEFERRED
+- Remove irq work mechanism for IRQCHIP_MOVE_DEFERRED
 
-  - Calling iommu_resv_pci_windows() from
-    iommu_get_group_resv_regions() so that all group-level
-    consumers (VFIO type1, sysfs reserved_regions) automatically
-    receive the PCI window reservations.
+Changed in v9:
+- Clear PMIP in irq handler on wrong CPU for re-triggering IRQ
+- Add a lock in offline_cpu to avoid cpu hotplug race condition
 
-  - Refactoring iova_reserve_pci_windows() to reuse
-    iommu_get_pci_resv_windows(), eliminating the duplicated
-    bridge window enumeration logic.
+Changed in v8:
+- Rebased onto v7.3-rc2
+- Add irq work mechanism for IRQCHIP_MOVE_DEFERRED case
+- Filter multiple cycle event case
 
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
----
- drivers/iommu/dma-iommu.c  | 21 +++++++----
- drivers/iommu/iommu-priv.h | 11 ++++++
- drivers/iommu/iommu.c      | 73 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 99 insertions(+), 6 deletions(-)
+Changed in v7:
+- Rebased onto the v7.3-rc1
+- Remove raw spinlock
+- Check CPU matching at the beginning of irq handler
+- Add PERF_HES_STOPPED check before overflow handling
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 58c624513cd4..bccb53043462 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -37,6 +37,7 @@
- 
- #include "dma-iommu.h"
- #include "iommu-pages.h"
-+#include "iommu-priv.h"
- 
- struct iommu_dma_msi_page {
- 	struct list_head	list;
-@@ -508,18 +509,26 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
- 		struct iova_domain *iovad)
- {
- 	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct iommu_resv_region *region, *next;
- 	struct resource_entry *window;
- 	unsigned long lo, hi;
- 	phys_addr_t start = 0, end;
-+	LIST_HEAD(pci_windows);
-+	int ret;
- 
--	resource_list_for_each_entry(window, &bridge->windows) {
--		if (resource_type(window->res) != IORESOURCE_MEM)
--			continue;
-+	ret = iommu_get_pci_resv_windows(dev, &pci_windows);
- 
--		lo = iova_pfn(iovad, window->res->start - window->offset);
--		hi = iova_pfn(iovad, window->res->end - window->offset);
--		reserve_iova(iovad, lo, hi);
-+	list_for_each_entry_safe(region, next, &pci_windows, list) {
-+		if (!ret) {
-+			lo = iova_pfn(iovad, region->start);
-+			hi = iova_pfn(iovad, region->start + region->length - 1);
-+			reserve_iova(iovad, lo, hi);
-+		}
-+		list_del(&region->list);
-+		kfree(region);
- 	}
-+	if (ret)
-+		return ret;
- 
- 	/* Get reserved DMA windows from host bridge */
- 	list_sort(NULL, &bridge->dma_ranges, iommu_dma_ranges_sort);
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index aaffad5854fc..bc7fab0c827e 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -123,4 +123,15 @@ static inline void iommu_debug_init(void)
- 
- #endif /* CONFIG_IOMMU_DEBUG_PAGEALLOC */
- 
-+#ifdef CONFIG_PCI
-+struct pci_dev;
-+int iommu_get_pci_resv_windows(struct pci_dev *dev, struct list_head *head);
-+#else
-+static inline int iommu_get_pci_resv_windows(struct pci_dev *dev,
-+					     struct list_head *head)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_PCI */
-+
- #endif /* __LINUX_IOMMU_PRIV_H */
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cd1bca7ede9a..de675ed27753 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -945,6 +945,72 @@ iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
- 	return ret;
- }
- 
-+#ifdef CONFIG_PCI
-+/**
-+ * iommu_get_pci_resv_windows - collect PCI host bridge MMIO windows as
-+ *                               reserved regions
-+ * @dev: PCI device whose host bridge to scan
-+ * @head: list head to append iommu_resv_region entries to
-+ *
-+ * Walks the MMIO windows of @dev's PCI host bridge and creates an
-+ * IOMMU_RESV_RESERVED region for each one.  The caller must free the
-+ * returned entries with kfree() when done.
-+ *
-+ * Returns 0 on success, negative errno on failure.
-+ */
-+int iommu_get_pci_resv_windows(struct pci_dev *dev, struct list_head *head)
-+{
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct resource_entry *window;
-+
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		struct iommu_resv_region *region;
-+		phys_addr_t start;
-+		size_t length;
-+
-+		if (resource_type(window->res) != IORESOURCE_MEM)
-+			continue;
-+
-+		start = window->res->start - window->offset;
-+		length = window->res->end - window->res->start + 1;
-+
-+		region = iommu_alloc_resv_region(start, length, 0,
-+						 IOMMU_RESV_RESERVED,
-+						 GFP_KERNEL);
-+		if (!region)
-+			return -ENOMEM;
-+
-+		list_add_tail(&region->list, head);
-+	}
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_get_pci_resv_windows);
-+
-+/*
-+ * Reserve PCI host bridge MMIO windows as IOMMU_RESV_RESERVED regions.
-+ * This prevents IOVA allocations from overlapping with PCI MMIO address
-+ * ranges, which could cause PCIe switches to misroute DMA transactions.
-+ *
-+ * All PCI devices within the same IOMMU group share the same host bridge,
-+ * so we only need to find the first PCI device.
-+ *
-+ * Caller must hold group->mutex.
-+ */
-+static int iommu_resv_pci_windows(struct iommu_group *group,
-+				  struct list_head *head)
-+{
-+	struct group_device *gdev;
-+
-+	for_each_group_device(group, gdev) {
-+		if (!dev_is_pci(gdev->dev))
-+			continue;
-+		return iommu_get_pci_resv_windows(to_pci_dev(gdev->dev),
-+						  head);
-+	}
-+	return 0;
-+}
-+#endif /* CONFIG_PCI */
-+
- int iommu_get_group_resv_regions(struct iommu_group *group,
- 				 struct list_head *head)
- {
-@@ -969,6 +1035,13 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
- 		if (ret)
- 			break;
- 	}
-+
-+	/* Reserve PCI host bridge MMIO windows to prevent IOVA conflicts */
-+#ifdef CONFIG_PCI
-+	if (!ret)
-+		ret = iommu_resv_pci_windows(group, head);
-+#endif
-+
- 	mutex_unlock(&group->mutex);
- 	return ret;
- }
+Changed in v6:
+- Rebased onto the latest v7.3-rc
+- Use sysfs_emit instead of cpumap_print_to_pagebuf
+- Set up on_cpu and irq affinity by cpuhp callbacks
+- Change type of on_cpu from unsigned int to int
+- Reject filter operands of cycle event in event_init
+- Check return value of counter number and  masks in probe
+- Add raw spinlock for race condition (third commit)
+
+Changed in v5:
+- Pick up suggestions from sashiko-bot as follows
+- Fix event group validation for sw event
+- Bind IRQ to aux PMU dev instead of parent IOMMU dev
+- Clear OF bit when event is NULL
+- Improve hi-lo-hi patten
+- Add back IRQF_SHARED flag due to mismatch
+- Manage cpuhp and pmu register by devre
+
+Changed in v4:
+- Rebased onto v7.3-rc
+- Use is_sampling_event() instead of accessing vairable directly
+- Rename the matching name from "iommu.pmu" to "riscv-iommu.pmu"
+- Change the naming of PMU device for avoid ":" in PCIe case
+- Add suppress_bind_attrs attribute
+- Remove IRQF_SHARED flag
+- Set irq affinity to local CPU of IOMMU
+- Allocate ID by IDA for auxiliary device
+- Pick up suggestions from sashiko-bot
+
+Changed in v3:
+- Rebased onto v7.2-rc3
+- Use hi_lo_writeq/readq to access register
+- Pick comments from sashiko-bot as follows
+- Set IRQ CPU affinity
+- Remove IRQF_ONESHOT flag when request irq
+- Adjust cycle event check by checking event_id field only
+- Fix bug for group events verificaiton
+- Fix KASAN issue about casting 32-bit variable to unsigned long pointer
+- Clear IPSR pending bit before starting counter
+- Clear OF bit in event selector register in irq handler
+- Release irq by devm instead of explicit free_irq
+
+Changed in v2:
+- Rebased onto v7.2-rc1
+- Use hi-lo-hi mechanism to read counter.
+  Suggested by Guo Ren and David Laight
+
+Changed in v1:
+- Rebased onto v6.19-rc8
+- Pick all suggestions and feedbacks from v1 series
+- Add cpu hotplug implementation to avoid race enablement
+- Move PMU-related definition from header to c file
+- Change PMU driver to auxiliary device driver
+
+Changed in RFC:
+- Rebase onto v6.13-rc7
+- Clear interrupt pending before handling interrupt
+- Fix the counter value issue caused by OF bit in the cycle counter.
+- Invoke riscv_iommu_hpm_disable() instead of riscv_iommu_pmu_uninit()
+  in riscv_iommu_remove()
+
+Zong Li (2):
+  drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+  iommu/riscv: create a auxiliary device for HPM
+
+ drivers/iommu/riscv/Kconfig      |    1 +
+ drivers/iommu/riscv/iommu-bits.h |   61 --
+ drivers/iommu/riscv/iommu.c      |   48 ++
+ drivers/iommu/riscv/iommu.h      |    4 +
+ drivers/perf/Kconfig             |   12 +
+ drivers/perf/Makefile            |    1 +
+ drivers/perf/riscv_iommu_pmu.c   | 1007 ++++++++++++++++++++++++++++++
+ 7 files changed, 1073 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/perf/riscv_iommu_pmu.c
+
 -- 
 2.43.7
 
