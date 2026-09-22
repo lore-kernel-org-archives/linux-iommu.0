@@ -1,199 +1,211 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7EE376A0A
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 01:47:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B7E3B3C2795
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 03:46:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790041656; cv=none; b=EF2hbJY3Jn0COHamIAIXmFGIsBfUhTkGFy9ha5+799s9NQq6qqjf2QjCSrm/t7TeeI6sEUHNlco0tKma25MeC9p2IlvS5AUGW9z19PpIx9KVH7aquJFDmqTlIMcbKUin769R02tn1UoR2OPDb6N2yMR2ooCzIjYkDDGDypMi9Co=
+	t=1790048805; cv=none; b=EZbb3IKT4ze/nkyFnujQXv5seCEafXq9Kk0UfQo8/I6e6ydRIXGrn+hByVr6zNbTSvFP4bFo1Xp6XI1CloAl414i3ZW9SntHr11C8xdtcq1dIpRXqdzAMMNumvKJ5bkFS74VofLnm+qk/cubFvE5XECEtKR0Mz18io+ZcsqDeXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790041656; c=relaxed/simple;
-	bh=JRet0lN6fAyPGKcEZAkelJe6hquf64NfYxR4H5/x8y8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GG1Wj6wepPADTvuvYgESZMQDDagYpI/hzEGyeG2TSgJj9JJVdH4aBc3zEv/CftXTLD9DM7SWCTB4nZGl5ECLECMb2bSazF2XN3fwjZOyAOxumeYYioRKr/ZL+osuehBc3Y6X6Va3NthO+0wumyL3wwhcrN8fcEYrOS3NdPtF2NM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ou1R6FtR; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1790048805; c=relaxed/simple;
+	bh=qBL4hOnkWrnl9KngneqkBU17EWse148K0i1gIAwANFc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MvbA9vZ1+5ML2oHXTyd2OWX1Ub3LnB6xFyiYmQSr2OgziHxTyS/4MS0HnAjfD4HOQhAhJauFKCLInKjA+QtewCyww9UFBVXzrtsIJUSwt9h2/wWytQg6hfoD4+zpq5ZXjrsPaC7H/2SJiBD2ToSlav0/jTLgMQNWUTHK/erP3mM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ab/1Xmm0; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ou1R6FtR"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2db33db4de9so43685ad.0
-        for <iommu@lists.linux.dev>; Mon, 21 Sep 2026 18:47:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790041654; x=1790646454; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=i6+2inLQAeVlBcJ3LlCplkJMtCvXJB/NM/8WbN3/bwA=;
-        b=Ou1R6FtRB4hDSc6xK/hp0ton+7qrU1RMPsvG4XQ9Hm/ldbCXwV2TrtZBsTJ6xQHeeY
-         5w3jm1b1a4f2WE7PP/T96Ox5abyDYDPw6s3M70951+oDNtL0hZxtWhfoF3P6ABjnFOdp
-         qqhc83YjommeJvGq4eTYU6wDRTwQQBFAyDtn4Wyn5FRX1jizi+AcjfufNjIA+f1MISxr
-         ls7ep7btTdzLLYWHrxYJEnjlA5JLDtNKqSnE7F/8M6occqqCVsK4zib/MYXQc1uPw56A
-         U/QYoHuawo/eMx0P+G3uVBpSPgdIXiWuUHE1Xmn0VPhk0dLqMzMyEszVzWal8yEG7LKJ
-         s5Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790041654; x=1790646454;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=i6+2inLQAeVlBcJ3LlCplkJMtCvXJB/NM/8WbN3/bwA=;
-        b=aDhFzkBIWq9ARxIr7nBrMWRkjwsrT8wBTsQszOWJio+zsDBmGL4LAvG+eRc9aSKSbw
-         zAVJhBfhJna/0rsLukOwJB4KTYYdsuosIPP3ujn/9FFrMRyC0z83ST2z2BLFmqYO39eX
-         ze9FhO61xpNmNdeMJn3co6lEl0GPvZplEATRKDGNr0140KXQipHcKtGBNn2E3GVK9GLN
-         T2gF3jAB5sFSc7KV7QIe02w1qEr3oXN8u2OtQGJET2uAXD7arsOmaChYxFvqmI+d/GIi
-         5yyfH14C3IbC/Hoxs6WviIKzVRrk9Ux4a5zNWfrA1QmYdHfEa7UlEu5n6pelJ9xCggP/
-         28Lw==
-X-Forwarded-Encrypted: i=1; AKwUvBwmLMpt/NOIPeTskZgFAKJPlwqNgn+VIFHp8+d+IHZOJNgMEEaM3W16u4MPV8oyTPwQGxSxCw==@lists.linux.dev
-X-Gm-Message-State: AFuF++kP47gIE8l1ssJKWafs3K6hi8jLkDi3dnNb5LQFyO/ijyxQIvnL
-	C7Z5zQ1x7o0Gjkyd0KusPAV+iEYsDjJJLeHcna4G+B5qJI0LDYUxwCdgeT6UVaAawQ==
-X-Gm-Gg: AYBFou03aI44GPqnDpSEVu3WQlMAEsl1UPnsb9f7tMC/e5xaSfrsOYYs2QWkilhYEGn
-	B9tkOCFbAgfxzd5nsxI0wD8f9wmufbhRCqZqU0MmyaRyQRl1BZGyvJdDz8Hkwp5fRBzMf3+5+bo
-	TyS5ZXtyqhFErNcIJxIanxVo56phTQ/fK+8c6ShS8XQ+uAq8SYpnFr0qzFE3qgvidH89IfQ2Vr8
-	m6KVBSPk4k17pkTdhdmICcfP2hZGY/PrptlsoFHPc0giTE+UxMoTtm9zA3RXW5h7Eatib43vPH+
-	2D4DdmSEK9I4YRPU7W5iT5TlUYLT4/eL1z6IaNJQvOBi62S+Z9eaT1pIejrgPIU1XyWo5w9hUry
-	IaBmtOylfZuvxUB8t1JQqcAe2utTRJEfqHR92DO8vIVBBaQ5rE9Y/FpKKErysNszQqbVmqdL0Z6
-	+Ylvye1drcYd2hWi3YnmKHnSl8P1B7t8/cbXn9XMKccg+9RUe/p/2PURQsAfIbCjUbMX2ojsJFI
-	et32ofs8GMJCqpI5hx05EZosa0dSOkit/383UUVA0uvNHTZKLpsr2HBynCcAAnbFQuGYhUjLlKi
-	TjEx
-X-Received: by 2002:a17:903:2f4d:b0:2c7:f688:f22f with SMTP id d9443c01a7336-2df5b835b4amr3114135ad.13.1790041653508;
-        Mon, 21 Sep 2026 18:47:33 -0700 (PDT)
-Received: from google.com (210.87.127.34.bc.googleusercontent.com. [34.127.87.210])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a06e5751f2sm342687a91.9.2026.09.21.18.47.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 18:47:32 -0700 (PDT)
-Date: Tue, 22 Sep 2026 01:47:28 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Alex Williamson <alex.williamson@nvidia.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, kvm <kvm@vger.kernel.org>, 
-	Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	linux-kernel <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [RFC PATCH 1/5] PCI: Refuse function reset of an SR-IOV PF with
- enabled VFs
-Message-ID: <arHP3Sj19YX-J-vx@google.com>
-References: <20260812045325.2733631-1-alex.williamson@nvidia.com>
- <20260812045325.2733631-2-alex.williamson@nvidia.com>
- <an5JbIzz40svS3xe@google.com>
- <20260814083737.66bb83fb@nvidia.com>
- <20260817121810.GC933791@ziepe.ca>
- <CO1PR11MB48354AC2854C4D8E9984FD8E8CA62@CO1PR11MB4835.namprd11.prod.outlook.com>
- <20260818140304.GC5482@ziepe.ca>
- <20260818143906.1f58aecb@nvidia.com>
- <CO1PR11MB4835146C50242D76568724DE8CAD2@CO1PR11MB4835.namprd11.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ab/1Xmm0"
+Received: from [192.168.1.70] (unknown [4.194.122.136])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 1E69C20B7168;
+	Mon, 21 Sep 2026 20:45:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1E69C20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790048753;
+	bh=ei/RamUX7t5csrMcNl7UepCODFZshy2mQl2ZoF4lX7I=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ab/1Xmm0uV0FQNIoD4At64yMz5qVSjA0VS2PKZb1ZSmck3ppzdkl9Bv6BBZ0rj2zd
+	 YAuUPtVaTyFqhdWBAEPgYz3vNkKJW3wvFcVk8TD0lqjYqf+/3Ds3z8lf0qSxaP+zkZ
+	 X1iQY1u84bjMKefXVun+WKpr2M7mftn5Q5HGlej0=
+Message-ID: <aaecad83-cb46-44cc-91c4-1675350749f4@linux.microsoft.com>
+Date: Tue, 22 Sep 2026 09:16:28 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB4835146C50242D76568724DE8CAD2@CO1PR11MB4835.namprd11.prod.outlook.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 4/4] x86/irq, iommu/amd, x86/hyperv, PCI: Drop
+ redundant irq_retrigger inits
+To: Michael Kelley <mhklinux@outlook.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "x86@kernel.org"
+ <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+ Wei Liu <wei.liu@kernel.org>, "K . Y . Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>
+Cc: Long Li <longli@microsoft.com>, Nam Cao <namcao@linutronix.de>,
+ Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Rob Herring <robh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Kees Cook <kees@kernel.org>,
+ "Rafael J . Wysocki" <rafael@kernel.org>, Radu Rendec <radu@rendec.net>,
+ Sean Christopherson <seanjc@google.com>, Kai Huang <kai.huang@intel.com>,
+ Dmitry Ilvokhin <d@ilvokhin.com>,
+ Shradha Gupta <shradhagupta@linux.microsoft.com>,
+ Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+ Thierry Reding <treding@nvidia.com>, Jiri Wiesner <jwiesner@suse.de>,
+ Daniel J Blueman <daniel@quora.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+References: <20260914111836.2119301-1-namjain@linux.microsoft.com>
+ <20260914111836.2119301-5-namjain@linux.microsoft.com>
+ <SN6PR02MB4157B6AAECA10E13072B727BD4842@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Language: en-US
+From: Naman Jain <namjain@linux.microsoft.com>
+In-Reply-To: <SN6PR02MB4157B6AAECA10E13072B727BD4842@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Aug 27, 2026 at 05:35:17AM +0000, Tian, Kevin wrote:
->> From: Alex Williamson <alex.williamson@nvidia.com>
->> Sent: Wednesday, August 19, 2026 4:39 AM
->>
->> On Tue, 18 Aug 2026 11:03:04 -0300
->> Jason Gunthorpe <jgg@ziepe.ca> wrote:
->>
->> > On Tue, Aug 18, 2026 at 07:07:20AM +0000, Tian, Kevin wrote:
->> > > 3) resetting a PF due to ad-hoc FW error
->> > >
->> > > e.g. pdsc_check_pci_health() calls pci_reset_function() when FW
->> > > reports broken PCI. Sounds a similar condition to AER.
->> > >
->> > > but as it calls pci_reset_function() this series causes a regression
->> > > in case of active VFs. Is it desired?
->> >
->> > mlx5 does something similar. RAS flows require detecting the PF has
->> > blown up and resetting it to bring it back.
->> >
->> > This has to work while VFs exist and bound to kernel drivers or vfio.
->> >
->> > In the VFIO KVM case I would expect the VM to experiance a RAS error
->> > on its vPCI device and trigger a VF flr
->>
->> This would need to be a device level RAS flow as we're sorely lacking
->> on forwarding reset notification to VF drivers or providing any
->> mechanism for recovery from the vfio error eventfd.
->>
->> > But we have to sort all this out through the hypervisor to not crash
->> > the machine or otherwise :)
->>
->> In general guarding the high level pci_reset_function() family on
->> (pci_num_vfs() == 0) seems to have more pros than cons and the
->> restriction matches the scoped intent of the interface.
->>
->> The low level __pci_reset_function_locked() interface remains
->> untouched, and as the prefix implies, relies on the caller to do
->> necessary verification and preparation.  A "reset the PF regardless of
->> VFs" seems like an underscore prefix sort of operation.  We'll need to
->> export the pci_dev_save_and_disable() and pci_dev_restore() functions
->> to provide handlers the full suite of tools they need to replace the
->> existing function and port those we find (maybe also questioning the
->> author's intent on VF reset and recovery).
->>
->> Of course making the guard parameterized with wrappers to expand this
->> family of calls is also an option,
->> pci_reset_function_locked_with_vfs()...
->
->+1 for wrappers. Maybe call it pci_force_reset_function_locked() which
->is slightly forward-looking if in future other conditions may reject the
->reset request using the base function.
->
->>
->> The mlx5 driver doesn't actually seem to be affected by these changes,
->> doing its own link toggle or a PCI bus reset, not a
->> pci_reset_function() call.
->>
->> On the other improvements, triggering a pci_reset_function_locked() on
->> unbind after SR-IOV is disabled, when needs_reset is indicated, looks
->> pretty trivial.
->>
->> The blocking domain operation looks like it might be simplest to
->> implement in the IOMMU core.  We can set a flag for a default blocking
->> domain on the IOMMU group when we take_dma_ownership of the group.
->> Then
->> release_dma_ownership picks the blocking rather than default domain.
->
->IMHO we should change release_dma_ownership() to always picks the
->blocking. No new flag.
->
->this take/release interfaces are invented for drivers which manage dma
->on their own, so it sounds reasonable to not assume the operated device
->is in a good shape after the ownership is released.
->
->Then only a clean reset can unwind it.
->
->>
->> This is then unwound in use_default_domain, called via dma_configure,
->> attaching the device to the default domain in probe of the next driver.
->> Therefore until probe by another driver, a device used by vfio would
->> remain in a blocking domain even while unused and unbound.
->>
->
->so unwinding it blindly at dma_configure time is also problematic, as the
->device may still have a bad state to hurt the kernel.
->
->Instead use_default_domain should fail in such case (in blocked with
->owner_cnt being '0') then a reset is expected to unwind it (Nicolin's
->work will carry the resetting status to pci_dev_reset_iommu_done())
 
-Thinking about this more, it might be tricky in multiple ways,
 
-- This will only work if drivers do reset after dma ownership is
-   released. Looking at the code, vfio currently resets the device first
-   and then dma ownership is released.
-- For some devices with no reset mechanism, vfio-pci uses bus or slot
-   resets. This will need extra care to propagate the
-   reset_iommu_prepare/reset_iommu_done to subordinate devices to bring
-   the device out of blocking domain.
-- AFAIU looking at vfio-pci code, some devices do not have proper reset
-   mechanism, not even slot/bus, so those devices would be stuck in the
-   blocking domain state. Probably need a mechanism to let IOMMU know
-   that there is no reset mechanism?
+On 9/22/2026 2:31 AM, Michael Kelley wrote:
+> From: Naman Jain <namjain@linux.microsoft.com> Sent: Monday, September 14, 2026 4:19 AM
+>>
+>> With fixup_irqs(), msi_set_affinity() and the generic resend path
+>> (try_retrigger()) now all falling back to irq_chip_retrigger_hierarchy(),
+> 
+> The "falling back" terminology is not accurate in this version of the
+> patch set.  Perhaps "all now calling irq_chip_retrigger_hierarchy() directly"?
+> 
 
-Thanks,
-Sami
+Thanks for catching this Michael, it was a miss on my part.
+
+Regards,
+Naman
+
+>> installing it as the irq_retrigger() callback on the outermost domain chips
+>> is no longer required. The hierarchy walk reaches the x86 vector domain's
+>> apic_retrigger_irq() for all of these stacked domain chips.
+>>
+>> Remove the now redundant irq_retrigger() initializations from the outermost
+>> domain interrupt chips, including the Hyper-V root partition PCI/MSI chip.
+>>
+>> No functional change intended.
+>>
+>> Suggested-by: Thomas Gleixner <tglx@kernel.org>
+>> Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+>> Reviewed-by: Thomas Gleixner <tglx@kernel.org>
+>> Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
+>> ---
+>>   arch/x86/hyperv/irqdomain.c         | 1 -
+>>   arch/x86/kernel/apic/io_apic.c      | 2 --
+>>   arch/x86/kernel/apic/msi.c          | 2 --
+>>   arch/x86/kernel/hpet.c              | 1 -
+>>   drivers/iommu/amd/init.c            | 1 -
+>>   drivers/pci/controller/pci-hyperv.c | 1 -
+>>   6 files changed, 8 deletions(-)
+>>
+>> diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
+>> index 6d790636c8b95..b3ad50a874dca 100644
+>> --- a/arch/x86/hyperv/irqdomain.c
+>> +++ b/arch/x86/hyperv/irqdomain.c
+>> @@ -316,7 +316,6 @@ static bool hv_init_dev_msi_info(struct device *dev, struct
+>> irq_domain *domain,
+>>   		return false;
+>>
+>>   	chip->flags |= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED;
+>> -	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
+>>
+>>   	info->ops->msi_prepare = pci_msi_prepare;
+>>
+>> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+>> index 7d7175d012288..18f49a251f23b 100644
+>> --- a/arch/x86/kernel/apic/io_apic.c
+>> +++ b/arch/x86/kernel/apic/io_apic.c
+>> @@ -1857,7 +1857,6 @@ static struct irq_chip ioapic_chip __read_mostly = {
+>>   	.irq_ack		= irq_chip_ack_parent,
+>>   	.irq_eoi		= ioapic_ack_level,
+>>   	.irq_set_affinity	= ioapic_set_affinity,
+>> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+>>   	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
+>>   	.flags			= IRQCHIP_SKIP_SET_WAKE |
+>> IRQCHIP_MOVE_DEFERRED |
+>>   				  IRQCHIP_AFFINITY_PRE_STARTUP,
+>> @@ -1871,7 +1870,6 @@ static struct irq_chip ioapic_ir_chip __read_mostly = {
+>>   	.irq_ack		= irq_chip_ack_parent,
+>>   	.irq_eoi		= ioapic_ir_ack_level,
+>>   	.irq_set_affinity	= ioapic_set_affinity,
+>> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+>>   	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
+>>   	.flags			= IRQCHIP_SKIP_SET_WAKE |
+>>   				  IRQCHIP_AFFINITY_PRE_STARTUP,
+>> diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+>> index 9160227b9b32a..aad2f15eb2176 100644
+>> --- a/arch/x86/kernel/apic/msi.c
+>> +++ b/arch/x86/kernel/apic/msi.c
+>> @@ -246,7 +246,6 @@ static bool x86_init_dev_msi_info(struct device *dev, struct
+>> irq_domain *domain,
+>>   	info->ops->msi_prepare		= x86_msi_prepare;
+>>
+>>   	info->chip->irq_ack		= irq_chip_ack_parent;
+>> -	info->chip->irq_retrigger	= irq_chip_retrigger_hierarchy;
+>>   	info->chip->flags		|= IRQCHIP_SKIP_SET_WAKE |
+>>   					   IRQCHIP_AFFINITY_PRE_STARTUP;
+>>
+>> @@ -313,7 +312,6 @@ static struct irq_chip dmar_msi_controller = {
+>>   	.irq_mask		= dmar_msi_mask,
+>>   	.irq_ack		= irq_chip_ack_parent,
+>>   	.irq_set_affinity	= msi_domain_set_affinity,
+>> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+>>   	.irq_compose_msi_msg	= dmar_msi_compose_msg,
+>>   	.irq_write_msi_msg	= dmar_msi_write_msg,
+>>   	.flags			= IRQCHIP_SKIP_SET_WAKE |
+>> IRQCHIP_MOVE_DEFERRED |
+>> diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
+>> index 8dc7b710e1250..2bb7a6f466af3 100644
+>> --- a/arch/x86/kernel/hpet.c
+>> +++ b/arch/x86/kernel/hpet.c
+>> @@ -509,7 +509,6 @@ static struct irq_chip hpet_msi_controller __ro_after_init = {
+>>   	.irq_mask = hpet_msi_mask,
+>>   	.irq_ack = irq_chip_ack_parent,
+>>   	.irq_set_affinity = msi_domain_set_affinity,
+>> -	.irq_retrigger = irq_chip_retrigger_hierarchy,
+>>   	.irq_write_msi_msg = hpet_msi_write_msg,
+>>   	.flags = IRQCHIP_SKIP_SET_WAKE | IRQCHIP_AFFINITY_PRE_STARTUP,
+>>   };
+>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+>> index edcc187b8f14f..bc3da5b0578eb 100644
+>> --- a/drivers/iommu/amd/init.c
+>> +++ b/drivers/iommu/amd/init.c
+>> @@ -2477,7 +2477,6 @@ static struct irq_chip intcapxt_controller = {
+>>   	.irq_unmask		= intcapxt_unmask_irq,
+>>   	.irq_mask		= intcapxt_mask_irq,
+>>   	.irq_ack		= irq_chip_ack_parent,
+>> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+>>   	.irq_set_affinity       = intcapxt_set_affinity,
+>>   	.irq_set_wake		= intcapxt_set_wake,
+>>   	.flags			= IRQCHIP_MASK_ON_SUSPEND |
+>> IRQCHIP_MOVE_DEFERRED,
+>> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+>> index 89816a2bd7cd3..cfc8fa403dad6 100644
+>> --- a/drivers/pci/controller/pci-hyperv.c
+>> +++ b/drivers/pci/controller/pci-hyperv.c
+>> @@ -2119,7 +2119,6 @@ static bool hv_pcie_init_dev_msi_info(struct device *dev,
+>> struct irq_domain *dom
+>>   	info->ops->msi_prepare = hv_msi_prepare;
+>>
+>>   	chip->irq_set_affinity = irq_chip_set_affinity_parent;
+>> -	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
+>>
+>>   	if (IS_ENABLED(CONFIG_X86))
+>>   		chip->flags |= IRQCHIP_MOVE_DEFERRED;
+>> --
+>> 2.43.0
+>>
+> 
+
