@@ -1,279 +1,101 @@
-Received: from mail-pj2-f12.google.com (mail-pj2-f12.google.com [74.125.227.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC749539791
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 15:43:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38DA854CF48;
+	Tue, 22 Sep 2026 15:44:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790091839; cv=none; b=jey2Uzuw5Q5pza4/lzIml3XVfAAe/C99qMzyeU4zPiYpbiTrGTxglQTekHIiI9ci/LWUqHFAEKTg7r/c8MgSScEm0TD+d9QG/eDQbksknJagkyCqYuTzrlGQ5aNglu0Ka0zZVPzy4F75CSGVb582ZuzlgPBzcq51Pgb2obbeMiQ=
+	t=1790091858; cv=none; b=gZPkHSnXz28vhF6f6w9i8Xbe2TGX/coz58evPNLUsrvnA+vpgeXYx9ycpwspCZjWBQcUkQ1rXBNMoaAgPXuV6tDZ0LnfImY7OWjYFDK9WBF+pH+NgdbtNbF7NbUZN7U0tqqKKTe5cDURkWbCvtAvnumFNSSeyLiDHd6yOeKxpuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790091839; c=relaxed/simple;
-	bh=MPJa407hEU35uhm5nNbxl1o7nH1It+GZNahj267Ph9Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UMRKpq4KzzVJugt9R5GwMMHxDYgU/2Xm2f8HV2JZYG7YjzuoRDZ0w49XrdwWVVI6g3OgT6aRayLG0Awnzi6Qq4swC9z0VLA8NRz/jIx3dLEbeHExmPIJ4evp5N1MYwU8SIiPsMJRV1TWZjakMzUW5nSmKFEPY33EIQKbmhmMzKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xDEQN812; arc=none smtp.client-ip=74.125.227.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1790091858; c=relaxed/simple;
+	bh=H2LQm10GMuQayO/rov7YPEEWZioZkR4PzepRTqfC9VI=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
+	 Content-Type:Subject; b=uc/W8YWWrntShBk4/4VyZFGm5oddWGSl+CUNQX+fZJeCsbckD+vN1iFc/qR6d3rEaAmLJFncsZ1+qxsjVESHcp+DTC00V4+ZtNmhLaHqppdMIy30zyBtJ8tydq3DkQrqlZlmSEfpIUyqaf27pfSdQSVIqTMMAoQg4gL9NoYF2NA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=GSm4x/DT; arc=none smtp.client-ip=204.191.154.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xDEQN812"
-Received: by mail-pj2-f12.google.com with SMTP id 98e67ed59e1d1-39b9184fa80so29117a91.2
-        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 08:43:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1790091836; x=1790696636; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=M3+7e8iXJEjn74p0MvD+DqdSnpalQ9TYucgtTBbjy+c=;
-        b=xDEQN812OykqFWBD+YpMJx+rqv9F6tjUrRrYd5yEzh0GF0kRwpeRIiVXvVlKmUvFfT
-         dQkz1axgKiIE6PmYxd8K5Y0fY4GnUd0FguDhk1kKXi+1xwLIVvHymBXx/304m5ei12CW
-         Vdd9SKK1n59tXLvXDaV4kbTg7MQTO+GKhAyHSTz9aSsoYXVpNxel+EI7Ij/tRhhW0grd
-         rbTj0y/FurQRn2TkqpPde4qEX76K6p4CfkSkwADFjSPjOc3NmPGPtwQyaHk6ge3CHUuN
-         mLQ+xLf5spW9xrLPk9MGnJjxCLbirtGQqO5XOiYB0708FJZflNqg+CUX5qyPfWUYNfxr
-         WW1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790091836; x=1790696636;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=M3+7e8iXJEjn74p0MvD+DqdSnpalQ9TYucgtTBbjy+c=;
-        b=GJprSr/C2tVfyAayPmWUAgWRZOsiUL97JoVbx4wfWqXQzmzU/ozYdpvTU/Gl4kVif0
-         pvCs/SDCLpXDt5VAjS9J1mn362O6pbOguxYToHDTj6e8JsuQB7n0QnrR9F4Ls7LFPGZa
-         g2vhvNhBlIbh/VllU4iVCAYtBA5NVu22bixTy6JmbjutT9JO4zpnLBD2YNeie2ehTlgt
-         UwnkzVOYuE7HYQrVWSHM0+vsyrPGf0n9n/d+8omUV7iQ5kafjcRITCUq54R18DdaN3oQ
-         +SQx6xcvLH+kksvc22JWd7mvbFYmCYBKj0gcR00V+IjvGDSy8yYyuYvRTQgS0GZyqp/g
-         5epw==
-X-Forwarded-Encrypted: i=1; AKwUvBxoeqEP3j5cSKmzsOOWMvpx+oQPMrLN1Q+FtwiK1QPWQWx3cpzP0m4TRe+2i4tNgXml11xUbg==@lists.linux.dev
-X-Gm-Message-State: AFuF++nnbHyYklJM3afoyDgDh+6vuQnVnn6hDdJaGIuP44GV+bX7wk1x
-	DX1DZ4zhsWHtBUX8OGaakVj2OWtRO9bnewlkgZfkJOKdEH9azY7zKVJ7iKaXPiv+nuY=
-X-Gm-Gg: AYBFou0vbN4yBDJKbfVUOxxRxrX1DO6uOsckcvQCTMpqTxDjO5siVAtVltozs23o5Jn
-	AXnG954/UNMd+KjGUsaO+THbgSbe+rEchQf2sB6WZ8EEkhqJ08QAHV6+kcSednIDI9mLWHxoVZF
-	xatIW3Gwtf5uFHovt/rindTR4Wd3FWzsvUlGKnAByxwLK2/jhZHqF8rBG5c9IKhan4cihDJYNac
-	aRuh//2/fJdn+RVVQ5A2qsKFWDRf3ttHaXqVrncPkPWLTqJQPBxLM8Ab1/KdoTv+W8/yisGuoOT
-	5x/Eb6G/vLVC3dJpQjK+2IRMrDPpuFZ7U7e/v2CuvwSs5r6KvqZfgUPQi5IwaSTBX3VbAiRUMU4
-	FfSytqBRIejUtD6gbxk9JIlZ2hdVwHf7tCJbzHGQ5CYwa4EJqJzHBsCkxUezbLeyi9n+y2x3vWB
-	0VykHlo+f/mqQSZPAKUnfx/w1PRH1TSdK1Z7O5URoYYEcqh3Q+L+zH1ipSxDkxind1nHChsdJkT
-	n4D3w6o7x0=
-X-Received: by 2002:a17:90b:1d48:b0:39d:efa9:cd25 with SMTP id 98e67ed59e1d1-3a07306c5d9mr1633442a91.2.1790091835796;
-        Tue, 22 Sep 2026 08:43:55 -0700 (PDT)
-Received: from p14s ([2604:3d09:148c:c800:1046:ab8:737c:d2e2])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a07dbf69f0sm34882a91.8.2026.09.22.08.43.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 08:43:55 -0700 (PDT)
-Date: Tue, 22 Sep 2026 09:43:52 -0600
-From: Mathieu Poirier <mathieu.poirier@linaro.org>
-To: Francesco Valla <francesco@valla.it>
-Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	imx@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFC 12/12] PoC: arm64: dts: imx93-11x11-frdm: add
- multiple vdevs
-Message-ID: <arKiOCGrWAKyc-bc@p14s>
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <20260916-remoteproc_virtio_map-v1-12-dac8c5eb4aa9@valla.it>
+	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="GSm4x/DT"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+	MIME-Version:Date:Message-ID:content-disposition;
+	bh=CWnSk7EHPwZAKsC2qnExgWJIw09V8t9KapKe+fGyacY=; b=GSm4x/DTZBhqYrTlypLXxe4dWy
+	9y0sKMPb064RvrGUTmasLfAtfG82W1NGKWo/+xT03P6Oh8PevDkvjUF+Chntkj38pPm6H5lSpW00n
+	14O4Dpzm0kR1kCBBt6AmxVZk4MZUVOwj5r2wnDpgZW8eoYS9DAM7xK79NREGkU6auzxdUBhjGuiJU
+	ijdiVxaHh9h2MKQWZntFWWZPJw+ThxEHQC72rUwJ+Nmhz3sNlRxYQuIQDNpuRwFiwZMJQ5hWueLbT
+	h4CWHqhJq+VkZA3OU+lTvTGaBB/oZn2MtwfwF77vBEpGxIfjjB8HIJOzz6yj/Om+EkgOwRsWHoW3c
+	3sCFOc9A==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.98.2)
+	(envelope-from <logang@deltatee.com>)
+	id 1x92fD-0000000FjgX-1I9v;
+	Tue, 22 Sep 2026 09:44:12 -0600
+Message-ID: <be735e17-0948-4940-a6c9-862466f986b3@deltatee.com>
+Date: Tue, 22 Sep 2026 09:43:56 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260916-remoteproc_virtio_map-v1-12-dac8c5eb4aa9@valla.it>
+User-Agent: Mozilla Thunderbird
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
+ <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+ Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Randy Dunlap <rdunlap@infradead.org>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+ Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+References: <20260920-fix-p2p-acs-v4-0-v7-0-ca0828ab697c@nvidia.com>
+ <20260920-fix-p2p-acs-v4-0-v7-15-ca0828ab697c@nvidia.com>
+ <85bb90f0-5a02-4e35-9ed6-ad7e67c1c0d8@deltatee.com>
+ <20260922092754.GC563127@unreal>
+Content-Language: en-CA
+From: Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <20260922092754.GC563127@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: leon@kernel.org, bhelgaas@google.com, kch@nvidia.com, gregkh@linuxfoundation.org, axboe@kernel.dk, alex@shazbot.org, ankita@nvidia.com, jgg@ziepe.ca, corbet@lwn.net, skhan@linuxfoundation.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, rdunlap@infradead.org, sumit.semwal@linaro.org, christian.koenig@amd.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux.dev, tdave@nvidia.com, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Level: 
+Subject: Re: [PATCH v7 15/19] PCI/P2PDMA: Document TLP-class routing
+X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
-On Wed, Sep 16, 2026 at 11:10:57PM +0200, Francesco Valla wrote:
-> Add rings for multiple vdevs, as well as the required virtio nodes for
-> I2C, SPI and GPIO functionalities. On top of that, add example
-> peripherals using all of them.
-> 
-> NOTE: this is a Proof-Of-Concept, not meant to be integrated!
-> 
-> Signed-off-by: Francesco Valla <francesco@valla.it>
-> ---
->  arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts | 128 +++++++++++++++++++--
->  1 file changed, 119 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
-> index bd14ba28690c..dfa3b122ac5f 100644
-> --- a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
-> @@ -53,6 +53,32 @@ button-k3 {
->  		};
->  	};
->  
-> +	gpio-keys-virtio {
-> +		compatible = "gpio-keys-polled";
-> +		poll-interval = <100>;
-> +
-> +		button-v1 {
-> +			label = "Button V1";
-> +			linux,code = <BTN_3>;
-> +			gpios = <&v_gpio 23 GPIO_ACTIVE_LOW>;
-> +		};
-> +
-> +		button-v2 {
-> +			label = "Button V2";
-> +			linux,code = <BTN_4>;
-> +			gpios = <&v_gpio 24 GPIO_ACTIVE_LOW>;
-> +		};
-> +	};
-> +
-> +	leds {
-> +		compatible = "gpio-leds";
-> +
-> +		led {
-> +			gpios = <&v_gpio 18 GPIO_ACTIVE_HIGH>;
-> +			label = "LED V";
-> +		};
-> +	};
-> +
->  	reg_usdhc2_vmmc: regulator-usdhc2 {
->  		compatible = "regulator-fixed";
->  		off-on-delay-us = <12000>;
-> @@ -89,11 +115,6 @@ linux,cma {
->  			linux,cma-default;
->  		};
->  
-> -		rsc_table: rsc-table@2021e000 {
-> -			reg = <0 0x2021e000 0 0x1000>;
-> -			no-map;
-> -		};
-> -
 
-Why is the resource table removed?  There is no mention of that in the
-changelog...
 
->  		vdev0vring0: vdev0vring0@a4000000 {
->  			reg = <0 0xa4000000 0 0x8000>;
->  			no-map;
-> @@ -105,12 +126,42 @@ vdev0vring1: vdev0vring1@a4008000 {
->  		};
->  
->  		vdev1vring0: vdev1vring0@a4010000 {
-> -			reg = <0 0xa4010000 0 0x8000>;
-> +			reg = <0 0xa4010000 0 0x1000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev2vring0: vdev2vring0@a4011000 {
-> +			reg = <0 0xa4011000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev2vring1: vdev2vring1@a4013000 {
-> +			reg = <0 0xa4013000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev3vring0: vdev3vring0@a4015000 {
-> +			reg = <0 0xa4015000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev4vring0: vdev4vring0@a4017000 {
-> +			reg = <0 0xa4017000 0 0x4000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev5vring0: vdev5vring0@a401B000 {
-> +			reg = <0 0xa401B000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev5vring1: vdev5vring1@a401D000 {
-> +			reg = <0 0xa401D000 0 0x2000>;
->  			no-map;
->  		};
->  
-> -		vdev1vring1: vdev1vring1@a4018000 {
-> -			reg = <0 0xa4018000 0 0x8000>;
-> +		vdev5vring2: vdev5vring2@a401F000 {
-> +			reg = <0 0xa401F000 0 0x1000>;
->  			no-map;
->  		};
->  
-> @@ -149,8 +200,67 @@ &cm33 {
->  		 <&mu1 3 1>;
->  	mbox-names = "tx", "rx", "rxdb";
->  	memory-region = <&vdevbuffer>, <&vdev0vring0>, <&vdev0vring1>,
-> -			<&vdev1vring0>, <&vdev1vring1>, <&rsc_table>;
-> +			<&vdev1vring0>, <&vdev2vring0>, <&vdev2vring1>,
-> +			<&vdev3vring0>, <&vdev4vring0>,
-> +			<&vdev5vring0>, <&vdev5vring1>, <&vdev5vring2>;
-
-Who is using vdev5 vrings?  
-
->  	status = "okay";
-> +
-> +	virtio {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		vdev@2 {
-> +			reg = <2>;
-> +
-> +			v_gpio: gpio {
-> +				compatible = "virtio,device29";
-> +				gpio-controller;
-> +				#gpio-cells = <2>;
-> +				interrupt-controller;
-> +				#interrupt-cells = <2>;
-> +			};
-> +		};
-> +
-> +		vdev@3 {
-> +			reg = <3>;
-> +
-> +			i2c {
-> +				compatible = "virtio,device22";
-> +				#address-cells = <1>;
-> +				#size-cells = <0>;
-> +
-> +				eeprom@50 {
-> +					compatible = "atmel,24c1025";
-> +					reg = <0x50>;
-> +				};
-> +			};
-> +		};
-> +
-> +		vdev@4 {
-> +			reg = <4>;
-> +
-> +			spi {
-> +				compatible = "virtio,device2d";
-> +				#address-cells = <1>;
-> +				#size-cells = <0>;
-> +
-> +				sram@0 {
-> +					compatible = "microchip,mchp23k256";
-> +					reg = <0>;
-> +					spi-max-frequency = <20000000>;
-> +				};
-> +
-> +				lcd@1 {
-> +					compatible = "adafruit,yx240qv29", "ilitek,ili9341";
-> +					reg = <1>;
-> +					spi-max-frequency = <10000000>;
-> +					dc-gpios = <&v_gpio 21 GPIO_ACTIVE_HIGH>;
-> +					reset-gpios = <&v_gpio 20 GPIO_ACTIVE_HIGH>;
-> +					rotation = <90>;
-> +				};
-> +			};
-> +		};
-> +	};
->  };
->  
->  &eqos {
+On 2026-09-22 03:27, Leon Romanovsky wrote:
+> On Mon, Sep 21, 2026 at 04:16:56PM -0600, Logan Gunthorpe wrote:
+>>
+>>
+>> On 2026-09-20 05:41, Leon Romanovsky wrote:
+>>> +A path is bus addressable only where both directions route directly, so with
+>>> +nothing enabled every class is.
+>>
+>> I don't understand the sentence.
 > 
-> -- 
-> 2.55.0
+> I tried to say that we need both Requests and Completions route
+> directly.
 > 
+> Claude suggested something like that:
+> ---------------------------------------------------------------------------
+> Combining the two tables gives the mapping type: a class is bus addressable
+> when its Request and its Completions both route directly, a blocked Request
+> is not supported because Translation Blocking rejects the Address Type
+> wherever the Request is addressed, and anything else goes through the host
+> bridge. With no ACS control set anywhere, every class routes directly.
+> ---------------------------------------------------------------------------
+
+That's much more understandable. Thanks.
+
+Logan
