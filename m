@@ -1,83 +1,108 @@
-Received: from outbound.baidu.com (mx16.baidu.com [111.202.115.101])
-	by smtp.subspace.kernel.org (Postfix) with SMTP id AA65151E431
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 09:00:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.202.115.101
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281B54D7D25;
+	Tue, 22 Sep 2026 09:01:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790067663; cv=none; b=caXkqEw8d+rHZyeyGfQyZ5hL+HYfOaLRUwzHuWfm7ss8kraNhcXVVuViTa821h0MeikERhUGIM2CRnoCIBJ0bx1lP058mfdeioLb2ejSL62JZXMAa+TlQ4PWnc9dcJoXGtrZaaKOl2bUHp7GQgk1dg+XTKZ10tifVdb+ajntUlU=
+	t=1790067691; cv=none; b=bos5jTsiDwgaUf9Fz5oql0NFPJX/K/I6ZU8qkBEyERNvp2qqf2A/S8Jc5M2SsTHbYWgFZ9IJDqCSm/dxpe2p6isK1k7AXR7vp7VCm8/xlMz2Ob2N+K3aTv/iXvRdTT85Q3SmlUI9MGiLMEGjiw77Wy7kfUM4rc1E0rbEcQh8QxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790067663; c=relaxed/simple;
-	bh=WfnbxA312IgvcF2c2+N6gzfeww5EkajWbX9AxAcijbQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=SluRyk3dO6qe5Mqg6eHUGspee61eBaqpjosd9bbxJgtNcHrQnxrbKo6mtZ4lZ0VoWD1Jp9/SpSHHzKLGfiRZelz9JWbtbZBBLrZQtvWxKSCR19GqnVF/2LvDr4bbunlPPoiFmpztmOd1vmnhG/XOSz+Cyk605LPKJE50XYYKkQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=n/VlQ/ua; arc=none smtp.client-ip=111.202.115.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+	s=arc-20240116; t=1790067691; c=relaxed/simple;
+	bh=LFptJeZ/MOXnuUtOnXU11IKoEE1FtGg7p0aASVn4Go0=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=CRKbPntKMYRBwbKt/Dgn1Y2M9ujgD8+nyUt2FqfB6aLW39ZF4ILlIUvaFDk3EzRFXriaRFLrw/sKloMns0V5YQM28CING+iOzTTgiSIcnICgS6enEn/tdki52opNsF8GWahSRSoplcKxuWoIJ5vglE9x8jljDIGQBT9Cs+Dm/HE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RKTk+bn3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="n/VlQ/ua"
-X-MD-Sfrom: lirongqing@baidu.com
-X-MD-SrcIP: 172.31.50.47
-From: lirongqing <lirongqing@baidu.com>
-To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: Li RongQing <lirongqing@baidu.com>
-Subject: [PATCH] iommu/amd: Fix leak of data->entry in irq_remapping_alloc() error path
-Date: Tue, 22 Sep 2026 17:00:35 +0800
-Message-ID: <20260922090035.1724-1-lirongqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RKTk+bn3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DD21F000FF;
+	Tue, 22 Sep 2026 09:01:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790067689;
+	bh=mjGPVOew5ysCF3WUc2TZ8QW0kJr9lTS0DgEOW24GPw4=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=RKTk+bn3+WrRh+uEPi4QsKpCQMBXdiVXaebzTyFMU52JIHYsRCsBMfXvtU7rub77Q
+	 c2fEr37xSa/FgKfpQbOmr0c9p9pK/zq6q4W/drmX1lPcv3vRb3icWMD4gg0qNqTTVp
+	 uy4jqLPrcnvvlNYaJ71axxVw70rxXcvMAz1o7bQwK2I4DFT70VIVpDD/fsuuwVCvnA
+	 gq5CeO6ZT33+PfALex/ZbfH0KlRpf3mb8fEQaBSo3yx6fPOHe5xxnwc1aQjElG4KjB
+	 rL3CjuBhz5Xe/jnj1pnhwqK3B7MWS+9TGPt1ZlARHlpTuVgUjv3joyNdav1qEFlRuN
+	 0jXrGWn1YgZuw==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v7 7/9] of: reserved_mem: mark /reserved-memory entries
+ with MEMBLOCK_NODUMP
+Reply-To: sashiko-reviews@lists.linux.dev
+To: robh@kernel.org, "Wandun Chen" <chenwandun1@gmail.com>, m.szyprowski@samsung.com, baoquan.he@linux.dev, rppt@kernel.org
+Cc: aou@eecs.berkeley.edu, akpm@linux-foundation.org, pjw@kernel.org, chenhuacai@kernel.org, mingo@redhat.com, kexec@lists.infradead.org, palmer@dabbelt.com, pasha.tatashin@soleen.com, hpa@zytor.com, ruirui.yang@linux.dev, iommu@lists.linux.dev, pratyush@kernel.org, kernel@xen0n.name, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, robin.murphy@arm.com, devicetree@vger.kernel.org, catalin.marinas@arm.com, alex@ghiti.fr, linux-kernel@vger.kernel.org, x86@kernel.org, will@kernel.org, loongarch@lists.linux.dev, saravanak@kernel.org, linux-riscv@lists.infradead.org, conor+dt@kernel.org, tglx@kernel.org, mark.rutland@arm.com, bp@alien8.de, dave.hansen@linux.intel.com
+In-Reply-To: <20260922084256.1515554-8-chenwandun1@gmail.com>
+References: <20260922084256.1515554-1-chenwandun1@gmail.com>
+ <20260922084256.1515554-8-chenwandun1@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 22 Sep 2026 09:01:25 +0000
+Message-Id: <20260922090126.03DD21F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: bjkjy-exc14.internal.baidu.com (172.31.51.14) To
- bjkjy-exc3.internal.baidu.com (172.31.50.47)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
-	s=selector1; t=1790067650;
-	bh=y+EBRgXIXktsPfT8OlB4nZ+skHnzVC+esNilkjwc1S4=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
-	b=n/VlQ/ualqqBBUChOWW85h7pf88vkdVK1BDabbh5AMzkslFbzHnCJderRTn/nas4Z
-	 oHATKbHrlKBQIYyak+wNhEdjP7ojvxn9muRt/PXwomrD+bZA81TavvGfIkgz2szQB1
-	 x2SZDY4TSMsE5afpbSEDTvbl0sa77JR8+tGriW3fICs534jAHJPix/befT81GtqVWs
-	 ZhOgL5a1DjdC7drjgmVl7/j+W7REqYoboBpCZMVkv9mGeWGOT2ndMPdkvHkxhLhZfY
-	 3TWJk/1KYfL4S1U8EY7kpAzkvP2hBYp1SgOvmw1N21V6gooC8ps8UqF+AHL/KyMBuv
-	 uviYvw1U6uV/Q==
 
-From: Li RongQing <lirongqing@baidu.com>
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [High] of: reserved_mem: unconditional MEMBLOCK_NODUMP breaks firmware de=
+bugging
+--
 
-In irq_remapping_alloc() each per-IRQ iteration allocates two objects:
-the amd_ir_data (chip_data) and its data->entry (union irte / struct
-irte_ga). The out_free_data error path only freed chip_data via
-kfree(irq_data->chip_data), leaking data->entry for every already
-initialized IRQ.
+commit 70f4cbca539766519d8967f7e857d2db27db4c13
+Author: Wandun Chen <chenwandun@lixiang.com>
 
-Free data->entry alongside data on the error path.
+of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- drivers/iommu/amd/iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+This commit marks non-dumpable reserved-memory regions with MEMBLOCK_NODUMP
+so kdump can omit them from the vmcore. The marking is guarded by
+CONFIG_CRASH_DUMP to avoid splitting memblock.memory entries unnecessarily
+on non-kdump kernels.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index fd27373..92e93d2 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3906,8 +3906,11 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- out_free_data:
- 	for (i--; i >= 0; i--) {
- 		irq_data = irq_domain_get_irq_data(domain, virq + i);
--		if (irq_data)
--			kfree(irq_data->chip_data);
-+		if (irq_data && irq_data->chip_data) {
-+			data = irq_data->chip_data;
-+			kfree(data->entry);
-+			kfree(data);
-+		}
- 	}
- 	for (i = 0; i < nr_irqs; i++)
- 		free_irte(iommu, devid, index + i);
--- 
-2.9.4
+> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+> --- a/drivers/of/of_reserved_mem.c
+> +++ b/drivers/of/of_reserved_mem.c
 
+[ ... ]
+
+> @@ -677,6 +677,21 @@ static void __init fdt_init_reserved_mem_node(...)
+>  	reserved_mem_count++;
+>  }
+> =20
+> +void __init fdt_mark_reserve_mem_nodump(void)
+> +{
+> +	struct reserved_mem *rmem;
+> +	int i;
+> +
+> +	if (!IS_ENABLED(CONFIG_CRASH_DUMP))
+> +		return;
+> +
+> +	for (i =3D 0; i < reserved_mem_count; i++) {
+> +		rmem =3D &reserved_mem[i];
+> +		if (rmem->size && !rmem->dumpable)
+> +			memblock_mark_nodump(rmem->base, rmem->size);
+
+[Severity: High]
+Does this unconditional masking prevent debugging of coprocessor memory and
+firmware state in vmcores?
+
+Since only the CMA driver sets dumpable to true, it appears all other
+generic /reserved-memory regions (such as DSP logs or ramoops) default
+to false.
+
+Because fdt_mark_reserve_mem_nodump() unconditionally applies
+MEMBLOCK_NODUMP to these regions, and there is no Device Tree property
+provided to opt them back in, is there a risk that system administrators
+will lose the ability to inspect these regions after a crash?
+
+> +	}
+> +}
+> +
+>  struct rmem_assigned_device {
+>  	struct device *dev;
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260922084256.1515=
+554-1-chenwandun1@gmail.com?part=3D7
