@@ -1,156 +1,368 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013023.outbound.protection.outlook.com [40.93.196.23])
+Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 233894AB3A7;
-	Tue, 22 Sep 2026 20:00:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.23
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED18C4A68A4;
+	Tue, 22 Sep 2026 20:20:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790107224; cv=fail; b=N/3/GpJCs90UgVUemH10ynUFByWdSEctW/T1mu4UdX75R37yhnIG+VaYMCQ2EKgfiu9iFKhK1OUL/0+ZaXNSnks1qTWNmvvQcuBbyugEWPpleY/iGScCf5iHyg48VkUebYPWVxumSaNGL+ssPJjARg1n0OyYsBPA6ji3a9j5ALQ=
+	t=1790108464; cv=pass; b=A1Cp44LcozyXplCK59wSeH1jjx8RlrF5a/JuV3jfNog7VhWOtb8qYxWwVhBdjO6scjoQ5ygq4h3KhzgUfITArF9GMcAotYPg1+ObMQgu/Oddl/pm9msxVibTXgQdePSp1kFvQGkYmIiYNZv+09pyaXWlOI1J8BG0noUdJzO8bdw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790107224; c=relaxed/simple;
-	bh=veb65Pn4CpmFEWTKSfNgpLdxKjg+fy5dHsFLVV0vopE=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t+S7wxS9YJo9fogS1eQiEUwDkHpKZKAYjdUFtpD1ZJoD95gNVEwmCWXX2p2DY/jS/PSg0a09G0UiSJx3FFLZX/aNt1NRkYxeHWcw7aDZc5Pp8Se3lpvVn/ttFEaO6zeLRhF6Oa+7seNnyjAnReP9NpdP4m/5o1Ur8+eDL49/MlY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=RjjiTIby; arc=fail smtp.client-ip=40.93.196.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1790108464; c=relaxed/simple;
+	bh=0WVIKbcOsdwoXz5omIyem/bJ7sFg+LvjnvYwgCd83rQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gvsPDPx55AclLh7XrHzdYXTAIW16Y9xYCByOks7Oddr94yLybzymCD0okFRdKPriGOFYOzRFTzuP82B9fFc3U4+6ZLDt/NHqRw7hiV9ZKniV9KsdFQLApT+TXkXSduPodKnBnsebUr2jXANfvP7TIwT06uUH9B4dICAJq2lbDLI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=nQZoE4Jj; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=EpfMWehE; arc=pass smtp.client-ip=185.56.87.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RjjiTIby"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CJpmkn94o/gBLWhxOrJqhg+P6d7wNufuPzaZbVxUTzBS2gDixo8GdgfNeCZjAKEwL23fEKEanUjS74PkNC0c+kjwWdZ1f7Wt9TwtIVFWFig4yt5WjG9PW99MKci30l5eANRkPAJy9gfbutvwjxxmc7120IB+tZmaxWubs/G2zlGLGJlDpeBvueoxay4PdjRrMLNQjqj7E9xFLgGnhq9iGRGJkKtnW7miMPVu1Ca8uMRuAX17UUuVYNPNRiDrC9sJ5h8/4rokKZ/FIkPOv9SwXF15RewyOO+HWWZpPppPu3/ipcFheO6vtZtd4E1ABW8iOsF7S8spcl2p7r2OPQevGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EbrL81ftez1/Lz+4iuhOw9CrE0nMBDsYDdSTGwWCIAA=;
- b=NDdz7iOXrNrXNz5fBKrPcTwdVT3Y950DQGT6QtJ5S4B/2HS+Q7vMn2jFEH0SqQV7bStLpZVDuSkaVscfLbaK7Ve9qTSmcvSQg4wituKKVVQvwAYwm+qLCUlDKExADeJvTpMGnDl5/1ue0GsCe3p8ycKCM89sNTXWEKdw0buSFnCSv3UPtQllGMxBgSD+RqRtY+fGsZcfnAhMOuxaUAOG9aNVq1QQzy3TMojyJEK42A6AF+buwvKAT2K6Rx0bnIz9lUt3c6TvTdhJC5ekx8uuCIfLXPagH96mk8iWByAKuICyptsunOXXmYu8wsjhlrAIUoGQD9yJghycLghE5xFcLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EbrL81ftez1/Lz+4iuhOw9CrE0nMBDsYDdSTGwWCIAA=;
- b=RjjiTIby+IHrtgLpu0ss8D4aOW6HByz87grc4D5KIOAwBbMLxjXayZtV+REh7KPB0wg+fYN5sjUNxaPTxL18MrGjrcmEszDhqe7irx/mC2HaFWnhBUW5EZQA7lk4h7nBtVHR2gqSoHptwtH14iiqpBtLEQF6xsFxNsfCSWlULNjUgoespdDNJD96bWKXYh6zN9NsAgVjg9Uh9MSZtx3oL+QCBMg1ulFNBmCP97eukmPuirzmVhVQhjzLtWM0xDO55Um7HKlJLpZvGuf+rMo3HFnx306CkgTup3pqccxbR7PMngWIUEqIDS5VFPz5JCMgnVeMVt1TE/4t4eAuUZz8nA==
-Received: from BN9PR03CA0138.namprd03.prod.outlook.com (2603:10b6:408:fe::23)
- by PH0PR12MB8052.namprd12.prod.outlook.com (2603:10b6:510:28b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.12; Tue, 22 Sep
- 2026 20:00:02 +0000
-Received: from BN3PEPF00022BD4.namprd03.prod.outlook.com
- (2603:10b6:408:fe:cafe::5e) by BN9PR03CA0138.outlook.office365.com
- (2603:10b6:408:fe::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.13 via Frontend Transport; Tue,
- 22 Sep 2026 20:00:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN3PEPF00022BD4.mail.protection.outlook.com (10.167.248.102) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Tue, 22 Sep 2026 20:00:01 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 22 Sep
- 2026 12:59:32 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Tue, 22 Sep 2026 12:59:31 -0700
-Received: from nvidia.com (10.127.8.12) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Tue, 22 Sep 2026 12:59:30 -0700
-Date: Tue, 22 Sep 2026 12:59:28 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Mostafa Saleh <smostafa@google.com>
-CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<kvmarm@lists.linux.dev>, <iommu@lists.linux.dev>, <catalin.marinas@arm.com>,
-	<will@kernel.org>, <maz@kernel.org>, <oliver.upton@linux.dev>,
-	<joey.gouly@arm.com>, <suzuki.poulose@arm.com>, <yuzenghui@huawei.com>,
-	<joro@8bytes.org>, <jgg@ziepe.ca>, <mark.rutland@arm.com>,
-	<qperret@google.com>, <tabba@google.com>, <vdonnefort@google.com>,
-	<sebastianene@google.com>, <keirf@google.com>
-Subject: Re: [PATCH v8 05/25] iommu/arm-smmu-v3: Move hitless machinery to
- common code
-Message-ID: <arLeIO20VQZD80nr@nvidia.com>
-References: <20260922131259.2975334-1-smostafa@google.com>
- <20260922131259.2975334-6-smostafa@google.com>
+	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="nQZoE4Jj";
+	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="EpfMWehE"
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-gcsk.prod.antispam.mailspamprotection.com; s=arckey; t=1790108432;
+	 b=pcRRbPVKZJIXja2U2gfESEhEielTadnMe5oS4Lsic0ihCNlIWehNBhwTk2wS8Hp7qN9J4ca/0o
+	  YTZ5MkgGW5TkaOdCcQ5QPncYRrWwMfgPZY/WxVT9GkQdbBbkKwJJMTRiRFx/MbcoruOK3vOTKe
+	  1Vem8b8YbcEK7Uw5J2r/RIqTv+KnL8natMtaygHexhjp81cpwKEoeKsPjg/6SQdUSFFNcwG17j
+	  zP0EBc1MLHiPEWlDaMtMEUCINPdmkJEX2ANeEpHkN109TakXv2qupip+aUPSNkn0+vMFK/OXBu
+	  dpRgCpokVfUPQ4HX63q3YMGxSOnBQFpKWmheiXSYOXUjow==;
+ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-gcsk.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
+	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
+	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
+	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
+	arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-gcsk.prod.antispam.mailspamprotection.com; s=arckey; t=1790108432;
+	bh=0WVIKbcOsdwoXz5omIyem/bJ7sFg+LvjnvYwgCd83rQ=;
+	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:
+	  From:Date:DKIM-Signature:DKIM-Signature;
+	b=CUxW8E+Ke3UpYppDIqiTR/29o3v9fvpL3HQfdU7oM+23DXslL5JDWT8wAz9vgNM9ptL0V/RLoB
+	  ZDuFqG3p4VyZltVnwy1N4BcS8m3xsSXV7sPq0QAv0fJMCM0bxkKDGMADu1cHCzQ5LPjJ6X+VyG
+	  UlWl232UcvYPQbgCw94HxR/NmbPBV/bEk9zQ/yTIiFf89tTwfBx5yi2fz8rn9EOLdXLNigUCxH
+	  nbv+IEbJujKIizYmJ2zftFZlRg/Bqj5VBJSxlybignVmSc8hw7puOG7rW1R2YiaQLY5EwID5+J
+	  oFeO2HBSQXqeXSdmZaF2hk5dm9R5+qB3m/pvEy0b+QQd0g==;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
+	:Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	List-Unsubscribe:Content-Transfer-Encoding;
+	bh=eKnrLV23HgV/Tt/v6XD8WD1ByL0WlpYBpZXbv5lCaho=; b=nQZoE4Jj37RSYtL8GhXgR9HPqi
+	lTGTfRzdX1vF6gsX+Yk1o2YVs7o4xIokfKEj3/9H+3YOND9yOZ0pOtDV28kgDM8zkktXbzJh/y5ab
+	5HTEklbGItgkq5o0MxLmmE0pCqGKpPBQq90E5HFWu98rMTSl8Fp7ErJJyuHyi9KTRmVg=;
+Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
+	by instance-europe-west4-gcsk.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.99.5)
+	(envelope-from <francesco@valla.it>)
+	id 1x96yR-0000000DOAJ-08iR;
+	Tue, 22 Sep 2026 20:20:20 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
+	s=default; h=Subject:Cc:To:From:Date:list-help:list-unsubscribe:
+	list-subscribe:list-post:list-owner:list-archive;
+	bh=eKnrLV23HgV/Tt/v6XD8WD1ByL0WlpYBpZXbv5lCaho=; b=EpfMWehEBuPf3r4MM/IaAgqfdL
+	vt5NbMHtSb89q+lrYJjXn+wXkZtPuUlklXIMYNDeID8m8kSGbs0RtfVQm5Fvy/JydWJpS6pmLQpUY
+	0UQBM3zyxD3O9XzFYG+D5rR24UPr2Wxf5g2AY0BoWJIIicCE4puC96gknCoAF51ur4Wk=;
+Received: from [79.43.46.244] (port=63142 helo=bywater)
+	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.99.5)
+	(envelope-from <francesco@valla.it>)
+	id 1x96xy-00000000NML-2uZM;
+	Tue, 22 Sep 2026 20:19:50 +0000
+Date: Tue, 22 Sep 2026 22:19:48 +0200
+From: Francesco Valla <francesco@valla.it>
+To: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	virtualization@lists.linux.dev, imx@lists.linux.dev, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFC 12/12] PoC: arm64: dts: imx93-11x11-frdm: add
+ multiple vdevs
+Message-ID: <arLawAw6kgFT2e0W@bywater>
+References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+ <20260916-remoteproc_virtio_map-v1-12-dac8c5eb4aa9@valla.it>
+ <arKiOCGrWAKyc-bc@p14s>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260922131259.2975334-6-smostafa@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF00022BD4:EE_|PH0PR12MB8052:EE_
-X-MS-Office365-Filtering-Correlation-Id: b37b01eb-ad8a-4211-8f2a-08df18e41685
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|376014|7416014|23010399003|82310400026|1800799024|4143699003|56012099006|11063799006|10067099003|22082099003|6133799003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	+Vyl0+Ll5m9qQLnbap8TAnXhQhqjO12SETJgCw/8PjwK+UGunwwwRIl3rqi15cOkIOI5EKYb4DIbbNho+cJ8pVSGnXUjWy58sIM5om8pUSBisfk7eyVTjy66Q8GOCFGsgXQnsOmUGAN8rwpWV+0CHSBekfsWSw0a4ALFGZBxgXYBQMQA/BwCrgVHvO6DdyN++01UAhjo6QoNcuSWLuqvVq/+EaCz+HpIy8KdpqWGnmNvn2YcG6P8QQGtO1DuoZVHVDQmIFjp8ayY50xFA2KsE6IpNgm1Gc/9J5jFVsqJxzHRVP6LmPSWvNFABv/Q7Agl5JDIjg9hs6OxxmtyqKA8gpn6Ag2qzjM9eTwTS+JaLGMbQIeaCzLox4JrTYjST4G9jqUzVcVfwOx341Y39GAJgr6Pz2mJ3ahbbYduD5M3jBQo02boQInQKAsvP1i9HQlKWC8Vjxal+if/WXv0E9OoXNx9CaonRUMYws6iRq2XKon+26Qn4Rd7QUwxG+YaEcOqJwWKjMDSMvyFHMhi8vReVNbujZzCxqS5xiuVWuBF0oO6IlkLayYjbNijfnJQDOwyj+dEYNRX+OJcKSoEasRiTcYUyChmtUB6X5JPh2PohV70n6+FOCxJX4Qy3if3KUmLnuvEYvx+PmfOUUlB3Liph7MaG9fZzFJuN8AG7whBhl/2i7cwkwCD0ms/5YoQK3MZUv3CeyMt2KW+T033f8UFCw==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(376014)(7416014)(23010399003)(82310400026)(1800799024)(4143699003)(56012099006)(11063799006)(10067099003)(22082099003)(6133799003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	/4LW693ggD79JcwClr+vnytb4k9cVToN9OwKaPfgoPLjoAY8EBagnBbpQ30Gr+JIg6YoaaveN1GP6MZ3s18oXFE9SumxsJWV08seuSRYMPlGiuRurjJ+1ATQuuajvjAVDc+wHhoN5RClAMSmgHf4HTdkv/scCzGrvfNGOv8/CXrvxQGv3N3NmIsSnOVVVH0LvorSt3nvWp6/yC5qAeJhIt4qgfYCLFvg4vnIz5S7Jp9jhxmsKMOBrqJKojuhcOZoZuzVU5mR09gDKo5RyD9Z8XrNE+j9855tcjSvN01m/a/bZi1U9OhCEwoDSDNG8VOui8aUd0zjIv4Kgj++BAi2Ut3jGtXU5K7po80Mplp+t/mD1eF+e0qCOtGtV+Naxf19ogKUFQdgS+YRMAT8Skzf6iKoOAWC3/d/9H0KD4XyP8b+0+uSCtawWffKkCYwEbgA
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2026 20:00:01.7616
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b37b01eb-ad8a-4211-8f2a-08df18e41685
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF00022BD4.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8052
+In-Reply-To: <arKiOCGrWAKyc-bc@p14s>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - esm19.siteground.biz
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - valla.it
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-SGantispam-id: 9c99f88c77eeafcb81f84f34bee45c22
+X-AntiAbuse: ID - 9c99f88c77eeafcb81f84f34bee45c22
+AntiSpam-DLS: false
+AntiSpam-DLSP: 
+AntiSpam-DLSRS: 
+AntiSpam-TS: 1.0
+CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
+CFBL-Feedback-ID: 1x96yR-0000000DOAJ-08iR-feedback@antispam.mailspamprotection.com
+Authentication-Results: outgoing.instance-europe-west4-gcsk.prod.antispam.mailspamprotection.com;
+	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
+	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
+	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
+	arc=none
 
-On Tue, Sep 22, 2026 at 01:12:38PM +0000, Mostafa Saleh wrote:
-> Move the hitless STE functions to the common file so it can be
-> reused by the hypervisor.
-
-s/it/they
-
-> No functional change.
+On Tue, Sep 22, 2026 at 09:43:52AM -0600, Mathieu Poirier wrote:
+> On Wed, Sep 16, 2026 at 11:10:57PM +0200, Francesco Valla wrote:
+> > Add rings for multiple vdevs, as well as the required virtio nodes for
+> > I2C, SPI and GPIO functionalities. On top of that, add example
+> > peripherals using all of them.
+> > 
+> > NOTE: this is a Proof-Of-Concept, not meant to be integrated!
+> > 
+> > Signed-off-by: Francesco Valla <francesco@valla.it>
+> > ---
+> >  arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts | 128 +++++++++++++++++++--
+> >  1 file changed, 119 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+> > index bd14ba28690c..dfa3b122ac5f 100644
+> > --- a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+> > +++ b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+> > @@ -53,6 +53,32 @@ button-k3 {
+> >  		};
+> >  	};
+> >  
+> > +	gpio-keys-virtio {
+> > +		compatible = "gpio-keys-polled";
+> > +		poll-interval = <100>;
+> > +
+> > +		button-v1 {
+> > +			label = "Button V1";
+> > +			linux,code = <BTN_3>;
+> > +			gpios = <&v_gpio 23 GPIO_ACTIVE_LOW>;
+> > +		};
+> > +
+> > +		button-v2 {
+> > +			label = "Button V2";
+> > +			linux,code = <BTN_4>;
+> > +			gpios = <&v_gpio 24 GPIO_ACTIVE_LOW>;
+> > +		};
+> > +	};
+> > +
+> > +	leds {
+> > +		compatible = "gpio-leds";
+> > +
+> > +		led {
+> > +			gpios = <&v_gpio 18 GPIO_ACTIVE_HIGH>;
+> > +			label = "LED V";
+> > +		};
+> > +	};
+> > +
+> >  	reg_usdhc2_vmmc: regulator-usdhc2 {
+> >  		compatible = "regulator-fixed";
+> >  		off-on-delay-us = <12000>;
+> > @@ -89,11 +115,6 @@ linux,cma {
+> >  			linux,cma-default;
+> >  		};
+> >  
+> > -		rsc_table: rsc-table@2021e000 {
+> > -			reg = <0 0x2021e000 0 0x1000>;
+> > -			no-map;
+> > -		};
+> > -
 > 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> Why is the resource table removed?  There is no mention of that in the
+> changelog...
+>
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+You are obviously right, the commit message here should have been a
+poem, not a form of hermetic poetry. My bad.
 
-With some nits:
+The resource table here is causing problems with how Zephyr is managing
+it at its side. If it is kept in a separate memory location and copied
+there at runtime by the remote processor firmware during its startup
+(which is the current Zephyr behavior), then there might be a race
+condition when the aforesaid firmware is loaded and started by Linux
+*and* at least one of the vdev drivers (here including rpmsg_bus) is
+built-in. In this case, the copy of the resource table done by the
+remote processor might - depending on the async execution of the two
+processors - overwrite the status bit set by the Linux driver:
 
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -59,10 +59,8 @@ enum arm_smmu_msi_index {
->  	ARM_SMMU_MAX_MSIS,
->  };
->  
-> -#define NUM_ENTRY_QWORDS 8
->  static_assert(sizeof(struct arm_smmu_ste) == NUM_ENTRY_QWORDS * sizeof(u64));
->  static_assert(sizeof(struct arm_smmu_cd) == NUM_ENTRY_QWORDS * sizeof(u64));
-> -
->  static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
+  Firmware load and startup (echo start > /sys/.../state)
+                           |
+			   |
+			   V
+  The vdev devices get registered (by register_virtio_device())
+                           |
+			   |
+			   V
+  If a driver is built-in, it probes and sets the vdev status
+  inside the resource table @rsc-table.
+                           .
+			   . (in the mean time)
+			   .
+  The remote processor starts up and copies the resource table from its
+  dedicated section to @rsc-table.
 
-This line removal seems unnecessary.
+Depending on the system load and the complexity of the firmware, the two
+operations can happen in whatever sequence, causing a race condition.
 
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -1321,6 +1316,8 @@ static inline u64 arm_smmu_tlb_inv_range_enc(u8 num, u8 scale)
->  		FIELD_PREP(CMDQ_TLBI_0_SCALE, scale & 0x1f);
->  }
->  
-> +#define NUM_ENTRY_QWORDS 8
-> +
+This is somewhat masked if vdev drivers are built as modules, as the
+devices does not probe immediately but only after the modules have been
+loaded, giving the remote processor time to start. Note that this is not
+a solution! but a workaround.
 
-Maybe we should drop the duplicated define in arm-smmu-v3-test.c?
+If the rsc-table node is not there, the startup logic falls back to the
+classic rproc_elf_find_loaded_rsc_table().
 
-Nicolin
+This is specific to i.MX platforms [1] and is probably not normally an
+issue because - as stated in [1] - the offical SDK from NXP seems not
+to check the status inside the resource table.
+
+> >  		vdev0vring0: vdev0vring0@a4000000 {
+> >  			reg = <0 0xa4000000 0 0x8000>;
+> >  			no-map;
+> > @@ -105,12 +126,42 @@ vdev0vring1: vdev0vring1@a4008000 {
+> >  		};
+> >  
+> >  		vdev1vring0: vdev1vring0@a4010000 {
+> > -			reg = <0 0xa4010000 0 0x8000>;
+> > +			reg = <0 0xa4010000 0 0x1000>;
+> > +			no-map;
+> > +		};
+> > +
+> > +		vdev2vring0: vdev2vring0@a4011000 {
+> > +			reg = <0 0xa4011000 0 0x2000>;
+> > +			no-map;
+> > +		};
+> > +
+> > +		vdev2vring1: vdev2vring1@a4013000 {
+> > +			reg = <0 0xa4013000 0 0x2000>;
+> > +			no-map;
+> > +		};
+> > +
+> > +		vdev3vring0: vdev3vring0@a4015000 {
+> > +			reg = <0 0xa4015000 0 0x2000>;
+> > +			no-map;
+> > +		};
+> > +
+> > +		vdev4vring0: vdev4vring0@a4017000 {
+> > +			reg = <0 0xa4017000 0 0x4000>;
+> > +			no-map;
+> > +		};
+> > +
+> > +		vdev5vring0: vdev5vring0@a401B000 {
+> > +			reg = <0 0xa401B000 0 0x2000>;
+> > +			no-map;
+> > +		};
+> > +
+> > +		vdev5vring1: vdev5vring1@a401D000 {
+> > +			reg = <0 0xa401D000 0 0x2000>;
+> >  			no-map;
+> >  		};
+> >  
+> > -		vdev1vring1: vdev1vring1@a4018000 {
+> > -			reg = <0 0xa4018000 0 0x8000>;
+> > +		vdev5vring2: vdev5vring2@a401F000 {
+> > +			reg = <0 0xa401F000 0 0x1000>;
+> >  			no-map;
+> >  		};
+> >  
+> > @@ -149,8 +200,67 @@ &cm33 {
+> >  		 <&mu1 3 1>;
+> >  	mbox-names = "tx", "rx", "rxdb";
+> >  	memory-region = <&vdevbuffer>, <&vdev0vring0>, <&vdev0vring1>,
+> > -			<&vdev1vring0>, <&vdev1vring1>, <&rsc_table>;
+> > +			<&vdev1vring0>, <&vdev2vring0>, <&vdev2vring1>,
+> > +			<&vdev3vring0>, <&vdev4vring0>,
+> > +			<&vdev5vring0>, <&vdev5vring1>, <&vdev5vring2>;
+> 
+> Who is using vdev5 vrings?  
+> 
+
+Another thing that should have been in the commit message. Vdevs are
+defined, in the Zephyr application I am using as PoC, as follows:
+
+ - vdev0: RPMSG (tx and rx vrings)
+ - vdev1: entropy (single request vring)
+ - vdev2: GPIO (request and event vrings)
+ - vdev3: I2C (single request vring)
+ - vdev4: SPI (single request vring)
+ - vdev5: CAN (tx, rx and control vrings)
+
+vdev5 is not represented inside the devicetree because the can-virtio
+driver registers a single CAN network device and has thus no need for
+such representation.
+
+> >  	status = "okay";
+> > +
+> > +	virtio {
+> > +		#address-cells = <1>;
+> > +		#size-cells = <0>;
+> > +
+> > +		vdev@2 {
+> > +			reg = <2>;
+> > +
+> > +			v_gpio: gpio {
+> > +				compatible = "virtio,device29";
+> > +				gpio-controller;
+> > +				#gpio-cells = <2>;
+> > +				interrupt-controller;
+> > +				#interrupt-cells = <2>;
+> > +			};
+> > +		};
+> > +
+> > +		vdev@3 {
+> > +			reg = <3>;
+> > +
+> > +			i2c {
+> > +				compatible = "virtio,device22";
+> > +				#address-cells = <1>;
+> > +				#size-cells = <0>;
+> > +
+> > +				eeprom@50 {
+> > +					compatible = "atmel,24c1025";
+> > +					reg = <0x50>;
+> > +				};
+> > +			};
+> > +		};
+> > +
+> > +		vdev@4 {
+> > +			reg = <4>;
+> > +
+> > +			spi {
+> > +				compatible = "virtio,device2d";
+> > +				#address-cells = <1>;
+> > +				#size-cells = <0>;
+> > +
+> > +				sram@0 {
+> > +					compatible = "microchip,mchp23k256";
+> > +					reg = <0>;
+> > +					spi-max-frequency = <20000000>;
+> > +				};
+> > +
+> > +				lcd@1 {
+> > +					compatible = "adafruit,yx240qv29", "ilitek,ili9341";
+> > +					reg = <1>;
+> > +					spi-max-frequency = <10000000>;
+> > +					dc-gpios = <&v_gpio 21 GPIO_ACTIVE_HIGH>;
+> > +					reset-gpios = <&v_gpio 20 GPIO_ACTIVE_HIGH>;
+> > +					rotation = <90>;
+> > +				};
+> > +			};
+> > +		};
+> > +	};
+> >  };
+> >  
+> >  &eqos {
+> > 
+> > -- 
+> > 2.55.0
+> >
+
+Thank you!
+
+Regards,
+Francesco
+
+
+[1] https://lore.kernel.org/all/20240719-imx_rproc-v2-2-10d0268c7eb1@nxp.com/
