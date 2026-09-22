@@ -1,68 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED0043DEB8;
-	Tue, 22 Sep 2026 08:59:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from outbound.baidu.com (mx16.baidu.com [111.202.115.101])
+	by smtp.subspace.kernel.org (Postfix) with SMTP id AA65151E431
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 09:00:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.202.115.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790067594; cv=none; b=QVW8tqOcZ2bCMbM0fNUFSQ7cDSEkZDwpF603s+Jv8O1IuGufeN/aVg8XmONINj1QNkj39DEf429Wyna5nOg20+cs4tQMWhwzPrryq0P9QkywvLFes1/BEcmoFk0+YUpFGBHk8ynT3Dy+/YT6vwG2hu9xl3FLmbQYXKVxfzIPtPQ=
+	t=1790067663; cv=none; b=caXkqEw8d+rHZyeyGfQyZ5hL+HYfOaLRUwzHuWfm7ss8kraNhcXVVuViTa821h0MeikERhUGIM2CRnoCIBJ0bx1lP058mfdeioLb2ejSL62JZXMAa+TlQ4PWnc9dcJoXGtrZaaKOl2bUHp7GQgk1dg+XTKZ10tifVdb+ajntUlU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790067594; c=relaxed/simple;
-	bh=+cpSLdx5G86GAiYEa1KiKUdyGr9Hwx+hUdwakbZPe5c=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=lYWBw0o5MZ88ejk5XOYXmJ1RKDgh35YHHgWbBvgsaKmLaEIWc00LmXv5z6ur+hO85k9mTI2MI3Osxz14DPmLGmIjFrzrD6nrZR4FFAwi/ZvHRH3ls0o8kc9zsUlFi/7Qz16xT9zdL6jjPnqEksS/SKVopc4mRYjkaiYvubxL3kk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=izvJYf3w; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790067663; c=relaxed/simple;
+	bh=WfnbxA312IgvcF2c2+N6gzfeww5EkajWbX9AxAcijbQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=SluRyk3dO6qe5Mqg6eHUGspee61eBaqpjosd9bbxJgtNcHrQnxrbKo6mtZ4lZ0VoWD1Jp9/SpSHHzKLGfiRZelz9JWbtbZBBLrZQtvWxKSCR19GqnVF/2LvDr4bbunlPPoiFmpztmOd1vmnhG/XOSz+Cyk605LPKJE50XYYKkQo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=n/VlQ/ua; arc=none smtp.client-ip=111.202.115.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="izvJYf3w"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB051F000FF;
-	Tue, 22 Sep 2026 08:59:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790067593;
-	bh=+cpSLdx5G86GAiYEa1KiKUdyGr9Hwx+hUdwakbZPe5c=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=izvJYf3wx7OMx8dtyK2bPgV4goHzPpSwGkfqbgOp88Z2f384iep3os6cqHBe6ioCo
-	 IipTl+Y06tX741Ho3LXMdE8qTZBy6i3kW/AG2fyAak47hFXgIbhMztEc/AjEfWJ3gO
-	 tR/TutUOUAWlWalvbKQpWlAlEN8YL3e5y5N7pjthg/ab5xsU3bbMXVoOIgsjkQruj1
-	 OyekninqCRr4y32dIPdT5Bd+44BDIJNM8eGAdEaSR4P5Xn3uC66ReBLFcE1ilJjyVa
-	 Vp4PDuJDDdxPnmrmh8vGIIpx5tDJkTvYEYN2OU5Kmw3iEXQ1oXLsmHDVUD/8g0E2hX
-	 zd2wbQtt6yspg==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v7 1/9] riscv: build crash_mem ranges from memblock
- instead of resource tree
-Reply-To: sashiko-reviews@lists.linux.dev
-To: robh@kernel.org, rppt@kernel.org, "Wandun Chen" <chenwandun1@gmail.com>, baoquan.he@linux.dev, m.szyprowski@samsung.com
-Cc: pasha.tatashin@soleen.com, aou@eecs.berkeley.edu, linux-mm@kvack.org, conor+dt@kernel.org, mark.rutland@arm.com, dave.hansen@linux.intel.com, devicetree@vger.kernel.org, bp@alien8.de, catalin.marinas@arm.com, mingo@redhat.com, ruirui.yang@linux.dev, iommu@lists.linux.dev, kexec@lists.infradead.org, saravanak@kernel.org, pjw@kernel.org, linux-kernel@vger.kernel.org, hpa@zytor.com, alex@ghiti.fr, chenhuacai@kernel.org, x86@kernel.org, akpm@linux-foundation.org, robin.murphy@arm.com, loongarch@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-riscv@lists.infradead.org, kernel@xen0n.name, will@kernel.org, palmer@dabbelt.com, pratyush@kernel.org, tglx@kernel.org
-In-Reply-To: <20260922084256.1515554-2-chenwandun1@gmail.com>
-References: <20260922084256.1515554-1-chenwandun1@gmail.com>
- <20260922084256.1515554-2-chenwandun1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 22 Sep 2026 08:59:51 +0000
-Message-Id: <20260922085951.DAB051F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="n/VlQ/ua"
+X-MD-Sfrom: lirongqing@baidu.com
+X-MD-SrcIP: 172.31.50.47
+From: lirongqing <lirongqing@baidu.com>
+To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH] iommu/amd: Fix leak of data->entry in irq_remapping_alloc() error path
+Date: Tue, 22 Sep 2026 17:00:35 +0800
+Message-ID: <20260922090035.1724-1-lirongqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-ClientProxiedBy: bjkjy-exc14.internal.baidu.com (172.31.51.14) To
+ bjkjy-exc3.internal.baidu.com (172.31.50.47)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
+	s=selector1; t=1790067650;
+	bh=y+EBRgXIXktsPfT8OlB4nZ+skHnzVC+esNilkjwc1S4=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
+	b=n/VlQ/ualqqBBUChOWW85h7pf88vkdVK1BDabbh5AMzkslFbzHnCJderRTn/nas4Z
+	 oHATKbHrlKBQIYyak+wNhEdjP7ojvxn9muRt/PXwomrD+bZA81TavvGfIkgz2szQB1
+	 x2SZDY4TSMsE5afpbSEDTvbl0sa77JR8+tGriW3fICs534jAHJPix/befT81GtqVWs
+	 ZhOgL5a1DjdC7drjgmVl7/j+W7REqYoboBpCZMVkv9mGeWGOT2ndMPdkvHkxhLhZfY
+	 3TWJk/1KYfL4S1U8EY7kpAzkvP2hBYp1SgOvmw1N21V6gooC8ps8UqF+AHL/KyMBuv
+	 uviYvw1U6uV/Q==
 
-> From: Wandun Chen <chenwandun@lixiang.com>
->=20
-> Replace walk_system_ram_res() with for_each_mem_range(). A later patch
-> introduces MEMBLOCK_NODUMP in memblock, the reserved-memory regions
-> marked with MEMBLOCK_NODUMP can be excluded from the vmcore by walking
-> memblock.
->=20
-> for_each_mem_range() iterates memblock.memory, which is freed after
-> init unless ARCH_KEEP_MEMBLOCK is selected. riscv needs ARCH_KEEP_MEMBLOCK
-> to filter reserved memory from the vmcore, so extend its condition
-> (ACPI || KEXEC) with CRASH_DUMP. arm64 and loongarch already select
-> ARCH_KEEP_MEMBLOCK unconditionally.
->=20
-> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+From: Li RongQing <lirongqing@baidu.com>
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+In irq_remapping_alloc() each per-IRQ iteration allocates two objects:
+the amd_ir_data (chip_data) and its data->entry (union irte / struct
+irte_ga). The out_free_data error path only freed chip_data via
+kfree(irq_data->chip_data), leaking data->entry for every already
+initialized IRQ.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260922084256.1515=
-554-1-chenwandun1@gmail.com?part=3D1
+Free data->entry alongside data on the error path.
+
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ drivers/iommu/amd/iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index fd27373..92e93d2 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3906,8 +3906,11 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ out_free_data:
+ 	for (i--; i >= 0; i--) {
+ 		irq_data = irq_domain_get_irq_data(domain, virq + i);
+-		if (irq_data)
+-			kfree(irq_data->chip_data);
++		if (irq_data && irq_data->chip_data) {
++			data = irq_data->chip_data;
++			kfree(data->entry);
++			kfree(data);
++		}
+ 	}
+ 	for (i = 0; i < nr_irqs; i++)
+ 		free_irte(iommu, devid, index + i);
+-- 
+2.9.4
 
