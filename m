@@ -1,32 +1,26 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 505DA3793A8
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 03:46:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-m12764.qiye.163.com (mail-m12764.qiye.163.com [115.236.127.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 391833A6F10
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 03:50:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.236.127.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790048814; cv=none; b=l7Jmop/LXXcyLkpVDnRgjtWun5aPynzxV51NZZHHS6GMUTb7jrYHexQ7/l3pBTAULxyA1PnbE1K9URmADTwjPUQ1712GBP9i4SvMzg9H3ImeSVYU81tfzyuizEWqINX+9UlZpfgxiRcN8w/64WtmZoTC6H5fbTp+vuqnwDykjS4=
+	t=1790049040; cv=none; b=u3UkFPbX3+3OvZ2AYWvoTYqPd8F4xT0ZajyprnYxCmrrV9R6QGgyWgPFhASelDt27Vzi2KFs0tWKxPH5o6007MzcRTpzEbapLg1O1Bga8XOUniizSXfdLRRt/Fb2QmCGMndLaZAhbAw7k2n73GwTv0vz29ElcSo1a6GYmxvSaA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790048814; c=relaxed/simple;
-	bh=LTpnuIgDGyq6xsQCCTBkMjz2ignLP0OXe2ADwuFTm4U=;
+	s=arc-20240116; t=1790049040; c=relaxed/simple;
+	bh=YjQdf8P5ib4hDeFOIv/TikyocWOSjV6ChF0lvJ79Eag=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=B3wbgw234HEipuSaFzsQMiIhzDgoYBK2yXjz/0gai7dWe/ISiIhKyh3N6HlM7ndZ2x5bexYC4yO0dxgmlAihAXfvhYyGwOTR8Xfb92k7OEBYN0ZziGXm4OH0jvwOkAr5aAxP9BXyBWUx7sMuHNGAgvPmjiNtqykdDl7GyqcNZ6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=JyMZEPHo; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 In-Reply-To:Content-Type; b=mYVw659/bQOxO2DkezZsskd5Y/rCjgzsLGip16zusstADHEPyG+I5524BZBF++BzP8EpTR9RR5fXEgvWNCBNAGLjOhwptAQ2SYU3D6alQE/2ORfsn759noVicqYoUEm3PDKcckHqPiojk/t7jJvH+WRkVo3v3kKJxKSI6XELCAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=W0odU1OO; arc=none smtp.client-ip=115.236.127.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="JyMZEPHo"
-Received: from [192.168.1.70] (unknown [4.194.122.136])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 3CA9520B7169;
-	Mon, 21 Sep 2026 20:45:54 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3CA9520B7169
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1790048764;
-	bh=hCWMokXUQJxjRS5QdQL5gNAVPByZ1c1WYuxTg8bYASY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=JyMZEPHoh0VHsPtYUZ/NyYnw9zoO2Ai49u81MWxW8sYPlvSzR0CfmdbbVD56M4MXc
-	 WP/4YcjlCemINQbDhdktQCaNknNK4Ap3PWCe77GE58KGbRw1PC48Uefavk50YhPk8a
-	 gpq1XXv75N9tmq/B1OIkuxnxnxgH5lXHyjxEj6tA=
-Message-ID: <d1609eac-6f3f-48e3-8b1f-1e272fb53bf3@linux.microsoft.com>
-Date: Tue, 22 Sep 2026 09:16:30 +0530
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="W0odU1OO"
+Received: from [172.16.12.90] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 4ea47cc08;
+	Tue, 22 Sep 2026 09:28:05 +0800 (GMT+08:00)
+Message-ID: <86d0a09c-f1e1-4310-aa39-6526268bdc76@rock-chips.com>
+Date: Tue, 22 Sep 2026 09:28:03 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,88 +28,78 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/4] x86/irq: Use irq_chip_retrigger_hierarchy() in
- msi_set_affinity()
-To: Michael Kelley <mhklinux@outlook.com>, Thomas Gleixner <tglx@kernel.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>, "x86@kernel.org"
- <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
- Wei Liu <wei.liu@kernel.org>, "K . Y . Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>
-Cc: Long Li <longli@microsoft.com>, Nam Cao <namcao@linutronix.de>,
- Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
- Manivannan Sadhasivam <mani@kernel.org>, Rob Herring <robh@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Kees Cook <kees@kernel.org>,
- "Rafael J . Wysocki" <rafael@kernel.org>, Radu Rendec <radu@rendec.net>,
- Sean Christopherson <seanjc@google.com>, Kai Huang <kai.huang@intel.com>,
- Dmitry Ilvokhin <d@ilvokhin.com>,
- Shradha Gupta <shradhagupta@linux.microsoft.com>,
- Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
- Thierry Reding <treding@nvidia.com>, Jiri Wiesner <jwiesner@suse.de>,
- Daniel J Blueman <daniel@quora.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-References: <20260914111836.2119301-1-namjain@linux.microsoft.com>
- <20260914111836.2119301-4-namjain@linux.microsoft.com>
- <SN6PR02MB41570F45986408BA60D75A3CD4842@SN6PR02MB4157.namprd02.prod.outlook.com>
+Subject: Re: [PATCH v13 09/14] pmdomain: rockchip: add optional per-domain
+ power-on settle delay
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ ulfh@kernel.org, p.zabel@pengutronix.de, ogabbay@kernel.org,
+ zhangqing@rock-chips.com, Jiaxing Hu <gahing@gahingwoo.com>,
+ royalnet026@gmail.com, abel.vesa@oss.qualcomm.com,
+ sebastian.reichel@collabora.com, sidong.yang@furiosa.ai,
+ u.kleine-koenig@baylibre.com, diederik@cknow-tech.com, alchark@flipper.net,
+ dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20260915104328.45901-1-gahing@gahingwoo.com>
+ <20260915104328.45901-10-gahing@gahingwoo.com> <15844283.tv2OnDr8pf@phil>
 Content-Language: en-US
-From: Naman Jain <namjain@linux.microsoft.com>
-In-Reply-To: <SN6PR02MB41570F45986408BA60D75A3CD4842@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+In-Reply-To: <15844283.tv2OnDr8pf@phil>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0aa0c6ba2f2d03a7kunmeb9776bc9d1cf
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDSk4eVkxDGR9JGEoYHUhCTFYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSU
+	9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=W0odU1OOloYr55qtR7C7tVj3QAyYPL77i/h4ftBbKvQbI3quKMF5KR+1/q1L6P/K/JX8O6nCNzM53G0WqUmyiLvn/yBNzFcM8m8+KlASYIQ18AARR77yMJC5J/mQMpDGdfyoYrFpsjaJBgVfNbWDNJolVVt1Llx0m7JRklgsMiE=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
+	bh=bEMNftgPUsUp/chMEhUbfGL5eAcx9DDwnaTufeKfD2w=;
+	h=date:mime-version:subject:message-id:from;
 
+Hi Heiko, Jiaxing,
 
-
-On 9/22/2026 2:30 AM, Michael Kelley wrote:
-> From: Naman Jain <namjain@linux.microsoft.com> Sent: Monday, September 14, 2026 4:19 AM
->>
->> msi_set_affinity() re-injects a pending interrupt on its new target by
->> looking at the outermost domain chip and invoking its irq_retrigger()
->> callback. Since this mirrors the behavior of
->> irq_chip_retrigger_hierarchy(), use the helper directly instead.
+On 9/22/2026 6:06 AM, Heiko Stuebner wrote:
+> Hi,
 > 
-> This commit message glosses over the key point. I think the full
-> statement is that in all cases where msi_set_affinity() is called, the
-> irqchip's .irq_retrigger function is set to irq_chip_retrigger_hierarchy().
-> Both are set only in x86_init_dev_msi_info(). So it is equivalent to
-> just call irq_chip_retrigger_hierarchy() directly.
-
-I'll add this info in next version.
-
-Thanks,
-Naman
-
+> Am Dienstag, 15. September 2026, 12:43:23 Mitteleuropäische Sommerzeit schrieb Jiaxing Hu:
+>> The RK3576 NPU domains need a short settle time after the idle request is
+>> released before the registers behind the domain answer. Without it the QoS
+>> writes that rockchip_pmu_restore_qos() issues land while the domain is
+>> still coming up, and the NPU throws an async SError on the first cold
+>> power-on.
 > 
->>
->> Suggested-by: Thomas Gleixner <tglx@kernel.org>
->> Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
->> Reviewed-by: Thomas Gleixner <tglx@kernel.org>
->> Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
->> ---
->>   arch/x86/kernel/apic/msi.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
->> index 66bc5d3e79db3..9160227b9b32a 100644
->> --- a/arch/x86/kernel/apic/msi.c
->> +++ b/arch/x86/kernel/apic/msi.c
->> @@ -137,7 +137,7 @@ msi_set_affinity(struct irq_data *irqd, const struct cpumask *mask, bool force)
->>   	 * IRR.
->>   	 */
->>   	if (lapic_vector_set_in_irr(cfg->vector))
->> -		irq_data_get_irq_chip(irqd)->irq_retrigger(irqd);
->> +		irq_chip_retrigger_hierarchy(irqd);
->>
->>   	return ret;
->>   }
->> --
->> 2.43.0
->>
+> are you really really sure, this is the fault of the domain itself?
+> 
+> The regulator also can just need a longer time to bring up the power.
+> Looking at [0], it seems I actually encountered the same thing back
+> on the RK3588.
+> 
+> Only difference is, on RK3588 a fan5355-type regulator normally does
+> provide the npu supply, while on your board it comes from the main pmic.
+> 
+> Can you please try the following:
+> - set your power-domain regulator to always-on in the DT (so it stays
+>   on even when the domain gets turned off)
+> - try to reproduce your SError issue and see if it still appears
+> 
+> 
+> And for the other case, look through the pmic datasheet to find the
+> enable-time values and do something similar for the RK806.
+> 
+> 
 
+Thank you for your attention to this series.
+
+Providing some background here: this delay is required by the pmdomain
+design itself, rather than being dependent on the external RK806 state. 
+Taking the NPU as an example, after its pmdomain is powered on, some 
+internal preparation is needed, which takes approximately 15us. 
+And during this period, the QOS registers *must* not be accessed, 
+otherwise it will cause a hang.
+
+-- 
+Best, 
+Chaoyi
