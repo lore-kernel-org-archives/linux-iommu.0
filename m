@@ -1,114 +1,89 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD2BE2E0914;
-	Tue, 22 Sep 2026 09:05:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B43CC456DF7;
+	Tue, 22 Sep 2026 09:27:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790067903; cv=none; b=b7SlO2izYAZBpCd/Y7913y53Lso3yNl3MFOyfJSJF3ZyYlnF16IiCmwx+a7qqldSuUOd+JyR0BGq0DJeUf6AW96p+gU2WT7Q2rG7nFwMRhSJSPro5jia57yYjPyXXaIp+vdKw2c47WaHZ3MP0PvuINsPJ0tgXdc6pM7L8/GtS4A=
+	t=1790069280; cv=none; b=RU6mh1GuIEarH8VWsNG+9+hN+T2O8RuoHKcWrrszvS3aU5soH7IJz8hUTFlkD8h3cUY3EmdSC9rmvwo3M7sFnsX8QLiUbU+TBEO0l2KgjaKdbm133zZU6fH4fmQM2y+EbCqRUQEZF5VM7s7E3NeFISih4m4mGb0NyHxLgTjTjXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790067903; c=relaxed/simple;
-	bh=Iib6UzcABQ6xYqcy3qwfLHQr9tDa9Fk17JJoNSXf8h8=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=BAfdsqHa4QNccKNkrc+ETXa3x7VhaMXwNma4GtN1pYG+NwJy7bmd/VMEXiHZkE3rTfxr4KVqiTXCW4CQnKScJrj9ICFNI1+YWtqIYlxHUKUXz7NhDcJqDAWH427qdLsZvTrTzQwxBW6+8Oz7N0v/WE8mt9RxKNhM5yUOJXUzt9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k9LHr2Wd; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790069280; c=relaxed/simple;
+	bh=gS3AFki51Z44v57VCMt1yUS9ZPFvANxOrRZ4wXkAYmI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uhB7zD8x69ckrqfGITzcQqx5hDONamZXrUaWh0OuzXnHLEYmQlajYyI+F7yXJY8NPwWSkRXMMKg8b2kQHc2e4hyPzmcoX3RiA7zACba9CAGvGc6FOervze9fxJvkkJAFCmQfKYFxNGyFYSiw7Jz+0ROvLN+7dB3zfpbO/7gRs9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P93Y2JwM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k9LHr2Wd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5581F000FF;
-	Tue, 22 Sep 2026 09:04:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P93Y2JwM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 460301F000FF;
+	Tue, 22 Sep 2026 09:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790067901;
-	bh=gVJZTypgXfKJStNVi3R0a2JQB/tvx6NLIBfpEAfH+Ko=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=k9LHr2Wd4Rxx3+1boxWUT9I2oXWCmuvgxijo5nc6bPCgxtO998Rsh7NKemCZPMZ7q
-	 jCqEgkFPjzxPK4mReOTTd/elY+ciGLQH0sdAs9Gj6meNVO4LfN2kzV+4LXR0oVx6SK
-	 7ZH/T7Wv5A2AUNswlgh8q3cB2VzM3drCJ2lhSUow3TBR7t+5QqoSZi80Bp+U336otT
-	 6+pWL7hrOojomJ2u753Enniueu6LZnlrBvU6X6vwp9prGtDnyfBK/IXM5CJdbxbR9Z
-	 4Y6VvuOiSdy8+S0cHn5PGHelRvFyfDPZFS7siU3DaFG8DB1NQi0pi6gHzGpuQPP6oN
-	 01swkhQ7UyoBw==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v7 8/9] of: reserved_mem: mark /memreserve/ entries as
- MEMBLOCK_NODUMP
-Reply-To: sashiko-reviews@lists.linux.dev
-To: robh@kernel.org, baoquan.he@linux.dev, "Wandun Chen" <chenwandun1@gmail.com>, rppt@kernel.org, m.szyprowski@samsung.com
-Cc: saravanak@kernel.org, pjw@kernel.org, conor+dt@kernel.org, iommu@lists.linux.dev, ruirui.yang@linux.dev, linux-kernel@vger.kernel.org, mark.rutland@arm.com, loongarch@lists.linux.dev, tglx@kernel.org, bp@alien8.de, x86@kernel.org, pratyush@kernel.org, kexec@lists.infradead.org, chenhuacai@kernel.org, hpa@zytor.com, pasha.tatashin@soleen.com, mingo@redhat.com, linux-mm@kvack.org, robin.murphy@arm.com, linux-riscv@lists.infradead.org, aou@eecs.berkeley.edu, linux-arm-kernel@lists.infradead.org, alex@ghiti.fr, catalin.marinas@arm.com, will@kernel.org, devicetree@vger.kernel.org, dave.hansen@linux.intel.com, akpm@linux-foundation.org, palmer@dabbelt.com, kernel@xen0n.name
-In-Reply-To: <20260922084256.1515554-9-chenwandun1@gmail.com>
-References: <20260922084256.1515554-1-chenwandun1@gmail.com>
- <20260922084256.1515554-9-chenwandun1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 22 Sep 2026 09:04:58 +0000
-Message-Id: <20260922090459.2B5581F000FF@smtp.kernel.org>
+	s=k20260515; t=1790069279;
+	bh=koizuzCvTqcQymkCuZR6nRMdDkAOhPlxoac5NyN6ips=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=P93Y2JwMRUD+FjDX9JvlrJ4sdffhqSpMhQ3xyG2fMIU7w46V1TqTlurEZHFvSSmnp
+	 2eCbfQf/foqQ/lkHF+f7ldipUiwNNQN7Y6VjMqHQ9MMC12Ja10TNRz+PBB7dYo63HN
+	 1p45XqVVe6G71spiFanf/g1AOhtAq6jjqqf2EPcBv4PQIobYrP49/5M4kREllclt/X
+	 L5hwGCaBqXR9wDzE2cl68BHXQw4yQaN9tbvaZwd7fHT0B6gO8IZMywYJuK8wPdg+xf
+	 2ZFKuqemyBIUzzqWh1b1M3W+Dt4g4n1tpq/O+4GBRiuEtrGT7YOxV1miHkxHvRpX74
+	 sSTSkzvA+KpeQ==
+Date: Tue, 22 Sep 2026 12:27:54 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v7 15/19] PCI/P2PDMA: Document TLP-class routing
+Message-ID: <20260922092754.GC563127@unreal>
+References: <20260920-fix-p2p-acs-v4-0-v7-0-ca0828ab697c@nvidia.com>
+ <20260920-fix-p2p-acs-v4-0-v7-15-ca0828ab697c@nvidia.com>
+ <85bb90f0-5a02-4e35-9ed6-ad7e67c1c0d8@deltatee.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <85bb90f0-5a02-4e35-9ed6-ad7e67c1c0d8@deltatee.com>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Medium] of/fdt: silent u64 truncation in fdt_mark_memreserve_nodump caus=
-es nodump false positives
---
+On Mon, Sep 21, 2026 at 04:16:56PM -0600, Logan Gunthorpe wrote:
+> 
+> 
+> On 2026-09-20 05:41, Leon Romanovsky wrote:
+> > +A path is bus addressable only where both directions route directly, so with
+> > +nothing enabled every class is.
+> 
+> I don't understand the sentence.
 
-commit 070ed699ada4d456618a640c6ad541abbec98f95
-Author: Wandun Chen <chenwandun@lixiang.com>
+I tried to say that we need both Requests and Completions route
+directly.
 
-of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+Claude suggested something like that:
+---------------------------------------------------------------------------
+Combining the two tables gives the mapping type: a class is bus addressable
+when its Request and its Completions both route directly, a blocked Request
+is not supported because Translation Blocking rejects the Address Type
+wherever the Request is addressed, and anything else goes through the host
+bridge. With no ACS control set anywhere, every class routes directly.
+---------------------------------------------------------------------------
 
-The /memreserve/ entries are memory reservations made by the bootloader
-or firmware, their contents are not needed for kernel crash analysis. This
-commit marks them MEMBLOCK_NODUMP to omit them from the vmcore, while leavi=
-ng
-overlapping dumpable regions unmarked.
+Thanks
 
-> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> index f29a07e8fb23e..a42cf6eac55b5 100644
-> --- a/drivers/of/of_reserved_mem.c
-> +++ b/drivers/of/of_reserved_mem.c
-[ ... ]
-> @@ -251,6 +251,39 @@ static void __init __rmem_check_for_overlap(void)
->  	}
->  }
-> =20
-> +void __init fdt_mark_memreserve_nodump(void)
-> +{
-> +	u64 base, size;
-> +	int n;
-> +	const void *fdt =3D initial_boot_params;
-[ ... ]
-> +		for (i =3D 0; i < reserved_mem_count; i++) {
-> +			struct reserved_mem *rmem =3D &reserved_mem[i];
-> +
-> +			if (rmem->dumpable &&
-> +			    base < (u64)rmem->base + (u64)rmem->size &&
-> +			    (u64)rmem->base < base + size)
-> +				break;
-> +		}
-> +		if (i =3D=3D reserved_mem_count)
-> +			memblock_mark_nodump(base, size);
-
-[Severity: Medium]
-Is there a risk of silent truncation here when passing u64 arguments to
-memblock_mark_nodump() on 32-bit architectures?
-
-The u64 base and size variables are passed directly to memblock_mark_nodump=
-()
-which takes phys_addr_t arguments. On a 32-bit architecture where phys_addr=
-_t
-is 32-bit, if the device tree contains a /memreserve/ entry with an address
-greater than 4GB, fdt_mark_memreserve_nodump() reads it as a 64-bit value.
-
-It performs a 64-bit overlap check against dumpable regions in reserved_mem.
-Because the upper 32 bits differ, it concludes there is no overlap. It then
-calls memblock_mark_nodump(), where the compiler silently truncates base to=
- 32
-bits.
-
-Could this incorrectly mark the lower 32-bit address as MEMBLOCK_NODUMP,
-mistakenly excluding any dumpable region located there that the overlap
-check was intended to protect?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260922084256.1515=
-554-1-chenwandun1@gmail.com?part=3D8
+> 
+> 
+> Logan
