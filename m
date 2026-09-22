@@ -1,125 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9BB4D2ED0;
-	Tue, 22 Sep 2026 09:02:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F12522F0C;
+	Tue, 22 Sep 2026 09:03:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790067777; cv=none; b=RnuoliJDdGiVskCnUt7bmx+5E/V8iM4hVNJc6bpDL7mOY3g3+yM+NhvUnXP+/FId8/MCnTTpPdy2EtRXtU0xfwXlVaXDPjV4A5VbR+MOl84ZTvwlTDuTc8bZdCTchP7eqCzigFqI+K+afYPlxqoYmzCq/LixZoohtv0M2RuFkw0=
+	t=1790067789; cv=none; b=WQAv7Xb//iLQM8xFiM5P1vd5ANFQMevUxFBzwrqnr4OhX/D08130Pb2tj1k4BrkMdw8vI//tUhRyB++sa301Y1CR/+EnDqIo5pblveeT8QL59giA1H4utvkq2gYx5yhBa0nIvqwjQskjMJjccpKPKuYehYTsZDBYGq7SvGWF798=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790067777; c=relaxed/simple;
-	bh=eDrtESrCV+F2i5tlO1zl18MePWnt6NhFaqPLy+AF5xk=;
+	s=arc-20240116; t=1790067789; c=relaxed/simple;
+	bh=pHgvoHnJIwe3nC5S4OY8z28uWVR9gAOlu7YWol56jKc=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=IjI8uPv5XsBwF6jEFCt4Ti/lDsk90K5EW8YKJ30HL/wf/IeXjbUqkHmRDmI5UMdckSM7KK7fnXpfO0MnZC3BrzWGW9fLKfrAJdjTtiOJcUXaIU0GAlzBLC7JLSZEncRpBdyKIjlr+nT1XUXkN7g69eY8fofq/8B1J1uzbTCTUk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e17ouVhx; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=RftEVpUc62UdVL8z5DscQYtPMxlRwu2CgPBYIPxAct5aNFDkuJBhTH0WMbl+KNt64p/cDb/QtvB4kYfRD90Q/dx425woPlU29LMWlnlV5oBXH9mXhWmEjiL62F1fY3Clm0RmSkHJSjNQeAQDxw+WDeJulBbjqKqJROSpXeLhXpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l+JOE4ry; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e17ouVhx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B01541F000FF;
-	Tue, 22 Sep 2026 09:02:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l+JOE4ry"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 542831F000FF;
+	Tue, 22 Sep 2026 09:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790067775;
-	bh=JnhzTAx413FwpdKahXPNOcr3FwWYv2J2Y6dhd+67auQ=;
+	s=k20260515; t=1790067788;
+	bh=pHgvoHnJIwe3nC5S4OY8z28uWVR9gAOlu7YWol56jKc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=e17ouVhx7pCa4EJXvSkinhLyV94jWOdGlljXb86UFt04mTtWxN7lu6AysEmUU3QLo
-	 AY/5/KTGz63a1+nHe+QBAv7i9L3bkjvPynyjRfU1ZKNv39Ud+MifCRynvPn4HfDheh
-	 /qodv7Z+OrXbHXZqlzP36IohhsehpVwOMtTCPMRaUWthRowSEohGKneZhUzEIWf48B
-	 +RQ0gOP/EPvltRkXJ/AL9wU/EPgrO8maZ0xKOAvkdpqMfAX5JcoShYoS+IQIzmWQkZ
-	 cfWweH9aPTBakCZQdL3x6Uw1Z/VAMetOe1jYzWpZLI1Hjn9BkaGnmlNtDWAUYaCfP/
-	 WkRJ8YEnGI6hw==
+	b=l+JOE4ryLKIP3w9q5Wm7pSG1JLgmDJMTih9bWxagWnLP0XhQLvugLdVxdO/i7BZ1b
+	 uvX39GjRiLtbNCtIwl6kbzM07pHvNRM7sLWrfKdwu5cRDBDhhUW14JQEPxQgJCJcpo
+	 zteqI1bXRF1+ErMo/W206HGKtuTl5xYGFoYzr8R+VyzOeETVbKARobUvCKiqV/1H5G
+	 ZG2bS7BFom8VmX+m2cO+RlPZM8u/HRlPHtdDSKYxDCuUCo7GUN/ZasJtPMbhOvS5BW
+	 mJMwC/BAeODqKEf4NJtp6Oe/JkjP/uh/PV3O0rpjhB5shaJzPxmBPBVxFXQ+Q6GbJt
+	 r1KqQABQ7lA/w==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v7 5/9] memblock: introduce MEMBLOCK_NODUMP flag
+Subject: Re: [PATCH v7 3/9] crash_core: serialize crash header preparation
+ against hotplug
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Wandun Chen" <chenwandun1@gmail.com>, robh@kernel.org, rppt@kernel.org, baoquan.he@linux.dev, m.szyprowski@samsung.com
-Cc: aou@eecs.berkeley.edu, palmer@dabbelt.com, akpm@linux-foundation.org, conor+dt@kernel.org, bp@alien8.de, pasha.tatashin@soleen.com, ruirui.yang@linux.dev, mingo@redhat.com, hpa@zytor.com, saravanak@kernel.org, x86@kernel.org, robin.murphy@arm.com, catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com, alex@ghiti.fr, pratyush@kernel.org, kernel@xen0n.name, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, dave.hansen@linux.intel.com, kexec@lists.infradead.org, linux-riscv@lists.infradead.org, pjw@kernel.org, loongarch@lists.linux.dev, tglx@kernel.org, linux-mm@kvack.org, chenhuacai@kernel.org
-In-Reply-To: <20260922084256.1515554-6-chenwandun1@gmail.com>
+To: m.szyprowski@samsung.com, "Wandun Chen" <chenwandun1@gmail.com>, baoquan.he@linux.dev, robh@kernel.org, rppt@kernel.org
+Cc: devicetree@vger.kernel.org, ruirui.yang@linux.dev, linux-arm-kernel@lists.infradead.org, alex@ghiti.fr, pjw@kernel.org, tglx@kernel.org, aou@eecs.berkeley.edu, bp@alien8.de, hpa@zytor.com, akpm@linux-foundation.org, mingo@redhat.com, linux-kernel@vger.kernel.org, dave.hansen@linux.intel.com, saravanak@kernel.org, x86@kernel.org, will@kernel.org, kexec@lists.infradead.org, linux-riscv@lists.infradead.org, linux-mm@kvack.org, chenhuacai@kernel.org, iommu@lists.linux.dev, mark.rutland@arm.com, loongarch@lists.linux.dev, robin.murphy@arm.com, kernel@xen0n.name, pratyush@kernel.org, catalin.marinas@arm.com, palmer@dabbelt.com, conor+dt@kernel.org, pasha.tatashin@soleen.com
+In-Reply-To: <20260922084256.1515554-4-chenwandun1@gmail.com>
 References: <20260922084256.1515554-1-chenwandun1@gmail.com>
- <20260922084256.1515554-6-chenwandun1@gmail.com>
+ <20260922084256.1515554-4-chenwandun1@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 22 Sep 2026 09:02:52 +0000
-Message-Id: <20260922090252.B01541F000FF@smtp.kernel.org>
+Date: Tue, 22 Sep 2026 09:03:05 +0000
+Message-Id: <20260922090306.542831F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] mm: lockless mutation of memblock.memory causes UAF in concurrent =
-readers
---
+> From: Wandun Chen <chenwandun@lixiang.com>
+>=20
+> crash_prepare_headers() counts memory ranges before populating the
+> allocated crash_mem array. The weak implementation used by ARM64,
+> RISC-V and LoongArch walks memblock.memory, while x86 performs the same
+> two-pass operation over system RAM resources. Concurrent memory hotplug
+> can change range source between the two walks and make the populate
+> pass overflow cmem->ranges.
+>=20
+> Take device_hotplug_lock when preparing crash headers during
+> kexec_file_load(). The x86 memory hotplug path already takes
+> device_hotplug_lock, so call __crash_prepare_headers() directly
+> to avoid recursive locking.
+>=20
+> Sashiko reported this issue in [1].
+>=20
+> Fixes: 3751e728cef2 ("arm64: kexec_file: add crash dump support")
+> Fixes: 1bcca8620a91 ("LoongArch: Add crash dump support for kexec_file")
+> Fixes: 8acea455fafa ("RISC-V: Support for kexec_file on panic")
+> Fixes: dd5f726076cc ("kexec: support for kexec on panic using new system =
+call")
+> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
 
-commit 3e0d4f57949330268c708beeb66dc1c0fb65db32
-Author: Wandun Chen <chenwandun@lixiang.com>
-Subject: memblock: introduce MEMBLOCK_NODUMP flag
-
-This patch introduces the MEMBLOCK_NODUMP flag to mark memory regions that
-should be excluded from kdump vmcores. It also adds logic to clear this flag
-when reserved memory, such as the initrd, is freed so the memory can be
-properly reused.
-
-> diff --git a/mm/memblock.c b/mm/memblock.c
-> index ea0de4b5f3568..48cabfe5cdf16 100644
-> --- a/mm/memblock.c
-> +++ b/mm/memblock.c
-[ ... ]
-> @@ -949,9 +951,13 @@ unsigned long free_reserved_area(void *start, void *=
-end, int poison, const char
->  	}
-> =20
->  	if (IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK)) {
-> -		if (start_pa < end_pa)
-> +		if (start_pa < end_pa) {
->  			memblock_remove_range(&memblock.reserved,
->  					      start_pa, end_pa - start_pa);
-> +
-> +			if (IS_ENABLED(CONFIG_CRASH_DUMP))
-> +				memblock_clear_nodump(start_pa, end_pa - start_pa);
-> +		}
->  	}
-
-[Severity: High]
-Could this lockless mutation of memblock.memory race with concurrent reader=
-s?
-
-This code path is triggered during asynchronous initrd freeing
-(e.g., via do_populate_rootfs using async_schedule_domain).
-
-Calling memblock_clear_nodump() modifies the memblock.memory array lockless=
-ly
-via memblock_setclr_flag() and memblock_isolate_range().
-memblock_isolate_range() can split ranges using memmove(), which disrupts
-array ordering, and can even call memblock_double_array() which kfree()s
-the old array.
-
-Concurrently, subsystems rely on memblock.memory being immutable after early
-boot. For example, on ARM64, ioremap() calls pfn_is_map_memory(), which
-performs a lockless binary search (memblock_search()) directly on
-memblock.memory.regions.
-
-If memblock_clear_nodump() splits or reallocates the array while ioremap()
-is executing during driver probes, could this result in a use-after-free
-on the freed array or an out-of-bounds access from broken binary search
-invariants?
-
-[ ... ]
-> @@ -995,8 +1001,11 @@ int __init_memblock memblock_phys_free(phys_addr_t =
-base, phys_addr_t size)
-> =20
->  	kmemleak_free_part_phys(base, size);
-> =20
-> -	if (!slab_is_available() || IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK))
-> +	if (!slab_is_available() || IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK)) {
->  		ret =3D memblock_remove_range(&memblock.reserved, base, size);
-> +		if (IS_ENABLED(CONFIG_CRASH_DUMP))
-> +			memblock_clear_nodump(base, size);
-> +	}
-
-[Severity: High]
-Similar to the above, does this introduce the same lockless mutation risk
-when called during runtime module unloads or CMA frees?
+Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260922084256.1515=
-554-1-chenwandun1@gmail.com?part=3D5
+554-1-chenwandun1@gmail.com?part=3D3
+
